@@ -15,6 +15,7 @@
 #include "main/shop_list_a.h"
 #include "member_pointer.h"
 #include "room_object_body.h" /* RoomObject_Number */
+#include "room_objects.h"
 
 static_assert(sizeof(ShopDisplay) == 0x58, "the process");
 
@@ -67,7 +68,7 @@ extern const MemberPointer data_ov004_022568b4; /* ShopDisplay_StockFox */
 extern const MemberPointer data_ov004_022568a4; /* ShopDisplay_StockOther */
 
 /* ItemAt's two item codes: function-local statics of the game's, built and registered for
- * destruction (with func_020051b0) the first time, a guard bit each. */
+ * destruction (with TrivialObject_DestructItemCode) the first time, a guard bit each. */
 extern u16 data_ov004_0225ff04; /* the empty code: "nothing on sale here" */
 extern u16 data_ov004_0225ff08; /* the code of the room object on the tile */
 extern u32 data_ov004_0225ff14;
@@ -83,10 +84,6 @@ extern FoxShop data_021f3b30;
 extern void __register_global_object(void *object, void *destruct, void *record);
 /* The destructor of an item code (TrivialObject_DestructItemCode), as the game registers it. */
 extern void func_020051b0(void *item);
-
-/* The room's objects on their cells (room_sync.h). */
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int y, int layer);
 
 /* Whether `item` is the code `code`: for an item with variants, the same item (the item's
  * variant item read first). */
@@ -281,7 +278,7 @@ u16 *ShopDisplay_ItemAt(int x, int z)
         return &data_ov004_0225ff04;
     }
     if (ItemCode_IsF031OrVariant(item)) {
-        RoomObject *object = func_ov004_0223cc10(func_ov004_0223cd50(), x, z, 0);
+        RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, 0);
         if (object == NULL) {
             return &data_ov004_0225ff04;
         }

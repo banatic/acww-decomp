@@ -15,6 +15,8 @@
 #include "villager_memories.h"
 #include "villager_memory_entry.h"
 #include "villager_scene_object.h"
+#include "letter.h"
+#include "main_random.h"
 
 static_assert(offsetof(VillagerTalk, line) == 0xb0, "VillagerTalk layout");
 static_assert(offsetof(VillagerTalk, reply) == 0xd0, "VillagerTalk layout");
@@ -68,10 +70,6 @@ extern const MemberPointer data_021c283c[VILLAGER_TALK_SCENE_LINE_TABLES][VILLAG
 extern u8 data_021c1e84[VILLAGER_TALK_SCENE_SHARED_SIZE];
 extern const MemberPointer __ptmf_null;
 
-/* A letter's state (its byte 0xfa, low six bits). */
-extern u8 func_02065ec0(const MailLetter *letter);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
 /* The SDK's fill. */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
@@ -149,7 +147,7 @@ MailLetter *VillagerTalkScene_LetterToSend(PlayerPockets *pockets)
 {
     u8 *letter = (u8 *) PlayerPockets_Letter(pockets, 0);
     for (int i = 0; i < VILLAGER_TALK_SCENE_LETTERS; i++, letter += VILLAGER_TALK_SCENE_LETTER_SIZE) {
-        if ((u8) (func_02065ec0((MailLetter *) (void *) letter) - VILLAGER_TALK_SCENE_LETTER_TO_SEND) <= 1) {
+        if ((u8) (Letter_State((const Letter *) ((MailLetter *) (void *) letter)) - VILLAGER_TALK_SCENE_LETTER_TO_SEND) <= 1) {
             return (MailLetter *) (void *) letter;
         }
     }
@@ -339,7 +337,7 @@ int VillagerTalkScene_DrawLine(VillagerTalk *talk, char *text, u8 *message, int 
     u8 first = (u8) ((u8) per_group * group);
     u8 bound = (u8) range != 0 ? (u8) range : (u8) per_group;
     Personality_FormatResourceName(text, size, (const char *) (uintptr_t) texts, (u8) personality);
-    int result = first + func_020644cc(bound);
+    int result = first + MainRandom_Below(bound);
     *message = (u8) result;
     return result;
 }

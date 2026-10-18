@@ -7,17 +7,15 @@
 #include "session.h"
 #include "villager_bonds.h"
 #include "villager_town.h"
+#include "actor_table.h"
+#include "main_random.h"
+#include "town_villager.h"
+#include "villager_roster.h"
 
 extern NetSession *data_020ccf94; /* the game's session */
 /* The lowest score of each tier, the best first. */
 extern const int data_020cd474[VILLAGER_PAIR_TIERS];
 
-extern NpcId *func_0208150c(const void *villager);                    /* the villager's NpcId, at 0x7a0 */
-extern u8 *func_0207cec0(VillagerTown *town, int villager);           /* villager `villager`, or NULL past 7 */
-extern int func_0207cf14(const VillagerTown *town, const NpcId *npc); /* the villager it names, or -1 */
-extern int func_0207cf74(u32 index);                                  /* whether the index is 0-7 */
-extern int func_0207cee4(VillagerTown *town, int villager);           /* whether that place has a villager */
-extern unsigned int func_020644cc(int bound);                         /* a random number below `bound` */
 /* The game's own tests for VillagerPair_Pick, handed to it as it hands them. */
 extern int func_0207ba24(int best, int score);
 extern int func_0207ba30(int best, int score);
@@ -58,22 +56,22 @@ CLEAN_AS(func_0207ba30, VillagerPair_IsHigher)
  * none, or `villager` is not one of the town's. */
 u8 *VillagerPair_Pick(VillagerTown *town, u8 *villager, VillagerPairBetter *better, int start)
 {
-    int index = func_0207cf14(town, func_0208150c(villager));
+    int index = VillagerRoster_IndexOf(town, TownVillager_NpcId(villager));
     u8 *chosen = NULL;
     int best = start;
-    if (!NpcId_IsValid(func_0208150c(villager)) || !func_0207cf74((u32) index)) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager)) || !ActorTable_IsKindESlot((u32) index)) {
         return NULL;
     }
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
-        if (i == index || !func_0207cee4(town, i)) {
+        if (i == index || !VillagerRoster_IsFilled(town, i)) {
             continue;
         }
         int score = VillagerBond_Compatibility(town->bonds, index, i);
         if ((*better)(best, score)) {
-            chosen = func_0207cec0(town, i);
+            chosen = VillagerRoster_At(town, i);
             best = score;
-        } else if (score == best && (chosen == NULL || (func_020644cc(4) & 1) == 1)) {
-            chosen = func_0207cec0(town, i);
+        } else if (score == best && (chosen == NULL || (MainRandom_Below(4) & 1) == 1)) {
+            chosen = VillagerRoster_At(town, i);
         }
     }
     return chosen;
@@ -87,8 +85,8 @@ void VillagerPair_AddBond(VillagerTown *town, const NpcId *first, const NpcId *s
     if (Session_IsLinked(data_020ccf94)) {
         return;
     }
-    int a = func_0207cf14(town, first);
-    int b = func_0207cf14(town, second);
+    int a = VillagerRoster_IndexOf(town, first);
+    int b = VillagerRoster_IndexOf(town, second);
     VillagerBond_Add(town->bonds, a, b, amount);
 }
 CLEAN_AS(func_0207bae8, VillagerPair_AddBond)
@@ -97,9 +95,9 @@ CLEAN_AS(func_0207bae8, VillagerPair_AddBond)
  * the same villager or one not of the town. */
 int VillagerPair_TierOf(VillagerTown *town, u8 *first, u8 *second)
 {
-    int a = func_0207cf14(town, func_0208150c(first));
-    int b = func_0207cf14(town, func_0208150c(second));
-    if (a != b && func_0207cf74((u32) a) && func_0207cf74((u32) b)) {
+    int a = VillagerRoster_IndexOf(town, TownVillager_NpcId(first));
+    int b = VillagerRoster_IndexOf(town, TownVillager_NpcId(second));
+    if (a != b && ActorTable_IsKindESlot((u32) a) && ActorTable_IsKindESlot((u32) b)) {
         return VillagerPair_Tier(town, a, b);
     }
     return VILLAGER_PAIR_TIERS;

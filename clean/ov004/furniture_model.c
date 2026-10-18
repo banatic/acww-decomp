@@ -10,13 +10,19 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/item_code.h"
+#include "main/c_library.h"
+#include "main/model_anim.h"
+#include "main/model_cache.h"
+#include "main/model_loader.h"
+#include "main/model_pool.h"
+#include "main/rom_file.h"
+#include "main/vram_region.h"
 
 static_assert(offsetof(FurnitureModel, loader) == 0x10, "loader");
 static_assert(offsetof(FurnitureModel, anims) == 0x44, "animations");
 static_assert(offsetof(FurnitureModel, item) == 0x70, "item");
 static_assert(offsetof(FurnitureModel, keep_texture_copy) == 0x72, "copy flag");
 static_assert(sizeof(FurnitureModel) == 0x74, "furniture model");
-static_assert(offsetof(FurnitureAnim, target) == 0x18, "animation target");
 static_assert(sizeof(FurnitureAnim) == 0x20, "animation");
 
 #define LOADER_DONE 3   /* the texture loader's last state */
@@ -47,12 +53,8 @@ extern char data_ov004_02256e7c[];
 /* The vtable of FurnitureAnim. */
 extern const u8 data_ov004_0224fe44[];
 
-extern int func_02064328(char *buffer, const char *format, ...);
-extern u8 *func_02064b2c(const char *path, void *heap, int align, int *size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The slot the furniture is loaded for: something at 8 for the texture, and a heap. */
-extern void *func_0209d320(void *slot);
-extern Heap *func_0209d324(void *slot);
 extern int NNS_FndMountArchive(Archive *archive, const char *name, void *data);
 extern u8 *NNS_FndGetArchiveFileByName(const char *path);
 extern int func_0210285c(Archive *archive);
@@ -68,16 +70,6 @@ extern u8 *func_02107cf0(void *set, u32 index);
 extern u8 *func_02107bbc(void *set, u32 index);
 extern u8 *func_02107bf8(void *set, u32 index);
 extern void *func_021077e8(u8 *file);
-extern int func_02055954(TextureLoader *loader, void *texture, void *for_texture, Heap *heap);
-extern u8 *func_0205594c(TextureLoader *loader);
-extern void func_02055aac(TextureLoader *loader);
-extern void func_02055af4(TextureLoader *loader);
-extern TextureLoader *func_02055b00(TextureLoader *loader);
-extern int func_02056064(void *texture, void *for_texture);
-extern u8 *func_020561cc(void *texture, Heap *heap);
-extern void *func_02056578(void *anim);
-extern void func_020565ec(void *anim);
-extern void func_020edb3c(void *object);
 
 /* An arithmetic shift right, for negative values too. */
 static s32 shift_right(s32 value, int bits)
@@ -121,7 +113,7 @@ int FurnitureModel_EndLoad(FurnitureModel *files)
 {
     files->item = ITEM_CODE_NONE;
     FurnitureModel_FreeTextureFile(files);
-    func_02055aac(&files->loader);
+    ModelLoader_Release(&files->loader);
     files->keep_texture_copy = 0;
     return 0;
 }
@@ -167,10 +159,10 @@ int FurnitureModel_LoadStep(FurnitureModel *files, void *slot, int number, int k
     FurnitureModel_LoadFiles(files, slot, number);
     if (files->texture == NULL) {
         void *texture = func_021077e8(files->texture_file);
-        void *for_texture = func_0209d320(slot);
-        Heap *heap = func_0209d324(slot);
-        if (func_02055954(&files->loader, texture, for_texture, heap) == LOADER_DONE) {
-            files->texture = func_0205594c(&files->loader);
+        VramRegion *for_texture = (VramRegion *) (uintptr_t) ModelPoolEntry_Vram(slot);
+        Heap *heap = (Heap *) (uintptr_t) ModelPoolEntry_Heap(slot);
+        if (ModelLoader_StepTexture(&files->loader, texture, for_texture, heap) == LOADER_DONE) {
+            files->texture = ModelLoader_Texture(&files->loader);
             FurnitureModel_EndLoad(files);
             return 1;
         }
@@ -190,8 +182,8 @@ int FurnitureModel_Load(FurnitureModel *files, void *slot, int number, int keep_
     files->item = ItemCode_MakeVariant(number, 0);
     FurnitureModel_LoadFiles(files, slot, number);
     void *texture = func_021077e8(files->texture_file);
-    func_02056064(texture, func_0209d320(slot));
-    files->texture = func_020561cc(texture, func_0209d324(slot));
+    VramRegion_LoadTexture(texture, (VramRegion *) (uintptr_t) ModelPoolEntry_Vram(slot));
+    files->texture = ModelCache_CopyTexture(texture, (Heap *) (uintptr_t) ModelPoolEntry_Heap(slot));
     FurnitureModel_EndLoad(files);
     return 1;
 }
@@ -221,18 +213,18 @@ CLEAN_AS(func_ov004_0220e220, FurnitureModel_Anims)
 int FurnitureModel_LoadFiles(FurnitureModel *files, void *slot, int number)
 {
     if (files->texture_file == NULL) {
-        int size;
-        files->texture_file = func_02064b2c(FurnitureModel_TexturePath(files, number), data_021fbe94, TAIL_ALIGN, &size);
+        u32 size;
+        files->texture_file = RomFile_Load(FurnitureModel_TexturePath(files, number), data_021fbe94, TAIL_ALIGN, &size);
         if (files->keep_texture_copy) {
-            u8 *copy = Heap_Alloc(func_0209d324(slot), size);
-            MI_CpuCopy8(files->texture_file, copy, (u32) size);
+            u8 *copy = Heap_Alloc((Heap *) (uintptr_t) ModelPoolEntry_Heap(slot), size);
+            MI_CpuCopy8(files->texture_file, copy, size);
             AnimSet_SetFile28(&files->anims, address(copy));
         }
     }
     if (files->archive == NULL) {
-        int size;
+        u32 size;
         char *path = FurnitureModel_ArchivePath(files, number);
-        files->archive = func_02064b2c(path, func_0209d324(slot), 4, &size);
+        files->archive = RomFile_Load(path, (Heap *) (uintptr_t) ModelPoolEntry_Heap(slot), 4, &size);
     }
     if (files->model == NULL && files->archive != NULL) {
         Archive archive;
@@ -244,27 +236,27 @@ int FurnitureModel_LoadFiles(FurnitureModel *files, void *slot, int number)
             for (unsigned int i = 0; i < VARIANTS; i++) {
                 char name[32];
                 u8 *file;
-                func_02064328(name, data_ov004_0224ff94, i);
+                CLib_SPrintf(name, data_ov004_0224ff94, i);
                 file = NNS_FndGetArchiveFileByName(name);
                 if (file != NULL) {
                     AnimSet_SetAnim00(&files->anims, address(func_02107b44(NNS_G3dGetJntAnmSet(file), 0)), (int) i);
                 }
-                func_02064328(name, data_ov004_0224ffa4, i);
+                CLib_SPrintf(name, data_ov004_0224ffa4, i);
                 file = NNS_FndGetArchiveFileByName(name);
                 if (file != NULL) {
                     AnimSet_SetAnim08(&files->anims, address(func_02107b80(NNS_G3dGetMatCAnmSet(file), 0)), (int) i);
                 }
-                func_02064328(name, data_ov004_0224ffb4, i);
+                CLib_SPrintf(name, data_ov004_0224ffb4, i);
                 file = NNS_FndGetArchiveFileByName(name);
                 if (file != NULL) {
                     AnimSet_SetAnim10(&files->anims, address(func_02107cf0(NNS_G3dGetVisAnmSet(file), 0)), (int) i);
                 }
-                func_02064328(name, data_ov004_0224ffc4, i);
+                CLib_SPrintf(name, data_ov004_0224ffc4, i);
                 file = NNS_FndGetArchiveFileByName(name);
                 if (file != NULL) {
                     AnimSet_SetAnim18(&files->anims, address(func_02107bbc(NNS_G3dGetTexSRTAnmSet(file), 0)), (int) i);
                 }
-                func_02064328(name, data_ov004_0224ffd4, i);
+                CLib_SPrintf(name, data_ov004_0224ffd4, i);
                 file = NNS_FndGetArchiveFileByName(name);
                 if (file != NULL) {
                     AnimSet_SetAnim20(&files->anims, address(func_02107bf8(NNS_G3dGetTexPatAnmSet(file), 0)), (int) i);
@@ -281,7 +273,7 @@ CLEAN_AS(func_ov004_0220e224, FurnitureModel_LoadFiles)
 char *FurnitureModel_TexturePath(FurnitureModel *files, int number)
 {
     (void) files;
-    func_02064328(data_ov004_02256ea4, data_ov004_0224ffe4, shift_right(number, 8), (number & 0xff) >> 4, number);
+    CLib_SPrintf(data_ov004_02256ea4, data_ov004_0224ffe4, shift_right(number, 8), (number & 0xff) >> 4, number);
     return data_ov004_02256ea4;
 }
 CLEAN_AS(func_ov004_0220e3f0, FurnitureModel_TexturePath)
@@ -290,7 +282,7 @@ CLEAN_AS(func_ov004_0220e3f0, FurnitureModel_TexturePath)
 char *FurnitureModel_ArchivePath(FurnitureModel *files, int number)
 {
     (void) files;
-    func_02064328(data_ov004_02256e7c, data_ov004_0224fffc, shift_right(number, 8), (number & 0xff) >> 4, number);
+    CLib_SPrintf(data_ov004_02256e7c, data_ov004_0224fffc, shift_right(number, 8), (number & 0xff) >> 4, number);
     return data_ov004_02256e7c;
 }
 CLEAN_AS(func_ov004_0220e41c, FurnitureModel_ArchivePath)
@@ -306,7 +298,7 @@ CLEAN_AS(func_ov004_0220e448, FurnitureModel_IsLoaded)
 FurnitureModel *FurnitureModel_Destruct(FurnitureModel *files)
 {
     AnimSet_Destruct(&files->anims);
-    func_02055af4(&files->loader);
+    ModelLoader_Destruct(&files->loader);
     return files;
 }
 CLEAN_AS(func_ov004_0220e458, FurnitureModel_Destruct)
@@ -315,7 +307,7 @@ CLEAN_AS(func_ov004_0220e458, FurnitureModel_Destruct)
  * QUIRK: the item code is written twice. */
 FurnitureModel *FurnitureModel_Construct(FurnitureModel *files)
 {
-    func_02055b00(&files->loader);
+    ModelLoader_Construct(&files->loader);
     AnimSet_Construct(&files->anims);
     files->item = ITEM_CODE_NONE;
     files->texture_file = NULL;
@@ -329,19 +321,19 @@ FurnitureModel *FurnitureModel_Construct(FurnitureModel *files)
 CLEAN_AS(func_ov004_0220e474, FurnitureModel_Construct)
 
 /* func_ov004_0220e4b0 */
-u32 *FurnitureAnim_Target(const FurnitureAnim *anim)
+AnimatedModelAnim *FurnitureAnim_Target(const FurnitureAnim *anim)
 {
-    return anim->target;
+    return anim->base.anim;
 }
 CLEAN_AS(func_ov004_0220e4b0, FurnitureAnim_Target)
 
 /* func_ov004_0220e4b4: the destructor that also frees the object (operator delete,
- * func_020edb3c). */
+ * Heap_OperatorDeleteB). */
 FurnitureAnim *FurnitureAnim_Delete(FurnitureAnim *anim)
 {
-    anim->vtable = data_ov004_0224fe44;
-    func_02056578(anim);
-    func_020edb3c(anim);
+    anim->base.ctrl.vtable = data_ov004_0224fe44;
+    ModelAnim_Destruct(&anim->base);
+    Heap_OperatorDeleteB(anim);
     return anim;
 }
 CLEAN_AS(func_ov004_0220e4b4, FurnitureAnim_Delete)
@@ -349,8 +341,8 @@ CLEAN_AS(func_ov004_0220e4b4, FurnitureAnim_Delete)
 /* func_ov004_0220e4d4 */
 FurnitureAnim *FurnitureAnim_Destruct(FurnitureAnim *anim)
 {
-    anim->vtable = data_ov004_0224fe44;
-    func_02056578(anim);
+    anim->base.ctrl.vtable = data_ov004_0224fe44;
+    ModelAnim_Destruct(&anim->base);
     return anim;
 }
 CLEAN_AS(func_ov004_0220e4d4, FurnitureAnim_Destruct)
@@ -358,8 +350,8 @@ CLEAN_AS(func_ov004_0220e4d4, FurnitureAnim_Destruct)
 /* func_ov004_0220e4ec */
 FurnitureAnim *FurnitureAnim_Construct(FurnitureAnim *anim)
 {
-    func_020565ec(anim);
-    anim->vtable = data_ov004_0224fe44;
+    ModelAnim_ConstructBase(&anim->base);
+    anim->base.ctrl.vtable = data_ov004_0224fe44;
     return anim;
 }
 CLEAN_AS(func_ov004_0220e4ec, FurnitureAnim_Construct)

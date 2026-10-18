@@ -5,13 +5,15 @@
 #include "clean.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "sky_objects.h"
+#include "sky_resources.h"
+#include "sky_sound.h"
 
 extern const u32 data_020e69a4[]; /* the class's vtable */
 extern const u32 data_020da13c[]; /* the base class's (Process) */
 
 extern u8 data_021fba68[];
 extern u8 data_021f8b48[];
-extern void func_020bc514(void *object);
 
 /* The flag Block020ba298_SetPlayerFlag32 sets. */
 #define BLOCK_020BA298_PLAYER_FLAG 0x32
@@ -51,7 +53,7 @@ void Block020ba298_SetPlayerFlag32(void)
     u8 *record = PlayerRecords_Current();
     if (record != NULL) {
         PlayerRecord_SetFlag(record, BLOCK_020BA298_PLAYER_FLAG);
-        func_020bc514(data_021f8b48);
+        SkyObjects_Add2Mark3((SkyObjects *) (void *) data_021f8b48);
     }
 }
 CLEAN_AS(func_020ba2ec, Block020ba298_SetPlayerFlag32)
@@ -74,15 +76,6 @@ extern const u16 data_021f6cc0;
 extern StarPalette data_021f7280;
 extern void GX_LoadBGPltt(const void *src, u32 offset, u32 size);
 extern void GXS_LoadBGPltt(const void *src, u32 offset, u32 size);
-extern int func_020befa0(void *files);
-extern void func_020bc4f8(void *objects);
-extern void func_020bc4dc(void *objects);
-extern void func_020bc388(void *objects);
-extern void func_020bc380(void *objects);
-extern void func_020bc1bc(void *objects);
-extern void func_020bbe8c(void *sound);
-extern void func_020bbe94(void *sound);
-extern int func_020bbee0(void *sound);
 extern void func_01ffceb8(void);
 extern void func_020bad44(void);
 extern void func_020bab04(void);
@@ -147,10 +140,10 @@ int SkyProcess_Delete(SkyProcess *process)
     }
 
     if (data_021f6cd8 != 0) {
-        func_020bc4dc(data_021f8b48);
+        SkyObjects_Delete((SkyObjects *) (void *) data_021f8b48);
     }
     StarPalette_Cancel(&data_021f7280);
-    func_020bbe8c(&process->sound);
+    SkySound_Release((SkySound *) &process->sound);
     return removed;
 }
 CLEAN_AS(func_020ba8d8, SkyProcess_Delete)
@@ -159,7 +152,7 @@ CLEAN_AS(func_020ba8d8, SkyProcess_Delete)
 int SkyProcess_Draw(void)
 {
     if (data_021f6cd8 != 0) {
-        func_020bc1bc(data_021f8b48);
+        SkyObjects_Draw((SkyObjects *) (void *) data_021f8b48);
     }
     return 1;
 }
@@ -174,12 +167,12 @@ int SkyProcess_Execute(SkyProcess *process)
         if (!StateFlags_Test1()) {
             StarPalette_Update(&data_021f7280);
         }
-        func_020bc388(data_021f8b48);
+        SkyObjects_Frame((SkyObjects *) (void *) data_021f8b48);
     } else {
-        func_020bc380(data_021f8b48);
+        SkyObjects_FrameHidden((SkyObjects *) (void *) data_021f8b48);
     }
     Sky_UpdateHour(&data_021f75b0);
-    func_020bbe94(&process->sound);
+    SkySound_Update((SkySound *) &process->sound);
     return 1;
 }
 CLEAN_AS(func_020ba9d8, SkyProcess_Execute)
@@ -195,8 +188,8 @@ int SkyProcess_Create(SkyProcess *process)
     Sky_Reset(&data_021f75b0);
 
     if (data_021f6cd8 != 0) {
-        if (func_020befa0(data_021fa6b4) && Sky_ShowOn(SKY_SCREEN_SUB)) {
-            func_020bc4f8(data_021f8b48);
+        if (SkyFiles_ReadPalettes((SkyFiles *) (void *) data_021fa6b4) && Sky_ShowOn(SKY_SCREEN_SUB)) {
+            SkyObjects_Start((SkyObjects *) (void *) data_021f8b48);
             added = LineHandlers_Add(&data_021f6d2c, (int) (uintptr_t) func_01ffceb8, (int) (uintptr_t) func_020bad44,
                                      (int) (uintptr_t) func_020bab04);
         }
@@ -205,7 +198,7 @@ int SkyProcess_Create(SkyProcess *process)
     }
 
     if (added) {
-        func_020bbee0(&process->sound);
+        SkySound_Start((SkySound *) &process->sound);
     }
     return added;
 }

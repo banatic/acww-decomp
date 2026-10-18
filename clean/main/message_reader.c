@@ -3,6 +3,17 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "bmg_file.h"
+#include "c_library.h"
+#include "message_attributes.h"
+#include "message_cursor.h"
+#include "message_decoder.h"
+#include "message_query.h"
+#include "message_receiver.h"
+#include "message_texts.h"
+#include "message_walker.h"
+#include "text_base.h"
+#include "text_walker.h"
 
 static_assert(offsetof(MessageRequest, message) == 0x1e, "message");
 static_assert(offsetof(MessageRequest, folder) == 0x20, "folder");
@@ -32,42 +43,6 @@ extern MessageReader data_021f4dac;        /* the reader */
 /* A value the decoder reads while a nickname loads, NULL otherwise. */
 extern void *data_021f669c;
 
-/* The message receivers' base class: its destructor and constructor, and naming the file. */
-extern void func_020a8188(void *receiver);
-extern void *func_020a81b8(void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-
-/* The reader's members: the decoder (built for its reader, destroyed; decoding with the two
- * bytes of a request; whether it could), the file (built, destroyed, emptied; opened by path,
- * the message found, closed), the attributes (built, destroyed, reset, copied), the cursor and
- * the line walker. */
-extern void *func_020b5418(MessageReader *decoder, MessageReader *reader);
-extern void *func_020b53f8(MessageReader *decoder);
-extern u8 func_020b5350(MessageReader *decoder, u8 a, u8 b);
-extern void *func_020b54c8(void *file);
-extern void *func_020b54b0(void *file);
-extern void func_020b547c(void *file);
-extern u8 func_020a9a08(void *file, const char *path);
-extern int func_020a9938(void *file, const u8 *message);
-extern void func_020a99d8(void *file);
-extern void func_020a9b50(void *attributes);
-extern void func_020a9b44(void *attributes);
-extern void func_020a9b04(void *attributes);
-extern void func_020a9b1c(void *dst, const void *src);
-extern void *func_020b4ca4(void *cursor);
-extern void *func_020b4c84(void *cursor);
-extern void func_020b4c40(void *cursor);               /* back to the start, nothing walked */
-extern void func_020b4c28(void *cursor, void *source); /* the text it walks */
-extern void func_020b4c24(void *cursor, void *output); /* the text it writes */
-extern void func_020b4c0c(void *cursor);               /* back to where it stands */
-extern int func_020b4bb4(void *cursor);                /* the next character */
-extern void func_020b4bf0(void *cursor, int count);    /* on by `count` characters, matched */
-extern void func_020b4bd4(void *cursor);               /* on by one character */
-extern void *func_020b4ad4(void *walker);
-extern void *func_020b4ab4(void *walker);
-extern void func_020a94a4(void *walker);            /* back to its start */
-extern void func_020a9354(void *walker, int text);  /* the text it walks */
-extern int func_020a92d8(void *walker, int unused); /* a step */
 /* The constructors and destructors of the reader's arrays. */
 extern void *func_020a8228(void *part);
 extern void *func_020a8210(void *part);
@@ -77,17 +52,8 @@ extern void *func_020b550c(void *item);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
-
-/* Texts: the one the filter copies from (a global text object), setting a text from another
- * (func_020a8bb8) or from raw bytes, emptying one, and the line after a line (or NULL). */
-extern void *func_020b5548(void);
-extern void *func_020a8bb8(void *text, void *source);
-extern int func_020a8be4(void *text, const void *data);
-extern void func_020a8c1c(void *text);
-extern const char *func_020a7bf4(const char *line, int count);
-/* What a character may also be written as (the second argument is passed along). */
-extern int func_02050bdc_unk(int character, int wanted);
+/* What a character may also be written as (the game's call leaves `wanted` in r1 too, unread). */
+extern int func_02050bdc_unk(int character);
 
 typedef int MessageRequestFolderFunction(MessageRequest *request);
 
@@ -115,7 +81,7 @@ CLEAN_AS(func_020b3ffc, MessageRequest_Folder)
 MessageRequest *MessageRequest_Delete(MessageRequest *request)
 {
     request->vtable = data_020e5200;
-    func_020a8188(request);
+    MessageReceiver_DestructBase((MessageReceiver *) request);
     Heap_OperatorDeleteB(request);
     return request;
 }
@@ -125,7 +91,7 @@ CLEAN_AS(func_020b400c, MessageRequest_Delete)
 MessageRequest *MessageRequest_Destruct(MessageRequest *request)
 {
     request->vtable = data_020e5200;
-    func_020a8188(request);
+    MessageReceiver_DestructBase((MessageReceiver *) request);
     return request;
 }
 CLEAN_AS(func_020b402c, MessageRequest_Destruct)
@@ -134,7 +100,7 @@ CLEAN_AS(func_020b402c, MessageRequest_Destruct)
  * text and the decoder's bytes 0. */
 MessageRequest *MessageRequest_Construct(MessageRequest *request)
 {
-    func_020a81b8(request);
+    MessageReceiver_Construct((MessageReceiver *) request);
     request->vtable = data_020e5200;
     request->folder = 0;
     request->text = NULL;
@@ -148,12 +114,12 @@ CLEAN_AS(func_020b4044, MessageRequest_Construct)
 MessageReader *MessageReader_Destruct(MessageReader *reader)
 {
     __cxa_vec_cleanup(reader->items, MESSAGE_READER_ITEMS, sizeof(reader->items[0]), message_reader_function(func_020b550c));
-    func_020b4ab4(reader->line_walker);
-    func_020b4c84(reader->cursor);
+    MessageLineWalker_Destruct(reader->line_walker);
+    MessageCursor_Destruct(reader->cursor);
     __cxa_vec_cleanup(reader->parts, MESSAGE_READER_PARTS, sizeof(reader->parts[0]), message_reader_function(func_020a8210));
-    func_020a9b44(reader->attributes);
-    func_020b54b0(reader->file);
-    func_020b53f8(reader);
+    MessageAttributes_Destruct((MessageAttributes *) (void *) reader->attributes);
+    MessageFile_Destruct((MessageFile *) (void *) reader->file);
+    MessageDecoder_Destruct((MessageDecoder *) reader);
     return reader;
 }
 CLEAN_AS(func_020b4070, MessageReader_Destruct)
@@ -161,14 +127,14 @@ CLEAN_AS(func_020b4070, MessageReader_Destruct)
 /* func_020b40dc: the reader's constructor; the text buffer is cleared last. */
 MessageReader *MessageReader_Construct(MessageReader *reader)
 {
-    func_020b5418(reader, reader);
-    func_020b54c8(reader->file);
-    func_020a9b50(reader->attributes);
+    MessageDecoder_Construct((MessageDecoder *) reader, reader);
+    MessageFile_Construct((MessageFile *) (void *) reader->file);
+    MessageAttributes_Construct((MessageAttributes *) (void *) reader->attributes);
     __cxa_vec_ctor(reader->parts, MESSAGE_READER_PARTS, sizeof(reader->parts[0]), message_reader_function(func_020a8228),
                    message_reader_function(func_020a8210));
     reader->unk_18f0 = 0;
-    func_020b4ca4(reader->cursor);
-    func_020b4ad4(reader->line_walker);
+    MessageCursor_Construct((MessageCursor *) (void *) reader->cursor);
+    MessageLineWalker_Construct((MessageLineWalker *) (void *) reader->line_walker);
     __cxa_vec_ctor(reader->items, MESSAGE_READER_ITEMS, sizeof(reader->items[0]), message_reader_function(func_020b5524),
                    message_reader_function(func_020b550c));
     MI_CpuFill8(reader->text, 0, MESSAGE_READER_TEXT_SIZE);
@@ -183,7 +149,7 @@ int MessageReader_SameCharacter(int character, int wanted)
     if (character == wanted) {
         return 1;
     }
-    return func_02050bdc_unk(character, wanted) == wanted;
+    return func_02050bdc_unk(character) == wanted;
 }
 CLEAN_AS(func_020b4178, MessageReader_SameCharacter)
 
@@ -195,18 +161,18 @@ int MessageReader_MatchLine(MessageReader *reader)
 {
     int count = 0;
 
-    func_020b4c0c(reader->cursor);
-    func_020a94a4(reader->line_walker);
-    func_020a9354(reader->line_walker, (int) (uintptr_t) reader->line);
+    MessageCursor_Rewind(reader->cursor);
+    MessageWalker_Reset((MessageWalker *) (void *) reader->line_walker);
+    MessageWalker_Start((MessageWalker *) (void *) reader->line_walker, (int) (uintptr_t) reader->line);
     for (;;) {
         reader->line_want = 1;
         reader->line_character = 0;
-        func_020a92d8(reader->line_walker, 0);
+        TextWalker_Run((MessageWalker *) (void *) reader->line_walker, 0);
         int wanted = reader->line_character;
         if (wanted == MESSAGE_READER_NEWLINE || wanted == 0) {
             break;
         }
-        if (!MessageReader_SameCharacter(func_020b4bb4(reader->cursor), wanted)) {
+        if (!MessageReader_SameCharacter(MessageCursor_Read((MessageCursor *) (void *) reader->cursor), wanted)) {
             count = 0;
             break;
         }
@@ -224,7 +190,7 @@ int MessageReader_FilterText(MessageReader *reader)
 {
     int found = 0;
 
-    func_020b4c0c(reader->cursor);
+    MessageCursor_Rewind(reader->cursor);
     while (reader->cursor_done == 0) {
         const char *line = reader->text;
         int matched = 0;
@@ -234,14 +200,14 @@ int MessageReader_FilterText(MessageReader *reader)
             if (matched > 0) {
                 break;
             }
-            line = func_020a7bf4(line, 1);
+            line = (const char *) (uintptr_t) MessageQuery_Line((int) (uintptr_t) line, 1);
         }
-        func_020b4c0c(reader->cursor);
+        MessageCursor_Rewind(reader->cursor);
         if (matched > 0) {
-            func_020b4bf0(reader->cursor, matched);
+            MessageCursor_Mask((MessageCursor *) (void *) reader->cursor, matched);
             found = 1;
         } else {
-            func_020b4bd4(reader->cursor);
+            MessageCursor_Copy((MessageCursor *) (void *) reader->cursor);
         }
     }
     return found;
@@ -257,20 +223,20 @@ void *MessageReader_StartTabooFilter(MessageReader *reader, void *text)
     MessageRequest request;
 
     MessageRequest_Construct(&request);
-    func_020a8164(&request, data_020e52d0);
+    MessageReceiver_SetName((MessageReceiver *) &request, data_020e52d0);
     request.message = 0;
     MessageReader_Clear(reader);
     int loaded = MessageReader_Load(&data_021f4dac, &request);
     if (loaded != 0) {
-        func_020a8bb8(func_020b5548(), text);
-        func_020a8c1c(text);
-        func_020b4c40(reader->cursor);
-        func_020b4c28(reader->cursor, func_020b5548());
-        func_020b4c24(reader->cursor, text);
+        TextBase_Copy((TextBase *) MessageText256_Global(), text);
+        TextBase_Clear(text);
+        MessageCursor_Reset(reader->cursor);
+        MessageCursor_SetSource((MessageCursor *) (void *) reader->cursor, MessageText256_Global());
+        MessageCursor_SetOutput((MessageCursor *) (void *) reader->cursor, (int) (uintptr_t) text);
         reader->line = NULL;
         reader->line_want = 0;
         reader->line_character = 0;
-        func_020a94a4(reader->line_walker);
+        MessageWalker_Reset((MessageWalker *) (void *) reader->line_walker);
     }
     MessageRequest_Destruct(&request);
     return (void *) (uintptr_t) loaded;
@@ -286,16 +252,17 @@ int MessageReader_Load(MessageReader *reader, MessageRequest *request)
 {
     char path[MESSAGE_READER_PATH_SIZE];
 
-    func_02064328(path, data_020e52dc, message_request_folder(request), request->name);
-    int ok = func_020a9a08(reader->file, path);
-    ok = (ok & (ok != 0 ? func_020a9938(reader->file, &request->message) : 0)) != 0;
-    func_020a99d8(reader->file);
+    CLib_SPrintf(path, data_020e52dc, message_request_folder(request), request->name);
+    int ok = BmgFile_Open((BmgFile *) (void *) reader->file, path);
+    ok = (ok & (ok != 0 ? BmgFile_LoadMessage((BmgFile *) (void *) reader->file, &request->message) : 0)) != 0;
+    BmgFile_Close(reader->file);
     if (ok) {
         void *text = request->text;
-        ok = (ok & func_020b5350(reader, request->decode_a, request->decode_b)) != 0;
+        ok = (ok & MessageDecoder_Decode((MessageDecoder *) reader, request->decode_a, request->decode_b)) != 0;
         if (text != NULL) {
-            ok = (ok & func_020a8be4(text, reader->text)) != 0;
-            func_020a9b1c((u8 *) text + 8, reader->attributes);
+            ok = (ok & TextBase_SetChars(text, reader->text)) != 0;
+            MessageAttributes_Copy((MessageAttributes *) (void *) ((u8 *) text + 8),
+                                   (const MessageAttributes *) (void *) reader->attributes);
         }
     }
     return ok;
@@ -305,8 +272,8 @@ CLEAN_AS(func_020b4344, MessageReader_Load)
 /* func_020b43f4: the file emptied, the attributes reset and the text buffer cleared. */
 void MessageReader_Clear(MessageReader *reader)
 {
-    func_020b547c(reader->file);
-    func_020a9b04(reader->attributes);
+    MessageFile_Clear((MessageFile *) (void *) reader->file);
+    MessageAttributes_Reset((MessageAttributes *) (void *) reader->attributes);
     MI_CpuFill8(reader->text, 0, MESSAGE_READER_TEXT_SIZE);
 }
 CLEAN_AS(func_020b43f4, MessageReader_Clear)
@@ -330,7 +297,7 @@ int MessageReader_LoadNickname(void *text, void *context, unsigned char *message
     MessageRequest request;
 
     MessageRequest_Construct(&request);
-    func_020a8164(&request, data_020e52e8);
+    MessageReceiver_SetName((MessageReceiver *) &request, data_020e52e8);
     request.message = *message;
     request.text = text;
     request.decode_b = 1;
@@ -367,7 +334,7 @@ CLEAN_AS(func_020b44d4, MessageReader_LoadGeneral)
 /* func_020b496c: the reader's part `index` set from the text `source` (func_020a8bb8). */
 void *MessageReader_SetPart(int index, int source)
 {
-    return func_020a8bb8(data_021f62a8[index], (void *) (uintptr_t) source);
+    return TextBase_Copy((TextBase *) (void *) data_021f62a8[index], (void *) (uintptr_t) source);
 }
 CLEAN_AS(func_020b496c, MessageReader_SetPart)
 
@@ -382,7 +349,7 @@ int MessageReader_LoadMenuMessage(int text, unsigned char *message, const char *
     }
     MessageRequest_Construct(&request);
     request.folder = 1;
-    func_020a8164(&request, name);
+    MessageReceiver_SetName((MessageReceiver *) &request, name);
     request.message = *message;
     request.text = (void *) (uintptr_t) text;
     MessageReader_Clear(&data_021f4dac);
@@ -399,7 +366,7 @@ void *MessageReader_LoadDecoded(void *text, unsigned char *message, const char *
     MessageRequest request;
 
     MessageRequest_Construct(&request);
-    func_020a8164(&request, name);
+    MessageReceiver_SetName((MessageReceiver *) &request, name);
     request.message = *message;
     request.text = text;
     request.decode_a = 1;
@@ -417,7 +384,7 @@ int MessageReader_LoadMessage(int text, unsigned char *message, int name)
     MessageRequest request;
 
     MessageRequest_Construct(&request);
-    func_020a8164(&request, (const char *) (uintptr_t) name);
+    MessageReceiver_SetName((MessageReceiver *) &request, (const char *) (uintptr_t) name);
     request.message = *message;
     request.text = (void *) (uintptr_t) text;
     MessageReader_Clear(&data_021f4dac);

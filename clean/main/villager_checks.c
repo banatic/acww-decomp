@@ -10,6 +10,11 @@
 #include "villager_roster.h"
 #include "villager_state.h"
 #include "villager_town.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "town_villager.h"
+#include "villager_move_record.h"
+#include "villager_status.h"
 
 /* What func_0207f150 gives a villager that lives in the town as usual. */
 #define VILLAGER_CHECK_RESIDENT 3
@@ -22,15 +27,6 @@ static VillagerTown *town(void)
     return (VillagerTown *) (void *) data_021e5a2c;
 }
 
-extern NpcId *func_0208150c(const void *villager); /* the villager's NpcId, at 0x7a0 */
-extern int func_0207f150(const void *villager);    /* 0-3, from three tests of the villager */
-extern NpcId *func_0209a774(VillagerMove *move);   /* the plan's NpcId */
-extern u8 *func_02099870(u8 *record);              /* the player's id (town and name), at 0x247e */
-extern int func_020951bc(const u8 *player);        /* whether the player id is set */
-extern u8 *func_02099640(u8 *record);              /* the record's part at 0x1e40 */
-/* Whether the part (of a player's record) holds an object for the villager. */
-extern int func_0207ef54(const void *villager, u8 *part);
-
 static int same_npc(const NpcId *a, const NpcId *b)
 {
     return a->head.id == b->head.id && memcmp(a->head.data, b->head.data, sizeof(a->head.data)) == 0 && a->number == b->number;
@@ -40,11 +36,11 @@ static int same_npc(const NpcId *a, const NpcId *b)
  * plan to move away names (the personality is not compared). */
 int VillagerCheck_IsStayingResident(u8 *villager)
 {
-    NpcId *npc = func_0208150c(villager);
-    if (!NpcId_IsValid(npc) || func_0207f150(villager) != VILLAGER_CHECK_RESIDENT) {
+    NpcId *npc = TownVillager_NpcId(villager);
+    if (!NpcId_IsValid(npc) || VillagerStatus_Stay(villager) != VILLAGER_CHECK_RESIDENT) {
         return 0;
     }
-    NpcId *moving = func_0209a774(VillagerMove_Record(town()));
+    NpcId *moving = VillagerMoveRecord_Npc(VillagerMove_Record(town()));
     return !same_npc(npc, moving);
 }
 CLEAN_AS(func_0207d6c4, VillagerCheck_IsStayingResident)
@@ -55,10 +51,10 @@ int VillagerCheck_NoPlayerHolds(u8 *villager)
 {
     for (int i = 0; i < PLAYER_RECORDS_TOWN; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7bc, i);
-        if (func_020951bc(func_02099870(record)) == 0) {
+        if (PlayerId_IsSet(PlayerRecord_Player(record)) == 0) {
             continue;
         }
-        if (func_0207ef54(villager, func_02099640(record)) != 0) {
+        if (VillagerStatus_PlayerHolds(villager, PlayerRecord_VillagerPart(record)) != 0) {
             return 0;
         }
     }
@@ -70,8 +66,8 @@ CLEAN_AS(func_0207dca8, VillagerCheck_NoPlayerHolds)
 int VillagerCheck_IsIndex161(u8 *villager)
 {
     int named = (s8) VillagerState_Table()->byte_161;
-    int index = VillagerRoster_IndexOf(town(), func_0208150c(villager));
-    return NpcId_IsValid(func_0208150c(villager)) && index == named;
+    int index = VillagerRoster_IndexOf(town(), TownVillager_NpcId(villager));
+    return NpcId_IsValid(TownVillager_NpcId(villager)) && index == named;
 }
 CLEAN_AS(func_0207dd1c, VillagerCheck_IsIndex161)
 
@@ -89,7 +85,7 @@ CLEAN_AS(func_0207dd60, VillagerCheck_ClearIndex160IfSelf)
 int VillagerCheck_IsIndex160(u8 *villager)
 {
     int named = VillagerState_Table()->index_160;
-    int index = VillagerRoster_IndexOf(town(), func_0208150c(villager));
-    return NpcId_IsValid(func_0208150c(villager)) && named != VILLAGER_STATE_NONE && index == named;
+    int index = VillagerRoster_IndexOf(town(), TownVillager_NpcId(villager));
+    return NpcId_IsValid(TownVillager_NpcId(villager)) && named != VILLAGER_STATE_NONE && index == named;
 }
 CLEAN_AS(func_0207dd84, VillagerCheck_IsIndex160)

@@ -17,6 +17,7 @@
 #include "state_flags.h"    /* StateFlags_Test4, StateFlags_ValueOrOne */
 #include "text_draw.h"      /* TextDraw_AlignRight, TextDraw_RequestDraw */
 #include "text_label.h"     /* TextVtable */
+#include "label_box.h"
 
 static_assert(offsetof(BellsPanel, anim) == 0x0c && offsetof(BellsPanel, state) == 0x20, "BellsPanel");
 static_assert(offsetof(BellsPanel, shift) == 0x28 && offsetof(BellsPanel, box) == 0x38, "BellsPanel");
@@ -37,10 +38,6 @@ extern MemberPointer data_021d31b0[4];
 extern const MemberPointer data_020e20f4, data_020e20e4, data_020e2154, data_020e2114;
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* A text box from VRAM tile `first_tile`, `cells` tiles wide and `rows` high, in the boxes'
- * heap (NULL when it is full); a box destroyed and freed. */
-extern TextDrawBox *func_020a9034(int first_tile, int cells, int rows);
-extern void func_020a8fb8(TextDrawBox *box);
 
 /* The ease of `shift`: 40 pixels lower while another balloon is out, eased by 0x600 of the
  * distance a frame, the step from 0x2300 up to `shift_speed`, which grows by 0xa00 a frame
@@ -216,7 +213,7 @@ CLEAN_AS(func_0208b800, BellsPanel_TakeBells)
 void BellsPanel_FreeTextBox(BellsPanel *panel)
 {
     if (panel->box != NULL) {
-        func_020a8fb8(panel->box);
+        LabelBox_Free((LabelBox *) panel->box);
         panel->box = NULL;
     }
 }
@@ -230,7 +227,7 @@ void BellsPanel_OpenTextBox(BellsPanel *panel)
     if (panel->box != NULL) {
         return;
     }
-    panel->box = func_020a9034(BOX_FIRST_TILE, BOX_CELLS, BOX_ROWS);
+    panel->box = (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE, BOX_CELLS, BOX_ROWS);
     TextDrawBox *box = panel->box;
     if (box == NULL) {
         return;

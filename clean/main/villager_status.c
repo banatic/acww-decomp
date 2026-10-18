@@ -10,6 +10,14 @@
 #include "session.h"
 #include "villager_roster.h"
 #include "villager_town.h"
+#include "item_object.h"
+#include "npc_lookup.h"
+#include "town_villager.h"
+#include "villager_mode_record.h"
+#include "villager_object.h"
+#include "villager_part.h"
+#include "villager_part_block.h"
+#include "villager_part_handover.h"
 
 #define VILLAGER_STATUS_MODE_RECORD 0x734
 #define VILLAGER_STATUS_CAME 0x7d6
@@ -20,22 +28,6 @@
 
 extern u8 data_021e5a2c[];        /* the town's villagers (VillagerTown) */
 extern NetSession *data_020ccf94; /* the session */
-
-extern NpcId *func_0208150c(const void *villager);               /* the villager's NpcId, at 0x7a0 */
-extern void *func_0209b5ec(void *record);                        /* the record itself */
-extern int func_0209c330(const VillagerModeRecord *record);      /* its mode, byte 0x10 */
-extern unsigned func_0209c304(const VillagerModeRecord *record); /* the group of its mode (0 for 0-4) */
-/* Loads the text of a mode (7 for one that is not a kind 0-7) into the label. */
-extern int func_0209bff0(void *label, int mode);
-extern u8 *func_0209ad9c(u8 *part, int index);     /* its index-th block of 48 bytes; NULL past 1 */
-extern u8 *func_0209b4d4(u8 *block);               /* the block's object, the block itself */
-extern int func_0209bd44(u8 *object);              /* whether it holds something */
-extern NpcId *func_0209b4cc(u8 *block, int index); /* its index-th NpcId (block + 12 + 16 index) */
-/* Whether the part's NpcId at 0x70 is in use (func_0209ac04) and is `npc`. */
-extern int func_0209a854(u8 *part, const NpcId *npc);
-extern int func_0209aebc(u8 *part, const NpcId *npc); /* whether it holds an object for the villager */
-/* The villager's data (data_020cd884), NULL past 149. */
-extern const u8 *func_02082500(int number);
 
 static VillagerTown *VillagerStatus_Town(void)
 {
@@ -52,10 +44,10 @@ static int VillagerStatus_SameNpc(const NpcId *a, const NpcId *b)
 /* The mode of the villager's record, for a villager with a valid NpcId; -1 without one. */
 static int VillagerStatus_Mode(u8 *villager)
 {
-    if (!NpcId_IsValid(func_0208150c(villager))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return -1;
     }
-    return func_0209c330(func_0209b5ec(VillagerStatus_ModeRecord(villager)));
+    return VillagerModeRecord_Mode(VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
 }
 
 /* func_0207ef3c */
@@ -75,10 +67,11 @@ CLEAN_AS(func_0207ef48, VillagerStatus_Came)
 /* Whether one of the two NpcIds of `block` is `npc`, when the block's object holds something. */
 static int VillagerStatus_BlockNames(u8 *block, const NpcId *npc)
 {
-    if (!func_0209bd44(func_0209b4d4(block))) {
+    if (!ItemObject_IsInUse((ItemObject *) (void *) VillagerPartBlock_Object((VillagerPartBlock *) (void *) block))) {
         return 0;
     }
-    return VillagerStatus_SameNpc(func_0209b4cc(block, 0), npc) || VillagerStatus_SameNpc(func_0209b4cc(block, 1), npc);
+    return VillagerStatus_SameNpc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) block, 0), npc) ||
+           VillagerStatus_SameNpc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) block, 1), npc);
 }
 
 /* func_0207ef54: whether the part of a player's record (PlayerRecord_VillagerPart) holds the
@@ -86,14 +79,15 @@ static int VillagerStatus_BlockNames(u8 *block, const NpcId *npc)
  * at 0xa4 (func_0209aebc). 0 for a villager whose NpcId is not valid. */
 int VillagerStatus_PlayerHolds(u8 *villager, u8 *part)
 {
-    const NpcId *npc = func_0208150c(villager);
+    const NpcId *npc = TownVillager_NpcId(villager);
     if (!NpcId_IsValid(npc)) {
         return 0;
     }
-    u8 *first = func_0209ad9c(part, 0);
-    u8 *second = func_0209ad9c(part, 1);
-    return VillagerStatus_BlockNames(first, npc) || VillagerStatus_BlockNames(second, npc) || func_0209a854(part, npc) ||
-           func_0209aebc(part + VILLAGER_STATUS_PART_A4, npc);
+    u8 *first = (u8 *) (VillagerPart_Block((VillagerPart *) (void *) part, 0));
+    u8 *second = (u8 *) (VillagerPart_Block((VillagerPart *) (void *) part, 1));
+    return VillagerStatus_BlockNames(first, npc) || VillagerStatus_BlockNames(second, npc) ||
+           VillagerPart_IsSecondPick((VillagerPart *) (void *) part, npc) ||
+           VillagerPartHandover_IsFrom((VillagerPartHandover *) (void *) (part + VILLAGER_STATUS_PART_A4), npc);
 }
 CLEAN_AS(func_0207ef54, VillagerStatus_PlayerHolds)
 
@@ -103,7 +97,7 @@ CLEAN_AS(func_0207ef54, VillagerStatus_PlayerHolds)
 int VillagerStatus_IsFree(u8 *villager)
 {
     u8 *part = PlayerRecord_VillagerPart(PlayerRecords_Current());
-    return NpcId_IsValid(func_0208150c(villager)) && VillagerStatus_Stay(villager) == VILLAGER_STAY_RESIDENT &&
+    return NpcId_IsValid(TownVillager_NpcId(villager)) && VillagerStatus_Stay(villager) == VILLAGER_STAY_RESIDENT &&
            VillagerStatus_Get(villager) != VILLAGER_STATUS_AWAY && !VillagerStatus_PlayerHolds(villager, part);
 }
 CLEAN_AS(func_0207f074, VillagerStatus_IsFree)
@@ -150,10 +144,11 @@ CLEAN_AS(func_0207f150, VillagerStatus_Stay)
 int VillagerStatus_LoadModeText(u8 *villager, void *label)
 {
     VillagerModeRecord *record = (VillagerModeRecord *) (villager + VILLAGER_STATUS_MODE_RECORD);
-    if (func_0209c304(func_0209b5ec(record)) <= 1) {
-        return func_0209bff0(label, func_0209c330(func_0209b5ec(record)));
+    if (VillagerModeRecord_Group(VillagerObject_RecordMode((VillagerRecord *) record)) <= 1) {
+        return VillagerModeRecord_LoadKindText(label,
+                                               VillagerModeRecord_Mode(VillagerObject_RecordMode((VillagerRecord *) record)));
     }
-    return func_0209bff0(label, VILLAGER_STATUS_MODE_TEXT_OTHER);
+    return VillagerModeRecord_LoadKindText(label, VILLAGER_STATUS_MODE_TEXT_OTHER);
 }
 CLEAN_AS(func_0207f184, VillagerStatus_LoadModeText)
 
@@ -181,7 +176,7 @@ static int VillagerStatus_HomeOrAway(const VillagerState *entry)
 /* func_0207f1d8: the villager's status (VILLAGER_STATUS_*, 0-7). */
 int VillagerStatus_Get(u8 *villager)
 {
-    if (!NpcId_IsValid(func_0208150c(villager))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return VILLAGER_STATUS_NONE;
     }
     VillagerState *entry = VillagerStatus_StateEntry(villager);
@@ -218,14 +213,14 @@ CLEAN_AS(func_0207f294, VillagerStatus_Index)
  * QUIRK: the original first tests the town's address for null, which it never is. */
 int VillagerStatus_FindIndex(u8 *villager)
 {
-    return VillagerRoster_IndexOf(VillagerStatus_Town(), func_0208150c(villager));
+    return VillagerRoster_IndexOf(VillagerStatus_Town(), TownVillager_NpcId(villager));
 }
 CLEAN_AS(func_0207f29c, VillagerStatus_FindIndex)
 
 /* func_0207f2c4: the villager's song (byte 0x4d of its data), 0 for a number without data. */
 int VillagerStatus_Song(u8 *villager)
 {
-    const u8 *data = func_02082500(NpcId_Number(func_0208150c(villager)));
+    const u8 *data = (const u8 *) (NpcLookup_Data(NpcId_Number(TownVillager_NpcId(villager))));
     return data != NULL ? data[VILLAGER_STATUS_SONG] : 0;
 }
 CLEAN_AS(func_0207f2c4, VillagerStatus_Song)

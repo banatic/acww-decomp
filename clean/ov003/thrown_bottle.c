@@ -8,6 +8,7 @@
 #include "main/session.h"
 #include "main/session_players.h"
 #include "ov004/member_pointer.h"
+#include "town_item_models.h"
 
 static_assert(offsetof(ThrownBottle, state) == 0x30 && offsetof(ThrownBottle, position) == 0x34, "ThrownBottle");
 static_assert(offsetof(ThrownBottle, to) == 0x4c && offsetof(ThrownBottle, local) == 0x5c, "ThrownBottle");
@@ -47,22 +48,13 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 /* The bottle's destructor, handed to __cxa_vec_cleanup: the game's symbol
  * (ThrownBottle_Destruct). */
 extern void func_ov003_0222c3d0(void *bottle);
-/* The overlay's: an item's model drawn at a point with a scale (func_ov003_0222462c), whether
- * `b` is in the box around `a` (func_ov003_0222799c), whether a point has reached the end of a
- * line (func_ov003_0222796c), the shadows near a point fleeing it (func_ov003_02228400) and a
- * point drifted by the water's current (func_ov003_0222803c). */
-extern void func_ov003_0222462c(int item, const Vec3 *position, const Vec3 *scale, int a3, int a4, int a5);
-extern int func_ov003_0222799c(const Vec3 *a, const Vec3 *b, int dx, int dz_ahead, int dz_behind);
-extern int func_ov003_0222796c(const Vec3 *position, const Vec3 *from, const Vec3 *to);
-extern int func_ov003_02228400(const Vec3 *point, int reach);
-extern void func_ov003_0222803c(Vec3 *position, int amount);
 
 /* The bottle's model drawn where it is, at full size. */
 static void thrown_bottle_draw(const ThrownBottle *bottle)
 {
     Vec3 at = bottle->position;
     Vec3 scale = {0x1000, 0x1000, 0x1000};
-    func_ov003_0222462c(THROWN_BOTTLE_ITEM, &at, &scale, 0, 0, 0);
+    TownItemModels_DrawCodeAt(THROWN_BOTTLE_ITEM, &at, &scale, 0, 0, 0);
 }
 
 /* The bottle's collision with the ground and walls, facing from where it lands back to the
@@ -84,7 +76,7 @@ static void thrown_bottle_land(ThrownBottle *bottle)
     bottle->state = THROWN_BOTTLE_FLOATING;
     bottle->frames = 0;
     if (bottle->local != 0) {
-        func_ov003_02228400(&bottle->position, THROWN_BOTTLE_SCARE);
+        FishShadow_ScareNear(&bottle->position, THROWN_BOTTLE_SCARE);
     }
 }
 
@@ -103,7 +95,7 @@ void ThrownBottle_StepFloating(void *self, ThrownBottle *bottle)
     } else if (bottle->frames & 1) {
         thrown_bottle_draw(bottle);
     }
-    func_ov003_0222803c(&bottle->position, data_ov003_0223bda8);
+    FishShadow_Drift(&bottle->position, data_ov003_0223bda8);
     bottle->position.y -= data_ov003_0223bda4;
     thrown_bottle_collide(bottle);
     bottle->frames++;
@@ -125,7 +117,7 @@ void ThrownBottle_StepFlying(int self, ThrownBottle *bottle)
     Vec3 from = bottle->from;
     Vec3 to = bottle->to;
     Vec3 at = bottle->position;
-    if (func_ov003_0222796c(&at, &from, &to)) {
+    if (FishShadow_ReachedXZ(&at, &from, &to)) {
         thrown_bottle_land(bottle);
         return;
     }
@@ -169,8 +161,7 @@ int ThrownBottle_OutOfView(ThrownBottle *bottle)
         return 1;
     }
     Vec3 camera = data_021c67d0;
-    return func_ov003_0222799c(&bottle->position, &camera, THROWN_BOTTLE_VIEW_X, THROWN_BOTTLE_VIEW_Z, THROWN_BOTTLE_VIEW_Z) ==
-           0;
+    return FishShadow_InBox(&bottle->position, &camera, THROWN_BOTTLE_VIEW_X, THROWN_BOTTLE_VIEW_Z, THROWN_BOTTLE_VIEW_Z) == 0;
 }
 CLEAN_AS(func_ov003_0222c16c, ThrownBottle_OutOfView)
 

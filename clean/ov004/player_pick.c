@@ -71,7 +71,7 @@ static_assert(offsetof(PlayerPick, fixed) == 0x338, "the fixed tag's text");
 /* How far the player walks off from the start position, along z. */
 #define PLAYER_PICK_LEAVE_DISTANCE 0x6000
 #define PLAYER_PICK_LEAVE_ACCEL 0x2b8
-/* The scene's player actor action of state 3 (func_ov004_0222c110's last argument). */
+/* The scene's player actor action of state 3 (RoomPlayerActor_RequestPlaceOff's last argument). */
 #define PLAYER_PICK_ACTION_ARG 1
 /* The cell layer sprite's and the name tags' vtable slots: draw and step. */
 #define PLAYER_PICK_SLOT_DRAW 2

@@ -11,6 +11,22 @@
 #include "text_string.h"    /* TextString_ClearWide, TextString_BytesToWide, ... */
 #include "autoload_2/approach.h"
 #include "text_draw.h"
+#include "autoload_2/process.h"
+#include "cell_anim.h"
+#include "event_queue.h"
+#include "game_variables.h"
+#include "label_box.h"
+#include "message_reader.h"
+#include "oam_buffer.h"
+#include "player_actor_ops.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "scene_query.h"
+#include "screen_sprite.h"
+#include "slots.h"
+#include "state_flags.h"
+#include "text_base.h"
 
 static_assert(offsetof(QuickMessageBalloon, position) == 0x0c, "balloon position");
 static_assert(offsetof(QuickMessageBalloon, stack_offset) == 0x44, "balloon offset");
@@ -75,14 +91,6 @@ extern const u8 data_020ca154[];
 extern const int data_020ca134[QUICK_MESSAGE_BALLOONS];
 extern const int data_020ca144[QUICK_MESSAGE_BALLOONS];
 
-/* The process base: constructed, destroyed. operator delete. */
-extern void *func_020ee660(void *process);
-extern void func_020ee62c(void *process);
-extern void func_020edb3c(void *block);
-/* The board's constructor and destructor (they construct and destroy the four balloons). */
-extern void *func_020397a0(QuickMessageBoard *board);
-extern void *func_0203977c(QuickMessageBoard *board);
-
 /* Text objects on the stack:
  *   a view of 16-bit characters elsewhere (vtable data_020da610; func_0203a2f0 constructs,
  *   func_0203a2dc destroys), 0xc bytes;
@@ -108,49 +116,6 @@ typedef struct QuickMessageText {
 typedef struct QuickMessagePlayerName {
     u32 words[8];
 } QuickMessagePlayerName;
-
-extern void func_0203a2f0(QuickMessageView *view, u16 *chars, int count);
-extern void func_0203a2dc(QuickMessageView *view);
-extern void *func_0203a3a4(QuickMessageWide *wide, u16 *chars, int count);
-extern void *func_0203a38c(QuickMessageWide *wide);
-extern void *func_0203a344(QuickMessageName *label);
-extern void func_0203a330(QuickMessageName *label);
-extern void *func_0203a404(QuickMessageText *label);
-extern void *func_0203a3ec(QuickMessageText *label);
-extern void *func_02094fd4(QuickMessagePlayerName *name);
-extern void *func_02094fbc(QuickMessagePlayerName *name);
-
-/* Label to wide text and back (text_label.h). Message `*number` of the menu archive loaded into
- * a label. */
-extern int func_020a87e0(void *wide, void *label);
-extern int func_020a8a70(void *label, void *wide, int escape_newlines, int end_code);
-extern int func_020b4980(void *label, u8 *number, int table);
-
-/* The current player's record, its player, and that player's name copied to a name. */
-extern int func_020984e8(void);
-extern int func_02099870(int record);
-extern void *func_02095074(int player, QuickMessagePlayerName *name);
-
-/* What func_02096718(4) holds at 0x7f0 (0x93 without it): a scene number. */
-extern int func_020960d8(int which);
-/* Whether data_021c72b8 is set. */
-extern int func_0203ec98(void);
-/* The scene. */
-extern u8 func_020b65c4(void);
-
-/* A message shown in the balloon of `slot`, with a name and a message label. */
-extern void func_020398e8(int slot, void *name, void *text);
-
-/* A balloon: reset; given its position and animations; its boxes asked to redraw; its x
- * placed; its state restarted when shown again or started when placed. */
-extern void func_02039e44(QuickMessageBalloon *balloon);
-extern void func_02039efc(QuickMessageBalloon *balloon, int position, int animation_a, int animation_b);
-extern void func_02039e84(QuickMessageBalloon *balloon);
-extern void func_02039f30(QuickMessageBalloon *balloon);
-extern int func_02039ebc(QuickMessageBalloon *balloon);
-extern int func_02039edc(QuickMessageBalloon *balloon);
-/* Whether a balloon is among the board's shown ones (slots.h). */
-extern int func_02039444(QuickMessageBoard *board, QuickMessageBalloon *balloon);
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -239,10 +204,10 @@ QuickMessageProcess *QuickMessage_Destruct(QuickMessageProcess *self)
 {
     self->vtable = data_020da674;
     QuickMessage_ReceiverDestruct(&self->receiver);
-    func_0203977c(&self->board);
+    QuickMessage_BoardDestruct(&self->board);
     QuickMessage_SenderDestruct(&self->sender);
     self->vtable = data_020da13c;
-    func_020ee62c(self);
+    Process_Destruct((Process *) self);
     return self;
 }
 CLEAN_AS(func_02038e54, QuickMessage_Destruct)
@@ -250,11 +215,11 @@ CLEAN_AS(func_02038e54, QuickMessage_Destruct)
 /* func_02038e94: the constructor. */
 QuickMessageProcess *QuickMessage_Construct(QuickMessageProcess *self)
 {
-    func_020ee660(self);
+    Process_Construct((Process *) self);
     self->vtable = data_020da13c;
     self->vtable = data_020da674;
     QuickMessage_SenderConstruct(&self->sender);
-    func_020397a0(&self->board);
+    QuickMessage_BoardConstruct(&self->board);
     QuickMessage_ReceiverConstruct(&self->receiver);
     return self;
 }
@@ -281,7 +246,7 @@ CLEAN_AS(func_02038ed0, QuickMessage_Spawn)
 void QuickMessage_PollButtons(int unused)
 {
     (void) unused;
-    int scene = func_020960d8(4);
+    int scene = PlayerActorOps_State(4);
     int in_scene = scene == 0x28 || scene == 0x2b || scene == 8 || scene == 9;
 
     u16 pressed = data_021fbe40.pressed;
@@ -289,7 +254,7 @@ void QuickMessage_PollButtons(int unused)
 
     NetSession *session = data_020ccf94;
     int linked = Session_IsLinked(session);
-    int idle = func_0203ec98() == 0;
+    int idle = EventQueue_HasCurrent() == 0;
 
     if (data_021c6730 > 0) {
         return;
@@ -299,7 +264,7 @@ void QuickMessage_PollButtons(int unused)
     }
 
     QuickMessageText text;
-    func_0203a404(&text);
+    QuickMessage_TextConstruct(&text);
 
     u8 number;
     int post = 1;
@@ -319,16 +284,16 @@ void QuickMessage_PollButtons(int unused)
     }
 
     if (post) {
-        func_020b4980(&text, &number, 0);
+        MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &number, 0);
         QuickMessagePlayerName name;
-        func_02094fd4(&name);
-        func_02095074(func_02099870(func_020984e8()), &name);
-        func_020398e8(session->local_slot, &name, &text);
+        PlayerIdText_Construct((PlayerIdText *) &name);
+        PlayerId_NameToText(PlayerRecord_Player(PlayerRecords_Current()), (TextBase *) &name);
+        QuickMessage_Post(session->local_slot, &name, &text);
         SoundSys_PlaySe(QUICK_MESSAGE_SOUND);
         data_021c6730 = QUICK_MESSAGE_COOLDOWN;
-        func_02094fbc(&name);
+        PlayerIdText_Destruct((PlayerIdText *) &name);
     }
-    func_0203a3ec(&text);
+    QuickMessage_TextDestruct(&text);
 }
 CLEAN_AS(func_02038eec, QuickMessage_PollButtons)
 
@@ -361,7 +326,7 @@ CLEAN_AS(func_02039080, QuickMessage_SenderCreate)
 QuickMessagePart *QuickMessage_SenderDestructDelete(QuickMessagePart *sender)
 {
     sender->vtable = data_020da5e8;
-    func_020edb3c(sender);
+    Heap_OperatorDeleteB(sender);
     return sender;
 }
 CLEAN_AS(func_02039084, QuickMessage_SenderDestructDelete)
@@ -384,23 +349,23 @@ CLEAN_AS(func_020390a8, QuickMessage_SenderConstruct)
  * last 30 frames or there is no current player. */
 void QuickMessage_PostDefault(void)
 {
-    int record = func_020984e8();
+    int record = (int) (uintptr_t) PlayerRecords_Current();
     if (data_021c6730 > 0 || record == 0) {
         return;
     }
 
     QuickMessagePlayerName name;
     QuickMessageText text;
-    func_02094fd4(&name);
-    func_0203a404(&text);
-    func_02095074(func_02099870(record), &name);
+    PlayerIdText_Construct((PlayerIdText *) &name);
+    QuickMessage_TextConstruct(&text);
+    PlayerId_NameToText(PlayerRecord_Player((u8 *) (uintptr_t) record), (TextBase *) &name);
     u8 number = QUICK_MESSAGE_START;
-    func_020b4980(&text, &number, 0);
-    func_020398e8(data_020ccf94->local_slot, &name, &text);
+    MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &number, 0);
+    QuickMessage_Post(data_020ccf94->local_slot, &name, &text);
     SoundSys_PlaySe(QUICK_MESSAGE_SOUND);
     data_021c6730 = QUICK_MESSAGE_COOLDOWN;
-    func_0203a3ec(&text);
-    func_02094fbc(&name);
+    QuickMessage_TextDestruct(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
 }
 CLEAN_AS(func_020390b4, QuickMessage_PostDefault)
 
@@ -414,16 +379,16 @@ void *QuickMessage_WriteRecordOf(u8 *record, int id, QuickMessageBalloon *balloo
 {
     QuickMessageWide text;
     QuickMessageView name;
-    func_0203a3a4(&text, data_021c676a, QUICK_MESSAGE_TEXT_CHARS);
-    func_0203a2f0(&name, data_021c675e, QUICK_MESSAGE_NAME_CHARS);
+    QuickMessage_WideConstruct(&text, (int) (uintptr_t) data_021c676a, QUICK_MESSAGE_TEXT_CHARS);
+    QuickMessage_ViewConstruct(&name, (unsigned int) (uintptr_t) data_021c675e, QUICK_MESSAGE_NAME_CHARS);
     TextString_ClearWide((TextObject *) &text);
     TextString_ClearWide((TextObject *) &name);
-    func_020a87e0(&text, balloon->text);
+    TextBase_BytesToWide((WideTextBase *) &text, (TextBase *) (void *) balloon->text);
     TextString_BytesToWide((TextObject *) &name, (TextObject *) balloon->name);
     data_021c675c[0] = 1;
     MI_CpuCopy8(data_021c675c, record, SessionRecord_GetSize((u32) id));
-    func_0203a2dc(&name);
-    return func_0203a38c(&text);
+    QuickMessage_ViewDestruct(&name);
+    return QuickMessage_WideDestruct(&text);
 }
 CLEAN_AS(func_02039128, QuickMessage_WriteRecordOf)
 
@@ -435,7 +400,7 @@ int QuickMessage_TakeRecord(int slot)
     u8 *record = Session_GetRecord(data_020ccf94, slot + QUICK_MESSAGE_FIRST_RECORD);
     u8 present = record[0];
     if (present != 0) {
-        int scene = func_020b65c4();
+        int scene = SceneQuery_Current();
         if (scene == 0x2e || scene == 0x0c || scene == 0x0d || scene == 0x0e || scene == 0x2f) {
             present = 0;
         } else {
@@ -464,17 +429,17 @@ void QuickMessage_ReadRecords(void)
         QuickMessageWide text_chars;
         QuickMessageName name;
         QuickMessageText text;
-        func_0203a2f0(&name_chars, data_021c675e, QUICK_MESSAGE_NAME_CHARS);
-        func_0203a3a4(&text_chars, data_021c676a, QUICK_MESSAGE_TEXT_CHARS);
-        func_0203a344(&name);
-        func_0203a404(&text);
+        QuickMessage_ViewConstruct(&name_chars, (unsigned int) (uintptr_t) data_021c675e, QUICK_MESSAGE_NAME_CHARS);
+        QuickMessage_WideConstruct(&text_chars, (int) (uintptr_t) data_021c676a, QUICK_MESSAGE_TEXT_CHARS);
+        QuickMessage_NameConstruct(&name);
+        QuickMessage_TextConstruct(&text);
         TextString_WideToBytes((TextObject *) &name, (TextObject *) &name_chars);
-        func_020a8a70(&text, &text_chars, 0, 0);
-        func_020398e8(slot, &name, &text);
-        func_0203a3ec(&text);
-        func_0203a330(&name);
-        func_0203a38c(&text_chars);
-        func_0203a2dc(&name_chars);
+        TextBase_WideToBytes((TextBase *) &text, (WideTextBase *) &text_chars, 0, 0);
+        QuickMessage_Post(slot, &name, &text);
+        QuickMessage_TextDestruct(&text);
+        QuickMessage_NameDestruct(&name);
+        QuickMessage_WideDestruct(&text_chars);
+        QuickMessage_ViewDestruct(&name_chars);
     }
 }
 CLEAN_AS(func_020391fc, QuickMessage_ReadRecords)
@@ -521,7 +486,7 @@ CLEAN_AS(func_020392e8, QuickMessage_ReceiverCreate)
 QuickMessagePart *QuickMessage_ReceiverDestructDelete(QuickMessagePart *receiver)
 {
     receiver->vtable = data_020da5c8;
-    func_020edb3c(receiver);
+    Heap_OperatorDeleteB(receiver);
     return receiver;
 }
 CLEAN_AS(func_020392ec, QuickMessage_ReceiverDestructDelete)
@@ -546,7 +511,7 @@ CLEAN_AS(func_02039310, QuickMessage_ReceiverConstruct)
 void QuickMessage_ResetBoard(QuickMessageBoard *board)
 {
     for (int i = 0; i < QUICK_MESSAGE_BALLOONS; i++) {
-        func_02039e44(&board->balloons[i]);
+        QuickMessage_BalloonReset(&board->balloons[i]);
         board->waiting[i] = NULL;
         board->shown[i] = NULL;
     }
@@ -558,7 +523,7 @@ void QuickMessage_RedrawShown(QuickMessageBoard *board)
 {
     for (int i = 0; i < QUICK_MESSAGE_BALLOONS; i++) {
         if (board->shown[i] != NULL) {
-            func_02039e84(board->shown[i]);
+            QuickMessage_BalloonRedraw(board->shown[i]);
         }
     }
 }
@@ -570,7 +535,7 @@ void QuickMessage_DrawBoard(QuickMessageBoard *board)
     for (int i = QUICK_MESSAGE_BALLOONS - 1; i >= 0; i--) {
         QuickMessageBalloon *balloon = board->shown[i];
         if (balloon != NULL) {
-            func_02039f30(balloon);
+            QuickMessage_BalloonPlaceY(balloon);
             balloon_call(balloon, BALLOON_DRAW);
         }
     }
@@ -604,7 +569,7 @@ void QuickMessage_BoardCreate(QuickMessageBoard *board)
 {
     data_021c6738 = board;
     for (int i = 0; i < QUICK_MESSAGE_BALLOONS; i++) {
-        func_02039efc(&board->balloons[i], i, data_020ca144[i], data_020ca134[i]);
+        QuickMessage_BalloonSetup(&board->balloons[i], i, data_020ca144[i], data_020ca134[i]);
     }
 }
 CLEAN_AS(func_02039404, QuickMessage_BoardCreate)
@@ -670,8 +635,8 @@ CLEAN_AS(func_02039540, QuickMessage_PlaceWaiting)
  * while it is shown. */
 int QuickMessage_PlaceBalloon(QuickMessageBoard *board, QuickMessageBalloon *balloon)
 {
-    if (func_02039444(board, balloon) != 0) {
-        func_02039ebc(balloon);
+    if (SlotOwner_Contains((const SlotOwner *) board, balloon) != 0) {
+        QuickMessage_BalloonRelease(balloon);
         return 0;
     }
     if (balloon->delay > 0) {
@@ -692,8 +657,8 @@ int QuickMessage_PlaceBalloon(QuickMessageBoard *board, QuickMessageBalloon *bal
         }
         balloon->placed_offset = offset;
         balloon->stack_offset = offset;
-        func_02039f30(balloon);
-        func_02039edc(balloon);
+        QuickMessage_BalloonPlaceY(balloon);
+        QuickMessage_BalloonRequest(balloon);
         return 1;
     }
     return 0;
@@ -807,7 +772,7 @@ QuickMessageBoard *QuickMessage_BoardDestructDelete(QuickMessageBoard *board)
 {
     board->vtable = data_020da5d8;
     __cxa_vec_cleanup(board->balloons, QUICK_MESSAGE_BALLOONS, sizeof(QuickMessageBalloon), func_0203a1f8);
-    func_020edb3c(board);
+    Heap_OperatorDeleteB(board);
     return board;
 }
 CLEAN_AS(func_02039750, QuickMessage_BoardDestructDelete)
@@ -942,45 +907,6 @@ typedef struct QuickMessageAnimData {
 } QuickMessageAnimData;
 extern const QuickMessageAnimData data_020d5b3c[];
 
-/* A tuning value (table entry, index); 0 in this build. */
-extern int func_0209d368(int entry, int index);
-
-/* The sprite base: constructed, destroyed, its place. */
-extern void func_0208af30(QuickMessageBalloon *balloon);
-extern void func_0208af00(QuickMessageBalloon *balloon);
-extern int func_0208aef0(QuickMessageBalloon *balloon); /* x */
-extern int func_0208aeec(QuickMessageBalloon *balloon); /* y */
-
-/* Cell animations (screen_icon.h): constructed, destroyed, given their data, held on the last
- * frame, given a speed, put on a frame, advanced; the data, the frame's cell and offsets. */
-extern void func_0208a1f8(CellAnim *anim);
-extern void func_0208a1f4(CellAnim *anim);
-extern void func_0208a1f0(CellAnim *anim, const QuickMessageAnimData *data);
-extern void func_0208a1ec(CellAnim *anim, int hold);
-extern void *func_0208a1e8(CellAnim *anim, fx32 speed);
-extern void *func_0208a1e0(CellAnim *anim, int frame, fx32 time);
-extern void func_0208a0c8(CellAnim *anim);
-extern const QuickMessageAnimData *func_0208a1c8(CellAnim *anim);
-extern int func_0208a1d0(CellAnim *anim);
-extern s16 func_0208a1b0(CellAnim *anim, int frame); /* the current one for -1 */
-extern s16 func_0208a198(CellAnim *anim, int frame);
-
-/* An object drawn from a cell. */
-extern void func_02088df8(int a0, int cell, int x, int y, int palette, int priority, fx32 scale_x, fx32 scale_y, int rotation,
-                          int p9, int p10, int p11);
-
-/* A text box from VRAM tile `first_tile`, `cells` tiles wide and `rows` high, in the boxes'
- * heap (NULL when it is full); a box destroyed and freed. */
-extern TextDrawBox *func_020a9034(int first_tile, int cells, int rows);
-extern void func_020a8fb8(TextDrawBox *box);
-
-/* A label emptied; a label set from another. */
-extern void func_020a8c1c(void *label);
-extern void *func_020a8bb8(void *label, void *from);
-
-/* State flag 4's value, or 1.0 / 0 while the flag is clear (state_flags.h). */
-extern fx32 func_0206fd10(void);
-extern fx32 func_0206fd34(void);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* POWCNT1's swap bit: 1 for the main engine on top. */
@@ -1004,29 +930,29 @@ static u32 box_text_width(TextDrawBox *box)
 /* The animation put on its frame for a text `cells` tiles wide, within its frames. */
 static void fit_frame(CellAnim *anim, int cells)
 {
-    int last = func_0208a1c8(anim)->frames - 1;
+    int last = (int) (uintptr_t) (CellAnim_Data(anim)->frames - 1);
     int frame = cells - 1;
     if (frame < 0) {
         frame = 0;
     } else if (frame > last) {
         frame = last;
     }
-    func_0208a1e0(anim, frame, 0);
+    CellAnim_SetFrame(anim, frame, 0);
 }
 
 /* The animation given its data, held still. */
 static void load_anim(CellAnim *anim, const QuickMessageAnimData *data)
 {
-    func_0208a1f0(anim, data);
-    func_0208a1ec(anim, 1);
-    func_0208a1e8(anim, 0);
+    CellAnim_SetData(anim, (const CellAnimData *) data);
+    CellAnim_SetHold(anim, 1);
+    CellAnim_SetSpeed(anim, 0);
 }
 
 /* func_0203990c: the message's text box freed. */
 void QuickMessage_BalloonFreeTextBox(QuickMessageBalloon *balloon)
 {
     if (balloon->boxes[QUICK_BALLOON_TEXT_BOX] != NULL) {
-        func_020a8fb8(balloon->boxes[QUICK_BALLOON_TEXT_BOX]);
+        LabelBox_Free(balloon->boxes[QUICK_BALLOON_TEXT_BOX]);
         balloon->boxes[QUICK_BALLOON_TEXT_BOX] = NULL;
     }
 }
@@ -1040,7 +966,8 @@ void QuickMessage_BalloonOpenTextBox(QuickMessageBalloon *balloon)
     if (balloon->boxes[QUICK_BALLOON_TEXT_BOX] != NULL) {
         return;
     }
-    TextDrawBox *box = func_020a9034(TEXT_BOX_FIRST_TILE + balloon->position * TEXT_BOX_TILE_STRIDE, TEXT_BOX_CELLS, BOX_ROWS);
+    TextDrawBox *box = (TextDrawBox *) LabelBox_NewInVram(TEXT_BOX_FIRST_TILE + balloon->position * TEXT_BOX_TILE_STRIDE,
+                                                          TEXT_BOX_CELLS, BOX_ROWS);
     balloon->boxes[QUICK_BALLOON_TEXT_BOX] = box;
     if (box == NULL) {
         return;
@@ -1060,7 +987,7 @@ CLEAN_AS(func_02039928, QuickMessage_BalloonOpenTextBox)
 void QuickMessage_BalloonFreeNameBox(QuickMessageBalloon *balloon)
 {
     if (balloon->boxes[QUICK_BALLOON_NAME_BOX] != NULL) {
-        func_020a8fb8(balloon->boxes[QUICK_BALLOON_NAME_BOX]);
+        LabelBox_Free(balloon->boxes[QUICK_BALLOON_NAME_BOX]);
         balloon->boxes[QUICK_BALLOON_NAME_BOX] = NULL;
     }
 }
@@ -1073,7 +1000,8 @@ void QuickMessage_BalloonOpenNameBox(QuickMessageBalloon *balloon)
     if (balloon->position == 0 || balloon->boxes[QUICK_BALLOON_NAME_BOX] != NULL) {
         return;
     }
-    TextDrawBox *box = func_020a9034(NAME_BOX_FIRST_TILE + balloon->position * NAME_BOX_TILE_STRIDE, NAME_BOX_CELLS, BOX_ROWS);
+    TextDrawBox *box = (TextDrawBox *) LabelBox_NewInVram(NAME_BOX_FIRST_TILE + balloon->position * NAME_BOX_TILE_STRIDE,
+                                                          NAME_BOX_CELLS, BOX_ROWS);
     balloon->boxes[QUICK_BALLOON_NAME_BOX] = box;
     if (box == NULL) {
         return;
@@ -1134,9 +1062,9 @@ void QuickMessage_BalloonLeaving(QuickMessageBalloon *balloon)
 {
     int move;
     if (balloon->position == 0) {
-        move = func_0209d368(TUNE_OWN_LEAVE, 3) + 11;
+        move = GameVariables_Tweak(TUNE_OWN_LEAVE, 3) + 11;
     } else {
-        move = func_0209d368(TUNE_OTHER_LEAVE, 3) - 11;
+        move = GameVariables_Tweak(TUNE_OTHER_LEAVE, 3) - 11;
     }
     balloon->bounce += move;
     balloon->timer--;
@@ -1147,9 +1075,9 @@ void QuickMessage_BalloonLeaving(QuickMessageBalloon *balloon)
     QuickMessage_BalloonFreeTextBox(balloon);
     QuickMessage_BalloonStop(balloon);
     if (balloon->position == 0) {
-        balloon->delay = func_0209d368(TUNE_OWN_LEAVE, 4);
+        balloon->delay = GameVariables_Tweak(TUNE_OWN_LEAVE, 4);
     } else {
-        balloon->delay = func_0209d368(TUNE_OTHER_LEAVE, 4) + 10;
+        balloon->delay = GameVariables_Tweak(TUNE_OTHER_LEAVE, 4) + 10;
     }
 }
 CLEAN_AS(func_02039b90, QuickMessage_BalloonLeaving)
@@ -1160,9 +1088,9 @@ void QuickMessage_BalloonStartLeaving(QuickMessageBalloon *balloon)
     balloon->unk_a4 = QUICK_BALLOON_LEAVING;
     balloon->visible = 1;
     if (balloon->position == 0) {
-        balloon->timer = func_0209d368(TUNE_OWN_LEAVE, 2) + 2;
+        balloon->timer = GameVariables_Tweak(TUNE_OWN_LEAVE, 2) + 2;
     } else {
-        balloon->timer = func_0209d368(TUNE_OTHER_LEAVE, 2) + 2;
+        balloon->timer = GameVariables_Tweak(TUNE_OTHER_LEAVE, 2) + 2;
     }
 }
 CLEAN_AS(func_02039c0c, QuickMessage_BalloonStartLeaving)
@@ -1173,9 +1101,9 @@ void QuickMessage_BalloonHolding(QuickMessageBalloon *balloon)
 {
     int step;
     if (balloon->position == 0) {
-        step = func_0209d368(TUNE_OWN_HOLD, 3) + 6;
+        step = GameVariables_Tweak(TUNE_OWN_HOLD, 3) + 6;
     } else {
-        step = func_0209d368(TUNE_OTHER_HOLD, 3) + 6;
+        step = GameVariables_Tweak(TUNE_OTHER_HOLD, 3) + 6;
     }
     Approach_S32Again((int *) &balloon->placed_offset, balloon->stack_offset, step);
     balloon->timer--;
@@ -1194,9 +1122,9 @@ void QuickMessage_BalloonStartHolding(QuickMessageBalloon *balloon)
     balloon->unk_a4 = QUICK_BALLOON_HOLDING;
     balloon->visible = 1;
     if (balloon->position == 0) {
-        balloon->timer = func_0209d368(TUNE_OWN_HOLD, 2) + BALLOON_HOLD_FRAMES;
+        balloon->timer = GameVariables_Tweak(TUNE_OWN_HOLD, 2) + BALLOON_HOLD_FRAMES;
     } else {
-        balloon->timer = func_0209d368(TUNE_OTHER_HOLD, 2) + BALLOON_HOLD_FRAMES;
+        balloon->timer = GameVariables_Tweak(TUNE_OTHER_HOLD, 2) + BALLOON_HOLD_FRAMES;
     }
 }
 CLEAN_AS(func_02039cb4, QuickMessage_BalloonStartHolding)
@@ -1210,19 +1138,19 @@ void QuickMessage_BalloonAppearing(QuickMessageBalloon *balloon)
     int move;
     int settle;
     if (balloon->position == 0) {
-        turn = func_0209d368(TUNE_OWN_APPEAR, 4) + 2;
+        turn = GameVariables_Tweak(TUNE_OWN_APPEAR, 4) + 2;
     } else {
-        turn = func_0209d368(TUNE_OTHER_APPEAR, 4) + 2;
+        turn = GameVariables_Tweak(TUNE_OTHER_APPEAR, 4) + 2;
     }
     if (balloon->position == 0) {
-        move = func_0209d368(TUNE_OWN_APPEAR, 5) - 6;
+        move = GameVariables_Tweak(TUNE_OWN_APPEAR, 5) - 6;
     } else {
-        move = func_0209d368(TUNE_OTHER_APPEAR, 5) + 6;
+        move = GameVariables_Tweak(TUNE_OTHER_APPEAR, 5) + 6;
     }
     if (balloon->position == 0) {
-        settle = func_0209d368(TUNE_OWN_APPEAR, 6) + 2;
+        settle = GameVariables_Tweak(TUNE_OWN_APPEAR, 6) + 2;
     } else {
-        settle = func_0209d368(TUNE_OTHER_APPEAR, 6) - 2;
+        settle = GameVariables_Tweak(TUNE_OTHER_APPEAR, 6) - 2;
     }
 
     balloon->bounce += balloon->timer > turn ? move : settle;
@@ -1243,14 +1171,14 @@ void QuickMessage_BalloonStartAppearing(QuickMessageBalloon *balloon)
     int frames;
     int start;
     if (balloon->position == 0) {
-        frames = func_0209d368(TUNE_OWN_APPEAR, 2) + 3;
+        frames = GameVariables_Tweak(TUNE_OWN_APPEAR, 2) + 3;
     } else {
-        frames = func_0209d368(TUNE_OTHER_APPEAR, 2) + 3;
+        frames = GameVariables_Tweak(TUNE_OTHER_APPEAR, 2) + 3;
     }
     if (balloon->position == 0) {
-        start = func_0209d368(TUNE_OWN_APPEAR, 3) + 5;
+        start = GameVariables_Tweak(TUNE_OWN_APPEAR, 3) + 5;
     } else {
-        start = func_0209d368(TUNE_OTHER_APPEAR, 3) - 5;
+        start = GameVariables_Tweak(TUNE_OTHER_APPEAR, 3) - 5;
     }
     balloon->timer = frames;
     balloon->bounce = start;
@@ -1285,7 +1213,7 @@ CLEAN_AS(func_02039e34, QuickMessage_BalloonStop)
  * or request left. */
 void QuickMessage_BalloonReset(QuickMessageBalloon *balloon)
 {
-    func_020a8c1c(balloon->text);
+    TextBase_Clear(balloon->text);
     TextString_ClearBytes((TextObject *) balloon->name);
     QuickMessage_BalloonFreeNameBox(balloon);
     QuickMessage_BalloonFreeTextBox(balloon);
@@ -1350,7 +1278,7 @@ CLEAN_AS(func_02039efc, QuickMessage_BalloonSetup)
 void QuickMessage_BalloonSetMessage(QuickMessageBalloon *balloon, void *name, void *text, int color)
 {
     TextString_CopyBytes((TextObject *) balloon->name, name);
-    func_020a8bb8(balloon->text, text);
+    TextBase_Copy((TextBase *) (void *) balloon->text, text);
     balloon->palette = color + BALLOON_PALETTE_BASE;
 }
 CLEAN_AS(func_02039f0c, QuickMessage_BalloonSetMessage)
@@ -1361,12 +1289,12 @@ CLEAN_AS(func_02039f0c, QuickMessage_BalloonSetMessage)
 void QuickMessage_BalloonPlaceY(QuickMessageBalloon *balloon)
 {
     if (balloon->position == 0) {
-        fx32 v = func_0206fd10();
+        fx32 v = StateFlags_ValueOrOne();
         fx32 at_one = FX_MulFunc(0x4c000, v);
         fx32 at_zero = FX_MulFunc(0xc0000, 0x1000 - v);
         balloon->base_y = (at_one + at_zero) >> 12;
     } else {
-        fx32 v = func_0206fd34();
+        fx32 v = StateFlags_ValueOrZero();
         fx32 at_one = FX_MulFunc(-0x5c000, v);
         fx32 at_zero = FX_MulFunc(0x30000, 0x1000 - v);
         balloon->base_y = (at_one + at_zero) >> 12;
@@ -1400,9 +1328,9 @@ void QuickMessage_BalloonUpdate(QuickMessageBalloon *balloon)
     }
     if (balloon->unk_a4 != QUICK_BALLOON_IDLE) {
         if (balloon->position != 0) {
-            func_0208a0c8(&balloon->tag);
+            CellAnim_Advance(&balloon->tag);
         }
-        func_0208a0c8(&balloon->frame);
+        CellAnim_Advance(&balloon->frame);
     }
 }
 CLEAN_AS(func_02039f98, QuickMessage_BalloonUpdate)
@@ -1418,18 +1346,19 @@ typedef struct QuickMessageCell {
 static QuickMessageCell balloon_cell(QuickMessageBalloon *balloon, CellAnim *anim)
 {
     QuickMessageCell out;
-    out.cell = func_0208a1d0(anim);
-    int x = func_0208aef0(balloon);
-    out.x = x + func_0208a1b0(anim, -1);
-    int y = func_0208aeec(balloon);
-    int frame_y = func_0208a198(anim, -1);
+    out.cell = (int) (uintptr_t) CellAnim_Cell(anim);
+    int x = ScreenSprite_X((ScreenSprite *) balloon);
+    out.x = x + CellAnim_FrameX(anim, -1);
+    int y = ScreenSprite_Y((ScreenSprite *) balloon);
+    int frame_y = CellAnim_FrameY(anim, -1);
     out.y = balloon->base_y + balloon->bounce + balloon->placed_offset + y + frame_y;
     return out;
 }
 
 static void draw_cell(int a0, const QuickMessageCell *cell, int palette)
 {
-    func_02088df8(a0, cell->cell, cell->x, cell->y, palette, -1, 0x1000, 0x1000, 0, -1, 0, 0);
+    OamBuffer_DrawCell(a0, (const OamEntry *) (uintptr_t) cell->cell, cell->x, cell->y, palette, -1, 0x1000, 0x1000, 0, -1, 0,
+                       0);
 }
 
 /* func_0203a054 (vtable entry 2): a visible balloon drawn: this system's own one alone (first
@@ -1455,7 +1384,7 @@ CLEAN_AS(func_0203a054, QuickMessage_BalloonDraw)
 QuickMessageBalloon *QuickMessage_BalloonDestructDelete(QuickMessageBalloon *balloon)
 {
     QuickMessage_BalloonDestruct(balloon);
-    func_020edb3c(balloon);
+    Heap_OperatorDeleteB(balloon);
     return balloon;
 }
 CLEAN_AS(func_0203a1ac, QuickMessage_BalloonDestructDelete)
@@ -1468,9 +1397,9 @@ QuickMessageBalloon *QuickMessage_BalloonDestruct(QuickMessageBalloon *balloon)
     QuickMessage_BalloonFreeTextBox(balloon);
     QuickMessage_NameDestruct((QuickMessageName *) balloon->name);
     QuickMessage_TextDestruct((QuickMessageText *) balloon->text);
-    func_0208a1f4(&balloon->frame);
-    func_0208a1f4(&balloon->tag);
-    func_0208af00(balloon);
+    CellAnim_Destruct(&balloon->frame);
+    CellAnim_Destruct(&balloon->tag);
+    ScreenSprite_DestructBase((ScreenSprite *) balloon);
     return balloon;
 }
 CLEAN_AS(func_0203a1f8, QuickMessage_BalloonDestruct)
@@ -1478,19 +1407,19 @@ CLEAN_AS(func_0203a1f8, QuickMessage_BalloonDestruct)
 /* func_0203a23c: the constructor: everything 0, the labels empty. */
 QuickMessageBalloon *QuickMessage_BalloonConstruct(QuickMessageBalloon *balloon)
 {
-    func_0208af30(balloon);
+    ScreenSprite_Construct((ScreenSprite *) balloon);
     balloon->vtable = data_020da658;
     balloon->position = 0;
     balloon->palette = 0;
     balloon->tag_anim = 0;
     balloon->frame_anim = 0;
-    func_0208a1f8(&balloon->tag);
-    func_0208a1f8(&balloon->frame);
+    CellAnim_Construct(&balloon->tag);
+    CellAnim_Construct(&balloon->frame);
     balloon->stack_offset = 0;
     balloon->placed_offset = 0;
     balloon->bounce = 0;
     balloon->base_y = 0;
-    func_0203a404((QuickMessageText *) balloon->text);
+    QuickMessage_TextConstruct((QuickMessageText *) balloon->text);
     QuickMessage_NameConstruct((QuickMessageName *) balloon->name);
     balloon->boxes[QUICK_BALLOON_NAME_BOX] = NULL;
     balloon->boxes[QUICK_BALLOON_TEXT_BOX] = NULL;
@@ -1532,10 +1461,6 @@ extern const u8 data_020da6dc[]; /* its base */
 extern const u8 data_020da628[]; /* a wide text */
 extern const u8 data_020da640[]; /* a message label */
 
-extern void *func_020a88ec(QuickMessageWide *wide);
-extern void *func_020a887c(QuickMessageWide *wide);
-extern void *func_020a8c38(QuickMessageText *text);
-
 /* A vtable's address, as the object's first word holds it. */
 static u32 vtable_word(const u8 *vtable)
 {
@@ -1561,7 +1486,7 @@ QuickMessageView *QuickMessage_ViewDestructDelete(QuickMessageView *view)
 {
     view->words[0] = vtable_word(data_020da610);
     view->words[0] = vtable_word(data_020da6c4);
-    func_020edb3c(view);
+    Heap_OperatorDeleteB(view);
     return view;
 }
 CLEAN_AS(func_0203a2bc, QuickMessage_ViewDestructDelete)
@@ -1603,7 +1528,7 @@ QuickMessageName *QuickMessage_NameDestructDelete(QuickMessageName *name)
 {
     name->words[0] = vtable_word(data_020da5f8);
     name->words[0] = vtable_word(data_020da6dc);
-    func_020edb3c(name);
+    Heap_OperatorDeleteB(name);
     return name;
 }
 CLEAN_AS(func_0203a310, QuickMessage_NameDestructDelete)
@@ -1644,8 +1569,8 @@ CLEAN_AS(func_0203a368, QuickMessage_WideCapacity)
 QuickMessageWide *QuickMessage_WideDestructDelete(QuickMessageWide *wide)
 {
     wide->words[0] = vtable_word(data_020da628);
-    func_020a887c(wide);
-    func_020edb3c(wide);
+    TextBase_WideDestruct(wide);
+    Heap_OperatorDeleteB(wide);
     return wide;
 }
 CLEAN_AS(func_0203a36c, QuickMessage_WideDestructDelete)
@@ -1654,7 +1579,7 @@ CLEAN_AS(func_0203a36c, QuickMessage_WideDestructDelete)
 QuickMessageWide *QuickMessage_WideDestruct(QuickMessageWide *wide)
 {
     wide->words[0] = vtable_word(data_020da628);
-    func_020a887c(wide);
+    TextBase_WideDestruct(wide);
     return wide;
 }
 CLEAN_AS(func_0203a38c, QuickMessage_WideDestruct)
@@ -1662,7 +1587,7 @@ CLEAN_AS(func_0203a38c, QuickMessage_WideDestruct)
 /* func_0203a3a4: a wide text over `count` 16-bit characters at address `chars`. */
 QuickMessageWide *QuickMessage_WideConstruct(QuickMessageWide *wide, int chars, int count)
 {
-    func_020a88ec(wide);
+    TextBase_WideConstruct(wide);
     wide->words[0] = vtable_word(data_020da628);
     wide->words[WIDE_CHARS] = (u32) chars;
     wide->words[WIDE_COUNT] = (u32) count;
@@ -1688,8 +1613,8 @@ CLEAN_AS(func_0203a3c8, QuickMessage_TextCapacity)
 QuickMessageText *QuickMessage_TextDestructDelete(QuickMessageText *text)
 {
     text->words[0] = vtable_word(data_020da640);
-    func_020a8c38(text);
-    func_020edb3c(text);
+    TextBase_Destruct((TextBase *) text);
+    Heap_OperatorDeleteB(text);
     return text;
 }
 CLEAN_AS(func_0203a3cc, QuickMessage_TextDestructDelete)
@@ -1698,7 +1623,7 @@ CLEAN_AS(func_0203a3cc, QuickMessage_TextDestructDelete)
 QuickMessageText *QuickMessage_TextDestruct(QuickMessageText *text)
 {
     text->words[0] = vtable_word(data_020da640);
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     return text;
 }
 CLEAN_AS(func_0203a3ec, QuickMessage_TextDestruct)
@@ -1709,9 +1634,9 @@ extern void *func_020a8cac(QuickMessageText *text);
 /* func_0203a404: an empty message label. */
 QuickMessageText *QuickMessage_TextConstruct(QuickMessageText *text)
 {
-    func_020a8cac(text);
+    TextBase_Construct(text);
     text->words[0] = vtable_word(data_020da640);
-    func_020a8c1c(text);
+    TextBase_Clear(text);
     return text;
 }
 CLEAN_AS(func_0203a404, QuickMessage_TextConstruct)

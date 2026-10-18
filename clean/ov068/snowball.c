@@ -19,6 +19,8 @@
 #include "main/snowmen.h"
 #include "main/sound_emitter.h"
 #include "main/unit_type_info.h"
+#include "ov003/fish_shadow.h"
+#include "ov003/snowman.h"
 
 /* The parts of a ball that snowman.h leaves unnamed, by place. */
 #define SNOWBALL_FALL_SPEED 0xa8   /* fx32: how fast it falls (rises while negative) */
@@ -78,11 +80,6 @@ extern const s16 FX_SinCosTable_[];
 
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* The first other ball of overlay 3's table that is in a loose state (Snowman_CanRoll), or
- * null. */
-extern Snowman *func_ov003_02236128(Snowman *ball);
-/* The fish shadows within `reach` of a point are startled; whether any was. */
-extern int func_ov003_02228400(const Vec3 *point, fx32 reach);
 
 /* An arithmetic shift right, for negative values too. */
 static int shift_right(int value, int bits)
@@ -340,7 +337,7 @@ CLEAN_AS(func_ov068_0226ee54, Snowball_UpdateJumpOn)
 int Snowball_EnterJumpOn(Snowman *ball)
 {
     ball_layer_0(ball);
-    Snowman *body = func_ov003_02236128(ball);
+    Snowman *body = Snowman_OtherRollable(ball);
     AcreTile_SnapToTileCentre(ball_target(ball), &body->position);
     int body_size = body->size;
     int head_size = ball->size;
@@ -711,7 +708,7 @@ void Snowball_UpdateLoose(Snowman *ball)
     speed += FX_MulFunc(velocity_z, velocity_z);
     if (ball->talk_state == SNOWMAN_TALK_IDLE && ball->scene_state == SNOWMAN_STATE_LOOSE && speed > 0 &&
         ball->size >= SNOWBALL_SIZE_PUSHABLE && (ball->flags & SNOWMAN_FLAG_PUSHED)) {
-        Snowman *body = func_ov003_02236128(ball);
+        Snowman *body = Snowman_OtherRollable(ball);
         if (body != NULL && ball_build_snowman(ball, body, map)) {
             return;
         }
@@ -741,7 +738,7 @@ void Snowball_UpdateLoose(Snowman *ball)
         u16 *item = AcreTile_ItemAt(map, &ball->position, 0);
         if (item != NULL && *item >= SNOWBALL_SINK_ITEM_FIRST && *item <= SNOWBALL_SINK_ITEM_LAST &&
             Vec_DistanceXZ(&middle, &ball->position) < 0x1000) {
-            Snowman *other = func_ov003_02236128(ball);
+            Snowman *other = Snowman_OtherRollable(ball);
             int may_sink = 1;
             if (other != NULL && other->talk_state == SNOWMAN_TALK_IDLE && other->scene_state == SNOWBALL_STATE_SINK) {
                 may_sink = Vec_DistanceXZ(&other->position, &ball->position) > other->size + ball->size;
@@ -797,7 +794,7 @@ void Snowball_Splash(Snowman *ball)
     s16 size = (s16) FX_Div(ball->size, 0x1000);
     EffectSystem_StartKind(SNOWBALL_EFFECT_SPLASH, &at, NULL, &size);
     SoundEmitter_PlayB(ball_sound(ball), SNOWBALL_SOUND_SPLASH, 0x7f, 0);
-    func_ov003_02228400(&ball->position, SNOWBALL_STARTLE_REACH);
+    FishShadow_ScareNear(&ball->position, SNOWBALL_STARTLE_REACH);
 }
 CLEAN_AS(func_ov068_0226fc48, Snowball_Splash)
 

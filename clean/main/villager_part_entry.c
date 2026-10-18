@@ -6,6 +6,11 @@
 #include "player_record.h"
 #include "player_records.h"
 #include "shops.h"
+#include "item_code.h"
+#include "item_object.h"
+#include "main_random.h"
+#include "npc_lookup.h"
+#include "player_id.h"
 
 static_assert(sizeof(VillagerPartEntry) == 16, "entry");
 static_assert(offsetof(VillagerPartEntry, index) == 0x0c, "index");
@@ -27,20 +32,6 @@ extern const u16 data_020d1a54[VILLAGER_PART_ENTRY_CHOICES]; /* the code each in
 extern const u16 data_020d1a28[2];                           /* the entry's items: 0x155f, 0x1560 */
 extern NookStore data_021f395c;
 
-extern int func_020644cc(int bound);                   /* a random number below `bound` */
-extern int func_02094ffc(const DesignCreator *player); /* 0 for a player of this town */
-extern int func_0204bcdc(const u16 *code);             /* whether the code has a variant */
-extern int func_0204bc64(const u16 *code);             /* its item without the variant */
-extern int func_02082438(void *text, const u16 *code); /* writes the code's name */
-/* An object: whether it holds something (type below 22), the low five bits of its byte 0x0b
- * and their setter, its item set, set to a type and item, and emptied. */
-extern int func_0209bd44(const u8 *object);
-extern int func_0209bba0(const u8 *object);
-extern void func_0209bb90(u8 *object, int value);
-extern void func_0209bb68(u8 *object, const u16 *item);
-extern void func_0209bd30(u8 *object, u8 type, const u16 *item, u8 low_bits);
-extern void func_0209bd5c(u8 *object);
-
 /* Bit `bit` of a byte, as the ARM shifts: by the low byte of `bit`, nothing from 8 on. */
 static u8 villager_part_entry_bit(int bit)
 {
@@ -60,13 +51,14 @@ int VillagerPartEntry_Accepts(VillagerPartEntry *entry, const u16 *code)
     if (PlayerRecords_Current() == NULL) {
         return 0;
     }
-    if (func_02094ffc(PlayerRecord_Player(PlayerRecords_Current())) != 0) {
+    if (PlayerId_WhichTown(PlayerRecord_Player(PlayerRecords_Current())) != 0) {
         return 0;
     }
     if ((*code >> 12) != VILLAGER_PART_ENTRY_CODE_KIND) {
         return 0;
     }
-    if (func_0209bd44(entry->object) == 0 || func_0209bba0(entry->object) != 0) {
+    if (ItemObject_IsInUse((ItemObject *) (void *) entry->object) == 0 ||
+        ItemObject_Low5((ItemObject *) (void *) entry->object) != 0) {
         return 0;
     }
     if (*code >= VILLAGER_PART_ENTRY_INDEX0_FIRST && *code <= VILLAGER_PART_ENTRY_INDEX0_LAST) {
@@ -74,9 +66,9 @@ int VillagerPartEntry_Accepts(VillagerPartEntry *entry, const u16 *code)
     }
 
     u16 wanted = data_020d1a54[entry->index];
-    if (func_0204bcdc(code) != 0) {
-        int item = func_0204bc64(code);
-        return item == func_0204bc64(&wanted);
+    if (ItemCode_HasVariant(code) != 0) {
+        int item = ItemCode_VariantItem(code);
+        return item == ItemCode_VariantItem(&wanted);
     }
     return *code == wanted;
 }
@@ -99,12 +91,12 @@ int VillagerPartEntry_Advance(VillagerPartEntry *entry)
 
     VillagerPartEntry_CloseChoice(entry, (int) choice);
     entry->index = (u8) choice;
-    func_0209bb90(entry->object, 0);
-    u16 item = data_020d1a28[func_020644cc(10) & 1];
-    func_0209bb68(entry->object, &item);
+    ItemObject_SetLow5((ItemObject *) (void *) entry->object, 0);
+    u16 item = data_020d1a28[MainRandom_Below(10) & 1];
+    ItemObject_SetItem((ItemObject *) (void *) entry->object, &item);
 
     u8 left = VillagerPartEntry_CountLeft(entry, entry->choices);
-    if (left == 1 || (left == 2 && (func_020644cc(10) & 1) != 0)) {
+    if (left == 1 || (left == 2 && (MainRandom_Below(10) & 1) != 0)) {
         entry->choices = 0;
     }
     return 1;
@@ -119,7 +111,7 @@ int VillagerPartEntry_WriteName(VillagerPartEntry *entry, void *text)
         return 0;
     }
     u16 code = data_020d1a54[entry->index];
-    return func_02082438(text, &code);
+    return NpcLookup_FormatPersonName(text, &code);
 }
 CLEAN_AS(func_0209b0c4, VillagerPartEntry_WriteName)
 
@@ -134,10 +126,10 @@ CLEAN_AS(func_0209b0f0, VillagerPartEntry_Self)
  * choices open, then one drawn and closed. */
 void VillagerPartEntry_Start(VillagerPartEntry *entry)
 {
-    int which = func_020644cc(10) & 1;
+    int which = MainRandom_Below(10) & 1;
     VillagerPartEntry_Clear(entry);
     u16 item = data_020d1a28[which];
-    func_0209bd30(entry->object, VILLAGER_PART_ENTRY_TYPE, &item, 0);
+    ItemObject_Set((ItemObject *) (void *) entry->object, VILLAGER_PART_ENTRY_TYPE, &item, 0);
     entry->choices |= VILLAGER_PART_ENTRY_ALL_CHOICES;
 
     u32 choice = (u32) VillagerPartEntry_PickChoice(entry, entry->choices);
@@ -173,7 +165,7 @@ int VillagerPartEntry_PickChoice(VillagerPartEntry *entry, int choices)
 
     int count = VillagerPartEntry_CountChoices(entry, choices);
     if (count > 0) {
-        int n = func_020644cc(count);
+        int n = MainRandom_Below(count);
         for (int i = 0; i < VILLAGER_PART_ENTRY_CHOICES; i++) {
             if (((choices >> i) & 1) == 0) {
                 continue;
@@ -216,7 +208,7 @@ CLEAN_AS(func_0209b218, VillagerPartEntry_CountChoices)
 /* func_0209b23c: no entry: the object emptied, no index, no choice open. */
 void VillagerPartEntry_Clear(VillagerPartEntry *entry)
 {
-    func_0209bd5c(entry->object);
+    ItemObject_Clear((ItemObject *) (void *) entry->object);
     entry->index = VILLAGER_PART_ENTRY_NONE;
     entry->choices = 0;
 }

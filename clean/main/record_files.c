@@ -2,15 +2,10 @@
 #include "record_files.h"
 
 #include "clean.h"
+#include "record_file.h"
 
 static_assert(sizeof(FurnitureRecordFile) == 0x1c, "record file size");
 static_assert(offsetof(FurnitureRecordFiles, dma) == 0x38, "third file");
-
-/* A record file's own functions (main). */
-extern void func_0206e808(FurnitureRecordFile *file); /* close it, freeing what was read */
-extern void func_0206e83c(FurnitureRecordFile *file); /* free its whole copy, if any */
-extern void func_0206e854(FurnitureRecordFile *file); /* read it whole */
-extern int func_0206e890(FurnitureRecordFile *file, const char *path, int record_size, int records); /* open */
 
 /* func_0206e6e4: the third file. */
 int RecordFiles_Third(int files)
@@ -36,7 +31,7 @@ CLEAN_AS(func_0206e6ec, RecordFiles_First)
 /* func_0206e6f0: the second file's whole copy freed. Always 1. */
 int RecordFiles_FreeSecond(FurnitureRecordFiles *files)
 {
-    func_0206e83c(&files->indoor);
+    RecordFile_FreeWhole(&files->indoor);
     return 1;
 }
 CLEAN_AS(func_0206e6f0, RecordFiles_FreeSecond)
@@ -45,7 +40,7 @@ CLEAN_AS(func_0206e6f0, RecordFiles_FreeSecond)
 int RecordFiles_LoadSecond(FurnitureRecordFiles *files, int stream)
 {
     if (!stream) {
-        func_0206e854(&files->indoor);
+        RecordFile_ReadWhole(&files->indoor);
     }
     return 1;
 }
@@ -54,9 +49,9 @@ CLEAN_AS(func_0206e704, RecordFiles_LoadSecond)
 /* func_0206e71c: the three closed. */
 void RecordFiles_Close(FurnitureRecordFiles *files)
 {
-    func_0206e808(&files->always);
-    func_0206e808(&files->indoor);
-    func_0206e808(&files->dma);
+    RecordFile_Close(&files->always);
+    RecordFile_Close(&files->indoor);
+    RecordFile_Close(&files->dma);
 }
 CLEAN_AS(func_0206e71c, RecordFiles_Close)
 
@@ -65,10 +60,10 @@ CLEAN_AS(func_0206e71c, RecordFiles_Close)
 int RecordFiles_Open(FurnitureRecordFiles *files, const char *path0, int size0, const char *path1, int size1,
                      const char *path2, int size2, int records)
 {
-    func_0206e890(&files->always, path0, size0, records);
-    func_0206e890(&files->indoor, path1, size1, records);
-    func_0206e890(&files->dma, path2, size2, records);
-    func_0206e854(&files->always);
+    RecordFile_Open(&files->always, path0, size0, records);
+    RecordFile_Open(&files->indoor, path1, size1, records);
+    RecordFile_Open(&files->dma, path2, size2, records);
+    RecordFile_ReadWhole(&files->always);
     return 1;
 }
 CLEAN_AS(func_0206e73c, RecordFiles_Open)

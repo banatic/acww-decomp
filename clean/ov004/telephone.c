@@ -7,6 +7,10 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "main/event_queue.h"
+#include "main/message_receiver.h"
+#include "main/scene_object_base.h"
+#include "room_pushes.h"
 
 static_assert(offsetof(Telephone, entry_words) == 0x844, "entry words");
 static_assert(offsetof(Telephone, wait) == 0x852, "wait");
@@ -46,37 +50,24 @@ extern const u8 data_ov004_02247684[TELEPHONE_SWITCH_STATE_COUNT];
 extern const u8 data_ov004_02252950[];
 extern const u8 data_ov004_022529fc[];
 
-/* The two entries a telephone's values come from, and their parts. */
-extern void *func_ov004_0223cb10(void);
-extern void *func_ov004_0223ca9c(void *entries, Telephone *phone);
-extern s32 *func_ov004_0223cb24(void *entry);
-extern int func_ov004_0223cb18(void *entry);
-
-/* The scene object's hooks. */
-extern int func_0203e0a8(Telephone *phone, int a1);
-extern int func_0203e020(Telephone *phone);
-extern void func_0203ee08(Telephone *phone, void *receiver);
-extern void func_0203ee14(Telephone *phone, void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-
 /* The receiver part as C++ converts a pointer to the telephone to it: NULL stays NULL. */
 static void *receiver_of(Telephone *phone)
 {
     return phone != NULL ? (u8 *) phone + RECEIVER_OFFSET : NULL;
 }
 
-/* Vtable slot 0x70: the telephone's (func_ov004_02211aa0) enters a state of its switch. */
+/* Vtable slot 0x70: the telephone's (Telephone_EnterSwitch) enters a state of its switch. */
 static void switch_to(Telephone *phone, int state)
 {
     phone->base.vtable->vfunc_70(&phone->base, state, SLOT_70_VALUE);
 }
 
 /* func_ov004_0221167c (update of TELEPHONE_CLOSE): once its frame has passed, lets the scene go
- * on (func_0203e020). */
+ * on (EventQueue_FinishObjectEvent). */
 void Telephone_UpdateClose(Telephone *phone)
 {
     if (phone->wait == 0) {
-        func_0203e020(phone);
+        EventQueue_FinishObjectEvent(phone);
     }
     if (phone->wait != 0) {
         phone->wait--;
@@ -94,11 +85,11 @@ int Telephone_EnterClose(Telephone *phone)
 CLEAN_AS(func_ov004_022116a4, Telephone_EnterClose)
 
 /* func_ov004_022116c4 (update of TELEPHONE_TALK_END): once the link has closed, hands the
- * receiver back (func_0203ee08) and closes. */
+ * receiver back (SceneObjectBase_ReleaseReceiver) and closes. */
 void Telephone_UpdateTalkEnd(Telephone *phone)
 {
-    if (phone->base.link != NULL && phone->base.link->open == 0) {
-        func_0203ee08(phone, receiver_of(phone));
+    if (phone->base.link != NULL && phone->base.link->state == 0) {
+        SceneObjectBase_ReleaseReceiver(&phone->base.scene, receiver_of(phone));
         Telephone_EnterState(phone, TELEPHONE_CLOSE);
     }
 }
@@ -115,20 +106,20 @@ CLEAN_AS(func_ov004_022116f8, Telephone_EnterTalkEnd)
 /* func_ov004_022116fc (update of TELEPHONE_TALK): on once the link has opened. */
 void Telephone_UpdateTalk(Telephone *phone)
 {
-    if (phone->base.link != NULL && phone->base.link->open != 0) {
+    if (phone->base.link != NULL && phone->base.link->state != 0) {
         Telephone_EnterState(phone, TELEPHONE_TALK_END);
     }
 }
 CLEAN_AS(func_ov004_022116fc, Telephone_UpdateTalk)
 
-/* func_ov004_02211720 (entry of TELEPHONE_TALK): takes the receiver (func_0203ee14), raises the
+/* func_ov004_02211720 (entry of TELEPHONE_TALK): takes the receiver (SceneObjectBase_TakeReceiver), raises the
  * link's request, names the receiver "obj_etc_tel" and resets its state byte.
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Telephone_EnterTalk(Telephone *phone)
 {
-    func_0203ee14(phone, receiver_of(phone));
-    phone->base.link->requested = 1;
-    func_020a8164(&phone->base.receiver_vtable, data_ov004_02253184);
+    SceneObjectBase_TakeReceiver(&phone->base.scene, receiver_of(phone));
+    phone->base.link->next_state = 1;
+    MessageReceiver_SetName(&phone->base.receiver.base, data_ov004_02253184);
     phone->base.receiver_state = 0;
     return 1;
 }
@@ -156,20 +147,20 @@ int Telephone_EnterOpen(Telephone *phone)
 CLEAN_AS(func_ov004_02211790, Telephone_EnterOpen)
 
 /* func_ov004_022117b0 (update of TELEPHONE_IDLE): when the switch was asked to change, takes the
- * values of the telephone's entry and asks the scene for an event (func_0203e0a8); the switch
+ * values of the telephone's entry and asks the scene for an event (EventQueue_RequestKind6); the switch
  * is then set off, shown at once, every frame.
- * BUG: without an entry for it, func_ov004_0223cb24 is handed NULL and the words are read from
+ * BUG: without an entry for it, RoomPushes_Destination is handed NULL and the words are read from
  * address 0x2c; kept. */
 void Telephone_UpdateIdle(Telephone *phone)
 {
     if (Switch_IsPending(&phone->base.light_switch)) {
-        void *entry = func_ov004_0223ca9c(func_ov004_0223cb10(), phone);
-        s32 *words = func_ov004_0223cb24(entry);
-        phone->entry_words[0] = words[0];
-        phone->entry_words[1] = words[1];
-        phone->entry_words[2] = words[2];
-        phone->entry_value = (u16) func_ov004_0223cb18(entry);
-        func_0203e0a8(phone, 0);
+        void *entry = RoomPushes_FindObject(RoomPushes_Records(), &phone->base);
+        Vec3 *destination = RoomPushes_Destination(entry);
+        phone->entry_words[0] = destination->x;
+        phone->entry_words[1] = destination->y;
+        phone->entry_words[2] = destination->z;
+        phone->entry_value = (u16) RoomPushes_Facing(entry);
+        EventQueue_RequestKind6(phone, 0);
     }
     Switch_Set(&phone->base.light_switch, 0, 0);
 }
@@ -335,7 +326,7 @@ u8 Telephone_SwitchStateIsOn(Telephone *phone, unsigned int state)
 }
 CLEAN_AS(func_ov004_02211b40, Telephone_SwitchStateIsOn)
 
-/* func_ov004_02211b54 (vtable slot 0x4c): the scene's answer to func_0203e0a8; events 0 and 1
+/* func_ov004_02211b54 (vtable slot 0x4c): the scene's answer to EventQueue_RequestKind6; events 0 and 1
  * open the telephone, event 8 makes it idle, others do nothing. */
 void Telephone_OnSceneEvent(Telephone *phone, int event)
 {

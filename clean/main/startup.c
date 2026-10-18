@@ -12,6 +12,16 @@
 #include "main/overlay_slots.h"
 #include "main/scene_sound.h"
 #include "main/user_settings.h"
+#include "build_time.h"
+#include "caution_window.h"
+#include "clock.h"
+#include "display_frame.h"
+#include "line_handlers.h"
+#include "main_loop.h"
+#include "main_random.h"
+#include "resident_process.h"
+#include "touch_history.h"
+#include "town_day.h"
 
 /* The master interrupt enable. */
 #define REG_IME (*(volatile u16 *) 0x04000208)
@@ -85,17 +95,7 @@ extern void func_01ffcc60(void);
 /* Start-up steps of their own, not named yet. */
 extern void func_02110794(void);
 extern void func_02110aa0(void);
-extern void func_0205c0d4(void);
-extern void func_02037f74(void);
-extern void func_020b93e8(void);
-extern void func_020540e4(void); /* the graphics set-up */
-extern void func_0209dfc0(void);
-extern void func_02046620(void);
-extern int func_02038998(void);
 extern void StartupNoOp_Run(void);
-extern void func_02061530(void);
-extern void func_0206e6c0(void);
-extern void func_0209dae8(void);
 
 /* NitroStartUp: the start-up NitroSDK runs before main.
  * HW: with the master interrupt enable saved and set to 1 and the CPU's interrupts enabled,
@@ -181,7 +181,7 @@ void Startup_InitGame(void)
     Startup_FirstStep();
     Irq_InitNothing();
     Math_InitSqrt();
-    func_0205c0d4();
+    LineHandlers_Init();
     Startup_InitFrameWait();
 
     OS_SetIrqFunction(STARTUP_IRQ_HBLANK, func_01ffcc30);
@@ -193,29 +193,29 @@ void Startup_InitGame(void)
     GX_HBlankIntr(1);
 
     BackupCard_InitGame();
-    func_02037f74();
+    BuildTime_Load();
     LibraryOverlay_Load(&data_021d11c4, (int) (uintptr_t) &SDK_OVERLAY_ov069_ID);
     LibraryOverlay_End(&data_021d11c4);
-    func_020b93e8();
+    TouchHistory_Init();
     System_InitTick();
     Heap_CreateAuxHeap(STARTUP_AUX_HEAP_SIZE, NULL);
-    func_020540e4();
+    DisplayFrame_Init();
     SoundLayer_Init();
     System_ResetFrameCount();
-    func_0209dfc0();
-    func_02046620();
-    func_02038998();
+    Clock_Init();
+    TownDay_Init();
+    CautionWindow_LoadMessages();
     data_021fd044 = data_020e3134;
     StartupNoOp_Run();
-    func_02061530();
+    MainRandom_SeedFromClock();
 
     REG_040004C8 = 0x296a5800;
     REG_040004CC = 0x7fff;
     REG_040004C0 = 0x7fff;
     REG_040004C4 = 0;
 
-    func_0206e6c0();
-    func_0209dae8();
+    MainLoop_StartupNothing();
+    ResidentProcess_SpawnAll();
     LibraryOverlay_Load(&data_021d11c4, (int) (uintptr_t) &SDK_OVERLAY_ov068_ID);
 }
 CLEAN_AS(func_020b1b84, Startup_InitGame)

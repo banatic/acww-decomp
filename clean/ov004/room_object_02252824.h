@@ -5,19 +5,19 @@
  *
  * - OFF (0): the switch off; the material animation at its first frame in mode 3; when the
  *   switch is asked to change it requests TURNING_ON for the object at its cell
- *   (func_0205265c);
+ *   (RoomSync_RequestState);
  * - TURNING_ON (1): the switch on; the material animation once from the start, with the sound
  *   at 2; each frame the sound at 0, and once the animation has ended (or when it is not bound)
  *   ON;
  * - ON (2): the switch on; the material animation held at its last frame; each frame
- *   func_020537a8 of its number and the sound at 0; when the switch is asked to change it
+ *   FurnitureInfo_IndoorBit6 of its number and the sound at 0; when the switch is asked to change it
  *   requests TURNING_OFF;
  * - TURNING_OFF (3): the switch off; the material animation in mode 3 from its last frame,
  *   with the sound at 4; once it has ended (or when it is not bound) OFF.
  *
  * Each frame its other animations (joints, texture coordinates, patterns, visibility) advance
  * on their own. Its start binds all five of variant 0 and enters ON when its switch is on
- * (unless func_ov004_0223c10c says so), else OFF. */
+ * (unless RoomObjects_InNookOrScene0AOr0F says so), else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02252824_H
 #define CLEAN_OV004_ROOM_OBJECT_02252824_H
 

@@ -15,6 +15,13 @@
 #include "autoload_2/matrix.h" /* Mtx43 */
 #include "carried_items.h"
 #include "furniture_model.h"
+#include "furniture_mover.h"
+#include "main/actor.h"
+#include "main/animated_model.h"
+#include "main/scene_object_base.h"
+#include "main/talk_object.h"
+#include "main/talk_receiver.h"
+#include "main/touch_pick_shapes.h"
 #include "push_box.h"
 #include "room_object_parts.h"
 
@@ -27,8 +34,8 @@ typedef struct ByteSet {
     u8 value;
 } ByteSet;
 
-/* A sound played at a point (func_ov004_0223cf54 and func_ov004_0223cf40 play one while
- * `playing`, func_ov004_0223cf68 stops it); the point is the object's centre, kept each frame. */
+/* A sound played at a point (RoomSound_PlayAtB and RoomSound_PlayAt play one while
+ * `playing`, RoomSound_Stop stops it); the point is the object's centre, kept each frame. */
 typedef struct RoomSound {
     u8 unk_00[0x1c];
     u8 playing;
@@ -62,37 +69,47 @@ typedef struct RoomObjectVtable {
     int (*is_idle)(struct RoomObject *object);              /* RoomObject_IsIdle in the base */
 } RoomObjectVtable;
 
-/* The link a room object's receiver part is attached to (set by the code that opens it), as
- * the scene objects' receivers have it (clean/ov003/etc_board.h). */
-typedef struct RoomLink {
-    u8 unk_00[4];
-    s32 open;      /* an object that talks waits for it to open, then to close */
-    s32 requested; /* set to 1 when the object starts talking */
-} RoomLink;
-
 typedef struct RoomObject {
-    const RoomObjectVtable *vtable;
-    u8 unk_004[4];
-    u32 placement; /* how it was placed (room_object_body.c) */
-    u16 unk_00C;   /* 0x3d: moving it plays no sound */
-    u8 unk_00e[0x4e];
-    Vec3 position;
-    u8 unk_068[0x26];
-    s16 angle;
-    u8 unk_090[0x5c];
-    /* The message-receiver base (Base_02066994), at 0xec. */
-    const void *receiver_vtable;
-    u8 unk_0f0[0x1a];
-    u8 receiver_state; /* the receiver's state byte */
-    u8 unk_10b[0x21];
-    RoomLink *link;
-    u8 unk_130[2];
-    u16 slot; /* its entry in the pool data_ov004_02259698 (func_0209d238), 0xffff for none */
+    union {
+        SceneObjectBase scene; /* the main program's scene object it extends */
+        Actor actor;           /* the same, as the main program's actors see it */
+        struct {
+            const RoomObjectVtable *vtable;
+            u8 unk_004[4];
+            u32 placement; /* how it was placed (room_object_body.c) */
+            u16 unk_00C;   /* 0x3d: moving it plays no sound */
+            u8 unk_00e[0x4e];
+            Vec3 position;
+            u8 unk_068[0x26];
+            s16 angle;
+            u8 unk_090[0x5c];
+        };
+    };
+    union {
+        TalkReceiver receiver; /* its receiver part, at 0xec */
+        struct {
+            const void *receiver_vtable;
+            u8 unk_0f0[0x1a];
+            u8 receiver_state; /* the receiver's state byte */
+            u8 unk_10b[0x21];
+            /* The conversation the receiver part is attached to (set by the code that opens
+             * it): an object that talks waits for its state to become non-zero, then 0 again,
+             * and sets its next state to 1 when it starts talking. */
+            TalkObject *link;
+            u8 unk_130[2];
+            u16 slot; /* its entry in the pool data_ov004_02259698 (ModelPool_Take), 0xffff for none */
+        };
+    };
     u8 unk_134[0x10];
-    Vec3 pivot;  /* where its model turns about, in its space (func_ov004_0220dbac) */
-    int scale_x; /* 20.12 fixed point, as the rest */
-    int scale_y;
-    int scale_z;
+    Vec3 pivot; /* where its model turns about, in its space (PushBox_SettlePivot) */
+    union {
+        Vec3 scale; /* 20.12 fixed point, as the rest */
+        struct {
+            int scale_x;
+            int scale_y;
+            int scale_z;
+        };
+    };
     int unk_15C;      /* rises to 0x1000 while appearing; the wobble ends only once it is there */
     u16 timer;        /* frames since it started to appear */
     u16 wobble_phase; /* an angle */
@@ -104,24 +121,29 @@ typedef struct RoomObject {
     Vec3 target_position;
     Mount mount;
     CarriedItems carried;
-    u8 item_shadows[4][0x20]; /* of the items lying on its cells (func_020b7d3c) */
-    u8 unk_250[4];            /* given to the move functions func_ov004_0223b004/58/80 */
-    Mtx43 base_matrix;        /* its place in the world, about its pivot (func_ov004_0220fc98) */
-    s32 unk_284;              /* the furniture's number (func_ov004_0220fde0), which names its files */
-    u8 unk_288;               /* 0: the objects on its cells turn with it; the layer of the town's map it is on */
-    u8 is_set_up;             /* func_ov004_0220f52c has run */
+    TouchPickCylinder item_shadows[4]; /* of the items lying on its cells (TouchPick_SetCylinderAndAdd) */
+    FurnitureMoveFlag move_flag;       /* given to the move functions FurnitureMover_Step/58/80 */
+    u8 unk_251[3];
+    Mtx43 base_matrix; /* its place in the world, about its pivot (RoomObject_BuildMatrix) */
+    s32 unk_284;       /* the furniture's number (RoomObject_Number), which names its files */
+    u8 unk_288;        /* 0: the objects on its cells turn with it; the layer of the town's map it is on */
+    u8 is_set_up;      /* func_ov004_0220f52c has run */
     u8 unk_28a[2];
-    u8 shadow[4]; /* its shadow (func_020b7dc8) */
-    u8 unk_290[0x2a4];
-    s32 state;        /* RoomObjectState */
-    u8 unk_538[0x5c]; /* the main program's model object, up to 0x62c */
-    G3dModel *model_resource;
-    u8 unk_598[4];
-    Mtx43 matrix; /* its place in the world, for what it carries */
-    u8 unk_5cc[8];
-    u8 joint_anim[8]; /* the model's joint animation, its frame below */
-    u32 joint_frame;
-    u8 unk_5e0[0x4c];
+    TouchPickFace shadow[10]; /* its shadow (TouchPick_SetBoxAndAdd) */
+    s32 state;                /* RoomObjectState */
+    union {
+        AnimatedModel model; /* the main program's blended model */
+        struct {
+            u8 unk_538[0x5c];
+            G3dModel *model_resource; /* model.object.model */
+            u8 unk_598[4];
+            Mtx43 matrix; /* its place in the world, for what it carries */
+            u8 unk_5cc[8];
+            u8 joint_anim[8]; /* model.frames, the model's joint animation, its frame below */
+            u32 joint_frame;
+            u8 unk_5e0[0x4c];
+        };
+    };
     PushBox push_box;
     FurnitureModel model_files;
     Switch light_switch;
@@ -130,7 +152,7 @@ typedef struct RoomObject {
     Glow glow;
     ByteSet node_set; /* the nodes "v", "v1", "v2" and "v3" */
     u8 unk_769[3];
-    s32 unk_76C;      /* 2: func_ov004_0220e5c8 says so */
+    s32 unk_76C;      /* 2: RoomObject_Unk76CIs2 says so */
     u16 state_frames; /* frames in the state, for the states that count them */
     u8 unk_772[2];
     s32 unk_774;
@@ -140,7 +162,7 @@ typedef struct RoomObject {
     u8 unk_77E; /* set while the constructor's loading binds its model */
     u8 unk_77f;
     u32 unk_780; /* 0x23 to 0x25: spinning does not turn it */
-    u32 unk_784; /* 1: two cells long, its pivot at either end (func_ov004_0220dbac) */
+    u32 unk_784; /* 1: two cells long, its pivot at either end (PushBox_SettlePivot) */
     u32 unk_788; /* 1: the objects on its cells turn with it */
     u8 unk_78C;
     u8 unk_78D; /* 0: its switch starts on when unk_76C is 1 or 2 */
@@ -159,22 +181,16 @@ enum RoomAnim {
     ROOM_ANIM_VISIBILITY = 3 /* anim_10 */
 };
 
-/* The cells an object covers (func_ov004_0220f27c fills them in). */
+/* The cells an object covers (RoomObject_ListCells fills them in). */
 typedef struct Cell {
-    s32 x;
-    s32 y;
+    int x;
+    int y;
 } Cell;
 
 typedef struct CellList {
     u32 count;
     Cell cells[4];
 } CellList;
-
-extern CellList *func_ov004_0220db94(CellList *list);
-extern void func_ov004_0220f27c(RoomObject *object, CellList *list, void *a2, int a3);
-extern unsigned long func_ov004_0220db68(CellList *list);
-extern Cell *func_ov004_0220db5c(CellList *list, int index);
-extern void func_ov004_0220db90(CellList *list);
 
 enum RoomObjectState {
     ROOM_OBJECT_APPEAR = 0,

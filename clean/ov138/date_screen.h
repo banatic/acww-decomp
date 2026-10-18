@@ -5,7 +5,7 @@
  * - overlay 92's dispatcher opens it with overlay 134 as overlay group 0x2a for GroupParams'
  *   mode 0x33 (ov092/menu_dispatch.c), the last of the four clock screens (modes 0x30-0x33,
  *   overlays 135-138);
- * - it embeds overlay 134's clock panel at 0x2c8 (ov134/clock_panel.h), set up in the panel's
+ * - it embeds overlay 134's clock setter at 0x2c8 (ov134/clock_setter.h), set up in its
  *   mode 3 (the date, bounded below by the panel's minimum): the year, the month and the day
  *   are its fields 0-2, and touching or picking one opens the list of its values;
  * - the panel's buttons 6 and 7 (ov002/button_panel.h, layout 6) confirm and cancel: confirming
@@ -14,18 +14,19 @@
  *
  * The cursor (`cursor`, DateScreenPlace) is a Glider0 sprite that points at a field, at a
  * button, or, while a field's list is open (DATE_SCREEN_FLAG_LIST), at the list's cursor row.
- * The clock panel's functions are called by symbol. */
+ */
 #ifndef CLEAN_OV138_DATE_SCREEN_H
 #define CLEAN_OV138_DATE_SCREEN_H
 
 #include "ov002/button_panel.h"
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
+#include "ov134/clock_setter.h"
 #include "types.h"
 
 /* The places of the cursor (`cursor`). */
 enum DateScreenPlace {
-    DATE_SCREEN_YEAR = 0, /* 0-2: the clock panel's fields, in a row */
+    DATE_SCREEN_YEAR = 0, /* 0-2: the clock setter's fields, in a row */
     DATE_SCREEN_MONTH = 1,
     DATE_SCREEN_DAY = 2,
     DATE_SCREEN_CONFIRM = 3, /* the panel's button 6 */
@@ -68,16 +69,14 @@ enum DateScreenSubState {
     DATE_SCREEN_SUB_STATES = 14
 };
 
-#define DATE_SCREEN_CLOCK_SIZE 0x28b0
-
 typedef struct DateScreen {
-    MenuScene base;                   /* 0x000: its bytes 0x92-0x93 are `flags` (DateScreen_Flags) */
-    u8 return_sub_state;              /* 0x094: the sub state to go back to once the sprite stops */
-    u8 cursor;                        /* 0x095: DateScreenPlace */
-    u8 pad_96[2];                     /* 0x096 */
-    Glider cursor_sprite;             /* 0x098: a Glider0 */
-    ButtonPanel panel;                /* 0x0fc */
-    u8 clock[DATE_SCREEN_CLOCK_SIZE]; /* 0x2c8: overlay 134's ClockPanel */
+    MenuScene base;       /* 0x000: its bytes 0x92-0x93 are `flags` (DateScreen_Flags) */
+    u8 return_sub_state;  /* 0x094: the sub state to go back to once the sprite stops */
+    u8 cursor;            /* 0x095: DateScreenPlace */
+    u8 pad_96[2];         /* 0x096 */
+    Glider cursor_sprite; /* 0x098: a Glider0 */
+    ButtonPanel panel;    /* 0x0fc */
+    ClockSetter clock;    /* 0x2c8: overlay 134's clock setter */
 } DateScreen;
 
 DateScreen *DateScreen_Destroy(DateScreen *self);

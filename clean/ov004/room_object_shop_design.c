@@ -9,6 +9,9 @@
 #include "main/sound_emitter.h"
 #include "room_object_body.h"
 #include "room_object_life.h"
+#include "autoload_2/sound_emitter_class.h"
+#include "main/item_code.h"
+#include "main/material_bind.h"
 
 static_assert(offsetof(ShopDesignObject, design) == 0x844, "design");
 static_assert(offsetof(ShopDesignObject, emitter) == 0x848, "emitter");
@@ -29,15 +32,6 @@ extern const char data_ov004_022531c8[];
 /* The class's vtables, and its receiver part's. */
 extern const u8 data_ov004_02251ec4[];
 extern const u8 data_ov004_02251f70[];
-
-/* The item code of furniture `item` in `variant`. */
-extern u16 func_0204bc50(int item, int variant);
-/* Puts `texture` on the material named `material` of `model`. */
-extern int func_02057084(G3dModel *model, const char *material, void *texture, void *a3, int a4);
-/* The sound emitter's destructor (its vtable 0x0213f074 again) and constructor (that vtable,
- * and its byte 0x3e cleared). */
-extern void func_020f5948(void *emitter);
-extern void func_020f5958(void *emitter);
 
 static SoundEmitter *ShopDesignObject_emitter(ShopDesignObject *object)
 {
@@ -81,7 +75,7 @@ CLEAN_AS(func_ov004_022139a8, ShopDesignObject_Update)
  * emitter (stopping it first) if it was not in use; done then, not done otherwise. */
 int ShopDesignObject_Start(ShopDesignObject *object)
 {
-    u16 item = func_0204bc50(RoomObject_Number(&object->base), 0);
+    u16 item = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
     object->design = 0;
     if (item < SHOP_DESIGN_ITEM_FIRST || item > SHOP_DESIGN_ITEM_LAST) {
         return 0;
@@ -91,7 +85,7 @@ int ShopDesignObject_Start(ShopDesignObject *object)
     if (texture == 0) {
         return 0;
     }
-    func_02057084(object->base.model_resource, data_ov004_022531c8, (void *) (uintptr_t) texture, NULL, 0);
+    MaterialBind_BindByIndex((u8 *) object->base.model_resource, data_ov004_022531c8, (G3dResTex *) (uintptr_t) texture, 0, 0);
     if (object->has_sound == 0) {
         SoundEmitter_StopB(ShopDesignObject_emitter(object));
         object->has_sound = 1;
@@ -111,7 +105,7 @@ static void ShopDesignObject_set_vtables(ShopDesignObject *object)
 ShopDesignObject *ShopDesignObject_Delete(ShopDesignObject *object)
 {
     ShopDesignObject_set_vtables(object);
-    func_020f5948(object->emitter);
+    SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) object->emitter);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -122,7 +116,7 @@ CLEAN_AS(func_ov004_02213ab8, ShopDesignObject_Delete)
 ShopDesignObject *ShopDesignObject_Destroy(ShopDesignObject *object)
 {
     ShopDesignObject_set_vtables(object);
-    func_020f5948(object->emitter);
+    SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) object->emitter);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -134,7 +128,7 @@ ShopDesignObject *ShopDesignObject_Construct(ShopDesignObject *object)
 {
     RoomObject_ConstructBase(&object->base);
     ShopDesignObject_set_vtables(object);
-    func_020f5958(object->emitter);
+    SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) (void *) object->emitter);
     return object;
 }
 CLEAN_AS(func_ov004_02213b24, ShopDesignObject_Construct)

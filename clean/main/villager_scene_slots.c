@@ -22,6 +22,8 @@
 #include "villager_state.h"
 #include "villager_status.h"
 #include "villager_talk_scene.h"
+#include "c_library.h"
+#include "main_random.h"
 
 /* The object's parts, by place. */
 #define VSO_PERSON 0x0ea   /* ItemCode: the person (kind 0xe) */
@@ -64,11 +66,6 @@ extern char data_021c1da4[];
 extern char data_021c1d84[];
 extern const char data_020d9fc0[];
 extern const char data_020d9fd8[];
-
-/* sprintf */
-extern int func_02064328(char *buffer, const char *format, ...);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
 
 static u8 *vso_at(void *object, u32 offset)
 {
@@ -180,7 +177,7 @@ int VillagerSceneObject_Init(u8 *object)
     }
     VillagerSceneObject_FindRecord(object);
     *(u32 *) (void *) vso_at(object, VSO_WORD_644) = 0;
-    *vso_at(object, VSO_COIN) = (u8) func_020644cc(2);
+    *vso_at(object, VSO_COIN) = (u8) MainRandom_Below(2);
     VillagerMood_Start((VillagerMood *) (void *) vso_at(object, VSO_MOOD));
     VillagerSceneObject_SetEvent(object);
     return 1;
@@ -262,7 +259,7 @@ static char *vso_file(void *object, char *buffer, const char *format)
     if (number == VSO_NO_NUMBER) {
         number = 0;
     }
-    func_02064328(buffer, format, number & 0xf8, number);
+    CLib_SPrintf(buffer, format, number & 0xf8, number);
     return buffer;
 }
 
@@ -406,8 +403,6 @@ u8 *VillagerSceneObject_Construct(u8 *object)
     LayeredModel_ConstructB((LayeredModel *) (void *) vso_at(object, VSO_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) vso_at(object, 0x2a0));
     SceneFace_Construct((SceneFace *) (void *) vso_at(object, VSO_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
     SpeakerAnim_Destruct((SpeakerAnim *) (void *) vso_at(object, VSO_ANIM));
     SceneMover_Construct((SceneMover *) (void *) vso_at(object, 0x350));
     SceneProbe_Construct(vso_at(object, 0x3a8));

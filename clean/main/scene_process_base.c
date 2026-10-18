@@ -12,6 +12,14 @@
 #include "scene_sound.h"
 #include "session.h"
 #include "session_link.h"
+#include "event_queue.h"
+#include "game_process.h"
+#include "link_global.h"
+#include "link_scene.h"
+#include "object_claim.h"
+#include "screen_transition.h"
+#include "town_day.h"
+#include "transition_mark.h"
 
 static_assert(offsetof(Process, class_id) == 0x0c && offsetof(Process, flags) == 0x13, "process");
 
@@ -48,35 +56,8 @@ extern u8 data_021dc6c4;
 extern u8 data_021c75b8;
 extern u8 data_021c75b0;
 
-/* The screen opened (from closed) or closed (from shown, or with data_021c75b0) with
- * transition `kind` over `frames` frames; 0 when it cannot be now. */
-extern int func_02041c88(int kind, int frames, int option);
-extern int func_02041d14(int kind, int frames);
-
-/* A process of class `class_id` spawned under `parent`; NULL when it could not be. */
-extern Process *func_0202f134(int class_id, Process *parent, int group, int arg);
-/* The class whose after-create deletes a process whose creation is pending (actor.c). */
-extern void func_0202f144(Process *process, int outcome);
 /* Called with 1 before scene 2 is spawned (and with 0 when the library is shut down). */
 extern void func_02116a1c(int arg);
-
-/* The link's work of a frame (data_021f4320), and the link's state read and set. */
-extern void func_020a6c08(void);
-extern int func_020a6ea0(void);
-extern void func_020a6eb0(int value);
-/* The link's set-up when a scene is created (only for a slot of the session's), and a step
- * that does nothing. */
-extern void func_020a6d84(void);
-extern void func_020a7448(void);
-/* Two objects of the game (data_021c7c48 and data_021c776c) updated. */
-extern void func_02046600(void);
-/* The second background of both engines cleared (and their palettes' first colours). */
-extern void func_02041a9c(void);
-/* The events dropped, and the four heap words OSiHeapInfo and data_021c72d4 cleared. */
-extern void func_0203ecfc(void);
-extern void func_0203f4c4(void);
-/* Byte 0x19 of data_021d3674 set. */
-extern void func_0208f8f0(void);
 
 extern void G3X_Init(void);
 extern void GX_SetBankForBG(int banks);
@@ -164,8 +145,8 @@ void SceneProcessBase_CheckChange(Process *process)
         }
         SceneProcessBase_Request(SCENE_STOPPED, 0, 0, 0);
         Process_RequestDelete(process);
-        func_0203ecfc();
-        func_0203f4c4();
+        EventQueue_Reset();
+        ObjectClaim_Reset();
         return;
     }
     if (data_020e3c80 == SCENE_PROCESS_BASE_NONE) {
@@ -175,14 +156,14 @@ void SceneProcessBase_CheckChange(Process *process)
         return;
     }
     if (slot_taken()) {
-        switch (func_020a6ea0()) {
+        switch (LinkScene_GlobalPhase()) {
             case LINK_05:
                 Process_RequestDelete(process);
-                func_020a6eb0(LINK_06);
+                LinkScene_GlobalSetPhase(LINK_06);
                 break;
             case LINK_0C:
                 Process_RequestDelete(process);
-                func_020a6eb0(LINK_0D);
+                LinkScene_GlobalSetPhase(LINK_0D);
                 break;
             default:
                 break;
@@ -206,7 +187,7 @@ int SceneProcessBase_StartAsked(void)
     if (data_020e3c80 == SCENE_2) {
         func_02116a1c(1);
     }
-    scene = func_0202f134(data_020e3c80, data_021dc740, 0, SPAWN_ARG);
+    scene = (Process *) (uintptr_t) GameProcess_SpawnChild(data_020e3c80, (int) (uintptr_t) data_021dc740, 0, SPAWN_ARG);
     if (scene == NULL) {
         return 0;
     }
@@ -270,8 +251,8 @@ CLEAN_AS(func_020a5428, SceneProcessBase_AfterExecute)
 int SceneProcessBase_CanExecute(Process *process)
 {
     Session_Deliver(0);
-    func_020a6c08();
-    func_02046600();
+    LinkScene_Update();
+    TownDay_Update();
     if (!Process_CanExecute(process)) {
         return 0;
     }
@@ -279,13 +260,13 @@ int SceneProcessBase_CanExecute(Process *process)
         if (data_021c75b8 == SCREEN_SHOWN) {
             data_021f42ec = STOP_TRANSITION;
             data_021f42e8 = 0;
-            func_02041d14(STOP_TRANSITION, STOP_FRAMES);
+            ScreenTransition_Close(STOP_TRANSITION, STOP_FRAMES);
         }
         return 0;
     }
     if (data_020e3c80 != SCENE_PROCESS_BASE_NONE) {
         if (data_021c75b8 == SCREEN_SHOWN || data_021c75b0 != 0) {
-            func_02041d14(data_021f42ec, TRANSITION_FRAMES);
+            ScreenTransition_Close(data_021f42ec, TRANSITION_FRAMES);
         }
         return 0;
     }
@@ -298,7 +279,7 @@ int SceneProcessBase_CanExecute(Process *process)
     }
     if (data_021f42e0 != 0 && data_021c75b8 == SCREEN_CLOSED) {
         data_021f42e0--;
-        if (data_021f42e0 == 0 && func_02041c88(data_021f42e8, TRANSITION_FRAMES, 0) == 0) {
+        if (data_021f42e0 == 0 && ScreenTransition_Open(data_021f42e8, TRANSITION_FRAMES, 0) == 0) {
             data_021f42e0 = 1;
         }
     }
@@ -338,14 +319,14 @@ void SceneProcessBase_AfterCreate(Process *process, int outcome)
     if (outcome == OUTCOME_DONE) {
         data_021f42f0 = 0;
         if (process->class_id != SCENE_FIELD_CLASS) {
-            func_02041a9c();
+            ScreenTransition_ClearBg2();
         }
         Session_Deliver(0);
-        func_020a6c08();
-        func_02046600();
+        LinkScene_Update();
+        TownDay_Update();
         Empty0203de64_Nothing64();
     }
-    func_0202f144(process, outcome);
+    GameProcess_AfterCreate(process, outcome);
 }
 CLEAN_AS(func_020a5598, SceneProcessBase_AfterCreate)
 
@@ -362,19 +343,19 @@ int SceneProcessBase_CanCreate(Process *process)
         return 1;
     }
     SceneProcessBase_SetUpDisplay();
-    func_0208f8f0();
+    TransitionMark_Suppress();
     data_021f42f4 = process;
     data_021f42e0 = OPEN_DELAY;
-    func_020a7448();
-    func_020a6d84();
+    LinkGlobal_Empty7448();
+    LinkScene_TakeEnteredState();
     data_021f42f0++;
     if (slot_taken()) {
-        switch (func_020a6ea0()) {
+        switch (LinkScene_GlobalPhase()) {
             case LINK_06:
-                func_020a6eb0(LINK_07);
+                LinkScene_GlobalSetPhase(LINK_07);
                 break;
             case LINK_0D:
-                func_020a6eb0(LINK_0E);
+                LinkScene_GlobalSetPhase(LINK_0E);
                 break;
         }
     }

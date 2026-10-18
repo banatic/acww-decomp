@@ -30,12 +30,14 @@
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
 #include "ov090/menu_tabs.h"
+#include "ov095/soft_keyboard.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(ChatScene, return_sub_state) == 0x98, "bytes");
 static_assert(offsetof(ChatScene, cursor) == 0x9e && offsetof(ChatScene, reaction_wait) == 0xa2, "bytes");
 static_assert(offsetof(ChatScene, flags) == 0xa4 && offsetof(ChatScene, box) == 0xa8, "flags");
 static_assert(sizeof(LayerTask) == 0x24 && sizeof(TextLabel) == 0x6c, "keyboard members");
 static_assert(offsetof(ChatKeyboard, map) == 0x2428 && sizeof(ChatKeyboard) == 0x3c28, "keyboard");
+static_assert(sizeof(ChatKeyboard) == sizeof(SoftKeyboard), "keyboard");
 static_assert(offsetof(ChatScene, keyboard) == 0xac && offsetof(ChatScene, message) == 0x3cd4, "keyboard");
 static_assert(sizeof(ChatLine) == 0x30 && offsetof(ChatLine, chars) == 0x0e, "line");
 static_assert(offsetof(ChatScene, line) == 0x3d08 && offsetof(ChatScene, pointer) == 0x3d38, "line");
@@ -119,79 +121,6 @@ extern int func_02051c8c_unk(u16 *text, int max);
 /* The SDK's copy. */
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-/* The keyboard of overlay 95 (no Clean version yet; as ov122/letter_write_scene.c reads it).
- * Its keys are numbered; a key has a code (func_ov095_0229c448) and can be disabled. */
-extern void func_ov095_022999e8(void *keyboard); /* sound 23 */
-extern void func_ov095_022999f4(void *keyboard); /* sound 22 */
-/* The key its cursor is on, -1 when that key cannot be pressed now. */
-extern int func_ov095_02299a00(void *keyboard);
-/* The cursor moved by the d-pad keys: 1-3 when it leaves the keys, 4 toward the text. */
-extern int func_ov095_02299a54(void *keyboard, int keys);
-extern void func_ov095_02299aec(void *keyboard); /* sets its key place by its mode */
-extern int func_ov095_02299b38(void *keyboard);  /* the key's y */
-extern int func_ov095_02299b7c(void *keyboard);  /* the key's x */
-/* The cursor put back on the keys: at the line's end, at the mode tab under `x`, or below. */
-extern void func_ov095_0229a148(void *keyboard);
-extern void func_ov095_0229a154(void *keyboard, int x);
-extern void func_ov095_0229a170(void *keyboard, int x);
-extern void func_ov095_0229aeec(void *keyboard, int x, int y);              /* its frame cells drawn */
-extern int func_ov095_0229af58(void *keyboard, int x, int y, int priority); /* the text cursor drawn */
-extern unsigned char func_ov095_0229af84(void *keyboard);                   /* the expression chosen, 0xff none */
-extern void *func_ov095_0229af98(void *keyboard, int code);                 /* the expression of a code chosen */
-extern void func_ov095_0229afa4(void *keyboard);                            /* no expression chosen */
-extern int func_ov095_0229afac(void *keyboard);                             /* an expression under the pen chosen */
-extern int func_ov095_0229aff0(void *keyboard);                             /* a mode tab under the pen: the mode changed, 1 */
-extern int func_ov095_0229b058(void *keyboard);                             /* the send button is under the pen */
-extern void func_ov095_0229b090(void *keyboard, int x, int y, int look, int fade); /* the send button drawn */
-extern void func_ov095_0229b0d8(void *keyboard, int x, int y);                     /* the expressions drawn */
-extern void func_ov095_0229b1c8(void *keyboard, int x, int y, int priority);       /* the mode tabs drawn */
-extern void func_ov095_0229b280(void *keyboard);                                   /* the expression keys' characters made */
-extern int func_ov095_0229b324(void *keyboard);                                    /* its screen's files loaded */
-extern void func_ov095_0229b388(void *keyboard);                                   /* its flag 2 cleared */
-extern void func_ov095_0229b394(void *keyboard);                                   /* its flag 2 set */
-/* A character being composed taken back (0 when there was none to take back). */
-extern int func_ov095_0229b3a0(void *keyboard, u16 *text, int position);
-extern void func_ov095_0229b3ec(void *keyboard); /* the composition dropped */
-/* A code of the keyboard's own (the modes, the composition): what it did, 0 for none. */
-extern int func_ov095_0229ba44(void *keyboard, int code, int layer);
-/* The character of a text of `length` characters (at most `limit` pixels wide) whose middle is
- * past `x` pixels, into *index; gives the pixels before it. */
-extern unsigned char func_ov095_0229bb34(void *keyboard, const u16 *text, int length, int limit, unsigned char x, u8 *index);
-extern int func_ov095_0229bb94(void *keyboard, int character); /* the conversions: 0 for none */
-extern int func_ov095_0229bb98(void *keyboard, int character);
-extern int func_ov095_0229bb9c(void *keyboard, int character);
-/* The character before `position` replaced; 0 at position 0. */
-extern int func_ov095_0229bba0(void *keyboard, u16 *text, int character, int position);
-/* Deletes the characters from `from` to `to` of a text of `length`, filling the end with 0;
- * gives the lower of the two. */
-extern unsigned char func_ov095_0229bbc0(void *keyboard, u16 *text, unsigned char from, unsigned char to, int length);
-/* A character put into a one-line text at *position, at most `width` pixels wide. */
-extern int func_ov095_0229bcec(void *keyboard, u16 *text, int character, u8 *position, int length, int width, int p6,
-                               int notify);
-extern int func_ov095_0229bebc(void *keyboard, int code);         /* the code is a command */
-extern void func_ov095_0229bed8(void *keyboard, int character);   /* key 6 enabled */
-extern void func_ov095_0229bee4(void *keyboard);                  /* keys 6, 3, 4 and 5 disabled */
-extern int func_ov095_0229bf0c(void *keyboard);                   /* a held key's repeat is due */
-extern void func_ov095_0229bf3c(void *keyboard);                  /* a held key's repeat started */
-extern int func_ov095_0229bf48(void *keyboard);                   /* the pressed key shown: 1 while it shows */
-extern void func_ov095_0229bf70(void *keyboard);                  /* its map to be uploaded */
-extern void func_ov095_0229bf7c(void *keyboard, int layer);       /* drawn */
-extern void func_ov095_0229bfd8(void *keyboard, int layer);       /* its map uploaded */
-extern int func_ov095_0229c000(void *keyboard, const char *path); /* its map read */
-extern void func_ov095_0229c05c(void *keyboard);                  /* ended */
-extern void func_ov095_0229c084(void *keyboard, int mode);        /* set up */
-extern void func_ov095_0229c22c(void *keyboard, int state, int layer, int p3);
-extern void func_ov095_0229c420(void *keyboard, int layer);                       /* set up in the mode main keeps */
-extern int func_ov095_0229c448(void *keyboard, int key, int mode);                /* the key's code */
-extern int func_ov095_0229c548(void *keyboard);                                   /* the key held down */
-extern int func_ov095_0229c54c(void *keyboard, unsigned char x, unsigned char y); /* the key at (x, y), or -1 */
-extern void func_ov095_0229c8e4(void *keyboard, int key);                         /* the key shown pressed */
-extern void func_ov095_0229cce0(void *keyboard);                                  /* releases its pressed keys */
-extern void func_ov095_0229cd30(void *keyboard);                                  /* resets its keys */
-extern void func_ov095_0229ce84(void *keyboard, int key);                         /* the key enabled */
-extern void func_ov095_0229cef4(void *keyboard, int key);                         /* the key disabled */
-extern int func_ov095_0229cf64(void *keyboard, int key);                          /* the key is disabled */
-
 /* The keyboard's keys and modes the scene names. */
 #define CHAT_SCENE_KEY_NEWLINE 0
 #define CHAT_SCENE_KEY_CONVERT 6
@@ -227,9 +156,9 @@ static MenuScene *chat_scene(ChatScene *self)
     return &self->base;
 }
 
-static void *chat_keyboard(ChatScene *self)
+static SoftKeyboard *chat_keyboard(ChatScene *self)
 {
-    return &self->keyboard;
+    return (SoftKeyboard *) (void *) &self->keyboard;
 }
 
 static u16 *chat_line(ChatScene *self)
@@ -384,26 +313,26 @@ CLEAN_AS(func_ov111_0229efd8, ChatScene_TestFlags)
  * key 6 enabled for the character before the cursor. */
 void ChatScene_UpdateKeys(ChatScene *self)
 {
-    void *keyboard = chat_keyboard(self);
+    SoftKeyboard *keyboard = chat_keyboard(self);
 
-    func_ov095_0229cef4(keyboard, CHAT_SCENE_KEY_NEWLINE);
+    SoftKeyboard_DisableSpecial(keyboard, CHAT_SCENE_KEY_NEWLINE);
     if (ChatScene_IsMarking(self)) {
-        func_ov095_0229ce84(keyboard, CHAT_SCENE_KEY_COPY);
+        SoftKeyboard_EnableSpecial(keyboard, CHAT_SCENE_KEY_COPY);
     } else {
-        func_ov095_0229cef4(keyboard, CHAT_SCENE_KEY_COPY);
+        SoftKeyboard_DisableSpecial(keyboard, CHAT_SCENE_KEY_COPY);
     }
     if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_COPIED)) {
-        func_ov095_0229ce84(keyboard, CHAT_SCENE_KEY_PASTE);
+        SoftKeyboard_EnableSpecial(keyboard, CHAT_SCENE_KEY_PASTE);
     } else {
-        func_ov095_0229cef4(keyboard, CHAT_SCENE_KEY_PASTE);
+        SoftKeyboard_DisableSpecial(keyboard, CHAT_SCENE_KEY_PASTE);
     }
     if (ChatScene_IsMarking(self)) {
-        func_ov095_0229bee4(keyboard);
-        func_ov095_0229ce84(keyboard, CHAT_SCENE_KEY_CONVERT);
+        SoftKeyboard_DisableEditKeys(keyboard);
+        SoftKeyboard_EnableSpecial(keyboard, CHAT_SCENE_KEY_CONVERT);
     } else if (self->cursor == 0) {
-        func_ov095_0229bee4(keyboard);
+        SoftKeyboard_DisableEditKeys(keyboard);
     } else {
-        func_ov095_0229bed8(keyboard, ChatScene_CharBeforeCursor(self));
+        SoftKeyboard_EnableBackspace(keyboard, ChatScene_CharBeforeCursor(self));
     }
 }
 CLEAN_AS(func_ov111_0229efec, ChatScene_UpdateKeys)
@@ -411,14 +340,14 @@ CLEAN_AS(func_ov111_0229efec, ChatScene_UpdateKeys)
 /* func_ov111_0229f084: the keyboard drawn on the sub screen's BG3. */
 void ChatScene_DrawKeyboardLayer(ChatScene *self)
 {
-    func_ov095_0229bf7c(chat_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_QueueScreen(chat_keyboard(self), LAYER_SUB_BG3);
 }
 CLEAN_AS(func_ov111_0229f084, ChatScene_DrawKeyboardLayer)
 
 /* func_ov111_0229f090: the keyboard set up in `state` on the sub screen's BG3. */
 void ChatScene_SetKeyboardState(ChatScene *self, int state)
 {
-    func_ov095_0229c22c(chat_keyboard(self), state, LAYER_SUB_BG3, 1);
+    SoftKeyboard_LoadLayout(chat_keyboard(self), state, LAYER_SUB_BG3, 1);
 }
 CLEAN_AS(func_ov111_0229f090, ChatScene_SetKeyboardState)
 
@@ -455,8 +384,8 @@ void ChatScene_PlacePointer(ChatScene *self)
     if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_POINTER_ON_TEXT)) {
         Glider_PlaceAt(&self->pointer, self->cursor_x + CHAT_SCENE_LINE_X, CHAT_SCENE_POINTER_TEXT_Y);
     } else {
-        int x = func_ov095_02299b7c(chat_keyboard(self));
-        int y = func_ov095_02299b38(chat_keyboard(self));
+        int x = SoftKeyboard_CursorX(chat_keyboard(self));
+        int y = SoftKeyboard_CursorY(chat_keyboard(self));
         Glider_PlaceAt(&self->pointer, x, y);
     }
     chat_update_pointer(self);
@@ -471,8 +400,8 @@ void ChatScene_GlidePointer(ChatScene *self)
         Glider_EaseTo(&self->pointer, self->cursor_x + CHAT_SCENE_LINE_X, CHAT_SCENE_POINTER_TEXT_Y, 3, 1);
         self->return_sub_state = CHAT_SCENE_SUB_TEXT_KEYS;
     } else {
-        int x = func_ov095_02299b7c(chat_keyboard(self));
-        int y = func_ov095_02299b38(chat_keyboard(self));
+        int x = SoftKeyboard_CursorX(chat_keyboard(self));
+        int y = SoftKeyboard_CursorY(chat_keyboard(self));
         Glider_EaseTo(&self->pointer, x, y, 2, 1);
         self->return_sub_state = CHAT_SCENE_SUB_KEYS;
     }
@@ -493,9 +422,9 @@ CLEAN_AS(func_ov111_0229f1d8, ChatScene_HidePointer)
 void ChatScene_PointAtKey(ChatScene *self)
 {
     ChatScene_ClearFlags(self, CHAT_SCENE_FLAG_POINTER_ON_TEXT);
-    func_ov095_02299aec(chat_keyboard(self));
-    int x = func_ov095_02299b7c(chat_keyboard(self));
-    int y = func_ov095_02299b38(chat_keyboard(self));
+    SoftKeyboard_PlaceCursorHome(chat_keyboard(self));
+    int x = SoftKeyboard_CursorX(chat_keyboard(self));
+    int y = SoftKeyboard_CursorY(chat_keyboard(self));
     Glider_PlaceAt(&self->pointer, x, y);
     Glider_SetAnim(&self->pointer, GLIDER_ANIM_SET_A);
     ChatScene_PointerFirstOfSet(self);
@@ -527,11 +456,11 @@ int ChatScene_CopyOnL(ChatScene *self)
     if ((data_021fbe40.pressed & CHAT_SCENE_PAD_L) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(chat_keyboard(self), CHAT_SCENE_KEY_COPY) != 0) {
+    if (SoftKeyboard_IsSpecialDisabled(chat_keyboard(self), CHAT_SCENE_KEY_COPY) != 0) {
         return 0;
     }
     ChatScene_RunCode(self, CHAT_SCENE_CODE_COPY);
-    func_ov095_0229c8e4(chat_keyboard(self), CHAT_SCENE_KEY_COPY_FACE);
+    SoftKeyboard_ShowKeyPressed(chat_keyboard(self), CHAT_SCENE_KEY_COPY_FACE);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_WHILE_L);
     return 1;
@@ -545,11 +474,11 @@ int ChatScene_PasteOnR(ChatScene *self)
     if ((data_021fbe40.pressed & CHAT_SCENE_PAD_R) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(chat_keyboard(self), CHAT_SCENE_KEY_PASTE) != 0) {
+    if (SoftKeyboard_IsSpecialDisabled(chat_keyboard(self), CHAT_SCENE_KEY_PASTE) != 0) {
         return 0;
     }
     ChatScene_RunCode(self, CHAT_SCENE_CODE_PASTE);
-    func_ov095_0229c8e4(chat_keyboard(self), CHAT_SCENE_KEY_PASTE_FACE);
+    SoftKeyboard_ShowKeyPressed(chat_keyboard(self), CHAT_SCENE_KEY_PASTE_FACE);
     ChatScene_PlacePointer(self);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_WHILE_R);
@@ -565,7 +494,7 @@ int ChatScene_BackspaceOnB(ChatScene *self)
         return 0;
     }
     if (ChatScene_Backspace(self, 0) != 0) {
-        func_ov095_0229bf3c(chat_keyboard(self));
+        SoftKeyboard_StartRepeat(chat_keyboard(self));
         self->return_sub_state = self->base.sub_state;
         MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_BACKSPACE);
     } else {
@@ -583,11 +512,11 @@ int ChatScene_PressOnA(ChatScene *self)
     if ((data_021fbe40.pressed & CHAT_SCENE_PAD_A) == 0) {
         return 0;
     }
-    int key = func_ov095_02299a00(chat_keyboard(self));
+    int key = SoftKeyboard_PressCursorKey(chat_keyboard(self));
     if (key == -1) {
         return 0;
     }
-    if (func_ov095_0229c448(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE) == CHAT_SCENE_CODE_SEND) {
+    if (SoftKeyboard_KeyCode(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE) == CHAT_SCENE_CODE_SEND) {
         if (ChatScene_Send(self) == 0) {
             return 0;
         }
@@ -595,7 +524,7 @@ int ChatScene_PressOnA(ChatScene *self)
         MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_SEND_IN);
         return 1;
     }
-    func_ov095_0229c8e4(chat_keyboard(self), key);
+    SoftKeyboard_ShowKeyPressed(chat_keyboard(self), key);
     ChatScene_PointerSecondOfSet(self);
     return 1;
 }
@@ -679,8 +608,8 @@ CLEAN_AS(func_ov111_0229f524, ChatScene_PlaceCursorAtChar)
 void ChatScene_PlaceCursorAtX(ChatScene *self)
 {
     u8 x = self->cursor_x;
-    self->cursor_x = func_ov095_0229bb34(chat_keyboard(self), chat_line(self), CHAT_SCENE_LINE_CHARS, CHAT_SCENE_LINE_WIDTH, x,
-                                         &self->cursor);
+    self->cursor_x = SoftKeyboard_TextColumnAt(chat_keyboard(self), chat_line(self), CHAT_SCENE_LINE_CHARS,
+                                               CHAT_SCENE_LINE_WIDTH, x, &self->cursor);
     self->blink = CHAT_SCENE_BLINK_START;
     ChatScene_UpdateKeys(self);
 }
@@ -692,7 +621,7 @@ void ChatScene_MoveCursorToX(ChatScene *self, int x)
 {
     self->cursor_x = (u8) (x - CHAT_SCENE_LINE_X);
     ChatScene_PlaceCursorAtX(self);
-    func_ov095_0229b3ec(chat_keyboard(self));
+    SoftKeyboard_HangulReset(chat_keyboard(self));
     ChatScene_RedrawLine(self);
 }
 CLEAN_AS(func_ov111_0229f598, ChatScene_MoveCursorToX)
@@ -765,7 +694,7 @@ int ChatScene_TouchSend(ChatScene *self)
     if (self->send_fade != 0) {
         return 0;
     }
-    if (func_ov095_0229b058(chat_keyboard(self)) != 0) {
+    if (SoftKeyboard_TouchChatF7(chat_keyboard(self)) != 0) {
         return ChatScene_Send(self);
     }
     return 0;
@@ -777,12 +706,12 @@ CLEAN_AS(func_ov111_0229f6a8, ChatScene_TouchSend)
  * first. */
 int ChatScene_TouchKey(ChatScene *self)
 {
-    func_ov095_0229cce0(chat_keyboard(self));
-    int key = func_ov095_0229c54c(chat_keyboard(self), data_021f6c58, data_021f6c54);
+    SoftKeyboard_ReleasePressed(chat_keyboard(self));
+    int key = SoftKeyboard_KeyAt(chat_keyboard(self), data_021f6c58, data_021f6c54);
     if (key != -1) {
-        int result = ChatScene_RunCode(self, func_ov095_0229c448(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
-        func_ov095_0229c8e4(chat_keyboard(self), key);
-        func_ov095_0229bf3c(chat_keyboard(self));
+        int result = ChatScene_RunCode(self, SoftKeyboard_KeyCode(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
+        SoftKeyboard_ShowKeyPressed(chat_keyboard(self), key);
+        SoftKeyboard_StartRepeat(chat_keyboard(self));
         return result;
     }
     return 0;
@@ -798,12 +727,12 @@ CLEAN_AS(func_ov111_0229f6d4, ChatScene_TouchKey)
  * gives 1). Gives ChatSceneCodeResult. */
 int ChatScene_RunCode(ChatScene *self, int code)
 {
-    int result = func_ov095_0229ba44(chat_keyboard(self), code, LAYER_SUB_BG3);
+    int result = SoftKeyboard_HandleCommand(chat_keyboard(self), code, LAYER_SUB_BG3);
     if (result != 0) {
         ChatScene_RedrawLine(self);
         return result;
     }
-    if (func_ov095_0229bebc(chat_keyboard(self), code) == 0) {
+    if (SoftKeyboard_IsCommand(chat_keyboard(self), code) == 0) {
         if (ChatScene_InsertChar(self, (u16) code) == 0) {
             ChatScene_Buzz(self);
         }
@@ -817,7 +746,7 @@ int ChatScene_RunCode(ChatScene *self, int code)
         if (self->reaction_wait != 0) {
             return CHAT_SCENE_CODE_IGNORED;
         }
-        func_ov095_0229af98(chat_keyboard(self), code);
+        SoftKeyboard_PickEmotionByCode(chat_keyboard(self), code);
         ChatScene_Express(self);
         ChatScene_PointerThirdOfSet(self);
         return CHAT_SCENE_CODE_EXPRESSED;
@@ -866,16 +795,16 @@ void ChatScene_Paste(ChatScene *self)
     if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_COPIED) == 0) {
         return;
     }
-    func_ov095_0229b394(chat_keyboard(self));
+    SoftKeyboard_SetFlag02(chat_keyboard(self));
     if (ChatScene_IsMarking(self)) {
-        self->cursor =
-            func_ov095_0229bbc0(chat_keyboard(self), chat_line(self), self->mark_from, self->mark_to, CHAT_SCENE_LINE_CHARS);
+        self->cursor = SoftKeyboard_DeleteRange(chat_keyboard(self), chat_line(self), self->mark_from, self->mark_to,
+                                                CHAT_SCENE_LINE_CHARS);
         ChatScene_ClearFlags(self, CHAT_SCENE_FLAG_MARKING);
     }
-    func_ov095_0229b3ec(chat_keyboard(self));
+    SoftKeyboard_HangulReset(chat_keyboard(self));
     int count = func_02051c8c_unk(self->clipboard, CHAT_SCENE_LINE_CHARS);
     for (int i = 0; i < count; i++) {
-        if (func_ov095_0229bcec(chat_keyboard(self), chat_line(self), self->clipboard[i], &self->cursor, CHAT_SCENE_LINE_CHARS,
+        if (SoftKeyboard_Insert(chat_keyboard(self), chat_line(self), self->clipboard[i], &self->cursor, CHAT_SCENE_LINE_CHARS,
                                 CHAT_SCENE_LINE_WIDTH, 0, 0) == 0) {
             if (i == 0) {
                 ChatScene_Buzz(self);
@@ -885,8 +814,8 @@ void ChatScene_Paste(ChatScene *self)
     }
     ChatScene_PlaceCursorAtChar(self);
     ChatScene_RedrawLine(self);
-    func_ov095_022999e8(chat_keyboard(self));
-    func_ov095_0229b388(chat_keyboard(self));
+    SoftKeyboard_PlaySe23(chat_keyboard(self));
+    SoftKeyboard_ClearFlag02(chat_keyboard(self));
 }
 CLEAN_AS(func_ov111_0229f860, ChatScene_Paste)
 
@@ -903,7 +832,7 @@ void ChatScene_Copy(ChatScene *self)
     TextString_ClearChars(self->clipboard, CHAT_SCENE_LINE_CHARS);
     TextString_CopyChars(chat_line_at(self, (unsigned int) low), self->clipboard, length);
     ChatScene_SetFlags(self, CHAT_SCENE_FLAG_COPIED);
-    func_ov095_022999f4(chat_keyboard(self));
+    SoftKeyboard_PlaySe22(chat_keyboard(self));
     ChatScene_UpdateKeys(self);
 }
 CLEAN_AS(func_ov111_0229f92c, ChatScene_Copy)
@@ -917,7 +846,7 @@ void ChatScene_ClearLine(ChatScene *self)
     self->cursor = 0;
     ChatScene_ClearMark(self);
     ChatScene_UpdateKeys(self);
-    func_ov095_0229cd30(chat_keyboard(self));
+    SoftKeyboard_ResetKeyLooks(chat_keyboard(self));
     TextString_ClearChars(chat_line(self), CHAT_SCENE_LINE_CHARS);
 }
 CLEAN_AS(func_ov111_0229f994, ChatScene_ClearLine)
@@ -927,11 +856,11 @@ static int chat_convert(ChatScene *self, int which, int character)
 {
     switch (which) {
         case 1:
-            return func_ov095_0229bb9c(chat_keyboard(self), character);
+            return SoftKeyboard_Convert1(chat_keyboard(self), character);
         case 2:
-            return func_ov095_0229bb98(chat_keyboard(self), character);
+            return SoftKeyboard_Convert2(chat_keyboard(self), character);
         default:
-            return func_ov095_0229bb94(chat_keyboard(self), character);
+            return SoftKeyboard_Convert3(chat_keyboard(self), character);
     }
 }
 
@@ -947,7 +876,7 @@ static int chat_try_convert(ChatScene *self, int which)
     if (converted == 0) {
         return 0;
     }
-    return func_ov095_0229bba0(chat_keyboard(self), chat_line(self), converted, self->cursor) != 0;
+    return SoftKeyboard_ReplaceBefore(chat_keyboard(self), chat_line(self), converted, self->cursor) != 0;
 }
 
 /* A conversion's result: the cursor drawn again and the line redrawn, else a buzz. */
@@ -1011,7 +940,7 @@ void ChatScene_DeleteMarked(ChatScene *self)
     u8 from = self->mark_from;
     u8 low = from > to ? to : from;
     u8 high = from > to ? from : to;
-    self->cursor = func_ov095_0229bbc0(chat_keyboard(self), chat_line(self), low, high, CHAT_SCENE_LINE_CHARS);
+    self->cursor = SoftKeyboard_DeleteRange(chat_keyboard(self), chat_line(self), low, high, CHAT_SCENE_LINE_CHARS);
     ChatScene_ClearMark(self);
 }
 CLEAN_AS(func_ov111_0229fb48, ChatScene_DeleteMarked)
@@ -1024,10 +953,10 @@ CLEAN_AS(func_ov111_0229fb48, ChatScene_DeleteMarked)
 int ChatScene_Backspace(ChatScene *self, int buzz)
 {
     if (ChatScene_IsMarking(self)) {
-        func_ov095_0229b3ec(chat_keyboard(self));
+        SoftKeyboard_HangulReset(chat_keyboard(self));
         ChatScene_DeleteMarked(self);
     } else if (self->cursor != 0) {
-        if (func_ov095_0229b3a0(chat_keyboard(self), chat_line(self), self->cursor) == 0) {
+        if (SoftKeyboard_HangulBackspace(chat_keyboard(self), chat_line(self), self->cursor) == 0) {
             self->mark_from = self->cursor;
             self->mark_to = (u8) (self->cursor - 1);
             ChatScene_DeleteMarked(self);
@@ -1055,9 +984,9 @@ int ChatScene_InsertChar(ChatScene *self, int character)
 {
     if (ChatScene_IsMarking(self)) {
         ChatScene_DeleteMarked(self);
-        func_ov095_0229b3ec(chat_keyboard(self));
+        SoftKeyboard_HangulReset(chat_keyboard(self));
     }
-    if (func_ov095_0229bcec(chat_keyboard(self), chat_line(self), character, &self->cursor, CHAT_SCENE_LINE_CHARS,
+    if (SoftKeyboard_Insert(chat_keyboard(self), chat_line(self), character, &self->cursor, CHAT_SCENE_LINE_CHARS,
                             CHAT_SCENE_LINE_WIDTH, 0, 1) == 0) {
         return 0;
     }
@@ -1152,8 +1081,8 @@ void ChatScene_DrawKeyboard(ChatScene *self)
     int y = MenuScene_WipeOffsetY(chat_scene(self)) + CHAT_SCENE_KEYBOARD_Y;
     int look;
 
-    func_ov095_0229b1c8(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y, 2);
-    func_ov095_0229b0d8(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y);
+    SoftKeyboard_DrawTabRow(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y, 2);
+    SoftKeyboard_DrawEmotionTabs(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y);
     if (self->send_frame != 0) {
         if (self->send_fade < 2) {
             self->send_fade++;
@@ -1165,12 +1094,12 @@ void ChatScene_DrawKeyboard(ChatScene *self)
         }
         look = 6;
     }
-    func_ov095_0229b090(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y, look, self->send_fade);
+    SoftKeyboard_DrawChatF7(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y, look, self->send_fade);
     self->blink++;
     if (self->send_frame == 0 && (self->blink & 0x10) != 0) {
-        func_ov095_0229af58(chat_keyboard(self), self->cursor_x + CHAT_SCENE_LINE_X, y - 0x38, 2);
+        SoftKeyboard_DrawCaret(chat_keyboard(self), self->cursor_x + CHAT_SCENE_LINE_X, y - 0x38, 2);
     }
-    func_ov095_0229aeec(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y);
+    SoftKeyboard_DrawChatSideButtons(chat_keyboard(self), CHAT_SCENE_KEYBOARD_X, y);
 }
 CLEAN_AS(func_ov111_0229fe0c, ChatScene_DrawKeyboard)
 
@@ -1189,7 +1118,7 @@ void ChatScene_ShowSendFrame(ChatScene *self, int frame)
         ScreenMap_ReplacePalette(map, 0, 4, 0x1f, 9, 5, 6);
     }
     Heap_Free(heap, file);
-    func_ov095_0229bf70(chat_keyboard(self));
+    SoftKeyboard_MarkScreenDirty(chat_keyboard(self));
 }
 CLEAN_AS(func_ov111_0229fed8, ChatScene_ShowSendFrame)
 
@@ -1198,7 +1127,7 @@ CLEAN_AS(func_ov111_0229fed8, ChatScene_ShowSendFrame)
 void ChatScene_Teardown(ChatScene *self)
 {
     ChatScene_FreeBox(self);
-    func_ov095_0229c05c(chat_keyboard(self));
+    SoftKeyboard_Finish(chat_keyboard(self));
     if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_CLOSING) == 0) {
         PlayerActors_Nothing();
     }
@@ -1217,7 +1146,7 @@ void ChatScene_Setup(ChatScene *self)
     self->reaction_wait = 0;
     ChatScene_ClearLine(self);
     self->box = NULL;
-    func_ov095_0229c084(chat_keyboard(self), 0);
+    SoftKeyboard_Init(chat_keyboard(self), 0);
     TextString_CopyChars(GroupParams_TextD48(), chat_line(self), CHAT_SCENE_LINE_CHARS);
     PlayerActorOps_Nothing();
     if (MenuTabs_IsOpening((MenuTabs *) (void *) chat_parent(self))) {
@@ -1232,7 +1161,7 @@ CLEAN_AS(func_ov111_0229ff88, ChatScene_Setup)
  * shown; once it has closed, the input again. */
 void ChatScene_UpdateError(ChatScene *self)
 {
-    func_ov095_0229bf48(chat_keyboard(self));
+    SoftKeyboard_StepPressed(chat_keyboard(self));
     if (ErrorMessage_Update(&self->error, 1) != 0) {
         ChatScene_EnterInput(self);
     }
@@ -1244,7 +1173,7 @@ CLEAN_AS(func_ov111_0229fff4, ChatScene_UpdateError)
 static void chat_express_by_touch(ChatScene *self)
 {
     if (StateFlags_IsClear2() && chat_pen_pressed()) {
-        if (self->reaction_wait == 0 && func_ov095_0229afac(chat_keyboard(self)) != 0) {
+        if (self->reaction_wait == 0 && SoftKeyboard_TouchEmotion(chat_keyboard(self)) != 0) {
             ChatScene_Express(self);
         }
     }
@@ -1294,7 +1223,7 @@ void ChatScene_SendAnimIn(ChatScene *self)
     } else if (self->send_delay != 0) {
         self->send_delay--;
     } else {
-        func_ov095_0229b3ec(chat_keyboard(self));
+        SoftKeyboard_HangulReset(chat_keyboard(self));
         MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_SEND_OUT);
     }
 }
@@ -1304,7 +1233,7 @@ CLEAN_AS(func_ov111_022a00f4, ChatScene_SendAnimIn)
  * the next one waits 20 frames. */
 void ChatScene_Express(ChatScene *self)
 {
-    unsigned char kind = func_ov095_0229af84(chat_keyboard(self));
+    unsigned char kind = SoftKeyboard_PickedEmotion(chat_keyboard(self));
     PlayerActorOps_RequestState14(&kind);
     self->reaction_wait = CHAT_SCENE_REACTION_WAIT;
 }
@@ -1374,7 +1303,7 @@ void ChatScene_MarkByKeys(ChatScene *self)
             ChatScene_ClearFlags(self, CHAT_SCENE_FLAG_MARKING);
         }
     } else if (ChatScene_MoveCursorByKeys(self, (int) MenuScene_LatchRepeatedKeys(chat_scene(self))) == 1) {
-        func_ov095_0229b3ec(chat_keyboard(self));
+        SoftKeyboard_HangulReset(chat_keyboard(self));
         ChatScene_PlaceCursorAtChar(self);
         self->mark_to = self->cursor;
         ChatScene_PlacePointer(self);
@@ -1398,7 +1327,7 @@ void ChatScene_TextByKeys(ChatScene *self)
     }
     switch (ChatScene_MoveCursorByKeys(self, (int) MenuScene_LatchRepeatedKeys(chat_scene(self)))) {
         case 1:
-            func_ov095_0229b3ec(chat_keyboard(self));
+            SoftKeyboard_HangulReset(chat_keyboard(self));
             ChatScene_ClearMark(self);
             ChatScene_PlaceCursorAtChar(self);
             ChatScene_RedrawLine(self);
@@ -1406,20 +1335,20 @@ void ChatScene_TextByKeys(ChatScene *self)
             SoundSys_PlaySe(CHAT_SCENE_SE_CURSOR);
             return;
         case 4:
-            func_ov095_0229a148(chat_keyboard(self));
+            SoftKeyboard_CursorToChatF7(chat_keyboard(self));
             ChatScene_ClearFlags(self, CHAT_SCENE_FLAG_POINTER_ON_TEXT);
             MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_KEYS);
             ChatScene_GlidePointer(self);
             return;
         case 2:
-            func_ov095_0229a154(chat_keyboard(self), Glider_ScreenX(&self->pointer));
+            SoftKeyboard_CursorToMenuTabAt(chat_keyboard(self), Glider_ScreenX(&self->pointer));
             ChatScene_ClearFlags(self, CHAT_SCENE_FLAG_POINTER_ON_TEXT);
             MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_KEYS);
             Glider_TurnToSetC(&self->pointer);
             ChatScene_GlidePointer(self);
             return;
         case 3:
-            func_ov095_0229a170(chat_keyboard(self), Glider_ScreenX(&self->pointer));
+            SoftKeyboard_CursorToTabRowAtB(chat_keyboard(self), Glider_ScreenX(&self->pointer));
             ChatScene_ClearFlags(self, CHAT_SCENE_FLAG_POINTER_ON_TEXT);
             MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_KEYS);
             ChatScene_GlidePointer(self);
@@ -1457,7 +1386,7 @@ void ChatScene_RepeatBackspace(ChatScene *self)
 {
     if ((data_021fbe40.held & CHAT_SCENE_PAD_B) == 0) {
         MenuScene_SetSubState(chat_scene(self), self->return_sub_state);
-    } else if (func_ov095_0229bf0c(chat_keyboard(self)) != 0) {
+    } else if (SoftKeyboard_StepRepeat(chat_keyboard(self)) != 0) {
         ChatScene_RunCode(self, CHAT_SCENE_CODE_BACKSPACE);
         if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_POINTER_ON_TEXT)) {
             ChatScene_PlacePointer(self);
@@ -1481,12 +1410,12 @@ CLEAN_AS(func_ov111_022a04ac, ChatScene_WaitKeyRelease)
 void ChatScene_RepeatKey(ChatScene *self)
 {
     if ((data_021fbe40.held & CHAT_SCENE_PAD_A) == 0) {
-        func_ov095_0229cce0(chat_keyboard(self));
+        SoftKeyboard_ReleasePressed(chat_keyboard(self));
         ChatScene_PointerThirdOfSet(self);
-    } else if (func_ov095_0229bf0c(chat_keyboard(self)) != 0) {
-        int key = func_ov095_0229c548(chat_keyboard(self));
-        ChatScene_RunCode(self, func_ov095_0229c448(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
-        func_ov095_0229c8e4(chat_keyboard(self), key);
+    } else if (SoftKeyboard_StepRepeat(chat_keyboard(self)) != 0) {
+        int key = SoftKeyboard_PressedKey(chat_keyboard(self));
+        ChatScene_RunCode(self, SoftKeyboard_KeyCode(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
+        SoftKeyboard_ShowKeyPressed(chat_keyboard(self), key);
     }
 }
 CLEAN_AS(func_ov111_022a04cc, ChatScene_RepeatKey)
@@ -1500,18 +1429,18 @@ void ChatScene_PressKey(ChatScene *self)
     if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->pointer) == 0) {
         return;
     }
-    int key = func_ov095_02299a00(chat_keyboard(self));
-    int result = ChatScene_RunCode(self, func_ov095_0229c448(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
+    int key = SoftKeyboard_PressCursorKey(chat_keyboard(self));
+    int result = ChatScene_RunCode(self, SoftKeyboard_KeyCode(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
     if (result == CHAT_SCENE_CODE_EXPRESSED) {
         return;
     }
     if (result == CHAT_SCENE_CODE_DONE && (data_021fbe40.held & CHAT_SCENE_PAD_A) != 0) {
-        func_ov095_0229bf3c(chat_keyboard(self));
+        SoftKeyboard_StartRepeat(chat_keyboard(self));
         MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_KEY_REPEAT);
-        func_ov095_0229c8e4(chat_keyboard(self), key);
+        SoftKeyboard_ShowKeyPressed(chat_keyboard(self), key);
         return;
     }
-    func_ov095_0229cce0(chat_keyboard(self));
+    SoftKeyboard_ReleasePressed(chat_keyboard(self));
     if (result != 4) {
         ChatScene_PointerThirdOfSet(self);
     }
@@ -1540,7 +1469,7 @@ void ChatScene_KeyboardByKeys(ChatScene *self)
         return;
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(chat_scene(self));
-    switch (func_ov095_02299a54(chat_keyboard(self), keys)) {
+    switch (SoftKeyboard_MoveCursor(chat_keyboard(self), keys)) {
         case 1:
             Glider_TurnToSetA(&self->pointer);
             ChatScene_GlidePointer(self);
@@ -1600,12 +1529,12 @@ void ChatScene_RepeatTouchedKey(ChatScene *self)
         MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_TOUCH);
         return;
     }
-    if (func_ov095_0229bf0c(chat_keyboard(self)) == 0) {
+    if (SoftKeyboard_StepRepeat(chat_keyboard(self)) == 0) {
         return;
     }
-    int key = func_ov095_0229c548(chat_keyboard(self));
-    ChatScene_RunCode(self, func_ov095_0229c448(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
-    func_ov095_0229c8e4(chat_keyboard(self), key);
+    int key = SoftKeyboard_PressedKey(chat_keyboard(self));
+    ChatScene_RunCode(self, SoftKeyboard_KeyCode(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
+    SoftKeyboard_ShowKeyPressed(chat_keyboard(self), key);
 }
 CLEAN_AS(func_ov111_022a0708, ChatScene_RepeatTouchedKey)
 
@@ -1620,7 +1549,7 @@ void ChatScene_IdleByTouch(ChatScene *self)
         ChatScene_EnterKeys(self);
         return;
     }
-    if (func_ov095_0229bf48(chat_keyboard(self)) != 0) {
+    if (SoftKeyboard_StepPressed(chat_keyboard(self)) != 0) {
         return;
     }
     if (!chat_pen_pressed()) {
@@ -1633,7 +1562,7 @@ void ChatScene_IdleByTouch(ChatScene *self)
         }
         return;
     }
-    if (func_ov095_0229aff0(chat_keyboard(self)) != 0) {
+    if (SoftKeyboard_TouchPageTab(chat_keyboard(self)) != 0) {
         ChatScene_SetKeyboardState(self, CHAT_SCENE_KEYBOARD_STATE_MODE_TAB);
         ChatScene_RedrawLine(self);
         return;
@@ -1642,7 +1571,7 @@ void ChatScene_IdleByTouch(ChatScene *self)
         MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_SEND_IN);
         return;
     }
-    if (self->reaction_wait == 0 && func_ov095_0229afac(chat_keyboard(self)) != 0) {
+    if (self->reaction_wait == 0 && SoftKeyboard_TouchEmotion(chat_keyboard(self)) != 0) {
         ChatScene_Express(self);
         MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_TOUCH);
         return;
@@ -1694,7 +1623,7 @@ CLEAN_AS(func_ov111_022a088c, ChatScene_WipeIn)
  * shown (state 3), and the line drawn. */
 void ChatScene_StartWipeIn(ChatScene *self)
 {
-    func_ov095_0229c420(chat_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_LoadSavedLayout(chat_keyboard(self), LAYER_SUB_BG3);
     ChatScene_DrawKeyboardLayer(self);
     ChatScene_SetFlags(self, CHAT_SCENE_FLAG_DRAWN);
     MenuScene_StartWipeCoveredOnWindow2(chat_scene(self), LAYER_SUB_OBJ, 3, 0, CHAT_SCENE_WIPE_MARGIN);
@@ -1709,7 +1638,7 @@ CLEAN_AS(func_ov111_022a08bc, ChatScene_StartWipeIn)
  * loaded (state 2, run at once unless the menu is opening). */
 void ChatScene_LoadScreen(ChatScene *self)
 {
-    func_ov095_0229b280(chat_keyboard(self));
+    SoftKeyboard_LoadEmotions(chat_keyboard(self));
     ChatScene_LoadScreenFiles(self);
     MenuScene_SetState(chat_scene(self), CHAT_SCENE_STATE_START_WIPE_IN);
     if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_OPENING) == 0) {
@@ -1723,7 +1652,7 @@ CLEAN_AS(func_ov111_022a0910, ChatScene_LoadScreen)
 void ChatScene_LoadKeyboard(ChatScene *self)
 {
     ChatScene_SetUpLayer();
-    func_ov095_0229b324(chat_keyboard(self));
+    SoftKeyboard_LoadObjGraphics(chat_keyboard(self));
     MenuScene_SetState(chat_scene(self), CHAT_SCENE_STATE_LOAD_SCREEN);
     if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_OPENING) == 0) {
         ChatScene_LoadScreen(self);
@@ -1737,9 +1666,9 @@ void ChatScene_LoadScreenFiles(ChatScene *self)
 {
     Heap *heap = data_021fbe94;
     DisplayLayer_LoadPalettesFromFile(data_ov111_022a1068, heap, LAYER_SUB_BG3, 1, 1, 9);
-    func_ov095_0229c000(chat_keyboard(self), data_ov111_022a0f88);
+    SoftKeyboard_ReadScreen(chat_keyboard(self), data_ov111_022a0f88);
     ChatScene_UpdateKeys(self);
-    func_ov095_0229bfd8(chat_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_LoadScreenNow(chat_keyboard(self), LAYER_SUB_BG3);
     DisplayLayer_LoadCharsFromFile(data_ov111_022a1080, heap, LAYER_SUB_BG3, 0x13d, 0x13d, 0x1e9);
 }
 CLEAN_AS(func_ov111_022a0970, ChatScene_LoadScreenFiles)
@@ -1820,7 +1749,7 @@ void ChatScene_EndFrame(ChatScene *self)
     if (self->reaction_wait != 0) {
         self->reaction_wait--;
         if (self->reaction_wait == 0) {
-            func_ov095_0229afa4(chat_keyboard(self));
+            SoftKeyboard_DropEmotion(chat_keyboard(self));
         }
     }
     ChatScene_DrawKeyboardLayer(self);

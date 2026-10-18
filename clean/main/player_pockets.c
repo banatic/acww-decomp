@@ -2,6 +2,8 @@
 #include "player_pockets.h"
 
 #include "clean.h"
+#include "item_traits.h"
+#include "letter.h"
 
 static_assert(offsetof(PlayerPockets, letter_defaults) == 0xa00, "PlayerPockets layout");
 static_assert(offsetof(PlayerPockets, items) == 0xa4a, "PlayerPockets layout");
@@ -13,11 +15,6 @@ static_assert(sizeof(PlayerPockets) == 0xa70, "PlayerPockets layout");
  * the biggest bag. */
 #define BAG_INDEX_ALL (PLAYER_POCKETS_BAG_LAST - PLAYER_POCKETS_BAG_FIRST)
 #define BAG_INDEX_BELOW_BIGGEST (BAG_INDEX_ALL - 1)
-
-extern int func_0204c878(u16 *item);               /* the bells an item is worth (a bag's value) */
-extern void func_02066650(MailLetter *letter);     /* empty it */
-extern void func_02065cc8(u8 *defaults);           /* set up the letter defaults */
-extern u8 func_02065ec0(const MailLetter *letter); /* its state; 0: no letter */
 
 /* Sums and differences of bells wrap around as the ARM's do. */
 static int wrap_add(int a, int b)
@@ -116,7 +113,7 @@ int PlayerPockets_PayFromBags(PlayerPockets *pockets, int owed)
         u16 bag = *PlayerPockets_Slot(pockets, slot);
         u16 none = PLAYER_POCKETS_NO_ITEM;
         PlayerPockets_SetSlot(pockets, &none, slot, 0);
-        owed = wrap_sub(owed, func_0204c878(&bag));
+        owed = wrap_sub(owed, ItemTraits_Price(&bag));
     }
     return wrap_sub(0, owed);
 }
@@ -127,7 +124,7 @@ CLEAN_AS(func_02098adc, PlayerPockets_PayFromBags)
 u32 PlayerPockets_PutInBags(PlayerPockets *pockets, u32 bells)
 {
     u16 biggest = PLAYER_POCKETS_BAG_LAST;
-    int biggest_bells = func_0204c878(&biggest);
+    int biggest_bells = ItemTraits_Price(&biggest);
     while (bells > PLAYER_POCKETS_WALLET_MAX) {
         int slot = PlayerPockets_PlaceForBag(pockets);
         if (slot == -1) {
@@ -136,7 +133,7 @@ u32 PlayerPockets_PutInBags(PlayerPockets *pockets, u32 bells)
         u16 old = *PlayerPockets_Slot(pockets, slot);
         if (is_bag(old)) {
             PlayerPockets_SetSlot(pockets, &biggest, slot, 0);
-            bells -= (u32) wrap_sub(biggest_bells, func_0204c878(&old));
+            bells -= (u32) wrap_sub(biggest_bells, ItemTraits_Price(&old));
         } else {
             if (old != PLAYER_POCKETS_NO_ITEM) {
                 break;
@@ -217,13 +214,13 @@ int PlayerPockets_BagsRoom(PlayerPockets *pockets, int extra_bags)
 {
     u16 *item = PlayerPockets_Slot(pockets, 0);
     u16 biggest = PLAYER_POCKETS_BAG_LAST;
-    int biggest_bells = func_0204c878(&biggest);
+    int biggest_bells = ItemTraits_Price(&biggest);
     int room = wrap_mul(extra_bags, biggest_bells);
     for (int slot = 0; slot < PLAYER_POCKETS_SLOTS; slot++, item++) {
         if (*item == PLAYER_POCKETS_NO_ITEM) {
             room = wrap_add(room, biggest_bells);
         } else if (is_bag(*item) && PlayerPockets_SlotState(pockets, slot) == 0) {
-            room = wrap_add(room, wrap_sub(biggest_bells, func_0204c878(item)));
+            room = wrap_add(room, wrap_sub(biggest_bells, ItemTraits_Price(item)));
         }
     }
     return room;
@@ -237,7 +234,7 @@ int PlayerPockets_BagsBells(PlayerPockets *pockets)
     int bells = 0;
     for (int slot = 0; slot < PLAYER_POCKETS_SLOTS; slot++, item++) {
         if (is_bag(*item) && PlayerPockets_SlotState(pockets, slot) == 0) {
-            bells = wrap_add(bells, func_0204c878(item));
+            bells = wrap_add(bells, ItemTraits_Price(item));
         }
     }
     return bells;
@@ -267,7 +264,7 @@ int PlayerPockets_FreeLetterIndex(PlayerPockets *pockets)
 {
     MailLetter *letter = PlayerPockets_Letter(pockets, 0);
     for (int index = 0; index < PLAYER_POCKETS_LETTERS; index++, letter++) {
-        if (func_02065ec0(letter) == 0) {
+        if (Letter_State((const Letter *) letter) == 0) {
             return index;
         }
     }
@@ -367,9 +364,9 @@ CLEAN_AS(func_02098f70, PlayerPockets_IsSlot)
 void PlayerPockets_Init(PlayerPockets *pockets)
 {
     for (int i = 0; i < PLAYER_POCKETS_LETTERS; i++) {
-        func_02066650(&pockets->letters[i]);
+        Letter_Clear((Letter *) &pockets->letters[i]);
     }
-    func_02065cc8(pockets->letter_defaults);
+    LetterDefaults_Init((LetterDefaults *) (void *) pockets->letter_defaults);
     for (int slot = 0; slot < PLAYER_POCKETS_SLOTS; slot++) {
         pockets->items[slot] = PLAYER_POCKETS_NO_ITEM;
     }

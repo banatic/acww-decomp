@@ -1,7 +1,7 @@
 /* A gatekeeper indoors, drawn with the model npc_sp/model/pla and talking with the lines of
  * the message file "sp_npc_gatekeeper2": a special character's scene object (main's
  * special_scene_object.h) of vtable data_ov004_02254918, 0x714 bytes (made by
- * func_ov004_022258c4), with its talk scene at 0x658 and the angle it faced at its start at
+ * Gatekeeper2_Create), with its talk scene at 0x658 and the angle it faced at its start at
  * 0x710.
  *
  * Its states (0x654), each an entry and an update function (C++ members taking it), from the

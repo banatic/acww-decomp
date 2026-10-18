@@ -7,12 +7,10 @@
 #include "scene_query.h"
 #include "session.h"
 #include "town_acre_count.h"
+#include "main_random.h"
+#include "town_lines.h"
 
 extern NetSession *data_020ccf94;
-
-extern u32 func_020644cc(int range); /* a random number below `range` */
-/* A code that is not taken out of the tile but stands for something else to take there. */
-extern int func_0204a034(const u16 *code);
 
 /* func_02048cb8: the item put on a free tile of acre (acre_x, acre_z) that `test` accepts,
  * marked or not; whether there was one. */
@@ -33,7 +31,7 @@ int TownPlace_PutOneOf(TownDay *town, AcreMap *map, int count, const TownPlaceTi
     if (count <= 0) {
         return -1;
     }
-    int index = (int) func_020644cc(count);
+    int index = (int) MainRandom_Below(count);
     const TownPlaceTile *tile = &tiles[index];
     if (Session_IsLinked(data_020ccf94)) {
         int scene = SceneQuery_Current();
@@ -82,7 +80,7 @@ static int TownPlace_ClearBelow(AcreMap *map, int x, int z)
 {
     for (int below = 1; below <= 2; below++) {
         const u16 *code = TownAcreCount_CodeAt(map, x, z + below);
-        if (code == NULL || func_0204a034(code) != 0) {
+        if (code == NULL || TownLines_IsGrownOrOccupied(code) != 0) {
             return 0;
         }
     }

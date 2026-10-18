@@ -1,5 +1,5 @@
 /* Small parts of overlay 4's room objects (room_object.h), each a member the constructor
- * func_ov004_02210fdc builds and the destructor func_ov004_02210cf0 takes down:
+ * RoomObject_Construct builds and the destructor RoomObject_DestructBase takes down:
  *
  * - a switch (0x740): a value the object's class shows (0 or 1), with a wanted value that
  *   touching the object toggles and that is applied when the class is ready; it is kept in the
@@ -38,7 +38,7 @@ typedef struct G3dModel {
 } G3dModel;
 
 /* A level that moves towards a target by a speed, or flashes through a table of 11 levels
- * after a wait of 5 frames (func_020b36c8 runs it, func_020b3670 sets it). */
+ * after a wait of 5 frames (Fader_Run runs it, Fader_Switch sets it). */
 typedef struct Fader {
     fx32 level;
     fx32 target;
@@ -75,7 +75,7 @@ typedef struct Mount {
  * "...1" of the furniture's archive, furniture_model.c), and a copy of its texture file, which
  * func_021077e8 reads. The comments say who uses them. */
 typedef struct AnimSet {
-    u32 anim_00[2]; /* joints ("bca"); applied to the model at 0x538 (func_02055060) */
+    u32 anim_00[2]; /* joints ("bca"); applied to the model at 0x538 (AnimatedModel_Start) */
     u32 anim_08[2]; /* material colours ("bma"); given to the animation at 0x7c4 */
     u32 anim_10[2]; /* visibility ("bva"); given to the animation at 0x824 */
     u32 anim_18[2]; /* texture coordinates ("bta"); given to the animation at 0x7e4 */

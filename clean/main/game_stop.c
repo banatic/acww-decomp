@@ -4,13 +4,11 @@
 #include "clean.h"
 #include "music_queue.h" /* Music_Reset */
 #include "text_draw.h"   /* TextDraw_ReleaseBoxes */
+#include "quick_message.h"
 
 extern u8 data_021dc6c4; /* set: the scenes stop */
 extern u8 data_021dc6c8; /* data_021fbe38 was set the frame before */
 extern u8 data_021fbe38;
-
-/* Frees what func_0203931c frees for data_021c6738. */
-extern void func_020397f0(void);
 
 /* func_0209d36c: once a frame, after the pad is read. While the latch is open, a rise of
  * data_021fbe38 closes it; its fall is noted. Once closed nothing changes. */
@@ -34,7 +32,7 @@ CLEAN_AS(func_0209d36c, GameStop_Update)
  * text boxes released. */
 void GameStop_Release(void)
 {
-    func_020397f0();
+    QuickMessage_ResetCurrent();
     Music_Reset();
     TextDraw_ReleaseBoxes();
 }

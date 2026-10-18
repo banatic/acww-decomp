@@ -8,6 +8,8 @@
 #include "main/shadow.h"
 #include "main/talk_object.h"
 #include "main/town_record.h"
+#include "object_actors.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(SceneActor, position) == 0x5c, "position");
 static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
@@ -32,12 +34,6 @@ extern const u8 data_ov003_022395e8[];
 extern const u8 data_ov003_022396ac[];
 /* The town's record in the state block. */
 extern TownRecord data_021f39fc;
-
-/* The count overlay 3 keeps at data_ov003_0223ce54. */
-extern u16 func_ov003_022203d0(void);
-/* Overlay 9's scene actor's destructor and constructor. */
-extern void *func_ov009_0226539c(SignBoard *board);
-extern void *func_ov009_0226552c(SignBoard *board);
 
 /* func_ov003_0221e9d8 (vtable slot 0x8c): whether a talk asks main for a visit record; always
  * 0, so the talk starts at once. */
@@ -79,7 +75,7 @@ CLEAN_AS(func_ov003_0221ea50, SignBoard_DrawShadow)
  * always 1. */
 int SignBoard_SetUp(SignBoard *board)
 {
-    board->number = func_ov003_022203d0();
+    board->number = ObjectActors_Mode1Count();
     return 1;
 }
 CLEAN_AS(func_ov003_0221ea64, SignBoard_SetUp)
@@ -89,7 +85,7 @@ static void sign_board_destroy_parts(SignBoard *board)
 {
     board->actor.vtable = data_ov003_022395e8;
     board->actor.receiver_vtable = data_ov003_022396ac;
-    func_ov009_0226539c(board);
+    SceneActor_Destruct((SceneActor *) board);
 }
 
 /* func_ov003_0221ea7c (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -113,7 +109,7 @@ CLEAN_AS(func_ov003_0221eaa8, SignBoard_Destroy)
 /* func_ov003_0221eacc: the constructor: overlay 9's, then the vtables. */
 SignBoard *SignBoard_Construct(SignBoard *board)
 {
-    func_ov009_0226552c(board);
+    SceneActor_ConstructBase((SceneActor *) board);
     board->actor.vtable = data_ov003_022395e8;
     board->actor.receiver_vtable = data_ov003_022396ac;
     return board;

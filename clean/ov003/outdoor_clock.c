@@ -5,6 +5,10 @@
 
 #include "autoload_2/heap.h" /* Heap_FreeAux, Heap_AllocAuxZeroed */
 #include "clean.h"
+#include "main/clock_hands.h"
+#include "main/g3d_resource.h"
+#include "main/model_object.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(OutdoorClock, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(OutdoorClock, model_object) == 0x13c, "model object");
@@ -29,17 +33,6 @@ extern const char data_ov003_0223922c[];
 extern const u8 data_ov003_022390e8[];
 extern const u8 data_ov003_022391ac[];
 
-/* The index of the model's joint named `name`, -1 for none. */
-extern int func_0205790c(void *model, const char *name);
-/* Sets the hook the model object's render state runs for `command` at `timing`, and the object
- * it is given. */
-extern void func_02055de0(void *model_object, int hook, int command, int timing, OutdoorClock *user, int a5);
-/* Turn the joint being described by the clock's time: as an hour hand, as a minute hand. */
-extern void func_020b3220(OutdoorClockRenderState *state);
-extern void func_020b3188(OutdoorClockRenderState *state);
-/* Overlay 9's scene actor: its destructor and its constructor. */
-extern void *func_ov009_0226539c(OutdoorClock *clock);
-extern void *func_ov009_0226552c(OutdoorClock *clock);
 /* The hook is the game's function: its address goes to the model object. */
 extern void func_ov003_0221db90(OutdoorClockRenderState *state);
 
@@ -55,9 +48,9 @@ CLEAN_AS(func_ov003_0221da64, OutdoorClock_Slot98)
 void OutdoorClock_TurnHand(OutdoorClock *clock, int node, OutdoorClockRenderState *state)
 {
     if (node == clock->hour_node) {
-        func_020b3220(state);
+        ClockHands_TurnHourHand((ClockHandsRenderState *) state);
     } else if (node == clock->minute_node) {
-        func_020b3188(state);
+        ClockHands_TurnMinuteHand((ClockHandsRenderState *) state);
     }
 }
 CLEAN_AS(func_ov003_0221da68, OutdoorClock_TurnHand)
@@ -67,11 +60,11 @@ CLEAN_AS(func_ov003_0221da68, OutdoorClock_TurnHand)
  * always 1. */
 int OutdoorClock_Init(OutdoorClock *clock)
 {
-    clock->hour_node = (s8) func_0205790c(clock->model, data_ov003_02239224);
-    clock->minute_node = (s8) func_0205790c(clock->model, data_ov003_0223922c);
+    clock->hour_node = (s8) G3dRes_NodeIndex(clock->model, data_ov003_02239224);
+    clock->minute_node = (s8) G3dRes_NodeIndex(clock->model, data_ov003_0223922c);
     if (clock->hour_node != OUTDOOR_CLOCK_NO_NODE && clock->minute_node != OUTDOOR_CLOCK_NO_NODE) {
-        func_02055de0(clock->model_object, (int) (uintptr_t) func_ov003_0221db90, OUTDOOR_CLOCK_COMMAND_NODE_DESC,
-                      OUTDOOR_CLOCK_TIMING_AFTER, clock, 0);
+        ModelObject_SetNodeCallback((ModelObject *) clock->model_object, (void *) (uintptr_t) func_ov003_0221db90,
+                                    OUTDOOR_CLOCK_COMMAND_NODE_DESC, OUTDOOR_CLOCK_TIMING_AFTER, clock, 0);
     }
     return 1;
 }
@@ -82,7 +75,7 @@ static void outdoor_clock_destroy_parts(OutdoorClock *clock)
 {
     clock->vtable = data_ov003_022390e8;
     clock->receiver_vtable = data_ov003_022391ac;
-    func_ov009_0226539c(clock);
+    SceneActor_Destruct((SceneActor *) clock);
 }
 
 /* func_ov003_0221db04 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -106,7 +99,7 @@ CLEAN_AS(func_ov003_0221db30, OutdoorClock_Destroy)
 /* func_ov003_0221db54: the constructor: overlay 9's, the vtables; no joints yet. */
 OutdoorClock *OutdoorClock_Construct(OutdoorClock *clock)
 {
-    func_ov009_0226552c(clock);
+    SceneActor_ConstructBase((SceneActor *) clock);
     clock->vtable = data_ov003_022390e8;
     clock->receiver_vtable = data_ov003_022391ac;
     clock->minute_node = OUTDOOR_CLOCK_NO_NODE;

@@ -1,7 +1,7 @@
 /* A class of overlay 4's room objects (vtable 0x02252374, receiver part 0x02252420, 0x878 bytes,
  * class number 0x1b in RoomObject.unk_780) for the room items 0x3984-0x3d83 (four codes,
  * variants, an item). Once its model is bound it loads, from the room's heap, a copy of the
- * model of the item those codes convert to (func_02061e2c: 0x11a8 and on, the design item's
+ * model of the item those codes convert to (ItemForm_ToCarried: 0x11a8 and on, the design item's
  * model and those after it), and puts a texture on its own model's material "w" by its state
  * (RoomObject02252374.state, through tables of member pointers, member_pointer.h):
  *
@@ -10,21 +10,22 @@
  *
  * Its start enters the state the switch says, then ON in any case (QUIRK, see
  * RoomObject02252374_Start). Others turn it on or off by requesting the state for the object at
- * its cell (func_0205265c, through func_ov004_0223b364 and func_ov004_0223b3c0). */
+ * its cell (RoomSync_RequestState, through RoomObjects_RequestOn and RoomObjects_RequestOff). */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02252374_H
 #define CLEAN_OV004_ROOM_OBJECT_02252374_H
 
 #include "types.h"
 
 #include "main/design_assets.h" /* DesignModel */
+#include "main/vram_copy_task.h"
 #include "room_object.h"
 
 typedef struct RoomObject02252374 {
     RoomObject base;
     DesignModel *item_model; /* the item's model, NULL until the start loads it */
-    /* Puts a texture on a material of the model (built by func_020b9e58, filled by
-     * func_020b9d3c). */
-    u8 material_texture[0x28];
+    /* Puts a texture on a material of the model (built by VramCopyMaterial_Construct, filled by
+     * VramCopyMaterial_Queue). */
+    VramCopyMaterial material_texture;
     u8 unk_870; /* cleared when OFF's texture went on */
     u8 unk_871;
     u8 unk_872;

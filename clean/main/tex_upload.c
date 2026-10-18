@@ -3,21 +3,14 @@
 #include "tex_upload.h"
 
 #include "clean.h"
+#include "vram_copy_task.h"
 
 static_assert(sizeof(ModelLoaderTask) == 0x1c, "ModelLoaderTask size");
 static_assert(offsetof(TexUpload, palette) == 0x1c && sizeof(TexUpload) == 0x38, "TexUpload layout");
 
-/* The transfer task: started for a texture image (kind 2) or a palette (kind 3) of `size` bytes
- * copied from `src` to the VRAM address `dst`, 0 when it could not be; its end; its
- * constructor. */
-extern int func_020b9f80(ModelLoaderTask *task, const void *src, unsigned int dst, int size, u8 kind);
-extern int func_020b9f30(ModelLoaderTask *task, const void *src, unsigned int dst, int size, u8 kind);
-extern void func_020b9ec4(ModelLoaderTask *task);
-extern ModelLoaderTask *func_020ba01c(ModelLoaderTask *task);
-
-/* The transfer kinds. */
-#define TRANSFER_TEXTURE_IMAGE 2
-#define TRANSFER_PALETTE 3
+/* The copy tasks' priorities (their byte 0x0c). */
+#define IMAGE_PRIORITY 2
+#define PALETTE_PRIORITY 3
 
 static u16 read_u16(const u8 *p)
 {
@@ -67,7 +60,7 @@ int TexUpload_Send(TexUpload *upload, G3dResTex *target, int texture, int palett
         const u8 *source_entry = dict_entry(source->texture_dict, (u32) source_texture);
         void *image = G3dRes_TextureImage(source, source_texture);
         unsigned int size = G3dRes_TextureBytes(read_u32(source_entry));
-        if (func_020b9f80(&upload->image, image, offset << 3, (int) size, TRANSFER_TEXTURE_IMAGE) == 0) {
+        if (VramCopyTask_QueueImage((VramCopyTask *) &upload->image, image, offset << 3, (int) size, IMAGE_PRIORITY) == 0) {
             return 0;
         }
     }
@@ -75,8 +68,8 @@ int TexUpload_Send(TexUpload *upload, G3dResTex *target, int texture, int palett
         u8 *data = G3dRes_Palette(source, (int) source_palette);
         int size = G3dRes_PaletteSize(source, (int) source_palette);
         unsigned int address = (unsigned int) (read_u16(target_palette) + (u16) target->palette_vram_key) << 3;
-        if (func_020b9f30(&upload->palette, data, address, size, TRANSFER_PALETTE) == 0) {
-            func_020b9ec4(&upload->image);
+        if (VramCopyTask_QueuePalette((VramCopyTask *) &upload->palette, data, address, size, PALETTE_PRIORITY) == 0) {
+            VramCopyTask_End((VramCopyTask *) &upload->image);
             return 0;
         }
     }
@@ -87,8 +80,8 @@ CLEAN_AS(func_020577c8, TexUpload_Send)
 /* func_020578d4: the destructor: both transfers ended. */
 TexUpload *TexUpload_Destruct(TexUpload *upload)
 {
-    func_020b9ec4(&upload->image);
-    func_020b9ec4(&upload->palette);
+    VramCopyTask_End((VramCopyTask *) &upload->image);
+    VramCopyTask_End((VramCopyTask *) &upload->palette);
     return upload;
 }
 CLEAN_AS(func_020578d4, TexUpload_Destruct)
@@ -96,8 +89,8 @@ CLEAN_AS(func_020578d4, TexUpload_Destruct)
 /* func_020578ec: the constructor: both transfers constructed. */
 TexUpload *TexUpload_Construct(TexUpload *upload)
 {
-    func_020ba01c(&upload->image);
-    func_020ba01c(&upload->palette);
+    VramCopyTask_Construct((VramCopyTask *) &upload->image);
+    VramCopyTask_Construct((VramCopyTask *) &upload->palette);
     return upload;
 }
 CLEAN_AS(func_020578ec, TexUpload_Construct)

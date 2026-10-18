@@ -11,6 +11,21 @@
 #include "scene_query.h"
 #include "session.h"
 #include "villager_events.h"
+#include "angle_sector.h"
+#include "collision_query.h"
+#include "item_traits.h"
+#include "linked_map_items.h"
+#include "main_random.h"
+#include "ov003/tile_event.h"
+#include "ov004/dropped_items.h"
+#include "session_players.h"
+#include "tile_changes.h"
+#include "tile_request_grant.h"
+#include "town_day.h"
+#include "town_lines.h"
+#include "town_record.h"
+#include "town_spawn.h"
+#include "town_tile_put.h"
 
 static_assert(sizeof(TileRequest) == 0x24, "TileRequest");
 static_assert(offsetof(TileRequest, tile) == 0x14, "TileRequest.tile");
@@ -42,42 +57,8 @@ extern const s8 data_020ca58c[5];
 extern const u16 data_020cab3c[];
 extern const u16 data_020ca664[];
 
-/* The session slot to use for `player`: itself while linked, else 0. */
-extern int func_02044858(int player);
-/* Whether `slot` may ask: 1 when not linked, else Session_IsLocalSlot. */
-extern int func_0204482c(int slot);
-/* The tile record (a halfword: x high, z low) of the actor of `slot`, or NULL. */
-extern u16 *func_02045b5c(int slot);
-/* The index of the actor standing on a tile, or a negative number. */
-extern int func_02045cec(const TileRequestTile *tile, int flag);
-extern int func_02045d80(const TileRequestTile *tile, int flag);
-extern int func_02045ac4(const TileRequestTile *tile, int player);
-extern void func_02045e24(const TileRequestTile *tile, int flag);
-extern void func_02045f08(const TileRequestTile *tile, int arg);
-extern void func_02045770(u8 index, int arg);
-extern TileRequestsActor *func_020961a8(int player);
-extern int func_020644e4(int facing);
-extern int func_020317c4(int from_x, int from_z, int x, int z, u8 flag);
-extern int func_020445c0(u16 *item, u16 *tile_item, u16 code);
-extern int func_02043db4(int slot, const TileRequestTile *tile, int operation, int arg, u16 item);
-/* The item `item` put on the tile (x, z) of the town (whose code becomes `code`). */
-extern int func_02046024(int unk, const TileRequestTile *tile, u32 item, u32 code, u8 a, u8 b, u8 c, u8 d, u8 e, s8 f);
-extern void func_0204a330(int x, int z, int code, int flag);
-extern void func_0204811c(u8 *town, const Vec3 *position);
-/* The code a code of family B (and 0x88, 0xd4-0xda) changes into, 0xfff1 for none; `alternative`
- * changes 0x86 into 0xa5. */
-extern u16 func_020475b0(u8 *town, const u16 *code, int alternative);
-extern void func_0205f9d4(u8 x, u8 z, int scene, int code, int flag);
-/* The item the actor of `player` holds (0xfff1 for none). */
-extern int func_02044808(int player);
-
 extern void *CurrentPockets_FreeLetter(void);
 extern int CurrentPockets_FreeSlot(void);
-
-extern int func_ov003_02221118(int player, int item, const TileRequestTile *tile);
-extern int func_ov003_02221304(int player, int item, const TileRequestTile *tile, const Vec3 *position);
-extern int func_ov003_02220e20(int player, int item, const TileRequestTile *tile, const Vec3 *position);
-extern int func_ov004_022335b8(int player, int item, const TileRequestTile *tile, const Vec3 *position, int layer);
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
@@ -144,7 +125,7 @@ static TileRequestTile TileRequests_TileOf(u16 packed)
  * else 0. */
 int TileRequests_TakeAction(TileRequestsAction *out, int player)
 {
-    TileRequestsAction *action = &data_021c7788[func_02044858(player)];
+    TileRequestsAction *action = &data_021c7788[TileRequests_SlotOf(player)];
     if (action->kind == 0) {
         return 0;
     }
@@ -168,12 +149,12 @@ void TileRequests_ReceiveAction(const TileRequestsActionMessage *message)
     TileRequestsAction *action = &data_021c7788[slot];
     if (action->kind != 0) {
         TileRequestTile old = TileRequests_TileOf(action->tile);
-        func_02045e24(&old, 0);
+        TileChanges_LetGoAt((const TileChangesTile *) &old, 0);
         if ((message->bits & 1) == 1) {
             for (int i = 0; i < 3; i++) {
                 if (message->extra_tiles[i] != TILE_REQUESTS_NO_TILE) {
                     TileRequestTile extra = TileRequests_TileOf(message->extra_tiles[i]);
-                    func_02045e24(&extra, 0);
+                    TileChanges_LetGoAt((const TileChangesTile *) &extra, 0);
                 }
             }
         }
@@ -189,15 +170,15 @@ void TileRequests_ReceiveAction(const TileRequestsActionMessage *message)
         case TILE_REQUEST_DROP:
         case TILE_REQUEST_ACTOR_TILE:
         case TILE_REQUEST_DROP_12:
-            player = func_020961a8(slot);
+            player = SessionPlayers_ActorOf(slot);
             if (player == NULL) {
                 break;
             }
             position = player->position;
             if (data_020e54a8 == 0) {
-                func_ov003_02221304(slot, message->item, &tile, &position);
+                TileEvent_StartKind0(slot, message->item, (const TileChangesTile *) &tile, &position);
             } else {
-                func_ov004_022335b8(slot, message->item, &tile, &position, 0);
+                DroppedItems_DropOnTile(slot, message->item, (const TileChangesTile *) &tile, &position, 0);
             }
             break;
         case TILE_REQUEST_CHANGE_AROUND:
@@ -207,12 +188,12 @@ void TileRequests_ReceiveAction(const TileRequestsActionMessage *message)
             if (message->item == ITEM_CODE_NONE) {
                 break;
             }
-            player = func_020961a8(slot);
+            player = SessionPlayers_ActorOf(slot);
             if (player == NULL) {
                 break;
             }
             position = player->position;
-            func_ov003_02220e20(slot, message->item, &tile, &position);
+            TileEvent_StartKind9(slot, message->item, (const TileChangesTile *) &tile, &position);
             break;
         default:
             break;
@@ -306,7 +287,7 @@ int TileRequests_DropBagAt(TileRequestsRock *rock, AcreMap *map, const TileReque
         return 0;
     }
     TileRequestTile at = *tile;
-    func_02046024(0, &at, data_020cab3c[rock->hits], ITEM_CODE_NONE, 0, 0, 0, 3, 0, -1);
+    TileChanges_Put(0, (const TileChangesTile *) &at, data_020cab3c[rock->hits], ITEM_CODE_NONE, 0, 0, 0, 3, 0, -1);
     return 1;
 }
 CLEAN_AS(func_02042d14, TileRequests_DropBagAt)
@@ -372,7 +353,7 @@ void TileRequests_RockUpdate(TileRequestsRock *rock)
         return;
     }
     TileRequestTile tile = {rock->x, rock->z};
-    if (func_02045cec(&tile, 0) >= 0) {
+    if (TileChanges_FindAt((const TileChangesTile *) &tile, 0) >= 0) {
         return;
     }
     int code = TILE_REQUESTS_ROCK;
@@ -384,7 +365,7 @@ void TileRequests_RockUpdate(TileRequestsRock *rock)
             code = (u16) ((*on_map - TILE_REQUESTS_MONEY_ROCK) % TILE_REQUESTS_ROCKS + TILE_REQUESTS_ROCK);
         }
     }
-    func_0204a330(rock->x, rock->z, code, 0);
+    TownTilePut_TellScene(rock->x, rock->z, code, 0);
 }
 CLEAN_AS(func_02042e64, TileRequests_RockUpdate)
 
@@ -444,7 +425,7 @@ int TileRequests_Add(TileRequest *requests, int player, int kind, const TileRequ
         request->unk_1d = unk_1d;
         request->unk_20 = unk_20;
         request->unk_1e = unk_1e;
-        func_02045770((u8) i, unk_20);
+        TileRequestGrant_Submit((u8) i, unk_20);
         return i;
     }
     return TILE_REQUESTS_NONE;
@@ -463,7 +444,7 @@ CLEAN_AS(func_02042fc4, TileRequests_At)
 void TileRequests_ClearSpawnTile(const Vec3 *position)
 {
     Vec3 copy = *position;
-    func_0204811c(data_021c779c, &copy);
+    TownSpawn_ClearTileAt((TownDay *) (void *) data_021c779c, (const Position *) &copy);
 }
 CLEAN_AS(func_02042fd4, TileRequests_ClearSpawnTile)
 
@@ -475,27 +456,27 @@ CLEAN_AS(func_02042fd4, TileRequests_ClearSpawnTile)
 void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
-    TileRequestsActor *self = func_020961a8(TILE_REQUESTS_PLAYER_ACTOR);
+    TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
     if (town == NULL || self == NULL) {
         return;
     }
-    int holds_1379 = func_02044808(player) == TILE_REQUESTS_ITEM_1379;
+    int holds_1379 = TileRequests_HeldItem(player) == TILE_REQUESTS_ITEM_1379;
     int found = 0;
     for (int i = 0; i < 5; i++) {
         int x = tile->x + data_020ca584[i];
         int z = tile->z + data_020ca58c[i];
         TileRequestTile at = {x, z};
-        if (func_02045cec(&at, 0) >= 0) {
+        if (TileChanges_FindAt((const TileChangesTile *) &at, 0) >= 0) {
             continue;
         }
         u16 *code = TileRequests_CodeAt(town, x, z, 0);
         if (code == NULL) {
             continue;
         }
-        u16 changed = func_020475b0(data_021c779c, code, holds_1379);
+        u16 changed = TownDay_FamilyCCode((int) (uintptr_t) data_021c779c, code, holds_1379);
         if (changed != ITEM_CODE_NONE) {
             found = 1;
-            func_0205f9d4((u8) x, (u8) z, SceneQuery_Current(), changed, 0);
+            LinkedMapItems_Set((u8) x, (u8) z, SceneQuery_Current(), changed, 0);
         }
         u32 now = *code;
         if (TileRequests_IsFamilyA(now) || TileRequests_IsFamilyC(now) || TileRequests_IsFamilyB(now) || now == 0x1a ||
@@ -531,7 +512,7 @@ int TileRequests_Carry(int index)
     }
     switch (request->state) {
         case TILE_REQUEST_GRANTED: {
-            TileRequestsActor *self = func_020961a8(TILE_REQUESTS_PLAYER_ACTOR);
+            TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
             if (self == NULL) {
                 return 0;
             }
@@ -539,15 +520,16 @@ int TileRequests_Carry(int index)
             Vec3 position;
             if (data_020e54a8 != 0) {
                 position = self->position;
-                return func_ov004_022335b8(request->player, request->item, &tile, &position, request->layer) != 0;
+                return DroppedItems_DropOnTile(request->player, request->item, (const TileChangesTile *) &tile, &position,
+                                               request->layer) != 0;
             }
             u32 item = request->item;
             if (TileRequests_IsFamilyA(item) || TileRequests_IsFamilyC(item) || item == 0x1a || item == 0xa4 || item == 0x1d ||
                 TileRequests_InRange(item, 0xa7, 0xc6) || item == 0x1e) {
-                return func_ov003_02221118(request->player, request->item, &tile) != 0;
+                return TileEvent_StartKind4(request->player, request->item, (const TileChangesTile *) &tile) != 0;
             }
             position = self->position;
-            return func_ov003_02221304(request->player, request->item, &tile, &position) != 0;
+            return TileEvent_StartKind0(request->player, request->item, (const TileChangesTile *) &tile, &position) != 0;
         }
         case TILE_REQUEST_REFUSED:
             return 2;
@@ -566,11 +548,11 @@ CLEAN_AS(func_020431c8, TileRequests_Carry)
 int TileRequests_FindDropTile(int kind, TileRequestTile *tile, u8 *place)
 {
     AcreMap *map = data_021c80bc;
-    TileRequestsActor *self = func_020961a8(TILE_REQUESTS_PLAYER_ACTOR);
+    TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
     if (map == NULL || self == NULL) {
         return 0;
     }
-    const int *order = data_020cb638[func_020644e4(self->facing)];
+    const int *order = data_020cb638[AngleSector_Eight(self->facing)];
     Position_Tile(&tile->x, &tile->z, (const Position *) &self->position);
     NetSession *session = data_020ccf94;
     for (int i = 0; i < 9; i++) {
@@ -581,7 +563,8 @@ int TileRequests_FindDropTile(int kind, TileRequestTile *tile, u8 *place)
         u16 *code = TileRequests_DropTileFor(kind, map, x, z, &from);
         if (code != NULL && *code == ITEM_CODE_NONE) {
             TileRequestTile at = {x, z};
-            if (func_02045d80(&at, 0) < 0 && func_02045ac4(&at, session->local_player)) {
+            if (TileChanges_IndexAt((const TileChangesTile *) &at, 0) < 0 &&
+                TileRequestGrant_NoOneNear(&at, session->local_player)) {
                 tile->x = x;
                 tile->z = z;
                 if (place != NULL) {
@@ -619,7 +602,7 @@ u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRe
         case TILE_REQUEST_DROP:
         case TILE_REQUEST_ACTOR_TILE:
         case TILE_REQUEST_DROP_12:
-            if (func_020317c4(from->x, from->z, x, z, 0) == 0) {
+            if (CollisionQuery_CanStep(from->x, from->z, x, z, 0) == 0) {
                 return NULL;
             }
             break;
@@ -631,7 +614,7 @@ u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRe
             break;
         }
         case TILE_REQUEST_DROP_A7:
-            if (func_020317c4(from->x, from->z, x, z, 1) == 0) {
+            if (CollisionQuery_CanStep(from->x, from->z, x, z, 1) == 0) {
                 return NULL;
             }
             break;
@@ -645,14 +628,14 @@ CLEAN_AS(func_02043484, TileRequests_DropTileFor)
 /* func_02043540: TileRequests_AskAtActorTile for `player`'s slot. */
 int TileRequests_AskAtActorTileFor(int player, int item)
 {
-    return TileRequests_AskAtActorTile(func_02044858(player), item);
+    return TileRequests_AskAtActorTile(TileRequests_SlotOf(player), item);
 }
 CLEAN_AS(func_02043540, TileRequests_AskAtActorTileFor)
 
 /* func_02043554: TileRequests_AskDrop for `player`'s slot. */
 int TileRequests_AskDropFor(int player, int item)
 {
-    return TileRequests_AskDrop(func_02044858(player), (u16) item);
+    return TileRequests_AskDrop(TileRequests_SlotOf(player), (u16) item);
 }
 CLEAN_AS(func_02043554, TileRequests_AskDropFor)
 
@@ -660,10 +643,10 @@ CLEAN_AS(func_02043554, TileRequests_AskDropFor)
  * 0x10; -1 when the slot may not ask. */
 int TileRequests_AskDrop12(int slot, int item)
 {
-    if (func_0204482c(slot) == 0) {
+    if (TileRequests_MayAsk(slot) == 0) {
         return TILE_REQUESTS_NONE;
     }
-    int kind = func_02045b5c(slot) != NULL ? TILE_REQUEST_DROP_12 : TILE_REQUEST_DROP;
+    int kind = TileChanges_HeldTileOf(slot) != NULL ? TILE_REQUEST_DROP_12 : TILE_REQUEST_DROP;
     return TileRequests_AskPut(slot, kind, (u16) item);
 }
 CLEAN_AS(func_02043568, TileRequests_AskDrop12)
@@ -672,10 +655,10 @@ CLEAN_AS(func_02043568, TileRequests_AskDrop12)
  * the slot may not ask or has no record. */
 int TileRequests_AskAtActorTile(int slot, int item)
 {
-    if (func_0204482c(slot) == 0) {
+    if (TileRequests_MayAsk(slot) == 0) {
         return TILE_REQUESTS_NONE;
     }
-    u16 *record = func_02045b5c(slot);
+    u16 *record = TileChanges_HeldTileOf(slot);
     if (record == NULL) {
         return TILE_REQUESTS_NONE;
     }
@@ -705,7 +688,7 @@ int TileRequests_AskPut(int slot, int kind, u16 item)
         return TILE_REQUESTS_NONE;
     }
     if (kind == TILE_REQUEST_SPLIT_DROP) {
-        func_020445c0(&first, &second, item);
+        TileRequests_SplitItem(&first, &second, item);
     } else {
         first = item;
         second = item;
@@ -742,7 +725,7 @@ int TileRequests_Answer(u32 index)
             switch (request->kind) {
                 case TILE_REQUEST_KIND_13:
                     if (request->item != ITEM_CODE_NONE) {
-                        TileRequestsActor *self = func_020961a8(TILE_REQUESTS_PLAYER_ACTOR);
+                        TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
                         if (self != NULL) {
                             int shown = request->tile_item;
                             u16 item = request->item;
@@ -755,7 +738,7 @@ int TileRequests_Answer(u32 index)
                             }
                             Vec3 position = self->position;
                             TileRequestTile tile = request->tile;
-                            func_ov003_02220e20(request->player, shown, &tile, &position);
+                            TileEvent_StartKind9(request->player, shown, (const TileChangesTile *) &tile, &position);
                         }
                     }
                     return 1;
@@ -763,7 +746,7 @@ int TileRequests_Answer(u32 index)
                 case TILE_REQUEST_KIND_15:
                     if (*code == ITEM_CODE_NONE) {
                         TileRequestTile tile = request->tile;
-                        func_02045f08(&tile, request->layer);
+                        TileChanges_FinishAtTile((const TileChangesTile *) &tile, request->layer);
                         return 2;
                     }
                     return 1;
@@ -771,7 +754,7 @@ int TileRequests_Answer(u32 index)
                 case TILE_REQUEST_DROP_A7:
                     if (!Session_IsLinked(session)) {
                         TileRequestTile tile = request->tile;
-                        func_ov003_02221118(request->player, request->item, &tile);
+                        TileEvent_StartKind4(request->player, request->item, (const TileChangesTile *) &tile);
                     }
                     return 1;
                 default:
@@ -804,7 +787,7 @@ static int TileRequests_AskMarked(int player, int for_player, const TileRequestT
     if (AcreTile_IsMarked(town, tile->x, tile->z) == 0) {
         return TILE_REQUESTS_NONE;
     }
-    int slot = for_player ? func_02044858(player) : 0;
+    int slot = for_player ? TileRequests_SlotOf(player) : 0;
     u16 made = AcreTile_UnitByte09(town, tile->x, tile->z) != 0 ? 0xfd : 0xfc;
     TileRequestTile at = *tile;
     return TileRequests_Add(data_021c7c48.requests, slot, TILE_REQUEST_MARKED_1566, &at, made, ITEM_CODE_NONE, 0, 0, 0,
@@ -829,7 +812,7 @@ CLEAN_AS(func_020438dc, TileRequests_AskMarked1566For)
 /* func_02043990: TileRequests_AskFcFd for `player`'s slot. */
 int TileRequests_AskFcFdFor(u32 player, const TileRequestTile *tile, u32 mode)
 {
-    int slot = func_02044858((int) player);
+    int slot = TileRequests_SlotOf((int) player);
     TileRequestTile at = *tile;
     return TileRequests_AskFcFd(slot, &at, (int) mode);
 }
@@ -859,7 +842,7 @@ CLEAN_AS(func_020439b4, TileRequests_AskFcFd)
 /* func_02043a4c: TileRequests_AskForTool0 for `player`'s slot. */
 int TileRequests_AskForTool0For(int player, const TileRequestTile *tile, int unused)
 {
-    int slot = func_02044858(player);
+    int slot = TileRequests_SlotOf(player);
     TileRequestTile at = *tile;
     return TileRequests_AskForTool0(slot, &at, unused);
 }
@@ -955,7 +938,7 @@ CLEAN_AS(func_02043cdc, TileRequests_AskForTool0)
 /* func_02043d18: TileRequests_AskAtActorTileOp for `player`'s slot. */
 int TileRequests_AskAtActorTileOpFor(int player, int operation, int arg, int item)
 {
-    return TileRequests_AskAtActorTileOp(func_02044858(player), operation, arg, item);
+    return TileRequests_AskAtActorTileOp(TileRequests_SlotOf(player), operation, arg, item);
 }
 CLEAN_AS(func_02043d18, TileRequests_AskAtActorTileOpFor)
 
@@ -963,24 +946,24 @@ CLEAN_AS(func_02043d18, TileRequests_AskAtActorTileOpFor)
  * may not ask or has no record. */
 int TileRequests_AskAtActorTileOp(int slot, int operation, int arg, int item)
 {
-    if (func_0204482c(slot) == 0) {
+    if (TileRequests_MayAsk(slot) == 0) {
         return TILE_REQUESTS_NONE;
     }
-    u16 *record = func_02045b5c(slot);
+    u16 *record = TileChanges_HeldTileOf(slot);
     if (record == NULL) {
         return TILE_REQUESTS_NONE;
     }
     TileRequestTile tile = TileRequests_TileOf(*record);
-    return func_02043db4(slot, &tile, operation, arg, (u16) item);
+    return TileRequests_AskOp(slot, &tile, operation, arg, (u16) item);
 }
 CLEAN_AS(func_02043d34, TileRequests_AskAtActorTileOp)
 
 /* func_02043d84: func_02043db4's request for `player`'s slot. */
 int TileRequests_AskOpFor(int player, const TileRequestTile *tile, int operation, int arg, u16 item)
 {
-    int slot = func_02044858(player);
+    int slot = TileRequests_SlotOf(player);
     TileRequestTile at = *tile;
-    return func_02043db4(slot, &at, operation, arg, item);
+    return TileRequests_AskOp(slot, &at, operation, arg, item);
 }
 CLEAN_AS(func_02043d84, TileRequests_AskOpFor)
 
@@ -995,17 +978,6 @@ extern StateBlock data_021dc7a8;
 extern const int data_020caaf8[];
 /* The codes the items 0x1518-0x151c become. */
 extern const u16 data_020ca64c[];
-
-/* A code that is not taken out of the tile but stands for something else to take there. */
-extern int func_0204a034(const u16 *code);
-/* Whether the current player has not done it today, in the board's part of the state block;
- * func_0204cb2c notes it done. */
-extern int func_0204cafc(void *part);
-extern void func_0204cb2c(int part);
-/* The bells a bag holds. */
-extern int func_0204c878(void *bag);
-/* A random number below `range`. */
-extern int func_020644cc(int range);
 
 #define TILE_REQUESTS_TOWN_DROP_BLOCK 0x1c /* data_021c779c's byte: no item may drop */
 #define TILE_REQUESTS_BAG_SHOVEL 0x136a    /* the item to hold for a bag of bells to grow */
@@ -1148,7 +1120,7 @@ int TileRequests_AskHole(int slot, AcreMap *town, const u16 *code, const TileReq
         }
     } else if (TileRequests_IsShortLineCode(now)) {
         kind = 0xb;
-    } else if (func_0204a034(code) != 0 || now == 0x1b || now == 0x89) {
+    } else if (TownLines_IsGrownOrOccupied(code) != 0 || now == 0x1b || now == 0x89) {
         kind = 0xc;
         ask_item = (u16) now;
     } else if (now == 0x25 || now == 0x5c || now == 0xc7 || (TileRequests_IsGrowthCode(now) && MapItem_IsStage0(code))) {
@@ -1395,17 +1367,17 @@ void TileRequests_BagCodes(u16 *item, u8 *unchanged, u16 put)
     *item = TILE_REQUESTS_BAG_CODE;
     *unchanged = 0;
     u8 *part = data_021dc7a8.part_17254;
-    if (func_0204cafc(part) == 0) {
+    if (TownRecord_PlayerTurnLeft((TownRecord *) (void *) part) == 0) {
         return;
     }
-    int chance = func_0204c878(&bag) / 1000;
+    int chance = ItemTraits_Price(&bag) / 1000;
     chance += (int) RoomScore_HouseLowX() / 25;
     if (chance > TILE_REQUESTS_BAG_CHANCE_MAX) {
         chance = TILE_REQUESTS_BAG_CHANCE_MAX;
     }
-    if (func_020644cc(TILE_REQUESTS_BAG_CHANCE_MAX) < chance) {
+    if ((int) MainRandom_Below(TILE_REQUESTS_BAG_CHANCE_MAX) < chance) {
         *item = TILE_REQUESTS_BAG_GROWN_CODE;
-        func_0204cb2c((int) (uintptr_t) part);
+        TownRecord_UsePlayerTurn((int) (uintptr_t) part);
     }
 }
 CLEAN_AS(func_02044750, TileRequests_BagCodes)

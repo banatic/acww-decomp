@@ -1,5 +1,5 @@
 /* A link from an actor to a held item: the item's code, and a link object (class 0x020e1a40,
- * func_02082d04 builds it) whose func_02082c98 gives the held item it stands for, or null.
+ * PoolLink_ItemConstruct builds it) whose func_02082c98 gives the held item it stands for, or null.
  * The held items are kept in a pool at data_021ca16c and the functions 0x0205e8e4 to 0x0205f1bc
  * work on them (the first byte of one is its number in the pool, func_0205f130 its record).
  *

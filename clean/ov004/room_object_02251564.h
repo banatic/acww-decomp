@@ -5,7 +5,7 @@
  * - idle: touching it (a change of the switch pending) requests the used state with this
  *   system's player number as the value vtable slot 0x70 keeps (RoomObject.unk_77C);
  * - used: on entry, the sound at 2 and, when the player who used it is this system's, one bell
- *   less in the player's wallet (at 0xa68 of the pockets, func_02098cf8 and func_02098aa0) if
+ *   less in the player's wallet (at 0xa68 of the pockets, PlayerPockets_Bells and PlayerPockets_SetBells) if
  *   any is left. Its update is idle's, so it can be used again.
  *
  * With unk_76C at 2 it enters the used state by itself, each frame, with no player (0xff). Once

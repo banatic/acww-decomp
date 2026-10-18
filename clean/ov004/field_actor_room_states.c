@@ -36,6 +36,8 @@
 #include "ov004/rmo_telephone.h"
 #include "ov004/room_objects.h"
 #include "ov004/room_point_sound.h"
+#include "field_actor_room_states2.h"
+#include "room_pushes.h"
 
 static_assert(offsetof(FieldActor, anim) == 0x2d0, "animation control");
 static_assert(offsetof(FieldActor, anim.end) == 0x2d4, "animation length");
@@ -731,7 +733,7 @@ static_assert(offsetof(FieldActorItemOutArgs, second) == 0x0c, "second");
 /* The screen's transition (main/screen_transition.h): its state, 0 while the screen is
  * closed. */
 extern u8 data_021c75b8;
-/* "obj_etc_player": the receiver's name for the refusal's talk. */
+/* "obj_etc_error": the receiver's name for the refusal's talk. */
 extern const char data_ov004_02254b00[];
 
 extern int FX_MulFunc(int a, int b);
@@ -1079,7 +1081,7 @@ CLEAN_AS(func_ov004_022279d8, FieldActorRoomStates_UpdateExitWalk)
  * A claim (main's scene_claim.h): the exit is claimed (until SceneClaim_TakeExit agrees), then
  * its answer waited for. Given, the exit is taken, or, when the claimed exit is placed, the
  * phase is "at the point" again with animation 0x3e (blended over 3 frames). Refused, the
- * actor takes its receiver (flag 0x11, named "obj_etc_player", byte 0x1e 0x15) and asks its
+ * actor takes its receiver (flag 0x11, named "obj_etc_error", byte 0x1e 0x15) and asks its
  * link for the talk; once the talk has opened and closed, the receiver is let go (flag 0x11
  * cleared), the state's bar for requests is its end value and state 0x6f is asked for to the
  * claimed exit's next tile (0x333, priority 5), each frame until it is taken. */
@@ -1515,7 +1517,7 @@ CLEAN_AS(func_ov004_022281e0, FieldActorRoomStates_ChestCloseMessage)
 
 /* func_ov004_0222820c (state 0x2f's entry): the request's chest index goes to the work and to
  * 0x8f0; animation 0x38 plus the index (blended over 3 frames) plays backwards from its last
- * whole frame; for another console's actor func_ov004_0223b334 is told its position and yaw.
+ * whole frame; for another console's actor RoomObjects_Stub0223b334 is told its position and yaw.
  * REQUIRES: the index is 0 to 2 (the ROM picks no animation for others and plays whatever its
  * register held). */
 void FieldActorRoomStates_EnterChestClose(FieldActor *actor, const StateRequest *request, int previous)
@@ -1595,7 +1597,7 @@ CLEAN_AS(func_ov004_02228318, FieldActorRoomStates_AtChestMessage)
 
 /* func_ov004_02228344 (state 0x2e's entry): the request's chest index (its first byte) goes to
  * the work and to 0x8f0; animation 0x3b plus the index loops (blended over 3 frames); for
- * another console's actor func_ov004_0223b338 is told its position and yaw.
+ * another console's actor RoomObjects_Stub0223b338 is told its position and yaw.
  * REQUIRES: the index is 0 to 2 (the ROM picks no animation for others and plays whatever its
  * register held). */
 void FieldActorRoomStates_EnterAtChest(FieldActor *actor, const StateRequest *request, int previous)
@@ -1781,7 +1783,7 @@ CLEAN_AS(func_ov004_02228438, FieldActorRoomStates_EndChestApproach)
 
 /* func_ov004_02228480: while animation 0x1a or the standing one plays, flag 2 is set and
  * animation 0x3b plus the work's chest index plays once (blended over 3 frames); for another
- * console's actor func_ov004_0223b33c is told its position and yaw.
+ * console's actor RoomObjects_Stub0223b33c is told its position and yaw.
  * QUIRK: the ROM also tests whether the animation is at its whole frame 0, and goes on either
  * way.
  * REQUIRES: the index is 0 to 2 (the ROM picks no animation for others and plays whatever its
@@ -3002,18 +3004,6 @@ static_assert(offsetof(FieldActor, player) == 0x800, "player");
 /* How far behind the step back ends (-2.0). */
 extern const fx32 data_ov004_02254afc;
 
-/* The room's object being moved (data_ov004_02259784) and what it answers: whether it can move
- * ahead (func_ov004_0223c8a8) or back (func_ov004_0223c85c, half a turn round), and its move
- * ahead (func_ov004_0223c86c) or back (func_ov004_0223c820). */
-extern void *func_ov004_0223cb10(void);
-extern int func_ov004_0223c8a8(void *mover);
-extern int func_ov004_0223c85c(void *mover);
-extern int func_ov004_0223c86c(void *mover);
-extern int func_ov004_0223c820(void *mover);
-
-/* State 0x1e's request (elsewhere in the overlay). */
-extern int func_ov004_0222a23c(FieldActor *actor, int a, int b, int priority, short arg);
-
 static FieldActorObjectStep *fars_object_step_of(FieldActor *actor)
 {
     return (FieldActorObjectStep *) (void *) &actor->work;
@@ -3034,7 +3024,7 @@ static void fars_end_object_step(FieldActor *actor)
     }
     actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     if (FIELD_ACTOR_HOLD(actor) != 0) {
-        func_ov004_0222a23c(actor, 1, 0, FARS_HOLD_PRIORITY, FARS_NO_ARG);
+        FieldActorRoomStates2_RequestFurnitureHold(actor, 1, 0, FARS_HOLD_PRIORITY, FARS_NO_ARG);
     } else {
         FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
     }
@@ -3056,7 +3046,7 @@ static void fars_run_object_move(FieldActor *actor, int pull)
         return;
     }
     u8 refused = 0;
-    int can_move = pull ? func_ov004_0223c85c(func_ov004_0223cb10()) : func_ov004_0223c8a8(func_ov004_0223cb10());
+    int can_move = pull ? RoomPushes_CanPull(RoomPushes_Records()) : RoomPushes_CanPush(RoomPushes_Records());
     if (can_move == 0) {
         refused = FARS_MOVE_BLOCKED;
     }
@@ -3066,10 +3056,10 @@ static void fars_run_object_move(FieldActor *actor, int pull)
     if (refused == 0) {
         if (pull) {
             FieldActorRoomStates_RequestPullStep(actor, FARS_PRIORITY, FARS_NO_ARG);
-            func_ov004_0223c820(func_ov004_0223cb10());
+            RoomPushes_TryPull(RoomPushes_Records());
         } else {
             FieldActorRoomStates_RequestPushStep(actor, FARS_PRIORITY, FARS_NO_ARG);
-            func_ov004_0223c86c(func_ov004_0223cb10());
+            RoomPushes_TryPush(RoomPushes_Records());
         }
         return;
     }
@@ -3085,7 +3075,7 @@ static void fars_run_object_move(FieldActor *actor, int pull)
         return;
     }
     actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
-    func_ov004_0222a23c(actor, 0, 1, FARS_HOLD_PRIORITY, FARS_NO_ARG);
+    FieldActorRoomStates2_RequestFurnitureHold(actor, 0, 1, FARS_HOLD_PRIORITY, FARS_NO_ARG);
 }
 
 /* func_ov004_022297d8 (state 0x23's update): the body, the move, the contact bodies, the shadow

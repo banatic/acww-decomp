@@ -73,7 +73,7 @@ void SoundSystem_MoveMusicVolume(SoundSystem *sys, int volume, int frames);
 void SoundSystem_EndMusic(SoundSystem *sys, int fade_frames);
 void SoundSystem_ChangeMusic(SoundSystem *sys, unsigned int music);
 unsigned int SoundSystem_Random(SoundSystem *sys, unsigned int range);
-int SoundSystem_LoadSeqArc(SoundSystem *sys, int seq_arc);
+int SoundSystem_LoadBank(SoundSystem *sys, int bank);
 void SoundSystem_PlayVoice(SoundSystem *sys, int number, int volume, int pitch);
 void SoundSystem_SetVoiceType(SoundSystem *sys, int type);
 void SoundSystem_StopSequence(void *sys, int number, int fade_frames);

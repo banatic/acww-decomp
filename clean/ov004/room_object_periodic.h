@@ -1,6 +1,6 @@
 /* A class of overlay 4's room objects (vtable 0x02252a7c, receiver part 0x02252b28, 0x850
  * bytes) that plays its model's animation (variant 0, once, at normal speed) in bursts: after a
- * wait it plays the sound at 0 of the furniture's row (func_ov004_0223a760) and runs the
+ * wait it plays the sound at 0 of the furniture's row (FurnitureSounds_Sound0) and runs the
  * animation `repeats` times over, then waits again. What it does depends on that sound:
  *
  * - sounds 0x3f9 to 0x3fc: one burst between waits, the animation 4 times (2 for 0x3fc); the

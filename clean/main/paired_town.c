@@ -8,6 +8,12 @@
 #include "player_records.h"
 #include "session.h"
 #include "wifi_friends.h"
+#include "activity.h"
+#include "exchange_block.h"
+#include "link_global.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "town_name.h"
 
 extern NetSession *data_020ccf94;
 
@@ -18,34 +24,6 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 typedef struct PairedTownText {
     u32 words[8];
 } PairedTownText;
-extern void *func_020641c8(PairedTownText *text);
-extern void *func_020641b0(PairedTownText *text);
-extern void func_02064210(const u8 *town, PairedTownText *text);
-
-/* A design creator's town (a player's, from PlayerRecord_Player). */
-extern u16 *func_02095040(DesignCreator *creator);
-
-/* A slot's exchange block (0x950 bytes; 4 for this system's, data_021ee418) and the paired town
- * in it. */
-extern u8 *func_02090040(int slot);
-extern u8 *func_02090124(u8 *block);
-
-/* A paired town's parts: its town (the object itself), its days, its bit 4, and setting them;
- * all cleared. */
-extern u8 *func_020882ec(u8 *pairing);
-extern int func_020882dc(u8 *pairing);
-extern int func_020882c4(u8 *pairing);
-extern void func_020882b0(u8 *pairing, u32 flag);
-extern void func_020882e4(u8 *pairing, const void *town);
-extern void func_020882cc(u8 *pairing, u8 days);
-extern void func_020882f0(u8 *pairing);
-
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-
-/* The slot whose exchange block a slot is given (Activity.block_source). */
-extern u8 func_020a2450(const Activity *activity, int slot);
-/* The word at 0x94 of the link state (data_021f4320): a slot. */
-extern u32 func_020a6ed0(void);
 
 #define NO_PLAYER 4
 #define OWN_BLOCK 4
@@ -60,7 +38,7 @@ extern u32 func_020a6ed0(void);
 /* The town of a player record's player. */
 static const u8 *record_town(u8 *record)
 {
-    return (const u8 *) func_02095040(PlayerRecord_Player(record));
+    return (const u8 *) PlayerId_Town(PlayerRecord_Player(record));
 }
 
 /* func_020a0c18: whether `record`'s player (its own friend data) is among the friends of
@@ -94,12 +72,12 @@ void PairedTown_Pair(Activity *activity, int player)
         return;
     }
     PairedTownText player_text;
-    func_020641c8(&player_text);
-    func_02064210(record_town(record), &player_text);
+    TownNameText_Construct((TownNameText *) &player_text);
+    TownName_ToText((TownName *) (void *) record_town(record), (TextBase *) &player_text);
     u8 *pairing = PlayerRecord_Field242C(record);
-    if (func_020882dc(pairing) != 0) {
+    if (PairedTown_Days(pairing) != 0) {
         PairedTown_Note(activity, pairing);
-        func_020641b0(&player_text);
+        TownNameText_Destruct((TownNameText *) &player_text);
         return;
     }
 
@@ -107,7 +85,7 @@ void PairedTown_Pair(Activity *activity, int player)
     u8 *partner_record = NULL;
     u8 *partner_pairing = NULL;
     PairedTownText partner_text;
-    func_020641c8(&partner_text);
+    TownNameText_Construct((TownNameText *) &partner_text);
     NetSession *session = data_020ccf94;
     for (int i = 0; i < SESSION_SLOTS; i++) {
         if (i == player || Session_IsSlotTaken(session, i) == 0) {
@@ -117,9 +95,9 @@ void PairedTown_Pair(Activity *activity, int player)
         if (partner_record == NULL) {
             continue;
         }
-        func_02064210(record_town(partner_record), &partner_text);
+        TownName_ToText((TownName *) (void *) record_town(partner_record), (TextBase *) &partner_text);
         partner_pairing = PlayerRecord_Field242C(partner_record);
-        if (func_020882dc(partner_pairing) != 0) {
+        if (PairedTown_Days(partner_pairing) != 0) {
             continue;
         }
         if (Net_GetMode() == NET_MODE_WFC_3 || Net_GetMode() == NET_MODE_WFC_4) {
@@ -132,47 +110,48 @@ void PairedTown_Pair(Activity *activity, int player)
         break;
     }
     if (partner == NO_PLAYER ||
-        (*GameVariables_Slot(VARIABLE_BANK, VARIABLE_PAIRING) == 0 && func_020644cc(PAIRING_ODDS) != 0)) {
-        func_020641b0(&partner_text);
-        func_020641b0(&player_text);
+        (*GameVariables_Slot(VARIABLE_BANK, VARIABLE_PAIRING) == 0 && MainRandom_Below(PAIRING_ODDS) != 0)) {
+        TownNameText_Destruct((TownNameText *) &partner_text);
+        TownNameText_Destruct((TownNameText *) &player_text);
         return;
     }
 
-    u32 draw = func_020644cc(2);
-    func_020882b0(partner_pairing, draw == 0);
-    func_020882e4(partner_pairing, record_town(record));
-    func_020882cc(partner_pairing, PAIRED_TOWN_DAYS);
-    func_020882b0(pairing, draw == 1);
-    func_020882e4(pairing, record_town(partner_record));
-    func_020882cc(pairing, PAIRED_TOWN_DAYS);
+    u32 draw = MainRandom_Below(2);
+    PairedTown_SetFlag4(partner_pairing, draw == 0);
+    PairedTown_SetTown(partner_pairing, record_town(record));
+    PairedTown_SetDays(partner_pairing, PAIRED_TOWN_DAYS);
+    PairedTown_SetFlag4(pairing, draw == 1);
+    PairedTown_SetTown(pairing, record_town(partner_record));
+    PairedTown_SetDays(pairing, PAIRED_TOWN_DAYS);
     PairedTown_Note(activity, pairing);
     PairedTown_Note(activity, partner_pairing);
 
-    int player_block = func_020a2450(activity, player);
-    int partner_block = func_020a2450(activity, partner);
+    int player_block = Activity_BlockSource(activity, player);
+    int partner_block = Activity_BlockSource(activity, partner);
 
     u8 *block_record = PlayerRecords_OfPlayer(player_block);
-    u8 *block = func_02090040(player_block);
+    u8 *block = (u8 *) (uintptr_t) ExchangeBlock_OfSlot(player_block);
     PairedTownText player_block_text;
-    func_020641c8(&player_block_text);
+    TownNameText_Construct((TownNameText *) &player_block_text);
     if (block_record != NULL) {
-        func_02064210(record_town(block_record), &player_block_text);
+        TownName_ToText((TownName *) (void *) record_town(block_record), (TextBase *) &player_block_text);
     }
-    MI_CpuCopy8(pairing, func_02090124(block), PAIRED_TOWN_SIZE);
+    MI_CpuCopy8(pairing, (void *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (void *) block), PAIRED_TOWN_SIZE);
 
     block_record = PlayerRecords_OfPlayer(partner_block);
-    block = func_02090040(partner_block);
+    block = (u8 *) (uintptr_t) ExchangeBlock_OfSlot(partner_block);
     PairedTownText partner_block_text;
-    func_020641c8(&partner_block_text);
+    TownNameText_Construct((TownNameText *) &partner_block_text);
     if (block_record != NULL) {
-        func_02064210(record_town(block_record), &partner_block_text);
+        TownName_ToText((TownName *) (void *) record_town(block_record), (TextBase *) &partner_block_text);
     }
-    MI_CpuCopy8(partner_pairing, func_02090124(block), PAIRED_TOWN_SIZE);
+    MI_CpuCopy8(partner_pairing, (void *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (void *) block),
+                PAIRED_TOWN_SIZE);
 
-    func_020641b0(&partner_block_text);
-    func_020641b0(&player_block_text);
-    func_020641b0(&partner_text);
-    func_020641b0(&player_text);
+    TownNameText_Destruct((TownNameText *) &partner_block_text);
+    TownNameText_Destruct((TownNameText *) &player_block_text);
+    TownNameText_Destruct((TownNameText *) &partner_text);
+    TownNameText_Destruct((TownNameText *) &player_text);
 }
 CLEAN_AS(func_020a0c74, PairedTown_Pair)
 
@@ -191,7 +170,8 @@ void PairedTown_PairAll(Activity *activity)
     NetSession *session = data_020ccf94;
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (Session_IsSlotTaken(session, slot) != 0) {
-            func_020882f0(func_02090124(func_02090040(slot)));
+            PairedTown_Reset(
+                (u8 *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (uintptr_t) ExchangeBlock_OfSlot(slot)));
         }
     }
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
@@ -209,10 +189,11 @@ void PairedTown_PairOwn(Activity *activity)
     NetSession *session = data_020ccf94;
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (Session_IsSlotTaken(session, slot) != 0) {
-            func_020882f0(func_02090124(func_02090040(slot)));
+            PairedTown_Reset(
+                (u8 *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (uintptr_t) ExchangeBlock_OfSlot(slot)));
         }
     }
-    PairedTown_Pair(activity, (int) func_020a6ed0());
+    PairedTown_Pair(activity, (int) LinkGlobal_ServedSlot());
 }
 CLEAN_AS(func_020a0efc, PairedTown_PairOwn)
 
@@ -222,23 +203,23 @@ CLEAN_AS(func_020a0efc, PairedTown_PairOwn)
 void PairedTown_TakeOwn(void *unused)
 {
     (void) unused;
-    u8 *block = func_02090040(OWN_BLOCK);
+    u8 *block = (u8 *) (uintptr_t) ExchangeBlock_OfSlot(OWN_BLOCK);
     u8 *record = PlayerRecords_Current();
     PairedTownText player_text;
-    func_020641c8(&player_text);
-    func_02064210(record_town(record), &player_text);
+    TownNameText_Construct((TownNameText *) &player_text);
+    TownName_ToText((TownName *) (void *) record_town(record), (TextBase *) &player_text);
     u8 *own_pairing = PlayerRecord_Field242C(record);
-    u8 *arrived = func_02090124(block);
+    u8 *arrived = (u8 *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (void *) block);
     PairedTownText arrived_text;
-    func_020641c8(&arrived_text);
-    func_02064210(func_020882ec(arrived), &arrived_text);
-    if (func_020882dc(arrived) != 0) {
+    TownNameText_Construct((TownNameText *) &arrived_text);
+    TownName_ToText((TownName *) (void *) PairedTown_Town(arrived), (TextBase *) &arrived_text);
+    if (PairedTown_Days(arrived) != 0) {
         MI_CpuCopy8(arrived, own_pairing, PAIRED_TOWN_SIZE);
-        func_020882c4(arrived);
+        PairedTown_Flag4(arrived);
     }
-    func_020882f0(func_02090124(block));
-    func_020641b0(&arrived_text);
-    func_020641b0(&player_text);
+    PairedTown_Reset((u8 *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (void *) block));
+    TownNameText_Destruct((TownNameText *) &arrived_text);
+    TownNameText_Destruct((TownNameText *) &player_text);
 }
 CLEAN_AS(func_020a0b94, PairedTown_TakeOwn)
 
@@ -252,12 +233,6 @@ CLEAN_AS(func_020a0b94, PairedTown_TakeOwn)
 #define PAIRED_TOWN_PLAYER_FLAG 0x33
 
 extern u32 data_021dc7a8[]; /* the state block (state_block.h) */
-
-/* A town object's copy, reset, destructor and constructor (StateBlockTown). */
-extern void func_020642d0(void *town, const void *source);
-extern void func_020642e0(void *town);
-extern void func_020642f8(void *town);
-extern void func_020642fc(void *town);
 
 static u8 *paired_town_of_state_block(void)
 {
@@ -318,7 +293,7 @@ CLEAN_AS(func_020882dc, PairedTown_Days)
 /* func_020882e4: the town copied in. */
 void PairedTown_SetTown(u8 *pairing, const void *town)
 {
-    func_020642d0(pairing, town);
+    TownName_Copy((TownName *) (void *) pairing, town);
 }
 CLEAN_AS(func_020882e4, PairedTown_SetTown)
 
@@ -332,7 +307,7 @@ CLEAN_AS(func_020882ec, PairedTown_Town)
 /* func_020882f0: no town, no days and both flags clear. */
 void PairedTown_Reset(u8 *pairing)
 {
-    func_020642e0(pairing);
+    TownName_Clear((TownName *) (void *) pairing);
     pairing[PAIRED_TOWN_STATE] &= (u8) ~(PAIRED_TOWN_DAYS_MASK | PAIRED_TOWN_FLAG_4 | PAIRED_TOWN_FLAG_5);
 }
 CLEAN_AS(func_020882f0, PairedTown_Reset)
@@ -410,7 +385,7 @@ CLEAN_AS(func_02088404, PairedTown_PassDays)
 /* func_02088450: destructs the town. */
 u8 *PairedTown_Destruct(u8 *pairing)
 {
-    func_020642f8(pairing);
+    TownName_Destruct(pairing);
     return pairing;
 }
 CLEAN_AS(func_02088450, PairedTown_Destruct)
@@ -418,7 +393,7 @@ CLEAN_AS(func_02088450, PairedTown_Destruct)
 /* func_02088460: constructs the town. */
 u8 *PairedTown_Construct(u8 *pairing)
 {
-    func_020642fc(pairing);
+    TownName_Construct(pairing);
     return pairing;
 }
 CLEAN_AS(func_02088460, PairedTown_Construct)

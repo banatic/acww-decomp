@@ -3,13 +3,11 @@
 
 #include "clean.h"
 #include "session_villager.h"
+#include "item_code.h"
+#include "item_traits.h"
+#include "main_random.h"
 
 #define VILLAGER_ITEMS_OFFSET 0x7b0
-
-extern int func_0204c878(const u16 *item);    /* what the item is worth */
-extern unsigned int func_020644cc(int bound); /* a random number below `bound` */
-extern int func_0204bcdc(const u16 *item);    /* whether the item code is of kind 3 or 4 */
-extern int func_0204bc64(const u16 *item);    /* the item without its variant */
 
 static u16 *items_of(u8 *villager)
 {
@@ -27,7 +25,7 @@ void VillagerItems_MostValuable(u16 *out, u8 *villager)
         if (items[i] == VILLAGER_ITEMS_NONE) {
             continue;
         }
-        int worth = func_0204c878(&items[i]);
+        int worth = ItemTraits_Price(&items[i]);
         if (worth >= best) {
             *out = items[i];
             best = worth;
@@ -50,7 +48,7 @@ void VillagerItems_Random(u16 *out, u8 *villager)
     if (count <= 0) {
         return;
     }
-    int pick = (int) func_020644cc(count);
+    int pick = (int) MainRandom_Below(count);
     for (int i = 0; i < VILLAGER_ITEMS_COUNT; i++) {
         if (items[i] == VILLAGER_ITEMS_NONE) {
             continue;
@@ -85,9 +83,9 @@ int VillagerItems_Find(u8 *villager, u16 *item)
     u16 *items = VillagerItems_At(villager, 0);
     for (int i = 0; i < VILLAGER_ITEMS_COUNT; i++) {
         int same;
-        if (func_0204bcdc(item) != 0) {
-            int wanted = func_0204bc64(item);
-            same = wanted == func_0204bc64(&items[i]);
+        if (ItemCode_HasVariant(item) != 0) {
+            int wanted = ItemCode_VariantItem(item);
+            same = wanted == ItemCode_VariantItem(&items[i]);
         } else {
             same = *item == items[i];
         }

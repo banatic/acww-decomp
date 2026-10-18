@@ -6,6 +6,9 @@
 
 #include "clean.h"
 #include "state_flags.h"
+#include "a_mes_obj.h"
+#include "autoload_2/network.h"
+#include "oam_buffer.h"
 
 static_assert(offsetof(WirelessIcon, delay) == 0x10, "WirelessIcon layout");
 static_assert(offsetof(WirelessIcon, wfc_graphics) == 0x15, "WirelessIcon layout");
@@ -38,15 +41,6 @@ extern WirelessIcon data_0213ff98;
 #define DELAY_FLAG_SET 0xe
 #define DELAY_VALUE_LEFT_ONE 0x17
 
-/* The wireless mode (data_021fbef8): 0 none, 1 and 2 the local wireless library, 3 and 4 the
- * Wi-Fi Connection. */
-extern u8 func_020ec1e8(void);
-/* The link level, 1 to 3, of the library in use; 0 for none. */
-extern int func_020ec39c(void);
-/* Load one of the icon's two sets of graphics (nonzero: the Wi-Fi Connection's). */
-extern void func_02011f2c(int wfc);
-extern void func_02088df8(int a, int cell, int x, int y, int b, int c, fx32 scale_x, fx32 scale_y, int d, int e, int f, int g);
-
 static void set_step(WirelessIcon *icon, u32 step)
 {
     icon->step = step;
@@ -77,7 +71,7 @@ void WirelessIcon_Slide(WirelessIcon *icon)
 
     if (active && !match && icon->step == 0) {
         icon->wfc_graphics = !icon->wfc_graphics;
-        func_02011f2c(icon->wfc_graphics);
+        AMesObj_SetWirelessIcon(icon->wfc_graphics);
     }
 }
 CLEAN_AS(func_02003bc8, WirelessIcon_Slide)
@@ -110,7 +104,7 @@ CLEAN_AS(func_02003c38, WirelessIcon_TrackFlag)
 /* func_02003c98: whether the graphics loaded are those of the library in use. */
 int WirelessIcon_GraphicsMatch(WirelessIcon *icon)
 {
-    u8 mode = func_020ec1e8();
+    u8 mode = Net_GetMode();
     return icon->wfc_graphics == (mode == 3 || mode == 4);
 }
 CLEAN_AS(func_02003c98, WirelessIcon_GraphicsMatch)
@@ -118,7 +112,7 @@ CLEAN_AS(func_02003c98, WirelessIcon_GraphicsMatch)
 /* func_02003cc0: a wireless library in use (a mode other than 0 and 6) and no delay. */
 int WirelessIcon_IsActive(WirelessIcon *icon)
 {
-    int in_use = func_020ec1e8() != 0 && func_020ec1e8() != 6;
+    int in_use = Net_GetMode() != 0 && Net_GetMode() != 6;
     return in_use && icon->delay == 0;
 }
 CLEAN_AS(func_02003cc0, WirelessIcon_IsActive)
@@ -130,7 +124,8 @@ void WirelessIcon_Draw(WirelessIcon *icon)
         return;
     }
     int cell = data_020d5b3c[SIGNAL_ANIM].frames[icon->frame].cell;
-    func_02088df8(0, cell, icon->slide_x + DRAW_X, DRAW_Y, -1, -1, 0x1000, 0x1000, 0, -1, 0, 0);
+    OamBuffer_DrawCell(0, (const OamEntry *) (uintptr_t) cell, icon->slide_x + DRAW_X, DRAW_Y, -1, -1, 0x1000, 0x1000, 0, -1,
+                       0, 0);
 }
 CLEAN_AS(func_02003cf4, WirelessIcon_Draw)
 
@@ -138,7 +133,7 @@ CLEAN_AS(func_02003cf4, WirelessIcon_Draw)
 void WirelessIcon_Update(WirelessIcon *icon)
 {
     if (WirelessIcon_IsActive(icon)) {
-        switch (func_020ec39c()) {
+        switch (Net_GetLinkLevel()) {
             case 1:
                 icon->frame = 2;
                 break;

@@ -20,6 +20,8 @@
 #include "main/talk_object.h"
 #include "ov003/field_actor.h" /* FieldActor_PlayerRequestState39 */
 #include "ov003/object_actors.h"
+#include "ov009/scene_actor_files.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(SceneActor, model_object) == 0x13c, "model");
 static_assert(offsetof(SceneActor, sound) == 0x238, "sound");
@@ -68,26 +70,11 @@ static_assert(offsetof(AnimatedModel, frames) == 0x9c, "model frames");
 extern s16 data_ov068_022786c8;
 extern StateBlock data_021dc7a8;
 
-/* Its member func_ov068_02272a7c: the state's entry runs and, when it answers nonzero, the state
- * is taken; whether it was. */
-extern int _ZN18Obj_ov068_0227775019func_ov068_02272a7cEi(Sequence4 *actor, int state);
-/* Its third animation (overlay 9's func_ov009_02264d18). */
-extern int func_ov068_02272dc8(Sequence4 *actor);
-/* The yaw from where this console's player stood when its frame began to the effect point moved
- * 0x30a along x; 0 without the player. */
-extern int func_ov068_02272cd4(Sequence4 *actor);
-/* Over frames 0x25-0x32 of its animation the effect at 0x2e4 is moved to the effect point
- * (func_ov068_02272c30 runs first at frame 0x25, func_ov068_02272bd4 after it at 0x32). */
-extern void func_ov068_02272be4(Sequence4 *actor);
-/* The same over frames 0x2d-0x31 for the effect at 0x2e0 (func_ov068_02272cb0 and
- * func_ov068_02272c54). */
-extern void func_ov068_02272c64(Sequence4 *actor);
-
 typedef int (*Sequence4Slot)(Sequence4 *actor);
 
 static void set_state(Sequence4 *actor, int state)
 {
-    _ZN18Obj_ov068_0227775019func_ov068_02272a7cEi(actor, state);
+    Sequence4_SetState(actor, state);
 }
 
 static AnimatedModel *sequence4_model(Sequence4 *actor)
@@ -123,8 +110,8 @@ static int call_slot(Sequence4 *actor, int offset)
 static int player_looks(Sequence4 *actor, const Actor *player)
 {
     s16 facing = player->angle[1];
-    if (Math_AbsDiff16(facing, func_ov068_02272cd4(actor)) < SEQUENCE4_LOOK_REACH) {
-        PlayerActorOps_SetLook(0, (s16) (func_ov068_02272cd4(actor) - facing), SEQUENCE4_PLAYER);
+    if (Math_AbsDiff16(facing, Sequence4_YawToEffect(actor)) < SEQUENCE4_LOOK_REACH) {
+        PlayerActorOps_SetLook(0, (s16) (Sequence4_YawToEffect(actor) - facing), SEQUENCE4_PLAYER);
         return 1;
     }
     return 0;
@@ -165,7 +152,7 @@ void Sequence4_UpdateState15(Sequence4 *actor)
     if (animation_done(actor)) {
         set_state(actor, 16);
     }
-    func_ov068_02272be4(actor);
+    Sequence4_FollowEffectA(actor);
     step_animation(actor);
 }
 CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272114Ev, Sequence4_UpdateState15)
@@ -173,7 +160,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272114Ev, Sequence4_UpdateState15
 /* func_ov068_0227215c (entry of state 15): the third animation, and sound 0x88b. */
 int Sequence4_EnterState15(Sequence4 *actor)
 {
-    start_animation(actor, func_ov068_02272dc8(actor));
+    start_animation(actor, Sequence4_ThirdAnimation(actor));
     SceneActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_C);
     return 1;
 }
@@ -232,7 +219,7 @@ void Sequence4_UpdateState12(Sequence4 *actor)
     if (animation_done(actor)) {
         set_state(actor, 13);
     }
-    func_ov068_02272c64(actor);
+    Sequence4_FollowEffectB(actor);
     step_animation(actor);
     const Actor *player = (const Actor *) SessionPlayers_ActorOf(SEQUENCE4_PLAYER);
     if (player != NULL) {
@@ -391,7 +378,7 @@ CLEAN_AS(func_ov068_0227254c, Sequence4_EnterState7)
 void Sequence4_UpdateState6(Sequence4 *actor)
 {
     SceneActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_LOOP);
-    func_ov068_02272be4(actor);
+    Sequence4_FollowEffectA(actor);
     if (animation_done(actor)) {
         set_state(actor, 7);
         return;
@@ -426,7 +413,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272550Ev, Sequence4_UpdateState6)
  * from 0. */
 int Sequence4_EnterState6(Sequence4 *actor)
 {
-    start_animation(actor, func_ov068_02272dc8(actor));
+    start_animation(actor, Sequence4_ThirdAnimation(actor));
     SceneActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_C);
     actor->frames = 0;
     return 1;
@@ -527,11 +514,6 @@ extern const MemberPointer data_ov068_02277670, data_ov068_02277700, data_ov068_
     data_ov068_022776e8, data_ov068_022776d8, data_ov068_022776e0, data_ov068_02277710, data_ov068_02277718,
     data_ov068_022776c0, data_ov068_022776b8, data_ov068_022776b0, data_ov068_022776a8, data_ov068_022776a0,
     data_ov068_02277698, data_ov068_02277690, data_ov068_02277630;
-
-/* Overlay 9's scene actor: its third animation, its destructor and its constructor. */
-extern int func_ov009_02264d18(Sequence4 *actor);
-extern void *func_ov009_0226539c(Sequence4 *actor);
-extern void *func_ov009_0226552c(Sequence4 *actor);
 
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
@@ -867,7 +849,7 @@ CLEAN_AS(func_ov068_02272db4, Sequence4_DrawsModel)
 /* func_ov068_02272dc8: its third animation (overlay 9's func_ov009_02264d18). */
 int Sequence4_ThirdAnimation(Sequence4 *actor)
 {
-    return func_ov009_02264d18(actor);
+    return SceneActor_JointAnim2((SceneActor *) actor);
 }
 CLEAN_AS(func_ov068_02272dc8, Sequence4_ThirdAnimation)
 
@@ -952,7 +934,7 @@ Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor)
 {
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
-    func_ov009_0226539c(actor);
+    SceneActor_Destruct((SceneActor *) actor);
     Heap_FreeAux(actor);
     return actor;
 }
@@ -963,7 +945,7 @@ Sequence4 *Sequence4_Destroy(Sequence4 *actor)
 {
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
-    func_ov009_0226539c(actor);
+    SceneActor_Destruct((SceneActor *) actor);
     return actor;
 }
 CLEAN_AS(func_ov068_02272f14, Sequence4_Destroy)
@@ -971,7 +953,7 @@ CLEAN_AS(func_ov068_02272f14, Sequence4_Destroy)
 /* func_ov068_02272f38: the constructor: overlay 9's, then its vtables. */
 Sequence4 *Sequence4_Construct(Sequence4 *actor)
 {
-    func_ov009_0226552c(actor);
+    SceneActor_ConstructBase((SceneActor *) actor);
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
     return actor;

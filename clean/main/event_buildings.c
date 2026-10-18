@@ -4,6 +4,11 @@
 #include "clean.h"
 #include "main/acre_map.h"
 #include "main/acre_tile.h"
+#include "item_1568_count.h"
+#include "main_random.h"
+#include "town_day.h"
+#include "acre_record.h"
+#include "item_code.h"
 
 #define EVENT_BUILDINGS_FIRST 0x5000
 #define EVENT_BUILDINGS_LAST 0x5021
@@ -40,24 +45,6 @@ extern u8 data_021ebcd2[];
 
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020051b0(void *item); /* the item code's destructor (does nothing) */
-
-/* Acre records: searching a layer for a code in [*first, *last] (the tile to *x, *z), whether
- * the acre has any of the flags, the code of tile (x, z) in a layer (or 0), and setting it. */
-extern int func_02037da8(u8 *acre, int *x, int *z, u16 *first, u16 *last, u8 layer);
-extern int func_02037d64(u8 *acre, int flags);
-extern u16 *func_02037e0c(u8 *acre, int x, int z, u8 layer);
-extern int func_02037e44(u8 *acre, u16 *code, int x, int z, u8 layer);
-/* Item codes (item_code.h): whether a code has a variant, and its item. */
-extern int func_0204bcdc(u16 *code);
-extern int func_0204bc64(u16 *code);
-/* A random number below `bound`. */
-extern u32 func_020644cc(int bound);
-/* Clears the byte at `counter` (MI_CpuFill8). */
-extern void func_020871b0(u8 *counter);
-/* Marks event `event` (func_020479e0 on data_021c779c). */
-extern void func_02046640(int event);
-/* Empties the tiles of the inner acres that hold item 0x1568. */
-extern void func_02085f48(void);
 
 /* Rounding down as the ARM's arithmetic shift does. */
 static int event_buildings_shift_right(int value, int bits)
@@ -103,7 +90,7 @@ int EventBuildings_Revert5020(void)
             }
             int tile_x = 0;
             int tile_z = 0;
-            if (func_02037da8(acre, &tile_x, &tile_z, &data_021f4b20, &data_021f4b20, 0) == 0) {
+            if (AcreRecord_FindCode((AcreRecord *) (void *) acre, &tile_x, &tile_z, &data_021f4b20, &data_021f4b20, 0) == 0) {
                 continue;
             }
             if ((data_021f4b4c & 1) == 0) {
@@ -112,7 +99,7 @@ int EventBuildings_Revert5020(void)
                 data_021f4b4c |= 1;
             }
             if (AcreMap_SetBuildingInAcre((int) (uintptr_t) town, x, z, tile_x, tile_z, (int) (uintptr_t) &data_021f4b24)) {
-                func_02085f48();
+                EventBuildings_Clear1568();
                 return 1;
             }
         }
@@ -128,8 +115,8 @@ static int event_buildings_place_in(AcreMap *town, int x, int z)
     if (EventBuildings_TurnRandom500a(event_buildings_acre(town, x, z), EVENT_BUILDINGS_5020) == 0) {
         return 0;
     }
-    func_020871b0(data_021ebcd2);
-    func_02046640(EVENT_BUILDINGS_EVENT_5020);
+    Item1568Count_SetUp(data_021ebcd2);
+    TownDay_MarkEventOf(EVENT_BUILDINGS_EVENT_5020);
     return 1;
 }
 
@@ -198,7 +185,7 @@ int EventBuildings_TurnRandom500a(u8 *acre, int code)
     if (count == 0) {
         return 0;
     }
-    int index = (int) func_020644cc(count);
+    int index = (int) MainRandom_Below(count);
     return EventBuildings_Turn500a(acre, index, code);
 }
 CLEAN_AS(func_020b2d98, EventBuildings_TurnRandom500a)
@@ -211,21 +198,21 @@ int EventBuildings_Turn500a(u8 *acre, int index, int code)
     if (acre == NULL) {
         return 0;
     }
-    if (func_02037d64(acre, EVENT_BUILDINGS_NO_TURN_FLAGS_1) != 0 ||
-        func_02037d64(acre, EVENT_BUILDINGS_NO_TURN_FLAGS_2) != 0) {
+    if (AcreRecord_HasAnyFlag((AcreRecord *) (void *) acre, EVENT_BUILDINGS_NO_TURN_FLAGS_1) != 0 ||
+        AcreRecord_HasAnyFlag((AcreRecord *) (void *) acre, EVENT_BUILDINGS_NO_TURN_FLAGS_2) != 0) {
         return 0;
     }
     int count = 0;
     for (int z = 0; z < EVENT_BUILDINGS_ACRE_TILES; z++) {
         for (int x = 0; x < EVENT_BUILDINGS_ACRE_TILES; x++) {
-            u16 *tile = func_02037e0c(acre, x, z, 0);
+            u16 *tile = (u16 *) (uintptr_t) AcreRecord_Tile((AcreRecord *) (void *) acre, x, z, 0);
             if (tile == NULL || *tile != EVENT_BUILDINGS_500A) {
                 continue;
             }
             if (count == index) {
                 u16 building = (u16) code;
                 /* QUIRK: when the tile cannot be set, the search goes on and finds no other. */
-                if (func_02037e44(acre, &building, x, z, 0) != 0) {
+                if (AcreRecord_SetTile((AcreRecord *) (void *) acre, &building, x, z, 0) != 0) {
                     return 1;
                 }
             }
@@ -243,14 +230,14 @@ int EventBuildings_Count500a(u8 *acre)
     if (acre == NULL) {
         return 0;
     }
-    if (func_02037d64(acre, EVENT_BUILDINGS_NO_TURN_FLAGS_1) != 0 ||
-        func_02037d64(acre, EVENT_BUILDINGS_NO_TURN_FLAGS_2) != 0) {
+    if (AcreRecord_HasAnyFlag((AcreRecord *) (void *) acre, EVENT_BUILDINGS_NO_TURN_FLAGS_1) != 0 ||
+        AcreRecord_HasAnyFlag((AcreRecord *) (void *) acre, EVENT_BUILDINGS_NO_TURN_FLAGS_2) != 0) {
         return 0;
     }
     int count = 0;
     for (int z = 0; z < EVENT_BUILDINGS_ACRE_TILES; z++) {
         for (int x = 0; x < EVENT_BUILDINGS_ACRE_TILES; x++) {
-            u16 *tile = func_02037e0c(acre, x, z, 0);
+            u16 *tile = (u16 *) (uintptr_t) AcreRecord_Tile((AcreRecord *) (void *) acre, x, z, 0);
             if (tile != NULL && *tile == EVENT_BUILDINGS_500A) {
                 count++;
             }
@@ -332,10 +319,10 @@ int EventBuildings_RemoveAtSpot(int code)
         return 0;
     }
     int same;
-    if (func_0204bcdc(spot)) {
+    if (ItemCode_HasVariant(spot)) {
         u16 wanted = (u16) code;
-        int own = func_0204bc64(spot);
-        same = own == func_0204bc64(&wanted);
+        int own = ItemCode_VariantItem(spot);
+        same = own == ItemCode_VariantItem(&wanted);
     } else {
         same = *spot == code;
     }
@@ -413,14 +400,12 @@ u16 *EventBuildings_FindSpot(int *tile_x, int *tile_z)
     if (acre == NULL) {
         return NULL;
     }
-    return func_02037e0c(acre, EVENT_BUILDINGS_SPOT_X, EVENT_BUILDINGS_SPOT_Z, 0);
+    return (u16 *) (uintptr_t) AcreRecord_Tile((AcreRecord *) (void *) acre, EVENT_BUILDINGS_SPOT_X, EVENT_BUILDINGS_SPOT_Z,
+                                               0);
 }
 CLEAN_AS(func_020b3038, EventBuildings_FindSpot)
 
 /* ---- Emptying the tiles of item 0x1568 */
-
-#include "main/acre_record.h"
-#include "main/item_code.h"
 
 #define EVENT_BUILDINGS_ITEM_1568 0x1568
 #define EVENT_BUILDINGS_NO_ITEM 0xfff1

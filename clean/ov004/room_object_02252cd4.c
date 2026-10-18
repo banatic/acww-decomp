@@ -9,6 +9,8 @@
 #include "room_object_life.h"
 #include "room_object_map.h"
 #include "ov004/room_player_actor.h"
+#include "main/actor_table.h"
+#include "room_pushes.h"
 
 static_assert(offsetof(RoomObject, position) == 0x5c, "position");
 static_assert(offsetof(RoomObject, angle) == 0x8e, "angle");
@@ -24,9 +26,9 @@ static_assert(sizeof(RoomObject02252cd4) == 0x848, "the size RoomObject02252cd4_
 #define KIND_9 9           /* RoomObject.unk_780 of the kind animated every frame */
 #define KIND_26 0x26       /* RoomObject.unk_780 of the kind with three entry states */
 #define KIND_2C 0x2c       /* RoomObject.unk_780 of the kind stood on */
-#define PLAYER_COUNT 4     /* the actors func_ov004_0222c268 is asked for */
+#define PLAYER_COUNT 4     /* the actors RoomPlayerActor_PointAtSpot is asked for */
 #define PUSH_FRAMES 7      /* frames counted before the player is sent */
-#define MOVED_ENOUGH 0x200 /* how far the entry must have moved (func_ov004_0223cb30) */
+#define MOVED_ENOUGH 0x200 /* how far the entry must have moved (RoomPushes_Moved) */
 #define AHEAD 0x1000       /* added to the entry's distance for the point in front of it */
 #define PLAYER_REACH 0x800 /* what Actors_NoneNear is given */
 #define NPC_REACH 0x2000
@@ -36,20 +38,7 @@ static_assert(sizeof(RoomObject02252cd4) == 0x848, "the size RoomObject02252cd4_
 extern const u8 data_ov004_02252cd4[];
 extern const u8 data_ov004_02252d80[];
 
-/* Its entry among two (func_ov004_0223ca9c of func_ov004_0223cb10) and the parts of one: an
- * angle, a state, a point, a distance and how far it has moved. */
-extern void *func_ov004_0223cb10(void);
-extern void *func_ov004_0223ca9c(void *entries, RoomObject02252cd4 *object);
-extern int func_ov004_0223cb18(void *entry);
-extern u32 func_ov004_0223cb20(void *entry);
-extern Vec3 *func_ov004_0223cb24(void *entry);
-extern u32 func_ov004_0223cb2c(void *entry);
-extern int func_ov004_0223cb30(void *entry);
-/* Whether the entry's push may start. */
-extern int func_ov004_0223c700(void);
-
 /* The cell of a point of the town's map. */
-extern void func_0204f818(s32 *x, s32 *y, const Vec3 *point);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 
 /* func_ov004_02218848: the point checked for people in front of the entry: the object's own
@@ -61,9 +50,9 @@ void RoomObject02252cd4_ProbePoint(RoomObject02252cd4 *object, Vec3 *out, void *
         *out = object->base.position;
         return;
     }
-    *out = *func_ov004_0223cb24(entry);
-    Vec3 ahead = {0, 0, (s32) (func_ov004_0223cb2c(entry) + AHEAD)};
-    Vec_RotateY(&ahead, func_ov004_0223cb18(entry));
+    *out = *RoomPushes_Destination(entry);
+    Vec3 ahead = {0, 0, (s32) (RoomPushes_Standoff(entry) + AHEAD)};
+    Vec_RotateY(&ahead, RoomPushes_Facing(entry));
     VEC_Add(out, &ahead, out);
 }
 CLEAN_AS(func_ov004_02218848, RoomObject02252cd4_ProbePoint)
@@ -86,9 +75,9 @@ static void RoomObject02252cd4_update_stood_on(RoomObject02252cd4 *object)
         if (RoomPlayerActor_PointAtSpot(&point, i) == 0) {
             continue;
         }
-        s32 x;
-        s32 y;
-        func_0204f818(&x, &y, &point);
+        int x;
+        int y;
+        Position_Tile(&x, &y, (const Position *) (const void *) &point);
         CellList cells;
         CellList_Construct(&cells);
         RoomObject_ListCells(base, &cells, NULL, 0);
@@ -111,16 +100,16 @@ static int RoomObject02252cd4_entry_ready(RoomObject02252cd4 *object, void *entr
 {
     *action = 0;
     if (object->base.unk_780 != KIND_26) {
-        return func_ov004_0223cb20(entry) == 0;
+        return RoomPushes_Side(entry) == 0;
     }
-    if (func_ov004_0223cb20(entry) == 0) {
+    if (RoomPushes_Side(entry) == 0) {
         return 1;
     }
-    if (func_ov004_0223cb20(entry) == 3) {
+    if (RoomPushes_Side(entry) == 3) {
         *action = 1;
         return 1;
     }
-    if (func_ov004_0223cb20(entry) == 1) {
+    if (RoomPushes_Side(entry) == 1) {
         *action = 2;
         return 1;
     }
@@ -144,8 +133,8 @@ int RoomObject02252cd4_Update(RoomObject02252cd4 *object)
         RoomObject_PlaySound0(base);
     }
     int counted = 0;
-    void *entry = func_ov004_0223ca9c(func_ov004_0223cb10(), object);
-    if (entry != NULL && func_ov004_0223c700() != 0) {
+    void *entry = RoomPushes_FindObject(RoomPushes_Records(), &object->base);
+    if (entry != NULL && RoomPushes_Allowed() != 0) {
         u8 action;
         if (RoomObject02252cd4_entry_ready(object, entry, &action)) {
             Vec3 point;
@@ -155,7 +144,7 @@ int RoomObject02252cd4_Update(RoomObject02252cd4 *object)
                     counted = 1;
                     object->push_frames++;
                 }
-                if (func_ov004_0223cb30(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES) {
+                if (RoomPushes_Moved(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES) {
                     RoomPlayerActor_RequestSpotApproach(&point.x, &point.z, &base->angle, &action);
                     object->push_frames = 0;
                 }

@@ -3,6 +3,7 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "rom_file.h"
 
 /* The flags counted by AcreKind_CountFlags1000: seven bits from 0x1000. */
 #define ACRE_KIND_FLAGS_1000 0x7f000
@@ -18,9 +19,6 @@ extern u32 data_021c5910;
 extern Heap *data_021fbe94;
 /* "/bg/bkattr.bin". */
 extern const char data_020da4b4[];
-
-/* A file read whole into `heap` (from its start when `align` is positive); its size into *size. */
-extern u8 *func_02064b2c(const char *path, Heap *heap, int align, u32 *size);
 
 /* func_02037b14: how many of the flags 0x1000-0x40000 kind `kind` has. */
 u32 AcreKind_CountFlags1000(int kind)
@@ -95,7 +93,7 @@ CLEAN_AS(func_02037c28, AcreKind_Free)
 /* func_02037c48: the file read into the current heap; 1. */
 int AcreKind_Load(void)
 {
-    data_021c590c = func_02064b2c(data_020da4b4, data_021fbe94, 4, &data_021c5910);
+    data_021c590c = RomFile_Load(data_020da4b4, data_021fbe94, 4, &data_021c5910);
     return 1;
 }
 CLEAN_AS(func_02037c48, AcreKind_Load)

@@ -24,6 +24,7 @@
 #ifndef CLEAN_OV119_FRIEND_ROSTER_H
 #define CLEAN_OV119_FRIEND_ROSTER_H
 
+#include "main/bbs.h"
 #include "main/layer_load_task.h"
 #include "main/text_label.h"
 #include "main/wifi_friends.h"
@@ -153,7 +154,7 @@ typedef struct FriendRoster {
     ChoiceEntries entries;                  /* 0x4c4 */
     u8 pad_4cf;                             /* 0x4cf */
     TextLabel labels[FRIEND_ROSTER_LABELS]; /* 0x4d0 */
-    u8 header[0xd4];                        /* 0xcd4: a BbsLabel of main's (bbs.h), its first 0xd4 bytes */
+    BbsLabel header;                        /* 0xcd4 */
     Glider cursor_sprite;                   /* 0xda8: a Glider0 */
     u16 list_map[0x400];                    /* 0xe0c: "menu/friend/b_bg.bsc" */
     u16 key_map[0x400];                     /* 0x160c: "menu/friend/d_bg.bsc" (page 4) */

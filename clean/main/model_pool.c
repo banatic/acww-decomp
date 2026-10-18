@@ -2,6 +2,8 @@
 #include "model_pool.h"
 
 #include "clean.h"
+#include "model_loader.h"
+#include "vram_region.h"
 
 /* The bytes of an entry's heap added to its size, before rounding down to 4. */
 #define MODEL_POOL_HEAP_OVERHEAD 0x5b
@@ -15,25 +17,10 @@ static_assert(sizeof(ModelPoolFiles) == 0x40, "ModelPoolFiles is 0x40 bytes");
 
 extern Heap *data_021fbe94; /* the current heap */
 
-/* The model resource: its model, release, destructor, constructor and the step-by-step load of
- * `path` (VRAM `vram`, heap `heap`, files read on `parent`). */
-extern int func_02055950(void *resource);
-extern void func_02055aac(void *resource);
-extern void func_02055af4(void *resource);
-extern void *func_02055b00(void *resource);
-extern u8 func_020559d0(void *resource, const char *path, void *vram, Heap *heap, Heap *parent);
-/* An entry: emptied, constructed, set up (its heap of `heap_size` bytes inside `parent`, VRAM of
- * `texture_size` and `palette_size`), its VRAM and its heap. */
-extern int func_0209d2d0(ModelPoolEntry *entry);
-extern ModelPoolEntry *func_0209d328(ModelPoolEntry *entry);
-extern int func_0209d2dc(ModelPoolEntry *entry, int texture_size, int palette_size, int heap_size, int parent);
-extern void *func_0209d320(ModelPoolEntry *entry);
-extern Heap *func_0209d324(ModelPoolEntry *entry);
-
 /* func_0209d088: the model of the files. */
 int ModelPoolFiles_Model(ModelPoolFiles *files)
 {
-    return func_02055950(files);
+    return (int) (uintptr_t) ModelLoader_Model((ModelLoader *) files);
 }
 CLEAN_AS(func_0209d088, ModelPoolFiles_Model)
 
@@ -43,7 +30,7 @@ void ModelPoolFiles_Release(ModelPoolFiles *files)
     files->loaded = 0;
     files->entry = NULL;
     files->unk_3c = 0;
-    func_02055aac(files);
+    ModelLoader_Release((ModelLoader *) files);
 }
 CLEAN_AS(func_0209d090, ModelPoolFiles_Release)
 
@@ -63,9 +50,9 @@ unsigned char ModelPoolFiles_Load(ModelPoolFiles *files, ModelPoolEntry *entry, 
         files->entry = entry;
     }
     if (files->loaded == 0) {
-        void *vram = func_0209d320(entry);
-        Heap *heap = func_0209d324(entry);
-        if (func_020559d0(files, path, vram, heap, data_021fbe94) == MODEL_POOL_FILES_LOADED) {
+        void *vram = (void *) (uintptr_t) ModelPoolEntry_Vram(entry);
+        Heap *heap = (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry);
+        if (ModelLoader_StepModel((ModelLoader *) files, path, vram, heap, data_021fbe94) == MODEL_POOL_FILES_LOADED) {
             files->loaded = 1;
         }
     }
@@ -77,7 +64,7 @@ CLEAN_AS(func_0209d0ac, ModelPoolFiles_Load)
 int ModelPoolFiles_Destruct(ModelPoolFiles *files)
 {
     ModelPoolFiles_Release(files);
-    func_02055af4(files);
+    ModelLoader_Destruct((ModelLoader *) files);
     return (int) (uintptr_t) files;
 }
 CLEAN_AS(func_0209d104, ModelPoolFiles_Destruct)
@@ -85,7 +72,7 @@ CLEAN_AS(func_0209d104, ModelPoolFiles_Destruct)
 /* func_0209d11c: the files' constructor: not loaded, no entry. */
 ModelPoolFiles *ModelPoolFiles_Construct(ModelPoolFiles *files)
 {
-    func_02055b00(files);
+    ModelLoader_Construct((ModelLoader *) files);
     files->loaded = 0;
     files->entry = NULL;
     return files;
@@ -99,7 +86,7 @@ int ModelPool_Destroy(ModelPool *pool)
     if (pool->entries != NULL) {
         ModelPoolEntry *entry = pool->entries;
         for (u32 i = 0; i < pool->count; i++) {
-            func_0209d2d0(entry);
+            ModelPoolEntry_Empty(entry);
             entry++;
         }
         Heap_FreeCurrent(pool->entries);
@@ -144,9 +131,9 @@ int ModelPool_Create(ModelPool *pool, u32 count, int texture_size, int palette_s
     for (u32 i = 0; i < pool->count; i++) {
         /* Constructed in place; a C++ placement new tests the address first. */
         if (entry != NULL) {
-            entry = func_0209d328(entry);
+            entry = ModelPoolEntry_Construct(entry);
         }
-        if (func_0209d2dc(entry, texture_size, palette_size, heap_size, parent) == 0) {
+        if (ModelPoolEntry_Setup(entry, texture_size, palette_size, heap_size, parent) == 0) {
             return 0;
         }
         entry++;
@@ -234,7 +221,6 @@ CLEAN_AS(func_0209d2b8, ModelPool_Init)
 /* What sets up an entry's VRAM (`vram` at 0x08): `texture_size` bytes of texture VRAM and
  * `palette_size` of palette VRAM; nonzero when it got them. And the VRAM's constructor. */
 extern int func_02055c80(void *vram, int texture_size, int unused, int palette_size);
-extern void *func_02055cf4(void *vram);
 
 /* func_0209d2d0: the entry emptied: not taken, no heap (the heap itself is left alone). Always
  * 1. */
@@ -255,7 +241,7 @@ int ModelPoolEntry_Setup(ModelPoolEntry *entry, int texture_size, int palette_si
         entry->heap = FrameHeap_Create((int) (((u32) heap_size + 3) & ~3u), (Heap *) (uintptr_t) parent);
     }
     if (texture_size != 0 || palette_size != 0) {
-        return func_02055c80(entry->vram, texture_size, 0, palette_size) != 0;
+        return VramRegion_Alloc((VramRegion *) (void *) entry->vram, texture_size, 0, palette_size) != 0;
     }
     return 1;
 }
@@ -278,7 +264,7 @@ CLEAN_AS(func_0209d324, ModelPoolEntry_Heap)
 /* func_0209d328: the entry's constructor: its VRAM constructed, then not taken and no heap. */
 ModelPoolEntry *ModelPoolEntry_Construct(ModelPoolEntry *entry)
 {
-    func_02055cf4(entry->vram);
+    VramRegion_Construct((VramRegion *) (void *) entry->vram);
     entry->taken = 0;
     entry->heap = NULL;
     return entry;

@@ -20,15 +20,6 @@
 #include "state_block.h"
 #include "town_record.h"
 
-/* An item's value in bells (a bag of bells: what it holds). */
-extern int func_0204c878(const ItemCode *item);
-/* An item's price at the store, less the discount of the player's membership. */
-extern int func_0204c7f0(const ItemCode *item);
-/* Whether an item is a bag of bells, 0x1492-0x14fd. */
-extern int func_0204c7c8(const ItemCode *item);
-/* The address of the state block data_021dc7a8. */
-extern StateBlock *func_0204c7c0(void);
-
 /* The pair of this index is never paired. */
 #define ITEM_TRAITS_UNPAIRED 30
 #define ITEM_TRAITS_PAIRS 0x21
@@ -191,12 +182,12 @@ int ItemTraits_BellBagFor(int bells, int round_up, int *rest)
     }
     if (round_up) {
         ItemCode bag = ITEM_TRAITS_BIGGEST_BAG;
-        if (func_0204c878(&bag) < bells) {
+        if (ItemTraits_Price(&bag) < bells) {
             return ITEM_CODE_NONE;
         }
         for (u32 i = 0; i < ITEM_TRAITS_BELL_BAGS; i++) {
             bag = ItemGroup_BellBag(i);
-            int value = func_0204c878(&bag);
+            int value = ItemTraits_Price(&bag);
             if (value >= bells) {
                 if (rest != NULL) {
                     *rest = value - bells;
@@ -206,12 +197,12 @@ int ItemTraits_BellBagFor(int bells, int round_up, int *rest)
         }
     } else {
         ItemCode bag = ITEM_TRAITS_SMALLEST_BAG;
-        if (func_0204c878(&bag) > bells) {
+        if (ItemTraits_Price(&bag) > bells) {
             return ITEM_CODE_NONE;
         }
         for (u32 i = ITEM_TRAITS_BELL_BAGS; i != 0; i--) {
             bag = ItemGroup_BellBag(i - 1);
-            int value = func_0204c878(&bag);
+            int value = ItemTraits_Price(&bag);
             if (bells >= value) {
                 if (rest != NULL) {
                     *rest = bells - value;
@@ -413,11 +404,11 @@ CLEAN_AS(func_0204c6b8, ItemTraits_Unk02)
  * sale (NookStore_IsTimeSale, 0 or 1) except for a bag of bells. */
 int ItemTraits_StorePrice(const ItemCode *item)
 {
-    int price = func_0204c7f0(item);
-    if (func_0204c7c8(item)) {
+    int price = ItemTraits_MemberPrice(item);
+    if (ItemTraits_IsBellBag(item)) {
         return price;
     }
-    StateBlock *block = func_0204c7c0();
+    StateBlock *block = (StateBlock *) (uintptr_t) ItemTraits_StateBlockAddress();
     return shift_right(price, NookStore_IsTimeSale((NookStore *) (void *) block->nook_store));
 }
 CLEAN_AS(func_0204c788, ItemTraits_StorePrice)

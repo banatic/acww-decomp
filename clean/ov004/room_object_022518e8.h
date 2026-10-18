@@ -13,7 +13,7 @@
  *   2 of its row; sound 0 each frame; then OFF.
  *
  * SWITCHING_ON and ON show it on (vtable slot 0x74). Once its model is bound it is ON when its
- * switch is on (unless func_ov004_0223c10c says otherwise), else OFF. */
+ * switch is on (unless RoomObjects_InNookOrScene0AOr0F says otherwise), else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_022518E8_H
 #define CLEAN_OV004_ROOM_OBJECT_022518E8_H
 

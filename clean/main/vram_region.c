@@ -24,8 +24,6 @@ extern u32 NNS_G3dPlttGetRequiredSize(const void *texture);
  * NitroSystem's NNS_G3dPlttSetPlttKey). */
 extern void NNS_G3dTexSetTexKey(void *texture, VramKey key, VramKey key_4x4);
 extern void func_02105178(void *texture, VramKey key);
-/* The texture resource's textures given their keys and sent to VRAM (1). */
-extern int func_02056140(void *texture, VramKey key, VramKey key_4x4);
 
 extern void DC_FlushRange(const void *start, u32 size);
 extern void NNS_G3dPlttLoad(void *texture, int exec_begin_end);
@@ -229,7 +227,7 @@ int VramRegion_LoadImages(void *texture, VramRegion *region)
         key = NNS_GfdDefaultFuncAllocTexVram(size, 0, 0);
         key_4x4 = NNS_GfdDefaultFuncAllocTexVram(size_4x4, 1, 0);
     }
-    return func_02056140(texture, key, key_4x4);
+    return VramRegion_LoadImagesAt(texture, key, key_4x4);
 }
 CLEAN_AS(func_020560e0, VramRegion_LoadImages)
 

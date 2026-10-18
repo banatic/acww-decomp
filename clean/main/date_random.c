@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "date_time.h"
 #include "item_lists.h"
+#include "item_group_order.h"
 
 static_assert(sizeof(DatedRandom) == 0x0c && offsetof(DatedRandom, random) == 0x04 && offsetof(DatedRandom, year) == 0x08,
               "DatedRandom layout");
@@ -14,9 +15,6 @@ extern const u8 data_020de64c[]; /* the dated one's */
 extern Random data_021cb5a0;
 /* The state block's nine bytes at 0x173d4, one per item kind (item_lists.h). */
 extern u8 data_021f3b7c[];
-
-/* A byte read through a pointer (in the next block of main). */
-extern int func_02063f3c(u8 *byte);
 
 /* The seed of a fresh dated source, before its date is set. */
 #define DATED_RANDOM_FIRST_SEED 1
@@ -64,7 +62,7 @@ CLEAN_AS(func_02063ce0, DatedRandom_SetDate)
 /* The state block's byte for kind `kind`. */
 static u32 dated_random_byte(int kind)
 {
-    return (u8) func_02063f3c(ItemLists_TierByte(data_021f3b7c, kind));
+    return (u8) ItemGroupOrder_Get(ItemLists_TierByte(data_021f3b7c, kind));
 }
 
 /* func_02063d04: the seed of a date: the date's three numbers packed (the year, the month from

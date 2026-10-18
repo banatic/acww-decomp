@@ -6,8 +6,8 @@
  * value of its node set (RoomObject.node_set) to the state.
  *
  * Once its model is bound it enters the state its switch says. Others turn it on or off by
- * requesting the state for the object at its cell (func_0205265c, through
- * func_ov004_0223b364 and func_ov004_0223b3c0). */
+ * requesting the state for the object at its cell (RoomSync_RequestState, through
+ * RoomObjects_RequestOn and RoomObjects_RequestOff). */
 #ifndef CLEAN_OV004_ROOM_OBJECT_SWITCH_SHOWN_H
 #define CLEAN_OV004_ROOM_OBJECT_SWITCH_SHOWN_H
 

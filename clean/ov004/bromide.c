@@ -6,6 +6,10 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "main/event_queue.h"
+#include "main/item_code.h"
+#include "main/message_receiver.h"
+#include "main/scene_object_base.h"
 
 static_assert(offsetof(Bromide, state) == 0x844, "state");
 static_assert(sizeof(Bromide) == 0x848, "the size of a bromide");
@@ -37,15 +41,6 @@ extern const MemberPointer data_ov004_022501e0, data_ov004_02250030, data_ov004_
 extern const u8 data_ov004_02251b40[];
 extern const u8 data_ov004_02251bec[];
 
-/* The scene object's hooks. */
-extern int func_0203e0a8(Bromide *bromide, int a1);
-extern int func_0203e020(Bromide *bromide);
-extern void func_0203ee08(Bromide *bromide, void *receiver);
-extern void func_0203ee14(Bromide *bromide, void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-/* The item code of furniture `item` in `variant`. */
-extern u16 func_0204bc50(int item, int variant);
-
 /* The receiver part as C++ converts a pointer to the bromide to it: NULL stays NULL. */
 static void *Bromide_receiver(Bromide *bromide)
 {
@@ -53,13 +48,13 @@ static void *Bromide_receiver(Bromide *bromide)
 }
 
 /* func_ov004_022133f8 (update of BROMIDE_TALK_END): once the link has closed, hands the
- * receiver back (func_0203ee08) and lets the scene go on (func_0203e020). Its state stays
+ * receiver back (SceneObjectBase_ReleaseReceiver) and lets the scene go on (EventQueue_FinishObjectEvent). Its state stays
  * BROMIDE_TALK_END until the scene sets another. */
 void Bromide_UpdateTalkEnd(Bromide *bromide)
 {
-    if (bromide->base.link != NULL && bromide->base.link->open == 0) {
-        func_0203ee08(bromide, Bromide_receiver(bromide));
-        func_0203e020(bromide);
+    if (bromide->base.link != NULL && bromide->base.link->state == 0) {
+        SceneObjectBase_ReleaseReceiver(&bromide->base.scene, Bromide_receiver(bromide));
+        EventQueue_FinishObjectEvent(bromide);
     }
 }
 CLEAN_AS(func_ov004_022133f8, Bromide_UpdateTalkEnd)
@@ -75,27 +70,27 @@ CLEAN_AS(func_ov004_02213428, Bromide_EnterTalkEnd)
 /* func_ov004_0221342c (update of BROMIDE_TALK): on once the link has opened. */
 void Bromide_UpdateTalk(Bromide *bromide)
 {
-    if (bromide->base.link != NULL && bromide->base.link->open != 0) {
+    if (bromide->base.link != NULL && bromide->base.link->state != 0) {
         Bromide_EnterState(bromide, BROMIDE_TALK_END);
     }
 }
 CLEAN_AS(func_ov004_0221342c, Bromide_UpdateTalk)
 
-/* func_ov004_02213450 (entry of BROMIDE_TALK): takes the receiver (func_0203ee14), raises the
+/* func_ov004_02213450 (entry of BROMIDE_TALK): takes the receiver (SceneObjectBase_TakeReceiver), raises the
  * link's request, names the receiver "obj_etc_bromide" and puts the photo's number in its state
  * byte: the item code's distance from the first photo's, in fours, or 0xff for a code that is
  * no photo.
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Bromide_EnterTalk(Bromide *bromide)
 {
-    func_0203ee14(bromide, Bromide_receiver(bromide));
-    bromide->base.link->requested = 1;
-    u16 item = func_0204bc50(RoomObject_Number(&bromide->base), 0);
+    SceneObjectBase_TakeReceiver(&bromide->base.scene, Bromide_receiver(bromide));
+    bromide->base.link->next_state = 1;
+    u16 item = ItemCode_MakeVariant(RoomObject_Number(&bromide->base), 0);
     int photo = BROMIDE_NO_PHOTO;
     if (item >= BROMIDE_ITEM_FIRST && item <= BROMIDE_ITEM_LAST) {
         photo = (item - BROMIDE_ITEM_FIRST) >> 2;
     }
-    func_020a8164(&bromide->base.receiver_vtable, data_ov004_022531b0);
+    MessageReceiver_SetName(&bromide->base.receiver.base, data_ov004_022531b0);
     bromide->base.receiver_state = (u8) photo;
     return 1;
 }
@@ -117,11 +112,11 @@ int Bromide_EnterOpen(Bromide *bromide)
 CLEAN_AS(func_ov004_022134d8, Bromide_EnterOpen)
 
 /* func_ov004_022134dc (update of BROMIDE_IDLE): when the switch was asked to change, asks the
- * scene for an event (func_0203e0a8) and gives its answer; else 0. */
+ * scene for an event (EventQueue_RequestKind6) and gives its answer; else 0. */
 int Bromide_UpdateIdle(Bromide *bromide)
 {
     if (Switch_IsPending(&bromide->base.light_switch)) {
-        return func_0203e0a8(bromide, 0);
+        return EventQueue_RequestKind6(bromide, 0);
     }
     return 0;
 }
@@ -172,7 +167,7 @@ int Bromide_EnterState(Bromide *bromide, int state)
 }
 CLEAN_AS(func_ov004_02213590, Bromide_EnterState)
 
-/* func_ov004_0221362c (vtable slot 0x4c): the scene's answer to func_0203e0a8; event 1 opens
+/* func_ov004_0221362c (vtable slot 0x4c): the scene's answer to EventQueue_RequestKind6; event 1 opens
  * the bromide, event 8 makes it idle, others do nothing. */
 void Bromide_OnSceneEvent(Bromide *bromide, int event)
 {

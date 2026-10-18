@@ -16,8 +16,6 @@ extern const fx16 FX_SinCosTable_[4096 * 2];
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void MTX_RotZ33_(Mtx33 *mtx, fx32 sin, fx32 cos);
 extern void MTX_Concat33(const Mtx33 *a, const Mtx33 *b, Mtx33 *ab);
-/* The time of day (calendar.h's Calendar_Now, which is not registered). */
-extern void func_0209def4(Time *now);
 
 /* The frame count, and the frame the hour hand's sine and cosine were worked out in. */
 extern int data_021fbdd0;
@@ -49,7 +47,7 @@ void ClockHands_TurnMinuteHand(ClockHandsRenderState *state)
 {
     ClockHandsJoint *joint = state->joint;
     Time now;
-    func_0209def4(&now);
+    Calendar_Now(&now);
     fx32 part = FX_Div((now.minute % 60) << 12, 60 << 12);
     u32 angle = 0u - (((u32) CLOCK_HANDS_TURN * (u32) part) >> 12);
     u32 entry = clock_hands_entry(angle);
@@ -65,7 +63,7 @@ void ClockHands_TurnHourHand(ClockHandsRenderState *state)
 {
     ClockHandsJoint *joint = state->joint;
     Time now;
-    func_0209def4(&now);
+    Calendar_Now(&now);
     if (data_021f4b30 != data_021fbdd0) {
         fx32 hours = FX_Div((now.hour % 12) << 12, 12 << 12);
         u32 hour_angle = 0u - (((u32) CLOCK_HANDS_TURN * (u32) hours) >> 12);

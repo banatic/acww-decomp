@@ -56,6 +56,8 @@
 #include "main/villager_status.h"
 #include "main/villager_talk_scene.h"
 #include "room_object_body.h"
+#include "room_manager.h"
+#include "room_objects.h"
 
 static_assert(sizeof(VillagerTalk) == 0x1a4, "the town villager's talk scene");
 static_assert(sizeof(FleaMarketBuyerTalk) == 0x1b0, "its talk scene");
@@ -98,7 +100,7 @@ static_assert(sizeof(FleaMarketBuyer) == 0xaec, "the size func_ov004_022217fc al
 #define FMB_STAGE_PLAYER_AT_EXIT 5
 #define FMB_STAGE_PLAYER_AT_EXIT_BYE 6
 
-/* Its states (func_ov004_02221550). */
+/* Its states (FleaMarketBuyer_SetState). */
 #define FMB_STATE_GREET 1
 #define FMB_STATE_BROWSE 3
 #define FMB_STATE_FACE 4
@@ -218,19 +220,6 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 /* The functions of the room kept as the game's. */
 /* The room's list of objects, its object of a number (NULL for none) and how many it holds. */
-extern void *func_ov004_0223ce84(void);
-extern RoomObject *func_ov004_0223cd58(void *objects, int index);
-extern int func_ov004_0223cdc0(void *objects);
-/* Whether the room's object of a number may be taken: there is one, its vtable slot 0xa0 agrees
- * and nothing stands on it. */
-extern int func_ov004_0223ba78(int number);
-/* The room object taken away by number. */
-extern int func_ov004_0223bb14(int number);
-/* The grid of the room's objects, and the number at a cell of it (-1 for none). */
-extern void *func_ov004_0223cd50(void);
-extern int func_ov004_0223cc5c(void *grid, int x, int z, int layer);
-/* Notes that a villager of the flea market is in the room (sets data_ov004_022595b4). */
-extern void func_ov004_0223d33c(void);
 
 static u8 *fmb_part(FleaMarketBuyer *buyer, u32 offset)
 {
@@ -325,7 +314,7 @@ static void fmb_turn_and_talk(FleaMarketBuyer *buyer, int keep_camera)
  * the reach of its shape; the number is remembered among its last chosen. */
 static void fmb_choose(FleaMarketBuyer *buyer, int number)
 {
-    RoomObject *object = func_ov004_0223cd58(func_ov004_0223ce84(), number);
+    RoomObject *object = RoomObjects_At(RoomObjects_Table(), number);
     buyer->item = ItemCode_MakeVariant(RoomObject_Number(object), 0);
     RoomObject_Centre(object, &buyer->target);
     FleaMarketBuyer_SetReach(buyer, object);
@@ -385,15 +374,15 @@ void FleaMarketBuyer_Remember(FleaMarketBuyer *buyer, u8 number)
 CLEAN_AS(func_ov004_0222005c, FleaMarketBuyer_Remember)
 
 /* func_ov004_02220084: whether it may want the room's object of `number`: there is one, it may
- * be taken (func_ov004_0223ba78), its item (variant 0) is none of the player's designs nor
+ * be taken (RoomObjects_IsIdleAt), its item (variant 0) is none of the player's designs nor
  * 0x409c, 0x40a0 or 0x3820 (by the variant's item), and it is not among its last chosen. */
 int FleaMarketBuyer_MayBuy(FleaMarketBuyer *buyer, int number)
 {
-    RoomObject *object = func_ov004_0223cd58(func_ov004_0223ce84(), number);
+    RoomObject *object = RoomObjects_At(RoomObjects_Table(), number);
     if (object == NULL) {
         return 0;
     }
-    if (func_ov004_0223ba78(number) == 0) {
+    if (RoomObjects_IsIdleAt(number) == 0) {
         return 0;
     }
     u16 item = ItemCode_MakeVariant(RoomObject_Number(object), 0);
@@ -506,7 +495,7 @@ static void fmb_ready_talk(FleaMarketBuyer *buyer)
  * - 1: its talk readied, then it says goodbye (state 7) in stages 3 and 5, else talks (state
  *   6). In stage 0 (it has just come) the room's objects are counted, the town's extra
  *   visitors set, the collision map's claim set to 0, the room notes a villager of the flea
- *   market (func_ov004_0223d33c) and the time is its last talk's;
+ *   market (RoomManager_SetShopMode) and the time is its last talk's;
  * - 0, the player talks to it: its talk readied, state 6;
  * - 8, the event ended: in stage 6 with the player on the claimed unit the claim is cleared;
  *   else it browses (state 3). */
@@ -521,10 +510,10 @@ void FleaMarketBuyer_OnEvent(FleaMarketBuyer *buyer, int code)
                 FleaMarketBuyer_SetState(buyer, FMB_STATE_TALK);
             }
             if (buyer->stage == FMB_STAGE_CALL) {
-                buyer->object_count = func_ov004_0223cdc0(func_ov004_0223ce84());
+                buyer->object_count = RoomObjects_UsedCount(RoomObjects_Table());
                 TownObjects_SetExtraVisitors();
                 CollisionMap_Claim(0);
-                func_ov004_0223d33c();
+                RoomManager_SetShopMode();
                 DateTime_Now(&buyer->talk_time);
             }
             break;
@@ -789,7 +778,7 @@ void FleaMarketBuyerTalk_Buy(FleaMarketBuyerTalk *talk)
         }
         VillagerItems_Add(fmb_record(talk->buyer), &talk->buyer->item);
     }
-    func_ov004_0223bb14(talk->buyer->object);
+    RoomObjects_Take(talk->buyer->object);
     talk->buyer->object = -1;
     talk->buyer->item = FMB_NO_ITEM;
     talk->buyer->bought++;
@@ -1058,8 +1047,8 @@ int FleaMarketBuyer_UpdateGo(FleaMarketBuyer *buyer)
     ahead.x += FX_MulFunc(FMB_AHEAD, FX_SinCosTable_[index]);
     ahead.z += FX_MulFunc(FMB_AHEAD, FX_SinCosTable_[index + 1]);
     Position_Tile(&x, &z, (const Position *) (const void *) &ahead);
-    int floor = func_ov004_0223cc5c(func_ov004_0223cd50(), x, z, 0);
-    int top = func_ov004_0223cc5c(func_ov004_0223cd50(), x, z, 1);
+    int floor = RoomObjects_GridIndexAt(RoomObjects_Grid(), x, z, 0);
+    int top = RoomObjects_GridIndexAt(RoomObjects_Grid(), x, z, 1);
     if (FleaMarketBuyer_MayBuy(buyer, top)) {
         fmb_choose(buyer, top);
     } else if (FleaMarketBuyer_MayBuy(buyer, floor)) {
@@ -1413,7 +1402,7 @@ static int fmb_player_known(FleaMarketBuyer *buyer, DesignCreator *player)
  * objects cleared and its look locked. When the previous scene is one SceneQuery_Is31 names, or
  * the current player is known to it (fmb_player_known), it is in the room already: the room's
  * objects are counted, the town's extra visitors set, the collision map's claim set to 0, the
- * room notes a villager of the flea market (func_ov004_0223d33c), the time is its last talk's
+ * room notes a villager of the flea market (RoomManager_SetShopMode), the time is its last talk's
  * and it browses (stage 2, state 3). Else it waits at the way in, (0x10000, 0x23000), to call
  * (its first try in 100 frames, its frames of looking about counted, state 0). With a town
  * record, its state entry is set to state 2. Whether the start was done. */
@@ -1436,10 +1425,10 @@ int FleaMarketBuyer_Start(FleaMarketBuyer *buyer)
         player = PlayerRecord_Player(PlayerRecords_Current());
     }
     if (SceneQuery_Is31(SceneQuery_Previous()) != 0 || fmb_player_known(buyer, player)) {
-        buyer->object_count = func_ov004_0223cdc0(func_ov004_0223ce84());
+        buyer->object_count = RoomObjects_UsedCount(RoomObjects_Table());
         TownObjects_SetExtraVisitors();
         CollisionMap_Claim(0);
-        func_ov004_0223d33c();
+        RoomManager_SetShopMode();
         DateTime_Now(&buyer->talk_time);
         buyer->stage = FMB_STAGE_BROWSE;
         FleaMarketBuyer_SetState(buyer, FMB_STATE_BROWSE);

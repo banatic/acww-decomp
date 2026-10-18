@@ -8,6 +8,7 @@
 #include "ov004/member_pointer.h" /* MemberPointer */
 #include "screen_sprite.h"
 #include "text_string.h" /* TextString_ClearBytes */
+#include "label_box.h"
 
 static_assert(offsetof(SlidingWindow, state) == 0x34 && offsetof(SlidingWindow, priority) == 0x44, "SlidingWindow");
 static_assert(offsetof(SlidingWindow, open_request) == 0x54 && offsetof(SlidingWindow, center_text) == 0x5c, "SlidingWindow");
@@ -32,11 +33,6 @@ extern const CellAnimData data_020d71a4; /* the body's animation */
 extern const CellAnimData data_020d71ac; /* the extra animation */
 extern TextFont data_021c828c;           /* the font of a two-line window */
 extern TextFont data_021c8230;           /* the font of a one-line window */
-
-extern TextDrawBox *func_020a9034(int first_tile, int cells, int rows); /* a text box made */
-extern void func_020a8fb8(TextDrawBox *box);                            /* a text box freed */
-extern int func_0208aef0(SlidingWindow *window);                        /* the base class's x */
-extern int func_0208aeec(SlidingWindow *window);                        /* the base class's y */
 
 /* A line's characters, through its vtable (slot 3). */
 static const char *line_chars(SlidingWindowText *line)
@@ -78,11 +74,11 @@ CLEAN_AS(func_0208a490, SlidingWindow_KeepOnScreen)
 void SlidingWindow_FreeBoxes(SlidingWindow *window)
 {
     if (window->boxes[0] != NULL) {
-        func_020a8fb8(window->boxes[0]);
+        LabelBox_Free((LabelBox *) window->boxes[0]);
         window->boxes[0] = NULL;
     }
     if (window->boxes[1] != NULL) {
-        func_020a8fb8(window->boxes[1]);
+        LabelBox_Free((LabelBox *) window->boxes[1]);
         window->boxes[1] = NULL;
     }
 }
@@ -110,13 +106,13 @@ void SlidingWindow_MakeBoxes(SlidingWindow *window)
 {
     int two_lines = window->line_count == 2;
     if (window->boxes[0] == NULL) {
-        window->boxes[0] = func_020a9034(BOX_FIRST_TILE_0, BOX_CELLS, BOX_ROWS);
+        window->boxes[0] = (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE_0, BOX_CELLS, BOX_ROWS);
         if (window->boxes[0] != NULL) {
             setup_box(window, window->boxes[0], &window->lines[0], two_lines ? &data_021c828c : &data_021c8230);
         }
     }
     if (window->boxes[1] == NULL && two_lines) {
-        window->boxes[1] = func_020a9034(BOX_FIRST_TILE_1, BOX_CELLS, BOX_ROWS);
+        window->boxes[1] = (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE_1, BOX_CELLS, BOX_ROWS);
         if (window->boxes[1] != NULL) {
             setup_box(window, window->boxes[1], &window->lines[1], &data_021c828c);
         }
@@ -230,7 +226,7 @@ CLEAN_AS(func_0208a808, SlidingWindow_X)
 /* func_0208a80c: the y it is drawn at: the base class's, its own and the slide's. */
 int SlidingWindow_DrawY(SlidingWindow *window)
 {
-    int base_y = func_0208aeec(window);
+    int base_y = ScreenSprite_Y((ScreenSprite *) window);
     return window->slide_y + window->y + base_y;
 }
 CLEAN_AS(func_0208a80c, SlidingWindow_DrawY)
@@ -239,7 +235,7 @@ CLEAN_AS(func_0208a80c, SlidingWindow_DrawY)
  * keeps it on the screen. */
 int SlidingWindow_DrawX(SlidingWindow *window)
 {
-    int base_x = func_0208aef0(window);
+    int base_x = ScreenSprite_X((ScreenSprite *) window);
     return window->x + base_x + window->slide_x + window->screen_shift;
 }
 CLEAN_AS(func_0208a824, SlidingWindow_DrawX)

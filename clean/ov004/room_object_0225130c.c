@@ -10,6 +10,10 @@
 #include "room_object_life.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "main/frame_ctrl.h"
+#include "main/room_sync.h"
+#include "room_objects.h"
+#include "room_sound.h"
 
 static_assert(offsetof(RoomObject0225130c, ticks) == 0x845, "ticks");
 static_assert(offsetof(RoomObject0225130c, settle_reset) == 0x846, "settle reset");
@@ -43,22 +47,6 @@ extern const u8 data_ov004_0224769c[ROOM_OBJECT_0225130C_STATE_COUNT];
 extern const u8 data_ov004_0225130c[];
 extern const u8 data_ov004_022513b8[];
 
-/* Plays sound `id` at `position` while the sound plays; sets variable 0 of its player while it
- * plays. */
-extern void func_ov004_0223cf40(RoomSound *sound, int id, Vec3 *position);
-extern void func_ov004_0223cf18(RoomSound *sound, s16 value);
-/* Whether the joint animation is at `frame`. */
-extern int func_02056f28(void *anim, int frame);
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-
-static unsigned int RoomObject0225130c_address(RoomObject0225130c *object)
-{
-    return (unsigned int) (uintptr_t) object;
-}
-
 /* Vtable slot 0x70: RoomObject0225130c_EnterState for this class. */
 static void RoomObject0225130c_switch_to(RoomObject0225130c *object, int state)
 {
@@ -69,7 +57,7 @@ static void RoomObject0225130c_switch_to(RoomObject0225130c *object, int state)
 static void RoomObject0225130c_keep_sound(RoomObject0225130c *object)
 {
     if (!RoomObject_Unk76CIs2(&object->base)) {
-        func_ov004_0223cf40(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
+        RoomSound_PlayAt(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
     }
 }
 
@@ -80,10 +68,10 @@ static void RoomObject0225130c_tick(RoomObject0225130c *object)
     if (RoomObject_Unk76CIs2(&object->base)) {
         return;
     }
-    if (func_02056f28(object->base.joint_anim, 0)) {
-        func_ov004_0223cf18(&object->base.sound, 1);
-    } else if (func_02056f28(object->base.joint_anim, TICK_FRAME)) {
-        func_ov004_0223cf18(&object->base.sound, (object->ticks & 1) != 0 ? 2 : 1);
+    if (FrameCtrl_Passed(&object->base.model.frames, 0)) {
+        RoomSound_SetVariable(&object->base.sound, 1);
+    } else if (FrameCtrl_Passed(&object->base.model.frames, TICK_FRAME)) {
+        RoomSound_SetVariable(&object->base.sound, (object->ticks & 1) != 0 ? 2 : 1);
         object->ticks++;
     }
 }
@@ -93,9 +81,9 @@ static void RoomObject0225130c_tick(RoomObject0225130c *object)
 void RoomObject0225130c_UpdateSettling(RoomObject0225130c *object)
 {
     if (!RoomObject_Unk76CIs2(&object->base)) {
-        func_ov004_0223cf40(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
+        RoomSound_PlayAt(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
         if (object->settle_reset != 0) {
-            func_ov004_0223cf18(&object->base.sound, 1);
+            RoomSound_SetVariable(&object->base.sound, 1);
             object->settle_reset = 0;
         }
     }
@@ -149,7 +137,7 @@ void RoomObject0225130c_UpdateRunning(RoomObject0225130c *object)
     RoomObject_AdvanceAnims(&object->base);
     RoomObject0225130c_tick(object);
     if (Switch_IsPending(&object->base.light_switch)) {
-        func_0205265c(RoomObject0225130c_address(object), ROOM_OBJECT_0225130C_STOPPING, SLOT_70_VALUE, 1);
+        RoomSync_RequestState(&object->base, ROOM_OBJECT_0225130C_STOPPING, SLOT_70_VALUE, 1);
     }
 }
 CLEAN_AS(func_ov004_02212bb0, RoomObject0225130c_UpdateRunning)
@@ -191,7 +179,7 @@ CLEAN_AS(func_ov004_02212ce4, RoomObject0225130c_EnterStarting)
 void RoomObject0225130c_UpdateOff(RoomObject0225130c *object)
 {
     if (Switch_IsPending(&object->base.light_switch)) {
-        func_0205265c(RoomObject0225130c_address(object), ROOM_OBJECT_0225130C_STARTING, SLOT_70_VALUE, 1);
+        RoomSync_RequestState(&object->base, ROOM_OBJECT_0225130C_STARTING, SLOT_70_VALUE, 1);
     }
 }
 CLEAN_AS(func_ov004_02212d1c, RoomObject0225130c_UpdateOff)
@@ -269,7 +257,7 @@ CLEAN_AS(func_ov004_02212ed0, RoomObject0225130c_Vfunc0C)
 int RoomObject0225130c_UpdateUnsettled(RoomObject0225130c *object)
 {
     if (!RoomObject_Unk76CIs2(&object->base) && !RoomObject_IsVanishing(&object->base)) {
-        func_ov004_0223cf40(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
+        RoomSound_PlayAt(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
     }
     return 1;
 }
@@ -285,13 +273,13 @@ int RoomObject0225130c_Update(RoomObject0225130c *object)
 CLEAN_AS(_ZN18Obj_ov004_0225130c19func_ov004_02212f0cEv, RoomObject0225130c_Update)
 
 /* func_ov004_02212f1c (vtable slot 0x7c, once the model is bound): binds the animations of
- * variant 0 (once, from the start); running when the switch is on and func_ov004_0223c10c says
+ * variant 0 (once, from the start); running when the switch is on and RoomObjects_InNookOrScene0AOr0F says
  * no, else off; done at once. */
 int RoomObject0225130c_Start(RoomObject0225130c *object)
 {
     object->unk_844 = 0;
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
-    if (Switch_Value(&object->base.light_switch) != 0 && !func_ov004_0223c10c()) {
+    if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
     } else {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_OFF);

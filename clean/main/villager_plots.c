@@ -6,6 +6,12 @@
 #include "acre_map.h"
 #include "clean.h"
 #include "villager_town.h"
+#include "acre_tile.h"
+#include "main_random.h"
+#include "map_code.h"
+#include "town_villager.h"
+#include "villager_home.h"
+#include "villager_plot_tile.h"
 
 static_assert(sizeof(VillagerPlot) == 2, "plot");
 
@@ -27,15 +33,6 @@ extern void __register_global_object(int object, void *destruct, void *node);
 extern int func_02081fa0(VillagerPlot *plot);
 extern void func_02081f9c(VillagerPlot *plot);
 extern void func_0207bd28(void);
-extern void func_02081f94(VillagerPlot *plot);                               /* none */
-extern int func_02081f80(const VillagerPlot *plot);                          /* whether it is set */
-extern void func_02081f60(VillagerPlot *plot, const VillagerPlotTile *tile); /* set from the tile */
-extern u16 *func_0204f5e0(AcreMap *map, int acre_x, int acre_z, int x, int z, int layer);
-extern u16 func_0204bbbc(u32 villager);                            /* the house of villager index `villager` */
-extern NpcId *func_0208150c(const void *villager);                 /* the villager's NpcId, at 0x7a0 */
-extern int func_020800dc(const u8 *villager);                      /* whether its house tile (0x7ce) is set */
-extern void func_020800b8(u8 *villager, const VillagerPlot *plot); /* sets it */
-extern unsigned int func_020644cc(int bound);                      /* a random number below `bound` */
 
 /* func_0207bbb8: every villager without a house tile gets a random free plot of the town's
  * map, in villager order, while plots are left: the villager's house is put there
@@ -59,13 +56,13 @@ void VillagerPlot_GiveHouses(VillagerTown *town)
     int high = map->tiles_high;
     VillagerPlotTile tile = {0, 0};
     for (int i = 0; i < VILLAGER_PLOT_LIST; i++) {
-        func_02081f94(&data_021d13a8[i]);
+        VillagerPlotTile_Clear(&data_021d13a8[i]);
     }
     for (tile.z = 0; tile.z < high; tile.z++) {
         for (tile.x = 0; tile.x < wide; tile.x++) {
-            const u16 *item = func_0204f5e0(map, tile.x >> 4, tile.z >> 4, tile.x & 15, tile.z & 15, 0);
+            const u16 *item = AcreTile_ItemInAcre(map, tile.x >> 4, tile.z >> 4, tile.x & 15, tile.z & 15, 0);
             if (item != NULL && *item == VILLAGER_PLOT_FREE) {
-                func_02081f60(&data_021d13a8[count], &tile);
+                VillagerPlotTile_SetFrom(&data_021d13a8[count], (const VillagerPlotXZ *) &tile);
                 count++;
             }
         }
@@ -75,16 +72,16 @@ void VillagerPlot_GiveHouses(VillagerTown *town)
     }
     for (int j = 0; j < VILLAGER_TOWN_VILLAGERS; j++) {
         u8 *villager = town->villagers[j];
-        if (!NpcId_IsValid(func_0208150c(villager)) || func_020800dc(villager) != 0) {
+        if (!NpcId_IsValid(TownVillager_NpcId(villager)) || VillagerHome_HasTile(villager) != 0) {
             continue;
         }
-        int nth = (int) func_020644cc(count);
+        int nth = (int) MainRandom_Below(count);
         VillagerPlot *plot = &data_021d13a8[VillagerPlot_Nth(data_021d13a8, VILLAGER_PLOT_LIST, nth)];
-        u16 house = func_0204bbbc((u32) j);
+        u16 house = MapCode_VillagerHouse((u32) j);
         if (AcreMap_ClearBuildingAt((int) (uintptr_t) map, (int) (uintptr_t) &house, plot->x, plot->z) != 0) {
-            func_020800b8(villager, plot);
+            VillagerHome_SetTile(villager, plot);
         }
-        func_02081f94(plot);
+        VillagerPlotTile_Clear(plot);
         count--;
         if (count <= 0) {
             return;
@@ -104,7 +101,7 @@ CLEAN_AS(func_0207bd28, VillagerPlot_DestroyList)
 int VillagerPlot_Nth(VillagerPlot *plots, int count, int nth)
 {
     for (int i = 0; i < count; i++) {
-        if (func_02081f80(&plots[i])) {
+        if (VillagerPlotTile_IsSet(&plots[i])) {
             if (nth == 0) {
                 return i;
             }

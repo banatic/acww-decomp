@@ -3,6 +3,7 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "slot_pool.h"
 
 static_assert(offsetof(PoolLink, index) == 0x04, "link entry number");
 static_assert(sizeof(PoolLink) == 0x08, "link size");
@@ -11,27 +12,6 @@ static_assert(offsetof(SlotPool, count) == 0x04, "pool size");
 extern const PoolLinkVtable data_020e19dc; /* the part link's vtable */
 extern const PoolLinkVtable data_020e1a40; /* the held item link's vtable */
 extern const PoolLinkVtable data_020e1a68; /* the animation set link's vtable */
-
-/* The pools. */
-extern SlotPool *func_02083b00(void); /* data_021d1e48 */
-extern SlotPool *func_0208399c(void); /* data_021d1ebc, the heap8 slots */
-extern SlotPool *func_0208385c(void); /* data_021d1e64, the heap4 slots */
-extern SlotPool *func_02083708(void); /* data_021d1e20 */
-extern SlotPool *func_020835a0(void); /* data_021d1e8c, the block slots */
-extern SlotPool *func_02083460(void); /* data_021d1e0c, the animation sets */
-extern SlotPool *func_02083320(void); /* data_021d1e34, the parts */
-extern SlotPool *func_020831c0(void); /* data_021d1f04, the held items */
-/* Every entry of a pool given back: each "taken" byte cleared. */
-extern void func_02083c50(SlotPool *pool);
-/* An entry of a pool by number, past its "taken" byte; null for a number past the pool. */
-extern int func_02083110(SlotPool *pool, u32 index);          /* a held item */
-extern int func_020832c4(SlotPool *pool, u32 index);          /* a part */
-extern int func_02083404(SlotPool *pool, u32 index);          /* an animation set */
-extern int func_02083148(SlotPool *pool, u32 index, int arg); /* a held item set up from `arg` */
-
-/* The link base class's constructor (no entry) and destructor. */
-extern void func_02083100(PoolLink *link);
-extern void func_020830d0(PoolLink *link);
 
 /* The pool of a link, from its vtable entry 2. */
 static SlotPool *pool_link_pool(PoolLink *link)
@@ -47,56 +27,56 @@ static SlotPool *pool_link_pool(PoolLink *link)
 /* func_02082c0c (vtable data_020e1a18) */
 void PoolLink_Pool1E48(void)
 {
-    func_02083b00();
+    SlotPool_Speakers();
 }
 CLEAN_AS(func_02082c0c, PoolLink_Pool1E48)
 
 /* func_02082c14 (vtable data_020e1a04) */
 void PoolLink_Heap8Pool(void)
 {
-    func_0208399c();
+    SlotPool_Heap8();
 }
 CLEAN_AS(func_02082c14, PoolLink_Heap8Pool)
 
 /* func_02082c1c (vtable data_020e19f0) */
 void PoolLink_Heap4Pool(void)
 {
-    func_0208385c();
+    SlotPool_Heap4();
 }
 CLEAN_AS(func_02082c1c, PoolLink_Heap4Pool)
 
 /* func_02082c24 (vtable data_020e1a54) */
 void PoolLink_Pool1E20(void)
 {
-    func_02083708();
+    SlotPool_Clothes();
 }
 CLEAN_AS(func_02082c24, PoolLink_Pool1E20)
 
 /* func_02082c2c (vtable data_020e1a7c) */
 void PoolLink_BlockPool(void)
 {
-    func_020835a0();
+    SlotPool_Blocks();
 }
 CLEAN_AS(func_02082c2c, PoolLink_BlockPool)
 
 /* func_02082c34 (vtable data_020e1a68) */
 void PoolLink_AnimSetPool(void)
 {
-    func_02083460();
+    SlotPool_AnimSets();
 }
 CLEAN_AS(func_02082c34, PoolLink_AnimSetPool)
 
 /* func_02082c3c (vtable data_020e19dc) */
 void PoolLink_PartPool(void)
 {
-    func_02083320();
+    SlotPool_Parts();
 }
 CLEAN_AS(func_02082c3c, PoolLink_PartPool)
 
 /* func_02082c44 (vtable data_020e1a40) */
 void PoolLink_ItemPool(void)
 {
-    func_020831c0();
+    SlotPool_Items();
 }
 CLEAN_AS(func_02082c44, PoolLink_ItemPool)
 
@@ -120,12 +100,12 @@ CLEAN_AS(func_02082c54, PoolLink_FreeAllAtSceneStart)
  * animation sets, the parts and the held items given back, in that order. */
 void PoolLink_FreeAll(void)
 {
-    func_02083c50(func_02083b00());
-    func_02083c50(func_02083708());
-    func_02083c50(func_020835a0());
-    func_02083c50(func_02083460());
-    func_02083c50(func_02083320());
-    func_02083c50(func_020831c0());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_Speakers());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_Clothes());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_Blocks());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_AnimSets());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_Parts());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_Items());
 }
 CLEAN_AS(func_02082c5c, PoolLink_FreeAll)
 
@@ -138,7 +118,7 @@ int PoolLink_Item(PoolLink *link)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083110(pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_Item((SlotPoolItems *) pool, (u32) link->index);
 }
 CLEAN_AS(func_02082c98, PoolLink_Item)
 
@@ -150,7 +130,7 @@ int PoolLink_ItemOpen(PoolLink *link, int arg)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083148(pool, (u32) link->index, arg);
+    return SlotPool_ItemTakeWith((SlotPoolItems *) pool, (u32) link->index, (const u16 *) (uintptr_t) arg);
 }
 CLEAN_AS(func_02082cb8, PoolLink_ItemOpen)
 
@@ -158,7 +138,7 @@ CLEAN_AS(func_02082cb8, PoolLink_ItemOpen)
 PoolLink *PoolLink_ItemDestructDelete(PoolLink *link)
 {
     link->vtable = &data_020e1a40;
-    func_020830d0(link);
+    PoolLink_BaseDestruct(link);
     Heap_OperatorDeleteB(link);
     return link;
 }
@@ -168,7 +148,7 @@ CLEAN_AS(func_02082ce4, PoolLink_ItemDestructDelete)
 PoolLink *PoolLink_ItemDestruct(PoolLink *link)
 {
     link->vtable = &data_020e1a40;
-    func_020830d0(link);
+    PoolLink_BaseDestruct(link);
     return link;
 }
 CLEAN_AS(func_02082d04, PoolLink_ItemDestruct)
@@ -176,7 +156,7 @@ CLEAN_AS(func_02082d04, PoolLink_ItemDestruct)
 /* func_02082d1c: a held item link with no entry. */
 PoolLink *PoolLink_ItemConstruct(PoolLink *link)
 {
-    func_02083100(link);
+    PoolLink_BaseConstruct(link);
     link->vtable = &data_020e1a40;
     return link;
 }
@@ -191,7 +171,7 @@ int PoolLink_Part(PoolLink *link)
     if (pool == NULL) {
         return 0;
     }
-    return func_020832c4(pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_Part((SlotPoolBytes *) pool, (u32) link->index);
 }
 CLEAN_AS(func_02082d34, PoolLink_Part)
 
@@ -199,7 +179,7 @@ CLEAN_AS(func_02082d34, PoolLink_Part)
 PoolLink *PoolLink_PartDestructDelete(PoolLink *link)
 {
     link->vtable = &data_020e19dc;
-    func_020830d0(link);
+    PoolLink_BaseDestruct(link);
     Heap_OperatorDeleteB(link);
     return link;
 }
@@ -209,7 +189,7 @@ CLEAN_AS(func_02082d58, PoolLink_PartDestructDelete)
 PoolLink *PoolLink_PartDestruct(PoolLink *link)
 {
     link->vtable = &data_020e19dc;
-    func_020830d0(link);
+    PoolLink_BaseDestruct(link);
     return link;
 }
 CLEAN_AS(func_02082d78, PoolLink_PartDestruct)
@@ -217,7 +197,7 @@ CLEAN_AS(func_02082d78, PoolLink_PartDestruct)
 /* func_02082d90: a part link with no entry. */
 PoolLink *PoolLink_PartConstruct(PoolLink *link)
 {
-    func_02083100(link);
+    PoolLink_BaseConstruct(link);
     link->vtable = &data_020e19dc;
     return link;
 }
@@ -232,7 +212,7 @@ int PoolLink_AnimSet(PoolLink *link)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083404(pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_AnimSet((SlotPoolBytes *) pool, (u32) link->index);
 }
 CLEAN_AS(func_02082da8, PoolLink_AnimSet)
 
@@ -240,7 +220,7 @@ CLEAN_AS(func_02082da8, PoolLink_AnimSet)
 PoolLink *PoolLink_AnimSetDestructDelete(PoolLink *link)
 {
     link->vtable = &data_020e1a68;
-    func_020830d0(link);
+    PoolLink_BaseDestruct(link);
     Heap_OperatorDeleteB(link);
     return link;
 }
@@ -267,13 +247,6 @@ CLEAN_AS(func_02082e04, PoolLink_AnimSetConstruct)
 /* The entries of the pools the remaining classes of link stand for, by number, past their
  * "taken" byte; null for a number past the pool. */
 extern int func_02083544(SlotPool *pool, u32 index); /* a block slot */
-extern int func_02083684(SlotPool *pool, u32 index); /* an entry of data_021d1e20 */
-extern int func_02083800(SlotPool *pool, u32 index); /* a heap4 slot */
-extern int func_02083940(SlotPool *pool, u32 index); /* a heap8 slot */
-/* The address of value `which` of an entry of data_021d1e48, or null. */
-extern int func_02083a80(SlotPool *pool, u32 index, u32 which);
-/* The number of the first entry of a pool that is not taken, -1 when all are. */
-extern int func_02083bfc(SlotPool *pool);
 
 extern const PoolLinkVtable data_020e1a7c; /* the block slot link's vtable */
 extern const PoolLinkVtable data_020e1a54; /* the data_021d1e20 link's vtable */
@@ -291,7 +264,7 @@ int PoolLink_Block(PoolLink *link)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083544(pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_BlockSlot((SlotPoolBlocks *) pool, (u32) link->index);
 }
 CLEAN_AS(func_02082e1c, PoolLink_Block)
 
@@ -332,7 +305,7 @@ int PoolLink_Pool1E20Entry(PoolLink *link)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083684(pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_Cloth((SlotPoolBytes *) pool, (u32) link->index);
 }
 CLEAN_AS(func_02082e90, PoolLink_Pool1E20Entry)
 
@@ -373,7 +346,7 @@ int PoolLink_Heap4(PoolLink *link)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083800(pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_Heap4Slot((SlotPoolHeap4 *) pool, (u32) link->index);
 }
 CLEAN_AS(func_02082f04, PoolLink_Heap4)
 
@@ -414,7 +387,7 @@ int PoolLink_Heap8(PoolLink *link)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083940(pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_Heap8Slot((SlotPoolHeap8 *) pool, (u32) link->index);
 }
 CLEAN_AS(func_02082f78, PoolLink_Heap8)
 
@@ -458,7 +431,7 @@ int PoolLink_Pool1E48Byte(PoolLink *link, int which)
     if (pool == NULL) {
         return 0;
     }
-    return func_02083a80(pool, (u32) link->index, (u32) which);
+    return (int) (uintptr_t) (SlotPool_SpeakerAnim((SlotPoolSpeakers *) pool, (u32) link->index, (u32) which));
 }
 CLEAN_AS(func_02082fec, PoolLink_Pool1E48Byte)
 
@@ -518,7 +491,7 @@ int PoolLink_Take(PoolLink *link)
     if (link->index != POOL_LINK_NONE) {
         return 1;
     }
-    int free_index = func_02083bfc(pool);
+    int free_index = SlotPool_FirstFree(pool);
     if ((u32) free_index >= pool->count) {
         return 0;
     }

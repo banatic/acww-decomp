@@ -13,9 +13,6 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The options in use, and the three ways the game reads them (each one of the getters below on
  * data_021c6998). */
 extern PlayerOptions data_021c6998;
-extern PlayerOptions *func_0203d4b8(void); /* &data_021c6998 */
-extern int func_0203d4a8(void);            /* its flag */
-extern int func_0203d470(void);            /* its sound flag */
 
 /* func_0203d22c */
 void PlayerOptions_MarkSettingChanged(PlayerOptions *options)
@@ -191,18 +188,18 @@ CLEAN_AS(func_0203d390, PlayerOptions_Nothing390)
 void PlayerOptions_Store(void)
 {
     u8 *stored = PlayerRecord_Field1D3B(PlayerRecords_Current());
-    PlayerOptions *in_use = func_0203d4b8();
+    PlayerOptions *in_use = (PlayerOptions *) (uintptr_t) PlayerOptions_InUse();
     u8 values;
 
     if (PlayerOptions_FlagChanged(in_use)) {
-        if (func_0203d4a8() == 1) {
+        if (PlayerOptions_FlagInUse() == 1) {
             PlayerOptions_SetFlag(stored);
         } else {
             PlayerOptions_ClearFlag(stored);
         }
     }
     if (PlayerOptions_SoundChanged(in_use)) {
-        if (func_0203d470() == 1) {
+        if (PlayerOptions_SoundInUse() == 1) {
             PlayerOptions_SetSound(stored);
         } else {
             PlayerOptions_ClearSound(stored);

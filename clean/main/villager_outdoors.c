@@ -7,6 +7,20 @@
 #include "date_time.h"
 #include "npc_id.h"
 #include "villager_state.h"
+#include "actor_table.h"
+#include "insect_tables.h"
+#include "item_traits.h"
+#include "main_random.h"
+#include "npc_lookup.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "town_villager.h"
+#include "villager_checks.h"
+#include "villager_memories.h"
+#include "villager_move.h"
+#include "villager_roster.h"
+#include "villager_status.h"
 
 #define VILLAGERS 8
 #define VILLAGER_SIZE 0x7ec
@@ -33,37 +47,6 @@ typedef struct VillagerOutdoorsMonth {
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern NpcId *func_0208150c(const void *villager); /* the villager's NpcId, at 0x7a0 */
-extern int func_0207cf74(u32 index);               /* whether the index is 0-7 */
-extern void func_0209e474(DateTime *now);          /* the clock's date and time */
-/* 1 when the date is not a valid one, else 0. */
-extern int func_0209dffc(const DateTime *when);
-/* DateTime_Compare and DateTime_MinutesBetween (date_time.h). */
-extern int func_0209e3ac(const DateTime *a, const DateTime *b, int fields);
-extern int func_0209e350(const DateTime *from, const DateTime *to);
-/* 0 while this system holds its slot of the session, else 4. */
-extern int func_02082240(void);
-/* How many of the eight villagers have a valid NpcId. */
-extern int func_0207cadc(const void *villagers);
-extern int func_020984e8(void);                /* the current player's record, or 0 */
-extern int func_02099020(int record, u32 bit); /* a bit of the record's flags */
-/* Whether `now` is in the night hours of personality `personality` (Lookups_DayWindow). */
-extern int func_020821d4(int personality, const DateTime *now);
-extern int func_0204c7c0(void); /* the address of data_021dc7a8 */
-/* The index of the villager the record at 0x3f90 of `villagers` names, or -1. */
-extern int func_0207b3dc(void *villagers);
-/* Whether the villager has a valid NpcId, func_0207f150 gives it 3 and it is not the one the
- * record at 0x3f90 names. */
-extern int func_0207d6c4(const void *villager);
-extern unsigned int func_020644cc(int bound); /* a random number below `bound` */
-/* Whether the player's name is set (its first halfword) and its halfword 0x0e is not 0. */
-extern int func_020951bc(const void *player);
-/* Whether the villager remembers the player. */
-extern int func_020807a8(const void *villager, const void *player);
-/* The villager's status: 0 while it is out walking (villager_house.c). */
-extern int func_0207f1d8(const void *villager);
-/* The table of month `month` (0-11; others read month 0). */
-extern const VillagerOutdoorsMonth *func_020617d8(int month);
 
 static const u8 *villager_at(const u8 *villagers, int index)
 {
@@ -99,7 +82,7 @@ void VillagerOutdoors_Update(VillagerOutdoors *outdoors, u8 *villagers, int keep
     DateTime now = {0};
 
     mark_all_absent(VillagerState_Table());
-    func_0209e474(&now);
+    DateTime_Now(&now);
     if (VillagerOutdoors_IsDue(outdoors, &now)) {
         VillagerOutdoors_Draw(outdoors, villagers);
         if (keep_time != 0) {
@@ -119,7 +102,7 @@ void VillagerOutdoors_Restore(VillagerOutdoors *outdoors, u8 *villagers)
     VillagerState *entry = VillagerState_Table()->entries;
 
     for (int i = 0; i < VILLAGERS; i++) {
-        if (NpcId_IsValid(func_0208150c(villager_at(villagers, i)))) {
+        if (NpcId_IsValid(TownVillager_NpcId((u8 *) villager_at(villagers, i)))) {
             if (VillagerOutdoors_FindOutside(outdoors, i) != VILLAGER_OUTDOORS_NONE) {
                 set_place(&entry[i], VILLAGER_PLACE_OUTSIDE, 1);
             } else {
@@ -140,8 +123,8 @@ void VillagerOutdoors_Draw(VillagerOutdoors *outdoors, u8 *villagers)
 {
     VillagerStates *table = VillagerState_Table();
     int chosen_count = 0;
-    int limit = func_02082240();
-    int residents = func_0207cadc(villagers);
+    int limit = NpcLookup_FourUnlessSlotTaken();
+    int residents = VillagerRoster_CountFilled(villagers);
     int placed = 0;
     s8 list[VILLAGER_OUTDOORS_ORDER];
     s8 chosen[VILLAGER_OUTDOORS_ORDER];
@@ -167,14 +150,14 @@ CLEAN_AS(func_02079db8, VillagerOutdoors_Draw)
 void VillagerOutdoors_PutToSleep(VillagerOutdoors *outdoors, u8 *villagers, const DateTime *now)
 {
     (void) outdoors;
-    int record = func_020984e8();
-    int awake = record != 0 && func_02099020(record, VILLAGER_OUTDOORS_PLAYER_NO_SLEEP) != 0;
+    int record = (int) (uintptr_t) PlayerRecords_Current();
+    int awake = record != 0 && PlayerRecord_TestFlag((u8 *) (uintptr_t) record, VILLAGER_OUTDOORS_PLAYER_NO_SLEEP) != 0;
     VillagerState *entry = VillagerState_Table()->entries;
 
     for (int i = 0; i < VILLAGERS; i++) {
-        NpcId *npc = func_0208150c(villager_at(villagers, i));
+        NpcId *npc = TownVillager_NpcId((u8 *) villager_at(villagers, i));
         if (NpcId_IsValid(npc)) {
-            if (!awake && func_020821d4(NpcId_Personality(npc), now)) {
+            if (!awake && NpcLookup_IsInNightWindow(NpcId_Personality(npc), now)) {
                 set_place(&entry[i], VILLAGER_PLACE_ASLEEP, 0);
             }
         } else {
@@ -193,13 +176,13 @@ void VillagerOutdoors_TakeIndex16C(VillagerOutdoors *outdoors, s8 *chosen, int *
     (void) outdoors;
     int wanted = VillagerState_GetIndex16C();
 
-    if (!func_0207cf74((u32) wanted)) {
+    if (!ActorTable_IsKindESlot((u32) wanted)) {
         return;
     }
     for (int i = 0; i < VILLAGERS; i++) {
         int villager = list[i];
-        if (func_0207cf74((u32) villager) && villager == wanted) {
-            if (NpcId_IsValid(func_0208150c(villager_at(villagers, villager)))) {
+        if (ActorTable_IsKindESlot((u32) villager) && villager == wanted) {
+            if (NpcId_IsValid(TownVillager_NpcId((u8 *) villager_at(villagers, villager)))) {
                 chosen[*count] = (s8) villager;
                 (*count)++;
             }
@@ -230,7 +213,7 @@ void VillagerOutdoors_KeepHome(VillagerOutdoors *outdoors, s8 *list, int *count,
 {
     for (int i = 0; i < VILLAGERS; i++) {
         int villager = list[i];
-        if (func_0207cf74((u32) villager) && VillagerOutdoors_SetOrder(outdoors, *count, villager)) {
+        if (ActorTable_IsKindESlot((u32) villager) && VillagerOutdoors_SetOrder(outdoors, *count, villager)) {
             (*count)++;
             set_place(state_at(states, villager), VILLAGER_PLACE_HOME, 0);
             list[i] = VILLAGER_OUTDOORS_NONE;
@@ -248,15 +231,15 @@ void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *co
     (void) outdoors;
     u8 candidates = 0;
     int left = 0;
-    void *town = (void *) (uintptr_t) (u32) (func_0204c7c0() + VILLAGER_OUTDOORS_VILLAGERS_FROM_0204C7C0);
-    int excluded = func_0207b3dc(town);
+    void *town = (void *) (uintptr_t) (u32) (ItemTraits_StateBlockAddress() + VILLAGER_OUTDOORS_VILLAGERS_FROM_0204C7C0);
+    int excluded = VillagerMove_VillagerIndex(town);
 
     for (int i = 0; i < VILLAGERS; i++) {
         int villager = list[i];
-        if (!func_0207cf74((u32) villager) || villager == excluded) {
+        if (!ActorTable_IsKindESlot((u32) villager) || villager == excluded) {
             continue;
         }
-        if (func_0207d6c4(villager_at(villagers, villager))) {
+        if (VillagerCheck_IsStayingResident((u8 *) villager_at(villagers, villager))) {
             candidates = (u8) (candidates | (1 << i));
             left++;
             if (left >= VILLAGER_OUTDOORS_CANDIDATES) {
@@ -265,7 +248,7 @@ void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *co
         }
     }
     while (left > 0 && *count < limit) {
-        int pick = (int) func_020644cc(left);
+        int pick = (int) MainRandom_Below(left);
         for (int j = 0; j < VILLAGERS; j++) {
             if ((candidates >> j) & 1) {
                 if (pick == 0) {
@@ -296,16 +279,16 @@ int VillagerOutdoors_IsDue(VillagerOutdoors *outdoors, const DateTime *now)
 {
     const DateTime *drawn = &outdoors->drawn_at;
 
-    if (is_all_zero(drawn) || func_0209dffc(drawn) != 0) {
+    if (is_all_zero(drawn) || DateTime_IsInvalid(drawn) != 0) {
         return 1;
     }
     int minutes = 0;
     int order =
-        func_0209e3ac(now, drawn, DATE_TIME_MINUTE | DATE_TIME_HOUR | DATE_TIME_DAY | DATE_TIME_MONTH | DATE_TIME_YEAR);
+        DateTime_Compare(now, drawn, DATE_TIME_MINUTE | DATE_TIME_HOUR | DATE_TIME_DAY | DATE_TIME_MONTH | DATE_TIME_YEAR);
     if (order == -1) {
-        minutes = func_0209e350(now, drawn);
+        minutes = DateTime_MinutesBetween(now, drawn);
     } else if (order == 1) {
-        minutes = func_0209e350(drawn, now);
+        minutes = DateTime_MinutesBetween(drawn, now);
     }
     return minutes >= VILLAGER_OUTDOORS_DRAW_MINUTES;
 }
@@ -325,7 +308,7 @@ CLEAN_AS(func_0207a180, VillagerOutdoors_ClearTime)
 void VillagerOutdoors_ListResidents(VillagerOutdoors *outdoors, u8 *villagers)
 {
     for (int i = 0; i < VILLAGERS; i++) {
-        if (NpcId_IsValid(func_0208150c(villager_at(villagers, i)))) {
+        if (NpcId_IsValid(TownVillager_NpcId((u8 *) villager_at(villagers, i)))) {
             outdoors->order[i] = (s8) i;
         } else {
             outdoors->order[i] = VILLAGER_OUTDOORS_NONE;
@@ -367,7 +350,7 @@ CLEAN_AS(func_0207a1e4, VillagerOutdoors_RemoveOutside)
 /* func_0207a210: the outside slot of villager `villager` (0-7), or -1. */
 int VillagerOutdoors_FindOutside(VillagerOutdoors *outdoors, int villager)
 {
-    if (!func_0207cf74((u32) villager)) {
+    if (!ActorTable_IsKindESlot((u32) villager)) {
         return VILLAGER_OUTDOORS_NONE;
     }
     for (int slot = 0; slot < VILLAGER_OUTDOORS_OUTSIDE; slot++) {
@@ -401,7 +384,7 @@ CLEAN_AS(func_0207a254, VillagerOutdoors_ClearOutside)
  * after it moving up. */
 void VillagerOutdoors_RemoveFromOrder(VillagerOutdoors *outdoors, int villager)
 {
-    if (!func_0207cf74((u32) villager)) {
+    if (!ActorTable_IsKindESlot((u32) villager)) {
         return;
     }
     for (int i = 0; i < VILLAGER_OUTDOORS_ORDER; i++) {
@@ -419,7 +402,7 @@ CLEAN_AS(func_0207a264, VillagerOutdoors_RemoveFromOrder)
 /* func_0207a2a4: villager `villager` (0-7) put in the first free place of the order, if any. */
 void VillagerOutdoors_AddToOrder(VillagerOutdoors *outdoors, int villager)
 {
-    if (!func_0207cf74((u32) villager)) {
+    if (!ActorTable_IsKindESlot((u32) villager)) {
         return;
     }
     for (int i = 0; i < VILLAGER_OUTDOORS_ORDER; i++) {
@@ -434,7 +417,7 @@ CLEAN_AS(func_0207a2a4, VillagerOutdoors_AddToOrder)
 /* func_0207a2d8: whether `position` is 0-7; then that place of the order holds `villager`. */
 int VillagerOutdoors_SetOrder(VillagerOutdoors *outdoors, int position, int villager)
 {
-    if (!func_0207cf74((u32) position)) {
+    if (!ActorTable_IsKindESlot((u32) position)) {
         return 0;
     }
     outdoors->order[position] = (s8) villager;
@@ -490,7 +473,7 @@ CLEAN_AS(func_0207a338, VillagerOutdoors_Construct)
 void VillagerOutdoors_DrawIndex160(const u8 *villagers, const void *player)
 {
     VillagerState_Table()->index_160 = VILLAGER_STATE_NONE;
-    if (player == NULL || func_020951bc(player) == 0) {
+    if (player == NULL || PlayerId_IsSet((DesignCreator *) player) == 0) {
         return;
     }
     int chance = VillagerOutdoors_MonthChance();
@@ -499,18 +482,19 @@ void VillagerOutdoors_DrawIndex160(const u8 *villagers, const void *player)
     int left = 0;
     for (int i = 0; i < VILLAGERS; i++) {
         const u8 *villager = villager_at(villagers, i);
-        if (NpcId_IsValid(func_0208150c(villager)) && func_020807a8(villager, player) != 0 && func_0207f1d8(villager) == 0) {
+        if (NpcId_IsValid(TownVillager_NpcId((u8 *) villager)) && VillagerMemory_Of((u8 *) villager, player) != 0 &&
+            VillagerStatus_Get((u8 *) villager) == 0) {
             candidates = (u8) (candidates | (1 << i));
             left++;
         }
     }
     while (left > 0) {
-        int pick = (int) func_020644cc(left);
+        int pick = (int) MainRandom_Below(left);
         left--;
         for (int i = 0; i < VILLAGERS; i++) {
             if ((candidates >> i) & 1) {
                 if (pick == 0) {
-                    if ((int) func_020644cc(100) < chance) {
+                    if ((int) MainRandom_Below(100) < chance) {
                         VillagerState_Table()->index_160 = (s8) i;
                         left = 0;
                     }
@@ -530,8 +514,8 @@ int VillagerOutdoors_MonthChance(void)
 {
     DateTime now = {0};
 
-    func_0209e474(&now);
-    const VillagerOutdoorsMonth *month = func_020617d8(now.month - 1);
+    DateTime_Now(&now);
+    const VillagerOutdoorsMonth *month = (const VillagerOutdoorsMonth *) InsectTables_MonthLists(now.month - 1);
     if (month == NULL) {
         return 0;
     }

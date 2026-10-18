@@ -6,6 +6,10 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/design_assets.h"
+#include "model_cache.h"
+#include "rom_file.h"
+#include "scene_lights.h"
+#include "vram_region.h"
 
 static_assert(sizeof(ModelRenderObject) == 0x54, "ModelRenderObject size");
 static_assert(offsetof(ModelRenderObject, joint_results) == 0x34, "ModelRenderObject joint_results");
@@ -22,28 +26,9 @@ extern const u8 data_020dd04c[];
 extern Heap *data_021fbe94; /* the current heap, which files are read into */
 extern Heap *data_021c9b2c; /* the heap a model set is kept on when none is given */
 
-/* A file read whole into `heap` (from its end when `align` is negative). */
-extern u8 *func_02064b2c(const char *path, Heap *heap, int align, u32 *size);
 /* The model set of a model file, and the texture resource of a file (NULL without one). */
 extern u8 *func_02107828(u8 *file);
 extern void *func_021077e8(u8 *file);
-/* A texture resource given its place in VRAM (`vram` NULL: anywhere), then copied to `heap`. */
-extern int func_02056064(void *texture, void *vram);
-extern void *func_020561cc(void *texture, Heap *heap);
-/* A model resource copied to `heap`; one copied to the shared heap and kept under `name`, or the
- * one already kept under it (MODEL_OBJECT_NO_NAME: always a new copy); the one kept under
- * `name`, or NULL. */
-extern u8 *func_02056268(u8 *model, Heap *heap);
-extern u8 *func_020561fc(u8 *model, u32 name);
-extern u8 *func_020562cc(int name);
-/* The holder's render object set up for its model; the holder given a model and a texture
- * resource bound to it; the holder's render object released (1). */
-extern void func_02055f6c(ModelObject *object);
-extern int func_02055f40(ModelObject *object, u8 *model, void *texture);
-extern int func_02055f1c(ModelObject *object);
-/* The constructor and destructor of the class the holder extends (vtable data_020dd13c). */
-extern ModelObject *func_02056044(ModelObject *object);
-extern void func_02055ff4(ModelObject *object);
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
@@ -117,7 +102,7 @@ int ModelSet_Load(ModelSet *set, const char *path, Heap *heap)
         heap = data_021c9b2c;
     }
     Heap *file_heap = data_021fbe94;
-    u8 *file = func_02064b2c(path, file_heap, -4, NULL);
+    u8 *file = RomFile_Load(path, file_heap, -4, NULL);
     if (file == NULL) {
         return 0;
     }
@@ -137,11 +122,11 @@ int ModelSet_Load(ModelSet *set, const char *path, Heap *heap)
     }
 
     void *texture = func_021077e8(file);
-    func_02056064(texture, NULL);
-    void *kept_texture = func_020561cc(texture, heap);
+    VramRegion_LoadTexture(texture, NULL);
+    void *kept_texture = ModelCache_CopyTexture(texture, heap);
     for (u32 i = 0; i < set->count; i++) {
-        u8 *model = func_02056268(model_at(func_02107828(file), i), heap);
-        func_02055f40(&set->models[i], model, kept_texture);
+        u8 *model = ModelCache_CopyModel(model_at(func_02107828(file), i), heap);
+        ModelObject_SetModelTexture(&set->models[i], model, kept_texture);
     }
     Heap_Free(file_heap, file);
     return 1;
@@ -177,7 +162,7 @@ CLEAN_AS(func_02055444, ModelSet_Construct)
 int ModelObject_Release(ModelObject *object)
 {
     int released = 1;
-    released &= func_02055f1c(object);
+    released &= ModelObject_ReleaseRender(object);
     object->name = MODEL_OBJECT_NO_NAME;
     return released;
 }
@@ -211,7 +196,7 @@ void ModelObject_UseFileModel(ModelObject *object, u8 *file)
     object->model = model;
     NNS_G3dBindMdlTex(object->model, texture);
     NNS_G3dBindMdlPltt(object->model, texture);
-    func_02055f6c(object);
+    ModelObject_SetupRender(object);
 }
 CLEAN_AS(func_020554b0, ModelObject_UseFileModel)
 
@@ -221,17 +206,17 @@ CLEAN_AS(func_020554b0, ModelObject_UseFileModel)
 int ModelObject_LoadWithDesign(ModelObject *object, const char *path, int player, int index)
 {
     Heap *file_heap = data_021fbe94;
-    u8 *file = func_02064b2c(path, file_heap, -4, NULL);
+    u8 *file = RomFile_Load(path, file_heap, -4, NULL);
     if (file == NULL) {
         return 0;
     }
-    object->model = func_020561fc(model_at(func_02107828(file), 0), MODEL_OBJECT_NO_NAME);
+    object->model = ModelCache_KeepModel(model_at(func_02107828(file), 0), MODEL_OBJECT_NO_NAME);
     DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Get();
     void *texture = (void *) (uintptr_t) DesignManager_PlayerTexture(designs, player, index);
     NNS_G3dForceBindMdlTex(object->model, texture, 0, 0);
     NNS_G3dForceBindMdlPltt(object->model, texture, 0, 0);
     Heap_Free(file_heap, file);
-    func_02055f6c(object);
+    ModelObject_SetupRender(object);
     return 1;
 }
 CLEAN_AS(func_020554ec, ModelObject_LoadWithDesign)
@@ -241,9 +226,9 @@ CLEAN_AS(func_020554ec, ModelObject_LoadWithDesign)
  * the holder has its model. */
 int ModelObject_LoadShared(ModelObject *object, int name, const char *path)
 {
-    object->model = func_020562cc(name);
+    object->model = ModelCache_FindModel(name);
     if (object->model != NULL) {
-        func_02055f6c(object);
+        ModelObject_SetupRender(object);
         return 1;
     }
     object->name = (u32) name;
@@ -275,22 +260,22 @@ int ModelObject_LoadNamed(ModelObject *object, const char *path, Heap *heap, voi
                           const u32 *palette_of_material, int materials, u32 name)
 {
     Heap *file_heap = data_021fbe94;
-    u8 *file = func_02064b2c(path, file_heap, -4, NULL);
+    u8 *file = RomFile_Load(path, file_heap, -4, NULL);
     if (file == NULL) {
         return 0;
     }
     u8 *model = model_at(func_02107828(file), 0);
     if (heap != NULL) {
-        object->model = func_02056268(model, heap);
+        object->model = ModelCache_CopyModel(model, heap);
     } else {
-        object->model = func_020561fc(model, name);
+        object->model = ModelCache_KeepModel(model, name);
     }
     if (texture != NULL) {
         NNS_G3dBindMdlTex(object->model, texture);
     } else {
         void *own = func_021077e8(file);
         if (own != NULL) {
-            func_02056064(own, object->vram);
+            VramRegion_LoadTexture(own, object->vram);
             NNS_G3dBindMdlTex(object->model, own);
         }
     }
@@ -300,7 +285,7 @@ int ModelObject_LoadNamed(ModelObject *object, const char *path, Heap *heap, voi
         }
     }
     Heap_Free(file_heap, file);
-    func_02055f6c(object);
+    ModelObject_SetupRender(object);
     return 1;
 }
 CLEAN_AS(func_020555dc, ModelObject_LoadNamed)
@@ -311,24 +296,24 @@ CLEAN_AS(func_020555dc, ModelObject_LoadNamed)
 int ModelObject_LoadFrom(ModelObject *object, const char *path, Heap *heap, int name)
 {
     Heap *file_heap = data_021fbe94;
-    u8 *file = func_02064b2c(path, file_heap, -4, NULL);
+    u8 *file = RomFile_Load(path, file_heap, -4, NULL);
     if (file == NULL) {
         return 0;
     }
     u8 *model = model_at(func_02107828(file), 0);
     void *texture = func_021077e8(file);
     if (heap != NULL) {
-        object->model = func_02056268(model, heap);
+        object->model = ModelCache_CopyModel(model, heap);
     } else {
-        object->model = func_020561fc(model, (u32) name);
+        object->model = ModelCache_KeepModel(model, (u32) name);
     }
     if (texture != NULL) {
-        func_02056064(texture, object->vram);
+        VramRegion_LoadTexture(texture, object->vram);
         NNS_G3dBindMdlTex(object->model, texture);
         NNS_G3dBindMdlPltt(object->model, texture);
     }
     Heap_Free(file_heap, file);
-    func_02055f6c(object);
+    ModelObject_SetupRender(object);
     return 1;
 }
 CLEAN_AS(func_02055698, ModelObject_LoadFrom)
@@ -337,7 +322,7 @@ CLEAN_AS(func_02055698, ModelObject_LoadFrom)
 ModelObject *ModelObject_Destruct(ModelObject *object)
 {
     object->vtable = data_020dd03c;
-    func_02055ff4(object);
+    ModelObject_BaseDestruct(object);
     return object;
 }
 CLEAN_AS(func_0205572c, ModelObject_Destruct)
@@ -346,7 +331,7 @@ CLEAN_AS(func_0205572c, ModelObject_Destruct)
 ModelObject *ModelObject_Delete(ModelObject *object)
 {
     object->vtable = data_020dd03c;
-    func_02055ff4(object);
+    ModelObject_BaseDestruct(object);
     Heap_OperatorDeleteB(object);
     return object;
 }
@@ -356,7 +341,7 @@ CLEAN_AS(func_02055744, ModelObject_Delete)
 ModelObject *ModelObject_DestructComplete(ModelObject *object)
 {
     object->vtable = data_020dd03c;
-    func_02055ff4(object);
+    ModelObject_BaseDestruct(object);
     return object;
 }
 CLEAN_AS(func_02055764, ModelObject_DestructComplete)
@@ -364,7 +349,7 @@ CLEAN_AS(func_02055764, ModelObject_DestructComplete)
 /* func_0205577c: the constructor: no name. */
 ModelObject *ModelObject_Construct(ModelObject *object)
 {
-    func_02056044(object);
+    ModelObject_BaseConstruct(object);
     object->vtable = data_020dd03c;
     object->name = MODEL_OBJECT_NO_NAME;
     return object;
@@ -374,7 +359,7 @@ CLEAN_AS(func_0205577c, ModelObject_Construct)
 /* func_020557a0: the same constructor, the one the derived classes' constructors start with. */
 ModelObject *ModelObject_ConstructBase(ModelObject *object)
 {
-    func_02056044(object);
+    ModelObject_BaseConstruct(object);
     object->vtable = data_020dd03c;
     object->name = MODEL_OBJECT_NO_NAME;
     return object;
@@ -384,8 +369,6 @@ CLEAN_AS(func_020557a0, ModelObject_ConstructBase)
 /* The render object's parts: the class the holder extends (vtable data_020dd13c) and its own
  * base class (vtable data_020dd11c, constructor func_020563c0, destructor func_02056390). */
 extern const u8 data_020dd13c[];
-extern void func_020563c0(ModelObject *object);
-extern void func_02056390(ModelObject *object);
 
 /* NitroSystem's G3D global state (NNS_G3dGlb, data_027e0148): word 0x1f its flags; its base
  * rotation at 0x3c (data_027e0184). */
@@ -436,8 +419,6 @@ extern void NNS_G3dGlbFlushP(void);
 extern void NNS_G3dDraw1Mat1Shp(u8 *model, u32 material, u32 shape, int send_material);
 extern u32 NNS_G3dGetSbcCmdLen(const u8 *command);
 extern void NNSi_G3dModifyMatFlag(u8 *model, int on, int flag);
-/* The lights a lit material uses in the current scene. */
-extern u32 func_020658c4(void);
 
 /* The render object's pointer handed to its hooks (NNSG3dRenderObj.ptrUser, at 0x2c). */
 static void **render_user(ModelObject *object)
@@ -662,7 +643,7 @@ void ModelObject_SetupRender(ModelObject *object)
         u32 *attributes = material_attributes(object->model, i);
         if ((*attributes & MODEL_MATERIAL_LIGHTS) != 0) {
             *attributes &= ~MODEL_MATERIAL_LIGHTS;
-            *attributes |= func_020658c4();
+            *attributes |= SceneLights_MaterialLights();
         }
     }
     NNSi_G3dModifyMatFlag(object->model, 0, MODEL_MATERIAL_FLAG_EMISSION);
@@ -686,7 +667,7 @@ CLEAN_AS(func_02055fcc, ModelObject_ResetRender)
 ModelObject *ModelObject_BaseDestruct(ModelObject *object)
 {
     object->vtable = data_020dd13c;
-    func_02056390(object);
+    ModelObject_RootDestruct(object);
     return object;
 }
 CLEAN_AS(func_02055ff4, ModelObject_BaseDestruct)
@@ -695,7 +676,7 @@ CLEAN_AS(func_02055ff4, ModelObject_BaseDestruct)
 ModelObject *ModelObject_BaseDelete(ModelObject *object)
 {
     object->vtable = data_020dd13c;
-    func_02056390(object);
+    ModelObject_RootDestruct(object);
     Heap_OperatorDeleteB(object);
     return object;
 }
@@ -705,7 +686,7 @@ CLEAN_AS(func_0205600c, ModelObject_BaseDelete)
 ModelObject *ModelObject_BaseDestructComplete(ModelObject *object)
 {
     object->vtable = data_020dd13c;
-    func_02056390(object);
+    ModelObject_RootDestruct(object);
     return object;
 }
 CLEAN_AS(func_0205602c, ModelObject_BaseDestructComplete)
@@ -713,7 +694,7 @@ CLEAN_AS(func_0205602c, ModelObject_BaseDestructComplete)
 /* func_02056044: its constructor: no model (ModelObject_ResetRender). */
 ModelObject *ModelObject_BaseConstruct(ModelObject *object)
 {
-    func_020563c0(object);
+    ModelObject_RootConstruct(object);
     object->vtable = data_020dd13c;
     ModelObject_ResetRender(object);
     return object;

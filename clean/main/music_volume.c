@@ -6,6 +6,9 @@
 #include "clean.h"
 #include "music_commands.h"
 #include "sound.h"
+#include "field_collision.h"
+#include "player_actor_ops.h"
+#include "scene_query.h"
 
 static_assert(sizeof(MusicVolumeSlot) == 0x10, "slot size");
 static_assert(offsetof(MusicVolumeSlot, state) == 0x0c, "slot state");
@@ -33,12 +36,6 @@ typedef struct MusicVolumeGround {
     u8 unk_38[8];
 } MusicVolumeGround;
 
-extern int func_02034270(MusicVolumeGround *out, const Vec3 *at, int a, int b);
-extern void func_0203423c(MusicVolumeGround *info);
-/* The position of a field actor, NULL without one. */
-extern const Vec3 *func_02095794(int actor);
-/* The current scene. */
-extern u8 func_020b65c4(void);
 /* The game's slot destructor and constructor (which also returns the slot), handed to the
  * array helpers. */
 extern void func_02036570(void *slot);
@@ -155,7 +152,7 @@ CLEAN_AS(func_0203611c, MusicVolume_ClearStarted)
 void MusicVolume_UpdateSceneSlot(MusicVolume *self, MusicVolumeSlot *slot)
 {
     int state = slot->state;
-    int scene = func_020b65c4();
+    int scene = SceneQuery_Current();
     int lowered = scene == 0x27 || scene == 0x28;
 
     (void) self;
@@ -181,7 +178,7 @@ void MusicVolume_UpdateGroundSlot(MusicVolume *self, MusicVolumeSlot *slot)
 {
     int state = slot->state;
     int lowered = 0;
-    const Vec3 *player = func_02095794(MUSIC_VOLUME_PLAYER);
+    const Vec3 *player = PlayerActorOps_StartPosition(MUSIC_VOLUME_PLAYER);
 
     (void) self;
     if (player != NULL) {
@@ -189,16 +186,16 @@ void MusicVolume_UpdateGroundSlot(MusicVolume *self, MusicVolumeSlot *slot)
         MusicVolumeGround ahead;
         Vec3 at;
 
-        func_02034270(&here, player, 0, 0);
+        CollisionGround_Init((CollisionGround *) &here, player, 0, 0);
         at.x = player->x;
         at.y = player->y;
         at.z = (fx32) ((u32) player->z + 0x2000);
-        func_02034270(&ahead, &at, 0, 0);
+        CollisionGround_Init((CollisionGround *) &ahead, &at, 0, 0);
         if (here.kind == 0x13 || here.kind == 0x16 || ahead.unk_30 == 1) {
             lowered = 1;
         }
-        func_0203423c(&ahead);
-        func_0203423c(&here);
+        CollisionGround_Destroy((CollisionGround *) &ahead);
+        CollisionGround_Destroy((CollisionGround *) &here);
     }
     if (state == 0) {
         if (lowered) {

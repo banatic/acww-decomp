@@ -5,13 +5,13 @@
  *
  * - off: entered with the sound at 4 and the animation of variant 0 played once; while the
  *   switch has a change pending it requests the state "on" for the object at its cell
- *   (func_0205265c, which does so only when data_020e54a8 is 1);
+ *   (RoomSync_RequestState, which does so only when data_020e54a8 is 1);
  * - on: entered with the sound at 2 and the animation of variant 1 played in a loop; the sound
  *   at 0 is played each frame; while the switch has a change pending it requests "off".
  *
- * Once its model is bound it enters "on" when its switch is on, unless func_ov004_0223c10c
+ * Once its model is bound it enters "on" when its switch is on, unless RoomObjects_InNookOrScene0AOr0F
  * says otherwise, and "off" if not; in mode 1 (RoomObject.unk_76C) it requests "off" through
- * func_02052738 instead. */
+ * RoomSync_SetState instead. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_GLOWING_H
 #define CLEAN_OV004_ROOM_OBJECT_GLOWING_H
 

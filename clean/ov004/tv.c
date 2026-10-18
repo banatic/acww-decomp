@@ -10,6 +10,10 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "main/material_bind.h"
+#include "main/room_sync.h"
+#include "room_manager.h"
+#include "room_objects.h"
 
 static_assert(offsetof(RoomObject, model_resource) == 0x594, "model resource");
 static_assert(offsetof(RoomObject, model_files) == 0x6cc, "model files");
@@ -57,23 +61,6 @@ extern const char data_ov004_022531d8[];
 extern const char data_ov004_022531e0[];
 extern const char data_ov004_022531e8[];
 
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-/* The picture the screens show (func_ov004_0223a7cc of the member at 0x64 of
- * data_ov004_022595c0; 0 when that is NULL). */
-extern int func_ov004_0223b314(void);
-/* Gives a material of a model another texture: the one given, or the texture and palette
- * named in a texture file. */
-extern int func_02057084(G3dModel *model, const char *material, void *texture, void *a3, int a4);
-extern int func_020570d4(G3dModel *model, const char *material, u8 *texture_file, const char *texture, const char *palette);
-
-static unsigned int Tv_address(Tv *tv)
-{
-    return (unsigned int) (uintptr_t) tv;
-}
-
 /* Vtable slot 0x70: the class's EnterState. */
 static void Tv_switch_to(Tv *tv, int state)
 {
@@ -81,12 +68,12 @@ static void Tv_switch_to(Tv *tv, int state)
 }
 
 /* The glow bound to the screen's material, on as the switch is; then the "on" state when the
- * switch is on and func_ov004_0223c10c says no, else the "off" one. */
+ * switch is on and RoomObjects_InNookOrScene0AOr0F says no, else the "off" one. */
 static void Tv_bind_and_enter(Tv *tv, int on_state, int off_state)
 {
     int on = Switch_Value(&tv->base.light_switch);
     Glow_Bind(&tv->screen, tv->base.model_resource, data_ov004_022531d8, on);
-    if (Switch_Value(&tv->base.light_switch) != 0 && func_ov004_0223c10c() == 0) {
+    if (Switch_Value(&tv->base.light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         Tv_switch_to(tv, on_state);
     } else {
         Tv_switch_to(tv, off_state);
@@ -129,7 +116,7 @@ CLEAN_AS(func_ov004_02215788, TvAnimated_EnterTurningOff)
 int TvAnimated_UpdateOn(TvAnimated *tv)
 {
     if (Switch_IsPending(&tv->base.base.light_switch)) {
-        return func_0205265c(Tv_address(&tv->base), TV_ANIMATED_TURNING_OFF, SLOT_70_VALUE, 1);
+        return RoomSync_RequestState(&tv->base.base, TV_ANIMATED_TURNING_OFF, SLOT_70_VALUE, 1);
     }
     return 0;
 }
@@ -172,7 +159,7 @@ CLEAN_AS(func_ov004_02215874, TvAnimated_EnterTurningOn)
 void TvAnimated_UpdateOff(TvAnimated *tv)
 {
     if (Switch_IsPending(&tv->base.base.light_switch)) {
-        func_0205265c(Tv_address(&tv->base), TV_ANIMATED_TURNING_ON, SLOT_70_VALUE, 1);
+        RoomSync_RequestState(&tv->base.base, TV_ANIMATED_TURNING_ON, SLOT_70_VALUE, 1);
     }
 }
 CLEAN_AS(func_ov004_022158c8, TvAnimated_UpdateOff)
@@ -256,7 +243,7 @@ CLEAN_AS(_ZN18Obj_ov004_02250f8819func_ov004_02215a80Ev, TvAnimated_Update)
 
 /* func_ov004_02215aa0 (vtable slot 0x7c, once the model is bound): binds the animations of
  * variant 0 to play once from frame 0, then the glow; TV_ANIMATED_ON when the switch is on and
- * func_ov004_0223c10c says no, else TV_ANIMATED_OFF; done at once. */
+ * RoomObjects_InNookOrScene0AOr0F says no, else TV_ANIMATED_OFF; done at once. */
 int TvAnimated_Start(TvAnimated *tv)
 {
     RoomObject_LoadAnims(&tv->base.base, 0, ANIM_MODE_ONCE, ONE, 0);
@@ -315,7 +302,7 @@ CLEAN_AS(func_ov004_02215b8c, TvAnimated_Create)
 int Tv_UpdateOn(Tv *tv)
 {
     if (Switch_IsPending(&tv->base.light_switch)) {
-        return func_0205265c(Tv_address(tv), TV_OFF, SLOT_70_VALUE, 1);
+        return RoomSync_RequestState(&tv->base, TV_OFF, SLOT_70_VALUE, 1);
     }
     return 0;
 }
@@ -338,7 +325,7 @@ CLEAN_AS(func_ov004_02215bd0, Tv_EnterOn)
 void Tv_UpdateOff(Tv *tv)
 {
     if (Switch_IsPending(&tv->base.light_switch)) {
-        func_0205265c(Tv_address(tv), TV_ON, SLOT_70_VALUE, 1);
+        RoomSync_RequestState(&tv->base, TV_ON, SLOT_70_VALUE, 1);
     }
 }
 CLEAN_AS(func_ov004_02215c0c, Tv_UpdateOff)
@@ -400,7 +387,7 @@ u8 Tv_StateIsOn(Tv *tv, unsigned int state)
 }
 CLEAN_AS(func_ov004_02215d60, Tv_StateIsOn)
 
-/* func_ov004_02215d74: marks this TV as the one heard (func_ov004_0223bdac). */
+/* func_ov004_02215d74: marks this TV as the one heard (RoomManager_UpdateTvSound). */
 Tv *Tv_SetHeard(Tv *tv)
 {
     tv->heard = 1;
@@ -409,18 +396,18 @@ Tv *Tv_SetHeard(Tv *tv)
 CLEAN_AS(func_ov004_02215d74, Tv_SetHeard)
 
 /* func_ov004_02215d80: the screen's material "tv_m" shows the picture of
- * func_ov004_0223b314 when `on`, else the texture "tv.0" with the palette "tv_pl" of the
+ * RoomManager_TvTexture when `on`, else the texture "tv.0" with the palette "tv_pl" of the
  * model's texture file; 1. */
 int Tv_ShowScreen(Tv *tv, int on)
 {
     if (on != 0) {
         G3dModel *model = tv->base.model_resource;
-        void *picture = (void *) (uintptr_t) (u32) func_ov004_0223b314();
-        func_02057084(model, data_ov004_022531d8, picture, NULL, 0);
+        G3dResTex *picture = (G3dResTex *) (uintptr_t) RoomManager_TvTexture();
+        MaterialBind_BindByIndex((u8 *) model, data_ov004_022531d8, picture, 0, 0);
     } else {
         G3dModel *model = tv->base.model_resource;
-        func_020570d4(model, data_ov004_022531d8, FurnitureModel_Texture(&tv->base.model_files), data_ov004_022531e0,
-                      data_ov004_022531e8);
+        MaterialBind_BindByName((u8 *) model, data_ov004_022531d8, (G3dResTex *) FurnitureModel_Texture(&tv->base.model_files),
+                                data_ov004_022531e0, data_ov004_022531e8);
     }
     return 1;
 }
@@ -435,7 +422,7 @@ CLEAN_AS(func_ov004_02215ddc, Tv_Vfunc0C)
 
 /* _ZN18Obj_ov004_0225143819func_ov004_02215de0Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the glow, the state's update, and `heard` cleared for
- * func_ov004_0223bdac to set again. */
+ * RoomManager_UpdateTvSound to set again. */
 int Tv_Update(Tv *tv)
 {
     Glow_Update(&tv->screen);
@@ -446,7 +433,7 @@ int Tv_Update(Tv *tv)
 CLEAN_AS(_ZN18Obj_ov004_0225143819func_ov004_02215de0Ev, Tv_Update)
 
 /* func_ov004_02215e08 (vtable slot 0x7c, once the model is bound): binds the glow; TV_ON when
- * the switch is on and func_ov004_0223c10c says no, else TV_OFF; done at once. */
+ * the switch is on and RoomObjects_InNookOrScene0AOr0F says no, else TV_OFF; done at once. */
 int Tv_Start(Tv *tv)
 {
     Tv_bind_and_enter(tv, TV_ON, TV_OFF);

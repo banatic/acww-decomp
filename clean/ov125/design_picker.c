@@ -27,6 +27,7 @@
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
+#include "ov124/han_panel.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(DesignPicker, title) == 0x94, "title");
 static_assert(offsetof(DesignPicker, choice) == 0x180 && offsetof(DesignPicker, entries) == 0x568, "choice");
@@ -56,15 +57,6 @@ extern u8 data_021f6c58, data_021f6c54;
 
 /* The heap the scenes load into (autoload_2/heap.c). */
 extern Heap *data_021fbe94;
-
-/* Overlay 124's object (the title): destructor, constructor, its texts closed each frame, drawn,
- * its graphics loaded and opened. */
-extern void *func_ov124_0229f43c(void *title);
-extern void *func_ov124_0229f460(void *title);
-extern void func_ov124_0229eea0(void *title);
-extern void func_ov124_0229ef08(void *title, int x, int y);
-extern void func_ov124_0229ef4c(void *title, int a);
-extern void func_ov124_0229f398(void *title, int a, int b);
 
 extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 
@@ -123,7 +115,7 @@ static void picker_destroy_members(DesignPicker *self)
     Glider0_Destroy(&self->cursor_sprite);
     Popup_Destroy(&self->popup);
     PagedChoice_Destroy(picker_choice(self));
-    func_ov124_0229f43c(self->title);
+    HanPanel_Destroy(&self->title);
     MenuScene_DestroyBase(picker_scene(self));
 }
 
@@ -785,7 +777,7 @@ CLEAN_AS(func_ov125_022a02b4, DesignPicker_BrowseByTouch)
 void DesignPicker_LoadGraphics(DesignPicker *self)
 {
     DesignPicker_LoadDesigns();
-    func_ov124_0229ef4c(self->title, 4);
+    HanPanel_LoadSign(&self->title, 4);
     ButtonPanel_LoadTextColors(&self->panel);
 }
 CLEAN_AS(func_ov125_022a0334, DesignPicker_LoadGraphics)
@@ -823,7 +815,7 @@ CLEAN_AS(func_ov125_022a0358, DesignPicker_LoadDesigns)
 /* func_ov125_022a0418: overlay 124's title opened (6, 4). */
 void DesignPicker_OpenTitle(DesignPicker *self)
 {
-    func_ov124_0229f398(self->title, 6, 4);
+    HanPanel_ShowModeMessage(&self->title, 6, 4);
 }
 CLEAN_AS(func_ov125_022a0418, DesignPicker_OpenTitle)
 
@@ -856,7 +848,7 @@ CLEAN_AS(func_ov125_022a0474, DesignPicker_EndFrame)
 void DesignPicker_BeginFrame(DesignPicker *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
-    func_ov124_0229eea0(self->title);
+    HanPanel_CloseTexts(&self->title);
 }
 CLEAN_AS(func_ov125_022a04a0, DesignPicker_BeginFrame)
 
@@ -880,7 +872,7 @@ CLEAN_AS(func_ov125_022a04c8, DesignPicker_BeginInteractiveFrame)
 void DesignPicker_Teardown(DesignPicker *self)
 {
     PagedChoice_Dismiss(picker_choice(self));
-    func_ov124_0229eea0(self->title);
+    HanPanel_CloseTexts(&self->title);
     ButtonPanel_CloseTexts(&self->panel);
 }
 CLEAN_AS(func_ov125_022a04e4, DesignPicker_Teardown)
@@ -1085,7 +1077,7 @@ int DesignPicker_Draw(DesignPicker *self)
         Glider_DrawWrapped(&self->cursor_sprite);
     }
     ButtonPanel_Draw(&self->panel, MenuScene_WipeOffsetY(picker_scene(self)));
-    func_ov124_0229ef08(self->title, 0, wipe_y);
+    HanPanel_DrawBase(&self->title, 0, wipe_y);
     OamEntry *obj = &data_ov125_022a0a28;
     for (int i = 0; i < DESIGN_PICKER_DESIGNS; i++) {
         obj->attr2 = (u16) ((obj->attr2 & ~0x3ffu) | ((unsigned int) (i * 4 + 0xc0) & 0x3ffu));
@@ -1129,7 +1121,7 @@ DesignPicker *DesignPicker_New(void)
     }
     MenuScene_Construct(&self->base);
     self->base.vtable = data_ov125_022a0ab8;
-    func_ov124_0229f460(self->title);
+    HanPanel_Construct(&self->title);
     PagedChoice_Construct(picker_choice(self));
     Popup_Construct(&self->popup);
     Glider0_Construct(&self->cursor_sprite);

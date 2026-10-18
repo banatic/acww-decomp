@@ -4,21 +4,12 @@
 #include "clean.h"
 #include "session.h"
 #include "system_packet.h"
+#include "activity.h"
+#include "exchange_block.h"
+#include "link_global.h"
+#include "main_random.h"
 
 extern NetSession *data_020ccf94;
-
-/* A slot's exchange block, and whether one may be sent (always). */
-extern u8 *func_02090040(int slot);
-extern int func_02090158(u8 *block);
-
-/* Activity.block_source of a slot: read and set. */
-extern u8 func_020a2450(const Activity *activity, int slot);
-extern void func_020a2444(Activity *activity, int slot, u8 source);
-
-/* The word at 0x94 of the link state (data_021f4320): a slot. */
-extern u32 func_020a6ed0(void);
-
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 
 #define GUESTS 3 /* slots 1-3 */
 
@@ -43,10 +34,10 @@ int ExchangeBlocks_SendToGuests(Activity *activity)
         if (Session_IsSlotTaken(session, slot) == 0) {
             continue;
         }
-        int source = func_020a2450(activity, slot);
+        int source = Activity_BlockSource(activity, slot);
         if (source >= EXCHANGE_BLOCK_NONE) {
             content[i] = SEND_KEEP;
-        } else if (func_02090158(func_02090040(source)) != 0) {
+        } else if (ExchangeBlock_IsSendable((ExchangeBlock *) (uintptr_t) ExchangeBlock_OfSlot(source)) != 0) {
             content[i] = SEND_COPY;
             block[i] = source;
         } else {
@@ -70,11 +61,11 @@ void ExchangeBlocks_Rotate(Activity *activity)
         }
     }
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
-        func_020a2444(activity, slot, EXCHANGE_BLOCK_NONE);
+        Activity_SetBlockSource(activity, slot, EXCHANGE_BLOCK_NONE);
     }
     for (int i = 0; i < count; i++) {
         int next = i + 1 < count ? i + 1 : 0;
-        func_020a2444(activity, taken[i], (u8) taken[next]);
+        Activity_SetBlockSource(activity, taken[i], (u8) taken[next]);
     }
 }
 CLEAN_AS(func_020a0f3c, ExchangeBlocks_Rotate)
@@ -85,7 +76,7 @@ CLEAN_AS(func_020a0f3c, ExchangeBlocks_Rotate)
  * leftover of the stack in the original, 0 here. */
 void ExchangeBlocks_SwapWithRandom(Activity *activity)
 {
-    int own = (int) func_020a6ed0();
+    int own = (int) LinkGlobal_ServedSlot();
     int others[SESSION_SLOTS] = {0};
     int count = 0;
     NetSession *session = data_020ccf94;
@@ -96,13 +87,13 @@ void ExchangeBlocks_SwapWithRandom(Activity *activity)
     }
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (Session_IsSlotTaken(session, slot) != 0) {
-            func_020a2444(activity, slot, (u8) slot);
+            Activity_SetBlockSource(activity, slot, (u8) slot);
         } else {
-            func_020a2444(activity, slot, EXCHANGE_BLOCK_NONE);
+            Activity_SetBlockSource(activity, slot, EXCHANGE_BLOCK_NONE);
         }
     }
-    int other = others[func_020644cc(count)];
-    func_020a2444(activity, other, (u8) own);
-    func_020a2444(activity, own, (u8) other);
+    int other = others[MainRandom_Below(count)];
+    Activity_SetBlockSource(activity, other, (u8) own);
+    Activity_SetBlockSource(activity, own, (u8) other);
 }
 CLEAN_AS(func_020a0fac, ExchangeBlocks_SwapWithRandom)

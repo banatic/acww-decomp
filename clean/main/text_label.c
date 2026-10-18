@@ -6,6 +6,14 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "autoload_2/heap.h"
+#include "display_layers.h"
+#include "label_box.h"
+#include "message_reader.h"
+#include "number_text.h"
+#include "text_base.h"
+#include "text_draw.h"
+#include "text_string.h"
 
 static_assert(offsetof(WideText, text) == 0xe, "wide text characters");
 static_assert(sizeof(WideText) == 0x60, "wide text size");
@@ -35,41 +43,7 @@ extern const TextVtable data_020e179c; /* the label's vtable */
 extern const u8 data_021c828c[];       /* the font TextLabel_OpenStyledBox gives its box */
 extern const u8 data_021c82e8[];       /* the other font TextLabel_OpenStyledBox2 can */
 
-/* The text base's constructors and destructors. */
-extern void *func_020a88ec(void *text);           /* base of a wide text */
-extern void *func_020a887c(void *text);           /* its destructor */
-extern void *func_020a8cac(void *label);          /* base of a label */
-extern void func_020a8c1c(void *label);           /* empty a label's text */
-extern void *func_020a8c38(void *label);          /* its destructor */
-extern void func_020edb3c(void *block);           /* operator delete */
 extern int func_02051c8c_unk(u16 *text, int max); /* the 16-bit characters before a 0, at most max */
-/* The length of `text` (at most max characters, ending at a 0) without its trailing spaces
- * (0x20 and the wide space 0x3000). */
-extern int func_02051ca8(const u16 *text, int max);
-/* Convert a label's 8-bit text to 16 bits into `dst`. */
-extern int func_020a87e0(void *dst, void *src);
-/* Set a wide text from `length` 16-bit characters. */
-extern void func_020a8874(void *dst, const void *text, int length);
-/* Convert a wide text to 8 bits into a label; `escape_newlines` replaces each newline with the
- * escape func_02050c28 gives, `end_code` ends the text with the one func_02050c20 gives. */
-extern int func_020a8a70(void *dst, void *src, int escape_newlines, int end_code);
-/* Copy a text's characters into `count` 16-bit characters, padding with 0. */
-extern int func_0205182c(void *src, u16 *dst, int count);
-extern int func_020b45d0(int label, int a, int b, int kind, int extra, u8 raw);
-/* Load message `*number` of an archive (by name; "2d_menu" when NULL) into a label. */
-extern int func_020b4a20(int label, char *number, char *archive);
-extern int func_020b4980(int label, const char *number, const char *archive);
-extern int func_020a8f88(int text); /* the width of 8-bit characters, in pixels */
-/* The text box. */
-extern void func_02051608(TextBox *box, u8 a, u8 b, int c, int d);
-extern void func_02051694(TextBox *box); /* ask for a redraw */
-extern void func_02051624(TextBox *box); /* place the text against the right edge */
-extern void func_02051648(TextBox *box); /* place the text in the middle */
-extern TextBox *func_020a8fe8(int a, int b, int mode);
-extern TextBox *func_020a9034(int a, int b, int mode);
-extern void func_020a8fb8(TextBox *box);      /* destruct and free */
-extern int func_02002dc8(int style);          /* the box style for a label style */
-extern int func_02002e04(unsigned int style); /* the styles with 0x50 = 2: 0-2 and 7 */
 
 typedef char *(*TextBufferMethod)(void *self);
 
@@ -106,8 +80,8 @@ CLEAN_AS(func_02070794, WideText_Capacity)
 WideText *WideText_DestructDelete(WideText *text)
 {
     text->vtable = &data_020e1784;
-    func_020a887c(text);
-    func_020edb3c(text);
+    TextBase_WideDestruct(text);
+    Heap_OperatorDeleteB(text);
     return text;
 }
 CLEAN_AS(func_02070798, WideText_DestructDelete)
@@ -116,7 +90,7 @@ CLEAN_AS(func_02070798, WideText_DestructDelete)
 void *WideText_Destruct(void *text)
 {
     ((WideText *) text)->vtable = &data_020e1784;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     return text;
 }
 CLEAN_AS(func_020707b8, WideText_Destruct)
@@ -124,7 +98,7 @@ CLEAN_AS(func_020707b8, WideText_Destruct)
 /* func_020707d0 */
 void *WideText_Construct(void *text)
 {
-    func_020a88ec(text);
+    TextBase_WideConstruct(text);
     ((WideText *) text)->vtable = &data_020e1784;
     return text;
 }
@@ -139,10 +113,10 @@ int TextLabel_EqualsTrimmed(TextLabel *label, const u16 *text, u16 length)
 {
     WideText wide;
     WideText_Construct(&wide);
-    func_020a87e0(&wide, label);
+    TextBase_BytesToWide((WideTextBase *) &wide, (TextBase *) label);
     int equal = 1;
-    int n = func_02051ca8(text, length);
-    if (n != func_02051ca8(wide.text, length)) {
+    int n = TextString_TrimmedLength((u16 *) text, length);
+    if (n != TextString_TrimmedLength(wide.text, length)) {
         equal = 0;
     } else {
         for (int i = 0; i < n; i++) {
@@ -162,7 +136,7 @@ CLEAN_AS(func_020707e8, TextLabel_EqualsTrimmed)
 void TextLabel_SetBoxParams(TextLabel *label, int a, int b, int c, int d)
 {
     if (label->box != NULL) {
-        func_02051608(label->box, (u8) a, (u8) b, c, d);
+        TextDraw_SetMark((TextDrawBox *) label->box, (u8) a, (u8) b, c, d);
     }
 }
 CLEAN_AS(func_02070854, TextLabel_SetBoxParams)
@@ -176,8 +150,8 @@ void TextLabel_SetFromWideConverted(TextLabel *label, const u16 *text, int lengt
     }
     WideText wide;
     WideText_Construct(&wide);
-    func_020a8874(&wide, text, length);
-    func_020a8a70(label, &wide, escape_newlines, end_code);
+    TextBase_SetWide(&wide, text, length);
+    TextBase_WideToBytes((TextBase *) label, (WideTextBase *) &wide, escape_newlines, end_code);
     WideText_Destruct(&wide);
 }
 CLEAN_AS(func_02070870, TextLabel_SetFromWideConverted)
@@ -187,8 +161,8 @@ void TextLabel_CopyWide(void *label, u16 *out)
 {
     WideText wide;
     WideText_Construct(&wide);
-    func_020a87e0(&wide, label);
-    func_0205182c(&wide, out, LABEL_WIDE_COPY);
+    TextBase_BytesToWide((WideTextBase *) &wide, label);
+    TextString_CopyWideOut((TextObject *) &wide, out, LABEL_WIDE_COPY);
     WideText_Destruct(&wide);
 }
 CLEAN_AS(func_020708b4, TextLabel_CopyWide)
@@ -198,8 +172,8 @@ void TextLabel_SetFromWide(void *label, const u16 *text, void *length)
 {
     WideText wide;
     WideText_Construct(&wide);
-    func_020a8874(&wide, text, (int) (uintptr_t) length);
-    func_020a8a70(label, &wide, 0, 0);
+    TextBase_SetWide(&wide, text, (int) (uintptr_t) length);
+    TextBase_WideToBytes(label, (WideTextBase *) &wide, 0, 0);
     WideText_Destruct(&wide);
 }
 CLEAN_AS(func_020708e4, TextLabel_SetFromWide)
@@ -207,14 +181,14 @@ CLEAN_AS(func_020708e4, TextLabel_SetFromWide)
 /* func_02070918: build the label's text with func_020b45d0. */
 int TextLabel_Compose(int label, int a, int b, int kind, int extra, u8 raw)
 {
-    return func_020b45d0(label, a, b, kind, extra, raw);
+    return NumberText_Format((void *) (uintptr_t) label, a, b, kind, extra, raw);
 }
 CLEAN_AS(func_02070918, TextLabel_Compose)
 
 /* func_02070934: load message `number` of the named archive. */
 void TextLabel_LoadMessage(int label, char *archive, char number)
 {
-    func_020b4a20(label, &number, archive);
+    MessageReader_LoadMessage(label, (unsigned char *) &number, (int) (uintptr_t) archive);
 }
 CLEAN_AS(func_02070934, TextLabel_LoadMessage)
 
@@ -228,14 +202,14 @@ CLEAN_AS(func_0207094c, TextLabel_LoadMenuMessage)
 /* func_02070960: load the message of "2d_menu" whose number `number` points to. */
 int TextLabel_LoadMenuMessageAt(int label, int number)
 {
-    return func_020b4980(label, (const char *) (uintptr_t) number, DEFAULT_ARCHIVE);
+    return MessageReader_LoadMenuMessage(label, (unsigned char *) ((const char *) (uintptr_t) number), DEFAULT_ARCHIVE);
 }
 CLEAN_AS(func_02070960, TextLabel_LoadMenuMessageAt)
 
 /* func_0207096c: the width of the label's text, in pixels. */
 int TextLabel_TextWidth(void *label)
 {
-    return func_020a8f88((int) (uintptr_t) ((TextLabel *) label)->text);
+    return LabelBox_CharsWidth((int) (uintptr_t) ((TextLabel *) label)->text);
 }
 CLEAN_AS(func_0207096c, TextLabel_TextWidth)
 
@@ -249,7 +223,7 @@ void TextLabel_ShowAt(TextLabel *label, int offset)
     }
     label->box->text = buffer_of(label);
     label->box->offset = (u32) offset;
-    func_02051694(label->box);
+    TextDraw_RequestDraw((TextDrawBox *) label->box);
 }
 CLEAN_AS(func_02070978, TextLabel_ShowAt)
 
@@ -260,8 +234,8 @@ void TextLabel_ShowRightAligned(TextLabel *label)
         return;
     }
     label->box->text = buffer_of(label);
-    func_02051624(label->box);
-    func_02051694(label->box);
+    TextDraw_AlignRight((TextDrawBox *) label->box);
+    TextDraw_RequestDraw((TextDrawBox *) label->box);
 }
 CLEAN_AS(func_0207099c, TextLabel_ShowRightAligned)
 
@@ -274,12 +248,12 @@ void TextLabel_ShowShifted(TextLabel *label, int center, int shift)
     }
     label->box->text = buffer_of(label);
     if (center != 0) {
-        func_02051648(label->box);
+        TextDraw_Center((TextDrawBox *) label->box);
     } else {
         label->box->offset = 0;
     }
     label->box->offset += (u32) shift;
-    func_02051694(label->box);
+    TextDraw_RequestDraw((TextDrawBox *) label->box);
 }
 CLEAN_AS(func_020709c4, TextLabel_ShowShifted)
 
@@ -293,11 +267,11 @@ void TextLabel_Show(TextLabel *label, int center, int flag_57)
     label->box->text = buffer_of(label);
     label->box->unk_57 = flag_57 != 0;
     if (center != 0) {
-        func_02051648(label->box);
+        TextDraw_Center((TextDrawBox *) label->box);
     } else {
         label->box->offset = 0;
     }
-    func_02051694(label->box);
+    TextDraw_RequestDraw((TextDrawBox *) label->box);
 }
 CLEAN_AS(func_02070a04, TextLabel_Show)
 
@@ -308,7 +282,7 @@ void TextLabel_OpenBox(TextLabel *label, int a, int b, int color_38, u8 color_39
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = func_020a8fe8(a, b, BOX_MODE_2);
+    label->box = (TextBox *) LabelBox_New(a, b, BOX_MODE_2);
     if (label->box != NULL) {
         label->box->color_39 = color_39;
         label->box->color_38 = (u8) color_38;
@@ -326,7 +300,7 @@ void TextLabel_OpenStyledBox(TextLabel *label, int style, int a, int b, u8 color
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = func_020a9034(a, b, BOX_MODE_1);
+    label->box = (TextBox *) LabelBox_NewInVram(a, b, BOX_MODE_1);
     TextLabel_SetStyle(label, style, (char) color_38, (char) color_39);
     label->box->font = data_021c828c;
 }
@@ -340,7 +314,7 @@ void TextLabel_OpenStyledBox2(TextLabel *label, int style, int a, int b, u8 colo
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = func_020a9034(a, b, BOX_MODE_2);
+    label->box = (TextBox *) LabelBox_NewInVram(a, b, BOX_MODE_2);
     TextLabel_SetStyle(label, style, (char) color_38, (char) color_39);
     if (other_font != 0) {
         label->box->font = data_021c82e8;
@@ -352,13 +326,13 @@ CLEAN_AS(func_02070adc, TextLabel_OpenStyledBox2)
  * (func_02002dc8) even when there is no box. */
 void TextLabel_SetStyle(TextLabel *label, int style, char color_38, char color_39)
 {
-    int box_style = func_02002dc8(style);
+    int box_style = DisplayLayer_PlaneNumber(style);
     TextBox *box = label->box;
     if (box == NULL) {
         return;
     }
     box->style = box_style;
-    label->box->unk_50 = func_02002e04((unsigned int) style) != 0 ? 2 : 1;
+    label->box->unk_50 = DisplayLayer_IsMainScreen((unsigned int) style) != 0 ? 2 : 1;
     label->box->unk_55 = box_style == 4;
     label->box->color_39 = (u8) color_39;
     label->box->color_38 = (u8) color_38;
@@ -370,7 +344,7 @@ void TextLabel_CloseBox(void *label)
 {
     TextLabel *l = label;
     if (l->box != NULL) {
-        func_020a8fb8(l->box);
+        LabelBox_Free((LabelBox *) l->box);
         l->box = NULL;
     }
 }
@@ -395,7 +369,7 @@ TextLabel *TextLabel_DestructCopy(TextLabel *label)
 {
     label->vtable = &data_020e179c;
     TextLabel_CloseBox(label);
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_02070ba4, TextLabel_DestructCopy)
@@ -405,8 +379,8 @@ TextLabel *TextLabel_DestructDelete(TextLabel *label)
 {
     label->vtable = &data_020e179c;
     TextLabel_CloseBox(label);
-    func_020a8c38(label);
-    func_020edb3c(label);
+    TextBase_Destruct((TextBase *) label);
+    Heap_OperatorDeleteB(label);
     return label;
 }
 CLEAN_AS(func_02070bc4, TextLabel_DestructDelete)
@@ -416,7 +390,7 @@ TextLabel *TextLabel_Destruct(TextLabel *label)
 {
     label->vtable = &data_020e179c;
     TextLabel_CloseBox(label);
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_02070be8, TextLabel_Destruct)
@@ -424,9 +398,9 @@ CLEAN_AS(func_02070be8, TextLabel_Destruct)
 /* func_02070c08: an empty label without a box. */
 TextLabel *TextLabel_Construct(TextLabel *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = &data_020e179c;
-    func_020a8c1c(label);
+    TextBase_Clear(label);
     label->box = NULL;
     return label;
 }
@@ -435,9 +409,9 @@ CLEAN_AS(func_02070c08, TextLabel_Construct)
 /* func_02070c2c: QUIRK: a second copy of TextLabel_Construct that nothing calls. */
 TextLabel *TextLabel_ConstructCopy(TextLabel *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = &data_020e179c;
-    func_020a8c1c(label);
+    TextBase_Clear(label);
     label->box = NULL;
     return label;
 }

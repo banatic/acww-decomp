@@ -120,14 +120,14 @@ enum LetterWriteState {
 
 #define LETTER_WRITE_SUB_STATES 0x1b
 
-/* The codes of the keyboard's keys (func_ov095_0229c448) the scene acts on; others are
- * characters or the keyboard's own (func_ov095_0229ba44). */
+/* The codes of the keyboard's keys (SoftKeyboard_KeyCode) the scene acts on; others are
+ * characters or the keyboard's own (SoftKeyboard_HandleCommand). */
 enum LetterWriteCode {
     LETTER_WRITE_CODE_NEWLINE = 0x0a,
     LETTER_WRITE_CODE_BACKSPACE = 0x100,
-    LETTER_WRITE_CODE_CONVERT_1 = 0x103, /* the character before the cursor converted (func_ov095_0229bb9c) */
-    LETTER_WRITE_CODE_CONVERT_2 = 0x104, /* (func_ov095_0229bb98) */
-    LETTER_WRITE_CODE_CONVERT_3 = 0x105, /* (func_ov095_0229bb94) */
+    LETTER_WRITE_CODE_CONVERT_1 = 0x103, /* the character before the cursor converted (SoftKeyboard_Convert1) */
+    LETTER_WRITE_CODE_CONVERT_2 = 0x104, /* (SoftKeyboard_Convert2) */
+    LETTER_WRITE_CODE_CONVERT_3 = 0x105, /* (SoftKeyboard_Convert3) */
     LETTER_WRITE_CODE_SCROLL = 0x112,    /* the scroll button pressed: the d-pad scrolls */
     LETTER_WRITE_CODE_BUTTON_1 = 0x113,  /* the panel's button 1 */
     LETTER_WRITE_CODE_BUTTON_0 = 0x114,  /* the panel's button 0 */

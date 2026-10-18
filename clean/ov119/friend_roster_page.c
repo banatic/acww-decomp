@@ -318,11 +318,10 @@ void FriendRoster_ShowHeader(FriendRoster *self)
     } else {
         message = FRIEND_ROSTER_MESSAGE_ACCOUNT;
     }
-    MessageReader_LoadMenuMessage((int) (uintptr_t) self->header, &message, NULL);
+    MessageReader_LoadMenuMessage((int) (uintptr_t) &self->header, &message, NULL);
     for (int i = 0; i < FRIEND_ROSTER_HEADER_LINES; i++) {
         TextLabel *label = FriendRoster_NextLabel(self);
-        /* the header's characters start at 0x12, as a BbsLabel's */
-        int line = MessageQuery_Line((int) (uintptr_t) (self->header + 0x12), i);
+        int line = MessageQuery_Line((int) (uintptr_t) self->header.text, i);
         TextBase_SetLine((TextBase *) (void *) label, (const char *) (uintptr_t) line);
         fr_open_label(label, 4, i * 0x28 + 0x8a, 0x14, 0);
     }

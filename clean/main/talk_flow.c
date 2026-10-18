@@ -8,6 +8,8 @@
 #include "quick_message.h"
 #include "session.h"
 #include "sound.h"
+#include "talk_object.h"
+#include "talk_voice.h"
 
 static_assert(offsetof(TalkFlowTalk, slide) == 0x0c, "talk slide");
 static_assert(offsetof(TalkFlowTalk, mode) == 0x14, "talk mode");
@@ -39,18 +41,6 @@ extern u8 *data_021c526c;
 
 /* The receiver's slot told the talk closes. */
 #define TALK_FLOW_SLOT_CLOSING 0x70
-
-/* The choices open now (`asked` 0), or are asked to open once the walk stops (`asked` 1). */
-extern void func_02068388(TalkFlowTalk *talk, int asked);
-/* The window: its offset, opened, closed. */
-/* The last characters: their voice stopped; their codes reset (with `all`, one more); voiced. */
-extern void func_0206899c(void *last_chars);
-extern void func_02068ae4(void *last_chars, int all);
-extern void func_02068a04(void *last_chars);
-/* Whether the player asks to hurry (the pen or a button; never while silent). */
-extern int func_02067d7c(TalkFlowTalk *talk);
-/* The talk's byte 0x1e97 cleared and its last characters cleared. */
-extern void func_020680d0(TalkFlowTalk *talk);
 
 /* The talk as talk_object.h lays it out. */
 static TalkObject *talk_flow_object(TalkFlowTalk *talk)
@@ -89,7 +79,7 @@ void TalkFlow_WalkStopped(TalkFlowTalk *talk)
 
     if (talk->choices_asked != 0) {
         talk->choices_asked = 0;
-        func_02068388(talk, 0);
+        TalkObject_OpenChoices((TalkObject *) talk, 0);
     } else if (page_full || stop_keep || choosing) {
         new_walk = TALK_TAGS_STATE_RUNNING;
         next = TALK_FLOW_WRITING;
@@ -212,7 +202,7 @@ void TalkFlow_EnterClosing(TalkFlowTalk *talk)
     talk->slide = TALK_FLOW_SLIDE_STEPS;
     talk->window_offset = data_020def28[talk->slide];
     if (talk->silent == 0) {
-        func_0206899c(talk->last_chars);
+        TalkVoice_Stop((TalkVoice *) (void *) talk->last_chars);
         if (talk->mode != 1 && talk->mode != 2 && talk->mode != 3) {
             MusicVolume_EndSlot2((MusicVolume *) (void *) (data_021c526c + TALK_FLOW_MUSIC_VOLUME));
         }
@@ -234,14 +224,14 @@ CLEAN_AS(func_02066c54, TalkFlow_EnterClosing)
  * the receiver first told its answer when the text ended; its last characters cleared. */
 void TalkFlow_StepWriting(TalkFlowTalk *talk)
 {
-    if (func_02067d7c(talk)) {
+    if (TalkObject_HurryPressed((TalkObject *) talk)) {
         TalkTags_Hurry(&talk->walker);
     }
-    func_02068ae4(talk->last_chars, 0);
+    TalkVoice_Clear((TalkVoice *) (void *) talk->last_chars, 0);
     MessageWalkRun_Step(&talk->walk);
     TalkPage_Update(&talk->page);
     if (talk->silent == 0) {
-        func_02068a04(talk->last_chars);
+        TalkVoice_Update((TalkVoice *) (void *) talk->last_chars);
     }
 
     s32 walk = talk->walker.state;
@@ -258,7 +248,7 @@ void TalkFlow_StepWriting(TalkFlowTalk *talk)
         TalkObject_TellMessageEnded(talk_flow_object(talk));
     }
     talk->next = TALK_FLOW_WAITING;
-    func_020680d0(talk);
+    TalkObject_ClearVoice((TalkObject *) talk);
 }
 CLEAN_AS(func_02066cd4, TalkFlow_StepWriting)
 

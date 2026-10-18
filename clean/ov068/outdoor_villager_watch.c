@@ -5,6 +5,8 @@
 #include "clean.h"
 #include "main/scene_look.h"
 #include "outdoor_villager.h"
+#include "ov003/fish_shadow.h"
+#include "ov003/town_insect.h"
 
 static_assert(offsetof(OutdoorVillagerWatch, kind) == 0x08, "kind");
 static_assert(offsetof(OutdoorVillagerWatch, slot) == 0x0c, "slot");
@@ -15,16 +17,6 @@ static_assert(sizeof(OutdoorVillagerWatch) <= OUTDOOR_VILLAGER_BEHAVIOUR - OUTDO
 /* The range of its looks and the point a look at the player is given. */
 extern fx32 data_020c814c;
 extern Vec3 data_021fbee8;
-
-/* Overlay 3 (the town's field): the kind of the fish shadow in `slot` (0-5) when its state is
- * 3 or 4, else -1; its point (at 0x120) into `point`, and whether it is in such a state; the
- * kind of the insect in `slot` (its low four bits) and its point; the kind of the insect in
- * `slot`, with `*flag` set to whether its byte 0x254 has reached its byte 0x255 when the kind
- * is not negative. */
-extern int func_ov003_02227638(int slot);
-extern int func_ov003_02227608(Vec3 *point, int slot);
-extern int func_ov003_0222f458(Vec3 *point, int slot);
-extern int func_ov003_0222f524(u8 *flag, int slot);
 
 /* No slot or kind. */
 #define WATCH_NONE (-1)
@@ -144,7 +136,7 @@ CLEAN_AS(func_ov068_022669c4, OutdoorVillagerWatch_LookAtFish)
 int OutdoorVillagerWatch_FishStill(OutdoorVillagerWatch *watch, int slot, int kind)
 {
     (void) watch;
-    int now = func_ov003_02227638(slot);
+    int now = FishShadow_ShownKind(slot);
     return now != WATCH_NONE && kind == now;
 }
 CLEAN_AS(func_ov068_02266a00, OutdoorVillagerWatch_FishStill)
@@ -155,7 +147,7 @@ CLEAN_AS(func_ov068_02266a00, OutdoorVillagerWatch_FishStill)
 int OutdoorVillagerWatch_FindFish(OutdoorVillagerWatch *watch, Vec3 *point, int *slot, const Vec3 *from, fx32 range)
 {
     for (int i = 0; i < WATCH_FISH; i++) {
-        int kind = func_ov003_02227638(i);
+        int kind = FishShadow_ShownKind(i);
         if (kind != WATCH_NONE && OutdoorVillagerWatch_FishNear(watch, point, i, from, range)) {
             *slot = i;
             return kind;
@@ -170,7 +162,7 @@ CLEAN_AS(func_ov068_02266a24, OutdoorVillagerWatch_FindFish)
 int OutdoorVillagerWatch_FishNear(OutdoorVillagerWatch *watch, Vec3 *point, int slot, const Vec3 *from, fx32 range)
 {
     (void) watch;
-    return func_ov003_02227608(point, slot) != 0 && Vec_DistanceXZ(from, point) < range;
+    return FishShadow_ShownPosition(point, slot) != 0 && Vec_DistanceXZ(from, point) < range;
 }
 CLEAN_AS(func_ov068_02266a70, OutdoorVillagerWatch_FishNear)
 
@@ -211,7 +203,7 @@ int OutdoorVillagerWatch_InsectStill(OutdoorVillagerWatch *watch, int slot, int 
     (void) watch;
     if (kind != WATCH_NONE) {
         u8 flag = 0;
-        if (func_ov003_0222f524(&flag, (u8) slot) == kind) {
+        if (TownInsect_Byte254Reached(&flag, (u8) slot) == kind) {
             return 1;
         }
     }
@@ -240,7 +232,7 @@ CLEAN_AS(func_ov068_02266b6c, OutdoorVillagerWatch_FindInsect)
 int OutdoorVillagerWatch_InsectNear(OutdoorVillagerWatch *watch, Vec3 *point, int slot, const Vec3 *from, fx32 range)
 {
     (void) watch;
-    int kind = func_ov003_0222f458(point, (u8) slot);
+    int kind = TownInsect_GetPosition(point, (u8) slot);
     if (kind == WATCH_NONE || Vec_DistanceXZ(from, point) >= range) {
         return WATCH_NONE;
     }

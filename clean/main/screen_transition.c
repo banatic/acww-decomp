@@ -9,6 +9,7 @@
 #include "line_handlers.h"
 #include "music_queue.h"
 #include "scene_sound.h"
+#include "transition_mark.h"
 
 static_assert(offsetof(ScreenTransition, cover) == 0x04, "ScreenTransition.cover");
 static_assert(offsetof(ScreenTransition, brightness) == 0x0c, "ScreenTransition.brightness");
@@ -55,9 +56,6 @@ extern void *G2S_GetBG2ScrPtr(void);
 extern void *G2S_GetBG2CharPtr(void);
 extern int FX_Div(int numerator, int denominator);
 extern int FX_Sqrt(int value);
-/* The music told the screen opens (by kind) or closes. */
-extern void func_0208f95c(int kind);
-extern void func_0208f97c(int kind);
 /* The circle's HBlank and VBlank functions, as the game's line handler gets them. */
 extern void func_02042154(void);
 extern void func_02042120(void);
@@ -230,7 +228,7 @@ int ScreenTransition_Open(int kind, int frames, int keep_music)
     }
     if (keep_music == 0) {
         Music2d0_Finish(music_2d0());
-        func_0208f95c(kind);
+        TransitionMark_SetBlinkFrames(kind);
     }
     return 1;
 }
@@ -258,7 +256,7 @@ int ScreenTransition_Close(int kind, int frames)
     if (data_020ca514[kind].begin != NULL) {
         data_020ca514[kind].begin();
         Music2d0_Start(music_2d0());
-        func_0208f97c(kind);
+        TransitionMark_SetDelay(kind);
         if (kind == SCREEN_TRANSITION_CIRCLE) {
             SceneSound_Stop();
         }

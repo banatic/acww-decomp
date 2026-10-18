@@ -6,6 +6,13 @@
 #include "lookups.h"
 #include "npc_id.h"
 #include "villager_state.h"
+#include "item_object.h"
+#include "town_villager.h"
+#include "villager_data.h"
+#include "villager_furniture.h"
+#include "villager_mode_record.h"
+#include "villager_object.h"
+#include "villager_status.h"
 
 static_assert(sizeof(DateTime) == 8, "DateTime");
 static_assert(offsetof(VillagerModeRecord, counted) == 0x08, "counted");
@@ -32,62 +39,10 @@ static_assert(offsetof(VillagerModeRecord, flags) == 0x21, "flags");
 #define VILLAGER_MODE_NO_ITEM 0xfff1
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern NpcId *func_0208150c(const void *villager);                    /* the villager's NpcId, at 0x7a0 */
-extern VillagerModeRecord *func_0207f1c8(const void *villager);       /* its mode record, at 0x734 */
-extern VillagerModeRecord *func_0209b5ec(VillagerModeRecord *record); /* the record itself */
-extern u8 *func_0209b5e8(VillagerModeRecord *record);                 /* the record's object, at 0x24 */
-extern DateTime *func_0209bfec(VillagerModeRecord *record);           /* its date `since` */
-extern DateTime *func_0209bfe8(VillagerModeRecord *record);           /* its date `counted` */
-extern int func_0209c330(const VillagerModeRecord *record);           /* its mode */
-extern void func_0209c32c(VillagerModeRecord *record, int mode);      /* sets it */
-extern int func_0209c370(const VillagerModeRecord *record);           /* whether the mode is below 12 */
-extern int func_0209c380(const VillagerModeRecord *record);           /* whether it is one of the eight kinds */
-extern int func_0209c2c0(const VillagerModeRecord *record);           /* bit 0 of its flags */
-extern int func_0209c38c(u32 mode);                                   /* whether a mode is one of the eight kinds */
-extern u32 func_0209c310(u32 mode);                                   /* its group: 0 for 0-4, 1 for 5-7, 2 for 8-11, else 3 */
-/* Mode 8 back to its mode drawn from the scores (func_0209c108), mode 10 once a day has passed
- * since `since` (func_0209c020), mode 11 once the day of the month differs (func_0209c0a0); each
- * gives the new mode (with `since` now and the scores halved) or 12. */
-extern int func_0209c108(VillagerModeRecord *record);
-extern int func_0209c020(VillagerModeRecord *record, const DateTime *now);
-extern int func_0209c0a0(VillagerModeRecord *record, const DateTime *now);
-/* A mode of the eight kinds kept when its score is still the highest, else the record back to
- * mode 8 (func_0209c270); gives the mode kept, 8, or 12. */
-extern int func_0209c168(VillagerModeRecord *record);
-extern void func_0209c270(VillagerModeRecord *record); /* back to mode 8 from now */
-/* Whether the record's mode is one of the eight kinds and `since` is at least seven days from
- * `now`. */
-extern int func_0209c1c0(const VillagerModeRecord *record, const DateTime *now);
-/* A day's draw of the scores from the weights; 0 when no score could change. */
-extern int func_0209bf28(VillagerModeRecord *record, const s16 *weights);
-/* The counts, scaled by the weights, added into the scores; the counts cleared. */
-extern void func_0209bf80(VillagerModeRecord *record, const s16 *weights);
-/* `amount` added to the count of `kind`, kept within 0-10. */
-extern void func_0209bee8(VillagerModeRecord *record, u32 kind, int amount);
-/* The kind `from` scores highest gets a full score (10 times its weight) in `record`. */
-extern void func_0209beb0(VillagerModeRecord *record, VillagerModeRecord *from, const s16 *weights);
-extern const s16 *func_02080814(const void *villager); /* its weights, NULL for a number without data */
-/* The villager's byte 0x7d8 drawn again (below 10 for mode 2, else below 40), and its two items
- * at 0x78e emptied for mode 2 or when `from_2` is set. */
-extern void func_0207f414(u8 *villager, int mode, int from_2);
-extern VillagerState *func_0207f270(const void *villager); /* its entry of the state table */
-extern u8 *func_0209b91c(u8 *object);                      /* the object itself */
-extern int func_0209bd44(const u8 *object);                /* whether it holds something */
-extern int func_0209bd04(const u8 *object);                /* the group of its type */
-extern int func_0209bba0(const u8 *object);                /* the low 5 bits of its byte 0x0b */
-extern int func_0209bc40(const u8 *object);                /* its type, byte 0x0a */
-extern void func_0209baf4(u8 *object);                     /* empties it */
-extern void func_0209bd5c(u8 *object);                     /* type 22, no item */
-extern void func_0209bd30(u8 *object, u8 type, const u16 *item, u8 low_bits);
-extern const DayWindow *func_0208222c(u32 kind);                            /* Lookups_DayWindow */
-extern int func_0209dffc(const DateTime *when);                             /* 1 when it is not a valid date and time */
-extern int func_0209e3ac(const DateTime *a, const DateTime *b, int fields); /* DateTime_Compare */
-extern int func_0209e350(const DateTime *from, const DateTime *to);         /* DateTime_MinutesBetween */
-extern void func_0209e29c(DateTime *when, int days);                        /* DateTime_AddDays */
 
 static int has_villager(const u8 *villager)
 {
-    return NpcId_IsValid(func_0208150c(villager));
+    return NpcId_IsValid(TownVillager_NpcId((u8 *) villager));
 }
 
 /* The whole days in a span of minutes, either way. The minutes between two valid dates are far
@@ -107,18 +62,19 @@ void VillagerMode_FinishObject(u8 *villager)
     if (!has_villager(villager)) {
         return;
     }
-    VillagerModeRecord *record = func_0207f1c8(villager);
-    u8 *object = func_0209b5e8(record);
-    u8 *held = func_0209b91c(object);
-    if (func_0209bd44(held) == 0 || func_0209bd04(held) != VILLAGER_MODE_OBJECT_GROUP ||
-        func_0209bba0(held) != VILLAGER_MODE_OBJECT_DONE) {
+    VillagerModeRecord *record = VillagerStatus_ModeRecord(villager);
+    u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) record);
+    u8 *held = VillagerObject_Base((VillagerObject *) (void *) object);
+    if (ItemObject_IsInUse((ItemObject *) (void *) held) == 0 ||
+        ItemObject_Group((ItemObject *) (void *) held) != VILLAGER_MODE_OBJECT_GROUP ||
+        ItemObject_Low5((ItemObject *) (void *) held) != VILLAGER_MODE_OBJECT_DONE) {
         return;
     }
-    if (func_0209bc40(held) == VILLAGER_MODE_OBJECT_TYPE_4) {
+    if (ItemObject_Type((ItemObject *) (void *) held) == VILLAGER_MODE_OBJECT_TYPE_4) {
         VillagerMode_StepCounter7D7(villager);
     }
-    func_0209baf4(object);
-    func_0209c270(func_0209b5ec(record));
+    VillagerObject_Clear((VillagerObject *) (void *) object);
+    VillagerModeRecord_EnterNoneYet(VillagerObject_RecordMode((VillagerRecord *) record));
 }
 CLEAN_AS(func_0207d71c, VillagerMode_FinishObject)
 
@@ -129,18 +85,18 @@ CLEAN_AS(func_0207d71c, VillagerMode_FinishObject)
  * 0x7d8 (func_0207f414). Gives the new mode, or 12. */
 int VillagerMode_Update(u8 *villager, DateTime *latest, DateTime *last_left, const DateTime *now)
 {
-    NpcId *npc = func_0208150c(villager);
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
+    NpcId *npc = TownVillager_NpcId(villager);
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
     int result = VILLAGER_MODE_UNCHANGED;
-    int from_2 = func_0209c2c0(record);
-    if (!NpcId_IsValid(npc) || func_0209c370(record) == 0) {
+    int from_2 = VillagerModeRecord_IsFrom2(record);
+    if (!NpcId_IsValid(npc) || VillagerModeRecord_IsInUse(record) == 0) {
         return result;
     }
-    switch (func_0209c330(record)) {
+    switch (VillagerModeRecord_Mode(record)) {
         case VILLAGER_MODE_11:
-            result = func_0209c0a0(record, now);
+            result = VillagerModeRecord_LeaveMode11(record, now);
             if (result != VILLAGER_MODE_UNCHANGED) {
-                func_0207f414(villager, result, from_2);
+                VillagerFurniture_ResetForMode(villager, result, from_2);
                 MI_CpuCopy8(now, latest, sizeof(DateTime));
                 const u8 *left = (const u8 *) last_left;
                 int set = 0;
@@ -153,9 +109,9 @@ int VillagerMode_Update(u8 *villager, DateTime *latest, DateTime *last_left, con
             }
             break;
         case VILLAGER_MODE_ARRIVED:
-            result = func_0209c020(record, now);
+            result = VillagerModeRecord_LeaveArrived(record, now);
             if (result != VILLAGER_MODE_UNCHANGED) {
-                func_0207f414(villager, result, from_2);
+                VillagerFurniture_ResetForMode(villager, result, from_2);
             }
             break;
         default:
@@ -174,37 +130,37 @@ CLEAN_AS(func_0207d788, VillagerMode_Update)
  * A new kind (0-7) redraws the villager's byte 0x7d8 (func_0207f414). Gives the new mode, or 12. */
 int VillagerMode_UpdateDaily(u8 *villager, const DateTime *now)
 {
-    NpcId *npc = func_0208150c(villager);
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
+    NpcId *npc = TownVillager_NpcId(villager);
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
     int result = VILLAGER_MODE_UNCHANGED;
-    int before = func_0209c330(record);
-    if (!NpcId_IsValid(npc) || func_0209c370(record) == 0) {
+    int before = VillagerModeRecord_Mode(record);
+    if (!NpcId_IsValid(npc) || VillagerModeRecord_IsInUse(record) == 0) {
         return result;
     }
-    int from_2 = func_0209c2c0(record);
-    if (func_0209c330(record) == VILLAGER_MODE_NONE_YET) {
+    int from_2 = VillagerModeRecord_IsFrom2(record);
+    if (VillagerModeRecord_Mode(record) == VILLAGER_MODE_NONE_YET) {
         if (VillagerMode_IsWakeTimePast(villager, now)) {
-            result = func_0209c108(record);
+            result = VillagerModeRecord_LeaveNoneYet(record);
         }
     } else {
         VillagerMode_CatchUpScores(villager, now);
-        result = func_0209c168(record);
+        result = VillagerModeRecord_KeepKind(record);
     }
     if (result == VILLAGER_MODE_UNCHANGED) {
         return result;
     }
-    if (func_0209c38c((u32) before) && before == result) {
+    if (VillagerModeRecord_IsKindMode((u32) before) && before == result) {
         return result;
     }
-    func_0209baf4(func_0209b5e8(func_0207f1c8(villager)));
-    u8 *object = VillagerState_Object(func_0207f270(villager));
-    func_0209bd5c(object);
-    if (func_0209c310((u32) result) == 0) {
+    VillagerObject_Clear(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
+    u8 *object = VillagerState_Object(VillagerStatus_StateEntry(villager));
+    ItemObject_Clear((ItemObject *) (void *) object);
+    if (VillagerModeRecord_GroupOfMode((u32) result) == 0) {
         u16 item = VILLAGER_MODE_NO_ITEM;
-        func_0209bd30(object, (u8) result, &item, 0);
+        ItemObject_Set((ItemObject *) (void *) object, (u8) result, &item, 0);
     }
-    if (func_0209c38c((u32) result)) {
-        func_0207f414(villager, result, from_2);
+    if (VillagerModeRecord_IsKindMode((u32) result)) {
+        VillagerFurniture_ResetForMode(villager, result, from_2);
     }
     return result;
 }
@@ -214,12 +170,12 @@ CLEAN_AS(func_0207d840, VillagerMode_UpdateDaily)
  * lies after `now` (the clock was set back). Only for a record in use. */
 void VillagerMode_KeepCountedDate(u8 *villager, const DateTime *now)
 {
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
-    if (!has_villager(villager) || func_0209c370(record) == 0) {
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    if (!has_villager(villager) || VillagerModeRecord_IsInUse(record) == 0) {
         return;
     }
-    DateTime *counted = func_0209bfe8(record);
-    if (func_0209dffc(counted) != 0 || func_0209e3ac(now, counted, VILLAGER_MODE_TO_SECOND) == -1) {
+    DateTime *counted = VillagerModeRecord_Counted(record);
+    if (DateTime_IsInvalid(counted) != 0 || DateTime_Compare(now, counted, VILLAGER_MODE_TO_SECOND) == -1) {
         MI_CpuCopy8(now, counted, sizeof(DateTime));
     }
 }
@@ -228,12 +184,12 @@ CLEAN_AS(func_0207d91c, VillagerMode_KeepCountedDate)
 /* func_0207d978: the same for the record's `since`. */
 void VillagerMode_KeepSinceDate(u8 *villager, const DateTime *now)
 {
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
-    if (!has_villager(villager) || func_0209c370(record) == 0) {
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    if (!has_villager(villager) || VillagerModeRecord_IsInUse(record) == 0) {
         return;
     }
-    DateTime *since = func_0209bfec(record);
-    if (func_0209dffc(since) != 0 || func_0209e3ac(now, since, VILLAGER_MODE_TO_SECOND) == -1) {
+    DateTime *since = VillagerModeRecord_Since(record);
+    if (DateTime_IsInvalid(since) != 0 || DateTime_Compare(now, since, VILLAGER_MODE_TO_SECOND) == -1) {
         MI_CpuCopy8(now, since, sizeof(DateTime));
     }
 }
@@ -247,33 +203,33 @@ CLEAN_AS(func_0207d978, VillagerMode_KeepSinceDate)
  * either way. */
 void VillagerMode_CatchUpScores(u8 *villager, const DateTime *now)
 {
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
-    if (!has_villager(villager) || func_0209c370(record) == 0 || func_0209c380(record) == 0) {
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    if (!has_villager(villager) || VillagerModeRecord_IsInUse(record) == 0 || VillagerModeRecord_IsKind(record) == 0) {
         return;
     }
-    DateTime *counted = func_0209bfe8(record);
-    const s16 *weights = func_02080814(villager);
-    if (func_0209dffc(counted) != 0 || weights == NULL) {
+    DateTime *counted = VillagerModeRecord_Counted(record);
+    const s16 *weights = VillagerData_ModeWeights(villager);
+    if (DateTime_IsInvalid(counted) != 0 || weights == NULL) {
         return;
     }
-    int days = whole_days(func_0209e350(counted, now));
+    int days = whole_days(DateTime_MinutesBetween(counted, now));
     if (days <= 0) {
         return;
     }
-    if (func_0209c1c0(record, now)) {
+    if (VillagerModeRecord_IsKindAWeekOld(record, now)) {
         DateTime from = {0};
         int draws = days;
-        MI_CpuCopy8(func_0209bfec(record), &from, sizeof(DateTime));
-        if (whole_days(func_0209e350(&from, counted)) < VILLAGER_MODE_SETTLE_DAYS) {
-            func_0209e29c(&from, VILLAGER_MODE_SETTLE_OFFSET);
-            draws = whole_days(func_0209e350(&from, now));
+        MI_CpuCopy8(VillagerModeRecord_Since(record), &from, sizeof(DateTime));
+        if (whole_days(DateTime_MinutesBetween(&from, counted)) < VILLAGER_MODE_SETTLE_DAYS) {
+            DateTime_AddDays(&from, VILLAGER_MODE_SETTLE_OFFSET);
+            draws = whole_days(DateTime_MinutesBetween(&from, now));
         }
-        while (draws > 0 && func_0209bf28(record, weights) != 0) {
+        while (draws > 0 && VillagerModeRecord_DrawScores(record, weights) != 0) {
             draws--;
         }
-        func_0209bf80(record, weights);
+        VillagerModeRecord_AddCountsToScores(record, weights);
     }
-    func_0209e29c(counted, days);
+    DateTime_AddDays(counted, days);
 }
 CLEAN_AS(func_0207d9d4, VillagerMode_CatchUpScores)
 
@@ -281,7 +237,8 @@ CLEAN_AS(func_0207d9d4, VillagerMode_CatchUpScores)
 void VillagerMode_AddCount(u8 *villager, int kind, int amount)
 {
     if (has_villager(villager)) {
-        func_0209bee8(func_0209b5ec(func_0207f1c8(villager)), (u32) kind, amount);
+        VillagerModeRecord_AddCount(VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager)),
+                                    (u32) kind, amount);
     }
 }
 CLEAN_AS(func_0207dac8, VillagerMode_AddCount)
@@ -293,12 +250,13 @@ void VillagerMode_LearnFrom(u8 *villager, u8 *other)
     if (!has_villager(villager) || !has_villager(other)) {
         return;
     }
-    const s16 *weights = func_02080814(villager);
+    const s16 *weights = VillagerData_ModeWeights(villager);
     if (weights == NULL) {
         return;
     }
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
-    func_0209beb0(record, func_0209b5ec(func_0207f1c8(other)), weights);
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    VillagerModeRecord_LearnTop(record, VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(other)),
+                                weights);
 }
 CLEAN_AS(func_0207daf4, VillagerMode_LearnFrom)
 
@@ -309,14 +267,14 @@ CLEAN_AS(func_0207daf4, VillagerMode_LearnFrom)
  * very minute of it; a later minute of that hour keeps the same day, already passed. */
 int VillagerMode_IsWakeTimePast(u8 *villager, const DateTime *now)
 {
-    NpcId *npc = func_0208150c(villager);
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
-    if (!NpcId_IsValid(npc) || func_0209c370(record) == 0) {
+    NpcId *npc = TownVillager_NpcId(villager);
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    if (!NpcId_IsValid(npc) || VillagerModeRecord_IsInUse(record) == 0) {
         return 0;
     }
-    const DayWindow *night = func_0208222c((u32) NpcId_Personality(npc));
-    const DateTime *since = func_0209bfec(record);
-    if (func_0209dffc(since) != 0) {
+    const DayWindow *night = Lookups_DayWindow((u32) NpcId_Personality(npc));
+    const DateTime *since = VillagerModeRecord_Since(record);
+    if (DateTime_IsInvalid(since) != 0) {
         return 0;
     }
     DateTime wake = {0};
@@ -324,9 +282,9 @@ int VillagerMode_IsWakeTimePast(u8 *villager, const DateTime *now)
     wake.hour = night->end_hour;
     wake.minute = night->end_minute;
     if (since->hour > night->end_hour || (night->end_hour == since->hour && night->end_minute == since->minute)) {
-        func_0209e29c(&wake, 1);
+        DateTime_AddDays(&wake, 1);
     }
-    return func_0209e3ac(now, &wake, VILLAGER_MODE_TO_MINUTE) == 1;
+    return DateTime_Compare(now, &wake, VILLAGER_MODE_TO_MINUTE) == 1;
 }
 CLEAN_AS(func_0207db48, VillagerMode_IsWakeTimePast)
 
@@ -336,10 +294,10 @@ void VillagerMode_SetArrived(u8 *villager, const DateTime *now)
     if (!has_villager(villager)) {
         return;
     }
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
-    func_0209c32c(record, VILLAGER_MODE_ARRIVED);
-    MI_CpuCopy8(now, func_0209bfec(record), sizeof(DateTime));
-    func_0209baf4(func_0209b5e8(func_0207f1c8(villager)));
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    VillagerModeRecord_SetMode(record, VILLAGER_MODE_ARRIVED);
+    MI_CpuCopy8(now, VillagerModeRecord_Since(record), sizeof(DateTime));
+    VillagerObject_Clear(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
 }
 CLEAN_AS(func_0207dbe8, VillagerMode_SetArrived)
 
@@ -350,13 +308,14 @@ void VillagerMode_SetLeaving(u8 *villager, const DateTime *now)
     if (!has_villager(villager)) {
         return;
     }
-    VillagerModeRecord *record = func_0209b5ec(func_0207f1c8(villager));
-    if (func_0209c330(record) == 2 || (func_0209c330(record) == VILLAGER_MODE_NONE_YET && func_0209c2c0(record) != 0)) {
+    VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    if (VillagerModeRecord_Mode(record) == 2 ||
+        (VillagerModeRecord_Mode(record) == VILLAGER_MODE_NONE_YET && VillagerModeRecord_IsFrom2(record) != 0)) {
         record->flags |= VILLAGER_MODE_FROM_2;
     }
-    func_0209c32c(record, VILLAGER_MODE_LEAVING);
-    MI_CpuCopy8(now, func_0209bfec(record), sizeof(DateTime));
-    func_0209baf4(func_0209b5e8(func_0207f1c8(villager)));
+    VillagerModeRecord_SetMode(record, VILLAGER_MODE_LEAVING);
+    MI_CpuCopy8(now, VillagerModeRecord_Since(record), sizeof(DateTime));
+    VillagerObject_Clear(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
 }
 CLEAN_AS(func_0207dc30, VillagerMode_SetLeaving)
 

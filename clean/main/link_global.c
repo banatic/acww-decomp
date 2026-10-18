@@ -12,14 +12,6 @@
 extern NetSession *data_020ccf94;
 extern LinkState data_021f4320;
 
-/* The one-byte request of session message 8 (the scene asked for): made, given its scene and
- * ended. */
-extern void func_020a7948(void *request);
-extern void func_020a7940(u8 *request, int scene);
-extern void func_020a7944(void *request);
-/* A slot's pending change added to (link_scene.h): the fields of `mask` set, `mask` or'ed in. */
-extern void func_020a7794(LinkStatePlaceChange *change, u8 scene, u8 holder, u8 moving, u32 mask);
-
 #define HOST_SLOT 0
 
 #define MASK_SCENE 1
@@ -136,13 +128,13 @@ void LinkGlobal_AskMove(void)
         return;
     }
     u8 request[1];
-    func_020a7948(request);
-    func_020a7940(request, SceneExit_NextScene());
+    LinkPart_MakeByte(request);
+    LinkPart_SetByte(request, SceneExit_NextScene());
     session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, request, sizeof(request));
     Session_EndMessage(session, MESSAGE_ASK_MOVE, TO_HOST);
-    func_020a7944(request);
+    LinkPart_EndByte(request);
 }
 CLEAN_AS(func_020a6f88, LinkGlobal_AskMove)
 
@@ -342,7 +334,7 @@ CLEAN_AS(func_020a7330, LinkGlobal_PlaceScene)
  * holder, 2 moving). */
 void LinkGlobal_AddPlaceChange(int slot, int scene, int holder, int moving, int mask)
 {
-    func_020a7794(&data_021f4320.changes[slot], (u8) scene, (u8) holder, (u8) moving, (u32) mask);
+    LinkPart_AddChange(&data_021f4320.changes[slot], (u8) scene, (u8) holder, (u8) moving, (u32) mask);
 }
 CLEAN_AS(func_020a7360, LinkGlobal_AddPlaceChange)
 

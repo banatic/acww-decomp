@@ -16,6 +16,24 @@
 #include "session.h"
 #include "villager_part.h"
 #include "villager_part_block.h"
+#include "beside_spot.h"
+#include "block_021d27ac.h"
+#include "block_021d27ac_parts.h"
+#include "daily_bits.h"
+#include "event_announce.h"
+#include "event_calendar.h"
+#include "link_global.h"
+#include "main_random.h"
+#include "middle_spot.h"
+#include "near_spot.h"
+#include "paired_town.h"
+#include "tile_requests.h"
+#include "town_spot.h"
+#include "town_start_day.h"
+#include "unit_type_info.h"
+#include "wfc_stats.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
 
 static_assert(sizeof(SpawnerRequest) == 0x10, "request size");
 static_assert(offsetof(SpawnerRequest, profile) == 0x0c && offsetof(SpawnerRequest, priority) == 0x0f, "request");
@@ -106,41 +124,6 @@ typedef struct SpawnerTile {
 extern u32 data_021d212c;
 extern SpawnerTile data_021d222c[RANDOM_TILES];
 
-extern u8 func_020b65c4(void);                 /* the current scene */
-extern u8 func_020b65b8(void);                 /* the scene byte at data_020e54b0 */
-extern int func_020b67e8(unsigned int number); /* whether 1 <= number <= 5 */
-extern u32 func_020644cc(int bound);           /* a random number below `bound` */
-extern u32 func_02041608(void);                /* the event going on */
-/* Whether `event` is on at `when` (now when `when` is NULL). */
-extern int func_02085d2c(u32 event, const DateTime *when);
-extern int func_0209fa30(u8 *flags);
-extern int func_020881c4(u8 *object);
-extern int func_02088394(void);
-extern int func_020883cc(void);
-/* Whether bit `bit` of the two words after `bits` is set. */
-extern int func_020887c0(u32 *bits, u32 bit);
-extern int func_02031a48(int x, int z);
-/* The position copied, then handed on to func_0204811c with data_021c779c. */
-extern void func_02042fd4(void *position);
-
-/* The object at data_021d27ac, its flags (func_02086108) and the parts func_020860b8..
- * func_020860c8 give, and what the placers and checks do with those parts. */
-extern void *func_0208602c(void);
-extern int func_02086108(void *flags, u32 bit);
-extern void *func_020860b8(void *object); /* + 0x04 */
-extern void *func_020860c4(void *object); /* + 0x0c */
-extern void *func_020860c0(void *object); /* + 0x24 */
-extern void *func_020860c8(void *object); /* + 0x30 */
-extern void *func_020860bc(void *object); /* + 0x31 */
-extern int func_02087854(void *part, Vec3 *position);
-extern void func_02087a78(void *part, Vec3 *position, u16 *angle_y, const SpawnerRequest *request);
-extern void func_02087e4c(void *part, Vec3 *position);
-extern int func_02087de8(void *part);
-extern void func_02087f40(void *part, Vec3 *position);
-extern int func_02087f30(void *part);
-extern void func_02087f58(void *part);
-extern int func_02087ea0(void *part);
-
 /* ---- Helpers */
 
 static int outdoors(void)
@@ -158,7 +141,7 @@ static int in_session(void)
  * scene 0x2c. */
 static int mode_allows(int check_mode)
 {
-    return check_mode == 0 || (outdoors() && func_020b65c4() != SCENE_2C);
+    return check_mode == 0 || (outdoors() && SceneQuery_Current() != SCENE_2C);
 }
 
 static int entry_result(const SpawnerEntry *entry)
@@ -237,7 +220,7 @@ CLEAN_AS(func_02083d1c, Spawner_PlaceOffRequest)
 int Spawner_PlaceFromPart31(Spawner *self, Vec3 *position, u16 *angle, const SpawnerRequest *request)
 {
     (void) self;
-    func_02087a78(func_020860bc(func_0208602c()), position, &angle[1], request);
+    BesideSpot_Place(Block021d27ac_Part31(Block021d27ac_Get()), position, &angle[1], request);
     return 1;
 }
 CLEAN_AS(func_02083d54, Spawner_PlaceFromPart31)
@@ -246,8 +229,8 @@ CLEAN_AS(func_02083d54, Spawner_PlaceFromPart31)
 int Spawner_PlaceFromPart4(Spawner *self, Vec3 *position, u16 *angle)
 {
     (void) self;
-    func_02087854(func_020860b8(func_0208602c()), position);
-    angle[1] = (u16) func_020644cc(RANDOM_ANGLE_BOUND);
+    TownSpot_ToPosition((const TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()), position);
+    angle[1] = (u16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
 CLEAN_AS(func_02083d78, Spawner_PlaceFromPart4)
@@ -256,9 +239,9 @@ CLEAN_AS(func_02083d78, Spawner_PlaceFromPart4)
 int Spawner_PlaceFromPart24(Spawner *self, Vec3 *position, u16 *angle)
 {
     (void) self;
-    void *part = func_020860c0(func_0208602c());
-    func_02087e4c(part, position);
-    angle[1] = (u16) func_02087de8(part);
+    void *part = Block021d27ac_Part24(Block021d27ac_Get());
+    NearSpot_ToPosition(part, position);
+    angle[1] = (u16) NearSpot_Facing(part);
     return 1;
 }
 CLEAN_AS(func_02083da4, Spawner_PlaceFromPart24)
@@ -301,7 +284,7 @@ int Spawner_PlaceOnRandomTile(Spawner *self, Vec3 *position)
             AcreTile_TileOfAcre(&first_x, &first_z, acre_x, acre_z, 0, 0);
             for (int z = first_z; z < first_z + ACRE_TILES && found < RANDOM_TILES; z++) {
                 for (int x = first_x; x < first_x + ACRE_TILES && found < RANDOM_TILES; x++) {
-                    if (func_02031a48(x, z) != 0) {
+                    if (UnitTypeInfo_IsType1eOver08(x, z) != 0) {
                         data_021d222c[found].x = x;
                         data_021d222c[found].z = z;
                         found++;
@@ -313,7 +296,7 @@ int Spawner_PlaceOnRandomTile(Spawner *self, Vec3 *position)
     if (found <= 0) {
         return 0;
     }
-    const SpawnerTile *tile = &data_021d222c[func_020644cc(found)];
+    const SpawnerTile *tile = &data_021d222c[MainRandom_Below(found)];
     AcreTile_TileCentre(position, (u32) tile->x, (u32) tile->z);
     return 1;
 }
@@ -329,7 +312,7 @@ int Spawner_PlayerLacksFlag18(void)
     if (record == NULL) {
         return 0;
     }
-    return func_020887c0((u32 *) PlayerRecord_Field23EC(record), PLAYER_BIT_18) == 0;
+    return DailyBits_Test((DailyBits *) ((u32 *) PlayerRecord_Field23EC(record)), PLAYER_BIT_18) == 0;
 }
 CLEAN_AS(func_02083f40, Spawner_PlayerLacksFlag18)
 
@@ -357,7 +340,7 @@ CLEAN_AS(func_02083f84, Spawner_CheckEvents3e)
  * is in the session, or the check mode forbids it. */
 int Spawner_CheckEvents(const SpawnerEvent *events, SpawnerCondition *const *conditions, int count, int check_mode)
 {
-    int held = func_0209fa30(data_021f3b85);
+    int held = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
     if (!mode_allows(check_mode) || held != 0 || Spawner_PlayerHasFlag1() || Spawner_SoundFlagSet() || in_session()) {
         return 0;
     }
@@ -392,11 +375,11 @@ int Spawner_CheckD020In(int check_mode)
         return 0;
     }
     for (u32 event = EVENT_D020_FIRST; event <= EVENT_D020_LAST; event++) {
-        if (func_02085d2c(event, &now) != 0) {
+        if (Spawner_EventOn(event, &now) != 0) {
             return 0;
         }
     }
-    if (func_020881c4(data_021f3278) == 0) {
+    if (WfcStats_IsInUse((const WfcStats *) (void *) data_021f3278) == 0) {
         return 0;
     }
     return code_result(0xd020);
@@ -407,7 +390,7 @@ CLEAN_AS(func_02084058, Spawner_CheckD020In)
 int Spawner_PlaceFromPartC(Spawner *self, Vec3 *position)
 {
     (void) self;
-    func_02087f40(func_020860c4(func_0208602c()), position);
+    MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()), position);
     return 1;
 }
 CLEAN_AS(func_02084160, Spawner_PlaceFromPartC)
@@ -426,8 +409,8 @@ CLEAN_AS(func_0208417c, Spawner_CheckD023)
  * console is in the session. */
 int Spawner_CheckD023In(int check_mode)
 {
-    if (func_02088394() == 0 || Spawner_PlayerHasFlag1() || Spawner_SoundFlagSet() || !mode_allows(check_mode) ||
-        in_session() || func_02085d2c(EVENT_3D, NULL) != 0) {
+    if (PairedTown_CurrentFlaggedInLastWeek() == 0 || Spawner_PlayerHasFlag1() || Spawner_SoundFlagSet() ||
+        !mode_allows(check_mode) || in_session() || Spawner_EventOn(EVENT_3D, NULL) != 0) {
         return 0;
     }
     return code_result(0xd023);
@@ -440,11 +423,11 @@ CLEAN_AS(func_02084188, Spawner_CheckD023In)
 void Spawner_UpdatePartCInSession(Spawner *self)
 {
     (void) self;
-    if (!in_session() || Spawner_PlayerHasFlag1() || func_020883cc() == 0) {
+    if (!in_session() || Spawner_PlayerHasFlag1() || PairedTown_CurrentUnflaggedInLastWeek() == 0) {
         return;
     }
     if (outdoors()) {
-        func_02087f58(func_020860c4(func_0208602c()));
+        MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()));
     }
 }
 CLEAN_AS(func_02084210, Spawner_UpdatePartCInSession)
@@ -455,7 +438,7 @@ int Spawner_PlaceFromPartCOrRoom(Spawner *self, Vec3 *position)
 {
     (void) self;
     if (outdoors()) {
-        func_02087f40(func_020860c4(func_0208602c()), position);
+        MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()), position);
         return 1;
     }
     AcreTile_TileCentre(position, 6, 0x11);
@@ -483,14 +466,16 @@ int Spawner_CheckD022In(int check_mode)
     if (Spawner_PlayerHasFlag1() || Spawner_SoundFlagSet()) {
         return 0;
     }
-    if (func_020883cc() != 0 && mode_allows(check_mode) && !in_session() && func_02085d2c(EVENT_3D, NULL) == 0) {
+    if (PairedTown_CurrentUnflaggedInLastWeek() != 0 && mode_allows(check_mode) && !in_session() &&
+        Spawner_EventOn(EVENT_3D, NULL) == 0) {
         return code_result(0xd022);
     }
-    if (func_02087f30(func_020860c4(func_0208602c())) != 0 && func_020b65c4() == SCENE_B &&
-        Session_IsLinked(data_020ccf94) == 0) {
+    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get())) != 0 &&
+        SceneQuery_Current() == SCENE_B && Session_IsLinked(data_020ccf94) == 0) {
         return code_result(0xd022);
     }
-    if (func_02087f30(func_020860c4(func_0208602c())) != 0 && func_020b65c4() == SCENE_C) {
+    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get())) != 0 &&
+        SceneQuery_Current() == SCENE_C) {
         return code_result(0xd022);
     }
     return 0;
@@ -509,9 +494,9 @@ CLEAN_AS(func_0208437c, Spawner_CheckD002)
  * player has flag 1 or either sound flag is set. */
 int Spawner_CheckD002In(int check_mode)
 {
-    int held = func_0209fa30(data_021f3b85);
+    int held = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
     if (in_session() || !mode_allows(check_mode) || held != 0 || Spawner_PlayerHasFlag1() || Spawner_SoundFlagSet() ||
-        func_02085d2c(EVENT_3B, NULL) == 0) {
+        Spawner_EventOn(EVENT_3B, NULL) == 0) {
         return 0;
     }
     return code_result(0xd002);
@@ -556,9 +541,9 @@ CLEAN_AS(func_020844b8, Spawner_CheckD00D)
 /* func_020844c4: Spawner_CheckD002In's conditions with event 0x3c, for code 0xd00d. */
 int Spawner_CheckD00DIn(int check_mode)
 {
-    int held = func_0209fa30(data_021f3b85);
+    int held = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
     if (in_session() || !mode_allows(check_mode) || held != 0 || Spawner_PlayerHasFlag1() || Spawner_SoundFlagSet() ||
-        func_02085d2c(EVENT_3C, NULL) == 0) {
+        Spawner_EventOn(EVENT_3C, NULL) == 0) {
         return 0;
     }
     return code_result(0xd00d);
@@ -625,7 +610,7 @@ int Spawner_PlaceBesideBuilding(Spawner *self, Vec3 *position, s16 *angle)
         return 0;
     }
     AcreTile_TileCentre(position, (u32) (x + 2), (u32) (z + 2));
-    angle[1] = (s16) func_020644cc(RANDOM_ANGLE_BOUND);
+    angle[1] = (s16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
 CLEAN_AS(func_02084598, Spawner_PlaceBesideBuilding)
@@ -642,7 +627,7 @@ int Spawner_PlaceBesideBuilding5000(Spawner *self, Vec3 *position, s16 *angle)
         return 0;
     }
     AcreTile_TileCentre(position, (u32) (x - 2), (u32) (z + 3));
-    angle[1] = (s16) func_020644cc(RANDOM_ANGLE_BOUND);
+    angle[1] = (s16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
 CLEAN_AS(func_02084630, Spawner_PlaceBesideBuilding5000)
@@ -666,7 +651,7 @@ CLEAN_AS(func_020846c0, Spawner_CheckEvents06a4)
 int Spawner_CheckEvents06a4In(int check_mode)
 {
     if (in_session()) {
-        return func_020b65c4() == SCENE_9 ? code_result(0xd025) : 0;
+        return SceneQuery_Current() == SCENE_9 ? code_result(0xd025) : 0;
     }
     int allowed = mode_allows(check_mode);
     if (Spawner_PlayerBlock0Ready()) {
@@ -678,14 +663,14 @@ int Spawner_CheckEvents06a4In(int check_mode)
     }
     if (index != -1) {
         int needs = data_020d0664[index];
-        if ((u32) needs != func_02041608() && needs != EVENT_ANY) {
+        if ((u32) needs != EventAnnounce_CurrentEvent() && needs != EVENT_ANY) {
             index = -1;
         }
     }
     if (index != -1) {
         return allowed ? profile_result(&data_020d06a4[index].profile) : 0;
     }
-    if (Spawner_Profile56Allowed() || func_020b65c4() != SCENE_9) {
+    if (Spawner_Profile56Allowed() || SceneQuery_Current() != SCENE_9) {
         return 0;
     }
     return code_result(0xd025);
@@ -732,8 +717,8 @@ CLEAN_AS(func_02084840, Spawner_CheckProfile56In)
  * data_021d27ac is set, neither sound flag is set and the player lacks flag 1. */
 int Spawner_Profile56Allowed(void)
 {
-    return !in_session() && func_02086108(func_0208602c(), OBJECT_FLAG_8) != 0 && !Spawner_SoundFlagSet() &&
-           !Spawner_PlayerHasFlag1();
+    return !in_session() && Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), OBJECT_FLAG_8) != 0 &&
+           !Spawner_SoundFlagSet() && !Spawner_PlayerHasFlag1();
 }
 CLEAN_AS(func_02084890, Spawner_Profile56Allowed)
 
@@ -770,11 +755,11 @@ CLEAN_AS(func_020848d0, Spawner_PlaceBelowBuilding)
 int Spawner_CheckD019(void)
 {
     u8 *record = PlayerRecords_Current();
-    if (func_020b65c4() != SCENE_0 || Spawner_SoundFlagSet() || in_session() || record == NULL ||
+    if (SceneQuery_Current() != SCENE_0 || Spawner_SoundFlagSet() || in_session() || record == NULL ||
         PlayerRecord_TestFlag(record, PLAYER_FLAG_23) == 0) {
         return 0;
     }
-    if (func_020b67e8(func_020b65b8()) != 0 || func_020b65b8() == 6) {
+    if (SceneKinds_IsHouseRoom(SceneQuery_Previous()) != 0 || SceneQuery_Previous() == 6) {
         return code_result(0xd019);
     }
     return 0;
@@ -809,7 +794,8 @@ CLEAN_AS(func_020849e8, Spawner_PlaceInFrontOfBuilding)
  * accepts part 0x30 of the object at data_021d27ac and this console is not in the session. */
 int Spawner_CheckD011(void)
 {
-    if (func_020b65c4() != SCENE_0 || func_02087ea0(func_020860c8(func_0208602c())) == 0 || in_session()) {
+    if (SceneQuery_Current() != SCENE_0 || Block021d27acPart30_IsSet(Block021d27ac_Part30(Block021d27ac_Get())) == 0 ||
+        in_session()) {
         return 0;
     }
     return code_result(0xd011);
@@ -838,7 +824,7 @@ int Spawner_FirstEventOn(const SpawnerEvent *events, int count)
     DateTime now = {0};
     DateTime_Now(&now);
     for (int i = 0; i < count; i++) {
-        if (func_02085d2c(events[i].event, &now) != 0) {
+        if (Spawner_EventOn(events[i].event, &now) != 0) {
             return i;
         }
     }
@@ -873,7 +859,7 @@ const SpawnerEntry *Spawner_Serve(Spawner *self, const SpawnerEntry *table, int 
         return NULL;
     }
     const SpawnerEntry *entry = Spawner_FindProfile(&request->profile, table, count);
-    if (entry != NULL && request->scene == func_020b65c4()) {
+    if (entry != NULL && request->scene == SceneQuery_Current()) {
         Vec3 position = {0, 0, 0};
         s16 angle[3] = {0, 0, 0};
         if (entry->place.ptr != 0) {
@@ -890,7 +876,7 @@ const SpawnerEntry *Spawner_Serve(Spawner *self, const SpawnerEntry *table, int 
         if (Actor_Spawn(entry->profile, entry->code, &position, angle, self) != 0) {
             if (outdoors() && !in_session()) {
                 Vec3 copy = position;
-                func_02042fd4(&copy);
+                TileRequests_ClearSpawnTile(&copy);
             }
             made = entry;
         }
@@ -906,7 +892,7 @@ CLEAN_AS(func_02084b74, Spawner_Serve)
 int Spawner_RunChecks(Spawner *self)
 {
     const SpawnerCheck *check = data_020e1d08;
-    int scene = func_020b65c4();
+    int scene = SceneQuery_Current();
     for (int i = 0; i < SPAWNER_CHECKS; i++, check++) {
         if (check->priority <= data_020e1ca8.priority) {
             break;
@@ -1045,8 +1031,6 @@ CLEAN_AS(func_02084f88, Spawner_PartConstruct)
 #include "npc_lookup.h"
 #include "packed_bytes.h"
 #include "scene_exit.h"
-#include "scene_kinds.h"
-#include "scene_query.h"
 #include "scene_share_table.h"
 #include "tile_grid.h"
 #include "town_objects.h"
@@ -1068,16 +1052,6 @@ extern SceneShareEntry data_021d213c[SCENE_SHARE_TABLE_E_COUNT];
 extern const int data_020d0648; /* the number of events of data_020d0684 */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-/* Whether `event` is on at `when` (`arg` 0). */
-extern int func_0203fc78(int event, const DateTime *when, int arg);
-/* Nonzero always without a session slot (scene_share.c). */
-extern int func_020a7278(void);
-/* What creating the spawner does with parts 0x24 and 0x31 of the object at data_021d27ac. */
-extern void func_02087e00(void *part);
-extern void func_02087b10(void *part);
-extern void func_02087b04(void *part);
-extern int func_02087e38(void *part);
-extern void func_02087df4(void *part);
 
 /* The profiles of the villager actors made here. */
 #define SPAWNER_PROFILE_EVENT_VILLAGER 0x80 /* the villager VillagerState_GetIndex162 names */
@@ -1129,7 +1103,7 @@ static u16 spawner_villager_person(int index)
 /* A random angle about Y, a whole number of quarter turns. */
 static s16 spawner_random_quarter(void)
 {
-    return (s16) (u16) (func_020644cc(4) << 14);
+    return (s16) (u16) (MainRandom_Below(4) << 14);
 }
 
 /* The centre of the tile before the villager's house's door. */
@@ -1225,8 +1199,8 @@ int Spawner_Create(Spawner *self)
     int entries = data_020d0644;
     VillagerTown *town = &data_021e5a2c;
 
-    func_02087e00(func_020860c0(func_0208602c()));
-    func_02087b10(func_020860bc(func_0208602c()));
+    NearSpot_ClearServed((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
+    BesideSpot_ClearServed(Block021d27ac_Part31(Block021d27ac_Get()));
     if (SceneQuery_CurrentIs0() != 0) {
         VillagerTown_UpdateEventVillager(town);
         VillagerTown_ApplyEventStates(town);
@@ -1268,9 +1242,10 @@ int Spawner_Create(Spawner *self)
     Spawner_RunChecks(self);
     const SpawnerEntry *served = Spawner_Serve(self, data_020e1d8c, entries);
     if (served != NULL) {
-        func_02087b04(func_020860bc(func_0208602c()));
-        if (served->code != SPAWNER_CODE_D008 || func_02087e38(func_020860c0(func_0208602c())) != 0) {
-            func_02087df4(func_020860c0(func_0208602c()));
+        BesideSpot_SetServed(Block021d27ac_Part31(Block021d27ac_Get()));
+        if (served->code != SPAWNER_CODE_D008 ||
+            NearSpot_Found((const NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get())) != 0) {
+            NearSpot_SetServed((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
         }
     }
     Spawner_UpdatePartCInSession(self);
@@ -1380,7 +1355,7 @@ void Spawner_SpawnHouseOwner(Spawner *self)
 
     SceneShareEntry *record = SceneShareTable_SharedRecordE(&person);
     int placed;
-    if (func_020a7278() == 0 && record != NULL && record->in_use != 0) {
+    if (LinkGlobal_HoldsScene() == 0 && record != NULL && record->in_use != 0) {
         spawner_entry_place(record, &position);
         MI_CpuCopy8(record->angle, &angle[1], sizeof(angle[1]));
         placed = 1;
@@ -1458,7 +1433,7 @@ void Spawner_PlaceTownVillagers(Spawner *self)
             } else {
                 spawner_at_door(villager, &position);
             }
-        } else if (func_020a7278() != 0 && data_021d213c[i].in_use != 0) {
+        } else if (LinkGlobal_HoldsScene() != 0 && data_021d213c[i].in_use != 0) {
             SceneShareEntry *entry = &data_021d213c[i];
             PackedBytes_SplitScene(&entry->scene, &scene, NULL);
             if (scene != SceneQuery_Current() && SceneQuery_Is0(scene) == 0 && SceneQuery_Is31(scene) == 0 &&
@@ -1503,7 +1478,7 @@ static const SpawnerEntry *spawner_answer(int result)
  * data_021f3b85. */
 void Spawner_PeekCode(u16 *code)
 {
-    int started = func_0209fa30(data_021f3b85);
+    int started = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
     int blocked = Spawner_CheckProfile56In(0);
     if (blocked == 0) {
         blocked = Spawner_CheckEvents06a4In(0);
@@ -1545,7 +1520,7 @@ int Spawner_EventOn(u32 event, const DateTime *when)
     }
     DateTime copy;
     MI_CpuCopy8(when, &copy, sizeof(copy));
-    return func_0203fc78((int) event, &copy, 0) != 0;
+    return EventCalendar_State((int) event, &copy, 0) != 0;
 }
 CLEAN_AS(func_02085d2c, Spawner_EventOn)
 
@@ -1573,7 +1548,7 @@ int Spawner_PlaceOnFreeTile(Spawner *self, Vec3 *position)
     if (count <= 0) {
         return 0;
     }
-    u32 pick = func_020644cc(count);
+    u32 pick = MainRandom_Below(count);
     for (u32 z = 0; z < TILE_GRID_SEARCH_ROWS; z++) {
         for (u32 x = 0; x < TILE_GRID_SIZE; x++) {
             if (!TileGrid_IsMarked(grid, x, z)) {

@@ -5,7 +5,7 @@
  *         with the work's side, point and kind; refused, the state ends;
  *   0x0f  taking that place: animation 7 (side 1) or 8 (side 0) with sound 0x4c5; the actor
  *         eases along x or z (by the yaw's 0x4000 bit) to the point, a sound at the point at
- *         frame 0xd in a room, and at the animation's end func_ov004_0222bdf0 with the kind;
+ *         frame 0xd in a room, and at the animation's end FieldActorPlaceStates_RequestStay with the kind;
  *   0x12  the actor turns to yaw 0x8000 and eases to a fixed point of the overlay while
  *         animation 0x9b loops; the camera snaps to that point on entering;
  *   0x1c  an item taken from the room's floor or one of its objects (state 0x18 indoors):
@@ -16,7 +16,7 @@
  *         plays; there, it takes hold (state 0x1e); A let go before, it toggles the
  *         furniture's switch once, then the state ends;
  *   0x1e  holding the furniture with A: pushed far enough (above 0x333) the stick's quadrant
- *         asks for func_ov004_02229bb4 (2), state 0x20 (0) or a turn (state 0x1f, quadrants 3
+ *         asks for FieldActorRoomStates_RequestPull (2), state 0x20 (0) or a turn (state 0x1f, quadrants 3
  *         and 1, only after the stick was let back below 0x333); with more than one visitor
  *         a talk ("obj_etc_error") opens instead; A let go ends it;
  *   0x1f  the furniture turned (animation 0x1b one way, 0x1c the other) and the animation
@@ -48,7 +48,7 @@ typedef struct FieldActorTakePlaceWork {
     fx32 x; /* the place's point */
     fx32 z;
     s16 yaw; /* bit 0x4000 set: the actor eases along x, else along z */
-    u8 kind; /* handed to func_ov004_0222bdf0 at the end */
+    u8 kind; /* handed to FieldActorPlaceStates_RequestStay at the end */
 } FieldActorTakePlaceWork;
 
 /* What a request for state 0x0f carries. */

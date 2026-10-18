@@ -14,6 +14,10 @@
 #include "start_kind.h"
 #include "state_block.h"
 #include "villager_state.h"
+#include "activity_process.h"
+#include "player_id.h"
+#include "scene_process_base.h"
+#include "talk_object.h"
 
 static_assert(offsetof(Activity, state) == 0xa1 && offsetof(Activity, card_parts) == 0x10e, "activity");
 static_assert(offsetof(StateBlock, players) == 0x14 && offsetof(StateBlock, part_17254) == 0x17254, "state block");
@@ -35,19 +39,6 @@ extern const Vec3 data_020d1c14;
 typedef struct ActivityJobsText {
     u32 words[0x24 / 4];
 } ActivityJobsText;
-extern void *func_02094fd4(ActivityJobsText *text);
-extern void *func_02094fbc(ActivityJobsText *text);
-extern void *func_02095074(DesignCreator *player, ActivityJobsText *text); /* a player's name to a text */
-
-/* Talk 0 (activity_talk.h): its receiver unlinked, and the text of its slot `slot` set. */
-extern ActivityTalk *func_020682e0(int index);
-extern void func_02068320(ActivityTalk *talk);
-extern void func_02068404(ActivityTalk *talk, int slot, ActivityJobsText *text);
-
-/* The activity's job `job` started. */
-extern void func_020a4e94(Activity *activity, int job);
-/* Three values the scene 0x2c reads (data_020e3c80, data_021f42ec and data_021f42e8). */
-extern void func_020a53ec(int a, int b, int c, int unused);
 
 #define TALK_INDEX 0
 #define TALK_CLOSED 0
@@ -78,11 +69,11 @@ static int read_part(const Activity *activity)
 /* Talk 0 when it is closed: its receiver unlinked and it given; else NULL. */
 static ActivityTalk *closed_talk(void)
 {
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     if (talk->state != TALK_CLOSED) {
         return NULL;
     }
-    func_02068320(talk);
+    TalkObject_DetachReceiver((TalkObject *) talk);
     return talk;
 }
 
@@ -97,13 +88,13 @@ static SceneExit *entry_record(void)
  * cleared. */
 void ActivityJobs_Start06(Activity *activity)
 {
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     StateBlock *block = &data_021dc7a8;
     u8 *record = PlayerRecords_TownRecord(data_021dc7a8.players, data_021f3c34);
     ActivityJobsText name;
-    func_02094fd4(&name);
-    func_02095074(PlayerRecord_Player(record), &name);
-    func_02068404(talk, 0, &name);
+    PlayerIdText_Construct((PlayerIdText *) &name);
+    PlayerId_NameToText(PlayerRecord_Player(record), (TextBase *) &name);
+    TalkObject_SetPart((TalkObject *) talk, 0, (TextBase *) &name);
     PlayerRecord_Clear(record);
     StateBlock_ForgetPlayer(block, data_021f3c34);
     ActivityTalk_Show(activity, data_020e3c54, SEQUENCE1_REMOVED);
@@ -111,7 +102,7 @@ void ActivityJobs_Start06(Activity *activity)
         block->part_17254[STATE_BLOCK_17276] = 0;
     }
     activity->state = 0;
-    func_02094fbc(&name);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
 }
 CLEAN_AS(func_020a4840, ActivityJobs_Start06)
 
@@ -168,7 +159,7 @@ void ActivityJobs_Step06(Activity *activity)
             break;
         default:
             ActivityTalk_Close(activity);
-            func_020a4e94(activity, 0xc);
+            ActivityProcess_StartJob(activity, 0xc);
             break;
     }
 }
@@ -226,7 +217,7 @@ void ActivityJobs_Step07(Activity *activity)
             break;
         default:
             ActivityTalk_Close(activity);
-            func_020a4e94(activity, 0xf);
+            ActivityProcess_StartJob(activity, 0xf);
             break;
     }
 }
@@ -243,7 +234,7 @@ void ActivityJobs_Step08(Activity *activity)
         return;
     }
     SceneExit_Take(entry_record(), 1);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a464c, ActivityJobs_Step08)
 
@@ -260,7 +251,7 @@ void ActivityJobs_Step09(Activity *activity)
     }
     Vec3 point = data_020d1bfc;
     SceneExit_SetTo(entry_record(), 13, &point, 0x800000, 0, 3, 2);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a45f0, ActivityJobs_Step09)
 
@@ -277,7 +268,7 @@ void ActivityJobs_Step0A(Activity *activity)
     }
     Vec3 point = data_020d1c14;
     SceneExit_SetTo(entry_record(), 14, &point, 0x800000, 0, 3, 2);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a4594, ActivityJobs_Step0A)
 
@@ -293,7 +284,7 @@ void ActivityJobs_Step0B(Activity *activity)
         return;
     }
     SceneExit_SetToScene(entry_record(), 0x2f, 3, 2);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a4560, ActivityJobs_Step0B)
 
@@ -322,7 +313,7 @@ void ActivityJobs_Step0C(Activity *activity)
     StateBlock_FinishStart(&data_021dc7a8);
     VillagerState_CallNoOp();
     SceneExit_SetToScene(entry_record(), 0x2c, 3, 2);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a44f0, ActivityJobs_Step0C)
 
@@ -336,8 +327,8 @@ void ActivityJobs_Step0D(Activity *activity)
     if (closed_talk() == NULL) {
         return;
     }
-    func_020a53ec(2, 3, 0, 0);
-    func_020a4e94(activity, 0);
+    SceneProcessBase_Request(2, 3, 0, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a44bc, ActivityJobs_Step0D)
 
@@ -350,11 +341,11 @@ CLEAN_AS(func_020a44b8, ActivityJobs_Start0E)
  * applied; then the scene 0x2d entered (arguments 3 and 0); job 0. */
 void ActivityJobs_Step0E(Activity *activity)
 {
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     if (data_021c75b8 != 2 || talk->state != TALK_CLOSED) {
         return;
     }
-    func_02068320(talk);
+    TalkObject_DetachReceiver((TalkObject *) talk);
     if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_12)) {
         StartKind_SetPlayer0();
     } else {
@@ -362,7 +353,7 @@ void ActivityJobs_Step0E(Activity *activity)
     }
     StartKind_Apply();
     SceneExit_SetToScene(entry_record(), 0x2d, 3, 0);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a4454, ActivityJobs_Step0E)
 
@@ -377,15 +368,15 @@ CLEAN_AS(func_020a4450, ActivityJobs_Start0F)
  * its stack held; here at the point (0, 0, 0). */
 void ActivityJobs_Step0F(Activity *activity)
 {
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     if (data_021c75b8 != 2 || talk->state != TALK_CLOSED) {
         return;
     }
-    func_02068320(talk);
+    TalkObject_DetachReceiver((TalkObject *) talk);
     int front[3] = {0, 0, 0};
     AcreMap_FindBuilding5000Front((int) AcreMap_Town(), front, NULL, NULL);
     SceneExit_SetTo(entry_record(), 0, (const Vec3 *) (const void *) front, 0x400000, -0x8000, 3, 2);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a43e4, ActivityJobs_Step0F)
 
@@ -405,7 +396,7 @@ void ActivityJobs_Step10(Activity *activity)
     } else {
         SceneExit_Take(entry_record(), 0);
     }
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a43a0, ActivityJobs_Step10)
 
@@ -421,7 +412,7 @@ void ActivityJobs_Step11(Activity *activity)
         return;
     }
     SceneExit_Take(entry_record(), 2);
-    func_020a4e94(activity, 0);
+    ActivityProcess_StartJob(activity, 0);
 }
 CLEAN_AS(func_020a4370, ActivityJobs_Step11)
 
@@ -458,7 +449,7 @@ static void write_copy_and_letters(Activity *activity)
         case 3:
             break;
         default:
-            func_020a4e94(activity, 0);
+            ActivityProcess_StartJob(activity, 0);
             break;
     }
 }

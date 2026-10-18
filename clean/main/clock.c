@@ -3,14 +3,12 @@
 
 #include "clean.h"
 #include "date_time.h"
+#include "town_day.h"
 
 /* The SDK's RTC: starting it, and reading its date and time. The reader at 0211e7c0 is named
  * RTC_SetDateTime in the symbols; the game calls it to read both. */
 extern void RTC_Init(void);
 extern int RTC_SetDateTime(RtcDate *date, RtcTime *time);
-
-/* Checks what the clock's date says against the town's records; func_020469f4. */
-extern void func_020469f4(void);
 
 static_assert(sizeof(RtcClock) == 28 && offsetof(RtcClock, time) == 16, "clock layout");
 static_assert(sizeof(ClockOffset) == 8 && offsetof(ClockOffset, seconds) == 4, "clock offset layout");
@@ -135,7 +133,7 @@ void Clock_Refresh(const void *skip_check)
 {
     Clock_Read((RtcClock *) &data_021dc744);
     if (skip_check == NULL) {
-        func_020469f4();
+        TownDay_OnClock();
     }
 }
 CLEAN_AS(func_0209dfa4, Clock_Refresh)

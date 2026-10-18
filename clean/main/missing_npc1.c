@@ -38,6 +38,12 @@
 #include "special_scene_object.h"
 #include "talk_checks.h"
 #include "town_tile.h"
+#include "effect_system.h"
+#include "main_random.h"
+#include "missing_npc2.h"
+#include "player_actor_ops.h"
+#include "talk_answers.h"
+#include "talk_object.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "the scene base");
 static_assert(offsetof(MissingNpc1Talk, owner) == 0xb0 && sizeof(MissingNpc1Talk) == 0xb8, "MissingNpc1Talk");
@@ -176,31 +182,10 @@ extern u8 data_021c75b8;
 extern const Vec3 data_020d3150;
 #define MISSING_NPC1_PLAYER_ANGLE 0x35c
 
-/* A random number below `range` (Random_Below on the game's generator). */
-extern int func_020644cc(int range);
-/* The talk's menu, and the choice made on it. */
-extern void *func_0206837c(void *talk);
-extern unsigned int func_020ab504(void *menu);
-/* The talk given the next message (and the archive's name), held and released. */
-extern void func_0206844c(void *talk, const u8 *message, const char *name);
-extern void func_02068440(void *talk);
-extern void func_02068434(void *talk);
-/* Effects (scene_motion.h): started, moved and stopped. */
-extern int func_020912d4(int kind, Vec3 *point, s16 *angle, int a);
-extern void func_02091278(int effect, Vec3 *point, s16 *angle, int a);
-extern void func_0209129c(int effect);
-/* A point of field actor `player`'s (its member at 0x6f4), or null without the actor. */
-extern Vec3 *func_02095794(int player);
 /* What is asked of the player's actor numbered `player` in scene 0x2f: whether it is ready
  * (with 1), whether it is still busy (DWCi_GsMalloc is the symbol's name), to be put at a point
  * and angle, and to turn. */
-extern int func_02095ed0(int ready, int player);
 extern int DWCi_GsMalloc(int player);
-extern int func_02095ab0(Vec3 *point, int angle, int player);
-extern int func_02095a8c(int a, int player);
-/* The character "sp_npc_missing2" (missing_npc2.h) set to its states 4 and 6. */
-extern void func_020c37f8(void);
-extern void func_020c37dc(void);
 
 static u8 *missing_npc1_at(MissingNpc1 *self, u32 offset)
 {
@@ -360,15 +345,15 @@ void MissingNpc1Talk_OnAnswer(MissingNpc1Talk *talk)
         return;
     }
     u8 message;
-    switch (func_020ab504(func_0206837c(talk->scene.talk))) {
+    switch (TalkAnswers_Picked(TalkObject_Answers((TalkObject *) (void *) talk->scene.talk))) {
         case 0:
-            message = (u8) (func_020644cc(3) + MISSING_NPC1_MESSAGE_YES);
-            func_0206844c(talk->scene.talk, &message, data_020e7ad8);
+            message = (u8) (MainRandom_Below(3) + MISSING_NPC1_MESSAGE_YES);
+            TalkObject_SetMessage((TalkObject *) (void *) talk->scene.talk, &message, data_020e7ad8);
             MiddleSpot_SetMark(missing_npc1_spot());
             break;
         case 1:
-            message = (u8) (func_020644cc(3) + MISSING_NPC1_MESSAGE_NO);
-            func_0206844c(talk->scene.talk, &message, data_020e7ad8);
+            message = (u8) (MainRandom_Below(3) + MISSING_NPC1_MESSAGE_NO);
+            TalkObject_SetMessage((TalkObject *) (void *) talk->scene.talk, &message, data_020e7ad8);
             if (SceneQuery_Current() == MISSING_NPC1_SCENE_TOWN) {
                 MiddleSpot_ClearMark(missing_npc1_spot());
             }
@@ -414,20 +399,20 @@ void MissingNpc1Talk_Line(MissingNpc1Talk *talk, MissingNpc1Line *line)
             break;
         case MISSING_NPC1_TOPIC_AGAIN:
             PlayerRecord_SetFlag(record, MISSING_NPC1_FLAG_33);
-            line->message = (u8) (func_020644cc(3) + 1);
+            line->message = (u8) (MainRandom_Below(3) + 1);
             break;
         case MISSING_NPC1_TOPIC_TODAY:
-            line->message = (u8) (func_020644cc(3) + 4);
+            line->message = (u8) (MainRandom_Below(3) + 4);
             TalkChecks_TestSetDailyBit(MISSING_NPC1_DAILY_BIT, 1);
             break;
         case MISSING_NPC1_TOPIC_FOLLOWING:
-            line->message = (u8) (func_020644cc(3) + 7);
+            line->message = (u8) (MainRandom_Below(3) + 7);
             break;
         case MISSING_NPC1_TOPIC_LOST:
-            line->message = (u8) (func_020644cc(3) + 0x19);
+            line->message = (u8) (MainRandom_Below(3) + 0x19);
             break;
         case MISSING_NPC1_TOPIC_MARKED:
-            line->message = (u8) (func_020644cc(3) + 0x22);
+            line->message = (u8) (MainRandom_Below(3) + 0x22);
             break;
         case MISSING_NPC1_TOPIC_HOME:
             line->message = MISSING_NPC1_LINE_HOME;
@@ -529,13 +514,13 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
 
     switch (self->step) {
         case 0:
-            if (data_021c75b8 == MISSING_NPC1_SCREEN_SHOWN && func_02095ed0(1, player) != 0) {
+            if (data_021c75b8 == MISSING_NPC1_SCREEN_SHOWN && PlayerActorOps_SwitchFlag10(1, player) != 0) {
                 self->step = 1;
             }
             break;
         case 1: {
             Vec3 point = data_020d3150;
-            func_02095ab0(&point, MISSING_NPC1_PLAYER_ANGLE, player);
+            PlayerActorOps_MoveTo(&point, MISSING_NPC1_PLAYER_ANGLE, player);
             missing_npc1_move(self, MISSING_NPC1_WALK, 1, 0xe000, 0x10800, 0);
             self->step = 2;
             break;
@@ -554,9 +539,9 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
             if (talk->state != MISSING_NPC1_TALK_SHOWN) {
                 break;
             }
-            func_02068440(talk);
+            TalkObject_Hold((TalkObject *) talk);
             missing_npc1_move(self, MISSING_NPC1_WALK_2, 2, 0xea00, 0x12e00, 0);
-            func_020c37f8();
+            MissingNpc2_StartScene2FWalk();
             CameraControl_SetMode19();
             self->step = 4;
             break;
@@ -571,9 +556,9 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
                 SceneBase_SetSecondSpeaker(&self->talk.scene, second);
             }
             u8 message = MISSING_NPC1_LINE_SCENE_2F;
-            func_0206844c(talk, &message, data_020e7ad8);
+            TalkObject_SetMessage((TalkObject *) talk, &message, data_020e7ad8);
             talk->request = 1;
-            func_02068434(talk);
+            TalkObject_Release((TalkObject *) talk);
             self->step = 5;
             break;
         }
@@ -591,8 +576,8 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
                 break;
             }
             missing_npc1_move(self, MISSING_NPC1_WALK, 1, 0xde00, 0x13a00, 0);
-            func_02095a8c(0, player);
-            func_020c37dc();
+            PlayerActorOps_Turn(0, player);
+            MissingNpc2_StartScene2FExit();
             self->step = 7;
             break;
         case 7:
@@ -667,10 +652,10 @@ int MissingNpc1_UpdateLost(MissingNpc1 *self)
         u32 frame = *(const u32 *) (const void *) missing_npc1_at(self, MISSING_NPC1_ANIM_FRAME);
         u32 whole = (frame << 4) >> 16;
         if (whole == 7) {
-            func_020912d4(MISSING_NPC1_EFFECT_39, &point, &angle, 0);
+            EffectSystem_StartKind(MISSING_NPC1_EFFECT_39, &point, &angle, 0);
         }
         if (whole == 9) {
-            func_020912d4(MISSING_NPC1_EFFECT_38, &point, &angle, 0);
+            EffectSystem_StartKind(MISSING_NPC1_EFFECT_38, &point, &angle, 0);
         }
         if (SceneMotion_IsDone(missing_npc1_motion(self))) {
             missing_npc1_play(self, MISSING_NPC1_ANIMATION_123);
@@ -732,7 +717,7 @@ int MissingNpc1_UpdateFollow(MissingNpc1 *self)
             self->solid = 1;
         }
     }
-    Vec3 *target = func_02095794(MISSING_NPC1_PLAYER_ACTOR);
+    Vec3 *target = PlayerActorOps_StartPosition(MISSING_NPC1_PLAYER_ACTOR);
     if (target == NULL) {
         return 1;
     }
@@ -874,10 +859,10 @@ int MissingNpc1_UpdateAnim53(MissingNpc1 *self)
         missing_npc1_set_standard(self, MISSING_NPC1_STANDARD_54, MISSING_NPC1_STANDARD_54);
     }
     if (self->effect == MISSING_NPC1_NO_EFFECT) {
-        self->effect = func_020912d4(MISSING_NPC1_EFFECT_54, point, &self->angle, 0);
+        self->effect = EffectSystem_StartKind(MISSING_NPC1_EFFECT_54, point, &self->angle, 0);
     }
     if (self->effect != MISSING_NPC1_NO_EFFECT) {
-        func_02091278(self->effect, point, &self->angle, 0);
+        EffectSystem_MoveHandle(self->effect, point, &self->angle, 0);
     }
     return 1;
 }
@@ -937,7 +922,7 @@ void MissingNpc1_SetState(MissingNpc1 *self, int state)
         return;
     }
     if (state != MISSING_NPC1_ANIM_53 && self->effect != MISSING_NPC1_NO_EFFECT) {
-        func_0209129c(self->effect);
+        EffectSystem_EndHandle(self->effect);
         self->effect = MISSING_NPC1_NO_EFFECT;
     }
     self->state = state;
@@ -1173,8 +1158,6 @@ MissingNpc1 *MissingNpc1_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) (object + MISSING_NPC1_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) (object + MISSING_NPC1_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) (object + MISSING_NPC1_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
     SpeakerAnim_Destruct((SpeakerAnim *) (void *) (object + MISSING_NPC1_ANIM));
     SceneMover_Construct((SceneMover *) (void *) (object + MISSING_NPC1_MOVER));
     SceneProbe_Construct(object + MISSING_NPC1_PROBE);

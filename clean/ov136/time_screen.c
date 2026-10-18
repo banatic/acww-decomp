@@ -8,7 +8,6 @@
 #include "autoload_2/input.h"
 #include "autoload_2/process.h"
 #include "clean.h"
-#include "entry_picker.h"
 #include "main/cell_layer_sprite.h"
 #include "main/display_layers.h"
 #include "main/display_shadow.h"
@@ -18,6 +17,7 @@
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
+#include "ov134/clock_setter.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(TimeScreen, cursor_sprite) == 0x94, "cursor_sprite");
 static_assert(offsetof(TimeScreen, panel) == 0xf8 && offsetof(TimeScreen, picker) == 0x2c4, "panel");
@@ -86,7 +86,7 @@ static void time_update_sprite(Glider *sprite)
 static void time_destroy_members(TimeScreen *self)
 {
     self->base.vtable = data_ov136_0229d510;
-    func_ov134_0229beb0((char *) self->picker);
+    ClockSetter_Destroy(&self->picker);
     ButtonPanel_Destroy(&self->panel);
     Glider0_Destroy(&self->cursor_sprite);
     MenuScene_DestroyBase(time_scene(self));
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov136_0229c734, TimeScreen_HideCursorSprite)
 int TimeScreen_CursorY(TimeScreen *self)
 {
     if (TimeScreen_TestFlags(self, TIME_SCREEN_FLAG_IN_LIST) != 0) {
-        return func_ov134_022999ac(self->picker);
+        return ClockSetter_CursorY(&self->picker);
     }
     u8 place = self->place;
     if (place == TIME_SCREEN_PLACE_OK) {
@@ -240,7 +240,7 @@ CLEAN_AS(func_ov136_0229c750, TimeScreen_CursorY)
 int TimeScreen_CursorX(TimeScreen *self)
 {
     if (TimeScreen_TestFlags(self, TIME_SCREEN_FLAG_IN_LIST) != 0) {
-        return func_ov134_022999e0(self->picker);
+        return ClockSetter_CursorX(&self->picker);
     }
     u8 place = self->place;
     if (place == TIME_SCREEN_PLACE_OK) {
@@ -281,8 +281,8 @@ CLEAN_AS(func_ov136_0229c834, TimeScreen_ResumeList)
  * sprite following it (flagged), shown there, the key repeat reset (sub state 7). */
 void TimeScreen_ResumeListByKeys(TimeScreen *self)
 {
-    int y = func_ov134_022999ac(self->picker);
-    func_ov134_02299980(self->picker, y);
+    int y = ClockSetter_CursorY(&self->picker);
+    ClockSetter_CursorToY(&self->picker, y);
     TimeScreen_SetFlags(self, TIME_SCREEN_FLAG_IN_LIST);
     TimeScreen_ShowSpriteAtCursor(self);
     MenuScene_ResetKeyRepeat(time_scene(self));
@@ -304,7 +304,7 @@ void TimeScreen_CancelList(TimeScreen *self)
 {
     TimeScreen_HideCursorSprite(self);
     TimeScreen_ClearFlags(self, TIME_SCREEN_FLAG_IN_LIST);
-    func_ov134_0229a398(self->picker);
+    ClockSetter_CancelList(&self->picker);
     MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_LIST_CLOSE);
 }
 CLEAN_AS(func_ov136_0229c8a8, TimeScreen_CancelList)
@@ -315,7 +315,7 @@ void TimeScreen_PickInList(TimeScreen *self)
 {
     TimeScreen_HideCursorSprite(self);
     TimeScreen_ClearFlags(self, TIME_SCREEN_FLAG_IN_LIST);
-    func_ov134_0229a3e4(self->picker);
+    ClockSetter_PickRow(&self->picker);
     MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_LIST_CLOSE);
 }
 CLEAN_AS(func_ov136_0229c8d4, TimeScreen_PickInList)
@@ -325,7 +325,7 @@ CLEAN_AS(func_ov136_0229c8d4, TimeScreen_PickInList)
 void TimeScreen_OpenList(TimeScreen *self, int field)
 {
     TimeScreen_HideCursorSprite(self);
-    func_ov134_0229a5c8(self->picker, field);
+    ClockSetter_OpenList(&self->picker, field);
     MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_LIST_OPEN);
 }
 CLEAN_AS(func_ov136_0229c900, TimeScreen_OpenList)
@@ -340,7 +340,7 @@ void TimeScreen_Confirm(TimeScreen *self)
     ButtonPanel_Select(&self->panel, TIME_SCREEN_OK_BUTTON);
     MenuScene_SetState(time_scene(self), TIME_SCREEN_STATE_START_WIPE_OUT);
     MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_OK_PRESSED);
-    func_ov134_0229bbdc(self->picker, &when);
+    ClockSetter_CopyValue(&self->picker, &when);
     Global021cfc98_CopyIn(&when);
     GroupParams_SetC4C(1);
 }
@@ -380,11 +380,11 @@ CLEAN_AS(func_ov136_0229c9b0, TimeScreen_ResumeFieldsByTouch)
  * QUIRK: a field below 3 would wrap the place (u8); the picker of a time only has 3, 4 and 6. */
 void TimeScreen_WaitListClosed(TimeScreen *self)
 {
-    if (func_ov134_0229a24c(self->picker) == 0) {
+    if (ClockSetter_CloseListStep(&self->picker) == 0) {
         return;
     }
-    int field = func_ov134_0229a8a0(self->picker);
-    if (field == ENTRY_PICKER_NO_FIELD) {
+    int field = ClockSetter_Focus(&self->picker);
+    if (field == CLOCK_SETTER_NO_FIELD) {
         self->place = TIME_SCREEN_PLACE_OK;
     } else {
         self->place = (u8) (field - TIME_SCREEN_FIELD_OF_PLACE);
@@ -396,7 +396,7 @@ CLEAN_AS(func_ov136_0229c9c8, TimeScreen_WaitListClosed)
 /* func_ov136_0229ca08 (sub state 14): once the list has opened, on to it. */
 void TimeScreen_WaitListOpen(TimeScreen *self)
 {
-    if (func_ov134_0229a4e4(self->picker)) {
+    if (ClockSetter_OpenListStep(&self->picker)) {
         TimeScreen_ResumeList(self);
     }
 }
@@ -442,9 +442,9 @@ void TimeScreen_AfterPress(TimeScreen *self)
         return;
     }
     if (TimeScreen_TestFlags(self, TIME_SCREEN_FLAG_IN_LIST) != 0) {
-        if (func_ov134_02299b70(self->picker) != 0) {
+        if (ClockSetter_PressThumbByKey(&self->picker) != 0) {
             MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_BAR);
-        } else if (func_ov134_022997b0(self->picker) != 0) {
+        } else if (ClockSetter_PickCursorRow(&self->picker) != 0) {
             TimeScreen_PickInList(self);
         } else {
             MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_LIST);
@@ -485,7 +485,7 @@ CLEAN_AS(func_ov136_0229cb30, TimeScreen_WaitCursorSprite)
  * list by the keys again, after the release animation; the cursor sprite follows meanwhile. */
 void TimeScreen_ReturnFromBar(TimeScreen *self)
 {
-    if (func_ov134_02299a60(self->picker)) {
+    if (ClockSetter_SettleThumb(&self->picker)) {
         MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_LIST);
         TimeScreen_PlayReleaseAnim(self);
     }
@@ -500,12 +500,12 @@ CLEAN_AS(func_ov136_0229cb58, TimeScreen_ReturnFromBar)
 void TimeScreen_ListBarByKeys(TimeScreen *self)
 {
     if ((data_021fbe40.held & TIME_SCREEN_PAD_A) != 0) {
-        func_ov134_02299a90(self->picker);
+        ClockSetter_MoveThumbByKeys(&self->picker);
         int x = TimeScreen_CursorX(self);
         int y = TimeScreen_CursorY(self);
         Glider_PlaceAt(&self->cursor_sprite, x, y);
     } else {
-        func_ov134_02299a84(self->picker);
+        ClockSetter_ReleaseThumb(&self->picker);
         MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_BAR_RETURN);
     }
 }
@@ -522,18 +522,18 @@ void TimeScreen_ListByKeys(TimeScreen *self)
         return;
     }
     u32 keys = MenuScene_LatchRepeatedKeys(time_scene(self));
-    switch (func_ov134_022997dc(self->picker, (void *) (uintptr_t) keys)) {
-        case ENTRY_PICKER_KEYS_STEPPED:
+    switch (ClockSetter_ListKeys(&self->picker, keys)) {
+        case CLOCK_SETTER_KEYS_STEPPED:
             TimeScreen_SetFlags(self, TIME_SCREEN_FLAG_QUICK);
             TimeScreen_GlideToCursor(self);
             break;
-        case ENTRY_PICKER_KEYS_SCROLLED: {
+        case CLOCK_SETTER_KEYS_FAST: {
             int x = TimeScreen_CursorX(self);
             int y = TimeScreen_CursorY(self);
             Glider_PlaceAt(&self->cursor_sprite, x, y);
             break;
         }
-        case ENTRY_PICKER_KEYS_NONE: {
+        case CLOCK_SETTER_KEYS_NONE: {
             u16 pressed = data_021fbe40.pressed;
             if ((pressed & TIME_SCREEN_PAD_A) != 0) {
                 TimeScreen_PressSprite(self);
@@ -571,34 +571,36 @@ void TimeScreen_FieldsByKeys(TimeScreen *self)
 }
 CLEAN_AS(func_ov136_0229cc90, TimeScreen_FieldsByKeys)
 
-/* func_ov136_0229ccf4 (sub state 5): while the pen is down the list follows it along its column;
- * once it is up, the list let go and back to it by touch (sub state 3). */
-void TimeScreen_DragListColumn(TimeScreen *self)
+/* func_ov136_0229ccf4 (sub state 5): while the pen is down on the scroll bar off its thumb, the
+ * thumb moves toward it (ClockSetter_ThumbTowardPen); once it is up, the thumb let go and back to
+ * the list by touch (sub state 3). */
+void TimeScreen_ThumbTowardPen(TimeScreen *self)
 {
     if (data_021fbdd8 != 0) {
-        func_ov134_02299af0(self->picker, data_021f6c54);
+        ClockSetter_ThumbTowardPen(&self->picker, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->picker);
+        ClockSetter_ReleaseThumb(&self->picker);
         MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_TOUCH_LIST);
     }
 }
-CLEAN_AS(func_ov136_0229ccf4, TimeScreen_DragListColumn)
+CLEAN_AS(func_ov136_0229ccf4, TimeScreen_ThumbTowardPen)
 
-/* func_ov136_0229cd30 (sub state 4): ... by its scroll bar. */
-void TimeScreen_DragListBar(TimeScreen *self)
+/* func_ov136_0229cd30 (sub state 4): ... with the thumb held at the pen (ClockSetter_DragThumb). */
+void TimeScreen_DragThumb(TimeScreen *self)
 {
     if (data_021fbdd8 != 0) {
-        func_ov134_02299b18(self->picker, data_021f6c54);
+        ClockSetter_DragThumb(&self->picker, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->picker);
+        ClockSetter_ReleaseThumb(&self->picker);
         MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_TOUCH_LIST);
     }
 }
-CLEAN_AS(func_ov136_0229cd30, TimeScreen_DragListBar)
+CLEAN_AS(func_ov136_0229cd30, TimeScreen_DragThumb)
 
 /* func_ov136_0229cd6c (sub state 3): the list by touch. A button goes on by the keys. A touch
  * that went down or up this frame: on a value it is taken (the list closes), outside the list
- * closes without one, on the scroll bar or the column the list is dragged (sub state 4 or 5). */
+ * closes without one, on the scroll bar's thumb it is held (sub state 4), on the bar off the
+ * thumb the thumb moves toward the pen (sub state 5). */
 void TimeScreen_ListByTouch(TimeScreen *self)
 {
     if (MenuScene_TakeButtons(time_scene(self), 1) != 0) {
@@ -608,18 +610,18 @@ void TimeScreen_ListByTouch(TimeScreen *self)
     if (data_021fbdd8 == 0 || data_021fbddc == 0) {
         return;
     }
-    switch (func_ov134_0229a1f0(self->picker, data_021f6c58, data_021f6c54)) {
-        case ENTRY_PICKER_TOUCH_VALUE:
+    switch (ClockSetter_TouchList(&self->picker, data_021f6c58, data_021f6c54)) {
+        case CLOCK_SETTER_TOUCH_PICKED:
             TimeScreen_PickInList(self);
             break;
-        case ENTRY_PICKER_TOUCH_OUTSIDE:
+        case CLOCK_SETTER_TOUCH_OUTSIDE:
             TimeScreen_CancelList(self);
             break;
-        case ENTRY_PICKER_TOUCH_BAR:
-            MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_DRAG_BAR);
+        case CLOCK_SETTER_TOUCH_THUMB:
+            MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_DRAG_THUMB);
             break;
-        case ENTRY_PICKER_TOUCH_COLUMN:
-            MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_DRAG_COLUMN);
+        case CLOCK_SETTER_TOUCH_BAR:
+            MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_THUMB_TO_PEN);
             break;
         default:
             break;
@@ -631,7 +633,7 @@ CLEAN_AS(func_ov136_0229cd6c, TimeScreen_ListByTouch)
  * fields by touch. */
 void TimeScreen_SettleHands(TimeScreen *self)
 {
-    if (func_ov134_0229b014(self->picker)) {
+    if (ClockSetter_SpinHandsHome(&self->picker)) {
         MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_TOUCH_FIELDS);
     }
 }
@@ -642,13 +644,13 @@ CLEAN_AS(func_ov136_0229ce04, TimeScreen_SettleHands)
 void TimeScreen_DragHands(TimeScreen *self)
 {
     if (data_021fbdd8 == 0) {
-        if (func_ov134_0229b034(self->picker) != 0) {
+        if (ClockSetter_ReleaseHand(&self->picker) != 0) {
             MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_SETTLE_HANDS);
         } else {
             MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_TOUCH_FIELDS);
         }
     } else {
-        func_ov134_0229b108(self->picker, data_021f6c58, data_021f6c54);
+        ClockSetter_DragHand(&self->picker, data_021f6c58, data_021f6c54);
     }
 }
 CLEAN_AS(func_ov136_0229ce28, TimeScreen_DragHands)
@@ -672,11 +674,11 @@ void TimeScreen_FieldsByTouch(TimeScreen *self)
     }
     int x = data_021f6c58;
     int y = data_021f6c54;
-    if (func_ov134_0229b168(self->picker, x, y) != 0) {
+    if (ClockSetter_GrabHand(&self->picker, x, y) != 0) {
         MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_DRAG_HANDS);
     }
-    int field = func_ov134_0229aad8(self->picker, x, y);
-    if (field != ENTRY_PICKER_NO_FIELD) {
+    int field = ClockSetter_TouchedTimeField(&self->picker, x, y);
+    if (field != CLOCK_SETTER_NO_FIELD) {
         TimeScreen_OpenList(self, field);
     }
 }
@@ -685,7 +687,7 @@ CLEAN_AS(func_ov136_0229ce7c, TimeScreen_FieldsByTouch)
 /* func_ov136_0229cf14: the picker's characters and the panel's text colours loaded. */
 void TimeScreen_LoadGraphics(TimeScreen *self)
 {
-    func_ov134_0229b954(self->picker);
+    ClockSetter_LoadSprites(&self->picker);
     ButtonPanel_LoadTextColors(&self->panel);
 }
 CLEAN_AS(func_ov136_0229cf14, TimeScreen_LoadGraphics)
@@ -693,8 +695,8 @@ CLEAN_AS(func_ov136_0229cf14, TimeScreen_LoadGraphics)
 /* func_ov136_0229cf34: the picker's texts loaded, with its prompt (message 0x8b). */
 void TimeScreen_LoadTexts(TimeScreen *self)
 {
-    func_ov134_0229baec(self->picker);
-    func_ov134_0229ba10(self->picker, TIME_SCREEN_PROMPT);
+    ClockSetter_LoadBackground(&self->picker);
+    ClockSetter_DrawLabels(&self->picker, TIME_SCREEN_PROMPT);
 }
 CLEAN_AS(func_ov136_0229cf34, TimeScreen_LoadTexts)
 
@@ -715,7 +717,7 @@ CLEAN_AS(func_ov136_0229cf54, TimeScreen_SetUpLayers)
 /* func_ov136_0229cfa0: the frame's end: the picker's. */
 void TimeScreen_EndFrame(TimeScreen *self)
 {
-    func_ov134_0229bbe8(self->picker);
+    ClockSetter_Update(&self->picker);
 }
 CLEAN_AS(func_ov136_0229cfa0, TimeScreen_EndFrame)
 
@@ -723,7 +725,7 @@ CLEAN_AS(func_ov136_0229cfa0, TimeScreen_EndFrame)
 void TimeScreen_BeginFrame(TimeScreen *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
-    func_ov134_0229bcac(self->picker);
+    ClockSetter_EndFrame(&self->picker);
 }
 CLEAN_AS(func_ov136_0229cfb0, TimeScreen_BeginFrame)
 
@@ -745,7 +747,7 @@ CLEAN_AS(func_ov136_0229cfd4, TimeScreen_BeginInteractiveFrame)
 /* func_ov136_0229cfec: the members torn down: the picker's, then the panel's texts closed. */
 void TimeScreen_Teardown(TimeScreen *self)
 {
-    func_ov134_0229bcf0(self->picker);
+    ClockSetter_Teardown(&self->picker);
     ButtonPanel_CloseTexts(&self->panel);
 }
 CLEAN_AS(func_ov136_0229cfec, TimeScreen_Teardown)
@@ -754,7 +756,7 @@ CLEAN_AS(func_ov136_0229cfec, TimeScreen_Teardown)
  * the hour, no flags. */
 void TimeScreen_Setup(TimeScreen *self)
 {
-    func_ov134_0229bd38(self->picker, ENTRY_PICKER_KIND_TIME, 6, 4, 3);
+    ClockSetter_Init(&self->picker, CLOCK_SETTER_MODE_TIME, 6, 4, 3);
     self->place = TIME_SCREEN_PLACE_HOUR;
     self->flags = 0;
 }
@@ -903,7 +905,7 @@ int TimeScreen_Draw(TimeScreen *self)
     if (TimeScreen_TestFlags(self, TIME_SCREEN_FLAG_DRAWN) == 0) {
         return 0;
     }
-    func_ov134_0229b220(self->picker, 0, MenuScene_WipeOffsetY(time_scene(self)));
+    ClockSetter_Draw(&self->picker, 0, MenuScene_WipeOffsetY(time_scene(self)));
     ButtonPanel_Draw(&self->panel, MenuScene_WipeOffsetY(time_scene(self)));
     return 1;
 }
@@ -943,7 +945,7 @@ TimeScreen *TimeScreen_New(void)
     self->base.vtable = data_ov136_0229d510;
     Glider0_Construct(&self->cursor_sprite);
     ButtonPanel_Construct(&self->panel);
-    func_ov134_0229bed4(self->picker);
+    ClockSetter_Construct(&self->picker);
     return self;
 }
 CLEAN_AS(func_ov136_0229d3d4, TimeScreen_New)

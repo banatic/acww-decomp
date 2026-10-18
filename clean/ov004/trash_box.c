@@ -432,7 +432,7 @@ void TrashBox_UpdateLid(TrashBox *self)
 CLEAN_AS(_ZN18Obj_ov004_022553d819func_ov004_0222f908Ev, TrashBox_UpdateLid)
 
 /* func_ov004_0222f994 (vtable slot 0x60): enters lid state `lid` when its entry (through a
- * table) agrees and the shared value takes it (func_ov004_0222c558); whether it did. */
+ * table) agrees and the shared value takes it (RmoObjectSlots_SetSharedValue); whether it did. */
 int TrashBox_SetLid(TrashBox *self, u32 lid)
 {
     static const MemberPointer *const entries[TRASH_BOX_LID_COUNT] = {

@@ -8,6 +8,8 @@
 #include "item_code.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "item_form.h"
+#include "item_traits.h"
 
 static_assert(offsetof(ItemRecord, wallpaper) == 0x100, "the wallpaper");
 static_assert(offsetof(ItemRecord, carpets) == 0x109, "the carpets");
@@ -21,12 +23,6 @@ static_assert(sizeof(ItemRecord) == 0x123, "the record of items");
 #define CARPET_LAST 0x1187
 #define SONG_FIRST 0x1323
 #define SONG_LAST 0x1368
-
-/* `*code` as the code its item has in a room (whatever the scene is when `always` is set). */
-extern void func_02061b1c(ItemCode *out, const ItemCode *code, int always);
-/* Whether the item is listed: a flag of its entry in the table of its kind (the items in piles
- * or the items with variants; 0 for any other code). */
-extern int func_0204c2b4(const ItemCode *item);
 
 static int in_range(int code, int first, int last)
 {
@@ -107,9 +103,9 @@ int ItemRecord_CountHad(int first, int count)
         for (u32 i = 0; i < (u32) count; i++) {
             ItemCode code = (ItemCode) (first + i);
             ItemCode room_code;
-            func_02061b1c(&room_code, &code, 1);
+            ItemForm_ToPlaced(&room_code, &code, 1);
             code = room_code;
-            if (func_0204c2b4(&code) && ItemRecord_Has((ItemRecord *) PlayerRecord_ItemRecord(player), &code)) {
+            if (ItemTraits_FlagBit3(&code) && ItemRecord_Has((ItemRecord *) PlayerRecord_ItemRecord(player), &code)) {
                 had++;
             }
         }
@@ -118,7 +114,7 @@ int ItemRecord_CountHad(int first, int count)
         int item = ItemCode_VariantItem(&start);
         for (u32 i = 0; i < (u32) count; i++) {
             ItemCode code = ItemCode_MakeVariant(item + (int) i, 0);
-            if (func_0204c2b4(&code) && ItemRecord_Has((ItemRecord *) PlayerRecord_ItemRecord(player), &code)) {
+            if (ItemTraits_FlagBit3(&code) && ItemRecord_Has((ItemRecord *) PlayerRecord_ItemRecord(player), &code)) {
                 had++;
             }
         }
@@ -183,7 +179,7 @@ u8 *ItemRecord_BitOf(ItemRecord *record, u8 *mask, const ItemCode *item)
     u8 *part;
     int index;
 
-    func_02061b1c(&code, item, 1);
+    ItemForm_ToPlaced(&code, (u16 *) item, 1);
     if (ItemCode_HasVariant(&code)) {
         part = record->variant_items;
         index = ItemCode_VariantItem(&code);

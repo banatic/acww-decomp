@@ -3,20 +3,15 @@
 
 #include "clean.h"
 #include "session.h"
+#include "item_object.h"
+#include "scene_query.h"
+#include "villager_mode_record.h"
 
 extern VillagerStates data_021d13e4;
 extern u8 data_020e54a8;          /* 0 or 1, a mode many scenes test */
 extern NetSession *data_020ccf94; /* the game's session */
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern void func_0209bd5c(void *object); /* no item (0xfff1), 0x16 at 0x0a, byte 0x0b cleared */
-extern void func_0209c52c(void *bytes);  /* eight bytes cleared */
-extern void func_0209bd80(void *object); /* both words cleared, no item (0xfff1), 0x16 at 0x0a */
-extern void *func_0209c53c(void *bytes); /* func_0209c52c, then the bytes */
-extern void func_0209bd7c(void *object); /* the object's destructor: does nothing */
-extern void func_0209c538(void *bytes);  /* the bytes' destructor: does nothing */
-/* Whether func_020b6694 accepts the current scene (func_020b65c4). */
-extern int func_020b6680(void);
 
 static_assert(sizeof(VillagerTally) == 4, "tally size");
 static_assert(offsetof(VillagerState, object) == 0x04, "object");
@@ -345,7 +340,7 @@ CLEAN_AS(func_02079468, VillagerState_DoubleByte1E)
 /* func_02079478: flag 1 set unless the current scene passes func_020b6694. */
 void VillagerState_SetFlag1UnlessScene(VillagerState *entry)
 {
-    if (func_020b6680() == 0) {
+    if (SceneQuery_CurrentIn11() == 0) {
         entry->flags |= VILLAGER_STATE_FLAG_1;
     }
 }
@@ -471,8 +466,8 @@ void VillagerState_Init(VillagerState *entry)
     MI_CpuFill8(entry, 0, sizeof *entry);
     entry->state = 0;
     entry->byte_01 = 3;
-    func_0209bd5c(entry->object);
-    func_0209c52c(entry->bytes_10);
+    ItemObject_Clear((ItemObject *) (void *) entry->object);
+    VillagerModeRecord_ClearKindBytes(entry->bytes_10);
     entry->byte_18 = 5;
     entry->byte_1c = 12;
     entry->word_20 = 0;
@@ -486,8 +481,8 @@ CLEAN_AS(func_0207956c, VillagerState_Init)
 VillagerState *VillagerState_Destruct(VillagerState *entry)
 {
     VillagerTally_Destruct(&entry->tally);
-    func_0209c538(entry->bytes_10);
-    func_0209bd7c(entry->object);
+    VillagerModeRecord_DestructKindBytes(entry->bytes_10);
+    ItemObject_Destruct((ItemObject *) (void *) entry->object);
     return entry;
 }
 CLEAN_AS(func_020795a8, VillagerState_Destruct)
@@ -496,8 +491,8 @@ CLEAN_AS(func_020795a8, VillagerState_Destruct)
  * is none and the tally is built. The other fields are left as they are. */
 VillagerState *VillagerState_Construct(VillagerState *entry)
 {
-    func_0209bd80(entry->object);
-    func_0209c53c(entry->bytes_10);
+    ItemObject_Construct((ItemObject *) (void *) entry->object);
+    VillagerModeRecord_ConstructKindBytes(entry->bytes_10);
     entry->item = 0xfff1;
     VillagerTally_Construct(&entry->tally);
     return entry;

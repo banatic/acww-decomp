@@ -20,6 +20,12 @@
 #include "villager_roster.h"
 #include "villager_state.h"
 #include "villager_status.h"
+#include "creature_draw.h"
+#include "insect_draw.h"
+#include "player_id.h"
+#include "villager_scene_held.h"
+#include "villager_talk_greeting.h"
+#include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h), or 0, and its position (three
  * words: x, y, z). */
@@ -150,29 +156,10 @@ extern u8 data_020e54a8;              /* 0 or 1 */
 extern AcreMap *data_021c80bc;        /* the town's map; null while there is none */
 extern const NpcIdHead data_021dc7aa; /* the head at 2 of the state block data_021dc7a8 */
 
-/* A line drawn for the personality (villager_talk.h). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The item of the villager's state entry, 0xfff1 when there is none (or no record, or the
- * villager has no entry). */
-extern void func_0202e118(u16 *item, u8 *villager);
-/* Something put into the talk's slot `slot`: of func_0209c54c of `what`, or of the villager. */
-extern int func_0202bd7c(VillagerTalk *talk, int slot, int what);
-extern void func_0202bd40(VillagerTalk *talk, int slot, u8 *villager);
-/* Players: whether two are the same, and the town head of one. */
-extern int func_0209518c(const DesignCreator *a, const DesignCreator *b);
-extern const NpcIdHead *func_02095040(const DesignCreator *player);
 /* A fish or an insect for the date drawn into the halfword at `item` (0xfff1 or out of range
  * when none was found). */
 extern void func_0202cac4(u16 *item);
 extern void func_0202cfa8(u16 *item);
-/* A catch for the date worked out: which of five weighted choices, two values; 1 when there
- * is one. */
-extern int func_0202cb70(u16 *item, s32 *choice, s32 *kind, s32 *value, void *lists);
-extern int func_0202d060(u16 *item, s32 *choice, s32 *kind, s32 *value, DateTime *when);
-/* The group of a catch kind of VillagerTalkSubjects_SayCatchB: 0 for 12, 1 for 1, 2 and 4, else
- * 2. */
-extern int func_0202c9c0(int kind);
 
 static u8 *subjects_record(const VillagerTalk *talk)
 {
@@ -188,8 +175,9 @@ static SceneBase *subjects_base(VillagerTalk *talk)
  * message. */
 static void subjects_draw(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
-                  NpcId_Personality(TownVillager_NpcId(subjects_record(talk))), (int) texts, per_group, group, range);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
+                               NpcId_Personality(TownVillager_NpcId(subjects_record(talk))), (int) texts, per_group, group,
+                               range);
 }
 
 /* A line of a text set, its count the lines per group. */
@@ -209,7 +197,7 @@ static int subjects_mode(u8 *record)
 static u16 subjects_held(VillagerTalk *talk)
 {
     u16 item;
-    func_0202e118(&item, talk->villager);
+    VillagerSceneHeld_Item(&item, talk->villager);
     return item;
 }
 
@@ -271,7 +259,7 @@ int VillagerTalkSubjects_SayLast(VillagerTalk *talk)
 {
     subjects_draw(talk, data_020c8cc0.texts, data_020c8cc0.count, 0, 0);
     for (int slot = 0; slot < VILLAGER_TALK_SUBJECTS_SLOTS; slot++) {
-        func_0202bd7c(talk, slot, data_020c8960[slot]);
+        VillagerTalkGreeting_PutRandomWord(talk, slot, data_020c8960[slot]);
     }
     return 1;
 }
@@ -302,15 +290,16 @@ int VillagerTalkSubjects_SayDesignClothes(VillagerTalk *talk)
              * says they are not the same player. */
             if (player->town_id == creator->town_id &&
                 memcmp(player->town_name, creator->town_name, sizeof player->town_name) == 0 &&
-                func_0209518c(player, creator) != 0) {
+                PlayerId_SamePlayer(player, creator) != 0) {
                 group = 1;
-            } else if (func_0209518c(player, creator) == 0) {
-                group = subjects_same_head(func_02095040(creator), &data_021dc7aa) ? 2 : 3;
+            } else if (PlayerId_SamePlayer(player, creator) == 0) {
+                group = subjects_same_head((const NpcIdHead *) PlayerId_Town(creator), &data_021dc7aa) ? 2 : 3;
             }
             if (group != -1) {
                 SceneBase_PutNameAt10(subjects_base(talk), DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design)),
                                       0);
-                const NpcIdHead *town = func_02095040(DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design)));
+                const NpcIdHead *town =
+                    (const NpcIdHead *) (PlayerId_Town(DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design))));
                 SceneBase_PutNameAt2(subjects_base(talk), (unsigned int) (uintptr_t) town, 1);
             }
         } else {
@@ -422,7 +411,7 @@ int VillagerTalkSubjects_SayHoldingNamed(VillagerTalk *talk)
         return 0;
     }
     VillagerTalkSubjects_SayForMode(talk, 3, &data_020c8d28);
-    func_0202bd40(talk, 5, subjects_record(talk));
+    VillagerTalkGreeting_PutByte29(talk, 5, subjects_record(talk));
     return 1;
 }
 CLEAN_AS(func_02022938, VillagerTalkSubjects_SayHoldingNamed)
@@ -569,7 +558,8 @@ int VillagerTalkSubjects_SayCatchA(VillagerTalk *talk)
     if (lists == NULL) {
         return 0;
     }
-    if (func_0202cb70(&catch_.item, &catch_.choice, &catch_.kind, &catch_.value, lists) != 1) {
+    if (CreatureDraw_FishByWeights(&catch_.item, (int *) &catch_.choice, (int *) &catch_.kind, (int *) &catch_.value, lists) !=
+        1) {
         return 0;
     }
     int group = (catch_.choice >= 3 ? 1 : 0) * VILLAGER_TALK_SUBJECTS_CATCH_HALF +
@@ -649,10 +639,11 @@ int VillagerTalkSubjects_SayCatchB(VillagerTalk *talk)
     catch_.choice = VILLAGER_TALK_SUBJECTS_CHOICES;
     catch_.item = VILLAGER_TALK_SUBJECTS_NO_ITEM;
     DateTime_Now(&catch_.when);
-    if (func_0202d060(&catch_.item, &catch_.choice, &catch_.kind, &catch_.value, &catch_.when) != 1) {
+    if (InsectDraw_ByWeights(&catch_.item, (int *) &catch_.choice, (int *) &catch_.kind, (int *) &catch_.value,
+                             &catch_.when) != 1) {
         return 0;
     }
-    int group = (catch_.choice >= 3 ? 1 : 0) * VILLAGER_TALK_SUBJECTS_CATCH_HALF + func_0202c9c0(catch_.kind);
+    int group = (catch_.choice >= 3 ? 1 : 0) * VILLAGER_TALK_SUBJECTS_CATCH_HALF + CreatureDraw_PlaceGroup(catch_.kind);
     SceneBase_PutItemName(subjects_base(talk), (int) (uintptr_t) &catch_.item, 0, 7);
     if (catch_.value >= 3) {
         catch_.value--;

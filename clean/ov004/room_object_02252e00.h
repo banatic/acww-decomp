@@ -4,7 +4,7 @@
  *
  * - STILL (0): the animations of variant 0 at their end, entered with the sound at 4 (not for
  *   furniture 0x207); while the switch has a change pending it requests PLAYING for the object
- *   at its cell (func_0205265c);
+ *   at its cell (RoomSync_RequestState);
  * - PLAYING (1): the animations of variant 0 once from the start, entered with the sound at 2;
  *   each frame the switch is turned over, and STILL requested once the animations end, the
  *   sound at 0 played until then. Furniture 0xb9 and 0xba touched again start over; furniture

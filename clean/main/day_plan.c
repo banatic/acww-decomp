@@ -5,6 +5,7 @@
 #include "calendar.h"
 #include "clean.h"
 #include "nook_store.h"
+#include "main_random.h"
 
 #define DAY_PLAN_SUNDAY 0
 #define DAY_PLAN_SATURDAY 6
@@ -12,8 +13,6 @@
 #define DAY_PLAN_NIGHT_STORE_LEVEL 3
 
 extern NookStore data_021f395c; /* the town's Nook's store */
-
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 
 static int day_plan_get(const u8 *plan, u8 mask, int shift)
 {
@@ -65,11 +64,11 @@ CLEAN_AS(func_02086ed4, DayPlan_Morning)
  * The night bit is set on Saturday and Sunday. An afternoon equal to the noon becomes 0. */
 void DayPlan_Draw(u8 *plan)
 {
-    day_plan_set(plan, DAY_PLAN_MORNING_MASK, DAY_PLAN_MORNING_SHIFT, func_020644cc(2));
+    day_plan_set(plan, DAY_PLAN_MORNING_MASK, DAY_PLAN_MORNING_SHIFT, MainRandom_Below(2));
     day_plan_set(plan, DAY_PLAN_NIGHT_MASK, DAY_PLAN_NIGHT_SHIFT, 1);
-    int x = (int) func_020644cc(100);
-    int y = (int) func_020644cc(100);
-    int z = (int) func_020644cc(100);
+    int x = (int) MainRandom_Below(100);
+    int y = (int) MainRandom_Below(100);
+    int z = (int) MainRandom_Below(100);
     u32 noon;
     u32 afternoon;
     switch (Calendar_TodayWeekday()) {

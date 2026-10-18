@@ -4,6 +4,8 @@
 #include "actor.h"
 #include "clean.h"
 #include "sky.h"
+#include "main_random.h"
+#include "session_players.h"
 
 static_assert(sizeof(SkyFallingVars) == 0x14, "the words at 0x60");
 
@@ -30,8 +32,6 @@ extern const fx32 data_020d22e4[3]; /* a drop's */
 extern const fx16 FX_SinCosTable_[4096 * 2];
 
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern Actor *func_020961a8(int player);
 
 static SkyFallingVars *sky_falling_vars(SkyObject *object)
 {
@@ -70,7 +70,7 @@ void SkySnow_Run(SkyObject *object)
     SkyFallingVars *vars = sky_falling_vars(object);
     Vec3 *position = &body->position;
     VEC_Add(position, &body->velocity, position);
-    const Actor *player = func_020961a8(SKY_FALLING_PLAYER);
+    const Actor *player = SessionPlayers_ActorOf(SKY_FALLING_PLAYER);
     if (player != NULL) {
         vars->base_x = sky_falling_shift(player, data_020d2308[vars->layer]) + vars->base_x;
     }
@@ -95,8 +95,8 @@ void SkySnow_SetUp(SkyObject *object, int start)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     SkyFallingVars *vars = sky_falling_vars(object);
-    int layer = (int) func_020644cc(3);
-    fx32 x = (fx32) ((u32) ((int) func_020644cc(0x80) * data_020e5974 + 0x80) << 12);
+    int layer = (int) MainRandom_Below(3);
+    fx32 x = (fx32) ((u32) ((int) MainRandom_Below(0x80) * data_020e5974 + 0x80) << 12);
     data_020e5974 = -data_020e5974;
     body->position.x = x;
     body->position.y = SKY_FALLING_START_Y;
@@ -104,15 +104,15 @@ void SkySnow_SetUp(SkyObject *object, int start)
     body->velocity.x = 0;
     body->velocity.y = data_020d22fc[layer];
     body->velocity.z = 0;
-    vars->speed = (s32) func_020644cc(0x300) + 0x180;
-    vars->phase = (s32) func_020644cc(0x10000);
+    vars->speed = (s32) MainRandom_Below(0x300) + 0x180;
+    vars->phase = (s32) MainRandom_Below(0x10000);
     vars->layer = layer;
     vars->base_x = x;
-    vars->sway = (fx32) func_020644cc(2) + 0x5000;
+    vars->sway = (fx32) MainRandom_Below(2) + 0x5000;
     body->animation = data_020d22f0[layer];
     body->priority = SKY_FALLING_PRIORITY;
     if (start == 1) {
-        body->position.y += (fx32) (func_020644cc(0x1c1) << 12);
+        body->position.y += (fx32) (MainRandom_Below(0x1c1) << 12);
     }
 }
 CLEAN_AS(func_020c1278, SkySnow_SetUp)
@@ -132,7 +132,7 @@ void SkyRain_Run(SkyObject *object)
     SkyFallingVars *vars = sky_falling_vars(object);
     fx32 *x = &body->position.x;
     VEC_Add(&body->position, &body->velocity, &body->position);
-    const Actor *player = func_020961a8(SKY_FALLING_PLAYER);
+    const Actor *player = SessionPlayers_ActorOf(SKY_FALLING_PLAYER);
     if (player != NULL) {
         *x += sky_falling_shift(player, data_020d22e4[vars->layer]);
     }
@@ -154,15 +154,15 @@ void SkyRain_SetUp(SkyObject *object, int start)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     SkyFallingVars *vars = sky_falling_vars(object);
-    int r = (int) func_020644cc(0x8a);
+    int r = (int) MainRandom_Below(0x8a);
     fx32 x = (fx32) ((u32) (data_020e5978 * r + 0x80) << 12);
     data_020e5978 = -data_020e5978;
-    fx32 y = SKY_FALLING_START_Y - (fx32) (func_020644cc(0x10) << 12);
+    fx32 y = SKY_FALLING_START_Y - (fx32) (MainRandom_Below(0x10) << 12);
     body->position.x = x;
     body->position.y = y;
     body->position.z = 0;
     s32 wind = data_021f8b48.unk_2f54;
-    int spread = (int) func_020644cc(0xaac) - 0x556;
+    int spread = (int) MainRandom_Below(0xaac) - 0x556;
     int turn = (spread + (s16) data_021f75b0.unk_1538) * wind;
     u16 angle = (u16) ((u32) turn >> 12);
     int index = (angle >> 4) * 2;
@@ -171,23 +171,23 @@ void SkyRain_SetUp(SkyObject *object, int start)
     body->velocity.z = 0;
     body->scale_y = 0x800;
     body->rotation = angle;
-    int look = (int) func_020644cc(SKY_RAIN_LOOKS);
+    int look = (int) MainRandom_Below(SKY_RAIN_LOOKS);
     body->animation = look + SKY_RAIN_FIRST_ANIMATION;
     int line;
     switch (look) {
         case 0:
-            line = (int) func_020644cc(0x40) + 0x80;
+            line = (int) MainRandom_Below(0x40) + 0x80;
             break;
         case 1:
-            line = (int) func_020644cc(0x40) + 0x40;
+            line = (int) MainRandom_Below(0x40) + 0x40;
             break;
         default:
-            line = (int) func_020644cc(0x40);
+            line = (int) MainRandom_Below(0x40);
             break;
     }
     vars->speed = line;
     if (start == 1) {
-        body->position.y += (fx32) (func_020644cc(line + 0x101) << 12);
+        body->position.y += (fx32) (MainRandom_Below(line + 0x101) << 12);
     }
     body->priority = SKY_FALLING_PRIORITY;
 }

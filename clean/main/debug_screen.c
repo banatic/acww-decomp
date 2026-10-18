@@ -7,6 +7,10 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "autoload_2/heap.h"
+#include "autoload_2/process.h"
+#include "debug_text.h"
+#include "display_frame.h"
 
 static_assert(offsetof(ExceptionContext, spsr) == 0x64, "ExceptionContext layout");
 
@@ -108,16 +112,8 @@ extern void GXS_LoadBGPltt(const void *src, u32 offset, u32 size);
 extern void *G2_GetBG1ScrPtr(void);
 extern void *G2S_GetBG1ScrPtr(void);
 extern void GX_DispOn(void);
-extern void func_02053f20(void);                                  /* resets the 2D graphics registers */
 extern void func_02112d48(const void *src, u32 offset, u32 size); /* main background 1's characters */
 extern void func_02112ce0(const void *src, u32 offset, u32 size); /* sub background 1's characters */
-/* Print on a screen's map; of `style` only the second half is read, the tile attribute
- * (palette) given to the characters. */
-extern void func_020b97b4(u16 *style, short *dest, const char *format, ...);
-extern void func_020b97d4(u16 *style, short *dest, const char *text);
-extern unsigned int func_020eea3c(unsigned int loop); /* the loop's name */
-extern void func_020e9e78(struct Heap *heap);         /* reports a heap, under its lock */
-extern void func_0204f8b8(void);                      /* does nothing */
 
 extern u8 data_0213fdc4;                /* DebugScreenState */
 extern u32 data_0213fdc8;               /* the buttons held on the last frame */
@@ -234,15 +230,15 @@ void DebugScreen_Frame(void)
             if (held & PAD_SELECT) {
                 if ((pressed & PAD_A) && OS_GetProcMode() == OS_PROCMODE_SYS) {
                     if (held & PAD_LEFT) {
-                        func_020e9e78(data_021fbe8c);
+                        Heap_Report(data_021fbe8c);
                     } else if (held & PAD_RIGHT) {
-                        func_020e9e78(sSubOBJExtPltt);
+                        Heap_Report(sSubOBJExtPltt);
                     } else if (held & PAD_UP) {
-                        func_020e9e78(data_021fbe94);
+                        Heap_Report(data_021fbe94);
                     }
                 }
                 if (pressed & PAD_B) {
-                    func_0204f8b8();
+                    DebugScreen_Nothing();
                 }
             }
             break;
@@ -269,7 +265,7 @@ CLEAN_AS(func_0200149c, DebugScreen_WaitVBlank)
  * HW: the register writes in this order. */
 void DebugScreen_InitDisplay(void)
 {
-    func_02053f20();
+    DisplayFrame_Reset2D();
     REG_POWCNT1 |= 1;
     REG_BLDCNT = 0;
     REG_DB_BLDCNT = 0;
@@ -327,12 +323,12 @@ void DebugScreen_DrawStatus(void)
     int status;
     unsigned int i;
 
-    func_020b97b4(style, at(screen, 1, 0), data_020d3420, data_0213fdd4);
-    func_020b97d4(style, at(screen, 0, 0), data_021c5914);
+    DebugText_Printf(style, at(screen, 1, 0), data_020d3420, data_0213fdd4);
+    DebugText_Print(style, at(screen, 0, 0), data_021c5914);
 
     loop = data_0213e7fc;
     if (loop != 0 && loop < 6) {
-        func_020b97b4(style, at(screen, 6, 0), data_020d3428, loop, func_020eea3c(loop));
+        DebugText_Printf(style, at(screen, 6, 0), data_020d3428, loop, Process_PhaseName(loop));
     }
 
     profile = 0xffff;
@@ -344,34 +340,34 @@ void DebugScreen_DrawStatus(void)
         profile = data_021fcfdc;
     }
     if (profile != 0xffff) {
-        func_020b97b4(style, at(screen, 7, 0), data_020d3438, profile, data_021fcfd4);
+        DebugText_Printf(style, at(screen, 7, 0), data_020d3438, profile, data_021fcfd4);
     }
 
     context = data_0213fde0;
     if (context != NULL) {
         for (i = 0; i < 18; i++) {
-            func_020b97b4(style, at(screen, i + 2, 20), data_020d3450, &data_020c7538[i * 3], context->regs[i]);
+            DebugText_Printf(style, at(screen, i + 2, 20), data_020d3450, &data_020c7538[i * 3], context->regs[i]);
         }
-        func_020b97b4(style, at(screen, 20, 20), data_020d345c, context->spsr);
-        func_020b97b4(style, at(screen, 21, 20), data_020d3468, context->cp15);
+        DebugText_Printf(style, at(screen, 20, 20), data_020d345c, context->spsr);
+        DebugText_Printf(style, at(screen, 21, 20), data_020d3468, context->cp15);
     } else {
-        func_020b97b4(style, at(screen, 16, 20), data_020d3474, data_0213fdd8);
-        func_020b97b4(style, at(screen, 18, 20), data_020d3480, data_0213fdcc);
+        DebugText_Printf(style, at(screen, 16, 20), data_020d3474, data_0213fdd8);
+        DebugText_Printf(style, at(screen, 18, 20), data_020d3480, data_0213fdcc);
     }
 
     if (data_0213fdec != NULL) {
-        func_020b97b4(style, at(screen, 18, 0), data_020d348c, data_0213fdec, data_0213fde8);
-        func_020b97d4(style, at(screen, 19, 0), data_0213fde4);
+        DebugText_Printf(style, at(screen, 18, 0), data_020d348c, data_0213fdec, data_0213fde8);
+        DebugText_Print(style, at(screen, 19, 0), data_0213fde4);
     }
 
     mode = OS_GetProcMode();
     thread = OSi_ThreadInfo.current;
-    func_020b97b4(style, at(screen, 2, 0), data_020d3494, thread->id, mode);
-    func_020b97b4(style, at(screen, 3, 0), data_020d34a4, thread->stack_top, thread->stack_bottom);
+    DebugText_Printf(style, at(screen, 2, 0), data_020d3494, thread->id, mode);
+    DebugText_Printf(style, at(screen, 3, 0), data_020d34a4, thread->stack_top, thread->stack_bottom);
 
     status = OS_GetIrqStackStatus();
     if (status != 0) {
-        func_020b97b4(style, at(screen, 4, 0), data_020d34b0, status);
+        DebugText_Printf(style, at(screen, 4, 0), data_020d34b0, status);
     } else {
         for (thread = OSi_ThreadInfo.list; thread != NULL; thread = thread->next) {
             status = OS_GetStackStatus(thread);
@@ -380,7 +376,7 @@ void DebugScreen_DrawStatus(void)
             }
         }
         if (thread != NULL) {
-            func_020b97b4(style, at(screen, 4, 0), data_020d34bc, status, thread->id, thread->stack_warning);
+            DebugText_Printf(style, at(screen, 4, 0), data_020d34bc, status, thread->id, thread->stack_warning);
         }
     }
 }
@@ -394,7 +390,7 @@ void DebugScreen_DrawStack(void)
     short *screen = data_0213fddc;
     u32 sp = data_0213fde0 != NULL ? data_0213fde0->regs[14] : data_0213fdd8;
 
-    func_020b97b4(style, at(screen, 1, 0), data_020d34cc, sp);
+    DebugText_Printf(style, at(screen, 1, 0), data_020d34cc, sp);
     if (DebugScreen_IsReadable((void *) (uintptr_t) sp, 4)) {
         DebugScreen_DumpWords(at(screen, 2, 0), (void *) (uintptr_t) sp, 0x160);
     }
@@ -417,7 +413,7 @@ void DebugScreen_DumpWords(void *dest, void *src, u32 size)
             break;
         }
         style[1] = attribute;
-        func_020b97b4(style, text, data_020d34d8, *(const u32 *) (uintptr_t) word);
+        DebugText_Printf(style, text, data_020d34d8, *(const u32 *) (uintptr_t) word);
         text += 8;
         attribute ^= 0x3000; /* palette 13 <-> 14 */
     }

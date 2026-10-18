@@ -1,6 +1,6 @@
 /* A room object (room_object.h) on the town's map: the cells it covers, putting it on the map
- * and taking it off (the map's record of its item code, func_020523e4 and func_020521d8, and
- * the grid of the room's objects, func_ov004_0223cd50), moving it with the objects standing
+ * and taking it off (the map's record of its item code, RoomSync_PutFurniture and RoomSync_TakeFurniture, and
+ * the grid of the room's objects, RoomObjects_Grid), moving it with the objects standing
  * on it, and whether a move or a turn is free: no player, item or other object in the way. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_MAP_H
 #define CLEAN_OV004_ROOM_OBJECT_MAP_H
@@ -10,7 +10,7 @@
 #include "main/lookups.h" /* ItemCode */
 #include "room_object.h"
 
-/* An actor of the main program (func_020961a8, func_02082664): its position and facing. */
+/* An actor of the main program (SessionPlayers_ActorOf, Actors_Slot): its position and facing. */
 typedef struct MapActor {
     u8 unk_00[0x5c];
     Vec3 position;

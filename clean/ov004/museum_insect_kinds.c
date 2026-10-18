@@ -285,7 +285,7 @@ static fx32 InsectKind_fx(int whole)
 }
 
 /* The start of kinds 14, 15, 26 and 32: their motion at a random yaw, the bounds of 0x900 either
- * way of their x and from 0x200 below to 0x500 above their z (func_ov004_02240fc0), and
+ * way of their x and from 0x200 below to 0x500 above their z (InsectMotion_BoundAroundPosition), and
  * `word_4c` at 0x4c. */
 static void InsectKind_start_boxed(MuseumInsect *insect, short a, int b, int f, int word_4c)
 {

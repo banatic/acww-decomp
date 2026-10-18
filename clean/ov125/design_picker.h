@@ -23,6 +23,7 @@
 #include "ov002/menu_scene.h"
 #include "ov002/paged_choice.h"
 #include "ov002/popup.h"
+#include "ov124/han_panel.h"
 #include "types.h"
 
 #define DESIGN_PICKER_DESIGNS 8
@@ -84,8 +85,7 @@ enum DesignPickerSubState {
 
 typedef struct DesignPicker {
     MenuScene base;        /* 0x000 */
-    u8 title[0xec];        /* 0x094: overlay 124's object: a text label of main's and a panel
-                             * sprite (constructor func_ov124_0229f460) */
+    HanPanel title;        /* 0x094: overlay 124's panel (ov124/han_panel.h) */
     u8 choice[0x3e8];      /* 0x180: a PagedChoice */
     ChoiceEntries entries; /* 0x568 */
     u8 pad_573;            /* 0x573 */

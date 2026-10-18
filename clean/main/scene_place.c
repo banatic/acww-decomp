@@ -4,6 +4,8 @@
 #include "clean.h"
 #include "main/actor_table.h"
 #include "main/scene_tables.h"
+#include "player_actor_ops.h"
+#include "scene_query.h"
 
 static_assert(offsetof(ScenePlace, player_param) == 0x0c, "player_param");
 static_assert(offsetof(ScenePlace, angle) == 0x10, "angle");
@@ -36,12 +38,6 @@ extern u8 data_021f6988[];
 
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020012dc(void *object); /* the static objects' destructor: nothing */
-
-/* The current scene. */
-extern u8 func_020b65c4(void);
-/* The player's actor's point and angle, and its state (0x93 without an actor; then nothing is
- * written). */
-extern int func_02095fc0(Vec3 *position, s16 *angle);
 
 /* func_020b5e90: the marked place back to its start. */
 void ScenePlace_ResetMarked(void)
@@ -83,18 +79,18 @@ int ScenePlace_SavePlayer(int unused, int z_offset)
         data_021f6934 |= 1;
     }
 
-    state = func_02095fc0(&position, &angle);
+    state = PlayerActorOps_PlaceAfterState(&position, &angle);
     tile_x = 0;
     tile_z = 0;
     Position_Tile(&tile_x, &tile_z, (const Position *) &position);
 
-    if (func_020b65c4() == SCENE_PLACE_Z_LIMIT_SCENE && position.z < data_021f6940) {
+    if (SceneQuery_Current() == SCENE_PLACE_Z_LIMIT_SCENE && position.z < data_021f6940) {
         position.z = data_021f6940;
     }
     position.z = (fx32) ((u32) position.z + (u32) z_offset);
 
     int entry = SceneTables_EntryRecord();
-    int scene = func_020b65c4();
+    int scene = SceneQuery_Current();
     return ScenePlace_SetSaved(entry, scene, &position,
                                (int) (((u32) state << SCENE_PLACE_STATE_SHIFT) & SCENE_PLACE_STATE_MASK), angle, tile_x,
                                tile_z);

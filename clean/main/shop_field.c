@@ -5,6 +5,10 @@
 #include "main/acre_map.h"
 #include "main/acre_tile.h"
 #include "main/sound.h"
+#include "acre_record.h"
+#include "item_code.h"
+#include "ov004/room_objects.h"
+#include "scene_query.h"
 
 /* A shop's room is one acre of 16 x 16 tiles. */
 #define SHOP_FIELD_TILES 16
@@ -23,20 +27,6 @@ extern AcreMap *data_021c80bc;
 /* What a sold place reads as (shop_stock.h). */
 extern u16 data_021f49f4;
 
-extern int func_020b65c4(void);                              /* the kind of the shop the player is in */
-extern u16 *func_02037e0c(u8 *acre, int x, int z, u8 layer); /* the code of tile (x, z), or 0 */
-extern int func_0204bcdc(u16 *item);                         /* whether the item is of the kinds compared by number */
-extern int func_0204bc64(u16 *item);                         /* that number */
-extern int func_0204bc90(u16 *item);                         /* whether the item stands as a room object */
-extern int func_0204bd08(u16 *item);                         /* whether it is a code of kind 1 */
-/* Overlay 4's room: its grid of objects, the object on a tile, the table of objects, an
- * object's index in it, and taking the object of an index off. */
-extern void *func_ov004_0223cd50(void);
-extern void *func_ov004_0223cc10(void *grid, int x, int z, int layer);
-extern void *func_ov004_0223ce84(void);
-extern int func_ov004_0223cd78(void *objects, void *object);
-extern int func_ov004_0223bb14(int index);
-
 /* func_020afdc8: shows `item` taken: the first tile of the room's acre, row by row, that holds
  * it (compared by number for the kinds func_0204bcdc accepts on the tile) goes through
  * ShopField_ShowTakenAt. Only while the field is a room, the player is in the shop of `kind`
@@ -46,7 +36,7 @@ void ShopField_ShowItemTaken(u16 *item, int kind, int sound)
     if (data_020e54a8 == 0) {
         return;
     }
-    if (func_020b65c4() != kind) {
+    if (SceneQuery_Current() != kind) {
         return;
     }
     AcreMap *map = data_021c80bc;
@@ -59,14 +49,14 @@ void ShopField_ShowItemTaken(u16 *item, int kind, int sound)
     u8 *acre = map->acres;
     for (int z = 0; z < SHOP_FIELD_TILES; z++) {
         for (int x = 0; x < SHOP_FIELD_TILES; x++) {
-            u16 *here = func_02037e0c(acre, x, z, SHOP_FIELD_LAYER);
+            u16 *here = AcreRecord_Tile((AcreRecord *) (void *) acre, x, z, SHOP_FIELD_LAYER);
             if (here == NULL) {
                 continue;
             }
             int same;
-            if (func_0204bcdc(here) != 0) {
-                int a = func_0204bc64(here);
-                same = a == func_0204bc64(item);
+            if (ItemCode_HasVariant(here) != 0) {
+                int a = ItemCode_VariantItem(here);
+                same = a == ItemCode_VariantItem(item);
             } else {
                 same = *here == *item;
             }
@@ -87,7 +77,7 @@ void ShopField_ShowTakenAt(int x, int z, int kind, int sound)
     if (data_020e54a8 == 0) {
         return;
     }
-    if (kind != func_020b65c4()) {
+    if (kind != SceneQuery_Current()) {
         return;
     }
     AcreMap *map = data_021c80bc;
@@ -98,10 +88,10 @@ void ShopField_ShowTakenAt(int x, int z, int kind, int sound)
         return;
     }
 
-    if (func_0204bc90(item) != 0) {
-        void *object = func_ov004_0223cc10(func_ov004_0223cd50(), x, z, 0);
+    if (ItemCode_IsF031OrVariant(item) != 0) {
+        void *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, 0);
         if (object != NULL) {
-            func_ov004_0223bb14(func_ov004_0223cd78(func_ov004_0223ce84(), object));
+            RoomObjects_Take(RoomObjects_IndexOf(RoomObjects_Table(), object));
         }
         if (sound != 0) {
             SoundSys_PlaySe(SHOP_FIELD_SE_TAKEN);
@@ -109,7 +99,7 @@ void ShopField_ShowTakenAt(int x, int z, int kind, int sound)
         return;
     }
 
-    if (func_0204bd08(item) == 0) {
+    if (ItemCode_IsKind1(item) == 0) {
         return;
     }
     u16 code = *item;

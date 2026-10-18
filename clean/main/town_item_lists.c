@@ -2,6 +2,10 @@
 #include "town_item_lists.h"
 
 #include "clean.h"
+#include "date_time.h"
+#include "item_lists.h"
+#include "item_traits.h"
+#include "main_random.h"
 
 /* The lists themselves, at 0x172c0 and 0x172de of the state block. */
 extern u16 data_021f3a68[TOWN_ITEM_LIST_PLACES];
@@ -22,22 +26,15 @@ typedef struct TownItemListsDraw {
 } TownItemListsDraw;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_0209e100(DateTime *when, int hours); /* `when` moved back by `hours` */
-extern int func_020644cc(int bound);                  /* a random number below `bound` */
-extern void func_02063ccc(TownItemListsDraw *list, int kind, int group);
-extern void func_020638d4(u16 *item, TownItemListsDraw *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(TownItemListsDraw *list);
-/* The form `*item` takes in list B, in `*out` (0xfff1 when none); whether it may go there. */
-extern int func_0204c438(u16 *item, u16 *out);
 
 /* An item drawn from the item list of `kind` (group 0). */
 static u16 draw_item(int kind)
 {
     TownItemListsDraw list;
     u16 item;
-    func_02063ccc(&list, kind, 0);
-    func_020638d4(&item, &list, 0, 0, 1, 1, 0);
-    func_02063cc8(&list);
+    ItemList_Construct((ItemList *) &list, kind, 0);
+    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemList_Destruct(&list);
     return item;
 }
 
@@ -55,7 +52,7 @@ void TownItemLists_EmptyListBOnDays(u16 *list, const DateTime *today, int days)
     }
     DateTime when = {0};
     MI_CpuCopy8(today, &when, sizeof when);
-    func_0209e100(&when, DAY_START_HOUR);
+    DateTime_SubtractHours(&when, DAY_START_HOUR);
     switch (Calendar_Weekday(when.year, when.month, when.day)) {
         case 1: /* Monday */
         case 4: /* Thursday */
@@ -125,7 +122,7 @@ void TownItemLists_FillListA(u16 *list, int days)
         if (place == TOWN_ITEM_LIST_PLACES) {
             continue;
         }
-        int number = func_020644cc(100);
+        int number = MainRandom_Below(100);
         int kind;
         if (number >= 30 && number < 50) {
             list[place] = LIST_A_PLAIN_ITEM;
@@ -152,7 +149,7 @@ void TownItemLists_StartListA(u16 *list)
 {
     static const int kinds[3] = {1, 0, 2};
     for (int i = 0; i < 3; i++) {
-        list[i] = draw_item(kinds[func_020644cc(3)]);
+        list[i] = draw_item(kinds[MainRandom_Below(3)]);
     }
 }
 CLEAN_AS(func_0203a5f4, TownItemLists_StartListA)
@@ -189,7 +186,7 @@ int TownItemLists_PutListB(u32 place, u16 item)
         return 0;
     }
     u16 put = TOWN_ITEM_LIST_NONE;
-    if (func_0204c438(&item, &put)) {
+    if (ItemTraits_CarriedNonCreature(&item, &put)) {
         data_021f3a86[place] = put;
     }
     return 1;

@@ -7,6 +7,13 @@
 #include "item_record.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "beside_spot.h"
+#include "block_021d27ac_parts.h"
+#include "event_calendar.h"
+#include "middle_spot.h"
+#include "near_spot.h"
+#include "player_id.h"
+#include "town_spot.h"
 
 static_assert(offsetof(Block021d27ac, part_04) == 0x04 && offsetof(Block021d27ac, part_0c) == 0x0c, "parts");
 static_assert(offsetof(Block021d27ac, part_18) == 0x18 && offsetof(Block021d27ac, part_20) == 0x20, "parts");
@@ -17,29 +24,6 @@ extern Block021d27ac data_021d27ac;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-/* Whether `event` is on at `when` (`arg` 0). */
-extern int func_0203fc78(int event, const DateTime *when, int arg);
-/* Whether a player's name is set. */
-extern int func_020951bc(const void *player);
-
-/* The parts' own functions: reset, construct and destroy. */
-extern void func_02087f0c(u8 *part);
-extern void func_02087b78(u8 *part);
-extern void func_02087a64(u8 *part);
-extern void func_02087b84(u8 *part);
-extern void func_02087eb8(u8 *part);
-extern void func_02087e70(u8 *part);
-extern void func_02087e94(u8 *part);
-extern void func_02087f14(u8 *part);
-extern void func_020881a4(u8 *part);
-extern void func_02087a70(u8 *part);
-extern void func_02087a74(u8 *part);
-extern void func_020881a8(u8 *part);
-extern void func_02087f18(u8 *part);
-extern void func_02087e98(u8 *part);
-extern void func_02087e74(u8 *part);
-extern void func_02087ebc(u8 *part);
-extern void func_02087b88(u8 *part);
 
 /* The player record's flags Block021d27ac_NoteCollections reads (PlayerRecord_TestFlag). */
 #define BLOCK_021D27AC_PLAYER_FLAG_1 1
@@ -69,7 +53,7 @@ void Block021d27ac_NoteCollections(Block021d27ac *self)
     if (record == NULL) {
         return;
     }
-    if (func_020951bc(PlayerRecord_Player(record)) == 0) {
+    if (PlayerId_IsSet(PlayerRecord_Player(record)) == 0) {
         return;
     }
     if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_1) != 0) {
@@ -84,7 +68,7 @@ void Block021d27ac_NoteCollections(Block021d27ac *self)
     DateTime copy;
     DateTime_Now(&now);
     MI_CpuCopy8(&now, &copy, sizeof(copy));
-    if (func_0203fc78(BLOCK_021D27AC_EVENT_8, &copy, 0) != 0) {
+    if (EventCalendar_State(BLOCK_021D27AC_EVENT_8, &copy, 0) != 0) {
         return;
     }
     Block021d27ac_SetFlag(&self->flags, BLOCK_021D27AC_FLAG_8);
@@ -168,37 +152,37 @@ CLEAN_AS(func_02086108, Block021d27ac_TestFlag)
 /* func_02086130: part 0x18 reset, the flags cleared, then parts 0x31 and 0x04 reset. */
 void Block021d27ac_Reset(Block021d27ac *self)
 {
-    func_02087f0c(self->part_18);
+    Block021d27acPart18_Clear((DateTime *) (void *) self->part_18);
     MI_CpuFill8(&self->flags, 0, sizeof(self->flags));
-    func_02087b78(self->part_31);
-    func_02087a64(self->part_04);
+    BesideSpot_Clear(self->part_31);
+    TownSpot_Clear((TownSpot *) (void *) self->part_04);
 }
 CLEAN_AS(func_02086130, Block021d27ac_Reset)
 
-/* func_02086158: the constructor: the parts constructed from the last to the first. */
-Block021d27ac *Block021d27ac_Construct(Block021d27ac *self)
-{
-    func_02087b84(self->part_31);
-    func_02087eb8(&self->part_30);
-    func_02087e70(self->part_24);
-    func_02087e94(self->part_20);
-    func_02087f14(self->part_18);
-    func_020881a4(self->part_0c);
-    func_02087a70(self->part_04);
-    return self;
-}
-CLEAN_AS(func_02086158, Block021d27ac_Construct)
-
-/* func_02086198: the destructor: the parts destroyed from the first to the last. */
+/* func_02086158: the destructor: the parts destroyed from the last to the first. */
 Block021d27ac *Block021d27ac_Destruct(Block021d27ac *self)
 {
-    func_02087a74(self->part_04);
-    func_020881a8(self->part_0c);
-    func_02087f18(self->part_18);
-    func_02087e98(self->part_20);
-    func_02087e74(self->part_24);
-    func_02087ebc(&self->part_30);
-    func_02087b88(self->part_31);
+    BesideSpot_Destruct(self->part_31);
+    Block021d27acPart30_Destruct(&self->part_30);
+    NearSpot_Destruct((NearSpot *) (void *) self->part_24);
+    Block021d27acPart20_Destruct((Block021d27acPart20 *) (void *) self->part_20);
+    Block021d27acPart18_Destruct((DateTime *) (void *) self->part_18);
+    MiddleSpot_Destruct((MiddleSpot *) (void *) self->part_0c);
+    TownSpot_Destruct((TownSpot *) (void *) self->part_04);
     return self;
 }
-CLEAN_AS(func_02086198, Block021d27ac_Destruct)
+CLEAN_AS(func_02086158, Block021d27ac_Destruct)
+
+/* func_02086198: the constructor: the parts constructed from the first to the last. */
+Block021d27ac *Block021d27ac_Construct(Block021d27ac *self)
+{
+    TownSpot_Construct((TownSpot *) (void *) self->part_04);
+    MiddleSpot_Construct((MiddleSpot *) (void *) self->part_0c);
+    Block021d27acPart18_Construct((DateTime *) (void *) self->part_18);
+    Block021d27acPart20_Construct((Block021d27acPart20 *) (void *) self->part_20);
+    NearSpot_Construct((NearSpot *) (void *) self->part_24);
+    Block021d27acPart30_Construct(&self->part_30);
+    BesideSpot_Construct(self->part_31);
+    return self;
+}
+CLEAN_AS(func_02086198, Block021d27ac_Construct)

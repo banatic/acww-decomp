@@ -12,6 +12,24 @@
 #include "ov002/menu_scene.h"
 #include "ov002/paged_choice.h"
 #include "ov003/field_actor.h"
+#include "main/acre_map.h"
+#include "main/acre_tile.h"
+#include "main/actor_table.h"
+#include "main/collision_query.h"
+#include "main/exchange_block.h"
+#include "main/letter.h"
+#include "main/main_random.h"
+#include "main/packed_bytes.h"
+#include "main/player_actor_ops.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
+#include "main/session_players.h"
+#include "main/state_flags.h"
+#include "main/tile_requests.h"
+#include "ov003/fish_shadow.h"
+#include "ov003/thrown_bottle.h"
+#include "ov003/town_insect.h"
+#include "ov094/pockets_common.h"
 
 /* The pockets scene's words at 0x2e14-0x2e27: a point in the town (written by
  * func_0203162c, PocketsTown_FindPointAhead) and a tile (PocketsTown_FindTileAhead). */
@@ -70,16 +88,10 @@ static MenuScene *scene_of(PocketsScreen *self)
 #define ERROR_13 13
 #define SOUND_ERROR 0x73
 
-/* Requests of main's for a session slot (as PocketsScreen_CheckUseItem's): -1 when none could
- * be made; func_020436a8 answers 1 done, 2 failed, others pending; func_020431b8 frees one. */
-extern int func_02043db4(int slot, s32 *tile, int operation, int arg, u16 item);
-extern int func_02043634(int slot, int kind, int item);
-extern int func_020436a8(int request);
-extern void func_020431b8(int request);
 #define TILE_OPERATION 2
 #define DROP_KIND 0x18
 
-/* What func_020961a8 gives for a player (4: the one at this console); its position and its
+/* What SessionPlayers_ActorOf gives for a player (4: the one at this console); its position and its
  * angle are read. */
 typedef struct PocketsTownPlayer {
     u8 unk_00[0x5c];
@@ -90,20 +102,7 @@ typedef struct PocketsTownPlayer {
 static_assert(offsetof(PocketsTownPlayer, angle) == 0x8e, "angle");
 #define THIS_PLAYER 4
 
-extern PocketsTownPlayer *func_020961a8(int player);
-extern int func_020984e8(void);                               /* the current player's record */
-extern u16 *func_02099728(int record);                        /* its item at 0x2406 (record slot 5) */
-extern int func_02099020(int record, int bit);                /* a bit of its flags */
-extern void *func_0204e414(void);                             /* the town map */
-extern int data_021c80bc;                                     /* the town map, for func_0204f658 */
-extern void func_0204f818(int *x, int *z, const Vec3 *point); /* a point's tile */
-extern void func_0204f794(Vec3 *point, int x, int z);         /* a tile's point */
-extern u16 *func_0204f5e0(void *map, int acre_x, int acre_z, int x, int z, int layer);
-extern int func_0204f658(int map, int x, int z);
-extern int func_0203162c(Vec3 *out, const Vec3 *from, int angle, int distance, int range, int arg);
-extern int func_020644cc(int range);                 /* a random number below `range` */
-extern void func_020779b8(u8 *packed, int x, int z); /* a point's x and z in 5 bytes */
-extern int func_020960f8(int a, int b);
+extern int data_021c80bc; /* the town map, for AcreTile_AcreFlags */
 
 /* The pen (main's bytes, as menu_scene.c reads them), the pad and a close request (state flag
  * 0x80, pockets_screen.c). */
@@ -112,30 +111,14 @@ extern u8 data_021fbddc; /* the pen went down or up this frame */
 extern PadState data_021fbe40;
 #define PAD_A 0x0001
 #define PAD_B 0x0002
-extern int func_0206f56c(void);
 
 /* The session the messages go through; a received record (main/player_messages.h, type 6). */
 extern NetSession *data_020ccf94;
 extern Heap *data_021c9b28;
 extern u8 data_021ee418[0x100];
-extern void *func_020900f0(void *record);
-extern int func_02066830(void *dst, const void *src); /* copy a letter */
-extern void func_02090100(void *record);
-extern void func_02090140(void *record, int arg);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
 #define LETTER_SIZE 0x100
 #define MESSAGE_TO 4 /* where these messages are sent (as PlayerMessages_SetMode answers) */
-
-/* Overlay 3's, for a player number. */
-extern int func_ov003_0222780c(int player, int item, Vec3 *point);
-extern void func_ov003_0222c3a8(Vec3 *point, int player);
-extern int func_ov003_0222c364(int player);
-extern int func_ov003_0222ea84(int player);
-extern void func_ov003_0222e898(unsigned char kind, int player);
-extern void func_ov003_0222eabc(int player, int angle);
-
-/* Overlay 94's answer to whether an item can be used. */
-extern int func_ov094_022999e4(unsigned int item);
 
 /* The angles beside the player's that PocketsTown_FindTileAhead looks along: ahead, then
  * 0x1800 to either side. */
@@ -150,7 +133,7 @@ extern PocketsTownStep data_ov098_022a3264[16];
 void PocketsTown_WaitShowEnd(PocketsScreen *self)
 {
     ErrorMessage_UpdateWindow(&self->error);
-    if (func_020960f8(6, 4) == 0) {
+    if (PlayerActorOps_InState(6, 4) == 0) {
         ErrorMessage_UndimWindow(&self->error);
         PocketsScreen_EndAction(self);
     }
@@ -173,8 +156,8 @@ CLEAN_AS(func_ov098_022a27f0, PocketsTown_WaitPutAway)
 void PocketsTown_WaitDismissShow(PocketsScreen *self)
 {
     ErrorMessage_UpdateWindow(&self->error);
-    if (func_0206f56c() != 0 || (data_021fbdd8 != 0 && data_021fbddc != 0) || (data_021fbe40.pressed & PAD_A) != 0 ||
-        (data_021fbe40.pressed & PAD_B) != 0) {
+    if (StateFlags_MenuCloseAsked() != 0 || (data_021fbdd8 != 0 && data_021fbddc != 0) ||
+        (data_021fbe40.pressed & PAD_A) != 0 || (data_021fbe40.pressed & PAD_B) != 0) {
         MenuScene_SetSubState(scene_of(self), SUB_PUT_AWAY);
         ErrorMessage_HideWindow(&self->error);
     }
@@ -224,9 +207,9 @@ void PocketsTown_PassLetter(PocketsScreen *self)
     NetSession *session = data_020ccf94;
     if (Session_IsLinked(session) == 0 || session->local_slot == 0) {
         u8 *record = data_021ee418;
-        func_02066830(func_020900f0(record), letter);
-        func_02090100(record);
-        func_02090140(record, 0);
+        Letter_Assign((Letter *) ExchangeBlock_BottleLetter((ExchangeBlock *) record), letter);
+        ExchangeBlock_ClearDrifts((ExchangeBlock *) record);
+        ExchangeBlock_SetArrivesAtOnce((ExchangeBlock *) record, 0);
         return;
     }
     Heap *heap = data_021c9b28;
@@ -244,7 +227,7 @@ CLEAN_AS(func_ov098_022a28ec, PocketsTown_PassLetter)
  * this console's player. */
 void PocketsTown_WaitLetterPlaced(PocketsScreen *self)
 {
-    if (func_ov003_0222c364(PocketsScreen_LocalSlotIfTaken(self)) == 0) {
+    if (ThrownBottle_IsActive(PocketsScreen_LocalSlotIfTaken(self)) == 0) {
         PocketsScreen_EndAction(self);
     }
 }
@@ -253,7 +236,7 @@ CLEAN_AS(func_ov098_022a2994, PocketsTown_WaitLetterPlaced)
 /* func_ov098_022a29b0 (sub state 0x33): sub state 0x34 once func_ov003_0222c364 answers 1. */
 void PocketsTown_WaitLetterPlacing(PocketsScreen *self)
 {
-    if (func_ov003_0222c364(PocketsScreen_LocalSlotIfTaken(self)) == 1) {
+    if (ThrownBottle_IsActive(PocketsScreen_LocalSlotIfTaken(self)) == 1) {
         MenuScene_SetSubState(scene_of(self), SUB_LETTER_PLACED);
     }
 }
@@ -266,7 +249,7 @@ void PocketsTown_ActionPlaceLetter(PocketsScreen *self)
 {
     PocketsTown_PassLetter(self);
     FieldActor_PlayerRequestState89();
-    func_ov003_0222c3a8(point_of(self), PocketsScreen_LocalSlotIfTaken(self));
+    ThrownBottle_SetTarget(point_of(self), PocketsScreen_LocalSlotIfTaken(self));
     PocketsScreen_RemoveLetterAt(self, self->slot);
     MenuScene_SetSubState(scene_of(self), SUB_LETTER_PLACING);
 }
@@ -276,7 +259,7 @@ CLEAN_AS(func_ov098_022a29d0, PocketsTown_ActionPlaceLetter)
 static int request_tile(PocketsScreen *self, u16 item)
 {
     s32 tile[2] = {(s32) self->unk_2e20, (s32) self->unk_2e24};
-    self->unk_c4 = func_02043db4(data_020ccf94->local_slot, tile, TILE_OPERATION, 0, item);
+    self->unk_c4 = TileRequests_AskOp(data_020ccf94->local_slot, (const TileRequestTile *) tile, TILE_OPERATION, 0, item);
     return self->unk_c4;
 }
 
@@ -291,7 +274,7 @@ void PocketsTown_ActionTileOrDrop(PocketsScreen *self)
         MenuScene_SetSubState(scene_of(self), SUB_TILE_REQUEST);
         return;
     }
-    self->unk_c4 = func_02043634(data_020ccf94->local_slot, DROP_KIND, item);
+    self->unk_c4 = TileRequests_AskPut(data_020ccf94->local_slot, DROP_KIND, item);
     if (self->unk_c4 == -1) {
         PocketsScreen_EndAction(self);
         PocketsScreen_ShowError(self, ERROR_8, 0xff, 0);
@@ -308,7 +291,7 @@ CLEAN_AS(func_ov098_022a2a0c, PocketsTown_ActionTileOrDrop)
 void PocketsTown_StartTileState61(PocketsScreen *self)
 {
     Vec3 point;
-    func_0204f794(&point, (int) self->unk_2e20, (int) self->unk_2e24);
+    AcreTile_TileCentre(&point, (int) self->unk_2e20, (int) self->unk_2e24);
     u16 item = PocketsScreen_PlaceItem(self, self->slot);
     if (FieldActor_PlayerRequestState61(&point, &item) != 0) {
         PocketsScreen_EmptyPlace(self, self->slot);
@@ -322,7 +305,7 @@ CLEAN_AS(func_ov098_022a2ac8, PocketsTown_StartTileState61)
  * nothing while it is pending. */
 void PocketsTown_WaitTileRequest(PocketsScreen *self)
 {
-    switch (func_020436a8(self->unk_c4)) {
+    switch (TileRequests_Answer(self->unk_c4)) {
         case 1:
             MenuScene_SetSubState(scene_of(self), SUB_TILE_STATE);
             PocketsTown_StartTileState61(self);
@@ -334,7 +317,7 @@ void PocketsTown_WaitTileRequest(PocketsScreen *self)
         default:
             return;
     }
-    func_020431b8(self->unk_c4);
+    TileRequests_Release(self->unk_c4);
     self->unk_c4 = -1;
 }
 CLEAN_AS(func_ov098_022a2b1c, PocketsTown_WaitTileRequest)
@@ -361,15 +344,15 @@ CLEAN_AS(func_ov098_022a2b6c, PocketsTown_ActionTile)
  * Whether one was found. */
 int PocketsTown_FindTileAhead(PocketsScreen *self)
 {
-    u16 held = *func_02099728(func_020984e8());
+    u16 held = *PlayerRecord_HeldItem(PlayerRecords_Current());
     if (held != ITEM_TOOL_1369 && held != ITEM_TOOL_136A) {
         return 0;
     }
-    PocketsTownPlayer *player = func_020961a8(THIS_PLAYER);
+    PocketsTownPlayer *player = SessionPlayers_ActorOf(THIS_PLAYER);
     int x = 0;
     int z = 0;
-    void *map = func_0204e414();
-    func_0204f818(&x, &z, &player->position);
+    void *map = (void *) (uintptr_t) AcreMap_Town();
+    Position_Tile(&x, &z, (const Position *) &player->position);
     int angle = player->angle;
     for (int i = 0; i < 3; i++) {
         const PocketsTownStep *step =
@@ -377,7 +360,7 @@ int PocketsTown_FindTileAhead(PocketsScreen *self)
         int tile_x = x + step->dx;
         int tile_z = z + step->dz;
         /* The tile's acre and its place in it: x >> 4 rounds down, x & 15 is the rest. */
-        u16 *object = func_0204f5e0(map, tile_x >> 4, tile_z >> 4, tile_x & 15, tile_z & 15, 0);
+        u16 *object = AcreTile_ItemInAcre(map, tile_x >> 4, tile_z >> 4, tile_x & 15, tile_z & 15, 0);
         if (object != NULL && *object >= 0xfc && *object <= 0xfd) {
             self->unk_2e20 = (u32) tile_x;
             self->unk_2e24 = (u32) tile_z;
@@ -433,17 +416,17 @@ CLEAN_AS(func_ov098_022a2dac, PocketsTown_SendTurn)
 int PocketsTown_LetInsectGo(PocketsScreen *self)
 {
     int player = PocketsScreen_LocalSlotIfTaken(self);
-    int busy = func_ov003_0222ea84(player);
+    int busy = TownInsect_HeldState(player);
     if (busy != 0) {
         return busy;
     }
     u16 item = PocketsScreen_PlaceItem(self, self->slot);
     int kind = item >= ITEM_INSECT_FIRST && item <= ITEM_INSECT_LAST ? item - ITEM_INSECT_FIRST : NO_KIND;
-    int turn = (u8) func_020644cc(60);
+    int turn = (u8) MainRandom_Below(60);
     s16 angle = (s16) (0xb6 * (turn - 30));
-    angle = (s16) (angle + func_020961a8(THIS_PLAYER)->angle);
-    func_ov003_0222e898((u8) kind, player);
-    func_ov003_0222eabc(player, angle);
+    angle = (s16) (angle + ((PocketsTownPlayer *) SessionPlayers_ActorOf(THIS_PLAYER))->angle);
+    TownInsect_TakeHeld((u8) kind, player);
+    TownInsect_LetGo(player, angle);
     FieldActor_PlayerLook(0);
     PocketsTown_SendTurn(self, (u8) kind, turn);
     return (int) (uintptr_t) PocketsScreen_StartBlinkSlot(self);
@@ -475,7 +458,7 @@ void PocketsTown_SendPoint(PocketsScreen *self, char id, char type)
         const Vec3 *point = point_of(self);
         message[0] = (u8) type;
         message[1] = (u8) id;
-        func_020779b8(packed, point->x, point->z);
+        PackedBytes_PackPoint(packed, point->x, point->z);
         MI_CpuCopy8(packed, message + 2, sizeof packed);
         NetSession *session = data_020ccf94;
         Session_BeginMessage(session);
@@ -493,7 +476,7 @@ void PocketsTown_PlaceFish(PocketsScreen *self)
 {
     int player = PocketsScreen_LocalSlotIfTaken(self);
     int item = PocketsScreen_PlaceItem(self, self->slot);
-    if (func_ov003_0222780c(player, item, point_of(self)) != 0) {
+    if (PlayerFish_PlaceFromPockets(player, item, point_of(self)) != 0) {
         u16 code = (u16) item;
         u8 kind = code >= ITEM_FISH_FIRST && code <= ITEM_FISH_LAST ? (u8) (code - ITEM_FISH_FIRST) : NO_KIND;
         PocketsTown_SendPlaceId(self, kind);
@@ -518,8 +501,9 @@ CLEAN_AS(func_ov098_022a2fa8, PocketsTown_ActionFish)
  * letter is not looked for without them. */
 int PocketsTown_FindPointAhead(PocketsScreen *self, int for_letter)
 {
-    PocketsTownPlayer *player = func_020961a8(THIS_PLAYER);
-    int bits = func_0204f658(data_021c80bc, player->position.x >> 17, player->position.z >> 17);
+    PocketsTownPlayer *player = SessionPlayers_ActorOf(THIS_PLAYER);
+    int bits = (int) (uintptr_t) AcreTile_AcreFlags((AcreMap *) (uintptr_t) data_021c80bc, player->position.x >> 17,
+                                                    player->position.z >> 17);
     int marked = (bits & 0x7f000) != 0 || (bits & 8) != 0;
     int range;
     if (for_letter) {
@@ -530,7 +514,7 @@ int PocketsTown_FindPointAhead(PocketsScreen *self, int for_letter)
     } else {
         range = marked ? 0xa00 + 0xe10 : 0xa00 + 0x3e8;
     }
-    return func_0203162c(point_of(self), &player->position, player->angle, 0x7800, range, 0xc);
+    return CollisionQuery_FindWaterAhead(point_of(self), &player->position, player->angle, 0x7800, range, 0xc);
 }
 CLEAN_AS(func_ov098_022a2fc0, PocketsTown_FindPointAhead)
 
@@ -602,11 +586,11 @@ CLEAN_AS(func_ov098_022a30a4, PocketsTown_AddItemRows)
 int PocketsTown_CanUseItem(PocketsScreen *self, unsigned int item)
 {
     (void) self;
-    if (func_02099020(func_020984e8(), 1) != 0) {
+    if (PlayerRecord_TestFlag(PlayerRecords_Current(), 1) != 0) {
         if ((item >= 0x14fe && item <= 0x1517) || (item >= 0x151d && item <= 0x151e)) {
             return 0;
         }
     }
-    return func_ov094_022999e4(item);
+    return PocketsItem_CanUse(item);
 }
 CLEAN_AS(func_ov098_022a31d8, PocketsTown_CanUseItem)

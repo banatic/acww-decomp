@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "display_shadow.h"
+#include "rom_file.h"
 
 #define REG16(addr) (*(volatile u16 *) (addr))
 
@@ -21,7 +22,6 @@ static const u8 screen_bases[LAYER_SUB_BG3 + 1] = {5, 6, 7, 12, 13, 14, 15};
 #define BGCNT_PRIORITY 0x3
 
 extern void DC_FlushRange(const void *start, u32 size);
-extern void *func_02064b2c(const char *path, Heap *heap, int align, u32 *size);
 extern void GX_LoadBG2Char(const void *src, u32 offset, u32 size);
 extern void GX_LoadOBJ(const void *src, u32 offset, u32 size);
 extern void GXS_LoadOBJ(const void *src, u32 offset, u32 size);
@@ -272,7 +272,7 @@ CLEAN_AS(func_02002c4c, DisplayLayer_LoadChars256FromFile)
 int DisplayLayer_LoadCharsFromFile(const char *path, Heap *heap, int layer, int file_first, int first, int last)
 {
     u32 file_size;
-    void *data = func_02064b2c(path, heap, ALIGN_BACK, &file_size);
+    void *data = RomFile_Load(path, heap, ALIGN_BACK, &file_size);
     int result = DisplayLayer_LoadChars((u32) data, layer, (u32) file_first, (u32) first, (u32) last);
 
     Heap_Free(heap, data);
@@ -284,7 +284,7 @@ CLEAN_AS(func_02002c6c, DisplayLayer_LoadCharsFromFile)
 int DisplayLayer_LoadScreenFromFile(const char *path, Heap *heap, int layer)
 {
     u32 file_size;
-    void *data = func_02064b2c(path, heap, ALIGN_BACK, &file_size);
+    void *data = RomFile_Load(path, heap, ALIGN_BACK, &file_size);
     int result = DisplayLayer_LoadScreen(data, layer, (int) file_size, 0);
 
     Heap_Free(heap, data);
@@ -297,7 +297,7 @@ CLEAN_AS(func_02002ca4, DisplayLayer_LoadScreenFromFile)
 int DisplayLayer_LoadPaletteFromFile(const char *path, Heap *heap, int layer, int file_palette, u8 palette)
 {
     u32 file_size;
-    u8 *data = func_02064b2c(path, heap, ALIGN_BACK, &file_size);
+    u8 *data = RomFile_Load(path, heap, ALIGN_BACK, &file_size);
     int result =
         DisplayLayer_LoadPalettes(data + file_palette * PALETTE_SIZE, (unsigned int) layer, palette, palette, palette);
 
@@ -310,7 +310,7 @@ CLEAN_AS(func_02002cd8, DisplayLayer_LoadPaletteFromFile)
  * first palette is number `file_first`; returns 1. */
 int DisplayLayer_LoadPalettesFromFile(const char *path, Heap *heap, int layer, int file_first, u8 first, u8 last)
 {
-    u8 *data = func_02064b2c(path, heap, ALIGN_BACK, NULL);
+    u8 *data = RomFile_Load(path, heap, ALIGN_BACK, NULL);
     int result = DisplayLayer_LoadPalettes(data, (unsigned int) layer, file_first, first, last);
 
     Heap_Free(heap, data);

@@ -9,6 +9,21 @@
 #include "main/mail.h"
 #include "main/session.h"
 #include "main/state_block.h"
+#include "acre_record.h"
+#include "acre_tile.h"
+#include "item_code.h"
+#include "item_lists.h"
+#include "last_sale.h"
+#include "letter.h"
+#include "mail_text.h"
+#include "main_random.h"
+#include "message_reader.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "room_score.h"
+#include "shop_stock.h"
+#include "text_base.h"
 
 static_assert(offsetof(FoxShop, password) == 0x08, "password");
 static_assert(offsetof(FoxShop, sold) == 0x10, "sold");
@@ -56,15 +71,6 @@ extern u16 data_021f49f8;
 extern u32 data_021f49fc;
 extern u8 data_021f4a14[];
 
-/* An item code within a set (func_020b0038): its place, or the sold marker. */
-extern u16 *func_020b0038(int index, u16 *items, u8 *sold, int count, u16 *out);
-extern int func_020aff84(u16 *item, u16 *items, u8 *sold, int count); /* its place, or -1 */
-extern int func_020b0074(int index, int count, u8 *sold);             /* marks it sold, if not */
-extern void func_020b00c8(u16 *items, u8 *sold, int count);           /* none, none sold */
-extern int func_0204bcdc(u16 *item);                                  /* whether the item is of the kinds compared by number */
-extern int func_0204bc64(u16 *item);
-extern u32 func_020644cc(int range); /* a random number below `range` */
-
 /* An item lot: func_02063ccc constructs it, func_020638d4 draws an item of it, func_02063cc8
  * destroys it. */
 typedef struct FoxItemLot {
@@ -72,45 +78,18 @@ typedef struct FoxItemLot {
     int group;
 } FoxItemLot;
 
-extern void func_02063ccc(FoxItemLot *lot, int unk_00, int group);
-extern void func_020638d4(u16 *out, FoxItemLot *lot, int a, int b, u8 c, int d, int e);
-extern void func_02063cc8(FoxItemLot *lot);
-extern int func_0205be44(void);
-extern u8 func_0205be20(void);
-extern u8 func_0205be2c(void);
-extern void func_0208722c(u16 *a);
-
-extern void *func_020984e8(void);                    /* this system's player record */
-extern void *func_02099870(void *player);            /* the record's name */
-extern int func_02094ffc(void *name);                /* 0 this town's, 1 another's, 2 none */
-extern int func_0209871c(void *players, void *name); /* the player with that name */
-extern void *func_02098844(void *players, int player);
-extern int func_02099a28(void *player); /* whether the record's name is valid */
-extern int func_02099020(void *player, int flag);
-extern void func_02066694(MailLetter *letter);
-extern void func_02066688(MailLetter *letter);
-extern void func_02066024(MailLetter *letter, u8 *message, const char *name, const void *a, const void *b, void *player_name);
-extern int func_0203d7c4(int slot, void *object);
-extern int func_020b49d4(FoxShopText *text, const u8 *number, const char *name); /* loads text */
-
-extern void *func_0204f694(unsigned int map, int a);
-extern int func_02037da8(void *cell, int *x, int *z, u16 *first, u16 *last, u8 a);
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020051b0(void *object); /* a destructor that does nothing */
 extern void func_02034ce0(void *item);   /* an item's constructor: 0xfff1 */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 
-extern FoxShopText *func_020a8cac(FoxShopText *text); /* the base text's constructor */
-extern void func_020a8c1c(FoxShopText *text);
-extern void *func_020a8c38(FoxShopText *text); /* the base text's destructor */
-
 /* Whether two item codes are the same: by func_0204bc64's number for the kinds that have
  * one, else by code. */
 static int fox_same_item(u16 *item, u16 *other)
 {
-    if (func_0204bcdc(item) != 0) {
-        return func_0204bc64(item) == func_0204bc64(other);
+    if (ItemCode_HasVariant(item) != 0) {
+        return ItemCode_VariantItem(item) == ItemCode_VariantItem(other);
     }
     return *item == *other;
 }
@@ -118,14 +97,14 @@ static int fox_same_item(u16 *item, u16 *other)
 /* func_020adf8c: the place of `item` among the items, or -1. */
 int FoxShop_FindItem(FoxShop *shop, u16 *item)
 {
-    return func_020aff84(item, shop->items, shop->sold, FOX_SHOP_ITEMS);
+    return ShopStock_Find(item, shop->items, shop->sold, FOX_SHOP_ITEMS);
 }
 CLEAN_AS(func_020adf8c, FoxShop_FindItem)
 
 /* func_020adfa4: item `index` (data_021f49f4 when sold); its code also in `out` unless NULL. */
 u16 *FoxShop_Item(FoxShop *shop, int index, u16 *out)
 {
-    return func_020b0038(index, shop->items, shop->sold, FOX_SHOP_ITEMS, out);
+    return ShopStock_Item(index, shop->items, shop->sold, FOX_SHOP_ITEMS, out);
 }
 CLEAN_AS(func_020adfa4, FoxShop_Item)
 
@@ -147,7 +126,7 @@ CLEAN_AS(func_020adfc0, FoxShop_TakeItem)
 /* func_020ae02c: marks item `index` sold; whether it was not yet. */
 int FoxShop_MarkSold(FoxShop *shop, int index)
 {
-    return func_020b0074(index, FOX_SHOP_ITEMS, shop->sold);
+    return ShopStock_MarkSold(index, FOX_SHOP_ITEMS, shop->sold);
 }
 CLEAN_AS(func_020ae02c, FoxShop_MarkSold)
 
@@ -156,37 +135,37 @@ static void fox_draw(u16 *out, int group)
 {
     FoxItemLot lot;
     u16 item;
-    func_02063ccc(&lot, 0, group);
-    func_020638d4(&item, &lot, 0, 0, 0, 1, 0);
+    ItemList_Construct((ItemList *) &lot, 0, group);
+    ItemLists_Draw(&item, (ItemList *) &lot, 0, 0, 0, 1, 0);
     *out = item;
-    func_02063cc8(&lot);
+    ItemList_Destruct(&lot);
 }
 
 /* func_020ae03c: new items, none sold. The first is of group 0x26 with a chance of 50% plus a
- * tenth of the sum of three town values (func_0205be44), else of group 0x27; each other one of
- * group 5 with a chance of 50% plus a tenth of two of them, else of group 0. Then they are put
- * in one of six orders at random.
- * QUIRK: the second chance leaves out the middle value (func_0205be38) the first one adds.
+ * tenth of the edges of the house's five rooms summed over its three sides (RoomScore_HouseEdges),
+ * else of group 0x27; each other one of group 5 with a chance of 50% plus a tenth of two of those
+ * sums, else of group 0. Then they are put in one of six orders at random.
+ * QUIRK: the second chance leaves out the low-x sum (RoomScore_HouseLowX) the first one adds.
  * REQUIRES: `items` is a shop (data_021f3b30): the sold bits after it are cleared too. */
 void FoxShop_Stock(u16 *items)
 {
     FoxShop_ClearItems((FoxShop *) items);
 
-    unsigned chance = (unsigned) func_0205be44() / 10 + 50;
-    fox_draw(&items[0], func_020644cc(100) < chance ? 0x26 : 0x27);
+    unsigned chance = (unsigned) RoomScore_HouseEdges() / 10 + 50;
+    fox_draw(&items[0], MainRandom_Below(100) < chance ? 0x26 : 0x27);
 
-    int first = func_0205be20();
-    int second = func_0205be2c();
+    int first = RoomScore_HouseHighX();
+    int second = RoomScore_HouseHighZ();
     chance = (unsigned) ((first + second) / 10 + 50);
     for (unsigned i = 1; i < FOX_SHOP_ITEMS; i++) {
-        fox_draw(&items[i], func_020644cc(100) < chance ? 5 : 0);
+        fox_draw(&items[i], MainRandom_Below(100) < chance ? 5 : 0);
     }
 
     u16 drawn[FOX_SHOP_ITEMS];
     for (unsigned i = 0; i < FOX_SHOP_ITEMS; i++) {
         drawn[i] = items[i];
     }
-    const u8 *order = &data_020d1e48[FOX_SHOP_ITEMS * func_020644cc(6)];
+    const u8 *order = &data_020d1e48[FOX_SHOP_ITEMS * MainRandom_Below(6)];
     for (unsigned i = 0; i < FOX_SHOP_ITEMS; i++) {
         items[i] = drawn[order[i]];
     }
@@ -210,18 +189,20 @@ void FoxShop_SendLetters(void)
     MailLetter letter;
     FoxShopText text;
     u8 message;
-    func_02066694(&letter);
-    message = (u8) func_020644cc(FOX_LETTER_MESSAGES);
+    Letter_Construct((Letter *) &letter);
+    message = (u8) MainRandom_Below(FOX_LETTER_MESSAGES);
     FoxShopText_Construct(&text);
     FoxPassword_LoadLetterText(FoxShop_Password(&data_021f3b30), &text);
-    func_0203d7c4(FOX_TEXT_SLOT, &text);
+    MailText_SetPartText(FOX_TEXT_SLOT, &text);
 
     for (int i = 0; i < MAIL_PLAYERS; i++) {
-        void *player = func_02098844(data_021dc7bc, i);
-        if (player == NULL || func_02099a28(player) == 0 || func_02099020(player, FOX_LETTER_PLAYER_FLAG) == 0) {
+        void *player = PlayerRecords_TownRecord(data_021dc7bc, i);
+        if (player == NULL || PlayerRecord_HasPlayer(player) == 0 ||
+            PlayerRecord_TestFlag(player, FOX_LETTER_PLAYER_FLAG) == 0) {
             continue;
         }
-        func_02066024(&letter, &message, data_020e419c, data_020e4160, data_020e4164, func_02099870(player));
+        Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e419c, data_020e4160, data_020e4164,
+                                    PlayerRecord_Player(player));
         if (Mail_Post(&letter) == 0) {
             Mail_HoldAtPostOffice(&letter, 0);
         }
@@ -229,7 +210,7 @@ void FoxShop_SendLetters(void)
 
     FoxPassword_SetLettersSent(FoxShop_Password(&data_021f3b30));
     FoxShopText_Destruct(&text);
-    func_02066688(&letter);
+    Letter_Destruct((Letter *) &letter);
 }
 CLEAN_AS(func_020ae190, FoxShop_SendLetters)
 
@@ -238,15 +219,15 @@ CLEAN_AS(func_020ae190, FoxShop_SendLetters)
  * is no player, else whether a mark was set (always for a player of the town). */
 int FoxShop_MarkCurrentPlayer(void)
 {
-    void *player = func_020984e8();
+    void *player = PlayerRecords_Current();
     if (player == NULL) {
         return 0;
     }
-    void *name = func_02099870(player);
-    if (func_02094ffc(name) == FOX_OTHER_TOWN) {
+    void *name = PlayerRecord_Player(player);
+    if (PlayerId_WhichTown(name) == FOX_OTHER_TOWN) {
         return FoxPassword_MarkVisitor(FoxShop_Password(&data_021f3b30));
     }
-    int index = (u8) (func_0209871c(data_021dc7bc, name) & 3);
+    int index = (u8) (PlayerRecords_FindIndex(data_021dc7bc, name) & 3);
     FoxPassword_MarkPlayer(FoxShop_Password(&data_021f3b30), index);
     return 1;
 }
@@ -255,15 +236,15 @@ CLEAN_AS(func_020ae270, FoxShop_MarkCurrentPlayer)
 /* func_020ae2c4: whether this system's player has the mark FoxShop_MarkCurrentPlayer sets. */
 int FoxShop_CurrentPlayerMarked(void)
 {
-    void *player = func_020984e8();
+    void *player = PlayerRecords_Current();
     if (player == NULL) {
         return 0;
     }
-    void *name = func_02099870(player);
-    if (func_02094ffc(name) == FOX_OTHER_TOWN) {
+    void *name = PlayerRecord_Player(player);
+    if (PlayerId_WhichTown(name) == FOX_OTHER_TOWN) {
         return FoxPassword_VisitorMarked();
     }
-    int index = (u8) (func_0209871c(data_021dc7bc, name) & 3);
+    int index = (u8) (PlayerRecords_FindIndex(data_021dc7bc, name) & 3);
     return FoxPassword_PlayerMarked(FoxShop_Password(&data_021f3b30), index);
 }
 CLEAN_AS(func_020ae2c4, FoxShop_CurrentPlayerMarked)
@@ -283,7 +264,7 @@ int FoxShop_Has5012AfterSix(void)
     if (map == 0) {
         return 0;
     }
-    void *cell = func_0204f694(map, 0x200);
+    void *cell = AcreTile_FindAcreAnyFlag((AcreMap *) (uintptr_t) map, (void *) (uintptr_t) 0x200);
     if (cell == NULL) {
         return 0;
     }
@@ -294,7 +275,7 @@ int FoxShop_Has5012AfterSix(void)
     }
     int x;
     int z;
-    if (func_02037da8(cell, &x, &z, &data_021f49f8, &data_021f49f8, 0) == 0) {
+    if (AcreRecord_FindCode(cell, &x, &z, &data_021f49f8, &data_021f49f8, 0) == 0) {
         return 0;
     }
     DateTime now = {0};
@@ -320,7 +301,7 @@ CLEAN_AS(func_020ae3bc, FoxShop_Init)
 /* func_020ae3c4: no items, none sold. */
 void FoxShop_ClearItems(FoxShop *shop)
 {
-    func_020b00c8(shop->items, shop->sold, FOX_SHOP_ITEMS);
+    ShopStock_Clear(shop->items, shop->sold, FOX_SHOP_ITEMS);
 }
 CLEAN_AS(func_020ae3c4, FoxShop_ClearItems)
 
@@ -381,7 +362,8 @@ CLEAN_AS(func_020ae470, FoxPassword_CountUnused)
  * the visitors' mark. Returns whether it did. */
 int FoxPassword_MarkVisitor(FoxPassword *password)
 {
-    if (password->current != FOX_PASSWORD_NONE && func_02094ffc(func_02099870(func_020984e8())) == FOX_OTHER_TOWN) {
+    if (password->current != FOX_PASSWORD_NONE &&
+        PlayerId_WhichTown(PlayerRecord_Player(PlayerRecords_Current())) == FOX_OTHER_TOWN) {
         data_021f49e8 = 1;
         return 1;
     }
@@ -392,7 +374,7 @@ CLEAN_AS(func_020ae494, FoxPassword_MarkVisitor)
 /* func_020ae4c8: the visitors' mark, 0 when this system's player is not from another town. */
 u8 FoxPassword_VisitorMarked(void)
 {
-    if (func_02094ffc(func_02099870(func_020984e8())) == FOX_OTHER_TOWN) {
+    if (PlayerId_WhichTown(PlayerRecord_Player(PlayerRecords_Current())) == FOX_OTHER_TOWN) {
         return data_021f49e8;
     }
     return 0;
@@ -463,7 +445,7 @@ int FoxPassword_LoadLetterText(FoxPassword *password, FoxShopText *text)
         return 0;
     }
     u8 number = (u8) (((password->current & 0x1f) << 1) + 1);
-    return func_020b49d4(text, &number, data_020e41ac);
+    return (int) (uintptr_t) MessageReader_LoadDecoded(text, &number, data_020e41ac);
 }
 CLEAN_AS(func_020ae5bc, FoxPassword_LoadLetterText)
 
@@ -486,7 +468,7 @@ int FoxPassword_LoadTalkText(FoxPassword *password, FoxShopText *text)
         return 0;
     }
     u8 number = (u8) ((password->current & 0x1f) << 1);
-    return func_020b49d4(text, &number, data_020e41ac);
+    return (int) (uintptr_t) MessageReader_LoadDecoded(text, &number, data_020e41ac);
 }
 CLEAN_AS(func_020ae614, FoxPassword_LoadTalkText)
 
@@ -515,7 +497,7 @@ int FoxPassword_Pick(FoxPassword *password)
     if (unused == 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(unused);
+    int pick = (int) MainRandom_Below(unused);
     int seen = 0;
     for (unsigned i = 0; i < FOX_PASSWORDS; i++) {
         if (FoxPassword_IsUsed(password, i) != 0) {
@@ -524,7 +506,7 @@ int FoxPassword_Pick(FoxPassword *password)
         if (seen == pick) {
             password->current = (s8) i;
             FoxPassword_SetUsed(password, (int) i);
-            func_0208722c(data_021f3aec);
+            LastSale_SetUp((LastSale *) data_021f3aec);
             FoxShop_Stock(data_021f3b30.items);
             FoxPassword_ClearPlayers(password);
             StateBlock_ClearFlag(data_021dc7a8, FOX_LETTERS_SENT_FLAG);
@@ -579,7 +561,7 @@ CLEAN_AS(func_020ae738, FoxShopText_Buffer)
 FoxShopText *FoxShopText_DestructFree(FoxShopText *text)
 {
     text->vtable = data_020e4170;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -589,7 +571,7 @@ CLEAN_AS(func_020ae73c, FoxShopText_DestructFree)
 FoxShopText *FoxShopText_Destruct(FoxShopText *text)
 {
     text->vtable = data_020e4170;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     return text;
 }
 CLEAN_AS(func_020ae75c, FoxShopText_Destruct)
@@ -597,9 +579,9 @@ CLEAN_AS(func_020ae75c, FoxShopText_Destruct)
 /* func_020ae774: the constructor. */
 FoxShopText *FoxShopText_Construct(FoxShopText *text)
 {
-    func_020a8cac(text);
+    TextBase_Construct(text);
     text->vtable = data_020e4170;
-    func_020a8c1c(text);
+    TextBase_Clear(text);
     return text;
 }
 CLEAN_AS(func_020ae774, FoxShopText_Construct)

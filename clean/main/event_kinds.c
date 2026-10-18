@@ -7,6 +7,11 @@
 #include "scene_exit.h"
 #include "scene_tables.h"
 #include "session.h"
+#include "object_claim.h"
+#include "ov004/room_player_actor.h"
+#include "player_actor_ops.h"
+#include "scene_object_base.h"
+#include "session_players.h"
 
 /* The session's answer about an object (event_kinds.h); 6 when nothing was asked. */
 extern u8 data_020dab94;
@@ -14,37 +19,6 @@ extern u8 data_020dab94;
 extern NetSession *data_020ccf94;
 /* A byte of field actor states 0x6e (2 while the state's animation runs, field_actor.c). */
 extern u8 data_021c75b8;
-
-/* An object's id (its word 0xdc). */
-extern u32 func_0203efbc(void *object);
-/* What this console's player may do now; each reads its field actor (func_02096718(4)). */
-extern int func_02095bdc(void);
-extern int func_02095ce0(void);
-extern int func_02095d04(void);
-extern int func_02095d2c(void);
-extern int func_02095d84(void);
-extern int func_02095e08(void);
-extern int func_02095f28(void);
-extern int func_0209583c(void);
-extern int func_02095904(void);
-/* The player goes to the object in the way SceneObjectBase_ApproachKind gives. */
-extern void func_02095944(unsigned int approach);
-extern int func_02095f08(int on);
-extern int func_02096174(void);
-extern int func_ov004_0222bfb4(void);
-/* An actor of the scene; 4 is this console's player. */
-extern void *func_020961a8(int actor);
-/* How an event about a person is shared: 2 decided here, 1 sent to the other console. */
-extern int func_0203f338(void);
-/* An object's event sent to the other console as code 5 or 4. */
-extern void func_0203f320(u32 id, int code);
-extern void func_0203f32c(u32 id, int act);
-/* Whether the object may be claimed through the session: 2 yes, 1 asked, 0 not now. */
-extern int func_0203f400(u32 id);
-/* The object let go in the session. */
-extern void func_0203f394(u32 id);
-/* The session's object let go (or its state reset) at the end of an event. */
-extern void func_0203f364(void);
 
 /* The object registered under `id`, or NULL. */
 static SceneObjectBase *find(u32 id)
@@ -91,7 +65,7 @@ int EventKind_RunKind13(EventQueueEntry *event)
     if (event->step != EVENT_STEP_FINISHED) {
         return 0;
     }
-    func_02095f08(0);
+    PlayerActorOps_SwitchOwnFlag0b(0);
     return 1;
 }
 CLEAN_AS(func_0203e648, EventKind_RunKind13)
@@ -122,10 +96,10 @@ CLEAN_AS(func_0203e67c, EventKind_RunKind8)
  * way. */
 int EventKind_TakeKind8(EventQueueEntry *event)
 {
-    if (!func_02095d04()) {
+    if (!PlayerActorOps_QueueBelow5()) {
         return 0;
     }
-    if (!func_ov004_0222bfb4()) {
+    if (!RoomPlayerActor_RequestExit()) {
         return 0;
     }
     event->step = EVENT_KIND_STEP_UNDER_WAY;
@@ -138,7 +112,7 @@ CLEAN_AS(func_0203e68c, EventKind_TakeKind8)
 /* func_0203e6b4 (end): once func_02095bdc agrees. */
 int EventKind_EndMenu(void)
 {
-    return func_02095bdc() != 0;
+    return PlayerActorOps_FinishState() != 0;
 }
 CLEAN_AS(func_0203e6b4, EventKind_EndMenu)
 
@@ -152,10 +126,10 @@ CLEAN_AS(func_0203e6cc, EventKind_RunMenu)
 /* func_0203e6dc (take): when func_02095d84 and then func_02095904 agree; under way. */
 int EventKind_TakeMenu(EventQueueEntry *event)
 {
-    if (!func_02095d84()) {
+    if (!PlayerActorOps_MayAct()) {
         return 0;
     }
-    if (!func_02095904()) {
+    if (!PlayerActorOps_RequestState10()) {
         return 0;
     }
     event->step = EVENT_KIND_STEP_UNDER_WAY;
@@ -179,10 +153,10 @@ int EventKind_RunSceneStart(EventQueueEntry *event)
 }
 CLEAN_AS(func_0203e704, EventKind_RunSceneStart)
 
-/* func_0203e740 (end, kind 12): func_0203f364, done. */
+/* func_0203e740 (end, kind 12): this system's claim let go (ObjectClaim_Release), done. */
 int EventKind_EndSceneObject(void)
 {
-    func_0203f364();
+    ObjectClaim_Release();
     return 1;
 }
 CLEAN_AS(func_0203e740, EventKind_EndSceneObject)
@@ -199,13 +173,13 @@ int EventKind_StartSceneObject(EventQueueEntry *event)
         return 0;
     }
     if (event->step == EVENT_KIND_STEP_ASK_SESSION) {
-        switch (func_0203f400(event->first_id)) {
+        switch (ObjectClaim_Ask(event->first_id)) {
             case 2:
                 event->step = EVENT_KIND_STEP_GO;
                 break;
             case 1:
                 event->step = EVENT_KIND_STEP_ASKED;
-                func_0203f394(event->first_id);
+                ObjectClaim_Claim(event->first_id);
                 break;
         }
     }
@@ -215,7 +189,7 @@ int EventKind_StartSceneObject(EventQueueEntry *event)
                 event->step = EVENT_KIND_STEP_GO;
                 break;
             case EVENT_KIND_ANSWER_NO:
-                func_0203f394(event->first_id);
+                ObjectClaim_Claim(event->first_id);
                 break;
         }
     }
@@ -233,7 +207,7 @@ CLEAN_AS(func_0203e750, EventKind_StartSceneObject)
 /* func_0203e7d4 (start): once func_02095d2c agrees, flag 4 set. */
 int EventKind_StartKind11(void)
 {
-    if (!func_02095d2c()) {
+    if (!PlayerActorOps_Flag0bInState28_2_8()) {
         return 0;
     }
     EventQueue_SetFlag4();
@@ -244,10 +218,10 @@ CLEAN_AS(func_0203e7d4, EventKind_StartKind11)
 /* func_0203e7f0 (take): when func_02095f28 agrees; func_02095f08(1) and flag 2 set. */
 int EventKind_TakeKind11(void)
 {
-    if (!func_02095f28()) {
+    if (!PlayerActorOps_StateFlagA20()) {
         return 0;
     }
-    func_02095f08(1);
+    PlayerActorOps_SwitchOwnFlag0b(1);
     EventQueue_SetFlag2();
     return 1;
 }
@@ -262,10 +236,10 @@ int EventKind_TakeUnderfoot(EventQueueEntry *event)
 {
     SceneObjectBase *player = find(event->first_id);
 
-    if (!func_02095d84()) {
+    if (!PlayerActorOps_MayAct()) {
         return 0;
     }
-    if (!func_0209583c()) {
+    if (!PlayerActorOps_StepOffDoor()) {
         return 0;
     }
     if (player != NULL) {
@@ -285,10 +259,10 @@ int EventKind_TakeKind7(EventQueueEntry *event)
     if (find(event->first_id) == NULL) {
         return 0;
     }
-    if (!func_02095f28()) {
+    if (!PlayerActorOps_StateFlagA20()) {
         return 0;
     }
-    if (!func_02095f08(1)) {
+    if (!PlayerActorOps_SwitchOwnFlag0b(1)) {
         return 0;
     }
     event->step_17 = EVENT_KIND_ACT_KIND_6_7;
@@ -297,14 +271,14 @@ int EventKind_TakeKind7(EventQueueEntry *event)
 CLEAN_AS(func_0203e860, EventKind_TakeKind7)
 
 /* func_0203e89c (end): once func_02095bdc agrees, the object told the act ended and
- * func_0203f364. */
+ * this system's claim let go (ObjectClaim_Release). */
 int EventKind_EndObjectEvent(EventQueueEntry *event)
 {
-    if (!func_02095bdc()) {
+    if (!PlayerActorOps_FinishState()) {
         return 0;
     }
     EventKind_TellTarget(event, EVENT_KIND_TELL_ENDED);
-    func_0203f364();
+    ObjectClaim_Release();
     return 1;
 }
 CLEAN_AS(func_0203e89c, EventKind_EndObjectEvent)
@@ -318,7 +292,7 @@ int EventKind_RunObjectEvent(EventQueueEntry *event)
 
     switch (event->step) {
         case EVENT_KIND_STEP_APPROACHING:
-            if (func_02096174()) {
+            if (PlayerActorOps_TestOwnFlag1()) {
                 EventKind_TellObject(object, event->step_17);
                 event->step = EVENT_KIND_STEP_UNDER_WAY;
             }
@@ -336,14 +310,14 @@ CLEAN_AS(func_0203e8c0, EventKind_RunObjectEvent)
 int EventKind_TakeKind6(EventQueueEntry *event)
 {
     (void) find(event->first_id);
-    if (!func_02095d84()) {
+    if (!PlayerActorOps_MayAct()) {
         return 0;
     }
     event->step_17 = EVENT_KIND_ACT_KIND_6_7;
     if (!EventKind_Claim(event)) {
         return 0;
     }
-    func_02095904();
+    PlayerActorOps_RequestState10();
     return 1;
 }
 CLEAN_AS(func_0203e904, EventKind_TakeKind6)
@@ -374,10 +348,10 @@ int EventKind_StartObjectEvent(EventQueueEntry *event)
             break;
     }
     if (event->step == EVENT_KIND_STEP_WAIT_PLAYER) {
-        if (!func_02095d84()) {
+        if (!PlayerActorOps_MayAct()) {
             return 0;
         }
-        if (!func_02095904()) {
+        if (!PlayerActorOps_RequestState10()) {
             return 0;
         }
         event->step = EVENT_KIND_STEP_GO;
@@ -390,16 +364,16 @@ int EventKind_StartObjectEvent(EventQueueEntry *event)
                 approach = SCENE_OBJECT_BASE_APPROACH_NONE;
             }
             if (approach == SCENE_OBJECT_BASE_APPROACH_NONE) {
-                func_02095904();
+                PlayerActorOps_RequestState10();
                 EventKind_TellObject(object, event->step_17);
                 event->step = EVENT_KIND_STEP_UNDER_WAY;
             } else {
-                func_02095944((unsigned int) approach);
+                PlayerActorOps_Approach((unsigned int) approach);
                 event->step = EVENT_KIND_STEP_APPROACHING;
             }
             return 1;
         case EVENT_KIND_STEP_REFUSED:
-            if (func_02095bdc()) {
+            if (PlayerActorOps_FinishState()) {
                 EventKind_TellTarget(event, EVENT_KIND_TELL_REFUSED);
                 EventQueue_EndCurrent();
             }
@@ -419,7 +393,7 @@ int EventKind_TakeAct(EventQueueEntry *event)
     SceneObjectBase *target = find(event->second_id);
     SceneObjectBase *actor = find(event->first_id);
 
-    if (!func_02095d84()) {
+    if (!PlayerActorOps_MayAct()) {
         return 0;
     }
     event->step_17 = EVENT_KIND_ACT_MAY_ACT;
@@ -428,7 +402,7 @@ int EventKind_TakeAct(EventQueueEntry *event)
         if (found == NULL) {
             return 0;
         }
-        event->second_id = func_0203efbc(found);
+        event->second_id = SceneObjectBase_Id(found);
     } else if (!SceneObjectBase_CanAct(target, actor)) {
         if (!((SceneObjectBaseAsk *) SceneObjectBase_Slot(target, SCENE_OBJECT_BASE_SLOT_ASK_54))(target, actor)) {
             return 0;
@@ -438,7 +412,7 @@ int EventKind_TakeAct(EventQueueEntry *event)
     if (!EventKind_Claim(event)) {
         return 0;
     }
-    func_02095904();
+    PlayerActorOps_RequestState10();
     return 1;
 }
 CLEAN_AS(func_0203ea04, EventKind_TakeAct)
@@ -451,14 +425,14 @@ void EventKind_TellTarget(EventQueueEntry *event, int code)
     SceneObjectBase *object = find(event->second_id);
 
     if (object != NULL) {
-        if (SceneObjectBase_IsPerson(object) && func_0203f338() == 1) {
-            func_0203f320(event->second_id, code);
+        if (SceneObjectBase_IsPerson(object) && ObjectClaim_Mode() == 1) {
+            ObjectClaim_SendEvent(event->second_id, code);
         }
         tell(object, code);
     }
     EventQueue_SetTargetId(0);
     if (event->kind == 7) {
-        func_02095f08(0);
+        PlayerActorOps_SwitchOwnFlag0b(0);
     }
 }
 CLEAN_AS(func_0203ea80, EventKind_TellTarget)
@@ -468,8 +442,8 @@ CLEAN_AS(func_0203ea80, EventKind_TellTarget)
  * REQUIRES: `object` is not NULL. */
 void EventKind_TellObject(SceneObjectBase *object, int code)
 {
-    if (SceneObjectBase_IsPerson(object) && func_0203f338() == 1) {
-        func_0203f320(func_0203efbc(object), code);
+    if (SceneObjectBase_IsPerson(object) && ObjectClaim_Mode() == 1) {
+        ObjectClaim_SendEvent(SceneObjectBase_Id(object), code);
     }
     tell(object, code);
 }
@@ -493,7 +467,7 @@ CLEAN_AS(func_0203eb08, EventKind_Claim)
  * other console (func_0203f32c). */
 int EventKind_ClaimPerson(EventQueueEntry *event)
 {
-    int sharing = func_0203f338();
+    int sharing = ObjectClaim_Mode();
 
     switch (sharing) {
         case 2:
@@ -502,7 +476,7 @@ int EventKind_ClaimPerson(EventQueueEntry *event)
                 if (SceneObjectBase_IsPerson(person) && event->step_17 == EVENT_KIND_ACT_KIND_6_7) {
                     SceneObjectBaseAsk *ask =
                         (SceneObjectBaseAsk *) SceneObjectBase_Slot(person, SCENE_OBJECT_BASE_SLOT_ASK_58);
-                    if (!ask(person, func_020961a8(4))) {
+                    if (!ask(person, SessionPlayers_ActorOf(4))) {
                         return 0;
                     }
                 }
@@ -515,12 +489,12 @@ int EventKind_ClaimPerson(EventQueueEntry *event)
         case 0:
             return 0;
     }
-    if (event->kind != 7 && !func_02095904()) {
+    if (event->kind != 7 && !PlayerActorOps_RequestState10()) {
         return 0;
     }
     EventQueue_SetTargetId(event->second_id);
     if (sharing == 1) {
-        func_0203f32c(event->second_id, event->step_17);
+        ObjectClaim_SendAct(event->second_id, event->step_17);
     }
     return 1;
 }
@@ -528,10 +502,10 @@ CLEAN_AS(func_0203eb40, EventKind_ClaimPerson)
 
 /* func_0203ebd0: another object claimed: the session asked about it (2: go; 1: asked; 0: not
  * now). Then, except for kind 7, func_02095904 must agree; the object becomes the target object
- * and is let go in the session (func_0203f394). */
+ * and is claimed in the session (ObjectClaim_Claim). */
 int EventKind_ClaimObject(EventQueueEntry *event)
 {
-    switch (func_0203f400(event->second_id)) {
+    switch (ObjectClaim_Ask(event->second_id)) {
         case 2:
             event->step = EVENT_KIND_STEP_GO;
             break;
@@ -541,11 +515,11 @@ int EventKind_ClaimObject(EventQueueEntry *event)
         case 0:
             return 0;
     }
-    if (event->kind != 7 && !func_02095904()) {
+    if (event->kind != 7 && !PlayerActorOps_RequestState10()) {
         return 0;
     }
     EventQueue_SetTargetId(event->second_id);
-    func_0203f394(event->second_id);
+    ObjectClaim_Claim(event->second_id);
     return 1;
 }
 CLEAN_AS(func_0203ebd0, EventKind_ClaimObject)
@@ -555,7 +529,7 @@ CLEAN_AS(func_0203ebd0, EventKind_ClaimObject)
 /* func_0203ec1c (end): once func_02095bdc agrees. */
 int EventKind_EndGroup(void)
 {
-    return func_02095bdc() != 0;
+    return PlayerActorOps_FinishState() != 0;
 }
 CLEAN_AS(func_0203ec1c, EventKind_EndGroup)
 
@@ -575,10 +549,10 @@ int EventKind_TakeGroup(EventQueueEntry *event)
     if (!OverlayGroups_IsIdle()) {
         return 0;
     }
-    if (!func_02095e08()) {
+    if (!PlayerActorOps_MayActFree()) {
         return 0;
     }
-    if (!func_02095ce0()) {
+    if (!PlayerActorOps_RequestState5()) {
         return 0;
     }
     OverlayGroups_Request(event->step);

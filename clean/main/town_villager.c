@@ -17,6 +17,16 @@
 #include "villager_part_handover.h"
 #include "villager_status.h"
 #include "villager_town.h"
+#include "date_time.h"
+#include "event_calendar.h"
+#include "item_traits.h"
+#include "letter.h"
+#include "npc_lookup.h"
+#include "small_texts.h"
+#include "town_name.h"
+#include "villager_memory_entry.h"
+#include "villager_mode_record.h"
+#include "villager_plot_tile.h"
 
 #define TOWN_VILLAGER_HOUSE_ITEM_COUNT 10
 #define TOWN_VILLAGER_ITEM_COUNT 4
@@ -43,33 +53,6 @@ extern void func_02081f30(void *memory);
 extern void func_02081f18(void *memory);
 extern void func_02034ce0(void *item);
 extern void func_020051b0(void *item);
-
-extern u8 *func_0204c7c0(void);                           /* the address of data_021dc7a8 */
-extern const VillagerData *func_02082500(int number);     /* a villager number's data, NULL past 149 */
-extern int func_0209c330(const VillagerModeRecord *mode); /* its mode */
-/* The catchphrase text: constructed, destroyed, set from a villager number's catchphrase in
- * "st_npc_habit" (0 for a number without one) and copied out. */
-extern VillagerCatchphraseText *func_02082164(VillagerCatchphraseText *text);
-extern VillagerCatchphraseText *func_0208214c(VillagerCatchphraseText *text);
-extern int func_02082308(VillagerCatchphraseText *text, u32 number);
-extern void func_02082114(VillagerCatchphraseText *text, u16 *dst, int count);
-/* A town head (npc_id.h): constructed, destroyed, cleared. */
-extern void func_020642fc(NpcIdHead *head);
-extern void func_020642f8(NpcIdHead *head);
-extern void func_020642e0(NpcIdHead *head);
-/* A letter: constructed, destroyed, emptied. */
-extern void func_02066694(MailLetter *letter);
-extern void func_02066688(MailLetter *letter);
-extern void func_02066650(MailLetter *letter);
-/* The tile of the villager's house (villager_plots.h): constructed, destroyed, set to none. */
-extern int func_02081fa0(void *tile);
-extern void func_02081f9c(void *tile);
-extern void func_02081f94(void *tile);
-extern void func_02081ef0(VillagerMemory *memory); /* a memory emptied */
-/* The calendar's events of a date (at most seven), and whether event `event` is on it. */
-extern int func_0203fea0(VillagerTownEvent *events, DateTime *when);
-extern void func_0209e474(DateTime *now);            /* the clock's date and time */
-extern void func_0209e29c(DateTime *when, int days); /* plus `days` */
 
 static u8 *town_villager_at(u8 *villager, int offset)
 {
@@ -102,7 +85,8 @@ int TownVillager_IsFreeCompanion(u8 *villager)
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return 0;
     }
-    int moving = VillagerMove_VillagerIndex((VillagerTown *) (void *) (func_0204c7c0() + TOWN_VILLAGER_TOWN_OFFSET));
+    int moving =
+        VillagerMove_VillagerIndex((VillagerTown *) (void *) (ItemTraits_StateBlockAddress() + TOWN_VILLAGER_TOWN_OFFSET));
     u8 *record = PlayerRecords_Current();
     if (moving == VillagerStatus_Index(villager)) {
         return 0;
@@ -133,7 +117,7 @@ int TownVillager_EventYearWithin(u8 *villager, int days, const DateTime *from)
     int index = VillagerStatus_Index(villager);
     DateTime day = {0};
     if (from == NULL) {
-        func_0209e474(&day);
+        DateTime_Now(&day);
     } else {
         MI_CpuCopy8(from, &day, sizeof(day));
     }
@@ -141,13 +125,13 @@ int TownVillager_EventYearWithin(u8 *villager, int days, const DateTime *from)
         VillagerTownEvent events[VILLAGER_TOWN_DAY_EVENTS];
         DateTime when;
         MI_CpuCopy8(&day, &when, sizeof(when));
-        int count = func_0203fea0(events, &when);
+        int count = EventCalendar_ListAll((EventCalendarEvent *) events, &when);
         for (int k = 0; k < count; k++) {
             if (events[k].id == index) {
                 return day.year;
             }
         }
-        func_0209e29c(&day, 1);
+        DateTime_AddDays(&day, 1);
     }
     return -1;
 }
@@ -233,14 +217,15 @@ CLEAN_AS(func_0208150c, TownVillager_NpcId)
  * town (`came`). */
 void TownVillager_Setup(u8 *villager, u32 number, int came, const NpcIdHead *town, u8 mode_draw)
 {
-    const VillagerData *data = func_02082500((int) number);
+    const VillagerData *data = NpcLookup_Data((int) number);
     VillagerCatchphraseText text;
-    func_02082164(&text);
+    CatchphraseWide_Construct((CatchphraseWide *) &text);
     u8 personality = data != NULL ? data->personality : 0;
     NpcId_Set((NpcId *) (void *) town_villager_at(villager, TOWN_VILLAGER_NPC), (u8) number, personality, town);
     TextString_ClearWide((TextObject *) (void *) &text);
-    if (func_02082308(&text, number)) {
-        func_02082114(&text, (u16 *) (void *) town_villager_at(villager, VILLAGER_CATCHPHRASE), VILLAGER_CATCHPHRASE_LENGTH);
+    if (NpcLookup_CatchphraseToWide(&text, number)) {
+        CatchphraseWide_CopyOut((CatchphraseWide *) &text, (u16 *) (void *) town_villager_at(villager, VILLAGER_CATCHPHRASE),
+                                VILLAGER_CATCHPHRASE_LENGTH);
     }
     if (data != NULL) {
         u16 clothes = data->clothes;
@@ -253,17 +238,17 @@ void TownVillager_Setup(u8 *villager, u32 number, int came, const NpcIdHead *tow
         VillagerFurniture_SetWallpaper(villager, data->wallpaper);
         VillagerFurniture_SetCarpet(villager, data->carpet);
         VillagerObject_DrawRecordMode(town_villager_record(villager), (int) (uintptr_t) data->mode_scores, mode_draw);
-        int mode = func_0209c330(VillagerObject_RecordMode(town_villager_record(villager)));
+        int mode = VillagerModeRecord_Mode(VillagerObject_RecordMode(town_villager_record(villager)));
         VillagerFurniture_ResetForMode(villager, mode, 0);
         villager[TOWN_VILLAGER_NUMBER_7D8] = data->byte_2f;
-        if (func_0209c330(VillagerObject_RecordMode(town_villager_record(villager))) == TOWN_VILLAGER_MODE_2) {
+        if (VillagerModeRecord_Mode(VillagerObject_RecordMode(town_villager_record(villager))) == TOWN_VILLAGER_MODE_2) {
             villager[TOWN_VILLAGER_NUMBER_7D8] = (u8) (villager[TOWN_VILLAGER_NUMBER_7D8] % TOWN_VILLAGER_MODE_2_NUMBERS);
         }
         VillagerEntry_MarkItems(villager);
         villager[TOWN_VILLAGER_ITEM_1380] = data->item_1380;
     }
     VillagerStatus_SetCame(villager, (u8) came);
-    func_0208214c(&text);
+    CatchphraseWide_Destruct((CatchphraseWide *) &text);
 }
 CLEAN_AS(func_02081518, TownVillager_Setup)
 
@@ -285,33 +270,33 @@ void TownVillager_Reset(u8 *villager)
     *TownVillager_Clothes(villager) = VILLAGER_DATA_CLOTHES_FIRST;
     VillagerCatchphrase_Clear(villager);
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
-        func_02081ef0((VillagerMemory *) (void *) town_villager_at(villager, i * (int) sizeof(VillagerMemory)));
+        VillagerMemoryEntry_Clear((VillagerMemory *) (void *) town_villager_at(villager, i * (int) sizeof(VillagerMemory)));
     }
-    func_020642e0((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN));
+    TownName_Clear((TownName *) ((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN)));
     u16 *items = town_villager_house_items(villager);
     for (int i = 0; i < TOWN_VILLAGER_HOUSE_ITEM_COUNT; i++) {
         items[i] = TOWN_VILLAGER_NO_ITEM;
     }
-    func_02081f94(town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
+    VillagerPlotTile_Clear((VillagerPlot *) (void *) town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
     VillagerObject_ClearRecord((VillagerRecord *) (void *) town_villager_at(villager, TOWN_VILLAGER_RECORD));
     villager[TOWN_VILLAGER_CAME] = TOWN_VILLAGER_CAME_RESET;
-    func_02066650(TownVillager_Letter(villager));
+    Letter_Clear((Letter *) TownVillager_Letter(villager));
     VillagerItems_Clear(villager);
-    func_020642e0((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN));
+    TownName_Clear((TownName *) ((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN)));
 }
 CLEAN_AS(func_02081660, TownVillager_Reset)
 
 /* func_02081710: the villager's destructor, its parts from the last to the first. */
 u8 *TownVillager_Destruct(u8 *villager)
 {
-    func_020642f8((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN));
-    func_02081f9c(town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
-    func_020642f8((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN));
+    TownName_Destruct((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN));
+    VillagerPlotTile_Destruct((VillagerPlot *) (void *) town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
+    TownName_Destruct((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN));
     __cxa_vec_cleanup(town_villager_at(villager, TOWN_VILLAGER_ITEMS), TOWN_VILLAGER_ITEM_COUNT, sizeof(u16), func_020051b0);
     NpcId_Destruct((NpcId *) (void *) town_villager_at(villager, TOWN_VILLAGER_NPC));
     __cxa_vec_cleanup(town_villager_house_items(villager), TOWN_VILLAGER_HOUSE_ITEM_COUNT, sizeof(u16), func_020051b0);
     VillagerObject_DestructRecord((VillagerRecord *) (void *) town_villager_at(villager, TOWN_VILLAGER_RECORD));
-    func_02066688(TownVillager_Letter(villager));
+    Letter_Destruct((Letter *) TownVillager_Letter(villager));
     Design_Destruct((Design *) (void *) town_villager_at(villager, TOWN_VILLAGER_DESIGN));
     __cxa_vec_cleanup(villager, VILLAGER_MEMORIES, sizeof(VillagerMemory), func_02081f18);
     return villager;
@@ -323,17 +308,17 @@ u8 *TownVillager_Construct(u8 *villager)
 {
     __cxa_vec_ctor(villager, VILLAGER_MEMORIES, sizeof(VillagerMemory), func_02081f30, func_02081f18);
     Design_Construct((char *) town_villager_at(villager, TOWN_VILLAGER_DESIGN));
-    func_02066694(TownVillager_Letter(villager));
+    Letter_Construct((Letter *) TownVillager_Letter(villager));
     VillagerObject_ConstructRecord((VillagerRecord *) (void *) town_villager_at(villager, TOWN_VILLAGER_RECORD));
     __cxa_vec_ctor(town_villager_house_items(villager), TOWN_VILLAGER_HOUSE_ITEM_COUNT, sizeof(u16), func_02034ce0,
                    func_020051b0);
     NpcId_Construct((NpcId *) (void *) town_villager_at(villager, TOWN_VILLAGER_NPC));
     __cxa_vec_ctor(town_villager_at(villager, TOWN_VILLAGER_ITEMS), TOWN_VILLAGER_ITEM_COUNT, sizeof(u16), func_02034ce0,
                    func_020051b0);
-    func_020642fc((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN));
-    func_02081fa0(town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
+    TownName_Construct((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN));
+    VillagerPlotTile_Construct((VillagerPlot *) (void *) town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
     *TownVillager_Clothes(villager) = TOWN_VILLAGER_NO_ITEM;
-    func_020642fc((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN));
+    TownName_Construct((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN));
     return villager;
 }
 CLEAN_AS(func_020817a8, TownVillager_Construct)

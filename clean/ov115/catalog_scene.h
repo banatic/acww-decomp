@@ -11,18 +11,19 @@
  * handle). A cursor sprite (a Glider0, ov002/glide.h) follows the list's cursor while the scene
  * is used with the buttons; with the pen the list is touched directly.
  *
- * The list's cursor is on one of its places (byte 0x12bc of the list): 0 and 1 the page
- * arrows, 2 and 3 the scroll arrows, 4 the scroll handle, 5-12 the menu bar's eight places
- * (tab = place - 5) and 13 on the list's entries. */
+ * The list's cursor is on one of its places (CatalogList.cursor, CatalogListPlace): 0 and 1
+ * the page arrows, 2 and 3 the scroll arrows, 4 the scroll handle, 5-12 the menu bar's eight
+ * places (tab = place - 5) and 13 on the list's entries. */
 #ifndef CLEAN_OV115_CATALOG_SCENE_H
 #define CLEAN_OV115_CATALOG_SCENE_H
 
 #include "main/text_label.h"
+#include "ov114/catalog_list.h"
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
 #include "types.h"
 
-/* The kinds of list overlay 114 shows (byte 0x12b7 of the list). */
+/* The kinds of list overlay 114 shows (CatalogList.kind, the same as CatalogListKind). */
 enum CatalogKind { CATALOG_KIND_FISH = 0, CATALOG_KIND_INSECTS = 1 };
 
 /* The scene's flags (`flags`). */
@@ -66,52 +67,17 @@ enum CatalogScenePhase {
 #define CATALOG_SCENE_LAYER_B 6
 #define CATALOG_SCENE_LAYER_C 4
 
-#define CATALOG_SCENE_LIST_SIZE 0x12c0
-
 typedef struct CatalogScene {
-    MenuScene base;                   /* 0x00 */
-    Glider cursor;                    /* 0x94: a Glider0 */
-    u8 list[CATALOG_SCENE_LIST_SIZE]; /* 0xf8: overlay 114's catalog list (func_ov114_0229da18) */
-    TextLabel label;                  /* 0x13b8 */
-    s32 wipe_y;                       /* 0x1424: MenuScene_WipeOffsetY's, the list's y offset */
-    u16 flags;                        /* 0x1428: CatalogSceneFlag */
-    u8 unk_142a;                      /* 0x142a: cleared with the label's box */
-    u8 pad_142b;                      /* 0x142b */
-    u8 return_sub_state;              /* 0x142c: the sub state to go back to */
-    u8 pad_142d[3];                   /* 0x142d */
+    MenuScene base;      /* 0x00 */
+    Glider cursor;       /* 0x94: a Glider0 */
+    CatalogList list;    /* 0xf8: overlay 114's catalog list */
+    TextLabel label;     /* 0x13b8 */
+    s32 wipe_y;          /* 0x1424: MenuScene_WipeOffsetY's, the list's y offset */
+    u16 flags;           /* 0x1428: CatalogSceneFlag */
+    u8 unk_142a;         /* 0x142a: cleared with the label's box */
+    u8 pad_142b;         /* 0x142b */
+    u8 return_sub_state; /* 0x142c: the sub state to go back to */
+    u8 pad_142d[3];      /* 0x142d */
 } CatalogScene;
-
-/* Overlay 114's catalog list, called with the list (0xf8 of the scene). */
-extern void *func_ov114_0229da18(void *list);                                           /* constructor */
-extern void *func_ov114_0229d9d8(void *list);                                           /* destructor */
-extern void func_ov114_0229d8d0(u8 *list, u8 layer_a, u8 layer_b, u8 layer_c, u8 kind); /* starts */
-extern int func_ov114_0229c60c(u8 *list);               /* the bar's tab under the cursor, or -1 */
-extern int func_ov114_0229c5f4(u8 *list);               /* the cursor is on a page arrow */
-extern int func_ov114_0229c690(void *list);             /* the cursor's x */
-extern int func_ov114_0229c628(void *list);             /* the cursor's y */
-extern void func_ov114_0229c3ac(void *list);            /* the cursor's entry brought into view */
-extern int func_ov114_0229c410(void *list, void *keys); /* the cursor moved by the keys */
-extern int func_ov114_0229c2c8(void *list);             /* A on the cursor's place */
-extern int func_ov114_0229d1dc(void *list);
-extern void func_ov114_0229d52c(void *list, int y); /* the scroll handle placed */
-extern void func_ov114_0229d244(void *list);        /* a scroll step */
-extern void func_ov114_0229d220(void *list);
-extern int func_ov114_0229d2d8(void *list);
-extern void func_ov114_0229d304(void *list);              /* the pen let go of the handle */
-extern void func_ov114_0229d32c(void *list, int x);       /* the handle dragged to x */
-extern int func_ov114_0229d564(void *list, int x, int y); /* a page arrow touched */
-extern int func_ov114_0229d3f4(void *list, int x, int y); /* the handle or a scroll arrow touched */
-extern int func_ov114_0229ca50(void *list, int x, int y); /* an entry touched */
-extern void func_ov114_0229d688(void *list);              /* the OBJ files loaded */
-extern void func_ov114_0229cadc(void *list);              /* the entries filled */
-extern void func_ov114_0229d700(void *list);              /* the background files loaded */
-extern void func_ov114_0229c8dc(void *list);
-extern void func_ov114_0229d824(void *list);        /* the end of a frame */
-extern void func_ov114_0229d87c(void *list);        /* the start of a frame */
-extern void func_ov114_0229d8ac(void *list);        /* the end of the scene */
-extern void func_ov114_0229c8b4(void *list);        /* the wipe out begins */
-extern void func_ov114_0229d5b8(void *list, int y); /* draws the arrows and the handle */
-extern void func_ov114_0229cbe4(void *list, int y); /* draws the entries */
-extern void func_ov114_0229d54c(void *list);        /* draws its member at 0x121c */
 
 #endif

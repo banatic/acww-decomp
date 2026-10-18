@@ -25,7 +25,7 @@ void MiddleSpot_ToPosition(const MiddleSpot *spot, Vec3 *position);
 void MiddleSpot_SetFromPosition(MiddleSpot *spot, const Vec3 *position);
 void MiddleSpot_Pick(MiddleSpot *spot);
 void MiddleSpot_Clear(MiddleSpot *spot);
-void MiddleSpot_Construct(MiddleSpot *spot);
 void MiddleSpot_Destruct(MiddleSpot *spot);
+void MiddleSpot_Construct(MiddleSpot *spot);
 
 #endif

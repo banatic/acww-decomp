@@ -29,20 +29,20 @@ void Block021d27acPart20_SetValue(Block021d27acPart20 *part, int value);
 int Block021d27acPart20_Kind(const Block021d27acPart20 *part);
 void Block021d27acPart20_SetKind(Block021d27acPart20 *part, int kind);
 void Block021d27acPart20_ClearKind(Block021d27acPart20 *part);
-void Block021d27acPart20_Construct(Block021d27acPart20 *part);
 void Block021d27acPart20_Destruct(Block021d27acPart20 *part);
+void Block021d27acPart20_Construct(Block021d27acPart20 *part);
 
 void Block021d27acPart30_Set(u8 *part, int value);
 int Block021d27acPart30_IsSet(const u8 *part);
 void Block021d27acPart30_Clear(u8 *part);
-void Block021d27acPart30_Construct(u8 *part);
 void Block021d27acPart30_Destruct(u8 *part);
+void Block021d27acPart30_Construct(u8 *part);
 
 int Block021d27acPart18_HasPassed(const DateTime *part);
 void Block021d27acPart18_SetToday(DateTime *part);
 DateTime *Block021d27acPart18_Get(DateTime *part);
 void Block021d27acPart18_Clear(DateTime *part);
-void Block021d27acPart18_Construct(DateTime *part);
 void Block021d27acPart18_Destruct(DateTime *part);
+void Block021d27acPart18_Construct(DateTime *part);
 
 #endif

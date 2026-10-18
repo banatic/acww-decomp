@@ -8,6 +8,18 @@
 #include "villager_bonds.h"
 #include "villager_outdoors.h"
 #include "villager_state.h"
+#include "actor_table.h"
+#include "date_time.h"
+#include "main_random.h"
+#include "npc_lookup.h"
+#include "player_id.h"
+#include "scene_query.h"
+#include "text_base.h"
+#include "town_villager.h"
+#include "villager_memories.h"
+#include "villager_memory_entry.h"
+#include "villager_move_record.h"
+#include "villager_status.h"
 
 static_assert(sizeof(NpcIdHead) == 14, "NpcId head");
 static_assert(offsetof(NpcId, number) == 0x0f, "NpcId number");
@@ -37,43 +49,14 @@ static_assert(offsetof(VillagerRosterTextVtable, chars) == 0x0c, "vtable slot 3"
 static_assert(sizeof(VillagerRosterText) == 0x20, "text object");
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern NpcId *func_0208150c(const void *villager);         /* the villager's NpcId, at 0x7a0 */
-extern VillagerState *func_0207f270(const void *villager); /* its entry of the state table */
-extern int func_0207cf74(u32 index);                       /* whether the index is 0-7 */
-extern unsigned int func_020644cc(int bound);              /* a random number below `bound` */
-extern void func_0209e474(DateTime *now);                  /* the clock's date and time */
-/* Whether `when` falls in the hours a villager of that personality sleeps. */
-extern int func_020821d4(int personality, const DateTime *when);
-/* The villager's memory of the player (0x80 bytes), or NULL when it does not know the player. */
-extern s8 *func_020807a8(const void *villager, const void *player);
-extern int func_02081d20(const s8 *memory);     /* how fond the villager is (signed byte 0x6c) */
-extern int func_020951bc(const void *player);   /* whether the player id is set */
-extern int func_0207f074(const void *villager); /* a resident not away and not met (see PickResident) */
-/* The first of `count` places from `villagers` that has no valid NpcId, or -1. */
-extern int func_02080b98(VillagerTown *villagers, int count);
-extern int func_020b6694(u8 code); /* whether the code is 17-24 */
-extern int func_020b66c4(u8 code); /* 0-7 for 17-24, else -1 */
-/* The text objects (VillagerRosterText): built, emptied, filled from another, destroyed. */
-extern void *func_02094fd4(VillagerRosterText *text);
-extern void *func_02094fbc(VillagerRosterText *text);
-extern void *func_02094f7c(VillagerRosterText *text);
-extern void *func_02094f64(VillagerRosterText *text);
-extern void func_020a8c1c(VillagerRosterText *text);
-extern int func_020a87e0(VillagerRosterText *dst, VillagerRosterText *src);
-extern int func_02094f40(VillagerRosterText *text); /* its length in characters: 6 */
-/* A villager's place and the state of the town as a block. */
-extern void func_02081660(void *villager);      /* the place emptied (a villager reset) */
-extern void *func_02081710(void *villager);     /* a villager's destructor */
-extern void *func_020817a8(void *villager);     /* a villager's constructor */
-extern void func_0209a77c(VillagerMove *move);  /* the record cleared: no plan */
-extern void *func_0209a7e8(VillagerMove *move); /* its destructor */
-extern void *func_0209a814(VillagerMove *move); /* its constructor */
+extern void *func_02081710(void *villager); /* a villager's destructor */
+extern void *func_020817a8(void *villager); /* a villager's constructor */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 
 static int has_villager(const u8 *villager)
 {
-    return NpcId_IsValid(func_0208150c(villager));
+    return NpcId_IsValid(TownVillager_NpcId((u8 *) villager));
 }
 
 /* Whether two NpcIds name the same villager: the head and the number, not the personality. */
@@ -89,7 +72,7 @@ u8 *VillagerRoster_FindNumber(VillagerTown *town, int number)
 {
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
-        const NpcId *npc = func_0208150c(villager);
+        const NpcId *npc = TownVillager_NpcId(villager);
         if (NpcId_IsValid(npc) && number == NpcId_Number(npc)) {
             return villager;
         }
@@ -101,11 +84,11 @@ CLEAN_AS(func_0207c4a4, VillagerRoster_FindNumber)
 /* func_0207cd4c: the villager a code 17-24 stands for (places 0-7), or NULL. */
 u8 *VillagerRoster_ForCode(VillagerTown *town, int code)
 {
-    if (func_020b6694((u8) code) == 0) {
+    if (SceneQuery_In11((u8) code) == 0) {
         return NULL;
     }
-    int index = func_020b66c4((u8) code);
-    if (!func_0207cf74((u32) index)) {
+    int index = SceneQuery_IndexIn11((u8) code);
+    if (!ActorTable_IsKindESlot((u32) index)) {
         return NULL;
     }
     return VillagerRoster_At(town, index);
@@ -116,7 +99,7 @@ CLEAN_AS(func_0207cd4c, VillagerRoster_ForCode)
 u8 *VillagerRoster_Find(VillagerTown *town, const NpcId *npc)
 {
     int index = VillagerRoster_IndexOf(town, npc);
-    if (!func_0207cf74((u32) index)) {
+    if (!ActorTable_IsKindESlot((u32) index)) {
         return NULL;
     }
     return town->villagers[index];
@@ -126,7 +109,7 @@ CLEAN_AS(func_0207ce98, VillagerRoster_Find)
 /* func_0207cec0: the villager at place `index`, or NULL outside 0-7. */
 u8 *VillagerRoster_At(VillagerTown *town, int index)
 {
-    if (!func_0207cf74((u32) index)) {
+    if (!ActorTable_IsKindESlot((u32) index)) {
         return NULL;
     }
     return town->villagers[index];
@@ -136,10 +119,10 @@ CLEAN_AS(func_0207cec0, VillagerRoster_At)
 /* func_0207cee4: whether place `index` (0-7) holds a villager; 0 outside 0-7. */
 int VillagerRoster_IsFilled(VillagerTown *town, int index)
 {
-    if (!func_0207cf74((u32) index)) {
+    if (!ActorTable_IsKindESlot((u32) index)) {
         return 0;
     }
-    return NpcId_IsValid(func_0208150c(town->villagers[index]));
+    return NpcId_IsValid(TownVillager_NpcId(town->villagers[index]));
 }
 CLEAN_AS(func_0207cee4, VillagerRoster_IsFilled)
 
@@ -151,7 +134,7 @@ int VillagerRoster_IndexOf(VillagerTown *town, const NpcId *npc)
         return VILLAGER_ROSTER_NONE;
     }
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
-        if (same_villager(npc, func_0208150c(town->villagers[i]))) {
+        if (same_villager(npc, TownVillager_NpcId(town->villagers[i]))) {
             return i;
         }
     }
@@ -196,8 +179,8 @@ u8 *VillagerRoster_FindByName(VillagerTown *town, const u16 *name, int length, c
     u8 *villager = VillagerRoster_At(town, 0);
     VillagerRosterText formatted;
     VillagerRosterText wide;
-    func_02094fd4(&formatted);
-    func_02094f7c(&wide);
+    PlayerIdText_Construct((PlayerIdText *) &formatted);
+    PlayerIdWideText_Construct((PlayerIdWideText *) &wide);
 
     u8 *found = NULL;
     int wanted = VillagerRoster_NameLength(name, length);
@@ -206,22 +189,22 @@ u8 *VillagerRoster_FindByName(VillagerTown *town, const u16 *name, int length, c
             if (!has_villager(villager)) {
                 continue;
             }
-            if (player != NULL && func_020807a8(villager, player) == NULL) {
+            if (player != NULL && VillagerMemory_Of(villager, player) == NULL) {
                 continue;
             }
-            func_020a8c1c(&formatted);
-            NpcId_FormatName(func_0208150c(villager), (char *) &formatted);
-            func_020a87e0(&wide, &formatted);
+            TextBase_Clear(&formatted);
+            NpcId_FormatName(TownVillager_NpcId(villager), (char *) &formatted);
+            TextBase_BytesToWide((WideTextBase *) &wide, (TextBase *) &formatted);
             u16 *chars = wide.vtable->chars(&wide);
-            int chars_length = VillagerRoster_NameLength(chars, func_02094f40(&wide));
+            int chars_length = VillagerRoster_NameLength(chars, PlayerIdWideText_Capacity(&wide));
             if (chars_length == wanted && VillagerRoster_NameEquals(chars, name, chars_length)) {
                 found = villager;
                 break;
             }
         }
     }
-    func_02094f64(&wide);
-    func_02094fbc(&formatted);
+    PlayerIdWideText_Destruct((PlayerIdWideText *) &wide);
+    PlayerIdText_Destruct((PlayerIdText *) &formatted);
     return found;
 }
 CLEAN_AS(func_0207cd84, VillagerRoster_FindByName)
@@ -251,7 +234,7 @@ CLEAN_AS(func_0207cadc, VillagerRoster_CountFilled)
 /* func_0207cd40: the first place without a villager, or -1 when all eight are filled. */
 int VillagerRoster_FirstFree(VillagerTown *town)
 {
-    return func_02080b98(town, VILLAGER_TOWN_VILLAGERS);
+    return TownVillager_FirstEmpty((u8 *) town, VILLAGER_TOWN_VILLAGERS);
 }
 CLEAN_AS(func_0207cd40, VillagerRoster_FirstFree)
 
@@ -263,7 +246,7 @@ int VillagerRoster_PickBit(unsigned int mask, int count, int bits)
     if (count <= 0) {
         return VILLAGER_ROSTER_NONE;
     }
-    int nth = (int) func_020644cc(count);
+    int nth = (int) MainRandom_Below(count);
     for (int i = 0; i < bits; i++) {
         if ((mask >> i) & 1) {
             if (nth == 0) {
@@ -282,22 +265,22 @@ CLEAN_AS(func_0207cc54, VillagerRoster_PickBit)
 u8 *VillagerRoster_FondestOrAny(VillagerTown *town, const void *player)
 {
     u8 *best = NULL;
-    if (func_020951bc(player) != 0) {
+    if (PlayerId_IsSet((DesignCreator *) player) != 0) {
         int best_fondness = -128;
         for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
             u8 *villager = town->villagers[i];
             if (!has_villager(villager)) {
                 continue;
             }
-            const s8 *memory = func_020807a8(villager, player);
+            const s8 *memory = (const s8 *) VillagerMemory_Of(villager, player);
             if (memory == NULL) {
                 continue;
             }
-            int fondness = func_02081d20(memory);
+            int fondness = VillagerMemoryEntry_Fondness((VillagerMemory *) (void *) memory);
             if (best == NULL || fondness > best_fondness) {
                 best = villager;
                 best_fondness = fondness;
-            } else if (fondness == best_fondness && (func_020644cc(VILLAGER_ROSTER_TIE_DRAW) & 1)) {
+            } else if (fondness == best_fondness && (MainRandom_Below(VILLAGER_ROSTER_TIE_DRAW) & 1)) {
                 best = villager;
             }
         }
@@ -318,13 +301,13 @@ u8 *VillagerRoster_PickResident(VillagerTown *town, const NpcId *const *excluded
     for (int i = 0; i < count; i++) {
         if (excluded[i] != NULL) {
             int index = VillagerRoster_IndexOf(town, excluded[i]);
-            if (func_0207cf74((u32) index)) {
+            if (ActorTable_IsKindESlot((u32) index)) {
                 left_out |= (u8) (1u << index);
             }
         }
     }
     int moving = VillagerMove_VillagerIndex(town);
-    if (func_0207cf74((u32) moving)) {
+    if (ActorTable_IsKindESlot((u32) moving)) {
         left_out |= (u8) (1u << moving);
     }
 
@@ -332,8 +315,8 @@ u8 *VillagerRoster_PickResident(VillagerTown *town, const NpcId *const *excluded
     int candidate_count = 0;
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
-        const NpcId *npc = func_0208150c(villager);
-        if (((left_out >> i) & 1) == 0 && NpcId_IsValid(npc) && func_0207f074(villager)) {
+        const NpcId *npc = TownVillager_NpcId(villager);
+        if (((left_out >> i) & 1) == 0 && NpcId_IsValid(npc) && VillagerStatus_IsFree(villager)) {
             candidates |= (u8) (1u << i);
             candidate_count++;
         }
@@ -362,7 +345,7 @@ u8 *VillagerRoster_PickAny(VillagerTown *town, const NpcId *const *excluded, int
             continue;
         }
         int index = VillagerRoster_IndexOf(town, excluded[i]);
-        if (func_0207cf74((u32) index)) {
+        if (ActorTable_IsKindESlot((u32) index)) {
             filled[index] = 0;
             if (NpcId_IsValid(excluded[i])) {
                 filled_count--;
@@ -370,7 +353,7 @@ u8 *VillagerRoster_PickAny(VillagerTown *town, const NpcId *const *excluded, int
         }
     }
     if (filled_count > 0) {
-        int nth = (int) func_020644cc(filled_count);
+        int nth = (int) MainRandom_Below(filled_count);
         for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
             if (filled[i] == 1) {
                 if (nth == 0) {
@@ -392,21 +375,21 @@ CLEAN_AS(func_0207cc94, VillagerRoster_PickAny)
 void VillagerRoster_WakeUp(VillagerTown *town)
 {
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
-        const NpcId *npc = func_0208150c(villager);
+        const NpcId *npc = TownVillager_NpcId(villager);
         if (!NpcId_IsValid(npc)) {
             continue;
         }
-        VillagerState *state = func_0207f270(villager);
+        VillagerState *state = VillagerStatus_StateEntry(villager);
         if (VillagerState_LinkedByte01(state) != VILLAGER_PLACE_ASLEEP || VillagerState_LinkedState(state) != 0) {
             continue;
         }
         if (VillagerOutdoors_OutsideSlot(&town->outdoors, i) != VILLAGER_OUTDOORS_NONE) {
             continue;
         }
-        if (func_020821d4(NpcId_Personality(npc), &now) != 0) {
+        if (NpcLookup_IsInNightWindow(NpcId_Personality(npc), &now) != 0) {
             continue;
         }
         VillagerState_SetByte01(state, VILLAGER_PLACE_HOME);
@@ -437,11 +420,11 @@ CLEAN_AS(func_0207c754, VillagerRoster_UpdateOutdoors)
 void VillagerRoster_Init(VillagerTown *town)
 {
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
-        func_02081660(town->villagers[i]);
+        TownVillager_Reset(town->villagers[i]);
     }
     VillagerBond_Clear(town->bonds);
     VillagerOutdoors_Init(&town->outdoors);
-    func_0209a77c(&town->move);
+    VillagerMoveRecord_Clear(&town->move);
 
     town->date_404c.day = 1;
     town->date_404c.month = 1;
@@ -461,7 +444,7 @@ CLEAN_AS(func_0207cf80, VillagerRoster_Init)
  * villagers. */
 VillagerTown *VillagerRoster_Destruct(VillagerTown *town)
 {
-    func_0209a7e8(&town->move);
+    VillagerMoveRecord_Destruct(&town->move);
     VillagerOutdoors_Destruct(&town->outdoors);
     VillagerBond_Destruct(town->bonds);
     __cxa_vec_cleanup(town->villagers, VILLAGER_TOWN_VILLAGERS, VILLAGER_TOWN_VILLAGER_SIZE,
@@ -478,7 +461,7 @@ VillagerTown *VillagerRoster_Construct(VillagerTown *town)
                    (void (*)(void *))(uintptr_t) func_020817a8, (void (*)(void *))(uintptr_t) func_02081710);
     VillagerBond_Construct(town->bonds);
     VillagerOutdoors_Construct(&town->outdoors);
-    func_0209a814(&town->move);
+    VillagerMoveRecord_Construct(&town->move);
     memset(&town->latest, 0, sizeof(town->latest));
     memset(&town->time_4058, 0, sizeof(town->time_4058));
     return town;

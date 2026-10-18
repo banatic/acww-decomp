@@ -8,6 +8,12 @@
 #include "clean.h"
 #include "ov004/member_pointer.h"
 #include "scene_command.h"
+#include "camera_control.h"
+#include "player_id.h"
+#include "scene_base.h"
+#include "scene_object.h"
+#include "scene_talk_state.h"
+#include "talk_receiver.h"
 
 /* The scene's parts used here. */
 #define SCENE_TALK_TALK 0x40
@@ -45,16 +51,6 @@ extern MemberPointer data_021c1684[];
 extern const MemberPointer data_020d88f4;
 extern const MemberPointer data_020d85f4;
 extern const MemberPointer data_020d8604;
-
-extern u8 *func_02015d78(void *scene, int number);
-extern int func_0203ad88(void);
-extern u8 func_0203ad30(void);
-extern int func_0203ae28(Vec3 *at);
-extern void func_0201a7cc(void *talking);
-extern void *func_02094fd4(SceneTalkText *text);
-extern void *func_02094fbc(SceneTalkText *text);
-extern int func_0201c250(void *object);
-extern void func_020668d8(void *scene, SceneTalkText *text, int a);
 
 static u8 *scene_talk_part(void *scene, u32 offset)
 {
@@ -98,30 +94,30 @@ int SceneTalk_PassTurn(void *scene)
     if (talk == NULL || talk[SCENE_TALK_TALK_STATE / 4] != SCENE_TALK_LINE_SHOWN) {
         return 0;
     }
-    if (func_0203ad88() != 0 && func_0203ad30() >= SCENE_TALK_CAMERA_WAIT) {
+    if (CameraControl_IsMoving() != 0 && CameraControl_MoveFramesLeft() >= SCENE_TALK_CAMERA_WAIT) {
         return 0;
     }
     u8 *speaking = scene_talk_part(scene, SCENE_TALK_SPEAKING);
-    u8 *speaker = func_02015d78(scene, *speaking);
+    u8 *speaker = (u8 *) (uintptr_t) SceneBase_SpeakerOf(scene, *speaking);
     if (speaker != NULL) {
-        func_0201a7cc(speaker + SCENE_TALK_SPEAKER_TALKING);
+        SceneTalkState_Stop((SceneTalkState *) (void *) (speaker + SCENE_TALK_SPEAKER_TALKING));
     }
     *speaking = (u8) ((*speaking + 1) & 1);
-    u8 *next = func_02015d78(scene, *speaking);
+    u8 *next = (u8 *) (uintptr_t) SceneBase_SpeakerOf(scene, *speaking);
     if (next == NULL) {
         return 0;
     }
 
     SceneTalkText text;
-    func_02094fd4(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
     const u8 *vtable = *(const u8 *const *) next;
     u32 fill_name = *(const u32 *) (vtable + SCENE_TALK_SLOT_NAME);
     ((SceneTalkFill) (uintptr_t) fill_name)(next, &text);
-    int a = func_0201c250(next);
-    func_020668d8(scene, &text, a);
+    int a = SceneObject_Sort(next);
+    TalkReceiver_NextSpeaker(scene, (TextBase *) &text, a);
     scene_talk_talk(scene)[SCENE_TALK_TALK_NEXT / 4] = 1;
     *scene_talk_part(scene, SCENE_TALK_STATE) = 3;
-    func_02094fbc(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
     return 1;
 }
 CLEAN_AS(func_02014920, SceneTalk_PassTurn)
@@ -133,11 +129,11 @@ int SceneTalk_LookAtNext(void *scene)
     s32 *talk = scene_talk_talk(scene);
     if (talk != NULL && talk[SCENE_TALK_TALK_STATE / 4] == SCENE_TALK_LINE_SHOWN) {
         u8 speaking = *scene_talk_part(scene, SCENE_TALK_SPEAKING);
-        u8 *next = func_02015d78(scene, (u8) ((speaking + 1) & 1));
+        u8 *next = (u8 *) (uintptr_t) (SceneBase_SpeakerOf(scene, (u8) ((speaking + 1) & 1)));
         if (next != NULL) {
             Vec3 at = *(const Vec3 *) (next + SCENE_TALK_SPEAKER_POSITION);
             at.y += SCENE_TALK_CAMERA_HEIGHT;
-            func_0203ae28(&at);
+            CameraControl_LookAt(&at);
         }
         *scene_talk_part(scene, SCENE_TALK_STATE) = 2;
     }

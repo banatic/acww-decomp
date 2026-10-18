@@ -37,6 +37,7 @@
 #include "main/creature_table.h"
 #include "main/scene_query.h"
 #include "main/sound_emitter.h"
+#include "effect_system.h"
 
 static_assert(offsetof(Obj020dd33c, item) == 0x50, "Obj020dd33c item");
 static_assert(offsetof(Obj020dd33c, look) == 0x54, "Obj020dd33c look");
@@ -64,14 +65,6 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 /* The destructor of a trivial global object (TrivialObject_Destruct); handed to the C++
  * runtime, so the game's symbol. */
 extern void func_020012dc(void *object);
-/* The effect started at a point (kind, point, 0, 0). */
-extern int func_02091254(int kind, Vec3 *at, int a, int b);
-/* The scale factor of a held creature's offset class (data_020cbb44, 20.12). */
-extern fx32 func_02059e10(unsigned int offset_class);
-/* The second offset of a held creature's class for `actor` (the table of data_020dd31c). */
-extern Vec3 *func_02059cc4(Actor *actor, int offset_class);
-/* The first offset of a held creature's class for `actor`. */
-extern Vec3 *func_02059cf8(Actor *actor, int offset_class);
 
 /* The scene (SceneQuery_Current) where the item drops onto a fixed point. */
 #define OBJ_020DD33C_SCENE_FIXED_DROP 0x10
@@ -689,7 +682,7 @@ void Obj020dd33c_EnterMode8Kind0(Obj020dd33c *obj)
     if (obj->look == OBJ_020DD33C_LOOK_MODEL_27) {
         obj->look = 0;
     }
-    func_02091254(0x93, &obj->point, 0, 0);
+    EffectSystem_StartOneShotSetNumberCopy(0x93, &obj->point, 0, 0);
 }
 CLEAN_AS(func_02058c60, Obj020dd33c_EnterMode8Kind0)
 
@@ -838,8 +831,8 @@ static void place_goal(Obj020dd33c *obj, Vec3 *base, int second)
 {
     if (holds_fish(obj)) {
         int offset_class = CreatureTable_OffsetClass((unsigned int) (obj->item - OBJ_020DD33C_FISH_FIRST));
-        const Vec3 *fish_offset =
-            second ? func_02059cc4(obj->actors[0], offset_class) : func_02059cf8(obj->actors[0], offset_class);
+        const Vec3 *fish_offset = second ? Obj020dd33c_FishSecondOffset(obj->actors[0], offset_class)
+                                         : Obj020dd33c_FishFirstOffset(obj->actors[0], offset_class);
         VEC_Add(base, fish_offset, base);
     }
     Vec3 hold_offset;
@@ -947,8 +940,8 @@ void Obj020dd33c_Mode1Kind0Rise(Obj020dd33c *obj)
     fx32 size = data_020cbb34[obj->phase];
     fx32 step = data_021c9400[obj->phase];
     if (holds_fish(obj)) {
-        fx32 factor =
-            func_02059e10((unsigned int) CreatureTable_OffsetClass((unsigned int) (obj->item - OBJ_020DD33C_FISH_FIRST)));
+        fx32 factor = Obj020dd33c_FishScale(
+            (unsigned int) CreatureTable_OffsetClass((unsigned int) (obj->item - OBJ_020DD33C_FISH_FIRST)));
         size = FX_MulFunc(size, factor);
         step = FX_MulFunc(step, factor);
     }

@@ -3,6 +3,12 @@
 
 #include "clean.h"
 #include "session.h"
+#include "house_record.h"
+#include "ov004/room_shell.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
 
 static_assert(sizeof(RoomInteriorChange) == 4, "message size");
 
@@ -26,24 +32,6 @@ extern NetSession *data_020ccf94;
 /* The four players' records. */
 extern u8 data_021dc7bc[];
 
-/* The current scene; whether a scene is one of the house's rooms (1 to 5) and that room's
- * record (NULL when there is none). */
-extern u8 func_020b65c4(void);
-extern int func_020b67e8(int scene);
-extern void *func_02060f04(u8 *records, int scene);
-/* A room record's wallpaper (0x448) and carpet (0x44a), with a flag bit each. */
-extern void func_020611bc(void *record, const u16 *item, int flag);
-extern void func_02061194(void *record, const u16 *item, int flag);
-/* Overlay 4's room: its carpet and wallpaper, and changing them (the code they replace comes
- * back, else the overlay's code of nothing). */
-extern u16 *func_ov004_022320ac(void);
-extern u16 *func_ov004_02232054(void);
-extern u16 *func_ov004_02232104(u16 *item, int option, int with_sound);
-extern int func_ov004_022321b8(u16 *item, int option, int with_sound);
-/* The current player's record; where its name is; the index of the player with that name. */
-extern void *func_020984e8(void);
-extern void *func_02099870(void *record);
-extern int func_0209871c(u8 *players, void *name);
 /* The item code of design `design` of player `player`, to `code` (misnamed in the symbols). */
 extern void NNS_G3dAllocAnmObj(u16 *code, int player, int design);
 /* The item code's destructor (nothing to do), handed to __cxa_vec_cleanup. */
@@ -62,20 +50,20 @@ void RoomInterior_ReceiveChange(const RoomInteriorChange *change)
     int wallpaper = (change->bits & ROOM_CHANGE_WALLPAPER) != 0;
     int with_sound = (change->bits & ROOM_CHANGE_SOUND) != 0;
 
-    if (scene == func_020b65c4()) {
+    if (scene == SceneQuery_Current()) {
         RoomInterior_Set(&item, option, wallpaper, with_sound, 0);
         return;
     }
-    if (func_020b67e8(scene) != 0) {
-        void *record = func_02060f04(data_021ebcd4, scene);
+    if (SceneKinds_IsHouseRoom(scene) != 0) {
+        void *record = HouseRecord_RoomOfScene((HouseRecord *) (void *) data_021ebcd4, scene);
         if (record == NULL) {
             return;
         }
         if (wallpaper) {
-            func_020611bc(record, &item, option);
+            HouseRecord_RoomSetWallpaper(record, &item, option);
             RoomInterior_SetSceneWallpaper(scene, &item);
         } else {
-            func_02061194(record, &item, option);
+            HouseRecord_RoomSetCarpet(record, &item, option);
             RoomInterior_SetSceneCarpet(scene, &item);
         }
     } else if (wallpaper) {
@@ -149,7 +137,7 @@ CLEAN_AS(func_02034a48, RoomInterior_Set)
 int RoomInterior_ResendCarpet(int send)
 {
     if (data_020e54a8 == 1) {
-        RoomInterior_SetCarpet(func_ov004_022320ac(), 0, 0, (u32) send);
+        RoomInterior_SetCarpet(RoomShell_CarpetCode(), 0, 0, (u32) send);
         return 1;
     }
     return 0;
@@ -160,7 +148,7 @@ CLEAN_AS(func_02034a74, RoomInterior_ResendCarpet)
 int RoomInterior_ResendWallpaper(int send)
 {
     if (data_020e54a8 == 1) {
-        RoomInterior_SetWallpaper(func_ov004_02232054(), 0, 0, send);
+        RoomInterior_SetWallpaper(RoomShell_WallpaperCode(), 0, 0, send);
         return 1;
     }
     return 0;
@@ -186,7 +174,7 @@ u16 *RoomInterior_SetCarpet(const u16 *item, int option, int with_sound, u32 sen
     if (data_020e54a8 != 1) {
         return &data_021c5174;
     }
-    u16 *replaced = func_ov004_02232104(&code, option, with_sound);
+    u16 *replaced = RoomShell_SetCarpet(&code, option, with_sound);
     if (send != 0) {
         RoomInterior_SendChange(&code, option, 0, (u16) with_sound);
     }
@@ -212,7 +200,7 @@ int RoomInterior_SetWallpaper(const u16 *item, int option, int with_sound, int s
     if (data_020e54a8 != 1) {
         return (int) (uintptr_t) &data_021c5174;
     }
-    int replaced = func_ov004_022321b8(&code, option, with_sound);
+    int replaced = (int) (uintptr_t) RoomShell_SetWallpaper(&code, option, with_sound);
     if (send != 0) {
         RoomInterior_SendChange(&code, option, 1, (u16) with_sound);
     }
@@ -231,7 +219,7 @@ void RoomInterior_SendChange(const u16 *item, int option, u16 wallpaper, u16 wit
         return;
     }
     change.item = *item;
-    change.bits = (u16) (func_020b65c4() & ROOM_CHANGE_SCENE_MASK);
+    change.bits = (u16) (SceneQuery_Current() & ROOM_CHANGE_SCENE_MASK);
     if ((wallpaper & 1) != 0) {
         change.bits |= ROOM_CHANGE_WALLPAPER;
     }
@@ -252,10 +240,10 @@ CLEAN_AS(func_02034bd4, RoomInterior_SendChange)
 void RoomInterior_DesignCode(u16 *code, int design)
 {
     int player = 0;
-    void *record = func_020984e8();
+    void *record = PlayerRecords_Current();
 
     if (record != NULL) {
-        player = func_0209871c(data_021dc7bc, func_02099870(record)) & 3;
+        player = PlayerRecords_FindIndex(data_021dc7bc, (const PlayerRecordsId *) PlayerRecord_Player(record)) & 3;
     }
     NNS_G3dAllocAnmObj(code, player, design & 7);
 }

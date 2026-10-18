@@ -57,7 +57,6 @@ typedef struct BbsLabel {
     const TextVtable *vtable; /* data_020e1888 */
     u8 base_04[0xe];          /* the text base's */
     char text[BBS_LABEL_CAPACITY];
-    u8 unk_d4[4];
 } BbsLabel;
 
 u8 Bbs_CountTownPosts(void);

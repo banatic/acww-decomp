@@ -27,6 +27,7 @@
 #include "special_scene_object.h"
 #include "talk_checks.h"
 #include "town_tile.h"
+#include "main_random.h"
 
 static_assert(offsetof(MissingNpc2, position) == 0x5c && offsetof(MissingNpc2, angle) == 0x8e, "MissingNpc2");
 static_assert(offsetof(MissingNpc2, walk_angle) == 0x94 && offsetof(MissingNpc2, speed) == 0x98, "MissingNpc2");
@@ -85,9 +86,6 @@ extern const Vec3 data_021fbccc;
 /* Sines and cosines by the angle's top 12 bits (NitroSDK). */
 extern const s16 FX_SinCosTable_[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-
-/* A random number below `range` (Random_Below on the game's generator). */
-extern int func_020644cc(int range);
 
 static u8 *missing_npc2_at(MissingNpc2 *self, u32 offset)
 {
@@ -216,7 +214,7 @@ int MissingNpc2_UpdateWander(MissingNpc2 *self)
         int angle = Vec_YawTo(&self->position, &point);
         if (SceneObject_IsWithinQuarterTurn((s16) (angle - self->angle))) {
             int kind = MISSING_NPC2_WALK;
-            if (func_020644cc(4) == 0) {
+            if (MainRandom_Below(4) == 0) {
                 kind = MISSING_NPC2_WALK_2;
             }
             if (kind != SceneMotion_Kind(motion)) {
@@ -531,14 +529,14 @@ void MissingNpc2Talk_Line(MissingNpc2Talk *talk, MissingNpc2Line *line)
             break;
         case MISSING_NPC2_TOPIC_AGAIN:
             PlayerRecord_SetFlag(record, MISSING_NPC2_FLAG_33);
-            line->message = (u8) (func_020644cc(3) + 1);
+            line->message = (u8) (MainRandom_Below(3) + 1);
             break;
         case MISSING_NPC2_TOPIC_TODAY:
-            line->message = (u8) (func_020644cc(3) + 4);
+            line->message = (u8) (MainRandom_Below(3) + 4);
             TalkChecks_TestSetDailyBit(MISSING_NPC2_DAILY_BIT, 1);
             break;
         case MISSING_NPC2_TOPIC_LATER:
-            line->message = (u8) (func_020644cc(3) + 7);
+            line->message = (u8) (MainRandom_Below(3) + 7);
             break;
         default:
             break;
@@ -924,8 +922,6 @@ MissingNpc2 *MissingNpc2_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) (object + MISSING_NPC2_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) (object + MISSING_NPC2_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) (object + MISSING_NPC2_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
     SpeakerAnim_Destruct((SpeakerAnim *) (void *) (object + MISSING_NPC2_ANIM));
     SceneMover_Construct((SceneMover *) (void *) (object + MISSING_NPC2_MOVER));
     SceneProbe_Construct(object + MISSING_NPC2_PROBE);

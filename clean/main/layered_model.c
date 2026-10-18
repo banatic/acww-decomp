@@ -3,6 +3,10 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "animated_model.h"
+#include "frame_ctrl.h"
+#include "joint_blend.h"
+#include "model_anim.h"
 
 static_assert(sizeof(LayeredModelAnim) == 0x0c, "LayeredModelAnim layout");
 static_assert(sizeof(LayeredModelRamp) == 0x3c && offsetof(LayeredModelRamp, rate) == 0x38, "LayeredModelRamp layout");
@@ -27,37 +31,6 @@ extern const u8 data_020dd184[];
 
 /* The joint animation header NitroSystem sizes an animation object by ("J\0AC"). */
 extern const u8 data_020dd030[];
-
-/* The class with layer A: its constructor and destructor. */
-extern LayeredModel *func_02054c2c(LayeredModel *model);
-extern LayeredModel *func_02054ad0(LayeredModel *model);
-
-/* The base model object's own functions. */
-extern void func_02054cac(LayeredModel *model, const void *file, int blend, int flags, fx32 speed, u16 start, u16 frames);
-extern void func_02054cdc(LayeredModel *model);                                             /* update */
-extern void func_0205510c(LayeredModel *model, const void *scale);                          /* draw */
-extern int func_02055140(LayeredModel *model, int heap);                                    /* load the base animation */
-extern void func_02054a9c(LayeredModel *model, LayeredModelAnim *anim);                     /* animation the joints use */
-extern void func_02054d14(LayeredModel *model, LayeredModelNodeState *state);               /* blend a base node */
-extern void func_02054d80(LayeredModel *model, LayeredModelNodeState *state);               /* record a base node */
-extern const void *func_02054ecc(LayeredModel *model);                                      /* base_anim's animation */
-extern void func_02054a94(LayeredModel *model, u32 node);                                   /* does nothing */
-extern void func_02054a98(LayeredModel *model, u32 node);                                   /* does nothing */
-extern void func_02054a64(LayeredModel *model, u32 node);                                   /* put a node in layer A */
-extern u16 func_020550b8(int flags, const void *file);                                      /* the file's frame count */
-extern LayeredModelAnim *func_02056548(void *model_resource, const void *header, int heap); /* a new animation */
-
-/* Frame controls and Ramps (frame_ctrl.h). */
-extern void func_02056fcc(FrameCtrl *ctrl, u32 frames, int flags, fx32 speed, u16 start); /* FrameCtrl_Init */
-extern int func_02056f94(const FrameCtrl *ctrl);                                          /* FrameCtrl_IsDone */
-extern void func_02056ffc(FrameCtrl *ctrl);                                               /* FrameCtrl_Step */
-extern void func_02057078(FrameCtrl *ctrl);                                               /* its destructor */
-extern void func_02056e60(LayeredModelRamp *ramp, int frames);                            /* start a blend */
-extern int func_02056e84(LayeredModelRamp *ramp);                                         /* Ramp_Step */
-extern void func_02056aa0(LayeredModelRamp *ramp, LayeredModelNodeState *state);          /* record the pose */
-extern void func_02056b18(LayeredModelRamp *ramp, LayeredModelNodeState *state);          /* blend from it */
-extern void func_02056ed4(LayeredModelRamp *ramp);                                        /* its destructor */
-extern LayeredModelRamp *func_02056ee0(LayeredModelRamp *ramp);                           /* its constructor */
 
 extern void NNS_G3dAnmObjInit(LayeredModelAnim *anim, const void *file, void *model_resource, void *texture);
 
@@ -127,8 +100,8 @@ CLEAN_AS(func_02054170, LayeredModel_ClearNodesB)
 void LayeredModel_MoveNodesToA(LayeredModel *model, u32 first, u32 last)
 {
     for (u32 node = first; node <= last; node++) {
-        func_02054a94(model, node);
-        func_02054a64(model, node);
+        LayeredModel_BeforeAddNode(model, node);
+        LayeredModel_SetNodeA(model, node);
         LayeredModel_ClearNodeB(model, node);
     }
 }
@@ -139,7 +112,7 @@ CLEAN_AS(func_02054188, LayeredModel_MoveNodesToA)
 void LayeredModel_MoveNodesToB(LayeredModel *model, u32 first, u32 last)
 {
     for (u32 node = first; node <= last; node++) {
-        func_02054a94(model, node);
+        LayeredModel_BeforeAddNode(model, node);
         LayeredModel_ClearNodeA(model, node);
         LayeredModel_SetNodeB(model, node);
     }
@@ -155,15 +128,15 @@ void LayeredModel_StartBFromBase(LayeredModel *model, int blend, int frames)
         LayeredModel_ClearNodesB(model);
         return;
     }
-    LayeredModel_PlayB(model, func_02054ecc(model), blend, model->base_frames.flags, model->base_frames.speed,
-                       whole_frame(&model->base_frames), (u16) frames, 1);
+    LayeredModel_PlayB(model, AnimatedModel_AnimFile((AnimatedModel *) model), blend, model->base_frames.flags,
+                       model->base_frames.speed, whole_frame(&model->base_frames), (u16) frames, 1);
 }
 CLEAN_AS(func_020541e8, LayeredModel_StartBFromBase)
 
 /* func_02054230: whether layer B's sequence, played once, has reached its end. */
 int LayeredModel_IsBDone(LayeredModel *model)
 {
-    return func_02056f94(&model->frames_b);
+    return FrameCtrl_IsDone(&model->frames_b);
 }
 CLEAN_AS(func_02054230, LayeredModel_IsBDone)
 
@@ -173,11 +146,11 @@ CLEAN_AS(func_02054230, LayeredModel_IsBDone)
 void LayeredModel_PlayB(LayeredModel *model, const void *file, int blend, int flags, fx32 speed, u16 start, u16 frames,
                         int release)
 {
-    func_02056e60(&model->ramp_b, blend);
+    Ramp_Start((Ramp *) &model->ramp_b, blend);
     if (frames == 0) {
-        frames = func_020550b8(flags, file);
+        frames = AnimatedModel_FrameCount(flags, file);
     }
-    func_02056fcc(&model->frames_b, frames, flags, speed, start);
+    FrameCtrl_Init(&model->frames_b, frames, flags, speed, start);
     NNS_G3dAnmObjInit(model->anim_b, file, model->model_resource, NULL);
     if (release) {
         model->flags |= LAYERED_MODEL_RELEASE_B;
@@ -203,11 +176,11 @@ void LayeredModel_UpdateB(LayeredModel *model)
     if (model->nodes_b[0] == 0 && model->nodes_b[1] == 0) {
         return;
     }
-    if (func_02056e84(&model->ramp_b) && (model->flags & LAYERED_MODEL_RELEASE_B)) {
+    if (Ramp_Step((Ramp *) &model->ramp_b) && (model->flags & LAYERED_MODEL_RELEASE_B)) {
         LayeredModel_ClearNodesB(model);
         model->flags &= (u16) ~LAYERED_MODEL_RELEASE_B;
     }
-    func_02056ffc(&model->frames_b);
+    FrameCtrl_Step(&model->frames_b);
     model->anim_b->frame = model->frames_b.frame;
 }
 CLEAN_AS(func_020542e0, LayeredModel_UpdateB)
@@ -219,7 +192,8 @@ int LayeredModel_LoadB(LayeredModel *model, int heap)
     if (!LayeredModel_LoadA(model, heap)) {
         return 0;
     }
-    model->anim_b = func_02056548(model->model_resource, data_020dd030, heap);
+    model->anim_b =
+        (LayeredModelAnim *) (ModelAnim_AllocAnmObj(model->model_resource, data_020dd030, (Heap *) (uintptr_t) heap));
     return model->anim_b != NULL;
 }
 CLEAN_AS(func_02054354, LayeredModel_LoadB)
@@ -235,12 +209,12 @@ void LayeredModel_ApplyNodeB(LayeredModel *model, LayeredModelNodeState *state)
     }
     u32 any = model->nodes_b[1] | model->nodes_b[0] | model->nodes_a[0] | model->nodes_a[1];
     if (any == 0) {
-        func_02054d14(model, state);
+        AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
         return;
     }
     u8 node = state->state.command[1];
     if ((any & 1u << (node & 0x1f)) == 0) {
-        func_02054d14(model, state);
+        AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
         return;
     }
     if (LayeredModel_HasNodeB(model, node)) {
@@ -251,7 +225,7 @@ void LayeredModel_ApplyNodeB(LayeredModel *model, LayeredModelNodeState *state)
         LayeredModel_BlendNodeA(model, state);
         return;
     }
-    func_02054d14(model, state);
+    AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
 }
 CLEAN_AS(func_02054394, LayeredModel_ApplyNodeB)
 
@@ -261,7 +235,7 @@ void LayeredModel_BlendNodeB(LayeredModel *model, LayeredModelNodeState *state)
 {
     zero_translation(state);
     if (model->ramp_b.rate != 0) {
-        func_02056b18(&model->ramp_b, state);
+        JointBlend_Apply((JointBlend *) &model->ramp_b, (AnimatedModelNodeState *) state);
     }
 }
 CLEAN_AS(func_02054430, LayeredModel_BlendNodeB)
@@ -276,17 +250,17 @@ void LayeredModel_PrepareNodeB(LayeredModel *model, LayeredModelNodeState *state
     }
     u8 node = state->state.command[1];
     if (mask_has(model->nodes_b, node)) {
-        func_02054a9c(model, model->anim_b);
+        AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->anim_b);
         LayeredModel_RecordNodeB(model, state);
         return;
     }
     if (mask_has(model->nodes_a, node)) {
-        func_02054a9c(model, model->anim_a);
+        AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->anim_a);
         LayeredModel_RecordNodeA(model, state);
         return;
     }
-    func_02054a9c(model, model->base_anim);
-    func_02054d80(model, state);
+    AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->base_anim);
+    AnimatedModel_RecordNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
 }
 CLEAN_AS(func_02054474, LayeredModel_PrepareNodeB)
 
@@ -294,7 +268,7 @@ CLEAN_AS(func_02054474, LayeredModel_PrepareNodeB)
 void LayeredModel_RecordNodeB(LayeredModel *model, LayeredModelNodeState *state)
 {
     if (model->ramp_b.rate != 0) {
-        func_02056aa0(&model->ramp_b, state);
+        JointBlend_RecordPose((JointBlend *) &model->ramp_b, (AnimatedModelNodeState *) state);
     }
 }
 CLEAN_AS(func_02054524, LayeredModel_RecordNodeB)
@@ -327,9 +301,9 @@ static void destruct_b(LayeredModel *model)
     model->vtable = data_020dd07c;
     model->base_frames.vtable = data_020dd08c;
     model->base_ramp.vtable = data_020dd09c;
-    func_02056ed4(&model->ramp_b);
-    func_02057078(&model->frames_b);
-    func_02054ad0(model);
+    JointBlend_DestructComplete((JointBlend *) &model->ramp_b);
+    FrameCtrl_DestructComplete(&model->frames_b);
+    LayeredModel_DestructA(model);
 }
 
 /* func_020545e0: the deleting destructor (the vtable's second entry). */
@@ -353,7 +327,7 @@ CLEAN_AS(func_02054630, LayeredModel_DestructB)
  * frame control at frame 0 with speed 1.0, its Ramp, no animation object and no node. */
 LayeredModel *LayeredModel_ConstructB(LayeredModel *model)
 {
-    func_02054c2c(model);
+    LayeredModel_ConstructABase(model);
     model->vtable = data_020dd07c;
     model->base_frames.vtable = data_020dd08c;
     model->base_ramp.vtable = data_020dd09c;
@@ -361,7 +335,7 @@ LayeredModel *LayeredModel_ConstructB(LayeredModel *model)
     model->frames_b.frame = 0;
     model->frames_b.previous = 0;
     model->frames_b.speed = 0x1000;
-    func_02056ee0(&model->ramp_b);
+    JointBlend_Construct((JointBlend *) &model->ramp_b);
     model->anim_b = NULL;
     model->nodes_b[0] = 0;
     model->nodes_b[1] = 0;
@@ -382,7 +356,7 @@ CLEAN_AS(func_02054700, LayeredModel_ClearNodesA)
 void LayeredModel_RemoveNodesA(LayeredModel *model, u32 first, u32 last)
 {
     for (u32 node = first; node <= last; node++) {
-        func_02054a98(model, node);
+        LayeredModel_BeforeRemoveNode(model, node);
         LayeredModel_ClearNodeA(model, node);
     }
 }
@@ -393,8 +367,8 @@ CLEAN_AS(func_02054718, LayeredModel_RemoveNodesA)
 void LayeredModel_AddNodesA(LayeredModel *model, u32 first, u32 last)
 {
     for (u32 node = first; node <= last; node++) {
-        func_02054a94(model, node);
-        func_02054a64(model, node);
+        LayeredModel_BeforeAddNode(model, node);
+        LayeredModel_SetNodeA(model, node);
     }
 }
 CLEAN_AS(func_02054740, LayeredModel_AddNodesA)
@@ -406,8 +380,8 @@ void LayeredModel_StartAFromBase(LayeredModel *model, int blend, int frames)
         LayeredModel_ClearNodesA(model);
         return;
     }
-    LayeredModel_PlayA(model, func_02054ecc(model), blend, model->base_frames.flags, model->base_frames.speed,
-                       whole_frame(&model->base_frames), (u16) frames, 1);
+    LayeredModel_PlayA(model, AnimatedModel_AnimFile((AnimatedModel *) model), blend, model->base_frames.flags,
+                       model->base_frames.speed, whole_frame(&model->base_frames), (u16) frames, 1);
 }
 CLEAN_AS(func_02054768, LayeredModel_StartAFromBase)
 
@@ -415,11 +389,11 @@ CLEAN_AS(func_02054768, LayeredModel_StartAFromBase)
 void LayeredModel_PlayA(LayeredModel *model, const void *file, int blend, int flags, fx32 speed, u16 start, u16 frames,
                         int release)
 {
-    func_02056e60(&model->ramp_a, blend);
+    Ramp_Start((Ramp *) &model->ramp_a, blend);
     if (frames == 0) {
-        frames = func_020550b8(flags, file);
+        frames = AnimatedModel_FrameCount(flags, file);
     }
-    func_02056fcc(&model->frames_a, frames, flags, speed, start);
+    FrameCtrl_Init(&model->frames_a, frames, flags, speed, start);
     NNS_G3dAnmObjInit(model->anim_a, file, model->model_resource, NULL);
     if (release) {
         model->flags |= LAYERED_MODEL_RELEASE_A;
@@ -433,7 +407,7 @@ CLEAN_AS(func_020547b0, LayeredModel_PlayA)
  * object's func_02054cac). */
 void LayeredModel_PlayBaseA(LayeredModel *model, const void *file, int blend, int flags, fx32 speed, u16 start, u16 frames)
 {
-    func_02054cac(model, file, blend, flags, speed, start, frames);
+    AnimatedModel_Play((AnimatedModel *) model, file, blend, flags, speed, start, frames);
 }
 CLEAN_AS(func_02054828, LayeredModel_PlayBaseA)
 
@@ -442,23 +416,23 @@ CLEAN_AS(func_02054828, LayeredModel_PlayBaseA)
  * left another layer's. */
 void LayeredModel_DrawA(LayeredModel *model, const void *scale)
 {
-    func_0205510c(model, scale);
-    func_02054a9c(model, model->base_anim);
+    AnimatedModel_Draw((AnimatedModel *) model, scale);
+    AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->base_anim);
 }
 CLEAN_AS(func_02054848, LayeredModel_DrawA)
 
 /* func_02054860: LayeredModel_UpdateB for the base animation and layer A. */
 void LayeredModel_UpdateA(LayeredModel *model)
 {
-    func_02054cdc(model);
+    AnimatedModel_Update((AnimatedModel *) model);
     if (model->nodes_a[0] == 0 && model->nodes_a[1] == 0) {
         return;
     }
-    if (func_02056e84(&model->ramp_a) && (model->flags & LAYERED_MODEL_RELEASE_A)) {
+    if (Ramp_Step((Ramp *) &model->ramp_a) && (model->flags & LAYERED_MODEL_RELEASE_A)) {
         LayeredModel_ClearNodesA(model);
         model->flags &= (u16) ~LAYERED_MODEL_RELEASE_A;
     }
-    func_02056ffc(&model->frames_a);
+    FrameCtrl_Step(&model->frames_a);
     model->anim_a->frame = model->frames_a.frame;
 }
 CLEAN_AS(func_02054860, LayeredModel_UpdateA)
@@ -466,10 +440,11 @@ CLEAN_AS(func_02054860, LayeredModel_UpdateA)
 /* func_020548cc: LayeredModel_LoadB for the base animation and layer A. */
 int LayeredModel_LoadA(LayeredModel *model, int heap)
 {
-    if (func_02055140(model, heap) == 0) {
+    if (AnimatedModel_LoadAnim((AnimatedModel *) model, (Heap *) (uintptr_t) heap) == 0) {
         return 0;
     }
-    model->anim_a = func_02056548(model->model_resource, data_020dd030, heap);
+    model->anim_a =
+        (LayeredModelAnim *) (ModelAnim_AllocAnmObj(model->model_resource, data_020dd030, (Heap *) (uintptr_t) heap));
     return model->anim_a != NULL;
 }
 CLEAN_AS(func_020548cc, LayeredModel_LoadA)
@@ -483,7 +458,7 @@ void LayeredModel_ApplyNodeA(LayeredModel *model, LayeredModelNodeState *state)
     if (LayeredModel_HasNodeA(model, state->state.command[1])) {
         LayeredModel_BlendNodeA(model, state);
     } else {
-        func_02054d14(model, state);
+        AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
     }
 }
 CLEAN_AS(func_0205490c, LayeredModel_ApplyNodeA)
@@ -493,7 +468,7 @@ void LayeredModel_BlendNodeA(LayeredModel *model, LayeredModelNodeState *state)
 {
     zero_translation(state);
     if (model->ramp_a.rate != 0) {
-        func_02056b18(&model->ramp_a, state);
+        JointBlend_Apply((JointBlend *) &model->ramp_a, (AnimatedModelNodeState *) state);
     }
 }
 CLEAN_AS(func_02054944, LayeredModel_BlendNodeA)
@@ -505,11 +480,11 @@ void LayeredModel_PrepareNodeA(LayeredModel *model, LayeredModelNodeState *state
         return;
     }
     if (LayeredModel_HasNodeA(model, state->state.command[1])) {
-        func_02054a9c(model, model->anim_a);
+        AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->anim_a);
         LayeredModel_RecordNodeA(model, state);
     } else {
-        func_02054a9c(model, model->base_anim);
-        func_02054d80(model, state);
+        AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->base_anim);
+        AnimatedModel_RecordNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
     }
 }
 CLEAN_AS(func_02054988, LayeredModel_PrepareNodeA)
@@ -518,7 +493,7 @@ CLEAN_AS(func_02054988, LayeredModel_PrepareNodeA)
 void LayeredModel_RecordNodeA(LayeredModel *model, LayeredModelNodeState *state)
 {
     if (model->ramp_a.rate != 0) {
-        func_02056aa0(&model->ramp_a, state);
+        JointBlend_RecordPose((JointBlend *) &model->ramp_a, (AnimatedModelNodeState *) state);
     }
 }
 CLEAN_AS(func_020549d8, LayeredModel_RecordNodeA)
@@ -566,10 +541,6 @@ extern const u8 data_020dd0ac[];
 extern const u8 data_020dd0bc[];
 extern const u8 data_020dd0cc[];
 
-/* The base model object's destructor and constructor (animated_model.h). */
-extern LayeredModel *func_02054d9c(LayeredModel *model);
-extern LayeredModel *func_02054e8c(LayeredModel *model);
-
 /* The destructor's work: the vtables of the class, then layer A's Ramp and frame control
  * destructed, then the base model object's destructor. */
 static void destruct_a(LayeredModel *model)
@@ -577,9 +548,9 @@ static void destruct_a(LayeredModel *model)
     model->vtable = data_020dd0ac;
     model->base_frames.vtable = data_020dd0bc;
     model->base_ramp.vtable = data_020dd0cc;
-    func_02056ed4(&model->ramp_a);
-    func_02057078(&model->frames_a);
-    func_02054d9c(model);
+    JointBlend_DestructComplete((JointBlend *) &model->ramp_a);
+    FrameCtrl_DestructComplete(&model->frames_a);
+    AnimatedModel_DestructBlended((AnimatedModel *) model);
 }
 
 /* func_02054ad0: the destructor of the class with layer A (the class with both layers' ends
@@ -612,7 +583,7 @@ CLEAN_AS(func_02054b64, LayeredModel_DestructAComplete)
  * control at frame 0 with speed 1.0, its Ramp, no animation object and no node. */
 static void construct_a(LayeredModel *model)
 {
-    func_02054e8c(model);
+    AnimatedModel_ConstructBlendedBase((AnimatedModel *) model);
     model->vtable = data_020dd0ac;
     model->base_frames.vtable = data_020dd0bc;
     model->base_ramp.vtable = data_020dd0cc;
@@ -620,7 +591,7 @@ static void construct_a(LayeredModel *model)
     model->frames_a.frame = 0;
     model->frames_a.previous = 0;
     model->frames_a.speed = 0x1000;
-    func_02056ee0(&model->ramp_a);
+    JointBlend_Construct((JointBlend *) &model->ramp_a);
     model->anim_a = NULL;
     model->nodes_a[0] = 0;
     model->nodes_a[1] = 0;

@@ -7,6 +7,7 @@
 #include "clean.h"
 #include "design_info.h"
 #include "design_sets.h"
+#include "main_random.h"
 
 static_assert(offsetof(HouseLooksRecord, design) == 0x04, "design");
 static_assert(offsetof(HouseLooksDesign, style) == 0x234, "style");
@@ -16,8 +17,6 @@ static_assert(offsetof(HouseLooksDesign, style) == 0x234, "style");
 #define HOUSE_LOOKS_LAST_ACRE 4
 /* An unset look while the looks are drawn. */
 #define HOUSE_LOOKS_NONE 0xff
-
-extern int func_020644cc(int range); /* a random number below `range` */
 
 static int house_looks_is_building(u16 code)
 {
@@ -118,7 +117,7 @@ CLEAN_AS(func_020b3858, HouseLooks_Style)
 /* func_020b3880: a random style, then the default design (DesignHolder_Reset). */
 void HouseLooks_ResetDesign(HouseLooksDesign *design)
 {
-    design->style = (u8) func_020644cc(HOUSE_LOOKS_STYLES);
+    design->style = (u8) MainRandom_Below(HOUSE_LOOKS_STYLES);
     DesignHolder_Reset(&design->design);
 }
 CLEAN_AS(func_020b3880, HouseLooks_ResetDesign)
@@ -156,8 +155,8 @@ CLEAN_AS(func_020b38c0, HouseLooks_Look)
  * set at 0. */
 void HouseLooks_ResetLooks(u8 *looks)
 {
-    int first_set = func_020644cc(HOUSE_LOOKS_SETS);
-    unsigned int other_pick = (unsigned int) func_020644cc(HOUSE_LOOKS_SETS - 1);
+    int first_set = MainRandom_Below(HOUSE_LOOKS_SETS);
+    unsigned int other_pick = (unsigned int) MainRandom_Below(HOUSE_LOOKS_SETS - 1);
 
     /* The other set: the other_pick-th set that is not the first one. */
     int other_set = 0;
@@ -180,7 +179,7 @@ void HouseLooks_ResetLooks(u8 *looks)
     /* Each of the first three: the pick-th variant of the first set not drawn yet. */
     int base = HOUSE_LOOKS_VARIANTS * (first_set % HOUSE_LOOKS_SETS);
     for (unsigned int k = 0; k < HOUSE_LOOKS_COUNT - 1; k++) {
-        unsigned int pick = (unsigned int) func_020644cc(HOUSE_LOOKS_VARIANTS - (int) k);
+        unsigned int pick = (unsigned int) MainRandom_Below(HOUSE_LOOKS_VARIANTS - (int) k);
         unsigned int free_seen = 0;
         for (unsigned int variant = 0; variant < HOUSE_LOOKS_VARIANTS; variant++) {
             int look = (int) variant + base;
@@ -202,7 +201,7 @@ void HouseLooks_ResetLooks(u8 *looks)
         }
     }
 
-    unsigned int variant = (unsigned int) func_020644cc(HOUSE_LOOKS_VARIANTS);
+    unsigned int variant = (unsigned int) MainRandom_Below(HOUSE_LOOKS_VARIANTS);
     looks[HOUSE_LOOKS_COUNT - 1] =
         (u8) (HOUSE_LOOKS_VARIANTS * (other_set % HOUSE_LOOKS_SETS) + (int) (variant % HOUSE_LOOKS_VARIANTS));
 }

@@ -25,13 +25,6 @@ extern const s16 FX_SinCosTable_[];
 extern void *data_020e29fc[];
 extern void *data_020e2ac4[];
 
-/* A kept set's emitters started at `position`, each given its two words of `setups`; nonzero
- * when it started. */
-extern int func_02090ac4(int set, const Vec3 *position, const s16 *angle, void *const *setups);
-/* A one-shot set's emitters started the same way, one word each. */
-extern int func_02090c2c(int set, const Vec3 *position, const s16 *angle, void *const *setups);
-/* The emitter's colour tinted as its resource asks. */
-extern void func_02090db0(ParticleEmitter *emitter);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -63,7 +56,7 @@ static void effect_places_face(ParticleEmitter *emitter, u16 angle)
     emitter->axis.x = FX_SinCosTable_[index];
     emitter->axis.y = 0;
     emitter->axis.z = FX_SinCosTable_[index + 1];
-    func_02090db0(emitter);
+    EffectSystem_TintEmitter(emitter);
 }
 
 /* func_02094b58: a kept set started at a place filled from the arguments with the next handle
@@ -78,7 +71,7 @@ int EffectPlaces_StartKept(int set, int kind, const Vec3 *position, const s16 *a
     }
     EffectSystem_FillPlace(&data_021d5658.place, data_021d5658.next_handle, kind, position, angle, extra,
                            EFFECT_PLACES_FOR_EVER);
-    if (func_02090ac4(set, position, angle, setups) != 0) {
+    if (EffectSystem_StartKeptSet(set, position, angle, setups) != 0) {
         result = EFFECT_PLACES_KEPT_STARTED;
     }
     EffectSystem_ClearPlace(&data_021d5658.place);
@@ -131,7 +124,7 @@ void EffectPlaces_Place(EffectKindsInstance *instance, const Vec3 *offset, const
     u8 slot = instance->slot;
 
     EffectPlaces_PutEmitter(instance->emitter, &data_021d5658.place, offset, axis);
-    func_02090db0(instance->emitter);
+    EffectSystem_TintEmitter(instance->emitter);
     MI_CpuCopy8(&data_021d5658.place, &data_021d52d8[slot], sizeof(EffectKindsPlace));
 }
 CLEAN_AS(func_02094c38, EffectPlaces_Place)
@@ -176,7 +169,7 @@ int EffectPlaces_StartOneShot(int set, int kind, const Vec3 *position, const s16
     }
     EffectSystem_FillPlace(&data_021d5658.place, EFFECT_PLACES_NO_HANDLE, kind, position, angle, extra,
                            EFFECT_PLACES_FOR_EVER);
-    if (func_02090c2c(set, position, angle, setups) != 0) {
+    if (EffectSystem_StartSet(set, position, angle, setups) != 0) {
         result = EFFECT_PLACES_ONE_SHOT_STARTED;
     }
     return result;
@@ -188,7 +181,7 @@ CLEAN_AS(func_02094cf8, EffectPlaces_StartOneShot)
 void EffectPlaces_SetUpAt(ParticleEmitter *emitter, const Vec3 *offset, const Vec3 *axis)
 {
     EffectPlaces_PutEmitter(emitter, &data_021d5658.place, offset, axis);
-    func_02090db0(emitter);
+    EffectSystem_TintEmitter(emitter);
 }
 CLEAN_AS(func_02094d48, EffectPlaces_SetUpAt)
 
@@ -265,13 +258,13 @@ CLEAN_AS(func_02094ea0, EffectPlaces_PutFacing)
 void EffectPlaces_SetUp(ParticleEmitter *emitter)
 {
     effect_places_put_at(emitter, &data_021d5658.place.position);
-    func_02090db0(emitter);
+    EffectSystem_TintEmitter(emitter);
 }
 CLEAN_AS(func_02094ef4, EffectPlaces_SetUp)
 
 /* func_02094f28: a set-up word that only tints the new emitter (left where it started). */
 void EffectPlaces_SetUpTintOnly(ParticleEmitter *emitter)
 {
-    func_02090db0(emitter);
+    EffectSystem_TintEmitter(emitter);
 }
 CLEAN_AS(func_02094f28, EffectPlaces_SetUpTintOnly)

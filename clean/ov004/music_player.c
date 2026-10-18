@@ -11,6 +11,21 @@
 #include "room_object_life.h"
 #include "room_object_map.h"
 #include "room_object_parts.h"
+#include "main/event_queue.h"
+#include "main/house_record.h"
+#include "main/message_receiver.h"
+#include "main/music_queue.h"
+#include "main/name_texts.h"
+#include "main/player_actor_ops.h"
+#include "main/room_sync.h"
+#include "main/scene_kinds.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/talk_object.h"
+#include "main/villager_roster.h"
+#include "main/villager_status.h"
+#include "room_objects.h"
+#include "room_sound.h"
 
 static_assert(offsetof(MusicPlayer, playing) == 0x844, "playing");
 static_assert(offsetof(MusicPlayer, song) == 0x845, "song");
@@ -61,7 +76,7 @@ extern const u8 data_ov004_02247660[MUSIC_PLAYER_STATE_COUNT];
 /* "obj_etc_player", the name the receiver takes for the talk. */
 extern const char data_ov004_022531f0[];
 /* The villagers (0x7ec bytes each). */
-extern u8 data_021e5a2c[];
+extern VillagerTown data_021e5a2c;
 
 /* The talk steps' entries. */
 extern u32 data_ov004_02257058;
@@ -77,57 +92,9 @@ extern const u8 data_ov004_02251868[];
  * none: a player there starts on with the villager's song only while none was started. */
 extern u16 data_ov004_02256fec;
 
-/* Music: starting music `id` (with 0x11, 0x7f and 0) and stopping it. */
-extern void func_020356c4(int a0, int id, int a2, int a3);
-extern void func_02035638(int id);
-/* Sets the music item of the scene's house (func_02060b70 reads it), and sets it to none. */
-extern void *func_02060b34(u16 *item);
-extern void func_02060afc(void);
-/* func_020b67e8 of the scene (func_020b65c4). */
-extern int func_020b67d4(void);
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1), straight
- * to func_020526b8. */
-extern int func_02052738(unsigned int object, int state, int a2, int a3);
-/* Switches every room object to `value` whose switch shows otherwise, of those `filter`
- * accepts. */
-extern void func_ov004_0223c2b4(int value, int (*filter)(void *object), void *pending);
 /* Whether unk_00C is 0x3a and the switch on (RoomObject_Unk00CIs3AAndOn), handed to
- * func_ov004_0223c2b4 by its symbol. */
-extern int func_ov004_02211308(void *object);
-/* Moves a sound that is playing to `at`. */
-extern void func_ov004_0223cf2c(RoomSound *sound, const Vec3 *at);
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-/* The scene object's hooks: asking the scene for an event, letting it go on, and taking and
- * handing back the receiver. */
-extern int func_0203e0a8(MusicPlayer *player, int a1);
-extern int func_0203e020(MusicPlayer *player);
-extern void func_0203ee14(MusicPlayer *player, void *receiver);
-extern void func_0203ee08(MusicPlayer *player, void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-/* Sets flag 0x17 of the actor func_02096718(4) gives; whether there is one. */
-extern int func_02095ec4(void);
-/* The item chosen in group 9's menu (data_021cfc70). */
-extern u16 func_0206f668(void);
-/* Whether the scene (func_020b65c4) is a villager's house (17 to 24), and the villager whose. */
-extern int func_020b6680(void);
-extern int func_020b66b0(void);
-/* A villager (NULL when there is none) and its song (its byte at 0x4d). */
-extern void *func_0207cec0(void *villagers, int villager);
-extern int func_0207f2c4(void *villager);
-/* The music item of the scene's house (0xfff1 when it has none). */
-extern u16 *func_02060b70(void);
-/* A text made from an item's name, handed to the link as its message 0, and taken down. */
-extern void *func_02062f90(void *text, u16 *item);
-extern void func_020683b4(RoomLink *link, int index, void *text, int kind);
-extern void *func_02062f4c(void *text);
-
-static unsigned int MusicPlayer_address(MusicPlayer *player)
-{
-    return (unsigned int) (uintptr_t) player;
-}
+ * RoomObjects_SetSwitches by its symbol. */
+extern int func_ov004_02211308(RoomObject *object);
 
 /* The receiver part as C++ converts a pointer to the player to it: NULL stays NULL. */
 static void *MusicPlayer_receiver(MusicPlayer *player)
@@ -139,19 +106,19 @@ static void *MusicPlayer_receiver(MusicPlayer *player)
 static int MusicPlayer_touched(MusicPlayer *player, u8 shown)
 {
     Switch_Set(&player->base.light_switch, shown, 0);
-    func_0203e0a8(player, 0);
-    return func_02095ec4();
+    EventQueue_RequestKind6(player, 0);
+    return PlayerActorOps_SetOwnFlag17();
 }
 
 /* func_ov004_02215f8c (update of MUSIC_PLAYER_PLAYING): the animations, the sound at 0, the
  * glows towards on, the sound kept at the object; when touched, gives the answer of
- * func_02095ec4, else 0. */
+ * PlayerActorOps_SetOwnFlag17, else 0. */
 int MusicPlayer_UpdatePlaying(MusicPlayer *player)
 {
     RoomObject_AdvanceAnims(&player->base);
     RoomObject_PlaySound0(&player->base);
     GlowSet_Switch(&player->glows, 1, 1, 0);
-    func_ov004_0223cf2c(&player->base.sound, &player->base.sound.position);
+    RoomSound_UpdateVolumeAt(&player->base.sound, &player->base.sound.position);
     if (Switch_IsPending(&player->base.light_switch)) {
         return MusicPlayer_touched(player, 1);
     }
@@ -166,7 +133,7 @@ CLEAN_AS(func_ov004_02215f8c, MusicPlayer_UpdatePlaying)
 int MusicPlayer_EnterPlaying(MusicPlayer *player)
 {
     RoomObject_PlaySound1(&player->base);
-    func_ov004_0223c2b4(0, func_ov004_02211308, NULL);
+    RoomObjects_SetSwitches(0, func_ov004_02211308, 0);
     Switch_Set(&player->base.light_switch, 1, 0);
     player->song = player->base.unk_77C;
     MusicPlayer_PlaySong(player, player->base.unk_77C);
@@ -254,13 +221,13 @@ u8 MusicPlayer_StateIsOn(MusicPlayer *player, unsigned int state)
 CLEAN_AS(func_ov004_02216200, MusicPlayer_StateIsOn)
 
 /* func_ov004_02216214 (update of MUSIC_PLAYER_TALK_END): once the link has closed, hands the
- * receiver back (func_0203ee08) and lets the scene go on (func_0203e020). The step stays until
+ * receiver back (SceneObjectBase_ReleaseReceiver) and lets the scene go on (EventQueue_FinishObjectEvent). The step stays until
  * the scene sets another. */
 void MusicPlayer_UpdateTalkEnd(MusicPlayer *player)
 {
-    if (player->base.link != NULL && player->base.link->open == 0) {
-        func_0203ee08(player, MusicPlayer_receiver(player));
-        func_0203e020(player);
+    if (player->base.link != NULL && player->base.link->state == 0) {
+        SceneObjectBase_ReleaseReceiver(&player->base.scene, MusicPlayer_receiver(player));
+        EventQueue_FinishObjectEvent(player);
     }
 }
 CLEAN_AS(func_ov004_02216214, MusicPlayer_UpdateTalkEnd)
@@ -276,7 +243,7 @@ CLEAN_AS(func_ov004_02216244, MusicPlayer_EnterTalkEnd)
 /* func_ov004_02216248 (update of MUSIC_PLAYER_TALK): on once the link has opened. */
 void MusicPlayer_UpdateTalk(MusicPlayer *player)
 {
-    if (player->base.link != NULL && player->base.link->open != 0) {
+    if (player->base.link != NULL && player->base.link->state != 0) {
         MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_END);
     }
 }
@@ -285,33 +252,33 @@ CLEAN_AS(func_ov004_02216248, MusicPlayer_UpdateTalk)
 /* The song's item handed to the link as text, the receiver told so. */
 static void MusicPlayer_tell_song(MusicPlayer *player, u16 *item)
 {
-    u8 text[0x28];
-    func_02062f90(text, item);
+    NameText text;
+    NameText_ConstructItem(&text, item);
     player->base.receiver_state = SAYS_SONG;
-    func_020683b4(player->base.link, 0, text, 7);
-    func_02062f4c(text);
+    TalkObject_SetValue(player->base.link, 0, (TextBase *) &text, 7);
+    NameText_Destruct(&text);
 }
 
-/* func_ov004_0221626c (entry of MUSIC_PLAYER_TALK): takes the receiver (func_0203ee14), raises
+/* func_ov004_0221626c (entry of MUSIC_PLAYER_TALK): takes the receiver (SceneObjectBase_TakeReceiver), raises
  * the link's request and names the receiver "obj_etc_player". In a villager's house it tells
  * the villager's song (song 0 for no villager or a song past the last); elsewhere the house's
  * music item, or that there is none.
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int MusicPlayer_EnterTalk(MusicPlayer *player)
 {
-    func_0203ee14(player, MusicPlayer_receiver(player));
-    player->base.link->requested = 1;
-    func_020a8164(&player->base.receiver_vtable, data_ov004_022531f0);
-    if (func_020b6680() != 0) {
+    SceneObjectBase_TakeReceiver(&player->base.scene, MusicPlayer_receiver(player));
+    player->base.link->next_state = 1;
+    MessageReceiver_SetName(&player->base.receiver.base, data_ov004_022531f0);
+    if (SceneQuery_CurrentIn11() != 0) {
         u32 song = 0;
-        void *villager = func_0207cec0(data_021e5a2c, func_020b66b0());
+        void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentIndexIn11());
         if (villager != NULL) {
-            song = (u32) func_0207f2c4(villager);
+            song = (u32) VillagerStatus_Song(villager);
         }
         u16 item = song < SONG_COUNT ? (u16) (MUSIC_ITEM_FIRST + song) : MUSIC_ITEM_FIRST;
         MusicPlayer_tell_song(player, &item);
     } else {
-        u16 *item = func_02060b70();
+        u16 *item = HouseRecord_CurrentSong();
         if (*item >= MUSIC_ITEM_FIRST && *item <= MUSIC_ITEM_LAST) {
             MusicPlayer_tell_song(player, item);
         } else {
@@ -347,14 +314,14 @@ void MusicPlayer_UpdateTalkMenu(MusicPlayer *player)
         return;
     }
     if (GroupParams_C4CIs1()) {
-        u16 item = func_0206f668();
+        u16 item = GroupParams_Item();
         int song = NO_SONG;
         if (item >= MUSIC_ITEM_FIRST && item <= MUSIC_ITEM_LAST) {
             song = item - MUSIC_ITEM_FIRST;
         }
-        func_0205265c(MusicPlayer_address(player), MUSIC_PLAYER_PLAYING, (u8) song, 1);
+        RoomSync_RequestState(&player->base, MUSIC_PLAYER_PLAYING, (u8) song, 1);
     }
-    func_0203e020(player);
+    EventQueue_FinishObjectEvent(player);
 }
 CLEAN_AS(func_ov004_02216360, MusicPlayer_UpdateTalkMenu)
 
@@ -439,14 +406,14 @@ int MusicPlayer_EnterTalkStep(MusicPlayer *player, int step)
 }
 CLEAN_AS(func_ov004_022164a0, MusicPlayer_EnterTalkStep)
 
-/* func_ov004_02216558 (vtable slot 0x4c): the scene's answer to func_0203e0a8. Event 1 starts
- * the song menu when func_020b67d4 and Room_Check0220fed0 allow it, else the talk that tells the
+/* func_ov004_02216558 (vtable slot 0x4c): the scene's answer to EventQueue_RequestKind6. Event 1 starts
+ * the song menu when SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else the talk that tells the
  * song; event 8 ends the talk; others do nothing. */
 void MusicPlayer_OnSceneEvent(MusicPlayer *player, int event)
 {
     switch (event) {
         case 1:
-            if (func_020b67d4() != 0 && Room_Check0220fed0() != 0) {
+            if (SceneKinds_CurrentIsHouseRoom() != 0 && Room_Check0220fed0() != 0) {
                 MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_MENU_NEXT);
             } else {
                 MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_NEXT);
@@ -464,10 +431,10 @@ CLEAN_AS(func_ov004_02216558, MusicPlayer_OnSceneEvent)
 void MusicPlayer_StopSong(MusicPlayer *player, unsigned int song, int clear_item)
 {
     if (player->playing && song < SONG_COUNT) {
-        func_02035638((u16) (song + MUSIC_FIRST));
+        Music_DropMusic((u16) (song + MUSIC_FIRST));
         if (clear_item != 0) {
             u16 none = ITEM_NONE;
-            func_02060b34(&none);
+            HouseRecord_SetCurrentSong(&none);
         }
         player->playing = 0;
     }
@@ -479,9 +446,9 @@ CLEAN_AS(func_ov004_02216598, MusicPlayer_StopSong)
 void MusicPlayer_PlaySong(MusicPlayer *player, unsigned int song)
 {
     if (!player->playing && song < SONG_COUNT) {
-        func_020356c4(0x11, (u16) (song + MUSIC_FIRST), 0x7f, 0);
+        Music_Add(0x11, (u16) (song + MUSIC_FIRST), 0x7f, 0);
         u16 item = (u16) (MUSIC_ITEM_FIRST + song);
-        func_02060b34(&item);
+        HouseRecord_SetCurrentSong(&item);
         player->playing = 1;
     }
 }
@@ -527,8 +494,8 @@ static int MusicPlayer_request(MusicPlayer *player, int state, int song)
 
 /* func_ov004_022166b8 (vtable slot 0x7c, once the model is bound): kinds 0x13 and 0x29 load the
  * animations of variant 0, looping; the glows are bound, on as the switch shows. In mode 1
- * (unk_76C) STOPPED is requested for the object's cell (func_02052738). Otherwise, with the
- * switch on outside the areas func_ov004_0223c10c names, it plays:
+ * (unk_76C) STOPPED is requested for the object's cell (RoomSync_SetState). Otherwise, with the
+ * switch on outside the areas RoomObjects_InNookOrScene0AOr0F names, it plays:
  * - in a villager's house the villager's song (song 0 for no villager), noted as started
  *   (data_ov004_02256fec, the first song's item for a song past the last); but once a song was
  *   started there it stops instead;
@@ -543,13 +510,13 @@ int MusicPlayer_Start(MusicPlayer *player)
     }
     GlowSet_Bind(&player->glows, base->model_resource, Switch_Value(&base->light_switch));
     if (base->unk_76C == 1) {
-        func_02052738(MusicPlayer_address(player), MUSIC_PLAYER_STOPPED, NO_VALUE, 1);
-    } else if (Switch_Value(&base->light_switch) != 0 && func_ov004_0223c10c() == 0) {
-        if (func_020b6680() != 0) {
+        RoomSync_SetState(&player->base, MUSIC_PLAYER_STOPPED, NO_VALUE, 1);
+    } else if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+        if (SceneQuery_CurrentIn11() != 0) {
             u32 song = 0;
-            void *villager = func_0207cec0(data_021e5a2c, func_020b66b0());
+            void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentIndexIn11());
             if (villager != NULL) {
-                song = (u32) func_0207f2c4(villager);
+                song = (u32) VillagerStatus_Song(villager);
             }
             if (data_ov004_02256fec >= MUSIC_ITEM_FIRST && data_ov004_02256fec <= MUSIC_ITEM_LAST) {
                 MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
@@ -557,11 +524,11 @@ int MusicPlayer_Start(MusicPlayer *player)
                 data_ov004_02256fec = song < SONG_COUNT ? (u16) (MUSIC_ITEM_FIRST + song) : MUSIC_ITEM_FIRST;
             }
         } else {
-            u16 item = *func_02060b70();
+            u16 item = *HouseRecord_CurrentSong();
             if (item >= MUSIC_ITEM_FIRST && item <= MUSIC_ITEM_LAST) {
                 MusicPlayer_request(player, MUSIC_PLAYER_PLAYING, (u8) (item - MUSIC_ITEM_FIRST));
             } else {
-                func_02060afc();
+                HouseRecord_StopCurrentSong();
                 MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
             }
         }

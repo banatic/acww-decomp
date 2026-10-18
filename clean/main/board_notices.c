@@ -12,6 +12,9 @@
 #include "town_villager.h"
 #include "villager_roster.h"
 #include "villager_town.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "town_record.h"
 
 static_assert(sizeof(BoardNoticesState) == sizeof(((StateBlock *) NULL)->part_17254), "BoardNoticesState");
 static_assert(offsetof(BoardNoticesState, pelican_day) == 0x1725c - 0x17254, "BoardNoticesState.pelican_day");
@@ -35,11 +38,6 @@ extern const u32 data_020cb5c0[0x3a - 0x1c];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-/* The next pelican day (the state's pelican_day) drawn from `day`: a day of the week after. */
-extern void func_0204cc34(BoardNoticesState *state, BoardNoticesDay *day);
-extern void *func_02094fd4(BoardNoticesText *text);
-extern void *func_02094fbc(BoardNoticesText *text);
 
 #define BOARD_NOTICES_NEVER 0xff
 #define BOARD_NOTICES_BIRTHDAYS 8 /* events 0-7: the birthday of the villager of that number */
@@ -117,7 +115,7 @@ void BoardNotices_PostDays(void *unused, StateBlock *block, int days, const Date
         if (DateTime_DaysBetween(&day, &pelican) == 0) {
             MI_CpuCopy8(&pelican, &copy, sizeof(DateTime));
             BoardNotices_PostPelican(unused, block, &copy);
-            func_0204cc34(state, &state->pelican_day);
+            TownRecord_DrawPelicanDay((TownRecord *) state, (const TownDayStamp *) &state->pelican_day);
         }
         if (weekday == BOARD_NOTICES_SLOGAN_WEEKDAY) {
             MI_CpuCopy8(&day, &copy, sizeof(DateTime));
@@ -158,7 +156,7 @@ void BoardNotices_CatchUpPelicanDay(int unused, StateBlock *block, const DateTim
     DateTime pelican;
     BoardNotices_DayToDateTime(&pelican, &state->pelican_day);
     while (DateTime_DaysBetween(when, &pelican) < 0) {
-        func_0204cc34(state, &state->pelican_day);
+        TownRecord_DrawPelicanDay((TownRecord *) state, (const TownDayStamp *) &state->pelican_day);
         BoardNotices_DayToDateTime(&pelican, &state->pelican_day);
     }
 }
@@ -196,7 +194,7 @@ void BoardNotices_PostEvents(int unused, const EventCalendarEvent *events, const
     (void) unused;
     BoardNoticesText name;
     DateTime asked;
-    func_02094fd4(&name);
+    PlayerIdText_Construct((PlayerIdText *) &name);
     for (int i = 0; i < BOARD_NOTICES_EVENTS; i++, events++) {
         int message = BOARD_NOTICES_NO_MESSAGE;
         int id = events->id;
@@ -206,7 +204,7 @@ void BoardNotices_PostEvents(int unused, const EventCalendarEvent *events, const
             if (villager != NULL && (npc = TownVillager_NpcId(villager)) != NULL) {
                 NpcLookup_FormatName((char *) &name, NpcId_Number(npc));
                 MailText_SetPartText(0, &name);
-                message = (int) func_020644cc(3) + BOARD_NOTICES_BIRTHDAY_MESSAGE;
+                message = (int) MainRandom_Below(3) + BOARD_NOTICES_BIRTHDAY_MESSAGE;
             }
         } else if (id >= BOARD_NOTICES_FIRST_EVENT && id <= BOARD_NOTICES_LAST_EVENT) {
             MI_CpuCopy8(when, &asked, sizeof(DateTime));
@@ -219,7 +217,7 @@ void BoardNotices_PostEvents(int unused, const EventCalendarEvent *events, const
             Bbs_PostMessageDated(message, data_020db864, when->year, when->month, when->day);
         }
     }
-    func_02094fbc(&name);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
 }
 CLEAN_AS(func_02042798, BoardNotices_PostEvents)
 
@@ -234,7 +232,7 @@ static void BoardNotices_PostDrawn(void *unused, u8 *bits, int count, const char
         left = count;
         MI_CpuFill8(used, 0, (u32) count);
     }
-    int pick = (int) func_020644cc(left);
+    int pick = (int) MainRandom_Below(left);
     MI_CpuCopy8(when, &copy, sizeof(DateTime));
     BoardNotices_PostUnused((int) (uintptr_t) unused, pick, archive, used, count, &copy);
     BoardNotices_PackBits(unused, bits, used, (count + 7) / 8);

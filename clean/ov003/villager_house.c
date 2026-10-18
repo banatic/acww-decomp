@@ -12,6 +12,21 @@
 #include "main/npc_id.h"         /* NpcId, NpcId_Personality, NpcId_FormatName */
 #include "main/session.h"        /* NetSession, Session_IsSlotTaken */
 #include "main/trivial_object.h" /* TrivialObject_Destruct */
+#include "main/animated_model.h"
+#include "main/c_library.h"
+#include "main/frame_ctrl.h"
+#include "main/link_scene.h"
+#include "main/message_receiver.h"
+#include "main/model_anim.h"
+#include "main/model_object.h"
+#include "main/player_id.h"
+#include "main/scene_query.h"
+#include "main/talk_object.h"
+#include "main/town_villager.h"
+#include "main/villager_data.h"
+#include "main/villager_roster.h"
+#include "main/villager_status.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(VillagerHouse, position) == 0x5c, "position");
 static_assert(offsetof(VillagerHouse, receiver_vtable) == 0xec, "receiver");
@@ -59,41 +74,10 @@ extern const u8 data_ov003_02236644[];
 /* The session of the wireless play. */
 extern NetSession *data_020ccf94;
 
-/* Villager `index` of the list, NULL when there is none. */
-extern void *func_0207cec0(void *villagers, int index);
-/* Whether there is a villager (always 1), and its status (0 to 7). */
-extern int func_0207f1d4(void *villager);
-extern int func_0207f1d8(void *villager);
-/* The villager's NpcId, 0x7a0 bytes in. */
-extern NpcId *func_0208150c(void *villager);
-/* The three bytes of a session slot's link state. */
-extern void func_020a6e4c(int slot, u8 *byte0, u8 *byte1, u8 *byte2);
-/* The villager index (0 to 7) a link state's first byte names (17 to 24), else -1. */
-extern int func_020b66c4(unsigned int value);
-/* Whether the hour is outside 6:00 to 18:00. */
-extern int func_ov009_02264c40(VillagerHouse *house);
-/* Copies at most 25 characters of `name` into the receiver's name. */
-extern void func_020a8164(void *receiver, const char *name);
-/* A string object (0x24 bytes): built by func_02094fd4, destroyed by func_02094fbc;
- * func_02068404 hands it to the link as line `line`. */
-extern void *func_02094fd4(void *text);
-extern void *func_02094fbc(void *text);
-extern void func_02068404(void *link, int line, void *text);
 /* Overlay 3's set of house textures and animations (data_ov003_0223cea0, HouseTextures of
  * house_files.h, which HouseFiles_Textures gives) and its set from "/str/npcHsX.arc"
  * (data_ov003_0223ce80, HouseXFiles, which HouseFiles_XFiles gives). */
 typedef HouseXFiles VillagerHouseXFiles;
-
-/* The X files' accessors: loaded, models[kind] (NULL from kind 5 on), deco and texture. */
-extern int func_ov003_0221fe9c(VillagerHouseXFiles *files);
-extern void *func_ov003_0221fea4(VillagerHouseXFiles *files, unsigned int kind);
-extern void *func_ov003_0221fea0(VillagerHouseXFiles *files);
-extern void *func_ov003_0221feb4(VillagerHouseXFiles *files);
-
-/* The villager's house look byte (0x28 bytes into a record of the villager), NULL when there is
- * none. */
-extern u8 *func_02080b64(void *villager);
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
 
 /* The paths and the model name, in overlay 3's buffers, and their formats:
  * "/str/npcHs/%d/%s%c.nsbtx", "/str/npcHs/%d/%s%c.arc" and "obj_house%d_%d". */
@@ -121,25 +105,6 @@ extern const u8 data_ov003_02238fec[];
 
 extern int NNS_G3dBindMdlTex(void *model, void *texture);
 extern int NNS_G3dBindMdlPltt(void *model, void *texture);
-/* A model object of main: given a model resource and a texture (always 1), drawn, its render
- * object, destroyed and constructed. */
-extern int func_02055f2c(VillagerHouseModel *model, void *resource, void *texture);
-extern void func_0205510c(VillagerHouseModel *model, int arg);
-extern void *func_02055e00(VillagerHouseModel *model);
-extern void *func_020551e0(VillagerHouseModel *model);
-extern void *func_02055210(VillagerHouseModel *model);
-/* An animation of main: advanced, bound to a model resource (whether it could), playing a
- * texture pattern `file` with `texture` by `mode` and `speed` from `frame`, put on a render
- * object, destroyed and constructed. */
-extern void func_02056ffc(VillagerHouseAnim *anim);
-extern int func_0205650c(VillagerHouseAnim *anim, void *resource, Heap *heap);
-extern void func_02056424(VillagerHouseAnim *anim, void *file, void *texture, int mode, int speed, u16 frame);
-extern void func_020563dc(VillagerHouseAnim *anim, void *render_object);
-extern void *func_020565b0(VillagerHouseAnim *anim);
-extern void func_020565c8(VillagerHouseAnim *anim);
-/* Overlay 9's scene actor: its destructor and its constructor. */
-extern void *func_ov009_0226539c(VillagerHouse *house);
-extern void *func_ov009_0226552c(VillagerHouse *house);
 
 typedef struct VillagerHouseText {
     u8 bytes[0x24];
@@ -159,8 +124,8 @@ static int villager_house_index(const VillagerHouse *house)
  * QUIRK: the status is asked for again for each value compared. */
 static int villager_house_status_refuses(void *villager)
 {
-    return func_0207f1d8(villager) == 0 || func_0207f1d8(villager) == 3 || func_0207f1d8(villager) == 4 ||
-           func_0207f1d8(villager) == 5 || func_0207f1d8(villager) == 6 || func_0207f1d8(villager) == 7;
+    return VillagerStatus_Get(villager) == 0 || VillagerStatus_Get(villager) == 3 || VillagerStatus_Get(villager) == 4 ||
+           VillagerStatus_Get(villager) == 5 || VillagerStatus_Get(villager) == 6 || VillagerStatus_Get(villager) == 7;
 }
 
 /* func_ov003_0221d2a8 (vtable slot 0x98): always 1. */
@@ -184,28 +149,28 @@ CLEAN_AS(func_ov003_0221d2ac, VillagerHouse_Slot90)
 int VillagerHouse_Slot9C(VillagerHouse *house)
 {
     int index = villager_house_index(house);
-    if (func_ov009_02264c40(house) == 0) {
+    if (SceneActor_IsNight((SceneActor *) house) == 0) {
         return 0;
     }
-    void *villager = func_0207cec0(data_021e5a2c, index);
+    void *villager = VillagerRoster_At((VillagerTown *) data_021e5a2c, index);
     if (villager == NULL) {
         return 1;
     }
-    if (func_0207f1d4(villager) == 0) {
+    if (VillagerStatus_Exists(villager) == 0) {
         return 0;
     }
     if (villager_house_status_refuses(villager)) {
         return 0;
     }
-    if (func_0207f1d8(villager) != VILLAGER_HOUSE_STATUS_AWAY) {
+    if (VillagerStatus_Get(villager) != VILLAGER_HOUSE_STATUS_AWAY) {
         return 1;
     }
     NetSession *session = data_020ccf94;
     for (int slot = 0; slot < VILLAGER_HOUSE_SESSION_SLOTS; slot++) {
         if (Session_IsSlotTaken(session, slot) != 0) {
             u8 link_state[3];
-            func_020a6e4c(slot, &link_state[0], &link_state[1], &link_state[2]);
-            if (index == func_020b66c4(link_state[0])) {
+            LinkScene_GlobalPlace(slot, &link_state[0], &link_state[1], &link_state[2]);
+            if (index == SceneQuery_IndexIn11(link_state[0])) {
                 return 1;
             }
         }
@@ -218,11 +183,11 @@ CLEAN_AS(func_ov003_0221d2b0, VillagerHouse_Slot9C)
  * yes and its status is neither 0 nor 3 to 7. */
 int VillagerHouse_Slot8C(VillagerHouse *house)
 {
-    void *villager = func_0207cec0(data_021e5a2c, villager_house_index(house));
+    void *villager = VillagerRoster_At((VillagerTown *) data_021e5a2c, villager_house_index(house));
     if (villager == NULL) {
         return 0;
     }
-    if (func_0207f1d4(villager) == 0) {
+    if (VillagerStatus_Exists(villager) == 0) {
         return 0;
     }
     if (villager_house_status_refuses(villager)) {
@@ -240,15 +205,15 @@ CLEAN_AS(func_ov003_0221d3a4, VillagerHouse_Slot8C)
  * villager's name goes to the link as line 0. */
 void VillagerHouse_PrepareTalk(VillagerHouse *house)
 {
-    void *villager = func_0207cec0(data_021e5a2c, villager_house_index(house));
-    func_020a8164(&house->receiver_vtable, data_ov003_02239064);
-    if (func_0207f1d4(villager) == 0) {
+    void *villager = VillagerRoster_At((VillagerTown *) data_021e5a2c, villager_house_index(house));
+    MessageReceiver_SetName((MessageReceiver *) &house->receiver_vtable, data_ov003_02239064);
+    if (VillagerStatus_Exists(villager) == 0) {
         house->message = VILLAGER_HOUSE_MESSAGE_GONE;
     } else if (house->flags & VILLAGER_HOUSE_FLAG_ERROR) {
-        func_020a8164(&house->receiver_vtable, data_ov003_02239074);
+        MessageReceiver_SetName((MessageReceiver *) &house->receiver_vtable, data_ov003_02239074);
         house->message = 0;
     } else {
-        NpcId *npc = func_0208150c(villager);
+        NpcId *npc = TownVillager_NpcId(villager);
         if (npc != NULL) {
             if (house->message_set == 0) {
                 house->message = data_ov003_0223664c[NpcId_Personality(npc)];
@@ -259,10 +224,10 @@ void VillagerHouse_PrepareTalk(VillagerHouse *house)
     }
 
     VillagerHouseText text;
-    func_02094fd4(&text);
-    NpcId_FormatName(func_0208150c(villager), (char *) text.bytes);
-    func_02068404(house->link, 0, &text);
-    func_02094fbc(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
+    NpcId_FormatName(TownVillager_NpcId(villager), (char *) text.bytes);
+    TalkObject_SetPart(house->link, 0, (TextBase *) &text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
 }
 CLEAN_AS(func_ov003_0221d43c, VillagerHouse_PrepareTalk)
 
@@ -299,7 +264,7 @@ char *VillagerHouse_TexturePath(VillagerHouse *house)
     int look = VillagerHouse_Look(house);
     char *name = VillagerHouse_ModelName(house);
     int letter = HouseFiles_SeasonLetter();
-    func_02064328(data_ov003_0223c970, data_ov003_02239084, look >> VILLAGER_HOUSE_KIND_SHIFT, name, letter);
+    CLib_SPrintf(data_ov003_0223c970, data_ov003_02239084, look >> VILLAGER_HOUSE_KIND_SHIFT, name, letter);
     return data_ov003_0223c970;
 }
 CLEAN_AS(func_ov003_0221d55c, VillagerHouse_TexturePath)
@@ -312,7 +277,7 @@ char *VillagerHouse_ArchivePath(VillagerHouse *house)
     int look = VillagerHouse_Look(house);
     char *name = VillagerHouse_ModelName(house);
     int letter = HouseFiles_SeasonLetter();
-    func_02064328(data_ov003_0223c948, data_ov003_022390a0, look >> VILLAGER_HOUSE_KIND_SHIFT, name, letter);
+    CLib_SPrintf(data_ov003_0223c948, data_ov003_022390a0, look >> VILLAGER_HOUSE_KIND_SHIFT, name, letter);
     return data_ov003_0223c948;
 }
 CLEAN_AS(func_ov003_0221d594, VillagerHouse_ArchivePath)
@@ -322,8 +287,8 @@ CLEAN_AS(func_ov003_0221d594, VillagerHouse_ArchivePath)
 char *VillagerHouse_ModelName(VillagerHouse *house)
 {
     int look = VillagerHouse_Look(house);
-    func_02064328(data_ov003_0223c914, data_ov003_022390b8, look >> VILLAGER_HOUSE_KIND_SHIFT,
-                  look & VILLAGER_HOUSE_VARIANT_MASK);
+    CLib_SPrintf(data_ov003_0223c914, data_ov003_022390b8, look >> VILLAGER_HOUSE_KIND_SHIFT,
+                 look & VILLAGER_HOUSE_VARIANT_MASK);
     return data_ov003_0223c914;
 }
 CLEAN_AS(func_ov003_0221d5cc, VillagerHouse_ModelName)
@@ -331,7 +296,7 @@ CLEAN_AS(func_ov003_0221d5cc, VillagerHouse_ModelName)
 /* The villager's house look byte, as func_02080b64 gives it. */
 static const u8 *villager_house_look_byte(const VillagerHouse *house)
 {
-    return func_02080b64(func_0207cec0(data_021e5a2c, villager_house_index(house)));
+    return VillagerData_Room(VillagerRoster_At((VillagerTown *) data_021e5a2c, villager_house_index(house)));
 }
 
 /* func_ov003_0221d5f4: the variant of the villager's house look (0 to 3).
@@ -365,8 +330,8 @@ CLEAN_AS(func_ov003_0221d69c, VillagerHouse_Leave)
  * always 1. */
 int VillagerHouse_Draw(VillagerHouse *house)
 {
-    if (func_ov003_0221fe9c(HouseFiles_XFiles())) {
-        func_0205510c(&house->x_model, 0);
+    if (HouseXFiles_Loaded(HouseFiles_XFiles())) {
+        AnimatedModel_Draw((AnimatedModel *) &house->x_model, 0);
     }
     return 1;
 }
@@ -378,10 +343,10 @@ CLEAN_AS(func_ov003_0221d6dc, VillagerHouse_Draw)
  * REQUIRES: the X model's animation was bound (VillagerHouse_Init), so it has a target. */
 int VillagerHouse_Update(VillagerHouse *house)
 {
-    if (func_ov003_0221fe9c(HouseFiles_XFiles())) {
+    if (HouseXFiles_Loaded(HouseFiles_XFiles())) {
         house->x_model.matrix = house->matrix;
         if (!(house->flags_235 & 1)) {
-            func_02056ffc(&house->x_anim);
+            FrameCtrl_Step((FrameCtrl *) &house->x_anim);
             *house->x_anim.target = house->x_anim.frame;
         }
     }
@@ -425,22 +390,22 @@ int VillagerHouse_Init(VillagerHouse *house)
         NNS_G3dBindMdlPltt(model, light_texture);
     }
 
-    if (!func_ov003_0221fe9c(HouseFiles_XFiles())) {
+    if (!HouseXFiles_Loaded(HouseFiles_XFiles())) {
         return 1;
     }
     unsigned int kind = (unsigned int) VillagerHouse_Look(house) >> VILLAGER_HOUSE_KIND_SHIFT;
-    if (!func_02055f2c(&house->x_model, func_ov003_0221fea4(HouseFiles_XFiles(), kind), NULL)) {
+    if (!ModelObject_SetModel((ModelObject *) &house->x_model, HouseXFiles_Model(HouseFiles_XFiles(), kind), NULL)) {
         return 1;
     }
-    void *x_model = func_ov003_0221fea4(HouseFiles_XFiles(), kind);
-    NNS_G3dBindMdlTex(x_model, func_ov003_0221feb4(HouseFiles_XFiles()));
-    x_model = func_ov003_0221fea4(HouseFiles_XFiles(), kind);
-    NNS_G3dBindMdlPltt(x_model, func_ov003_0221feb4(HouseFiles_XFiles()));
-    if (func_0205650c(&house->x_anim, house->x_model.resource, data_021c9b1c)) {
-        void *deco = func_ov003_0221fea0(HouseFiles_XFiles());
-        void *texture = func_ov003_0221feb4(HouseFiles_XFiles());
-        func_02056424(&house->x_anim, deco, texture, 0, VILLAGER_HOUSE_ONE, 0);
-        func_020563dc(&house->x_anim, func_02055e00(&house->x_model));
+    void *x_model = HouseXFiles_Model(HouseFiles_XFiles(), kind);
+    NNS_G3dBindMdlTex(x_model, (void *) (uintptr_t) HouseXFiles_Texture(HouseFiles_XFiles()));
+    x_model = HouseXFiles_Model(HouseFiles_XFiles(), kind);
+    NNS_G3dBindMdlPltt(x_model, (void *) (uintptr_t) HouseXFiles_Texture(HouseFiles_XFiles()));
+    if (ModelAnim_AllocMaterialAnim((ModelAnim *) &house->x_anim, house->x_model.resource, data_021c9b1c)) {
+        void *deco = (void *) (uintptr_t) HouseXFiles_Deco(HouseFiles_XFiles());
+        void *texture = (void *) (uintptr_t) HouseXFiles_Texture(HouseFiles_XFiles());
+        ModelAnim_StartTextured((ModelAnim *) &house->x_anim, deco, texture, 0, VILLAGER_HOUSE_ONE, 0);
+        ModelAnim_Attach((ModelAnim *) &house->x_anim, ModelObject_RenderObject((ModelObject *) &house->x_model));
         house->x_model.matrix = house->matrix;
     }
     return 1;
@@ -453,9 +418,9 @@ static void villager_house_destroy_parts(VillagerHouse *house)
 {
     house->vtable = data_ov003_02238f28;
     house->receiver_vtable = data_ov003_02238fec;
-    func_020565b0(&house->x_anim);
-    func_020551e0(&house->x_model);
-    func_ov009_0226539c(house);
+    ModelAnim_DestructComplete((ModelAnim *) &house->x_anim);
+    AnimatedModel_DestructComplete((AnimatedModel *) &house->x_model);
+    SceneActor_Destruct((SceneActor *) house);
 }
 
 /* func_ov003_0221d93c (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -482,11 +447,11 @@ CLEAN_AS(func_ov003_0221d980, VillagerHouse_Destroy)
  * made before it are kept again only by their set-up (VillagerHouse_Init). */
 VillagerHouse *VillagerHouse_Construct(VillagerHouse *house)
 {
-    func_ov009_0226552c(house);
+    SceneActor_ConstructBase((SceneActor *) house);
     house->vtable = data_ov003_02238f28;
     house->receiver_vtable = data_ov003_02238fec;
-    func_02055210(&house->x_model);
-    func_020565c8(&house->x_anim);
+    AnimatedModel_Construct((AnimatedModel *) &house->x_model);
+    ModelAnim_Construct((ModelAnim *) &house->x_anim);
     for (int i = 0; i < VILLAGER_HOUSE_VILLAGERS; i++) {
         data_ov003_0223c928[i] = NULL;
     }

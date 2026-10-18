@@ -5,6 +5,11 @@
 #include "clean.h"
 #include "date_time.h"
 #include "mail.h"
+#include "item_lists.h"
+#include "letter.h"
+#include "main_random.h"
+#include "player_record.h"
+#include "player_records.h"
 
 #define NO_ITEM 0xfff1
 
@@ -55,25 +60,6 @@ extern const int data_020d18e0[];
 extern MomGlobal data_021f39a8;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern u32 func_020644cc(int bound);                /* a random number below `bound` */
-extern void *func_020984e8(void);                   /* the current player's record */
-extern MomLetterState *func_02098a0c(void *player); /* its MomLetterState (0x243e) */
-extern u8 *func_020992e4(void *player);             /* its birthday: day, month (0x2414) */
-extern void *func_02099870(void *player);           /* its name (0x247e) */
-/* The state's day: 1 when it is `date`, else 0, setting it when there is none (then 1). */
-extern int func_02097d68(MomLetterState *state, MomDate *date);
-extern void func_02097d50(MomLetterState *state, MomDate *date); /* set its day to `date` */
-extern void func_02066694(MailLetter *letter);                   /* construct */
-extern void func_02066650(MailLetter *letter);                   /* empty */
-extern void func_02066688(MailLetter *letter);                   /* destruct */
-/* Write the letter: its message `*message` of the template `name`, for the player whose name
- * is given; *kind goes to byte 0xfb and *paper to byte 0xf9. */
-extern void func_02066024(MailLetter *letter, u8 *message, const char *name, u8 *kind, u8 *paper, void *player_name);
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int arg); /* attach an item */
-extern void func_02063ccc(MomItemList *list, int kind, int unk_04);
-extern void func_020638d4(u16 *item, MomItemList *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(MomItemList *list);
-extern void func_02063414(u16 *item, int a, int b, int c, int d, int e, int f, int g, int h, int i);
 
 static u8 *sent_bits(MomLetterState *state)
 {
@@ -103,9 +89,9 @@ static u16 list_item(int kind)
 {
     MomItemList list;
     u16 item;
-    func_02063ccc(&list, kind, 0);
-    func_020638d4(&item, &list, 0, 0, 1, 1, 0);
-    func_02063cc8(&list);
+    ItemList_Construct((ItemList *) &list, kind, 0);
+    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemList_Destruct(&list);
     return item;
 }
 
@@ -120,7 +106,7 @@ int MomLetters_Present(int letter)
             return list_item(PRESENT_LIST_A);
         case 0x4a: {
             u16 item;
-            func_02063414(&item, 0x1380, 0x20, 0, 0, 0, 1, 0xa, 0, 1);
+            ItemLists_DrawRange(&item, 0x1380, 0x20, 0, 0, 0, 1, 0xa, 0, 1);
             return item;
         }
         case 0x1e:
@@ -132,7 +118,7 @@ int MomLetters_Present(int letter)
         case 0x51: {
             /* One of the range other than the one data_021f39a8 names, at random. */
             u16 excluded = range_item(data_021f39a8.unk_58);
-            int skip = (int) func_020644cc(4);
+            int skip = (int) MainRandom_Below(4);
             for (u32 i = 0; i < PRESENT_RANGE_COUNT; i++) {
                 u16 item = range_item(i);
                 if (item == excluded) {
@@ -183,19 +169,19 @@ CLEAN_AS(func_020970a4, MomLetters_Template)
 int MomLetters_Send(int letter, int month)
 {
     MailLetter mail;
-    func_02066694(&mail);
-    func_02066650(&mail);
-    void *name = func_02099870(func_020984e8());
+    Letter_Construct((Letter *) &mail);
+    Letter_Clear((Letter *) &mail);
+    void *name = PlayerRecord_Player(PlayerRecords_Current());
     u8 message = MomLetters_GroupIndex(letter);
     u8 kind = letter == MOM_FATHERS_DAY ? LETTER_KIND_FATHERS_DAY : LETTER_KIND;
     u8 paper = (u8) MomLetters_DrawPaper(PAPER_SET_MOM, month);
-    func_02066024(&mail, &message, MomLetters_Template(letter), &kind, &paper, name);
+    Letter_WriteSpecialToPlayer((Letter *) &mail, &message, MomLetters_Template(letter), &kind, &paper, name);
     int item = MomLetters_Present(letter);
     if (item != NO_ITEM) {
-        func_02065ed0(&mail, (u16) item, 1);
+        Letter_SetItem((Letter *) &mail, (u16) item, 1);
     }
     int sent = Mail_Post(&mail) != 0 || Mail_HoldAtPostOffice(&mail, 0) != 0;
-    func_02066688(&mail);
+    Letter_Destruct((Letter *) &mail);
     return sent;
 }
 CLEAN_AS(func_020970cc, MomLetters_Send)
@@ -206,7 +192,7 @@ CLEAN_AS(func_020970cc, MomLetters_Send)
  * instead, the one just sent included. */
 int MomLetters_SendOneOf(int first, int count, int month, int recycle)
 {
-    MomLetterState *state = func_02098a0c(func_020984e8());
+    MomLetterState *state = PlayerRecord_MomLetterState(PlayerRecords_Current());
     int unsent = MomLetters_CountUnsent(first, count);
     if (unsent == 0) {
         if (recycle == 0) {
@@ -216,7 +202,7 @@ int MomLetters_SendOneOf(int first, int count, int month, int recycle)
         MomLetters_Unmark(first, count);
         recycle = 0;
     }
-    int pick = (int) func_020644cc(unsent);
+    int pick = (int) MainRandom_Below(unsent);
     int letter = MomLetters_NthUnsent(first, count, pick);
     int sent = MomLetters_Send(letter, month);
     if (sent != 0) {
@@ -233,7 +219,7 @@ CLEAN_AS(func_02097188, MomLetters_SendOneOf)
 /* func_02097204: mark letters first..first + count - 1 not sent. */
 void MomLetters_Unmark(int first, int count)
 {
-    MomLetterState *state = func_02098a0c(func_020984e8());
+    MomLetterState *state = PlayerRecord_MomLetterState(PlayerRecords_Current());
     for (int i = 0; i < count; i++) {
         MomLetterState_Unmark(state, first + i);
     }
@@ -244,7 +230,7 @@ CLEAN_AS(func_02097204, MomLetters_Unmark)
  * when there are not that many. */
 int MomLetters_NthUnsent(int first, int count, int n)
 {
-    MomLetterState *state = func_02098a0c(func_020984e8());
+    MomLetterState *state = PlayerRecord_MomLetterState(PlayerRecords_Current());
     int seen = 0;
     for (int i = 0; i < count; i++) {
         if (MomLetterState_IsSent(state, first + i) == 0) {
@@ -261,7 +247,7 @@ CLEAN_AS(func_02097234, MomLetters_NthUnsent)
 /* func_0209727c: how many of letters first..first + count - 1 are not sent yet. */
 int MomLetters_CountUnsent(int first, int count)
 {
-    MomLetterState *state = func_02098a0c(func_020984e8());
+    MomLetterState *state = PlayerRecord_MomLetterState(PlayerRecords_Current());
     int unsent = 0;
     for (int i = 0; i < count; i++) {
         if (MomLetterState_IsSent(state, first + i) == 0) {
@@ -308,7 +294,7 @@ int MomLetters_SendSeasonalOrAlways(MomDate *date)
     if (unsent == count) {
         return MomLetters_SendOneOf(first, count, (u8) date->month, 0);
     }
-    int draw = (int) func_020644cc(MomLetters_CountUnsent(MOM_ALWAYS_FIRST, MOM_ALWAYS_COUNT) + unsent);
+    int draw = (int) MainRandom_Below(MomLetters_CountUnsent(MOM_ALWAYS_FIRST, MOM_ALWAYS_COUNT) + unsent);
     if (draw < unsent) {
         return MomLetters_SendOneOf(first, count, (u8) date->month, 0);
     }
@@ -346,9 +332,9 @@ CLEAN_AS(func_0209737c, MomLetters_SendForDay)
  * sent. */
 int MomLetters_SendBirthday(MomDate *date)
 {
-    void *player = func_020984e8();
-    MomLetterState *state = func_02098a0c(player);
-    u8 *birthday = func_020992e4(player);
+    void *player = PlayerRecords_Current();
+    MomLetterState *state = PlayerRecord_MomLetterState(player);
+    u8 *birthday = PlayerRecord_Birthday(player);
     if (birthday[0] == 0 && birthday[1] == 0) {
         return 0;
     }
@@ -391,7 +377,7 @@ CLEAN_AS(func_02097430, MomLetters_SendBirthday)
  * SendSeasonalOrAlways); then note the day. On the first day only the day is noted. */
 void MomLetters_DailyCheck(MomDate *date, int days)
 {
-    void *player = func_020984e8();
+    void *player = PlayerRecords_Current();
     if (player == NULL) {
         return;
     }
@@ -401,17 +387,17 @@ void MomLetters_DailyCheck(MomDate *date, int days)
     if (Mail_PostOfficeHasRoom() == 0 && Mail_IsMailboxFull(-1) == 1) {
         return;
     }
-    MomLetterState *state = func_02098a0c(player);
+    MomLetterState *state = PlayerRecord_MomLetterState(player);
     MomLetters_UnmarkOtherMonths((u8) date->month);
-    if (func_02097d68(state, date) != 0) {
+    if (MomLetterState_IsDate(state, date) != 0) {
         return;
     }
     if (MomLetters_SendBirthday(date) != 0) {
         MomLetterState_SetBirthdayYear(state, (u8) date->year);
-    } else if (MomLetters_SendForDay(date) == 0 && func_020644cc(10) < 2) {
+    } else if (MomLetters_SendForDay(date) == 0 && MainRandom_Below(10) < 2) {
         MomLetters_SendSeasonalOrAlways(date);
     }
-    func_02097d50(state, date);
+    MomLetterState_SetDate(state, date);
 }
 CLEAN_AS(func_0209751c, MomLetters_DailyCheck)
 
@@ -429,14 +415,14 @@ u8 MomLetters_PaperForMonth(u32 month)
     } else {
         season = 2;
     }
-    return data_020e3048[season][func_020644cc(data_020d18d0[season])];
+    return data_020e3048[season][MainRandom_Below(data_020d18d0[season])];
 }
 CLEAN_AS(func_0209761c, MomLetters_PaperForMonth)
 
 /* func_0209765c: a paper from paper set `set`, at random. */
 u8 MomLetters_PaperFromSet(int set)
 {
-    u32 pick = func_020644cc(data_020d18e0[set]);
+    u32 pick = MainRandom_Below(data_020d18e0[set]);
     return data_020e3058[set][pick];
 }
 CLEAN_AS(func_0209765c, MomLetters_PaperFromSet)
@@ -444,7 +430,7 @@ CLEAN_AS(func_0209765c, MomLetters_PaperFromSet)
 /* func_0209767c: three times in ten a paper of the season of `month`, else one of set `set`. */
 int MomLetters_DrawPaper(int set, int month)
 {
-    if (func_020644cc(10) < 3) {
+    if (MainRandom_Below(10) < 3) {
         return MomLetters_PaperForMonth((u32) month);
     }
     return MomLetters_PaperFromSet(set);

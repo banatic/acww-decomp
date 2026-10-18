@@ -9,6 +9,10 @@
 #include "clean.h"
 #include "display_shadow.h" /* DisplayShadow_SetMainBg1Scroll, DisplayShadow_HideMainPlanes */
 #include "game_variables.h" /* GameVariables_Tweak */
+#include "cell_layer_sprite.h"
+#include "dual_cell_sprite.h"
+#include "oam_buffer.h"
+#include "screen_sprite.h"
 
 static_assert(offsetof(MesBg, colours_dirty) == 0x12, "MesBg layout");
 static_assert(offsetof(MesBg, lines) == 0x1e, "MesBg layout");
@@ -35,25 +39,6 @@ extern const void *const *data_020d5b3c;
 extern int FS_OpenFile(void *file, const char *path);
 extern s32 FS_ReadFile(void *file, void *dst, s32 size);
 extern int FS_CloseFile(void *file);
-
-/* main's sprite classes */
-extern void *func_0208e8d4(void *sprite, u8 kind);     /* constructor */
-extern void *func_0208e7f0(void *sprite);              /* destructor */
-extern void func_0208af30(void *sprite);               /* the base class's constructor: place (0x80, 0x60) */
-extern void func_0208af00(void *sprite);               /* the base class's destructor */
-extern void func_0208aef4(void *sprite, int x, int y); /* place at (0x80 + x, 0x60 + y) */
-extern int func_0208aeec(void *sprite);                /* y */
-extern int func_0208aef0(void *sprite);                /* x */
-extern MesBgIndicator *func_0208ec40(MesBgIndicator *indicator, u8 kind); /* constructor */
-extern MesBgIndicator *func_0208ec14(MesBgIndicator *indicator);          /* destructor */
-extern void func_0208ea6c(MesBgIndicator *indicator, int value);
-extern void func_0208ea70(MesBgIndicator *indicator, int x, int y); /* the offset */
-extern void *func_0208e95c(MesBgIndicator *indicator, int state);
-extern int func_0208e958(MesBgIndicator *indicator); /* the state */
-extern int func_0208e930(MesBgIndicator *indicator); /* both animations at their end */
-extern void func_0208e9e0(MesBgIndicator *indicator, int *dx, int *dy);
-extern void func_02088df8(int a0, const void *cell, int x, int y, int palette, int priority, int scale_x, int scale_y,
-                          int rotation, int p9, int p10, int p11);
 
 /* func_020ac8f0: reads the first MES_BG_SCREEN_SIZE bytes of /a_mes/a_mes1a_bg_nsc.bin into a
  * block of the current heap kept in `screen`. Returns 1 when the file opened, the block was
@@ -122,7 +107,7 @@ CLEAN_AS(func_020ac9a4, MesBg_Construct)
 MesBgMarker *MesBgMarker_DestructDelete(MesBgMarker *marker)
 {
     marker->vtable = &data_020e4030;
-    func_0208e7f0(marker);
+    CellLayerSprite_DestructCopy((CellLayerSprite *) marker);
     Heap_OperatorDeleteB(marker);
     return marker;
 }
@@ -132,7 +117,7 @@ CLEAN_AS(func_020ac9cc, MesBgMarker_DestructDelete)
 MesBgMarker *MesBgMarker_Destruct(MesBgMarker *marker)
 {
     marker->vtable = &data_020e4030;
-    func_0208e7f0(marker);
+    CellLayerSprite_DestructCopy((CellLayerSprite *) marker);
     return marker;
 }
 CLEAN_AS(func_020ac9ec, MesBgMarker_Destruct)
@@ -140,7 +125,7 @@ CLEAN_AS(func_020ac9ec, MesBgMarker_Destruct)
 /* func_020aca04 */
 MesBgMarker *MesBgMarker_Construct(MesBgMarker *marker)
 {
-    func_0208e8d4(marker, 1);
+    CellLayerSprite_Construct((CellLayerSprite *) marker, 1);
     marker->vtable = &data_020e4030;
     marker->unk_28 = 0;
     return marker;
@@ -150,42 +135,42 @@ CLEAN_AS(func_020aca04, MesBgMarker_Construct)
 /* func_020aca24 */
 void MesBgSlider_PlayIndicatorB(MesBgSlider *slider)
 {
-    func_0208e95c(&slider->indicator, 3);
+    DualCellSprite_SetState((DualCellSprite *) &slider->indicator, 3);
 }
 CLEAN_AS(func_020aca24, MesBgSlider_PlayIndicatorB)
 
 /* func_020aca30 */
 void MesBgSlider_PlayIndicatorA(MesBgSlider *slider)
 {
-    func_0208e95c(&slider->indicator, 2);
+    DualCellSprite_SetState((DualCellSprite *) &slider->indicator, 2);
 }
 CLEAN_AS(func_020aca30, MesBgSlider_PlayIndicatorA)
 
 /* func_020aca3c: indicator state 0, in which the slider is not drawn. */
 void MesBgSlider_Hide(MesBgSlider *slider)
 {
-    func_0208e95c(&slider->indicator, 0);
+    DualCellSprite_SetState((DualCellSprite *) &slider->indicator, 0);
 }
 CLEAN_AS(func_020aca3c, MesBgSlider_Hide)
 
 /* func_020aca48 */
 void MesBgSlider_ShowStill(MesBgSlider *slider)
 {
-    func_0208e95c(&slider->indicator, 1);
+    DualCellSprite_SetState((DualCellSprite *) &slider->indicator, 1);
 }
 CLEAN_AS(func_020aca48, MesBgSlider_ShowStill)
 
 /* func_020aca54 */
 int MesBgSlider_IndicatorDone(MesBgSlider *slider)
 {
-    return func_0208e930(&slider->indicator);
+    return DualCellSprite_IsDone((DualCellSprite *) &slider->indicator);
 }
 CLEAN_AS(func_020aca54, MesBgSlider_IndicatorDone)
 
 /* func_020aca60: how far the indicator's animations move (0 unless it plays them). */
 void MesBgSlider_IndicatorMove(MesBgSlider *slider, int *dx, int *dy)
 {
-    func_0208e9e0(&slider->indicator, dx, dy);
+    DualCellSprite_Travel((DualCellSprite *) &slider->indicator, dx, dy);
 }
 CLEAN_AS(func_020aca60, MesBgSlider_IndicatorMove)
 
@@ -241,7 +226,7 @@ CLEAN_AS(func_020aca94, MesBgSlider_SetLevel)
  * indicator's own place function with the same values. */
 void MesBgSlider_SetPlace(MesBgSlider *slider, int x, int y)
 {
-    func_0208aef4(slider, x, y);
+    ScreenSprite_SetPlace((ScreenSprite *) slider, x, y);
     slider->indicator.vtable->set_place(&slider->indicator, x, y);
 }
 CLEAN_AS(func_020aca98, MesBgSlider_SetPlace)
@@ -252,7 +237,7 @@ void MesBgSlider_Update(MesBgSlider *slider)
 {
     int x = MesBgSlider_TrackX(slider);
     int y = MesBgSlider_KnobY(slider);
-    func_0208ea70(&slider->indicator, x, y);
+    DualCellSprite_SetOffset((DualCellSprite *) &slider->indicator, x, y);
     slider->indicator.vtable->update(&slider->indicator);
 }
 CLEAN_AS(func_020acab8, MesBgSlider_Update)
@@ -261,14 +246,14 @@ CLEAN_AS(func_020acab8, MesBgSlider_Update)
  * at the slider's place. */
 void MesBgSlider_Draw(MesBgSlider *slider)
 {
-    if (func_0208e958(&slider->indicator) == 0) {
+    if (DualCellSprite_State((DualCellSprite *) &slider->indicator) == 0) {
         return;
     }
     slider->indicator.vtable->draw(&slider->indicator);
     const void *cell = data_020d5b3c[0];
-    int y = func_0208aeec(slider);
-    int x = func_0208aef0(slider);
-    func_02088df8(0, cell, x, y, -1, 0, SCALE_ONE, SCALE_ONE, 0, -1, 0, 0);
+    int y = ScreenSprite_Y((ScreenSprite *) slider);
+    int x = ScreenSprite_X((ScreenSprite *) slider);
+    OamBuffer_DrawCell(0, cell, x, y, -1, 0, SCALE_ONE, SCALE_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_020acae8, MesBgSlider_Draw)
 
@@ -276,8 +261,8 @@ CLEAN_AS(func_020acae8, MesBgSlider_Draw)
 MesBgSlider *MesBgSlider_DestructDelete(MesBgSlider *slider)
 {
     slider->vtable = &data_020e4014;
-    func_0208ec14(&slider->indicator);
-    func_0208af00(slider);
+    DualCellSprite_Destruct((DualCellSprite *) &slider->indicator);
+    ScreenSprite_DestructBase((ScreenSprite *) slider);
     Heap_OperatorDeleteB(slider);
     return slider;
 }
@@ -287,8 +272,8 @@ CLEAN_AS(func_020acb48, MesBgSlider_DestructDelete)
 MesBgSlider *MesBgSlider_Destruct(MesBgSlider *slider)
 {
     slider->vtable = &data_020e4014;
-    func_0208ec14(&slider->indicator);
-    func_0208af00(slider);
+    DualCellSprite_Destruct((DualCellSprite *) &slider->indicator);
+    ScreenSprite_DestructBase((ScreenSprite *) slider);
     return slider;
 }
 CLEAN_AS(func_020acb70, MesBgSlider_Destruct)
@@ -296,11 +281,11 @@ CLEAN_AS(func_020acb70, MesBgSlider_Destruct)
 /* func_020acb94: a slider at half level, its indicator of kind 1 hidden. */
 MesBgSlider *MesBgSlider_Construct(MesBgSlider *slider)
 {
-    func_0208af30(slider);
+    ScreenSprite_Construct((ScreenSprite *) slider);
     slider->vtable = &data_020e4014;
     slider->level = MES_BG_SLIDER_LEVEL_TOP / 2;
-    func_0208ec40(&slider->indicator, 1);
-    func_0208ea6c(&slider->indicator, 0);
+    DualCellSprite_Construct((DualCellSprite *) &slider->indicator, 1);
+    DualCellSprite_SetPriority((DualCellSprite *) &slider->indicator, 0);
     return slider;
 }
 CLEAN_AS(func_020acb94, MesBgSlider_Construct)

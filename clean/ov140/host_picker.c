@@ -302,7 +302,7 @@ CLEAN_AS(func_ov140_0229a244, HostPicker_CountHosts)
 /* func_ov140_0229a280: the page's rows filled from the list (the rows' palette marked first):
  * a place of the list with a host shows its two names (the status data's from 0x10, then from
  * 0) and keeps its entry and its entries; any other row is cleared.
- * HW: the two names are one buffer of twelve characters that ResRows_SetRow reads whole (the
+ * QUIRK: the two names are one buffer of twelve characters that ResRows_SetRow reads whole (the
  * game keeps them in two arrays that sit one after the other on its stack). */
 void HostPicker_FillRows(HostPicker *self)
 {

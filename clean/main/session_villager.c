@@ -4,6 +4,8 @@
 #include "clean.h"
 #include "main/packed_bytes.h"
 #include "main/session.h"
+#include "actor_table.h"
+#include "villager_status.h"
 
 #define VILLAGERS 8 /* the town's villagers (data_021e5a2c) */
 
@@ -33,11 +35,6 @@
 
 extern NetSession *data_020ccf94; /* the session */
 
-/* The villager's index among the town's villagers, -1 when it is none of them. */
-extern int func_0207f294(u8 *villager);
-/* Whether a number is below eight (one of the town's villagers). */
-extern int func_0207cf74(int index);
-
 /* Whether a message is to be sent for the villager: the session is linked and the villager is
  * one of the town's; its index in `index`. */
 static int should_send(u8 *villager, int *index)
@@ -45,8 +42,8 @@ static int should_send(u8 *villager, int *index)
     if (!Session_IsLinked(data_020ccf94)) {
         return 0;
     }
-    *index = func_0207f294(villager);
-    return func_0207cf74(*index) != 0;
+    *index = VillagerStatus_Index(villager);
+    return ActorTable_IsKindESlot(*index) != 0;
 }
 
 /* Sends `size` bytes of `payload` to handler `handler`. */

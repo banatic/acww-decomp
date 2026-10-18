@@ -17,6 +17,8 @@
 #include "main/tile_requests.h"
 #include "main/town_family.h"
 #include "ov003/field_actor.h"
+#include "ov003/town_insect_moves.h"
+#include "ov003/walk_target.h"
 
 static_assert(offsetof(TownInsect, position) == 0x204, "position");
 static_assert(offsetof(TownInsect, model) == 0x50, "model");
@@ -53,36 +55,6 @@ extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *ab);
 extern int func_02070070(void);
 
 /* Overlay 3's helpers of the insects. */
-/* Kind 0x33's point to settle on, when it has one (within reach of `from`). */
-extern int func_ov003_02224718(Vec3 *spot, const Vec3 *from);
-/* A flower within reach of `from` whose code passes `mask`, when there is one. */
-extern int func_ov003_02224768(Vec3 *spot, const Vec3 *from, int mask);
-/* The mask of the flowers a kind settles on: 0xf for kinds 2 and 3, else 0x3f. */
-extern int func_ov003_0223482c(int kind);
-/* Whether the flower `code` suits kind 2 or 3. */
-extern int func_ov003_02235518(int kind, const u16 *code);
-/* TownInsect.unk_244 counted down; 1 once it is 0. */
-extern int func_ov003_02234984(TownInsect *insect);
-/* Kind 0x33's (or other kinds') box around its spot (0x1b0 and 0x1bc). */
-extern void func_ov003_02230f88(TownInsect *insect);
-/* `src` with its y 0 and its x and z each kept within `t` / 64. */
-extern void func_ov003_022321b8(Vec3 *dst, const Vec3 *src, int t);
-/* Each frame: it falls (or lands) and keeps clear of what is around. */
-extern int func_ov003_02232414(TownInsect *insect);
-/* Its kind's sound `which` played (`play`) or stopped. */
-extern void func_ov003_022353a4(TownInsect *insect, int which, int play);
-/* Its model faded by `by`; 1 once its alpha is 7 or less. */
-extern int func_ov003_02232598(TownInsect *insect, int by);
-/* It leaves (TOWN_INSECT_STATE_LEAVING) with its model's alpha 0. */
-extern void func_ov003_02230f60(TownInsect *insect);
-/* The player point it watches (`*point`) and how it sees the player. */
-extern int func_ov003_02233e4c(TownInsect *insect, Vec3 *point);
-/* Whether the tile of a point is of a kind func_02031b5c accepts. */
-extern int func_ov003_02235950(const Vec3 *point);
-/* The step of length 0x29 (along z) turned by `angle`. */
-extern void func_ov003_0223597c(Vec3 *step, int angle);
-/* The z of its scale stretched (by 0x52, 1.0 to 2.0) or squeezed. */
-extern void func_ov068_02270d24(Vec3 *scale, int stretch);
 
 static void *insect_model(TownInsect *insect)
 {
@@ -158,7 +130,7 @@ void InsectPath_Wander(TownInsect *insect, s16 *heading, int step, int period, u
         }
     }
     Vec3 way;
-    func_ov003_0223597c(&way, *heading);
+    TownInsectMove_StepAlong(&way, *heading);
     insect->angle_y = *heading;
     if (insect->unk_24a != 0) {
         fx32 factor = 0x1400;
@@ -201,9 +173,9 @@ int InsectPath_FindSpot(TownInsect *insect, s16 *turn, int *distance, Vec3 *spot
     u8 kind = (u8) insect->kind;
     int found;
     if (kind == INSECT_PATH_KIND_33) {
-        found = func_ov003_02224718(spot, position) != 0;
+        found = WalkTarget_DaySpot(spot, position) != 0;
     } else {
-        found = func_ov003_02224768(spot, position, func_ov003_0223482c((s8) kind)) != 0;
+        found = WalkTarget_NearFamily(spot, position, TownInsectMove_TestFlags((s8) kind)) != 0;
     }
     if (!found) {
         return 0;
@@ -214,7 +186,7 @@ int InsectPath_FindSpot(TownInsect *insect, s16 *turn, int *distance, Vec3 *spot
     int acre_z = z >> 4;
     u16 *code = AcreTile_ItemInAcre(data_021c80bc, (u32) acre_x, (u32) acre_z, x - acre_x * 16, z - acre_z * 16, 0);
     if (kind == 2 || kind == 3) {
-        if (func_ov003_02235518((s8) kind, code) == 0) {
+        if (TownInsectMove_SuitsCode((s8) kind, code) == 0) {
             return 0;
         }
     }
@@ -247,7 +219,7 @@ CLEAN_AS(func_ov068_02270070, InsectPath_FindSpot)
  * x and z. */
 int InsectPath_GoToSpot(TownInsect *insect, s16 *heading)
 {
-    int waited = func_ov003_02234984(insect);
+    int waited = TownInsectMove_WaitOver(insect);
     Vec3 *position = &insect->position;
     s16 turn;
     int distance;
@@ -269,7 +241,7 @@ int InsectPath_GoToSpot(TownInsect *insect, s16 *heading)
             if (insect->unk_21c != 1) {
                 insect->action = 0;
             } else {
-                func_ov003_02230f88(insect);
+                TownInsectMove_SetBox(insect);
             }
         }
         return 1;
@@ -287,7 +259,7 @@ int InsectPath_GoToSpot(TownInsect *insect, s16 *heading)
         }
         *heading = (s16) (*heading + turn);
         VEC_Subtract(&spot, position, &spot);
-        func_ov003_022321b8(&spot, &spot, 1);
+        TownInsectMove_ClampXZ(&spot, &spot, 1);
         VEC_Add(position, &spot, position);
     }
     return 1;
@@ -344,12 +316,12 @@ int InsectPath_GoForPlayer(TownInsect *insect, int mode, const Vec3 *player, s16
     if ((mode == 1 || mode == 3) && *counter == 0) {
         *counter = 300;
     } else if (*counter < 0x1f) {
-        if (func_ov003_02232598(insect, 1) != 0) {
-            func_ov003_02230f60(insect);
+        if (TownInsectMove_FadeStep(insect, 1) != 0) {
+            TownInsectMove_Leave(insect);
         }
     } else if (insect->unk_24b != 0) {
         s16 angle = insect->angle_y;
-        func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
+        TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
         Approach_S16Wrapped(&angle, Vec_YawTo(player, position), 0x666);
         insect->angle_y = angle;
         insect->action = INSECT_PATH_FLEE;
@@ -381,7 +353,7 @@ int InsectPath_TurnToPlayer(TownInsect *insect, int mode, const Vec3 *player)
     if ((*seen == 0 || insect->kind == INSECT_PATH_KIND_FRAMES) && insect_opaque(insect)) {
         if (mode == 1) {
             if (*seen == 0) {
-                func_ov003_022353a4(insect, INSECT_PATH_SOUND_ACTIVE, 0);
+                TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_ACTIVE, 0);
                 angle = Vec_YawTo(position, player);
             }
             *seen = (s16) (*seen + 1);
@@ -392,7 +364,7 @@ int InsectPath_TurnToPlayer(TownInsect *insect, int mode, const Vec3 *player)
             insect->timer = 0x3c;
             if (insect->kind == INSECT_PATH_KIND_FRAMES && frame_number(frames->frame) < 4 &&
                 frame_number(frames->end) < 0xb) {
-                func_ov003_022353a4(insect, INSECT_PATH_SOUND_ACTIVE, 0);
+                TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_ACTIVE, 0);
             }
         }
         if (insect->unk_24b != 0) {
@@ -438,7 +410,7 @@ int InsectPath_WatchPlayer(TownInsect *insect, s16 *counter)
     }
     const Vec3 *player_position = (const Vec3 *) (const void *) (player + 0x5c);
     Vec3 point;
-    s8 mode = (s8) func_ov003_02233e4c(insect, &point);
+    s8 mode = (s8) TownInsectMove_SensePlayers(insect, &point);
     s16 alarm = insect->unk_254;
     if (alarm > 0) {
         fx32 reach = insect->reach;
@@ -470,10 +442,10 @@ CLEAN_AS(func_ov068_02270680, InsectPath_WatchPlayer)
  * 0x37, or one whose hop ended, then turns calm unless `result` is 2. */
 void InsectPath_CalmDown(TownInsect *insect, s16 *hop, int result)
 {
-    func_ov003_02232414(insect);
+    TownInsectMove_Walk(insect);
     if (insect->action == INSECT_PATH_STOPPED) {
-        func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
-        if (func_ov003_02234984(insect) != 0) {
+        TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
+        if (TownInsectMove_WaitOver(insect) != 0) {
             insect->action = INSECT_PATH_CALM;
             insect->unk_244 = (s16) (0x14 * (MainRandom_Below(9) + 2));
         }
@@ -485,15 +457,15 @@ void InsectPath_CalmDown(TownInsect *insect, s16 *hop, int result)
                 u8 *player = (u8 *) SessionPlayers_ActorOf(INSECT_PATH_PLAYER);
                 if (player != NULL) {
                     insect->angle_y = Vec_YawTo(&insect->position, (const Vec3 *) (const void *) (player + 0x5c));
-                    func_ov003_022353a4(insect, INSECT_PATH_SOUND_ACTIVE, 0);
+                    TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_ACTIVE, 0);
                 }
             }
             *hop = (s16) (*hop + 3);
-            if (*hop > 3 && func_ov003_02235950(&insect->position) == 0 && insect->position.y <= 0) {
+            if (*hop > 3 && TownInsectMove_OnGroupTile(&insect->position) == 0 && insect->position.y <= 0) {
                 *hop = 0;
             }
         } else {
-            func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
+            TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
         }
         if ((insect->kind == INSECT_PATH_KIND_FRAMES || *hop == 0) && result != 2) {
             insect->action = INSECT_PATH_CALM;
@@ -527,7 +499,7 @@ void InsectPath_CircleOrLeave(TownInsect *insect)
             Approach_S16Wrapped(&angle, Vec_YawTo(position, (const Vec3 *) (const void *) (player + 0x5c)), 0x1554);
             insect->angle_y = angle;
             Vec3 way;
-            func_ov003_0223597c(&way, angle);
+            TownInsectMove_StepAlong(&way, angle);
             position->x += FX_MulFunc(0x23000, way.x);
             position->z += FX_MulFunc(0x23000, way.z);
             InsectPath_Flap(scale, &insect->model, before - angle);
@@ -535,10 +507,10 @@ void InsectPath_CircleOrLeave(TownInsect *insect)
         s16 frames = insect->frames_left;
         if (frames == 0) {
             if (FieldActor_PlayerRequestState78() != 0) {
-                func_ov003_022353a4(insect, INSECT_PATH_SOUND_ACTIVE, 0);
+                TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_ACTIVE, 0);
                 insect->frames_left = (s16) (insect->frames_left + 1);
             } else {
-                func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
+                TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
             }
             return;
         }
@@ -550,7 +522,7 @@ void InsectPath_CircleOrLeave(TownInsect *insect)
         return;
     }
     Vec3 way;
-    func_ov003_0223597c(&way, insect->angle_y);
+    TownInsectMove_StepAlong(&way, insect->angle_y);
     if (action == INSECT_PATH_FLEE) {
         position->x += FX_MulFunc(way.x, 0x64000);
         position->z += FX_MulFunc(way.z, 0x64000);
@@ -565,7 +537,7 @@ void InsectPath_CircleOrLeave(TownInsect *insect)
         scale->y += 0x333;
         scale->z += 0x333;
     }
-    if (func_ov003_02232598(insect, 4) != 0) {
+    if (TownInsectMove_FadeStep(insect, 4) != 0) {
         insect->action = INSECT_PATH_CALM;
         insect->in_view = 0;
         position->x = 0;
@@ -588,14 +560,14 @@ void InsectPath_Flap(Vec3 *scale, TownInsectModel *model, int turned)
     s16 frame = (s16) frame_number(frames->frame);
     int size = turned < 0 ? -turned : turned;
     if (size > INSECT_PATH_TURN_LIMIT) {
-        func_ov068_02270d24(scale, 0);
+        InsectPath_StretchScale(scale, 0);
         if (turned > 0) {
             FrameCtrl_Init(frames, 0, 3, 0x4000, (u16) frame);
         } else {
             FrameCtrl_Init(frames, 0x5a, 1, 0x4000, (u16) frame);
         }
     } else {
-        func_ov068_02270d24(scale, 1);
+        InsectPath_StretchScale(scale, 1);
         if (frame > 0x2d) {
             FrameCtrl_Init(frames, 0x2e, 3, 0x4000, (u16) frame);
         } else {
@@ -630,7 +602,7 @@ void InsectPath_Chase(TownInsect *insect)
         angle = (s16) (angle + 0x1554);
         insect->angle_y = angle;
         Vec3 way;
-        func_ov003_0223597c(&way, angle);
+        TownInsectMove_StepAlong(&way, angle);
         position->x += FX_MulFunc(0x23000, way.x);
         position->z += FX_MulFunc(0x23000, way.z);
         InsectPath_Flap(&insect->scale, &insect->model, before - angle);
@@ -672,7 +644,7 @@ void InsectPath_Chase(TownInsect *insect)
     }
     insect->angle_y = angle;
     Vec3 way;
-    func_ov003_0223597c(&way, angle);
+    TownInsectMove_StepAlong(&way, angle);
     fx32 divisor = distance > 0xe000 ? 0x3800 : 0x5000;
     position->x += FX_Div(FX_MulFunc(speed << 12, way.x), divisor);
     position->z += FX_Div(FX_MulFunc(speed << 12, way.z), divisor);
@@ -739,22 +711,6 @@ static_assert(offsetof(Actor, speed) == 0x98, "actor speed");
  * sizes (a function-local static computed once; bit 0 of data_ov068_022786c4 says it was). */
 extern fx32 data_ov068_022786c0;
 extern u32 data_ov068_022786c4;
-
-/* Loose snowball `index` when it is at rest, else NULL. */
-extern Snowman *func_ov003_02236164(int index);
-/* An angle of `steps` steps of 5 degrees at random, either side when `both`. */
-extern short func_ov003_02233c70(int steps, int both);
-/* The model's animation set to frame 2 when it is at frame 1, else to frame 1. */
-extern void func_ov003_02234cc4(TownInsect *insect);
-/* The alarm counted and the insect turned with what it found; 2 when alarmed out of reach. */
-extern int func_ov003_02234d70(TownInsect *insect);
-/* Its height by its frame counter: `frame` stepped over `divisor` up to `limit`. */
-extern void func_ov003_02234dac(TownInsect *insect, int frame, int limit, fx32 divisor);
-/* Which sides of the heading something stands on (0 for none), `reach` percent of a feeler
- * ahead and `spread` either side. */
-extern int func_ov003_02235b54(TownInsect *insect, int reach, int spread);
-/* BuildingShapes_MTile with the shape and the tile's place as pointers. */
-extern int func_020b3e8c(void *shape, int *x, int *z, unsigned int index);
 
 /* A shift left by 12 done on the bits, as the ARM does it. */
 static int shift_12(int value)
@@ -849,8 +805,8 @@ void InsectPath_FollowPlayer(TownInsect *insect, s16 *phase)
     Vec3 *position = &insect->position;
     s16 turn = 0;
     *phase = (s16) (*phase + 0xaaa);
-    func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
-    func_ov003_02234cc4(insect);
+    TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
+    TownInsectMove_ToggleFrame(insect);
     if (player != NULL) {
         const Vec3 *at = actor_position(player);
         fx32 distance = Vec_DistanceXZ(at, position);
@@ -898,11 +854,11 @@ void InsectPath_FollowPlayer(TownInsect *insect, s16 *phase)
     s16 heading = (s16) (turn + insect->angle_y);
     insect->angle_y = heading;
     Vec3 way;
-    func_ov003_0223597c(&way, heading);
+    TownInsectMove_StepAlong(&way, heading);
     position->x += FX_MulFunc(way.x, 0x8000);
     position->z += FX_MulFunc(way.z, 0x8000);
     int divisor = (int) MainRandom_Below(8) + 0x12;
-    func_ov003_02234dac(insect, *phase, 0x2800, shift_12(divisor));
+    TownInsectMove_Bob(insect, *phase, 0x2800, shift_12(divisor));
 }
 CLEAN_AS(func_ov068_02270e80, InsectPath_FollowPlayer)
 
@@ -980,7 +936,7 @@ static void insect_rest(TownInsect *insect)
  * (Snowman_Place); when it refuses, the insect rests. */
 void InsectPath_CircleSnowball(TownInsect *insect)
 {
-    Snowman *ball = func_ov003_02236164(insect->unk_21c);
+    Snowman *ball = Snowman_IdleLooseBall(insect->unk_21c);
     Vec3 *position = &insect->position;
     if (ball == NULL) {
         insect_rest(insect);
@@ -998,7 +954,7 @@ void InsectPath_CircleSnowball(TownInsect *insect)
     }
     ring -= FX_MulFunc(0x4cd, FX_Div(ring - Snowman_MinSize(), data_ov068_022786c0));
     if (insect->counter % 0x14 == 0) {
-        s16 swing = (s16) (func_ov003_02233c70(6, 1) * 2);
+        s16 swing = (s16) (TownInsectMove_RandomTurn(6, 1) * 2);
         round = (s16) (round + swing);
         insect->timer = swing;
     } else {
@@ -1012,7 +968,7 @@ void InsectPath_CircleSnowball(TownInsect *insect)
     }
     insect->angle_y = facing;
     Vec3 way;
-    func_ov003_0223597c(&way, round);
+    TownInsectMove_StepAlong(&way, round);
     point.x -= FX_MulFunc(way.x, 0x2666);
     point.z -= FX_MulFunc(way.z, 0x2666);
     fx32 distance = Vec_DistanceXZ(&point, position);
@@ -1037,7 +993,7 @@ CLEAN_AS(func_ov068_02271160, InsectPath_CircleSnowball)
 void InsectPath_Rest(TownInsect *insect)
 {
     s16 left = insect->timer;
-    if (func_ov003_02232414(insect) == 0) {
+    if (TownInsectMove_Walk(insect) == 0) {
         return;
     }
     if (left <= 0) {
@@ -1059,11 +1015,11 @@ void InsectPath_Roam(TownInsect *insect)
 {
     s16 heading = insect->angle_y;
     s16 phase = insect->timer;
-    func_ov003_02234cc4(insect);
-    if (func_ov003_02234d70(insect) == 2) {
+    TownInsectMove_ToggleFrame(insect);
+    if (TownInsectMove_Sense(insect) == 2) {
         insect->unk_24a = 0;
     }
-    func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
+    TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
     if (insect->unk_24a == 0 && InsectPath_GoToSpot(insect, &heading) == 0 && insect->kind == INSECT_PATH_KIND_0A) {
         insect->frames_left = 0;
         insect->action = INSECT_PATH_LEAVE;
@@ -1073,11 +1029,11 @@ void InsectPath_Roam(TownInsect *insect)
     if (insect->kind == INSECT_PATH_KIND_0A) {
         fx32 limit = FX_Div(0x12000, 0x10000);
         int divisor = (int) MainRandom_Below(8) + 0xa;
-        func_ov003_02234dac(insect, phase, limit, shift_12(divisor));
+        TownInsectMove_Bob(insect, phase, limit, shift_12(divisor));
         insect->timer = (s16) (phase + 0xaaa);
     } else {
         int divisor = (int) MainRandom_Below(8) + 0x12;
-        func_ov003_02234dac(insect, phase, 0x19a, shift_12(divisor));
+        TownInsectMove_Bob(insect, phase, 0x19a, shift_12(divisor));
         insect->timer = (s16) (phase + 0x1554);
     }
 }
@@ -1119,7 +1075,8 @@ int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
             continue;
         }
         for (u32 j = 0; j < count; j++) {
-            if (func_020b3e8c(shape, &shape_x, &shape_z, j) == 0) {
+            if (BuildingShapes_MTile((unsigned int) (uintptr_t) shape, (unsigned int) (uintptr_t) &shape_x,
+                                     (unsigned int) (uintptr_t) &shape_z, j) == 0) {
                 continue;
             }
             if (SceneActor_Member1F4IsSet(building) != 1) {
@@ -1170,7 +1127,7 @@ int InsectPath_ToBuilding(TownInsect *insect, s16 *frames, Vec3 *step)
         Vec_Subtract(&way, position, &tile);
         *step = way;
         step->y = 0;
-        func_ov003_022321b8(step, step, 2);
+        TownInsectMove_ClampXZ(step, step, 2);
         VEC_Subtract(position, step, position);
         return 1;
     } else {
@@ -1198,7 +1155,7 @@ void InsectPath_Hover(TownInsect *insect)
     Vec3 *position = &insect->position;
     int up = insect->unk_24c;
     Vec3 before = *position;
-    func_ov003_02234d70(insect);
+    TownInsectMove_Sense(insect);
     if (insect->unk_24a != 0) {
         const u8 *player = (const u8 *) SessionPlayers_ActorOf(INSECT_PATH_PLAYER);
         if (player == NULL || insect->angle_x != 1 || insect->kind != INSECT_PATH_KIND_HOVERS) {
@@ -1279,7 +1236,7 @@ void InsectPath_GoToPerch(TownInsect *insect)
         if (distance > 0x266) {
             s16 angle = Vec_YawTo(position, perch);
             Vec3 way;
-            func_ov003_0223597c(&way, angle);
+            TownInsectMove_StepAlong(&way, angle);
             insect->angle_y = angle;
             position->x += FX_MulFunc(way.x, 0xa000);
             position->z += FX_MulFunc(way.z, 0xa000);
@@ -1306,9 +1263,9 @@ CLEAN_AS(func_ov068_022717e0, InsectPath_GoToPerch)
  * (INSECT_PATH_TURNING to unk_240) and ends the glide (*frames 0). */
 void InsectPath_TurnFromObstacle(TownInsect *insect, u16 *frames)
 {
-    if (func_ov003_02235b54(insect, 0xa0, 0xe38) != 0) {
+    if (TownInsectMove_FeelObstacles(insect, 0xa0, 0xe38) != 0) {
         int back = -0x8000;
-        back += func_ov003_02233c70(0xc, 1);
+        back += TownInsectMove_RandomTurn(0xc, 1);
         insect->unk_240 = (s16) back;
         insect->action = INSECT_PATH_TURNING;
         *frames = 0;
@@ -1375,7 +1332,7 @@ void InsectPath_Glide(TownInsect *insect, s16 *frames)
         return;
     }
     *position = before;
-    insect->unk_240 = (s16) (func_ov003_02233c70(0xc, 1) + -0x8000);
+    insect->unk_240 = (s16) (TownInsectMove_RandomTurn(0xc, 1) + -0x8000);
     insect->action = INSECT_PATH_TURNING;
     *frames = 0;
 }

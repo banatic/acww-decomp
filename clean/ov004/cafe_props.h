@@ -3,12 +3,12 @@
  * (obj_cafe2 to obj_cafe6, some loaded twice), which the cafe's master handles while he makes
  * coffee. Only one exists at a time; data_ov004_02258310 points to it while it runs.
  *
- * The master's coffee sequences (func_ov004_0222393c, func_ov004_02223c40 and
- * func_ov004_02223dcc) move it through ten states (CafeProps.state) and wait on the parts'
+ * The master's coffee sequences (CafeMasterTalk_ClearUp, CafeMasterTalk_Drink and
+ * CafeMasterTalk_Brew) move it through ten states (CafeProps.state) and wait on the parts'
  * animations. Each state has an entry function and an update, both called through tables of
  * member pointers (member_pointer.h); most updates start animations of the parts when the
- * master's own animation (func_ov004_022236a8, numbers 0xf2 to 0xf8) reaches theirs, often
- * from his animation's frame (func_ov004_022236c4):
+ * master's own animation (CafeMaster_AnimNumber, numbers 0xf2 to 0xf8) reaches theirs, often
+ * from his animation's frame (CafeMaster_AnimFrame):
  *
  * - 0: shows the counter and part 0; master's 0xf2 or 0xf4 play animation 0 or 1 on both;
  * - 1: master's 0xf3 or 0xf5 play animation 0 or 1 on parts 1 and 2;

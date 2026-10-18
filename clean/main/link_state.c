@@ -20,6 +20,9 @@
 #include "session_link.h"
 #include "start_menu.h"
 #include "state_block.h"
+#include "link_parts.h"
+#include "paired_town.h"
+#include "state_flags.h"
 
 static_assert(offsetof(LinkState, status) == 0x84 && offsetof(LinkState, half_98) == 0x98, "link state");
 static_assert(offsetof(LinkState, host_phase) == 0x9c && offsetof(LinkState, answers) == 0xa8, "link state");
@@ -41,23 +44,6 @@ extern u32 data_021f42f8;
 extern u8 data_021f4308[];
 extern void func_020012dc(void *object);
 extern void __register_global_object(void *object, void *destruct, void *record);
-
-/* A slot's link status read and set, and a request refused: with `local` the status set to
- * 6, else for a slot other than 0 a status byte 6 sent to it and its status set to 7. */
-extern int func_020a6170(LinkState *state, int slot);
-extern void func_020a617c(LinkState *state, int slot, int status);
-extern void func_020a6104(LinkState *state, int slot, int local);
-/* Byte 0xc4 of data_021f4320 set. */
-extern void func_020a6cd4(int value);
-/* A status byte: made, given its fields (answer, kind, slot served) and ended. */
-extern void func_020a76cc(u8 *byte);
-extern void func_020a76ac(u8 *byte, int answer, int kind, int slot);
-extern void func_020a76c8(u8 *byte);
-/* func_0206fee0(0x80), then data_021cfc54 set to 0x37. */
-extern void func_0206f5b0(void);
-/* A paired town's flag (bit 5 of its byte 0xe), and its town (the paired town itself). */
-extern int func_0208829c(u8 *pairing);
-extern u8 *func_020882ec(u8 *pairing);
 
 #define HOST_SLOT 0
 #define GUEST_RECORD_FIRST 3 /* a slot's player record number, less this */
@@ -105,12 +91,12 @@ static SceneExit *entry_record(void)
 static void send_answer(NetSession *session, int answer, int kind, int served, int to)
 {
     u8 byte;
-    func_020a76cc(&byte);
-    func_020a76ac(&byte, answer, kind, served);
+    LinkPart_MakeStatusByte(&byte);
+    LinkPart_PackStatusByte(&byte, answer, kind, served);
     Session_BeginMessage(session);
     Session_AppendMessage(session, &byte, 1);
     Session_EndMessage(session, HANDLER_STATUS_BYTE, (u32) to);
-    func_020a76c8(&byte);
+    LinkPart_EndStatusByte(&byte);
 }
 
 /* The link status `status` sent to `to`. */
@@ -228,8 +214,8 @@ static void carry_out(LinkState *state, NetSession *session, int slot)
         const StateBlockTown *town = &data_021dc7a8.town;
         u8 *record = PlayerRecords_Get(LinkState_Chosen(state) + GUEST_RECORD_FIRST);
         const StateBlockTown *paired = NULL;
-        if (record != NULL && func_0208829c(PlayerRecord_Field242C(record)) != 0) {
-            paired = (const StateBlockTown *) (void *) func_020882ec(PlayerRecord_Field242C(record));
+        if (record != NULL && PairedTown_Flag5(PlayerRecord_Field242C(record)) != 0) {
+            paired = (const StateBlockTown *) (void *) PairedTown_Town(PlayerRecord_Field242C(record));
         }
         if (paired != NULL && paired->number == town->number && memcmp(paired->name, town->name, sizeof(town->name)) == 0) {
             SceneExit_SetToScene(entry_record(), SCENE_2F, EXIT_ARG, EXIT_ARG);
@@ -312,7 +298,7 @@ void LinkState_SystemStep(LinkState *state)
                     send_answer(session, LINK_STATE_ANSWER_NO, LINK_STATE_KIND_NONE, LinkState_Chosen(state), HOST_SLOT);
                     LinkState_SetAnswer(state, slot, LINK_STATE_ANSWER_DONE);
                 }
-                func_0206f5b0();
+                StateFlags_EndMenuClose();
                 LinkState_SetWaitFrames(state, 0);
             } else {
                 LinkState_SetWaitFrames(state, frames);
@@ -328,7 +314,7 @@ void LinkState_SystemStep(LinkState *state)
             break;
         case LINK_STATE_ANSWER_CANCEL:
             EventQueue_FinishKind13();
-            func_0206f5b0();
+            StateFlags_EndMenuClose();
             FieldLabel_ShowMessage9();
             LinkState_SetHoldFrames(state, 0);
             if (slot != HOST_SLOT) {
@@ -500,10 +486,10 @@ static void tell_served(LinkState *state, int served, int status)
 {
     NetSession *session = data_020ccf94;
     if (LinkState_Kind(state) == KIND_JOIN || Session_IsLocalSlot(session, served) != 0) {
-        func_020a617c(state, served, status);
+        LinkState_SetStatus(state, served, status);
     } else {
         send_link_status(session, status, served);
-        func_020a617c(state, served, STATUS_TOLD);
+        LinkState_SetStatus(state, served, STATUS_TOLD);
     }
 }
 
@@ -533,14 +519,14 @@ void LinkState_HostStep(LinkState *state)
     int served;
 
     for (unsigned int slot = 0; slot < LINK_STATE_SLOTS; slot++) {
-        unsigned int request = (unsigned int) func_020a6170(state, (int) slot);
+        unsigned int request = (unsigned int) LinkState_Status(state, (int) slot);
         int ok;
         if (request > STATUS_REQUEST_LAST) {
             continue;
         }
         ok = 1;
         for (int other = LINK_STATE_SLOTS - 1; other >= 0; other--) {
-            if (!status_is_quiet(func_020a6170(state, other))) {
+            if (!status_is_quiet(LinkState_Status(state, other))) {
                 ok = 0;
                 break;
             }
@@ -558,9 +544,9 @@ void LinkState_HostStep(LinkState *state)
             LinkState_SetHostPhase(state, LINK_STATE_HOST_ASK);
             LinkState_SetChosen(state, (int) slot);
             LinkState_SetKind(state, request);
-            func_020a617c(state, (int) slot, STATUS_SERVED);
+            LinkState_SetStatus(state, (int) slot, STATUS_SERVED);
         } else {
-            func_020a6104(state, (int) slot, request == KIND_JOIN);
+            LinkState_RefuseRequest(state, (int) slot, request == KIND_JOIN);
         }
     }
 
@@ -610,7 +596,7 @@ void LinkState_HostStep(LinkState *state)
                 }
                 tell_served(state, served, STATUS_GO);
                 if (LinkState_Kind(state) == KIND_JOIN) {
-                    func_020a6cd4(0);
+                    LinkState_GlobalSetByteC4(0);
                 }
                 LinkState_SetServedSlot(state, (u32) served);
                 LinkState_SetHostPhase(state, LINK_STATE_HOST_GO);
@@ -658,10 +644,6 @@ CLEAN_AS(func_020a5c38, LinkState_HostStep)
  * scene), an arrived word cleared and a pending change cleared; and the parts' constructors
  * and destructors handed to the C++ runtime (only their addresses are taken here; each
  * constructor returns its object). */
-extern void func_020a772c(LinkStatePlace *place);
-extern void func_020a76f8(LinkStateMove *move);
-extern void func_020a76d0(u32 *arrived);
-extern void func_020a7768(LinkStatePlaceChange *change);
 extern void func_020a7758(void *place);
 extern void func_020a7754(void *place);
 extern void func_020a771c(void *move);
@@ -716,10 +698,10 @@ CLEAN_AS(func_020a617c, LinkState_SetStatus)
 void LinkState_Reset(LinkState *state)
 {
     for (int slot = LINK_STATE_SLOTS - 1; slot >= 0; slot--) {
-        func_020a772c(&state->places[slot]);
-        func_020a76f8(&state->moves[slot]);
-        func_020a76d0(&state->arrived[slot]);
-        func_020a7768(&state->changes[slot]);
+        LinkPart_ResetPlace(&state->places[slot]);
+        LinkPart_ResetMove(&state->moves[slot]);
+        LinkPart_ClearArrived(&state->arrived[slot]);
+        LinkPart_ResetChange(&state->changes[slot]);
     }
     LinkState_ResetHostPhase(state);
     LinkState_ResetChosen(state);
@@ -749,10 +731,10 @@ CLEAN_AS(func_020a6998, LinkState_Reset)
  * does. */
 void LinkState_ForgetSlot(LinkState *state, int slot)
 {
-    func_020a772c(&state->places[slot]);
-    func_020a76f8(&state->moves[slot]);
-    func_020a76d0(&state->arrived[slot]);
-    func_020a7768(&state->changes[slot]);
+    LinkPart_ResetPlace(&state->places[slot]);
+    LinkPart_ResetMove(&state->moves[slot]);
+    LinkPart_ClearArrived(&state->arrived[slot]);
+    LinkPart_ResetChange(&state->changes[slot]);
     LinkState_ResetAnswer(state, slot);
     LinkScene_SetAcked(state, slot, 0);
     if (slot != HOST_SLOT) {

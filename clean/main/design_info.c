@@ -8,6 +8,11 @@
 
 #include "clean.h"
 #include "design_assets.h"
+#include "name_texts.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "text_base.h"
 
 static_assert(sizeof(DesignTitle) == 0x14, "title");
 static_assert(sizeof(DesignTitleWide) == 0x24, "wide title");
@@ -21,17 +26,6 @@ static_assert(sizeof(DesignTitleWide) == 0x24, "wide title");
 #define TOWN_NAME_SIZE 12
 
 extern void MI_CpuCopy8(const void *src, void *dst, int size);
-extern int func_0209518c(DesignCreator *a, DesignCreator *b); /* the same player (number and name) */
-extern int func_0209526c(DesignCreator *creator);             /* a creator's destructor */
-extern void *func_0209529c(DesignCreator *creator);           /* its constructor */
-extern int func_020984e8(void);                               /* this system's player record */
-extern int func_02099870(int record);                         /* its creator (record + 0x247e) */
-extern void *func_02062e50(DesignTitleWide *text);            /* the wide text's constructor */
-extern void *func_02062e00(DesignTitleWide *text);            /* its destructor */
-extern int func_02062da4(DesignTitleWide *text, u16 *chars, int capacity);
-extern void func_020a8874(DesignTitleWide *text, const u16 *chars, int length);
-extern int func_020a87e0(DesignTitleWide *wide, void *text);
-extern int func_020a8a70(void *text, DesignTitleWide *wide, int a2, int a3);
 
 static Design *design_at(unsigned int address)
 {
@@ -145,7 +139,7 @@ CLEAN_AS(func_02072e3c, DesignInfo_SetTitle)
 /* func_02072e50: sets the title from a wide text, unless that is longer than a title. */
 void DesignInfo_SetTitleFromWide(DesignInfo *info, DesignTitleWide *text)
 {
-    func_02062da4(text, info->title, DESIGN_TITLE_LENGTH);
+    NameWideText_CopyOut((NameWideText *) text, info->title, DESIGN_TITLE_LENGTH);
 }
 CLEAN_AS(func_02072e50, DesignInfo_SetTitleFromWide)
 
@@ -153,10 +147,10 @@ CLEAN_AS(func_02072e50, DesignInfo_SetTitleFromWide)
 void DesignInfo_SetTitleFromText(DesignInfo *info, void *text)
 {
     DesignTitleWide wide;
-    func_02062e50(&wide);
-    func_020a87e0(&wide, text);
+    NameWideText_Construct((NameWideText *) &wide);
+    TextBase_BytesToWide((WideTextBase *) &wide, text);
     DesignInfo_SetTitleFromWide(info, &wide);
-    func_02062e00(&wide);
+    NameWideText_Destruct((NameWideText *) &wide);
 }
 CLEAN_AS(func_02072e64, DesignInfo_SetTitleFromText)
 
@@ -170,7 +164,7 @@ CLEAN_AS(func_02072e90, DesignInfo_GetTitle)
 /* func_02072ea4: the title into a wide text. */
 void DesignInfo_TitleToWide(char *info, DesignTitleWide *text)
 {
-    func_020a8874(text, ((DesignInfo *) info)->title, DESIGN_TITLE_LENGTH);
+    TextBase_SetWide(text, ((DesignInfo *) info)->title, DESIGN_TITLE_LENGTH);
 }
 CLEAN_AS(func_02072ea4, DesignInfo_TitleToWide)
 
@@ -178,10 +172,10 @@ CLEAN_AS(func_02072ea4, DesignInfo_TitleToWide)
 void DesignInfo_TitleToText(DesignInfo *info, void *text)
 {
     DesignTitleWide wide;
-    func_02062e50(&wide);
+    NameWideText_Construct((NameWideText *) &wide);
     DesignInfo_TitleToWide((char *) info, &wide);
-    func_020a8a70(text, &wide, 0, 0);
-    func_02062e00(&wide);
+    TextBase_WideToBytes(text, (WideTextBase *) &wide, 0, 0);
+    NameWideText_Destruct((NameWideText *) &wide);
 }
 CLEAN_AS(func_02072eb8, DesignInfo_TitleToText)
 
@@ -209,7 +203,7 @@ CLEAN_AS(func_02072eec, DesignInfo_SetCreator)
  * REQUIRES: there is such a player (without one the creator is read from address 0x247e). */
 void DesignInfo_SetCreatorLocal(DesignInfo *info)
 {
-    int creator = func_02099870(func_020984e8());
+    int creator = (int) (uintptr_t) PlayerRecord_Player(PlayerRecords_Current());
     DesignInfo_SetCreator(info, (DesignCreator *) (uintptr_t) creator);
 }
 CLEAN_AS(func_02072f38, DesignInfo_SetCreatorLocal)
@@ -239,7 +233,7 @@ CLEAN_AS(func_02072f88, DesignInfo_PaletteColours)
 /* func_02072fac */
 int DesignInfo_Destruct(DesignInfo *info)
 {
-    func_0209526c(&info->creator);
+    PlayerId_Destruct(&info->creator);
     return (int) (uintptr_t) info;
 }
 CLEAN_AS(func_02072fac, DesignInfo_Destruct)
@@ -247,7 +241,7 @@ CLEAN_AS(func_02072fac, DesignInfo_Destruct)
 /* func_02072fbc */
 int DesignInfo_Construct(DesignInfo *info)
 {
-    func_0209529c(&info->creator);
+    PlayerId_Construct(&info->creator);
     return (int) (uintptr_t) info;
 }
 CLEAN_AS(func_02072fbc, DesignInfo_Construct)
@@ -265,7 +259,7 @@ int DesignInfo_Equals(DesignInfo *a, DesignInfo *b)
     if (memcmp(a->creator.town_name, b->creator.town_name, TOWN_NAME_SIZE) != 0) {
         return 0;
     }
-    if (func_0209518c(&a->creator, &b->creator) == 0) {
+    if (PlayerId_SamePlayer(&a->creator, &b->creator) == 0) {
         return 0;
     }
     return memcmp(a->title, b->title, sizeof(a->title)) == 0;

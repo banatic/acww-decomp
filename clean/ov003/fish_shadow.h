@@ -136,8 +136,8 @@ typedef struct FishShadow {
     u8 unk_201;                  /* 0x201 */
     u8 pad_202[2];               /* 0x202 */
     int effect;                  /* 0x204: its effect's handle, -1 for none */
-    int tile_x;                  /* 0x208 */
-    int tile_z;                  /* 0x20c */
+    int acre_x;                  /* 0x208: the acre it was placed in (its index while it waits) */
+    int acre_z;                  /* 0x20c */
     u8 unk_210;                  /* 0x210 */
     u8 index;                    /* 0x211: its number */
     s16 respawn;                 /* 0x212: frames before it is placed again */

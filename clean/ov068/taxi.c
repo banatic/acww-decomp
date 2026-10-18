@@ -9,6 +9,10 @@
 #include "main/model_object.h"
 #include "main/sound.h"
 #include "ov004/member_pointer.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_base.h"
+#include "ov004/rmo_object_slots.h"
+#include "ov051/taxi_driver.h"
 
 static_assert(offsetof(RmoObject, body) == 0xec, "body");
 static_assert(offsetof(RmoObject, body_model) == 0x1a4, "body model");
@@ -94,27 +98,6 @@ extern u32 data_ov068_02278800;
 extern MemberPointer data_ov068_02278820[TAXI_STATES];
 extern const MemberPointer data_ov068_022778a4, data_ov068_022778cc, data_ov068_022778c4;
 
-/* The RMO family's base class and holders (ov004/rmo_object.h): loading the body's archive and
- * another archive into a part, releasing them, the joint, material and texture animations of an
- * index (NULL for none), the constructor and destructor and those of the holders. */
-extern int func_ov004_0222c5c8(RmoObject *object, const char *name);
-extern int func_ov004_0222c62c(const char *name, RmoAnimatedModel *model, RmoModel *source, RmoTexture *texture);
-extern void func_ov004_0222c598(RmoObject *object);
-extern void func_ov004_0222c5b4(RmoModel *source, RmoTexture *texture);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index);
-extern const u8 *func_ov004_0222c3b4(RmoModel *model, int index);
-extern const u8 *func_ov004_0222c3a4(RmoModel *model, int index);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-extern RmoModel *func_ov004_0222c548(RmoModel *model);
-extern RmoModel *func_ov004_0222c538(RmoModel *model);
-extern void func_ov004_0222c398(RmoTexture *texture);
-extern void func_ov004_0222c394(RmoTexture *texture);
-
-/* Overlay 51's speaker: its animation's number, and its frame. */
-extern int func_ov051_02260474(void);
-extern unsigned int func_ov051_02260490(void);
-
 extern void NNS_G3dMdlSetMdlAlpha(u8 *model, int material, u8 alpha);
 
 /* The hooks are the game's functions: their addresses go to the model. */
@@ -132,8 +115,8 @@ void Taxi_PlayPartAnim(Taxi *self, int anim, RmoAnimatedModel *model, RmoModel *
                        u16 frames)
 {
     (void) self;
-    if (AnimatedModel_AnimFile(animated(model)) != func_ov004_0222c3c4(source, anim)) {
-        AnimatedModel_Start(animated(model), func_ov004_0222c3c4(source, anim), flags, speed, start, frames);
+    if (AnimatedModel_AnimFile(animated(model)) != RmoModel_JointAnim(source, anim)) {
+        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, anim), flags, speed, start, frames);
     }
 }
 CLEAN_AS(func_ov068_02272fe8, Taxi_PlayPartAnim)
@@ -151,7 +134,7 @@ int Taxi_StartFigure(void)
         return 0;
     }
     self->figure_plays = 1;
-    AnimatedModel_Start(animated(&self->figure), func_ov004_0222c3c4(&self->figure_model, 0), TAXI_ONCE, TAXI_ONE, 0, 0);
+    AnimatedModel_Start(animated(&self->figure), RmoModel_JointAnim(&self->figure_model, 0), TAXI_ONCE, TAXI_ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov068_02273030, Taxi_StartFigure)
@@ -267,10 +250,10 @@ CLEAN_AS(func_ov068_02273230, Taxi_SetState)
 void Taxi_RestartCar(Taxi *self, int flags)
 {
     AnimatedModel *body = animated(&self->base.body);
-    const u8 *joints = func_ov004_0222c3c4(&self->base.body_model, 0);
+    const u8 *joints = RmoModel_JointAnim(&self->base.body_model, 0);
     AnimatedModel_Start(body, joints, flags, TAXI_ONE, (u16) ((u32) self->base.body.frames.frame >> 12), 0);
     ModelRenderObject *render = ModelObject_RenderObject(&body->object);
-    const u8 *materials = func_ov004_0222c3b4(&self->base.body_model, 0);
+    const u8 *materials = RmoModel_MaterialAnim(&self->base.body_model, 0);
     ModelAnim_Restart(&self->material_anim, render, materials, flags, TAXI_ONE,
                       (u16) ((u32) self->material_anim.ctrl.frame >> 12));
 }
@@ -279,8 +262,8 @@ CLEAN_AS(func_ov068_022732bc, Taxi_RestartCar)
 /* An animation file started looping (or once) on a part that can take it. */
 static void start_part(RmoAnimatedModel *model, RmoModel *source, int flags)
 {
-    if (func_ov004_0222c3c4(source, 0) != NULL && AnimatedModel_LoadAnim(animated(model), data_021c9b24) != 0) {
-        AnimatedModel_Start(animated(model), func_ov004_0222c3c4(source, 0), flags, TAXI_ONE, 0, 0);
+    if (RmoModel_JointAnim(source, 0) != NULL && AnimatedModel_LoadAnim(animated(model), data_021c9b24) != 0) {
+        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, 0), flags, TAXI_ONE, 0, 0);
         AnimatedModel_Attach(animated(model));
     }
 }
@@ -301,13 +284,13 @@ static void start_material_anim(Taxi *self, ModelAnim *anim, const u8 *(*get)(Rm
  * the handle's, with its first animation looping. */
 void Taxi_Load(Taxi *self)
 {
-    func_ov004_0222c5c8(&self->base, data_ov068_0227795c);
+    RmoObjectSlots_LoadNamed(&self->base, data_ov068_0227795c);
     start_part(&self->base.body, &self->base.body_model, TAXI_LOOP);
-    start_material_anim(self, &self->texture_anim, func_ov004_0222c3a4);
-    start_material_anim(self, &self->material_anim, func_ov004_0222c3b4);
-    func_ov004_0222c62c(data_ov068_02277968, &self->figure, &self->figure_model, &self->figure_texture);
+    start_material_anim(self, &self->texture_anim, RmoModel_TextureAnim);
+    start_material_anim(self, &self->material_anim, RmoModel_MaterialAnim);
+    RmoModel_LoadNamed(data_ov068_02277968, (ModelObject *) &self->figure, &self->figure_model, &self->figure_texture);
     start_part(&self->figure, &self->figure_model, TAXI_ONCE);
-    func_ov004_0222c62c(data_ov068_02277978, &self->handle, &self->handle_model, &self->handle_texture);
+    RmoModel_LoadNamed(data_ov068_02277978, (ModelObject *) &self->handle, &self->handle_model, &self->handle_texture);
     start_part(&self->handle, &self->handle_model, TAXI_LOOP);
 }
 CLEAN_AS(func_ov068_02273338, Taxi_Load)
@@ -317,9 +300,9 @@ CLEAN_AS(func_ov068_02273338, Taxi_Load)
 int Taxi_Release(Taxi *self)
 {
     data_ov068_022787fc = NULL;
-    func_ov004_0222c598(&self->base);
-    func_ov004_0222c5b4(&self->figure_model, &self->figure_texture);
-    func_ov004_0222c5b4(&self->handle_model, &self->handle_texture);
+    RmoObjectSlots_ReleaseBody(&self->base);
+    RmoModel_ReleaseWithTexture(&self->figure_model, &self->figure_texture);
+    RmoModel_ReleaseWithTexture(&self->handle_model, &self->handle_texture);
     SoundSys_StopSound(TAXI_SOUND_A, TAXI_SOUND_FADE);
     SoundSys_StopSound(TAXI_SOUND_B, TAXI_SOUND_FADE);
     return 1;
@@ -371,9 +354,9 @@ int Taxi_Update(Taxi *self)
     if (self->figure_plays != 0) {
         AnimatedModel_StepFrames(animated(&self->figure));
     }
-    int speaker_anim = func_ov051_02260474();
+    int speaker_anim = TaxiDriver_CurrentAnim();
     /* QUIRK: the speaker's frame is asked for and not used */
-    (void) func_ov051_02260490();
+    (void) TaxiDriver_CurrentFrame();
     Taxi_PlayPartAnim(self, handle_anim(speaker_anim), &self->handle, &self->handle_model, TAXI_LOOP, TAXI_ONE, 0, 0);
     AnimatedModel_StepFrames(animated(&self->handle));
     u8 *model = self->base.body.object.model;
@@ -407,15 +390,15 @@ CLEAN_AS(func_ov068_022736d8, Taxi_Start)
 static void destruct_parts(Taxi *self)
 {
     self->base.actor.vtable = data_ov068_022778f4;
-    func_ov004_0222c394(&self->handle_texture);
-    func_ov004_0222c538(&self->handle_model);
+    RmoTexture_Destruct(&self->handle_texture);
+    RmoModel_Destruct(&self->handle_model);
     AnimatedModel_DestructComplete(animated(&self->handle));
-    func_ov004_0222c394(&self->figure_texture);
-    func_ov004_0222c538(&self->figure_model);
+    RmoTexture_Destruct(&self->figure_texture);
+    RmoModel_Destruct(&self->figure_model);
     AnimatedModel_DestructComplete(animated(&self->figure));
     ModelAnim_DestructComplete(&self->texture_anim);
     ModelAnim_DestructComplete(&self->material_anim);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
 }
 
 /* func_ov068_02273764 (vtable slot 0x44): taken down and freed. */
@@ -438,16 +421,16 @@ CLEAN_AS(func_ov068_022737e4, Taxi_Destruct)
 /* func_ov068_02273860: the RMO family's constructor, the vtable, then the holders. */
 Taxi *Taxi_Construct(Taxi *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     self->base.actor.vtable = data_ov068_022778f4;
     ModelAnim_Construct(&self->material_anim);
     ModelAnim_Construct(&self->texture_anim);
     AnimatedModel_Construct(animated(&self->figure));
-    func_ov004_0222c548(&self->figure_model);
-    func_ov004_0222c398(&self->figure_texture);
+    RmoModel_Construct(&self->figure_model);
+    RmoTexture_Construct(&self->figure_texture);
     AnimatedModel_Construct(animated(&self->handle));
-    func_ov004_0222c548(&self->handle_model);
-    func_ov004_0222c398(&self->handle_texture);
+    RmoModel_Construct(&self->handle_model);
+    RmoTexture_Construct(&self->handle_texture);
     return self;
 }
 CLEAN_AS(func_ov068_02273860, Taxi_Construct)

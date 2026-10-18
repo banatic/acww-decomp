@@ -7,6 +7,13 @@
 #include "autoload_2/heap.h"
 #include "calendar.h"
 #include "clean.h"
+#include "autoload_2/sound_system.h"
+#include "block_020b220c.h"
+#include "date_time.h"
+#include "event_calendar.h"
+#include "music_queue.h"
+#include "scene_query.h"
+#include "town_tune.h"
 
 static_assert(offsetof(SceneSoundVtable, vfunc_24) == 0x24, "SceneSoundVtable layout");
 
@@ -30,20 +37,6 @@ extern void *data_021c67a4;
 extern int data_021c679c;
 extern u8 *data_021c526c;
 
-extern void func_0206e8d8(void);
-extern void func_0206e904(void);
-extern void func_020f2388(void *sys);
-/* The original also passes 1 as a fifth argument, which the callee does not read. */
-extern void func_020f23b4(void *sys, u8 *heap, u32 heap_size, const char *archive);
-extern int func_02035bec(u8 *flags);
-
-extern void func_0209def4(Time *now);
-extern void func_0209e474(DateTime *now);
-extern u8 func_020b65c4(void);
-extern u8 func_020b22b8(void);
-extern u8 func_020b22dc(void);
-extern int func_020b6640(void);
-extern int func_0203fc78(int event, const DateTime *when, int arg);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The constructors of the scene sound classes. */
@@ -123,7 +116,7 @@ void SceneSound_Delete(void)
     if (data_0213fff0 == NULL) {
         return;
     }
-    if (func_02035bec(data_021c526c + 0x2d0)) {
+    if (Music2d0_AnyFlag((const Music2d0 *) (void *) (data_021c526c + 0x2d0))) {
         data_021fd21c[2] = 1;
     }
     data_0213fff0->vtable->unload(data_0213fff0);
@@ -150,27 +143,27 @@ static SceneSound *make_default(void)
     if (data_020e54a8 != 0) {
         return make(0x20, func_020f3be8);
     }
-    if (func_020b22b8() != 0 || func_020b22dc() != 0) {
+    if (Block020b220c_Flag4b18() != 0 || Block020b220c_Flag4b1c() != 0) {
         return make(8, func_020f3dc4);
     }
-    if (func_020b6640() != 0) {
+    if (SceneQuery_CurrentIs31() != 0) {
         return make(8, func_020f2664);
     }
 
     /* The clock's date checked for three events (func_0203fc78), each with its own copy. */
     DateTime now = {0};
     DateTime copy;
-    func_0209e474(&now);
+    DateTime_Now(&now);
     MI_CpuCopy8(&now, &copy, sizeof(copy));
-    if (func_0203fc78(0xf, &copy, 0) != 0) {
+    if (EventCalendar_State(0xf, &copy, 0) != 0) {
         return make(8, func_020f3cd4);
     }
     MI_CpuCopy8(&now, &copy, sizeof(copy));
-    if (func_0203fc78(0x12, &copy, 0) != 0) {
+    if (EventCalendar_State(0x12, &copy, 0) != 0) {
         return make(8, func_020f3cd4);
     }
     MI_CpuCopy8(&now, &copy, sizeof(copy));
-    if (func_0203fc78(0x13, &copy, 0) != 0 && now.hour < 2) {
+    if (EventCalendar_State(0x13, &copy, 0) != 0 && now.hour < 2) {
         return make(8, func_020f3cd4);
     }
     return make(8, func_020f3f88);
@@ -254,8 +247,8 @@ void SceneSound_Create(void)
         data_0213fff0 = make(8, func_020f2590);
     } else {
         Time now;
-        func_0209def4(&now);
-        data_0213fff0 = make_for_scene(func_020b65c4(), &now);
+        Calendar_Now(&now);
+        data_0213fff0 = make_for_scene(SceneQuery_Current(), &now);
     }
     data_0213fff0->vtable->start(data_0213fff0);
 }
@@ -265,8 +258,8 @@ CLEAN_AS(func_0200471c, SceneSound_Create)
  * frame, then the scene's sound while the camera exists. */
 void SoundLayer_Frame(void)
 {
-    func_0206e8d8();
-    func_020f2388(data_021fd1bc);
+    TownTune_Update();
+    SoundSystem_Frame((SoundSystem *) (void *) data_021fd1bc);
     if (data_0213fff0 != NULL && data_021c67a4 != NULL) {
         data_0213fff0->vtable->update(data_0213fff0, data_021c679c);
     }
@@ -278,7 +271,7 @@ CLEAN_AS(func_02004b30, SoundLayer_Frame)
 void SoundLayer_Init(void)
 {
     data_0213fff0 = NULL;
-    func_020f23b4(data_021fd1bc, data_0213fff4, SOUND_HEAP_SIZE, data_020d72e0);
-    func_0206e904();
+    SoundSystem_Init((SoundSystem *) (void *) data_021fd1bc, data_0213fff4, SOUND_HEAP_SIZE, data_020d72e0);
+    TownTune_Init();
 }
 CLEAN_AS(func_02004b70, SoundLayer_Init)

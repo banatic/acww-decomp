@@ -20,6 +20,8 @@
 #include "main/trivial_object.h"
 #include "member_pointer.h"
 #include "rmo_object_base.h"
+#include "rmo_model.h"
+#include "rmo_object_slots.h"
 
 static_assert(sizeof(RmoObject) == 0x290, "RmoObject size");
 static_assert(sizeof(ModelAnim) == 0x20, "ModelAnim size");
@@ -154,17 +156,6 @@ extern u32 data_ov004_02258274;
 extern MemberPointer data_ov004_022582ec[CHECK_IN_GATE_STATE_COUNT];
 extern const MemberPointer data_ov004_02254d84, data_ov004_02254d8c, data_ov004_02254db4, data_ov004_02254da4;
 
-/* The RMO family's base class and holders (rmo_object.h). */
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index); /* a joint animation */
-extern const u8 *func_ov004_0222c3b4(RmoModel *model, int index); /* a material animation */
-extern int func_ov004_0222c3f4(RmoModel *model, const char *path);
-extern u8 *func_ov004_0222c3a0(RmoModel *model);
-extern void func_ov004_0222c3d4(RmoModel *model);
-extern int func_ov004_0222c348(RmoTexture *texture, const char *path);
-extern void *func_ov004_0222c33c(RmoTexture *texture);
-extern void func_ov004_0222c340(RmoTexture *texture);
-
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
@@ -196,10 +187,10 @@ static int CheckInGate_call_set_state(CheckInGate *self, unsigned int state)
 /* Joint and material animation `index` from their start, with the same flags. */
 static void CheckInGate_play(CheckInGate *self, int index, int flags)
 {
-    AnimatedModel_Start(CheckInGate_body(self), func_ov004_0222c3c4(&self->base.body_model, index), flags, CHECK_IN_GATE_ONE,
-                        0, 0);
+    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, index), flags, CHECK_IN_GATE_ONE, 0,
+                        0);
     ModelRenderObject *render = ModelObject_RenderObject(&self->base.body.object);
-    const u8 *material_anim = func_ov004_0222c3b4(&self->base.body_model, index);
+    const u8 *material_anim = RmoModel_MaterialAnim(&self->base.body_model, index);
     ModelAnim_Restart(&self->material_anim, render, material_anim, flags, CHECK_IN_GATE_ONE, 0);
 }
 
@@ -460,11 +451,11 @@ CLEAN_AS(func_ov004_0222d53c, CheckInGate_SetCurrent)
  * object, it is started looped and attached to the model; whether it was. */
 int CheckInGate_StartMaterialAnim(CheckInGate *self)
 {
-    if (func_ov004_0222c3b4(&self->base.body_model, 0) == NULL ||
+    if (RmoModel_MaterialAnim(&self->base.body_model, 0) == NULL ||
         ModelAnim_AllocMaterialAnim(&self->material_anim, self->base.body.object.model, data_021c9b24) == 0) {
         return 0;
     }
-    ModelAnim_Start(&self->material_anim, func_ov004_0222c3b4(&self->base.body_model, 0), CHECK_IN_GATE_LOOP,
+    ModelAnim_Start(&self->material_anim, RmoModel_MaterialAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP,
                     CHECK_IN_GATE_ONE, 0);
     ModelAnim_Attach(&self->material_anim, ModelObject_RenderObject(&self->base.body.object));
     return 1;
@@ -475,11 +466,11 @@ CLEAN_AS(func_ov004_0222d548, CheckInGate_StartMaterialAnim)
  * started looped and attached; whether it was. */
 int CheckInGate_StartJointAnim(CheckInGate *self)
 {
-    if (func_ov004_0222c3c4(&self->base.body_model, 0) == NULL ||
+    if (RmoModel_JointAnim(&self->base.body_model, 0) == NULL ||
         AnimatedModel_LoadAnim(CheckInGate_body(self), data_021c9b24) == 0) {
         return 0;
     }
-    AnimatedModel_Start(CheckInGate_body(self), func_ov004_0222c3c4(&self->base.body_model, 0), CHECK_IN_GATE_LOOP,
+    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP,
                         CHECK_IN_GATE_ONE, 0, 0);
     AnimatedModel_Attach(CheckInGate_body(self));
     return 1;
@@ -493,11 +484,11 @@ CLEAN_AS(func_ov004_0222d5c0, CheckInGate_StartJointAnim)
  * record's address against NULL never fails for a real model. */
 void CheckInGate_LightMaterials(CheckInGate *self)
 {
-    u8 *model = func_ov004_0222c3a0(&self->base.body_model);
+    u8 *model = RmoModel_Model(&self->base.body_model);
     uintptr_t materials = (uintptr_t) model + *(const u32 *) (const void *) (model + 8);
     u32 lights = data_ov004_022478a4;
     for (unsigned int i = 0; i < CHECK_IN_GATE_GROUND_MATERIALS; i++) {
-        int index = G3dRes_MaterialIndex(func_ov004_0222c3a0(&self->base.body_model), data_ov004_02254e28[i]);
+        int index = G3dRes_MaterialIndex(RmoModel_Model(&self->base.body_model), data_ov004_02254e28[i]);
         /* the dictionary after the 4-byte header: its entries start at its halfword 6 */
         uintptr_t entries = materials + 4 + *(const u16 *) (uintptr_t) (materials + 0x0a);
         u16 unit = *(const u16 *) entries;
@@ -516,14 +507,14 @@ CLEAN_AS(func_ov004_0222d624, CheckInGate_LightMaterials)
  * then from its own (the later binding wins where both have a name). */
 int CheckInGate_BindTextures(CheckInGate *self)
 {
-    u8 *model = func_ov004_0222c3a0(&self->base.body_model);
+    u8 *model = RmoModel_Model(&self->base.body_model);
     NNS_G3dBindMdlTex(model, (void *) (uintptr_t) BgModels_GroundTexture((const BgModels *) (uintptr_t) BgModels_Get()));
-    model = func_ov004_0222c3a0(&self->base.body_model);
+    model = RmoModel_Model(&self->base.body_model);
     NNS_G3dBindMdlPltt(model, (void *) (uintptr_t) BgModels_GroundTexture((const BgModels *) (uintptr_t) BgModels_Get()));
-    model = func_ov004_0222c3a0(&self->base.body_model);
-    NNS_G3dBindMdlTex(model, func_ov004_0222c33c(&self->base.body_texture));
-    model = func_ov004_0222c3a0(&self->base.body_model);
-    NNS_G3dBindMdlPltt(model, func_ov004_0222c33c(&self->base.body_texture));
+    model = RmoModel_Model(&self->base.body_model);
+    NNS_G3dBindMdlTex(model, RmoTexture_Texture(&self->base.body_texture));
+    model = RmoModel_Model(&self->base.body_model);
+    NNS_G3dBindMdlPltt(model, RmoTexture_Texture(&self->base.body_texture));
     return 1;
 }
 CLEAN_AS(func_ov004_0222d69c, CheckInGate_BindTextures)
@@ -534,8 +525,8 @@ CLEAN_AS(func_ov004_0222d69c, CheckInGate_BindTextures)
  * overlay 4's loading clears it). */
 int CheckInGate_Release(CheckInGate *self)
 {
-    func_ov004_0222c3d4(&self->base.body_model);
-    func_ov004_0222c340(&self->base.body_texture);
+    RmoModel_Release(&self->base.body_model);
+    RmoTexture_Release(&self->base.body_texture);
     CheckInGate_RemoveDoorBox(self);
     CollisionBox_Remove(&self->boxes[0]);
     CollisionBox_Remove(&self->boxes[1]);
@@ -563,7 +554,7 @@ int CheckInGate_Update(CheckInGate *self)
 CLEAN_AS(_ZN18Obj_ov004_02254e4c19func_ov004_0222d774Ev, CheckInGate_Update)
 
 /* A fixed box's point, built once as a function-local static and registered for destruction
- * (func_020012dc, which does nothing). */
+ * (TrivialObject_Destruct, which does nothing). */
 static void CheckInGate_point_once(u32 *guard, Vec3 *point, u8 *record, fx32 x)
 {
     if ((*guard & 1) == 0) {
@@ -585,12 +576,12 @@ static void CheckInGate_point_once(u32 *guard, Vec3 *point, u8 *record, fx32 x)
 int CheckInGate_Start(CheckInGate *self)
 {
     Block021d27acPart20 *part = (Block021d27acPart20 *) (void *) Block021d27ac_Part20(Block021d27ac_Get());
-    func_ov004_0222c3f4(&self->base.body_model, data_ov004_02254eb4);
-    func_ov004_0222c348(&self->base.body_texture, data_ov004_02254ed0);
-    ModelObject_SetModel(&self->base.body.object, func_ov004_0222c3a0(&self->base.body_model), NULL);
-    self->light_materials[0] = G3dRes_MaterialIndex(func_ov004_0222c3a0(&self->base.body_model), data_ov004_02254eec);
-    self->light_materials[1] = G3dRes_MaterialIndex(func_ov004_0222c3a0(&self->base.body_model), data_ov004_02254ef4);
-    self->light_materials[2] = G3dRes_MaterialIndex(func_ov004_0222c3a0(&self->base.body_model), data_ov004_02254f00);
+    RmoModel_Load(&self->base.body_model, data_ov004_02254eb4);
+    RmoTexture_Load(&self->base.body_texture, data_ov004_02254ed0);
+    ModelObject_SetModel(&self->base.body.object, RmoModel_Model(&self->base.body_model), NULL);
+    self->light_materials[0] = G3dRes_MaterialIndex(RmoModel_Model(&self->base.body_model), data_ov004_02254eec);
+    self->light_materials[1] = G3dRes_MaterialIndex(RmoModel_Model(&self->base.body_model), data_ov004_02254ef4);
+    self->light_materials[2] = G3dRes_MaterialIndex(RmoModel_Model(&self->base.body_model), data_ov004_02254f00);
     ModelObject_SetInitHook(&self->base.body.object, (void *) (uintptr_t) func_ov004_0222da90, self);
     CheckInGate_BindTextures(self);
     CheckInGate_LightMaterials(self);
@@ -639,7 +630,7 @@ static void CheckInGate_take_down(CheckInGate *self)
     CollisionBox_Destruct(&self->boxes[0]);
     CollisionBox_Destruct(&self->door_box);
     ModelAnim_DestructComplete(&self->material_anim);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
 }
 
 /* func_ov004_0222d9ac (the deleting destructor, vtable slot 0x44) */

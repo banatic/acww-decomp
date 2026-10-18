@@ -6,6 +6,8 @@
 #include "main/display_frame.h"
 #include "main/display_shadow.h"
 #include "main/model_cache.h"
+#include "transfer_queue.h"
+#include "vram_frame.h"
 
 static_assert(offsetof(SceneFog, enabled) == 0x20, "enabled");
 static_assert(offsetof(SceneFog, offset) == 0x22, "offset");
@@ -62,11 +64,6 @@ extern void GX_SetBankForSubBG(int banks);
 extern void GX_SetBankForSubOBJ(int banks);
 extern void G3X_SetFog(int enable, int blend, int slope, int offset);
 extern void G3X_SetFogTable(const u32 *table);
-/* Two resets of display state (also at the boot screen's set-up). */
-extern void func_020b98dc(void);
-extern void func_020b9990(void);
-/* The texture and palette VRAM managers set up on the banks. */
-extern void func_020b947c(void);
 
 /* func_020b68ac: the scene's display hook after the VBlank: nothing. */
 void SceneDisplay_AfterVBlank(void) {}
@@ -111,8 +108,8 @@ CLEAN_AS(func_020b68e4, SceneDisplay_TearDown)
 void SceneDisplay_SetUp(void)
 {
     DisplayFrame_ResetState();
-    func_020b98dc();
-    func_020b9990();
+    TransferQueue_ClearMain();
+    TransferQueue_ClearVBlank();
     DisplayFrame_ReleaseVram();
     GX_SetBankForTex(SCENE_DISPLAY_BANKS_TEX);
     GX_SetBankForTexPltt(SCENE_DISPLAY_BANK_TEX_PLTT);
@@ -125,7 +122,7 @@ void SceneDisplay_SetUp(void)
     Display_SetMainBgModeNow(SCENE_DISPLAY_MAIN_BG_MODE);
     Display_SetSubBgModeNow(SCENE_DISPLAY_SUB_BG_MODE);
     REG32(REG_DISPCNT) &= ~DISPCNT_CHAR_BASE;
-    func_020b947c();
+    VramFrame_Init();
     DisplayShadow_ShowMainPlanes(SCENE_DISPLAY_MAIN_PLANES);
     DisplayShadow_ShowSubPlanes(SCENE_DISPLAY_SUB_PLANES);
     ModelCache_Init();

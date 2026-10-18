@@ -20,6 +20,13 @@
 #include "villager_home.h"
 #include "villager_roster.h"
 #include "villager_town.h"
+#include "event_calendar.h"
+#include "item_traits.h"
+#include "letter.h"
+#include "main_random.h"
+#include "name_texts.h"
+#include "player_field_2416.h"
+#include "player_id.h"
 
 static_assert(offsetof(EventWinner, villager) == 0x1e && offsetof(EventWinner, npc_2e) == 0x2e, "EventWinner");
 static_assert(offsetof(EventWinner, item) == 0x3e && offsetof(EventWinner, size) == 0x40, "EventWinner");
@@ -37,26 +44,6 @@ extern const EventWinnerTile data_021d27e0[8];
 extern const EventWinnerTile data_021d2820[14];
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern u32 func_020644b4(int bound); /* the same from another generator */
-/* The days since the town's event `event` this year, -1 without one. */
-extern int func_0203fdc4(int event);
-/* The record's parts (set by the functions after this file's). */
-extern NpcId *func_020867a0(EventWinner *record);
-extern DesignCreator *func_020867e0(EventWinner *record);
-extern void func_020867a4(EventWinner *record, const NpcId *villager);
-extern void func_020867e4(EventWinner *record, const DesignCreator *player);
-extern void func_0208683c(EventWinner *record);
-/* A player's name cleared. */
-extern void func_02095238(DesignCreator *player);
-/* The value of a creature item 0x12e8-0x131f and of an item 0x12b0-0x12e7. */
-extern int func_0204c380(u16 *item);
-extern int func_0204c308(u16 *item);
-/* What the record's reset does to a player's field at 0x2416 (PlayerRecord_Field2416). */
-extern void func_02088aa0(u8 *field);
-extern void func_02088ac0(u8 *field);
-extern void func_02088b1c(u8 *field, int value);
-extern void func_02088b38(u8 *field, int value);
 
 #define EVENT_WINNER_VILLAGERS 8
 #define EVENT_WINNER_PLAYERS 4
@@ -118,8 +105,8 @@ void EventWinner_JudgeGardens(EventWinner *record)
         return;
     }
     AcreMap *map = data_021c80bc;
-    NpcId_Clear(func_020867a0(record));
-    func_02095238(func_020867e0(record));
+    NpcId_Clear(EventWinner_Villager(record));
+    PlayerId_Clear(EventWinner_Player(record));
     if (map == NULL) {
         return;
     }
@@ -144,13 +131,13 @@ void EventWinner_JudgeGardens(EventWinner *record)
     }
 
     int player = EventWinner_ScoreAroundBuilding(record, map);
-    if (count == 0 || player > best || (player > 0 && player == best && func_020644cc(2) == 0)) {
-        func_020867e4(record, PlayerRecord_Player(PlayerRecords_Current()));
+    if (count == 0 || player > best || (player > 0 && player == best && MainRandom_Below(2) == 0)) {
+        EventWinner_SetPlayer(record, PlayerRecord_Player(PlayerRecords_Current()));
         return;
     }
     u8 *winner = VillagerRoster_At(town, VillagerRoster_PickBit(best_villagers, count, EVENT_WINNER_VILLAGERS));
     if (winner != NULL && NpcId_IsValid(TownVillager_NpcId(winner)) != 0) {
-        func_020867a4(record, TownVillager_NpcId(winner));
+        EventWinner_SetVillager(record, TownVillager_NpcId(winner));
     }
 }
 CLEAN_AS(func_020861dc, EventWinner_JudgeGardens)
@@ -275,13 +262,13 @@ CLEAN_AS(func_020864f4, EventWinner_ItemKind)
  * number is drawn for any item. */
 fx32 EventWinner_RandomSize(u16 *item)
 {
-    fx32 scale = (fx32) func_020644b4(EVENT_WINNER_SCALE_RANGE) + EVENT_WINNER_SCALE_MIN;
+    fx32 scale = (fx32) MainRandom_BelowB(EVENT_WINNER_SCALE_RANGE) + EVENT_WINNER_SCALE_MIN;
     u16 code = *item;
     if (code >= EVENT_WINNER_CREATURES_FIRST && code <= EVENT_WINNER_CREATURES_LAST) {
-        return FX_MulFunc((fx32) ((u32) func_0204c380(item) << 12), scale);
+        return FX_MulFunc((fx32) ((u32) ItemTraits_FishValue(item) << 12), scale);
     }
     if (code >= EVENT_WINNER_OTHERS_FIRST && code <= EVENT_WINNER_OTHERS_LAST) {
-        return FX_MulFunc((fx32) ((u32) func_0204c308(item) << 12), scale);
+        return FX_MulFunc((fx32) ((u32) ItemTraits_InsectSize(item) << 12), scale);
     }
     return 0;
 }
@@ -302,13 +289,13 @@ void EventWinner_ExpireForEvent(EventWinner *record, int event)
     int since_event = 0;
     switch (event) {
         case 0:
-            since_event = func_0203fdc4(EVENT_WINNER_EVENT_0);
+            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_0);
             break;
         case 1:
-            since_event = func_0203fdc4(EVENT_WINNER_EVENT_1);
+            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_1);
             break;
         case 2:
-            since_event = func_0203fdc4(EVENT_WINNER_EVENT_2);
+            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_2);
             break;
         default:
             break;
@@ -331,17 +318,17 @@ void EventWinner_ExpireForEvent(EventWinner *record, int event)
                     continue;
                 }
                 if (event == 2) {
-                    func_02088ac0(PlayerRecord_Field2416(player));
+                    PlayerField2416_ClearBytes0B((PlayerField2416 *) (void *) PlayerRecord_Field2416(player));
                     PlayerRecord_ClearFlag(player, EVENT_WINNER_PLAYER_FLAG);
                 } else {
-                    func_02088aa0(PlayerRecord_Field2416(player));
+                    PlayerField2416_ClearGardening((PlayerField2416 *) (void *) PlayerRecord_Field2416(player));
                 }
             }
             break;
         default:
             break;
     }
-    func_0208683c(record);
+    EventWinner_Restart(record);
 }
 CLEAN_AS(func_020865d8, EventWinner_ExpireForEvent)
 
@@ -355,16 +342,16 @@ void EventWinner_ResetIfNotToday(EventWinner *record, int mode)
     if (record->date.year == today.year && record->date.month == today.month && record->date.day == today.day) {
         return;
     }
-    func_0208683c(record);
+    EventWinner_Restart(record);
     for (int i = 0; i < EVENT_WINNER_PLAYERS; i++) {
         u8 *player = PlayerRecords_TownRecord(data_021dc7bc, i);
         if (player == NULL || PlayerRecord_HasPlayer(player) == 0) {
             continue;
         }
         if (mode == 1) {
-            func_02088b38(PlayerRecord_Field2416(player), 0);
+            PlayerField2416_SetFishing((PlayerField2416 *) (void *) PlayerRecord_Field2416(player), 0);
         } else if (mode == 2) {
-            func_02088b1c(PlayerRecord_Field2416(player), 0);
+            PlayerField2416_SetInsects((PlayerField2416 *) (void *) PlayerRecord_Field2416(player), 0);
         }
     }
 }
@@ -445,33 +432,6 @@ extern const char *const data_020e1fbc[4];
 extern u8 data_020e1f64[];
 extern u8 data_020e1f5c[];
 
-/* A player's id destructed and constructed (DesignCreator). */
-extern int func_0209526c(DesignCreator *player);
-extern void *func_0209529c(DesignCreator *player);
-/* Whether a player's id names a player. */
-extern int func_020951bc(const DesignCreator *player);
-/* The same player number and name (after the same town). */
-extern int func_0209518c(const DesignCreator *a, const DesignCreator *b);
-/* A player's name text: constructed, filled from a player's id, destructed. */
-extern void *func_02094fd4(EventWinnerName *name);
-extern void *func_02095074(const DesignCreator *player, EventWinnerName *name);
-extern void *func_02094fbc(EventWinnerName *name);
-/* An item's name text: constructed from an item, destructed. */
-extern void *func_02062f90(EventWinnerItemName *text, u16 *item);
-extern void *func_02062f4c(EventWinnerItemName *text);
-/* A letter: constructed, written (message *message of archive `name`, kind byte and paper),
- * given an item, destructed. */
-extern void func_02066694(MailLetter *letter);
-extern void func_02066024(MailLetter *letter, u8 *message, const char *name, u8 *kind, u8 *paper, void *player_name);
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int arg);
-extern void func_02066688(MailLetter *letter);
-/* A player's field at 0x2416 (PlayerRecord_Field2416), its byte 0x10: whether the player
- * entered the fishing tourney (bit 0), the insect contest (bit 1), whether it is owed a
- * gardening letter (bit 6; func_02088aa0, declared above, clears it). */
-extern int func_02088b48(u8 *field);
-extern int func_02088b30(u8 *field);
-extern int func_02088ab8(u8 *field);
-
 /* Whether the record's kind is one of the two contests (fishing, insects). */
 static int event_winner_is_contest(const EventWinner *record)
 {
@@ -500,7 +460,7 @@ static int event_winner_item_is_none(u16 *item)
 static int event_winner_same_player(const DesignCreator *a, const DesignCreator *b)
 {
     return a->town_id == b->town_id && memcmp(a->town_name, b->town_name, sizeof(a->town_name)) == 0 &&
-           func_0209518c(a, b) != 0;
+           PlayerId_SamePlayer(a, b) != 0;
 }
 
 /* The size into `text`: to one decimal for fishing, in whole units otherwise. */
@@ -518,9 +478,9 @@ static void event_winner_name_item(EventWinner *record)
 {
     if (!event_winner_item_is_none(&record->item)) {
         EventWinnerItemName item_name;
-        func_02062f90(&item_name, &record->item);
+        NameText_ConstructItem((NameText *) &item_name, &record->item);
         MailText_SetPartText(EVENT_WINNER_SLOT_ITEM, &item_name);
-        func_02062f4c(&item_name);
+        NameText_Destruct((NameText *) &item_name);
     }
 }
 
@@ -560,7 +520,7 @@ CLEAN_AS(func_020867a0, EventWinner_Villager)
 void EventWinner_SetVillager(EventWinner *record, const NpcId *villager)
 {
     copy_halfwords(&record->villager, villager, sizeof record->villager);
-    func_02095238(&record->player);
+    PlayerId_Clear(&record->player);
 }
 CLEAN_AS(func_020867a4, EventWinner_SetVillager)
 
@@ -602,7 +562,7 @@ CLEAN_AS(func_0208683c, EventWinner_Restart)
 /* func_02086874: no winner, no second villager, no item and no size; the date is kept. */
 void EventWinner_Reset(EventWinner *record)
 {
-    func_02095238(&record->player);
+    PlayerId_Clear(&record->player);
     NpcId_Clear(&record->villager);
     NpcId_Clear(&record->npc_2e);
     record->item = ITEM_CODE_NONE;
@@ -615,7 +575,7 @@ EventWinner *EventWinner_Destruct(EventWinner *record)
 {
     NpcId_Destruct(&record->npc_2e);
     NpcId_Destruct(&record->villager);
-    func_0209526c(&record->player);
+    PlayerId_Destruct(&record->player);
     return record;
 }
 CLEAN_AS(func_020868a0, EventWinner_Destruct)
@@ -623,7 +583,7 @@ CLEAN_AS(func_020868a0, EventWinner_Destruct)
 /* func_020868c0: the constructor; no item. The size and the date are left as they are. */
 EventWinner *EventWinner_Construct(EventWinner *record)
 {
-    func_0209529c(&record->player);
+    PlayerId_Construct(&record->player);
     NpcId_Construct(&record->villager);
     NpcId_Construct(&record->npc_2e);
     record->item = ITEM_CODE_NONE;
@@ -650,7 +610,7 @@ CLEAN_AS(func_020868c0, EventWinner_Construct)
  * QUIRK: two more number texts are made and unmade without being used. */
 void EventWinner_SendLetters(EventWinner *record)
 {
-    if (func_020951bc(&record->player) == 0 && NpcId_IsValid(&record->villager) == 0) {
+    if (PlayerId_IsSet(&record->player) == 0 && NpcId_IsValid(&record->villager) == 0) {
         return;
     }
     if (!event_winner_has_kind(record)) {
@@ -687,7 +647,7 @@ void EventWinner_SendLetters(EventWinner *record)
             return;
         }
     } else {
-        int since_event = func_0203fdc4(EVENT_WINNER_EVENT_0);
+        int since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_0);
         /* The clock read again, this time as it is. */
         DateTime_Now(&now);
         if (since_event != -1) {
@@ -703,7 +663,7 @@ void EventWinner_SendLetters(EventWinner *record)
         }
     }
 
-    if (kind == EVENT_WINNER_KIND_GARDENS && func_020951bc(&record->player) == 0) {
+    if (kind == EVENT_WINNER_KIND_GARDENS && PlayerId_IsSet(&record->player) == 0) {
         EventWinner_PostNotice(record);
         EventWinner_Reset(record);
         return;
@@ -717,8 +677,8 @@ void EventWinner_SendLetters(EventWinner *record)
     MessageText46_Construct(&size_text);
     MessageText46_Construct(&unused_text_a);
     MessageText46_Construct(&unused_text_b);
-    func_02066694(&letter);
-    func_02094fd4(&name);
+    Letter_Construct((Letter *) &letter);
+    PlayerIdText_Construct((PlayerIdText *) &name);
 
     u8 message = 0;
     for (int i = 0; i < EVENT_WINNER_PLAYERS; i++) {
@@ -736,13 +696,15 @@ void EventWinner_SendLetters(EventWinner *record)
                 event_winner_format_size(record, &size_text);
                 MailText_SetPartText(EVENT_WINNER_SLOT_SIZE, &size_text);
             }
-            send = kind == EVENT_WINNER_KIND_FISHING ? func_02088b48(field) : func_02088b30(field);
+            send = kind == EVENT_WINNER_KIND_FISHING ? PlayerField2416_Fishing((PlayerField2416 *) (void *) field)
+                                                     : PlayerField2416_Insects((PlayerField2416 *) (void *) field);
         } else {
             DesignCreator *who = PlayerRecord_Player(player);
-            if (event_winner_same_player(&record->player, who) || func_02088ab8(field) != 0) {
-                message = (u8) func_020644cc(3);
-                func_02095074(PlayerRecord_Player(player), &name);
-                func_02088aa0(field);
+            if (event_winner_same_player(&record->player, who) ||
+                PlayerField2416_Gardening((PlayerField2416 *) (void *) field) != 0) {
+                message = (u8) MainRandom_Below(3);
+                PlayerId_NameToText(PlayerRecord_Player(player), (TextBase *) &name);
+                PlayerField2416_ClearGardening((PlayerField2416 *) (void *) field);
                 MailText_SetPartText(EVENT_WINNER_SLOT_GARDENER, &name);
                 send = 1;
             }
@@ -754,14 +716,15 @@ void EventWinner_SendLetters(EventWinner *record)
         if (event_winner_is_contest(record)) {
             DesignCreator *who = PlayerRecord_Player(player);
             if (event_winner_same_player(&record->player, who)) {
-                message = (u8) func_020644cc(3);
+                message = (u8) MainRandom_Below(3);
             } else {
-                message = (u8) (func_020644cc(3) + 3);
+                message = (u8) (MainRandom_Below(3) + 3);
             }
-            func_02095074(PlayerRecord_Player(player), &name);
+            PlayerId_NameToText(PlayerRecord_Player(player), (TextBase *) &name);
             MailText_SetPartText(EVENT_WINNER_SLOT_NAME, &name);
         }
-        func_02066024(&letter, &message, data_020e1fcc[kind], data_020e1f64, data_020e1f5c, PlayerRecord_Player(player));
+        Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e1fcc[kind], data_020e1f64, data_020e1f5c,
+                                    PlayerRecord_Player(player));
         DesignCreator *who = PlayerRecord_Player(player);
         if (event_winner_same_player(&record->player, who) || kind == EVENT_WINNER_KIND_GARDENS) {
             u16 prize = EVENT_WINNER_PRIZE_FISHING;
@@ -770,15 +733,15 @@ void EventWinner_SendLetters(EventWinner *record)
             } else if (kind == EVENT_WINNER_KIND_GARDENS) {
                 prize = EVENT_WINNER_PRIZE_GARDENS;
             }
-            func_02065ed0(&letter, prize, 1);
+            Letter_SetItem((Letter *) &letter, prize, 1);
         }
         Mail_Post(&letter);
     }
 
     EventWinner_PostNotice(record);
     EventWinner_Reset(record);
-    func_02094fbc(&name);
-    func_02066688(&letter);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
+    Letter_Destruct((Letter *) &letter);
     MessageText46_Destruct(&unused_text_b);
     MessageText46_Destruct(&unused_text_a);
     MessageText46_Destruct(&size_text);
@@ -792,7 +755,7 @@ CLEAN_AS(func_020868e8, EventWinner_SendLetters)
  * when there is no winner. */
 void EventWinner_PostNotice(EventWinner *record)
 {
-    if (func_020951bc(&record->player) == 0 && NpcId_IsValid(&record->villager) == 0) {
+    if (PlayerId_IsSet(&record->player) == 0 && NpcId_IsValid(&record->villager) == 0) {
         StateBlock_ClearFlag(data_021dc7a8, EVENT_WINNER_NOTICE_FLAG);
         return;
     }
@@ -804,9 +767,9 @@ void EventWinner_PostNotice(EventWinner *record)
     }
 
     EventWinnerName name;
-    func_02094fd4(&name);
-    if (func_020951bc(&record->player) != 0) {
-        func_02095074(&record->player, &name);
+    PlayerIdText_Construct((PlayerIdText *) &name);
+    if (PlayerId_IsSet(&record->player) != 0) {
+        PlayerId_NameToText(&record->player, (TextBase *) &name);
     } else {
         NpcId_FormatName(&record->villager, (char *) &name);
     }
@@ -827,9 +790,9 @@ void EventWinner_PostNotice(EventWinner *record)
         MailText_SetPartText(EVENT_WINNER_SLOT_GARDENER, &name);
     }
 
-    int message = event_winner_is_contest(record) ? (int) func_020644cc(3) : (int) func_020644cc(2);
+    int message = event_winner_is_contest(record) ? (int) MainRandom_Below(3) : (int) MainRandom_Below(2);
     Bbs_PostMessage(message, data_020e1fbc[record->date.unused]);
     StateBlock_ClearFlag(data_021dc7a8, EVENT_WINNER_NOTICE_FLAG);
-    func_02094fbc(&name);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
 }
 CLEAN_AS(func_02086d24, EventWinner_PostNotice)

@@ -3,6 +3,12 @@
 
 #include "clean.h"
 #include "town_layout.h"
+#include "c_library.h"
+#include "model_cache.h"
+#include "rom_file.h"
+#include "scene_heaps.h"
+#include "scene_query.h"
+#include "vram_region.h"
 
 static_assert(sizeof(BgModel) == 0x30, "model size");
 static_assert(offsetof(BgModels, data) == 0x5d0, "data");
@@ -60,11 +66,6 @@ extern const char data_020da474[];
 extern const char data_020da484[];
 extern const char data_020da498[];
 
-/* sprintf. */
-extern int func_02064328(char *buffer, const char *format, ...);
-/* A file read whole into `heap` (from its end when `align` is negative); its size into *size
- * when `size` is not NULL. */
-extern u8 *func_02064b2c(const char *path, Heap *heap, int align, u32 *size);
 extern int NNS_FndMountArchive(BgArchive *archive, const char *name, void *data);
 extern u8 *NNS_FndGetArchiveFileByName(const char *path);
 /* The archive unmounted. */
@@ -82,14 +83,7 @@ extern u8 *func_02107bbc(void *set, u32 index);
 extern u8 *func_02107bf8(void *set, u32 index);
 /* The texture of a texture file; the texture prepared, and copied to `heap`. */
 extern void *func_021077e8(u8 *file);
-extern int func_02056064(void *texture, void *for_texture);
-extern void *func_020561cc(void *texture, Heap *heap);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-/* The background heap destroyed; the background heap made, of `size` bytes. */
-extern void func_0205cab0(void);
-extern void func_0205cacc(u32 size, void *parent);
-/* The current scene. */
-extern u8 func_020b65c4(void);
 
 static u16 read_u16(const u8 *p)
 {
@@ -220,7 +214,7 @@ int BgModels_Release(BgModels *self)
     self->ground_texture = NULL;
     self->full = 0;
     self->heap_size = 0;
-    func_0205cab0();
+    SceneHeaps_DestroyBgModels();
     return 1;
 }
 CLEAN_AS(func_020375a0, BgModels_Release)
@@ -248,7 +242,7 @@ BgModel *BgModels_Load(BgModels *self, int key)
         BgArchive archive;
         int folder = key >> 4;
 
-        func_02064328(path, data_020da37c, folder, key);
+        CLib_SPrintf(path, data_020da37c, folder, key);
         model->archive = BgModels_LoadFile(path, &model->archive_size);
         if (NNS_FndMountArchive(&archive, data_020da390, model->archive) != 0) {
             u8 *file;
@@ -274,13 +268,13 @@ BgModel *BgModels_Load(BgModels *self, int key)
         if (((key & 0xf000) >> 12) == BG_MODEL_OWN_TEXTURE) {
             u8 *file;
 
-            func_02064328(path, data_020da404, folder, key);
-            file = func_02064b2c(path, data_021fbe94, -4, NULL);
+            CLib_SPrintf(path, data_020da404, folder, key);
+            file = RomFile_Load(path, data_021fbe94, -4, NULL);
             if (file != NULL) {
                 void *texture = func_021077e8(file);
 
-                func_02056064(texture, NULL);
-                model->texture = func_020561cc(texture, heap);
+                VramRegion_LoadTexture(texture, NULL);
+                model->texture = ModelCache_CopyTexture(texture, heap);
                 Heap_FreeCurrent(file);
             }
         }
@@ -339,8 +333,8 @@ void *BgModels_LoadData(int key, Heap *heap)
     u8 *file;
     void *data = NULL;
 
-    func_02064328(path, data_020da37c, key >> 4, key);
-    file = func_02064b2c(path, data_021fbe94, -4, NULL);
+    CLib_SPrintf(path, data_020da37c, key >> 4, key);
+    file = RomFile_Load(path, data_021fbe94, -4, NULL);
     if (NNS_FndMountArchive(&archive, data_020da390, file) != 0) {
         u8 *source = NNS_FndGetArchiveFileByName(data_020da3a4);
 
@@ -386,11 +380,11 @@ void BgModels_LoadGroundTexture(BgModels *self)
     char path[0x20];
     u8 *file;
 
-    func_02064328(path, data_020da498, folder, set, 'a' + (layout->settings >> 2));
-    file = func_02064b2c(path, data_021fbe94, -4, NULL);
+    CLib_SPrintf(path, data_020da498, folder, set, 'a' + (layout->settings >> 2));
+    file = RomFile_Load(path, data_021fbe94, -4, NULL);
     self->ground_texture = func_021077e8(file);
-    func_02056064(self->ground_texture, NULL);
-    self->ground_texture = func_020561cc(self->ground_texture, data_021c9b24);
+    VramRegion_LoadTexture(self->ground_texture, NULL);
+    self->ground_texture = ModelCache_CopyTexture(self->ground_texture, data_021c9b24);
     if (file != NULL) {
         Heap_FreeCurrent(file);
     }
@@ -411,7 +405,7 @@ CLEAN_AS(func_020379ac, BgModels_TownSetting)
  * and the ground's animations when `full` is set; 1. */
 int BgModels_SetUp(BgModels *self, int full)
 {
-    u8 scene = func_020b65c4();
+    u8 scene = SceneQuery_Current();
     u8 heap_kb;
 
     if (scene == 0x2c) {
@@ -420,10 +414,10 @@ int BgModels_SetUp(BgModels *self, int full)
     BgModels_Clear(self);
     self->full = (u8) full;
 
-    scene = func_020b65c4();
+    scene = SceneQuery_Current();
     heap_kb = scene < BG_HEAP_SCENES ? data_020c9fd4[scene] : BG_HEAP_DEFAULT_KB;
     self->heap_size = (u32) heap_kb << 10;
-    func_0205cacc(self->heap_size, NULL);
+    SceneHeaps_CreateBgModels(self->heap_size, NULL);
 
     if (full != 0 || scene == 0x0b || scene == 0x2f || (scene >= 0x0c && scene <= 0x0e)) {
         BgModels_LoadGroundTexture(self);
@@ -473,6 +467,6 @@ CLEAN_AS(func_02037ae8, BgModels_Construct)
  * *size when `size` is not NULL. */
 void *BgModels_LoadFile(const char *path, u32 *size)
 {
-    return func_02064b2c(path, data_021c9b24, 4, size);
+    return RomFile_Load(path, data_021c9b24, 4, size);
 }
 CLEAN_AS(func_02037af8, BgModels_LoadFile)

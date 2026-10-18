@@ -7,6 +7,12 @@
 #include "villager_entry.h"
 #include "villager_items.h"
 #include "villager_status.h"
+#include "item_code.h"
+#include "main_random.h"
+#include "room_cells.h"
+#include "town_villager.h"
+#include "villager_house_items.h"
+#include "villager_object.h"
 
 #define VILLAGER_FURNITURE_OFFSET 0x78c
 #define VILLAGER_FURNITURE_WALLPAPER 0x7d4
@@ -17,28 +23,6 @@
 #define VILLAGER_FURNITURE_DRAW_OTHER 40
 
 extern NetSession *data_020ccf94; /* the session */
-
-extern NpcId *func_0208150c(const void *villager);      /* the villager's NpcId, at 0x7a0 */
-extern int func_0207ffa0(const u8 *villager, u32 item); /* whether the item index is 0-9 */
-/* Which of the villager's ten items a template code 0xf000-0xf02f stands for: (code - 0xf000)
- * / 4, less 2 from 3 on; -1 for any other code. */
-extern int func_0207ff58(const u8 *villager, const u16 *code);
-extern unsigned int func_020644cc(int bound); /* a random number below `bound` */
-extern void func_0207f5c8(u8 *villager);      /* its items 1 and 2 (at 0x78e) emptied */
-/* The item put away into the villager's house (its ten items, or its wallpaper or carpet);
- * non-zero when it went into one of the ten (some kind 3 or 4 items go through func_0207f8a0). */
-extern int func_0207f76c(u8 *villager, u16 *item);
-extern int func_02052fdc(unsigned char index);
-extern u8 *func_0209b5e8(VillagerModeRecord *record); /* the record's object, at 0x24 */
-extern void func_0209b998(u8 *object);
-/* The villager's item `slot` in `out` (converted by func_02061b1c), 0xfff1 for none or a slot
- * past 9. */
-extern void func_0207ff0c(u16 *out, const u8 *villager, int slot);
-/* An item of kind 3 or 4 that stands for `item` (one of three by its func_02053bc0, from
- * data_020cd42c) in `out`, else 0xfff1. */
-extern void func_0207f590(u16 *out, const u8 *villager, const u16 *item);
-extern int func_0204bcdc(u16 *item);               /* whether the code is of kind 3 or 4 (ItemCode_HasVariant) */
-extern void func_0204bc28(u16 *item, int variant); /* its variant set (ItemCode_SetVariant) */
 
 static u16 *VillagerFurniture_Items(u8 *villager)
 {
@@ -83,8 +67,8 @@ int VillagerFurniture_IsMarkedAt(u8 *villager, const VillagerFurnitureTile *tile
                                  int count)
 {
     int slot = VillagerFurniture_SlotAt(villager, tile, spots, count);
-    return func_0207ffa0(villager, (u32) slot) && VillagerFurniture_Items(villager)[slot] != VILLAGER_FURNITURE_NONE &&
-           VillagerEntry_IsItemMarked(villager, slot);
+    return VillagerHouseItems_IsSlot(villager, (u32) slot) &&
+           VillagerFurniture_Items(villager)[slot] != VILLAGER_FURNITURE_NONE && VillagerEntry_IsItemMarked(villager, slot);
 }
 CLEAN_AS(func_0207f318, VillagerFurniture_IsMarkedAt)
 
@@ -93,7 +77,7 @@ CLEAN_AS(func_0207f318, VillagerFurniture_IsMarkedAt)
 int VillagerFurniture_TakeAt(u8 *villager, const VillagerFurnitureTile *tile, const VillagerFurnitureSpot *spots, int count)
 {
     int slot = VillagerFurniture_SlotAt(villager, tile, spots, count);
-    if (!func_0207ffa0(villager, (u32) slot)) {
+    if (!VillagerHouseItems_IsSlot(villager, (u32) slot)) {
         return 0;
     }
     VillagerFurniture_Items(villager)[slot] = VILLAGER_FURNITURE_NONE;
@@ -116,7 +100,7 @@ int VillagerFurniture_SlotAt(u8 *villager, const VillagerFurnitureTile *tile, co
         }
         u16 code = spots[i].code;
         if (VillagerFurniture_IsSlotCode(code)) {
-            return func_0207ff58(villager, &code);
+            return VillagerHouseItems_SlotOfCode(villager, &code);
         }
     }
     return VILLAGER_FURNITURE_NOT_FOUND;
@@ -128,12 +112,12 @@ CLEAN_AS(func_0207f3a0, VillagerFurniture_SlotAt)
 void VillagerFurniture_ResetForMode(u8 *villager, int mode, int from_2)
 {
     if (mode == 2) {
-        villager[VILLAGER_FURNITURE_DRAW] = (u8) func_020644cc(VILLAGER_FURNITURE_DRAW_MODE_2);
-        func_0207f5c8(villager);
+        villager[VILLAGER_FURNITURE_DRAW] = (u8) MainRandom_Below(VILLAGER_FURNITURE_DRAW_MODE_2);
+        VillagerHouseItems_ClearSlots1And2(villager);
     } else {
-        villager[VILLAGER_FURNITURE_DRAW] = (u8) func_020644cc(VILLAGER_FURNITURE_DRAW_OTHER);
+        villager[VILLAGER_FURNITURE_DRAW] = (u8) MainRandom_Below(VILLAGER_FURNITURE_DRAW_OTHER);
         if (from_2 != 0) {
-            func_0207f5c8(villager);
+            VillagerHouseItems_ClearSlots1And2(villager);
         }
     }
 }
@@ -149,21 +133,21 @@ void VillagerFurniture_StoreItems(u8 *villager)
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
         return;
     }
-    if (!NpcId_IsValid(func_0208150c(villager))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return;
     }
     u16 *items = VillagerItems_At(villager, 0);
     int stored = 0;
     for (int i = 0; i < VILLAGER_ITEMS_COUNT; i++) {
-        if (func_0207f76c(villager, &items[i])) {
+        if (VillagerHouseItems_Store(villager, &items[i])) {
             stored = 1;
         }
     }
     VillagerItems_Clear(villager);
     if (stored) {
-        func_02052fdc((unsigned char) VillagerStatus_Index(villager));
+        RoomCells_ResetByIndex((unsigned char) VillagerStatus_Index(villager));
     }
-    func_0209b998(func_0209b5e8(VillagerStatus_ModeRecord(villager)));
+    VillagerObject_SetLow5From1To2(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
 }
 CLEAN_AS(func_0207f454, VillagerFurniture_StoreItems)
 
@@ -180,21 +164,21 @@ void VillagerFurniture_FillTemplate(u8 *villager, u16 *codes)
         if (!VillagerFurniture_IsSlotCode(*code)) {
             continue;
         }
-        int slot = func_0207ff58(villager, code);
+        int slot = VillagerHouseItems_SlotOfCode(villager, code);
         u16 fetched;
-        func_0207ff0c(&fetched, villager, slot);
+        VillagerHouseItems_Get(&fetched, villager, slot);
         u16 item = fetched;
-        if (moving && func_0204bcdc(&item)) {
+        if (moving && ItemCode_HasVariant(&item)) {
             if (VillagerEntry_IsItemMarked(villager, slot)) {
                 u16 replacement;
-                func_0207f590(&replacement, villager, &item);
+                VillagerHouseItems_ReplacementFor(&replacement, villager, &item);
                 item = replacement;
             } else {
                 item = VILLAGER_FURNITURE_NONE;
             }
         }
-        if (func_0204bcdc(&item)) {
-            func_0204bc28(&item, *code & VILLAGER_FURNITURE_VARIANT_MASK);
+        if (ItemCode_HasVariant(&item)) {
+            ItemCode_SetVariant(&item, *code & VILLAGER_FURNITURE_VARIANT_MASK);
             *code = item;
         } else {
             *code = VILLAGER_FURNITURE_NONE;

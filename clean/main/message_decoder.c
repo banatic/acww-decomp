@@ -4,6 +4,11 @@
 #include <string.h>
 
 #include "clean.h"
+#include "message_query.h"
+#include "message_tag.h"
+#include "message_walker.h"
+#include "text_codes.h"
+#include "text_walker.h"
 
 static_assert(sizeof(MessageTag) == 0x14, "tag");
 static_assert(offsetof(MessageAttributes, unk_04) == 0x04, "attributes 4");
@@ -36,24 +41,8 @@ static_assert(sizeof(MessageDecoder) == 0x4c, "decoder");
 
 extern const s32 data_020e5294[MESSAGE_DECODER_BAD_STARTS];
 
-/* The character `index` of a text, and the character `index` from its end (0 for none). */
-extern int func_020a7c98(int text, int index);
-extern int func_020a7c74(int text, int index);
 /* The other form of a character (itself when it has none). */
 extern int func_02050bdc_unk(int character);
-/* A walker: the text `text` walked from here on, where it was coming back after it (nothing
- * for 0); its position moved on by `bytes` (when it has one). */
-extern void func_020a9334(void *walker, int text);
-extern void func_020a93e8(void *walker, u32 bytes);
-/* A tag's parameters: the first byte; the three first bytes; its first byte, its end and the
- * bytes after the first. The part a 4/15-25 tag names (its kind less 15). */
-extern int func_020a86e4(MessageTag *tag, u8 *first, u8 *second, u8 *third);
-extern void func_020a8328(MessageTag *tag, u32 *first, s32 *end, const s8 **rest);
-extern int func_020a8354(MessageTag *tag);
-/* The three fixed texts tags 0/10, 0/9 and 0/6 put in, as addresses. */
-extern int func_02050c10(void);
-extern int func_02050c18(void);
-extern int func_02050c30(void);
 
 typedef int MessageDecoderCharactersFunction(const void *object);
 
@@ -89,7 +78,7 @@ CLEAN_AS(func_020b4cd8, MessageDecoder_DiffersFromSource)
 /* func_020b4d0c: whether the decoded text's first character is none of data_020e5294's. */
 int MessageDecoder_StartsWell(MessageDecoder *decoder)
 {
-    int first = func_020a7c98((int) (uintptr_t) decoder->reader->text, 0);
+    int first = MessageQuery_CharacterAt((int) (uintptr_t) decoder->reader->text, 0);
 
     for (int i = 0; i < MESSAGE_DECODER_BAD_STARTS; i++) {
         if (data_020e5294[i] == first) {
@@ -140,7 +129,7 @@ void MessageDecoder_SetAttributes(MessageDecoder *decoder)
 {
     u8 bytes[3];
 
-    func_020a86e4(&decoder->tag, &bytes[0], &bytes[1], &bytes[2]);
+    MessageTag_ReadThreeBytes(&decoder->tag, &bytes[0], &bytes[1], &bytes[2]);
     MessageAttributes *attributes = (MessageAttributes *) (void *) decoder->reader->attributes;
     attributes->unk_04 = bytes[0] < MESSAGE_DECODER_ATTRIBUTE_COUNT ? (s32) bytes[0] : -1;
     attributes->unk_08 = bytes[1];
@@ -151,8 +140,8 @@ CLEAN_AS(func_020b4dc8, MessageDecoder_SetAttributes)
 /* func_020b4e08 (tags 4/15 to 4/25): the reader's part the tag names walked in its place. */
 void MessageDecoder_InsertPart(MessageDecoder *decoder)
 {
-    int part = func_020a8354(&decoder->tag);
-    func_020a9334(decoder, message_decoder_characters(decoder->reader->parts[part]));
+    int part = MessageTag_PartIndex(&decoder->tag);
+    MessageWalker_Enter((MessageWalker *) decoder, message_decoder_characters(decoder->reader->parts[part]));
 }
 CLEAN_AS(func_020b4e08, MessageDecoder_InsertPart)
 
@@ -171,21 +160,21 @@ CLEAN_AS(func_020b4e38, MessageDecoder_CopyTag)
 /* func_020b4e58 (tag 0/10): the fixed text of func_02050c10 walked in the tag's place. */
 void MessageDecoder_InsertText10(MessageDecoder *decoder)
 {
-    func_020a9334(decoder, func_02050c10());
+    MessageWalker_Enter((MessageWalker *) decoder, TextCodes_RightParen());
 }
 CLEAN_AS(func_020b4e58, MessageDecoder_InsertText10)
 
 /* func_020b4e70 (tag 0/9): the fixed text of func_02050c18 walked in the tag's place. */
 void MessageDecoder_InsertText9(MessageDecoder *decoder)
 {
-    func_020a9334(decoder, func_02050c18());
+    MessageWalker_Enter((MessageWalker *) decoder, TextCodes_LeftParen());
 }
 CLEAN_AS(func_020b4e70, MessageDecoder_InsertText9)
 
 /* func_020b4e88 (tag 0/6): the fixed text of func_02050c30 walked in the tag's place. */
 void MessageDecoder_InsertText6(MessageDecoder *decoder)
 {
-    func_020a9334(decoder, func_02050c30());
+    MessageWalker_Enter((MessageWalker *) decoder, TextCodes_Ampersand());
 }
 CLEAN_AS(func_020b4e88, MessageDecoder_InsertText6)
 
@@ -208,7 +197,7 @@ static void message_decoder_insert_source(MessageDecoder *decoder, int index)
     if (decoder->nickname == 0) {
         return;
     }
-    int character = func_020a7c98(message_decoder_source(decoder), index);
+    int character = MessageQuery_CharacterAt(message_decoder_source(decoder), index);
     if (decoder->convert_next != 0) {
         character = func_02050bdc_unk(character);
         decoder->convert_next = 0;
@@ -227,8 +216,8 @@ void MessageDecoder_InsertSourceEnd(MessageDecoder *decoder)
         return;
     }
     int source = message_decoder_source(decoder);
-    int last = func_020a7c74(source, 0);
-    int before_last = func_020a7c74(source, 1);
+    int last = MessageQuery_CharacterFromEnd((const void *) (uintptr_t) source, 0);
+    int before_last = MessageQuery_CharacterFromEnd((const void *) (uintptr_t) source, 1);
     if (decoder->convert_next != 0) {
         last = func_02050bdc_unk(last);
         decoder->convert_next = 0;
@@ -275,10 +264,10 @@ void MessageDecoder_ExpandTag(MessageDecoder *decoder)
     s32 end;
     const s8 *bytes;
 
-    func_020a8328(&decoder->tag, &skip, &end, &bytes);
+    MessageTag_SplitParams(&decoder->tag, &skip, &end, &bytes);
     u32 count = decoder->tag.size - 1;
     int fits = MESSAGE_READER_TEXT_SIZE - decoder->length > count;
-    func_020a93e8(decoder, skip << 1);
+    MessageWalker_Skip((MessageWalker *) decoder, skip << 1);
     if (fits) {
         s8 *text = message_decoder_text_at(decoder, decoder->length);
         for (u32 i = 0; i < count; i++) {
@@ -338,17 +327,6 @@ CLEAN_AS(func_020b5174, MessageDecoder_WantsMore)
 extern const u8 data_020e5278[];
 extern const u8 data_020e3e68[];
 
-/* The walkers' base: its constructor and destructor, back to the start, the text to walk and
- * the walk (up to the end or until slot 6 says to stop). */
-extern void *func_020a9484(void *walker);
-extern void *func_020a941c(void *walker);
-extern void func_020a94a4(void *walker);
-extern void func_020a9354(void *walker, int text);
-extern int func_020a92d8(void *walker, int stop);
-/* A tag: its constructor; read from the message at `position`; whether it is a 4/15-25 tag. */
-extern void func_020a8754(MessageTag *tag);
-extern void func_020a8764(MessageTag *tag, int position);
-extern int func_020a835c(MessageTag *tag);
 /* The deleting destructors' delete (autoload_2/heap.h). */
 void Heap_OperatorDeleteB(void *block);
 
@@ -393,7 +371,7 @@ static MessageDecoderHandler *message_decoder_handler(MessageDecoder *decoder)
         case MESSAGE_DECODER_GROUP_RAW:
             return kind == 2 ? MessageDecoder_CopyTag : NULL;
         case MESSAGE_DECODER_GROUP_PART:
-            return func_020a835c(&decoder->tag) != 0 ? MessageDecoder_InsertPart : NULL;
+            return MessageTag_IsPart(&decoder->tag) != 0 ? MessageDecoder_InsertPart : NULL;
         case MESSAGE_DECODER_GROUP_FORM:
             if (kind == 0) {
                 return MessageDecoder_SetAttributes;
@@ -408,7 +386,7 @@ static MessageDecoderHandler *message_decoder_handler(MessageDecoder *decoder)
  * a handler makes the decoding fail. */
 void MessageDecoder_OnTag(MessageDecoder *decoder, int position)
 {
-    func_020a8764(&decoder->tag, position);
+    MessageTag_Read(&decoder->tag, position);
     MessageDecoderHandler *handler = message_decoder_handler(decoder);
     if (handler != NULL) {
         handler(decoder);
@@ -470,9 +448,9 @@ u8 MessageDecoder_Decode(MessageDecoder *decoder, u8 expand_tags, u8 nickname)
     decoder->nickname = nickname;
     decoder->convert_next = 0;
     decoder->character = 0;
-    func_020a94a4(decoder);
-    func_020a9354(decoder, message_decoder_file_buffer(decoder->reader));
-    func_020a92d8(decoder, 0);
+    MessageWalker_Reset((MessageWalker *) decoder);
+    MessageWalker_Start((MessageWalker *) decoder, message_decoder_file_buffer(decoder->reader));
+    TextWalker_Run((MessageWalker *) decoder, 0);
     if (decoder->ok != 0 && decoder->nickname != 0) {
         if (MessageDecoder_StartsWell(decoder) == 0 || MessageDecoder_DiffersFromSource(decoder) == 0) {
             decoder->ok = 0;
@@ -487,7 +465,7 @@ MessageDecoder *MessageDecoder_Delete(MessageDecoder *decoder)
 {
     decoder->base.vtable = data_020e5278;
     decoder->base.vtable = data_020e3e68;
-    func_020a941c(decoder);
+    MessageWalker_BaseDestruct(decoder);
     Heap_OperatorDeleteB(decoder);
     return decoder;
 }
@@ -499,7 +477,7 @@ MessageDecoder *MessageDecoder_Destruct(MessageDecoder *decoder)
 {
     decoder->base.vtable = data_020e5278;
     decoder->base.vtable = data_020e3e68;
-    func_020a941c(decoder);
+    MessageWalker_BaseDestruct(decoder);
     return decoder;
 }
 CLEAN_AS(func_020b53f8, MessageDecoder_Destruct)
@@ -508,11 +486,11 @@ CLEAN_AS(func_020b53f8, MessageDecoder_Destruct)
  * request bytes, and the decoding going well. */
 MessageDecoder *MessageDecoder_Construct(MessageDecoder *decoder, MessageReader *reader)
 {
-    func_020a9484(decoder);
+    MessageWalker_Construct((MessageWalker *) decoder);
     decoder->base.vtable = data_020e3e68;
     decoder->base.vtable = data_020e5278;
     decoder->reader = reader;
-    func_020a8754(&decoder->tag);
+    MessageTag_Construct(&decoder->tag);
     decoder->character = 0;
     decoder->length = 0;
     decoder->inserted = 0;

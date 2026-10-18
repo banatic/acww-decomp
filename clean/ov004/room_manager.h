@@ -36,7 +36,7 @@ int RoomManager_BroadcastChanged(void);
 void RoomManager_SetBroadcastChanged(void);
 
 /* What the TV's sound kept of the frame before (RoomManager.unk_2a8, set up by the room's
- * start, func_ov004_0223d434: 0, 1 and 0). */
+ * start, RoomManager_Init: 0, 1 and 0). */
 typedef struct RoomTvSoundState {
     u8 told;   /* 0x2a8: the sound has been silenced or raised once */
     u8 silent; /* 0x2a9: no TV that is on was near the player */

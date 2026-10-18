@@ -45,6 +45,9 @@
 #include "main/town_start_day.h"
 #include "ov004/cafe_props.h"
 #include "ov004/member_pointer.h"
+#include "ov004/music_show_overlay.h"
+#include "ov004/room_camera.h"
+#include "ov004/room_player_actor.h"
 
 static_assert(sizeof(SceneCommandScene) == 0xb0, "scene command scene");
 static_assert(sizeof(CafeGuestShow) == 0x14, "show");
@@ -134,20 +137,6 @@ extern NookStore data_021f395c;
 /* The vtable of the class 0x020da088 (special_scene_object.h). */
 extern const u8 data_020da088[];
 
-/* Overlay 4's handling of overlay 93's object (made by func_ov004_02246a2c, released by
- * func_ov004_02246988), each a no-op while there is none. */
-extern void func_ov004_02246a2c(void);
-extern void func_ov004_02246988(void);
-extern int func_ov004_02246900(void);
-extern void func_ov004_02246a04(void);
-extern void func_ov004_0224692c(void);
-extern void func_ov004_02246954(int value);
-extern void func_ov004_022469dc(void);
-extern void func_ov004_02246e88(void);
-extern void func_ov004_02246e98(void);
-extern void func_ov004_02246ea8(void);
-extern void func_ov004_02246eb8(void);
-extern int func_ov004_0222c070(int value);
 /* Of the model's resource (a NitroSystem routine). */
 extern void func_021074dc(void *model_resource, int value);
 
@@ -519,7 +508,7 @@ void CafeGuestScene_GiveSong(CafeGuestScene *scene)
         }
     }
     TalkObject_SetMessage(scene_talk(scene), &message, data_ov068_02277ca4[owner->kind]);
-    func_ov004_02246988();
+    MusicShowOverlay_Close();
     Music_DropMusic((u16) owner->music);
     owner->timer = CAFE_GUEST_LIGHTS_FRAMES;
     SceneLights_RequestOff(1, 1);
@@ -547,14 +536,14 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
     const CafeGuestShow *now = (const CafeGuestShow *) (const void *) SoundSys_FirstEntryData();
     CafeGuestShow *seen = &scene->show;
     CafeGuest *owner = scene->owner;
-    func_ov004_02246a04();
+    MusicShowOverlay_Update();
     if (now != NULL && !(now->var2 == 1 && seen->var2 == 1)) {
         if (now->var3 != seen->var3) {
             if (now->var3 == 2) {
-                func_ov004_02246e88();
-                func_ov004_0224692c();
+                RoomCamera_ShowViews();
+                MusicShowOverlay_SetDisplay();
             } else if ((u8) now->var3 <= 1) {
-                func_ov004_02246e98();
+                RoomCamera_ShowNextSpot();
             }
         }
         if (now->track_kind != seen->track_kind) {
@@ -592,9 +581,9 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
         }
         if (now->var2 != seen->var2) {
             if (now->var2 == 0) {
-                func_ov004_02246a04();
-                func_ov004_02246954(0);
-                func_ov004_022469dc();
+                MusicShowOverlay_Update();
+                MusicShowOverlay_Restart(0);
+                MusicShowOverlay_Upload();
             }
             if (now->var2 == 1) {
                 SceneFace_MapNamed(guest_face(owner), (void *) (uintptr_t) data_ov068_022779a8);
@@ -603,9 +592,9 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
             }
         }
     }
-    func_ov004_022469dc();
+    MusicShowOverlay_Upload();
     MI_CpuCopy8(now, seen, sizeof(CafeGuestShow));
-    if (func_ov004_02246900() != 0) {
+    if (MusicShowOverlay_HasEnded() != 0) {
         owner->timer = CAFE_GUEST_SHOW_END_FRAMES;
         CafeGuestScene_SetStep(scene, CAFE_GUEST_STEP_GIVE);
     }
@@ -633,7 +622,7 @@ void CafeGuestScene_StartMusic(CafeGuestScene *scene)
     if (Countdown_Tick16(&owner->timer) != 0) {
         return;
     }
-    func_ov004_02246ea8();
+    RoomCamera_ShowClose();
     owner->music = 0;
     if (owner->no_such_song != 0) {
         owner->music = MainRandom_Below(3) + CAFE_GUEST_OTHER_MUSIC;
@@ -657,7 +646,7 @@ void CafeGuestScene_StartMusic(CafeGuestScene *scene)
     }
     Music_Add(CAFE_GUEST_MUSIC_PRIORITY, (u16) owner->music, CAFE_GUEST_MUSIC_0C, 0);
     scene->show_started = 0;
-    func_ov004_02246a2c();
+    MusicShowOverlay_Open();
     CafeGuestScene_SetStep(scene, CAFE_GUEST_STEP_SHOW);
 }
 CLEAN_AS(func_ov068_02273eb0, CafeGuestScene_StartMusic)
@@ -1005,7 +994,7 @@ static void end_play(CafeGuest *self)
 {
     EventQueue_FinishObjectEvent(self);
     if (PlayerActorOps_InState(CAFE_GUEST_PLAYER_LISTENING, GUEST_PLAYER) != 0) {
-        func_ov004_0222c070(0);
+        RoomPlayerActor_RequestSpotMove(0);
     }
     Music_DropPriority(CAFE_GUEST_TALK_PRIORITY);
     Music_Clear2f4();
@@ -1033,7 +1022,7 @@ CLEAN_AS(func_ov068_02274734, CafeGuest_UpdatePlay)
 int CafeGuest_StartPlay(CafeGuest *self)
 {
     SceneMotion_RequestAnimation(guest_motion(self), 1, CAFE_GUEST_ANIM_TALK, 0, data_020c80f8, 0);
-    func_ov004_02246eb8();
+    RoomCamera_SetModeShow();
     SceneLook_RequestAngles(guest_look(self), 0, 0, CAFE_GUEST_LOOK_AHEAD, data_020c80f4, data_020c80ec);
     SceneAction_RequestTalk(guest_action(self), 0, 1);
     Music_AddValue(CAFE_GUEST_TALK_PRIORITY, CAFE_GUEST_TALK_VALUE, 0);
@@ -1190,7 +1179,7 @@ int CafeGuest_Leave(CafeGuest *self)
         return 0;
     }
     if ((u32) self->kind == CAFE_GUEST_KIND_MUSIC) {
-        func_ov004_02246988();
+        MusicShowOverlay_Close();
     }
     return 1;
 }

@@ -13,6 +13,66 @@
 #include "main/group_params.h" /* GroupParams_CanOpen, GroupParams_C4CIs1 */
 #include "main/session.h"      /* NetSession */
 #include "snowman.h"           /* Snowman_Knock */
+#include "autoload_2/vector.h"
+#include "main/acre_map.h"
+#include "main/acre_tile.h"
+#include "main/actor_table.h"
+#include "main/block_020b220c.h"
+#include "main/block_020ba298.h"
+#include "main/block_021d27ac.h"
+#include "main/board_notices.h"
+#include "main/camera_control.h"
+#include "main/camera_modes.h"
+#include "main/catch_panel.h"
+#include "main/catch_sphere.h"
+#include "main/collision_map.h"
+#include "main/collision_query.h"
+#include "main/current_pockets.h"
+#include "main/date_time.h"
+#include "main/effect_system.h"
+#include "main/event_queue.h"
+#include "main/face_texture.h"
+#include "main/field_actor.h"
+#include "main/field_body.h"
+#include "main/field_collision.h"
+#include "main/fish_disp.h"
+#include "main/fishing_float.h"
+#include "main/frame_ctrl.h"
+#include "main/globe.h"
+#include "main/held_item.h"
+#include "main/item_code.h"
+#include "main/item_record.h"
+#include "main/layered_model.h"
+#include "main/main_random.h"
+#include "main/message_receiver.h"
+#include "main/music_queue.h"
+#include "main/music_volume.h"
+#include "main/name_texts.h"
+#include "main/packed_bytes.h"
+#include "main/player_actor_ops.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
+#include "main/scene_exit.h"
+#include "main/scene_kinds.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/scene_tables.h"
+#include "main/screen_panels.h"
+#include "main/session_players.h"
+#include "main/sky.h"
+#include "main/talk_object.h"
+#include "main/tile_changes.h"
+#include "main/tile_effects.h"
+#include "main/tile_requests.h"
+#include "main/touch_pick_shapes.h"
+#include "main/town_objects.h"
+#include "main/villager_events.h"
+#include "fish_shadow.h"
+#include "growth_model.h"
+#include "object_actors.h"
+#include "thrown_bottle.h"
+#include "tile_event.h"
+#include "town_insect.h"
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
@@ -108,95 +168,6 @@ extern Vec3 data_ov003_02260558;
 
 /* ---- Functions of the game */
 
-/* `out` = `from` moved `*distance` along `*angle`. */
-extern void func_0200fa1c(Vec3 *out, FieldActor *actor, const Vec3 *from, const s16 *angle, const fx32 *distance);
-/* The point a fixed distance ahead of the actor, and the same snapped to its tile. */
-extern void func_0200fa6c(Vec3 *out, FieldActor *actor);
-extern void func_0200fa8c(Vec3 *out, FieldActor *actor);
-extern int func_0201005c(FieldActor *actor, const Vec3 *point, int range);
-extern int func_0200ff28(FieldActor *actor, Vec3 *point, int mode, int tool);
-extern int func_0200fd04(FieldActor *actor, Vec3 *point, int mode);
-extern int func_0200ffec(FieldActor *actor);
-extern int func_0200fbe0(FieldActor *actor);
-extern int func_02010004(FieldActor *actor, int tool);
-extern int func_020eaa6c(const Vec3 *a, const Vec3 *b);
-extern int func_020ea990(const Vec3 *a, const Vec3 *b);
-/* The tile a point is on. */
-extern void func_0204f818(int *x, int *z, const Vec3 *point);
-extern u16 *func_0204f5e0(void *map, int acre_x, int acre_z, int x, int z, int layer);
-extern u16 *func_0204f5a8(void *map, const Vec3 *point, int layer);
-extern int func_02031614(const Vec3 *point);
-extern int func_020ba310(void);
-extern void func_020110c4(u16 *item, FieldActor *actor);
-extern GameObject *func_02082618(int kind, int id);
-extern int func_0200ee0c(FieldActor *actor);
-extern u16 *func_02096274(void);
-extern u8 *func_0209626c(void);
-extern void *func_02011368(FieldActor *actor);
-extern void func_0209e474(DateTime *now);
-extern int func_0200f86c(FieldActor *actor);
-extern int func_020ba4d4(void);
-extern void func_020997b4(void *record, u8 level);
-extern void func_0200f7ac(FieldActor *actor, void *record, u16 *date);
-extern u8 func_020112bc(FieldActor *actor);
-extern void func_0200f11c(FieldActor *actor);
-extern int func_0200f290(FieldActor *actor, int bit);
-extern u32 *func_0200f27c(FieldActor *actor, int bit);
-extern void func_0200f268(FieldActor *actor, int bit);
-extern int func_0200ea0c(FieldActor *actor, int state);
-extern int func_020438dc(int player, int *tile, int mode);
-extern void func_0200e854(FieldActor *actor);
-extern void func_020448b8(int *tile);
-extern int func_0200fdd0(FieldActor *actor, int *tile, int c, int d);
-extern int func_020310d0(const Vec3 *point, int *surface, int flags);
-extern int func_02010718(FieldActor *actor);
-extern u8 func_02008258(FieldActor *actor, int state);
-extern int func_0200d1a0(FieldActor *actor, int a, int priority, int arg);
-extern int func_02010538(FieldActor *actor);
-extern void func_02010f5c(FieldActor *actor);
-extern int func_0200f554(FieldActor *actor);
-extern int func_0201100c(FieldActor *actor);
-extern void func_02010d64(FieldActor *actor);
-extern int func_02095518(int pitch, int yaw, int player);
-extern int func_02011404(s16 *angle, int target, int a, int b, int c);
-extern int func_0200c9a8(FieldActor *actor, int a, int priority, int arg);
-extern int func_0200d4e8(FieldActor *actor, int a, int priority, int arg);
-extern void func_020109fc(FieldActor *actor, int animation, int a, int b);
-extern void func_020109a0(FieldActor *actor, int animation, int a, u16 b);
-extern u32 func_0200e92c(StateRequest *request);
-extern void func_0200e90c(StateRequest *request, int state, int priority, int arg);
-extern int func_0200e894(FieldActor *actor, StateRequest *request);
-extern int func_0200e91c(StateRequest *request);
-extern int func_02056f94(const FrameCtrl *ctrl);
-extern int func_02056f28(const FrameCtrl *ctrl, int frame);
-extern int func_020113e0(s16 *angle, int target);
-extern void func_020110a0(FieldActor *actor, s16 *yaw);
-extern int func_0200f328(FieldActor *actor, int sound);
-extern int func_02073908(void *session, int player);
-extern int func_0203f7d0(Vec3 *out, const Vec3 *in);
-extern int func_020912d4(int kind, Vec3 *position, s16 *angle, int a);
-extern void func_02091278(int effect, Vec3 *position, s16 *angle, int a);
-extern void func_0209129c(int effect);
-extern void *func_020984fc(int player);
-extern void func_0209971c(void *record, u16 *item);
-extern u16 *func_02099728(void *record);
-extern void func_0205eb8c(void *held, u16 *item, int a);
-extern void func_0205eae0(void *held, int pose, int a, int b);
-extern u8 *func_0205e8e4(void *held);
-extern void func_0200f1a4(FieldActor *actor, int a, u16 item);
-extern int func_0203b144(void);
-extern void func_02036448(void *p);
-
-extern GameObject *func_ov003_02236204(int id);
-extern int func_ov003_02212c58(FieldActor *actor, int priority, int arg);
-extern int func_ov003_02214644(FieldActor *actor, int priority, int arg);
-extern void func_ov003_02224384(int player, int *tile, int a);
-extern int func_ov003_0222a938(int player);
-extern Vec3 *func_ov003_0222a918(int player);
-extern int func_ov003_0222c364(int player);
-extern Vec3 *func_ov003_0222c1f4(int player);
-extern int func_ov003_0222c214(int player);
-
 /* What func_02034270 tells of the ground at a point; func_0203423c releases it. */
 typedef struct GroundInfo {
     u8 unk_00[0x30];
@@ -227,79 +198,7 @@ extern const char data_ov003_02238134[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 VEC_Mag(const Vec3 *v);
-/* out = a - b */
-extern void func_020eaca0(Vec3 *out, const Vec3 *a, const Vec3 *b);
-extern void func_0203ae98(void);
-extern void func_02036450(void *p);
-extern int func_02099e9c(u16 *item);
-extern int func_02095694(int a, int player);
-extern void func_0209a050(int slot);
-extern int func_0200faa8(FieldActor *actor, int step);
-/* Turns the actor towards yaw 0 by up to `step`; whether it faces that way. */
-extern int func_0200faf0(FieldActor *actor, int step);
-extern void *func_020984e8(void);
-extern void func_02099740(void *record, int a);
-extern u32 func_0209984c(void *record);
-extern int func_0205dc94(u8 *p, int value);
-extern int func_02099020(void *record, u32 bit);
-extern void func_02098ff8(void *record, u32 bit);
-extern void func_02035624(int a);
-extern void func_020356c4(int a, int b, int c, int d);
-extern void func_02035638(int a);
-extern void func_02035684(int a, int b, int c);
-extern void func_02035a70(void *p);
-extern void func_02035ac8(void *p);
-extern void func_0203ee14(FieldActor *actor, void *receiver);
-extern void func_0203ee08(FieldActor *actor, void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-extern int func_0203e19c(void);
-extern int func_0203e110(void);
-extern int func_0203e420(void);
-extern int func_02034270(GroundInfo *out, Vec3 *at, int a, int b);
-extern void func_0203423c(GroundInfo *info);
-extern int func_02091254(int kind, Vec3 *at, int a, int b);
-extern int func_ov003_02220b44(int player, Vec3 *at);
-extern int func_ov003_02221228(int player, Vec3 *at);
-/* The actor's movement: its speed (the word at 0x134) and direction (the halfword at 0x138). */
-extern u32 func_0200dc8c(FieldActor *actor);
-extern s16 func_0200dc80(FieldActor *actor);
-extern void func_0205eac4(void *held, fx32 speed);
-extern void func_0200f2a0(FieldActor *actor, int a, Vec3 *at);
-extern void func_0200fbc4(FieldActor *actor, fx32 x, fx32 z, int yaw);
-/* The point at the middle of a tile. */
-extern void func_0204f794(Vec3 *out, u32 x, u32 z);
-/* max(value - step, min) */
-extern int func_020113a4(int value, int min, int step);
-extern void func_0201107c(FieldActor *actor, int *value);
-extern void func_020ba2ec(void);
-extern void func_02054860(void *p);
-extern void func_0200f3e8(FieldActor *actor);
-extern int func_0204bcdc(u16 *item);
-extern int func_0204bc64(u16 *item);
-extern void func_0200f888(FieldActor *actor);
-extern void func_0200f95c(FieldActor *actor);
-extern u32 func_0204e414(void);
-extern int func_0204e108(u32 a, Vec3 *out, int c, int d);
-extern int func_0204e08c(u32 a, Vec3 *out, int c, int d);
-extern void *func_020b5e10(void);
-extern int func_020b63f4(void *dst, u8 a, const Vec3 *at, u32 b, s16 c, u8 d, u8 e);
 extern void RtcSendPxiCommand(int command);
-extern void func_02056fcc(FrameCtrl *ctrl, u32 frames, u8 flags, fx32 speed, u16 start);
-/* Points packed into 20-bit coordinates: x, y and z (y biased by 0x80000) with a nibble, or x and
- * z alone. */
-extern void func_02077928(const u8 *packed, fx32 *x, fx32 *y, fx32 *z, u8 *nibble);
-extern void func_02077950(u8 *packed, fx32 x, fx32 y, fx32 z, u8 nibble);
-extern void func_02077978(const u8 *packed, fx32 *x, fx32 *z);
-extern void func_020779b8(u8 *packed, fx32 x, fx32 z);
-/* Move the actor towards a point (or a tile's middle); whether it is there. */
-extern int func_0200f434(FieldActor *actor, const Vec3 *point);
-extern int func_0200f530(FieldActor *actor, const int *tile);
-/* Asks for state 0x77 with a yaw. */
-extern int func_02008dc0(FieldActor *actor, u16 yaw, int priority, int arg);
-/* The middle of the tile a point is on, at the point's height. */
-extern void func_0204f7e0(Vec3 *out, const Vec3 *point);
-extern void func_ov003_022235d8(int player, int *tile);
-extern int func_ov003_02220db4(int player, Vec3 *at);
 
 /* ---- Helpers */
 
@@ -321,13 +220,13 @@ static int anim_frame(const FieldActor *actor)
 
 static BOOL is_local_player(const FieldActor *actor)
 {
-    return func_02073908(data_020ccf94, actor->player) != 0;
+    return Session_IsLocalPlayer(data_020ccf94, actor->player) != 0;
 }
 
 /* The map object on a tile: the acre is the tile over 16, the tile in it the remainder. */
 static u16 *map_object_at(int x, int z)
 {
-    return func_0204f5e0(data_021c80bc, x >> 4, z >> 4, x & 15, z & 15, 0);
+    return AcreTile_ItemInAcre(data_021c80bc, x >> 4, z >> 4, x & 15, z & 15, 0);
 }
 
 static BOOL in_range(u16 code, u16 first, u16 last)
@@ -374,13 +273,13 @@ static int request_state(FieldActor *actor, int state, int priority, int arg, co
 #ifdef BUGFIX
     request = (StateRequest){0};
 #endif
-    func_0200e92c(&request);
-    func_0200e90c(&request, state, priority, arg);
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, state, priority, arg);
     for (int i = 0; i < payload_size; i++) {
         request.payload[i] = payload[i];
     }
-    int queued = func_0200e894(actor, &request);
-    func_0200e91c(&request);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
     return queued;
 }
 
@@ -398,14 +297,14 @@ int FieldActor_TryTarget(FieldActor *actor, int tool, ...)
         return 1;
     }
     if (actor->aim_mode == 1) {
-        func_0200fa1c(&point, actor, &actor->position, &actor->yaw, &data_ov003_02238130);
+        FieldActor_PointAhead(&point, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_02238130);
     } else {
         point = actor->aim_point;
-        if (!func_0201005c(actor, &point, 0xc)) {
+        if (!FieldActor_InToolReach(actor, &point, 0xc)) {
             return 0;
         }
     }
-    return func_0200ff28(actor, &point, 0, tool) && func_0200fd04(actor, &point, 0);
+    return FieldActor_FindTarget(actor, &point, 0, tool) && FieldActor_ActOnTarget(actor, &point, 0);
 }
 CLEAN_AS(func_ov003_0220c328, FieldActor_TryTarget)
 
@@ -421,13 +320,13 @@ int FieldActor_UseTool(FieldActor *actor, int tool, Vec3 *point)
 
     switch (tool) {
         case 1:
-            func_ov003_02212c58(actor, 6, -1);
+            FieldActor_RequestState59AtAim(actor, 6, -1);
             return 1;
         case 2:
             FieldActor_RequestState46(actor, 6, -1);
             return 1;
         case 3:
-            if (func_020eaa6c(point, &ORIGIN)) {
+            if (Vec_Equal(point, &ORIGIN)) {
                 *point = actor->position;
             }
             if (FieldActor_PointsAhead(actor, &ahead, point)) {
@@ -438,7 +337,7 @@ int FieldActor_UseTool(FieldActor *actor, int tool, Vec3 *point)
             }
             return 1;
         case 4:
-            func_ov003_02214644(actor, 6, -1);
+            FieldActor_RequestState56(actor, 6, -1);
             return 1;
         case 5:
             FieldActor_RequestState63(actor, 6, -1);
@@ -457,13 +356,13 @@ int FieldActor_UseTool(FieldActor *actor, int tool, Vec3 *point)
             return 1;
         case 0:
         case 10:
-            if (func_020eaa6c(point, &ORIGIN)) {
-                func_0200fa8c(&tile, actor);
+            if (Vec_Equal(point, &ORIGIN)) {
+                FieldActor_TileAhead(&tile, actor);
                 *point = tile;
             }
-            func_0200fa8c(&tile, actor);
-            if (func_020ea990(&actor->position, point) < 0x2334 && func_0200ff28(actor, &tile, 1, 0)) {
-                int not_kind_1 = func_0200ffec(actor) == 1 ? 0 : 1;
+            FieldActor_TileAhead(&tile, actor);
+            if (Vec_DistanceXZ(&actor->position, point) < 0x2334 && FieldActor_FindTarget(actor, &tile, 1, 0)) {
+                int not_kind_1 = FieldActor_TargetKind(actor) == 1 ? 0 : 1;
                 FieldActor_RequestState68(actor, tile.x, tile.z, not_kind_1, 0, 6, -1);
                 return 1;
             }
@@ -493,7 +392,7 @@ CLEAN_AS(func_ov003_0220c3d0, FieldActor_UseTool)
  *  - last, with no tool, 0x140 set and func_020ba310, state 0x72. */
 int FieldActor_TryTool(FieldActor *actor)
 {
-    int tool = func_0200fbe0(actor);
+    int tool = FieldActor_HeldTool(actor);
     Vec3 point;
 
     if (actor->unk_140 != 0) {
@@ -503,8 +402,8 @@ int FieldActor_TryTool(FieldActor *actor)
         }
     }
 
-    if (!func_0201005c(actor, &actor->aim_point, tool)) {
-        if ((actor->unk_144 == 1 || actor->unk_148 != 0) && func_02010004(actor, tool)) {
+    if (!FieldActor_InToolReach(actor, &actor->aim_point, tool)) {
+        if ((actor->unk_144 == 1 || actor->unk_148 != 0) && FieldActor_TryTargetInScene(actor, tool)) {
             return 1;
         }
         goto last;
@@ -537,7 +436,7 @@ int FieldActor_TryTool(FieldActor *actor)
     if (actor->aim_mode == 2 && tool == 5) {
         int x;
         int z;
-        func_0204f818(&x, &z, &actor->aim_point);
+        Position_Tile(&x, &z, (const Position *) &actor->aim_point);
         u16 *object = map_object_at(x, z);
         if (object != NULL && is_family_object(*object)) {
             point = ORIGIN;
@@ -547,7 +446,7 @@ int FieldActor_TryTool(FieldActor *actor)
         }
     }
 
-    if (actor->unk_148 != 0 && func_02010004(actor, tool)) {
+    if (actor->unk_148 != 0 && FieldActor_TryTargetInScene(actor, tool)) {
         return 1;
     }
     if (actor->aim_mode != 2) {
@@ -559,8 +458,8 @@ int FieldActor_TryTool(FieldActor *actor)
             s16 angle = Math_Atan2(sub32(actor->aim_point.x, actor->start_position.x),
                                    sub32(actor->aim_point.z, actor->start_position.z));
             Vec3 ahead;
-            func_0200fa1c(&ahead, actor, &actor->position, &angle, data_ov003_02236608);
-            if (!func_0201005c(actor, &ahead, tool)) {
+            FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &angle, data_ov003_02236608);
+            if (!FieldActor_InToolReach(actor, &ahead, tool)) {
                 goto last;
             }
             Vec3 saved = actor->aim_point;
@@ -580,7 +479,7 @@ int FieldActor_TryTool(FieldActor *actor)
             }
             goto last;
         case 3:
-            if (!func_02031614(&actor->aim_point)) {
+            if (!CollisionQuery_IsWaterAroundPoint(&actor->aim_point)) {
                 goto last;
             }
             point = actor->aim_point;
@@ -593,7 +492,7 @@ int FieldActor_TryTool(FieldActor *actor)
     }
 
 last:
-    if (tool == 0 && actor->unk_140 != 0 && func_020ba310()) {
+    if (tool == 0 && actor->unk_140 != 0 && Block020ba298_Byte10()) {
         FieldActor_RequestState72(actor, 6, -1);
         return 1;
     }
@@ -618,12 +517,12 @@ int FieldActor_CheckOther(FieldActor *actor)
     int kind = actor->other_kind;
     int id = actor->other_id;
     u16 item;
-    func_020110c4(&item, actor);
+    FieldActor_RecordHeldItem(&item, actor);
 
     switch (kind) {
         case 2:
         case 3: {
-            GameObject *object = func_02082618(kind, id);
+            GameObject *object = Actors_GetByIndex(kind, id);
             if (object != NULL) {
                 if (is_item_1376(item)) {
                     ItemQuery query = (ItemQuery) (uintptr_t) object->vtable[24];
@@ -640,7 +539,7 @@ int FieldActor_CheckOther(FieldActor *actor)
         }
         case 0x11:
         case 0x12: {
-            GameObject *object = func_ov003_02236204(id);
+            GameObject *object = (GameObject *) Snowman_Find(id);
             if (object != NULL) {
                 if (!is_item_1376(item)) {
                     actor->other = object;
@@ -670,20 +569,20 @@ void FieldActor_UpdateSunLevel(FieldActor *actor)
     if (actor->unk_7F8 == 0) {
         return;
     }
-    BOOL keep_flag_4 = func_0200ee0c(actor) != 0;
+    BOOL keep_flag_4 = FieldActor_LinkedNotPlayer0(actor) != 0;
 
-    u16 *countdown = func_02096274();
+    u16 *countdown = SessionPlayers_SunCountdown();
     if (*countdown == 0) {
         *countdown = 1;
     }
-    u8 *flags = func_0209626c();
-    void *record = func_02011368(actor);
+    u8 *flags = SessionPlayers_SunFlags();
+    void *record = FieldActor_Record(actor);
 
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
 
     if ((*flags & 1) != 0) {
-        if (func_0200f86c(actor) != 1) {
+        if (FieldActor_SunDatePassed(actor) != 1) {
             return;
         }
         *flags &= keep_flag_4 ? 0xfe : 0xee;
@@ -696,15 +595,15 @@ void FieldActor_UpdateSunLevel(FieldActor *actor)
     if (now.hour < 10 || now.hour >= 17) {
         return;
     }
-    if (func_020ba4d4() >= 3) {
+    if (Sky_WeatherNow() >= 3) {
         return;
     }
     u16 item;
-    func_020110c4(&item, actor);
+    FieldActor_RecordHeldItem(&item, actor);
     if (in_range(item, 0x1380, 0x139f)) {
         return;
     }
-    func_020110c4(&item, actor);
+    FieldActor_RecordHeldItem(&item, actor);
     if (in_range(item, 0x13a0, 0x13a7)) {
         return;
     }
@@ -714,16 +613,16 @@ void FieldActor_UpdateSunLevel(FieldActor *actor)
         return;
     }
     u16 date = (u16) ((now.year & 0x7f) | (now.month & 0xf) << 7 | (now.day & 0x1f) << 11);
-    u8 level = (u8) (func_020112bc(actor) + 1);
+    u8 level = (u8) (FieldActor_RecordSunLevel(actor) + 1);
     if (level > 7) {
         level = 7;
     }
-    func_020997b4(record, level);
-    func_0200f7ac(actor, record, &date);
+    PlayerRecord_SetSunLevel(record, level);
+    FieldActor_StoreSunDate(actor, (int) (uintptr_t) record, &date);
     *countdown = 0x4650;
     *flags &= 0xfb;
     *flags |= 3;
-    func_0200f11c(actor);
+    FieldActor_SendSunLevel(actor);
 }
 CLEAN_AS(func_ov003_0220ca24, FieldActor_UpdateSunLevel)
 
@@ -732,20 +631,20 @@ CLEAN_AS(func_ov003_0220ca24, FieldActor_UpdateSunLevel)
  * clears flags 0x16 and 0x13. */
 void FieldActor_FinishPendingTile(FieldActor *actor)
 {
-    if (!func_0200f290(actor, FIELD_ACTOR_FLAG_PENDING_TILE)) {
+    if (!FieldActor_TestFlag(actor, FIELD_ACTOR_FLAG_PENDING_TILE)) {
         return;
     }
     switch (actor->unk_818) {
         case 1: {
             int tile[2] = {actor->pending_tile[0], actor->pending_tile[1]};
             FieldActor_RequestState73(actor, tile, 6, -1);
-            func_0200f268(actor, FIELD_ACTOR_FLAG_PENDING_TILE);
-            func_0200f268(actor, 0x13);
+            FieldActor_ClearFlag(actor, FIELD_ACTOR_FLAG_PENDING_TILE);
+            FieldActor_ClearFlag(actor, 0x13);
             break;
         }
         case 2:
-            func_0200f268(actor, FIELD_ACTOR_FLAG_PENDING_TILE);
-            func_0200f268(actor, 0x13);
+            FieldActor_ClearFlag(actor, FIELD_ACTOR_FLAG_PENDING_TILE);
+            FieldActor_ClearFlag(actor, 0x13);
             break;
         default:
             break;
@@ -759,13 +658,13 @@ CLEAN_AS(func_ov003_0220cbb4, FieldActor_FinishPendingTile)
  * tile pending (func_0200e854, flags 0x16 and 0x13). */
 void FieldActor_FindTileTarget(FieldActor *actor)
 {
-    if (func_0200f290(actor, 11)) {
+    if (FieldActor_TestFlag(actor, 11)) {
         return;
     }
-    if (func_0200f290(actor, FIELD_ACTOR_FLAG_PENDING_TILE)) {
+    if (FieldActor_TestFlag(actor, FIELD_ACTOR_FLAG_PENDING_TILE)) {
         return;
     }
-    if (!func_0200ea0c(actor, actor->state)) {
+    if (!FieldActor_StateGroup(actor, actor->state)) {
         return;
     }
     if (actor->target != -1) {
@@ -774,10 +673,10 @@ void FieldActor_FindTileTarget(FieldActor *actor)
 
     int x = 0;
     int z = 0;
-    func_0204f818(&x, &z, &actor->position);
+    Position_Tile(&x, &z, (const Position *) &actor->position);
 
     int mode;
-    switch (func_0200fbe0(actor)) {
+    switch (FieldActor_HeldTool(actor)) {
         case 1:
             mode = 2;
             break;
@@ -796,16 +695,16 @@ void FieldActor_FindTileTarget(FieldActor *actor)
     }
 
     int tile[2] = {x, z};
-    actor->target = func_020438dc(actor->player, tile, mode);
+    actor->target = TileRequests_AskMarked1566For(actor->player, (const TileRequestTile *) tile, mode);
     if (actor->target == -1) {
         return;
     }
-    if (func_0200ffec(actor) != 0x19) {
+    if (FieldActor_TargetKind(actor) != 0x19) {
         return;
     }
-    func_0200e854(actor);
-    func_0200f27c(actor, FIELD_ACTOR_FLAG_PENDING_TILE);
-    func_0200f27c(actor, 0x13);
+    FieldActor_ClearQueue(actor);
+    FieldActor_SetFlag(actor, FIELD_ACTOR_FLAG_PENDING_TILE);
+    FieldActor_SetFlag(actor, 0x13);
     actor->pending_tile[0] = x;
     actor->pending_tile[1] = z;
 }
@@ -820,13 +719,13 @@ void FieldActor_TrackTile(FieldActor *actor)
     }
     int x = 0;
     int z = 0;
-    func_0204f818(&x, &z, &actor->position);
+    Position_Tile(&x, &z, (const Position *) &actor->position);
     BOOL same = x == actor->tile[0] && z == actor->tile[1];
     actor->tile[0] = x;
     actor->tile[1] = z;
     if (!same) {
         int tile[2] = {x, z};
-        func_020448b8(tile);
+        TileEffects_Brush((const TileEffectsTile *) tile);
     }
 }
 CLEAN_AS(func_ov003_0220cd08, FieldActor_TrackTile)
@@ -840,8 +739,8 @@ void FieldActor_TrackFrontTile(FieldActor *actor)
     int x = 0;
     int z = 0;
 
-    func_0200fa1c(&ahead, actor, &actor->position, &actor->yaw, &data_ov003_02238128);
-    func_0204f818(&x, &z, &ahead);
+    FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_02238128);
+    Position_Tile(&x, &z, (const Position *) &ahead);
     BOOL same = x == actor->front_tile[0] && z == actor->front_tile[1];
     actor->front_tile[0] = x;
     actor->front_tile[1] = z;
@@ -853,7 +752,7 @@ void FieldActor_TrackFrontTile(FieldActor *actor)
         return;
     }
     int tile[2] = {x, z};
-    func_ov003_02224384(actor->player, tile, 1);
+    GrowthModel_RequestHit(actor->player, (const TileChangesTile *) tile, 1);
 }
 CLEAN_AS(func_ov003_0220cd84, FieldActor_TrackFrontTile)
 
@@ -865,16 +764,16 @@ int FieldActor_PointsAhead(FieldActor *actor, Vec3 *ahead, const Vec3 *toward)
     s16 angle;
     Vec3 point;
 
-    if (func_020eaa6c(toward, &actor->position)) {
+    if (Vec_Equal(toward, &actor->position)) {
         angle = actor->yaw;
     } else {
         angle = Math_Atan2(sub32(toward->x, actor->position.x), sub32(toward->z, actor->position.z));
     }
-    func_0200fa1c(&point, actor, &actor->position, &angle, &data_ov003_02238124);
+    FieldActor_PointAhead(&point, actor, &actor->position, (const u16 *) &angle, &data_ov003_02238124);
     *ahead = point;
-    int far_ok = func_02031614(ahead);
-    func_0200fa1c(&point, actor, &actor->position, &angle, &data_ov003_0223810c);
-    return far_ok && func_02031614(&point);
+    int far_ok = CollisionQuery_IsWaterAroundPoint(ahead);
+    FieldActor_PointAhead(&point, actor, &actor->position, (const u16 *) &angle, &data_ov003_0223810c);
+    return far_ok && CollisionQuery_IsWaterAroundPoint(&point);
 }
 CLEAN_AS(func_ov003_0220ced4, FieldActor_PointsAhead)
 
@@ -886,13 +785,13 @@ int FieldActor_ClassifyAt(FieldActor *actor, const Vec3 *at, const u8 *check_oth
     int x;
     int z;
 
-    func_0204f818(&x, &z, at);
+    Position_Tile(&x, &z, (const Position *) at);
     if (*check_other) {
         if (FieldActor_CheckOther(actor)) {
             return 2;
         }
         int tile[2] = {x, z};
-        switch (func_0200fdd0(actor, tile, 2, 3)) {
+        switch (FieldActor_FindMapTarget(actor, tile, 2, 3)) {
             case 0:
                 return 7;
             case 1:
@@ -952,19 +851,19 @@ int FieldActor_ClassifyAhead(FieldActor *actor, const u8 *check_other, const u8 
     if (*check_other != 0 && FieldActor_CheckOther(actor)) {
         return 4;
     }
-    func_0200fa6c(&ahead, actor);
-    func_0204f818(&x, &z, &ahead);
+    FieldActor_PointAheadOfSelf(&ahead, actor);
+    Position_Tile(&x, &z, (const Position *) &ahead);
     if (tile != NULL) {
         tile[0] = x;
         tile[1] = z;
     }
 
-    fx32 height = func_020310d0(&ahead, &surface, 0x19);
+    fx32 height = CollisionQuery_GroundY(&ahead, &surface, 0x19);
     if (surface != 4 && surface != 6) {
         return height >= 0x1000 ? 4 : 1;
     }
     if (surface == 6 && data_021c80bc != NULL) {
-        u16 *object = func_0204f5a8(data_021c80bc, &ahead, 0);
+        u16 *object = AcreTile_ItemAt(data_021c80bc, &ahead, 0);
         if (is_short_line_object(*object)) {
             return 1;
         }
@@ -975,7 +874,7 @@ int FieldActor_ClassifyAhead(FieldActor *actor, const u8 *check_other, const u8 
             return 1;
         }
         int pair[2] = {x, z};
-        switch (func_0200fdd0(actor, pair, 1, *mode)) {
+        switch (FieldActor_FindMapTarget(actor, pair, 1, *mode)) {
             case 0:
                 return 5;
             case 1:
@@ -1014,11 +913,12 @@ int FieldActor_TryTargetMode2(FieldActor *actor, int *tool)
     Vec3 point;
 
     if (actor->aim_mode == 1) {
-        func_0200fa1c(&point, actor, &actor->position, &actor->yaw, data_ov003_02236608);
+        FieldActor_PointAhead(&point, actor, &actor->position, (const u16 *) &actor->yaw, data_ov003_02236608);
     } else {
         point = actor->aim_point;
     }
-    return func_0201005c(actor, &point, 0xd) && func_0200ff28(actor, &point, 2, *tool) && func_0200fd04(actor, &point, 0);
+    return FieldActor_InToolReach(actor, &point, 0xd) && FieldActor_FindTarget(actor, &point, 2, *tool) &&
+           FieldActor_ActOnTarget(actor, &point, 0);
 }
 CLEAN_AS(func_ov003_0220d1a8, FieldActor_TryTargetMode2)
 
@@ -1026,11 +926,11 @@ CLEAN_AS(func_ov003_0220d1a8, FieldActor_TryTargetMode2)
  * (func_0200d1a0) after storing the state's next one; otherwise through func_02010538. */
 int FieldActor_ResumeMoving(FieldActor *actor)
 {
-    if (func_02010718(actor) > 0) {
-        actor->next_state = func_02008258(actor, actor->state);
-        return func_0200d1a0(actor, 0, 1, -1);
+    if (FieldActor_WalkSpeed(actor) > 0) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        return FieldActor_RequestState3(actor, 0, 1, -1);
     }
-    return func_02010538(actor);
+    return FieldActor_TryAct(actor);
 }
 CLEAN_AS(func_ov003_0220d268, FieldActor_ResumeMoving)
 
@@ -1039,11 +939,11 @@ CLEAN_AS(func_ov003_0220d268, FieldActor_ResumeMoving)
 /* func_ov003_0220d2a4: state 0x8f's update. */
 void FieldActor_UpdateLook(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    if (func_0200f554(actor)) {
-        func_0201100c(actor);
+    FieldActor_UpdateBody(actor);
+    if (FieldActor_FollowReported(actor)) {
+        FieldActor_MoveWithCollision(actor);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_TrackLookTarget(actor);
 }
 CLEAN_AS(func_ov003_0220d2a4, FieldActor_UpdateLook)
@@ -1058,13 +958,13 @@ void FieldActor_TrackLookTarget(FieldActor *actor)
         return;
     }
     int player = actor->player;
-    if (func_ov003_0222a938(player)) {
-        Vec3 target = *func_ov003_0222a918(player);
+    if (PlayerFish_IsBusy(player)) {
+        Vec3 target = *PlayerFish_PositionOf(player);
         Vec3 head = actor->position;
         head.y = add32(head.y, 0x1b33);
 
         int yaw = Math_Atan2(sub32(target.x, head.x), sub32(target.z, head.z));
-        int distance = func_020ea990(&target, &head);
+        int distance = Vec_DistanceXZ(&target, &head);
         int pitch = Math_Atan2(sub32(target.y, head.y), distance);
         if (pitch >= 0x1800) {
             pitch = 0x1800;
@@ -1073,18 +973,18 @@ void FieldActor_TrackLookTarget(FieldActor *actor)
         }
         yaw = (s16) (yaw - actor->yaw);
         if ((u16) (yaw + 0x2aaa) >= 0x5554) {
-            func_02095518(0, 0, actor->player);
+            PlayerActorOps_SetLook(0, 0, actor->player);
         } else {
-            func_02011404(&actor->head_pitch, pitch, 0x400, 0x1770000, 0xc0000);
-            func_02011404(&actor->head_yaw, yaw, 0x400, 0x1770000, 0xc0000);
+            FieldActor_TurnAngle(&actor->head_pitch, pitch, 0x400, 0x1770000, 0xc0000);
+            FieldActor_TurnAngle(&actor->head_yaw, yaw, 0x400, 0x1770000, 0xc0000);
         }
     } else {
-        func_02095518(0, 0, actor->player);
-        actor->next_state = func_02008258(actor, actor->state);
+        PlayerActorOps_SetLook(0, 0, actor->player);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         if (actor->work.look.exit_kind != 0) {
-            func_0200c9a8(actor, 3, 5, -1);
+            FieldActor_RequestState5(actor, 3, 5, -1);
         } else {
-            func_0200d4e8(actor, 3, 1, -1);
+            FieldActor_RequestState2(actor, 3, 1, -1);
         }
     }
 }
@@ -1111,7 +1011,7 @@ void FieldActor_EnterLook(FieldActor *actor, const StateRequest *request, int pr
     u8 exit_kind = request->payload[1];
 
     if (exit_kind == 0) {
-        func_020109fc(actor, 0, 3, 3);
+        FieldActor_PlayAnimationLoop(actor, 0, 3, 3);
     }
     actor->work.look.track = track;
     actor->work.look.exit_kind = exit_kind;
@@ -1149,7 +1049,7 @@ CLEAN_AS(func_ov003_0220d498, FieldActor_RequestLook)
 void FieldActor_UpdateState89(FieldActor *actor)
 {
     FieldActor_AnimateState89(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_FaceState89Target(actor);
 }
 CLEAN_AS(func_ov003_0220d4dc, FieldActor_UpdateState89)
@@ -1160,32 +1060,32 @@ CLEAN_AS(func_ov003_0220d4dc, FieldActor_UpdateState89)
  * pitch is reset and the actor leaves for state 5. */
 void FieldActor_FaceState89Target(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
-        func_020109fc(actor, 0, 3, 3);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        FieldActor_PlayAnimationLoop(actor, 0, 3, 3);
         return;
     }
     if (actor->animation != 0) {
         return;
     }
-    if (!func_ov003_0222c364(actor->player)) {
-        func_02095518(0, 0, 4);
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200c9a8(actor, 3, 5, -1);
+    if (!ThrownBottle_IsActive(actor->player)) {
+        PlayerActorOps_SetLook(0, 0, 4);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_RequestState5(actor, 3, 5, -1);
         return;
     }
 
-    Vec3 target = *func_ov003_0222c1f4(actor->player);
+    Vec3 target = *ThrownBottle_PositionOf(actor->player);
     Vec3 here = actor->position;
     int yaw = Math_Atan2(sub32(target.x, here.x), sub32(target.z, here.z));
-    int distance = func_020ea990(&target, &here);
+    int distance = Vec_DistanceXZ(&target, &here);
     int pitch = Math_Atan2(sub32(target.y, here.y), distance);
     if (pitch > 0) {
         pitch = 0;
     }
-    func_02095518(pitch, 0, 4);
+    PlayerActorOps_SetLook(pitch, 0, 4);
     s16 body = actor->yaw;
-    func_020113e0(&body, yaw);
-    func_020110a0(actor, &body);
+    FieldActor_TurnAngleStep(&body, yaw);
+    FieldActor_SetYaw(actor, &body);
 }
 CLEAN_AS(func_ov003_0220d4f8, FieldActor_FaceState89Target)
 
@@ -1194,7 +1094,7 @@ CLEAN_AS(func_ov003_0220d4f8, FieldActor_FaceState89Target)
  * at frame 11 (0x333 a frame); frame 25 clears flag 13 and calls func_ov003_0222c214. */
 void FieldActor_AnimateState89(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (actor->animation != 0x8f) {
         return;
     }
@@ -1202,7 +1102,7 @@ void FieldActor_AnimateState89(FieldActor *actor)
     if (frame < 6 || frame > 25) {
         return;
     }
-    func_0200f27c(actor, 13);
+    FieldActor_SetFlag(actor, 13);
     ((FieldActorSlot23) (uintptr_t) actor->vtable[23])(actor, &actor->unk_824);
     actor->unk_822 = 0x1520;
     fx32 value = frame >= 11 ? 0x1000 : (frame - 6) * 0x333;
@@ -1210,8 +1110,8 @@ void FieldActor_AnimateState89(FieldActor *actor)
     actor->unk_830[1] = value;
     actor->unk_830[2] = value;
     if (frame == 25) {
-        func_0200f268(actor, 13);
-        func_ov003_0222c214(actor->player);
+        FieldActor_ClearFlag(actor, 13);
+        ThrownBottle_Throw(actor->player);
     }
 }
 CLEAN_AS(func_ov003_0220d5d8, FieldActor_AnimateState89)
@@ -1228,8 +1128,8 @@ void FieldActor_EnterState89(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x8f, 0, 0);
-    func_0200f328(actor, 0x4f);
+    FieldActor_PlayAnimationOnce(actor, 0x8f, 0, 0);
+    FieldActor_PlaySound(actor, 0x4f);
 }
 CLEAN_AS(func_ov003_0220d680, FieldActor_EnterState89)
 
@@ -1246,8 +1146,8 @@ CLEAN_AS(func_ov003_0220d69c, FieldActor_RequestState89)
 void FieldActor_UpdateState82(FieldActor *actor)
 {
     FieldActor_AnimateState82(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState82(actor);
 }
 CLEAN_AS(func_ov003_0220d6d4, FieldActor_UpdateState82)
@@ -1256,9 +1156,9 @@ CLEAN_AS(func_ov003_0220d6d4, FieldActor_UpdateState82)
  * this console may leave from frame 0x18 on (FieldActor_ResumeMoving). */
 void FieldActor_EndState82(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200d4e8(actor, 3, 1, -1);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
     if (is_local_player(actor) && anim_frame(actor) >= 0x18) {
         FieldActor_ResumeMoving(actor);
@@ -1271,23 +1171,23 @@ CLEAN_AS(func_ov003_0220d6f4, FieldActor_EndState82)
  * actor holds become nothing. */
 void FieldActor_AnimateState82(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     int frame = anim_frame(actor);
     if (frame >= 14 && frame <= 24) {
         Vec3 at = actor->unk_68C;
-        func_0203f7d0(&at, &at);
+        Globe_Unbend(&at, &at);
         if (actor->work.effect.effect == -1) {
-            actor->work.effect.effect = func_020912d4(0x31, &at, &actor->yaw, 0);
+            actor->work.effect.effect = EffectSystem_StartKind(0x31, &at, &actor->yaw, 0);
         } else {
-            func_02091278(actor->work.effect.effect, &at, &actor->yaw, 0);
+            EffectSystem_MoveHandle(actor->work.effect.effect, &at, &actor->yaw, 0);
         }
     }
-    if (func_02056f28(&actor->anim, 0x18)) {
-        void *record = func_020984fc(actor->player);
+    if (FrameCtrl_Passed(&actor->anim, 0x18)) {
+        void *record = PlayerRecords_OfPlayer(actor->player);
         u16 none = ITEM_NONE;
-        func_0209971c(record, &none);
+        PlayerRecord_SetHeldItem(record, &none);
         u16 held_none = ITEM_NONE;
-        func_0205eb8c(actor->held, &held_none, 0);
+        HeldItem_Take((HeldItemObject *) actor->held, &held_none, 0);
     }
 }
 CLEAN_AS(func_ov003_0220d760, FieldActor_AnimateState82)
@@ -1297,13 +1197,13 @@ CLEAN_AS(func_ov003_0220d760, FieldActor_AnimateState82)
 void FieldActor_FinishState82(FieldActor *actor)
 {
     if (is_local_player(actor)) {
-        u16 *item = func_02099728(func_020984fc(actor->player));
+        u16 *item = PlayerRecord_HeldItem(PlayerRecords_OfPlayer(actor->player));
         if (item != NULL) {
-            func_0200f1a4(actor, 3, *item);
+            FieldActor_SendItem(actor, 3, *item);
         }
     }
     if (actor->work.effect.effect != -1) {
-        func_0209129c(actor->work.effect.effect);
+        EffectSystem_EndHandle(actor->work.effect.effect);
     }
 }
 CLEAN_AS(func_ov003_0220d820, FieldActor_FinishState82)
@@ -1322,9 +1222,9 @@ void FieldActor_EnterState82(FieldActor *actor, const StateRequest *request, int
     (void) request;
     (void) previous;
     actor->work.effect.effect = -1;
-    func_020109a0(actor, 125, 3, 0);
-    func_0205eae0(actor->held, 42, 0, 0);
-    func_0200f328(actor, 0x85d);
+    FieldActor_PlayAnimationOnce(actor, 125, 3, 0);
+    HeldItem_Act(actor->held, 42, 0, 0);
+    FieldActor_PlaySound(actor, 0x85d);
 }
 CLEAN_AS(func_ov003_0220d880, FieldActor_EnterState82)
 
@@ -1341,8 +1241,8 @@ CLEAN_AS(func_ov003_0220d8bc, FieldActor_RequestState82)
 void FieldActor_UpdateState81(FieldActor *actor)
 {
     FieldActor_AnimateState81(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState81(actor);
 }
 CLEAN_AS(func_ov003_0220d8f4, FieldActor_UpdateState81)
@@ -1352,7 +1252,7 @@ CLEAN_AS(func_ov003_0220d8f4, FieldActor_UpdateState81)
  * nothing and the actor leaves for state 2. */
 void FieldActor_EndState81(FieldActor *actor)
 {
-    if (!func_02056f94((const FrameCtrl *) (func_0205e8e4(actor->held) + 0x9c))) {
+    if (!FrameCtrl_IsDone((const FrameCtrl *) (HeldItem_Model(actor->held) + 0x9c))) {
         return;
     }
     u8 *count = &actor->work.effect.count;
@@ -1369,13 +1269,13 @@ void FieldActor_EndState81(FieldActor *actor)
     if (*count2 != 0) {
         return;
     }
-    void *record = func_020984fc(actor->player);
+    void *record = PlayerRecords_OfPlayer(actor->player);
     u16 none = ITEM_NONE;
-    func_0209971c(record, &none);
+    PlayerRecord_SetHeldItem(record, &none);
     u16 held_none = ITEM_NONE;
-    func_0205eb8c(actor->held, &held_none, 0);
-    actor->next_state = func_02008258(actor, actor->state);
-    func_0200d4e8(actor, 9, 1, -1);
+    HeldItem_Take((HeldItemObject *) actor->held, &held_none, 0);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    FieldActor_RequestState2(actor, 9, 1, -1);
 }
 CLEAN_AS(func_ov003_0220d914, FieldActor_EndState81)
 
@@ -1386,12 +1286,12 @@ CLEAN_AS(func_ov003_0220d914, FieldActor_EndState81)
  * wraps to 0 and the wait starts again. */
 void FieldActor_AnimateState81(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     Vec3 at = actor->unk_62C;
-    func_0203f7d0(&at, &at);
+    Globe_Unbend(&at, &at);
 
     if (actor->work.effect.effect != -1) {
-        func_02091278(actor->work.effect.effect, &at, &actor->yaw, 0);
+        EffectSystem_MoveHandle(actor->work.effect.effect, &at, &actor->yaw, 0);
         return;
     }
     u8 *count = &actor->work.effect.count;
@@ -1401,15 +1301,15 @@ void FieldActor_AnimateState81(FieldActor *actor)
     }
     u16 item;
     if (*count == 10) {
-        func_020110c4(&item, actor);
-        func_0200f328(actor, item == 0x137f ? 0x85a : 0x859);
+        FieldActor_RecordHeldItem(&item, actor);
+        FieldActor_PlaySound(actor, item == 0x137f ? 0x85a : 0x859);
         Vec3 ahead;
-        func_0200fa6c(&ahead, actor);
+        FieldActor_PointAheadOfSelf(&ahead, actor);
         data_ov003_02260540 = 1;
         data_ov003_02260558 = ahead;
     }
-    func_020110c4(&item, actor);
-    actor->work.effect.effect = func_020912d4(item == 0x137f ? 0x35 : 0x36, &at, &actor->yaw, 0);
+    FieldActor_RecordHeldItem(&item, actor);
+    actor->work.effect.effect = EffectSystem_StartKind(item == 0x137f ? 0x35 : 0x36, &at, &actor->yaw, 0);
 }
 CLEAN_AS(func_ov003_0220d9b8, FieldActor_AnimateState81)
 
@@ -1419,18 +1319,18 @@ CLEAN_AS(func_ov003_0220d9b8, FieldActor_AnimateState81)
 void FieldActor_FinishState81(FieldActor *actor)
 {
     if (is_local_player(actor)) {
-        u16 *item = func_02099728(func_020984fc(actor->player));
+        u16 *item = PlayerRecord_HeldItem(PlayerRecords_OfPlayer(actor->player));
         if (item != NULL) {
-            func_0200f1a4(actor, 3, *item);
+            FieldActor_SendItem(actor, 3, *item);
         }
-        func_0203b144();
-        func_02036448(data_021c526c + 0x1c4);
+        CameraControl_ResetMode();
+        MusicVolume_EndSlot4((MusicVolume *) (data_021c526c + 0x1c4));
     }
     if (actor->work.effect.effect != -1) {
-        func_0209129c(actor->work.effect.effect);
+        EffectSystem_EndHandle(actor->work.effect.effect);
     }
     Vec3 ahead;
-    func_0200fa6c(&ahead, actor);
+    FieldActor_PointAheadOfSelf(&ahead, actor);
     data_ov003_02260540 = 0;
     data_ov003_02260558 = ahead;
 }
@@ -1453,11 +1353,11 @@ void FieldActor_EnterState81(FieldActor *actor, const StateRequest *request, int
     actor->work.effect.effect = -1;
     actor->work.effect.count = 0;
     actor->work.effect.count2 = 20;
-    func_020109fc(actor, 0x7c, 9, 0);
-    func_0205eae0(actor->held, 0x28, 0, 1);
+    FieldActor_PlayAnimationLoop(actor, 0x7c, 9, 0);
+    HeldItem_Act(actor->held, 0x28, 0, 1);
     if (is_local_player(actor)) {
-        func_0203ae98();
-        func_02036450(data_021c526c + 0x1c4);
+        CameraControl_SetMode4();
+        MusicVolume_BeginSlot4((MusicVolume *) (data_021c526c + 0x1c4));
     }
 }
 CLEAN_AS(func_ov003_0220db4c, FieldActor_EnterState81)
@@ -1475,8 +1375,8 @@ CLEAN_AS(func_ov003_0220dbb4, FieldActor_RequestState81)
 void FieldActor_UpdateState80(FieldActor *actor)
 {
     FieldActor_AnimateState80(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState80(actor);
 }
 CLEAN_AS(func_ov003_0220dbec, FieldActor_UpdateState80)
@@ -1486,22 +1386,22 @@ CLEAN_AS(func_ov003_0220dbec, FieldActor_UpdateState80)
  * the slot goes to func_0209a050 and FieldActor_RequestState3D starts the next action. */
 void FieldActor_EndState80(FieldActor *actor)
 {
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
     u16 item = 0x137d;
-    actor->next_state = func_02008258(actor, actor->state);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     if (is_local_player(actor)) {
-        int slot = func_02099e9c(&item);
+        int slot = CurrentPockets_FindItem(&item);
         if (slot != -1) {
-            func_0200f268(actor, 0);
-            func_02095694(0x15, actor->player);
-            func_0209a050(slot);
+            FieldActor_ClearFlag(actor, 0);
+            PlayerActorOps_SetHeldModel(0x15, actor->player);
+            CurrentPockets_Empty(slot);
             FieldActor_RequestState3D(actor, 2, 2, 0, 0, 0, 6, -1);
             return;
         }
     }
-    func_0200d4e8(actor, 3, 1, -1);
+    FieldActor_RequestState2(actor, 3, 1, -1);
 }
 CLEAN_AS(func_ov003_0220dc0c, FieldActor_EndState80)
 
@@ -1510,20 +1410,20 @@ CLEAN_AS(func_ov003_0220dc0c, FieldActor_EndState80)
  * func_0203f7d0) and flag 9 is set. */
 void FieldActor_AnimateState80(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    if (!func_02056f28(&actor->anim, 13)) {
+    FieldActor_UpdateBody(actor);
+    if (!FrameCtrl_Passed(&actor->anim, 13)) {
         return;
     }
-    void *record = func_020984fc(actor->player);
+    void *record = PlayerRecords_OfPlayer(actor->player);
     u16 none = ITEM_NONE;
-    func_0209971c(record, &none);
+    PlayerRecord_SetHeldItem(record, &none);
     u16 held_none = ITEM_NONE;
-    func_0205eb8c(actor->held, &held_none, 0);
-    func_0200f328(actor, 0x850);
+    HeldItem_Take((HeldItemObject *) actor->held, &held_none, 0);
+    FieldActor_PlaySound(actor, 0x850);
     Vec3 at = actor->unk_68C;
-    func_0203f7d0(&at, &at);
-    func_020912d4(0x24, &at, &actor->yaw, 0);
-    func_0200f27c(actor, 9);
+    Globe_Unbend(&at, &at);
+    EffectSystem_StartKind(0x24, &at, &actor->yaw, 0);
+    FieldActor_SetFlag(actor, 9);
 }
 CLEAN_AS(func_ov003_0220dcb0, FieldActor_AnimateState80)
 
@@ -1531,9 +1431,9 @@ CLEAN_AS(func_ov003_0220dcb0, FieldActor_AnimateState80)
 void FieldActor_FinishState80(FieldActor *actor)
 {
     if (is_local_player(actor)) {
-        u16 *item = func_02099728(func_020984fc(actor->player));
+        u16 *item = PlayerRecord_HeldItem(PlayerRecords_OfPlayer(actor->player));
         if (item != NULL) {
-            func_0200f1a4(actor, 3, *item);
+            FieldActor_SendItem(actor, 3, *item);
         }
     }
 }
@@ -1551,7 +1451,7 @@ void FieldActor_EnterState80(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x7b, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x7b, 3, 0);
 }
 CLEAN_AS(func_ov003_0220dd9c, FieldActor_EnterState80)
 
@@ -1567,8 +1467,8 @@ CLEAN_AS(func_ov003_0220ddb0, FieldActor_RequestState80)
 /* func_ov003_0220dde8: state 0x78's update. */
 void FieldActor_UpdateState78(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState78(actor);
 }
 CLEAN_AS(func_ov003_0220dde8, FieldActor_UpdateState78)
@@ -1588,51 +1488,51 @@ void FieldActor_RunState78(FieldActor *actor)
 {
     switch (actor->animation) {
         case 0x71:
-            if (func_02056f94(&actor->anim)) {
-                func_020109a0(actor, 0x72, 0, 0);
+            if (FrameCtrl_IsDone(&actor->anim)) {
+                FieldActor_PlayAnimationOnce(actor, 0x72, 0, 0);
             }
             break;
         case 0x72:
-            func_0200faa8(actor, 0x3ae);
-            if (func_02056f94(&actor->anim)) {
-                func_020109a0(actor, 0x73, 0, 0);
+            FieldActor_TurnToHalfTurn(actor, 0x3ae);
+            if (FrameCtrl_IsDone(&actor->anim)) {
+                FieldActor_PlayAnimationOnce(actor, 0x73, 0, 0);
             }
             break;
         case 0x73:
-            if (func_02056f94(&actor->anim)) {
-                func_0200f328(actor, 0x817);
-                func_020109a0(actor, 0x74, 0, 0);
-                void *record = func_020984e8();
+            if (FrameCtrl_IsDone(&actor->anim)) {
+                FieldActor_PlaySound(actor, 0x817);
+                FieldActor_PlayAnimationOnce(actor, 0x74, 0, 0);
+                void *record = PlayerRecords_Current();
                 if (record != NULL) {
-                    func_02099740(record, 1);
-                    func_0205dc94(actor->unk_70D, (int) (func_0209984c(record) + 0x10));
-                    if (func_02099020(record, 0x17)) {
-                        func_02098ff8(record, 0x19);
+                    PlayerRecord_SetFlag0(record, 1);
+                    FaceTexture_Load(actor->unk_70D, (int) (PlayerRecord_Face(record) + 0x10));
+                    if (PlayerRecord_TestFlag(record, 0x17)) {
+                        PlayerRecord_SetFlag(record, 0x19);
                     }
                 }
             }
             break;
         case 0x74:
-            if (func_02056f94(&actor->anim)) {
-                func_020109a0(actor, 0x75, 0, 0);
+            if (FrameCtrl_IsDone(&actor->anim)) {
+                FieldActor_PlayAnimationOnce(actor, 0x75, 0, 0);
             }
             break;
         case 0x75: {
             s16 yaw_before = actor->yaw;
-            func_0200faf0(actor, 0x59a);
+            FieldActor_TurnToZero(actor, 0x59a);
             if (yaw_before != 0 && actor->yaw == 0) {
-                func_02035624(0x19);
-                func_020356c4(0xd, 0x40, 0x7f, 1);
+                Music_DropPriority(0x19);
+                Music_Add(0xd, 0x40, 0x7f, 1);
             }
             switch (actor->work.step) {
                 case 0:
                     actor->work.step = 1;
-                    func_0203ee14(actor, actor->receiver);
-                    func_0200f27c(actor, 0x11);
-                    func_020a8164(actor->receiver, data_ov003_02238134);
+                    SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+                    FieldActor_SetFlag(actor, 0x11);
+                    MessageReceiver_SetName((MessageReceiver *) actor->receiver, data_ov003_02238134);
                     actor->receiver_unk_1E = 20;
                     actor->link->requested = 1;
-                    func_0203ae98();
+                    CameraControl_SetMode4();
                     /* fall through */
                 case 1:
                     if (actor->link != NULL && actor->link->open != 0) {
@@ -1641,15 +1541,15 @@ void FieldActor_RunState78(FieldActor *actor)
                     break;
                 case 2:
                     if (actor->link != NULL && actor->link->open == 0) {
-                        func_0203ee08(actor, actor->receiver);
-                        func_0200f268(actor, 0x11);
-                        func_0203e19c();
-                        actor->next_state = func_02008258(actor, actor->state);
-                        func_0200d4e8(actor, 3, 1, -1);
-                        func_0200f268(actor, 7);
-                        func_0203b144();
-                        func_02035638(0x40);
-                        func_02035684(0xc, 0xf, 5);
+                        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+                        FieldActor_ClearFlag(actor, 0x11);
+                        EventQueue_FinishKind9();
+                        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+                        FieldActor_RequestState2(actor, 3, 1, -1);
+                        FieldActor_ClearFlag(actor, 7);
+                        CameraControl_ResetMode();
+                        Music_DropMusic(0x40);
+                        Music_AddValue(0xc, 0xf, 5);
                     }
                     break;
                 default:
@@ -1677,14 +1577,14 @@ void FieldActor_EnterState78(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x71, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x71, 3, 0);
     actor->work.step = 0;
-    if (func_0200fbe0(actor) == 3) {
-        func_0205eae0(actor->held, 0x13, 3, 0);
+    if (FieldActor_HeldTool(actor) == 3) {
+        HeldItem_Act(actor->held, 0x13, 3, 0);
     }
-    func_0200f268(actor, 0x1a);
-    func_02035638(0x3f);
-    func_02035684(0x19, 0xf, 0);
+    FieldActor_ClearFlag(actor, 0x1a);
+    Music_DropMusic(0x3f);
+    Music_AddValue(0x19, 0xf, 0);
 }
 CLEAN_AS(func_ov003_0220e008, FieldActor_EnterState78)
 
@@ -1697,13 +1597,13 @@ int FieldActor_RequestState78(FieldActor *actor, int priority, int arg)
 #ifdef BUGFIX
     request = (StateRequest){0};
 #endif
-    func_0200e92c(&request);
-    func_0200e90c(&request, 0x78, priority, arg);
-    int queued = func_0200e894(actor, &request) != 0;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, 0x78, priority, arg);
+    int queued = FieldActor_QueueRequest(actor, &request) != 0;
     if (queued) {
-        func_0200f27c(actor, 7);
+        FieldActor_SetFlag(actor, 7);
     }
-    func_0200e91c(&request);
+    StateRequest_Destruct(&request);
     return queued;
 }
 CLEAN_AS(func_ov003_0220e05c, FieldActor_RequestState78)
@@ -1713,8 +1613,8 @@ CLEAN_AS(func_ov003_0220e05c, FieldActor_RequestState78)
 /* func_ov003_0220e0a8: state 0x75's update. */
 void FieldActor_UpdateState75(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState75(actor);
 }
 CLEAN_AS(func_ov003_0220e0a8, FieldActor_UpdateState75)
@@ -1723,11 +1623,11 @@ CLEAN_AS(func_ov003_0220e0a8, FieldActor_UpdateState75)
  * holding tool 4). */
 void FieldActor_EndState75(FieldActor *actor)
 {
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
-    actor->next_state = func_02008258(actor, actor->state);
-    func_0200d4e8(actor, func_0200fbe0(actor) == 4 ? 9 : 3, 1, -1);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    FieldActor_RequestState2(actor, FieldActor_HeldTool(actor) == 4 ? 9 : 3, 1, -1);
 }
 CLEAN_AS(func_ov003_0220e0c4, FieldActor_EndState75)
 
@@ -1745,25 +1645,25 @@ void FieldActor_EnterState75(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    int tool = func_0200fbe0(actor);
+    int tool = FieldActor_HeldTool(actor);
     if (tool == 10 || tool == 3 || tool == 4) {
-        func_020109a0(actor, 0x94, 3, 0);
-        if (func_0200fbe0(actor) == 4) {
-            func_0205eae0(actor->held, 0x12, 3, 1);
+        FieldActor_PlayAnimationOnce(actor, 0x94, 3, 0);
+        if (FieldActor_HeldTool(actor) == 4) {
+            HeldItem_Act(actor->held, 0x12, 3, 1);
         }
     } else {
-        func_020109a0(actor, 0x93, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x93, 3, 0);
     }
 
     Vec3 at = actor->position;
     GroundInfo ground;
-    func_02034270(&ground, &at, 0, 0);
-    func_02091254(ground.kind == 0x13 ? 0x91 : 0x90, &at, 0, 0);
-    func_0200f27c(actor, 9);
+    CollisionGround_Init((CollisionGround *) &ground, &at, 0, 0);
+    EffectSystem_StartOneShotSetNumberCopy(ground.kind == 0x13 ? 0x91 : 0x90, &at, 0, 0);
+    FieldActor_SetFlag(actor, 9);
     Vec3 position = actor->position;
-    func_ov003_02220b44(actor->player, &position);
-    func_0200f328(actor, 0x7e9);
-    func_0203423c(&ground);
+    TileEvent_StartKindE(actor->player, &position);
+    FieldActor_PlaySound(actor, 0x7e9);
+    CollisionGround_Destroy((CollisionGround *) &ground);
 }
 CLEAN_AS(func_ov003_0220e128, FieldActor_EnterState75)
 
@@ -1780,9 +1680,9 @@ CLEAN_AS(func_ov003_0220e1f0, FieldActor_RequestState75)
 static void follow_effect(FieldActor *actor, int *effect, int kind)
 {
     if (*effect == -1) {
-        *effect = func_020912d4(kind, &actor->effect_point, NULL, 0);
+        *effect = EffectSystem_StartKind(kind, &actor->effect_point, NULL, 0);
     } else {
-        func_02091278(*effect, &actor->effect_point, NULL, 0);
+        EffectSystem_MoveHandle(*effect, &actor->effect_point, NULL, 0);
     }
 }
 
@@ -1804,7 +1704,7 @@ static int whole(fx32 value)
 void FieldActor_UpdateState74(FieldActor *actor)
 {
     FieldActor_AnimateState74(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState74(actor);
 }
 CLEAN_AS(func_ov003_0220e228, FieldActor_UpdateState74)
@@ -1824,15 +1724,15 @@ void FieldActor_RunState74(FieldActor *actor)
 
     Vec3 before;
     velocity(&before, work->move_speed, work->move_angle);
-    fx32 speed = (fx32) func_0200dc8c(actor);
-    u16 angle = (u16) func_0200dc80(actor);
+    fx32 speed = (fx32) FieldActor_Push(actor);
+    u16 angle = (u16) FieldActor_PushAngle(actor);
     Vec3 now;
     velocity(&now, speed, angle);
     work->move_speed = speed;
     work->move_angle = angle;
 
     Vec3 change;
-    func_020eaca0(&change, &before, &now);
+    Vec_Subtract(&change, &before, &now);
     fx32 push = 0;
     if (VEC_Mag(&change) >= 0x59a) {
         push = FX_Div(FX_MulFunc(VEC_Mag(&change), 0x6400), 0x59a);
@@ -1857,11 +1757,11 @@ void FieldActor_RunState74(FieldActor *actor)
     }
     /* The ROM tests the push for 0 here again; it cannot be by now. */
     if (speed != 0 || bonus != 0) {
-        func_0200f328(actor, 0x7ef);
+        FieldActor_PlaySound(actor, 0x7ef);
     }
     work->min_anim_speed = add32(FX_Div(FX_MulFunc(FX_MulFunc(0x1c00, work->progress), 0xa66), 0x190000), 0x800);
 
-    if (func_0200f290(actor, 11) || work->progress >= 0x190000) {
+    if (FieldActor_TestFlag(actor, 11) || work->progress >= 0x190000) {
         FieldActor_RequestState75(actor, 6, -1);
     }
 }
@@ -1881,12 +1781,12 @@ void FieldActor_AnimateState74(FieldActor *actor)
         work->anim_speed = work->min_anim_speed;
     }
     actor->anim.speed = work->anim_speed;
-    if (func_0200fbe0(actor) == 4) {
-        func_0205eac4(actor->held, work->anim_speed);
+    if (FieldActor_HeldTool(actor) == 4) {
+        HeldItem_SetAnimSpeed(actor->held, work->anim_speed);
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     follow_effect(actor, &work->effect, 0x4c);
-    func_0200f2a0(actor, 0x8a, &actor->position);
+    FieldActor_PlaySoundAt(actor, 0x8a, &actor->position);
 }
 CLEAN_AS(func_ov003_0220e424, FieldActor_AnimateState74)
 
@@ -1895,13 +1795,13 @@ CLEAN_AS(func_ov003_0220e424, FieldActor_AnimateState74)
 void FieldActor_ExitState74(FieldActor *actor, int next)
 {
     if (actor->work.s74.effect != -1) {
-        func_0209129c(actor->work.s74.effect);
+        EffectSystem_EndHandle(actor->work.s74.effect);
     }
     if (next == 0x75) {
         return;
     }
     Vec3 position = actor->position;
-    func_ov003_02220b44(actor->player, &position);
+    TileEvent_StartKindE(actor->player, &position);
 }
 CLEAN_AS(func_ov003_0220e4d0, FieldActor_ExitState74)
 
@@ -1932,19 +1832,19 @@ void FieldActor_EnterState74(FieldActor *actor, const StateRequest *request, int
     int effect;
     memcpy(&effect, request->payload, sizeof(effect));
 
-    func_020109fc(actor, 0x92, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x92, 3, 0);
     actor->anim.speed = 0x800;
     work->anim_speed = 0x800;
     work->min_anim_speed = 0x800;
     work->effort = 0;
     work->progress = 0;
-    work->move_speed = (fx32) func_0200dc8c(actor);
-    work->move_angle = (u16) func_0200dc80(actor);
+    work->move_speed = (fx32) FieldActor_Push(actor);
+    work->move_angle = (u16) FieldActor_PushAngle(actor);
     work->effect = effect;
-    func_0200f268(actor, 9);
-    if (func_0200fbe0(actor) == 4) {
-        func_0205eae0(actor->held, 0x11, 3, 0);
-        func_0205eac4(actor->held, 0x800);
+    FieldActor_ClearFlag(actor, 9);
+    if (FieldActor_HeldTool(actor) == 4) {
+        HeldItem_Act(actor->held, 0x11, 3, 0);
+        HeldItem_SetAnimSpeed(actor->held, 0x800);
     }
 }
 CLEAN_AS(func_ov003_0220e548, FieldActor_EnterState74)
@@ -1979,35 +1879,35 @@ void FieldActor_RunState73(FieldActor *actor)
     if (actor->animation == 0x90) {
         fx32 x = actor->work.s73.x;
         fx32 z = actor->work.s73.z;
-        func_0200fbc4(actor, x, z, actor->yaw);
+        FieldActor_MoveToPose(actor, x, z, actor->yaw);
         if (actor->position.x != x || actor->position.z != z) {
             return;
         }
         actor->anim.flags = FRAME_CTRL_ONCE;
     }
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
     if (actor->animation == 0x91) {
         FieldActor_RequestState74(actor, actor->work.s73.effect, 6, -1);
-        func_0200f27c(actor, 9);
+        FieldActor_SetFlag(actor, 9);
         return;
     }
 
-    func_020109a0(actor, 0x91, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x91, 3, 0);
     Vec3 at = actor->position;
     GroundInfo ground;
-    func_02034270(&ground, &at, 0, 0);
-    func_02091254(ground.kind == 0x13 ? 0x8f : 0x8e, &at, 0, 0);
-    func_0200f328(actor, 0x7e8);
-    func_0200f27c(actor, 9);
+    CollisionGround_Init((CollisionGround *) &ground, &at, 0, 0);
+    EffectSystem_StartOneShotSetNumberCopy(ground.kind == 0x13 ? 0x8f : 0x8e, &at, 0, 0);
+    FieldActor_PlaySound(actor, 0x7e8);
+    FieldActor_SetFlag(actor, 9);
     Vec3 copy = at;
-    func_ov003_02221228(actor->player, &copy);
-    func_0200f268(actor, 0x12);
-    if (func_0200fbe0(actor) == 4) {
-        func_0205eae0(actor->held, 0x10, 3, 1);
+    TileEvent_StartUnitKind2(actor->player, &copy);
+    FieldActor_ClearFlag(actor, 0x12);
+    if (FieldActor_HeldTool(actor) == 4) {
+        HeldItem_Act(actor->held, 0x10, 3, 1);
     }
-    func_0203423c(&ground);
+    CollisionGround_Destroy((CollisionGround *) &ground);
 }
 CLEAN_AS(func_ov003_0220e614, FieldActor_RunState73)
 
@@ -2015,9 +1915,9 @@ CLEAN_AS(func_ov003_0220e614, FieldActor_RunState73)
  * position. */
 void FieldActor_AnimateState73(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     follow_effect(actor, &actor->work.s73.effect, 0x4c);
-    func_0200f2a0(actor, 0x8a, &actor->position);
+    FieldActor_PlaySoundAt(actor, 0x8a, &actor->position);
 }
 CLEAN_AS(func_ov003_0220e738, FieldActor_AnimateState73)
 
@@ -2031,19 +1931,19 @@ void FieldActor_ExitState73(FieldActor *actor, int next)
     actor->position.z = actor->work.s73.z;
     BOOL continues = next == 0x74 || next == 0x75;
 
-    if (func_0200f290(actor, 0x12)) {
+    if (FieldActor_TestFlag(actor, 0x12)) {
         if (continues) {
             Vec3 position = actor->position;
-            func_ov003_02221228(actor->player, &position);
+            TileEvent_StartUnitKind2(actor->player, &position);
         }
-        func_0200f268(actor, 0x12);
+        FieldActor_ClearFlag(actor, 0x12);
     }
     if (!continues) {
         Vec3 position = actor->position;
-        func_ov003_02220b44(actor->player, &position);
+        TileEvent_StartKindE(actor->player, &position);
     }
     if (next != 0x74 && actor->work.s73.effect != -1) {
-        func_0209129c(actor->work.s73.effect);
+        EffectSystem_EndHandle(actor->work.s73.effect);
     }
 }
 CLEAN_AS(func_ov003_0220e788, FieldActor_ExitState73)
@@ -2071,16 +1971,16 @@ void FieldActor_EnterState73(FieldActor *actor, const StateRequest *request, int
     u8 z = request->payload[1];
     Vec3 point;
 
-    func_0204f794(&point, x, z);
+    AcreTile_TileCentre(&point, x, z);
     actor->work.s73.x = point.x;
     actor->work.s73.z = point.z;
     actor->work.s73.effect = -1;
-    func_020109fc(actor, 0x90, 3, 0);
-    if (func_0200fbe0(actor) == 4) {
-        func_0205eae0(actor->held, 0xf, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x90, 3, 0);
+    if (FieldActor_HeldTool(actor) == 4) {
+        HeldItem_Act(actor->held, 0xf, 3, 0);
     }
     TileArgs_Set(&actor->saved.tile, x, z);
-    func_0200f328(actor, 0x7ee);
+    FieldActor_PlaySound(actor, 0x7ee);
 }
 CLEAN_AS(func_ov003_0220e860, FieldActor_EnterState73)
 
@@ -2114,9 +2014,9 @@ CLEAN_AS(func_ov003_0220e8f4, FieldActor_RequestState73)
 /* func_ov003_0220e938: state 0x72's update. */
 void FieldActor_UpdateState72(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_SlowDown(actor);
     FieldActor_EndState72(actor);
 }
@@ -2127,10 +2027,10 @@ CLEAN_AS(func_ov003_0220e938, FieldActor_UpdateState72)
  * (FieldActor_ResumeMoving). */
 void FieldActor_EndState72(FieldActor *actor)
 {
-    func_0200faf0(actor, 0x59a);
-    if (func_02056f94(&actor->anim)) {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200d4e8(actor, 3, 1, -1);
+    FieldActor_TurnToZero(actor, 0x59a);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
     if (is_local_player(actor) && anim_frame(actor) >= 0x1a) {
         FieldActor_ResumeMoving(actor);
@@ -2143,8 +2043,8 @@ CLEAN_AS(func_ov003_0220e960, FieldActor_EndState72)
 void FieldActor_SlowDown(FieldActor *actor)
 {
     if (actor->unk_098 != 0) {
-        int value = func_020113a4(actor->unk_098, 0, 0x171);
-        func_0201107c(actor, &value);
+        int value = FieldActor_StepDown(actor->unk_098, 0, 0x171);
+        FieldActor_SetSpeed(actor, &value);
     }
 }
 CLEAN_AS(func_ov003_0220e9d8, FieldActor_SlowDown)
@@ -2162,9 +2062,9 @@ void FieldActor_EnterState72(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x9c, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x9c, 3, 0);
     if (is_local_player(actor)) {
-        func_020ba2ec();
+        Block020ba298_SetPlayerFlag32();
     }
 }
 CLEAN_AS(func_ov003_0220ea10, FieldActor_EnterState72)
@@ -2183,8 +2083,8 @@ void FieldActor_UpdateState71(FieldActor *actor)
 {
     FieldActor_RunState71(actor);
     FieldActor_AnimateState71(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState71(actor);
 }
 CLEAN_AS(func_ov003_0220ea78, FieldActor_UpdateState71)
@@ -2198,29 +2098,29 @@ void FieldActor_RunState71(FieldActor *actor)
     if (actor->work.s71.done) {
         return;
     }
-    int value = func_020113a4(actor->unk_098, 0, 0x7b);
-    func_0201107c(actor, &value);
+    int value = FieldActor_StepDown(actor->unk_098, 0, 0x7b);
+    FieldActor_SetSpeed(actor, &value);
     if (actor->unk_098 != 0) {
         return;
     }
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
 
     switch (actor->work.s71.tool) {
         case 4:
-            func_0205eae0(actor->held, 8, 3, 0);
-            func_020109a0(actor, 0x8e, 3, 0);
+            HeldItem_Act(actor->held, 8, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x8e, 3, 0);
             break;
         case 3:
-            func_0205eae0(actor->held, 0x1e, 3, 0);
-            func_020109a0(actor, 0x8e, 3, 0);
+            HeldItem_Act(actor->held, 0x1e, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x8e, 3, 0);
             break;
         case 10:
-            func_020109a0(actor, 0x8e, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x8e, 3, 0);
             break;
         default:
-            func_020109a0(actor, 0x8c, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x8c, 3, 0);
             break;
     }
     actor->work.s71.done = 1;
@@ -2228,9 +2128,9 @@ void FieldActor_RunState71(FieldActor *actor)
     if (!is_local_player(actor)) {
         return;
     }
-    void *record = func_020984e8();
-    if (record != NULL && func_02099020(record, 0x17)) {
-        func_02098ff8(record, 0x1a);
+    void *record = PlayerRecords_Current();
+    if (record != NULL && PlayerRecord_TestFlag(record, 0x17)) {
+        PlayerRecord_SetFlag(record, 0x1a);
     }
 }
 CLEAN_AS(func_ov003_0220eaa0, FieldActor_RunState71)
@@ -2239,9 +2139,9 @@ CLEAN_AS(func_ov003_0220eaa0, FieldActor_RunState71)
  * to 60. */
 void FieldActor_EndState71(FieldActor *actor)
 {
-    if (actor->work.s71.done == 1 && func_02056f94(&actor->anim)) {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200d4e8(actor, 3, 1, -1);
+    if (actor->work.s71.done == 1 && FrameCtrl_IsDone(&actor->anim)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_RequestState2(actor, 3, 1, -1);
         actor->unk_8E8 = 60;
     }
 }
@@ -2253,39 +2153,39 @@ CLEAN_AS(func_ov003_0220eb8c, FieldActor_EndState71)
  * 0x37 at points ahead of the actor (0x02238110, 0x02238118), facing its way. */
 void FieldActor_AnimateState71(FieldActor *actor)
 {
-    func_02054860(actor->unk_234);
+    LayeredModel_UpdateA((LayeredModel *) actor->unk_234);
     s16 yaw = actor->yaw;
     if (actor->work.s71.done) {
         return;
     }
 
-    if (func_02056f28(&actor->anim, 10)) {
+    if (FrameCtrl_Passed(&actor->anim, 10)) {
         u16 item;
-        func_020110c4(&item, actor);
+        FieldActor_RecordHeldItem(&item, actor);
         if (item == 0x137c) {
             Vec3 at;
             if (actor->unk_68C.x == 0 && actor->unk_68C.y == 0 && actor->unk_68C.z == 0) {
                 at = actor->position;
             } else {
                 at = actor->unk_68C;
-                func_0203f7d0(&at, &at);
+                Globe_Unbend(&at, &at);
             }
-            func_020912d4(0x32, &at, NULL, 0);
-            func_02095694(0, actor->player);
+            EffectSystem_StartKind(0x32, &at, NULL, 0);
+            PlayerActorOps_SetHeldModel(0, actor->player);
         }
     }
 
-    if (func_02056f28(&actor->anim, 7)) {
+    if (FrameCtrl_Passed(&actor->anim, 7)) {
         Vec3 ahead;
-        func_0200fa1c(&ahead, actor, &actor->position, &yaw, data_ov003_02238110);
+        FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &yaw, data_ov003_02238110);
         Vec3 at = ahead;
-        func_020912d4(0x39, &at, &yaw, 0);
+        EffectSystem_StartKind(0x39, &at, &yaw, 0);
     }
-    if (func_02056f28(&actor->anim, 9)) {
+    if (FrameCtrl_Passed(&actor->anim, 9)) {
         Vec3 ahead;
-        func_0200fa1c(&ahead, actor, &actor->position, &yaw, data_ov003_02238118);
+        FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &yaw, data_ov003_02238118);
         Vec3 at = ahead;
-        func_020912d4(0x37, &at, &yaw, 0);
+        EffectSystem_StartKind(0x37, &at, &yaw, 0);
     }
 }
 CLEAN_AS(func_ov003_0220ebe0, FieldActor_AnimateState71)
@@ -2304,28 +2204,28 @@ void FieldActor_EnterState71(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    int tool = func_0200fbe0(actor);
+    int tool = FieldActor_HeldTool(actor);
     actor->work.s71.tool = tool;
 
     switch (tool) {
         case 4:
-            func_0205eae0(actor->held, 7, 2, 1);
-            func_020109a0(actor, 0x8d, 2, 0);
+            HeldItem_Act(actor->held, 7, 2, 1);
+            FieldActor_PlayAnimationOnce(actor, 0x8d, 2, 0);
             break;
         case 3:
-            func_0205eae0(actor->held, 0x1d, 2, 1);
-            func_020109a0(actor, 0x8d, 2, 0);
+            HeldItem_Act(actor->held, 0x1d, 2, 1);
+            FieldActor_PlayAnimationOnce(actor, 0x8d, 2, 0);
             break;
         case 10:
-            func_020109a0(actor, 0x8d, 2, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x8d, 2, 0);
             break;
         default:
-            func_020109a0(actor, 0x8b, 2, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x8b, 2, 0);
             break;
     }
     actor->work.s71.done = 0;
-    func_0200f27c(actor, 9);
-    func_0200f328(actor, 0x7db);
+    FieldActor_SetFlag(actor, 9);
+    FieldActor_PlaySound(actor, 0x7db);
 }
 CLEAN_AS(func_ov003_0220ed30, FieldActor_EnterState71)
 
@@ -2342,7 +2242,7 @@ CLEAN_AS(func_ov003_0220edcc, FieldActor_RequestState71)
 void FieldActor_UpdateState6E(FieldActor *actor)
 {
     FieldActor_AnimateState6E(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState6E(actor);
 }
 CLEAN_AS(func_ov003_0220ee04, FieldActor_UpdateState6E)
@@ -2351,10 +2251,10 @@ CLEAN_AS(func_ov003_0220ee04, FieldActor_UpdateState6E)
  * func_0204bc64 of it and of nothing. */
 static BOOL holds_nothing(u16 *item)
 {
-    if (func_0204bcdc(item)) {
+    if (ItemCode_HasVariant(item)) {
         item[1] = ITEM_NONE;
-        int held = func_0204bc64(&item[0]);
-        return held == func_0204bc64(&item[1]);
+        int held = ItemCode_VariantItem(&item[0]);
+        return held == ItemCode_VariantItem(&item[1]);
     }
     return item[0] == ITEM_NONE;
 }
@@ -2365,28 +2265,28 @@ static BOOL holds_nothing(u16 *item)
  * else with func_0200d4e8 (3) and flag 0 set. */
 void FieldActor_RunState6E(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
+    if (FrameCtrl_IsDone(&actor->anim)) {
         actor->work.step = 1;
-        func_020109fc(actor, 1, 3, 0);
+        FieldActor_PlayAnimationLoop(actor, 1, 3, 0);
     }
     if (actor->work.step == 0) {
         return;
     }
-    if (!func_0200faf0(actor, 0x59a)) {
+    if (!FieldActor_TurnToZero(actor, 0x59a)) {
         return;
     }
-    func_02035a70(data_021c526c + 0x2e4);
-    func_0200f3e8(actor);
-    func_0203e110();
-    actor->next_state = func_02008258(actor, actor->state);
+    Music2e4_End((Music2e4 *) (data_021c526c + 0x2e4));
+    FieldActor_NudgeOne(actor);
+    EventQueue_FinishKind4Or12();
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
 
     u16 item[2];
-    func_020110c4(&item[0], actor);
+    FieldActor_RecordHeldItem(&item[0], actor);
     if (!holds_nothing(item)) {
         FieldActor_RequestState3D(actor, 2, 2, 0, 0, 0, 6, -1);
     } else {
-        func_0200d4e8(actor, 3, 1, -1);
-        func_0200f27c(actor, 0);
+        FieldActor_RequestState2(actor, 3, 1, -1);
+        FieldActor_SetFlag(actor, 0);
     }
 }
 CLEAN_AS(func_ov003_0220ee20, FieldActor_RunState6E)
@@ -2398,14 +2298,14 @@ void FieldActor_AnimateState6E(FieldActor *actor)
     if (data_021c75b8 != 2) {
         return;
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (actor->animation == 0x6a) {
         int frame = anim_frame(actor);
         if (frame == 0x13 || frame == 0x19 || frame == 0x1e) {
-            func_0200f888(actor);
+            FieldActor_PlayFootstep(actor);
         }
     } else {
-        func_0200f95c(actor);
+        FieldActor_Footfall(actor);
     }
 }
 CLEAN_AS(func_ov003_0220ef1c, FieldActor_AnimateState6E)
@@ -2425,10 +2325,10 @@ void FieldActor_EnterState6E(FieldActor *actor, const StateRequest *request, int
     (void) previous;
     actor->work.step = 0;
     s16 yaw = -0x8000;
-    func_020110a0(actor, &yaw);
-    func_0200f268(actor, 0);
-    func_020109a0(actor, 0x6a, 0, 0);
-    func_0200f328(actor, 0x818);
+    FieldActor_SetYaw(actor, &yaw);
+    FieldActor_ClearFlag(actor, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x6a, 0, 0);
+    FieldActor_PlaySound(actor, 0x818);
 }
 CLEAN_AS(func_ov003_0220ef80, FieldActor_EnterState6E)
 
@@ -2445,7 +2345,7 @@ CLEAN_AS(func_ov003_0220efc8, FieldActor_RequestState6E)
 void FieldActor_UpdateState6D(FieldActor *actor)
 {
     FieldActor_AnimateState6D(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState6D(actor);
 }
 CLEAN_AS(func_ov003_0220f000, FieldActor_UpdateState6D)
@@ -2460,32 +2360,32 @@ void FieldActor_RunState6D(FieldActor *actor)
 {
     Vec3 point;
 
-    if (func_02056f28(&actor->anim, 0x2e)) {
+    if (FrameCtrl_Passed(&actor->anim, 0x2e)) {
         if (actor->work.s6d.kind >= 2) {
-            func_02035624(0xc);
-            func_02035ac8(data_021c526c + 0x2e4);
+            Music_DropPriority(0xc);
+            Music2e4_PlayMusic41((Music2e4 *) (data_021c526c + 0x2e4));
         }
         return;
     }
-    if (!func_02056f28(&actor->anim, 0x2f)) {
+    if (!FrameCtrl_Passed(&actor->anim, 0x2f)) {
         return;
     }
-    u32 source = func_0204e414();
+    u32 source = AcreMap_Town();
     if (!is_local_player(actor)) {
         return;
     }
     if (actor->work.s6d.kind == 0) {
-        if (func_0204e108(source, &point, 0, 0)) {
-            func_020b63f4(func_020b5e10(), 0, &actor->position, 0x1b800000, 0, 2, 2);
+        if (AcreMap_HasBuilding5014((int) source, (int) (uintptr_t) &point, 0, 0)) {
+            SceneExit_SetTo((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0, &actor->position, 0x1b800000, 0, 2, 2);
         }
     } else if (actor->player == 0) {
-        if (func_0204e108(source, &point, 0, 0)) {
+        if (AcreMap_HasBuilding5014((int) source, (int) (uintptr_t) &point, 0, 0)) {
             point.z = add32(point.z, 0x2000);
-            func_020b63f4(func_020b5e10(), 0, &point, 0x1b800000, 0, 2, 2);
+            SceneExit_SetTo((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0, &point, 0x1b800000, 0, 2, 2);
         }
     } else {
-        if (func_0204e08c(source, &point, 0, 0)) {
-            func_020b63f4(func_020b5e10(), 0, &point, 0x1b800000, 0, 2, 2);
+        if (AcreMap_HasBuilding500b((int) source, (int) (uintptr_t) &point, 0, 0)) {
+            SceneExit_SetTo((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0, &point, 0x1b800000, 0, 2, 2);
         }
     }
 }
@@ -2494,7 +2394,7 @@ CLEAN_AS(func_ov003_0220f01c, FieldActor_RunState6D)
 /* func_ov003_0220f128: effect 0x34 follows effect_point. */
 void FieldActor_AnimateState6D(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     follow_effect(actor, &actor->work.s6d.effect, 0x34);
 }
 CLEAN_AS(func_ov003_0220f128, FieldActor_AnimateState6D)
@@ -2515,27 +2415,27 @@ void FieldActor_EnterState6D(FieldActor *actor, const StateRequest *request, int
 {
     (void) previous;
     u8 kind = request->payload[0];
-    int tool = func_0200fbe0(actor);
+    int tool = FieldActor_HeldTool(actor);
 
     if (tool == 3 || tool == 4 || tool == 10) {
-        func_020109a0(actor, 0x69, 3, 6);
+        FieldActor_PlayAnimationOnce(actor, 0x69, 3, 6);
         if (tool == 3) {
-            func_0205eae0(actor->held, 0x14, 3, 1);
+            HeldItem_Act(actor->held, 0x14, 3, 1);
         } else if (tool == 4) {
-            func_0205eae0(actor->held, 2, 9, 1);
+            HeldItem_Act(actor->held, 2, 9, 1);
         }
     } else {
-        func_020109a0(actor, 0x68, 3, 6);
+        FieldActor_PlayAnimationOnce(actor, 0x68, 3, 6);
     }
-    func_0203e420();
-    actor->work.s6d.effect = func_020912d4(0x34, &actor->effect_point, NULL, 0);
+    EventQueue_RequestKind8();
+    actor->work.s6d.effect = EffectSystem_StartKind(0x34, &actor->effect_point, NULL, 0);
     actor->work.s6d.kind = kind;
     if (kind >= 2) {
         RtcSendPxiCommand(0x51);
-        func_0200f328(actor, kind == 2 ? 0x839 : 0x838);
-        func_02035684(0xc, 0, 0);
+        FieldActor_PlaySound(actor, kind == 2 ? 0x839 : 0x838);
+        Music_AddValue(0xc, 0, 0);
     }
-    func_0200f328(actor, 0x816);
+    FieldActor_PlaySound(actor, 0x816);
 }
 CLEAN_AS(func_ov003_0220f180, FieldActor_EnterState6D)
 
@@ -2555,15 +2455,15 @@ static void begin_request(StateRequest *request, int state, int priority, int ar
 #ifdef BUGFIX
     *request = (StateRequest){0};
 #endif
-    func_0200e92c(request);
-    func_0200e90c(request, state, priority, arg);
+    StateRequest_Construct(request);
+    StateRequest_Set(request, state, priority, arg);
 }
 
 /* Queues a request begun with begin_request; whether it was queued. */
 static int finish_request(FieldActor *actor, StateRequest *request)
 {
-    int queued = func_0200e894(actor, request);
-    func_0200e91c(request);
+    int queued = FieldActor_QueueRequest(actor, request);
+    StateRequest_Destruct(request);
     return queued;
 }
 
@@ -2588,7 +2488,7 @@ static u32 anim_frames(const FieldActor *actor)
 void FieldActor_UpdateState6C(FieldActor *actor)
 {
     FieldActor_RunState6C(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
 }
 CLEAN_AS(func_ov003_0220f280, FieldActor_UpdateState6C)
 
@@ -2596,11 +2496,11 @@ CLEAN_AS(func_ov003_0220f280, FieldActor_UpdateState6C)
  * players note the state after this one (the actor of this console is moved on elsewhere). */
 void FieldActor_RunState6C(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    if (func_02056f94(&actor->anim)) {
-        func_020109fc(actor, 0, 3, 3);
+    FieldActor_UpdateBody(actor);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        FieldActor_PlayAnimationLoop(actor, 0, 3, 3);
         if (!is_local_player(actor)) {
-            actor->next_state = func_02008258(actor, actor->state);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         }
     }
 }
@@ -2620,10 +2520,10 @@ void FieldActor_EnterState6C(FieldActor *actor, const StateRequest *request, int
     (void) request;
     (void) previous;
     if (actor->animation != 0x7a) {
-        func_020109a0(actor, 0x7a, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x7a, 3, 0);
     }
     u32 frames = anim_frames(actor);
-    func_02056fcc(&actor->anim, frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (frames - 1));
+    FrameCtrl_Init(&actor->anim, frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (frames - 1));
 }
 CLEAN_AS(func_ov003_0220f2f8, FieldActor_EnterState6C)
 
@@ -2639,8 +2539,8 @@ CLEAN_AS(func_ov003_0220f344, FieldActor_RequestState6C)
 /* func_ov003_0220f37c: state 0x6b's update. */
 void FieldActor_UpdateState6B(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
 }
 CLEAN_AS(func_ov003_0220f37c, FieldActor_UpdateState6B)
 
@@ -2658,7 +2558,7 @@ void FieldActor_EnterState6B(FieldActor *actor, const StateRequest *request, int
     (void) request;
     (void) previous;
     if (actor->animation != 0x7a) {
-        func_020109a0(actor, 0x38, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x38, 3, 0);
     }
     actor->anim.frame = (fx32) (((anim_frames(actor) - 1) & 0xffff) << 12);
 }
@@ -2677,8 +2577,8 @@ CLEAN_AS(func_ov003_0220f3d8, FieldActor_RequestState6B)
 void FieldActor_UpdateState6A(FieldActor *actor)
 {
     FieldActor_PlaceState6A(actor);
-    func_02010f5c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState6A(actor);
 }
 CLEAN_AS(func_ov003_0220f410, FieldActor_UpdateState6A)
@@ -2686,7 +2586,7 @@ CLEAN_AS(func_ov003_0220f410, FieldActor_UpdateState6A)
 /* func_ov003_0220f430: at the animation's end, asks for state 0x6b. */
 void FieldActor_EndState6A(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
+    if (FrameCtrl_IsDone(&actor->anim)) {
         FieldActor_RequestState6B(actor, 6, -1);
     }
 }
@@ -2695,7 +2595,7 @@ CLEAN_AS(func_ov003_0220f430, FieldActor_EndState6A)
 /* func_ov003_0220f458: the actor is put on the point (x and z), facing yaw -0x8000. */
 void FieldActor_PlaceState6A(FieldActor *actor)
 {
-    func_0200fbc4(actor, actor->work.s6a_point.x, actor->work.s6a_point.z, -0x8000);
+    FieldActor_MoveToPose(actor, actor->work.s6a_point.x, actor->work.s6a_point.z, -0x8000);
 }
 CLEAN_AS(func_ov003_0220f458, FieldActor_PlaceState6A)
 
@@ -2715,7 +2615,7 @@ CLEAN_AS(func_ov003_0220f478, FieldActor_State6AMessage)
 void FieldActor_EnterState6A(FieldActor *actor, const StateRequest *request, int previous)
 {
     (void) previous;
-    func_020109a0(actor, 0x7a, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x7a, 3, 0);
     Vec3 point = *(const Vec3 *) (const void *) request->payload;
     State6A_SetPoint(&actor->work.s6a_point, point);
     PackedPoint_Set(actor->saved.packed, &point);
@@ -2726,14 +2626,14 @@ CLEAN_AS(func_ov003_0220f4a8, FieldActor_EnterState6A)
 void PackedPoint_Get(const u8 *packed, Vec3 *point)
 {
     u8 nibble;
-    func_02077928(packed, &point->x, &point->y, &point->z, &nibble);
+    PackedBytes_UnpackPointAndValue(packed, (u32 *) &point->x, &point->y, (u32 *) &point->z, &nibble);
 }
 CLEAN_AS(func_ov003_0220f4f0, PackedPoint_Get)
 
 /* func_ov003_0220f508: packs a point, with nibble 0. */
 void PackedPoint_Set(u8 *packed, const Vec3 *point)
 {
-    func_02077950(packed, point->x, point->y, point->z, 0);
+    PackedBytes_PackPointAndValue(packed, point->x, point->y, point->z, 0);
 }
 CLEAN_AS(func_ov003_0220f508, PackedPoint_Set)
 
@@ -2771,13 +2671,13 @@ void FieldActor_UpdateState69(FieldActor *actor)
     FieldActor_AnimateState69(actor);
     if (is_local_player(actor)) {
         FieldActor_TurnState69(actor);
-        func_02010d64(actor);
+        FieldActor_EnterContact(actor);
     } else {
         int tile[2] = {actor->work.s69.tile_x, actor->work.s69.tile_z};
-        if (func_0200f530(actor, tile)) {
+        if (FieldActor_FollowReportedToTile(actor, tile)) {
             FieldActor_TurnState69(actor);
         }
-        func_02010d64(actor);
+        FieldActor_EnterContact(actor);
     }
     FieldActor_EndState69(actor);
 }
@@ -2789,12 +2689,12 @@ void FieldActor_EndState69(FieldActor *actor)
 {
     u8 then_77 = actor->work.s69.then_77;
 
-    if (func_02056f94(&actor->anim)) {
-        actor->next_state = func_02008258(actor, actor->state);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         if (then_77) {
-            func_02008dc0(actor, (u16) actor->yaw, 6, -1);
+            FieldActor_RequestState77(actor, (u16) actor->yaw, 6, -1);
         } else {
-            func_0200d4e8(actor, 3, 1, -1);
+            FieldActor_RequestState2(actor, 3, 1, -1);
         }
     }
 }
@@ -2804,8 +2704,8 @@ CLEAN_AS(func_ov003_0220f5f8, FieldActor_EndState69)
 void FieldActor_TurnState69(FieldActor *actor)
 {
     s16 yaw = actor->yaw;
-    func_020113e0(&yaw, (s16) actor->work.s69.yaw);
-    func_020110a0(actor, &yaw);
+    FieldActor_TurnAngleStep(&yaw, (s16) actor->work.s69.yaw);
+    FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_ov003_0220f658, FieldActor_TurnState69)
 
@@ -2813,14 +2713,14 @@ CLEAN_AS(func_ov003_0220f658, FieldActor_TurnState69)
  * is cleared and flag 9 set. */
 void FieldActor_AnimateState69(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    if (!func_02056f28(&actor->anim, 5)) {
+    FieldActor_UpdateBody(actor);
+    if (!FrameCtrl_Passed(&actor->anim, 5)) {
         return;
     }
     int tile[2] = {actor->work.s69.tile_x, actor->work.s69.tile_z};
-    func_ov003_02224384(actor->player, tile, 3);
-    func_0200f268(actor, 0x12);
-    func_0200f27c(actor, 9);
+    GrowthModel_RequestHit(actor->player, (const TileChangesTile *) tile, 3);
+    FieldActor_ClearFlag(actor, 0x12);
+    FieldActor_SetFlag(actor, 9);
 }
 CLEAN_AS(func_ov003_0220f684, FieldActor_AnimateState69)
 
@@ -2845,9 +2745,9 @@ void FieldActor_EnterState69(FieldActor *actor, const StateRequest *request, int
     int tile_x = 0;
     int tile_z = 0;
 
-    func_0204f818(&tile_x, &tile_z, &target);
+    Position_Tile(&tile_x, &tile_z, (const Position *) &target);
     State69Work_Set(&actor->work.s69, (u16) yaw, (u32) tile_x, (u32) tile_z, then_77, then_69);
-    func_020109a0(actor, 0x67, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x67, 3, 0);
 }
 CLEAN_AS(func_ov003_0220f6dc, FieldActor_EnterState69)
 
@@ -2893,7 +2793,7 @@ static void state68_tile(const FieldActor *actor, int *tile)
 
     tile[0] = 0;
     tile[1] = 0;
-    func_0204f818(&tile[0], &tile[1], &at);
+    Position_Tile(&tile[0], &tile[1], (const Position *) &at);
 }
 
 /* func_ov003_0220f7cc: state 0x68's update. In the fifth frame the tile goes to
@@ -2908,24 +2808,24 @@ void FieldActor_UpdateState68(FieldActor *actor)
     state68_tile(actor, tile);
     if (work->count > 5) {
         int copy[2] = {tile[0], tile[1]};
-        func_ov003_022235d8(actor->player, copy);
+        GrowthModel_Loop(actor->player, (const TileChangesTile *) copy);
     } else {
         work->count++;
         if (work->count == 5) {
             int copy[2] = {tile[0], tile[1]};
-            func_ov003_02224384(actor->player, copy, 2);
+            GrowthModel_RequestHit(actor->player, (const TileChangesTile *) copy, 2);
         }
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (is_local_player(actor)) {
         FieldActor_TurnState68(actor);
-        func_02010d64(actor);
+        FieldActor_EnterContact(actor);
         FieldActor_EndState68Local(actor);
     } else {
-        if (func_0200f554(actor)) {
+        if (FieldActor_FollowReported(actor)) {
             FieldActor_TurnState68(actor);
         }
-        func_02010d64(actor);
+        FieldActor_EnterContact(actor);
         FieldActor_EndState68Remote(actor);
     }
 }
@@ -2937,8 +2837,8 @@ void FieldActor_EndState68Remote(FieldActor *actor)
 {
     State68Work *work = &actor->work.s68;
 
-    actor->next_state = func_02008258(actor, actor->state);
-    if (work->then_69 && func_02056f94(&actor->anim)) {
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    if (work->then_69 && FrameCtrl_IsDone(&actor->anim)) {
         FieldActor_RequestState69(actor, work->x, work->z, work->then_77, 1, 6, -1);
     }
 }
@@ -2952,15 +2852,15 @@ void FieldActor_EndState68Local(FieldActor *actor)
     State68Work *work = &actor->work.s68;
 
     if (work->then_69) {
-        if (func_02056f94(&actor->anim)) {
+        if (FrameCtrl_IsDone(&actor->anim)) {
             FieldActor_RequestState69(actor, work->x, work->z, work->then_77, 1, 6, -1);
         }
     } else if (actor->unk_818 == 1) {
         work->then_69 = 1;
         actor->anim.flags = FRAME_CTRL_ONCE;
     } else if (actor->unk_818 == 2) {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200d4e8(actor, 3, 1, -1);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
 }
 CLEAN_AS(func_ov003_0220f8e0, FieldActor_EndState68Local)
@@ -2969,8 +2869,8 @@ CLEAN_AS(func_ov003_0220f8e0, FieldActor_EndState68Local)
 void FieldActor_TurnState68(FieldActor *actor)
 {
     s16 yaw = actor->yaw;
-    func_020113e0(&yaw, (s16) actor->work.s68.yaw);
-    func_020110a0(actor, &yaw);
+    FieldActor_TurnAngleStep(&yaw, (s16) actor->work.s68.yaw);
+    FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_ov003_0220f968, FieldActor_TurnState68)
 
@@ -2987,7 +2887,7 @@ void FieldActor_ExitState68(FieldActor *actor)
     int tile[2];
     state68_tile(actor, tile);
     int copy[2] = {tile[0], tile[1]};
-    func_ov003_02224384(actor->player, copy, 2);
+    GrowthModel_RequestHit(actor->player, (const TileChangesTile *) copy, 2);
 }
 CLEAN_AS(func_ov003_0220f994, FieldActor_ExitState68)
 
@@ -3031,18 +2931,18 @@ void FieldActor_EnterState68(FieldActor *actor, const StateRequest *request, int
     State68Work_Set(&actor->work.s68, yaw, x, z, then_77, then_69);
     PackedXZ_Set(actor->saved.packed, x, z, (u8) (then_77 | then_69 << 4));
     if (then_69) {
-        func_020109a0(actor, 0x66, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x66, 3, 0);
     } else {
-        func_020109fc(actor, 0x66, 3, 0);
+        FieldActor_PlayAnimationLoop(actor, 0x66, 3, 0);
     }
-    func_0200f27c(actor, 9);
+    FieldActor_SetFlag(actor, 9);
 }
 CLEAN_AS(func_ov003_0220fa5c, FieldActor_EnterState68)
 
 /* func_ov003_0220fae4: unpacks x and z and the byte after them. */
 void PackedXZ_Get(u8 *packed, fx32 *x, fx32 *z, u8 *flags)
 {
-    func_02077978(packed, x, z);
+    PackedBytes_UnpackPoint(packed, (u32 *) x, (u32 *) z);
     *flags = packed[5];
 }
 CLEAN_AS(func_ov003_0220fae4, PackedXZ_Get)
@@ -3050,7 +2950,7 @@ CLEAN_AS(func_ov003_0220fae4, PackedXZ_Get)
 /* func_ov003_0220fafc: packs x and z and the byte after them. */
 void PackedXZ_Set(u8 *packed, fx32 x, fx32 z, int flags)
 {
-    func_020779b8(packed, x, z);
+    PackedBytes_PackPoint(packed, x, z);
     packed[5] = (u8) flags;
 }
 CLEAN_AS(func_ov003_0220fafc, PackedXZ_Set)
@@ -3096,10 +2996,10 @@ void FieldActor_UpdateState67(FieldActor *actor)
 {
     FieldActor_AnimateState67(actor);
     Vec3 point = actor->work.s67.point;
-    if (func_0200f434(actor, &point)) {
+    if (FieldActor_FollowReportedTo(actor, &point)) {
         FieldActor_TurnState67(actor);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     if (is_local_player(actor)) {
         FieldActor_EndState67Local(actor);
     } else {
@@ -3112,9 +3012,9 @@ CLEAN_AS(func_ov003_0220fb94, FieldActor_UpdateState67)
  * animation's end it moves on through func_0200d4e8. */
 void FieldActor_EndState67Remote(FieldActor *actor)
 {
-    actor->next_state = func_02008258(actor, actor->state);
-    if (func_02056f94(&actor->anim)) {
-        func_0200d4e8(actor, 3, 1, -1);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
 }
 CLEAN_AS(func_ov003_0220fbf8, FieldActor_EndState67Remote)
@@ -3123,9 +3023,9 @@ CLEAN_AS(func_ov003_0220fbf8, FieldActor_EndState67Remote)
  * leave from frame 22 on (FieldActor_ResumeMoving). */
 void FieldActor_EndState67Local(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200d4e8(actor, 3, 1, -1);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
     if (anim_frame(actor) >= 22) {
         FieldActor_ResumeMoving(actor);
@@ -3137,8 +3037,8 @@ CLEAN_AS(func_ov003_0220fc34, FieldActor_EndState67Local)
 void FieldActor_TurnState67(FieldActor *actor)
 {
     s16 yaw = actor->yaw;
-    func_020113e0(&yaw, actor->work.s67.yaw);
-    func_020110a0(actor, &yaw);
+    FieldActor_TurnAngleStep(&yaw, actor->work.s67.yaw);
+    FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_ov003_0220fc88, FieldActor_TurnState67)
 
@@ -3146,10 +3046,10 @@ CLEAN_AS(func_ov003_0220fc88, FieldActor_TurnState67)
  * the actor's position and yaw. */
 void FieldActor_AnimateState67(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (actor->animation == 0x65) {
-        if (func_02056f28(&actor->anim, 3) || func_02056f28(&actor->anim, 13)) {
-            func_020912d4(0x23, &actor->position, &actor->yaw, 0);
+        if (FrameCtrl_Passed(&actor->anim, 3) || FrameCtrl_Passed(&actor->anim, 13)) {
+            EffectSystem_StartKind(0x23, &actor->position, &actor->yaw, 0);
         }
     }
 }
@@ -3174,12 +3074,12 @@ void FieldActor_EnterState67(FieldActor *actor, const StateRequest *request, int
     Vec3 copy = point;
 
     State67Work_Set(&actor->work.s67, yaw, &copy);
-    func_020109a0(actor, 0x65, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x65, 3, 0);
     copy = point;
-    func_ov003_02220db4(actor->player, &copy);
-    func_0200f268(actor, 0x1c);
-    func_0200f328(actor, 0x7da);
-    func_0200f27c(actor, 9);
+    TileEvent_StartKindA(actor->player, &copy);
+    FieldActor_ClearFlag(actor, 0x1c);
+    FieldActor_PlaySound(actor, 0x7da);
+    FieldActor_SetFlag(actor, 9);
 }
 CLEAN_AS(func_ov003_0220fd04, FieldActor_EnterState67)
 
@@ -3199,7 +3099,7 @@ int FieldActor_RequestState67(FieldActor *actor, const Vec3 *at, int priority, i
     Vec3 middle;
 
     begin_request(&request, 0x67, priority, arg);
-    func_0204f7e0(&middle, at);
+    AcreTile_SnapToTileCentre(&middle, at);
     Vec3 copy = middle;
     State67_CopyPoint((Vec3 *) (void *) request.payload, &copy);
     return finish_request(actor, &request);
@@ -3219,12 +3119,12 @@ CLEAN_AS(func_ov003_0220fdf4, State67_CopyPoint)
  * there. */
 void FieldActor_UpdateState66(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     Vec3 point = actor->work.s66.point;
-    if (func_0200f434(actor, &point)) {
+    if (FieldActor_FollowReportedTo(actor, &point)) {
         FieldActor_TurnState66(actor);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState66(actor);
 }
 CLEAN_AS(func_ov003_0220fe04, FieldActor_UpdateState66)
@@ -3249,14 +3149,14 @@ void FieldActor_EndState66(FieldActor *actor)
         return;
     }
     if (!is_local_player(actor)) {
-        actor->next_state = func_02008258(actor, actor->state);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     }
     if (work->next == 1) {
         Vec3 point = work->point;
         FieldActor_RequestState67(actor, &point, 6, -1);
     } else if (work->next == 2) {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200d4e8(actor, 3, 1, -1);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
 }
 CLEAN_AS(func_ov003_0220fe4c, FieldActor_EndState66)
@@ -3265,8 +3165,8 @@ CLEAN_AS(func_ov003_0220fe4c, FieldActor_EndState66)
 void FieldActor_TurnState66(FieldActor *actor)
 {
     s16 yaw = actor->yaw;
-    func_020113e0(&yaw, (s16) actor->work.s66.yaw);
-    func_020110a0(actor, &yaw);
+    FieldActor_TurnAngleStep(&yaw, (s16) actor->work.s66.yaw);
+    FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_ov003_0220ff14, FieldActor_TurnState66)
 
@@ -3276,14 +3176,14 @@ CLEAN_AS(func_ov003_0220ff14, FieldActor_TurnState66)
 void FieldActor_ExitState66(FieldActor *actor, int next)
 {
     if (!is_local_player(actor) && next != 2 && next != 0x67) {
-        if (func_0200f290(actor, 0x1c)) {
+        if (FieldActor_TestFlag(actor, 0x1c)) {
             Vec3 point = actor->work.s66.point;
-            func_ov003_02220db4(actor->player, &point);
-            func_0200f268(actor, 0x1c);
+            TileEvent_StartKindA(actor->player, &point);
+            FieldActor_ClearFlag(actor, 0x1c);
         }
         return;
     }
-    func_0200f268(actor, 0x1c);
+    FieldActor_ClearFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_0220ff40, FieldActor_ExitState66)
 
@@ -3314,15 +3214,15 @@ void FieldActor_EnterState66(FieldActor *actor, const StateRequest *request, int
     int next = args->next;
     Vec3 point;
 
-    func_0204f794(&point, (u32) x, (u32) z);
+    AcreTile_TileCentre(&point, (u32) x, (u32) z);
     s16 yaw = Math_Atan2(sub32(point.x, actor->position.x), sub32(point.z, actor->position.z));
     Vec3 copy = point;
     State66Work_Set(&actor->work.s66, (u8) next, (u16) yaw, &copy);
     int tile[2] = {x, z};
     TileArgs_SetInts(&actor->saved.tile, tile);
-    func_020109fc(actor, 0x64, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x64, 3, 0);
     if (actor->work.s66.next == 1) {
-        func_0200f27c(actor, 0x1c);
+        FieldActor_SetFlag(actor, 0x1c);
     }
 }
 CLEAN_AS(func_ov003_02210010, FieldActor_EnterState66)
@@ -3377,37 +3277,6 @@ static_assert(sizeof(PointItemArgs) <= sizeof(((StateRequest *) 0)->payload), "p
 /* The effect handle state 0x63 keeps (func_020912d4), -1 for none. */
 #define STATE63_EFFECT(actor) ((actor)->work.effect.effect)
 
-extern void *func_02010ca4(FieldActor *actor);
-extern int func_0203e168(void);
-extern void func_020ba35c(int player);
-/* The object at 0x5c8 (the end of `held`). */
-extern void func_0206026c(void *object, int a);
-extern void func_02060428(void *object, Vec3 *at);
-/* Some state of a player's actor, as the session knows it; whether it is known. */
-extern int func_02096518(u32 *out, int a, int player);
-extern int func_02008380(FieldActor *actor, int a, int priority, int arg);
-extern int func_ov003_022211bc(int player, Vec3 *at);
-extern void func_ov003_02221150(int player, Vec3 *at);
-/* Turns the actor towards a yaw. */
-extern void func_0200fb34(FieldActor *actor, s16 yaw);
-/* An item code packed into two bytes, and read back. */
-extern void func_020778b0(u8 *packed, int item);
-extern u16 func_02077898(const u8 *packed);
-extern int func_02043d18(int player, int a, int b, u16 item);
-extern int func_0209a110(u16 *item);
-extern int func_0206f6b0(u16 item);
-extern void func_0200f650(FieldActor *actor, fx32 value);
-extern int func_0203e1c4(void);
-extern void *func_02062f90(void *text, u16 *item);
-extern void func_020683b4(FieldActorLink *link, int a, void *text, int b);
-extern void *func_02062f4c(void *text);
-extern int func_02099fe8(void);
-extern int func_02030db8(int x, int z);
-extern int func_ov003_02221294(int player, Vec3 *at, u8 kind);
-extern void func_0200ee40(FieldActor *actor);
-extern int func_ov003_02220f40(int player, Vec3 *at, s16 yaw);
-extern void func_02079750(Vec3 *position);
-
 /* Starts a request for `state` (func_0200e92c, func_0200e90c); the caller fills the payload and
  * sends it with send_request.
  * BUG: as in request_state, the bytes of the request nothing sets are the stack's. */
@@ -3416,15 +3285,15 @@ static void open_request(StateRequest *request, int state, int priority, int arg
 #ifdef BUGFIX
     memset(request, 0, sizeof(*request));
 #endif
-    func_0200e92c(request);
-    func_0200e90c(request, state, priority, arg);
+    StateRequest_Construct(request);
+    StateRequest_Set(request, state, priority, arg);
 }
 
 /* Queues the request (func_0200e894) and ends it (func_0200e91c); whether it was queued. */
 static int send_request(FieldActor *actor, StateRequest *request)
 {
-    int queued = func_0200e894(actor, request);
-    func_0200e91c(request);
+    int queued = FieldActor_QueueRequest(actor, request);
+    StateRequest_Destruct(request);
     return queued;
 }
 
@@ -3432,10 +3301,10 @@ static int send_request(FieldActor *actor, StateRequest *request)
  * of it and of ITEM_NONE (held in a temporary); otherwise by the code itself. */
 static BOOL item_is_nothing(u16 *item)
 {
-    if (func_0204bcdc(item)) {
+    if (ItemCode_HasVariant(item)) {
         u16 none = ITEM_NONE;
-        int code = func_0204bc64(item);
-        return code == func_0204bc64(&none);
+        int code = ItemCode_VariantItem(item);
+        return code == ItemCode_VariantItem(&none);
     }
     return *item == ITEM_NONE;
 }
@@ -3443,24 +3312,24 @@ static BOOL item_is_nothing(u16 *item)
 /* Releases the receiver at 0xec when flag 0x11 says it is registered. */
 static void release_receiver(FieldActor *actor)
 {
-    if (func_0200f290(actor, 0x11)) {
-        func_0200f268(actor, 0x11);
-        func_0203ee08(actor, actor->receiver);
+    if (FieldActor_TestFlag(actor, 0x11)) {
+        FieldActor_ClearFlag(actor, 0x11);
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
     }
 }
 
 /* Ends a state the usual way: the state after it is noted and func_0200d4e8 (3) moves on. */
 static void move_on(FieldActor *actor)
 {
-    actor->next_state = func_02008258(actor, actor->state);
-    func_0200d4e8(actor, 3, 1, -1);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    FieldActor_RequestState2(actor, 3, 1, -1);
 }
 
 /* Ends state 0x63's effect, if any. */
 static void end_state63_effect(FieldActor *actor)
 {
     if (STATE63_EFFECT(actor) != -1) {
-        func_0209129c(STATE63_EFFECT(actor));
+        EffectSystem_EndHandle(STATE63_EFFECT(actor));
         STATE63_EFFECT(actor) = -1;
     }
 }
@@ -3492,9 +3361,9 @@ CLEAN_AS(func_ov003_02210114, TileNextArgs_Set)
 /* func_ov003_02210120: state 0x65's update. */
 void FieldActor_UpdateState65(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_02010d64(actor);
-    func_02010ca4(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
 }
 CLEAN_AS(func_ov003_02210120, FieldActor_UpdateState65)
 
@@ -3511,7 +3380,7 @@ void FieldActor_EnterState65(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109fc(actor, 0, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0, 3, 0);
 }
 CLEAN_AS(func_ov003_02210140, FieldActor_EnterState65)
 
@@ -3528,7 +3397,7 @@ CLEAN_AS(func_ov003_02210154, FieldActor_RequestState65)
 void FieldActor_UpdateState64(FieldActor *actor)
 {
     FieldActor_RunState64(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState64(actor);
 }
 CLEAN_AS(func_ov003_0221018c, FieldActor_UpdateState64)
@@ -3537,14 +3406,14 @@ CLEAN_AS(func_ov003_0221018c, FieldActor_UpdateState64)
  * actor notes the state after this one. */
 void FieldActor_EndState64(FieldActor *actor)
 {
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
-    func_020109fc(actor, 0x60, 3, 3);
+    FieldActor_PlayAnimationLoop(actor, 0x60, 3, 3);
     if (is_local_player(actor)) {
         return;
     }
-    actor->next_state = func_02008258(actor, actor->state);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
 }
 CLEAN_AS(func_ov003_022101a8, FieldActor_EndState64)
 
@@ -3554,8 +3423,8 @@ CLEAN_AS(func_ov003_022101a8, FieldActor_EndState64)
  * sounds 0x852 and 0x853 play and flag 9 is set. */
 void FieldActor_RunState64(FieldActor *actor)
 {
-    func_0200faa8(actor, 0x400);
-    func_02010f5c(actor);
+    FieldActor_TurnToHalfTurn(actor, 0x400);
+    FieldActor_UpdateBody(actor);
     if (actor->animation != 0x5f) {
         return;
     }
@@ -3563,16 +3432,16 @@ void FieldActor_RunState64(FieldActor *actor)
     point.y = add32(point.y, 0xb00);
     point.z = add32(point.z, 0x300);
     if (anim_frame(actor) < 11) {
-        func_0200f2a0(actor, 0x851, &point);
+        FieldActor_PlaySoundAt(actor, 0x851, &point);
         return;
     }
-    if (func_02056f28(&actor->anim, 11)) {
+    if (FrameCtrl_Passed(&actor->anim, 11)) {
         void *object = &actor->held[0x28];
-        func_0206026c(object, 9);
-        func_02060428(object, &point);
-        func_0200f328(actor, 0x852);
-        func_0200f328(actor, 0x853);
-        func_0200f27c(actor, 9);
+        FishingFloat_SetState(object, 9);
+        FishingFloat_SetPosition(object, &point);
+        FieldActor_PlaySound(actor, 0x852);
+        FieldActor_PlaySound(actor, 0x853);
+        FieldActor_SetFlag(actor, 9);
     }
 }
 CLEAN_AS(func_ov003_022101fc, FieldActor_RunState64)
@@ -3592,13 +3461,13 @@ void FieldActor_EnterState64(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    if (is_local_player(actor) && func_0203e168() == 0) {
+    if (is_local_player(actor) && EventQueue_RequestKind14() == 0) {
         move_on(actor);
         return;
     }
-    func_020ba35c(actor->player);
-    func_020109a0(actor, 0x5f, 3, 0);
-    func_0205eae0(actor->held, 0x22, 3, 1);
+    Sky_Objects020bdf68(actor->player);
+    FieldActor_PlayAnimationOnce(actor, 0x5f, 3, 0);
+    HeldItem_Act(actor->held, 0x22, 3, 1);
 }
 CLEAN_AS(func_ov003_022102dc, FieldActor_EnterState64)
 
@@ -3615,8 +3484,8 @@ CLEAN_AS(func_ov003_02210354, FieldActor_RequestState64)
 void FieldActor_UpdateState63(FieldActor *actor)
 {
     FieldActor_RunState63(actor);
-    func_02010d64(actor);
-    func_02010ca4(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
     if (is_local_player(actor)) {
         FieldActor_EndState63Local(actor);
     } else {
@@ -3634,14 +3503,14 @@ void FieldActor_EndState63Remote(FieldActor *actor)
     u8 left_early;
     u32 state;
 
-    actor->next_state = func_02008258(actor, actor->state);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     SavedFlag_Get(&actor->saved.left_early, &left_early);
-    if (left_early && func_02096518(&state, -1, actor->player) && state == 0x63) {
+    if (left_early && SessionPlayers_State((int *) &state, -1, actor->player) && state == 0x63) {
         FieldActor_RequestState63(actor, 6, -1);
         SavedFlag_Set(&actor->saved.left_early, 1);
         end_state63_effect(actor);
-    } else if (func_02056f94(&actor->anim)) {
-        func_0200d4e8(actor, 3, 1, -1);
+    } else if (FrameCtrl_IsDone(&actor->anim)) {
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
 }
 CLEAN_AS(func_ov003_022103cc, FieldActor_EndState63Remote)
@@ -3651,7 +3520,7 @@ CLEAN_AS(func_ov003_022103cc, FieldActor_EndState63Remote)
  * state, it is set and the effect ends. */
 void FieldActor_EndState63Local(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
+    if (FrameCtrl_IsDone(&actor->anim)) {
         move_on(actor);
     }
     SavedFlag_Set(&actor->saved.left_early, 0);
@@ -3668,27 +3537,27 @@ CLEAN_AS(func_ov003_02210474, FieldActor_EndState63Local)
  * func_0200ff28 acts on the point ahead (mode 1, tool 5); on frame 0x23 the effect ends. */
 void FieldActor_RunState63(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     int frame = anim_frame(actor);
     if (frame < 5 || frame > 0x23) {
         return;
     }
     Vec3 at = actor->unk_62C;
-    func_0203f7d0(&at, &at);
+    Globe_Unbend(&at, &at);
     if (STATE63_EFFECT(actor) == -1) {
-        STATE63_EFFECT(actor) = func_020912d4(0x26, &at, &actor->yaw, 0);
-        func_0200f328(actor, 0x854);
+        STATE63_EFFECT(actor) = EffectSystem_StartKind(0x26, &at, &actor->yaw, 0);
+        FieldActor_PlaySound(actor, 0x854);
         Vec3 ahead;
-        func_0200fa6c(&ahead, actor);
+        FieldActor_PointAheadOfSelf(&ahead, actor);
         data_ov003_02260540 = 1;
         data_ov003_02260558 = ahead;
     } else {
-        func_02091278(STATE63_EFFECT(actor), &at, NULL, 0);
+        EffectSystem_MoveHandle(STATE63_EFFECT(actor), &at, NULL, 0);
     }
     if (frame == 0x14) {
         Vec3 ahead;
-        func_0200fa6c(&ahead, actor);
-        func_0200ff28(actor, &ahead, 1, 5);
+        FieldActor_PointAheadOfSelf(&ahead, actor);
+        FieldActor_FindTarget(actor, &ahead, 1, 5);
     } else if (frame == 0x23) {
         end_state63_effect(actor);
     }
@@ -3701,10 +3570,10 @@ CLEAN_AS(func_ov003_02210504, FieldActor_RunState63)
 void FieldActor_ExitState63(FieldActor *actor)
 {
     if (STATE63_EFFECT(actor) != -1) {
-        func_0209129c(STATE63_EFFECT(actor));
+        EffectSystem_EndHandle(STATE63_EFFECT(actor));
     }
     Vec3 ahead;
-    func_0200fa6c(&ahead, actor);
+    FieldActor_PointAheadOfSelf(&ahead, actor);
     data_ov003_02260540 = 0;
     data_ov003_02260558 = ahead;
 }
@@ -3723,7 +3592,7 @@ void FieldActor_EnterState63(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x61, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x61, 3, 0);
     STATE63_EFFECT(actor) = -1;
 }
 CLEAN_AS(func_ov003_02210640, FieldActor_EnterState63)
@@ -3757,8 +3626,8 @@ void FieldActor_UpdateState62(FieldActor *actor)
     FieldActor_TurnState62(actor);
     FieldActor_AnimateState62(actor);
     Vec3 point = actor->work.s62.point;
-    func_0200f434(actor, &point);
-    func_02010d64(actor);
+    FieldActor_FollowReportedTo(actor, &point);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState62(actor);
 }
 CLEAN_AS(func_ov003_022106a4, FieldActor_UpdateState62)
@@ -3769,24 +3638,24 @@ CLEAN_AS(func_ov003_022106a4, FieldActor_UpdateState62)
  * other func_0200d4e8. */
 void FieldActor_EndState62(FieldActor *actor)
 {
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
     if (actor->animation == 0x49) {
-        func_020109a0(actor, 0x51, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x51, 3, 0);
         return;
     }
-    actor->next_state = func_02008258(actor, actor->state);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     u8 kind = actor->work.s62.kind;
     if (kind == 1) {
-        func_0200c9a8(actor, 3, 5, -1);
+        FieldActor_RequestState5(actor, 3, 5, -1);
         return;
     }
     if (is_local_player(actor) && kind == 3) {
         release_receiver(actor);
-        func_02008380(actor, 3, 1, -1);
+        FieldActor_RequestState90(actor, 3, 1, -1);
     } else {
-        func_0200d4e8(actor, 3, 1, -1);
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
 }
 CLEAN_AS(func_ov003_022106e4, FieldActor_EndState62)
@@ -3803,40 +3672,40 @@ void FieldActor_AnimateState62(FieldActor *actor)
         s16 yaw = actor->yaw;
         switch (anim_frame(actor)) {
             case 1:
-                func_020912d4(9, &point, &yaw, 0);
+                EffectSystem_StartKind(9, &point, &yaw, 0);
                 break;
             case 5:
                 if (is_local_player(actor)) {
                     Vec3 copy = point;
-                    func_ov003_022211bc(actor->player, &copy);
+                    TileEvent_StartUnitKind3(actor->player, &copy);
                 } else {
-                    u16 *object = func_0204f5a8(data_021c80bc, &point, 0);
+                    u16 *object = AcreTile_ItemAt(data_021c80bc, &point, 0);
                     if (in_range(*object, 0xfc, 0xfd)) {
                         Vec3 copy = point;
-                        func_ov003_02221150(actor->player, &copy);
+                        TileEvent_StartKind3(actor->player, &copy);
                     }
                 }
-                func_0200f268(actor, 0x1c);
+                FieldActor_ClearFlag(actor, 0x1c);
                 break;
             case 7:
-                func_0200f328(actor, 0x843);
-                func_0200f27c(actor, 9);
+                FieldActor_PlaySound(actor, 0x843);
+                FieldActor_SetFlag(actor, 9);
                 break;
             case 0x15:
-                func_020912d4(0xa, &point, NULL, 0);
+                EffectSystem_StartKind(0xa, &point, NULL, 0);
                 break;
             default:
                 break;
         }
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
 }
 CLEAN_AS(func_ov003_022107ac, FieldActor_AnimateState62)
 
 /* func_ov003_022108b0 */
 void FieldActor_TurnState62(FieldActor *actor)
 {
-    func_0200fb34(actor, actor->work.s62.yaw);
+    FieldActor_TurnTowards(actor, actor->work.s62.yaw);
 }
 CLEAN_AS(func_ov003_022108b0, FieldActor_TurnState62)
 
@@ -3849,16 +3718,16 @@ void FieldActor_ExitState62(FieldActor *actor)
     if (is_local_player(actor)) {
         return;
     }
-    if (!func_0200f290(actor, 0x1c)) {
+    if (!FieldActor_TestFlag(actor, 0x1c)) {
         return;
     }
     Vec3 point = actor->work.s62.point;
     if (is_local_player(actor)) {
-        func_ov003_022211bc(actor->player, &point);
+        TileEvent_StartUnitKind3(actor->player, &point);
     } else {
-        func_ov003_02221150(actor->player, &point);
+        TileEvent_StartKind3(actor->player, &point);
     }
-    func_0200f268(actor, 0x1c);
+    FieldActor_ClearFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_022108c0, FieldActor_ExitState62)
 
@@ -3882,22 +3751,22 @@ void FieldActor_EnterState62(FieldActor *actor, const StateRequest *request, int
     u8 kind = args->kind;
     Vec3 point;
 
-    func_0204f794(&point, args->x, args->z);
+    AcreTile_TileCentre(&point, args->x, args->z);
     work->item = args->item;
     work->kind = kind;
     work->point = point;
     work->yaw = Math_Atan2(sub32(point.x, actor->position.x), sub32(point.z, actor->position.z));
     if (actor->animation == 0x49) {
-        if (func_02056f94(&actor->anim)) {
-            func_020109a0(actor, 0x51, 3, 0);
+        if (FrameCtrl_IsDone(&actor->anim)) {
+            FieldActor_PlayAnimationOnce(actor, 0x51, 3, 0);
         }
     } else if (actor->animation == 0x4a) {
-        func_020109a0(actor, 0x51, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x51, 3, 0);
     } else {
-        func_020109a0(actor, 0x49, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x49, 3, 0);
     }
-    func_0200f268(actor, 0xd);
-    func_0200f27c(actor, 0x1c);
+    FieldActor_ClearFlag(actor, 0xd);
+    FieldActor_SetFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02210950, FieldActor_EnterState62)
 
@@ -3923,8 +3792,8 @@ CLEAN_AS(func_ov003_022109f8, FieldActor_RequestState62)
 void FieldActor_UpdateState61(FieldActor *actor)
 {
     FieldActor_TurnState61(actor);
-    func_02010f5c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState61(actor);
 }
 CLEAN_AS(func_ov003_02210a44, FieldActor_UpdateState61)
@@ -3938,18 +3807,18 @@ void FieldActor_EndState61(FieldActor *actor)
     State61Work *work = &actor->work.s61;
 
     if (!is_local_player(actor)) {
-        actor->next_state = func_02008258(actor, actor->state);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         return;
     }
     if (actor->unk_818 == 1) {
         work->done = 1;
     }
-    if (func_02056f94(&actor->anim) || actor->animation == 0x4a) {
-        if (func_02056f94(&actor->anim)) {
-            func_020109fc(actor, 0x4a, 3, 0);
+    if (FrameCtrl_IsDone(&actor->anim) || actor->animation == 0x4a) {
+        if (FrameCtrl_IsDone(&actor->anim)) {
+            FieldActor_PlayAnimationLoop(actor, 0x4a, 3, 0);
         }
         if (work->kind != 2 || work->done != 0) {
-            actor->next_state = func_02008258(actor, actor->state);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
             u32 tile[2] = {work->x, work->z};
             FieldActor_RequestState62(actor, work->kind, tile, work->item, 6, -1);
         }
@@ -3960,7 +3829,7 @@ CLEAN_AS(func_ov003_02210a64, FieldActor_EndState61)
 /* func_ov003_02210b28 */
 void FieldActor_TurnState61(FieldActor *actor)
 {
-    func_0200fb34(actor, actor->work.s61.yaw);
+    FieldActor_TurnTowards(actor, actor->work.s61.yaw);
 }
 CLEAN_AS(func_ov003_02210b28, FieldActor_TurnState61)
 
@@ -3986,11 +3855,11 @@ void FieldActor_EnterState61(FieldActor *actor, const StateRequest *request, int
     u8 z = args->z;
     Vec3 point;
 
-    func_0204f794(&point, x, z);
+    AcreTile_TileCentre(&point, x, z);
     u16 item = args->item;
     if (kind == 2) {
         if (is_local_player(actor)) {
-            actor->target = func_02043d18(actor->player, 2, 0, actor->item);
+            actor->target = TileRequests_AskAtActorTileOpFor(actor->player, 2, 0, actor->item);
         }
     } else if (actor->animation == 0x6c) {
         kind = 3;
@@ -4002,15 +3871,15 @@ void FieldActor_EnterState61(FieldActor *actor, const StateRequest *request, int
     work->done = 0;
     work->yaw = Math_Atan2(sub32(point.x, actor->position.x), sub32(point.z, actor->position.z));
     SavedItemTile_Set(&actor->saved.item_tile, item, (char) x, (char) z, (u8) kind);
-    func_020109a0(actor, 0x49, 7, 0);
-    func_0200f268(actor, 0xd);
+    FieldActor_PlayAnimationOnce(actor, 0x49, 7, 0);
+    FieldActor_ClearFlag(actor, 0xd);
 }
 CLEAN_AS(func_ov003_02210b3c, FieldActor_EnterState61)
 
 /* func_ov003_02210c08 */
 void SavedItemTile_Set(SavedItemTile *saved, int item, char x, char z, u8 kind)
 {
-    func_020778b0(saved->item, item);
+    PackedBytes_WriteItem(saved->item, item);
     saved->x = (u8) x;
     saved->z = (u8) z;
     saved->kind = kind;
@@ -4039,7 +3908,7 @@ CLEAN_AS(func_ov003_02210c24, FieldActor_RequestState61)
 void FieldActor_UpdateState60(FieldActor *actor)
 {
     FieldActor_ScaleState60(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState60(actor);
 }
 CLEAN_AS(func_ov003_02210c70, FieldActor_UpdateState60)
@@ -4061,28 +3930,28 @@ void FieldActor_RunState60(FieldActor *actor)
 
     switch (work->step) {
         case 0:
-            if (!func_02056f94(&actor->anim)) {
+            if (!FrameCtrl_IsDone(&actor->anim)) {
                 break;
             }
             move_on(actor);
             if (is_local_player(actor)) {
-                func_0209a110(&actor->item);
+                CurrentPockets_Receive(&actor->item);
             }
             break;
         case 1:
             if (actor->animation == 0x50) {
-                if (!func_02056f94(&actor->anim)) {
+                if (!FrameCtrl_IsDone(&actor->anim)) {
                     break;
                 }
-                func_020109fc(actor, 0x6c, 3, 3);
+                FieldActor_PlayAnimationLoop(actor, 0x6c, 3, 3);
             }
             if (!is_local_player(actor)) {
-                actor->next_state = func_02008258(actor, actor->state);
-                func_0200f268(actor, 0xd);
+                actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+                FieldActor_ClearFlag(actor, 0xd);
                 break;
             }
             if (actor->unk_81C == 5) {
-                if (func_0206f6b0(actor->item)) {
+                if (GroupParams_OpenWithItem2a(actor->item)) {
                     actor->unk_81C = 6;
                 }
                 break;
@@ -4093,9 +3962,9 @@ void FieldActor_RunState60(FieldActor *actor)
                 }
                 actor->unk_81C = 0xf;
                 if (GroupParams_C4CIs1()) {
-                    func_0200f268(actor, 0xd);
+                    FieldActor_ClearFlag(actor, 0xd);
                     release_receiver(actor);
-                    func_0203e19c();
+                    EventQueue_FinishKind9();
                     move_on(actor);
                     break;
                 }
@@ -4103,7 +3972,7 @@ void FieldActor_RunState60(FieldActor *actor)
                 break;
             }
             release_receiver(actor);
-            func_0203e19c();
+            EventQueue_FinishKind9();
             work->step++;
             break;
         case 2: {
@@ -4112,7 +3981,7 @@ void FieldActor_RunState60(FieldActor *actor)
             }
             u32 tile[2] = {work->x, work->z};
             FieldActor_RequestState61(actor, 2, tile, actor->item, 6, -1);
-            func_0200f268(actor, 0xd);
+            FieldActor_ClearFlag(actor, 0xd);
             break;
         }
         default:
@@ -4128,18 +3997,18 @@ void FieldActor_ScaleState60(FieldActor *actor)
 {
     fx32 scale = 0;
 
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (actor->animation == 0x50) {
         scale = 0x1000 - (anim_frame(actor) << 12) / 6;
         if (scale < 0) {
             scale = 0;
-            func_0200f268(actor, 13);
+            FieldActor_ClearFlag(actor, 13);
         }
     }
     actor->unk_830[0] = scale;
     actor->unk_830[1] = scale;
     actor->unk_830[2] = scale;
-    func_0200f650(actor, scale);
+    FieldActor_EasePoint824(actor, scale);
 }
 CLEAN_AS(func_ov003_02210e4c, FieldActor_ScaleState60)
 
@@ -4171,8 +4040,8 @@ void FieldActor_EnterState60(FieldActor *actor, const StateRequest *request, int
     actor->work.s60.x = x;
     actor->work.s60.z = z;
     TileStepArgs_Set(&actor->saved.tile_step, x, z, step);
-    func_020109a0(actor, 0x50, 3, 0);
-    func_0200f328(actor, 0x4f);
+    FieldActor_PlayAnimationOnce(actor, 0x50, 3, 0);
+    FieldActor_PlaySound(actor, 0x4f);
 }
 CLEAN_AS(func_ov003_02210ef8, FieldActor_EnterState60)
 
@@ -4212,13 +4081,13 @@ void FieldActor_UpdateState5F(FieldActor *actor)
     FieldActor_AnimateState5F(actor);
     if (is_local_player(actor)) {
         if (anim_frame(actor) >= 0x19) {
-            func_0201100c(actor);
+            FieldActor_MoveWithCollision(actor);
         }
     } else {
         Vec3 point = actor->work.s5f.point;
-        func_0200f434(actor, &point);
+        FieldActor_FollowReportedTo(actor, &point);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState5F(actor);
 }
 CLEAN_AS(func_ov003_02210fa0, FieldActor_UpdateState5F)
@@ -4228,7 +4097,7 @@ static void request_state60_at_point(FieldActor *actor, int step)
 {
     int tile[2] = {0, 0};
     Vec3 point = actor->work.s5f.point;
-    func_0204f818(&tile[0], &tile[1], &point);
+    Position_Tile(&tile[0], &tile[1], (const Position *) &point);
     FieldActor_RequestState60(actor, tile, step, 6, -1);
 }
 
@@ -4256,57 +4125,57 @@ void FieldActor_RunState5F(FieldActor *actor)
     State5FWork *work = &actor->work.s5f;
 
     if (actor->animation == 0x49) {
-        if (func_02056f94(&actor->anim)) {
-            func_020109a0(actor, 0x4f, 3, 0);
+        if (FrameCtrl_IsDone(&actor->anim)) {
+            FieldActor_PlayAnimationOnce(actor, 0x4f, 3, 0);
         }
         return;
     }
     int frame = anim_frame(actor);
-    if (is_local_player(actor) && func_02056f28(&actor->anim, 0x13)) {
-        func_0203ae98();
+    if (is_local_player(actor) && FrameCtrl_Passed(&actor->anim, 0x13)) {
+        CameraControl_SetMode4();
     }
     if (frame < 0x19) {
         return;
     }
-    if (!func_0200faf0(actor, 0x400)) {
+    if (!FieldActor_TurnToZero(actor, 0x400)) {
         return;
     }
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
     if (!is_local_player(actor)) {
-        func_0200f268(actor, 0x12);
-        actor->next_state = func_02008258(actor, actor->state);
+        FieldActor_ClearFlag(actor, 0x12);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         return;
     }
 
     switch (work->step) {
         case 0: {
-            if (func_0203e1c4() == 0) {
+            if (EventQueue_RequestKind9() == 0) {
                 return;
             }
             work->step = 1;
-            func_0203ee14(actor, actor->receiver);
-            func_0200f27c(actor, 0x11);
-            void *record = func_020984e8();
-            func_020a8164(actor->receiver, data_ov003_02238134);
-            if (actor->item == 0x136a && !func_02099020(record, 0x27)) {
+            SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+            FieldActor_SetFlag(actor, 0x11);
+            void *record = PlayerRecords_Current();
+            MessageReceiver_SetName((MessageReceiver *) actor->receiver, data_ov003_02238134);
+            if (actor->item == 0x136a && !PlayerRecord_TestFlag(record, 0x27)) {
                 actor->receiver_unk_1E = 0x21;
-                func_02098ff8(record, 0x27);
-            } else if (actor->item == 0x137b && !func_02099020(record, 0x28)) {
+                PlayerRecord_SetFlag(record, 0x27);
+            } else if (actor->item == 0x137b && !PlayerRecord_TestFlag(record, 0x28)) {
                 actor->receiver_unk_1E = 0x23;
-                func_02098ff8(record, 0x28);
+                PlayerRecord_SetFlag(record, 0x28);
             } else {
                 u8 text[0x28];
                 actor->receiver_unk_1E = 1;
-                func_02062f90(text, &actor->item);
-                func_020683b4(actor->link, 0, text, 7);
-                func_02062f4c(text);
+                NameText_ConstructItem((NameText *) text, &actor->item);
+                TalkObject_SetValue((TalkObject *) actor->link, 0, (TextBase *) text, 7);
+                NameText_Destruct((NameText *) text);
             }
             actor->link->requested = 1;
-            func_02035624(0x12);
-            func_02035684(0xc, 0, 1);
-            func_020356c4(0xd, 0x39, 0x7f, 1);
+            Music_DropPriority(0x12);
+            Music_AddValue(0xc, 0, 1);
+            Music_Add(0xd, 0x39, 0x7f, 1);
             actor->unk_81C = 10;
             break;
         }
@@ -4316,7 +4185,7 @@ void FieldActor_RunState5F(FieldActor *actor)
             }
             break;
         case 2:
-            if (func_02099fe8() == -1) {
+            if (CurrentPockets_FreeSlot() == -1) {
                 work->step = 3;
                 actor->unk_81C = 2;
                 break;
@@ -4324,11 +4193,11 @@ void FieldActor_RunState5F(FieldActor *actor)
             if (actor->link == NULL || actor->link->open != 0) {
                 break;
             }
-            func_0203ee08(actor, actor->receiver);
-            func_0200f268(actor, 0x11);
-            func_0203e19c();
+            SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+            FieldActor_ClearFlag(actor, 0x11);
+            EventQueue_FinishKind9();
             request_state60_at_point(actor, 0);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         case 3:
             if (actor->unk_81C >= 0xf) {
@@ -4338,10 +4207,10 @@ void FieldActor_RunState5F(FieldActor *actor)
             if (actor->link == NULL || actor->link->open != 0) {
                 break;
             }
-            func_0203ee08(actor, actor->receiver);
-            func_0200f268(actor, 0x11);
+            SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+            FieldActor_ClearFlag(actor, 0x11);
             request_state60_at_point(actor, 1);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         case 4:
             if (actor->link == NULL || actor->link->open != 0) {
@@ -4350,9 +4219,9 @@ void FieldActor_RunState5F(FieldActor *actor)
             if (!GroupParams_CanOpen()) {
                 break;
             }
-            func_0203ee08(actor, actor->receiver);
-            func_0200f268(actor, 0x11);
-            func_0203e19c();
+            SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+            FieldActor_ClearFlag(actor, 0x11);
+            EventQueue_FinishKind9();
             work->step = 5;
             break;
         case 5: {
@@ -4361,10 +4230,10 @@ void FieldActor_RunState5F(FieldActor *actor)
             }
             int tile[2] = {0, 0};
             Vec3 point = work->point;
-            func_0204f818(&tile[0], &tile[1], &point);
+            Position_Tile(&tile[0], &tile[1], (const Position *) &point);
             u32 at[2] = {(u32) tile[0], (u32) tile[1]};
             FieldActor_RequestState61(actor, 2, at, actor->item, 6, -1);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         }
         default:
@@ -4381,49 +4250,49 @@ CLEAN_AS(func_ov003_0221100c, FieldActor_RunState5F)
  * 0x824. */
 void FieldActor_AnimateState5F(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (actor->animation == 0x49) {
         return;
     }
     Vec3 point = actor->work.s5f.point;
     switch (anim_frame(actor)) {
         case 5:
-            func_020912d4(6, &point, NULL, 0);
+            EffectSystem_StartKind(6, &point, NULL, 0);
             break;
         case 6:
-            func_0200f328(actor, 0x841);
-            func_0200f27c(actor, 9);
+            FieldActor_PlaySound(actor, 0x841);
+            FieldActor_SetFlag(actor, 9);
             break;
         case 0xc: {
             int x;
             int z;
-            func_020912d4(8, &point, NULL, 0);
-            func_0204f818(&x, &z, &point);
-            func_02030db8(x, z);
+            EffectSystem_StartKind(8, &point, NULL, 0);
+            Position_Tile(&x, &z, (const Position *) &point);
+            CollisionMap_AddExtraPost(x, z);
             Vec3 copy = point;
-            func_ov003_02221294(actor->player, &copy, actor->work.s5f.kind);
-            func_0200f27c(actor, 0xd);
-            func_0200f268(actor, 0x1c);
+            TileEvent_StartUnitKind1(actor->player, &copy, actor->work.s5f.kind);
+            FieldActor_SetFlag(actor, 0xd);
+            FieldActor_ClearFlag(actor, 0x1c);
             break;
         }
         default:
             break;
     }
     if (anim_frame(actor) >= 0x18) {
-        func_0200f268(actor, 9);
+        FieldActor_ClearFlag(actor, 9);
         Vec3 kept_0C4 = actor->unk_0C4;
         s16 kept_0D0 = actor->unk_0D0;
         FieldActorBlock48 kept_298 = actor->unk_298;
         FieldActorBlock48 kept_698 = actor->unk_698;
-        func_0200ee40(actor);
-        func_0200f650(actor, 0x1000);
+        FieldActor_RebuildPose(actor);
+        FieldActor_EasePoint824(actor, 0x1000);
         actor->unk_0C4 = kept_0C4;
         actor->unk_0D0 = kept_0D0;
         actor->unk_298 = kept_298;
         actor->unk_698 = kept_698;
     } else {
         actor->unk_824 = actor->unk_62C;
-        func_0203f7d0(&actor->unk_824, &actor->unk_824);
+        Globe_Unbend(&actor->unk_824, &actor->unk_824);
     }
 }
 CLEAN_AS(func_ov003_0221138c, FieldActor_AnimateState5F)
@@ -4436,14 +4305,14 @@ void FieldActor_ExitState5F(FieldActor *actor, int next)
     if (is_local_player(actor)) {
         return;
     }
-    if (func_0200f290(actor, 0x1c)) {
+    if (FieldActor_TestFlag(actor, 0x1c)) {
         Vec3 point = actor->work.s5f.point;
-        func_ov003_02221294(actor->player, &point, actor->work.s5f.kind);
-        func_0200f268(actor, 0x1c);
-        func_0200f268(actor, 9);
+        TileEvent_StartUnitKind1(actor->player, &point, actor->work.s5f.kind);
+        FieldActor_ClearFlag(actor, 0x1c);
+        FieldActor_ClearFlag(actor, 9);
     }
     if (next != 0x60 && next != 0x61) {
-        func_0200f268(actor, 0xd);
+        FieldActor_ClearFlag(actor, 0xd);
     }
 }
 CLEAN_AS(func_ov003_02211530, FieldActor_ExitState5F)
@@ -4460,7 +4329,7 @@ void FieldActor_State5FMessage(FieldActor *actor, int arg)
     u8 kind;
     SavedItemTile_Get(&actor->saved.item_tile, tile, &item, &kind);
     Vec3 point;
-    func_0204f794(&point, tile[0], tile[1]);
+    AcreTile_TileCentre(&point, tile[0], tile[1]);
     FieldActor_RequestState5F(actor, &point, item, kind, 6, (s16) arg);
 }
 CLEAN_AS(func_ov003_022115a4, FieldActor_State5FMessage)
@@ -4489,19 +4358,19 @@ void FieldActor_EnterState5F(FieldActor *actor, const StateRequest *request, int
     work->point = point;
     work->kind = (u8) kind;
     if (actor->animation == 0x49 || actor->animation == 0x4a || !item_is_nothing(&item)) {
-        func_020109a0(actor, 0x4f, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x4f, 3, 0);
     } else {
-        func_020109a0(actor, 0x49, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x49, 3, 0);
     }
     actor->unk_824 = actor->unk_62C;
-    func_0203f7d0(&actor->unk_824, &actor->unk_824);
+    Globe_Unbend(&actor->unk_824, &actor->unk_824);
     actor->unk_830[0] = 0x1000;
     actor->unk_830[1] = 0x1000;
     actor->unk_830[2] = 0x1000;
-    func_0200f268(actor, 0xd);
+    FieldActor_ClearFlag(actor, 0xd);
 
     int tile[2] = {0, 0};
-    func_0204f818(&tile[0], &tile[1], &point);
+    Position_Tile(&tile[0], &tile[1], (const Position *) &point);
     SavedItemTile_SetTile(&actor->saved.item_tile, tile, actor->item, kind);
     u16 *object = map_object_at(tile[0], tile[1]);
     if (!item_is_nothing(&item)) {
@@ -4512,7 +4381,7 @@ void FieldActor_EnterState5F(FieldActor *actor, const StateRequest *request, int
              * wraps to frame 0xffff. */
             u16 frames = (u16) ((u32) actor->anim.end >> 12);
             actor->anim.frame = (fx32) ((u32) (u16) (frames - 1) << 12);
-            func_0200f27c(actor, 0xd);
+            FieldActor_SetFlag(actor, 0xd);
         }
     } else if (item_is_nothing(&actor->item) || !is_local_player(actor)) {
         u16 code = object != NULL ? *object : ITEM_NONE;
@@ -4520,13 +4389,13 @@ void FieldActor_EnterState5F(FieldActor *actor, const StateRequest *request, int
         actor->item = code;
     }
     if (is_local_player(actor)) {
-        func_02035684(0x12, 0xf, 0);
+        Music_AddValue(0x12, 0xf, 0);
         if (actor->item == 0x1549) {
-            func_02079750(&actor->position);
+            VillagerEvent_Item1549(&actor->position);
         }
     }
     actor->unk_81C = 7;
-    func_0200f27c(actor, 0x1c);
+    FieldActor_SetFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02211604, FieldActor_EnterState5F)
 
@@ -4535,7 +4404,7 @@ void SavedItemTile_Get(const SavedItemTile *saved, u32 *tile, u16 *item, u8 *kin
 {
     tile[0] = saved->x;
     tile[1] = saved->z;
-    *item = func_02077898(saved->item);
+    *item = PackedBytes_ReadItem(saved->item);
     *kind = saved->kind;
 }
 CLEAN_AS(func_ov003_022118b8, SavedItemTile_Get)
@@ -4545,7 +4414,7 @@ void SavedItemTile_SetTile(SavedItemTile *saved, const int *tile, int item, int 
 {
     saved->x = (u8) tile[0];
     saved->z = (u8) tile[1];
-    func_020778b0(saved->item, item);
+    PackedBytes_WriteItem(saved->item, item);
     saved->kind = (u8) kind;
 }
 CLEAN_AS(func_ov003_022118d8, SavedItemTile_SetTile)
@@ -4600,12 +4469,12 @@ void FieldActor_UpdateState5E(FieldActor *actor)
 {
     FieldActor_AnimateState5E(actor);
     if (is_local_player(actor)) {
-        func_0201100c(actor);
+        FieldActor_MoveWithCollision(actor);
     } else {
         Vec3 point = actor->work.s5e.point;
-        func_0200f434(actor, &point);
+        FieldActor_FollowReportedTo(actor, &point);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState5E(actor);
 }
 CLEAN_AS(func_ov003_022119f0, FieldActor_UpdateState5E)
@@ -4614,14 +4483,14 @@ CLEAN_AS(func_ov003_022119f0, FieldActor_UpdateState5E)
  * work's flag is set, else 0x4b; after those the actor moves on. */
 void FieldActor_EndState5E(FieldActor *actor)
 {
-    if (!func_02056f94(&actor->anim)) {
+    if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
     if (actor->animation == 0x49) {
         if (actor->work.s5e.flag != 0) {
-            func_020109a0(actor, 0x4e, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x4e, 3, 0);
         } else {
-            func_020109a0(actor, 0x4b, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x4b, 3, 0);
         }
     } else {
         move_on(actor);
@@ -4643,21 +4512,21 @@ void FieldActor_AnimateState5E(FieldActor *actor)
         if (actor->animation == 0x4b) {
             switch (anim_frame(actor)) {
                 case 2:
-                    func_020912d4(6, &point, NULL, 0);
+                    EffectSystem_StartKind(6, &point, NULL, 0);
                     break;
                 case 5:
-                    func_0200f328(actor, 0x841);
-                    func_0200f27c(actor, 9);
+                    FieldActor_PlaySound(actor, 0x841);
+                    FieldActor_SetFlag(actor, 9);
                     break;
                 case 7: {
                     int x;
                     int z;
-                    func_020912d4(7, &point, &yaw, 0);
+                    EffectSystem_StartKind(7, &point, &yaw, 0);
                     Vec3 copy = point;
-                    func_ov003_02221294(actor->player, &copy, 0);
-                    func_0200f268(actor, 0x1c);
-                    func_0204f818(&x, &z, &point);
-                    func_02030db8(x, z);
+                    TileEvent_StartUnitKind1(actor->player, &copy, 0);
+                    FieldActor_ClearFlag(actor, 0x1c);
+                    Position_Tile(&x, &z, (const Position *) &point);
+                    CollisionMap_AddExtraPost(x, z);
                     break;
                 }
                 default:
@@ -4666,22 +4535,22 @@ void FieldActor_AnimateState5E(FieldActor *actor)
         } else {
             switch (anim_frame(actor)) {
                 case 5:
-                    func_0200f328(actor, 0x85b);
-                    func_0200f27c(actor, 9);
+                    FieldActor_PlaySound(actor, 0x85b);
+                    FieldActor_SetFlag(actor, 9);
                     break;
                 case 12:
-                    func_020912d4(6, &point, NULL, 0);
+                    EffectSystem_StartKind(6, &point, NULL, 0);
                     break;
                 case 18:
-                    func_020912d4(8, &point, &yaw, 0);
+                    EffectSystem_StartKind(8, &point, &yaw, 0);
                     break;
                 case 21: {
                     Vec3 copy = point;
-                    func_ov003_02220f40(actor->player, &copy, actor->yaw);
+                    TileEvent_StartKind8(actor->player, &copy, actor->yaw);
                     Vec3 copy2 = point;
-                    func_ov003_02221294(actor->player, &copy2, 0);
-                    func_0200f328(actor, 0x85c);
-                    func_0200f268(actor, 0x1c);
+                    TileEvent_StartUnitKind1(actor->player, &copy2, 0);
+                    FieldActor_PlaySound(actor, 0x85c);
+                    FieldActor_ClearFlag(actor, 0x1c);
                     break;
                 }
                 default:
@@ -4689,7 +4558,7 @@ void FieldActor_AnimateState5E(FieldActor *actor)
             }
         }
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
 }
 CLEAN_AS(func_ov003_02211ac0, FieldActor_AnimateState5E)
 
@@ -4701,20 +4570,20 @@ void FieldActor_ExitState5E(FieldActor *actor)
     if (is_local_player(actor)) {
         return;
     }
-    if (!func_0200f290(actor, 0x1c)) {
+    if (!FieldActor_TestFlag(actor, 0x1c)) {
         return;
     }
     Vec3 point = actor->work.s5e.point;
     if (actor->animation == 0x4b) {
         Vec3 copy = point;
-        func_ov003_02221294(actor->player, &copy, 0);
+        TileEvent_StartUnitKind1(actor->player, &copy, 0);
     } else {
         Vec3 copy = point;
-        func_ov003_02220f40(actor->player, &copy, actor->yaw);
+        TileEvent_StartKind8(actor->player, &copy, actor->yaw);
         Vec3 copy2 = point;
-        func_ov003_02221294(actor->player, &copy2, 0);
+        TileEvent_StartUnitKind1(actor->player, &copy2, 0);
     }
-    func_0200f268(actor, 0x1c);
+    FieldActor_ClearFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02211c20, FieldActor_ExitState5E)
 
@@ -4738,14 +4607,14 @@ void FieldActor_EnterState5E(FieldActor *actor, const StateRequest *request, int
     State5EWork_Set(&actor->work.s5e, (char) args->flag, &point);
     if (actor->animation == 0x49 || actor->animation == 0x4a) {
         if (actor->work.s5e.flag != 0) {
-            func_020109a0(actor, 0x4e, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x4e, 3, 0);
         } else {
-            func_020109a0(actor, 0x4b, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x4b, 3, 0);
         }
     } else {
-        func_020109a0(actor, 0x49, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x49, 3, 0);
     }
-    func_0200f27c(actor, 0x1c);
+    FieldActor_SetFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02211cc0, FieldActor_EnterState5E)
 
@@ -4790,28 +4659,6 @@ static_assert(offsetof(FieldActor, saved.s58.angle) == 0x8f2, "state 0x58 angle"
 static_assert(sizeof(State59Work) == 0x10, "state 0x59 work");
 static_assert(sizeof(State5EWork) <= sizeof(((StateRequest *) 0)->payload), "state 0x5e payload");
 
-/* max(value - 0x9c, min) */
-extern int func_02011398(int value, int min);
-extern void func_ov003_022241a4(int *tile);
-/* Turns the actor towards a point. */
-extern void func_02010d88(FieldActor *actor, const Vec3 *point, int a, int b);
-extern void func_02089fc8(void *p);
-extern int func_0203f8d0(Vec3 *out, Vec3 *in);
-extern int func_0206f728(int item);
-extern int func_0206fbc0(void);
-extern int func_0206fc6c(void);
-extern int func_020644cc(int range);
-extern void func_ov003_0222e6c4(u8 player, int a);
-extern void func_ov003_0222eabc(u8 player, int angle);
-extern int func_ov003_0222ea84(u8 player);
-extern Vec3 *func_ov003_0222e970(u8 player);
-/* Moves the block's point (its last three words) by `offset` (none: NULL) along the block. */
-extern void func_ov003_02219668(FieldActorBlock48 *block, const Vec3 *offset);
-extern int func_ov003_0222d83c(u8 player, s16 *angles, FieldActorBlock48 *block, int a);
-/* A halfword packed into two bytes, and read back. */
-extern void func_02077910(u8 *packed, int value);
-extern s16 func_020778f8(const u8 *packed);
-
 /* The absolute value as the ARM computes it (-0x80000000 stays itself). */
 static int abs32(int value)
 {
@@ -4823,10 +4670,10 @@ static int abs32(int value)
 void FieldActor_UpdateState5D(FieldActor *actor)
 {
     FieldActor_AnimateState5D(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
-    int speed = sub32(0, func_02011398(abs32(actor->unk_098), 0));
-    func_0201107c(actor, &speed);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
+    int speed = sub32(0, FieldActor_Slow(abs32(actor->unk_098), 0));
+    FieldActor_SetSpeed(actor, &speed);
     FieldActor_EndState5D(actor);
 }
 CLEAN_AS(func_ov003_02211db0, FieldActor_UpdateState5D)
@@ -4834,7 +4681,7 @@ CLEAN_AS(func_ov003_02211db0, FieldActor_UpdateState5D)
 /* func_ov003_02211df8: at the animation's end the actor moves on. */
 void FieldActor_EndState5D(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
+    if (FrameCtrl_IsDone(&actor->anim)) {
         move_on(actor);
     }
 }
@@ -4851,31 +4698,31 @@ CLEAN_AS(func_ov003_02211df8, FieldActor_EndState5D)
  * fails or for another player's actor; 1 gives sound 0x7df. What was met is forgotten. */
 void FieldActor_AnimateState5D(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    if (!func_02056f28(&actor->anim, 5)) {
+    FieldActor_UpdateBody(actor);
+    if (!FrameCtrl_Passed(&actor->anim, 5)) {
         return;
     }
     const TileFlagArgs *work = &actor->work.s5d;
     if (work->flag != 0) {
         int tile[2] = {work->x, work->z};
-        func_ov003_022241a4(tile);
-        func_0200f268(actor, 0x12);
-        func_0200f268(actor, 0x1c);
+        TileEvent_StartFromChanges((const TileChangesTile *) tile);
+        FieldActor_ClearFlag(actor, 0x12);
+        FieldActor_ClearFlag(actor, 0x1c);
     }
     int speed = -0x333;
-    func_0201107c(actor, &speed);
+    FieldActor_SetSpeed(actor, &speed);
 
     Vec3 ahead;
     int x = 0;
     int z = 0;
-    func_0200fa8c(&ahead, actor);
-    func_0204f818(&x, &z, &ahead);
+    FieldActor_TileAhead(&ahead, actor);
+    Position_Tile(&x, &z, (const Position *) &ahead);
     u16 *object = map_object_at(x, z);
     if (object != NULL && is_growth_object(*object)) {
         int tile[2] = {x, z};
-        func_ov003_02224384(actor->player, tile, 1);
+        GrowthModel_RequestHit(actor->player, (const TileChangesTile *) tile, 1);
     }
-    func_0200f27c(actor, 9);
+    FieldActor_SetFlag(actor, 9);
 
     int object_kind = object != NULL ? (*object & 0xf000) >> 12 : 0xf;
     switch (actor->other_result) {
@@ -4889,10 +4736,10 @@ void FieldActor_AnimateState5D(FieldActor *actor)
                 }
             }
             if (plain) {
-                func_0200f328(actor, 0x7df);
+                FieldActor_PlaySound(actor, 0x7df);
                 break;
             }
-            func_0200f328(actor, 0x844);
+            FieldActor_PlaySound(actor, 0x844);
             Vec3 at = actor->position;
             s16 angle = actor->yaw;
             int index = ((u16) angle >> 4) * 2;
@@ -4907,17 +4754,17 @@ void FieldActor_AnimateState5D(FieldActor *actor)
             at.x = add32(at.x, dx);
             at.z = add32(at.z, dz);
             angle = (s16) (angle - 0x2000);
-            func_020912d4(5, &at, &angle, 0);
+            EffectSystem_StartKind(5, &at, &angle, 0);
             break;
         }
         case 1:
-            func_0200f328(actor, 0x7df);
+            FieldActor_PlaySound(actor, 0x7df);
             break;
         case 2:
-            func_0200f328(actor, 0x7df);
+            FieldActor_PlaySound(actor, 0x7df);
             if (actor->other != NULL) {
                 u16 item;
-                func_020110c4(&item, actor);
+                FieldActor_RecordHeldItem(&item, actor);
                 GameObject *other = (GameObject *) actor->other;
                 ItemQuery query = (ItemQuery) (uintptr_t) other->vtable[24];
                 query(other, &item);
@@ -4927,7 +4774,7 @@ void FieldActor_AnimateState5D(FieldActor *actor)
             if (is_local_player(actor) && Snowman_Knock(actor->other, 1)) {
                 break;
             }
-            func_0200f328(actor, 0x7df);
+            FieldActor_PlaySound(actor, 0x7df);
             break;
         default:
             break;
@@ -4945,15 +4792,15 @@ void FieldActor_ExitState5D(FieldActor *actor)
     if (is_local_player(actor)) {
         return;
     }
-    if (!func_0200f290(actor, 0x1c)) {
+    if (!FieldActor_TestFlag(actor, 0x1c)) {
         return;
     }
     const TileFlagArgs *work = &actor->work.s5d;
     if (work->flag != 0) {
         int tile[2] = {work->x, work->z};
-        func_ov003_022241a4(tile);
-        func_0200f268(actor, 0x12);
-        func_0200f268(actor, 0x1c);
+        TileEvent_StartFromChanges((const TileChangesTile *) tile);
+        FieldActor_ClearFlag(actor, 0x12);
+        FieldActor_ClearFlag(actor, 0x1c);
     }
 }
 CLEAN_AS(func_ov003_02212158, FieldActor_ExitState5D)
@@ -4990,9 +4837,9 @@ void FieldActor_EnterState5D(FieldActor *actor, const StateRequest *request, int
 
     State5DWork_Set(&actor->work.s5d, tile, flag);
     State5DSaved_Set(&actor->saved.s5d, flag, x, z, actor->other_result);
-    func_020109a0(actor, 0x4c, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x4c, 3, 0);
     if (flag != 0) {
-        func_0200f27c(actor, 0x1c);
+        FieldActor_SetFlag(actor, 0x1c);
     }
 }
 CLEAN_AS(func_ov003_0221220c, FieldActor_EnterState5D)
@@ -5052,11 +4899,11 @@ CLEAN_AS(func_ov003_022122fc, State5DArgs_Set)
 /* func_ov003_02212308: state 0x5c's update: the speed at 0x98 slows by 0x171 a frame. */
 void FieldActor_UpdateState5C(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
-    int speed = func_020113a4(actor->unk_098, 0, 0x171);
-    func_0201107c(actor, &speed);
+    FieldActor_UpdateBody(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
+    int speed = FieldActor_StepDown(actor->unk_098, 0, 0x171);
+    FieldActor_SetSpeed(actor, &speed);
     FieldActor_EndState5C(actor);
 }
 CLEAN_AS(func_ov003_02212308, FieldActor_UpdateState5C)
@@ -5064,7 +4911,7 @@ CLEAN_AS(func_ov003_02212308, FieldActor_UpdateState5C)
 /* func_ov003_02212348: at the animation's end the actor moves on. */
 void FieldActor_EndState5C(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
+    if (FrameCtrl_IsDone(&actor->anim)) {
         move_on(actor);
     }
 }
@@ -5082,7 +4929,7 @@ void FieldActor_EnterState5C(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x5e, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x5e, 3, 0);
 }
 CLEAN_AS(func_ov003_02212394, FieldActor_EnterState5C)
 
@@ -5099,7 +4946,7 @@ CLEAN_AS(func_ov003_022123a8, FieldActor_RequestState5C)
 void FieldActor_UpdateState5B(FieldActor *actor)
 {
     FieldActor_AnimateState5B(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState5B(actor);
 }
 CLEAN_AS(func_ov003_022123e0, FieldActor_UpdateState5B)
@@ -5107,7 +4954,7 @@ CLEAN_AS(func_ov003_022123e0, FieldActor_UpdateState5B)
 /* func_ov003_022123fc: at the animation's end the actor moves on. */
 void FieldActor_EndState5B(FieldActor *actor)
 {
-    if (func_02056f94(&actor->anim)) {
+    if (FrameCtrl_IsDone(&actor->anim)) {
         move_on(actor);
     }
 }
@@ -5116,10 +4963,10 @@ CLEAN_AS(func_ov003_022123fc, FieldActor_EndState5B)
 /* func_ov003_0221243c: sound 0x842 on reaching frame 5. */
 void FieldActor_AnimateState5B(FieldActor *actor)
 {
-    if (func_02056f28(&actor->anim, 5)) {
-        func_0200f328(actor, 0x842);
+    if (FrameCtrl_Passed(&actor->anim, 5)) {
+        FieldActor_PlaySound(actor, 0x842);
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
 }
 CLEAN_AS(func_ov003_0221243c, FieldActor_AnimateState5B)
 
@@ -5135,7 +4982,7 @@ void FieldActor_EnterState5B(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x4d, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x4d, 3, 0);
 }
 CLEAN_AS(func_ov003_02212478, FieldActor_EnterState5B)
 
@@ -5154,24 +5001,24 @@ CLEAN_AS(func_ov003_0221248c, FieldActor_RequestState5B)
 void FieldActor_UpdateState5A(FieldActor *actor)
 {
     int speed_before = actor->unk_098;
-    int speed = func_02011398(speed_before, 0);
-    func_0201107c(actor, &speed);
-    func_02010f5c(actor);
+    int speed = FieldActor_Slow(speed_before, 0);
+    FieldActor_SetSpeed(actor, &speed);
+    FieldActor_UpdateBody(actor);
     if (is_local_player(actor)) {
-        func_0201100c(actor);
-        func_02010d64(actor);
+        FieldActor_MoveWithCollision(actor);
+        FieldActor_EnterContact(actor);
         Vec3 zero = {0, 0, 0};
         FieldActor_ActAt(actor, &zero, 0);
     } else {
-        if (func_0200f554(actor)) {
-            func_0201100c(actor);
+        if (FieldActor_FollowReported(actor)) {
+            FieldActor_MoveWithCollision(actor);
         }
-        func_02010d64(actor);
-        actor->next_state = func_02008258(actor, actor->state);
+        FieldActor_EnterContact(actor);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     }
     FieldActor_FaceState5ATile(actor);
     if (speed_before != 0 && actor->unk_098 == 0) {
-        func_020912d4(0x2a, &actor->position, &actor->yaw, 0);
+        EffectSystem_StartKind(0x2a, &actor->position, &actor->yaw, 0);
     }
 }
 CLEAN_AS(func_ov003_022124c4, FieldActor_UpdateState5A)
@@ -5196,7 +5043,7 @@ int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point)
     if (use_point) {
         copy_point(&at, point);
     } else {
-        func_0204f794(&at, work->x, work->z);
+        AcreTile_TileCentre(&at, work->x, work->z);
         if (work->has_target == 0) {
             first_look = TRUE;
             use_point = 1;
@@ -5205,7 +5052,7 @@ int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point)
 
     int verdict = FieldActor_ClassifyAt(actor, &at, &use_point);
     int tile[2] = {0, 0};
-    func_0204f818(&tile[0], &tile[1], &at);
+    Position_Tile(&tile[0], &tile[1], (const Position *) &at);
     if (first_look && actor->target != -1) {
         work->has_target = 1;
     }
@@ -5235,7 +5082,7 @@ int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point)
         case 6: {
             int x = 0;
             int z = 0;
-            func_0204f818(&x, &z, &at);
+            Position_Tile(&x, &z, (const Position *) &at);
             u32 copy[2] = {(u32) x, (u32) z};
             FieldActor_RequestState62(actor, 0, copy, ITEM_NONE, 6, -1);
             break;
@@ -5254,9 +5101,9 @@ CLEAN_AS(func_ov003_02212574, FieldActor_ActAt)
 void FieldActor_FaceState5ATile(FieldActor *actor)
 {
     Vec3 middle;
-    func_0204f794(&middle, actor->work.s5a.x, actor->work.s5a.z);
-    func_02010d88(actor, &middle, 0xf33, 0x1000);
-    func_02089fc8(actor->unk_1C4);
+    AcreTile_TileCentre(&middle, actor->work.s5a.x, actor->work.s5a.z);
+    FieldActor_SetContactBSized(actor, &middle, 0xf33, 0x1000);
+    FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
 CLEAN_AS(func_ov003_02212728, FieldActor_FaceState5ATile)
 
@@ -5287,7 +5134,7 @@ void FieldActor_EnterState5A(FieldActor *actor, const StateRequest *request, int
     int copy[2] = {x, z};
     State5ASaved_Set(&actor->saved.tile, copy);
     if (actor->animation == 0x4a) {
-        func_020109fc(actor, 0x4a, 3, 0);
+        FieldActor_PlayAnimationLoop(actor, 0x4a, 3, 0);
     }
 }
 CLEAN_AS(func_ov003_022127a0, FieldActor_EnterState5A)
@@ -5345,25 +5192,25 @@ CLEAN_AS(func_ov003_02212878, State5AArgs_Set)
 void FieldActor_UpdateState59(FieldActor *actor)
 {
     int speed_before = actor->unk_098;
-    int speed = func_020113a4(speed_before, 0, 0x171);
-    func_0201107c(actor, &speed);
+    int speed = FieldActor_StepDown(speed_before, 0, 0x171);
+    FieldActor_SetSpeed(actor, &speed);
     if (is_local_player(actor)) {
         FieldActor_TurnState59(actor);
-        func_02010f5c(actor);
-        func_0201100c(actor);
-        func_02010d64(actor);
+        FieldActor_UpdateBody(actor);
+        FieldActor_MoveWithCollision(actor);
+        FieldActor_EnterContact(actor);
         FieldActor_RunState59(actor);
         FieldActor_FaceState59Point(actor);
     } else {
-        func_02010f5c(actor);
-        if (func_0200f554(actor)) {
-            func_0201100c(actor);
+        FieldActor_UpdateBody(actor);
+        if (FieldActor_FollowReported(actor)) {
+            FieldActor_MoveWithCollision(actor);
         }
-        func_02010d64(actor);
+        FieldActor_EnterContact(actor);
         FieldActor_EndState59Remote(actor);
     }
     if (speed_before != 0 && actor->unk_098 == 0) {
-        func_020912d4(0x2a, &actor->position, &actor->yaw, 0);
+        EffectSystem_StartKind(0x2a, &actor->position, &actor->yaw, 0);
     }
 }
 CLEAN_AS(func_ov003_02212884, FieldActor_UpdateState59)
@@ -5372,9 +5219,9 @@ CLEAN_AS(func_ov003_02212884, FieldActor_UpdateState59)
  * animation's end animation 0x4a is set (func_020109fc). */
 void FieldActor_EndState59Remote(FieldActor *actor)
 {
-    actor->next_state = func_02008258(actor, actor->state);
-    if (func_02056f94(&actor->anim)) {
-        func_020109fc(actor, 0x4a, 3, 0);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        FieldActor_PlayAnimationLoop(actor, 0x4a, 3, 0);
     }
 }
 CLEAN_AS(func_ov003_0221292c, FieldActor_EndState59Remote)
@@ -5386,11 +5233,11 @@ void FieldActor_RunState59(FieldActor *actor)
 {
     State59Work *work = &actor->work.s59;
 
-    if (!func_02056f94(&actor->anim) && actor->animation != 0x4a) {
+    if (!FrameCtrl_IsDone(&actor->anim) && actor->animation != 0x4a) {
         return;
     }
     if (actor->animation == 0x49) {
-        func_020109fc(actor, 0x4a, 3, 0);
+        FieldActor_PlayAnimationLoop(actor, 0x4a, 3, 0);
     }
     if (actor->unk_098 != 0) {
         return;
@@ -5404,7 +5251,7 @@ void FieldActor_RunState59(FieldActor *actor)
         return;
     }
     int tile[2] = {0, 0};
-    func_0204f818(&tile[0], &tile[1], &point);
+    Position_Tile(&tile[0], &tile[1], (const Position *) &point);
     int tile_copy[2] = {tile[0], tile[1]};
     FieldActor_RequestState5A(actor, tile_copy, 6, -1);
 }
@@ -5414,8 +5261,8 @@ CLEAN_AS(func_ov003_02212968, FieldActor_RunState59)
 void FieldActor_FaceState59Point(FieldActor *actor)
 {
     Vec3 point = actor->work.s59.point;
-    func_02010d88(actor, &point, 0xf33, 0x1000);
-    func_02089fc8(actor->unk_1C4);
+    FieldActor_SetContactBSized(actor, &point, 0xf33, 0x1000);
+    FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
 CLEAN_AS(func_ov003_02212a14, FieldActor_FaceState59Point)
 
@@ -5429,7 +5276,7 @@ void FieldActor_TurnState59(FieldActor *actor)
 
     if (actor->unk_098 == 0 && work->fixed == 0) {
         Vec3 ahead;
-        func_0200fa8c(&ahead, actor);
+        FieldActor_TileAhead(&ahead, actor);
         yaw = Math_Atan2(sub32(ahead.x, actor->start_position.x), sub32(ahead.z, actor->start_position.z));
         work->yaw = yaw;
         work->fixed = 1;
@@ -5437,7 +5284,7 @@ void FieldActor_TurnState59(FieldActor *actor)
     } else {
         yaw = work->yaw;
     }
-    func_0200fb34(actor, yaw);
+    FieldActor_TurnTowards(actor, yaw);
 }
 CLEAN_AS(func_ov003_02212a54, FieldActor_TurnState59)
 
@@ -5468,9 +5315,9 @@ void FieldActor_EnterState59(FieldActor *actor, const StateRequest *request, int
     int fixed = args->flag;
 
     State59Saved_Set(&actor->saved.s59, x, z, fixed);
-    func_020109a0(actor, 0x49, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x49, 3, 0);
     Vec3 point;
-    func_0204f794(&point, (u32) x, (u32) z);
+    AcreTile_TileCentre(&point, (u32) x, (u32) z);
     if (fixed == 0) {
         /* QUIRK: the speed is taken as it is: a negative one adds nothing, and one within 0x171
          * of -0x80000000 wraps round to a large positive one. */
@@ -5485,9 +5332,9 @@ void FieldActor_EnterState59(FieldActor *actor, const StateRequest *request, int
             }
         }
         Vec3 end;
-        func_0200fa1c(&end, actor, &actor->position, &actor->yaw, &distance);
+        FieldActor_PointAhead(&end, actor, &actor->position, (const u16 *) &actor->yaw, &distance);
         point = end;
-        func_0204f7e0(&point, &point);
+        AcreTile_SnapToTileCentre(&point, &point);
     }
     s16 yaw = Math_Atan2(sub32(point.x, actor->start_position.x), sub32(point.z, actor->start_position.z));
     Vec3 copy = point;
@@ -5557,7 +5404,7 @@ int FieldActor_RequestState59AtAim(FieldActor *actor, int priority, int arg)
     }
     int x = 0;
     int z = 0;
-    func_0204f818(&x, &z, &point);
+    Position_Tile(&x, &z, (const Position *) &point);
     State59Args_Set((TileFlagArgs *) (void *) request.payload, (u8) x, (u8) z, fixed);
     return send_request(actor, &request);
 }
@@ -5577,9 +5424,9 @@ CLEAN_AS(func_ov003_02212d04, State59Args_Set)
 /* func_ov003_02212d0c: state 0x58's update. */
 void FieldActor_UpdateState58(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_0200f554(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState58(actor);
 }
 CLEAN_AS(func_ov003_02212d0c, FieldActor_UpdateState58)
@@ -5587,8 +5434,8 @@ CLEAN_AS(func_ov003_02212d0c, FieldActor_UpdateState58)
 /* Ends state 0x58: the state after it is noted and func_0200d4e8 (6) moves on. */
 static void leave_state58(FieldActor *actor)
 {
-    actor->next_state = func_02008258(actor, actor->state);
-    func_0200d4e8(actor, 6, 1, -1);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    FieldActor_RequestState2(actor, 6, 1, -1);
 }
 
 /* func_ov003_02212d2c: state 0x58 by the work's step. Each frame a block (a copy of the one at
@@ -5624,90 +5471,90 @@ void FieldActor_RunState58(FieldActor *actor)
     s16 angles[3] = {angle, angle, angle};
 
     FieldActorBlock48 block = actor->unk_698;
-    func_ov003_02219668(&block, NULL);
+    FieldActor_OffsetMatrix(&block, NULL);
 
     State58Args *work = &actor->work.s58;
     State58Saved *saved = &actor->saved.s58;
     int item = (u16) (work->kind + 0x12b0);
     switch (work->step) {
         case 0:
-            if (!func_02056f94(&actor->anim)) {
+            if (!FrameCtrl_IsDone(&actor->anim)) {
                 break;
             }
-            func_ov003_0222e6c4((u8) actor->player, 1);
+            TownInsect_EndHeld((u8) actor->player, 1);
             leave_state58(actor);
             if (is_local_player(actor)) {
                 u16 code = (u16) item;
-                func_0209a110(&code);
+                CurrentPockets_Receive(&code);
             }
             flag = 1;
             break;
         case 1:
             if (actor->animation == 0x5d) {
-                if (!func_02056f94(&actor->anim)) {
+                if (!FrameCtrl_IsDone(&actor->anim)) {
                     break;
                 }
-                func_020109fc(actor, 0x6c, 3, 3);
-                func_0205eae0(actor->held, 0, 3, 0);
+                FieldActor_PlayAnimationLoop(actor, 0x6c, 3, 3);
+                HeldItem_Act(actor->held, 0, 3, 0);
             }
             beside.x = sub32(beside.x, 0x400);
             beside.y = add32(beside.y, 0x1b34);
             beside.z = add32(beside.z, 0x1400);
-            func_0203f8d0(&beside, &beside);
+            Globe_BendFar(&beside, &beside);
             /* The block's last three words are its point. */
             block.words[9] = (u32) beside.x;
             block.words[10] = (u32) beside.y;
             block.words[11] = (u32) beside.z;
             if (is_local_player(actor)) {
                 if (actor->unk_81C == 5) {
-                    if (func_0206f728(item)) {
+                    if (GroupParams_OpenWithItem2b(item)) {
                         actor->unk_81C = 6;
                     }
                     break;
                 }
                 if (actor->unk_81C == 6) {
-                    if (!func_0206fbc0()) {
+                    if (!GroupParams_CanOpen()) {
                         break;
                     }
                     actor->unk_81C = 0xf;
-                    if (func_0206fc6c()) {
+                    if (GroupParams_C4CIs1()) {
                         release_receiver(actor);
-                        func_0203e19c();
+                        EventQueue_FinishKind9();
                         leave_state58(actor);
                         return;
                     }
                 } else if (actor->unk_81C < 0xf) {
                     break;
                 }
-                int drawn = (s16) sub32(func_020644cc(0x2aaa), 0x1555);
-                func_ov003_0222eabc((u8) player, drawn);
+                int drawn = (s16) sub32(MainRandom_Below(0x2aaa), 0x1555);
+                TownInsect_LetGo((u8) player, drawn);
                 State58Saved_SetAngle(saved, drawn);
                 release_receiver(actor);
-                func_0203e19c();
+                EventQueue_FinishKind9();
                 work->step = 2;
                 State58Saved_SetStep(saved, 2);
-                func_020109fc(actor, 0, 4, 4);
+                FieldActor_PlayAnimationLoop(actor, 0, 4, 4);
                 return;
             }
-            actor->next_state = func_02008258(actor, actor->state);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
             if (State58Saved_Step(saved) != 2) {
                 return;
             }
-            func_ov003_0222eabc((u8) player, State58Saved_Angle(saved));
+            TownInsect_LetGo((u8) player, State58Saved_Angle(saved));
             work->step = 2;
-            func_020109fc(actor, 0, 4, 4);
+            FieldActor_PlayAnimationLoop(actor, 0, 4, 4);
             return;
         case 2: {
-            if (func_ov003_0222ea84((u8) player) != 3) {
+            if (TownInsect_HeldState((u8) player) != 3) {
                 if (actor->head_pitch == 0 && actor->head_yaw == 0) {
                     leave_state58(actor);
                     return;
                 }
-                func_02011404(&actor->head_pitch, 0, 0x400, 0x1770000, 0xc0000);
-                func_02011404(&actor->head_yaw, 0, 0x400, 0x1770000, 0xc0000);
+                FieldActor_TurnAngle(&actor->head_pitch, 0, 0x400, 0x1770000, 0xc0000);
+                FieldActor_TurnAngle(&actor->head_yaw, 0, 0x400, 0x1770000, 0xc0000);
                 return;
             }
-            const Vec3 *target = func_ov003_0222e970((u8) player);
+            const Vec3 *target = TownInsect_HeldPosition((u8) player);
             Vec3 eye = actor->position;
             eye.y = add32(eye.y, 0x1b33);
             int yaw = Math_Atan2(sub32(target->x, eye.x), sub32(target->z, eye.z));
@@ -5722,7 +5569,7 @@ void FieldActor_RunState58(FieldActor *actor)
         default:
             break;
     }
-    func_ov003_0222d83c((u8) player, angles, &block, flag);
+    TownInsect_HeldFromMatrix((u8) player, angles, (Mtx43 *) &block, flag);
 }
 CLEAN_AS(func_ov003_02212d2c, FieldActor_RunState58)
 
@@ -5761,16 +5608,16 @@ void FieldActor_EnterState58(FieldActor *actor, const StateRequest *request, int
     actor->work.s58.kind = kind;
     actor->work.s58.step = step;
     State58Saved_Set(&actor->saved.s58, kind, step, 0);
-    func_020109a0(actor, 0x5d, 3, 0);
-    func_0205eae0(actor->held, 6, 3, 1);
-    func_0200f328(actor, 0x4f);
+    FieldActor_PlayAnimationOnce(actor, 0x5d, 3, 0);
+    HeldItem_Act(actor->held, 6, 3, 1);
+    FieldActor_PlaySound(actor, 0x4f);
 }
 CLEAN_AS(func_ov003_02213114, FieldActor_EnterState58)
 
 /* func_ov003_02213168 */
 int State58Saved_Angle(const State58Saved *saved)
 {
-    return func_020778f8(saved->angle);
+    return PackedBytes_ReadS16(saved->angle);
 }
 CLEAN_AS(func_ov003_02213168, State58Saved_Angle)
 
@@ -5793,7 +5640,7 @@ CLEAN_AS(func_ov003_02213178, State58Saved_Get)
 /* func_ov003_02213198 */
 void State58Saved_SetAngle(State58Saved *saved, int angle)
 {
-    func_02077910(saved->angle, angle);
+    PackedBytes_WriteS16(saved->angle, angle);
 }
 CLEAN_AS(func_ov003_02213198, State58Saved_SetAngle)
 
@@ -5877,40 +5724,6 @@ extern const u8 data_ov003_02238108;
 /* The speed (-1049) state 0x52 starts with. */
 extern int data_ov003_0223812c;
 
-extern int func_0203cbd0(u16 *item);
-extern int func_0203cc1c(void);
-extern int func_0203cc38(void);
-extern int func_02043368(int a, int *point, u8 *result);
-extern void *func_020094a0(FieldActor *actor, u8 a, u8 kind, u8 slot, u32 priority, s16 arg);
-extern int func_02043554(int player, int item);
-extern int func_0206f6f8(int item, HookedFish *fish);
-extern u16 func_0206f6a4(void);
-extern HookedFish *func_020604f8(void *line);
-extern void func_02060460(void *line);
-extern void func_020604fc(void *line, int a);
-extern int func_02060474(void *line);
-extern void func_02060448(void *line);
-extern void func_02079774(Vec3 *position);
-extern void func_02079798(Vec3 *position);
-extern void func_0208d07c(void *object);
-extern void func_0208d09c(void *object);
-extern int func_0208b500(void);
-extern void func_ov003_0222e898(int kind, int player);
-extern int func_020899a8(const Vec3 *from, const Vec3 *to, int radius, u8 *slot, int a);
-extern int func_020311bc(SegmentTest *test, Vec3 *a, Vec3 *b, int flags);
-extern void *func_02032adc(SegmentTest *test);
-extern int func_02032acc(SegmentTest *test);
-extern void func_0204489c(int *tile);
-extern u8 func_ov003_0222e538(int slot, u8 player);
-extern int func_ov003_0222e5fc(u8 slot);
-extern int func_ov003_0222e3a4(u8 slot);
-extern int func_ov003_0222f458(Vec3 *out, int slot);
-extern int func_ov003_0222f490(int slot);
-extern int func_ov003_0222aa50(HookedFish *fish, Vec3 *at, Vec3 *scale);
-extern void func_ov003_0222aaa0(Vec3 *scale, int kind);
-extern int func_ov003_0222a8a8(int player);
-extern int func_02008c40(FieldActor *actor, int priority, int arg);
-
 /* The ROM's signed division (_s32_div_f): a divisor of 0 gives the numerator back, and
  * -0x80000000 / -1 gives -0x80000000. */
 static int div_s32(int numerator, int divisor)
@@ -5933,12 +5746,12 @@ static void *held_line(FieldActor *actor)
 /* Animation frame `frame` was reached (func_02056f28). */
 static BOOL anim_passed(FieldActor *actor, int frame)
 {
-    return func_02056f28(&actor->anim, frame) != 0;
+    return FrameCtrl_Passed(&actor->anim, frame) != 0;
 }
 
 static BOOL anim_done(FieldActor *actor)
 {
-    return func_02056f94(&actor->anim) != 0;
+    return FrameCtrl_IsDone(&actor->anim) != 0;
 }
 
 /* The point of a block (its last three words). */
@@ -5957,8 +5770,8 @@ static BOOL link_closed(const FieldActor *actor)
 /* Releases the receiver without testing flag 0x11 first. */
 static void close_receiver(FieldActor *actor)
 {
-    func_0203ee08(actor, actor->receiver);
-    func_0200f268(actor, 0x11);
+    SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+    FieldActor_ClearFlag(actor, 0x11);
 }
 
 /* The items 0x1320 to 0x1322: kinds 0x38 to 0x3a past the fish of 0x12e8 to 0x131f. */
@@ -5999,11 +5812,11 @@ void FieldActor_UpdateState57(FieldActor *actor)
 {
     KeptAcrossEE40 kept;
 
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     keep_across_ee40(actor, &kept);
-    func_0200ee40(actor);
-    func_0200f554(actor);
-    func_02010d64(actor);
+    FieldActor_RebuildPose(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState57(actor);
     restore_after_ee40(actor, &kept);
 }
@@ -6046,26 +5859,26 @@ void FieldActor_RunState57(FieldActor *actor)
     int kind = work->kind;
 
     if (mode == 0) {
-        func_0200faf0(actor, 0x400);
+        FieldActor_TurnToZero(actor, 0x400);
     }
     int player = actor->player;
     if (work->step == 0) {
-        if (func_02073908(data_020ccf94, player)) {
+        if (Session_IsLocalPlayer(data_020ccf94, player)) {
             work->step = 1;
         } else {
             work->step = 9;
             if (work->slot != 0xff) {
-                func_ov003_0222e5fc(work->slot);
+                TownInsect_Caught(work->slot);
             }
         }
         if (kind == 0x18 || kind == 0x30 || kind == 0x32 || kind == 0x33) {
             FieldActorBlock48 start = actor->unk_698;
-            func_ov003_02219668(&start, NULL);
+            FieldActor_OffsetMatrix(&start, NULL);
             Vec3 at = block_point(&start);
-            func_0203f7d0(&at, &at);
-            work->effect = func_020912d4(0x25, &at, NULL, 0);
+            Globe_Unbend(&at, &at);
+            work->effect = EffectSystem_StartKind(0x25, &at, NULL, 0);
         }
-        func_ov003_0222e898(kind, (u8) player);
+        TownInsect_TakeHeld(kind, (u8) player);
     }
 
     FieldActorBlock48 block = actor->unk_698;
@@ -6085,24 +5898,24 @@ void FieldActor_RunState57(FieldActor *actor)
             offset.z = sub32(offset.z, d);
         }
     }
-    func_ov003_02219668(&block, &offset);
+    FieldActor_OffsetMatrix(&block, &offset);
     if (work->effect != -1) {
         Vec3 at = block_point(&block);
-        func_0203f7d0(&at, &at);
-        func_02091278(work->effect, &at, NULL, 0);
+        Globe_Unbend(&at, &at);
+        EffectSystem_MoveHandle(work->effect, &at, NULL, 0);
     }
 
     s16 values[3] = {0, 0, 0};
     if (anim_frame(actor) < 0x17 && actor->animation == 0x5c) {
-        func_ov003_0222d83c((u8) player, values, &block, 0);
+        TownInsect_HeldFromMatrix((u8) player, values, (Mtx43 *) &block, 0);
         return;
     }
     if (!is_local_player(actor)) {
-        actor->next_state = func_02008258(actor, actor->state);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         if (work->step < 6 || work->step == 9) {
             if (State57Saved_Step(saved) == 6) {
-                func_ov003_0222eabc((u8) player, State57Saved_Angle(saved));
-                func_020109fc(actor, 0, 3, 3);
+                TownInsect_LetGo((u8) player, State57Saved_Angle(saved));
+                FieldActor_PlayAnimationLoop(actor, 0, 3, 3);
                 work->step = 7;
             }
         }
@@ -6121,32 +5934,32 @@ void FieldActor_RunState57(FieldActor *actor)
 
     switch (work->step) {
         case 1: {
-            if (!func_0203e1c4()) {
+            if (!EventQueue_RequestKind9()) {
                 break;
             }
             work->step = 2;
-            func_0203ee14(actor, actor->receiver);
-            func_0200f27c(actor, 0x11);
-            func_020a8164(actor->receiver, data_ov003_02238144);
+            SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+            FieldActor_SetFlag(actor, 0x11);
+            MessageReceiver_SetName((MessageReceiver *) actor->receiver, data_ov003_02238144);
             actor->receiver_unk_1E = (u8) kind;
             u16 item = (u16) (kind + 0x12b0);
-            func_0203cbd0(&item);
+            ItemRecord_MarkHadByCurrent(&item);
             actor->link->requested = 1;
-            func_0203ae98();
-            if (func_0200f290(actor, 0x1a)) {
-                func_02035638(0x3f);
-                func_0200f268(actor, 0x1a);
+            CameraControl_SetMode4();
+            if (FieldActor_TestFlag(actor, 0x1a)) {
+                Music_DropMusic(0x3f);
+                FieldActor_ClearFlag(actor, 0x1a);
             }
-            func_02035624(0x12);
-            func_02035684(0xc, 0, 0xe);
-            func_020356c4(0xd, 0x39, 0x7f, 1);
+            Music_DropPriority(0x12);
+            Music_AddValue(0xc, 0, 0xe);
+            Music_Add(0xd, 0x39, 0x7f, 1);
             break;
         }
         case 2:
             if (actor->link == NULL || actor->link->open == 0) {
                 break;
             }
-            if (func_0203cc1c() && work->unk_0A == 0) {
+            if (ItemRecord_HasAllInsects() && work->unk_0A == 0) {
                 work->step = 8;
                 actor->unk_81C = 0xd;
             } else {
@@ -6155,9 +5968,9 @@ void FieldActor_RunState57(FieldActor *actor)
             }
             break;
         case 3:
-            if (func_02099fe8() == -1) {
+            if (CurrentPockets_FreeSlot() == -1) {
                 int point[2] = {0, 0};
-                if (func_02043368(0x10, point, NULL)) {
+                if (TileRequests_FindDropTile(0x10, (TileRequestTile *) point, NULL)) {
                     work->step = 4;
                     actor->unk_81C = 0;
                 } else {
@@ -6170,9 +5983,9 @@ void FieldActor_RunState57(FieldActor *actor)
                 break;
             }
             close_receiver(actor);
-            func_0203e19c();
+            EventQueue_FinishKind9();
             FieldActor_RequestState58(actor, (char) kind, 0, 6, -1);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         case 4:
             if (actor->unk_81C >= 0xf) {
@@ -6184,68 +5997,68 @@ void FieldActor_RunState57(FieldActor *actor)
             }
             close_receiver(actor);
             FieldActor_RequestState58(actor, (char) kind, 1, 6, -1);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         case 5: {
             if (!link_closed(actor)) {
                 break;
             }
             if (work->effect != -1) {
-                func_0209129c(work->effect);
+                EffectSystem_EndHandle(work->effect);
             }
-            int angle = (s16) sub32(func_020644cc(0x2aaa), 0x1555);
-            func_ov003_0222eabc((u8) player, angle);
+            int angle = (s16) sub32(MainRandom_Below(0x2aaa), 0x1555);
+            TownInsect_LetGo((u8) player, angle);
             State57Saved_SetAngle(saved, angle);
             close_receiver(actor);
-            func_0203e19c();
-            func_020109fc(actor, 0, 3, 3);
+            EventQueue_FinishKind9();
+            FieldActor_PlayAnimationLoop(actor, 0, 3, 3);
             work->step = 6;
             State57Saved_SetStep(saved, 6);
-            func_0203b144();
+            CameraControl_ResetMode();
             return;
         }
         case 6: {
-            if (func_ov003_0222ea84((u8) player) != 3) {
+            if (TownInsect_HeldState((u8) player) != 3) {
                 if (actor->head_pitch != 0 || actor->head_yaw != 0) {
-                    func_02011404(&actor->head_pitch, 0, 0x400, 0x1770000, 0xc0000);
-                    func_02011404(&actor->head_yaw, 0, 0x400, 0x1770000, 0xc0000);
+                    FieldActor_TurnAngle(&actor->head_pitch, 0, 0x400, 0x1770000, 0xc0000);
+                    FieldActor_TurnAngle(&actor->head_yaw, 0, 0x400, 0x1770000, 0xc0000);
                     return;
                 }
-                actor->next_state = func_02008258(actor, actor->state);
+                actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
                 switch (mode) {
                     case 2:
                         if (is_local_player(actor)) {
                             release_receiver(actor);
-                            func_0203e19c();
+                            EventQueue_FinishKind9();
                         }
-                        func_0200d4e8(actor, 3, 1, -1);
+                        FieldActor_RequestState2(actor, 3, 1, -1);
                         return;
                     case 0:
                     case 3:
-                        func_0200d4e8(actor, 3, 1, -1);
+                        FieldActor_RequestState2(actor, 3, 1, -1);
                         return;
                     case 1:
-                        func_0200c9a8(actor, 3, 5, -1);
+                        FieldActor_RequestState5(actor, 3, 5, -1);
                         return;
                     default:
                         return;
                 }
             }
-            const Vec3 *target = func_ov003_0222e970((u8) player);
+            const Vec3 *target = TownInsect_HeldPosition((u8) player);
             Vec3 eye = actor->position;
             eye.y = add32(eye.y, 0x1b33);
             int yaw = Math_Atan2(sub32(target->x, eye.x), sub32(target->z, eye.z));
-            int pitch = Math_Atan2(sub32(target->y, eye.y), func_020ea990(target, &eye));
+            int pitch = Math_Atan2(sub32(target->y, eye.y), Vec_DistanceXZ(target, &eye));
             if (pitch >= 0x1800) {
                 pitch = 0x1800;
             }
             yaw = (s16) (yaw - actor->yaw);
-            func_02011404(&actor->head_pitch, pitch, 0x400, 0x1770000, 0xc0000);
-            func_02011404(&actor->head_yaw, yaw, 0x400, 0x1770000, 0xc0000);
+            FieldActor_TurnAngle(&actor->head_pitch, pitch, 0x400, 0x1770000, 0xc0000);
+            FieldActor_TurnAngle(&actor->head_yaw, yaw, 0x400, 0x1770000, 0xc0000);
             return;
         }
         case 7: {
-            int ready = func_ov003_0222ea84((u8) player);
+            int ready = TownInsect_HeldState((u8) player);
             if (ready == 3 || ready == 0) {
                 work->step = 6;
             }
@@ -6256,13 +6069,13 @@ void FieldActor_RunState57(FieldActor *actor)
                 break;
             }
             close_receiver(actor);
-            func_0203e19c();
-            func_020094a0(actor, 0, (u8) kind, work->slot, 6, -1);
+            EventQueue_FinishKind9();
+            FieldActor_RequestState76(actor, 0, (u8) kind, work->slot, 6, -1);
             return;
         default:
             break;
     }
-    func_ov003_0222d83c((u8) player, values, &block, 0);
+    TownInsect_HeldFromMatrix((u8) player, values, (Mtx43 *) &block, 0);
 }
 CLEAN_AS(func_ov003_022132bc, FieldActor_RunState57)
 
@@ -6270,7 +6083,7 @@ CLEAN_AS(func_ov003_022132bc, FieldActor_RunState57)
 void FieldActor_ExitState57(FieldActor *actor)
 {
     if (actor->work.s57.effect != -1) {
-        func_0209129c(actor->work.s57.effect);
+        EffectSystem_EndHandle(actor->work.s57.effect);
     }
     actor->head_pitch = 0;
     actor->head_yaw = 0;
@@ -6309,19 +6122,19 @@ void FieldActor_EnterState57(FieldActor *actor, const StateRequest *request, int
     State57Work *work = &actor->work.s57;
 
     if (mode == 0) {
-        func_020109a0(actor, 0x5c, 3, 0);
-        func_0205eae0(actor->held, 5, 3, 1);
+        FieldActor_PlayAnimationOnce(actor, 0x5c, 3, 0);
+        HeldItem_Act(actor->held, 5, 3, 1);
     }
     work->slot = slot;
     work->kind = kind;
     work->mode = mode;
     work->unk_04 = 0x39;
-    work->unk_0A = (u8) func_0203cc1c();
+    work->unk_0A = (u8) ItemRecord_HasAllInsects();
     if (mode == 0) {
         if (is_local_player(actor)) {
-            func_02035684(0x12, 0, 0);
-            func_0208d07c((void *) (uintptr_t) func_0208b500());
-            func_02079774(&actor->position);
+            Music_AddValue(0x12, 0, 0);
+            CatchPanel_CountInsect((void *) (uintptr_t) ScreenPanels_SecondPanel());
+            VillagerEvent_InsectCaught(&actor->position);
         }
         work->step = 0;
     } else if (mode == 3) {
@@ -6331,7 +6144,7 @@ void FieldActor_EnterState57(FieldActor *actor, const StateRequest *request, int
     } else {
         if (actor->animation == 0x6c) {
             work->mode = 2;
-            func_020109fc(actor, 0, 3, 3);
+            FieldActor_PlayAnimationLoop(actor, 0, 3, 3);
         }
         work->step = 7;
     }
@@ -6345,7 +6158,7 @@ CLEAN_AS(func_ov003_02213988, FieldActor_EnterState57)
 /* func_ov003_02213a80 */
 int State57Saved_Angle(const State57Saved *saved)
 {
-    return func_020778f8(saved->angle);
+    return PackedBytes_ReadS16(saved->angle);
 }
 CLEAN_AS(func_ov003_02213a80, State57Saved_Angle)
 
@@ -6370,7 +6183,7 @@ CLEAN_AS(func_ov003_02213a90, State57Saved_Get)
 /* func_ov003_02213ab4 */
 void State57Saved_SetAngle(State57Saved *saved, int angle)
 {
-    func_02077910(saved->angle, angle);
+    PackedBytes_WriteS16(saved->angle, angle);
 }
 CLEAN_AS(func_ov003_02213ab4, State57Saved_SetAngle)
 
@@ -6417,22 +6230,22 @@ void FieldActor_UpdateState56(FieldActor *actor)
         FieldActor_FaceState56(actor);
         FieldActor_SweepState56(actor);
         FieldActor_AnimateState56(actor);
-        func_0201100c(actor);
+        FieldActor_MoveWithCollision(actor);
     } else {
         FieldActor_SweepState56Remote(actor);
         FieldActor_AnimateState56(actor);
-        if (func_0200f554(actor)) {
-            func_0201100c(actor);
+        if (FieldActor_FollowReported(actor)) {
+            FieldActor_MoveWithCollision(actor);
         }
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_SlowState56(actor);
     FieldActor_EndState56(actor);
     FieldActor_TurnState56(actor);
 
     Vec3 tip = actor->unk_62C;
     Vec3 out;
-    func_0203f7d0(&out, &tip);
+    Globe_Unbend(&out, &tip);
     actor->work.s56.tip = out;
 }
 CLEAN_AS(func_ov003_02213b28, FieldActor_UpdateState56)
@@ -6454,20 +6267,20 @@ void FieldActor_EndState56(FieldActor *actor)
             FieldActor_RequestState57(actor, 0, slot, 0x30, 6, -1);
             return;
         }
-        u8 answer = func_ov003_0222e538(slot, (u8) actor->player);
+        u8 answer = TownInsect_Release(slot, (u8) actor->player);
         if (answer == 0) {
-            u8 kind = (u8) func_ov003_0222e5fc(slot);
+            u8 kind = (u8) TownInsect_Caught(slot);
             FieldActor_RequestState57(actor, 0, slot, kind, 6, -1);
         } else if (answer == 1) {
             work->caught = 0;
         }
         return;
     }
-    const FrameCtrl *held_anim = (const FrameCtrl *) (const void *) (func_0205e8e4(actor->held) + 0x9c);
-    if (func_02056f94(held_anim)) {
-        actor->next_state = func_02008258(actor, actor->state);
+    const FrameCtrl *held_anim = (const FrameCtrl *) (const void *) (HeldItem_Model(actor->held) + 0x9c);
+    if (FrameCtrl_IsDone(held_anim)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         if (is_local_player(actor)) {
-            func_0200d4e8(actor, 9, 1, -1);
+            FieldActor_RequestState2(actor, 9, 1, -1);
         }
     }
 }
@@ -6480,12 +6293,12 @@ void FieldActor_SlowState56(FieldActor *actor)
     if (actor->unk_098 == 0) {
         return;
     }
-    int speed = func_020113a4(actor->unk_098, 0, 0x171);
-    func_0201107c(actor, &speed);
+    int speed = FieldActor_StepDown(actor->unk_098, 0, 0x171);
+    FieldActor_SetSpeed(actor, &speed);
     if (actor->unk_098 != 0) {
         return;
     }
-    func_020912d4(0x2b, &actor->position, &actor->yaw, 0);
+    EffectSystem_StartKind(0x2b, &actor->position, &actor->yaw, 0);
 }
 CLEAN_AS(func_ov003_02213cd0, FieldActor_SlowState56)
 
@@ -6503,7 +6316,7 @@ void FieldActor_SweepState56Remote(FieldActor *actor)
         return;
     }
     Vec3 at = actor->unk_68C;
-    func_0203f7d0(&at, &at);
+    Globe_Unbend(&at, &at);
     Vec3 sweep = at;
     Vec3 base;
     Vec3 tip;
@@ -6516,10 +6329,10 @@ CLEAN_AS(func_ov003_02213d18, FieldActor_SweepState56Remote)
 /* Stops the swing: flag 9, sound 0x846, the animation stops and the held item takes pose 4. */
 static void stop_state56(FieldActor *actor)
 {
-    func_0200f27c(actor, 9);
-    func_0200f328(actor, 0x846);
+    FieldActor_SetFlag(actor, 9);
+    FieldActor_PlaySound(actor, 0x846);
     actor->anim.speed = 0;
-    func_0205eae0(actor->held, 4, 3, 1);
+    HeldItem_Act(actor->held, 4, 3, 1);
 }
 
 /* func_ov003_02213da0: tests the segment between `to` and `at` (func_020311bc). When it hits, the
@@ -6533,22 +6346,22 @@ int FieldActor_TraceState56(FieldActor *actor, Vec3 *at, Vec3 *from, Vec3 *to)
     SegmentTest test;
     BOOL hit;
 
-    func_02032adc(&test);
-    if (func_020311bc(&test, to, at, 0x1b)) {
+    CollisionSegmentHit_Construct((CollisionSegmentHit *) &test);
+    if (CollisionQuery_Trace((CollisionTraceHit *) &test, to, at, 0x1b)) {
         hit = TRUE;
     } else {
         if (!anim_passed(actor, 5)) {
-            func_02032acc(&test);
+            CollisionSegmentHit_Destroy((CollisionSegmentHit *) &test);
             return 0;
         }
         hit = FALSE;
         if (!is_local_player(actor)) {
-            func_02034270(&test.ground, from, 0, 0);
+            CollisionGround_Init((CollisionGround *) &test.ground, from, 0, 0);
             if (test.ground.unk_30 == 0) {
                 copy_point(to, from);
                 hit = TRUE;
             }
-            func_0203423c(&test.ground);
+            CollisionGround_Destroy((CollisionGround *) &test.ground);
         }
     }
     if (hit) {
@@ -6556,20 +6369,20 @@ int FieldActor_TraceState56(FieldActor *actor, Vec3 *at, Vec3 *from, Vec3 *to)
         if (anim_passed(actor, 5)) {
             int x = 0;
             int z = 0;
-            func_0204f818(&x, &z, to);
+            Position_Tile(&x, &z, (const Position *) to);
             int tile[2] = {x, z};
-            func_0204489c(tile);
+            TileEffects_Strike((const TileEffectsTile *) tile);
         }
         if (anim_frame(actor) <= 4) {
-            func_02032acc(&test);
+            CollisionSegmentHit_Destroy((CollisionSegmentHit *) &test);
             return 1;
         }
     } else {
-        func_020912d4(0xb, from, NULL, 0);
-        func_0200f27c(actor, 9);
-        func_0205eae0(actor->held, 4, 3, 1);
+        EffectSystem_StartKind(0xb, from, NULL, 0);
+        FieldActor_SetFlag(actor, 9);
+        HeldItem_Act(actor->held, 4, 3, 1);
     }
-    func_02032acc(&test);
+    CollisionSegmentHit_Destroy((CollisionSegmentHit *) &test);
     return 0;
 }
 CLEAN_AS(func_ov003_02213da0, FieldActor_TraceState56)
@@ -6584,8 +6397,8 @@ int FieldActor_HitState56(FieldActor *actor)
     if (!FieldActor_CheckOther(actor)) {
         Vec3 ahead;
         int surface;
-        func_0200fa1c(&ahead, actor, &actor->position, &actor->yaw, &data_ov003_02238114);
-        if (func_020310d0(&ahead, &surface, 0x19) < 0x400) {
+        FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_02238114);
+        if (CollisionQuery_GroundY(&ahead, &surface, 0x19) < 0x400) {
             return 0;
         }
     }
@@ -6605,7 +6418,7 @@ int FieldActor_State56Reaches(FieldActor *actor, const Vec3 *hit, const Vec3 *in
 {
     Vec3 here = actor->position;
 
-    const u16 *object = func_0204f5a8(data_021c80bc, hit, 0);
+    const u16 *object = AcreTile_ItemAt(data_021c80bc, hit, 0);
     if (object != NULL && (*object == 0x1b || *object == 0x89)) {
         return 1;
     }
@@ -6651,9 +6464,9 @@ int FieldActor_ClassifyState56(FieldActor *actor, const u8 *has_insect, const Ve
             }
             return *has_insect ? 1 : 2;
         }
-        func_0200fa1c(&ahead, actor, &actor->position, &actor->yaw, &data_ov003_0223811c);
-        func_0204f7e0(&ahead, &ahead);
-        if (func_020310d0(&ahead, &surface, 0x19) >= 0x400) {
+        FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_0223811c);
+        AcreTile_SnapToTileCentre(&ahead, &ahead);
+        if (CollisionQuery_GroundY(&ahead, &surface, 0x19) >= 0x400) {
             stop_state56(actor);
             if (*has_insect && FieldActor_State56Reaches(actor, &ahead, insect, insect_flag)) {
                 return 1;
@@ -6662,9 +6475,9 @@ int FieldActor_ClassifyState56(FieldActor *actor, const u8 *has_insect, const Ve
         }
     } else if (anim_passed(actor, 3)) {
         if (*has_insect) {
-            func_0200fa1c(&ahead, actor, &actor->position, &actor->yaw, &data_ov003_02238120);
-            func_0204f7e0(&ahead, &ahead);
-            if (func_020310d0(&ahead, &surface, 0x19) >= 0x400) {
+            FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_02238120);
+            AcreTile_SnapToTileCentre(&ahead, &ahead);
+            if (CollisionQuery_GroundY(&ahead, &surface, 0x19) >= 0x400) {
                 return FieldActor_State56Reaches(actor, &ahead, insect, insect_flag) ? 1 : 2;
             }
         }
@@ -6689,7 +6502,7 @@ void FieldActor_State56Points(FieldActor *actor, Vec3 *sweep, Vec3 *base, Vec3 *
 
     switch (anim_frame(actor)) {
         case 3:
-            func_0200f328(actor, 0x845);
+            FieldActor_PlaySound(actor, 0x845);
             sweep->y = add32(sweep->y, 0x1dd3);
             base->x = add32(base->x, FX_MulFunc(sin, 0x1e66));
             base->y = add32(base->y, 0x24cd);
@@ -6715,7 +6528,7 @@ void FieldActor_State56Points(FieldActor *actor, Vec3 *sweep, Vec3 *base, Vec3 *
             break;
     }
     Vec3 at = actor->unk_62C;
-    func_0203f7d0(&at, &at);
+    Globe_Unbend(&at, &at);
     copy_point(tip, &at);
 }
 CLEAN_AS(func_ov003_02214200, FieldActor_State56Points)
@@ -6746,7 +6559,7 @@ void FieldActor_SweepState56(FieldActor *actor)
     Vec3 insect = {0, 0, 0};
 
     Vec3 at = actor->unk_68C;
-    func_0203f7d0(&at, &at);
+    Globe_Unbend(&at, &at);
     Vec3 sweep = at;
     Vec3 base;
     Vec3 tip;
@@ -6755,12 +6568,12 @@ void FieldActor_SweepState56(FieldActor *actor)
     State56Work *work = &actor->work.s56;
     if (work->caught == 0 && anim_frame(actor) < 6) {
         u16 item;
-        func_020110c4(&item, actor);
+        FieldActor_RecordHeldItem(&item, actor);
         int radius = item == 0x1376 ? 0xa00 : 0xd1f;
-        if (func_020899a8(&sweep, &base, radius, &slot, 0)) {
+        if (CatchSphere_FindAlong(&sweep, &base, radius, &slot, 0)) {
             has_insect = 1;
-            func_ov003_0222f458(&insect, slot);
-            insect_flag = (u8) func_ov003_0222f490(slot);
+            TownInsect_GetPosition(&insect, slot);
+            insect_flag = (u8) TownInsect_KindHighPlace(slot);
             if (insect_flag) {
                 insect.z = add32(insect.z, 0x100);
             }
@@ -6778,7 +6591,7 @@ void FieldActor_SweepState56(FieldActor *actor)
             }
             work->caught = 1;
             work->slot = 0xff;
-            func_0200f328(actor, 0x847);
+            FieldActor_PlaySound(actor, 0x847);
             return;
         default: {
             Vec3 from = at;
@@ -6796,10 +6609,10 @@ void FieldActor_SweepState56(FieldActor *actor)
             break;
         }
     }
-    if (func_ov003_0222e3a4(slot)) {
+    if (TownInsect_Catch(slot)) {
         work->caught = 1;
         work->slot = slot;
-        func_0200f328(actor, 0x847);
+        FieldActor_PlaySound(actor, 0x847);
     }
 }
 CLEAN_AS(func_ov003_02214384, FieldActor_SweepState56)
@@ -6808,16 +6621,16 @@ CLEAN_AS(func_ov003_02214384, FieldActor_SweepState56)
 void FieldActor_TurnState56(FieldActor *actor)
 {
     Vec3 ahead;
-    func_0200fa6c(&ahead, actor);
-    func_02010d88(actor, &ahead, 0x99a, 0x1000);
-    func_02089fc8(actor->unk_1C4);
+    FieldActor_PointAheadOfSelf(&ahead, actor);
+    FieldActor_SetContactBSized(actor, &ahead, 0x99a, 0x1000);
+    FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
 CLEAN_AS(func_ov003_02214568, FieldActor_TurnState56)
 
 /* func_ov003_022145a0: the actor faces the request's yaw. */
 void FieldActor_FaceState56(FieldActor *actor)
 {
-    func_0200fb34(actor, actor->work.s56.yaw);
+    FieldActor_TurnTowards(actor, actor->work.s56.yaw);
 }
 CLEAN_AS(func_ov003_022145a0, FieldActor_FaceState56)
 
@@ -6825,9 +6638,9 @@ CLEAN_AS(func_ov003_022145a0, FieldActor_FaceState56)
 void FieldActor_AnimateState56(FieldActor *actor)
 {
     BOOL was_done = anim_done(actor);
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (!was_done && anim_done(actor)) {
-        func_0200f328(actor, 0x848);
+        FieldActor_PlaySound(actor, 0x848);
     }
 }
 CLEAN_AS(func_ov003_022145b0, FieldActor_AnimateState56)
@@ -6851,8 +6664,8 @@ void FieldActor_EnterState56(FieldActor *actor, const StateRequest *request, int
     work->caught = 0;
     work->yaw = yaw;
     work->slot = 0xff;
-    func_020109a0(actor, 0x5b, 3, 0);
-    func_0205eae0(actor->held, 3, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x5b, 3, 0);
+    HeldItem_Act(actor->held, 3, 3, 0);
 }
 CLEAN_AS(func_ov003_02214604, FieldActor_EnterState56)
 
@@ -6879,9 +6692,9 @@ CLEAN_AS(func_ov003_02214644, FieldActor_RequestState56)
 /* func_ov003_022146bc: state 0x55's update. */
 void FieldActor_UpdateState55(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_0200f554(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
     if (is_local_player(actor)) {
         FieldActor_RunState55(actor);
     } else {
@@ -6895,9 +6708,9 @@ CLEAN_AS(func_ov003_022146bc, FieldActor_UpdateState55)
 void FieldActor_EndState55Remote(FieldActor *actor)
 {
     if (anim_done(actor)) {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_020109fc(actor, 0x6c, 6, 6);
-        func_0205eae0(actor->held, 0x13, 6, 0);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_PlayAnimationLoop(actor, 0x6c, 6, 6);
+        HeldItem_Act(actor->held, 0x13, 6, 0);
     }
 }
 CLEAN_AS(func_ov003_022146fc, FieldActor_EndState55Remote)
@@ -6905,10 +6718,10 @@ CLEAN_AS(func_ov003_022146fc, FieldActor_EndState55Remote)
 /* The fish placed at the hand point with its own scale (func_ov003_0222aaa0). */
 static void place_fish_default(HookedFish *fish, const Vec3 *hand, Vec3 *scale)
 {
-    func_ov003_0222aaa0(scale, fish->kind);
+    PlayerFish_KindScale(scale, fish->kind);
     Vec3 at = *hand;
     Vec3 sized = *scale;
-    func_ov003_0222aa50(fish, &at, &sized);
+    PlayerFish_PlaceForShadow((FishShadow *) fish, &at, &sized);
 }
 
 /* func_ov003_0221474c: state 0x55 for the actor of this console, by the work's step. The fish
@@ -6928,7 +6741,7 @@ static void place_fish_default(HookedFish *fish, const Vec3 *hand, Vec3 *scale)
  *   Step 3: waits for func_02043554 to give a value other than -1, then step 2. */
 void FieldActor_RunState55(FieldActor *actor)
 {
-    HookedFish *fish = func_020604f8(held_line(actor));
+    HookedFish *fish = (HookedFish *) FishingFloat_Fish(held_line(actor));
     int size = 0;
     if (actor->animation == 0x5a) {
         int frame = anim_frame(actor);
@@ -6943,18 +6756,18 @@ void FieldActor_RunState55(FieldActor *actor)
     }
     Vec3 scale = {size, size, size};
     FieldActorBlock48 block = actor->unk_698;
-    func_ov003_02219668(&block, NULL);
+    FieldActor_OffsetMatrix(&block, NULL);
     Vec3 hand = block_point(&block);
 
     u16 item = ITEM_NONE;
     if (fish != NULL) {
-        func_0203f7d0(&hand, &hand);
+        Globe_Unbend(&hand, &hand);
         Vec3 at = hand;
         Vec3 sized = scale;
-        func_ov003_0222aa50(fish, &at, &sized);
+        PlayerFish_PlaceForShadow((FishShadow *) fish, &at, &sized);
         item = (u16) (fish->kind + 0x12e8);
         if (size == 0) {
-            func_ov003_0222a8a8(actor->player);
+            PlayerFish_AnnounceHeld(actor->player);
         }
     }
 
@@ -6964,45 +6777,45 @@ void FieldActor_RunState55(FieldActor *actor)
             if (!anim_done(actor)) {
                 break;
             }
-            actor->next_state = func_02008258(actor, actor->state);
-            func_0200d4e8(actor, 6, 1, -1);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            FieldActor_RequestState2(actor, 6, 1, -1);
             if (is_local_player(actor)) {
                 u16 code = item;
-                func_0209a110(&code);
+                CurrentPockets_Receive(&code);
             }
-            func_02060460(held_line(actor));
+            FishingFloat_LetFishGo(held_line(actor));
             break;
         case 1:
             if (actor->animation == 0x5a) {
                 if (!anim_done(actor)) {
                     break;
                 }
-                func_020109fc(actor, 0x6c, 6, 6);
-                func_0205eae0(actor->held, 0x13, 6, 0);
+                FieldActor_PlayAnimationLoop(actor, 0x6c, 6, 6);
+                HeldItem_Act(actor->held, 0x13, 6, 0);
             }
             if (is_local_player(actor)) {
                 if (actor->unk_81C == 5) {
-                    if (func_0206f6f8(item, fish)) {
+                    if (GroupParams_OpenWithItemAndObject(item, fish)) {
                         actor->unk_81C = 6;
                     }
                     break;
                 }
                 if (actor->unk_81C == 6) {
-                    if (!func_0206fbc0()) {
+                    if (!GroupParams_CanOpen()) {
                         break;
                     }
                     actor->unk_81C = 0xf;
-                    if (func_0206fc6c()) {
-                        func_020604fc(held_line(actor), 0);
+                    if (GroupParams_C4CIs1()) {
+                        FishingFloat_SetFish(held_line(actor), 0);
                         release_receiver(actor);
-                        func_0203e19c();
-                        u16 got = func_0206f6a4();
-                        actor->next_state = func_02008258(actor, actor->state);
+                        EventQueue_FinishKind9();
+                        u16 got = GroupParams_ItemC();
+                        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
                         if (got >= 0x12e8 && got <= 0x131f) {
                             FieldActor_RequestLook(actor, &data_ov003_02238104, 0, 6, -1);
                             break;
                         }
-                        func_0200d4e8(actor, 6, 1, -1);
+                        FieldActor_RequestState2(actor, 6, 1, -1);
                         *step = 2;
                         break;
                     }
@@ -7012,7 +6825,7 @@ void FieldActor_RunState55(FieldActor *actor)
                 if (is_item_1320(item)) {
                     *step = 3;
                     if (actor->unk_810 == -1) {
-                        actor->unk_810 = func_02043554(actor->player, item);
+                        actor->unk_810 = TileRequests_AskDropFor(actor->player, item);
                         if (actor->unk_810 != -1) {
                             *step = 2;
                         }
@@ -7024,28 +6837,28 @@ void FieldActor_RunState55(FieldActor *actor)
                     FieldActor_RequestLook(actor, &data_ov003_02238108, 0, 6, -1);
                     State55Saved_SetStep(&actor->saved.step55, 2);
                 }
-                func_02060448(held_line(actor));
+                FishingFloat_TellPlayerFish(held_line(actor));
                 release_receiver(actor);
-                func_0203e19c();
+                EventQueue_FinishKind9();
                 break;
             }
-            actor->next_state = func_02008258(actor, actor->state);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
             if (State55Saved_Step(&actor->saved.step55) == 2) {
                 if (fish != NULL) {
                     place_fish_default(fish, &hand, &scale);
                 }
-                func_02060448(held_line(actor));
+                FishingFloat_TellPlayerFish(held_line(actor));
                 *step = 2;
-                func_020109fc(actor, 0, 6, 6);
+                FieldActor_PlayAnimationLoop(actor, 0, 6, 6);
             }
             break;
         case 2:
-            actor->next_state = func_02008258(actor, actor->state);
-            func_0200d4e8(actor, 6, 1, -1);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            FieldActor_RequestState2(actor, 6, 1, -1);
             break;
         case 3:
             if (actor->unk_810 == -1) {
-                actor->unk_810 = func_02043554(actor->player, item);
+                actor->unk_810 = TileRequests_AskDropFor(actor->player, item);
                 if (actor->unk_810 != -1) {
                     *step = 2;
                 }
@@ -7073,8 +6886,8 @@ void FieldActor_EnterState55(FieldActor *actor, const StateRequest *request, int
     u8 step = request->payload[0];
     actor->work.step = step;
     State55Saved_SetStep(&actor->saved.step55, step);
-    func_020109a0(actor, 0x5a, 3, 3);
-    func_0200f328(actor, 0x4f);
+    FieldActor_PlayAnimationOnce(actor, 0x5a, 3, 3);
+    FieldActor_PlaySound(actor, 0x4f);
 }
 CLEAN_AS(func_ov003_02214bc8, FieldActor_EnterState55)
 
@@ -7111,16 +6924,16 @@ void FieldActor_UpdateState54(FieldActor *actor)
 {
     KeptAcrossEE40 kept;
 
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     keep_across_ee40(actor, &kept);
-    func_0200ee40(actor);
-    func_0200f554(actor);
-    func_02010d64(actor);
+    FieldActor_RebuildPose(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
     if (is_local_player(actor)) {
         FieldActor_RunState54(actor);
     } else {
-        actor->next_state = func_02008258(actor, actor->state);
-        func_0200faf0(actor, 0x400);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        FieldActor_TurnToZero(actor, 0x400);
     }
     restore_after_ee40(actor, &kept);
 }
@@ -7149,12 +6962,12 @@ void FieldActor_RunState54(FieldActor *actor)
 {
     State54Work *work = &actor->work.s54;
 
-    func_0200faf0(actor, 0x400);
-    HookedFish *fish = func_020604f8(held_line(actor));
+    FieldActor_TurnToZero(actor, 0x400);
+    HookedFish *fish = (HookedFish *) FishingFloat_Fish(held_line(actor));
     if (fish != NULL) {
         FieldActorBlock48 block = actor->unk_698;
         Vec3 scale;
-        func_ov003_0222aaa0(&scale, fish->kind);
+        PlayerFish_KindScale(&scale, fish->kind);
         Vec3 offset = {0x4cd, 0, 0};
         int frame = anim_frame(actor);
         if (work->mode != 0) {
@@ -7169,15 +6982,15 @@ void FieldActor_RunState54(FieldActor *actor)
             offset.y = add32(offset.y, d);
             offset.z = sub32(offset.z, d);
         }
-        func_ov003_02219668(&block, &offset);
+        FieldActor_OffsetMatrix(&block, &offset);
         Vec3 at = block_point(&block);
-        func_0203f7d0(&at, &at);
+        Globe_Unbend(&at, &at);
         Vec3 sized = scale;
-        func_ov003_0222aa50(fish, &at, &sized);
+        PlayerFish_PlaceForShadow((FishShadow *) fish, &at, &sized);
     }
 
     if (actor->animation == 0x59 && anim_passed(actor, 3)) {
-        func_0203ae98();
+        CameraControl_SetMode4();
     }
     if (anim_frame(actor) < 0x11 && work->step < 5 && work->mode == 0) {
         return;
@@ -7185,28 +6998,28 @@ void FieldActor_RunState54(FieldActor *actor)
 
     switch (work->step) {
         case 0:
-            if (func_0203e1c4()) {
+            if (EventQueue_RequestKind9()) {
                 work->step = 1;
-                func_0203ee14(actor, actor->receiver);
-                func_0200f27c(actor, 0x11);
-                func_020a8164(actor->receiver, data_ov003_02238158);
+                SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+                FieldActor_SetFlag(actor, 0x11);
+                MessageReceiver_SetName((MessageReceiver *) actor->receiver, data_ov003_02238158);
                 u8 kind = work->kind;
                 actor->receiver_unk_1E = kind;
                 u16 code = (u16) (kind + 0x12e8);
-                func_0203cbd0(&code);
+                ItemRecord_MarkHadByCurrent(&code);
                 actor->unk_822 = code;
                 actor->item = actor->unk_822;
                 actor->link->requested = 1;
-                func_02035624(0x12);
-                func_02035684(0xc, 0, 4);
-                func_020356c4(0xd, 0x39, 0x7f, 1);
+                Music_DropPriority(0x12);
+                Music_AddValue(0xc, 0, 4);
+                Music_Add(0xd, 0x39, 0x7f, 1);
             }
             /* fall through */
         case 1:
             if (actor->link == NULL || actor->link->open == 0) {
                 break;
             }
-            if (func_0203cc38() && work->unk_05 == 0) {
+            if (ItemRecord_HasAllFish() && work->unk_05 == 0) {
                 work->step = 5;
                 actor->unk_81C = 0xe;
                 break;
@@ -7215,9 +7028,9 @@ void FieldActor_RunState54(FieldActor *actor)
             actor->unk_81C = 8;
             break;
         case 2:
-            if (func_02099fe8() == -1) {
+            if (CurrentPockets_FreeSlot() == -1) {
                 int point[2] = {0, 0};
-                if (func_02043368(0x10, point, NULL)) {
+                if (TileRequests_FindDropTile(0x10, (TileRequestTile *) point, NULL)) {
                     work->step = 3;
                     actor->unk_81C = is_item_1320(actor->item) ? 4 : 0;
                     break;
@@ -7230,9 +7043,9 @@ void FieldActor_RunState54(FieldActor *actor)
                 break;
             }
             close_receiver(actor);
-            func_0203e19c();
+            EventQueue_FinishKind9();
             FieldActor_RequestState55(actor, 0, 6, -1);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         case 3:
             if (actor->unk_81C >= 0xf) {
@@ -7244,7 +7057,7 @@ void FieldActor_RunState54(FieldActor *actor)
                 if (actor->unk_810 != -1) {
                     break;
                 }
-                actor->unk_810 = func_02043554(actor->player, actor->item);
+                actor->unk_810 = TileRequests_AskDropFor(actor->player, actor->item);
                 if (actor->unk_810 != -1) {
                     work->step = 4;
                 }
@@ -7255,32 +7068,32 @@ void FieldActor_RunState54(FieldActor *actor)
             }
             close_receiver(actor);
             FieldActor_RequestState55(actor, 1, 6, -1);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         case 4:
             if (!link_closed(actor)) {
                 break;
             }
-            func_02060448(held_line(actor));
+            FishingFloat_TellPlayerFish(held_line(actor));
             close_receiver(actor);
-            func_0203e19c();
-            actor->next_state = func_02008258(actor, actor->state);
+            EventQueue_FinishKind9();
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
             FieldActor_RequestLook(actor, &data_ov003_02238100, 0, 6, -1);
-            func_0203b144();
+            CameraControl_ResetMode();
             break;
         case 5:
             if (!link_closed(actor)) {
                 break;
             }
             close_receiver(actor);
-            func_0203e19c();
-            func_020094a0(actor, 1, work->kind, 0, 6, -1);
+            EventQueue_FinishKind9();
+            FieldActor_RequestState76(actor, 1, work->kind, 0, 6, -1);
             break;
         case 6:
             if (actor->unk_810 != -1) {
                 break;
             }
-            actor->unk_810 = func_02043554(actor->player, actor->item);
+            actor->unk_810 = TileRequests_AskDropFor(actor->player, actor->item);
             if (actor->unk_810 != -1) {
                 work->step = 4;
             }
@@ -7315,19 +7128,19 @@ void FieldActor_EnterState54(FieldActor *actor, const StateRequest *request, int
 
     work->mode = mode;
     work->unk_00 = 0x39;
-    work->unk_05 = (u8) func_0203cc38();
+    work->unk_05 = (u8) ItemRecord_HasAllFish();
     if (mode == 0) {
         if (is_local_player(actor)) {
-            s8 kind = func_020604f8(held_line(actor))->kind;
+            s8 kind = ((HookedFish *) FishingFloat_Fish(held_line(actor)))->kind;
             work->kind = (u8) kind;
             if (kind < 0x38) {
-                func_02079798(&actor->position);
-                func_0208d09c((void *) (uintptr_t) func_0208b500());
+                VillagerEvent_FishCaught(&actor->position);
+                CatchPanel_CountFish((void *) (uintptr_t) ScreenPanels_SecondPanel());
             }
         }
         work->step = 0;
-        func_020109a0(actor, 0x59, 3, 0);
-        func_0205eae0(actor->held, 0x1c, 3, 1);
+        FieldActor_PlayAnimationOnce(actor, 0x59, 3, 0);
+        HeldItem_Act(actor->held, 0x1c, 3, 1);
     } else {
         work->step = 2;
         work->unk_00 = 0x3a;
@@ -7366,9 +7179,9 @@ CLEAN_AS(func_ov003_02215240, FieldActor_RequestState54)
 /* func_ov003_0221527c: state 0x53's update. */
 void FieldActor_UpdateState53(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_0200f554(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
     if (is_local_player(actor)) {
         FieldActor_EndState53(actor);
     }
@@ -7379,7 +7192,7 @@ CLEAN_AS(func_ov003_0221527c, FieldActor_UpdateState53)
  * held item, state 0x54 is asked for (mode 0). */
 void FieldActor_EndState53(FieldActor *actor)
 {
-    if (anim_done(actor) && func_02060474(held_line(actor))) {
+    if (anim_done(actor) && FishingFloat_FishFlag80(held_line(actor))) {
         FieldActor_RequestState54(actor, 0, 6, -1);
     }
 }
@@ -7398,10 +7211,10 @@ void FieldActor_EnterState53(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x58, 3, 0);
-    func_0205eae0(actor->held, 0x1b, 3, 1);
-    func_0200f328(actor, 0x84c);
-    func_0200f328(actor, 0x84e);
+    FieldActor_PlayAnimationOnce(actor, 0x58, 3, 0);
+    HeldItem_Act(actor->held, 0x1b, 3, 1);
+    FieldActor_PlaySound(actor, 0x84c);
+    FieldActor_PlaySound(actor, 0x84e);
     copy_point(&actor->unk_8C4, &actor->unk_5D0);
 }
 CLEAN_AS(func_ov003_022152f8, FieldActor_EnterState53)
@@ -7419,13 +7232,13 @@ CLEAN_AS(func_ov003_0221535c, FieldActor_RequestState53)
  * as a magnitude, and is stored negated. */
 void FieldActor_UpdateState52(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    if (func_0200f554(actor)) {
-        func_0201100c(actor);
+    FieldActor_UpdateBody(actor);
+    if (FieldActor_FollowReported(actor)) {
+        FieldActor_MoveWithCollision(actor);
     }
-    func_02010d64(actor);
-    int speed = sub32(0, func_020113a4(abs32(actor->unk_098), 0, 0xc5));
-    func_0201107c(actor, &speed);
+    FieldActor_EnterContact(actor);
+    int speed = sub32(0, FieldActor_StepDown(abs32(actor->unk_098), 0, 0xc5));
+    FieldActor_SetSpeed(actor, &speed);
     FieldActor_EndState52(actor);
 }
 CLEAN_AS(func_ov003_02215394, FieldActor_UpdateState52)
@@ -7438,10 +7251,10 @@ void FieldActor_EndState52(FieldActor *actor)
         return;
     }
     if (is_local_player(actor)) {
-        func_0203b144();
+        CameraControl_ResetMode();
     }
     move_on(actor);
-    func_0205eae0(actor->held, 0x13, 3, 0);
+    HeldItem_Act(actor->held, 0x13, 3, 0);
 }
 CLEAN_AS(func_ov003_022153e8, FieldActor_EndState52)
 
@@ -7458,9 +7271,9 @@ void FieldActor_EnterState52(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_0201107c(actor, &data_ov003_0223812c);
-    func_020109a0(actor, 0x57, 3, 0);
-    func_0205eae0(actor->held, 0x1a, 3, 0);
+    FieldActor_SetSpeed(actor, &data_ov003_0223812c);
+    FieldActor_PlayAnimationOnce(actor, 0x57, 3, 0);
+    HeldItem_Act(actor->held, 0x1a, 3, 0);
 }
 CLEAN_AS(func_ov003_02215460, FieldActor_EnterState52)
 
@@ -7476,9 +7289,9 @@ CLEAN_AS(func_ov003_02215494, FieldActor_RequestState52)
 /* func_ov003_022154cc: state 0x51's update. */
 void FieldActor_UpdateState51(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_0200f554(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState51(actor);
 }
 CLEAN_AS(func_ov003_022154cc, FieldActor_UpdateState51)
@@ -7488,15 +7301,15 @@ CLEAN_AS(func_ov003_022154cc, FieldActor_UpdateState51)
  * theirs, 0 before the end. */
 int FieldActor_EndState51(FieldActor *actor)
 {
-    int done = func_02056f94(&actor->anim);
+    int done = FrameCtrl_IsDone(&actor->anim);
     if (done == 0) {
         return done;
     }
-    actor->next_state = func_02008258(actor, actor->state);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     if (actor->work.s51_flag != 0) {
-        return func_02008c40(actor, 5, -1);
+        return FieldActor_RequestState79(actor, 5, -1);
     }
-    return func_0200d4e8(actor, 3, 1, -1);
+    return FieldActor_RequestState2(actor, 3, 1, -1);
 }
 CLEAN_AS(func_ov003_022154ec, FieldActor_EndState51)
 
@@ -7520,13 +7333,13 @@ void FieldActor_EnterState51(FieldActor *actor, const StateRequest *request, int
 
     FieldActor_SetState51Work(&actor->work.s51_flag, flag);
     FieldActor_SetState51Saved(&actor->saved.flag51, flag);
-    func_020109a0(actor, 0x56, 3, 0);
-    func_0205eae0(actor->held, 0x19, 3, 0);
-    func_0200f328(actor, 0x84c);
-    func_0200f328(actor, 0x84e);
+    FieldActor_PlayAnimationOnce(actor, 0x56, 3, 0);
+    HeldItem_Act(actor->held, 0x19, 3, 0);
+    FieldActor_PlaySound(actor, 0x84c);
+    FieldActor_PlaySound(actor, 0x84e);
     copy_point(&actor->unk_8C4, &actor->unk_5D0);
     if (is_local_player(actor)) {
-        func_0203b144();
+        CameraControl_ResetMode();
     }
 }
 CLEAN_AS(func_ov003_02215570, FieldActor_EnterState51)
@@ -7571,23 +7384,6 @@ CLEAN_AS(func_ov003_02215664, FieldActor_SetState51Args)
 
 /* ---- State 0x50: animation 0x55, after something takes the line of state 0x4f */
 
-/* What hangs from the held item, as func_020604b0 sees it at the end of state 0x50. */
-extern int func_020604b0(void *line);
-/* Whether something takes what hangs from the held item (state 0x4f). */
-extern int func_020604c8(void *line);
-extern void func_02060438(void *line, Vec3 *at);
-/* Whether the held item's animation is over. */
-extern int func_0205e8d8(void *held);
-extern int func_020b6590(void);
-extern int func_020b758c(int a, int b);
-extern void func_ov003_0222ad2c(HookedFish *fish);
-extern int func_ov003_02228400(Vec3 *at, fx32 a);
-extern void func_02036458(u8 *p);
-extern void func_02036460(u8 *p);
-extern void func_0203ae84(void);
-extern void func_02045f08(int *tile, int a);
-extern int func_0200fc90(FieldActor *actor);
-extern void func_ov003_02224234(int player, int *tile, int kind);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 
 static_assert(offsetof(FieldActor, line_mode) == 0x5cc, "line mode");
@@ -7604,9 +7400,9 @@ static int mul32(int a, int b)
 /* func_ov003_02215668: state 0x50's update. */
 void FieldActor_UpdateState50(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_0200f554(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState50(actor);
 }
 CLEAN_AS(func_ov003_02215668, FieldActor_UpdateState50)
@@ -7617,16 +7413,16 @@ CLEAN_AS(func_ov003_02215668, FieldActor_UpdateState50)
 void FieldActor_EndState50(FieldActor *actor)
 {
     if (!is_local_player(actor)) {
-        func_0200f2a0(actor, 0x7f6, &actor->unk_5D0);
+        FieldActor_PlaySoundAt(actor, 0x7f6, &actor->unk_5D0);
         return;
     }
-    switch (func_020604b0(held_line(actor))) {
+    switch (FishingFloat_FishBite(held_line(actor))) {
         case 0:
-            func_0200f2a0(actor, 0x7f6, &actor->unk_5D0);
+            FieldActor_PlaySoundAt(actor, 0x7f6, &actor->unk_5D0);
             break;
         case 1:
             FieldActor_RequestState52(actor, 6, -1);
-            func_02035624(0x12);
+            Music_DropPriority(0x12);
             break;
         case 2:
             FieldActor_RequestState53(actor, 6, -1);
@@ -7650,10 +7446,10 @@ void FieldActor_EnterState50(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109fc(actor, 0x55, 3, 0);
-    func_0205eae0(actor->held, 0x18, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x55, 3, 0);
+    HeldItem_Act(actor->held, 0x18, 3, 0);
     if (is_local_player(actor)) {
-        func_02035684(0x12, 0, 0);
+        Music_AddValue(0x12, 0, 0);
     }
 }
 CLEAN_AS(func_ov003_02215718, FieldActor_EnterState50)
@@ -7671,15 +7467,15 @@ CLEAN_AS(func_ov003_02215760, FieldActor_RequestState50)
  * console runs FieldActor_RunState4F, another player's notes the state after this one. */
 void FieldActor_UpdateState4F(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     FieldActor_SyncState4FPoint(actor);
-    func_0200f554(actor);
+    FieldActor_FollowReported(actor);
     FieldActor_FaceState4FPoint(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     if (is_local_player(actor)) {
         FieldActor_RunState4F(actor);
     } else {
-        actor->next_state = func_02008258(actor, actor->state);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     }
 }
 CLEAN_AS(func_ov003_02215798, FieldActor_UpdateState4F)
@@ -7692,23 +7488,23 @@ CLEAN_AS(func_ov003_02215798, FieldActor_UpdateState4F)
 void FieldActor_RunState4F(FieldActor *actor)
 {
     FieldActor_CheckState4FLine(actor);
-    if (!func_0205e8d8(actor->held)) {
+    if (!HeldItem_LineState4Or5((HeldItemObject *) actor->held)) {
         return;
     }
-    if (func_0200f290(actor, 0xb)) {
-        HookedFish *fish = func_020604f8(held_line(actor));
+    if (FieldActor_TestFlag(actor, 0xb)) {
+        HookedFish *fish = (HookedFish *) FishingFloat_Fish(held_line(actor));
         if (fish != NULL) {
-            func_ov003_0222ad2c(fish);
+            FishShadowHook_LetGo((FishShadow *) fish);
         } else {
-            func_ov003_02228400(&actor->unk_5D0, 0x1000);
+            FishShadow_ScareNear(&actor->unk_5D0, 0x1000);
         }
         FieldActor_RequestState51(actor, 0, 6, -1);
         return;
     }
-    if (actor->unk_140 == 0 && func_020b758c(func_020b6590(), 0) == 0) {
+    if (actor->unk_140 == 0 && TouchPick_GetGround((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), NULL) == 0) {
         return;
     }
-    if (func_020604c8(held_line(actor))) {
+    if (FishingFloat_FishPull(held_line(actor))) {
         FieldActor_RequestState50(actor, 6, -1);
     } else {
         FieldActor_RequestState51(actor, 0, 6, -1);
@@ -7721,18 +7517,18 @@ CLEAN_AS(func_ov003_022157f4, FieldActor_RunState4F)
  * 0x1c4 of data_021c526c. */
 void FieldActor_CheckState4FLine(FieldActor *actor)
 {
-    if (!func_0205e8d8(actor->held)) {
+    if (!HeldItem_LineState4Or5((HeldItemObject *) actor->held)) {
         return;
     }
     if (actor->unk_600 == 0) {
         return;
     }
-    func_0200f328(actor, 0x84b);
+    FieldActor_PlaySound(actor, 0x84b);
     copy_point(&actor->unk_8C4, &actor->unk_5D0);
     if (!is_local_player(actor)) {
         return;
     }
-    func_02036460(data_021c526c + 0x1c4);
+    MusicVolume_BeginSlot3((MusicVolume *) (data_021c526c + 0x1c4));
 }
 CLEAN_AS(func_ov003_02215894, FieldActor_CheckState4FLine)
 
@@ -7741,8 +7537,8 @@ void FieldActor_FaceState4FPoint(FieldActor *actor)
 {
     int target = Math_Atan2(sub32(actor->unk_5D0.x, actor->position.x), sub32(actor->unk_5D0.z, actor->position.z));
     s16 yaw = actor->yaw;
-    func_020113e0(&yaw, target);
-    func_020110a0(actor, &yaw);
+    FieldActor_TurnAngleStep(&yaw, target);
+    FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_ov003_02215918, FieldActor_FaceState4FPoint)
 
@@ -7767,20 +7563,20 @@ void FieldActor_SyncState4FPoint(FieldActor *actor)
         int dz = sub32(actor->unk_5D0.z, point.z);
         if (add32(mul32(dx, dx), mul32(dz, dz)) >= 0x400000) {
             Vec3 copy = point;
-            func_02060428(held_line(actor), &copy);
+            FishingFloat_SetPosition(held_line(actor), &copy);
         }
         if (saved_mode == 5) {
-            func_0206026c(held_line(actor), 5);
-            func_0200f328(actor, 0x84f);
+            FishingFloat_SetState(held_line(actor), 5);
+            FieldActor_PlaySound(actor, 0x84f);
             actor->unk_8C4 = point;
         }
     } else if (mode != 3) {
         if (saved_mode == 4) {
-            func_0206026c(held_line(actor), 4);
+            FishingFloat_SetState(held_line(actor), 4);
             Vec3 copy = point;
-            func_02060428(held_line(actor), &copy);
+            FishingFloat_SetPosition(held_line(actor), &copy);
         } else if (mode >= 6) {
-            func_0206026c(held_line(actor), 0);
+            FishingFloat_SetState(held_line(actor), 0);
         }
     }
 }
@@ -7792,13 +7588,13 @@ CLEAN_AS(func_ov003_02215958, FieldActor_SyncState4FPoint)
 void FieldActor_ExitState4F(FieldActor *actor, int next)
 {
     if (is_local_player(actor)) {
-        func_02036458(data_021c526c + 0x1c4);
+        MusicVolume_EndSlot3((MusicVolume *) (data_021c526c + 0x1c4));
         return;
     }
     if (next == 0x50 || next == 0x51) {
         return;
     }
-    func_0206026c(held_line(actor), 1);
+    FishingFloat_SetState(held_line(actor), 1);
 }
 CLEAN_AS(func_ov003_02215a70, FieldActor_ExitState4F)
 
@@ -7825,20 +7621,20 @@ void FieldActor_EnterState4F(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109fc(actor, 0x54, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x54, 3, 0);
 
     void *session = data_020ccf94;
-    if (!func_02073908(session, actor->player)) {
+    if (!Session_IsLocalPlayer(session, actor->player)) {
         Vec3 point;
         u8 mode;
         FieldActor_GetPackedPointMode(actor->saved.packed, &point, &mode);
         if (mode == 3) {
             Vec3 copy = point;
-            func_02060428(held_line(actor), &copy);
+            FishingFloat_SetPosition(held_line(actor), &copy);
         }
     }
-    func_0205eae0(actor->held, 0x17, 3, 0);
-    if (func_02073908(session, actor->player)) {
+    HeldItem_Act(actor->held, 0x17, 3, 0);
+    if (Session_IsLocalPlayer(session, actor->player)) {
         FieldActor_SetPackedPointMode(actor->saved.packed, &actor->unk_5D0, (u8) actor->line_mode);
     }
 }
@@ -7847,14 +7643,14 @@ CLEAN_AS(func_ov003_02215af0, FieldActor_EnterState4F)
 /* func_ov003_02215b90: unpacks a point and a mode (func_02077928). */
 void FieldActor_GetPackedPointMode(const u8 *packed, Vec3 *point, u8 *mode)
 {
-    func_02077928(packed, &point->x, &point->y, &point->z, mode);
+    PackedBytes_UnpackPointAndValue(packed, (u32 *) &point->x, &point->y, (u32 *) &point->z, mode);
 }
 CLEAN_AS(func_ov003_02215b90, FieldActor_GetPackedPointMode)
 
 /* func_ov003_02215ba8: packs a point and a mode (func_02077950). */
 void FieldActor_SetPackedPointMode(u8 *packed, const Vec3 *point, int mode)
 {
-    func_02077950(packed, point->x, point->y, point->z, (u8) mode);
+    PackedBytes_PackPointAndValue(packed, point->x, point->y, point->z, (u8) mode);
 }
 CLEAN_AS(func_ov003_02215ba8, FieldActor_SetPackedPointMode)
 
@@ -7872,12 +7668,12 @@ CLEAN_AS(func_ov003_02215bc0, FieldActor_RequestState4F)
 void FieldActor_UpdateState4E(FieldActor *actor)
 {
     FieldActor_RunState4E(actor);
-    if (func_0200f554(actor)) {
-        func_0201100c(actor);
+    if (FieldActor_FollowReported(actor)) {
+        FieldActor_MoveWithCollision(actor);
     }
-    func_02010d64(actor);
-    int speed = func_020113a4(actor->unk_098, 0, 0x171);
-    func_0201107c(actor, &speed);
+    FieldActor_EnterContact(actor);
+    int speed = FieldActor_StepDown(actor->unk_098, 0, 0x171);
+    FieldActor_SetSpeed(actor, &speed);
     FieldActor_EndState4E(actor);
 }
 CLEAN_AS(func_ov003_02215bf8, FieldActor_UpdateState4E)
@@ -7895,9 +7691,9 @@ CLEAN_AS(func_ov003_02215c44, FieldActor_EndState4E)
 /* func_ov003_02215c84: sound 0x84a at frame 0xc. */
 void FieldActor_RunState4E(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_passed(actor, 0xc)) {
-        func_0200f328(actor, 0x84a);
+        FieldActor_PlaySound(actor, 0x84a);
     }
 }
 CLEAN_AS(func_ov003_02215c84, FieldActor_RunState4E)
@@ -7914,8 +7710,8 @@ void FieldActor_EnterState4E(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x53, 3, 0);
-    func_0205eae0(actor->held, 0x16, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x53, 3, 0);
+    HeldItem_Act(actor->held, 0x16, 3, 0);
 }
 CLEAN_AS(func_ov003_02215cbc, FieldActor_EnterState4E)
 
@@ -7935,16 +7731,16 @@ void FieldActor_UpdateState4D(FieldActor *actor)
     if (is_local_player(actor)) {
         FieldActor_TurnState4D(actor);
         FieldActor_RunState4D(actor);
-        func_0201100c(actor);
+        FieldActor_MoveWithCollision(actor);
     } else {
         FieldActor_RunState4D(actor);
-        if (func_0200f554(actor)) {
-            func_0201100c(actor);
+        if (FieldActor_FollowReported(actor)) {
+            FieldActor_MoveWithCollision(actor);
         }
     }
-    func_02010d64(actor);
-    int speed = func_020113a4(actor->unk_098, 0, 0x171);
-    func_0201107c(actor, &speed);
+    FieldActor_EnterContact(actor);
+    int speed = FieldActor_StepDown(actor->unk_098, 0, 0x171);
+    FieldActor_SetSpeed(actor, &speed);
     FieldActor_EndState4D(actor);
 }
 CLEAN_AS(func_ov003_02215d1c, FieldActor_UpdateState4D)
@@ -7958,7 +7754,7 @@ void FieldActor_EndState4D(FieldActor *actor)
     }
     FieldActor_RequestState4F(actor, 6, -1);
     if (is_local_player(actor)) {
-        func_0203ae84();
+        CameraControl_SetMode5();
     }
 }
 CLEAN_AS(func_ov003_02215db8, FieldActor_EndState4D)
@@ -7966,16 +7762,16 @@ CLEAN_AS(func_ov003_02215db8, FieldActor_EndState4D)
 /* func_ov003_02215dfc */
 void FieldActor_TurnState4D(FieldActor *actor)
 {
-    func_0200fb34(actor, actor->work.s4d_yaw);
+    FieldActor_TurnTowards(actor, actor->work.s4d_yaw);
 }
 CLEAN_AS(func_ov003_02215dfc, FieldActor_TurnState4D)
 
 /* func_ov003_02215e0c: sound 0x849 at frame 0x11. */
 void FieldActor_RunState4D(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_passed(actor, 0x11)) {
-        func_0200f328(actor, 0x849);
+        FieldActor_PlaySound(actor, 0x849);
     }
 }
 CLEAN_AS(func_ov003_02215e0c, FieldActor_RunState4D)
@@ -8000,12 +7796,12 @@ void FieldActor_EnterState4D(FieldActor *actor, const StateRequest *request, int
     (void) previous;
     const XZArgs *args = (const XZArgs *) (const void *) request->payload;
 
-    func_020109a0(actor, 0x52, 3, 0);
-    func_0205eae0(actor->held, 0x15, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x52, 3, 0);
+    HeldItem_Act(actor->held, 0x15, 3, 0);
     fx32 x = args->x;
     fx32 z = args->z;
     Vec3 point = {x, 0, z};
-    func_02060438(held_line(actor), &point);
+    FishingFloat_SetTarget(held_line(actor), &point);
     FieldActor_SetState4DSaved(actor->saved.packed, x, z);
     actor->work.s4d_yaw = Math_Atan2(sub32(x, actor->position.x), sub32(z, actor->position.z));
 }
@@ -8014,14 +7810,14 @@ CLEAN_AS(func_ov003_02215e78, FieldActor_EnterState4D)
 /* func_ov003_02215ef0: unpacks x and z (func_02077978). */
 void FieldActor_GetState4DSaved(const u8 *packed, fx32 *x, fx32 *z)
 {
-    func_02077978(packed, x, z);
+    PackedBytes_UnpackPoint(packed, (u32 *) x, (u32 *) z);
 }
 CLEAN_AS(func_ov003_02215ef0, FieldActor_GetState4DSaved)
 
 /* func_ov003_02215ef8: packs x and z (func_020779b8). */
 void FieldActor_SetState4DSaved(u8 *packed, fx32 x, fx32 z)
 {
-    func_020779b8(packed, x, z);
+    PackedBytes_PackPoint(packed, x, z);
 }
 CLEAN_AS(func_ov003_02215ef8, FieldActor_SetState4DSaved)
 
@@ -8054,12 +7850,12 @@ CLEAN_AS(func_ov003_02215f4c, FieldActor_SetState4DArgs)
  * FieldActor_RunState4C; another player's notes the state after this one. */
 void FieldActor_UpdateState4C(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
     if (is_local_player(actor)) {
         FieldActor_RunState4C(actor);
     } else {
-        actor->next_state = func_02008258(actor, actor->state);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     }
 }
 CLEAN_AS(func_ov003_02215f58, FieldActor_UpdateState4C)
@@ -8069,8 +7865,8 @@ CLEAN_AS(func_ov003_02215f58, FieldActor_UpdateState4C)
 void FieldActor_ExitState4C(FieldActor *actor)
 {
     if (!is_local_player(actor)) {
-        func_02095694(0, actor->player);
-        func_0200f27c(actor, 0);
+        PlayerActorOps_SetHeldModel(0, actor->player);
+        FieldActor_SetFlag(actor, 0);
     }
 }
 CLEAN_AS(func_ov003_02215fa4, FieldActor_ExitState4C)
@@ -8089,14 +7885,14 @@ void FieldActor_RunState4C(FieldActor *actor)
             break;
         case 1:
             if (actor->link != NULL && actor->link->open == 0) {
-                func_0203ee08(actor, actor->receiver);
-                func_0200f268(actor, 0x11);
-                func_0203e19c();
-                actor->next_state = func_02008258(actor, actor->state);
-                func_02095694(0, actor->player);
-                func_0200f27c(actor, 0);
-                func_0200d4e8(actor, 3, 1, -1);
-                func_0203b144();
+                SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+                FieldActor_ClearFlag(actor, 0x11);
+                EventQueue_FinishKind9();
+                actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+                PlayerActorOps_SetHeldModel(0, actor->player);
+                FieldActor_SetFlag(actor, 0);
+                FieldActor_RequestState2(actor, 3, 1, -1);
+                CameraControl_ResetMode();
             }
             break;
         default:
@@ -8120,17 +7916,17 @@ void FieldActor_EnterState4C(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109fc(actor, 0x48, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x48, 3, 0);
     FieldActor_ResetState4CStep(&actor->work.step);
     if (is_local_player(actor)) {
-        func_0203ee14(actor, actor->receiver);
-        func_020a8164(actor->receiver, data_ov003_02238134);
+        SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, (TalkReceiver *) actor->receiver);
+        MessageReceiver_SetName((MessageReceiver *) actor->receiver, data_ov003_02238134);
         actor->receiver_unk_1E = 0xa;
         actor->link->requested = 1;
-        func_0203ae98();
-        func_02035624(0x12);
-        func_02035684(0xc, 0, 1);
-        func_020356c4(0xd, 0x42, 0x7f, 1);
+        CameraControl_SetMode4();
+        Music_DropPriority(0x12);
+        Music_AddValue(0xc, 0, 1);
+        Music_Add(0xd, 0x42, 0x7f, 1);
     }
 }
 CLEAN_AS(_ZN12Obj_020d82b419func_ov003_0221608cEP12Msg_02007364i, FieldActor_EnterState4C)
@@ -8155,8 +7951,8 @@ CLEAN_AS(func_ov003_02216124, FieldActor_RequestState4C)
 void FieldActor_UpdateState4B(FieldActor *actor)
 {
     FieldActor_RunState4B(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState4B(actor);
 }
 CLEAN_AS(func_ov003_0221615c, FieldActor_UpdateState4B)
@@ -8171,7 +7967,7 @@ void FieldActor_EndState4B(FieldActor *actor)
     if (!anim_done(actor)) {
         return;
     }
-    if (is_local_player(actor) && func_0203e1c4() == 0) {
+    if (is_local_player(actor) && EventQueue_RequestKind9() == 0) {
         return;
     }
     FieldActor_RequestState4C(actor, 6, -1);
@@ -8185,7 +7981,7 @@ CLEAN_AS(func_ov003_0221617c, FieldActor_EndState4B)
  * func_0200faf0(0x200). */
 void FieldActor_RunState4B(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_frame(actor) < 8) {
         return;
     }
@@ -8193,19 +7989,19 @@ void FieldActor_RunState4B(FieldActor *actor)
         State4BWork *work = &actor->work.s4b;
         if (work->flag) {
             int tile[2] = {work->x, work->z};
-            func_02045f08(tile, 0);
-            func_0200f268(actor, 0x12);
+            TileChanges_FinishAtTile((const TileChangesTile *) tile, 0);
+            FieldActor_ClearFlag(actor, 0x12);
             work->flag = 0;
         }
-        func_0200f328(actor, 0x840);
-        func_0200f268(actor, 0);
-        func_0200f27c(actor, 9);
+        FieldActor_PlaySound(actor, 0x840);
+        FieldActor_ClearFlag(actor, 0);
+        FieldActor_SetFlag(actor, 9);
 
         Mtx43 mtx = actor->unk_668;
         const Vec3 origin = {mtx.m[3][0], mtx.m[3][1], mtx.m[3][2]};
         Vec3 at = origin;
-        func_0203f7d0(&at, &at);
-        func_02091254(0x8c, &at, 0, 0);
+        Globe_Unbend(&at, &at);
+        EffectSystem_StartOneShotSetNumberCopy(0x8c, &at, 0, 0);
 
         at = origin;
         mtx.m[3][0] = 0;
@@ -8217,10 +8013,10 @@ void FieldActor_RunState4B(FieldActor *actor)
         at.x = add32(at.x, turned.x);
         at.y = add32(at.y, turned.y);
         at.z = add32(at.z, turned.z);
-        func_0203f7d0(&at, &at);
-        func_02091254(0x8b, &at, 0, 0);
+        Globe_Unbend(&at, &at);
+        EffectSystem_StartOneShotSetNumberCopy(0x8b, &at, 0, 0);
     }
-    func_0200faf0(actor, 0x200);
+    FieldActor_TurnToZero(actor, 0x200);
 }
 CLEAN_AS(func_ov003_022161cc, FieldActor_RunState4B)
 
@@ -8230,17 +8026,17 @@ CLEAN_AS(func_ov003_022161cc, FieldActor_RunState4B)
 void FieldActor_ExitState4B(FieldActor *actor)
 {
     if (is_local_player(actor)) {
-        u16 *item = func_02099728(func_020984fc(actor->player));
+        u16 *item = PlayerRecord_HeldItem(PlayerRecords_OfPlayer(actor->player));
         if (item != NULL) {
-            func_0200f1a4(actor, 3, *item);
+            FieldActor_SendItem(actor, 3, *item);
         }
         return;
     }
     State4BWork *work = &actor->work.s4b;
     if (work->flag != 0) {
         int tile[2] = {work->x, work->z};
-        func_02045f08(tile, 0);
-        func_0200f268(actor, 0x12);
+        TileChanges_FinishAtTile((const TileChangesTile *) tile, 0);
+        FieldActor_ClearFlag(actor, 0x12);
     }
 }
 CLEAN_AS(func_ov003_022162ec, FieldActor_ExitState4B)
@@ -8269,9 +8065,9 @@ void FieldActor_EnterState4B(FieldActor *actor, const StateRequest *request, int
 
     FieldActor_SetState4BWork(&actor->work.s4b, flag, tile);
     FieldActor_SetState4BSaved(&actor->saved.flag4b, flag);
-    func_020109a0(actor, 0x47, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x47, 3, 0);
     if (is_local_player(actor)) {
-        func_02035684(0x12, 0xf, 0);
+        Music_AddValue(0x12, 0xf, 0);
     }
 }
 CLEAN_AS(func_ov003_02216390, FieldActor_EnterState4B)
@@ -8326,8 +8122,8 @@ CLEAN_AS(func_ov003_02216460, FieldActor_SetState4BArgs)
 void FieldActor_UpdateState4A(FieldActor *actor)
 {
     FieldActor_RunState4A(actor);
-    func_02010d64(actor);
-    func_02010ca4(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
     FieldActor_EndState4A(actor);
 }
 CLEAN_AS(func_ov003_0221646c, FieldActor_UpdateState4A)
@@ -8340,11 +8136,11 @@ void FieldActor_EndState4A(FieldActor *actor)
 {
     u8 face = actor->work.s4b.unk_03;
     if (anim_done(actor)) {
-        actor->next_state = func_02008258(actor, actor->state);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         if (face != 0) {
-            func_02008dc0(actor, (u16) actor->yaw, 6, -1);
+            FieldActor_RequestState77(actor, (u16) actor->yaw, 6, -1);
         } else {
-            func_0200d4e8(actor, 3, 1, -1);
+            FieldActor_RequestState2(actor, 3, 1, -1);
         }
     }
     if (face != 0) {
@@ -8367,37 +8163,37 @@ CLEAN_AS(func_ov003_0221648c, FieldActor_EndState4A)
 void FieldActor_ActState4A(FieldActor *actor)
 {
     const State4BWork *work = &actor->work.s4b;
-    int count = func_0200fc90(actor);
+    int count = FieldActor_HeldToolNumber(actor);
 
     if (work->flag != 0) {
         count++;
         if (count == 7) {
-            func_0200f328(actor, 0x83e);
+            FieldActor_PlaySound(actor, 0x83e);
         } else if (count == 9) {
-            func_0200f328(actor, 0x83f);
+            FieldActor_PlaySound(actor, 0x83f);
         }
     }
-    func_02095694(count, actor->player);
-    func_0200f27c(actor, 9);
-    func_0200f328(actor, 0x83b);
+    PlayerActorOps_SetHeldModel(count, actor->player);
+    FieldActor_SetFlag(actor, 9);
+    FieldActor_PlaySound(actor, 0x83b);
 
     u8 x = work->x;
     u8 z = work->z;
     Vec3 point;
-    func_0204f794(&point, x, z);
+    AcreTile_TileCentre(&point, x, z);
     s16 angle = (s16) (actor->yaw + 0x2000);
-    func_020912d4(2, &point, &angle, 0);
+    EffectSystem_StartKind(2, &point, &angle, 0);
 
     int tile[2] = {x, z};
-    func_ov003_02224234(actor->player, tile, point.x >= actor->position.x ? 5 : 4);
-    func_0200f268(actor, 0x1c);
+    GrowthModel_RequestChop(actor->player, (const TileChangesTile *) tile, point.x >= actor->position.x ? 5 : 4);
+    FieldActor_ClearFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02216520, FieldActor_ActState4A)
 
 /* func_ov003_022165e4: the act at frame 8. */
 void FieldActor_RunState4A(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_passed(actor, 8)) {
         FieldActor_ActState4A(actor);
     }
@@ -8411,7 +8207,7 @@ void FieldActor_ExitState4A(FieldActor *actor)
     if (is_local_player(actor)) {
         return;
     }
-    if (!func_0200f290(actor, 0x1c)) {
+    if (!FieldActor_TestFlag(actor, 0x1c)) {
         return;
     }
     FieldActor_ActState4A(actor);
@@ -8435,8 +8231,8 @@ void FieldActor_EnterState4A(FieldActor *actor, const StateRequest *request, int
     const u32 tile[2] = {args[0], args[1]};
 
     FieldActor_SetState4AWork(&actor->work.s4b, args[2], args[3], tile);
-    func_020109a0(actor, 0x44, 3, 0);
-    func_0200f27c(actor, 0x1c);
+    FieldActor_PlayAnimationOnce(actor, 0x44, 3, 0);
+    FieldActor_SetFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02216644, FieldActor_EnterState4A)
 
@@ -8484,10 +8280,10 @@ static_assert(sizeof(State49Work) <= sizeof(((StateRequest *) 0)->payload), "sta
 void FieldActor_UpdateState49(FieldActor *actor)
 {
     FieldActor_RunState49(actor);
-    func_0201100c(actor);
-    func_02010d64(actor);
-    int speed = sub32(0, func_02011398(abs32(actor->unk_098), 0));
-    func_0201107c(actor, &speed);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
+    int speed = sub32(0, FieldActor_Slow(abs32(actor->unk_098), 0));
+    FieldActor_SetSpeed(actor, &speed);
     FieldActor_EndState49(actor);
 }
 CLEAN_AS(func_ov003_022166f8, FieldActor_UpdateState49)
@@ -8514,24 +8310,24 @@ void FieldActor_ActState49(FieldActor *actor)
 {
     const State49Work *work = &actor->work.s49;
     int speed = -0x333;
-    func_0201107c(actor, &speed);
+    FieldActor_SetSpeed(actor, &speed);
 
-    int count = func_0200fc90(actor);
+    int count = FieldActor_HeldToolNumber(actor);
     if (work->flag != 0) {
         count++;
         if (count == 7) {
-            func_0200f328(actor, 0x83e);
+            FieldActor_PlaySound(actor, 0x83e);
         } else if (count == 9) {
-            func_0200f328(actor, 0x83f);
+            FieldActor_PlaySound(actor, 0x83f);
         }
     }
-    func_02095694(count, actor->player);
-    func_0200f27c(actor, 9);
+    PlayerActorOps_SetHeldModel(count, actor->player);
+    FieldActor_SetFlag(actor, 9);
     if (work->on_tile != 0) {
         int tile[2] = {work->x, work->z};
-        func_ov003_022241a4(tile);
-        func_0200f268(actor, 0x12);
-        func_0200f268(actor, 0x1c);
+        TileEvent_StartFromChanges((const TileChangesTile *) tile);
+        FieldActor_ClearFlag(actor, 0x12);
+        FieldActor_ClearFlag(actor, 0x1c);
     }
 
     switch (actor->other_result) {
@@ -8551,18 +8347,18 @@ void FieldActor_ActState49(FieldActor *actor)
             at.z = add32(at.z, dz);
             at.y = add32(at.y, 0xccd);
             angle = (s16) (angle + 0x2000);
-            func_020912d4(4, &at, &angle, 0);
-            func_0200f328(actor, 0x83c);
+            EffectSystem_StartKind(4, &at, &angle, 0);
+            FieldActor_PlaySound(actor, 0x83c);
             break;
         }
         case 1:
-            func_0200f328(actor, 0x7df);
+            FieldActor_PlaySound(actor, 0x7df);
             break;
         case 2:
-            func_0200f328(actor, 0x7df);
+            FieldActor_PlaySound(actor, 0x7df);
             if (actor->other != NULL) {
                 u16 item;
-                func_020110c4(&item, actor);
+                FieldActor_RecordHeldItem(&item, actor);
                 GameObject *other = (GameObject *) actor->other;
                 ItemQuery query = (ItemQuery) (uintptr_t) other->vtable[24];
                 query(other, &item);
@@ -8572,7 +8368,7 @@ void FieldActor_ActState49(FieldActor *actor)
             if (is_local_player(actor) && Snowman_Knock(actor->other, 1)) {
                 break;
             }
-            func_0200f328(actor, 0x7df);
+            FieldActor_PlaySound(actor, 0x7df);
             break;
         default:
             break;
@@ -8585,7 +8381,7 @@ CLEAN_AS(func_ov003_02216780, FieldActor_ActState49)
 /* func_ov003_02216948: the act at frame 8. */
 void FieldActor_RunState49(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_passed(actor, 8)) {
         FieldActor_ActState49(actor);
     }
@@ -8599,7 +8395,7 @@ void FieldActor_ExitState49(FieldActor *actor)
     if (is_local_player(actor)) {
         return;
     }
-    if (!func_0200f290(actor, 0x1c)) {
+    if (!FieldActor_TestFlag(actor, 0x1c)) {
         return;
     }
     FieldActor_ActState49(actor);
@@ -8639,9 +8435,9 @@ void FieldActor_EnterState49(FieldActor *actor, const StateRequest *request, int
 
     FieldActor_SetState49Work(&actor->work.s49, flag, on_tile, tile);
     FieldActor_SetState49Saved(&actor->saved.s49, flag, on_tile, actor->other_result, x, z);
-    func_020109a0(actor, 0x45, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x45, 3, 0);
     if (on_tile != 0) {
-        func_0200f27c(actor, 0x1c);
+        FieldActor_SetFlag(actor, 0x1c);
     }
 }
 CLEAN_AS(func_ov003_02216a00, FieldActor_EnterState49)
@@ -8707,7 +8503,7 @@ CLEAN_AS(func_ov003_02216b08, FieldActor_SetState49Args)
 void FieldActor_UpdateState48(FieldActor *actor)
 {
     FieldActor_RunState48(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState48(actor);
 }
 CLEAN_AS(func_ov003_02216b18, FieldActor_UpdateState48)
@@ -8725,9 +8521,9 @@ CLEAN_AS(func_ov003_02216b34, FieldActor_EndState48)
 void FieldActor_RunState48(FieldActor *actor)
 {
     if (anim_passed(actor, 6)) {
-        func_0200f328(actor, 0x83d);
+        FieldActor_PlaySound(actor, 0x83d);
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
 }
 CLEAN_AS(func_ov003_02216b74, FieldActor_RunState48)
 
@@ -8743,7 +8539,7 @@ void FieldActor_EnterState48(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x46, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x46, 3, 0);
 }
 CLEAN_AS(func_ov003_02216bb0, FieldActor_EnterState48)
 
@@ -8765,21 +8561,21 @@ CLEAN_AS(func_ov003_02216bc4, FieldActor_RequestState48)
  * ahead. */
 void FieldActor_UpdateState47(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (is_local_player(actor)) {
-        func_0201100c(actor);
-        func_02010d64(actor);
-        int speed = func_02011398(actor->unk_098, 0);
-        func_0201107c(actor, &speed);
+        FieldActor_MoveWithCollision(actor);
+        FieldActor_EnterContact(actor);
+        int speed = FieldActor_Slow(actor->unk_098, 0);
+        FieldActor_SetSpeed(actor, &speed);
         FieldActor_ActAhead(actor, 0);
     } else {
-        if (func_0200f554(actor)) {
-            func_0201100c(actor);
+        if (FieldActor_FollowReported(actor)) {
+            FieldActor_MoveWithCollision(actor);
         }
-        func_02010d64(actor);
-        int speed = func_02011398(actor->unk_098, 0);
-        func_0201107c(actor, &speed);
-        actor->next_state = func_02008258(actor, actor->state);
+        FieldActor_EnterContact(actor);
+        int speed = FieldActor_Slow(actor->unk_098, 0);
+        FieldActor_SetSpeed(actor, &speed);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     }
     FieldActor_TurnState47(actor);
 }
@@ -8801,9 +8597,9 @@ int FieldActor_ActAhead(FieldActor *actor, int check_other)
         return -1;
     }
 
-    int count = func_0200fc90(actor);
+    int count = FieldActor_HeldToolNumber(actor);
     u8 mode = 0;
-    if (count != 0xb && func_0200f290(actor, 0x14)) {
+    if (count != 0xb && FieldActor_TestFlag(actor, 0x14)) {
         mode = count != 0xa ? 1 : 2;
     }
 
@@ -8854,9 +8650,9 @@ CLEAN_AS(func_ov003_02216c9c, FieldActor_ActAhead)
 void FieldActor_TurnState47(FieldActor *actor)
 {
     Vec3 ahead;
-    func_0200fa6c(&ahead, actor);
-    func_02010d88(actor, &ahead, 0xf33, 0x1000);
-    func_02089fc8(actor->unk_1C4);
+    FieldActor_PointAheadOfSelf(&ahead, actor);
+    FieldActor_SetContactBSized(actor, &ahead, 0xf33, 0x1000);
+    FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
 CLEAN_AS(func_ov003_02216e5c, FieldActor_TurnState47)
 
@@ -8872,7 +8668,7 @@ void FieldActor_EnterState47(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109fc(actor, 0x43, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x43, 3, 0);
 }
 CLEAN_AS(func_ov003_02216ea0, FieldActor_EnterState47)
 
@@ -8900,26 +8696,26 @@ void FieldActor_UpdateState46(FieldActor *actor)
 
     if (is_local_player(actor)) {
         FieldActor_FaceState46(actor);
-        func_02010f5c(actor);
-        func_0201100c(actor);
-        func_02010d64(actor);
-        int speed = func_020113a4(actor->unk_098, 0, 0x171);
-        func_0201107c(actor, &speed);
+        FieldActor_UpdateBody(actor);
+        FieldActor_MoveWithCollision(actor);
+        FieldActor_EnterContact(actor);
+        int speed = FieldActor_StepDown(actor->unk_098, 0, 0x171);
+        FieldActor_SetSpeed(actor, &speed);
         FieldActor_EndState46Local(actor);
         FieldActor_TurnState46(actor);
     } else {
-        func_02010f5c(actor);
-        if (func_0200f554(actor)) {
-            func_0201100c(actor);
+        FieldActor_UpdateBody(actor);
+        if (FieldActor_FollowReported(actor)) {
+            FieldActor_MoveWithCollision(actor);
         }
-        func_02010d64(actor);
-        int speed = func_020113a4(actor->unk_098, 0, 0x171);
-        func_0201107c(actor, &speed);
+        FieldActor_EnterContact(actor);
+        int speed = FieldActor_StepDown(actor->unk_098, 0, 0x171);
+        FieldActor_SetSpeed(actor, &speed);
         FieldActor_EndState46Remote(actor);
     }
 
     if (before != 0 && actor->unk_098 == 0) {
-        func_020912d4(0x2c, &actor->position, &actor->yaw, 0);
+        EffectSystem_StartKind(0x2c, &actor->position, &actor->yaw, 0);
     }
 }
 CLEAN_AS(func_ov003_02216eec, FieldActor_UpdateState46)
@@ -8928,7 +8724,7 @@ CLEAN_AS(func_ov003_02216eec, FieldActor_UpdateState46)
  * for state 0x47 at the animation's end. */
 void FieldActor_EndState46Remote(FieldActor *actor)
 {
-    actor->next_state = func_02008258(actor, actor->state);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     if (anim_done(actor)) {
         FieldActor_RequestState47(actor, 6, -1);
     }
@@ -8951,15 +8747,15 @@ CLEAN_AS(func_ov003_02216fec, FieldActor_EndState46Local)
 void FieldActor_TurnState46(FieldActor *actor)
 {
     Vec3 point = actor->work.s46.point;
-    func_02010d88(actor, &point, 0xf33, 0x1000);
-    func_02089fc8(actor->unk_1C4);
+    FieldActor_SetContactBSized(actor, &point, 0xf33, 0x1000);
+    FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
 CLEAN_AS(func_ov003_02217020, FieldActor_TurnState46)
 
 /* func_ov003_02217060: the actor faces the work's yaw (func_0200fb34). */
 void FieldActor_FaceState46(FieldActor *actor)
 {
-    func_0200fb34(actor, actor->work.s46.yaw);
+    FieldActor_TurnTowards(actor, actor->work.s46.yaw);
 }
 CLEAN_AS(func_ov003_02217060, FieldActor_FaceState46)
 
@@ -8993,7 +8789,7 @@ void FieldActor_EnterState46(FieldActor *actor, const StateRequest *request, int
     Vec3 point;
 
     FieldActor_SetState46Saved(actor->saved.packed, x, z, at_point);
-    func_020109a0(actor, 0x42, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x42, 3, 0);
 
     if (at_point != 0) {
 #ifdef BUGFIX
@@ -9004,11 +8800,11 @@ void FieldActor_EnterState46(FieldActor *actor, const StateRequest *request, int
     } else {
         Vec3 ahead;
         int surface;
-        func_0200fa6c(&ahead, actor);
-        if (func_020310d0(&ahead, &surface, 0x19) >= 0x1000) {
-            func_0200fa8c(&point, actor);
+        FieldActor_PointAheadOfSelf(&ahead, actor);
+        if (CollisionQuery_GroundY(&ahead, &surface, 0x19) >= 0x1000) {
+            FieldActor_TileAhead(&point, actor);
         } else {
-            func_0200fa6c(&point, actor);
+            FieldActor_PointAheadOfSelf(&point, actor);
         }
     }
 
@@ -9017,9 +8813,9 @@ void FieldActor_EnterState46(FieldActor *actor, const StateRequest *request, int
     FieldActor_SetState46Work(&actor->work.s46, &copy, (u16) yaw);
 
     if (is_local_player(actor)) {
-        func_0200f268(actor, 0x14);
-        if (func_0200fc90(actor) != 0xb && func_020644cc(8) == 0) {
-            func_0200f27c(actor, 0x14);
+        FieldActor_ClearFlag(actor, 0x14);
+        if (FieldActor_HeldToolNumber(actor) != 0xb && MainRandom_Below(8) == 0) {
+            FieldActor_SetFlag(actor, 0x14);
         }
     }
 }
@@ -9028,7 +8824,7 @@ CLEAN_AS(func_ov003_022170a4, FieldActor_EnterState46)
 /* func_ov003_022171ac: the saved point (func_02077978) and the flag in byte 5. */
 void FieldActor_GetState46Saved(const u8 *saved, fx32 *x, fx32 *z, u8 *at_point)
 {
-    func_02077978(saved, x, z);
+    PackedBytes_UnpackPoint(saved, (u32 *) x, (u32 *) z);
     *at_point = saved[5];
 }
 CLEAN_AS(func_ov003_022171ac, FieldActor_GetState46Saved)
@@ -9036,7 +8832,7 @@ CLEAN_AS(func_ov003_022171ac, FieldActor_GetState46Saved)
 /* func_ov003_022171c4: the point packed by func_020779b8 and the flag in byte 5. */
 void FieldActor_SetState46Saved(u8 *saved, fx32 x, fx32 z, u8 at_point)
 {
-    func_020779b8(saved, x, z);
+    PackedBytes_PackPoint(saved, x, z);
     saved[5] = at_point;
 }
 CLEAN_AS(func_ov003_022171c4, FieldActor_SetState46Saved)
@@ -9097,12 +8893,12 @@ void FieldActor_UpdateState45(FieldActor *actor)
 {
     FieldActor_RunState45(actor);
     if (is_local_player(actor)) {
-        func_0201100c(actor);
+        FieldActor_MoveWithCollision(actor);
     } else {
-        func_0200f554(actor);
+        FieldActor_FollowReported(actor);
     }
-    func_02010d64(actor);
-    func_02010ca4(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
     FieldActor_EndState45(actor);
 }
 CLEAN_AS(func_ov003_022172c4, FieldActor_UpdateState45)
@@ -9124,14 +8920,14 @@ CLEAN_AS(func_ov003_0221730c, FieldActor_EndState45)
  * (passed through func_0203f7d0), turned by the yaw. */
 void FieldActor_RunState45(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     int *effect = &actor->work.s45.effect;
     Vec3 at = actor->unk_62C;
-    func_0203f7d0(&at, &at);
+    Globe_Unbend(&at, &at);
     if (*effect == -1) {
-        *effect = func_020912d4(0x33, &at, &actor->yaw, 0);
+        *effect = EffectSystem_StartKind(0x33, &at, &actor->yaw, 0);
     } else {
-        func_02091278(*effect, &at, &actor->yaw, 0);
+        EffectSystem_MoveHandle(*effect, &at, &actor->yaw, 0);
     }
 }
 CLEAN_AS(func_ov003_02217378, FieldActor_RunState45)
@@ -9141,7 +8937,7 @@ CLEAN_AS(func_ov003_02217378, FieldActor_RunState45)
 void FieldActor_ExitState45(FieldActor *actor)
 {
     if (actor->work.s45.effect != -1) {
-        func_0209129c(actor->work.s45.effect);
+        EffectSystem_EndHandle(actor->work.s45.effect);
     }
 }
 CLEAN_AS(func_ov003_022173e0, FieldActor_ExitState45)
@@ -9159,10 +8955,10 @@ void FieldActor_EnterState45(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_020109a0(actor, 0x63, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x63, 3, 0);
     FieldActor_InitState45Work(&actor->work.s45);
-    func_0200f328(actor, 0x856);
-    func_0200f27c(actor, 9);
+    FieldActor_PlaySound(actor, 0x856);
+    FieldActor_SetFlag(actor, 9);
 }
 CLEAN_AS(func_ov003_0221740c, FieldActor_EnterState45)
 
@@ -9188,8 +8984,6 @@ CLEAN_AS(func_ov003_02217450, FieldActor_RequestState45)
 
 /* ---- State 0x3e: animation 0x62, then the state the request names */
 
-extern int func_0200c3b0(FieldActor *actor, int a, int priority, int arg);
-
 static_assert(offsetof(FieldActor, work.s3e.flags) == 0x7e2, "state 0x3e flags");
 static_assert(sizeof(State3ESaved) == 8, "state 0x3e saved");
 
@@ -9197,7 +8991,7 @@ static_assert(sizeof(State3ESaved) == 8, "state 0x3e saved");
 void FieldActor_UpdateState3E(FieldActor *actor)
 {
     FieldActor_RunState3E(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState3E(actor);
 }
 CLEAN_AS(func_ov003_02217488, FieldActor_UpdateState3E)
@@ -9212,23 +9006,23 @@ void FieldActor_EndState3E(FieldActor *actor)
     if (!anim_done(actor)) {
         return;
     }
-    func_0200f27c(actor, 1);
+    FieldActor_SetFlag(actor, 1);
     switch (work->next) {
         case 0x38:
-            func_0200f268(actor, 0);
+            FieldActor_ClearFlag(actor, 0);
             FieldActor_RequestState38(actor, work->x, work->z, work->value, 6, -1);
             break;
         case 0x39:
-            func_0200f268(actor, 0);
+            FieldActor_ClearFlag(actor, 0);
             FieldActor_RequestState39(actor, (work->flags & 0xc) >> 2, work->x, work->z, work->value, 6, -1);
             break;
         case 0x10:
-            func_0200f268(actor, 0);
-            actor->next_state = func_02008258(actor, actor->state);
-            func_0200c3b0(actor, 3, 5, -1);
+            FieldActor_ClearFlag(actor, 0);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            FieldActor_RequestState10(actor, 3, 5, -1);
             break;
         case 2:
-            func_0203e110();
+            EventQueue_FinishKind4Or12();
             move_on(actor);
             break;
         default:
@@ -9241,15 +9035,15 @@ CLEAN_AS(func_ov003_022174a4, FieldActor_EndState3E)
  * 5; played forwards (2), flag 0 is set and sound 0x857 plays on passing frame 7. */
 void FieldActor_RunState3E(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if ((actor->work.s3e.flags & 3) != 2) {
         if (anim_frame(actor) < 6 && anim_passed(actor, 5)) {
-            func_0200f268(actor, 0);
+            FieldActor_ClearFlag(actor, 0);
         }
     } else {
         if (anim_frame(actor) < 8 && anim_passed(actor, 7)) {
-            func_0200f27c(actor, 0);
-            func_0200f328(actor, 0x857);
+            FieldActor_SetFlag(actor, 0);
+            FieldActor_PlaySound(actor, 0x857);
         }
     }
 }
@@ -9296,26 +9090,26 @@ void FieldActor_EnterState3E(FieldActor *actor, const StateRequest *request, int
     const State3EWork *args = (const State3EWork *) (const void *) request->payload;
     u8 flags = args->flags;
 
-    func_0205eae0(actor->held, 0x24, 3, 1);
+    HeldItem_Act(actor->held, 0x24, 3, 1);
     if ((flags & 3) != 2) {
-        func_020109a0(actor, 0x62, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x62, 3, 0);
         u32 frames = anim_frames(actor);
-        func_02056fcc(&actor->anim, frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (frames - 1));
+        FrameCtrl_Init(&actor->anim, frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (frames - 1));
 
-        FrameCtrl *held_anim = (FrameCtrl *) (void *) (func_0205e8e4(actor->held) + 0x9c);
+        FrameCtrl *held_anim = (FrameCtrl *) (void *) (HeldItem_Model(actor->held) + 0x9c);
         u32 held_frames = ((u32) held_anim->end >> 12) & 0xffff;
-        func_02056fcc(held_anim, held_frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (held_frames - 1));
+        FrameCtrl_Init(held_anim, held_frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (held_frames - 1));
 
-        func_0200f328(actor, 0x858);
+        FieldActor_PlaySound(actor, 0x858);
     } else {
         u16 items[2];
-        func_020110c4(&items[0], actor);
-        void *record = func_02011368(actor);
+        FieldActor_RecordHeldItem(&items[0], actor);
+        void *record = FieldActor_Record(actor);
         items[1] = ITEM_NONE;
-        func_0209971c(record, &items[1]);
-        func_020109a0(actor, 0x62, 3, 0);
-        func_0209971c(record, &items[0]);
-        func_0200f268(actor, 0);
+        PlayerRecord_SetHeldItem(record, &items[1]);
+        FieldActor_PlayAnimationOnce(actor, 0x62, 3, 0);
+        PlayerRecord_SetHeldItem(record, &items[0]);
+        FieldActor_ClearFlag(actor, 0);
     }
 
     int next = args->next;
@@ -9338,7 +9132,7 @@ void FieldActor_EnterState3E(FieldActor *actor, const StateRequest *request, int
             break;
     }
     FieldActor_SetState3ESaved(&actor->saved.s3e, (char) flags, x, z, value);
-    func_0200f328(actor, 0x4f);
+    FieldActor_PlaySound(actor, 0x4f);
 }
 CLEAN_AS(func_ov003_02217678, FieldActor_EnterState3E)
 
@@ -9346,8 +9140,8 @@ CLEAN_AS(func_ov003_02217678, FieldActor_EnterState3E)
 u16 FieldActor_GetState3ESaved(const State3ESaved *saved, u8 *flags, fx32 *x, fx32 *z, u16 *value)
 {
     *flags = saved->flags;
-    func_02077978(saved->xz, x, z);
-    u16 v = (u16) func_020778f8(saved->value);
+    PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
+    u16 v = (u16) PackedBytes_ReadS16(saved->value);
     *value = v;
     return v;
 }
@@ -9357,8 +9151,8 @@ CLEAN_AS(func_ov003_022177d0, FieldActor_GetState3ESaved)
 void FieldActor_SetState3ESaved(State3ESaved *saved, char flags, fx32 x, fx32 z, s16 value)
 {
     saved->flags = (u8) flags;
-    func_020779b8(saved->xz, x, z);
-    func_02077910(saved->value, value);
+    PackedBytes_PackPoint(saved->xz, x, z);
+    PackedBytes_WriteS16(saved->value, value);
 }
 CLEAN_AS(func_ov003_022177f4, FieldActor_SetState3ESaved)
 
@@ -9381,7 +9175,7 @@ int FieldActor_RequestState3E(FieldActor *actor, int next, int flags, fx32 x, fx
 
     open_request(&request, 0x3e, priority, arg);
     FieldActor_SetState3EArgs((State3EWork *) (void *) request.payload, next, (char) flags, x, z, value);
-    func_0200f268(actor, 1);
+    FieldActor_ClearFlag(actor, 1);
     return send_request(actor, &request);
 }
 CLEAN_AS(func_ov003_02217838, FieldActor_RequestState3E)
@@ -9402,8 +9196,8 @@ CLEAN_AS(func_ov003_02217894, FieldActor_SetState3EArgs)
 /* func_ov003_022178b0: state 0x3d's update. */
 void FieldActor_UpdateState3D(FieldActor *actor)
 {
-    func_02010f5c(actor);
-    func_02010d64(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_StepState3D(actor);
 }
 CLEAN_AS(func_ov003_022178b0, FieldActor_UpdateState3D)
@@ -9419,8 +9213,6 @@ static BOOL is_item_1380(u16 item)
 {
     return item >= 0x1380 && item <= 0x13a7;
 }
-
-extern void func_020108cc(FieldActor *actor, int a, int b);
 
 static_assert(offsetof(FieldActor, work.s3d.weight) == 0x7e0, "state 0x3d weight");
 static_assert(offsetof(FieldActor, work.s3d.yaw) == 0x7e4, "state 0x3d yaw");
@@ -9440,7 +9232,7 @@ void FieldActor_StepState3D(FieldActor *actor)
         target = 0x1000;
         if (anim_frame(actor) < 8) {
             if (anim_passed(actor, 7)) {
-                func_020108cc(actor, 0, 7);
+                FieldActor_AnimateHeldItem(actor, 0, 7);
             }
             if (work->weight != 0x1000) {
                 work->weight = add32(work->weight, 0x249);
@@ -9463,23 +9255,23 @@ void FieldActor_StepState3D(FieldActor *actor)
     if (!anim_done(actor) || work->weight != target) {
         return;
     }
-    func_0200f27c(actor, 1);
+    FieldActor_SetFlag(actor, 1);
     switch (work->next) {
         case 0x38:
-            func_0200f268(actor, 0);
+            FieldActor_ClearFlag(actor, 0);
             FieldActor_RequestState38(actor, work->x, work->z, work->yaw, 6, -1);
             break;
         case 0x39:
-            func_0200f268(actor, 0);
+            FieldActor_ClearFlag(actor, 0);
             FieldActor_RequestState39(actor, (work->flags & 0xc) >> 2, work->x, work->z, work->yaw, 6, -1);
             break;
         case 0x10:
-            func_0200f268(actor, 0);
-            actor->next_state = func_02008258(actor, actor->state);
-            func_0200c3b0(actor, 3, 5, -1);
+            FieldActor_ClearFlag(actor, 0);
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            FieldActor_RequestState10(actor, 3, 5, -1);
             break;
         case 2:
-            func_0203e110();
+            EventQueue_FinishKind4Or12();
             move_on(actor);
             break;
         default:
@@ -9496,7 +9288,7 @@ void FieldActor_ExitState3D(FieldActor *actor)
         set_held_weight(actor, 0x1000);
     } else {
         set_held_weight(actor, 0);
-        func_0200f268(actor, 0);
+        FieldActor_ClearFlag(actor, 0);
     }
 }
 CLEAN_AS(func_ov003_02217a38, FieldActor_ExitState3D)
@@ -9542,18 +9334,18 @@ void FieldActor_EnterState3D(FieldActor *actor, const StateRequest *request, int
     u16 items[2];
     fx32 weight;
 
-    func_020110c4(&items[0], actor);
-    void *record = func_02011368(actor);
+    FieldActor_RecordHeldItem(&items[0], actor);
+    void *record = FieldActor_Record(actor);
     items[1] = ITEM_NONE;
-    func_0209971c(record, &items[1]);
-    func_020109a0(actor, 0x6b, 3, 0);
-    func_0209971c(record, &items[0]);
+    PlayerRecord_SetHeldItem(record, &items[1]);
+    FieldActor_PlayAnimationOnce(actor, 0x6b, 3, 0);
+    PlayerRecord_SetHeldItem(record, &items[0]);
 
     if ((args->flags & 3) == 2) {
-        func_0200f27c(actor, 0);
+        FieldActor_SetFlag(actor, 0);
         weight = 0;
         u32 frames = anim_frames(actor);
-        func_02056fcc(&actor->anim, frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (frames - 1));
+        FrameCtrl_Init(&actor->anim, frames, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) (frames - 1));
     } else {
         weight = 0x1000;
     }
@@ -9579,7 +9371,7 @@ void FieldActor_EnterState3D(FieldActor *actor, const StateRequest *request, int
             break;
     }
     FieldActor_SetState3DSaved(&actor->saved.s3d, (char) flags, x, z, yaw);
-    func_0200f328(actor, 0x4f);
+    FieldActor_PlaySound(actor, 0x4f);
 }
 CLEAN_AS(func_ov003_02217adc, FieldActor_EnterState3D)
 
@@ -9587,8 +9379,8 @@ CLEAN_AS(func_ov003_02217adc, FieldActor_EnterState3D)
 void FieldActor_GetState3DSaved(const State3ESaved *saved, u8 *flags, fx32 *x, fx32 *z, u16 *yaw)
 {
     *flags = saved->flags;
-    func_02077978(saved->xz, x, z);
-    *yaw = (u16) func_020778f8(saved->value);
+    PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
+    *yaw = (u16) PackedBytes_ReadS16(saved->value);
 }
 CLEAN_AS(func_ov003_02217bf0, FieldActor_GetState3DSaved)
 
@@ -9596,8 +9388,8 @@ CLEAN_AS(func_ov003_02217bf0, FieldActor_GetState3DSaved)
 void FieldActor_SetState3DSaved(State3ESaved *saved, char flags, fx32 x, fx32 z, s16 yaw)
 {
     saved->flags = (u8) flags;
-    func_020779b8(saved->xz, x, z);
-    func_02077910(saved->value, yaw);
+    PackedBytes_PackPoint(saved->xz, x, z);
+    PackedBytes_WriteS16(saved->value, yaw);
 }
 CLEAN_AS(func_ov003_02217c14, FieldActor_SetState3DSaved)
 
@@ -9621,13 +9413,13 @@ int FieldActor_RequestState3D(FieldActor *actor, int next, int flags, fx32 x, fx
     StateRequest request;
     u16 item;
 
-    func_020110c4(&item, actor);
+    FieldActor_RecordHeldItem(&item, actor);
     if (is_item_1380(item)) {
         return FieldActor_RequestState3E(actor, next, flags, x, z, yaw, priority, arg);
     }
     open_request(&request, 0x3d, priority, arg);
     FieldActor_SetState3DArgs((State3EWork *) (void *) request.payload, next, (char) flags, x, z, yaw);
-    func_0200f268(actor, 1);
+    FieldActor_ClearFlag(actor, 1);
     return send_request(actor, &request);
 }
 CLEAN_AS(func_ov003_02217c5c, FieldActor_RequestState3D)
@@ -9645,12 +9437,6 @@ CLEAN_AS(func_ov003_02217d1c, FieldActor_SetState3DArgs)
 
 /* ---- State 0x3c: animation 0x34 or 0x35, held until another state is asked for */
 
-extern u8 func_ov003_022203ac(void);
-/* Flags func_0208602c points at: func_02086108 tests one, func_020860d4 changes one. */
-extern void *func_0208602c(void);
-extern int func_02086108(void *flags, u32 bit);
-extern void func_020860d4(void *flags, u32 bit);
-
 /* func_ov003_02217d38: state 0x3c's update does nothing. */
 void FieldActor_UpdateState3C(FieldActor *actor)
 {
@@ -9664,7 +9450,7 @@ void FieldActor_ExitState3C(FieldActor *actor, int next)
     if (next == 0x3b || next == 0x3d) {
         return;
     }
-    func_0200f27c(actor, 0);
+    FieldActor_SetFlag(actor, 0);
 }
 CLEAN_AS(func_ov003_02217d3c, FieldActor_ExitState3C)
 
@@ -9683,16 +9469,16 @@ void FieldActor_EnterState3C(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_0200f268(actor, 0);
-    if (func_ov003_022203ac()) {
-        func_020109a0(actor, 0x34, 0, 0);
+    FieldActor_ClearFlag(actor, 0);
+    if (ObjectActors_PoseFlag()) {
+        FieldActor_PlayAnimationOnce(actor, 0x34, 0, 0);
     } else {
-        func_020109a0(actor, 0x35, 0, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x35, 0, 0);
     }
     actor->unk_7F8 = 0;
-    if (func_02086108(func_0208602c(), 0) || func_02086108(func_0208602c(), 5)) {
+    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 0) || Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 5)) {
         if (is_local_player(actor)) {
-            func_02035684(0x12, 0xf, 0);
+            Music_AddValue(0x12, 0xf, 0);
         }
     }
 }
@@ -9710,22 +9496,13 @@ CLEAN_AS(func_ov003_02217ddc, FieldActor_RequestState3C)
 
 /* ---- State 0x3b: animation 0x34, 0x35 or 0x36, then an end by its kind */
 
-extern u8 func_020b22dc(void);
-extern u8 func_020b65c4(void);
-extern u8 func_020b65b8(void);
-extern int func_020b67e8(u32 value);
-extern int func_020b29c0(Vec3 *position);
-extern void func_02098fd0(void *record, u32 bit);
-extern void func_02042500(void);
-extern int func_ov003_02220368(Vec3 *position);
-
 static_assert(offsetof(FieldActor, work.s3b.count) == 0x7d5, "state 0x3b count");
 
 /* func_ov003_02217e14: state 0x3b's update. */
 void FieldActor_UpdateState3B(FieldActor *actor)
 {
     FieldActor_RunState3B(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState3B(actor);
 }
 CLEAN_AS(func_ov003_02217e14, FieldActor_UpdateState3B)
@@ -9751,62 +9528,62 @@ void FieldActor_EndState3B(FieldActor *actor)
     if (!anim_done(actor)) {
         return;
     }
-    func_0200f3e8(actor);
-    actor->next_state = func_02008258(actor, actor->state);
+    FieldActor_NudgeOne(actor);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     u8 kind = actor->work.s3b.kind;
-    func_020110c4(&item, actor);
+    FieldActor_RecordHeldItem(&item, actor);
     if (kind <= 1 && is_item_1380(item)) {
-        func_0200f268(actor, 0x1d);
+        FieldActor_ClearFlag(actor, 0x1d);
     }
 
     switch (actor->work.s3b.kind) {
         case 0:
-            if (!item_is_nothing(&item) && !func_020b22dc() && !func_0200f290(actor, 0x1d)) {
+            if (!item_is_nothing(&item) && !Block020b220c_Flag4b1c() && !FieldActor_TestFlag(actor, 0x1d)) {
                 FieldActor_RequestState3D(actor, 2, 2, 0, 0, 0, 6, -1);
                 break;
             }
             if (is_local_player(actor) && item_is_nothing(&item)) {
-                func_0200f27c(actor, 0);
+                FieldActor_SetFlag(actor, 0);
             }
             /* fall through */
         case 1:
             if (item_is_nothing(&item)) {
-                func_0200f27c(actor, 0);
+                FieldActor_SetFlag(actor, 0);
             }
-            func_0203e110();
-            func_0200f268(actor, 0x1d);
-            func_0200d4e8(actor, 3, 1, -1);
+            EventQueue_FinishKind4Or12();
+            FieldActor_ClearFlag(actor, 0x1d);
+            FieldActor_RequestState2(actor, 3, 1, -1);
             break;
         case 2: {
             void *session = data_020ccf94;
-            if (func_02073908(session, actor->player)) {
-                func_020860d4(func_0208602c(), 0);
+            if (Session_IsLocalPlayer(session, actor->player)) {
+                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), 0);
             }
-            if (!func_020b22dc()) {
-                func_020094a0(actor, 2, 0, 0, 6, -1);
+            if (!Block020b220c_Flag4b1c()) {
+                FieldActor_RequestState76(actor, 2, 0, 0, 6, -1);
                 break;
             }
-            func_0203e110();
+            EventQueue_FinishKind4Or12();
             BOOL set_flag = TRUE;
-            if (!func_02073908(session, actor->player)) {
+            if (!Session_IsLocalPlayer(session, actor->player)) {
                 u16 held;
-                func_020110c4(&held, actor);
+                FieldActor_RecordHeldItem(&held, actor);
                 set_flag = item_is_nothing(&held);
             }
             if (set_flag) {
-                func_0200f27c(actor, 0);
+                FieldActor_SetFlag(actor, 0);
             }
-            func_0200f268(actor, 0x1d);
-            func_0200d4e8(actor, 3, 1, -1);
+            FieldActor_ClearFlag(actor, 0x1d);
+            FieldActor_RequestState2(actor, 3, 1, -1);
             break;
         }
         case 3:
             if (is_local_player(actor)) {
-                func_020860d4(func_0208602c(), 5);
-                func_02098fd0(func_020984e8(), 1);
-                func_02042500();
+                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), 5);
+                PlayerRecord_ClearFlag(PlayerRecords_Current(), 1);
+                BoardNotices_Update();
             }
-            func_020094a0(actor, 3, 0, 0, 6, -1);
+            FieldActor_RequestState76(actor, 3, 0, 0, 6, -1);
             break;
         default:
             break;
@@ -9822,11 +9599,11 @@ void FieldActor_RunState3B(FieldActor *actor)
 {
     u8 *count = &actor->work.s3b.count;
 
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (*count != 0) {
         *count = (u8) (*count - 1);
         if (*count == 0 && actor->animation == 0x36) {
-            func_020109a0(actor, 0x35, 5, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x35, 5, 0);
         }
         return;
     }
@@ -9838,7 +9615,7 @@ void FieldActor_RunState3B(FieldActor *actor)
             case 0x1c:
             case 0x25:
             case 0x28:
-                func_0200f888(actor);
+                FieldActor_PlayFootstep(actor);
                 break;
             default:
                 break;
@@ -9849,7 +9626,7 @@ void FieldActor_RunState3B(FieldActor *actor)
             case 9:
             case 0xe:
             case 0x14:
-                func_0200f888(actor);
+                FieldActor_PlayFootstep(actor);
                 break;
             default:
                 break;
@@ -9890,22 +9667,22 @@ void FieldActor_EnterState3B(FieldActor *actor, const StateRequest *request, int
     int kind = 0;
     u8 count;
 
-    func_0200f268(actor, 0);
+    FieldActor_ClearFlag(actor, 0);
     session = data_020ccf94;
-    if (func_02073908(session, actor->player)) {
-        alt = func_ov003_022203ac();
+    if (Session_IsLocalPlayer(session, actor->player)) {
+        alt = ObjectActors_PoseFlag();
     } else {
         alt = args->alt;
     }
 
-    if (func_02073908(session, actor->player)) {
-        void *record = func_020984e8();
-        if (!func_020b65c4() && record != NULL && func_02099020(record, 0x23) &&
-            (func_020b67e8(func_020b65b8()) || func_020b65b8() == 6)) {
+    if (Session_IsLocalPlayer(session, actor->player)) {
+        void *record = PlayerRecords_Current();
+        if (!SceneQuery_Current() && record != NULL && PlayerRecord_TestFlag(record, 0x23) &&
+            (SceneKinds_IsHouseRoom(SceneQuery_Previous()) || SceneQuery_Previous() == 6)) {
             kind = 1;
-        } else if (func_02086108(func_0208602c(), 0)) {
+        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 0)) {
             kind = 2;
-        } else if (func_02086108(func_0208602c(), 5)) {
+        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 5)) {
             kind = 3;
         }
     } else {
@@ -9913,14 +9690,14 @@ void FieldActor_EnterState3B(FieldActor *actor, const StateRequest *request, int
     }
 
     if (alt != 0) {
-        func_020109a0(actor, 0x34, 0, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x34, 0, 0);
         count = 0;
     } else {
-        count = (u8) func_020b29c0(&actor->position);
+        count = (u8) TownObjects_NearbyActorValue(&actor->position);
         if (count <= 1) {
-            func_020109a0(actor, 0x35, 0, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x35, 0, 0);
         } else {
-            func_020109fc(actor, 0x36, 0, 0);
+            FieldActor_PlayAnimationLoop(actor, 0x36, 0, 0);
         }
     }
     actor->unk_7F8 = 1;
@@ -9928,7 +9705,7 @@ void FieldActor_EnterState3B(FieldActor *actor, const StateRequest *request, int
     actor->work.s3b.count = count;
     actor->work.s3b.kind = (u8) kind;
     FieldActor_SetState3BSaved(&actor->saved.s3b, alt, kind);
-    func_ov003_02220368(&actor->position);
+    ObjectActors_SetNearModeA(&actor->position);
 }
 CLEAN_AS(func_ov003_02218210, FieldActor_EnterState3B)
 
@@ -9996,7 +9773,7 @@ void FieldActor_EnterState3A(FieldActor *actor, const StateRequest *request, int
 {
     (void) request;
     (void) previous;
-    func_0200f268(actor, 0);
+    FieldActor_ClearFlag(actor, 0);
     actor->unk_7F8 = 0;
 }
 CLEAN_AS(func_ov003_022183d8, FieldActor_EnterState3A)
@@ -10013,9 +9790,6 @@ CLEAN_AS(func_ov003_022183f4, FieldActor_RequestState3A)
 
 /* ---- State 0x39: animation 0x32 or 0x33 at a point and yaw, then state 0x3a */
 
-extern int func_02096614(u8 *out, fx32 *x, fx32 *z, int a, int player);
-extern int func_ov003_02220384(Vec3 *position);
-
 static_assert(offsetof(FieldActor, work.s39.kind) == 0x7de, "state 0x39 kind");
 static_assert(offsetof(FieldActor, work.s39.count) == 0x7df, "state 0x39 count");
 
@@ -10024,7 +9798,7 @@ void FieldActor_UpdateState39(FieldActor *actor)
 {
     FieldActor_RunState39(actor);
     FieldActor_SoundState39(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState39(actor);
 }
 CLEAN_AS(func_ov003_0221842c, FieldActor_UpdateState39)
@@ -10043,7 +9817,7 @@ CLEAN_AS(func_ov003_0221844c, FieldActor_EndState39)
  * frames 9, 17 and 26 of animation 0x33. */
 void FieldActor_SoundState39(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (actor->animation == 0x32) {
         switch (anim_frame(actor)) {
             case 8:
@@ -10051,7 +9825,7 @@ void FieldActor_SoundState39(FieldActor *actor)
             case 22:
             case 27:
             case 34:
-                func_0200f888(actor);
+                FieldActor_PlayFootstep(actor);
                 break;
             default:
                 break;
@@ -10061,7 +9835,7 @@ void FieldActor_SoundState39(FieldActor *actor)
             case 9:
             case 17:
             case 26:
-                func_0200f888(actor);
+                FieldActor_PlayFootstep(actor);
                 break;
             default:
                 break;
@@ -10080,10 +9854,10 @@ void FieldActor_RunState39(FieldActor *actor)
     if (work->count != 0) {
         work->count = (u8) (work->count - 1);
         if (work->count == 0) {
-            func_020109a0(actor, 0x33, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x33, 3, 0);
         }
     } else {
-        func_0200fbc4(actor, work->x, work->z, work->yaw);
+        FieldActor_MoveToPose(actor, work->x, work->z, work->yaw);
     }
 }
 CLEAN_AS(func_ov003_022184e8, FieldActor_RunState39)
@@ -10107,7 +9881,7 @@ void FieldActor_State39Message(FieldActor *actor, int arg)
         return;
     }
     FieldActor_GetState39Saved(&actor->saved.s39, &kind, &x, &z, &yaw);
-    if (func_02096614(&unused, &at_x, &at_z, -1, actor->player)) {
+    if (SessionPlayers_ScenePoint(&unused, (int *) &at_x, (int *) &at_z, -1, actor->player)) {
         actor->position.x = at_x;
         actor->position.z = at_z;
     }
@@ -10127,17 +9901,17 @@ void FieldActor_EnterState39(FieldActor *actor, const StateRequest *request, int
     const State39Work *args = (const State39Work *) (const void *) request->payload;
     u8 count = 0;
 
-    func_0200f27c(actor, 4);
+    FieldActor_SetFlag(actor, 4);
     switch (args->kind) {
         case 0:
-            func_020109a0(actor, 0x33, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x33, 3, 0);
             break;
         case 1:
-            func_020109a0(actor, 0x32, 3, 0);
+            FieldActor_PlayAnimationOnce(actor, 0x32, 3, 0);
             break;
         case 2:
             count = 12;
-            func_020109fc(actor, 0, 3, 0);
+            FieldActor_PlayAnimationLoop(actor, 0, 3, 0);
             break;
         default:
             break;
@@ -10149,7 +9923,7 @@ void FieldActor_EnterState39(FieldActor *actor, const StateRequest *request, int
     FieldActor_SetState39Work(&actor->work.s39, (char) kind, x, z, yaw, count);
     FieldActor_SetState39Saved(&actor->saved.s39, (char) kind, x, z, yaw);
     (void) is_local_player(actor);
-    func_ov003_02220384(&actor->position);
+    ObjectActors_SetNearModeB(&actor->position);
 }
 CLEAN_AS(func_ov003_022185b0, FieldActor_EnterState39)
 
@@ -10157,8 +9931,8 @@ CLEAN_AS(func_ov003_022185b0, FieldActor_EnterState39)
 void FieldActor_GetState39Saved(const State3ESaved *saved, u8 *kind, fx32 *x, fx32 *z, u16 *yaw)
 {
     *kind = saved->flags;
-    func_02077978(saved->xz, x, z);
-    *yaw = (u16) func_020778f8(saved->value);
+    PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
+    *yaw = (u16) PackedBytes_ReadS16(saved->value);
 }
 CLEAN_AS(func_ov003_02218664, FieldActor_GetState39Saved)
 
@@ -10166,8 +9940,8 @@ CLEAN_AS(func_ov003_02218664, FieldActor_GetState39Saved)
 void FieldActor_SetState39Saved(State3ESaved *saved, char kind, fx32 x, fx32 z, s16 yaw)
 {
     saved->flags = (u8) kind;
-    func_020779b8(saved->xz, x, z);
-    func_02077910(saved->value, yaw);
+    PackedBytes_PackPoint(saved->xz, x, z);
+    PackedBytes_WriteS16(saved->value, yaw);
 }
 CLEAN_AS(func_ov003_02218688, FieldActor_SetState39Saved)
 
@@ -10210,7 +9984,7 @@ void FieldActor_UpdateState38(FieldActor *actor)
 {
     FieldActor_FaceState38(actor);
     FieldActor_RunState38(actor);
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState38(actor);
 }
 CLEAN_AS(func_ov003_02218734, FieldActor_UpdateState38)
@@ -10230,9 +10004,9 @@ CLEAN_AS(func_ov003_02218754, FieldActor_EndState38)
 /* func_ov003_02218798: sound 0x7d5 at frames 8 and 13. */
 void FieldActor_RunState38(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_passed(actor, 8) || anim_passed(actor, 0xd)) {
-        func_0200f328(actor, 0x7d5);
+        FieldActor_PlaySound(actor, 0x7d5);
     }
 }
 CLEAN_AS(func_ov003_02218798, FieldActor_RunState38)
@@ -10241,7 +10015,7 @@ CLEAN_AS(func_ov003_02218798, FieldActor_RunState38)
 void FieldActor_FaceState38(FieldActor *actor)
 {
     const State38Work *work = &actor->work.s38;
-    func_0200fbc4(actor, work->x, work->z, work->yaw);
+    FieldActor_MoveToPose(actor, work->x, work->z, work->yaw);
 }
 CLEAN_AS(func_ov003_022187d4, FieldActor_FaceState38)
 
@@ -10268,7 +10042,7 @@ void FieldActor_EnterState38(FieldActor *actor, const StateRequest *request, int
     (void) previous;
     const State38Work *args = (const State38Work *) (const void *) request->payload;
 
-    func_020109a0(actor, 0x37, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x37, 3, 0);
     fx32 x = args->x;
     fx32 z = args->z;
     s16 yaw = args->yaw;
@@ -10280,16 +10054,16 @@ CLEAN_AS(func_ov003_02218844, FieldActor_EnterState38)
 /* func_ov003_02218890: the saved point and yaw. */
 void FieldActor_GetState38Saved(const State3ESaved *saved, fx32 *x, fx32 *z, s16 *yaw)
 {
-    func_02077978(saved->xz, x, z);
-    *yaw = func_020778f8(saved->value);
+    PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
+    *yaw = PackedBytes_ReadS16(saved->value);
 }
 CLEAN_AS(func_ov003_02218890, FieldActor_GetState38Saved)
 
 /* func_ov003_022188ac: the point and the yaw packed. */
 void FieldActor_SetState38Saved(State3ESaved *saved, fx32 x, fx32 z, int yaw)
 {
-    func_020779b8(saved->xz, x, z);
-    func_02077910(saved->value, yaw);
+    PackedBytes_PackPoint(saved->xz, x, z);
+    PackedBytes_WriteS16(saved->value, yaw);
 }
 CLEAN_AS(func_ov003_022188ac, FieldActor_SetState38Saved)
 
@@ -10324,8 +10098,6 @@ CLEAN_AS(func_ov003_02218918, FieldActor_SetState38Args)
 
 /* ---- State 0x17: animation 0x14 towards a tile, acting on its map object at frame 10 */
 
-extern int func_02091230(int kind, Vec3 *at, int a, int b);
-extern void func_02044a14(u16 *code, int *tile, int yaw, int a);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 
 static_assert(offsetof(FieldActor, work.s17.unk_0C) == 0x7e0, "state 0x17 byte");
@@ -10345,9 +10117,9 @@ void FieldActor_UpdateState17(FieldActor *actor)
 {
     FieldActor_RunState17(actor);
     Vec3 point = actor->work.s17.point;
-    func_0200f434(actor, &point);
-    func_02010d64(actor);
-    func_02010ca4(actor);
+    FieldActor_FollowReportedTo(actor, &point);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
     FieldActor_EndState17(actor);
 }
 CLEAN_AS(func_ov003_02218920, FieldActor_UpdateState17)
@@ -10363,7 +10135,7 @@ void FieldActor_EndState17(FieldActor *actor)
         if (is_local_player(actor)) {
             FieldActor_ResumeMoving(actor);
         } else {
-            func_0200f268(actor, 0x12);
+            FieldActor_ClearFlag(actor, 0x12);
         }
     }
 }
@@ -10383,30 +10155,30 @@ void FieldActor_ActState17(FieldActor *actor)
     s16 yaw;
 
     copy_point(&at, &actor->work.s17.point);
-    func_0204f818(&tile[0], &tile[1], &at);
+    Position_Tile(&tile[0], &tile[1], (const Position *) &at);
     yaw = actor->yaw;
 
     switch (actor->item) {
         case 0x1f:
-            func_020912d4(0x2e, &at, &yaw, 0);
+            EffectSystem_StartKind(0x2e, &at, &yaw, 0);
             break;
         case 0x20:
-            func_020912d4(0x2f, &at, &yaw, 0);
+            EffectSystem_StartKind(0x2f, &at, &yaw, 0);
             break;
         case 0x21:
         case 0x22:
         case 0x23:
         case 0x24:
             VEC_Add(&at, &STATE17_OFFSETS[actor->item - 0x21], &at);
-            func_020912d4(0x2d, &at, &yaw, 0);
+            EffectSystem_StartKind(0x2d, &at, &yaw, 0);
             break;
         default:
             if (actor->item >= 0x6e && actor->item <= 0xa5) {
-                func_02091230(0x54, &at, 0, 0);
+                EffectSystem_StartOneShotSetNumber(0x54, &at, 0, 0);
                 u16 code = actor->item;
                 int code_tile[2] = {tile[0], tile[1]};
-                func_02044a14(&code, code_tile, actor->yaw, 2);
-                func_0200f328(actor, 0x7d8);
+                TileEffects_StartTurned(&code, (const TileEffectsTile *) code_tile, actor->yaw, 2);
+                FieldActor_PlaySound(actor, 0x7d8);
             }
             break;
     }
@@ -10414,28 +10186,28 @@ void FieldActor_ActState17(FieldActor *actor)
     switch (actor->item) {
         case 0x1f:
         case 0x20:
-            func_0200f328(actor, 0x7d8);
+            FieldActor_PlaySound(actor, 0x7d8);
             break;
         case 0x21:
         case 0x22:
         case 0x23:
         case 0x24:
-            func_0200f328(actor, 0x7ec);
+            FieldActor_PlaySound(actor, 0x7ec);
             break;
         default:
             break;
     }
 
     int end_tile[2] = {tile[0], tile[1]};
-    func_02045f08(end_tile, 0);
-    func_0200f268(actor, 0x1c);
+    TileChanges_FinishAtTile((const TileChangesTile *) end_tile, 0);
+    FieldActor_ClearFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_022189d8, FieldActor_ActState17)
 
 /* func_ov003_02218bc8: frame 10 acts on the map object (FieldActor_ActState17). */
 void FieldActor_RunState17(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_passed(actor, 10)) {
         FieldActor_ActState17(actor);
     }
@@ -10449,7 +10221,7 @@ void FieldActor_ExitState17(FieldActor *actor)
     if (is_local_player(actor)) {
         return;
     }
-    if (!func_0200f290(actor, 0x1c)) {
+    if (!FieldActor_TestFlag(actor, 0x1c)) {
         return;
     }
     FieldActor_ActState17(actor);
@@ -10474,14 +10246,14 @@ void FieldActor_EnterState17(FieldActor *actor, const StateRequest *request, int
     const TileArgs *args = (const TileArgs *) (const void *) request->payload;
     Vec3 point;
 
-    func_0204f794(&point, args->x, args->z);
+    AcreTile_TileCentre(&point, args->x, args->z);
     copy_point(&actor->work.s17.point, &point);
     actor->work.s17.unk_0C = 0;
-    func_020109a0(actor, 0x14, 3, 0);
-    if (func_0200fbe0(actor) == 4) {
-        func_0205eae0(actor->held, 0xe, 3, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x14, 3, 0);
+    if (FieldActor_HeldTool(actor) == 4) {
+        HeldItem_Act(actor->held, 0xe, 3, 0);
     }
-    actor->unk_822 = *func_0204f5a8(data_021c80bc, &point, 0);
+    actor->unk_822 = *AcreTile_ItemAt(data_021c80bc, &point, 0);
     actor->item = actor->unk_822;
 }
 CLEAN_AS(func_ov003_02218c28, FieldActor_EnterState17)
@@ -10509,11 +10281,11 @@ void FieldActor_UpdateState16(FieldActor *actor)
     if (is_local_player(actor)) {
         FieldActor_RunState16Local(actor);
     } else {
-        func_02010f5c(actor);
+        FieldActor_UpdateBody(actor);
         int tile[2] = {actor->work.s16.x, actor->work.s16.z};
-        func_0200f530(actor, tile);
+        FieldActor_FollowReportedToTile(actor, tile);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_EndState16(actor);
 }
 CLEAN_AS(func_ov003_02218cec, FieldActor_UpdateState16)
@@ -10523,7 +10295,7 @@ CLEAN_AS(func_ov003_02218cec, FieldActor_UpdateState16)
 void FieldActor_EndState16(FieldActor *actor)
 {
     if (!is_local_player(actor)) {
-        actor->next_state = func_02008258(actor, actor->state);
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     }
     switch (actor->work.s16.outcome) {
         case 1: {
@@ -10552,7 +10324,7 @@ void FieldActor_RunState16Local(FieldActor *actor)
             *outcome = 1;
         }
     }
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
 }
 CLEAN_AS(func_ov003_02218dcc, FieldActor_RunState16Local)
 
@@ -10585,9 +10357,9 @@ void FieldActor_EnterState16(FieldActor *actor, const StateRequest *request, int
     actor->work.s16.outcome = 0;
     int tile[2] = {x, z};
     FieldActor_SetState16Saved(&actor->saved.tile, tile);
-    func_020109fc(actor, 0x15, 3, 0);
-    if (func_0200fbe0(actor) == 4) {
-        func_0205eae0(actor->held, 0xb, 3, 0);
+    FieldActor_PlayAnimationLoop(actor, 0x15, 3, 0);
+    if (FieldActor_HeldTool(actor) == 4) {
+        HeldItem_Act(actor->held, 0xb, 3, 0);
     }
 }
 CLEAN_AS(func_ov003_02218e4c, FieldActor_EnterState16)
@@ -10630,28 +10402,26 @@ CLEAN_AS(func_ov003_02218f0c, FieldActor_SetState16Args)
 
 /* ---- State 0x11: animation 0x9a, then animation 0 */
 
-extern void func_0200c2c8(FieldActor *actor);
-
 /* func_ov003_02218f18: state 0x11's update: the player at this console goes on through
  * func_0200c2c8, other actors through func_0200f554. */
 void FieldActor_UpdateState11(FieldActor *actor)
 {
     FieldActor_RunState11(actor);
     if (is_local_player(actor)) {
-        func_0200c2c8(actor);
+        FieldActor_FaceState10Target(actor);
     } else {
-        func_0200f554(actor);
+        FieldActor_FollowReported(actor);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
 }
 CLEAN_AS(func_ov003_02218f18, FieldActor_UpdateState11)
 
 /* func_ov003_02218f54: animation 0 follows once animation 0x9a is over. */
 void FieldActor_RunState11(FieldActor *actor)
 {
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     if (anim_done(actor)) {
-        func_020109fc(actor, 0, 3, 0);
+        FieldActor_PlayAnimationLoop(actor, 0, 3, 0);
     }
 }
 CLEAN_AS(func_ov003_02218f54, FieldActor_RunState11)
@@ -10669,7 +10439,7 @@ void FieldActor_EnterState11(FieldActor *actor, const StateRequest *request, int
     (void) previous;
     u16 mode;
     memcpy(&mode, request->payload, sizeof(mode));
-    func_020109a0(actor, 0x9a, mode, 0);
+    FieldActor_PlayAnimationOnce(actor, 0x9a, mode, 0);
 }
 CLEAN_AS(func_ov003_02218f94, FieldActor_EnterState11)
 
@@ -10704,12 +10474,6 @@ static_assert(offsetof(FieldActor, work.s6.is_fish) == 0x7e0, "state 6 fish");
 static_assert(offsetof(FieldActor, work.s6.step) == 0x7e1, "state 6 step");
 static_assert(offsetof(FieldActor, saved.s6.progress) == 0x8f2, "state 6 progress");
 
-extern int func_0209120c(int kind, Vec3 *position, s16 *angle, int a);
-extern int func_0204fea4(void);
-extern void func_0204fdbc(int model);
-extern int func_0204fdec(int model, int kind, Vec3 *position, Vec3 *scale, s16 rotation_x, s16 rotation_y, s16 rotation_z,
-                         u8 flag0, u8 flag1, u32 tag);
-
 /* The kind of an insect (item 0x12b0 + kind) or of a fish (0x12e8 + kind); -1 for another
  * item. */
 static int insect_kind(u16 item)
@@ -10729,15 +10493,15 @@ void FieldActor_UpdateState6(FieldActor *actor)
 {
     KeptAcrossEE40 kept;
 
-    func_02010f5c(actor);
+    FieldActor_UpdateBody(actor);
     keep_across_ee40(actor, &kept);
-    func_0200ee40(actor);
+    FieldActor_RebuildPose(actor);
     FieldActor_PlaceState6(actor);
     restore_after_ee40(actor, &kept);
-    if (func_0200f554(actor)) {
-        func_0201100c(actor);
+    if (FieldActor_FollowReported(actor)) {
+        FieldActor_MoveWithCollision(actor);
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     FieldActor_RunState6(actor);
 }
 CLEAN_AS(func_ov003_02218ff0, FieldActor_UpdateState6)
@@ -10760,9 +10524,9 @@ void FieldActor_RunState6(FieldActor *actor)
     switch (work->step) {
         case 0:
             if (anim_passed(actor, 10)) {
-                func_0200f328(actor, 0x63);
+                FieldActor_PlaySound(actor, 0x63);
             } else if (anim_passed(actor, 25)) {
-                func_0200f328(actor, 0x7f2);
+                FieldActor_PlaySound(actor, 0x7f2);
             }
             if (anim_done(actor)) {
                 work->step = 1;
@@ -10776,7 +10540,7 @@ void FieldActor_RunState6(FieldActor *actor)
             break;
         case 2:
             if (work->effect > -1) {
-                func_0209129c(work->effect);
+                EffectSystem_EndHandle(work->effect);
 #ifdef BUGFIX
                 work->effect = -2;
 #endif
@@ -10784,13 +10548,13 @@ void FieldActor_RunState6(FieldActor *actor)
             if (is_local_player(actor)) {
                 FieldActor_SetState6Progress(saved, 2);
             }
-            func_020109a0(actor, 0xa0, 3, 0);
-            func_0200f328(actor, 0x7f1);
+            FieldActor_PlayAnimationOnce(actor, 0xa0, 3, 0);
+            FieldActor_PlaySound(actor, 0x7f1);
             work->step = 3;
             break;
         case 3:
             if (anim_done(actor)) {
-                func_0200c9a8(actor, 3, 5, -1);
+                FieldActor_RequestState5(actor, 3, 5, -1);
             }
             break;
         default:
@@ -10811,7 +10575,7 @@ void FieldActor_PlaceState6(FieldActor *actor)
     State6Work *work = &actor->work.s6;
     u16 item = work->item;
 
-    func_0200faf0(actor, 0x400);
+    FieldActor_TurnToZero(actor, 0x400);
     FieldActorBlock48 matrix = actor->unk_698;
     Vec3 offset = {0x4cd, 0, 0};
     int frame = anim_frame(actor);
@@ -10826,16 +10590,16 @@ void FieldActor_PlaceState6(FieldActor *actor)
     Vec3 at;
     if (work->effect > -1) {
         at = block_point(&matrix);
-        func_0203f7d0(&at, &at);
-        func_02091278(work->effect, &at, NULL, 0);
+        Globe_Unbend(&at, &at);
+        EffectSystem_MoveHandle(work->effect, &at, NULL, 0);
     } else if (work->effect == -1) {
         work->effect = -2;
         if (!work->is_fish) {
             int kind = insect_kind(item);
             if (kind == 0x18 || kind == 0x30 || kind == 0x32 || kind == 0x33) {
                 at = block_point(&matrix);
-                func_0203f7d0(&at, &at);
-                work->effect = func_0209120c(0x5a, &at, NULL, 0);
+                Globe_Unbend(&at, &at);
+                work->effect = EffectSystem_StartKeptSetNumber(0x5a, &at, NULL, 0);
             }
         }
     }
@@ -10855,7 +10619,7 @@ void FieldActor_PlaceState6(FieldActor *actor)
 
     if (!work->is_fish) {
         s16 sizes[3] = {(s16) percent, (s16) percent, (s16) percent};
-        func_ov003_0222d83c((u8) actor->player, sizes, &matrix, 0);
+        TownInsect_HeldFromMatrix((u8) actor->player, sizes, (Mtx43 *) &matrix, 0);
         return;
     }
 
@@ -10863,13 +10627,13 @@ void FieldActor_PlaceState6(FieldActor *actor)
      * sizes 0 to 100 that is the same as this. */
     fx32 factor = (2048 * percent + 25) / 50;
     Vec3 scale;
-    func_ov003_0222aaa0(&scale, fish_kind(item));
+    PlayerFish_KindScale(&scale, fish_kind(item));
     scale.x = FX_MulFunc(scale.x, factor);
     scale.y = FX_MulFunc(scale.y, factor);
     scale.z = FX_MulFunc(scale.z, factor);
     at = block_point(&matrix);
-    func_0203f7d0(&at, &at);
-    func_0204fdec(work->model, fish_kind(item), &at, &scale, 0, 0, 0, 1, 1, 0x1f);
+    Globe_Unbend(&at, &at);
+    FishDisp_ShowModel(work->model, fish_kind(item), &at, &scale, 0, 0, 0, 1, 1, 0x1f);
 }
 CLEAN_AS(func_ov003_022191c0, FieldActor_PlaceState6)
 
@@ -10880,12 +10644,12 @@ void FieldActor_ExitState6(FieldActor *actor)
     State6Work *work = &actor->work.s6;
 
     if (work->effect > -1) {
-        func_0209129c(work->effect);
+        EffectSystem_EndHandle(work->effect);
     }
     if (!work->is_fish) {
-        func_ov003_0222e6c4((u8) actor->player, 1);
+        TownInsect_EndHeld((u8) actor->player, 1);
     } else {
-        func_0204fdbc(work->model);
+        FishDisp_ReleaseModel(work->model);
     }
 }
 CLEAN_AS(func_ov003_02219438, FieldActor_ExitState6)
@@ -10921,14 +10685,14 @@ void FieldActor_EnterState6(FieldActor *actor, const StateRequest *request, int 
     work->step = 0;
 
     if (!work->is_fish) {
-        func_ov003_0222e898((u8) insect_kind(item), (u8) actor->player);
+        TownInsect_TakeHeld((u8) insect_kind(item), (u8) actor->player);
         animation = 0x9f;
     } else {
-        work->model = func_0204fea4();
+        work->model = FishDisp_TakeModel();
         animation = 0x9e;
     }
-    func_020109a0(actor, animation, 3, 3);
-    func_0200f328(actor, 0x4f);
+    FieldActor_PlayAnimationOnce(actor, animation, 3, 3);
+    FieldActor_PlaySound(actor, 0x4f);
 
     if (is_local_player(actor)) {
         FieldActor_SetState6SavedItem(saved, item);
@@ -10958,14 +10722,14 @@ CLEAN_AS(func_ov003_022195ac, FieldActor_SetState6Progress)
 /* func_ov003_022195b0: the saved item (packed by func_020778b0). */
 void FieldActor_GetState6SavedItem(const State6Saved *saved, u16 *item)
 {
-    *item = func_02077898(saved->item);
+    *item = PackedBytes_ReadItem(saved->item);
 }
 CLEAN_AS(func_ov003_022195b0, FieldActor_GetState6SavedItem)
 
 /* func_ov003_022195c0 */
 void FieldActor_SetState6SavedItem(State6Saved *saved, int item)
 {
-    func_020778b0(saved->item, item);
+    PackedBytes_WriteItem(saved->item, item);
 }
 CLEAN_AS(func_ov003_022195c0, FieldActor_SetState6SavedItem)
 
@@ -10983,12 +10747,6 @@ CLEAN_AS(func_ov003_022195c8, FieldActor_RequestState6)
 /* ---- A player's actor, as other code asks about it or asks for its states. Player 4 is the
  *      player at this console; func_02096718 finds the actor (NULL when there is none). */
 
-extern FieldActor *func_02096718(int player);
-extern void func_02095764(u16 *item, int player);
-extern Vec3 *func_02095794(int player);
-extern int func_0200e7f8(FieldActor *actor);
-extern int func_0203e21c(void);
-extern int func_0203e140(void);
 /* A misnamed main function: whether a player's actor has a flag (func_0200f290). */
 extern int DWC_Alloc(int flag, int player);
 
@@ -10999,7 +10757,7 @@ extern int DWC_Alloc(int flag, int player);
 int FieldActor_PlayerHolds1376(void)
 {
     u16 item;
-    func_02095764(&item, THIS_PLAYER);
+    PlayerActorOps_HeldItem(&item, THIS_PLAYER);
     return is_item_1376(item);
 }
 CLEAN_AS(func_ov003_02219604, FieldActor_PlayerHolds1376)
@@ -11007,9 +10765,9 @@ CLEAN_AS(func_ov003_02219604, FieldActor_PlayerHolds1376)
 /* func_ov003_02219648: the actor of this console starts animation 0x99. */
 void FieldActor_PlayerAnimation99(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor != NULL) {
-        func_020109a0(actor, 0x99, 3, 0);
+        FieldActor_PlayAnimationOnce(actor, 0x99, 3, 0);
     }
 }
 CLEAN_AS(func_ov003_02219648, FieldActor_PlayerAnimation99)
@@ -11042,11 +10800,11 @@ CLEAN_AS(func_ov003_02219668, FieldActor_OffsetMatrix)
  * the frame (func_02095794). */
 Vec3 *FieldActor_PlayerFocus(int player)
 {
-    FieldActor *actor = func_02096718(player);
-    if (actor != NULL && func_0200fbe0(actor) == 3 && actor->line_mode > 1) {
+    FieldActor *actor = SessionPlayers_FieldActor(player);
+    if (actor != NULL && FieldActor_HeldTool(actor) == 3 && actor->line_mode > 1) {
         return &actor->unk_5D0;
     }
-    return func_02095794(player);
+    return PlayerActorOps_StartPosition(player);
 }
 CLEAN_AS(func_ov003_022196e0, FieldActor_PlayerFocus)
 
@@ -11054,7 +10812,7 @@ CLEAN_AS(func_ov003_022196e0, FieldActor_PlayerFocus)
  * 1 to 2); whether it was waiting for that. */
 int FieldActor_PlayerPutAwayShown(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor != NULL && actor->state == 6 && actor->work.s6.step == 1) {
         actor->work.s6.step = 2;
         return 1;
@@ -11067,7 +10825,7 @@ CLEAN_AS(func_ov003_02219718, FieldActor_PlayerPutAwayShown)
  * priority 5; whether it was queued. */
 int FieldActor_PlayerShowItem(int item)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
@@ -11080,17 +10838,17 @@ CLEAN_AS(func_ov003_02219750, FieldActor_PlayerShowItem)
  * and its head turns back to the front (func_02095518); whether there is an actor. */
 int FieldActor_PlayerStop(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
-    func_0203e140();
+    EventQueue_FinishKind14();
     int state = actor->state;
     if (state != 0x77) {
-        actor->next_state = func_02008258(actor, state);
-        func_0200d4e8(actor, 3, 1, -1);
+        actor->next_state = FieldActor_StateEndPriority(actor, state);
+        FieldActor_RequestState2(actor, 3, 1, -1);
     }
-    func_02095518(0, 0, THIS_PLAYER);
+    PlayerActorOps_SetLook(0, 0, THIS_PLAYER);
     return 1;
 }
 CLEAN_AS(func_ov003_02219774, FieldActor_PlayerStop)
@@ -11100,19 +10858,19 @@ CLEAN_AS(func_ov003_02219774, FieldActor_PlayerStop)
  * and moves on (func_0200d4e8), 1 asks for state 0x65; whether there is an actor. */
 int FieldActor_PlayerEndState(int how, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (player == THIS_PLAYER) {
         player = ((NetSession *) data_020ccf94)->local_player;
     }
     if (actor == NULL) {
         return 0;
     }
-    if (func_02073908(data_020ccf94, player)) {
-        actor->next_state = func_02008258(actor, actor->state);
+    if (Session_IsLocalPlayer(data_020ccf94, player)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
         switch (how) {
             case 0:
-                func_0203e140();
-                func_0200d4e8(actor, 3, 1, -1);
+                EventQueue_FinishKind14();
+                FieldActor_RequestState2(actor, 3, 1, -1);
                 break;
             case 1:
                 FieldActor_RequestState65(actor, 6, -1);
@@ -11129,7 +10887,7 @@ CLEAN_AS(func_ov003_022197c4, FieldActor_PlayerEndState)
  * whether it was queued. */
 int FieldActor_PlayerRequestState89(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL || actor->state == 0x89) {
         return 0;
     }
@@ -11141,11 +10899,11 @@ CLEAN_AS(func_ov003_02219840, FieldActor_PlayerRequestState89)
  * state 0x11 (mode 3, priority 5); whether it was queued. */
 int FieldActor_PlayerRequestState11(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
-    actor->next_state = func_02008258(actor, actor->state);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     return FieldActor_RequestState11(actor, 3, 5, -1);
 }
 CLEAN_AS(func_ov003_02219874, FieldActor_PlayerRequestState11)
@@ -11156,23 +10914,23 @@ CLEAN_AS(func_ov003_02219874, FieldActor_PlayerRequestState11)
  * an actor in state 0x4f asks for state 0x51 instead. Whether state 0x78 was queued. */
 int FieldActor_PlayerRequestState78(void)
 {
-    if (func_0203e21c()) {
+    if (EventQueue_IsKind5Unfinished()) {
         return 0;
     }
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
-    if (func_0200f290(actor, 0xb)) {
+    if (FieldActor_TestFlag(actor, 0xb)) {
         return 0;
     }
-    if (func_0200e7f8(actor) >= 5) {
+    if (FieldActor_QueuePriorityAbove(actor) >= 5) {
         if (actor->state == 0x4f) {
             FieldActor_RequestState51(actor, 0, 6, -1);
         }
         return 0;
     }
-    if (!func_0203e1c4()) {
+    if (!EventQueue_RequestKind9()) {
         return 0;
     }
     return FieldActor_RequestState78(actor, 5, -1);
@@ -11183,12 +10941,12 @@ CLEAN_AS(func_ov003_022198b0, FieldActor_PlayerRequestState78)
  * func_02008dc0); whether it was queued. */
 int FieldActor_PlayerFacePoint(const Vec3 *point)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
     s16 yaw = Math_Atan2(sub32(point->x, actor->position.x), sub32(point->z, actor->position.z));
-    return func_02008dc0(actor, (u16) yaw, 6, -1);
+    return FieldActor_RequestState77(actor, (u16) yaw, 6, -1);
 }
 CLEAN_AS(func_ov003_02219930, FieldActor_PlayerFacePoint)
 
@@ -11198,11 +10956,11 @@ CLEAN_AS(func_ov003_02219930, FieldActor_PlayerFacePoint)
  * set. Whether it was queued. */
 int FieldActor_PlayerRequestState6D(int kind)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
-    if (func_0200e7f8(actor) >= 5) {
+    if (FieldActor_QueuePriorityAbove(actor) >= 5) {
         return 0;
     }
     if (actor->state == 0x78) {
@@ -11211,9 +10969,9 @@ int FieldActor_PlayerRequestState6D(int kind)
     if (!FieldActor_RequestState6D(actor, (char) (u8) (kind + 2), 7, -1)) {
         return 0;
     }
-    if (func_0200f290(actor, 0x1a)) {
-        func_0200f268(actor, 0x1a);
-        func_02035638(0x3f);
+    if (FieldActor_TestFlag(actor, 0x1a)) {
+        FieldActor_ClearFlag(actor, 0x1a);
+        Music_DropMusic(0x3f);
     }
     return 1;
 }
@@ -11223,7 +10981,7 @@ CLEAN_AS(func_ov003_0221996c, FieldActor_PlayerRequestState6D)
  * console; whether it was queued. */
 int FieldActor_PlayerRequestState6BOr6C(int which)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
@@ -11242,7 +11000,7 @@ CLEAN_AS(func_ov003_022199d8, FieldActor_PlayerRequestState6BOr6C)
  * was queued. */
 int FieldActor_PlayerRequestState6A(Vec3 *point)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
@@ -11254,7 +11012,7 @@ CLEAN_AS(func_ov003_02219a14, FieldActor_PlayerRequestState6A)
  * queued. */
 int FieldActor_PlayerRequestState3B(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
@@ -11268,14 +11026,14 @@ CLEAN_AS(func_ov003_02219a40, FieldActor_PlayerRequestState3B)
  * queued. */
 int FieldActor_PlayerRequestState39(u32 kind, int *x, int *z, int yaw)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
-    if (func_0200fc90(actor)) {
+    if (FieldActor_HeldToolNumber(actor)) {
         return FieldActor_RequestState3D(actor, 0x39, (int) ((kind & 0x3f) << 2), *x, *z, (s16) yaw, 6, -1);
     }
-    func_0200f27c(actor, 1);
+    FieldActor_SetFlag(actor, 1);
     return FieldActor_RequestState39(actor, (int) kind, *x, *z, (s16) yaw, 6, -1);
 }
 CLEAN_AS(func_ov003_02219a64, FieldActor_PlayerRequestState39)
@@ -11283,14 +11041,14 @@ CLEAN_AS(func_ov003_02219a64, FieldActor_PlayerRequestState39)
 /* func_ov003_02219ad0: the same for state 0x38 (a point and a yaw). */
 int FieldActor_PlayerRequestState38(int *x, int *z, short *yaw)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
-    if (func_0200fc90(actor)) {
+    if (FieldActor_HeldToolNumber(actor)) {
         return FieldActor_RequestState3D(actor, 0x38, 0, *x, *z, *yaw, 6, -1);
     }
-    func_0200f27c(actor, 1);
+    FieldActor_SetFlag(actor, 1);
     return FieldActor_RequestState38(actor, *x, *z, *yaw, 6, -1);
 }
 CLEAN_AS(func_ov003_02219ad0, FieldActor_PlayerRequestState38)
@@ -11302,7 +11060,7 @@ CLEAN_AS(func_ov003_02219ad0, FieldActor_PlayerRequestState38)
  * Whether it was queued. */
 int FieldActor_PlayerLook(int flag)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
@@ -11318,13 +11076,13 @@ CLEAN_AS(func_ov003_02219b38, FieldActor_PlayerLook)
  * actor of this console; whether it was queued. */
 int FieldActor_PlayerRequestState61(const Vec3 *point, u16 *item)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
     int x = 0;
     int z = 0;
-    func_0204f818(&x, &z, point);
+    Position_Tile(&x, &z, (const Position *) point);
     u32 tile[2] = {(u32) x, (u32) z};
     return (int) (uintptr_t) FieldActor_RequestState61(actor, 1, tile, *item, 6, -1);
 }
@@ -11335,7 +11093,7 @@ CLEAN_AS(func_ov003_02219b90, FieldActor_PlayerRequestState61)
  * QUIRK: an insect kind of 0x38 or more gives 0x12b0, a fish kind of 0x38 or more ITEM_NONE. */
 u32 FieldActor_PlayerShownItem(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     u32 item = ITEM_NONE;
     if (actor == NULL) {
         return item;
@@ -11368,7 +11126,7 @@ CLEAN_AS(func_ov003_02219be0, FieldActor_PlayerShownItem)
  * away (state 6, step 1). */
 int FieldActor_PlayerShowing(void)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     return actor != NULL && actor->state == 6 && actor->work.s6.step == 1;
 }
 CLEAN_AS(func_ov003_02219c80, FieldActor_PlayerShowing)
@@ -11377,7 +11135,7 @@ CLEAN_AS(func_ov003_02219c80, FieldActor_PlayerShowing)
  * frame 5 of animation 0x67 or frame 8 of animation 0x44, on the tile ahead (func_0200fa8c). */
 int FieldActor_PlayerStrikesTile(const Vec3 *point)
 {
-    FieldActor *actor = func_02096718(THIS_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
@@ -11385,7 +11143,7 @@ int FieldActor_PlayerStrikesTile(const Vec3 *point)
     int animation = actor->animation;
     if ((animation == 0x67 && frame == 5) || (animation == 0x44 && frame == 8)) {
         Vec3 ahead;
-        func_0200fa8c(&ahead, actor);
+        FieldActor_TileAhead(&ahead, actor);
         return FieldActor_SameTile(point, &ahead);
     }
     return 0;
@@ -11396,7 +11154,7 @@ CLEAN_AS(func_ov003_02219cb4, FieldActor_PlayerStrikesTile)
  * `point` in state 0x49 (at frame 8) or 0x5d (at frame 5); 0 when it does not or is past it. */
 int FieldActor_PlayerFramesToActOnTile(const Vec3 *point, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -11404,10 +11162,10 @@ int FieldActor_PlayerFramesToActOnTile(const Vec3 *point, int player)
     int left = 0;
     Vec3 at = {0, 0, 0};
     if (actor->state == 0x49) {
-        func_0204f794(&at, actor->work.s49.x, actor->work.s49.z);
+        AcreTile_TileCentre(&at, actor->work.s49.x, actor->work.s49.z);
         left = 8 - frame;
     } else if (actor->state == 0x5d) {
-        func_0204f794(&at, actor->work.s5d.x, actor->work.s5d.z);
+        AcreTile_TileCentre(&at, actor->work.s5d.x, actor->work.s5d.z);
         left = 5 - frame;
     }
     if (left > 0 && FieldActor_SameTile(point, &at)) {
@@ -11421,7 +11179,7 @@ CLEAN_AS(func_ov003_02219d04, FieldActor_PlayerFramesToActOnTile)
  * frame 9 of animation 0x4b. */
 int FieldActor_PlayerFramesToState5E(const Vec3 *point, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -11450,8 +11208,8 @@ int FieldActor_SameTile(const Vec3 *a, const Vec3 *b)
     int bz = 0;
     int ax = 0;
     int az = 0;
-    func_0204f818(&bx, &bz, b);
-    func_0204f818(&ax, &az, a);
+    Position_Tile(&bx, &bz, (const Position *) b);
+    Position_Tile(&ax, &az, (const Position *) a);
     return bx == ax && bz == az;
 }
 CLEAN_AS(func_ov003_02219e14, FieldActor_SameTile)

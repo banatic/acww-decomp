@@ -17,6 +17,13 @@
 #include "villager_state.h"
 #include "villager_status.h"
 #include "villager_town.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "talk_object.h"
+#include "town_tune.h"
+#include "villager_talk_greeting.h"
+#include "villager_talk_scene.h"
+#include "villager_talk_subjects.h"
 
 /* The villager scene object's town record (town_villager.h), or 0, and its position. */
 #define VILLAGER_TALK_REPLIES_OBJECT_RECORD 0x830
@@ -76,48 +83,6 @@ extern const u8 data_020c8924[2];
 extern VillagerTown data_021e5a2c; /* the town's villagers */
 extern NetSession *data_020ccf94;  /* the session */
 
-/* The scene's member setters: the three at 0xb0 from a table, the reply, the member run at the
- * command's end and the one at 0xe0. */
-extern void func_0202da88(VillagerTalk *talk, const MemberPointer *table);
-extern void func_0202da74(VillagerTalk *talk, MemberPointer reply);
-extern void func_0202dbf0(VillagerTalk *talk, MemberPointer next);
-extern void func_0202dbdc(VillagerTalk *talk, MemberPointer member);
-/* A line drawn for the personality (villager_talk.c). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The player's memory noted by the villager (unless the byte 0x13c is set). */
-extern void func_0202d8f8(VillagerTalk *talk, u8 **memory, s32 *index, u8 *villager, int player);
-/* The talk: its message and text, and its byte 0x18 set. */
-extern void func_0206844c(u8 *talk, const u8 *message, int text);
-extern void func_02068388(u8 *talk, int cond);
-/* A random number below `bound`. */
-extern unsigned int func_020644cc(int bound);
-/* 0 for a player of this town, 1 for one of another town, 2 for none. */
-extern int func_02094ffc(void *player);
-/* Refreshes the 8 bytes at data_021f3b68 from data_021cfbcc. */
-extern void func_0206e94c(void);
-/* Another line function of the scene's classes. */
-extern int func_02022454(VillagerTalk *talk);
-
-/* The checks and line choosers of VillagerTalkReplies_LineForSituation, in the order it asks
- * them; each chooser gives a text set (and some a group). */
-extern int func_0202c424(VillagerTalk *talk, int *out);
-extern void func_0202bcd4(VillagerTalk *talk);
-extern int func_0202c420(VillagerTalk *talk);
-extern int func_0202c3f0(VillagerTalk *talk);
-extern int func_0202c3e4(VillagerTalk *talk, int state);
-extern const VillagerTalkRepliesTexts *func_0202c388(VillagerTalk *talk, int *group, u8 *villager);
-extern int func_0202c31c(VillagerTalk *talk, s32 *which, u8 *position);
-extern const VillagerTalkRepliesTexts *func_0202c2c4(VillagerTalk *talk, s32 which);
-extern int func_0202c2a8(VillagerTalk *talk);
-extern int func_0202c37c(VillagerTalk *talk, int state);
-extern const VillagerTalkRepliesTexts *func_0202c350(VillagerTalk *talk);
-extern int func_0202c27c(VillagerTalk *talk, VillagerState *entry);
-extern const VillagerTalkRepliesTexts *func_0202c254(VillagerTalk *talk, int *group, VillagerState *entry);
-extern int func_0202c248(VillagerTalk *talk, int byte18);
-extern int func_0202c23c(VillagerTalk *talk, int byte18);
-extern int func_0202c230(VillagerTalk *talk, int byte18);
-
 static u8 *replies_talk(const VillagerTalk *talk)
 {
     return (u8 *) talk->scene.talk;
@@ -141,20 +106,21 @@ static void replies_call(const MemberPointer *member, VillagerTalk *talk, void *
 static void replies_say(VillagerTalk *talk, const MemberPointer *table)
 {
     VillagerTalkLine line = {0};
-    func_0202da88(talk, table);
+    VillagerTalkScene_SetLines(talk, table);
     if (talk->line.function != 0) {
         replies_call(&talk->line, talk, &line);
     }
     u8 message = line.message;
-    func_0206844c(replies_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessage((TalkObject *) (void *) replies_talk(talk), &message, (const char *) (uintptr_t) ((int) line.text));
 }
 
 /* The line drawn for the personality of the talk's villager into the talk's text and
  * message, which `out` then names. */
 static void replies_draw(VillagerTalk *talk, VillagerTalkLine *out, u32 texts, int per_group, int group, int range)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
-                  NpcId_Personality(TownVillager_NpcId(replies_record(talk))), (int) texts, per_group, group, range);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
+                               NpcId_Personality(TownVillager_NpcId(replies_record(talk))), (int) texts, per_group, group,
+                               range);
     out->text = (u32) (uintptr_t) talk->text;
     out->message = talk->message;
 }
@@ -162,7 +128,7 @@ static void replies_draw(VillagerTalk *talk, VillagerTalkLine *out, u32 texts, i
 /* The player noted in the memory of the talk's villager. */
 static void replies_note(VillagerTalk *talk)
 {
-    func_0202d8f8(talk, &talk->memory, &talk->memory_index, replies_record(talk), 0);
+    VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, replies_record(talk), 0);
 }
 
 /* Two choices offered with cancel choice 1, the reply set and the talk's byte 0x18 set. */
@@ -171,8 +137,8 @@ static void replies_offer(VillagerTalk *talk, TalkChoiceList *list, MemberPointe
     list->count = 2;
     list->cancel = 1;
     TalkChoices_Offer((TalkChoicesScene *) (void *) talk, list);
-    func_0202da74(talk, reply);
-    func_02068388(replies_talk(talk), 1);
+    VillagerTalkScene_SetReply(talk, reply);
+    TalkObject_OpenChoices((TalkObject *) (void *) replies_talk(talk), 1);
 }
 
 /* func_020203c8: group 17 of the set at 0x020c8ab0, its count the random part. */
@@ -208,7 +174,7 @@ CLEAN_AS(func_020204f4, VillagerTalkReplies_LineAb0Group10)
 void VillagerTalkReplies_MarkVillager(VillagerTalk *talk, int event)
 {
     (void) event;
-    func_0206e94c();
+    TownTune_StorePreset();
     VillagerTown_Mark(&data_021e5a2c, TownVillager_NpcId(replies_record(talk)));
 }
 CLEAN_AS(func_02020558, VillagerTalkReplies_MarkVillager)
@@ -256,7 +222,7 @@ CLEAN_AS(func_020206d0, VillagerTalkReplies_Say249cNextLine)
 void VillagerTalkReplies_RequestSound(VillagerTalk *talk)
 {
     SceneCommand_RequestSound(&talk->scene);
-    func_0202dbdc(talk, data_020d8f60);
+    VillagerTalkScene_SetNextCommandEnd(talk, data_020d8f60);
 }
 CLEAN_AS(func_02020728, VillagerTalkReplies_RequestSound)
 
@@ -265,7 +231,7 @@ void VillagerTalkReplies_TalkMode3(VillagerTalk *talk, void *unused)
 {
     (void) unused;
     SceneCommand_RequestTalkMode(&talk->scene, 3);
-    func_0202dbf0(talk, data_020d9218);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d9218);
 }
 CLEAN_AS(func_02020744, VillagerTalkReplies_TalkMode3)
 
@@ -319,27 +285,28 @@ void VillagerTalkReplies_LineFirstOfDay(VillagerTalk *talk, VillagerTalkLine *ou
     }
     replies_note(talk);
     if (talk->memory != NULL && VillagerMemoryEntry_Bit6((VillagerMemory *) (void *) talk->memory) == 0) {
-        func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, NpcId_Personality(TownVillager_NpcId(record)),
-                      (int) data_020c8ab0.texts, data_020c8ab0.count, 0, 0);
+        VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
+                                   NpcId_Personality(TownVillager_NpcId(record)), (int) data_020c8ab0.texts,
+                                   data_020c8ab0.count, 0, 0);
         out->text = (u32) (uintptr_t) talk->text;
         out->message = talk->message;
         VillagerMemoryEntry_SetBit6((VillagerMemory *) (void *) talk->memory);
         return;
     }
     if (VillagerTown_IsMarked(&data_021e5a2c, TownVillager_NpcId(record)) == 0) {
-        switch (func_020644cc(3)) {
+        switch (MainRandom_Below(3)) {
             case 0:
-                func_0202da88(talk, data_021c2454);
+                VillagerTalkScene_SetLines(talk, data_021c2454);
                 break;
             case 1:
-                func_0202da88(talk, data_021c24fc);
+                VillagerTalkScene_SetLines(talk, data_021c24fc);
                 break;
             default:
-                func_0202da88(talk, data_021c2514);
+                VillagerTalkScene_SetLines(talk, data_021c2514);
                 break;
         }
     } else {
-        func_0202da88(talk, data_021c2514);
+        VillagerTalkScene_SetLines(talk, data_021c2514);
     }
     if (talk->line.function != 0) {
         replies_call(&talk->line, talk, out);
@@ -366,40 +333,42 @@ int VillagerTalkReplies_LineForSituation(VillagerTalk *talk, VillagerTalkLine *o
     s32 which = -1;
     int group = 0;
     int unused = 0;
-    int state = func_0202c424(talk, &unused);
-    func_0202bcd4(talk);
+    int state = VillagerTalkGreeting_SinceLastTalk(talk, &unused);
+    VillagerTalkGreeting_FillSlots(talk);
 
-    if (func_0202c420(talk) != 0) {
+    if (VillagerTalkGreeting_IsFallen(talk) != 0) {
         texts = &data_020c89f8;
         if (state == 0) {
             talk->no_memory = 1;
         }
-    } else if (func_0202c3f0(talk) != 0) {
+    } else if (VillagerTalkGreeting_IsRun(talk) != 0) {
         texts = &data_020c8b28;
         if (state == 0) {
             talk->no_memory = 1;
         }
-    } else if (func_0202c3e4(talk, state) != 0) {
-        texts = func_0202c388(talk, &group, record);
-    } else if (func_0202c31c(talk, &which, talk->villager + VILLAGER_TALK_REPLIES_OBJECT_POSITION) != 0) {
-        texts = func_0202c2c4(talk, which);
-    } else if (func_0202c2a8(talk) != 0) {
+    } else if (VillagerTalkGreeting_IsFirst(talk, state) != 0) {
+        texts = (const VillagerTalkRepliesTexts *) (uintptr_t) VillagerTalkGreeting_FirstTexts(talk, &group, record);
+    } else if (VillagerTalkGreeting_FindPoisonous(
+                   talk, (int *) &which, (const Vec3 *) (void *) (talk->villager + VILLAGER_TALK_REPLIES_OBJECT_POSITION)) !=
+               0) {
+        texts = (const VillagerTalkRepliesTexts *) VillagerTalkGreeting_PoisonTexts(talk, which);
+    } else if (VillagerTalkGreeting_HasFlea(talk) != 0) {
         texts = &data_020c8ca0;
-    } else if (func_0202c37c(talk, state) != 0) {
-        texts = func_0202c350(talk);
-    } else if (func_0202c27c(talk, entry) != 0) {
-        texts = func_0202c254(talk, &group, entry);
-    } else if (func_0202c248(talk, byte18) != 0) {
+    } else if (VillagerTalkGreeting_IsForeign(talk, state) != 0) {
+        texts = (const VillagerTalkRepliesTexts *) VillagerTalkGreeting_ForeignTexts(talk);
+    } else if (VillagerTalkGreeting_IsStung(talk, entry) != 0) {
+        texts = (const VillagerTalkRepliesTexts *) VillagerTalkGreeting_BeeTexts(talk, &group, entry);
+    } else if (VillagerTalkGreeting_IsAngry(talk, byte18) != 0) {
         texts = &data_020c8a38;
-    } else if (func_0202c23c(talk, byte18) != 0) {
+    } else if (VillagerTalkGreeting_IsSad(talk, byte18) != 0) {
         texts = &data_020c8970;
-    } else if (func_0202c230(talk, byte18) != 0) {
+    } else if (VillagerTalkGreeting_IsTired(talk, byte18) != 0) {
         texts = &data_020c8c88;
     }
 
     if (texts != NULL) {
-        func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, NpcId_Personality(TownVillager_NpcId(record)),
-                      (int) texts->texts, texts->count, group, 0);
+        VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
+                                   NpcId_Personality(TownVillager_NpcId(record)), (int) texts->texts, texts->count, group, 0);
         said = 1;
     }
     out->text = (u32) (uintptr_t) talk->text;
@@ -412,7 +381,7 @@ CLEAN_AS(func_02020a5c, VillagerTalkReplies_LineForSituation)
 /* func_02020bf0: the line made by func_02022454 named in `out`. */
 void VillagerTalkReplies_Line2454(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_02022454(talk);
+    VillagerTalkSubjects_SayLast(talk);
     out->text = (u32) (uintptr_t) talk->text;
     out->message = talk->message;
 }
@@ -439,7 +408,7 @@ CLEAN_AS(func_02020c7c, VillagerTalkReplies_Line8a88Group1)
 void VillagerTalkReplies_LineNewcomer(VillagerTalk *talk, VillagerTalkLine *out)
 {
     int group;
-    if (func_020644cc(3) == 0 && Session_IsLinked(data_020ccf94) == 0) {
+    if (MainRandom_Below(3) == 0 && Session_IsLinked(data_020ccf94) == 0) {
         u8 *record = replies_record(talk);
         VillagerModeRecord *mode = VillagerObject_RecordMode((VillagerRecord *) (void *) VillagerStatus_ModeRecord(record));
         if (VillagerStatus_IsMode11(record) == 0) {
@@ -482,7 +451,7 @@ void VillagerTalkReplies_OfferChoicesByArrival(VillagerTalk *talk)
     u8 *first;
     if (VillagerStatus_IsArrived(replies_record(talk)) != 0) {
         first = data_021c21fc;
-    } else if (Session_IsLinked(data_020ccf94) != 0 && func_02094ffc(PlayerRecord_Player(PlayerRecords_Current())) != 0) {
+    } else if (Session_IsLinked(data_020ccf94) != 0 && PlayerId_WhichTown(PlayerRecord_Player(PlayerRecords_Current())) != 0) {
         first = data_021c2214;
     } else {
         first = data_021c21b4;

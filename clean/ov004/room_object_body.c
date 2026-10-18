@@ -14,9 +14,24 @@
 #include "room_object_map.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "main/acre_tile.h"
+#include "main/actor.h"
+#include "main/collision_box.h"
+#include "main/furniture_info.h"
+#include "main/g3d_resource.h"
+#include "main/model_object.h"
+#include "main/model_pool.h"
+#include "main/scene_kinds.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/session_players.h"
+#include "main/touch_pick_shapes.h"
+#include "room_manager.h"
+#include "room_objects.h"
+#include "room_sound.h"
 
 #define ONE 0x1000             /* 1 in 20.12 fixed point */
-#define PLAYER 4               /* the actor func_020961a8 is asked for */
+#define PLAYER 4               /* the actor SessionPlayers_ActorOf is asked for */
 #define LAYER_FLOOR 0          /* RoomObject.unk_288 */
 #define LAYER_ON_TOP 1         /* standing on another object */
 #define CARRIES_ITEMS 1        /* RoomObject.unk_788: what stands on its cells moves with it */
@@ -33,7 +48,7 @@
 #define SHADOW_SHRINK 0xc00     /* the shadow is 3/4 of the object */
 #define BOX_HEIGHT 0x4000
 #define SHADOW_PLAIN 8      /* the shadow's flags... */
-#define SHADOW_020B67AC 0xf /* ...when func_020b67ac says so */
+#define SHADOW_020B67AC 0xf /* ...when SceneKinds_CurrentIn6To8 says so */
 
 /* Placement word fields. */
 #define PLACE_X(word) ((word) & 0xf)
@@ -57,7 +72,7 @@ extern u16 data_ov004_02256c40;
 extern u16 data_ov004_02256c3c;
 /* The first state for each mode (RoomObject.unk_76C). */
 extern const s32 data_ov004_02247634[];
-/* A byte for each index among the room's objects, given to func_02055d80. */
+/* A byte for each index among the room's objects, given to ModelObject_SetPolygonId. */
 extern const u8 data_ov004_02247640[];
 /* The names of the clock's hand nodes, "kh_j" and "km_j". */
 extern const char data_ov004_02250018[];
@@ -65,7 +80,7 @@ extern const char data_ov004_02250020[];
 /* For each footprint (RoomObject.unk_784), the address of its four corners in its own space. */
 extern const u32 data_ov004_0224fe10[];
 /* The pool the objects' slots are in (RoomObject.slot). */
-extern u8 data_ov004_02259698[];
+extern ModelPool data_ov004_02259698;
 
 /* The function-local statics of RoomObject_Size and RoomObject_PointBeforePlayer: guards, the
  * values and their records in the C++ runtime's list of objects to destroy. */
@@ -86,50 +101,9 @@ extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
-extern void *func_ov004_0223ce84(void);
-extern int func_ov004_0223cd78(void *objects, RoomObject *object);
-extern RoomObject *func_ov004_0223cd58(void *objects, int index);
-extern void func_ov004_0223cde8(void *objects, RoomObject *object);
-extern void func_02055d80(void *model, int value);
-extern int func_0205790c(G3dModel *model, const char *name);
-extern void func_02055dc8(void *model, void *callback, RoomObject *object);
 extern void func_ov004_02211450(void);
 extern int NNS_G3dBindMdlTex(u8 *model, u8 *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, u8 *texture);
-extern void func_0204f7ac(Vec3 *position, int block_x, int block_y, int x, int y);
-extern int func_ov004_0223c5a4(Vec3 *point);
-extern int func_ov004_0223c5b8(int x, int y);
-extern unsigned char func_020b65c4(void);
-extern unsigned char func_ov004_0223d348(void);
-extern u8 func_02053de4(int number);
-extern int func_02053dac(int number);
-extern u8 func_02053be0(int number);
-extern int func_02053d60(int number);
-extern int func_02053d24(int number);
-extern int func_020538dc(int number);
-extern int func_0205389c(int number);
-extern int func_0205395c(int number);
-extern int func_02053818(int number);
-extern int func_020537a8(int number);
-extern s8 func_02053658(int number);
-extern ItemCode *func_0204f5e0(void *map, int block_x, int block_y, int x, int y, int layer);
-extern void func_0204f794(Vec3 *centre, unsigned int x, unsigned int y);
-extern void *func_020b6590(void);
-extern void *func_020b7d3c(void *shadows, void *shadow, Vec3 *point, fx32 size, int a4, int a5, u8 a6);
-extern int func_020b7dc8(void *shadows, void *shadow, Vec3 *centre, fx32 x, fx32 z, fx32 y, s16 angle, int flags, u8 index);
-extern int func_020b7e04(void *shadows, void *shadow);
-extern int func_020b67ac(void);
-extern int func_02032214(PushBox *box, Vec3 *centre, s16 angle, Vec3 *scale);
-extern int func_020321bc(PushBox *box, fx32 x, fx32 z, fx32 height, Vec3 *centre, s16 angle, Vec3 *scale);
-extern int func_02032180(PushBox *box);
-extern MapActor *func_020961a8(int actor);
-extern void func_ov004_0223cf68(RoomSound *sound);
-extern void func_0209d200(u8 *pool, u16 *slot);
-extern int func_020b6694(int area);
-extern int func_020b67e8(int area);
-extern int func_0204f538(void *map, ItemCode *item, int x, int y, int layer);
-extern void func_02003510(RoomObject *object, int mode);
-extern int func_0203efdc(RoomObject *object);
 
 /* An arithmetic shift right, for negative values too. */
 static s32 shift_right(s32 value, int bits)
@@ -151,27 +125,27 @@ static void set_scale(RoomObject *object, fx32 scale)
     object->scale_z = scale;
 }
 
-/* func_ov004_0220f450: func_02055d80 on the model with the byte of data_ov004_02247640 for the
+/* func_ov004_0220f450: ModelObject_SetPolygonId on the model with the byte of data_ov004_02247640 for the
  * object's index among the room's objects, when it has one. */
 void RoomObject_SetModelByIndex(RoomObject *object)
 {
-    int index = func_ov004_0223cd78(func_ov004_0223ce84(), object);
+    int index = RoomObjects_IndexOf(RoomObjects_Table(), object);
     if (index != -1) {
-        func_02055d80(object->unk_538, data_ov004_02247640[index]);
+        ModelObject_SetPolygonId(&object->model.object, data_ov004_02247640[index]);
     }
 }
 CLEAN_AS(func_ov004_0220f450, RoomObject_SetModelByIndex)
 
 /* func_ov004_0220f484: binds the loaded model: the clock's hand nodes, the model's callback
- * (func_ov004_02211450, given the object), the node set, the texture and palettes of the
+ * (RoomObject_SetModelHooks, given the object), the node set, the texture and palettes of the
  * furniture's texture file, then RoomObject_SetModelByIndex. */
 void RoomObject_BindModel(RoomObject *object)
 {
     G3dModel *model = object->model_resource;
-    int hour_hand = func_0205790c(model, data_ov004_02250018);
-    int minute_hand = func_0205790c(model, data_ov004_02250020);
+    int hour_hand = G3dRes_NodeIndex((const u8 *) model, data_ov004_02250018);
+    int minute_hand = G3dRes_NodeIndex((const u8 *) model, data_ov004_02250020);
     NodePair_Set(&object->nodes, (s8) hour_hand, (s8) minute_hand);
-    func_02055dc8(object->unk_538, (void *) func_ov004_02211450, object);
+    ModelObject_SetInitHook(&object->model.object, (void *) func_ov004_02211450, object);
     ByteSet_Bind(&object->node_set, object->model_resource, 1);
     NNS_G3dBindMdlTex(FurnitureModel_Model(&object->model_files), FurnitureModel_Texture(&object->model_files));
     NNS_G3dBindMdlPltt(FurnitureModel_Model(&object->model_files), FurnitureModel_Texture(&object->model_files));
@@ -180,13 +154,13 @@ void RoomObject_BindModel(RoomObject *object)
 CLEAN_AS(func_ov004_0220f484, RoomObject_BindModel)
 
 /* func_ov004_0220f52c: sets the object up once from its placement word: its position (the
- * centre of its cell, at the height func_ov004_0223c5a4 finds), angle, number (at most
+ * centre of its cell, at the height RoomObjects_HeightAtPoint finds), angle, number (at most
  * LAST_NUMBER), layer, and the furniture's values from the main program's tables; then its
  * matrices, switch, place on the map, first state, box and shadow. A preview instead stands 4
  * units from data_021c67b8 towards data_021c67d0, at a quarter of its size, and the angles it
  * is turned by are set to face along that line. An object on the floor stands at height 0,
  * except in area 10; one on top of another is mounted on it.
- * QUIRK: the item code of the number is made (func_0204bc50) and not used. */
+ * QUIRK: the item code of the number is made (ItemCode_MakeVariant) and not used. */
 void RoomObject_SetUp(RoomObject *object)
 {
     if (object->is_set_up) {
@@ -194,8 +168,8 @@ void RoomObject_SetUp(RoomObject *object)
     }
     u32 word = object->placement;
     if (!RoomObject_Unk76CIs2(object)) {
-        func_0204f7ac(&object->position, 0, 0, (int) PLACE_X(word), (int) PLACE_Y(word));
-        object->position.y = func_ov004_0223c5a4(&object->position);
+        AcreTile_TileCentreInAcre(&object->position, 0, 0, (int) PLACE_X(word), (int) PLACE_Y(word));
+        object->position.y = RoomObjects_HeightAtPoint(&object->position);
         set_scale(object, ONE);
         object->unk_15C = ONE;
     } else {
@@ -224,19 +198,19 @@ void RoomObject_SetUp(RoomObject *object)
     object->unk_288 = (u8) PLACE_ON_TOP(word);
     if (!RoomObject_Unk76CIs2(object) && object->unk_288 == LAYER_FLOOR) {
         object->position.y = 0;
-        if (func_020b65c4() == AREA_ROOM) {
-            object->position.y = func_ov004_0223c5a4(&object->position);
+        if (SceneQuery_Current() == AREA_ROOM) {
+            object->position.y = RoomObjects_HeightAtPoint(&object->position);
         }
     }
-    object->unk_780 = func_02053de4(object->unk_284);
-    object->top_height = func_02053dac(object->unk_284);
-    object->unk_784 = func_02053be0(object->unk_284);
-    object->unk_774 = func_02053d60(object->unk_284);
-    object->unk_778 = func_02053d24(object->unk_284);
-    object->unk_78C = (u8) func_020538dc(object->unk_284);
-    object->unk_78D = (u8) func_0205389c(object->unk_284);
-    object->unk_788 = (u32) func_0205395c(object->unk_284);
-    object->light_kind = func_02053818(object->unk_284);
+    object->unk_780 = FurnitureInfo_DmaUnk18(object->unk_284);
+    object->top_height = FurnitureInfo_DmaUnk19(object->unk_284);
+    object->unk_784 = FurnitureInfo_Shape(object->unk_284);
+    object->unk_774 = FurnitureInfo_DmaUnk1D(object->unk_284);
+    object->unk_778 = FurnitureInfo_DmaUnk1E(object->unk_284);
+    object->unk_78C = (u8) FurnitureInfo_IndoorBit2(object->unk_284);
+    object->unk_78D = (u8) FurnitureInfo_IndoorBit3(object->unk_284);
+    object->unk_788 = (u32) FurnitureInfo_DmaUnk1A(object->unk_284);
+    object->light_kind = FurnitureInfo_LightKind(object->unk_284);
     if (!RoomObject_Unk76CIs2(object)) {
         if (object->unk_784 == FOOTPRINT_TWO_BY_TWO) {
             object->position.x += ONE;
@@ -263,8 +237,8 @@ int RoomObject_EnterFirstState(RoomObject *object)
 CLEAN_AS(func_ov004_0220f7d4, RoomObject_EnterFirstState)
 
 /* func_ov004_0220f7f0: for an object on the floor that carries what stands on it, a shadow
- * (func_020b7d3c, its slot by cell) under each pile item lying on its cells, at the height
- * func_ov004_0223c5b8 finds. */
+ * (TouchPick_SetCylinderAndAdd, its slot by cell) under each pile item lying on its cells, at the height
+ * RoomObjects_HeightAtCell finds. */
 void RoomObject_ShadowItemsOnTop(RoomObject *object)
 {
     if (object->unk_288 != LAYER_FLOOR || object->unk_788 != CARRIES_ITEMS) {
@@ -277,13 +251,14 @@ void RoomObject_ShadowItemsOnTop(RoomObject *object)
     for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
         int x = CellList_At(&cells, (int) i)->x;
         int y = CellList_At(&cells, (int) i)->y;
-        ItemCode *item = func_0204f5e0(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1),
-                                       LAYER_ON_TOP);
+        ItemCode *item = AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1),
+                                             y & (BLOCK_CELLS - 1), LAYER_ON_TOP);
         if (item != NULL && ItemCode_IsKind1(item)) {
             Vec3 point;
-            func_0204f794(&point, (unsigned int) x, (unsigned int) y);
-            point.y = func_ov004_0223c5b8(x, y);
-            func_020b7d3c(func_020b6590(), object->item_shadows[i], &point, 0xccd, 0x100, 0xa, 0xff);
+            AcreTile_TileCentre(&point, (unsigned int) x, (unsigned int) y);
+            point.y = RoomObjects_HeightAtCell(x, y);
+            TouchPick_SetCylinderAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &object->item_shadows[i], &point,
+                                        0xccd, 0x100, 0xa, 0xff);
         }
     }
     CellList_Destruct(&cells);
@@ -293,12 +268,12 @@ CLEAN_AS(func_ov004_0220f7f0, RoomObject_ShadowItemsOnTop)
 /* The shadow's flags. */
 static int shadow_flags(void)
 {
-    return func_020b67ac() != 0 ? SHADOW_020B67AC : SHADOW_PLAIN;
+    return SceneKinds_CurrentIn6To8() != 0 ? SHADOW_020B67AC : SHADOW_PLAIN;
 }
 
-/* func_ov004_0220f8c0 (each frame): moves the box to the object (func_02032214, when the box
+/* func_ov004_0220f8c0 (each frame): moves the box to the object (CollisionBox_Place, when the box
  * is set up and the object has one: not with unk_78C) and its shadow, 3/4 of its size, with
- * it; the shadow goes (func_020b7e04) when the box did not move. Nothing for a preview. */
+ * it; the shadow goes (TouchPick_AddFaces) when the box did not move. Nothing for a preview. */
 void RoomObject_UpdateBoxAndShadow(RoomObject *object)
 {
     if (RoomObject_Unk76CIs2(object)) {
@@ -312,8 +287,8 @@ void RoomObject_UpdateBoxAndShadow(RoomObject *object)
     RoomObject_Centre(object, &centre);
     int shown = 0;
     if (!object->unk_78C) {
-        if (object->push_box.unk_98) {
-            shown = func_02032214(&object->push_box, &centre, object->angle, &scale);
+        if (object->push_box.base.active) {
+            shown = CollisionBox_Place(&object->push_box.base, &centre, object->angle, &scale);
         } else {
             shown = 1;
         }
@@ -321,11 +296,12 @@ void RoomObject_UpdateBoxAndShadow(RoomObject *object)
     size.x = FX_MulFunc(size.x, SHADOW_SHRINK);
     size.z = FX_MulFunc(size.z, SHADOW_SHRINK);
     if (shown) {
-        u8 index = (u8) func_ov004_0223cd78(func_ov004_0223ce84(), object);
+        u8 index = (u8) RoomObjects_IndexOf(RoomObjects_Table(), object);
         int flags = shadow_flags();
-        func_020b7dc8(func_020b6590(), object->shadow, &centre, size.x, size.z, size.y, object->angle, flags, index);
+        TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->shadow, &centre, size.x, size.z,
+                               size.y, object->angle, flags, index);
     } else {
-        func_020b7e04(func_020b6590(), object->shadow);
+        TouchPick_AddFaces((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->shadow);
     }
 }
 CLEAN_AS(func_ov004_0220f8c0, RoomObject_UpdateBoxAndShadow)
@@ -334,15 +310,15 @@ CLEAN_AS(func_ov004_0220f8c0, RoomObject_UpdateBoxAndShadow)
 void RoomObject_RemoveBox(RoomObject *object)
 {
     if (!RoomObject_Unk76CIs2(object) && !object->unk_78C) {
-        func_02032180(&object->push_box);
+        CollisionBox_Remove(&object->push_box.base);
         PushBox_ClearOwner(&object->push_box);
     }
 }
 CLEAN_AS(func_ov004_0220f994, RoomObject_RemoveBox)
 
-/* func_ov004_0220f9c8: sets up the box (func_020321bc, BOX_HEIGHT high, when the object has
+/* func_ov004_0220f9c8: sets up the box (CollisionBox_Add, BOX_HEIGHT high, when the object has
  * one) and the shadow, as RoomObject_UpdateBoxAndShadow. Nothing for a preview.
- * QUIRK: the object it stands on is looked up (func_ov004_0223cd58) and not used. */
+ * QUIRK: the object it stands on is looked up (RoomObjects_At) and not used. */
 void RoomObject_SetUpBoxAndShadow(RoomObject *object)
 {
     if (RoomObject_Unk76CIs2(object)) {
@@ -356,22 +332,23 @@ void RoomObject_SetUpBoxAndShadow(RoomObject *object)
     RoomObject_Centre(object, &centre);
     if (!object->unk_78C) {
         PushBox_SetOwner(&object->push_box, object);
-        void *objects = func_ov004_0223ce84();
-        (void) func_ov004_0223cd58(objects, Mount_Parent(&object->mount));
-        func_020321bc(&object->push_box, size.x, size.z, BOX_HEIGHT, &centre, object->angle, &scale);
+        void *objects = RoomObjects_Table();
+        (void) RoomObjects_At(objects, Mount_Parent(&object->mount));
+        CollisionBox_Add(&object->push_box.base, size.x, size.z, BOX_HEIGHT, &centre, object->angle, &scale);
     }
-    u8 index = (u8) func_ov004_0223cd78(func_ov004_0223ce84(), object);
+    u8 index = (u8) RoomObjects_IndexOf(RoomObjects_Table(), object);
     size.x = FX_MulFunc(size.x, SHADOW_SHRINK);
     size.z = FX_MulFunc(size.z, SHADOW_SHRINK);
     int flags = shadow_flags();
-    func_020b7dc8(func_020b6590(), object->shadow, &centre, size.x, size.z, size.y, object->angle, flags, index);
+    TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->shadow, &centre, size.x, size.z, size.y,
+                           object->angle, flags, index);
 }
 CLEAN_AS(func_ov004_0220f9c8, RoomObject_SetUpBoxAndShadow)
 
 /* func_ov004_0220faac: the object's size by footprint (one cell, two, or 2x2), its height
- * what stands on it (halved unless func_ov004_0223d348 says so), or 0x200 when that is 0.
+ * what stands on it (halved unless RoomManager_ShopMode says so), or 0x200 when that is 0.
  * QUIRK: the first call builds the three function-local static sizes and registers them for
- * destruction (func_020012dc, which does nothing); func_020b65c4 is called and not used. */
+ * destruction (TrivialObject_Destruct, which does nothing); SceneQuery_Current is called and not used. */
 void RoomObject_Size(RoomObject *object, Vec3 *size)
 {
     if ((data_ov004_02256c70 & 1) == 0) {
@@ -383,11 +360,11 @@ void RoomObject_Size(RoomObject *object, Vec3 *size)
         __register_global_object(&data_ov004_02256e70, (void *) func_020012dc, data_ov004_02256df8);
         data_ov004_02256c70 |= 1;
     }
-    func_020b65c4();
+    SceneQuery_Current();
     Vec3 result = data_ov004_02256e58[object->unk_784];
     if (object->top_height == 0) {
         result.y = 0x200;
-    } else if (func_ov004_0223d348() != 0) {
+    } else if (RoomManager_ShopMode() != 0) {
         result.y = object->top_height;
     } else {
         result.y = shift_right(object->top_height, 1);
@@ -400,7 +377,7 @@ CLEAN_AS(func_ov004_0220faac, RoomObject_Size)
  * base_matrix its place about its pivot (RoomObject_BuildMatrix). An object two cells long is
  * drawn moved along X by 1 less its scale. A preview is turned by the angles RoomObject_SetUp
  * set, moved back along X by its scale when it is two cells long, and raised by 100 times
- * func_02053658 of its number, less 600. Both leave the matrix in data_021fbe48. */
+ * FurnitureInfo_Lift of its number, less 600. Both leave the matrix in data_021fbe48. */
 void RoomObject_UpdateMatrices(RoomObject *object)
 {
     if (RoomObject_Unk76CIs2(object)) {
@@ -410,7 +387,7 @@ void RoomObject_UpdateMatrices(RoomObject *object)
         if (object->unk_784 == FOOTPRINT_TWO) {
             Mtx43_Translate(&data_021fbe48, FX_MulFunc(object->scale_x, -ONE), 0, 0);
         }
-        fx32 lift = 100 * func_02053658(RoomObject_Number(object)) - 600;
+        fx32 lift = 100 * FurnitureInfo_Lift(RoomObject_Number(object)) - 600;
         Mtx43_Translate(&data_021fbe48, 0, lift, 0);
         object->matrix = data_021fbe48;
     } else {
@@ -431,8 +408,8 @@ CLEAN_AS(func_ov004_0220fb90, RoomObject_UpdateMatrices)
 void RoomObject_BuildMatrix(RoomObject *object, Vec3 *offset, int turn)
 {
     if (Mount_IsSet(&object->mount)) {
-        void *objects = func_ov004_0223ce84();
-        RoomObject *below = func_ov004_0223cd58(objects, Mount_Parent(&object->mount));
+        void *objects = RoomObjects_Table();
+        RoomObject *below = RoomObjects_At(objects, Mount_Parent(&object->mount));
         if (offset != NULL || turn != 0) {
             RoomObject_BuildMatrix(below, offset, turn);
         } else {
@@ -534,10 +511,10 @@ void RoomObject_ToWorld(RoomObject *object, Vec3 *out, const Vec3 *point)
 }
 CLEAN_AS(func_ov004_0220ff74, RoomObject_ToWorld)
 
-/* func_ov004_0221081c: func_020537a8 of the furniture's number. */
+/* func_ov004_0221081c: FurnitureInfo_IndoorBit6 of the furniture's number. */
 int RoomObject_Lookup020537a8(RoomObject *object)
 {
-    return func_020537a8(object->unk_284);
+    return FurnitureInfo_IndoorBit6(object->unk_284);
 }
 CLEAN_AS(func_ov004_0221081c, RoomObject_Lookup020537a8)
 
@@ -550,7 +527,7 @@ CLEAN_AS(func_ov004_0221082c, RoomObject_Unk77C)
 
 /* func_ov004_02210838 (vtable slot 0x50): the point one unit before the player, the way the
  * player faces; the object's position without a player.
- * QUIRK: the point is a function-local static, registered for destruction (func_020012dc,
+ * QUIRK: the point is a function-local static, registered for destruction (TrivialObject_Destruct,
  * which does nothing) on the first call; the result points to it. */
 Vec3 *RoomObject_PointBeforePlayer(RoomObject *object)
 {
@@ -559,7 +536,7 @@ Vec3 *RoomObject_PointBeforePlayer(RoomObject *object)
         data_ov004_02256c68 |= 1;
     }
     data_ov004_02256dc8 = object->position;
-    MapActor *player = func_020961a8(PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(PLAYER);
     if (player != NULL) {
         int index = player->angle >> 4;
         data_ov004_02256dc8.x = player->position.x + FX_SinCosTable_[index * 2];
@@ -603,51 +580,51 @@ CLEAN_AS(func_ov004_022108cc, RoomObject_Vfunc8C)
 /* func_ov004_022108d0 (vtable slot 0x14): with 2, the object leaves: its sound stops, the
  * room's lighting follows (RoomObject_ExitLight), its box goes, its switch is saved unless it
  * is going away (vanishing or shrunk), its model's loading ends and its slot is freed. One that
- * vanishes leaves the map, with an effect towards the player: where func_ov004_0223d348 says so
+ * vanishes leaves the map, with an effect towards the player: where RoomManager_ShopMode says so
  * outside areas 17 to 24 and 1 to 5, it leaves item LEFT_BEHIND on the floor at the cell
  * RoomObject_FindVariantCell finds. Then it leaves the room's objects. The base class's slot
- * (func_02003510) runs for every value.
+ * (Actor_Vfunc14) runs for every value.
  * BUG: when RoomObject_FindVariantCell finds no cell, the item goes to a cell left from
  * whatever the stack held; here cell (0, 0). */
 void RoomObject_Vfunc14(RoomObject *object, int mode)
 {
     if (mode == STATE_CHANGE_EXIT) {
-        func_ov004_0223cf68(&object->sound);
+        RoomSound_Stop(&object->sound);
         RoomObject_ExitLight(object);
         RoomObject_RemoveBox(object);
         if (!RoomObject_IsVanishing(object) && !RoomObject_IsShrunk(object)) {
             Switch_Save(&object->light_switch, object);
         }
         FurnitureModel_EndLoad(&object->model_files);
-        func_0209d200(data_ov004_02259698, &object->slot);
+        ModelPool_Release(&data_ov004_02259698, &object->slot);
         if (RoomObject_IsVanishing(object)) {
             int x = 0;
             int y = 0;
             RoomObject_FindVariantCell(object, &x, &y, NULL, 0);
-            int area = func_020b65c4();
-            if (func_ov004_0223d348() != 0 && func_020b6694(area) == 0 && func_020b67e8(area) == 0) {
+            int area = SceneQuery_Current();
+            if (RoomManager_ShopMode() != 0 && SceneQuery_In11(area) == 0 && SceneKinds_IsHouseRoom(area) == 0) {
                 void *map = data_021c80bc;
                 RoomObject_TakeOffMap(object, 0, 0);
                 if (map != NULL) {
                     ItemCode item = LEFT_BEHIND;
-                    func_0204f538(map, &item, x, y, LAYER_FLOOR);
+                    AcreTile_SetItem(map, &item, x, y, LAYER_FLOOR);
                 }
             } else {
                 RoomObject_TakeOffMap(object, 1, 0);
             }
             RoomObject_EffectTowardsPlayer(object);
         }
-        func_ov004_0223cde8(func_ov004_0223ce84(), object);
+        RoomObjects_Remove(RoomObjects_Table(), object);
     }
-    func_02003510(object, mode);
+    Actor_Vfunc14(&object->actor, mode);
 }
 CLEAN_AS(func_ov004_022108d0, RoomObject_Vfunc14)
 
-/* func_ov004_022109cc (vtable slot 0x10): whether func_0203efdc (the base class's slot) did
+/* func_ov004_022109cc (vtable slot 0x10): whether SceneObjectBase_CanDelete (the base class's slot) did
  * its work. */
 int RoomObject_Vfunc10(RoomObject *object)
 {
-    return func_0203efdc(object) != 0;
+    return SceneObjectBase_CanDelete(&object->scene) != 0;
 }
 CLEAN_AS(func_ov004_022109cc, RoomObject_Vfunc10)
 

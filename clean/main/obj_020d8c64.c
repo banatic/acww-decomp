@@ -5,26 +5,26 @@
 #include "autoload_2/sound_emitter_class.h"
 #include "clean.h"
 #include "scene_action.h"
+#include "act_effects.h"
+#include "field_body.h"
+#include "field_collision.h"
+#include "footsteps.h"
+#include "layered_model.h"
+#include "motion_slots.h"
+#include "scene_base.h"
+#include "scene_face.h"
+#include "scene_look.h"
+#include "scene_motion_request.h"
+#include "scene_mover.h"
+#include "scene_object.h"
+#include "scene_object_base.h"
+#include "scene_standard_anims.h"
+#include "scene_talk_state.h"
+#include "speaker_anim.h"
 
 /* The class's vtable and that of the sound emitter at 0x514, whose destructor is inlined. */
 extern const u8 data_020d8c64[];
 extern const u8 data_020d8414[];
-
-/* The destructors of the members and the base, in the order they run. */
-extern void func_02014898(void *member);
-extern void func_02019eac(void *member);
-extern void func_02013c28(void *member);
-extern void *func_02089c70(void *member);
-extern void *func_02032c50(void *member);
-extern void func_0201a790(void *member);
-extern void func_0201a7e8(void *member);
-extern void func_0201ade4(void *member);
-extern void func_0201b320(void *member);
-extern int func_02016998(void *member);
-extern void *func_0201a3f8(void *member);
-extern void func_0201b390(void *member);
-extern void *func_02054630(void *member);
-extern void *func_0203f080(void *object);
 
 #define SOUND_EMITTER 0x514
 
@@ -38,22 +38,22 @@ static u8 *at(void *object, u32 offset)
 void *Obj020d8c64_Destruct(void *object)
 {
     *(const u8 **) object = data_020d8c64;
-    func_02014898(at(object, 0x618));
-    func_02019eac(at(object, 0x564));
-    func_02013c28(at(object, 0x558));
+    SceneAction_Destruct((SceneAction *) (void *) at(object, 0x618));
+    SceneMotion_Destruct((SceneMotion *) (void *) at(object, 0x564));
+    Footsteps_Destruct((Footsteps *) (void *) at(object, 0x558));
     *(const u8 **) at(object, SOUND_EMITTER) = data_020d8414;
     SoundEmitterClass_DestructBase((SoundEmitterObject *) at(object, SOUND_EMITTER));
-    func_02089c70(at(object, 0x4cc));
-    func_02032c50(at(object, 0x49c));
-    func_0201a790(at(object, 0x420));
-    func_0201a7e8(at(object, 0x418));
-    func_0201ade4(at(object, 0x3b0));
-    func_0201b320(at(object, 0x350));
-    func_02016998(at(object, 0x334));
-    func_0201a3f8(at(object, 0x2ac));
-    func_0201b390(at(object, 0x2a0));
-    func_02054630(at(object, 0x0ec));
-    func_0203f080(object);
+    FieldOwnedBody_Destruct2((FieldOwnedBody *) (void *) at(object, 0x4cc));
+    CollisionContacts_Destroy((CollisionContacts *) (void *) at(object, 0x49c));
+    ActEffects_Destruct((ActEffects *) (void *) at(object, 0x420));
+    SceneTalkState_Destruct((SceneTalkState *) (void *) at(object, 0x418));
+    SceneLook_Destruct((SceneLook *) (void *) at(object, 0x3b0));
+    SceneMover_Destruct((SceneMover *) (void *) at(object, 0x350));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) at(object, 0x334));
+    SceneFace_Destruct((SceneFace *) (void *) at(object, 0x2ac));
+    SceneStandardAnims_Destruct((SceneStandardAnims *) (void *) at(object, 0x2a0));
+    LayeredModel_DestructB((LayeredModel *) (void *) at(object, 0x0ec));
+    SceneObjectBase_DestructBase(object);
     return object;
 }
 CLEAN_AS(func_020120e0, Obj020d8c64_Destruct)
@@ -64,22 +64,22 @@ CLEAN_AS(func_020120e0, Obj020d8c64_Destruct)
 void *Obj020d8c64_DestructDelete(void *object)
 {
     *(const u8 **) object = data_020d8c64;
-    func_02014898(at(object, 0x618));
-    func_02019eac(at(object, 0x564));
-    func_02013c28(at(object, 0x558));
+    SceneAction_Destruct((SceneAction *) (void *) at(object, 0x618));
+    SceneMotion_Destruct((SceneMotion *) (void *) at(object, 0x564));
+    Footsteps_Destruct((Footsteps *) (void *) at(object, 0x558));
     *(const u8 **) at(object, SOUND_EMITTER) = data_020d8414;
     SoundEmitterClass_DestructBase((SoundEmitterObject *) at(object, SOUND_EMITTER));
-    func_02089c70(at(object, 0x4cc));
-    func_02032c50(at(object, 0x49c));
-    func_0201a790(at(object, 0x420));
-    func_0201a7e8(at(object, 0x418));
-    func_0201ade4(at(object, 0x3b0));
-    func_0201b320(at(object, 0x350));
-    func_02016998(at(object, 0x334));
-    func_0201a3f8(at(object, 0x2ac));
-    func_0201b390(at(object, 0x2a0));
-    func_02054630(at(object, 0x0ec));
-    func_0203f080(object);
+    FieldOwnedBody_Destruct2((FieldOwnedBody *) (void *) at(object, 0x4cc));
+    CollisionContacts_Destroy((CollisionContacts *) (void *) at(object, 0x49c));
+    ActEffects_Destruct((ActEffects *) (void *) at(object, 0x420));
+    SceneTalkState_Destruct((SceneTalkState *) (void *) at(object, 0x418));
+    SceneLook_Destruct((SceneLook *) (void *) at(object, 0x3b0));
+    SceneMover_Destruct((SceneMover *) (void *) at(object, 0x350));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) at(object, 0x334));
+    SceneFace_Destruct((SceneFace *) (void *) at(object, 0x2ac));
+    SceneStandardAnims_Destruct((SceneStandardAnims *) (void *) at(object, 0x2a0));
+    LayeredModel_DestructB((LayeredModel *) (void *) at(object, 0x0ec));
+    SceneObjectBase_DestructBase(object);
     Heap_FreeAux(object);
     return object;
 }
@@ -94,13 +94,6 @@ CLEAN_AS(func_02012014, Obj020d8c64_DestructDelete)
 /* The kind of motion of a talk, and the numbers its byte 0xa9 may give. */
 #define OBJ_020D8C64_MOTION_TALK 8
 #define OBJ_020D8C64_NUMBER_LAST 59
-
-extern int func_02019e00(void *motion);
-extern u8 func_02019df8(void *motion);
-extern u32 func_0201c274(void *object);
-extern void *func_020160d4(void *scene);
-/* The slot (0 to 3) of `number` among the four bytes at 0x23e8 of the player's record, or -1. */
-extern int func_0203f9e0(int number);
 
 /* func_02013a0c (vtable slot 0xa0 of the class): no number (-1). */
 int Obj020d8c64_NoMotionNumber(void *object)
@@ -119,16 +112,16 @@ int Obj020d8c64_TakeNewMotionNumber(void *object)
 {
     void *motion = at(object, OBJ_020D8C64_MOTION);
     if (SceneAction_IsBusy((const SceneAction *) at(object, OBJ_020D8C64_ACTION)) == 0 ||
-        func_02019e00(motion) != OBJ_020D8C64_MOTION_TALK) {
+        SceneMotion_Kind(motion) != OBJ_020D8C64_MOTION_TALK) {
         return OBJ_020D8C64_NO_NUMBER;
     }
-    u32 scene = func_0201c274(object);
-    if (scene == 0 || func_020160d4((void *) (uintptr_t) scene) != NULL) {
+    u32 scene = SceneObject_Scene(object);
+    if (scene == 0 || SceneBase_SecondSpeaker((void *) (uintptr_t) scene) != 0) {
         return OBJ_020D8C64_NO_NUMBER;
     }
-    int number = func_02019df8(motion);
+    int number = SceneMotion_ActNumber(motion);
     if (number > 0 && number <= OBJ_020D8C64_NUMBER_LAST && number != Obj020d8c64_LastMotionNumber((s16 *) object) &&
-        func_0203f9e0((u8) number) == -1) {
+        MotionSlots_Find((u8) number) == -1) {
         Obj020d8c64_SetLastMotionNumber(object, (u8) number);
         return number;
     }

@@ -34,6 +34,13 @@
 #include "villager_status.h"
 #include "villager_town.h"
 #include "word_archives.h"
+#include "item_lists.h"
+#include "letter.h"
+#include "main_random.h"
+#include "ov003/town_insect.h"
+#include "player_id.h"
+#include "talk_object.h"
+#include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h) and its position (Vec3). */
 #define VILLAGER_TALK_GREETING_RECORD 0x830
@@ -156,43 +163,6 @@ extern u8 data_021f3b30[];         /* the fox's shop */
 extern VillagerTown data_021e5a2c; /* the town's villagers */
 extern NetSession *data_020ccf94;  /* the session */
 
-/* The scene's member setter: the three at 0xb0 from a table. */
-extern void func_0202da88(VillagerTalk *talk, const MemberPointer *table);
-/* A line drawn for the personality (villager_talk.h). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The player's memory noted by the villager (unless the byte 0x13c is set). */
-extern void func_0202d8f8(VillagerTalk *talk, u8 **memory, s32 *index, u8 *villager, int player);
-/* The talk's object at 0x154, and the object set there. */
-extern ItemObject *func_0202d9c4(VillagerTalk *talk);
-extern void func_0202d9d0(VillagerTalk *talk, ItemObject *object);
-/* The place (0-14) of a pocket of state 2 holding an item like `item`, or -1; the first of the
- * pockets' ten letters whose state is 7 or 8, or 0. */
-extern int func_0202d794(PlayerPockets *pockets, u16 *item);
-extern MailLetter *func_0202d754(PlayerPockets *pockets);
-/* A letter's state; and the letter emptied. */
-extern u8 func_02065ec0(const MailLetter *letter);
-extern void func_02066650(MailLetter *letter);
-/* The talk: a text put into its slot; its message and text set only while it is on the
- * message data_021f43f8. */
-extern void func_02068404(u8 *talk, int slot, void *text);
-extern int func_02068484(u8 *talk, const u8 *message, int text);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
-/* Whether a player id is set; 0 for a player of this town, 1 for one of another, 2 for none;
- * the player's town (its number, then its name). */
-extern int func_020951bc(const DesignCreator *player);
-extern int func_02094ffc(const DesignCreator *player);
-extern const u8 *func_02095040(const DesignCreator *player);
-/* An item list constructed, an item drawn of it, the list destructed. */
-extern void func_02063ccc(void *list, int kind, int group);
-extern void func_020638d4(u16 *item, void *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(void *list);
-/* Overlay 3 (the town's field): whether the player runs; the kind of the insect at a slot and
- * its point. */
-extern int func_ov003_0222d77c(void);
-extern int func_ov003_0222f458(Vec3 *at, int slot);
-
 /* The item list VillagerTalkGreeting_Line draws a fortune's item from. */
 typedef struct VillagerTalkGreetingItemList {
     s32 words[5];
@@ -283,19 +253,19 @@ void VillagerTalkGreeting_LineThree(VillagerTalk *talk, VillagerTalkLine *out)
     VillagerTalkGreetingTexts texts = data_020d8f40;
     int personality = greeting_personality(greeting_record(talk));
     unsigned int partner_personality = 0;
-    func_0202d8f8(talk, &talk->memory, &talk->memory_index, greeting_record(talk), 0);
+    VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, greeting_record(talk), 0);
     if (VillagerSceneObject_Word644((u32 *) (void *) talk->villager) != 0) {
         u8 *partner = greeting_record_of((u8 *) (uintptr_t) VillagerSceneObject_Word644((u32 *) (void *) talk->villager));
         partner_personality = (unsigned int) greeting_personality(partner);
-        func_0202d8f8(talk, &talk->partner_memory, (s32 *) (void *) ((u8 *) talk + VILLAGER_TALK_GREETING_PARTNER_INDEX),
-                      partner, 0);
+        VillagerTalkScene_NoteMemory(talk, &talk->partner_memory,
+                                     (s32 *) (void *) ((u8 *) talk + VILLAGER_TALK_GREETING_PARTNER_INDEX), partner, 0);
     }
     if (partner_personality < 6) {
         texts.texts = data_020d9d4c[partner_personality];
     }
     if (texts.texts != 0) {
-        func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts.texts, texts.count,
-                      0, 0);
+        VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts.texts,
+                                   texts.count, 0, 0);
     }
     greeting_name(talk, out);
 
@@ -339,25 +309,25 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
                 }
                 if (DateTime_Compare(ItemObject_Date(greeting_block_object(talk)), &now, VILLAGER_TALK_GREETING_ALL_FIELDS) ==
                     -1) {
-                    func_0202da88(talk, data_021c2a64);
-                    func_0202d9d0(talk, greeting_block_object(talk));
+                    VillagerTalkScene_SetLines(talk, data_021c2a64);
+                    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) greeting_block_object(talk));
                     break;
                 }
                 switch (ItemObject_Type(greeting_block_object(talk))) {
                     case VILLAGER_TALK_GREETING_TYPE_ITEM: {
                         PlayerPockets *pockets = PlayerRecord_Pockets(player);
-                        if (func_0202d794(pockets, ItemObject_Item(greeting_block_object(talk))) == -1) {
-                            func_0202da88(talk, data_021c2aac);
-                            func_0202d9d0(talk, greeting_block_object(talk));
+                        if (VillagerTalkScene_PocketOfItem(pockets, ItemObject_Item(greeting_block_object(talk))) == -1) {
+                            VillagerTalkScene_SetLines(talk, data_021c2aac);
+                            VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) greeting_block_object(talk));
                         }
                         break;
                     }
                     case VILLAGER_TALK_GREETING_TYPE_LETTER: {
-                        MailLetter *letter = func_0202d754(PlayerRecord_Pockets(player));
-                        if (letter != NULL && func_02065ec0(letter) == VILLAGER_TALK_GREETING_LETTER_STATE) {
-                            func_02066650(letter);
-                            func_0202da88(talk, data_021c2aac);
-                            func_0202d9d0(talk, greeting_block_object(talk));
+                        MailLetter *letter = VillagerTalkScene_LetterToSend(PlayerRecord_Pockets(player));
+                        if (letter != NULL && Letter_State((const Letter *) letter) == VILLAGER_TALK_GREETING_LETTER_STATE) {
+                            Letter_Clear((Letter *) letter);
+                            VillagerTalkScene_SetLines(talk, data_021c2aac);
+                            VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) greeting_block_object(talk));
                         }
                         break;
                     }
@@ -372,8 +342,8 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
                 if (ItemObject_IsInUse(object) != 0 && ItemObject_Type(object) == VILLAGER_PART_HANDOVER_TYPE &&
                     ItemObject_Low5(object) == 0 && VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(record)) != 0 &&
                     DateTime_Compare(&now, &handover->date, VILLAGER_TALK_GREETING_ALL_FIELDS) == 1) {
-                    func_0202da88(talk, data_021c3094);
-                    func_0202d9d0(talk, object);
+                    VillagerTalkScene_SetLines(talk, data_021c3094);
+                    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) object);
                 }
                 break;
             }
@@ -381,8 +351,8 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
                 break;
         }
     }
-    if (func_0202d9c4(talk) == NULL) {
-        func_0202da88(talk, data_021c1d54);
+    if (VillagerTalkScene_Object(talk) == 0) {
+        VillagerTalkScene_SetLines(talk, data_021c1d54);
     }
 
     VillagerTalkLine line = {0};
@@ -391,7 +361,8 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
         ((void (*)(void *, VillagerTalkLine *))(uintptr_t) MemberPointer_Code(&talk->line, self))(self, &line);
     }
     u8 message = line.message;
-    func_02068484(greeting_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessageIfNone((TalkObject *) (void *) greeting_talk(talk), &message,
+                                (const char *) (uintptr_t) ((int) line.text));
 }
 CLEAN_AS(func_0202ba94, VillagerTalkGreeting_SayByKnownObject)
 
@@ -399,7 +370,7 @@ CLEAN_AS(func_0202ba94, VillagerTalkGreeting_SayByKnownObject)
 void VillagerTalkGreeting_NoteMemory(VillagerTalk *talk, void *unused)
 {
     (void) unused;
-    func_0202d8f8(talk, &talk->memory, &talk->memory_index, greeting_record(talk), 0);
+    VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, greeting_record(talk), 0);
 }
 CLEAN_AS(func_0202bca0, VillagerTalkGreeting_NoteMemory)
 
@@ -459,7 +430,7 @@ static const VillagerTalkGreetingTexts *greeting_weather(int falling, int *group
     if (town != 0 && falling == VILLAGER_TALK_GREETING_SNOW) {
         return &data_020c8d80;
     }
-    if (func_020644cc(9) != 0) {
+    if (MainRandom_Below(9) != 0) {
         *range = (u8) (data_020c8c58.count - 1);
     }
     *group = Calendar_PartOfDay();
@@ -549,17 +520,17 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         FoxShopText_Construct(&password);
         FoxPassword_LoadLetterText(FoxShop_Password((FoxShop *) (void *) data_021f3b30), &password);
         texts = &data_020c8ac8;
-        func_02068404(greeting_talk(talk), 4, &password);
+        TalkObject_SetPart((TalkObject *) (void *) greeting_talk(talk), 4, (TextBase *) &password);
         FoxShopText_Destruct(&password);
     } else if (Session_IsLinked(data_020ccf94) == 0 && greeting_memory(talk) != NULL &&
                VillagerMemoryBits_Bit5(greeting_memory(talk)) != 0 && CurrentPockets_FreeSlot() != -1) {
         VillagerTalkGreetingItemList list;
         u16 item;
         texts = &data_020c8c70;
-        func_02063ccc(&list, 0, 0);
-        func_020638d4(&item, &list, 0, 0, 1, 1, 0);
+        ItemList_Construct((ItemList *) &list, 0, 0);
+        ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
         talk->gift = item;
-        func_02063cc8(&list);
+        ItemList_Destruct(&list);
         talk->gift_from_items = 0;
         SceneBase_PutItemName(greeting_base(talk), (int) (uintptr_t) &talk->gift, 0, VILLAGER_TALK_GREETING_ITEM_KIND);
         if (greeting_memory(talk) != NULL) {
@@ -606,8 +577,8 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         if (per_group == -1) {
             per_group = texts->count;
         }
-        func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts->texts,
-                      (u8) per_group, group, range);
+        VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts->texts,
+                                   (u8) per_group, group, range);
     }
 
     if (days > 0) {
@@ -682,7 +653,7 @@ CLEAN_AS(func_0202c2a8, VillagerTalkGreeting_HasFlea)
 const VillagerTalkGreetingTexts *VillagerTalkGreeting_PoisonTexts(VillagerTalk *talk, int kind)
 {
     if (kind == VILLAGER_TALK_GREETING_NO_KIND) {
-        kind = data_020c892c[func_020644cc(VILLAGER_TALK_GREETING_POISON_KINDS)];
+        kind = data_020c892c[MainRandom_Below(VILLAGER_TALK_GREETING_POISON_KINDS)];
     }
     if (kind != VILLAGER_TALK_GREETING_NO_KIND) {
         u16 item =
@@ -734,7 +705,7 @@ int VillagerTalkGreeting_FirstTexts(VillagerTalk *talk, int *group, u8 *villager
 {
     u8 *player = PlayerRecords_Current();
     int came = VillagerStatus_Came(villager);
-    if (came == VILLAGER_TALK_GREETING_CAME_1 && func_02094ffc(PlayerRecord_Player(player)) != 0) {
+    if (came == VILLAGER_TALK_GREETING_CAME_1 && PlayerId_WhichTown(PlayerRecord_Player(player)) != 0) {
         came = 0;
     }
     if (came == VILLAGER_TALK_GREETING_CAME_FROM_TOWN) {
@@ -761,7 +732,7 @@ int VillagerTalkGreeting_IsRun(VillagerTalk *talk)
 {
     (void) talk;
     unsigned int town = data_020e54a8 == 0 ? 1 : 0;
-    return town != 0 && func_ov003_0222d77c() != 0;
+    return town != 0 && TownInsect_EventShown() != 0;
 }
 CLEAN_AS(func_0202c3f0, VillagerTalkGreeting_IsRun)
 
@@ -787,9 +758,9 @@ int VillagerTalkGreeting_SinceLastTalk(VillagerTalk *talk, int *days)
     if (greeting_memory(talk) == NULL) {
         return VILLAGER_TALK_GREETING_FIRST;
     }
-    if (player != NULL && func_020951bc(player) != 0 && func_02094ffc(player) != 0) {
-        const u8 *current_town = func_02095040(player);
-        const u8 *memory_town = func_02095040(VillagerMemoryEntry_Player(greeting_memory(talk)));
+    if (player != NULL && PlayerId_IsSet(player) != 0 && PlayerId_WhichTown(player) != 0) {
+        const u8 *current_town = (const u8 *) PlayerId_Town(player);
+        const u8 *memory_town = (const u8 *) (PlayerId_Town(VillagerMemoryEntry_Player(greeting_memory(talk))));
         if (greeting_towns_differ(memory_town, current_town)) {
             return VILLAGER_TALK_GREETING_OTHER_TOWN;
         }
@@ -811,7 +782,7 @@ int VillagerTalkGreeting_SinceLastTalk(VillagerTalk *talk, int *days)
         greeted = 1;
     }
     *days = DateTime_DaysBetween(when, &now);
-    if (func_02094ffc(player) != 0) {
+    if (PlayerId_WhichTown(player) != 0) {
         return *days >= 1 && greeted == 0 ? VILLAGER_TALK_GREETING_EARLIER_DAY : VILLAGER_TALK_GREETING_TODAY;
     }
     if (*days >= VILLAGER_TALK_GREETING_MONTH_DAYS) {
@@ -834,7 +805,7 @@ int VillagerTalkGreeting_FindNearInsect(Vec3 *at, const s8 *kinds, int count, co
         return VILLAGER_TALK_GREETING_NO_KIND;
     }
     for (int slot = 0; slot < VILLAGER_TALK_GREETING_INSECT_SLOTS; slot++) {
-        int kind = func_ov003_0222f458(at, slot);
+        int kind = TownInsect_GetPosition(at, slot);
         int found = VillagerTalkGreeting_FindInList(kind, kinds, count);
         if (found == VILLAGER_TALK_GREETING_NO_KIND) {
             continue;

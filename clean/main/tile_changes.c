@@ -6,6 +6,9 @@
 #include "scene_query.h"
 #include "session.h"
 #include "tile_requests.h"
+#include "ov003/growth_model.h"
+#include "ov003/tile_event.h"
+#include "ov004/dropped_items.h"
 
 static_assert(sizeof(TileChange) == 0x10, "TileChange");
 static_assert(offsetof(TileChange, tile) == 0x08, "TileChange.tile");
@@ -14,20 +17,6 @@ static_assert(offsetof(TileChanges, changes) == 0x04, "TileChanges.changes");
 extern TileChanges data_021c7880;
 extern TileChange data_021c7884[TILE_CHANGES_COUNT]; /* data_021c7880.changes */
 extern NetSession *data_020ccf94;
-
-/* A record set free (tile 0xffff, item 0xfff1, slot 7). */
-extern void func_020465b0(TileChange *change);
-/* A change finished: its effect on the map carried out, then its record freed. */
-extern void func_0204629c(TileChange *change);
-/* A change done with: kinds 4, 10, 22 and 25 freed, the others finished; nothing for a free
- * record. */
-extern void func_020461e0(TileChange *change);
-/* A change let go of: kinds 4, 10, 22 and 25 kept, the others finished. */
-extern void func_0204622c(TileChange *change);
-/* func_020465b0, as the initial state calls it. */
-extern void func_02046224(TileChange *change);
-/* Whether the actor of `slot` is at the tile (overlay 3). */
-extern int func_ov003_02221340(int slot, TileChangesTile *tile);
 
 static int TileChanges_Slot(const TileChange *change)
 {
@@ -66,7 +55,7 @@ static int TileChanges_Stays(int kind)
 void TileChanges_Init(TileChanges *changes)
 {
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
-        func_02046224(&changes->changes[i]);
+        TileChanges_InitRecord(&changes->changes[i]);
     }
 }
 CLEAN_AS(func_02045b3c, TileChanges_Init)
@@ -174,7 +163,7 @@ void TileChanges_FinishAll(void)
 {
     TileChange *change = (TileChange *) (uintptr_t) TileChanges_At(0);
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
-        func_020461e0(&change[i]);
+        TileChanges_Done(&change[i]);
     }
     data_021c7880.active = 0;
 }
@@ -200,7 +189,7 @@ void TileChanges_FreeHeld(int slot)
 {
     int index = TileChanges_FindHeld(slot);
     if (index >= 0) {
-        func_020465b0(&data_021c7884[index]);
+        TileChanges_Free(&data_021c7884[index]);
     }
 }
 CLEAN_AS(func_02045d98, TileChanges_FreeHeld)
@@ -215,7 +204,7 @@ void TileChanges_Release(TileChange *change)
             other->state &= (u8) ~TILE_CHANGE_HELD;
         }
     }
-    func_0204622c(change);
+    TileChanges_LetGo(change);
 }
 CLEAN_AS(func_02045db8, TileChanges_Release)
 
@@ -242,13 +231,13 @@ void TileChanges_LetGoAt(const TileChangesTile *tile, int layer)
     TileChange *change = &data_021c7884[index];
     u16 packed = change->tile;
     TileChangesTile on = {packed >> 8, packed & 0xff};
-    if (func_ov003_02221340(TileChanges_Slot(change), &on) != 0) {
+    if (TileEvent_EndAt(TileChanges_Slot(change), &on) != 0) {
         return;
     }
     if (TileChanges_Stays(TileChanges_Kind(change))) {
         TileChanges_Release(change);
     } else {
-        func_0204629c(change);
+        TileChanges_Finish(change);
     }
 }
 CLEAN_AS(func_02045e24, TileChanges_LetGoAt)
@@ -263,7 +252,7 @@ void TileChanges_FinishOwnAt(const TileChangesTile *tile, int slot, int layer)
         return;
     }
     if ((slot & 3) == TileChanges_Slot(&data_021c7884[index])) {
-        func_0204629c(&data_021c7884[index]);
+        TileChanges_Finish(&data_021c7884[index]);
     }
 }
 CLEAN_AS(func_02045ea8, TileChanges_FinishOwnAt)
@@ -272,7 +261,7 @@ CLEAN_AS(func_02045ea8, TileChanges_FinishOwnAt)
 void TileChanges_FinishAt(int index)
 {
     if (index >= 0) {
-        func_0204629c(&data_021c7884[index]);
+        TileChanges_Finish(&data_021c7884[index]);
     }
 }
 CLEAN_AS(func_02045eec, TileChanges_FinishAt)
@@ -291,13 +280,6 @@ CLEAN_AS(func_02045eec, TileChanges_FinishAt)
 #define TILE_CHANGE_NUMBER_MASK (0xf << TILE_CHANGE_NUMBER_SHIFT)
 #define TILE_CHANGES_NO_ITEM 0xfff1
 
-/* The overlay of the town's field told of a change done (its item and result at the tile). */
-extern void func_ov003_02224140(int x, int z, u16 item, int result);
-/* The overlay of a room told of a change done (its item and layer at the tile). */
-extern void func_ov004_02233ad4(int x, int z, u16 item, int layer);
-/* What the code at the tile has its line moved to when a change of the hitting kinds is
- * finished over it (overlay 3). */
-extern void func_ov003_02222d8c(u16 *code, int slot, TileChangesTile *tile);
 /* data_021c7c48 (tile_requests.h): the marks of the town's tiles. */
 extern TileRequests data_021c7c48;
 /* data_021c776c (block_02042200.h): two flags of main. */
@@ -329,7 +311,7 @@ int TileChanges_Replace(int slot, const TileChangesTile *tile, u32 item, int cod
             case 7: {
                 u16 old_code = change->unk_0c;
                 TileChangesTile at = *tile;
-                func_ov003_02222d8c(&old_code, TileChanges_Slot(change), &at);
+                GrowthModel_Drop(&old_code, TileChanges_Slot(change), &at);
                 break;
             }
         }
@@ -552,10 +534,10 @@ void TileChanges_Report(TileChange *change)
     int x = change->tile >> 8;
     int z = change->tile & 0xff;
     if (SceneQuery_CurrentIs0() != 0) {
-        func_ov003_02224140(x, z, change->item, change->state & TILE_CHANGE_RESULT_MASK);
+        TileEvent_SetTownItem(x, z, change->item, change->state & TILE_CHANGE_RESULT_MASK);
         TileChanges_NoteItem(change);
     } else {
-        func_ov004_02233ad4(x, z, change->item, TileChanges_Layer(change));
+        DroppedItems_PutOnMap(x, z, change->item, TileChanges_Layer(change));
     }
 }
 CLEAN_AS(func_020464d4, TileChanges_Report)

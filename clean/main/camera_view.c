@@ -15,6 +15,13 @@
 #include "player_record.h"  /* PlayerRecord_TestFlag */
 #include "player_records.h" /* PlayerRecords_Current */
 #include "view_frustum.h"   /* ViewFrustum_Set */
+#include "collision_map.h"
+#include "ease_curve.h"
+#include "globe.h"
+#include "player_actor_ops.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "view_process.h"
 
 static_assert(sizeof(CameraPreset) == 0x14, "a preset");
 static_assert(sizeof(CameraTiming) == 0x10, "a timing");
@@ -101,24 +108,6 @@ extern void G3i_PerspectiveW_(unsigned int sin, unsigned int cos, unsigned int a
 extern void G3i_LookAt_(Vec3 *position, Vec3 *up, Vec3 *target, int draw, void *matrix);
 extern int MTX_Inverse43(const Mtx43 *mtx, Mtx43 *inverse);
 
-/* The player's position (actor 4, the one at this console), or NULL. */
-extern Vec3 *func_02095794(int actor);
-/* `in` bent onto the curved ground drawn outdoors into `out`; the angle it is turned by (0
- * elsewhere). */
-extern int func_0203f844(Vec3 *out, const Vec3 *in);
-/* Outdoors, the angle of the curved ground under `point`; else 0. */
-extern s16 func_0203f768(const Vec3 *point);
-/* The share of a move done after `time`: 0 to 1.0, rising over `ease_in` and falling over
- * `ease_out` between `start` and `end`. */
-extern fx32 func_020643dc(fx32 time, fx32 start, fx32 end, fx32 ease_in, fx32 ease_out);
-/* Indoors, the bounds of the room's floor tiles in world units (x, then z). */
-extern int func_02030738(fx32 *min_x, fx32 *max_x, fx32 *min_z, fx32 *max_z);
-extern u8 func_020b65c4(void);                /* the scene */
-extern u8 func_020b65b8(void);                /* the scene byte at data_020e54b0 */
-extern int func_020b67e8(unsigned int scene); /* whether 1 <= scene <= 5 */
-extern int func_020b9464(CameraControl *camera);
-extern void func_0203f684(u8 *out, const Vec3 *point);
-
 /* The scene the camera is in (data_021f6948): byte 4 says whether outdoors (the town, whose
  * ground is curved, overlay 3) or indoors (a room, overlay 4). */
 typedef struct CameraViewScene {
@@ -178,8 +167,8 @@ CLEAN_AS(func_0203bc50, CameraControl_Follow)
  * ground; the up vector leans by the ground's angle under the target, then turns by the roll. */
 void CameraControl_PlaceAt(CameraControl *camera, const Vec3 *target, const Vec3 *eye)
 {
-    int angle = func_0203f844(&camera->drawn_target, target);
-    func_0203f844(&camera->drawn_eye, eye);
+    int angle = Globe_Bend(&camera->drawn_target, target);
+    Globe_Bend(&camera->drawn_eye, eye);
     int index = (u16) angle >> 4;
     camera->up.x = 0;
     camera->up.y = FX_SinCosTable_[index * 2 + 1];
@@ -204,8 +193,8 @@ void CameraControl_Place(CameraControl *camera, const Vec3 *target, int pitch, i
     Vec3 eye;
     Vec_Add(&eye, target, &behind);
     camera->point = eye;
-    int angle = func_0203f844(&camera->drawn_target, target);
-    func_0203f844(&camera->drawn_eye, CameraControl_Eye(camera));
+    int angle = Globe_Bend(&camera->drawn_target, target);
+    Globe_Bend(&camera->drawn_eye, CameraControl_Eye(camera));
     camera->up.x = 0;
     camera->up.y = 0x1000;
     camera->up.z = 0;
@@ -238,7 +227,7 @@ void CameraControl_Ease(CameraControl *camera)
         fx32 length = CameraControl_MoveLength(camera);
         fx32 ease_in = CameraControl_EaseIn(camera);
         fx32 ease_out = CameraControl_EaseOut(camera);
-        fx32 share = func_020643dc(camera->move_time, delay, length, ease_in, ease_out);
+        fx32 share = EaseCurve_Share(camera->move_time, delay, length, ease_in, ease_out);
         ease_point(&camera->current.second_offset, &camera->goal.second_offset, share);
         ease_point(&camera->current.offset, &camera->goal.offset, share);
         camera->current.pitch = (s16) (camera->current.pitch + FX_MulFunc(camera->goal.pitch - camera->current.pitch, share));
@@ -377,12 +366,12 @@ CLEAN_AS(func_0203c23c, CameraControl_ClampToRoom)
 void CameraControl_SetRoomBounds(CameraControl *camera)
 {
     if (data_021f6948->outdoors == 0) {
-        func_02030738(&camera->room_min_x, &camera->room_max_x, &camera->room_min_z, &camera->room_max_z);
+        CollisionMap_GetRoomBounds(&camera->room_min_x, &camera->room_max_x, &camera->room_min_z, &camera->room_max_z);
         if (camera->room_max_z < data_020ca0e8) {
             camera->room_max_z = data_020ca0e8;
         }
     }
-    if (func_020b65c4() == SCENE_29) {
+    if (SceneQuery_Current() == SCENE_29) {
         camera->room_max_x += 0x4000;
         camera->room_max_z += 0x4000;
         return;
@@ -423,7 +412,7 @@ CLEAN_AS(func_0203c3c4, CameraControl_TargetAcre)
 /* func_0203c3ec */
 void CameraControl_UpdateGroundAngle(CameraControl *camera)
 {
-    camera->ground_angle = func_0203f768(&camera->drawn_eye);
+    camera->ground_angle = Globe_HorizonAngle(&camera->drawn_eye);
 }
 CLEAN_AS(func_0203c3ec, CameraControl_UpdateGroundAngle)
 
@@ -584,7 +573,7 @@ void CameraControl_Draw(CameraControl *camera)
     data_027e02c8.target = camera->drawn_target;
     G3i_LookAt_(&camera->drawn_eye, &camera->up, &camera->drawn_target, 0, data_027e0114);
     data_027e0148.flags &= ~0xe8u;
-    func_020b9464(camera);
+    ViewProcess_Draw((ViewProcess *) camera);
 }
 CLEAN_AS(func_0203c610, CameraControl_Draw)
 
@@ -595,7 +584,7 @@ int CameraControl_Execute(CameraControl *camera)
     CameraControl_RunMode(camera);
     Vec3 target;
     Camera_GetTarget(&target, (Camera *) camera);
-    func_0203f684(data_021c749c, &target);
+    Globe_UpdateView((GlobeView *) (void *) data_021c749c, &target);
     return 1;
 }
 CLEAN_AS(func_0203c76c, CameraControl_Execute)
@@ -652,13 +641,13 @@ int CameraControl_Create(CameraControl *camera)
     camera->previous_mode = CAMERA_MODE_FOLLOW;
     camera->mode = camera->previous_mode;
     if (CameraControl_SetMode(camera, CAMERA_MODE_FOLLOW)) {
-        Vec3 *player = func_02095794(PLAYER);
+        Vec3 *player = PlayerActorOps_StartPosition(PLAYER);
         if (player != NULL) {
             camera->goal.second_offset = *player;
         }
     }
     CameraControl_SetRoomBounds(camera);
-    int scene = func_020b65c4();
+    int scene = SceneQuery_Current();
     data_020da718 = scene == SCENE_9 ? 0x1000 : 0x1800;
     switch (scene) {
         case SCENE_ACTOR_FOLLOWED: {
@@ -689,7 +678,7 @@ int CameraControl_Create(CameraControl *camera)
         case SCENE_TOWN: {
             u8 *record = PlayerRecords_Current();
             if (record != NULL && PlayerRecord_TestFlag(record, RECORD_FLAG_23) &&
-                (func_020b67e8(func_020b65b8()) || func_020b65b8() == SCENE_6)) {
+                (SceneKinds_IsHouseRoom(SceneQuery_Previous()) || SceneQuery_Previous() == SCENE_6)) {
                 CameraControl_SetMode(camera, CAMERA_MODE_13);
             }
             break;

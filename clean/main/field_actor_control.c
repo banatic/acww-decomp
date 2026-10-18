@@ -18,6 +18,17 @@
 #include "clean.h"
 #include "field_actor_parts.h"
 #include "main/session.h"
+#include "acre_tile.h"
+#include "actor_table.h"
+#include "angle_sector.h"
+#include "camera_control.h"
+#include "camera_view.h"
+#include "empty_0203de64.h"
+#include "event_queue.h"
+#include "field_label.h"
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "touch_pick_shapes.h"
 
 /* The buttons (autoload_2/input.h). */
 #define BUTTON_A 0x0001
@@ -61,30 +72,9 @@ extern const fx32 data_020d72f4[];
 extern const fx32 data_020d7308[];
 extern const fx32 data_020d7310[];
 
-extern int func_020b5d5c(void);
-extern void func_020b8db4(void);
-extern int func_0203e110(void);
-/* The touch screen's context, a point the pen holds on the ground (whether there is one), what
- * the pen picked (whether anything: the point, the kind, a byte) and its value. */
-extern int func_020b6590(void);
-extern int func_020b758c(int touch, Vec3 *point);
-extern u8 func_020b755c(int touch, Vec3 *point, int *kind, u8 *extra);
-extern int func_020b7524(int touch, int *a, u8 *b);
-extern u16 *func_0204f5a8(void *map, const Vec3 *point, int layer);
-extern void func_0204f818(int *x, int *z, const Vec3 *point);
-extern void func_0204f7e0(Vec3 *out, const Vec3 *point);
-extern int func_0203de78(void);
-extern int func_0203e31c(void);
-/* The camera's pitch and yaw. */
-extern s16 func_0203c57c(int camera);
-extern s16 func_0203c568(int camera);
-/* A point's place on the screen. */
-extern void func_0203aa24(int *x, int *y, const Vec3 *point);
 extern int FX_MulFunc(int a, int b);
 extern int FX_Div(int numerator, int denominator);
 extern int FX_Sqrt(int value);
-extern int func_02064558(int angle);
-extern int func_02064594(int angle);
 
 static_assert(offsetof(FieldActor, unk_140) == 0x140, "0x140");
 static_assert(offsetof(FieldActor, unk_14C) == 0x14c, "0x14c");
@@ -203,25 +193,26 @@ void FieldActor_ReadControl(FieldActor *actor)
         FIELD_ACTOR_HOLD(actor) = 0;
         actor->unk_148 = 0;
         actor->aim_point = aim;
-        if (!FieldActor_TestFlag(actor, 0x1b) || func_020b5d5c() != 1 || FieldActor_AnyPlayerUnreported(actor) != 0) {
+        if (!FieldActor_TestFlag(actor, 0x1b) || SceneTables_NoPlayerInClosedScene() != 1 ||
+            FieldActor_AnyPlayerUnreported(actor) != 0) {
             return;
         }
         FieldActor_ClearFlag(actor, 0x1b);
-        func_020b8db4();
+        FieldLabel_ClearMessage();
         /* Network modes 3 and 4 (Net_GetMode's result less 3, as a byte, at most 1). */
         if (data_020ccf94->local_slot == 0 && (u8) (Net_GetMode() - 3) <= 1) {
             Wfc_ClearHostTime();
         }
         int state = actor->state;
         if (state == 2 || state == 0x83 || state == 0x28 || state == 8) {
-            func_0203e110();
+            EventQueue_FinishKind4Or12();
         }
         return;
     }
 
     if (data_021c8c9c == 0) {
-        on_ground = func_020b758c(func_020b6590(), &ground) != 0;
-        if (func_020b755c(func_020b6590(), &pick, &pick_kind, &pick_extra)) {
+        on_ground = TouchPick_GetGround((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &ground) != 0;
+        if (TouchPick_GetPick((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &pick, (u32 *) &pick_kind, &pick_extra)) {
             picked = 1;
             switch (pick_kind) {
                 case 1:
@@ -244,7 +235,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                 case 0x11:
                     if (pen_came_down()) {
                         act = 1;
-                        act_value = func_020b7524(func_020b6590(), NULL, NULL);
+                        act_value = TouchPick_PickedObject((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), NULL, NULL);
                         aim = ground;
                     }
                     break;
@@ -253,11 +244,11 @@ void FieldActor_ReadControl(FieldActor *actor)
                         actor->unk_144 = 1;
                         Vec3 target = pick;
                         if (FieldActor_HeldTool(actor) == 1) {
-                            u16 *tile_item = func_0204f5a8(data_021c80bc, &pick, 0);
+                            u16 *tile_item = AcreTile_ItemAt(data_021c80bc, &pick, 0);
                             if (*tile_item >= 0xfc && *tile_item <= 0xfd) {
                                 int actor_x = 0, actor_z = 0, ground_x = 0, ground_z = 0;
-                                func_0204f818(&actor_x, &actor_z, position_of(actor));
-                                func_0204f818(&ground_x, &ground_z, &ground);
+                                Position_Tile(&actor_x, &actor_z, (const Position *) position_of(actor));
+                                Position_Tile(&ground_x, &ground_z, (const Position *) &ground);
                                 if (actor_x != ground_x || actor_z != ground_z) {
                                     target = ground;
                                 }
@@ -278,7 +269,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                 case 0xa:
                     if (pen_came_down()) {
                         aimed = 1;
-                        func_0204f7e0(&pick, &pick);
+                        AcreTile_SnapToTileCentre(&pick, &pick);
                         aim = pick;
                     }
                     FIELD_ACTOR_PICK_EXTRA(actor) = pick_extra;
@@ -287,7 +278,7 @@ void FieldActor_ReadControl(FieldActor *actor)
         }
     }
 
-    if (on_actor || (func_0203de78() && !on_ground)) {
+    if (on_actor || (Empty0203de64_No78() && !on_ground)) {
         Vec3 ahead;
         FIELD_ACTOR_PUSH(actor) = 0;
         FIELD_ACTOR_RUN(actor) = 0;
@@ -314,9 +305,9 @@ void FieldActor_ReadControl(FieldActor *actor)
                  * start position, along the camera's yaw. */
                 int camera = data_021c67a4;
                 Vec3 from = actor->start_position;
-                u16 slope = (u16) (0x4000 - func_0203c57c(camera));
+                u16 slope = (u16) (0x4000 - CameraControl_Pitch((CameraControl *) (uintptr_t) camera));
                 fx32 back = FX_Div(FX_MulFunc(0x1266, sine(slope)), cosine(slope));
-                u16 yaw = (u16) func_0203c568(camera);
+                u16 yaw = (u16) CameraControl_Yaw((CameraControl *) (uintptr_t) camera);
                 Vec3 behind;
                 behind.x = from.x - FX_MulFunc(back, sine(yaw));
                 behind.z = from.z - FX_MulFunc(back, cosine(yaw));
@@ -332,7 +323,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                 toward.x = ground.x - actor->start_position.x;
                 toward.y = 0; /* not read */
                 toward.z = ground.z - actor->start_position.z;
-                func_0203aa24(&screen_x, &screen_y, &actor->start_position);
+                CameraControl_ScreenPosition(&screen_x, &screen_y, &actor->start_position);
                 screen_x += 0x80;
                 screen_y += 0x60;
                 offset.x = ((u8) data_021fbde0 - screen_x) * 0x100;
@@ -353,7 +344,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                 aim = ground;
             }
         } else {
-            u16 steer = (func_0203e31c() || FieldActor_TestFlag(actor, 0x13)) ? BUTTONS_ALL : BUTTONS_STEER;
+            u16 steer = (EventQueue_TestFlag8() || FieldActor_TestFlag(actor, 0x13)) ? BUTTONS_ALL : BUTTONS_STEER;
             u16 held = data_021fbe40.held;
             mode = (held & steer) ? 1 : actor->aim_mode;
             run = (held & (BUTTON_B | BUTTON_R | BUTTON_L)) != 0;
@@ -408,7 +399,7 @@ s16 FieldActor_PushYaw(FieldActor *actor)
 {
     s16 yaw = FieldActor_PushAngle(actor);
     if (actor->aim_mode != 2 && data_021c67a4 != 0) {
-        yaw = (s16) (yaw + func_0203c568(data_021c67a4));
+        yaw = (s16) (yaw + CameraControl_Yaw((CameraControl *) (uintptr_t) data_021c67a4));
     }
     return yaw;
 }
@@ -419,7 +410,7 @@ CLEAN_AS(func_0200dc48, FieldActor_PushYaw)
 int FieldActor_PushQuadrant(FieldActor *actor)
 {
     s16 relative = (s16) (FieldActor_PushYaw(actor) - actor->yaw);
-    return func_02064558(relative);
+    return AngleSector_Four(relative);
 }
 CLEAN_AS(func_0200dc10, FieldActor_PushQuadrant)
 
@@ -428,7 +419,7 @@ CLEAN_AS(func_0200dc10, FieldActor_PushQuadrant)
 int FieldActor_PushSide(FieldActor *actor)
 {
     s16 relative = (s16) (FieldActor_PushYaw(actor) - actor->yaw);
-    return func_02064594(relative);
+    return AngleSector_Side(relative);
 }
 CLEAN_AS(func_0200dc2c, FieldActor_PushSide)
 

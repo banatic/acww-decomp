@@ -7,6 +7,11 @@
 
 #include "autoload_2/fx_math.h"
 #include "clean.h"
+#include "autoload_2/heap.h"
+#include "autoload_2/process.h"
+#include "game_process.h"
+#include "itcm/process_phases.h"
+#include "view_frustum.h"
 
 static_assert(offsetof(Actor, profile) == 0x0c, "Actor layout");
 static_assert(offsetof(Actor, link) == 0x50, "Actor layout");
@@ -55,25 +60,6 @@ extern u8 data_0213fee4[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 
-/* The scene objects' own functions (the root class, vtable 0x020da13c). */
-extern void *func_020ee660(void *object);                              /* constructor */
-extern void func_020ee62c(void *object);                               /* destructor */
-extern void func_020edf54(void *object);                               /* operator delete */
-extern int func_0202f134(int profile, int parent, int group, int arg); /* make an object */
-extern ActorLink *func_020ee7a4(List *list, int profile, ActorLink *after);
-extern ActorLink *func_020ee7f0(List *list, int serial);
-extern void func_01ffd3e4(void *object);
-extern int func_01ffd3e8(void *object);
-extern void func_01ffd418(void *object);
-extern int func_01ffd41c(void *object);
-extern void func_020ee4d8(void *object, int marker);
-extern int func_020ee550(void *object);
-extern void func_0202f144(void *object, int flag);
-extern int func_020ee61c(void);
-/* The depth of `point` seen through `view_matrix`, 0x7fffffff outside the near and far
- * distances of `frustum` widened by `radius`; the point in view space goes to `view`. */
-extern int func_0203a7b8(void *frustum, void *view_matrix, Vec3 *point, fx32 radius, Vec3 *view);
-
 /* The sine and cosine table's entries for `angle`: its top 12 bits. */
 static fx32 sin_of(u16 angle)
 {
@@ -91,7 +77,7 @@ static void destruct(Actor *actor)
     actor->vtable = data_020d7244;
     List_Remove(&data_0213ff78, &actor->link.node);
     actor->vtable = data_020da13c;
-    func_020ee62c(actor);
+    Process_Destruct((Process *) actor);
 }
 
 /* func_0200316c: the destructor; takes the actor out of the list. */
@@ -106,7 +92,7 @@ CLEAN_AS(func_0200316c, Actor_Destruct)
 void *Actor_DestructDelete(void *actor)
 {
     destruct(actor);
-    func_020edf54(actor);
+    Heap_FreeAux(actor);
     return actor;
 }
 CLEAN_AS(func_0200319c, Actor_DestructDelete)
@@ -192,7 +178,7 @@ int Actor_Spawn(int profile, int group, const Vec3 *position, const s16 *angle, 
 {
     int owner = parent != NULL ? (int) (intptr_t) parent : data_021f42f4;
     Actor_SetSpawnPlacement(position, angle);
-    return func_0202f134(profile, owner, group, 3);
+    return GameProcess_SpawnChild(profile, owner, group, 3);
 }
 CLEAN_AS(func_02003348, Actor_Spawn)
 
@@ -208,7 +194,8 @@ CLEAN_AS(func_02003378, Actor_SetSpawnPlacement)
  * without one), NULL when there is none. */
 void *Actor_FindNextOfProfile(int profile, Actor *after)
 {
-    ActorLink *link = func_020ee7a4(&data_0213ff78, profile, after != NULL ? &after->link : NULL);
+    ActorLink *link =
+        (ActorLink *) (ProcessList_FindClass(&data_0213ff78, profile, (ProcessLink *) (after != NULL ? &after->link : NULL)));
     return link != NULL ? link->owner : NULL;
 }
 CLEAN_AS(func_0200338c, Actor_FindNextOfProfile)
@@ -216,7 +203,7 @@ CLEAN_AS(func_0200338c, Actor_FindNextOfProfile)
 /* func_020033c4: the actor with this serial number (its address), 0 when there is none. */
 int Actor_FindBySerial(int serial)
 {
-    ActorLink *link = func_020ee7f0(&data_0213ff78, serial);
+    ActorLink *link = (ActorLink *) ProcessList_FindId(&data_0213ff78, serial);
     return link != NULL ? (int) (intptr_t) link->owner : 0;
 }
 CLEAN_AS(func_020033c4, Actor_FindBySerial)
@@ -225,7 +212,7 @@ CLEAN_AS(func_020033c4, Actor_FindBySerial)
 void Actor_Draw(Actor *actor, int status)
 {
     (void) status;
-    func_01ffd3e4(actor);
+    Process_AfterDraw((Process *) actor);
 }
 CLEAN_AS(func_020033e4, Actor_Draw)
 
@@ -233,7 +220,7 @@ CLEAN_AS(func_020033e4, Actor_Draw)
  * the distance check found the actor far and its class skips drawing then. */
 int Actor_CanDraw(Actor *actor)
 {
-    if (func_01ffd3e8(actor) == 0) {
+    if (Process_CanDraw((Process *) actor) == 0) {
         return 0;
     }
     if ((actor->cull_flags & ACTOR_CULL_FAR) && (actor->cull_flags & ACTOR_CULL_SKIP_DRAW)) {
@@ -247,7 +234,7 @@ CLEAN_AS(func_020033ec, Actor_CanDraw)
 void Actor_Run(Actor *actor, int status)
 {
     (void) status;
-    func_01ffd418(actor);
+    Process_AfterExecute((Process *) actor);
 }
 CLEAN_AS(func_02003420, Actor_Run)
 
@@ -261,7 +248,7 @@ CLEAN_AS(func_02003420, Actor_Run)
  * REQUIRES: a class asking for the check has a radius. */
 int Actor_CanRun(Actor *actor)
 {
-    if (func_01ffd41c(actor) == 0) {
+    if (Process_CanExecute((Process *) actor) == 0) {
         return 0;
     }
     actor->last_position = actor->position;
@@ -271,7 +258,8 @@ int Actor_CanRun(Actor *actor)
         fx32 dz = FX_MulFunc(actor->cull_offset, sin_of(actor->pitch));
         fx32 dy = FX_MulFunc(actor->cull_offset, cos_of(actor->pitch));
         Vec3 point = {actor->pivot.x, actor->pivot.y + dy, actor->pivot.z + dz};
-        depth = func_0203a7b8(data_021f6a6c, data_0213fee4, &point, actor->cull_radius, &actor->view_position);
+        depth = ViewFrustum_Depth((ViewFrustum *) (void *) data_021f6a6c, (const Mtx43 *) (void *) data_0213fee4, &point,
+                                  actor->cull_radius, &actor->view_position);
     }
 
     actor->cull_flags &= ~(u32) ACTOR_CULL_FAR;
@@ -286,21 +274,21 @@ CLEAN_AS(func_02003428, Actor_CanRun)
 /* func_02003510: vtable slot 0x14; the root class's. */
 void Actor_Vfunc14(Actor *actor, int marker)
 {
-    func_020ee4d8(actor, marker);
+    Process_AfterDelete((Process *) actor, marker);
 }
 CLEAN_AS(func_02003510, Actor_Vfunc14)
 
 /* func_02003518: vtable slot 0x10; the root class's answer as 0 or 1. */
 int Actor_Vfunc10(Actor *actor)
 {
-    return func_020ee550(actor) != 0;
+    return Process_CanDelete((Process *) actor) != 0;
 }
 CLEAN_AS(func_02003518, Actor_Vfunc10)
 
 /* func_02003530: vtable slot 0x08; the root class's, then the actor counts as far. */
 void Actor_Vfunc08(Actor *actor, int flag)
 {
-    func_0202f144(actor, flag);
+    GameProcess_AfterCreate((Process *) actor, flag);
     actor->cull_flags |= ACTOR_CULL_FAR;
 }
 CLEAN_AS(func_02003530, Actor_Vfunc08)
@@ -308,7 +296,7 @@ CLEAN_AS(func_02003530, Actor_Vfunc08)
 /* func_0200354c: vtable slot 0x04; the root class's answer as 0 or 1. */
 int Actor_Vfunc04(void)
 {
-    return func_020ee61c() != 0;
+    return Process_CanCreateDefault() != 0;
 }
 CLEAN_AS(func_0200354c, Actor_Vfunc04)
 
@@ -317,7 +305,7 @@ CLEAN_AS(func_0200354c, Actor_Vfunc04)
  * check from its class's profile. */
 Actor *Actor_Construct(Actor *actor)
 {
-    func_020ee660(actor);
+    Process_Construct((Process *) actor);
     actor->vtable = data_020da13c;
     actor->vtable = data_020d7244;
     actor->link.node.prev = NULL;

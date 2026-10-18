@@ -7,6 +7,31 @@
 #include "player_records.h"
 #include "savings.h"
 #include "state_block.h"
+#include "activity.h"
+#include "daily_bits.h"
+#include "day_events.h"
+#include "item_code.h"
+#include "item_lists.h"
+#include "item_record.h"
+#include "letter.h"
+#include "mail_text.h"
+#include "main_random.h"
+#include "message_reader.h"
+#include "message_receiver.h"
+#include "motion_slots.h"
+#include "npc_letters.h"
+#include "paired_town.h"
+#include "player_field_2416.h"
+#include "player_id.h"
+#include "player_options.h"
+#include "text_base.h"
+#include "town_name.h"
+#include "villager_letter.h"
+#include "villager_part.h"
+#include "villager_part_block.h"
+#include "villager_part_entry.h"
+#include "villager_part_handover.h"
+#include "word_archives.h"
 
 static_assert(offsetof(PlayerRecordVillager, villager) == 0xe, "PlayerRecordVillager layout");
 static_assert(offsetof(PlayerRecordVillager, item) == 0x1e, "PlayerRecordVillager layout");
@@ -52,11 +77,6 @@ extern PlayerStorage data_021f2fa8[MAIL_PLAYERS]; /* the players' storages */
 extern u32 data_021dc7a8[];                       /* the state block (state_block.h) */
 extern u8 data_020e3128[];                        /* passed to func_0207d3dc for the villager's letter */
 
-extern int func_0209985c(u8 *record);   /* the record's player number (0-3), or -1 */
-extern int func_020a1368(void);         /* the block of the letters kept (letter_store.h), or 0 */
-extern void *func_02099870(u8 *record); /* the player's id (0x247e) */
-extern int func_020951bc(void *player); /* whether the player id is set */
-
 /* The villager's letter. The texts are the game's objects: a player's name (0x20 bytes), an
  * 8-bit text (0x20 bytes) and a label (0x5c bytes, with a vtable). */
 typedef struct PlayerRecordName {
@@ -68,36 +88,6 @@ typedef struct PlayerRecordText8 {
 typedef struct PlayerRecordLabel {
     u32 words[0x5c / 4];
 } PlayerRecordLabel;
-extern int func_02099df4(PlayerRecordVillager *villager); /* whether its town and villager are set */
-extern void *func_02094fd4(PlayerRecordName *text);
-extern void *func_02094fbc(PlayerRecordName *text);
-extern void *func_020641c8(PlayerRecordText8 *text);
-extern void *func_020641b0(PlayerRecordText8 *text);
-extern void *func_020a8228(PlayerRecordLabel *label);
-extern void *func_020a8210(PlayerRecordLabel *label);
-extern void *func_02095074(void *player, PlayerRecordName *text); /* copy a player's name to a text */
-extern int func_0203d7c4(int entry, void *text);                  /* set a message entry */
-extern void func_020a8c1c(void *text);                            /* empty it */
-extern int func_0209c54c(int *number, int word);                  /* a word for the letter, and a random number for it */
-extern void *func_020b49d4(PlayerRecordLabel *label, const u8 *number, int word); /* load it */
-extern void func_02064210(const u8 *town, PlayerRecordText8 *text);               /* a town's name as 8-bit text */
-/* Write the letter from `villager` of `town` to `player`, its message drawn from `first` on
- * among `count`; whether it was written. */
-extern int func_0207d3dc(void *letters, int first, int count, void *player, u8 *villager, u16 *item);
-extern void func_02099e18(PlayerRecordVillager *villager); /* clear it */
-
-/* What PlayerRecord_UpdateSinceLastPlay calls. */
-extern Date *func_02099308(u8 *record);           /* the date of the last play (0x2400) */
-extern u8 *func_02099670(u8 *record);             /* a field at 0x2416 */
-extern u8 *func_0209967c(u8 *record);             /* a field at 0x23ec */
-extern u8 *func_02099688(u8 *record);             /* a field at 0x242c */
-extern void func_02099768(u8 *record, int value); /* set bits 6-7 of byte 0x243d */
-extern void func_0209948c(u8 *record);
-extern void func_02088810(u8 *field); /* letters on flags 0x17-0x1a of the record */
-extern void func_020889a8(void);      /* a letter on flag 0x36 of the current record */
-extern void func_020887f8(u8 *field); /* clear its bytes 4-11 */
-extern void func_02088ac8(u8 *field); /* clear bits 2-5 of its byte 16 */
-extern void func_020882f0(u8 *object);
 
 static u32 *player_record_flags(u8 *record)
 {
@@ -106,7 +96,7 @@ static u32 *player_record_flags(u8 *record)
 
 static int player_number(u8 *record)
 {
-    int number = func_0209985c(record);
+    int number = PlayerRecord_Number(record);
     return number >= 0 && number < MAIL_PLAYERS ? number : -1;
 }
 
@@ -154,7 +144,7 @@ MailLetter *PlayerRecord_KeptLetters(u8 *record)
     if (number == -1) {
         return NULL;
     }
-    int block = func_020a1368();
+    int block = (int) (uintptr_t) Activity_CurrentLetters();
     if (block == 0) {
         return NULL;
     }
@@ -213,20 +203,20 @@ CLEAN_AS(func_02099020, PlayerRecord_TestFlag)
  * villager is cleared. */
 void PlayerRecord_SendVillagerLetter(u8 *record)
 {
-    void *player = func_02099870(record);
-    if (!func_020951bc(player)) {
+    void *player = PlayerRecord_Player(record);
+    if (!PlayerId_IsSet(player)) {
         return;
     }
     PlayerRecordVillager *villager = PlayerRecord_Villager(record);
-    if (!func_02099df4(villager)) {
+    if (!PlayerRecordVillager_IsSet(villager)) {
         return;
     }
     PlayerRecordName name;
     PlayerRecordText8 town;
     PlayerRecordLabel word;
-    func_02094fd4(&name);
-    func_020641c8(&town);
-    func_020a8228(&word);
+    PlayerIdText_Construct((PlayerIdText *) &name);
+    TownNameText_Construct((TownNameText *) &town);
+    MessagePart_Construct((MessagePart *) &word);
 
     int first = 0;
     int count = 10;
@@ -235,29 +225,30 @@ void PlayerRecord_SendVillagerLetter(u8 *record)
         count = 5;
     }
 
-    func_02095074(player, &name);
-    func_0203d7c4(LETTER_ENTRY_PLAYER, &name);
-    func_020a8c1c(&name);
+    PlayerId_NameToText(player, (TextBase *) &name);
+    MailText_SetPartText(LETTER_ENTRY_PLAYER, &name);
+    TextBase_Clear(&name);
     NpcId_FormatName((const NpcId *) (void *) villager->villager, (char *) &name);
-    func_0203d7c4(LETTER_ENTRY_VILLAGER, &name);
+    MailText_SetPartText(LETTER_ENTRY_VILLAGER, &name);
 
     int number = 0;
     for (int i = 0; i < LETTER_WORDS; i++) {
-        int text = func_0209c54c(&number, i);
-        func_020a8c1c(&word);
+        int text = WordArchives_Random(&number, i);
+        TextBase_Clear(&word);
         u8 digit = (u8) number;
-        func_020b49d4(&word, &digit, text);
-        func_0203d7c4(LETTER_ENTRY_FIRST_WORD + i, &word);
+        MessageReader_LoadDecoded(&word, &digit, (const char *) (uintptr_t) text);
+        MailText_SetPartText(LETTER_ENTRY_FIRST_WORD + i, &word);
     }
 
-    func_02064210(villager->town, &town);
-    func_0203d7c4(LETTER_ENTRY_TOWN, &town);
-    if (func_0207d3dc(data_020e3128, first, count, player, villager->villager, &villager->item)) {
-        func_02099e18(villager);
+    TownName_ToText((TownName *) (void *) villager->town, (TextBase *) &town);
+    MailText_SetPartText(LETTER_ENTRY_TOWN, &town);
+    if (VillagerLetter_PostDrawn((const char *) data_020e3128, first, count, player,
+                                 (const NpcId *) (void *) villager->villager, &villager->item)) {
+        PlayerRecordVillager_Clear(villager);
     }
-    func_020a8210(&word);
-    func_020641b0(&town);
-    func_02094fbc(&name);
+    MessagePart_Destruct((MessagePart *) &word);
+    TownNameText_Destruct((TownNameText *) &town);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
 }
 CLEAN_AS(func_02099050, PlayerRecord_SendVillagerLetter)
 
@@ -337,35 +328,35 @@ void PlayerRecord_UpdateSinceLastPlay(void)
 
     Date today;
     Calendar_Today(&today);
-    Date *last = func_02099308(self);
+    Date *last = PlayerRecord_LastPlayDate(self);
     int days = Calendar_DaysFrom(&today, last);
 
     Savings_PayInterest((today.month - last->month) + 12 * (today.year - last->year));
     Savings_SendMilestoneLetter(days);
     Savings_SendRankLetter(days);
-    func_02088810(func_02099670(self));
+    NpcLetters_SendInsurance((PlayerField2416 *) (void *) PlayerRecord_Field2416(self));
     /* QUIRK: the field is asked for once more, unused. */
-    func_02099670(self);
-    func_020889a8();
+    PlayerRecord_Field2416(self);
+    NpcLetters_SendMissing();
 
     if (days != 0) {
-        func_0209948c(self);
+        PlayerRecord_NewDayPocketItems(self);
     }
     if (today.year != PlayerRecord_BirthdayYear(self)) {
         PlayerRecord_SetBirthdayYear(self, PLAYER_RECORD_NO_YEAR);
     }
     if (days != 0) {
-        func_020887f8(func_0209967c(self));
-        func_02099768(self, 0);
-        func_02088ac8(func_02099670(self));
+        DailyBits_ClearAll((DailyBits *) (void *) PlayerRecord_Field23EC(self));
+        PlayerRecord_SetDayState(self, 0);
+        PlayerField2416_ClearTally((PlayerField2416 *) (void *) PlayerRecord_Field2416(self));
         StateBlock_ClearFlag(data_021dc7a8, STATE_FLAG_CLEARED_ON_NEW_DAY);
     }
     if (days < 0) {
-        func_020882f0(func_02099688(self));
-        func_020882f0((u8 *) data_021dc7a8 + STATE_OBJECT_173E2);
+        PairedTown_Reset(PlayerRecord_Field242C(self));
+        PairedTown_Reset((u8 *) data_021dc7a8 + STATE_OBJECT_173E2);
     }
 
-    Calendar_Today(func_02099308(self));
+    Calendar_Today(PlayerRecord_LastPlayDate(self));
 }
 CLEAN_AS(func_020991d4, PlayerRecord_UpdateSinceLastPlay)
 
@@ -511,63 +502,9 @@ extern void func_020051b0(void *item);
 extern u8 data_021dc7bc[];                              /* the town's four records */
 extern const int data_020d19c4[VILLAGER_PRESENT_LISTS]; /* the item lists of a villager's present */
 
-extern int func_02094fec(const DesignCreator *player); /* its town record number, or -1 */
-/* Set the player: its name (12 bytes), id, byte 0x1c and town (this town for NULL). */
-extern void func_02095158(DesignCreator *player, const void *name, u16 id, u8 byte_1c, const NpcIdHead *town);
-extern void func_02095238(DesignCreator *player);  /* clear it */
-extern int func_0209526c(DesignCreator *player);   /* its destructor */
-extern void *func_0209529c(DesignCreator *player); /* its constructor */
-/* A town (an NpcIdHead): copy, clear, whether it is set, destruct, construct. */
-extern void func_020642d0(u8 *dst, const NpcIdHead *src);
-extern void func_020642e0(u8 *town);
-extern int func_02064294(const void *town);
-extern void func_020642f8(u8 *town);
-extern void func_020642fc(u8 *town);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-
-/* The record of items. */
-extern void func_0203cf38(u8 *items); /* reset it for a new player */
-extern void func_0203cf40(u8 *items); /* clear it */
-extern void func_0203cfa0(u8 *items); /* its destructor */
-extern void func_0203cfa4(u8 *items); /* its constructor */
 /* Set (`set`) or clear an item's bit in the record of items; mode 0 refuses some items. The
  * symbol's name is wrong: this is the game's code. */
 extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
-/* The byte object at 0x1d3b. */
-extern void func_0203d388(u8 *object);
-extern void func_0203d38c(u8 *object);
-/* The villagers' part at 0x1e40. */
-extern u8 *func_0209ad9c(u8 *part, int index); /* its index-th block of 48 bytes; NULL past 1 */
-extern void func_0209b56c(u8 *block);          /* empty a block */
-extern void func_0209af04(u8 *object);         /* empty the NpcId and object at 0xa4 */
-extern u8 *func_0209a850(u8 *part);            /* its object at 0x94 */
-extern void func_0209b23c(u8 *object);         /* reset that object */
-extern void func_0209adb0(u8 *part);           /* clear the part */
-extern void func_0209ade4(u8 *part);           /* its destructor */
-extern void func_0209ae20(u8 *part);           /* its constructor */
-/* The objects at 0x23ec, 0x2416, 0x2427 and 0x242c, and the four bytes at 0x23e8. */
-extern void func_02088808(u8 *object);
-extern void func_0208880c(u8 *object);
-extern void func_02088c08(u8 *object);
-extern void func_02088c0c(u8 *object);
-extern void func_02088c10(u8 *object);
-extern void func_02088754(u8 *object);
-extern void func_02088760(u8 *object);
-extern void func_02088764(u8 *object);
-extern void *func_02088450(u8 *object);
-extern int func_02088460(u8 *object);
-extern void func_0203fa84(u8 *bytes);
-extern void func_0209df64(Date *date); /* reset the date */
-
-extern u8 func_02065ec0(const MailLetter *letter); /* its state; 0: no letter */
-extern void func_02066650(MailLetter *letter);     /* empty it */
-extern int func_0204bcdc(u16 *item);               /* whether the item is of the kinds compared by number */
-extern int func_0204bc64(u16 *item);               /* that number */
-/* Draw an item among `count` from `first`, for the player of `record`. */
-extern void func_02063414(u16 *item, int first, int count, int c, int d, u8 *record, int f, int g, int h, int i);
-extern void func_02063ccc(PlayerRecordItemList *list, int kind, int group);
-extern void func_020638d4(u16 *item, PlayerRecordItemList *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(PlayerRecordItemList *list);
 
 static u16 *player_record_u16(u8 *record, u32 offset)
 {
@@ -609,14 +546,14 @@ CLEAN_AS(func_02099314, PlayerRecord_FindFree)
  * town's players, drawn at random, goes into `name`; whether there was one. */
 int PlayerRecord_OtherPlayerName(u8 *record, PlayerRecordName *name)
 {
-    if (func_02094fec(PlayerRecord_Player(record)) == -1) {
+    if (PlayerId_IndexInTown(PlayerRecord_Player(record)) == -1) {
         return 0;
     }
     u8 *other = PlayerRecord_RandomOther(record);
     if (other == NULL) {
         return 0;
     }
-    func_02095074(PlayerRecord_Player(other), name);
+    PlayerId_NameToText(PlayerRecord_Player(other), (TextBase *) name);
     return 1;
 }
 CLEAN_AS(func_02099348, PlayerRecord_OtherPlayerName)
@@ -656,9 +593,10 @@ void PlayerRecord_ResetForNewTown(u8 *record)
     PlayerPockets *pockets = PlayerRecord_Pockets(record);
     u16 *slot = PlayerPockets_Slot(pockets, 0);
 
-    func_0209b56c(func_0209ad9c(PlayerRecord_VillagerPart(record), 0));
-    func_0209b56c(func_0209ad9c(PlayerRecord_VillagerPart(record), 1));
-    func_0209af04(PlayerRecord_VillagerPart(record) + VILLAGER_PART_OBJECT_A4);
+    VillagerPartBlock_Clear(VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 0));
+    VillagerPartBlock_Clear(VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 1));
+    VillagerPartHandover_Clear(
+        (VillagerPartHandover *) (void *) (PlayerRecord_VillagerPart(record) + VILLAGER_PART_OBJECT_A4));
 
     for (int i = 0; i < PLAYER_POCKETS_SLOTS; i++, slot++) {
         if (PlayerPockets_SlotState(pockets, i) != SLOT_STATE_2) {
@@ -672,9 +610,9 @@ void PlayerRecord_ResetForNewTown(u8 *record)
 
     MailLetter *letter = PlayerPockets_Letter(pockets, 0);
     for (int i = 0; i < PLAYER_POCKETS_LETTERS; i++, letter++) {
-        u8 state = func_02065ec0(letter);
+        u8 state = Letter_State((const Letter *) letter);
         if (state >= LETTER_STATE_EMPTIED_FIRST && state <= LETTER_STATE_EMPTIED_LAST) {
-            func_02066650(letter);
+            Letter_Clear((Letter *) letter);
         }
     }
 }
@@ -685,14 +623,14 @@ CLEAN_AS(func_020993b4, PlayerRecord_ResetForNewTown)
 static u16 player_record_draw_day_item(u8 *record, int first, int list_kind)
 {
     u16 item;
-    func_02063414(&item, first, DAY_DRAW_COUNT, 0, 0, record, 1, 10, 0, 1);
+    ItemLists_DrawRange(&item, first, DAY_DRAW_COUNT, 0, 0, record, 1, 10, 0, 1);
     if (item == PLAYER_RECORD_NO_ITEM) {
         PlayerRecordItemList list;
         u16 drawn;
-        func_02063ccc(&list, list_kind, 0);
-        func_020638d4(&drawn, &list, 0, 0, 1, 1, 0);
+        ItemList_Construct((ItemList *) &list, list_kind, 0);
+        ItemLists_Draw(&drawn, (ItemList *) &list, 0, 0, 1, 1, 0);
         item = drawn;
-        func_02063cc8(&list);
+        ItemList_Destruct(&list);
     }
     return item;
 }
@@ -707,7 +645,8 @@ void PlayerRecord_NewDayPocketItems(u8 *record)
     if (PlayerRecord_HasPlayer(record) == 0) {
         return;
     }
-    func_0209b23c(func_0209a850(PlayerRecord_VillagerPart(record)));
+    VillagerPartEntry_Clear(
+        (VillagerPartEntry *) (void *) VillagerPart_Object94((VillagerPart *) (void *) PlayerRecord_VillagerPart(record)));
     PlayerPockets *pockets = PlayerRecord_Pockets(record);
     u16 *slot = PlayerPockets_Slot(pockets, 0);
 
@@ -720,10 +659,10 @@ void PlayerRecord_NewDayPocketItems(u8 *record)
         }
 
         int is_a;
-        if (func_0204bcdc(slot) != 0) {
+        if (ItemCode_HasVariant(slot) != 0) {
             u16 a = DAY_ITEM_A;
-            int number = func_0204bc64(slot);
-            is_a = number == func_0204bc64(&a);
+            int number = ItemCode_VariantItem(slot);
+            is_a = number == ItemCode_VariantItem(&a);
         } else {
             is_a = *slot == DAY_ITEM_A;
         }
@@ -1007,7 +946,7 @@ CLEAN_AS(func_0209984c, PlayerRecord_Face)
 /* func_0209985c: the record's player's number among the town's records (0-3), or -1. */
 int PlayerRecord_Number(u8 *record)
 {
-    return func_02094fec(PlayerRecord_Player(record));
+    return PlayerId_IndexInTown(PlayerRecord_Player(record));
 }
 CLEAN_AS(func_0209985c, PlayerRecord_Number)
 
@@ -1027,7 +966,7 @@ CLEAN_AS(func_02099870, PlayerRecord_Player)
 void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const NpcIdHead *town, u8 face,
                             u8 head_kind, u8 hair_color, u8 sun_level, u8 flag0, int bells, const u16 *held_item)
 {
-    func_02095158(PlayerRecord_Player(record), name, (u16) player_id, (u8) byte_1c, town);
+    PlayerId_Make(PlayerRecord_Player(record), name, (u16) player_id, (u8) byte_1c, (const TownName *) town);
     PlayerRecord_SetFace(record, face);
     PlayerRecord_SetHeadKind(record, head_kind);
     PlayerRecord_SetHairColor(record, hair_color);
@@ -1039,7 +978,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     *player_record_u16(record, RECORD_HELD_ITEM) = *held_item;
     PlayerDesigns_Reset((PlayerDesigns *) (void *) record, PlayerRecord_Player(record));
     ShopPoints_ResetA(record + RECORD_SHOP_POINTS);
-    func_0203cf38(record + RECORD_ITEM_RECORD);
+    ItemRecord_Reset((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
     MailDated_Init((MailDatedLetter *) (void *) (record + RECORD_DATED_LETTER));
     MomLetterState_Init((MomLetterState *) (void *) (record + RECORD_MOM_LETTERS));
     WifiAccount_Init((WifiAccount *) (void *) (record + RECORD_WIFI_ACCOUNT));
@@ -1050,14 +989,14 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     PlayerRecord_SetSunDate(record, sun_date);
     PlayerRecord_ClearBirthday(record);
     *player_record_u16(record, RECORD_CLOTHES) = NEW_PLAYER_CLOTHES;
-    func_02088c08(record + RECORD_FIELD_2416);
+    PlayerField2416_Reset((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
     *player_record_u16(record, RECORD_PART_C_ITEM) = PLAYER_RECORD_NO_ITEM;
     *player_record_u16(record, RECORD_HEAD_ITEM) = PLAYER_RECORD_NO_ITEM;
     *player_record_u16(record, RECORD_ITEM_2410) = NEW_PLAYER_ITEM_2410;
-    func_02088754(record + RECORD_FIELD_2427);
+    DayEvents_ClearMark((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
     Savings_InitAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
-    func_0203fa84(record + RECORD_BYTES_23E8);
-    func_0209df64(PlayerRecord_LastPlayDate(record));
+    MotionSlots_Clear(record + RECORD_BYTES_23E8);
+    Calendar_Today(PlayerRecord_LastPlayDate(record));
     MI_CpuFill8(record + RECORD_VILLAGER_BYTES, 0xff, PLAYER_RECORD_VILLAGER_BYTES);
 }
 CLEAN_AS(func_0209987c, PlayerRecord_NewPlayer)
@@ -1065,7 +1004,7 @@ CLEAN_AS(func_0209987c, PlayerRecord_NewPlayer)
 /* func_02099a28: whether the record holds a player (its player id is set). */
 int PlayerRecord_HasPlayer(u8 *record)
 {
-    return func_020951bc(record + RECORD_PLAYER);
+    return PlayerId_IsSet((DesignCreator *) (void *) (record + RECORD_PLAYER));
 }
 CLEAN_AS(func_02099a28, PlayerRecord_HasPlayer)
 
@@ -1075,10 +1014,10 @@ CLEAN_AS(func_02099a28, PlayerRecord_HasPlayer)
 void PlayerRecord_Clear(u8 *record)
 {
     PlayerRecord_Zero(record);
-    func_02095238(PlayerRecord_Player(record));
+    PlayerId_Clear(PlayerRecord_Player(record));
     PlayerPockets_Init(player_record_pockets_at(record));
-    func_0203cf40(record + RECORD_ITEM_RECORD);
-    func_0209adb0(record + RECORD_VILLAGER_PART);
+    ItemRecord_Clear((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
+    VillagerPart_ClearAll((VillagerPart *) (void *) (record + RECORD_VILLAGER_PART));
     *player_record_u16(record, RECORD_HELD_ITEM) = PLAYER_RECORD_NO_ITEM;
     ShopPoints_ResetB(record + RECORD_SHOP_POINTS);
     *player_record_u16(record, RECORD_ITEM_240E) = PLAYER_RECORD_NO_ITEM;
@@ -1100,21 +1039,21 @@ u8 *PlayerRecord_Destruct(u8 *record)
 {
     PlayerPockets *pockets = player_record_pockets_at(record);
 
-    func_0209526c(PlayerRecord_Player(record));
+    PlayerId_Destruct(PlayerRecord_Player(record));
     PlayerRecordVillager_Destruct((PlayerRecordVillager *) (void *) (record + RECORD_VILLAGER));
     MomLetterState_Destruct((MomLetterState *) (void *) (record + RECORD_MOM_LETTERS));
-    func_02088450(record + RECORD_FIELD_242C);
-    func_02088760(record + RECORD_FIELD_2427);
-    func_02088c0c(record + RECORD_FIELD_2416);
+    PairedTown_Destruct(record + RECORD_FIELD_242C);
+    DayEvents_MarkDestruct((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
+    PlayerField2416_Destruct((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
     ShopPoints_Destruct((u32) (uintptr_t) (record + RECORD_SHOP_POINTS));
-    func_02088808(record + RECORD_FIELD_23EC);
+    DailyBits_Destruct((DailyBits *) (void *) (record + RECORD_FIELD_23EC));
     Savings_DestructAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
     WifiFriendList_Destruct((WifiFriendList *) (void *) (record + RECORD_WIFI_FRIENDS));
     WifiAccount_Destruct((WifiAccount *) (void *) (record + RECORD_WIFI_ACCOUNT));
-    func_0209ade4(record + RECORD_VILLAGER_PART);
+    VillagerPart_Destruct((VillagerPart *) (void *) (record + RECORD_VILLAGER_PART));
     MailDated_Destruct((MailDatedLetter *) (void *) (record + RECORD_DATED_LETTER));
-    func_0203d388(record + RECORD_FIELD_1D3B);
-    func_0203cfa0(record + RECORD_ITEM_RECORD);
+    PlayerOptions_Destruct(record + RECORD_FIELD_1D3B);
+    ItemRecord_Destruct((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
     __cxa_vec_cleanup(pockets->items, PLAYER_POCKETS_SLOTS, sizeof(u16), func_020051b0);
     __cxa_vec_cleanup(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(MailLetter), func_02066688);
     PlayerDesigns_Destruct((PlayerDesigns *) (void *) record);
@@ -1131,24 +1070,24 @@ u8 *PlayerRecord_Construct(u8 *record)
     PlayerDesigns_Construct((PlayerDesigns *) (void *) record);
     __cxa_vec_ctor(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(MailLetter), func_02066694, func_02066688);
     __cxa_vec_ctor(pockets->items, PLAYER_POCKETS_SLOTS, sizeof(u16), func_02034ce0, func_020051b0);
-    func_0203cfa4(record + RECORD_ITEM_RECORD);
-    func_0203d38c(record + RECORD_FIELD_1D3B);
+    ItemRecord_Construct((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
+    PlayerOptions_Construct(record + RECORD_FIELD_1D3B);
     MailDated_Construct((MailDatedLetter *) (void *) (record + RECORD_DATED_LETTER));
-    func_0209ae20(record + RECORD_VILLAGER_PART);
+    VillagerPart_Construct((VillagerPart *) (void *) (record + RECORD_VILLAGER_PART));
     WifiAccount_Construct((WifiAccount *) (void *) (record + RECORD_WIFI_ACCOUNT));
     WifiFriendList_Construct((WifiFriendList *) (void *) (record + RECORD_WIFI_FRIENDS));
     Savings_ConstructAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
-    func_0208880c(record + RECORD_FIELD_23EC);
+    DailyBits_Construct((DailyBits *) (void *) (record + RECORD_FIELD_23EC));
     ShopPoints_ConstructAndReset((int) (uintptr_t) (record + RECORD_SHOP_POINTS));
     for (u32 offset = RECORD_HELD_ITEM; offset <= RECORD_ITEM_2410; offset += sizeof(u16)) {
         *player_record_u16(record, offset) = PLAYER_RECORD_NO_ITEM;
     }
-    func_02088c10(record + RECORD_FIELD_2416);
-    func_02088764(record + RECORD_FIELD_2427);
-    func_02088460(record + RECORD_FIELD_242C);
+    PlayerField2416_Construct((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
+    DayEvents_MarkConstruct((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
+    PairedTown_Construct(record + RECORD_FIELD_242C);
     MomLetterState_Construct((MomLetterState *) (void *) (record + RECORD_MOM_LETTERS));
     PlayerRecordVillager_Construct((PlayerRecordVillager *) (void *) (record + RECORD_VILLAGER));
-    func_0209529c(PlayerRecord_Player(record));
+    PlayerId_Construct(PlayerRecord_Player(record));
     return record;
 }
 CLEAN_AS(func_02099bc8, PlayerRecord_Construct)
@@ -1168,22 +1107,22 @@ static NpcId *player_record_villager_npc(PlayerRecordVillager *villager)
  * also when the villager is then not noted. */
 int PlayerRecordVillager_Note(PlayerRecordVillager *villager, const NpcId *npc, int fondness, const NpcIdHead *town)
 {
-    if (NpcId_IsValid(npc) == 0 || func_02064294(town) == 0) {
+    if (NpcId_IsValid(npc) == 0 || TownName_IsSet((const u16 *) town) == 0) {
         return 0;
     }
 
     u16 present = PLAYER_RECORD_NO_ITEM;
-    if (func_020644cc(VILLAGER_PRESENT_DRAW) == 0) {
-        int kind = data_020d19c4[func_020644cc(VILLAGER_PRESENT_LISTS)];
+    if (MainRandom_Below(VILLAGER_PRESENT_DRAW) == 0) {
+        int kind = data_020d19c4[MainRandom_Below(VILLAGER_PRESENT_LISTS)];
         PlayerRecordItemList list;
-        func_02063ccc(&list, kind, 0);
+        ItemList_Construct((ItemList *) &list, kind, 0);
         /* QUIRK: the item is drawn from a plain copy of the list, and both are destroyed. */
         PlayerRecordItemList copy = list;
         u16 drawn;
-        func_020638d4(&drawn, &copy, 0, 0, 1, 1, 0);
+        ItemLists_Draw(&drawn, (ItemList *) &copy, 0, 0, 1, 1, 0);
         present = drawn;
-        func_02063cc8(&copy);
-        func_02063cc8(&list);
+        ItemList_Destruct(&copy);
+        ItemList_Destruct(&list);
     }
 
     if (PlayerRecordVillager_IsSet(villager) != 0 && fondness < (s8) villager->unk_20) {
@@ -1198,7 +1137,7 @@ CLEAN_AS(func_02099d08, PlayerRecordVillager_Note)
 void PlayerRecordVillager_Set(PlayerRecordVillager *villager, const NpcId *npc, s8 fondness, const NpcIdHead *town,
                               const u16 *item)
 {
-    func_020642d0(villager->town, town);
+    TownName_Copy((TownName *) (void *) villager->town, (const TownName *) town);
     NpcId_Copy(player_record_villager_npc(villager), npc);
     villager->item = *item;
     villager->unk_20 = (u8) fondness;
@@ -1208,14 +1147,15 @@ CLEAN_AS(func_02099dcc, PlayerRecordVillager_Set)
 /* func_02099df4: whether its town and villager are set. */
 int PlayerRecordVillager_IsSet(PlayerRecordVillager *villager)
 {
-    return func_02064294(villager->town) != 0 && NpcId_IsValid(player_record_villager_npc(villager)) != 0;
+    return TownName_IsSet((const u16 *) (void *) villager->town) != 0 &&
+           NpcId_IsValid(player_record_villager_npc(villager)) != 0;
 }
 CLEAN_AS(func_02099df4, PlayerRecordVillager_IsSet)
 
 /* func_02099e18: no villager, no item, no fondness. */
 void PlayerRecordVillager_Clear(PlayerRecordVillager *villager)
 {
-    func_020642e0(villager->town);
+    TownName_Clear((TownName *) (void *) villager->town);
     NpcId_Clear(player_record_villager_npc(villager));
     villager->item = PLAYER_RECORD_NO_ITEM;
     villager->unk_20 = (u8) VILLAGER_NO_FONDNESS;
@@ -1226,7 +1166,7 @@ CLEAN_AS(func_02099e18, PlayerRecordVillager_Clear)
 PlayerRecordVillager *PlayerRecordVillager_Destruct(PlayerRecordVillager *villager)
 {
     NpcId_Destruct(player_record_villager_npc(villager));
-    func_020642f8(villager->town);
+    TownName_Destruct(villager->town);
     return villager;
 }
 CLEAN_AS(func_02099e40, PlayerRecordVillager_Destruct)
@@ -1234,7 +1174,7 @@ CLEAN_AS(func_02099e40, PlayerRecordVillager_Destruct)
 /* func_02099e58: the constructor; no item. */
 PlayerRecordVillager *PlayerRecordVillager_Construct(PlayerRecordVillager *villager)
 {
-    func_020642fc(villager->town);
+    TownName_Construct(villager->town);
     NpcId_Construct(player_record_villager_npc(villager));
     villager->item = PLAYER_RECORD_NO_ITEM;
     return villager;

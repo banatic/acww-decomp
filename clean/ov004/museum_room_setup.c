@@ -33,7 +33,7 @@ extern AcreMap *data_021c80bc;
 extern MuseumRecord data_021f38f8;
 
 /* Class 82's two item codes: function-local statics of the game's, built and registered for
- * destruction (with func_020051b0) the first time, a guard bit each. */
+ * destruction (with TrivialObject_DestructItemCode) the first time, a guard bit each. */
 extern u16 data_ov004_0225f538; /* MUSEUM_SETUP_STAND_IN */
 extern u16 data_ov004_0225f534; /* the empty tile */
 extern u32 data_ov004_0225f53c;

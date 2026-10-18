@@ -28,6 +28,32 @@
 #include "main/shadow.h"
 #include "main/shops.h"
 #include "ov004/member_pointer.h"
+#include "actor_palettes.h"
+#include "anim_slots.h"
+#include "body_anim_heaps.h"
+#include "body_look.h"
+#include "cloth_slots.h"
+#include "collision_map.h"
+#include "effect_system.h"
+#include "event_queue.h"
+#include "face_anim_heaps.h"
+#include "face_anim_slots.h"
+#include "face_texture.h"
+#include "field_body.h"
+#include "fishing_float.h"
+#include "glasses_look.h"
+#include "head_look.h"
+#include "held_item_pool.h"
+#include "item_info.h"
+#include "link_global.h"
+#include "link_scene.h"
+#include "scene_heaps.h"
+#include "scene_object_base.h"
+#include "screen_transition.h"
+#include "session_players.h"
+#include "touch_pick_shapes.h"
+#include "town_day.h"
+#include "transition_mark.h"
 
 static_assert(offsetof(SceneInfo, overlays) == 0x10, "overlays");
 static_assert(sizeof(SceneInfo) == 0x18, "scene info");
@@ -135,66 +161,6 @@ extern s32 data_021d3124;
 
 extern u64 OS_GetTick(void);
 extern void NNS_G3dGeFlushBuffer(void);
-/* The field object's (SceneQuery_FieldObject) reset, at the end and the start of a scene. */
-extern void func_020b7e6c(void *field);
-extern void func_020b7e84(void *field);
-/* The pen on the field: the field object, the touch's x and y, whether the pen is down. */
-extern void func_020b75b8(int field, unsigned char x, unsigned char y, int down);
-/* The drawing's last step. */
-extern void func_02089ce0(void);
-/* A value of the link (data_021f4320) and setting it; the player number it keeps, and
- * setting that. */
-extern int func_020a6ee0(void);
-extern void func_020a6ef0(int value);
-extern int func_020a6ed0(void);
-extern void func_020a6ec0(int value);
-/* The link's work of a frame the scene base also does when its creation ends. */
-extern void func_020a6c08(void);
-extern void func_02046600(void);
-/* A session player's record number (7 for none) and setting it, freeing it; and the byte
- * kept for each player at 0x14 of the same table (data_021d5684). */
-extern u8 func_02096284(int player);
-extern void func_020962a4(int player, int record);
-extern void func_02096294(int player);
-extern void func_020961f0(int player, int value);
-/* Calls at the start (and end) of a scene whose work is elsewhere. */
-extern void func_02041a9c(void);
-extern void func_0203f070(void);
-extern void func_0208f8fc(void);
-extern void func_02030dcc(void);
-extern void func_0208a0a0(void);
-extern void func_0208a0ac(void);
-extern void func_02091300(void);
-extern void func_0203ecac(void);
-extern void func_02062ae4(int full);
-extern int func_02062ad4(void);
-/* The field's resource loaders, given the current heap, and their releases. */
-extern void func_0205cf84(Heap *heap);
-extern void func_0205d724(Heap *heap);
-extern void func_0205dd98(Heap *heap);
-extern void func_0205db10(Heap *heap);
-extern void func_0205dc58(Heap *heap);
-extern void func_0205f820(Heap *heap);
-extern void func_0205d234(Heap *heap);
-extern void func_0205e8b0(Heap *heap);
-extern void func_0205f9ac(Heap *heap);
-extern void func_0205e0f0(Heap *heap);
-extern void func_0205f6f8(Heap *heap);
-extern void func_0206094c(Heap *heap);
-extern void func_0205c1a4(Heap *heap);
-extern void func_0205c188(void);
-extern void func_02060934(void);
-extern void func_0205f6dc(void);
-extern void func_0205f994(void);
-extern void func_0205e0d8(void);
-extern void func_0205e898(void);
-extern void func_0205d21c(void);
-extern void func_0205f808(void);
-extern void func_0205dc40(void);
-extern void func_0205daf8(void);
-extern void func_0205dd80(void);
-extern void func_0205d70c(void);
-extern void func_0205cf6c(void);
 
 /* ---- Process class 6 */
 
@@ -210,9 +176,9 @@ int SceneProcess_Draw(void *process)
     NNS_G3dGeFlushBuffer();
     int field = SceneQuery_FieldObject();
     int down = data_021fbdd8 != 0;
-    func_020b75b8(field, (unsigned char) data_021fbde0, (unsigned char) data_021fbde4, down);
+    TouchPick_Update((TouchPick *) (uintptr_t) field, (unsigned char) data_021fbde0, (unsigned char) data_021fbde4, down);
     Block02034858_AfterDraw();
-    func_02089ce0();
+    FieldBody_PushApart();
     return 1;
 }
 CLEAN_AS(func_020b6a2c, SceneProcess_Draw)
@@ -223,8 +189,8 @@ CLEAN_AS(func_020b6a2c, SceneProcess_Draw)
 int SceneProcess_Update(int unused)
 {
     (void) unused;
-    func_02030dcc();
-    func_0208a0a0();
+    CollisionMap_AgeExtraPosts();
+    FieldBody_EmptyList();
     if (data_021c75b8 != SCENE_PROCESS_STEERING && data_021c75b0 == 0) {
         return 1;
     }
@@ -247,27 +213,27 @@ CLEAN_AS(func_020b6a7c, SceneProcess_Update)
 int SceneProcess_End(void)
 {
     Music_OnSceneEnd();
-    func_020b7e6c((void *) (uintptr_t) SceneQuery_FieldObject());
+    TouchPick_ResetOnSceneEnd((void *) (uintptr_t) SceneQuery_FieldObject());
     data_021c8ca0 = NULL;
-    func_0205c188();
+    SceneHeaps_DestroyFieldActors();
     PoolLink_FreeAllAtSceneEnd();
     ResourcePools_Shutdown();
     Actors_Init();
-    func_02060934();
-    func_0205f6dc();
-    func_0205f994();
-    func_0205e0d8();
-    func_0205e898();
-    func_0205d21c();
-    func_0205f808();
-    func_0205dc40();
-    func_0205daf8();
-    func_0205dd80();
-    func_0205d70c();
-    func_0205cf6c();
+    FishingFloat_EndScene();
+    HeldItemPool_EndScene();
+    ActorPalettes_EndScene();
+    GlassesLook_EndScene();
+    HeadLook_EndScene();
+    BodyLook_EndScene();
+    BodyAnimHeaps_EndScene();
+    FaceAnimHeaps_EndScene();
+    FaceAnimSlots_EndScene();
+    FaceTexture_EndScene();
+    ClothSlots_EndScene();
+    AnimSlots_EndScene();
     DesignManager_Shutdown((DesignManager *) (uintptr_t) DesignManager_Get());
     FurnitureInfo_FreeIndoor();
-    func_02062ad4();
+    ItemInfo_FreeIndoor();
     CharaShadow_Unload();
     ObjShadow_FreeAll();
     BgModels_Release((BgModels *) (uintptr_t) BgModels_Get());
@@ -278,26 +244,26 @@ int SceneProcess_End(void)
         NetSession *session = data_020ccf94;
         for (int player = 0; player < SCENE_PROCESS_PLAYERS; player++) {
             if (player == 0) {
-                func_020962a4(0, session->local_player);
+                SessionPlayers_SetRecordNumber(0, session->local_player);
                 session->local_player = 0;
             } else {
-                func_02096294(player);
+                SessionPlayers_ClearRecordNumber(player);
             }
         }
     } else if (SceneQuery_Current() == SCENE_KINDS_SESSION_SECOND) {
         for (int player = SCENE_PROCESS_PLAYERS - 1; player >= 1; player--) {
-            func_02096294(player);
+            SessionPlayers_ClearRecordNumber(player);
         }
     } else if (SceneQuery_Current() == SCENE_PROCESS_SCENE_0E) {
-        int player = func_020a6ed0();
+        int player = LinkGlobal_ServedSlot();
         if (player >= SCENE_PROCESS_LINK_PLAYER_FIRST && player <= SCENE_PROCESS_LINK_PLAYER_LAST) {
             u8 *record = PlayerRecords_Get(player + SCENE_PROCESS_LINK_RECORD_OFFSET);
             if (record != NULL) {
                 PlayerRecord_Clear(record);
             }
-            func_02096294(player);
+            SessionPlayers_ClearRecordNumber(player);
         }
-        func_020a6ec0(SCENE_PROCESS_LINK_IDLE);
+        LinkGlobal_SetServedSlot(SCENE_PROCESS_LINK_IDLE);
     }
 
     SceneProcess_ReleaseOverlays();
@@ -361,8 +327,8 @@ int SceneProcess_Create(Process *process)
     }
     if (stopped) {
         Session_Deliver(0);
-        func_020a6c08();
-        func_02046600();
+        LinkScene_Update();
+        TownDay_Update();
         return SCENE_PROCESS_NOT_CREATED;
     }
     return SCENE_PROCESS_CREATED;
@@ -376,13 +342,13 @@ CLEAN_AS(func_020b6c0c, SceneProcess_Create)
 int SceneProcess_Finish(void *process)
 {
     SceneDisplay_ResetFog(process);
-    func_02091300();
+    EffectSystem_ResetPlaces();
     REG16(REG_BG0CNT) = (u16) ((REG16(REG_BG0CNT) & ~BGCNT_PRIORITY) | SCENE_PROCESS_BG0_PRIORITY);
-    func_0208a0ac();
+    FieldBody_Reset();
     data_021d3124 = 0;
     SceneExit_Clear(&data_021f69d0);
     data_020dd828 = SCENE_PROCESS_FRAME_VBLANKS;
-    func_0203ecac();
+    EventQueue_StartScene();
     if (SceneQuery_Current() == SCENE_PROCESS_SCENE_2E || SceneQuery_Current() == SCENE_PROCESS_SCENE_0D ||
         SceneQuery_Current() == SCENE_PROCESS_SCENE_2F) {
         QuickMessage_DismissAll();
@@ -425,26 +391,26 @@ int SceneProcess_LoadResources(void)
     int bg_models = BgModels_Get();
     BgModels_SetUp((BgModels *) (uintptr_t) bg_models, scene_process_full());
     FurnitureInfo_LoadIndoor((void *) (uintptr_t) scene_process_full());
-    func_02062ae4(scene_process_full());
+    ItemInfo_LoadIndoor(scene_process_full());
     DesignManager_Startup((DesignManager *) (uintptr_t) DesignManager_Get());
-    func_0205cf84(data_021fbe94);
-    func_0205d724(data_021fbe94);
-    func_0205dd98(data_021fbe94);
-    func_0205db10(data_021fbe94);
-    func_0205dc58(data_021fbe94);
-    func_0205f820(data_021fbe94);
-    func_0205d234(data_021fbe94);
-    func_0205e8b0(data_021fbe94);
-    func_0205f9ac(data_021fbe94);
-    func_0205e0f0(data_021fbe94);
-    func_0205f6f8(data_021fbe94);
-    func_0206094c(data_021fbe94);
+    AnimSlots_StartScene(data_021fbe94);
+    ClothSlots_StartScene(data_021fbe94);
+    FaceTexture_StartScene(data_021fbe94);
+    FaceAnimSlots_StartScene(data_021fbe94);
+    FaceAnimHeaps_StartScene(data_021fbe94);
+    BodyAnimHeaps_StartScene(data_021fbe94);
+    BodyLook_StartScene(data_021fbe94);
+    HeadLook_StartScene(data_021fbe94);
+    ActorPalettes_StartScene(data_021fbe94);
+    GlassesLook_StartScene(data_021fbe94);
+    HeldItemPool_StartScene(data_021fbe94);
+    FishingFloat_StartScene(data_021fbe94);
     ObjShadow_LoadAll(scene_process_full());
     CharaShadow_Load();
     ResourcePools_Startup();
     PoolLink_FreeAllAtSceneStart();
     Actors_Init();
-    func_0205c1a4(data_021fbe94);
+    SceneHeaps_CreateFieldActors((unsigned int) (uintptr_t) data_021fbe94);
     SceneClaim_Leave();
     if (SceneQuery_Current() == SCENE_PROCESS_SCENE_2C || SceneQuery_Current() == SCENE_PROCESS_SCENE_2D) {
         (void) SceneTables_EntryRecord();
@@ -466,24 +432,24 @@ CLEAN_AS(func_020b6dcc, SceneProcess_LoadResources)
 int SceneProcess_SetUpPlayers(void)
 {
     SceneDisplay_SetUp();
-    func_02041a9c();
-    func_0208f8fc();
+    ScreenTransition_ClearBg2();
+    TransitionMark_RestoreWithOutside();
     SceneSound_Create();
 
     NetSession *session = data_020ccf94;
     if (Session_IsSlotTaken(session, session->local_slot) != 0) {
         for (int player = 0; player < SCENE_PROCESS_PLAYERS; player++) {
-            func_020961f0(player, SCENE_PROCESS_NO_PLAYER);
+            SessionPlayers_SetLookIndex(player, SCENE_PROCESS_NO_PLAYER);
         }
     } else if (SceneKinds_CurrentIsSession() != 0) {
         Session_SetPlayerCount(session, SCENE_PROCESS_PLAYERS);
         for (int player = 0; player < SCENE_PROCESS_PLAYERS; player++) {
-            func_020961f0(player, player);
+            SessionPlayers_SetLookIndex(player, player);
         }
     } else {
         Session_SetPlayerCount(session, 1);
         for (int player = 0; player < SCENE_PROCESS_PLAYERS; player++) {
-            func_020961f0(player, SCENE_PROCESS_NO_PLAYER);
+            SessionPlayers_SetLookIndex(player, SCENE_PROCESS_NO_PLAYER);
         }
     }
 
@@ -491,11 +457,11 @@ int SceneProcess_SetUpPlayers(void)
         if (SceneQuery_Current() == SCENE_KINDS_SESSION_FIRST) {
             session->local_player = SCENE_PROCESS_NO_PLAYER;
             for (int player = SCENE_PROCESS_PLAYERS - 1; player >= 0; player--) {
-                func_020962a4(player, player);
+                SessionPlayers_SetRecordNumber(player, player);
             }
         } else if (SceneQuery_Current() == SCENE_KINDS_SESSION_SECOND) {
             int local = session->local_player;
-            int own_record = func_02096284(local);
+            int own_record = SessionPlayers_RecordNumber(local);
             int record = 0;
             for (int player = SCENE_PROCESS_PLAYERS - 1; player >= 0; player--) {
                 if (player == local) {
@@ -504,7 +470,7 @@ int SceneProcess_SetUpPlayers(void)
                 if (record == own_record) {
                     record++;
                 }
-                func_020962a4(player, record);
+                SessionPlayers_SetRecordNumber(player, record);
                 record++;
             }
         }
@@ -513,7 +479,7 @@ int SceneProcess_SetUpPlayers(void)
         now->local_slot = SCENE_PROCESS_NO_PLAYER;
         now->local_player = SCENE_PROCESS_NO_PLAYER;
         for (int player = SCENE_PROCESS_PLAYERS - 1; player >= 0; player--) {
-            func_02096294(player);
+            SessionPlayers_ClearRecordNumber(player);
         }
     }
     return 1;
@@ -527,21 +493,21 @@ CLEAN_AS(func_020b6ed4, SceneProcess_SetUpPlayers)
  * loaded; done. */
 int SceneProcess_Enter(void)
 {
-    func_02041a9c();
+    ScreenTransition_ClearBg2();
     u8 scene = data_020e54ac;
-    int link = func_020a6ee0();
+    int link = LinkGlobal_DoneKind();
     if (scene == SCENE_PROCESS_SCENE_2E || scene == SCENE_PROCESS_SCENE_0D || scene == SCENE_PROCESS_SCENE_0C ||
         scene == SCENE_PROCESS_SCENE_0E || scene == SCENE_PROCESS_SCENE_2F) {
         if (link != SCENE_PROCESS_LINK_IDLE) {
-            func_020a6ef0(SCENE_PROCESS_LINK_IDLE);
+            LinkGlobal_SetDoneKind(SCENE_PROCESS_LINK_IDLE);
         }
     }
-    func_0203f070();
+    SceneObjectBase_ClearRegistry();
     data_020e54b0 = data_020e54ac;
     data_020e54ac = (u8) SceneExit_Scene(&data_021f69d0);
     SceneProcess_LoadCommonOverlay();
     data_021c8ca0 = &data_021f693c;
-    func_020b7e84((void *) (uintptr_t) SceneQuery_FieldObject());
+    TouchPick_ResetOnSceneStart((void *) (uintptr_t) SceneQuery_FieldObject());
     data_021f692c = 0;
     data_021f6944 = data_020e54ac;
     SceneProcess_LoadModeOverlays();

@@ -64,7 +64,7 @@ extern MuseumRecord data_021f38f8;
 extern EtcMuseum *data_ov004_0225797c[ETC_MUSEUM_MAX];
 extern u8 data_ov004_02257908;
 extern u8 data_ov004_02257904;
-/* What the spawns leave for the object's creation (func_ov004_0221bd28) to read: its kind,
+/* What the spawns leave for the object's creation (EtcMuseum_OnCreate) to read: its kind,
  * group A's message, its exhibits and their count, and its face angle. */
 extern s32 data_ov004_02257914;
 extern s16 data_ov004_0225337c;

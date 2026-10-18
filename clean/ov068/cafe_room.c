@@ -8,6 +8,9 @@
 #include "clean.h"
 #include "main/animated_model.h"
 #include "ov004/member_pointer.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_base.h"
+#include "ov004/rmo_object_slots.h"
 
 static_assert(sizeof(RmoObject) == 0x290, "RmoObject size");
 static_assert(offsetof(CafeRoom, alpha) == 0x290, "alpha");
@@ -31,12 +34,6 @@ extern const MemberPointer data_ov068_02277efc, data_ov068_02277f14;
 extern u32 data_ov068_022788a0;
 extern MemberPointer data_ov068_022788b4[CAFE_ROOM_MODES];
 extern const MemberPointer data_ov068_02277f04, data_ov068_02277f0c;
-
-/* The RMO family's release of the body's archive and of another part's, and the shared value
- * a mode is told to (a no-op answering 0 without one). */
-extern void func_ov004_0222c598(RmoObject *object);
-extern void func_ov004_0222c5b4(RmoModel *source, RmoTexture *texture);
-extern int func_ov004_0222c558(RmoObject *object, u32 value);
 
 static u8 *mode_of(CafeRoom *self)
 {
@@ -100,7 +97,7 @@ int CafeRoom_SetMode(CafeRoom *self, unsigned int mode)
     };
     MemberTable_InitOnce(&data_ov068_022788a0, data_ov068_022788b4, entries, CAFE_ROOM_MODES);
     if (mode >= CAFE_ROOM_MODES || MemberPointer_CallInt(&data_ov068_022788b4[mode], self) == 0 ||
-        func_ov004_0222c558(&self->base, mode) == 0) {
+        RmoObjectSlots_SetSharedValue(&self->base, mode) == 0) {
         return 0;
     }
     *mode_of(self) = (u8) mode;
@@ -112,9 +109,9 @@ CLEAN_AS(_ZN18Obj_ov068_02277f3c19func_ov068_02274f84Ej, CafeRoom_SetMode)
  * loaded; no room object any more. */
 int CafeRoom_Release(CafeRoom *self)
 {
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     if (self->has_chr != 0) {
-        func_ov004_0222c5b4(&self->chr_model, &self->chr_texture);
+        RmoModel_ReleaseWithTexture(&self->chr_model, &self->chr_texture);
     }
     data_ov068_022788b0 = NULL;
     return 1;
@@ -138,18 +135,6 @@ extern const char data_ov068_02277fb0[];
 /* The class's vtable. */
 extern const u8 data_ov068_02277f3c[];
 
-/* The RMO family's base class and its parts (rmo_object.h): the object's number among the
- * shared values, the loads of the body's and another part's archive, and the constructors and
- * destructors. */
-extern void func_ov004_0222c590(RmoObject *object, u8 number);
-extern int func_ov004_0222c5c8(RmoObject *object, const char *name);
-extern int func_ov004_0222c62c(const char *name, RmoAnimatedModel *model, RmoModel *source, RmoTexture *texture);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-extern RmoModel *func_ov004_0222c548(RmoModel *model);
-extern RmoModel *func_ov004_0222c538(RmoModel *model);
-extern void func_ov004_0222c398(RmoTexture *texture);
-extern void func_ov004_0222c394(RmoTexture *texture);
 /* A NitroSystem routine: the alpha of one material of a model resource. */
 extern void NNS_G3dMdlSetMdlAlpha(u8 *model, unsigned int material, u8 alpha);
 
@@ -186,11 +171,11 @@ CLEAN_AS(_ZN18Obj_ov068_02277f3c19func_ov068_0227507cEv, CafeRoom_Update)
 int CafeRoom_Start(CafeRoom *self)
 {
     data_ov068_022788b0 = self;
-    func_ov004_0222c590(&self->base, CAFE_ROOM_VALUE_NUMBER);
-    func_ov004_0222c5c8(&self->base, data_ov068_02277fa4);
+    RmoObjectSlots_SetValueNumber(&self->base, CAFE_ROOM_VALUE_NUMBER);
+    RmoObjectSlots_LoadNamed(&self->base, data_ov068_02277fa4);
     self->target_alpha = CAFE_ROOM_ALPHA_FADED;
     self->alpha = self->target_alpha;
-    func_ov004_0222c62c(data_ov068_02277fb0, &self->chr, &self->chr_model, &self->chr_texture);
+    RmoModel_LoadNamed(data_ov068_02277fb0, (ModelObject *) &self->chr, &self->chr_model, &self->chr_texture);
     u32 vtable = *(const u32 *) (const void *) self;
     ((void (*)(CafeRoom *, int))(uintptr_t) *(const u32 *) (uintptr_t) (vtable + CAFE_ROOM_SLOT_SET_MODE))(self, 1);
     self->has_chr = 1;
@@ -202,10 +187,10 @@ CLEAN_AS(func_ov068_022750d0, CafeRoom_Start)
 CafeRoom *CafeRoom_DestructDelete(CafeRoom *self)
 {
     *(const u8 **) (void *) self = data_ov068_02277f3c;
-    func_ov004_0222c394(&self->chr_texture);
-    func_ov004_0222c538(&self->chr_model);
+    RmoTexture_Destruct(&self->chr_texture);
+    RmoModel_Destruct(&self->chr_model);
     AnimatedModel_DestructComplete((AnimatedModel *) (void *) &self->chr);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     Heap_FreeAux(self);
     return self;
 }
@@ -216,10 +201,10 @@ CLEAN_AS(func_ov068_02275140, CafeRoom_DestructDelete)
 CafeRoom *CafeRoom_Destruct(CafeRoom *self)
 {
     *(const u8 **) (void *) self = data_ov068_02277f3c;
-    func_ov004_0222c394(&self->chr_texture);
-    func_ov004_0222c538(&self->chr_model);
+    RmoTexture_Destruct(&self->chr_texture);
+    RmoModel_Destruct(&self->chr_model);
     AnimatedModel_DestructComplete((AnimatedModel *) (void *) &self->chr);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     return self;
 }
 CLEAN_AS(func_ov068_02275184, CafeRoom_Destruct)
@@ -228,11 +213,11 @@ CLEAN_AS(func_ov068_02275184, CafeRoom_Destruct)
  * model, archive and texture; no room object yet. */
 CafeRoom *CafeRoom_Construct(CafeRoom *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     *(const u8 **) (void *) self = data_ov068_02277f3c;
     AnimatedModel_Construct((AnimatedModel *) (void *) &self->chr);
-    func_ov004_0222c548(&self->chr_model);
-    func_ov004_0222c398(&self->chr_texture);
+    RmoModel_Construct(&self->chr_model);
+    RmoTexture_Construct(&self->chr_texture);
     data_ov068_022788b0 = NULL;
     return self;
 }

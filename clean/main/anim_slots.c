@@ -7,6 +7,8 @@
 #include "scene_query.h"
 #include "scene_tables.h"
 #include "session.h"
+#include "c_library.h"
+#include "rom_file.h"
 
 /* The sizes of a body slot's block and of a held slot's (both ranges of the held slots). */
 #define ANIM_SLOTS_BODY_BLOCK_SIZE 5568
@@ -26,8 +28,6 @@ extern char data_021c9b44[20];     /* the path AnimSlots_FilePath makes */
 extern const char data_020dd6ac[]; /* "/anm/%d/%d.nsbca" */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern int func_02064328(char *buffer, const char *format, ...);    /* sprintf */
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
 
 /* func_0205cb80: the resource the slot `slot` names holds. */
 unsigned short AnimSlots_SlotResource(u8 *slot)
@@ -100,7 +100,7 @@ void AnimSlots_Load(u8 *slot, int resource, int share, int force)
 
     u8 *block = AnimSlots_Data(&data_021c9b58, index);
     int limit = index > ANIM_SLOTS_LAST_BODY ? AnimSlots_HeldBlockSize() : AnimSlots_BodyBlockSize();
-    int size = func_02064af4(AnimSlots_FilePath((unsigned int) resource), block, limit);
+    int size = RomFile_Read(AnimSlots_FilePath((unsigned int) resource), block, limit);
     if (size == 0) {
         return;
     }
@@ -287,7 +287,7 @@ CLEAN_AS(func_0205cf44, AnimSlots_BodyBlockSize)
 /* func_0205cf4c: the path of the resource's file, in the buffer at data_021c9b44. */
 char *AnimSlots_FilePath(unsigned int resource)
 {
-    func_02064328(data_021c9b44, data_020dd6ac, resource >> 5, resource);
+    CLib_SPrintf(data_021c9b44, data_020dd6ac, resource >> 5, resource);
     return data_021c9b44;
 }
 CLEAN_AS(func_0205cf4c, AnimSlots_FilePath)

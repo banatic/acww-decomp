@@ -20,6 +20,10 @@
 #include "villager_talk_greeting.h"
 #include "villager_talk_topics.h"
 #include "villager_town.h"
+#include "item_traits.h"
+#include "main_random.h"
+#include "talk_item_draw.h"
+#include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h), and its byte that picks the group
  * of the catchphrase's lines. */
@@ -91,20 +95,6 @@ extern const MemberPointer data_021c2794[3];
 
 extern VillagerTown data_021e5a2c; /* the town's villagers */
 
-/* The scene's member setter: the three at 0xb0 from a table. */
-extern void func_0202da88(VillagerTalk *talk, const MemberPointer *table);
-/* A line drawn for the personality (villager_talk.h). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The player's memory noted by the villager (unless the byte 0x13c is set). */
-extern void func_0202d8f8(VillagerTalk *talk, u8 **memory, s32 *index, u8 *villager, int player);
-/* A random item of one of four lists. */
-extern void func_0202d694(u16 *item);
-/* A random number below `bound`, from the main generator and from another. */
-extern int func_020644cc(int bound);
-extern int func_020644b4(int bound);
-/* What an item is worth. */
-extern int func_0204c878(u16 *item);
 /* The game's test of a memory VillagerTalkApproach_Mail hands VillagerTalkTopics_PickRandom
  * (VillagerTalkTopics_HoldsLetter). */
 extern int func_02021d60(u8 *villager, VillagerMemory *memory);
@@ -136,8 +126,8 @@ static int approach_mode(u8 *record)
  * drawn for `personality` into the talk's text and message. */
 static void approach_draw(VillagerTalk *talk, int personality, u32 texts, int per_group, int group, int range)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts, per_group, group,
-                  range);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts, per_group,
+                               group, range);
 }
 
 /* A line of `texts` (its count the lines a group, group 0) for the villager's personality. */
@@ -157,7 +147,7 @@ static void approach_gift_from_items(VillagerTalk *talk, u8 *record)
         talk->gift_from_items = 1;
     } else {
         u16 drawn;
-        func_0202d694(&drawn);
+        TalkItemDraw_OfKinds(&drawn);
         talk->gift = drawn;
         talk->gift_from_items = 0;
     }
@@ -186,7 +176,7 @@ void VillagerTalkApproach_Line(VillagerTalk *talk, VillagerTalkLine *out)
 
     u8 weights[VILLAGER_TALK_APPROACH_COUNT];
     MI_CpuCopy8(data_020c8e68, weights, VILLAGER_TALK_APPROACH_COUNT);
-    func_0202d8f8(talk, &talk->memory, &talk->memory_index, approach_record(talk), 0);
+    VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, approach_record(talk), 0);
     int applied = 0;
     while (applied == 0) {
         int which = VillagerTalkTopics_Draw(talk, weights, VILLAGER_TALK_APPROACH_COUNT);
@@ -196,7 +186,7 @@ void VillagerTalkApproach_Line(VillagerTalk *talk, VillagerTalkLine *out)
                 weights[which] = 0;
             }
         } else {
-            MemberPointer_CallInt(&data_021c1f4c[func_020644cc(2)], talk);
+            MemberPointer_CallInt(&data_021c1f4c[MainRandom_Below(2)], talk);
             break;
         }
     }
@@ -238,8 +228,8 @@ int VillagerTalkApproach_Sell(VillagerTalk *talk)
         return 0;
     }
 
-    int factor = func_020644b4(VILLAGER_TALK_APPROACH_FACTOR_BASE) + VILLAGER_TALK_APPROACH_FACTOR_BASE;
-    int price = (factor * func_0204c878(&talk->gift)) >> 12;
+    int factor = MainRandom_BelowB(VILLAGER_TALK_APPROACH_FACTOR_BASE) + VILLAGER_TALK_APPROACH_FACTOR_BASE;
+    int price = (factor * ItemTraits_Price(&talk->gift)) >> 12;
     int discount = 3 * RoomScore_HouseLowX();
     talk->bells = VillagerTalkApproach_RoundBells(price - (price > discount ? discount : 0));
     if (talk->bells > VILLAGER_TALK_APPROACH_SELL_MAX) {
@@ -286,8 +276,8 @@ int VillagerTalkApproach_Buy(VillagerTalk *talk)
         return 0;
     }
 
-    int factor = func_020644b4(VILLAGER_TALK_APPROACH_FACTOR_BASE) + VILLAGER_TALK_APPROACH_FACTOR_BASE;
-    int worth = func_0204c878(&talk->item);
+    int factor = MainRandom_BelowB(VILLAGER_TALK_APPROACH_FACTOR_BASE) + VILLAGER_TALK_APPROACH_FACTOR_BASE;
+    int worth = ItemTraits_Price(&talk->item);
     int scaled = worth * factor;
     int extra = 3 * RoomScore_HouseLowX();
     talk->bells = (scaled >> 14) + extra;
@@ -323,7 +313,7 @@ void VillagerTalkApproach_PickPocketItem(u16 *out, unsigned int mode)
     if (CurrentPockets_MarkClass(&marks, (int) data_020c8f38[mode]) == 0) {
         return;
     }
-    int pick = func_020644cc(marks.count);
+    int pick = MainRandom_Below(marks.count);
     for (int slot = 0; slot < VILLAGER_TALK_APPROACH_POCKETS; slot++) {
         if (((marks.slots >> slot) & 1) == 0) {
             continue;
@@ -344,7 +334,7 @@ int VillagerTalkApproach_Present2(VillagerTalk *talk)
         return 0;
     }
     u16 item;
-    func_0202d694(&item);
+    TalkItemDraw_OfKinds(&item);
     talk->gift = item;
     talk->gift_from_items = 0;
     approach_say(talk, &data_020c8ca8);
@@ -400,7 +390,7 @@ int VillagerTalkApproach_Nickname(VillagerTalk *talk)
         return 0;
     }
     approach_draw(talk, approach_personality(approach_record(talk)), data_020c8b20.texts, data_020c8b20.count, 0, 0);
-    func_0202da88(talk, data_021c2794);
+    VillagerTalkScene_SetLines(talk, data_021c2794);
     return 1;
 }
 CLEAN_AS(func_0202b770, VillagerTalkApproach_Nickname)
@@ -449,7 +439,7 @@ int VillagerTalkApproach_Catchphrase(VillagerTalk *talk)
     int personality = approach_personality(approach_record(talk));
     int group = talk->villager[VILLAGER_TALK_APPROACH_HABIT_BYTE] & 1;
     approach_draw(talk, personality, data_020c8b18.texts, 9, group, data_020c8b18.count);
-    func_0202da88(talk, data_021c2704);
+    VillagerTalkScene_SetLines(talk, data_021c2704);
     return 1;
 }
 CLEAN_AS(func_0202b8dc, VillagerTalkApproach_Catchphrase)

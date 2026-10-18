@@ -13,6 +13,7 @@
 #include "ov004/rmo_model.h"
 #include "ov004/rmo_object_slots.h"
 #include "rmo_object_base.h"
+#include "ov045/fortune_teller.h"
 
 static_assert(sizeof(RmoAnimatedModel) == 0xb8, "RmoAnimatedModel size");
 static_assert(sizeof(RmoModel) == 0xa4, "RmoModel size");
@@ -76,11 +77,6 @@ extern void func_ov004_0222c548(void *model);   /* RmoModel's constructor */
 extern void func_ov004_0222c538(void *model);   /* and destructor */
 extern void func_ov004_0222c398(void *texture); /* RmoTexture's constructor */
 extern void func_ov004_0222c394(void *texture); /* and destructor */
-
-/* Overlay 45's object: the whole frame of its animation (its word at 0x190, cut to 16 bits) and
- * the matrix the body and part 0 are drawn at (at its 0x65c). */
-extern unsigned int func_ov045_02260618(void);
-extern const Mtx43 *func_ov045_02260630(void);
 
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);
@@ -173,16 +169,16 @@ CLEAN_AS(func_ov004_02230518, TarotObject_EnterState1Current)
  * asked for once for each); idle once part 2's animation has run out. */
 void TarotObject_UpdateState3(TarotObject *self)
 {
-    if (func_ov045_02260618() == TAROT_OBJECT_STATE3_HIDE_PART0_FRAME) {
+    if (FortuneTeller_CurrentFrame() == TAROT_OBJECT_STATE3_HIDE_PART0_FRAME) {
         self->part_shown[0] = 0;
     }
-    if (func_ov045_02260618() == TAROT_OBJECT_STATE3_HIDE_PART2_FRAME) {
+    if (FortuneTeller_CurrentFrame() == TAROT_OBJECT_STATE3_HIDE_PART2_FRAME) {
         self->part_shown[2] = 0;
     }
-    if (func_ov045_02260618() == TAROT_OBJECT_STATE3_SHOW_BODY_FRAME) {
+    if (FortuneTeller_CurrentFrame() == TAROT_OBJECT_STATE3_SHOW_BODY_FRAME) {
         self->body_shown = 1;
     }
-    if (func_ov045_02260618() == TAROT_OBJECT_STATE3_HIDE_BODY_FRAME) {
+    if (FortuneTeller_CurrentFrame() == TAROT_OBJECT_STATE3_HIDE_BODY_FRAME) {
         self->body_shown = 0;
     }
     if (FrameCtrl_IsDone(&self->parts[2].frames)) {
@@ -211,7 +207,7 @@ CLEAN_AS(func_ov004_022305a0, TarotObject_EnterState3)
  * frame 9 the offset of the flag it set (0x6b0). */
 int TarotObject_UpdateState2(TarotObject *self)
 {
-    unsigned int frame = func_ov045_02260618();
+    unsigned int frame = FortuneTeller_CurrentFrame();
     if (frame == TAROT_OBJECT_STATE2_SHOW_FRAME) {
         self->part_shown[0] = 1;
         return (int) offsetof(TarotObject, part_shown[0]);
@@ -243,7 +239,7 @@ CLEAN_AS(func_ov004_0223063c, TarotObject_EnterState2)
  * frame 11 the offset of the last flag it set (0x6b2). */
 int TarotObject_UpdateState1(TarotObject *self)
 {
-    unsigned int frame = func_ov045_02260618();
+    unsigned int frame = FortuneTeller_CurrentFrame();
     if (frame == TAROT_OBJECT_STATE1_SWAP_FRAME) {
         self->body_shown = 0;
         self->part_shown[2] = 1;
@@ -343,7 +339,7 @@ CLEAN_AS(func_ov004_022308a8, TarotObject_Release)
  * shown. */
 void TarotObject_Draw(TarotObject *self)
 {
-    data_021fbe48 = *func_ov045_02260630();
+    data_021fbe48 = *(const Mtx43 *) (uintptr_t) FortuneTeller_CurrentMatrix();
     *TarotObject_matrix(&self->base.body) = data_021fbe48;
     *TarotObject_matrix(&self->parts[0]) = data_021fbe48;
     if (self->body_shown) {

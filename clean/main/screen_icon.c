@@ -6,6 +6,11 @@
 
 #include "clean.h"
 #include "state_flags.h"
+#include "a_mes_obj.h"
+#include "autoload_2/heap.h"
+#include "cell_anim.h"
+#include "oam_buffer.h"
+#include "screen_sprite.h"
 
 static_assert(offsetof(ScreenIcon, anim) == 0x0c, "ScreenIcon layout");
 static_assert(offsetof(ScreenIcon, slide_x) == 0x20, "ScreenIcon layout");
@@ -28,21 +33,6 @@ extern ScreenIcon data_0213ffb0;
 #define FIXED_DY 0x48
 #define FLAG4_DY 0x8c
 
-/* Load the graphics of a variant. */
-extern void func_02011f1c(int mode);
-extern void func_0208a0c8(CellAnim *anim);                   /* advance */
-extern void func_0208a1f0(CellAnim *anim, const void *data); /* set the animation */
-extern void func_0208a1ec(CellAnim *anim, int hold);
-extern void *func_0208a1e0(CellAnim *anim, int frame, fx32 time);
-extern void func_0208a158(CellAnim *anim);           /* speed 0 */
-extern void *func_0208a144(CellAnim *anim);          /* speed 1.0 from the first frame */
-extern int func_0208a1d0(CellAnim *anim);            /* the frame's cell */
-extern s16 func_0208a1b0(CellAnim *anim, int frame); /* a frame's x, the current one for -1 */
-extern s16 func_0208a198(CellAnim *anim, int frame); /* a frame's y, the current one for -1 */
-extern int func_0208aef0(ScreenIcon *icon);          /* the indicator's x */
-extern int func_0208aeec(ScreenIcon *icon);          /* the indicator's y */
-extern void func_02088df8(int a, int cell, int x, int y, int b, int c, fx32 scale_x, fx32 scale_y, int d, int e, int f, int g);
-
 static void set_step(ScreenIcon *icon, u32 step)
 {
     icon->step = step;
@@ -55,7 +45,7 @@ void ScreenIcon_ApplyMode(ScreenIcon *icon)
     if (icon->step != 0 || icon->next_mode == SCREEN_ICON_MODE_NONE || icon->next_mode == icon->mode) {
         return;
     }
-    func_02011f1c((int) icon->next_mode);
+    AMesObj_SetScreenIcon((int) icon->next_mode);
     icon->mode = icon->next_mode;
     icon->next_mode = SCREEN_ICON_MODE_NONE;
     icon->fixed_place = icon->mode == 0 || icon->mode == 3 || icon->mode == 4;
@@ -90,7 +80,7 @@ void ScreenIcon_Slide(ScreenIcon *icon)
     if (icon->timer > 0) {
         icon->timer--;
     }
-    func_0208a0c8(&icon->anim);
+    CellAnim_Advance(&icon->anim);
 }
 CLEAN_AS(func_02003814, ScreenIcon_Slide)
 
@@ -141,14 +131,14 @@ CLEAN_AS(func_02003938, ScreenIcon_IsShown)
  * second frame. */
 void ScreenIcon_SetAnim(ScreenIcon *icon, int still)
 {
-    func_0208a1f0(&icon->anim, data_020d5c64);
+    CellAnim_SetData(&icon->anim, (const CellAnimData *) (void *) data_020d5c64);
     if (still) {
-        func_0208a1ec(&icon->anim, 1);
-        func_0208a1e0(&icon->anim, 1, 0);
-        func_0208a158(&icon->anim);
+        CellAnim_SetHold(&icon->anim, 1);
+        CellAnim_SetFrame(&icon->anim, 1, 0);
+        CellAnim_Stop(&icon->anim);
     } else {
-        func_0208a1ec(&icon->anim, 0);
-        func_0208a144(&icon->anim);
+        CellAnim_SetHold(&icon->anim, 0);
+        CellAnim_Restart(&icon->anim);
     }
     icon->restart_anim = 0;
 }
@@ -171,7 +161,7 @@ CLEAN_AS(func_020039d4, ScreenIcon_CallUpdate)
 /* func_020039e4: the animation running from its first frame. */
 void ScreenIcon_RestartAnim(ScreenIcon *icon)
 {
-    func_0208a144(&icon->anim);
+    CellAnim_Restart(&icon->anim);
 }
 CLEAN_AS(func_020039e4, ScreenIcon_RestartAnim)
 
@@ -237,14 +227,14 @@ void ScreenIcon_Draw(ScreenIcon *icon)
     if (icon->step == 0) {
         return;
     }
-    int cell = func_0208a1d0(&icon->anim);
+    int cell = (int) (uintptr_t) CellAnim_Cell(&icon->anim);
     if (cell == 0) {
         return;
     }
-    int x = func_0208aef0(icon);
-    x += func_0208a1b0(&icon->anim, -1);
-    int y = func_0208aeec(icon);
-    y += func_0208a198(&icon->anim, -1);
+    int x = ScreenSprite_X((ScreenSprite *) icon);
+    x += CellAnim_FrameX(&icon->anim, -1);
+    int y = ScreenSprite_Y((ScreenSprite *) icon);
+    y += CellAnim_FrameY(&icon->anim, -1);
     if (icon->fixed_place) {
         x += FIXED_DX;
         y += FIXED_DY;
@@ -252,23 +242,18 @@ void ScreenIcon_Draw(ScreenIcon *icon)
         x += icon->slide_x;
         y += icon->flag4 ? FLAG4_DY : 0;
     }
-    func_02088df8(0, cell, x, y, -1, -1, 0x1000, 0x1000, 0, -1, 0, 0);
+    OamBuffer_DrawCell(0, (const OamEntry *) (uintptr_t) cell, x, y, -1, -1, 0x1000, 0x1000, 0, -1, 0, 0);
 }
 CLEAN_AS(func_02003a90, ScreenIcon_Draw)
 
 /* The icon's class (vtable 0x020d72cc); its base is the screen indicator (vtable 0x020e20c8). */
 extern const ScreenIconVtable data_020d72cc;
-extern void func_0208af30(ScreenIcon *icon); /* indicator constructor: at (0x80, 0x60) */
-extern void func_0208af00(ScreenIcon *icon); /* indicator destructor */
-extern void func_0208a1f8(CellAnim *anim);   /* no animation, speed 1.0 */
-extern void func_0208a1f4(CellAnim *anim);   /* animation destructor (does nothing) */
-extern void func_020edb3c(void *block);      /* operator delete */
 
 /* func_02003b24: the deleting destructor. */
 ScreenIcon *ScreenIcon_DestructFree(ScreenIcon *icon)
 {
     ScreenIcon_Destruct(icon);
-    func_020edb3c(icon);
+    Heap_OperatorDeleteB(icon);
     return icon;
 }
 CLEAN_AS(func_02003b24, ScreenIcon_DestructFree)
@@ -279,8 +264,8 @@ ScreenIcon *ScreenIcon_Destruct(ScreenIcon *icon)
 {
     icon->vtable = &data_020d72cc;
     ScreenIcon_RestartAnim(icon);
-    func_0208a1f4(&icon->anim);
-    func_0208af00(icon);
+    CellAnim_Destruct(&icon->anim);
+    ScreenSprite_DestructBase((ScreenSprite *) icon);
     return icon;
 }
 CLEAN_AS(func_02003b50, ScreenIcon_Destruct)
@@ -289,9 +274,9 @@ CLEAN_AS(func_02003b50, ScreenIcon_Destruct)
  * with variant 0 at the fixed place and no variant asked for. */
 ScreenIcon *ScreenIcon_Construct(ScreenIcon *icon)
 {
-    func_0208af30(icon);
+    ScreenSprite_Construct((ScreenSprite *) icon);
     icon->vtable = &data_020d72cc;
-    func_0208a1f8(&icon->anim);
+    CellAnim_Construct(&icon->anim);
     icon->slide_x = 0;
     icon->step = 0;
     icon->flag_value = 0;

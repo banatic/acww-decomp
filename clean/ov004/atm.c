@@ -6,6 +6,22 @@
 
 #include "clean.h"
 #include "member_pointer.h"
+#include "autoload_2/heap.h"
+#include "autoload_2/vector.h"
+#include "main/collision_box.h"
+#include "main/event_queue.h"
+#include "main/message_receiver.h"
+#include "main/message_texts.h"
+#include "main/number_text.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/shop_points.h"
+#include "main/talk_answers.h"
+#include "main/talk_object.h"
+#include "main/talk_receiver.h"
+#include "main/touch_pick_shapes.h"
 
 static_assert(offsetof(Atm, position) == 0x5c, "position");
 static_assert(offsetof(Atm, angle) == 0x8e, "angle");
@@ -13,14 +29,15 @@ static_assert(offsetof(Atm, receiver_vtable) == 0xec, "receiver part");
 static_assert(offsetof(Atm, talk_state) == 0xec + 0x1e, "receiver state byte");
 static_assert(offsetof(Atm, talk) == 0xec + 0x40, "receiver's conversation");
 static_assert(offsetof(Atm, state) == 0x134, "state");
-static_assert(offsetof(Atm, unk_138) == 0x138, "list entry");
-static_assert(offsetof(Atm, unk_1d4) == 0x1d4, "entries");
+static_assert(offsetof(Atm, receiver) == 0xec, "receiver part");
+static_assert(offsetof(Atm, box) == 0x138, "collision box");
+static_assert(offsetof(Atm, faces) == 0x1d4, "faces");
 static_assert(sizeof(Atm) == 0x47c, "the size Atm_Create allocates");
 
 #define ATM_RECEIVER_OFFSET 0xec
 #define ATM_SIZE 0x47c
 
-/* The near distance func_020ea990 returns, and the angles (atm.h) that count as facing. */
+/* The near distance Vec_DistanceXZ returns, and the angles (atm.h) that count as facing. */
 #define ATM_TALK_DISTANCE 0x2333
 #define HALF_TURN 0x8000
 #define FACING_TOLERANCE 0x1000
@@ -58,65 +75,21 @@ extern u32 data_ov004_02256c08;
 extern MemberPointer data_ov004_02256c0c[ATM_STATE_COUNT];
 extern const MemberPointer data_ov004_0224fbf0, data_ov004_0224fc00, data_ov004_0224fc18;
 
-/* The conversation: the player's choice in it (at 0x31c + 0x2d8), its message and its text. */
-extern void *func_0206837c(void *talk);
-extern unsigned int func_020ab504(void *menu);
-extern void func_0206844c(void *talk, const u8 *message, const char *name);
-extern void func_02068404(void *talk, int slot, void *text);
-extern int func_020683e4(void *talk, int slot, const void *bytes, const char *name);
-extern void func_020a8164(void *receiver, const char *name);
-
-/* The player's record, and the count in it. */
-extern int func_020984e8(void);
-extern unsigned int func_020996a0(unsigned int record);
-extern u16 *func_020adf50(void *count);
-extern int func_020adde4(unsigned int count);
-extern u16 func_020adda8(u16 *count);
-
-/* A number written as text into a 0x40-byte buffer. */
-extern void *func_020b5630(void *text);
-extern int func_020b45d0(void *text, int value, int a2, int a3, int a4, u8 a5);
-extern void *func_020b5618(void *text);
-
-/* The scene object's hooks. */
-extern void func_0203ee08(Atm *atm, void *receiver);
-extern int func_0203e020(Atm *atm);
-extern void func_0203ee14(Atm *atm, void *receiver);
-extern void func_0203efb0(Atm *atm, unsigned int value);
-extern int func_02032180(void *entry);
-extern int func_020321bc(void *entry, int a2, int a3, int a4, Vec3 *position, short a6, int *scale);
-extern int func_020b6590(void);
-extern int func_020b7dc8(int list, void *entries, Vec3 *position, int p3, int p4, int p5, short p6, int p7, u8 p8);
-extern int func_020b7e04(int list, void *entries);
-extern int func_020ea990(const Vec3 *a, const Vec3 *b);
-
-/* Construction, destruction and the heap. */
-extern void *func_0203f130(Atm *atm);
-extern void *func_02066a30(void *receiver);
-extern void *func_020324fc(void *entry);
-extern void *func_020b82ec(void *entries);
-extern void *func_020b82d0(void *entries);
-extern void *func_020324c4(void *entry);
-extern void *func_02066994(void *receiver);
-extern void *func_0203f080(Atm *atm);
-extern void func_020edf54(Atm *atm);
-extern void *func_020edf70(int size);
-
 /* The receiver part as C++ converts a pointer to the ATM to it: NULL stays NULL. */
-static void *receiver_of(Atm *atm)
+static TalkReceiver *receiver_of(Atm *atm)
 {
-    return atm != NULL ? (u8 *) atm + ATM_RECEIVER_OFFSET : NULL;
+    return atm != NULL ? &atm->receiver : NULL;
 }
 
 /* The player's count (atm.h). */
 static u16 *player_count(void)
 {
-    return func_020adf50((void *) (uintptr_t) func_020996a0((unsigned int) func_020984e8()));
+    return ShopPoints_Count((void *) (uintptr_t) PlayerRecord_ShopPoints(PlayerRecords_Current()));
 }
 
 static void show_message(Atm *atm, u8 message)
 {
-    func_0206844c(atm->talk, &message, data_ov004_0224fbe0);
+    TalkObject_SetMessage(atm->talk, &message, data_ov004_0224fbe0);
 }
 
 /* func_ov004_0220bf00 (the receiver's slot 0x18): after the player chose in the conversation,
@@ -125,14 +98,14 @@ static void show_message(Atm *atm, u8 message)
 void Atm_PickChoiceMessage(Atm *atm)
 {
     u8 talk_state = atm->talk_state;
-    unsigned int choice = func_020ab504(func_0206837c(atm->talk));
+    unsigned int choice = TalkAnswers_Picked(TalkObject_Answers(atm->talk));
 
     if (talk_state != 0 && talk_state != 7) {
         return;
     }
     switch (choice) {
         case 0:
-            if (func_020adde4(*player_count()) == 0) {
+            if (ShopPoints_Level(*player_count()) == 0) {
                 show_message(atm, ATM_MESSAGE_LEVEL_0);
             } else {
                 show_message(atm, ATM_MESSAGE_LEVEL_ABOVE_0);
@@ -153,7 +126,7 @@ CLEAN_AS(func_ov004_0220bf00, Atm_PickChoiceMessage)
 void Atm_PickLevelMessage(Atm *atm)
 {
     if (atm->talk_state == 1 || atm->talk_state == 2) {
-        if (func_020adde4(*player_count()) == ATM_TOP_LEVEL) {
+        if (ShopPoints_Level(*player_count()) == ATM_TOP_LEVEL) {
             show_message(atm, ATM_MESSAGE_TOP_LEVEL);
         } else {
             show_message(atm, ATM_MESSAGE_BELOW_TOP_LEVEL);
@@ -169,13 +142,13 @@ void Atm_IgnoreReceiverHook(void *object)
 }
 CLEAN_AS(func_ov004_0220c01c, Atm_IgnoreReceiverHook)
 
-/* func_ov004_0220c020 (update of ATM_TALK_END): once the conversation's unk_04 is clear, hands
- * the receiver back to the scene object (func_0203ee08) and lets the scene go on. */
+/* func_ov004_0220c020 (update of ATM_TALK_END): once the conversation's state is clear, hands
+ * the receiver back to the scene object (SceneObjectBase_ReleaseReceiver) and lets the scene go on. */
 void Atm_UpdateTalkEnd(Atm *atm)
 {
-    if (atm->talk != NULL && atm->talk->unk_04 == 0) {
-        func_0203ee08(atm, receiver_of(atm));
-        func_0203e020(atm);
+    if (atm->talk != NULL && atm->talk->state == 0) {
+        SceneObjectBase_ReleaseReceiver(&atm->base, receiver_of(atm));
+        EventQueue_FinishObjectEvent(atm);
     }
 }
 CLEAN_AS(func_ov004_0220c020, Atm_UpdateTalkEnd)
@@ -191,21 +164,21 @@ CLEAN_AS(func_ov004_0220c050, Atm_EnterTalkEnd)
 /* func_ov004_0220c054 (update of ATM_TALK) */
 void Atm_UpdateTalk(Atm *atm)
 {
-    if (atm->talk != NULL && atm->talk->unk_04 != 0) {
+    if (atm->talk != NULL && atm->talk->state != 0) {
         Atm_EnterState(atm, ATM_TALK_END);
     }
 }
 CLEAN_AS(func_ov004_0220c054, Atm_UpdateTalk)
 
-/* func_ov004_0220c078 (entry of ATM_TALK): takes the receiver (func_0203ee14), names it,
+/* func_ov004_0220c078 (entry of ATM_TALK): takes the receiver (SceneObjectBase_TakeReceiver), names it,
  * resets its state byte, fills in the count and starts the conversation. */
 int Atm_EnterTalk(Atm *atm)
 {
-    func_0203ee14(atm, receiver_of(atm));
-    func_020a8164((u8 *) atm + ATM_RECEIVER_OFFSET, data_ov004_0224fbe0);
+    SceneObjectBase_TakeReceiver(&atm->base, receiver_of(atm));
+    MessageReceiver_SetName(&atm->receiver.base, data_ov004_0224fbe0);
     atm->talk_state = 0;
     Atm_ShowCount(atm);
-    atm->talk->unk_08 = 1;
+    atm->talk->next_state = 1;
     return 1;
 }
 CLEAN_AS(_ZN18Obj_ov004_0224fc4c19func_ov004_0220c078Ev, Atm_EnterTalk)
@@ -271,7 +244,7 @@ CLEAN_AS(func_ov004_0220c1d0, Atm_HandleEvent)
  * the ATM and turned towards it: its angle within 0x1000 of the opposite of the ATM's. */
 int Atm_IsFacedBy(const Atm *atm, const Atm *other)
 {
-    if (other == NULL || func_020ea990(&other->position, &atm->position) >= ATM_TALK_DISTANCE) {
+    if (other == NULL || Vec_DistanceXZ(&other->position, &atm->position) >= ATM_TALK_DISTANCE) {
         return 0;
     }
     u16 difference = (u16) (other->angle - (atm->angle + HALF_TURN));
@@ -284,7 +257,7 @@ CLEAN_AS(func_ov004_0220c1f4, Atm_IsFacedBy)
  * (slot 2) and the level (slot 3). The level is asked for again each time. */
 void Atm_ShowCount(Atm *atm)
 {
-    u8 text[0x40];
+    MessageText46 text;
     u8 previous_level;
     u8 level;
 
@@ -292,35 +265,36 @@ void Atm_ShowCount(Atm *atm)
         return;
     }
     u16 *count = player_count();
-    func_020b5630(text);
-    func_020b45d0(text, *count, 10, 0, 0, 0);
-    func_02068404(atm->talk, 0, text);
-    func_020b45d0(text, func_020adda8(count), 10, 0, 0, 0);
-    func_02068404(atm->talk, 1, text);
-    if (func_020adde4(*count) != 0) {
-        previous_level = (u8) (func_020adde4(*count) - 1);
-        func_020683e4(atm->talk, 2, &previous_level, data_ov004_0224fbe4);
+    MessageText46_Construct(&text);
+    NumberText_Format(&text, *count, 10, 0, 0, 0);
+    TalkObject_SetPart(atm->talk, 0, (TextBase *) &text);
+    NumberText_Format(&text, ShopPoints_ToNextLevel(count), 10, 0, 0, 0);
+    TalkObject_SetPart(atm->talk, 1, (TextBase *) &text);
+    if (ShopPoints_Level(*count) != 0) {
+        previous_level = (u8) (ShopPoints_Level(*count) - 1);
+        TalkObject_LoadPart(atm->talk, 2, &previous_level, (unsigned int) (uintptr_t) data_ov004_0224fbe4);
     }
-    level = (u8) func_020adde4(*count);
-    func_020683e4(atm->talk, 3, &level, data_ov004_0224fbe4);
-    func_020b5618(text);
+    level = (u8) ShopPoints_Level(*count);
+    TalkObject_LoadPart(atm->talk, 3, &level, (unsigned int) (uintptr_t) data_ov004_0224fbe4);
+    MessageText46_Destruct(&text);
 }
 CLEAN_AS(func_ov004_0220c250, Atm_ShowCount)
 
-/* func_ov004_0220c308: takes the ATM's entry out of the list at data_021c30e4; whether it was
+/* func_ov004_0220c308: takes the ATM's collision box out of the list at data_021c30e4; whether it was
  * there. */
 int Atm_Unregister(Atm *atm)
 {
-    return func_02032180(atm->unk_138);
+    return CollisionBox_Remove(&atm->box);
 }
 CLEAN_AS(func_ov004_0220c308, Atm_Unregister)
 
-/* func_ov004_0220c318: puts the ATM's entry into the list at data_021c30e4 and sets up its
- * entries at 0x1d4, both at its position with sizes of 0x2000. */
+/* func_ov004_0220c318: puts the ATM's collision box into the list at data_021c30e4 and sets up its
+ * faces, both at its position with sizes of 0x2000. */
 void Atm_Register(Atm *atm)
 {
-    func_020321bc(atm->unk_138, 0x2000, 0x2000, 0x2000, &atm->position, 0, NULL);
-    func_020b7dc8(func_020b6590(), atm->unk_1d4, &atm->position, 0x2000, 0x2000, 0x2000, 0, 0xb, 0xff);
+    CollisionBox_Add(&atm->box, 0x2000, 0x2000, 0x2000, &atm->position, 0, NULL);
+    TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), atm->faces, &atm->position, 0x2000, 0x2000,
+                           0x2000, 0, 0xb, 0xff);
 }
 CLEAN_AS(func_ov004_0220c318, Atm_Register)
 
@@ -339,11 +313,11 @@ int Atm_Vfunc24(void)
 }
 CLEAN_AS(func_ov004_0220c37c, Atm_Vfunc24)
 
-/* func_ov004_0220c380 (vtable slot 0x18): the state's update, then the entries at 0x1d4. */
+/* func_ov004_0220c380 (vtable slot 0x18): the state's update, then the faces. */
 int Atm_Update(Atm *atm)
 {
     Atm_UpdateState(atm);
-    func_020b7e04(func_020b6590(), atm->unk_1d4);
+    TouchPick_AddFaces((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), atm->faces);
     return 1;
 }
 CLEAN_AS(func_ov004_0220c380, Atm_Update)
@@ -352,7 +326,7 @@ CLEAN_AS(func_ov004_0220c380, Atm_Update)
 int Atm_Init(Atm *atm)
 {
     data_ov004_02256c00 = atm;
-    func_0203efb0(atm, 0);
+    SceneObjectBase_SetId(&atm->base, 0);
     Atm_EnterState(atm, ATM_IDLE);
     Atm_Register(atm);
     return 1;
@@ -363,17 +337,17 @@ static void destroy(Atm *atm)
 {
     atm->vtable = data_ov004_0224fc4c;
     atm->receiver_vtable = data_ov004_0224fcc0;
-    func_020b82d0(atm->unk_1d4);
-    func_020324c4(atm->unk_138);
-    func_02066994(&atm->receiver_vtable);
-    func_0203f080(atm);
+    TouchPickFaces_DestructBox(atm->faces);
+    CollisionBox_Destruct(&atm->box);
+    TalkReceiver_Destruct(&atm->receiver);
+    SceneObjectBase_DestructBase(&atm->base);
 }
 
 /* func_ov004_0220c3c8 (the deleting destructor) */
 Atm *Atm_Delete(Atm *atm)
 {
     destroy(atm);
-    func_020edf54(atm);
+    Heap_FreeAux(atm);
     return atm;
 }
 CLEAN_AS(func_ov004_0220c3c8, Atm_Delete)
@@ -389,12 +363,12 @@ CLEAN_AS(func_ov004_0220c414, Atm_Destroy)
 /* func_ov004_0220c45c (the constructor). It leaves no ATM current until Atm_Init. */
 Atm *Atm_Construct(Atm *atm)
 {
-    func_0203f130(atm);
-    func_02066a30(&atm->receiver_vtable);
+    SceneObjectBase_Construct(&atm->base);
+    TalkReceiver_ConstructBase(&atm->receiver);
     atm->vtable = data_ov004_0224fc4c;
     atm->receiver_vtable = data_ov004_0224fcc0;
-    func_020324fc(atm->unk_138);
-    func_020b82ec(atm->unk_1d4);
+    CollisionBox_Construct(&atm->box);
+    TouchPickFaces_ConstructBox(atm->faces);
     data_ov004_02256c00 = NULL;
     return atm;
 }
@@ -407,10 +381,10 @@ Atm *Atm_Current(void)
 }
 CLEAN_AS(func_ov004_0220c4ac, Atm_Current)
 
-/* func_ov004_0220c4b8: a new ATM from the heap (func_020edf70); nothing when that fails. */
+/* func_ov004_0220c4b8: a new ATM from the heap (Heap_AllocAuxZeroed); nothing when that fails. */
 void Atm_Create(void)
 {
-    Atm *atm = func_020edf70(ATM_SIZE);
+    Atm *atm = Heap_AllocAuxZeroed(ATM_SIZE);
     if (atm != NULL) {
         Atm_Construct(atm);
     }

@@ -9,6 +9,7 @@
 #include "text_codes.h"
 #include "text_string.h"
 #include "text_walker.h"
+#include "message_attributes.h"
 
 static_assert(offsetof(WideTextBase, attributes) == 0x04, "wide text base attributes");
 static_assert(offsetof(TextBase, length) == 0x04, "text base length");
@@ -25,11 +26,6 @@ extern const u8 data_020da6dc[]; /* the abstract 8-bit text's */
 /* The game's text copier. */
 extern TextCopier data_021f450c;
 
-/* A text's attributes: destroyed, built, reset, copied from another's. */
-extern void func_020a9b44(void *attributes);
-extern void func_020a9b50(void *attributes);
-extern void func_020a9b04(void *attributes);
-extern void func_020a9b1c(void *dst, const void *src);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 typedef int TextBaseCapacity(void *text);
@@ -89,7 +85,8 @@ int TextBase_BytesToWide(WideTextBase *dst, TextBase *src)
         *to++ = 0;
         written++;
     }
-    func_020a9b1c(dst->attributes, src->attributes);
+    MessageAttributes_Copy((MessageAttributes *) (void *) dst->attributes,
+                           (const MessageAttributes *) (void *) src->attributes);
     return ok;
 }
 CLEAN_AS(func_020a87e0, TextBase_BytesToWide)
@@ -106,7 +103,7 @@ void *TextBase_WideDestruct(void *text)
 {
     WideTextBase *wide = text;
     wide->vtable = (const TextVtable *) data_020e3d7c;
-    func_020a9b44(wide->attributes);
+    MessageAttributes_Destruct((MessageAttributes *) (void *) wide->attributes);
     wide->vtable = (const TextVtable *) data_020da6c4;
     return text;
 }
@@ -116,7 +113,7 @@ CLEAN_AS(func_020a887c, TextBase_WideDestruct)
 void *TextBase_WideDelete(WideTextBase *text)
 {
     text->vtable = (const TextVtable *) data_020e3d7c;
-    func_020a9b44(text->attributes);
+    MessageAttributes_Destruct((MessageAttributes *) (void *) text->attributes);
     text->vtable = (const TextVtable *) data_020da6c4;
     Heap_OperatorDeleteB(text);
     return text;
@@ -127,7 +124,7 @@ CLEAN_AS(func_020a88a0, TextBase_WideDelete)
 void *TextBase_WideDestructSlot(WideTextBase *text)
 {
     text->vtable = (const TextVtable *) data_020e3d7c;
-    func_020a9b44(text->attributes);
+    MessageAttributes_Destruct((MessageAttributes *) (void *) text->attributes);
     text->vtable = (const TextVtable *) data_020da6c4;
     return text;
 }
@@ -139,7 +136,7 @@ void *TextBase_WideConstruct(void *text)
     WideTextBase *wide = text;
     wide->vtable = (const TextVtable *) data_020da6c4;
     wide->vtable = (const TextVtable *) data_020e3d7c;
-    func_020a9b50(wide->attributes);
+    MessageAttributes_Construct((MessageAttributes *) (void *) wide->attributes);
     return text;
 }
 CLEAN_AS(func_020a88ec, TextBase_WideConstruct)
@@ -277,7 +274,8 @@ int TextBase_WideToBytes(TextBase *dst, WideTextBase *src, int escape_newlines, 
     if (!ended) {
         chars[capacity - 1] = 0;
     }
-    func_020a9b1c(dst->attributes, src->attributes);
+    MessageAttributes_Copy((MessageAttributes *) (void *) dst->attributes,
+                           (const MessageAttributes *) (void *) src->attributes);
     return !over && ended;
 }
 CLEAN_AS(func_020a8a70, TextBase_WideToBytes)
@@ -287,7 +285,8 @@ CLEAN_AS(func_020a8a70, TextBase_WideToBytes)
 void *TextBase_Copy(TextBase *dst, TextBase *src)
 {
     int fitted = TextBase_SetChars(dst, text_base_buffer(src));
-    func_020a9b1c(dst->attributes, src->attributes);
+    MessageAttributes_Copy((MessageAttributes *) (void *) dst->attributes,
+                           (const MessageAttributes *) (void *) src->attributes);
     return (void *) (uintptr_t) (unsigned int) fitted;
 }
 CLEAN_AS(func_020a8bb8, TextBase_Copy)
@@ -305,7 +304,7 @@ void TextBase_Clear(void *text)
     TextBase *base = text;
     TextString_ClearBytes(text);
     base->length = 0;
-    func_020a9b04(base->attributes);
+    MessageAttributes_Reset((MessageAttributes *) (void *) base->attributes);
 }
 CLEAN_AS(func_020a8c1c, TextBase_Clear)
 
@@ -313,7 +312,7 @@ CLEAN_AS(func_020a8c1c, TextBase_Clear)
 TextBase *TextBase_Destruct(TextBase *text)
 {
     text->vtable = (const TextVtable *) data_020e3d94;
-    func_020a9b44(text->attributes);
+    MessageAttributes_Destruct((MessageAttributes *) (void *) text->attributes);
     text->vtable = (const TextVtable *) data_020da6dc;
     return text;
 }
@@ -324,7 +323,7 @@ void *TextBase_Delete(void *text)
 {
     TextBase *base = text;
     base->vtable = (const TextVtable *) data_020e3d94;
-    func_020a9b44(base->attributes);
+    MessageAttributes_Destruct((MessageAttributes *) (void *) base->attributes);
     base->vtable = (const TextVtable *) data_020da6dc;
     Heap_OperatorDeleteB(text);
     return text;
@@ -335,7 +334,7 @@ CLEAN_AS(func_020a8c5c, TextBase_Delete)
 TextBase *TextBase_DestructSlot(TextBase *text)
 {
     text->vtable = (const TextVtable *) data_020e3d94;
-    func_020a9b44(text->attributes);
+    MessageAttributes_Destruct((MessageAttributes *) (void *) text->attributes);
     text->vtable = (const TextVtable *) data_020da6dc;
     return text;
 }
@@ -349,7 +348,7 @@ void *TextBase_Construct(void *text)
     base->vtable = (const TextVtable *) data_020da6dc;
     base->vtable = (const TextVtable *) data_020e3d94;
     base->length = 0;
-    func_020a9b50(base->attributes);
+    MessageAttributes_Construct((MessageAttributes *) (void *) base->attributes);
     return text;
 }
 CLEAN_AS(func_020a8cac, TextBase_Construct)

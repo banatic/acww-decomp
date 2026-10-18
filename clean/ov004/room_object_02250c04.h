@@ -1,7 +1,7 @@
 /* A class of overlay 4's room objects (vtable 0x02250c04, receiver part 0x02250cb0) without
  * states of its own: its start binds the animations of variant 0 held at frame 0 (speed 0),
  * each frame advances them, and when a move starts it plays them forwards or backwards by the
- * state of its entry among the two of func_ov004_0223cb10 (func_ov004_0223ca9c), with the
+ * state of its entry among the two of RoomPushes_Records (RoomPushes_FindObject), with the
  * sound at 2, or else the sound of the move. It is 0x844 bytes: the base class's alone. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02250C04_H
 #define CLEAN_OV004_ROOM_OBJECT_02250C04_H

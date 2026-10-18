@@ -1,15 +1,15 @@
 /* The televisions: two classes of overlay 4's room objects (0x868 bytes) whose screen is the
- * material "tv_m" of their model. On, the screen shows the picture of func_ov004_0223b314 and
+ * material "tv_m" of their model. On, the screen shows the picture of RoomManager_TvTexture and
  * glows (a Glow, room_object_parts.h, at 0x848); off, it shows its own texture "tv.0" with the
  * palette "tv_pl" and the glow fades out. Their states run through tables of member pointers
  * (member_pointer.h), entered through vtable slot 0x70.
  *
  * Tv (vtable 0x02251438, receiver part 0x022514e4) has two states:
  * - TV_OFF (0): entered with the sound at 4, the switch off; when the switch is asked to change
- *   it requests TV_ON for the object at its cell (func_0205265c);
+ *   it requests TV_ON for the object at its cell (RoomSync_RequestState);
  * - TV_ON (1): entered with the sound at 2, the switch on; when the switch is asked to change
  *   it requests TV_OFF.
- * Each frame its glow is updated and `heard` cleared: func_ov004_0223bdac sets it on the TV
+ * Each frame its glow is updated and `heard` cleared: RoomManager_UpdateTvSound sets it on the TV
  * that is on and nearest to the player, whose sound is heard from where it stands.
  *
  * TvAnimated (vtable 0x02250f88, receiver part 0x02251034) is derived from Tv and plays the
@@ -24,7 +24,7 @@
  *   at 4; at their end TV_ANIMATED_OFF.
  *
  * Once their model is bound both bind the glow (on as the switch is) and enter their "on"
- * state when the switch is on and func_ov004_0223c10c says no, else "off". */
+ * state when the switch is on and RoomObjects_InNookOrScene0AOr0F says no, else "off". */
 #ifndef CLEAN_OV004_TV_H
 #define CLEAN_OV004_TV_H
 
@@ -38,7 +38,7 @@ typedef struct Tv {
     u8 state; /* TvState */
     u8 unk_845[3];
     Glow screen;       /* the material "tv_m" */
-    u8 heard;          /* set by func_ov004_0223bdac, cleared by Tv_Update */
+    u8 heard;          /* set by RoomManager_UpdateTvSound, cleared by Tv_Update */
     u8 animated_state; /* TvAnimatedState, in a TvAnimated */
     u8 unk_866[2];
 } Tv;

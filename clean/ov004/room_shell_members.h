@@ -18,10 +18,9 @@
 #include "main/touch_pick_shapes.h"
 #include "types.h"
 
-/* The room's model and its material animation have the layouts of RmoAnimatedModel
- * (rmo_object.h) and ModelAnim (model_anim.h); they are written out here because
- * main/animated_model.h cannot be included next to room_object_methods.h (both define
- * G3dRenderObject). */
+/* The room's model has the layout of RmoAnimatedModel (rmo_object.h): an animated model
+ * without the blended model's ramp, smaller than main/animated_model.h's AnimatedModel. Its
+ * material animation has the layout of ModelAnim (model_anim.h). */
 
 /* NitroSystem's animation object (NNSG3dAnmObj) as far as its frame. */
 typedef struct RoomShellAnimObject {

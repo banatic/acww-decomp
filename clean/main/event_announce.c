@@ -20,6 +20,9 @@
 #include "session.h"
 #include "talk_flow.h"
 #include "town_objects.h"
+#include "talk_object.h"
+#include "town_day.h"
+#include "town_tune.h"
 
 static_assert(offsetof(EventAnnounceState, message) == 0x04, "EventAnnounceState.message");
 static_assert(offsetof(EventAnnounceState, event) == 0x08, "EventAnnounceState.event");
@@ -28,19 +31,6 @@ static_assert(offsetof(TalkReceiver, base.message) == 0x1e, "TalkReceiver.base.m
 static_assert(sizeof(EventAnnounceProcess) == 0x9c, "EventAnnounceProcess");
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-/* Talk `index` (0x1e9c-byte entries at data_021cda88), its receiver taken off it, and a
- * receiver handed to it. */
-extern TalkFlowTalk *func_020682e0(int index);
-extern void func_02068320(TalkFlowTalk *talk);
-extern void func_02068340(TalkFlowTalk *talk, TalkReceiver *receiver);
-/* Nonzero while data_021cfbac is set or func_02004130 says data_021cfbcc is busy: the field is
- * not ready for an announcement. */
-extern int func_0206e980(void);
-/* The town's object at data_021c779c started (func_0204763c with 0), and the day's change
- * handled there (func_02046a74). */
-extern void func_0204762c(void);
-extern void func_02046a74(int arg);
 
 extern EventAnnounceState data_021c75a0;
 extern int data_021c758c; /* the music's part in it: 0 (event 0x44, the day), 1 start, 2 end */
@@ -175,11 +165,11 @@ CLEAN_AS(func_020413f8, EventAnnounce_SetStep)
 void EventAnnounce_StepTalking(void *unused)
 {
     (void) unused;
-    TalkFlowTalk *talk = func_020682e0(0);
+    TalkFlowTalk *talk = (TalkFlowTalk *) TalkObject_Get(0);
     if (talk->state != TALK_FLOW_CLOSED) {
         return;
     }
-    func_02068320(talk);
+    TalkObject_DetachReceiver((TalkObject *) talk);
     SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), EXIT_RETURN);
     Music2d0_Mark08Unless(music_2d0(), data_021c758c, data_021c75a0.message);
     data_021c758c = 0;
@@ -195,13 +185,13 @@ void EventAnnounce_StepShow(EventAnnounceProcess *process)
     if (data_021c75b8 != SCREEN_SHOWN) {
         return;
     }
-    TalkFlowTalk *talk = func_020682e0(0);
+    TalkFlowTalk *talk = (TalkFlowTalk *) TalkObject_Get(0);
     TalkReceiver *receiver = &process->receiver;
     void (*const *vtable)(TalkReceiver *) = (void (*const *)(TalkReceiver *)) receiver->base.vtable;
     vtable[2](receiver);
     MessageReceiver_SetName(&receiver->base, data_020db6f0[data_021c75a0.ending]);
     receiver->base.message = data_021c75a0.message;
-    func_02068340(talk, receiver);
+    TalkObject_AttachReceiver((TalkObject *) talk, receiver);
     talk->next = TALK_OBJECT_OPENING;
     data_021c75a0.step = EVENT_ANNOUNCE_TALKING;
 }
@@ -229,7 +219,7 @@ void EventAnnounce_StepEnter(void *unused)
     data_020db6e4 = data_021c75a0.event;
     data_020db6e0 = data_021c75a0.event;
 
-    if (!EventQueue_TestFlag4() || func_0206e980()) {
+    if (!EventQueue_TestFlag4() || TownTune_IsBusy()) {
         return;
     }
     int map = (int) AcreMap_Town();
@@ -273,7 +263,7 @@ CLEAN_AS(func_020415a8, EventAnnounce_QueueEvent)
 void EventAnnounce_StepWaitFree(void *unused)
 {
     (void) unused;
-    if (!func_0206e980()) {
+    if (!TownTune_IsBusy()) {
         EventAnnounce_SetStep(EVENT_ANNOUNCE_ENTER);
     }
 }
@@ -283,7 +273,7 @@ CLEAN_AS(func_020415d0, EventAnnounce_StepWaitFree)
 void EventAnnounce_StepWaitBusy(void *unused)
 {
     (void) unused;
-    if (func_0206e980()) {
+    if (TownTune_IsBusy()) {
         data_021c75a0.step = EVENT_ANNOUNCE_WAIT_FREE;
     }
 }
@@ -525,7 +515,7 @@ int EventAnnounceProcess_Create(void)
         data_021f39c0.unk_11 = EVENT_CALENDAR_NONE;
         data_021c7588 = 0;
         if (SceneQuery_CurrentIs31() && !data_021c75a0.new_day) {
-            func_0204762c();
+            TownDay_StartNow();
         }
     } else {
         EventAnnounce_Reset();
@@ -552,7 +542,7 @@ int EventAnnounceProcess_Create(void)
             EventQueue_SetFlag1();
             data_021c75a0.step = EVENT_ANNOUNCE_SHOW;
             if (data_021c75a0.new_day) {
-                func_02046a74(0);
+                TownDay_Check(0);
                 data_021c75a0.new_day = 0;
             }
             if (data_020db6e4 != EVENT_CALENDAR_NONE) {

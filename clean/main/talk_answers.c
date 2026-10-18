@@ -6,6 +6,7 @@
 #include "clean.h"
 #include "select_bmg.h"
 #include "text_base.h" /* TextBase_Copy */
+#include "c_library.h"
 
 static_assert(offsetof(TalkAnswer, record) == 0x64, "talk answer");
 static_assert(offsetof(TalkAnswer, weight) == 0x8b, "talk answer");
@@ -22,18 +23,10 @@ static_assert(sizeof(TalkAnswers) == 0x364, "talk answers");
 /* The answers the slider's weights pick from; the last of them when the weights run out. */
 #define TALK_ANSWERS_WEIGHED 4
 
-/* Two entries (data structures of the game the answers' style word points to). */
+/* The names of the answers' two select files: "select" and "select2". */
 extern u32 data_020d1de0[];
 
-/* An answer's fields: its unk_70, its name, its text, its record (the addresses). */
-extern u8 *func_020ab794(TalkAnswer *answer);
-extern char *func_020ab790(TalkAnswer *answer);
-extern TextBase *func_020ab798(TalkAnswer *answer);
-extern void *func_020ab78c(TalkAnswer *answer);
-extern u8 *func_020ab788(TalkAnswer *answer);
-extern TalkAnswer *func_020ab550(TalkAnswers *answers, int index);
-
-/* func_020ab39c: entry `index` of data_020d1de0 (an answer's style; the table has two). */
+/* func_020ab39c: entry `index` of data_020d1de0: the address of a select file's name (two). */
 u32 TalkAnswers_Style(unsigned int index)
 {
     return data_020d1de0[index];
@@ -57,7 +50,7 @@ void TalkAnswers_PickByLevel(TalkAnswers *answers, int level)
     int index = TALK_ANSWERS_WEIGHED - 1;
     int total = 0;
     for (unsigned int i = 0; i < TALK_ANSWERS_WEIGHED; i++) {
-        total += *func_020ab788(&answers->answers[i]);
+        total += *TalkAnswers_Weight(&answers->answers[i]);
         if (step < total) {
             index = (int) i;
             break;
@@ -66,8 +59,8 @@ void TalkAnswers_PickByLevel(TalkAnswers *answers, int level)
 
     TalkAnswer *answer = &answers->answers[index];
     answers->picked = index;
-    answers->picked_70 = *func_020ab794(answer);
-    Block020a8248_Copy(&answers->picked_record, Block020a8248_Self(func_020ab78c(answer)));
+    answers->picked_70 = *TalkAnswers_Answer70(answer);
+    Block020a8248_Copy(&answers->picked_record, Block020a8248_Self(TalkAnswers_Record(answer)));
     answers->picked_step = (u32) step;
 }
 CLEAN_AS(func_020ab3a8, TalkAnswers_PickByLevel)
@@ -78,12 +71,12 @@ void TalkAnswers_Pick(TalkAnswers *answers, int index)
 {
     TalkAnswer *answer = &answers->answers[index];
     answers->picked = index;
-    answers->picked_70 = *func_020ab794(answer);
-    TextBase_Copy((TextBase *) answers->picked_text, func_020ab798(answer));
-    const char *name = func_020ab790(answer);
+    answers->picked_70 = *TalkAnswers_Answer70(answer);
+    TextBase_Copy((TextBase *) answers->picked_text, TalkAnswers_Text(answer));
+    const char *name = TalkAnswers_Name(answer);
     answers->picked_name[TALK_ANSWERS_NAME_SIZE - 1] = '\0';
     strncpy(answers->picked_name, name, TALK_ANSWERS_NAME_SIZE - 1);
-    Block020a8248_Copy(&answers->picked_record, Block020a8248_Self(func_020ab78c(answer)));
+    Block020a8248_Copy(&answers->picked_record, Block020a8248_Self(TalkAnswers_Record(answer)));
 }
 CLEAN_AS(func_020ab42c, TalkAnswers_Pick)
 
@@ -160,7 +153,7 @@ CLEAN_AS(func_020ab51c, TalkAnswers_Count)
 /* func_020ab528: the fifth answer's text. */
 u8 *TalkAnswers_FifthText(TalkAnswers *answers)
 {
-    return (u8 *) func_020ab798(func_020ab550(answers, 4));
+    return (u8 *) TalkAnswers_Text(TalkAnswers_Answer(answers, 4));
 }
 CLEAN_AS(func_020ab528, TalkAnswers_FifthText)
 
@@ -168,7 +161,6 @@ CLEAN_AS(func_020ab528, TalkAnswers_FifthText)
 extern u8 data_021f43ec;
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 /* An answer's constructor and destructor, handed to the array helpers: the game's own. */
@@ -285,13 +277,13 @@ TalkAnswers *TalkAnswers_Construct(TalkAnswers *answers)
 CLEAN_AS(func_020ab6c8, TalkAnswers_Construct)
 
 /* func_020ab71c: the answer's text read from its message file, /script/KOR/select/<file>.bmg
- * (the answer's `style` word is the address of the file's name, "select" or "select2"), and
+ * (the answer's `file_name` word is the address of the file's name, "select" or "select2"), and
  * the message's entry kept in its record. */
 void TalkAnswers_LoadAnswerText(TalkAnswer *answer)
 {
     char path[TALK_ANSWERS_PATH_SIZE];
     const char *language = "KOR";
-    func_02064328(path, "/script/%s/select/%s.bmg", language, (const char *) (uintptr_t) answer->style);
+    CLib_SPrintf(path, "/script/%s/select/%s.bmg", language, (const char *) (uintptr_t) answer->file_name);
     SelectBmg_LoadText((SelectBmgText *) answer->text, path, &answer->unk_00, &answer->record);
 }
 CLEAN_AS(func_020ab71c, TalkAnswers_LoadAnswerText)
@@ -321,7 +313,7 @@ CLEAN_AS(func_020ab76c, TalkAnswers_Set70)
 /* func_020ab774: the message file (the address of its name). */
 void TalkAnswers_SetFile(TalkAnswer *answer, int file)
 {
-    answer->style = (u32) file;
+    answer->file_name = (u32) file;
 }
 CLEAN_AS(func_020ab774, TalkAnswers_SetFile)
 
@@ -379,7 +371,7 @@ CLEAN_AS(func_020ab798, TalkAnswers_Text)
 void TalkAnswers_ClearAnswer(TalkAnswer *answer)
 {
     answer->unk_00 = data_021f43ec;
-    answer->style = 0;
+    answer->file_name = 0;
     TextBase_Clear(answer->text);
     Block020a8248_Clear(&answer->record);
     answer->unk_70 = data_021f43ec;

@@ -5,6 +5,7 @@
 #include "acre_tile.h"
 #include "clean.h"
 #include "town_spot.h"
+#include "main_random.h"
 
 /* The area MiddleSpot_Pick searches: 32 x 32 tiles from the first tile of acre (2, 2). */
 #define MIDDLE_SPOT_FIRST_ACRE 2
@@ -17,7 +18,6 @@ static_assert(sizeof(MiddleSpot) == 12, "part 0x0c");
 extern u32 data_021d2890[MIDDLE_SPOT_TILES];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 
 /* func_02087f20 */
 void MiddleSpot_ClearMark(MiddleSpot *spot)
@@ -79,7 +79,7 @@ void MiddleSpot_Pick(MiddleSpot *spot)
             }
         }
         if (count > 0) {
-            int pick = (int) func_020644cc(count);
+            int pick = (int) MainRandom_Below(count);
             int found = 0;
             for (int z = 0; z < MIDDLE_SPOT_TILES && !found; z++) {
                 for (int x = 0; x < MIDDLE_SPOT_TILES; x++) {
@@ -111,16 +111,16 @@ void MiddleSpot_Clear(MiddleSpot *spot)
 }
 CLEAN_AS(func_02088198, MiddleSpot_Clear)
 
-/* func_020881a4: the constructor does nothing. */
-void MiddleSpot_Construct(MiddleSpot *spot)
-{
-    (void) spot;
-}
-CLEAN_AS(func_020881a4, MiddleSpot_Construct)
-
-/* func_020881a8: the destructor does nothing. */
+/* func_020881a4: the destructor does nothing. */
 void MiddleSpot_Destruct(MiddleSpot *spot)
 {
     (void) spot;
 }
-CLEAN_AS(func_020881a8, MiddleSpot_Destruct)
+CLEAN_AS(func_020881a4, MiddleSpot_Destruct)
+
+/* func_020881a8: the constructor does nothing. */
+void MiddleSpot_Construct(MiddleSpot *spot)
+{
+    (void) spot;
+}
+CLEAN_AS(func_020881a8, MiddleSpot_Construct)

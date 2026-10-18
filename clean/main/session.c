@@ -9,6 +9,12 @@
 #include "main/library_overlay.h"
 #include "main/packed_bytes.h"
 #include "main/session_net.h"
+#include "link_global.h"
+#include "link_scene.h"
+#include "scene_query.h"
+#include "session_link.h"
+#include "session_message.h"
+#include "session_record.h"
 
 static_assert(offsetof(NetSession, frame_count) == 0x04, "frame count");
 static_assert(offsetof(NetSession, mode) == 0x06, "mode");
@@ -69,17 +75,6 @@ static_assert(offsetof(NetSession, start_header) == 0x714, "start header");
 extern NetSession *data_020ccf94; /* the session */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern u8 func_020b65c4(void);        /* the current scene */
-extern int func_020a71ec(int scene);  /* the slot owning a scene, 4 for none */
-extern u16 func_02077620(u16 record); /* a shared record's offset in the table */
-extern u8 func_0207762c(u32 record);  /* a shared record's size */
-extern int func_020a6c98(int scene);  /* whether a scene is 12-14, 46 or 47 */
-extern int func_020a72d0(int slot);   /* the third byte of a slot's data_021f4320 entry */
-extern int func_020a7278(void);       /* read from this system's data_021f4320 entry */
-extern void func_020750fc(void);      /* OS_DisableInterrupts */
-extern void func_020750f4(void);      /* OS_EnableInterrupts */
-/* Hands a message to its handler: sets the read cursor to `payload`, then calls the handler. */
-extern void func_02076168(int handler, const u8 *payload, int size, int kind, u8 scene, u32 slot);
 
 /* func_02073138 */
 u8 *Session_GetStartHeader(NetSession *session)
@@ -409,7 +404,7 @@ static void deliver_all(const u8 *message, u32 length)
         done += MESSAGE_HEADER_SIZE;
         PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &slot);
         u16 size = PackedBytes_ReadU16(header);
-        func_02076168(header[HEADER_HANDLER], message, size, header[HEADER_KIND], scene, slot);
+        SessionMessage_Dispatch(header[HEADER_HANDLER], message, size, header[HEADER_KIND], scene, slot);
         message += size;
         done += size;
     }
@@ -479,7 +474,7 @@ void Session_DeliverSceneQueue(NetSession *session)
     u8 slot;
     MI_CpuCopy8(first, header, MESSAGE_HEADER_SIZE);
     PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &slot);
-    if (scene != func_020b65c4()) {
+    if (scene != SceneQuery_Current()) {
         return;
     }
 
@@ -548,7 +543,7 @@ void Session_RouteHeldMessages(NetSession *session)
     MI_CpuCopy8(message, header, MESSAGE_HEADER_SIZE);
     PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &slot);
 
-    int owner = func_020a71ec(scene);
+    int owner = LinkGlobal_SceneOwner(scene);
     if (owner >= SESSION_SLOTS) {
         return;
     }
@@ -715,7 +710,7 @@ void Session_EndMessage(NetSession *session, u32 handler, u32 kind)
         return;
     }
     if (kind == 6 || kind == 7) {
-        func_020a6c98(func_020b65c4());
+        LinkScene_IsLinkingScene(SceneQuery_Current());
     }
     u32 whole = (u32) ((uintptr_t) session->message_cursor - (uintptr_t) session->message_start);
 
@@ -723,7 +718,7 @@ void Session_EndMessage(NetSession *session, u32 handler, u32 kind)
     PackedBytes_WriteU16(header, (PackedBytesHalf){.value = (u16) (whole - MESSAGE_HEADER_SIZE)});
     header[HEADER_HANDLER] = (u8) handler;
     header[HEADER_KIND] = (u8) kind;
-    PackedBytes_JoinScene(&header[HEADER_SOURCE], func_020b65c4(), (u8) session->local_slot);
+    PackedBytes_JoinScene(&header[HEADER_SOURCE], SceneQuery_Current(), (u8) session->local_slot);
     MI_CpuCopy8(header, session->message_start, MESSAGE_HEADER_SIZE);
 
     session->send_length += whole;
@@ -825,7 +820,7 @@ u8 *Session_GetRecord(NetSession *session, int id)
     if (table == NULL) {
         return NULL;
     }
-    return table + func_02077620((u16) id);
+    return table + SessionRecord_GetOffset((u16) id);
 }
 CLEAN_AS(func_020738bc, Session_GetRecord)
 
@@ -983,7 +978,7 @@ void Session_ProcessReceived(NetSession *session)
                 if (id >= SESSION_RECORDS) {
                     break;
                 }
-                u8 size = func_0207762c(id);
+                u8 size = SessionRecord_GetSize(id);
                 MI_CpuCopy8(read, Session_GetRecord(session, id), size);
                 read += size;
                 used = (u16) (used + size);
@@ -1000,31 +995,31 @@ void Session_ProcessReceived(NetSession *session)
                 done += MESSAGE_HEADER_SIZE;
                 u8 kind = header[HEADER_KIND];
                 PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &sender);
-                u8 current_scene = func_020b65c4();
+                u8 current_scene = SceneQuery_Current();
                 u16 size = PackedBytes_ReadU16(header);
 
-                if (func_020a72d0(session->local_slot) != 0 && kind == KIND_SCENE_QUEUED && scene != current_scene) {
+                if (LinkGlobal_PlaceMoving(session->local_slot) != 0 && kind == KIND_SCENE_QUEUED && scene != current_scene) {
                     u32 queued = Session_GetSceneQueueLength(session);
                     u8 *dst = Session_GetSceneQueue(session) + queued;
                     MI_CpuCopy8(read - MESSAGE_HEADER_SIZE, dst, (u32) size + MESSAGE_HEADER_SIZE);
                     Session_SetSceneQueueLength(session, queued + size + MESSAGE_HEADER_SIZE);
                 } else {
-                    int ready = func_020a7278();
+                    int ready = LinkGlobal_HoldsScene();
                     int drop = (kind == KIND_SAME_SCENE && (ready == 0 || scene != current_scene)) ||
                                (kind == KIND_SCENE_QUEUED && scene != current_scene);
                     if (!drop) {
-                        func_02076168(header[HEADER_HANDLER], read, size, kind, scene, sender);
+                        SessionMessage_Dispatch(header[HEADER_HANDLER], read, size, kind, scene, sender);
                     }
                 }
                 read += size;
                 done += size;
             }
 
-            func_020750fc();
+            Session_DisableInterrupts();
             Session_ClearRecvLength(queues, slot, (int) entry);
             Session_PopRecvEntry(queues, slot);
             Session_OweCredit(queues, slot);
-            func_020750f4();
+            Session_EnableInterrupts();
         }
     }
 }

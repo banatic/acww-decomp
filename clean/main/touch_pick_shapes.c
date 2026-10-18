@@ -9,6 +9,13 @@
 #include "main/camera_control.h"
 #include "main/camera_view.h"
 #include "main/touch_pick.h"
+#include "collision_cylinder.h"
+#include "collision_line.h"
+#include "collision_query.h"
+#include "collision_sphere.h"
+#include "collision_triangle.h"
+#include "globe.h"
+#include "ov003/object_actors.h"
 
 static_assert(sizeof(TouchPickFace) == 0x44, "TouchPickFace");
 static_assert(sizeof(TouchPickSphere) == 0x1c, "TouchPickSphere");
@@ -91,43 +98,6 @@ extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
-/* The globe's radius; a drawn point to the map and back (with the angle about X used). */
-extern int func_0203f758(void);
-extern int func_0203f7d0(Vec3 *out, const Vec3 *drawn);
-extern int func_0203f844(Vec3 *out, const Vec3 *map);
-extern int func_0203f8d0(Vec3 *out, const Vec3 *map);
-/* Collision triangles (CollisionTriangle): constructors (the second also sets it from three
- * corners and a normal), the destructor, setting one, a corner's normal, a point's signed
- * distance from the plane and where a segment crosses it (0 when its ends are on one side). */
-extern void func_0202feec(CollisionTriangle *triangle);
-extern void func_0202ff00(CollisionTriangle *triangle);
-extern CollisionTriangle *func_0202feb4(CollisionTriangle *triangle, Vec3 *a, Vec3 *b, Vec3 *c, Vec3 *normal);
-extern void func_0202fee0(CollisionTriangle *triangle);
-extern void func_0202fed4(CollisionTriangle *triangle);
-extern int func_0202fc18(CollisionTriangle *triangle, Vec3 *a, Vec3 *b, Vec3 *c, Vec3 *normal);
-extern int func_0202fc5c(Vec3 *normal, Vec3 *a, Vec3 *b, Vec3 *c);
-extern fx32 func_0202fb28(CollisionTriangle *triangle, Vec3 *point);
-extern int func_0202f9d0(CollisionTriangle *triangle, Vec3 *crossing, Vec3 *start, Vec3 *end);
-/* Spheres and cylinders of the collision code: constructors, destructors, setting them, and
- * the segment tests. */
-extern void func_0202f27c(TouchPickSphere *sphere);
-extern void func_0202f278(void);
-extern void func_0202f268(TouchPickSphere *sphere, Vec3 *centre, fx32 radius);
-extern int func_0202f1cc(TouchPickSphere *sphere, Vec3 *out, TouchPickTestSegment *segment);
-extern TouchPickTestSegment *func_0203005c(TouchPickTestSegment *segment, Vec3 *start, Vec3 *end);
-extern void func_02030058(TouchPickTestSegment *segment);
-extern TouchPickCylinder *func_02030690(TouchPickCylinder *cylinder);
-extern int func_02030658(TouchPickCylinder *cylinder);
-extern void func_02030640(TouchPickCylinder *cylinder, Vec3 *base, fx32 radius, fx32 height);
-extern TouchPickTestCylinder *func_02030678(TouchPickTestCylinder *cylinder, Vec3 *base, fx32 radius, fx32 height);
-extern int func_02030668(TouchPickTestCylinder *cylinder);
-extern int func_0203021c(TouchPickTestCylinder *cylinder, Vec3 *end, Vec3 *start);
-extern int func_0203006c(TouchPickTestCylinder *cylinder, Vec3 *end, Vec3 *start);
-/* The map's post on unit (x, z): its radius, height and kind. */
-extern int func_02031078(int x, int z, int *radius, int *height, int *kind);
-/* Overlay 3's outdoor object on a tile, and its slot among the 32. */
-extern void *func_ov003_022201fc(unsigned int x, unsigned int z);
-extern int func_ov003_02220150(int object);
 /* The game's symbols for the box's constructor and destructor, for __cxa_vec_*. */
 extern void func_020b8038(void *face);
 extern void func_020b8020(void *face);
@@ -167,7 +137,7 @@ static int is_bent_world(void)
 /* Whether the triangle separates `start` (on its front) from `end` (behind it). */
 static int crosses_from_front(CollisionTriangle *triangle, Vec3 *start, Vec3 *end)
 {
-    return func_0202fb28(triangle, start) >= 0 && func_0202fb28(triangle, end) < 0;
+    return CollisionTriangle_Distance(triangle, start) >= 0 && CollisionTriangle_Distance(triangle, end) < 0;
 }
 
 /* func_020b74ec: the object of a kind that has none. */
@@ -264,7 +234,7 @@ static void touch_pick_ground_bent(TouchPick *pick, Vec3 *from, Vec3 *to, const 
         data_021f6ad0 |= 1;
     }
     if ((data_021f6ac8 & 1) == 0) {
-        data_021f6ad8 = data_020c904c + func_0203f758();
+        data_021f6ad8 = data_020c904c + Globe_Radius();
         data_021f6ac8 |= 1;
     }
     length = data_021f6ad4;
@@ -272,7 +242,7 @@ static void touch_pick_ground_bent(TouchPick *pick, Vec3 *from, Vec3 *to, const 
     if (TouchPick_SegmentHitsGlobe(&hit, from, to, data_021f6ad8, length)) {
         Vec3 map;
         CollisionGround ground;
-        func_0203f7d0(&map, &hit);
+        Globe_Unbend(&map, &hit);
         CollisionGround_Init(&ground, &map, 0, 0);
         if (ground.unk_30 != 0) {
             *to = hit;
@@ -283,10 +253,10 @@ static void touch_pick_ground_bent(TouchPick *pick, Vec3 *from, Vec3 *to, const 
     }
 
     if (!TouchPick_GetGround(pick, NULL)) {
-        if (TouchPick_SegmentHitsGlobe(&hit, from, to, func_0203f758(), length)) {
+        if (TouchPick_SegmentHitsGlobe(&hit, from, to, Globe_Radius(), length)) {
             Vec3 map;
             *to = hit;
-            func_0203f7d0(&map, &hit);
+            Globe_Unbend(&map, &hit);
             map.y = 0;
             pick->ground = map;
         }
@@ -317,28 +287,29 @@ static void touch_pick_ground_bent(TouchPick *pick, Vec3 *from, Vec3 *to, const 
             corner[3] = (Vec3){right, depth, 0};
 
             Mtx43_RotX(&mtx, CameraControl_GroundAngle(camera));
-            Mtx43_Translate(&mtx, 0, func_0203f758(), 0);
+            Mtx43_Translate(&mtx, 0, Globe_Radius(), 0);
             Mtx43_RotateX(&mtx, -0x1000);
             Mtx43_RotateX(&mtx, 0);
             for (int i = 0; i < 4; i++) {
                 MTX_MultVec43(&corner[i], &mtx, &drawn[i]);
             }
 
-            func_0202fc5c(&normal, &drawn[0], &drawn[1], &drawn[2]);
-            func_0202feb4(&wall[0], &drawn[0], &drawn[1], &drawn[2], &normal);
-            func_0202feb4(&wall[1], &drawn[0], &drawn[2], &drawn[3], &normal);
+            CollisionTriangle_CornerNormal(&normal, &drawn[0], &drawn[1], &drawn[2]);
+            CollisionTriangle_ConstructSet(&wall[0], &drawn[0], &drawn[1], &drawn[2], &normal);
+            CollisionTriangle_ConstructSet(&wall[1], &drawn[0], &drawn[2], &drawn[3], &normal);
             for (int i = 0; i < 2; i++) {
                 Vec3 crossing;
-                if (crosses_from_front(&wall[i], from, &tip) && func_0202f9d0(&wall[i], &crossing, from, &tip)) {
+                if (crosses_from_front(&wall[i], from, &tip) &&
+                    CollisionTriangle_SegmentHit(&wall[i], &crossing, from, &tip)) {
                     Vec3 map;
                     *to = crossing;
-                    func_0203f7d0(&map, &crossing);
+                    Globe_Unbend(&map, &crossing);
                     pick->ground = map;
                     pick->ground.y = 0;
                 }
             }
-            func_0202fee0(&wall[1]);
-            func_0202fee0(&wall[0]);
+            CollisionTriangle_Destruct(&wall[1]);
+            CollisionTriangle_Destruct(&wall[0]);
         }
     }
 }
@@ -379,20 +350,20 @@ static void touch_pick_ground_flat(TouchPick *pick, Vec3 *from, Vec3 *to)
                 Vec3 up = {0, 0x1000, 0};
                 CollisionTriangle top[2];
 
-                func_0202feec(&top[0]);
-                func_0202feec(&top[1]);
-                func_0202fc18(&top[0], &corner[0], &corner[1], &corner[3], &up);
-                func_0202fc18(&top[1], &corner[1], &corner[2], &corner[3], &up);
+                CollisionTriangle_Construct(&top[0]);
+                CollisionTriangle_Construct(&top[1]);
+                CollisionTriangle_Set(&top[0], &corner[0], &corner[1], &corner[3], &up);
+                CollisionTriangle_Set(&top[1], &corner[1], &corner[2], &corner[3], &up);
                 for (int i = 0; i < 2; i++) {
                     Vec3 crossing;
-                    if (crosses_from_front(&top[i], from, to) && func_0202f9d0(&top[i], &crossing, from, to)) {
+                    if (crosses_from_front(&top[i], from, to) && CollisionTriangle_SegmentHit(&top[i], &crossing, from, to)) {
                         *to = crossing;
                         pick->ground = *to;
                         found = 1;
                     }
                 }
-                func_0202fee0(&top[1]);
-                func_0202fee0(&top[0]);
+                CollisionTriangle_Destruct(&top[1]);
+                CollisionTriangle_Destruct(&top[0]);
             }
             CollisionGround_Destroy(&ground);
         }
@@ -429,8 +400,8 @@ static void touch_pick_posts(TouchPick *pick, Vec3 *from, Vec3 *to)
     Vec3 a;
     Vec3 b;
 
-    func_0203f7d0(&a, from);
-    func_0203f7d0(&b, to);
+    Globe_Unbend(&a, from);
+    Globe_Unbend(&b, to);
     int x_low = a.x < b.x ? a.x : b.x;
     int x_high = a.x < b.x ? b.x : a.x;
     int z_low = a.z < b.z ? a.z : b.z;
@@ -446,7 +417,7 @@ static void touch_pick_posts(TouchPick *pick, Vec3 *from, Vec3 *to)
             int radius;
             int height;
             int kind = 0;
-            if (!func_02031078(x, z, &radius, &height, &kind) || kind == 0) {
+            if (!CollisionQuery_PostAt(x, z, (fx32 *) &radius, (fx32 *) &height, &kind) || kind == 0) {
                 continue;
             }
             Vec3 middle = {unit_middle(x), 0, middle_z};
@@ -458,8 +429,8 @@ static void touch_pick_posts(TouchPick *pick, Vec3 *from, Vec3 *to)
                     int tile_z;
                     pick->kind = TOUCH_PICK_KIND_OUTDOOR_ENTRY;
                     Position_Tile(&tile_x, &tile_z, (const Position *) &pick->point);
-                    pick->index = (u8) func_ov003_02220150(
-                        (int) (uintptr_t) func_ov003_022201fc((unsigned int) tile_x, (unsigned int) tile_z));
+                    pick->index = (u8) ObjectActors_IndexOf((SceneActor *) (uintptr_t) ((
+                        int) (uintptr_t) ObjectActors_FindAtTile((unsigned int) tile_x, (unsigned int) tile_z)));
                 } else {
                     pick->kind = TOUCH_PICK_KIND_POST;
                 }
@@ -521,10 +492,11 @@ void TouchPick_Update(TouchPick *pick, u8 pen_x, u8 pen_y, int pen_down)
 
     for (TouchPickFace *face = pick->faces; face != NULL; face = face->next) {
         Vec3 crossing;
-        if (crosses_from_front(&face->triangle, &from, &to) && func_0202f9d0(&face->triangle, &crossing, &from, &to)) {
+        if (crosses_from_front(&face->triangle, &from, &to) &&
+            CollisionTriangle_SegmentHit(&face->triangle, &crossing, &from, &to)) {
             Vec3 map;
             to = crossing;
-            func_0203f7d0(&map, &to);
+            Globe_Unbend(&map, &to);
             pick->point = map;
             pick->kind = (u8) face->kind;
             pick->index = face->index;
@@ -534,16 +506,16 @@ void TouchPick_Update(TouchPick *pick, u8 pen_x, u8 pen_y, int pen_down)
     for (TouchPickSphere *sphere = pick->spheres; sphere != NULL;) {
         TouchPickTestSegment segment;
         Vec3 out;
-        func_0203005c(&segment, &from, &to);
-        if (func_0202f1cc(sphere, &out, &segment)) {
+        CollisionLine_Construct((CollisionLine *) &segment, &from, &to);
+        if (CollisionSphere_HitLine((CollisionSphere *) sphere, &out, (CollisionLine *) &segment)) {
             Vec3 map;
-            func_0203f7d0(&map, &sphere->centre);
+            Globe_Unbend(&map, &sphere->centre);
             pick->point = map;
             pick->kind = (u8) sphere->kind;
             pick->index = sphere->index;
         }
         sphere = sphere->next;
-        func_02030058(&segment);
+        CollisionLine_Destruct((CollisionLine *) &segment);
     }
 
     pick->spheres = NULL;
@@ -680,7 +652,7 @@ int TouchPickCylinder_Set(TouchPickCylinder *cylinder, Vec3 *base, fx32 radius, 
 {
     cylinder->kind = kind;
     cylinder->index = index;
-    func_02030640(cylinder, base, radius, height);
+    CollisionCylinder_Set((CollisionCylinder *) cylinder, base, radius, height);
     return 1;
 }
 CLEAN_AS(func_020b7ebc, TouchPickCylinder_Set)
@@ -688,7 +660,7 @@ CLEAN_AS(func_020b7ebc, TouchPickCylinder_Set)
 /* func_020b7ed8 */
 TouchPickCylinder *TouchPickCylinder_Destruct(TouchPickCylinder *cylinder)
 {
-    func_02030658(cylinder);
+    CollisionCylinder_DestructBase((CollisionCylinder *) cylinder);
     return cylinder;
 }
 CLEAN_AS(func_020b7ed8, TouchPickCylinder_Destruct)
@@ -696,7 +668,7 @@ CLEAN_AS(func_020b7ed8, TouchPickCylinder_Destruct)
 /* func_020b7ee8: a cylinder of kind 0, index 0xff, in no list. */
 TouchPickCylinder *TouchPickCylinder_Construct(TouchPickCylinder *cylinder)
 {
-    func_02030690(cylinder);
+    CollisionCylinder_Construct((CollisionCylinder *) cylinder);
     cylinder->kind = 0;
     cylinder->next = NULL;
     cylinder->index = 0xff;
@@ -709,7 +681,7 @@ int TouchPickSphere_Set(TouchPickSphere *sphere, Vec3 *centre, fx32 radius, int 
 {
     sphere->kind = kind;
     sphere->index = index;
-    func_0202f268(sphere, centre, radius);
+    CollisionSphere_Set((CollisionSphere *) sphere, centre, radius);
     return 1;
 }
 CLEAN_AS(func_020b7f04, TouchPickSphere_Set)
@@ -718,7 +690,7 @@ CLEAN_AS(func_020b7f04, TouchPickSphere_Set)
 void TouchPickSphere_SetAtMapPoint(TouchPickSphere *sphere, Vec3 *centre, u32 radius, u32 kind, u8 index)
 {
     Vec3 drawn;
-    func_0203f844(&drawn, centre);
+    Globe_Bend(&drawn, centre);
     TouchPickSphere_Set(sphere, &drawn, (fx32) radius, (int) kind, index);
 }
 CLEAN_AS(func_020b7f24, TouchPickSphere_SetAtMapPoint)
@@ -726,7 +698,7 @@ CLEAN_AS(func_020b7f24, TouchPickSphere_SetAtMapPoint)
 /* func_020b7f50 */
 TouchPickSphere *TouchPickSphere_Destruct(TouchPickSphere *sphere)
 {
-    func_0202f278();
+    CollisionSphere_Destruct();
     return sphere;
 }
 CLEAN_AS(func_020b7f50, TouchPickSphere_Destruct)
@@ -734,7 +706,7 @@ CLEAN_AS(func_020b7f50, TouchPickSphere_Destruct)
 /* func_020b7f60: the same as func_020b7f50. */
 TouchPickSphere *TouchPickSphere_Destruct2(TouchPickSphere *sphere)
 {
-    func_0202f278();
+    CollisionSphere_Destruct();
     return sphere;
 }
 CLEAN_AS(func_020b7f60, TouchPickSphere_Destruct2)
@@ -742,7 +714,7 @@ CLEAN_AS(func_020b7f60, TouchPickSphere_Destruct2)
 /* func_020b7f70: a sphere of kind 0, index 0, in no list. */
 TouchPickSphere *TouchPickSphere_Construct(TouchPickSphere *sphere)
 {
-    func_0202f27c(sphere);
+    CollisionSphere_Construct((CollisionSphere *) sphere);
     sphere->kind = 0;
     sphere->index = 0;
     sphere->next = NULL;
@@ -753,7 +725,7 @@ CLEAN_AS(func_020b7f70, TouchPickSphere_Construct)
 /* func_020b7f88: the same as func_020b7f70. */
 TouchPickSphere *TouchPickSphere_Construct2(TouchPickSphere *sphere)
 {
-    func_0202f27c(sphere);
+    CollisionSphere_Construct((CollisionSphere *) sphere);
     sphere->kind = 0;
     sphere->index = 0;
     sphere->next = NULL;
@@ -766,10 +738,10 @@ CLEAN_AS(func_020b7f88, TouchPickSphere_Construct2)
 int TouchPickFace_Set(TouchPickFace *face, Vec3 *a, Vec3 *b, Vec3 *c, int kind, u8 index)
 {
     Vec3 normal;
-    if (func_0202fc5c(&normal, a, b, c)) {
+    if (CollisionTriangle_CornerNormal(&normal, a, b, c)) {
         face->kind = kind;
         face->index = index;
-        return func_0202fc18(&face->triangle, a, b, c, &normal);
+        return CollisionTriangle_Set(&face->triangle, a, b, c, &normal);
     }
     return 0;
 }
@@ -781,9 +753,9 @@ int TouchPickFace_SetAtMapPoints(TouchPickFace *face, Vec3 *a, Vec3 *b, Vec3 *c,
     Vec3 drawn_a;
     Vec3 drawn_b;
     Vec3 drawn_c;
-    func_0203f844(&drawn_a, a);
-    func_0203f844(&drawn_b, b);
-    func_0203f844(&drawn_c, c);
+    Globe_Bend(&drawn_a, a);
+    Globe_Bend(&drawn_b, b);
+    Globe_Bend(&drawn_c, c);
     return TouchPickFace_Set(face, &drawn_a, &drawn_b, &drawn_c, kind, index);
 }
 CLEAN_AS(func_020b7fe0, TouchPickFace_SetAtMapPoints)
@@ -792,7 +764,7 @@ CLEAN_AS(func_020b7fe0, TouchPickFace_SetAtMapPoints)
 TouchPickFace *TouchPickFace_Destruct(TouchPickFace *face)
 {
     face->triangle.vtable = data_020e5810;
-    func_0202fed4(&face->triangle);
+    CollisionTriangle_DestructBase(&face->triangle);
     return face;
 }
 CLEAN_AS(func_020b8020, TouchPickFace_Destruct)
@@ -800,7 +772,7 @@ CLEAN_AS(func_020b8020, TouchPickFace_Destruct)
 /* func_020b8038: a face of kind 0, index 0xff, in no list. */
 TouchPickFace *TouchPickFace_Construct(TouchPickFace *face)
 {
-    func_0202ff00(&face->triangle);
+    CollisionTriangle_ConstructBase(&face->triangle);
     face->triangle.vtable = data_020e5810;
     face->kind = 0;
     face->next = NULL;
@@ -909,7 +881,7 @@ int TouchPick_SegmentHitsCylinder(Vec3 *end, Vec3 *start, Vec3 *base, fx32 radiu
     Vec3 drawn_base;
     TouchPickTestCylinder cylinder;
 
-    int angle = func_0203f8d0(&drawn_base, base);
+    int angle = Globe_BendFar(&drawn_base, base);
     Vec3 a = *start;
     Vec3 b = *end;
     Vec3 c = drawn_base;
@@ -919,14 +891,15 @@ int TouchPick_SegmentHitsCylinder(Vec3 *end, Vec3 *start, Vec3 *base, fx32 radiu
     turn_pair(&b.y, &b.z, s, co);
     turn_pair(&c.y, &c.z, s, co);
 
-    func_02030678(&cylinder, &c, radius, height);
-    if (func_0203021c(&cylinder, &b, &a) != 0 || func_0203006c(&cylinder, &b, &a) != 0) {
+    CollisionCylinder_ConstructSet((CollisionCylinder *) &cylinder, &c, radius, height);
+    if (CollisionCylinder_HitCaps((CollisionCylinder *) &cylinder, &b, &a) != 0 ||
+        CollisionCylinder_HitSide((CollisionCylinder *) &cylinder, &b, &a) != 0) {
         Vec_RotateX(&b, angle);
         *end = b;
-        func_02030668(&cylinder);
+        CollisionCylinder_Destruct((CollisionCylinder *) &cylinder);
         return 1;
     }
-    func_02030668(&cylinder);
+    CollisionCylinder_Destruct((CollisionCylinder *) &cylinder);
     return 0;
 }
 CLEAN_AS(func_020b83ec, TouchPick_SegmentHitsCylinder)
@@ -950,20 +923,20 @@ int TouchPick_SegmentHitsGlobe(Vec3 *hit, Vec3 *start, Vec3 *end, fx32 radius, f
     Vec3 origin = {0, 0, 0};
     TouchPickTestCylinder drum;
 
-    func_02030678(&drum, &origin, radius, length);
+    CollisionCylinder_ConstructSet((CollisionCylinder *) &drum, &origin, radius, length);
     Vec3 a = *start;
     Vec3 b = *end;
     int s = sine_of(0x4000);
     int c = cosine_of(0x4000);
     turn_pair(&a.x, &a.y, s, c);
     turn_pair(&b.x, &b.y, s, c);
-    if (func_0203006c(&drum, &b, &a) != 0) {
+    if (CollisionCylinder_HitSide((CollisionCylinder *) &drum, &b, &a) != 0) {
         turn_pair(&b.x, &b.y, sine_of(0xc000), cosine_of(0xc000));
         *hit = b;
-        func_02030668(&drum);
+        CollisionCylinder_Destruct((CollisionCylinder *) &drum);
         return 1;
     }
-    func_02030668(&drum);
+    CollisionCylinder_Destruct((CollisionCylinder *) &drum);
     return 0;
 }
 CLEAN_AS(func_020b8550, TouchPick_SegmentHitsGlobe)

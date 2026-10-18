@@ -81,17 +81,6 @@ extern const MemberPointer data_ov118_0229cb30; /* MapMenu_StateWipeIn */
 extern const MemberPointer data_ov118_0229cb28; /* MapMenu_StateLeave */
 extern const MemberPointer data_ov118_0229cad8; /* MapMenu_StateWipeOut */
 
-/* Overlay 117's map: its maker started (func_ov117_02299a18), steps of it (func_ov117_022999fc,
- * func_ov117_022999e0 with a flag), its characters and spots put out and the maker freed
- * (func_ov117_022999a0); the spots emptied, constructed and destructed. */
-extern void func_ov117_02299a18(void);
-extern void func_ov117_022999fc(int step);
-extern void func_ov117_022999e0(void *flag);
-extern void func_ov117_022999a0(int chars, int spots);
-extern void func_ov117_0229a2c8(MapMenuSpot *spots);
-extern MapMenuSpot *func_ov117_0229a2f0(MapMenuSpot *spots);
-extern void func_ov117_0229a2ec(void *spots);
-
 /* The arrays' element functions handed to the C++ runtime: the game's symbols. */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -151,7 +140,7 @@ static void map_menu_destroy_members(MapMenu *self)
     self->base.vtable = data_ov118_0229cc08;
     __cxa_vec_cleanup(self->marks, MAP_MENU_MARKS, sizeof(MapMenuMark), func_ov118_0229a438);
     __cxa_vec_cleanup(self->extra_marks, MAP_MENU_EXTRA_MARKS, sizeof(MapMenuMark), func_ov118_0229a438);
-    func_ov117_0229a2ec(self->spots);
+    TownMapMarkers_Destruct(self->spots);
     Glider0_Destroy(&self->cursor);
     PushButton_Destroy(&self->knob_button);
     __cxa_vec_cleanup(self->labels, MAP_MENU_ROWS, sizeof(TextLabel), func_02070be8);
@@ -191,9 +180,9 @@ CLEAN_AS(func_ov118_0229bda4, MapMenu_LoadObjFiles)
  * from which the marks are made. */
 void MapMenu_FinishMap(MapMenu *self)
 {
-    func_ov117_022999fc(3);
-    func_ov117_0229a2c8(self->spots);
-    func_ov117_022999a0((int) (uintptr_t) self->map_chars, (int) (uintptr_t) self->spots);
+    TownMapImage_DrawRow(3);
+    TownMapMarkers_Clear(self->spots);
+    TownMapImage_Finish((int) (uintptr_t) self->map_chars, (int) (uintptr_t) self->spots);
     DisplayLayer_LoadChars((u32) (uintptr_t) self->map_chars, MAP_MENU_LAYER_MAP, 0x60, 0x60, 0x15f);
     MapMenu_FillMarks(self, self->spots);
 }
@@ -202,8 +191,8 @@ CLEAN_AS(func_ov118_0229be04, MapMenu_FinishMap)
 /* func_ov118_0229be54: overlay 117's map steps 1 and 2. */
 void MapMenu_ContinueMap(void)
 {
-    func_ov117_022999fc(1);
-    func_ov117_022999fc(2);
+    TownMapImage_DrawRow(1);
+    TownMapImage_DrawRow(2);
 }
 CLEAN_AS(func_ov118_0229be54, MapMenu_ContinueMap)
 
@@ -211,10 +200,10 @@ CLEAN_AS(func_ov118_0229be54, MapMenu_ContinueMap)
  * other step. */
 void MapMenu_StartMap(void)
 {
-    func_ov117_02299a18();
-    func_ov117_022999fc(0);
-    func_ov117_022999e0((void *) 0);
-    func_ov117_022999e0((void *) (uintptr_t) 1);
+    TownMapImage_Create();
+    TownMapImage_DrawRow(0);
+    TownMapImage_Mark(TOWN_MAP_MARK_VILLAGERS);
+    TownMapImage_Mark(TOWN_MAP_MARK_OTHERS);
 }
 CLEAN_AS(func_ov118_0229be6c, MapMenu_StartMap)
 
@@ -697,7 +686,7 @@ MapMenu *MapMenu_New(void)
     __cxa_vec_ctor(self->labels, MAP_MENU_ROWS, sizeof(TextLabel), func_02070c08, func_02070be8);
     PushButton_Construct(&self->knob_button);
     Glider0_Construct(&self->cursor);
-    func_ov117_0229a2f0(self->spots);
+    TownMapMarkers_Construct(self->spots);
     __cxa_vec_ctor(self->extra_marks, MAP_MENU_EXTRA_MARKS, sizeof(MapMenuMark), func_ov118_0229a43c, func_ov118_0229a438);
     __cxa_vec_ctor(self->marks, MAP_MENU_MARKS, sizeof(MapMenuMark), func_ov118_0229a43c, func_ov118_0229a438);
     return self;

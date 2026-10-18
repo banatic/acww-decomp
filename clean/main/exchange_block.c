@@ -2,6 +2,7 @@
 #include "exchange_block.h"
 
 #include "clean.h"
+#include "letter.h"
 
 static_assert(offsetof(ExchangeBlock, constellation) == 0x100 && offsetof(ExchangeBlock, villager) == 0x14c, "ExchangeBlock");
 static_assert(offsetof(ExchangeBlock, drifts) == 0x938 && offsetof(ExchangeBlock, paired_town) == 0x93a, "ExchangeBlock");
@@ -160,15 +161,12 @@ CLEAN_AS(func_02090168, ExchangeBlock_SetChecksum)
 #include "main/villager_copy.h"
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern void func_02066650(MailLetter *letter); /* a letter emptied */
-extern void func_02066688(MailLetter *letter); /* a letter's destructor */
-extern void func_02066694(MailLetter *letter); /* and constructor */
 
 /* func_02090174: the block cleared to 0, then its letter emptied and its constellation cleared. */
 void ExchangeBlock_Clear(ExchangeBlock *block)
 {
     MI_CpuFill8(block, 0, sizeof(ExchangeBlock));
-    func_02066650(&block->bottle_letter);
+    Letter_Clear((Letter *) &block->bottle_letter);
     Constellations_Clear((Constellation *) (void *) block->constellation);
 }
 CLEAN_AS(func_02090174, ExchangeBlock_Clear)
@@ -186,7 +184,7 @@ ExchangeBlock *ExchangeBlock_Destruct(ExchangeBlock *block)
     PairedTown_Destruct(block->paired_town);
     VillagerCopy_Destruct(block->villager);
     Constellations_DestructOne((Constellation *) (void *) block->constellation);
-    func_02066688(&block->bottle_letter);
+    Letter_Destruct((Letter *) &block->bottle_letter);
     return block;
 }
 CLEAN_AS(func_020901a0, ExchangeBlock_Destruct)
@@ -195,7 +193,7 @@ CLEAN_AS(func_020901a0, ExchangeBlock_Destruct)
  * town's. */
 ExchangeBlock *ExchangeBlock_Construct(ExchangeBlock *block)
 {
-    func_02066694(&block->bottle_letter);
+    Letter_Construct((Letter *) &block->bottle_letter);
     Constellations_ConstructOne((int) (uintptr_t) block->constellation);
     VillagerCopy_Construct(block->villager);
     PairedTown_Construct(block->paired_town);

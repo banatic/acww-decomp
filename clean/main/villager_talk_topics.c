@@ -28,6 +28,19 @@
 #include "villager_scene_object.h"
 #include "villager_status.h"
 #include "villager_town.h"
+#include "day_events.h"
+#include "event_calendar.h"
+#include "insect_draw.h"
+#include "letter.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "talk_item_draw.h"
+#include "talk_object.h"
+#include "text_base.h"
+#include "town_name.h"
+#include "villager_talk_greeting.h"
+#include "villager_talk_scene.h"
+#include "villager_talk_subjects.h"
 
 /* The villager scene object's town record (town_villager.h), or 0, and its position (three
  * words: x, y, z). */
@@ -157,51 +170,10 @@ extern u8 data_021dc7bc[];         /* the town's players (player_records.h) */
 extern AcreMap *data_021c80bc;     /* the town's map; null while there is none */
 extern u8 data_020e54a8;           /* 0 or 1 */
 
-/* A line drawn for the personality (villager_talk.c). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The talk: a text into its slot `slot`. */
-extern void func_02068404(void *talk, int slot, void *text);
-/* A random number below `bound`. */
-extern unsigned int func_020644cc(int bound);
 /* Clears `size` bytes. */
 extern void *func_02137550(void *dst, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-/* Something put into the talk's slot `slot`: the first from func_0209c54c of `what`, the
- * second the byte func_020808b0 gives for the villager. */
-extern int func_0202bd7c(VillagerTalk *talk, int slot, int what);
-extern void func_0202bd40(VillagerTalk *talk, int slot, u8 *villager);
-/* The place of a weight drawn at random among `count` byte weights (their sum, a byte), -1
- * when they are all 0. */
-extern int func_0202d6e4(const u8 *weights, int count);
-/* A random item of one of four lists. */
-extern void func_0202d694(u16 *item);
-/* Another topic. */
-extern int func_02022454(VillagerTalk *talk);
-/* Whether the event `event` is on at `when`. */
-extern int func_0203fc78(u32 event, const DateTime *when, int arg);
-/* Whether the date has an event of the current player's; its kind into `event`. */
-extern int func_02088470(int year, int month, int day, u8 *event);
-/* Players: whether one is set, the same player, by whose town (0 this, 1 another, 2 none),
- * the town record number (-1 for none) and the town at its start. */
-extern int func_020951bc(const DesignCreator *player);
-extern int func_0209518c(const DesignCreator *a, const DesignCreator *b);
-extern int func_02094ffc(const void *player);
-extern int func_02094fec(const DesignCreator *player);
-extern const NpcIdHead *func_02095040(const void *player);
-/* Text objects: a wide text filled from characters, a label from it, a text emptied, and
- * the constructor and destructor of VillagerTalkTopicsText. */
-extern void func_020a8874(void *wide, const u16 *chars, int count);
-extern int func_020a8a70(void *label, void *wide, int escape_newlines, int end_code);
-extern void func_020a8c1c(void *label);
-extern void *func_02094fd4(void *text);
-extern void *func_02094fbc(void *text);
-/* A town head: constructed, assigned, destructed; and a letter's sender. */
-extern void func_020642fc(NpcIdHead *head);
-extern void func_020642bc(NpcIdHead *dst, const NpcIdHead *src);
-extern void func_020642f8(NpcIdHead *head);
-extern const NpcIdHead *func_02065f7c(MailLetter *letter);
 
 /* The tests the pickers hand to VillagerTalkTopics_PickRandom (the game's own functions). */
 extern int func_02021ae4(u8 *villager, VillagerMemory *memory);
@@ -227,8 +199,9 @@ static SceneBase *topics_base(VillagerTalk *talk)
  * message. */
 static void topics_draw(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
-                  NpcId_Personality(TownVillager_NpcId(topics_record(talk))), (int) texts, per_group, group, range);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
+                               NpcId_Personality(TownVillager_NpcId(topics_record(talk))), (int) texts, per_group, group,
+                               range);
 }
 
 /* func_02020f9c: the talk's slots filled (VillagerTalkTopics_FillSlots), then the topic of
@@ -252,7 +225,7 @@ void VillagerTalkTopics_Line(VillagerTalk *talk, VillagerTalkLine *out)
     while (said == 0) {
         int topic = VillagerTalkTopics_Draw(talk, data_021c1d34, VILLAGER_TALK_TOPICS_COUNT);
         if (topic < 0 || topic >= VILLAGER_TALK_TOPICS_COUNT) {
-            func_02022454(talk);
+            VillagerTalkSubjects_SayLast(talk);
             break;
         }
         said = MemberPointer_CallInt(&data_021c20a4[topic], talk);
@@ -269,9 +242,9 @@ CLEAN_AS(func_02020f9c, VillagerTalkTopics_Line)
  * (func_0209c54c of 4) filled; the answer of the last. */
 int VillagerTalkTopics_FillSlots(VillagerTalk *talk)
 {
-    func_0202bd7c(talk, 4, 3);
-    func_0202bd40(talk, 5, topics_record(talk));
-    return func_0202bd7c(talk, 6, 4);
+    VillagerTalkGreeting_PutRandomWord(talk, 4, 3);
+    VillagerTalkGreeting_PutByte29(talk, 5, topics_record(talk));
+    return VillagerTalkGreeting_PutRandomWord(talk, 6, 4);
 }
 CLEAN_AS(func_02021118, VillagerTalkTopics_FillSlots)
 
@@ -280,7 +253,7 @@ CLEAN_AS(func_02021118, VillagerTalkTopics_FillSlots)
 int VillagerTalkTopics_Draw(VillagerTalk *talk, const u8 *weights, int count)
 {
     (void) talk;
-    int topic = func_0202d6e4(weights, count);
+    int topic = InsectDraw_PickByWeights(weights, count);
     if (topic == -1) {
         return VILLAGER_TALK_TOPICS_LAST;
     }
@@ -293,7 +266,7 @@ CLEAN_AS(func_0202114c, VillagerTalkTopics_Draw)
  * 0). */
 int VillagerTalkTopics_SayEvent10(VillagerTalk *talk)
 {
-    unsigned int bit = func_020644cc(2);
+    unsigned int bit = MainRandom_Below(2);
     if (VillagerSceneObject_Event(talk->villager) != VILLAGER_TALK_TOPICS_EVENT || bit != 0) {
         return 0;
     }
@@ -342,17 +315,17 @@ int VillagerTalkTopics_SayConstellation(VillagerTalk *talk)
     Constellation *constellation = NULL;
     if (number != -1 && Constellations_IsKept(store, number) != 0 && current != NULL) {
         Constellation *candidate = &store->list[number];
-        if (func_020951bc(&candidate->creator) != 0) {
+        if (PlayerId_IsSet(&candidate->creator) != 0) {
             DesignCreator *player = PlayerRecord_Player(current);
             if (candidate->creator.town_id == player->town_id &&
                 memcmp(candidate->creator.town_name, player->town_name, sizeof player->town_name) == 0 &&
-                func_0209518c(&candidate->creator, player) != 0) {
+                PlayerId_SamePlayer(&candidate->creator, player) != 0) {
                 group = 0;
-            } else if (func_02094ffc(&candidate->creator) == 0) {
-                if (func_02094fec(&candidate->creator) != -1) {
+            } else if (PlayerId_WhichTown(&candidate->creator) == 0) {
+                if (PlayerId_IndexInTown(&candidate->creator) != -1) {
                     group = 1;
                 }
-            } else if (func_0209518c(&candidate->creator, PlayerRecord_Player(current)) == 0) {
+            } else if (PlayerId_SamePlayer(&candidate->creator, PlayerRecord_Player(current)) == 0) {
                 group = 2;
             }
             if (group != -1) {
@@ -369,14 +342,14 @@ int VillagerTalkTopics_SayConstellation(VillagerTalk *talk)
     ConstellationsLabel label;
     ConstellationsWideName_Construct(&wide);
     ConstellationsLabel_Construct(&label);
-    func_020a8874(&wide, constellation->name, CONSTELLATIONS_NAME_LENGTH);
-    func_020a8a70(&label, &wide, 0, 0);
-    func_02068404(talk->scene.talk, 0, &label);
+    TextBase_SetWide(&wide, constellation->name, CONSTELLATIONS_NAME_LENGTH);
+    TextBase_WideToBytes((TextBase *) &label, (WideTextBase *) &wide, 0, 0);
+    TalkObject_SetPart((TalkObject *) talk->scene.talk, 0, (TextBase *) &label);
     ConstellationsLabel_Destruct(&label);
     ConstellationsWideName_Destruct(&wide);
 
     SceneBase_PutNameAt10(topics_base(talk), &constellation->creator, 1);
-    SceneBase_PutNameAt2(topics_base(talk), (unsigned int) (uintptr_t) func_02095040(&constellation->creator), 2);
+    SceneBase_PutNameAt2(topics_base(talk), (unsigned int) (uintptr_t) PlayerId_Town(&constellation->creator), 2);
     return 1;
 }
 CLEAN_AS(func_02021284, VillagerTalkTopics_SayConstellation)
@@ -393,7 +366,7 @@ int VillagerTalkTopics_SayDayEvent(VillagerTalk *talk)
     DateTime now = {0};
     u8 event = 0;
     DateTime_Now(&now);
-    if (func_02088470(now.year, now.month, now.day, &event) != 0) {
+    if (DayEvents_PlayerHas(now.year, now.month, now.day, &event) != 0) {
         if (VILLAGER_TALK_TOPICS_EVENT_KIND(event) == 2 && VILLAGER_TALK_TOPICS_EVENT_SUB(event) == 3) {
             per_group = 1;
             group = VILLAGER_TALK_TOPICS_EVENT_PART(event) + 0xc;
@@ -435,7 +408,7 @@ int VillagerTalkTopics_SayDated(VillagerTalk *talk)
         dated[i].texts = topics_call_dated(&data_021c1d44[i], talk, &dated[i], &now);
     }
     if (dated[0].texts != 0) {
-        if (dated[1].texts != 0 && func_020644cc(2) == 0) {
+        if (dated[1].texts != 0 && MainRandom_Below(2) == 0) {
             chosen = &dated[1];
         } else {
             chosen = &dated[0];
@@ -462,7 +435,7 @@ u32 VillagerTalkTopics_DatedLine12(VillagerTalk *talk, u8 *per_group, int *group
     for (int i = 0; i < VILLAGER_TALK_TOPICS_DATED_12; i++) {
         DateTime when;
         MI_CpuCopy8(now, &when, sizeof when);
-        if (func_0203fc78(data_020c8fe0[i], &when, 0) != 0) {
+        if (EventCalendar_State(data_020c8fe0[i], &when, 0) != 0) {
             found = i;
             break;
         }
@@ -494,7 +467,7 @@ int VillagerTalkTopics_DatedLine14(VillagerTalk *talk, u8 *per_group, int *group
     for (int i = 0; i < VILLAGER_TALK_TOPICS_DATED_14; i++) {
         DateTime when;
         MI_CpuCopy8(now, &when, sizeof when);
-        if (func_0203fc78(data_020c9010[i], &when, 0) != 0) {
+        if (EventCalendar_State(data_020c9010[i], &when, 0) != 0) {
             mask |= (u16) (1u << i);
             count++;
         }
@@ -556,7 +529,7 @@ static u32 topics_pick_from(VillagerTalk *talk, u8 *villager, const DesignCreato
     }
     MI_CpuFill8(used, 0, sizeof used);
     for (int left = VILLAGER_TALK_TOPICS_PICKER_GROUP; left > 0; left--) {
-        int skip = (int) func_020644cc(left);
+        int skip = (int) MainRandom_Below(left);
         for (int index = 0; index < VILLAGER_TALK_TOPICS_PICKER_GROUP; index++) {
             if (used[index] != 0) {
                 continue;
@@ -612,12 +585,12 @@ int VillagerTalkTopics_SayOtherPlayer(VillagerTalk *talk)
     if (chosen != 0) {
         VillagerMemory *memory = (VillagerMemory *) (uintptr_t) chosen;
         VillagerTalkTopicsText text;
-        func_02094fd4(&text);
+        PlayerIdText_Construct((PlayerIdText *) &text);
         u8 impression = VillagerMemoryEntry_Impression(memory);
         u8 end = 0;
         SceneBase_PutBytes(topics_base(talk), 2, &impression, (int) (uintptr_t) data_020d9f68, &end);
         SceneBase_PutNameAt10(topics_base(talk), VillagerMemoryEntry_Player(memory), 10);
-        func_02094fbc(&text);
+        PlayerIdText_Destruct((PlayerIdText *) &text);
     }
     talk->record_138 = chosen;
     topics_draw(talk, data_020c8cb8.texts, data_020c8cb8.count, slot, 0);
@@ -696,12 +669,13 @@ int VillagerTalkTopics_PickLetterOfResident(VillagerTalk *talk, VillagerMemory *
 {
     int memory = VillagerTalkTopics_PickRandom(topics_record(talk), list, count, func_02021c08);
     if (memory != 0) {
-        const NpcIdHead *sender = func_02065f7c(TownVillager_Letter(topics_record(talk)));
+        const NpcIdHead *sender =
+            (const NpcIdHead *) (uintptr_t) (Letter_PlayerSender((Letter *) TownVillager_Letter(topics_record(talk))));
         NpcIdHead town;
-        func_020642fc(&town);
-        func_020642bc(&town, sender);
+        TownName_Construct(&town);
+        TownName_Assign((TownName *) &town, (const TownName *) sender);
         SceneBase_PutNameAt2(topics_base(talk), (unsigned int) (uintptr_t) &town, 9);
-        func_020642f8(&town);
+        TownName_Destruct(&town);
     }
     return memory;
 }
@@ -729,7 +703,7 @@ void *VillagerTalkTopics_PickWithText2A(VillagerTalk *talk, VillagerMemory **lis
         Label22Text label;
         Label22Text_Construct(&label);
         VillagerMemoryEntry_Text2AToLabel(picked, &label);
-        func_02068404(talk->scene.talk, 1, &label);
+        TalkObject_SetPart((TalkObject *) talk->scene.talk, 1, (TextBase *) &label);
         SceneBase_PutNameAt2(topics_base(talk), (unsigned int) VillagerMemoryEntry_Town(picked), 9);
         Label22Text_Destruct(&label);
     }
@@ -767,7 +741,7 @@ int VillagerTalkTopics_HoldsLetterOfTown(u8 *villager, VillagerMemory *memory)
     if (VillagerMail_HoldsLetterFrom(villager, VillagerMemoryEntry_Player(memory)) == 0) {
         return 0;
     }
-    const NpcIdHead *town = func_02095040(VillagerMemoryEntry_Player(memory));
+    const NpcIdHead *town = (const NpcIdHead *) PlayerId_Town(VillagerMemoryEntry_Player(memory));
     return town->id == letter_town->id && memcmp(town->data, letter_town->data, sizeof town->data) == 0;
 }
 CLEAN_AS(func_02021d10, VillagerTalkTopics_HoldsLetterOfTown)
@@ -853,7 +827,7 @@ int VillagerTalkTopics_PickRandom(u8 *villager, VillagerMemory **list, int count
     if (found <= 0) {
         return 0;
     }
-    int skip = (int) func_020644cc(found);
+    int skip = (int) MainRandom_Below(found);
     for (int i = 0; i < count; i++) {
         if (passed[i] == 1) {
             if (skip == 0) {
@@ -876,7 +850,7 @@ int VillagerTalkTopics_SayGiftItem(VillagerTalk *talk)
         return 0;
     }
     u16 item;
-    func_0202d694(&item);
+    TalkItemDraw_OfKinds(&item);
     talk->item = item;
     if (talk->item == VILLAGER_TALK_TOPICS_NO_ITEM) {
         return 0;
@@ -895,7 +869,7 @@ int VillagerTalkTopics_SayByTown(VillagerTalk *talk)
 {
     int whose = 2;
     if (PlayerRecords_Current() != NULL) {
-        whose = func_02094ffc(PlayerRecord_Player(PlayerRecords_Current()));
+        whose = PlayerId_WhichTown(PlayerRecord_Player(PlayerRecords_Current()));
     }
     if (whose >= 2) {
         whose = 1;
@@ -978,7 +952,7 @@ int VillagerTalkTopics_SayPair(VillagerTalk *talk)
         }
     }
 
-    func_02094fd4(&name);
+    PlayerIdText_Construct((PlayerIdText *) &name);
     order[0] = data_020d91f0[0];
     order[1] = data_020d91f0[1];
     int second_group = group[1];
@@ -987,11 +961,11 @@ int VillagerTalkTopics_SayPair(VillagerTalk *talk)
         order[1] = 0;
     }
     for (int i = 0; i < 2; i++) {
-        func_020a8c1c(&name);
+        TextBase_Clear(&name);
         NpcId_FormatName(TownVillager_NpcId(picked[order[i]]), (char *) &name);
-        func_02068404(talk->scene.talk, i + 7, &name);
+        TalkObject_SetPart((TalkObject *) talk->scene.talk, i + 7, (TextBase *) &name);
     }
-    func_02094fbc(&name);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
 
     if (index[0] != -1 && index[1] != -1) {
         int tier = VillagerPair_Tier(&data_021e5a2c, index[0], index[1]);

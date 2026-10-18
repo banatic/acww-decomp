@@ -9,6 +9,9 @@
 #include "scene_tables.h"
 #include "session.h"
 #include "vram_copy_task.h"
+#include "c_library.h"
+#include "item_info.h"
+#include "rom_file.h"
 
 /* The ModelLoaderTask.state of a task that is queued. */
 #define HELD_ITEM_POOL_TASK_QUEUED 1
@@ -51,8 +54,6 @@ extern NetSession *data_020ccf94;  /* the session */
 extern const u8 data_020cc900[];
 extern const u16 data_020cc940[];
 extern const u8 data_020cc8c0[];
-extern unsigned int func_02062148(ItemCode *item);
-extern unsigned int func_02062230(void);
 
 /* The path buffers and formats: "/PItm/ItaAnm%d/%d.nsbta", "/PItm/Anm%d/%d.nsbca" and
  * "/PItm/Mdl%d/%d.nsbmd" (the number / 32, then the number). */
@@ -63,9 +64,7 @@ extern const char data_020dd768[];
 extern const char data_020dd780[];
 extern const char data_020dd798[];
 
-extern int func_02064328(char *buffer, const char *format, ...);    /* sprintf */
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
-extern void *func_021077e8(void *file);                             /* the file's texture resource */
+extern void *func_021077e8(void *file); /* the file's texture resource */
 /* An animation file's set of joint or texture SRT animations, and its animation `index`. */
 extern void *NNS_G3dGetJntAnmSet(u8 *file);
 extern void *NNS_G3dGetTexSRTAnmSet(u8 *file);
@@ -101,7 +100,7 @@ int HeldItemPool_LoadModel(HeldItemPool *pool, int index, int model)
     char *path = HeldItemPool_ModelPath((unsigned int) model);
     unsigned long file = HeldItemPool_ModelFile(pool, index);
     int size = HeldItemPool_ModelFileSize();
-    return func_02064af4(path, (void *) (uintptr_t) file, size);
+    return RomFile_Read(path, (void *) (uintptr_t) file, size);
 }
 CLEAN_AS(func_0205f094, HeldItemPool_LoadModel)
 
@@ -203,7 +202,7 @@ int HeldItemPool_LoadTextureAnim(HeldItemPool *pool, int index, int number)
     unsigned long buffer = HeldItemPool_TextureAnim(&data_021ca16c, index);
     int size = HeldItemPool_TextureAnimSize(&data_021ca16c, index);
     char *path = HeldItemPool_TextureAnimPath((unsigned int) number);
-    int read = func_02064af4(path, (void *) (uintptr_t) buffer, size);
+    int read = RomFile_Read(path, (void *) (uintptr_t) buffer, size);
     return size - read;
 }
 CLEAN_AS(func_0205f20c, HeldItemPool_LoadTextureAnim)
@@ -217,7 +216,7 @@ int HeldItemPool_LoadJointAnim(HeldItemPool *pool, int index, int number)
     int buffer = HeldItemPool_JointAnim(&data_021ca16c, index);
     int size = HeldItemPool_JointAnimSize(&data_021ca16c, index);
     char *path = HeldItemPool_JointAnimPath((unsigned int) number);
-    int read = func_02064af4(path, (void *) (uintptr_t) buffer, size);
+    int read = RomFile_Read(path, (void *) (uintptr_t) buffer, size);
     return size - read;
 }
 CLEAN_AS(func_0205f240, HeldItemPool_LoadJointAnim)
@@ -423,7 +422,7 @@ CLEAN_AS(func_0205f570, HeldItemPool_Construct)
  * buffer (each call overwrites the last one's path). */
 char *HeldItemPool_TextureAnimPath(unsigned int number)
 {
-    func_02064328(data_021ca150, data_020dd768, number >> 5, number);
+    CLib_SPrintf(data_021ca150, data_020dd768, number >> 5, number);
     return data_021ca150;
 }
 CLEAN_AS(func_0205f5ec, HeldItemPool_TextureAnimPath)
@@ -431,7 +430,7 @@ CLEAN_AS(func_0205f5ec, HeldItemPool_TextureAnimPath)
 /* func_0205f60c: the path of joint animation file `number`, in one shared buffer. */
 char *HeldItemPool_JointAnimPath(unsigned int number)
 {
-    func_02064328(data_021ca138, data_020dd780, number >> 5, number);
+    CLib_SPrintf(data_021ca138, data_020dd780, number >> 5, number);
     return data_021ca138;
 }
 CLEAN_AS(func_0205f60c, HeldItemPool_JointAnimPath)
@@ -475,8 +474,8 @@ CLEAN_AS(func_0205f644, HeldItemPool_ModelFileSize)
  * model). */
 int HeldItemPool_ModelKind(ItemCode *item)
 {
-    unsigned int number = func_02062148(item);
-    if (number < func_02062230()) {
+    unsigned int number = ItemInfo_HeldModelNumber(item);
+    if (number < ItemInfo_HeldModelCount()) {
         return data_020cc900[number];
     }
     return HELD_ITEM_POOL_KIND_NONE;
@@ -487,8 +486,8 @@ CLEAN_AS(func_0205f64c, HeldItemPool_ModelKind)
  * none). */
 unsigned int HeldItemPool_ItemAnim(ItemCode *item)
 {
-    unsigned int number = func_02062148(item);
-    if (number < func_02062230()) {
+    unsigned int number = ItemInfo_HeldModelNumber(item);
+    if (number < ItemInfo_HeldModelCount()) {
         return data_020cc940[number];
     }
     return HELD_ITEM_POOL_ANIM_NONE;
@@ -498,8 +497,8 @@ CLEAN_AS(func_0205f670, HeldItemPool_ItemAnim)
 /* func_0205f698: the item's model number (HELD_ITEM_POOL_MODEL_NONE outside the table). */
 unsigned char HeldItemPool_ModelNumber(ItemCode *item)
 {
-    unsigned int number = func_02062148(item);
-    if (number < func_02062230()) {
+    unsigned int number = ItemInfo_HeldModelNumber(item);
+    if (number < ItemInfo_HeldModelCount()) {
         return data_020cc8c0[number];
     }
     return HELD_ITEM_POOL_MODEL_NONE;
@@ -509,7 +508,7 @@ CLEAN_AS(func_0205f698, HeldItemPool_ModelNumber)
 /* func_0205f6bc: the path of model file `model`, in one shared buffer. */
 char *HeldItemPool_ModelPath(unsigned int model)
 {
-    func_02064328(data_021ca120, data_020dd798, model >> 5, model);
+    CLib_SPrintf(data_021ca120, data_020dd798, model >> 5, model);
     return data_021ca120;
 }
 CLEAN_AS(func_0205f6bc, HeldItemPool_ModelPath)

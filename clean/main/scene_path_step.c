@@ -6,6 +6,7 @@
 #include "itcm/vector.h"
 #include "session.h"
 #include "town_tile.h"
+#include "player_actor_ops.h"
 
 /* The steps to the tiles around a tile, and the path direction bit of each (1 << step). */
 extern const Vec3 data_020c81fc[SCENE_PATH_STEPS];
@@ -14,8 +15,6 @@ extern const u32 data_020c81b4[SCENE_PATH_STEPS];
 extern AcreMap *data_021c80bc; /* the field's map */
 extern NetSession *data_020ccf94;
 
-/* The point at 0x6f4 of the field actor of session slot `slot`, or null. */
-extern Vec3 *func_02095794(u32 slot);
 /* Clears `size` bytes. */
 extern void *func_02137550(void *dst, u32 size);
 
@@ -121,7 +120,7 @@ void ScenePathStep_Choose(Vec3 *out, u8 *object, const Vec3 *target)
 
     if (Session_IsLinked(data_020ccf94) != 0) {
         for (u32 slot = 0; slot < SESSION_SLOTS; slot++) {
-            const Vec3 *player = func_02095794(slot);
+            const Vec3 *player = PlayerActorOps_StartPosition(slot);
             if (player == NULL) {
                 continue;
             }

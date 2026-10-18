@@ -2,6 +2,9 @@
 #include "message_tag.h"
 
 #include "clean.h"
+#include "bmg_file.h"
+#include "select_bmg.h"
+#include "text_base.h"
 
 /* The bytes of a tag's head, before its parameters. */
 #define MESSAGE_TAG_HEAD 6
@@ -23,15 +26,6 @@ static_assert(offsetof(MessageTagText, length) == 0x04, "text length");
 /* The ready-made 0xff/0 tags: the head 1a 00 08 ff 00 00, the parameters (the colour and 0),
  * then two bytes of padding. */
 extern const u8 data_020d1d70[][MESSAGE_TAG_COLOUR_TAG_STRIDE];
-
-/* The text codec's readers: the byte and the halfword at the address given. */
-extern int func_020a9adc(const u8 *byte);
-extern int func_020a9ae0(const u16 *half);
-/* A label's text set from the message text at `position` (text_label.h). */
-extern int func_020a8a34(void *text, int position);
-/* A message part on the stack: built, destroyed. */
-extern void *func_020ab8dc(void *part);
-extern void *func_020ab8c4(void *part);
 
 static const u8 *message_tag_params(const MessageTag *tag)
 {
@@ -96,7 +90,7 @@ static int message_tag_read_texts(const MessageTag *tag, MessageTagText *const *
     int position = message_tag_end(tag) + MESSAGE_TAG_TEXT_GAP;
     int total = MESSAGE_TAG_TEXT_GAP;
     for (int i = 0; i < count; i++) {
-        func_020a8a34(texts[i], position);
+        TextBase_SetLine((TextBase *) texts[i], (const char *) (uintptr_t) position);
         int size = texts[i]->length + MESSAGE_TAG_TEXT_GAP;
         total += size;
         position += size;
@@ -136,16 +130,16 @@ unsigned int MessageTag_TextsSize(MessageTag *tag)
         u8 bytes[MESSAGE_TAG_PART_SIZE];
     } part;
 
-    func_020ab8dc(&part);
+    SelectBmgText_Construct((SelectBmgText *) &part);
     unsigned int total = MESSAGE_TAG_TEXT_GAP;
     int position = message_tag_end(tag) + MESSAGE_TAG_TEXT_GAP;
     for (unsigned int i = 0; i < count; i++) {
-        func_020a8a34(&part, position);
+        TextBase_SetLine((TextBase *) &part, (const char *) (uintptr_t) position);
         int size = part.text.length + MESSAGE_TAG_TEXT_GAP;
         total += (unsigned int) size;
         position += size;
     }
-    func_020ab8c4(&part);
+    SelectBmgText_Destruct((SelectBmgText *) &part);
     return total;
 }
 CLEAN_AS(func_020a83ec, MessageTag_TextsSize)
@@ -311,7 +305,7 @@ int MessageTag_HalfAt(const u8 *bytes, int offset)
 {
     const u8 *at = bytes + offset;
     u16 half = (u16) (at[0] | at[1] << 8);
-    return func_020a9ae0(&half);
+    return BmgFile_ReadU16(&half);
 }
 CLEAN_AS(func_020a87a8, MessageTag_HalfAt)
 
@@ -319,6 +313,6 @@ CLEAN_AS(func_020a87a8, MessageTag_HalfAt)
 int MessageTag_ByteAt(const u8 *bytes, int offset)
 {
     u8 byte = bytes[offset];
-    return func_020a9adc(&byte);
+    return BmgFile_ReadU8(&byte);
 }
 CLEAN_AS(func_020a87c8, MessageTag_ByteAt)

@@ -11,6 +11,12 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "main/g3d_resource.h"
+#include "main/item_form.h"
+#include "main/item_texture.h"
+#include "main/model_pool.h"
+#include "main/room_sync.h"
+#include "main/vram_copy_task.h"
 
 static_assert(offsetof(RoomObject02252374, item_model) == 0x844, "item model");
 static_assert(offsetof(RoomObject02252374, material_texture) == 0x848, "material texture");
@@ -44,25 +50,6 @@ extern const char data_ov004_022531d4[];
 extern const u8 data_ov004_02252374[];
 extern const u8 data_ov004_02252420[];
 
-/* The item code of furniture `item` in `variant`. */
-extern u16 func_0204bc50(int item, int variant);
-/* The item a room item stands for (0x3984-0x3d83: 0x11a8 plus the code's distance in fours). */
-extern void func_02061e2c(ItemCode *out, const ItemCode *item);
-/* The heap of an entry of the pool data_ov004_02259698. */
-extern Heap *func_0209d324(void *entry);
-/* Loads the model of `*item` into `model`; and that model's resource. */
-extern int func_0203d064(DesignModel *model, const u16 *item, void *unused);
-extern unsigned int func_0203cfc8(DesignModel *model);
-/* The index of the texture and of the palette named `name` in a texture file. */
-extern int func_02057a40(void *file, const char *name);
-extern int func_020579b8(void *file, const char *name);
-/* Puts texture `tex_index` and palette `plt_index` of `texture` on the material named
- * `material` of `model`; whether it could. */
-extern int func_020b9d3c(void *bind, G3dModel *model, const char *material, void *texture, int tex_index, int plt_index);
-extern void *func_020b9e58(void *bind);
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-
 /* Vtable slot 0x70: RoomObject02252374_EnterState for this class. */
 static void RoomObject02252374_switch_to(RoomObject02252374 *object, int state)
 {
@@ -87,11 +74,11 @@ CLEAN_AS(func_ov004_02213d70, RoomObject02252374_UpdateOff)
 int RoomObject02252374_EnterOff(RoomObject02252374 *object)
 {
     Switch_Set(&object->base.light_switch, 0, 0);
-    int tex_index = func_02057a40(RoomObject02252374_texture_file(object), data_ov004_022531d4);
-    int plt_index = func_020579b8(RoomObject02252374_texture_file(object), data_ov004_022531d4);
+    int tex_index = G3dRes_TextureIndex(RoomObject02252374_texture_file(object), data_ov004_022531d4);
+    int plt_index = G3dRes_PaletteIndex(RoomObject02252374_texture_file(object), data_ov004_022531d4);
     G3dModel *model = object->base.model_resource;
-    if (func_020b9d3c(object->material_texture, model, data_ov004_022531c8, RoomObject02252374_texture_file(object), tex_index,
-                      plt_index) != 0) {
+    if (VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_022531c8,
+                               RoomObject02252374_texture_file(object), tex_index, plt_index) != 0) {
         object->unk_870 = 0;
     }
     return 1;
@@ -107,13 +94,13 @@ CLEAN_AS(func_ov004_02213e10, RoomObject02252374_UpdateOn)
 
 /* func_ov004_02213e24 (entry of ON): the switch on, shown at once, and the loaded model's
  * texture on "w".
- * REQUIRES: the item model was loaded (without it func_0203cfc8 is handed NULL). */
+ * REQUIRES: the item model was loaded (without it ClothTexture_Textures is handed NULL). */
 int RoomObject02252374_EnterOn(RoomObject02252374 *object)
 {
     Switch_Set(&object->base.light_switch, 1, 0);
     G3dModel *model = object->base.model_resource;
-    void *texture = (void *) (uintptr_t) func_0203cfc8(object->item_model);
-    func_020b9d3c(object->material_texture, model, data_ov004_022531c8, texture, 0, 0);
+    void *texture = (void *) (uintptr_t) ClothTexture_Textures(object->item_model);
+    VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_022531c8, texture, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02213e24, RoomObject02252374_EnterOn)
@@ -166,14 +153,14 @@ CLEAN_AS(func_ov004_02213f64, RoomObject02252374_StateIsOn)
 /* func_ov004_02213f78: requests ON for the object at its cell; the answer. */
 int RoomObject02252374_RequestOn(RoomObject02252374 *object)
 {
-    return func_0205265c((unsigned int) (uintptr_t) object, ROOM_OBJECT_02252374_ON, SLOT_70_VALUE, 1);
+    return RoomSync_RequestState(&object->base, ROOM_OBJECT_02252374_ON, SLOT_70_VALUE, 1);
 }
 CLEAN_AS(func_ov004_02213f78, RoomObject02252374_RequestOn)
 
 /* func_ov004_02213f8c: requests OFF for the object at its cell; the answer. */
 int RoomObject02252374_RequestOff(RoomObject02252374 *object)
 {
-    return func_0205265c((unsigned int) (uintptr_t) object, ROOM_OBJECT_02252374_OFF, SLOT_70_VALUE, 1);
+    return RoomSync_RequestState(&object->base, ROOM_OBJECT_02252374_OFF, SLOT_70_VALUE, 1);
 }
 CLEAN_AS(func_ov004_02213f8c, RoomObject02252374_RequestOff)
 
@@ -209,13 +196,14 @@ CLEAN_AS(_ZN18Obj_ov004_0225237419func_ov004_02213fa8Ev, RoomObject02252374_Upda
 int RoomObject02252374_Start(RoomObject02252374 *object)
 {
     object->starting = 1;
-    ItemCode item = func_0204bc50(RoomObject_Number(&object->base), 0);
+    ItemCode item = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
     if (item >= ROOM_OBJECT_02252374_ITEM_FIRST && item <= ROOM_OBJECT_02252374_ITEM_LAST) {
         ItemCode shown;
-        func_02061e2c(&shown, &item);
-        Heap *heap = func_0209d324((void *) (uintptr_t) RoomObject_PoolEntry(&object->base));
+        ItemForm_ToCarried(&shown, &item);
+        Heap *heap =
+            (Heap *) (uintptr_t) ModelPoolEntry_Heap((ModelPoolEntry *) (uintptr_t) RoomObject_PoolEntry(&object->base));
         object->item_model = Heap_Alloc(heap, sizeof(DesignModel));
-        func_0203d064(object->item_model, &shown, NULL);
+        ClothTexture_Load(object->item_model, &shown, NULL);
         if (Switch_Value(&object->base.light_switch) != 0) {
             RoomObject02252374_switch_to(object, ROOM_OBJECT_02252374_ON);
         } else {
@@ -260,7 +248,7 @@ RoomObject02252374 *RoomObject02252374_Construct(RoomObject02252374 *object)
 {
     RoomObject_ConstructBase(&object->base);
     RoomObject02252374_set_vtables(object);
-    func_020b9e58(object->material_texture);
+    VramCopyMaterial_Construct(&object->material_texture);
     object->item_model = NULL;
     object->unk_871 = 0;
     object->unk_870 = object->unk_871;

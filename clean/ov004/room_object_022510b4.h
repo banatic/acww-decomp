@@ -7,13 +7,13 @@
  * - SWITCHING_ON (1): the switch on, sound 1 of its row and the animations of variant 0 once;
  *   then ON;
  * - ON (2): the animations of variant 1 in a loop from their end, advanced each frame with
- *   sound 0 and func_020537a8 of its number; touching it requests SWITCHING_OFF, and unk_76C at
+ *   sound 0 and FurnitureInfo_IndoorBit6 of its number; touching it requests SWITCHING_OFF, and unk_76C at
  *   2 enters it at once;
  * - SWITCHING_OFF (3): the switch off, sound 2 of its row and the animations of variant 0 from
  *   their end in mode 3; then OFF.
  *
  * SWITCHING_ON and ON show it on (vtable slot 0x74). Once its model is bound it is ON when its
- * switch is on (unless func_ov004_0223c10c says otherwise), else OFF. */
+ * switch is on (unless RoomObjects_InNookOrScene0AOr0F says otherwise), else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_022510B4_H
 #define CLEAN_OV004_ROOM_OBJECT_022510B4_H
 

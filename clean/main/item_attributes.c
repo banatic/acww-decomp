@@ -2,6 +2,9 @@
 #include "item_attributes.h"
 
 #include "clean.h"
+#include "furniture_info.h"
+#include "item_code.h"
+#include "main_random.h"
 
 #define ITEM_ATTRIBUTES_NONE 0xfff1
 /* The attributes ItemAttributes_Match compares. */
@@ -19,16 +22,6 @@ enum {
 extern const u8 data_020d1a60[ITEM_ATTRIBUTES_KINDS]; /* the ten kinds */
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern int func_020644cc(int bound);       /* a random number below `bound` */
-extern int func_020535f0(const u16 *item); /* the kind of an item 0x450c-0x45db; 0 for others */
-extern int func_0204bcdc(const u16 *item); /* whether the code has a variant */
-extern int func_0204bc64(const u16 *item); /* its item without the variant */
-extern int func_020539e4(const u16 *item);
-extern int func_02053cf0(int item);
-extern int func_02053cbc(int item);
-extern int func_02053a88(const u16 *item);
-extern int func_02053b6c(const u16 *item);
-extern int func_02053c68(const u16 *item);
 
 /* The index-th item of the kinds' items; the first one past the end. */
 static u16 item_attributes_kind_item(u32 index)
@@ -43,37 +36,37 @@ static u16 item_attributes_kind_item(u32 index)
 int ItemAttributes_Match(u16 *item, int attribute, int value)
 {
     int score = 0;
-    if (func_0204bcdc(item) == 0) {
+    if (ItemCode_HasVariant(item) == 0) {
         return score;
     }
     switch (attribute) {
         case ITEM_ATTRIBUTE_0:
-            if (value == func_020539e4(item)) {
+            if (value == FurnitureInfo_ItemFlagBits23(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;
         case ITEM_ATTRIBUTE_1: {
-            int base = func_0204bc64(item);
-            if (value == func_02053cf0(base)) {
+            int base = ItemCode_VariantItem(item);
+            if (value == FurnitureInfo_Unk01(base)) {
                 score = ITEM_ATTRIBUTES_HALF;
             }
-            if (value == func_02053cbc(base)) {
+            if (value == FurnitureInfo_Unk02(base)) {
                 score += ITEM_ATTRIBUTES_HALF;
             }
             break;
         }
         case ITEM_ATTRIBUTE_2:
-            if (value == func_02053a88(item)) {
+            if (value == FurnitureInfo_ItemFlagBits01(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;
         case ITEM_ATTRIBUTE_3:
-            if (value == func_02053b6c(item)) {
+            if (value == FurnitureInfo_ItemUnk03(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;
         case ITEM_ATTRIBUTE_4:
-            if (value == func_02053c68(item)) {
+            if (value == FurnitureInfo_ItemGroup(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;
@@ -91,7 +84,7 @@ void ItemAttributes_KindItem(u16 *out, u32 kind, u32 offset)
     *out = ITEM_ATTRIBUTES_NONE;
     for (u32 i = 0; i < ITEM_ATTRIBUTES_KIND_ITEMS; i++) {
         u16 item = item_attributes_kind_item(i);
-        if ((u32) func_020535f0(&item) == kind) {
+        if ((u32) FurnitureInfo_MuseumKind(&item) == kind) {
             *out = item_attributes_kind_item(i + offset);
             return;
         }
@@ -115,7 +108,7 @@ u8 ItemAttributes_PickMissingKind(u16 *items, int count)
             continue;
         }
         for (int j = 0; j < ITEM_ATTRIBUTES_KINDS; j++) {
-            if (func_020535f0(items) == data_020d1a60[j] && seen[j] == 0) {
+            if (FurnitureInfo_MuseumKind(items) == data_020d1a60[j] && seen[j] == 0) {
                 seen[j] = 1;
                 left--;
                 break;
@@ -123,7 +116,7 @@ u8 ItemAttributes_PickMissingKind(u16 *items, int count)
         }
     }
 
-    int n = func_020644cc(left);
+    int n = MainRandom_Below(left);
     int k = 0;
     while (n >= 0) {
         if (k >= ITEM_ATTRIBUTES_KINDS) {

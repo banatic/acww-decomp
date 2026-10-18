@@ -9,6 +9,7 @@
 #include "room_object_life.h"
 #include "room_object_map.h"
 #include "room_object_parts.h"
+#include "main/g3d_resource.h"
 
 static_assert(offsetof(Compass, needle) == 0x844, "needle");
 static_assert(offsetof(Compass, turn_frames) == 0x846, "turn frames");
@@ -51,8 +52,6 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void MTX_RotY33_(Mtx33 *mtx, fx32 sin, fx32 cos);
 extern void MTX_Concat33(const Mtx33 *a, const Mtx33 *b, Mtx33 *out);
-/* The index of the model's node named `name`. */
-extern int func_0205790c(G3dModel *model, const char *name);
 
 /* An arithmetic shift right, for negative values too. */
 static s32 Compass_shift_right(s32 value, int bits)
@@ -159,7 +158,7 @@ CLEAN_AS(func_ov004_02213860, Compass_Update)
  * done at once. */
 int Compass_Start(Compass *compass)
 {
-    compass->needle = (s16) func_0205790c(compass->base.model_resource, data_ov004_022531c0);
+    compass->needle = (s16) G3dRes_NodeIndex((const u8 *) compass->base.model_resource, data_ov004_022531c0);
     return 1;
 }
 CLEAN_AS(func_ov004_022138c0, Compass_Start)

@@ -5,6 +5,16 @@
 #include "mail.h"
 #include "player_messages.h"
 #include "session.h"
+#include "acre_map.h"
+#include "acre_tile.h"
+#include "current_pockets.h"
+#include "exchange_block.h"
+#include "letter.h"
+#include "main_random.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "town_beach.h"
+#include "town_day.h"
 
 /* The bottle's letter is not drawn for counts past this (it always arrives). */
 #define DRIFT_DRAWS 5
@@ -14,7 +24,7 @@
 #define MARKED_ITEM 0x1033
 
 /* The bottle's letter and the bits of the game's messages used (func_02097e38, func_02097edc). */
-extern MailLetter data_021f36ec;
+extern BottleState data_021f36ec;
 /* The letter in a bottle from another console (0x100 bytes), with a count at 0x938
  * (func_020900f4, func_02090100) and a flag in bit 0 of byte 0x939 (func_02090130). */
 extern u8 data_021ee418[];
@@ -33,28 +43,6 @@ typedef struct BottleMap {
     int height;
 } BottleMap;
 
-extern u32 func_020644cc(int bound);               /* a random number below `bound` */
-extern u8 func_02065ec0(const MailLetter *letter); /* its state; 0: no letter */
-extern void func_02066650(MailLetter *letter);     /* empty it */
-extern int func_02066830(MailLetter *dst, const MailLetter *src);
-extern void func_020664e0(MailLetter *letter); /* move its state on */
-extern MailLetter *func_02097f14(MailLetter *letter);
-extern int func_02090158(u8 *pending);
-extern MailLetter *func_020900f0(u8 *pending);
-extern int func_02090130(u8 *pending);
-extern u8 func_020900f4(u8 *pending);
-extern void func_02090100(u8 *pending);
-extern int func_02097e38(MailLetter *bottle);               /* an unused message, at random (all used: all freed) */
-extern void func_02097edc(MailLetter *bottle, int message); /* mark it used */
-extern u32 func_0204e414(void);                             /* the town's BottleMap */
-extern u16 *func_0204f5e0(BottleMap *map, int block_x, int block_z, int x, int z, int layer);
-extern u8 *func_0204677c(void);
-extern int func_02046ebc(u8 *place); /* put a bottle on the map; whether it was */
-/* Write the letter: message `*message` of template `name`. */
-extern void func_02065f88(MailLetter *letter, const u8 *message, const char *name);
-extern MailLetter *func_0209a1d0(void);   /* the current player's free place for a letter, or NULL */
-extern void *func_020984e8(void);         /* the current player's record */
-extern void *func_020996ac(void *player); /* its record of items (0x1c18) */
 /* Set (`set`) or clear an item's bit in a record of items; mode 0 refuses some items. The
  * symbol's name is wrong: this is the game's code. */
 extern int OSi_DoUnlockByWord__main_0203cd2c(void *items, u16 *item, int mode, int set);
@@ -65,26 +53,26 @@ extern int OSi_DoUnlockByWord__main_0203cd2c(void *items, u16 *item, int mode, i
 void BottleMail_ReceiveDrifting(void)
 {
     u8 *pending = data_021ee418;
-    if (func_02090158(pending) == 0) {
+    if (ExchangeBlock_IsSendable((ExchangeBlock *) (void *) pending) == 0) {
         return;
     }
-    MailLetter *letter = func_020900f0(pending);
-    if (func_02065ec0(letter) == 0) {
+    MailLetter *letter = ExchangeBlock_BottleLetter((ExchangeBlock *) (void *) pending);
+    if (Letter_State((const Letter *) letter) == 0) {
         return;
     }
-    if (func_02090130(pending) == 0) {
-        int count = func_020900f4(pending);
+    if (ExchangeBlock_ArrivesAtOnce((ExchangeBlock *) (void *) pending) == 0) {
+        int count = ExchangeBlock_Drifts((ExchangeBlock *) (void *) pending);
         if (count == 0) {
             return;
         }
-        if (count < DRIFT_DRAWS && func_020644cc(data_020d18c8[count]) != 1) {
+        if (count < DRIFT_DRAWS && MainRandom_Below(data_020d18c8[count]) != 1) {
             return;
         }
     }
-    func_02090100(pending);
-    func_020664e0(letter);
-    func_02066830(func_02097f14(&data_021f36ec), letter);
-    func_02066650(letter);
+    ExchangeBlock_ClearDrifts((ExchangeBlock *) (void *) pending);
+    Letter_AdvanceWritten((Letter *) letter);
+    Letter_Assign((Letter *) BottleMail_Letter(&data_021f36ec), (const Letter *) letter);
+    Letter_Clear((Letter *) letter);
     if (BottleMail_IsOnMap() != 0) {
         return;
     }
@@ -103,18 +91,18 @@ void BottleMail_DailyCheck(int days)
     if (BottleMail_IsOnMap() != 0) {
         return;
     }
-    MailLetter *bottle = &data_021f36ec;
-    if (func_02065ec0(func_02097f14(bottle)) != 0) {
+    BottleState *bottle = &data_021f36ec;
+    if (Letter_State((const Letter *) BottleMail_Letter(bottle)) != 0) {
         BottleMail_PlaceOnMap();
         return;
     }
-    if (func_020644cc(10) != NEW_BOTTLE_DRAW) {
+    if (MainRandom_Below(10) != NEW_BOTTLE_DRAW) {
         return;
     }
-    int message = func_02097e38(bottle);
+    int message = BottleMail_DrawMessage(bottle);
     u8 number = (u8) message;
     if (BottleMail_Write(&number) != 0) {
-        func_02097edc(bottle, message);
+        BottleMail_MarkMessageUsed(bottle, message);
     }
 }
 CLEAN_AS(func_02096d10, BottleMail_DailyCheck)
@@ -122,10 +110,10 @@ CLEAN_AS(func_02096d10, BottleMail_DailyCheck)
 /* func_02096d78: whether a bottle lies anywhere on the town's map. */
 int BottleMail_IsOnMap(void)
 {
-    BottleMap *map = (BottleMap *) (uintptr_t) func_0204e414();
+    BottleMap *map = (BottleMap *) (uintptr_t) AcreMap_Town();
     for (int z = 0; z < map->height; z++) {
         for (int x = 0; x < map->width; x++) {
-            u16 *item = func_0204f5e0(map, x >> 4, z >> 4, x & 15, z & 15, 0);
+            u16 *item = AcreTile_ItemInAcre((AcreMap *) map, x >> 4, z >> 4, x & 15, z & 15, 0);
             if (item != NULL && *item == BOTTLE_ITEM) {
                 return 1;
             }
@@ -138,7 +126,7 @@ CLEAN_AS(func_02096d78, BottleMail_IsOnMap)
 /* func_02096de0: put a bottle on the map; whether one was. */
 int BottleMail_PlaceOnMap(void)
 {
-    return func_02046ebc(func_0204677c());
+    return TownBeach_PutBottle(TownDay_Object());
 }
 CLEAN_AS(func_02096de0, BottleMail_PlaceOnMap)
 
@@ -146,14 +134,14 @@ CLEAN_AS(func_02096de0, BottleMail_PlaceOnMap)
  * write message `*message` of "ev_bottle" as its letter; whether it was written. */
 int BottleMail_Write(const u8 *message)
 {
-    MailLetter *bottle = func_02097f14(&data_021f36ec);
-    if (func_02065ec0(bottle) != 0) {
+    MailLetter *bottle = BottleMail_Letter(&data_021f36ec);
+    if (Letter_State((const Letter *) bottle) != 0) {
         return 0;
     }
     if (BottleMail_PlaceOnMap() == 0) {
         return 0;
     }
-    func_02065f88(bottle, message, data_020e3070);
+    Letter_WriteBottle((Letter *) bottle, message, data_020e3070);
     return 1;
 }
 CLEAN_AS(func_02096df4, BottleMail_Write)
@@ -163,19 +151,19 @@ CLEAN_AS(func_02096df4, BottleMail_Write)
  * a linked session tells the host (player 0) to empty its own. 0 when the player has no room. */
 int BottleMail_Open(void)
 {
-    MailLetter *place = func_0209a1d0();
+    MailLetter *place = CurrentPockets_FreeLetter();
     if (place == NULL) {
         return 0;
     }
-    MailLetter *bottle = func_02097f14(&data_021f36ec);
-    if (func_02065ec0(bottle) == 0) {
-        func_02066650(bottle);
+    MailLetter *bottle = BottleMail_Letter(&data_021f36ec);
+    if (Letter_State((const Letter *) bottle) == 0) {
+        Letter_Clear((Letter *) bottle);
         return 1;
     }
     u16 item = MARKED_ITEM;
-    OSi_DoUnlockByWord__main_0203cd2c(func_020996ac(func_020984e8()), &item, 0, 1);
-    func_02066830(place, bottle);
-    func_02066650(bottle);
+    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(PlayerRecords_Current()), &item, 0, 1);
+    Letter_Assign((Letter *) place, (const Letter *) bottle);
+    Letter_Clear((Letter *) bottle);
     NetSession *session = data_020ccf94;
     if (Session_IsLinked(session) && session->local_slot != 0) {
         PlayerMessages_Send(PLAYER_MESSAGE_CLEAR_RECORD, 0);
@@ -187,7 +175,6 @@ CLEAN_AS(func_02096e38, BottleMail_Open)
 /* ---- The bottle's letter and its used messages ---- */
 
 extern void func_02066694(void *letter); /* a letter's constructor */
-extern void func_02066688(void *letter); /* and destructor */
 
 /* func_02097e38: one of the messages not used yet, at random; when all are used, all become
  * unused first. */
@@ -203,7 +190,7 @@ int BottleMail_DrawMessage(BottleState *bottle)
         BottleMail_ClearUsed(bottle);
         unused = BOTTLE_MESSAGES;
     }
-    int skip = (int) func_020644cc(unused);
+    int skip = (int) MainRandom_Below(unused);
     for (int i = 0; i < BOTTLE_MESSAGES; i++) {
         if (BottleMail_IsMessageUsed(bottle, i) != 0) {
             continue;
@@ -243,7 +230,7 @@ CLEAN_AS(func_02097edc, BottleMail_MarkMessageUsed)
 /* func_02097f00: no letter, every message unused. */
 void BottleMail_InitState(BottleState *bottle)
 {
-    func_02066650(&bottle->letter);
+    Letter_Clear((Letter *) &bottle->letter);
     BottleMail_ClearUsed(bottle);
 }
 CLEAN_AS(func_02097f00, BottleMail_InitState)
@@ -258,7 +245,7 @@ CLEAN_AS(func_02097f14, BottleMail_Letter)
 /* func_02097f18: the destructor. */
 BottleState *BottleMail_DestructState(BottleState *bottle)
 {
-    func_02066688(&bottle->letter);
+    Letter_Destruct((Letter *) &bottle->letter);
     return bottle;
 }
 CLEAN_AS(func_02097f18, BottleMail_DestructState)
@@ -266,7 +253,7 @@ CLEAN_AS(func_02097f18, BottleMail_DestructState)
 /* func_02097f28: the constructor. */
 BottleState *BottleMail_ConstructState(BottleState *bottle)
 {
-    func_02066694(&bottle->letter);
+    Letter_Construct((Letter *) &bottle->letter);
     return bottle;
 }
 CLEAN_AS(func_02097f28, BottleMail_ConstructState)

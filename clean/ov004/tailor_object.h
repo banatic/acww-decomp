@@ -1,5 +1,5 @@
 /* A room object of the RMO family (rmo_object.h) built from /roomObj/obj_tailor1, with a second
- * animated model built from /roomObj/obj_tailor2 (func_ov004_022300fc loads both). Only one
+ * animated model built from /roomObj/obj_tailor2 (TailorObject_Start loads both). Only one
  * exists at a time: data_ov004_02258558 points to it from its start to its release. Overlay 4's
  * code outside it reads and sets the second model's frame through these functions, and asks
  * whether its state byte is 0 or 3.

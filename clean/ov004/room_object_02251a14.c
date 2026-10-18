@@ -8,6 +8,8 @@
 #include "room_object_anims.h"
 #include "room_object_body.h"
 #include "room_object_life.h"
+#include "main/room_sync.h"
+#include "room_objects.h"
 
 static_assert(offsetof(RoomObject02251a14, state) == 0x844, "state");
 static_assert(offsetof(RoomObject02251a14, glows) == 0x848, "glows");
@@ -33,14 +35,9 @@ extern const u8 data_ov004_02247668[ROOM_OBJECT_02251A14_STATE_COUNT];
 extern const u8 data_ov004_02251a14[];
 extern const u8 data_ov004_02251ac0[];
 
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-
 static int RoomObject02251a14_request(RoomObject02251a14 *object, int state)
 {
-    return func_0205265c((unsigned int) (uintptr_t) object, state, SLOT_70_VALUE, 1);
+    return RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
 }
 
 /* Vtable slot 0x70: RoomObject02251a14_EnterState for this class. */
@@ -49,7 +46,7 @@ static void RoomObject02251a14_switch_to(RoomObject02251a14 *object, int state)
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
 
-/* func_ov004_02219b38 (update of ON): the animations, func_020537a8 of its number, the sound at
+/* func_ov004_02219b38 (update of ON): the animations, FurnitureInfo_IndoorBit6 of its number, the sound at
  * 0; with a change of the switch pending, requests OFF and gives the answer, else 0. */
 int RoomObject02251a14_UpdateOn(RoomObject02251a14 *object)
 {
@@ -158,13 +155,13 @@ CLEAN_AS(_ZN18Obj_ov004_02251a1419func_ov004_02219d08Ev, RoomObject02251a14_Upda
 
 /* func_ov004_02219d28 (vtable slot 0x7c, once the model is bound): binds the animations of
  * variant 0 (in a loop, from the start) and the glows, lit as the switch is; then enters ON
- * when the switch is on and func_ov004_0223c10c says no, OFF otherwise; done at once. */
+ * when the switch is on and RoomObjects_InNookOrScene0AOr0F says no, OFF otherwise; done at once. */
 int RoomObject02251a14_Start(RoomObject02251a14 *object)
 {
     RoomObject *base = &object->base;
     RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
-    if (Switch_Value(&base->light_switch) != 0 && func_ov004_0223c10c() == 0) {
+    if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         RoomObject02251a14_switch_to(object, ROOM_OBJECT_02251A14_ON);
     } else {
         RoomObject02251a14_switch_to(object, ROOM_OBJECT_02251A14_OFF);

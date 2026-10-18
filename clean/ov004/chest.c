@@ -16,6 +16,18 @@
 #include "room_object_methods.h"
 #include "room_object_parts.h"
 #include "ov004/room_player_actor.h"
+#include "main/acre_tile.h"
+#include "main/collision_map.h"
+#include "main/event_queue.h"
+#include "main/item_code.h"
+#include "main/message_receiver.h"
+#include "main/player_actor_ops.h"
+#include "main/room_sync.h"
+#include "main/scene_kinds.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "room_objects.h"
+#include "room_pushes.h"
 
 static_assert(offsetof(Chest, lid) == 0x860, "lid");
 static_assert(offsetof(Chest, talk_step) == 0x864, "talk step");
@@ -52,9 +64,6 @@ extern const u8 data_ov004_02247680[CHEST_LID_STATE_COUNT];
 extern const u8 data_ov004_0225211c[];
 extern const u8 data_ov004_022521c8[];
 
-/* Whether the lid starts closed whatever the switch: func_020b6730, or scene 0xa or 0xf. */
-extern int func_ov004_0223c10c(void);
-
 /* The talk's tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov004_02257024;
 extern MemberPointer data_ov004_0225766c[CHEST_TALK_STEP_COUNT];
@@ -75,44 +84,9 @@ extern u32 data_ov004_02257020;
 extern MemberPointer data_ov004_022574cc[CHEST_LID_STATE_COUNT];
 extern const MemberPointer data_ov004_022505b8, data_ov004_022505d8, data_ov004_02250650, data_ov004_02250648;
 
-/* The town's map (func_0204f5e0 finds the item on a cell of it), and whether an item is of the
- * kind func_0204bcdc tells. */
+/* The town's map (AcreTile_ItemInAcre finds the item on a cell of it), and whether an item is of the
+ * kind ItemCode_HasVariant tells. */
 extern void *data_021c80bc;
-extern u16 *func_0204f5e0(void *map, int block_x, int block_y, int x, int y, u8 layer);
-extern int func_0204bcdc(u16 *item);
-/* The scene. */
-extern u8 func_020b65c4(void);
-/* func_020b67e8 of the scene (func_020b65c4). */
-extern int func_020b67d4(void);
-
-/* The entries of the room's objects, and the parts of one. */
-extern void *func_ov004_0223cb10(void);
-extern void *func_ov004_0223ca9c(void *entries, Chest *chest);
-extern s32 *func_ov004_0223cb24(void *entry);
-extern int func_ov004_0223cb18(void *entry);
-extern int func_ov004_0223cb20(void *entry);
-/* Whether a cell holds something: func_ov004_0223c5b8 says so, or func_020308a4 finds one
- * (else -1). */
-extern int func_ov004_0223c5b8(int x, int y);
-extern int func_020308a4(int x, int y);
-
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1), straight
- * to func_020526b8. */
-extern int func_02052738(unsigned int object, int state, int a2, int a3);
-/* The scene object's hooks: asking the scene for an event, letting it go on, and taking and
- * handing back the receiver. */
-extern int func_0203e0a8(Chest *chest, int a1);
-extern int func_0203e020(Chest *chest);
-extern void func_0203ee14(Chest *chest, void *receiver);
-extern void func_0203ee08(Chest *chest, void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-/* Sets flag 0x17 of the actor func_02096718(4) gives; whether there is one. */
-extern int func_02095ec4(void);
-
-static unsigned int Chest_address(Chest *chest)
-{
-    return (unsigned int) (uintptr_t) chest;
-}
 
 /* The receiver part as C++ converts a pointer to the chest to it: NULL stays NULL. */
 static void *Chest_receiver(Chest *chest)
@@ -132,21 +106,21 @@ static void Chest_switch_to(Chest *chest, int state)
     chest->base.vtable->vfunc_70(&chest->base, state, SLOT_70_VALUE);
 }
 
-/* Requests lid state `state` for the object's cell (func_02052738); its answer. */
+/* Requests lid state `state` for the object's cell (RoomSync_SetState); its answer. */
 static int Chest_request(Chest *chest, int state)
 {
-    return func_02052738(Chest_address(chest), state, SLOT_70_VALUE, 1);
+    return RoomSync_SetState(&chest->base, state, SLOT_70_VALUE, 1);
 }
 
 /* Whether the link the receiver is attached to is there and open, or there and closed. */
 static int Chest_link_open(Chest *chest)
 {
-    return chest->base.link != NULL && chest->base.link->open != 0;
+    return chest->base.link != NULL && chest->base.link->state != 0;
 }
 
 static int Chest_link_closed(Chest *chest)
 {
-    return chest->base.link != NULL && chest->base.link->open == 0;
+    return chest->base.link != NULL && chest->base.link->state == 0;
 }
 
 /* The common entry of CHEST_MENU_CLOSE and CHEST_TALK_CLOSE: message 0x2f for a chest with an
@@ -163,22 +137,22 @@ static int Chest_close(Chest *chest)
 /* The common entry of CHEST_MENU_ANNOUNCE and CHEST_TALK_ANNOUNCE: for a chest with an index,
  * message 0x2d with the index and the values of the chest's entry; whether it was sent (1 for
  * no index).
- * BUG: without an entry for the chest, func_ov004_0223cb18 and func_ov004_0223cb24 are handed
+ * BUG: without an entry for the chest, RoomPushes_Facing and RoomPushes_Destination are handed
  * NULL and the values are read from near address 0; kept. */
 static int Chest_announce(Chest *chest)
 {
-    void *entry = func_ov004_0223ca9c(func_ov004_0223cb10(), chest);
+    void *entry = RoomPushes_FindObject(RoomPushes_Records(), &chest->base);
     int index = Chest_Index(chest);
     if (index == NO_CHEST) {
         return 1;
     }
-    s16 value = (s16) func_ov004_0223cb18(entry);
-    s32 *words = func_ov004_0223cb24(entry);
-    return RoomPlayerActor_RequestChestApproach(&index, words, func_ov004_0223cb24(entry) + 2, &value);
+    s16 value = (s16) RoomPushes_Facing(entry);
+    Vec3 *destination = RoomPushes_Destination(entry);
+    return RoomPlayerActor_RequestChestApproach(&index, &destination->x, &RoomPushes_Destination(entry)->z, &value);
 }
 
 /* The common update of CHEST_MENU_ANNOUNCE and CHEST_TALK_ANNOUNCE: `next` for a chest without
- * an index, else once func_ov004_0222c2b0 says so. */
+ * an index, else once RoomPlayerActor_TestFlag2 says so. */
 static void Chest_wait_announce(Chest *chest, int next)
 {
     if (Chest_Index(chest) == NO_CHEST) {
@@ -189,13 +163,13 @@ static void Chest_wait_announce(Chest *chest, int next)
 }
 
 /* _ZN18Obj_ov004_0225211c19func_ov004_02216c60Ev (update of CHEST_TALK_CLOSE): once the lid is
- * closed, hands the receiver back (func_0203ee08) and lets the scene go on (func_0203e020). The
+ * closed, hands the receiver back (SceneObjectBase_ReleaseReceiver) and lets the scene go on (EventQueue_FinishObjectEvent). The
  * step stays until the scene sets another. */
 void Chest_UpdateTalkClose(Chest *chest)
 {
     if (chest->lid == CHEST_LID_CLOSED) {
-        func_0203ee08(chest, Chest_receiver(chest));
-        func_0203e020(chest);
+        SceneObjectBase_ReleaseReceiver(&chest->base.scene, Chest_receiver(chest));
+        EventQueue_FinishObjectEvent(chest);
     }
 }
 CLEAN_AS(_ZN18Obj_ov004_0225211c19func_ov004_02216c60Ev, Chest_UpdateTalkClose)
@@ -236,22 +210,22 @@ CLEAN_AS(func_ov004_02216cf8, Chest_UpdateTalk)
 /* The item on cell (x, y) of the town's map, layer 0. */
 static u16 *Chest_item_on_cell(void *map, s32 x, s32 y)
 {
-    return func_0204f5e0(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1), 0);
+    return AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1), 0);
 }
 
-/* func_ov004_02216d1c (entry of CHEST_TALK): takes the receiver (func_0203ee14), raises the
+/* func_ov004_02216d1c (entry of CHEST_TALK): takes the receiver (SceneObjectBase_TakeReceiver), raises the
  * link's request and names the receiver "obj_etc_nchest". Its state byte is set to one of 16
  * values: the furniture's number plus the scene, plus x + 16 y of the first of its cells that
- * holds an item func_0204bcdc tells (on the town's map, when there is one).
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+ * holds an item ItemCode_HasVariant tells (on the town's map, when there is one).
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Chest_EnterTalk(Chest *chest)
 {
     RoomObject *base = &chest->base;
-    func_0203ee14(chest, Chest_receiver(chest));
-    base->link->requested = 1;
-    func_020a8164(&base->receiver_vtable, data_ov004_02253200);
+    SceneObjectBase_TakeReceiver(&chest->base.scene, Chest_receiver(chest));
+    base->link->next_state = 1;
+    MessageReceiver_SetName(&base->receiver.base, data_ov004_02253200);
     int number = RoomObject_Number(base);
-    int line = (number + func_020b65c4()) & (LINE_COUNT - 1);
+    int line = (number + SceneQuery_Current()) & (LINE_COUNT - 1);
     CellList cells;
     CellList_Construct(&cells);
     RoomObject_ListCells(base, &cells, NULL, 0);
@@ -261,7 +235,7 @@ int Chest_EnterTalk(Chest *chest)
             s32 x = CellList_At(&cells, (int) i)->x;
             s32 y = CellList_At(&cells, (int) i)->y;
             u16 *item = Chest_item_on_cell(map, x, y);
-            if (item != NULL && func_0204bcdc(item) != 0) {
+            if (item != NULL && ItemCode_HasVariant(item) != 0) {
                 line = (line + x + y * BLOCK_CELLS) & (LINE_COUNT - 1);
                 break;
             }
@@ -324,7 +298,7 @@ CLEAN_AS(func_ov004_02216eb4, Chest_EnterTalkNext)
 void Chest_UpdateMenuClose(Chest *chest)
 {
     if (chest->lid == CHEST_LID_CLOSED) {
-        func_0203e020(chest);
+        EventQueue_FinishObjectEvent(chest);
     }
 }
 CLEAN_AS(func_ov004_02216eb8, Chest_UpdateMenuClose)
@@ -485,14 +459,14 @@ int Chest_Index(Chest *chest)
 }
 CLEAN_AS(func_ov004_02217230, Chest_Index)
 
-/* func_ov004_02217264 (vtable slot 0x4c): the scene's answer to func_0203e0a8. Event 1 starts
- * the menu when func_020b67d4 and Room_Check0220fed0 allow it, else the talk; event 8 ends
+/* func_ov004_02217264 (vtable slot 0x4c): the scene's answer to EventQueue_RequestKind6. Event 1 starts
+ * the menu when SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else the talk; event 8 ends
  * either; others do nothing. */
 void Chest_OnSceneEvent(Chest *chest, int event)
 {
     switch (event) {
         case 1:
-            if (func_020b67d4() != 0 && Room_Check0220fed0() != 0) {
+            if (SceneKinds_CurrentIsHouseRoom() != 0 && Room_Check0220fed0() != 0) {
                 Chest_EnterTalkStep(chest, CHEST_MENU_NEXT);
             } else {
                 Chest_EnterTalkStep(chest, CHEST_TALK_NEXT);
@@ -597,7 +571,7 @@ static int Chest_front_blocked(Chest *chest)
     for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
         s32 x = dx + CellList_At(&cells, (int) i)->x;
         s32 y = dy + CellList_At(&cells, (int) i)->y;
-        if (func_ov004_0223c5b8(x, y) != 0 || func_020308a4(x, y) != -1) {
+        if (RoomObjects_HeightAtCell(x, y) != 0 || CollisionMap_UnclaimedObjectAt(x, y) != -1) {
             Switch_Set(&base->light_switch, 1, 0);
             CellList_Destruct(&cells);
             return 1;
@@ -608,20 +582,20 @@ static int Chest_front_blocked(Chest *chest)
 }
 
 /* func_ov004_02217420 (update of CHEST_LID_CLOSED): the node set's value 0. When touched, with an
- * entry that func_ov004_0223cb20 does not hold back, it asks the scene for an event
- * (func_0203e0a8, then func_02095ec4); a chest of kind 0xb only when the cells in front of it
+ * entry that RoomPushes_Side does not hold back, it asks the scene for an event
+ * (EventQueue_RequestKind6, then PlayerActorOps_SetOwnFlag17); a chest of kind 0xb only when the cells in front of it
  * are free, else its switch is put back on. Otherwise in mode 2 (unk_76C) it opens at once. */
 void Chest_UpdateLidClosed(Chest *chest)
 {
     RoomObject *base = &chest->base;
     ByteSet_SetValue(&base->node_set, 0);
-    void *entry = func_ov004_0223ca9c(func_ov004_0223cb10(), chest);
-    if (Switch_IsPending(&base->light_switch) && entry != NULL && func_ov004_0223cb20(entry) == 0) {
+    void *entry = RoomPushes_FindObject(RoomPushes_Records(), &chest->base);
+    if (Switch_IsPending(&base->light_switch) && entry != NULL && RoomPushes_Side(entry) == 0) {
         if (base->unk_780 == KIND_0B && Chest_front_blocked(chest)) {
             return;
         }
-        func_0203e0a8(chest, 0);
-        func_02095ec4();
+        EventQueue_RequestKind6(chest, 0);
+        PlayerActorOps_SetOwnFlag17();
     } else if (RoomObject_Unk76CIs2(base)) {
         Chest_switch_to(chest, CHEST_LID_OPENING);
     }
@@ -720,7 +694,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225211c19func_ov004_022176e8Ev, Chest_Update)
 /* func_ov004_02217700 (vtable slot 0x7c, once the model is bound): the node set's value 0; in
  * mode 1 (unk_76C) the switch is set on first. The animations of variant 0 are bound (kind 0xf
  * to play once, the others in mode 3); the lid starts closed when the switch is on or
- * func_ov004_0223c10c says so, else open; and the chest is not talking. Done at once. */
+ * RoomObjects_InNookOrScene0AOr0F says so, else open; and the chest is not talking. Done at once. */
 int Chest_Start(Chest *chest)
 {
     RoomObject *base = &chest->base;
@@ -733,7 +707,7 @@ int Chest_Start(Chest *chest)
     } else {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_3, ONE, 0);
     }
-    if (Switch_Value(&base->light_switch) != 0 || func_ov004_0223c10c() != 0) {
+    if (Switch_Value(&base->light_switch) != 0 || RoomObjects_InNookOrScene0AOr0F() != 0) {
         Chest_switch_to(chest, CHEST_LID_CLOSED);
     } else {
         Chest_switch_to(chest, CHEST_LID_OPEN);

@@ -1,7 +1,7 @@
 /* A room object of the RMO family (rmo_object.h) built from /roomObj/obj_r_box, that talks
  * with the message file "sp_npc_trash" (vtable 0x022553d8, receiver part 0x02255454 at 0x290,
  * 0x620 bytes). Only one exists at a time: data_ov004_02258490 points to it from its start to
- * its release, and the touch screen's picks ask for it (func_020b73d4).
+ * its release, and the touch screen's picks ask for it (TouchPick_RoomObject12).
  *
  * It stands in a collision box and a box of touch-pick faces, both 0x2000 wide, 0x4000 deep and
  * 0x2000 high at its position. Its lid (TrashBox lid byte, RmoObject byte 0x24c) is a state

@@ -5,6 +5,8 @@
 #include "player_records.h"
 #include "session.h"
 #include "state_block.h"
+#include "player_options.h"
+#include "session_players.h"
 
 extern u32 data_021f3c30; /* enum StartKind */
 
@@ -13,11 +15,6 @@ extern StateBlock data_021dc7a8;
 
 /* The name the new player gets: six full-width letters, "ABCDEF". */
 extern const u16 data_020e3a68[];
-
-/* A session player given a record number. */
-extern void func_020962a4(int player, int number);
-/* The options kept by the player (villager_talk.c). */
-extern void func_0203d394(void);
 
 #define FIRST_RECORD 0
 #define NEW_PLAYER_ARG 0
@@ -106,14 +103,14 @@ void StartKind_Apply(void)
     if (StartKind_IsPlayer0() != 0) {
         NetSession *session = data_020ccf94;
         session->local_player = 0;
-        func_020962a4(session->local_player, FIRST_RECORD);
-        func_0203d394();
+        SessionPlayers_SetRecordNumber(session->local_player, FIRST_RECORD);
+        PlayerOptions_Store();
         return;
     }
     int number = PlayerRecords_FirstFree(data_021dc7a8.players);
     NetSession *session = data_020ccf94;
     session->local_player = 0;
-    func_020962a4(session->local_player, number);
+    SessionPlayers_SetRecordNumber(session->local_player, number);
     PlayerRecords_NewPlayer(data_021dc7a8.players, data_020e3a68, NEW_PLAYER_ARG, number);
 }
 CLEAN_AS(func_020a13e8, StartKind_Apply)

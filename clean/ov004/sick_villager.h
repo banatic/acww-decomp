@@ -1,8 +1,8 @@
 /* A villager in a room who talks with the lines of the message files "q12_sick1_2" and
- * "q12_sick3_5" (class vtable 0x022541d8, 0xa94 bytes, made by func_ov004_02222a88): a town
+ * "q12_sick3_5" (class vtable 0x022541d8, 0xa94 bytes, made by SickVillager_New): a town
  * villager scene object (main's villager_scene_slots.h) that walks about the room, stops now
  * and then for an act, talks to this console's player and may be offered, from the player's
- * pockets, the item 0x155e (the predicate func_ov004_02222a30).
+ * pockets, the item 0x155e (the predicate SickVillager_IsAskedItem).
  *
  * The stage of the town's villager move record (main's villager_move.h, byte 0xba) is read at
  * its set-up into its talk scene; above stage 1 the base's byte 0x897 is set: its file is then

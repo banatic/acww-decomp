@@ -2,28 +2,18 @@
 #include "town_tile.h"
 
 #include "clean.h"
+#include "acre_tile.h"
+#include "actor_table.h"
+#include "item_code.h"
+#include "map_item.h"
+#include "player_actor_ops.h"
+#include "session_players.h"
 
 #define ACRE_TILES 16 /* an acre is 16 x 16 tiles */
 #define PLAYERS 4
 
 extern void *data_021c80bc; /* the town's map; null while there is none */
 extern u8 data_020e54a8;    /* 0 or 1, a mode many scenes test */
-
-/* The tile's object on `layer` of the map, or null. */
-extern u16 *func_0204f5e0(void *map, int acre_x, int acre_z, int x, int z, int layer);
-/* The tile a position is on. */
-extern void func_0204f818(int *x, int *z, const int *position);
-/* Whether the map takes the tile (its own test, func_02031af0, made with the map's 0x1c). */
-extern int func_0204ee20(void *map, int x, int z);
-extern int func_0204bd08(u16 *object); /* a code of kind 1 (ItemCode_IsKind1) */
-extern int func_0204bcdc(u16 *object); /* a code of kind 3 or 4 (ItemCode_HasVariant) */
-/* The first stage of a growth line: 0x26, 0x2f, 0x37, 0x3f, 0x47, 0x4f, 0x57, 0x5d or 0xc8. */
-extern int func_0204ba94(u16 *object);
-/* The position of player `slot` (an actor's 0x6f4), or 0 when the slot has no player. */
-extern int func_02095794(int slot);
-extern int func_02096190(int slot); /* what stands for player `slot` */
-/* What of the game's actor table (data_021d1d4c) stands on the tile, or 0. */
-extern int func_0208259c(int x, int z);
 
 /* The acre a tile coordinate is in, rounded down for negative coordinates as the ARM's
  * arithmetic shift does. The tile within the acre is then the low four bits. */
@@ -34,7 +24,7 @@ static int acre_of(int tile)
 
 static u16 *object_at(void *map, int x, int z, int layer)
 {
-    return func_0204f5e0(map, acre_of(x), acre_of(z), x & (ACRE_TILES - 1), z & (ACRE_TILES - 1), layer);
+    return AcreTile_ItemInAcre(map, acre_of(x), acre_of(z), x & (ACRE_TILES - 1), z & (ACRE_TILES - 1), layer);
 }
 
 /* func_02078dd4: TownTile_FindItem5000Above from the tile `position` is on. */
@@ -43,7 +33,7 @@ int TownTile_FindItem5000AboveAt(const Vec3 *position, int rows, int *out_x, int
     int x = 0;
     int z = 0;
 
-    func_0204f818(&x, &z, (const int *) position);
+    Position_Tile(&x, &z, (const Position *) ((const int *) position));
     return TownTile_FindItem5000Above(x, z, rows, out_x, out_z);
 }
 CLEAN_AS(func_02078dd4, TownTile_FindItem5000AboveAt)
@@ -80,7 +70,7 @@ int TownTile_IsClearAt(const Vec3 *position, void *map)
     int x = 0;
     int z = 0;
 
-    func_0204f818(&x, &z, (const int *) position);
+    Position_Tile(&x, &z, (const Position *) ((const int *) position));
     return TownTile_IsClear(x, z, map);
 }
 CLEAN_AS(func_02078e98, TownTile_IsClearAt)
@@ -109,15 +99,15 @@ int TownTile_IsClear(int x, int z, void *map)
     if (map == NULL) {
         map = data_021c80bc;
     }
-    if (map == NULL || func_0204ee20(map, x, z) == 0) {
+    if (map == NULL || AcreTile_UnitByte05(map, x, z) == 0) {
         return 0;
     }
     object = object_at(map, x, z, 0);
     if (object == NULL) {
         return 0;
     }
-    open = *object == 0xfff1 || func_0204bd08(object) != 0 || (*object >= 0xa7 && *object <= 0xc6) ||
-           (data_020e54a8 == 0 && func_0204bcdc(object) != 0) || func_0204ba94(object) != 0 || is_open_code(*object);
+    open = *object == 0xfff1 || ItemCode_IsKind1(object) != 0 || (*object >= 0xa7 && *object <= 0xc6) ||
+           (data_020e54a8 == 0 && ItemCode_HasVariant(object) != 0) || MapItem_IsStage0(object) != 0 || is_open_code(*object);
     if (!open) {
         return 0;
     }
@@ -132,7 +122,7 @@ int TownTile_Occupant(int x, int z)
     int occupant = TownTile_PlayerOccupant(x, z);
 
     if (occupant == 0) {
-        return func_0208259c(x, z);
+        return (int) (uintptr_t) Actors_FindAt(x, z);
     }
     return occupant;
 }
@@ -143,15 +133,15 @@ CLEAN_AS(func_0207903c, TownTile_Occupant)
 int TownTile_PlayerOccupant(int x, int z)
 {
     for (int slot = 0; slot < PLAYERS; slot++) {
-        int position = func_02095794(slot);
+        int position = (int) (uintptr_t) PlayerActorOps_StartPosition(slot);
 
         if (position != 0) {
             int tile_x = 0;
             int tile_z = 0;
 
-            func_0204f818(&tile_x, &tile_z, (const int *) (uintptr_t) position);
+            Position_Tile(&tile_x, &tile_z, (const Position *) ((const int *) (uintptr_t) position));
             if (tile_x == x && tile_z == z) {
-                return func_02096190(slot);
+                return SessionPlayers_ActorHandle(slot);
             }
         }
     }

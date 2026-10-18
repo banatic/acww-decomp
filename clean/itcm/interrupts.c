@@ -6,6 +6,8 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "main/line_handlers.h"
+#include "main/transfer_queue.h"
 
 static_assert(offsetof(LineHandler, hblank_function) == 0x0c, "the HBlank function");
 static_assert(offsetof(LineHandler, next) == 0x18, "the next handler");
@@ -33,10 +35,6 @@ extern u8 data_021cfb98[];
 extern u8 data_021cfb90[];
 
 extern void OS_WakeupThread(void *queue);
-/* The tasks queued for spare time run while the VBlank leaves time (func_020b98ec), and every
- * line handler's VBlank function (func_0205c054). */
-extern void func_020b98ec(void);
-extern void func_0205c054(void);
 
 /* func_01ffcb28: does nothing; called once in the start-up (func_020b1b84) with the interrupt
  * set-up. */
@@ -69,9 +67,9 @@ void Irq_VBlank(void)
     if (data_021cfb88 >= data_020dd828 && data_021cfb6c != 0) {
         OS_WakeupThread(data_021cfb98);
         data_021cfb88 = 0;
-        func_020b98ec();
+        TransferQueue_RunVBlank();
     }
-    func_0205c054();
+    LineHandlers_RunVBlank();
     OS_WakeupThread(data_021cfb90);
     *(u32 *) (SDK_AUTOLOAD_DTCM_START + IRQ_CHECK_FLAGS_OFFSET) |= IRQ_VBLANK;
 }

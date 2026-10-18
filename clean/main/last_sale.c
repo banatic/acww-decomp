@@ -2,15 +2,11 @@
 #include "last_sale.h"
 
 #include "clean.h"
+#include "player_id.h"
 
 #define LAST_SALE_NO_ITEM 0xfff1
 
 static_assert(offsetof(LastSale, item) == 0x1e && sizeof(LastSale) == 0x20, "LastSale");
-
-/* A player's id cleared, destructed and constructed. */
-extern void func_02095238(DesignCreator *player);
-extern int func_0209526c(DesignCreator *player);
-extern void *func_0209529c(DesignCreator *player);
 
 /* func_020871cc */
 void LastSale_GetItem(u16 *item, const LastSale *sale)
@@ -61,7 +57,7 @@ CLEAN_AS(func_0208722c, LastSale_SetUp)
 /* func_02087234: no buyer, no item. */
 void LastSale_Clear(LastSale *sale)
 {
-    func_02095238(&sale->buyer);
+    PlayerId_Clear(&sale->buyer);
     sale->item = LAST_SALE_NO_ITEM;
 }
 CLEAN_AS(func_02087234, LastSale_Clear)
@@ -69,7 +65,7 @@ CLEAN_AS(func_02087234, LastSale_Clear)
 /* func_0208724c */
 LastSale *LastSale_Destruct(LastSale *sale)
 {
-    func_0209526c(&sale->buyer);
+    PlayerId_Destruct(&sale->buyer);
     return sale;
 }
 CLEAN_AS(func_0208724c, LastSale_Destruct)
@@ -77,7 +73,7 @@ CLEAN_AS(func_0208724c, LastSale_Destruct)
 /* func_0208725c: the constructor; no item. */
 LastSale *LastSale_Construct(LastSale *sale)
 {
-    func_0209529c(&sale->buyer);
+    PlayerId_Construct(&sale->buyer);
     sale->item = LAST_SALE_NO_ITEM;
     return sale;
 }

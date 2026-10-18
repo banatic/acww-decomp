@@ -1,5 +1,5 @@
 /* A villager who comes to the player's house on the day of the flea market to buy an item of
- * the room (class vtable 0x02253e10, 0xaec bytes, made by func_ov004_022217fc; its lines come
+ * the room (class vtable 0x02253e10, 0xaec bytes, made by FleaMarketBuyer_New; its lines come
  * from the message files "ev_fmarket3", "q10_call", "q10_wait" and "q_bye"): a town villager
  * scene object (main's villager_scene_slots.h).
  *
@@ -25,7 +25,7 @@
  *
  * Its states (0x910), each an entry and an update function (C++ members taking the villager),
  * from the tables data_ov004_02257e90 (states 0 to 7, filled at start-up by
- * __sinit_ov004_0224e484) and data_ov004_02257f10 (state 8), set by func_ov004_02221550:
+ * __sinit_ov004_0224e484) and data_ov004_02257f10 (state 8), set by FleaMarketBuyer_SetState:
  *   2  step in:  facing into the room it walks 0x4000 ahead, waits, stands and its event ends;
  *   3  browse:   in stage 2 it picks an item (FleaMarketBuyer_PickItem) and walks to it
  *                (state 5) or turns to it (state 4);

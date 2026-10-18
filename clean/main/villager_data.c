@@ -7,16 +7,15 @@
 #include "npc_id.h"
 #include "town_villager.h"
 #include "villager_mode.h"
+#include "npc_lookup.h"
 
-/* data_020cd884's entry of a villager number, NULL past 149. */
-extern const VillagerData *func_02082500(int number);
 /* A byte for each species (0-32). */
 extern const u8 data_020cd4dc[VILLAGER_DATA_NO_SPECIES];
 
 /* The data of the villager's number, as each function here looks it up itself. */
 static const VillagerData *villager_data_of(u8 *villager)
 {
-    return func_02082500(NpcId_Number(TownVillager_NpcId(villager)));
+    return NpcLookup_Data(NpcId_Number(TownVillager_NpcId(villager)));
 }
 
 /* func_02080814: the eight weights of the villager's mode record, NULL without data. */

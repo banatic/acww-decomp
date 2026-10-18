@@ -2,6 +2,7 @@
 #include "overlay_slots.h"
 
 #include "clean.h"
+#include "rom_file.h"
 
 static_assert(sizeof(OverlaySlot) == 12, "OverlaySlot size");
 static_assert(offsetof(OverlaySlot, start) == 4, "OverlaySlot start");
@@ -18,8 +19,6 @@ typedef struct OverlaySlotsFileId {
 extern void OS_Terminate(void);
 extern int FS_LoadOverlayInfo(OverlaySlotsInfo *info, int target, int overlay);
 extern OverlaySlotsFileId FS_GetOverlayFileID(const void *info);
-extern void func_02064640(int overlay); /* FS_UnloadOverlay of the main processor */
-extern void func_0206464c(int overlay); /* loads an overlay of the main processor (func_02064d14) */
 
 /* func_0204f8bc: every slot empty. */
 void OverlaySlots_Clear(void)
@@ -146,14 +145,14 @@ CLEAN_AS(func_0204fa18, OverlaySlots_Fill)
 /* func_0204fa4c */
 void OverlaySlots_Unload(int overlay)
 {
-    func_02064640(overlay);
+    RomFile_UnloadOverlay(overlay);
 }
 CLEAN_AS(func_0204fa4c, OverlaySlots_Unload)
 
 /* func_0204fa54 */
 void OverlaySlots_LoadOverlay(int overlay)
 {
-    func_0206464c(overlay);
+    RomFile_LoadOverlay(overlay);
 }
 CLEAN_AS(func_0204fa54, OverlaySlots_LoadOverlay)
 

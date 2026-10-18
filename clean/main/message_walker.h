@@ -1,5 +1,5 @@
-/* The walkers' base class (data_020e3e68; MessageWalker in message_cursor.h): its destructor
- * and its deleting destructor. */
+/* The walkers (MessageWalker in message_cursor.h): the class data_020e3e68's destructor and
+ * deleting destructor, and the base class it derives from (data_020e3e24), below. */
 #ifndef CLEAN_MAIN_MESSAGE_WALKER_H
 #define CLEAN_MAIN_MESSAGE_WALKER_H
 
@@ -8,9 +8,8 @@
 MessageWalker *MessageWalker_Destruct(MessageWalker *walker);
 MessageWalker *MessageWalker_Delete(MessageWalker *walker);
 
-/* The class data_020e3e68 derives from (vtable data_020e3e24, built by
- * MessageWalker_Construct): a walk through a 16-bit message text, one step at a time
- * (MessageWalker_Step).
+/* The walkers' base class (vtable data_020e3e24, built by MessageWalker_Construct): a walk
+ * through a 16-bit message text, one step at a time (MessageWalker_Step).
  *
  * A step reads the character at `position`. A 0 ends the text, and so does a newline when the
  * step is told to (TextWalker_RunTo): at the end of a nested text the walk comes back to where

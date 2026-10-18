@@ -1,7 +1,7 @@
 /* The cafe's master, drawn with the model npc_sp/model/pge: a special character's scene object
  * (main's special_scene_object.h) of vtable data_ov004_022546e0, 0x780 bytes, made by
- * func_ov004_02224c68, with its talk scene at 0x658. data_ov004_022580dc points to it from its
- * start (func_ov004_02224b30) until it may be deleted (func_ov004_02224b0c).
+ * CafeMaster_Create, with its talk scene at 0x658. data_ov004_022580dc points to it from its
+ * start (CafeMaster_Start) until it may be deleted (CafeMaster_Leave).
  *
  * The cafe's props (cafe_props.h) follow it through the functions here: the number of the
  * animation it plays (its animation player at 0x334), that animation's frame (its model's

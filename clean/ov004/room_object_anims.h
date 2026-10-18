@@ -1,7 +1,7 @@
 /* The animations and sounds of overlay 4's room objects (room_object.h): the five animations of
  * the furniture's archive (AnimSet, room_object_parts.h) in one of their two variants, played by
  * the model's joint animation and the four animations in RoomObject.anims; the sounds of the
- * furniture's row of func_ov004_0223a770, played at the object's centre; and the sound of a
+ * furniture's row of FurnitureSounds_Row, played at the object's centre; and the sound of a
  * move. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_ANIMS_H
 #define CLEAN_OV004_ROOM_OBJECT_ANIMS_H

@@ -25,6 +25,13 @@
 #include "main/touch_pick_shapes.h"
 #include "main/town_objects.h" /* TownObjects_SetActorMode, SceneActor */
 #include "ov003/field_actor.h"
+#include "main/animated_model.h"
+#include "main/event_queue.h"
+#include "main/frame_ctrl.h"
+#include "object_actors.h"
+#include "ov009/scene_actor.h"
+#include "ov009/scene_actor_files.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(Mailbox, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(Mailbox, mode) == 0x134, "mode");
@@ -68,34 +75,6 @@ extern MemberPointer data_ov003_0223ca30[MAILBOX_MODES];
 extern const MemberPointer data_ov003_022393fc, data_ov003_0223940c, data_ov003_0223945c, data_ov003_02239454,
     data_ov003_022393c4, data_ov003_022393bc, data_ov003_022393b4;
 
-/* Sets `mode` through vtable slot 0x6c (when a wireless flag of main is clear) and, in a
- * session with others, tells them; whether it was set. */
-extern int func_020b2800(Mailbox *mailbox, unsigned int mode);
-/* Main's mode of the special character `code`. */
-extern int func_020b30e8(unsigned int code, unsigned char mode);
-/* Lets the scene go on. */
-extern int func_0203e020(Mailbox *mailbox);
-/* The byte at 0x2f4, and the number of filled entries of the player's ten (0 while that byte is
- * clear). */
-extern u8 func_ov003_0221e6a0(Mailbox *mailbox);
-extern int func_ov003_0221e6ac(Mailbox *mailbox);
-/* The model object's joint animation: played from `file` by `mode` and `speed` from `frame`,
- * advanced, and whether it is at its end (on its frame control); the model object's render
- * object. */
-extern void func_02055060(void *model_object, const MailboxAnimFile *file, int mode, int speed, u16 frame, u16 a5);
-extern void func_02055124(void *model_object);
-extern int func_02056f94(void *frames);
-extern void *func_02055e00(void *model_object);
-/* An animation: advanced, whether it is at `frame`, and playing `file` on a render object by
- * `mode` and `speed` from `frame`. */
-extern void func_02056ffc(MailboxAnim *anim);
-extern int func_02056f28(MailboxAnim *anim, int frame);
-extern void func_02056440(MailboxAnim *anim, void *render_object, void *file, int mode, int speed, u16 frame);
-/* Overlay 9's scene actor: its animation file `index` (0 to 3), and the sound effect `id` on its
- * sound source. */
-extern void *func_ov009_02264cf8(Mailbox *mailbox, unsigned int index);
-extern void func_ov009_02262ef0(void *sound, int id);
-
 /* Joint animation A or B: what vtable slot 0x64 or 0x68 gives. */
 static const MailboxAnimFile *mailbox_anim_file(Mailbox *mailbox, unsigned int slot)
 {
@@ -111,14 +90,15 @@ static void mailbox_play_from_end(Mailbox *mailbox, unsigned int slot, int mode)
 {
     const MailboxAnimFile *counted = mailbox_anim_file(mailbox, slot);
     const MailboxAnimFile *file = mailbox_anim_file(mailbox, slot);
-    func_02055060(mailbox->model_object, file, mode, MAILBOX_ONE, (u16) (counted->frames - 1), 0);
+    AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) file, mode, MAILBOX_ONE,
+                        (u16) (counted->frames - 1), 0);
 }
 
 /* The pattern animation goes on and its frame is written where it goes.
  * REQUIRES: the pattern is bound (it has a target). */
 static void mailbox_advance_pattern(Mailbox *mailbox)
 {
-    func_02056ffc(&mailbox->pattern);
+    FrameCtrl_Step((FrameCtrl *) &mailbox->pattern);
     *mailbox->pattern.target = mailbox->pattern.frame;
 }
 
@@ -126,7 +106,7 @@ static void mailbox_advance_pattern(Mailbox *mailbox)
  * end. */
 static int mailbox_anim_done(Mailbox *mailbox)
 {
-    return func_ov003_0221e6a0(mailbox) != 0 && func_02056f94(mailbox->model_frames) != 0;
+    return Mailbox_MovesOn(mailbox) != 0 && FrameCtrl_IsDone((const FrameCtrl *) mailbox->model_frames) != 0;
 }
 
 /* func_ov003_0221de58 (run of MAILBOX_EMPTYING): moves on to MAILBOX_EMPTY once A is at its
@@ -134,9 +114,9 @@ static int mailbox_anim_done(Mailbox *mailbox)
 void Mailbox_RunEmptying(Mailbox *mailbox)
 {
     if (mailbox_anim_done(mailbox)) {
-        func_020b2800(mailbox, MAILBOX_EMPTY);
+        TownObjects_SetActorMode((SceneActor *) mailbox, MAILBOX_EMPTY);
     } else {
-        func_02055124(mailbox->model_object);
+        AnimatedModel_StepFrames((AnimatedModel *) mailbox->model_object);
     }
     mailbox_advance_pattern(mailbox);
 }
@@ -147,7 +127,7 @@ CLEAN_AS(func_ov003_0221de58, Mailbox_RunEmptying)
 int Mailbox_EnterEmptying(Mailbox *mailbox)
 {
     mailbox_play_from_end(mailbox, MAILBOX_SLOT_ANIM_A, MAILBOX_PLAY_BACKWARD);
-    func_ov009_02262ef0(mailbox->sound, MAILBOX_SE_EMPTY);
+    SceneActorSound_Play((SceneActorSound *) mailbox->sound, MAILBOX_SE_EMPTY);
     return 1;
 }
 CLEAN_AS(func_ov003_0221deb0, Mailbox_EnterEmptying)
@@ -158,13 +138,13 @@ CLEAN_AS(func_ov003_0221deb0, Mailbox_EnterEmptying)
 void Mailbox_RunClosing(Mailbox *mailbox)
 {
     if (mailbox_anim_done(mailbox)) {
-        if (!func_ov003_0221e6ac(mailbox)) {
-            func_020b2800(mailbox, MAILBOX_EMPTYING);
+        if (!Mailbox_CountLetters(mailbox)) {
+            TownObjects_SetActorMode((SceneActor *) mailbox, MAILBOX_EMPTYING);
         } else {
-            func_020b2800(mailbox, MAILBOX_FULL);
+            TownObjects_SetActorMode((SceneActor *) mailbox, MAILBOX_FULL);
         }
     } else {
-        func_02055124(mailbox->model_object);
+        AnimatedModel_StepFrames((AnimatedModel *) mailbox->model_object);
     }
     mailbox_advance_pattern(mailbox);
 }
@@ -175,7 +155,7 @@ CLEAN_AS(func_ov003_0221df08, Mailbox_RunClosing)
 int Mailbox_EnterClosing(Mailbox *mailbox)
 {
     mailbox_play_from_end(mailbox, MAILBOX_SLOT_ANIM_B, MAILBOX_PLAY_BACKWARD);
-    func_ov009_02262ef0(mailbox->sound, MAILBOX_SE_CLOSE);
+    SceneActorSound_Play((SceneActorSound *) mailbox->sound, MAILBOX_SE_CLOSE);
     return 1;
 }
 CLEAN_AS(func_ov003_0221df74, Mailbox_EnterClosing)
@@ -199,10 +179,10 @@ CLEAN_AS(func_ov003_0221dff4, Mailbox_EnterOpen)
  * moves on to MAILBOX_OPEN. */
 void Mailbox_RunOpening(Mailbox *mailbox)
 {
-    func_02055124(mailbox->model_object);
+    AnimatedModel_StepFrames((AnimatedModel *) mailbox->model_object);
     mailbox_advance_pattern(mailbox);
     if (mailbox_anim_done(mailbox)) {
-        func_020b2800(mailbox, MAILBOX_OPEN);
+        TownObjects_SetActorMode((SceneActor *) mailbox, MAILBOX_OPEN);
     }
 }
 CLEAN_AS(func_ov003_0221e038, Mailbox_RunOpening)
@@ -210,9 +190,9 @@ CLEAN_AS(func_ov003_0221e038, Mailbox_RunOpening)
 /* func_ov003_0221e090 (entry of MAILBOX_OPENING): B from its start (mode 1), and sound 0x819. */
 int Mailbox_EnterOpening(Mailbox *mailbox)
 {
-    func_02055060(mailbox->model_object, mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_B), MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0,
-                  0);
-    func_ov009_02262ef0(mailbox->sound, MAILBOX_SE_OPEN);
+    AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_B),
+                        MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0, 0);
+    SceneActorSound_Play((SceneActorSound *) mailbox->sound, MAILBOX_SE_OPEN);
     return 1;
 }
 CLEAN_AS(func_ov003_0221e090, Mailbox_EnterOpening)
@@ -230,9 +210,9 @@ CLEAN_AS(func_ov003_0221e0d4, Mailbox_RunFull)
 int Mailbox_EnterFull(Mailbox *mailbox)
 {
     mailbox_play_from_end(mailbox, MAILBOX_SLOT_ANIM_A, MAILBOX_PLAY_FORWARD);
-    void *render_object = func_02055e00(mailbox->model_object);
-    void *file = func_ov009_02264cf8(mailbox, 0);
-    func_02056440(&mailbox->pattern, render_object, file, MAILBOX_PATTERN_FULL, MAILBOX_ONE, 0);
+    void *render_object = ModelObject_RenderObject((ModelObject *) mailbox->model_object);
+    void *file = (void *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) mailbox, 0);
+    ModelAnim_Restart((ModelAnim *) &mailbox->pattern, render_object, file, MAILBOX_PATTERN_FULL, MAILBOX_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov003_0221e0fc, Mailbox_EnterFull)
@@ -242,18 +222,18 @@ CLEAN_AS(func_ov003_0221e0fc, Mailbox_EnterFull)
 void Mailbox_RunArriving(Mailbox *mailbox)
 {
     if (mailbox_anim_done(mailbox)) {
-        func_020b2800(mailbox, MAILBOX_FULL);
+        TownObjects_SetActorMode((SceneActor *) mailbox, MAILBOX_FULL);
         return;
     }
-    func_02055124(mailbox->model_object);
+    AnimatedModel_StepFrames((AnimatedModel *) mailbox->model_object);
 }
 CLEAN_AS(func_ov003_0221e16c, Mailbox_RunArriving)
 
 /* func_ov003_0221e1a4 (entry of MAILBOX_ARRIVING): A from its start (mode 1). */
 int Mailbox_EnterArriving(Mailbox *mailbox)
 {
-    func_02055060(mailbox->model_object, mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_A), MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0,
-                  0);
+    AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_A),
+                        MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov003_0221e1a4, Mailbox_EnterArriving)
@@ -262,8 +242,8 @@ CLEAN_AS(func_ov003_0221e1a4, Mailbox_EnterArriving)
  * letters. */
 void Mailbox_RunEmpty(Mailbox *mailbox)
 {
-    if (func_ov003_0221e6ac(mailbox)) {
-        func_020b2800(mailbox, MAILBOX_ARRIVING);
+    if (Mailbox_CountLetters(mailbox)) {
+        TownObjects_SetActorMode((SceneActor *) mailbox, MAILBOX_ARRIVING);
     }
 }
 CLEAN_AS(func_ov003_0221e1d8, Mailbox_RunEmpty)
@@ -272,11 +252,11 @@ CLEAN_AS(func_ov003_0221e1d8, Mailbox_RunEmpty)
  * (overlay 9's animation file 0) from its start in mode 1 on the model's render object. */
 int Mailbox_EnterEmpty(Mailbox *mailbox)
 {
-    func_02055060(mailbox->model_object, mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_A), MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0,
-                  0);
-    void *render_object = func_02055e00(mailbox->model_object);
-    void *file = func_ov009_02264cf8(mailbox, 0);
-    func_02056440(&mailbox->pattern, render_object, file, MAILBOX_PATTERN_EMPTY, MAILBOX_ONE, 0);
+    AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_A),
+                        MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0, 0);
+    void *render_object = ModelObject_RenderObject((ModelObject *) mailbox->model_object);
+    void *file = (void *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) mailbox, 0);
+    ModelAnim_Restart((ModelAnim *) &mailbox->pattern, render_object, file, MAILBOX_PATTERN_EMPTY, MAILBOX_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov003_0221e1f4, Mailbox_EnterEmpty)
@@ -298,8 +278,8 @@ void Mailbox_RunMode(Mailbox *mailbox)
     if (mailbox->mode < MAILBOX_MODES) {
         MemberPointer_CallVoid(&data_ov003_0223ca68[mailbox->mode], mailbox);
     }
-    if (func_02056f28(&mailbox->pattern, MAILBOX_PATTERN_SOUND_FRAME)) {
-        func_ov009_02262ef0(mailbox->sound, MAILBOX_SE_PATTERN);
+    if (FrameCtrl_Passed((const FrameCtrl *) &mailbox->pattern, MAILBOX_PATTERN_SOUND_FRAME)) {
+        SceneActorSound_Play((SceneActorSound *) mailbox->sound, MAILBOX_SE_PATTERN);
     }
 }
 CLEAN_AS(func_ov003_0221e254, Mailbox_RunMode)
@@ -324,7 +304,7 @@ int Mailbox_SetMode(Mailbox *mailbox, unsigned int mode)
     if (MemberPointer_CallInt(&data_ov003_0223ca30[mode], mailbox) == 0) {
         return 0;
     }
-    if (func_020b30e8(mailbox->code, (unsigned char) mode) == 0) {
+    if (TownObjects_SetRecordedMode(mailbox->code, (unsigned char) mode) == 0) {
         return 0;
     }
     mailbox->mode = (u8) mode;
@@ -337,7 +317,7 @@ CLEAN_AS(func_ov003_0221e32c, Mailbox_SetMode)
 void Mailbox_RunClose(Mailbox *mailbox)
 {
     if (mailbox->mode == MAILBOX_EMPTY || mailbox->mode == MAILBOX_FULL) {
-        func_0203e020(mailbox);
+        EventQueue_FinishObjectEvent(mailbox);
     }
 }
 CLEAN_AS(func_ov003_0221e404, Mailbox_RunClose)
@@ -397,14 +377,6 @@ extern Mtx43 data_021fbe48;
 /* The heap its pattern's animation object comes from. */
 extern Heap *data_021c9b1c;
 extern NetSession *data_020ccf94;
-/* Overlay 9's scene actor: its model's matrix built from its placement (the point at 0xc4 and
- * the turn about y at 0xd0), its destructor and its constructor. */
-extern void func_ov009_022648a4(Mailbox *mailbox, Mtx43 *matrix);
-extern void *func_ov009_0226539c(Mailbox *mailbox);
-extern void *func_ov009_0226552c(Mailbox *mailbox);
-/* Its index in overlay 3's table of 32 scene actors (data_ov003_0223cef0), -1 when it is not
- * there. */
-extern int func_ov003_02220150(Mailbox *mailbox);
 
 /* The point and the turn overlay 9 builds the model's matrix from (bytes 0xc4 to 0xd1 of the
  * scene actor). */
@@ -595,7 +567,7 @@ int Mailbox_ModelMatrix(Mailbox *mailbox, Mtx43 *matrix)
     point.y = 0;
     point.z = actor->position.z - MAILBOX_MODEL_Z;
     placement->turn = (u16) Globe_BendFar(&placement->point, &point);
-    func_ov009_022648a4(mailbox, matrix);
+    SceneActor_PivotMatrix((SceneActor *) mailbox, matrix);
     mailbox_copy_matrix(&data_021fbe48, matrix);
     Mtx43_Translate(&data_021fbe48, -MAILBOX_MODEL_X, 0, MAILBOX_MODEL_Z);
     mailbox_copy_matrix(matrix, &data_021fbe48);
@@ -696,12 +668,14 @@ int Mailbox_SetUp(Mailbox *mailbox)
 {
     SceneActor *actor = mailbox_actor(mailbox);
     ModelAnim *pattern = mailbox_pattern(mailbox);
-    if (func_ov009_02264cf8(mailbox, 0) != NULL && ModelAnim_AllocMaterialAnim(pattern, actor->model, data_021c9b1c) != 0) {
-        ModelAnim_Start(pattern, func_ov009_02264cf8(mailbox, 0), MAILBOX_PATTERN_SETUP_FLAGS, MAILBOX_ONE, 0);
+    if (SceneActor_SrtAnim((SceneActor *) mailbox, 0) != 0 &&
+        ModelAnim_AllocMaterialAnim(pattern, actor->model, data_021c9b1c) != 0) {
+        ModelAnim_Start(pattern, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) mailbox, 0),
+                        MAILBOX_PATTERN_SETUP_FLAGS, MAILBOX_ONE, 0);
         ModelAnim_Attach(pattern, ModelObject_RenderObject((ModelObject *) (void *) mailbox->model_object));
     }
 
-    u8 index = (u8) func_ov003_02220150(mailbox);
+    u8 index = (u8) ObjectActors_IndexOf((SceneActor *) mailbox);
     Vec3 centre = actor->position;
     centre.y += MAILBOX_SPHERE_HEIGHT;
     TouchPick_SetSphereAndAdd((TouchPick *) (intptr_t) SceneQuery_FieldObject(), mailbox_sphere(mailbox), &centre,
@@ -735,7 +709,7 @@ static void mailbox_destroy_parts(Mailbox *mailbox)
     mailbox->receiver_vtable = data_ov003_02239550;
     TouchPickSphere_Destruct2(mailbox_sphere(mailbox));
     ModelAnim_DestructComplete(mailbox_pattern(mailbox));
-    func_ov009_0226539c(mailbox);
+    SceneActor_Destruct((SceneActor *) mailbox);
 }
 
 /* func_ov003_0221e8c4 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -760,7 +734,7 @@ CLEAN_AS(func_ov003_0221e908, Mailbox_Destroy)
  * touch sphere. */
 Mailbox *Mailbox_Construct(Mailbox *mailbox)
 {
-    func_ov009_0226552c(mailbox);
+    SceneActor_ConstructBase((SceneActor *) mailbox);
     mailbox->vtable = data_ov003_0223948c;
     mailbox->receiver_vtable = data_ov003_02239550;
     ModelAnim_Construct(mailbox_pattern(mailbox));

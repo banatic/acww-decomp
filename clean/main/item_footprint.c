@@ -2,6 +2,8 @@
 #include "item_footprint.h"
 
 #include "clean.h"
+#include "furniture_info.h"
+#include "item_code.h"
 
 static_assert(offsetof(FootprintShape, count) == 0x10, "FootprintShape count");
 static_assert(sizeof(ItemFootprint) == 8, "ItemFootprint size");
@@ -12,10 +14,6 @@ extern FootprintShape *data_020dcfe0[ITEM_FOOTPRINT_SHAPES];
  * guard). */
 extern u32 data_021c8744;
 extern FootprintCell data_021c8748;
-
-extern int func_0204bc64(u16 *code); /* the code's item number, or -1 */
-extern u8 func_02053be0(int number); /* byte 5 of the furniture's data: its shape */
-extern int func_0204bc7c(u16 *code); /* the side the code's variant faces (0-3) */
 
 /* Entry `shape` of the table, read as the ROM does: a shape below 0 reads the words before it.
  * The address is formed as an integer so that no array is indexed out of its bounds. */
@@ -71,10 +69,10 @@ CLEAN_AS(func_02052e38, ItemFootprint_Destruct)
 ItemFootprint *ItemFootprint_Construct(ItemFootprint *footprint, u16 *code)
 {
     footprint->shape = ITEM_FOOTPRINT_NONE;
-    int number = func_0204bc64(code);
+    int number = ItemCode_VariantItem(code);
     if (number != -1) {
-        footprint->shape = func_02053be0(number);
-        footprint->side = func_0204bc7c(code);
+        footprint->shape = FurnitureInfo_Shape(number);
+        footprint->side = ItemCode_Variant(code);
     }
     return footprint;
 }

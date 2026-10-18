@@ -3,6 +3,8 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "bmg_file.h"
+#include "text_base.h"
 
 static_assert(offsetof(MessageFile, buffer) == 0xa4, "file buffer");
 static_assert(sizeof(MessageFile) == 0xaa4, "file");
@@ -16,14 +18,6 @@ extern const u8 data_020e51e8[]; /* the message file */
 extern const u8 data_020e51b8[]; /* 10 characters */
 extern const u8 data_020e51d0[]; /* 256 characters */
 extern const u8 data_020e5218[]; /* 46 characters */
-
-/* The file base: its constructor (with a first byte) and destructor. */
-extern void *func_020a9a90(void *file, u8 first);
-extern void *func_020a9a40(void *file);
-/* The label base: constructed, destroyed; a label's text emptied. */
-extern void *func_020a8cac(void *label);
-extern void *func_020a8c38(void *label);
-extern void func_020a8c1c(void *label);
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void __register_global_object(void *object, void *destruct, void *record);
@@ -60,7 +54,7 @@ CLEAN_AS(func_020b547c, MessageFile_Clear)
 MessageFile *MessageFile_Delete(MessageFile *file)
 {
     file->vtable = data_020e51e8;
-    func_020a9a40(file);
+    BmgFile_Destruct(file);
     Heap_OperatorDeleteB(file);
     return file;
 }
@@ -70,7 +64,7 @@ CLEAN_AS(func_020b5490, MessageFile_Delete)
 MessageFile *MessageFile_Destruct(MessageFile *file)
 {
     file->vtable = data_020e51e8;
-    func_020a9a40(file);
+    BmgFile_Destruct(file);
     return file;
 }
 CLEAN_AS(func_020b54b0, MessageFile_Destruct)
@@ -78,7 +72,7 @@ CLEAN_AS(func_020b54b0, MessageFile_Destruct)
 /* func_020b54c8: the constructor: the file base's (first byte 0), then its vtable. */
 MessageFile *MessageFile_Construct(MessageFile *file)
 {
-    func_020a9a90(file, 0);
+    BmgFile_Construct((BmgFile *) file, 0);
     file->vtable = data_020e51e8;
     return file;
 }
@@ -102,7 +96,7 @@ CLEAN_AS(func_020b54e8, MessageText10_Capacity)
 MessageText10 *MessageText10_Delete(MessageText10 *text)
 {
     text->vtable = data_020e51b8;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -112,7 +106,7 @@ CLEAN_AS(func_020b54ec, MessageText10_Delete)
 MessageText10 *MessageText10_Destruct(MessageText10 *text)
 {
     text->vtable = data_020e51b8;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     return text;
 }
 CLEAN_AS(func_020b550c, MessageText10_Destruct)
@@ -120,10 +114,10 @@ CLEAN_AS(func_020b550c, MessageText10_Destruct)
 /* func_020b5524: an empty text, with the 0 byte after its characters. */
 MessageText10 *MessageText10_Construct(MessageText10 *text)
 {
-    func_020a8cac(text);
+    TextBase_Construct(text);
     text->vtable = data_020e51b8;
     text->end = 0;
-    func_020a8c1c(text);
+    TextBase_Clear(text);
     return text;
 }
 CLEAN_AS(func_020b5524, MessageText10_Construct)
@@ -159,7 +153,7 @@ CLEAN_AS(func_020b5590, MessageText256_Capacity)
 MessageText256 *MessageText256_Delete(MessageText256 *text)
 {
     text->vtable = data_020e51d0;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -169,7 +163,7 @@ CLEAN_AS(func_020b5598, MessageText256_Delete)
 MessageText256 *MessageText256_Destruct(MessageText256 *text)
 {
     text->vtable = data_020e51d0;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     return text;
 }
 CLEAN_AS(func_020b55b8, MessageText256_Destruct)
@@ -177,9 +171,9 @@ CLEAN_AS(func_020b55b8, MessageText256_Destruct)
 /* func_020b55d0: an empty text. */
 MessageText256 *MessageText256_Construct(MessageText256 *text)
 {
-    func_020a8cac(text);
+    TextBase_Construct(text);
     text->vtable = data_020e51d0;
-    func_020a8c1c(text);
+    TextBase_Clear(text);
     return text;
 }
 CLEAN_AS(func_020b55d0, MessageText256_Construct)
@@ -202,7 +196,7 @@ CLEAN_AS(func_020b55f4, MessageText46_Capacity)
 MessageText46 *MessageText46_Delete(MessageText46 *text)
 {
     text->vtable = data_020e5218;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -212,7 +206,7 @@ CLEAN_AS(func_020b55f8, MessageText46_Delete)
 MessageText46 *MessageText46_Destruct(MessageText46 *text)
 {
     text->vtable = data_020e5218;
-    func_020a8c38(text);
+    TextBase_Destruct((TextBase *) text);
     return text;
 }
 CLEAN_AS(func_020b5618, MessageText46_Destruct)
@@ -220,9 +214,9 @@ CLEAN_AS(func_020b5618, MessageText46_Destruct)
 /* func_020b5630: an empty text. */
 MessageText46 *MessageText46_Construct(MessageText46 *text)
 {
-    func_020a8cac(text);
+    TextBase_Construct(text);
     text->vtable = data_020e5218;
-    func_020a8c1c(text);
+    TextBase_Clear(text);
     return text;
 }
 CLEAN_AS(func_020b5630, MessageText46_Construct)

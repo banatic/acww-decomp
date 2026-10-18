@@ -17,7 +17,7 @@
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
-#include "ov136/entry_picker.h"
+#include "ov134/clock_setter.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(BirthdayScreen, cursor_sprite) == 0x94, "cursor_sprite");
 static_assert(offsetof(BirthdayScreen, panel) == 0xf8 && offsetof(BirthdayScreen, picker) == 0x2c4, "panel");
@@ -86,7 +86,7 @@ static void birthday_update_sprite(Glider *sprite)
 static void birthday_destroy_members(BirthdayScreen *self)
 {
     self->base.vtable = data_ov137_0229d440;
-    func_ov134_0229beb0((char *) self->picker);
+    ClockSetter_Destroy(&self->picker);
     ButtonPanel_Destroy(&self->panel);
     Glider0_Destroy(&self->cursor_sprite);
     MenuScene_DestroyBase(birthday_scene(self));
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov137_0229c734, BirthdayScreen_HideCursorSprite)
 int BirthdayScreen_CursorY(BirthdayScreen *self)
 {
     if (BirthdayScreen_TestFlags(self, BIRTHDAY_SCREEN_FLAG_IN_LIST) != 0) {
-        return func_ov134_022999ac(self->picker);
+        return ClockSetter_CursorY(&self->picker);
     }
     u8 place = self->place;
     if (place == BIRTHDAY_SCREEN_PLACE_OK) {
@@ -240,7 +240,7 @@ CLEAN_AS(func_ov137_0229c750, BirthdayScreen_CursorY)
 int BirthdayScreen_CursorX(BirthdayScreen *self)
 {
     if (BirthdayScreen_TestFlags(self, BIRTHDAY_SCREEN_FLAG_IN_LIST) != 0) {
-        return func_ov134_022999e0(self->picker);
+        return ClockSetter_CursorX(&self->picker);
     }
     u8 place = self->place;
     if (place == BIRTHDAY_SCREEN_PLACE_OK) {
@@ -281,8 +281,8 @@ CLEAN_AS(func_ov137_0229c834, BirthdayScreen_ResumeList)
  * sprite following it (flagged), shown there, the key repeat reset (sub state 5). */
 void BirthdayScreen_ResumeListByKeys(BirthdayScreen *self)
 {
-    int y = func_ov134_022999ac(self->picker);
-    func_ov134_02299980(self->picker, y);
+    int y = ClockSetter_CursorY(&self->picker);
+    ClockSetter_CursorToY(&self->picker, y);
     BirthdayScreen_SetFlags(self, BIRTHDAY_SCREEN_FLAG_IN_LIST);
     BirthdayScreen_ShowSpriteAtCursor(self);
     MenuScene_ResetKeyRepeat(birthday_scene(self));
@@ -304,7 +304,7 @@ void BirthdayScreen_CancelList(BirthdayScreen *self)
 {
     BirthdayScreen_HideCursorSprite(self);
     BirthdayScreen_ClearFlags(self, BIRTHDAY_SCREEN_FLAG_IN_LIST);
-    func_ov134_0229a398(self->picker);
+    ClockSetter_CancelList(&self->picker);
     MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_LIST_CLOSE);
 }
 CLEAN_AS(func_ov137_0229c8a8, BirthdayScreen_CancelList)
@@ -315,7 +315,7 @@ void BirthdayScreen_PickInList(BirthdayScreen *self)
 {
     BirthdayScreen_HideCursorSprite(self);
     BirthdayScreen_ClearFlags(self, BIRTHDAY_SCREEN_FLAG_IN_LIST);
-    func_ov134_0229a3e4(self->picker);
+    ClockSetter_PickRow(&self->picker);
     MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_LIST_CLOSE);
 }
 CLEAN_AS(func_ov137_0229c8d4, BirthdayScreen_PickInList)
@@ -325,7 +325,7 @@ CLEAN_AS(func_ov137_0229c8d4, BirthdayScreen_PickInList)
 void BirthdayScreen_OpenList(BirthdayScreen *self, int field)
 {
     BirthdayScreen_HideCursorSprite(self);
-    func_ov134_0229a5c8(self->picker, field);
+    ClockSetter_OpenList(&self->picker, field);
     MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_LIST_OPEN);
 }
 CLEAN_AS(func_ov137_0229c900, BirthdayScreen_OpenList)
@@ -341,7 +341,7 @@ void BirthdayScreen_Confirm(BirthdayScreen *self)
     MenuScene_SetState(birthday_scene(self), BIRTHDAY_SCREEN_STATE_START_WIPE_OUT);
     MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_OK_PRESSED);
     u8 *record = PlayerRecords_Current();
-    func_ov134_0229bbdc(self->picker, &when);
+    ClockSetter_CopyValue(&self->picker, &when);
     PlayerRecord_SetBirthday(record, when.month, when.day);
 }
 CLEAN_AS(func_ov137_0229c92c, BirthdayScreen_Confirm)
@@ -380,11 +380,11 @@ CLEAN_AS(func_ov137_0229c9b4, BirthdayScreen_ResumeFieldsByTouch)
  * QUIRK: a field 0 would wrap the place (u8); the picker of a month and day only has 1, 2 and 6. */
 void BirthdayScreen_WaitListClosed(BirthdayScreen *self)
 {
-    if (func_ov134_0229a24c(self->picker) == 0) {
+    if (ClockSetter_CloseListStep(&self->picker) == 0) {
         return;
     }
-    int field = func_ov134_0229a8a0(self->picker);
-    if (field == ENTRY_PICKER_NO_FIELD) {
+    int field = ClockSetter_Focus(&self->picker);
+    if (field == CLOCK_SETTER_NO_FIELD) {
         self->place = BIRTHDAY_SCREEN_PLACE_OK;
     } else {
         self->place = (u8) (field - BIRTHDAY_SCREEN_FIELD_OF_PLACE);
@@ -396,7 +396,7 @@ CLEAN_AS(func_ov137_0229c9cc, BirthdayScreen_WaitListClosed)
 /* func_ov137_0229ca0c (sub state 12): once the list has opened, on to it. */
 void BirthdayScreen_WaitListOpen(BirthdayScreen *self)
 {
-    if (func_ov134_0229a4e4(self->picker)) {
+    if (ClockSetter_OpenListStep(&self->picker)) {
         BirthdayScreen_ResumeList(self);
     }
 }
@@ -435,7 +435,7 @@ CLEAN_AS(func_ov137_0229ca90, BirthdayScreen_WaitSpriteAnim)
 /* func_ov137_0229cab8 (sub state 9): once the cursor sprite's press is over. In a list: on its
  * scroll bar, the bar by the keys (sub state 6); else the value under the cursor taken and the
  * list closed. Among the fields: at OK the birthday is confirmed, at a field its list opens.
- * QUIRK: unlike overlay 136, the list closes keeping its value whether func_ov134_022997b0 took
+ * QUIRK: unlike overlay 136, the list closes keeping its value whether ClockSetter_PickCursorRow took
  * one or not. */
 void BirthdayScreen_AfterPress(BirthdayScreen *self)
 {
@@ -443,10 +443,10 @@ void BirthdayScreen_AfterPress(BirthdayScreen *self)
         return;
     }
     if (BirthdayScreen_TestFlags(self, BIRTHDAY_SCREEN_FLAG_IN_LIST) != 0) {
-        if (func_ov134_02299b70(self->picker) != 0) {
+        if (ClockSetter_PressThumbByKey(&self->picker) != 0) {
             MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_BAR);
         } else {
-            func_ov134_022997b0(self->picker);
+            ClockSetter_PickCursorRow(&self->picker);
             BirthdayScreen_PickInList(self);
         }
     } else if (self->place == BIRTHDAY_SCREEN_PLACE_OK) {
@@ -483,7 +483,7 @@ CLEAN_AS(func_ov137_0229cb20, BirthdayScreen_WaitCursorSprite)
  * list by the keys again, after the release animation; the cursor sprite follows meanwhile. */
 void BirthdayScreen_ReturnFromBar(BirthdayScreen *self)
 {
-    if (func_ov134_02299a60(self->picker)) {
+    if (ClockSetter_SettleThumb(&self->picker)) {
         MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_LIST);
         BirthdayScreen_PlayReleaseAnim(self);
     }
@@ -498,12 +498,12 @@ CLEAN_AS(func_ov137_0229cb48, BirthdayScreen_ReturnFromBar)
 void BirthdayScreen_ListBarByKeys(BirthdayScreen *self)
 {
     if ((data_021fbe40.held & BIRTHDAY_SCREEN_PAD_A) != 0) {
-        func_ov134_02299a90(self->picker);
+        ClockSetter_MoveThumbByKeys(&self->picker);
         int x = BirthdayScreen_CursorX(self);
         int y = BirthdayScreen_CursorY(self);
         Glider_PlaceAt(&self->cursor_sprite, x, y);
     } else {
-        func_ov134_02299a84(self->picker);
+        ClockSetter_ReleaseThumb(&self->picker);
         MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_BAR_RETURN);
     }
 }
@@ -520,18 +520,18 @@ void BirthdayScreen_ListByKeys(BirthdayScreen *self)
         return;
     }
     u32 keys = MenuScene_LatchRepeatedKeys(birthday_scene(self));
-    switch (func_ov134_022997dc(self->picker, (void *) (uintptr_t) keys)) {
-        case ENTRY_PICKER_KEYS_STEPPED:
+    switch (ClockSetter_ListKeys(&self->picker, keys)) {
+        case CLOCK_SETTER_KEYS_STEPPED:
             BirthdayScreen_SetFlags(self, BIRTHDAY_SCREEN_FLAG_QUICK);
             BirthdayScreen_GlideToCursor(self);
             break;
-        case ENTRY_PICKER_KEYS_SCROLLED: {
+        case CLOCK_SETTER_KEYS_FAST: {
             int x = BirthdayScreen_CursorX(self);
             int y = BirthdayScreen_CursorY(self);
             Glider_PlaceAt(&self->cursor_sprite, x, y);
             break;
         }
-        case ENTRY_PICKER_KEYS_NONE: {
+        case CLOCK_SETTER_KEYS_NONE: {
             u16 pressed = data_021fbe40.pressed;
             if ((pressed & BIRTHDAY_SCREEN_PAD_A) != 0) {
                 BirthdayScreen_PressSprite(self);
@@ -570,34 +570,36 @@ void BirthdayScreen_FieldsByKeys(BirthdayScreen *self)
 }
 CLEAN_AS(func_ov137_0229cc80, BirthdayScreen_FieldsByKeys)
 
-/* func_ov137_0229cce4 (sub state 3): while the pen is down the list follows it along its column;
- * once it is up, the list let go and back to it by touch (sub state 1). */
-void BirthdayScreen_DragListColumn(BirthdayScreen *self)
+/* func_ov137_0229cce4 (sub state 3): while the pen is down on the scroll bar off its thumb, the
+ * thumb moves toward it (ClockSetter_ThumbTowardPen); once it is up, the thumb let go and back to
+ * the list by touch (sub state 1). */
+void BirthdayScreen_ThumbTowardPen(BirthdayScreen *self)
 {
     if (data_021fbdd8 != 0) {
-        func_ov134_02299af0(self->picker, data_021f6c54);
+        ClockSetter_ThumbTowardPen(&self->picker, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->picker);
+        ClockSetter_ReleaseThumb(&self->picker);
         MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_TOUCH_LIST);
     }
 }
-CLEAN_AS(func_ov137_0229cce4, BirthdayScreen_DragListColumn)
+CLEAN_AS(func_ov137_0229cce4, BirthdayScreen_ThumbTowardPen)
 
-/* func_ov137_0229cd20 (sub state 2): ... by its scroll bar. */
-void BirthdayScreen_DragListBar(BirthdayScreen *self)
+/* func_ov137_0229cd20 (sub state 2): ... with the thumb held at the pen (ClockSetter_DragThumb). */
+void BirthdayScreen_DragThumb(BirthdayScreen *self)
 {
     if (data_021fbdd8 != 0) {
-        func_ov134_02299b18(self->picker, data_021f6c54);
+        ClockSetter_DragThumb(&self->picker, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->picker);
+        ClockSetter_ReleaseThumb(&self->picker);
         MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_TOUCH_LIST);
     }
 }
-CLEAN_AS(func_ov137_0229cd20, BirthdayScreen_DragListBar)
+CLEAN_AS(func_ov137_0229cd20, BirthdayScreen_DragThumb)
 
 /* func_ov137_0229cd5c (sub state 1): the list by touch. A button goes on by the keys. A touch
  * that went down or up this frame: on a value it is taken (the list closes), outside the list
- * closes without one, on the scroll bar or the column the list is dragged (sub state 2 or 3). */
+ * closes without one, on the scroll bar's thumb it is held (sub state 2), on the bar off the
+ * thumb the thumb moves toward the pen (sub state 3). */
 void BirthdayScreen_ListByTouch(BirthdayScreen *self)
 {
     if (MenuScene_TakeButtons(birthday_scene(self), 1) != 0) {
@@ -607,18 +609,18 @@ void BirthdayScreen_ListByTouch(BirthdayScreen *self)
     if (data_021fbdd8 == 0 || data_021fbddc == 0) {
         return;
     }
-    switch (func_ov134_0229a1f0(self->picker, data_021f6c58, data_021f6c54)) {
-        case ENTRY_PICKER_TOUCH_VALUE:
+    switch (ClockSetter_TouchList(&self->picker, data_021f6c58, data_021f6c54)) {
+        case CLOCK_SETTER_TOUCH_PICKED:
             BirthdayScreen_PickInList(self);
             break;
-        case ENTRY_PICKER_TOUCH_OUTSIDE:
+        case CLOCK_SETTER_TOUCH_OUTSIDE:
             BirthdayScreen_CancelList(self);
             break;
-        case ENTRY_PICKER_TOUCH_BAR:
-            MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_DRAG_BAR);
+        case CLOCK_SETTER_TOUCH_THUMB:
+            MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_DRAG_THUMB);
             break;
-        case ENTRY_PICKER_TOUCH_COLUMN:
-            MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_DRAG_COLUMN);
+        case CLOCK_SETTER_TOUCH_BAR:
+            MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_THUMB_TO_PEN);
             break;
         default:
             break;
@@ -642,8 +644,8 @@ void BirthdayScreen_FieldsByTouch(BirthdayScreen *self)
         BirthdayScreen_Confirm(self);
         return;
     }
-    int field = func_ov134_0229ab2c(self->picker, data_021f6c58, data_021f6c54);
-    if (field != ENTRY_PICKER_NO_FIELD) {
+    int field = ClockSetter_TouchedMonthDayField(&self->picker, data_021f6c58, data_021f6c54);
+    if (field != CLOCK_SETTER_NO_FIELD) {
         BirthdayScreen_OpenList(self, field);
     }
 }
@@ -652,7 +654,7 @@ CLEAN_AS(func_ov137_0229cdf4, BirthdayScreen_FieldsByTouch)
 /* func_ov137_0229ce70: the picker's characters and the panel's text colours loaded. */
 void BirthdayScreen_LoadGraphics(BirthdayScreen *self)
 {
-    func_ov134_0229b954(self->picker);
+    ClockSetter_LoadSprites(&self->picker);
     ButtonPanel_LoadTextColors(&self->panel);
 }
 CLEAN_AS(func_ov137_0229ce70, BirthdayScreen_LoadGraphics)
@@ -660,8 +662,8 @@ CLEAN_AS(func_ov137_0229ce70, BirthdayScreen_LoadGraphics)
 /* func_ov137_0229ce90: the picker's texts loaded, with its prompt (message 0x6d). */
 void BirthdayScreen_LoadTexts(BirthdayScreen *self)
 {
-    func_ov134_0229baec(self->picker);
-    func_ov134_0229ba10(self->picker, BIRTHDAY_SCREEN_PROMPT);
+    ClockSetter_LoadBackground(&self->picker);
+    ClockSetter_DrawLabels(&self->picker, BIRTHDAY_SCREEN_PROMPT);
 }
 CLEAN_AS(func_ov137_0229ce90, BirthdayScreen_LoadTexts)
 
@@ -682,7 +684,7 @@ CLEAN_AS(func_ov137_0229ceb0, BirthdayScreen_SetUpLayers)
 /* func_ov137_0229cefc: the frame's end: the picker's. */
 void BirthdayScreen_EndFrame(BirthdayScreen *self)
 {
-    func_ov134_0229bbe8(self->picker);
+    ClockSetter_Update(&self->picker);
 }
 CLEAN_AS(func_ov137_0229cefc, BirthdayScreen_EndFrame)
 
@@ -690,7 +692,7 @@ CLEAN_AS(func_ov137_0229cefc, BirthdayScreen_EndFrame)
 void BirthdayScreen_BeginFrame(BirthdayScreen *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
-    func_ov134_0229bcac(self->picker);
+    ClockSetter_EndFrame(&self->picker);
 }
 CLEAN_AS(func_ov137_0229cf0c, BirthdayScreen_BeginFrame)
 
@@ -712,7 +714,7 @@ CLEAN_AS(func_ov137_0229cf30, BirthdayScreen_BeginInteractiveFrame)
 /* func_ov137_0229cf48: the members torn down: the picker's, then the panel's texts closed. */
 void BirthdayScreen_Teardown(BirthdayScreen *self)
 {
-    func_ov134_0229bcf0(self->picker);
+    ClockSetter_Teardown(&self->picker);
     ButtonPanel_CloseTexts(&self->panel);
 }
 CLEAN_AS(func_ov137_0229cf48, BirthdayScreen_Teardown)
@@ -721,7 +723,7 @@ CLEAN_AS(func_ov137_0229cf48, BirthdayScreen_Teardown)
  * cursor at the month, no flags. */
 void BirthdayScreen_Setup(BirthdayScreen *self)
 {
-    func_ov134_0229bd38(self->picker, ENTRY_PICKER_KIND_MONTH_DAY, 6, 4, 3);
+    ClockSetter_Init(&self->picker, CLOCK_SETTER_MODE_MONTH_DAY, 6, 4, 3);
     self->place = BIRTHDAY_SCREEN_PLACE_MONTH;
     self->flags = 0;
 }
@@ -869,7 +871,7 @@ int BirthdayScreen_Draw(BirthdayScreen *self)
     if (BirthdayScreen_TestFlags(self, BIRTHDAY_SCREEN_FLAG_DRAWN) == 0) {
         return 0;
     }
-    func_ov134_0229b220(self->picker, 0, MenuScene_WipeOffsetY(birthday_scene(self)));
+    ClockSetter_Draw(&self->picker, 0, MenuScene_WipeOffsetY(birthday_scene(self)));
     ButtonPanel_Draw(&self->panel, MenuScene_WipeOffsetY(birthday_scene(self)));
     return 1;
 }
@@ -909,7 +911,7 @@ BirthdayScreen *BirthdayScreen_New(void)
     self->base.vtable = data_ov137_0229d440;
     Glider0_Construct(&self->cursor_sprite);
     ButtonPanel_Construct(&self->panel);
-    func_ov134_0229bed4(self->picker);
+    ClockSetter_Construct(&self->picker);
     return self;
 }
 CLEAN_AS(func_ov137_0229d314, BirthdayScreen_New)

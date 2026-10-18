@@ -455,7 +455,7 @@ int FishShadow_FindSpot(FishShadowProcess *self, int *unit_x, int *unit_z, int *
         int first = group == FISH_SHADOW_IN_GROUP0 ? 0 : FISH_SHADOW_GROUP_SIZE;
         for (int i = first; i < first + FISH_SHADOW_GROUP_SIZE; i++) {
             FishShadow *other = &data_ov003_0225f76c[i];
-            if (skip != other && x == other->tile_x && z == other->tile_z) {
+            if (skip != other && x == other->acre_x && z == other->acre_z) {
                 return 0;
             }
         }
@@ -595,8 +595,8 @@ int FishShadow_Place(FishShadowProcess *self, FishShadow *fish, int group)
     fish->state = FISH_SHADOW_PLACED;
     fish->behaviour = 0;
     fish->last_position = at;
-    fish->tile_x = acre_x;
-    fish->tile_z = acre_z;
+    fish->acre_x = acre_x;
+    fish->acre_z = acre_z;
     fish->timer = -1;
     return 1;
 }

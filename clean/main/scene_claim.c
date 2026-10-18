@@ -4,6 +4,10 @@
 #include "clean.h"
 #include "main/acre_tile.h" /* AcreTile_SnapToTileCentre */
 #include "session.h"
+#include "scene_exit.h"
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "session_players.h"
 
 static_assert(offsetof(SceneClaimExit, next_tile) == 0x10, "SceneClaimExit.next_tile is at 0x10");
 static_assert(offsetof(SceneClaimExit, angle) == 0x1c, "SceneClaimExit.angle is at 0x1c");
@@ -39,20 +43,6 @@ typedef struct SceneClaimPlayer {
     s16 angle; /* 0x8e */
 } SceneClaimPlayer;
 static_assert(offsetof(SceneClaimPlayer, angle) == 0x8e, "SceneClaimPlayer.angle is at 0x8e");
-
-extern SceneClaimPlayer *func_020961a8(int player);
-extern u8 func_020b65c4(void); /* the scene */
-extern u8 func_020b65b8(void); /* the scene before it */
-/* The scene's table of exits; an exit's scene, position, word 0x10, angle and bytes 0x14 and
- * 0x15 (the last two pointers, when not NULL, get two more words); whether there is such an
- * exit. */
-extern void *func_020b5e10(void);
-extern int func_020b6140(void *table, int exit, u8 *scene, Vec3 *position, int *unk_10, s16 *angle, u8 *unk_14, u8 *unk_15,
-                         int *unk_a, int *unk_b);
-/* An exit's byte 0x18 and its angle (halfword 0x16); whether there is such an exit. */
-extern int func_020b6044(void *table, int exit, int *placed, s16 *angle);
-/* Where the exit puts a player who is at `from`; whether there is such an exit. */
-extern int func_020b5fc8(void *table, int exit, Vec3 *position, const Vec3 *from);
 
 /* The element destructor handed to __cxa_vec_cleanup (SceneClaimMask_Destruct's). */
 extern void func_0209d934(void *mask);
@@ -116,8 +106,8 @@ void SceneClaim_Leave(void)
     if (data_020e54a8 != 1) {
         return;
     }
-    u8 scene = func_020b65c4();
-    u8 before = func_020b65b8();
+    u8 scene = SceneQuery_Current();
+    u8 before = SceneQuery_Previous();
     for (unsigned int i = 0; i < SCENE_CLAIM_ROOMS; i++) {
         if (scene == data_020d1ad8[i].exit_to && before == data_020d1ad8[i].scene) {
             SceneClaim_Release(before, HOST_SLOT);
@@ -153,15 +143,15 @@ CLEAN_AS(func_0209d5e8, SceneClaim_Exit)
  * missing, else 1. */
 int SceneClaim_TakeExit(int exit)
 {
-    SceneClaimPlayer *player = func_020961a8(THIS_PLAYER);
+    SceneClaimPlayer *player = SessionPlayers_ActorOf(THIS_PLAYER);
     u8 scene;
     u8 unk_14;
     u8 unk_15;
     s16 unused_angle;
     Vec3 unused_position;
     int unk_10;
-    int found =
-        func_020b6140(func_020b5e10(), exit, &scene, &unused_position, &unk_10, &unused_angle, &unk_14, &unk_15, NULL, NULL);
+    int found = SceneExit_Resolve((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), exit, &scene, &unused_position,
+                                  &unk_10, &unused_angle, &unk_14, &unk_15, NULL, NULL);
     SceneClaimExit_SetAnswer(&data_021dc6e8, SCENE_CLAIM_WAITING);
     if (found == 0 || player == NULL) {
         return 0;
@@ -172,8 +162,8 @@ int SceneClaim_TakeExit(int exit)
     int placed;
     s16 exit_angle;
     Vec3 exit_position;
-    func_020b6044(func_020b5e10(), exit, &placed, &exit_angle);
-    func_020b5fc8(func_020b5e10(), exit, &exit_position, &from);
+    SceneExit_DoorInfo((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), exit, &placed, &exit_angle);
+    SceneExit_DoorPoint((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), exit, &exit_position, &from);
 
     SceneClaimExit_SetExit(&data_021dc6e8, exit);
     SceneClaimExit_SetPlaced(&data_021dc6e8, (unsigned char) placed);
@@ -219,7 +209,8 @@ int SceneClaim_IsClaimedExit(int exit)
     s16 angle;
     Vec3 position;
     int unk_10;
-    if (func_020b6140(func_020b5e10(), exit, &scene, &position, &unk_10, &angle, &unk_14, &unk_15, NULL, NULL) == 0) {
+    if (SceneExit_Resolve((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), exit, &scene, &position, &unk_10, &angle,
+                          &unk_14, &unk_15, NULL, NULL) == 0) {
         return 0;
     }
     return SceneClaim_IsClaimed(scene);

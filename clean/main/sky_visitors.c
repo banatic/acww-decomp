@@ -8,6 +8,9 @@
 #include "sky_resources.h"
 #include "sky_shots.h"
 #include "state_block.h"
+#include "main_random.h"
+#include "player_actor_ops.h"
+#include "player_actors.h"
 
 static_assert(sizeof(SkyVisitorVars) == 12, "the words at 0x60");
 
@@ -52,9 +55,6 @@ extern const fx16 FX_SinCosTable_[4096 * 2];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern int func_020952ec(void);      /* this system's player */
-extern const Vec3 *func_02095794(int player);
 
 static SkyVisitorVars *sky_visitor_vars(SkyObject *object)
 {
@@ -232,7 +232,7 @@ void SkyKind6_Run(SkyObject *object)
         case SKY_VISITOR_FALLING:
             if (body->position.y > SKY_VISITOR_BOTTOM) {
                 EventSchedule_MarkToday(SKY_KIND6_EVENT);
-                EventBuildings_Place5020(func_02095794(func_020952ec()), body->forward == 0 ? 1 : 0);
+                EventBuildings_Place5020(PlayerActorOps_StartPosition(PlayerActors_OwnPlayer()), body->forward == 0 ? 1 : 0);
                 SkyShots_StartFall5(&data_021fbaf0);
                 body->state = SKY_OBJECT_DONE;
             }
@@ -269,7 +269,7 @@ void SkyKind6_SetUp(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     SkyVisitorVars *vars = sky_visitor_vars(object);
-    SkyObjectKinds_StartPath(object, func_020644cc(2) == 0 ? 1 : 0, SKY_KIND6_SWAY);
+    SkyObjectKinds_StartPath(object, MainRandom_Below(2) == 0 ? 1 : 0, SKY_KIND6_SWAY);
     body->animation = SKY_KIND6_ANIMATION;
     body->priority = SKY_VISITOR_PRIORITY;
     StateBlock_SetFlag((u32 *) (void *) &data_021dc7a8, SKY_KIND6_STATE_FLAG);
@@ -294,11 +294,11 @@ void SkyKind6_Sparkle(SkyObject *object)
         vars->count = count - 1;
         return;
     }
-    vars->count = (s32) func_020644cc(2) + 1;
-    u32 look = func_020644cc(2) + 2;
+    vars->count = (s32) MainRandom_Below(2) + 1;
+    u32 look = MainRandom_Below(2) + 2;
     fx32 size = body->scale_x;
-    fx32 distance = FX_Div((fx32) (func_020644cc(0x10) << 12), size);
-    int index = ((u16) func_020644cc(0x10000) >> 4) * 2;
+    fx32 distance = FX_Div((fx32) (MainRandom_Below(0x10) << 12), size);
+    int index = ((u16) MainRandom_Below(0x10000) >> 4) * 2;
     fx32 y = body->position.y + FX_MulFunc(distance, FX_SinCosTable_[index]);
     Vec3 at;
     at.x = body->position.x + FX_MulFunc(distance, FX_SinCosTable_[index + 1]);
@@ -371,7 +371,7 @@ void SkyKind5_SetUp(SkyObject *object, int param)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     SkyVisitorVars *vars = sky_visitor_vars(object);
-    SkyObjectKinds_StartPath(object, func_020644cc(2) == 0 ? 1 : 0, SKY_KIND5_SWAY);
+    SkyObjectKinds_StartPath(object, MainRandom_Below(2) == 0 ? 1 : 0, SKY_KIND5_SWAY);
     body->animation = SKY_KIND5_ANIMATION;
     body->priority = SKY_VISITOR_PRIORITY;
     vars->state = SKY_VISITOR_CROSSING;

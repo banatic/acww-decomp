@@ -10,6 +10,8 @@
 #include "room_object_life.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "main/room_sync.h"
+#include "room_objects.h"
 
 static_assert(offsetof(RoomObject, light_switch) == 0x740, "switch");
 static_assert(offsetof(RoomObject, node_set) == 0x764, "node set");
@@ -36,11 +38,6 @@ extern const u8 data_ov004_02247698[ROOM_OBJECT_022518E8_STATE_COUNT];
 extern const u8 data_ov004_022518e8[];
 extern const u8 data_ov004_02251994[];
 
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-
 /* Vtable slot 0x70: RoomObject022518e8_EnterState for this class. */
 static void RoomObject022518e8_switch_to(RoomObject022518e8 *object, int state)
 {
@@ -52,7 +49,7 @@ static void RoomObject022518e8_switch_to(RoomObject022518e8 *object, int state)
 static void RoomObject022518e8_on_touch(RoomObject022518e8 *object, int state)
 {
     if (Switch_IsPending(&object->base.light_switch)) {
-        func_0205265c((unsigned int) (uintptr_t) object, state, SLOT_70_VALUE, 1);
+        RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
     } else if (RoomObject_Unk76CIs2(&object->base)) {
         RoomObject022518e8_switch_to(object, state);
     }
@@ -210,12 +207,12 @@ int RoomObject022518e8_Update(RoomObject022518e8 *object)
 CLEAN_AS(_ZN18Obj_ov004_022518e819func_ov004_02219274Ev, RoomObject022518e8_Update)
 
 /* func_ov004_02219284 (vtable slot 0x7c, once the model is bound): binds the animations of
- * variant 0 (once, from the start); ON when the switch is on and func_ov004_0223c10c says no,
+ * variant 0 (once, from the start); ON when the switch is on and RoomObjects_InNookOrScene0AOr0F says no,
  * else OFF; done at once. */
 int RoomObject022518e8_Start(RoomObject022518e8 *object)
 {
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
-    if (Switch_Value(&object->base.light_switch) != 0 && !func_ov004_0223c10c()) {
+    if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_ON);
     } else {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_OFF);

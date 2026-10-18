@@ -12,6 +12,8 @@
 #include "main/player_record.h"
 #include "main/player_records.h"
 #include "main/start_kind.h"
+#include "ov009/scene_actor_files.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(SceneActor, message) == 0x10a, "receiver byte 0x1e");
@@ -45,15 +47,6 @@ extern const u8 data_ov003_02239754[];
 extern const u8 data_ov003_02239818[];
 /* The town's Nook's store. */
 extern NookStore data_021f395c;
-
-/* Overlay 9's scene actor: the paths of its archive, texture and light texture (vtable slots
- * 0xa4, 0xa8 and 0xac; the last gives none for some codes), its destructor and its
- * constructor. */
-extern int *func_ov009_02264c10(StoreFront *store);
-extern char *func_ov009_02264be0(StoreFront *store);
-extern void *func_ov009_02264b64(StoreFront *store);
-extern void *func_ov009_0226539c(StoreFront *store);
-extern void *func_ov009_0226552c(StoreFront *store);
 
 static MessageReceiver *store_front_receiver(StoreFront *store)
 {
@@ -184,7 +177,7 @@ CLEAN_AS(func_ov003_0221ec24, StoreFront_PrepareTalk)
  * path; its callers read it although this is declared void. */
 void StoreFront_LightTexturePath(StoreFront *store)
 {
-    func_ov009_02264b64(store);
+    SceneActor_LitTexturePath((SceneActor *) store);
 }
 CLEAN_AS(func_ov003_0221ed48, StoreFront_LightTexturePath)
 
@@ -192,7 +185,7 @@ CLEAN_AS(func_ov003_0221ed48, StoreFront_LightTexturePath)
  * QUIRK: hands back what overlay 9's function returns, as StoreFront_LightTexturePath. */
 void StoreFront_TexturePath(StoreFront *store)
 {
-    func_ov009_02264be0(store);
+    SceneActor_TexturePath((SceneActor *) store);
 }
 CLEAN_AS(func_ov003_0221ed50, StoreFront_TexturePath)
 
@@ -200,7 +193,7 @@ CLEAN_AS(func_ov003_0221ed50, StoreFront_TexturePath)
  * QUIRK: hands back what overlay 9's function returns, as StoreFront_LightTexturePath. */
 void StoreFront_ArchivePath(StoreFront *store)
 {
-    func_ov009_02264c10(store);
+    SceneActor_ArchivePath((SceneActor *) store);
 }
 CLEAN_AS(func_ov003_0221ed58, StoreFront_ArchivePath)
 
@@ -218,7 +211,7 @@ static void store_front_destroy_parts(StoreFront *store)
 {
     store->actor.vtable = data_ov003_02239754;
     store->actor.receiver_vtable = data_ov003_02239818;
-    func_ov009_0226539c(store);
+    SceneActor_Destruct((SceneActor *) store);
 }
 
 /* func_ov003_0221ed80 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -242,7 +235,7 @@ CLEAN_AS(func_ov003_0221edac, StoreFront_Destroy)
 /* func_ov003_0221edd0: the constructor: overlay 9's, then the vtables. */
 StoreFront *StoreFront_Construct(StoreFront *store)
 {
-    func_ov009_0226552c(store);
+    SceneActor_ConstructBase((SceneActor *) store);
     store->actor.vtable = data_ov003_02239754;
     store->actor.receiver_vtable = data_ov003_02239818;
     return store;

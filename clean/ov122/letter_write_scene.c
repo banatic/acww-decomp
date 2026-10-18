@@ -24,6 +24,7 @@
 #include "ov002/key_repeat.h"
 #include "ov002/paper.h"
 #include "ov004/member_pointer.h"
+#include "ov095/soft_keyboard.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterWriteScene, cursor_x) == 0x9c, "cursor");
 static_assert(offsetof(LetterWriteScene, flags) == 0xa8 && offsetof(LetterWriteScene, position) == 0xac, "flags");
@@ -58,20 +59,6 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern const unsigned char data_ov122_022a2584[];
 extern const unsigned short data_ov122_022a258c[];
 
-/* The keyboard of overlay 95 (no Clean version yet). */
-extern void func_ov095_0229cce0(void *keyboard); /* releases its pressed keys */
-extern void func_ov095_02299aec(void *keyboard); /* sets its key place by its mode */
-extern int func_ov095_02299b7c(void *keyboard);  /* the key's x */
-extern int func_ov095_02299b38(void *keyboard);  /* the key's y */
-extern void func_ov095_0229cd30(int keyboard);   /* resets its keys */
-/* Deletes the characters from `from` to `to` of a text of `length`, filling the end with 0;
- * gives the lower of the two. */
-extern int func_ov095_0229bbc0(int unused, unsigned short *text, int from, int to, int length);
-/* The character of a text of `length` characters (at most `limit` pixels wide) whose middle is
- * past `x` pixels, into *index; gives the pixels before it. */
-extern unsigned char func_ov095_0229bb34(int unused, const unsigned short *text, int length, int limit, unsigned char x,
-                                         unsigned char *index);
-
 /* The characters before a 0, at most `max` (main's). */
 extern int func_02051c8c_unk(u16 *text, int max);
 
@@ -85,9 +72,11 @@ static PagedChoice *letter_write_choice(LetterWriteScene *self)
     return (PagedChoice *) (void *) self->choice;
 }
 
-static int letter_write_keyboard_arg(LetterWriteScene *self)
+/* The keyboard runs past `keyboard` into the scene's own members after it
+ * (ov095/soft_keyboard.h). */
+static SoftKeyboard *letter_write_keyboard(LetterWriteScene *self)
 {
-    return (int) (uintptr_t) self->keyboard;
+    return (SoftKeyboard *) (void *) self->keyboard;
 }
 
 /* The pointer's update through its class (vtable slot 3). */
@@ -236,7 +225,7 @@ CLEAN_AS(func_ov122_0229f150, LetterWrite_PointerFirstOfSet)
 /* func_ov122_0229f170: the keyboard's pressed keys released, the pointer at the third of its set. */
 void LetterWrite_BeginSub0A(LetterWriteScene *self)
 {
-    func_ov095_0229cce0(self->keyboard);
+    SoftKeyboard_ReleasePressed(letter_write_keyboard(self));
     Glider_ShowThirdOfSet(&self->pointer);
     MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_0A);
 }
@@ -257,8 +246,8 @@ void LetterWrite_PlacePointer(LetterWriteScene *self)
     if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_POINTER_ON_TEXT)) {
         Glider_PlaceAt(&self->pointer, self->cursor_x, self->cursor_y - self->scroll_target);
     } else {
-        int x = func_ov095_02299b7c(self->keyboard);
-        int y = func_ov095_02299b38(self->keyboard);
+        int x = SoftKeyboard_CursorX(letter_write_keyboard(self));
+        int y = SoftKeyboard_CursorY(letter_write_keyboard(self));
         Glider_PlaceAt(&self->pointer, x, y);
     }
     letter_write_update_pointer(self);
@@ -282,8 +271,8 @@ void LetterWrite_GlidePointer(LetterWriteScene *self)
         Glider_EaseToByDistance(&self->pointer, self->cursor_x, self->cursor_y - self->scroll_target, 3, 2);
         self->return_sub_state = LETTER_WRITE_SUB_0C;
     } else {
-        int x = func_ov095_02299b7c(self->keyboard);
-        int y = func_ov095_02299b38(self->keyboard);
+        int x = SoftKeyboard_CursorX(letter_write_keyboard(self));
+        int y = SoftKeyboard_CursorY(letter_write_keyboard(self));
         Glider_EaseToByDistance(&self->pointer, x, y, 3, 2);
         self->return_sub_state = LETTER_WRITE_SUB_KEYS;
     }
@@ -305,9 +294,9 @@ void LetterWrite_PointAtKey(LetterWriteScene *self)
     int x, y;
 
     LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_POINTER_ON_TEXT);
-    func_ov095_02299aec(self->keyboard);
-    x = func_ov095_02299b7c(self->keyboard);
-    y = func_ov095_02299b38(self->keyboard);
+    SoftKeyboard_PlaceCursorHome(letter_write_keyboard(self));
+    x = SoftKeyboard_CursorX(letter_write_keyboard(self));
+    y = SoftKeyboard_CursorY(letter_write_keyboard(self));
     Glider_PlaceAt(&self->pointer, x, y);
     Glider_SetAnim(&self->pointer, GLIDER_ANIM_SET_A);
     LetterWrite_PointerFirstOfSet(self);
@@ -690,8 +679,8 @@ void LetterWrite_DeleteMarked(LetterWriteScene *self)
             break;
     }
 
-    position = (u8) func_ov095_0229bbc0(letter_write_keyboard_arg(self), (unsigned short *) (uintptr_t) text, (int) low,
-                                        (int) high, length);
+    position = (u8) SoftKeyboard_DeleteRange(letter_write_keyboard(self), (unsigned short *) (uintptr_t) text, (int) low,
+                                             (int) high, length);
     if (self->part == LETTER_WRITE_PART_HEADER_AFTER) {
         position = (u8) (position - self->letter->header_line);
     }
@@ -915,8 +904,8 @@ int LetterWrite_FooterPositionAt(LetterWriteScene *self, s32 *x)
         index = 0;
         *x = room + 0x30;
     } else {
-        int before = func_ov095_0229bb34(letter_write_keyboard_arg(self), self->letter->footer, LETTER_FOOTER_CHARS, 0xa0,
-                                         (u8) (at - room), &index);
+        int before = SoftKeyboard_TextColumnAt(letter_write_keyboard(self), self->letter->footer, LETTER_FOOTER_CHARS, 0xa0,
+                                               (u8) (at - room), &index);
         *x = room + before + 0x30;
     }
     return index;
@@ -942,8 +931,8 @@ unsigned char LetterWrite_BodyPositionAt(LetterWriteScene *self, int line, s32 *
 {
     s32 start = LetterView_LineStarts(&self->view)[line];
     u8 index;
-    int before =
-        func_ov095_0229bb34(letter_write_keyboard_arg(self), self->letter->body + start, 0x28, 0xa0, (u8) (*x - 0x30), &index);
+    int before = SoftKeyboard_TextColumnAt(letter_write_keyboard(self), self->letter->body + start, 0x28, 0xa0,
+                                           (u8) (*x - 0x30), &index);
 
     *x = before + 0x30;
     return (unsigned char) (index + start);
@@ -998,8 +987,8 @@ u8 LetterWrite_HeaderPositionAt(LetterWriteScene *self, int x, u8 *part)
     int after_name;
     int middle;
 
-    func_ov095_0229bb34(letter_write_keyboard_arg(self), self->shown_header, LETTER_WRITE_SHOWN_HEADER_CHARS, 0xa0,
-                        (u8) (x - 0x30), &index);
+    SoftKeyboard_TextColumnAt(letter_write_keyboard(self), self->shown_header, LETTER_WRITE_SHOWN_HEADER_CHARS, 0xa0,
+                              (u8) (x - 0x30), &index);
 
     line = self->letter->header_line;
     after_name = (int) LetterView_NameLength(&self->view) + line;
@@ -1043,7 +1032,7 @@ void LetterWrite_Start(LetterWriteScene *self)
     LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_1000);
     LetterWrite_SetPosition(self, 0);
     LetterWrite_EndMark(self);
-    func_ov095_0229cd30(letter_write_keyboard_arg(self));
+    SoftKeyboard_ResetKeyLooks(letter_write_keyboard(self));
     LetterWrite_UpdateKeys(self);
 }
 CLEAN_AS(func_ov122_0229fedc, LetterWrite_Start)
@@ -1142,58 +1131,6 @@ extern const char data_ov122_022a27c8[]; /* "menu/chat2/b_cht.bch" */
 /* The panel's buttons at the panel cursor's two places ({3, 4}). */
 extern const u8 data_ov122_022a2580[];
 
-/* The keyboard (overlay 95; no Clean version yet). Its keys are numbered; a key has a code
- * (func_ov095_0229c448) and can be disabled (a bit of its word 0x20). */
-extern void func_ov095_022999e8(void *keyboard); /* sound 23 */
-extern void func_ov095_022999f4(void *keyboard); /* sound 22 */
-/* The key its cursor is on, -1 when that key cannot be pressed now. */
-extern int func_ov095_02299a00(void *keyboard);
-/* The cursor moved by the d-pad keys: 1-3 when it leaves the keys toward the text (the
- * pointer's turn), 0 or 4 otherwise. */
-extern int func_ov095_02299a54(void *keyboard, int keys);
-extern int func_ov095_0229aff0(void *keyboard); /* a mode tab under the pen: the mode changed, 1 */
-extern int func_ov095_0229b324(void *keyboard); /* its screen's files loaded */
-extern void func_ov095_0229b388(int keyboard);  /* its flag 2 cleared */
-extern void func_ov095_0229b394(int keyboard);  /* its flag 2 set */
-/* A character being composed taken back (0 when there was none to take back). */
-extern int func_ov095_0229b3a0(void *keyboard, u16 *text, int position);
-extern void func_ov095_0229b3ec(void *keyboard); /* the composition dropped */
-/* A code of the keyboard's own (the modes, the composition): what it did, 0 for none. */
-extern int func_ov095_0229ba44(void *keyboard, int code, int layer);
-extern int func_ov095_0229bb94(void *keyboard, int character); /* the conversions: 0 for none */
-extern int func_ov095_0229bb98(void *keyboard, int character);
-extern int func_ov095_0229bb9c(void *keyboard, int character);
-/* The character before `position` replaced. */
-extern int func_ov095_0229bba0(int keyboard, unsigned short *text, int character, int position);
-/* A character put into the body at *position, its lines broken as the view breaks them; with
- * `test_only` the text is left as it was. 1 when it fits. */
-extern int func_ov095_0229bc00(void *keyboard, u16 *text, int character, u8 *position, int length, int max_chars, int lines,
-                               int width, int test_only, int notify);
-/* A character put into a one-line text at *position, at most `width` pixels wide. */
-extern int func_ov095_0229bcec(void *keyboard, u16 *text, int character, u8 *position, int length, int width, int p6,
-                               int notify);
-extern int func_ov095_0229bebc(void *keyboard, int code);            /* the code is a command (0x100-0x123) */
-extern void func_ov095_0229bed8(void *keyboard, int character);      /* key 6 enabled */
-extern void func_ov095_0229bee4(void *keyboard);                     /* keys 6, 3, 4 and 5 disabled */
-extern int func_ov095_0229bf0c(void *keyboard);                      /* a held key's repeat is due */
-extern void func_ov095_0229bf3c(void *keyboard);                     /* a held key's repeat started */
-extern int func_ov095_0229bf48(void *keyboard);                      /* the pressed key shown: 1 while it shows */
-extern void func_ov095_0229bf7c(void *keyboard, unsigned int layer); /* drawn */
-extern void func_ov095_0229bfd8(void *keyboard, int layer);
-extern int func_ov095_0229c000(void *keyboard, const char *path);
-extern void func_ov095_0229c050(int keyboard); /* its flag 8 set */
-extern void func_ov095_0229c05c(void *keyboard);
-extern void func_ov095_0229c084(void *keyboard, int mode);
-extern void func_ov095_0229c22c(void *keyboard, int state, unsigned int layer, int p3);
-extern int func_ov095_0229c448(void *keyboard, int key, unsigned int mode); /* the key's code */
-extern int func_ov095_0229c548(void *keyboard);                             /* the key held down */
-extern int func_ov095_0229c54c(void *keyboard, int x, u8 y);                /* the key at (x, y), or -1 */
-extern void func_ov095_0229c8e4(int keyboard, int key);                     /* the key shown pressed */
-extern int func_ov095_0229cda4(void *keyboard, int key);                    /* the key (-1: the cursor's) is 0x104-0x108 */
-extern void func_ov095_0229ce84(void *keyboard, int key);                   /* the key enabled */
-extern void func_ov095_0229cef4(void *keyboard, int key);                   /* the key disabled */
-extern int func_ov095_0229cf64(void *keyboard, int key);                    /* the key is disabled */
-
 #define LETTER_WRITE_KEY_NEWLINE 0 /* the keyboard's keys the scene enables */
 #define LETTER_WRITE_KEY_6 6
 #define LETTER_WRITE_KEY_COPY 11
@@ -1245,11 +1182,11 @@ int LetterWrite_CopyKey(LetterWriteScene *self)
     if ((data_021fbe40.pressed & LETTER_WRITE_PAD_L) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(self->keyboard, LETTER_WRITE_KEY_COPY) != 0) {
+    if (SoftKeyboard_IsSpecialDisabled(letter_write_keyboard(self), LETTER_WRITE_KEY_COPY) != 0) {
         return 0;
     }
     LetterWrite_Command(self, LETTER_WRITE_CODE_COPY);
-    func_ov095_0229c8e4(letter_write_keyboard_arg(self), LETTER_WRITE_KEY_L);
+    SoftKeyboard_ShowKeyPressed(letter_write_keyboard(self), LETTER_WRITE_KEY_L);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_WHILE_L);
     return 1;
@@ -1263,11 +1200,11 @@ int LetterWrite_PasteKey(LetterWriteScene *self)
     if ((data_021fbe40.pressed & LETTER_WRITE_PAD_R) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(self->keyboard, LETTER_WRITE_KEY_PASTE) != 0) {
+    if (SoftKeyboard_IsSpecialDisabled(letter_write_keyboard(self), LETTER_WRITE_KEY_PASTE) != 0) {
         return 0;
     }
     LetterWrite_Command(self, LETTER_WRITE_CODE_PASTE);
-    func_ov095_0229c8e4(letter_write_keyboard_arg(self), LETTER_WRITE_KEY_R);
+    SoftKeyboard_ShowKeyPressed(letter_write_keyboard(self), LETTER_WRITE_KEY_R);
     LetterWrite_PlacePointer(self);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_WHILE_R);
@@ -1289,7 +1226,7 @@ int LetterWrite_SwitchPointerKey(LetterWriteScene *self)
         LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_POINTER_ON_TEXT);
         LetterWrite_ScrollToCursor(self);
     }
-    if (func_ov095_0229cda4(self->keyboard, -1) != 0) {
+    if (SoftKeyboard_IsButtonKey(letter_write_keyboard(self), -1) != 0) {
         if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_POINTER_ON_TEXT)) {
             Glider_TurnToSetA(&self->pointer);
             MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_0C);
@@ -1311,7 +1248,7 @@ int LetterWrite_BackspaceKey(LetterWriteScene *self)
         return 0;
     }
     LetterWrite_Command(self, LETTER_WRITE_CODE_BACKSPACE);
-    func_ov095_0229bf3c(self->keyboard);
+    SoftKeyboard_StartRepeat(letter_write_keyboard(self));
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_BACKSPACE_REPEAT);
     return 1;
@@ -1327,13 +1264,13 @@ int LetterWrite_PressKeyByA(LetterWriteScene *self)
     if ((data_021fbe40.pressed & LETTER_WRITE_PAD_A) == 0) {
         return 0;
     }
-    key = func_ov095_02299a00(self->keyboard);
+    key = SoftKeyboard_PressCursorKey(letter_write_keyboard(self));
     if (key == -1) {
         return 0;
     }
     /* QUIRK: the key's code is looked up and not used. */
-    func_ov095_0229c448(self->keyboard, key, 9);
-    func_ov095_0229c8e4(letter_write_keyboard_arg(self), key);
+    SoftKeyboard_KeyCode(letter_write_keyboard(self), key, 9);
+    SoftKeyboard_ShowKeyPressed(letter_write_keyboard(self), key);
     LetterWrite_BeginSub08(self);
     return 1;
 }
@@ -1345,7 +1282,7 @@ int LetterWrite_RunError(LetterWriteScene *self)
 {
     int done;
 
-    func_ov095_0229bf48(self->keyboard);
+    SoftKeyboard_StepPressed(letter_write_keyboard(self));
     done = ErrorMessage_Update(&self->error, 1);
     if (done != 0) {
         return (int) (uintptr_t) LetterWrite_BeginInput(self);
@@ -1690,7 +1627,7 @@ void LetterWrite_RunBackspaceRepeat(LetterWriteScene *self)
 {
     if ((data_021fbe40.held & LETTER_WRITE_PAD_B) == 0) {
         MenuScene_SetSubState(letter_write_scene(self), self->return_sub_state);
-    } else if (func_ov095_0229bf0c(self->keyboard) != 0) {
+    } else if (SoftKeyboard_StepRepeat(letter_write_keyboard(self)) != 0) {
         LetterWrite_Command(self, LETTER_WRITE_CODE_BACKSPACE);
         if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_POINTER_ON_TEXT)) {
             LetterWrite_PlacePointer(self);
@@ -1720,10 +1657,10 @@ void LetterWrite_RunKeyRepeat(LetterWriteScene *self)
         LetterWrite_BeginSub0A(self);
         return;
     }
-    if (func_ov095_0229bf0c(self->keyboard) != 0) {
-        key = func_ov095_0229c548(self->keyboard);
-        LetterWrite_Command(self, func_ov095_0229c448(self->keyboard, key, 9));
-        func_ov095_0229c8e4(letter_write_keyboard_arg(self), key);
+    if (SoftKeyboard_StepRepeat(letter_write_keyboard(self)) != 0) {
+        key = SoftKeyboard_PressedKey(letter_write_keyboard(self));
+        LetterWrite_Command(self, SoftKeyboard_KeyCode(letter_write_keyboard(self), key, 9));
+        SoftKeyboard_ShowKeyPressed(letter_write_keyboard(self), key);
     }
 }
 CLEAN_AS(func_ov122_022a099c, LetterWrite_RunKeyRepeat)
@@ -1740,8 +1677,8 @@ void LetterWrite_RunKeyPressed(LetterWriteScene *self)
     if (CellLayerSprite_IsDone(letter_write_pointer_cells(self)) == 0) {
         return;
     }
-    key = func_ov095_02299a00(self->keyboard);
-    code = func_ov095_0229c448(self->keyboard, key, 9);
+    key = SoftKeyboard_PressCursorKey(letter_write_keyboard(self));
+    code = SoftKeyboard_KeyCode(letter_write_keyboard(self), key, 9);
     if (code == LETTER_WRITE_CODE_SCROLL) {
         MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_SCROLL_PRESS);
         PushButton_Press(&self->scroll_button);
@@ -1757,12 +1694,12 @@ void LetterWrite_RunKeyPressed(LetterWriteScene *self)
     }
     result = LetterWrite_Command(self, code);
     if (result == 1 && (data_021fbe40.held & LETTER_WRITE_PAD_A) != 0) {
-        func_ov095_0229bf3c(self->keyboard);
+        SoftKeyboard_StartRepeat(letter_write_keyboard(self));
         MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_KEY_REPEAT);
-        func_ov095_0229c8e4(letter_write_keyboard_arg(self), key);
+        SoftKeyboard_ShowKeyPressed(letter_write_keyboard(self), key);
     } else if (result != 3) {
         if (result == 4) {
-            func_ov095_0229cce0(self->keyboard);
+            SoftKeyboard_ReleasePressed(letter_write_keyboard(self));
         } else {
             LetterWrite_BeginSub0A(self);
         }
@@ -1794,13 +1731,13 @@ void LetterWrite_RunKeys(LetterWriteScene *self)
     }
     keys = (u8) MenuScene_LatchRepeatedKeys(letter_write_scene(self));
     if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_NO_HEADER) == 1) {
-        if (func_ov095_02299a00(self->keyboard) == 0x104) {
+        if (SoftKeyboard_PressCursorKey(letter_write_keyboard(self)) == 0x104) {
             if (MenuScene_RepeatedLeft(letter_write_scene(self)) != 0) {
                 keys = (u8) (keys & ~KEY_REPEAT_LEFT);
             }
         }
     }
-    switch (func_ov095_02299a54(self->keyboard, keys)) {
+    switch (SoftKeyboard_MoveCursor(letter_write_keyboard(self), keys)) {
         case 1:
             Glider_TurnToSetA(&self->pointer);
             LetterWrite_GlidePointer(self);
@@ -1843,13 +1780,13 @@ CLEAN_AS(func_ov122_022a0afc, LetterWrite_RunKeys)
 int LetterWrite_Command(LetterWriteScene *self, int code)
 {
     int result = 1;
-    int own = func_ov095_0229ba44(self->keyboard, code, 6);
+    int own = SoftKeyboard_HandleCommand(letter_write_keyboard(self), code, 6);
 
     if (own != 0) {
         LetterWrite_Refresh(self, 0, 1);
         return own;
     }
-    if (func_ov095_0229bebc(self->keyboard, code)) {
+    if (SoftKeyboard_IsCommand(letter_write_keyboard(self), code)) {
         switch (code) {
             case LETTER_WRITE_CODE_BACKSPACE:
                 LetterWrite_Backspace(self, 1);
@@ -1905,8 +1842,8 @@ void LetterWrite_Paste(LetterWriteScene *self)
     if (LetterWrite_HasMark(self) != 0) {
         LetterWrite_DeleteMarked(self);
     }
-    func_ov095_0229b3ec(self->keyboard);
-    func_ov095_0229b394(letter_write_keyboard_arg(self));
+    SoftKeyboard_HangulReset(letter_write_keyboard(self));
+    SoftKeyboard_SetFlag02(letter_write_keyboard(self));
     count = func_02051c8c_unk(self->clipboard, LETTER_BODY_CHARS);
     for (i = 0; i < count; i++) {
         if (LetterWrite_InsertChar(self, self->clipboard[i], 0) == 0) {
@@ -1916,10 +1853,10 @@ void LetterWrite_Paste(LetterWriteScene *self)
             break;
         }
     }
-    func_ov095_022999e8(self->keyboard);
+    SoftKeyboard_PlaySe23(letter_write_keyboard(self));
     LetterWrite_Refresh(self, 0, 1);
     LetterWrite_PlaceCursor(self);
-    func_ov095_0229b388(letter_write_keyboard_arg(self));
+    SoftKeyboard_ClearFlag02(letter_write_keyboard(self));
 }
 CLEAN_AS(func_ov122_022a0cec, LetterWrite_Paste)
 
@@ -1947,7 +1884,7 @@ void LetterWrite_Copy(LetterWriteScene *self)
     text = LetterWrite_PartText(self);
     TextString_CopyChars(text + first, self->clipboard, count);
     LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_COPIED);
-    func_ov095_022999f4(self->keyboard);
+    SoftKeyboard_PlaySe22(letter_write_keyboard(self));
     LetterWrite_UpdateKeys(self);
 }
 CLEAN_AS(func_ov122_022a0d84, LetterWrite_Copy)
@@ -1976,7 +1913,7 @@ void LetterWrite_Leave(LetterWriteScene *self)
     LetterWrite_ScrollTo(self, 0);
     LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_CURSOR_SHOWN);
     LetterWrite_EndMark(self);
-    func_ov095_0229b3ec(self->keyboard);
+    SoftKeyboard_HangulReset(letter_write_keyboard(self));
     LetterWrite_Refresh(self, 1, 0);
     LetterWrite_HidePointer(self);
 }
@@ -1990,7 +1927,7 @@ int LetterWrite_TypeChar(LetterWriteScene *self, int code)
 
     if (LetterWrite_HasMark(self)) {
         LetterWrite_DeleteMarked(self);
-        func_ov095_0229b3ec(self->keyboard);
+        SoftKeyboard_HangulReset(letter_write_keyboard(self));
     }
     result = LetterWrite_InsertChar(self, code, 1);
     LetterWrite_Refresh(self, 0, 1);
@@ -2000,8 +1937,9 @@ int LetterWrite_TypeChar(LetterWriteScene *self, int code)
 CLEAN_AS(func_ov122_022a0e4c, LetterWrite_TypeChar)
 
 /* func_ov122_022a0e90: a character put in at the cursor, which moves past it. The body takes
- * newlines and is broken into its four lines; the header and the footer are one line of 0xa0
- * pixels. Typing before the name moves the name on. Gives 1 when it was put in. */
+ * newlines and is broken into its four lines of 0xa0 pixels; the header and the footer are one
+ * line held only to their capacity (SoftKeyboard_Insert does not use the width 0xa0 it is
+ * given). Typing before the name moves the name on. Gives 1 when it was put in. */
 int LetterWrite_InsertChar(LetterWriteScene *self, int code, int notify)
 {
     u8 position = LetterWrite_HeaderPosition(self);
@@ -2010,7 +1948,8 @@ int LetterWrite_InsertChar(LetterWriteScene *self, int code, int notify)
     int capacity = LetterWrite_PartCapacity(self);
 
     if (self->part == LETTER_WRITE_PART_BODY) {
-        if (func_ov095_0229bc00(self->keyboard, text, code, &position, LETTER_BODY_CHARS, 0x28, 4, 0xa0, 0, notify) == 0) {
+        if (SoftKeyboard_InsertInLines(letter_write_keyboard(self), text, code, &position, LETTER_BODY_CHARS, 0x28, 4, 0xa0, 0,
+                                       notify) == 0) {
             return 0;
         }
         LetterWrite_SetPosition(self, position);
@@ -2019,7 +1958,7 @@ int LetterWrite_InsertChar(LetterWriteScene *self, int code, int notify)
     if (code == LETTER_WRITE_CODE_NEWLINE) {
         return 0;
     }
-    if (func_ov095_0229bcec(self->keyboard, text, code, &position, capacity, 0xa0, 0, 1) == 0) {
+    if (SoftKeyboard_Insert(letter_write_keyboard(self), text, code, &position, capacity, 0xa0, 0, 1) == 0) {
         return 0;
     }
     switch (self->part) {
@@ -2054,13 +1993,13 @@ int LetterWrite_ConvertChar(LetterWriteScene *self, int code)
     }
     switch (code) {
         case LETTER_WRITE_CODE_CONVERT_1:
-            character = func_ov095_0229bb9c(self->keyboard, character);
+            character = SoftKeyboard_Convert1(letter_write_keyboard(self), character);
             break;
         case LETTER_WRITE_CODE_CONVERT_2:
-            character = func_ov095_0229bb98(self->keyboard, character);
+            character = SoftKeyboard_Convert2(letter_write_keyboard(self), character);
             break;
         case LETTER_WRITE_CODE_CONVERT_3:
-            character = func_ov095_0229bb94(self->keyboard, character);
+            character = SoftKeyboard_Convert3(letter_write_keyboard(self), character);
             break;
         default:
             break;
@@ -2071,7 +2010,8 @@ int LetterWrite_ConvertChar(LetterWriteScene *self, int code)
     position = LetterWrite_HeaderPosition(self);
     text = LetterWrite_PartTextAddress(self);
     LetterWrite_PartCapacity(self);
-    if (func_ov095_0229bba0(letter_write_keyboard_arg(self), (unsigned short *) (uintptr_t) text, character, position) == 0) {
+    if (SoftKeyboard_ReplaceBefore(letter_write_keyboard(self), (unsigned short *) (uintptr_t) text, character, position) ==
+        0) {
         return 0;
     }
     LetterWrite_Refresh(self, 0, 1);
@@ -2088,11 +2028,11 @@ CLEAN_AS(func_ov122_022a0f78, LetterWrite_ConvertChar)
 int LetterWrite_Backspace(LetterWriteScene *self, int sound_on_fail)
 {
     if (LetterWrite_HasMark(self) != 0) {
-        func_ov095_0229b3ec(self->keyboard);
+        SoftKeyboard_HangulReset(letter_write_keyboard(self));
         LetterWrite_DeleteMarked(self);
     } else if (self->position != 0) {
         u16 *text = LetterWrite_PartText(self);
-        if (func_ov095_0229b3a0(self->keyboard, text, self->position) == 0) {
+        if (SoftKeyboard_HangulBackspace(letter_write_keyboard(self), text, self->position) == 0) {
             self->mark_from = self->position;
             self->mark_to = (u8) (self->position - 1);
             LetterWrite_DeleteMarked(self);
@@ -2142,14 +2082,14 @@ int LetterWrite_TouchKey(LetterWriteScene *self)
     int key;
     int result;
 
-    func_ov095_0229cce0(self->keyboard);
-    key = func_ov095_0229c54c(self->keyboard, data_021f6c58, data_021f6c54);
+    SoftKeyboard_ReleasePressed(letter_write_keyboard(self));
+    key = SoftKeyboard_KeyAt(letter_write_keyboard(self), data_021f6c58, data_021f6c54);
     if (key == -1) {
         return 0;
     }
-    result = LetterWrite_Command(self, func_ov095_0229c448(self->keyboard, key, 9));
-    func_ov095_0229c8e4(letter_write_keyboard_arg(self), key);
-    func_ov095_0229bf3c(self->keyboard);
+    result = LetterWrite_Command(self, SoftKeyboard_KeyCode(letter_write_keyboard(self), key, 9));
+    SoftKeyboard_ShowKeyPressed(letter_write_keyboard(self), key);
+    SoftKeyboard_StartRepeat(letter_write_keyboard(self));
     return result;
 }
 CLEAN_AS(func_ov122_022a1110, LetterWrite_TouchKey)
@@ -2249,10 +2189,10 @@ void LetterWrite_RunKeyTouchHeld(LetterWriteScene *self)
         MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_TOUCH);
         return;
     }
-    if (func_ov095_0229bf0c(self->keyboard) != 0) {
-        key = func_ov095_0229c548(self->keyboard);
-        LetterWrite_Command(self, func_ov095_0229c448(self->keyboard, key, 9));
-        func_ov095_0229c8e4(letter_write_keyboard_arg(self), key);
+    if (SoftKeyboard_StepRepeat(letter_write_keyboard(self)) != 0) {
+        key = SoftKeyboard_PressedKey(letter_write_keyboard(self));
+        LetterWrite_Command(self, SoftKeyboard_KeyCode(letter_write_keyboard(self), key, 9));
+        SoftKeyboard_ShowKeyPressed(letter_write_keyboard(self), key);
     }
 }
 CLEAN_AS(func_ov122_022a132c, LetterWrite_RunKeyTouchHeld)
@@ -2271,7 +2211,7 @@ void LetterWrite_RunTouch(LetterWriteScene *self)
         return;
     }
     key_shown = 0;
-    if (func_ov095_0229bf48(self->keyboard)) {
+    if (SoftKeyboard_StepPressed(letter_write_keyboard(self))) {
         key_shown = 1;
     }
     if (!letter_write_pen_put_down()) {
@@ -2289,8 +2229,8 @@ void LetterWrite_RunTouch(LetterWriteScene *self)
             return;
         }
     }
-    if (func_ov095_0229aff0(self->keyboard)) {
-        func_ov095_0229c22c(self->keyboard, 9, 6, 1);
+    if (SoftKeyboard_TouchPageTab(letter_write_keyboard(self))) {
+        SoftKeyboard_LoadLayout(letter_write_keyboard(self), 9, 6, 1);
         LetterWrite_Refresh(self, 0, 1);
         return;
     }
@@ -2298,7 +2238,7 @@ void LetterWrite_RunTouch(LetterWriteScene *self)
         if (x < 0xe0) {
             if (LetterWrite_StartTouch(self)) {
                 MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_MARK_DRAG);
-                func_ov095_0229b3ec(self->keyboard);
+                SoftKeyboard_HangulReset(letter_write_keyboard(self));
                 LetterWrite_Refresh(self, 1, 1);
                 return;
             }
@@ -2327,35 +2267,35 @@ void LetterWrite_UpdateKeys(LetterWriteScene *self)
 {
     if (self->part == LETTER_WRITE_PART_BODY) {
         u8 position = self->position;
-        if (func_ov095_0229bc00(self->keyboard, self->letter->body, LETTER_WRITE_CODE_NEWLINE, &position, LETTER_BODY_CHARS,
-                                0x28, 4, 0xa0, 1, 1)) {
-            func_ov095_0229ce84(self->keyboard, LETTER_WRITE_KEY_NEWLINE);
+        if (SoftKeyboard_InsertInLines(letter_write_keyboard(self), self->letter->body, LETTER_WRITE_CODE_NEWLINE, &position,
+                                       LETTER_BODY_CHARS, 0x28, 4, 0xa0, 1, 1)) {
+            SoftKeyboard_EnableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_NEWLINE);
         } else {
-            func_ov095_0229cef4(self->keyboard, LETTER_WRITE_KEY_NEWLINE);
+            SoftKeyboard_DisableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_NEWLINE);
         }
     } else {
-        func_ov095_0229cef4(self->keyboard, LETTER_WRITE_KEY_NEWLINE);
+        SoftKeyboard_DisableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_NEWLINE);
     }
 
     if (LetterWrite_HasMark(self)) {
-        func_ov095_0229ce84(self->keyboard, LETTER_WRITE_KEY_COPY);
+        SoftKeyboard_EnableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_COPY);
     } else {
-        func_ov095_0229cef4(self->keyboard, LETTER_WRITE_KEY_COPY);
+        SoftKeyboard_DisableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_COPY);
     }
 
     if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_COPIED)) {
-        func_ov095_0229ce84(self->keyboard, LETTER_WRITE_KEY_PASTE);
+        SoftKeyboard_EnableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_PASTE);
     } else {
-        func_ov095_0229cef4(self->keyboard, LETTER_WRITE_KEY_PASTE);
+        SoftKeyboard_DisableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_PASTE);
     }
 
     if (LetterWrite_HasMark(self)) {
-        func_ov095_0229bee4(self->keyboard);
-        func_ov095_0229ce84(self->keyboard, LETTER_WRITE_KEY_6);
+        SoftKeyboard_DisableEditKeys(letter_write_keyboard(self));
+        SoftKeyboard_EnableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_6);
     } else if (self->position == 0) {
-        func_ov095_0229bee4(self->keyboard);
+        SoftKeyboard_DisableEditKeys(letter_write_keyboard(self));
     } else {
-        func_ov095_0229bed8(self->keyboard, LetterWrite_CharBeforeCursor(self));
+        SoftKeyboard_EnableBackspace(letter_write_keyboard(self), LetterWrite_CharBeforeCursor(self));
     }
 }
 CLEAN_AS(func_ov122_022a14c0, LetterWrite_UpdateKeys)
@@ -2450,7 +2390,7 @@ CLEAN_AS(func_ov122_022a1738, LetterWrite_SetPanelLayout)
 /* func_ov122_022a1764 */
 void LetterWrite_LoadKeyboardScreen(LetterWriteScene *self)
 {
-    func_ov095_0229b324(self->keyboard);
+    SoftKeyboard_LoadObjGraphics(letter_write_keyboard(self));
 }
 CLEAN_AS(func_ov122_022a1764, LetterWrite_LoadKeyboardScreen)
 
@@ -2462,9 +2402,9 @@ void LetterWrite_LoadScreens(LetterWriteScene *self)
     Heap *heap = data_021fbe94;
 
     DisplayLayer_LoadPalettesFromFile(data_ov122_022a2798, heap, LAYER_SUB_BG3, 1, 1, 9);
-    func_ov095_0229c000(self->keyboard, data_ov122_022a27b0);
+    SoftKeyboard_ReadScreen(letter_write_keyboard(self), data_ov122_022a27b0);
     LetterWrite_UpdateKeys(self);
-    func_ov095_0229bfd8(self->keyboard, LAYER_SUB_BG3);
+    SoftKeyboard_LoadScreenNow(letter_write_keyboard(self), LAYER_SUB_BG3);
     DisplayLayer_LoadCharsFromFile(data_ov122_022a27c8, heap, LAYER_SUB_BG3, 0x13d, 0x13d, 0x1e9);
     Paper_LoadBackground(Letter_Paper(self->letter), LAYER_SUB_BG1);
     LetterView_LoadScreen(&self->view, LAYER_SUB_BG0);
@@ -2504,7 +2444,7 @@ CLEAN_AS(func_ov122_022a1854, LetterWrite_ClosePanelTexts)
 void LetterWrite_Draw(LetterWriteScene *self)
 {
     LetterView_Redraw(&self->view);
-    func_ov095_0229bf7c(self->keyboard, LAYER_SUB_BG3);
+    SoftKeyboard_QueueScreen(letter_write_keyboard(self), LAYER_SUB_BG3);
     PagedChoice_Update(letter_write_choice(self));
     LetterWrite_Idle(self);
 }
@@ -2530,7 +2470,7 @@ CLEAN_AS(func_ov122_022a1898, LetterWrite_UpdateSprites)
 /* func_ov122_022a18c4: what the keyboard, the view, the choice and the panel hold let go. */
 void LetterWrite_Release(LetterWriteScene *self)
 {
-    func_ov095_0229c05c(self->keyboard);
+    SoftKeyboard_Finish(letter_write_keyboard(self));
     LetterView_ReleaseBoxes(&self->view);
     PagedChoice_Dismiss(letter_write_choice(self));
     ButtonPanel_CloseTexts(&self->panel);
@@ -2543,7 +2483,7 @@ CLEAN_AS(func_ov122_022a18c4, LetterWrite_Release)
 void LetterWrite_Setup(LetterWriteScene *self)
 {
     self->letter = (Letter *) GroupParams_Pointer();
-    func_ov095_0229c084(self->keyboard, 1);
+    SoftKeyboard_Init(letter_write_keyboard(self), 1);
     LetterView_Init(&self->view, LAYER_SUB_BG0);
     LetterView_SetName(&self->view, letter_write_view_letter(self));
     LetterWrite_SetScroll(self, 0x10);
@@ -2554,7 +2494,7 @@ void LetterWrite_Setup(LetterWriteScene *self)
     PagedChoice_BuildPages(letter_write_choice(self));
     self->unk_a4 = 0;
     if (Letter_HasNoAddressee(self->letter) != 0) {
-        func_ov095_0229c050(letter_write_keyboard_arg(self));
+        SoftKeyboard_SetFlag08(letter_write_keyboard(self));
         LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_NO_HEADER);
     }
 }
@@ -2596,17 +2536,6 @@ CLEAN_AS(func_ov122_022a1a04, LetterWrite_StartWipeOut)
 
 /* The margin of the wipes on window 2. */
 #define LETTER_WRITE_WIPE_MARGIN 0x30
-
-/* The keyboard of overlay 95: set up again in its current mode and drawn on a layer, set up in
- * the mode main keeps (GroupParams) on a layer, its mode tabs drawn at (x, y), its two frame
- * cells drawn at (x, y), the place it keeps for the scroll button's face (its words 0xd and
- * 0xe), and the text cursor's cell drawn at (x, y) (its first argument unused). */
-extern void func_ov095_0229c208(void *keyboard, unsigned int layer);
-extern void func_ov095_0229c420(void *keyboard, int layer);
-extern void func_ov095_0229b1c8(void *keyboard, int x, int y, int priority);
-extern void func_ov095_0229ae84(void *keyboard, void *x, void *y);
-extern void func_ov095_02299b30(int *keyboard, int x, int y);
-extern int func_ov095_0229af58(int unused, int x, int y, int priority);
 
 /* The parent, overlay 90's menu (as ov096's pockets_screen.c calls it): switched to a tab (7 closes
  * the menu), and told the scene closes. */
@@ -2686,7 +2615,7 @@ CLEAN_AS(func_ov122_022a1a84, LetterWrite_KeyboardWipeIn)
  * panel following the wipe (state 11). */
 void LetterWrite_StartKeyboardWipeIn(LetterWriteScene *self)
 {
-    func_ov095_0229c208(self->keyboard, LAYER_SUB_BG3);
+    SoftKeyboard_Restore(letter_write_keyboard(self), LAYER_SUB_BG3);
     DisplayLayer_SetPriority(LAYER_SUB_BG3, 1);
     MenuScene_StartWipeCoveredOnWindow2(letter_write_scene(self), 8, 0, 0, LETTER_WRITE_WIPE_MARGIN);
     DisplayLayer_Show(LAYER_SUB_BG3);
@@ -2836,8 +2765,8 @@ void LetterWrite_StartWipeIn(LetterWriteScene *self)
 {
     LetterWrite_SetLayers();
     LetterWrite_LoadScreens(self);
-    func_ov095_0229c420(self->keyboard, LAYER_SUB_BG3);
-    func_ov095_0229bf7c(self->keyboard, LAYER_SUB_BG3);
+    SoftKeyboard_LoadSavedLayout(letter_write_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_QueueScreen(letter_write_keyboard(self), LAYER_SUB_BG3);
     MenuScene_StartWipeCoveredOnWindow2(letter_write_scene(self), 0xb, 0, 0, LETTER_WRITE_WIPE_MARGIN);
     DisplayLayer_Show(LAYER_SUB_BG3);
     DisplayLayer_Show(LAYER_SUB_BG1);
@@ -3020,8 +2949,8 @@ int LetterWrite_DrawScene(LetterWriteScene *self)
     if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_01) != 0) {
         int y = (int) ((u32) self->unk_94 + 0x60);
         OamBuffer_DrawCell(1, data_ov122_022a2700, 0x80, (int) ((u32) y - 0x10), -1, 2, 0x1000, 0x1000, 0, -1, 0, 0);
-        func_ov095_0229b1c8(self->keyboard, 0x80, y, 1);
-        func_ov095_0229ae84(self->keyboard, (void *) (uintptr_t) 0x80, (void *) (uintptr_t) (u32) y);
+        SoftKeyboard_DrawTabRow(letter_write_keyboard(self), 0x80, y, 1);
+        SoftKeyboard_DrawSideButtons(letter_write_keyboard(self), 0x80, y);
         if (StateFlags_Test2()) {
             OamBuffer_DrawObjAffine(1, data_ov122_022a25b0, 0x80, y, -1, 1, NULL);
         }
@@ -3050,7 +2979,7 @@ int LetterWrite_DrawScene(LetterWriteScene *self)
         DualCellSprite_SetOffset(letter_write_button_cells(self), 100, y);
         int face_x = PushButton_FaceX(&self->scroll_button);
         int face_y = PushButton_FaceY(&self->scroll_button);
-        func_ov095_02299b30((int *) (void *) self->keyboard, face_x, face_y);
+        SoftKeyboard_SetMovableKeyPlace(letter_write_keyboard(self), face_x, face_y);
         letter_write_draw_object(&self->scroll_button);
     }
 
@@ -3074,7 +3003,7 @@ int LetterWrite_DrawScene(LetterWriteScene *self)
         int y = (int) ((u32) self->cursor_y - self->scroll);
         self->blink = (u8) (self->blink + 1);
         if (self->blink & 0x10) {
-            func_ov095_0229af58(letter_write_keyboard_arg(self), x, y, 3);
+            SoftKeyboard_DrawCaret(letter_write_keyboard(self), x, y, 3);
         }
     }
     return 1;

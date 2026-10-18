@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "ov004/member_pointer.h"
 #include "packed_bytes.h"
+#include "scene_motion_request.h"
 
 static_assert(offsetof(SceneMotion, note_kind) == 0x04, "SceneMotion layout");
 static_assert(offsetof(SceneMotion, unk_18) == 0x18, "SceneMotion layout");
@@ -20,12 +21,6 @@ static_assert(offsetof(SceneMotion, next_kind) == 0x24, "SceneMotion layout");
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-/* The motion's own functions. */
-extern int func_02019de8(SceneMotion *self);
-extern void func_02019e80(SceneMotionArgs *dst, const SceneMotionArgs *src);
-extern void func_02019d94(SceneMotion *self, u8 *object, int kind, int priority);
-extern void func_02019d78(SceneMotion *self);
-
 /* func_02019af0: sets whether the motion is done. */
 void SceneMotion_SetDone(SceneMotion *self, u32 done)
 {
@@ -40,10 +35,10 @@ CLEAN_AS(func_02019af0, SceneMotion_SetDone)
  * request for a motion is cleared (func_02019d78). */
 void SceneMotion_Update(SceneMotion *self, u8 *object)
 {
-    if (self->next_priority != 0 && (self->next_priority >= self->priority || func_02019de8(self) != 0 ||
+    if (self->next_priority != 0 && (self->next_priority >= self->priority || SceneMotion_IsDone(self) != 0 ||
                                      self->priority == SCENE_MOTION_PRIORITY_YIELDS)) {
-        func_02019e80(&self->args, &self->next_args);
-        func_02019d94(self, object, self->next_kind, self->next_priority);
+        SceneMotionArgs_Copy(&self->args, &self->next_args);
+        SceneMotion_Start(self, object, self->next_kind, self->next_priority);
     }
 
     if (self->hold == SCENE_MOTION_HOLD_SET) {
@@ -54,7 +49,7 @@ void SceneMotion_Update(SceneMotion *self, u8 *object)
         self->hold = 0;
     }
 
-    func_02019d78(self);
+    SceneMotion_ClearRequest(self);
 }
 CLEAN_AS(func_02019af8, SceneMotion_Update)
 
@@ -88,7 +83,7 @@ static void motion_core_call(SceneMotion *self, u8 *object, int column)
 /* Once the motion is done, its priority falls to 0. */
 static void motion_core_drop_priority(SceneMotion *self)
 {
-    if (func_02019de8(self) != 0) {
+    if (SceneMotion_IsDone(self) != 0) {
         self->priority = 0;
     }
 }

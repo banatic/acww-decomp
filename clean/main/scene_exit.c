@@ -8,6 +8,7 @@
 #include "main/scene_place.h"
 #include "main/scene_tables.h"
 #include "main/session.h"
+#include "scene_process_base.h"
 
 static_assert(offsetof(SceneExit, angle) == 0x02, "angle");
 static_assert(offsetof(SceneExit, position) == 0x04, "position");
@@ -45,10 +46,6 @@ extern ScenePlace data_021f69a0; /* the saved place */
 extern ScenePlace data_021f69b8; /* the marked place */
 /* The process class asked for next (func_020a53ec sets it). */
 extern u16 data_020e3c80;
-
-/* Asks for process class `class_id` as the next scene, with `param` and `arg` for its spawn
- * (`flags` is not used). */
-extern void func_020a53ec(int class_id, int param, int arg, int flags);
 
 /* A point copied a coordinate at a time, x first, as the ROM does (which matters when the two
  * overlap). */
@@ -131,7 +128,7 @@ CLEAN_AS(func_020b5e40, SceneExit_Position)
 void SceneExit_RequestChange(int change_arg, int next_arg)
 {
     if (data_020e3c80 != SCENE_EXIT_CHANGE_CLASS) {
-        func_020a53ec(SCENE_EXIT_CHANGE_CLASS, change_arg, SCENE_EXIT_CHANGE_ARG, SCENE_EXIT_CHANGE_FLAGS);
+        SceneProcessBase_Request(SCENE_EXIT_CHANGE_CLASS, change_arg, SCENE_EXIT_CHANGE_ARG, SCENE_EXIT_CHANGE_FLAGS);
         Global021dc5b0_Set((u8) next_arg);
     }
 }

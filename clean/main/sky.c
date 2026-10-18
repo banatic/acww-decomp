@@ -13,6 +13,16 @@
 #include "star_palette.h"
 #include "state_block.h"
 #include "state_flags.h"
+#include "main_random.h"
+#include "rom_file.h"
+#include "scene_lights.h"
+#include "session_players.h"
+#include "sky_events.h"
+#include "sky_objects.h"
+#include "sky_resources.h"
+#include "sky_shots.h"
+#include "sky_weather_day.h"
+#include "town_name.h"
 
 static_assert(offsetof(Sky, cloud_scroll) == 0x1208, "the clouds' scroll");
 static_assert(offsetof(Sky, blend_alpha) == 0x1210, "the blending tables");
@@ -111,25 +121,6 @@ extern const char data_020e7aa8[];               /* "menu/star/a_bg.bch" */
 extern const char data_020e7abc[];               /* "menu/star/bg.bsc" */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_020be2d4(void *objects, void *unused);
-extern void func_020bdf68(void *objects, int player);
-extern void func_020bdfd8(void *objects, int arg);
-extern void func_020bbc90(Sky *sky);
-extern void func_020becbc(void *objects_2eb8, int index);
-extern void func_020be388(void *objects);
-extern void func_020bde5c(void *objects);
-extern Actor *func_020961a8(int actor); /* 4: this console's player */
-extern u8 *func_02064b2c(const char *path, Heap *heap, int align, u32 *size);
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file */
-extern u32 func_020655c4(u32 kind);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern int func_020c1608(SkyWeatherDay *day, const DateTime *now);
-extern void func_020bb240(Sky *sky);
-extern void func_020bbb6c(Sky *sky, u32 *seconds, u32 *fade);
-extern void func_020bba14(void);
-extern int func_020bbb20(int screen);
-extern int func_020bbd30(void);
-extern int func_020bbcfc(SkyPalette **palettes);
 extern void func_01ffcd4c(void);
 extern void func_01ffcd50(void);
 extern void func_01ffceb8(void);
@@ -154,49 +145,49 @@ static SkyObjectSlot *object_slots(void)
 void Sky_SwapLineShift(void)
 {
     data_021f75b0.shift_index ^= 1;
-    func_020be2d4(data_021f8b48, (u8 *) &data_021f75b0 + 0x1500);
+    SkyObjects_ReloadChangedSlots((SkyObjects *) (void *) data_021f8b48, (u8 *) &data_021f75b0 + 0x1500);
 }
 CLEAN_AS(func_020ba340, Sky_SwapLineShift)
 
 /* func_020ba35c */
 void Sky_Objects020bdf68(int player)
 {
-    func_020bdf68(data_021f8b48, player);
+    SkyShots_Fire((SkyObjects *) (void *) data_021f8b48, player);
 }
 CLEAN_AS(func_020ba35c, Sky_Objects020bdf68)
 
 /* func_020ba36c */
 void Sky_Objects020bdfd8(int arg)
 {
-    func_020bdfd8(data_021f8b48, arg);
+    SkyEvents_Refresh((SkyObjects *) (void *) data_021f8b48, arg);
 }
 CLEAN_AS(func_020ba36c, Sky_Objects020bdfd8)
 
 /* func_020ba37c: func_020bbc90 run on the sky (by ActivityLinkJobs). */
 void Sky_ReseedForLink(void)
 {
-    func_020bbc90(&data_021f75b0);
+    Sky_DrawDayAngle(&data_021f75b0);
 }
 CLEAN_AS(func_020ba37c, Sky_ReseedForLink)
 
 /* func_020ba38c: the same, by StateBlock_StartMode3. */
 void Sky_ReseedForMode3(void)
 {
-    func_020bbc90(&data_021f75b0);
+    Sky_DrawDayAngle(&data_021f75b0);
 }
 CLEAN_AS(func_020ba38c, Sky_ReseedForMode3)
 
 /* func_020ba39c: the same, by StateBlock_StartMode4. */
 void Sky_ReseedForMode4(void)
 {
-    func_020bbc90(&data_021f75b0);
+    Sky_DrawDayAngle(&data_021f75b0);
 }
 CLEAN_AS(func_020ba39c, Sky_ReseedForMode4)
 
 /* func_020ba3ac: the same, by StateBlock_StartMode2. */
 void Sky_ReseedForMode2(void)
 {
-    func_020bbc90(&data_021f75b0);
+    Sky_DrawDayAngle(&data_021f75b0);
 }
 CLEAN_AS(func_020ba3ac, Sky_ReseedForMode2)
 
@@ -376,7 +367,7 @@ int Sky_ShowOn(int screen)
     }
 
     /* The game also checks the address of the player's position, which is never null. */
-    Actor *player = func_020961a8(4);
+    Actor *player = SessionPlayers_ActorOf(4);
     data_021f75b0.player_z = 0;
     if (player != NULL) {
         data_021f75b0.player_z = player->position.z;
@@ -392,9 +383,9 @@ void Sky_ResetObjects(void)
     for (int i = 0; i < SKY_OBJECT_SLOTS; i++) {
         slots[i].loaded = 0;
     }
-    func_020becbc(data_021f8b48 + SKY_OBJECTS_2EB8_OFFSET, -1);
-    func_020be388(data_021f8b48);
-    func_020bde5c(data_021f8b48);
+    SkyPalettes_Forget((SkyPalettes *) (void *) (data_021f8b48 + SKY_OBJECTS_2EB8_OFFSET), -1);
+    SkyObjects_LoadSlots((SkyObjects *) (void *) data_021f8b48);
+    SkyObjects_ResetTime((SkyObjects *) (void *) data_021f8b48);
 }
 CLEAN_AS(func_020ba6b8, Sky_ResetObjects)
 
@@ -412,7 +403,7 @@ int Sky_LoadStars(int screen)
     if (map == NULL) {
         return 0;
     }
-    func_02064af4(SKY_STARS_MAP_PATH, map, SKY_CHARS_SIZE);
+    RomFile_Read(SKY_STARS_MAP_PATH, map, SKY_CHARS_SIZE);
     Constellations_MarkSkyMap(map);
     int loaded = DisplayLayer_LoadScreen(map, layer, SKY_CHARS_SIZE, 0);
     Heap_Free(heap, map);
@@ -510,10 +501,10 @@ void Sky_FrameHidden(void)
 {
     u32 seconds, fade;
     if (!StateFlags_Test1()) {
-        func_020bb240(&data_021f75b0);
+        Sky_StepChangeHidden(&data_021f75b0);
     }
-    func_020bbb6c(&data_021f75b0, &seconds, &fade);
-    func_020bba14();
+    Sky_ColorWeights(&data_021f75b0, &seconds, &fade);
+    Sky_UpdateColors();
 }
 CLEAN_AS(func_020baad8, Sky_FrameHidden)
 
@@ -529,7 +520,7 @@ void Sky_Frame(void)
         Sky_UpdateClouds();
         Sky_StepChange(&data_021f75b0);
     }
-    func_020bbb20((int) data_021f75b0.screen);
+    Sky_LoadPalette((int) data_021f75b0.screen);
     if (data_021c67a4 != NULL) {
         int from_flags = (StateFlags_ValueOrZero() * 0x123) >> 12;
         int from_camera = ((int) CameraControl_Value1E8() * 0x1e) >> 12;
@@ -687,7 +678,7 @@ void Sky_UpdateClouds(void)
     u16 *blend = sky->blend_alpha[set];
 
     /* The game also checks the address of the player's position, which is never null. */
-    Actor *player = func_020961a8(4);
+    Actor *player = SessionPlayers_ActorOf(4);
     if (player != NULL) {
         x = player->position.x >> 3;
         int z = player->position.z;
@@ -737,7 +728,7 @@ void Sky_UpdateClouds(void)
         }
     }
 
-    u32 alpha = func_020655c4(1);
+    u32 alpha = SceneLights_LightLevel(1);
     if (alpha != data_020e597c[set]) {
         data_020e597c[set] = (u16) alpha;
         int n = 0;
@@ -1035,7 +1026,7 @@ void Sky_ChangeStart(Sky *sky)
         Sky_LoadCloudScreen(sky, &sky->change_screen_data, &sky->change_screen_size, kind, next)) {
         Sky_SetWeathers(sky, sky->weather, next);
         if (sky->weather < SKY_WEATHER_RAIN && sky->next_weather >= SKY_WEATHER_RAIN) {
-            func_020bbc90(sky);
+            Sky_DrawDayAngle(sky);
         }
         sky->row = 0;
         sky->fade = 0;
@@ -1052,10 +1043,10 @@ int Sky_LoadCloudScreen(Sky *sky, u8 **data, u32 *size, int kind, int weather)
     int index = kind == SKY_CLOUDS_LEVEL ? weather * 2 + sky->variant : weather;
     const char *path = data_020e5e0c[kind][index];
     if (*data == NULL) {
-        *data = func_02064b2c(path, data_021fbe94, -4, size);
+        *data = RomFile_Load(path, data_021fbe94, -4, size);
         return *data != NULL;
     }
-    return func_02064af4(path, *data, (int) *size) != 0;
+    return RomFile_Read(path, *data, (int) *size) != 0;
 }
 CLEAN_AS(func_020bb608, Sky_LoadCloudScreen)
 
@@ -1097,7 +1088,7 @@ void Sky_UpdateHour(Sky *sky)
     if ((day->hour + 6) % SKY_HOURS == now.hour) {
         return;
     }
-    func_020c1608(day, &now);
+    SkyWeatherDay_Update(day, &now);
     int weather = Sky_WeatherInHours(sky, 1);
     if (weather == SKY_WEATHER_RAIN || weather == SKY_WEATHER_HEAVY_RAIN) {
         day->wet = 1;
@@ -1139,7 +1130,7 @@ void Sky_SetTarget(Sky *sky, int weather)
 {
     sky->target_weather = weather;
     sky->direction = weather > sky->weather ? SKY_DIRECTION_UP : SKY_DIRECTION_DOWN;
-    sky->next_variant = (s32) func_020644cc(2);
+    sky->next_variant = (s32) MainRandom_Below(2);
 }
 CLEAN_AS(func_020bb7a0, Sky_SetTarget)
 
@@ -1190,13 +1181,13 @@ CLEAN_AS(func_020bb830, Sky_FallingKindOf)
  * `screen` when the sky is drawn, else only the colours worked out; 1 when all done. */
 int Sky_LoadColors(int screen)
 {
-    if (!func_020bbd30() || !func_020bbcfc(data_021f75b0.palettes)) {
+    if (!Sky_LoadHourColors() || !Sky_AllocPalettes(data_021f75b0.palettes)) {
         return 0;
     }
     if (data_021f6cd8 != 0) {
-        return func_020bbb20(screen);
+        return Sky_LoadPalette(screen);
     }
-    func_020bba14();
+    Sky_UpdateColors();
     return 1;
 }
 CLEAN_AS(func_020bb89c, Sky_LoadColors)
@@ -1215,7 +1206,7 @@ void Sky_Reset(Sky *sky)
     sky->step = SKY_STEP_IDLE;
     sky->target_weather = -1;
     sky->direction = SKY_DIRECTION_NONE;
-    sky->next_variant = (s32) func_020644cc(2);
+    sky->next_variant = (s32) MainRandom_Below(2);
     sky->variant = sky->next_variant;
     sky->changing = 0;
     sky->row = 0;
@@ -1247,15 +1238,13 @@ CLEAN_AS(func_020bb8e0, Sky_Reset)
 #define SKY_CLEAR_DEPTH 0x1c2
 #define SKY_DAY_ANGLE_RANGE 0x2aaa /* a sixth of a turn */
 
-extern const char *const data_020e5fe0[2][2];                              /* the hour colour files */
-extern const s32 data_020d2364[SKY_WEATHER_LEVELS];                        /* the set of hour colours per level */
-extern const u16 *const *const data_020e6084[];                            /* per level: 4 light colours per hour */
-extern const u16 *const data_020e6098[];                                   /* per level: the fog offset per hour */
-extern const u8 *const *const data_020e60c0[];                             /* per level: 2 light levels per hour */
-extern u16 data_021f6cf0[SKY_LIGHT_COLORS];                                /* the light colours of now */
-extern u8 data_021f6cf8[SKY_LIGHT_LEVELS];                                 /* the light levels of now */
-extern void func_020642a8(const StateBlockTown *src, StateBlockTown *dst); /* a copy */
-extern short func_02065604(void);
+extern const char *const data_020e5fe0[2][2];       /* the hour colour files */
+extern const s32 data_020d2364[SKY_WEATHER_LEVELS]; /* the set of hour colours per level */
+extern const u16 *const *const data_020e6084[];     /* per level: 4 light colours per hour */
+extern const u16 *const data_020e6098[];            /* per level: the fog offset per hour */
+extern const u8 *const *const data_020e60c0[];      /* per level: 2 light levels per hour */
+extern u16 data_021f6cf0[SKY_LIGHT_COLORS];         /* the light colours of now */
+extern u8 data_021f6cf8[SKY_LIGHT_LEVELS];          /* the light levels of now */
 extern void NNS_G3dGlbMaterialColorSpecEmi(int specular, unsigned short emission, int shininess);
 
 /* func_020bb998: the destructor (registered at start-up): nothing to do. */
@@ -1393,7 +1382,7 @@ void Sky_DrawDayAngle(Sky *sky)
 {
     DateTime now = {0};
     StateBlockTown town;
-    func_020642a8(&data_021dc7a8.town, &town);
+    TownName_CopyTo((const u16 *) &data_021dc7a8.town, (u16 *) &town);
     DateTime_Now(&now);
     u32 seed = now.day | ((u32) now.month << 5) | ((u32) town.number << 16) | ((u32) (now.year & 0x1f) << 9);
 
@@ -1429,12 +1418,12 @@ int Sky_LoadHourColors(void)
             u8 *table = sky->hour_colors[set][half];
             const char *path = data_020e5fe0[set][half];
             if (table == NULL) {
-                sky->hour_colors[set][half] = func_02064b2c(path, data_021fbe94, -4, &sky->hour_colors_size[set][half]);
+                sky->hour_colors[set][half] = RomFile_Load(path, data_021fbe94, -4, &sky->hour_colors_size[set][half]);
                 if (sky->hour_colors[set][half] == NULL) {
                     return 0;
                 }
             } else {
-                func_02064af4(path, table, (int) sky->hour_colors_size[set][half]);
+                RomFile_Read(path, table, (int) sky->hour_colors_size[set][half]);
             }
         }
     }
@@ -1475,7 +1464,7 @@ void Sky_UpdateLight(int minute_weight, int fade_weight)
         Display3D_SetClearDepth(SKY_CLEAR_DEPTH);
         Display3D_SetClearColor(data_021f6f70.bottom_color);
     }
-    NNS_G3dGlbMaterialColorSpecEmi(0, (u16) func_02065604(), 0);
+    NNS_G3dGlbMaterialColorSpecEmi(0, (u16) SceneLights_EmissionColour(), 0);
 }
 CLEAN_AS(func_020bbf0c, Sky_UpdateLight)
 

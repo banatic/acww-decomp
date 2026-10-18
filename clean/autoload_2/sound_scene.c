@@ -85,12 +85,12 @@ enum {
     KIND_99 = 99,
 };
 
-/* The sequence archive class 60 loads (also class 1 and the classes derived from it). */
-#define SEQ_ARC_60 0x8f
-/* The sequence archive class 1's slot 9 loads for its value 1. */
-#define SEQ_ARC_1_ALT 0xb2
-/* The sequence archive class 10 loads. */
-#define SEQ_ARC_10 0x90
+/* The bank class 60 loads (also class 1 and the classes derived from it). */
+#define BANK_60 0x8f
+/* The bank class 1's slot 9 loads for its value 1. */
+#define BANK_1_ALT 0xb2
+/* The bank class 10 loads. */
+#define BANK_10 0x90
 
 /* The music class 41's part follows. */
 #define SCENE41_MUSIC_FIRST 99
@@ -142,14 +142,14 @@ SoundScene *SoundScene99_Construct(SoundScene *scene)
 CLEAN_AS(func_020f2590, SoundScene99_Construct)
 
 /* func_020f25bc: slot 3: group 4 of the archive loaded, with 0x21ef8 bytes for player 0 and
- * two heaps for player 11, then sequence archive 0x8f. */
+ * two heaps for player 11, then bank 0x8f. */
 void SoundScene60_Start(SoundScene *scene)
 {
     SoundScene_LoadGroup(scene, 0x21ef8, 4);
     SoundScene_CreatePlayer11Heaps(scene, 2);
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
-    SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_60);
+    SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.unk_62 = 0;
 }
 CLEAN_AS(func_020f25bc, SoundScene60_Start)
@@ -1193,18 +1193,18 @@ SoundScene *SoundScene19_Construct(SoundScene *scene)
 CLEAN_AS(func_020f39e0, SoundScene19_Construct)
 
 /* func_020f3a0c: slot 8: the base class's (the sound heap back to its saved state, which drops
- * the keyboard's sounds), then sequence archive 0x90 and player 12's heaps loaded again. */
+ * the keyboard's sounds), then bank 0x90 and player 12's heaps loaded again. */
 void SoundScene10_ReloadSounds(SoundScene10 *scene)
 {
     SoundSceneBase_RestoreHeap(&scene->base);
-    SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_10);
+    SoundSystem_LoadBank(&data_021fd1bc, BANK_10);
     SoundScene_CreatePlayer12Heaps(&scene->base);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
     scene->stage = 1;
 }
 CLEAN_AS(func_020f3a0c, SoundScene10_ReloadSounds)
 
-/* func_020f3a48: slot 7: the sound heap back to its level before sequence archive 0x90, then
+/* func_020f3a48: slot 7: the sound heap back to its level before bank 0x90, then
  * the base class's (the keyboard's sounds for `mode` loaded).
  * QUIRK: the base class's result is not returned. */
 void SoundScene10_SetKeyboardMode(SoundScene10 *scene, int mode)
@@ -1233,7 +1233,7 @@ CLEAN_AS(func_020f3a90, SoundScene10_Update)
 
 /* func_020f3ab4: slot 3: group 5 of the archive loaded, with 0x10ea0 bytes for player 0 and the
  * heaps of players 4, 5, 6, 17, 18 and 19; then item 9 of the archive loaded (func_0210e160)
- * and the heap's level kept, sequence archive 0x90 and player 12's heaps loaded on top, the
+ * and the heap's level kept, bank 0x90 and player 12's heaps loaded on top, the
  * part set up as when the music stops and players 18 and 19 at volume 63. */
 void SoundScene10_Start(SoundScene10 *scene)
 {
@@ -1252,7 +1252,7 @@ void SoundScene10_Start(SoundScene10 *scene)
     /* QUIRK: the level is kept as a byte. */
     scene->heap_level = (u8) NNS_SndHeapGetCurrentLevel(heap);
 
-    SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_10);
+    SoundSystem_LoadBank(&data_021fd1bc, BANK_10);
     SoundScene_CreatePlayer12Heaps(&scene->base);
     NNS_SndHeapSaveState(heap);
     scene->stage = 1;
@@ -1298,7 +1298,7 @@ SoundScene10 *SoundScene10_Construct(SoundScene10 *scene)
 CLEAN_AS(func_020f3be8, SoundScene10_Construct)
 
 /* func_020f3c24: slot 3: group 3 of the archive loaded, with 0x21ef8 bytes for player 0, two
- * heaps for player 11 and player 13's, then sequence archive 0x8f. */
+ * heaps for player 11 and player 13's, then bank 0x8f. */
 void SoundScene3_Start(SoundScene *scene)
 {
     SoundScene_LoadGroup(scene, 0x21ef8, 3);
@@ -1306,7 +1306,7 @@ void SoundScene3_Start(SoundScene *scene)
     SoundScene_CreatePlayer13Heap(scene);
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
-    SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_60);
+    SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.unk_62 = 0;
 }
 CLEAN_AS(func_020f3c24, SoundScene3_Start)
@@ -1348,14 +1348,14 @@ SoundScene *SoundScene3_Construct(SoundScene *scene)
 CLEAN_AS(func_020f3cd4, SoundScene3_Construct)
 
 /* func_020f3d1c: slot 3: group 2 of the archive loaded, with 0x1f340 bytes for player 0 and two
- * heaps for player 11, then sequence archive 0x8f. */
+ * heaps for player 11, then bank 0x8f. */
 void SoundScene2_Start(SoundScene *scene)
 {
     SoundScene_LoadGroup(scene, 0x1f340, 2);
     SoundScene_CreatePlayer11Heaps(scene, 2);
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
-    SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_60);
+    SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.unk_62 = 0;
 }
 CLEAN_AS(func_020f3d1c, SoundScene2_Start)
@@ -1392,16 +1392,16 @@ SoundScene *SoundScene2_Construct(SoundScene *scene)
 }
 CLEAN_AS(func_020f3dc4, SoundScene2_Construct)
 
-/* func_020f3e0c: slot 9: the sound heap back to its saved state, then sequence archive 0x8f
+/* func_020f3e0c: slot 9: the sound heap back to its saved state, then bank 0x8f
  * loaded for `value` 0, or 0xb2 for 1; any other value loads nothing. */
 void SoundScene1_Vfunc24(SoundScene *scene, int value)
 {
     (void) scene;
     Sound_RestoreHeapLevel(Sound_GetHeapLevel());
     if (value == 0) {
-        SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_60);
+        SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     } else if (value == 1) {
-        SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_1_ALT);
+        SoundSystem_LoadBank(&data_021fd1bc, BANK_1_ALT);
     }
 }
 CLEAN_AS(func_020f3e0c, SoundScene1_Vfunc24)
@@ -1411,12 +1411,11 @@ CLEAN_AS(func_020f3e0c, SoundScene1_Vfunc24)
 void SoundScene1_Vfunc20(SoundScene *scene)
 {
     SoundSceneBase_RestoreHeap(scene);
-    SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_60);
+    SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
 }
 CLEAN_AS(func_020f3e5c, SoundScene1_Vfunc20)
 
-/* func_020f3e84: slot 7: the sound heap back to its saved state (dropping sequence archive
- * 0x8f), then the base class's. */
+/* func_020f3e84: slot 7: the sound heap back to its saved state (dropping bank 0x8f), then the base class's. */
 int SoundScene1_SetKeyboardMode(SoundScene *scene, int mode)
 {
     Sound_RestoreHeapLevel(Sound_GetHeapLevel());
@@ -1425,7 +1424,7 @@ int SoundScene1_SetKeyboardMode(SoundScene *scene, int mode)
 CLEAN_AS(func_020f3e84, SoundScene1_SetKeyboardMode)
 
 /* func_020f3eb4: slot 3: group 1 of the archive loaded, with 0x21ef8 bytes for player 0, three
- * heaps for player 11 and player 13's, then sequence archive 0x8f. */
+ * heaps for player 11 and player 13's, then bank 0x8f. */
 void SoundScene1_Start(SoundScene *scene)
 {
     SoundScene_LoadGroup(scene, 0x21ef8, 1);
@@ -1433,7 +1432,7 @@ void SoundScene1_Start(SoundScene *scene)
     SoundScene_CreatePlayer13Heap(scene);
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
-    SoundSystem_LoadSeqArc(&data_021fd1bc, SEQ_ARC_60);
+    SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.unk_62 = 0;
 }
 CLEAN_AS(func_020f3eb4, SoundScene1_Start)
@@ -1566,10 +1565,10 @@ extern void NNS_SndPlayerStopSeqByPlayerNo(int player_no, int fade_frames);
  * stopped. */
 static const u8 scene_players[] = {11, 2, 4, 5, 6, 7, 8, 9, 10, 12, 15, 16, 17, 18, 19};
 
-/* The sequence archives of the keyboard's sounds, by mode (SoundSceneBase_SetKeyboardMode). */
-#define SEQ_ARC_KEYBOARD_A 0x85 /* modes 0 and 4 */
-#define SEQ_ARC_KEYBOARD_B 0x86 /* modes 1 and 3 */
-#define SEQ_ARC_KEYBOARD_C 0x87 /* mode 2 */
+/* The banks of the keyboard's sounds, by mode (SoundSceneBase_SetKeyboardMode). */
+#define BANK_KEYBOARD_A 0x85 /* modes 0 and 4 */
+#define BANK_KEYBOARD_B 0x86 /* modes 1 and 3 */
+#define BANK_KEYBOARD_C 0x87 /* mode 2 */
 
 /* The sequence archive the base constructor gives the current sound set's first melody player. */
 #define SOUND_SET_VALUE_BASE 0xd2
@@ -1645,32 +1644,32 @@ void SoundSceneBase_RestoreHeap(SoundScene *scene)
 }
 CLEAN_AS(func_020f4318, SoundSceneBase_RestoreHeap)
 
-/* func_020f4338: slot 7: the keyboard's mode made the voice's kind, and the sequence archive
+/* func_020f4338: slot 7: the keyboard's mode made the voice's kind, and the bank
  * of that mode's sounds loaded; the scene's byte 6 set. Returns 1.
  * BUG: for a mode above 4 the ROM loads whatever number its register held from the caller.
  * REQUIRES: mode 0 to 4; Clean loads nothing for the others. */
 int SoundSceneBase_SetKeyboardMode(SoundScene *scene, unsigned int mode)
 {
-    int seq_arc = -1;
+    int bank = -1;
 
     switch (mode) {
         case 0:
         case 4:
-            seq_arc = SEQ_ARC_KEYBOARD_A;
+            bank = BANK_KEYBOARD_A;
             break;
         case 1:
         case 3:
-            seq_arc = SEQ_ARC_KEYBOARD_B;
+            bank = BANK_KEYBOARD_B;
             break;
         case 2:
-            seq_arc = SEQ_ARC_KEYBOARD_C;
+            bank = BANK_KEYBOARD_C;
             break;
         default:
             break;
     }
     SoundSystem_SetVoiceType(&data_021fd1bc, (int) mode);
-    if (seq_arc >= 0) {
-        SoundSystem_LoadSeqArc(&data_021fd1bc, seq_arc);
+    if (bank >= 0) {
+        SoundSystem_LoadBank(&data_021fd1bc, bank);
     }
     scene->started = 1;
     return 1;

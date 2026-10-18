@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "main/model_object.h"
+#include "scene_heaps.h"
 
 static_assert(sizeof(ModelCacheEntry) == 8, "ModelCacheEntry size");
 
@@ -18,11 +19,6 @@ extern ModelCacheEntry data_021c8e8c[MODEL_CACHE_MODELS];
 /* 0 while the player is in town, else in a building (the pockets scene, ov096, reads it the
  * same way). */
 extern u8 data_020e54a8;
-
-/* The shared model heap freed (and forgotten); a new one of `size` bytes made in `parent`
- * (NULL: the current heap). */
-extern void func_0205cb18(void);
-extern void func_0205cb34(u32 size, Heap *parent);
 
 extern void OS_Terminate(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -166,7 +162,7 @@ CLEAN_AS(func_020562cc, ModelCache_FindModel)
  * they are; ModelCache_Init clears them. */
 void ModelCache_FreeHeap(void)
 {
-    func_0205cb18();
+    SceneHeaps_DestroyModelCache();
 }
 CLEAN_AS(func_02056310, ModelCache_FreeHeap)
 
@@ -184,6 +180,6 @@ void ModelCache_Init(void)
     }
     data_021c8ca8 = 0;
     data_021c8ca4 = 0;
-    func_0205cb34(data_020e54a8 == 0 ? MODEL_CACHE_HEAP_TOWN : MODEL_CACHE_HEAP_INDOORS, NULL);
+    SceneHeaps_CreateModelCache(data_020e54a8 == 0 ? MODEL_CACHE_HEAP_TOWN : MODEL_CACHE_HEAP_INDOORS, NULL);
 }
 CLEAN_AS(func_02056318, ModelCache_Init)

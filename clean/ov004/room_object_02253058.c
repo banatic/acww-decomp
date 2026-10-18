@@ -22,6 +22,28 @@
 #include "room_object_methods.h"
 #include "room_object_parts.h"
 #include "ov004/room_player_actor.h"
+#include "main/acre_tile.h"
+#include "main/activity_job.h"
+#include "main/actor_table.h"
+#include "main/collision_map.h"
+#include "main/current_pockets.h"
+#include "main/event_queue.h"
+#include "main/furniture_info.h"
+#include "main/item_code.h"
+#include "main/message_receiver.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
+#include "main/scene_exit.h"
+#include "main/scene_kinds.h"
+#include "main/scene_object_base.h"
+#include "main/scene_tables.h"
+#include "main/session_players.h"
+#include "main/start_kind.h"
+#include "main/talk_answers.h"
+#include "main/talk_object.h"
+#include "main/town_objects.h"
+#include "room_objects.h"
+#include "room_pushes.h"
 
 static_assert(offsetof(RoomObject, unk_00C) == 0xc, "kind");
 static_assert(offsetof(RoomObject, position) == 0x5c, "position");
@@ -43,10 +65,10 @@ static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size RoomObject02253058_
 #define RECEIVER_OFFSET 0xec
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 #define ONE 0x1000         /* normal speed, 20.12 fixed point */
-#define PLAYER 4           /* the actor func_020961a8 is asked for: this console's player */
-#define PLAYER_COUNT 4     /* the actors func_ov004_0222c25c is asked for */
+#define PLAYER 4           /* the actor SessionPlayers_ActorOf is asked for: this console's player */
+#define PLAYER_COUNT 4     /* the actors RoomPlayerActor_PointAtPlace is asked for */
 #define PUSH_FRAMES 7      /* frames of pushing before it counts */
-#define MOVED_ENOUGH 0x200 /* how far the entry must have moved (func_ov004_0223cb30) */
+#define MOVED_ENOUGH 0x200 /* how far the entry must have moved (RoomPushes_Moved) */
 #define WAIT_FRAMES 0x18
 #define VANISH_FRAMES 0x16
 #define KIND_2A 0x2a       /* RoomObject.unk_780 of the kind with glows */
@@ -59,7 +81,7 @@ static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size RoomObject02253058_
 #define NPC_REACH 0x2000
 #define PLAYER_RADIUS 0x800
 #define NO_ITEM_KIND_SLOT 0 /* the pockets' slot state RoomObject02253058_CanTakeItem accepts */
-#define ITEM_CATEGORY 5     /* what func_02053990 says of the items it accepts */
+#define ITEM_CATEGORY 5     /* what FurnitureInfo_ItemCategory says of the items it accepts */
 #define ITEM_PLACE_SIDE 3   /* the side the kept item is placed facing */
 #define ITEM_PLACE_MODE 1
 #define POCKETS_ARG 0x28 /* what GroupParams_OpenWithMask is given */
@@ -67,7 +89,7 @@ static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size RoomObject02253058_
 #define CHOICE_SECOND 0xd
 #define SEQUENCE_4 0x19 /* the receiver's state byte with "sp_etc_sequence4" */
 #define TALK_STATE 4    /* the receiver's state byte with "obj_etc_player" */
-#define DONE_EVENT 0x2e /* queued in func_020b5e10's object when the sequence is done */
+#define DONE_EVENT 0x2e /* queued in SceneTables_EntryRecord's object when the sequence is done */
 #define DONE_EVENT_ARG 2
 #define NO_ITEM 0xfff1 /* RoomObject02253058.item when none is kept */
 #define ROOM_OBJECT_02253058_SIZE 0x8b8
@@ -102,77 +124,20 @@ typedef struct RoomObject02253058Shape {
 extern const RoomObject02253058Shape data_ov004_022476b0[];
 extern const Vec3 *const data_ov004_02250668[];
 
-/* Its entry among two (func_ov004_0223ca9c of data_ov004_02259784) and the parts of one: an
- * angle, a state, a point, and how far it has moved. */
-extern void *func_ov004_0223cb10(void);
-extern void *func_ov004_0223ca9c(void *entries, RoomObject02253058 *object);
-extern int func_ov004_0223cb18(void *entry);
-extern u32 func_ov004_0223cb20(void *entry);
-extern Vec3 *func_ov004_0223cb28(void *entry);
-extern int func_ov004_0223cb30(void *entry);
-
-/* The players: actor 4 (func_020961a8), this console's player's number (func_020984d4) and
- * record (func_020984e8). */
-extern MapActor *func_020961a8(int actor);
-extern int func_020984d4(void);
-extern void *func_020984e8(void);
+/* The players: actor 4 (SessionPlayers_ActorOf), this console's player's number (PlayerRecords_CurrentNumber) and
+ * record (PlayerRecords_Current). */
 extern NetSession *data_020ccf94;
 /* The width the room's halves are taken from. */
 extern s32 data_020ca0ec;
 
-/* Whether pushing may start (func_ov004_0223c700), whether talking may (func_020b2300), and
- * whether the sequence starts at once (func_020b67ac). */
-extern int func_ov004_0223c700(void);
-extern int func_020b2300(void);
-extern int func_020b67ac(void);
 /* The town's map: a cell's point and a point's cell, whether a cell holds something
- * (func_ov004_0223c5b8, func_020308a4 gives -1 for nothing), the same for the cell of a point,
+ * (RoomObjects_HeightAtCell, CollisionMap_UnclaimedObjectAt gives -1 for nothing), the same for the cell of a point,
  * and the grid of the room's objects. */
-extern void func_0204f794(Vec3 *point, int x, int y);
-extern void func_0204f818(s32 *x, s32 *y, const Vec3 *point);
-extern int func_ov004_0223c5b8(int x, int y);
-extern int func_020308a4(int x, int y);
-extern int func_ov004_0223c5a4(const Vec3 *point);
-extern int func_02030890(const Vec3 *point);
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int y, int layer);
-extern int func_020538dc(int number);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
-
-/* The scene object's hooks: asking the scene for an event, letting it go on, taking and
- * handing back the receiver, and naming it. */
-extern int func_0203e0a8(RoomObject02253058 *object, int a1);
-extern int func_0203e020(RoomObject02253058 *object);
-extern void func_0203ee14(RoomObject02253058 *object, void *receiver);
-extern void func_0203ee08(RoomObject02253058 *object, void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-extern int func_020a12d4(void);
-extern int func_020a12c0(void);
-extern void *func_020b5e10(void);
-extern int func_020b6434(void *queue, u8 event, u8 a2, u8 a3);
-extern void func_020a1948(void);
 
 /* The conversation: its choices (at 0x31c), the one taken, and its message. */
 extern u8 data_021f43e8;
-extern void *func_0206837c(void *talk);
-extern unsigned int func_020ab504(void *choices);
-extern void func_020ab670(void *choices, int count, int a2);
-extern void func_020ab628(void *choices, int index, const u8 *message, int a3, const u8 *a4, int a5, int a6);
-extern void func_020ab5f8(void *choices);
-extern void func_02068388(void *talk, int on);
-extern void func_0206844c(void *talk, const u8 *message, const char *name);
 
-/* The items: the pockets' item in a slot and storing one, the record's last item, an item code
- * of a furniture's number and the number of one, and what the items are. */
-extern u16 func_0209a034(unsigned int slot);
-extern void func_0209a088(u16 *item, int state, int slot);
-extern void func_020996bc(void *record, const u16 *item);
-extern u16 func_0204bc50(int number, int variant);
-extern int func_0204bc64(u16 *item);
-extern int func_0204bcdc(u16 *item);
-extern int func_02053990(u16 *item);
-extern int func_02053bc0(u16 *item);
-extern int func_ov004_0223c660(int placement);
 /* RoomObject02253058_CanTakeItem by the game's symbol, the predicate the pockets are given. */
 extern int func_ov004_02217bb0(u16 *item, int state);
 
@@ -190,13 +155,13 @@ static void switch_to(RoomObject02253058 *object, int state)
 
 static void *entry_of(RoomObject02253058 *object)
 {
-    return func_ov004_0223ca9c(func_ov004_0223cb10(), object);
+    return RoomPushes_FindObject(RoomPushes_Records(), &object->base);
 }
 
 /* Whether the entry is in state 2 or 0. */
 static int entry_ready(void *entry)
 {
-    return func_ov004_0223cb20(entry) == 2 || func_ov004_0223cb20(entry) == 0;
+    return RoomPushes_Side(entry) == 2 || RoomPushes_Side(entry) == 0;
 }
 
 /* The angle the player faces it with. */
@@ -208,23 +173,23 @@ static s16 facing(RoomObject02253058 *object)
 /* Whether the link the receiver is attached to is there and closed. */
 static int link_closed(RoomObject02253058 *object)
 {
-    return object->base.link != NULL && object->base.link->open == 0;
+    return object->base.link != NULL && object->base.link->state == 0;
 }
 
 /* Hands the receiver back and lets the scene go on. */
 static void end_talk(RoomObject02253058 *object)
 {
-    func_0203ee08(object, receiver_of(object));
-    func_0203e020(object);
+    SceneObjectBase_ReleaseReceiver(&object->base.scene, receiver_of(object));
+    EventQueue_FinishObjectEvent(object);
 }
 
 /* Takes the receiver, raises the link's request and names the receiver.
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 static void take_receiver(RoomObject02253058 *object, const char *name)
 {
-    func_0203ee14(object, receiver_of(object));
-    object->base.link->requested = 1;
-    func_020a8164(&object->base.receiver_vtable, name);
+    SceneObjectBase_TakeReceiver(&object->base.scene, receiver_of(object));
+    object->base.link->next_state = 1;
+    MessageReceiver_SetName(&object->base.receiver.base, name);
 }
 
 /* An arithmetic shift right, for negative values too. */
@@ -239,11 +204,11 @@ static s32 shift_right(s32 value, int bits)
  * message. Other answers do nothing. */
 void RoomObject02253058_OnChoice(RoomObject02253058 *object)
 {
-    unsigned int choice = func_020ab504(func_0206837c(object->base.link));
+    unsigned int choice = TalkAnswers_Picked(TalkObject_Answers(object->base.link));
     if (object->mode == ROOM_OBJECT_02253058_MODE_PUSH) {
         switch (choice) {
             case 0:
-                func_0206844c(object->base.link, &data_021f43e8, NULL);
+                TalkObject_SetMessage(object->base.link, &data_021f43e8, NULL);
                 switch_to(object, ROOM_OBJECT_02253058_SEQUENCE_DONE);
                 break;
             case 1:
@@ -253,11 +218,11 @@ void RoomObject02253058_OnChoice(RoomObject02253058 *object)
     } else {
         switch (choice) {
             case 0:
-                func_0206844c(object->base.link, &data_021f43e8, NULL);
+                TalkObject_SetMessage(object->base.link, &data_021f43e8, NULL);
                 switch_to(object, ROOM_OBJECT_02253058_CHOOSE_ITEM);
                 break;
             case 1:
-                func_0206844c(object->base.link, &data_021f43e8, NULL);
+                TalkObject_SetMessage(object->base.link, &data_021f43e8, NULL);
                 switch_to(object, ROOM_OBJECT_02253058_TALK_END);
                 break;
         }
@@ -272,14 +237,14 @@ void RoomObject02253058_OnTalkStep(RoomObject02253058 *object)
 {
     if (object->base.receiver_state == 0) {
         void *talk = object->base.link;
-        void *choices = func_0206837c(talk);
-        func_020ab670(choices, 2, 1);
+        void *choices = TalkObject_Answers(talk);
+        TalkAnswers_Reset(choices, 2, 1);
         u8 first[2] = {CHOICE_FIRST, data_021f43e8};
-        func_020ab628(choices, 0, &first[0], 1, &first[1], 0, 2);
+        TalkAnswers_Set(choices, 0, &first[0], 1, &first[1], 0, 2);
         u8 second[2] = {CHOICE_SECOND, data_021f43e8};
-        func_020ab628(choices, 1, &second[0], 1, &second[1], 0, 0);
-        func_020ab5f8(choices);
-        func_02068388(talk, 1);
+        TalkAnswers_Set(choices, 1, &second[0], 1, &second[1], 0, 0);
+        TalkAnswers_LoadTexts(choices);
+        TalkObject_OpenChoices(talk, 1);
     }
     if (object->base.receiver_state == SEQUENCE_4) {
         switch_to(object, ROOM_OBJECT_02253058_SEQUENCE_END);
@@ -287,7 +252,7 @@ void RoomObject02253058_OnTalkStep(RoomObject02253058 *object)
 }
 CLEAN_AS(func_ov004_022178fc, RoomObject02253058_OnTalkStep)
 
-/* func_ov004_022179a0 (vtable slot 0x4c): the scene's answer to func_0203e0a8. Events 0 and 1
+/* func_ov004_022179a0 (vtable slot 0x4c): the scene's answer to EventQueue_RequestKind6. Events 0 and 1
  * move the player in mode 1, else start the talk; event 8 watches again; others do nothing. */
 void RoomObject02253058_OnSceneEvent(RoomObject02253058 *object, int event)
 {
@@ -332,7 +297,7 @@ CLEAN_AS(func_ov004_02217a28, RoomObject02253058_EnterVanish)
 
 /* func_ov004_02217a38 (update of PLACE): once shrunk away, places the kept item at its cell
  * facing side 3 (a cell to the right for the two-cell shape on the left half, a cell back to the
- * left for an item func_02053bc0 tells 2 of on the left half); vanishes once func_ov004_0223c660
+ * left for an item FurnitureInfo_ItemShape tells 2 of on the left half); vanishes once RoomObjects_Spawn
  * has placed it. */
 void RoomObject02253058_UpdatePlace(RoomObject02253058 *object)
 {
@@ -344,12 +309,12 @@ void RoomObject02253058_UpdatePlace(RoomObject02253058 *object)
     if (object->base.unk_784 == LONG_SHAPE && object->left_half != 0) {
         x++;
     }
-    int kind = func_02053bc0(&object->item);
+    int kind = FurnitureInfo_ItemShape(&object->item);
     if (object->left_half != 0 && kind == 2) {
         x--;
     }
-    int number = func_0204bc64(&object->item);
-    if (func_ov004_0223c660(Placement_Make(x, y, number, ITEM_PLACE_SIDE, 0, ITEM_PLACE_MODE)) != 0) {
+    int number = ItemCode_VariantItem(&object->item);
+    if (RoomObjects_Spawn(Placement_Make(x, y, number, ITEM_PLACE_SIDE, 0, ITEM_PLACE_MODE)) != 0) {
         switch_to(object, ROOM_OBJECT_02253058_VANISH);
     }
 }
@@ -378,13 +343,13 @@ void RoomObject02253058_UpdateSwap(RoomObject02253058 *object)
         return;
     }
     int slot = GroupParams_Arg();
-    object->item = func_0209a034((unsigned int) slot);
-    void *record = func_020984e8();
+    object->item = CurrentPockets_Item((unsigned int) slot);
+    void *record = PlayerRecords_Current();
     if (record != NULL) {
-        func_020996bc(record, &object->item);
+        PlayerRecord_SetItem240E(record, &object->item);
     }
-    u16 code = func_0204bc50(RoomObject_Number(&object->base), 0);
-    func_0209a088(&code, 0, slot);
+    u16 code = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
+    CurrentPockets_Set(&code, 0, slot);
     switch_to(object, ROOM_OBJECT_02253058_PLACE);
 }
 CLEAN_AS(func_ov004_02217af4, RoomObject02253058_UpdateSwap)
@@ -408,10 +373,10 @@ void RoomObject02253058_UpdateChooseItem(RoomObject02253058 *object)
 CLEAN_AS(func_ov004_02217b74, RoomObject02253058_UpdateChooseItem)
 
 /* func_ov004_02217bb0: whether a pockets' slot may be chosen: in state 0, holding an item
- * func_0204bcdc tells that func_02053990 puts in category 5. */
+ * ItemCode_HasVariant tells that FurnitureInfo_ItemCategory puts in category 5. */
 int RoomObject02253058_CanTakeItem(u16 *item, int state)
 {
-    return state == NO_ITEM_KIND_SLOT && func_0204bcdc(item) != 0 && func_02053990(item) == ITEM_CATEGORY;
+    return state == NO_ITEM_KIND_SLOT && ItemCode_HasVariant(item) != 0 && FurnitureInfo_ItemCategory(item) == ITEM_CATEGORY;
 }
 CLEAN_AS(func_ov004_02217bb0, RoomObject02253058_CanTakeItem)
 
@@ -472,13 +437,13 @@ int RoomObject02253058_EnterTalkNext(RoomObject02253058 *object)
 CLEAN_AS(func_ov004_02217c6c, RoomObject02253058_EnterTalkNext)
 
 /* func_ov004_02217c70 (update of SEQUENCE_DONE): once the link has closed, ends the talk, queues
- * event 0x2e in func_020b5e10's object and sets the flag of func_020a1948. */
+ * event 0x2e in SceneTables_EntryRecord's object and sets the flag of ActivityJob_Ask1. */
 void RoomObject02253058_UpdateSequenceDone(RoomObject02253058 *object)
 {
     if (link_closed(object)) {
         end_talk(object);
-        func_020b6434(func_020b5e10(), DONE_EVENT, DONE_EVENT_ARG, 0);
-        func_020a1948();
+        SceneExit_SetToScene((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), DONE_EVENT, DONE_EVENT_ARG, 0);
+        ActivityJob_Ask1();
     }
 }
 CLEAN_AS(func_ov004_02217c70, RoomObject02253058_UpdateSequenceDone)
@@ -492,7 +457,7 @@ int RoomObject02253058_EnterSequenceDone(RoomObject02253058 *object)
 CLEAN_AS(func_ov004_02217cb4, RoomObject02253058_EnterSequenceDone)
 
 /* func_ov004_02217cb8 (update of SEQUENCE_END): once the link has closed, tells the player the
- * half it stands in (func_ov004_0222c110) and ends the talk. */
+ * half it stands in (RoomPlayerActor_RequestPlaceOff) and ends the talk. */
 void RoomObject02253058_UpdateSequenceEnd(RoomObject02253058 *object)
 {
     if (link_closed(object)) {
@@ -518,16 +483,16 @@ void RoomObject02253058_UpdateSequence(RoomObject02253058 *object)
 CLEAN_AS(func_ov004_02217cfc, RoomObject02253058_UpdateSequence)
 
 /* func_ov004_02217d00 (entry of SEQUENCE): takes the receiver, named "sp_etc_sequence4" in state
- * 0x19 when func_020a12d4 or func_020a12c0 says so, else "sp_etc_sequence2" in state 0. */
+ * 0x19 when StartKind_IsNewTown or StartKind_IsNewPlayer says so, else "sp_etc_sequence2" in state 0. */
 int RoomObject02253058_EnterSequence(RoomObject02253058 *object)
 {
-    func_0203ee14(object, receiver_of(object));
-    object->base.link->requested = 1;
-    if (func_020a12d4() != 0 || func_020a12c0() != 0) {
-        func_020a8164(&object->base.receiver_vtable, data_ov004_02253210);
+    SceneObjectBase_TakeReceiver(&object->base.scene, receiver_of(object));
+    object->base.link->next_state = 1;
+    if (StartKind_IsNewTown() != 0 || StartKind_IsNewPlayer() != 0) {
+        MessageReceiver_SetName(&object->base.receiver.base, data_ov004_02253210);
         object->base.receiver_state = SEQUENCE_4;
     } else {
-        func_020a8164(&object->base.receiver_vtable, data_ov004_02253224);
+        MessageReceiver_SetName(&object->base.receiver.base, data_ov004_02253224);
         object->base.receiver_state = 0;
     }
     return 1;
@@ -556,14 +521,14 @@ CLEAN_AS(func_ov004_02217d98, RoomObject02253058_EnterWait)
 
 /* func_ov004_02217da8 (update of MOVE_PLAYER): sends the player to the entry's point with the
  * entry's angle, facing the object; waits once the player goes.
- * BUG: without an entry for the object, func_ov004_0223cb18 and func_ov004_0223cb28 are handed
+ * BUG: without an entry for the object, RoomPushes_Facing and RoomPushes_Centre are handed
  * NULL and the point is read from near address 0; kept. */
 void RoomObject02253058_UpdateMovePlayer(RoomObject02253058 *object)
 {
     void *entry = entry_of(object);
-    s16 angle = (s16) func_ov004_0223cb18(entry);
-    Vec3 *point = func_ov004_0223cb28(entry);
-    if (RoomPlayerActor_RequestPlaceApproach(&point->x, &func_ov004_0223cb28(entry)->z, &angle, facing(object), 1) != 0) {
+    s16 angle = (s16) RoomPushes_Facing(entry);
+    Vec3 *point = RoomPushes_Centre(entry);
+    if (RoomPlayerActor_RequestPlaceApproach(&point->x, &RoomPushes_Centre(entry)->z, &angle, facing(object), 1) != 0) {
         switch_to(object, ROOM_OBJECT_02253058_WAIT);
     }
 }
@@ -580,25 +545,25 @@ CLEAN_AS(func_ov004_02217e08, RoomObject02253058_EnterMovePlayer)
 /* func_ov004_02217e0c (update of WATCH): with an entry, in the quarter of this console's player:
  * with the entry in state 0 or 2 it is pushed (mode 1), counts up to 7 frames and, once the
  * entry has moved more than 0x200 after those, asks the scene for an event unless the session
- * is linked; with the entry in another state it is for talking (mode 2) when func_020b2300 is at
+ * is linked; with the entry in another state it is for talking (mode 2) when TownObjects_VisitorsHere is at
  * most 1. The count restarts on any frame it did not go up. */
 void RoomObject02253058_UpdateWatch(RoomObject02253058 *object)
 {
     int counted = 0;
     object->mode = ROOM_OBJECT_02253058_MODE_NONE;
     void *entry = entry_of(object);
-    if (entry != NULL && (int) object->quarter == func_020984d4()) {
+    if (entry != NULL && (int) object->quarter == PlayerRecords_CurrentNumber()) {
         if (entry_ready(entry)) {
             object->mode = ROOM_OBJECT_02253058_MODE_PUSH;
             if (object->push_frames < PUSH_FRAMES) {
                 counted = 1;
                 object->push_frames++;
             }
-            if (func_ov004_0223cb30(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES &&
+            if (RoomPushes_Moved(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES &&
                 Session_IsLinked(data_020ccf94) == 0) {
-                func_0203e0a8(object, 0);
+                EventQueue_RequestKind6(object, 0);
             }
-        } else if ((unsigned int) func_020b2300() <= 1) {
+        } else if ((unsigned int) TownObjects_VisitorsHere() <= 1) {
             object->mode = ROOM_OBJECT_02253058_MODE_TALK;
         }
     }
@@ -624,7 +589,7 @@ int RoomObject02253058_EnterWatch(RoomObject02253058 *object)
 CLEAN_AS(func_ov004_02217eb8, RoomObject02253058_EnterWatch)
 
 /* func_ov004_02217f2c (update of PUSHED): with an entry in state 0 or 2, the player there and
- * func_ov004_0223c700 allowing it, the one of its two front cells nearer the player (the second
+ * RoomPushes_Allowed allowing it, the one of its two front cells nearer the player (the second
  * when as near); when that cell is free and nobody is one cell ahead of the entry (along its
  * angle) it counts up to 7 frames, and once the entry has moved more than 0x200 after those it
  * sends the player to the entry's point and counts again. The count restarts on any frame it
@@ -633,35 +598,35 @@ void RoomObject02253058_UpdatePushed(RoomObject02253058 *object)
 {
     int counted = 0;
     void *entry = entry_of(object);
-    MapActor *player = func_020961a8(PLAYER);
-    if (entry != NULL && player != NULL && func_ov004_0223c700() != 0 && entry_ready(entry)) {
+    MapActor *player = SessionPlayers_ActorOf(PLAYER);
+    if (entry != NULL && player != NULL && RoomPushes_Allowed() != 0 && entry_ready(entry)) {
         Cell cells[2];
         RoomObject02253058_PairConstruct(cells);
         RoomObject02253058_FrontCells(object, cells);
         Vec3 first;
         Vec3 second;
         Cell *cell = RoomObject02253058_CellAt(cells, 0);
-        func_0204f794(&first, cell->x, cell->y);
+        AcreTile_TileCentre(&first, cell->x, cell->y);
         cell = RoomObject02253058_CellAt(cells, 1);
-        func_0204f794(&second, cell->x, cell->y);
+        AcreTile_TileCentre(&second, cell->x, cell->y);
         Vec3 at = player->position;
         fx32 to_first = Vec_DistanceXZ(&at, &first);
         fx32 to_second = Vec_DistanceXZ(&at, &second);
         Cell chosen = *RoomObject02253058_CellAt(cells, to_first < to_second ? 0 : 1);
         if (RoomObject02253058_CellIsFree(&chosen)) {
             Vec3 ahead = {0, 0, STEP};
-            Vec_RotateY(&ahead, func_ov004_0223cb18(entry));
-            fx32 z = ahead.z + func_ov004_0223cb28(entry)->z;
-            Vec3 probe = {ahead.x + func_ov004_0223cb28(entry)->x, 0, z};
+            Vec_RotateY(&ahead, RoomPushes_Facing(entry));
+            fx32 z = ahead.z + RoomPushes_Centre(entry)->z;
+            Vec3 probe = {ahead.x + RoomPushes_Centre(entry)->x, 0, z};
             if (Actors_NoneNear(&probe, PLAYER_REACH, NPC_REACH, PLAYER_RADIUS, 0)) {
                 if (object->push_frames < PUSH_FRAMES) {
                     counted = 1;
                     object->push_frames++;
                 }
-                if (func_ov004_0223cb30(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES) {
-                    s16 angle = (s16) func_ov004_0223cb18(entry);
-                    Vec3 *point = func_ov004_0223cb28(entry);
-                    RoomPlayerActor_RequestPlaceApproach(&point->x, &func_ov004_0223cb28(entry)->z, &angle, facing(object), 0);
+                if (RoomPushes_Moved(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES) {
+                    s16 angle = (s16) RoomPushes_Facing(entry);
+                    Vec3 *point = RoomPushes_Centre(entry);
+                    RoomPlayerActor_RequestPlaceApproach(&point->x, &RoomPushes_Centre(entry)->z, &angle, facing(object), 0);
                     object->push_frames = 0;
                 }
             }
@@ -677,7 +642,7 @@ CLEAN_AS(func_ov004_02217f2c, RoomObject02253058_UpdatePushed)
 /* func_ov004_022180d4: whether a cell holds nothing. */
 int RoomObject02253058_CellIsFree(const Cell *cell)
 {
-    return func_ov004_0223c5b8(cell->x, cell->y) == 0 && func_020308a4(cell->x, cell->y) == -1;
+    return RoomObjects_HeightAtCell(cell->x, cell->y) == 0 && CollisionMap_UnclaimedObjectAt(cell->x, cell->y) == -1;
 }
 CLEAN_AS(func_ov004_022180d4, RoomObject02253058_CellIsFree)
 
@@ -819,24 +784,24 @@ void RoomObject02253058_PointAhead(RoomObject02253058 *object, Vec3 *out, const 
 }
 CLEAN_AS(func_ov004_022183b8, RoomObject02253058_PointAhead)
 
-/* func_ov004_02218414 (func_ov004_0223c568 asks it of an object of this kind): what is half a
+/* func_ov004_02218414 (RoomObjects_CheckStep asks it of an object of this kind): what is half a
  * cell ahead of `point` along `angle` (RoomObject02253058_PointAhead): blocked when someone is
- * near; else the object of the room on that cell: itself (joined), one func_020538dc accepts by
+ * near; else the object of the room on that cell: itself (joined), one FurnitureInfo_IndoorBit2 accepts by
  * its number (open), or one of this kind facing the same way with a cell next to one of this
  * object's (joined); with no object there, open when the cell holds nothing. */
 int RoomObject02253058_CheckStep(RoomObject02253058 *object, Vec3 *point, int angle, Vec3 *offset)
 {
     Vec3 moved;
-    s32 x;
-    s32 y;
+    int x;
+    int y;
     RoomObject02253058_PointAhead(object, &moved, point, angle, offset);
-    func_0204f818(&x, &y, &moved);
-    RoomObject *other = func_ov004_0223cc10(func_ov004_0223cd50(), x, y, 0);
+    Position_Tile(&x, &y, (const Position *) (const void *) &moved);
+    RoomObject *other = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, y, 0);
     if (!Actors_NoneNear(&moved, PLAYER_REACH, NPC_REACH, PLAYER_RADIUS, 0)) {
         return ROOM_OBJECT_02253058_STEP_BLOCKED;
     }
     if (other == NULL) {
-        if (func_ov004_0223c5a4(&moved) == 0 && func_02030890(&moved) == -1) {
+        if (RoomObjects_HeightAtPoint(&moved) == 0 && CollisionMap_UnclaimedObjectAtPoint(&moved) == -1) {
             return ROOM_OBJECT_02253058_STEP_OPEN;
         }
         return ROOM_OBJECT_02253058_STEP_BLOCKED;
@@ -844,7 +809,7 @@ int RoomObject02253058_CheckStep(RoomObject02253058 *object, Vec3 *point, int an
     if (other == &object->base) {
         return ROOM_OBJECT_02253058_STEP_JOINED;
     }
-    if (func_020538dc(RoomObject_Number(other)) != 0) {
+    if (FurnitureInfo_IndoorBit2(RoomObject_Number(other)) != 0) {
         return ROOM_OBJECT_02253058_STEP_OPEN;
     }
     if (object->base.angle == other->angle && other->unk_00C == KIND_37) {
@@ -894,7 +859,7 @@ unsigned int RoomObject02253058_ListCells(RoomObject02253058 *object, Cell *cell
         Vec3 world;
         RoomObject_ToWorld(&object->base, &world, &points[i]);
         Cell *cell = RoomObject02253058_CellAt(cells, (int) i);
-        func_0204f818(&cell->x, &cell->y, &world);
+        Position_Tile(&cell->x, &cell->y, (const Position *) (const void *) &world);
     }
     return data_ov004_022476b0[object->base.unk_784].count;
 }
@@ -912,7 +877,7 @@ int RoomObject02253058_FrontCells(RoomObject02253058 *object, Cell *cells)
         Vec3 world;
         RoomObject_ToWorld(&object->base, &world, &points[i]);
         Cell *cell = RoomObject02253058_CellAt(cells, (int) i);
-        func_0204f818(&cell->x, &cell->y, &world);
+        Position_Tile(&cell->x, &cell->y, (const Position *) (const void *) &world);
     }
     return 2;
 }
@@ -946,9 +911,9 @@ int RoomObject02253058_Update(RoomObject02253058 *object)
             if (RoomPlayerActor_PointAtPlace(&point, i) == 0) {
                 continue;
             }
-            s32 x;
-            s32 y;
-            func_0204f818(&x, &y, &point);
+            int x;
+            int y;
+            Position_Tile(&x, &y, (const Position *) (const void *) &point);
             CellList cells;
             CellList_Construct(&cells);
             RoomObject_ListCells(base, &cells, NULL, 0);
@@ -971,7 +936,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225305819func_ov004_0221860cEv, RoomObject02253058_Upda
 
 /* func_ov004_022186cc (vtable slot 0x7c, once the model is bound): the node set's value 0; kind
  * 0x2a binds the animations of variant 0 and its glows (on); it watches at once when
- * func_020b67ac says so. Done at once. */
+ * SceneKinds_CurrentIn6To8 says so. Done at once. */
 int RoomObject02253058_Start(RoomObject02253058 *object)
 {
     RoomObject *base = &object->base;
@@ -980,7 +945,7 @@ int RoomObject02253058_Start(RoomObject02253058 *object)
         RoomObject_LoadAnims(base, 0, 0, ONE, 0);
         GlowSet_Bind(&object->glows, base->model_resource, 1);
     }
-    if (func_020b67ac() != 0) {
+    if (SceneKinds_CurrentIn6To8() != 0) {
         switch_to(object, ROOM_OBJECT_02253058_WATCH);
     }
     return 1;

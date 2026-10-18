@@ -5,6 +5,10 @@
 #include "packed_bytes.h"
 #include "session.h"
 #include "session_record.h"
+#include "link_global.h"
+#include "scene_object.h"
+#include "scene_query.h"
+#include "scene_share_table.h"
 
 static_assert(offsetof(SceneShareEntry, place) == 0x04, "SceneShareEntry layout");
 static_assert(offsetof(SceneShareEntry, extra) == 0x0b, "SceneShareEntry layout");
@@ -14,25 +18,6 @@ static_assert(sizeof(SceneShareEntry) == 0x1e, "SceneShareEntry layout");
 extern NetSession *data_020ccf94;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-/* The person's shared record, or null (scene_share.h). */
-extern SceneShareEntry *func_02085148(u16 *person);
-/* Its entry's in-use byte set, the scene, the place, the angle, the 15 bytes of the motion's
- * note and the four extra bytes written. */
-extern int func_020851a0(u16 *person, int scene, const Vec3 *position, int angle, const void *note, const void *extra);
-/* Its entry's in-use byte set and the owner and holder written. */
-extern int func_02085174(u16 *person, int owner, int holder);
-/* As func_02085174, then, while this system's slot is taken, the record updated (with
- * `value`'s address). */
-extern void func_020850e8(int value, int owner, int holder, u16 *person);
-/* The record's owner and holder, when it is in use. */
-extern int func_020850b8(int *owner, int *holder, u16 *person);
-/* The person's index (the object's halfword at 0x632). */
-extern u16 func_0201c444(void *object);
-/* The scene shown. */
-extern u8 func_020b65c4(void);
-/* Nonzero always without a session slot. */
-extern int func_020a7278(void);
 
 /* The object's parts used here. */
 #define SCENE_SHARE_OBJECT_POSITION 0x5c /* Vec3 */
@@ -61,9 +46,9 @@ static void scene_share_send(u8 *object, int *value)
 {
     int kind = scene_share_kind(object);
     if (kind == SCENE_SHARE_KIND_E) {
-        SessionRecord_Update(func_0201c444(object) + SCENE_SHARE_RECORDS_E, value, 0, 0);
+        SessionRecord_Update(SceneObject_PersonIndex(object) + SCENE_SHARE_RECORDS_E, value, 0, 0);
     } else if (kind == SCENE_SHARE_KIND_D) {
-        SessionRecord_Update(func_0201c444(object) + SCENE_SHARE_RECORDS_D, value, 0, 0);
+        SessionRecord_Update(SceneObject_PersonIndex(object) + SCENE_SHARE_RECORDS_D, value, 0, 0);
     }
 }
 
@@ -78,7 +63,7 @@ static int scene_share_slot_taken(void)
  * 0 without a record. */
 int SceneShare_ReadNote(u8 *object, int *kind, int *priority, u8 *note)
 {
-    SceneShareEntry *entry = func_02085148(scene_share_person(object));
+    SceneShareEntry *entry = SceneShareTable_SharedRecord(scene_share_person(object));
     if (entry == NULL) {
         return 0;
     }
@@ -96,7 +81,7 @@ int SceneShare_ReadPlace(u8 *object, Vec3 *point, s16 *angle)
     if (object[SCENE_SHARE_OBJECT_LOCAL] != 0) {
         return 0;
     }
-    SceneShareEntry *entry = func_02085148(scene_share_person(object));
+    SceneShareEntry *entry = SceneShareTable_SharedRecord(scene_share_person(object));
     if (entry == NULL) {
         return 0;
     }
@@ -111,10 +96,11 @@ CLEAN_AS(func_0201bee0, SceneShare_ReadPlace)
  * the record is updated with `value`'s address. */
 void SceneShare_Publish(u8 *object, int value)
 {
-    int scene = func_020b65c4();
-    func_020851a0(scene_share_person(object), scene, (const Vec3 *) (const void *) (object + SCENE_SHARE_OBJECT_POSITION),
-                  *(const s16 *) (const void *) (object + SCENE_SHARE_OBJECT_ANGLE), object + SCENE_SHARE_OBJECT_NOTE,
-                  object + SCENE_SHARE_OBJECT_EXTRA);
+    int scene = SceneQuery_Current();
+    SceneShareTable_SetPlace(scene_share_person(object), scene,
+                             (const Vec3 *) (const void *) (object + SCENE_SHARE_OBJECT_POSITION),
+                             *(const s16 *) (const void *) (object + SCENE_SHARE_OBJECT_ANGLE),
+                             object + SCENE_SHARE_OBJECT_NOTE, object + SCENE_SHARE_OBJECT_EXTRA);
     if (!scene_share_slot_taken() || SceneShare_IsOurs(object) == 0) {
         return;
     }
@@ -140,7 +126,7 @@ int SceneShare_ReadExtra(u8 *object, u8 *out, u32 size)
     if (object[SCENE_SHARE_OBJECT_LOCAL] != 0) {
         return 0;
     }
-    SceneShareEntry *entry = func_02085148(scene_share_person(object));
+    SceneShareEntry *entry = SceneShareTable_SharedRecord(scene_share_person(object));
     if (size > SCENE_SHARE_EXTRA_SIZE) {
         size = SCENE_SHARE_EXTRA_SIZE;
     }
@@ -168,7 +154,7 @@ CLEAN_AS(func_0201c014, SceneShare_IsHeld)
  * written). */
 int SceneShare_ReadSlots(u8 *object, int *owner, int *holder)
 {
-    return func_020850b8(owner, holder, scene_share_person(object));
+    return SceneShareTable_ReadSlots(owner, holder, scene_share_person(object));
 }
 CLEAN_AS(func_0201c040, SceneShare_ReadSlots)
 
@@ -176,7 +162,7 @@ CLEAN_AS(func_0201c040, SceneShare_ReadSlots)
  * taken and the object is ours, the record is updated with `value`'s address. */
 void SceneShare_SetSlotsIfOurs(u8 *object, int value, int owner, int holder)
 {
-    func_02085174(scene_share_person(object), owner, holder);
+    SceneShareTable_SetSlots(scene_share_person(object), owner, holder);
     if (!scene_share_slot_taken() || SceneShare_IsOurs(object) == 0) {
         return;
     }
@@ -188,7 +174,7 @@ CLEAN_AS(func_0201c054, SceneShare_SetSlotsIfOurs)
  * this system's slot is taken, ours or not (func_020850e8). */
 void SceneShare_SetSlots(u8 *object, u32 value, u32 owner, u32 holder)
 {
-    func_020850e8((int) value, (int) owner, (int) holder, scene_share_person(object));
+    SceneShareTable_SetSlotsAndSend((int) value, (int) owner, (int) holder, scene_share_person(object));
 }
 CLEAN_AS(func_0201c0c8, SceneShare_SetSlots)
 
@@ -201,11 +187,11 @@ int SceneShare_IsOurs(u8 *object)
     if (Session_IsLinked(session) == 0 || object[SCENE_SHARE_OBJECT_LOCAL] != 0) {
         return 1;
     }
-    SceneShareEntry *entry = func_02085148(scene_share_person(object));
+    SceneShareEntry *entry = SceneShareTable_SharedRecord(scene_share_person(object));
     if (entry == NULL || entry->in_use == 0) {
         return 0;
     }
-    if (entry->owner == SCENE_SHARE_NO_SLOT && func_020a7278() != 0) {
+    if (entry->owner == SCENE_SHARE_NO_SLOT && LinkGlobal_HoldsScene() != 0) {
         return 1;
     }
     return entry->owner == session->local_slot;

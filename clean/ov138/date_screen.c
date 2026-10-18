@@ -1,5 +1,5 @@
 /* The date screen of overlay 138 (date_screen.h): its destructors, its flags, the cursor and
- * its sprite, the lists of the clock panel's fields, the frame's states and the scene's slots. */
+ * its sprite, the lists of the clock setter's fields, the frame's states and the scene's slots. */
 #include "date_screen.h"
 
 #include <stddef.h>
@@ -17,6 +17,7 @@
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
+#include "ov134/clock_setter.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(DateScreen, return_sub_state) == 0x94, "bytes");
 static_assert(offsetof(DateScreen, cursor) == 0x95 && offsetof(DateScreen, cursor_sprite) == 0x98, "cursor");
@@ -46,52 +47,8 @@ extern u8 data_021f6c54; /* y */
 #define DATE_SCREEN_PAD_B 0x0002
 #define DATE_SCREEN_PAD_START 0x0008
 
-/* Overlay 134's clock panel (ov134/clock_panel.h), by symbol. */
-extern void *func_ov134_0229beb0(void *clock); /* ClockPanel_Destroy */
-extern void *func_ov134_0229bed4(void *clock); /* ClockPanel_Construct */
-extern void func_ov134_0229bd38(void *clock, int mode, int base_layer, int panel_layer, int list_layer); /* Init */
-extern void func_ov134_0229bd2c(void *clock);               /* sets CLOCK_PANEL_FLAG_HAS_MIN */
-extern void func_ov134_0229bcf0(void *clock);               /* ClockPanel_Teardown */
-extern void func_ov134_0229bcac(void *clock);               /* ClockPanel_EndFrame */
-extern void func_ov134_0229bbe8(void *clock);               /* ClockPanel_Update */
-extern void func_ov134_0229bbdc(void *clock, void *out);    /* ClockPanel_CopyValue */
-extern int func_ov134_0229baec(void *clock);                /* ClockPanel_LoadBackground */
-extern void func_ov134_0229ba10(void *clock, int title);    /* ClockPanel_DrawLabels */
-extern int func_ov134_0229b954(void *clock);                /* ClockPanel_LoadSprites */
-extern void func_ov134_0229b220(void *clock, int x, int y); /* ClockPanel_Draw */
-extern int func_ov134_0229ab80(void *clock, int x, int y);  /* ClockPanel_TouchedField */
-extern int func_ov134_0229a8a0(void *clock);                /* ClockPanel_Focus */
-extern void func_ov134_0229a5c8(void *clock, int field);    /* ClockPanel_OpenList */
-extern int func_ov134_0229a4e4(void *clock);                /* ClockPanel_OpenListStep */
-extern void func_ov134_0229a3e4(void *clock);               /* ClockPanel_PickRow */
-extern void func_ov134_0229a398(void *clock);               /* ClockPanel_CancelList */
-extern int func_ov134_0229a24c(void *clock);                /* ClockPanel_CloseListStep */
-extern int func_ov134_0229a1f0(void *clock, int x, int y);  /* ClockPanel_TouchList */
-extern int func_ov134_02299b70(void *clock);                /* ClockPanel_PressThumbByKey */
-extern void func_ov134_02299b18(void *clock, int pen_y);    /* ClockPanel_DragThumb */
-extern void func_ov134_02299af0(void *clock, int pen_y);    /* ClockPanel_ThumbTowardPen */
-extern void func_ov134_02299a90(void *clock);               /* ClockPanel_MoveThumbByKeys */
-extern int func_ov134_02299a84(void *clock);                /* ClockPanel_ReleaseThumb */
-extern int func_ov134_02299a60(void *clock);                /* ClockPanel_SettleThumb */
-extern int func_ov134_022999e0(void *clock);                /* ClockPanel_CursorX */
-extern int func_ov134_022999ac(void *clock);                /* ClockPanel_CursorY */
-extern void func_ov134_02299980(void *clock, int y);        /* ClockPanel_CursorToY */
-extern int func_ov134_022997dc(void *clock, int keys);      /* ClockPanel_ListKeys */
-extern int func_ov134_022997b0(void *clock);                /* ClockPanel_PickCursorRow */
-
-/* The clock panel's mode and layers (ClockPanel_Init), and its title (ClockPanel_DrawLabels). */
-#define DATE_SCREEN_CLOCK_MODE 3
+/* The clock setter's title (ClockSetter_DrawLabels). */
 #define DATE_SCREEN_TITLE 0x6c
-
-/* What ClockPanel_TouchList and ClockPanel_ListKeys answer (ov134/clock_panel.h). */
-#define DATE_SCREEN_TOUCH_PICKED 0
-#define DATE_SCREEN_TOUCH_OUTSIDE 1
-#define DATE_SCREEN_TOUCH_BAR 2
-#define DATE_SCREEN_TOUCH_THUMB 3
-#define DATE_SCREEN_KEYS_NONE 0
-#define DATE_SCREEN_KEYS_STEPPED 2
-#define DATE_SCREEN_KEYS_FAST 3
-#define DATE_SCREEN_NO_FIELD 6
 
 /* The panel's buttons and the cursor sprite's animations (glide.h). */
 #define DATE_SCREEN_CONFIRM_BUTTON 6
@@ -141,7 +98,7 @@ static int date_at_button(DateScreen *self)
 static void date_destroy_members(DateScreen *self)
 {
     self->base.vtable = data_ov138_0229d4e0;
-    func_ov134_0229beb0(self->clock);
+    ClockSetter_Destroy(&self->clock);
     ButtonPanel_Destroy(&self->panel);
     Glider0_Destroy(&self->cursor_sprite);
     MenuScene_DestroyBase(date_scene(self));
@@ -282,7 +239,7 @@ CLEAN_AS(func_ov138_0229c738, DateScreen_HideCursorSprite)
 int DateScreen_CursorSpriteY(DateScreen *self)
 {
     if (DateScreen_TestFlags(self, DATE_SCREEN_FLAG_LIST)) {
-        return func_ov134_022999ac(self->clock);
+        return ClockSetter_CursorY(&self->clock);
     }
     switch (self->cursor) {
         case DATE_SCREEN_CONFIRM:
@@ -300,7 +257,7 @@ CLEAN_AS(func_ov138_0229c754, DateScreen_CursorSpriteY)
 int DateScreen_CursorSpriteX(DateScreen *self)
 {
     if (DateScreen_TestFlags(self, DATE_SCREEN_FLAG_LIST)) {
-        return func_ov134_022999e0(self->clock);
+        return ClockSetter_CursorX(&self->clock);
     }
     switch (self->cursor) {
         case DATE_SCREEN_CONFIRM:
@@ -346,8 +303,8 @@ CLEAN_AS(func_ov138_0229c858, DateScreen_EnterList)
  * restarts. */
 void DateScreen_EnterListByKeys(DateScreen *self)
 {
-    int y = func_ov134_022999ac(self->clock);
-    func_ov134_02299980(self->clock, y);
+    int y = ClockSetter_CursorY(&self->clock);
+    ClockSetter_CursorToY(&self->clock, y);
     DateScreen_SetFlags(self, DATE_SCREEN_FLAG_LIST);
     DateScreen_PlaceSpriteAtCursor(self);
     MenuScene_ResetKeyRepeat(date_scene(self));
@@ -369,7 +326,7 @@ void DateScreen_CancelList(DateScreen *self)
 {
     DateScreen_HideCursorSprite(self);
     DateScreen_ClearFlags(self, DATE_SCREEN_FLAG_LIST);
-    func_ov134_0229a398(self->clock);
+    ClockSetter_CancelList(&self->clock);
     MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_LIST_CLOSING);
 }
 CLEAN_AS(func_ov138_0229c8cc, DateScreen_CancelList)
@@ -379,7 +336,7 @@ void DateScreen_PickListRow(DateScreen *self)
 {
     DateScreen_HideCursorSprite(self);
     DateScreen_ClearFlags(self, DATE_SCREEN_FLAG_LIST);
-    func_ov134_0229a3e4(self->clock);
+    ClockSetter_PickRow(&self->clock);
     MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_LIST_CLOSING);
 }
 CLEAN_AS(func_ov138_0229c8f8, DateScreen_PickListRow)
@@ -389,7 +346,7 @@ CLEAN_AS(func_ov138_0229c8f8, DateScreen_PickListRow)
 void DateScreen_OpenList(DateScreen *self, int field)
 {
     DateScreen_HideCursorSprite(self);
-    func_ov134_0229a5c8(self->clock, field);
+    ClockSetter_OpenList(&self->clock, field);
     MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_LIST_OPENING);
 }
 CLEAN_AS(func_ov138_0229c924, DateScreen_OpenList)
@@ -413,7 +370,7 @@ void DateScreen_Confirm(DateScreen *self)
     MenuScene_SetState(date_scene(self), DATE_SCREEN_STATE_START_WIPE_OUT);
     MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_PANEL_PRESSED);
     DateTime when = {0};
-    func_ov134_0229bbdc(self->clock, &when);
+    ClockSetter_CopyValue(&self->clock, &when);
     Global021cfc98_CopyIn(&when);
     GroupParams_SetC4C(1);
 }
@@ -453,11 +410,11 @@ CLEAN_AS(func_ov138_0229c9fc, DateScreen_ResumeByTouch)
  * that has the focus (with none, to the confirm button) and the fields are used again. */
 void DateScreen_WaitListClose(DateScreen *self)
 {
-    if (func_ov134_0229a24c(self->clock) == 0) {
+    if (ClockSetter_CloseListStep(&self->clock) == 0) {
         return;
     }
-    int field = func_ov134_0229a8a0(self->clock);
-    if (field == DATE_SCREEN_NO_FIELD) {
+    int field = ClockSetter_Focus(&self->clock);
+    if (field == CLOCK_SETTER_NO_FIELD) {
         self->cursor = DATE_SCREEN_CONFIRM;
     } else {
         self->cursor = (u8) field;
@@ -469,7 +426,7 @@ CLEAN_AS(func_ov138_0229ca14, DateScreen_WaitListClose)
 /* func_ov138_0229ca50 (sub state 12): once the list has opened, it is used. */
 void DateScreen_WaitListOpen(DateScreen *self)
 {
-    if (func_ov134_0229a4e4(self->clock) != 0) {
+    if (ClockSetter_OpenListStep(&self->clock) != 0) {
         DateScreen_EnterList(self);
     }
 }
@@ -515,9 +472,9 @@ void DateScreen_ActOnPress(DateScreen *self)
         return;
     }
     if (DateScreen_TestFlags(self, DATE_SCREEN_FLAG_LIST)) {
-        if (func_ov134_02299b70(self->clock)) {
+        if (ClockSetter_PressThumbByKey(&self->clock)) {
             MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_THUMB_KEYS);
-        } else if (func_ov134_022997b0(self->clock)) {
+        } else if (ClockSetter_PickCursorRow(&self->clock)) {
             DateScreen_PickListRow(self);
         } else {
             MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_LIST);
@@ -551,7 +508,7 @@ CLEAN_AS(_ZN18Obj_ov138_0229d4e019func_ov138_0229cb7cEv, DateScreen_WaitCursorSp
  * list (through the press's release). The sprite follows the list's cursor. */
 void DateScreen_SettleThumb(DateScreen *self)
 {
-    if (func_ov134_02299a60(self->clock)) {
+    if (ClockSetter_SettleThumb(&self->clock)) {
         MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_LIST);
         DateScreen_PressAndReturn(self);
     }
@@ -566,12 +523,12 @@ CLEAN_AS(func_ov138_0229cba4, DateScreen_SettleThumb)
 void DateScreen_MoveThumbByKeys(DateScreen *self)
 {
     if (data_021fbe40.held & DATE_SCREEN_PAD_A) {
-        func_ov134_02299a90(self->clock);
+        ClockSetter_MoveThumbByKeys(&self->clock);
         int x = DateScreen_CursorSpriteX(self);
         int y = DateScreen_CursorSpriteY(self);
         Glider_PlaceAt(&self->cursor_sprite, x, y);
     } else {
-        func_ov134_02299a84(self->clock);
+        ClockSetter_ReleaseThumb(&self->clock);
         MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_THUMB_SETTLE);
     }
 }
@@ -587,18 +544,18 @@ void DateScreen_ListByKeys(DateScreen *self)
         return;
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(date_scene(self));
-    switch (func_ov134_022997dc(self->clock, keys)) {
-        case DATE_SCREEN_KEYS_STEPPED:
+    switch (ClockSetter_ListKeys(&self->clock, keys)) {
+        case CLOCK_SETTER_KEYS_STEPPED:
             DateScreen_SetFlags(self, DATE_SCREEN_FLAG_QUICK);
             DateScreen_GlideToCursor(self);
             break;
-        case DATE_SCREEN_KEYS_FAST: {
+        case CLOCK_SETTER_KEYS_FAST: {
             int x = DateScreen_CursorSpriteX(self);
             int y = DateScreen_CursorSpriteY(self);
             Glider_PlaceAt(&self->cursor_sprite, x, y);
             break;
         }
-        case DATE_SCREEN_KEYS_NONE: {
+        case CLOCK_SETTER_KEYS_NONE: {
             u16 pressed = data_021fbe40.pressed;
             if (pressed & DATE_SCREEN_PAD_A) {
                 DateScreen_PressToAct(self);
@@ -644,9 +601,9 @@ CLEAN_AS(func_ov138_0229ccdc, DateScreen_BrowseByKeys)
 void DateScreen_ThumbTowardPen(DateScreen *self)
 {
     if (data_021fbdd8) {
-        func_ov134_02299af0(self->clock, data_021f6c54);
+        ClockSetter_ThumbTowardPen(&self->clock, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->clock);
+        ClockSetter_ReleaseThumb(&self->clock);
         MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_TOUCH_LIST);
     }
 }
@@ -657,9 +614,9 @@ CLEAN_AS(func_ov138_0229cd58, DateScreen_ThumbTowardPen)
 void DateScreen_DragThumb(DateScreen *self)
 {
     if (data_021fbdd8) {
-        func_ov134_02299b18(self->clock, data_021f6c54);
+        ClockSetter_DragThumb(&self->clock, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->clock);
+        ClockSetter_ReleaseThumb(&self->clock);
         MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_TOUCH_LIST);
     }
 }
@@ -677,17 +634,17 @@ void DateScreen_ListByTouch(DateScreen *self)
     if (!(data_021fbdd8 != 0 && data_021fbddc != 0)) {
         return;
     }
-    switch (func_ov134_0229a1f0(self->clock, data_021f6c58, data_021f6c54)) {
-        case DATE_SCREEN_TOUCH_PICKED:
+    switch (ClockSetter_TouchList(&self->clock, data_021f6c58, data_021f6c54)) {
+        case CLOCK_SETTER_TOUCH_PICKED:
             DateScreen_PickListRow(self);
             break;
-        case DATE_SCREEN_TOUCH_OUTSIDE:
+        case CLOCK_SETTER_TOUCH_OUTSIDE:
             DateScreen_CancelList(self);
             break;
-        case DATE_SCREEN_TOUCH_THUMB:
+        case CLOCK_SETTER_TOUCH_THUMB:
             MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_DRAG_THUMB);
             break;
-        case DATE_SCREEN_TOUCH_BAR:
+        case CLOCK_SETTER_TOUCH_BAR:
             MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_THUMB_TO_PEN);
             break;
         default:
@@ -716,27 +673,27 @@ void DateScreen_BrowseByTouch(DateScreen *self)
         DateScreen_Cancel(self);
         return;
     }
-    int field = func_ov134_0229ab80(self->clock, data_021f6c58, data_021f6c54);
-    if (field != DATE_SCREEN_NO_FIELD) {
+    int field = ClockSetter_TouchedDateField(&self->clock, data_021f6c58, data_021f6c54);
+    if (field != CLOCK_SETTER_NO_FIELD) {
         DateScreen_OpenList(self, field);
     }
 }
 CLEAN_AS(func_ov138_0229ce68, DateScreen_BrowseByTouch)
 
-/* func_ov138_0229cefc: the clock panel's sprites loaded, and the panel's text colours. */
+/* func_ov138_0229cefc: the clock setter's sprites loaded, and the panel's text colours. */
 void DateScreen_LoadSprites(DateScreen *self)
 {
-    func_ov134_0229b954(self->clock);
+    ClockSetter_LoadSprites(&self->clock);
     ButtonPanel_LoadTextColors(&self->panel);
 }
 CLEAN_AS(func_ov138_0229cefc, DateScreen_LoadSprites)
 
-/* func_ov138_0229cf1c: the clock panel's background loaded and its labels drawn with the
+/* func_ov138_0229cf1c: the clock setter's background loaded and its labels drawn with the
  * screen's title. */
 void DateScreen_LoadBackground(DateScreen *self)
 {
-    func_ov134_0229baec(self->clock);
-    func_ov134_0229ba10(self->clock, DATE_SCREEN_TITLE);
+    ClockSetter_LoadBackground(&self->clock);
+    ClockSetter_DrawLabels(&self->clock, DATE_SCREEN_TITLE);
 }
 CLEAN_AS(func_ov138_0229cf1c, DateScreen_LoadBackground)
 
@@ -754,19 +711,19 @@ void DateScreen_SetUpLayers(void)
 }
 CLEAN_AS(func_ov138_0229cf3c, DateScreen_SetUpLayers)
 
-/* func_ov138_0229cf88: the frame's end: the clock panel updated. */
+/* func_ov138_0229cf88: the frame's end: the clock setter updated. */
 void DateScreen_EndFrame(DateScreen *self)
 {
-    func_ov134_0229bbe8(self->clock);
+    ClockSetter_Update(&self->clock);
 }
 CLEAN_AS(func_ov138_0229cf88, DateScreen_EndFrame)
 
-/* func_ov138_0229cf98: the frame's start: the button panel's texts closed and the clock panel's
+/* func_ov138_0229cf98: the frame's start: the button panel's texts closed and the clock setter's
  * frame ended. */
 void DateScreen_BeginFrame(DateScreen *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
-    func_ov134_0229bcac(self->clock);
+    ClockSetter_EndFrame(&self->clock);
 }
 CLEAN_AS(func_ov138_0229cf98, DateScreen_BeginFrame)
 
@@ -786,21 +743,21 @@ int DateScreen_BeginInteractiveFrame(DateScreen *self)
 }
 CLEAN_AS(func_ov138_0229cfbc, DateScreen_BeginInteractiveFrame)
 
-/* func_ov138_0229cfd4: the members torn down: the clock panel, and the button panel's texts
+/* func_ov138_0229cfd4: the members torn down: the clock setter, and the button panel's texts
  * closed. */
 void DateScreen_Teardown(DateScreen *self)
 {
-    func_ov134_0229bcf0(self->clock);
+    ClockSetter_Teardown(&self->clock);
     ButtonPanel_CloseTexts(&self->panel);
 }
 CLEAN_AS(func_ov138_0229cfd4, DateScreen_Teardown)
 
-/* func_ov138_0229cff4: the setup: the clock panel in mode 3 (layers 6 and 4 for its base and
+/* func_ov138_0229cff4: the setup: the clock setter in mode 3 (layers 6 and 4 for its base and
  * fields, 3 for its lists) bounded below, the cursor at the year, no flags. */
 void DateScreen_Setup(DateScreen *self)
 {
-    func_ov134_0229bd38(self->clock, DATE_SCREEN_CLOCK_MODE, 6, 4, 3);
-    func_ov134_0229bd2c(self->clock);
+    ClockSetter_Init(&self->clock, CLOCK_SETTER_MODE_DATE, 6, 4, 3);
+    ClockSetter_UseMinimum(&self->clock);
     self->cursor = DATE_SCREEN_YEAR;
     *date_flags(self) = 0;
 }
@@ -851,7 +808,7 @@ void DateScreen_WipeIn(DateScreen *self)
 }
 CLEAN_AS(func_ov138_0229d0b4, DateScreen_WipeIn)
 
-/* func_ov138_0229d0dc (state 0): the layers set up, the clock panel's background and sprites
+/* func_ov138_0229d0dc (state 0): the layers set up, the clock setter's background and sprites
  * loaded, the wipe in started covered on window 2 (layers 2 and 8, 4 frames, margin 0x30),
  * layers 6 and 4 shown and following it, the scene drawn, the panel in layout 6 with message
  * 0x65; state 1. */
@@ -950,7 +907,7 @@ int DateScreen_RunState(DateScreen *self)
 CLEAN_AS(_ZN18Obj_ov138_0229d4e019func_ov138_0229d27cEv, DateScreen_RunState)
 
 /* func_ov138_0229d310 (vtable slot 0x24): the cursor sprite drawn while the keys are in use;
- * then, while the scene is drawn (else answers 0), the clock panel and the button panel moved
+ * then, while the scene is drawn (else answers 0), the clock setter and the button panel moved
  * with the wipe. Answers 1. */
 int DateScreen_Draw(DateScreen *self)
 {
@@ -960,7 +917,7 @@ int DateScreen_Draw(DateScreen *self)
     if (DateScreen_TestFlags(self, DATE_SCREEN_FLAG_DRAWN) == 0) {
         return 0;
     }
-    func_ov134_0229b220(self->clock, 0, MenuScene_WipeOffsetY(date_scene(self)));
+    ClockSetter_Draw(&self->clock, 0, MenuScene_WipeOffsetY(date_scene(self)));
     ButtonPanel_Draw(&self->panel, MenuScene_WipeOffsetY(date_scene(self)));
     return 1;
 }
@@ -999,7 +956,7 @@ DateScreen *DateScreen_New(void)
         self->base.vtable = data_ov138_0229d4e0;
         Glider0_Construct(&self->cursor_sprite);
         ButtonPanel_Construct(&self->panel);
-        func_ov134_0229bed4(self->clock);
+        ClockSetter_Construct(&self->clock);
     }
     return self;
 }

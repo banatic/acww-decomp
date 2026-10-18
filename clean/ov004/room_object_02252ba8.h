@@ -1,15 +1,15 @@
 /* A class of overlay 4's room objects (vtable 0x02252ba8, receiver part 0x02252c54, 0x864 bytes)
- * that plays a sound (the sound at 6 of the furniture's row, func_ov004_0223a730) through a
+ * that plays a sound (the sound at 6 of the furniture's row, FurnitureSounds_Sound3) through a
  * sound cue of the main program (main/sound.h) and moves its joints with it. The cue's step is
  * the sound library's variable 2 (taken 0-15); the object keeps it in RoomObject.unk_77C, which
- * the map's record gets, and at its cell in the scene's record (func_02052e98).
+ * the map's record gets, and at its cell in the scene's record (RoomCells_SetStep).
  *
  * Its state (RoomObject02252ba8.state) runs through tables of member pointers
  * (member_pointer.h):
  *
  * - OFF (0): the cue off, the sound at 4, the switch off and the step 0xff; the joints take the
- *   animation of the room's object at func_ov004_0223b22c. When the switch is asked to change,
- *   it is set off and the change is handed on (func_02051f4c);
+ *   animation of the room's object at RoomManager_Mover. When the switch is asked to change,
+ *   it is set off and the change is handed on (RoomSync_ToggleSwitchAtPoint);
  * - STARTING (1): the switch on and the sound at 2; the cue starts or waits for its step; each
  *   frame the countdown runs down, the cue's start (3 frames) setting it, and at 0 PLAYING;
  * - PLAYING (2): the switch on and the animations of variant 0 looped; each frame the joints

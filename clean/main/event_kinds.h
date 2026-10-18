@@ -24,8 +24,9 @@
  * object on the kept tile.
  *
  * An event about an object may be shared with a session (data_020ccf94): the object's events
- * are then sent to the other console (func_0203f320, func_0203f32c) or asked of it
- * (func_0203f400, func_0203f394), and its answer comes back in the byte data_020dab94. */
+ * are then sent to the other console (ObjectClaim_SendEvent, ObjectClaim_SendAct), or the
+ * object is asked for and claimed (ObjectClaim_Ask, ObjectClaim_Claim) and let go again
+ * (ObjectClaim_Release); the answer comes back in the byte data_020dab94. */
 #ifndef CLEAN_MAIN_EVENT_KINDS_H
 #define CLEAN_MAIN_EVENT_KINDS_H
 

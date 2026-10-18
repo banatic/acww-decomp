@@ -3,6 +3,8 @@
 
 #include "clean.h"
 #include "itcm/field_units.h"
+#include "collision_area.h"
+#include "collision_box.h"
 
 static_assert(sizeof(CollisionMapState) == sizeof(((FieldBlockMap *) 0)->unk_12C), "a map's words after its blocks");
 static_assert(offsetof(CollisionWorld, maps) == 4 && offsetof(CollisionWorld, extra_posts) == 0x1f3c, "collision world");
@@ -13,12 +15,6 @@ extern FieldBlockMap *data_020da1a8;
 
 /* The rows of the unit type table (field_collision.h). */
 extern const CollisionTypeInfo data_020c907c[];
-
-/* The two objects of the world at 0x1a90 and 0x1a91 empty their lists. */
-extern void func_0203242c(u8 *object);
-extern void func_020326b0(u8 *object);
-/* Byte 0x130 of map `slot`. */
-extern u8 func_02031e48(int slot);
 
 /* The side attribute CollisionMap_RetypeWithSides gives the sides it is asked for. */
 #define UNIT_SIDE_0A 0x0a
@@ -316,8 +312,8 @@ void CollisionMap_Reset(int slot)
     data_021c31e8.walls.count = 0;
     data_021c31e8.floors.count = 0;
     data_021c31e8.posts.count = 0;
-    func_0203242c(&data_021c31e8.unk_1a90);
-    func_020326b0(&data_021c31e8.unk_1a91);
+    CollisionBox_ClearList(&data_021c31e8.unk_1a90);
+    CollisionArea_ClearList(&data_021c31e8.unk_1a91);
     CollisionExtraPosts_Clear(&data_021c31e8.extra_posts);
 }
 CLEAN_AS(func_02030c34, CollisionMap_Reset)
@@ -433,7 +429,7 @@ CLEAN_AS(func_02030e4c, CollisionMap_Select)
 /* func_0203160c: whether map `slot` is complete (every block of its size has its data). */
 u8 CollisionMap_IsComplete(int slot)
 {
-    return func_02031e48(slot);
+    return CollisionMap_CompleteByte(slot);
 }
 CLEAN_AS(func_0203160c, CollisionMap_IsComplete)
 

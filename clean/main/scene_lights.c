@@ -40,8 +40,6 @@ extern const SceneLightsRotation data_0213fee4;
 extern const u32 data_020de710[];
 extern const u32 data_020da13c[];
 
-/* The lights set up from the scene's set (the count, each light's fields, the lamps' requests). */
-extern void func_02065a7c(SceneLights *self);
 /* The vector helper is handed the game's destructor of a light, declared as the helper calls it. */
 extern void func_02064d8c(void *light);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
@@ -871,7 +869,7 @@ int SceneLights_Create(SceneLights *self)
         self->level = preset->level;
     }
 
-    func_02065a7c(self);
+    SceneLights_SetUp(self);
     for (int i = 0; i < self->count; i++) {
         SceneLight_Init(&self->lights[i]);
         SceneLight_Run(&self->lights[i]);

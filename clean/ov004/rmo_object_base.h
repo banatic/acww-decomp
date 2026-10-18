@@ -3,7 +3,7 @@
  * and its sound source at 0x250, built in that order and taken down in reverse.
  *
  * Vtable slots 0x40 and 0x44 hold RmoObjectBase_Destruct and RmoObjectBase_Delete; the classes
- * built on it end their own destructors with func_ov004_0222c7a0, a copy of the former. */
+ * built on it end their own destructors with RmoObjectSlots_Destruct, a copy of the former. */
 #ifndef CLEAN_OV004_RMO_OBJECT_BASE_H
 #define CLEAN_OV004_RMO_OBJECT_BASE_H
 

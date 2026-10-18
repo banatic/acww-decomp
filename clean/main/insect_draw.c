@@ -6,6 +6,8 @@
 #include "clean.h"
 #include "creature_weight.h"
 #include "date_time.h"
+#include "insect_tables.h"
+#include "main_random.h"
 
 #define INSECT_DRAW_FIRST 0x12b0
 #define INSECT_DRAW_LAST 0x12e7
@@ -24,14 +26,6 @@ extern u8 data_021c1d20[INSECT_DRAW_TIME_SLOTS];
 /* The places InsectDraw_MissingPlaces names when the town lacks them: 7, 13, 1, 2. */
 extern const u8 data_020c893c[INSECT_DRAW_MISSING_MAX];
 
-/* The six lists of a month (0 to 11; others read as 0, January). */
-extern const InsectDrawList *func_020617d8(int month_index);
-/* The time slot (0 to 5) of an hour. */
-extern int func_02061798(u8 hour);
-/* The place an insect kind lives in. */
-extern int func_02061550(u8 kind);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
 /* The SDK's fill and copy. */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -44,7 +38,7 @@ static int insect_is_insect(u16 item)
 /* The lists of a month (1 to 12). */
 static const InsectDrawList *insect_lists(int month)
 {
-    return func_020617d8(month - 1);
+    return InsectTables_MonthLists(month - 1);
 }
 
 /* 1 shifted left by `shift` as the ARM shifts by a register: 0 from 32 on (by its low byte). */
@@ -70,7 +64,7 @@ int InsectDraw_Available(u16 *item, int first_hour, int last_hour, int month)
     int kind = (u8) (*item - INSECT_DRAW_FIRST);
     int previous = INSECT_DRAW_TIME_SLOTS;
     for (int hour = first_hour; hour <= last_hour; hour++) {
-        int slot = func_02061798((u8) hour);
+        int slot = InsectTables_TimeSlot((u8) hour);
         if (slot == previous) {
             continue;
         }
@@ -104,7 +98,7 @@ void InsectDraw_Now(u16 *item)
     int left = INSECT_DRAW_BANDS;
     int place = 0;
     DateTime_Now(&now);
-    int slot = func_02061798(now.hour);
+    int slot = InsectTables_TimeSlot(now.hour);
     const InsectDrawList *lists = insect_lists(now.month);
     if (lists == NULL || slot < 0 || slot >= INSECT_DRAW_TIME_SLOTS) {
         return;
@@ -116,7 +110,7 @@ void InsectDraw_Now(u16 *item)
     MI_CpuFill8(tried, 0, (u32) left);
     InsectDraw_MissingPlaces(missing, &missing_count);
     while (left > 0) {
-        int pick = func_020644cc(left);
+        int pick = MainRandom_Below(left);
         for (int band = 0; band < INSECT_DRAW_BANDS; band++) {
             if (tried[band] != 0) {
                 continue;
@@ -184,7 +178,7 @@ int InsectDraw_OfBandsHours(u16 *item, int first, int last, u8 first_hour, u8 la
         bands = (u8) (bands | insect_bit(band));
     }
     for (; left > 0; left--) {
-        int pick = func_020644cc(left);
+        int pick = MainRandom_Below(left);
         for (int band = 0; band < INSECT_DRAW_BANDS; band++) {
             if (((bands >> band) & 1) == 0) {
                 continue;
@@ -233,7 +227,7 @@ int InsectDraw_OfBand(u16 *item, int *place, int *time_slot, int band, const Ins
     int previous = INSECT_DRAW_TIME_SLOTS;
     MI_CpuFill8(data_021c1d20, 0, INSECT_DRAW_TIME_SLOTS);
     for (int hour = first_hour; hour <= last_hour; hour++) {
-        int slot = func_02061798((u8) hour);
+        int slot = InsectTables_TimeSlot((u8) hour);
         if (data_021c1d20[slot] != 0 || slot == previous) {
             continue;
         }
@@ -246,7 +240,7 @@ int InsectDraw_OfBand(u16 *item, int *place, int *time_slot, int band, const Ins
     if (found <= 0) {
         return 0;
     }
-    int pick = func_020644cc(found);
+    int pick = MainRandom_Below(found);
     for (int slot = 0; slot < INSECT_DRAW_TIME_SLOTS; slot++) {
         if (data_021c1d20[slot] == 0) {
             continue;
@@ -274,12 +268,12 @@ int InsectDraw_OfList(u16 *item, int *place, int band, const u8 *entries, int co
     if (matches <= 0) {
         return 0;
     }
-    int pick = func_020644cc(matches);
+    int pick = MainRandom_Below(matches);
     int before = 0;
     for (int i = 0; i < count; i++, entries += INSECT_DRAW_ENTRY_SIZE) {
         int weight = entries[1] - before;
         if (weight > 0 && band == CreatureWeight_BandB((u8) weight)) {
-            int where = func_02061550(entries[0]);
+            int where = InsectTables_Place(entries[0]);
             if (InsectDraw_IsListed(where, missing, missing_count) == 0) {
                 if (pick == 0) {
                     *item = (u16) (entries[0] < INSECT_DRAW_KINDS ? INSECT_DRAW_FIRST + entries[0] : INSECT_DRAW_FIRST);
@@ -311,7 +305,7 @@ int InsectDraw_CountInList(int band, const u8 *entries, int count, const int *mi
             return 0;
         }
         if (band == CreatureWeight_BandB((u8) weight) &&
-            InsectDraw_IsListed(func_02061550(entries[0]), missing, missing_count) == 0) {
+            InsectDraw_IsListed(InsectTables_Place(entries[0]), missing, missing_count) == 0) {
             matches++;
         }
         before = entries[1];
@@ -412,7 +406,7 @@ int InsectDraw_PickByWeights(const u8 *weights, int count)
     if (total == 0) {
         return -1;
     }
-    u8 target = (u8) func_020644cc(total);
+    u8 target = (u8) MainRandom_Below(total);
     u8 sum = 0;
     for (int j = 0; j < count; j++) {
         sum = (u8) (sum + weights[j]);

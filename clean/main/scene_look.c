@@ -6,6 +6,10 @@
 #include "autoload_2/fx_math.h"
 #include "clean.h"
 #include "ov004/member_pointer.h"
+#include "globe.h"
+#include "model_object.h"
+#include "player_actor_ops.h"
+#include "session_players.h"
 
 static_assert(offsetof(SceneLook, target) == 0x04, "SceneLook layout");
 static_assert(offsetof(SceneLook, priority) == 0x14, "SceneLook layout");
@@ -38,11 +42,6 @@ static_assert(sizeof(SceneLook) == 0x68, "SceneLook layout");
 /* The kinds' handlers (member pointers of the look, called with the object), and the origin. */
 extern MemberPointer data_021c1794[SCENE_LOOK_KINDS];
 extern Vec3 data_021fbee8;
-
-extern int func_02096190(int actor);                 /* the field actor's object, or 0 */
-extern int func_020954c0(Vec3 *out, int actor);      /* its head point, or 0 when it has none */
-extern int func_0203f7d0(Vec3 *out, const Vec3 *in); /* a point onto the curved ground drawn */
-extern int func_02055d0c(void *model, Mtx43 *out, int joint);
 
 /* `value`'s magnitude as the ARM computes it: the most negative int stays negative. */
 static int scene_look_abs(int value)
@@ -200,11 +199,11 @@ void SceneLook_AimActor(SceneLook *self, u8 *object, int actor, fx32 range, u8 i
 {
     Vec3 head;
 
-    int target = func_02096190(actor);
+    int target = SessionPlayers_ActorHandle(actor);
     if (target == 0) {
         return;
     }
-    if (func_020954c0(&head, actor) == 0) {
+    if (PlayerActorOps_HeadPoint(&head, actor) == 0) {
         return;
     }
     Vec3 copy = head;
@@ -331,7 +330,7 @@ int SceneLook_CanSee(SceneLook *self, u8 *object)
 
     switch (self->kind) {
         case SCENE_LOOK_PLAYER: {
-            int actor = func_02096190(self->actor);
+            int actor = SessionPlayers_ActorHandle(self->actor);
             if (actor != 0) {
                 seen = scene_look_position((u8 *) (uintptr_t) (u32) actor);
             }
@@ -435,7 +434,7 @@ int SceneLook_HeadPoint(SceneLook *self, Vec3 *out)
     out->x = x;
     out->y = self->head.m[3][1];
     out->z = self->head.m[3][2];
-    func_0203f7d0(out, out);
+    Globe_Unbend(out, out);
     return 1;
 }
 CLEAN_AS(func_0201ad8c, SceneLook_HeadPoint)
@@ -445,7 +444,8 @@ CLEAN_AS(func_0201ad8c, SceneLook_HeadPoint)
 void SceneLook_ReadHead(SceneLook *self, u8 *object)
 {
     if (object != NULL) {
-        func_02055d0c(object + SCENE_LOOK_OBJECT_MODEL, &self->head, SCENE_LOOK_HEAD_JOINT);
+        ModelObject_JointMatrix((ModelObject *) (void *) (object + SCENE_LOOK_OBJECT_MODEL), &self->head,
+                                SCENE_LOOK_HEAD_JOINT);
     }
 }
 CLEAN_AS(func_0201adbc, SceneLook_ReadHead)

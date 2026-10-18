@@ -31,6 +31,20 @@
 #include "system_packet.h"
 #include "town_pack.h"
 #include "wfc_session.h"
+#include "activity_process.h"
+#include "bells_panel.h"
+#include "exchange_block.h"
+#include "link_global.h"
+#include "link_state.h"
+#include "ov048/gatekeeper.h"
+#include "scene_map.h"
+#include "screen_panels.h"
+#include "session_players.h"
+#include "sky.h"
+#include "talk_object.h"
+#include "town_day.h"
+#include "town_name.h"
+#include "town_tune.h"
 
 static_assert(offsetof(Activity, unk_bc) == 0xbc && offsetof(Activity, unk_d0) == 0xd0, "activity");
 static_assert(offsetof(Activity, unk_d8) == 0xd8 && offsetof(Activity, slot_answer) == 0xef, "activity");
@@ -55,54 +69,6 @@ extern const char data_020e3c54[]; /* "sp_etc_sequence1" */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void DC_FlushAll(void);
-
-/* The activity's job `job` started. */
-extern void func_020a4e94(Activity *activity, int job);
-
-/* Talk 0 (activity_talk.h): func_02068c10 on its part at 0x1c, its byte 0x1e93 cleared, and its
- * next message: the number at `message` from the file `name`. */
-extern ActivityTalk *func_020682e0(int index);
-extern void func_02068358(ActivityTalk *talk);
-extern void func_02068434(ActivityTalk *talk);
-extern void func_0206844c(ActivityTalk *talk, const u8 *message, const char *name);
-
-/* The link state (data_021f4320): its slot (word 0x94) read and set, its byte 0xc4, a slot's
- * entry reset (func_020a6a74), and a slot's three entry bytes set where bits 0-2 of `mask`
- * say. */
-extern u32 func_020a6ed0(void);
-extern void func_020a6ec0(int slot);
-extern u8 func_020a6cc4(void);
-extern void func_020a6c6c(int slot);
-extern void func_020a7394(int slot, int a, int b, int c, int mask);
-
-/* An exchange block (0x4 for this system's, data_021ee418) and clearing one (0x950 bytes). */
-extern u8 *func_02090040(int slot);
-extern void func_02090174(u8 *block);
-
-/* A session player's record number: read and set. */
-extern u8 func_02096284(int player);
-extern void func_020962a4(int player, int number);
-/* A session player's object (a process). */
-extern Process *func_020961a8(int player);
-
-/* The object at data_021d351c, and its byte 0x82 set and cleared. */
-extern void *func_0208b4f8(void);
-extern void func_0208b9b8(void *object);
-extern void func_0208b9b0(void *object);
-
-/* Byte 0x173c0 of the state block handed on to data_021cfbbc (player_messages.c). */
-extern void func_0206ea3c(u8 *part);
-/* Called with data_021f75b0 (func_020bbc90). */
-extern void func_020ba37c(void);
-/* The town map's own models (activity_save.c), and the end of a session for the host. */
-extern void func_0204d0ac(AcreMap *map);
-extern void func_02046830(void);
-/* Overlay 48: whether this system's player's paired town is not the state block's (it sets it
- * then). */
-extern int func_ov048_02262ee8(void);
-
-/* The town name of the state block (StateBlockTown + 2). */
-extern u8 *func_020642a4(StateBlockTown *town);
 
 #define TALK_INDEX 0
 #define PLAYER_FLAG_2 2
@@ -203,7 +169,7 @@ static int all_peers_set(NetSession *session, const u8 *flags)
  * raised, the slot taken and the change told. */
 static void add_new_slot(void)
 {
-    func_020a7394(data_021f3c1c, 0xc, 1, 0, 7);
+    LinkGlobal_SetPlace(data_021f3c1c, 0xc, 1, 0, 7);
     NetSession *session = data_020ccf94;
     Session_SetPlayerCount(session, (u8) (session->player_count + 1));
     Session_SetSlotTaken(session, data_021f3c1c, 1);
@@ -219,7 +185,7 @@ static u16 new_slot_bit(void)
 /* Talk 0 given message `message` of "sp_etc_sequence2" next. */
 static void queue_sequence2(u8 message)
 {
-    func_0206844c(func_020682e0(TALK_INDEX), &message, data_020e3c40);
+    TalkObject_SetMessage(TalkObject_Get(TALK_INDEX), &message, data_020e3c40);
 }
 
 /* func_020a4210: job 0x14 starts: the gatekeeper's end (no message) and a constellation
@@ -296,11 +262,11 @@ void ActivityLinkJobs_Step14(Activity *activity)
             if (link_lost(AIDS_HOST) || !ActivityVars_Flag3C08()) {
                 return;
             }
-            Process_RequestDelete(func_020961a8(4));
+            Process_RequestDelete(SessionPlayers_ActorOf(4));
             activity->state = 5;
             return;
         case 5:
-            if (link_lost(AIDS_HOST) || func_020961a8(4) != NULL || !SystemPacket_SendActivityFlagD9()) {
+            if (link_lost(AIDS_HOST) || SessionPlayers_ActorOf(4) != NULL || !SystemPacket_SendActivityFlagD9()) {
                 return;
             }
             activity->state = 6;
@@ -312,9 +278,9 @@ void ActivityLinkJobs_Step14(Activity *activity)
             int aid = Net_GetMyAid();
             NetSession *session = data_020ccf94;
             session->local_slot = aid;
-            MI_CpuCopy8(PlayerRecords_Get(func_02096284(session->local_player)),
+            MI_CpuCopy8(PlayerRecords_Get(SessionPlayers_RecordNumber(session->local_player)),
                         PlayerRecords_Get(session->local_slot + GUEST_RECORD_FIRST), PLAYER_RECORD_SIZE);
-            data_020e37f8 = func_02096284(session->local_player);
+            data_020e37f8 = SessionPlayers_RecordNumber(session->local_player);
             session->local_player = aid;
             u8 count = 0;
             for (int slot = ACTIVITY_SLOTS - 1; slot >= 0; slot--) {
@@ -326,9 +292,9 @@ void ActivityLinkJobs_Step14(Activity *activity)
                 }
             }
             Session_SetPlayerCount(session, count);
-            func_020a7394(aid, 0xc, 1, 0, 7);
-            func_020962a4(0, activity->byte_d7);
-            func_020962a4(aid, aid + GUEST_RECORD_FIRST);
+            LinkGlobal_SetPlace(aid, 0xc, 1, 0, 7);
+            SessionPlayers_SetRecordNumber(0, activity->byte_d7);
+            SessionPlayers_SetRecordNumber(aid, aid + GUEST_RECORD_FIRST);
             MI_CpuCopy8(data_021f3c24, &data_021dc7a8, sizeof(StateBlock));
 
             DateTime when;
@@ -342,13 +308,13 @@ void ActivityLinkJobs_Step14(Activity *activity)
             if (AcreMap_Town()) {
                 AcreMap_SetTownModels((AcreMap *) (uintptr_t) AcreMap_Town());
                 AcreMap_LoadTownData((AcreMap *) (uintptr_t) AcreMap_Town());
-                func_0204d0ac((AcreMap *) (uintptr_t) AcreMap_Town());
+                SceneMap_ClearRimGrowth((AcreMap *) (uintptr_t) AcreMap_Town());
             }
             AcreMap_SetRoomsModels();
             AcreMap_LoadRoomsData();
             Session_OnPlayersChanged(4);
-            func_0206ea3c(data_021dc7a8.part_173c0);
-            func_020ba37c();
+            TownTune_Load((const TownTunePacked *) (void *) data_021dc7a8.part_173c0);
+            Sky_ReseedForLink();
             activity->byte_d6 = 1;
             Session_SetMode(session, SESSION_MODE_1);
             activity->state = 7;
@@ -365,7 +331,7 @@ void ActivityLinkJobs_Step14(Activity *activity)
                 return;
             }
             Session_SetMode(data_020ccf94, SESSION_MODE_2);
-            if (func_ov048_02262ee8()) {
+            if (Gatekeeper_CheckPairedTown()) {
                 SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 2);
             } else {
                 SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0);
@@ -409,14 +375,14 @@ void ActivityLinkJobs_Step15(Activity *activity)
 {
     switch (activity->state) {
         case 0:
-            if (link_lost(Session_GetPeerMask() | (1 << func_020a6ed0())) || !func_020a6cc4()) {
+            if (link_lost(Session_GetPeerMask() | (1 << LinkGlobal_ServedSlot())) || !LinkState_GlobalByteC4()) {
                 return;
             }
             activity->state = 1;
             return;
         case 1:
         case 2:
-            if (link_lost(Session_GetPeerMask() | (1 << func_020a6ed0()))) {
+            if (link_lost(Session_GetPeerMask() | (1 << LinkGlobal_ServedSlot()))) {
                 return;
             }
             Activity_StepRequestMode1(activity, &activity->state, 1, 0xd, 0x2f);
@@ -541,7 +507,7 @@ void ActivityLinkJobs_Start17(Activity *activity)
 {
     Activity_TalkGatekeeper(activity, 0);
     PlayerRecord_SetFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
-    func_020a6ec0(data_020ccf94->local_slot);
+    LinkGlobal_SetServedSlot(data_020ccf94->local_slot);
 }
 CLEAN_AS(func_020a3a94, ActivityLinkJobs_Start17)
 
@@ -607,7 +573,7 @@ void ActivityLinkJobs_Step17(Activity *activity)
             ActivitySave_LeaveSession(activity, data_020e37f8, 0);
             data_020e37f8 = 7;
             LibraryOverlay_Switch68();
-            func_020ba37c();
+            Sky_ReseedForLink();
             activity->state = 0x19;
             return;
         case 14:
@@ -625,7 +591,7 @@ void ActivityLinkJobs_Step17(Activity *activity)
             return;
         default:
             ActivityTalk_Close(activity);
-            func_020a4e94(activity, 8);
+            ActivityProcess_StartJob(activity, 8);
             return;
     }
 }
@@ -684,11 +650,11 @@ void ActivityLinkJobs_Step18(Activity *activity)
             if (link_lost(Session_GetPeerMask()) || !ExchangeBlocks_SendToGuests(activity)) {
                 return;
             }
-            int leaving = (int) func_020a6ed0();
+            int leaving = (int) LinkGlobal_ServedSlot();
             int source = Activity_BlockSource(activity, leaving);
-            u8 *block = func_02090040(leaving);
-            MI_CpuCopy8(block, func_02090040(source), 0x950);
-            func_02090174(block);
+            u8 *block = (u8 *) (uintptr_t) ExchangeBlock_OfSlot(leaving);
+            MI_CpuCopy8(block, (void *) (uintptr_t) ExchangeBlock_OfSlot(source), 0x950);
+            ExchangeBlock_Clear((ExchangeBlock *) (void *) block);
             Activity_SystemExchangeBlockToActivity(activity);
             RecentSlots_Forget((u8) leaving);
             activity->state = 5;
@@ -708,26 +674,26 @@ void ActivityLinkJobs_Step18(Activity *activity)
                 return;
             }
             session = data_020ccf94;
-            if (!all_peers_set(session, activity->slot_fc) || Session_GetOwedCredits(session, (int) func_020a6ed0())) {
+            if (!all_peers_set(session, activity->slot_fc) || Session_GetOwedCredits(session, (int) LinkGlobal_ServedSlot())) {
                 return;
             }
-            if (!SystemPacket_SendActivityFlagE5((u16) (1 << func_020a6ed0()))) {
+            if (!SystemPacket_SendActivityFlagE5((u16) (1 << LinkGlobal_ServedSlot()))) {
                 return;
             }
             activity->state = 13;
             return;
         case 13:
-            if (link_lost(Session_GetPeerMask() ^ (u16) (1 << func_020a6ed0()))) {
+            if (link_lost(Session_GetPeerMask() ^ (u16) (1 << LinkGlobal_ServedSlot()))) {
                 return;
             }
             if (!sendable() && (unsigned int) Net_CountPlayers() > 1) {
                 return;
             }
-            Session_RemovePlayer((int) func_020a6ed0());
+            Session_RemovePlayer((int) LinkGlobal_ServedSlot());
             session = data_020ccf94;
             Session_SetMode(session, SESSION_MODE_2);
             if (Session_IsLinked(session)) {
-                u8 slot = (u8) func_020a6ed0();
+                u8 slot = (u8) LinkGlobal_ServedSlot();
                 session = data_020ccf94;
                 Session_BeginMessage(session);
                 Session_AppendMessage(session, &slot, 1);
@@ -743,12 +709,12 @@ void ActivityLinkJobs_Step18(Activity *activity)
             if (!all_peers_set(session, activity->slot_ack)) {
                 return;
             }
-            func_020ba37c();
+            Sky_ReseedForLink();
             session = data_020ccf94;
             Session_BeginMessage(session);
             Session_EndMessage(session, 7, 5);
             if (session->player_count == 1) {
-                func_02046830();
+                TownDay_Load();
             }
             activity->state = 0x1a;
             return;
@@ -767,7 +733,7 @@ void ActivityLinkJobs_Step18(Activity *activity)
             return;
         default:
             ActivityTalk_Close(activity);
-            func_020a4e94(activity, 0xa);
+            ActivityProcess_StartJob(activity, 0xa);
             return;
     }
 }
@@ -830,7 +796,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             if (link_lost(AIDS_HOST)) {
                 return;
             }
-            if (Session_GetOwedCredits(data_020ccf94, (int) func_020a6ed0()) || !SystemPacket_SendActivityPlayerFC()) {
+            if (Session_GetOwedCredits(data_020ccf94, (int) LinkGlobal_ServedSlot()) || !SystemPacket_SendActivityPlayerFC()) {
                 return;
             }
             activity->state = 13;
@@ -842,7 +808,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             if (*member_mask(activity) == (u16) Session_GetMemberMask()) {
                 return;
             }
-            func_020a6c6c((int) func_020a6ed0());
+            LinkState_GlobalForgetSlot((int) LinkGlobal_ServedSlot());
             session = data_020ccf94;
             Session_SetMode(session, SESSION_MODE_2);
             Session_BeginMessage(session);
@@ -853,7 +819,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             if (link_lost(AIDS_HOST) || !activity->flag_e6) {
                 return;
             }
-            func_020ba37c();
+            Sky_ReseedForLink();
             activity->state = 0x1a;
             return;
         case 15:
@@ -871,7 +837,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             return;
         default:
             ActivityTalk_Close(activity);
-            func_020a4e94(activity, 0xa);
+            ActivityProcess_StartJob(activity, 0xa);
             return;
     }
 }
@@ -937,13 +903,13 @@ void ActivityLinkJobs_Step1A(Activity *activity)
                 }
                 int source = Activity_BlockSource(activity, 0);
                 if (source < NO_SLOT) {
-                    u8 *own = func_02090040(0);
-                    MI_CpuCopy8(func_02090040(source), own, 0x950);
+                    u8 *own = (u8 *) (uintptr_t) ExchangeBlock_OfSlot(0);
+                    MI_CpuCopy8((const void *) (uintptr_t) ExchangeBlock_OfSlot(source), own, 0x950);
                 } else {
-                    func_02090174(func_02090040(0));
+                    ExchangeBlock_Clear((ExchangeBlock *) (uintptr_t) ExchangeBlock_OfSlot(0));
                 }
                 for (int slot = 2; slot >= 0; slot--) {
-                    func_02090174(func_02090040(slot + 1));
+                    ExchangeBlock_Clear((ExchangeBlock *) (uintptr_t) ExchangeBlock_OfSlot(slot + 1));
                 }
                 Activity_SystemExchangeBlockToActivity(activity);
             }
@@ -1025,7 +991,7 @@ void ActivityLinkJobs_Step1A(Activity *activity)
             if (StartMenu_LeaveChoice()) {
                 queue_sequence2(SEQUENCE2_LEFT);
             }
-            func_020a4e94(activity, 8);
+            ActivityProcess_StartJob(activity, 8);
             return;
     }
 }
@@ -1147,9 +1113,9 @@ void ActivityLinkJobs_Step1B(Activity *activity)
             ActivityTalk_Close(activity);
             if (StartMenu_LeaveChoice()) {
                 queue_sequence2(SEQUENCE2_LEFT);
-                func_020a4e94(activity, 0x11);
+                ActivityProcess_StartJob(activity, 0x11);
             } else {
-                func_020a4e94(activity, 8);
+                ActivityProcess_StartJob(activity, 8);
             }
             return;
     }
@@ -1171,7 +1137,7 @@ void ActivityLinkJobs_Step1C(Activity *activity)
         return;
     }
     LibraryOverlay_Switch66();
-    func_020a4e94(activity, 0x1d);
+    ActivityProcess_StartJob(activity, 0x1d);
 }
 CLEAN_AS(func_020a2dbc, ActivityLinkJobs_Step1C)
 
@@ -1186,7 +1152,7 @@ void ActivityLinkJobs_Start1D(Activity *activity)
     *countdown(activity) = WAIT_FRAMES;
     Session_Start(1, 2, 0);
     Session_SetHostReceiveBuffers();
-    MI_CpuCopy8(func_020642a4(&data_021dc7a8.town), offer, 12);
+    MI_CpuCopy8((const void *) (uintptr_t) TownName_Name((int) (uintptr_t) &data_021dc7a8.town), offer, 12);
     offer[13] = 1;
     offer[12] = StateBlock_IsSetUp(&data_021dc7a8) == 0;
     LibraryOverlay_Require66();
@@ -1203,12 +1169,12 @@ void ActivityLinkJobs_Step1D(Activity *activity)
 {
     int slot = Activity_CurrentSlot100();
     if (slot > 0 && slot < NO_SLOT) {
-        ActivityTalk *talk = func_020682e0(TALK_INDEX);
-        func_02068358(talk);
-        func_02068434(talk);
+        ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
+        TalkObject_StopSpinner((TalkObject *) talk);
+        TalkObject_Release((TalkObject *) talk);
         u8 message = SEQUENCE1_LINKED;
-        func_0206844c(talk, &message, data_020e3c54);
-        func_020a4e94(activity, 0);
+        TalkObject_SetMessage((TalkObject *) talk, &message, data_020e3c54);
+        ActivityProcess_StartJob(activity, 0);
         return;
     }
     if (Net_CountPlayers() == 2) {
@@ -1229,12 +1195,12 @@ void ActivityLinkJobs_Step1D(Activity *activity)
         if (WfcSession_End(activity)) {
             LibraryOverlay_Switch68();
         }
-        ActivityTalk *talk = func_020682e0(TALK_INDEX);
+        ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
         u8 message = SEQUENCE1_TIMED_OUT;
-        func_0206844c(talk, &message, data_020e3c54);
-        func_02068358(talk);
-        func_02068434(talk);
-        func_020a4e94(activity, 0xc);
+        TalkObject_SetMessage((TalkObject *) talk, &message, data_020e3c54);
+        TalkObject_StopSpinner((TalkObject *) talk);
+        TalkObject_Release((TalkObject *) talk);
+        ActivityProcess_StartJob(activity, 0xc);
     }
 }
 CLEAN_AS(func_020a2c8c, ActivityLinkJobs_Step1D)
@@ -1399,7 +1365,7 @@ void ActivityLinkJobs_Step1E(Activity *activity)
             return;
         default:
             ActivityTalk_Close(activity);
-            func_020a4e94(activity, 0xe);
+            ActivityProcess_StartJob(activity, 0xe);
             return;
     }
 }
@@ -1462,7 +1428,7 @@ void ActivityLinkJobs_Step1F(Activity *activity)
             if (link_lost(AIDS_HOST) || !sendable()) {
                 return;
             }
-            func_0208b9b8(func_0208b4f8());
+            BellsPanel_Freeze((BellsPanel *) (uintptr_t) ScreenPanels_FourthPanel());
             MI_CpuCopy8(PlayerRecords_Current(), record_copy(activity), PLAYER_RECORD_SIZE);
             PlayerRecord_Clear(PlayerRecords_Current());
             StateBlock_ForgetPlayer(&data_021dc7a8, PlayerRecords_CurrentNumber());
@@ -1521,7 +1487,7 @@ void ActivityLinkJobs_Step1F(Activity *activity)
                 LibraryOverlay_Switch68();
             }
             MI_CpuCopy8(record_copy(activity), PlayerRecords_Current(), PLAYER_RECORD_SIZE);
-            func_0208b9b0(func_0208b4f8());
+            BellsPanel_Unfreeze((BellsPanel *) (uintptr_t) ScreenPanels_FourthPanel());
             activity->state = 0x16;
             return;
         case 10:
@@ -1549,7 +1515,7 @@ void ActivityLinkJobs_Step1F(Activity *activity)
             ActivitySave_EndSteps(activity, &activity->state, 0xb, 0x11, AIDS_HOST, 1);
             return;
         default:
-            func_020a4e94(activity, 0);
+            ActivityProcess_StartJob(activity, 0);
             return;
     }
 }

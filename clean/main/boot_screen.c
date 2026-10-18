@@ -10,6 +10,13 @@
 #include "main/scene_tables.h"
 #include "main/sound.h"
 #include "main/villager_state.h"
+#include "activity_card.h"
+#include "card_save.h"
+#include "save_stamp.h"
+#include "scene_exit.h"
+#include "scene_heaps.h"
+#include "state_block.h"
+#include "transfer_queue.h"
 
 static_assert(offsetof(BootScreen, state) == 0x50, "state");
 static_assert(offsetof(BootScreen, shown_tick) == 0x54, "shown tick");
@@ -73,27 +80,6 @@ extern u64 OS_GetTick(void);
 extern void GX_SetBankForBG(int banks);
 extern void GX_SetBankForSubBG(int banks);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_020b98dc(void);
-extern void func_020b9990(void);
-/* Reading copy `copy` of the save into `buffer`, a step a call (enum BootScreenReadResult). */
-extern int func_020a1a40(int copy, void *buffer);
-/* With both copies good: 1 to use copy 1, 0 to use copy 0. */
-extern int func_020a16e0(void);
-/* 0 when byte 2 of the record is 2 or 28; a flag set; a step on the save (its result unused). */
-extern int func_0209fb28(const u8 *record);
-extern void func_020a01d4(int value);
-extern int func_020a16b0(void);
-/* The state block: a new state; a step of its own by number; the state put to use. */
-extern void func_0209ef7c(void *block);
-extern void func_0209e6ec(void *block, int step);
-extern void func_0209e604(void *block);
-/* The background heap made (with `size` bytes) and destroyed. */
-extern void func_0205cacc(u32 size, void *parent);
-extern void func_0205cab0(void);
-/* Asking for the scene `scene` in the entry record (whether it was free to take it). */
-extern u8 func_020b6454(u8 *entry, u8 scene);
-/* The process between scenes asked for with `param`; `keep` kept for after it. */
-extern void func_020b5e44(int param, int keep);
 
 /* func_020b5650 (vtable slot 16): the destructor: the class's vtable, the scene base class's
  * and the root class's in turn, then the process destructor. */
@@ -125,25 +111,25 @@ CLEAN_AS(func_020b5678, BootScreen_Delete)
  * else the loaded copy gets step 4. Either way the state is then put to use. */
 void BootScreen_ApplySave(BootScreen *screen)
 {
-    func_0205cacc(BOOT_SCREEN_APPLY_HEAP_SIZE, NULL);
+    SceneHeaps_CreateBgModels(BOOT_SCREEN_APPLY_HEAP_SIZE, NULL);
     u8 status = screen->save_status;
     if (status == BOOT_SCREEN_SAVE_BOTH_BAD || status == BOOT_SCREEN_SAVE_FAILED) {
-        if (status == BOOT_SCREEN_SAVE_BOTH_BAD && func_0209fb28(data_021f3ba0) == 0) {
-            func_020a01d4(1);
+        if (status == BOOT_SCREEN_SAVE_BOTH_BAD && SaveStamp_HasNoWrite((const SaveStamp *) (void *) data_021f3ba0) == 0) {
+            SaveStamp_SetLostFlag(1);
         }
         if (screen->save_status == BOOT_SCREEN_SAVE_BOTH_BAD) {
-            func_020a16b0();
+            CardSave_ClearByte3FFFC();
         }
-        func_0209ef7c(data_021dc7a8);
+        StateBlock_Init((StateBlock *) (void *) data_021dc7a8);
         PlayerRecords_ClearGuests();
         VillagerState_Reset();
-        func_0209e6ec(data_021dc7a8, BOOT_SCREEN_BLOCK_STEP_NEW);
+        StateBlock_Start((StateBlock *) (void *) data_021dc7a8, BOOT_SCREEN_BLOCK_STEP_NEW);
     } else {
-        func_0209e6ec(data_021dc7a8, BOOT_SCREEN_BLOCK_STEP_LOADED);
+        StateBlock_Start((StateBlock *) (void *) data_021dc7a8, BOOT_SCREEN_BLOCK_STEP_LOADED);
     }
-    func_0209e604(data_021dc7a8);
+    StateBlock_FinishStart((StateBlock *) (void *) data_021dc7a8);
     VillagerState_CallNoOp();
-    func_0205cab0();
+    SceneHeaps_DestroyBgModels();
 }
 CLEAN_AS(func_020b56a8, BootScreen_ApplySave)
 
@@ -170,7 +156,7 @@ void BootScreen_PickSave(BootScreen *screen)
     } else if (second != BOOT_SCREEN_READ_GOOD) {
         use_second = 0;
     } else {
-        use_second = func_020a16e0();
+        use_second = CardSave_SameSerial();
     }
     MI_CpuCopy8(screen->copies[use_second != 0 ? 1 : 0], data_021dc7a8, BOOT_SCREEN_SAVE_SIZE);
     screen->save_status = BOOT_SCREEN_SAVE_LOADED;
@@ -185,8 +171,8 @@ void BootScreen_SetUpPictures(BootScreen *screen)
 {
     (void) screen;
     DisplayFrame_ResetState();
-    func_020b98dc();
-    func_020b9990();
+    TransferQueue_ClearMain();
+    TransferQueue_ClearVBlank();
     DisplayFrame_ReleaseVram();
     GX_SetBankForBG(BOOT_SCREEN_BANK_BG);
     GX_SetBankForSubBG(BOOT_SCREEN_BANK_SUB_BG);
@@ -222,14 +208,14 @@ static void boot_screen_read(BootScreen *screen)
             }
             break;
         case BOOT_SCREEN_READ_FIRST:
-            result = func_020a1a40(0, screen->copies[0]);
+            result = ActivityCard_StepReadCopy(0, screen->copies[0]);
             if (result != BOOT_SCREEN_READ_BUSY) {
                 screen->read_result[0] = (u8) result;
                 screen->read_step = BOOT_SCREEN_READ_SECOND;
             }
             break;
         case BOOT_SCREEN_READ_SECOND:
-            result = func_020a1a40(1, screen->copies[1]);
+            result = ActivityCard_StepReadCopy(1, screen->copies[1]);
             if (result != BOOT_SCREEN_READ_BUSY) {
                 screen->read_result[1] = (u8) result;
                 screen->read_step = BOOT_SCREEN_READ_DONE;
@@ -290,8 +276,9 @@ int BootScreen_Update(BootScreen *screen)
                 DisplayShadow_SetMainPlanes(0);
                 DisplayShadow_SetSubPlanes(0);
                 screen->state = BOOT_SCREEN_DONE;
-                func_020b6454((u8 *) (uintptr_t) SceneTables_EntryRecord(), BOOT_SCREEN_NEXT_SCENE);
-                func_020b5e44(BOOT_SCREEN_CHANGE_PARAM, BOOT_SCREEN_CHANGE_KEEP);
+                SceneExit_SetToSceneOnly((SceneExit *) (void *) ((u8 *) (uintptr_t) SceneTables_EntryRecord()),
+                                         BOOT_SCREEN_NEXT_SCENE);
+                SceneExit_RequestChange(BOOT_SCREEN_CHANGE_PARAM, BOOT_SCREEN_CHANGE_KEEP);
             }
             break;
         default:

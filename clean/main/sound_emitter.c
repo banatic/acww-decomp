@@ -7,6 +7,7 @@
 #include "autoload_2/heap.h"
 #include "autoload_2/sound_emitter_class.h"
 #include "clean.h"
+#include "autoload_2/sound_point.h"
 
 static_assert(offsetof(SoundSourceVtable, update) == 0x10, "SoundSourceVtable layout");
 static_assert(offsetof(SoundSource, flags) == 0x0a, "SoundSource layout");
@@ -20,21 +21,6 @@ extern Vec3 data_021c67b8;
 
 /* The vtable of class 0x020d8414 and the base class's destructor (0x0213f074). */
 extern const SoundEmitterVtable data_020d8414;
-extern void func_020f5914(SoundEmitter *emitter);
-
-extern int func_020f5748(SoundEmitter *emitter, int number, int volume, int arg);
-extern int func_020f545c(SoundEmitter *emitter, u32 number, u32 flag);
-extern int func_020f56a4(SoundEmitter *emitter, int number, int arg2, int arg3);
-
-extern void func_020f503c(void *sound, s16 value);
-extern void func_020f4f80(void *sound);
-/* The first argument is not read. */
-extern void func_020f4fb8(void *sound, const Vec3 *pos);
-extern void func_020f5054(void *sound, int number, const Vec3 *pos);
-extern void func_020f52a0(void *sound, int number, const Vec3 *pos);
-extern void func_020f5360(void *sound, int owner);
-extern void func_020f4d4c(void *list);
-extern void func_020f4f44(char *list);
 
 /* `pos` relative to data_021c67b8. */
 static Vec3 relative(const Vec3 *pos)
@@ -107,14 +93,14 @@ CLEAN_AS(func_0200431c, PointSound_CanStartList)
 /* func_02004320: write `value` to variable 0 of the sound's player. */
 void PointSound_SetVariable(void *sound, s16 value)
 {
-    func_020f503c(sound, value);
+    SoundPoint_SetVariable(sound, value);
 }
 CLEAN_AS(func_02004320, PointSound_SetVariable)
 
 /* func_02004328: take the sound out of the list, stop it and release its handle. */
 void PointSound_Release(char *sound)
 {
-    func_020f4f80(sound);
+    SoundPoint_Release((SoundPoint *) (void *) sound);
 }
 CLEAN_AS(func_02004328, PointSound_Release)
 
@@ -126,7 +112,7 @@ void PointSound_UpdateVolumeAt(void *sound, const Vec3 *pos)
         return;
     }
     Vec3 rel = relative(pos);
-    func_020f4fb8(sound, &rel);
+    SoundPoint_UpdateMusicVolume((int) (uintptr_t) sound, &rel);
 }
 CLEAN_AS(func_02004330, PointSound_UpdateVolumeAt)
 
@@ -138,7 +124,7 @@ void PointSound_PlayAt(void *sound, int number, const Vec3 *pos)
         return;
     }
     Vec3 rel = relative(pos);
-    func_020f5054(sound, number, &rel);
+    SoundPoint_PlayAt(sound, number, &rel);
 }
 CLEAN_AS(func_02004384, PointSound_PlayAt)
 
@@ -150,7 +136,7 @@ void PointSound_PlayAtB(void *sound, int number, const Vec3 *pos)
         return;
     }
     Vec3 rel = relative(pos);
-    func_020f52a0(sound, number, &rel);
+    SoundPoint_PlayAtB(sound, number, &rel);
 }
 CLEAN_AS(func_020043c4, PointSound_PlayAtB)
 
@@ -158,21 +144,21 @@ CLEAN_AS(func_020043c4, PointSound_PlayAtB)
  * (data_021fd234). */
 void PointSound_Init(void *sound, int owner)
 {
-    func_020f5360(sound, owner);
+    SoundPoint_Init(sound, (SoundPointList *) (uintptr_t) owner);
 }
 CLEAN_AS(func_02004404, PointSound_Init)
 
 /* func_0200440c: empty the list, stopping its sounds. */
 void PointSound_FlushList(void *list)
 {
-    func_020f4d4c(list);
+    SoundPointList_Flush(list);
 }
 CLEAN_AS(func_0200440c, PointSound_FlushList)
 
 /* func_02004414: start an empty list. */
 void PointSound_StartList(char *list)
 {
-    func_020f4f44(list);
+    SoundPointList_Init((SoundPointList *) (void *) list);
 }
 CLEAN_AS(func_02004414, PointSound_StartList)
 
@@ -186,7 +172,7 @@ CLEAN_AS(func_0200441c, SoundEmitter_Vfunc10)
 /* func_0200442c: play sound `number`; the result is the sound layer's. */
 int SoundEmitter_Play(SoundEmitter *emitter, int number, int volume, int arg)
 {
-    return func_020f5748(emitter, number, volume, arg);
+    return SoundEmitterClass_Play((SoundEmitterObject *) emitter, number, volume, arg);
 }
 CLEAN_AS(func_0200442c, SoundEmitter_Play)
 
@@ -194,7 +180,7 @@ CLEAN_AS(func_0200442c, SoundEmitter_Play)
  * which came last), at volume 0x7f. */
 void SoundEmitter_PlayAlternating(SoundEmitter *emitter, u32 number, u32 flag)
 {
-    func_020f545c(emitter, number, flag);
+    SoundEmitterClass_PlayAlternate((SoundEmitterObject *) emitter, number, flag);
 }
 CLEAN_AS(func_0200443c, SoundEmitter_PlayAlternating)
 
@@ -238,14 +224,14 @@ CLEAN_AS(func_020044a0, SoundEmitter_Vfunc10B)
  * state's byte 0x4d is 1. */
 int SoundEmitter_PlayEx(SoundEmitter *emitter, int number, int arg2, int arg3)
 {
-    return func_020f56a4(emitter, number, arg2, arg3);
+    return SoundEmitterClass_PlayHeld((SoundEmitterObject *) emitter, number, arg2, arg3);
 }
 CLEAN_AS(func_020044b0, SoundEmitter_PlayEx)
 
 /* func_020044c0: a second copy of SoundEmitter_Play. */
 int SoundEmitter_PlayB(SoundEmitter *emitter, int number, int volume, int arg)
 {
-    return func_020f5748(emitter, number, volume, arg);
+    return SoundEmitterClass_Play((SoundEmitterObject *) emitter, number, volume, arg);
 }
 CLEAN_AS(func_020044c0, SoundEmitter_PlayB)
 
@@ -268,7 +254,7 @@ CLEAN_AS(func_0200451c, SoundEmitter_StopB)
 void *SoundEmitter_Destruct(SoundEmitter *emitter)
 {
     emitter->vtable = &data_020d8414;
-    func_020f5914(emitter);
+    SoundEmitterClass_DestructBase((SoundEmitterObject *) emitter);
     return emitter;
 }
 CLEAN_AS(func_02005198, SoundEmitter_Destruct)

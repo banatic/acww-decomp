@@ -14,7 +14,7 @@
  *   then off.
  *
  * Starting and running show it on (vtable slot 0x74). Once its model is bound it is running
- * when its switch is on (unless func_ov004_0223c10c says otherwise), else off. */
+ * when its switch is on (unless RoomObjects_InNookOrScene0AOr0F says otherwise), else off. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_0225130C_H
 #define CLEAN_OV004_ROOM_OBJECT_0225130C_H
 

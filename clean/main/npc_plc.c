@@ -414,8 +414,6 @@ NpcPlc *NpcPlc_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) (object + NPC_PLC_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) (object + NPC_PLC_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) (object + NPC_PLC_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
     SpeakerAnim_Destruct((SpeakerAnim *) (void *) (object + NPC_PLC_ANIM));
     SceneMover_Construct((SceneMover *) (void *) (object + NPC_PLC_MOVER));
     SceneProbe_Construct(object + NPC_PLC_PROBE);

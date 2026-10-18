@@ -124,7 +124,7 @@ CLEAN_AS(func_ov004_0223ae00, FurnitureMover_ForgetModel)
 
 /* func_ov004_0223ae0c: with the heap and nothing loaded yet, the archive of furniture 0x3984
  * loaded and its model set up with its joints' animation, the push animation started (and
- * attached), and the hook that sets the node hooks (func_ov004_0223b1b8) given the mover.
+ * attached), and the hook that sets the node hooks (FurnitureMover_SetModelHooks) given the mover.
  * Whether the model was set up. */
 int FurnitureMover_LoadModel(FurnitureMover *mover)
 {
@@ -356,7 +356,7 @@ FurnitureMover *FurnitureMover_Construct(FurnitureMover *mover)
 CLEAN_AS(func_ov004_0223b18c, FurnitureMover_Construct)
 
 /* func_ov004_0223b1b8 (the model's hook before it is drawn): the node commands' hook set to
- * FurnitureMover_RootNodeHook (func_ov004_0223b1c8). */
+ * FurnitureMover_RootNodeHook (FurnitureMover_RootNodeHook). */
 void FurnitureMover_SetModelHooks(FurnitureMoverRenderState *state)
 {
     state->hooks[NODE_COMMAND] = (u32) (uintptr_t) func_ov004_0223b1c8;

@@ -4,12 +4,28 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "town_layout.h"
+#include "acre_record.h"
+#include "acre_templates.h"
+#include "acre_tile.h"
+#include "bg_models.h"
+#include "building_shapes.h"
+#include "collision_map.h"
+#include "collision_query.h"
+#include "house_record.h"
+#include "item_code.h"
+#include "rom_file.h"
+#include "scene_heaps.h"
+#include "scene_kinds.h"
+#include "town_posts.h"
+#include "villager_furniture.h"
+#include "villager_house_items.h"
+#include "villager_roster.h"
 
 extern AcreMapTemplate *data_021c80c8;           /* the item templates, or 0 */
 extern AcreMapVillager *data_021c80cc;           /* the villager's map, or 0 */
 extern AcreMap *data_021c80c0;                   /* the town's map, or 0 */
 extern AcreMap *data_021c80e0[ACRE_MAP_ROOMS];   /* the rooms' maps */
-extern u32 data_020cb764[ACRE_MAP_TEMPLATES][2]; /* the templates' file numbers (the second word unused) */
+extern u32 data_020cb764[ACRE_MAP_TEMPLATES][2]; /* per template: its file, and its records file (AcreTemplates_Read) */
 extern int data_020ca0ec;                        /* an acre's width in world units */
 extern int data_020ca0e8;                        /* and depth */
 extern u8 data_021e5a2c[];                       /* the villagers (0x7ec bytes each) */
@@ -18,76 +34,7 @@ extern u8 data_021e9aac[];                       /* the town's layout (town_layo
 extern Heap *data_021c9b34;                      /* the heap of the rooms' acre data */
 extern Heap *data_021c9ab0;                      /* the heap of the town's acre data */
 
-/* A file loaded whole into `heap`, aligned to `align`; its size goes to *size. */
-extern void *func_02064b2c(u32 file, u32 heap, int align, u32 *size);
-/* Frees the four templates (stops at the first empty one, as it only steps on after a free). */
-extern void func_0204d934(AcreMapTemplate *templates, int heap);
-/* `count` acre records (func_02037f5c) from `heap`, aligned to `align`, or 0. */
-extern u8 *func_02037e90(int count, int heap, int align);
-/* 256 item codes, all empty, from `heap`, or 0. */
-extern u16 *func_0204d858(int heap, int align);
-/* `count` AcreMapSource records from the back of `heap` (model 0x102a, the rest 0), or 0. */
-extern AcreMapSource *func_0204f86c(int count, int heap);
-/* Fills `items` from item template `template_set` / `variant` (func_0204d708 on the templates);
- * 0 without templates. */
-extern int func_0204d7f8(void *items, int template_set, int variant, void *heap);
-/* A villager's record, or 0 when there is none. */
-extern void *func_0207cec0(void *villagers, int villager);
-/* The template set and variant of a villager's items (left alone when it has none). */
-extern int func_0207ffdc(void *villager, int *template_set, int *variant);
-/* Copies a villager's own items over `items`. */
-extern void func_0207f4c8(void *villager, void *items);
-/* The model number of a villager's acre: 0x1010 + 0-4. */
-extern int func_0207ffac(void *villager);
-/* Sets up entry `slot` of the table at data_021c31ec for a map of acres_wide x acres_high. */
-extern int func_02030ddc(int acres_wide, int acres_high, int unk, int slot);
-/* Releases entry `slot`. */
-extern void func_02030bac(int slot);
-/* data_021c52c0, a cache of acre data the next call looks up in. */
-extern void *func_0203750c(void);
-extern int func_0203776c(void *cache, int model);
-/* Sets up an acre: its model, position, items, the rest of the record and its data. */
-extern void func_02037f28(u8 *acre, int model, const Vec3 *position, u16 *items, int unk_08, void *extra, int unk_20, int data,
-                          int unk_04, int unk_08b, int slot);
-/* The same with the acre's coordinates given as a pair. */
-extern void func_02037eec(u8 *acre, int model, const Vec3 *position, u16 *items, int unk_08, void *extra, int unk_20, int data,
-                          const int *coordinates, int slot);
-extern int func_02037e84(u8 *acre);             /* the acre's model number */
-extern void func_02037e88(u8 *acre, int model); /* sets it */
-/* Gives an acre its data (the 0x180 bytes func_020377d8 loads) and registers it with the slot. */
-extern void func_02037ecc(u8 *acre, int unk_20, int data, int slot);
-extern int func_020377d8(int model, Heap *heap); /* the 0x180 bytes of the model's data, from `heap` */
-/* The rooms' records: room `room`'s acre source (from the back of `heap`), its model number. */
-extern AcreMapSource *func_02060eac(void *records, int room, int heap);
-extern int func_02060da8(void *records, int room);
-extern int func_02060f30(int room);            /* whether 0 <= room < 5 */
-extern int func_020b67e8(unsigned int number); /* whether 1 <= number <= 5 */
-extern int func_020b6818(unsigned int number); /* number - 1, or -1 */
-/* Creates and destroys the heaps of the rooms' and the town's acre data. */
-extern void func_0205c10c(void *heap);
-extern void func_0205c0f0(void);
-extern void func_0205c158(void *heap);
-extern void func_0205c13c(void);
-/* Item codes (item_code.h): whether a code has a variant (kinds 3 and 4), and its item. */
-extern int func_0204bcdc(u16 *item);
-extern int func_0204bc64(u16 *item);
-/* Searches the map for a tile whose item is in [*first, *last] and passes `flags`: its acre to
- * (*acre_x, *acre_z) and the tile in the acre to (*x, *z). */
-extern int func_0204f3e4(void *map, int *acre_x, int *acre_z, int *x, int *z, u16 *first, u16 *last, u32 flags, int unk);
-/* The tile (acre * 16 + offset) on each axis. */
-extern void func_0204f800(int *x, int *z, int acre_x, int acre_z, int offset_x, int offset_z);
-/* The point at the centre of a tile, at height 0. */
-extern void func_0204f794(u32 position, int x, int z);
-extern u16 *func_0204f5e0(void *map, int acre_x, int acre_z, int x, int z, int layer);
-/* A building's shape (codes 0x5000-0x5021): its triangles. */
-extern void *func_020b3b50(u16 *item);
-extern u32 func_020b3d90(void *shape);
-extern int func_020b3d04(void *shape, Vec3 *a, Vec3 *b, Vec3 *c, u32 index);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
-extern int func_020310c8(int unused); /* 0x200 */
-/* Puts building `item` on the tile that holds a building; and takes the building `item` off. */
-extern int func_0204eea4(int map, int x, int z, int item);
-extern int func_0204ef24(int map, int item, int x, int z);
 
 /* Rounding down as the ARM's arithmetic shift does. */
 static int acre_map_acre_of(int tile)
@@ -108,10 +55,10 @@ static u8 *acre_map_acre_at(const AcreMap *map, int x, int z)
  * code's item. */
 static int acre_map_item_is_none(u16 *item)
 {
-    if (func_0204bcdc(item)) {
+    if (ItemCode_HasVariant(item)) {
         u16 none = ACRE_MAP_ITEM_NONE;
-        int own = func_0204bc64(item);
-        return own == func_0204bc64(&none);
+        int own = ItemCode_VariantItem(item);
+        return own == ItemCode_VariantItem(&none);
     }
     return *item == ACRE_MAP_ITEM_NONE;
 }
@@ -125,7 +72,8 @@ int AcreMap_LoadTemplates(AcreMapTemplate *templates, u32 heap)
     u32 size = 0;
 
     for (int i = 0; i < ACRE_MAP_TEMPLATES; i++) {
-        templates[i].data = func_02064b2c(data_020cb764[i][0], heap, 4, &size);
+        templates[i].data =
+            RomFile_Load((const char *) (uintptr_t) data_020cb764[i][0], (struct Heap *) (uintptr_t) heap, 4, &size);
         if (templates[i].data == NULL) {
             templates[i].halfwords = 0;
             return 0;
@@ -140,7 +88,7 @@ CLEAN_AS(func_0204d960, AcreMap_LoadTemplates)
 void AcreMap_FreeTemplateSet(int heap)
 {
     if (data_021c80c8 != NULL) {
-        func_0204d934(data_021c80c8, heap);
+        AcreTemplates_FreeAll(data_021c80c8, heap);
         Heap_Free((Heap *) (uintptr_t) heap, data_021c80c8);
         data_021c80c8 = NULL;
     }
@@ -202,7 +150,7 @@ void AcreMap_ReleaseVillager(AcreMapVillager *map, void *heap)
         Heap_Free(heap, map->items);
         map->items = NULL;
     }
-    func_02030bac(map->map.slot);
+    CollisionMap_Release(map->map.slot);
 }
 CLEAN_AS(func_0204da74, AcreMap_ReleaseVillager)
 
@@ -236,10 +184,10 @@ int AcreMap_BuildVillager(AcreMapVillager *map, int villager, int heap)
 {
     map->map.slot = ACRE_MAP_SLOT_VILLAGER;
     if (map->map.acres == NULL) {
-        map->map.acres = func_02037e90(1, heap, -4);
+        map->map.acres = (u8 *) (AcreRecord_NewArray(1, (Heap *) (uintptr_t) heap, -4));
     }
     if (map->items == NULL) {
-        map->items = func_0204d858(heap, -4);
+        map->items = AcreTemplates_EmptyItems(heap, -4);
     }
     AcreMapSource *source = AcreMap_MakeVillagerSource((int) (uintptr_t) map->items, villager, heap);
     if (map->map.acres == NULL || source == NULL || map->items == NULL) {
@@ -250,13 +198,13 @@ int AcreMap_BuildVillager(AcreMapVillager *map, int villager, int heap)
     map->map.acres_high = 1;
     map->map.world_wide = data_020ca0ec;
     map->map.world_high = data_020ca0e8;
-    func_0204f800(&map->map.tiles_wide, &map->map.tiles_high, map->map.acres_wide, map->map.acres_high, 0, 0);
-    func_02030ddc(map->map.acres_wide, map->map.acres_high, 0, map->map.slot);
-    void *cache = func_0203750c();
-    int data = func_0203776c(cache, source->model);
+    AcreTile_TileOfAcre(&map->map.tiles_wide, &map->map.tiles_high, map->map.acres_wide, map->map.acres_high, 0, 0);
+    CollisionMap_Setup(map->map.acres_wide, map->map.acres_high, 0, map->map.slot);
+    void *cache = (void *) (uintptr_t) BgModels_Get();
+    int data = BgModels_Data(cache, source->model);
     Vec3 origin = {0, 0, 0};
-    func_02037f28(map->map.acres, source->model, &origin, source->items, source->unk_08, source->extra, 0, data, 0, 0,
-                  map->map.slot);
+    AcreRecord_SetUp((AcreRecord *) (void *) map->map.acres, source->model, &origin, source->items,
+                     (u16 *) (uintptr_t) source->unk_08, source->extra, 0, data, 0, 0, map->map.slot);
     Heap_Free((Heap *) (uintptr_t) heap, source);
     return 1;
 }
@@ -270,12 +218,12 @@ int AcreMap_FillVillagerItems(void *items, void *villager, void *heap)
     int template_set = 2;
     int variant = 0;
 
-    void *record = func_0207cec0(data_021e5a2c, (int) (uintptr_t) villager);
+    void *record = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, (int) (uintptr_t) villager);
     if (record != NULL) {
-        func_0207ffdc(record, &template_set, &variant);
+        VillagerHouseItems_Template(record, &template_set, &variant);
     }
-    if (record != NULL && func_0204d7f8(items, template_set, variant, heap)) {
-        func_0207f4c8(record, items);
+    if (record != NULL && AcreTemplates_FillItems((int) (uintptr_t) items, template_set, variant, (int) (uintptr_t) heap)) {
+        VillagerFurniture_FillTemplate(record, items);
         return 1;
     }
     return 0;
@@ -286,11 +234,11 @@ CLEAN_AS(func_0204dbe4, AcreMap_FillVillagerItems)
  * `items` filled for it. 0 when the record cannot be allocated. */
 AcreMapSource *AcreMap_MakeVillagerSource(int items, int villager, int heap)
 {
-    AcreMapSource *source = func_0204f86c(1, heap);
+    AcreMapSource *source = AcreMap_MakeSources(1, heap);
 
     if (source != NULL) {
-        void *record = func_0207cec0(data_021e5a2c, villager);
-        source->model = record != NULL ? func_0207ffac(record) : 0x1010;
+        void *record = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, villager);
+        source->model = record != NULL ? VillagerHouseItems_RoomModel(record) : 0x1010;
         AcreMap_FillVillagerItems((void *) (uintptr_t) items, (void *) (uintptr_t) villager, (void *) (uintptr_t) heap);
         source->items = (u16 *) (uintptr_t) items;
         source->unk_08 = 0;
@@ -334,9 +282,9 @@ int AcreMap_BuildRoom(AcreMap *map, int room, int heap)
 {
     map->slot = room + ACRE_MAP_SLOT_FIRST_ROOM;
     if (map->acres == NULL) {
-        map->acres = func_02037e90(1, heap, 4);
+        map->acres = (u8 *) (AcreRecord_NewArray(1, (Heap *) (uintptr_t) heap, 4));
     }
-    AcreMapSource *source = func_02060eac(data_021ebcd4, room, heap);
+    AcreMapSource *source = HouseRecord_RoomSource((HouseRecord *) (void *) data_021ebcd4, room, heap);
     if (map->acres == NULL || source == NULL) {
         return 0;
     }
@@ -345,10 +293,11 @@ int AcreMap_BuildRoom(AcreMap *map, int room, int heap)
     map->acres_high = 1;
     map->world_wide = data_020ca0ec;
     map->world_high = data_020ca0e8;
-    func_0204f800(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
-    func_02030ddc(map->acres_wide, map->acres_high, 0, map->slot);
+    AcreTile_TileOfAcre(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
+    CollisionMap_Setup(map->acres_wide, map->acres_high, 0, map->slot);
     Vec3 origin = {0, 0, 0};
-    func_02037f28(map->acres, source->model, &origin, source->items, source->unk_08, source->extra, 0, 0, 0, 0, map->slot);
+    AcreRecord_SetUp((AcreRecord *) (void *) map->acres, source->model, &origin, source->items,
+                     (u16 *) (uintptr_t) source->unk_08, source->extra, 0, 0, 0, 0, map->slot);
     Heap_Free((Heap *) (uintptr_t) heap, source);
     return 1;
 }
@@ -357,7 +306,7 @@ CLEAN_AS(func_0204dcb8, AcreMap_BuildRoom)
 /* func_0204dd78: releases the map's slot. */
 void AcreMap_ReleaseRoomSlot(unsigned int *map)
 {
-    func_02030bac((int) ((AcreMap *) map)->slot);
+    CollisionMap_Release((int) ((AcreMap *) map)->slot);
 }
 CLEAN_AS(func_0204dd78, AcreMap_ReleaseRoomSlot)
 
@@ -365,13 +314,13 @@ CLEAN_AS(func_0204dd78, AcreMap_ReleaseRoomSlot)
  * data_021c9b34. */
 void AcreMap_LoadRoomData(AcreMap *map)
 {
-    func_02030ddc(map->acres_wide, map->acres_high, 0, map->slot);
+    CollisionMap_Setup(map->acres_wide, map->acres_high, 0, map->slot);
     u8 *acre = (u32) map->acres_wide > 0 && (u32) map->acres_high > 0 ? map->acres : NULL;
     if (acre != NULL) {
-        int model = func_02037e84(acre);
+        int model = AcreRecord_Model((const AcreRecord *) (void *) acre);
         Heap *heap = data_021c9b34;
-        func_0203750c();
-        func_02037ecc(acre, 0, func_020377d8(model, heap), map->slot);
+        BgModels_Get();
+        AcreRecord_SetBgModel((AcreRecord *) (void *) acre, 0, (int) (uintptr_t) BgModels_LoadData(model, heap), map->slot);
     }
 }
 CLEAN_AS(func_0204dd84, AcreMap_LoadRoomData)
@@ -391,10 +340,10 @@ CLEAN_AS(func_0204dde0, AcreMap_LoadRoomsData)
 /* func_0204de14: gives the room's acre the model its record now names. */
 void AcreMap_SetRoomModel(int *map, int room)
 {
-    int model = func_02060da8(data_021ebcd4, room);
+    int model = HouseRecord_RoomModel((int) (uintptr_t) data_021ebcd4, room);
     u8 *acres = ((AcreMap *) map)->acres;
     if (acres != NULL) {
-        func_02037e88(acres, model);
+        AcreRecord_SetModel((AcreRecord *) (void *) acres, model);
     }
 }
 CLEAN_AS(func_0204de14, AcreMap_SetRoomModel)
@@ -421,7 +370,7 @@ void AcreMap_FreeRooms(int heap)
             data_021c80e0[i] = NULL;
         }
     }
-    func_0205c0f0();
+    SceneHeaps_DestroyAcreRooms();
 }
 CLEAN_AS(func_0204de5c, AcreMap_FreeRooms)
 
@@ -431,7 +380,7 @@ int AcreMap_CreateRooms(void *heap)
 {
     int ok = 1;
 
-    func_0205c10c(heap);
+    SceneHeaps_CreateAcreRooms(heap);
     for (int i = 0; i < ACRE_MAP_ROOMS; i++) {
         if (data_021c80e0[i] != NULL) {
             continue;
@@ -457,17 +406,17 @@ CLEAN_AS(func_0204dea0, AcreMap_CreateRooms)
 /* func_0204df08: the room numbered 1-5, or 0. */
 int AcreMap_RoomByNumber(int number)
 {
-    if (func_020b67e8((unsigned int) number) == 0) {
+    if (SceneKinds_IsHouseRoom((unsigned int) number) == 0) {
         return 0;
     }
-    return AcreMap_Room(func_020b6818((unsigned int) number));
+    return AcreMap_Room(SceneKinds_HouseRoomIndex((unsigned int) number));
 }
 CLEAN_AS(func_0204df08, AcreMap_RoomByNumber)
 
 /* func_0204df30: room 0-4's map, or 0. */
 int AcreMap_Room(int room)
 {
-    if (func_02060f30(room)) {
+    if (HouseRecord_IsRoom(room)) {
         return (int) (uintptr_t) data_021c80e0[room];
     }
     return 0;
@@ -571,29 +520,29 @@ void AcreMap_FindBuildingPoint(u16 *out, void *map, int *position, int *tile_x, 
     AcreMap_FindItem(&item, map, (u32) (uintptr_t) &tile, &x, &z, first, last, flags);
     void *shape = NULL;
     if (!acre_map_item_is_none(&item)) {
-        shape = func_020b3b50(&item);
+        shape = BuildingShapes_Of(&item);
     }
     if (shape == NULL) {
         *out = ACRE_MAP_ITEM_NONE;
         return;
     }
 
-    u32 triangles = func_020b3d90(shape);
+    u32 triangles = BuildingShapes_TriangleCount(shape);
     u32 sum_x = 0;
     u32 sum_z = 0;
     for (u32 i = 0; i < triangles; i++) {
         Vec3 a;
         Vec3 b;
         Vec3 c;
-        if (func_020b3d04(shape, &a, &b, &c, i)) {
+        if (BuildingShapes_Triangle(shape, &a, &b, &c, i)) {
             sum_x += (u32) a.x + (u32) b.x + (u32) c.x;
             sum_z += (u32) a.z + (u32) b.z + (u32) c.z;
         }
     }
-    fx32 corners = (fx32) ((3u * func_020b3d90(shape)) << 12);
+    fx32 corners = (fx32) ((3u * BuildingShapes_TriangleCount(shape)) << 12);
     fx32 mean_x = FX_Div((fx32) sum_x, corners);
     fx32 front_z = (fx32) ((u32) tile.z + (u32) FX_Div((fx32) sum_z, corners) + 0x1000u);
-    int height = func_020310c8(0);
+    int height = CollisionQuery_FloorHeight(0);
     position[0] = (int) ((u32) tile.x + (u32) mean_x);
     position[1] = height;
     position[2] = front_z;
@@ -619,12 +568,13 @@ void AcreMap_FindItem(u16 *out, void *map, u32 position, int *tile_x, int *tile_
     int x;
     int z;
 
-    if (func_0204f3e4(map, &acre_x, &acre_z, &x, &z, &range[0], &range[1], flags, 0)) {
-        func_0204f800(tile_x, tile_z, acre_x, acre_z, x, z);
-        func_0204f794(position, *tile_x, *tile_z);
+    if (AcreTile_FindItemAnyFlag(map, &acre_x, &acre_z, &x, &z, &range[0], &range[1], flags, 0)) {
+        AcreTile_TileOfAcre(tile_x, tile_z, acre_x, acre_z, x, z);
+        AcreTile_TileCentre((Vec3 *) (uintptr_t) position, *tile_x, *tile_z);
         int found_x = *tile_x;
         int found_z = *tile_z;
-        u16 *item = func_0204f5e0(map, acre_map_acre_of(found_x), acre_map_acre_of(found_z), found_x & 15, found_z & 15, 0);
+        u16 *item =
+            AcreTile_ItemInAcre(map, acre_map_acre_of(found_x), acre_map_acre_of(found_z), found_x & 15, found_z & 15, 0);
         if (item != NULL) {
             *out = *item;
             return;
@@ -640,7 +590,7 @@ int AcreMap_SetBuildingInAcre(int map, int acre_x, int acre_z, int x, int z, int
     int tile_x = 0;
     int tile_z = 0;
 
-    func_0204f800(&tile_x, &tile_z, acre_x, acre_z, x, z);
+    AcreTile_TileOfAcre(&tile_x, &tile_z, acre_x, acre_z, x, z);
     return AcreMap_SetBuildingAt(map, tile_x, tile_z, item);
 }
 CLEAN_AS(func_0204e3bc, AcreMap_SetBuildingInAcre)
@@ -649,7 +599,7 @@ CLEAN_AS(func_0204e3bc, AcreMap_SetBuildingInAcre)
  * a tile that holds a building. */
 int AcreMap_SetBuildingAt(int map, int tile_x, int tile_z, int item)
 {
-    return func_0204eea4(map, tile_x, tile_z, item);
+    return AcreTile_ReplaceBuilding((AcreMap *) (uintptr_t) map, tile_x, tile_z, (u16 *) (uintptr_t) item);
 }
 CLEAN_AS(func_0204e3f4, AcreMap_SetBuildingAt)
 
@@ -657,7 +607,7 @@ CLEAN_AS(func_0204e3f4, AcreMap_SetBuildingAt)
  * with code 0xf030. */
 int AcreMap_ClearBuildingAt(int map, int item, int tile_x, int tile_z)
 {
-    return func_0204ef24(map, item, tile_x, tile_z);
+    return AcreTile_StampBuilding((AcreMap *) (uintptr_t) map, (u16 *) (uintptr_t) item, tile_x, tile_z);
 }
 CLEAN_AS(func_0204e404, AcreMap_ClearBuildingAt)
 
@@ -673,7 +623,7 @@ CLEAN_AS(func_0204e414, AcreMap_Town)
 /* func_0204e420 */
 void AcreMap_ReleaseTownSlot(AcreMap *map)
 {
-    func_02030bac(map->slot);
+    CollisionMap_Release(map->slot);
 }
 CLEAN_AS(func_0204e420, AcreMap_ReleaseTownSlot)
 
@@ -682,15 +632,16 @@ CLEAN_AS(func_0204e420, AcreMap_ReleaseTownSlot)
 void AcreMap_LoadTownData(AcreMap *map)
 {
     Heap_FreeAll(data_021c9ab0);
-    func_02030ddc(map->acres_wide, map->acres_high, 0, map->slot);
+    CollisionMap_Setup(map->acres_wide, map->acres_high, 0, map->slot);
     for (int z = 0; z < map->acres_high; z++) {
         for (int x = 0; x < map->acres_wide; x++) {
             u8 *acre = acre_map_acre_at(map, x, z);
             if (acre != NULL) {
-                int model = func_02037e84(acre);
+                int model = AcreRecord_Model((const AcreRecord *) (void *) acre);
                 Heap *heap = data_021c9ab0;
-                func_0203750c();
-                func_02037ecc(acre, 0, func_020377d8(model, heap), map->slot);
+                BgModels_Get();
+                AcreRecord_SetBgModel((AcreRecord *) (void *) acre, 0, (int) (uintptr_t) BgModels_LoadData(model, heap),
+                                      map->slot);
             }
         }
     }
@@ -712,7 +663,7 @@ void AcreMap_SetTownModels(AcreMap *map)
     for (int z = 0; z < map->acres_high; z++) {
         for (int x = 0; x < map->acres_wide; x++) {
             if (acre != 0) {
-                func_02037e88((u8 *) acre, *models);
+                AcreRecord_SetModel((AcreRecord *) (void *) ((u8 *) acre), *models);
             }
             acre += ACRE_MAP_ACRE_SIZE;
             models++;
@@ -742,7 +693,7 @@ int AcreMap_BuildTown(AcreMap *map, int heap)
 
     map->slot = ACRE_MAP_SLOT_TOWN;
     if (map->acres == NULL) {
-        map->acres = func_02037e90(TOWN_LAYOUT_ACRES, heap, 4);
+        map->acres = (u8 *) (AcreRecord_NewArray(TOWN_LAYOUT_ACRES, (Heap *) (uintptr_t) heap, 4));
     }
     AcreMapSource *sources = TownLayout_MakeSources(data_021e9aac, heap);
     if (map->acres != NULL && sources != NULL) {
@@ -752,13 +703,13 @@ int AcreMap_BuildTown(AcreMap *map, int heap)
         map->acres_high = TOWN_LAYOUT_SIDE;
         map->world_wide = (int) ((u32) map->acres_wide * (u32) data_020ca0ec);
         map->world_high = (int) ((u32) map->acres_high * (u32) data_020ca0e8);
-        func_0204f800(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
+        AcreTile_TileOfAcre(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
         for (int z = 0; z < map->acres_high; z++) {
             for (int x = 0; x < map->acres_wide; x++) {
                 int coordinates[2] = {x, z};
                 Vec3 position = {x << 17, 0, z << 17};
-                func_02037eec(acre, source->model, &position, source->items, source->unk_08, source->extra, 0, 0, coordinates,
-                              map->slot);
+                AcreRecord_SetUpAt((AcreRecord *) (void *) acre, source->model, &position, source->items,
+                                   (u16 *) (uintptr_t) source->unk_08, source->extra, 0, 0, coordinates, map->slot);
                 acre += ACRE_MAP_ACRE_SIZE;
                 source++;
             }
@@ -781,7 +732,7 @@ void AcreMap_FreeTown(void *heap)
         Heap_Free(heap, data_021c80c0);
         data_021c80c0 = NULL;
     }
-    func_0205c13c();
+    SceneHeaps_DestroyAcreTown();
 }
 CLEAN_AS(func_0204e624, AcreMap_FreeTown)
 
@@ -790,7 +741,7 @@ CLEAN_AS(func_0204e624, AcreMap_FreeTown)
  * stays allocated. */
 int AcreMap_CreateTown(void *heap)
 {
-    func_0205c158(heap);
+    SceneHeaps_CreateAcreTown(heap);
     if (data_021c80c0 != NULL) {
         return 1;
     }
@@ -828,11 +779,8 @@ static_assert(sizeof(AcreMapTemplate) == 8, "AcreMapTemplate size");
 extern u8 data_021c80c4[];
 extern u32 data_021c80d0;  /* bit 0: data_021c80c4 is constructed */
 extern u8 data_021c80d4[]; /* its record for the C++ runtime */
-extern void *func_020b3afc(void *object);
 extern void *func_020b3ae4(void *object);
 extern void __register_global_object(void *object, void *destruct, void *record);
-/* The data of an acre's model, looked up in the cache of acre data (func_0203750c). */
-extern int func_02037608(void *cache, int model);
 
 /* func_0204ebb0: builds `map` (slot 0) of size[0] x size[1] acres from `sources`, one per acre
  * row by row, acre (x, z) at (x, 0, z) * 0x20000 with its model's data from the cache.
@@ -843,7 +791,7 @@ int AcreMap_Build(AcreMap *map, AcreMapSource *sources, const AcreMapSize *size,
 
     map->slot = 0;
     if (map->acres == NULL) {
-        map->acres = func_02037e90(count, (int) (uintptr_t) heap, 4);
+        map->acres = (u8 *) (AcreRecord_NewArray(count, (Heap *) (uintptr_t) heap, 4));
     }
     if (map->acres == NULL) {
         return 0;
@@ -855,20 +803,21 @@ int AcreMap_Build(AcreMap *map, AcreMapSource *sources, const AcreMapSize *size,
     map->acres_high = size->high;
     map->world_wide = (int) ((u32) map->acres_wide * (u32) data_020ca0ec);
     map->world_high = (int) ((u32) map->acres_high * (u32) data_020ca0e8);
-    func_0204f800(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
+    AcreTile_TileOfAcre(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
     if (!(data_021c80d0 & 1)) {
-        func_020b3afc(data_021c80c4);
+        TownPosts_ConstructSource((CollisionPostSource *) (void *) data_021c80c4);
         __register_global_object(data_021c80c4, (void *) (uintptr_t) func_020b3ae4, data_021c80d4);
         data_021c80d0 |= 1;
     }
-    func_02030ddc(map->acres_wide, map->acres_high, (int) (uintptr_t) data_021c80c4, map->slot);
+    CollisionMap_Setup(map->acres_wide, map->acres_high, (CollisionPostSource *) (uintptr_t) data_021c80c4, map->slot);
     for (int z = 0; z < map->acres_high; z++) {
         for (int x = 0; x < map->acres_wide; x++) {
             int coordinates[2] = {x, z};
             Vec3 position = {(fx32) ((u32) x << 17), 0, (fx32) ((u32) z << 17)};
-            int data = func_02037608(func_0203750c(), source->model);
-            func_02037eec(acre, source->model, &position, source->items, source->unk_08, source->extra, data, 0, coordinates,
-                          0);
+            int data = (int) (uintptr_t) BgModels_Load((BgModels *) (uintptr_t) BgModels_Get(), source->model);
+            AcreRecord_SetUpAt((AcreRecord *) (void *) acre, source->model, &position, source->items,
+                               (u16 *) (uintptr_t) source->unk_08, source->extra, (BgModel *) (uintptr_t) data, 0, coordinates,
+                               0);
             acre += ACRE_MAP_ACRE_SIZE;
             source++;
         }
@@ -884,7 +833,7 @@ void AcreMap_Release(AcreMap *map, void *heap)
         Heap_Free(heap, map->acres);
         map->acres = NULL;
     }
-    func_02030bac(map->slot);
+    CollisionMap_Release(map->slot);
 }
 CLEAN_AS(func_0204ecd4, AcreMap_Release)
 

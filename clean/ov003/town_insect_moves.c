@@ -46,28 +46,6 @@ extern int NNS_G3dMdlGetMdlAlpha(void *model, int material);
 extern void NNS_G3dMdlSetMdlAlpha(void *model, int material, int alpha);
 extern int func_02070070(void);
 
-/* The behaviours of overlay 68. */
-extern void func_ov068_02271160(TownInsect *insect);
-extern void func_ov068_02271358(TownInsect *insect);
-extern int func_ov068_02270680(TownInsect *insect, s16 *counter);
-extern void func_ov068_02270750(TownInsect *insect, s16 *counter, int heard);
-extern void func_ov068_02271644(TownInsect *insect);
-extern int func_ov068_02271068(TownInsect *insect);
-extern int func_ov068_022710e4(TownInsect *insect);
-extern void func_ov068_02271398(TownInsect *insect);
-extern void func_ov068_02270b00(TownInsect *insect);
-extern void func_ov068_02270d54(TownInsect *insect);
-extern void func_ov068_02270d24(Vec3 *scale, int unused);
-extern void func_ov068_02270890(TownInsect *insect);
-extern void func_ov068_02270df8(TownInsect *insect);
-extern void func_ov068_02270e80(TownInsect *insect, short *frames);
-extern void func_ov068_02271960(TownInsect *insect, short *frames);
-extern void func_ov068_02271a14(TownInsect *insect, short *frames);
-extern void func_ov068_0227191c(TownInsect *insect, short *frames);
-extern void func_ov068_02271cec(TownInsect *insect, u8 *away, Vec3 *nearest);
-extern void func_ov068_022717e0(TownInsect *insect);
-extern int func_ov068_02271b30(TownInsect *insect);
-
 /* Whether this system has a slot in the session. */
 static int town_insect_moves_in_session(void)
 {
@@ -898,14 +876,14 @@ void TownInsectMove_Update35(TownInsect *insect)
             TownInsectMove_Flee(insect, frames);
             break;
         case 0x12:
-            if (func_ov068_02271068(insect) != 0) {
+            if (InsectPath_Sway(insect) != 0) {
                 insect->angle_y = 0;
                 insect->action = 2;
                 town_insect_moves_play(insect, 0x39, FRAME_CTRL_ONCE, 0x1000, 0x20);
             }
             break;
         case 0x13:
-            if (func_ov068_022710e4(insect) != 0) {
+            if (InsectPath_KnockedAside(insect) != 0) {
                 insect->action = 1;
                 insect->unk_254 = 0;
                 town_insect_moves_play(insect, 0x21, FRAME_CTRL_ONCE, 0x1000, 0);
@@ -1085,10 +1063,10 @@ void TownInsectMove_Update23(TownInsect *insect)
 {
     switch (insect->action) {
         case 4:
-            func_ov068_02271160(insect);
+            InsectPath_CircleSnowball(insect);
             break;
         case 5:
-            func_ov068_02271358(insect);
+            InsectPath_Rest(insect);
             break;
         case 9:
         case TOWN_INSECT_ACTION_LET_GO:
@@ -1123,7 +1101,7 @@ void TownInsectMove_Update36(TownInsect *insect)
         insect->unk_247 = FieldActor_PlayerHolds1376() != 0 ? 1 : 0;
     }
     if (insect->unk_24c == 0 && action != TOWN_INSECT_ACTION_LET_GO && action != 9) {
-        heard = func_ov068_02270680(insect, &insect->unk_236);
+        heard = InsectPath_WatchPlayer(insect, &insect->unk_236);
         if (insect->action != 5) {
             if (heard == 1) {
                 return;
@@ -1142,7 +1120,7 @@ void TownInsectMove_Update36(TownInsect *insect)
         case 4:
         case 5:
         case 7:
-            func_ov068_02270750(insect, fall, heard);
+            InsectPath_CalmDown(insect, fall, heard);
             break;
         case TOWN_INSECT_ACTION_LET_GO:
             TownInsectMove_Hop(insect, &insect->frames_left);
@@ -1281,7 +1259,7 @@ void TownInsectMove_Update08(TownInsect *insect)
 {
     switch (insect->action) {
         case 0:
-            func_ov068_02271644(insect);
+            InsectPath_Hover(insect);
             break;
         case 9:
         case TOWN_INSECT_ACTION_LET_GO:
@@ -1805,7 +1783,7 @@ void TownInsectMove_Update0A(TownInsect *insect)
 {
     switch (insect->action) {
         case 0:
-            func_ov068_02271398(insect);
+            InsectPath_Roam(insect);
             break;
         case 6:
             TownInsectMove_WanderInBox(insect);
@@ -1841,17 +1819,17 @@ void TownInsectMove_Update0B(TownInsect *insect)
     switch (insect->action) {
         case 0:
             TownInsectMove_PlaySound(insect, 0, 1);
-            func_ov068_02270b00(insect);
+            InsectPath_Chase(insect);
             break;
         case 2:
             TownInsectMove_PlaySound(insect, 0, 1);
-            func_ov068_02270d54(insect);
+            InsectPath_Grow(insect);
             break;
         case 3:
         case 7:
         case 8:
-            func_ov068_02270d24(&insect->scale, 0);
-            func_ov068_02270890(insect);
+            InsectPath_StretchScale(&insect->scale, 0);
+            InsectPath_CircleOrLeave(insect);
             break;
         case TOWN_INSECT_ACTION_LET_GO:
             TownInsectMove_PlaySound(insect, 0, 1);
@@ -1859,7 +1837,7 @@ void TownInsectMove_Update0B(TownInsect *insect)
             TownInsectMove_Escape(insect, 0x1333);
             break;
         case 4:
-            func_ov068_02270df8(insect);
+            InsectPath_StartGrow(insect);
             break;
         default:
             break;
@@ -1931,7 +1909,7 @@ void TownInsectMove_Update32(TownInsect *insect)
     short *frames = &insect->frames_left;
     switch (insect->action) {
         case 0:
-            func_ov068_02270e80(insect, frames);
+            InsectPath_FollowPlayer(insect, frames);
             break;
         case 0xf: {
             s16 heading = insect->angle_y;
@@ -1964,11 +1942,11 @@ void TownInsectMove_Update19(TownInsect *insect)
     switch (insect->action) {
         case 3:
         case 0xf:
-            func_ov068_02271960(insect, frames);
+            InsectPath_PickHeading(insect, frames);
             break;
         case 4:
-            func_ov068_02271a14(insect, frames);
-            func_ov068_0227191c(insect, frames);
+            InsectPath_Glide(insect, frames);
+            InsectPath_TurnFromObstacle(insect, (u16 *) frames);
             break;
         case TOWN_INSECT_ACTION_LET_GO:
             TownInsectMove_FlyUpAway(insect, frames);
@@ -2236,7 +2214,7 @@ int TownInsectMove_SensePlayers(TownInsect *insect, Vec3 *nearest)
             player++;
         } while (player < 4);
     } else {
-        func_ov068_02271cec(insect, away, nearest);
+        InsectPath_SensePlayers(insect, away, nearest);
     }
     if (counting) {
         u32 alarm = insect->unk_254;
@@ -2553,7 +2531,7 @@ void TownInsectMove_UpdateTurned(TownInsect *insect)
             break;
         case 4:
             if (count > 0) {
-                func_ov068_022717e0(insect);
+                InsectPath_GoToPerch(insect);
             } else {
                 TownInsectMove_FlyToTarget(insect);
             }
@@ -2590,7 +2568,7 @@ void TownInsectMove_UpdateTurned(TownInsect *insect)
                 int ran_out = TownInsectMove_WaitOver(insect);
                 *frames = 0;
                 if (insect->unk_24a == 0 && ran_out != 0 && !town_insect_moves_in_session()) {
-                    func_ov068_02271b30(insect);
+                    InsectPath_FindPerch(insect);
                 }
                 if (insect->action == 0x12) {
                     insect->action = 4;
@@ -2620,8 +2598,6 @@ CLEAN_AS(func_ov003_0223482c, TownInsectMove_TestFlags)
 extern int _ffix(int bits);
 /* The SDK's difference of two points: a minus b into the third. */
 extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
-/* Kind 8's flight while it is not alarmed (overlay 68); 0 to stop the frame there. */
-extern int func_ov068_022715a0(TownInsect *insect, s16 *frames, Vec3 *step);
 
 /* The float 5120.5 as its bits: _ffix makes it 0x1400, 1.25 in 20.12 fixed point. */
 #define TOWN_INSECT_MOVES_FLEE_BOOST_BITS 0x45a00400
@@ -2773,7 +2749,7 @@ void TownInsectMove_FlyBobbing(TownInsect *insect)
             }
         }
     } else if (insect->kind == 8) {
-        if (func_ov068_022715a0(insect, frames, &step) == 0) {
+        if (InsectPath_ToBuilding(insect, frames, &step) == 0) {
             return;
         }
     } else {

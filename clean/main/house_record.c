@@ -8,6 +8,7 @@
 #include "scene_kinds.h"
 #include "scene_query.h"
 #include "state_block.h"
+#include "map_code.h"
 
 static_assert(sizeof(HouseRoom) == 0x450, "HouseRoom");
 static_assert(offsetof(HouseRoom, wallpaper) == 0x448 && offsetof(HouseRoom, flags) == 0x44e, "HouseRoom");
@@ -61,8 +62,6 @@ extern void func_020051b0(void *code);
 /* A room record's constructor and destructor, which the array helpers are handed. */
 extern void *func_02061470(void *room);
 extern void *func_02061444(void *room);
-/* The house's code on the map for a size (0x5014 + size, 0x5014 past the sizes). */
-extern unsigned short func_0204bae8(unsigned int size);
 
 static unsigned int house_record_field(const HouseRecord *house, int shift, u32 mask)
 {
@@ -330,35 +329,35 @@ int HouseRecord_Loan(const HouseRecord *house)
 }
 CLEAN_AS(func_02060d3c, HouseRecord_Loan)
 
-/* func_02060d48: an absence of `days` days raises the count by the days past six, to at most
- * 10.
+/* func_02060d48: an absence of `days` days raises the house's cockroach count by the days past
+ * six, to at most 10.
  * QUIRK: the sum is the ARM's 32-bit one; a count wrapped negative by an absurd number of days
  * is kept, as its low byte. */
-void HouseRecord_AddAbsence(HouseRecord *house, int days)
+void HouseRecord_AddRoachesForAbsence(HouseRecord *house, int days)
 {
     if (days > HOUSE_RECORD_ABSENCE_FREE_DAYS) {
-        int count = (int) ((u32) house->bits.bytes[HOUSE_RECORD_ABSENCE_BYTE] + (u32) (days - HOUSE_RECORD_ABSENCE_FREE_DAYS));
-        if (count > HOUSE_RECORD_MAX_ABSENCE) {
-            count = HOUSE_RECORD_MAX_ABSENCE;
+        int count = (int) ((u32) house->bits.bytes[HOUSE_RECORD_ROACHES_BYTE] + (u32) (days - HOUSE_RECORD_ABSENCE_FREE_DAYS));
+        if (count > HOUSE_RECORD_MAX_ROACHES) {
+            count = HOUSE_RECORD_MAX_ROACHES;
         }
-        house->bits.bytes[HOUSE_RECORD_ABSENCE_BYTE] = (u8) count;
+        house->bits.bytes[HOUSE_RECORD_ROACHES_BYTE] = (u8) count;
     }
 }
-CLEAN_AS(func_02060d48, HouseRecord_AddAbsence)
+CLEAN_AS(func_02060d48, HouseRecord_AddRoachesForAbsence)
 
 /* func_02060d64 */
-void HouseRecord_SetAbsence(HouseRecord *house, unsigned char count)
+void HouseRecord_SetRoaches(HouseRecord *house, unsigned char count)
 {
-    house->bits.bytes[HOUSE_RECORD_ABSENCE_BYTE] = count;
+    house->bits.bytes[HOUSE_RECORD_ROACHES_BYTE] = count;
 }
-CLEAN_AS(func_02060d64, HouseRecord_SetAbsence)
+CLEAN_AS(func_02060d64, HouseRecord_SetRoaches)
 
 /* func_02060d70 */
-unsigned char HouseRecord_Absence(const HouseRecord *house)
+unsigned char HouseRecord_Roaches(const HouseRecord *house)
 {
-    return house->bits.bytes[HOUSE_RECORD_ABSENCE_BYTE];
+    return house->bits.bytes[HOUSE_RECORD_ROACHES_BYTE];
 }
-CLEAN_AS(func_02060d70, HouseRecord_Absence)
+CLEAN_AS(func_02060d70, HouseRecord_Roaches)
 
 /* func_02060d7c: the model number the house's size gives (0x1003 for sizes 0-2, 0x1008 from
  * 3), 0x1003 past the sizes.
@@ -484,11 +483,11 @@ int HouseRecord_IsRoom(int room)
 }
 CLEAN_AS(func_02060f30, HouseRecord_IsRoom)
 
-/* func_02060f40: the first loan, and no absence counted. */
+/* func_02060f40: the first loan, and no cockroaches. */
 void HouseRecord_Reset(HouseRecord *house)
 {
     house->loan = HOUSE_RECORD_FIRST_LOAN;
-    house->bits.bytes[HOUSE_RECORD_ABSENCE_BYTE] = 0;
+    house->bits.bytes[HOUSE_RECORD_ROACHES_BYTE] = 0;
 }
 CLEAN_AS(func_02060f40, HouseRecord_Reset)
 
@@ -536,7 +535,7 @@ int HouseRecord_PlaceOnMap(int size)
         int tile_x;
         int tile_z;
         AcreTile_TileOfAcre(&tile_x, &tile_z, acre_x, acre_z, x, z);
-        u16 code = func_0204bae8((unsigned int) size);
+        u16 code = MapCode_PlayerHouse((unsigned int) size);
         if (AcreTile_SetItem(map, &code, tile_x, tile_z, 0)) {
             return 1;
         }

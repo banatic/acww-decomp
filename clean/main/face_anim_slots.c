@@ -7,6 +7,8 @@
 #include "scene_query.h"
 #include "scene_tables.h"
 #include "session.h"
+#include "c_library.h"
+#include "rom_file.h"
 
 /* The first slot of the other actors. */
 #define FACE_ANIM_SLOTS_OTHERS 4
@@ -22,7 +24,6 @@ extern NetSession *data_020ccf94;   /* the session */
 extern const u8 data_020cc65c[];    /* each animation number's half */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
 
 /* func_0205d74c: the slot `slot` names takes animation `a` and animation `b`
  * (FaceAnimSlots_Load with `share` and `force`). FACE_ANIM_SLOTS_NONE or above empties half A
@@ -80,7 +81,7 @@ void FaceAnimSlots_Load(unsigned char *slot, int number, int share, int force)
         }
     }
 
-    int size = func_02064af4(FaceAnimSlots_Path((unsigned int) number), (void *) (uintptr_t) target, limit);
+    int size = RomFile_Read(FaceAnimSlots_Path((unsigned int) number), (void *) (uintptr_t) target, limit);
     if (size != 0) {
         FaceAnimSlots_SetResource(&data_021c9d7c, index, half, number);
         FaceAnimSlots_SetSize(&data_021c9d7c, index, half, (short) size);
@@ -266,7 +267,6 @@ CLEAN_AS(func_0205daac, FaceAnimSlots_Half)
  * then the number). */
 extern char data_021c9d68[];
 extern const char data_020dd6f0[];
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
 
 /* The size of half A, which is where half B starts. */
 #define FACE_ANIM_SLOTS_HALF_A_SIZE 280
@@ -291,7 +291,7 @@ CLEAN_AS(func_0205dad0, FaceAnimSlots_HalfASize)
  * call overwrites the last one's path). */
 char *FaceAnimSlots_Path(unsigned int number)
 {
-    func_02064328(data_021c9d68, data_020dd6f0, number >> 5, number);
+    CLib_SPrintf(data_021c9d68, data_020dd6f0, number >> 5, number);
     return data_021c9d68;
 }
 CLEAN_AS(func_0205dad8, FaceAnimSlots_Path)

@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "letter.h"
 
 static_assert(offsetof(WfcNotice, number) == 0xc0, "WfcNotice layout");
 static_assert(offsetof(WfcNotice, hmac) == 0xc2, "WfcNotice layout");
@@ -14,15 +15,6 @@ static_assert(sizeof(WfcLetter) == 0x114, "WfcLetter size");
 
 /* The town's board. */
 extern Bbs data_021eed68;
-
-/* A letter's constructor and destructor (they set its vtable), and its copy. */
-extern void func_02066694(MailLetter *letter);
-extern void func_02066688(MailLetter *letter);
-extern MailLetter *func_02066830(MailLetter *dst, const MailLetter *src);
-/* The letter addressed to the player of that number. */
-extern void func_02066560(MailLetter *letter, int player);
-/* The letter's kind bytes set as a delivered letter's (its byte 0xfb 0x11). */
-extern void func_02066478(MailLetter *letter);
 
 /* func_0203f5a4: a notice whose number is not the board's last posted, the number kept; 1 when
  * posted. */
@@ -68,19 +60,19 @@ int WfcDelivery_DeliverLetter(WfcLetter *letter)
     MailLetter copy;
     int delivered = 0;
 
-    func_02066694(&copy);
+    Letter_Construct((Letter *) &copy);
     u8 *record = PlayerRecords_Current();
     if (letter->number != PlayerRecord_MailMark(record)) {
-        func_02066830(&copy, &letter->letter);
+        Letter_Assign((Letter *) &copy, (const Letter *) &letter->letter);
         int player = PlayerRecord_Number(record);
-        func_02066560(&copy, player);
-        func_02066478(&copy);
+        Letter_AddressToPlayer((Letter *) &copy, player);
+        Letter_MarkDelivered((Letter *) &copy);
         if (Mail_PutInMailbox(&copy, player, 0) != 0) {
             PlayerRecord_SetMailMark(record, letter->number);
             delivered = 1;
         }
     }
-    func_02066688(&copy);
+    Letter_Destruct((Letter *) &copy);
     return delivered;
 }
 CLEAN_AS(func_0203f5e4, WfcDelivery_DeliverLetter)
@@ -95,7 +87,7 @@ CLEAN_AS(func_0203f658, WfcDelivery_LetterHmac)
 /* func_0203f664: the letter's destructor; its address. */
 int WfcDelivery_DestructLetter(WfcLetter *letter)
 {
-    func_02066688(&letter->letter);
+    Letter_Destruct((Letter *) &letter->letter);
     return (int) (uintptr_t) letter;
 }
 CLEAN_AS(func_0203f664, WfcDelivery_DestructLetter)
@@ -103,7 +95,7 @@ CLEAN_AS(func_0203f664, WfcDelivery_DestructLetter)
 /* func_0203f674: the letter's constructor; its address. */
 int WfcDelivery_ConstructLetter(WfcLetter *letter)
 {
-    func_02066694(&letter->letter);
+    Letter_Construct((Letter *) &letter->letter);
     return (int) (uintptr_t) letter;
 }
 CLEAN_AS(func_0203f674, WfcDelivery_ConstructLetter)

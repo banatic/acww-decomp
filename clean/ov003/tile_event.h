@@ -1,4 +1,4 @@
-/* Overlay 3's tile events: a table of four entries (0xa0 bytes each) per player at
+/* Overlay 3's tile events: a table of four entries (0xa4 bytes each) per player at
  * data_ov003_0223cfe4, set up by the process of vtable 0x0223bc7c (0x6a70 bytes, made by
  * func_ov003_02227454). func_ov003_022213f8 starts an event in a free entry of a player: a kind
  * (3-14), a tile, a point, an id (an item or object code) and two more values; the

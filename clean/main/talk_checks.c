@@ -9,6 +9,7 @@
 #include "player_record.h"
 #include "player_records.h"
 #include "session.h"
+#include "talk_answers.h"
 
 /* The slot of the session's leader. */
 #define TALK_CHECKS_HOST_SLOT 0
@@ -16,12 +17,6 @@
 #define TALK_CHECKS_CHOICE_DATA 0xff
 
 extern NetSession *data_020ccf94;
-
-/* The talk's menu of choices: its count and the choice for cancelling (after it is reset);
- * one choice's message; the choices made ready. */
-extern void func_020ab670(void *menu, int count, int cancel);
-extern void func_020ab628(void *menu, int index, const u8 *message, int a, const u8 *data, int b, int c);
-extern void func_020ab5f8(void *menu);
 
 /* func_0202e9fc: 1 unless linked with others (Session_IsLinked) with this console in a slot
  * other than the leader's (0). */
@@ -78,13 +73,13 @@ CLEAN_AS(func_0202ea80, TalkChecks_TestSetDailyBit)
 void TalkChecks_OfferMessages(SceneBase *scene, const u8 *messages, int count, int cancel)
 {
     void *menu = (void *) (uintptr_t) SceneBase_TalkChoices(scene);
-    func_020ab670(menu, count, cancel);
+    TalkAnswers_Reset(menu, count, cancel);
     for (int i = 0; i < count; i++) {
         u8 choice[2];
         choice[0] = messages[i];
         choice[1] = TALK_CHECKS_CHOICE_DATA;
-        func_020ab628(menu, i, &choice[0], 0, &choice[1], 0, 0);
+        TalkAnswers_Set(menu, i, &choice[0], 0, &choice[1], 0, 0);
     }
-    func_020ab5f8(menu);
+    TalkAnswers_LoadTexts(menu);
 }
 CLEAN_AS(func_0202eac8, TalkChecks_OfferMessages)

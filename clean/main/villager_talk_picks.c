@@ -6,6 +6,9 @@
 #include "date_time.h"
 #include "player_records.h"
 #include "villager_roster.h"
+#include "creature_draw.h"
+#include "insect_draw.h"
+#include "item_lists.h"
 
 #define VILLAGER_TALK_PICKS_NO_ITEM 0xfff1
 #define VILLAGER_TALK_PICKS_CLOTHES_FIRST 0x11a8
@@ -15,14 +18,6 @@
 /* The game's pickers by index (a slot without one holds 0). */
 extern const u32 data_020c8efc[VILLAGER_TALK_PICKS_TABLE];
 extern const u32 data_020c8f10[VILLAGER_TALK_PICKS_TABLE];
-
-/* An item drawn from `count` codes from `first` (villager_talk_object.c). */
-extern void func_02063414(u16 *item, int first, int count, int c, int d, u8 *record, int f, int g, int h, int i);
-/* A fish of the classes first-last for the month and day into `*out`; nonzero when one was
- * found. */
-extern int func_0202cbdc(u16 *out, int first, int last, int month, u8 day);
-/* An insect of the classes first-last for the month into `*out`; nonzero when one was found. */
-extern int func_0202d190(u16 *out, int first, int last, int month);
 
 /* func_020264b4: clothes of any of the ten styles but the second style byte (`styles[1]`),
  * drawn for the current player (which 1), or when that gave none for no player (which 0). */
@@ -55,8 +50,8 @@ void VillagerTalkPick_ClothesOfStyleMask(u16 *out, int mask, int count, u8 *play
     int style = VillagerRoster_PickBit((unsigned int) mask, count, VILLAGER_TALK_PICKS_STYLES);
     if (style != -1) {
         u16 drawn;
-        func_02063414(&drawn, VILLAGER_TALK_PICKS_CLOTHES_FIRST, VILLAGER_TALK_PICKS_CLOTHES_COUNT, clothes, 1, player, which,
-                      style, 0, 1);
+        ItemLists_DrawRange(&drawn, VILLAGER_TALK_PICKS_CLOTHES_FIRST, VILLAGER_TALK_PICKS_CLOTHES_COUNT,
+                            (u16 *) (uintptr_t) clothes, 1, player, which, style, 0, 1);
         *out = drawn;
     }
 }
@@ -78,13 +73,13 @@ static void pick_by_index(u16 *out, const u32 *table, unsigned int index)
 /* A fish of the classes first-last for the date. */
 static int pick_fish(u16 *out, const DateTime *now, int first, int last)
 {
-    return func_0202cbdc(out, first, last, now->month, now->day);
+    return CreatureDraw_FishOfBands(out, first, last, now->month, now->day);
 }
 
 /* An insect of the classes first-last for the month. */
 static int pick_insect(u16 *out, const DateTime *now, int first, int last)
 {
-    return func_0202d190(out, first, last, now->month);
+    return InsectDraw_OfBands(out, first, last, now->month);
 }
 
 /* func_02026584: a fish by the picker for `index` (data_020c8f10). */

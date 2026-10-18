@@ -3,6 +3,7 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "town_day.h"
 
 static_assert(offsetof(WorkerThread, ready) == 0x10e8, "WorkerThread.ready");
 static_assert(sizeof(WorkerThread) == 0x10ec, "WorkerThread");
@@ -59,10 +60,6 @@ extern void DC_FlushAll(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
-/* The town's change from one date to another (`days` days, `mode` from func_02046a74's
- * argument), here run on the job's thread (the last argument 1). */
-extern void func_0204714c(WorkerThreadOwner *town, const DateTime *from, const DateTime *to, u32 days, u32 mode,
-                          u32 on_thread);
 /* The job thread's function, handed to OS_CreateThread (WorkerThread_Run). */
 extern void func_020424b4(void *argument);
 
@@ -182,7 +179,7 @@ void WorkerThread_Run(void *argument)
     WorkerThreadDays *days = argument;
     DC_FlushAll();
     WorkerThread *job = data_021c779c.job;
-    func_0204714c(&data_021c779c, &days->from, &days->to, (u32) days->days, days->mode, 1);
+    TownDay_Pass((TownDay *) &data_021c779c, &days->from, &days->to, (u32) days->days, days->mode, 1);
     WorkerThreadContext *context = WorkerThread_Context(job);
     Heap_SetThreadHeap(context->caller, context->heap);
     job->done = 1;

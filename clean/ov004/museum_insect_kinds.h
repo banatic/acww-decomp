@@ -1,7 +1,7 @@
 /* The initialisers and frame functions of some kinds of the museum's insects (the table
  * data_ov004_022563ec, museum_insects.h): an initialiser sets up the insect's motion when its
  * model is loaded, a frame function runs its motion each frame it is shown. Most hand the work
- * to the motions shared by several kinds (func_ov004_02240f2c and the others after them). */
+ * to the motions shared by several kinds (InsectMotion_Start and the others after them). */
 #ifndef CLEAN_OV004_MUSEUM_INSECT_KINDS_H
 #define CLEAN_OV004_MUSEUM_INSECT_KINDS_H
 

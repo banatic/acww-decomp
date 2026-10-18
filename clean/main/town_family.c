@@ -6,8 +6,7 @@
 #include "town_acre_count.h"
 #include "town_place.h"
 #include "town_tile_put.h"
-
-extern u32 func_020644cc(int range); /* a random number below `range` */
+#include "main_random.h"
 
 extern const u8 data_020ca5d4[8]; /* the eight tiles around one: 0x10 * (8 - dx) + (8 - dz) */
 /* The chance in 100, by code 0x00-0x1a, that the first day passed moves it to family B. */
@@ -40,7 +39,7 @@ static int is_family_b_or_after(u16 code)
 
 static int chance(int percent)
 {
-    return (int) func_020644cc(100) < percent;
+    return (int) MainRandom_Below(100) < percent;
 }
 
 /* func_020499cc: the families' codes of the map after a further day (`day` from the first,
@@ -156,7 +155,7 @@ CLEAN_AS(func_02049bc4, TownFamily_Cross)
  * the map's `size`, starting from one of the eight drawn at random; whether it was put. */
 int TownFamily_PutAround(AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile, int code)
 {
-    int index = (int) func_020644cc(TOWN_FAMILY_AROUND);
+    int index = (int) MainRandom_Below(TOWN_FAMILY_AROUND);
     for (int i = 0; i < TOWN_FAMILY_AROUND; i++) {
         u8 offset = data_020ca5d4[index];
         TownGrowthTiles near = {tile->x - ((offset >> 4) - 8), tile->z - ((offset & 15) - 8)};
@@ -197,7 +196,7 @@ CLEAN_AS(func_02049ca0, TownFamily_PutOnFree)
  * 100; 0xfff1 when the draw goes past the list or there is none. */
 int TownFamily_DrawCross(const u16 *code, const u16 *mate)
 {
-    int left = (int) func_020644cc(100);
+    int left = (int) MainRandom_Below(100);
     int made = ACRE_MAP_ITEM_NONE;
     int line = TownFamily_Line(code);
     int low = TownFamily_Stage(code);

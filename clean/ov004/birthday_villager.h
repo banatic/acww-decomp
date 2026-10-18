@@ -1,5 +1,5 @@
 /* A town villager of the rooms whose talk takes its lines from the "ev_nbirth" message files
- * (class vtable 0x02253674, 0xa70 bytes, made by func_ov004_0221d4f4): a town villager scene
+ * (class vtable 0x02253674, 0xa70 bytes, made by BirthdayVillager_New): a town villager scene
  * object (main's villager_scene_slots.h) that walks about the room, comes to this console's
  * player, talks, asks for an item from the player's pockets and gives one in return.
  *

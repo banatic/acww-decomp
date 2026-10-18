@@ -7,6 +7,10 @@
 #include "player_records.h"
 #include "villager_data.h"
 #include "villager_roster.h"
+#include "item_lists.h"
+#include "letter.h"
+#include "mail_text.h"
+#include "main_random.h"
 
 #define VILLAGER_POST_NAME_SIZE 0x28
 #define VILLAGER_POST_NO_ITEM 0xfff1
@@ -45,32 +49,17 @@ extern u8 data_021c9608[], data_021c9668[], data_021c9638[], data_021c965c[], da
 /* The list kinds a present of kind 5 is drawn from (0, 4 and 3). */
 extern const int data_020cbfe4[3];
 
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 extern void __register_global_object(void *object, void *destruct, void *record);
-extern void func_02063ccc(VillagerPostItemList *list, int kind, int group);
 /* The destructor; handed to the C++ runtime, so the game's symbol. */
 extern void func_02063cc8(VillagerPostItemList *list);
-extern void func_020638d4(u16 *item, VillagerPostItemList *list, int record, int a, u8 b, int c, int *group);
-extern void func_02063884(u16 *item, VillagerPostItemList *list);
-/* Message arguments of the letters: numbers. */
-extern int func_0203d7b0(int index, int value);
-extern int func_0203d79c(int index, int value);
-extern void func_02066694(MailLetter *letter); /* a letter's constructor */
-extern void func_02066688(MailLetter *letter); /* its destructor */
-/* The letter written from `npc` to `player`, of message `*text` of the group `name`, on paper
- * `*paper`. */
-extern void func_020662bc(MailLetter *letter, const u8 *text, const char *name, const u8 *paper, const NpcId *npc,
-                          const DesignCreator *player, int from);
-/* The item the letter carries set; the one it had. */
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int arg);
 
 /* An item drawn from a copy of `list` (the copy destroyed after). */
 static u16 draw_from(const VillagerPostItemList *list)
 {
     VillagerPostItemList copy = *list;
     u16 item;
-    func_020638d4(&item, &copy, 0, 0, 1, 1, NULL);
-    func_02063cc8(&copy);
+    ItemLists_Draw(&item, (ItemList *) &copy, 0, 0, 1, 1, (int) (uintptr_t) NULL);
+    ItemList_Destruct(&copy);
     return item;
 }
 
@@ -83,7 +72,7 @@ static void make_lists_once(u32 *guard, VillagerPostItemList *lists, const int *
         return;
     }
     for (int i = 0; i < count; i++) {
-        func_02063ccc(&lists[i], kinds[i], groups[i]);
+        ItemList_Construct((ItemList *) &lists[i], kinds[i], groups[i]);
         __register_global_object(&lists[i], (void *) (uintptr_t) func_02063cc8, records[i]);
     }
     *guard |= 1;
@@ -110,49 +99,49 @@ int VillagerPost_SendQ10Reply(unsigned int present, const DesignCreator *player,
         return 0;
     }
     u16 item = VILLAGER_POST_NO_ITEM;
-    func_020644cc(3);
-    func_020644cc(3);
+    MainRandom_Below(3);
+    MainRandom_Below(3);
 
     switch (present) {
         case 1: {
             VillagerPostItemList list;
-            func_02063ccc(&list, 0, 0);
-            func_020638d4(&item, &list, 0, 0, 1, 1, NULL);
-            func_02063cc8(&list);
+            ItemList_Construct((ItemList *) &list, 0, 0);
+            ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, (int) (uintptr_t) NULL);
+            ItemList_Destruct(&list);
             break;
         }
         case 2:
             make_lists_once(&data_021c95f4, data_021c96ec, kinds_2, groups_2, records_2, 3);
-            item = draw_from(&data_021c96ec[func_020644cc(3)]);
+            item = draw_from(&data_021c96ec[MainRandom_Below(3)]);
             break;
         case 3:
             make_lists_once(&data_021c95f8, data_021c96d4, kinds_3, groups_3, records_3, 3);
-            item = draw_from(&data_021c96d4[func_020644cc(3)]);
+            item = draw_from(&data_021c96d4[MainRandom_Below(3)]);
             break;
         case 4:
             make_lists_once(&data_021c95ec, data_021c972c, kinds_4, groups_4, records_4, 9);
-            item = draw_from(&data_021c972c[func_020644cc(9)]);
+            item = draw_from(&data_021c972c[MainRandom_Below(9)]);
             break;
         default: {
             u8 *record = PlayerRecords_Find(data_021dc7bc, (const PlayerRecordsId *) (const void *) player);
-            int kind = data_020cbfe4[func_020644cc(3)];
+            int kind = data_020cbfe4[MainRandom_Below(3)];
             VillagerPostItemList list;
-            func_02063ccc(&list, kind, 0);
+            ItemList_Construct((ItemList *) &list, kind, 0);
             VillagerPostItemList copy = list;
             int group;
-            func_020638d4(&item, &copy, (int) (uintptr_t) record, 0, 1, 1, &group);
-            func_02063cc8(&copy);
+            ItemLists_Draw(&item, (ItemList *) &copy, (int) (uintptr_t) record, 0, 1, 1, (int) (uintptr_t) &group);
+            ItemList_Destruct(&copy);
             if (item == VILLAGER_POST_NO_ITEM) {
                 VillagerPostItemList other;
-                func_02063ccc(&other, kind, group);
-                func_02063884(&item, &other);
-                func_02063cc8(&other);
+                ItemList_Construct((ItemList *) &other, kind, group);
+                ItemLists_DrawPlain((u32) (uintptr_t) &item, (ItemList *) &other);
+                ItemList_Destruct(&other);
             }
-            func_02063cc8(&list);
+            ItemList_Destruct(&list);
             break;
         }
     }
-    return VillagerPost_Send(data_020dd3c4, (u8) func_020644cc(VILLAGER_POST_TEXTS), player, npc, &item,
+    return VillagerPost_Send(data_020dd3c4, (u8) MainRandom_Below(VILLAGER_POST_TEXTS), player, npc, &item,
                              VILLAGER_POST_PERSONALITY_PAPER);
 }
 CLEAN_AS(func_02059e1c, VillagerPost_SendQ10Reply)
@@ -166,9 +155,9 @@ int VillagerPost_SendBirthdayNotice(const DesignCreator *player, const NpcId *np
     if (villager == NULL) {
         return 0;
     }
-    func_0203d7b0(VILLAGER_POST_SLOT_MONTH, VillagerData_Birthday(villager)->month);
-    func_0203d79c(VILLAGER_POST_SLOT_DAY, VillagerData_Birthday(villager)->day);
-    return VillagerPost_Send(data_020dd3cc, (u8) func_020644cc(VILLAGER_POST_TEXTS), player, npc, NULL,
+    MailText_SetPartNumberB(VILLAGER_POST_SLOT_MONTH, VillagerData_Birthday(villager)->month);
+    MailText_SetPartNumber(VILLAGER_POST_SLOT_DAY, VillagerData_Birthday(villager)->day);
+    return VillagerPost_Send(data_020dd3cc, (u8) MainRandom_Below(VILLAGER_POST_TEXTS), player, npc, NULL,
                              VILLAGER_POST_BIRTHDAY_PAPER);
 }
 CLEAN_AS(func_0205a1dc, VillagerPost_SendBirthdayNotice)
@@ -190,13 +179,14 @@ int VillagerPost_Send(const char *name, int text, const DesignCreator *player, c
         letter_paper = (u8) paper;
     }
     MailLetter letter;
-    func_02066694(&letter);
-    func_020662bc(&letter, &message, data_021c9704, &letter_paper, npc, player, VILLAGER_POST_FROM_VILLAGER);
+    Letter_Construct((Letter *) &letter);
+    Letter_WriteVillagerToPlayer((Letter *) &letter, &message, data_021c9704, &letter_paper, npc, player,
+                                 VILLAGER_POST_FROM_VILLAGER);
     if (item != NULL) {
-        func_02065ed0(&letter, *item, 1);
+        Letter_SetItem((Letter *) &letter, *item, 1);
     }
     int sent = Mail_Post(&letter) != 0 || Mail_HoldAtPostOffice(&letter, 0) != 0;
-    func_02066688(&letter);
+    Letter_Destruct((Letter *) &letter);
     return sent;
 }
 CLEAN_AS(func_0205a240, VillagerPost_Send)

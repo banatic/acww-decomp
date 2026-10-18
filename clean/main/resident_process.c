@@ -9,6 +9,11 @@
 #include "design_assets.h"  /* DesignArchive_Get, DesignArchive_Open, DesignArchive_Close */
 #include "furniture_info.h" /* FurnitureInfo_Open, FurnitureInfo_Close */
 #include "session_link.h"   /* Session_CreateHeap, Session_FreeHeap */
+#include "game_process.h"
+#include "item_info.h"
+#include "link_scene.h"
+#include "scene_process_base.h"
+#include "scene_share_table.h"
 
 /* Vtables: the resident process's, and its base class's. */
 extern const u32 data_020e360c[];
@@ -17,21 +22,6 @@ extern const u32 data_020da13c[];
 extern Heap *data_021fbe94;                                /* the current heap */
 extern Process *data_021dc740;                             /* the resident process */
 extern const u16 data_020d1adc[RESIDENT_PROCESS_CHILDREN]; /* the classes of the root's children */
-
-/* Opening and closing the resources at data_021cb5e0; two empty functions; clearing the state
- * at data_021d2128. */
-extern void func_02062b04(void);
-extern void func_02062af4(void);
-extern void func_020a6c94(void);
-extern void func_020a6c90(void);
-extern void func_02085e94(void);
-/* Starts the scene asked for, once (data_020e3c80, 0xd8 once started). */
-extern int func_020a536c(void);
-/* Asks for scene 1. */
-extern void func_020a53c4(void);
-/* Process_SpawnRoot and Process_SpawnChild, through main's wrappers. */
-extern int func_0202f12c(int class_id, int param, int unk_12);
-extern int func_0202f134(int class_id, int parent, int param, int unk_12);
 
 #define ROOT_CLASS 0
 
@@ -67,7 +57,7 @@ CLEAN_AS(func_0209da1c, ResidentProcess_Draw)
  * QUIRK: the answer of func_020a536c is dropped. */
 int ResidentProcess_Execute(void)
 {
-    func_020a536c();
+    SceneProcessBase_StartAsked();
     return 1;
 }
 CLEAN_AS(func_0209da20, ResidentProcess_Execute)
@@ -78,13 +68,13 @@ int ResidentProcess_Delete(void)
     BuildingShapes_Free();
     AcreKind_Free();
     FurnitureInfo_Close();
-    func_02062af4();
+    ItemInfo_Close();
     DesignArchive_Close((RecordFile *) (uintptr_t) DesignArchive_Get());
     AcreMap_FreeTemplateSet((int) (uintptr_t) data_021fbe94);
     AcreMap_FreeTown(data_021fbe94);
     AcreMap_FreeRooms((int) (uintptr_t) data_021fbe94);
     Session_FreeHeap();
-    func_020a6c90();
+    LinkScene_Empty6C90();
     return 1;
 }
 CLEAN_AS(func_0209da30, ResidentProcess_Delete)
@@ -97,14 +87,14 @@ int ResidentProcess_Create(Process *self)
     BuildingShapes_Load();
     AcreKind_Load();
     FurnitureInfo_Open();
-    func_02062b04();
+    ItemInfo_Open();
     DesignArchive_Open((RecordFile *) (uintptr_t) DesignArchive_Get());
     AcreMap_CreateTemplateSet((int) (uintptr_t) data_021fbe94);
     AcreMap_CreateTown(data_021fbe94);
     AcreMap_CreateRooms(data_021fbe94);
     Session_CreateHeap(data_021fbe94);
-    func_020a6c94();
-    func_02085e94();
+    LinkScene_Empty6C94();
+    SceneShareTable_Reset();
     return 1;
 }
 CLEAN_AS(func_0209da78, ResidentProcess_Create)
@@ -113,10 +103,10 @@ CLEAN_AS(func_0209da78, ResidentProcess_Create)
  * classes of data_020d1adc (0xd7, 0xce, 0xcf, 0xcb, 8, 0xa, 0xcc). */
 void ResidentProcess_SpawnAll(void)
 {
-    func_020a53c4();
-    int root = func_0202f12c(ROOT_CLASS, 0, 1);
+    SceneProcessBase_ResetRequest();
+    int root = GameProcess_SpawnRoot(ROOT_CLASS, 0, 1);
     for (int i = 0; i < RESIDENT_PROCESS_CHILDREN; i++) {
-        func_0202f134(data_020d1adc[i], root, 0, 0);
+        GameProcess_SpawnChild(data_020d1adc[i], root, 0, 0);
     }
 }
 CLEAN_AS(func_0209dae8, ResidentProcess_SpawnAll)

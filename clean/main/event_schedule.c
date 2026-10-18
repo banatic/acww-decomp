@@ -9,6 +9,7 @@
 #include "fox_shop.h"
 #include "player_records.h"
 #include "process_020dabc0.h"
+#include "main_random.h"
 
 static_assert(sizeof(EventScheduleDay) == 6, "EventScheduleDay");
 static_assert(offsetof(EventSchedule, no_3c_from) == 0x08, "EventSchedule.no_3c_from");
@@ -19,10 +20,6 @@ static_assert(offsetof(EventSchedule, week) == 0x34, "EventSchedule.week");
 static_assert(sizeof(EventSchedule) == 0x3c, "EventSchedule");
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern int func_020644cc(int range); /* a random number below `range` */
-/* The days of the week from `week` (its Sunday) the calendar has nothing for at noon: for
- * Monday to Friday 1 in `free_days` when free, else 0; their count. */
-extern int func_02041140(EventSchedule *schedule, int *free_days, DateTime *week);
 
 extern EventSchedule data_021f39c0;
 extern FoxShop data_021f3b30;
@@ -359,7 +356,7 @@ void EventSchedule_Update(EventSchedule *schedule, int redraw)
         previous[EVENT_SCHEDULE_DAYS] = EVENT_CALENDAR_NONE;
         EventSchedule_Clear(schedule);
         MI_CpuCopy8(&week, &copy, sizeof(copy));
-        int free_count = func_02041140(schedule, free_days, &copy);
+        int free_count = EventSchedule_CountFreeDays(schedule, free_days, &copy);
         MI_CpuCopy8(&week, &copy, sizeof(copy));
         EventSchedule_PlaceFox(schedule, free_days, &free_count, &copy);
         MI_CpuCopy8(&week, &copy, sizeof(copy));
@@ -548,7 +545,7 @@ int EventSchedule_PickEvent(EventSchedule *unused, const u8 *previous)
         }
     }
     if (total > 0) {
-        int left = func_020644cc(total);
+        int left = MainRandom_Below(total);
         for (int i = 0; i < count; i++) {
             left -= weights[i];
             if (left < 0) {
@@ -578,7 +575,7 @@ CLEAN_AS(func_020410ec, EventSchedule_Holds)
 int EventSchedule_PickFreeDay(EventSchedule *unused, int *free_days, int free_count)
 {
     (void) unused;
-    int left = func_020644cc(free_count);
+    int left = MainRandom_Below(free_count);
     for (int i = 0; i < EVENT_SCHEDULE_DAYS; i++) {
         if (free_days[i] == 1) {
             left--;
@@ -671,7 +668,7 @@ void EventSchedule_Reset(EventSchedule *schedule)
     schedule->unk_00[7] = today.unused;
     event_schedule_clear_bar(&schedule->no_3c_from);
     event_schedule_clear_bar(&schedule->no_fox_from);
-    schedule->fox_day = (u8) (func_020644cc(EVENT_SCHEDULE_DAYS) + 1);
+    schedule->fox_day = (u8) (MainRandom_Below(EVENT_SCHEDULE_DAYS) + 1);
     schedule->unk_11 = EVENT_CALENDAR_NONE;
     schedule->week = (DateTime){0};
     EventSchedule_Clear(schedule);

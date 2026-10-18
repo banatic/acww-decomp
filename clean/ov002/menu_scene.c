@@ -298,12 +298,12 @@ typedef struct MemberFunction {
 
 /* The phases' functions, as constants (all virtual, no adjustment) and as the table
  * MenuScene_Update fills from them on its first call (a function-local static). */
-extern const MemberFunction data_ov002_0220babc; /* slot 0x48 */
-extern const MemberFunction data_ov002_0220bac4; /* slot 0x5c */
+extern const MemberFunction data_ov002_0220babc; /* slot 0x54 */
+extern const MemberFunction data_ov002_0220bac4; /* slot 0x58 */
 extern const MemberFunction data_ov002_0220bacc; /* slot 0x50 */
-extern const MemberFunction data_ov002_0220bad4; /* slot 0x54 */
-extern const MemberFunction data_ov002_0220badc; /* slot 0x4c */
-extern const MemberFunction data_ov002_0220bae4; /* slot 0x58 */
+extern const MemberFunction data_ov002_0220bad4; /* slot 0x48 */
+extern const MemberFunction data_ov002_0220badc; /* slot 0x5c */
+extern const MemberFunction data_ov002_0220bae4; /* slot 0x4c */
 extern u32 data_ov002_0220bec0;                  /* bit 0: the table is filled */
 extern MemberFunction data_ov002_0220bec4[MENU_SCENE_PHASES];
 
@@ -323,16 +323,16 @@ static void call_member(const MemberFunction *member, u8 *object)
 
 /* func_ov002_022080a8 (vtable slot 0x18): a frame of the scene: the key repeat, then the
  * virtual function of its phase. Returns 1.
- * REQUIRES: phase < 6 (the game's phases are 1, 3 and 5 here). */
+ * REQUIRES: phase < 6 (the game sets phases 0, 1, 2 and 5). */
 int MenuScene_Update(MenuScene *scene)
 {
     if (!(data_ov002_0220bec0 & 1)) {
-        data_ov002_0220bec4[MENU_SCENE_PHASE_0] = data_ov002_0220bad4;
-        data_ov002_0220bec4[MENU_SCENE_PHASE_1] = data_ov002_0220bae4;
-        data_ov002_0220bec4[MENU_SCENE_PHASE_2] = data_ov002_0220bacc;
-        data_ov002_0220bec4[MENU_SCENE_WAIT] = data_ov002_0220babc;
+        data_ov002_0220bec4[MENU_SCENE_PHASE_WAIT] = data_ov002_0220bad4;
+        data_ov002_0220bec4[MENU_SCENE_PHASE_STATES] = data_ov002_0220bae4;
+        data_ov002_0220bec4[MENU_SCENE_PHASE_INTERACTIVE] = data_ov002_0220bacc;
+        data_ov002_0220bec4[MENU_SCENE_PHASE_3] = data_ov002_0220babc;
         data_ov002_0220bec4[MENU_SCENE_PHASE_4] = data_ov002_0220bac4;
-        data_ov002_0220bec4[MENU_SCENE_RUN] = data_ov002_0220badc;
+        data_ov002_0220bec4[MENU_SCENE_PHASE_DELETE] = data_ov002_0220badc;
         data_ov002_0220bec0 |= 1;
     }
     KeyRepeat_Update(&scene->keys);
@@ -341,51 +341,52 @@ int MenuScene_Update(MenuScene *scene)
 }
 CLEAN_AS(func_ov002_022080a8, MenuScene_Update)
 
-/* func_ov002_02208154: phase 4 (slot 0x5c) of the base: nothing. */
+/* func_ov002_02208154: phase 5, the delete request (slot 0x5c), of the base: nothing. */
+int MenuScene_Phase5(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov002_02208154, MenuScene_Phase5)
+
+/* func_ov002_02208158: phase 4 (slot 0x58) of the base: nothing. */
 int MenuScene_Phase4(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov002_02208154, MenuScene_Phase4)
+CLEAN_AS(func_ov002_02208158, MenuScene_Phase4)
 
-/* func_ov002_02208158: phase 1 (slot 0x58) of the base: nothing. */
-int MenuScene_Phase1(void)
+/* func_ov002_0220815c: phase 3 (slot 0x54) of the base: nothing. */
+int MenuScene_Phase3(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov002_02208158, MenuScene_Phase1)
+CLEAN_AS(func_ov002_0220815c, MenuScene_Phase3)
 
-/* func_ov002_0220815c: phase 0 (slot 0x54) of the base: nothing. */
-int MenuScene_Phase0(void)
-{
-    return 1;
-}
-CLEAN_AS(func_ov002_0220815c, MenuScene_Phase0)
-
-/* func_ov002_02208160: phase 2 (slot 0x50) of the base: nothing. */
+/* func_ov002_02208160: phase 2, the interactive one (slot 0x50), of the base: nothing. */
 int MenuScene_Phase2(void)
 {
     return 1;
 }
 CLEAN_AS(func_ov002_02208160, MenuScene_Phase2)
 
-/* func_ov002_02208164: the run phase (slot 0x4c) of the base: nothing. */
-int MenuScene_Run(void)
+/* func_ov002_02208164: phase 1, the state table (slot 0x4c), of the base: nothing. */
+int MenuScene_Phase1(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov002_02208164, MenuScene_Run)
+CLEAN_AS(func_ov002_02208164, MenuScene_Phase1)
 
-/* func_ov002_02208168: the wait phase (slot 0x48): on to phase 1 while data_021cfc20 is 5-7;
- * at 12, clears it and the values beside it and goes on to the run phase. */
+/* func_ov002_02208168: phase 0, the wait (slot 0x48): on to the state table (phase 1) while
+ * data_021cfc20 is 5-7; at 12, clears it and the values beside it and goes on to the delete
+ * request (phase 5). */
 int MenuScene_Wait(MenuScene *scene)
 {
     if (func_0206f258()) {
-        MenuScene_SetPhase(scene, MENU_SCENE_PHASE_1);
+        MenuScene_SetPhase(scene, MENU_SCENE_PHASE_STATES);
     }
     if (func_0206f244()) {
         func_0206ef70();
-        MenuScene_SetPhase(scene, MENU_SCENE_RUN);
+        MenuScene_SetPhase(scene, MENU_SCENE_PHASE_DELETE);
     }
     return 1;
 }

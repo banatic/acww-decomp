@@ -6,6 +6,14 @@
 #include "clean.h"
 #include "number_text.h"
 #include "text_codes.h"
+#include "bmg_file.h"
+#include "c_library.h"
+#include "mail_particles.h"
+#include "message_receiver.h"
+#include "message_tag.h"
+#include "message_walker.h"
+#include "text_base.h"
+#include "text_walker.h"
 
 static_assert(offsetof(MailTextRequest, message) == 0x1e, "request message");
 static_assert(offsetof(MailTextRequest, folder) == 0x20, "request folder");
@@ -81,48 +89,12 @@ extern const u8 data_020da994[];
 /* The letter texts. */
 extern MailText data_021c69b4;
 
-/* The message receivers' base class: its destructor, its constructor, naming its file. */
-extern void func_020a8188(void *receiver);
-extern void *func_020a81b8(void *receiver);
-extern void func_020a8164(void *receiver, const char *name);
-/* The file: built with a first byte, destroyed, opened by path, the message found, closed. */
-extern void *func_020a9a90(void *file, unsigned int first);
-extern void *func_020a9a40(void *file);
-extern int func_020a9a08(void *file, const char *path);
-extern int func_020a9938(void *file, const u8 *message);
-extern void func_020a99d8(void *file);
-/* The particles' object: built, destroyed, and its last syllable taken from characters. */
-extern void func_020a7a04(MailTextParticles *particles);
-extern void func_020a79f8(MailTextParticles *particles);
-extern void func_020a7994(MailTextParticles *particles, const char *characters);
-/* Texts: set from another text, characters added, set from characters. */
-extern int func_020a8bb8(void *text, const void *source);
-extern int func_020a89f8(void *text, const char *characters);
-extern int func_020a8be4(void *text, const char *characters);
 /* The parts' constructor and destructor, and the arrays'. */
 extern void *func_020a8228(void *part);
 extern void *func_020a8210(void *part);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
-
-/* The walkers' base (message_cursor.h): its constructor and destructor, back to the start,
- * the text to walk, the walk; a nested text walked from here on, and back from one. */
-extern void *func_020a9484(void *walker);
-extern void *func_020a941c(void *walker);
-extern void func_020a94a4(void *walker);
-extern void func_020a9354(void *walker, int text);
-extern int func_020a92d8(void *walker, int stop);
-extern void func_020a9334(void *walker, int text);
-extern void func_020a9318(void *walker);
-/* A tag: its constructor; read from the message at `position`; whether it is a 4/15-25 tag;
- * the part it names; its first byte. */
-extern void func_020a8754(MessageTag *tag);
-extern void func_020a8764(MessageTag *tag, int position);
-extern int func_020a835c(MessageTag *tag);
-extern int func_020a8354(MessageTag *tag);
-extern void func_020a873c(MessageTag *tag, u8 *first);
 /* The other form of a character (itself when it has none). */
 extern int func_02050bdc_unk(int character);
 
@@ -217,7 +189,7 @@ CLEAN_AS(func_0203d4f8, MailTextRequest_Folder)
 MailTextRequest *MailTextRequest_Delete(MailTextRequest *request)
 {
     request->vtable = data_020da97c;
-    func_020a8188(request);
+    MessageReceiver_DestructBase((MessageReceiver *) request);
     Heap_OperatorDeleteB(request);
     return request;
 }
@@ -227,7 +199,7 @@ CLEAN_AS(func_0203d508, MailTextRequest_Delete)
 MailTextRequest *MailTextRequest_Destruct(MailTextRequest *request)
 {
     request->vtable = data_020da97c;
-    func_020a8188(request);
+    MessageReceiver_DestructBase((MessageReceiver *) request);
     return request;
 }
 CLEAN_AS(func_0203d528, MailTextRequest_Destruct)
@@ -236,7 +208,7 @@ CLEAN_AS(func_0203d528, MailTextRequest_Destruct)
  * text and no first line asked for. */
 MailTextRequest *MailTextRequest_Construct(MailTextRequest *request)
 {
-    func_020a81b8(request);
+    MessageReceiver_Construct((MessageReceiver *) request);
     request->vtable = data_020da97c;
     request->folder = 0;
     request->kind = 0;
@@ -256,14 +228,14 @@ int MailText_Load(MailText *writer, MailTextRequest *request)
     int kind_folder = MailTextRequest_KindFolder(request);
 
     if (kind_folder != 0) {
-        func_02064328(path, data_020da9c8, mail_text_virtual(request, MAIL_TEXT_CHARACTERS_SLOT), kind_folder, request->name);
+        CLib_SPrintf(path, data_020da9c8, mail_text_virtual(request, MAIL_TEXT_CHARACTERS_SLOT), kind_folder, request->name);
     } else {
-        func_02064328(path, data_020da9d8, mail_text_virtual(request, MAIL_TEXT_CHARACTERS_SLOT), request->name);
+        CLib_SPrintf(path, data_020da9d8, mail_text_virtual(request, MAIL_TEXT_CHARACTERS_SLOT), request->name);
     }
 
-    int ok = func_020a9a08(&writer->file, path);
-    ok = mail_text_and(ok, ok != 0 ? func_020a9938(&writer->file, &request->message) : 0);
-    func_020a99d8(&writer->file);
+    int ok = BmgFile_Open((BmgFile *) &writer->file, path);
+    ok = mail_text_and(ok, ok != 0 ? BmgFile_LoadMessage((BmgFile *) &writer->file, &request->message) : 0);
+    BmgFile_Close(&writer->file);
     if (ok) {
         void *text = (void *) (uintptr_t) MailTextRequest_Text(request);
         s32 *first_line = (s32 *) (uintptr_t) MailTextRequest_FirstLine(request);
@@ -271,9 +243,9 @@ int MailText_Load(MailText *writer, MailTextRequest *request)
 
         ok = mail_text_and(ok, MailTextDecoder_Decode(&writer->decoder, first_line != NULL));
         if (appends) {
-            ok = mail_text_and(ok, func_020a89f8(text, writer->text));
+            ok = mail_text_and(ok, TextBase_AppendChars(text, writer->text));
         } else {
-            ok = mail_text_and(ok, func_020a8be4(text, writer->text));
+            ok = mail_text_and(ok, TextBase_SetChars(text, writer->text));
         }
         if (first_line != NULL) {
             *first_line = writer->first_line;
@@ -296,7 +268,7 @@ CLEAN_AS(func_0203d668, MailText_Clear)
 MailText *MailText_Destruct(MailText *writer)
 {
     __cxa_vec_cleanup(writer->parts, MAIL_TEXT_PARTS, MAIL_TEXT_PART_SIZE, mail_text_function(func_020a8210));
-    func_020a79f8(&writer->particles);
+    MailParticles_Destruct(&writer->particles);
     MailTextFile_Destruct(&writer->file);
     MailTextDecoder_Destruct(&writer->decoder);
     return writer;
@@ -309,7 +281,7 @@ MailText *MailText_Construct(MailText *writer)
 {
     MailTextDecoder_Construct(&writer->decoder, writer);
     MailTextFile_Construct(&writer->file);
-    func_020a7a04(&writer->particles);
+    MailParticles_Construct(&writer->particles);
     writer->first_line = -1;
     __cxa_vec_ctor(writer->parts, MAIL_TEXT_PARTS, MAIL_TEXT_PART_SIZE, mail_text_function(func_020a8228),
                    mail_text_function(func_020a8210));
@@ -353,7 +325,7 @@ CLEAN_AS(func_0203d7b0, MailText_SetPartNumberB)
 /* func_0203d7c4: part `index` set from the text `text`. */
 int MailText_SetPartText(int index, const void *text)
 {
-    return func_020a8bb8(data_021c69b4.parts[index], text);
+    return (int) (uintptr_t) TextBase_Copy((TextBase *) (void *) data_021c69b4.parts[index], (TextBase *) text);
 }
 CLEAN_AS(func_0203d7c4, MailText_SetPartText)
 
@@ -365,7 +337,7 @@ int MailText_LoadBbs(void *text, const unsigned char *message, const char *name)
 
     MailTextRequest_Construct(&request);
     MailTextRequest_SetFolder(&request, MAIL_TEXT_FOLDER_BBS);
-    func_020a8164(&request, name);
+    MessageReceiver_SetName((MessageReceiver *) &request, name);
     MailTextRequest_SetText(&request, text);
     request.message = *message;
     MailTextRequest_SetKind(&request, MAIL_TEXT_KIND_NONE);
@@ -397,7 +369,7 @@ int MailText_LoadMailz(void *super, void *msg, void *ps, s32 *first_line, const 
 
     MailTextRequest_Construct(&request);
     MailTextRequest_SetFolder(&request, MAIL_TEXT_FOLDER_MAILZ);
-    func_020a8164(&request, name);
+    MessageReceiver_SetName((MessageReceiver *) &request, name);
 
     MailTextRequest_SetText(&request, super);
     MailTextRequest_SetFirstLine(&request, first_line);
@@ -433,7 +405,7 @@ int MailText_LoadMail(void *super, void *msg, void *ps, s32 *first_line, const u
 
     MailTextRequest_Construct(&request);
     MailTextRequest_SetFolder(&request, MAIL_TEXT_FOLDER_MAIL);
-    func_020a8164(&request, name);
+    MessageReceiver_SetName((MessageReceiver *) &request, name);
     request.message = *message;
 
     MailTextRequest_SetText(&request, super);
@@ -469,7 +441,7 @@ CLEAN_AS(func_0203d9f0, MailTextDecoder_OnFormPart)
 void MailTextDecoder_InsertParticle(MailTextDecoder *decoder)
 {
     u8 particle;
-    func_020a873c(&decoder->tag, &particle);
+    MessageTag_GetFirstByte(&decoder->tag, &particle);
     particle--;
 
     const MailTextParticles *particles = &decoder->writer->particles;
@@ -487,7 +459,7 @@ void MailTextDecoder_InsertParticle(MailTextDecoder *decoder)
             text = TextCodes_ParticleAfterConsonant(particle);
         }
     }
-    func_020a9334(decoder, (int) (uintptr_t) text);
+    MessageWalker_Enter((MessageWalker *) decoder, (int) (uintptr_t) text);
 }
 CLEAN_AS(func_0203d9f4, MailTextDecoder_InsertParticle)
 
@@ -543,16 +515,16 @@ void MailTextDecoder_InsertCode(MailTextDecoder *decoder)
 {
     switch ((s32) decoder->tag.kind) {
         case MAIL_TEXT_CODE_ASTERISK:
-            func_020a9334(decoder, TextCodes_Asterisk());
+            MessageWalker_Enter((MessageWalker *) decoder, TextCodes_Asterisk());
             break;
         case MAIL_TEXT_CODE_SLASH:
-            func_020a9334(decoder, TextCodes_Slash());
+            MessageWalker_Enter((MessageWalker *) decoder, TextCodes_Slash());
             break;
         case MAIL_TEXT_CODE_PERCENT:
-            func_020a9334(decoder, TextCodes_Percent());
+            MessageWalker_Enter((MessageWalker *) decoder, TextCodes_Percent());
             break;
         case MAIL_TEXT_CODE_LEFT_BRACE:
-            func_020a9334(decoder, TextCodes_LeftBrace());
+            MessageWalker_Enter((MessageWalker *) decoder, TextCodes_LeftBrace());
             break;
         default:
             break;
@@ -565,10 +537,11 @@ CLEAN_AS(func_0203daf0, MailTextDecoder_InsertCode)
 void MailTextDecoder_InsertPart(MailTextDecoder *decoder)
 {
     MailText *writer = decoder->writer;
-    const void *part = writer->parts[func_020a8354(&decoder->tag)];
+    const void *part = writer->parts[MessageTag_PartIndex(&decoder->tag)];
 
-    func_020a9334(decoder, mail_text_virtual(part, MAIL_TEXT_CHARACTERS_SLOT));
-    func_020a7994(&writer->particles, (const char *) (uintptr_t) mail_text_virtual(part, MAIL_TEXT_CHARACTERS_SLOT));
+    MessageWalker_Enter((MessageWalker *) decoder, mail_text_virtual(part, MAIL_TEXT_CHARACTERS_SLOT));
+    MailParticles_TakeLastSyllable(&writer->particles,
+                                   (const char *) (uintptr_t) mail_text_virtual(part, MAIL_TEXT_CHARACTERS_SLOT));
     writer->particles.ro_after_rieul = 0;
     decoder->unk_4c = 0;
 }
@@ -616,7 +589,7 @@ static MailTextDecoderHandler *mail_text_handler(MailTextDecoder *decoder)
 {
     u32 group = decoder->tag.group;
 
-    if (group == MAIL_TEXT_GROUP_PART && func_020a835c(&decoder->tag) != 0) {
+    if (group == MAIL_TEXT_GROUP_PART && MessageTag_IsPart(&decoder->tag) != 0) {
         return MailTextDecoder_InsertPart;
     }
     if (group == MAIL_TEXT_GROUP_CODE) {
@@ -632,7 +605,7 @@ static MailTextDecoderHandler *mail_text_handler(MailTextDecoder *decoder)
  * makes the decoding fail. */
 void MailTextDecoder_OnTag(MailTextDecoder *decoder, int position)
 {
-    func_020a8764(&decoder->tag, position);
+    MessageTag_Read(&decoder->tag, position);
     MailTextDecoderHandler *handler = mail_text_handler(decoder);
     if (handler != NULL) {
         handler(decoder);
@@ -656,7 +629,7 @@ void MailTextDecoder_OnCharacter(MailTextDecoder *decoder, int character)
     MailTextDecoder_PutCharacter(decoder);
     if (decoder->base.position == decoder->return_at) {
         decoder->return_at = 0;
-        func_020a9318(decoder);
+        MessageWalker_Return((MessageWalker *) decoder);
     }
 }
 CLEAN_AS(func_0203dcbc, MailTextDecoder_OnCharacter)
@@ -684,9 +657,9 @@ unsigned char MailTextDecoder_Decode(MailTextDecoder *decoder, unsigned char cou
     decoder->count_lines = count_lines;
     decoder->characters = 0;
     decoder->newlines = 0;
-    func_020a94a4(decoder);
-    func_020a9354(decoder, mail_text_virtual(&decoder->writer->file, MAIL_TEXT_FILE_BUFFER_SLOT));
-    func_020a92d8(decoder, 0);
+    MessageWalker_Reset((MessageWalker *) decoder);
+    MessageWalker_Start((MessageWalker *) decoder, mail_text_virtual(&decoder->writer->file, MAIL_TEXT_FILE_BUFFER_SLOT));
+    TextWalker_Run((MessageWalker *) decoder, 0);
     return decoder->ok;
 }
 CLEAN_AS(func_0203dd10, MailTextDecoder_Decode)
@@ -696,7 +669,7 @@ MailTextDecoder *MailTextDecoder_Delete(MailTextDecoder *decoder)
 {
     decoder->base.vtable = data_020da9ac;
     decoder->base.vtable = data_020e3e68;
-    func_020a941c(decoder);
+    MessageWalker_BaseDestruct(decoder);
     Heap_OperatorDeleteB(decoder);
     return decoder;
 }
@@ -708,7 +681,7 @@ MailTextDecoder *MailTextDecoder_Destruct(MailTextDecoder *decoder)
 {
     decoder->base.vtable = data_020da9ac;
     decoder->base.vtable = data_020e3e68;
-    func_020a941c(decoder);
+    MessageWalker_BaseDestruct(decoder);
     return decoder;
 }
 CLEAN_AS(func_0203dd7c, MailTextDecoder_Destruct)
@@ -717,11 +690,11 @@ CLEAN_AS(func_0203dd7c, MailTextDecoder_Destruct)
  * decoding going well. */
 MailTextDecoder *MailTextDecoder_Construct(MailTextDecoder *decoder, MailText *writer)
 {
-    func_020a9484(decoder);
+    MessageWalker_Construct((MessageWalker *) decoder);
     decoder->base.vtable = data_020e3e68;
     decoder->base.vtable = data_020da9ac;
     decoder->writer = writer;
-    func_020a8754(&decoder->tag);
+    MessageTag_Construct(&decoder->tag);
     decoder->character = 0;
     decoder->length = 0;
     decoder->ok = 1;
@@ -760,7 +733,7 @@ CLEAN_AS(func_0203ddfc, MailTextFile_Clear)
 MailTextFile *MailTextFile_Delete(MailTextFile *file)
 {
     file->vtable = data_020da994;
-    func_020a9a40(file);
+    BmgFile_Destruct(file);
     Heap_OperatorDeleteB(file);
     return file;
 }
@@ -770,7 +743,7 @@ CLEAN_AS(func_0203de10, MailTextFile_Delete)
 MailTextFile *MailTextFile_Destruct(MailTextFile *file)
 {
     file->vtable = data_020da994;
-    func_020a9a40(file);
+    BmgFile_Destruct(file);
     return file;
 }
 CLEAN_AS(func_0203de30, MailTextFile_Destruct)
@@ -778,7 +751,7 @@ CLEAN_AS(func_0203de30, MailTextFile_Destruct)
 /* func_0203de48: the constructor: the base class's (with 0), then its vtable. */
 MailTextFile *MailTextFile_Construct(MailTextFile *file)
 {
-    func_020a9a90(file, 0);
+    BmgFile_Construct((BmgFile *) file, 0);
     file->vtable = data_020da994;
     return file;
 }

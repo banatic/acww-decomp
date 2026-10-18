@@ -25,6 +25,7 @@
 #include "main/wfc_stats.h"
 #include "main/wifi_friends.h"
 #include "ov004/member_pointer.h"
+#include "ov004/check_in_gate.h"
 
 static_assert(sizeof(GatekeeperTalkStart) == 8, "GatekeeperTalkStart");
 
@@ -102,10 +103,6 @@ extern const MemberPointer data_ov048_02263fbc, data_ov048_022640cc, data_ov048_
     data_ov048_02263e5c, data_ov048_02263e54, data_ov048_02263fdc, data_ov048_02263fc4, data_ov048_02263fb4,
     data_ov048_02263fa4, data_ov048_02263e2c, data_ov048_02263e24, data_ov048_02263e1c, data_ov048_02263f6c,
     data_ov048_02263f5c, data_ov048_02263dcc, data_ov048_02263f34, data_ov048_02263ddc;
-
-/* Overlay 4's scene that leaves for the next line. */
-extern int func_ov004_0222d4d4(void);
-extern int func_ov004_0222d518(void);
 
 /* ---- Helpers */
 
@@ -586,7 +583,7 @@ CLEAN_AS(func_ov048_0226242c, GatekeeperTalk_StartWaitMissingNpc)
 
 /* func_ov048_02262444 (vtable slot 0x78, the talk starting): bytes 0x810 and 0x811 cleared and
  * the topic chosen: GATEKEEPER_TOPIC_SPECIAL_START when the game started in a special way; topic
- * 6 kept (overlay 4's func_ov004_0222d518 called unless func_ov004_0222d4d4 agrees); topics 7,
+ * 6 kept (overlay 4's CheckInGate_Open called unless CheckInGate_IsOpen agrees); topics 7,
  * 9 and 10 kept; else GATEKEEPER_TOPIC_NOT_HOST when the system may not host, the first meeting
  * (the current player's flag 5 then set) when the flag is clear, else the part of the day plus
  * 1. A topic of the table (0-10) gives `out` its line and message file:
@@ -614,8 +611,8 @@ void GatekeeperTalk_StartLine(GatekeeperTalk *talk, GatekeeperTalkStart *out)
     if (StartKind_IsSet()) {
         GatekeeperTalk_SetTopic(talk, GATEKEEPER_TOPIC_SPECIAL_START);
     } else if (GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_6) {
-        if (func_ov004_0222d4d4() == 0) {
-            func_ov004_0222d518();
+        if (CheckInGate_IsOpen() == 0) {
+            CheckInGate_Open();
         }
     } else if (GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_7 ||
                GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_CALL_LINKED ||

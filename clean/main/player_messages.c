@@ -6,6 +6,21 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/packed_bytes.h"
+#include "bbs.h"
+#include "bottle_mail.h"
+#include "catch_panel.h"
+#include "exchange_block.h"
+#include "letter.h"
+#include "mail.h"
+#include "ov003/fish_shadow.h"
+#include "ov003/thrown_bottle.h"
+#include "ov003/town_insect.h"
+#include "screen_panels.h"
+#include "session.h"
+#include "session_players.h"
+#include "tile_changes.h"
+#include "town_tune.h"
+#include "villager_town.h"
 
 #define RECORD_SIZE 0x100
 #define BYTES_SIZE 30
@@ -21,10 +36,6 @@
 /* Type 2's ids: 0x12e8 and the 0x38 after it; a larger byte gives 0x12e8. */
 #define PLACE_ID_FIRST 0x12e8
 #define PLACE_IDS 0x38
-
-typedef struct Vec3 {
-    s32 x, y, z;
-} Vec3;
 
 /* What func_020961a8 gives for a player; only the angle is read here. */
 typedef struct PlayerObject {
@@ -48,32 +59,6 @@ extern s32 data_020c904c; /* the height types 2 and 5 are placed at */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void RtcSendPxiCommand(int command);
-extern int func_0208b500(void); /* the object at data_021d3338 */
-extern void func_0208d0bc(void *object, int word, int arg);
-extern u32 func_0208d12c(void *object); /* its mode word is 0 */
-extern void func_02045d98(int key);
-extern void func_0206ea84(u64 *packed, const u8 *values);
-extern void func_0206ea28(void);
-extern void func_0207a500(u16 *flags);
-extern int func_020979f0(void *record, int arg);                      /* store a record in a free slot of 10 */
-extern int func_0209782c(void);                                       /* a slot is free */
-extern void func_02073820(void *message);                             /* begin */
-extern void func_020737f0(void *message, const void *data, int size); /* append */
-extern void func_02073770(void *message, u32 category, u32 player);   /* end and send */
-extern void *func_02097f14(void *record);
-extern void func_02066650(void *record); /* empty a record */
-extern void *func_020900f0(void *record);
-extern int func_02066830(void *dst, void *src); /* copy a record */
-extern void func_02090100(void *record);
-extern void func_02090140(void *record, u32 arg);
-extern PlayerObject *func_020961a8(int player);
-extern int func_ov003_0222780c(int player, int id, Vec3 *position);
-extern void func_ov003_0222c3a8(Vec3 *position, int player);
-extern u8 func_ov003_0222ea84(int player);
-extern void func_ov003_0222e898(int type, int player);
-extern void func_ov003_0222eabc(int player, int angle);
-/* Add an entry to the log at data_021eed68 (15 dated entries of LOG_ENTRY_SIZE bytes). */
-extern void func_02077ed4(void *entry);
 
 /* The handlers by type (PLAYER_MESSAGE_TYPES of them), as DS addresses. */
 extern const u32 data_020df6bc[];
@@ -82,14 +67,14 @@ typedef void (*PlayerMessageHandler)(const u8 *message, int player);
 
 static void *mode_object(void)
 {
-    return (void *) (uintptr_t) func_0208b500();
+    return (void *) (uintptr_t) ScreenPanels_SecondPanel();
 }
 
 /* func_0207042c: type 23. */
 void PlayerMessages_Key(const u8 *message, int player)
 {
     (void) player;
-    func_02045d98(message[1]);
+    TileChanges_FreeHeld(message[1]);
 }
 CLEAN_AS(func_0207042c, PlayerMessages_Key)
 
@@ -108,7 +93,7 @@ void PlayerMessages_SetMode(const u8 *message, int player)
 {
     (void) player;
     int mode = message[0] - PLAYER_MESSAGE_SET_MODE;
-    BOOL mode_is_0 = func_0208d12c(mode_object()) != 0;
+    BOOL mode_is_0 = CatchPanel_IsStopped(mode_object()) != 0;
     if (mode == 0 ? mode_is_0 : !mode_is_0) {
         return;
     }
@@ -122,7 +107,7 @@ CLEAN_AS(func_02070444, PlayerMessages_SetMode)
 void PlayerMessages_ApplyMode(int mode)
 {
     RtcSendPxiCommand(mode == 0 ? 0x67 : 0x66);
-    func_0208d0bc(mode_object(), data_020df6a8[mode], 0);
+    CatchPanel_Start(mode_object(), data_020df6a8[mode], 0);
 }
 CLEAN_AS(func_02070490, PlayerMessages_ApplyMode)
 
@@ -131,9 +116,9 @@ void PlayerMessages_Nibbles(const void *message, int player)
 {
     (void) player;
     MI_CpuCopy8((const u8 *) message + 1, data_021cfbbc, NIBBLES_SIZE);
-    func_0206ea84(&data_021f3b68, data_021cfbbc);
-    func_0206ea28();
-    func_0207a500(&data_021e5a2c);
+    TownTune_Pack((TownTunePacked *) &data_021f3b68, data_021cfbbc);
+    TownTune_UseTune();
+    VillagerTown_ClearMark((VillagerTown *) &data_021e5a2c);
 }
 CLEAN_AS(func_020704c0, PlayerMessages_Nibbles)
 
@@ -154,8 +139,8 @@ void PlayerMessages_StoreRecord(const u8 *message, int player)
     void *record = Heap_AllocBack(heap, RECORD_SIZE);
     int reply = PLAYER_MESSAGE_NOT_STORED;
     MI_CpuCopy8(message + 1, record, RECORD_SIZE);
-    if (func_020979f0(record, 1) != 0) {
-        reply = func_0209782c() != 0 ? PLAYER_MESSAGE_STORED : PLAYER_MESSAGE_STORED_FULL;
+    if (Mail_HoldAtPostOffice(record, 1) != 0) {
+        reply = Mail_PostOfficeHasRoom() != 0 ? PLAYER_MESSAGE_STORED : PLAYER_MESSAGE_STORED_FULL;
     }
     Heap_Free(heap, record);
     PlayerMessages_Send(reply, player);
@@ -167,9 +152,9 @@ void PlayerMessages_Send(int type, int player)
 {
     void *outgoing = data_020ccf94;
     u8 byte = (u8) type;
-    func_02073820(outgoing);
-    func_020737f0(outgoing, &byte, 1);
-    func_02073770(outgoing, PLAYER_MESSAGE_CATEGORY, (u32) player);
+    Session_BeginMessage(outgoing);
+    Session_AppendMessage(outgoing, &byte, 1);
+    Session_EndMessage(outgoing, PLAYER_MESSAGE_CATEGORY, (u32) player);
 }
 CLEAN_AS(func_0207055c, PlayerMessages_Send)
 
@@ -192,7 +177,7 @@ void PlayerMessages_ClearRecord(const u8 *message, int player)
 {
     (void) message;
     (void) player;
-    func_02066650(func_02097f14(data_021f36ec));
+    Letter_Clear((Letter *) BottleMail_Letter((BottleState *) (void *) data_021f36ec));
 }
 CLEAN_AS(func_020705a8, PlayerMessages_ClearRecord)
 
@@ -204,9 +189,9 @@ void PlayerMessages_Record(const char *message, int player)
     Heap *heap = data_021fbe94;
     void *copy = Heap_AllocBack(heap, RECORD_SIZE);
     MI_CpuCopy8(message + 1, copy, RECORD_SIZE);
-    func_02066830(func_020900f0(data_021ee418), copy);
-    func_02090100(data_021ee418);
-    func_02090140(data_021ee418, 0);
+    Letter_Assign((Letter *) ExchangeBlock_BottleLetter((ExchangeBlock *) (void *) data_021ee418), copy);
+    ExchangeBlock_ClearDrifts((ExchangeBlock *) (void *) data_021ee418);
+    ExchangeBlock_SetArrivesAtOnce((ExchangeBlock *) (void *) data_021ee418, 0);
     Heap_Free(heap, copy);
 }
 CLEAN_AS(func_020705c0, PlayerMessages_Record)
@@ -243,9 +228,9 @@ void PlayerMessages_Place(const u8 *message, int player)
     position.y = data_020c904c;
     if (message[0] == PLAYER_MESSAGE_PLACE_ID) {
         int id = message[1] < PLACE_IDS ? PLACE_ID_FIRST + message[1] : PLACE_ID_FIRST;
-        func_ov003_0222780c(sender, id, &position);
+        PlayerFish_PlaceFromPockets(sender, id, &position);
     } else {
-        func_ov003_0222c3a8(&position, sender);
+        ThrownBottle_SetTarget(&position, sender);
     }
 }
 CLEAN_AS(func_02070658, PlayerMessages_Place)
@@ -260,14 +245,14 @@ void PlayerMessages_Turn(const u8 *message, int player)
     }
     int sender = (u8) player;
     s16 angle = (s16) ((message[2] - TURN_BIAS) * ANGLE_DEGREE);
-    PlayerObject *object = func_020961a8(sender);
+    PlayerObject *object = SessionPlayers_ActorOf(sender);
     if (object == NULL) {
         return;
     }
     angle = (s16) (angle + object->angle);
-    if (func_ov003_0222ea84(sender) == 0) {
-        func_ov003_0222e898(message[1], sender);
-        func_ov003_0222eabc(sender, angle);
+    if (TownInsect_HeldState(sender) == 0) {
+        TownInsect_TakeHeld(message[1], sender);
+        TownInsect_LetGo(sender, angle);
     }
 }
 CLEAN_AS(func_020706cc, PlayerMessages_Turn)
@@ -280,7 +265,7 @@ void PlayerMessages_LogEntry(const u8 *message, int player)
     Heap *heap = data_021fbe94;
     void *entry = Heap_AllocBack(heap, LOG_ENTRY_SIZE);
     MI_CpuCopy8(message + 1, entry, LOG_ENTRY_SIZE);
-    func_02077ed4(entry);
+    Bbs_PostText(entry);
     Heap_Free(heap, entry);
 }
 CLEAN_AS(func_0207072c, PlayerMessages_LogEntry)

@@ -7,6 +7,8 @@
 #include "sky.h"
 #include "sky_object_sounds.h"
 #include "sky_resources.h"
+#include "cell_anim.h"
+#include "main_random.h"
 
 static_assert(sizeof(SkyObjectBody) == sizeof(SkyObject), "the same object");
 static_assert(offsetof(SkyObjectBody, anim) == offsetof(SkyObject, anim), "the animation");
@@ -61,12 +63,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_InvA(fx32 x);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
-extern u32 func_020644cc(int bound);       /* a random number below `bound` */
-extern u32 func_020644b4(int bound);       /* the same from another generator */
-extern void func_0208a1f8(CellAnim *anim); /* an animation's constructor */
-extern void func_0208a1f0(CellAnim *anim, const SkyAnimation *data);
-extern void func_0208a1ec(CellAnim *anim, int hold);
-extern void *func_0208a144(CellAnim *anim); /* started from the first frame */
 
 static const MemberPointer *const sky_object_kinds_take_down_constants[SKY_OBJECT_KINDS] = {
     &data_020e5ca0, &data_020e5d20, &data_020e5a60, &data_020e5c88, &data_020e5c80, &data_020e5c78, &data_020e5c70,
@@ -251,9 +247,9 @@ void SkyObjectKinds_StartAnimation(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     const SkyAnimation *animation = &data_020e7880[body->animation];
-    func_0208a1f0(&body->anim, animation);
-    func_0208a1ec(&body->anim, animation->hold);
-    func_0208a144(&body->anim);
+    CellAnim_SetData(&body->anim, (const CellAnimData *) animation);
+    CellAnim_SetHold(&body->anim, animation->hold);
+    CellAnim_Restart(&body->anim);
 }
 CLEAN_AS(func_020bf5b8, SkyObjectKinds_StartAnimation)
 
@@ -349,7 +345,7 @@ CLEAN_AS(func_020bf948, SkyObjectKinds_Reset)
  * constructed, its fields reset and the entry free. */
 SkyObject *SkyObjectKinds_Construct(SkyObject *object)
 {
-    func_0208a1f8(&object->anim);
+    CellAnim_Construct(&object->anim);
     SkyObjectKinds_Reset(object);
     SkyObjectKinds_Free(object);
     return object;
@@ -397,15 +393,15 @@ void SkyKind12_SetUp(SkyObject *object, int param)
     body->delay = data_020d22c4[param & 3] + SKY_KIND12_DELAY;
     body->animation = SKY_KIND12_ANIMATION;
     body->priority = SKY_KIND12_PRIORITY;
-    fx32 y = (fx32) ((func_020644cc(0x38) + 0x90) << 12);
+    fx32 y = (fx32) ((MainRandom_Below(0x38) + 0x90) << 12);
     body->position.x = -0x8000;
     body->position.y = y;
     body->position.z = 0;
     body->velocity.x = 0x1000;
     body->velocity.y = 0x2000;
     body->velocity.z = 0;
-    body->velocity.x += (fx32) func_020644b4(0x8000);
-    body->velocity.y -= (fx32) func_020644b4(0x2000);
+    body->velocity.x += (fx32) MainRandom_BelowB(0x8000);
+    body->velocity.y -= (fx32) MainRandom_BelowB(0x2000);
     body->pull_x = -0x666 + 0x8cd;
     body->pull_y = 0xcd - 0x666;
 }
@@ -462,13 +458,13 @@ CLEAN_AS(func_020c0428, SkyKind8_Run)
 void SkyKind8_SetUp(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
-    int across = (int) func_020644cc(0x80);
-    across = across * ((int) func_020644cc(2) * 2 - 1) + 0x80;
-    fx32 y = (fx32) ((func_020644cc(0x50) + 0x50) << 12);
+    int across = (int) MainRandom_Below(0x80);
+    across = across * ((int) MainRandom_Below(2) * 2 - 1) + 0x80;
+    fx32 y = (fx32) ((MainRandom_Below(0x50) + 0x50) << 12);
     body->position.x = (fx32) ((u32) across << 12);
     body->position.y = y;
     body->position.z = 0;
-    body->animation = (s32) func_020644cc(8) + 8;
+    body->animation = (s32) MainRandom_Below(8) + 8;
     body->priority = SKY_KIND8_PRIORITY;
 }
 CLEAN_AS(func_020c0440, SkyKind8_SetUp)

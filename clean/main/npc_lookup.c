@@ -10,6 +10,9 @@
 #include "small_texts.h"
 #include "town_villager.h"
 #include "villager_roster.h"
+#include "lookups.h"
+#include "message_reader.h"
+#include "text_base.h"
 
 #define NPC_CODE_KIND(code) (((code) & 0xf000) >> 12)
 #define NPC_CODE_INDEX(code) ((code) & 0xfff)
@@ -28,31 +31,20 @@ extern const char data_020e19a8[]; /* "st_npc_habit" */
 extern const char data_020e19b8[]; /* "st_spnpc_name" */
 extern const char data_020e19c8[]; /* "st_npc_name" */
 
-/* The night window of a personality (Lookups_DayWindow). */
-extern const DayWindow *func_0208222c(u32 personality);
-/* -1, 0 or 1 as `a` is before, at or after `b`, in `fields` (DateTime_Compare). */
-extern int func_0209e3ac(const DateTime *a, const DateTime *b, int fields);
-/* A special character's record (three bytes), or NULL (Lookups_KindDRecord). */
-extern const u8 *func_020824d0(const ItemCode *code);
-/* Message `*number` of the message group `group` into a label. */
-extern int func_020b4a20(void *label, u8 *number, const char *group);
-/* A label's 8-bit text converted to 16 bits into a wide text. */
-extern int func_020a87e0(void *wide, void *label);
-
 /* func_020821d4: whether the time of `when` (its hour and minute) is strictly between the
  * start and the end of the night window of `personality`.
  * QUIRK: both ends are excluded: at the very minute the window starts, it is not in it. */
 int NpcLookup_IsInNightWindow(int personality, const DateTime *when)
 {
-    const DayWindow *window = func_0208222c((u32) personality);
+    const DayWindow *window = Lookups_DayWindow((u32) personality);
     DateTime bound;
     memset(&bound, 0, sizeof(bound));
     bound.hour = window->start_hour;
     bound.minute = window->start_minute;
-    if (func_0209e3ac(when, &bound, DATE_TIME_HOUR | DATE_TIME_MINUTE) == 1) {
+    if (DateTime_Compare(when, &bound, DATE_TIME_HOUR | DATE_TIME_MINUTE) == 1) {
         bound.hour = window->end_hour;
         bound.minute = window->end_minute;
-        return func_0209e3ac(when, &bound, DATE_TIME_HOUR | DATE_TIME_MINUTE) == -1;
+        return DateTime_Compare(when, &bound, DATE_TIME_HOUR | DATE_TIME_MINUTE) == -1;
     }
     return 0;
 }
@@ -78,7 +70,7 @@ int NpcLookup_CatchphraseToWide(void *wide, int number)
     int done = 0;
     Label10Text_Construct(&label);
     if (NpcLookup_FormatCatchphrase(&label, number)) {
-        func_020a87e0(wide, &label);
+        TextBase_BytesToWide(wide, (TextBase *) &label);
         done = 1;
     }
     Label10Text_Destruct(&label);
@@ -94,7 +86,7 @@ int NpcLookup_FormatCatchphrase(void *label, int number)
         return 0;
     }
     u8 message = (u8) number;
-    func_020b4a20(label, &message, data_020e19a8);
+    MessageReader_LoadMessage((int) (uintptr_t) label, &message, (int) (uintptr_t) data_020e19a8);
     return 1;
 }
 CLEAN_AS(func_02082340, NpcLookup_FormatCatchphrase)
@@ -106,7 +98,7 @@ int NpcLookup_SpeciesByte(const ItemCode *code)
     int index = NPC_CODE_INDEX(*code);
     switch (NPC_CODE_KIND(*code)) {
         case NPC_CODE_KIND_SPECIAL: {
-            const u8 *record = func_020824d0(code);
+            const u8 *record = Lookups_KindDRecord(code);
             if (record != NULL) {
                 return record[NPC_SPECIAL_SPECIES];
             }
@@ -138,7 +130,7 @@ int NpcLookup_PersonalityKind(ItemCode *code)
             break;
         }
         case NPC_CODE_KIND_SPECIAL: {
-            const u8 *record = func_020824d0(code);
+            const u8 *record = Lookups_KindDRecord(code);
             if (record != NULL) {
                 return record[NPC_SPECIAL_KIND];
             }
@@ -159,7 +151,7 @@ int NpcLookup_FormatPersonName(void *label, ItemCode *code)
         case NPC_CODE_KIND_SPECIAL:
             if (index < NPC_SPECIAL_COUNT) {
                 u8 message = (u8) index;
-                func_020b4a20(label, &message, data_020e19b8);
+                MessageReader_LoadMessage((int) (uintptr_t) label, &message, (int) (uintptr_t) data_020e19b8);
                 return 1;
             }
             break;
@@ -183,7 +175,7 @@ int NpcLookup_FormatName(char *label, int number)
         return 0;
     }
     u8 message = (u8) number;
-    func_020b4a20(label, &message, data_020e19c8);
+    MessageReader_LoadMessage((int) (uintptr_t) label, &message, (int) (uintptr_t) data_020e19c8);
     return 1;
 }
 CLEAN_AS(func_0208249c, NpcLookup_FormatName)

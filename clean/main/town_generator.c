@@ -3,6 +3,10 @@
 
 #include "acre_kind.h"
 #include "clean.h"
+#include "c_library.h"
+#include "main_random.h"
+#include "record_file.h"
+#include "rom_file.h"
 
 /* The kind a new cell has, and the one past the last valid kind. */
 #define TOWN_GENERATOR_KIND_NONE ACRE_KIND_LAST
@@ -27,15 +31,6 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern u32 func_020644cc(int range);                              /* a random number below `range` */
-extern int func_02064328(char *buffer, const char *format, ...);  /* sprintf */
-extern int func_0206487c(const char *path);                       /* a file's size */
-extern char *func_0206e7bc(RecordFile *file, unsigned int entry); /* a record, NULL when unread */
-extern void func_0206e808(RecordFile *file);                      /* closes the file */
-extern void func_0206e854(RecordFile *file);                      /* reads all its records */
-extern int func_0206e890(RecordFile *file, const char *path, int record_size, int records);
-extern int func_0206e8b4(RecordFile *file);  /* its destructor */
-extern void func_0206e8c4(RecordFile *file); /* its constructor */
 /* The cells' destructor (nothing) and constructor, handed to the C++ runtime. */
 extern void func_0209d038(void *cell);
 extern void func_0209d03c(void *cell);
@@ -93,13 +88,13 @@ void TownGenerator_PickCandidate(TownGenerator *generator, int number)
 {
     int candidate;
     if (number < 0) {
-        candidate = (int) func_020644cc(TOWN_GENERATOR_CANDIDATES);
+        candidate = (int) MainRandom_Below(TOWN_GENERATOR_CANDIDATES);
     } else {
         candidate = (int) ((unsigned int) number % TOWN_GENERATOR_CANDIDATES);
     }
     data_021dc580 = candidate;
 
-    const u8 *kinds = (const u8 *) func_0206e7bc(&generator->candidates, (unsigned int) candidate);
+    const u8 *kinds = (const u8 *) RecordFile_Record((FurnitureRecordFile *) &generator->candidates, (unsigned int) candidate);
     if (kinds == NULL) {
         return;
     }
@@ -144,7 +139,7 @@ int TownGenerator_PlaceBorders(TownGenerator *generator)
             count++;
         }
     }
-    u32 pick = func_020644cc((int) count);
+    u32 pick = MainRandom_Below((int) count);
     u32 seen = 0;
     for (unsigned int x = 2; x <= 3; x++) {
         if (AcreKind_CountFlags1000(town_generator_kind_at(generator, x, 1)) == 0) {
@@ -184,7 +179,7 @@ int TownGenerator_UpgradeOne(TownGenerator *generator)
         return 0;
     }
 
-    int pick = (int) func_020644cc(count);
+    int pick = (int) MainRandom_Below(count);
     int seen = 0;
     for (unsigned int z = 1; z < 5; z++) {
         for (unsigned int x = 1; x < 5; x++) {
@@ -242,7 +237,7 @@ int TownGenerator_PlaceSpecials(TownGenerator *generator, int choice)
     if (count == 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(count);
+    int pick = (int) MainRandom_Below(count);
     int seen = 0;
     for (unsigned int x = 1; x < 5; x++) {
         if (town_generator_kind_at(generator, x, 3) == TOWN_GENERATOR_KIND_PLAIN) {
@@ -302,7 +297,7 @@ int TownGenerator_PlaceBeside(TownGenerator *generator, int beside, int kind)
     if (count == 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(count);
+    int pick = (int) MainRandom_Below(count);
     int seen = 0;
     for (int i = 0; i < 4; i++) {
         unsigned int nx = x + (unsigned int) data_021dc5a0[i][0];
@@ -335,7 +330,7 @@ int TownGenerator_PlaceOnPlain(TownGenerator *generator, int kind)
         }
     }
 
-    u32 pick = func_020644cc((int) count);
+    u32 pick = MainRandom_Below((int) count);
     u32 seen = 0;
     for (unsigned int z = 1; z < 5; z++) {
         for (unsigned int x = 1; x < 5; x++) {
@@ -449,7 +444,7 @@ int TownGenerator_AssignModels(TownGenerator *generator)
                 TownGenerator_SetModel(TownGenerator_Cell(generator, x, z), TOWN_GENERATOR_MODEL_FALLBACK);
                 continue;
             }
-            u32 pick = func_020644cc((int) count);
+            u32 pick = MainRandom_Below((int) count);
             unsigned int model = town_generator_nth_model(kind, used, unused_only, pick);
             TownGenerator_SetModel(TownGenerator_Cell(generator, x, z), (int) model);
             used[model] = 1;
@@ -486,8 +481,8 @@ int TownGenerator_ModelFilesSize(TownGenerator *generator)
                 continue;
             }
             int model = TownGenerator_Model(TownGenerator_Cell(generator, x, z));
-            func_02064328(path, data_020e35d8, model >> 4, model);
-            size += (u32) func_0206487c(path);
+            CLib_SPrintf(path, data_020e35d8, model >> 4, model);
+            size += (u32) RomFile_Size(path);
             counted[TownGenerator_Model(TownGenerator_Cell(generator, x, z))] = 1;
         }
     }
@@ -528,15 +523,16 @@ CLEAN_AS(func_0209cec0, TownGenerator_Generate)
 /* func_0209cf70 */
 void TownGenerator_CloseCandidates(TownGenerator *generator)
 {
-    func_0206e808(&generator->candidates);
+    RecordFile_Close((FurnitureRecordFile *) &generator->candidates);
 }
 CLEAN_AS(func_0209cf70, TownGenerator_CloseCandidates)
 
 /* func_0209cf80: opens "/bg/rndCand.bin" and reads its 524 candidates; whether it opened. */
 int TownGenerator_OpenCandidates(TownGenerator *generator)
 {
-    if (func_0206e890(&generator->candidates, data_020e35ec, TOWN_GENERATOR_CANDIDATE_SIZE, TOWN_GENERATOR_CANDIDATES)) {
-        func_0206e854(&generator->candidates);
+    if (RecordFile_Open((FurnitureRecordFile *) &generator->candidates, data_020e35ec, TOWN_GENERATOR_CANDIDATE_SIZE,
+                        TOWN_GENERATOR_CANDIDATES)) {
+        RecordFile_ReadWhole((FurnitureRecordFile *) &generator->candidates);
         return 1;
     }
     return 0;
@@ -546,7 +542,7 @@ CLEAN_AS(func_0209cf80, TownGenerator_OpenCandidates)
 /* func_0209cfb8: the generator's destructor. */
 TownGenerator *TownGenerator_Destruct(TownGenerator *generator)
 {
-    func_0206e8b4(&generator->candidates);
+    RecordFile_Destruct((FurnitureRecordFile *) &generator->candidates);
     __cxa_vec_cleanup(generator->cells, TOWN_GENERATOR_CELLS, sizeof(TownGeneratorCell), func_0209d038);
     return generator;
 }
@@ -556,7 +552,7 @@ CLEAN_AS(func_0209cfb8, TownGenerator_Destruct)
 TownGenerator *TownGenerator_Construct(TownGenerator *generator)
 {
     __cxa_vec_ctor(generator->cells, TOWN_GENERATOR_CELLS, sizeof(TownGeneratorCell), func_0209d03c, func_0209d038);
-    func_0206e8c4(&generator->candidates);
+    RecordFile_Construct((FurnitureRecordFile *) &generator->candidates);
     return generator;
 }
 CLEAN_AS(func_0209cfe0, TownGenerator_Construct)

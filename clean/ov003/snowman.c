@@ -15,6 +15,30 @@
 #include "main/sound_emitter.h" /* SoundEmitter_PlayB */
 #include "main/text_label.h"    /* TextVtable */
 #include "ov004/member_pointer.h"
+#include "itcm/vector.h"
+#include "main/acre_tile.h"
+#include "main/actor_table.h"
+#include "main/collision_query.h"
+#include "main/event_queue.h"
+#include "main/field_body.h"
+#include "main/field_collision.h"
+#include "main/globe.h"
+#include "main/item_code.h"
+#include "main/main_random.h"
+#include "main/map_code.h"
+#include "main/message_reader.h"
+#include "main/message_receiver.h"
+#include "main/message_texts.h"
+#include "main/model_object.h"
+#include "main/quaternion.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/session_players.h"
+#include "main/shadow.h"
+#include "main/snowmen.h"
+#include "main/talk_receiver.h"
+#include "main/town_item_lists.h"
+#include "main/unit_type_info.h"
 
 static_assert(offsetof(Snowman, position) == 0x5c, "position");
 static_assert(offsetof(Snowman, receiver_vtable) == 0xec, "receiver");
@@ -77,24 +101,12 @@ extern u32 data_ov003_0223c620;
 extern MemberPointer data_ov003_0223c624[SNOWMAN_TALK_STATES];
 extern const MemberPointer data_ov003_02238198, data_ov003_022381e8, data_ov003_02238180;
 
-extern void func_0203ee08(Snowman *snowman, void *receiver);
-extern void func_0203ee14(Snowman *snowman, void *receiver);
-extern int func_0203e020(Snowman *snowman);
-extern void func_0203edd0(Snowman *snowman);
-/* Copies at most 25 characters of `name` into the receiver's name. */
-extern void func_020a8164(void *receiver, const char *name);
-/* A random number below `range`. */
-extern int func_020644cc(int range);
-/* Sets the receiver's speaker name. */
-extern void func_02066954(void *receiver, const char *name, int a);
-/* A text label of main (vtable data_020e51d0, 0x118 bytes): built by func_020b55d0, destroyed
- * by func_020b55b8; func_020b4a20 loads message `*number` of a named archive into it. */
-extern void *func_020b55d0(void *text);
-extern void *func_020b55b8(void *text);
-extern int func_020b4a20(void *text, char *number, const char *archive);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
+/* A text label of main (vtable data_020e51d0, 0x118 bytes): built by MessageText256_Construct,
+ * destroyed by MessageText256_Destruct; MessageReader_LoadMessage loads message `*number` of a
+ * named archive into it. */
 typedef struct SnowmanNameText {
     const TextVtable *vtable;
     u8 unk_04[0x114];
@@ -114,8 +126,8 @@ static void *snowman_receiver(Snowman *snowman)
 void SnowmanTalk_UpdateEnd(Snowman *snowman)
 {
     if (snowman->link != NULL && snowman->link->open == 0) {
-        func_0203ee08(snowman, snowman_receiver(snowman));
-        func_0203e020(snowman);
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) snowman, snowman_receiver(snowman));
+        EventQueue_FinishObjectEvent(snowman);
     }
 }
 CLEAN_AS(func_ov003_02219e64, SnowmanTalk_UpdateEnd)
@@ -143,26 +155,26 @@ CLEAN_AS(func_ov003_02219e98, SnowmanTalk_UpdateOpen)
  * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
 int SnowmanTalk_EnterOpen(Snowman *snowman)
 {
-    func_0203ee14(snowman, snowman_receiver(snowman));
+    SceneObjectBase_TakeReceiver((SceneObjectBase *) snowman, snowman_receiver(snowman));
     int kind = (snowman->flags >> SNOWMAN_KIND_SHIFT) & 3;
     int message;
     if (snowman->flags & SNOWMAN_FLAG_FIRST_TALK) {
-        message = func_020644cc(3) + kind * 3;
+        message = MainRandom_Below(3) + kind * 3;
     } else {
-        message = func_020644cc(3) + kind * 3 + 0xc;
+        message = MainRandom_Below(3) + kind * 3 + 0xc;
     }
-    func_020a8164(&snowman->receiver_vtable, data_ov003_0223838c);
+    MessageReceiver_SetName((MessageReceiver *) &snowman->receiver_vtable, data_ov003_0223838c);
     snowman->message = (u8) message;
     snowman->link->requested = 1;
 
     char number = SNOWMAN_NAME_MESSAGE;
     SnowmanNameText name;
-    func_020b55d0(&name);
-    func_020b4a20(&name, &number, data_ov003_0223839c);
+    MessageText256_Construct((MessageText256 *) &name);
+    MessageReader_LoadMessage((int) (uintptr_t) &name, (unsigned char *) &number, (int) (uintptr_t) data_ov003_0223839c);
     const char *text = ((SnowmanTextBuffer) (uintptr_t) name.vtable->buffer)(&name);
-    func_02066954(&snowman->receiver_vtable, text, 0);
+    TalkReceiver_SetSpeaker((TalkReceiver *) &snowman->receiver_vtable, text, 0);
     snowman->flags &= (u16) ~SNOWMAN_FLAG_FIRST_TALK;
-    func_020b55b8(&name);
+    MessageText256_Destruct((MessageText256 *) &name);
     return 1;
 }
 CLEAN_AS(func_ov003_02219ebc, SnowmanTalk_EnterOpen)
@@ -243,7 +255,7 @@ CLEAN_AS(func_ov003_0221a090, SnowmanTalk_OnSceneEvent)
  * machine is in state 0xb. func_0203edd0 runs on the snowman first in any case. */
 int SnowmanTalk_CanTalkTo(Snowman *snowman, const SnowmanVisitor *visitor)
 {
-    func_0203edd0(snowman);
+    SceneObjectBase_ClearApproach((SceneObjectBase *) snowman);
     fx32 reach = FX_MulFunc(0x2000, FX_Div(0x7d000, 0x64000));
     return visitor != NULL && Vec_DistanceXZ(&visitor->position, &snowman->position) < reach &&
            snowman->scene_state == SNOWMAN_STATE_HEAD;
@@ -321,67 +333,8 @@ typedef struct SnowmanContact {
 #define SNOWMAN_SIZE_PUSHABLE 0xa00 /* smaller balls are not pushed and make sound 0x81c */
 #define SNOWMAN_SIZE_MAX 0x1400
 
-/* The tile a position is on. */
-extern void func_0204f818(int *x, int *z, const Vec3 *position);
-/* The centre of a tile. */
-extern void func_0204f794(Vec3 *point, u32 x, u32 z);
-/* The item on cell (x, z) of block (block_x, block_z) of the map, in a layer. */
-extern u16 *func_0204f5e0(void *map, int block_x, int block_z, int x, int z, int layer);
-/* Puts an item on a tile; whether it could. */
-extern int func_0204f538(void *map, u16 *item, int x, int z, int layer);
-/* The map object of snowman `number` (0xb001 + number, 0xb001 past 2). */
-extern u16 func_0204bb14(u32 number);
-/* Whether an item is a snowman's map object. */
-extern int func_0204bb54(u16 *item);
-extern int func_0204c71c(u16 *item);
-extern int func_0204bcdc(u16 *item);
-extern int func_0204bc64(u16 *item);
-extern int func_0204bd08(u16 *item);
-/* Adds an item to main's list of fifteen at 0x021f3a68 (the oldest goes when it is full). */
-extern void func_0203a76c(u16 item);
-/* What main's tables say of a tile. */
-extern int func_02031078(int x, int z, int *a, int *b, int *c);
-extern u8 func_02031b38(int x, int z);
-extern u8 func_02031acc(int x, int z);
-extern SnowmanVisitor *func_020961a8(int actor);
-extern int func_020b0594(u8 *snowmen, u32 number, int *head_size, int *body_size, int *face, u8 *a, u8 *b, u8 *c);
-extern void func_020b0540(u8 *snowmen, u32 number);
-extern SnowmanSaved *func_020b03f8(void);
-extern const SnowmanContact *func_0208a020(SnowmanBody *body);
-extern int func_0203e0a8(Snowman *snowman, int a);
-extern int func_020b6660(void);
-extern void func_02089c20(SnowmanBody *body, Snowman *owner, int a, int b, int flags, int c, int d, int e, int weight);
-extern void func_02089fc8(SnowmanBody *body);
-extern int func_02089cc0(SnowmanBody *body, u32 mask);
-extern void func_02031288(void *collider, Vec3 *position, Vec3 *from, int a, int size, Snowman *owner, int layer);
-extern int func_02034270(SnowmanGround *ground, Vec3 *at, int a, int b);
-extern void func_0203423c(SnowmanGround *ground);
 extern fx32 VEC_Mag(const Vec3 *v);
-/* The sum of two points. */
-extern void func_01ffd070(Vec3 *sum, const Vec3 *a, const Vec3 *b);
-/* The point as the camera shows it, and an angle to turn by there. */
-extern int func_0203f8d0(Vec3 *out, Vec3 *in);
-/* The product of two quaternions; normalizing one; the matrix of one. */
-extern void func_0209a204(const SnowmanQuat *a, const SnowmanQuat *b, SnowmanQuat *product);
-extern void func_0209a3c8(SnowmanQuat *q);
-extern void func_0209a2ec(const SnowmanQuat *q, Mtx43 *mtx);
 extern void MTX_Concat43(const Mtx43 *a, const Mtx43 *b, Mtx43 *ab);
-extern int func_0205556c(SnowmanModel *model, u32 tag, const char *path);
-extern void func_02055e7c(SnowmanModel *model, const Vec3 *scale);
-extern void func_020acc0c(Vec3 *position, int size, int a, int b);
-extern void func_0203efb0(Snowman *snowman, u16 value);
-/* Destructors and constructors of the parts: the collider, a model, the receiver part, the
- * base, and the body's base. */
-extern void func_02032c50(void *collider);
-extern void func_02032c64(void *collider);
-extern void func_02055764(SnowmanModel *model);
-extern void func_0205577c(SnowmanModel *model);
-extern void func_02066994(void *receiver);
-extern void func_02066a30(void *receiver);
-extern void func_0203f080(Snowman *snowman);
-extern void func_0203f130(Snowman *snowman);
-extern void func_02089c58(SnowmanBody *body);
-extern void func_02089ca4(SnowmanBody *body);
 
 /* An arithmetic shift right, for negative values too. */
 static int shift_right(int value, int bits)
@@ -407,7 +360,7 @@ static SoundEmitter *snowman_sound(Snowman *snowman)
 /* The item on a tile of the map, in layer 0. */
 static u16 *item_on_tile(void *map, int x, int z)
 {
-    return func_0204f5e0(map, shift_right(x, 4), shift_right(z, 4), x & 0xf, z & 0xf, 0);
+    return AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(z, 4), x & 0xf, z & 0xf, 0);
 }
 
 /* Both machines idle: the ball is loose and nobody talks to it. */
@@ -424,14 +377,15 @@ void Snowman_UpdateHead(Snowman *snowman)
 {
     snowman->last_size = snowman->size;
     if (snowman->body.body.touched) {
-        const SnowmanContact *contact = func_0208a020(&snowman->body.body);
+        const SnowmanContact *contact =
+            (const SnowmanContact *) (uintptr_t) FieldBody_TouchedActor((FieldBody *) &snowman->body.body);
         if (contact != NULL && contact->unk_98 > SNOWMAN_KNOCK_LIMIT) {
             Snowman_Knock(snowman, 1);
             return;
         }
     }
     if (snowman->flags & SNOWMAN_FLAG_FIRST_TALK) {
-        func_0203e0a8(snowman, 0);
+        EventQueue_RequestKind6(snowman, 0);
     }
 }
 CLEAN_AS(func_ov003_0221a128, Snowman_UpdateHead)
@@ -452,7 +406,8 @@ void Snowman_UpdateBody(Snowman *snowman)
 {
     snowman->last_size = snowman->size;
     if (snowman->body.body.touched) {
-        const SnowmanContact *contact = func_0208a020(&snowman->body.body);
+        const SnowmanContact *contact =
+            (const SnowmanContact *) (uintptr_t) FieldBody_TouchedActor((FieldBody *) &snowman->body.body);
         if (contact != NULL && contact->unk_98 > SNOWMAN_KNOCK_LIMIT) {
             Snowman_Knock(snowman, 1);
         }
@@ -534,15 +489,15 @@ CLEAN_AS(func_ov003_0221a35c, Snowman_SetState)
 int Snowman_KeepDisplacedItem(u16 *item)
 {
     int nothing;
-    if (func_0204bcdc(item)) {
+    if (ItemCode_HasVariant(item)) {
         u16 none = SNOWMAN_NO_ITEM;
-        int code = func_0204bc64(item);
-        nothing = code == func_0204bc64(&none);
+        int code = ItemCode_VariantItem(item);
+        nothing = code == ItemCode_VariantItem(&none);
     } else {
         nothing = *item == SNOWMAN_NO_ITEM;
     }
-    if (!nothing && (func_0204bd08(item) || func_0204bcdc(item))) {
-        func_0203a76c(*item);
+    if (!nothing && (ItemCode_IsKind1(item) || ItemCode_HasVariant(item))) {
+        TownItemLists_PushListA(*item);
         return 1;
     }
     return 0;
@@ -556,9 +511,9 @@ int Snowman_ClearTile(const Vec3 *position)
     void *map = data_021c80bc;
     if (map != NULL) {
         int x, z;
-        func_0204f818(&x, &z, position);
+        Position_Tile(&x, &z, (const Position *) position);
         u16 none = SNOWMAN_NO_ITEM;
-        if (func_0204f538(map, &none, x, z, 0)) {
+        if (AcreTile_SetItem(map, &none, x, z, 0)) {
             return 1;
         }
     }
@@ -576,14 +531,14 @@ int Snowman_PlaceObjectNearby(int number, Vec3 *position, u16 *replaced)
     if (data_021c80bc == NULL) {
         return 0;
     }
-    func_0204bb14((u32) number);
+    MapCode_Snowman((u32) number);
     int x, z;
-    func_0204f818(&x, &z, position);
+    Position_Tile(&x, &z, (const Position *) position);
     u8 usable = 0;
     int count = 0;
     for (int i = 0; i < 8; i++) {
         Vec3 point;
-        func_0204f794(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
+        AcreTile_TileCentre(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
         if (Snowman_CanStandAt(&point)) {
             usable |= (u8) (1 << i);
             count++;
@@ -592,13 +547,13 @@ int Snowman_PlaceObjectNearby(int number, Vec3 *position, u16 *replaced)
     if (count == 0) {
         return 0;
     }
-    int chosen = func_020644cc(count);
+    int chosen = MainRandom_Below(count);
     int seen = 0;
     for (int i = 0; i < 8; i++) {
         if ((usable >> i) & 1) {
             if (seen == chosen) {
                 Vec3 point;
-                func_0204f794(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
+                AcreTile_TileCentre(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
                 return Snowman_PlaceObject(number, &point, replaced) != 0;
             }
             seen++;
@@ -621,14 +576,14 @@ int Snowman_PlaceObject(int number, Vec3 *position, u16 *replaced)
     if (map == NULL) {
         return 0;
     }
-    u16 object = func_0204bb14((u32) number);
+    u16 object = MapCode_Snowman((u32) number);
     int x, z;
-    func_0204f818(&x, &z, position);
+    Position_Tile(&x, &z, (const Position *) position);
     u16 *there = item_on_tile(map, x, z);
     if (there != NULL) {
         *replaced = *there;
     }
-    return func_0204f538(map, &object, x, z, 0) != 0;
+    return AcreTile_SetItem(map, &object, x, z, 0) != 0;
 }
 CLEAN_AS(func_ov003_0221a608, Snowman_PlaceObject)
 
@@ -637,8 +592,8 @@ CLEAN_AS(func_ov003_0221a608, Snowman_PlaceObject)
 static int tile_allows(int x, int z)
 {
     int a, b, c;
-    int found = func_02031078(x, z, &a, &b, &c);
-    return func_02031b38(x, z) != 0 && !(found != 0 && c != 2);
+    int found = CollisionQuery_PostAt(x, z, (fx32 *) &a, (fx32 *) &b, &c);
+    return UnitTypeInfo_Byte04At(x, z) != 0 && !(found != 0 && c != 2);
 }
 
 /* func_ov003_0221a68c: whether a snowman can stand on the tile of `position`: there is a map,
@@ -652,25 +607,25 @@ int Snowman_CanStandAt(Vec3 *position)
         return 0;
     }
     int player_x = -1, player_z = -1;
-    SnowmanVisitor *player = func_020961a8(SNOWMAN_PLAYER);
+    SnowmanVisitor *player = SessionPlayers_ActorOf(SNOWMAN_PLAYER);
     if (player != NULL) {
-        func_0204f818(&player_x, &player_z, &player->position);
+        Position_Tile(&player_x, &player_z, (const Position *) &player->position);
     }
     int x, z;
-    func_0204f818(&x, &z, position);
+    Position_Tile(&x, &z, (const Position *) position);
     u16 *item = item_on_tile(map, x, z);
-    if (item != NULL && func_0204c71c(item)) {
+    if (item != NULL && MapCode_IsSpecial(item)) {
         return 0;
     }
     int a, b, c;
-    int found = func_02031078(x, z, &a, &b, &c);
+    int found = CollisionQuery_PostAt(x, z, (fx32 *) &a, (fx32 *) &b, &c);
     if (x == player_x && z == player_z) {
         return 0;
     }
-    if (func_02031b38(x, z) == 0 || (found != 0 && c != 2)) {
+    if (UnitTypeInfo_Byte04At(x, z) == 0 || (found != 0 && c != 2)) {
         return 0;
     }
-    if (func_02031acc(x, z) > 1) {
+    if (UnitTypeInfo_Byte09At(x, z) > 1) {
         return 0;
     }
     for (int dx = -1; dx <= 1; dx++) {
@@ -699,7 +654,7 @@ void Snowman_Setup(Snowman *snowman)
     u32 number = ((snowman->index - 2) >> 1) & SNOWMAN_NUMBER_MASK;
     snowman->flags = (u16) ((snowman->flags & ~SNOWMAN_NUMBER_MASK) | number);
     int head_size, body_size, face;
-    if (func_020b0594(data_021f3b56, number, &head_size, &body_size, &face, NULL, NULL, NULL) == 0) {
+    if (Snowmen_Get((SnowmenRecord *) data_021f3b56, number, &head_size, &body_size, &face, NULL, NULL, NULL) == 0) {
         return;
     }
     snowman->flags = (u16) ((snowman->flags & ~(3 << SNOWMAN_KIND_SHIFT)) | ((face & 3) << SNOWMAN_KIND_SHIFT));
@@ -781,8 +736,8 @@ static int push_refused(Snowman *snowman, fx32 velocity_x, fx32 velocity_z)
  * (0x8000) counts as negative and never refuses the push. */
 int Snowman_Push(Snowman *snowman, Vec3 *behind, s16 *angle, int *speed, int force, int direction)
 {
-    SnowmanVisitor *player = func_020961a8(SNOWMAN_PLAYER);
-    if (func_020b6660() == 0 || player == NULL) {
+    SnowmanVisitor *player = SessionPlayers_ActorOf(SNOWMAN_PLAYER);
+    if (SceneQuery_CurrentIs0() == 0 || player == NULL) {
         return 0;
     }
     if (snowman->talk_state != SNOWMAN_TALK_IDLE || snowman->scene_state != SNOWMAN_STATE_LOOSE) {
@@ -904,7 +859,8 @@ void Snowman_Roll(Snowman *snowman)
     if (is_idle_loose(snowman)) {
         snowman->position.y -= 0x200;
     }
-    func_02031288(snowman->collider, &snowman->position, &snowman->last_position, 0, snowman->last_size, snowman, layer);
+    CollisionQuery_Move((CollisionContacts *) snowman->collider, &snowman->position, &snowman->last_position, 0,
+                        snowman->last_size, snowman, layer);
 
     u8 collisions = snowman->collisions;
     if (collisions > snowman->last_collisions && is_idle_loose(snowman)) {
@@ -925,9 +881,9 @@ void Snowman_Roll(Snowman *snowman)
         factor = FX_Div(percent * 0x1000, 0x64000);
     }
     fx32 size = snowman->size;
-    func_02089c20(&snowman->body.body, snowman, FX_MulFunc(size, factor), size * 2, contact_flags, 0x2fc, kind,
-                  (u8) snowman->index, snowman->body.body.weight);
-    func_02089fc8(&snowman->body.body);
+    FieldOwnedBody_Set((FieldOwnedBody *) &snowman->body.body, (Actor *) snowman, FX_MulFunc(size, factor), size * 2,
+                       contact_flags, 0x2fc, kind, (u8) snowman->index, snowman->body.body.weight);
+    FieldBody_Enter((FieldBody *) &snowman->body.body);
 
     Vec3 moved;
     Vec_Subtract(&moved, &snowman->position, &snowman->last_position);
@@ -973,7 +929,7 @@ void Snowman_Roll(Snowman *snowman)
     }
 
     SnowmanGround ground;
-    func_02034270(&ground, &snowman->position, 0, 0);
+    CollisionGround_Init((CollisionGround *) &ground, &snowman->position, 0, 0);
     if (ground.kind == SNOWMAN_GROUND_SNOW) {
         if (!(snowman->flags & SNOWMAN_FLAG_PLACED)) {
             snowman->size = FX_MulFunc(snowman->size, shift_right(distance, 7) + 0x1000);
@@ -988,7 +944,7 @@ void Snowman_Roll(Snowman *snowman)
         }
     }
     Snowman_UpdateModels(snowman, roll, direction);
-    func_0203423c(&ground);
+    CollisionGround_Destroy((CollisionGround *) &ground);
 }
 CLEAN_AS(func_ov003_0221ac70, Snowman_Roll)
 
@@ -1003,7 +959,7 @@ void Snowman_PreUpdate(Snowman *snowman)
             snowman->position.x += snowman->body.body.push_x;
             snowman->position.z += snowman->body.body.push_z;
         }
-        if (func_02089cc0(&snowman->body.body, 4) && snowman->size < SNOWMAN_SIZE_PUSHABLE) {
+        if (FieldBody_TouchedWith((FieldBody *) &snowman->body.body, 4) && snowman->size < SNOWMAN_SIZE_PUSHABLE) {
             if (!snowman->rolling_sound) {
                 SoundEmitter_PlayB(snowman_sound(snowman), 0x81c, 0x7f, 0);
             }
@@ -1032,21 +988,21 @@ void Snowman_UpdateModels(Snowman *snowman, int roll, int direction)
         int half = shift_right(roll, 1);
         Vec_Scale(&axis, sine(half));
         SnowmanQuat turn = {axis.x, axis.y, axis.z, cosine(half)};
-        func_0209a204(&turn, rotation, rotation);
+        Quat_Multiply((const Quat *) &turn, (const Quat *) rotation, (Quat *) rotation);
         if ((data_021fbdd0 & 7) == (int) snowman->index) {
-            func_0209a3c8(rotation);
+            Quat_Normalize((Quat *) rotation);
         }
     }
     Vec3 at;
-    func_01ffd070(&at, &snowman->position, &snowman->body.rolling.model_offset);
+    Vec_Add(&at, &snowman->position, &snowman->body.rolling.model_offset);
     at.y = at.y + snowman->size - 0x400;
     Vec3 shown;
-    int tilt = func_0203f8d0(&shown, &at);
+    int tilt = Globe_BendFar(&shown, &at);
     Mtx43 place;
     Mtx43_Translation(&place, shown.x, shown.y, shown.z);
     Mtx43_RotateX(&place, tilt);
     Mtx43 turned;
-    func_0209a2ec(rotation, &turned);
+    Quat_ToMtx43((const Quat *) rotation, &turned);
     MTX_Concat43(&turned, &place, &place);
     snowman->ball_model.matrix = place;
     snowman->face_model.matrix = place;
@@ -1064,24 +1020,24 @@ void Snowman_Leave(Snowman *snowman)
     if (snowman->scene_state == SNOWMAN_STATE_BODY) {
         void *map = data_021c80bc;
         int x, z;
-        func_0204f818(&x, &z, &snowman->position);
+        Position_Tile(&x, &z, (const Position *) &snowman->position);
         u16 *item = item_on_tile(map, x, z);
-        if (item != NULL && func_0204bb54(item)) {
+        if (item != NULL && MapCode_IsSnowman(item)) {
             u16 none = SNOWMAN_NO_ITEM;
-            func_0204f538(map, &none, x, z, 0);
+            AcreTile_SetItem(map, &none, x, z, 0);
         }
         int number = snowman->flags & SNOWMAN_NUMBER_MASK;
         if (!Snowman_PlaceObject(number, &snowman->position, &snowman->item_under) &&
             !Snowman_PlaceObjectNearby(number, &snowman->position, &snowman->item_under)) {
-            func_020b0540(data_021f3b56, (u32) number);
+            Snowmen_TakeOffMap((SnowmenRecord *) data_021f3b56, (u32) number);
         }
         Snowman_KeepDisplacedItem(&snowman->item_under);
     }
     if (is_idle_loose(snowman)) {
-        SnowmanSaved *saved = func_020b03f8();
+        SnowmanSaved *saved = (SnowmanSaved *) Snowmen_LooseBalls();
         saved[snowman->index & 1].position = snowman->position;
         fx32 size = snowman->size;
-        saved = func_020b03f8();
+        saved = (SnowmanSaved *) Snowmen_LooseBalls();
         saved[snowman->index & 1].size = size;
     }
     SoundEmitter_Vfunc10B(snowman_sound(snowman));
@@ -1099,11 +1055,11 @@ int Snowman_Draw(Snowman *snowman)
         fx32 scale = FX_Div(snowman->size, 0x1000);
         Vec3 scales = {scale, scale, scale};
         if (snowman->scene_state == SNOWMAN_STATE_HEAD) {
-            func_02055e7c(&snowman->face_model, &scales);
+            ModelObject_Draw((ModelObject *) &snowman->face_model, &scales);
         } else {
-            func_02055e7c(&snowman->ball_model, &scales);
+            ModelObject_Draw((ModelObject *) &snowman->ball_model, &scales);
         }
-        func_020acc0c(&snowman->position, snowman->size, 0x4000, 0x1000);
+        CharaShadow_Draw(&snowman->position, snowman->size, 0x4000, 0x1000);
     }
     return 1;
 }
@@ -1151,31 +1107,32 @@ void Snowman_Init(Snowman *snowman)
 {
     snowman->item_under = SNOWMAN_NO_ITEM;
     snowman->body.rolling.rotation = data_020d1a10;
-    func_0205556c(&snowman->ball_model, SNOWMAN_TAG_BALL, data_ov003_022383ac);
-    func_0205556c(&snowman->face_model, SNOWMAN_TAG_FACE, data_ov003_022383c8);
+    ModelObject_LoadShared((ModelObject *) &snowman->ball_model, SNOWMAN_TAG_BALL, data_ov003_022383ac);
+    ModelObject_LoadShared((ModelObject *) &snowman->face_model, SNOWMAN_TAG_FACE, data_ov003_022383c8);
     if (Snowman_IsLoose(snowman)) {
-        SnowmanSaved *saved = func_020b03f8();
+        SnowmanSaved *saved = (SnowmanSaved *) Snowmen_LooseBalls();
         snowman->size = saved[snowman->index & 1].size;
-        saved = func_020b03f8();
+        saved = (SnowmanSaved *) Snowmen_LooseBalls();
         saved[snowman->index & 1].position = snowman->position;
         fx32 size = snowman->size;
-        saved = func_020b03f8();
+        saved = (SnowmanSaved *) Snowmen_LooseBalls();
         saved[snowman->index & 1].size = size;
     }
-    func_0203efb0(snowman, (u16) snowman->index);
+    SceneObjectBase_SetId((SceneObjectBase *) snowman, (u16) snowman->index);
     SnowmanTalk_SetState(snowman, SNOWMAN_TALK_IDLE);
     Snowman_Setup(snowman);
 
     snowman->last_position = snowman->position;
     snowman->body.rolling.start_position = snowman->last_position;
-    func_02031288(snowman->collider, &snowman->position, &snowman->last_position, 0, snowman->last_size, snowman, 0xb);
+    CollisionQuery_Move((CollisionContacts *) snowman->collider, &snowman->position, &snowman->last_position, 0,
+                        snowman->last_size, snowman, 0xb);
     snowman->last_position = snowman->position;
     snowman->body.rolling.start_position = snowman->last_position;
     snowman->last_collisions = snowman->collisions;
 
     Snowman_UpdateModels(snowman, 0, 0);
     SoundEmitter_StopB(snowman_sound(snowman));
-    func_0203edd0(snowman);
+    SceneObjectBase_ClearApproach((SceneObjectBase *) snowman);
     Snowman_Register(snowman);
 }
 CLEAN_AS(func_ov003_0221b414, Snowman_Init)
@@ -1226,11 +1183,11 @@ static void destroy_parts(Snowman *snowman)
     snowman->receiver_vtable = data_ov003_02238314;
     SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) snowman->sound);
     SnowmanBody_Destroy(&snowman->body.body);
-    func_02032c50(snowman->collider);
-    func_02055764(&snowman->face_model);
-    func_02055764(&snowman->ball_model);
-    func_02066994(&snowman->receiver_vtable);
-    func_0203f080(snowman);
+    CollisionContacts_Destroy((CollisionContacts *) snowman->collider);
+    ModelObject_DestructComplete((ModelObject *) &snowman->face_model);
+    ModelObject_DestructComplete((ModelObject *) &snowman->ball_model);
+    TalkReceiver_Destruct((TalkReceiver *) &snowman->receiver_vtable);
+    SceneObjectBase_DestructBase((SceneObjectBase *) snowman);
 }
 
 /* func_ov003_0221b5f8 (the deleting destructor): the destructor's work, then the memory freed
@@ -1255,13 +1212,13 @@ CLEAN_AS(func_ov003_0221b668, Snowman_Destroy)
  * models, the collider, the body and the sound; nothing under it. */
 Snowman *Snowman_Construct(Snowman *snowman)
 {
-    func_0203f130(snowman);
-    func_02066a30(&snowman->receiver_vtable);
+    SceneObjectBase_Construct((SceneObjectBase *) snowman);
+    TalkReceiver_ConstructBase((TalkReceiver *) &snowman->receiver_vtable);
     snowman->vtable = data_ov003_022382ac;
     snowman->receiver_vtable = data_ov003_02238314;
-    func_0205577c(&snowman->ball_model);
-    func_0205577c(&snowman->face_model);
-    func_02032c64(snowman->collider);
+    ModelObject_Construct((ModelObject *) &snowman->ball_model);
+    ModelObject_Construct((ModelObject *) &snowman->face_model);
+    CollisionContacts_Construct((CollisionContacts *) snowman->collider);
     SnowmanBody_Construct(&snowman->body.body);
     SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) (void *) snowman->sound);
     snowman->item_under = SNOWMAN_NO_ITEM;
@@ -1285,7 +1242,7 @@ SnowmanBody *SnowmanBody_Destroy(SnowmanBody *body)
 {
     body->vtable = data_ov003_02238280;
     body->hit = 0;
-    func_02089c58(body);
+    FieldOwnedBody_Destruct((FieldOwnedBody *) body);
     return body;
 }
 CLEAN_AS(func_ov003_0221b75c, SnowmanBody_Destroy)
@@ -1293,7 +1250,7 @@ CLEAN_AS(func_ov003_0221b75c, SnowmanBody_Destroy)
 /* func_ov003_0221b77c: the body's constructor: its base's, then its vtable, not hit. */
 SnowmanBody *SnowmanBody_Construct(SnowmanBody *body)
 {
-    func_02089ca4(body);
+    FieldOwnedBody_Construct((FieldOwnedBody *) body);
     body->vtable = data_ov003_02238280;
     body->hit = 0;
     return body;

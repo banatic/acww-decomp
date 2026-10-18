@@ -20,21 +20,21 @@
 #include "main/session_players.h"
 #include "main/shadow.h"
 
-static_assert(offsetof(HouseRoachActor, walk_speed) == 0x0d4, "roach walk speed");
-static_assert(offsetof(HouseRoachActor, contacts) == 0x0dc, "roach contacts");
-static_assert(offsetof(HouseRoachActor, state) == 0x10c, "roach state");
-static_assert(offsetof(HouseRoachActor, sound) == 0x114, "roach sound");
-static_assert(offsetof(HouseRoachActor, model) == 0x120, "roach model");
-static_assert(offsetof(HouseRoachActor, body) == 0x1d8, "roach body");
-static_assert(offsetof(HouseRoachActor, body.base.body.touched) == 0x214, "roach body touched");
-static_assert(offsetof(HouseRoachActor, start_angle) == 0x228, "roach start angle");
-static_assert(offsetof(HouseRoachActor, timer) == 0x22c, "roach timer");
-static_assert(offsetof(HouseRoachActor, feelers) == 0x230, "roach feelers");
-static_assert(offsetof(HouseRoachActor, feelers_last) == 0x248, "roach feelers before");
-static_assert(offsetof(HouseRoachActor, blocked) == 0x260, "roach blocked");
-static_assert(offsetof(HouseRoachActor, turn) == 0x262, "roach turn");
-static_assert(offsetof(HouseRoachActor, sound_state) == 0x264, "roach sound state");
-static_assert(sizeof(HouseRoachActor) == 0x268, "roach");
+static_assert(offsetof(HouseRoach, walk_speed) == 0x0d4, "roach walk speed");
+static_assert(offsetof(HouseRoach, contacts) == 0x0dc, "roach contacts");
+static_assert(offsetof(HouseRoach, state) == 0x10c, "roach state");
+static_assert(offsetof(HouseRoach, sound) == 0x114, "roach sound");
+static_assert(offsetof(HouseRoach, model) == 0x120, "roach model");
+static_assert(offsetof(HouseRoach, body) == 0x1d8, "roach body");
+static_assert(offsetof(HouseRoach, body.base.body.touched) == 0x214, "roach body touched");
+static_assert(offsetof(HouseRoach, start_angle) == 0x228, "roach start angle");
+static_assert(offsetof(HouseRoach, timer) == 0x22c, "roach timer");
+static_assert(offsetof(HouseRoach, feelers) == 0x230, "roach feelers");
+static_assert(offsetof(HouseRoach, feelers_last) == 0x248, "roach feelers before");
+static_assert(offsetof(HouseRoach, blocked) == 0x260, "roach blocked");
+static_assert(offsetof(HouseRoach, turn) == 0x262, "roach turn");
+static_assert(offsetof(HouseRoach, sound_state) == 0x264, "roach sound state");
+static_assert(sizeof(HouseRoach) == 0x268, "roach");
 static_assert(offsetof(AnimatedModel, object.unk_64) == 0x64, "model matrix");
 static_assert(offsetof(Process, param) == 0x08, "process param");
 
@@ -112,13 +112,13 @@ extern void func_020012dc(void *object);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
-static AnimatedModel *roach_model(HouseRoachActor *roach)
+static AnimatedModel *roach_model(HouseRoach *roach)
 {
     return (AnimatedModel *) (void *) roach->model;
 }
 
 /* Its process's param, which is its alpha. */
-static u32 *roach_alpha(HouseRoachActor *roach)
+static u32 *roach_alpha(HouseRoach *roach)
 {
     return &((Process *) (void *) roach)->param;
 }
@@ -137,21 +137,21 @@ static s16 random_time(int range, unsigned int extra)
 /* func_ov004_0223d608 (vtable slot 3): HouseRoach_Release.
  * QUIRK: nothing is returned in C; the ROM's code leaves HouseRoach_Release's 1 as its
  * result. */
-void HouseRoach_Remove(HouseRoachActor *roach)
+void HouseRoach_Remove(HouseRoach *roach)
 {
     HouseRoach_Release(roach);
 }
 CLEAN_AS(func_ov004_0223d608, HouseRoach_Remove)
 
 /* func_ov004_0223d610 (vtable slot 6): HouseRoach_Update (its result is left as the ROM's). */
-void HouseRoach_Execute(HouseRoachActor *roach)
+void HouseRoach_Execute(HouseRoach *roach)
 {
     HouseRoach_Update(roach);
 }
 CLEAN_AS(func_ov004_0223d610, HouseRoach_Execute)
 
 /* func_ov004_0223d618 (vtable slot 0): loaded in a room of the house; 1 elsewhere. */
-int HouseRoach_Create(HouseRoachActor *roach)
+int HouseRoach_Create(HouseRoach *roach)
 {
     if (SceneKinds_CurrentIsHouseRoom() != 0) {
         return HouseRoach_Load(roach);
@@ -161,7 +161,7 @@ int HouseRoach_Create(HouseRoachActor *roach)
 CLEAN_AS(func_ov004_0223d618, HouseRoach_Create)
 
 /* func_ov004_0223d634 (vtable slot 9): HouseRoach_Draw (its result is left as the ROM's). */
-void HouseRoach_DrawPhase(HouseRoachActor *roach)
+void HouseRoach_DrawPhase(HouseRoach *roach)
 {
     HouseRoach_Draw(roach);
 }
@@ -181,7 +181,7 @@ static s16 turned(s16 heading, int left)
  * first way being -), and else wiggles by the shared counter; and it asks for its rustle.
  * Its heading is set to the result; 1.
  * QUIRK: the angles are compared only when both are on the same side of 0 (or one is 0). */
-int HouseRoach_Run(HouseRoachActor *roach)
+int HouseRoach_Run(HouseRoach *roach)
 {
     s16 heading = roach->actor.angle[1];
     Vec3 *position = &roach->actor.position;
@@ -255,7 +255,7 @@ int HouseRoach_Run(HouseRoachActor *roach)
 CLEAN_AS(func_ov004_0223d63c, HouseRoach_Run)
 
 /* func_ov004_0223d82c: its body for this frame, at its position, entered for the touches. */
-void HouseRoach_SetBody(HouseRoachActor *roach)
+void HouseRoach_SetBody(HouseRoach *roach)
 {
     FieldOwnedPointBody_Set(&roach->body, &roach->actor, &roach->actor.position, HOUSE_ROACH_RADIUS, HOUSE_ROACH_BODY_HEIGHT,
                             HOUSE_ROACH_BODY_FLAGS, HOUSE_ROACH_BODY_TOUCHES, 0, 0xff, HOUSE_ROACH_ONE);
@@ -268,7 +268,7 @@ CLEAN_AS(func_ov004_0223d82c, HouseRoach_SetBody)
  * one there moving nearer than 4.0 makes it run for 2 to 5 times 20 frames, turned away from
  * the nearer of the two (HouseRoach_NearestOther).
  * QUIRK: the time runs down once for each of the two there, so twice a frame with both. */
-void HouseRoach_Stand(HouseRoachActor *roach)
+void HouseRoach_Stand(HouseRoach *roach)
 {
     Vec3 *position = &roach->actor.position;
     int outcome = 0; /* 1: its time was up, 2: one came near */
@@ -304,7 +304,7 @@ CLEAN_AS(func_ov004_0223d87c, HouseRoach_Stand)
 
 /* func_ov004_0223d958: the nearer to it of the player and the villager, by the sum of the
  * distances along X and Z (the player when as near); either when the other is missing. */
-Actor *HouseRoach_NearestOther(HouseRoachActor *roach)
+Actor *HouseRoach_NearestOther(HouseRoach *roach)
 {
     Actor *player = roach_player();
     Actor *villager = data_ov004_02259a14;
@@ -351,7 +351,7 @@ static void place_feeler(Vec3 *feeler, int distance, u16 angle)
 /* func_ov004_0223d9c4: both feelers and where they were before start at its position; then
  * the first is put ahead at `spread` to one side of its heading, the second at `spread` to the
  * other. */
-void HouseRoach_SetFeelers(HouseRoachActor *roach, int distance, int spread)
+void HouseRoach_SetFeelers(HouseRoach *roach, int distance, int spread)
 {
     const Vec3 *position = &roach->actor.position;
     s16 heading = roach->actor.angle[1];
@@ -367,8 +367,7 @@ CLEAN_AS(func_ov004_0223d9c4, HouseRoach_SetFeelers)
 /* One feeler moved by the room's collision from where it was (its own position when that has
  * an X or Z of 0): whether it is blocked, by ground above 0x200 under it, by being above 1.0,
  * or by touching a wall or a post. */
-static int feeler_blocked(HouseRoachActor *roach, CollisionContacts *contacts, const CollisionGround *ground, int index,
-                          s16 angle)
+static int feeler_blocked(HouseRoach *roach, CollisionContacts *contacts, const CollisionGround *ground, int index, s16 angle)
 {
     Vec3 *feeler = &roach->feelers[index];
     Vec3 *last = &roach->feelers_last[index];
@@ -384,7 +383,7 @@ static int feeler_blocked(HouseRoachActor *roach, CollisionContacts *contacts, c
 /* func_ov004_0223db08: which feelers are blocked: 1 for the first, 2 for the second.
  * QUIRK: the ground under each is the one at its point before the collision moves it, and the
  * contacts are not cleared between the two. */
-unsigned char HouseRoach_FeelersBlocked(HouseRoachActor *roach)
+unsigned char HouseRoach_FeelersBlocked(HouseRoach *roach)
 {
     unsigned char result = 0;
     CollisionContacts contacts;
@@ -410,7 +409,7 @@ CLEAN_AS(func_ov004_0223db08, HouseRoach_FeelersBlocked)
 /* func_ov004_0223dc68: HOUSE_ROACH_SOUND_RUSTLE notes it asked and plays the rustle when it is
  * the one chosen to make it, else asks to be (HOUSE_ROACH_ASKING); the others play their sound
  * held. */
-void HouseRoach_PlaySound(HouseRoachActor *roach, int sound)
+void HouseRoach_PlaySound(HouseRoach *roach, int sound)
 {
     switch (sound) {
         case HOUSE_ROACH_SOUND_RUSTLE:
@@ -433,7 +432,7 @@ CLEAN_AS(func_ov004_0223dc68, HouseRoach_PlaySound)
 
 /* func_ov004_0223dccc: its model is released, it is marked released and made away with
  * (param 0xffff), and its sound released; 1. */
-int HouseRoach_Release(HouseRoachActor *roach)
+int HouseRoach_Release(HouseRoach *roach)
 {
     ModelObject_Release(&roach_model(roach)->object);
     roach->life = HOUSE_ROACH_RELEASED;
@@ -446,7 +445,7 @@ CLEAN_AS(func_ov004_0223dccc, HouseRoach_Release)
 /* func_ov004_0223dd04: unless released: its alpha is kept at most 0x1f and its model drawn
  * with it (polygon ID 3, the alpha of every polygon open to change); its shadow too while it is
  * out at full alpha; 1. */
-int HouseRoach_Draw(HouseRoachActor *roach)
+int HouseRoach_Draw(HouseRoach *roach)
 {
     if (roach->life != HOUSE_ROACH_RELEASED) {
         AnimatedModel *model = roach_model(roach);
@@ -468,7 +467,7 @@ CLEAN_AS(func_ov004_0223dd04, HouseRoach_Draw)
 
 /* func_ov004_0223dd90: whether it was stepped on: touched (and not jumping) by the player's
  * body, or else a villager's, while that one moves; it then vanishes. */
-int HouseRoach_CheckStepped(HouseRoachActor *roach)
+int HouseRoach_CheckStepped(HouseRoach *roach)
 {
     Actor *player = roach_player();
     if (roach->body.base.body.touched != 0 && roach->jumping == 0) {
@@ -491,7 +490,7 @@ CLEAN_AS(func_ov004_0223dd90, HouseRoach_CheckStepped)
 /* func_ov004_0223de14: found 0xc00 or higher, it goes back to its height of the frame before;
  * when its move also put it on the ground, it vanishes there, put on the ground's height under
  * it (1). */
-int HouseRoach_CheckRaised(HouseRoachActor *roach)
+int HouseRoach_CheckRaised(HouseRoach *roach)
 {
     if (roach->actor.position.y >= HOUSE_ROACH_RAISED) {
         roach->actor.position.y = roach->actor.last_position.y;
@@ -514,7 +513,7 @@ CLEAN_AS(func_ov004_0223de14, HouseRoach_CheckRaised)
  * alpha goes up by 2 and it moves; else (leaving) it goes down by 1. While its alpha is not 0
  * its pitch follows the globe and its model's matrix is set; at 0 it is released. Its sound
  * state goes back to quiet when it did not ask for its rustle; 1. */
-int HouseRoach_Update(HouseRoachActor *roach)
+int HouseRoach_Update(HouseRoach *roach)
 {
     u32 *alpha = roach_alpha(roach);
     roach->sound_asked = 0;
@@ -557,7 +556,7 @@ CLEAN_AS(func_ov004_0223de70, HouseRoach_Update)
 
 /* func_ov004_0223df48: a frame while it fades in: it moves at its walk speed but keeps its
  * height of the frame before; its sound follows it. */
-void HouseRoach_StepAppearing(HouseRoachActor *roach)
+void HouseRoach_StepAppearing(HouseRoach *roach)
 {
     roach->actor.speed = roach->walk_speed;
     HouseRoach_Move(roach);
@@ -576,7 +575,7 @@ CLEAN_AS(func_ov004_0223df48, HouseRoach_StepAppearing)
  * BUG: the boxes' centres have no height in the ROM (whatever the stack held); 0 here.
  * REQUIRES: the scene is a room of the house (else the ROM's code reads one box it never
  * set). */
-void HouseRoach_Move(HouseRoachActor *roach)
+void HouseRoach_Move(HouseRoach *roach)
 {
     CollisionBox boxes[HOUSE_ROACH_KEEP_OUT_BOXES];
     Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};
@@ -655,7 +654,7 @@ CLEAN_AS(func_ov004_0223df88, HouseRoach_Move)
  * jumping, then standing for 3 to 12 times 20 frames; vanishing (an effect at it, its alpha
  * starts down, it is leaving and plays its sound); or, just made, standing (3 to 12) or running
  * (3 to 6 times 20 frames) at even odds. Its sound follows it. */
-void HouseRoach_Act(HouseRoachActor *roach)
+void HouseRoach_Act(HouseRoach *roach)
 {
     if (roach->state != HOUSE_ROACH_VANISH) {
         HouseRoach_Move(roach);
@@ -698,7 +697,7 @@ CLEAN_AS(func_ov004_0223e1f0, HouseRoach_Act)
 /* func_ov004_0223e2f0: its model (shared as "GOKI"), a frame heap of 0x5000 bytes for its
  * files, its visibility animation started and attached, its sound; its heading kept, its
  * gravity, its walk speed, not jumping, quiet; 1. */
-int HouseRoach_Load(HouseRoachActor *roach)
+int HouseRoach_Load(HouseRoach *roach)
 {
     AnimatedModel *model = roach_model(roach);
     ModelObject_LoadShared(&model->object, HOUSE_ROACH_MODEL_NAME, data_ov004_022561a4);
@@ -723,14 +722,14 @@ int HouseRoach_Load(HouseRoachActor *roach)
 CLEAN_AS(func_ov004_0223e2f0, HouseRoach_Load)
 
 /* func_ov004_0223e3d4 */
-void HouseRoach_SetSoundState(HouseRoachActor *roach, int state)
+void HouseRoach_SetSoundState(HouseRoach *roach, int state)
 {
     roach->sound_state = state;
 }
 CLEAN_AS(func_ov004_0223e3d4, HouseRoach_SetSoundState)
 
 /* func_ov004_0223e3e0 */
-int HouseRoach_SoundState(HouseRoachActor *roach)
+int HouseRoach_SoundState(HouseRoach *roach)
 {
     return roach->sound_state;
 }
@@ -738,7 +737,7 @@ CLEAN_AS(func_ov004_0223e3e0, HouseRoach_SoundState)
 
 /* func_ov004_0223e3ec: the villager is the last actor found in the actor table's eight kind
  * 0xe entries; one found before stays when none is. */
-void HouseRoach_FindVillager(HouseRoachActor *roach)
+void HouseRoach_FindVillager(HouseRoach *roach)
 {
     (void) roach;
     for (u8 i = 0; i < HOUSE_ROACH_VILLAGER_ENTRIES; i++) {
@@ -752,7 +751,7 @@ CLEAN_AS(func_ov004_0223e3ec, HouseRoach_FindVillager)
 
 /* The destructor: its members in the reverse order, then the actor's part (out of the actors'
  * list) and the process. */
-static void HouseRoach_destruct(HouseRoachActor *roach)
+static void HouseRoach_destruct(HouseRoach *roach)
 {
     roach->actor.vtable = data_ov004_0225622c;
     __cxa_vec_cleanup(roach->feelers_last, HOUSE_ROACH_FEELERS, sizeof(Vec3), func_020012dc);
@@ -767,7 +766,7 @@ static void HouseRoach_destruct(HouseRoachActor *roach)
 }
 
 /* func_ov004_0223e418: the destructor that frees it. */
-HouseRoachActor *HouseRoach_Delete(HouseRoachActor *roach)
+HouseRoach *HouseRoach_Delete(HouseRoach *roach)
 {
     HouseRoach_destruct(roach);
     Heap_FreeAux(roach);
@@ -776,7 +775,7 @@ HouseRoachActor *HouseRoach_Delete(HouseRoachActor *roach)
 CLEAN_AS(func_ov004_0223e418, HouseRoach_Delete)
 
 /* func_ov004_0223e4a0 */
-HouseRoachActor *HouseRoach_Destruct(HouseRoachActor *roach)
+HouseRoach *HouseRoach_Destruct(HouseRoach *roach)
 {
     HouseRoach_destruct(roach);
     return roach;
@@ -785,7 +784,7 @@ CLEAN_AS(func_ov004_0223e4a0, HouseRoach_Destruct)
 
 /* func_ov004_0223e520: the constructor: the actor, its speeds, contacts, sound, model, body
  * and feelers; out, not blocked, not jumping, to decide what it does. */
-HouseRoachActor *HouseRoach_Construct(HouseRoachActor *roach)
+HouseRoach *HouseRoach_Construct(HouseRoach *roach)
 {
     Actor_Construct(&roach->actor);
     roach->actor.vtable = data_ov004_0225622c;

@@ -5,6 +5,8 @@
 #include "design_info.h"
 #include "design_sets.h"
 #include "player_record.h"
+#include "c_library.h"
+#include "rom_file.h"
 
 static_assert(sizeof(DesignModel) == 0x2c4, "a clothing texture file");
 
@@ -15,11 +17,6 @@ static_assert(sizeof(DesignModel) == 0x2c4, "a clothing texture file");
 #define CLOTH_PATH_SIZE 0x20
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
-/* Reads the file at `path` into `buffer` (`size` -1: the whole file); nonzero when read. */
-extern int func_02064af4(const char *path, void *buffer, int size);
-/* The same, the path formatted from `format` and what follows. */
-extern int func_0206490c(void *buffer, int size, const char *format, ...);
 /* The block of textures of a texture file read whole. */
 extern G3dResTex *func_021077e8(void *file);
 /* An item code's destructor (nothing), registered for the static default codes. */
@@ -75,7 +72,7 @@ int CarpetTexture_Load(u8 *file, const ItemCode *item)
 {
     int carpet = index_in(*item, CARPET_FIRST, CARPET_LAST);
     if (carpet != -1) {
-        return func_0206490c(file, -1, data_020da8c4, carpet) != 0;
+        return RomFile_ReadFormatted(file, -1, data_020da8c4, carpet) != 0;
     }
     if ((data_021c6974 & 1) == 0) {
         data_021c6970 = CARPET_FIRST;
@@ -195,8 +192,8 @@ int ClothTexture_Load(DesignModel *file, const ItemCode *item, u8 *player)
     int cloth = index_in(code, CLOTH_FIRST, CLOTH_LAST);
     if (cloth != -1) {
         char path[CLOTH_PATH_SIZE];
-        func_02064328(path, data_020da8dc, cloth >> 4, cloth);
-        return func_02064af4(path, file, -1) != 0;
+        CLib_SPrintf(path, data_020da8dc, cloth >> 4, cloth);
+        return RomFile_Read(path, file, -1) != 0;
     }
 
     if ((data_021c6988 & 1) == 0) {

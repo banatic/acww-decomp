@@ -9,6 +9,7 @@
 #include "room_object_anims.h"
 #include "room_object_body.h"
 #include "room_object_life.h"
+#include "main/room_sync.h"
 
 static_assert(offsetof(RoomObject02252e00, state) == 0x844, "state");
 static_assert(sizeof(RoomObject02252e00) == 0x848, "the size RoomObject02252e00_Create allocates");
@@ -36,12 +37,9 @@ extern const MemberPointer data_ov004_02250340, data_ov004_022502a0;
 extern const u8 data_ov004_02252e00[];
 extern const u8 data_ov004_02252eac[];
 
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-
 static int RoomObject02252e00_request(RoomObject02252e00 *object, int state)
 {
-    return func_0205265c((unsigned int) (uintptr_t) object, state, SLOT_70_VALUE, 1);
+    return RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
 }
 
 /* func_ov004_02219e54 (update of PLAYING): furniture 0xb9 and 0xba with a change of the switch
@@ -69,8 +67,7 @@ void RoomObject02252e00_UpdatePlaying(RoomObject02252e00 *object)
     } else {
         RoomObject_PlaySound0(base);
     }
-    if (RoomObject_Number(base) == FURNITURE_0207 &&
-        FrameCtrl_Passed((const FrameCtrl *) (const void *) base->joint_anim, FURNITURE_0207_SOUND_FRAME)) {
+    if (RoomObject_Number(base) == FURNITURE_0207 && FrameCtrl_Passed(&base->model.frames, FURNITURE_0207_SOUND_FRAME)) {
         RoomObject_PlaySound2(base);
     }
 }

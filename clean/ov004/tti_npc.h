@@ -1,7 +1,7 @@
 /* A special character indoors drawn with the model npc_sp/model/tti, without a talk scene of
  * its own: a special character's scene object (main's special_scene_object.h) of vtable
- * data_ov004_02254a38, 0x65c bytes (made by func_ov004_02225cd4). data_ov004_02258200 points
- * to it from its start (func_ov004_02225c68) until it may leave (func_ov004_02225c44).
+ * data_ov004_02254a38, 0x65c bytes (made by TtiNpc_Create). data_ov004_02258200 points
+ * to it from its start (TtiNpc_Start) until it may leave (TtiNpc_Leave).
  *
  * Its states (0x654), each an entry and an update function (C++ members taking it), from the
  * table data_ov004_02258204 (filled at start-up by __sinit_ov004_0224e968), set by

@@ -4,6 +4,7 @@
 #include "acre_tile.h"
 #include "clean.h"
 #include "town_spot.h"
+#include "main_random.h"
 
 /* The tiles NearSpot_Pick searches: rows from 5 tiles to +z of the position, starting 8 tiles
  * to the side, and columns from that side, from the position's row to 4 tiles to +z; each row
@@ -16,7 +17,6 @@
 extern AcreMap *data_021c80bc; /* the map of the scene */
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 
 /* The tests handed to NearSpot_PickInRange: the game's own functions. */
 extern int func_02087dd0(int x, int z, AcreMap *map); /* NearSpot_ColumnTileSuits */
@@ -90,7 +90,7 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
             }
         }
         if (row_found != 0) {
-            if (column_found != 0 && (func_020644cc(10) & 1) != 0) {
+            if (column_found != 0 && (MainRandom_Below(10) & 1) != 0) {
                 picked = &in_column;
             } else {
                 picked = &in_row;
@@ -109,7 +109,7 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
     }
     AcreTile_TileCentre(&centre, (u32) picked->x, (u32) picked->z);
     NearSpot_SetFromPosition(spot, &centre);
-    u32 facing = func_020644cc(4) & 3;
+    u32 facing = MainRandom_Below(4) & 3;
     spot->flags = (u8) ((spot->flags & ~NEAR_SPOT_FACING_MASK) | (facing << NEAR_SPOT_FACING_SHIFT));
     NearSpot_SetFound(spot);
     return 1;
@@ -146,7 +146,7 @@ int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int
     if (count <= 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(count);
+    int pick = (int) MainRandom_Below(count);
     row = 0;
     bit = 0;
     for (int i = first; i <= last; i++) {
@@ -257,16 +257,16 @@ void NearSpot_Clear(NearSpot *spot)
 }
 CLEAN_AS(func_02087e64, NearSpot_Clear)
 
-/* func_02087e70: the constructor does nothing. */
-void NearSpot_Construct(NearSpot *spot)
-{
-    (void) spot;
-}
-CLEAN_AS(func_02087e70, NearSpot_Construct)
-
-/* func_02087e74: the destructor does nothing. */
+/* func_02087e70: the destructor does nothing. */
 void NearSpot_Destruct(NearSpot *spot)
 {
     (void) spot;
 }
-CLEAN_AS(func_02087e74, NearSpot_Destruct)
+CLEAN_AS(func_02087e70, NearSpot_Destruct)
+
+/* func_02087e74: the constructor does nothing. */
+void NearSpot_Construct(NearSpot *spot)
+{
+    (void) spot;
+}
+CLEAN_AS(func_02087e74, NearSpot_Construct)

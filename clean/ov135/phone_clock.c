@@ -20,6 +20,7 @@
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
+#include "ov134/clock_setter.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(PhoneClock, return_sub_state) == 0x94, "bytes");
 static_assert(offsetof(PhoneClock, cursor) == 0x95 && offsetof(PhoneClock, cursor_sprite) == 0x98, "sprite");
@@ -50,45 +51,6 @@ extern u8 data_021f6c58, data_021f6c54;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-/* Overlay 134's object, the clock's fields (called by symbol; what each does is told where it
- * is used). */
-extern int func_ov134_022997b0(void *editor);
-extern int func_ov134_022997dc(void *editor, void *keys);
-extern void func_ov134_02299980(unsigned char *editor, int value);
-extern int func_ov134_022999ac(void *editor);
-extern int func_ov134_022999e0(void *editor);
-extern int func_ov134_02299a60(void *editor);
-extern int func_ov134_02299a84(void *editor);
-extern void func_ov134_02299a90(void *editor);
-extern void func_ov134_02299af0(void *editor, int y);
-extern void func_ov134_02299b18(int *editor, int y);
-extern int func_ov134_02299b70(void *editor);
-extern int func_ov134_0229a1f0(void *editor, int x, int y);
-extern int func_ov134_0229a24c(void *editor);
-extern void func_ov134_0229a398(void *editor);
-extern void func_ov134_0229a3e4(void *editor);
-extern int func_ov134_0229a4e4(void *editor);
-extern void func_ov134_0229a5c8(void *editor, int field);
-extern unsigned char func_ov134_0229a8a0(void *editor);
-extern int func_ov134_0229abd4(void *editor, int x, int y);
-extern int func_ov134_0229b014(int editor);
-extern int func_ov134_0229b034(void *editor);
-extern void func_ov134_0229b108(void *editor, int x, int y);
-extern int func_ov134_0229b168(void *editor, int x, int y);
-extern void func_ov134_0229b220(char *editor, void *b, char *y);
-extern int func_ov134_0229b954(void *editor);
-extern void func_ov134_0229ba10(void *editor, unsigned int message);
-extern int func_ov134_0229baec(unsigned char *editor);
-extern int func_ov134_0229bbbc(char *editor);
-extern void func_ov134_0229bbdc(int editor, int when);
-extern void func_ov134_0229bbe8(void *editor);
-extern void func_ov134_0229bcac(void *editor);
-extern void func_ov134_0229bcf0(void *editor);
-extern void func_ov134_0229bd2c(int editor);
-extern void func_ov134_0229bd38(void *editor, int a, int b, int c, u8 d);
-extern char *func_ov134_0229beb0(char *editor);
-extern void *func_ov134_0229bed4(void *editor);
-
 /* The panel's buttons of the two places past the fields. */
 #define PHONE_CLOCK_SET_BUTTON 6
 #define PHONE_CLOCK_CANCEL_BUTTON 7
@@ -97,14 +59,11 @@ extern void *func_ov134_0229bed4(void *editor);
 #define PHONE_CLOCK_ANIM_FIELD GLIDER_ANIM_SET_A
 #define PHONE_CLOCK_ANIM_BUTTON GLIDER_ANIM_SET_B
 
-/* overlay 134's answer of no field (PhoneClock_BrowseByTouch, PhoneClock_WaitFieldClosed). */
-#define PHONE_CLOCK_NO_FIELD 6
-
 /* What the parent (overlay 92's) is told when the scene wipes out: the menu closes. */
 #define PHONE_CLOCK_PARENT_CLOSE 0x44
 
 /* GroupParams' mode of overlay 138's screen (group 0x2a), for which the setup asks overlay
- * 134's object for something more (func_ov134_0229bd2c). */
+ * 134's object for something more (ClockSetter_UseMinimum). */
 #define PHONE_CLOCK_MODE_138 0x33
 
 static MenuScene *clock_scene(PhoneClock *self)
@@ -143,7 +102,7 @@ static int clock_at_button(PhoneClock *self)
 static void clock_destroy_members(PhoneClock *self)
 {
     self->base.vtable = data_ov135_0229d610;
-    func_ov134_0229beb0((char *) self->editor);
+    ClockSetter_Destroy(&self->editor);
     ButtonPanel_Destroy(&self->panel);
     Glider0_Destroy(&self->cursor_sprite);
     MenuScene_DestroyBase(clock_scene(self));
@@ -278,12 +237,12 @@ void PhoneClock_HideCursorSprite(PhoneClock *self)
 CLEAN_AS(func_ov135_0229c738, PhoneClock_HideCursorSprite)
 
 /* func_ov135_0229c754: where the cursor sprite points: y. While a field is edited, overlay 134's
- * (func_ov134_022999ac); at a button, the panel button's; else the field's from the table.
+ * (ClockSetter_CursorY); at a button, the panel button's; else the field's from the table.
  * REQUIRES: cursor < 7 while no field is edited; the game reads its table on for others. */
 int PhoneClock_CursorY(PhoneClock *self)
 {
     if (PhoneClock_TestFlags(self, PHONE_CLOCK_FLAG_EDITING)) {
-        return func_ov134_022999ac(self->editor);
+        return ClockSetter_CursorY(&self->editor);
     }
     switch (self->cursor) {
         case PHONE_CLOCK_SET:
@@ -296,11 +255,11 @@ int PhoneClock_CursorY(PhoneClock *self)
 }
 CLEAN_AS(func_ov135_0229c754, PhoneClock_CursorY)
 
-/* func_ov135_0229c7a8: ... x (overlay 134's by func_ov134_022999e0). */
+/* func_ov135_0229c7a8: ... x (overlay 134's by ClockSetter_CursorX). */
 int PhoneClock_CursorX(PhoneClock *self)
 {
     if (PhoneClock_TestFlags(self, PHONE_CLOCK_FLAG_EDITING)) {
-        return func_ov134_022999e0(self->editor);
+        return ClockSetter_CursorX(&self->editor);
     }
     switch (self->cursor) {
         case PHONE_CLOCK_SET:
@@ -341,12 +300,12 @@ void PhoneClock_ResumeEditing(PhoneClock *self)
 CLEAN_AS(func_ov135_0229c858, PhoneClock_ResumeEditing)
 
 /* func_ov135_0229c878: the field edited by the keys: overlay 134's object handed back its own
- * func_ov134_022999ac value (func_ov134_02299980), the field flagged as edited, the cursor
+ * ClockSetter_CursorY value (ClockSetter_CursorToY), the field flagged as edited, the cursor
  * sprite shown at its cursor and the key repeat reset (sub state 7). */
 void PhoneClock_ResumeEditingByKeys(PhoneClock *self)
 {
-    int value = func_ov134_022999ac(self->editor);
-    func_ov134_02299980(self->editor, value);
+    int value = ClockSetter_CursorY(&self->editor);
+    ClockSetter_CursorToY(&self->editor, value);
     PhoneClock_SetFlags(self, PHONE_CLOCK_FLAG_EDITING);
     PhoneClock_ShowCursorAtCursor(self);
     MenuScene_ResetKeyRepeat(clock_scene(self));
@@ -363,34 +322,34 @@ void PhoneClock_ResumeEditingByTouch(PhoneClock *self)
 CLEAN_AS(func_ov135_0229c8b4, PhoneClock_ResumeEditingByTouch)
 
 /* func_ov135_0229c8cc: the field's editing given up: the cursor sprite hidden, no field edited,
- * overlay 134's object told (func_ov134_0229a398, which plays sound 0x2a) and its closing
+ * overlay 134's object told (ClockSetter_CancelList, which plays sound 0x2a) and its closing
  * waited for (sub state 15). */
 void PhoneClock_CancelField(PhoneClock *self)
 {
     PhoneClock_HideCursorSprite(self);
     PhoneClock_ClearFlags(self, PHONE_CLOCK_FLAG_EDITING);
-    func_ov134_0229a398(self->editor);
+    ClockSetter_CancelList(&self->editor);
     MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_FIELD_CLOSE);
 }
 CLEAN_AS(func_ov135_0229c8cc, PhoneClock_CancelField)
 
-/* func_ov135_0229c8f8: the field's editing confirmed: the same, by func_ov134_0229a3e4 (which
+/* func_ov135_0229c8f8: the field's editing confirmed: the same, by ClockSetter_PickRow (which
  * plays sound 0x29 and keeps the value). */
 void PhoneClock_ConfirmField(PhoneClock *self)
 {
     PhoneClock_HideCursorSprite(self);
     PhoneClock_ClearFlags(self, PHONE_CLOCK_FLAG_EDITING);
-    func_ov134_0229a3e4(self->editor);
+    ClockSetter_PickRow(&self->editor);
     MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_FIELD_CLOSE);
 }
 CLEAN_AS(func_ov135_0229c8f8, PhoneClock_ConfirmField)
 
 /* func_ov135_0229c924: field `field` opened: the cursor sprite hidden, overlay 134's object
- * told (func_ov134_0229a5c8), its opening waited for (sub state 14), state flag 0x40 set. */
+ * told (ClockSetter_OpenList), its opening waited for (sub state 14), state flag 0x40 set. */
 void PhoneClock_OpenField(PhoneClock *self, int field)
 {
     PhoneClock_HideCursorSprite(self);
-    func_ov134_0229a5c8(self->editor, field);
+    ClockSetter_OpenList(&self->editor, field);
     MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_FIELD_OPEN);
     StateFlags_Set40();
 }
@@ -410,8 +369,8 @@ CLEAN_AS(func_ov135_0229c954, PhoneClock_Cancel)
 
 /* func_ov135_0229c97c: the clock set: the panel's button 6 selected, the wipe out next (state 2)
  * once its press is over (sub state 13), main told it was set (GroupParams_SetC4C(1)). The date
- * and time edited (func_ov134_0229bbdc fills them) are kept in data_021cfc98, state flag 8 or
- * 0x20 set as func_ov134_0229bbbc says, and the town's offset from the RTC (data_021f3b74, in
+ * and time edited (ClockSetter_CopyValue fills them) are kept in data_021cfc98, state flag 8 or
+ * 0x20 set as ClockSetter_IsBeforeMin says, and the town's offset from the RTC (data_021f3b74, in
  * the state block) made that date and time's: its minutes and seconds from the RTC's now, each
  * computed from its own copy (MI_CpuCopy8). Then the game's clock read again (Clock_Init). */
 void PhoneClock_SetClock(PhoneClock *self)
@@ -422,9 +381,9 @@ void PhoneClock_SetClock(PhoneClock *self)
     GroupParams_SetC4C(1);
 
     DateTime when = {0};
-    func_ov134_0229bbdc((int) (uintptr_t) self->editor, (int) (uintptr_t) &when);
+    ClockSetter_CopyValue(&self->editor, &when);
     Global021cfc98_CopyIn(&when);
-    if (func_ov134_0229bbbc((char *) self->editor)) {
+    if (ClockSetter_IsBeforeMin(&self->editor)) {
         StateFlags_Set8();
     } else {
         StateFlags_Set20();
@@ -471,15 +430,15 @@ void PhoneClock_ResumeByTouch(PhoneClock *self)
 CLEAN_AS(func_ov135_0229ca58, PhoneClock_ResumeByTouch)
 
 /* func_ov135_0229ca70 (sub state 15): once overlay 134's object has closed the field
- * (func_ov134_0229a24c), the cursor at the field it answers (func_ov134_0229a8a0; its 6, no
+ * (ClockSetter_CloseListStep), the cursor at the field it answers (ClockSetter_Focus; its 6, no
  * field, puts it at the set button) and back to the fields. */
 void PhoneClock_WaitFieldClosed(PhoneClock *self)
 {
-    if (func_ov134_0229a24c(self->editor) == 0) {
+    if (ClockSetter_CloseListStep(&self->editor) == 0) {
         return;
     }
-    u8 field = func_ov134_0229a8a0(self->editor);
-    if (field == PHONE_CLOCK_NO_FIELD) {
+    u8 field = ClockSetter_Focus(&self->editor);
+    if (field == CLOCK_SETTER_NO_FIELD) {
         self->cursor = PHONE_CLOCK_SET;
     } else {
         self->cursor = field;
@@ -489,10 +448,10 @@ void PhoneClock_WaitFieldClosed(PhoneClock *self)
 CLEAN_AS(func_ov135_0229ca70, PhoneClock_WaitFieldClosed)
 
 /* func_ov135_0229caac (sub state 14): once overlay 134's object has opened the field
- * (func_ov134_0229a4e4), on to editing it. */
+ * (ClockSetter_OpenListStep), on to editing it. */
 void PhoneClock_WaitFieldOpen(PhoneClock *self)
 {
-    if (func_ov134_0229a4e4(self->editor)) {
+    if (ClockSetter_OpenListStep(&self->editor)) {
         PhoneClock_ResumeEditing(self);
     }
 }
@@ -529,8 +488,8 @@ void PhoneClock_ShowSpriteWhenDone(PhoneClock *self)
 CLEAN_AS(func_ov135_0229cb30, PhoneClock_ShowSpriteWhenDone)
 
 /* func_ov135_0229cb54 (sub state 11): once the cursor sprite's press is over: while a field is
- * edited, A held is followed (sub state 8) when func_ov134_02299b70 says so, else the field is
- * confirmed when func_ov134_022997b0 says so, else the sprite shows its third animation and
+ * edited, A held is followed (sub state 8) when ClockSetter_PressThumbByKey says so, else the field is
+ * confirmed when ClockSetter_PickCursorRow says so, else the sprite shows its third animation and
  * the editing goes on (sub state 7). With no field edited, the place at the cursor is picked:
  * the set button, the cancel button or a field. */
 void PhoneClock_PickWhenPressed(PhoneClock *self)
@@ -539,9 +498,9 @@ void PhoneClock_PickWhenPressed(PhoneClock *self)
         return;
     }
     if (PhoneClock_TestFlags(self, PHONE_CLOCK_FLAG_EDITING)) {
-        if (func_ov134_02299b70(self->editor)) {
+        if (ClockSetter_PressThumbByKey(&self->editor)) {
             MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_HOLD_A);
-        } else if (func_ov134_022997b0(self->editor)) {
+        } else if (ClockSetter_PickCursorRow(&self->editor)) {
             PhoneClock_ConfirmField(self);
         } else {
             MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_EDIT);
@@ -571,12 +530,12 @@ void PhoneClock_WaitCursorSprite(PhoneClock *self)
 }
 CLEAN_AS(func_ov135_0229cbd8, PhoneClock_WaitCursorSprite)
 
-/* func_ov135_0229cc00 (sub state 9): when overlay 134's object is done (func_ov134_02299a60), the
+/* func_ov135_0229cc00 (sub state 9): when overlay 134's object is done (ClockSetter_SettleThumb), the
  * sprite shows its third animation and the editing goes on (sub state 7); either way the cursor
  * sprite put at the field's cursor. */
 void PhoneClock_WaitEditor(PhoneClock *self)
 {
-    if (func_ov134_02299a60(self->editor) != 0) {
+    if (ClockSetter_SettleThumb(&self->editor) != 0) {
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_EDIT);
         PhoneClock_ShowSpriteThird(self);
     }
@@ -587,24 +546,24 @@ void PhoneClock_WaitEditor(PhoneClock *self)
 CLEAN_AS(func_ov135_0229cc00, PhoneClock_WaitEditor)
 
 /* func_ov135_0229cc48 (sub state 8): while A is held, overlay 134's object stepped
- * (func_ov134_02299a90) and the cursor sprite put at its cursor; once let go, the object told
- * (func_ov134_02299a84) and waited for (sub state 9). */
+ * (ClockSetter_MoveThumbByKeys) and the cursor sprite put at its cursor; once let go, the object told
+ * (ClockSetter_ReleaseThumb) and waited for (sub state 9). */
 void PhoneClock_HoldButtonA(PhoneClock *self)
 {
     if ((data_021fbe40.held & PHONE_CLOCK_PAD_A) != 0) {
-        func_ov134_02299a90(self->editor);
+        ClockSetter_MoveThumbByKeys(&self->editor);
         int x = PhoneClock_CursorX(self);
         int y = PhoneClock_CursorY(self);
         Glider_PlaceAt(&self->cursor_sprite, x, y);
     } else {
-        func_ov134_02299a84(self->editor);
+        ClockSetter_ReleaseThumb(&self->editor);
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_EDIT_WAIT);
     }
 }
 CLEAN_AS(func_ov135_0229cc48, PhoneClock_HoldButtonA)
 
 /* func_ov135_0229cca0 (sub state 7): the field edited by the keys. A touch goes on by touch.
- * Else overlay 134's object takes the repeated keys (func_ov134_022997dc) and answers: 0, no
+ * Else overlay 134's object takes the repeated keys (ClockSetter_ListKeys) and answers: 0, no
  * move (then A presses the cursor sprite and B gives the editing up); 3, the sprite put at its
  * cursor at once; 2, a quick glide there; any other, a glide there. */
 void PhoneClock_EditByKeys(PhoneClock *self)
@@ -614,8 +573,8 @@ void PhoneClock_EditByKeys(PhoneClock *self)
         return;
     }
     u32 keys = MenuScene_LatchRepeatedKeys(clock_scene(self));
-    switch (func_ov134_022997dc(self->editor, (void *) (uintptr_t) keys)) {
-        case 0: {
+    switch (ClockSetter_ListKeys(&self->editor, keys)) {
+        case CLOCK_SETTER_KEYS_NONE: {
             u16 pressed = data_021fbe40.pressed;
             if ((pressed & PHONE_CLOCK_PAD_A) != 0) {
                 PhoneClock_PressCursorSprite(self);
@@ -624,13 +583,13 @@ void PhoneClock_EditByKeys(PhoneClock *self)
             }
             break;
         }
-        case 3: {
+        case CLOCK_SETTER_KEYS_FAST: {
             int x = PhoneClock_CursorX(self);
             int y = PhoneClock_CursorY(self);
             Glider_PlaceAt(&self->cursor_sprite, x, y);
             break;
         }
-        case 2:
+        case CLOCK_SETTER_KEYS_STEPPED:
             PhoneClock_SetFlags(self, PHONE_CLOCK_FLAG_QUICK);
             PhoneClock_GlideToCursor(self);
             break;
@@ -667,36 +626,37 @@ void PhoneClock_BrowseByKeys(PhoneClock *self)
 }
 CLEAN_AS(func_ov135_0229cd38, PhoneClock_BrowseByKeys)
 
-/* func_ov135_0229cdb4 (sub state 5): while the pen is down, overlay 134's object follows its y
- * (func_ov134_02299af0); once it is up, the object told (func_ov134_02299a84) and the editing by
- * touch goes on (sub state 3). */
-void PhoneClock_HoldTouchA(PhoneClock *self)
+/* func_ov135_0229cdb4 (sub state 5): while the pen is down, the list's scroll thumb moves toward
+ * its y (ClockSetter_ThumbTowardPen); once it is up, the thumb let go (ClockSetter_ReleaseThumb)
+ * and the editing by touch goes on (sub state 3). */
+void PhoneClock_ThumbTowardPen(PhoneClock *self)
 {
     if (data_021fbdd8 != 0) {
-        func_ov134_02299af0(self->editor, data_021f6c54);
+        ClockSetter_ThumbTowardPen(&self->editor, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->editor);
+        ClockSetter_ReleaseThumb(&self->editor);
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_EDIT);
     }
 }
-CLEAN_AS(func_ov135_0229cdb4, PhoneClock_HoldTouchA)
+CLEAN_AS(func_ov135_0229cdb4, PhoneClock_ThumbTowardPen)
 
-/* func_ov135_0229cdf0 (sub state 4): the same with func_ov134_02299b18. */
-void PhoneClock_HoldTouchB(PhoneClock *self)
+/* func_ov135_0229cdf0 (sub state 4): the same with ClockSetter_DragThumb. */
+void PhoneClock_DragThumb(PhoneClock *self)
 {
     if (data_021fbdd8 != 0) {
-        func_ov134_02299b18((int *) (void *) self->editor, data_021f6c54);
+        ClockSetter_DragThumb(&self->editor, data_021f6c54);
     } else {
-        func_ov134_02299a84(self->editor);
+        ClockSetter_ReleaseThumb(&self->editor);
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_EDIT);
     }
 }
-CLEAN_AS(func_ov135_0229cdf0, PhoneClock_HoldTouchB)
+CLEAN_AS(func_ov135_0229cdf0, PhoneClock_DragThumb)
 
 /* func_ov135_0229ce2c (sub state 3): the field edited by touch. A button goes on by the keys. A
  * touch that went down or up this frame is handed to overlay 134's object
- * (func_ov134_0229a1f0), which answers: 0, the field confirmed; 1, its editing given up; 3, a
- * hold (sub state 4); 2, the other hold (sub state 5); anything else, nothing. */
+ * (ClockSetter_TouchList), which answers: a row picked, the field confirmed; outside, its editing
+ * given up; the thumb grabbed, it is dragged (sub state 4); the bar touched off the thumb, the
+ * thumb moves toward the pen (sub state 5); anything else, nothing. */
 void PhoneClock_EditByTouch(PhoneClock *self)
 {
     if (MenuScene_TakeButtons(clock_scene(self), 1) != 0) {
@@ -706,18 +666,18 @@ void PhoneClock_EditByTouch(PhoneClock *self)
     if (data_021fbdd8 == 0 || data_021fbddc == 0) {
         return;
     }
-    switch (func_ov134_0229a1f0(self->editor, data_021f6c58, data_021f6c54)) {
-        case 0:
+    switch (ClockSetter_TouchList(&self->editor, data_021f6c58, data_021f6c54)) {
+        case CLOCK_SETTER_TOUCH_PICKED:
             PhoneClock_ConfirmField(self);
             break;
-        case 1:
+        case CLOCK_SETTER_TOUCH_OUTSIDE:
             PhoneClock_CancelField(self);
             break;
-        case 3:
-            MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_HOLD_B);
+        case CLOCK_SETTER_TOUCH_THUMB:
+            MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_DRAG_THUMB);
             break;
-        case 2:
-            MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_HOLD_A);
+        case CLOCK_SETTER_TOUCH_BAR:
+            MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_THUMB_TO_PEN);
             break;
         default:
             break;
@@ -725,29 +685,29 @@ void PhoneClock_EditByTouch(PhoneClock *self)
 }
 CLEAN_AS(func_ov135_0229ce2c, PhoneClock_EditByTouch)
 
-/* func_ov135_0229cec4 (sub state 2): once overlay 134's object has settled (func_ov134_0229b014),
+/* func_ov135_0229cec4 (sub state 2): once overlay 134's object has settled (ClockSetter_SpinHandsHome),
  * back to the fields by touch (sub state 0). */
 void PhoneClock_WaitDragSettled(PhoneClock *self)
 {
-    if (func_ov134_0229b014((int) (uintptr_t) self->editor)) {
+    if (ClockSetter_SpinHandsHome(&self->editor)) {
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_BROWSE);
     }
 }
 CLEAN_AS(func_ov135_0229cec4, PhoneClock_WaitDragSettled)
 
 /* func_ov135_0229cee8 (sub state 1): while the pen is down, overlay 134's object follows it
- * (func_ov134_0229b108); once it is up, the object's func_ov134_0229b034 says whether to wait for
+ * (ClockSetter_DragHand); once it is up, the object's ClockSetter_ReleaseHand says whether to wait for
  * it to settle (sub state 2) or to go back to the fields by touch (sub state 0). */
 void PhoneClock_DragByTouch(PhoneClock *self)
 {
     if (data_021fbdd8 == 0) {
-        if (func_ov134_0229b034(self->editor) != 0) {
+        if (ClockSetter_ReleaseHand(&self->editor) != 0) {
             MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_SETTLE);
         } else {
             MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_BROWSE);
         }
     } else {
-        func_ov134_0229b108(self->editor, data_021f6c58, data_021f6c54);
+        ClockSetter_DragHand(&self->editor, data_021f6c58, data_021f6c54);
     }
 }
 CLEAN_AS(func_ov135_0229cee8, PhoneClock_DragByTouch)
@@ -755,8 +715,8 @@ CLEAN_AS(func_ov135_0229cee8, PhoneClock_DragByTouch)
 /* func_ov135_0229cf3c (sub state 0): the fields by touch. A button goes on by the keys. A touch
  * that went down or up this frame on the panel's button 6 sets the clock, on its button 7
  * leaves it as it was. Else, when overlay 134's object takes the touch as a drag
- * (func_ov134_0229b168), state flag 0x40 is set and the drag followed (sub state 1); and a field
- * the touch is on (func_ov134_0229abd4) is opened.
+ * (ClockSetter_GrabHand), state flag 0x40 is set and the drag followed (sub state 1); and a field
+ * the touch is on (ClockSetter_TouchedField) is opened.
  * QUIRK: the field test runs after a drag was taken too. */
 void PhoneClock_BrowseByTouch(PhoneClock *self)
 {
@@ -777,32 +737,32 @@ void PhoneClock_BrowseByTouch(PhoneClock *self)
     }
     int x = data_021f6c58;
     int y = data_021f6c54;
-    if (func_ov134_0229b168(self->editor, x, y) != 0) {
+    if (ClockSetter_GrabHand(&self->editor, x, y) != 0) {
         StateFlags_Set40();
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_TOUCH_DRAG);
     }
-    int field = func_ov134_0229abd4(self->editor, x, y);
-    if (field != PHONE_CLOCK_NO_FIELD) {
+    int field = ClockSetter_TouchedField(&self->editor, x, y);
+    if (field != CLOCK_SETTER_NO_FIELD) {
         PhoneClock_OpenField(self, field);
     }
 }
 CLEAN_AS(func_ov135_0229cf3c, PhoneClock_BrowseByTouch)
 
-/* func_ov135_0229cff0: the scene's graphics: overlay 134's object's (func_ov134_0229b954) and the
+/* func_ov135_0229cff0: the scene's graphics: overlay 134's object's (ClockSetter_LoadSprites) and the
  * panel's text colours. */
 void PhoneClock_LoadGraphics(PhoneClock *self)
 {
-    func_ov134_0229b954(self->editor);
+    ClockSetter_LoadSprites(&self->editor);
     ButtonPanel_LoadTextColors(&self->panel);
 }
 CLEAN_AS(func_ov135_0229cff0, PhoneClock_LoadGraphics)
 
-/* func_ov135_0229d010: overlay 134's object opened (func_ov134_0229baec, then
- * func_ov134_0229ba10 with message 0x6b). */
+/* func_ov135_0229d010: overlay 134's object opened (ClockSetter_LoadBackground, then
+ * ClockSetter_DrawLabels with message 0x6b). */
 void PhoneClock_OpenEditor(PhoneClock *self)
 {
-    func_ov134_0229baec(self->editor);
-    func_ov134_0229ba10(self->editor, 0x6b);
+    ClockSetter_LoadBackground(&self->editor);
+    ClockSetter_DrawLabels(&self->editor, 0x6b);
 }
 CLEAN_AS(func_ov135_0229d010, PhoneClock_OpenEditor)
 
@@ -820,19 +780,19 @@ void PhoneClock_SetUpLayers(void)
 }
 CLEAN_AS(func_ov135_0229d030, PhoneClock_SetUpLayers)
 
-/* func_ov135_0229d07c: the frame's end: overlay 134's object's (func_ov134_0229bbe8). */
+/* func_ov135_0229d07c: the frame's end: overlay 134's object's (ClockSetter_Update). */
 void PhoneClock_EndFrame(PhoneClock *self)
 {
-    func_ov134_0229bbe8(self->editor);
+    ClockSetter_Update(&self->editor);
 }
 CLEAN_AS(func_ov135_0229d07c, PhoneClock_EndFrame)
 
 /* func_ov135_0229d08c: the frame's start: the panel's texts closed, then overlay 134's object's
- * (func_ov134_0229bcac). */
+ * (ClockSetter_EndFrame). */
 void PhoneClock_BeginFrame(PhoneClock *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
-    func_ov134_0229bcac(self->editor);
+    ClockSetter_EndFrame(&self->editor);
 }
 CLEAN_AS(func_ov135_0229d08c, PhoneClock_BeginFrame)
 
@@ -851,23 +811,23 @@ void PhoneClock_BeginInteractiveFrame(PhoneClock *self)
 }
 CLEAN_AS(func_ov135_0229d0b0, PhoneClock_BeginInteractiveFrame)
 
-/* func_ov135_0229d0c8: the members torn down: overlay 134's object (func_ov134_0229bcf0) and the
+/* func_ov135_0229d0c8: the members torn down: overlay 134's object (ClockSetter_Teardown) and the
  * panel's texts closed. */
 void PhoneClock_Teardown(PhoneClock *self)
 {
-    func_ov134_0229bcf0(self->editor);
+    ClockSetter_Teardown(&self->editor);
     ButtonPanel_CloseTexts(&self->panel);
 }
 CLEAN_AS(func_ov135_0229d0c8, PhoneClock_Teardown)
 
-/* func_ov135_0229d0e8: the setup: overlay 134's object set up (func_ov134_0229bd38 with 0, 6, 4
- * and 3; and func_ov134_0229bd2c in GroupParams' mode 0x33), the cursor at the first field, no
+/* func_ov135_0229d0e8: the setup: overlay 134's object set up (ClockSetter_Init with 0, 6, 4
+ * and 3; and ClockSetter_UseMinimum in GroupParams' mode 0x33), the cursor at the first field, no
  * flags. */
 void PhoneClock_Setup(PhoneClock *self)
 {
-    func_ov134_0229bd38(self->editor, 0, 6, 4, 3);
+    ClockSetter_Init(&self->editor, CLOCK_SETTER_MODE_DATE_TIME, 6, 4, 3);
     if (GroupParams_Mode() == PHONE_CLOCK_MODE_138) {
-        func_ov134_0229bd2c((int) (uintptr_t) self->editor);
+        ClockSetter_UseMinimum(&self->editor);
     }
     self->cursor = 0;
     *clock_flags(self) = 0;
@@ -1021,7 +981,7 @@ CLEAN_AS(_ZN18Obj_ov135_0229d61019func_ov135_0229d394Ev, PhoneClock_RunState)
 
 /* func_ov135_0229d428 (vtable slot 0x24): the scene's draw: the cursor sprite (with the keys in
  * use, even before the scene is drawn), then while the scene is drawn (else answers 0) overlay
- * 134's object (func_ov134_0229b220) and the panel, each with the wipe's y read for it. Answers
+ * 134's object (ClockSetter_Draw) and the panel, each with the wipe's y read for it. Answers
  * 1. */
 int PhoneClock_Draw(PhoneClock *self)
 {
@@ -1032,7 +992,7 @@ int PhoneClock_Draw(PhoneClock *self)
         return 0;
     }
     int wipe_y = MenuScene_WipeOffsetY(clock_scene(self));
-    func_ov134_0229b220((char *) self->editor, NULL, (char *) (uintptr_t) (u32) wipe_y);
+    ClockSetter_Draw(&self->editor, 0, wipe_y);
     ButtonPanel_Draw(&self->panel, MenuScene_WipeOffsetY(clock_scene(self)));
     return 1;
 }
@@ -1071,7 +1031,7 @@ PhoneClock *PhoneClock_New(void)
     self->base.vtable = data_ov135_0229d610;
     Glider0_Construct(&self->cursor_sprite);
     ButtonPanel_Construct(&self->panel);
-    func_ov134_0229bed4(self->editor);
+    ClockSetter_Construct(&self->editor);
     return self;
 }
 CLEAN_AS(func_ov135_0229d4b8, PhoneClock_New)

@@ -1,7 +1,7 @@
 /* The sound of the current scene: one object at data_0213fff0, of a class chosen from the
  * scene number (func_020b65c4), the time of day and a few checks of the game's state when
  * the scene starts (SceneSound_Create). The classes live in autoload_2 next to the sound
- * layer, are 8 bytes long (one 0x20 and one 0x38) and share the base vtable at 0x0213ef4c:
+ * layer, are 8 bytes long (one 0x20 and one 0x38) and share the base vtable at 0x0213efb4:
  * start (slot 3: load the scene's sounds, after saving the sound heap's level), the frame's
  * update (slot 4), stopping (slot 5), unloading (slot 6: back to the saved level) and the
  * keyboard's mode (slot 7).

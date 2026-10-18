@@ -6,6 +6,13 @@
 #include "clean.h"
 #include "main/packed_bytes.h"  /* PackedBytes_UnpackPoint */
 #include "main/sound_emitter.h" /* SoundEmitter_Vfunc10B, _StopB, _UpdateAtB, _PlayB */
+#include "animated_model.h"
+#include "c_library.h"
+#include "frame_ctrl.h"
+#include "globe.h"
+#include "model_object.h"
+#include "model_pool.h"
+#include "rom_file.h"
 
 static_assert(sizeof(FishModelObject) == 0xb8, "FishModelObject size");
 static_assert(offsetof(FishModel, kind) == 0x40, "FishModel kind");
@@ -65,51 +72,11 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 
 /* The pool of heaps: constructor, destructor, set-up (with the allocator and the releaser it is
  * handed, the game's own) and release. */
-extern void func_0209d2b8(u8 *pool);
-extern void func_0209d2b4(u8 *pool);
-extern int func_0209d180(u8 *pool, unsigned int count, int a, int b, int size, int (*allocate)(int, int),
-                         void (*release)(void), void *name);
 extern int func_0205c8f8(int size, int heapword);
 extern void func_0205c8dc(void);
-extern int func_0209d138(u8 *pool);
-/* A model's entry in the pool, taken when it has none; given back. */
-extern void *func_0209d238(u8 *pool, u16 *slot);
-extern void func_0209d200(u8 *pool, u16 *slot);
-extern void func_0209d34c(u16 *slot); /* constructor */
-extern void func_0209d340(u16 *slot); /* destructor */
-/* The heap of a pool's entry. */
-extern void *func_0209d324(void *entry);
-
-/* The files loaded for a model: load one into an entry, the model resource, free them, reset,
- * constructor and destructor. */
-extern int func_0209d0ac(u8 *files, void *entry, const char *path);
-extern void *func_0209d088(u8 *files);
-extern void func_0209d090(u8 *files);
-extern void func_0209d0a4(u8 *files);
-extern void *func_0209d11c(u8 *files);
-extern int func_0209d104(u8 *files);
-
-/* The model object. */
-extern void *func_02055210(FishModelObject *object); /* constructor */
-extern void *func_020551e0(FishModelObject *object); /* destructor */
-extern int func_02055f2c(FishModelObject *object, void *resource, void *texture);
-extern int func_02055140(FishModelObject *object, void *heap);
-extern void func_02055060(FishModelObject *object, void *animation, int mode, int speed, int frame, int a5);
-extern void func_02055050(FishModelObject *object);
-extern void func_02055124(FishModelObject *object);              /* moves on its animation */
-extern void func_0205510c(FishModelObject *object, Vec3 *scale); /* draws it */
-extern void func_0205502c(FishModelObject *object);
-extern int func_02055454(FishModelObject *object);
-extern int func_02056f28(const u8 *frames, int frame); /* whether the animation passed `frame` */
-
-extern void *func_02064b2c(const char *path, void *heap, int align, u32 *size); /* loads a file */
-extern int func_02064328(char *buffer, const char *format, ...);                /* sprintf */
 extern void *NNS_G3dGetJntAnmSet(void *file);
 extern void *func_02107b44(void *set, int index);
 extern void NNS_G3dMdlSetMdlAlpha(void *resource, int material, int alpha);
-
-/* The point as the camera shows it, and an angle to turn about x by there. */
-extern int func_0203f8d0(Vec3 *shown, Vec3 *at);
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -256,7 +223,7 @@ FishDisp *FishDisp_New(void)
         disp->base.vtable = data_020dce48;
         __cxa_vec_ctor(disp->models, FISH_DISP_MODELS, sizeof(FishModel), (void (*)(void *))(uintptr_t) func_0205072c,
                        (void (*)(void *))(uintptr_t) func_02050704);
-        func_0209d2b8(disp->pool);
+        ModelPool_Init((ModelPool *) (void *) disp->pool);
     }
     return disp;
 }
@@ -267,7 +234,7 @@ CLEAN_AS(func_020507b8, FishDisp_New)
 FishDisp *FishDisp_Destruct(FishDisp *disp)
 {
     disp->base.vtable = data_020dce48;
-    func_0209d2b4(disp->pool);
+    ModelPool_Destruct(disp->pool);
     __cxa_vec_cleanup(disp->models, FISH_DISP_MODELS, sizeof(FishModel), (void (*)(void *))(uintptr_t) func_02050704);
     disp->base.vtable = data_020da13c;
     Process_Destruct(&disp->base);
@@ -279,7 +246,7 @@ CLEAN_AS(func_0204fcac, FishDisp_Destruct)
 FishDisp *FishDisp_DestructFree(FishDisp *disp)
 {
     disp->base.vtable = data_020dce48;
-    func_0209d2b4(disp->pool);
+    ModelPool_Destruct(disp->pool);
     __cxa_vec_cleanup(disp->models, FISH_DISP_MODELS, sizeof(FishModel), (void (*)(void *))(uintptr_t) func_02050704);
     disp->base.vtable = data_020da13c;
     Process_Destruct(&disp->base);
@@ -293,12 +260,12 @@ CLEAN_AS(func_0204fcf0, FishDisp_DestructFree)
 FishModel *FishDisp_ConstructModel(FishModel *model)
 {
     SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) model);
-    func_0209d34c(&model->slot);
-    func_0209d11c(model->files);
-    func_02055210(&model->object);
+    ModelPoolSlot_Construct(&model->slot);
+    ModelPoolFiles_Construct((ModelPoolFiles *) (void *) model->files);
+    AnimatedModel_Construct((AnimatedModel *) &model->object);
     model->kind = FISH_DISP_KIND_NONE;
     model->state = FISH_MODEL_FREE;
-    func_0209d0a4(model->files);
+    ModelPoolFiles_Reset((ModelPoolFiles *) (void *) model->files);
     model->position = (Vec3){0x1000, 0x1000, 0x1000};
     model->scale = (Vec3){0x1000, 0x1000, 0x1000};
     model->rotation[0] = 0;
@@ -312,9 +279,9 @@ CLEAN_AS(func_0205072c, FishDisp_ConstructModel)
 /* func_02050704: a model's destructor. */
 FishModel *FishDisp_DestructModel(FishModel *model)
 {
-    func_020551e0(&model->object);
-    func_0209d104(model->files);
-    func_0209d340(&model->slot);
+    AnimatedModel_DestructComplete((AnimatedModel *) &model->object);
+    ModelPoolFiles_Destruct((ModelPoolFiles *) (void *) model->files);
+    ModelPoolSlot_Destruct(&model->slot);
     SoundEmitterClass_DestructBaseB((SoundEmitterObject *) model);
     return model;
 }
@@ -331,7 +298,8 @@ int FishDisp_Create(FishDisp *disp)
     } else if (disp->base.param == 1) {
         data_020dcd78 = 1;
     }
-    func_0209d180(disp->pool, (unsigned int) data_020dcd78, 0x800, 0x80, 0x134c, func_0205c8f8, func_0205c8dc, data_020dcef0);
+    ModelPool_Create((ModelPool *) (void *) disp->pool, (unsigned int) data_020dcd78, 0x800, 0x80, 0x134c, func_0205c8f8,
+                     func_0205c8dc, data_020dcef0);
     data_021c8184 = disp;
     return 1;
 }
@@ -344,7 +312,7 @@ int FishDisp_Delete(FishDisp *disp)
     for (int i = 0; i < data_020dcd78; i++) {
         FishDisp_FreeModel(disp, i);
     }
-    func_0209d138(disp->pool);
+    ModelPool_Destroy((ModelPool *) (void *) disp->pool);
     data_021c8184 = NULL;
     return 1;
 }
@@ -384,14 +352,15 @@ int FishDisp_Execute(FishDisp *disp)
                 break;
             case FISH_MODEL_SHOWN:
                 if (model->kind == FISH_DISP_KIND_SHADOW) {
-                    func_02055124(&model->object);
-                    NNS_G3dMdlSetMdlAlpha(func_0209d088(model->files), 0, model->alpha);
+                    AnimatedModel_StepFrames((AnimatedModel *) &model->object);
+                    NNS_G3dMdlSetMdlAlpha((void *) (uintptr_t) ModelPoolFiles_Model((ModelPoolFiles *) (void *) model->files),
+                                          0, model->alpha);
                 } else if (!is_extra(model->kind)) {
-                    func_02055124(&model->object);
+                    AnimatedModel_StepFrames((AnimatedModel *) &model->object);
                     if (model->play_sound) {
                         Vec3 at = model->position;
                         SoundEmitter_UpdateAtB((SoundEmitter *) model, &at);
-                        if (func_02056f28(model->object.frames, 1) != 0) {
+                        if (FrameCtrl_Passed((const FrameCtrl *) (void *) model->object.frames, 1) != 0) {
                             SoundEmitter_PlayB((SoundEmitter *) model, 0x84d, 0x7f, 0);
                         }
                     }
@@ -420,7 +389,7 @@ int FishDisp_Draw(void)
     for (int i = 0; i < data_020dcd78; i++, model++) {
         if (model->state == FISH_MODEL_SHOWN) {
             Vec3 scale = model->scale;
-            func_0205510c(&model->object, &scale);
+            AnimatedModel_Draw((AnimatedModel *) &model->object, &scale);
         }
     }
     return 1;
@@ -513,7 +482,7 @@ int FishDisp_ModelPassedFrame(int index, int frame)
     if (model->kind < 0 || model->kind >= FISH_DISP_FISH_KINDS) {
         return 0;
     }
-    return func_02056f28(model->object.frames, frame) != 0;
+    return FrameCtrl_Passed((const FrameCtrl *) (void *) model->object.frames, frame) != 0;
 }
 CLEAN_AS(func_0204fd6c, FishDisp_ModelPassedFrame)
 
@@ -526,8 +495,8 @@ int FishDisp_StartLoad(FishDisp *disp, int index)
     }
     FishModel *model = &data_021c8184->models[index];
     model->state = FISH_MODEL_LOADING;
-    func_0209d238(disp->pool, &model->slot);
-    func_0209d0a4(model->files);
+    ModelPool_Take((ModelPool *) (void *) disp->pool, &model->slot);
+    ModelPoolFiles_Reset((ModelPoolFiles *) (void *) model->files);
     SoundEmitter_StopB((SoundEmitter *) model);
     return 1;
 }
@@ -548,10 +517,10 @@ void FishDisp_FreeModel(FishDisp *disp, int index)
     }
     model->kind = FISH_DISP_KIND_NONE;
     model->state = FISH_MODEL_FREE;
-    func_0205502c(&model->object);
-    func_0209d090(model->files);
-    func_02055454(&model->object);
-    func_0209d200(disp->pool, &model->slot);
+    AnimatedModel_DetachJoints((AnimatedModel *) &model->object);
+    ModelPoolFiles_Release((ModelPoolFiles *) (void *) model->files);
+    ModelObject_Release((ModelObject *) &model->object);
+    ModelPool_Release((ModelPool *) (void *) disp->pool, &model->slot);
 }
 CLEAN_AS(func_020505f4, FishDisp_FreeModel)
 
@@ -563,22 +532,24 @@ int FishDisp_LoadShadow(FishDisp *disp, u8 *pool, FishModel *model)
         return 0;
     }
     int kind = model->kind;
-    void *entry = func_0209d238(pool, &model->slot);
-    if (func_0209d0ac(model->files, entry, data_020dcd74) == 0) {
+    void *entry = ModelPool_Take((ModelPool *) (void *) pool, &model->slot);
+    if (ModelPoolFiles_Load((ModelPoolFiles *) (void *) model->files, entry, data_020dcd74) == 0) {
         return 0;
     }
-    func_02055f2c(&model->object, func_0209d088(model->files), NULL);
-    void *heap = func_0209d324(entry);
-    void *animation = func_02107b44(NNS_G3dGetJntAnmSet(func_02064b2c(data_020dcd70, heap, 4, NULL)), 0);
-    if (func_02055140(&model->object, heap) == 0) {
+    ModelObject_SetModel((ModelObject *) &model->object,
+                         (u8 *) (uintptr_t) ModelPoolFiles_Model((ModelPoolFiles *) (void *) model->files), NULL);
+    void *heap = (void *) (uintptr_t) ModelPoolEntry_Heap(entry);
+    void *animation = func_02107b44(NNS_G3dGetJntAnmSet(RomFile_Load(data_020dcd70, heap, 4, NULL)), 0);
+    if (AnimatedModel_LoadAnim((AnimatedModel *) &model->object, heap) == 0) {
         return 0;
     }
-    func_02055060(&model->object, animation, 0, 0x1000, 1, 0);
-    func_02055050(&model->object);
+    AnimatedModel_Start((AnimatedModel *) &model->object, animation, 0, 0x1000, 1, 0);
+    AnimatedModel_Attach((AnimatedModel *) &model->object);
     model->state = FISH_MODEL_SHOWN;
     FishDisp_PlaceModel(disp, model);
     if (kind == FISH_DISP_KIND_SHADOW) {
-        NNS_G3dMdlSetMdlAlpha(func_0209d088(model->files), 0, model->alpha);
+        NNS_G3dMdlSetMdlAlpha((void *) (uintptr_t) ModelPoolFiles_Model((ModelPoolFiles *) (void *) model->files), 0,
+                              model->alpha);
     }
     return 1;
 }
@@ -592,11 +563,13 @@ int FishDisp_LoadExtra(FishDisp *disp, u8 *pool, FishModel *model)
         return 0;
     }
     int kind = model->kind;
-    void *entry = func_0209d238(pool, &model->slot);
-    if (func_0209d0ac(model->files, entry, data_020dcd84[kind - FISH_DISP_KIND_EXTRA]) == 0) {
+    void *entry = ModelPool_Take((ModelPool *) (void *) pool, &model->slot);
+    if (ModelPoolFiles_Load((ModelPoolFiles *) (void *) model->files, entry, data_020dcd84[kind - FISH_DISP_KIND_EXTRA]) ==
+        0) {
         return 0;
     }
-    func_02055f2c(&model->object, func_0209d088(model->files), NULL);
+    ModelObject_SetModel((ModelObject *) &model->object,
+                         (u8 *) (uintptr_t) ModelPoolFiles_Model((ModelPoolFiles *) (void *) model->files), NULL);
     model->state = FISH_MODEL_SHOWN;
     FishDisp_PlaceModel(disp, model);
     return 1;
@@ -613,23 +586,24 @@ int FishDisp_LoadFish(FishDisp *disp, u8 *pool, FishModel *model)
         return 0;
     }
     int kind = model->kind;
-    void *entry = func_0209d238(pool, &model->slot);
+    void *entry = ModelPool_Take((ModelPool *) (void *) pool, &model->slot);
     int folder = kind / 16;
     char path[0x18];
-    func_02064328(path, kind < 10 ? data_020dce90 : data_020dcea8, folder, kind);
-    if (func_0209d0ac(model->files, entry, path) == 0) {
+    CLib_SPrintf(path, kind < 10 ? data_020dce90 : data_020dcea8, folder, kind);
+    if (ModelPoolFiles_Load((ModelPoolFiles *) (void *) model->files, entry, path) == 0) {
         return 0;
     }
-    func_02055f2c(&model->object, func_0209d088(model->files), NULL);
-    void *heap = func_0209d324(entry);
-    func_02064328(path, kind < 10 ? data_020dcec0 : data_020dced8, folder, kind);
-    void *animation = func_02107b44(NNS_G3dGetJntAnmSet(func_02064b2c(path, heap, 4, NULL)), 0);
+    ModelObject_SetModel((ModelObject *) &model->object,
+                         (u8 *) (uintptr_t) ModelPoolFiles_Model((ModelPoolFiles *) (void *) model->files), NULL);
+    void *heap = (void *) (uintptr_t) ModelPoolEntry_Heap(entry);
+    CLib_SPrintf(path, kind < 10 ? data_020dcec0 : data_020dced8, folder, kind);
+    void *animation = func_02107b44(NNS_G3dGetJntAnmSet(RomFile_Load(path, heap, 4, NULL)), 0);
     int speed = model->animate ? 0x1000 : 0;
-    if (func_02055140(&model->object, heap) == 0) {
+    if (AnimatedModel_LoadAnim((AnimatedModel *) &model->object, heap) == 0) {
         return 0;
     }
-    func_02055060(&model->object, animation, 0, speed, 1, 0);
-    func_02055050(&model->object);
+    AnimatedModel_Start((AnimatedModel *) &model->object, animation, 0, speed, 1, 0);
+    AnimatedModel_Attach((AnimatedModel *) &model->object);
     model->state = FISH_MODEL_SHOWN;
     FishDisp_PlaceModel(disp, model);
     return 1;
@@ -649,7 +623,7 @@ void FishDisp_PlaceModel(FishDisp *disp, FishModel *model)
     Vec3 shown = {0, 0, 0};
     int tilt = 0;
     if (disp->base.param == 0) {
-        tilt = func_0203f8d0(&shown, &at);
+        tilt = Globe_BendFar(&shown, &at);
     } else if (disp->base.param == 1) {
         tilt = 0;
         shown = at;

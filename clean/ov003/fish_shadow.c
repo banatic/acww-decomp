@@ -25,7 +25,7 @@ static_assert(offsetof(FishShadow, unk_84) == 0x84 && offsetof(FishShadow, posit
 static_assert(offsetof(FishShadow, yaw) == 0x138 && offsetof(FishShadow, unk_140) == 0x140, "FishShadow");
 static_assert(offsetof(FishShadow, model) == 0x144 && offsetof(FishShadow, group_state) == 0x1fc, "FishShadow");
 static_assert(offsetof(FishShadow, behaviour) == 0x200 && offsetof(FishShadow, effect) == 0x204, "FishShadow");
-static_assert(offsetof(FishShadow, tile_x) == 0x208 && offsetof(FishShadow, respawn) == 0x212, "FishShadow");
+static_assert(offsetof(FishShadow, acre_x) == 0x208 && offsetof(FishShadow, respawn) == 0x212, "FishShadow");
 static_assert(offsetof(FishShadow, last_position) == 0x218 && offsetof(FishShadow, hook_state) == 0x224, "FishShadow");
 static_assert(offsetof(FishShadow, player) == 0x227 && offsetof(FishShadow, fishing_float) == 0x22c, "FishShadow");
 static_assert(offsetof(FishShadow, hooked) == 0x23c && offsetof(FishShadow, timer) == 0x244, "FishShadow");
@@ -103,18 +103,6 @@ extern void func_0205c944(void);
 extern int func_0205c92c(int size, int heapword);
 extern void func_0205c910(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-/* The shadow's model set up from the file in an entry of the pool (func_ov003_02227778), the
- * respawn countdown (func_ov003_022279d8), a random number in [lo, hi) and one of either sign
- * (func_ov003_0222793c, func_ov003_0222791c), whether a player runs (func_ov003_02228018),
- * whether `b` is in the box around `a` (func_ov003_0222799c) and the shadow fleeing a point
- * (func_ov003_02228150). */
-extern int func_ov003_02227778(FishShadow *fish, void *file, ModelPool *pool);
-extern void func_ov003_022279d8(FishShadow *fish);
-extern int func_ov003_0222793c(int lo, int hi);
-extern int func_ov003_0222791c(int lo, int hi);
-extern int func_ov003_02228018(int player);
-extern int func_ov003_0222799c(const Vec3 *a, const Vec3 *b, int dx, int dz_ahead, int dz_behind);
-extern int func_ov003_02228150(FishShadow *fish, const Vec3 *from);
 
 typedef void (*FishShadowStateFn)(void *self, FishShadow *fish, int index);
 
@@ -173,7 +161,7 @@ void FishShadow_Update(FishShadowProcess *self, FishShadow *fish, int index)
     if (update->function != 0) {
         fish_shadow_call(update, self, fish, index);
     }
-    func_ov003_022279d8(fish);
+    FishShadow_TickRespawn(fish);
 }
 CLEAN_AS(func_ov003_02228ae8, FishShadow_Update)
 
@@ -189,10 +177,10 @@ int FishShadow_Create(FishShadowProcess *self)
     self->shadow_file = RomFile_Load(data_ov003_0223bdac, data_021fbe94, 4, NULL);
     for (int i = 0; i < FISH_SHADOW_COUNT; i++) {
         FishShadow *fish = &data_ov003_0225f76c[i];
-        func_ov003_02227778(fish, self->shadow_file, &self->shadows);
+        FishShadow_LoadModel(fish, self->shadow_file, &self->shadows);
         fish->group_state = i < FISH_SHADOW_GROUP_SIZE ? FISH_SHADOW_WAIT_GROUP0 : FISH_SHADOW_WAIT_GROUP1;
-        fish->tile_x = i;
-        fish->tile_z = 0;
+        fish->acre_x = i;
+        fish->acre_z = 0;
         fish->index = (u8) i;
         fish->respawn = (s16) (i * 400 + 2400);
         SoundEmitter_StopB((SoundEmitter *) fish->emitter);
@@ -254,8 +242,8 @@ void FishShadow_Reset(FishShadowProcess *self, int index)
     } else if (fish->group_state == FISH_SHADOW_IN_GROUP1) {
         fish->group_state = FISH_SHADOW_WAIT_GROUP1;
     }
-    fish->tile_x = index;
-    fish->tile_z = 0;
+    fish->acre_x = index;
+    fish->acre_z = 0;
     FishingFloat *fishing_float = fish->fishing_float;
     if (fishing_float != NULL) {
         if (fish_shadow_player_fish(fish->player)->state != PLAYER_FISH_TAKE) {
@@ -399,8 +387,8 @@ FishShadow *FishShadow_ConstructRecord(FishShadow *fish)
     ModelPoolSlot_Construct(&fish->slot);
     ModelObject_Construct(&fish->unk_84);
     AnimatedModel_Construct((AnimatedModel *) &fish->model);
-    fish->tile_x = 0;
-    fish->tile_z = 0;
+    fish->acre_x = 0;
+    fish->acre_z = 0;
     FishShadowSense_Construct(&fish->sense);
     fish->kind = -1;
     fish->timer = -1;
@@ -461,11 +449,11 @@ void FishShadowSense_StepSound(FishShadowSense *sense, FishShadow *fish)
         sense->sound_frames--;
         SoundSource_Play(&fish->source, FISH_SHADOW_SOUND);
     } else {
-        sense->cooldown = (u8) func_ov003_0222793c(20, 80);
+        sense->cooldown = (u8) FishShadow_Random(20, 80);
         sense->mode = FISH_SHADOW_SENSE_NEAR;
     }
-    if (func_ov003_02228018(0)) {
-        sense->cooldown = (u8) func_ov003_0222793c(20, 40);
+    if (FishShadow_PlayerRunning(0)) {
+        sense->cooldown = (u8) FishShadow_Random(20, 40);
         sense->mode = FISH_SHADOW_SENSE_NEAR;
         sense->sound_frames = 0;
         fish_shadow_alarm_up(sense);
@@ -486,14 +474,14 @@ void FishShadowSense_StepNear(FishShadowSense *sense, FishShadow *fish)
     const Vec3 *player = fish_shadow_player_position();
     if (player != NULL && Vec_DistanceXZ(player, &fish->position) >= FISH_SHADOW_SENSE_RANGE) {
         sense->mode = FISH_SHADOW_SENSE_FAR;
-    } else if (func_ov003_02228018(0)) {
+    } else if (FishShadow_PlayerRunning(0)) {
         fish_shadow_alarm_up(sense);
     } else {
         if (sense->alarm != 0) {
             sense->alarm--;
         }
         if (sense->alarm <= 150 && sense->cooldown == 0) {
-            sense->sound_frames = (u8) func_ov003_0222793c(60, 140);
+            sense->sound_frames = (u8) FishShadow_Random(60, 140);
             sense->mode = FISH_SHADOW_SENSE_SOUND;
         }
     }
@@ -834,7 +822,7 @@ int FishShadow_InBiteRange(const Vec3 *point, int yaw, int player, int kind)
     const Vec3 *float_at = &fishing_float->position;
     const FishBiteRange *range = &data_ov003_0223bf00[rod].ranges[fish_shadow_creature(kind)->unk_01];
     int reach = (range->reach << 12) / 10;
-    if (func_ov003_0222799c(point, float_at, reach, reach, reach) != 0 &&
+    if (FishShadow_InBox(point, float_at, reach, reach, reach) != 0 &&
         Math_AbsDiff16(Vec_YawTo(point, float_at), yaw) <= range->angle) {
         return 1;
     }
@@ -878,11 +866,11 @@ int FishShadow_TryBite(FishShadow *fish)
     if (FishShadow_InBiteRange(&at, fish->yaw, player, fish->kind)) {
         int reach = (data_ov003_0223c014[fish->size].reach << 12) / 100;
         Vec3 float_at = fishing_float->position;
-        if (FishShadow_SplashRecent() && func_ov003_0222799c(&fish->position, &float_at, reach, reach, reach)) {
+        if (FishShadow_SplashRecent() && FishShadow_InBox(&fish->position, &float_at, reach, reach, reach)) {
             if (fish->behaviour != FISH_SHADOW_STARTLED) {
                 fish->behaviour = FISH_SHADOW_STARTLED;
             }
-            fish->yaw = (s16) (fish->yaw + (s16) func_ov003_0222791c(0x5000, 0x7fff));
+            fish->yaw = (s16) (fish->yaw + (s16) FishShadow_RandomSigned(0x5000, 0x7fff));
             fish->unk_140 = 0x14;
         } else {
             fish->player = (s8) player;
@@ -908,7 +896,7 @@ int FishShadow_FleeFromPlayer(FishShadow *fish)
     if (from == NULL) {
         return 0;
     }
-    return func_ov003_02228150(fish, from) != 0;
+    return FishShadow_Flee(fish, from) != 0;
 }
 CLEAN_AS(func_ov003_0222a784, FishShadow_FleeFromPlayer)
 

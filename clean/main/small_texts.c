@@ -3,6 +3,7 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "text_base.h"
 
 static_assert(offsetof(Wide10Text, text) == 0xe, "wide text characters");
 static_assert(sizeof(Wide10Text) == 0x24, "wide text size");
@@ -19,12 +20,6 @@ extern const TextVtable data_020e1934; /* the 4-character wide text's vtable */
 extern const TextVtable data_020e1904; /* the 10-character label's vtable */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-/* The text base's constructors and destructors. */
-extern void *func_020a88ec(void *text);  /* base of a wide text */
-extern void *func_020a887c(void *text);  /* its destructor */
-extern void *func_020a8cac(void *label); /* base of a label */
-extern void *func_020a8c38(void *label); /* its destructor */
 
 /* ---- Wide text of 10 characters */
 
@@ -46,7 +41,7 @@ CLEAN_AS(func_02082064, Wide10Text_Capacity)
 Wide10Text *Wide10Text_DestructDelete(Wide10Text *text)
 {
     text->vtable = &data_020e194c;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -56,7 +51,7 @@ CLEAN_AS(func_02082068, Wide10Text_DestructDelete)
 Wide10Text *Wide10Text_Destruct(Wide10Text *text)
 {
     text->vtable = &data_020e194c;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     return text;
 }
 CLEAN_AS(func_02082088, Wide10Text_Destruct)
@@ -64,7 +59,7 @@ CLEAN_AS(func_02082088, Wide10Text_Destruct)
 /* func_020820a0 */
 Wide10Text *Wide10Text_Construct(Wide10Text *text)
 {
-    func_020a88ec(text);
+    TextBase_WideConstruct(text);
     text->vtable = &data_020e194c;
     return text;
 }
@@ -90,7 +85,7 @@ CLEAN_AS(func_020820bc, Label22Text_Capacity)
 Label22Text *Label22Text_DestructDelete(Label22Text *label)
 {
     label->vtable = &data_020e18d4;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
@@ -100,7 +95,7 @@ CLEAN_AS(func_020820c0, Label22Text_DestructDelete)
 Label22Text *Label22Text_Destruct(Label22Text *label)
 {
     label->vtable = &data_020e18d4;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_020820e0, Label22Text_Destruct)
@@ -108,7 +103,7 @@ CLEAN_AS(func_020820e0, Label22Text_Destruct)
 /* func_020820f8 */
 Label22Text *Label22Text_Construct(Label22Text *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = &data_020e18d4;
     return label;
 }
@@ -145,7 +140,7 @@ CLEAN_AS(func_02082128, CatchphraseWide_Capacity)
 CatchphraseWide *CatchphraseWide_DestructDelete(CatchphraseWide *text)
 {
     text->vtable = &data_020e1934;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -155,7 +150,7 @@ CLEAN_AS(func_0208212c, CatchphraseWide_DestructDelete)
 CatchphraseWide *CatchphraseWide_Destruct(CatchphraseWide *text)
 {
     text->vtable = &data_020e1934;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     return text;
 }
 CLEAN_AS(func_0208214c, CatchphraseWide_Destruct)
@@ -163,7 +158,7 @@ CLEAN_AS(func_0208214c, CatchphraseWide_Destruct)
 /* func_02082164 */
 CatchphraseWide *CatchphraseWide_Construct(CatchphraseWide *text)
 {
-    func_020a88ec(text);
+    TextBase_WideConstruct(text);
     text->vtable = &data_020e1934;
     return text;
 }
@@ -189,7 +184,7 @@ CLEAN_AS(func_02082180, Label10Text_Capacity)
 Label10Text *Label10Text_DestructDelete(Label10Text *label)
 {
     label->vtable = &data_020e1904;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
@@ -199,7 +194,7 @@ CLEAN_AS(func_02082184, Label10Text_DestructDelete)
 Label10Text *Label10Text_Destruct(Label10Text *label)
 {
     label->vtable = &data_020e1904;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_020821a4, Label10Text_Destruct)
@@ -207,7 +202,7 @@ CLEAN_AS(func_020821a4, Label10Text_Destruct)
 /* func_020821bc */
 Label10Text *Label10Text_Construct(Label10Text *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = &data_020e1904;
     return label;
 }

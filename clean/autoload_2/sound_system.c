@@ -68,9 +68,10 @@ extern void func_0210fc50(SoundStreamHandle *handle, int fade_frames);
 extern int func_0210fc7c(SoundStreamHandle *handle, int stream_no, int offset);
 /* The streams' set-up, given the sound heap. */
 extern void func_0210fe08(int unk, unsigned int heap);
-/* The second of the sound archive's three loaders before NNS_SndArcLoadGroup (their order in
- * the SDK: sequence, sequence archive, bank); whether `seq_arc` was loaded into `heap`. */
-extern int func_0210e198(int seq_arc, unsigned int heap);
+/* NNS_SndArcLoadBank, the second of the sound archive's three loaders before
+ * NNS_SndArcLoadGroup (wave archive, bank, sequence archive; func_0210e160, func_0210e198,
+ * func_0210e1d0): whether bank `bank` (and its wave archives) was loaded into `heap`. */
+extern int func_0210e198(int bank, unsigned int heap);
 /* The compiler's soft-float helpers: an unsigned int to double, a product, a double to int. */
 extern double _dfltu(int value);
 extern double _dmul(double a, double b);
@@ -701,13 +702,13 @@ unsigned int SoundSystem_Random(SoundSystem *sys, unsigned int range)
 }
 CLEAN_AS(func_020f1d3c, SoundSystem_Random)
 
-/* func_020f1d84: sequence archive `seq_arc` loaded into the sound heap; whether it was. */
-int SoundSystem_LoadSeqArc(SoundSystem *sys, int seq_arc)
+/* func_020f1d84: bank `bank` loaded into the sound heap; whether it was. */
+int SoundSystem_LoadBank(SoundSystem *sys, int bank)
 {
     (void) sys;
-    return func_0210e198(seq_arc, Sound_GetHeap());
+    return func_0210e198(bank, Sound_GetHeap());
 }
-CLEAN_AS(func_020f1d84, SoundSystem_LoadSeqArc)
+CLEAN_AS(func_020f1d84, SoundSystem_LoadBank)
 
 /* func_020f1da4: voice sample `number` (seq_arc * 1000 + index) started at `volume` and with
  * its tracks 0-3 at `pitch`. Voices of kinds 3 and 4 are pitched 400 lower and 600 higher, and

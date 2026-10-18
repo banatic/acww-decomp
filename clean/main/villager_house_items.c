@@ -7,6 +7,19 @@
 #include "villager_furniture.h"
 #include "villager_mode.h"
 #include "villager_roster.h"
+#include "furniture_info.h"
+#include "item_code.h"
+#include "item_form.h"
+#include "item_object.h"
+#include "item_traits.h"
+#include "main_random.h"
+#include "npc_lookup.h"
+#include "town_item_lists.h"
+#include "town_villager.h"
+#include "villager_data.h"
+#include "villager_mode_record.h"
+#include "villager_object.h"
+#include "villager_status.h"
 
 #define VILLAGER_HOUSE_ITEMS_OFFSET 0x78c
 #define VILLAGER_HOUSE_DRAW 0x7d8
@@ -46,31 +59,6 @@ extern const int data_020e18c0[VILLAGER_HOUSE_CLASSES]; /* -1, -1, -1 */
 extern const MemberPointer data_021d1330[VILLAGER_HOUSE_FILTERS];
 extern const MemberPointer __ptmf_null;
 
-extern NpcId *func_0208150c(const void *villager);                    /* the villager's NpcId, at 0x7a0 */
-extern VillagerModeRecord *func_0207f1c8(const void *villager);       /* its mode record, at 0x734 */
-extern VillagerModeRecord *func_0209b5ec(VillagerModeRecord *record); /* the record itself */
-extern int func_0209c330(const VillagerModeRecord *record);           /* its mode */
-extern int func_0209c2c0(const VillagerModeRecord *record);           /* bit 0 of its flags (VILLAGER_MODE_FROM_2) */
-extern u8 *func_0209b5e8(VillagerModeRecord *record);                 /* its object, at 0x24 */
-extern u8 *func_0209b91c(u8 *object);                                 /* the object itself */
-extern int func_0209bd44(const u8 *object);                           /* whether it holds something */
-extern int func_0209bc40(const u8 *object);                           /* its type, byte 0x0a */
-extern u8 func_0209b914(const u8 *object);                            /* its byte 0x2a */
-extern u8 func_0209b8bc(const u8 *object);                            /* its byte 0x2f */
-/* A mode's group (func_0209c310) in `group` and its place within the group. */
-extern int func_0209c2d4(u8 *group, u32 mode);
-extern int func_020644cc(int bound);                              /* a random number below `bound` */
-extern int func_0204bcdc(const u16 *item);                        /* whether the item is of kind 3 or 4 */
-extern int func_0204bc64(const u16 *item);                        /* its index among the items of kind 3 or 4 */
-extern int func_02053bc0(const u16 *item);                        /* its size class (0 for other kinds) */
-extern u32 func_020535f0(const u16 *item);                        /* the kind of a group A item; 0 for others */
-extern int func_0204c878(const u16 *item);                        /* what the item is worth */
-extern int func_0203a6ec(u16 item);                               /* the item put in the town's list of 15; 0 when full */
-extern void func_02061b1c(u16 *out, const u16 *code, int always); /* the item a code stands for */
-extern int func_02080834(u8 *villager, u16 *item);                /* how much the villager likes the item */
-extern const u8 *func_02080b64(const u8 *villager);               /* its villager data + 0x28, or NULL */
-extern const u8 *func_02082500(int number);                       /* a villager's data, NULL past 149 */
-
 static int is_group_a(u16 code)
 {
     return code >= MUSEUM_A_FIRST && code <= MUSEUM_A_LAST;
@@ -85,7 +73,7 @@ static int group_a_index(u16 code)
 /* The mode and its bit FROM_2, from the villager's mode record. */
 static VillagerModeRecord *mode_record(const u8 *villager)
 {
-    return func_0209b5ec(func_0207f1c8(villager));
+    return VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord((u8 *) villager));
 }
 
 /* func_0207f590: the item of kind 3 or 4 that stands in for `item` (one of three, by its size
@@ -94,8 +82,8 @@ void VillagerHouseItems_ReplacementFor(u16 *out, const u8 *villager, const u16 *
 {
     (void) villager;
     *out = VILLAGER_HOUSE_ITEM_NONE;
-    if (func_0204bcdc(item)) {
-        int size_class = func_02053bc0(item);
+    if (ItemCode_HasVariant(item)) {
+        int size_class = FurnitureInfo_ItemShape(item);
         if (size_class < VILLAGER_HOUSE_CLASSES) {
             *out = data_020cd42c[size_class];
         }
@@ -118,18 +106,18 @@ CLEAN_AS(func_0207f5c8, VillagerHouseItems_ClearSlots1And2)
  * town's list of 15. */
 void VillagerHouseItems_GiveAwayOne(u8 *villager)
 {
-    if (!NpcId_IsValid(func_0208150c(villager))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return;
     }
     if (VillagerHouseItems_Count(villager) < VILLAGER_HOUSE_CROWDED) {
         return;
     }
-    if (func_020644cc(2) != 0) {
+    if (MainRandom_Below(2) != 0) {
         return;
     }
     VillagerModeRecord *record = mode_record(villager);
-    int mode = func_0209c330(record);
-    int from_2 = func_0209c2c0(record);
+    int mode = VillagerModeRecord_Mode(record);
+    int from_2 = VillagerModeRecord_IsFrom2(record);
 
     int picks[VILLAGER_HOUSE_CLASSES];
     for (int i = 0; i < VILLAGER_HOUSE_CLASSES; i++) {
@@ -149,7 +137,7 @@ void VillagerHouseItems_GiveAwayOne(u8 *villager)
     if (count <= 0) {
         return;
     }
-    int chosen = func_020644cc(count);
+    int chosen = MainRandom_Below(count);
     if (chosen >= VILLAGER_HOUSE_CLASSES) {
         return;
     }
@@ -193,9 +181,9 @@ int VillagerHouseItems_CountSame(const u8 *villager, const u16 *item)
     int count = 0;
     for (int i = 0; i < VILLAGER_HOUSE_ITEMS; i++) {
         int same;
-        if (func_0204bcdc(&items[i])) {
-            int index = func_0204bc64(&items[i]);
-            same = index == func_0204bc64(item);
+        if (ItemCode_HasVariant(&items[i])) {
+            int index = ItemCode_VariantItem(&items[i]);
+            same = index == ItemCode_VariantItem(item);
         } else {
             same = items[i] == *item;
         }
@@ -218,14 +206,14 @@ int VillagerHouseItems_Store(u8 *villager, u16 *item)
         return 0;
     }
     u16 stands_for;
-    func_02061b1c(&stands_for, item, 1);
+    ItemForm_ToPlaced(&stands_for, item, 1);
     VillagerModeRecord *record = mode_record(villager);
-    int mode = func_0209c330(record);
-    int from_2 = func_0209c2c0(record);
+    int mode = VillagerModeRecord_Mode(record);
+    int from_2 = VillagerModeRecord_IsFrom2(record);
 
-    if (func_0204bcdc(&stands_for)) {
+    if (ItemCode_HasVariant(&stands_for)) {
         int fits = VillagerHouseItems_FitsMode(villager, item, (u32) mode);
-        int size_class = func_02053bc0(&stands_for);
+        int size_class = FurnitureInfo_ItemShape(&stands_for);
         if (is_group_a(*item) && size_class == 2) {
             return VillagerHouseItems_StoreGroupA(villager, item, size_class, mode, (u8) from_2, (u8) fits);
         }
@@ -282,18 +270,20 @@ int VillagerHouseItems_StoreGroupA(u8 *villager, u16 *item, int size_class, int 
     }
     int old_fits = VillagerHouseItems_FitsMode(villager, there, (u32) mode);
     if (fits) {
-        u8 *object = func_0209b5e8(func_0207f1c8(villager));
-        u8 *same = func_0209b91c(object);
-        func_0204c878(item);
-        func_0204c878(there);
+        u8 *object = (u8 *) (VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
+        u8 *same = VillagerObject_Base((VillagerObject *) (void *) object);
+        ItemTraits_Price(item);
+        ItemTraits_Price(there);
         if (mode == 2) {
             u32 wanted = VILLAGER_HOUSE_GROUP_A_KINDS;
-            if (func_0209bd44(same) && func_0209bc40(same) == VILLAGER_HOUSE_OBJECT_TYPE_2 && func_0209b914(object) >= 2 &&
-                func_0209b8bc(object) < VILLAGER_HOUSE_GROUP_A_KINDS) {
-                wanted = func_0209b8bc(object);
+            if (ItemObject_IsInUse((ItemObject *) (void *) same) &&
+                ItemObject_Type((ItemObject *) (void *) same) == VILLAGER_HOUSE_OBJECT_TYPE_2 &&
+                VillagerObject_Step((VillagerObject *) (void *) object) >= 2 &&
+                VillagerObject_Kind((VillagerObject *) (void *) object) < VILLAGER_HOUSE_GROUP_A_KINDS) {
+                wanted = VillagerObject_Kind((VillagerObject *) (void *) object);
             }
-            if (wanted < VILLAGER_HOUSE_GROUP_A_KINDS && wanted != func_020535f0(item) && old_fits &&
-                wanted == func_020535f0(there)) {
+            if (wanted < VILLAGER_HOUSE_GROUP_A_KINDS && wanted != (u32) FurnitureInfo_MuseumKind(item) && old_fits &&
+                wanted == (u32) FurnitureInfo_MuseumKind(there)) {
                 VillagerHouseItems_MaybeGiveUp(item);
                 return 0;
             }
@@ -316,13 +306,13 @@ int VillagerHouseItems_GroupAPlace(const u8 *villager, const u16 *item)
     if (!is_group_a(*item)) {
         return -1;
     }
-    u32 kind = func_020535f0(item);
+    u32 kind = FurnitureInfo_MuseumKind(item);
     if (kind >= VILLAGER_HOUSE_GROUP_A_KINDS) {
         return -1;
     }
     for (int i = 0; i < MUSEUM_A_ITEMS; i++) {
         u16 other = (u16) (MUSEUM_A_FIRST + i * 4);
-        if (func_020535f0(&other) == kind) {
+        if ((u32) FurnitureInfo_MuseumKind(&other) == kind) {
             return group_a_index(*item) - i;
         }
     }
@@ -362,17 +352,17 @@ CLEAN_AS(func_0207fad0, VillagerHouseItems_MakeRoom)
  * room); the other half it is just dropped (1). */
 int VillagerHouseItems_MaybeGiveUp(const u16 *item)
 {
-    if (func_020644cc(2) != 0) {
+    if (MainRandom_Below(2) != 0) {
         return 1;
     }
-    return func_0203a6ec(*item) != 0;
+    return TownItemLists_AddListB(*item) != 0;
 }
 CLEAN_AS(func_0207fb70, VillagerHouseItems_MaybeGiveUp)
 
 /* func_0207fb98: the item goes to the town's list; non-zero when it found room. */
 int VillagerHouseItems_GiveUp(const u16 *item)
 {
-    return func_0203a6ec(*item) != 0;
+    return TownItemLists_AddListB(*item) != 0;
 }
 CLEAN_AS(func_0207fb98, VillagerHouseItems_GiveUp)
 
@@ -418,7 +408,7 @@ MemberPointer VillagerHouseItems_ModeFilter(u32 villager, u32 mode)
 {
     (void) villager;
     u8 group = 3;
-    int place = func_0209c2d4(&group, mode);
+    int place = VillagerModeRecord_PlaceInGroup(&group, mode);
     if (group == 0 && (u32) place < VILLAGER_HOUSE_FILTERS) {
         return data_021d1330[place];
     }
@@ -430,10 +420,10 @@ CLEAN_AS(func_0207fc7c, VillagerHouseItems_ModeFilter)
  * likes (func_02080834 above 0). */
 int VillagerHouseItems_FitsMode4(u8 *villager, u16 *item)
 {
-    if (!func_0204bcdc(item) || is_group_a(*item)) {
+    if (!ItemCode_HasVariant(item) || is_group_a(*item)) {
         return 0;
     }
-    return func_02080834(villager, item) > 0;
+    return VillagerData_ItemLiking(villager, item) > 0;
 }
 CLEAN_AS(func_0207fcc8, VillagerHouseItems_FitsMode4)
 
@@ -481,7 +471,7 @@ int VillagerHouseItems_PickCheapest(u8 *villager, int first, int end)
     int slot = VILLAGER_HOUSE_NO_SLOT;
     for (int i = first; i < end; i++) {
         if (VillagerHouseItems_IsSlot(villager, (u32) i) && items[i] != VILLAGER_HOUSE_ITEM_NONE) {
-            int worth = func_0204c878(&items[i]);
+            int worth = ItemTraits_Price(&items[i]);
             if (worth <= best) {
                 slot = i;
                 best = worth;
@@ -558,7 +548,7 @@ void VillagerHouseItems_Get(u16 *out, const u8 *villager, int slot)
     *out = items[slot];
     if (*out != VILLAGER_HOUSE_ITEM_NONE) {
         u16 stands_for;
-        func_02061b1c(&stands_for, out, 1);
+        ItemForm_ToPlaced(&stands_for, out, 1);
         *out = stands_for;
     }
 }
@@ -594,7 +584,7 @@ CLEAN_AS(func_0207ffa0, VillagerHouseItems_IsSlot)
  * 0x28 give (0 past 4, or with no data). */
 int VillagerHouseItems_RoomModel(const u8 *villager)
 {
-    const u8 *data = func_02080b64(villager);
+    const u8 *data = VillagerData_Room((u8 *) villager);
     int room = 0;
     if (data != NULL) {
         room = (data[0] & 0x1f) >> 2;
@@ -611,19 +601,21 @@ CLEAN_AS(func_0207ffac, VillagerHouseItems_RoomModel)
  * with both left as they are, for a villager without a valid NpcId or data. */
 int VillagerHouseItems_Template(u8 *villager, int *template_set, int *variant)
 {
-    if (!NpcId_IsValid(func_0208150c(villager))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return 0;
     }
-    if (func_02082500(NpcId_Number(func_0208150c(villager))) == NULL) {
+    if (NpcLookup_Data(NpcId_Number(TownVillager_NpcId(villager))) == NULL) {
         return 0;
     }
     VillagerModeRecord *record = mode_record(villager);
     /* the mode is read again for each test */
-    int mode_2 = func_0209c330(record) == 2;
+    int mode_2 = VillagerModeRecord_Mode(record) == 2;
     if (!mode_2) {
-        int later = func_0209c330(record) == VILLAGER_MODE_NONE_YET || func_0209c330(record) == VILLAGER_MODE_LEAVING ||
-                    func_0209c330(record) == VILLAGER_MODE_ARRIVED || func_0209c330(record) == VILLAGER_MODE_11;
-        mode_2 = later && func_0209c2c0(record) != 0;
+        int later = VillagerModeRecord_Mode(record) == VILLAGER_MODE_NONE_YET ||
+                    VillagerModeRecord_Mode(record) == VILLAGER_MODE_LEAVING ||
+                    VillagerModeRecord_Mode(record) == VILLAGER_MODE_ARRIVED ||
+                    VillagerModeRecord_Mode(record) == VILLAGER_MODE_11;
+        mode_2 = later && VillagerModeRecord_IsFrom2(record) != 0;
     }
     if (mode_2) {
         *template_set = VILLAGER_HOUSE_TEMPLATE_MODE_2;

@@ -3,6 +3,14 @@
 
 #include "clean.h"
 #include "mail.h"
+#include "letter.h"
+#include "mail_text.h"
+#include "message_texts.h"
+#include "number_text.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "state_flags.h"
+#include "town_name.h"
 
 #define NO_ITEM 0xfff1
 
@@ -43,27 +51,6 @@ extern u8 data_020e3100[], data_020e3114[];
 extern u8 data_020e3108[], data_020e3104[];
 extern u8 data_020e3110[], data_020e310c[];
 
-extern void *func_020984e8(void);                   /* the current player's record */
-extern SavingsAccount *func_020992fc(void *player); /* its account (0x23e0) */
-extern void *func_02099870(void *player);           /* its name (0x247e) */
-extern int func_02099020(void *player, u32 flag);   /* a flag of its record */
-extern void func_02098fd0(void *player, u32 flag);  /* clear it */
-extern void func_02098ff8(void *player, u32 flag);  /* set it */
-extern int func_0206f798(void);                     /* global flag 0x20 (func_0206fec8): no interest */
-extern void func_02066694(MailLetter *letter);      /* construct */
-extern void func_02066688(MailLetter *letter);      /* destruct */
-/* Write the letter: message `*message` of template `name`; *kind goes to byte 0xfb, *paper to
- * byte 0xf9. */
-extern void func_02066024(MailLetter *letter, u8 *message, const char *name, u8 *kind, u8 *paper, void *player_name);
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int arg); /* attach an item */
-extern void *func_020641c8(SavingsText8 *text);                  /* construct */
-extern void *func_020641b0(SavingsText8 *text);                  /* destruct */
-extern void func_02064210(const u8 *town, SavingsText8 *text);
-extern int func_0203d7c4(int entry, void *text); /* set a message entry */
-extern void *func_020b5630(SavingsNumberText *text);
-extern void *func_020b5618(SavingsNumberText *text);
-extern int func_020b45d0(SavingsNumberText *text, int value, int base, int a3, int a4, u8 a5);
-
 /* The present of a rank's letter, NO_ITEM for none. */
 static u16 savings_rank_present(int rank)
 {
@@ -91,24 +78,25 @@ static u16 savings_rank_present(int rank)
  * account's rank (with its present) and post it; once it is posted, the flag is cleared. */
 void Savings_SendRankLetter(int days)
 {
-    void *player = func_020984e8();
-    SavingsAccount *account = func_020992fc(player);
-    if (days <= 0 || func_02099020(player, SAVINGS_FLAG_RANK_LETTER) == 0) {
+    void *player = PlayerRecords_Current();
+    SavingsAccount *account = PlayerRecord_Savings(player);
+    if (days <= 0 || PlayerRecord_TestFlag(player, SAVINGS_FLAG_RANK_LETTER) == 0) {
         return;
     }
     int rank = Savings_Rank(account);
     MailLetter letter;
-    func_02066694(&letter);
+    Letter_Construct((Letter *) &letter);
     u8 message = (u8) rank;
-    func_02066024(&letter, &message, data_020e3118, data_020e3100, data_020e3114, func_02099870(player));
+    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e3118, data_020e3100, data_020e3114,
+                                PlayerRecord_Player(player));
     u16 present = savings_rank_present(rank);
     if (present != NO_ITEM) {
-        func_02065ed0(&letter, present, 1);
+        Letter_SetItem((Letter *) &letter, present, 1);
     }
     if (Mail_Post(&letter) != 0) {
-        func_02098fd0(player, SAVINGS_FLAG_RANK_LETTER);
+        PlayerRecord_ClearFlag(player, SAVINGS_FLAG_RANK_LETTER);
     }
-    func_02066688(&letter);
+    Letter_Destruct((Letter *) &letter);
 }
 CLEAN_AS(func_020980f0, Savings_SendRankLetter)
 
@@ -118,8 +106,8 @@ CLEAN_AS(func_020980f0, Savings_SendRankLetter)
  * QUIRK: only the highest step is looked at; a lower one whose letter never came is skipped. */
 void Savings_SendMilestoneLetter(int days)
 {
-    void *player = func_020984e8();
-    SavingsAccount *account = func_020992fc(player);
+    void *player = PlayerRecords_Current();
+    SavingsAccount *account = PlayerRecord_Savings(player);
     if (days <= 0) {
         return;
     }
@@ -146,23 +134,24 @@ void Savings_SendMilestoneLetter(int days)
         present = 0x37dc;
     }
     u32 flag = (u32) (SAVINGS_FLAG_MILESTONE + step);
-    if (func_02099020(player, flag) != 0) {
+    if (PlayerRecord_TestFlag(player, flag) != 0) {
         return;
     }
     u8 message = (u8) (MILESTONE_MESSAGE + step);
     MailLetter letter;
     SavingsText8 town;
-    func_02066694(&letter);
-    func_020641c8(&town);
-    func_02064210(data_021dc7aa, &town);
-    func_0203d7c4(TOWN_NAME_ENTRY, &town);
-    func_02066024(&letter, &message, data_020e3118, data_020e3108, data_020e3104, func_02099870(player));
-    func_02065ed0(&letter, present, 1);
+    Letter_Construct((Letter *) &letter);
+    TownNameText_Construct((TownNameText *) &town);
+    TownName_ToText((TownName *) (void *) data_021dc7aa, (TextBase *) &town);
+    MailText_SetPartText(TOWN_NAME_ENTRY, &town);
+    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e3118, data_020e3108, data_020e3104,
+                                PlayerRecord_Player(player));
+    Letter_SetItem((Letter *) &letter, present, 1);
     if (Mail_Post(&letter) != 0) {
-        func_02098ff8(player, flag);
+        PlayerRecord_SetFlag(player, flag);
     }
-    func_020641b0(&town);
-    func_02066688(&letter);
+    TownNameText_Destruct((TownNameText *) &town);
+    Letter_Destruct((Letter *) &letter);
 }
 CLEAN_AS(func_020981f4, Savings_SendMilestoneLetter)
 
@@ -186,9 +175,9 @@ static int savings_interest(int balance, int months)
  * QUIRK: the interest is added whether the letter could be posted or not. */
 void Savings_PayInterest(int months)
 {
-    void *player = func_020984e8();
-    SavingsAccount *account = func_020992fc(player);
-    if (func_0206f798() != 0 || months <= 0) {
+    void *player = PlayerRecords_Current();
+    SavingsAccount *account = PlayerRecord_Savings(player);
+    if (StateFlags_Test20() != 0 || months <= 0) {
         return;
     }
     int balance = Savings_Balance(account);
@@ -204,15 +193,16 @@ void Savings_PayInterest(int months)
 
     MailLetter letter;
     SavingsNumberText amount;
-    func_02066694(&letter);
+    Letter_Construct((Letter *) &letter);
     u8 message = INTEREST_MESSAGE;
-    func_020b5630(&amount);
-    func_020b45d0(&amount, interest, 10, 0, 0, 0);
-    func_0203d7c4(INTEREST_ENTRY, &amount);
-    func_02066024(&letter, &message, data_020e3118, data_020e3110, data_020e310c, func_02099870(player));
+    MessageText46_Construct((MessageText46 *) &amount);
+    NumberText_Format(&amount, interest, 10, 0, 0, 0);
+    MailText_SetPartText(INTEREST_ENTRY, &amount);
+    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e3118, data_020e3110, data_020e310c,
+                                PlayerRecord_Player(player));
     Mail_Post(&letter);
-    func_020b5618(&amount);
-    func_02066688(&letter);
+    MessageText46_Destruct((MessageText46 *) &amount);
+    Letter_Destruct((Letter *) &letter);
 }
 CLEAN_AS(func_020982f8, Savings_PayInterest)
 

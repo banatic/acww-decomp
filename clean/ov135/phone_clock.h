@@ -5,7 +5,7 @@
  * - overlay 92's dispatcher opens it with overlay 134 (the clock screens' graphics, files
  *   "menu/clock/...") as overlay group 0x1c for GroupParams' mode 0x30, which the house's
  *   telephone asks for (ov004/rmo_telephone.c);
- * - the object at 0x2c8 is overlay 134's (its functions are called by symbol): it shows the
+ * - the object at 0x2c8 is overlay 134's clock setter (ov134/clock_setter.h): it shows the
  *   clock's fields and edits the one picked;
  * - the panel's button 6 sets the clock (PhoneClock_SetClock: the date and time edited become
  *   the town's, as an offset from the RTC's in the state block, main/clock.h) and its button 7
@@ -20,6 +20,7 @@
 #include "ov002/button_panel.h"
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
+#include "ov134/clock_setter.h"
 #include "types.h"
 
 /* The places of the cursor (`cursor`). */
@@ -52,8 +53,8 @@ enum PhoneClockSubState {
     PHONE_CLOCK_SUB_TOUCH_DRAG = 1,     /* PhoneClock_DragByTouch */
     PHONE_CLOCK_SUB_TOUCH_SETTLE = 2,   /* PhoneClock_WaitDragSettled */
     PHONE_CLOCK_SUB_TOUCH_EDIT = 3,     /* PhoneClock_EditByTouch */
-    PHONE_CLOCK_SUB_TOUCH_HOLD_B = 4,   /* PhoneClock_HoldTouchB */
-    PHONE_CLOCK_SUB_TOUCH_HOLD_A = 5,   /* PhoneClock_HoldTouchA */
+    PHONE_CLOCK_SUB_DRAG_THUMB = 4,     /* PhoneClock_DragThumb */
+    PHONE_CLOCK_SUB_THUMB_TO_PEN = 5,   /* PhoneClock_ThumbTowardPen */
     PHONE_CLOCK_SUB_BROWSE = 6,         /* PhoneClock_BrowseByKeys */
     PHONE_CLOCK_SUB_EDIT = 7,           /* PhoneClock_EditByKeys */
     PHONE_CLOCK_SUB_HOLD_A = 8,         /* PhoneClock_HoldButtonA */
@@ -67,17 +68,14 @@ enum PhoneClockSubState {
     PHONE_CLOCK_SUB_STATES = 16
 };
 
-#define PHONE_CLOCK_EDITOR_SIZE 0x28b0
-
 typedef struct PhoneClock {
-    MenuScene base;                     /* 0x000: its bytes 0x92-0x93 are the flags (PhoneClock_Flags) */
-    u8 return_sub_state;                /* 0x094: the sub state to go back to once the sprite stops */
-    u8 cursor;                          /* 0x095: PhoneClockPlace */
-    u8 pad_96[2];                       /* 0x096 */
-    Glider cursor_sprite;               /* 0x098: a Glider0 */
-    ButtonPanel panel;                  /* 0x0fc */
-    u8 editor[PHONE_CLOCK_EDITOR_SIZE]; /* 0x2c8: overlay 134's object (constructor
-                                         * func_ov134_0229bed4, destructor func_ov134_0229beb0) */
+    MenuScene base;       /* 0x000: its bytes 0x92-0x93 are the flags (PhoneClock_Flags) */
+    u8 return_sub_state;  /* 0x094: the sub state to go back to once the sprite stops */
+    u8 cursor;            /* 0x095: PhoneClockPlace */
+    u8 pad_96[2];         /* 0x096 */
+    Glider cursor_sprite; /* 0x098: a Glider0 */
+    ButtonPanel panel;    /* 0x0fc */
+    ClockSetter editor;   /* 0x2c8: overlay 134's clock setter */
 } PhoneClock;
 
 PhoneClock *PhoneClock_Destroy(PhoneClock *self);
@@ -116,8 +114,8 @@ void PhoneClock_WaitEditor(PhoneClock *self);
 void PhoneClock_HoldButtonA(PhoneClock *self);
 void PhoneClock_EditByKeys(PhoneClock *self);
 void PhoneClock_BrowseByKeys(PhoneClock *self);
-void PhoneClock_HoldTouchA(PhoneClock *self);
-void PhoneClock_HoldTouchB(PhoneClock *self);
+void PhoneClock_ThumbTowardPen(PhoneClock *self);
+void PhoneClock_DragThumb(PhoneClock *self);
 void PhoneClock_EditByTouch(PhoneClock *self);
 void PhoneClock_WaitDragSettled(PhoneClock *self);
 void PhoneClock_DragByTouch(PhoneClock *self);

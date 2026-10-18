@@ -3,6 +3,9 @@
 
 #include "clean.h"
 #include "item_code.h"
+#include "item_traits.h"
+#include "record_file.h"
+#include "record_files.h"
 
 static_assert(sizeof(ItemInfoAlways) == 12, "ItemInfoAlways size");
 static_assert(sizeof(ItemInfoIndoor) == 4, "ItemInfoIndoor size");
@@ -25,20 +28,6 @@ extern u32 data_021cb5c4; /* items 0x13c8-0x1407 with unk_06 0x1d */
 extern const char *const data_020de368[][2];
 /* The points of each value 0-45 of FurnitureAlways.unk_04 (room_score.c). */
 extern const u16 data_020cca34[];
-
-/* The record files' own functions. */
-extern void *func_0206e6e4(void *files);                    /* dma.bin */
-extern void *func_0206e6e8(void *files);                    /* indoor.bin */
-extern void *func_0206e6ec(void *files);                    /* always.bin */
-extern void *func_0206e7bc(void *file, unsigned int index); /* a record, NULL when it cannot be had */
-extern int func_0206e6f0(void *files);                      /* free indoor.bin's whole copy */
-extern int func_0206e704(void *files, int stream);          /* unless `stream`, load it whole */
-/* Close the files; open them and count the items (both past this block). */
-extern void func_02062ca4(void *files);
-extern int func_02062cbc(void *files);
-/* Whether an item is the first or the second of its pair (item_form.h). */
-extern int func_0204be38(u16 *item);
-extern int func_0204bd84(u16 *item);
 
 #define ITEM_INFO_LAST_NUMBER (ITEM_INFO_NUMBERS - 1)
 #define ITEM_INFO_NUMBER_MASK 0xfff
@@ -85,12 +74,14 @@ static unsigned int item_info_full_number(const u16 *item)
 
 static const ItemInfoAlways *item_info_always(unsigned int number)
 {
-    return func_0206e7bc(func_0206e6ec(&data_021cb5e0), number);
+    return (const ItemInfoAlways *) (void *) RecordFile_Record(RecordFiles_First((FurnitureRecordFiles *) &data_021cb5e0),
+                                                               number);
 }
 
 static const ItemInfoIndoor *item_info_indoor(unsigned int number)
 {
-    return func_0206e7bc(func_0206e6e8(&data_021cb5e0), number);
+    return (const ItemInfoIndoor *) (void *) RecordFile_Record(
+        (FurnitureRecordFile *) (uintptr_t) RecordFiles_Second((int) (uintptr_t) &data_021cb5e0), number);
 }
 
 /* Bit `bit` of the flags of the item's full pile; 0 without the record. */
@@ -217,7 +208,8 @@ CLEAN_AS(func_0206226c, ItemInfo_ScorePoints)
 const ItemInfoSeries *ItemInfo_SeriesRecord(int series)
 {
     if (series < ITEM_INFO_SERIES) {
-        const ItemInfoSeries *record = func_0206e7bc(&data_021cb5e0.series, (unsigned int) series);
+        const ItemInfoSeries *record =
+            (const ItemInfoSeries *) (void *) RecordFile_Record(&data_021cb5e0.series, (unsigned int) series);
         if (record != NULL) {
             return record;
         }
@@ -232,7 +224,8 @@ u8 ItemInfo_SeriesKind(int series)
     if (series >= ITEM_INFO_SERIES) {
         return ITEM_INFO_NO_SERIES_KIND;
     }
-    const ItemInfoSeries *record = func_0206e7bc(&data_021cb5e0.series, (unsigned int) series);
+    const ItemInfoSeries *record =
+        (const ItemInfoSeries *) (void *) RecordFile_Record(&data_021cb5e0.series, (unsigned int) series);
     return record != NULL ? record->kind : ITEM_INFO_NO_SERIES_KIND;
 }
 CLEAN_AS(func_020622a0, ItemInfo_SeriesKind)
@@ -383,7 +376,8 @@ CLEAN_AS(func_020629ec, ItemInfo_Unk02)
 /* func_02062a28: the dma.bin record (of the full pile), or NULL. */
 const ItemInfoDma *ItemInfo_Dma(const u16 *item)
 {
-    return func_0206e7bc(func_0206e6e4(&data_021cb5e0), item_info_full_number(item));
+    return (const ItemInfoDma *) (void *) (RecordFile_Record(
+        (FurnitureRecordFile *) (uintptr_t) RecordFiles_Third((int) (uintptr_t) &data_021cb5e0), item_info_full_number(item)));
 }
 CLEAN_AS(func_02062a28, ItemInfo_Dma)
 
@@ -404,14 +398,14 @@ CLEAN_AS(func_02062ae4, ItemInfo_LoadIndoor)
 /* func_02062af4: the game's files closed. */
 void ItemInfo_Close(void)
 {
-    func_02062ca4(&data_021cb5e0);
+    ItemInfoFiles_Close(&data_021cb5e0);
 }
 CLEAN_AS(func_02062af4, ItemInfo_Close)
 
 /* func_02062b04: the game's files opened and the items counted. */
 void ItemInfo_Open(void)
 {
-    func_02062cbc(&data_021cb5e0);
+    ItemInfoFiles_Open(&data_021cb5e0);
 }
 CLEAN_AS(func_02062b04, ItemInfo_Open)
 
@@ -455,9 +449,9 @@ void ItemInfo_CountSharedPairs(void)
         u16 pair[2];
         pair[0] = (u16) (ITEM_INFO_PAIR_FIRST_A + i);
         pair[1] = (u16) (ITEM_INFO_PAIR_FIRST_B + i);
-        if (func_0204be38(&pair[0])) {
+        if (ItemTraits_IsPairHeadItem(&pair[0])) {
             data_021cb5b4++;
-        } else if (func_0204bd84(&pair[1])) {
+        } else if (ItemTraits_IsPairFaceItem(&pair[1])) {
             data_021cb5b8++;
         }
     }
@@ -494,14 +488,14 @@ CLEAN_AS(func_02062c0c, ItemInfo_FindHeldModels)
 /* func_02062c94: indoor.bin's copy in memory freed. */
 int ItemInfoFiles_FreeIndoor(ItemInfoFiles *files)
 {
-    return func_0206e6f0(files);
+    return RecordFiles_FreeSecond((FurnitureRecordFiles *) files);
 }
 CLEAN_AS(func_02062c94, ItemInfoFiles_FreeIndoor)
 
 /* func_02062c9c: unless `stream`, indoor.bin read whole into memory. */
 void ItemInfoFiles_LoadIndoor(ItemInfoFiles *files, int stream)
 {
-    func_0206e704(files, stream);
+    RecordFiles_LoadSecond((FurnitureRecordFiles *) files, stream);
 }
 CLEAN_AS(func_02062c9c, ItemInfoFiles_LoadIndoor)
 
@@ -509,13 +503,6 @@ CLEAN_AS(func_02062c9c, ItemInfoFiles_LoadIndoor)
  * as furniture_info.c names them): close the three; open the three; close one; read all of
  * one's records; open one; a record file's destructor and constructor. */
 extern void func_0206e71c(FurnitureRecordFiles *files);
-extern int func_0206e73c(FurnitureRecordFiles *files, const char *path0, u32 size0, const char *path1, u32 size1,
-                         const char *path2, u32 size2, u32 records);
-extern void func_0206e808(FurnitureRecordFile *file);
-extern void func_0206e854(FurnitureRecordFile *file);
-extern int func_0206e890(FurnitureRecordFile *file, const char *path, u32 record_size, u32 records);
-extern FurnitureRecordFile *func_0206e8b4(FurnitureRecordFile *file);
-extern void func_0206e8c4(FurnitureRecordFile *file);
 
 extern const char data_020de5b0[]; /* "/item_info/always.bin" */
 extern const char data_020de5c8[]; /* "/item_info/indoor.bin" */
@@ -529,8 +516,8 @@ extern const char data_020de5f4[]; /* "/item_info/series.bin" */
 /* func_02062ca4: the three files closed, then series.bin. */
 void ItemInfoFiles_Close(ItemInfoFiles *files)
 {
-    func_0206e71c(&files->files);
-    func_0206e808(&files->series);
+    RecordFiles_Close(&files->files);
+    RecordFile_Close(&files->series);
 }
 CLEAN_AS(func_02062ca4, ItemInfoFiles_Close)
 
@@ -541,13 +528,13 @@ CLEAN_AS(func_02062ca4, ItemInfoFiles_Close)
 int ItemInfoFiles_Open(ItemInfoFiles *files)
 {
     data_021cb5c0 = 0;
-    (void) func_0206e73c(&files->files, data_020de5b0, sizeof(ItemInfoAlways), data_020de5c8, sizeof(ItemInfoIndoor),
-                         data_020de5e0, sizeof(ItemInfoDma), ITEM_INFO_FILE_RECORDS);
+    (void) RecordFiles_Open(&files->files, data_020de5b0, sizeof(ItemInfoAlways), data_020de5c8, sizeof(ItemInfoIndoor),
+                            data_020de5e0, sizeof(ItemInfoDma), ITEM_INFO_FILE_RECORDS);
     ItemInfo_FindHeldModels();
     ItemInfo_CountSharedPairs();
     ItemInfo_CountUnk06Is1d();
-    (void) func_0206e890(&files->series, data_020de5f4, sizeof(ItemInfoSeries), ITEM_INFO_SERIES_RECORDS);
-    func_0206e854(&files->series);
+    (void) RecordFile_Open(&files->series, data_020de5f4, sizeof(ItemInfoSeries), ITEM_INFO_SERIES_RECORDS);
+    RecordFile_ReadWhole(&files->series);
     return 1;
 }
 CLEAN_AS(func_02062cbc, ItemInfoFiles_Open)
@@ -556,12 +543,12 @@ CLEAN_AS(func_02062cbc, ItemInfoFiles_Open)
  * destructed, the last first. */
 ItemInfoFiles *ItemInfoFiles_Destruct(ItemInfoFiles *files)
 {
-    func_0206e71c(&files->files);
-    func_0206e808(&files->series);
-    func_0206e8b4(&files->series);
-    func_0206e8b4(&files->files.dma);
-    func_0206e8b4(&files->files.indoor);
-    func_0206e8b4(&files->files.always);
+    RecordFiles_Close(&files->files);
+    RecordFile_Close(&files->series);
+    RecordFile_Destruct(&files->series);
+    RecordFile_Destruct(&files->files.dma);
+    RecordFile_Destruct(&files->files.indoor);
+    RecordFile_Destruct(&files->files.always);
     return files;
 }
 CLEAN_AS(func_02062d44, ItemInfoFiles_Destruct)
@@ -569,10 +556,10 @@ CLEAN_AS(func_02062d44, ItemInfoFiles_Destruct)
 /* func_02062d7c: the constructor: the four record files constructed, in order. */
 ItemInfoFiles *ItemInfoFiles_Construct(ItemInfoFiles *files)
 {
-    func_0206e8c4(&files->files.always);
-    func_0206e8c4(&files->files.indoor);
-    func_0206e8c4(&files->files.dma);
-    func_0206e8c4(&files->series);
+    RecordFile_Construct(&files->files.always);
+    RecordFile_Construct(&files->files.indoor);
+    RecordFile_Construct(&files->files.dma);
+    RecordFile_Construct(&files->series);
     return files;
 }
 CLEAN_AS(func_02062d7c, ItemInfoFiles_Construct)

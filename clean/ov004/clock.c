@@ -9,6 +9,13 @@
 #include "room_object_life.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "main/animated_model.h"
+#include "main/calendar.h"
+#include "main/frame_ctrl.h"
+#include "main/model_pool.h"
+#include "room_manager.h"
+#include "room_objects.h"
+#include "room_sound.h"
 
 static_assert(offsetof(Clock, strikes) == 0x844, "strikes");
 static_assert(offsetof(Clock, time) == 0x846, "time");
@@ -35,29 +42,6 @@ static_assert(offsetof(RoomObject, model_files) == 0x6cc, "the model files");
 extern const u8 data_ov004_02251d98[];
 extern const u8 data_ov004_02251e44[];
 
-/* The time of day. */
-extern void func_0209def4(Time *now);
-/* The model object at 0x538: binding its joint animation (with the heap of the object's pool
- * entry, func_0209d324), playing `file` on it by `mode` and `speed` from `frame`, its first
- * advance, its advance, and its frame set to `frame`. */
-extern int func_0209d324(void *entry);
-extern int func_02055140(void *model, int heap);
-extern void func_02055060(void *model, const AnimFile *file, int mode, int speed, int frame, int a5);
-extern void func_02055050(void *model);
-extern void func_02054cdc(void *model);
-extern void func_020550e4(void *model, int frame);
-/* Whether an animation is at its end. */
-extern int func_02056f94(void *anim);
-/* The room's shared frame counter (data_ov004_022595bc). */
-extern u16 func_ov004_0223c1e0(void);
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-/* The sound at a point: setting its variable to `value` while it plays, and playing sound `id`
- * at `position` (func_ov004_0223cf40 while it plays, func_ov004_0223cf54 as well). */
-extern void func_ov004_0223cf18(RoomSound *sound, s16 value);
-extern void func_ov004_0223cf40(RoomSound *sound, int id, Vec3 *position);
-extern void func_ov004_0223cf54(RoomSound *sound, int id, Vec3 *position);
-
 /* The joint animation of the furniture's archive, variant 0. */
 static const AnimFile *Clock_joint_file(Clock *clock)
 {
@@ -67,7 +51,7 @@ static const AnimFile *Clock_joint_file(Clock *clock)
 /* One strike: the joint animation played once from the start. */
 static void Clock_play_strike(Clock *clock)
 {
-    func_02055060(clock->base.unk_538, Clock_joint_file(clock), ANIM_MODE_ONCE, ONE, 0, 0);
+    AnimatedModel_Start(&clock->base.model, (const u8 *) Clock_joint_file(clock), ANIM_MODE_ONCE, ONE, 0, 0);
 }
 
 /* func_ov004_022168d8: marks the clock as the nearest striking clock to the player, for this
@@ -104,7 +88,7 @@ CLEAN_AS(func_ov004_022168f8, Clock_Vfunc0C)
 
 /* The striking of a clock of kind 0x10, each frame. The nearest striking clock sets variable 1
  * of its sound when its count changes (not in mode 2). With no strikes left, a new hour (not in
- * the areas func_ov004_0223c10c names) starts the strikes of the hour, 12 for 0; in mode 2 one
+ * the areas RoomObjects_InNookOrScene0AOr0F names) starts the strikes of the hour, 12 for 0; in mode 2 one
  * strike at once. While strikes are left each frame plays the strike sound and advances the
  * animation; at its end the next strike starts, and the count goes down (not in mode 2). */
 static void Clock_strike(Clock *clock)
@@ -112,28 +96,28 @@ static void Clock_strike(Clock *clock)
     RoomObject *base = &clock->base;
     if (!RoomObject_Unk76CIs2(base) && clock->strikes >= 0 && clock->strikes != clock->last_strikes &&
         clock->nearest_striker) {
-        func_ov004_0223cf18(&base->sound, 1);
+        RoomSound_SetVariable(&base->sound, 1);
     }
     clock->last_strikes = clock->strikes;
     if (clock->strikes == NO_STRIKES) {
         if (RoomObject_Unk76CIs2(base)) {
             clock->strikes = 1;
-        } else if (!func_ov004_0223c10c() && clock->last_time.hour != clock->time.hour) {
+        } else if (!RoomObjects_InNookOrScene0AOr0F() && clock->last_time.hour != clock->time.hour) {
             clock->strikes = (s8) (clock->time.hour % 12);
             if (clock->strikes == 0) {
                 clock->strikes = 12;
             }
             if (!RoomObject_Unk76CIs2(base)) {
-                func_ov004_0223cf40(&base->sound, STRIKE_SOUND, &base->sound.position);
+                RoomSound_PlayAt(&base->sound, STRIKE_SOUND, &base->sound.position);
             }
             Clock_play_strike(clock);
         }
     } else if (clock->strikes > 0) {
         if (!RoomObject_Unk76CIs2(base)) {
-            func_ov004_0223cf40(&base->sound, STRIKE_SOUND, &base->sound.position);
+            RoomSound_PlayAt(&base->sound, STRIKE_SOUND, &base->sound.position);
         }
-        func_02054cdc(base->unk_538);
-        if (func_02056f94(base->joint_anim)) {
+        AnimatedModel_Update(&base->model);
+        if (FrameCtrl_IsDone(&base->model.frames)) {
             Clock_play_strike(clock);
             if (!RoomObject_Unk76CIs2(base)) {
                 clock->strikes--;
@@ -153,19 +137,19 @@ int Clock_Update(Clock *clock)
 {
     RoomObject *base = &clock->base;
     clock->last_time = clock->time;
-    func_0209def4(&clock->time);
+    Calendar_Now(&clock->time);
     if (base->unk_780 == KIND_STRIKING) {
         Clock_strike(clock);
     } else if (base->unk_780 == KIND_ANIMATED) {
         RoomObject_AdvanceAnims(base);
     }
-    int frame = func_ov004_0223c1e0();
+    int frame = RoomManager_FrameCounter();
     if (base->unk_780 == KIND_SHARED) {
-        func_020550e4(base->unk_538, frame);
+        AnimatedModel_SetFrame(&base->model, frame);
     }
     if (clock->nearest && (frame == TICK_FRAME_1 || frame == TICK_FRAME_2)) {
         if (base->unk_780 == KIND_STRIKING) {
-            func_ov004_0223cf54(&base->sound, TICK_SOUND, &base->sound.position);
+            RoomSound_PlayAtB(&base->sound, TICK_SOUND, &base->sound.position);
         } else {
             RoomObject_PlaySound3(base);
         }
@@ -179,10 +163,10 @@ CLEAN_AS(func_ov004_022168fc, Clock_Update)
 /* Binds the joint animation to the model and plays it by `mode` from the start. */
 static void Clock_bind_joints(Clock *clock, int entry, int mode)
 {
-    void *model = clock->base.unk_538;
-    if (func_02055140(model, func_0209d324((void *) (uintptr_t) (u32) entry)) != 0) {
-        func_02055060(model, Clock_joint_file(clock), mode, ONE, 0, 0);
-        func_02055050(model);
+    AnimatedModel *model = &clock->base.model;
+    if (AnimatedModel_LoadAnim(model, (Heap *) (uintptr_t) ModelPoolEntry_Heap((void *) (uintptr_t) (u32) entry)) != 0) {
+        AnimatedModel_Start(model, (const u8 *) Clock_joint_file(clock), mode, ONE, 0, 0);
+        AnimatedModel_Attach(model);
     }
 }
 
@@ -193,7 +177,7 @@ int Clock_Start(Clock *clock)
 {
     RoomObject *base = &clock->base;
     int entry = RoomObject_PoolEntry(base);
-    func_0209def4(&clock->last_time);
+    Calendar_Now(&clock->last_time);
     clock->time = clock->last_time;
     clock->strikes = NO_STRIKES;
     if (base->unk_780 == KIND_STRIKING) {

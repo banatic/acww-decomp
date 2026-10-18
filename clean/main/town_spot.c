@@ -5,17 +5,14 @@
 #include "clean.h"
 #include "map_item.h"
 #include "town_tile.h"
+#include "main_random.h"
+#include "map_code.h"
 
 #define TOWN_SPOT_ACRE_TILES 16
 /* The rows of inner acres TownSpot_PickRandom keeps a mask for. */
 #define TOWN_SPOT_MASK_ROWS 4
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-/* How many tiles of the acre func_02088024 accepts. `spot` is not read. */
-extern int func_02087a08(TownSpot *spot, const TownSpotAcre *acre, AcreMap *map);
-/* Whether the tile (x, z) of the map suits. */
-extern int func_02088024(int x, int z, AcreMap *map);
 
 /* func_02087854: the spot as a position on the ground (y 0). Returns 0. */
 int TownSpot_ToPosition(const TownSpot *spot, Vec3 *position)
@@ -56,7 +53,7 @@ int TownSpot_PickRandom(TownSpot *spot)
     MI_CpuFill8(mask, 0, sizeof(mask));
     for (acre.z = 1; acre.z < high - 1; acre.z++) {
         for (acre.x = 1; acre.x < wide - 1; acre.x++) {
-            if (func_02087a08(spot, &acre, map) != 0) {
+            if (TownSpot_CountTilesInAcre(spot, &acre, map) != 0) {
                 mask[acre.z - 1] = (u8) (mask[acre.z - 1] | (1u << (acre.x - 1)));
                 count++;
             }
@@ -65,7 +62,7 @@ int TownSpot_PickRandom(TownSpot *spot)
     if (count <= 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(count);
+    int pick = (int) MainRandom_Below(count);
     for (acre.z = 1; acre.z < high - 1; acre.z++) {
         for (acre.x = 1; acre.x < wide - 1; acre.x++) {
             if (((mask[acre.z - 1] >> (acre.x - 1)) & 1) == 0) {
@@ -97,7 +94,7 @@ int TownSpot_PickTileInAcre(TownSpot *spot, Vec3 *position, const TownSpotAcre *
     AcreTile_TileOfAcre(&first_x, &first_z, acre->x, acre->z, 0, 0);
     for (int z = 0; z < TOWN_SPOT_ACRE_TILES; z++) {
         for (int x = 0; x < TOWN_SPOT_ACRE_TILES; x++) {
-            if (func_02088024(first_x + x, first_z + z, map) != 0) {
+            if (TownSpot_TileSuits(first_x + x, first_z + z, map) != 0) {
                 mask[z] = (u16) (mask[z] | (1u << x));
                 count++;
             }
@@ -106,7 +103,7 @@ int TownSpot_PickTileInAcre(TownSpot *spot, Vec3 *position, const TownSpotAcre *
     if (count <= 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(count);
+    int pick = (int) MainRandom_Below(count);
     for (int z = 0; z < TOWN_SPOT_ACRE_TILES; z++) {
         for (int x = 0; x < TOWN_SPOT_ACRE_TILES; x++) {
             if (((mask[z] >> x) & 1) == 0) {
@@ -150,28 +147,24 @@ void TownSpot_Clear(TownSpot *spot)
 }
 CLEAN_AS(func_02087a64, TownSpot_Clear)
 
-/* func_02087a70: the constructor does nothing. */
-void TownSpot_Construct(TownSpot *spot)
-{
-    (void) spot;
-}
-CLEAN_AS(func_02087a70, TownSpot_Construct)
-
-/* func_02087a74: the destructor does nothing. */
+/* func_02087a70: the destructor does nothing. */
 void TownSpot_Destruct(TownSpot *spot)
 {
     (void) spot;
 }
-CLEAN_AS(func_02087a74, TownSpot_Destruct)
+CLEAN_AS(func_02087a70, TownSpot_Destruct)
+
+/* func_02087a74: the constructor does nothing. */
+void TownSpot_Construct(TownSpot *spot)
+{
+    (void) spot;
+}
+CLEAN_AS(func_02087a74, TownSpot_Construct)
 
 /* The objects that keep a tile from suiting: the event buildings, and (beside the tile) the
  * codes of the growth lines and 0x66-0x6d (map_item.h) past their first stage. */
 #define TOWN_SPOT_EVENT_BUILDING_FIRST 0x5000
 #define TOWN_SPOT_EVENT_BUILDING_LAST 0x5021
-
-/* Whether an object is one of the special codes 0xf030, 0xf031, 0xfffd, 0xfffe or one
- * func_0204c774 accepts. */
-extern int func_0204c71c(const u16 *item);
 
 /* The acre of a tile, with the ROM's arithmetic shift for tiles left of or above the map. */
 static int town_spot_acre_of(int tile)
@@ -227,7 +220,7 @@ int TownSpot_TileSuits(int x, int z, AcreMap *map)
         if (item == NULL || town_spot_is_event_building(*item)) {
             return 0;
         }
-        if (func_0204c71c(item) != 0) {
+        if (MapCode_IsSpecial(item) != 0) {
             return 0;
         }
         if (MapItem_IsStage0(item) == 0 && town_spot_grows(*item)) {

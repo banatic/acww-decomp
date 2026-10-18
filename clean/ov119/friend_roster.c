@@ -99,7 +99,7 @@ static void fr_destroy_members(FriendRoster *self)
     self->base.vtable = data_ov119_0229cea0;
     ErrorMessage_Destruct(&self->error);
     Glider0_Destroy(&self->cursor_sprite);
-    BbsLabel_Destruct((BbsLabel *) (void *) self->header);
+    BbsLabel_Destruct(&self->header);
     __cxa_vec_cleanup(self->labels, FRIEND_ROSTER_LABELS, sizeof(TextLabel), func_02070be8);
     PagedChoice_Destroy(fr_choice(self));
     MenuScene_DestroyBase(fr_scene(self));
@@ -629,7 +629,7 @@ FriendRoster *FriendRoster_New(void)
     self->base.vtable = data_ov119_0229cea0;
     PagedChoice_Construct(fr_choice(self));
     __cxa_vec_ctor(self->labels, FRIEND_ROSTER_LABELS, sizeof(TextLabel), func_02070c08, func_02070be8);
-    BbsLabel_Construct((BbsLabel *) (void *) self->header);
+    BbsLabel_Construct(&self->header);
     Glider0_Construct(&self->cursor_sprite);
     for (int i = 0; i < FRIEND_ROSTER_TASKS; i++) {
         LayerTask_Construct(&self->tasks[i]);

@@ -8,6 +8,9 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "furniture_sounds.h"
+#include "main/main_random.h"
+#include "room_sound.h"
 
 static_assert(offsetof(PeriodicRoomObject, repeats) == 0x844, "repeats");
 static_assert(offsetof(PeriodicRoomObject, count) == 0x848, "count");
@@ -29,10 +32,6 @@ extern const u8 data_ov004_02252b28[];
 /* The value the furniture's row has for no sound. */
 extern u16 data_ov004_0224fd38;
 
-extern u16 func_ov004_0223a760(int number);
-extern void func_ov004_0223cf54(RoomSound *sound, int id, Vec3 *position);
-extern unsigned int func_020644cc(int bound); /* a random number below `bound` */
-
 /* Whether the object's sound is one of 0x3f9 to 0x3fc, the ones that make a single burst. */
 static int single_burst(int sound)
 {
@@ -43,7 +42,7 @@ static int single_burst(int sound)
 static void play(PeriodicRoomObject *object, int sound)
 {
     if (sound != data_ov004_0224fd38) {
-        func_ov004_0223cf54(&object->base.sound, sound, &object->base.sound.position);
+        RoomSound_PlayAtB(&object->base.sound, sound, &object->base.sound.position);
     }
 }
 
@@ -60,9 +59,9 @@ static u16 anim_frames(PeriodicRoomObject *object)
     RoomObject *base = &object->base;
     u32 length;
     if (AnimSet_Anim10(FurnitureModel_Anims(&base->model_files), 0) != 0) {
-        length = *(const u32 *) (const void *) base->anims[ROOM_ANIM_VISIBILITY].unk_04;
+        length = (u32) base->anims[ROOM_ANIM_VISIBILITY].base.ctrl.end;
     } else {
-        length = (u32) ((const FrameCtrl *) (const void *) base->joint_anim)->end;
+        length = (u32) base->model.frames.end;
     }
     return whole_frames(length);
 }
@@ -110,7 +109,7 @@ CLEAN_AS(func_ov004_02211c80, PeriodicRoomObject_Vfunc0C)
  * Phases 2 and 3 do nothing with sounds 0x3f9 to 0x3fc, and phases above 3 nothing at all. */
 int PeriodicRoomObject_Update(PeriodicRoomObject *object)
 {
-    int sound = func_ov004_0223a760(RoomObject_Number(&object->base));
+    int sound = FurnitureSounds_Sound0(RoomObject_Number(&object->base));
     if (single_burst(sound)) {
         if (object->phase == PERIODIC_WAIT) {
             update_wait(object, sound, 1);
@@ -125,7 +124,7 @@ int PeriodicRoomObject_Update(PeriodicRoomObject *object)
         update_wait(object, sound, 0);
     } else if (object->phase <= PERIODIC_BURST_3) {
         /* the joint animation's last step, before this frame's */
-        const FrameCtrl *joints = (const FrameCtrl *) (const void *) object->base.joint_anim;
+        const FrameCtrl *joints = &object->base.model.frames;
         if (sound == SOUND_TICK && FrameCtrl_Passed(joints, TICK_FRAME)) {
             play(object, sound);
         }
@@ -150,7 +149,7 @@ int PeriodicRoomObject_Start(PeriodicRoomObject *object)
 {
     RoomObject *base = &object->base;
     RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
-    int sound = func_ov004_0223a760(RoomObject_Number(base));
+    int sound = FurnitureSounds_Sound0(RoomObject_Number(base));
     switch (sound) {
         case 0x3f9:
         case 0x3fa:
@@ -169,11 +168,11 @@ int PeriodicRoomObject_Start(PeriodicRoomObject *object)
     object->wait = 0;
     if (base->unk_76C != 1) {
         if (sound == SOUND_SHORT_WAIT) {
-            object->wait = (u16) func_020644cc(SHORT_WAIT);
+            object->wait = (u16) MainRandom_Below(SHORT_WAIT);
         } else if (single_burst(sound)) {
-            object->wait = (u16) func_020644cc(LONG_WAIT);
+            object->wait = (u16) MainRandom_Below(LONG_WAIT);
         } else {
-            object->wait = (u16) func_020644cc(RoomObject_AnimFrames(base, 0) * object->repeats);
+            object->wait = (u16) MainRandom_Below(RoomObject_AnimFrames(base, 0) * object->repeats);
         }
     }
     return 1;

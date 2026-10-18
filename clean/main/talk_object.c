@@ -30,6 +30,8 @@
 #include "player_options.h"
 #include "text_base.h"
 #include "autoload_2/approach.h"
+#include "talk_message_file.h"
+#include "talk_pick_scan.h"
 
 static_assert(offsetof(TalkObject, window) == 0x001c, "talk window");
 static_assert(offsetof(TalkObject, shake_angle) == 0x00a0, "talk shake");
@@ -95,12 +97,6 @@ extern void *func_020a8228(void *part);
 extern void *func_020a8210(void *part);
 extern void *func_02068644(void *talk);
 extern void *func_020684b0(void *talk);
-
-/* The message window: constructed, destroyed, run, drawn, placed; its spinner started and
- * stopped. */
-/* The part at 0xb14: constructed and destroyed. */
-extern void *func_0206d688(void *part);
-extern void *func_0206d670(void *part);
 
 /* The receiver's vtable slot 0x68: the villager talked to, or NULL. */
 #define TALK_OBJECT_SLOT_VILLAGER 0x68
@@ -645,7 +641,7 @@ TalkObject *TalkObject_Destruct(TalkObject *talk)
     Block020a8248_Destruct(&talk->unk_14ac);
     MessageWalkRun_Destruct(&talk->run);
     TalkTags_Destruct(&talk->walker);
-    func_0206d670(talk->unk_b14);
+    TalkMessageFile_Destruct((TalkMessageFile *) (void *) talk->unk_b14);
     TalkPage_Destruct(&talk->page);
     TalkAnswers_Destruct(&talk->answers);
     TalkWindows_Destruct(&talk->choice_windows);
@@ -677,7 +673,7 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     TalkAnswers_Construct(&talk->answers);
     talk->name_box = NULL;
     TalkPage_Construct(&talk->page, (u8 *) talk);
-    func_0206d688(talk->unk_b14);
+    TalkMessageFile_Construct((TalkMessageFile *) (void *) talk->unk_b14);
     TalkTags_Construct(&talk->walker, (u8 *) talk, &talk->page);
     MessageWalkRun_Construct(&talk->run, &talk->walker.base);
     talk->receiver = NULL;
@@ -746,14 +742,6 @@ extern const u16 data_020cce84[];
 extern const s8 data_020ccea0[];
 /* The state block: the town's name at its 0x02. */
 extern StateBlock data_021dc7a8;
-
-/* The talk's message file at 0xb14: its text buffer cleared. */
-extern void func_0206d63c(void *file);
-/* A walker of the talk's tags (0x44 bytes) over a text: constructed on the talk, run over the
- * text, destroyed. */
-extern void *func_0206923c(void *walker, TalkObject *talk);
-extern void func_020691cc(void *walker, const char *chars);
-extern void *func_0206921c(void *walker);
 
 /* The receiver's vtable slots the talk calls here: the folder of the message files, what
  * begins with a message (0x10), what follows its end (0x14), the player's answer (0x18). */
@@ -857,7 +845,7 @@ CLEAN_AS(func_02067218, TalkObject_StartGivenMessage)
 void TalkObject_LoadMessage(TalkObject *talk)
 {
     BmgFile *file = talk_object_file(talk);
-    func_0206d63c(file);
+    TalkMessageFile_Clear((TalkMessageFile *) file);
     const char *path = TalkObject_MessagePath(talk, NULL, NULL);
     if (BmgFile_Open(file, path)) {
         BmgFile_LoadMessage(file, &talk->receiver->base.message);
@@ -935,9 +923,9 @@ void TalkObject_RunAnswerText(TalkObject *talk)
 {
     u32 walker[TALK_OBJECT_ANSWER_WALKER_SIZE / sizeof(u32)];
     u8 *text = TalkAnswers_PickedText(&talk->answers);
-    func_0206923c(walker, talk);
-    func_020691cc(walker, talk_object_chars(text));
-    func_0206921c(walker);
+    TalkPickScan_Construct((TalkPickScan *) walker, talk);
+    TalkPickScan_Run((TalkPickScan *) walker, talk_object_chars(text));
+    TalkPickScan_Destruct((TalkPickScan *) walker);
 }
 CLEAN_AS(func_020673e0, TalkObject_RunAnswerText)
 

@@ -11,6 +11,14 @@
 #include "ov004/room_object_parts.h"
 #include "room_cells.h"
 #include "session.h"
+#include "actor_table.h"
+#include "furniture_info.h"
+#include "house_record.h"
+#include "item_code.h"
+#include "link_global.h"
+#include "ov004/room_objects.h"
+#include "scene_map.h"
+#include "scene_query.h"
 
 extern NetSession *data_020ccf94; /* the session */
 extern u8 data_020e54a8;          /* 1 while overlay 4 shows a room */
@@ -24,27 +32,6 @@ extern u8 data_021ebcd4[];        /* the house rooms' records */
 #define ACRE_CELL_MASK 0xf
 #define LIGHTS_ON_MAX 4 /* lamps of kind 0x18 on before switching one more turns one off */
 
-extern u8 func_020b65c4(void);                                /* the scene */
-extern AcreMap *func_0204d5c8(int scene);                     /* the scene's map, or NULL */
-extern void func_0204f818(int *x, int *y, const Vec3 *point); /* the cell a point is on */
-extern int func_020a7278(void); /* read from this system's data_021f4320 entry; 1 without a slot */
-/* Byte 0x1a of the furniture's data (0 for a number past the table's end). */
-extern int func_0205395c(int number);
-extern int func_0204bcdc(u16 *code); /* whether the code is compared by its item number */
-extern int func_0204bc64(u16 *code); /* the code's item number */
-/* Sets (or clears) the house room's bit (scene 1-5) in its lit bits; whether the scene is one. */
-extern int func_02060bf8(u8 *records, int scene, int lit);
-/* Gives the house room the music item `code`; whether the scene is one. */
-extern int func_02060b48(int scene, u16 *code);
-extern int func_02060b18(int scene); /* the same with no item (0xfff1) */
-
-/* Overlay 4's room: its grid of objects, and the object standing on a cell. */
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int y, int layer);
-/* The room's objects that `test` accepts (or all) and that are on: how many; and one of them
- * picked at random, switched off (Switch_Set with `pending`) and returned (NULL for none). */
-extern unsigned int func_ov004_0223c264(int (*test)(const RoomObject *object));
-extern RoomObject *func_ov004_0223c1ec(int (*test)(const RoomObject *object), int pending);
 extern int func_ov004_02211280(const RoomObject *object); /* RoomObject_TestUnk780Is18 */
 
 static int room_shown(void)
@@ -55,15 +42,15 @@ static int room_shown(void)
 /* The map of `scene`: the one shown when overlay 4 shows that scene. */
 static AcreMap *scene_map(int scene)
 {
-    if (room_shown() && func_020b65c4() == scene) {
+    if (room_shown() && SceneQuery_Current() == scene) {
         return data_021c80bc;
     }
-    return func_0204d5c8(scene);
+    return (AcreMap *) (uintptr_t) SceneMap_OfScene(scene);
 }
 
 static RoomObject *object_at(int x, int y, int layer)
 {
-    return func_ov004_0223cc10(func_ov004_0223cd50(), x, y, layer);
+    return RoomObjects_GridObjectAt(RoomObjects_Grid(), x, y, layer);
 }
 
 /* The item code on cell (x, y) of `layer` of a map. */
@@ -113,13 +100,13 @@ int RoomSync_IsFreeTopAt(int x, int y)
         return 0;
     }
     u16 *top = map_item(map, x, y, LAYER_ON_TOP);
-    if (func_0205395c(RoomObject_Number(object)) != 1 || top == NULL) {
+    if (FurnitureInfo_DmaUnk1A(RoomObject_Number(object)) != 1 || top == NULL) {
         return 0;
     }
-    if (func_0204bcdc(top)) {
+    if (ItemCode_HasVariant(top)) {
         u16 none = ACRE_MAP_ITEM_NONE;
-        int number = func_0204bc64(top);
-        return number == func_0204bc64(&none);
+        int number = ItemCode_VariantItem(top);
+        return number == ItemCode_VariantItem(&none);
     }
     return *top == ACRE_MAP_ITEM_NONE;
 }
@@ -130,7 +117,7 @@ void RoomSync_ToggleSwitchAtPoint(int scene, const Vec3 *point, int layer)
 {
     int x;
     int y;
-    func_0204f818(&x, &y, point);
+    Position_Tile(&x, &y, (const Position *) point);
     RoomSync_ToggleSwitchAt((u32) scene, (u32) x, (u32) y, (u32) layer);
 }
 CLEAN_AS(func_02051f4c, RoomSync_ToggleSwitchAtPoint)
@@ -142,7 +129,7 @@ CLEAN_AS(func_02051f4c, RoomSync_ToggleSwitchAtPoint)
  * set, so the ROM sends what it held; here it is 0. The receiver does not read it. */
 void RoomSync_ToggleSwitchAt(u32 scene, u32 x, u32 y, u32 layer)
 {
-    if (!Session_IsLinked(data_020ccf94) || func_020a7278()) {
+    if (!Session_IsLinked(data_020ccf94) || LinkGlobal_HoldsScene()) {
         RoomSync_ToggleAt((int) scene, (int) x, (int) y, (int) layer, 1);
         return;
     }
@@ -172,7 +159,7 @@ CLEAN_AS(func_02052038, RoomSync_SetLit)
 /* func_02052078: sets the house room's lit bit and tells everyone. */
 void RoomSync_ApplyLit(int scene, int lit)
 {
-    func_02060bf8(data_021ebcd4, scene, lit);
+    HouseRecord_SetLit((HouseRecord *) (void *) data_021ebcd4, scene, lit);
     RoomSync_SendLit(scene, lit, ROOM_SYNC_TO_ALL);
 }
 CLEAN_AS(func_02052078, RoomSync_ApplyLit)
@@ -389,7 +376,7 @@ int RoomSync_SendState(int x, int y, int layer, int state, u8 value, u8 flag, in
     }
     if (Session_IsLinked(data_020ccf94) && !RoomObject_Unk76CIs2(object)) {
         u32 on = (u32) shows_on(object, state);
-        u32 scene = func_020b65c4();
+        u32 scene = SceneQuery_Current();
         u32 music = (u32) RoomObject_Unk00CIs3A(object);
         u32 message = (scene & ROOM_SYNC_STATE_SCENE) | ((u32) layer & 1) << ROOM_SYNC_STATE_LAYER_SHIFT |
                       (on & 1) << ROOM_SYNC_STATE_ON_SHIFT | ((u32) x & 0xf) << ROOM_SYNC_STATE_X_SHIFT |
@@ -418,7 +405,7 @@ CLEAN_AS(func_02052960, RoomSync_ReceiveToggle)
  * are on, one of those picked at random is switched off and set to state 0 first. */
 void RoomSync_ToggleAt(int scene, int x, int y, int layer, u8 flag)
 {
-    if (func_020b65c4() != scene || !room_shown()) {
+    if (SceneQuery_Current() != scene || !room_shown()) {
         return;
     }
     RoomObject *object = object_at(x, y, layer);
@@ -426,8 +413,8 @@ void RoomSync_ToggleAt(int scene, int x, int y, int layer, u8 flag)
         return;
     }
     if (Switch_Value(&object->light_switch) == 0) {
-        if (func_ov004_0223c264(func_ov004_02211280) >= LIGHTS_ON_MAX) {
-            RoomObject *other = func_ov004_0223c1ec(func_ov004_02211280, 0);
+        if (RoomObjects_CountOn((RoomObjectsTest) func_ov004_02211280) >= LIGHTS_ON_MAX) {
+            RoomObject *other = RoomObjects_PickOn((RoomObjectsTest) func_ov004_02211280, 0);
             if (other != NULL) {
                 RoomSync_SetState(other, 0, ROOM_SYNC_NO_VALUE, flag);
             }
@@ -479,7 +466,7 @@ void RoomSync_ReceiveLit(const u8 *payload)
     u8 message = *payload;
     int scene = message & ROOM_SYNC_LIT_SCENE;
     int lit = (message & ROOM_SYNC_LIT_ON) != 0;
-    func_02060bf8(data_021ebcd4, scene, lit);
+    HouseRecord_SetLit((HouseRecord *) (void *) data_021ebcd4, scene, lit);
     if (message & ROOM_SYNC_LIT_RELAY) {
         u8 relayed = (u8) (message & ~ROOM_SYNC_LIT_RELAY);
         send_message(ROOM_SYNC_MSG_LIT, &relayed, sizeof(relayed), ROOM_SYNC_TO_ALL);
@@ -512,13 +499,13 @@ CLEAN_AS(func_02052b90, RoomSync_ReceiveState)
  * or no music item when off unless `flag` is set. The result is then 1. */
 int RoomSync_ApplyState(int scene, int x, int y, int layer, u8 state, u8 on, u8 music, u8 flag, u8 value)
 {
-    if (room_shown() && func_020b65c4() == scene) {
+    if (room_shown() && SceneQuery_Current() == scene) {
         RoomObject *object = object_at(x, y, layer);
         if (object != NULL) {
             return object->vtable->vfunc_70(object, state, value);
         }
     }
-    AcreMap *map = func_0204d5c8(scene);
+    AcreMap *map = (AcreMap *) (uintptr_t) SceneMap_OfScene(scene);
     if (map != NULL) {
         u16 *item = map_item(map, x, y, LAYER_FLOOR);
         if (item != NULL && is_step_item(*item)) {
@@ -533,9 +520,9 @@ int RoomSync_ApplyState(int scene, int x, int y, int layer, u8 state, u8 on, u8 
     if (music) {
         if (on) {
             u16 song = (u16) (ROOM_SYNC_SONG_ITEM_FIRST + (value < ROOM_SYNC_SONGS ? value : 0));
-            func_02060b48(scene, &song);
+            HouseRecord_SetSong(scene, &song);
         } else if (!flag) {
-            func_02060b18(scene);
+            HouseRecord_StopSong(scene);
         }
     }
     return 1;

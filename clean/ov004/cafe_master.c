@@ -54,9 +54,6 @@ extern const u8 data_ov004_022546e0[];
 /* The master while one is started. */
 extern u8 *data_ov004_022580dc;
 
-/* Its talk scene's destructor (vtable slot 0x00). */
-extern void *func_ov004_02224580(void *talk);
-
 /* The address `offset` bytes into the master; with no master the offset itself, as the ROM
  * computes it. */
 static uintptr_t cm_at(u32 offset)
@@ -69,7 +66,7 @@ static uintptr_t cm_at(u32 offset)
 u8 *CafeMaster_Destroy(u8 *master)
 {
     *(const u8 **) (void *) master = data_ov004_022546e0;
-    func_ov004_02224580(master + CAFE_MASTER_TALK);
+    CafeMasterTalk_Destroy((CafeMasterTalk *) (void *) (master + CAFE_MASTER_TALK));
     SpecialSceneObject_DestructBody(master);
     return master;
 }
@@ -79,7 +76,7 @@ CLEAN_AS(func_ov004_02223654, CafeMaster_Destroy)
 u8 *CafeMaster_Delete(u8 *master)
 {
     *(const u8 **) (void *) master = data_ov004_022546e0;
-    func_ov004_02224580(master + CAFE_MASTER_TALK);
+    CafeMasterTalk_Destroy((CafeMasterTalk *) (void *) (master + CAFE_MASTER_TALK));
     SpecialSceneObject_DestructBody(master);
     Heap_FreeAux(master);
     return master;
@@ -542,7 +539,7 @@ CLEAN_AS(func_ov004_02223910, CafeMaster_MayAct)
 
 /* func_ov004_0222393c (sequence 3, the clearing up, each step of the scene), by the step:
  * - 0: once the talk is gone, the player's field actor plays its animation of it
- *   (func_ov004_0222be34) and the props enter their state 9;
+ *   (RoomPlayerActor_PlayAnimation98) and the props enter their state 9;
  * - 1: sounds 0x4e6 and 0x4e7 at frames 15 and 20; once part 1's animation 12 of the props has
  *   run out the camera's sounds come back, he looks ahead, plays his animation 0xf8 (mode 3,
  *   priority 4) and the props enter state 6;
@@ -656,7 +653,7 @@ CLEAN_AS(func_ov004_02223c1c, CafeMasterTalk_OnClose)
 
 /* func_ov004_02223c40 (sequence 2, the drink, each step of the scene), while the talk is gone:
  * the first time the props are in their state 5 they enter state 8, the player's field actor
- * plays its animation of it (func_ov004_0222be58) and the frames start again. Each frame:
+ * plays its animation of it (RoomPlayerActor_RequestSequence8A) and the frames start again. Each frame:
  * sounds 0x4e1, 0x4e2 (with the value (20, 0) added to the music at priority 16) and 0x4e3 at
  * frames 7, 20 and 40, and at frame 70 0x4e4 or 0x4e5 by the current player id's byte 0x1c
  * (0 or not). Once part 1's animation 11 of the props is at frame 9: his line is picked (0x30
@@ -1192,7 +1189,7 @@ CLEAN_AS(func_ov004_022247b0, CafeMaster_EnterTalked)
 
 /* func_ov004_022247b4 (state 1's update): once his action is idle: unlinked and without the
  * game variable 0x4a, the panels' request is cleared (ScreenPanels_ClearRequest, given
- * func_ov004_0222c070's answer when the player is seated, else 0); he looks ahead, the
+ * RoomPlayerActor_RequestSpotMove's answer when the player is seated, else 0); he looks ahead, the
  * object's event ends and state 2 follows. 1. */
 int CafeMaster_UpdateTalk(CafeMaster *master)
 {

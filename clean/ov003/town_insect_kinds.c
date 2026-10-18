@@ -11,29 +11,6 @@
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void NNS_G3dMdlSetMdlAlpha(void *model, int material, int alpha);
 
-/* The behaviours the update functions pass the insect on to. */
-extern void func_ov003_02231e24(TownInsect *insect);
-extern void func_ov003_022325d4(TownInsect *insect);
-extern void func_ov003_022334d8(TownInsect *insect);
-extern void func_ov003_02232640(TownInsect *insect);
-extern void func_ov003_02231f20(TownInsect *insect);
-extern void func_ov003_02232874(TownInsect *insect);
-extern void func_ov003_022335cc(TownInsect *insect);
-extern void func_ov003_02233674(TownInsect *insect);
-extern void func_ov003_02232d30(TownInsect *insect);
-extern void func_ov003_0223345c(TownInsect *insect);
-extern void func_ov003_022314fc(TownInsect *insect);
-extern void func_ov003_02233930(TownInsect *insect);
-extern void func_ov003_02234600(TownInsect *insect);
-extern void func_ov003_02233d68(TownInsect *insect);
-extern void func_ov003_02233890(TownInsect *insect);
-extern void func_ov003_022337d8(TownInsect *insect);
-extern void func_ov003_02232a44(TownInsect *insect);
-/* The box the insect keeps to (its words 0x1b0-0x1c7), set around where it is by its kind. */
-extern void func_ov003_02230f88(TownInsect *insect);
-/* The insect moved to a side of where it is, at random, and 3.0 up. */
-extern void func_ov003_0223108c(TownInsect *insect);
-
 /* An insect that is let go (TOWN_INSECT_ACTION_LET_GO) or hidden keeps its action, its angle
  * about y and its position when it begins. */
 static int town_insect_kinds_placed(const TownInsect *insect)
@@ -49,7 +26,7 @@ static void town_insect_kinds_fade(TownInsect *insect)
 /* func_ov003_02230180 (kind 0x38's update). */
 void TownInsectKind_Update38(TownInsect *insect)
 {
-    func_ov003_02231e24(insect);
+    TownInsectMove_UpdateLeaning(insect);
 }
 CLEAN_AS(func_ov003_02230180, TownInsectKind_Update38)
 
@@ -63,7 +40,7 @@ CLEAN_AS(func_ov003_02230188, TownInsectKind_Start38)
 /* func_ov003_02230190 (kind 0x23's update). */
 void TownInsectKind_Update23(TownInsect *insect)
 {
-    func_ov003_022325d4(insect);
+    TownInsectMove_Update23(insect);
 }
 CLEAN_AS(func_ov003_02230190, TownInsectKind_Update23)
 
@@ -77,7 +54,7 @@ CLEAN_AS(func_ov003_02230198, TownInsectKind_Start23)
 /* func_ov003_022301bc (kinds 0x18 and 0x3b's update). */
 void TownInsectKind_Update18(TownInsect *insect)
 {
-    func_ov003_022334d8(insect);
+    TownInsectMove_Update18(insect);
 }
 CLEAN_AS(func_ov003_022301bc, TownInsectKind_Update18)
 
@@ -109,14 +86,14 @@ CLEAN_AS(func_ov003_0223022c, TownInsectKind_Start36)
 /* func_ov003_0223025c (kinds 0x36 and 0x37's update). */
 void TownInsectKind_Update36(TownInsect *insect)
 {
-    func_ov003_02232640(insect);
+    TownInsectMove_Update36(insect);
 }
 CLEAN_AS(func_ov003_0223025c, TownInsectKind_Update36)
 
 /* func_ov003_02230264 (kind 0x35's update). */
 void TownInsectKind_Update35(TownInsect *insect)
 {
-    func_ov003_02231f20(insect);
+    TownInsectMove_Update35(insect);
 }
 CLEAN_AS(func_ov003_02230264, TownInsectKind_Update35)
 
@@ -141,7 +118,7 @@ CLEAN_AS(func_ov003_0223026c, TownInsectKind_Start35)
 /* func_ov003_0223030c (kind 0x30's update). */
 void TownInsectKind_Update30(TownInsect *insect)
 {
-    func_ov003_02232874(insect);
+    TownInsectMove_Update30(insect);
 }
 CLEAN_AS(func_ov003_0223030c, TownInsectKind_Update30)
 
@@ -158,7 +135,7 @@ CLEAN_AS(func_ov003_02230314, TownInsectKind_Start30)
 /* func_ov003_0223035c (kind 0x33's update). */
 void TownInsectKind_Update33(TownInsect *insect)
 {
-    func_ov003_022335cc(insect);
+    TownInsectMove_Update0A(insect);
 }
 CLEAN_AS(func_ov003_0223035c, TownInsectKind_Update33)
 
@@ -166,14 +143,14 @@ CLEAN_AS(func_ov003_0223035c, TownInsectKind_Update33)
 void TownInsectKind_Start33(TownInsect *insect)
 {
     TownInsectKind_BeginPaced(insect, 0x96, 0x1e, 0x25, 0x12, 0x1000);
-    func_ov003_02230f88(insect);
+    TownInsectMove_SetBox(insect);
 }
 CLEAN_AS(func_ov003_02230364, TownInsectKind_Start33)
 
 /* func_ov003_02230390 (kind 0xa's update). */
 void TownInsectKind_Update0A(TownInsect *insect)
 {
-    func_ov003_022335cc(insect);
+    TownInsectMove_Update0A(insect);
 }
 CLEAN_AS(func_ov003_02230390, TownInsectKind_Update0A)
 
@@ -181,14 +158,14 @@ CLEAN_AS(func_ov003_02230390, TownInsectKind_Update0A)
 void TownInsectKind_Start0A(TownInsect *insect)
 {
     TownInsectKind_BeginPaced(insect, 0xc8, 0x3c, 0x25, 9, 0x1000);
-    func_ov003_02230f88(insect);
+    TownInsectMove_SetBox(insect);
 }
 CLEAN_AS(func_ov003_02230398, TownInsectKind_Start0A)
 
 /* func_ov003_022303c4 (kinds 0xb and 0x3a's update). */
 void TownInsectKind_Update0B(TownInsect *insect)
 {
-    func_ov003_02233674(insect);
+    TownInsectMove_Update0B(insect);
 }
 CLEAN_AS(func_ov003_022303c4, TownInsectKind_Update0B)
 
@@ -207,14 +184,14 @@ CLEAN_AS(func_ov003_022303cc, TownInsectKind_Start0B)
 /* func_ov003_02230420 (kind 0x31's update). */
 void TownInsectKind_Update31(TownInsect *insect)
 {
-    func_ov003_02232d30(insect);
+    TownInsectMove_Update31(insect);
 }
 CLEAN_AS(func_ov003_02230420, TownInsectKind_Update31)
 
 /* func_ov003_02230428 (kind 0x1e's update). */
 void TownInsectKind_Update1E(TownInsect *insect)
 {
-    func_ov003_0223345c(insect);
+    TownInsectMove_Update1E(insect);
 }
 CLEAN_AS(func_ov003_02230428, TownInsectKind_Update1E)
 
@@ -259,7 +236,7 @@ CLEAN_AS(func_ov003_022304b0, TownInsectKind_StartInArea)
 /* func_ov003_02230554 (kinds 0xe, 0xf, 0x1a and 0x20's update). */
 void TownInsectKind_UpdateInArea(TownInsect *insect)
 {
-    func_ov003_022314fc(insect);
+    TownInsectMove_UpdateInArea(insect);
 }
 CLEAN_AS(func_ov003_02230554, TownInsectKind_UpdateInArea)
 
@@ -270,9 +247,9 @@ void TownInsectKind_BeginInArea(TownInsect *insect, int reached, int reach, int 
 {
     short angle = TownInsectKind_RandomAngle();
     TownInsectKind_Begin(insect, 0, (u8) reached, reach, 0, angle, 0xe, 0, (u8) byte257, 0);
-    func_ov003_02230f88(insect);
+    TownInsectMove_SetBox(insect);
     if (insect->action != TOWN_INSECT_ACTION_LET_GO) {
-        func_ov003_0223108c(insect);
+        TownInsectMove_ShiftAside(insect);
     }
     insect->unk_21c = pace;
 }
@@ -281,7 +258,7 @@ CLEAN_AS(func_ov003_0223055c, TownInsectKind_BeginInArea)
 /* func_ov003_022305b4 (kind 0x19's update). */
 void TownInsectKind_Update19(TownInsect *insect)
 {
-    func_ov003_02233930(insect);
+    TownInsectMove_Update19(insect);
 }
 CLEAN_AS(func_ov003_022305b4, TownInsectKind_Update19)
 
@@ -289,7 +266,7 @@ CLEAN_AS(func_ov003_022305b4, TownInsectKind_Update19)
 void TownInsectKind_Start19(TownInsect *insect)
 {
     TownInsectKind_Begin(insect, 0, 0x28, 0x50, 0, 0, 0, 0, 3, 1);
-    func_ov003_02230f88(insect);
+    TownInsectMove_SetBox(insect);
     insect->timer = (s16) (3 * MainRandom_Below(20));
 }
 CLEAN_AS(func_ov003_022305bc, TownInsectKind_Start19)
@@ -297,7 +274,7 @@ CLEAN_AS(func_ov003_022305bc, TownInsectKind_Start19)
 /* func_ov003_022305fc (kinds 0x15-0x17's update). */
 void TownInsectKind_UpdateTurned(TownInsect *insect)
 {
-    func_ov003_02234600(insect);
+    TownInsectMove_UpdateTurned(insect);
 }
 CLEAN_AS(func_ov003_022305fc, TownInsectKind_UpdateTurned)
 
@@ -356,7 +333,7 @@ CLEAN_AS(func_ov003_022306a0, TownInsectKind_StartWaiting)
 /* func_ov003_0223072c (kinds 0xc, 0xd and 0x1b-0x1d's update). */
 void TownInsectKind_UpdateWaiting(TownInsect *insect)
 {
-    func_ov003_02233d68(insect);
+    TownInsectMove_UpdateWaiting(insect);
 }
 CLEAN_AS(func_ov003_0223072c, TownInsectKind_UpdateWaiting)
 
@@ -420,7 +397,7 @@ CLEAN_AS(func_ov003_02230794, TownInsectKind_StartLeaning)
 /* func_ov003_022309b8 (the leaning kinds' update, as kind 0x38's). */
 void TownInsectKind_UpdateLeaning(TownInsect *insect)
 {
-    func_ov003_02231e24(insect);
+    TownInsectMove_UpdateLeaning(insect);
 }
 CLEAN_AS(func_ov003_022309b8, TownInsectKind_UpdateLeaning)
 
@@ -442,7 +419,7 @@ CLEAN_AS(func_ov003_022309c0, TownInsectKind_BeginLeaning)
 /* func_ov003_02230a40 (kind 0x32's update). */
 void TownInsectKind_Update32(TownInsect *insect)
 {
-    func_ov003_02233890(insect);
+    TownInsectMove_Update32(insect);
 }
 CLEAN_AS(func_ov003_02230a40, TownInsectKind_Update32)
 
@@ -456,7 +433,7 @@ CLEAN_AS(func_ov003_02230a48, TownInsectKind_Start32)
 /* func_ov003_02230a6c (kinds 0x25 and 0x39's update). */
 void TownInsectKind_Update25(TownInsect *insect)
 {
-    func_ov003_022337d8(insect);
+    TownInsectMove_Update25(insect);
 }
 CLEAN_AS(func_ov003_02230a6c, TownInsectKind_Update25)
 
@@ -491,7 +468,7 @@ CLEAN_AS(func_ov003_02230ab4, TownInsectKind_Start08)
 /* func_ov003_02230b40 (kind 8's update). */
 void TownInsectKind_Update08(TownInsect *insect)
 {
-    func_ov003_02232a44(insect);
+    TownInsectMove_Update08(insect);
 }
 CLEAN_AS(func_ov003_02230b40, TownInsectKind_Update08)
 

@@ -3,6 +3,12 @@
 
 #include "clean.h"
 #include "main/field_collision.h"
+#include "collision_map.h"
+#include "item_info.h"
+#include "ov004/room_shell.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "unit_type_info.h"
 
 /* No object on the point (func_02030890). */
 #define GROUND_SOUND_NO_OBJECT (-1)
@@ -25,32 +31,15 @@
 
 extern u8 data_020e54a8; /* 0 or 1, a mode many scenes test */
 
-/* The object of the map at a point, GROUND_SOUND_NO_OBJECT for none. */
-extern int func_02030890(const Vec3 *point);
-/* The scene, and whether it is one of 0x1a-0x1f, 1-5, 6-8 and 0x20-0x29. */
-extern u8 func_020b65c4(void);
-extern int func_020b6744(unsigned int scene);
-extern int func_020b67e8(unsigned int scene);
-extern int func_020b67c0(int scene);
-extern int func_020b66ec(unsigned int scene);
-/* Whether bits 2-7 of byte 8 of data_021ebcc8 are 9 or more. */
-extern int func_020b6598(void);
-/* The sound of the collision table's row `attr` (its first halfword); GROUND_SOUND_NONE from
- * row 0x7c on. */
-extern u16 func_02031930(int attr);
-/* The item code overlay 4 gives, and byte 1 of an item's record. */
-extern u16 *func_ov004_022320d8(void);
-extern u8 func_02062300(u16 *code);
-
 static int ground_sound_scene_as_attr(int scene)
 {
-    if (func_020b6744((unsigned int) scene) != 0) {
+    if (SceneQuery_InNook((unsigned int) scene) != 0) {
         return GROUND_SOUND_ATTR_5;
     }
-    if (func_020b67e8((unsigned int) scene) != 0 || func_020b67c0(scene) != 0) {
+    if (SceneKinds_IsHouseRoom((unsigned int) scene) != 0 || SceneKinds_In6To8(scene) != 0) {
         return GROUND_SOUND_ATTR_6;
     }
-    if (func_020b66ec((unsigned int) scene) != 0) {
+    if (SceneQuery_In20((unsigned int) scene) != 0) {
         return GROUND_SOUND_ATTR_5;
     }
     return -1;
@@ -62,8 +51,8 @@ static int ground_sound_scene_as_attr(int scene)
  * GroundSound_OfAttr). */
 int GroundSound_AtPoint(const Vec3 *point)
 {
-    if (func_02030890(point) != GROUND_SOUND_NO_OBJECT) {
-        int attr = ground_sound_scene_as_attr(func_020b65c4());
+    if (CollisionMap_UnclaimedObjectAtPoint(point) != GROUND_SOUND_NO_OBJECT) {
+        int attr = ground_sound_scene_as_attr(SceneQuery_Current());
         if (attr >= 0) {
             return GroundSound_OfAttr(attr);
         }
@@ -97,8 +86,8 @@ int GroundSound_ResolveAttr(int attr)
     if (attr != GROUND_SOUND_ATTR_REPLACED || data_020e54a8 != 1) {
         return attr;
     }
-    u16 code = *func_ov004_022320d8();
-    return func_02062300(&code);
+    u16 code = *RoomShell_CarpetCode2();
+    return ItemInfo_IndoorUnk01(&code);
 }
 CLEAN_AS(func_020b1d54, GroundSound_ResolveAttr)
 
@@ -106,8 +95,8 @@ CLEAN_AS(func_020b1d54, GroundSound_ResolveAttr)
  * GROUND_SOUND_MODE_0; in mode 1 as its scene does (ground_sound.h), else GROUND_SOUND_OTHER. */
 int GroundSound_Lookup(int attr)
 {
-    int scene = func_020b65c4();
-    int sound = func_02031930(attr);
+    int scene = SceneQuery_Current();
+    int sound = UnitTypeInfo_Sound(attr);
     if (sound == GROUND_SOUND_NONE) {
         if (data_020e54a8 == 0) {
             sound = GROUND_SOUND_MODE_0;
@@ -116,7 +105,7 @@ int GroundSound_Lookup(int attr)
             sound = as_attr >= 0 ? GroundSound_OfAttr(as_attr) : GROUND_SOUND_OTHER;
         }
     }
-    if (sound == GROUND_SOUND_SWAPPED && func_020b6598() != 0) {
+    if (sound == GROUND_SOUND_SWAPPED && SceneQuery_IsSnowSeason() != 0) {
         if (data_020e54a8 == 0 || (u8) (scene - GROUND_SOUND_SWAP_SCENE_FIRST) < GROUND_SOUND_SWAP_SCENES ||
             scene == GROUND_SOUND_SWAP_SCENE_OTHER) {
             sound = GROUND_SOUND_SWAP;

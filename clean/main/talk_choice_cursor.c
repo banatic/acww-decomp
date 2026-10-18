@@ -8,6 +8,7 @@
 #include "sound.h" /* SoundSys_PlaySe */
 #include "talk_answers.h"
 #include "text_draw.h"
+#include "mes_bg.h"
 
 static_assert(offsetof(TalkChoiceCursor, answers) == 0x20, "talk choice cursor");
 static_assert(sizeof(TalkChoiceCursor) == 0x30, "talk choice cursor");
@@ -39,22 +40,10 @@ static_assert(sizeof(TalkChoiceCursor) == 0x30, "talk choice cursor");
 
 extern PadState data_021fbe40;
 
-/* An answer, its text and its sound kind (talk_answers.h). */
-extern TalkAnswer *func_020ab550(TalkAnswers *answers, int index);
-extern TextBase *func_020ab798(TalkAnswer *answer);
-extern u32 func_020ab780(TalkAnswer *answer);
-/* The pick cleared, and all the answers cleared. */
-extern void func_020ab58c(TalkAnswers *answers);
-extern void func_020ab558(TalkAnswers *answers);
-/* The first VRAM tile of label `row` of `rows`. */
-extern int func_020ac318(int row, int rows);
-/* The message window's row at (x, y), or -1. */
-extern int func_020ac148(void *window, int x, int y);
-
 /* func_020aaee8: the sound of the answer under the cursor. */
 void TalkChoiceCursor_PlayAnswerSound(TalkChoiceCursor *cursor)
 {
-    u32 kind = func_020ab780(func_020ab550(cursor->answers, cursor->position));
+    u32 kind = TalkAnswers_SoundKind(TalkAnswers_Answer(cursor->answers, cursor->position));
     int sound = TALK_CHOICE_CURSOR_SE_ANSWER;
     if (kind == TALK_ANSWER_SOUND_1) {
         sound = TALK_CHOICE_CURSOR_SE_ANSWER_1;
@@ -159,7 +148,7 @@ int TalkChoiceCursor_StepTouch(TalkChoiceCursor *cursor)
     if (!MenuInput_TouchPressedAt(&x, &y)) {
         return 0;
     }
-    int row = func_020ac148(cursor->window, x, y);
+    int row = MesBg_LineAt(cursor->window, x, y);
     if (row < 0) {
         return 0;
     }
@@ -235,9 +224,9 @@ void TalkChoiceCursor_MakeLabels(TalkChoiceCursor *cursor)
 {
     unsigned int count = TalkAnswers_Count(cursor->answers);
     for (unsigned int i = 0; i < count; i++) {
-        TalkAnswer *answer = func_020ab550(cursor->answers, (int) i);
-        int first_tile = func_020ac318((int) i, (int) count);
-        TextBase *text = func_020ab798(answer);
+        TalkAnswer *answer = TalkAnswers_Answer(cursor->answers, (int) i);
+        int first_tile = MesBg_LabelTile((int) i, (int) count);
+        TextBase *text = TalkAnswers_Text(answer);
         LabelBox *label = LabelBox_NewInVram(first_tile, TALK_CHOICE_CURSOR_LABEL_CELLS, TALK_CHOICE_CURSOR_LABEL_ROWS);
         if (label == NULL) {
             continue;
@@ -318,7 +307,7 @@ CLEAN_AS(func_020ab278, TalkChoiceCursor_Update)
 void TalkChoiceCursor_Close(TalkChoiceCursor *cursor)
 {
     TalkChoiceCursor_FreeLabels(cursor);
-    func_020ab558(cursor->answers);
+    TalkAnswers_ClearAnswers(cursor->answers);
     cursor->label_cells = 0;
     cursor->answers = NULL;
 }
@@ -342,7 +331,7 @@ CLEAN_AS(func_020ab304, TalkChoiceCursor_Show)
  * first answer, and the labels measured. */
 void TalkChoiceCursor_Start(TalkChoiceCursor *cursor)
 {
-    func_020ab58c(cursor->answers);
+    TalkAnswers_ClearPick(cursor->answers);
     TalkChoiceCursor_MakeLabels(cursor);
     cursor->position = 0;
     cursor->cancel_frames = 0;

@@ -5,8 +5,8 @@
  *
  * Its state (RmoTelephone.state, 0 to 14) has an entry and an update, as pairs of member
  * pointers in the table data_ov004_022588d8 (filled by __sinit_ov004_0224ebd8); one of them may
- * be none. func_ov004_0223121c enters a state (running its entry, then setting it whatever the
- * entry did) and func_ov004_022316a4 runs the state's update each frame. The states these
+ * be none. RmoTelephone_EnterState enters a state (running its entry, then setting it whatever the
+ * entry did) and RmoTelephone_Update runs the state's update each frame. The states these
  * functions belong to:
  *
  * - 10: its talk started over its receiver (message 0xe); on once the talk has opened (11);
@@ -31,7 +31,7 @@ typedef struct RmoTelephone {
     TalkReceiver receiver;                          /* 0x290: vtable data_ov004_02255974 */
     CollisionBox box;                               /* 0x2d8 */
     TouchPickFace pick_faces[TOUCH_PICK_BOX_FACES]; /* 0x374 */
-    u8 unk_61c[0x1c];                               /* 0x61c: built by func_020b7f70 */
+    u8 unk_61c[0x1c];                               /* 0x61c: built by TouchPickSphere_Construct */
     s32 state;                                      /* 0x638: 0 to 14 */
     u8 talking;                                     /* 0x63c: set while it holds the talk */
     u8 unk_63d[3];                                  /* 0x63d */

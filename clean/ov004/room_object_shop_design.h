@@ -15,7 +15,7 @@ typedef struct ShopDesignObject {
     RoomObject base;
     s32 design; /* 0 to 7, the shop's design shown */
     /* A sound emitter (the class with vtable 0x0213f074, main/sound_emitter.h), built by
-     * func_020f5958. */
+     * SoundEmitterClass_ConstructBaseB. */
     u8 emitter[0x40];
     u8 has_sound; /* the emitter is in use (once the design was put on) */
     u8 unk_889[3];

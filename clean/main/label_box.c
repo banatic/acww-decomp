@@ -5,6 +5,8 @@
 #include "clean.h"
 #include "message_tag.h"
 #include "text_box.h"
+#include "message_walker.h"
+#include "talk_box.h"
 
 static_assert(offsetof(LabelBox, mode) == 0x7c, "label box mode");
 static_assert(offsetof(LabelBox, walker) == 0x80, "label box walker");
@@ -30,11 +32,6 @@ extern u8 data_021c81bc[];        /* the list of boxes (an NNSFndList) */
 
 extern void NNS_FndAppendListObject(void *list, void *object);
 extern void NNS_FndRemoveListObject(void *list, void *object);
-/* The walkers' base (message_cursor.h): its nested texts dropped; its walk started at `text`. */
-extern void func_020a94a4(void *walker);
-extern void func_020a9354(void *walker, int text);
-/* The colour a colour tag's value stands for: 9 is 3, any other the value plus one. */
-extern unsigned char func_02068bc8(int colour);
 
 typedef void *LabelBoxDestruct(void *box);
 typedef int LabelBoxMeasure(void *box);
@@ -54,8 +51,8 @@ static void label_box_walk(LabelBox *box, int mode)
     }
     box->mode = mode;
     TextWalker_SetHandler(walker, box);
-    func_020a94a4(walker);
-    func_020a9354(walker, (int) (uintptr_t) box->base.text);
+    MessageWalker_Reset((MessageWalker *) walker);
+    MessageWalker_Start((MessageWalker *) walker, (int) (uintptr_t) box->base.text);
     TextWalker_RunTo(walker, (int) box->base.unk_14);
     TextWalker_ClearHandler(walker);
     box->mode = LABEL_BOX_IDLE;
@@ -86,7 +83,7 @@ void LabelBox_OnTag(LabelBox *box, int position)
     MessageTag_Construct(&tag);
     MessageTag_Read(&tag, position);
     if (tag.group == LABEL_BOX_GROUP_FORMAT && tag.kind == LABEL_BOX_KIND_COLOUR) {
-        box->base.color = func_02068bc8(MessageTag_Colour(&tag));
+        box->base.color = TalkBox_TextColour(MessageTag_Colour(&tag));
     }
 }
 CLEAN_AS(func_020a8e4c, LabelBox_OnTag)

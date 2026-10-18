@@ -3,11 +3,11 @@
  * and "p<i>_1" for the exhibit, of which only the one matching the museum's record is drawn.
  *
  * The kind (RmoObject.actor.unk_08, read as a word) picks the case from the table
- * func_ov004_0222f320 gives (data_ov004_022478a8): 0 the paintings (/roomObj/obj_ms_picture,
+ * MuseumDisplay_Kind gives (data_ov004_022478a8): 0 the paintings (/roomObj/obj_ms_picture,
  * 20 exhibits), 1 the insects (/roomObj/obj_ms_insectA, 56 exhibits); a kind past them gives
  * the paintings. On starting it loads its archive, looks up the node to draw for each exhibit
- * (MuseumDisplay_FindNodes) and has its model's node hook (func_ov004_0222f304, set before
- * each draw by func_ov004_0222f2f4) hide every other node. */
+ * (MuseumDisplay_FindNodes) and has its model's node hook (MuseumDisplay_NodeHook, set before
+ * each draw by MuseumDisplay_SetModelHooks) hide every other node. */
 #ifndef CLEAN_OV004_MUSEUM_DISPLAY_H
 #define CLEAN_OV004_MUSEUM_DISPLAY_H
 

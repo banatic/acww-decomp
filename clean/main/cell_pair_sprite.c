@@ -5,6 +5,7 @@
 #include "cell_anim.h"
 #include "clean.h"
 #include "oam_buffer.h"
+#include "screen_sprite.h"
 
 static_assert(offsetof(CellPairSprite, first) == 0x0c && offsetof(CellPairSprite, pose) == 0x34, "CellPairSprite");
 static_assert(offsetof(CellPairSprite, alternate) == 0x40 && sizeof(CellPairSprite) == 0x44, "CellPairSprite");
@@ -16,11 +17,6 @@ extern const u32 data_020e2058[];          /* the class's vtable */
 extern const u32 data_020d0a44[];          /* by pose: the first animation's entry */
 extern const u32 data_020d0a34[];          /* by pose: hold the animations on their last frame */
 extern const CellAnimData data_020d6fcc[]; /* the animations */
-
-extern void func_0208af30(CellPairSprite *sprite); /* the base class's constructor */
-extern void func_0208af00(CellPairSprite *sprite); /* the base class's destructor */
-extern int func_0208aef0(CellPairSprite *sprite);  /* the base class's x */
-extern int func_0208aeec(CellPairSprite *sprite);  /* the base class's y */
 
 /* func_0208a20c: whether both animations are over (CellAnim_IsDone). */
 int CellPairSprite_AnimsDone(CellPairSprite *sprite)
@@ -93,8 +89,8 @@ void CellPairSprite_Draw(CellPairSprite *sprite)
     int first_y = CellAnim_FrameY(&sprite->first, -1);
     int second_x = CellAnim_FrameX(&sprite->second, -1);
     int second_y = CellAnim_FrameY(&sprite->second, -1);
-    int x = sprite->x + func_0208aef0(sprite);
-    int y = sprite->y + func_0208aeec(sprite);
+    int x = sprite->x + ScreenSprite_X((ScreenSprite *) sprite);
+    int y = sprite->y + ScreenSprite_Y((ScreenSprite *) sprite);
     int screen = sprite->on_main != 0 ? OAM_BUFFER_SCREEN_MAIN : OAM_BUFFER_SCREEN_SUB;
 
     OamBuffer_DrawCell(screen, first_cell, x + first_x, y + first_y, -1, -1, 0x1000, 0x1000, 0, -1, 0, 0);
@@ -108,7 +104,7 @@ CellPairSprite *CellPairSprite_Delete(CellPairSprite *sprite)
     sprite->vtable = data_020e2058;
     CellAnim_Destruct(&sprite->second);
     CellAnim_Destruct(&sprite->first);
-    func_0208af00(sprite);
+    ScreenSprite_DestructBase((ScreenSprite *) sprite);
     Heap_OperatorDeleteB(sprite);
     return sprite;
 }
@@ -120,7 +116,7 @@ CellPairSprite *CellPairSprite_Destruct(CellPairSprite *sprite)
     sprite->vtable = data_020e2058;
     CellAnim_Destruct(&sprite->second);
     CellAnim_Destruct(&sprite->first);
-    func_0208af00(sprite);
+    ScreenSprite_DestructBase((ScreenSprite *) sprite);
     return sprite;
 }
 CLEAN_AS(func_0208a41c, CellPairSprite_Destruct)
@@ -128,7 +124,7 @@ CLEAN_AS(func_0208a41c, CellPairSprite_Destruct)
 /* func_0208a448: the constructor: at the base class's place, in pose 0 of the normal set. */
 CellPairSprite *CellPairSprite_Construct(CellPairSprite *sprite, int on_main)
 {
-    func_0208af30(sprite);
+    ScreenSprite_Construct((ScreenSprite *) sprite);
     sprite->vtable = data_020e2058;
     CellAnim_Construct(&sprite->first);
     CellAnim_Construct(&sprite->second);

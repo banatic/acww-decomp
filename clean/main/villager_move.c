@@ -3,6 +3,17 @@
 
 #include "clean.h"
 #include "villager_town.h"
+#include "calendar.h"
+#include "date_time.h"
+#include "item_object.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "town_villager.h"
+#include "villager_checks.h"
+#include "villager_data.h"
+#include "villager_move_record.h"
+#include "villager_roster.h"
+#include "villager_status.h"
 
 static_assert(offsetof(VillagerMove, npc) == 0x0c, "npc");
 static_assert(offsetof(VillagerMove, players) == 0x1c, "players");
@@ -20,42 +31,10 @@ static_assert(offsetof(VillagerMove, stage) == 0xba, "stage");
 extern const u16 data_020cd4c4[12];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern NpcId *func_0208150c(const void *villager);                    /* the villager's NpcId, at 0x7a0 */
-extern int func_0207f150(const void *villager);                       /* 0-3, from three tests of the villager */
-extern u8 *func_0207cec0(VillagerTown *town, int villager);           /* villager `villager`, or NULL past 7 */
-extern int func_0207cf14(const VillagerTown *town, const NpcId *npc); /* the villager it names, or -1 */
-extern int func_0207cad4(const VillagerTown *town);                   /* how many villagers it has (func_0207cadc) */
-/* A random one of the `count` bits set in `candidates` (of `bits`), or -1 for none. */
-extern int func_0207cc54(u32 candidates, int count, int bits);
-extern unsigned int func_020644cc(int bound); /* a random number below `bound` */
-/* Whether no player of the town has the villager in its record's part at 0x1e40. */
-extern int func_0207dca8(const void *villager);
-extern int func_02080998(const void *villager, int n, const DateTime *now);
-extern const u8 *func_02080890(const void *villager);           /* the villager's data, or NULL */
-extern void func_0209e474(DateTime *now);                       /* the clock's date and time */
-extern void func_0209df64(Date *today);                         /* Calendar_Today */
-extern int func_0209dd9c(const Date *date, const Date *other);  /* Calendar_IsOnOrAfter */
-extern int func_0209dcdc(const Date *date, const Date *origin); /* Calendar_DaysFrom */
-extern void func_0209dfd8(DateTime *dst, const Date *date, u8 hour, u8 minute, u8 second);
-extern void func_0209e29c(DateTime *when, int days); /* DateTime_AddDays */
-extern void func_0209e140(DateTime *when, int days); /* DateTime_SubtractDays */
-extern void func_0209a77c(VillagerMove *move);       /* the record cleared: no plan */
-extern int func_0209a654(const VillagerMove *move);  /* whether its stage is 5 */
-/* Whether its stage is 5 and `today` (the date when NULL) is 0-2 days after its last step. */
-extern int func_0209a610(const VillagerMove *move, const Date *today);
-/* Whether the player id of the current stage is set. */
-extern int func_0209a67c(const VillagerMove *move);
-extern u8 *func_0209a6fc(VillagerMove *move, u32 stage); /* that stage's player id; NULL past 4 */
-/* A plan for the villager of `npc` from `today`: stage 1 or 2. */
-extern void func_0209a710(VillagerMove *move, const NpcId *npc, const Date *today);
-extern u8 *func_0209a778(VillagerMove *move);    /* its object */
-extern NpcId *func_0209a774(VillagerMove *move); /* its NpcId */
-extern int func_0209bd44(const u8 *object);      /* whether it holds something */
-extern void func_02095238(u8 *id);               /* a player id emptied */
 
 static int has_villager(const u8 *villager)
 {
-    return NpcId_IsValid(func_0208150c(villager));
+    return NpcId_IsValid(TownVillager_NpcId((u8 *) villager));
 }
 
 static int magnitude(int value)
@@ -93,7 +72,7 @@ void VillagerMove_Update(VillagerTown *town)
     VillagerMove *move = &town->move;
     int villager = VillagerMove_VillagerIndex(town);
     Date today;
-    func_0209df64(&today);
+    Calendar_Today(&today);
 
     if (villager == VILLAGER_TOWN_NONE) {
         if (!VillagerMove_TownIsFull(town)) {
@@ -103,34 +82,34 @@ void VillagerMove_Update(VillagerTown *town)
         if (villager == VILLAGER_TOWN_NONE) {
             return;
         }
-        u8 *picked = func_0207cec0(town, villager);
+        u8 *picked = VillagerRoster_At(town, villager);
         if (picked != NULL && has_villager(picked)) {
-            func_0209a710(move, func_0208150c(picked), &today);
+            VillagerMoveRecord_Start(move, TownVillager_NpcId(picked), &today);
             town->move_index = (s8) villager;
             VillagerOutdoors_ClearTime(&town->outdoors);
         }
         return;
     }
 
-    if (!func_0209dd9c(&today, &move->started)) {
-        func_0209a77c(move);
+    if (!Calendar_IsOnOrAfter(&today, &move->started)) {
+        VillagerMoveRecord_Clear(move);
         return;
     }
-    if (func_0209a654(move)) {
-        if (!func_0209a610(move, &today)) {
-            func_0209a77c(move);
+    if (VillagerMoveRecord_IsIdle(move)) {
+        if (!VillagerMoveRecord_IsRecentlyDone(move, &today)) {
+            VillagerMoveRecord_Clear(move);
         }
         return;
     }
-    int days = func_0209dcdc(&today, &move->last_step);
+    int days = Calendar_DaysFrom(&today, &move->last_step);
     if (days == 0) {
         return;
     }
 
     int owed = 0;
     int first_days = 0;
-    if (move->started.unused == 0 && func_0209dcdc(&today, &move->started) >= VILLAGER_MOVE_FIRST_DAYS) {
-        int done = func_0209dcdc(&move->last_step, &move->started);
+    if (move->started.unused == 0 && Calendar_DaysFrom(&today, &move->started) >= VILLAGER_MOVE_FIRST_DAYS) {
+        int done = Calendar_DaysFrom(&move->last_step, &move->started);
         if (done >= 0 && done < VILLAGER_MOVE_FIRST_DAYS) {
             owed = VILLAGER_MOVE_FIRST_DAYS - 1 - done;
         }
@@ -153,34 +132,34 @@ void VillagerMove_Update(VillagerTown *town)
         VillagerMove_Step(town);
         left--;
         taken++;
-        if (func_0209a654(move)) {
+        if (VillagerMoveRecord_IsIdle(move)) {
             break;
         }
     }
 
-    if (!func_0209a654(move)) {
+    if (!VillagerMoveRecord_IsIdle(move)) {
         MI_CpuCopy8(&today, &move->last_step, sizeof(Date));
         return;
     }
     if (left >= VILLAGER_MOVE_LEFT_OVER && days > 0) {
-        func_0209a77c(move);
+        VillagerMoveRecord_Clear(move);
         return;
     }
     if (taken <= 0) {
         return;
     }
     DateTime when;
-    func_0209dfd8(&when, &move->last_step, 0, 0, 0);
+    DateTime_Set(&when, &move->last_step, 0, 0, 0);
     if (days > 0) {
-        func_0209e29c(&when, taken);
+        DateTime_AddDays(&when, taken);
         set_last_step(move, &when);
         return;
     }
     if (left > 0) {
-        func_0209a77c(move);
+        VillagerMoveRecord_Clear(move);
         return;
     }
-    func_0209e140(&when, taken);
+    DateTime_SubtractDays(&when, taken);
     set_last_step(move, &when);
 }
 CLEAN_AS(func_0207b05c, VillagerMove_Update)
@@ -195,22 +174,22 @@ void VillagerMove_Step(VillagerTown *town)
     int stage = move->stage;
     u8 *id = NULL;
 
-    if (func_0209a67c(move) || move->started.unused != 0) {
+    if (VillagerMoveRecord_HasStagePlayer(move) || move->started.unused != 0) {
         if (stage == 0) {
             stage = VILLAGER_MOVE_STAGE_NONE;
         } else if (stage < VILLAGER_MOVE_STAGES) {
             stage--;
         }
         move->stage = (u8) stage;
-        id = func_0209a6fc(move, move->stage);
+        id = (u8 *) VillagerMoveRecord_Player(move, move->stage);
     } else if ((u8) (stage + 1) < VILLAGER_MOVE_STAGES) {
         move->stage = (u8) (stage + 1);
-        id = func_0209a6fc(move, move->stage);
+        id = (u8 *) VillagerMoveRecord_Player(move, move->stage);
     } else if (stage < VILLAGER_MOVE_STAGES) {
-        id = func_0209a6fc(move, (u32) stage);
+        id = (u8 *) VillagerMoveRecord_Player(move, (u32) stage);
     }
     if (id != NULL) {
-        func_02095238(id);
+        PlayerId_Clear((DesignCreator *) (void *) id);
     }
 }
 CLEAN_AS(func_0207b268, VillagerMove_Step)
@@ -218,7 +197,7 @@ CLEAN_AS(func_0207b268, VillagerMove_Step)
 /* func_0207b2f8: whether the town has seven villagers or more. */
 int VillagerMove_TownIsFull(VillagerTown *town)
 {
-    return func_0207cad4(town) >= VILLAGER_MOVE_MIN_VILLAGERS;
+    return VillagerRoster_Count(town) >= VILLAGER_MOVE_MIN_VILLAGERS;
 }
 CLEAN_AS(func_0207b2f8, VillagerMove_TownIsFull)
 
@@ -235,20 +214,20 @@ int VillagerMove_PickVillager(VillagerTown *town, unsigned int month)
     u8 candidates = 0;
     int count = 0;
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
-        if (i != town->move_index && has_villager(villager) && func_0207f150(villager) == 3 && func_0207dca8(villager) &&
-            func_02080998(villager, 15, &now) == -1) {
+        if (i != town->move_index && has_villager(villager) && VillagerStatus_Stay((u8 *) villager) == 3 &&
+            VillagerCheck_NoPlayerHolds((u8 *) villager) && TownVillager_EventYearWithin((u8 *) villager, 15, &now) == -1) {
             candidates |= (u8) (1u << i);
             count++;
         }
     }
-    int chosen = func_0207cc54(candidates, count, VILLAGER_TOWN_VILLAGERS);
-    u8 *villager = func_0207cec0(town, chosen);
+    int chosen = VillagerRoster_PickBit(candidates, count, VILLAGER_TOWN_VILLAGERS);
+    u8 *villager = VillagerRoster_At(town, chosen);
     if (villager != NULL) {
-        const u8 *data = func_02080890(villager);
-        if ((int) func_020644cc(data_020cd4c4[month]) < data[3] + 0x80) {
+        const u8 *data = (const u8 *) VillagerData_Of(villager);
+        if ((int) MainRandom_Below(data_020cd4c4[month]) < data[3] + 0x80) {
             return chosen;
         }
     }
@@ -259,8 +238,8 @@ CLEAN_AS(func_0207b310, VillagerMove_PickVillager)
 /* func_0207b3dc: the index of the villager the plan names, or -1 when there is no plan. */
 int VillagerMove_VillagerIndex(VillagerTown *town)
 {
-    if (func_0209bd44(func_0209a778(VillagerMove_Record(town)))) {
-        return func_0207cf14(town, func_0209a774(VillagerMove_Record(town)));
+    if (ItemObject_IsInUse((ItemObject *) (void *) VillagerMoveRecord_Object(VillagerMove_Record(town)))) {
+        return VillagerRoster_IndexOf(town, VillagerMoveRecord_Npc(VillagerMove_Record(town)));
     }
     return VILLAGER_TOWN_NONE;
 }

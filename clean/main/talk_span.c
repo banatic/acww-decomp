@@ -6,6 +6,7 @@
 #include "message_walker.h"
 #include "talk_page.h"
 #include "text_walker.h"
+#include "talk_object.h"
 
 static_assert(offsetof(TalkSpan, talk) == 0x24, "span talk");
 static_assert(offsetof(TalkSpan, mode) == 0x2c, "span mode");
@@ -16,9 +17,6 @@ static_assert(sizeof(TalkSpan) == 0x3c, "span");
 /* The vtables of this class and of its base class. */
 extern const u8 data_020def9c[];
 extern const u8 data_020e3e68[];
-
-/* The character pushed onto the talk's last characters (the talk's 0x1a2c). */
-extern void func_02068104(u8 *talk, int character);
 
 /* func_0206be6c: the span stopped and its walk cleared. */
 void TalkSpan_Reset(TalkSpan *span)
@@ -58,7 +56,7 @@ void TalkSpan_OnCharacter(TalkSpan *span, int character)
             TalkSpan_Reset(span);
         }
     } else if (span->mode == TALK_SPAN_TO_END) {
-        func_02068104(span->talk, character);
+        TalkObject_PushVoiceChar((TalkObject *) (void *) span->talk, character);
     }
 }
 CLEAN_AS(func_0206be94, TalkSpan_OnCharacter)

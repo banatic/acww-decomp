@@ -28,6 +28,7 @@
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
 #include "ov002/push_button.h"
+#include "ov117/town_map_image.h"
 #include "types.h"
 
 /* In `flags`. */
@@ -109,16 +110,8 @@ enum MapMenuMarkKind {
 #define MAP_MENU_MARKS 14      /* overlay 117's spots 3-16 */
 #define MAP_MENU_EXTRA_MARKS 3 /* its spots 0-2 */
 
-/* One of overlay 117's 17 spots of the map (func_ov117_0229a280, func_ov117_0229a26c):
- * x and y -1 when it has none. */
-typedef struct MapMenuSpot {
-    s16 x;
-    s16 y;
-    u8 kind;
-    u8 pad_05;
-} MapMenuSpot;
-
-#define MAP_MENU_SPOTS 17
+/* Overlay 117's 17 spots of the map are its markers (TownMapMarker, TownMapMarkers_Get). */
+#define MAP_MENU_SPOTS TOWN_MAP_MARKERS
 
 /* The screens are 32 x 32 tiles; a row of the list is two tile rows, its icon at column 0x13
  * and its text from column 0x13 to 0x1c. */
@@ -201,7 +194,7 @@ typedef struct MapMenu {
     u16 rows[MAP_MENU_SCREEN_TILES];               /* 0x1724: the list's rows with their icons */
     u16 rows_template[MAP_MENU_SCREEN_TILES];      /* 0x1f24: "b_map_b_bg.bsc": icon i at rows 2i, 2i + 1 */
     u8 map_chars[0x2000];                          /* 0x2724: the map's characters 0x60-0x15f */
-    MapMenuSpot spots[MAP_MENU_SPOTS];             /* 0x4724: overlay 117's */
+    TownMapMarker spots[MAP_MENU_SPOTS];           /* 0x4724: overlay 117's */
     u8 residents[MAP_MENU_ROWS];                   /* 0x478a: MapMenuEntry */
     u8 places[MAP_MENU_ROWS];                      /* 0x4797: MapMenuEntry */
     MapMenuMark extra_marks[MAP_MENU_EXTRA_MARKS]; /* 0x47a4 */
@@ -230,7 +223,7 @@ unsigned char MapMenu_RowOfSelection(MapMenu *self, unsigned int selection);
 void MapMenu_HighlightRow(MapMenu *self, int row);
 void MapMenu_Select(MapMenu *self, unsigned int selection);
 int MapMenu_MarkAt(MapMenu *self, int x, int y);
-void MapMenu_FillMarks(MapMenu *self, MapMenuSpot *spots);
+void MapMenu_FillMarks(MapMenu *self, TownMapMarker *spots);
 void MapMenu_DrawMark(MapMenu *self, int x, int y, int kind, int flip, int palette);
 unsigned int MapMenu_MaxScroll(MapMenu *self);
 unsigned char MapMenu_ShownCount(MapMenu *self);

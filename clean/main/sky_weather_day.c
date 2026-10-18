@@ -9,6 +9,7 @@
 #include "scene_query.h"
 #include "session.h"
 #include "start_kind.h"
+#include "main_random.h"
 
 #define SKY_WEATHER_DAY_START_HOUR 6
 #define SKY_WEATHER_DAY_HOURS 24
@@ -25,7 +26,6 @@ extern s32 data_021fbbdc;                                  /* the day was moved 
 extern const u8 data_020d2ef0[][SKY_WEATHER_DAY_PATTERNS]; /* the patterns' odds in 100, by period */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 
 /* func_020c15bc: the wet flag of the day before. */
 unsigned char SkyWeatherDay_LastWet(void)
@@ -40,7 +40,7 @@ int SkyWeatherDay_DrawPattern(SkyWeatherDay *day, const DateTime *date)
 {
     (void) day;
     int period = Calendar_PeriodAOf(date);
-    int draw = (int) func_020644cc(100);
+    int draw = (int) MainRandom_Below(100);
     for (int i = 0; i < SKY_WEATHER_DAY_PATTERNS; i++) {
         draw -= data_020d2ef0[period][i];
         if (draw < 0) {

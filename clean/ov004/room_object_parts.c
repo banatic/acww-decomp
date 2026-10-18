@@ -7,6 +7,14 @@
 
 #include "clean.h"
 #include "room_object.h"
+#include "main/acre_tile.h"
+#include "main/fader.h"
+#include "main/g3d_resource.h"
+#include "main/room_cells.h"
+#include "main/scene_query.h"
+#include "room_object_body.h"
+#include "room_object_methods.h"
+#include "room_objects.h"
 
 static_assert(sizeof(Switch) == 2, "switch");
 static_assert(sizeof(NodePair) == 3, "node pair");
@@ -27,12 +35,6 @@ static s32 shift_right(s32 value, int bits)
 }
 
 /* ---- The switch (0x740) ---- */
-
-extern int func_ov004_0220e5c8(RoomObject *object);
-extern int func_ov004_0220e758(RoomObject *object, int *x, int *y, int a3, int a4);
-extern unsigned char func_020b65c4(void);
-extern void func_02052ee8(int x, int y, int layer, int value, unsigned char a4);
-extern int func_02052f14(int x, int y, int layer, int a3);
 
 /* func_ov004_0220d280: `value` as the wanted value; unless `pending`, also as the shown one. */
 void Switch_Set(Switch *sw, u8 value, int pending)
@@ -70,25 +72,25 @@ u8 Switch_Value(const Switch *sw)
 CLEAN_AS(func_ov004_0220d2b8, Switch_Value)
 
 /* func_ov004_0220d2bc: the wanted value into the town's map record of the object's cell
- * (func_02052ee8, for its layer), unless func_ov004_0220e5c8 says the object is not to be kept
+ * (RoomCells_SetSwitch, for its layer), unless RoomObject_Unk76CIs2 says the object is not to be kept
  * there or it has no cell. */
 void Switch_Save(const Switch *sw, RoomObject *object)
 {
-    if (func_ov004_0220e5c8(object) == 0) {
+    if (RoomObject_Unk76CIs2(object) == 0) {
         int x;
         int y;
-        if (func_ov004_0220e758(object, &x, &y, 0, 0) != 0) {
-            func_02052ee8(x, y, object->unk_288, sw->wanted, func_020b65c4());
+        if (RoomObject_FindVariantCell(object, &x, &y, 0, 0) != 0) {
+            RoomCells_SetSwitch(x, y, object->unk_288, sw->wanted, SceneQuery_Current());
         }
     }
 }
 CLEAN_AS(func_ov004_0220d2bc, Switch_Save)
 
-/* func_ov004_0220d300: shows the wanted value and returns it; when func_ov004_0220e5c8 says
+/* func_ov004_0220d300: shows the wanted value and returns it; when RoomObject_Unk76CIs2 says
  * otherwise, leaves it pending and returns what that said. */
 int Switch_Apply(Switch *sw, RoomObject *object)
 {
-    int held = func_ov004_0220e5c8(object);
+    int held = RoomObject_Unk76CIs2(object);
     if (held == 0) {
         sw->shown = sw->wanted;
         return sw->shown;
@@ -103,13 +105,13 @@ CLEAN_AS(func_ov004_0220d300, Switch_Apply)
 void Switch_Load(Switch *sw, RoomObject *object)
 {
     int value = 0;
-    if (object->unk_76C == 1 || func_ov004_0220e5c8(object) != 0) {
+    if (object->unk_76C == 1 || RoomObject_Unk76CIs2(object) != 0) {
         value = object->unk_78D == 0;
     } else {
         int x;
         int y;
-        if (func_ov004_0220e758(object, &x, &y, 0, 0) != 0) {
-            value = func_02052f14(x, y, object->unk_288, func_020b65c4());
+        if (RoomObject_FindVariantCell(object, &x, &y, 0, 0) != 0) {
+            value = RoomCells_GetSwitch(x, y, object->unk_288, SceneQuery_Current());
         }
     }
     /* QUIRK: the record's answer is kept in a byte. */
@@ -179,16 +181,8 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 extern int func_ov004_0220d258(int glow);
 extern char *func_ov004_0220d268(char *glow);
 
-extern void func_020b36c8(Fader *fader);
-extern int func_020b3658(Fader *fader);
-extern int func_020b365c(int level, int from, int to);
 extern void NNSi_G3dModifyMatFlag(G3dModel *model, int on, int flag);
 extern void NNS_G3dMdlSetMdlEmi(G3dModel *model, int material, int colour);
-extern int func_020b3670(Fader *fader, int on, int fade, int flash, int speed);
-extern void func_020b3720(Fader *fader, int on);
-extern int func_02057a50(G3dModel *model, const char *name);
-extern void func_020b373c(Fader *fader);
-extern void func_020b3740(Fader *fader);
 
 /* func_ov004_0220d030: each glow's frame, once the set is bound. */
 void GlowSet_Update(GlowSet *set)
@@ -258,17 +252,17 @@ void Glow_Update(Glow *glow)
     if (glow->material == -1) {
         return;
     }
-    func_020b36c8(&glow->fader);
-    int level = func_020b3658(&glow->fader);
+    Fader_Run(&glow->fader);
+    int level = Fader_Level(&glow->fader);
     if (level == 0) {
         NNSi_G3dModifyMatFlag(glow->model, 0, G3D_MATERIAL_EMISSION);
         return;
     }
     NNSi_G3dModifyMatFlag(glow->model, 1, G3D_MATERIAL_EMISSION);
     int base = Glow_BaseColour();
-    int blue = func_020b365c(level, ((base >> 10) & 0x1f) << 12, WHITE_COMPONENT);
-    int red = func_020b365c(level, (base & 0x1f) << 12, WHITE_COMPONENT);
-    int green = func_020b365c(level, ((base >> 5) & 0x1f) << 12, WHITE_COMPONENT);
+    int blue = Fader_Mix(level, ((base >> 10) & 0x1f) << 12, WHITE_COMPONENT);
+    int red = Fader_Mix(level, (base & 0x1f) << 12, WHITE_COMPONENT);
+    int green = Fader_Mix(level, ((base >> 5) & 0x1f) << 12, WHITE_COMPONENT);
     /* QUIRK: the components are not clamped; the sum is cut to 16 bits. */
     u32 bits = ((u32) shift_right(blue, 12) << 10) | (u32) shift_right(red, 12) | ((u32) shift_right(green, 12) << 5);
     int lit = (u16) bits;
@@ -282,7 +276,7 @@ CLEAN_AS(func_ov004_0220d150, Glow_Update)
  * fader's speed 0x800. Whether the fader started to fade. */
 int Glow_Switch(Glow *glow, int on, int fade, int flash)
 {
-    return func_020b3670(&glow->fader, on, fade, flash, 0x800);
+    return Fader_Switch(&glow->fader, on, fade, flash, 0x800);
 }
 CLEAN_AS(func_ov004_0220d208, Glow_Switch)
 
@@ -291,9 +285,9 @@ CLEAN_AS(func_ov004_0220d208, Glow_Switch)
 int Glow_Bind(Glow *glow, G3dModel *model, const char *name, int on)
 {
     if (model != NULL) {
-        glow->material = (s8) func_02057a50(model, name);
+        glow->material = (s8) G3dRes_MaterialIndex((const u8 *) model, name);
         if (glow->material != -1) {
-            func_020b3720(&glow->fader, on);
+            Fader_Set(&glow->fader, on);
             glow->model = model;
             return 1;
         }
@@ -305,7 +299,7 @@ CLEAN_AS(func_ov004_0220d220, Glow_Bind)
 /* func_ov004_0220d258: returns the glow's address. */
 int Glow_Destruct(Glow *glow)
 {
-    func_020b373c(&glow->fader);
+    Fader_Destruct(&glow->fader);
     return (int) (uintptr_t) glow;
 }
 CLEAN_AS(func_ov004_0220d258, Glow_Destruct)
@@ -313,7 +307,7 @@ CLEAN_AS(func_ov004_0220d258, Glow_Destruct)
 /* func_ov004_0220d268: off, on no material. */
 Glow *Glow_Construct(Glow *glow)
 {
-    func_020b3740(&glow->fader);
+    Fader_Construct(&glow->fader);
     glow->material = -1;
     glow->model = NULL;
     return glow;
@@ -324,15 +318,9 @@ CLEAN_AS(func_ov004_0220d268, Glow_Construct)
 
 #define MOUNT_PARENTS 28 /* the parent indexes kept */
 
-/* The scratch matrix func_ov004_0220fc98 builds an object's matrix into. */
+/* The scratch matrix RoomObject_BuildMatrix builds an object's matrix into. */
 extern Mtx43 data_021fbe48;
 
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int y, int layer);
-extern void *func_ov004_0223ce84(void);
-extern int func_ov004_0223cd78(void *objects, RoomObject *object);
-extern void func_0204f794(Vec3 *centre, unsigned int x, unsigned int y);
-extern void func_ov004_0220fc98(RoomObject *object, const Vec3 *offset, int turn);
 extern int MTX_Inverse43(const Mtx43 *mtx, Mtx43 *inverse);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 
@@ -341,15 +329,15 @@ extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
  * its angle. Whether there is one (with an index). */
 int Mount_Locate(int *parent, Vec3 *offset, s16 *angle, int x, int y, s16 facing)
 {
-    RoomObject *below = func_ov004_0223cc10(func_ov004_0223cd50(), x, y, 0);
-    int index = func_ov004_0223cd78(func_ov004_0223ce84(), below);
+    RoomObject *below = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, y, 0);
+    int index = RoomObjects_IndexOf(RoomObjects_Table(), below);
     if (below == NULL || index == -1) {
         return 0;
     }
     Vec3 centre;
-    func_0204f794(&centre, (unsigned int) x, (unsigned int) y);
+    AcreTile_TileCentre(&centre, (unsigned int) x, (unsigned int) y);
     centre.y = below->top_height;
-    func_ov004_0220fc98(below, NULL, 0);
+    RoomObject_BuildMatrix(below, NULL, 0);
     MTX_Inverse43(&data_021fbe48, &data_021fbe48);
     Vec3 local;
     MTX_MultVec43(&centre, &data_021fbe48, &local);

@@ -9,6 +9,17 @@
 #include "clean.h"
 #include "itcm/vector.h"
 #include "main/calendar.h"
+#include "c_library.h"
+#include "collision_query.h"
+#include "field_collision.h"
+#include "g3d_resource.h"
+#include "globe.h"
+#include "model_cache.h"
+#include "model_object.h"
+#include "rom_file.h"
+#include "scene_lights.h"
+#include "scene_query.h"
+#include "vram_region.h"
 
 static_assert(offsetof(ShadowTexture, polygon_id) == 0x14, "ShadowTexture layout");
 static_assert(sizeof(ShadowTexture) == 0x18, "ShadowTexture layout");
@@ -118,27 +129,7 @@ extern void NNSi_G3dModifyMatFlag(u8 *model, int on, int flag);
 extern void __register_global_object(void *object, void (*destructor)(void *), void *entry);
 extern void func_020012dc(void *object); /* the static objects' destructor */
 
-extern void func_0209def4(Time *now);
-extern int func_020310c8(int value);                                 /* the ground's height offset */
-extern int func_0203f844(Vec3 *out, const Vec3 *in);                 /* bends a point onto the curved world */
-extern int func_0203f8d0(Vec3 *out, Vec3 *in);                       /* the same, returning the slope's angle */
-extern int func_02034270(void *probe, const Vec3 *at, int a, int b); /* a ground probe */
-extern int func_020341c8(void *probe, int a);                        /* its height */
-extern void func_0203423c(void *probe);
-extern int func_020b66d8(void);
-extern short func_02065604(void); /* the light's colour */
-extern short func_0206586c(void); /* a colour of the scene's light */
-extern u32 func_020655c4(u32 kind);
-extern int func_020555c8(ShadowModel *holder, const char *path, int a);
-extern int func_02055454(ShadowModel *holder);
-extern void func_02055e7c(ShadowModel *holder, const Vec3 *scale);
-extern u8 *func_02064b18(const char *path);         /* reads a file into the current heap */
-extern u8 *func_021077e8(u8 *file);                 /* the texture block of a .nsbtx */
-extern int func_02056064(u8 *textures, int a);      /* places the textures in VRAM */
-extern u8 *func_020561cc(u8 *textures, void *heap); /* copies the block to a heap */
-extern int func_02064328(char *out, const char *format, ...);
-extern int func_02057a40(const u8 *textures, const char *name); /* a texture's index */
-extern int func_020579b8(const u8 *textures, const char *name); /* a palette's index */
+extern u8 *func_021077e8(u8 *file); /* the texture block of a .nsbtx */
 
 /* ARM's arithmetic shift right by a register: counts of 32 or more give the sign. */
 static s32 arm_asr(s32 value, u32 count)
@@ -159,7 +150,7 @@ static int abs_int(int value)
 void CharaShadow_DrawUnder(const Vec3 *pos, int size)
 {
     Vec3 at = *pos;
-    at.y -= func_020310c8(0) + 0x800;
+    at.y -= CollisionQuery_FloorHeight(0) + 0x800;
     CharaShadow_Draw(&at, size, 0xe00, FX_ONE);
 }
 CLEAN_AS(func_020acbc8, CharaShadow_DrawUnder)
@@ -182,16 +173,16 @@ void CharaShadow_Draw(const Vec3 *pos, int size, fx32 fade_height, fx32 scale)
     int alpha = Shadow_CharaAlpha(pos, size);
     int ground = 0;
     if (data_020e54a8 == 0) {
-        func_02034270(probe, pos, 0, 0);
-        ground = func_020341c8(probe, 0);
+        CollisionGround_Init((CollisionGround *) (void *) probe, pos, 0, 0);
+        ground = CollisionGround_GetHeight((const CollisionGround *) (void *) probe, 0);
         if (ground > 0) {
             ground = 0;
         }
-        func_0203423c(probe);
-    } else if (func_020b66d8() != 0) {
-        func_02034270(probe, pos, 0, 0);
-        ground = func_020341c8(probe, 0);
-        func_0203423c(probe);
+        CollisionGround_Destroy((CollisionGround *) (void *) probe);
+    } else if (SceneQuery_CurrentIn20() != 0) {
+        CollisionGround_Init((CollisionGround *) (void *) probe, pos, 0, 0);
+        ground = CollisionGround_GetHeight((const CollisionGround *) (void *) probe, 0);
+        CollisionGround_Destroy((CollisionGround *) (void *) probe);
     }
 
     int height = pos->y - ground;
@@ -219,9 +210,9 @@ void CharaShadow_Draw(const Vec3 *pos, int size, fx32 fade_height, fx32 scale)
     }
 
     Vec3 on_ground = *pos;
-    on_ground.y = ground + func_020310c8(0);
+    on_ground.y = ground + CollisionQuery_FloorHeight(0);
     Vec3 bent;
-    int slope = func_0203f8d0(&bent, &on_ground);
+    int slope = Globe_BendFar(&bent, &on_ground);
     Mtx43_Translation(&data_021fbe48, bent.x, bent.y, bent.z);
     Mtx43_RotateX(&data_021fbe48, slope);
     data_021f4790 = data_021fbe48;
@@ -235,7 +226,7 @@ void CharaShadow_Draw(const Vec3 *pos, int size, fx32 fade_height, fx32 scale)
         material->polygon_attr |= data_020e40e0 << POLYGON_ATTR_ID_SHIFT;
         material->polygon_attr_mask |= POLYGON_ATTR_ID_MASK | POLYGON_ATTR_ALPHA_MASK;
     }
-    func_02055e7c(&data_021f472c, &model_scale);
+    ModelObject_Draw((ModelObject *) &data_021f472c, &model_scale);
 
     data_020e40e0++;
     if (data_020e40e0 > CHARA_SHADOW_ID_LAST) {
@@ -263,7 +254,7 @@ CLEAN_AS(func_020acdcc, CharaShadow_DrawLevel)
 void CharaShadow_Unload(void)
 {
     data_021f471c = NULL;
-    func_02055454(&data_021f472c);
+    ModelObject_Release((ModelObject *) &data_021f472c);
 }
 CLEAN_AS(func_020ace0c, CharaShadow_Unload)
 
@@ -272,7 +263,7 @@ CLEAN_AS(func_020ace0c, CharaShadow_Unload)
 void CharaShadow_BeginFrame(void)
 {
     data_020e40e0 = CHARA_SHADOW_ID_FIRST;
-    u16 colour = (u16) func_02065604();
+    u16 colour = (u16) SceneLights_EmissionColour();
     NNS_G3dMdlSetMdlDiff(data_021f472c.model, 0, colour);
 }
 CLEAN_AS(func_020ace24, CharaShadow_BeginFrame)
@@ -283,7 +274,7 @@ CLEAN_AS(func_020ace24, CharaShadow_BeginFrame)
  * QUIRK: the material is looked up through the model even when loading failed. */
 int CharaShadow_Load(void)
 {
-    int loaded = func_020555c8(&data_021f472c, data_020e40e4, 0) != 0;
+    int loaded = ModelObject_Load((ModelObject *) &data_021f472c, data_020e40e4, 0) != 0;
 
     u8 *model = data_021f472c.model;
     u8 *materials = model + *(const u32 *) (model + 0x08);    /* NNSG3dResMdl.ofsMat */
@@ -388,13 +379,13 @@ void ObjShadow_Draw(ObjShadow *shadow, const Vec3 *pos)
         if (pos->z != shadow->last_z) {
             Vec3 at;
             at.x = 0;
-            at.y = func_020310c8(0);
+            at.y = CollisionQuery_FloorHeight(0);
             at.z = pos->z - shadow->lengths[i];
-            func_0203f844(point, &at);
+            Globe_Bend(point, &at);
             point->y = arm_asr(point->y, (u32) shift);
             point->z = arm_asr(point->z, (u32) shift);
         }
-        reg_write(REG_COLOR, (u16) func_02065604());
+        reg_write(REG_COLOR, (u16) SceneLights_EmissionColour());
 
         u32 t = texcoord(shadow->row_t[i]);
         reg_write(REG_TEXCOORD, texcoord(shadow->s_left) | (t << 16));
@@ -606,7 +597,7 @@ CLEAN_AS(func_020ad3a0, ObjShadow_FreeAll)
 void ShadowLight_Update(void)
 {
     Time now;
-    func_0209def4(&now);
+    Calendar_Now(&now);
     int minutes = now.minute + 60 * ((now.hour + 6) % 12);
     data_021f47d0 = FX_MulFunc((int) ((u32) (FX_Div(minutes << 12, 720 << 12) - 0x800) << 1), FX_ONE);
 
@@ -615,10 +606,10 @@ void ShadowLight_Update(void)
     MTX_Concat43(&data_021fbe48, &data_0213fee4, &data_021f486c);
     ShadowLight_NormalizeRows((const Vec3 *) &data_021f486c, data_021f4848);
 
-    u16 colour = (u16) func_0206586c();
+    u16 colour = (u16) SceneLights_FlashColour();
     u8 channels = (u8) ((colour & 0x1f) + ((colour >> 5) & 0x1f) + ((colour >> 10) & 0x1f));
     u8 extra = (u8) (FX_MulFunc(16 << 12, FX_Div(channels << 12, 93 << 12)) >> 12);
-    u8 alpha = (u8) (func_020655c4(0) + extra);
+    u8 alpha = (u8) (SceneLights_LightLevel(0) + extra);
     if (alpha > SHADOW_ALPHA_MAX) {
         alpha = SHADOW_ALPHA_MAX;
     }
@@ -640,10 +631,10 @@ void ObjShadow_LoadAll(int load)
     }
     data_021f47d0 = 0;
 
-    u8 *file = func_02064b18(data_020e412c);
+    u8 *file = RomFile_LoadDefault(data_020e412c);
     u8 *block = func_021077e8(file);
-    func_02056064(block, 0);
-    block = func_020561cc(block, heap);
+    VramRegion_LoadTexture(block, 0);
+    block = ModelCache_CopyTexture(block, heap);
     Heap_FreeCurrent(file);
 
     ShadowTexture *texture = data_021f49a0;
@@ -651,14 +642,14 @@ void ObjShadow_LoadAll(int load)
         const ShadowTextureEntry *entry = &data_020d1df4[i];
         const char *name = data_020d1df4[i].name;
         char palette_name[0x24];
-        func_02064328(palette_name, data_020e4148, name);
+        CLib_SPrintf(palette_name, data_020e4148, name);
         texture->block = NULL;
         texture->image_param = 0;
         texture->palette_base = 0;
         texture->block = block;
         texture->polygon_id = entry->polygon_id;
-        int tex_index = func_02057a40(texture->block, name);
-        int pal_index = func_020579b8(texture->block, palette_name);
+        int tex_index = G3dRes_TextureIndex((const G3dResTex *) (void *) texture->block, name);
+        int pal_index = G3dRes_PaletteIndex((const G3dResTex *) (void *) texture->block, palette_name);
 
         /* NNSG3dResTex: the texture dictionary at 0x3c, its entries (texImageParam first) */
         const u8 *res = texture->block;

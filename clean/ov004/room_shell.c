@@ -12,6 +12,8 @@
 
 #include "autoload_2/heap.h"
 #include "autoload_2/matrix.h"
+#include "main/animated_model.h"
+#include "main/model_anim.h"
 #include "main/field_collision.h"
 #include "main/g3d_resource.h"
 #include "main/house_record.h"
@@ -27,11 +29,12 @@
 #include "main/villager_furniture.h"
 #include "main/villager_roster.h"
 #include "room_surface.h"
+#include "room_manager.h"
 
 static_assert(offsetof(RoomShell, wallpaper) == 0x128, "wallpaper");
-static_assert(offsetof(RoomShell, wallpaper_material) == 0x121c, "wallpaper material");
+static_assert(offsetof(RoomShell, wallpaper.bind) == 0x121c, "wallpaper material");
 static_assert(offsetof(RoomShell, carpet) == 0x1228, "carpet");
-static_assert(offsetof(RoomShell, carpet_material) == 0x331c, "carpet material");
+static_assert(offsetof(RoomShell, carpet.bind) == 0x331c, "carpet material");
 static_assert(offsetof(RoomShell, hour_hand_node) == 0x3520, "hour hand node");
 static_assert(offsetof(RoomShell, size) == 0x3522, "size");
 static_assert(offsetof(RoomShell, hour_hand_position) == 0x3528, "hour hand position");
@@ -90,14 +93,6 @@ extern Vec3 data_ov004_02258a30;
 
 extern AcreMap *data_021c80bc; /* the map of the scene shown */
 
-/* The wallpaper's and carpet's parts: their first and second code and their mode. */
-extern u16 *func_ov004_022329c0(u8 *wallpaper);
-extern u16 *func_ov004_022329c4(u8 *wallpaper);
-extern int func_ov004_022329b4(u8 *wallpaper);
-extern u16 *func_ov004_02232734(u8 *carpet);
-extern u16 *func_ov004_02232738(u8 *carpet);
-extern int func_ov004_02232728(u8 *carpet);
-
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 /* The hooks are the game's functions: their addresses go into the render state. */
@@ -110,7 +105,7 @@ static void RoomShell_set_hook(NodeHookState *state, int command, u32 hook, u8 t
     state->hook_timings[command] = timing;
 }
 
-/* func_ov004_02231b38 (the model's init hook, given by func_02055dc8): the hooks for materials
+/* func_ov004_02231b38 (the model's init hook, given by ModelObject_SetInitHook): the hooks for materials
  * and after nodes' descriptions. */
 void RoomShell_SetModelHooks(NodeHookState *state)
 {
@@ -278,10 +273,10 @@ static const u8 *RoomShell_material_record(const u8 *materials, u32 material)
 void RoomShell_MaterialHook(RoomShell *self, u32 material, RoomShellRenderState *state)
 {
     const u8 *record = RoomShell_material_record(state->materials, material);
-    int wallpaper = material == (u32) (int) MaterialBind_Material(&self->wallpaper_material);
-    int carpet = material == (u32) (int) MaterialBind_Material(&self->carpet_material);
-    if (!((wallpaper && RoomShell_code_set_up(func_ov004_022329c4(self->wallpaper))) ||
-          (carpet && RoomShell_code_set_up(func_ov004_02232738(self->carpet))))) {
+    int wallpaper = material == (u32) (int) MaterialBind_Material(&self->wallpaper.bind);
+    int carpet = material == (u32) (int) MaterialBind_Material(&self->carpet.bind);
+    if (!((wallpaper && RoomShell_code_set_up(RoomWallpaper_Code(&self->wallpaper))) ||
+          (carpet && RoomShell_code_set_up(RoomCarpet_Code(&self->carpet))))) {
         return;
     }
 
@@ -289,7 +284,7 @@ void RoomShell_MaterialHook(RoomShell *self, u32 material, RoomShellRenderState 
     result->texture_image &= ~(ROOM_SHELL_TEXTURE_SOURCE_MASK | ROOM_SHELL_TEXTURE_FLIP_S | ROOM_SHELL_TEXTURE_FLIP_T |
                                ROOM_SHELL_TEXTURE_REPEAT_S | ROOM_SHELL_TEXTURE_REPEAT_T);
     result->texture_image |= ROOM_SHELL_TEXTURE_SOURCE_TEXCOORD;
-    int mode = wallpaper ? func_ov004_022329b4(self->wallpaper) : func_ov004_02232728(self->carpet);
+    int mode = wallpaper ? RoomWallpaper_Mode(&self->wallpaper) : RoomCarpet_Mode(&self->carpet);
     result = state->material;
     result->texture_image |= ROOM_SHELL_TEXTURE_REPEAT_S | ROOM_SHELL_TEXTURE_REPEAT_T;
     if (mode == ROOM_SHELL_MODE_FLIP) {
@@ -363,7 +358,7 @@ u16 *RoomShell_WallpaperCode(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
-        return func_ov004_022329c0(self->wallpaper);
+        return RoomWallpaper_Replaced(&self->wallpaper);
     }
     return data_ov004_022589ec;
 }
@@ -374,7 +369,7 @@ u16 *RoomShell_WallpaperCode2(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
-        return func_ov004_022329c4(self->wallpaper);
+        return RoomWallpaper_Code(&self->wallpaper);
     }
     return data_ov004_022589ec;
 }
@@ -385,7 +380,7 @@ u16 *RoomShell_CarpetCode(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
-        return func_ov004_02232734(self->carpet);
+        return RoomCarpet_Replaced(&self->carpet);
     }
     return data_ov004_022589ec;
 }
@@ -397,7 +392,7 @@ u16 *RoomShell_CarpetCode2(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
-        return func_ov004_02232738(self->carpet);
+        return RoomCarpet_Code(&self->carpet);
     }
     return data_ov004_022589ec;
 }
@@ -457,29 +452,10 @@ extern u8 data_ov004_02258a78[], data_ov004_02258aa8[], data_ov004_02258acc[], d
     data_ov004_02258a24[];
 
 /* The frame of the room's shared frame counter (clock.h). */
-extern u16 func_ov004_0223c1e0(void);
 extern void NNS_G3dMdlSetMdlDiff(u8 *model, int material, u16 diffuse);
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
-
-/* The animated model's and ModelAnim's functions (animated_model.h, model_anim.h), declared
- * here on their structures' tags: animated_model.h cannot be included next to
- * room_object_methods.h (both define G3dRenderObject). */
-struct AnimatedModel;
-struct AnimatedModelAnim;
-struct ModelAnim;
-struct AnimatedModelAnim *AnimatedModel_Anim(struct AnimatedModel *model);
-void AnimatedModel_Attach(struct AnimatedModel *model);
-void AnimatedModel_Start(struct AnimatedModel *model, const u8 *file, int flags, fx32 speed, u16 start, u16 frames);
-void AnimatedModel_Draw(struct AnimatedModel *model, const Vec3 *scale);
-void AnimatedModel_StepFrames(struct AnimatedModel *model);
-int AnimatedModel_LoadAnim(struct AnimatedModel *model, Heap *heap);
-struct AnimatedModel *AnimatedModel_DestructComplete(struct AnimatedModel *model);
-struct AnimatedModel *AnimatedModel_Construct(struct AnimatedModel *model);
-void ModelAnim_Attach(struct ModelAnim *anim, ModelRenderObject *render);
-void ModelAnim_Start(struct ModelAnim *anim, const u8 *file, int flags, fx32 speed, u16 start);
-int ModelAnim_AllocMaterialAnim(struct ModelAnim *anim, u8 *model, Heap *heap);
 
 /* Functions handed to the game: its symbols. */
 extern void func_ov004_02231b38(NodeHookState *state);
@@ -520,12 +496,12 @@ extern void func_020051b0(void *item);
 
 static RoomWallpaper *RoomShell_wallpaper(RoomShell *self)
 {
-    return (RoomWallpaper *) (void *) self->wallpaper;
+    return &self->wallpaper;
 }
 
 static RoomCarpet *RoomShell_carpet(RoomShell *self)
 {
-    return (RoomCarpet *) (void *) self->carpet;
+    return &self->carpet;
 }
 
 static struct AnimatedModel *RoomShell_animated(RoomShell *self)
@@ -835,7 +811,7 @@ int RoomShell_Execute(RoomShell *self)
         anim->anim->frame = anim->ctrl.frame;
     }
     if (self->hour_hand_position.x != 0) {
-        u16 frame = func_ov004_0223c1e0();
+        u16 frame = RoomManager_FrameCounter();
         if (frame == ROOM_SHELL_TICK_FRAME_1 || frame == ROOM_SHELL_TICK_FRAME_2) {
             SoundSource_PlayHeld(&self->sound, ROOM_SHELL_SE_TICK);
         }

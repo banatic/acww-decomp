@@ -15,6 +15,14 @@
 #include "main/field_label_window.h"
 #include "main/overlay_groups.h"
 #include "main/scene_query.h"
+#include "event_queue.h"
+#include "globe.h"
+#include "message_receiver.h"
+#include "name_texts.h"
+#include "player_actor_ops.h"
+#include "sliding_window.h"
+#include "state_flags.h"
+#include "talk_object.h"
 
 static_assert(offsetof(FieldLabel, item) == 0xf4, "FieldLabel");
 static_assert(offsetof(FieldLabel, notice_renewed) == 0x10d, "FieldLabel");
@@ -47,31 +55,6 @@ extern CameraControl *data_021c67a4;
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 
-/* The sliding window: its state (0 closed), asking it to close when open and to open when
- * closed (each says whether it did), its text, its place, and func_0208a9e4. */
-extern int func_0208a844(void *window);
-extern void *func_0208a9ac(void *window);
-extern void *func_0208a9c8(void *window);
-extern void func_0208aa48(void *window, void *text);
-extern void func_0208aa60(void *window, int x, int y);
-extern void func_0208a9e4(void *window, int flag);
-/* The derived window: func_020b8fe0, whether it is in a mode and
- * under 25 frames or at frame 29, setting its mode, and asking it to show. */
-extern void func_020b8fe0(void *window);
-extern int func_020b9030(void *window);
-extern int func_020b904c(void *window);
-extern void func_020b9068(void *window, u8 mode);
-extern void func_020b90a4(void *window);
-/* Message parts, and items' names: built and destroyed. */
-extern void *func_020a8228(FieldLabelText *text);
-extern void *func_020a8210(FieldLabelText *text);
-extern void *func_02062f90(FieldLabelItemName *name, const u16 *item);
-extern void *func_02062f4c(FieldLabelItemName *name);
-/* The bend of a map point into the drawn world (touch_pick_shapes.h), and an actor's
- * position. */
-extern int func_0203f844(Vec3 *out, const Vec3 *map);
-extern const Vec3 *func_02095794(int actor);
-
 static void *window_of(FieldLabel *label)
 {
     return label->window;
@@ -85,13 +68,13 @@ void FieldLabel_UpdateMessage(FieldLabel *label)
     if (label->timer > 0) {
         label->timer--;
     }
-    if (func_0208a844(window_of(label)) == 0) {
+    if (SlidingWindow_State(window_of(label)) == 0) {
         FieldLabel_EnterClosed(label);
     } else if (!FieldLabel_MessageActive(label)) {
-        if (func_020b9030(window_of(label)) == 0) {
-            func_0208a9ac(window_of(label));
+        if (FieldLabelWindow_MarkerBlinkShown(window_of(label)) == 0) {
+            SlidingWindow_RequestClose(window_of(label));
         }
-    } else if (func_020b904c(window_of(label)) != 0) {
+    } else if (FieldLabelWindow_MarkerBlinkLast(window_of(label)) != 0) {
         FieldLabel_ShowMessageText(label, 0);
     }
 }
@@ -100,7 +83,7 @@ CLEAN_AS(func_020b866c, FieldLabel_UpdateMessage)
 /* func_020b86d0 */
 void FieldLabel_EnterMessage(FieldLabel *label)
 {
-    func_020b90a4(window_of(label));
+    FieldLabelWindow_RequestMarker(window_of(label));
     label->state = FIELD_LABEL_MESSAGE;
 }
 CLEAN_AS(func_020b86d0, FieldLabel_EnterMessage)
@@ -112,14 +95,14 @@ void FieldLabel_UpdateNotice(FieldLabel *label)
     if (label->timer > 0) {
         label->timer--;
     }
-    if (func_0208a844(window_of(label)) == 0) {
+    if (SlidingWindow_State(window_of(label)) == 0) {
         FieldLabel_EnterClosed(label);
         return;
     }
     if (!FieldLabel_MessageActive(label) && FieldLabel_NoticeActive(label) && label->notice_renewed == 0) {
         return;
     }
-    func_0208a9ac(window_of(label));
+    SlidingWindow_RequestClose(window_of(label));
 }
 CLEAN_AS(func_020b86e4, FieldLabel_UpdateNotice)
 
@@ -135,7 +118,7 @@ CLEAN_AS(func_020b873c, FieldLabel_EnterNotice)
  * closes. */
 void FieldLabel_UpdateItem(FieldLabel *label)
 {
-    if (func_0208a844(window_of(label)) == 0) {
+    if (SlidingWindow_State(window_of(label)) == 0) {
         FieldLabel_EnterClosed(label);
         return;
     }
@@ -144,7 +127,7 @@ void FieldLabel_UpdateItem(FieldLabel *label)
         FieldLabel_PlaceOverPlayer(label);
         return;
     }
-    func_0208a9ac(window_of(label));
+    SlidingWindow_RequestClose(window_of(label));
 }
 CLEAN_AS(func_020b8744, FieldLabel_UpdateItem)
 
@@ -163,21 +146,21 @@ void FieldLabel_UpdateClosed(FieldLabel *label)
         FieldLabel_PlaceForMessage(label);
         FieldLabel_ShowMessageText(label, 1);
         FieldLabel_SetMessageMode(label);
-        if (func_0208a9c8(window_of(label)) != NULL) {
+        if (SlidingWindow_RequestOpen(window_of(label)) != NULL) {
             FieldLabel_EnterMessage(label);
         }
     } else if (FieldLabel_NoticeActive(label)) {
         FieldLabel_PlaceForNotice(label);
         FieldLabel_ShowNoticeText(label);
-        func_020b9068(window_of(label), 0);
-        if (func_0208a9c8(window_of(label)) != NULL) {
+        FieldLabelWindow_SetMode(window_of(label), 0);
+        if (SlidingWindow_RequestOpen(window_of(label)) != NULL) {
             FieldLabel_EnterNotice(label);
         }
     } else if (label->item != NULL) {
         FieldLabel_PlaceOverPlayer(label);
         FieldLabel_ShowItemName(label);
-        func_020b9068(window_of(label), 0);
-        if (func_0208a9c8(window_of(label)) != NULL) {
+        FieldLabelWindow_SetMode(window_of(label), 0);
+        if (SlidingWindow_RequestOpen(window_of(label)) != NULL) {
             FieldLabel_EnterItem(label);
         }
     }
@@ -225,7 +208,7 @@ CLEAN_AS(func_020b88c0, FieldLabel_RenewNotice)
 /* func_020b88d8: the window's mode for the message. */
 void FieldLabel_SetMessageMode(FieldLabel *label)
 {
-    func_020b9068(window_of(label), data_020d227c[label->message]);
+    FieldLabelWindow_SetMode(window_of(label), data_020d227c[label->message]);
 }
 CLEAN_AS(func_020b88d8, FieldLabel_SetMessageMode)
 
@@ -239,7 +222,7 @@ void FieldLabel_ShowMessageText(FieldLabel *label, int first)
     FieldLabelText text;
     u8 message_text;
 
-    func_020a8228(&text);
+    MessagePart_Construct((MessagePart *) &text);
     message_text = data_020d2270[label->message];
     int is_1 = label->message == 1;
     int is_2 = label->message == 2;
@@ -264,10 +247,10 @@ void FieldLabel_ShowMessageText(FieldLabel *label, int first)
             }
         }
         MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &message_text, NULL);
-        func_0208aa48(window_of(label), &text);
+        SlidingWindow_SetText(window_of(label), (struct TextObject *) &text);
         if (first == 0) {
-            func_0208a9e4(window_of(label), 1);
-            func_020b8fe0(window_of(label));
+            SlidingWindow_RefreshText(window_of(label), 1);
+            FieldLabelWindow_StartMarker(window_of(label));
         }
     }
 
@@ -277,7 +260,7 @@ void FieldLabel_ShowMessageText(FieldLabel *label, int first)
             label->alternate = 0;
         }
     }
-    func_020a8210(&text);
+    MessagePart_Destruct((MessagePart *) &text);
 }
 CLEAN_AS(func_020b88f0, FieldLabel_ShowMessageText)
 
@@ -287,10 +270,10 @@ void FieldLabel_ShowNoticeText(FieldLabel *label)
     FieldLabelText text;
     u8 notice_text = data_020d226c[label->notice];
 
-    func_020a8228(&text);
+    MessagePart_Construct((MessagePart *) &text);
     MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &notice_text, NULL);
-    func_0208aa48(window_of(label), &text);
-    func_020a8210(&text);
+    SlidingWindow_SetText(window_of(label), (struct TextObject *) &text);
+    MessagePart_Destruct((MessagePart *) &text);
 }
 CLEAN_AS(func_020b89cc, FieldLabel_ShowNoticeText)
 
@@ -299,23 +282,23 @@ void FieldLabel_ShowItemName(FieldLabel *label)
 {
     FieldLabelItemName name;
 
-    func_02062f90(&name, label->item);
-    func_0208aa48(window_of(label), &name);
-    func_02062f4c(&name);
+    NameText_ConstructItem((NameText *) &name, (u16 *) label->item);
+    SlidingWindow_SetText(window_of(label), (struct TextObject *) &name);
+    NameText_Destruct((NameText *) &name);
 }
 CLEAN_AS(func_020b8a10, FieldLabel_ShowItemName)
 
 /* func_020b8a3c */
 void FieldLabel_PlaceForMessage(FieldLabel *label)
 {
-    func_0208aa60(window_of(label), FIELD_LABEL_MESSAGE_X, FIELD_LABEL_TOP_Y);
+    SlidingWindow_SetPlace(window_of(label), FIELD_LABEL_MESSAGE_X, FIELD_LABEL_TOP_Y);
 }
 CLEAN_AS(func_020b8a3c, FieldLabel_PlaceForMessage)
 
 /* func_020b8a4c */
 void FieldLabel_PlaceForNotice(FieldLabel *label)
 {
-    func_0208aa60(window_of(label), 0, FIELD_LABEL_TOP_Y);
+    SlidingWindow_SetPlace(window_of(label), 0, FIELD_LABEL_TOP_Y);
 }
 CLEAN_AS(func_020b8a4c, FieldLabel_PlaceForNotice)
 
@@ -326,18 +309,18 @@ void FieldLabel_PlaceOverPlayer(FieldLabel *label)
 {
     data_021fbe48 = *CameraControl_ViewMatrix();
 
-    const Vec3 *player = func_02095794(4);
+    const Vec3 *player = PlayerActorOps_StartPosition(4);
     if (player != NULL) {
         Vec3 head = *player;
         Vec3 drawn;
         Vec3 view;
 
         head.y += FIELD_LABEL_HEAD_HEIGHT;
-        func_0203f844(&drawn, &head);
+        Globe_Bend(&drawn, &head);
         MTX_MultVec43(&drawn, &data_021fbe48, &view);
         fx32 near = FX_Div(0x60000, (fx32) CameraControl_Projection(data_021c67a4));
         Vec_Scale(&view, FX_Div(-near, view.z));
-        func_0208aa60(window_of(label), view.x >> 12, -view.y >> 12);
+        SlidingWindow_SetPlace(window_of(label), view.x >> 12, -view.y >> 12);
     }
 }
 CLEAN_AS(func_020b8a5c, FieldLabel_PlaceOverPlayer)
@@ -348,22 +331,11 @@ extern FieldLabel data_021f6b20;
 extern const u32 data_020e5848[];
 extern const int data_020d2288[];
 
-/* Player `player`'s session state is `state` (func_020960f8), and the item under player 4. */
-extern int func_020960f8(int state, int player);
-extern const u16 *func_020953e4(void);
 extern u8 data_020e54a8; /* 0 outdoors, 1 in a room */
-/* The window's byte at 0x5c set. */
-extern void func_0208aa40(FieldLabelWindow *window);
-/* Conditions FieldLabel_ChooseMessage tests, and talk 0 (whose second word is its state). */
-extern int func_0203dff0(void);
-extern int func_0203e21c(void);
-extern int func_0203e190(void);
-extern int func_0206f53c(void);
 typedef struct FieldLabelTalk {
     u32 unk_00;
     s32 state;
 } FieldLabelTalk;
-extern FieldLabelTalk *func_020682e0(int index);
 
 /* The kind of an item (the code's top four bits). */
 #define FIELD_LABEL_ITEM_KIND(code) (((code) & 0xf000) >> 12)
@@ -421,8 +393,8 @@ void FieldLabel_PickItem(FieldLabel *label)
 {
     const u16 *item = NULL;
 
-    if (func_020960f8(FIELD_LABEL_PLAYER_STATE, FIELD_LABEL_PLAYER) != 0) {
-        item = func_020953e4();
+    if (PlayerActorOps_InState(FIELD_LABEL_PLAYER_STATE, FIELD_LABEL_PLAYER) != 0) {
+        item = PlayerActorOps_ItemAhead();
     }
     if (item != NULL) {
         int kind = FIELD_LABEL_ITEM_KIND(*item);
@@ -480,7 +452,7 @@ CLEAN_AS(func_020b8c24, FieldLabel_ResetWindow)
 void FieldLabel_Reset(FieldLabel *label)
 {
     label->state = FIELD_LABEL_CLOSED;
-    func_0208aa40(label_window(label));
+    SlidingWindow_CenterText((SlidingWindow *) label_window(label));
     label->item = NULL;
     label->previous_item = FIELD_LABEL_NO_ITEM;
     label->message = 0;
@@ -620,15 +592,15 @@ void FieldLabel_ChooseMessage(int index)
     u32 message = 0;
 
     if (!scene_without_label()) {
-        BOOL busy = func_0203dff0() != 0 || func_0203e21c() != 0 || func_0203e190() != 0;
+        BOOL busy = EventQueue_IsObjectEvent() != 0 || EventQueue_IsKind5Unfinished() != 0 || EventQueue_IsKind9() != 0;
         BOOL from_table = FALSE;
 
         if (busy) {
-            FieldLabelTalk *talk = func_020682e0(0);
+            FieldLabelTalk *talk = (FieldLabelTalk *) TalkObject_Get(0);
             BOOL talking = talk != NULL && talk->state != 0;
 
             if (OverlayGroups_HasOwner()) {
-                if (func_0206f53c() != 0) {
+                if (StateFlags_Test100() != 0) {
                     from_table = TRUE;
                 } else {
                     message = FIELD_LABEL_MESSAGE_1;
@@ -636,7 +608,7 @@ void FieldLabel_ChooseMessage(int index)
             } else if (talking) {
                 message = FIELD_LABEL_MESSAGE_2;
             }
-        } else if (OverlayGroups_HasOwner() && func_0206f53c() != 0) {
+        } else if (OverlayGroups_HasOwner() && StateFlags_Test100() != 0) {
             from_table = TRUE;
         }
         if (from_table && index < FIELD_LABEL_TABLE_MESSAGES) {

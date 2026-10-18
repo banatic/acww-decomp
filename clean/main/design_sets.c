@@ -9,6 +9,8 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "design_info.h"
+#include "player_id.h"
+#include "town_name.h"
 
 static_assert(offsetof(PlayerDesigns, order) == 0x11a0, "order");
 static_assert(sizeof(ShopDesigns) == 0x11a0, "shop");
@@ -37,12 +39,6 @@ extern const u16 data_020d185c; /* a sample's: 0x7fff */
 extern const u16 data_020d1860; /* the holder's: 0x7ffc */
 extern u8 data_021dc7aa[];      /* this town (number and name) */
 
-extern void func_02064290(u16 *town, int number);              /* sets a town's number */
-extern void func_020950cc(DesignCreator *creator, int number); /* sets a creator's player number */
-extern void func_020642d0(u16 *town, const void *source);      /* copies a town */
-extern u16 *func_02095040(DesignCreator *creator);             /* a creator's town, at its start */
-extern int func_0209518c(DesignCreator *a, DesignCreator *b);  /* the same player (number and name) */
-extern void func_02095038(DesignCreator *creator, u16 *town);  /* sets a creator's town */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 /* Design_Construct and Design_Destruct at the game's addresses, declared as the vector helpers
@@ -173,8 +169,9 @@ int DesignSample_Load(Design *sample, unsigned int index)
     DesignSampleImage_ToBitmap(image, Design_Pixels(DesignSample_Design(sample)));
     RecordFile *file = archive();
     DesignArchive_ReadInfo(file, info_of(address_of(DesignSample_Design(sample))), (int) (index + SAMPLE_ENTRY_FIRST));
-    func_02064290(func_02095040(DesignInfo_Creator(info_of(address_of(DesignSample_Design(sample))))), data_020ccb64);
-    func_020950cc(DesignInfo_Creator(info_of(address_of(DesignSample_Design(sample)))), data_020d185c);
+    TownName_SetNumber((u16 *) (PlayerId_Town(DesignInfo_Creator(info_of(address_of(DesignSample_Design(sample)))))),
+                       data_020ccb64);
+    PlayerId_SetNumber((u16 *) (DesignInfo_Creator(info_of(address_of(DesignSample_Design(sample))))), data_020d185c);
     Heap_FreeCurrent(image);
     return 1;
 }
@@ -217,8 +214,9 @@ void DesignHolder_Reset(Design *holder)
     DesignBlankImage_ToBitmap(image, Design_Pixels(DesignHolder_Design(holder)));
     RecordFile *file = archive();
     DesignArchive_ReadInfo(file, info_of(address_of(DesignHolder_Design(holder))), HOLDER_ENTRY);
-    func_020642d0(func_02095040(DesignInfo_Creator(info_of(address_of(DesignHolder_Design(holder))))), data_021dc7aa);
-    func_020950cc(DesignInfo_Creator(info_of(address_of(DesignHolder_Design(holder)))), data_020d1860);
+    TownName_Copy(PlayerId_Town(DesignInfo_Creator(info_of(address_of(DesignHolder_Design(holder))))),
+                  (const TownName *) (void *) data_021dc7aa);
+    PlayerId_SetNumber((u16 *) (DesignInfo_Creator(info_of(address_of(DesignHolder_Design(holder))))), data_020d1860);
     Heap_FreeCurrent(image);
 }
 CLEAN_AS(func_02072998, DesignHolder_Reset)
@@ -264,8 +262,8 @@ void ShopDesigns_Reset(ShopDesigns *designs)
         DesignBuSheet_ToBitmap(sheet, Design_Pixels(design_at(ShopDesigns_At(set, (u8) i))), i);
         RecordFile *file = archive();
         DesignArchive_ReadInfo(file, info_of(ShopDesigns_At(set, (u8) i)), i + SHOP_ENTRY_FIRST);
-        func_02064290(func_02095040(DesignInfo_Creator(info_of(ShopDesigns_At(set, (u8) i)))), town);
-        func_020950cc(DesignInfo_Creator(info_of(ShopDesigns_At(set, (u8) i))), player);
+        TownName_SetNumber((u16 *) (PlayerId_Town(DesignInfo_Creator(info_of(ShopDesigns_At(set, (u8) i))))), town);
+        PlayerId_SetNumber((u16 *) (DesignInfo_Creator(info_of(ShopDesigns_At(set, (u8) i)))), player);
     }
     Heap_FreeCurrent(sheet);
 }
@@ -355,15 +353,15 @@ void PlayerDesigns_UpdateTown(PlayerDesigns *designs, DesignCreator *player, u8 
     for (int i = 0; i < DESIGNS_PER_SET; i++) {
         unsigned int info = Design_Info((unsigned int) PlayerDesigns_At(designs, i));
         DesignCreator *creator = DesignInfo_Creator((DesignInfo *) (uintptr_t) info);
-        u16 *town = func_02095040(creator);
+        u16 *town = (u16 *) PlayerId_Town(creator);
         u16 old_number;
         memcpy(&old_number, old_town, sizeof(old_number));
         if (town[0] != old_number || memcmp(town + 1, old_town + 2, TOWN_NAME_SIZE) != 0) {
             continue;
         }
-        if (func_0209518c(creator, player) != 0) {
+        if (PlayerId_SamePlayer(creator, player) != 0) {
             DesignCreator *target = DesignInfo_Creator((DesignInfo *) (uintptr_t) info);
-            func_02095038(target, func_02095040(player));
+            PlayerId_SetTown(target, PlayerId_Town(player));
         }
     }
 }

@@ -7,6 +7,9 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "control_mode_icon.h"
+#include "quick_message.h"
+#include "scene_query.h"
 
 static_assert(offsetof(AMesObj, palettes) == 0x48, "AMesObj layout");
 static_assert(offsetof(AMesObj, chars) == 0x4c, "AMesObj layout");
@@ -36,10 +39,6 @@ extern const char data_020d84f8[]; /* "/a_mes/a_mes_ten2_obj_ncl.bin" */
 extern const u32 data_020d8428[];
 /* The window style (0 to 3) of each scene. */
 extern const u8 data_020c80b8[];
-
-extern u8 func_020b65c4(void);  /* the current scene */
-extern int func_0208ff98(void); /* the touch screen controls the game (control_mode.h) */
-extern void func_02039800(void);
 
 extern void DC_FlushRange(const void *start, u32 size);
 extern void GX_LoadOBJ(const void *src, u32 offset, u32 size);
@@ -444,7 +443,7 @@ void AMesObj_ShowWindow(AMesObj *obj, int kind, int screens)
         AMesObj_UploadWindowChars(game, screens);
     }
     AMesObj_FreeWindowChars(game);
-    if ((kind == 2 || (kind == AMES_KIND_SCENE && AMesObj_Style() == 2)) && func_0208ff98()) {
+    if ((kind == 2 || (kind == AMES_KIND_SCENE && AMesObj_Style() == 2)) && ControlModeIcon_IsTouch()) {
         AMesObj_ShowExtraChars(obj, 1, 0, screens);
     }
 }
@@ -463,7 +462,7 @@ void AMesObj_ShowSheet(AMesObj *obj, int screens)
         AMesObj_UploadSheet(game, (u32) screens);
     }
     AMesObj_FreeChars(game);
-    if (AMesObj_Style() == 2 && func_0208ff98()) {
+    if (AMesObj_Style() == 2 && ControlModeIcon_IsTouch()) {
         AMesObj_ShowExtraChars(obj, 1, 0, screens);
     }
 }
@@ -494,7 +493,7 @@ CLEAN_AS(func_02011ec8, AMesObj_IsReady)
 /* func_02011ed4: the window style (0 to 3) of the current scene. */
 u8 AMesObj_Style(void)
 {
-    return data_020c80b8[func_020b65c4()];
+    return data_020c80b8[SceneQuery_Current()];
 }
 CLEAN_AS(func_02011ed4, AMesObj_Style)
 
@@ -556,7 +555,7 @@ CLEAN_AS(func_02011f74, AMesObj_SetWindow)
 void AMesObj_SetSheetSub(void)
 {
     AMesObj_ShowSheet(&data_021c1284, AMES_SCREENS_SUB);
-    func_02039800();
+    QuickMessage_RedrawCurrent();
 }
 CLEAN_AS(func_02011f88, AMesObj_SetSheetSub)
 
@@ -564,7 +563,7 @@ CLEAN_AS(func_02011f88, AMesObj_SetSheetSub)
 void AMesObj_SetSheetBoth(void)
 {
     AMesObj_ShowSheet(&data_021c1284, AMES_SCREENS_BOTH);
-    func_02039800();
+    QuickMessage_RedrawCurrent();
 }
 CLEAN_AS(func_02011fa4, AMesObj_SetSheetBoth)
 

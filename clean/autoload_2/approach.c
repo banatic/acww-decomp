@@ -6,16 +6,11 @@
 #include "approach.h"
 
 #include "clean.h"
+#include "vector.h"
 
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 VEC_Mag(const Vec3 *v);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
-/* `out` = `a` - `b`. */
-extern void func_020eaca0(Vec3 *out, const Vec3 *a, const Vec3 *b);
-/* The length of `v` in the XZ plane. */
-extern fx32 func_020ea9c8(const Vec3 *v);
-/* `v` scaled by `scale` (20.12), each component rounded. */
-extern void func_020eabc8(Vec3 *v, fx32 scale);
 
 static int add32(int a, int b)
 {
@@ -249,8 +244,8 @@ int Approach_PointXZ(Vec3 *point, const Vec3 *target, fx32 rate, fx32 max_step, 
         return 0;
     }
     Vec3 delta;
-    func_020eaca0(&delta, target, point);
-    fx32 distance = func_020ea9c8(&delta);
+    Vec_Subtract(&delta, target, point);
+    fx32 distance = Vec_LengthXZ(&delta);
     fx32 step = distance < min_step ? 0 : fx_mul(distance, rate);
     if (step == 0) {
         point->x = target->x;
@@ -262,7 +257,7 @@ int Approach_PointXZ(Vec3 *point, const Vec3 *target, fx32 rate, fx32 max_step, 
     } else if (step < min_step) {
         step = min_step;
     }
-    func_020eabc8(&delta, FX_Div(step, distance));
+    Vec_Scale(&delta, FX_Div(step, distance));
     point->x = add32(point->x, delta.x);
     point->z = add32(point->z, delta.z);
     return sub32(distance, step);
@@ -278,7 +273,7 @@ int Approach_Point(Vec3 *point, const Vec3 *target, fx32 rate, fx32 max_step, fx
         return 0;
     }
     Vec3 delta;
-    func_020eaca0(&delta, target, point);
+    Vec_Subtract(&delta, target, point);
     fx32 distance = VEC_Mag(&delta);
     fx32 step = distance < min_step ? 0 : fx_mul(distance, rate);
     if (step == 0) {
@@ -290,7 +285,7 @@ int Approach_Point(Vec3 *point, const Vec3 *target, fx32 rate, fx32 max_step, fx
     } else if (step < min_step) {
         step = min_step;
     }
-    func_020eabc8(&delta, FX_Div(step, distance));
+    Vec_Scale(&delta, FX_Div(step, distance));
     VEC_Add(point, &delta, point);
     return sub32(distance, step);
 }

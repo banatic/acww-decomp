@@ -87,7 +87,7 @@ void MelodySeq_Destruct(MelodySeq *seq);
 void MelodySeq_Construct(MelodySeq *seq);
 
 int MelodySet_LoadSeqArc(MelodySet *set, int seq_arc);
-void MelodySet_ResetHeapAndLoad(MelodySet *set, int number);
+void MelodySet_ResetHeapAndLoadBank(MelodySet *set, int number);
 void MelodySet_SetSeqArcA(MelodySet *set, unsigned short seq_arc);
 unsigned char MelodySet_APlaying(MelodySet *set);
 int MelodySet_Update(MelodySet *set);

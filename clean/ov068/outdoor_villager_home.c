@@ -31,16 +31,13 @@
 #include "outdoor_villager.h"
 #include "outdoor_villager_walks.h"
 #include "outdoor_villager_watch.h"
+#include "ov003/object_actors.h"
 
 /* The word its motion requests carry, the range of its looks and the point they are given. */
 extern u16 data_020c80f8;
 extern fx32 data_020c814c;
 extern Vec3 data_021fbee8;
 
-/* Overlay 3: the house of the villager of index `index` (the actor of character 0x5001 +
- * index) asked to let it out (02220318) or in (02220340); nonzero once it does. */
-extern int func_ov003_02220318(int index);
-extern int func_ov003_02220340(int index);
 /* The held item shown at once: the held item link takes it, scale 1.0, the byte at 0x9f0 set
  * (nothing without a held item). */
 void OutdoorVillagerObject_ShowHeldItem(u8 *villager);
@@ -266,7 +263,7 @@ void OutdoorVillagerHome_Open4(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u8 *record = home_record(villager);
     VillagerState *entry = VillagerStatus_StateEntry(record);
-    if (func_ov003_02220318(VillagerStatus_Index(record)) == 0) {
+    if (ObjectActors_IdleSetHouseModeA(VillagerStatus_Index(record)) == 0) {
         return;
     }
     SceneMotion_RequestAnimation(home_motion(villager), HOME_PRIORITY_HIGH, HOME_ANIM_OUT, HOME_ANIM_MODE, HOME_ANIM_OUT_WORD,
@@ -535,7 +532,7 @@ static void home_go_in(OutdoorVillagerBehaviour *self, u8 *villager, int kind)
     if (SceneMotion_Kind(home_motion(villager)) != kind || SceneMotion_IsDone(home_motion(villager)) == 0) {
         return;
     }
-    if (func_ov003_02220340(VillagerStatus_Index(home_record(villager))) == 0) {
+    if (ObjectActors_IdleSetHouseModeB(VillagerStatus_Index(home_record(villager))) == 0) {
         return;
     }
     VillagerHome_Tile(home_record(villager));

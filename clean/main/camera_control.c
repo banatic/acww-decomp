@@ -6,6 +6,10 @@
 #include "clean.h"
 #include "itcm/camera.h" /* Camera_GetTarget */
 #include "sound.h"       /* SoundSys_PlaySe */
+#include "camera_modes.h"
+#include "camera_view.h"
+#include "globe.h"
+#include "ov068/field_camera_modes.h"
 
 static_assert(sizeof(CameraView) == 0x20, "a view");
 static_assert(offsetof(CameraControl, view_matrix) == 0x50, "the view matrix");
@@ -51,21 +55,6 @@ extern const u8 data_020da13c[];
 /* How far before the goal's second offset CameraControl_IsPastGoalZ looks (2.0). */
 #define GOAL_Z_MARGIN 0x2000
 
-extern int func_0203c0ac(CameraControl *camera, int mode); /* switch to `mode` (below 21) */
-extern fx32 func_0203c4e4(CameraControl *camera);          /* the move's length, 20.12 frames */
-extern u32 func_0203c53c(CameraControl *camera);           /* camera->projection */
-extern s16 func_0203c57c(CameraControl *camera);           /* the current pitch, with an extra one */
-extern s16 func_0203c568(CameraControl *camera);           /* the current yaw, with an extra one */
-extern int func_0203c548(CameraControl *camera);           /* the current distance, with an extra one */
-/* Put the camera at `distance` from `target`, turned by `pitch` and `yaw`. */
-extern void func_0203bd84(CameraControl *camera, Vec3 *target, int pitch, int yaw, int distance);
-/* `view` (the goal when NULL) set to preset `preset`, its second offset to `point`. */
-extern void func_0203c210(CameraControl *camera, CameraView *view, const Vec3 *point);
-extern void func_0203b868(CameraControl *camera); /* put the saved view back */
-extern void func_0203b994(CameraControl *camera); /* save the goal view */
-/* A point on the flat ground to the curved ground drawn. */
-extern int func_0203f844(Vec3 *out, const Vec3 *in);
-extern void func_ov068_0226dc64(CameraControl *camera, u8 stage);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
@@ -96,7 +85,7 @@ CLEAN_AS(func_0203a9f4, CameraControl_DestructFree)
 void CameraControl_ScreenPosition(int *x, int *y, const Vec3 *point)
 {
     Vec3 curved;
-    func_0203f844(&curved, point);
+    Globe_Bend(&curved, point);
     CameraControl_ProjectPoint(x, y, &curved);
 }
 CLEAN_AS(func_0203aa24, CameraControl_ScreenPosition)
@@ -111,7 +100,7 @@ int CameraControl_ProjectPoint(int *x, int *y, const Vec3 *point)
     data_021fbe48 = *CameraControl_ViewMatrix();
     Vec3 view;
     MTX_MultVec43(point, &data_021fbe48, &view);
-    fx32 scale = -FX_Div(PROJECTION_SCALE, (fx32) func_0203c53c(data_021c67a4));
+    fx32 scale = -FX_Div(PROJECTION_SCALE, (fx32) CameraControl_Projection(data_021c67a4));
     scale = FX_Div(scale, view.z);
     Vec_Scale(&view, scale);
     *x = view.x >> 12;
@@ -169,14 +158,14 @@ CLEAN_AS(func_0203ab64, CameraControl_MuteSounds)
  * (copied to the current view), and the camera placed for it. */
 void CameraControl_SnapToPoint(const Vec3 *point)
 {
-    func_0203c210(data_021c67a4, &data_021c67a4->goal, point);
+    CameraControl_SetPresetPoint(data_021c67a4, &data_021c67a4->goal, point);
     data_021c67a4->current = data_021c67a4->goal;
     Vec3 target;
     Camera_GetTarget(&target, (Camera *) data_021c67a4);
-    int pitch = func_0203c57c(data_021c67a4);
-    int yaw = func_0203c568(data_021c67a4);
-    int distance = func_0203c548(data_021c67a4);
-    func_0203bd84(data_021c67a4, &target, pitch, yaw, distance);
+    int pitch = CameraControl_Pitch(data_021c67a4);
+    int yaw = CameraControl_Yaw(data_021c67a4);
+    int distance = CameraControl_Distance(data_021c67a4);
+    CameraControl_Place(data_021c67a4, &target, pitch, yaw, distance);
 }
 CLEAN_AS(func_0203ab78, CameraControl_SnapToPoint)
 
@@ -190,14 +179,14 @@ CLEAN_AS(func_0203ac04, CameraControl_SetFlag1F5)
 /* func_0203ac18: overlay 68's stage 3 started on the camera (func_ov068_0226dc64). */
 void CameraControl_StartStage3(void)
 {
-    func_ov068_0226dc64(data_021c67a4, STAGE_3);
+    FieldCameraModes_SetRiseStage(data_021c67a4, STAGE_3);
 }
 CLEAN_AS(func_0203ac18, CameraControl_StartStage3)
 
 /* func_0203ac2c: the saved view put back; 1. */
 int CameraControl_RestoreView(void)
 {
-    func_0203b868(data_021c67a4);
+    CameraControl_PutSavedViewBack(data_021c67a4);
     return 1;
 }
 CLEAN_AS(func_0203ac2c, CameraControl_RestoreView)
@@ -205,7 +194,7 @@ CLEAN_AS(func_0203ac2c, CameraControl_RestoreView)
 /* func_0203ac44: the goal view saved; 1. */
 int CameraControl_SaveView(void)
 {
-    func_0203b994(data_021c67a4);
+    CameraControl_SaveGoalView(data_021c67a4);
     return 1;
 }
 CLEAN_AS(func_0203ac44, CameraControl_SaveView)
@@ -237,7 +226,7 @@ CLEAN_AS(func_0203acd8, CameraControl_KeepView)
 /* func_0203ad30: the whole frames left of the move, in 8 bits. */
 u8 CameraControl_MoveFramesLeft(void)
 {
-    fx32 length = func_0203c4e4(data_021c67a4);
+    fx32 length = CameraControl_MoveLength(data_021c67a4);
     return (u8) ((length - data_021c67a4->move_time) >> 12);
 }
 CLEAN_AS(func_0203ad30, CameraControl_MoveFramesLeft)
@@ -252,14 +241,14 @@ CLEAN_AS(func_0203ad58, CameraControl_RestartMove)
 /* func_0203ad68: the move taken to its end. */
 void CameraControl_EndMove(void)
 {
-    data_021c67a4->move_time = func_0203c4e4(data_021c67a4);
+    data_021c67a4->move_time = CameraControl_MoveLength(data_021c67a4);
 }
 CLEAN_AS(func_0203ad68, CameraControl_EndMove)
 
 /* func_0203ad88: whether the move has not run past its length. */
 int CameraControl_IsMoving(void)
 {
-    fx32 length = func_0203c4e4(data_021c67a4);
+    fx32 length = CameraControl_MoveLength(data_021c67a4);
     return data_021c67a4->move_time <= length;
 }
 CLEAN_AS(func_0203ad88, CameraControl_IsMoving)
@@ -311,35 +300,35 @@ CLEAN_AS(func_0203ae28, CameraControl_LookAt)
 /* func_0203ae84 */
 void CameraControl_SetMode5(void)
 {
-    func_0203c0ac(data_021c67a4, CAMERA_MODE_5);
+    CameraControl_SetMode(data_021c67a4, CAMERA_MODE_5);
 }
 CLEAN_AS(func_0203ae84, CameraControl_SetMode5)
 
 /* func_0203ae98 */
 void CameraControl_SetMode4(void)
 {
-    func_0203c0ac(data_021c67a4, CAMERA_MODE_4);
+    CameraControl_SetMode(data_021c67a4, CAMERA_MODE_4);
 }
 CLEAN_AS(func_0203ae98, CameraControl_SetMode4)
 
 /* func_0203aeac: back to the mode before; func_0203c0ac's answer. */
 int CameraControl_SetPreviousMode(void)
 {
-    return func_0203c0ac(data_021c67a4, data_021c67a4->previous_mode);
+    return CameraControl_SetMode(data_021c67a4, data_021c67a4->previous_mode);
 }
 CLEAN_AS(func_0203aeac, CameraControl_SetPreviousMode)
 
 /* func_0203aec4 */
 void CameraControl_SetMode3(void)
 {
-    func_0203c0ac(data_021c67a4, CAMERA_MODE_3);
+    CameraControl_SetMode(data_021c67a4, CAMERA_MODE_3);
 }
 CLEAN_AS(func_0203aec4, CameraControl_SetMode3)
 
 /* func_0203aed8 */
 void CameraControl_SetMode19(void)
 {
-    func_0203c0ac(data_021c67a4, CAMERA_MODE_19);
+    CameraControl_SetMode(data_021c67a4, CAMERA_MODE_19);
 }
 CLEAN_AS(func_0203aed8, CameraControl_SetMode19)
 
@@ -347,7 +336,7 @@ CLEAN_AS(func_0203aed8, CameraControl_SetMode19)
 void CameraControl_SetMode17(u32 value)
 {
     data_021c67a4->unk_21c = value;
-    func_0203c0ac(data_021c67a4, CAMERA_MODE_17);
+    CameraControl_SetMode(data_021c67a4, CAMERA_MODE_17);
 }
 CLEAN_AS(func_0203aeec, CameraControl_SetMode17)
 

@@ -6,6 +6,7 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "rom_file.h"
 
 static_assert(offsetof(AbAllObj, palettes) == 0x48, "AbAllObj layout");
 static_assert(offsetof(AbAllObj, chars) == 0x4c, "AbAllObj layout");
@@ -17,7 +18,6 @@ extern const char data_020d7204[]; /* "/ab_all/ab_all_obj_ncg.bin" */
 extern const char data_020d7220[]; /* "/ab_all/ab_all_obj_ncl.bin" */
 extern AbAllObj data_0213ff20;
 
-extern void *func_02064b18(const char *path);
 extern void DC_FlushRange(const void *start, u32 size);
 extern void GX_LoadOBJ(const void *src, u32 offset, u32 size);
 extern void GXS_LoadOBJ(const void *src, u32 offset, u32 size);
@@ -66,7 +66,7 @@ CLEAN_AS(func_020030a4, AbAllObj_FreePalettes)
 /* func_020030bc: load the characters into the current heap; whether that worked. */
 int AbAllObj_LoadChars(AbAllObj *obj)
 {
-    obj->chars = func_02064b18(data_020d7204);
+    obj->chars = RomFile_LoadDefault(data_020d7204);
     return obj->chars != NULL;
 }
 CLEAN_AS(func_020030bc, AbAllObj_LoadChars)
@@ -74,7 +74,7 @@ CLEAN_AS(func_020030bc, AbAllObj_LoadChars)
 /* func_020030dc: load the palettes into the current heap; whether that worked. */
 int AbAllObj_LoadPalettes(AbAllObj *obj)
 {
-    obj->palettes = func_02064b18(data_020d7220);
+    obj->palettes = RomFile_LoadDefault(data_020d7220);
     return obj->palettes != NULL;
 }
 CLEAN_AS(func_020030dc, AbAllObj_LoadPalettes)

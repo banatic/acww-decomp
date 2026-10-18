@@ -43,10 +43,10 @@ extern void NNS_SndHeapLoadState(void *heap, int level);
 extern void NNS_SndPlayerSetVolume(SoundHandle *handle, int volume);
 extern void NNS_SndPlayerSetTrackVolume(SoundHandle *handle, int track_mask, int volume);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
-/* Two of the sound archive's loaders (the third and the second before NNS_SndArcLoadGroup):
- * item `number` loaded into `heap`. The game loads with the first the sequence archive it
- * starts next, and with the second the archive's number + 0x25f (or the item SoundSet_PlayAt
- * pairs with it). */
+/* Two of the sound archive's loaders: NNS_SndArcLoadSeqArc (sequence archive `number`) and
+ * NNS_SndArcLoadBank (bank `number`, with its wave archives), loaded into `heap`; whether they
+ * were. The game loads with the first the sequence archive it starts next, and with the second
+ * the bank numbered the archive's number + 0x25f (or the bank MelodySet_PlayAt pairs with it). */
 extern int func_0210e1d0(int number, void *heap);
 extern int func_0210e198(int number, void *heap);
 /* The pan of the tracks in `track_mask`. */
@@ -346,9 +346,8 @@ int MelodySet_LoadSeqArc(MelodySet *set, int seq_arc)
 }
 CLEAN_AS(func_020f6564, MelodySet_LoadSeqArc)
 
-/* func_020f6580: the scene's heap emptied and item `number` loaded into it (the second
- * loader). */
-void MelodySet_ResetHeapAndLoad(MelodySet *set, int number)
+/* func_020f6580: the scene's heap emptied and bank `number` loaded into it. */
+void MelodySet_ResetHeapAndLoadBank(MelodySet *set, int number)
 {
     void *heap = data_021fd1bc.scene_heap;
 
@@ -356,7 +355,7 @@ void MelodySet_ResetHeapAndLoad(MelodySet *set, int number)
     NNS_SndHeapLoadState(heap, 0);
     func_0210e198(number, heap);
 }
-CLEAN_AS(func_020f6580, MelodySet_ResetHeapAndLoad)
+CLEAN_AS(func_020f6580, MelodySet_ResetHeapAndLoadBank)
 
 /* func_020f65bc: the first player's sequence archive. */
 void MelodySet_SetSeqArcA(MelodySet *set, unsigned short seq_arc)
@@ -387,12 +386,12 @@ void MelodySet_PlaySeqD3B(MelodySet *set, int index)
 }
 CLEAN_AS(func_020f65fc, MelodySet_PlaySeqD3B)
 
-/* The sequence archive and the item loaded with it for each kind of MelodySet_PlayAt. */
+/* The sequence archive and the bank loaded with it for each kind of MelodySet_PlayAt. */
 static const u16 play_at_seq_arc[4] = {0xd4, 0xd7, 0xd5, 0xd6};
-static const u16 play_at_item[4] = {0x25f, 0x262, 0x260, 0x261};
+static const u16 play_at_bank[4] = {0x25f, 0x262, 0x260, 0x261};
 
 /* func_020f660c: the set's melody played by the second player at `pos` (its volume and pan
- * kept for layout 3), from the sequence archive of `kind` (0 to 3), loaded with its item into
+ * kept for layout 3), from the sequence archive of `kind` (0 to 3), loaded with its bank into
  * the emptied scene heap. Nothing while the second player plays a melody loaded by number or
  * a MelodySeq plays; another kind only takes the volume and pan. */
 void MelodySet_PlayAt(MelodySet *set, const Vec3 *pos, unsigned int kind)
@@ -406,7 +405,7 @@ void MelodySet_PlayAt(MelodySet *set, const Vec3 *pos, unsigned int kind)
     if (kind >= 4) {
         return;
     }
-    MelodySet_ResetHeapAndLoad(set, play_at_item[kind]);
+    MelodySet_ResetHeapAndLoadBank(set, play_at_bank[kind]);
     MelodySet_LoadSeqArc(set, play_at_seq_arc[kind]);
     MelodyPlayer_StartArc(&set->player_b, play_at_seq_arc[kind], set->melody);
 }
@@ -446,10 +445,10 @@ static void play_number(MelodySet *set, unsigned int number, const u8 *melody)
     unsigned int seq_arc;
 
     if (number < MELODY_NUMBER_SPLIT) {
-        MelodySet_ResetHeapAndLoad(set, (int) (number + 0x263));
+        MelodySet_ResetHeapAndLoadBank(set, (int) (number + 0x263));
         seq_arc = number + 4;
     } else {
-        MelodySet_ResetHeapAndLoad(set, (int) (number + 0x231));
+        MelodySet_ResetHeapAndLoadBank(set, (int) (number + 0x231));
         seq_arc = number - 0x2e;
     }
     MelodySet_LoadSeqArc(set, (int) seq_arc);
@@ -457,7 +456,7 @@ static void play_number(MelodySet *set, unsigned int number, const u8 *melody)
 }
 
 /* func_020f6754: a preset melody picked at random and played by the second player from the
- * sequence archive number + 4 (numbers up to 200), loaded with item number + 0x263; whether
+ * sequence archive number + 4 (numbers up to 200), loaded with bank number + 0x263; whether
  * it started.
  * QUIRK: a number above 200 plays nothing and returns the set's address. */
 int MelodySet_PlayRandomPreset(MelodySet *set, unsigned int number)
@@ -469,7 +468,7 @@ int MelodySet_PlayRandomPreset(MelodySet *set, unsigned int number)
     if (number > MELODY_NUMBER_SPLIT) {
         return (int) (uintptr_t) set;
     }
-    MelodySet_ResetHeapAndLoad(set, (int) (number + 0x263));
+    MelodySet_ResetHeapAndLoadBank(set, (int) (number + 0x263));
     seq_arc = number + 4;
     MelodySet_LoadSeqArc(set, (int) seq_arc);
     set->preset = (u8) SoundSystem_Random(&data_021fd1bc, PRESET_COUNT);

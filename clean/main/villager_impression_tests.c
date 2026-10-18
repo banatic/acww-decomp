@@ -9,6 +9,10 @@
 #include "player_record.h"
 #include "villager_roster.h"
 #include "villager_town.h"
+#include "actor_table.h"
+#include "item_code.h"
+#include "player_actor_ops.h"
+#include "sky.h"
 
 /* The actor whose position func_02095794 gives for the player. */
 #define VILLAGER_IMPRESSION_PLAYER_ACTOR 4
@@ -18,15 +22,6 @@
 extern u8 data_021e5a2c[];  /* the town's villagers (VillagerTown) */
 extern u8 data_020e54a8;    /* 0 or 1, a mode many scenes test (0 in the town) */
 extern void *data_021c80bc; /* the town's map; null while there is none */
-
-extern int func_0209dcac(void); /* the part of the day (Calendar_PartOfDay) */
-/* 1 or 2 from word 0x34 of data_021f8ab0 while its word 0x24 is 2-4, else 0. */
-extern int func_020ba4e4(void);
-extern int func_0204bcdc(u16 *item); /* whether the code is of kind 3 or 4 (ItemCode_HasVariant) */
-extern int func_0204bc64(u16 *item); /* the code without its variant (ItemCode_VariantItem) */
-/* The position of the actor, or 0 when there is none. */
-extern const int *func_02095794(int actor);
-extern void func_0204f818(int *x, int *z, const int *position); /* the tile a position is on */
 
 /* ---- The player and the clock */
 
@@ -48,14 +43,14 @@ CLEAN_AS(func_0207e684, VillagerImpression_PocketsFull)
 /* func_0207e6a4: it is night (0:00-4:59). */
 int VillagerImpression_IsNight(void)
 {
-    return func_0209dcac() == PART_OF_DAY_NIGHT;
+    return Calendar_PartOfDay() == PART_OF_DAY_NIGHT;
 }
 CLEAN_AS(func_0207e6a4, VillagerImpression_IsNight)
 
 /* func_0207e6bc: it is morning (5:00-11:59). */
 int VillagerImpression_IsMorning(void)
 {
-    return func_0209dcac() == PART_OF_DAY_MORNING;
+    return Calendar_PartOfDay() == PART_OF_DAY_MORNING;
 }
 CLEAN_AS(func_0207e6bc, VillagerImpression_IsMorning)
 
@@ -70,14 +65,14 @@ CLEAN_AS(func_0207e6d4, VillagerImpression_Clothes12A8)
 /* func_0207e708: func_020ba4e4 gives 2. */
 int VillagerImpression_State8AB0Is2(void)
 {
-    return func_020ba4e4() == 2;
+    return Sky_Falling() == 2;
 }
 CLEAN_AS(func_0207e708, VillagerImpression_State8AB0Is2)
 
 /* func_0207e720: func_020ba4e4 gives 1. */
 int VillagerImpression_State8AB0Is1(void)
 {
-    return func_020ba4e4() == 1;
+    return Sky_Falling() == 1;
 }
 CLEAN_AS(func_0207e720, VillagerImpression_State8AB0Is1)
 
@@ -92,9 +87,9 @@ static int VillagerImpression_InRange(u16 code, u16 first, u16 last)
 static int VillagerImpression_HeadIs(u8 *record, u16 wanted)
 {
     u16 *head = PlayerRecord_HeadItem(record);
-    if (func_0204bcdc(head)) {
-        int item = func_0204bc64(head);
-        return item == func_0204bc64(&wanted);
+    if (ItemCode_HasVariant(head)) {
+        int item = ItemCode_VariantItem(head);
+        return item == ItemCode_VariantItem(&wanted);
     }
     return *head == wanted;
 }
@@ -282,7 +277,7 @@ static int VillagerImpression_IsCode21To24(u16 code)
  * the town (data_020e54a8), without the player's actor or without a map. */
 static int VillagerImpression_CountNear(int (*wanted)(u16 code), int needed)
 {
-    const int *position = func_02095794(VILLAGER_IMPRESSION_PLAYER_ACTOR);
+    const int *position = (const int *) PlayerActorOps_StartPosition(VILLAGER_IMPRESSION_PLAYER_ACTOR);
     if (data_020e54a8 != 0 || position == NULL) {
         return 0;
     }
@@ -293,7 +288,7 @@ static int VillagerImpression_CountNear(int (*wanted)(u16 code), int needed)
     int count = 0;
     int px = 0;
     int pz = 0;
-    func_0204f818(&px, &pz, position);
+    Position_Tile(&px, &pz, (const Position *) position);
     for (int z = pz - 1; z <= pz + 1; z++) {
         for (int x = px - 1; x <= px + 1; x++) {
             int acre_x = VillagerImpression_AcreOf(x);

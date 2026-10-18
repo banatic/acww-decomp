@@ -9,6 +9,9 @@
 #include "scene_exit.h"
 #include "scene_query.h"
 #include "session.h"
+#include "link_bundle.h"
+#include "link_global.h"
+#include "link_parts.h"
 
 static_assert(sizeof(LinkStatePlace) == 3 && sizeof(LinkStateMove) == 8, "link state places");
 static_assert(offsetof(LinkState, moves) == 0x0c && offsetof(LinkState, arrived) == 0x2c, "link state");
@@ -26,51 +29,6 @@ extern u16 data_020e3c80;
 extern u8 data_021c75b8;
 /* The slots and masks LinkScene_HostStep starts from: both LINK_STATE_SLOTS. */
 extern const u32 data_020e3cdc[2];
-
-/* A slot's place read through data_021f4320: whether it moves (0 for no slot), whether it holds
- * its scene (1 for no slot) and its scene (LINK_SCENE_NONE for no slot). */
-extern int func_020a72d0(int slot);
-extern u8 func_020a7300(int slot);
-extern int func_020a7330(int slot);
-/* data_021f4320's place of `slot` given the fields of `mask` (bit 0 the scene, 1 holder, 2
- * moving), then the held session messages routed (Session_RouteHeldMessages). */
-extern void func_020a7394(int slot, int scene, int holder, int moving, int mask);
-/* data_021f4320's pending changes of `slot` added to (fields of `mask`). */
-extern void func_020a7360(int slot, int scene, int holder, int moving, int mask);
-/* data_021f4320's arrived word of `slot` set. */
-extern void func_020a7380(int slot, int value);
-/* Both always 0. */
-extern int func_020a7450(void);
-extern int func_020a744c(void);
-/* The sections of the received bundle 16 and bundle 15 handed out (session.h). */
-extern void func_020a7454(void);
-extern void func_020a753c(void);
-/* Bundle 16 built and sent to `slot`; bundle 15 built and sent to `slot`. */
-extern void func_020a7064(int slot);
-extern void func_020a70a8(int slot);
-/* The move to the entry record's next scene asked of the host (message 8, or the host's own
- * queue directly). */
-extern void func_020a6f88(void);
-/* Whether this system's place moves (1 without a slot). */
-extern int func_020a7258(void);
-
-/* The parts' own helpers: an arrived word cleared and read; a move reset (no slot, no scene)
- * and read; a place read; a pending change cleared and read. */
-extern void func_020a76d0(u32 *arrived);
-extern void func_020a76d8(const u32 *arrived, u32 *value);
-extern void func_020a76f8(LinkStateMove *move);
-extern void func_020a7704(const LinkStateMove *move, s32 *slot, u8 *scene);
-extern void func_020a7738(const LinkStatePlace *place, u8 *scene, u8 *holder, u8 *moving);
-extern void func_020a7768(LinkStatePlaceChange *change);
-extern void func_020a7778(const LinkStatePlaceChange *change, u8 *scene, u8 *holder, u8 *moving, u32 *mask);
-/* A place as the two bytes of message 9: made, filled (with its slot) and ended; and as the
- * two bytes of message 11 (always for slot 0). */
-extern u8 *func_020a7820(u8 *packed);
-extern void func_020a77f4(u8 *packed, int slot, int scene, int holder, u8 moving, u32 mask);
-extern u8 *func_020a7810(u8 *packed);
-extern u8 *func_020a7880(u8 *packed);
-extern void func_020a7850(u8 *packed, int scene, int holder, int moving, int mask);
-extern u8 *func_020a7870(u8 *packed);
 
 /* Clears `size` bytes at `dst`. */
 extern void *func_02137550(void *dst, u32 size);
@@ -101,7 +59,7 @@ enum {
 static int moving_slot(NetSession *session)
 {
     for (int slot = LINK_STATE_SLOTS - 1; slot >= 0; slot--) {
-        if (Session_IsSlotTaken(session, slot) && func_020a72d0(slot)) {
+        if (Session_IsSlotTaken(session, slot) && LinkGlobal_PlaceMoving(slot)) {
             return slot;
         }
     }
@@ -132,8 +90,8 @@ void LinkScene_ReleaseLeavingGuest(LinkState *state)
         LinkScene_SetLeavingGuest(state, LINK_STATE_SLOTS);
         return;
     }
-    if (!Session_IsLocalSlot(session, mover) && func_020a7300(own) != 0 && func_020a7330(mover) == SceneQuery_Current() &&
-        !LinkScene_IsLinkingScene(SceneQuery_Current())) {
+    if (!Session_IsLocalSlot(session, mover) && LinkGlobal_PlaceHolder(own) != 0 &&
+        LinkGlobal_PlaceScene(mover) == SceneQuery_Current() && !LinkScene_IsLinkingScene(SceneQuery_Current())) {
         send_empty(MESSAGE_RELEASE, mover);
     }
     LinkScene_SetLeavingGuest(state, (u32) mover);
@@ -173,7 +131,7 @@ CLEAN_AS(func_020a6248, LinkScene_SetReleased)
 void LinkScene_CheckStateSent(LinkState *state)
 {
     int slot = LinkScene_StateSentTo(state);
-    if (slot < LINK_STATE_SLOTS && func_020a7330(slot) == SceneQuery_Current()) {
+    if (slot < LINK_STATE_SLOTS && LinkGlobal_PlaceScene(slot) == SceneQuery_Current()) {
         LinkScene_SetStateSentTo(state, LINK_STATE_SLOTS);
     }
 }
@@ -236,8 +194,8 @@ void LinkScene_AckLeavingHolder(LinkState *state)
         LinkScene_SetLeavingHolder(state, LINK_STATE_SLOTS);
         return;
     }
-    if (!Session_IsLocalSlot(session, mover) && func_020a7330(mover) == SceneQuery_Current() && func_020a7300(mover) != 0 &&
-        !LinkScene_IsLinkingScene(SceneQuery_Current())) {
+    if (!Session_IsLocalSlot(session, mover) && LinkGlobal_PlaceScene(mover) == SceneQuery_Current() &&
+        LinkGlobal_PlaceHolder(mover) != 0 && !LinkScene_IsLinkingScene(SceneQuery_Current())) {
         send_empty(MESSAGE_ACK, mover);
     }
     LinkScene_SetLeavingHolder(state, mover);
@@ -304,7 +262,7 @@ static void choose_successor(LinkState *state, NetSession *session, int own)
     u8 holder = 0;
     u8 moving = 0;
 
-    if (func_020a7450() || func_020a744c()) {
+    if (LinkGlobal_Zero7450() || LinkGlobal_Zero744C()) {
         return;
     }
     LinkScene_GlobalPlace(own, &scene, &holder, &moving);
@@ -315,7 +273,7 @@ static void choose_successor(LinkState *state, NetSession *session, int own)
     }
     int successor = LINK_STATE_SLOTS;
     for (int slot = 0; slot < LINK_STATE_SLOTS; slot++) {
-        if (slot != own && Session_IsSlotTaken(session, slot) && func_020a7330(slot) == scene) {
+        if (slot != own && Session_IsSlotTaken(session, slot) && LinkGlobal_PlaceScene(slot) == scene) {
             successor = slot;
             break;
         }
@@ -339,7 +297,7 @@ static void wait_acks(LinkState *state, NetSession *session, int own)
             if (slot == own || !Session_IsSlotTaken(session, slot)) {
                 continue;
             }
-            if (func_020a7330(slot) != SceneQuery_Current()) {
+            if (LinkGlobal_PlaceScene(slot) != SceneQuery_Current()) {
                 continue;
             }
             if (!LinkScene_Acked(state, slot)) {
@@ -348,7 +306,7 @@ static void wait_acks(LinkState *state, NetSession *session, int own)
         }
     }
     if (Session_GetHeldQueueLength(session) || Session_GetSceneQueueLength(session) || Session_GetLocalQueueLength(session) ||
-        func_020a744c()) {
+        LinkGlobal_Zero744C()) {
         return;
     }
     LinkScene_ResetAcked(state);
@@ -409,13 +367,13 @@ void LinkScene_Step(LinkState *state)
             if (data_020e3c80 != CHANGE_CLASS) {
                 return;
             }
-            func_020a6f88();
+            LinkGlobal_AskMove();
             LinkScene_ResetAcked(state);
             LinkScene_SetReleased(state, 0);
             LinkScene_GlobalSetPhase(LINK_SCENE_WAIT_TURN);
             return;
         case LINK_SCENE_WAIT_TURN:
-            if (func_020a72d0(own)) {
+            if (LinkGlobal_PlaceMoving(own)) {
                 LinkScene_SetPhase(state, LINK_SCENE_CHOOSE);
             }
             return;
@@ -434,7 +392,7 @@ void LinkScene_Step(LinkState *state)
             return;
         case LINK_SCENE_WAIT_SUCCESSOR:
             /* The successor is read again for the test. */
-            if (LinkScene_Successor(state) != LINK_STATE_SLOTS && !func_020a7300(LinkScene_Successor(state)) &&
+            if (LinkScene_Successor(state) != LINK_STATE_SLOTS && !LinkGlobal_PlaceHolder(LinkScene_Successor(state)) &&
                 !LinkScene_IsLinkingScene(SceneQuery_Current())) {
                 return;
             }
@@ -450,11 +408,11 @@ void LinkScene_Step(LinkState *state)
             LinkScene_SetPhase(state, LINK_SCENE_ENTER);
             return;
         case LINK_SCENE_ARRIVE:
-            func_020a7380(session->local_slot, 1);
+            LinkGlobal_SetArrived(session->local_slot, 1);
             LinkScene_SetPhase(state, LINK_SCENE_WAIT_SETTLED);
             return;
         case LINK_SCENE_WAIT_SETTLED:
-            if (func_020a7258()) {
+            if (LinkGlobal_IsMoving()) {
                 return;
             }
             LinkScene_SetPhase(state, LINK_SCENE_IDLE);
@@ -497,12 +455,12 @@ CLEAN_AS(func_020a6694, LinkScene_SetEntersFirst)
 static void send_place(NetSession *session, int slot, u8 scene, u8 holder, u8 moving, u32 mask)
 {
     u8 packed[2];
-    func_020a7820(packed);
-    func_020a77f4(packed, slot, scene, holder, moving, mask);
+    LinkPart_MakeEntry(packed);
+    LinkPart_WriteEntry(packed, slot, scene, holder, moving, mask);
     Session_BeginMessage(session);
     Session_AppendMessage(session, packed, sizeof(packed));
     Session_EndMessage(session, MESSAGE_PLACE, TO_ALL);
-    func_020a7810(packed);
+    LinkPart_EndEntry(packed);
 }
 
 /* func_020a669c (host): each slot's pending changes applied to its place, sent to every system
@@ -516,20 +474,20 @@ void LinkScene_SendChanges(LinkState *state)
         u8 holder;
         u8 moving;
         u32 mask;
-        func_020a7778(change, &scene, &holder, &moving, &mask);
+        LinkPart_GetChange(change, &scene, &holder, &moving, &mask);
         if (mask == 0) {
             continue;
         }
-        func_020a7394((int) slot, scene, holder, moving, (int) mask);
+        LinkGlobal_SetPlace((int) slot, scene, holder, moving, (int) mask);
         {
             u8 packed[2];
-            func_020a7820(packed);
-            func_020a77f4(packed, (int) slot, scene, holder, moving, mask);
+            LinkPart_MakeEntry(packed);
+            LinkPart_WriteEntry(packed, (int) slot, scene, holder, moving, mask);
             Session_BeginMessage(session);
             Session_AppendMessage(session, packed, sizeof(packed));
             Session_EndMessage(session, MESSAGE_PLACE, TO_ALL);
-            func_020a7768(change);
-            func_020a7810(packed);
+            LinkPart_ResetChange(change);
+            LinkPart_EndEntry(packed);
         }
     }
 }
@@ -551,25 +509,25 @@ void LinkScene_SettleArrival(LinkState *state, int *slot, int *mask)
         return;
     }
     u32 *mover_arrived = &state->arrived[mover];
-    func_020a76d8(mover_arrived, &arrived);
+    LinkPart_GetArrived(mover_arrived, &arrived);
     if (arrived != 1) {
         return;
     }
     holder = 1;
-    func_020a7704(&state->moves[0], &move_slot, &scene);
+    LinkPart_GetMove(&state->moves[0], &move_slot, &scene);
     NetSession *session = data_020ccf94;
     for (int other = LINK_STATE_SLOTS - 1; other >= 0; other--) {
         if (other == mover || !Session_IsSlotTaken(session, other)) {
             continue;
         }
-        if (func_020a7330(other) != scene) {
+        if (LinkGlobal_PlaceScene(other) != scene) {
             continue;
         }
         holder = 0;
         break;
     }
-    func_020a7394(mover, scene, holder, 0, MASK_ALL);
-    func_020a76d0(mover_arrived);
+    LinkGlobal_SetPlace(mover, scene, holder, 0, MASK_ALL);
+    LinkPart_ClearArrived(mover_arrived);
     LinkScene_PopMove(state);
     *slot = mover;
     *mask = MASK_ALL;
@@ -582,14 +540,14 @@ void LinkScene_ReportArrival(LinkState *state)
 {
     u32 *arrived = &state->arrived[data_020ccf94->local_slot];
     u32 value;
-    func_020a76d8(arrived, &value);
+    LinkPart_GetArrived(arrived, &value);
     if (value != 0) {
         u8 byte = (u8) value;
         NetSession *session = data_020ccf94;
         Session_BeginMessage(session);
         Session_AppendMessage(session, &byte, 1);
         Session_EndMessage(session, MESSAGE_ARRIVED, TO_HOST);
-        func_020a76d0(arrived);
+        LinkPart_ClearArrived(arrived);
     }
 }
 CLEAN_AS(func_020a67d8, LinkScene_ReportArrival)
@@ -605,14 +563,14 @@ void LinkScene_PopMove(LinkState *state)
     for (int left = LINK_STATE_SLOTS - 2; left >= 0; left--) {
         s32 slot;
         u8 scene;
-        func_020a7704(move + 1, &slot, &scene);
+        LinkPart_GetMove(move + 1, &slot, &scene);
         if (slot >= LINK_STATE_SLOTS) {
             break;
         }
         MI_CpuCopy8(move + 1, move, sizeof(LinkStateMove));
         move++;
     }
-    func_020a76f8(move);
+    LinkPart_ResetMove(move);
 }
 CLEAN_AS(func_020a682c, LinkScene_PopMove)
 
@@ -621,7 +579,7 @@ int LinkScene_NextMover(LinkState *state)
 {
     s32 slot;
     u8 scene;
-    func_020a7704(&state->moves[0], &slot, &scene);
+    LinkPart_GetMove(&state->moves[0], &slot, &scene);
     return slot;
 }
 CLEAN_AS(func_020a6878, LinkScene_NextMover)
@@ -631,7 +589,7 @@ CLEAN_AS(func_020a6878, LinkScene_NextMover)
 void LinkScene_LetNextMove(LinkState *state, int *slot, int *mask)
 {
     for (int other = LINK_STATE_SLOTS - 1; other >= 0; other--) {
-        if (func_020a72d0(other)) {
+        if (LinkGlobal_PlaceMoving(other)) {
             return;
         }
     }
@@ -639,7 +597,7 @@ void LinkScene_LetNextMove(LinkState *state, int *slot, int *mask)
     if (mover >= LINK_STATE_SLOTS) {
         return;
     }
-    func_020a7394(mover, LINK_SCENE_NONE, 0, 1, MASK_MOVING);
+    LinkGlobal_SetPlace(mover, LINK_SCENE_NONE, 0, 1, MASK_MOVING);
     *slot = mover;
     *mask = MASK_MOVING;
 }
@@ -667,7 +625,7 @@ void LinkScene_HostStep(LinkState *state)
         if (slot >= LINK_STATE_SLOTS) {
             continue;
         }
-        func_020a7738(&state->places[slot], &scene, &holder, &moving);
+        LinkPart_GetPlace(&state->places[slot], &scene, &holder, &moving);
         send_place(session, slot, scene, holder, moving, (u32) masks[i]);
     }
 }
@@ -743,7 +701,7 @@ void LinkScene_SendAskedState(void)
     }
     int asker = LinkScene_StateAsker(&data_021f4320);
     if (asker < LINK_STATE_SLOTS) {
-        func_020a7064(asker);
+        LinkBundle_SendEntered(asker);
         LinkScene_SetStateSentTo(&data_021f4320, asker);
         LinkScene_SetStateAsker(&data_021f4320, LINK_STATE_SLOTS);
     }
@@ -763,7 +721,7 @@ void LinkScene_SendLeftState(void)
         return;
     }
     if (!LinkScene_IsLinkingScene(SceneQuery_Current())) {
-        func_020a70a8(LinkScene_Successor(&data_021f4320));
+        LinkBundle_SendLeft(LinkScene_Successor(&data_021f4320));
     }
     LinkScene_SetPhase(&data_021f4320, LINK_SCENE_LEAVE);
 }
@@ -774,7 +732,7 @@ void LinkScene_TakeEnteredState(void)
 {
     NetSession *session = data_020ccf94;
     if (Session_IsSlotTaken(session, session->local_slot) && Session_GetBundle16Length(session)) {
-        func_020a7454();
+        LinkBundle_ReadEntered();
     }
 }
 CLEAN_AS(func_020a6d84, LinkScene_TakeEnteredState)
@@ -790,22 +748,22 @@ void LinkScene_TakeLeftState(void)
     if (!Session_IsSlotTaken(session, own) || !Session_GetBundle15Length(session)) {
         return;
     }
-    func_020a753c();
-    func_020a7394(own, LINK_SCENE_NONE, 1, 0, MASK_HOLDER);
+    LinkBundle_ReadLeft();
+    LinkGlobal_SetPlace(own, LINK_SCENE_NONE, 1, 0, MASK_HOLDER);
     if (!Session_IsLinked(session)) {
         return;
     }
     if (own != HOST_SLOT) {
         u8 packed[2];
-        func_020a7880(packed);
-        func_020a7850(packed, LINK_SCENE_NONE, 1, 0, MASK_HOLDER);
+        LinkPart_MakeEntryB(packed);
+        LinkPart_WriteEntryChange(packed, LINK_SCENE_NONE, 1, 0, MASK_HOLDER);
         NetSession *sender = data_020ccf94;
         Session_BeginMessage(sender);
         Session_AppendMessage(sender, packed, sizeof(packed));
         Session_EndMessage(sender, MESSAGE_PLACE_CHANGE, TO_HOST);
-        func_020a7870(packed);
+        LinkPart_EndEntryB(packed);
     } else {
-        func_020a7360(own, LINK_SCENE_NONE, 1, 0, MASK_HOLDER);
+        LinkGlobal_AddPlaceChange(own, LINK_SCENE_NONE, 1, 0, MASK_HOLDER);
     }
 }
 CLEAN_AS(func_020a6db0, LinkScene_TakeLeftState)
@@ -814,7 +772,7 @@ CLEAN_AS(func_020a6db0, LinkScene_TakeLeftState)
 void LinkScene_GlobalPlace(int slot, u8 *scene, u8 *holder, u8 *moving)
 {
     if (slot < LINK_STATE_SLOTS) {
-        func_020a7738(&data_021f4320.places[slot], scene, holder, moving);
+        LinkPart_GetPlace(&data_021f4320.places[slot], scene, holder, moving);
     }
 }
 CLEAN_AS(func_020a6e4c, LinkScene_GlobalPlace)

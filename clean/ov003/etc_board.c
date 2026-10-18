@@ -5,6 +5,19 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "autoload_2/heap.h"
+#include "autoload_2/vector.h"
+#include "main/event_queue.h"
+#include "main/message_receiver.h"
+#include "main/npc_id.h"
+#include "main/player_id.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/talk_object.h"
+#include "main/talk_receiver.h"
+#include "main/touch_pick_shapes.h"
+#include "main/town_villager.h"
+#include "main/villager_roster.h"
 
 static_assert(offsetof(EtcBoard, index) == 0x08, "index");
 static_assert(offsetof(EtcBoard, position) == 0x5c, "position");
@@ -29,36 +42,6 @@ extern const char data_ov003_022380f0[];
 /* The table whose entry `index` the board shows (eight entries of 0x7ec bytes). */
 extern u8 data_021e5a2c[];
 
-extern void func_0203ee08(EtcBoard *board, void *receiver);
-extern int func_0203e020(EtcBoard *board);
-extern void func_0203ee14(EtcBoard *board, void *receiver);
-/* Copies at most 25 characters of `name` into the receiver's name. */
-extern void func_020a8164(void *receiver, const char *name);
-/* A string object: built by func_02094fd4, destroyed by func_02094fbc. */
-extern void *func_02094fd4(void *text);
-extern void *func_02094fbc(void *text);
-/* Entry `index` of the table, or null when `index` is 8 or more. */
-extern void *func_0207cec0(void *table, int index);
-/* 0x7a0 bytes into an entry. */
-extern void *func_0208150c(void *entry);
-extern int func_02003618(void *source, void *text);
-extern void func_02068404(EtcBoardLink *link, int line, void *text);
-extern void func_0203edd0(EtcBoard *board);
-extern int func_020ea990(const Vec3 *a, const Vec3 *b);
-extern void *func_020b6590(void);
-extern void func_020b7d84(void *renderer, void *member, Vec3 *position, int scale, int kind, u8 index);
-extern void func_0203efb0(EtcBoard *board, u32 value);
-/* The member at 0x138, the receiver part and the base: destructors and constructors. */
-extern void func_020b7f60(void *member);
-extern void func_02066994(void *receiver);
-extern void func_0203f080(EtcBoard *board);
-extern void func_020b7f70(void *member);
-extern void func_02066a30(void *receiver);
-extern void func_0203f130(EtcBoard *board);
-/* operator delete and operator new */
-extern void func_020edf54(void *block);
-extern void *func_020edf70(u32 size);
-
 /* The receiver part of a board, as a C++ conversion makes it: null stays null. */
 static void *receiver_of(EtcBoard *board)
 {
@@ -80,8 +63,8 @@ CLEAN_AS(func_ov003_0220bf00, EtcBoard_Get)
 void EtcBoard_UpdateOpen(EtcBoard *board)
 {
     if (board->link != NULL && board->link->open == 0) {
-        func_0203ee08(board, receiver_of(board));
-        func_0203e020(board);
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) board, receiver_of(board));
+        EventQueue_FinishObjectEvent(board);
     }
 }
 CLEAN_AS(func_ov003_0220bf18, EtcBoard_UpdateOpen)
@@ -109,15 +92,15 @@ int EtcBoard_EnterWaiting(EtcBoard *board)
 {
     u8 text[0x24];
 
-    func_0203ee14(board, receiver_of(board));
-    func_020a8164(&board->receiver_vtable, data_ov003_022380f0);
+    SceneObjectBase_TakeReceiver((SceneObjectBase *) board, receiver_of(board));
+    MessageReceiver_SetName((MessageReceiver *) &board->receiver_vtable, data_ov003_022380f0);
     board->receiver_unk_1E = 0;
     board->link->requested = 1;
 
-    func_02094fd4(text);
-    func_02003618(func_0208150c(func_0207cec0(data_021e5a2c, (int) board->index)), text);
-    func_02068404(board->link, 0, text);
-    func_02094fbc(text);
+    PlayerIdText_Construct((PlayerIdText *) text);
+    NpcId_FormatName(TownVillager_NpcId(VillagerRoster_At((VillagerTown *) data_021e5a2c, (int) board->index)), (char *) text);
+    TalkObject_SetPart((TalkObject *) board->link, 0, (TextBase *) text);
+    PlayerIdText_Destruct((PlayerIdText *) text);
     return 1;
 }
 CLEAN_AS(func_ov003_0220bf70, EtcBoard_EnterWaiting)
@@ -207,8 +190,8 @@ CLEAN_AS(_ZN18Obj_ov003_0223801019func_ov003_0220c0f0Ei, EtcBoard_HandleEvent)
  * facing within 0x1100 of angle 0x8000. func_0203edd0 runs on the board first in any case. */
 int EtcBoard_IsFacedBy(EtcBoard *board, const EtcBoardViewer *viewer)
 {
-    func_0203edd0(board);
-    return viewer != NULL && func_020ea990(&viewer->position, &board->position) < 0x2333 &&
+    SceneObjectBase_ClearApproach((SceneObjectBase *) board);
+    return viewer != NULL && Vec_DistanceXZ(&viewer->position, &board->position) < 0x2333 &&
            Math_AbsDiff16(-0x8000, viewer->yaw) <= 0x1100;
 }
 CLEAN_AS(func_ov003_0220c114, EtcBoard_IsFacedBy)
@@ -247,7 +230,8 @@ CLEAN_AS(func_ov003_0220c1a4, EtcBoard_Slot24)
 int EtcBoard_Run(EtcBoard *board)
 {
     EtcBoard_Update(board);
-    func_020b7d84(func_020b6590(), board->member_138, &board->position, 0xc00, 9, (u8) board->index);
+    TouchPick_SetSphereAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), (TouchPickSphere *) board->member_138,
+                              &board->position, 0xc00, 9, (u8) board->index);
     return 1;
 }
 CLEAN_AS(_ZN18Obj_ov003_0223801019func_ov003_0220c1a8Ev, EtcBoard_Run)
@@ -258,7 +242,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223801019func_ov003_0220c1a8Ev, EtcBoard_Run)
 int EtcBoard_Init(EtcBoard *board)
 {
     EtcBoard_ClearTableIfEmpty();
-    func_0203efb0(board, (u16) board->index);
+    SceneObjectBase_SetId((SceneObjectBase *) board, (u16) board->index);
     EtcBoard_SetState(board, ETC_BOARD_IDLE);
     data_ov003_0223c5f4[board->index] = board;
     data_ov003_0223c5a0++;
@@ -272,10 +256,10 @@ EtcBoard *EtcBoard_DestroyAndFree(EtcBoard *board)
 {
     board->vtable = data_ov003_02238010;
     board->receiver_vtable = data_ov003_02238078;
-    func_020b7f60(board->member_138);
-    func_02066994(&board->receiver_vtable);
-    func_0203f080(board);
-    func_020edf54(board);
+    TouchPickSphere_Destruct2((TouchPickSphere *) board->member_138);
+    TalkReceiver_Destruct((TalkReceiver *) &board->receiver_vtable);
+    SceneObjectBase_DestructBase((SceneObjectBase *) board);
+    Heap_FreeAux(board);
     return board;
 }
 CLEAN_AS(func_ov003_0220c220, EtcBoard_DestroyAndFree)
@@ -285,9 +269,9 @@ EtcBoard *EtcBoard_Destroy(EtcBoard *board)
 {
     board->vtable = data_ov003_02238010;
     board->receiver_vtable = data_ov003_02238078;
-    func_020b7f60(board->member_138);
-    func_02066994(&board->receiver_vtable);
-    func_0203f080(board);
+    TouchPickSphere_Destruct2((TouchPickSphere *) board->member_138);
+    TalkReceiver_Destruct((TalkReceiver *) &board->receiver_vtable);
+    SceneObjectBase_DestructBase((SceneObjectBase *) board);
     return board;
 }
 CLEAN_AS(func_ov003_0220c260, EtcBoard_Destroy)
@@ -296,11 +280,11 @@ CLEAN_AS(func_ov003_0220c260, EtcBoard_Destroy)
  * the member at 0x138. */
 EtcBoard *EtcBoard_Construct(EtcBoard *board)
 {
-    func_0203f130(board);
-    func_02066a30(&board->receiver_vtable);
+    SceneObjectBase_Construct((SceneObjectBase *) board);
+    TalkReceiver_ConstructBase((TalkReceiver *) &board->receiver_vtable);
     board->vtable = data_ov003_02238010;
     board->receiver_vtable = data_ov003_02238078;
-    func_020b7f70(board->member_138);
+    TouchPickSphere_Construct((TouchPickSphere *) board->member_138);
     return board;
 }
 CLEAN_AS(func_ov003_0220c29c, EtcBoard_Construct)
@@ -308,7 +292,7 @@ CLEAN_AS(func_ov003_0220c29c, EtcBoard_Construct)
 /* func_ov003_0220c2d4: allocates and constructs a board; nothing keeps the pointer here. */
 void EtcBoard_New(void)
 {
-    EtcBoard *board = func_020edf70(sizeof(EtcBoard));
+    EtcBoard *board = Heap_AllocAuxZeroed(sizeof(EtcBoard));
     if (board != NULL) {
         EtcBoard_Construct(board);
     }

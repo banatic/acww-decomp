@@ -4,6 +4,8 @@
 #include "clean.h"
 #include "date_time.h"
 #include "state_block.h"
+#include "main_random.h"
+#include "state_flags.h"
 
 static_assert(offsetof(TurnipPrices, peak) == 0x08 && offsetof(TurnipPrices, prices) == 0x0a, "TurnipPrices");
 static_assert(offsetof(TurnipPrices, pattern) == 0x18 && sizeof(TurnipPrices) == 0x1a, "TurnipPrices");
@@ -53,11 +55,6 @@ extern u32 data_021dc7a8[]; /* the state block */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern u32 func_020644b4(int bound); /* the same from another generator */
-/* Global flags 0x20 and 0x08 (StateFlags_Test): the clock was moved. */
-extern int func_0206f798(void);
-extern int func_0206f7a4(void);
 
 /* Whether a date is 1 January 2000, the clock's first day: there is no day before it. */
 static int turnip_is_first_day(const DateTime *when)
@@ -158,7 +155,7 @@ CLEAN_AS(func_020873b4, TurnipPrices_Update)
  * dates set to today. */
 void TurnipPrices_RedrawIfClockMoved(TurnipPrices *prices)
 {
-    if (func_0206f798() != 0 || func_0206f7a4() != 0) {
+    if (StateFlags_Test20() != 0 || StateFlags_Test8() != 0) {
         DateTime now = {0};
         DateTime_Now(&now);
         TurnipPrices_Draw(prices, 1);
@@ -192,7 +189,7 @@ CLEAN_AS(func_020874c4, TurnipPrices_Current)
 void TurnipPrices_Draw(TurnipPrices *prices, int falling)
 {
     if (prices->pattern != TURNIP_PATTERN_NONE) {
-        int odds = (int) func_020644cc(TURNIP_PATTERN_ODDS);
+        int odds = (int) MainRandom_Below(TURNIP_PATTERN_ODDS);
         switch (prices->pattern) {
             case TURNIP_PATTERN_RANDOM:
                 if (odds < 30) {
@@ -237,12 +234,12 @@ void TurnipPrices_Draw(TurnipPrices *prices, int falling)
             prices->pattern = TURNIP_PATTERN_FALLING;
         }
     } else {
-        prices->pattern = (u8) func_020644cc(TURNIP_PATTERNS);
+        prices->pattern = (u8) MainRandom_Below(TURNIP_PATTERNS);
     }
 
     prices->peak = 0;
     MI_CpuFill8(prices->prices, 0, sizeof(prices->prices));
-    prices->prices[0] = (u8) (func_020644cc(TURNIP_BUY_SPREAD) + TURNIP_BUY_BASE);
+    prices->prices[0] = (u8) (MainRandom_Below(TURNIP_BUY_SPREAD) + TURNIP_BUY_BASE);
     prices->prices[1] = prices->prices[0];
 
     u8 *p = prices->prices;
@@ -262,7 +259,7 @@ void TurnipPrices_Draw(TurnipPrices *prices, int falling)
             p[13] = (u8) TurnipPrices_DrawHigh(prices);
             break;
         case TURNIP_PATTERN_BIG_SPIKE: {
-            int peak = (int) func_020644cc(TURNIP_BIG_PEAK_CHOICES) + TURNIP_BIG_PEAK_FIRST;
+            int peak = (int) MainRandom_Below(TURNIP_BIG_PEAK_CHOICES) + TURNIP_BIG_PEAK_FIRST;
             p[peak] = (u8) TurnipPrices_DrawPeak(prices);
             TurnipPrices_DrawFalling(prices, TURNIP_FIRST_SALE, peak - 2);
             p[peak - 1] = (u8) TurnipPrices_DrawMid(prices);
@@ -289,7 +286,7 @@ CLEAN_AS(func_02087500, TurnipPrices_Draw)
  * QUIRK: the peak is cut to 16 bits, which it never fills. */
 int TurnipPrices_DrawPeak(TurnipPrices *prices)
 {
-    int share = (int) func_020644b4(TURNIP_PEAK_SPREAD) + TURNIP_PEAK_SHARE;
+    int share = (int) MainRandom_BelowB(TURNIP_PEAK_SPREAD) + TURNIP_PEAK_SHARE;
     prices->peak = (u16) ((prices->prices[0] * share) >> 12);
     return 0;
 }
@@ -300,7 +297,7 @@ CLEAN_AS(func_020876c8, TurnipPrices_DrawPeak)
 void TurnipPrices_DrawSmallSpike(TurnipPrices *prices)
 {
     u8 *p = prices->prices;
-    int peak = (int) func_020644cc(TURNIP_SMALL_PEAK_CHOICES) + TURNIP_SMALL_PEAK_FIRST;
+    int peak = (int) MainRandom_Below(TURNIP_SMALL_PEAK_CHOICES) + TURNIP_SMALL_PEAK_FIRST;
     TurnipPrices_DrawFalling(prices, TURNIP_FIRST_SALE, peak - 3);
     p[peak - 3] = (u8) TurnipPrices_DrawHigh(prices);
     p[peak - 2] = (u8) TurnipPrices_DrawHigh(prices);
@@ -349,7 +346,7 @@ CLEAN_AS(func_020877ac, TurnipPrices_DrawFalling)
  * QUIRK: a price of 256 or more wraps; the shares drawn here stay below. */
 int TurnipPrices_DrawShare(TurnipPrices *prices, int share, int spread)
 {
-    int random = (int) func_020644b4(spread);
+    int random = (int) MainRandom_BelowB(spread);
     return (u8) ((prices->prices[0] * (share + random)) >> 12);
 }
 CLEAN_AS(func_020877dc, TurnipPrices_DrawShare)

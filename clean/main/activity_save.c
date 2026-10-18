@@ -17,6 +17,13 @@
 #include "state_block.h"
 #include "system_packet.h"
 #include "wfc_session.h"
+#include "activity.h"
+#include "activity_card.h"
+#include "activity_talk.h"
+#include "scene_map.h"
+#include "session_players.h"
+#include "talk_object.h"
+#include "town_day.h"
 
 extern NetSession *data_020ccf94;
 extern StateBlock data_021dc7a8;
@@ -24,41 +31,13 @@ extern SaveStamp data_021f3ba0; /* the state block's part_173f8 */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-/* The activity's card steps (activity_save.h). func_020a2120's part goes in a pointer-sized
- * argument. */
-extern int func_020a238c(Activity *activity);
-extern int func_020a19c0(int unused, int part);
-extern int func_020a2120(Activity *activity, int part);
-/* The activity's exchange block copied to this system's (data_021ee418). */
-extern void func_020a2468(Activity *activity);
-/* This system's player record copied to record 7 (data_020e37f8); the argument is not read. */
-extern void func_020a24ac(Activity *activity);
-/* This system's player's paired town (paired_town.h) copied to the state block's (0x173e2). */
-extern void func_02088368(void);
-/* Message 10 and message 11 of "sp_etc_sequence2" given to talk 0; the argument is not read. */
-extern void func_020a261c(Activity *activity);
-extern void func_020a25e8(Activity *activity);
-
 /* Talk 0 and its state (0 when closed). */
 typedef struct ActivitySaveTalk {
     u32 unk_00;
     s32 state;
 } ActivitySaveTalk;
-extern ActivitySaveTalk *func_020682e0(int index);
 /* The library routine the end of the shutdown calls (caution_window.c). */
 extern void func_02116a1c(int arg);
-
-/* A session player's record number: given, read and taken away. */
-extern void func_020962a4(int player, int number);
-extern u8 func_02096284(int player);
-extern void func_02096294(int player);
-
-extern void func_0204d0ac(AcreMap *map);
-extern void func_02046830(void);
-
-/* The sun level's byte (field_actor_looks.c) and the date kept with it. */
-extern u8 *func_0209626c(void);
-extern u16 *func_0209627c(void);
 
 #define TO_HOST 1 /* the AID mask of the host */
 #define HOST_AID 0
@@ -125,7 +104,7 @@ int ActivitySave_GuestSteps(Activity *activity, u8 *step, int first, int fail_st
             if (link_lost(aids)) {
                 break;
             }
-            result = func_020a238c(activity);
+            result = ActivityCard_StepCheck(activity);
             if (result == 1) {
                 *step = (u8) fail_step;
             } else if (result != 3) {
@@ -137,17 +116,17 @@ int ActivitySave_GuestSteps(Activity *activity, u8 *step, int first, int fail_st
             if (link_lost(aids)) {
                 break;
             }
-            result = func_020a19c0((int) (uintptr_t) activity, activity->card_parts & 0xf);
+            result = ActivityCard_StepReadPart((int) (uintptr_t) activity, activity->card_parts & 0xf);
             if (result == 1) {
                 *step = (u8) fail_step;
             } else if (result == 0) {
                 if (with_exchange) {
-                    func_020a2468(activity);
+                    Activity_ExchangeBlockToSystem(activity);
                 }
-                func_020a24ac(activity);
+                Activity_CurrentRecordToGuest(activity);
                 if (with_exchange) {
                     PairedTown_TakeOwn(activity);
-                    func_02088368();
+                    PairedTown_SaveCurrent();
                 }
                 SaveStamp_MarkWriting(&data_021f3ba0);
                 *step = (u8) (first + 2);
@@ -158,7 +137,7 @@ int ActivitySave_GuestSteps(Activity *activity, u8 *step, int first, int fail_st
             if (link_lost(aids)) {
                 break;
             }
-            result = func_020a2120(activity, activity->card_parts >> 4);
+            result = ActivityCard_StepWritePart(activity, activity->card_parts >> 4);
             if (result == 1) {
                 *step = (u8) fail_step;
             } else if (result == 0) {
@@ -217,15 +196,15 @@ int ActivitySave_HostSteps(Activity *activity, u8 *step, int forced, int first, 
             if (link_lost(aids)) {
                 break;
             }
-            result = func_020a238c(activity);
+            result = ActivityCard_StepCheck(activity);
             if (result == 1) {
                 *step = fail_step;
             } else if (result != 3) {
                 SaveStamp_MarkWriting(&data_021f3ba0);
                 if (with_exchange != 0) {
-                    func_020a2468(activity);
+                    Activity_ExchangeBlockToSystem(activity);
                     PairedTown_TakeOwn(activity);
-                    func_02088368();
+                    PairedTown_SaveCurrent();
                 }
                 *step = (u8) (first + 1);
             }
@@ -235,7 +214,7 @@ int ActivitySave_HostSteps(Activity *activity, u8 *step, int forced, int first, 
             if (link_lost(aids)) {
                 break;
             }
-            result = func_020a2120(activity, activity->card_parts >> 4);
+            result = ActivityCard_StepWritePart(activity, activity->card_parts >> 4);
             if (result == 1) {
                 *step = fail_step;
             } else if (result == 0) {
@@ -409,7 +388,7 @@ int ActivitySave_EndSteps(Activity *activity, u8 *step, int first, int second, i
             break;
         case 4:
             if (show_message != 0) {
-                func_020a261c(activity);
+                ActivityTalk_QueueMessage10(activity);
             }
             *step = (u8) (first + 5);
             break;
@@ -455,12 +434,12 @@ int ActivitySave_EndSteps(Activity *activity, u8 *step, int first, int second, i
             break;
         case 3:
             if (show_message != 0) {
-                func_020a25e8(activity);
+                ActivityTalk_QueueMessage11(activity);
             }
             *step = (u8) (second + 4);
             break;
         case 4:
-            if (func_020682e0(0)->state == 0) {
+            if (TalkObject_Get(0)->state == 0) {
                 func_02116a1c(0);
             }
             break;
@@ -485,19 +464,19 @@ void ActivitySave_LeaveSession(Activity *activity, int record_number, int keep_t
     end_link(activity);
     if (record_number < NO_RECORD) {
         NetSession *session = data_020ccf94;
-        func_02096294(session->local_player);
+        SessionPlayers_ClearRecordNumber(session->local_player);
         session->local_player = 0;
     }
     NetSession *session = data_020ccf94;
     Session_SetPlayerCount(session, 1);
     if (record_number < NO_RECORD) {
-        func_020962a4(session->local_player, record_number);
+        SessionPlayers_SetRecordNumber(session->local_player, record_number);
     }
     int own = session->local_player;
-    func_02096284(own);
+    SessionPlayers_RecordNumber(own);
     for (int player = SESSION_SLOTS - 1; player >= 0; player--) {
         if (player != own) {
-            func_02096294(player);
+            SessionPlayers_ClearRecordNumber(player);
         }
     }
     for (int guest = PLAYER_RECORDS_GUESTS - 1; guest >= 0; guest--) {
@@ -513,24 +492,24 @@ void ActivitySave_LeaveSession(Activity *activity, int record_number, int keep_t
         if (AcreMap_Town() != 0) {
             AcreMap_SetTownModels((AcreMap *) (uintptr_t) AcreMap_Town());
             AcreMap_LoadTownData((AcreMap *) (uintptr_t) AcreMap_Town());
-            func_0204d0ac((AcreMap *) (uintptr_t) AcreMap_Town());
+            SceneMap_ClearRimGrowth((AcreMap *) (uintptr_t) AcreMap_Town());
         }
         AcreMap_SetRoomsModels();
         AcreMap_LoadRoomsData();
     } else {
-        func_02046830();
+        TownDay_Load();
     }
     Session_OnPlayersChanged(PLAYERS_LEFT);
     if (keep_town != 0) {
         return;
     }
 
-    int number = func_02096284(0);
+    int number = SessionPlayers_RecordNumber(0);
     if (number >= NO_RECORD) {
         return;
     }
     u8 *record = PlayerRecords_Get(number);
-    u8 *sun = func_0209626c();
+    u8 *sun = SessionPlayers_SunFlags();
     PlayerRecordSunDate date;
     if ((*sun & SUN_BYTE_BITS_12) != 0) {
         DateTime now = {0};
@@ -540,7 +519,7 @@ void ActivitySave_LeaveSession(Activity *activity, int record_number, int keep_t
             *sun |= SUN_BYTE_BITS_0_4;
         }
     } else {
-        date.packed = *func_0209627c();
+        date.packed = *SessionPlayers_SunDate();
         *sun = (u8) (*sun | ((*sun >> 4) & 1));
     }
     PlayerRecord_SetSunDate(record, date);

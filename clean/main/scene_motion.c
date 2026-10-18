@@ -8,6 +8,19 @@
 #include "ov004/member_pointer.h"
 #include "sound_emitter.h"
 #include "speaker_anim.h"
+#include "effect_system.h"
+#include "item_code.h"
+#include "layered_model.h"
+#include "obj_020dd33c.h"
+#include "ov004/room_player_actor.h"
+#include "player_actor_ops.h"
+#include "player_actors.h"
+#include "scene_motion_core.h"
+#include "scene_motion_request.h"
+#include "scene_mover.h"
+#include "scene_object.h"
+#include "scene_query.h"
+#include "scene_share.h"
 
 static_assert(sizeof(SceneMotionArgs) == 0x34, "SceneMotionArgs layout");
 static_assert(offsetof(SceneMotionArgs, item) == 0x22, "SceneMotionArgs layout");
@@ -131,50 +144,7 @@ extern const MemberPointer data_020d8864;
 extern const MemberPointer data_020d885c;
 extern const MemberPointer data_020d8854;
 
-/* The motion's own functions. */
-extern void func_02019af0(SceneMotion *self, int done);
-extern SceneMotionArgs *func_02019de4(SceneMotion *self);
-extern void func_02019d70(SceneMotion *self, int kind, int priority);
-extern void func_02019ea0(SceneMotionArgs *args);
-extern void func_020199ec(SceneMotion *self, void *note, u16 *item);
-
-/* The mover's functions. */
-extern void func_0201b188(void *mover, u8 *object);
-extern int func_0201bee0(u8 *object, Vec3 *point, s16 *angle);
-extern void func_0201b1a4(void *mover, u8 *object, int mode, int a, int b);
-extern void func_0201aff4(void *mover, int angle);
-extern void func_0201b044(void *mover, const Vec3 *point);
-extern void func_0201afd4(void *mover, const Vec3 *point);
-extern s16 func_0201afec(void *mover);
-extern int func_0201b1a0(void *mover);
-extern int func_0201c3dc(int angle);
 extern s32 FX_MulFunc(s32 a, s32 b);
-
-/* The object at data_021c9350's functions. */
-extern int func_02057b90(int number, u8 *object);
-extern void func_02057bb8(u16 *item);
-extern int func_02057bd4(void);
-extern int func_02057bf0(int number);
-extern int func_02057c20(void *object);
-extern int func_02057c44(Vec3 *point);
-extern int func_02057c68(u8 *object);
-extern void func_02057cb8(u8 *object);
-extern u8 func_02057cf4(void);
-extern int func_02057d0c(int number, u8 *object);
-extern int func_02057d34(u8 *object);
-
-extern int func_02091230(int kind, void *point, int a, int b);
-extern int func_020912d4(int kind, void *point, s16 *angle, int a);
-extern void func_0209129c(int effect);
-extern void func_02091278(int effect, void *point, void *angle, int a);
-extern int func_02095a28(void);
-extern int func_02095380(int number);
-extern void func_02054768(void *model, int a, int b);
-extern void func_02054188(void *model, unsigned int first, unsigned int last);
-extern int func_0204bcdc(u16 *item);
-extern int func_0204bc64(u16 *item);
-extern int func_020b65c4(void);
-extern int func_ov004_0222bf50(void);
 
 static u8 *scene_motion_part(u8 *object, u32 offset)
 {
@@ -233,14 +203,14 @@ static void scene_motion_sound(u8 *object, int number)
 static void scene_motion_drop_item_pose(u8 *object)
 {
     if (SpeakerAnim_Number(scene_motion_anim(object), SCENE_MOTION_SLOT_ITEM) == SCENE_MOTION_ITEM_POSE_ANIMATION) {
-        func_02054768(scene_motion_part(object, SCENE_MOTION_OBJECT_MODEL), 0, 0);
+        LayeredModel_StartAFromBase((LayeredModel *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_MODEL), 0, 0);
     }
 }
 
 /* The motion ends: done, and (for kind 14) its last step. */
 static void scene_motion_end14(SceneMotion *self)
 {
-    func_02019af0(self, 1);
+    SceneMotion_SetDone(self, 1);
     self->step = SCENE_MOTION_KIND14_END;
 }
 
@@ -280,12 +250,15 @@ int SceneMotion_FinishAnimation(SceneMotion *self, u8 *object, u16 *item, int an
             break;
         }
         case 0xd:
-            func_020912d4(0x22, scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION), NULL, 0);
+            EffectSystem_StartKind(0x22, (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION), NULL,
+                                   0);
             break;
         case 3: {
             s16 angle = scene_motion_angle(object);
-            func_020912d4(0x28, scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT_3), &angle, 0);
-            func_020912d4(0x28, scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT_2), &angle, 0);
+            EffectSystem_StartKind(0x28, (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT_3),
+                                   &angle, 0);
+            EffectSystem_StartKind(0x28, (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT_2),
+                                   &angle, 0);
             break;
         }
         default:
@@ -299,18 +272,18 @@ CLEAN_AS(func_02017f1c, SceneMotion_FinishAnimation)
 
 static void scene_motion_set_mode(u8 *object, int mode)
 {
-    func_0201b1a4(scene_motion_mover(object), object, mode, 0, data_020c80f8);
+    SceneMover_SetMode(scene_motion_mover(object), object, mode, 0, data_020c80f8);
 }
 
 static void scene_motion_set_angle(u8 *object, int angle)
 {
-    func_0201aff4(scene_motion_mover(object), angle);
+    SceneMover_SetAngle(scene_motion_mover(object), angle);
 }
 
 static void scene_motion_set_target(u8 *object, const Vec3 *point)
 {
-    func_0201b044(scene_motion_mover(object), point);
-    func_0201afd4(scene_motion_mover(object), point);
+    SceneMover_SetStart(scene_motion_mover(object), point);
+    SceneMover_SetEnd(scene_motion_mover(object), point);
 }
 
 /* The walking mode: 2 with `pace` 2, else 1. */
@@ -334,7 +307,7 @@ static s32 scene_motion_distance2(u8 *object, const Vec3 *spot, s32 *dx, s32 *dz
 /* Whether a turn of `turn` (an angle) is less than a quarter turn either way (func_0201c3dc). */
 static int scene_motion_ahead(int heading, s16 angle)
 {
-    return func_0201c3dc((s16) (u16) ((u32) heading - (u32) angle));
+    return SceneObject_IsWithinQuarterTurn((s16) (u16) ((u32) heading - (u32) angle));
 }
 
 /* Standing: the stand mode, the angle and the origin as the target, and step 0. */
@@ -384,8 +357,8 @@ void SceneMotion_GoToSpotTurnAtSpot(SceneMotion *self, u8 *object)
     s32 dx;
     s32 dz;
 
-    func_0201b188(scene_motion_mover(object), object);
-    if (func_0201bee0(object, &spot, &angle) == 0) {
+    SceneMover_AimAtEnd(scene_motion_mover(object), object);
+    if (SceneShare_ReadPlace(object, &spot, &angle) == 0) {
         scene_motion_stand(self, object, angle);
         return;
     }
@@ -426,15 +399,15 @@ void SceneMotion_GoToSpotTurnFirst(SceneMotion *self, u8 *object)
     s32 dx;
     s32 dz;
 
-    if (func_0201bee0(object, &spot, &angle) == 0) {
+    if (SceneShare_ReadPlace(object, &spot, &angle) == 0) {
         scene_motion_stand(self, object, angle);
         return;
     }
     if (scene_motion_distance2(object, &spot, &dx, &dz) < SCENE_MOTION_REACH) {
         void *mover = scene_motion_mover(object);
-        if (angle != func_0201afec(mover)) {
+        if (angle != SceneMover_Angle(mover)) {
             scene_motion_set_angle(object, angle);
-        } else if (func_0201afec(mover) == scene_motion_angle(object)) {
+        } else if (SceneMover_Angle(mover) == scene_motion_angle(object)) {
             self->step = SCENE_MOTION_SPOT_STAND;
         }
         return;
@@ -466,8 +439,8 @@ void SceneMotion_GoToSpotWalk(SceneMotion *self, u8 *object)
     s32 dx;
     s32 dz;
 
-    func_0201b188(mover, object);
-    if (func_0201bee0(object, &spot, &angle) == 0) {
+    SceneMover_AimAtEnd(mover, object);
+    if (SceneShare_ReadPlace(object, &spot, &angle) == 0) {
         scene_motion_stand(self, object, angle);
         return;
     }
@@ -483,11 +456,11 @@ void SceneMotion_GoToSpotWalk(SceneMotion *self, u8 *object)
         scene_motion_turn(self, object, angle);
         return;
     }
-    if (func_0201b1a0(mover) == SCENE_MOTION_MOVER_WALK) {
+    if (SceneMover_Mode(mover) == SCENE_MOTION_MOVER_WALK) {
         if (self->pace == SCENE_MOTION_PACE_2) {
             scene_motion_set_mode(object, SCENE_MOTION_MOVER_WALK_2);
         }
-    } else if (func_0201b1a0(mover) == SCENE_MOTION_MOVER_WALK_2) {
+    } else if (SceneMover_Mode(mover) == SCENE_MOTION_MOVER_WALK_2) {
         if (self->pace == 1) {
             scene_motion_set_mode(object, SCENE_MOTION_MOVER_WALK);
         }
@@ -507,7 +480,7 @@ void SceneMotion_GoToSpotStand(SceneMotion *self, u8 *object)
     s32 dx;
     s32 dz;
 
-    if (func_0201bee0(object, &spot, &angle) == 0) {
+    if (SceneShare_ReadPlace(object, &spot, &angle) == 0) {
         return;
     }
     if (scene_motion_distance2(object, &spot, &dx, &dz) < SCENE_MOTION_REACH) {
@@ -515,7 +488,7 @@ void SceneMotion_GoToSpotStand(SceneMotion *self, u8 *object)
             scene_motion_turn(self, object, angle);
             return;
         }
-        if (func_0201b1a0(scene_motion_mover(object)) == SCENE_MOTION_MOVER_STAND) {
+        if (SceneMover_Mode(scene_motion_mover(object)) == SCENE_MOTION_MOVER_STAND) {
             return;
         }
         scene_motion_set_mode(object, SCENE_MOTION_MOVER_STAND);
@@ -547,7 +520,7 @@ int SceneMotion_StartGoToSpot(SceneMotion *self, u8 *object)
     s32 dx;
     s32 dz;
 
-    if (func_0201bee0(object, &spot, &angle) == 0) {
+    if (SceneShare_ReadPlace(object, &spot, &angle) == 0) {
         scene_motion_set_mode(object, SCENE_MOTION_MOVER_STAND);
         scene_motion_set_target(object, &data_021fbee8);
         self->step = SCENE_MOTION_SPOT_STAND;
@@ -583,9 +556,9 @@ CLEAN_AS(func_0201709c, SceneMotion_StartGoToSpot)
  * with the motion's item and flag 0). */
 void SceneMotion_Kind20After(SceneMotion *self, u8 *object)
 {
-    SceneMotionArgs *args = func_02019de4(self);
+    SceneMotionArgs *args = SceneMotion_Args(self);
     if (SceneMotion_FinishAnimation(self, object, &args->item, 6, 0)) {
-        func_02019af0(self, 1);
+        SceneMotion_SetDone(self, 1);
     }
 }
 CLEAN_AS(func_02017224, SceneMotion_Kind20After)
@@ -594,11 +567,12 @@ CLEAN_AS(func_02017224, SceneMotion_Kind20After)
  * at the object's position and sound 0x76. Returns 1. */
 int SceneMotion_StartKind20(SceneMotion *self, u8 *object)
 {
-    func_02019de4(self);
+    SceneMotion_Args(self);
     scene_motion_play_with_item(object, 6, SCENE_MOTION_PLAY_ONCE);
-    func_02091230(0x61, scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION), 0, 0);
+    EffectSystem_StartOneShotSetNumber(0x61, (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION),
+                                       0, 0);
     scene_motion_sound(object, 0x76);
-    func_02019af0(self, 0);
+    SceneMotion_SetDone(self, 0);
     return 1;
 }
 CLEAN_AS(func_02017258, SceneMotion_StartKind20)
@@ -610,8 +584,8 @@ int SceneMotion_RequestKind20(SceneMotion *self, int priority, u16 *item)
     if (priority < self->next_priority && self->next_priority != 3) {
         return 0;
     }
-    func_02019d70(self, SCENE_MOTION_KIND_20, priority);
-    func_02019ea0(&self->next_args);
+    SceneMotion_SetNext(self, SCENE_MOTION_KIND_20, priority);
+    SceneMotionArgs_Clear(&self->next_args);
     self->next_args.item = *item;
     return 1;
 }
@@ -629,9 +603,9 @@ void SceneMotion_Kind19After(SceneMotion *self, u8 *object)
     if (!scene_motion_body_at_end(object)) {
         return;
     }
-    func_02057cb8(object);
+    Obj020dd33c_Finish(object);
     scene_motion_play(object, 0, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
-    func_02019af0(self, 1);
+    SceneMotion_SetDone(self, 1);
 }
 CLEAN_AS(func_02017310, SceneMotion_Kind19After)
 
@@ -655,12 +629,13 @@ void SceneMotion_Kind19Step0(SceneMotion *self, u8 *object)
     if (scene_motion_body_at_end(object)) {
         scene_motion_play(object, 0x2a, 0, SCENE_MOTION_PLAY_ONCE);
         if (self->effect != SCENE_MOTION_NO_EFFECT) {
-            func_0209129c(self->effect);
+            EffectSystem_EndHandle(self->effect);
         }
         self->step = SCENE_MOTION_KIND19_END;
     } else if (self->effect != SCENE_MOTION_NO_EFFECT) {
-        func_02091278(self->effect, scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT),
-                      scene_motion_part(object, SCENE_MOTION_OBJECT_ANGLE), 0);
+        EffectSystem_MoveHandle(self->effect,
+                                (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT),
+                                (const s16 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_ANGLE), 0);
     }
 }
 CLEAN_AS(func_020173d8, SceneMotion_Kind19Step0)
@@ -673,11 +648,11 @@ int SceneMotion_StartKind19(SceneMotion *self, u8 *object)
     Vec3 point = *(const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT);
     s16 angle = scene_motion_angle(object);
 
-    func_02057d0c(0xb, object);
+    Obj020dd33c_SetActorMode(0xb, object);
     scene_motion_play(object, 0x29, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
-    self->effect = func_020912d4(0x40, &point, &angle, 0);
+    self->effect = EffectSystem_StartKind(0x40, &point, &angle, 0);
     scene_motion_sound(object, 0x6f);
-    func_02019af0(self, 0);
+    SceneMotion_SetDone(self, 0);
     return 1;
 }
 CLEAN_AS(func_0201744c, SceneMotion_StartKind19)
@@ -702,9 +677,9 @@ CLEAN_AS(_ZN12Obj_020d8bd413func_020174e0Ei, SceneMotion_RunKind18)
 void SceneMotion_Kind18Step1(SceneMotion *self, u8 *object)
 {
     (void) object;
-    if (func_02057bf0(8) == 0) {
+    if (Obj020dd33c_InMode(8) == 0) {
         self->step = SCENE_MOTION_KIND18_END;
-        func_02019af0(self, 1);
+        SceneMotion_SetDone(self, 1);
     }
 }
 CLEAN_AS(func_02017550, SceneMotion_Kind18Step1)
@@ -713,7 +688,7 @@ CLEAN_AS(func_02017550, SceneMotion_Kind18Step1)
 void SceneMotion_Kind18Step0(SceneMotion *self, u8 *object)
 {
     (void) object;
-    if (func_02057bf0(8)) {
+    if (Obj020dd33c_InMode(8)) {
         self->step = 1;
     }
 }
@@ -724,11 +699,11 @@ CLEAN_AS(func_02017574, SceneMotion_Kind18Step0)
  * Returns 1. */
 int SceneMotion_StartKind18(SceneMotion *self, u8 *object)
 {
-    if (func_02057bd4() && func_02057d0c(8, object)) {
-        func_02057b90(8, object);
+    if (Obj020dd33c_IsBusy() && Obj020dd33c_SetActorMode(8, object)) {
+        Obj020dd33c_SetStage(8, object);
         self->step = 0;
-        func_02019af0(self, 0);
-        func_02095380(0x72);
+        SceneMotion_SetDone(self, 0);
+        PlayerActors_OwnPlaySound(0x72);
     }
     return 1;
 }
@@ -756,8 +731,8 @@ CLEAN_AS(_ZN12Obj_020d8bd413func_020175d4EPv, SceneMotion_RunKind17)
 void SceneMotion_Kind17Step2(SceneMotion *self, u8 *object)
 {
     (void) object;
-    if (func_02057bd4() == 0) {
-        func_02019af0(self, 1);
+    if (Obj020dd33c_IsBusy() == 0) {
+        SceneMotion_SetDone(self, 1);
         self->step = SCENE_MOTION_KIND17_END;
     }
 }
@@ -767,7 +742,7 @@ CLEAN_AS(func_02017654, SceneMotion_Kind17Step2)
  * standard animation loops (step 2). */
 void SceneMotion_Kind17Step1(SceneMotion *self, u8 *object)
 {
-    if (func_02057d34(object) != 0) {
+    if (Obj020dd33c_IsLead(object) != 0) {
         return;
     }
     scene_motion_play(object, 0, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
@@ -779,7 +754,7 @@ CLEAN_AS(func_02017674, SceneMotion_Kind17Step1)
  * animation 0x23 loops (step 1). */
 void SceneMotion_Kind17Step0(SceneMotion *self, u8 *object)
 {
-    if (scene_motion_body_at_end(object) && func_02095a28() != 0) {
+    if (scene_motion_body_at_end(object) && PlayerActorOps_RequestState32() != 0) {
         scene_motion_play(object, 0x23, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
         self->step = 1;
     }
@@ -791,11 +766,11 @@ CLEAN_AS(func_020176bc, SceneMotion_Kind17Step0)
  * func_02057b90 (5) and not done. Returns 1. */
 int SceneMotion_StartKind17(SceneMotion *self, u8 *object)
 {
-    if (func_02057bd4() && func_02057d0c(7, object)) {
+    if (Obj020dd33c_IsBusy() && Obj020dd33c_SetActorMode(7, object)) {
         scene_motion_play(object, 0x26, data_020c80f8, SCENE_MOTION_PLAY_3);
         scene_motion_drop_item_pose(object);
-        func_02057b90(5, object);
-        func_02019af0(self, 0);
+        Obj020dd33c_SetStage(5, object);
+        SceneMotion_SetDone(self, 0);
     }
     return 1;
 }
@@ -808,9 +783,9 @@ CLEAN_AS(func_02017710, SceneMotion_StartKind17)
 void SceneMotion_Kind16After(SceneMotion *self, u8 *object)
 {
     if (scene_motion_body_at_end(object)) {
-        func_02057cb8(object);
+        Obj020dd33c_Finish(object);
         scene_motion_play(object, 0, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
-        func_02019af0(self, 1);
+        SceneMotion_SetDone(self, 1);
     }
 }
 CLEAN_AS(func_02017790, SceneMotion_Kind16After)
@@ -820,11 +795,11 @@ CLEAN_AS(func_02017790, SceneMotion_Kind16After)
  * not done. Returns 1. */
 int SceneMotion_StartKind16(SceneMotion *self, u8 *object)
 {
-    if (func_02057bd4() && func_02057d0c(5, object)) {
+    if (Obj020dd33c_IsBusy() && Obj020dd33c_SetActorMode(5, object)) {
         scene_motion_play(object, 0x27, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
         scene_motion_sound(object, 0x4f);
         scene_motion_drop_item_pose(object);
-        func_02019af0(self, 0);
+        SceneMotion_SetDone(self, 0);
     }
     return 1;
 }
@@ -836,9 +811,9 @@ CLEAN_AS(func_020177e0, SceneMotion_StartKind16)
  * with the motion's item and flag 1). */
 void SceneMotion_Kind15After(SceneMotion *self, u8 *object)
 {
-    SceneMotionArgs *args = func_02019de4(self);
+    SceneMotionArgs *args = SceneMotion_Args(self);
     if (SceneMotion_FinishAnimation(self, object, &args->item, 0x28, 1) != 0) {
-        func_02019af0(self, 1);
+        SceneMotion_SetDone(self, 1);
     }
 }
 CLEAN_AS(func_0201786c, SceneMotion_Kind15After)
@@ -849,21 +824,22 @@ CLEAN_AS(func_0201786c, SceneMotion_Kind15After)
  * with the motion's priority and the item (func_020199ec). Returns 1. */
 int SceneMotion_StartKind15(SceneMotion *self, u8 *object)
 {
-    SceneMotionArgs *args = func_02019de4(self);
+    SceneMotionArgs *args = SceneMotion_Args(self);
     u16 item;
 
-    func_02057bb8(&item);
+    Obj020dd33c_Item(&item);
     args->item = item;
-    if (func_02057bd4() != 0) {
-        func_02057cb8(object);
+    if (Obj020dd33c_IsBusy() != 0) {
+        Obj020dd33c_Finish(object);
     }
     scene_motion_play(object, 0x28, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
-    func_02091230(0x61, scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION), 0, 0);
+    EffectSystem_StartOneShotSetNumber(0x61, (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION),
+                                       0, 0);
     scene_motion_sound(object, 0x76);
-    func_02019af0(self, 0);
+    SceneMotion_SetDone(self, 0);
     self->note_kind = SCENE_MOTION_KIND_20;
     self->note_priority = (u8) self->priority;
-    func_020199ec(self, self->note, &args->item);
+    SceneMotionNote_PackItem(self, self->note, &args->item);
     return 1;
 }
 CLEAN_AS(func_020178a0, SceneMotion_StartKind15)
@@ -910,12 +886,12 @@ CLEAN_AS(_ZN12Obj_020d8bd413func_0201793cEi, SceneMotion_RunKind14)
  * says so of it. */
 static int scene_motion_item_is(u16 *item, u16 code)
 {
-    if (func_0204bcdc(item) == 0) {
+    if (ItemCode_HasVariant(item) == 0) {
         return *item == code;
     }
     u16 other = code;
-    int value = func_0204bc64(item);
-    return value == func_0204bc64(&other);
+    int value = ItemCode_VariantItem(item);
+    return value == ItemCode_VariantItem(&other);
 }
 
 /* Step 2 of kind 14: animation 0x25 once (the held item takes action 0). */
@@ -932,24 +908,25 @@ static void scene_motion_kind14_to_step2(SceneMotion *self, u8 *object)
  * func_02057c44 gives, at height 0 (step 1). */
 void SceneMotion_Kind14Step0(SceneMotion *self, u8 *object)
 {
-    if (func_02057bf0(2) == 0) {
+    if (Obj020dd33c_InMode(2) == 0) {
         return;
     }
-    SceneMotionArgs *args = func_02019de4(self);
+    SceneMotionArgs *args = SceneMotion_Args(self);
 
     if (scene_motion_item_is((u16 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_ITEM), 0xd00c) ||
-        func_02057c68(object)) {
+        Obj020dd33c_IsNear((const Actor *) (void *) object)) {
         scene_motion_kind14_to_step2(self, object);
         return;
     }
-    if (scene_motion_item_is(&args->item, 0x1565) && args->unk_24 == 0 && (func_020b65c4() == 9 || func_020b65c4() == 0x10)) {
-        if (func_02057c20(object) != 0) {
+    if (scene_motion_item_is(&args->item, 0x1565) && args->unk_24 == 0 &&
+        (SceneQuery_Current() == 9 || SceneQuery_Current() == 0x10)) {
+        if (Obj020dd33c_Lead(object) != 0) {
             scene_motion_kind14_to_step2(self, object);
         }
         return;
     }
     Vec3 point;
-    if (func_02057c44(&point) != 0) {
+    if (Obj020dd33c_Point(&point) != 0) {
         point.y = 0;
         scene_motion_set_target(object, &point);
         scene_motion_set_mode(object, SCENE_MOTION_MOVER_WALK);
@@ -962,11 +939,11 @@ CLEAN_AS(func_020183cc, SceneMotion_Kind14Step0)
  * (mover mode 0, the origin as the target) and step 2 begins. */
 void SceneMotion_Kind14Step1(SceneMotion *self, u8 *object)
 {
-    if (func_02057c68(object) == 0) {
+    if (Obj020dd33c_IsNear((const Actor *) (void *) object) == 0) {
         return;
     }
     u16 arg = data_020c80f8;
-    func_0201b1a4(scene_motion_mover(object), object, SCENE_MOTION_MOVER_STAND, 0, arg);
+    SceneMover_SetMode(scene_motion_mover(object), object, SCENE_MOTION_MOVER_STAND, 0, arg);
     scene_motion_set_target(object, &data_021fbee8);
     scene_motion_play(object, 0x25, arg, SCENE_MOTION_PLAY_ONCE);
     HeldItemLink *held = scene_motion_held(object);
@@ -981,7 +958,7 @@ CLEAN_AS(func_02018340, SceneMotion_Kind14Step1)
  * object and the object takes it with 3, step 3. */
 void SceneMotion_Kind14Step2(SceneMotion *self, u8 *object)
 {
-    if (scene_motion_body_at_end(object) && func_02057c20(object) && func_02057d0c(3, object)) {
+    if (scene_motion_body_at_end(object) && Obj020dd33c_Lead(object) && Obj020dd33c_SetActorMode(3, object)) {
         self->step = 3;
     }
 }
@@ -991,10 +968,10 @@ CLEAN_AS(func_02018304, SceneMotion_Kind14Step2)
  * takes the object with 4, animation 0x26 once (step 4). */
 void SceneMotion_Kind14Step3(SceneMotion *self, u8 *object)
 {
-    if (func_02057bf0(3) != 0) {
+    if (Obj020dd33c_InMode(3) != 0) {
         return;
     }
-    if (func_02057d0c(4, object) == 0) {
+    if (Obj020dd33c_SetActorMode(4, object) == 0) {
         return;
     }
     scene_motion_play_with_item(object, 0x26, SCENE_MOTION_PLAY_ONCE);
@@ -1016,23 +993,24 @@ void SceneMotion_Kind14Step4(SceneMotion *self, u8 *object)
     if (!scene_motion_body_at_end(object)) {
         return;
     }
-    switch (func_02057cf4()) {
+    switch (Obj020dd33c_Stage()) {
         case 6:
-            func_02057cb8(object);
+            Obj020dd33c_Finish(object);
             scene_motion_play(object, 0x28, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
-            func_02091230(0x61, scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION), 0, 0);
+            EffectSystem_StartOneShotSetNumber(
+                0x61, (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_POSITION), 0, 0);
             scene_motion_sound(object, 0x76);
             self->step = 6;
             break;
         case 7:
-            if (func_02057d0c(7, object) == 0) {
+            if (Obj020dd33c_SetActorMode(7, object) == 0) {
                 return;
             }
             scene_motion_play(object, 0x26, data_020c80f8, SCENE_MOTION_PLAY_3);
             self->step = 7;
             break;
         case 5:
-            if (func_02057d0c(5, object) == 0) {
+            if (Obj020dd33c_SetActorMode(5, object) == 0) {
                 return;
             }
             scene_motion_play(object, 0x27, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
@@ -1040,30 +1018,30 @@ void SceneMotion_Kind14Step4(SceneMotion *self, u8 *object)
             self->step = 5;
             break;
         case 10:
-            if (func_02057d0c(10, object) == 0) {
+            if (Obj020dd33c_SetActorMode(10, object) == 0) {
                 return;
             }
             scene_motion_play(object, 0, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
             SpeakerAnim_Play(scene_motion_anim(object), object, SCENE_MOTION_ITEM_POSE_ANIMATION, 0, 0, SCENE_MOTION_SPEED, 0,
                              SCENE_MOTION_SLOT_ITEM);
-            func_02054188(scene_motion_part(object, SCENE_MOTION_OBJECT_MODEL), 9, 0xe);
-            func_02019af0(self, 1);
+            LayeredModel_MoveNodesToA((LayeredModel *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_MODEL), 9, 0xe);
+            SceneMotion_SetDone(self, 1);
             self->step = SCENE_MOTION_KIND14_END;
             break;
         case 11: {
-            if (func_02057d0c(0xb, object) == 0) {
+            if (Obj020dd33c_SetActorMode(0xb, object) == 0) {
                 return;
             }
             Vec3 point = *(const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT);
             s16 angle = scene_motion_angle(object);
             scene_motion_play(object, 0x29, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
-            self->effect = func_020912d4(0x40, &point, &angle, 0);
+            self->effect = EffectSystem_StartKind(0x40, &point, &angle, 0);
             self->step = 0xb;
             break;
         }
         default:
             scene_motion_play(object, 0x24, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
-            func_02019af0(self, 1);
+            SceneMotion_SetDone(self, 1);
             self->step = SCENE_MOTION_KIND14_END;
             break;
     }
@@ -1077,14 +1055,15 @@ void SceneMotion_Kind14Step5(SceneMotion *self, u8 *object)
 {
     if (scene_motion_body_at_end(object)) {
         scene_motion_play_with_item(object, 0, SCENE_MOTION_PLAY_LOOP);
-        func_02057cb8(object);
+        Obj020dd33c_Finish(object);
         if (self->effect != SCENE_MOTION_NO_EFFECT) {
-            func_0209129c(self->effect);
+            EffectSystem_EndHandle(self->effect);
         }
         scene_motion_end14(self);
     } else if (self->effect != SCENE_MOTION_NO_EFFECT) {
-        func_02091278(self->effect, scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT),
-                      scene_motion_part(object, SCENE_MOTION_OBJECT_ANGLE), 0);
+        EffectSystem_MoveHandle(self->effect,
+                                (const Vec3 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_EFFECT_POINT),
+                                (const s16 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_ANGLE), 0);
     }
 }
 CLEAN_AS(func_02017ff4, SceneMotion_Kind14Step5)
@@ -1093,7 +1072,7 @@ CLEAN_AS(func_02017ff4, SceneMotion_Kind14Step5)
  * with the motion's item and flag 1). */
 void SceneMotion_Kind14Step6(SceneMotion *self, u8 *object)
 {
-    SceneMotionArgs *args = func_02019de4(self);
+    SceneMotionArgs *args = SceneMotion_Args(self);
     if (SceneMotion_FinishAnimation(self, object, &args->item, 0x28, 1) != 0) {
         scene_motion_end14(self);
     }
@@ -1104,7 +1083,7 @@ CLEAN_AS(func_02017ee4, SceneMotion_Kind14Step6)
  * animation 0x23 loops (step 8). */
 void SceneMotion_Kind14Step7(SceneMotion *self, u8 *object)
 {
-    if (scene_motion_body_at_end(object) && func_02095a28()) {
+    if (scene_motion_body_at_end(object) && PlayerActorOps_RequestState32()) {
         scene_motion_play_with_item(object, 0x23, SCENE_MOTION_PLAY_LOOP);
         self->step = 8;
     }
@@ -1115,7 +1094,7 @@ CLEAN_AS(func_02017e7c, SceneMotion_Kind14Step7)
  * standard animation loops (step 9). */
 void SceneMotion_Kind14Step8(SceneMotion *self, u8 *object)
 {
-    if (func_02057d34(object) != 0) {
+    if (Obj020dd33c_IsLead(object) != 0) {
         return;
     }
     scene_motion_play_with_item(object, 0, SCENE_MOTION_PLAY_LOOP);
@@ -1127,7 +1106,7 @@ CLEAN_AS(func_02017e20, SceneMotion_Kind14Step8)
 void SceneMotion_Kind14Step9(SceneMotion *self, u8 *object)
 {
     (void) object;
-    if (func_02057bd4() == 0) {
+    if (Obj020dd33c_IsBusy() == 0) {
         scene_motion_end14(self);
     }
 }
@@ -1151,7 +1130,7 @@ void SceneMotion_Kind14Step11(SceneMotion *self, u8 *object)
     if (scene_motion_body_at_end(object)) {
         scene_motion_play(object, 0x2a, 0, SCENE_MOTION_PLAY_ONCE);
         if (self->effect != SCENE_MOTION_NO_EFFECT) {
-            func_0209129c(self->effect);
+            EffectSystem_EndHandle(self->effect);
         }
         self->step = 0xc;
     }
@@ -1164,7 +1143,7 @@ void SceneMotion_Kind14Step12(SceneMotion *self, u8 *object)
 {
     if (scene_motion_body_at_end(object)) {
         scene_motion_play_with_item(object, 0, SCENE_MOTION_PLAY_LOOP);
-        func_02057cb8(object);
+        Obj020dd33c_Finish(object);
         scene_motion_end14(self);
     }
 }
@@ -1174,7 +1153,7 @@ CLEAN_AS(func_02017d14, SceneMotion_Kind14Step12)
 void SceneMotion_Kind14Step13(SceneMotion *self, u8 *object)
 {
     (void) object;
-    if (func_02057bf0(1)) {
+    if (Obj020dd33c_InMode(1)) {
         self->step = 14;
     }
 }
@@ -1184,7 +1163,7 @@ CLEAN_AS(func_02017cf8, SceneMotion_Kind14Step13)
  * (step 15). */
 void SceneMotion_Kind14Step14(SceneMotion *self, u8 *object)
 {
-    if (func_02057bf0(1) != 0) {
+    if (Obj020dd33c_InMode(1) != 0) {
         return;
     }
     scene_motion_play(object, 0x2c, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
@@ -1196,7 +1175,7 @@ CLEAN_AS(func_02017cac, SceneMotion_Kind14Step14)
  * object and the object takes it with 3, step 16. */
 void SceneMotion_Kind14Step15(SceneMotion *self, u8 *object)
 {
-    if (scene_motion_body_at_end(object) && func_02057c20(object) && func_02057d0c(3, object)) {
+    if (scene_motion_body_at_end(object) && Obj020dd33c_Lead(object) && Obj020dd33c_SetActorMode(3, object)) {
         self->step = 0x10;
     }
 }
@@ -1206,7 +1185,7 @@ CLEAN_AS(func_02017c70, SceneMotion_Kind14Step15)
  * takes the object with 4, animation 0x2d once (step 17). */
 void SceneMotion_Kind14Step16(SceneMotion *self, u8 *object)
 {
-    if (func_02057bf0(3) == 0 && func_02057d0c(4, object) != 0) {
+    if (Obj020dd33c_InMode(3) == 0 && Obj020dd33c_SetActorMode(4, object) != 0) {
         scene_motion_play(object, 0x2d, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
         self->step = 0x11;
     }
@@ -1222,23 +1201,23 @@ void SceneMotion_Kind14Step17(SceneMotion *self, u8 *object)
     if (!scene_motion_body_at_end(object)) {
         return;
     }
-    int state = func_02057cf4();
+    int state = Obj020dd33c_Stage();
     if (state == 5) {
-        if (func_02057d0c(5, object) == 0) {
+        if (Obj020dd33c_SetActorMode(5, object) == 0) {
             return;
         }
         scene_motion_play(object, 0x2e, data_020c80f8, SCENE_MOTION_PLAY_ONCE);
         scene_motion_sound(object, 0x4f);
         self->step = 5;
     } else if (state == 7) {
-        if (func_02057d0c(7, object) == 0) {
+        if (Obj020dd33c_SetActorMode(7, object) == 0) {
             return;
         }
         scene_motion_play(object, 0x2d, data_020c80f8, SCENE_MOTION_PLAY_3);
         self->step = 0x12;
     } else {
         scene_motion_play(object, 0x24, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
-        func_02019af0(self, 1);
+        SceneMotion_SetDone(self, 1);
         self->step = SCENE_MOTION_KIND14_END;
     }
 }
@@ -1248,7 +1227,7 @@ CLEAN_AS(func_02017b44, SceneMotion_Kind14Step17)
  * data_021c9350 takes the object with 2, the first standard animation loops (step 19). */
 void SceneMotion_Kind14Step18(SceneMotion *self, u8 *object)
 {
-    if (scene_motion_body_at_end(object) && func_02057d0c(2, object) != 0) {
+    if (scene_motion_body_at_end(object) && Obj020dd33c_SetActorMode(2, object) != 0) {
         scene_motion_play(object, 0, data_020c80f8, SCENE_MOTION_PLAY_LOOP);
         self->step = 0x13;
     }
@@ -1260,12 +1239,12 @@ CLEAN_AS(func_02017af0, SceneMotion_Kind14Step18)
  * says so too. */
 void SceneMotion_Kind14Step19(SceneMotion *self, u8 *object)
 {
-    SceneMotionArgs *args = func_02019de4(self);
-    if (func_02057bf0(2) != 0) {
+    SceneMotionArgs *args = SceneMotion_Args(self);
+    if (Obj020dd33c_InMode(2) != 0) {
         return;
     }
-    func_02057b90(9, object);
-    if (func_02057c20((void *) (uintptr_t) args->partner) != 0 && func_ov004_0222bf50() != 0) {
+    Obj020dd33c_SetStage(9, object);
+    if (Obj020dd33c_Lead((void *) (uintptr_t) args->partner) != 0 && RoomPlayerActor_RequestItemBack() != 0) {
         self->step = 9;
     }
 }

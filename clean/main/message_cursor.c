@@ -3,6 +3,9 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "message_walker.h"
+#include "text_base.h"
+#include "text_walker.h"
 
 static_assert(sizeof(MessageWalker) == 0x24, "walker");
 static_assert(offsetof(MessageLineWalker, line) == 0x24, "line");
@@ -24,16 +27,8 @@ extern const u8 data_020e3e68[]; /* the walkers' base class's vtable */
 extern const u8 data_020e5230[]; /* the line walker's */
 extern const u8 data_020e5254[]; /* the cursor's */
 
-/* The walkers' base: its constructor and destructor, back to the start, a text to walk, and a
- * walk up to the end or until slot 6 says to stop. */
-extern void *func_020a9484(void *walker);
-extern void *func_020a941c(void *walker);
-extern void func_020a94a4(void *walker);
-extern void func_020a9354(void *walker, int text);
-extern int func_020a92d8(void *walker, int stop);
 /* Clears `size` bytes; text: raw characters appended. */
 extern void *func_02137550(void *dst, u32 size);
-extern int func_020a89f8(void *text, const void *characters);
 
 typedef int MessageCursorCharactersFunction(const void *object);
 
@@ -83,7 +78,7 @@ MessageLineWalker *MessageLineWalker_Delete(MessageLineWalker *walker)
 {
     walker->base.vtable = data_020e5230;
     walker->base.vtable = data_020e3e68;
-    func_020a941c(walker);
+    MessageWalker_BaseDestruct(walker);
     Heap_OperatorDeleteB(walker);
     return walker;
 }
@@ -96,7 +91,7 @@ void *MessageLineWalker_Destruct(void *walker)
     MessageWalker *self = walker;
     self->vtable = data_020e5230;
     self->vtable = data_020e3e68;
-    func_020a941c(walker);
+    MessageWalker_BaseDestruct(walker);
     return walker;
 }
 CLEAN_AS(func_020b4ab4, MessageLineWalker_Destruct)
@@ -104,7 +99,7 @@ CLEAN_AS(func_020b4ab4, MessageLineWalker_Destruct)
 /* func_020b4ad4: the line walker's constructor: no line, nothing wanted or handed. */
 MessageLineWalker *MessageLineWalker_Construct(MessageLineWalker *walker)
 {
-    func_020a9484(walker);
+    MessageWalker_Construct((MessageWalker *) walker);
     walker->base.vtable = data_020e3e68;
     walker->base.vtable = data_020e5230;
     walker->line = NULL;
@@ -122,7 +117,7 @@ void MessageCursor_Write(MessageCursor *cursor, int character)
     func_02137550(characters, sizeof(characters));
     characters[0] = (u8) character;
     characters[1] = (u8) (character >> 8);
-    func_020a89f8(cursor->output, characters);
+    TextBase_AppendChars(cursor->output, (const char *) characters);
 }
 CLEAN_AS(func_020b4afc, MessageCursor_Write)
 
@@ -196,7 +191,7 @@ int MessageCursor_Read(MessageCursor *cursor)
     cursor->mode = MESSAGE_CURSOR_READ;
     cursor->count = 1;
     cursor->character = 0;
-    func_020a92d8(cursor, 0);
+    TextWalker_Run((MessageWalker *) cursor, 0);
     cursor->mode = MESSAGE_CURSOR_IDLE;
     return cursor->character;
 }
@@ -207,7 +202,7 @@ void MessageCursor_Copy(MessageCursor *cursor)
 {
     cursor->mode = MESSAGE_CURSOR_COPY;
     cursor->count = 1;
-    func_020a92d8(cursor, 0);
+    TextWalker_Run((MessageWalker *) cursor, 0);
     cursor->mode = MESSAGE_CURSOR_IDLE;
 }
 CLEAN_AS(func_020b4bd4, MessageCursor_Copy)
@@ -217,7 +212,7 @@ void MessageCursor_Mask(MessageCursor *cursor, int count)
 {
     cursor->mode = MESSAGE_CURSOR_MASK;
     cursor->count = count;
-    func_020a92d8(cursor, 0);
+    TextWalker_Run((MessageWalker *) cursor, 0);
     cursor->mode = MESSAGE_CURSOR_IDLE;
 }
 CLEAN_AS(func_020b4bf0, MessageCursor_Mask)
@@ -225,8 +220,8 @@ CLEAN_AS(func_020b4bf0, MessageCursor_Mask)
 /* func_020b4c0c: the walk started again from the mark. */
 void MessageCursor_Rewind(void *cursor)
 {
-    func_020a94a4(cursor);
-    func_020a9354(cursor, (int) ((MessageCursor *) cursor)->mark);
+    MessageWalker_Reset(cursor);
+    MessageWalker_Start(cursor, (int) ((MessageCursor *) cursor)->mark);
 }
 CLEAN_AS(func_020b4c0c, MessageCursor_Rewind)
 
@@ -256,7 +251,7 @@ void MessageCursor_Reset(void *cursor)
     self->done = 0;
     self->character = 0;
     self->count = 0;
-    func_020a94a4(cursor);
+    MessageWalker_Reset(cursor);
 }
 CLEAN_AS(func_020b4c40, MessageCursor_Reset)
 
@@ -266,7 +261,7 @@ void *MessageCursor_Delete(void *cursor)
     MessageWalker *self = cursor;
     self->vtable = data_020e5254;
     self->vtable = data_020e3e68;
-    func_020a941c(cursor);
+    MessageWalker_BaseDestruct(cursor);
     Heap_OperatorDeleteB(cursor);
     return cursor;
 }
@@ -279,7 +274,7 @@ void *MessageCursor_Destruct(void *cursor)
     MessageWalker *self = cursor;
     self->vtable = data_020e5254;
     self->vtable = data_020e3e68;
-    func_020a941c(cursor);
+    MessageWalker_BaseDestruct(cursor);
     return cursor;
 }
 CLEAN_AS(func_020b4c84, MessageCursor_Destruct)
@@ -287,7 +282,7 @@ CLEAN_AS(func_020b4c84, MessageCursor_Destruct)
 /* func_020b4ca4: the cursor's constructor, every field cleared. */
 MessageCursor *MessageCursor_Construct(MessageCursor *cursor)
 {
-    func_020a9484(cursor);
+    MessageWalker_Construct((MessageWalker *) cursor);
     cursor->base.vtable = data_020e3e68;
     cursor->base.vtable = data_020e5254;
     cursor->mode = MESSAGE_CURSOR_IDLE;

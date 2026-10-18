@@ -7,6 +7,8 @@
 #include "sound.h" /* SoundSys_PlaySe */
 #include "talk_answers.h"
 #include "text_draw.h"
+#include "mes_bg.h"
+#include "mes_slider_window.h"
 
 static_assert(offsetof(TalkSlider, focus) == 0x2c, "talk slider");
 static_assert(offsetof(TalkSlider, choices) == 0x34, "talk slider");
@@ -37,19 +39,6 @@ static_assert(sizeof(TalkSlider) == 0x38, "talk slider");
 #define TALK_SLIDER_SOUND_MOVE 0x51
 #define TALK_SLIDER_SE_NOTCH 0x19
 
-/* The talk's choices: the one taken (negative while none is), and the one taken from a level
- * (0 to 0x1000). */
-extern unsigned int func_020ab504(void *choices);
-extern void func_020ab3a8(void *choices, int level);
-
-/* The slider window's message window: whether the knob can be moved, the knob's y at level 0
- * and at the top level, and the knob's place. */
-extern int func_020abd98(void *window);
-extern int func_020abcfc(void *window);
-extern int func_020abd14(void *window);
-extern int func_020abd44(void *window);
-extern int func_020abd2c(void *window);
-
 static int talk_slider_clamp(int value, int low, int high)
 {
     if (value < low) {
@@ -69,12 +58,12 @@ void TalkSlider_PressOk(TalkSlider *slider)
     if (slider->choices == NULL) {
         return;
     }
-    if ((int) func_020ab504(slider->choices) >= 0) {
+    if ((int) TalkAnswers_Picked(slider->choices) >= 0) {
         return;
     }
     if ((MenuInput_UsesTouch() && TalkSlider_OkTouched(slider)) ||
         (MenuInput_UsesButtons() && TalkSlider_OkPressedWithButtons(slider))) {
-        func_020ab3a8(slider->choices, slider->level);
+        TalkAnswers_PickByLevel(slider->choices, slider->level);
     }
 }
 CLEAN_AS(func_020aa83c, TalkSlider_PressOk)
@@ -93,13 +82,13 @@ CLEAN_AS(func_020aa880, TalkSlider_FocusOk)
  * REQUIRES: the track's two ends at different y (the original divides by their distance). */
 void TalkSlider_MoveKnob(TalkSlider *slider)
 {
-    if (slider->held != 0 && func_020abd98(slider->window) != 0) {
+    if (slider->held != 0 && MesSliderWindow_GrabSettled(slider->window) != 0) {
         if (MenuInput_UsesTouch()) {
             int x;
             int y;
             if (MenuInput_TouchPosition(&x, &y)) {
-                int bottom_y = func_020abcfc(slider->window);
-                int top_y = func_020abd14(slider->window);
+                int bottom_y = MesSliderWindow_TrackBottomY(slider->window);
+                int top_y = MesSliderWindow_TrackTopY(slider->window);
                 int knob_y = y - slider->grab_offset;
                 if (knob_y < top_y) {
                     knob_y = top_y;
@@ -210,8 +199,8 @@ CLEAN_AS(func_020aaa54, TalkSlider_GrabbedByButtons)
 /* func_020aaa74: 1 when the knob is touched; where, from its top, is kept. */
 int TalkSlider_GrabbedByTouch(TalkSlider *slider)
 {
-    int knob_x = func_020abd44(slider->window);
-    int knob_y = func_020abd2c(slider->window);
+    int knob_x = MesSliderWindow_TrackX(slider->window);
+    int knob_y = MesSliderWindow_KnobY(slider->window);
     if (!MenuInput_TouchPressedIn(knob_x - TALK_SLIDER_KNOB_LEFT, knob_x + TALK_SLIDER_KNOB_RIGHT, knob_y,
                                   knob_y + TALK_SLIDER_KNOB_HEIGHT)) {
         return 0;
@@ -239,14 +228,6 @@ CLEAN_AS(func_020aaa74, TalkSlider_GrabbedByTouch)
 
 /* The sound of the focus moving. */
 #define TALK_SLIDER_SE_FOCUS 0x0b
-
-/* An answer and its text (talk_answers.h), the pick cleared, all the answers cleared. */
-extern TalkAnswer *func_020ab550(TalkAnswers *answers, int index);
-extern TextBase *func_020ab798(TalkAnswer *answer);
-extern void func_020ab58c(TalkAnswers *answers);
-extern void func_020ab558(TalkAnswers *answers);
-/* The first VRAM tile of label `row` of `rows`. */
-extern int func_020ac318(int row, int rows);
 
 /* func_020aaabc: the knob taken or let go. Held, it is let go when the input in use lets it
  * go (the touch screen untouched, or A released); else it is taken when the input in use
@@ -378,9 +359,9 @@ void TalkSlider_MakeLabels(TalkSlider *slider)
 {
     TalkAnswers *answers = slider->choices;
     for (unsigned int i = 0; i < TALK_SLIDER_LABELS; i++) {
-        TalkAnswer *answer = func_020ab550(answers, (int) i);
-        int first_tile = func_020ac318((int) i, TALK_SLIDER_LABELS);
-        TextBase *text = func_020ab798(answer);
+        TalkAnswer *answer = TalkAnswers_Answer(answers, (int) i);
+        int first_tile = MesBg_LabelTile((int) i, TALK_SLIDER_LABELS);
+        TextBase *text = TalkAnswers_Text(answer);
         LabelBox *label = LabelBox_NewInVram(first_tile, TALK_SLIDER_LABEL_CELLS, TALK_SLIDER_LABEL_ROWS);
         if (label == NULL) {
             continue;
@@ -472,7 +453,7 @@ CLEAN_AS(func_020aad9c, TalkSlider_Update)
 void TalkSlider_Close(TalkSlider *slider)
 {
     TalkSlider_FreeLabels(slider);
-    func_020ab558(slider->choices);
+    TalkAnswers_ClearAnswers(slider->choices);
     slider->label_cells = 0;
     slider->choices = NULL;
 }
@@ -496,7 +477,7 @@ CLEAN_AS(func_020aae38, TalkSlider_Show)
  * the middle of the track and focused, the labels measured, START not pressed. */
 void TalkSlider_Start(TalkSlider *slider)
 {
-    func_020ab58c(slider->choices);
+    TalkAnswers_ClearPick(slider->choices);
     TalkSlider_MakeLabels(slider);
     slider->speed = 0;
     slider->level = TALK_SLIDER_LEVEL_START;

@@ -1,5 +1,5 @@
 /* The villager of a house at the flea market (class vtable 0x02253bb4, 0xa60 bytes, made by
- * func_ov004_0221ff70, the overlay's profile of kinds 0x86 and 0x8a; its lines come from the
+ * FleaMarketVillager_New, the overlay's profile of kinds 0x86 and 0x8a; its lines come from the
  * message files "ev_fmarket2" and "q11_*"): a town villager scene object (main's
  * villager_scene_slots.h) that sells the furniture of its house to the player.
  *
@@ -30,7 +30,7 @@
  * The stages, as the code here reads them: 1 the villager asks whether the player wants to
  * buy ("q11_trade1"); 2 the player looks about the room and may ask about the item ahead of
  * them; 3 the player stands at the room's start point. The states of its machine are set by
- * func_ov004_0221fdf4. */
+ * FleaMarketVillager_SetState. */
 #ifndef CLEAN_OV004_FLEA_MARKET_VILLAGER_H
 #define CLEAN_OV004_FLEA_MARKET_VILLAGER_H
 

@@ -6,19 +6,19 @@
  *
  * - its lid (Chest.lid), entered through vtable slot 0x70: closed (the switch on), opening
  *   (sound 1, the animations of variant 0 once), open (the switch off) and closing (sound 2).
- *   Touching it closed asks the scene for an event (func_0203e0a8); a chest of kind 0xb does so
+ *   Touching it closed asks the scene for an event (EventQueue_RequestKind6); a chest of kind 0xb does so
  *   only when the cells in front of it are free, else the touch is undone. In mode 2 (unk_76C)
  *   it opens and closes by itself;
  * - its talk (Chest.talk_step): the scene's event 1 (vtable slot 0x4c) starts the menu when
- *   func_020b67d4 and Room_Check0220fed0 allow it, else a talk; event 8 ends either. Both first
- *   send actor 4 (func_02096718(4)) message 0x2d with the chest's index and its entry's values
- *   (func_ov004_0222c030) and wait for func_ov004_0222c2b0, then open the lid; the menu opens
+ *   SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else a talk; event 8 ends either. Both first
+ *   send actor 4 (SessionPlayers_FieldActor(4)) message 0x2d with the chest's index and its entry's values
+ *   (RoomPlayerActor_RequestChestApproach) and wait for RoomPlayerActor_TestFlag2, then open the lid; the menu opens
  *   group 9 in mode 0x22, the talk takes the receiver and sets its state byte to one of 16
- *   values. Both end by sending actor 4 message 0x2f with the index (func_ov004_0222c00c) and
- *   closing the lid, after which the scene goes on (func_0203e020).
+ *   values. Both end by sending actor 4 message 0x2f with the index (RoomPlayerActor_RequestChestClose) and
+ *   closing the lid, after which the scene goes on (EventQueue_FinishObjectEvent).
  *
  * Once its model is bound it binds the animations of variant 0, its lid starts closed when its
- * switch is on (or func_ov004_0223c10c says so), else open, and it does not talk; each frame it
+ * switch is on (or RoomObjects_InNookOrScene0AOr0F says so), else open, and it does not talk; each frame it
  * runs the talk, then the lid. It is idle when the base class says so and it does not talk. */
 #ifndef CLEAN_OV004_CHEST_H
 #define CLEAN_OV004_CHEST_H
@@ -47,7 +47,7 @@ enum ChestLid {
 enum ChestTalkStep {
     CHEST_TALK_NONE = 0,
     CHEST_MENU_NEXT = 1,     /* the next frame sends the message */
-    CHEST_MENU_ANNOUNCE = 2, /* sends message 0x2d, waits for func_ov004_0222c2b0 */
+    CHEST_MENU_ANNOUNCE = 2, /* sends message 0x2d, waits for RoomPlayerActor_TestFlag2 */
     CHEST_MENU_OPEN = 3,     /* opens the lid, waits for it to be open */
     CHEST_MENU = 4,          /* opens the menu, waits for it to close */
     CHEST_MENU_CLOSE = 5,    /* closes the lid, waits for it to be closed */

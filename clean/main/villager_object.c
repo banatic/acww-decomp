@@ -5,6 +5,9 @@
 #include "furniture_info.h"
 #include "item_attributes.h"
 #include "item_object.h"
+#include "date_time.h"
+#include "player_id.h"
+#include "villager_mode_record.h"
 
 static_assert(sizeof(VillagerModeRecord) == 0x24, "mode record");
 static_assert(offsetof(VillagerObject, player) == 0x0c, "player");
@@ -22,25 +25,6 @@ static_assert(offsetof(VillagerRecord, object) == 0x24, "record");
 
 extern const u8 data_020d1a30[VILLAGER_OBJECT_COUNTED_STEPS]; /* the count each step of type 4 needs */
 extern const int data_020d1a7c[];                             /* the steps of types 0-4 */
-
-/* The mode record: a new mode drawn (its scores taken from `a`, func_0209c470 run when `b` is
- * not 0, both dates set to now), its mode, emptied, destroyed and constructed. */
-extern void func_0209c334(VillagerModeRecord *record, int a, int b);
-extern int func_0209c330(const VillagerModeRecord *record);
-extern void func_0209c398(VillagerModeRecord *record);
-extern VillagerModeRecord *func_0209c3c8(VillagerModeRecord *record);
-extern VillagerModeRecord *func_0209c3e4(VillagerModeRecord *record);
-/* The villager's object: emptied, destroyed and constructed. */
-extern void func_0209baf4(VillagerObject *object);
-extern VillagerObject *func_0209bb30(VillagerObject *object);
-extern VillagerObject *func_0209bb48(VillagerObject *object);
-/* An object: whether it holds something, its type, and its date (the object itself). */
-extern int func_0209bd44(const u8 *object);
-extern int func_0209bc40(const u8 *object);
-extern DateTime *func_0209bc20(u8 *object);
-/* A type's group (0 for 0-4, 1 for 5-21, 2 for none) and its place in the group. */
-extern int func_0209bd10(int type);
-extern int func_0209bcd4(int *place, int type);
 
 /* Bit `bit` of a byte, as the ARM shifts: by the low byte of `bit`, nothing from 8 on. */
 static u8 villager_object_bit(int bit)
@@ -67,24 +51,24 @@ CLEAN_AS(func_0209b5ec, VillagerObject_RecordMode)
  * dropped. */
 void VillagerObject_DrawRecordMode(VillagerRecord *record, int a, int b)
 {
-    func_0209c334(&record->mode, a, b);
-    func_0209c330(&record->mode);
+    VillagerModeRecord_Redraw(&record->mode, (const u8 *) (uintptr_t) a, b);
+    VillagerModeRecord_Mode(&record->mode);
 }
 CLEAN_AS(func_0209b5f0, VillagerObject_DrawRecordMode)
 
 /* func_0209b604: the mode record and the object emptied. */
 void VillagerObject_ClearRecord(VillagerRecord *record)
 {
-    func_0209c398(&record->mode);
-    func_0209baf4(&record->object);
+    VillagerModeRecord_Init(&record->mode);
+    VillagerObject_Clear(&record->object);
 }
 CLEAN_AS(func_0209b604, VillagerObject_ClearRecord)
 
 /* func_0209b61c: the record's destructor. */
 VillagerRecord *VillagerObject_DestructRecord(VillagerRecord *record)
 {
-    func_0209bb30(&record->object);
-    func_0209c3c8(&record->mode);
+    VillagerObject_Destruct(&record->object);
+    VillagerModeRecord_Destruct(&record->mode);
     return record;
 }
 CLEAN_AS(func_0209b61c, VillagerObject_DestructRecord)
@@ -92,8 +76,8 @@ CLEAN_AS(func_0209b61c, VillagerObject_DestructRecord)
 /* func_0209b634: the record's constructor. */
 VillagerRecord *VillagerObject_ConstructRecord(VillagerRecord *record)
 {
-    func_0209c3e4(&record->mode);
-    func_0209bb48(&record->object);
+    VillagerModeRecord_Construct(&record->mode);
+    VillagerObject_Construct(&record->object);
     return record;
 }
 CLEAN_AS(func_0209b634, VillagerObject_ConstructRecord)
@@ -103,7 +87,8 @@ CLEAN_AS(func_0209b634, VillagerObject_ConstructRecord)
 int VillagerObject_IsCountReached(VillagerObject *object)
 {
     u8 *held = VillagerObject_Base(object);
-    if (func_0209bd44(held) == 0 || func_0209bc40(held) != VILLAGER_OBJECT_COUNTED_TYPE) {
+    if (ItemObject_IsInUse((ItemObject *) (void *) held) == 0 ||
+        ItemObject_Type((ItemObject *) (void *) held) != VILLAGER_OBJECT_COUNTED_TYPE) {
         return 0;
     }
     int step = VillagerObject_Step(object);
@@ -180,7 +165,7 @@ CLEAN_AS(func_0209b8c4, VillagerObject_Item)
 /* func_0209b8c8: the date of the object (func_0209bc20). */
 DateTime *VillagerObject_Date(VillagerObject *object)
 {
-    return func_0209bc20(object->object);
+    return ItemObject_Date((ItemObject *) (void *) object->object);
 }
 CLEAN_AS(func_0209b8c8, VillagerObject_Date)
 
@@ -188,9 +173,9 @@ CLEAN_AS(func_0209b8c8, VillagerObject_Date)
  * types 0-4); 0 for the types of the other groups. */
 int VillagerObject_StepsForType(int type)
 {
-    if (func_0209bd10(type) == 0) {
+    if (ItemObject_GroupOfType(type) == 0) {
         int place = 0;
-        if (func_0209bcd4(&place, type) != 0) {
+        if (ItemObject_PlaceInGroupOfType(&place, type) != 0) {
             return data_020d1a7c[place];
         }
     }
@@ -232,13 +217,6 @@ CLEAN_AS(func_0209b91c, VillagerObject_Base)
 #define VILLAGER_OBJECT_KIND_STEP 2
 #define VILLAGER_OBJECT_STEP_CLEARED 7
 #define VILLAGER_OBJECT_NO_ITEM 0xfff1
-
-/* A player's id: copied, cleared, destroyed and constructed. */
-extern void func_0209525c(DesignCreator *dst, const DesignCreator *src);
-extern void func_02095238(DesignCreator *player);
-extern int func_0209526c(DesignCreator *player);
-extern void *func_0209529c(DesignCreator *player);
-extern void func_0209e474(DateTime *date); /* the date set to now */
 
 /* The object at the start of the villager's object, as an ItemObject. */
 static ItemObject *villager_object_held(VillagerObject *object)
@@ -301,11 +279,11 @@ void VillagerObject_Set(VillagerObject *object, u32 type, const u16 *item, const
         }
     }
     if (player != NULL) {
-        func_0209525c(VillagerObject_Player(object), player);
-        func_0209e474(ItemObject_Date(villager_object_held(object)));
+        PlayerId_Copy(VillagerObject_Player(object), player);
+        DateTime_Now(ItemObject_Date(villager_object_held(object)));
         ItemObject_SetHigh3(villager_object_held(object), 0);
     } else {
-        func_02095238(VillagerObject_Player(object));
+        PlayerId_Clear(VillagerObject_Player(object));
     }
 }
 CLEAN_AS(func_0209b9cc, VillagerObject_Set)
@@ -317,7 +295,7 @@ void VillagerObject_ClearItem(VillagerObject *object)
     ItemObject_SetLow5(villager_object_held(object), 0);
     u16 none = VILLAGER_OBJECT_NO_ITEM;
     ItemObject_SetItem(villager_object_held(object), &none);
-    func_02095238(VillagerObject_Player(object));
+    PlayerId_Clear(VillagerObject_Player(object));
     *VillagerObject_Item(object) = VILLAGER_OBJECT_NO_ITEM;
 }
 CLEAN_AS(func_0209ba7c, VillagerObject_ClearItem)
@@ -344,7 +322,7 @@ CLEAN_AS(func_0209bae4, VillagerObject_SetObject)
 void VillagerObject_Clear(VillagerObject *object)
 {
     ItemObject_Clear(villager_object_held(object));
-    func_02095238(&object->player);
+    PlayerId_Clear(&object->player);
     object->step = VILLAGER_OBJECT_STEP_CLEARED;
     object->item = VILLAGER_OBJECT_NO_ITEM;
     object->count = 0;
@@ -356,7 +334,7 @@ CLEAN_AS(func_0209baf4, VillagerObject_Clear)
 /* func_0209bb30: the destructor. */
 VillagerObject *VillagerObject_Destruct(VillagerObject *object)
 {
-    func_0209526c(&object->player);
+    PlayerId_Destruct(&object->player);
     ItemObject_Destruct(villager_object_held(object));
     return object;
 }
@@ -367,7 +345,7 @@ CLEAN_AS(func_0209bb30, VillagerObject_Destruct)
 VillagerObject *VillagerObject_Construct(VillagerObject *object)
 {
     ItemObject_Construct(villager_object_held(object));
-    func_0209529c(&object->player);
+    PlayerId_Construct(&object->player);
     object->item = VILLAGER_OBJECT_NO_ITEM;
     return object;
 }

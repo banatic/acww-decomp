@@ -23,6 +23,7 @@
 #include "main/session_players.h"
 #include "main/tile_requests.h"
 #include "tile_event.h"
+#include "growth_part.h"
 
 static_assert(sizeof(GrowthModel) == 0x14c, "a model");
 static_assert(offsetof(GrowthModel, position) == 0xc0, "position");
@@ -66,9 +67,6 @@ extern void NNS_G3dMdlSetMdlEmi(u8 *model, int material, unsigned short colour);
  * polygon ID. */
 extern void func_0210744c(u8 *model, int value);
 extern void func_02107494(u8 *model, int id);
-/* Starts a part of the table for the model's mode, `stage` and `parts`, at `tile`. */
-extern GrowthModelPart *func_ov003_02223c7c(void *parts, int mode, int stage, int item, TileChangesTile *tile, int count);
-extern GrowthModelPart *func_ov003_02223d14(void *parts, int mode, int stage, int item, TileChangesTile *tile, int count);
 
 /* The sounds. */
 #define GROWTH_MODEL_VOLUME 0x7f
@@ -550,11 +548,11 @@ void GrowthModel_Update(GrowthModel *model)
                         int stage = growth_model_short_line(*item) ? MapItem_ShortStage(item) : MapItem_GrowthStage(item);
                         if (stage > 0) {
                             TileChangesTile at = model->tile;
-                            model->part_a = func_ov003_02223c7c(data_ov003_0223cfa0, model->mode, stage - 1,
-                                                                (int) (intptr_t) item, &at, model->parts);
+                            model->part_a = (GrowthModelPart *) GrowthPart_StartFirst(
+                                (GrowthParts *) data_ov003_0223cfa0, model->mode, stage - 1, item, &at, model->parts);
                             TileChangesTile at2 = model->tile;
-                            model->part_b = func_ov003_02223d14(data_ov003_0223cfa0, model->mode, stage - 1,
-                                                                (int) (intptr_t) item, &at2, model->parts);
+                            model->part_b = (GrowthModelPart *) GrowthPart_StartSecond(
+                                (GrowthParts *) data_ov003_0223cfa0, model->mode, stage - 1, item, &at2, model->parts);
                             model->parts++;
                         }
                     }

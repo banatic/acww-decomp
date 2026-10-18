@@ -3,6 +3,11 @@
 
 #include "clean.h"
 #include "main/session.h"
+#include "date_random.h"
+#include "date_time.h"
+#include "item_code.h"
+#include "item_info.h"
+#include "shop_stock.h"
 
 static_assert(offsetof(ShopListA, stocked) == 0x0c, "stocked");
 static_assert(offsetof(ShopListA, sold) == 0x10, "sold");
@@ -16,20 +21,6 @@ extern NetSession *data_020ccf94;
 /* The day's random numbers, seeded from the date by func_02063ce0. */
 extern u8 data_021f4a80[];
 
-/* `count` items of the lot (kind, group), at items[*next], *next moved on. */
-extern void func_020b0164(u16 *items, u32 *next, int kind, int group, u32 count, int size, u8 convert);
-extern u16 *func_020b0038(u32 index, u16 *items, u8 *sold, u32 count, u16 *out);
-extern int func_020aff84(u16 *item, u16 *items, u8 *sold, u32 count); /* its place, or -1 */
-extern int func_020b0074(int index, int count, u8 *sold);             /* marks it sold, if not */
-extern void func_020b00c8(u16 *items, u8 *sold, u32 count);           /* none, none sold */
-extern u32 func_02063cd4(void *random, u32 range);                    /* a random number below `range` */
-extern void func_02063ce0(void *random, int year, int month, int day);
-extern u32 func_02062124(void);
-extern u32 func_02062118(void);
-extern int func_0204bcdc(u16 *item); /* whether the item is of the kinds compared by number */
-extern int func_0204bc64(u16 *item);
-extern void func_0209e474(DateTime *now);            /* the clock's date and time */
-extern void func_0209e140(DateTime *when, int days); /* minus `days` */
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void func_020051b0(void *object); /* a destructor that does nothing */
 extern void func_02034ce0(void *item);   /* an item's constructor: 0xfff1 */
@@ -40,9 +31,9 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
  * else by code. */
 static int shop_list_a_same_item(u16 *item, u16 *other)
 {
-    if (func_0204bcdc(item) != 0) {
-        int a = func_0204bc64(item);
-        int b = func_0204bc64(other);
+    if (ItemCode_HasVariant(item) != 0) {
+        int a = ItemCode_VariantItem(item);
+        int b = ItemCode_VariantItem(other);
         return a == b;
     }
     return *item == *other;
@@ -58,7 +49,7 @@ CLEAN_AS(func_020ae794, ShopListA_StockDone)
 /* func_020ae798: one item of the lot (5, 0x1d). */
 void ShopListA_StockLot5(ShopListA *list, u32 *next)
 {
-    func_020b0164(list->items, next, 5, 0x1d, 1, SHOP_LIST_A_DRAW_SIZE, 1);
+    ShopStock_DrawLot(list->items, next, 5, 0x1d, 1, SHOP_LIST_A_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae798, ShopListA_StockLot5)
 
@@ -66,25 +57,25 @@ CLEAN_AS(func_020ae798, ShopListA_StockLot5)
  * func_02062124 / (func_02062124 + func_02062118). */
 void ShopListA_StockLot6Or8(ShopListA *list, u32 *next)
 {
-    u32 first = func_02062124();
-    u32 second = func_02062118();
-    u32 draw = func_02063cd4(data_021f4a80, first + second);
-    int kind = draw < func_02062124() ? 6 : 8;
-    func_020b0164(list->items, next, kind, 0x1d, 1, SHOP_LIST_A_DRAW_SIZE, 1);
+    u32 first = ItemInfo_Count13c8Unk06Is1d();
+    u32 second = ItemInfo_Count13a8Unk06Is1d();
+    u32 draw = DatedRandom_Below((DatedRandom *) (void *) data_021f4a80, first + second);
+    int kind = draw < ItemInfo_Count13c8Unk06Is1d() ? 6 : 8;
+    ShopStock_DrawLot(list->items, next, kind, 0x1d, 1, SHOP_LIST_A_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae7b4, ShopListA_StockLot6Or8)
 
 /* func_020ae814: three items of the lot (2, 0). */
 void ShopListA_StockLot2(ShopListA *list, u32 *next)
 {
-    func_020b0164(list->items, next, 2, 0, 3, SHOP_LIST_A_DRAW_SIZE, 1);
+    ShopStock_DrawLot(list->items, next, 2, 0, 3, SHOP_LIST_A_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae814, ShopListA_StockLot2)
 
 /* func_020ae834: one item of the lot (7, 0x1d). */
 void ShopListA_StockLot7(ShopListA *list, u32 *next)
 {
-    func_020b0164(list->items, next, 7, 0x1d, 1, SHOP_LIST_A_DRAW_SIZE, 1);
+    ShopStock_DrawLot(list->items, next, 7, 0x1d, 1, SHOP_LIST_A_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae834, ShopListA_StockLot7)
 
@@ -106,21 +97,21 @@ CLEAN_AS(func_020ae850, ShopListA_TakeItem)
 /* func_020ae8bc: marks item `index` sold; whether it was not yet. */
 int ShopListA_MarkSold(ShopListA *list, int index)
 {
-    return func_020b0074(index, SHOP_LIST_A_ITEMS, list->sold);
+    return ShopStock_MarkSold(index, SHOP_LIST_A_ITEMS, list->sold);
 }
 CLEAN_AS(func_020ae8bc, ShopListA_MarkSold)
 
 /* func_020ae8cc: the place of `item` among the items not sold, or -1. */
 int ShopListA_FindItem(ShopListA *list, u16 *item)
 {
-    return func_020aff84(item, list->items, list->sold, SHOP_LIST_A_ITEMS);
+    return ShopStock_Find(item, list->items, list->sold, SHOP_LIST_A_ITEMS);
 }
 CLEAN_AS(func_020ae8cc, ShopListA_FindItem)
 
 /* func_020ae8e4: item `index` (data_021f49f4 when sold); its code also in `out` unless NULL. */
 u16 *ShopListA_Item(ShopListA *list, u32 index, u16 *out)
 {
-    return func_020b0038(index, list->items, list->sold, SHOP_LIST_A_ITEMS, out);
+    return ShopStock_Item(index, list->items, list->sold, SHOP_LIST_A_ITEMS, out);
 }
 CLEAN_AS(func_020ae8e4, ShopListA_Item)
 
@@ -150,7 +141,7 @@ CLEAN_AS(func_020ae92c, ShopListA_StockDateDiffers)
 void ShopListA_Restock(ShopListA *list, int year, int month, int day)
 {
     ShopListA_Clear(list);
-    func_02063ce0(data_021f4a80, year, month, day);
+    DatedRandom_SetDate((DatedRandom *) (void *) data_021f4a80, year, month, day);
     u32 next = 0;
     ShopListA_StockLot7(list, &next);
     ShopListA_StockLot2(list, &next);
@@ -164,9 +155,9 @@ CLEAN_AS(func_020ae96c, ShopListA_Restock)
 void ShopListA_Refresh(ShopListA *list)
 {
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     if (now.hour < SHOP_LIST_A_DAY_START_HOUR) {
-        func_0209e140(&now, 1);
+        DateTime_SubtractDays(&now, 1);
     }
     if (Session_IsLinked(data_020ccf94) != 0) {
         return;
@@ -196,7 +187,7 @@ CLEAN_AS(func_020aea20, ShopListA_Init)
 /* func_020aea28: no items, none sold, and a restock asked for. */
 void ShopListA_Clear(ShopListA *list)
 {
-    func_020b00c8(list->items, list->sold, SHOP_LIST_A_ITEMS);
+    ShopStock_Clear(list->items, list->sold, SHOP_LIST_A_ITEMS);
     list->stocked.unused = 1;
 }
 CLEAN_AS(func_020aea28, ShopListA_Clear)

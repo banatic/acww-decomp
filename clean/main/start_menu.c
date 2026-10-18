@@ -12,6 +12,18 @@
 #include "savings.h"
 #include "session.h"
 #include "session_link.h"
+#include "activity_job.h"
+#include "event_queue.h"
+#include "link_global.h"
+#include "message_receiver.h"
+#include "scene_exit.h"
+#include "scene_place.h"
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "start_kind.h"
+#include "talk_answers.h"
+#include "talk_object.h"
+#include "talk_receiver.h"
 
 static_assert(sizeof(StartMenuReceiver) == 0x50 && offsetof(StartMenuReceiver, talk) == 0x40, "receiver");
 static_assert(offsetof(StartMenuReceiver, owner) == 0x48 && offsetof(StartMenuReceiver, unk_4c) == 0x4c, "receiver");
@@ -36,50 +48,6 @@ extern NetSession *data_020ccf94;
 extern u8 data_021c75b8;
 /* The savings total each level of game variable 0x4c sets (1-21). */
 extern const s32 data_020d1b98[];
-
-/* The receiver's base class. */
-extern StartMenuReceiver *func_02066a30(StartMenuReceiver *receiver); /* constructor */
-extern void *func_02066994(StartMenuReceiver *receiver);              /* destructor */
-extern void func_020a8164(StartMenuReceiver *receiver, const char *name);
-
-/* The talks: talk `index`; unlinking its receiver; linking a receiver to it. */
-extern StartMenuTalk *func_020682e0(int index);
-extern void func_02068320(StartMenuTalk *talk);
-extern void func_02068340(StartMenuTalk *talk, StartMenuReceiver *receiver);
-extern void func_02068358(StartMenuTalk *talk);
-extern void func_02068364(StartMenuTalk *talk, int value);
-extern void func_02068388(StartMenuTalk *talk, int value);
-extern void func_02068434(StartMenuTalk *talk);
-extern void func_02068440(StartMenuTalk *talk);
-/* Gives the talk message `*message` of file `name`. */
-extern void func_0206844c(StartMenuTalk *talk, const u8 *message, const char *name);
-/* A talk's choices (at 0x31c of the talk): the one taken, and setting them up. */
-extern void *func_0206837c(StartMenuTalk *talk);
-extern u32 func_020ab504(void *choices);
-extern void func_020ab5f8(void *choices);
-extern void func_020ab628(void *choices, int index, const u8 *message, int a, const u8 *b, int c, int d);
-extern void func_020ab670(void *choices, int count, int a);
-
-/* Main's event queue (func_020b5e10 gives it): posting an event. */
-extern void *func_020b5e10(void);
-extern int func_020b6434(void *queue, u8 event, u8 a, u8 b);
-extern int func_020b5ee4(void *queue, int value);
-
-extern int func_0203e21c(void);
-extern int func_0203e228(void);
-extern int func_0203e31c(void);
-extern int func_0203e340(void);
-extern int func_0203ec98(void);
-extern void func_0203e210(void);
-extern u8 func_020b65c4(void); /* the scene */
-extern int func_020a12c0(void);
-extern int func_020a12d4(void);
-extern void func_020a18ac(void);
-extern void func_020a1948(void);
-extern void func_020a01e0(u8 value);
-extern void func_020a6ef0(void *object);
-extern void *func_020a6f00(void);
-extern void func_020a6f20(int a, int b);
 
 #define PAD_START 0x0008
 #define SCENE_45 45 /* a scene in which START does nothing */
@@ -141,32 +109,32 @@ CLEAN_AS(func_0209f3a0, StartMenu_DestructFree)
 void StartMenuReceiver_OnAnswer(StartMenuReceiver *receiver)
 {
     StartMenuTalk *talk = receiver->talk;
-    u32 answer = func_020ab504(func_0206837c(talk));
+    u32 answer = TalkAnswers_Picked(TalkObject_Answers((TalkObject *) talk));
     u8 message;
 
     switch (receiver->message) {
         case START_MENU_ASK_LINKED:
             if (answer == 0) {
-                func_02068440(talk);
-                func_02068364(talk, 1);
+                TalkObject_Hold((TalkObject *) talk);
+                TalkObject_StartSpinner((TalkObject *) talk, 1);
                 StartMenu_SetState(receiver->owner, START_MENU_WAIT_2);
             } else if (answer == 1) {
                 message = START_MENU_ASK_AGAIN;
-                func_0206844c(talk, &message, data_020e37d0);
+                TalkObject_SetMessage((TalkObject *) talk, &message, data_020e37d0);
             }
             break;
         case START_MENU_ASK_AGAIN:
             if (answer == 0) {
-                func_02068440(talk);
-                func_02068364(talk, 1);
+                TalkObject_Hold((TalkObject *) talk);
+                TalkObject_StartSpinner((TalkObject *) talk, 1);
                 StartMenu_SetState(receiver->owner, START_MENU_WAIT_3);
             } else if (answer == 1) {
-                func_0206844c(talk, &data_021f43e8, NULL);
+                TalkObject_SetMessage((TalkObject *) talk, &data_021f43e8, NULL);
             }
             break;
         case START_MENU_ASK:
             if (answer == 0) {
-                func_0206844c(talk, &data_021f43e8, NULL);
+                TalkObject_SetMessage((TalkObject *) talk, &data_021f43e8, NULL);
                 StartMenu_SetState(receiver->owner, START_MENU_LEAVE);
             }
             break;
@@ -182,14 +150,14 @@ void StartMenuReceiver_SetUpChoices(StartMenuReceiver *receiver)
         return;
     }
     StartMenuTalk *talk = receiver->talk;
-    void *choices = func_0206837c(talk);
-    func_020ab670(choices, 2, 1);
+    void *choices = TalkObject_Answers((TalkObject *) talk);
+    TalkAnswers_Reset(choices, 2, 1);
     u8 first[2] = {0xc, data_021f43e8};
-    func_020ab628(choices, 0, &first[0], 1, &first[1], 0, 2);
+    TalkAnswers_Set(choices, 0, &first[0], 1, &first[1], 0, 2);
     u8 second[2] = {0xd, data_021f43e8};
-    func_020ab628(choices, 1, &second[0], 1, &second[1], 0, 0);
-    func_020ab5f8(choices);
-    func_02068388(talk, 1);
+    TalkAnswers_Set(choices, 1, &second[0], 1, &second[1], 0, 0);
+    TalkAnswers_LoadTexts(choices);
+    TalkObject_OpenChoices((TalkObject *) talk, 1);
 }
 CLEAN_AS(func_0209f47c, StartMenuReceiver_SetUpChoices)
 
@@ -204,7 +172,7 @@ CLEAN_AS(func_0209f4fc, StartMenuReceiver_SetOwner)
 StartMenuReceiver *StartMenuReceiver_DestructFree(StartMenuReceiver *receiver)
 {
     receiver->vtable = data_020e3758;
-    func_02066994(receiver);
+    TalkReceiver_Destruct((TalkReceiver *) receiver);
     Heap_OperatorDeleteB(receiver);
     return receiver;
 }
@@ -214,7 +182,7 @@ CLEAN_AS(func_0209f500, StartMenuReceiver_DestructFree)
 StartMenuReceiver *StartMenuReceiver_Destruct(StartMenuReceiver *receiver)
 {
     receiver->vtable = data_020e3758;
-    func_02066994(receiver);
+    TalkReceiver_Destruct((TalkReceiver *) receiver);
     return receiver;
 }
 CLEAN_AS(func_0209f520, StartMenuReceiver_Destruct)
@@ -222,7 +190,7 @@ CLEAN_AS(func_0209f520, StartMenuReceiver_Destruct)
 /* func_0209f538: the constructor. */
 StartMenuReceiver *StartMenuReceiver_Construct(StartMenuReceiver *receiver)
 {
-    func_02066a30(receiver);
+    TalkReceiver_ConstructBase((TalkReceiver *) receiver);
     receiver->vtable = data_020e3758;
     return receiver;
 }
@@ -238,17 +206,17 @@ static void update_wait(StartMenu *menu, u8 choice)
     if (status != SESSION_STATUS_AGREED && status != SESSION_STATUS_REFUSED) {
         return;
     }
-    func_02068358(talk);
-    func_02068434(talk);
+    TalkObject_StopSpinner((TalkObject *) talk);
+    TalkObject_Release((TalkObject *) talk);
     if (status == SESSION_STATUS_AGREED) {
-        func_020a6f20(0, 6);
-        func_020a6ef0(func_020a6f00());
-        func_0206844c(talk, &data_021f43e8, NULL);
-        func_020a01e0(choice);
+        LinkGlobal_SetAnswer(0, 6);
+        LinkGlobal_SetDoneKind(LinkGlobal_Kind());
+        TalkObject_SetMessage((TalkObject *) talk, &data_021f43e8, NULL);
+        StartMenu_SetLeaveChoice(choice);
         StartMenu_SetState(menu, START_MENU_LEAVE);
     } else {
         u8 message = START_MENU_REFUSED;
-        func_0206844c(talk, &message, data_020e37d0);
+        TalkObject_SetMessage((TalkObject *) talk, &message, data_020e37d0);
         StartMenu_SetState(menu, START_MENU_TALK);
     }
     Session_FinishLocalStatus();
@@ -288,17 +256,17 @@ CLEAN_AS(func_0209f658, StartMenu_EnterWait2)
  * posted; in a linked session func_020b5ee4 and func_020a18ac follow, alone func_020a1948. */
 void StartMenu_UpdateLeave(void)
 {
-    StartMenuTalk *talk = func_020682e0(START_MENU_TALK_INDEX);
+    StartMenuTalk *talk = (StartMenuTalk *) TalkObject_Get(START_MENU_TALK_INDEX);
     if (talk->state != 0) {
         return;
     }
-    func_02068320(talk);
-    func_020b6434(func_020b5e10(), START_MENU_EVENT, 2, 3);
+    TalkObject_DetachReceiver((TalkObject *) talk);
+    SceneExit_SetToScene((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), START_MENU_EVENT, 2, 3);
     if (Session_IsLinked(data_020ccf94)) {
-        func_020b5ee4(func_020b5e10(), 0);
-        func_020a18ac();
+        ScenePlace_SavePlayer(SceneTables_EntryRecord(), 0);
+        ActivityJob_Ask1A();
     } else {
-        func_020a1948();
+        ActivityJob_Ask1();
     }
 }
 CLEAN_AS(func_0209f668, StartMenu_UpdateLeave)
@@ -311,10 +279,10 @@ CLEAN_AS(func_0209f6b4, StartMenu_EnterLeave)
  * func_0203e210 called, and the menu is idle again. */
 void StartMenu_UpdateTalk(StartMenu *menu)
 {
-    StartMenuTalk *talk = func_020682e0(START_MENU_TALK_INDEX);
+    StartMenuTalk *talk = (StartMenuTalk *) TalkObject_Get(START_MENU_TALK_INDEX);
     if (talk->state == 0) {
-        func_02068320(talk);
-        func_0203e210();
+        TalkObject_DetachReceiver((TalkObject *) talk);
+        EventQueue_FinishKind5();
         StartMenu_SetState(menu, START_MENU_IDLE);
     }
 }
@@ -329,24 +297,24 @@ CLEAN_AS(func_0209f6e0, StartMenu_EnterTalk)
  * the menu is idle again. */
 void StartMenu_UpdateOpen(StartMenu *menu)
 {
-    if (func_0203e21c() == 0) {
+    if (EventQueue_IsKind5Unfinished() == 0) {
         StartMenu_SetState(menu, START_MENU_IDLE);
         return;
     }
-    StartMenuTalk *talk = func_020682e0(START_MENU_TALK_INDEX);
+    StartMenuTalk *talk = (StartMenuTalk *) TalkObject_Get(START_MENU_TALK_INDEX);
     StartMenuReceiver *receiver = &menu->receiver;
     ((void (*)(StartMenuReceiver *))(uintptr_t) receiver->vtable[2])(receiver);
-    if (func_020a12d4() != 0 || func_020a12c0() != 0) {
-        func_020a8164(receiver, data_020e37e4);
+    if (StartKind_IsNewTown() != 0 || StartKind_IsNewPlayer() != 0) {
+        MessageReceiver_SetName((MessageReceiver *) receiver, data_020e37e4);
         receiver->message = START_MENU_ASK_LINKED;
     } else if (Session_IsLinked(data_020ccf94)) {
-        func_020a8164(receiver, data_020e37d0);
+        MessageReceiver_SetName((MessageReceiver *) receiver, data_020e37d0);
         receiver->message = START_MENU_ASK_LINKED;
     } else {
-        func_020a8164(receiver, data_020e37d0);
+        MessageReceiver_SetName((MessageReceiver *) receiver, data_020e37d0);
         receiver->message = START_MENU_ASK;
     }
-    func_02068340(talk, receiver);
+    TalkObject_AttachReceiver((TalkObject *) talk, (TalkReceiver *) receiver);
     talk->request = 1;
     StartMenu_SetState(menu, START_MENU_TALK);
 }
@@ -365,10 +333,10 @@ void StartMenu_UpdateIdle(StartMenu *menu)
     if ((data_021fbe40.pressed & PAD_START) == 0) {
         return;
     }
-    if (func_020b65c4() == SCENE_45 || func_0203e31c() != 0 || func_0203e340() != 0) {
+    if (SceneQuery_Current() == SCENE_45 || EventQueue_TestFlag8() != 0 || EventQueue_TestFlag1() != 0) {
         return;
     }
-    if (data_021c75b8 != 2 || func_0203ec98() != 0) {
+    if (data_021c75b8 != 2 || EventQueue_HasCurrent() != 0) {
         return;
     }
     NetSession *session = data_020ccf94;
@@ -376,7 +344,7 @@ void StartMenu_UpdateIdle(StartMenu *menu)
         QuickMessage_PostDefault();
         return;
     }
-    if (func_0203e228() != 0) {
+    if (EventQueue_RequestKind5() != 0) {
         StartMenu_SetState(menu, START_MENU_OPEN);
     }
 }

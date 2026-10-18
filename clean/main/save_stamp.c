@@ -2,10 +2,9 @@
 #include "save_stamp.h"
 
 #include "clean.h"
+#include "main_random.h"
 
 static_assert(sizeof(SaveStamp) == 4 && offsetof(SaveStamp, serial) == 3, "a save stamp");
-
-extern int func_020644cc(int range); /* a random number below `range` */
 
 /* Set by SaveStamp_SetLostFlag; nothing in the game reads it. */
 extern char data_021f3c10;
@@ -45,7 +44,7 @@ CLEAN_AS(func_0209faf8, SaveStamp_SetSerial)
 void SaveStamp_NewSerial(SaveStamp *stamp)
 {
     u8 old = stamp->serial;
-    stamp->serial = (u8) func_020644cc(SERIAL_RANGE);
+    stamp->serial = (u8) MainRandom_Below(SERIAL_RANGE);
     if (stamp->serial == old) {
         if (stamp->serial < 0xff) {
             stamp->serial++;

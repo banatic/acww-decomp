@@ -45,19 +45,19 @@ void Block021d27acPart20_ClearKind(Block021d27acPart20 *part)
 }
 CLEAN_AS(func_02087e8c, Block021d27acPart20_ClearKind)
 
-/* func_02087e94: the constructor does nothing. */
-void Block021d27acPart20_Construct(Block021d27acPart20 *part)
-{
-    (void) part;
-}
-CLEAN_AS(func_02087e94, Block021d27acPart20_Construct)
-
-/* func_02087e98: the destructor does nothing. */
+/* func_02087e94: the destructor does nothing. */
 void Block021d27acPart20_Destruct(Block021d27acPart20 *part)
 {
     (void) part;
 }
-CLEAN_AS(func_02087e98, Block021d27acPart20_Destruct)
+CLEAN_AS(func_02087e94, Block021d27acPart20_Destruct)
+
+/* func_02087e98: the constructor does nothing. */
+void Block021d27acPart20_Construct(Block021d27acPart20 *part)
+{
+    (void) part;
+}
+CLEAN_AS(func_02087e98, Block021d27acPart20_Construct)
 
 /* ---- part 0x30 */
 
@@ -82,19 +82,19 @@ void Block021d27acPart30_Clear(u8 *part)
 }
 CLEAN_AS(func_02087eb0, Block021d27acPart30_Clear)
 
-/* func_02087eb8: the constructor does nothing. */
-void Block021d27acPart30_Construct(u8 *part)
-{
-    (void) part;
-}
-CLEAN_AS(func_02087eb8, Block021d27acPart30_Construct)
-
-/* func_02087ebc: the destructor does nothing. */
+/* func_02087eb8: the destructor does nothing. */
 void Block021d27acPart30_Destruct(u8 *part)
 {
     (void) part;
 }
-CLEAN_AS(func_02087ebc, Block021d27acPart30_Destruct)
+CLEAN_AS(func_02087eb8, Block021d27acPart30_Destruct)
+
+/* func_02087ebc: the constructor does nothing. */
+void Block021d27acPart30_Construct(u8 *part)
+{
+    (void) part;
+}
+CLEAN_AS(func_02087ebc, Block021d27acPart30_Construct)
 
 /* ---- part 0x18 */
 
@@ -134,16 +134,16 @@ void Block021d27acPart18_Clear(DateTime *part)
 }
 CLEAN_AS(func_02087f0c, Block021d27acPart18_Clear)
 
-/* func_02087f14: the constructor does nothing. */
-void Block021d27acPart18_Construct(DateTime *part)
+/* func_02087f14: the destructor does nothing. */
+void Block021d27acPart18_Destruct(DateTime *part)
 {
     (void) part;
 }
-CLEAN_AS(func_02087f14, Block021d27acPart18_Construct)
+CLEAN_AS(func_02087f14, Block021d27acPart18_Destruct)
 
-/* func_02087f18: the destructor clears it, as Block021d27acPart18_Clear. */
-void Block021d27acPart18_Destruct(DateTime *part)
+/* func_02087f18: the constructor clears it, as Block021d27acPart18_Clear. */
+void Block021d27acPart18_Construct(DateTime *part)
 {
     *part = (DateTime){0};
 }
-CLEAN_AS(func_02087f18, Block021d27acPart18_Destruct)
+CLEAN_AS(func_02087f18, Block021d27acPart18_Construct)

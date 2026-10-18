@@ -8,6 +8,9 @@
 #include "clean.h"
 #include "main/group_params.h" /* GroupParams_CanOpen, GroupParams_Open */
 #include "ov004/member_pointer.h"
+#include "main/event_queue.h"
+#include "main/scene_object_base.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(ScreenObject, yaw) == 0x8e, "yaw");
 static_assert(offsetof(ScreenObject, receiver_vtable) == 0xec, "receiver");
@@ -36,19 +39,12 @@ extern u32 data_ov003_0223c748;
 extern MemberPointer data_ov003_0223c76c[SCREEN_OBJECT_STATES];
 extern const MemberPointer data_ov003_022383ec, data_ov003_022383f4, data_ov003_02238404;
 
-/* Lets the scene go on. */
-extern int func_0203e020(ScreenObject *object);
-extern void func_0203edd0(ScreenObject *object);
-/* Overlay 9's scene actor's destructor and constructor. */
-extern void *func_ov009_0226539c(ScreenObject *object);
-extern void *func_ov009_0226552c(ScreenObject *object);
-
 /* func_ov003_0221b7f0 (update of SCREEN_OBJECT_OPEN): once main can open a screen again, the
  * scene goes on. Its state stays SCREEN_OBJECT_OPEN until the scene sets another. */
 void ScreenObject_UpdateOpen(ScreenObject *object)
 {
     if (GroupParams_CanOpen()) {
-        func_0203e020(object);
+        EventQueue_FinishObjectEvent(object);
     }
 }
 CLEAN_AS(func_ov003_0221b7f0, ScreenObject_UpdateOpen)
@@ -149,7 +145,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223843419func_ov003_0221b944Ei, ScreenObject_OnSceneEve
 int ScreenObject_IsFacedBy(ScreenObject *object, ScreenObjectViewer *viewer)
 {
     if ((object->flags_235 & 8) && viewer != NULL && Math_AbsDiff16((s16) (object->yaw + 0x8000), viewer->yaw) < 0x1300) {
-        func_0203edd0(object);
+        SceneObjectBase_ClearApproach((SceneObjectBase *) object);
         return 1;
     }
     return 0;
@@ -191,7 +187,7 @@ static void destroy_parts(ScreenObject *object)
 {
     object->vtable = data_ov003_02238434;
     object->receiver_vtable = data_ov003_022384f8;
-    func_ov009_0226539c(object);
+    SceneActor_Destruct((SceneActor *) object);
 }
 
 /* func_ov003_0221b9e4 (the deleting destructor): the destructor's work, then the memory freed. */
@@ -214,7 +210,7 @@ CLEAN_AS(func_ov003_0221ba10, ScreenObject_Destroy)
 /* func_ov003_0221ba34: the constructor: overlay 9's, then the vtables. */
 ScreenObject *ScreenObject_Construct(ScreenObject *object)
 {
-    func_ov009_0226552c(object);
+    SceneActor_ConstructBase((SceneActor *) object);
     object->vtable = data_ov003_02238434;
     object->receiver_vtable = data_ov003_022384f8;
     return object;

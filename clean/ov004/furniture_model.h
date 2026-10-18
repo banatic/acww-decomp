@@ -6,43 +6,34 @@
  * copy of it was asked for.
  *
  * Also the four animations a room object plays (its members at 0x7c4), a class over the main
- * program's animation (constructor func_020565ec). */
+ * program's animation (constructor ModelAnim_ConstructBase). */
 #ifndef CLEAN_OV004_FURNITURE_MODEL_H
 #define CLEAN_OV004_FURNITURE_MODEL_H
 
 #include "types.h"
 
 #include "main/lookups.h" /* ItemCode */
+#include "main/model_anim.h"
+#include "main/model_loader.h"
 #include "room_object_parts.h"
-
-/* The texture loader of the main program (func_02055b00 builds it, func_02055954 runs it). */
-typedef struct TextureLoader {
-    u8 unk_00[0x34];
-} TextureLoader;
 
 typedef struct FurnitureModel {
     u8 *texture_file; /* while loading, and while the texture is not in */
     u8 *archive;
-    u8 *model;   /* the first model of the archive's "bmd0" */
-    u8 *texture; /* the texture once it is in: then the model counts as loaded */
-    TextureLoader loader;
+    u8 *model;          /* the first model of the archive's "bmd0" */
+    u8 *texture;        /* the texture once it is in: then the model counts as loaded */
+    ModelLoader loader; /* loads the texture (ModelLoader_StepTexture runs it) */
     AnimSet anims;
     ItemCode item; /* the furniture being loaded, 0xfff1 when none */
     u8 keep_texture_copy;
     u8 unk_73;
 } FurnitureModel;
 
-/* An animation of the room object: `target` is where its frame goes (func_ov004_0220ffbc
- * writes it there), none until it is bound. */
+/* An animation of the room object: the main program's animation (model_anim.h) with a class
+ * of its own (vtable data_ov004_0224fe44). Its animation object (base.anim) is where its frame
+ * goes (RoomObject_AdvanceAnims writes it there), none until it is bound. */
 typedef struct FurnitureAnim {
-    const void *vtable;
-    u8 unk_04[4];
-    u32 frame; /* in 20.12 fixed point */
-    u8 unk_0c[4];
-    fx32 speed; /* frames per step, 20.12 fixed point */
-    u8 unk_14[4];
-    u32 *target;
-    u32 unk_1c;
+    ModelAnim base;
 } FurnitureAnim;
 
 int FurnitureModel_EndLoad(FurnitureModel *files);
@@ -59,7 +50,7 @@ int FurnitureModel_IsLoaded(FurnitureModel *files);
 FurnitureModel *FurnitureModel_Destruct(FurnitureModel *files);
 FurnitureModel *FurnitureModel_Construct(FurnitureModel *files);
 
-u32 *FurnitureAnim_Target(const FurnitureAnim *anim);
+AnimatedModelAnim *FurnitureAnim_Target(const FurnitureAnim *anim);
 FurnitureAnim *FurnitureAnim_Delete(FurnitureAnim *anim);
 FurnitureAnim *FurnitureAnim_Destruct(FurnitureAnim *anim);
 FurnitureAnim *FurnitureAnim_Construct(FurnitureAnim *anim);

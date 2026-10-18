@@ -19,7 +19,7 @@
 #include "room_object_map.h"
 #include "room_objects.h"
 
-/* The player's actor (func_020961a8). */
+/* The player's actor (SessionPlayers_ActorOf). */
 #define ROOM_PLACEMENT_PLAYER 4
 
 /* The placement's mode for a piece found a place by the search. */
@@ -39,12 +39,6 @@ extern u8 data_021dc7bc[];
 
 /* The town's map, the room being its only acre. */
 extern AcreMap *data_021c80bc;
-
-/* The grid of the room's objects. */
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int z, int layer);
-extern void *func_ov004_0223ce84(void);
-extern int func_ov004_0223cda4(void *objects); /* the entries still free */
 
 /* The order the sides are tried in, from the side facing the actor. */
 extern const u8 data_ov004_02247cdc[4];
@@ -168,7 +162,7 @@ int RoomPlacement_Find(u32 *out, ItemCode *item, const Vec3 *position, int angle
     if (!ItemCode_HasVariant(item)) {
         return ROOM_PLACEMENT_NOT_FURNITURE;
     }
-    if (func_ov004_0223cda4(func_ov004_0223ce84()) == 0) {
+    if (RoomObjects_FreeCount(RoomObjects_Table()) == 0) {
         return ROOM_PLACEMENT_ROOM_FULL;
     }
     if (mode == ROOM_PLACEMENT_MODE_UNPLACED) {
@@ -260,7 +254,7 @@ int RoomPlacement_TryAt(u32 *out, int x, int z, int side, int number, u8 layer, 
                 fits = 0;
                 break;
             }
-            RoomObject *below = func_ov004_0223cc10(func_ov004_0223cd50(), cell_x, cell_z, ROOM_OBJECTS_LAYER_FLOOR);
+            RoomObject *below = RoomObjects_GridObjectAt(RoomObjects_Grid(), cell_x, cell_z, ROOM_OBJECTS_LAYER_FLOOR);
             if (below == NULL || below->unk_788 != 1 || RoomObject_IsBusy(below)) {
                 fits = 0;
                 break;

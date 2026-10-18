@@ -7,17 +7,14 @@
 #include "room_object.h"
 #include "room_object_anims.h"
 #include "room_object_methods.h"
-
-/* The room's grid of objects, and the object at a point on one of its layers. */
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cbe8(void *grid, Vec3 *point, int layer);
+#include "room_objects.h"
 
 #define LAYER_FLOOR 0
 
 /* The object on the floor at `point` when it is of kind 0x36 or 0x37, else NULL. */
 static RoomObject *RoomPointSound_object(Vec3 *point)
 {
-    RoomObject *object = func_ov004_0223cbe8(func_ov004_0223cd50(), point, LAYER_FLOOR);
+    RoomObject *object = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), point, LAYER_FLOOR);
     if (object != NULL && RoomObject_Unk00CIs36Or37(object) != 0) {
         return object;
     }

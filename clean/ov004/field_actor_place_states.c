@@ -19,6 +19,7 @@
 #include "main/session.h"
 #include "main/session_players.h"
 #include "ov004/room_point_sound.h"
+#include "room_objects.h"
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
@@ -96,7 +97,7 @@ static_assert(sizeof(FieldActorPlaceProbeWork) <= sizeof(FieldActorWork), "state
 #define FAPS_SUN_VARIABLE 80
 #define FAPS_SUN_FLAGS_WAITING 17
 
-/* The answers of the overlay's side checks (func_ov004_0223c510, func_ov004_0223c4b8). */
+/* The answers of the overlay's side checks (RoomObjects_CheckStepXPlus, RoomObjects_CheckStepXMinus). */
 #define FAPS_SIDE_FREE 1
 #define FAPS_SIDE_BLOCKED 2
 
@@ -109,9 +110,6 @@ extern const fx32 data_ov004_02247780;
 extern const s16 FX_SinCosTable_[];
 
 extern int FX_MulFunc(int a, int b);
-/* Whether the point 2.0 to side 0 or side 1 of `point` (at `yaw`) is free: 1 free, 2 not. */
-extern int func_ov004_0223c510(Vec3 *point, s16 yaw);
-extern int func_ov004_0223c4b8(Vec3 *point, s16 yaw);
 
 /* The date the sun level was stored, as packed: bits 0-6, the month in bits 7-10, bits 11-15. */
 #define FAPS_DATE_MONTH(date) (((unsigned int) (date) >> 7) & 0xf)
@@ -869,10 +867,10 @@ void FieldActorPlaceStates_PushStay(FieldActor *actor)
     int answer;
     switch (push_side) {
         case 0:
-            answer = func_ov004_0223c510(&actor->position, actor->yaw);
+            answer = RoomObjects_CheckStepXPlus(&actor->position, actor->yaw);
             break;
         case 1:
-            answer = func_ov004_0223c4b8(&actor->position, actor->yaw);
+            answer = RoomObjects_CheckStepXMinus(&actor->position, actor->yaw);
             break;
         default:
             answer = 0;

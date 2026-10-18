@@ -7,6 +7,12 @@
 #include "clean.h"
 #include "main/calendar.h"   /* DateTime */
 #include "main/text_label.h" /* TextVtable */
+#include "main/date_time.h"
+#include "main/message_receiver.h"
+#include "main/npc_lookup.h"
+#include "main/player_id.h"
+#include "main/talk_receiver.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(Panther, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(Panther, message) == 0x10a, "receiver byte 0x1e");
@@ -27,21 +33,6 @@ extern const char data_ov003_02238ef8[];
 extern const u8 data_ov003_02238dbc[];
 extern const u8 data_ov003_02238e80[];
 
-/* The clock's date and time (DateTime_Now). */
-extern void func_0209e474(DateTime *now);
-/* Copies at most 25 characters of `name` into the receiver's name. */
-extern void func_020a8164(void *receiver, const char *name);
-/* Sets the receiver's speaker name. */
-extern void func_02066954(void *receiver, const char *name, int a);
-/* A string object (0x24 bytes): built by func_02094fd4, destroyed by func_02094fbc;
- * func_02082438 loads the name of `*code` into it (whether it could). */
-extern void *func_02094fd4(void *text);
-extern void *func_02094fbc(void *text);
-extern int func_02082438(void *text, u16 *code);
-/* Overlay 9's scene actor: its destructor and its constructor. */
-extern void *func_ov009_0226539c(Panther *panther);
-extern void *func_ov009_0226552c(Panther *panther);
-
 typedef struct PantherText {
     const TextVtable *vtable;
     u8 unk_04[0x24 - 0x04];
@@ -56,7 +47,7 @@ void Panther_PrepareTalk(Panther *panther)
     typedef int (*PantherSlot)(Panther *panther);
     typedef const char *(*PantherTextBuffer)(void *text);
 
-    func_020a8164(&panther->receiver_vtable, data_ov003_02238ef8);
+    MessageReceiver_SetName((MessageReceiver *) &panther->receiver_vtable, data_ov003_02238ef8);
     PantherSlot after_six = (PantherSlot) (uintptr_t) *(const u32 *) ((const u8 *) panther->vtable + 0x8c);
     if (after_six(panther) == 0) {
         panther->message = PANTHER_MESSAGE_EARLY;
@@ -65,12 +56,12 @@ void Panther_PrepareTalk(Panther *panther)
     }
 
     PantherText text;
-    func_02094fd4(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
     u16 code = PANTHER_NAME_CODE;
-    func_02082438(&text, &code);
+    NpcLookup_FormatPersonName(&text, &code);
     const char *name = ((PantherTextBuffer) (uintptr_t) text.vtable->buffer)(&text);
-    func_02066954(&panther->receiver_vtable, name, 1);
-    func_02094fbc(&text);
+    TalkReceiver_SetSpeaker((TalkReceiver *) &panther->receiver_vtable, name, 1);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
 }
 CLEAN_AS(func_ov003_0221d10c, Panther_PrepareTalk)
 
@@ -79,7 +70,7 @@ CLEAN_AS(func_ov003_0221d10c, Panther_PrepareTalk)
 int Panther_IsAfterSix(Panther *panther)
 {
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     return now.hour >= PANTHER_HOUR_FROM && panther->hour >= PANTHER_HOUR_FROM;
 }
 CLEAN_AS(func_ov003_0221d17c, Panther_IsAfterSix)
@@ -96,7 +87,7 @@ CLEAN_AS(func_ov003_0221d1b4, Panther_Update)
 int Panther_KeepHour(Panther *panther)
 {
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     panther->hour = now.hour;
     return 1;
 }
@@ -107,7 +98,7 @@ static void panther_destroy_parts(Panther *panther)
 {
     panther->vtable = data_ov003_02238dbc;
     panther->receiver_vtable = data_ov003_02238e80;
-    func_ov009_0226539c(panther);
+    SceneActor_Destruct((SceneActor *) panther);
 }
 
 /* func_ov003_0221d1e0 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -131,7 +122,7 @@ CLEAN_AS(func_ov003_0221d20c, Panther_Destroy)
 /* func_ov003_0221d230: the constructor: overlay 9's, then the vtables. */
 Panther *Panther_Construct(Panther *panther)
 {
-    func_ov009_0226552c(panther);
+    SceneActor_ConstructBase((SceneActor *) panther);
     panther->vtable = data_ov003_02238dbc;
     panther->receiver_vtable = data_ov003_02238e80;
     return panther;

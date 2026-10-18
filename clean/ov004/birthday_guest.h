@@ -1,5 +1,5 @@
 /* The other villager of the rooms' "ev_nbirth" talks (class vtable 0x02253868, 0xa6c bytes, made
- * by func_ov004_0221e2cc): a town villager scene object (main's villager_scene_slots.h) that
+ * by BirthdayGuest_New): a town villager scene object (main's villager_scene_slots.h) that
  * walks about the room near the birthday villager (birthday_villager.h, the room's one is
  * BirthdayVillager_Current), faces it now and then and acts with it, and talks to this
  * console's player.

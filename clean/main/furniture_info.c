@@ -4,6 +4,8 @@
 #include "clean.h"
 #include "item_code.h"
 #include "museum_record.h"
+#include "record_file.h"
+#include "record_files.h"
 
 static_assert(sizeof(FurnitureAlways) == 8, "FurnitureAlways size");
 static_assert(sizeof(FurnitureIndoor) == 4, "FurnitureIndoor size");
@@ -11,12 +13,6 @@ static_assert(sizeof(FurnitureDma) == 0x20, "FurnitureDma size");
 static_assert(offsetof(FurnitureDma, unk_1e) == 0x1e, "FurnitureDma unk_1e");
 
 extern u8 data_021c8c48[]; /* the three record files */
-
-extern void *func_0206e6e4(void *files);                    /* dma.bin */
-extern void *func_0206e6e8(void *files);                    /* indoor.bin */
-extern void *func_0206e6ec(void *files);                    /* always.bin */
-extern void *func_0206e7bc(void *file, unsigned int index); /* a record, NULL when it cannot be had */
-extern u8 func_02053de4(int number);                        /* byte 0x18 of the number's dma.bin record */
 
 /* The kinds of FurnitureDma.unk_18 FurnitureInfo_IndoorBit7 answers 0 for. */
 #define DMA_18_NO_TURN_FIRST 0x23
@@ -30,17 +26,20 @@ static unsigned int clamp_number(int number)
 
 static const FurnitureAlways *always_record(int number)
 {
-    return func_0206e7bc(func_0206e6ec(data_021c8c48), clamp_number(number));
+    return (const FurnitureAlways *) (void *) (RecordFile_Record(
+        RecordFiles_First((FurnitureRecordFiles *) (void *) data_021c8c48), clamp_number(number)));
 }
 
 static const FurnitureIndoor *indoor_record(int number)
 {
-    return func_0206e7bc(func_0206e6e8(data_021c8c48), clamp_number(number));
+    return (const FurnitureIndoor *) (void *) (RecordFile_Record(
+        (FurnitureRecordFile *) (uintptr_t) RecordFiles_Second((int) (uintptr_t) data_021c8c48), clamp_number(number)));
 }
 
 static const FurnitureDma *dma_record(int number)
 {
-    return func_0206e7bc(func_0206e6e4(data_021c8c48), clamp_number(number));
+    return (const FurnitureDma *) (void *) (RecordFile_Record(
+        (FurnitureRecordFile *) (uintptr_t) RecordFiles_Third((int) (uintptr_t) data_021c8c48), clamp_number(number)));
 }
 
 /* Bit `bit` of an indoor.bin record's flags; 0 without the record. */
@@ -180,7 +179,7 @@ CLEAN_AS(func_02053728, FurnitureInfo_ItemIndoorBit7)
 int FurnitureInfo_IndoorBit7(int number)
 {
     int flag = indoor_flag(indoor_record(number), 7);
-    int kind = func_02053de4(number);
+    int kind = FurnitureInfo_DmaUnk18(number);
     if (kind >= DMA_18_NO_TURN_FIRST && kind <= DMA_18_NO_TURN_LAST) {
         return 0;
     }
@@ -485,13 +484,7 @@ u16 FurnitureInfo_DmaUnk16(int number)
 CLEAN_AS(func_02053e18, FurnitureInfo_DmaUnk16)
 
 /* The record files' own functions (main's record file code, func_0206e6f0 and on). */
-extern int func_0206e6f0(FurnitureRecordFiles *files);             /* free indoor.bin's whole copy */
-extern int func_0206e704(FurnitureRecordFiles *files, int stream); /* unless `stream`, load it whole */
-extern void func_0206e71c(FurnitureRecordFiles *files);            /* close the three */
-extern int func_0206e73c(FurnitureRecordFiles *files, const char *path0, u32 size0, const char *path1, u32 size1,
-                         const char *path2, u32 size2, u32 records);  /* open the three */
-extern FurnitureRecordFile *func_0206e8b4(FurnitureRecordFile *file); /* a record file's destructor */
-extern void func_0206e8c4(FurnitureRecordFile *file);                 /* a record file's constructor */
+extern int func_0206e6f0(FurnitureRecordFiles *files); /* free indoor.bin's whole copy */
 
 extern const char data_020dcfec[]; /* "/ftr_info/always.bin" */
 extern const char data_020dd004[]; /* "/ftr_info/indoor.bin" */
@@ -500,21 +493,21 @@ extern const char data_020dd01c[]; /* "/ftr_info/dma.bin" */
 /* func_02053e8c: free the copy of indoor.bin kept in memory. */
 void FurnitureFiles_FreeIndoor(FurnitureRecordFiles *files)
 {
-    func_0206e6f0(files);
+    RecordFiles_FreeSecond(files);
 }
 CLEAN_AS(func_02053e8c, FurnitureFiles_FreeIndoor)
 
 /* func_02053e94: unless `stream`, read the whole of indoor.bin into memory. Always 1. */
 int FurnitureFiles_LoadIndoor(FurnitureRecordFiles *files, int stream)
 {
-    return func_0206e704(files, stream);
+    return RecordFiles_LoadSecond(files, stream);
 }
 CLEAN_AS(func_02053e94, FurnitureFiles_LoadIndoor)
 
 /* func_02053e9c: close the three files, freeing what was read of them. */
 void FurnitureFiles_Close(FurnitureRecordFiles *files)
 {
-    func_0206e71c(files);
+    RecordFiles_Close(files);
 }
 CLEAN_AS(func_02053e9c, FurnitureFiles_Close)
 
@@ -522,8 +515,8 @@ CLEAN_AS(func_02053e9c, FurnitureFiles_Close)
  * FURNITURE_FILE_RECORDS records each, and read always.bin whole. Always 1. */
 int FurnitureFiles_Open(FurnitureRecordFiles *files)
 {
-    return func_0206e73c(files, data_020dcfec, sizeof(FurnitureAlways), data_020dd004, sizeof(FurnitureIndoor), data_020dd01c,
-                         sizeof(FurnitureDma), FURNITURE_FILE_RECORDS);
+    return RecordFiles_Open(files, data_020dcfec, sizeof(FurnitureAlways), data_020dd004, sizeof(FurnitureIndoor),
+                            data_020dd01c, sizeof(FurnitureDma), FURNITURE_FILE_RECORDS);
 }
 CLEAN_AS(func_02053ea4, FurnitureFiles_Open)
 
@@ -531,10 +524,10 @@ CLEAN_AS(func_02053ea4, FurnitureFiles_Open)
  * three, then destruct each, last first. */
 FurnitureRecordFiles *FurnitureFiles_Destruct(FurnitureRecordFiles *files)
 {
-    func_0206e71c(files);
-    func_0206e8b4(&files->dma);
-    func_0206e8b4(&files->indoor);
-    func_0206e8b4(&files->always);
+    RecordFiles_Close(files);
+    RecordFile_Destruct(&files->dma);
+    RecordFile_Destruct(&files->indoor);
+    RecordFile_Destruct(&files->always);
     return files;
 }
 CLEAN_AS(func_02053ed8, FurnitureFiles_Destruct)
@@ -542,9 +535,9 @@ CLEAN_AS(func_02053ed8, FurnitureFiles_Destruct)
 /* func_02053f00: the constructor. */
 FurnitureRecordFiles *FurnitureFiles_Construct(FurnitureRecordFiles *files)
 {
-    func_0206e8c4(&files->always);
-    func_0206e8c4(&files->indoor);
-    func_0206e8c4(&files->dma);
+    RecordFile_Construct(&files->always);
+    RecordFile_Construct(&files->indoor);
+    RecordFile_Construct(&files->dma);
     return files;
 }
 CLEAN_AS(func_02053f00, FurnitureFiles_Construct)

@@ -12,6 +12,7 @@
 #include "main/session.h"
 #include "main/session_players.h"
 #include "main/sound_emitter.h"
+#include "room_objects.h"
 
 static_assert(sizeof(DroppedItem) == 0x94, "dropped item");
 static_assert(offsetof(DroppedItem, target) == 0x18, "dropped item target");
@@ -33,9 +34,6 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 
 /* A place's destructor, handed to the C++ runtime: the game's. */
 extern void func_ov004_02233ff4(void *drop);
-
-/* The height of what stands on the tile (x, z) of the room, else of its floor. */
-extern int func_ov004_0223c5b8(int x, int z);
 
 #define ONE 0x1000
 
@@ -82,7 +80,7 @@ int DroppedItems_DropOnTile(int player, int item, const TileChangesTile *tile, c
     Vec3 to;
     AcreTile_TileCentre(&to, (u32) tile->x, (u32) tile->z);
     if (layer != 0) {
-        to.y = func_ov004_0223c5b8(tile->x, tile->z);
+        to.y = RoomObjects_HeightAtCell(tile->x, tile->z);
     }
     TileChangesTile at = *tile;
     return DroppedItems_Start(data_ov004_02258af4, player, &at, from, &to, 0, (u16) item, 0, layer);
@@ -342,7 +340,7 @@ int DroppedItems_DropFromLocalPlayer(const u16 *item, const Vec3 *to)
 CLEAN_AS(func_ov004_02233ba8, DroppedItems_DropFromLocalPlayer)
 
 /* func_ov004_02233fd8 (the array's destructor, handed to the C++ runtime at start): each
- * place's destructor (func_ov004_02233ff4, the game's), last first. */
+ * place's destructor (DroppedItem_Destruct, the game's), last first. */
 DroppedItem *DroppedItems_Destruct(DroppedItem *items)
 {
     __cxa_vec_cleanup(items, DROPPED_ITEMS, sizeof(DroppedItem), func_ov004_02233ff4);

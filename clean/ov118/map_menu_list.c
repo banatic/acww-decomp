@@ -27,7 +27,7 @@ static_assert(sizeof(PushButton) == 0x48 && offsetof(MapMenu, cursor) == 0x6c0, 
 static_assert(sizeof(Glider) == 0x64 && offsetof(MapMenu, map_screen) == 0x724, "map_screen");
 static_assert(offsetof(MapMenu, shown_rows) == 0xf24 && offsetof(MapMenu, rows) == 0x1724, "rows");
 static_assert(offsetof(MapMenu, rows_template) == 0x1f24 && offsetof(MapMenu, map_chars) == 0x2724, "chars");
-static_assert(sizeof(MapMenuSpot) == 6 && offsetof(MapMenu, spots) == 0x4724, "spots");
+static_assert(sizeof(TownMapMarker) == 6 && offsetof(MapMenu, spots) == 0x4724, "spots");
 static_assert(offsetof(MapMenu, residents) == 0x478a && offsetof(MapMenu, places) == 0x4797, "lists");
 static_assert(sizeof(MapMenuMark) == 3 && offsetof(MapMenu, extra_marks) == 0x47a4, "marks");
 static_assert(offsetof(MapMenu, marks) == 0x47ad && sizeof(MapMenu) == 0x47d8, "size (func_ov118_0229c9e0)");
@@ -44,10 +44,6 @@ extern const u8 data_ov118_0229caa0[MAP_MENU_PLACES];
 
 /* The OBJ every mark is drawn with (only its characters and flip are changed). */
 extern OamEntry data_ov118_0229cb40;
-
-/* Overlay 117's spots of the map: spot `i`, or NULL when it has no place; its kind. */
-extern MapMenuSpot *func_ov117_0229a280(MapMenuSpot *spots, unsigned int i);
-extern unsigned char func_ov117_0229a26c(MapMenuSpot *spots, unsigned int i);
 
 extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
@@ -396,16 +392,16 @@ CLEAN_AS(func_ov118_0229b088, MapMenu_MarkAt)
  * Spots 0-2 are the extra marks, by the spot's kind (0: kind 8, 1: 7, 2: 9, 3: 9 flipped, others
  * none); spots 3-10 are villagers' houses, 11 the players' house, 12-16 buildings
  * (data_ov118_0229caa0). A spot without a place has no mark. */
-void MapMenu_FillMarks(MapMenu *self, MapMenuSpot *spots)
+void MapMenu_FillMarks(MapMenu *self, TownMapMarker *spots)
 {
     for (int i = 0; i < MAP_MENU_EXTRA_MARKS; i++) {
         MapMenuMark *mark = &self->extra_marks[i];
-        const MapMenuSpot *spot = func_ov117_0229a280(spots, (unsigned int) i);
+        const TownMapMarker *spot = TownMapMarkers_Get(spots, (unsigned int) i);
         if (spot == NULL) {
             mark->kind = MAP_MENU_MARK_NONE;
             continue;
         }
-        switch (func_ov117_0229a26c(spots, (unsigned int) i)) {
+        switch (TownMapMarkers_Kind(spots, (unsigned int) i)) {
             case 0:
                 mark->kind = 8;
                 break;
@@ -428,7 +424,7 @@ void MapMenu_FillMarks(MapMenu *self, MapMenuSpot *spots)
     for (int i = 0; i < MAP_MENU_MARKS; i++) {
         unsigned int index = (unsigned int) i + MAP_MENU_EXTRA_MARKS;
         MapMenuMark *mark = &self->marks[i];
-        const MapMenuSpot *spot = func_ov117_0229a280(spots, index);
+        const TownMapMarker *spot = TownMapMarkers_Get(spots, index);
         if (spot == NULL) {
             mark->kind = MAP_MENU_MARK_NONE;
             continue;

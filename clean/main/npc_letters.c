@@ -10,6 +10,10 @@
 #include "number_text.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "item_lists.h"
+#include "letter.h"
+#include "main_random.h"
+#include "player_id.h"
 
 /* The player record's flags: insurance letters are sent at all (0x17), two claims each paid
  * with NPC_LETTERS_INSURANCE_ITEM (0x19, 0x1a), and claims counted in PlayerField2416.claims
@@ -64,19 +68,6 @@ extern u8 data_020e1f60[];
 extern u8 data_020e1f68[];
 extern u8 data_020e1f58[];
 
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern void *func_02094fd4(NpcLettersNameText *text);
-extern void *func_02094fbc(NpcLettersNameText *text);
-/* A letter: constructed, written (message *message of archive `name`, kind byte and paper,
- * for the player named), given an item, destructed. */
-extern void func_02066694(MailLetter *letter);
-extern void func_02066024(MailLetter *letter, u8 *message, const char *name, u8 *kind, u8 *paper, void *player_name);
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int arg);
-extern void func_02066688(MailLetter *letter);
-extern void func_02063ccc(NpcLettersItemList *list, int kind, int group);
-extern void func_020638d4(u16 *item, NpcLettersItemList *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(NpcLettersItemList *list);
-
 /* func_02088810: the insurance letters of the current player. With flag 0x17, each of the
  * claims 0x19 and 0x1a is paid with one letter (one of two messages) and cleared once it was
  * taken; with flag 0x18 and at least one claim counted in `field`, one letter pays for them
@@ -94,20 +85,20 @@ void NpcLetters_SendInsurance(PlayerField2416 *field)
 
     MessageText46_Construct(&number);
     u8 *record = PlayerRecords_Current();
-    func_02094fd4(&name);
+    PlayerIdText_Construct((PlayerIdText *) &name);
     PlayerField2416 *own = (PlayerField2416 *) PlayerRecord_Field2416(record);
 
     if (PlayerRecord_TestFlag(record, NPC_LETTERS_FLAG_INSURED) != 0) {
         if (PlayerRecord_TestFlag(record, NPC_LETTERS_FLAG_CLAIM_A) != 0) {
             claim_a = NPC_LETTERS_INSURANCE_ITEM;
-            int message = NPC_LETTERS_MESSAGE_CLAIM_A + (int) func_020644cc(2);
+            int message = NPC_LETTERS_MESSAGE_CLAIM_A + (int) MainRandom_Below(2);
             if (NpcLetters_SendInsuranceLetter(field, message, &claim_a) != 0) {
                 PlayerRecord_ClearFlag(record, NPC_LETTERS_FLAG_CLAIM_A);
             }
         }
         if (PlayerRecord_TestFlag(record, NPC_LETTERS_FLAG_CLAIM_B) != 0) {
             claim_b = NPC_LETTERS_INSURANCE_ITEM;
-            int message = NPC_LETTERS_MESSAGE_CLAIM_B + (int) func_020644cc(2);
+            int message = NPC_LETTERS_MESSAGE_CLAIM_B + (int) MainRandom_Below(2);
             if (NpcLetters_SendInsuranceLetter(field, message, &claim_b) != 0) {
                 PlayerRecord_ClearFlag(record, NPC_LETTERS_FLAG_CLAIM_B);
             }
@@ -117,7 +108,7 @@ void NpcLetters_SendInsurance(PlayerField2416 *field)
     if (PlayerRecord_TestFlag(record, NPC_LETTERS_FLAG_COUNTED) != 0 && PlayerField2416_Claims(own) >= 1) {
         NumberText_Format(&number, PlayerField2416_Claims(own), NPC_LETTERS_DIGITS, 0, 0, 0);
         MailText_SetPartText(NPC_LETTERS_PART_COUNT, &number);
-        int message = NPC_LETTERS_MESSAGE_COUNTED + (int) func_020644cc(2);
+        int message = NPC_LETTERS_MESSAGE_COUNTED + (int) MainRandom_Below(2);
         u32 claims = (u32) PlayerField2416_Claims(own);
         if (claims >= NPC_LETTERS_COUNTED_MAX) {
             claims = NPC_LETTERS_COUNTED_MAX;
@@ -131,7 +122,7 @@ void NpcLetters_SendInsurance(PlayerField2416 *field)
         }
     }
 
-    func_02094fbc(&name);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
     MessageText46_Destruct(&number);
 }
 CLEAN_AS(func_02088810, NpcLetters_SendInsurance)
@@ -142,13 +133,14 @@ int NpcLetters_SendInsuranceLetter(PlayerField2416 *field, int message, u16 *ite
 {
     (void) field;
     MailLetter letter;
-    func_02066694(&letter);
+    Letter_Construct((Letter *) &letter);
     u8 *record = PlayerRecords_Current();
     u8 number = (u8) message;
-    func_02066024(&letter, &number, data_020e1fdc, data_020e1f60, data_020e1f68, PlayerRecord_Player(record));
-    func_02065ed0(&letter, *item, 1);
+    Letter_WriteSpecialToPlayer((Letter *) &letter, &number, data_020e1fdc, data_020e1f60, data_020e1f68,
+                                PlayerRecord_Player(record));
+    Letter_SetItem((Letter *) &letter, *item, 1);
     int taken = Mail_HoldAtPostOffice(&letter, 0) != 0;
-    func_02066688(&letter);
+    Letter_Destruct((Letter *) &letter);
     return taken;
 }
 CLEAN_AS(func_0208893c, NpcLetters_SendInsuranceLetter)
@@ -167,23 +159,24 @@ void NpcLetters_SendMissing(void)
     }
 
     MailLetter letter;
-    func_02066694(&letter);
-    u8 message = (u8) func_020644cc(NPC_LETTERS_MISSING_MESSAGES);
+    Letter_Construct((Letter *) &letter);
+    u8 message = (u8) MainRandom_Below(NPC_LETTERS_MISSING_MESSAGES);
     Date today;
     Calendar_Today(&today);
     u8 paper = (u8) MomLetters_DrawPaper(NPC_LETTERS_MISSING_PAPER_SET, today.month);
-    func_02066024(&letter, &message, data_020e1ff0, data_020e1f58, &paper, PlayerRecord_Player(record));
+    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e1ff0, data_020e1f58, &paper,
+                                PlayerRecord_Player(record));
 
     NpcLettersItemList list;
     u16 item;
-    func_02063ccc(&list, 0, NPC_LETTERS_MISSING_LIST_GROUP);
-    func_020638d4(&item, &list, 0, 0, 1, 1, 0);
-    func_02065ed0(&letter, item, 1);
-    func_02063cc8(&list);
+    ItemList_Construct((ItemList *) &list, 0, NPC_LETTERS_MISSING_LIST_GROUP);
+    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    Letter_SetItem((Letter *) &letter, item, 1);
+    ItemList_Destruct(&list);
 
     if (Mail_HoldAtPostOffice(&letter, 0) != 0) {
         PlayerRecord_ClearFlag(record, NPC_LETTERS_FLAG_MISSING);
     }
-    func_02066688(&letter);
+    Letter_Destruct((Letter *) &letter);
 }
 CLEAN_AS(func_020889a8, NpcLetters_SendMissing)

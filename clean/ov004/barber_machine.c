@@ -10,6 +10,8 @@
 #include "main/room_object_state.h"
 #include "member_pointer.h"
 #include "rmo_object_base.h"
+#include "rmo_model.h"
+#include "rmo_object_slots.h"
 
 static_assert(sizeof(RmoObject) == 0x290, "RmoObject size");
 static_assert(offsetof(BarberMachine, receiver) == 0x290, "receiver");
@@ -60,14 +62,6 @@ extern u32 data_ov004_02258228;
 extern MemberPointer data_ov004_02258250[BARBER_MACHINE_STATE_COUNT];
 extern const MemberPointer data_ov004_02254bf8, data_ov004_02254c30, data_ov004_02254c28, data_ov004_02254c20;
 
-/* The RMO family's base class (rmo_object.h). */
-extern int func_ov004_0222c600(RmoObject *object, const char *archive, const char *texture);
-extern void func_ov004_0222c598(RmoObject *object);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-/* Plays a sound at the object's sound source (at 0x250). */
-extern int func_ov004_0222c2dc(void *source, int sound);
-
 static AnimatedModel *BarberMachine_body(BarberMachine *self)
 {
     return (AnimatedModel *) (void *) &self->base.body;
@@ -94,7 +88,7 @@ static int BarberMachine_call_set_state(BarberMachine *self, unsigned int state)
 /* Joint animation `index` played once from its start. */
 static void BarberMachine_play(BarberMachine *self, int index)
 {
-    AnimatedModel_Start(BarberMachine_body(self), func_ov004_0222c3c4(&self->base.body_model, index), BARBER_MACHINE_PLAY_ONCE,
+    AnimatedModel_Start(BarberMachine_body(self), RmoModel_JointAnim(&self->base.body_model, index), BARBER_MACHINE_PLAY_ONCE,
                         BARBER_MACHINE_ONE, 0, 0);
 }
 
@@ -161,7 +155,7 @@ CLEAN_AS(func_ov004_0222c934, BarberMachine_UpdateStopping)
 int BarberMachine_EnterStopping(BarberMachine *self)
 {
     BarberMachine_play(self, BARBER_MACHINE_ANIM_STOPPING);
-    func_ov004_0222c2dc(BarberMachine_sound_source(self), BARBER_MACHINE_SOUND_STOPPING);
+    RmoSound_Play(BarberMachine_sound_source(self), BARBER_MACHINE_SOUND_STOPPING);
     self->shared_run = 0;
     return 1;
 }
@@ -193,7 +187,7 @@ CLEAN_AS(func_ov004_0222ca34, BarberMachine_UpdateStarting)
 int BarberMachine_EnterStarting(BarberMachine *self)
 {
     BarberMachine_play(self, BARBER_MACHINE_ANIM_STARTING);
-    func_ov004_0222c2dc(BarberMachine_sound_source(self), BARBER_MACHINE_SOUND_STARTING);
+    RmoSound_Play(BarberMachine_sound_source(self), BARBER_MACHINE_SOUND_STARTING);
     return 1;
 }
 CLEAN_AS(func_ov004_0222ca78, BarberMachine_EnterStarting)
@@ -267,7 +261,7 @@ CLEAN_AS(func_ov004_0222cc24, BarberMachine_GetPosition)
 int BarberMachine_Release(BarberMachine *self)
 {
     BarberMachine_RemoveBox(self);
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     data_ov004_02258224 = NULL;
     return 1;
 }
@@ -297,9 +291,9 @@ int BarberMachine_Start(BarberMachine *self)
 {
     data_ov004_02258224 = self;
     self->shared_run = 0;
-    func_ov004_0222c600(&self->base, data_ov004_02254d40, data_ov004_02254d5c);
+    RmoObjectSlots_Load(&self->base, data_ov004_02254d40, data_ov004_02254d5c);
     BarberMachine_AddBox(self);
-    if (func_ov004_0222c3c4(&self->base.body_model, BARBER_MACHINE_ANIM_STARTING) != NULL &&
+    if (RmoModel_JointAnim(&self->base.body_model, BARBER_MACHINE_ANIM_STARTING) != NULL &&
         AnimatedModel_LoadAnim(BarberMachine_body(self), data_021c9b24) != 0) {
         BarberMachine_play(self, BARBER_MACHINE_ANIM_STARTING);
         AnimatedModel_Attach(BarberMachine_body(self));
@@ -320,7 +314,7 @@ BarberMachine *BarberMachine_Delete(BarberMachine *self)
     BarberMachine_set_vtables(self);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     Heap_FreeAux(self);
     return self;
 }
@@ -332,7 +326,7 @@ BarberMachine *BarberMachine_Destruct(BarberMachine *self)
     BarberMachine_set_vtables(self);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     return self;
 }
 CLEAN_AS(func_ov004_0222cd50, BarberMachine_Destruct)

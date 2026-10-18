@@ -11,6 +11,10 @@
 #include "player_record.h"
 #include "player_records.h"
 #include "state_block.h"
+#include "letter.h"
+#include "mail_text.h"
+#include "message_receiver.h"
+#include "name_texts.h"
 
 #define ROOM_SCORE_MAIL_PLAYERS 4
 #define ROOM_SCORE_MAIL_NO_ITEM 0xfff1
@@ -47,18 +51,6 @@ extern u8 data_020dd390[], data_020dd384[];
 extern u32 data_021dc7a8[]; /* the state block (state_block.h) */
 extern u8 data_021dc7bc[];  /* the town's four players' records */
 
-extern void func_02066694(MailLetter *letter); /* construct */
-extern void func_02066688(MailLetter *letter); /* destruct */
-/* Write the letter: message `*message` of template `name`; *kind goes to byte 0xfb, *paper to
- * byte 0xf9. */
-extern void func_02066024(MailLetter *letter, u8 *message, const char *name, u8 *kind, u8 *paper, void *player_name);
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int arg); /* attach an item */
-extern int func_0203d7c4(int slot, void *text);                  /* set a message entry */
-extern RoomScoreMailGroupName *func_02062f64(RoomScoreMailGroupName *text, int group);
-extern RoomScoreMailGroupName *func_02062f4c(RoomScoreMailGroupName *text);
-extern void *func_020a8228(RoomScoreMailLabel *label);
-extern void *func_020a8210(RoomScoreMailLabel *label);
-
 /* func_0205a2f0: the first letter (message 0x1b) to the current player when its record wants
  * it (flag 3) and has not had it (flag 0xe); posted, it marks the record as having had it.
  * Whether it was posted. */
@@ -70,15 +62,16 @@ int RoomScoreMail_SendWelcome(void)
         return 0;
     }
     MailLetter letter;
-    func_02066694(&letter);
+    Letter_Construct((Letter *) &letter);
     u8 message = ROOM_SCORE_MAIL_WELCOME;
-    func_02066024(&letter, &message, data_020dd3d8, data_020dd388, data_020dd398, PlayerRecord_Player(record));
+    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020dd3d8, data_020dd388, data_020dd398,
+                                PlayerRecord_Player(record));
     if (Mail_Post(&letter) != 0) {
         PlayerRecord_SetFlag(record, ROOM_SCORE_MAIL_RECORD_MEMBER);
-        func_02066688(&letter);
+        Letter_Destruct((Letter *) &letter);
         return 1;
     }
-    func_02066688(&letter);
+    Letter_Destruct((Letter *) &letter);
     return 0;
 }
 CLEAN_AS(func_0205a2f0, RoomScoreMail_SendWelcome)
@@ -127,16 +120,17 @@ void RoomScoreMail_SendPrize(RoomScoreRoom *room, int total)
             continue;
         }
         MailLetter letter;
-        func_02066694(&letter);
+        Letter_Construct((Letter *) &letter);
         u8 text = (u8) message;
-        func_02066024(&letter, &text, data_020dd3d8, data_020dd38c, data_020dd394, PlayerRecord_Player(record));
-        func_02065ed0(&letter, item, 1);
+        Letter_WriteSpecialToPlayer((Letter *) &letter, &text, data_020dd3d8, data_020dd38c, data_020dd394,
+                                    PlayerRecord_Player(record));
+        Letter_SetItem((Letter *) &letter, item, 1);
         if (Mail_Post(&letter) != 0 || Mail_HoldAtPostOffice(&letter, 0) != 0) {
             StateBlock_SetFlag(data_021dc7a8, flag);
-            func_02066688(&letter);
+            Letter_Destruct((Letter *) &letter);
             return;
         }
-        func_02066688(&letter);
+        Letter_Destruct((Letter *) &letter);
     }
 }
 CLEAN_AS(func_0205a41c, RoomScoreMail_SendPrize)
@@ -154,17 +148,17 @@ int RoomScoreMail_SendJudgement(RoomScoreRoom *room, int message, int total, int
         MessageText46_Destruct(&total_text);
         return 0;
     }
-    func_0203d7c4(ROOM_SCORE_MAIL_SLOT_TOTAL, &total_text);
+    MailText_SetPartText(ROOM_SCORE_MAIL_SLOT_TOTAL, &total_text);
     RoomScoreMailGroupName group_name;
-    func_02062f64(&group_name, group);
-    func_0203d7c4(ROOM_SCORE_MAIL_SLOT_GROUP, &group_name);
+    NameText_ConstructSeries((NameText *) &group_name, group);
+    MailText_SetPartText(ROOM_SCORE_MAIL_SLOT_GROUP, &group_name);
     if (theme < ROOM_SCORE_MAIL_THEMES) {
         RoomScoreMailLabel label;
-        func_020a8228(&label);
+        MessagePart_Construct((MessagePart *) &label);
         u8 word = (u8) theme;
         MessageReader_LoadDecoded(&label, &word, data_020dd3e8);
-        func_0203d7c4(ROOM_SCORE_MAIL_SLOT_THEME, &label);
-        func_020a8210(&label);
+        MailText_SetPartText(ROOM_SCORE_MAIL_SLOT_THEME, &label);
+        MessagePart_Destruct((MessagePart *) &label);
     }
     for (int i = 0; i < ROOM_SCORE_MAIL_PLAYERS; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7bc, i);
@@ -176,13 +170,14 @@ int RoomScoreMail_SendJudgement(RoomScoreRoom *room, int message, int total, int
             continue;
         }
         MailLetter letter;
-        func_02066694(&letter);
+        Letter_Construct((Letter *) &letter);
         u8 text = (u8) message;
-        func_02066024(&letter, &text, data_020dd3d8, data_020dd390, data_020dd384, PlayerRecord_Player(record));
+        Letter_WriteSpecialToPlayer((Letter *) &letter, &text, data_020dd3d8, data_020dd390, data_020dd384,
+                                    PlayerRecord_Player(record));
         Mail_Post(&letter);
-        func_02066688(&letter);
+        Letter_Destruct((Letter *) &letter);
     }
-    func_02062f4c(&group_name);
+    NameText_Destruct((NameText *) &group_name);
     MessageText46_Destruct(&total_text);
     return 1;
 }

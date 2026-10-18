@@ -2,6 +2,8 @@
 #include "actor_entries.h"
 
 #include "clean.h"
+#include "actor_table.h"
+#include "main_random.h"
 
 static_assert(sizeof(ActorEntry) == 0x08, "entry size");
 static_assert(offsetof(ActorEntry, code) == 0x04, "entry code");
@@ -12,9 +14,6 @@ static_assert(offsetof(ActorEntriesVtable, vfunc_a8) == 0xa8, "vtable entry 0xa8
 
 extern ActorTable data_021d1d4c; /* the game's table */
 
-/* Whether a kind 0xe entry of the table holds an actor (ActorTable_IsUsedE). */
-extern int func_02082b60(const ActorTable *table, const ActorEntry *entry);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 /* The entry destructors, as the game hands them to __cxa_vec_cleanup. */
 extern void func_02082bec(void *entry);
@@ -23,7 +22,7 @@ extern void func_02082bfc(void *entry);
 /* Whether entry `entry` holds an actor that may be picked. */
 static int actor_entries_pickable(ActorTable *table, ActorEntry *entry)
 {
-    if (func_02082b60(table, entry) == 0) {
+    if (ActorTable_IsUsedE(table, entry) == 0) {
         return 0;
     }
     ActorEntriesActor *actor = entry->actor;
@@ -54,7 +53,7 @@ void *ActorEntries_PickE(ActorTable *table, int *index)
     if (count <= 0) {
         return NULL;
     }
-    int left = (int) func_020644cc(count);
+    int left = (int) MainRandom_Below(count);
     for (int i = 0; i < ACTOR_TABLE_KIND_E_ENTRIES; i++) {
         ActorEntry *entry = &table->kind_e[i];
         if (actor_entries_pickable(table, entry)) {

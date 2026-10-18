@@ -6,6 +6,7 @@
 #include "main/animated_model.h"
 #include "main/room_object_state.h"
 #include "main/scene_object_base.h"
+#include "rmo_model.h"
 
 static_assert(sizeof(RmoObject) == 0x290, "RmoObject size");
 static_assert(offsetof(RmoObject, body) == 0xec, "body");
@@ -13,19 +14,11 @@ static_assert(offsetof(RmoObject, body_model) == 0x1a4, "body model");
 static_assert(offsetof(RmoObject, body_texture) == 0x248, "body texture");
 static_assert(offsetof(RoomObject, state_number) == 0xea, "state number");
 
-/* The sound source the objects play their sounds at (func_ov004_0222c2dc). */
+/* The sound source the objects play their sounds at (RmoSound_Play). */
 #define RMO_OBJECT_BASE_SOUND_SOURCE 0x250
 
 /* The class's vtable. */
 extern const u8 data_ov004_02254b28[];
-
-/* The holders' constructors and destructors, and the sound source's. */
-extern void *func_ov004_0222c548(RmoModel *model);
-extern void *func_ov004_0222c538(RmoModel *model);
-extern void func_ov004_0222c398(RmoTexture *texture);
-extern void func_ov004_0222c394(RmoTexture *texture);
-extern int func_ov004_0222c32c(void *source);
-extern int func_ov004_0222c31c(void *source);
 
 static void *RmoObjectBase_sound_source(RmoObject *self)
 {
@@ -46,9 +39,9 @@ static AnimatedModel *RmoObjectBase_body(RmoObject *self)
 static void RmoObjectBase_take_down(RmoObject *self)
 {
     self->actor.vtable = data_ov004_02254b28;
-    func_ov004_0222c31c(RmoObjectBase_sound_source(self));
-    func_ov004_0222c394(&self->body_texture);
-    func_ov004_0222c538(&self->body_model);
+    RmoSound_Destruct(RmoObjectBase_sound_source(self));
+    RmoTexture_Destruct(&self->body_texture);
+    RmoModel_Destruct(&self->body_model);
     AnimatedModel_DestructComplete(RmoObjectBase_body(self));
     SceneObjectBase_DestructBase(RmoObjectBase_scene_object(self));
 }
@@ -77,9 +70,9 @@ RmoObject *RmoObjectBase_Construct(RmoObject *self)
     SceneObjectBase_Construct(RmoObjectBase_scene_object(self));
     self->actor.vtable = data_ov004_02254b28;
     AnimatedModel_Construct(RmoObjectBase_body(self));
-    func_ov004_0222c548(&self->body_model);
-    func_ov004_0222c398(&self->body_texture);
-    func_ov004_0222c32c(RmoObjectBase_sound_source(self));
+    RmoModel_Construct(&self->body_model);
+    RmoTexture_Construct(&self->body_texture);
+    RmoSound_Construct(RmoObjectBase_sound_source(self));
     ((RoomObject *) (void *) self)->state_number = ROOM_OBJECT_STATE_NONE;
     return self;
 }

@@ -5,6 +5,8 @@
 #include "clean.h"
 #include "scene_object_base.h"
 #include "session.h"
+#include "link_global.h"
+#include "session_players.h"
 
 /* The session. */
 extern NetSession *data_020ccf94;
@@ -18,11 +20,6 @@ extern u32 data_021c72d4;
 /* A handler of message 23, by payload byte 0. */
 typedef void ObjectClaimHandler(const u8 *payload, int slot);
 extern ObjectClaimHandler *const data_020dab98[];
-
-/* An actor of the scene: a slot's player (4: this system's), as an address; 0 for none. */
-extern int func_020961a8(int actor);
-/* Whether this system's player may take part in what the session shares with the scene. */
-extern int func_020a7278(void);
 
 /* The id in payload bytes 1-4 (little-endian). */
 static u32 payload_id(const u8 *payload)
@@ -64,7 +61,7 @@ void ObjectClaim_HandleObjectMessage(const u8 *payload, int slot)
 {
     u8 value = payload[5];
     SceneObjectBase *object = (SceneObjectBase *) (uintptr_t) SceneObjectBase_FindAddress((int) payload_id(payload));
-    int player = func_020961a8(slot);
+    int player = (int) (uintptr_t) SessionPlayers_ActorOf(slot);
 
     if (object == NULL || player == 0) {
         if (payload[0] == OBJECT_CLAIM_ACT) {
@@ -187,7 +184,7 @@ int ObjectClaim_Mode(void)
     if (Session_IsLinked(data_020ccf94) == 0) {
         return OBJECT_CLAIM_DECIDED;
     }
-    if (func_020a7278() == 0) {
+    if (LinkGlobal_HoldsScene() == 0) {
         return OBJECT_CLAIM_SHARED;
     }
     return OBJECT_CLAIM_DECIDED;

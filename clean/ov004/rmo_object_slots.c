@@ -192,7 +192,7 @@ int RmoObjectSlots_CanCreate(RmoObject *object)
 CLEAN_AS(func_ov004_0222c774, RmoObjectSlots_CanCreate)
 
 /* func_ov004_0222c7a0: the destructor the derived classes end theirs with (a copy of the
- * class's own, func_ov004_0222c834): the class's vtable, then the sound, the texture's and the
+ * class's own, RmoObjectBase_Destruct): the class's vtable, then the sound, the texture's and the
  * archive's holders, the body and the scene object taken down in turn. Returns the object. */
 RmoObject *RmoObjectSlots_Destruct(RmoObject *object)
 {

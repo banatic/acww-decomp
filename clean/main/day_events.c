@@ -9,6 +9,7 @@
 #include "player_record.h"
 #include "player_records.h"
 #include "session.h"
+#include "player_field_2416.h"
 
 static_assert(sizeof(DayEventMark) == 5, "day event mark");
 
@@ -33,9 +34,6 @@ extern NookStore data_021f395c;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-
-/* Byte 8 of a player record's object at 0x2416. */
-extern int func_02088bdc(u8 *field);
 
 /* The player record's flag that rules all events out, the flags that qualify for kinds 0 and
  * 1, the value kind 2 asks of byte 8 at 0x2416 and the store level kind 3 asks for. */
@@ -87,7 +85,8 @@ int DayEvents_PlayerHas(int year, int month, int day, u8 *event)
         case 1:
             return PlayerRecord_TestFlag(record, DAY_EVENTS_FLAG_KIND_1) != 0 || MuseumRecord_Complete(&data_021f38f8) != 0;
         case 2:
-            return func_02088bdc(PlayerRecord_Field2416(record)) == DAY_EVENTS_KIND_2_VALUE;
+            return PlayerField2416_Byte08((PlayerField2416 *) (void *) PlayerRecord_Field2416(record)) ==
+                   DAY_EVENTS_KIND_2_VALUE;
         default:
             return NookStore_Level(&data_021f395c) == DAY_EVENTS_KIND_3_LEVEL;
     }

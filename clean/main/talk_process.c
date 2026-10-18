@@ -8,6 +8,8 @@
 #include "display_shadow.h"
 #include "field_label.h"
 #include "menu_input.h"
+#include "control_mode_icon.h"
+#include "talk_object.h"
 
 static_assert(sizeof(Process) == 0x50, "talk process");
 
@@ -16,17 +18,6 @@ static_assert(sizeof(Process) == 0x50, "talk process");
 
 extern const u32 data_020e3e8c[]; /* the process's vtable */
 extern const u32 data_020da13c[]; /* the scene objects' base class's */
-
-/* The control-mode object data_021d369c (control_mode.h): drawn, run, taken down, set up. */
-extern void func_0208ff58(void);
-extern void func_0208ff68(void);
-extern void func_0208ff78(void);
-extern void func_0208ff88(void);
-/* The two talks at data_021cda88: drawn, run, freed, allocated and constructed. */
-extern void func_0206820c(void);
-extern void func_0206823c(void);
-extern void func_0206826c(void);
-extern void func_0206829c(void);
 
 /* func_020a9b70: the main screen's OBJ hidden. */
 void TalkProcess_HideObjects(void)
@@ -46,8 +37,8 @@ CLEAN_AS(func_020a9b7c, TalkProcess_ShowObjects)
 int TalkProcess_Draw(void)
 {
     FieldLabel_DrawGlobal();
-    func_0206820c();
-    func_0208ff58();
+    TalkObject_DrawAll();
+    ControlModeIcon_DrawInstance();
     return 1;
 }
 CLEAN_AS(func_020a9b88, TalkProcess_Draw)
@@ -55,8 +46,8 @@ CLEAN_AS(func_020a9b88, TalkProcess_Draw)
 /* func_020a9ba0 (vtable slot 6): the control-mode object, the talks and the labels run. */
 int TalkProcess_Execute(void)
 {
-    func_0208ff68();
-    func_0206823c();
+    ControlModeIcon_UpdateInstance();
+    TalkObject_UpdateAll();
     FieldLabel_UpdateGlobal();
     return 1;
 }
@@ -68,9 +59,9 @@ int TalkProcess_Delete(void)
 {
     TalkProcess_HideObjects();
     FieldLabel_ResetGlobalWindow();
-    func_0206826c();
+    TalkObject_FreeAll();
     AMesObj_ClearReady();
-    func_0208ff78();
+    ControlModeIcon_RewindInstance();
     return 1;
 }
 CLEAN_AS(func_020a9bb8, TalkProcess_Delete)
@@ -79,12 +70,12 @@ CLEAN_AS(func_020a9bb8, TalkProcess_Delete)
  * once. */
 int TalkProcess_Create(void)
 {
-    func_0208ff88();
+    ControlModeIcon_ResetInstance();
     MenuInput_Reset();
     AbAllObj_LoadAndUpload();
     AMesObj_SetSheetBoth();
     AMesObj_SetReady();
-    func_0206829c();
+    TalkObject_AllocAll();
     FieldLabel_ResetGlobal();
     TalkProcess_ShowObjects();
     return 1;

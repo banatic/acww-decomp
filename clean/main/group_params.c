@@ -22,9 +22,6 @@ extern u8 data_021cfc50;
 extern void *data_021cfc8c;                        /* the pointer group 12 is opened with */
 extern u16 data_021cfd28[GROUP_PARAMS_TEXT_UNITS]; /* see GroupParams_SetText */
 
-extern void func_02051bf8(u16 *dst, int units);                 /* clear `units` 16-bit units */
-extern void func_02051c08(const u16 *src, u16 *dst, int units); /* copy them */
-
 /* func_0206f9c0 */
 u8 GroupParams_MaskArg(void)
 {
@@ -108,8 +105,8 @@ CLEAN_AS(func_0206fbf8, GroupParams_Open)
  * REQUIRES: units <= 16; more would write past the text, as the original does. */
 void GroupParams_SetText(const u16 *text, int units)
 {
-    func_02051bf8(data_021cfd28, GROUP_PARAMS_TEXT_UNITS);
-    func_02051c08(text, data_021cfd28, units);
+    TextString_ClearChars(data_021cfd28, GROUP_PARAMS_TEXT_UNITS);
+    TextString_CopyChars(text, data_021cfd28, units);
 }
 CLEAN_AS(func_0206fc1c, GroupParams_SetText)
 

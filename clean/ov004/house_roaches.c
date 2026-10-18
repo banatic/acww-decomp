@@ -13,9 +13,7 @@
 #include "main/scene_kinds.h"
 #include "main/session.h"
 #include "main/session_players.h"
-
-static_assert(offsetof(HouseRoach, sound_state) == 0x264, "roach sound state");
-static_assert(sizeof(HouseRoach) == 0x268, "roach");
+#include "house_roach.h"
 
 /* The cockroaches out now, the count still in the house (out ones included), the process
  * (their parent), and the cockroaches out by slot. */
@@ -31,11 +29,6 @@ extern const u32 data_020da13c[];
 extern HouseRecord data_021ebcd4; /* the house */
 extern AcreMap *data_021c80bc;    /* the room's map */
 extern NetSession *data_020ccf94; /* the link with other players */
-
-/* The cockroach's constructor and its sound state's setter and getter. */
-extern void *func_ov004_0223e520(void *roach);
-extern void func_ov004_0223e3d4(void *roach, int state);
-extern int func_ov004_0223e3e0(void *roach);
 
 #define HOUSE_ROACH_PROFILE 0xc0
 #define HOUSE_ROACH_FLOOR_GROUP 0x1f
@@ -222,17 +215,17 @@ int HouseRoaches_Update(Process *self)
         }
         if (roach_process(roach)->param == HOUSE_ROACH_GONE) {
             roach_process(roach)->param = 0;
-            func_ov004_0223e3d4(roach, HOUSE_ROACH_QUIET);
+            HouseRoach_SetSoundState(roach, HOUSE_ROACH_QUIET);
             Process_RequestDelete(roach_process(roach));
             data_ov004_02259a18[i] = NULL;
             if (data_ov004_02259a08 != 0) {
                 data_ov004_02259a08--;
                 data_ov004_02259a0c--;
             }
-        } else if (func_ov004_0223e3e0(roach) == HOUSE_ROACH_ASKING) {
+        } else if (HouseRoach_SoundState(roach) == HOUSE_ROACH_ASKING) {
             asking |= (u8) (1 << i);
             chosen--;
-        } else if (func_ov004_0223e3e0(roach) == HOUSE_ROACH_SOUNDING) {
+        } else if (HouseRoach_SoundState(roach) == HOUSE_ROACH_SOUNDING) {
             asking = 0xff;
         }
     }
@@ -258,7 +251,7 @@ int HouseRoaches_Update(Process *self)
             }
         }
     }
-    func_ov004_0223e3d4(roach_slot_any(chosen), HOUSE_ROACH_SOUNDING);
+    HouseRoach_SetSoundState(roach_slot_any(chosen), HOUSE_ROACH_SOUNDING);
     return 1;
 }
 CLEAN_AS(func_ov004_0223e878, HouseRoaches_Update)
@@ -312,7 +305,7 @@ void HouseRoaches_NewRoach(void)
 {
     void *roach = Heap_AllocAuxZeroed(sizeof(HouseRoach));
     if (roach != NULL) {
-        func_ov004_0223e520(roach);
+        HouseRoach_Construct(roach);
     }
 }
 CLEAN_AS(func_ov004_0223ea44, HouseRoaches_NewRoach)

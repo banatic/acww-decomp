@@ -1,5 +1,5 @@
 /* A villager who stands in the room and talks to the player with the lines of the message file
- * "ai_shop3" (class vtable 0x02253fd4, 0xa44 bytes, made by func_ov004_02221b68, the entry
+ * "ai_shop3" (class vtable 0x02253fd4, 0xa44 bytes, made by Shop3Villager_New, the entry
  * data_ov004_02253f24 of the overlay's table of profiles): a town villager scene object (main's
  * villager_scene_slots.h). The same file gives main's greetings of a villager in a scene of
  * the set 20 at index 1 (villager_talk_greeting.c).

@@ -4,6 +4,10 @@
 #include "clean.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "music_264.h"
+#include "scene_exit.h"
+#include "scene_query.h"
+#include "scene_tables.h"
 
 static_assert(sizeof(SceneMusic) == 0x14, "scene music size");
 static_assert(offsetof(SceneMusic, music) == 0x0a, "scene music music");
@@ -28,15 +32,6 @@ typedef struct SceneMusicEntry {
 extern Obj021c526c *data_021c526c;
 extern const SceneMusicEntry data_020c9f58[SCENE_MUSIC_ENTRIES];
 
-/* The current scene; the scene table at data_021f69d0 and its first byte, the scene being gone
- * to. */
-extern u8 func_020b65c4(void);
-extern void *func_020b5e10(void);
-extern int func_020b5e84(u8 *table);
-/* Whether the clock reads from h1:m1:s1 (included) to h2:m2:s2 (excluded), across midnight
- * when the second is earlier. */
-extern u32 func_0203736c(void *clock, u32 h1, u32 m1, u32 s1, u32 h2, u32 m2, u32 s2);
-
 /* func_02036584: in scenes 0x1a to 0x1f, unless the player's record has flag 0x23 or flag 1:
  * from 22:49:50 to 22:50:00 a request of priority 0x10 with word 0xc8 added (once), and from
  * 22:50:00 to midnight, or at once when it is forced, music 0x51 asked for (once). */
@@ -50,20 +45,20 @@ void SceneMusic_CheckLateHour(SceneMusic *self)
     if (record != NULL && (PlayerRecord_TestFlag(record, 0x23) != 0 || PlayerRecord_TestFlag(record, 1) != 0)) {
         flagged = 1;
     }
-    scene = func_020b65c4();
+    scene = SceneQuery_Current();
     if (flagged || scene < 0x1a || scene > 0x1f) {
         return;
     }
 
     clock = SceneMusic_Clock();
     if (self->late_value_added == 0) {
-        if (func_0203736c(clock, 22, 49, 50, 22, 50, 0) != 0) {
+        if (MusicClock_IsBetween(clock, 22, 49, 50, 22, 50, 0) != 0) {
             Music_AddValue(SCENE_MUSIC_LATE_VALUE_PRIORITY, 0xc8, 0);
             self->late_value_added = 1;
         }
     }
     if (self->late_music_added == 0) {
-        if (func_0203736c(clock, 22, 50, 0, 0, 0, 0) != 0 || self->late_music_forced != 0) {
+        if (MusicClock_IsBetween(clock, 22, 50, 0, 0, 0, 0) != 0 || self->late_music_forced != 0) {
             Music_Add(SCENE_MUSIC_LATE_MUSIC_PRIORITY, SCENE_MUSIC_LATE_MUSIC, 0x7f, 0);
             self->late_music_added = 1;
         }
@@ -97,7 +92,7 @@ CLEAN_AS(func_0203665c, SceneMusic_ClearLate)
  * when they differ. */
 void SceneMusic_UpdateScene(SceneMusic *self)
 {
-    int scene = func_020b65c4();
+    int scene = SceneQuery_Current();
 
     if (self->scene == scene) {
         return;
@@ -140,8 +135,8 @@ CLEAN_AS(func_020366e0, SceneMusic_Start)
  * one. */
 int SceneMusic_SameForNext(void)
 {
-    int current = func_020b65c4();
-    int next = func_020b5e84(func_020b5e10());
+    int current = SceneQuery_Current();
+    int next = SceneExit_Scene((const SceneExit *) (uintptr_t) SceneTables_EntryRecord());
     u16 current_music = SceneMusic_ForScene((u8) current);
     u16 next_music = SceneMusic_ForScene((u8) next);
 

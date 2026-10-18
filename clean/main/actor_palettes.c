@@ -4,25 +4,19 @@
 #include "clean.h"
 #include "scene_heaps.h"
 #include "session.h"
+#include "c_library.h"
+#include "rom_file.h"
 
 extern u8 data_021cacec[]; /* the buffers' table */
-
-/* The table's buffer `entry`, as an address. */
-extern unsigned long func_0205f8e0(u8 *table, int entry);
-/* The sizes of the hair and of the skin palette files, and the path of palette file `index`. */
-extern int func_0205f96c(void);
-extern int func_0205f970(void);
-extern char *func_0205f974(unsigned int index);
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
 
 /* func_0205f848: palette file `index` read as the hair palette, at most its size; its size,
  * 0 on failure. */
 int ActorPalettes_LoadHair(unsigned char *palettes, int index)
 {
     int file = ActorPalettes_HairFile(palettes);
-    char *path = func_0205f974((unsigned int) index);
-    int size = func_0205f96c();
-    return func_02064af4(path, (void *) (uintptr_t) file, size);
+    char *path = ActorPalettes_Path((unsigned int) index);
+    int size = ActorPalettes_HairSize();
+    return RomFile_Read(path, (void *) (uintptr_t) file, size);
 }
 CLEAN_AS(func_0205f848, ActorPalettes_LoadHair)
 
@@ -31,9 +25,9 @@ CLEAN_AS(func_0205f848, ActorPalettes_LoadHair)
 int ActorPalettes_LoadSkin(unsigned char *palettes, int index)
 {
     unsigned long file = ActorPalettes_SkinFile(palettes);
-    char *path = func_0205f974((unsigned int) index);
-    int size = func_0205f970();
-    return func_02064af4(path, (void *) (uintptr_t) file, size);
+    char *path = ActorPalettes_Path((unsigned int) index);
+    int size = ActorPalettes_SkinSize();
+    return RomFile_Read(path, (void *) (uintptr_t) file, size);
 }
 CLEAN_AS(func_0205f874, ActorPalettes_LoadSkin)
 
@@ -41,7 +35,7 @@ CLEAN_AS(func_0205f874, ActorPalettes_LoadSkin)
 int ActorPalettes_HairFile(unsigned char *palettes)
 {
     int skin = (int) ActorPalettes_SkinFile(palettes);
-    return skin + func_0205f970();
+    return skin + ActorPalettes_SkinSize();
 }
 CLEAN_AS(func_0205f8a0, ActorPalettes_HairFile)
 
@@ -49,7 +43,7 @@ CLEAN_AS(func_0205f8a0, ActorPalettes_HairFile)
  * address. */
 unsigned long ActorPalettes_SkinFile(unsigned char *palettes)
 {
-    return func_0205f8e0(data_021cacec, *palettes);
+    return ActorPalettes_Buffer((ActorPaletteBuffers *) (void *) data_021cacec, *palettes);
 }
 CLEAN_AS(func_0205f8b4, ActorPalettes_SkinFile)
 
@@ -87,7 +81,6 @@ extern Heap *data_021c9ae0;        /* the heap the buffers are taken from (Scene
 extern NetSession *data_020ccf94;  /* the session */
 extern char data_021cacfc[];       /* the path buffer */
 extern const char data_020dd7b0[]; /* "/PPal/%d/%d.nsbtx" */
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
 
 /* The table, data_021cacec. */
 static ActorPaletteBuffers *actor_palettes_table(void)
@@ -177,7 +170,7 @@ CLEAN_AS(func_0205f970, ActorPalettes_SkinSize)
  * buffer at data_021cacfc. */
 char *ActorPalettes_Path(unsigned int index)
 {
-    func_02064328(data_021cacfc, data_020dd7b0, index >> 5, index);
+    CLib_SPrintf(data_021cacfc, data_020dd7b0, index >> 5, index);
     return data_021cacfc;
 }
 CLEAN_AS(func_0205f974, ActorPalettes_Path)

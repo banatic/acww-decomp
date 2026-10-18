@@ -13,6 +13,25 @@
 #include "villager_letter.h"
 #include "villager_memories.h"
 #include "villager_memory_bits.h"
+#include "date_time.h"
+#include "event_calendar.h"
+#include "item_code.h"
+#include "item_form.h"
+#include "item_lists.h"
+#include "letter.h"
+#include "letter_grade.h"
+#include "mail_text.h"
+#include "main_random.h"
+#include "message_reader.h"
+#include "message_receiver.h"
+#include "message_texts.h"
+#include "number_text.h"
+#include "player_id.h"
+#include "text_base.h"
+#include "town_name.h"
+#include "villager_memory_entry.h"
+#include "villager_post.h"
+#include "word_archives.h"
 
 #define VILLAGER_MAIL_TOWN_PLAYERS 4
 #define VILLAGER_MAIL_NO_ITEM 0xfff1
@@ -94,57 +113,6 @@ extern const NpcIdHead data_021dc7aa; /* this town */
 extern u8 data_021dc7bc[];            /* the town's four players' records */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern void func_0209e474(DateTime *now);
-extern int func_0203fc78(int event, const DateTime *when, int arg); /* whether the event is on the date */
-/* A player id: constructed from another, destroyed; whether it is set; whether two are the same
- * player; whose town it is (VILLAGER_MAIL_THIS_TOWN, 1 another, 2 none). */
-extern DesignCreator *func_0209527c(DesignCreator *id, const DesignCreator *from);
-extern int func_0209526c(DesignCreator *id);
-extern int func_020951bc(const DesignCreator *id);
-extern int func_0209518c(const DesignCreator *a, const DesignCreator *b);
-extern int func_02094ffc(const DesignCreator *id);
-/* A memory's bit 0 (a letter of the player held), set; its fondness, and changed (within -128 to
- * 127). */
-extern int func_02081cd8(const VillagerMemory *memory);
-extern void func_02081cc4(VillagerMemory *memory);
-extern int func_02081d20(const VillagerMemory *memory);
-extern s8 func_02081cec(VillagerMemory *memory, int delta);
-/* A letter's sender (NULL for none), its item, the length of its text, its grade
- * (VILLAGER_MAIL_GRADE_*), and a copy of it. */
-extern const DesignCreator *func_02065f7c(MailLetter *letter);
-extern u16 func_02065f18(MailLetter *letter);
-extern int func_0206d7a0(MailLetter *letter);
-extern int func_0206d7ac(MailLetter *letter);
-extern int func_02066830(MailLetter *dst, MailLetter *src);
-/* A letter from the villager `npc` of message `text` of the group `name`, carrying `item` when it
- * is not NULL, on paper `paper`, delivered to `player`; whether it was. */
-extern int func_0205a240(const char *name, int text, const DesignCreator *player, const NpcId *npc, const u16 *item,
-                         int paper);
-extern int func_0203d7c4(int slot, void *text); /* a text slot of the letters set */
-extern void *func_02094fd4(VillagerMailName *text);
-extern void *func_02094fbc(VillagerMailName *text);
-extern void *func_02095074(const DesignCreator *player, VillagerMailName *text);
-extern void *func_020a8228(VillagerMailLabel *label);
-extern void *func_020a8210(VillagerMailLabel *label);
-extern void func_020a8c1c(VillagerMailLabel *label);
-extern int func_020b49d4(VillagerMailLabel *label, const u8 *message, const char *group);
-/* Word `word` of a reply: the group it comes from, and a random message of it in `number`. */
-extern const char *func_0209c54c(int *number, int word);
-extern void *func_020641c8(VillagerMailTownName *text);
-extern void *func_020641b0(VillagerMailTownName *text);
-extern u32 func_02064294(const NpcIdHead *town); /* whether it is set */
-extern void func_02064210(const NpcIdHead *town, VillagerMailTownName *text);
-extern void func_020642d0(NpcIdHead *dst, const NpcIdHead *src);
-extern void *func_020b5630(VillagerMailNumber *text);
-extern void *func_020b5618(VillagerMailNumber *text);
-extern int func_020b45d0(VillagerMailNumber *text, u32 value, int digits, int a, int b, int c);
-extern void func_02063ccc(VillagerMailItemList *list, int kind, int group);
-extern void func_020638d4(u16 *item, VillagerMailItemList *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(VillagerMailItemList *list);
-extern void func_02063414(u16 *item, int a, int b, int c, int d, int e, int f, int g, int h, int i);
-extern void func_02061b1c(u16 *out, const u16 *code, int always); /* the item a code stands for */
-extern int func_0204bcdc(const u16 *item);
 
 static MailLetter *villager_mail_held(u8 *villager)
 {
@@ -155,12 +123,12 @@ static MailLetter *villager_mail_held(u8 *villager)
 static u16 villager_mail_draw(int kind)
 {
     VillagerMailItemList list;
-    func_02063ccc(&list, kind, 0);
+    ItemList_Construct((ItemList *) &list, kind, 0);
     VillagerMailItemList copy = list;
     u16 item;
-    func_020638d4(&item, &copy, 0, 0, 1, 1, 0);
-    func_02063cc8(&copy);
-    func_02063cc8(&list);
+    ItemLists_Draw(&item, (ItemList *) &copy, 0, 0, 1, 1, 0);
+    ItemList_Destruct(&copy);
+    ItemList_Destruct(&list);
     return item;
 }
 
@@ -175,21 +143,22 @@ CLEAN_AS(func_02080cf0, VillagerMail_HasHeldLetter)
  * a set sender the villager knows and the memory's bit 0 is set; -1 otherwise. */
 int VillagerMail_HeldLetterMemory(u8 *villager)
 {
-    const DesignCreator *sender = func_02065f7c(villager_mail_held(villager));
+    const DesignCreator *sender =
+        (const DesignCreator *) (uintptr_t) (Letter_PlayerSender((Letter *) villager_mail_held(villager)));
     if (sender == NULL) {
         return -1;
     }
     DesignCreator id;
-    func_0209527c(&id, sender);
+    PlayerId_CopyConstruct(&id, (DesignCreator *) sender);
     int index = -1;
-    if (func_020951bc(&id)) {
+    if (PlayerId_IsSet(&id)) {
         int found = VillagerMemory_IndexOf(villager, &id);
         VillagerMemory *memory = VillagerMemory_At(villager, found);
-        if (memory != NULL && func_02081cd8(memory)) {
+        if (memory != NULL && VillagerMemoryEntry_LetterHeld(memory)) {
             index = found;
         }
     }
-    func_0209526c(&id);
+    PlayerId_Destruct(&id);
     return index;
 }
 CLEAN_AS(func_02080d0c, VillagerMail_HeldLetterMemory)
@@ -204,7 +173,7 @@ void VillagerMail_SendFarewells(u8 *villager)
     }
     for (int i = 0; i < VILLAGER_MAIL_TOWN_PLAYERS; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7bc, i);
-        if (record != NULL && func_020951bc(PlayerRecord_Player(record))) {
+        if (record != NULL && PlayerId_IsSet(PlayerRecord_Player(record))) {
             VillagerMail_SendFarewell(villager, record);
         }
     }
@@ -221,20 +190,21 @@ void VillagerMail_SendFarewell(u8 *villager, u8 *record)
         return;
     }
     DesignCreator *player = PlayerRecord_Player(record);
-    if (!func_020951bc(player) || func_02094ffc(player) != VILLAGER_MAIL_THIS_TOWN) {
+    if (!PlayerId_IsSet(player) || PlayerId_WhichTown(player) != VILLAGER_MAIL_THIS_TOWN) {
         return;
     }
     if (VillagerMemory_Of(villager, player) == NULL) {
         return;
     }
     VillagerMailTownName town;
-    func_020641c8(&town);
-    if (func_02064294(&data_021dc7aa)) {
-        func_02064210(&data_021dc7aa, &town);
-        func_0203d7c4(VILLAGER_MAIL_SLOT_TOWN, &town);
+    TownNameText_Construct((TownNameText *) &town);
+    if (TownName_IsSet((const u16 *) &data_021dc7aa)) {
+        TownName_ToText((TownName *) &data_021dc7aa, (TextBase *) &town);
+        MailText_SetPartText(VILLAGER_MAIL_SLOT_TOWN, &town);
     }
-    func_0205a240(data_020e1974, (u8) func_020644cc(VILLAGER_MAIL_FAREWELL_TEXTS), player, npc, NULL, VILLAGER_MAIL_ANY_PAPER);
-    func_020641b0(&town);
+    VillagerPost_Send(data_020e1974, (u8) MainRandom_Below(VILLAGER_MAIL_FAREWELL_TEXTS), player, npc, NULL,
+                      VILLAGER_MAIL_ANY_PAPER);
+    TownNameText_Destruct((TownNameText *) &town);
 }
 CLEAN_AS(func_02080dc0, VillagerMail_SendFarewell)
 
@@ -244,7 +214,7 @@ void VillagerMail_SendNewYearLetters(u8 *villager, const DateTime *today)
 {
     for (int i = 0; i < VILLAGER_MAIL_TOWN_PLAYERS; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7bc, i);
-        if (record != NULL && func_020951bc(PlayerRecord_Player(record))) {
+        if (record != NULL && PlayerId_IsSet(PlayerRecord_Player(record))) {
             VillagerMail_SendNewYearLetter(villager, record, today);
         }
     }
@@ -263,7 +233,7 @@ static DesignCreator *villager_mail_day_player(NpcId *npc, u8 **record)
         return NULL;
     }
     DesignCreator *player = PlayerRecord_Player(*record);
-    if (!func_020951bc(player) || func_02094ffc(player) != VILLAGER_MAIL_THIS_TOWN ||
+    if (!PlayerId_IsSet(player) || PlayerId_WhichTown(player) != VILLAGER_MAIL_THIS_TOWN ||
         PlayerRecord_TestFlag(*record, VILLAGER_MAIL_RECORD_FLAG) != 0) {
         return NULL;
     }
@@ -275,7 +245,7 @@ static DesignCreator *villager_mail_day_player(NpcId *npc, u8 **record)
 static VillagerMemory *villager_mail_day_memory(u8 *villager, DesignCreator *player, int birthday)
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
-    if (memory == NULL || func_02081d20(memory) < VILLAGER_MAIL_FONDNESS) {
+    if (memory == NULL || VillagerMemoryEntry_Fondness(memory) < VILLAGER_MAIL_FONDNESS) {
         return NULL;
     }
     int sent = birthday ? VillagerMemoryBits_BirthdayLetterSent(memory) : (int) VillagerMemoryBits_NewYearLetterSent(memory);
@@ -295,13 +265,13 @@ void VillagerMail_SendNewYearLetter(u8 *villager, u8 *record, const DateTime *to
     }
     DateTime now = {0};
     if (today == NULL) {
-        func_0209e474(&now);
+        DateTime_Now(&now);
     } else {
         MI_CpuCopy8(today, &now, sizeof(now));
     }
     DateTime when;
     MI_CpuCopy8(&now, &when, sizeof(when));
-    if (!func_0203fc78(VILLAGER_MAIL_EVENT_NEW_YEAR, &when, 0) || now.hour < VILLAGER_MAIL_FIRST_HOUR) {
+    if (!EventCalendar_State(VILLAGER_MAIL_EVENT_NEW_YEAR, &when, 0) || now.hour < VILLAGER_MAIL_FIRST_HOUR) {
         return;
     }
     VillagerMemory *memory = villager_mail_day_memory(villager, player, 0);
@@ -309,14 +279,14 @@ void VillagerMail_SendNewYearLetter(u8 *villager, u8 *record, const DateTime *to
         return;
     }
     VillagerMailNumber year;
-    func_020b5630(&year);
-    func_020b45d0(&year, (u32) (now.year + VILLAGER_MAIL_YEAR_BASE), VILLAGER_MAIL_YEAR_DIGITS, 0, 0, 0);
-    func_0203d7c4(VILLAGER_MAIL_SLOT_YEAR, &year);
-    if (func_0205a240(data_020e197c, (u8) func_020644cc(VILLAGER_MAIL_LETTER_TEXTS), player, npc, NULL,
-                      VILLAGER_MAIL_NEW_YEAR_PAPER)) {
+    MessageText46_Construct((MessageText46 *) &year);
+    NumberText_Format(&year, (u32) (now.year + VILLAGER_MAIL_YEAR_BASE), VILLAGER_MAIL_YEAR_DIGITS, 0, 0, 0);
+    MailText_SetPartText(VILLAGER_MAIL_SLOT_YEAR, &year);
+    if (VillagerPost_Send(data_020e197c, (u8) MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS), player, npc, NULL,
+                          VILLAGER_MAIL_NEW_YEAR_PAPER)) {
         VillagerMemoryBits_SetNewYearLetter(memory);
     }
-    func_020b5618(&year);
+    MessageText46_Destruct((MessageText46 *) &year);
 }
 CLEAN_AS(func_02080ea4, VillagerMail_SendNewYearLetter)
 
@@ -348,7 +318,7 @@ void VillagerMail_SendBirthdayLetter(u8 *villager, u8 *record, const DateTime *t
     DateTime now = {0};
     const u8 *birthday = PlayerRecord_Birthday(record); /* day, month */
     if (today == NULL) {
-        func_0209e474(&now);
+        DateTime_Now(&now);
     } else {
         MI_CpuCopy8(today, &now, sizeof(now));
     }
@@ -360,17 +330,17 @@ void VillagerMail_SendBirthdayLetter(u8 *villager, u8 *record, const DateTime *t
         return;
     }
     VillagerMailItemList list;
-    func_02063ccc(&list, data_020cd448[func_020644cc(VILLAGER_MAIL_LETTER_TEXTS)], 0);
+    ItemList_Construct((ItemList *) &list, data_020cd448[MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS)], 0);
     VillagerMailItemList copy = list;
     u16 present;
-    func_020638d4(&present, &copy, 0, 0, 1, 1, 0);
-    func_02063cc8(&copy);
+    ItemLists_Draw(&present, (ItemList *) &copy, 0, 0, 1, 1, 0);
+    ItemList_Destruct(&copy);
     const u16 *item = present != VILLAGER_MAIL_NO_ITEM ? &present : NULL;
-    if (func_0205a240(data_020e1988, (u8) func_020644cc(VILLAGER_MAIL_LETTER_TEXTS), player, npc, item,
-                      VILLAGER_MAIL_ANY_PAPER)) {
+    if (VillagerPost_Send(data_020e1988, (u8) MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS), player, npc, item,
+                          VILLAGER_MAIL_ANY_PAPER)) {
         VillagerMemoryBits_SetBirthdayLetter(memory);
     }
-    func_02063cc8(&list);
+    ItemList_Destruct(&list);
 }
 CLEAN_AS(func_02080ff8, VillagerMail_SendBirthdayLetter)
 
@@ -389,47 +359,47 @@ void VillagerMail_Reply(u8 *villager, u8 *record, MailLetter *letter)
         return;
     }
     DesignCreator *player = PlayerRecord_Player(record);
-    if (!func_020951bc(player)) {
+    if (!PlayerId_IsSet(player)) {
         return;
     }
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
-    int grade = func_0206d7ac(letter);
+    int grade = LetterGrade_Grade(letter);
     VillagerMailName name;
-    func_02094fd4(&name);
+    PlayerIdText_Construct((PlayerIdText *) &name);
     if (grade == VILLAGER_MAIL_GRADE_BAD) {
-        VillagerLetter_Post(data_020e1994, (int) func_020644cc(VILLAGER_MAIL_LETTER_TEXTS), player, npc, NULL);
+        VillagerLetter_Post(data_020e1994, (int) MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS), player, npc, NULL);
         if (memory != NULL) {
-            func_02081cec(memory, VILLAGER_MAIL_BAD_FONDNESS);
+            VillagerMemoryEntry_ChangeFondness(memory, VILLAGER_MAIL_BAD_FONDNESS);
         }
     } else if (grade == VILLAGER_MAIL_GRADE_GOOD) {
         u16 present = VILLAGER_MAIL_NO_ITEM;
         VillagerMailLabel label;
-        func_020a8228(&label);
+        MessagePart_Construct((MessagePart *) &label);
         int first = 0;
         int number = 0;
-        func_02095074(player, &name);
-        func_0203d7c4(VILLAGER_MAIL_SLOT_PLAYER, &name);
+        PlayerId_NameToText(player, (TextBase *) &name);
+        MailText_SetPartText(VILLAGER_MAIL_SLOT_PLAYER, &name);
         for (int i = 0; i < VILLAGER_MAIL_REPLY_WORDS; i++) {
-            const char *group = func_0209c54c(&number, i);
-            func_020a8c1c(&label);
+            const char *group = (const char *) (uintptr_t) WordArchives_Random(&number, i);
+            TextBase_Clear(&label);
             u8 message = (u8) number;
-            func_020b49d4(&label, &message, group);
-            func_0203d7c4(VILLAGER_MAIL_SLOT_WORDS + i, &label);
+            MessageReader_LoadDecoded(&label, &message, group);
+            MailText_SetPartText(VILLAGER_MAIL_SLOT_WORDS + i, &label);
         }
-        if (func_02065f18(letter) != VILLAGER_MAIL_NO_ITEM) {
-            int length = func_0206d7a0(letter);
+        if (Letter_Item((const Letter *) letter) != VILLAGER_MAIL_NO_ITEM) {
+            int length = LetterGrade_BodyLength(letter);
             if (length <= VILLAGER_MAIL_SHORT_LETTER) {
-                if (func_020644cc(2) == 0) {
+                if (MainRandom_Below(2) == 0) {
                     present = villager_mail_draw(VILLAGER_MAIL_SHORT_LIST);
                 } else {
                     u16 drawn;
-                    func_02063414(&drawn, 0x1518, 5, 0, 0, 0, 1, 0xa, 0, 1);
+                    ItemLists_DrawRange(&drawn, 0x1518, 5, 0, 0, 0, 1, 0xa, 0, 1);
                     present = drawn;
                 }
             } else if (length <= VILLAGER_MAIL_MIDDLE_LETTER) {
                 present = villager_mail_draw(VILLAGER_MAIL_MIDDLE_LIST);
             } else {
-                present = villager_mail_draw(data_020cd43c[func_020644cc(VILLAGER_MAIL_LETTER_TEXTS)]);
+                present = villager_mail_draw(data_020cd43c[MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS)]);
             }
             if (present != VILLAGER_MAIL_NO_ITEM) {
                 first = VILLAGER_MAIL_REPLY_PRESENT_FIRST;
@@ -437,13 +407,13 @@ void VillagerMail_Reply(u8 *villager, u8 *record, MailLetter *letter)
         }
         VillagerLetter_PostDrawn(data_020e199c, first, VILLAGER_MAIL_REPLY_TEXTS, player, npc, &present);
         if (memory != NULL) {
-            int delta =
-                func_02065f18(letter) != VILLAGER_MAIL_NO_ITEM ? VILLAGER_MAIL_GIFT_FONDNESS : VILLAGER_MAIL_GOOD_FONDNESS;
-            func_02081cec(memory, delta);
+            int delta = Letter_Item((const Letter *) letter) != VILLAGER_MAIL_NO_ITEM ? VILLAGER_MAIL_GIFT_FONDNESS
+                                                                                      : VILLAGER_MAIL_GOOD_FONDNESS;
+            VillagerMemoryEntry_ChangeFondness(memory, delta);
         }
-        func_020a8210(&label);
+        MessagePart_Destruct((MessagePart *) &label);
     }
-    func_02094fbc(&name);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
 }
 CLEAN_AS(func_02081144, VillagerMail_Reply)
 
@@ -451,19 +421,20 @@ CLEAN_AS(func_02081144, VillagerMail_Reply)
  * town, number and name) and its memory of the player has bit 0 set. */
 int VillagerMail_HoldsLetterFrom(u8 *villager, const DesignCreator *player)
 {
-    const DesignCreator *sender = func_02065f7c(villager_mail_held(villager));
-    if (!func_020951bc(player) || sender == NULL) {
+    const DesignCreator *sender =
+        (const DesignCreator *) (uintptr_t) (Letter_PlayerSender((Letter *) villager_mail_held(villager)));
+    if (!PlayerId_IsSet((DesignCreator *) player) || sender == NULL) {
         return 0;
     }
     DesignCreator held;
-    func_0209527c(&held, sender);
+    PlayerId_CopyConstruct(&held, (DesignCreator *) sender);
     int result = 0;
     if (player->town_id == held.town_id && memcmp(player->town_name, held.town_name, sizeof(held.town_name)) == 0 &&
-        func_0209518c(player, &held)) {
+        PlayerId_SamePlayer(player, &held)) {
         VillagerMemory *memory = VillagerMemory_Of(villager, player);
-        result = memory != NULL && func_02081cd8(memory);
+        result = memory != NULL && VillagerMemoryEntry_LetterHeld(memory);
     }
-    func_0209526c(&held);
+    PlayerId_Destruct(&held);
     return result;
 }
 CLEAN_AS(func_02081398, VillagerMail_HoldsLetterFrom)
@@ -475,26 +446,27 @@ CLEAN_AS(func_02081398, VillagerMail_HoldsLetterFrom)
 int VillagerMail_Receive(u8 *villager, MailLetter *letter)
 {
     VillagerMemory *memory = NULL;
-    const DesignCreator *sender = func_02065f7c(letter);
+    const DesignCreator *sender = (const DesignCreator *) (uintptr_t) Letter_PlayerSender((Letter *) letter);
     if (sender != NULL) {
         DesignCreator id;
-        func_0209527c(&id, sender);
-        if (func_020951bc(&id)) {
+        PlayerId_CopyConstruct(&id, (DesignCreator *) sender);
+        if (PlayerId_IsSet(&id)) {
             memory = VillagerMemory_Of(villager, &id);
         }
-        func_0209526c(&id);
+        PlayerId_Destruct(&id);
     }
     if (memory == NULL) {
         return 0;
     }
-    func_02081cc4(memory);
-    func_02066830(villager_mail_held(villager), letter);
-    func_020642d0((NpcIdHead *) (void *) (villager + TOWN_VILLAGER_LETTER_TOWN), &data_021dc7aa);
-    u16 item = func_02065f18(letter);
+    VillagerMemoryEntry_SetLetterHeld(memory);
+    Letter_Assign((Letter *) villager_mail_held(villager), (const Letter *) letter);
+    TownName_Copy((TownName *) ((NpcIdHead *) (void *) (villager + TOWN_VILLAGER_LETTER_TOWN)),
+                  (const TownName *) &data_021dc7aa);
+    u16 item = Letter_Item((const Letter *) letter);
     if (item != VILLAGER_MAIL_NO_ITEM) {
         u16 stands_for;
-        func_02061b1c(&stands_for, &item, 1);
-        if (func_0204bcdc(&stands_for) ||
+        ItemForm_ToPlaced(&stands_for, &item, 1);
+        if (ItemCode_HasVariant(&stands_for) ||
             (stands_for >= VILLAGER_MAIL_WALLPAPER_FIRST && stands_for <= VILLAGER_MAIL_WALLPAPER_LAST) ||
             (stands_for >= VILLAGER_MAIL_CARPET_FIRST && stands_for <= VILLAGER_MAIL_CARPET_LAST)) {
             VillagerItems_Add(villager, &item);

@@ -6,6 +6,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "sound_system.h"
 
 static_assert(sizeof(SoundList) == 0xc, "NNSFndList");
 static_assert(sizeof(SoundGroup) == 0x28, "the group before the next global");
@@ -54,8 +55,6 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void func_0210b7e0(SoundHandle *handle);
 /* The pan of the tracks in `track_mask` (it passes the player's number to the SDK). */
 extern void func_0210b634(SoundHandle *handle, u16 track_mask, int pan);
-/* Sequence `number` (seq_arc * 1000 + index) stopped wherever it plays; `self` is not used. */
-extern void func_020f1ed4(void *self, int number, int fade_frames);
 /* The output effect buffer's dispose callback, handed to the sound heap (Sound_DisposeNothing). */
 extern void func_020eeea0(void *memory, unsigned int size, unsigned int data1, unsigned int data2);
 
@@ -443,7 +442,7 @@ CLEAN_AS(func_020f0df0, SoundSystem_PlayEffectWithPan)
 /* func_020f0e34: sound effect 45 stopped wherever it plays, over 1 frame. */
 void SoundSystem_StopEffect45(SoundSystem *system)
 {
-    func_020f1ed4(system, EFFECT_45, 1);
+    SoundSystem_StopSequence(system, EFFECT_45, 1);
 }
 CLEAN_AS(func_020f0e34, SoundSystem_StopEffect45)
 

@@ -8,6 +8,10 @@
 #include "main/scene_sound.h"
 #include "main/session.h"
 #include "ov004/member_pointer.h"
+#include "link_scene.h"
+#include "scene_display.h"
+#include "scene_process_base.h"
+#include "transition_mark.h"
 
 static_assert(offsetof(SceneChange, step) == 0x50, "step");
 static_assert(sizeof(SceneChange) == 0x54, "scene change");
@@ -37,18 +41,6 @@ extern const MemberPointer data_020e53e8; /* SceneChange_Idle */
 
 extern NetSession *data_020ccf94;
 extern DisplayFrameHooks *data_021c8ca0; /* the running scene's hooks, or NULL */
-
-/* The link's state, and setting it. */
-extern int func_020a6ea0(void);
-extern void func_020a6eb0(int value);
-/* Asks for process class `class_id` as the next scene, with `param` and `arg` for its spawn
- * (`flags` is not used). */
-extern void func_020a53ec(int class_id, int param, int arg, int flags);
-/* The display set up for a scene, and the two calls that undo part of it. */
-extern void func_020b68f8(void);
-extern void func_020b68e4(void);
-/* A display step that depends on data_021d3654. */
-extern void func_0208f930(void);
 
 /* func_020b5abc (vtable slot 16): the destructor: the class's vtable, the scene base class's
  * and the root class's in turn, then the process destructor. */
@@ -101,7 +93,7 @@ CLEAN_AS(func_020b5b18, SceneChange_Update)
 int SceneChange_End(void)
 {
     data_021c8ca0 = NULL;
-    func_020b68e4();
+    SceneDisplay_TearDown();
     return 1;
 }
 CLEAN_AS(func_020b5b8c, SceneChange_End)
@@ -119,9 +111,9 @@ int SceneChange_Init(SceneChange *change)
         change->step = SCENE_CHANGE_START;
     }
     SceneSound_Create();
-    func_020b68f8();
+    SceneDisplay_SetUp();
     AbAllObj_LoadAndUpload();
-    func_0208f930();
+    TransitionMark_Restore();
     return 1;
 }
 CLEAN_AS(func_020b5ba8, SceneChange_Init)
@@ -138,7 +130,7 @@ CLEAN_AS(func_020b5be0, SceneChange_Idle)
 void SceneChange_Start(SceneChange *change)
 {
     int kept = Global021dc5b0_Get();
-    func_020a53ec(SCENE_CHANGE_NEXT_CLASS, SCENE_CHANGE_NEXT_PARAM, kept, 1);
+    SceneProcessBase_Request(SCENE_CHANGE_NEXT_CLASS, SCENE_CHANGE_NEXT_PARAM, kept, 1);
     change->step = SCENE_CHANGE_IDLE;
 }
 CLEAN_AS(func_020b5be4, SceneChange_Start)
@@ -147,8 +139,8 @@ CLEAN_AS(func_020b5be4, SceneChange_Start)
  * scene started. */
 void SceneChange_WaitLink(SceneChange *change)
 {
-    if (func_020a6ea0() == SCENE_CHANGE_LINK_READY) {
-        func_020a6eb0(SCENE_CHANGE_LINK_GOING);
+    if (LinkScene_GlobalPhase() == SCENE_CHANGE_LINK_READY) {
+        LinkScene_GlobalSetPhase(SCENE_CHANGE_LINK_GOING);
         SceneChange_Start(change);
     }
 }

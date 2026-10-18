@@ -28,6 +28,8 @@
 #include "ov004/room_objects.h"
 #include "ov004/room_point_sound.h"
 #include "ov004/room_pushes.h"
+#include "field_actor_place_states.h"
+#include "field_actor_room_states.h"
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
@@ -129,12 +131,6 @@ extern const char data_ov004_02254b00[];
 extern const char data_ov004_02254b10[];
 /* State 0x12's point. */
 extern const Vec3 data_ov004_02247774;
-
-/* Elsewhere in the overlay. */
-extern int func_ov004_02229bb4(FieldActor *actor, int priority, int arg);
-extern int func_ov004_0222bdf0(FieldActor *actor, int kind, int priority, int arg);
-extern void func_ov004_0222b1b4(const u8 *saved, int *x, int *z, s16 *yaw, u8 *side);
-extern int func_ov004_0222b214(FieldActor *actor, int x, int z, int yaw, u8 side, int priority, s16 arg);
 
 static int fars2_is_local(FieldActor *actor)
 {
@@ -285,12 +281,12 @@ CLEAN_AS(func_ov004_0222b0a8, FieldActorRoomStates2_LeaveClaimPlace)
  * again (priority 6). */
 void FieldActorRoomStates2_ClaimPlaceMessage(FieldActor *actor, s16 arg)
 {
-    int x;
-    int z;
+    u32 x;
+    u32 z;
     s16 yaw;
     u8 side;
-    func_ov004_0222b1b4(actor->saved.packed, &x, &z, &yaw, &side);
-    func_ov004_0222b214(actor, x, z, yaw, side, FARS2_PRIORITY, arg);
+    FieldActorPlaceStates_GetApproachSaved(actor->saved.packed, &x, &z, &yaw, &side);
+    FieldActorPlaceStates_RequestApproach(actor, x, z, yaw, side, FARS2_PRIORITY, arg);
 }
 CLEAN_AS(func_ov004_0222b0b8, FieldActorRoomStates2_ClaimPlaceMessage)
 
@@ -312,14 +308,14 @@ void FieldActorRoomStates2_UpdateTakePlace(FieldActor *actor)
 }
 CLEAN_AS(func_ov004_0222ad28, FieldActorRoomStates2_UpdateTakePlace)
 
-/* func_ov004_0222ad48: once the animation is over, func_ov004_0222bdf0 with the work's kind
+/* func_ov004_0222ad48: once the animation is over, FieldActorPlaceStates_RequestStay with the work's kind
  * (priority 6) and what it answered; 0 before. */
 int FieldActorRoomStates2_EndTakePlace(FieldActor *actor)
 {
     if (!FrameCtrl_IsDone(&actor->anim)) {
         return 0;
     }
-    return func_ov004_0222bdf0(actor, fars2_take_place_of(actor)->kind, FARS2_PRIORITY, FARS2_NO_ARG);
+    return FieldActorPlaceStates_RequestStay(actor, fars2_take_place_of(actor)->kind, FARS2_PRIORITY, FARS2_NO_ARG);
 }
 CLEAN_AS(func_ov004_0222ad48, FieldActorRoomStates2_EndTakePlace)
 
@@ -1001,7 +997,7 @@ CLEAN_AS(func_ov004_02229f60, FieldActorRoomStates2_UpdateFurnitureHold)
 
 /* func_ov004_02229fb8: state 0x1e's phases. Holding: the stick below 0x333 marks it released;
  * A let go ends the state; pushed above 0x333, with at most one visitor the state's bar drops
- * and the stick's quadrant asks (priority 6) for func_ov004_02229bb4 (2), state 0x20 (0), or,
+ * and the stick's quadrant asks (priority 6) for FieldActorRoomStates_RequestPull (2), state 0x20 (0), or,
  * when released, a turn (state 0x1f: 3 one way, 1 the other; refused, no longer released);
  * with more visitors, this console's first player in a house's room opens the talk
  * ("obj_etc_error", kind 1) once the talk event is allowed, waits for it to open and close,
@@ -1026,7 +1022,7 @@ void FieldActorRoomStates2_RunFurnitureHold(FieldActor *actor)
                 fars2_drop_priority(actor);
                 switch (FieldActor_PushQuadrant(actor)) {
                     case 2:
-                        func_ov004_02229bb4(actor, FARS2_PRIORITY, FARS2_NO_ARG);
+                        FieldActorRoomStates_RequestPull(actor, FARS2_PRIORITY, FARS2_NO_ARG);
                         break;
                     case 0:
                         FieldActorRoomStates2_RequestState20(actor, FARS2_PRIORITY, FARS2_NO_ARG);

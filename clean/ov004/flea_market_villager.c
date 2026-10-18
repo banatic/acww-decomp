@@ -48,6 +48,8 @@
 #include "room_object.h"
 #include "room_object_body.h"
 #include "room_object_methods.h"
+#include "room_manager.h"
+#include "room_objects.h"
 
 static_assert(sizeof(FleaMarketTalk) == 0x1ac, "its talk scene");
 static_assert(offsetof(FleaMarketVillager, item) == 0x898, "item");
@@ -120,10 +122,6 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 /* The class's functions kept as the game's. */
 /* The grid of the room's objects, the number at a cell of it (-1 for none) and the object
  * there (NULL for none); the room object taken away by number. */
-extern void *func_ov004_0223cd50(void);
-extern int func_ov004_0223cc5c(void *grid, int x, int z, int layer);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int z, int layer);
-extern int func_ov004_0223bb14(int number);
 
 static u8 *fm_part(FleaMarketVillager *villager, u32 offset)
 {
@@ -256,10 +254,10 @@ int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager)
     Position_Tile(&x, &z, (const Position *) (const void *) &ahead);
 
     if (tapped) {
-        if (func_ov004_0223cc5c(func_ov004_0223cd50(), x, z, 0) == -1) {
+        if (RoomObjects_GridIndexAt(RoomObjects_Grid(), x, z, 0) == -1) {
             return 0;
         }
-        RoomObject *object = func_ov004_0223cc10(func_ov004_0223cd50(), x, z, 0);
+        RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, 0);
         if (object != NULL) {
             TouchPick *pick = (TouchPick *) (uintptr_t) SceneQuery_FieldObject();
             if ((int) (uintptr_t) object != TouchPick_PickedObject(pick, NULL, NULL)) {
@@ -277,7 +275,7 @@ int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager)
         }
     }
 
-    RoomObject *object = func_ov004_0223cc10(func_ov004_0223cd50(), x, z, 0);
+    RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, 0);
     if (object == NULL) {
         return 0;
     }
@@ -570,9 +568,9 @@ void FleaMarketTalk_Sell(FleaMarketTalk *talk)
     }
     SceneBells_Take((int) (uintptr_t) villager, talk->price);
     CurrentPockets_Give(&villager->item, 0);
-    int number = func_ov004_0223cc5c(func_ov004_0223cd50(), villager->tile.x, villager->tile.z, 0);
+    int number = RoomObjects_GridIndexAt(RoomObjects_Grid(), villager->tile.x, villager->tile.z, 0);
     if (number != -1) {
-        func_ov004_0223bb14(number);
+        RoomObjects_Take(number);
         if (fm_record(villager) != NULL) {
             VillagerFurniture_TakeAt(fm_record(villager), &villager->tile, villager->spots, villager->spot_count);
         }
@@ -658,9 +656,6 @@ extern AcreMap *data_021c80bc;
 extern Heap *data_021fbe94;
 /* Its states' functions (filled at start-up from the overlay's constants). */
 extern FleaMarketVillagerStep data_ov004_02257d58[FLEA_MARKET_VILLAGER_STATES];
-
-/* Notes that a villager of the flea market is in the room (sets data_ov004_022595b4). */
-extern void func_ov004_0223d33c(void);
 
 static Actor *fm_actor_of(FleaMarketVillager *villager)
 {
@@ -954,7 +949,7 @@ int FleaMarketVillager_Leave(FleaMarketVillager *villager)
 CLEAN_AS(func_ov004_0221fe84, FleaMarketVillager_Leave)
 
 /* func_ov004_0221febc (vtable slot 0x00, its start): the town villager's start; then the room
- * notes a villager of the flea market (func_ov004_0223d33c), no item is asked about, its
+ * notes a villager of the flea market (RoomManager_SetShopMode), no item is asked about, its
  * footsteps are on, and it watches the player (state 4) when the previous scene is one
  * SceneQuery_Is31 names, else calls them (state 0). The collision map's claim is set to 0, and
  * the spots of its house's items are read for its person (AcreTemplates_VillagerRecords, from
@@ -964,7 +959,7 @@ int FleaMarketVillager_Start(FleaMarketVillager *villager)
     if (VillagerSceneObject_Start(villager->base) == 0) {
         return 0;
     }
-    func_ov004_0223d33c();
+    RoomManager_SetShopMode();
     villager->item = FLEA_MARKET_NO_ITEM;
     Footsteps_Enable((Footsteps *) (void *) fm_part(villager, FLEA_MARKET_FOOTSTEPS));
     if (SceneQuery_Is31(SceneQuery_Previous())) {

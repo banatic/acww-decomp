@@ -4,6 +4,12 @@
 #include "autoload_2/heap.h" /* Heap_FreeAux, Heap_AllocAuxZeroed */
 #include "clean.h"
 #include "main/calendar.h" /* DateTime */
+#include "main/date_time.h"
+#include "main/event_calendar.h"
+#include "main/scene_query.h"
+#include "main/spawner.h"
+#include "ov009/scene_actor.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(WarpObject, position) == 0x5c, "position");
 static_assert(offsetof(WarpObject, receiver_vtable) == 0xec, "receiver");
@@ -18,27 +24,14 @@ extern const u8 data_ov003_0223886c[];
 /* The place it sends the player to: 0x6c. */
 extern const u16 data_ov003_02238784[];
 
-/* Overlay 9's scene actor: the update of its receiver slot 0x14, its destructor and its
- * constructor. */
-extern void func_ov009_02263344(void *actor);
-extern void *func_ov009_0226539c(WarpObject *object);
-extern void *func_ov009_0226552c(WarpObject *object);
-/* The clock's date and time (DateTime_Now). */
-extern void func_0209e474(DateTime *now);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-/* Whether event `event` is on at `when`. */
-extern int func_0203fc78(int event, DateTime *when, int arg);
-/* Requests a change to the scene of place `*place` in scene `scene`, arriving at `position`. */
-extern int func_02084cd0(const u16 *place, int scene, const Vec3 *position);
-/* The scene. */
-extern u8 func_020b65c4(void);
 
 /* _ZThn236_N18Obj_ov009_022658dc17vfunc_02066994_14Ev: overlay 9's receiver slot 0x14
  * (func_ov009_02263344) on the actor around `receiver`; the warp object's and the
  * checkpoint's receivers use it. */
 void WarpObject_ReceiverSlot14(void *receiver)
 {
-    func_ov009_02263344((u8 *) receiver - WARP_OBJECT_RECEIVER_OFFSET);
+    SceneActor_OnMessageEnd((SceneActor *) ((u8 *) receiver - WARP_OBJECT_RECEIVER_OFFSET));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov009_022658dc17vfunc_02066994_14Ev, WarpObject_ReceiverSlot14)
 
@@ -48,10 +41,10 @@ int WarpObject_Enter(WarpObject *object)
 {
     DateTime now = {0};
     DateTime when;
-    func_0209e474(&now);
+    DateTime_Now(&now);
     MI_CpuCopy8(&now, &when, sizeof when);
-    if (func_0203fc78(WARP_OBJECT_EVENT, &when, 0) != 0) {
-        func_02084cd0(data_ov003_02238784, func_020b65c4(), &object->position);
+    if (EventCalendar_State(WARP_OBJECT_EVENT, &when, 0) != 0) {
+        Spawner_RequestAt(data_ov003_02238784, SceneQuery_Current(), &object->position);
     }
     return 1;
 }
@@ -62,7 +55,7 @@ static void warp_object_destroy_parts(WarpObject *object)
 {
     object->vtable = data_ov003_022387a8;
     object->receiver_vtable = data_ov003_0223886c;
-    func_ov009_0226539c(object);
+    SceneActor_Destruct((SceneActor *) object);
 }
 
 /* func_ov003_0221c368 (the deleting destructor): the destructor's work, then the memory
@@ -86,7 +79,7 @@ CLEAN_AS(func_ov003_0221c394, WarpObject_Destroy)
 /* func_ov003_0221c3b8: the constructor: overlay 9's, then the vtables. */
 WarpObject *WarpObject_Construct(WarpObject *object)
 {
-    func_ov009_0226552c(object);
+    SceneActor_ConstructBase((SceneActor *) object);
     object->vtable = data_ov003_022387a8;
     object->receiver_vtable = data_ov003_0223886c;
     return object;

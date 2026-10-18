@@ -6,6 +6,23 @@
 
 #include "clean.h"
 #include "member_pointer.h"
+#include "autoload_2/process.h"
+#include "autoload_2/vector.h"
+#include "cells.h"
+#include "dropped_items.h"
+#include "furniture_mover.h"
+#include "itcm/vector.h"
+#include "main/furniture_info.h"
+#include "main/g3d_resource.h"
+#include "main/item_code.h"
+#include "main/player_actors.h"
+#include "main/session_players.h"
+#include "room_manager.h"
+#include "room_object_anims.h"
+#include "room_object_body.h"
+#include "room_object_map.h"
+#include "room_object_methods.h"
+#include "room_objects.h"
 
 static_assert(offsetof(RoomObjectVtable, vfunc_90) == 0x90, "vtable slot 0x90");
 static_assert(offsetof(RoomObjectVtable, is_idle) == 0xa0, "vtable slot 0xa0");
@@ -28,7 +45,7 @@ static_assert(offsetof(RoomObject, node_set) == 0x764, "node set");
 static_assert(offsetof(RoomObject, unk_76C) == 0x76c, "unk_76C");
 static_assert(offsetof(RoomObject, unk_78D) == 0x78d, "unk_78D");
 static_assert(offsetof(RoomObject, top_height) == 0x790, "top height");
-static_assert(offsetof(RoomObject, unk_250) == 0x250, "unk_250");
+static_assert(offsetof(RoomObject, move_flag) == 0x250, "move flag");
 static_assert(offsetof(RoomObject, unk_284) == 0x284, "unk_284");
 static_assert(offsetof(RoomObject, state) == 0x534, "state");
 static_assert(offsetof(RoomObject, state_frames) == 0x770, "state frames");
@@ -45,10 +62,10 @@ static_assert(offsetof(RoomObject, unk_784) == 0x784, "unk_784");
 #define TURN_SPEED 0x700   /* per frame */
 #define SPIN_SPEED 0x400   /* per frame */
 #define SHRINK_SPEED 0x400 /* of the scale, per frame */
-#define NO_SOUND 0xffff    /* from func_ov004_0220ec8c */
+#define NO_SOUND 0xffff    /* from RoomObject_MoveSound */
 #define KIND_SILENT_MOVE 0x3d
 
-/* The sounds (func_02095380). */
+/* The sounds (PlayerActors_OwnPlaySound). */
 #define SOUND_TURN 0x4c4
 #define SOUND_APPEAR 0x4c7
 #define SOUND_VANISH 0x4c8
@@ -68,36 +85,11 @@ extern const s16 FX_SinCosTable_[];
 
 static_assert(sizeof(CellList) == 0x24, "the list func_ov004_0220db94 clears");
 
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int y, int layer);
-
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-extern int func_02053690(int value);
-extern int func_ov004_0220fde0(RoomObject *object);
-extern void func_ov004_0220fefc(RoomObject *object, Vec3 *centre);
-extern int func_ov004_0220e61c(RoomObject *object, Vec3 *centre);
-extern void func_ov004_0220e5dc(RoomObject *object, int index);
-extern void func_ov004_0223bac8(Vec3 *centre);
-extern int func_02095380(int sound);
-extern void func_020ee470(RoomObject *object);
-extern int func_020961a8(int a);
-extern int func_ov004_0223c5a4(Vec3 *centre);
-extern u16 func_0204bc50(int x, int y);
-extern int func_ov004_02233ba8(u16 *a, Vec3 *centre);
 
-extern void func_020eaca0(Vec3 *out, Vec3 *a, Vec3 *b);
-extern void func_ov004_0220ee90(RoomObject *object, const Vec3 *offset, int turn);
-extern void *func_ov004_0223b22c(void);
-extern int func_ov004_0223b004(void *mover, void *member, Vec3 *position);
 extern int func_ov004_0223b058(void *mover, void *member, Vec3 *position, int angle);
 extern int func_ov004_0223b080(void *mover, void *member, Vec3 *position, int angle);
-extern void func_ov004_0220e674(RoomObject *object, int a);
-extern void func_020ea6e0(Vec3 *vector, int angle);
-extern int func_ov004_0220ebd4(RoomObject *object, Vec3 *step);
-extern void func_01ffd070(Vec3 *out, const Vec3 *a, const Vec3 *b);
-extern int func_ov004_0220ec8c(RoomObject *object);
-extern int func_ov004_0220ebe0(RoomObject *object, int turn);
 
 /* An arithmetic shift right, for negative values too. */
 static s32 shift_right(s32 value, int bits)
@@ -124,14 +116,14 @@ static void set_scale(RoomObject *object, fx32 scale)
 }
 
 /* func_ov004_0220c560 (update of ROOM_OBJECT_SPIN): turns by 0x400 a frame (unless unk_780 is
- * 0x23 to 0x25) and takes its scale from func_ov004_0220fde0 through func_02053690, over
+ * 0x23 to 0x25) and takes its scale from RoomObject_Number through FurnitureInfo_Scale, over
  * 100 and a quarter of that. */
 void RoomObject_UpdateSpin(RoomObject *object)
 {
     if (object->unk_780 != 0x23 && object->unk_780 != 0x24 && object->unk_780 != 0x25) {
         object->angle = (s16) (object->angle + SPIN_SPEED);
     }
-    set_scale(object, shift_right(FX_Div(func_02053690(func_ov004_0220fde0(object)), 100 * ONE), 2));
+    set_scale(object, shift_right(FX_Div(FurnitureInfo_Scale(RoomObject_Number(object)), 100 * ONE), 2));
 }
 CLEAN_AS(func_ov004_0220c560, RoomObject_UpdateSpin)
 
@@ -157,8 +149,8 @@ static int shrink(RoomObject *object)
 static void shrink_effect(RoomObject *object)
 {
     Vec3 centre;
-    func_ov004_0220fefc(object, &centre);
-    func_ov004_0220e61c(object, &centre);
+    RoomObject_Centre(object, &centre);
+    RoomObject_Effect3dAt(object, &centre);
 }
 
 /* func_ov004_0220c5cc (update of ROOM_OBJECT_SHRINK): once shrunk, ROOM_OBJECT_SHRUNK. */
@@ -181,11 +173,11 @@ int RoomObject_EnterShrink(RoomObject *object)
 CLEAN_AS(func_ov004_0220c640, RoomObject_EnterShrink)
 
 /* func_ov004_0220c648 (update of ROOM_OBJECT_VANISH): once shrunk, asks for the object's
- * removal (func_020ee470) and goes on with the frame. */
+ * removal (Process_RequestDelete) and goes on with the frame. */
 void RoomObject_UpdateVanish(RoomObject *object)
 {
     if (shrink(object)) {
-        func_020ee470(object);
+        Process_RequestDelete(&object->scene.process);
     }
     if (object->state_frames == 1) {
         shrink_effect(object);
@@ -202,9 +194,9 @@ int RoomObject_EnterVanish(RoomObject *object)
 
     object->vtable->vfunc_90(object);
     object->state_frames = 0;
-    func_ov004_0220fefc(object, &centre);
-    func_ov004_0223bac8(&centre);
-    func_02095380(SOUND_VANISH);
+    RoomObject_Centre(object, &centre);
+    RoomObjects_SetVanishPoint(&centre);
+    PlayerActors_OwnPlaySound(SOUND_VANISH);
     return 1;
 }
 CLEAN_AS(func_ov004_0220c6b8, RoomObject_EnterVanish)
@@ -217,18 +209,18 @@ void RoomObject_UpdateMoveBack(RoomObject *object)
 CLEAN_AS(func_ov004_0220c6f4, RoomObject_UpdateMoveBack)
 
 /* The start of a move to the target position: the offset to it, then whether the mover
- * (func_ov004_0223b22c) takes it on with `start`. */
+ * (RoomManager_Mover) takes it on with `start`. */
 static int start_move(RoomObject *object, int (*start)(void *, void *, Vec3 *, int), int ahead)
 {
     Vec3 offset;
 
-    func_020eaca0(&offset, &object->target_position, &object->position);
+    Vec_Subtract(&offset, &object->target_position, &object->position);
     CarriedItems_PickUp(&object->carried, object);
-    func_ov004_0220ee90(object, &offset, 0);
-    void *mover = func_ov004_0223b22c();
-    if (mover != NULL && start(mover, object->unk_250, &object->position, object->target_angle) != 0) {
+    RoomObject_MoveOnMap(object, &offset, 0);
+    void *mover = RoomManager_Mover();
+    if (mover != NULL && start(mover, &object->move_flag, &object->position, object->target_angle) != 0) {
         object->vtable->vfunc_94(object, ahead);
-        func_ov004_0220e674(object, !ahead);
+        RoomObject_EffectAtCellTowardsPlayer(object, !ahead);
         return 1;
     }
     return 0;
@@ -245,10 +237,10 @@ CLEAN_AS(func_ov004_0220c6fc, RoomObject_EnterMoveBack)
  * says the move is over; then the object is at the target and idle. Without a mover, nothing. */
 void RoomObject_UpdateMove(RoomObject *object)
 {
-    void *mover = func_ov004_0223b22c();
+    void *mover = RoomManager_Mover();
     if (mover != NULL) {
         Vec3 position;
-        if (func_ov004_0223b004(mover, object->unk_250, &position)) {
+        if (FurnitureMover_Step(mover, &object->move_flag, &position)) {
             object->position = object->target_position;
             RoomObject_EnterState(object, ROOM_OBJECT_IDLE);
             CarriedItems_PutDown(&object->carried, object);
@@ -288,18 +280,18 @@ static void turn_with_cells(RoomObject *object, enum TurnSlot slot, int down)
         return;
     }
     CellList cells;
-    func_ov004_0220db94(&cells);
-    func_ov004_0220f27c(object, &cells, NULL, 0);
-    for (unsigned long i = 0; i < func_ov004_0220db68(&cells); i++) {
-        void *grid = func_ov004_0223cd50();
-        Cell *for_x = func_ov004_0220db5c(&cells, (int) i);
-        Cell *for_y = func_ov004_0220db5c(&cells, (int) i);
-        RoomObject *above = func_ov004_0223cc10(grid, for_x->x, for_y->y, 1);
+    CellList_Construct(&cells);
+    RoomObject_ListCells(object, &cells, NULL, 0);
+    for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
+        void *grid = RoomObjects_Grid();
+        Cell *for_x = CellList_At(&cells, (int) i);
+        Cell *for_y = CellList_At(&cells, (int) i);
+        RoomObject *above = RoomObjects_GridObjectAt(grid, for_x->x, for_y->y, 1);
         if (above != NULL) {
             call_turn(above, slot, down);
         }
     }
-    func_ov004_0220db90(&cells);
+    CellList_Destruct(&cells);
 }
 
 /* func_ov004_0220c858 (update of ROOM_OBJECT_TURN): towards the target angle by 0x700 a
@@ -320,7 +312,7 @@ int RoomObject_EnterTurn(RoomObject *object)
 {
     CarriedItems_PickUp(&object->carried, object);
     s16 turn = (s16) (object->target_angle - object->angle);
-    func_ov004_0220ee90(object, NULL, turn);
+    RoomObject_MoveOnMap(object, NULL, turn);
     turn_with_cells(object, TURN_START, turn < 0);
     return 1;
 }
@@ -347,7 +339,7 @@ CLEAN_AS(func_ov004_0220c9f8, RoomObject_EnterIdle)
  * sine of the phase times the amplitude, z as x. Each time the sine changes sign the
  * amplitude drops to 0.3 of itself and the phase speeds up by 0x960. Once unk_15C is 0x1000
  * and the amplitude below 0x52, the object is idle. While wobbling, it calls
- * func_ov004_0220e5dc with 0 and 2 in its first frame and with 1 and 3 in its third. */
+ * RoomObject_EffectNearCorner with 0 and 2 in its first frame and with 1 and 3 in its third. */
 void RoomObject_UpdateAppear(RoomObject *object)
 {
     Approach_S32Again(&object->unk_15C, ONE, 0x88);
@@ -356,12 +348,12 @@ void RoomObject_UpdateAppear(RoomObject *object)
         object->timer++;
         object->state_frames = 0;
         if (object->timer == 12) {
-            func_02095380(SOUND_APPEAR);
+            PlayerActors_OwnPlaySound(SOUND_APPEAR);
         }
         if (object->timer == 15) {
             Vec3 centre;
-            func_ov004_0220fefc(object, &centre);
-            func_ov004_0220e61c(object, &centre);
+            RoomObject_Centre(object, &centre);
+            RoomObject_Effect3dAt(object, &centre);
         }
         return;
     }
@@ -389,12 +381,12 @@ void RoomObject_UpdateAppear(RoomObject *object)
 
     switch (object->state_frames) {
         case 0:
-            func_ov004_0220e5dc(object, 0);
-            func_ov004_0220e5dc(object, 2);
+            RoomObject_EffectNearCorner(object, 0);
+            RoomObject_EffectNearCorner(object, 2);
             break;
         case 2:
-            func_ov004_0220e5dc(object, 1);
-            func_ov004_0220e5dc(object, 3);
+            RoomObject_EffectNearCorner(object, 1);
+            RoomObject_EffectNearCorner(object, 3);
             break;
     }
     object->state_frames++;
@@ -402,9 +394,9 @@ void RoomObject_UpdateAppear(RoomObject *object)
 CLEAN_AS(func_ov004_0220c9fc, RoomObject_UpdateAppear)
 
 /* func_ov004_0220cb68 (entry of ROOM_OBJECT_APPEAR): scale 0, the wobble's start, and when
- * func_020961a8(4) says so, whatever func_ov004_02233ba8 does at 0x800 above the object's
- * centre (on the floor when unk_288 is 0, else at the height func_ov004_0223c5a4 gives) with
- * the value func_0204bc50 makes of unk_284; its result decides. */
+ * SessionPlayers_ActorOf(4) says so, whatever DroppedItems_DropFromLocalPlayer does at 0x800 above the object's
+ * centre (on the floor when unk_288 is 0, else at the height RoomObjects_HeightAtPoint gives) with
+ * the value ItemCode_MakeVariant makes of unk_284; its result decides. */
 int RoomObject_EnterAppear(RoomObject *object)
 {
     object->unk_15C = 0x555;
@@ -416,17 +408,17 @@ int RoomObject_EnterAppear(RoomObject *object)
     object->wobble_speed = 0x2710;
     object->wobble_amplitude = 0x800;
 
-    if (func_020961a8(4)) {
+    if (SessionPlayers_ActorOf(4)) {
         Vec3 centre;
-        func_ov004_0220fefc(object, &centre);
+        RoomObject_Centre(object, &centre);
         if (object->unk_288 == 0) {
             centre.y = 0;
         } else {
-            centre.y = func_ov004_0223c5a4(&centre);
+            centre.y = RoomObjects_HeightAtPoint(&centre);
         }
         centre.y += 0x800;
-        u16 code = func_0204bc50(object->unk_284, 0);
-        return func_ov004_02233ba8(&code, &centre);
+        u16 code = ItemCode_MakeVariant(object->unk_284, 0);
+        return DroppedItems_DropFromLocalPlayer(&code, &centre);
     }
     return 1;
 }
@@ -535,25 +527,25 @@ void RoomObject_Shrink(RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220ce50, RoomObject_Shrink)
 
-/* A move one step along `step_angle` (if func_ov004_0220ebd4 allows it), keeping `angle` as
+/* A move one step along `step_angle` (if RoomObject_CanMove allows it), keeping `angle` as
  * the target angle, in `state`; the object's move sound unless its unk_00C is 0x3d. Whether
  * it moves. The state's entry is not asked whether it agrees here. */
 static int try_move(RoomObject *object, u16 angle, int step_angle, int state)
 {
     Vec3 step = {0, 0, STEP};
-    func_020ea6e0(&step, step_angle);
-    if (!func_ov004_0220ebd4(object, &step)) {
+    Vec_RotateY(&step, step_angle);
+    if (!RoomObject_CanMove(object, &step)) {
         return 0;
     }
     Vec3 target;
-    func_01ffd070(&target, &object->position, &step);
+    Vec_Add(&target, &object->position, &step);
     object->target_position = target;
     object->target_angle = (s16) angle;
     RoomObject_EnterState(object, state);
     if (object->unk_00C != KIND_SILENT_MOVE) {
-        int sound = func_ov004_0220ec8c(object);
+        int sound = RoomObject_MoveSound(object);
         if (sound != NO_SOUND) {
-            func_02095380(sound);
+            PlayerActors_OwnPlaySound(sound);
         }
     }
     return 1;
@@ -573,16 +565,16 @@ int RoomObject_TryMove(RoomObject *object, u16 angle)
 }
 CLEAN_AS(func_ov004_0220cefc, RoomObject_TryMove)
 
-/* func_ov004_0220cf90: a turn by `turn` from the object's angle, if func_ov004_0220ebe0 allows
+/* func_ov004_0220cf90: a turn by `turn` from the object's angle, if RoomObject_CanTurn allows
  * it; whether it turns. */
 int RoomObject_TryTurn(RoomObject *object, int turn)
 {
-    if (!func_ov004_0220ebe0(object, turn)) {
+    if (!RoomObject_CanTurn(object, turn)) {
         return 0;
     }
     object->target_angle = (s16) (object->angle + turn);
     RoomObject_EnterState(object, ROOM_OBJECT_TURN);
-    func_02095380(SOUND_TURN);
+    PlayerActors_OwnPlaySound(SOUND_TURN);
     return 1;
 }
 CLEAN_AS(func_ov004_0220cf90, RoomObject_TryTurn)
@@ -616,9 +608,6 @@ CLEAN_AS(func_ov004_0220cfec, ByteSet_SetValue)
 /* The names of the four nodes (the strings "v", "v1", "v2" and "v3"). */
 extern const char *const data_ov004_0224fe2c[4];
 
-/* func_0205790c: the index of the model's node named `name`. */
-extern int func_0205790c(void *model, const char *name);
-
 /* func_ov004_0220cff0: the indexes of the model's nodes "v", "v1", "v2" and "v3", and `value`
  * with them; nothing without a model.
  * QUIRK: the value is kept in a byte. */
@@ -626,7 +615,7 @@ void ByteSet_Bind(ByteSet *set, void *model, int value)
 {
     if (model != NULL) {
         for (unsigned int i = 0; i < 4; i++) {
-            set->values[i] = (s8) func_0205790c(model, data_ov004_0224fe2c[i]);
+            set->values[i] = (s8) G3dRes_NodeIndex(model, data_ov004_0224fe2c[i]);
         }
         ByteSet_SetValue(set, (u8) value);
     }

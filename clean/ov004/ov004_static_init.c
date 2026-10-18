@@ -13,6 +13,7 @@
 #include "museum_room_setup.h"
 #include "room_objects.h"
 #include "room_pushes.h"
+#include "room_preview.h"
 
 /* ---- What the initialisers share */
 
@@ -603,7 +604,7 @@ CLEAN_AS(__sinit_ov004_0224ee64, Ov004Init_Aquarium)
 extern ModelPool data_ov004_02259698;
 extern RoomObject *data_ov004_02259714[];
 extern struct Heap *data_ov004_022595c4;
-extern u8 data_ov004_022596b0[];
+extern RoomPreview data_ov004_022596b0;
 extern u8 data_ov004_02259804[];
 extern RoomPush data_ov004_02259784[];
 extern s32 data_ov004_022595d8;
@@ -611,7 +612,6 @@ extern Vec3 data_ov004_0225967c;
 extern int data_020ca0e8; /* an acre's depth */
 extern Ov004InitRecord data_ov004_02259634, data_ov004_022595e0, data_ov004_022595ec, data_ov004_022595f8, data_ov004_02259604,
     data_ov004_02259610, data_ov004_02259670;
-extern void *func_ov004_0223d2f8(void *object);
 extern void func_0209d2b4(void *pool);        /* ModelPool_Destruct */
 extern void func_ov004_0223ce70(void *table); /* RoomObjects_TableDestruct */
 extern void func_ov004_0223cefc(void *heap);  /* RoomObjects_HeapDestruct */
@@ -631,8 +631,8 @@ void Ov004Init_RoomObjects(void)
     ov004_init_register(data_ov004_02259714, func_ov004_0223ce70, &data_ov004_022595e0);
     RoomObjects_HeapConstruct(&data_ov004_022595c4);
     ov004_init_register(&data_ov004_022595c4, func_ov004_0223cefc, &data_ov004_022595ec);
-    func_ov004_0223d2f8(data_ov004_022596b0);
-    ov004_init_register(data_ov004_022596b0, func_ov004_0223d2d4, &data_ov004_022595f8);
+    RoomPreview_Construct(&data_ov004_022596b0);
+    ov004_init_register(&data_ov004_022596b0, func_ov004_0223d2d4, &data_ov004_022595f8);
     RoomObjects_GridConstruct(data_ov004_02259804);
     ov004_init_register(data_ov004_02259804, func_ov004_0223cd3c, &data_ov004_02259604);
     RoomPushes_Construct(data_ov004_02259784);

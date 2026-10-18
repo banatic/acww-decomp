@@ -3,6 +3,9 @@
 
 #include "clean.h"
 #include "room_object_life.h"
+#include "main/item_texture.h"
+#include "main/vram_copy_task.h"
+#include "room_preview.h"
 
 static_assert(offsetof(RoomObject02250e5c, unk_846) == 0x846, "unk_846");
 static_assert(offsetof(RoomObject02250e5c, material_texture) == 0x848, "material texture");
@@ -19,19 +22,6 @@ extern const u8 data_ov004_02250f08[];
 
 /* "m_dummy_floor", the material the carpet goes on. */
 extern const char data_ov004_02253190[];
-
-/* The room (data_ov004_022596b0), its word at 0x10, and its floor texture file in use. */
-extern void *func_ov004_0223d03c(void);
-extern unsigned long func_ov004_0223d2ac(void *p);
-extern void *func_ov004_0223d044(void *room);
-/* Loads the carpet `*item` (0x1144 to 0x1187) into a texture file; whether it did. */
-extern int func_0203cb3c(void *file, u16 *item);
-/* The texture block of a texture file. */
-extern void *func_0203cb34(void *file);
-/* Puts texture 0 and palette 0 of `texture` on the material named `material` of `model`;
- * whether it could. */
-extern int func_020b9d3c(void *bind, G3dModel *model, const char *material, void *texture, int tex_index, int plt_index);
-extern void *func_020b9e58(void *bind);
 
 /* func_ov004_02212764 (vtable slot 0x88): drawn once unk_846 is 2 or more. */
 int RoomObject02250e5c_CanDraw(RoomObject02250e5c *object)
@@ -63,13 +53,13 @@ CLEAN_AS(func_ov004_0221277c, RoomObject02250e5c_Update)
  * "m_dummy_floor"; done when the material took it. */
 int RoomObject02250e5c_Start(RoomObject02250e5c *object)
 {
-    object->unk_844 = (u16) func_ov004_0223d2ac(func_ov004_0223d03c());
+    object->unk_844 = (u16) RoomPreview_Number(RoomPreview_Get());
     object->unk_846 = 0;
     u16 item = object->unk_844 < CARPET_COUNT ? (u16) (object->unk_844 + CARPET_FIRST) : CARPET_FIRST;
-    func_0203cb3c(func_ov004_0223d044(func_ov004_0223d03c()), &item);
+    CarpetTexture_Load(RoomPreview_CarpetFile(RoomPreview_Get()), &item);
     G3dModel *model = object->base.model_resource;
-    void *texture = func_0203cb34(func_ov004_0223d044(func_ov004_0223d03c()));
-    return func_020b9d3c(object->material_texture, model, data_ov004_02253190, texture, 0, 0) != 0;
+    void *texture = CarpetTexture_Textures(RoomPreview_CarpetFile(RoomPreview_Get()));
+    return VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_02253190, texture, 0, 0) != 0;
 }
 CLEAN_AS(func_ov004_02212794, RoomObject02250e5c_Start)
 
@@ -105,7 +95,7 @@ RoomObject02250e5c *RoomObject02250e5c_Construct(RoomObject02250e5c *object)
 {
     RoomObject_ConstructBase(&object->base);
     RoomObject02250e5c_set_vtables(object);
-    func_020b9e58(object->material_texture);
+    VramCopyMaterial_Construct(&object->material_texture);
     return object;
 }
 CLEAN_AS(func_ov004_02212870, RoomObject02250e5c_Construct)

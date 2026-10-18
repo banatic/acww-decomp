@@ -4,6 +4,7 @@
 #include "acre_tile.h"
 #include "clean.h"
 #include "item_1568_count.h"
+#include "main_random.h"
 
 /* The count of item 0x1568 that makes the actor face the request's position. */
 #define BESIDE_SPOT_ITEM_1568_FACE 5
@@ -19,7 +20,6 @@ extern const s16 data_020d06e4[];
 extern u8 data_021ebcd2[];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 
 static int beside_spot_side(const u8 *spot)
 {
@@ -74,9 +74,9 @@ CLEAN_AS(func_02087b1c, BesideSpot_WasServed)
  * stored as it is drawn; then the spot marked chosen. */
 void BesideSpot_Choose(u8 *spot)
 {
-    u32 side = func_020644cc(BESIDE_SPOT_SIDES) & 3;
+    u32 side = MainRandom_Below(BESIDE_SPOT_SIDES) & 3;
     *spot = (u8) ((*spot & ~BESIDE_SPOT_SIDE_MASK) | (side << BESIDE_SPOT_SIDE_SHIFT));
-    u32 facing = func_020644cc(4) & 3;
+    u32 facing = MainRandom_Below(4) & 3;
     *spot = (u8) ((*spot & ~BESIDE_SPOT_FACING_MASK) | (facing << BESIDE_SPOT_FACING_SHIFT));
     *spot |= BESIDE_SPOT_CHOSEN;
 }
@@ -89,16 +89,16 @@ void BesideSpot_Clear(u8 *spot)
 }
 CLEAN_AS(func_02087b78, BesideSpot_Clear)
 
-/* func_02087b84: the constructor does nothing. */
-void BesideSpot_Construct(u8 *spot)
-{
-    (void) spot;
-}
-CLEAN_AS(func_02087b84, BesideSpot_Construct)
-
-/* func_02087b88: the destructor does nothing. */
+/* func_02087b84: the destructor does nothing. */
 void BesideSpot_Destruct(u8 *spot)
 {
     (void) spot;
 }
-CLEAN_AS(func_02087b88, BesideSpot_Destruct)
+CLEAN_AS(func_02087b84, BesideSpot_Destruct)
+
+/* func_02087b88: the constructor does nothing. */
+void BesideSpot_Construct(u8 *spot)
+{
+    (void) spot;
+}
+CLEAN_AS(func_02087b88, BesideSpot_Construct)

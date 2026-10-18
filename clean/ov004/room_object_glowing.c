@@ -8,6 +8,8 @@
 #include "room_object_anims.h"
 #include "room_object_body.h"
 #include "room_object_life.h"
+#include "main/room_sync.h"
+#include "room_objects.h"
 
 static_assert(offsetof(GlowingRoomObject, glows) == 0x844, "glows");
 static_assert(offsetof(GlowingRoomObject, state) == 0x89c, "state");
@@ -34,18 +36,6 @@ extern const u8 data_ov004_0224765c[GLOWING_STATE_COUNT];
 extern const u8 data_ov004_022509ac[];
 extern const u8 data_ov004_02250a58[];
 
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1); the
- * second goes straight to func_020526b8, the first may go through the link instead. */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-extern int func_02052738(unsigned int object, int state, int a2, int a3);
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-
-static unsigned int address_of(GlowingRoomObject *object)
-{
-    return (unsigned int) (uintptr_t) object;
-}
-
 /* func_ov004_0221206c (update of GLOWING_ON): the animations, the glows towards on, the sound
  * at 0; with a change of the switch pending, requests GLOWING_OFF and gives the answer, else
  * 0. */
@@ -55,7 +45,7 @@ int GlowingRoomObject_UpdateOn(GlowingRoomObject *object)
     GlowSet_Switch(&object->glows, 1, 1, 0);
     RoomObject_PlaySound0(&object->base);
     if (Switch_IsPending(&object->base.light_switch)) {
-        return func_0205265c(address_of(object), GLOWING_OFF, SLOT_70_VALUE, 1);
+        return RoomSync_RequestState(&object->base, GLOWING_OFF, SLOT_70_VALUE, 1);
     }
     return 0;
 }
@@ -79,7 +69,7 @@ int GlowingRoomObject_UpdateOff(GlowingRoomObject *object)
     RoomObject_AdvanceAnims(&object->base);
     GlowSet_Switch(&object->glows, 0, 1, 0);
     if (Switch_IsPending(&object->base.light_switch)) {
-        return func_0205265c(address_of(object), GLOWING_ON, SLOT_70_VALUE, 1);
+        return RoomSync_RequestState(&object->base, GLOWING_ON, SLOT_70_VALUE, 1);
     }
     return 0;
 }
@@ -160,7 +150,7 @@ CLEAN_AS(_ZN18Obj_ov004_022509ac19func_ov004_02212264Ev, GlowingRoomObject_Updat
 
 /* func_ov004_02212280 (vtable slot 0x7c, once the model is bound): binds the animations of
  * variant 0 (once) and the glows, lit as the switch is; then in mode 1 requests GLOWING_OFF
- * (func_02052738), else enters GLOWING_ON when the switch is on and func_ov004_0223c10c says
+ * (RoomSync_SetState), else enters GLOWING_ON when the switch is on and RoomObjects_InNookOrScene0AOr0F says
  * no, GLOWING_OFF otherwise; done at once. */
 int GlowingRoomObject_Start(GlowingRoomObject *object)
 {
@@ -168,8 +158,8 @@ int GlowingRoomObject_Start(GlowingRoomObject *object)
     RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
     if (base->unk_76C == 1) {
-        func_02052738(address_of(object), GLOWING_OFF, SLOT_70_VALUE, 1);
-    } else if (Switch_Value(&base->light_switch) != 0 && func_ov004_0223c10c() == 0) {
+        RoomSync_SetState(&object->base, GLOWING_OFF, SLOT_70_VALUE, 1);
+    } else if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         base->vtable->vfunc_70(base, GLOWING_ON, SLOT_70_VALUE);
     } else {
         base->vtable->vfunc_70(base, GLOWING_OFF, SLOT_70_VALUE);

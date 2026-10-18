@@ -3,6 +3,8 @@
 
 #include "clean.h"
 #include "main/session.h"
+#include "link_global.h"
+#include "scene_query.h"
 
 /* The scenes SceneTables_NoPlayerInClosedScene looks for. */
 #define SCENE_TABLES_CLOSED_FIRST 0x0c
@@ -19,10 +21,6 @@ extern const u8 data_020d2184[SCENE_TABLES_SCENES];
 extern const u8 data_020d211c[SCENE_TABLES_SCENES];
 /* The entry record. */
 extern u8 data_021f69d0[];
-
-/* The current scene; the scene of session player `player` (0x3f for a player above 3). */
-extern u8 func_020b65c4(void);
-extern int func_020a7330(int player);
 
 /* Whether `scene` is 0x0c-0x0e or 0x2e-0x2f (the last two as the ROM tests them, by the low
  * byte of the difference). */
@@ -42,13 +40,13 @@ int SceneTables_NoPlayerInClosedScene(void)
     NetSession *session = data_020ccf94;
 
     if (Session_IsSlotTaken(session, session->local_slot) == 0) {
-        if (scene_tables_is_closed(func_020b65c4())) {
+        if (scene_tables_is_closed(SceneQuery_Current())) {
             return 0;
         }
     } else {
         for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
             if (Session_IsSlotTaken(session, slot) != 0 && Session_IsLocalSlot(session, slot) == 0) {
-                if (scene_tables_is_closed(func_020a7330(slot))) {
+                if (scene_tables_is_closed(LinkGlobal_PlaceScene(slot))) {
                     return 0;
                 }
             }

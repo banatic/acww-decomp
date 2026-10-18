@@ -16,6 +16,11 @@
 #include "session.h"
 #include "sky_shots.h"
 #include "state_block.h"
+#include "item_lists.h"
+#include "letter.h"
+#include "main_random.h"
+#include "scene_lights.h"
+#include "sky_resources.h"
 
 #define SKY_EVENTS_FALL_MAX 0x6400 /* the rain's or snow's rate (SkyObjects.unk_2f08) at most */
 #define SKY_EVENTS_FALL_STEP 2
@@ -55,17 +60,7 @@ extern const s32 data_020d2424[]; /* per level of snow */
 extern const u8 data_020e7ad0[];  /* func_02066024's arguments for the letter */
 extern const u8 data_020e5970[];
 extern const u8 data_020e596c[];
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern void func_02065268(int number);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_02066694(MailLetter *letter); /* a letter's constructor */
-extern void func_02066688(MailLetter *letter); /* and destructor */
-extern void func_02066024(MailLetter *letter, u8 *message, const u8 *a, const u8 *b, const u8 *c, void *player);
-extern void func_02063ccc(SkyEventsItemList *list, int kind, int group);
-extern void func_020638d4(u16 *item, SkyEventsItemList *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(SkyEventsItemList *list);
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int arg); /* the item the letter carries */
-extern void func_020bece0(void *palettes);                       /* a random pick for the palettes' part */
 
 /* The day's weather pattern (sky.h, at 0x1737e of the state block). */
 static int sky_events_pattern(void)
@@ -197,10 +192,10 @@ CLEAN_AS(func_020bd124, SkyEvents_AddKind7)
 static int sky_events_try_odds(u8 *odds)
 {
     if (*odds == 0) {
-        *odds = (u8) (func_020644cc(SKY_EVENTS_ODDS) + 1);
+        *odds = (u8) (MainRandom_Below(SKY_EVENTS_ODDS) + 1);
     }
     u32 current = *odds;
-    if (func_020644cc(SKY_EVENTS_ODDS) < current) {
+    if (MainRandom_Below(SKY_EVENTS_ODDS) < current) {
         return 1;
     }
     if (current < SKY_EVENTS_ODDS) {
@@ -267,11 +262,11 @@ void SkyEvents_AddKind5(SkyObjects *objects)
         return;
     }
     if (!PlayerRecord_TestFlag(PlayerRecords_Current(), SKY_EVENTS_FLAG_30) && SkyShots_HitCountFull() &&
-        func_020644cc(4) == 0) {
+        MainRandom_Below(4) == 0) {
         SkyObjects_Add(objects, SKY_OBJECT_KIND_5, SKY_ENTRY_VISITOR, NULL, 1);
     } else {
         SkyObjects_Add(objects, SKY_OBJECT_KIND_5, SKY_ENTRY_VISITOR, NULL, 0);
-        func_020bece0(objects->unk_2eb8);
+        SkyPalettes_PickVariant((SkyPalettes *) (void *) objects->unk_2eb8);
     }
     objects->unk_2f24[SKY_EVENT_ODDS_5] = 1;
 }
@@ -313,8 +308,8 @@ void SkyEvents_AddKind3(SkyObjects *objects)
             SkyObjects_Add(objects, SKY_OBJECT_KIND_3, SKY_ENTRY_KIND_3, NULL, 0);
         }
     } else if (objects->unk_2f1c == SKY_EVENTS_KIND_3_SECOND && objects->unk_2f1c != objects->unk_2f20) {
-        if (func_020644cc(sky_events_pattern() == 0 ? 4 : 0x100) == 0) {
-            objects->unk_2f4c = (s32) func_020644cc(SKY_EVENTS_KIND_3_DELAY);
+        if (MainRandom_Below(sky_events_pattern() == 0 ? 4 : 0x100) == 0) {
+            objects->unk_2f4c = (s32) MainRandom_Below(SKY_EVENTS_KIND_3_DELAY);
         }
     }
 }
@@ -394,7 +389,7 @@ void SkyEvents_Snow(SkyObjects *objects)
                 objects->unk_2f04 = 0;
                 break;
             default:
-                objects->unk_2f00 = range[0] + (s32) func_020644cc(range[1]);
+                objects->unk_2f00 = range[0] + (s32) MainRandom_Below(range[1]);
                 objects->unk_2f04 = objects->unk_2f0c < SKY_EVENTS_FALL_GROWN ? 75 : 0;
                 break;
         }
@@ -421,7 +416,7 @@ void SkyEvents_Rain(SkyObjects *objects)
     } else {
         const s32 *range = &data_020d2404[(level - 1) * 2];
         if (objects->unk_2f00 == 0) {
-            objects->unk_2f00 = range[0] + (s32) func_020644cc(range[1]);
+            objects->unk_2f00 = range[0] + (s32) MainRandom_Below(range[1]);
         }
         sky_events_step_rate(objects, next);
         objects->unk_2f04 += objects->unk_2f08 >> 8;
@@ -431,7 +426,7 @@ void SkyEvents_Rain(SkyObjects *objects)
             if (objects->unk_2f04 > objects->unk_2f00) {
                 continue;
             }
-            objects->unk_2f00 = range[0] + (s32) func_020644cc(range[1]);
+            objects->unk_2f00 = range[0] + (s32) MainRandom_Below(range[1]);
             if (objects->unk_2f00 < SKY_EVENTS_RAIN_MIN_INTERVAL) {
                 objects->unk_2f00 = SKY_EVENTS_RAIN_MIN_INTERVAL;
             }
@@ -463,8 +458,8 @@ void SkyEvents_Thunder(SkyObjects *objects)
     if (!sky_events_thunder_due(objects)) {
         return;
     }
-    func_02065268(SKY_EVENTS_THUNDER_SOUND);
-    objects->thunder_timer = (s32) func_020644cc(SKY_EVENTS_THUNDER_SPREAD) + SKY_EVENTS_THUNDER_MIN;
+    SceneLights_StartFlash(SKY_EVENTS_THUNDER_SOUND);
+    objects->thunder_timer = (s32) MainRandom_Below(SKY_EVENTS_THUNDER_SPREAD) + SKY_EVENTS_THUNDER_MIN;
 }
 CLEAN_AS(func_020bda88, SkyEvents_Thunder)
 
@@ -474,11 +469,11 @@ void SkyEvents_HeavyThunder(SkyObjects *objects)
     if (!sky_events_thunder_due(objects)) {
         return;
     }
-    if (func_020644cc(SKY_EVENTS_ODDS) == 0) {
+    if (MainRandom_Below(SKY_EVENTS_ODDS) == 0) {
         SkyObjects_Add(objects, SKY_OBJECT_KIND_8, SKY_ENTRY_KIND_8, NULL, 0);
     }
-    func_02065268(SKY_EVENTS_THUNDER_SOUND);
-    objects->thunder_timer = (s32) func_020644cc(SKY_EVENTS_THUNDER_SPREAD) + SKY_EVENTS_THUNDER_MIN;
+    SceneLights_StartFlash(SKY_EVENTS_THUNDER_SOUND);
+    objects->thunder_timer = (s32) MainRandom_Below(SKY_EVENTS_THUNDER_SPREAD) + SKY_EVENTS_THUNDER_MIN;
 }
 CLEAN_AS(func_020bdac8, SkyEvents_HeavyThunder)
 
@@ -529,19 +524,20 @@ void SkyEvents_PostFlag32Letters(SkyObjects *objects)
         u16 item;
         SkyEventsItemList list;
         SkyEventsItemList copy;
-        func_02066694(&letter);
-        message = (u8) func_020644cc(3);
-        func_02066024(&letter, &message, data_020e7ad0, data_020e5970, data_020e596c, PlayerRecord_Player(record));
-        func_02063ccc(&list, 0, 4);
+        Letter_Construct((Letter *) &letter);
+        message = (u8) MainRandom_Below(3);
+        Letter_WriteSpecialToPlayer((Letter *) &letter, &message, (const char *) data_020e7ad0, data_020e5970, data_020e596c,
+                                    PlayerRecord_Player(record));
+        ItemList_Construct((ItemList *) &list, 0, 4);
         copy = list;
-        func_020638d4(&item, &copy, 0, 0, 1, 1, 0);
-        func_02063cc8(&copy);
-        func_02065ed0(&letter, item, 1);
+        ItemLists_Draw(&item, (ItemList *) &copy, 0, 0, 1, 1, 0);
+        ItemList_Destruct(&copy);
+        Letter_SetItem((Letter *) &letter, item, 1);
         if (Mail_Post(&letter)) {
             PlayerRecord_ClearFlag(record, SKY_EVENTS_FLAG_32);
         }
-        func_02063cc8(&list);
-        func_02066688(&letter);
+        ItemList_Destruct(&list);
+        Letter_Destruct((Letter *) &letter);
     }
 }
 CLEAN_AS(func_020bde98, SkyEvents_PostFlag32Letters)

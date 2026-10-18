@@ -3,6 +3,9 @@
 
 #include "autoload_2/vector.h"
 #include "clean.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "town_tune.h"
 
 /* Where the sound plays: (1.0, 0, 30.0). */
 #define BLOCK_020B220C_SOUND_X 0x10000
@@ -19,12 +22,6 @@ extern u8 data_021f4b1c;
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020012dc(void *object); /* TrivialObject_Destruct */
 
-extern u8 func_020b65c4(void);                /* the scene */
-extern int func_020b67e8(unsigned int scene); /* whether 1 <= scene <= 5 */
-extern int func_020b6694(int scene);          /* whether 17 <= scene <= 24 */
-/* Plays entry `entry` of the scenes' sound set (data_021cfbcc) at `position`. */
-extern void func_0206e9ec(Vec3 *position, int entry);
-
 /* func_020b220c: in scenes 1-5 and 17-24 entry 0 of the scenes' sound
  * set plays at (1.0, 0, 30.0); in scene 0x1a entry 1, in 9 entry 2, in 10 entry 3; in other
  * scenes nothing.
@@ -32,9 +29,9 @@ extern void func_0206e9ec(Vec3 *position, int entry);
  * it for destruction (func_020012dc, which does nothing). */
 void Block020b220c_PlaySceneSound(void)
 {
-    int scene = func_020b65c4();
+    int scene = SceneQuery_Current();
     int entry;
-    if (func_020b67e8((unsigned int) scene) != 0 || func_020b6694(scene) != 0) {
+    if (SceneKinds_IsHouseRoom((unsigned int) scene) != 0 || SceneQuery_In11(scene) != 0) {
         entry = 0;
     } else if (scene == 0x1a) {
         entry = 1;
@@ -53,7 +50,7 @@ void Block020b220c_PlaySceneSound(void)
         __register_global_object(&data_021f4b7c, (void *) func_020012dc, data_021f4b64);
         data_021f4b54 |= 1;
     }
-    func_0206e9ec(&data_021f4b7c, entry);
+    TownTune_PlayAt(&data_021f4b7c, entry);
 }
 CLEAN_AS(func_020b220c, Block020b220c_PlaySceneSound)
 

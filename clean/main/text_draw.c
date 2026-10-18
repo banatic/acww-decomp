@@ -4,6 +4,7 @@
 #include "autoload_2/heap.h"    /* Heap_Free, Heap_Delete, ExpHeap_Create, Heap_FreeAux, ... */
 #include "autoload_2/process.h" /* Process_Construct, Process_Destruct */
 #include "clean.h"
+#include "letter_grade.h"
 
 static_assert(offsetof(TextDrawBox, text) == 0x10, "TextDrawBox text");
 static_assert(offsetof(TextDrawBox, first_tile) == 0x18, "TextDrawBox first_tile");
@@ -79,9 +80,6 @@ extern void NNS_FndRemoveListObject(void *list, void *object);
 extern void NNS_FndInitList(void *list, u16 link_offset);
 extern int FS_SeekFile(void *file, u32 offset, int origin);
 extern int FS_ReadFile(void *file, void *dst, u32 size);
-/* Run once the fonts are loaded: a table of up to 1000 short strings (data_021ce3f4) gathered
- * from 45 messages. */
-extern void func_0206d83c(void);
 
 typedef void TileLoader(const void *src, u32 offset, u32 size);
 typedef void *BoxDestruct(TextDrawBox *box);
@@ -583,7 +581,7 @@ CLEAN_AS(func_02051b10, TextDraw_ProcessExecute)
 int TextDraw_ProcessCreate(void)
 {
     TextDraw_Init();
-    func_0206d83c();
+    LetterGrade_LoadKeywords();
     return 1;
 }
 CLEAN_AS(func_02051b20, TextDraw_ProcessCreate)

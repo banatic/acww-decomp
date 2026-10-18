@@ -4,6 +4,10 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "current_pockets.h"
+#include "player_pockets.h"
+#include "player_record.h"
+#include "player_records.h"
 
 /* An item of 0x38e4-0x3933 (20 items of 4 variants each) converts to the item 0x50 codes
  * further on, in its first variant. */
@@ -15,25 +19,19 @@ extern u16 data_021cfce8[POCKET_SLOTS]; /* the copy: each slot's item code */
 extern u8 data_021cfcd8[POCKET_SLOTS];  /* and its state */
 extern u16 data_021cfd08[POCKET_SLOTS]; /* the list of items to convert */
 
-extern int func_020984e8(void);                            /* the current player's record */
-extern int func_02099734(int player);                      /* its pockets (at 0x11a8) */
-extern u16 *func_02098f48(void *pockets, int slot);        /* a slot's item code; NULL past 14 */
-extern int func_02098e8c(void *pockets, int slot);         /* a slot's state (0-3); 0 past 14 */
-extern void func_0209a088(u16 *item, int state, int slot); /* store a slot */
-
 static void *pockets_of(int player)
 {
-    return (void *) (uintptr_t) func_02099734(player);
+    return (void *) (uintptr_t) PlayerRecord_Pockets((u8 *) (uintptr_t) player);
 }
 
 /* func_0206f9d8: the slots the predicate accepts, one bit each (bit n for slot n). */
 u16 Pockets_Select(PocketPredicate predicate)
 {
-    int player = func_020984e8();
-    u16 *items = func_02098f48(pockets_of(player), 0);
+    int player = (int) (uintptr_t) PlayerRecords_Current();
+    u16 *items = PlayerPockets_Slot(pockets_of(player), 0);
     u16 selected = 0;
     for (int slot = 0; slot < POCKET_SLOTS; slot++) {
-        int state = func_02098e8c(pockets_of(player), slot);
+        int state = PlayerPockets_SlotState(pockets_of(player), slot);
         if (predicate(items + slot, state) != 0) {
             selected |= (u16) (1u << slot);
         }
@@ -92,10 +90,10 @@ CLEAN_AS(func_0206faf8, Pockets_SetList)
  * player's pockets first and does not use them (func_0209a088 finds them itself). */
 void Pockets_Restore(void)
 {
-    func_02099734(func_020984e8());
+    PlayerRecord_Pockets(PlayerRecords_Current());
     for (int slot = 0; slot < POCKET_SLOTS; slot++) {
         u16 item = data_021cfce8[slot];
-        func_0209a088(&item, data_021cfcd8[slot], slot);
+        CurrentPockets_Set(&item, data_021cfcd8[slot], slot);
     }
 }
 CLEAN_AS(func_0206fb14, Pockets_Restore)
@@ -103,10 +101,10 @@ CLEAN_AS(func_0206fb14, Pockets_Restore)
 /* func_0206fb58: copy the pockets' slots. */
 void Pockets_Save(void)
 {
-    void *pockets = pockets_of(func_020984e8());
+    void *pockets = pockets_of((int) (uintptr_t) PlayerRecords_Current());
     for (int slot = 0; slot < POCKET_SLOTS; slot++) {
-        data_021cfce8[slot] = *func_02098f48(pockets, slot);
-        data_021cfcd8[slot] = (u8) func_02098e8c(pockets, slot);
+        data_021cfce8[slot] = *PlayerPockets_Slot(pockets, slot);
+        data_021cfcd8[slot] = (u8) PlayerPockets_SlotState(pockets, slot);
     }
 }
 CLEAN_AS(func_0206fb58, Pockets_Save)

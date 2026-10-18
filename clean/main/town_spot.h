@@ -25,8 +25,8 @@ int TownSpot_PickRandom(TownSpot *spot);
 int TownSpot_PickTileInAcre(TownSpot *spot, Vec3 *position, const TownSpotAcre *acre, AcreMap *map);
 int TownSpot_CountTilesInAcre(TownSpot *spot, const TownSpotAcre *acre, AcreMap *map);
 void TownSpot_Clear(TownSpot *spot);
-void TownSpot_Construct(TownSpot *spot);
 void TownSpot_Destruct(TownSpot *spot);
+void TownSpot_Construct(TownSpot *spot);
 /* Whether an actor may be put on a tile: also used by the spots of near_spot.h and
  * middle_spot.h. */
 int TownSpot_TileSuits(int x, int z, AcreMap *map);

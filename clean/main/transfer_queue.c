@@ -2,6 +2,7 @@
 #include "transfer_queue.h"
 
 #include "clean.h"
+#include "list_ops.h"
 
 static_assert(offsetof(TransferTask, link) == 0x04, "TransferTask");
 static_assert(offsetof(TransferTask, lines) == 0x0f, "TransferTask");
@@ -18,11 +19,6 @@ static_assert(offsetof(TransferTask, lines) == 0x0f, "TransferTask");
 
 extern List data_021f6c98; /* the main loop's queue */
 extern List data_021f6ca0; /* the VBlank's */
-
-/* `node` inserted in `list` after the nodes of its priority or less; always 1. */
-extern int func_02065c2c(List *list, ListNode *node);
-/* `list` emptied. */
-extern void func_02065c68(List *list);
 
 typedef int TransferTaskRun(TransferTask *task);
 
@@ -75,14 +71,14 @@ CLEAN_AS(func_020b98ac, TransferQueue_UnqueueMain)
 /* func_020b98c4: always 1. */
 int TransferQueue_QueueMain(TransferTask *task)
 {
-    return func_02065c2c(&data_021f6c98, node_of(task));
+    return ListOps_InsertByPriority(&data_021f6c98, (ListOpsPriorityNode *) node_of(task));
 }
 CLEAN_AS(func_020b98c4, TransferQueue_QueueMain)
 
 /* func_020b98dc */
 void TransferQueue_ClearMain(void)
 {
-    func_02065c68(&data_021f6c98);
+    ListOps_Clear(&data_021f6c98);
 }
 CLEAN_AS(func_020b98dc, TransferQueue_ClearMain)
 
@@ -107,13 +103,13 @@ CLEAN_AS(func_020b9960, TransferQueue_UnqueueVBlank)
 /* func_020b9978: always 1. */
 int TransferQueue_QueueVBlank(TransferTask *task)
 {
-    return func_02065c2c(&data_021f6ca0, node_of(task));
+    return ListOps_InsertByPriority(&data_021f6ca0, (ListOpsPriorityNode *) node_of(task));
 }
 CLEAN_AS(func_020b9978, TransferQueue_QueueVBlank)
 
 /* func_020b9990 */
 void TransferQueue_ClearVBlank(void)
 {
-    func_02065c68(&data_021f6ca0);
+    ListOps_Clear(&data_021f6ca0);
 }
 CLEAN_AS(func_020b9990, TransferQueue_ClearVBlank)

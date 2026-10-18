@@ -4,16 +4,15 @@
 #include "clean.h"
 #include "scene_query.h"
 #include "session.h"
+#include "ov003/town_insect.h"
+#include "town_day.h"
 
 #define FLAG_BIT_0 0x80 /* byte 0x30 of data_021c79c4: flags[0] */
 #define FLAG_BIT_1 0x40 /* flags[1] */
 
-/* data_021c79c4's object updated for the town map (its answer unused). */
-extern int func_0204678c(void);
 /* Overlay 3's flag set when flags[1] was (data_ov003_02260538), and its function that sets
  * its flag data_ov003_0226054c. */
 extern u8 data_ov003_02260538;
-extern void func_ov003_0222ddac(void);
 
 extern u8 data_021c776c[2];
 extern u8 data_021c79c4[0x34];
@@ -22,7 +21,7 @@ extern NetSession *data_020ccf94;
 /* func_02042200: data_021c79c4's object updated, then the two flags read from it. */
 void Block02042200_Update(void)
 {
-    func_0204678c();
+    TownDay_Summarize();
     Block02042200_ReadFlags(data_021c776c);
 }
 CLEAN_AS(func_02042200, Block02042200_Update)
@@ -40,7 +39,7 @@ void Block02042200_Apply(u8 *flags)
             data_ov003_02260538 = 1;
         }
         if (flags[1] != 0 || flags[0] != 0) {
-            func_ov003_0222ddac();
+            TownInsect_SetFlag54c();
         }
         flags[0] = 0;
         flags[1] = 0;

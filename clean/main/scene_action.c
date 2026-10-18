@@ -4,6 +4,18 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "ov004/member_pointer.h"
+#include "camera_modes.h"
+#include "message_receiver.h"
+#include "player_actor_ops.h"
+#include "player_id.h"
+#include "scene_base.h"
+#include "scene_motion_request.h"
+#include "scene_object.h"
+#include "scene_object_base.h"
+#include "scene_talk_state.h"
+#include "talk_object.h"
+#include "talk_receiver.h"
+#include "town_tune.h"
 
 static_assert(offsetof(SceneAction, motion_b) == 0x04, "SceneAction layout");
 static_assert(offsetof(SceneAction, action) == 0x08, "SceneAction layout");
@@ -98,32 +110,6 @@ extern const MemberPointer data_020d87dc;
 /* The last word every motion is set with. */
 extern u16 data_020c80f8;
 
-extern int func_02019d0c(void *motion, int kind, int priority, int a, int b, int c, int d, int e, int f, int g, int h);
-extern int func_02019cc8(void *motion, int priority, int b, int c, s32 arg, int g);
-extern int func_02019e00(void *motion);
-extern int func_02019de8(void *motion);
-extern void func_02019b78(void *motion);
-extern void func_02019b70(void *motion);
-extern u8 *func_020160d4(void *scene);
-extern u8 *func_02015d68(void *scene);
-extern void func_0201a7cc(void *talking);
-extern void func_0201a7d4(void *talking);
-extern void func_0203ee08(void *object, void *scene);
-extern void func_0203ee14(void *object, void *scene);
-extern int func_02016024(void *scene, int a, int speaker);
-extern void func_02016110(void *scene);
-extern u8 func_02068370(void *talk);
-extern int func_0203b144(void);
-extern int func_02095518(int a, int b, int c);
-extern void func_0206ea00(int sound);
-extern void func_0203af08(Vec3 *a, Vec3 *b);
-extern int func_0203af80(Vec3 *at);
-extern void *func_02094fd4(SceneActionText *text);
-extern void *func_02094fbc(SceneActionText *text);
-extern int func_0201c250(void *object);
-extern void func_02066954(void *receiver, const char *name, int a);
-extern void func_020a8164(void *receiver, const char *name);
-
 static u8 *scene_action_part(void *object, u32 offset)
 {
     return (u8 *) object + offset;
@@ -169,21 +155,21 @@ static void scene_action_call(const MemberPointer *member, SceneAction *self, vo
 
 static void scene_action_set_motion(void *object, int kind, int priority, int b, int c)
 {
-    func_02019d0c(scene_action_motion(object), kind, priority, 0, 0, b, c, 0, 0, data_020c80f8, 0);
+    SceneMotion_Request(scene_action_motion(object), kind, priority, 0, 0, b, c, 0, 0, data_020c80f8, 0);
 }
 
 /* Whether a speaker's motion is the talk's (kind 8) and not done. */
 static int scene_action_talk_motion_on(void *speaker)
 {
     void *motion = scene_action_motion(speaker);
-    return func_02019e00(motion) == SCENE_ACTION_MOTION_TALK && func_02019de8(motion) == 0;
+    return SceneMotion_Kind(motion) == SCENE_ACTION_MOTION_TALK && SceneMotion_IsDone(motion) == 0;
 }
 
 /* The motion of kind `kind` is done. */
 static int scene_action_motion_done(void *object, int kind)
 {
     void *motion = scene_action_motion(object);
-    return func_02019e00(motion) == kind && func_02019de8(motion) != 0;
+    return SceneMotion_Kind(motion) == kind && SceneMotion_IsDone(motion) != 0;
 }
 
 /* The object is held by the action: bit 2 of its flags is set (and the action remembers when it
@@ -212,7 +198,7 @@ static void scene_action_play_sound(void *object)
     if (scene_action_call_int(object, SCENE_ACTION_SLOT_HAS_SOUND) != 0) {
         int sound = scene_action_call_int(object, SCENE_ACTION_SLOT_SOUND);
         if (sound != SCENE_ACTION_NO_SOUND) {
-            func_0206ea00(sound);
+            TownTune_PlayOwn(sound);
         }
         scene_action_call_void(object, SCENE_ACTION_SLOT_SOUND_PLAYED);
     }
@@ -223,15 +209,15 @@ static void scene_action_play_sound(void *object)
 static void scene_action_aim_camera(void *object, Vec3 *at)
 {
     u8 *scene = scene_action_scene(object);
-    u8 *other = scene != NULL ? func_020160d4(scene) : NULL;
+    u8 *other = scene != NULL ? (u8 *) (uintptr_t) SceneBase_SecondSpeaker((SceneBase *) (void *) scene) : NULL;
     if (other != NULL) {
         Vec3 other_at = *(const Vec3 *) scene_action_part(other, SCENE_ACTION_OBJECT_POSITION);
         at->y += SCENE_ACTION_CAMERA_HEIGHT;
         other_at.y += SCENE_ACTION_CAMERA_HEIGHT;
-        func_0203af08(at, &other_at);
+        CameraControl_FocusOnPair(at, &other_at);
     } else {
         at->y += SCENE_ACTION_CAMERA_HEIGHT;
-        func_0203af80(at);
+        CameraControl_FocusOn(at);
     }
 }
 
@@ -269,8 +255,8 @@ CLEAN_AS(func_02013c98, SceneAction_WaitMotion7)
  * `motion_arg`; the object is held. */
 void SceneAction_Start4(SceneAction *self, void *object)
 {
-    func_02019cc8(scene_action_motion(object), SCENE_ACTION_PRIORITY, self->motion_b, (u16) self->motion_c, self->motion_arg,
-                  data_020c80f8);
+    SceneMotion_RequestGesture(scene_action_motion(object), SCENE_ACTION_PRIORITY, self->motion_b, (u16) self->motion_c,
+                               self->motion_arg, data_020c80f8);
     scene_action_hold(self, object);
     self->phase = 0;
 }
@@ -298,7 +284,7 @@ void SceneAction_Start3(SceneAction *self, void *object)
     if (self->reset_motion != 0) {
         scene_action_set_motion(object, SCENE_ACTION_MOTION_STAND, SCENE_ACTION_PRIORITY, 0, 0);
     }
-    func_02019b78(scene_action_motion(object));
+    SceneMotion_AskHold(scene_action_motion(object));
     scene_action_hold(self, object);
     scene_action_play_sound(object);
     self->phase = 0;
@@ -328,7 +314,7 @@ static void scene_action_wait_speakers(SceneAction *self, void *object, u8 phase
 {
     u8 *scene = scene_action_scene(object);
     if (scene != NULL) {
-        u8 *other = func_020160d4(scene);
+        u8 *other = (u8 *) (uintptr_t) SceneBase_SecondSpeaker((SceneBase *) (void *) scene);
         if (other != NULL && scene_action_talk_motion_on(other)) {
             return;
         }
@@ -364,27 +350,27 @@ static void scene_action_wait_talk(SceneAction *self, void *object, u8 phase)
         return;
     }
     if (*(const s32 *) (talk + 4) != 0) {
-        func_02016110(scene);
+        SceneBase_Update((SceneBase *) (void *) scene);
         SceneAction_ShowTalking(self, object);
         return;
     }
 
     scene_action_call_void(scene, SCENE_ACTION_SLOT_TALK_OVER);
-    func_0203ee08(object, scene);
-    u8 *speaker = func_02015d68(scene);
+    SceneObjectBase_ReleaseReceiver(object, (TalkReceiver *) (void *) scene);
+    u8 *speaker = (u8 *) (uintptr_t) SceneBase_SpeakingSpeaker((SceneBase *) (void *) scene);
     if (speaker != NULL) {
-        func_0201a7cc(speaker + SCENE_ACTION_OBJECT_TALKING);
+        SceneTalkState_Stop((SceneTalkState *) (void *) (speaker + SCENE_ACTION_OBJECT_TALKING));
     }
 
-    u8 *other = func_020160d4(scene);
+    u8 *other = (u8 *) (uintptr_t) SceneBase_SecondSpeaker((SceneBase *) (void *) scene);
     int other_on = other != NULL && scene_action_talk_motion_on(other);
     int own_on = scene_action_talk_motion_on(object);
     if (other_on || own_on) {
         if (own_on) {
-            func_02016024(scene, 0, 0);
+            SceneBase_SetSpeakerTalkStyle((SceneBase *) (void *) scene, 0, 0);
         }
         if (other_on) {
-            func_02016024(scene, 0, 1);
+            SceneBase_SetSpeakerTalkStyle((SceneBase *) (void *) scene, 0, 1);
         }
         self->phase = 2;
     } else {
@@ -447,7 +433,7 @@ CLEAN_AS(func_02014158, SceneAction_RunPhase2)
 void SceneAction_WaitRelease(SceneAction *self, void *object)
 {
     if (self->released != 0) {
-        func_02019b70(scene_action_motion(object));
+        SceneMotion_AskRelease(scene_action_motion(object));
         self->phase = 2;
         self->action = SCENE_ACTION_NONE;
     }
@@ -459,7 +445,7 @@ void SceneAction_WaitMotion3(SceneAction *self, void *object)
 {
     if (scene_action_motion_done(object, SCENE_ACTION_MOTION_TURN)) {
         scene_action_set_motion(object, SCENE_ACTION_MOTION_STAND, SCENE_ACTION_PRIORITY, 0, 0);
-        func_02019b78(scene_action_motion(object));
+        SceneMotion_AskHold(scene_action_motion(object));
         self->phase = 1;
     }
 }
@@ -544,16 +530,16 @@ void SceneAction_Finish(SceneAction *self, void *object)
 {
     u8 *scene = scene_action_scene(object);
     if (scene != NULL) {
-        u8 *other = func_020160d4(scene);
+        u8 *other = (u8 *) (uintptr_t) SceneBase_SecondSpeaker((SceneBase *) (void *) scene);
         if (other != NULL) {
             scene_action_call_void(other, SCENE_ACTION_SLOT_ENDED);
         }
     }
     if (self->keep_camera == 0) {
-        func_0203b144();
+        CameraControl_ResetMode();
     }
     scene_action_release(self, object);
-    func_02095518(0, 0, 4);
+    PlayerActorOps_SetLook(0, 0, 4);
 }
 CLEAN_AS(func_0201462c, SceneAction_Finish)
 
@@ -598,20 +584,20 @@ void SceneAction_OpenTalk(SceneAction *self, void *object)
         return;
     }
     SceneActionText text;
-    func_02094fd4(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
     ((SceneActionFill) (uintptr_t) scene_action_slot(object, SCENE_ACTION_SLOT_NAME))(object, &text);
     const char *name = ((SceneActionChars) (uintptr_t) scene_action_slot(&text, SCENE_ACTION_TEXT_SLOT_CHARS))(&text);
-    int a = func_0201c250(object);
-    func_02066954(scene, name, a);
-    func_0203ee14(object, scene);
+    int a = SceneObject_Sort(object);
+    TalkReceiver_SetSpeaker((TalkReceiver *) (void *) scene, name, a);
+    SceneObjectBase_TakeReceiver(object, (TalkReceiver *) (void *) scene);
 
     SceneActionLine line;
     ((SceneActionFill) (uintptr_t) scene_action_slot(scene, SCENE_ACTION_SLOT_LINE))(scene, &line);
-    func_020a8164(scene, (const char *) (uintptr_t) line.name);
+    MessageReceiver_SetName((MessageReceiver *) (void *) scene, (const char *) (uintptr_t) line.name);
     scene[SCENE_ACTION_SCENE_LINE_BYTE] = line.byte;
     u8 *talk = *(u8 **) (scene + SCENE_ACTION_SCENE_TALK);
     *(s32 *) (talk + 8) = 1;
-    func_02094fbc(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
 }
 CLEAN_AS(func_02014718, SceneAction_OpenTalk)
 
@@ -667,14 +653,14 @@ void SceneAction_ShowTalking(void *unused, void *object)
     if (talk == NULL) {
         return;
     }
-    u8 *speaker = func_02015d68(scene);
+    u8 *speaker = (u8 *) (uintptr_t) SceneBase_SpeakingSpeaker((SceneBase *) (void *) scene);
     if (speaker == NULL) {
         return;
     }
-    if (func_02068370(talk) != 0) {
-        func_0201a7d4(speaker + SCENE_ACTION_OBJECT_TALKING);
+    if (TalkObject_Voiced((TalkObject *) (void *) talk) != 0) {
+        SceneTalkState_Start((SceneTalkState *) (void *) (speaker + SCENE_ACTION_OBJECT_TALKING));
     } else {
-        func_0201a7cc(speaker + SCENE_ACTION_OBJECT_TALKING);
+        SceneTalkState_Stop((SceneTalkState *) (void *) (speaker + SCENE_ACTION_OBJECT_TALKING));
     }
 }
 CLEAN_AS(func_0201481c, SceneAction_ShowTalking)

@@ -3,6 +3,9 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "message_tag.h"
+#include "message_walker.h"
+#include "text_walker.h"
 
 static_assert(offsetof(MessageQuery, mode) == 0x24, "mode");
 static_assert(offsetof(MessageQuery, tag) == 0x28, "tag");
@@ -21,17 +24,6 @@ extern const u8 data_020e3e44[]; /* the query's */
 
 /* The game's one query object. */
 extern MessageQuery data_021f4548;
-
-/* The walkers' base: its constructor and destructor, back to the start, a text to walk, and a
- * walk up to the end or until slot 6 says to stop. */
-extern void *func_020a9484(void *walker);
-extern void *func_020a941c(void *walker);
-extern void func_020a94a4(void *walker);
-extern void func_020a9354(void *walker, int text);
-extern int func_020a92d8(void *walker, int stop);
-/* A tag emptied, and a tag read from the text at `position`. */
-extern void func_020a8754(MessageTag *tag);
-extern void func_020a8764(MessageTag *tag, int position);
 
 /* func_020a7a14: done when the tag met is the one looked for. */
 void MessageQuery_CheckTag(MessageQuery *query)
@@ -75,7 +67,7 @@ CLEAN_AS(func_020a7a50, MessageQuery_CountToIndex)
 void MessageQuery_Reset(MessageQuery *query)
 {
     query->mode = MESSAGE_QUERY_TAG;
-    func_020a8754(&query->tag);
+    MessageTag_Construct(&query->tag);
     query->character = 0;
     query->want_group = (u32) -1;
     query->want_kind = (u32) -1;
@@ -84,7 +76,7 @@ void MessageQuery_Reset(MessageQuery *query)
     query->line = 0;
     query->lines = 0;
     query->done = 0;
-    func_020a94a4(query);
+    MessageWalker_Reset((MessageWalker *) query);
 }
 CLEAN_AS(func_020a7a64, MessageQuery_Reset)
 
@@ -99,7 +91,7 @@ CLEAN_AS(func_020a7a98, MessageQuery_WantsMore)
  * REQUIRES: mode 0 to 4 (the ROM picks the action from a 5-entry table by the mode). */
 void MessageQuery_OnTag(MessageQuery *query, int position)
 {
-    func_020a8764(&query->tag, position);
+    MessageTag_Read(&query->tag, position);
     if (query->mode == MESSAGE_QUERY_TAG) {
         MessageQuery_CheckTag(query);
     }
@@ -148,8 +140,8 @@ CLEAN_AS(func_020a7be0, MessageQuery_OnText)
 /* Walks `text` with the game's query, set up by the caller after a reset. */
 static void message_query_walk(int text)
 {
-    func_020a9354(&data_021f4548, text);
-    func_020a92d8(&data_021f4548, 0);
+    MessageWalker_Start((MessageWalker *) &data_021f4548, text);
+    TextWalker_Run((MessageWalker *) &data_021f4548, 0);
 }
 
 /* func_020a7bf4: the address where line `line` of `text` starts, or 0 when the text has fewer
@@ -228,7 +220,7 @@ MessageQuery *MessageQuery_Delete(MessageQuery *query)
 {
     query->base.vtable = data_020e3e44;
     query->base.vtable = data_020e3e68;
-    func_020a941c(query);
+    MessageWalker_BaseDestruct(query);
     Heap_OperatorDeleteB(query);
     return query;
 }
@@ -240,7 +232,7 @@ MessageQuery *MessageQuery_Destruct(MessageQuery *query)
 {
     query->base.vtable = data_020e3e44;
     query->base.vtable = data_020e3e68;
-    func_020a941c(query);
+    MessageWalker_BaseDestruct(query);
     return query;
 }
 CLEAN_AS(func_020a7d48, MessageQuery_Destruct)
@@ -249,11 +241,11 @@ CLEAN_AS(func_020a7d48, MessageQuery_Destruct)
  * MessageQuery_Reset (the walk is not moved). */
 MessageQuery *MessageQuery_Construct(MessageQuery *query)
 {
-    func_020a9484(query);
+    MessageWalker_Construct((MessageWalker *) query);
     query->base.vtable = data_020e3e68;
     query->base.vtable = data_020e3e44;
     query->mode = MESSAGE_QUERY_TAG;
-    func_020a8754(&query->tag);
+    MessageTag_Construct(&query->tag);
     query->character = 0;
     query->want_group = (u32) -1;
     query->want_kind = (u32) -1;

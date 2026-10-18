@@ -26,6 +26,7 @@
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
 #include "ov002/push_button.h"
+#include "ov117/town_map_image.h"
 #include "types.h"
 
 /* In `flags`. */
@@ -133,14 +134,6 @@ typedef struct TownMapMark {
     u8 y;
     u8 kind;
 } TownMapMark;
-
-/* A place of overlay 117's table (17 of 6 bytes): -1 in both coordinates for none. */
-typedef struct TownMapPlace {
-    s16 x;
-    s16 y;
-    u8 kind;
-    u8 pad_05;
-} TownMapPlace;
 
 typedef struct TownMap {
     MenuScene base;                                /* 0x00 */
@@ -262,7 +255,7 @@ void TownMap_HighlightRow(TownMap *self, int row);
 void TownMap_Select(TownMap *self, unsigned int target);
 unsigned char TownMap_FindMarkAt(TownMap *self, int x, int y);
 int TownMap_TouchMap(TownMap *self);
-void TownMap_ReadMarks(TownMap *self, TownMapPlace *places);
+void TownMap_ReadMarks(TownMap *self, TownMapMarker *places);
 void TownMap_DrawMark(TownMap *self, int x, int y, int kind, int flip, int palette);
 int TownMap_TouchList(TownMap *self);
 unsigned int TownMap_MaxScroll(TownMap *self);

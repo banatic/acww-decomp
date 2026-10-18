@@ -7,6 +7,12 @@
 #include "main/design_assets.h"
 #include "room_object_body.h"
 #include "room_object_life.h"
+#include "main/g3d_resource.h"
+#include "main/item_code.h"
+#include "main/material_bind.h"
+#include "main/player_id.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
 
 static_assert(offsetof(PlayerDesignObject, cleared_node) == 0x844, "cleared node");
 static_assert(sizeof(PlayerDesignObject) == 0x848, "the size PlayerDesignObject_Create allocates");
@@ -28,18 +34,6 @@ extern const char data_ov004_022531d0[];
 /* The class's vtables, and its receiver part's. */
 extern const u8 data_ov004_02251ff0[];
 extern const u8 data_ov004_0225209c[];
-
-/* The item code of furniture `item` in `variant`. */
-extern u16 func_0204bc50(int item, int variant);
-/* The record of player `player`, or 0 when there is none. */
-extern int func_0209847c(int player);
-/* A player record's identity (record + 0x247e), and that identity's byte 0x1c. */
-extern int func_02099870(int record);
-extern int func_020950c0(int identity);
-/* The index of the model's node named `name`. */
-extern int func_0205790c(G3dModel *model, const char *name);
-/* Puts `texture` on the material named `material` of `model`. */
-extern int func_02057084(G3dModel *model, const char *material, void *texture, void *a3, int a4);
 
 /* func_ov004_02213b70 (vtable slot 0x64, the model's hook for a node): for the cleared node,
  * sets the word the state points to to 0. */
@@ -70,7 +64,7 @@ CLEAN_AS(func_ov004_02213b8c, PlayerDesignObject_Update)
  * has a record; and the player's texture of the design on "w". Done at once. */
 int PlayerDesignObject_Start(PlayerDesignObject *object)
 {
-    u16 item = func_0204bc50(RoomObject_Number(&object->base), 0);
+    u16 item = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
     object->cleared_node = PLAYER_DESIGN_NO_NODE;
     int design = 0;
     for (int i = 0; i < PLAYER_DESIGN_RANGES; i++) {
@@ -81,17 +75,17 @@ int PlayerDesignObject_Start(PlayerDesignObject *object)
     }
     int player = (design / PLAYER_DESIGNS_PER_PLAYER) & (DESIGN_PLAYERS - 1);
     int index = design % PLAYER_DESIGNS_PER_PLAYER;
-    int record = func_0209847c(player);
-    if (record != 0) {
-        if (func_020950c0(func_02099870(record)) == 0) {
-            object->cleared_node = func_0205790c(object->base.model_resource, data_ov004_022531cc);
+    u8 *record = PlayerRecords_Get(player);
+    if (record != NULL) {
+        if (PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record)) == 0) {
+            object->cleared_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531cc);
         } else {
-            object->cleared_node = func_0205790c(object->base.model_resource, data_ov004_022531d0);
+            object->cleared_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531d0);
         }
     }
     DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Get();
     int texture = DesignManager_PlayerTexture(designs, (u8) player, (u8) index);
-    func_02057084(object->base.model_resource, data_ov004_022531c8, (void *) (uintptr_t) texture, NULL, 0);
+    MaterialBind_BindByIndex((u8 *) object->base.model_resource, data_ov004_022531c8, (G3dResTex *) (uintptr_t) texture, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02213b90, PlayerDesignObject_Start)

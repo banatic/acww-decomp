@@ -11,8 +11,9 @@
  * - The word at 0x15a0 holds the house's size (0-6), the size ordered (the next extension,
  *   built on the next new day), the look shown and the look of the house (0-15, the roof's
  *   colour; at first the console owner's favourite colour), the look ordered with the
- *   extension, which rooms have their lights on, and in its top byte a count (0-10) the days
- *   of an absence past six raise, which the indoor overlay (4) reads and writes back.
+ *   extension, which rooms have their lights on, and in its top byte the house's cockroach
+ *   count (0-10): the days of an absence past six raise it, and the indoor overlay (4) reads it
+ *   and writes it back (house_roaches.h).
  *
  * Built (the extension done overnight), the house's code on the town's map becomes that of its
  * new size (0x5014 + size) and the state block's flag 13 is set until Nook has told the player
@@ -32,7 +33,7 @@
 #define HOUSE_RECORD_SONG_LAST 0x1368
 #define HOUSE_RECORD_NO_ITEM 0xfff1
 #define HOUSE_RECORD_FIRST_LOAN 19800
-#define HOUSE_RECORD_MAX_ABSENCE 10
+#define HOUSE_RECORD_MAX_ROACHES 10
 
 /* HouseRecord.bits */
 #define HOUSE_RECORD_SIZE_SHIFT 0 /* bits 0-2: the size */
@@ -45,7 +46,7 @@
 #define HOUSE_RECORD_LOOK_MASK 0xfu
 #define HOUSE_RECORD_LIT_SHIFT 18 /* bits 18-23: a bit per room (1 << room) whose lights are on */
 #define HOUSE_RECORD_LIT_MASK 0x3fu
-#define HOUSE_RECORD_ABSENCE_BYTE 3 /* bits 24-31, read and written as a byte */
+#define HOUSE_RECORD_ROACHES_BYTE 3 /* bits 24-31: the cockroaches, read and written as a byte */
 
 typedef struct HouseRoom {
     u16 items[2][256]; /* 0x000: the two layers of 16 x 16 item codes */
@@ -96,9 +97,13 @@ int HouseRecord_JustBuilt(HouseRecord *house);
 void HouseRecord_TakeNextLoan(HouseRecord *house);
 void HouseRecord_SetLoan(HouseRecord *house, int loan);
 int HouseRecord_Loan(const HouseRecord *house);
-void HouseRecord_AddAbsence(HouseRecord *house, int days);
-void HouseRecord_SetAbsence(HouseRecord *house, unsigned char count);
-unsigned char HouseRecord_Absence(const HouseRecord *house);
+void HouseRecord_AddRoachesForAbsence(HouseRecord *house, int days);
+void HouseRecord_SetRoaches(HouseRecord *house, unsigned char count);
+unsigned char HouseRecord_Roaches(const HouseRecord *house);
+/* The names these had before, for the callers in overlay 4 (house_roaches.c) until they use
+ * the ones above. */
+#define HouseRecord_Absence HouseRecord_Roaches
+#define HouseRecord_SetAbsence HouseRecord_SetRoaches
 unsigned short HouseRecord_SizeModel(void *unused);
 unsigned short HouseRecord_RoomModel(int unused, int room);
 int HouseRecord_SetLook(HouseRecord *house, unsigned char look);

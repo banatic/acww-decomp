@@ -19,19 +19,11 @@
 #include "scene_tables.h"
 #include "session.h"
 #include "session_players.h"
-
-/* Overlay 4: asks for state 0x8d with a point. */
-extern int func_ov004_022265dc(FieldActor *actor, const Vec3 *point, int priority, int arg);
-/* Overlay 4: an object of the room in front of this console's actor; negative for none. */
-extern int func_ov004_0223bbc0(int *a, int *b, void *c, void *d);
-/* Overlay 4: what leaving states 0x2c, 0x29, 0x2a, 0xa, 0xf and 0xd does to the actor (its place
- * and yaw among it), each given the state it leaves for. */
-extern void func_ov004_02228774(FieldActor *actor, int next);
-extern void func_ov004_02228ac4(FieldActor *actor, int next);
-extern void func_ov004_02228b90(FieldActor *actor, int next);
-extern void func_ov004_0222b85c(FieldActor *actor, int next);
-extern void func_ov004_0222ae34(FieldActor *actor, int next);
-extern void func_ov004_0222b2d8(FieldActor *actor, int next);
+#include "ov004/field_actor_place_states.h"
+#include "ov004/field_actor_room_states.h"
+#include "ov004/field_actor_room_states2.h"
+#include "ov004/field_actor_rooms.h"
+#include "ov004/room_objects.h"
 
 extern NetSession *data_020ccf94;
 extern AcreMap *data_021c80bc; /* the map of the scene */
@@ -146,7 +138,7 @@ u16 *PlayerActorOps_ItemAhead(void)
         int a;
         int b;
         if (SceneKinds_CurrentIsHouseRoom() != 0 && data_020ccf94->local_player == 0 &&
-            func_ov004_0223bbc0(&a, &b, NULL, NULL) < 0) {
+            RoomObjects_FindAheadOfPlayer(&a, &b, NULL, NULL) < 0) {
             return AcreTile_ItemAt(data_021c80bc, &ahead, 0);
         }
         return NULL;
@@ -433,7 +425,7 @@ int PlayerActorOps_StepOffDoor(void)
         default:
             break;
     }
-    return func_ov004_022265dc(actor, &point, PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);
+    return FieldActorRooms_RequestStepOff(actor, &point, PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);
 }
 CLEAN_AS(func_0209583c, PlayerActorOps_StepOffDoor)
 
@@ -883,14 +875,14 @@ int PlayerActorOps_PlaceAfterState(Vec3 *position, s16 *yaw)
             break;
         case 0x2c:
             next = 2;
-            func_ov004_02228774(actor, next);
+            FieldActorRoomStates_LeaveSpotStepOff(actor, next);
             break;
         case 0x29:
         case 0x2a: {
             if (next == 0x29) {
-                func_ov004_02228ac4(actor, 0x2c);
+                FieldActorRoomStates_LeaveSpotTurnPlus(actor, 0x2c);
             } else {
-                func_ov004_02228b90(actor, 0x2c);
+                FieldActorRoomStates_LeaveSpotTurnMinus(actor, 0x2c);
             }
             next = 2;
             Vec3 ahead;
@@ -905,15 +897,15 @@ int PlayerActorOps_PlaceAfterState(Vec3 *position, s16 *yaw)
             break;
         case 0xa:
             next = 2;
-            func_ov004_0222b85c(actor, next);
+            FieldActorPlaceStates_LeaveOff(actor, next);
             break;
         case 0xf:
             next = 8;
-            func_ov004_0222ae34(actor, next);
+            FieldActorRoomStates2_LeaveTakePlace(actor, next);
             break;
         case 0xd:
             next = 8;
-            func_ov004_0222b2d8(actor, next);
+            FieldActorPlaceStates_LeaveStep(actor, next);
             break;
         default:
             break;

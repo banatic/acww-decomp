@@ -4,6 +4,8 @@
 #include "clean.h"
 #include "main/calendar.h"
 #include "main/session.h"
+#include "clock.h"
+#include "main_random.h"
 
 static_assert(sizeof(CreatureTableList) == 8, "CreatureTableList size");
 
@@ -11,13 +13,6 @@ static_assert(sizeof(CreatureTableList) == 8, "CreatureTableList size");
 extern CreatureTablePeriod data_020dc8b4[CREATURE_TABLE_PERIODS];
 /* The session (Session_IsLinked). */
 extern NetSession *data_020ccf94;
-
-/* Today's day (byte 0) and month (byte 1). */
-extern void func_0209df94(u8 *day_month);
-/* The time of day (Calendar_Now). */
-extern void func_0209def4(Time *now);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
 
 /* func_0204fa68: the group of a kind: 1 for kinds 0-8 and 12-34, 2 for 9-11, 3 for 35-55, 0
  * for a number that is no kind. */
@@ -47,11 +42,11 @@ unsigned char CreatureTable_Period(unsigned char month)
         return month;
     }
     if (month == 8) {
-        func_0209df94(day_month);
+        Clock_GetDayMonth(day_month);
         return CreatureTable_IsSecondHalf(day_month[0]) ? 9 : 8;
     }
     if (month == 9) {
-        func_0209df94(day_month);
+        Clock_GetDayMonth(day_month);
         return CreatureTable_IsSecondHalf(day_month[0]) ? 11 : 10;
     }
     if (month >= 10 && month <= 12) {
@@ -91,9 +86,9 @@ int CreatureTable_PickNow(int *kind, int *second, int place)
     u8 day_month[2];
     Time now;
 
-    func_0209df94(day_month);
+    Clock_GetDayMonth(day_month);
     u8 month = day_month[1];
-    func_0209def4(&now);
+    Calendar_Now(&now);
     u8 hour = now.hour;
     int period = CreatureTable_Period(month);
     int time_slot = CreatureTable_TimeSlot(hour);
@@ -112,10 +107,10 @@ int CreatureTable_Pick(int *kind, int *second, int place, int period, int time_s
 
     if (Session_IsLinked(data_020ccf94)) {
         left_out = 3;
-        limit = func_020644cc(0x60);
+        limit = MainRandom_Below(0x60);
     } else {
         left_out = 0;
-        limit = func_020644cc(0x64);
+        limit = MainRandom_Below(0x64);
     }
 
     const CreatureTableList *list = &data_020dc8b4[period - 1][time_slot][place];

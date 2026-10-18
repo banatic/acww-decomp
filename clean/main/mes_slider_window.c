@@ -32,10 +32,6 @@ static_assert(sizeof(MesSliderWindow) == 0x148, "mes slider window");
 #define MES_SLIDER_WINDOW_SE_CHOSEN 0x27
 #define MES_SLIDER_WINDOW_SE_GRAB 0x33
 
-/* main's button sprite: whether its animation ended, an animation started. */
-extern int func_0208f098(void *button);
-extern void func_0208f0c4(void *button, int anim);
-
 static int mes_slider_window_marker_done(MesSliderWindow *self)
 {
     return CellLayerSprite_IsDone((CellLayerSprite *) &self->marker);
@@ -70,14 +66,14 @@ void MesSliderWindow_Enter10(MesSliderWindow *self)
 {
     self->state = MES_SLIDER_WINDOW_STATE_10;
     MesSliderWindow_SetMarkerAnim(self, MES_SLIDER_WINDOW_MARKER_9);
-    func_0208f0c4(self->button, MES_SLIDER_WINDOW_BUTTON_SHOWN);
+    LabelSprite_SetState((LabelSprite *) (void *) self->button, MES_SLIDER_WINDOW_BUTTON_SHOWN);
 }
 CLEAN_AS(func_020ab9c8, MesSliderWindow_Enter10)
 
 /* func_020ab9ec (step of state 9): on to state 10 once the button's animation ended. */
 void MesSliderWindow_Step9(MesSliderWindow *self)
 {
-    if (func_0208f098(self->button) != 0) {
+    if (LabelSprite_IsDone((LabelSprite *) (void *) self->button) != 0) {
         MesSliderWindow_Enter10(self);
     }
 }
@@ -86,7 +82,7 @@ CLEAN_AS(func_020ab9ec, MesSliderWindow_Step9)
 /* func_020aba08 (step of state 8): done once the button's animation ended. */
 void MesSliderWindow_StepPressing(MesSliderWindow *self)
 {
-    if (func_0208f098(self->button) != 0) {
+    if (LabelSprite_IsDone((LabelSprite *) (void *) self->button) != 0) {
         MesSliderWindow_EnterDone(self);
     }
 }
@@ -96,7 +92,7 @@ CLEAN_AS(func_020aba08, MesSliderWindow_StepPressing)
 void MesSliderWindow_EnterPressing(MesSliderWindow *self)
 {
     self->state = MES_SLIDER_WINDOW_PRESSING;
-    func_0208f0c4(self->button, MES_SLIDER_WINDOW_BUTTON_PRESSED);
+    LabelSprite_SetState((LabelSprite *) (void *) self->button, MES_SLIDER_WINDOW_BUTTON_PRESSED);
 }
 CLEAN_AS(func_020aba24, MesSliderWindow_EnterPressing)
 
@@ -138,7 +134,7 @@ void MesSliderWindow_EnterButton(MesSliderWindow *self)
     self->marker.vtable->set_place(&self->marker, 0, -self->bg.scroll_y);
     CellLayerSprite_SetAnim((CellLayerSprite *) &self->marker, MES_SLIDER_WINDOW_MARKER_BESIDE_BUTTON);
     MesBgSlider_ShowStill(&self->slider);
-    func_0208f0c4(self->button, MES_SLIDER_WINDOW_BUTTON_SHOWN);
+    LabelSprite_SetState((LabelSprite *) (void *) self->button, MES_SLIDER_WINDOW_BUTTON_SHOWN);
 }
 CLEAN_AS(func_020abaa8, MesSliderWindow_EnterButton)
 
@@ -234,7 +230,7 @@ void MesSliderWindow_EnterSlider(MesSliderWindow *self)
     self->marker.vtable->set_place(&self->marker, -self->bg.scroll_x, -self->bg.scroll_y);
     MesSliderWindow_SetMarkerAnim(self, MES_SLIDER_WINDOW_MARKER_BESIDE_SLIDER);
     MesBgSlider_ShowStill(&self->slider);
-    func_0208f0c4(self->button, MES_SLIDER_WINDOW_BUTTON_SHOWN);
+    LabelSprite_SetState((LabelSprite *) (void *) self->button, MES_SLIDER_WINDOW_BUTTON_SHOWN);
 }
 CLEAN_AS(func_020abbf8, MesSliderWindow_EnterSlider)
 

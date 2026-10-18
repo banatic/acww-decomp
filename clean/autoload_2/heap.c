@@ -77,8 +77,6 @@ extern void *NNS_FndCreateExpHeapEx(void *start, u32 size, u16 options);
 extern u32 func_021023c8(void *heap, void *block, u32 size);
 extern u32 func_02101c54(void *heap, void *block, u32 size);
 extern void func_02101e20(void *heap);
-/* Frees through the current heap (operator delete). */
-extern void func_020edb3c(void *block);
 /* The address the expanded heap's free_all hands NNS (ExpHeap_FreeVisitedBlock). */
 extern void func_020e9b84(void *block, void *heap, u32 param);
 /* The thread-switch callback that was installed before Heap_InstallThreadHook's; it is
@@ -773,7 +771,7 @@ Heap *FrameHeap_DestructFree(Heap *heap)
 {
     heap->vtable = &data_0213e608;
     Heap_DestructBase(heap);
-    func_020edb3c(heap);
+    Heap_OperatorDeleteB(heap);
     return heap;
 }
 CLEAN_AS(func_020ea30c, FrameHeap_DestructFree)
@@ -793,7 +791,7 @@ Heap *ExpHeap_DestructFree(Heap *heap)
 {
     heap->vtable = &data_0213e5b0;
     Heap_DestructBase(heap);
-    func_020edb3c(heap);
+    Heap_OperatorDeleteB(heap);
     return heap;
 }
 CLEAN_AS(func_020ea35c, ExpHeap_DestructFree)
@@ -818,7 +816,7 @@ CLEAN_AS(func_020ea3ac, Heap_DestructBase)
 Heap *Heap_DestructFree(Heap *heap)
 {
     heap->vtable = &data_0213e660;
-    func_020edb3c(heap);
+    Heap_OperatorDeleteB(heap);
     return heap;
 }
 CLEAN_AS(func_020ea3bc, Heap_DestructFree)

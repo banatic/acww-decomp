@@ -3,11 +3,9 @@
 
 #include "clean.h"
 #include "g3d_resource.h"
+#include "c_library.h"
+#include "rom_file.h"
 
-/* sprintf. */
-extern int func_02064328(char *buffer, const char *format, ...);
-/* The file at `path` read into `buffer` (`size` -1: all of it); 0 when it could not be. */
-extern int func_02064af4(const char *path, void *buffer, int size);
 /* The texture resource of a file. */
 extern G3dResTex *func_021077e8(void *file);
 extern void __register_global_object(void *object, void *destruct, void *record);
@@ -39,8 +37,8 @@ int WallpaperFile_Load(void *file, u16 *item)
     unsigned int code = *item;
     if (code >= WALLPAPER_FILE_FIRST_ITEM && code <= WALLPAPER_FILE_LAST_ITEM) {
         char path[WALLPAPER_FILE_PATH_SIZE];
-        func_02064328(path, data_020e5958, (int) (code - WALLPAPER_FILE_FIRST_ITEM));
-        return func_02064af4(path, file, -1) != 0;
+        CLib_SPrintf(path, data_020e5958, (int) (code - WALLPAPER_FILE_FIRST_ITEM));
+        return RomFile_Read(path, file, -1) != 0;
     }
     if ((data_021f6cac & 1) == 0) {
         data_021f6ca8 = WALLPAPER_FILE_FIRST_ITEM;

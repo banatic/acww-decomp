@@ -87,13 +87,13 @@ enum ChatScenePhase {
     CHAT_SCENE_PHASE_DELETE = 5       /* ChatScene_RequestDelete */
 };
 
-/* The codes of the keyboard's keys (func_ov095_0229c448) the scene acts on; others are
- * characters or the keyboard's own (func_ov095_0229ba44). */
+/* The codes of the keyboard's keys (SoftKeyboard_KeyCode) the scene acts on; others are
+ * characters or the keyboard's own (SoftKeyboard_HandleCommand). */
 enum ChatSceneCode {
     CHAT_SCENE_CODE_BACKSPACE = 0x100,
-    CHAT_SCENE_CODE_CONVERT_1 = 0x103, /* the character before the cursor converted (func_ov095_0229bb9c) */
-    CHAT_SCENE_CODE_CONVERT_2 = 0x104, /* (func_ov095_0229bb98) */
-    CHAT_SCENE_CODE_CONVERT_3 = 0x105, /* (func_ov095_0229bb94) */
+    CHAT_SCENE_CODE_CONVERT_1 = 0x103, /* the character before the cursor converted (SoftKeyboard_Convert1) */
+    CHAT_SCENE_CODE_CONVERT_2 = 0x104, /* (SoftKeyboard_Convert2) */
+    CHAT_SCENE_CODE_CONVERT_3 = 0x105, /* (SoftKeyboard_Convert3) */
     CHAT_SCENE_CODE_SEND = 0x106,
     CHAT_SCENE_CODE_TAB_FIRST = 0x10a, /* 0x10a-0x111: the menu's tabs 0-7 */
     CHAT_SCENE_CODE_TAB_LAST = 0x111,
@@ -124,14 +124,14 @@ typedef struct ChatLine {
     u8 pad_2e[2];
 } ChatLine;
 
-/* Overlay 95's keyboard (no Clean version yet), 0x3c28 bytes. It has no constructor of its
- * own: the scene's constructs the members below. */
+/* Overlay 95's keyboard (ov095/soft_keyboard.h's SoftKeyboard, with its owner's part), 0x3c28
+ * bytes. It has no constructor of its own: the scene's constructs the members below. */
 typedef struct ChatKeyboard {
     u8 base[0x2308];     /* 0x0000 */
     LayerTask tasks[2];  /* 0x2308 */
     TextLabel labels[2]; /* 0x2350 */
     u16 map[0x400];      /* 0x2428: the screen's map, 32 by 32 entries */
-    u8 chars[0x1000];    /* 0x2c28: the expression keys' characters (func_ov095_0229b280) */
+    u8 chars[0x1000];    /* 0x2c28: the expression keys' characters (SoftKeyboard_LoadEmotions) */
 } ChatKeyboard;
 
 typedef struct ChatScene {

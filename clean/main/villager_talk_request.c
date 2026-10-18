@@ -18,6 +18,9 @@
 #include "villager_part_block.h"
 #include "villager_roster.h"
 #include "villager_town.h"
+#include "main_random.h"
+#include "talk_object.h"
+#include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h). */
 #define VILLAGER_TALK_REQUEST_RECORD 0x830
@@ -74,24 +77,6 @@ extern u8 data_021c2a1c[];
 
 extern VillagerTown data_021e5a2c; /* the town's villagers */
 
-/* The scene's member setters: the three at 0xb0 from a table, the reply, the member run at the
- * command's end, the one at 0xe8. */
-extern void func_0202da88(VillagerTalk *talk, const MemberPointer *table);
-extern void func_0202da74(VillagerTalk *talk, MemberPointer reply);
-extern void func_0202dbf0(VillagerTalk *talk, MemberPointer next);
-extern void func_0202db48(VillagerTalk *talk, MemberPointer member);
-/* A line drawn for the personality (villager_talk.h). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The talk's object at 0x154, and the object set there. */
-extern ItemObject *func_0202d9c4(VillagerTalk *talk);
-extern void func_0202d9d0(VillagerTalk *talk, ItemObject *object);
-/* The talk: its message and text set only while the talk is on the message data_021f43f8;
- * its byte 0x18 set. */
-extern int func_02068484(u8 *talk, const u8 *message, int text);
-extern void func_02068388(u8 *talk, int cond);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
 /* `size` bytes cleared. */
 extern void *func_02137550(void *dst, u32 size);
 
@@ -127,7 +112,7 @@ static VillagerPartBlock *request_block(const VillagerTalk *talk)
 
 static int request_type(VillagerTalk *talk)
 {
-    return ItemObject_Type(func_0202d9c4(talk));
+    return ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
 }
 
 static int request_personality(VillagerTalk *talk)
@@ -139,8 +124,8 @@ static int request_personality(VillagerTalk *talk)
  * message. */
 static void request_draw(VillagerTalk *talk, int personality, const VillagerTalkRequestTexts *texts, int group)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts->texts, texts->count,
-                  group, 0);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts->texts,
+                               texts->count, group, 0);
 }
 
 /* `out` names the talk's text and message. */
@@ -183,14 +168,15 @@ void VillagerTalkRequest_LineOver(VillagerTalk *talk, VillagerTalkLine *out)
     const VillagerTalkRequestTexts *texts = request_texts_by_type(talk, &data_020c89d8, &data_020c8a70);
     if (texts != NULL) {
         int personality = request_personality(talk);
-        int group = ItemObject_High3(func_0202d9c4(talk));
+        int group = ItemObject_High3((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
         request_draw(talk, personality, texts, group);
         if (request_block(talk) != NULL) {
             SceneBase_PutNpcName(request_base(talk), VillagerPartBlock_Npc(request_block(talk), 0), 0);
             SceneBase_PutNpcName(request_base(talk), VillagerPartBlock_Npc(request_block(talk), 1), 1);
             /* QUIRK: the item goes into slot 0 too, after the first villager's name. */
-            SceneBase_PutItemName(request_base(talk), (int) (uintptr_t) ItemObject_Item(func_0202d9c4(talk)), 0,
-                                  VILLAGER_TALK_REQUEST_ITEM_KIND);
+            SceneBase_PutItemName(request_base(talk),
+                                  (int) (uintptr_t) ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)),
+                                  0, VILLAGER_TALK_REQUEST_ITEM_KIND);
         }
     }
     request_name(talk, out);
@@ -220,10 +206,11 @@ void VillagerTalkRequest_Accept(VillagerTalk *talk)
     if (request_block(talk) != NULL) {
         int type = request_type(talk);
         VillagerPartBlock_SetType(request_block(talk), type, TownVillager_NpcId(record), *request_other(talk));
-        ItemObject_Clear(func_0202d9c4(talk));
+        ItemObject_Clear((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
         VillagerKind_DealIfNeeded(&data_021e5a2c);
-        func_0202d9d0(talk, (ItemObject *) (void *) VillagerPartBlock_Object(request_block(talk)));
-        talk->item = *ItemObject_Item(func_0202d9c4(talk));
+        VillagerTalkScene_SetObject(talk,
+                                    (u32) (uintptr_t) ((ItemObject *) (void *) VillagerPartBlock_Object(request_block(talk))));
+        talk->item = *ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
         switch (request_type(talk)) {
             case VILLAGER_TALK_REQUEST_TYPE_ITEM: {
                 int slot = PlayerPockets_FreeSlot(PlayerRecord_Pockets(player));
@@ -242,8 +229,8 @@ void VillagerTalkRequest_Accept(VillagerTalk *talk)
         }
     }
     SceneCommand_RequestMotion13(&talk->scene, &talk->item, mode, 5, 0);
-    func_0202dbf0(talk, data_020d8f50);
-    func_0202db48(talk, data_020d8f00);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d8f50);
+    VillagerTalkScene_SetE8(talk, data_020d8f00);
 }
 CLEAN_AS(func_0202836c, VillagerTalkRequest_Accept)
 
@@ -251,11 +238,12 @@ CLEAN_AS(func_0202836c, VillagerTalkRequest_Accept)
  * three high bits to the wait's place at 0x159. */
 void VillagerTalkRequest_StampWait(VillagerTalk *talk)
 {
-    if (func_0202d9c4(talk) != NULL) {
-        DateTime *date = ItemObject_Date(func_0202d9c4(talk));
+    if (VillagerTalkScene_Object(talk) != 0) {
+        DateTime *date = ItemObject_Date((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
         DateTime_Now(date);
         DateTime_AddMinutes(date, *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT));
-        ItemObject_SetHigh3(func_0202d9c4(talk), *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT_PLACE));
+        ItemObject_SetHigh3((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk),
+                            *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT_PLACE));
     }
 }
 CLEAN_AS(func_02028478, VillagerTalkRequest_StampWait)
@@ -282,7 +270,7 @@ CLEAN_AS(func_02028550, VillagerTalkRequest_LineFull)
 /* func_020285b4: the talk's object emptied and the town's dealing done. */
 void VillagerTalkRequest_Drop(VillagerTalk *talk)
 {
-    ItemObject_Clear(func_0202d9c4(talk));
+    ItemObject_Clear((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
     VillagerKind_DealIfNeeded(&data_021e5a2c);
 }
 CLEAN_AS(func_020285b4, VillagerTalkRequest_Drop)
@@ -325,8 +313,8 @@ void VillagerTalkRequest_OfferAccept(VillagerTalk *talk)
     list.count = 2;
     list.cancel = 1;
     TalkChoices_Offer((TalkChoicesScene *) (void *) talk, &list);
-    func_0202da74(talk, data_020d9140);
-    func_02068388(request_talk(talk), 1);
+    VillagerTalkScene_SetReply(talk, data_020d9140);
+    TalkObject_OpenChoices((TalkObject *) (void *) request_talk(talk), 1);
 }
 CLEAN_AS(func_02028648, VillagerTalkRequest_OfferAccept)
 
@@ -339,7 +327,7 @@ void VillagerTalkRequest_LineTime(VillagerTalk *talk, VillagerTalkLine *out)
         waits[i] = data_020d8d28[i];
     }
     u8 *place = request_byte(talk, VILLAGER_TALK_REQUEST_WAIT_PLACE);
-    *place = (u8) func_020644cc(VILLAGER_TALK_REQUEST_WAITS);
+    *place = (u8) MainRandom_Below(VILLAGER_TALK_REQUEST_WAITS);
     *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT) = waits[*place];
     int personality = request_personality(talk);
     request_draw(talk, personality, &data_020c8c28, *place);
@@ -352,13 +340,14 @@ CLEAN_AS(func_020286f8, VillagerTalkRequest_LineTime)
 void VillagerTalkRequest_Say2a04(VillagerTalk *talk)
 {
     VillagerTalkLine line = {0};
-    func_0202da88(talk, data_021c2a04);
+    VillagerTalkScene_SetLines(talk, data_021c2a04);
     if (talk->line.function != 0) {
         void *self = MemberPointer_Object(&talk->line, talk);
         ((void (*)(void *, VillagerTalkLine *))(uintptr_t) MemberPointer_Code(&talk->line, self))(self, &line);
     }
     u8 message = line.message;
-    func_02068484(request_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessageIfNone((TalkObject *) (void *) request_talk(talk), &message,
+                                (const char *) (uintptr_t) ((int) line.text));
 }
 CLEAN_AS(func_02028790, VillagerTalkRequest_Say2a04)
 

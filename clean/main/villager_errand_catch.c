@@ -9,6 +9,9 @@
 #include "item_object.h"
 #include "session_villager.h"
 #include "villager_status.h"
+#include "insect_draw.h"
+#include "main_random.h"
+#include "player_id.h"
 
 /* The scene object's virtual function that gives its villager's town record. */
 #define VILLAGER_ERRAND_CATCH_SLOT_RECORD 0x64
@@ -28,17 +31,6 @@
 
 /* The minutes a catch waits since the last one, by step (-1 at step 0). */
 extern const s8 data_020c8958[VILLAGER_ERRAND_CATCH_STEPS];
-
-/* Whether the insect `*item` can be had at the hours first-last of the month; an insect drawn
- * of the weight bands first-last for the month into `*item`, nonzero when one was. */
-extern int func_0202cef4(u16 *item, int first, int last, int month);
-extern int func_0202d190(u16 *item, int first, int last, int month);
-/* A place drawn by `count` weights, -1 when they are all 0. */
-extern int func_0202d6e4(const u8 *weights, int count);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
-/* Whether a player id is set. */
-extern int func_020951bc(const DesignCreator *player);
 
 /* The town record of the scene object's villager (its virtual function at 0x64). */
 static u8 *errand_scene_record(void *scene)
@@ -104,7 +96,7 @@ void VillagerErrandCatch_Fish(void *scene, VillagerObject *object, u8 *chances, 
         return;
     }
     int chance = errand_chance(chances, step);
-    int roll = func_020644cc(100);
+    int roll = MainRandom_Below(100);
     u16 item = *ItemObject_Item(base);
     switch (step) {
         case 1:
@@ -116,7 +108,7 @@ void VillagerErrandCatch_Fish(void *scene, VillagerObject *object, u8 *chances, 
             break;
         case 2:
             if (roll < chance) {
-                int band = func_0202d6e4((const u8 *) weights, VILLAGER_ERRAND_CATCH_BANDS);
+                int band = InsectDraw_PickByWeights((const u8 *) weights, VILLAGER_ERRAND_CATCH_BANDS);
                 if (CreatureDraw_FishOfBands(&item, band, band + 1, now->month, now->day) != 0) {
                     *VillagerObject_Item(object) = item;
                 }
@@ -141,20 +133,20 @@ void VillagerErrandCatch_Insect(void *scene, VillagerObject *object, u8 *chances
         return;
     }
     int chance = errand_chance(chances, step);
-    int roll = func_020644cc(100);
+    int roll = MainRandom_Below(100);
     u16 item = *ItemObject_Item(base);
     switch (step) {
         case 1:
         case 3:
         case 4:
-            if (roll < chance && func_0202cef4(&item, now->hour, now->hour, now->month) != 0) {
+            if (roll < chance && InsectDraw_Available(&item, now->hour, now->hour, now->month) != 0) {
                 *VillagerObject_Item(object) = item;
             }
             break;
         case 2:
             if (roll < chance) {
-                int band = func_0202d6e4((const u8 *) weights, VILLAGER_ERRAND_CATCH_BANDS);
-                if (func_0202d190(&item, band, band + 1, now->month) != 0) {
+                int band = InsectDraw_PickByWeights((const u8 *) weights, VILLAGER_ERRAND_CATCH_BANDS);
+                if (InsectDraw_OfBands(&item, band, band + 1, now->month) != 0) {
                     *VillagerObject_Item(object) = item;
                 }
             }
@@ -179,7 +171,7 @@ int VillagerErrandCatch_CanCatch(void *scene, VillagerObject *object, DateTime *
     if (ItemObject_IsInUse(base) == 0 || ItemObject_Low5(base) != 0 || ItemObject_Group(base) != 0 || step == 0) {
         return 0;
     }
-    if (func_020951bc(VillagerObject_Player(object)) == 0) {
+    if (PlayerId_IsSet(VillagerObject_Player(object)) == 0) {
         return 0;
     }
     int type = ItemObject_Type(base);

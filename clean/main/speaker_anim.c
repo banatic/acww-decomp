@@ -5,6 +5,19 @@
 #include "speaker_anim.h"
 
 #include "clean.h"
+#include "anim_slots.h"
+#include "anim_tables.h"
+#include "animated_model.h"
+#include "frame_ctrl.h"
+#include "held_item_pool.h"
+#include "item_traits.h"
+#include "layered_model.h"
+#include "model_object.h"
+#include "pool_link.h"
+#include "scene_face.h"
+#include "scene_mover.h"
+#include "scene_standard_anims.h"
+#include "scene_talk_state.h"
 
 static_assert(offsetof(SpeakerAnim, entry) == 0x04, "SpeakerAnim layout");
 static_assert(offsetof(SpeakerAnim, speed) == 0x08, "SpeakerAnim layout");
@@ -41,26 +54,6 @@ static_assert(offsetof(SpeakerAnim, keep_speed) == 0x18, "SpeakerAnim layout");
 /* fx32 1.0 */
 #define SPEAKER_ANIM_ONE 0x1000
 
-extern int func_02016618(SpeakerAnim *anim);
-extern int func_020165bc(SpeakerAnim *anim);
-extern void func_02016764(SpeakerAnim *anim, u8 *object, int a2, int a3, int a5, int a6, u16 a7, int a8);
-extern int func_0201a7b4(void *talking);
-extern void func_0201a7b8(void *talking, int style);
-extern int func_0201a7bc(const void *talking);
-extern int func_0201a798(void);
-extern void *func_0201af24(void *object);
-extern int func_02082fec(SpeakerAnim *anim, int which);
-extern u16 func_0205cb80(void *animation);
-extern void func_02083068(SpeakerAnim *anim);
-extern int func_02056f94(void *animation);
-extern int func_02054230(void *model);
-extern void func_020541e8(void *model, int a, int b);
-extern void func_02054240(void *model, int animation, int a, int b, int c, u16 first, u16 last, int d);
-extern void func_020541b8(void *model, unsigned int first, unsigned int last);
-extern u16 func_0205cebc(unsigned int animation);
-extern u8 func_0205cf10(unsigned int set);
-extern u8 func_0205ceec(int set, int index);
-extern u8 func_0205cec8(int set, int index);
 extern s32 FX_MulFunc(s32 a, s32 b);
 
 static s32 speaker_anim_word(const u8 *object, u32 offset)
@@ -102,14 +95,14 @@ void SpeakerAnim_SetTalkStyle(SpeakerAnim *anim, u8 *object)
                                    number)) {
         style = SPEAKER_ANIM_STYLE_1;
     }
-    func_0201a7b8(object + SPEAKER_ANIM_OBJECT_TALKING, style);
+    SceneTalkState_SetStyle((SceneTalkState *) (void *) (object + SPEAKER_ANIM_OBJECT_TALKING), style);
 }
 CLEAN_AS(func_020161e4, SpeakerAnim_SetTalkStyle)
 
 /* func_0201637c: releases the member's entry in its set of animations (func_02083068). */
 void SpeakerAnim_Release(SpeakerAnim *anim)
 {
-    func_02083068(anim);
+    PoolLink_Release((PoolLink *) anim);
 }
 CLEAN_AS(func_0201637c, SpeakerAnim_Release)
 
@@ -122,19 +115,19 @@ void SpeakerAnim_Update(SpeakerAnim *anim, u8 *object)
     u8 *talking = object + SPEAKER_ANIM_OBJECT_TALKING;
     u8 *model = object + SPEAKER_ANIM_OBJECT_MODEL;
 
-    if (func_02016618(anim) != 0) {
-        if (func_0201a7b4(talking) >= SPEAKER_ANIM_STYLE_2) {
+    if (SpeakerAnim_HasTalk(anim) != 0) {
+        if (SceneTalkState_Style((int *) (void *) talking) >= SPEAKER_ANIM_STYLE_2) {
             if (anim->playing == 1) {
                 SpeakerAnim_StopTalk(anim, object);
                 anim->playing = 0;
             }
-        } else if (func_0201a7bc(talking) == 0) {
-            if (anim->playing == 1 && func_02054230(model) != 0) {
+        } else if (SceneTalkState_IsTalking((const SceneTalkState *) (void *) talking) == 0) {
+            if (anim->playing == 1 && LayeredModel_IsBDone((LayeredModel *) (void *) model) != 0) {
                 SpeakerAnim_StopTalk(anim, object);
                 anim->playing = 0;
             }
-        } else if (anim->playing == 0 || func_02054230(model) != 0) {
-            anim->variant = func_0201a798();
+        } else if (anim->playing == 0 || LayeredModel_IsBDone((LayeredModel *) (void *) model) != 0) {
+            anim->variant = SceneFace_PickTalkVariant();
             int first = SpeakerAnim_FirstFrame(anim, anim->variant);
             int last = SpeakerAnim_LastFrame(anim, anim->variant);
             SpeakerAnim_StartTalk(anim, object, first, last);
@@ -172,7 +165,7 @@ void SpeakerAnim_UpdateSpeed(SpeakerAnim *anim, u8 *object)
     s32 speed = speaker_anim_word(object, SPEAKER_ANIM_OBJECT_SPEED);
     if (speed == 0) {
         anim->speed = SPEAKER_ANIM_ONE;
-    } else if (*(const s32 *) func_0201af24(object + SPEAKER_ANIM_OBJECT_GROUND) == 0) {
+    } else if (*(const s32 *) SceneMover_Pace((SceneMover *) (void *) (object + SPEAKER_ANIM_OBJECT_GROUND)) == 0) {
         anim->speed = SPEAKER_ANIM_ONE;
     } else {
         anim->speed = FX_MulFunc(speed, anim->speed_scale);
@@ -187,10 +180,10 @@ CLEAN_AS(func_02016448, SpeakerAnim_UpdateSpeed)
  * 0x144 without one. QUIRK: func_02082fec is asked twice. */
 int SpeakerAnim_Number(SpeakerAnim *anim, int which)
 {
-    if (func_02082fec(anim, which) == 0) {
+    if (PoolLink_Pool1E48Byte((PoolLink *) anim, which) == 0) {
         return SPEAKER_ANIM_NONE;
     }
-    return func_0205cb80((void *) (uintptr_t) func_02082fec(anim, which));
+    return AnimSlots_SlotResource((void *) (uintptr_t) PoolLink_Pool1E48Byte((PoolLink *) anim, which));
 }
 CLEAN_AS(func_020164a0, SpeakerAnim_Number)
 
@@ -198,7 +191,7 @@ CLEAN_AS(func_020164a0, SpeakerAnim_Number)
 int SpeakerAnim_BodyAtEnd(SpeakerAnim *anim, u8 *object)
 {
     (void) anim;
-    return func_02056f94(object + SPEAKER_ANIM_OBJECT_BODY) != 0;
+    return FrameCtrl_IsDone((const FrameCtrl *) (void *) (object + SPEAKER_ANIM_OBJECT_BODY)) != 0;
 }
 CLEAN_AS(func_020164cc, SpeakerAnim_BodyAtEnd)
 
@@ -207,8 +200,8 @@ CLEAN_AS(func_020164cc, SpeakerAnim_BodyAtEnd)
 void SpeakerAnim_PlayFromBodyFrame(SpeakerAnim *anim, u8 *object, int animation, int arg, int slot)
 {
     u32 frame = (u32) speaker_anim_word(object, SPEAKER_ANIM_BODY_FRAME);
-    func_02016764(anim, object, animation, arg, 0, speaker_anim_word(object, SPEAKER_ANIM_BODY_SPEED),
-                  (u16) ((frame << 4) >> 16), slot);
+    SpeakerAnim_Play(anim, object, animation, arg, 0, speaker_anim_word(object, SPEAKER_ANIM_BODY_SPEED),
+                     (u16) ((frame << 4) >> 16), slot);
 }
 CLEAN_AS(func_020164ec, SpeakerAnim_PlayFromBodyFrame)
 
@@ -223,7 +216,7 @@ CLEAN_AS(func_0201651c, SpeakerAnim_SetKeepSpeed)
 void SpeakerAnim_StopTalk(SpeakerAnim *anim, u8 *object)
 {
     (void) anim;
-    func_020541e8(object + SPEAKER_ANIM_OBJECT_MODEL, 0, 0);
+    LayeredModel_StartBFromBase((LayeredModel *) (void *) (object + SPEAKER_ANIM_OBJECT_MODEL), 0, 0);
 }
 CLEAN_AS(func_02016520, SpeakerAnim_StopTalk)
 
@@ -234,22 +227,23 @@ CLEAN_AS(func_02016520, SpeakerAnim_StopTalk)
 void SpeakerAnim_StartTalk(SpeakerAnim *anim, u8 *object, int first, int last)
 {
     u8 *model = object + SPEAKER_ANIM_OBJECT_MODEL;
-    int animation = func_020165bc(anim);
+    int animation = SpeakerAnim_TalkResource(anim);
     if (animation == 0) {
         SpeakerAnim_StopTalk(anim, object);
         return;
     }
-    func_02054240(model, animation, 0, 1, SPEAKER_ANIM_ONE, (u16) first, (u16) last, 0);
-    int set = func_0205cebc(SPEAKER_ANIM_TALK);
+    LayeredModel_PlayB((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, 0, 1, SPEAKER_ANIM_ONE,
+                       (u16) first, (u16) last, 0);
+    int set = AnimTables_HeldJointGroup(SPEAKER_ANIM_TALK);
     if (set >= SPEAKER_ANIM_JOINT_SETS) {
         SpeakerAnim_StopTalk(anim, object);
         return;
     }
-    unsigned int count = func_0205cf10((unsigned int) set);
+    unsigned int count = AnimTables_HeldJointCount((unsigned int) set);
     for (unsigned int i = 0; i < count; i++) {
-        unsigned int from = func_0205ceec(set, (int) i);
-        unsigned int to = func_0205cec8(set, (int) i);
-        func_020541b8(model, from, to);
+        unsigned int from = AnimTables_HeldJointA(set, (int) i);
+        unsigned int to = AnimTables_HeldJointB(set, (int) i);
+        LayeredModel_MoveNodesToB((LayeredModel *) (void *) model, from, to);
     }
 }
 CLEAN_AS(func_02016530, SpeakerAnim_StartTalk)
@@ -281,32 +275,14 @@ CLEAN_AS(func_02016530, SpeakerAnim_StartTalk)
 #define SPEAKER_ANIM_OWN_POSE_LAST_JOINT 0x0e
 #define SPEAKER_ANIM_POSE_NONE 3
 
-extern void func_0205cc1c(void *animation, int number, int a, int b);
-extern int func_0205cb94(void *animation);
 extern int NNS_G3dGetJntAnmSet(int resource);
 extern int func_02107b44(int set, int index);
-extern int func_0204c4e8(u16 *item);
-extern u8 func_0205ceb0(unsigned int pose);
-extern unsigned int func_0205f670(u16 *item);
-extern void func_02054768(void *model, int a, int b);
-extern void func_020547b0(void *model, int animation, int arg, int mode, int speed, u16 frame, u16 b, int c);
-extern void func_02054188(void *model, unsigned int first, unsigned int last);
-extern void func_020542c0(void *model, int animation, int arg, int mode, int speed, u16 frame, u16 b);
-extern int func_0201b380(void *standard);
-extern int func_0201b37c(void *standard);
-extern int func_0201b378(void *standard);
-extern void func_0201a090(void *follower, int number, int mode, int style);
-extern void *func_02083038(SpeakerAnim *anim);
-extern void *func_02083050(SpeakerAnim *anim);
-extern int func_0208308c(SpeakerAnim *anim);
-extern void func_02055050(void *model);
-extern void func_02055de0(void *model, int callback, int a, int b, void *object, int c);
 extern void func_0201c6a8(void *object);
 
 /* An animation's resource: the first entry of its joint animation set. */
 static int speaker_anim_resource(int animation)
 {
-    return func_02107b44(NNS_G3dGetJntAnmSet(func_0205cb94((void *) (uintptr_t) animation)), 0);
+    return func_02107b44(NNS_G3dGetJntAnmSet(AnimSlots_SlotData((void *) (uintptr_t) animation)), 0);
 }
 
 /* func_020165bc: the talking animation's resource, or 0 when slot 2 does not hold the talking
@@ -316,7 +292,7 @@ int SpeakerAnim_TalkResource(SpeakerAnim *anim)
     if (SpeakerAnim_HasTalk(anim) == 0) {
         return 0;
     }
-    int animation = func_02082fec(anim, SPEAKER_ANIM_SLOT_TALK);
+    int animation = PoolLink_Pool1E48Byte((PoolLink *) anim, SPEAKER_ANIM_SLOT_TALK);
     if (animation == 0) {
         return 0;
     }
@@ -327,9 +303,9 @@ CLEAN_AS(func_020165bc, SpeakerAnim_TalkResource)
 /* func_020165f4: puts the talking animation (0x143) into slot 2, when the entry has one. */
 void SpeakerAnim_LoadTalk(SpeakerAnim *anim)
 {
-    int animation = func_02082fec(anim, SPEAKER_ANIM_SLOT_TALK);
+    int animation = PoolLink_Pool1E48Byte((PoolLink *) anim, SPEAKER_ANIM_SLOT_TALK);
     if (animation != 0) {
-        func_0205cc1c((void *) (uintptr_t) animation, SPEAKER_ANIM_TALK, 0, 0);
+        AnimSlots_Load((void *) (uintptr_t) animation, SPEAKER_ANIM_TALK, 0, 0);
     }
 }
 CLEAN_AS(func_020165f4, SpeakerAnim_LoadTalk)
@@ -351,8 +327,8 @@ void SpeakerAnim_PlayItemPose(SpeakerAnim *anim, u8 *object, u16 *item, int pose
 {
     u8 *model = object + SPEAKER_ANIM_OBJECT_MODEL;
 
-    if (func_0204c4e8(item) == 0 || func_0205ceb0((unsigned int) pose) == SPEAKER_ANIM_POSE_NONE) {
-        func_02054768(model, 0, 0);
+    if (ItemTraits_HasHeldModel(item) == 0 || AnimTables_HeldMode((unsigned int) pose) == SPEAKER_ANIM_POSE_NONE) {
+        LayeredModel_StartAFromBase((LayeredModel *) (void *) model, 0, 0);
         return;
     }
     if (*item == SPEAKER_ANIM_ITEM_OWN_POSE) {
@@ -360,31 +336,34 @@ void SpeakerAnim_PlayItemPose(SpeakerAnim *anim, u8 *object, u16 *item, int pose
         if (animation == 0) {
             return;
         }
-        func_020547b0(model, animation, arg, 0, SPEAKER_ANIM_ONE, 0, 0, 0);
-        func_02054188(model, SPEAKER_ANIM_OWN_POSE_FIRST_JOINT, SPEAKER_ANIM_OWN_POSE_LAST_JOINT);
+        LayeredModel_PlayA((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, arg, 0, SPEAKER_ANIM_ONE, 0,
+                           0, 0);
+        LayeredModel_MoveNodesToA((LayeredModel *) (void *) model, SPEAKER_ANIM_OWN_POSE_FIRST_JOINT,
+                                  SPEAKER_ANIM_OWN_POSE_LAST_JOINT);
         return;
     }
 
-    unsigned int number = func_0205f670(item);
+    unsigned int number = HeldItemPool_ItemAnim(item);
     if (number == SPEAKER_ANIM_NONE) {
-        func_02054768(model, 0, 0);
+        LayeredModel_StartAFromBase((LayeredModel *) (void *) model, 0, 0);
         return;
     }
     int animation = SpeakerAnim_Load(anim, (int) number, SPEAKER_ANIM_SLOT_ITEM);
     if (animation == 0) {
         return;
     }
-    func_020547b0(model, animation, arg, 0, SPEAKER_ANIM_ONE, 0, 0, 0);
-    int set = func_0205cebc(number);
+    LayeredModel_PlayA((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, arg, 0, SPEAKER_ANIM_ONE, 0, 0,
+                       0);
+    int set = AnimTables_HeldJointGroup(number);
     if (set >= SPEAKER_ANIM_JOINT_SETS) {
-        func_02054768(model, 0, 0);
+        LayeredModel_StartAFromBase((LayeredModel *) (void *) model, 0, 0);
         return;
     }
-    unsigned int count = func_0205cf10((unsigned int) set);
+    unsigned int count = AnimTables_HeldJointCount((unsigned int) set);
     for (unsigned int i = 0; i < count; i++) {
-        unsigned int from = func_0205ceec(set, (int) i);
-        unsigned int to = func_0205cec8(set, (int) i);
-        func_02054188(model, from, to);
+        unsigned int from = AnimTables_HeldJointA(set, (int) i);
+        unsigned int to = AnimTables_HeldJointB(set, (int) i);
+        LayeredModel_MoveNodesToA((LayeredModel *) (void *) model, from, to);
     }
 }
 CLEAN_AS(func_02016638, SpeakerAnim_PlayItemPose)
@@ -413,25 +392,25 @@ void SpeakerAnim_Play(SpeakerAnim *anim, u8 *object, int number, int arg, int mo
 
     if (slot == SPEAKER_ANIM_SLOT_BODY) {
         int resolved = SpeakerAnim_Resolve(anim, number, standard);
-        if (resolved != func_0201b380(standard) || SpeakerAnim_IsBody(anim, resolved, standard) == 0) {
+        if (resolved != SceneStandardAnims_First(standard) || SpeakerAnim_IsBody(anim, resolved, standard) == 0) {
             int animation = SpeakerAnim_Load(anim, resolved, slot);
             if (animation != 0) {
-                func_020542c0(model, animation, arg, mode, speed, (u16) start, 0);
+                LayeredModel_PlayBaseB(model, (const void *) (uintptr_t) animation, arg, mode, speed, (u16) start, 0);
             }
         }
         SpeakerAnim_SetTalkStyle(anim, object);
         int body = SpeakerAnim_Number(anim, SPEAKER_ANIM_SLOT_BODY);
-        int style = func_0201a7b4(object + SPEAKER_ANIM_OBJECT_TALKING);
-        func_0201a090(object + SPEAKER_ANIM_OBJECT_FOLLOWER, body, mode, style);
+        int style = SceneTalkState_Style((int *) (void *) (object + SPEAKER_ANIM_OBJECT_TALKING));
+        SceneFace_MatchBody((SceneFace *) (void *) (object + SPEAKER_ANIM_OBJECT_FOLLOWER), body, mode, style);
     } else if (slot == SPEAKER_ANIM_SLOT_ITEM) {
         int animation = SpeakerAnim_Load(anim, number, slot);
         if (animation != 0) {
-            func_020547b0(model, animation, arg, mode, speed, (u16) start, 0, 0);
+            LayeredModel_PlayA(model, (const void *) (uintptr_t) animation, arg, mode, speed, (u16) start, 0, 0);
         }
     } else {
         int animation = SpeakerAnim_Load(anim, number, slot);
         if (animation != 0) {
-            func_02054240(model, animation, arg, mode, speed, (u16) start, 0, 0);
+            LayeredModel_PlayB(model, (const void *) (uintptr_t) animation, arg, mode, speed, (u16) start, 0, 0);
         }
     }
 }
@@ -453,11 +432,11 @@ int SpeakerAnim_Resolve(SpeakerAnim *anim, int number, void *standard)
     (void) anim;
     switch (number) {
         case 0:
-            return func_0201b380(standard);
+            return SceneStandardAnims_First(standard);
         case 1:
-            return func_0201b37c(standard);
+            return SceneStandardAnims_Second(standard);
         case 2:
-            return func_0201b378(standard);
+            return SceneStandardAnims_Third(standard);
         default:
             return number;
     }
@@ -468,11 +447,11 @@ CLEAN_AS(func_020168ac, SpeakerAnim_Resolve)
  * resource, or 0 when the entry has no such slot. */
 int SpeakerAnim_Load(SpeakerAnim *anim, int number, int slot)
 {
-    int animation = func_02082fec(anim, slot);
+    int animation = PoolLink_Pool1E48Byte((PoolLink *) anim, slot);
     if (animation == 0) {
         return 0;
     }
-    func_0205cc1c((void *) (uintptr_t) animation, number, 0, 0);
+    AnimSlots_Load((void *) (uintptr_t) animation, number, 0, 0);
     return speaker_anim_resource(animation);
 }
 CLEAN_AS(func_020168e4, SpeakerAnim_Load)
@@ -488,12 +467,12 @@ int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale)
 
     SpeakerAnim_SetKeepSpeed(anim, 0);
     anim->speed_scale = speed_scale;
-    if (func_0208308c(anim) == 0) {
+    if (PoolLink_Take((PoolLink *) anim) == 0) {
         return 0;
     }
     SpeakerAnim_Play(anim, object, 0, 0, 0, SPEAKER_ANIM_ONE, 0, SPEAKER_ANIM_SLOT_BODY);
-    func_02055050(model);
-    func_02055de0(model, (int) (uintptr_t) func_0201c6a8, 6, 1, object, 0);
+    AnimatedModel_Attach((AnimatedModel *) (void *) model);
+    ModelObject_SetNodeCallback((ModelObject *) (void *) model, (void *) (uintptr_t) func_0201c6a8, 6, 1, object, 0);
     anim->variant = 2;
     if (SpeakerAnim_HasTalk(anim) == 0) {
         SpeakerAnim_LoadTalk(anim);
@@ -503,18 +482,21 @@ int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale)
 }
 CLEAN_AS(func_0201691c, SpeakerAnim_Init)
 
-/* func_02016998: the constructor: the holder's (func_02083038). Returns the member. */
+/* func_02016998: the destructor: the holder's (PoolLink_Pool1E48Destruct). Returns the member.
+ * Its name and SpeakerAnim_Destruct's are the wrong way round: their callers in the overlays
+ * use these names. */
 SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim)
 {
-    func_02083038(anim);
+    PoolLink_Pool1E48Destruct((PoolLink *) anim);
     return anim;
 }
 CLEAN_AS(func_02016998, SpeakerAnim_Construct)
 
-/* func_020169a8: the destructor: the holder's (func_02083050). Returns the member. */
+/* func_020169a8: the constructor (see SpeakerAnim_Construct): the holder's
+ * (PoolLink_Pool1E48Construct). Returns the member. */
 SpeakerAnim *SpeakerAnim_Destruct(SpeakerAnim *anim)
 {
-    func_02083050(anim);
+    PoolLink_Pool1E48Construct((PoolLink *) anim);
     return anim;
 }
 CLEAN_AS(func_020169a8, SpeakerAnim_Destruct)

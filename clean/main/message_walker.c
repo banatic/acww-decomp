@@ -1,20 +1,17 @@
-/* The walkers' base class (message_walker.h). */
+/* The walkers' base class and the class data_020e3e68 derived from it (message_walker.h). */
 #include "message_walker.h"
 
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "text_walker.h" /* TextWalker_Run */
 
-extern const u8 data_020e3e68[]; /* the walkers' base class's vtable */
-
-/* The walkers' base destructor. */
-extern void *func_020a941c(void *walker);
+extern const u8 data_020e3e68[]; /* the derived class's vtable */
 
 /* func_020a794c (slot 0): the destructor: its vtable, then the base destructor. */
 MessageWalker *MessageWalker_Destruct(MessageWalker *walker)
 {
     walker->vtable = data_020e3e68;
-    func_020a941c(walker);
+    MessageWalker_BaseDestruct(walker);
     return walker;
 }
 CLEAN_AS(func_020a794c, MessageWalker_Destruct)
@@ -23,13 +20,13 @@ CLEAN_AS(func_020a794c, MessageWalker_Destruct)
 MessageWalker *MessageWalker_Delete(MessageWalker *walker)
 {
     walker->vtable = data_020e3e68;
-    func_020a941c(walker);
+    MessageWalker_BaseDestruct(walker);
     Heap_OperatorDeleteB(walker);
     return walker;
 }
 CLEAN_AS(func_020a7964, MessageWalker_Delete)
 
-/* ---- The class data_020e3e68 derives from */
+/* ---- The walkers' base class (vtable data_020e3e24) */
 
 static_assert(sizeof(MessageWalkerStack) == sizeof(((MessageWalker *) 0)->stack), "walker stack");
 static_assert(sizeof(MessageWalkRun) == 0x0c, "walk run");
@@ -46,10 +43,6 @@ static_assert(sizeof(MessageWalkRun) == 0x0c, "walk run");
 #define MESSAGE_WALKER_SLOT_ON_TAG 5
 
 extern const u8 data_020e3e24[]; /* the class's vtable */
-
-/* The stack's top position, and its top dropped (when it has one). */
-extern u32 *func_020a9cc0(MessageWalkerStack *stack);
-extern void func_020a9ccc(MessageWalkerStack *stack);
 
 typedef void MessageWalkerSlot(MessageWalker *walker);
 typedef void MessageWalkerSlotArg(MessageWalker *walker, int value);
@@ -76,8 +69,8 @@ CLEAN_AS(func_020a9314, MessageWalker_WantsMoreDefault)
  * REQUIRES: a nested text was entered (the stack is not empty); its callers check. */
 void MessageWalker_Return(MessageWalker *walker)
 {
-    walker->position = *func_020a9cc0(message_walker_stack(walker));
-    func_020a9ccc(message_walker_stack(walker));
+    walker->position = *MessageWalkerStack_Top(message_walker_stack(walker));
+    MessageWalkerStack_Pop(message_walker_stack(walker));
 }
 CLEAN_AS(func_020a9318, MessageWalker_Return)
 
@@ -214,7 +207,7 @@ void MessageWalker_Reset(MessageWalker *walker)
 {
     walker->position = 0;
     while (!MessageWalkerStack_IsEmpty(message_walker_stack(walker))) {
-        func_020a9ccc(message_walker_stack(walker));
+        MessageWalkerStack_Pop(message_walker_stack(walker));
     }
 }
 CLEAN_AS(func_020a94a4, MessageWalker_Reset)

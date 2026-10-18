@@ -13,25 +13,10 @@
 
 #include "autoload_2/process.h"
 #include "autoload_2/vector.h"
-#include "main/actor.h"
 #include "types.h"
 
 /* The most out at once. */
 #define HOUSE_ROACHES_MAX 3
-
-/* HouseRoach.sound_state */
-enum {
-    HOUSE_ROACH_QUIET = 0,
-    HOUSE_ROACH_ASKING = 1,   /* it would make its sound */
-    HOUSE_ROACH_SOUNDING = 2, /* it was chosen to make it */
-};
-
-/* A cockroach (0x268 bytes, constructed by func_ov004_0223e520), as far as read here. */
-typedef struct HouseRoach {
-    Actor actor; /* 0x000: its process's param (actor.unk_08) becomes 0xffff once it is made away with */
-    u8 unk_d4[0x190];
-    int sound_state; /* 0x264: HOUSE_ROACH_* */
-} HouseRoach;
 
 int HouseRoaches_ReadCount(Process *self);
 int HouseRoaches_SpawnOnFloor(Process *self);

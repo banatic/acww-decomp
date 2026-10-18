@@ -16,6 +16,7 @@
 #include "main/state_flags.h"
 #include "ov002/key_repeat.h"
 #include "ov090/menu_tabs.h"
+#include "ov130/bank_pad.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(FriendCodeEntry, wipe_y) == 0x94, "wipe_y");
 static_assert(offsetof(FriendCodeEntry, flags) == 0x98 && offsetof(FriendCodeEntry, key) == 0x9c, "flags");
@@ -45,9 +46,6 @@ extern u8 data_021f6c58;
 
 /* The network session (main/session.h). */
 extern NetSession *data_020ccf94;
-
-/* Overlay 130's: sound 0x2a (the clear key's). */
-extern void func_ov130_02299dbc(void);
 
 /* The label's destructor, handed to __cxa_vec_cleanup (the game's symbol). */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
@@ -517,7 +515,7 @@ int FriendCodeEntry_UseKey(FriendCodeEntry *self, int first)
         case FRIEND_CODE_KEY_CLEAR:
             if (first) {
                 FriendCodeEntry_Clear(self);
-                func_ov130_02299dbc();
+                BankPad_PlayClearSound();
             }
             self->repeat = 0;
             return 0;

@@ -4,12 +4,12 @@
  * (RoomObject02251a14.state) runs through tables of member pointers (member_pointer.h):
  *
  * - OFF (0): entered with the switch off and the sound at 4; its animations stand still; while
- *   the switch has a change pending it requests ON for the object at its cell (func_0205265c);
+ *   the switch has a change pending it requests ON for the object at its cell (RoomSync_RequestState);
  * - ON (1): entered with the switch on and the sound at 2; its animations run (in a loop) and
  *   the sound at 0 is played each frame; while the switch has a change pending it requests OFF.
  *
  * ON shows it on (vtable slot 0x74). Once its model is bound it enters ON when its switch is on
- * and func_ov004_0223c10c says no, else OFF. */
+ * and RoomObjects_InNookOrScene0AOr0F says no, else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02251A14_H
 #define CLEAN_OV004_ROOM_OBJECT_02251A14_H
 

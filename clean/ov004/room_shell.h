@@ -1,5 +1,5 @@
 /* The model of the room itself in overlay 4 (vtable 0x02255ac8; data_ov004_022589fc points to
- * it from its start, func_ov004_02233084, to its release): the walls and the floor of the
+ * it from its start, RoomShell_Create, to its release): the walls and the floor of the
  * room shown, with their wallpaper and carpet (main/room_interior.h), a clock's hands and a
  * window. These functions are the part of its code between the telephone and the rest of it:
  *
@@ -24,6 +24,7 @@
 #include "main/sound_emitter.h"
 #include "room_object_methods.h" /* NodeHookState */
 #include "room_shell_members.h"
+#include "room_surface.h"
 #include "types.h"
 
 /* The size of the parts at 0x128 (the wallpaper's) and 0x1228 (the carpet's) up to the
@@ -32,15 +33,11 @@
 #define ROOM_SHELL_CARPET_SIZE 0x20f4
 
 typedef struct RoomShell {
-    Process base;                            /* 0x0000 */
-    RoomShellModel model;                    /* 0x0050: the room's model */
-    RoomShellMaterialAnim material_anim;     /* 0x0108: its material animation */
-    u8 wallpaper[ROOM_SHELL_WALLPAPER_SIZE]; /* 0x0128: func_ov004_022329c0 and on read it */
-    MaterialBind wallpaper_material;         /* 0x121c */
-    u8 unk_1224[4];
-    u8 carpet[ROOM_SHELL_CARPET_SIZE];    /* 0x1228: func_ov004_02232734 and on read it */
-    MaterialBind carpet_material;         /* 0x331c */
-    u8 unk_3324[4];                       /* 0x3324: the carpet's texture resource */
+    Process base;                         /* 0x0000 */
+    RoomShellModel model;                 /* 0x0050: the room's model */
+    RoomShellMaterialAnim material_anim;  /* 0x0108: its material animation */
+    RoomWallpaper wallpaper;              /* 0x0128 */
+    RoomCarpet carpet;                    /* 0x1228 */
     CollisionBox boxes[ROOM_SHELL_BOXES]; /* 0x3328 */
     CollisionBox box;                     /* 0x3460: scene 10's */
     RoomShellTouch touch;                 /* 0x34fc */

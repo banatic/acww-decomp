@@ -2,6 +2,10 @@
 #include "scene_probe.h"
 
 #include "clean.h"
+#include "collision_map.h"
+#include "collision_query.h"
+#include "field_collision.h"
+#include "ov004/room_objects.h"
 
 /* The object's position and walking angle. */
 #define SCENE_PROBE_OBJECT_POSITION 0x5c   /* Vec3 */
@@ -21,16 +25,6 @@ static_assert(sizeof(SceneProbeGround) == 0x40, "SceneProbeGround layout");
 /* The two points' offsets, and 1 while the scene is in a room. */
 extern Vec3 data_021c16e4[SCENE_PROBE_POINTS];
 extern u8 data_020e54a8;
-
-/* In a room: the furniture at a point (-1 for none), and another test of the room's. */
-extern int func_02030890(Vec3 *point);
-extern int func_ov004_0223c5a4(Vec3 *point);
-/* Outdoors: the ground at a point, its height above the walking level, another test of its
- * (func_0203104c, by the 8-unit cell of x and z), and its release. */
-extern int func_02034270(SceneProbeGround *ground, Vec3 *at, int a, int b);
-extern int func_020341c8(SceneProbeGround *ground, int a);
-extern int func_0203104c(Vec3 *point);
-extern void func_0203423c(SceneProbeGround *ground);
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern const s16 FX_SinCosTable_[];
@@ -63,21 +57,22 @@ CLEAN_AS(func_0201ae44, SceneProbe_Update)
 int SceneProbe_IsBlocked(Vec3 *point)
 {
     if (data_020e54a8 == 1) {
-        if (func_02030890(point) != -1) {
+        if (CollisionMap_UnclaimedObjectAtPoint(point) != -1) {
             return 1;
         }
-        return func_ov004_0223c5a4(point) != 0;
+        return RoomObjects_HeightAtPoint(point) != 0;
     }
 
     SceneProbeGround ground;
     int blocked;
-    func_02034270(&ground, point, 0, 0);
-    if (ground.unk_30 != 0 || func_020341c8(&ground, 1) > 0 || func_0203104c(point) != 0) {
+    CollisionGround_Init((CollisionGround *) &ground, point, 0, 0);
+    if (ground.unk_30 != 0 || CollisionGround_GetHeight((const CollisionGround *) &ground, 1) > 0 ||
+        CollisionQuery_HasPostAtPoint(point) != 0) {
         blocked = 1;
     } else {
         blocked = 0;
     }
-    func_0203423c(&ground);
+    CollisionGround_Destroy((CollisionGround *) &ground);
     return blocked;
 }
 CLEAN_AS(func_0201ae8c, SceneProbe_IsBlocked)

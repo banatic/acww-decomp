@@ -2,6 +2,9 @@
 #include "villager_mode_record.h"
 
 #include "clean.h"
+#include "date_time.h"
+#include "main_random.h"
+#include "message_reader.h"
 
 #define VILLAGER_MODE_RECORD_MINUTES_PER_DAY (24 * 60)
 /* The fields func_0209e3ac compares: all six of a DateTime. */
@@ -19,28 +22,6 @@
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020051b0(void *item); /* an item code's destructor: nothing */
-extern u32 func_020644cc(int range);   /* a random number below `range` */
-/* Dates: set to now, compared over the given fields (-1, 0 or 1), days and minutes between two,
- * and whether a date is not a valid one. */
-extern void func_0209e474(DateTime *date);
-extern int func_0209e3ac(const DateTime *a, const DateTime *b, int fields);
-extern int func_0209e380(const DateTime *from, const DateTime *to);
-extern int func_0209e350(const DateTime *from, const DateTime *to);
-extern int func_0209dffc(const DateTime *when);
-/* The text `text` loaded with message `message` of an archive. */
-extern int func_020b4a20(void *text, u8 *message, const char *archive);
-/* The record: whether its mode is one of the eight kinds, and whether a mode is. */
-extern int func_0209c380(const VillagerModeRecord *record);
-extern int func_0209c38c(u32 mode);
-/* Eight bytes of a kind each (the scores or the counts): the kind of a highest score, picked at
- * random among the highest; a byte read (0 for an index that is not a kind) and set; a score
- * raised by `delta` (up to 255); a score cleared and then every score halved; all cleared. */
-extern int func_0209c4a8(const u8 *scores);
-extern int func_0209c410(const u8 *bytes, u8 kind);
-extern void func_0209c42c(u8 *bytes, int kind, u8 value);
-extern void func_0209c448(u8 *scores, int kind, int delta);
-extern void func_0209c470(u8 *scores, u8 kind);
-extern void func_0209c52c(u8 *bytes);
 
 /* The item of each kind, built on the first call, with its guard and the records of its eight
  * registrations for destruction. */
@@ -74,7 +55,7 @@ void VillagerModeRecord_KindItem(u16 *out, int kind)
         }
         data_021dc50c |= 1;
     }
-    if (func_0209c38c((u32) kind)) {
+    if (VillagerModeRecord_IsKindMode((u32) kind)) {
         *out = data_021dc570[kind];
     } else {
         *out = 0xfff1;
@@ -86,10 +67,10 @@ CLEAN_AS(func_0209bd98, VillagerModeRecord_KindItem)
  * `record`: ten times its weight (4.12 fixed point), as a byte, added to its score. */
 void VillagerModeRecord_LearnTop(VillagerModeRecord *record, const VillagerModeRecord *from, const s16 *weights)
 {
-    int kind = func_0209c4a8(from->scores);
-    if (func_0209c38c((u32) kind)) {
+    int kind = VillagerModeRecord_DrawTopKind(from->scores);
+    if (VillagerModeRecord_IsKindMode((u32) kind)) {
         int full = (weights[kind] * VILLAGER_MODE_RECORD_FULL_SCORE) >> VILLAGER_MODE_RECORD_FIXED_SHIFT;
-        func_0209c448(record->scores, kind, (u8) full);
+        VillagerModeRecord_RaiseScore(record->scores, kind, (u8) full);
     }
 }
 CLEAN_AS(func_0209beb0, VillagerModeRecord_LearnTop)
@@ -97,16 +78,16 @@ CLEAN_AS(func_0209beb0, VillagerModeRecord_LearnTop)
 /* func_0209bee8: `amount` added to the count of `kind`, kept within 0-10. */
 void VillagerModeRecord_AddCount(VillagerModeRecord *record, u32 kind, int amount)
 {
-    if (!func_0209c38c(kind)) {
+    if (!VillagerModeRecord_IsKindMode(kind)) {
         return;
     }
-    int count = amount + func_0209c410(record->counts, (u8) kind);
+    int count = amount + VillagerModeRecord_KindByte(record->counts, (u8) kind);
     if (count < 0) {
         count = 0;
     } else if (count > VILLAGER_MODE_RECORD_COUNT_MAX) {
         count = VILLAGER_MODE_RECORD_COUNT_MAX;
     }
-    func_0209c42c(record->counts, (int) kind, (u8) count);
+    VillagerModeRecord_SetKindByte((char *) record->counts, (int) kind, (u8) count);
 }
 CLEAN_AS(func_0209bee8, VillagerModeRecord_AddCount)
 
@@ -116,12 +97,13 @@ int VillagerModeRecord_DrawScores(VillagerModeRecord *record, const s16 *weights
 {
     int any = 0;
     for (int kind = 0; kind < VILLAGER_MODE_KINDS; kind++) {
-        if (func_0209c410(record->scores, (u8) kind) >= VILLAGER_MODE_RECORD_SCORE_MAX) {
+        if (VillagerModeRecord_KindByte(record->scores, (u8) kind) >= VILLAGER_MODE_RECORD_SCORE_MAX) {
             continue;
         }
-        int draw = (int) func_020644cc(VILLAGER_MODE_RECORD_DRAW_RANGE);
+        int draw = (int) MainRandom_Below(VILLAGER_MODE_RECORD_DRAW_RANGE);
         if (draw > 0) {
-            func_0209c448(record->scores, kind, (u8) ((weights[kind] * draw) >> VILLAGER_MODE_RECORD_FIXED_SHIFT));
+            VillagerModeRecord_RaiseScore(record->scores, kind,
+                                          (u8) ((weights[kind] * draw) >> VILLAGER_MODE_RECORD_FIXED_SHIFT));
         }
         any = 1;
     }
@@ -134,14 +116,14 @@ CLEAN_AS(func_0209bf28, VillagerModeRecord_DrawScores)
 void VillagerModeRecord_AddCountsToScores(VillagerModeRecord *record, const s16 *weights)
 {
     for (int kind = 0; kind < VILLAGER_MODE_KINDS; kind++) {
-        int count = func_0209c410(record->counts, (u8) kind);
+        int count = VillagerModeRecord_KindByte(record->counts, (u8) kind);
         int multiplier = data_020d1a38[kind];
         if (multiplier != 0 && count != 0) {
             int gain = (weights[kind] * multiplier * count) >> VILLAGER_MODE_RECORD_FIXED_SHIFT;
-            func_0209c448(record->scores, kind, (u8) gain);
+            VillagerModeRecord_RaiseScore(record->scores, kind, (u8) gain);
         }
     }
-    func_0209c52c(record->counts);
+    VillagerModeRecord_ClearKindBytes(record->counts);
 }
 CLEAN_AS(func_0209bf80, VillagerModeRecord_AddCountsToScores)
 
@@ -163,8 +145,8 @@ CLEAN_AS(func_0209bfec, VillagerModeRecord_Since)
  * (message 7 for a mode that is not a kind). */
 int VillagerModeRecord_LoadKindText(void *text, int mode)
 {
-    u8 message = (u8) (func_0209c38c((u32) mode) ? mode : VILLAGER_MODE_RECORD_TEXT_OTHER);
-    return func_020b4a20(text, &message, data_020e35cc);
+    u8 message = (u8) (VillagerModeRecord_IsKindMode((u32) mode) ? mode : VILLAGER_MODE_RECORD_TEXT_OTHER);
+    return MessageReader_LoadMessage((int) (uintptr_t) text, &message, (int) (uintptr_t) data_020e35cc);
 }
 CLEAN_AS(func_0209bff0, VillagerModeRecord_LoadKindText)
 
@@ -173,9 +155,9 @@ CLEAN_AS(func_0209bff0, VillagerModeRecord_LoadKindText)
 static void villager_mode_record_take_kind(VillagerModeRecord *record, int kind)
 {
     VillagerModeRecord_SetMode(record, kind);
-    func_0209c470(record->scores, (u8) kind);
+    VillagerModeRecord_HalveScores(record->scores, (u8) kind);
     record->flags &= (u8) ~VILLAGER_MODE_FROM_2;
-    func_0209e474(&record->since);
+    DateTime_Now(&record->since);
     MI_CpuCopy8(&record->since, &record->counted, sizeof(DateTime));
 }
 
@@ -187,12 +169,12 @@ int VillagerModeRecord_LeaveArrived(VillagerModeRecord *record, const DateTime *
     if (record->mode != VILLAGER_MODE_ARRIVED) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    if (now != NULL &&
-        (func_0209e3ac(now, &record->since, VILLAGER_MODE_RECORD_ALL_FIELDS) != 1 || func_0209e380(&record->since, now) < 1)) {
+    if (now != NULL && (DateTime_Compare(now, &record->since, VILLAGER_MODE_RECORD_ALL_FIELDS) != 1 ||
+                        DateTime_DaysBetween(&record->since, now) < 1)) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = func_0209c4a8(record->scores);
-    if (!func_0209c38c((u32) kind)) {
+    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    if (!VillagerModeRecord_IsKindMode((u32) kind)) {
         return VILLAGER_MODE_UNCHANGED;
     }
     villager_mode_record_take_kind(record, kind);
@@ -207,8 +189,8 @@ int VillagerModeRecord_LeaveMode11(VillagerModeRecord *record, const DateTime *n
     if (record->mode != VILLAGER_MODE_11 || now->day == record->since.day) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = func_0209c4a8(record->scores);
-    if (!func_0209c38c((u32) kind)) {
+    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    if (!VillagerModeRecord_IsKindMode((u32) kind)) {
         return VILLAGER_MODE_UNCHANGED;
     }
     villager_mode_record_take_kind(record, kind);
@@ -223,8 +205,8 @@ int VillagerModeRecord_LeaveNoneYet(VillagerModeRecord *record)
     if (record->mode != VILLAGER_MODE_NONE_YET) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = func_0209c4a8(record->scores);
-    if (!func_0209c38c((u32) kind)) {
+    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    if (!VillagerModeRecord_IsKindMode((u32) kind)) {
         return VILLAGER_MODE_UNCHANGED;
     }
     villager_mode_record_take_kind(record, kind);
@@ -237,18 +219,19 @@ CLEAN_AS(func_0209c108, VillagerModeRecord_LeaveNoneYet)
  * record back to mode 8 (8 given). 12 when nothing changed. */
 int VillagerModeRecord_KeepKind(VillagerModeRecord *record)
 {
-    if (!func_0209c38c(record->mode)) {
+    if (!VillagerModeRecord_IsKindMode(record->mode)) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = func_0209c4a8(record->scores);
-    if (!func_0209c38c((u32) kind) || func_0209c410(record->scores, (u8) kind) != VILLAGER_MODE_RECORD_SCORE_MAX) {
+    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    if (!VillagerModeRecord_IsKindMode((u32) kind) ||
+        VillagerModeRecord_KindByte(record->scores, (u8) kind) != VILLAGER_MODE_RECORD_SCORE_MAX) {
         return VILLAGER_MODE_UNCHANGED;
     }
     if (record->mode != kind) {
         VillagerModeRecord_EnterNoneYet(record);
         return VILLAGER_MODE_NONE_YET;
     }
-    func_0209c470(record->scores, record->mode);
+    VillagerModeRecord_HalveScores(record->scores, record->mode);
     return record->mode;
 }
 CLEAN_AS(func_0209c168, VillagerModeRecord_KeepKind)
@@ -264,10 +247,10 @@ CLEAN_AS(func_0209c1c0, VillagerModeRecord_IsKindAWeekOld)
  * whole days or more from that date (either way). */
 int VillagerModeRecord_IsKindDaysOld(VillagerModeRecord *record, const DateTime *now, u32 days)
 {
-    if (func_0209dffc(&record->since) != 0 || func_0209c380(record) == 0) {
+    if (DateTime_IsInvalid(&record->since) != 0 || VillagerModeRecord_IsKind(record) == 0) {
         return 0;
     }
-    int minutes = func_0209e350(&record->since, now);
+    int minutes = DateTime_MinutesBetween(&record->since, now);
     if (minutes < 0) {
         minutes = -minutes;
     }
@@ -286,7 +269,7 @@ void VillagerModeRecord_EnterMode11(VillagerModeRecord *record)
         record->flags &= (u8) ~VILLAGER_MODE_FROM_2;
     }
     VillagerModeRecord_SetMode(record, VILLAGER_MODE_11);
-    func_0209e474(&record->since);
+    DateTime_Now(&record->since);
     MI_CpuCopy8(&record->since, &record->counted, sizeof(DateTime));
 }
 CLEAN_AS(func_0209c214, VillagerModeRecord_EnterMode11)
@@ -301,7 +284,7 @@ void VillagerModeRecord_EnterNoneYet(VillagerModeRecord *record)
         record->flags &= (u8) ~VILLAGER_MODE_FROM_2;
     }
     VillagerModeRecord_SetMode(record, VILLAGER_MODE_NONE_YET);
-    func_0209e474(&record->since);
+    DateTime_Now(&record->since);
     MI_CpuCopy8(&record->since, &record->counted, sizeof(DateTime));
 }
 CLEAN_AS(func_0209c270, VillagerModeRecord_EnterNoneYet)
@@ -377,8 +360,8 @@ void VillagerModeRecord_Redraw(VillagerModeRecord *record, const u8 *scores, int
     if (halve) {
         VillagerModeRecord_HalveScores(record->scores, record->mode);
     }
-    func_0209e474(&record->since);
-    func_0209e474(&record->counted);
+    DateTime_Now(&record->since);
+    DateTime_Now(&record->counted);
 }
 CLEAN_AS(func_0209c334, VillagerModeRecord_Redraw)
 
@@ -504,7 +487,7 @@ int VillagerModeRecord_DrawTopKind(const unsigned char *scores)
 
     u8 result = VILLAGER_MODE_KINDS;
     if (count > 0) {
-        u32 pick = func_020644cc(count);
+        u32 pick = MainRandom_Below(count);
         for (int kind = 0; kind < VILLAGER_MODE_KINDS; kind++) {
             if (tied & (1u << kind)) {
                 if (pick == 0) {

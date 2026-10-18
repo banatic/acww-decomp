@@ -15,6 +15,11 @@
 #include "villager_memories.h"
 #include "villager_memory_entry.h"
 #include "villager_town.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "talk_object.h"
+#include "text_base.h"
+#include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h), and a byte that picks the
  * catchphrase's message. */
@@ -67,27 +72,6 @@ extern const MemberPointer data_020d8f88; /* the reply func_020288bc */
 
 extern VillagerTown data_021e5a2c; /* the town's villagers */
 
-/* The scene's member setters: the three at 0xb0 from a table, the reply, the member run at the
- * command's end. */
-extern void func_0202da88(VillagerTalk *talk, const MemberPointer *table);
-extern void func_0202da74(VillagerTalk *talk, MemberPointer reply);
-extern void func_0202dbf0(VillagerTalk *talk, MemberPointer next);
-/* A line drawn for the personality (villager_talk.h). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The talk: a label put into its slot, its message and text set (only while it is on the
- * message data_021f43f8, func_02068484), its byte 0x18 set. */
-extern void func_02068404(u8 *talk, int slot, VillagerTalkNicknameLabel *label);
-extern void func_0206844c(u8 *talk, const u8 *message, int text);
-extern int func_02068484(u8 *talk, const u8 *message, int text);
-extern void func_02068388(u8 *talk, int cond);
-/* A label constructed and destructed; a player's name put into one; one copied. */
-extern void *func_02094fd4(VillagerTalkNicknameLabel *label);
-extern void *func_02094fbc(VillagerTalkNicknameLabel *label);
-extern void *func_02095074(const DesignCreator *player, VillagerTalkNicknameLabel *label);
-extern void *func_020a8bb8(VillagerTalkNicknameLabel *label, const VillagerTalkNicknameLabel *from);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 static u8 *nickname_talk(const VillagerTalk *talk)
@@ -152,15 +136,15 @@ static void nickname_offer(VillagerTalk *talk, int first, const MemberPointer *f
     list.count = 2;
     list.cancel = -1;
     TalkChoices_Offer((TalkChoicesScene *) (void *) talk, &list);
-    func_0202da74(talk, reply);
-    func_02068388(nickname_talk(talk), 1);
+    VillagerTalkScene_SetReply(talk, reply);
+    TalkObject_OpenChoices((TalkObject *) (void *) nickname_talk(talk), 1);
 }
 
 /* func_0202a5e8: a line of the set "etc_connect" (group 0) for the villager's personality. */
 void VillagerTalkNickname_LineConnect(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, nickname_personality(talk),
-                  (int) data_020c8af0.texts, data_020c8af0.count, 0, 0);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, nickname_personality(talk),
+                               (int) data_020c8af0.texts, data_020c8af0.count, 0, 0);
     nickname_name(talk, out);
 }
 CLEAN_AS(func_0202a5e8, VillagerTalkNickname_LineConnect)
@@ -211,7 +195,7 @@ void VillagerTalkNickname_Keep(VillagerTalk *talk)
 {
     if (GroupParams_C4CIs1() != 0) {
         u8 *record = nickname_record(talk);
-        func_0202da88(talk, data_021c27dc);
+        VillagerTalkScene_SetLines(talk, data_021c27dc);
         if (nickname_memory(talk) != NULL && VillagerMemoryEntry_InUse(nickname_memory(talk)) != 0) {
             VillagerMemoryEntry_SetNicknameChars(nickname_memory(talk), GroupParams_Text(), VILLAGER_TALK_NICKNAME_CHARS);
         } else {
@@ -222,15 +206,15 @@ void VillagerTalkNickname_Keep(VillagerTalk *talk)
         }
         if (nickname_memory(talk) != NULL) {
             VillagerTalkNicknameLabel label;
-            func_02094fd4(&label);
+            PlayerIdText_Construct((PlayerIdText *) &label);
             VillagerMemoryEntry_NicknameToLabel(nickname_memory(talk), &label);
-            func_02068404(nickname_talk(talk), 0, &label);
-            func_02094fbc(&label);
+            TalkObject_SetPart((TalkObject *) (void *) nickname_talk(talk), 0, (TextBase *) &label);
+            PlayerIdText_Destruct((PlayerIdText *) &label);
         }
     }
     VillagerTalkLine line = nickname_set_line(talk);
     u8 message = line.message;
-    func_0206844c(nickname_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessage((TalkObject *) (void *) nickname_talk(talk), &message, (const char *) (uintptr_t) ((int) line.text));
 }
 CLEAN_AS(func_0202a7cc, VillagerTalkNickname_Keep)
 
@@ -243,7 +227,7 @@ void VillagerTalkNickname_AskText(VillagerTalk *talk, int unused)
     SceneCommand_SetScreenText(&talk->scene, VILLAGER_TALK_NICKNAME_TEXT_MODE, (u32) (uintptr_t) data_021c1e84,
                                VILLAGER_TALK_NICKNAME_CHARS, 0);
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_MODE_TEXT);
-    func_0202dbf0(talk, data_020d9178);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d9178);
 }
 CLEAN_AS(func_0202a8a4, VillagerTalkNickname_AskText)
 
@@ -262,10 +246,11 @@ void VillagerTalkNickname_OfferIfFond(VillagerTalk *talk)
     if (nickname_memory(talk) != NULL && VillagerMemoryEntry_Fondness(nickname_memory(talk)) >= VILLAGER_TALK_NICKNAME_FOND) {
         nickname_offer(talk, 0x47, data_021c27c4, 0x48, data_021c280c, data_020d8f68);
     } else {
-        func_0202da88(talk, data_021c280c);
+        VillagerTalkScene_SetLines(talk, data_021c280c);
         VillagerTalkLine line = nickname_set_line(talk);
         u8 message = line.message;
-        func_02068484(nickname_talk(talk), &message, (int) line.text);
+        TalkObject_SetMessageIfNone((TalkObject *) (void *) nickname_talk(talk), &message,
+                                    (const char *) (uintptr_t) ((int) line.text));
     }
 }
 CLEAN_AS(func_0202a940, VillagerTalkNickname_OfferIfFond)
@@ -279,11 +264,11 @@ void VillagerTalkNickname_Pick(VillagerTalk *talk)
     VillagerTalkNicknameLabel nickname;
     VillagerTalkNicknameLabel name;
     const DesignCreator *player = PlayerRecord_Player(PlayerRecords_Current());
-    func_02094fd4(&nickname);
-    func_02094fd4(&name);
-    func_02095074(player, &name);
+    PlayerIdText_Construct((PlayerIdText *) &nickname);
+    PlayerIdText_Construct((PlayerIdText *) &name);
+    PlayerId_NameToText((DesignCreator *) player, (TextBase *) &name);
     if (VillagerTalkNickname_Load(&nickname, &name, (unsigned int) nickname_personality(talk)) == 0) {
-        func_020a8bb8(&nickname, &name);
+        TextBase_Copy((TextBase *) &nickname, (TextBase *) &name);
     }
     if (nickname_memory(talk) != NULL) {
         Date today;
@@ -293,9 +278,9 @@ void VillagerTalkNickname_Pick(VillagerTalk *talk)
     } else {
         VillagerMemory_SetNickname(nickname_record(talk), &nickname, player);
     }
-    func_02068404(nickname_talk(talk), 0, &nickname);
-    func_02094fbc(&name);
-    func_02094fbc(&nickname);
+    TalkObject_SetPart((TalkObject *) (void *) nickname_talk(talk), 0, (TextBase *) &nickname);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
+    PlayerIdText_Destruct((PlayerIdText *) &nickname);
 }
 CLEAN_AS(func_0202aa04, VillagerTalkNickname_Pick)
 
@@ -308,7 +293,7 @@ int VillagerTalkNickname_Load(void *text, void *name, unsigned int personality)
     u8 untried = 0xff;
     int left = VILLAGER_TALK_NICKNAME_MESSAGES;
     for (int tries = 0; tries < VILLAGER_TALK_NICKNAME_MESSAGES; tries++) {
-        int pick = func_020644cc(left);
+        int pick = MainRandom_Below(left);
         for (int i = 0; i < VILLAGER_TALK_NICKNAME_MESSAGES; i++) {
             if (((untried >> i) & 1) == 0) {
                 continue;
@@ -391,8 +376,8 @@ static void nickname_offer_ranges(VillagerTalk *talk, int first, int first_last,
     list.count = 2;
     list.cancel = -1;
     TalkChoices_Offer((TalkChoicesScene *) (void *) talk, &list);
-    func_0202da74(talk, reply);
-    func_02068388(nickname_talk(talk), 1);
+    VillagerTalkScene_SetReply(talk, reply);
+    TalkObject_OpenChoices((TalkObject *) (void *) nickname_talk(talk), 1);
 }
 
 /* func_0202ac64: a line of the set "ap_habit" (five lines a group, the group the low bit of the
@@ -402,8 +387,8 @@ void VillagerTalkNickname_LineHabitFlip(VillagerTalk *talk, VillagerTalkLine *ou
 {
     int personality = nickname_personality(talk);
     int group = talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] & 1;
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) data_020c8b18.texts, 5, group,
-                  data_020c8b18.count);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality,
+                               (int) data_020c8b18.texts, 5, group, data_020c8b18.count);
     talk->message += 7;
     nickname_name(talk, out);
     talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] = (u8) ((talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] + 1) & 1);
@@ -448,7 +433,7 @@ void VillagerTalkNickname_KeepHabit(VillagerTalk *talk)
 {
     if (GroupParams_C4CIs1() != 0) {
         u8 *record = nickname_record(talk);
-        func_0202da88(talk, data_021c274c);
+        VillagerTalkScene_SetLines(talk, data_021c274c);
         if (talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] == 0) {
             VillagerCatchphrase_Set(record, GroupParams_Text(), VILLAGER_TALK_NICKNAME_HABIT_CHARS);
         } else if (nickname_memory(talk) != NULL && VillagerMemoryEntry_InUse(nickname_memory(talk)) != 0) {
@@ -461,7 +446,7 @@ void VillagerTalkNickname_KeepHabit(VillagerTalk *talk)
     }
     VillagerTalkLine line = nickname_set_line(talk);
     u8 message = line.message;
-    func_0206844c(nickname_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessage((TalkObject *) (void *) nickname_talk(talk), &message, (const char *) (uintptr_t) ((int) line.text));
 }
 CLEAN_AS(func_0202add4, VillagerTalkNickname_KeepHabit)
 
@@ -480,15 +465,15 @@ void VillagerTalkNickname_AskHabitText(VillagerTalk *talk, int unused)
                                    VILLAGER_TALK_NICKNAME_TEXT3E_CHARS, 0);
     }
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_MODE_TEXT);
-    func_0202dbf0(talk, data_020d9260);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d9260);
 }
 CLEAN_AS(func_0202aea0, VillagerTalkNickname_AskHabitText)
 
 /* func_0202af08: a line of the set "ap_habit" (four lines a group, group 1). */
 void VillagerTalkNickname_LineHabitGroup1(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, nickname_personality(talk),
-                  (int) data_020c8b18.texts, 4, 1, data_020c8b18.count);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, nickname_personality(talk),
+                               (int) data_020c8b18.texts, 4, 1, data_020c8b18.count);
     nickname_name(talk, out);
 }
 CLEAN_AS(func_0202af08, VillagerTalkNickname_LineHabitGroup1)

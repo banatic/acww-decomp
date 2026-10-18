@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "itcm/process_phases.h"
 
 static_assert(sizeof(ProcessNode) == 0x14, "the tree links and the process");
 static_assert(sizeof(ProcessLink) == 0x10, "list links, the process and two orders");
@@ -89,13 +90,6 @@ extern MemberFn data_0213e784;
 extern MemberFn data_0213e79c;
 extern MemberFn data_0213e7a4;
 
-/* A phase run on a process: `check`, then `main` if it allowed, then `outcome` told how it went
- * (ProcessOutcome); the result of `main`, or 0 when it was not called. */
-extern int func_01ffd44c(Process *process, MemberFn main, MemberFn check, MemberFn outcome);
-/* The node after a node's subtree in tree order (NULL at the end), and the next node in tree
- * order. */
-extern TreeNode *func_01ffcfc0(TreeNode *node);
-extern TreeNode *func_01ffcffc(TreeNode *node);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 typedef int ProcessMethod(Process *self);
@@ -203,8 +197,8 @@ CLEAN_AS(func_020edd30, Process_SetConstructArgs)
 /* func_020edd74: TRUE when a process below `self` in the tree is still being created. */
 int Process_IsAnyDescendantCreating(Process *self)
 {
-    TreeNode *end = func_01ffcfc0(&self->node.tree);
-    for (TreeNode *node = self->node.tree.first_child; node != NULL && node != end; node = func_01ffcffc(node)) {
+    TreeNode *end = TreeNode_NextSkipChildren(&self->node.tree);
+    for (TreeNode *node = self->node.tree.first_child; node != NULL && node != end; node = TreeNode_Next(node)) {
         if (owner_of(node)->state == STATE_CREATING) {
             return TRUE;
         }
@@ -219,7 +213,7 @@ CLEAN_AS(func_020edd74, Process_IsAnyDescendantCreating)
 int Process_RunDelete(Process *self)
 {
     u16 class_id = self->class_id;
-    int result = func_01ffd44c(self, data_0213e784, data_0213e79c, data_0213e7a4);
+    int result = Process_RunPhase(self, data_0213e784, data_0213e79c, data_0213e7a4);
     if (result == 1) {
         Process_NotifyDeleted(class_id);
     }
@@ -230,7 +224,7 @@ CLEAN_AS(func_020edddc, Process_RunDelete)
 /* func_020ede60: the create phase run on the process. */
 void Process_RunCreate(Process *self)
 {
-    func_01ffd44c(self, data_0213e794, data_0213e78c, data_0213e77c);
+    Process_RunPhase(self, data_0213e794, data_0213e78c, data_0213e77c);
 }
 CLEAN_AS(func_020ede60, Process_RunCreate)
 
@@ -725,7 +719,7 @@ int ProcessTree_ForEach(ProcessTree *tree)
     }
     TreeNode *node = tree->tree.top;
     while (node != NULL) {
-        TreeNode *next = func_01ffcffc(node);
+        TreeNode *next = TreeNode_Next(node);
         call_member(&tree->each, owner_of(node));
         node = next;
     }

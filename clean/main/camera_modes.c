@@ -8,6 +8,12 @@
 #include "itcm/camera.h" /* Camera_GetTarget */
 #include "itcm/vector.h" /* Vec_Add */
 #include "state_flags.h" /* StateFlags_ValueOrZero */
+#include "ov003/town_camera_focus.h"
+#include "ov004/room_camera.h"
+#include "ov068/field_camera_modes.h"
+#include "player_actor_ops.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
 
 static_assert(sizeof(CameraControlModeData) == 8, "the mode's data");
 static_assert(offsetof(CameraControl, unk_21c) == 0x21c, "the mode's data");
@@ -38,22 +44,10 @@ extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 /* Reads the 3 x 3 part of `mtx`. */
 extern void MTX_MultVec33(const Vec3 *vec, const Mtx43 *mtx, Vec3 *dst);
 
-/* The player's position (actor 4, the one at this console), or NULL. */
-extern Vec3 *func_02095794(int actor);
 /* The point of the actor the player is turned to (overlay 3). */
 Vec3 *FieldActor_PlayerFocus(int player);
 /* The yaw from `from` towards `to`. */
 s16 Vec_YawTo(const Vec3 *from, const Vec3 *to);
-extern u8 func_020b65c4(void); /* the scene */
-/* Whether the scene is one of the kinds these three test. */
-extern int func_020b67d4(void);
-extern int func_020b6680(void);
-extern int func_020b66d8(void);
-/* Mode 2's frame indoors (with the view it sets; NULL for the goal) and outdoors. */
-extern void func_ov004_02247438(CameraControl *camera, CameraView *view);
-extern void func_ov003_02236564(CameraControl *camera);
-/* In mode 1 after mode 9: how much higher the point looked at goes (overlay 68). */
-extern int func_ov068_0226dabc(CameraControl *camera);
 
 #define PLAYER 4
 /* Focus on points whose span with the player reaches 11.0 is not taken. */
@@ -114,7 +108,7 @@ static void place(CameraControl *camera)
 static Vec3 player_position(void)
 {
     Vec3 position = data_021fbee8;
-    Vec3 *player = func_02095794(PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(PLAYER);
     if (player != NULL) {
         position = *player;
     }
@@ -125,7 +119,7 @@ static Vec3 player_position(void)
  * 11.0: then back to mode 0. */
 void CameraControl_FocusOnPair(const Vec3 *a, const Vec3 *b)
 {
-    int span = CameraControl_SpanOfThree(func_02095794(PLAYER), a, b, NULL, NULL);
+    int span = CameraControl_SpanOfThree(PlayerActorOps_StartPosition(PLAYER), a, b, NULL, NULL);
     if (span >= FOCUS_SPAN) {
         CameraControl_ResetMode();
         return;
@@ -145,10 +139,10 @@ int CameraControl_FocusOn(const Vec3 *point)
     if (data_021c67a4->mode == CAMERA_MODE_9) {
         return 0;
     }
-    if (func_020b65c4() == SCENE_NO_FOCUS) {
+    if (SceneQuery_Current() == SCENE_NO_FOCUS) {
         return 0;
     }
-    if (CameraControl_SpanOfTwo(func_02095794(PLAYER), point, NULL, NULL) >= FOCUS_SPAN) {
+    if (CameraControl_SpanOfTwo(PlayerActorOps_StartPosition(PLAYER), point, NULL, NULL) >= FOCUS_SPAN) {
         return CameraControl_ResetMode();
     }
     data_021c67a4->look_both = 0;
@@ -324,7 +318,7 @@ CLEAN_AS(func_0203b320, CameraControl_Mode6Start)
 void CameraControl_Mode5Frame(CameraControl *camera)
 {
     Vec3 point = data_021fbee8;
-    Vec3 *player = func_02095794(PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(PLAYER);
     Vec3 *focus = FieldActor_PlayerFocus(PLAYER);
     if (player != NULL && focus != NULL) {
         Vec3 between;
@@ -395,9 +389,9 @@ CLEAN_AS(func_0203b584, CameraControl_Mode3Start)
 void CameraControl_FocusFrame(CameraControl *camera)
 {
     if (scene()->outdoors == 0) {
-        func_ov004_02247438(camera, NULL);
+        RoomCamera_FocusGoal(camera, NULL);
     } else {
-        func_ov003_02236564(camera);
+        TownCameraFocus_SetGoal(camera);
     }
     place(camera);
 }
@@ -411,10 +405,10 @@ int CameraControl_FocusStart(CameraControl *camera)
     if (scene()->outdoors == 0) {
         CameraControl_LoadPreset(camera, PRESET_FOCUS_INDOORS, NULL);
         camera->unk_1f6 = 3;
-        func_ov004_02247438(camera, NULL);
+        RoomCamera_FocusGoal(camera, NULL);
     } else {
         CameraControl_LoadPreset(camera, PRESET_FOCUS_OUTDOORS, NULL);
-        func_ov003_02236564(camera);
+        TownCameraFocus_SetGoal(camera);
     }
     CameraControl_SelectTiming(camera, TIMING_0);
     if (camera->previous_mode == CAMERA_MODE_STILL) {
@@ -455,7 +449,7 @@ void CameraControl_StillFrame(CameraControl *camera)
     target.y += (0x1000 - StateFlags_ValueOrZero()) * 15;
     eye.y += (0x1000 - StateFlags_ValueOrZero()) * 2;
     if (camera->previous_mode == CAMERA_MODE_9) {
-        target.y += func_ov068_0226dabc(camera);
+        target.y += FieldCameraModes_Sway(camera);
     }
     CameraControl_PlaceAt(camera, &target, &eye);
 }
@@ -515,8 +509,8 @@ void CameraControl_FollowFrame(CameraControl *camera)
     Vec3 player = player_position();
     if (scene()->outdoors != 0) {
         CameraControl_Follow(camera, &player);
-    } else if (func_020b67d4() || func_020b6680() ||
-               (func_020b66d8() && func_020b65c4() != SCENE_20 && func_020b65c4() != SCENE_22)) {
+    } else if (SceneKinds_CurrentIsHouseRoom() || SceneQuery_CurrentIn11() ||
+               (SceneQuery_CurrentIn20() && SceneQuery_Current() != SCENE_20 && SceneQuery_Current() != SCENE_22)) {
         CameraControl_LoadPreset(camera, data_020ca158[camera->preset_row][camera->preset_column], NULL);
         camera->goal.second_offset = player;
         if (camera->preset_row != 0) {

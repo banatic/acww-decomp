@@ -2,6 +2,13 @@
 #include "town_layout.h"
 
 #include "clean.h"
+#include "acre_bits.h"
+#include "acre_map.h"
+#include "acre_templates.h"
+#include "main_random.h"
+#include "season.h"
+#include "snowmen.h"
+#include "town_generator.h"
 
 extern u8 data_021f3b56[]; /* handed to func_020b0698 */
 
@@ -12,16 +19,6 @@ extern void func_02037d0c(void *record); /* an acre record's destructor: nothing
 extern void *func_0204e6d8(void *items); /* an acre's items' destructor (TownLayout_DestructBlock) */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
-
-extern int func_020644cc(int range);     /* a random number below `range` */
-extern void func_0209c574(void *layout); /* lays the acres' models out */
-extern void func_02037d00(void *record); /* zeroes an acre record */
-/* Fills `items` from item template `template_set` / `variant` (acre_map.h); 0 without templates. */
-extern int func_0204d7f8(void *items, int template_set, int variant, int heap);
-/* `count` AcreMapSource records from the back of `heap`, or 0. */
-extern AcreMapSource *func_0204f86c(int count, int heap);
-extern u32 func_020b7098(void);
-extern void func_020b0698(u8 *data);
 
 /* func_0204e6b8: an acre's items are the block itself; returns its argument. */
 void *TownLayout_BlockItems(void *block)
@@ -70,10 +67,10 @@ void TownLayout_Generate(void *layout, void *heap)
     TownLayout *self = layout;
 
     TownLayout_Clear(layout);
-    int setting = func_020644cc(3);
+    int setting = MainRandom_Below(3);
     self->settings = (u8) ((self->settings & ~3) | (setting & 3));
     for (;;) {
-        func_0209c574(layout);
+        TownGenerator_LayOut(layout);
         TownLayout_FillFromTemplates(layout, (int) (uintptr_t) heap);
         if (TownLayout_HasNine500a(layout) && TownLayout_HasFiveE3ToE7(layout)) {
             break;
@@ -93,7 +90,8 @@ void TownLayout_FillFromTemplates(u8 *layout, int heap)
         for (acre.x = 0; acre.x < TOWN_LAYOUT_SIDE; acre.x++) {
             int items = TownLayout_AcreItems(layout, &acre.x);
             if (items != 0) {
-                func_0204d7f8((void *) (uintptr_t) items, 0, self->models[acre.z * TOWN_LAYOUT_SIDE + acre.x], heap);
+                AcreTemplates_FillItems((int) (uintptr_t) ((void *) (uintptr_t) items), 0,
+                                        self->models[acre.z * TOWN_LAYOUT_SIDE + acre.x], heap);
             }
         }
     }
@@ -141,7 +139,7 @@ CLEAN_AS(func_0204e854, TownLayout_HasNine500a)
  * cannot be allocated from the back of `heap`. */
 AcreMapSource *TownLayout_MakeSources(unsigned char *layout, int heap)
 {
-    AcreMapSource *sources = func_0204f86c(TOWN_LAYOUT_ACRES, heap);
+    AcreMapSource *sources = AcreMap_MakeSources(TOWN_LAYOUT_ACRES, heap);
 
     if (sources == NULL) {
         return NULL;
@@ -166,10 +164,10 @@ CLEAN_AS(func_0204e8c4, TownLayout_MakeSources)
 void TownLayout_SetUpperSettings(unsigned int layout)
 {
     TownLayout *self = (TownLayout *) (uintptr_t) layout;
-    u32 value = func_020b7098();
+    u32 value = Season_FromDate();
 
     self->settings = (u8) ((self->settings & 3) | ((value & 0x3f) << 2));
-    func_020b0698(data_021f3b56);
+    Snowmen_Melt((SnowmenRecord *) (void *) data_021f3b56);
 }
 CLEAN_AS(func_0204e938, TownLayout_SetUpperSettings)
 
@@ -237,7 +235,7 @@ void TownLayout_Clear(unsigned char *layout)
     }
     for (int i = 0; i < TOWN_LAYOUT_INNER_ACRES; i++) {
         TownLayout_ClearBlock(self->items[i]);
-        func_02037d00(&self->records[i]);
+        AcreBits_ClearAll((AcreBits *) &self->records[i]);
     }
     self->settings &= ~3;
 }

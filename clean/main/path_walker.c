@@ -9,6 +9,14 @@
 #include "actor_table.h"
 #include "autoload_2/fx_math.h"
 #include "clean.h"
+#include "acre_record.h"
+#include "acre_tile.h"
+#include "field_collision.h"
+#include "main_random.h"
+#include "town_tile.h"
+#include "town_villager.h"
+#include "villager_home.h"
+#include "villager_roster.h"
 
 static_assert(sizeof(PathWalkerJunction) == 3, "PathWalkerJunction layout");
 static_assert(offsetof(PathWalkerTable, steps) == 0x10, "PathWalkerTable layout");
@@ -52,23 +60,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
-extern unsigned int func_020644cc(int bound);
-extern int func_02037d64(int acre, int flags);
-extern int func_0207cc54(unsigned int candidates, int count, int columns);
-extern int func_02037e8c(int acre);
-extern int func_020800d0(int villager);
 extern char *func_02137550(char *dst, int n);
-extern unsigned int func_0208150c(unsigned int villager);
-extern void *func_0207cc94(void *villagers, void **except, int count);
-extern void *func_0204f61c(PathWalkerMap *map, unsigned int x, unsigned int z, unsigned int flags);
-extern void *func_0204f704(PathWalkerMap *map, void *flags);
-extern void func_0204f794(Vec3 *point, u32 x, u32 z);
-extern void func_0204f7e0(Vec3 *point, Vec3 *from);
-extern int func_02078e98(int point, int map);
-extern int func_02078ec0(int x, int z, void *map);
-extern int func_0204ed58(int map, int x, int z);
-extern int func_0204ed30(int map, int position);
-extern void func_0204f800(int *x, int *z, int acre_x, int acre_z, int offset_x, int offset_z);
 extern void func_020138a8(void *walker, void *position);
 extern void func_02013910(void *walker);
 extern void func_02013934(char *walker, int position);
@@ -104,7 +96,7 @@ static u8 *path_walker_acre(const PathWalkerMap *map, u32 x, u32 z)
 /* The acre's x and z (at 4 in its record). */
 static const s32 *path_walker_acre_place(u8 *acre)
 {
-    return (const s32 *) (uintptr_t) (u32) func_02037e8c((int) (uintptr_t) acre);
+    return (const s32 *) (uintptr_t) (u32) AcreRecord_Coordinates((AcreRecord *) (uintptr_t) acre);
 }
 
 /* The owner's villager record (vtable slot 0x64), or 0. */
@@ -118,7 +110,7 @@ static int path_walker_owner_villager(void *owner)
 /* The place in a villager record (func_020800d0: at 0x7ce): a tile's x and z. */
 static const u8 *path_walker_villager_place(int villager)
 {
-    return (const u8 *) (uintptr_t) (u32) func_020800d0(villager);
+    return (const u8 *) (uintptr_t) (u32) VillagerHome_Tile((u8 *) (uintptr_t) villager);
 }
 
 /* Another villager than the owner's (func_0207cc94 picks one at random), or null. */
@@ -126,8 +118,9 @@ static void *path_walker_other_villager(void *owner)
 {
     unsigned int except;
     func_02137550((char *) &except, sizeof(except));
-    except = func_0208150c((unsigned int) path_walker_owner_villager(owner));
-    return func_0207cc94(data_021e5a2c, (void **) &except, 1);
+    except =
+        (unsigned int) (uintptr_t) (TownVillager_NpcId((u8 *) (uintptr_t) ((unsigned int) path_walker_owner_villager(owner))));
+    return VillagerRoster_PickAny((VillagerTown *) (void *) data_021e5a2c, (const NpcId *const *) ((void **) &except), 1);
 }
 
 /* The walker's state after it lost its way: no junctions, no heading. */
@@ -185,7 +178,7 @@ void PathWalker_PickInRow4(PathWalkerTile *out, u32 self, const Vec3 *position)
         for (s32 x = 1; x < path_walker_add(wide, -1); x++) {
             if (!(x == own_x && own_z == 4)) {
                 u8 *acre = path_walker_acre(map, (u32) x, 4);
-                if (acre != NULL && func_02037d64((int) (uintptr_t) acre, PATH_WALKER_ACRE_FLAG_8) != 0) {
+                if (acre != NULL && AcreRecord_HasAnyFlag((AcreRecord *) (uintptr_t) acre, PATH_WALKER_ACRE_FLAG_8) != 0) {
                     candidates = (u8) (candidates | (1u << (x - 1)));
                     count++;
                 }
@@ -194,7 +187,7 @@ void PathWalker_PickInRow4(PathWalkerTile *out, u32 self, const Vec3 *position)
         }
     }
 
-    int pick = func_0207cc54(candidates, count, columns);
+    int pick = VillagerRoster_PickBit(candidates, count, columns);
     if ((u32) pick >= (u32) columns) {
         return;
     }
@@ -230,10 +223,10 @@ void PathWalker_PickInAnyAcre(PathWalkerTile *out, PathWalker *self)
     s32 high = (s32) map->acres_high;
     s32 acre[2] = {0, 0};
     if (wide >= 3) {
-        acre[0] = (s32) func_020644cc(wide - 2) + 1;
+        acre[0] = (s32) MainRandom_Below(wide - 2) + 1;
     }
     if (high >= 3) {
-        acre[1] = (s32) func_020644cc(high - 2) + 1;
+        acre[1] = (s32) MainRandom_Below(high - 2) + 1;
         PathWalkerTile tile;
         PathWalker_PickInAcre(&tile, self, acre, map);
         *out = tile;
@@ -282,11 +275,11 @@ int PathWalker_PlaceNearGoal(PathWalker *self, Vec3 *position)
 
     s32 goal_x = self->goal_x;
     if (x == goal_x && z >= self->goal_z && z <= path_walker_add(self->goal_z, 1)) {
-        func_0204f794(position, (u32) self->goal_x, (u32) self->goal_z);
+        AcreTile_TileCentre(position, (u32) self->goal_x, (u32) self->goal_z);
     } else if (x >= path_walker_add(goal_x, -3) && x <= path_walker_add(goal_x, 4) && z >= self->goal_z &&
                z <= path_walker_add(self->goal_z, 5)) {
-        s32 tile_z = path_walker_add(self->goal_z, (s32) func_020644cc(2));
-        func_0204f794(position, (u32) goal_x, (u32) tile_z);
+        s32 tile_z = path_walker_add(self->goal_z, (s32) MainRandom_Below(2));
+        AcreTile_TileCentre(position, (u32) goal_x, (u32) tile_z);
     } else {
         PathWalker_PlaceAtRandom(self, position);
     }
@@ -401,7 +394,7 @@ int PathWalker_InFlaggedAcre(void *self, const Vec3 *position)
     }
     u32 x = (u32) path_walker_acre_of(position->x);
     u32 z = (u32) path_walker_acre_of(position->z);
-    return func_0204f61c(map, x, z, PATH_WALKER_ACRE_FLAG_200) != NULL;
+    return AcreTile_AcreHasFlags((AcreMap *) map, x, z, PATH_WALKER_ACRE_FLAG_200) != NULL;
 }
 CLEAN_AS(func_02012a18, PathWalker_InFlaggedAcre)
 
@@ -416,7 +409,7 @@ void PathWalker_PickInFlaggedAcre(PathWalkerTile *out, PathWalker *self)
     if (map == NULL) {
         return;
     }
-    u8 *acre = func_0204f704(map, (void *) (uintptr_t) PATH_WALKER_ACRE_FLAG_200);
+    u8 *acre = AcreTile_FindAcreAllFlags((AcreMap *) map, (void *) (uintptr_t) PATH_WALKER_ACRE_FLAG_200);
     if (acre != NULL) {
         PathWalkerTile tile;
         PathWalker_PickInAcre(&tile, self, path_walker_acre_place(acre), map);
@@ -438,8 +431,8 @@ int PathWalker_PlaceAtRandom(PathWalker *self, Vec3 *position)
     s32 base;
     Vec3 point;
 
-    int kind = (int) func_020644cc(4);
-    func_0204f794(&point, (u32) self->goal_x, (u32) self->goal_z);
+    int kind = (int) MainRandom_Below(4);
+    AcreTile_TileCentre(&point, (u32) self->goal_x, (u32) self->goal_z);
     if (kind == 0) {
         base = Vec_YawTo(position, &point);
         spread = 0x1000;
@@ -451,17 +444,17 @@ int PathWalker_PlaceAtRandom(PathWalker *self, Vec3 *position)
     }
 
     for (int i = 0; i < 10; i++) {
-        fx32 distance = (fx32) ((func_020644cc(5) + 3) << 13);
-        s16 turn = (s16) func_020644cc(spread);
-        if (func_020644cc(2) != 0) {
+        fx32 distance = (fx32) ((MainRandom_Below(5) + 3) << 13);
+        s16 turn = (s16) MainRandom_Below(spread);
+        if (MainRandom_Below(2) != 0) {
             turn = (s16) -turn;
         }
         u16 angle = (u16) (s16) (turn + base);
         int index = (angle >> 4) * 2;
         point.x = path_walker_add(position->x, FX_MulFunc(distance, FX_SinCosTable_[index]));
         point.z = path_walker_add(position->z, FX_MulFunc(distance, FX_SinCosTable_[index + 1]));
-        func_0204f7e0(&point, &point);
-        if (func_02078e98((int) (uintptr_t) &point, 0) != 0) {
+        AcreTile_SnapToTileCentre(&point, &point);
+        if (TownTile_IsClearAt((const Vec3 *) (uintptr_t) &point, 0) != 0) {
             position->x = point.x;
             position->z = point.z;
             break;
@@ -539,14 +532,14 @@ int PathWalker_StepAlongOn(PathWalker *self, Vec3 *position, PathWalkerMap *map)
     u32 tile_x = (u32) x + (u32) step->x;
     u32 tile_z = (u32) z + (u32) step->z;
 
-    if (func_0204ed58((int) (uintptr_t) map, (int) tile_x, (int) tile_z) == 0) {
-        func_0204f794(position, tile_x, tile_z);
+    if (AcreTile_PathDirections((AcreMap *) (uintptr_t) map, (int) tile_x, (int) tile_z) == 0) {
+        AcreTile_TileCentre(position, tile_x, tile_z);
         path_walker_forget(self);
         PathWalker_ChooseRoute(self, position);
         self->return_dir = PATH_WALKER_NO_STEP;
         return 0;
     }
-    func_0204f794(position, tile_x, tile_z);
+    AcreTile_TileCentre(position, tile_x, tile_z);
     if (tile_x == (u32) self->stop_x && tile_z == (u32) self->stop_z) {
         PathWalker_ChooseRoute(self, position);
     }
@@ -593,13 +586,13 @@ int PathWalker_StepToPathOn(PathWalker *self, Vec3 *position, PathWalkerTile *li
         tile_x += (u32) step->x;
         tile_z += (u32) step->z;
         int at_stop = tile_x == (u32) self->stop_x && tile_z == (u32) self->stop_z;
-        if (at_stop || func_0204ed58((int) (uintptr_t) map, (int) tile_x, (int) tile_z) != 0) {
-            func_0204f794(position, tile_x, tile_z);
+        if (at_stop || AcreTile_PathDirections((AcreMap *) (uintptr_t) map, (int) tile_x, (int) tile_z) != 0) {
+            AcreTile_TileCentre(position, tile_x, tile_z);
             PathWalker_ChooseRoute(self, position);
             break;
         }
-        if (func_02078ec0((int) tile_x, (int) tile_z, map) != 0) {
-            func_0204f794(position, tile_x, tile_z);
+        if (TownTile_IsClear((int) tile_x, (int) tile_z, map) != 0) {
+            AcreTile_TileCentre(position, tile_x, tile_z);
             break;
         }
     }
@@ -620,7 +613,7 @@ static int path_walker_nearest(PathWalker *self, int open, int skip, const PathW
     fx32 best = -0x1000;
     int direction = 0;
 
-    func_0204f794(&goal, (u32) self->goal_x, (u32) self->goal_z);
+    AcreTile_TileCentre(&goal, (u32) self->goal_x, (u32) self->goal_z);
     for (int i = 0; i < 4; i++) {
         if (((skip >> i) & 1) != 0) {
             continue;
@@ -635,7 +628,7 @@ static int path_walker_nearest(PathWalker *self, int open, int skip, const PathW
         if (PathWalker_FindJunctionAlong(self, &found, &from, bit, limit, map) == 0) {
             continue;
         }
-        func_0204f794(&junction, found.x, found.z);
+        AcreTile_TileCentre(&junction, found.x, found.z);
         fx32 distance = Vec_DistanceXZ(&goal, &junction);
         if (best < 0 || distance < best) {
             *stop = found;
@@ -680,7 +673,7 @@ void PathWalker_ChooseRoute(PathWalker *self, const Vec3 *position)
     if (map == NULL) {
         return;
     }
-    int open = func_0204ed30((int) (uintptr_t) map, (int) (uintptr_t) position);
+    int open = AcreTile_PathDirectionsAt((AcreMap *) (uintptr_t) map, (const Vec3 *) (uintptr_t) position);
     if (open == 0) {
         self->return_dir = (u32) PathWalker_FindWayToPath(self, (u32 *) &self->stop_x, position);
         self->phase = 0;
@@ -770,17 +763,18 @@ void PathWalker_PickInAcre(PathWalkerTile *out, PathWalker *self, const s32 *acr
     (void) self;
 
     MI_CpuFill8(rows, 0, sizeof(rows));
-    func_0204f800(&corner_x, &corner_z, acre[0], acre[1], 0, 0);
+    AcreTile_TileOfAcre(&corner_x, &corner_z, acre[0], acre[1], 0, 0);
     for (int z = 0; z < PATH_WALKER_ACRE_TILES; z++) {
         for (int x = 0; x < PATH_WALKER_ACRE_TILES; x++) {
-            if (func_0204ed58((int) (uintptr_t) map, path_walker_add(corner_x, x), path_walker_add(corner_z, z)) != 0) {
+            if (AcreTile_PathDirections((AcreMap *) (uintptr_t) map, path_walker_add(corner_x, x),
+                                        path_walker_add(corner_z, z)) != 0) {
                 rows[z] = (u16) (rows[z] | (1u << x));
                 count++;
             }
         }
     }
     if (count > 0) {
-        int pick = (int) func_020644cc(count);
+        int pick = (int) MainRandom_Below(count);
         for (int z = 0; z < PATH_WALKER_ACRE_TILES; z++) {
             for (int x = 0; x < PATH_WALKER_ACRE_TILES; x++) {
                 if (((rows[z] >> x) & 1) != 0) {
@@ -915,7 +909,7 @@ int PathWalker_FindJunctionAlong(PathWalker *self, PathWalkerTile *out, PathWalk
             from->x += dx;
             from->z += dz;
             walked++;
-            int open = func_0204ed58((int) (uintptr_t) map, (int) from->x, (int) from->z);
+            int open = AcreTile_PathDirections((AcreMap *) (uintptr_t) map, (int) from->x, (int) from->z);
             if (open == 0) {
                 out->x = from->x - dx;
                 out->z = from->z - dz;
@@ -985,11 +979,6 @@ typedef struct PathWalkerGround {
 /* `last_x` and `last_z` once PathWalker_MarkTileUnknown marked them. */
 #define PATH_WALKER_TILE_UNKNOWN 0xff
 
-extern void *func_02034240(PathWalkerGround *ground, u32 x, u32 z, int a, int b);
-extern void func_0203423c(PathWalkerGround *ground);
-extern u32 func_0204f658(PathWalkerMap *map, u32 acre_x, u32 acre_z);
-extern void func_0204f828(int *acre, int *tile, const Vec3 *position);
-extern void func_0204f7ac(Vec3 *position, int acre_x, int acre_z, int tile_x, int tile_z);
 extern int TownTile_IsClear(int x, int z, void *map);
 
 /* The step of index `index` as a tile (the words are added as they are, without sign). */
@@ -1019,7 +1008,7 @@ int PathWalker_FindWayToPath(PathWalker *self, u32 *stop, const Vec3 *position)
     int z = 0;
     Position_Tile(&x, &z, (const Position *) position);
     PathWalkerTile limit = {map->tiles_wide, map->tiles_high};
-    if (func_0204ed30((int) (uintptr_t) map, (int) (uintptr_t) position) != 0) {
+    if (AcreTile_PathDirectionsAt((AcreMap *) (uintptr_t) map, (const Vec3 *) (uintptr_t) position) != 0) {
         return PATH_WALKER_NO_STEP;
     }
 
@@ -1029,7 +1018,8 @@ int PathWalker_FindWayToPath(PathWalker *self, u32 *stop, const Vec3 *position)
     }
     Position_Tile(&x, &z, (const Position *) position);
     PathWalkerTile here = {(u32) x, (u32) z};
-    u32 flags = func_0204f658(map, (u32) path_walker_acre_of(position->x), (u32) path_walker_acre_of(position->z));
+    u32 flags = (u32) (uintptr_t) (AcreTile_AcreFlags((AcreMap *) map, (u32) path_walker_acre_of(position->x),
+                                                      (u32) path_walker_acre_of(position->z)));
     int check_ground = (flags & PATH_WALKER_ACRE_GROUND_FLAGS) != 0;
 
     /* The acre's first tile on each axis, and the first past it. */
@@ -1093,14 +1083,14 @@ int PathWalker_StepToClearNeighbour(PathWalker *self, Vec3 *position, PathWalker
     int count = 0;
     (void) self;
 
-    func_0204f828(acre, tile, position);
+    AcreTile_AcreAndTileOf(acre, tile, position);
     for (int i = 0; i < 4; i++) {
         u32 x = (u32) tile[0] + (u32) data_021c172c[i].x;
         u32 z = (u32) tile[1] + (u32) data_021c172c[i].z;
         if (x < PATH_WALKER_ACRE_TILES && z < PATH_WALKER_ACRE_TILES) {
             int map_x = 0;
             int map_z = 0;
-            func_0204f800(&map_x, &map_z, acre[0], acre[1], (int) x, (int) z);
+            AcreTile_TileOfAcre(&map_x, &map_z, acre[0], acre[1], (int) x, (int) z);
             if (TownTile_IsClear(map_x, map_z, map) != 0) {
                 candidates = (u8) (candidates | (1u << i));
                 count++;
@@ -1108,10 +1098,10 @@ int PathWalker_StepToClearNeighbour(PathWalker *self, Vec3 *position, PathWalker
         }
     }
 
-    int pick = func_0207cc54(candidates, count, 4);
+    int pick = VillagerRoster_PickBit(candidates, count, 4);
     if ((u32) pick < 4) {
-        func_0204f7ac(position, acre[0], acre[1], path_walker_add(tile[0], data_021c172c[pick].x),
-                      path_walker_add(tile[1], data_021c172c[pick].z));
+        AcreTile_TileCentreInAcre(position, acre[0], acre[1], path_walker_add(tile[0], data_021c172c[pick].x),
+                                  path_walker_add(tile[1], data_021c172c[pick].z));
         return pick;
     }
     return PATH_WALKER_NO_STEP;
@@ -1139,15 +1129,15 @@ int PathWalker_SearchLine(PathWalker *self, Vec3 *point, const PathWalkerTile *f
         }
         if (check_ground != 0) {
             PathWalkerGround ground;
-            func_02034240(&ground, x, z, 0, 0);
+            CollisionGround_InitAtUnit((CollisionGround *) &ground, x, z, 0, 0);
             covered = ground.unk_30 != 0 ? covered + 1 : 0;
-            func_0203423c(&ground);
+            CollisionGround_Destroy((CollisionGround *) &ground);
             if (covered >= PATH_WALKER_GROUND_RUN) {
                 return 0;
             }
         }
-        if (func_0204ed58((int) (uintptr_t) map, (int) x, (int) z) != 0) {
-            func_0204f794(point, x, z);
+        if (AcreTile_PathDirections((AcreMap *) (uintptr_t) map, (int) x, (int) z) != 0) {
+            AcreTile_TileCentre(point, x, z);
             return 1;
         }
     }

@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "room_object_life.h"
+#include "room_preview.h"
 
 static_assert(offsetof(RoomObject02250d30, unk_844) == 0x844, "unk_844");
 static_assert(sizeof(RoomObject02250d30) == 0x848, "the size RoomObject02250d30_Create allocates");
@@ -12,9 +13,6 @@ static_assert(sizeof(RoomObject02250d30) == 0x848, "the size RoomObject02250d30_
 /* The class's vtables, and its receiver part's. */
 extern const u8 data_ov004_02250d30[];
 extern const u8 data_ov004_02250ddc[];
-
-extern void *func_ov004_0223d03c(void);
-extern unsigned long func_ov004_0223d2ac(void *p);
 
 /* func_ov004_022126b0 (vtable slot 0x0c) */
 int RoomObject02250d30_Vfunc0C(void)
@@ -34,7 +32,7 @@ CLEAN_AS(func_ov004_022126b4, RoomObject02250d30_Vfunc80)
  * data_ov004_022596b0, cut to 16 bits; done at once. */
 int RoomObject02250d30_Start(RoomObject02250d30 *object)
 {
-    object->unk_844 = (u16) func_ov004_0223d2ac(func_ov004_0223d03c());
+    object->unk_844 = (u16) RoomPreview_Number(RoomPreview_Get());
     return 1;
 }
 CLEAN_AS(func_ov004_022126b8, RoomObject02250d30_Start)

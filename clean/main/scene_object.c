@@ -24,6 +24,15 @@
 #include "shadow.h"
 #include "sound_emitter.h"
 #include "speaker_anim.h"
+#include "collision_query.h"
+#include "field_body.h"
+#include "globe.h"
+#include "link_global.h"
+#include "npc_lookup.h"
+#include "player_actor_ops.h"
+#include "scene_object_base.h"
+#include "session_players.h"
+#include "model_object.h"
 
 /* The object's parts used here. */
 #define SCENE_OBJECT_SPAWN_ARG 0x08     /* u32: what it was made with; its low half is the person */
@@ -116,37 +125,6 @@ extern const Vec3 data_021c16b4;   /* and when the second is */
 extern NetSession *data_020ccf94;
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-
-/* Nonzero always without a session slot. */
-extern int func_020a7278(void);
-extern void func_02095eec(int which, int value);
-/* A point onto the curved ground drawn. */
-extern int func_0203f7d0(Vec3 *out, const Vec3 *in);
-/* The model's joint `joint` matrix in view space into `out`; 0 when it has none. */
-extern int func_02055d0c(void *model, Mtx43 *out, int joint);
-/* Releases the model. */
-extern int func_0201c450(void *object);
-/* Loads the model; 0 when it fails. */
-extern int func_0201c45c(void *object);
-/* Sets the person code (0xea) and index (0x632) from `code`. */
-extern void func_0201c400(void *object, u16 *code);
-extern void func_0201c3f4(void *object, int value);
-/* The scene object's slots 0x04 and 0x08 (Base_0203f080) and its set-up end. */
-extern int func_0203f030(void *object);
-extern void func_0203f004(void *object, int mode);
-extern void func_0203ed98(void *object);
-extern int func_0208239c(u16 *person);
-extern void func_02031288(void *collider, Vec3 *position, Vec3 *last_position, int angle, int size, void *owner, int layer);
-extern int func_020310c8(int unused); /* the ground's height */
-extern int func_0203f8d0(Vec3 *pivot, Vec3 *position);
-extern void func_02089fc8(void *carrier);
-extern void func_02089fe4(void *carrier);
-/* The object of field actor `actor`, or 0. */
-extern int func_02096190(int actor);
-/* The x and z of field actor `actor`'s place (4: this system's player), when known. */
-extern int func_02096614(u8 *scene, fx32 *x, fx32 *z, int unused, int actor);
-/* Whether `other` (an object, or 0) is nearer the object than `distance`. */
-extern int func_0201c350(u8 *object, int other, int distance);
 
 static void *scene_object_at(u8 *object, u32 offset)
 {
@@ -256,7 +234,7 @@ void SceneObject_Vfunc4c(void *object, int event, int participant)
     (void) object;
     (void) participant;
     if (event == SCENE_OBJECT_EVENT_8) {
-        func_02095eec(0, 4);
+        PlayerActorOps_SwitchFlag0e(0, 4);
     }
 }
 CLEAN_AS(func_0201b6e4, SceneObject_Vfunc4c)
@@ -271,7 +249,7 @@ int SceneObject_Joint11Point(u8 *object, Vec3 *out)
         return 0;
     }
     scene_object_copy(out, point);
-    func_0203f7d0(out, out);
+    Globe_Unbend(out, out);
     return 1;
 }
 CLEAN_AS(func_0201b6fc, SceneObject_Joint11Point)
@@ -281,7 +259,7 @@ CLEAN_AS(func_0201b6fc, SceneObject_Joint11Point)
  * Returns 1. */
 int SceneObject_Leave(u8 *object)
 {
-    func_0201c450(object);
+    SceneObject_ReleaseModel(object);
     SceneFace_Release((SceneFace *) scene_object_at(object, SCENE_OBJECT_FACE));
     SpeakerAnim_Release((SpeakerAnim *) scene_object_at(object, SCENE_OBJECT_ANIM));
     SoundEmitter_Vfunc10((SoundEmitter *) scene_object_at(object, SCENE_OBJECT_EMITTER));
@@ -296,12 +274,12 @@ CLEAN_AS(func_0201b744, SceneObject_Leave)
  * `joint_matrix`, which keeps what it held when the model has no such joint. */
 static void scene_object_joint_point(u8 *object, Mtx43 *joint_matrix, int joint, Vec3 *out)
 {
-    func_02055d0c(scene_object_at(object, SCENE_OBJECT_MODEL), joint_matrix, joint);
+    ModelObject_JointMatrix(scene_object_at(object, SCENE_OBJECT_MODEL), joint_matrix, joint);
     Vec3 point;
     point.x = joint_matrix->m[3][0];
     point.y = joint_matrix->m[3][1];
     point.z = joint_matrix->m[3][2];
-    func_0203f7d0(out, &point);
+    Globe_Unbend(out, &point);
 }
 
 /* func_0201b790 (slot 0x24): drawing. While disabled or not posed, the points of joints 16,
@@ -327,7 +305,7 @@ int SceneObject_Draw(u8 *object)
     void *model = scene_object_at(object, SCENE_OBJECT_MODEL);
     LayeredModel_DrawA((LayeredModel *) model, NULL);
     SceneLook_ReadHead((SceneLook *) scene_object_at(object, SCENE_OBJECT_LOOK), object);
-    func_02055d0c(model, (Mtx43 *) scene_object_at(object, SCENE_OBJECT_JOINT_11), SCENE_OBJECT_JOINT_A);
+    ModelObject_JointMatrix(model, (Mtx43 *) scene_object_at(object, SCENE_OBJECT_JOINT_11), SCENE_OBJECT_JOINT_A);
 
     Mtx43 joint_matrix = {{{0}}};
     scene_object_joint_point(object, &joint_matrix, SCENE_OBJECT_JOINT_B, point_b);
@@ -450,18 +428,19 @@ int SceneObject_Update(u8 *object)
                       (Vec3 *) scene_object_at(object, SCENE_OBJECT_JOINT_16_POINT), scene_object_angle(object), animation,
                       (u16) (anim_frame >> 12));
     SceneMover_Steer((SceneMover *) scene_object_at(object, SCENE_OBJECT_MOVER), object);
-    if (func_020a7278() != 0 && object[SCENE_OBJECT_SOLID] != 0 &&
+    if (LinkGlobal_HoldsScene() != 0 && object[SCENE_OBJECT_SOLID] != 0 &&
         *(const s32 *) scene_object_at(object, SCENE_OBJECT_COLLIDER_SIZE) > 0) {
-        func_02031288(scene_object_at(object, SCENE_OBJECT_COLLIDER), position,
-                      (Vec3 *) scene_object_at(object, SCENE_OBJECT_LAST_POSITION), scene_object_angle(object),
-                      *(const s32 *) scene_object_at(object, SCENE_OBJECT_COLLIDER_SIZE), object, SCENE_OBJECT_COLLIDER_LAYER);
+        CollisionQuery_Move(scene_object_at(object, SCENE_OBJECT_COLLIDER), position,
+                            (Vec3 *) scene_object_at(object, SCENE_OBJECT_LAST_POSITION), scene_object_angle(object),
+                            *(const s32 *) scene_object_at(object, SCENE_OBJECT_COLLIDER_SIZE), object,
+                            SCENE_OBJECT_COLLIDER_LAYER);
     }
-    position->y = func_020310c8(0);
+    position->y = CollisionQuery_FloorHeight(0);
     SceneLook_Update((SceneLook *) scene_object_at(object, SCENE_OBJECT_LOOK), object);
     SceneProbe_Clear((u8 *) scene_object_at(object, SCENE_OBJECT_PROBE));
     SceneProbe_Update((u8 *) scene_object_at(object, SCENE_OBJECT_PROBE), object);
     *(u16 *) scene_object_at(object, SCENE_OBJECT_PITCH) =
-        (u16) func_0203f8d0((Vec3 *) scene_object_at(object, SCENE_OBJECT_PIVOT), position);
+        (u16) Globe_BendFar((Vec3 *) scene_object_at(object, SCENE_OBJECT_PIVOT), position);
 
     Mtx43 matrix;
     Actor_ModelMatrix((const Actor *) (const void *) object, &matrix);
@@ -469,19 +448,19 @@ int SceneObject_Update(u8 *object)
 
     u32 *flags = scene_object_flags(object);
     if (SceneShare_IsHeld(object) != 0) {
-        if ((*flags & SCENE_OBJECT_HELD) == 0 && func_020a7278() != 0) {
+        if ((*flags & SCENE_OBJECT_HELD) == 0 && LinkGlobal_HoldsScene() != 0) {
             *flags |= SCENE_OBJECT_HELD;
             object[SCENE_OBJECT_HELD_BY_SHARE] = 1;
         }
-    } else if (object[SCENE_OBJECT_HELD_BY_SHARE] == 1 && func_020a7278() != 0) {
+    } else if (object[SCENE_OBJECT_HELD_BY_SHARE] == 1 && LinkGlobal_HoldsScene() != 0) {
         *flags &= ~(u32) SCENE_OBJECT_HELD;
         object[SCENE_OBJECT_HELD_BY_SHARE] = 0;
     }
 
     if (object[SCENE_OBJECT_SOLID] != 0) {
-        func_02089fc8(scene_object_at(object, SCENE_OBJECT_CARRIER));
+        FieldBody_Enter(scene_object_at(object, SCENE_OBJECT_CARRIER));
     } else {
-        func_02089fe4(scene_object_at(object, SCENE_OBJECT_CARRIER));
+        FieldBody_Clear(scene_object_at(object, SCENE_OBJECT_CARRIER));
     }
     SpeakerAnim_Update((SpeakerAnim *) scene_object_at(object, SCENE_OBJECT_ANIM), object);
     LayeredModel_UpdateB((LayeredModel *) scene_object_at(object, SCENE_OBJECT_MODEL));
@@ -509,7 +488,7 @@ void SceneObject_ChangeState(u8 *object, int mode)
 {
     if (mode == SCENE_OBJECT_STATE_START) {
         u32 *flags = scene_object_flags(object);
-        if (func_020a7278() == 0 && (*flags & SCENE_OBJECT_HELD) == 0) {
+        if (LinkGlobal_HoldsScene() == 0 && (*flags & SCENE_OBJECT_HELD) == 0) {
             *flags |= SCENE_OBJECT_HELD;
             object[SCENE_OBJECT_HELD_BY_SHARE] = 1;
         }
@@ -517,7 +496,7 @@ void SceneObject_ChangeState(u8 *object, int mode)
             SceneShare_Publish(object, 1);
         }
     }
-    func_0203f004(object, mode);
+    SceneObjectBase_AfterCreate((SceneObjectBase *) (void *) object, mode);
 }
 CLEAN_AS(func_0201bcec, SceneObject_ChangeState)
 
@@ -527,16 +506,16 @@ CLEAN_AS(func_0201bcec, SceneObject_ChangeState)
  * func_0208239c's answer for the person. Returns 1. */
 int SceneObject_Start(u8 *object)
 {
-    if (func_020a7278() != 0) {
+    if (LinkGlobal_HoldsScene() != 0) {
         SceneShare_SetSlots(object, 1, (u32) data_020ccf94->local_slot, SCENE_SHARE_NO_SLOT);
     }
-    if (func_0201c45c(object) == 0) {
+    if (SceneObject_LoadModel(object) == 0) {
         return 0;
     }
     *(fx32 *) scene_object_at(object, SCENE_OBJECT_MIN_Y_VELOCITY) = SCENE_OBJECT_MIN_Y_VELOCITY_START;
     *(fx32 *) scene_object_at(object, SCENE_OBJECT_GRAVITY) = 0;
     SceneMover_SetAngle((SceneMover *) scene_object_at(object, SCENE_OBJECT_MOVER), scene_object_angle(object));
-    object[SCENE_OBJECT_PERSON_BYTE] = (u8) func_0208239c((u16 *) scene_object_at(object, SCENE_OBJECT_PERSON));
+    object[SCENE_OBJECT_PERSON_BYTE] = (u8) NpcLookup_SpeciesByte((u16 *) scene_object_at(object, SCENE_OBJECT_PERSON));
     return 1;
 }
 CLEAN_AS(func_0201bd48, SceneObject_Start)
@@ -547,13 +526,13 @@ CLEAN_AS(func_0201bd48, SceneObject_Start)
  * (func_0203ed98). Returns 1. */
 int SceneObject_Init(u8 *object)
 {
-    if (func_0203f030(object) == 0) {
+    if (SceneObjectBase_CanCreate((SceneObjectBase *) (void *) object) == 0) {
         return 0;
     }
     u16 person = (u16) * (const u32 *) scene_object_at(object, SCENE_OBJECT_SPAWN_ARG);
-    func_0201c400(object, &person);
+    SceneObject_SetPerson(object, &person);
     *(u32 *) scene_object_at(object, SCENE_OBJECT_SCENE) = 0;
-    func_0201c3f4(object, SCENE_OBJECT_SET_UP_WORD);
+    SceneObject_SetColliderSize(object, SCENE_OBJECT_SET_UP_WORD);
     SceneTalkState_Reset((SceneTalkState *) scene_object_at(object, SCENE_OBJECT_TALK_STATE));
     SceneAction_Init((SceneAction *) scene_object_at(object, SCENE_OBJECT_ACTION));
     ActEffects_Init((ActEffects *) scene_object_at(object, SCENE_OBJECT_EFFECTS));
@@ -570,7 +549,7 @@ int SceneObject_Init(u8 *object)
     object[SCENE_OBJECT_ENABLED] = 1;
     object[SCENE_OBJECT_POSED] = 1;
     *(u32 *) scene_object_at(object, SCENE_OBJECT_HELD_ITEM) = 0;
-    func_0203ed98(object);
+    SceneObjectBase_MarkPerson((SceneObjectBase *) (void *) object);
     return 1;
 }
 CLEAN_AS(func_0201bdb4, SceneObject_Init)
@@ -689,7 +668,7 @@ CLEAN_AS(func_0201c280, SceneObject_SetScene)
 int SceneObject_ActorObject(u8 *object, int actor)
 {
     (void) object;
-    return func_02096190(actor);
+    return SessionPlayers_ActorHandle(actor);
 }
 CLEAN_AS(func_0201c2a4, SceneObject_ActorObject)
 
@@ -708,10 +687,10 @@ void *SceneObject_YawToActor(u8 *object, int actor)
     int yaw = 0;
     u8 scene = 0;
     Vec3 place = {0, 0, 0};
-    if (func_02096614(&scene, &place.x, &place.z, -1, actor) != 0) {
+    if (SessionPlayers_ScenePoint(&scene, (int *) &place.x, (int *) &place.z, -1, actor) != 0) {
         yaw = Vec_YawTo(scene_object_position(object), &place);
     } else {
-        int other = func_02096190(actor);
+        int other = SessionPlayers_ActorHandle(actor);
         if (other != 0) {
             yaw = SceneObject_YawTo(object, (u8 *) (uintptr_t) other);
         }
@@ -733,13 +712,11 @@ CLEAN_AS(func_0201c314, SceneObject_YawTo)
 /* func_0201c330: whether field actor `actor`'s object is nearer the object than `distance`. */
 int SceneObject_IsNearActor(u8 *object, int distance, int actor)
 {
-    return func_0201c350(object, func_02096190(actor), distance);
+    return SceneObject_IsNear(object, (u8 *) (uintptr_t) SessionPlayers_ActorHandle(actor), distance);
 }
 CLEAN_AS(func_0201c330, SceneObject_IsNearActor)
 
 /* ---- Distances, facing, the person and the model */
-
-#include "model_object.h"
 
 #define SCENE_OBJECT_PERSON_INDEX 0x632 /* u16: the person code without its top 4 bits */
 #define SCENE_OBJECT_PERSON_MASK 0x0fff
@@ -748,8 +725,6 @@ CLEAN_AS(func_0201c330, SceneObject_IsNearActor)
 
 /* The unit heap models are loaded from (resource_pools.h). */
 extern Heap *data_021c9ab8;
-/* Sets the word at 0xdc of the object (Base_0203f080) to `value` with its half at 0x0c above. */
-extern void func_0203efb0(void *object, unsigned int value);
 
 /* Whether `value` is nearer 0 than `limit` either way.
  * QUIRK: as the ROM's negation, the most negative value stays negative and counts as near. */
@@ -772,7 +747,7 @@ CLEAN_AS(func_0201c350, SceneObject_IsNear)
 /* func_0201c378: the distance to field actor `actor`'s object (0 without one). */
 int SceneObject_DistanceToActor(u8 *object, int actor)
 {
-    return SceneObject_DistanceTo(object, (u8 *) (uintptr_t) func_02096190(actor));
+    return SceneObject_DistanceTo(object, (u8 *) (uintptr_t) SessionPlayers_ActorHandle(actor));
 }
 CLEAN_AS(func_0201c378, SceneObject_DistanceToActor)
 
@@ -817,7 +792,7 @@ void SceneObject_SetPerson(u8 *object, u16 *code)
     u16 *person = (u16 *) scene_object_at(object, SCENE_OBJECT_PERSON);
     *person = *code;
     SceneObject_SetPersonIndex(object, (u16) (*person & SCENE_OBJECT_PERSON_MASK));
-    func_0203efb0(object, SceneObject_PersonIndex(object));
+    SceneObjectBase_SetId((SceneObjectBase *) (void *) object, SceneObject_PersonIndex(object));
 }
 CLEAN_AS(func_0201c400, SceneObject_SetPerson)
 

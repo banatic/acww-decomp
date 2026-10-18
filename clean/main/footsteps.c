@@ -4,6 +4,10 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "sound_emitter.h"
+#include "effect_system.h"
+#include "frame_ctrl.h"
+#include "ground_sound.h"
+#include "scene_mover.h"
 
 static_assert(offsetof(Footsteps, ground) == 0x04, "Footsteps layout");
 
@@ -44,11 +48,6 @@ typedef struct FootstepMark {
 
 static_assert(offsetof(FootstepMark, at) == 0x04, "FootstepMark layout");
 
-extern s32 func_0201b1a0(void *ground);
-extern int func_02056f28(void *animation, int frame);
-extern int func_020912d4(int effect, const void *at, void *angles, int arg);
-extern int func_020b1cb0(const void *position);
-
 static u8 *footsteps_part(void *object, u32 offset)
 {
     return (u8 *) object + offset;
@@ -59,19 +58,23 @@ static u8 *footsteps_part(void *object, u32 offset)
  * angle alone is set (the rest is what the stack held); here the rest is zero. */
 void Footsteps_Update(Footsteps *steps, void *object)
 {
-    s32 ground = func_0201b1a0(footsteps_part(object, FOOTSTEPS_OBJECT_GROUND));
+    s32 ground = SceneMover_Mode((SceneMover *) (void *) footsteps_part(object, FOOTSTEPS_OBJECT_GROUND));
 
     if (steps->enabled != 0 && (u32) ground - FOOTSTEPS_GROUND_FIRST <= FOOTSTEPS_GROUND_LAST - FOOTSTEPS_GROUND_FIRST) {
         FootstepMark mark = {0};
         mark.angle = *(const s16 *) footsteps_part(object, FOOTSTEPS_OBJECT_ANGLE);
 
         if (steps->ground == 0) {
-            func_020912d4(FOOTSTEPS_EFFECT_MARK, footsteps_part(object, FOOTSTEPS_OBJECT_FOOT_A), &mark, 0);
-            func_020912d4(FOOTSTEPS_EFFECT_MARK, footsteps_part(object, FOOTSTEPS_OBJECT_FOOT_B), &mark, 0);
+            EffectSystem_StartKind(FOOTSTEPS_EFFECT_MARK,
+                                   (const Vec3 *) (void *) footsteps_part(object, FOOTSTEPS_OBJECT_FOOT_A),
+                                   (const s16 *) &mark, 0);
+            EffectSystem_StartKind(FOOTSTEPS_EFFECT_MARK,
+                                   (const Vec3 *) (void *) footsteps_part(object, FOOTSTEPS_OBJECT_FOOT_B),
+                                   (const s16 *) &mark, 0);
         } else {
             void *animation = footsteps_part(object, FOOTSTEPS_OBJECT_BODY_ANIM);
-            int on_a = func_02056f28(animation, FOOTSTEPS_FRAME_A);
-            int on_b = func_02056f28(animation, FOOTSTEPS_FRAME_B);
+            int on_a = FrameCtrl_Passed(animation, FOOTSTEPS_FRAME_A);
+            int on_b = FrameCtrl_Passed(animation, FOOTSTEPS_FRAME_B);
             if (on_a != 0 || on_b != 0) {
                 const Vec3 *foot =
                     (const Vec3 *) footsteps_part(object, on_a != 0 ? FOOTSTEPS_OBJECT_FOOT_A : FOOTSTEPS_OBJECT_FOOT_B);
@@ -80,9 +83,9 @@ void Footsteps_Update(Footsteps *steps, void *object)
                 /* the foot's point at the height of the object */
                 mark.at.y = ((const Vec3 *) footsteps_part(object, FOOTSTEPS_OBJECT_POSITION))->y;
                 if (ground == FOOTSTEPS_GROUND_EXTRA) {
-                    func_020912d4(FOOTSTEPS_EFFECT_EXTRA, &mark.at, &mark.back_angle, 0);
+                    EffectSystem_StartKind(FOOTSTEPS_EFFECT_EXTRA, &mark.at, &mark.back_angle, 0);
                 }
-                func_020912d4(FOOTSTEPS_EFFECT_MARK, &mark.at, &mark, 0);
+                EffectSystem_StartKind(FOOTSTEPS_EFFECT_MARK, &mark.at, (const s16 *) &mark, 0);
                 Footsteps_PlaySound(steps, object);
             }
         }
@@ -100,7 +103,7 @@ void Footsteps_PlaySound(Footsteps *steps, void *object)
         return;
     }
     if (steps->enabled != 0) {
-        int sound = func_020b1cb0(footsteps_part(object, FOOTSTEPS_OBJECT_POSITION));
+        int sound = GroundSound_AtPoint((const Vec3 *) (void *) footsteps_part(object, FOOTSTEPS_OBJECT_POSITION));
         SoundEmitter_PlayAlternating((SoundEmitter *) footsteps_part(object, FOOTSTEPS_OBJECT_SOUND), (u32) sound, 0);
     }
 }

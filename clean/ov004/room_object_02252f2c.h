@@ -6,7 +6,7 @@
  * - ON (1): entered with the switch on and the sound at 2;
  *
  * in either, while the switch has a change pending it requests the other state for the object
- * at its cell (func_0205265c). ON shows it on (vtable slot 0x74).
+ * at its cell (RoomSync_RequestState). ON shows it on (vtable slot 0x74).
  *
  * With RoomObject.unk_780 at 1 its animations of variant 0 run in a loop from a random frame
  * (from the start when RoomObject.unk_76C is 1) and the glows are bound lit. Furniture 0x123,

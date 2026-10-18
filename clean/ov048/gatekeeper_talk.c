@@ -35,6 +35,7 @@
 #include "main/wfc_session.h"
 #include "main/wifi_friends.h"
 #include "ov004/member_pointer.h"
+#include "ov004/check_in_gate.h"
 
 static_assert(offsetof(GatekeeperTalk, saved_message) == 0xae && offsetof(GatekeeperTalk, topic) == 0xb0, "GatekeeperTalk");
 static_assert(offsetof(GatekeeperTalk, state) == 0xb4 && offsetof(GatekeeperTalk, owner) == 0xb8, "GatekeeperTalk");
@@ -108,8 +109,6 @@ extern const MemberPointer data_ov048_02263edc, data_ov048_02263f44, data_ov048_
     data_ov048_02263d3c, data_ov048_02263d2c, data_ov048_02263d44, data_ov048_02263e4c, data_ov048_02263e34,
     data_ov048_02263d74, data_ov048_02263dec, data_ov048_02263ecc, data_ov048_02263d34, data_ov048_02263e44;
 
-/* The scene that leaves for the next line (overlay 4). */
-extern int func_ov004_0222d4f4(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* ---- Helpers */
@@ -1126,7 +1125,7 @@ void GatekeeperTalk_OnAnswerTo59(GatekeeperTalk *talk, int answer)
 }
 CLEAN_AS(func_ov048_02261a14, GatekeeperTalk_OnAnswerTo59)
 
-/* func_ov048_02261a38 (line 0x51): answer 0, line 0x52, overlay 4's func_ov004_0222d4f4 and
+/* func_ov048_02261a38 (line 0x51): answer 0, line 0x52, overlay 4's CheckInGate_Close and
  * the link's status reset; then over the Wi-Fi Connection GATEKEEPER_TALK_END_WFC, else the
  * session ended. */
 void GatekeeperTalk_OnAnswer51(GatekeeperTalk *talk, int answer)
@@ -1135,7 +1134,7 @@ void GatekeeperTalk_OnAnswer51(GatekeeperTalk *talk, int answer)
         return;
     }
     say(talk, 0x52);
-    func_ov004_0222d4f4();
+    CheckInGate_Close();
     Session_ResetLinkStatus();
     if (is_wfc_mode()) {
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_END_WFC);

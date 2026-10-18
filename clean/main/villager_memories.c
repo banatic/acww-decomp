@@ -7,6 +7,12 @@
 #include "date_time.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "player_id.h"
+#include "text_base.h"
+#include "town_name.h"
+#include "town_villager.h"
+#include "villager_mail.h"
+#include "villager_memory_entry.h"
 
 /* VillagerMemory_NameFor: the villager's own name for the player is used only above this. */
 #define VILLAGER_MEMORY_NAME_FONDNESS (-10)
@@ -31,48 +37,8 @@ extern DesignCreator data_021d12f0;
 extern u8 data_021d125c[];
 
 extern void __register_global_object(void *object, void *destruct, void *node);
-extern DesignCreator *func_0209529c(DesignCreator *player);               /* a player's constructor */
-extern int func_0209526c(DesignCreator *player);                          /* a player's destructor */
-extern void func_02095238(DesignCreator *player);                         /* a player emptied */
-extern int func_020951bc(const DesignCreator *player);                    /* whether the player is set */
-extern int func_0209518c(const DesignCreator *a, const DesignCreator *b); /* the same player number and name */
-extern const NpcIdHead *func_02095040(const void *player);                /* the player's town, at its start */
-extern int func_0209871c(void *players, void *player);                    /* the player's index among the town's, or -1 */
-extern void *func_02095074(const DesignCreator *player, void *text);      /* the player's name copied to a text */
-extern u32 func_02064294(const NpcIdHead *head);                          /* whether the head is set */
-extern NpcId *func_0208150c(const void *villager);                        /* the villager's NpcId, at 0x7a0 */
-extern int func_02080cf0(u8 *villager);
-extern int func_02080808(u8 *villager, u32 index); /* whether the index is 0-7 */
+extern int func_0209526c(DesignCreator *player); /* a player's destructor */
 
-/* A memory's parts (villager_memories.h). */
-extern int func_02081d28(const VillagerMemory *memory, const DesignCreator *player); /* the same player */
-extern int func_02081edc(const VillagerMemory *memory);                              /* whether it is in use */
-extern DesignCreator *func_02081d60(VillagerMemory *memory);                         /* its player */
-extern int func_02081cd8(const VillagerMemory *memory);                              /* bit 0 of its flags */
-extern int func_02081c00(const VillagerMemory *memory);                              /* bit 1 */
-extern int func_02081b54(const VillagerMemory *memory);                              /* bit 3 */
-extern int func_02081d20(const VillagerMemory *memory);                              /* how fond the villager is */
-extern DateTime *func_02081e10(VillagerMemory *memory);                              /* its date, at 0x54 */
-extern NpcIdHead *func_02081d64(VillagerMemory *memory);                             /* its town, at 0x5c */
-/* The texts at 0x3e and 0x2a set from up to 10 characters (and bits 3 and 1 of the flags), and
- * copied out to a text object. */
-extern void func_02081ac8(VillagerMemory *memory, const u16 *text, int length);
-extern void func_02081b24(VillagerMemory *memory, void *text);
-extern void func_02081b68(VillagerMemory *memory, const u16 *text, int length);
-extern int func_02081bc4(VillagerMemory *memory, void *text);
-/* What the villager calls the player (0x1e): set from up to 6 characters or from a text
- * object, and copied out to a text object. */
-extern void func_02081c14(VillagerMemory *memory, const u16 *chars, int length);
-extern void *func_02081c40(VillagerMemory *memory, void *text);
-extern void func_02081c94(VillagerMemory *memory, void *text);
-/* The memory taken for the player: emptied, then the player, two values and the player's name
- * as what the villager calls it. 0 when the player is not set. */
-extern int func_02081e94(VillagerMemory *memory, DesignCreator *player, int a, int b);
-/* Text objects. */
-extern void *func_02094fd4(void *text);                 /* constructor */
-extern void *func_02094fbc(void *text);                 /* destructor */
-extern void func_020a8c1c(void *text);                  /* emptied */
-extern int func_020a89ac(const void *a, const void *b); /* whether both hold the same string */
 /* The game's tests of a memory's player, handed to VillagerMemory_PickToReplace. */
 extern int func_0208053c(void *player, void *town, void *players);
 extern int func_02080578(void *player, void *town, void *players);
@@ -93,7 +59,7 @@ void VillagerMemory_SetText3E(u8 *villager, const u16 *text, int length, const D
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        func_02081ac8(memory, text, length);
+        VillagerMemoryEntry_SetText3E(memory, text, length);
     }
 }
 CLEAN_AS(func_02080108, VillagerMemory_SetText3E)
@@ -103,8 +69,8 @@ CLEAN_AS(func_02080108, VillagerMemory_SetText3E)
 int VillagerMemory_GetText3E(u8 *villager, void *text, const DesignCreator *player)
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
-    if (memory != NULL && func_020951bc(player) && func_02081b54(memory)) {
-        func_02081b24(memory, text);
+    if (memory != NULL && PlayerId_IsSet((DesignCreator *) player) && VillagerMemoryEntry_Text3ESet(memory)) {
+        VillagerMemoryEntry_Text3EToLabel(memory, text);
         return 1;
     }
     return 0;
@@ -117,7 +83,7 @@ void VillagerMemory_SetText2A(u8 *villager, const u16 *text, int length, const D
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        func_02081b68(memory, text, length);
+        VillagerMemoryEntry_SetText2A(memory, text, length);
     }
 }
 CLEAN_AS(func_0208016c, VillagerMemory_SetText2A)
@@ -131,15 +97,15 @@ int VillagerMemory_GetText2A(u8 *villager, void *text, const DesignCreator *play
     if (memory == NULL) {
         return 0;
     }
-    int result = func_020951bc(player);
+    int result = PlayerId_IsSet((DesignCreator *) player);
     if (result == 0) {
         return 0;
     }
-    result = func_02081c00(memory);
+    result = VillagerMemoryEntry_Text2ASet(memory);
     if (result == 0) {
         return 0;
     }
-    return func_02081bc4(memory, text);
+    return (int) (uintptr_t) VillagerMemoryEntry_Text2AToLabel(memory, text);
 }
 CLEAN_AS(func_02080190, VillagerMemory_GetText2A)
 
@@ -155,42 +121,42 @@ void VillagerMemory_ShareNickname(u8 *villager_a, u8 *villager_b, u8 *record)
         return;
     }
     DesignCreator *player = PlayerRecord_Player(record);
-    if (!func_020951bc(player)) {
+    if (!PlayerId_IsSet(player)) {
         return;
     }
-    if (!NpcId_IsValid(func_0208150c(villager_a)) || !NpcId_IsValid(func_0208150c(villager_b))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager_a)) || !NpcId_IsValid(TownVillager_NpcId(villager_b))) {
         return;
     }
     VillagerMemory *memory_b = VillagerMemory_Of(villager_b, player);
     VillagerMemory *memory_a = VillagerMemory_Of(villager_a, player);
     VillagerMemoryText nickname;
     VillagerMemoryWideText name;
-    func_02094fd4(&nickname);
-    func_02094fd4(&name);
+    PlayerIdText_Construct((PlayerIdText *) &nickname);
+    PlayerIdText_Construct((PlayerIdText *) &name);
     if (memory_b != NULL && memory_a != NULL) {
         VillagerMemory *from = NULL;
         VillagerMemory *to = NULL;
-        func_02095074(player, &name);
-        func_02081c94(memory_b, &nickname);
-        if (!func_020a89ac(&name, &nickname)) {
+        PlayerId_NameToText(player, (TextBase *) &name);
+        VillagerMemoryEntry_NicknameToLabel(memory_b, &nickname);
+        if (!TextBase_Equals((TextBase *) &name, (TextBase *) &nickname)) {
             from = memory_b;
             to = memory_a;
         } else {
-            func_020a8c1c(&nickname);
-            func_02081c94(memory_a, &nickname);
-            if (!func_020a89ac(&name, &nickname)) {
+            TextBase_Clear(&nickname);
+            VillagerMemoryEntry_NicknameToLabel(memory_a, &nickname);
+            if (!TextBase_Equals((TextBase *) &name, (TextBase *) &nickname)) {
                 from = memory_a;
                 to = memory_b;
             }
         }
         if (from != NULL && to != NULL) {
-            func_020a8c1c(&nickname);
-            func_02081c94(from, &nickname);
-            func_02081c40(to, &nickname);
+            TextBase_Clear(&nickname);
+            VillagerMemoryEntry_NicknameToLabel(from, &nickname);
+            VillagerMemoryEntry_SetNickname(to, &nickname);
         }
     }
-    func_02094fbc(&name);
-    func_02094fbc(&nickname);
+    PlayerIdText_Destruct((PlayerIdText *) &name);
+    PlayerIdText_Destruct((PlayerIdText *) &nickname);
 }
 CLEAN_AS(func_020801c4, VillagerMemory_ShareNickname)
 
@@ -200,7 +166,7 @@ VillagerMemory *VillagerMemory_SetNicknameChars(u8 *villager, const u16 *chars, 
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        func_02081c14(memory, chars, length);
+        VillagerMemoryEntry_SetNicknameChars(memory, chars, length);
     }
     return memory;
 }
@@ -212,7 +178,7 @@ VillagerMemory *VillagerMemory_SetNickname(u8 *villager, void *text, const Desig
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        func_02081c40(memory, text);
+        VillagerMemoryEntry_SetNickname(memory, text);
     }
     return memory;
 }
@@ -223,10 +189,10 @@ CLEAN_AS(func_020802c8, VillagerMemory_SetNickname)
 void VillagerMemory_NameFor(u8 *villager, void *text, DesignCreator *player)
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
-    if (memory != NULL && func_020951bc(player) && func_02081d20(memory) > VILLAGER_MEMORY_NAME_FONDNESS) {
-        func_02081c94(memory, text);
+    if (memory != NULL && PlayerId_IsSet(player) && VillagerMemoryEntry_Fondness(memory) > VILLAGER_MEMORY_NAME_FONDNESS) {
+        VillagerMemoryEntry_NicknameToLabel(memory, text);
     } else {
-        func_02095074(player, text);
+        PlayerId_NameToText(player, text);
     }
 }
 CLEAN_AS(func_020802ec, VillagerMemory_NameFor)
@@ -237,10 +203,10 @@ CLEAN_AS(func_020802ec, VillagerMemory_NameFor)
  * minutes from `now`. 0 on a tie or with A's NpcId not valid. */
 int VillagerMemory_RanksAbove(u8 *villager_a, u8 *villager_b, const DateTime *now)
 {
-    if (!NpcId_IsValid(func_0208150c(villager_a))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager_a))) {
         return 0;
     }
-    if (!NpcId_IsValid(func_0208150c(villager_b))) {
+    if (!NpcId_IsValid(TownVillager_NpcId(villager_b))) {
         return 1;
     }
     int known_a = VillagerMemory_CountKnown(villager_a);
@@ -248,8 +214,8 @@ int VillagerMemory_RanksAbove(u8 *villager_a, u8 *villager_b, const DateTime *no
     if (known_a != known_b) {
         return known_a > known_b;
     }
-    int has_a = func_02080cf0(villager_a) != 0;
-    int has_b = func_02080cf0(villager_b) != 0;
+    int has_a = VillagerMail_HasHeldLetter(villager_a) != 0;
+    int has_b = VillagerMail_HasHeldLetter(villager_b) != 0;
     if (has_a != has_b) {
         return has_a;
     }
@@ -269,7 +235,7 @@ int VillagerMemory_CountKnown(u8 *villager)
 {
     int count = 0;
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
-        if (func_02081edc(memory_at(villager, i))) {
+        if (VillagerMemoryEntry_InUse(memory_at(villager, i))) {
             count++;
         }
     }
@@ -284,19 +250,19 @@ CLEAN_AS(func_020803e0, VillagerMemory_CountKnown)
 int VillagerMemory_ListOthers(u8 *villager, VillagerMemory **out, const DesignCreator *player, int which)
 {
     int count = 0;
-    if (!func_020951bc(player)) {
+    if (!PlayerId_IsSet((DesignCreator *) player)) {
         return 0;
     }
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
         VillagerMemory *memory = memory_at(villager, i);
-        if (!func_02081edc(memory) || func_02081d28(memory, player)) {
+        if (!VillagerMemoryEntry_InUse(memory) || VillagerMemoryEntry_IsPlayer(memory, player)) {
             continue;
         }
         int listed;
         if (which == VILLAGER_MEMORY_LIST_THIS_TOWN) {
-            listed = same_town(func_02081d64(memory), &data_021dc7aa);
+            listed = same_town((const NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory), &data_021dc7aa);
         } else if (which == VILLAGER_MEMORY_LIST_OTHER_TOWNS) {
-            listed = !same_town(func_02081d64(memory), &data_021dc7aa);
+            listed = !same_town((const NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory), &data_021dc7aa);
         } else {
             listed = 1;
         }
@@ -321,7 +287,7 @@ VillagerMemory *VillagerMemory_Meet(u8 *villager, DesignCreator *player)
     if (memory == NULL) {
         return NULL;
     }
-    func_02081e94(memory, player, 0, 0);
+    VillagerMemoryEntry_Take(memory, player, 0, 0);
     return memory;
 }
 CLEAN_AS(func_020804b8, VillagerMemory_Meet)
@@ -359,7 +325,7 @@ CLEAN_AS(func_0208052c, VillagerMemory_OtherTownIndex)
 int VillagerMemory_IsOtherTown(void *player, void *town, void *players)
 {
     (void) players;
-    return !same_town((const NpcIdHead *) town, func_02095040(player));
+    return !same_town((const NpcIdHead *) town, (const NpcIdHead *) PlayerId_Town(player));
 }
 CLEAN_AS(func_0208053c, VillagerMemory_IsOtherTown)
 
@@ -373,11 +339,11 @@ CLEAN_AS(func_02080568, VillagerMemory_FormerPlayerIndex)
 /* func_02080578: whether the player is of `town` but not among its players. */
 int VillagerMemory_IsFormerPlayer(u16 *player, u16 *town, void *players)
 {
-    const NpcIdHead *own = func_02095040(player);
+    const NpcIdHead *own = (const NpcIdHead *) PlayerId_Town((DesignCreator *) player);
     if (!same_town((const NpcIdHead *) (void *) town, own)) {
         return 0;
     }
-    return func_0209871c(players, player) == -1;
+    return PlayerRecords_FindIndex(players, (const PlayerRecordsId *) player) == -1;
 }
 CLEAN_AS(func_02080578, VillagerMemory_IsFormerPlayer)
 
@@ -388,43 +354,43 @@ CLEAN_AS(func_02080578, VillagerMemory_IsFormerPlayer)
 int VillagerMemory_PickToReplace(VillagerMemory *memories, VillagerMemoryTest test)
 {
     int best = VILLAGER_MEMORY_NONE;
-    if (!func_02064294(&data_021dc7aa)) {
+    if (!TownName_IsSet((const u16 *) &data_021dc7aa)) {
         return best;
     }
     VillagerMemory *chosen = NULL;
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
         VillagerMemory *memory = &memories[i];
-        if (!func_02081edc(memory)) {
+        if (!VillagerMemoryEntry_InUse(memory)) {
             continue;
         }
-        if (!test(func_02081d60(memory), (void *) (uintptr_t) &data_021dc7aa, data_021dc7bc)) {
+        if (!test(VillagerMemoryEntry_Player(memory), (void *) (uintptr_t) &data_021dc7aa, data_021dc7bc)) {
             continue;
         }
         int take;
         if (chosen == NULL) {
             take = 1;
         } else {
-            int chosen_bit = func_02081cd8(chosen);
-            int memory_bit = func_02081cd8(memory);
+            int chosen_bit = VillagerMemoryEntry_LetterHeld(chosen);
+            int memory_bit = VillagerMemoryEntry_LetterHeld(memory);
             if (chosen_bit == memory_bit) {
-                int chosen_fond = func_02081d20(chosen);
-                int memory_fond = func_02081d20(memory);
+                int chosen_fond = VillagerMemoryEntry_Fondness(chosen);
+                int memory_fond = VillagerMemoryEntry_Fondness(memory);
                 if (chosen_fond > memory_fond) {
                     take = 1;
                 } else {
-                    chosen_fond = func_02081d20(chosen);
-                    memory_fond = func_02081d20(memory);
+                    chosen_fond = VillagerMemoryEntry_Fondness(chosen);
+                    memory_fond = VillagerMemoryEntry_Fondness(memory);
                     take = 0;
                     if (chosen_fond == memory_fond) {
-                        DateTime *chosen_when = func_02081e10(chosen);
-                        DateTime *memory_when = func_02081e10(memory);
+                        DateTime *chosen_when = (DateTime *) (uintptr_t) VillagerMemoryEntry_When(chosen);
+                        DateTime *memory_when = (DateTime *) (uintptr_t) VillagerMemoryEntry_When(memory);
                         take = DateTime_Compare(chosen_when, memory_when,
                                                 DATE_TIME_YEAR | DATE_TIME_MONTH | DATE_TIME_DAY | DATE_TIME_HOUR |
                                                     DATE_TIME_MINUTE | DATE_TIME_SECOND) == 1;
                     }
                 }
             } else {
-                take = func_02081cd8(memory) == 0;
+                take = VillagerMemoryEntry_LetterHeld(memory) == 0;
             }
         }
         if (take) {
@@ -443,10 +409,10 @@ int VillagerMemory_NearestMinutes(u8 *villager, const DateTime *now)
     int nearest = 0x7fffffff;
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
         VillagerMemory *memory = memory_at(villager, i);
-        if (!func_02081edc(memory)) {
+        if (!VillagerMemoryEntry_InUse(memory)) {
             continue;
         }
-        const DateTime *when = func_02081e10(memory);
+        const DateTime *when = (const DateTime *) (uintptr_t) VillagerMemoryEntry_When(memory);
         int order = DateTime_Compare(now, when,
                                      DATE_TIME_YEAR | DATE_TIME_MONTH | DATE_TIME_DAY | DATE_TIME_HOUR | DATE_TIME_MINUTE |
                                          DATE_TIME_SECOND);
@@ -473,8 +439,8 @@ int VillagerMemory_MostFond(u8 *villager)
     int most = VILLAGER_MEMORY_FONDNESS_MIN;
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
         VillagerMemory *memory = memory_at(villager, i);
-        if (func_02081edc(memory)) {
-            int fondness = func_02081d20(memory);
+        if (VillagerMemoryEntry_InUse(memory)) {
+            int fondness = VillagerMemoryEntry_Fondness(memory);
             if (fondness > most) {
                 most = fondness;
             }
@@ -489,7 +455,7 @@ CLEAN_AS(func_020806f8, VillagerMemory_MostFond)
 int VillagerMemory_IndexOfPlayer(u8 *villager, const DesignCreator *player)
 {
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
-        if (func_0209518c(func_02081d60(memory_at(villager, i)), player)) {
+        if (PlayerId_SamePlayer(VillagerMemoryEntry_Player(memory_at(villager, i)), player)) {
             return i;
         }
     }
@@ -501,11 +467,11 @@ CLEAN_AS(func_02080728, VillagerMemory_IndexOfPlayer)
 int VillagerMemory_FreeIndex(u8 *villager)
 {
     if ((data_021d1240 & 1) == 0) {
-        func_0209529c(&data_021d12f0);
+        PlayerId_Construct(&data_021d12f0);
         __register_global_object(&data_021d12f0, (void *) (uintptr_t) func_0209526c, data_021d125c);
         data_021d1240 |= 1;
     }
-    func_02095238(&data_021d12f0);
+    PlayerId_Clear(&data_021d12f0);
     return VillagerMemory_IndexOf(villager, &data_021d12f0);
 }
 CLEAN_AS(func_02080758, VillagerMemory_FreeIndex)
@@ -520,7 +486,7 @@ CLEAN_AS(func_020807a8, VillagerMemory_Of)
 /* func_020807c0: memory `index`, or NULL for an index past 0-7. */
 VillagerMemory *VillagerMemory_At(u8 *villager, int index)
 {
-    if (!func_02080808(villager, (u32) index)) {
+    if (!TownVillager_IsMemoryIndex(villager, (u32) index)) {
         return NULL;
     }
     return memory_at(villager, index);
@@ -532,7 +498,7 @@ CLEAN_AS(func_020807c0, VillagerMemory_At)
 int VillagerMemory_IndexOf(u8 *villager, const DesignCreator *player)
 {
     for (int i = 0; i < VILLAGER_MEMORIES; i++) {
-        if (func_02081d28(memory_at(villager, i), player)) {
+        if (VillagerMemoryEntry_IsPlayer(memory_at(villager, i), player)) {
             return i;
         }
     }

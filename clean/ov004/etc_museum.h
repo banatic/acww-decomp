@@ -3,13 +3,13 @@
  * exhibits of a list and who gave them, from the museum's record (main/museum_record.h,
  * data_021f38f8).
  *
- * func_ov004_022453c0 makes them (EtcMuseum_Spawn) with a kind, a list of exhibits (numbers
+ * MuseumSetup_SpawnSpots makes them (EtcMuseum_Spawn) with a kind, a list of exhibits (numbers
  * within one group of the record), the angle the player may face away from it by and a message.
- * The kind picks the record's group the exhibits are in (func_ov004_0221bad0 makes the item
+ * The kind picks the record's group the exhibits are in (EtcMuseum_MakeItems makes the item
  * codes):
  *   0  group C (0x12b0 on), 1  group B (0x12e8 on), 2  group D (0x3894 on, 4 apart),
  *   3  group A (0x450c on, 4 apart);
- *   4  a lone one (EtcMuseum_SpawnLone, from func_ov004_02241e88) with no exhibits, put before
+ *   4  a lone one (EtcMuseum_SpawnLone, from InsectMotion_UpdateHopper) with no exhibits, put before
  *      this console's player when it is created; it asks for an event about itself once, says
  *      who gave item 0x12e4 (or that nobody did) and is deleted after.
  * Up to 32 of kinds 0-3 exist at once: a table at data_ov004_0225797c holds them by their index

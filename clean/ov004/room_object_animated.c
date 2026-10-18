@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "room_object_anims.h"
 #include "room_object_life.h"
+#include "main/item_info.h"
 
 static_assert(offsetof(AnimatedRoomObject, start_frame) == 0x844, "start frame");
 static_assert(sizeof(AnimatedRoomObject) == 0x848, "the size AnimatedRoomObject_Create allocates");
@@ -13,8 +14,6 @@ static_assert(sizeof(AnimatedRoomObject) == 0x848, "the size AnimatedRoomObject_
 /* The class's vtables, and its receiver part's. */
 extern const u8 data_ov004_022526f8[];
 extern const u8 data_ov004_022527a4[];
-
-extern int func_02062b14(void);
 
 /* func_ov004_022115ac (vtable slot 0x0c) */
 int AnimatedRoomObject_Vfunc0C(void)
@@ -31,11 +30,11 @@ int AnimatedRoomObject_Vfunc80(void)
 CLEAN_AS(func_ov004_022115b0, AnimatedRoomObject_Vfunc80)
 
 /* func_ov004_022115b4 (vtable slot 0x7c, once the model is bound): its animations of variant 0
- * from the frame func_02062b14 gives (kept in start_frame, cut to 16 bits), advanced once;
+ * from the frame ItemInfo_Zero gives (kept in start_frame, cut to 16 bits), advanced once;
  * done at once. */
 int AnimatedRoomObject_StartAnims(AnimatedRoomObject *object)
 {
-    object->start_frame = func_02062b14();
+    object->start_frame = ItemInfo_Zero();
     RoomObject_LoadAnims(&object->base, 0, 0, 0, (u16) object->start_frame);
     RoomObject_AdvanceAnims(&object->base);
     return 1;

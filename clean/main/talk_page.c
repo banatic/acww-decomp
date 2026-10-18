@@ -10,6 +10,9 @@
 #include "message_walker.h"
 #include "text_codes.h"
 #include "text_draw.h"
+#include "talk_box.h"
+#include "talk_object.h"
+#include "talk_receiver.h"
 
 static_assert(offsetof(TalkPage, used) == 0x400, "page used");
 static_assert(offsetof(TalkPage, lines) == 0x410, "page lines");
@@ -43,12 +46,6 @@ static_assert(sizeof(TalkPageMeasurer) == 0x54, "measurer");
 #define TALK_PAGE_PARTICLE_RO 6
 
 extern void MI_CpuFill8(void *dst, int value, unsigned int size);
-
-/* The box colour of a line colour: 9 as 2, then plus one. */
-extern unsigned char func_02068bc8(int colour);
-/* 1 when the setting func_0203d4a8 reads is off: the characters after a 0xff/2 tag are shown,
- * else the tag's own text. */
-extern int func_02068114(void);
 
 /* func_0206c038: the line being written marked for drawing. */
 void TalkPage_MarkLine(TalkPage *page)
@@ -85,7 +82,7 @@ void TalkPage_Update(TalkPage *page)
         box->text = (const char *) (uintptr_t) *talk_page_word(page, offsetof(TalkPage, line_start) + 4 * i);
         box->unk_14 = 0;
         box->offset = *talk_page_word(page, offsetof(TalkPage, offset) + 4 * i);
-        box->color = func_02068bc8((int) *talk_page_word(page, offsetof(TalkPage, colour) + 4 * i));
+        box->color = TalkBox_TextColour((int) *talk_page_word(page, offsetof(TalkPage, colour) + 4 * i));
         TextDraw_RequestDraw(box);
         *dirty = 0;
     }
@@ -279,7 +276,7 @@ void TalkPageMeasurer_AltText(TalkPageMeasurer *measurer)
     s32 end;
     const s8 *text;
     MessageTag_SplitParams(&measurer->tag, &count, &end, &text);
-    if (func_02068114() == 0) {
+    if (TalkObject_OptionFlagOff() == 0) {
         u32 start = (u32) (uintptr_t) text;
         MessageWalker_Skip(&measurer->walker.base, (int) (count << 1));
         MessageWalker_Enter(&measurer->walker.base, (int) start);
@@ -391,7 +388,6 @@ extern int func_020679b0(u8 *talk);
 extern int func_02067a3c(u8 *talk);
 extern int func_02067a74(u8 *talk);
 extern int func_020679fc(u8 *talk);
-extern int func_020676d0(u8 *talk);
 /* The talk's texts of the date and time it began, each set and answered by these: the second,
  * the minute, the hour on a 12-hour clock, the weekday's name, the day, the month and the
  * year. */
@@ -402,8 +398,6 @@ extern void *func_02068010(u8 *talk);
 extern void *func_02068034(u8 *talk);
 extern void *func_02068058(u8 *talk);
 extern void *func_0206807c(u8 *talk);
-/* The text of the receiver's name (the receiver plus 0x20). */
-extern void *func_020668d4(void *receiver);
 
 /* The tables of the handlers (function-local statics of the game, filled on the first call):
  * the guard, the table, and the constants it is filled from. */
@@ -826,9 +820,9 @@ CLEAN_AS(func_0206cb88, TalkPageMeasurer_PutCatchphrase)
 void TalkPageMeasurer_PutReceiverName(TalkPageMeasurer *measurer)
 {
     void *receiver = *(void **) (void *) talk_page_talk_at(measurer, TALK_PAGE_TALK_RECEIVER);
-    MessageWalker_Enter(&measurer->walker.base, talk_page_characters(func_020668d4(receiver)));
+    MessageWalker_Enter(&measurer->walker.base, talk_page_characters(TalkReceiver_SpeakerName(receiver)));
     MailParticles_TakeLastSyllable(talk_page_particles(measurer),
-                                   (const char *) (uintptr_t) talk_page_characters(func_020668d4(receiver)));
+                                   (const char *) (uintptr_t) talk_page_characters(TalkReceiver_SpeakerName(receiver)));
     talk_page_particles(measurer)->ro_after_rieul = 0;
 }
 CLEAN_AS(func_0206cbd8, TalkPageMeasurer_PutReceiverName)
@@ -854,7 +848,7 @@ void TalkPageMeasurer_RememberedText(TalkPageMeasurer *measurer)
     if (end == 0) {
         return;
     }
-    if (func_020676d0(measurer->talk) == 0) {
+    if (TalkObject_LoadMemory((TalkObject *) (void *) measurer->talk) == 0) {
         return;
     }
     MessageWalker_Skip(&measurer->walker.base, end - position);

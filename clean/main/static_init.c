@@ -127,6 +127,10 @@
 #include "wfc_delivery.h"
 #include "wfc_stats.h"
 #include "wireless_icon.h"
+#include "letter.h"
+#include "mail_part_texts.h"
+#include "session_players.h"
+#include "town_acre_count.h"
 
 /* ---- What the initialisers share */
 
@@ -368,13 +372,12 @@ CLEAN_AS(__sinit_020c4270, StaticInit_SceneObjectTables)
  * constructor and destructor (they set its vtable word). */
 extern u8 data_021c2604[];
 extern StaticInitRecord data_021c1d28;
-extern void func_02066694(void *letter);
 extern void func_02066688(void *letter);
 
 /* __sinit_020c4a80: the villagers' talk's letter. */
 void StaticInit_TalkLetter(void)
 {
-    func_02066694(data_021c2604);
+    Letter_Construct((Letter *) (void *) data_021c2604);
     static_init_register(data_021c2604, func_02066688, &data_021c1d28);
 }
 CLEAN_AS(__sinit_020c4a80, StaticInit_TalkLetter)
@@ -694,7 +697,6 @@ extern StaticInitObject79c4 data_021c79c4;
 extern TileRequests data_021c7c48;
 extern StaticInitRecord data_021c777c, data_021c7770;
 extern void func_0204b184(void *town);   /* an empty destructor */
-extern void func_0204b160(void *words);  /* clears three words and sets them to -1 */
 extern void func_0204b170(void *object); /* the object's destructor */
 extern void func_020012e0(void *pair);   /* WordPair_Construct: both words -1 */
 
@@ -710,7 +712,7 @@ void StaticInit_TownObjects(void)
     static_init_register(data_021c779c, func_0204b184, &data_021c777c);
 
     StaticInitObject79c4 *object = &data_021c79c4;
-    func_0204b160(object->unk_18);
+    TownAcreCount_InitWorst((TownAcreWorst *) object->unk_18);
     for (int i = 0; i < 4; i++) {
         object->unk_34[i] = 0;
     }
@@ -1111,13 +1113,12 @@ CLEAN_AS(__sinit_020c5a78, StaticInit_MainRandom)
 extern ItemInfoFiles data_021cb5e0;
 extern u16 data_021cb5b0;
 extern StaticInitRecord data_021cb5c8, data_021cb5d4;
-extern void *func_02062d7c(void *files); /* the files' constructor */
-extern void func_02062d44(void *files);  /* the files' destructor */
+extern void func_02062d44(void *files); /* the files' destructor */
 
 /* __sinit_020c5aa0: the items' info files, and the item code (none). */
 void StaticInit_ItemInfo(void)
 {
-    func_02062d7c(&data_021cb5e0);
+    ItemInfoFiles_Construct(&data_021cb5e0);
     static_init_register(&data_021cb5e0, func_02062d44, &data_021cb5c8);
     data_021cb5b0 = STATIC_INIT_NO_ITEM;
     static_init_register(&data_021cb5b0, func_020051b0, &data_021cb5d4);
@@ -1137,9 +1138,6 @@ CLEAN_AS(__sinit_020c5ae4, StaticInit_Colours5ae4)
  * records, constructors and destructors. */
 extern u8 data_021cd8c4[], data_021cd9b0[], data_021cd8ec[];
 extern StaticInitRecord data_021cd8a0, data_021cd8b8, data_021cd894;
-extern void *func_0206daf8(void *text);
-extern void *func_0206da98(void *text);
-extern void *func_0206da38(void *text);
 extern void func_0206dae0(void *text);
 extern void func_0206da80(void *text);
 extern void func_0206da20(void *text);
@@ -1148,11 +1146,11 @@ extern void func_0206da20(void *text);
  * data_020df228). */
 void StaticInit_Texts5b40(void)
 {
-    func_0206daf8(data_021cd8c4);
+    MailSuperText_Construct((MailSuperText *) (void *) data_021cd8c4);
     static_init_register(data_021cd8c4, func_0206dae0, &data_021cd8a0);
-    func_0206da98(data_021cd9b0);
+    MailMsgText_Construct((MailMsgText *) (void *) data_021cd9b0);
     static_init_register(data_021cd9b0, func_0206da80, &data_021cd8b8);
-    func_0206da38(data_021cd8ec);
+    MailPsText_Construct((MailPsText *) (void *) data_021cd8ec);
     static_init_register(data_021cd8ec, func_0206da20, &data_021cd894);
 }
 CLEAN_AS(__sinit_020c5b40, StaticInit_Texts5b40)
@@ -1197,7 +1195,7 @@ void StaticInit_OverlayGroups(void)
 {
     data_021cfca0.first = NULL;
     data_021cfca0.last = NULL;
-    func_02066694(data_021cfd68);
+    Letter_Construct((Letter *) (void *) data_021cfd68);
     static_init_register(data_021cfd68, func_02066688, &data_021cfcc0);
     data_021cfc98[0] = 0;
     data_021cfc98[1] = 0;
@@ -1426,9 +1424,8 @@ static void static_init_tile(EventWinnerTile *tile, int x, int z)
 
 /* __sinit_020c6194: the fourteen tiles around a house, the eight next to a tile, and the
  * object at data_021d27ac.
- * The start-up code constructs that object with func_02086198 and registers func_02086158 as
- * its destructor: of the two names block_021d27ac.c gives them, Block021d27ac_Destruct is the
- * constructor. */
+ * The start-up code constructs that object (Block021d27ac_Construct, func_02086198) and
+ * registers its destructor, func_02086158. */
 void StaticInit_EventWinnerTiles(void)
 {
     static_init_tile(&data_021d2820[0], -3, -2);
@@ -1453,7 +1450,7 @@ void StaticInit_EventWinnerTiles(void)
     static_init_tile(&data_021d27e0[5], 1, -1);
     static_init_tile(&data_021d27e0[6], -1, 1);
     static_init_tile(&data_021d27e0[7], 1, 1);
-    Block021d27ac_Destruct(&data_021d27ac);
+    Block021d27ac_Construct(&data_021d27ac);
     static_init_register(&data_021d27ac, func_02086158, &data_021d27a0);
 }
 CLEAN_AS(__sinit_020c6194, StaticInit_EventWinnerTiles)
@@ -1526,13 +1523,12 @@ CLEAN_AS(__sinit_020c6344, StaticInit_ExchangeBlocks)
  * on the object itself), with its record and destructor. */
 extern u8 data_021d5684[];
 extern StaticInitRecord data_021d5678;
-extern void *func_020962f8(void *object);
 extern void func_020962dc(void *object);
 
 /* __sinit_020c636c: the object at data_021d5684. */
 void StaticInit_Object5684(void)
 {
-    func_020962f8(data_021d5684);
+    SessionPlayers_Construct((SessionPlayers *) (void *) data_021d5684);
     static_init_register(data_021d5684, func_020962dc, &data_021d5678);
 }
 CLEAN_AS(__sinit_020c636c, StaticInit_Object5684)
@@ -1612,7 +1608,6 @@ extern void func_020980a4(void *box);   /* a mailbox's destructor */
 extern void func_0203a690(void *part);  /* a part at 0x16800's constructor */
 extern void func_0203a68c(void *part);  /* its destructor */
 extern void func_0209f1a8(void *block); /* StateBlock_Destruct */
-extern void *func_020901d8(void *part); /* the part at 0x11c70's constructor */
 
 /* __sinit_020c64e8: the state block's parts constructed from the first to the last (the
  * mailboxes and the parts at 0x16800 as arrays, by __cxa_vec_ctor), then the block registered
@@ -1628,7 +1623,7 @@ void StaticInit_StateBlock(void)
     DayPlan_Construct(&block->part_0f52b);
     HouseRecord_Construct((HouseRecord *) block->part_0f52c);
     ShopDesigns_Construct((ShopDesigns *) block->shop_designs);
-    func_020901d8(block->part_11c70);
+    ExchangeBlock_Construct((ExchangeBlock *) (void *) block->part_11c70);
     Bbs_Construct((Bbs *) block->bbs);
     __cxa_vec_ctor(block->mailboxes, STATE_BLOCK_PLAYERS, sizeof(block->mailboxes[0]), func_020980c4, func_020980a4);
     MailPostOffice_Construct((MailPostOffice *) block->post_office);

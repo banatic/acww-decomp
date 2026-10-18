@@ -17,10 +17,6 @@ extern void VEC_Normalize(const Vec3 *src, Vec3 *dst);
 /* NitroSDK: `product` = `a` x `b`. */
 extern void VEC_CrossProduct(const Vec3 *a, const Vec3 *b, Vec3 *product);
 
-/* Math_SqrtRounded by the game's own symbol: it reaches the hardware, so it stays the ROM's
- * code and its callers go through the game's address. */
-extern fx32 func_020eacf8(s64 value);
-
 /* Sine and cosine of each of 4096 angles, interleaved (NitroSDK's table). */
 extern const fx16 FX_SinCosTable_[4096 * 2];
 
@@ -183,14 +179,14 @@ CLEAN_AS(func_020ea970, Vec_LengthSquaredXZ)
  * bits. */
 fx32 Vec_DistanceXZ(const Vec3 *a, const Vec3 *b)
 {
-    return func_020eacf8((s64) (square64(sub32(a->x, b->x)) + square64(sub32(a->z, b->z))));
+    return Math_SqrtRounded((s64) (square64(sub32(a->x, b->x)) + square64(sub32(a->z, b->z))));
 }
 CLEAN_AS(func_020ea990, Vec_DistanceXZ)
 
 /* func_020ea9c8: `v`'s length in the ground plane. */
 fx32 Vec_LengthXZ(const Vec3 *v)
 {
-    return func_020eacf8((s64) (square64(v->x) + square64(v->z)));
+    return Math_SqrtRounded((s64) (square64(v->x) + square64(v->z)));
 }
 CLEAN_AS(func_020ea9c8, Vec_LengthXZ)
 
@@ -198,7 +194,7 @@ CLEAN_AS(func_020ea9c8, Vec_LengthXZ)
 fx32 Vec_Distance(const Vec3 *a, const Vec3 *b)
 {
     u64 sum = square64(sub32(a->x, b->x)) + square64(sub32(a->y, b->y)) + square64(sub32(a->z, b->z));
-    return func_020eacf8((s64) sum);
+    return Math_SqrtRounded((s64) sum);
 }
 CLEAN_AS(func_020ea9e4, Vec_Distance)
 

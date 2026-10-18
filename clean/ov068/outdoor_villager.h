@@ -149,10 +149,6 @@ int OutdoorVillagerBehaviour_Resume(OutdoorVillagerBehaviour *self, u8 *villager
 /* The behaviour running saved to resume, and the one to resume set. */
 void OutdoorVillagerBehaviour_SaveResume(OutdoorVillagerBehaviour *self);
 void OutdoorVillagerBehaviour_SetResume(OutdoorVillagerBehaviour *self, int index);
-/* Whether behaviour `index` runs. */
-extern int func_ov068_0226cbe4(OutdoorVillagerBehaviour *self, int index);
-/* The cooldown set to data_ov068_0227673c (1200). */
-extern void func_ov068_0226cbf4(OutdoorVillagerBehaviour *self);
 /* Whether behaviour 0 runs and the cooldown is out. */
 int OutdoorVillagerBehaviour_IsIdle(OutdoorVillagerBehaviour *self);
 /* The member's destructor. */
@@ -165,10 +161,6 @@ u8 OutdoorVillagerRecords_Byte18(u8 *villager);
 VillagerTally *OutdoorVillagerRecords_Tally(u8 *villager);
 /* Its memory of this console's player (VillagerMemory_Of), or null. */
 VillagerMemory *OutdoorVillagerRecords_MemoryOfPlayer(u8 *villager);
-/* Whether this console's player shows an insect or a fish (items 0x12b0 to 0x131f). */
-extern int func_ov068_0226c0a4(OutdoorVillagerBehaviour *self);
-/* VillagerMood_Ask(mood, which, units), then VillagerMood_Apply when `apply`. */
-extern void func_ov068_0226ad78(OutdoorVillagerBehaviour *self, u8 *villager, int which, int units, u8 apply);
 
 u8 *OutdoorVillager_Destruct(u8 *object);
 u8 *OutdoorVillager_DestructDelete(u8 *object);

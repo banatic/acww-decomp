@@ -2,6 +2,8 @@
 #include "building_lights.h"
 
 #include "clean.h"
+#include "c_library.h"
+#include "g3d_resource.h"
 
 static_assert(offsetof(BuildingLightsLamps, materials) == 0x04, "lamp materials");
 static_assert(offsetof(BuildingLightsLamps, fader) == 0x08, "lamp fader");
@@ -33,11 +35,6 @@ extern const char data_020e5108[];
 /* NitroSDK's G3D global state; the word at 0x18 holds the material colours, the ambient one
  * (5 bits each of red, green and blue) in its high half. */
 extern const u32 data_027e0148[];
-
-/* The game's sprintf. */
-extern int func_02064328(char *buffer, const char *format, ...);
-/* The index of the material `name` of a model, -1 for none. */
-extern int func_02057a50(BuildingLightsModel *model, const char *name);
 
 extern void NNSi_G3dModifyMatFlag(BuildingLightsModel *model, int on, int flag);
 extern void NNS_G3dMdlSetMdlEmi(BuildingLightsModel *model, int material, int colour);
@@ -129,7 +126,7 @@ CLEAN_AS(func_020b33e0, BuildingLights_Construct)
 char *BuildingLights_LampName(BuildingLightsLamps *lamps, int index)
 {
     (void) lamps;
-    func_02064328(data_021f4b58, data_020e50f4, index);
+    CLib_SPrintf(data_021f4b58, data_020e50f4, index);
     return data_021f4b58;
 }
 CLEAN_AS(func_020b3408, BuildingLights_LampName)
@@ -183,7 +180,7 @@ void BuildingLights_BindLamps(BuildingLightsLamps *lamps, BuildingLightsModel *m
 {
     for (unsigned int i = 0; i < BUILDING_LIGHTS_LAMPS; i++) {
         if (building_lights_name_lamp(lamps)(lamps, (int) i) != NULL) {
-            int material = func_02057a50(model, building_lights_name_lamp(lamps)(lamps, (int) i));
+            int material = G3dRes_MaterialIndex((const u8 *) model, building_lights_name_lamp(lamps)(lamps, (int) i));
             lamps->materials[i] = (s8) material;
         }
     }
@@ -225,7 +222,7 @@ CLEAN_AS(func_020b3598, BuildingLights_ShowWindow)
 /* func_020b35c0: the window's material found in the model. */
 void BuildingLights_BindWindow(s8 *window, BuildingLightsModel *model)
 {
-    *window = (s8) func_02057a50(model, data_020e50fc);
+    *window = (s8) G3dRes_MaterialIndex((const u8 *) model, data_020e50fc);
 }
 CLEAN_AS(func_020b35c0, BuildingLights_BindWindow)
 
@@ -261,7 +258,7 @@ CLEAN_AS(func_020b35e8, BuildingLights_ShowDoor)
 /* func_020b3634: the door's material found in the model. */
 void BuildingLights_BindDoor(s8 *door, BuildingLightsModel *model)
 {
-    *door = (s8) func_02057a50(model, data_020e5108);
+    *door = (s8) G3dRes_MaterialIndex((const u8 *) model, data_020e5108);
 }
 CLEAN_AS(func_020b3634, BuildingLights_BindDoor)
 

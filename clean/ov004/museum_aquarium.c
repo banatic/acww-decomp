@@ -17,6 +17,8 @@
 #include "main/sound.h"
 #include "main/sound_emitter.h"
 #include "member_pointer.h"
+#include "aquarium_objects.h"
+#include "aquarium_swim.h"
 
 static_assert(sizeof(AquariumRock) == 0x64, "rock");
 static_assert(offsetof(MuseumAquarium, rocks) == 0x50, "rocks");
@@ -63,31 +65,9 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void *NNS_G3dGetJntAnmSet(u8 *file);
 extern u8 *func_02107b44(void *set, u32 index);
 
-/* A random place along the room, from tile `low` to tile `high`. */
-extern int func_ov004_022394ac(int low, int high);
-/* A random angle within `range` of `base`. */
-extern short func_ov004_02239474(int range, int base);
-
 /* The model pool's heap hooks, handed to the pool: the game's. */
 extern int func_0205c8c4(int size, int unused);
 extern void func_0205c8a8(void);
-
-/* The fish's classes' constructors. */
-extern void *func_ov004_02239df0(void *fish);
-extern void *func_ov004_02239e40(void *fish);
-extern void *func_ov004_02239e9c(void *fish);
-extern void *func_ov004_02239eec(void *fish);
-extern void *func_ov004_02239f68(void *fish);
-extern void *func_ov004_02239fd4(void *fish);
-extern void *func_ov004_0223a040(void *fish);
-extern void *func_ov004_0223a09c(void *fish);
-extern void *func_ov004_0223a114(void *fish);
-extern void *func_ov004_0223a18c(void *fish);
-extern void *func_ov004_0223a1e8(void *fish);
-extern void *func_ov004_0223a25c(void *fish);
-extern void *func_ov004_0223a2c0(void *fish);
-extern void *func_ov004_0223a31c(void *fish);
-extern void *func_ov004_0223a3c4(void *fish);
 
 #define ONE 0x1000
 
@@ -282,7 +262,7 @@ void Aquarium_PlaceSeaFish(MuseumAquarium *self)
             case 53:
             case 54:
                 fish->position.z = 0x12000;
-                fish->position.x = func_ov004_022394ac(5, 30);
+                fish->position.x = AquariumSwim_RandomUnits(5, 30);
                 break;
             case 38:
                 fish->position.z = 0x14700;
@@ -297,8 +277,8 @@ void Aquarium_PlaceSeaFish(MuseumAquarium *self)
                 fish->position.x = 0x7000;
                 break;
             default:
-                fish->position.z = func_ov004_022394ac(18, 22);
-                fish->position.x = func_ov004_022394ac(5, 30);
+                fish->position.z = AquariumSwim_RandomUnits(18, 22);
+                fish->position.x = AquariumSwim_RandomUnits(5, 30);
                 break;
         }
         Aquarium_finish_place(self, fish, kind);
@@ -316,8 +296,8 @@ void Aquarium_PlaceRiverFish(MuseumAquarium *self)
         }
         AquariumFish *fish = data_ov004_022594d4[kind];
         if (kind >= FIRST_SECOND_TANK_KIND && kind != KIND_FISH_25) {
-            fish->position.x = func_ov004_022394ac(9, 26);
-            fish->position.z = func_ov004_022394ac(5, 10);
+            fish->position.x = AquariumSwim_RandomUnits(9, 26);
+            fish->position.z = AquariumSwim_RandomUnits(5, 10);
         } else if (kind == 10) {
             fish->position.z = 0x14a00;
             fish->position.x = 0xc800;
@@ -325,8 +305,8 @@ void Aquarium_PlaceRiverFish(MuseumAquarium *self)
             fish->position.z = 0x13900;
             fish->position.x = 0x15900;
         } else {
-            fish->position.x = func_ov004_022394ac(9, 26);
-            fish->position.z = func_ov004_022394ac(19, 24);
+            fish->position.x = AquariumSwim_RandomUnits(9, 26);
+            fish->position.z = AquariumSwim_RandomUnits(19, 24);
         }
         Aquarium_finish_place(self, fish, kind);
     }
@@ -401,7 +381,7 @@ int Aquarium_LoadFish(MuseumAquarium *self, AquariumFish **slot, int kind)
     if (!ModelPoolFiles_Load(files, entry, name)) {
         return 0;
     }
-    fish->yaw = func_ov004_02239474(0x168, 0);
+    fish->yaw = AquariumSwim_RandomAngle(0x168, 0);
     fish->target_yaw = fish->yaw;
     AquariumFish_call(fish, 0);
     AnimatedModel *model = &fish->model;
@@ -554,7 +534,7 @@ int Aquarium_LoadFishAnims(MuseumAquarium *self, AquariumFish **slot, int kind, 
 CLEAN_AS(func_ov004_02234be0, Aquarium_LoadFishAnims)
 
 /* A fish of `size` bytes from `heap` put in the table at `kind` (NULL when there is no room). */
-static AquariumFish *Aquarium_alloc(Heap *heap, int kind, int size)
+static void *Aquarium_alloc(Heap *heap, int kind, int size)
 {
     data_ov004_022594d4[kind] = Heap_Alloc(heap, size);
     return data_ov004_022594d4[kind];
@@ -591,59 +571,59 @@ int Aquarium_CreateSeaFish(MuseumAquarium *self)
     data_ov004_022593dc.z = 0x136e1;
     Heap *heap = data_021fbe94;
     for (int kind = AQUARIUM_RIVER_FISH; kind < data_ov004_02255c30; kind++) {
-        AquariumFish *fish;
+        void *fish;
         switch (kind) {
             case 36:
                 if ((fish = Aquarium_alloc(heap, kind, 0x28c)) != NULL) {
-                    func_ov004_0223a31c(fish);
+                    AquariumKind36_Construct(fish);
                 }
                 break;
             case 50:
             case 51:
                 if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
-                    func_ov004_0223a2c0(fish);
+                    AquariumNonstopFish_Construct(fish);
                 }
                 break;
             case 52:
             case 53:
             case 54:
                 if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
-                    func_ov004_0223a25c(fish);
+                    AquariumLaneFish_Construct(fish);
                 }
                 break;
             case 35:
                 if ((fish = Aquarium_alloc(heap, kind, 0x278)) != NULL) {
-                    func_ov004_0223a114(fish);
+                    AquariumKind35_Construct(fish);
                 }
                 break;
             case 37:
                 if ((fish = Aquarium_alloc(heap, kind, 0x26c)) != NULL) {
-                    func_ov004_0223a09c(fish);
+                    AquariumKind37_Construct(fish);
                 }
                 break;
             case 40:
                 if ((fish = Aquarium_alloc(heap, kind, 0x25c)) != NULL) {
-                    func_ov004_02239fd4(fish);
+                    AquariumKind40_Construct(fish);
                 }
                 break;
             case 38:
                 if ((fish = Aquarium_alloc(heap, kind, 0x27c)) != NULL) {
-                    func_ov004_02239e9c(fish);
+                    AquariumHomeFish_Construct(fish);
                 }
                 break;
             case 47:
                 if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
-                    func_ov004_02239e40(fish);
+                    AquariumKind47_Construct(fish);
                 }
                 break;
             case 48:
                 if ((fish = Aquarium_alloc(heap, kind, 0x1fc)) != NULL) {
-                    func_ov004_02239df0(fish);
+                    AquariumKind48_Construct(fish);
                 }
                 break;
             default:
                 if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
-                    func_ov004_0223a3c4(fish);
+                    AquariumSwimmer_Construct(fish);
                 }
                 break;
         }
@@ -667,42 +647,42 @@ int Aquarium_CreateRiverFish(MuseumAquarium *self)
     data_ov004_022593dc.z = 0x15000;
     Heap *heap = data_021fbe94;
     for (int kind = 0; kind < data_ov004_02255c30; kind++) {
-        AquariumFish *fish;
+        void *fish;
         switch (kind) {
             case 11:
                 if ((fish = Aquarium_alloc(heap, kind, 0x214)) != NULL) {
-                    func_ov004_0223a1e8(fish);
+                    AquariumKind11_Construct(fish);
                 }
                 break;
             case 15:
                 if ((fish = Aquarium_alloc(heap, kind, 0x210)) != NULL) {
-                    func_ov004_0223a18c(fish);
+                    AquariumKind15_Construct(fish);
                 }
                 break;
             case 12:
                 if ((fish = Aquarium_alloc(heap, kind, 0x27c)) != NULL) {
-                    func_ov004_02239e9c(fish);
+                    AquariumHomeFish_Construct(fish);
                 }
                 break;
             case 10:
                 if ((fish = Aquarium_alloc(heap, kind, 0x220)) != NULL) {
-                    func_ov004_0223a040(fish);
+                    AquariumKind10_Construct(fish);
                 }
                 break;
             case 30:
                 if ((fish = Aquarium_alloc(heap, kind, 0x25c)) != NULL) {
-                    func_ov004_02239f68(fish);
+                    AquariumKind30_Construct(fish);
                 }
                 break;
             case 5:
             case 6:
                 if ((fish = Aquarium_alloc(heap, kind, 0x25c)) != NULL) {
-                    func_ov004_02239eec(fish);
+                    AquariumRisingFish_Construct(fish);
                 }
                 break;
             default:
                 if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
-                    func_ov004_0223a3c4(fish);
+                    AquariumSwimmer_Construct(fish);
                 }
                 break;
         }

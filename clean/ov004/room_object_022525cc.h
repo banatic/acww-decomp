@@ -4,14 +4,14 @@
  * member pointers (member_pointer.h):
  *
  * - OFF (0): the switch off, the glows fading out, the speed 0; while the switch has a change
- *   pending it requests ON for the object at its cell (func_0205265c);
+ *   pending it requests ON for the object at its cell (RoomSync_RequestState);
  * - ON (1): the switch on, the glows fading in, the speed normal and the sound at 0 each frame;
  *   while the switch has a change pending it requests STOPPING;
  * - STOPPING (2): the switch off, the glows still fading in, the speed falling by 0xcc a frame;
  *   at 0 it enters OFF.
  *
  * ON alone shows it on (vtable slot 0x74). Once its model is bound it enters ON when its switch
- * is on and func_ov004_0223c10c says no, else OFF. */
+ * is on and RoomObjects_InNookOrScene0AOr0F says no, else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_022525CC_H
 #define CLEAN_OV004_ROOM_OBJECT_022525CC_H
 

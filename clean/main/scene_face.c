@@ -3,6 +3,14 @@
 
 #include "clean.h"
 #include "resource_pools.h"
+#include "anim_tables.h"
+#include "face_anim_heaps.h"
+#include "face_anim_slots.h"
+#include "face_anim_timer.h"
+#include "main_random.h"
+#include "pool_link.h"
+#include "scene_talk_state.h"
+#include "tex_pattern_anim.h"
 
 static_assert(sizeof(SceneFaceAnim) == 0x2c, "SceneFaceAnim layout");
 static_assert(offsetof(SceneFace, anim_a) == 0x1c, "SceneFace layout");
@@ -35,48 +43,8 @@ static_assert(offsetof(SceneFace, ready) == 0x84, "SceneFace layout");
 extern const u32 data_020c8170[];
 extern const u8 data_020d8d18[];
 
-/* The timer at the face's start. */
-extern int func_020645e0(void *timer);
-extern void func_020645bc(void *timer);
-extern void func_020645d4(void *timer);
-extern void func_02064638(void *timer);
-extern void func_0206463c(void *timer);
-extern int func_020644cc(int range); /* a random number below `range` */
-
-/* The links, and what they give. */
-extern void *func_02082da8(void *link);         /* the animation set */
-extern ResourceSlot *func_02082e1c(void *link); /* the block slot, or null */
-extern void *func_02082d34(void *link);         /* the part */
-extern int func_0208308c(void *link);           /* gives the link a number in its pool */
-extern void func_02083068(void *link);
-extern void *func_02082d78(void *link);
-extern void *func_02082d90(void *link);
-extern void *func_02082dec(void *link);
-extern void *func_02082e04(void *link);
-extern void *func_02082e60(void *link);
-extern void *func_02082e78(void *link);
-
 /* The animation set and the face's animations. */
-extern int func_0205cf28(int animation);
-extern int func_0205cf1c(int animation);
-extern void func_0205d7b8(void *set, int number, int a, int b);
-extern int func_0205d8a0(void *set);
-extern int func_0205d894(void *set);
 extern u8 *NNS_G3dGetAnmByIdx(int resource, int index);
-extern void *func_0205db38(void *part);
-extern int func_0205685c(void *anim, int model, int texture, int a, void *heap);
-extern void func_0205678c(void *anim, int resource, int frame, int a, int flags, fx32 speed);
-extern void func_02056730(void *anim);
-extern void func_02056778(void *anim);
-extern void func_0205682c(void *anim);
-extern void *func_02056910(void *anim);
-extern void *func_02056928(void *anim);
-extern void func_02056610(void *anim, const void *name);
-extern void func_02056658(void *anim, const void *name);
-extern int func_020566a0(void *anim, const void *name, void *target);
-
-/* Whether the object talks (byte 0 of its talking state is 1). */
-extern int func_0201a7bc(const void *talk);
 
 /* The whole frames of a 20.12 frame position (bits 12 to 27). */
 static int scene_face_whole(fx32 frame)
@@ -96,13 +64,14 @@ void SceneFace_Step(SceneFace *self, u8 *object)
         return;
     }
 
-    if (self->anim_a_number != 0 || !FrameCtrl_Passed(&self->anim_a.ctrl, 0) || func_020645e0(self->timer) != 0) {
-        func_02056778(&self->anim_a);
+    if (self->anim_a_number != 0 || !FrameCtrl_Passed(&self->anim_a.ctrl, 0) ||
+        FaceAnimTimer_Step((FaceAnimTimer *) (void *) self->timer) != 0) {
+        TexPatternAnim_Step((TexPatternAnim *) &self->anim_a);
     }
 
     int *talk = (int *) (void *) (object + SCENE_FACE_OBJECT_TALK);
     if (SceneTalkState_Style(talk) < SCENE_FACE_TALK_STYLES) {
-        if (func_0201a7bc(talk) != 0) {
+        if (SceneTalkState_IsTalking((const SceneTalkState *) talk) != 0) {
             if (!SceneFace_IsTalkAnim(self, self->anim_b_number)) {
                 SceneFace_StartTalk(self, SceneTalkState_Style(talk));
                 SceneFace_StartTalkCycle(self);
@@ -116,7 +85,7 @@ void SceneFace_Step(SceneFace *self, u8 *object)
         SceneFace_EndTalk(self);
     }
 
-    func_02056778(&self->anim_b);
+    TexPatternAnim_Step((TexPatternAnim *) &self->anim_b);
 }
 CLEAN_AS(func_02019f1c, SceneFace_Step)
 
@@ -124,18 +93,18 @@ CLEAN_AS(func_02019f1c, SceneFace_Step)
  * and the part's links (func_02083068). */
 void SceneFace_Release(SceneFace *self)
 {
-    func_0205682c(&self->anim_a);
-    func_0205682c(&self->anim_b);
-    func_02083068(self->texture_link);
-    func_02083068(self->set_link);
-    func_02083068(self->part_link);
+    TexPatternAnim_Unload((TexPatternAnim *) &self->anim_a);
+    TexPatternAnim_Unload((TexPatternAnim *) &self->anim_b);
+    PoolLink_Release((PoolLink *) (void *) self->texture_link);
+    PoolLink_Release((PoolLink *) (void *) self->set_link);
+    PoolLink_Release((PoolLink *) (void *) self->part_link);
 }
 CLEAN_AS(func_02019ff0, SceneFace_Release)
 
 /* func_0201a020: the timer starts over (func_020645bc). */
 void SceneFace_ResetTimer(SceneFace *self)
 {
-    func_020645bc(self->timer);
+    FaceAnimTimer_Restart((FaceAnimTimer *) (void *) self->timer);
 }
 CLEAN_AS(func_0201a020, SceneFace_ResetTimer)
 
@@ -143,7 +112,7 @@ CLEAN_AS(func_0201a020, SceneFace_ResetTimer)
  * (func_02056610). */
 void SceneFace_DisableNamed(SceneFace *self)
 {
-    func_02056610(&self->anim_b, data_020d8d18);
+    TexPatternAnim_Release((TexPatternAnim *) &self->anim_b, (const char *) data_020d8d18);
 }
 CLEAN_AS(func_0201a028, SceneFace_DisableNamed)
 
@@ -161,11 +130,11 @@ CLEAN_AS(func_0201a038, SceneFace_MapNamed)
 int SceneFace_MapEntry(SceneFace *self, void *anim, const void *name, void *target)
 {
     if (SceneFace_IsReady(self)) {
-        func_02056658(anim, name);
-        if (func_020566a0(anim, name, target)) {
+        TexPatternAnim_Hold(anim, name);
+        if (TexPatternAnim_Show(anim, name, target)) {
             return 1;
         }
-        func_02056610(anim, name);
+        TexPatternAnim_Release(anim, name);
     }
     return 0;
 }
@@ -178,8 +147,8 @@ void SceneFace_MatchBody(SceneFace *self, int animation, int flags, int style)
     if (!SceneFace_IsReady(self)) {
         return;
     }
-    int number_a = func_0205cf28(animation);
-    int number_b = func_0205cf1c(animation);
+    int number_a = AnimTables_FaceAnimA(animation);
+    int number_b = AnimTables_FaceAnimB(animation);
     if (number_a == SCENE_FACE_ANIM_NONE) {
         number_a = SCENE_FACE_ANIM_A_DEFAULT;
     }
@@ -202,14 +171,15 @@ void SceneFace_Play(SceneFace *self, int number_a, int number_b, int flags, int 
         return;
     }
 
-    void *set = func_02082da8(self->set_link);
+    void *set = (void *) (uintptr_t) PoolLink_AnimSet((PoolLink *) (void *) self->set_link);
     if (number_a != 0 || self->anim_a_number != 0) {
-        func_0205d7b8(set, number_a, 1, 0);
-        NNS_G3dGetAnmByIdx(func_0205d8a0(set), 0);
-        func_0205678c(&self->anim_a, func_0205d8a0(set), 0, 0, flags, SCENE_FACE_SPEED);
+        FaceAnimSlots_Load(set, number_a, 1, 0);
+        NNS_G3dGetAnmByIdx(FaceAnimSlots_SlotDataA(set), 0);
+        TexPatternAnim_Start((TexPatternAnim *) &self->anim_a, (void *) (uintptr_t) FaceAnimSlots_SlotDataA(set), 0, 0, flags,
+                             SCENE_FACE_SPEED);
         self->anim_a_number = number_a;
         self->anim_a.ctrl.frame = 0;
-        func_02056730(&self->anim_a);
+        TexPatternAnim_Update((TexPatternAnim *) &self->anim_a);
     }
 
     if (style == SCENE_FACE_STYLE_NOW || !SceneFace_IsTalkAnim(self, self->anim_b_number)) {
@@ -254,13 +224,14 @@ void SceneFace_PlayB(SceneFace *self, int number, int flags)
     if (!SceneFace_IsReady(self)) {
         return;
     }
-    void *set = func_02082da8(self->set_link);
-    func_0205d7b8(set, number, 1, 0);
-    func_0205678c(&self->anim_b, func_0205d894(set), 0, 0, flags, SCENE_FACE_SPEED);
+    void *set = (void *) (uintptr_t) PoolLink_AnimSet((PoolLink *) (void *) self->set_link);
+    FaceAnimSlots_Load(set, number, 1, 0);
+    TexPatternAnim_Start((TexPatternAnim *) &self->anim_b, (void *) (uintptr_t) FaceAnimSlots_SlotDataB(set), 0, 0, flags,
+                         SCENE_FACE_SPEED);
     self->anim_b.ctrl.frame = 0;
     self->anim_b_number = number;
     SceneFace_StartTalkCycle(self);
-    func_02056730(&self->anim_b);
+    TexPatternAnim_Update((TexPatternAnim *) &self->anim_b);
 }
 CLEAN_AS(func_0201a1d4, SceneFace_PlayB)
 
@@ -337,34 +308,36 @@ int SceneFace_Load(SceneFace *self, void *model)
     u32 code = *(const u32 *) (vtable + SCENE_FACE_MODEL_SLOT_TEXTURE);
     const char *path = (const char *) (uintptr_t) ((int (*)(void *))(uintptr_t) code)(model);
 
-    if (func_02082e1c(self->texture_link) != NULL || path == NULL) {
+    if (PoolLink_Block((PoolLink *) (void *) self->texture_link) != 0 || path == NULL) {
         return 1;
     }
-    if (!func_0208308c(self->texture_link)) {
+    if (!PoolLink_Take((PoolLink *) (void *) self->texture_link)) {
         return 0;
     }
-    ResourceSlot *texture = func_02082e1c(self->texture_link);
+    ResourceSlot *texture = (ResourceSlot *) (uintptr_t) PoolLink_Block((PoolLink *) (void *) self->texture_link);
     ResourcePools_BlockSlotLoad(texture, path);
-    if (!func_0208308c(self->part_link)) {
+    if (!PoolLink_Take((PoolLink *) (void *) self->part_link)) {
         return 0;
     }
-    void *part = func_02082d34(self->part_link);
+    void *part = (void *) (uintptr_t) PoolLink_Part((PoolLink *) (void *) self->part_link);
     int g3d = *(const int *) ((const u8 *) model + SCENE_FACE_MODEL_G3D);
     int block = ResourcePools_BlockSlotBlock(texture);
-    if (!func_0205685c(&self->anim_a, g3d, block, 1, func_0205db38(part))) {
+    if (!TexPatternAnim_Load((TexPatternAnim *) &self->anim_a, (u8 *) (uintptr_t) g3d, (u8 *) (uintptr_t) block, 1,
+                             (Heap *) (uintptr_t) FaceAnimHeaps_SlotHeap(part))) {
         return 0;
     }
     g3d = *(const int *) ((const u8 *) model + SCENE_FACE_MODEL_G3D);
     block = ResourcePools_BlockSlotBlock(texture);
-    if (!func_0205685c(&self->anim_b, g3d, block, 1, func_0205db38(part))) {
+    if (!TexPatternAnim_Load((TexPatternAnim *) &self->anim_b, (u8 *) (uintptr_t) g3d, (u8 *) (uintptr_t) block, 1,
+                             (Heap *) (uintptr_t) FaceAnimHeaps_SlotHeap(part))) {
         return 0;
     }
-    if (!func_0208308c(self->set_link)) {
+    if (!PoolLink_Take((PoolLink *) (void *) self->set_link)) {
         return 0;
     }
     self->anim_a_number = SCENE_FACE_ANIM_NONE;
     self->anim_b_number = SCENE_FACE_ANIM_NONE;
-    func_020645d4(self->timer);
+    FaceAnimTimer_Reset((FaceAnimTimer *) (void *) self->timer);
     self->ready = 1;
     return 1;
 }
@@ -388,12 +361,12 @@ CLEAN_AS(func_0201a3e8, SceneFace_IsReady)
  * of their places. Returns the face. */
 SceneFace *SceneFace_Destruct(SceneFace *self)
 {
-    func_02056910(&self->anim_b);
-    func_02056910(&self->anim_a);
-    func_02082dec(self->set_link);
-    func_02082e60(self->texture_link);
-    func_02082d78(self->part_link);
-    func_02064638(self->timer);
+    TexPatternAnim_Destruct((TexPatternAnim *) &self->anim_b);
+    TexPatternAnim_Destruct((TexPatternAnim *) &self->anim_a);
+    PoolLink_AnimSetDestruct((PoolLink *) (void *) self->set_link);
+    PoolLink_BlockDestruct((PoolLink *) (void *) self->texture_link);
+    PoolLink_PartDestruct((PoolLink *) (void *) self->part_link);
+    FaceAnimTimer_Destruct(self->timer);
     return self;
 }
 CLEAN_AS(func_0201a3f8, SceneFace_Destruct)
@@ -402,12 +375,12 @@ CLEAN_AS(func_0201a3f8, SceneFace_Destruct)
  * places; not ready, no animation playing or kept, variant 2. Returns the face. */
 SceneFace *SceneFace_Construct(SceneFace *self)
 {
-    func_0206463c(self->timer);
-    func_02082d90(self->part_link);
-    func_02082e78(self->texture_link);
-    func_02082e04(self->set_link);
-    func_02056928(&self->anim_a);
-    func_02056928(&self->anim_b);
+    FaceAnimTimer_Construct(self->timer);
+    PoolLink_PartConstruct((PoolLink *) (void *) self->part_link);
+    PoolLink_BlockConstruct((PoolLink *) (void *) self->texture_link);
+    PoolLink_AnimSetConstruct((PoolLink *) (void *) self->set_link);
+    TexPatternAnim_Construct((TexPatternAnim *) &self->anim_a);
+    TexPatternAnim_Construct((TexPatternAnim *) &self->anim_b);
     self->ready = 0;
     self->anim_a_number = SCENE_FACE_ANIM_NONE;
     self->anim_b_number = SCENE_FACE_ANIM_NONE;
@@ -421,7 +394,7 @@ CLEAN_AS(func_0201a430, SceneFace_Construct)
  * else 0. */
 int SceneFace_PickTalkVariant(void)
 {
-    return (func_020644cc(4) & 1) ? 0 : 1;
+    return (MainRandom_Below(4) & 1) ? 0 : 1;
 }
 CLEAN_AS(func_0201a798, SceneFace_PickTalkVariant)
 

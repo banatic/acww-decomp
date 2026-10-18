@@ -10,6 +10,10 @@
 #include "item_footprint.h"
 #include "villager_furniture.h"
 #include "villager_roster.h"
+#include "house_record.h"
+#include "item_info.h"
+#include "main_random.h"
+#include "room_score_state.h"
 
 static_assert(offsetof(RoomScoreRoom, bottom) == 0x0c, "RoomScoreRoom bottom");
 static_assert(offsetof(RoomScoreRoom, carpet) == 0x12, "RoomScoreRoom carpet");
@@ -75,23 +79,6 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MIi_CpuClearFast(u32 data, void *dest, u32 size);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern u8 MATH_CountPopulation(u32 x);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-/* A group's kind (ROOM_SCORE_GROUP_KIND*, 3 for none). */
-extern u8 func_020622a0(int group);
-/* The group of a wallpaper's or a carpet's item code. */
-extern u8 func_02062998(const u16 *item);
-/* The points of a value of FurnitureInfo_Unk04 (0 from 46). */
-extern int func_0206226c(int value);
-/* Whether a week has passed since the date at `when` (and the hour is past 6). */
-extern int func_0205be9c(u8 *when);
-/* The date at `when` set to today's. */
-extern void func_0205be64(u8 *when);
-/* The house's 3-bit value at 0x15a0 the low scores' message goes by. */
-extern u32 func_02060e78(u8 *house);
-/* One of the house's rooms' records, or 0; its wallpaper and its carpet. */
-extern int func_02060ee0(void *records, int index);
-extern u16 *func_02061204(void *record, int *flag);
-extern u16 *func_020611e8(void *record, unsigned int *flag);
 
 /* The acre of tile `tile` (rounded down, as the ARM's arithmetic shift does). */
 static u32 tile_acre(u32 tile)
@@ -470,7 +457,7 @@ static void add_points(void *context, u16 *item, u32 x, u32 z)
     (void) x;
     (void) z;
     if (ItemCode_HasVariant(item)) {
-        *total += func_0206226c(FurnitureInfo_Unk04(ItemCode_VariantItem(item)));
+        *total += ItemInfo_ScorePoints(FurnitureInfo_Unk04(ItemCode_VariantItem(item)));
     }
 }
 
@@ -531,7 +518,7 @@ static void mark_piece(void *context, u16 *item, u32 x, u32 z)
         return;
     }
     int group = FurnitureInfo_ItemGroup(item);
-    if (func_020622a0(group) == g->kind) {
+    if (ItemInfo_SeriesKind(group) == g->kind) {
         g->bits[group] |= (u16) (1u << FurnitureInfo_IndexInGroup(item));
     }
 }
@@ -561,7 +548,7 @@ int RoomScore_Kind2Sets(RoomScoreRoom *room, AcreMap *map)
     mark_pieces(&g, room, map);
     int found = 0;
     for (u32 k = 0; k < ROOM_SCORE_GROUPS; k++) {
-        if (func_020622a0((int) k) != ROOM_SCORE_GROUP_KIND2) {
+        if (ItemInfo_SeriesKind((int) k) != ROOM_SCORE_GROUP_KIND2) {
             continue;
         }
         u32 count = FurnitureInfo_CountInGroup(k);
@@ -581,12 +568,12 @@ int RoomScore_Kind1Sets(RoomScoreRoom *room, AcreMap *map)
 {
     GroupPieces g;
     clear_pieces(&g, ROOM_SCORE_GROUP_KIND1);
-    u32 wallpaper_group = func_02062998(&room->wallpaper);
-    u32 carpet_group = func_02062998(&room->carpet);
+    u32 wallpaper_group = ItemInfo_Series(&room->wallpaper);
+    u32 carpet_group = ItemInfo_Series(&room->carpet);
     mark_pieces(&g, room, map);
     int found = 0;
     for (u32 i = 0; i < ROOM_SCORE_GROUPS; i++) {
-        if (func_020622a0((int) i) != ROOM_SCORE_GROUP_KIND1) {
+        if (ItemInfo_SeriesKind((int) i) != ROOM_SCORE_GROUP_KIND1) {
             continue;
         }
         u32 count = FurnitureInfo_CountInGroup(i);
@@ -616,7 +603,7 @@ CLEAN_AS(func_0205aec0, RoomScore_Kind1Sets)
 static u32 raise_kind0(const u16 *bits, u32 score, int exact_bits)
 {
     for (u32 i = 0; i < ROOM_SCORE_GROUPS; i++) {
-        if (func_020622a0((int) i) != ROOM_SCORE_GROUP_KIND0) {
+        if (ItemInfo_SeriesKind((int) i) != ROOM_SCORE_GROUP_KIND0) {
             continue;
         }
         int h = bits[i];
@@ -649,14 +636,14 @@ int RoomScore_Kind0Sets(RoomScoreRoom *room, AcreMap *map, u32 *most)
     mark_pieces(&g, room, map);
 
     if (room->wallpaper >= ROOM_SCORE_WALLPAPER_FIRST && room->wallpaper <= ROOM_SCORE_WALLPAPER_LAST) {
-        u32 group = func_02062998(&room->wallpaper);
-        if (func_020622a0((int) group) == ROOM_SCORE_GROUP_KIND0) {
+        u32 group = ItemInfo_Series(&room->wallpaper);
+        if (ItemInfo_SeriesKind((int) group) == ROOM_SCORE_GROUP_KIND0) {
             g.bits[group] |= data_020cbff0;
         }
     }
     if (room->carpet >= ROOM_SCORE_CARPET_FIRST && room->carpet <= ROOM_SCORE_CARPET_LAST) {
-        u32 group = func_02062998(&room->carpet);
-        if (func_020622a0((int) group) == ROOM_SCORE_GROUP_KIND0) {
+        u32 group = ItemInfo_Series(&room->carpet);
+        if (ItemInfo_SeriesKind((int) group) == ROOM_SCORE_GROUP_KIND0) {
             g.bits[group] |= data_020cbff4;
         }
     }
@@ -664,11 +651,11 @@ int RoomScore_Kind0Sets(RoomScoreRoom *room, AcreMap *map, u32 *most)
     u32 best = 0;
     for (u32 i = 0; i < ROOM_SCORE_GROUPS; i++) {
 #ifdef BUGFIX
-        if (func_020622a0((int) i) != ROOM_SCORE_GROUP_KIND0) {
+        if (ItemInfo_SeriesKind((int) i) != ROOM_SCORE_GROUP_KIND0) {
             continue;
         }
 #else
-        if (func_020622a0(func_02062998(&room->carpet)) != ROOM_SCORE_GROUP_KIND0) {
+        if (ItemInfo_SeriesKind(ItemInfo_Series(&room->carpet)) != ROOM_SCORE_GROUP_KIND0) {
             continue;
         }
 #endif
@@ -710,7 +697,7 @@ static u32 pick_group(int n, int kind)
 {
     int seen = 0;
     for (u32 m = 0; m < ROOM_SCORE_GROUPS; m++) {
-        if (data_021c9854[m] != 0 && func_020622a0((int) m) == kind) {
+        if (data_021c9854[m] != 0 && ItemInfo_SeriesKind((int) m) == kind) {
             if (seen == n) {
                 return m;
             }
@@ -813,7 +800,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     for (u32 j = 0; j < ROOM_SCORE_GROUPS; j++) {
         int v = (int) data_021c9854[j];
         if (v != 0) {
-            switch (func_020622a0((int) j)) {
+            switch (ItemInfo_SeriesKind((int) j)) {
                 case ROOM_SCORE_GROUP_KIND0:
                     kind0_groups++;
                     break;
@@ -833,11 +820,11 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     }
     u32 kind0_group = 0;
     if (kind0_groups != 0) {
-        kind0_group = pick_group((int) func_020644cc(kind0_groups), ROOM_SCORE_GROUP_KIND0);
+        kind0_group = pick_group((int) MainRandom_Below(kind0_groups), ROOM_SCORE_GROUP_KIND0);
     }
     u32 kind1_group = 0;
     if (kind1_groups != 0) {
-        kind1_group = pick_group((int) func_020644cc(kind1_groups), ROOM_SCORE_GROUP_KIND1);
+        kind1_group = pick_group((int) MainRandom_Below(kind1_groups), ROOM_SCORE_GROUP_KIND1);
     }
 
     int categories = 0;
@@ -891,10 +878,11 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     if (judge == 0) {
         return total;
     }
-    if (func_0205be9c(data_021f3b70) == 0 && *GameVariables_Slot(0, ROOM_SCORE_VARIABLE_ALWAYS) == 0) {
+    if (RoomScoreState_WeekPassed((Date *) (void *) data_021f3b70) == 0 &&
+        *GameVariables_Slot(0, ROOM_SCORE_VARIABLE_ALWAYS) == 0) {
         return total;
     }
-    int house_value = (int) func_02060e78(data_021ebcd4);
+    int house_value = (int) HouseRecord_Size((const HouseRecord *) (void *) data_021ebcd4);
     u16 found = 0;
     if (kind0_groups != 0) {
         found |= kind0_flag(data_021c9854[kind0_group]);
@@ -938,7 +926,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     RoomScore_SetTotal((u32) total);
     RoomScore_SetBonusFlags(found);
 
-    int by_total = found_count == 0 || func_020644cc(2) == 0;
+    int by_total = found_count == 0 || MainRandom_Below(2) == 0;
     int message = 0;
     if (by_total) {
         if (total == 0) {
@@ -953,7 +941,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
             message = 10;
         }
     } else {
-        int pick = (int) func_020644cc(found_count);
+        int pick = (int) MainRandom_Below(found_count);
         int seen = 0;
         for (u32 b = 0; b < ROOM_SCORE_BONUS_BITS; b++) {
             if ((found & (1u << b)) != 0) {
@@ -969,7 +957,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     u32 group = (u32) message - 11 > 2 ? kind1_group : kind0_group;
     if (RoomScoreMail_SendJudgement(room, message, total, (int) group, *theme) != 0) {
         RoomScoreMail_SendPrize(room, total);
-        func_0205be64(data_021f3b70);
+        RoomScoreState_SetJudgeDate((Date *) (void *) data_021f3b70);
     }
     return total;
 }
@@ -1028,10 +1016,10 @@ int RoomScore_Advice(RoomScoreRoom *room, int *count)
         RoomScore_Bounds(&room->left, &room->right, &room->top, &room->bottom, map);
         room->wallpaper = ROOM_SCORE_WALLPAPER_FIRST;
         room->carpet = ROOM_SCORE_CARPET_FIRST;
-        void *record = (void *) (uintptr_t) func_02060ee0(data_021ebcd4, 0);
+        void *record = (void *) (uintptr_t) HouseRecord_Room((HouseRecord *) (void *) data_021ebcd4, 0);
         if (record != NULL) {
-            room->wallpaper = *func_02061204(record, NULL);
-            room->carpet = *func_020611e8(record, NULL);
+            room->wallpaper = *HouseRecord_RoomWallpaper(record, NULL);
+            room->carpet = *HouseRecord_RoomCarpet(record, NULL);
         }
         u8 facing = 0;
         u8 loose = 0;
@@ -1168,7 +1156,7 @@ CLEAN_AS(func_0205bb48, RoomScore_ConstructVillagerSource)
 void RoomScore_HouseCarpet(u16 *out, RoomScoreSource *source, int room)
 {
     (void) source;
-    *out = *func_020611e8((void *) (uintptr_t) func_02060ee0(data_021ebcd4, room), NULL);
+    *out = *HouseRecord_RoomCarpet((void *) (uintptr_t) HouseRecord_Room((HouseRecord *) (void *) data_021ebcd4, room), NULL);
 }
 CLEAN_AS(func_0205bb60, RoomScore_HouseCarpet)
 
@@ -1177,7 +1165,8 @@ CLEAN_AS(func_0205bb60, RoomScore_HouseCarpet)
 void RoomScore_HouseWallpaper(u16 *out, RoomScoreSource *source, int room)
 {
     (void) source;
-    *out = *func_02061204((void *) (uintptr_t) func_02060ee0(data_021ebcd4, room), NULL);
+    *out =
+        *HouseRecord_RoomWallpaper((void *) (uintptr_t) HouseRecord_Room((HouseRecord *) (void *) data_021ebcd4, room), NULL);
 }
 CLEAN_AS(func_0205bb80, RoomScore_HouseWallpaper)
 

@@ -10,6 +10,25 @@
 #include "clean.h"
 #include "npc_id.h"
 #include "scene_command.h"
+#include "activity_vars.h"
+#include "message_reader.h"
+#include "message_receiver.h"
+#include "message_texts.h"
+#include "name_texts.h"
+#include "npc_lookup.h"
+#include "number_text.h"
+#include "player_actor_ops.h"
+#include "player_actors.h"
+#include "player_id.h"
+#include "scene_look.h"
+#include "scene_motion_request.h"
+#include "scene_object.h"
+#include "scene_query.h"
+#include "session_players.h"
+#include "talk_object.h"
+#include "talk_receiver.h"
+#include "text_base.h"
+#include "town_name.h"
 
 static_assert(offsetof(SceneBase, talk) == 0x40, "SceneBase layout");
 static_assert(offsetof(SceneBase, motion_arg) == 0x48, "SceneBase layout");
@@ -78,50 +97,6 @@ extern Vec3 data_021fbee8;
 /* "st_general", the name of a message archive. */
 extern const char data_020d8d0c[];
 
-extern unsigned int func_0201c274(void *object);
-extern int func_0201c314(void *from, void *to);
-extern void *func_0201c2c8(void *object, void *target);
-extern int func_02019d0c(void *motion, int kind, int priority, int a, int b, s16 c, s16 angle, int d, int e, u16 f, u16 g);
-extern int func_02019e00(void *motion);
-extern int func_02019c90(void *motion, int priority, int style, int g);
-extern void func_0201ad18(void *look, u8 kind, int priority, int object, const Vec3 *offset, int actor, int a, u8 b);
-extern u8 func_020b65c4(void);
-extern u8 func_020a13d0(void);
-extern int func_020952ec(void);
-extern int func_02095794(int actor);
-extern int func_02095518(int a, int angle, int actor);
-extern int func_02095a8c(int angle, int actor);
-extern void func_02095eec(int on, int actor);
-extern int func_02096190(int actor);
-extern int func_020823e8(void *code);
-extern unsigned int func_0206837c(void *talk);
-
-/* The talk's slots, and the text objects put into them. */
-extern int func_020683e4(void *talk, int slot, const void *bytes, unsigned int size);
-extern void func_020683b4(void *talk, int slot, void *text, int kind);
-extern void func_02068404(void *talk, int slot, void *text);
-extern void *func_02062f90(void *text, const void *item);
-extern void *func_02062f4c(void *text);
-extern void *func_02094fd4(void *text);
-extern void *func_02094fbc(void *text);
-extern void *func_02095074(void *from, void *text);
-extern void *func_020641c8(void *text);
-extern void func_02064210(unsigned int from, void *text);
-extern void *func_020641b0(void *text);
-extern void *func_020a8228(void *text);
-extern void *func_020a8210(void *text);
-extern int func_020b44a4(void *text, int value);
-extern int func_020b44bc(void *text, void *value);
-extern void *func_020b5630(void *text);
-extern void *func_020b5618(void *text);
-extern int func_020b4508(void *text, int value, int format);
-extern int func_020b45d0(void *text, int value, int format, int a, int b, u8 c);
-extern int func_020b4a20(void *text, u8 *message, const char *archive);
-extern int func_020a89dc(void *text, void *other);
-
-/* The message receiver (Base_02066994): its constructor, destructor and slot 0x08. */
-extern void *func_02066a30(void *receiver);
-extern void *func_02066994(void *receiver);
 extern void _ZN13Base_0206699417vfunc_02066994_08Ev(void *receiver);
 
 /* The text objects, as stack space for the game's constructors. */
@@ -162,15 +137,15 @@ static void scene_base_speaker_faces(SceneBase *scene, u8 *speaker, u8 *target, 
 {
     typedef int (*SceneBaseTalkStyle)(void *scene, int style);
 
-    unsigned int own_scene = func_0201c274(speaker);
-    int angle = func_0201c314(speaker, target);
+    unsigned int own_scene = SceneObject_Scene(speaker);
+    int angle = SceneObject_YawTo(speaker, target);
     scene_base_call(scene, look_slot);
     if (own_scene != 0) {
         void *own = (void *) (uintptr_t) own_scene;
         ((SceneBaseTalkStyle) (uintptr_t) scene_base_slot(own, SCENE_BASE_SLOT_TALK_STYLE))(own, 0);
     }
-    func_02019d0c(speaker + SCENE_BASE_SPEAKER_MOTION, SCENE_BASE_MOTION_TURN, SCENE_BASE_MOTION_TURN_PRIORITY, 0, 0, 0,
-                  (s16) angle, 0, 0, data_020c80f8, 0);
+    SceneMotion_Request((SceneMotion *) (void *) (speaker + SCENE_BASE_SPEAKER_MOTION), SCENE_BASE_MOTION_TURN,
+                        SCENE_BASE_MOTION_TURN_PRIORITY, 0, 0, 0, (s16) angle, 0, 0, data_020c80f8, 0);
 }
 
 /* func_02015a1c (slot 0x5c): the focus turns to face the second speaker: the first speaker
@@ -209,8 +184,8 @@ void SceneBase_LookAtSecond(SceneBase *scene)
         case SCENE_BASE_FOCUS_FIRST: {
             u8 *first = scene_base_speaker(scene, scene->focus);
             if (first != NULL) {
-                func_0201ad18(first + SCENE_BASE_SPEAKER_LOOK, SCENE_BASE_LOOK_OBJECT, 0, (int) (uintptr_t) second,
-                              &data_021fbee8, 4, 0, 0);
+                SceneLook_Request((SceneLook *) (void *) (first + SCENE_BASE_SPEAKER_LOOK), SCENE_BASE_LOOK_OBJECT, 0,
+                                  (int) (uintptr_t) second, &data_021fbee8, 4, 0, 0);
             }
             break;
         }
@@ -255,8 +230,8 @@ void SceneBase_LookAtFirst(SceneBase *scene)
         case SCENE_BASE_FOCUS_SECOND: {
             u8 *second = scene_base_speaker(scene, scene->focus);
             if (second != NULL) {
-                func_0201ad18(second + SCENE_BASE_SPEAKER_LOOK, SCENE_BASE_LOOK_OBJECT, 0, (int) (uintptr_t) first,
-                              &data_021fbee8, 4, 0, 0);
+                SceneLook_Request((SceneLook *) (void *) (second + SCENE_BASE_SPEAKER_LOOK), SCENE_BASE_LOOK_OBJECT, 0,
+                                  (int) (uintptr_t) first, &data_021fbee8, 4, 0, 0);
             }
             break;
         }
@@ -274,12 +249,12 @@ void SceneBase_PlayerFaces(SceneBase *scene, u8 *speaker)
 {
     (void) scene;
     int actor = SceneBase_PlayerActorId();
-    int position = func_02095794(actor);
+    int position = (int) (uintptr_t) PlayerActorOps_StartPosition(actor);
     if (position != 0) {
         int angle = Vec_YawTo((const Vec3 *) (uintptr_t) position, (const Vec3 *) (speaker + SCENE_BASE_SPEAKER_POSITION));
-        func_02095518(0, 0, actor);
-        func_02095a8c(angle, actor);
-        func_02095eec(1, actor);
+        PlayerActorOps_SetLook(0, 0, actor);
+        PlayerActorOps_Turn(angle, actor);
+        PlayerActorOps_SwitchFlag0e(1, actor);
     }
 }
 CLEAN_AS(func_02015bfc, SceneBase_PlayerFaces)
@@ -295,14 +270,14 @@ int SceneBase_PlayerLooksAt(SceneBase *scene, u8 *speaker)
 {
     (void) scene;
     int actor = SceneBase_PlayerActorId();
-    int position = func_02095794(actor);
+    int position = (int) (uintptr_t) PlayerActorOps_StartPosition(actor);
     if (position == 0) {
         return 0;
     }
     int angle = Vec_YawTo((const Vec3 *) (uintptr_t) position, (const Vec3 *) (speaker + SCENE_BASE_SPEAKER_POSITION));
-    const u8 *player = (const u8 *) (uintptr_t) func_02096190(SCENE_BASE_PLAYER_ACTOR);
+    const u8 *player = (const u8 *) (uintptr_t) SessionPlayers_ActorHandle(SCENE_BASE_PLAYER_ACTOR);
     s16 own = *(const s16 *) (player + SCENE_BASE_PLAYER_ANGLE);
-    return func_02095518(0, (s16) (angle - own), actor);
+    return PlayerActorOps_SetLook(0, (s16) (angle - own), actor);
 }
 CLEAN_AS(func_02015c3c, SceneBase_PlayerLooksAt)
 
@@ -317,16 +292,17 @@ void SceneBase_FacePlayer(SceneBase *scene)
     if (speaker == NULL) {
         return;
     }
-    unsigned int own_scene = func_0201c274(speaker);
+    unsigned int own_scene = SceneObject_Scene(speaker);
     int actor = SceneBase_PlayerActorId();
-    void *angle = func_0201c2c8(speaker, (void *) (uintptr_t) actor);
+    void *angle = SceneObject_YawToActor(speaker, (int) (uintptr_t) ((void *) (uintptr_t) actor));
     if (own_scene != 0) {
         void *own = (void *) (uintptr_t) own_scene;
         ((SceneBaseTalkStyle) (uintptr_t) scene_base_slot(own, SCENE_BASE_SLOT_TALK_STYLE))(own, 0);
     }
-    func_0201ad18(speaker + SCENE_BASE_SPEAKER_LOOK, SCENE_BASE_LOOK_ACTOR, 0, 0, &data_021fbee8, actor, 0, 0);
-    func_02019d0c(speaker + SCENE_BASE_SPEAKER_MOTION, SCENE_BASE_MOTION_TURN, SCENE_BASE_MOTION_TURN_PRIORITY, 0, 0, 0,
-                  (s16) (uintptr_t) angle, 0, 0, data_020c80f8, 0);
+    SceneLook_Request((SceneLook *) (void *) (speaker + SCENE_BASE_SPEAKER_LOOK), SCENE_BASE_LOOK_ACTOR, 0, 0, &data_021fbee8,
+                      actor, 0, 0);
+    SceneMotion_Request((SceneMotion *) (void *) (speaker + SCENE_BASE_SPEAKER_MOTION), SCENE_BASE_MOTION_TURN,
+                        SCENE_BASE_MOTION_TURN_PRIORITY, 0, 0, 0, (s16) (uintptr_t) angle, 0, 0, data_020c80f8, 0);
 }
 CLEAN_AS(func_02015c7c, SceneBase_FacePlayer)
 
@@ -336,7 +312,8 @@ void SceneBase_LookAtPlayer(SceneBase *scene)
     u8 *speaker = scene_base_speaker(scene, scene->focus);
     if (speaker != NULL) {
         int actor = SceneBase_PlayerActorId();
-        func_0201ad18(speaker + SCENE_BASE_SPEAKER_LOOK, SCENE_BASE_LOOK_ACTOR, 0, 0, &data_021fbee8, actor, 0, 0);
+        SceneLook_Request((SceneLook *) (void *) (speaker + SCENE_BASE_SPEAKER_LOOK), SCENE_BASE_LOOK_ACTOR, 0, 0,
+                          &data_021fbee8, actor, 0, 0);
     }
 }
 CLEAN_AS(func_02015d04, SceneBase_LookAtPlayer)
@@ -345,10 +322,10 @@ CLEAN_AS(func_02015d04, SceneBase_LookAtPlayer)
  * data_021f3c1c (func_020a13d0), elsewhere func_020952ec. */
 int SceneBase_PlayerActorId(void)
 {
-    if (func_020b65c4() == SCENE_BASE_SCENE_2F) {
-        return func_020a13d0();
+    if (SceneQuery_Current() == SCENE_BASE_SCENE_2F) {
+        return ActivityVars_Slot3C1C();
     }
-    return func_020952ec();
+    return PlayerActors_OwnPlayer();
 }
 CLEAN_AS(func_02015d44, SceneBase_PlayerActorId)
 
@@ -423,7 +400,7 @@ CLEAN_AS(func_02015dd0, SceneBase_Nothing34)
 int SceneBase_PutBytes(SceneBase *scene, int slot, const void *bytes, int size, const void *unused)
 {
     (void) unused;
-    return func_020683e4(scene->talk, slot, bytes, (unsigned int) size);
+    return TalkObject_LoadPart((TalkObject *) (void *) scene->talk, slot, bytes, (unsigned int) size);
 }
 CLEAN_AS(func_02015dd4, SceneBase_PutBytes)
 
@@ -432,9 +409,9 @@ CLEAN_AS(func_02015dd4, SceneBase_PutBytes)
 void SceneBase_PutItemName(SceneBase *scene, int item, int slot, int kind)
 {
     SceneBaseItemText text;
-    func_02062f90(&text, (const void *) (uintptr_t) item);
-    func_020683b4(scene->talk, slot, &text, kind);
-    func_02062f4c(&text);
+    NameText_ConstructItem((NameText *) &text, (u16 *) ((const void *) (uintptr_t) item));
+    TalkObject_SetValue((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text, kind);
+    NameText_Destruct((NameText *) &text);
 }
 CLEAN_AS(func_02015de4, SceneBase_PutItemName)
 
@@ -443,10 +420,10 @@ CLEAN_AS(func_02015de4, SceneBase_PutItemName)
 void SceneBase_PutNpcName(SceneBase *scene, const void *npc, int slot)
 {
     SceneBaseText text;
-    func_02094fd4(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
     NpcId_FormatName((const NpcId *) npc, (char *) &text);
-    func_02068404(scene->talk, slot, &text);
-    func_02094fbc(&text);
+    TalkObject_SetPart((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
 }
 CLEAN_AS(func_02015e10, SceneBase_PutNpcName)
 
@@ -455,10 +432,10 @@ CLEAN_AS(func_02015e10, SceneBase_PutNpcName)
 void SceneBase_PutNameAt10(SceneBase *scene, void *from, int slot)
 {
     SceneBaseText text;
-    func_02094fd4(&text);
-    func_02095074(from, &text);
-    func_02068404(scene->talk, slot, &text);
-    func_02094fbc(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
+    PlayerId_NameToText(from, (TextBase *) &text);
+    TalkObject_SetPart((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
 }
 CLEAN_AS(func_02015e40, SceneBase_PutNameAt10)
 
@@ -468,10 +445,10 @@ CLEAN_AS(func_02015e40, SceneBase_PutNameAt10)
 void *SceneBase_PutNameAt2(SceneBase *scene, unsigned int from, unsigned int slot)
 {
     SceneBaseText text;
-    func_020641c8(&text);
-    func_02064210(from, &text);
-    func_02068404(scene->talk, (int) slot, &text);
-    return func_020641b0(&text);
+    TownNameText_Construct((TownNameText *) &text);
+    TownName_ToText((TownName *) (uintptr_t) from, (TextBase *) &text);
+    TalkObject_SetPart((TalkObject *) (void *) scene->talk, (int) slot, (TextBase *) &text);
+    return TownNameText_Destruct((TownNameText *) &text);
 }
 CLEAN_AS(func_02015e70, SceneBase_PutNameAt2)
 
@@ -479,10 +456,10 @@ CLEAN_AS(func_02015e70, SceneBase_PutNameAt2)
 void SceneBase_PutNumber(SceneBase *scene, int value, int slot)
 {
     SceneBaseLabel text;
-    func_020a8228(&text);
-    func_020b44a4(&text, value);
-    func_02068404(scene->talk, slot, &text);
-    func_020a8210(&text);
+    MessagePart_Construct((MessagePart *) &text);
+    NumberText_SetTwoDigits(&text, value);
+    TalkObject_SetPart((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text);
+    MessagePart_Destruct((MessagePart *) &text);
 }
 CLEAN_AS(func_02015ea0, SceneBase_PutNumber)
 
@@ -491,10 +468,10 @@ CLEAN_AS(func_02015ea0, SceneBase_PutNumber)
 void SceneBase_PutNumberAlt(SceneBase *scene, void *value, int slot)
 {
     SceneBaseLabel text;
-    func_020a8228(&text);
-    func_020b44bc(&text, value);
-    func_02068404(scene->talk, slot, &text);
-    func_020a8210(&text);
+    MessagePart_Construct((MessagePart *) &text);
+    NumberText_SetTwoDigitsB(&text, (int) (uintptr_t) value);
+    TalkObject_SetPart((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text);
+    MessagePart_Destruct((MessagePart *) &text);
 }
 CLEAN_AS(func_02015ed0, SceneBase_PutNumberAlt)
 
@@ -507,10 +484,10 @@ void SceneBase_PutDecimal(SceneBase *scene, int value, int slot, int format, int
         return;
     }
     SceneBaseNumberText text;
-    func_020b5630(&text);
-    func_020b4508(&text, value, format);
-    func_02068404(scene->talk, slot, &text);
-    func_020b5618(&text);
+    MessageText46_Construct((MessageText46 *) &text);
+    NumberText_SetFixed(&text, value, format);
+    TalkObject_SetPart((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text);
+    MessageText46_Destruct((MessageText46 *) &text);
 }
 CLEAN_AS(func_02015f00, SceneBase_PutDecimal)
 
@@ -524,19 +501,19 @@ void SceneBase_PutCount(SceneBase *scene, int value, int slot, int format, u8 wi
     }
     SceneBaseNumberText text;
     int kind = SCENE_BASE_TEXT_KIND_PLAIN;
-    func_020b5630(&text);
-    func_020b45d0(&text, value, format, a, b, 0);
+    MessageText46_Construct((MessageText46 *) &text);
+    NumberText_Format(&text, value, format, a, b, 0);
     if (with_unit != 0) {
         SceneBaseLabel unit;
         u8 message = SCENE_BASE_COUNT_UNIT_MESSAGE;
-        func_020a8228(&unit);
-        func_020b4a20(&unit, &message, data_020d8d0c);
-        func_020a89dc(&text, &unit);
+        MessagePart_Construct((MessagePart *) &unit);
+        MessageReader_LoadMessage((int) (uintptr_t) &unit, &message, (int) (uintptr_t) data_020d8d0c);
+        TextBase_AppendText(&text, (TextBase *) &unit);
         kind = SCENE_BASE_TEXT_KIND_LABEL;
-        func_020a8210(&unit);
+        MessagePart_Destruct((MessagePart *) &unit);
     }
-    func_020683b4(scene->talk, slot, &text, kind);
-    func_020b5618(&text);
+    TalkObject_SetValue((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text, kind);
+    MessageText46_Destruct((MessageText46 *) &text);
 }
 CLEAN_AS(func_02015f38, SceneBase_PutCount)
 
@@ -548,10 +525,10 @@ void SceneBase_PutValue(SceneBase *scene, int value, int slot, int format, int a
         return;
     }
     SceneBaseNumberText text;
-    func_020b5630(&text);
-    func_020b45d0(&text, value, format, a, b, 0);
-    func_02068404(scene->talk, slot, &text);
-    func_020b5618(&text);
+    MessageText46_Construct((MessageText46 *) &text);
+    NumberText_Format(&text, value, format, a, b, 0);
+    TalkObject_SetPart((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text);
+    MessageText46_Destruct((MessageText46 *) &text);
 }
 CLEAN_AS(func_02015fb0, SceneBase_PutValue)
 
@@ -593,7 +570,7 @@ int SceneBase_SetSpeakerTalkStyle(SceneBase *scene, int style, int speaker)
     if (object == NULL) {
         return 0;
     }
-    SceneBase *own = (SceneBase *) (uintptr_t) func_0201c274(object);
+    SceneBase *own = (SceneBase *) (uintptr_t) SceneObject_Scene(object);
     if (own == NULL) {
         return 0;
     }
@@ -602,10 +579,10 @@ int SceneBase_SetSpeakerTalkStyle(SceneBase *scene, int style, int speaker)
         return holding;
     }
     void *motion = object + SCENE_BASE_SPEAKER_MOTION;
-    if (own->talk_style == style && func_02019e00(motion) == SCENE_BASE_MOTION_TALK) {
+    if (own->talk_style == style && SceneMotion_Kind(motion) == SCENE_BASE_MOTION_TALK) {
         return SCENE_BASE_MOTION_TALK;
     }
-    int result = func_02019c90(motion, SCENE_BASE_MOTION_TALK_PRIORITY, (u8) style, data_020c80f8);
+    int result = SceneMotion_RequestAct(motion, SCENE_BASE_MOTION_TALK_PRIORITY, (u8) style, data_020c80f8);
     own->talk_style = style;
     return result;
 }
@@ -618,7 +595,7 @@ int SceneBase_SpeakingKind(SceneBase *scene)
     if (scene->speaking == 0 || scene->speaking == 1) {
         u8 *speaker = scene->speakers[scene->speaking];
         if (speaker != NULL) {
-            return func_020823e8(speaker + SCENE_BASE_SPEAKER_CODE);
+            return NpcLookup_PersonalityKind((ItemCode *) (void *) (speaker + SCENE_BASE_SPEAKER_CODE));
         }
     }
     return SCENE_BASE_NO_KIND;
@@ -632,7 +609,7 @@ int SceneBase_TalkChoices(SceneBase *scene)
     if (scene->talk == NULL) {
         return 0;
     }
-    return (int) func_0206837c(scene->talk);
+    return (int) TalkObject_Answers((TalkObject *) (void *) scene->talk);
 }
 CLEAN_AS(func_020160b4, SceneBase_TalkChoices)
 
@@ -661,7 +638,7 @@ void SceneBase_SetSecondSpeaker(SceneBase *scene, u8 *speaker)
     if (scene->speakers[1] == NULL) {
         return;
     }
-    unsigned int own_scene = func_0201c274(scene->speakers[1]);
+    unsigned int own_scene = SceneObject_Scene(scene->speakers[1]);
     if (own_scene == 0) {
         return;
     }
@@ -731,7 +708,7 @@ CLEAN_AS(func_0201612c, SceneBase_Reset)
 void *SceneBase_DestructBody(void *scene)
 {
     *(const u8 **) scene = data_020d8bd4;
-    func_02066994(scene);
+    TalkReceiver_Destruct(scene);
     return scene;
 }
 CLEAN_AS(func_0201615c, SceneBase_DestructBody)
@@ -741,7 +718,7 @@ CLEAN_AS(func_0201615c, SceneBase_DestructBody)
 void *SceneBase_DestructDelete(SceneBase *scene)
 {
     scene->vtable = data_020d8bd4;
-    func_02066994(scene);
+    TalkReceiver_Destruct((TalkReceiver *) scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
@@ -752,7 +729,7 @@ CLEAN_AS(func_02016174, SceneBase_DestructDelete)
 void *SceneBase_Destruct(void *scene)
 {
     *(const u8 **) scene = data_020d8bd4;
-    func_02066994(scene);
+    TalkReceiver_Destruct(scene);
     return scene;
 }
 CLEAN_AS(func_02016194, SceneBase_Destruct)
@@ -762,7 +739,7 @@ CLEAN_AS(func_02016194, SceneBase_Destruct)
  * (SceneCommand_Init). Returns the scene. */
 SceneBase *SceneBase_Construct(SceneBase *scene)
 {
-    func_02066a30(scene);
+    TalkReceiver_ConstructBase((TalkReceiver *) scene);
     scene->vtable = data_020d8bd4;
     scene->item = SCENE_BASE_NO_ITEM;
     scene->motion_arg = 0;

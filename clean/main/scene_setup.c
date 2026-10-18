@@ -6,6 +6,13 @@
 #include "main/actor.h"
 #include "main/player_records.h"
 #include "main/session.h"
+#include "game_process.h"
+#include "player_actors.h"
+#include "scene_exit.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "session_players.h"
 
 static_assert(sizeof(SceneSetupPoint) == 0x14, "scene setup point");
 static_assert(sizeof(SceneSetupObject) == 4, "scene setup object");
@@ -24,23 +31,6 @@ extern NetSession *data_020ccf94;
 extern u8 data_021dc7bc[];
 
 extern u64 OS_GetTick(void);
-extern int func_0202f134(int profile, int parent, int param, int arg); /* make an object */
-extern u8 func_020b65c4(void);                                         /* the scene */
-extern int func_020b6788(void); /* whether the scene places every player of a linked session */
-extern int func_020b6660(void); /* whether the scene keeps this system's player at the entry */
-/* A session player's record number (func_02096284), the next player's turn (func_020961c0,
- * func_020961f0) and the player's actor made (class 9) at a place (func_020952ac). */
-extern u8 func_02096284(int player);
-extern int func_020961c0(void);
-extern void func_020961f0(int player, int value);
-extern void func_020952ac(int player, const Vec3 *position, const s16 *angle, int param);
-/* Main's entry record (data_021f69d0, func_020b5e10 gives it): whether its byte 1 is set (the
- * scene's own point is used then), its position, its angle and its word 0x10. */
-extern void *func_020b5e10(void);
-extern int func_020b5e24(void *entry);
-extern const Vec3 *func_020b5e40(void *entry);
-extern int func_020b5e38(void *entry);
-extern int func_020b5e34(void *entry);
 
 /* Scenes that make no players' actors. */
 #define SCENE_SETUP_NO_PLAYERS_A 0x0d
@@ -80,11 +70,11 @@ static void scene_setup_point(const SceneSetupPoint *point, Vec3 *position, s16 
 /* The angles (a turn about Y only) and parameter of main's entry record. */
 static void scene_setup_entry_angle(s16 *angle, int *param)
 {
-    int yaw = func_020b5e38(func_020b5e10());
+    int yaw = SceneExit_Angle((const SceneExit *) (uintptr_t) SceneTables_EntryRecord());
     angle[0] = 0;
     angle[1] = (s16) yaw;
     angle[2] = 0;
-    *param = func_020b5e34(func_020b5e10());
+    *param = SceneExit_PlayerParam((const SceneExit *) (uintptr_t) SceneTables_EntryRecord());
 }
 
 /* func_020b0abc */
@@ -105,7 +95,7 @@ CLEAN_AS(func_020b0ad4, SceneSetup_End)
  * parameter. */
 void SceneSetup_SpawnEndObject(SceneSetupEnd *end)
 {
-    func_0202f134(SCENE_SETUP_END_CLASS, data_021f42f4, end->param, 0);
+    GameProcess_SpawnChild(SCENE_SETUP_END_CLASS, data_021f42f4, end->param, 0);
 }
 CLEAN_AS(func_020b0ae0, SceneSetup_SpawnEndObject)
 
@@ -150,7 +140,7 @@ int SceneSetup_SpawnObjects(SceneSetupStep *step, u8 *item, u64 start)
     u8 i = item != NULL ? *item : 0;
     const SceneSetupObject *object = (const SceneSetupObject *) step->items + i;
     for (;;) {
-        func_0202f134(object->profile, data_021f42f4, object->param, 0);
+        GameProcess_SpawnChild(object->profile, data_021f42f4, object->param, 0);
         object++;
         i++;
         if (item != NULL) {
@@ -178,25 +168,25 @@ int SceneSetup_SpawnPlayers(SceneSetupStep *step)
     s16 angle[3];
     int param;
 
-    if (points != NULL && func_020b65c4() != SCENE_SETUP_NO_PLAYERS_A && func_020b65c4() != SCENE_SETUP_NO_PLAYERS_B &&
-        func_020b65c4() != SCENE_SETUP_NO_PLAYERS_C) {
-        if (func_020b6788() != 0) {
+    if (points != NULL && SceneQuery_Current() != SCENE_SETUP_NO_PLAYERS_A &&
+        SceneQuery_Current() != SCENE_SETUP_NO_PLAYERS_B && SceneQuery_Current() != SCENE_SETUP_NO_PLAYERS_C) {
+        if (SceneKinds_CurrentIsSession() != 0) {
             Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot);
             for (int player = 0; player < SCENE_SETUP_PLAYERS; player++) {
                 if (SceneSetup_PlayerPlace(points, player, 1, &position, angle, &param) != 0) {
-                    func_020952ac(player, &position, angle, param);
+                    PlayerActors_Spawn(player, &position, angle, param);
                 }
             }
         } else {
             for (int player = 0; player < SCENE_SETUP_PLAYERS; player++) {
                 if (SceneSetup_PlayerPlace(points, player, 0, &position, angle, &param) != 0) {
-                    func_020961f0(player, func_020961c0());
-                    func_020952ac(player, &position, angle, param);
+                    SessionPlayers_SetLookIndex(player, SessionPlayers_FreeLookIndex());
+                    PlayerActors_Spawn(player, &position, angle, param);
                 }
             }
         }
     }
-    func_0202f134(SCENE_SETUP_AFTER_PLAYERS_CLASS, data_021f42f4, 0, 0);
+    GameProcess_SpawnChild(SCENE_SETUP_AFTER_PLAYERS_CLASS, data_021f42f4, 0, 0);
     return 1;
 }
 CLEAN_AS(func_020b0c4c, SceneSetup_SpawnPlayers)
@@ -210,15 +200,16 @@ CLEAN_AS(func_020b0c4c, SceneSetup_SpawnPlayers)
 int SceneSetup_PlayerPlace(const SceneSetupPoint *points, int player, int linked, Vec3 *position, s16 *angle, int *param)
 {
     if (linked != 0) {
-        int record = func_02096284(player);
+        int record = SessionPlayers_RecordNumber(player);
         if (record >= PLAYER_RECORDS_TOWN) {
             return 0;
         }
-        if (PlayerRecords_TownExists(data_021dc7bc, func_02096284(player)) == 0) {
+        if (PlayerRecords_TownExists(data_021dc7bc, SessionPlayers_RecordNumber(player)) == 0) {
             return 0;
         }
-        if (Session_IsLocalPlayer(data_020ccf94, player) != 0 && func_020b5e24(func_020b5e10()) == 0) {
-            *position = *func_020b5e40(func_020b5e10());
+        if (Session_IsLocalPlayer(data_020ccf94, player) != 0 &&
+            SceneExit_UsesOwnPoint((const SceneExit *) (uintptr_t) SceneTables_EntryRecord()) == 0) {
+            *position = *(Vec3 *) (uintptr_t) SceneExit_Position((SceneExit *) (uintptr_t) SceneTables_EntryRecord());
             scene_setup_entry_angle(angle, param);
         } else {
             scene_setup_point(&points[record], position, angle, param);
@@ -229,17 +220,17 @@ int SceneSetup_PlayerPlace(const SceneSetupPoint *points, int player, int linked
     if (Session_IsLocalPlayer(data_020ccf94, player) == 0) {
         return 0;
     }
-    if (func_020b5e24(func_020b5e10()) != 0) {
+    if (SceneExit_UsesOwnPoint((const SceneExit *) (uintptr_t) SceneTables_EntryRecord()) != 0) {
         scene_setup_point(&points[0], position, angle, param);
         return 1;
     }
     Vec3 offset = {0, 0, 0};
-    if (func_020b6660() == 0) {
+    if (SceneQuery_CurrentIs0() == 0) {
         offset.x = (player & 3) * SCENE_SETUP_PLAYER_SPACING - SCENE_SETUP_PLAYER_OFFSET;
-        Vec_RotateY(&offset, func_020b5e38(func_020b5e10()));
+        Vec_RotateY(&offset, SceneExit_Angle((const SceneExit *) (uintptr_t) SceneTables_EntryRecord()));
     }
     Vec3 sum;
-    Vec_Add(&sum, func_020b5e40(func_020b5e10()), &offset);
+    Vec_Add(&sum, (const Vec3 *) (uintptr_t) SceneExit_Position((SceneExit *) (uintptr_t) SceneTables_EntryRecord()), &offset);
     *position = sum;
     scene_setup_entry_angle(angle, param);
     return 1;

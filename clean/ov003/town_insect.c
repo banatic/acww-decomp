@@ -37,6 +37,8 @@
 #include "ov003/town_insect_tables.h"
 #include "ov003/town_tile_mask.h"
 #include "ov009/scene_actor.h"
+#include "object_actors.h"
+#include "ov068/insect_paths.h"
 
 static_assert(offsetof(TownInsectModel, frames) == 0x9c, "TownInsectModel.frames");
 static_assert(sizeof(TownInsectModel) == 0xb8, "TownInsectModel");
@@ -75,13 +77,15 @@ extern TownInsect data_ov003_02260e4c[TOWN_INSECT_HELD_COUNT];
 extern TownInsect data_ov003_022617bc[TOWN_INSECT_TOWN_COUNT];
 extern const TownInsectKindInfo data_ov003_0223c144[TOWN_INSECT_KINDS];
 
-/* What each kind does when let go (TownInsect_LetGo): a function of the record, then a word. */
-typedef void (*TownInsectLetGoFn)(TownInsect *insect);
-typedef struct TownInsectLetGo {
-    u32 function;
-    u32 unk_04;
-} TownInsectLetGo;
-extern const TownInsectLetGo data_ov003_0223c2ac[TOWN_INSECT_KINDS];
+/* The insect kinds' start and update functions (town_insect_kinds.h): the start function is run
+ * once the kind's files are loaded (TownInsect_Load) or when a player lets the insect go
+ * (TownInsect_LetGo); the update function is kept in TownInsect.unk_170 and run each frame. */
+typedef void (*TownInsectKindFn)(TownInsect *insect);
+typedef struct TownInsectKindFunctions {
+    u32 start;  /* a TownInsectKindFn */
+    u32 update; /* a TownInsectKindFn */
+} TownInsectKindFunctions;
+extern const TownInsectKindFunctions data_ov003_0223c2ac[TOWN_INSECT_KINDS];
 
 /* The insect animation's vtable. */
 extern const u32 data_ov003_0223c0ec[];
@@ -136,22 +140,9 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern void func_020012e8(void *object);
 extern void func_020012dc(void *object);
 
-/* An actor of overlay 3 by its map code. */
-extern SceneActor *func_ov003_02220174(u16 code);
 /* Whether the tile's item code suits insect kind 2 or 3 of place 1. */
 /* Loose snowball `index` (0 or 1) when it is idle, else NULL. */
-/* An angle of `steps` steps of 5 degrees at random, either side when `both`. */
-extern short func_ov003_02233c70(int steps, int both);
-/* The process's functions for one insect. */
-extern void func_ov003_0222fe18(TownInsectProcess *process, TownInsect *insect, int mode);
-extern void func_ov003_0222fa20(TownInsectProcess *process, TownInsect *insect, int mode);
-extern void func_ov003_0222f6b0(TownInsectProcess *process, TownInsect *insect, int index, int mode);
-extern int func_ov003_0222ffdc(TownInsectProcess *process, TownInsect *insect);
-extern int func_ov003_0222ff2c(TownInsectProcess *process, TownInsect *insect);
-extern int func_ov003_02234030(TownInsect *insect, int on);
 /* A town insect's message from the session (kind, point, byte 0x254). */
-/* Overlay 68: the event insect shown (alpha 0x1f, action 0x12). */
-extern void func_ov068_0226fe00(TownInsect *insect);
 
 /* `value` shifted as the ARM does by a register: by its low byte, 0 from 32 on. */
 static u32 town_insect_shl(u32 value, int amount)
@@ -434,7 +425,7 @@ void TownInsect_UnmarkSceneActors(TownInsectMask *mask)
         if (tiles == 0) {
             continue;
         }
-        SceneActor *actor = func_ov003_02220174(code);
+        SceneActor *actor = ObjectActors_FindByCode(code);
         if (actor == NULL) {
             continue;
         }
@@ -1126,7 +1117,7 @@ int TownInsect_Place(TownInsectProcess *process, int kind, int place, int mode)
                 continue;
             }
             fx32 size = Snowman_Size(ball);
-            short angle = func_ov003_02233c70(0x20, 1);
+            short angle = TownInsectMove_RandomTurn(0x20, 1);
             if (player != NULL && Vec_DistanceXZ(&player->position, &ball->position) > 0xc000) {
                 Vec3 *position = &insect->position;
                 position->x = ball->position.x;
@@ -1140,7 +1131,7 @@ int TownInsect_Place(TownInsectProcess *process, int kind, int place, int mode)
                 insect->kind = (s8) kind;
                 insect->in_view = 0;
                 insect->unk_21c = (int) n;
-                func_ov003_0222ff2c(process, insect);
+                TownInsect_StartTown(process, insect);
                 return 1;
             }
         }
@@ -1154,7 +1145,7 @@ int TownInsect_Place(TownInsectProcess *process, int kind, int place, int mode)
         insect->start.y = insect->position.y;
         insect->start.z = insect->position.z;
         if (mode == TOWN_INSECT_MODE_TOWN) {
-            func_ov003_0222ff2c(process, insect);
+            TownInsect_StartTown(process, insect);
         }
         return 1;
     }
@@ -1198,7 +1189,7 @@ void TownInsect_UpdateView(TownInsectProcess *process, int mode)
         }
         int weather = TownInsect_Weather(insect->kind, falling);
         if (insect->in_view == 0 && weather == TOWN_INSECT_WEATHER_AWAY) {
-            func_ov003_0222fe18(process, insect, mode);
+            TownInsect_Remove(process, insect, mode);
         } else {
             insect->unk_246 = weather == TOWN_INSECT_WEATHER_QUIET ? 0 : 1;
             int x = insect->position.x;
@@ -1244,7 +1235,7 @@ void TownInsect_UpdatePlayerView(TownInsectProcess *process, int mode, int playe
         }
         u8 in_view = insect->in_view;
         if (in_view == 0 && weather == TOWN_INSECT_WEATHER_AWAY) {
-            func_ov003_0222fe18(process, insect, mode);
+            TownInsect_Remove(process, insect, mode);
             continue;
         }
         int px = insect->position.x;
@@ -1269,15 +1260,15 @@ CLEAN_AS(func_ov003_0222dec4, TownInsect_UpdatePlayerView)
 int TownInsect_RemoveAll(TownInsectProcess *process)
 {
     for (int i = 0; i < TOWN_INSECT_TOWN_COUNT; i++) {
-        func_ov003_0222fe18(process, &data_ov003_022617bc[i], TOWN_INSECT_MODE_TOWN);
+        TownInsect_Remove(process, &data_ov003_022617bc[i], TOWN_INSECT_MODE_TOWN);
     }
     for (int i = 0; i < TOWN_INSECT_EVENT_COUNT; i++) {
-        func_ov003_0222fe18(process, &data_ov003_02260994[i], TOWN_INSECT_MODE_EVENT);
+        TownInsect_Remove(process, &data_ov003_02260994[i], TOWN_INSECT_MODE_EVENT);
         Heap_FreeCurrent(process->blocks[i]);
         process->blocks[i] = NULL;
     }
     for (int i = 0; i < TOWN_INSECT_HELD_COUNT; i++) {
-        func_ov003_0222fe18(process, &data_ov003_02260e4c[i], TOWN_INSECT_MODE_HELD);
+        TownInsect_Remove(process, &data_ov003_02260e4c[i], TOWN_INSECT_MODE_HELD);
     }
     ModelPool_Destroy(&process->pools[0]);
     ModelPool_Destroy(&process->pools[1]);
@@ -1700,7 +1691,7 @@ u8 TownInsect_HeldState(int player)
 CLEAN_AS(func_ov003_0222ea84, TownInsect_HeldState)
 
 /* func_ov003_0222eabc: player `player`'s held insect let go facing `angle`, at full scale: its
- * kind's function (data_ov003_0223c2ac) run, then kinds 0xc, 0xd and 0x1b-0x1d handed to
+ * kind's start function (data_ov003_0223c2ac) run, then kinds 0xc, 0xd and 0x1b-0x1d handed to
  * func_ov003_02234030 and kind 0x39's effect ended. Without a kind of the table it is ended
  * and leaves. */
 void TownInsect_LetGo(int player, int angle)
@@ -1713,14 +1704,14 @@ void TownInsect_LetGo(int player, int angle)
     insect->angle_y = (s16) angle;
     int kind = insect->kind;
     if (kind >= 0 && kind < TOWN_INSECT_KINDS) {
-        ((TownInsectLetGoFn) (uintptr_t) data_ov003_0223c2ac[kind].function)(insect);
+        ((TownInsectKindFn) (uintptr_t) data_ov003_0223c2ac[kind].start)(insect);
         switch (insect->kind) {
             case 0xc:
             case 0xd:
             case 0x1b:
             case 0x1c:
             case 0x1d:
-                func_ov003_02234030(insect, 1);
+                TownInsectMove_TurnToHeading(insect, 1);
                 break;
             case TOWN_INSECT_KIND_GLOWING:
                 if (insect->effect != -1) {
@@ -1814,24 +1805,24 @@ void TownInsect_UpdateHeld(TownInsectProcess *process)
                 EffectSystem_EndHandle(insect->effect);
                 insect->effect = -1;
             }
-            func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_HELD);
+            TownInsect_Remove(process, insect, TOWN_INSECT_MODE_HELD);
             continue;
         }
         switch (insect->state) {
             case TOWN_INSECT_STATE_1:
-                func_ov003_0222ffdc(process, insect);
+                TownInsect_StartHeld(process, insect);
                 break;
             case TOWN_INSECT_STATE_2:
-                func_ov003_0222fa20(process, insect, 2);
+                TownInsect_Load(process, insect, 2);
                 CollisionQuery_Move(&insect->contacts, &insect->position, &insect->position, insect->angle_y,
                                     town_insect_kind_info(insect->kind)->size, NULL, 0xa);
                 break;
             case TOWN_INSECT_STATE_ACTIVE:
-                func_ov003_0222f6b0(process, insect, i, TOWN_INSECT_MODE_HELD);
+                TownInsect_Run(process, insect, i, TOWN_INSECT_MODE_HELD);
                 break;
             case TOWN_INSECT_STATE_LEAVING:
                 insect->action = TOWN_INSECT_ACTION_END;
-                func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_HELD);
+                TownInsect_Remove(process, insect, TOWN_INSECT_MODE_HELD);
                 break;
             default:
                 break;
@@ -1848,16 +1839,16 @@ void TownInsect_UpdateEvent(TownInsectProcess *process)
     for (u8 i = 0; i < TOWN_INSECT_EVENT_COUNT; i++, insect++) {
         switch (insect->state) {
             case TOWN_INSECT_STATE_2:
-                func_ov003_0222fa20(process, insect, 1);
+                TownInsect_Load(process, insect, 1);
                 break;
             case TOWN_INSECT_STATE_ACTIVE:
                 if (insect->position.x > 0x1000) {
-                    func_ov003_0222f6b0(process, insect, i, TOWN_INSECT_MODE_EVENT);
+                    TownInsect_Run(process, insect, i, TOWN_INSECT_MODE_EVENT);
                 }
                 break;
             case TOWN_INSECT_STATE_LEAVING:
                 insect->action = TOWN_INSECT_ACTION_END;
-                func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_EVENT);
+                TownInsect_Remove(process, insect, TOWN_INSECT_MODE_EVENT);
                 break;
             default:
                 break;
@@ -1991,7 +1982,7 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
                         }
                     } else if (byte254 == TOWN_INSECT_BYTE254_GONE || x == 1) {
                         if (!(kind == 0x1e && (insect->action == 9 || insect->action == TOWN_INSECT_ACTION_11))) {
-                            func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_TOWN);
+                            TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
                         }
                     } else {
                         if (insect->target.x != x || insect->target.z != z) {
@@ -2010,12 +2001,12 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
             case TOWN_INSECT_STATE_2:
                 if (LinkGlobal_HoldsScene() == 0 && Session_IsSlotTaken(session, session->local_slot) != 0) {
                     if (kind != insect->kind && x > 0) {
-                        func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_TOWN);
+                        TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
                     } else if (TownInsect_OnItsTile((int) (uintptr_t) process, insect) != 0) {
-                        func_ov003_0222fa20(process, insect, 0);
+                        TownInsect_Load(process, insect, 0);
                     }
                 } else {
-                    func_ov003_0222fa20(process, insect, 0);
+                    TownInsect_Load(process, insect, 0);
                 }
                 break;
             case TOWN_INSECT_STATE_ACTIVE:
@@ -2023,17 +2014,17 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
                     if (LinkGlobal_HoldsScene() == 0 &&
                         TownInsect_CheckTarget((int) (uintptr_t) process, insect, kind, x, z) != 0) {
                         insect->action = TOWN_INSECT_ACTION_END;
-                        func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_TOWN);
+                        TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
                     }
                     int own = insect->kind;
                     insect->unk_246 = TownInsect_Weather(own, Sky_Falling()) == TOWN_INSECT_WEATHER_QUIET ? 0 : 1;
                 }
-                func_ov003_0222f6b0(process, insect, i, TOWN_INSECT_MODE_TOWN);
+                TownInsect_Run(process, insect, i, TOWN_INSECT_MODE_TOWN);
                 break;
             case TOWN_INSECT_STATE_LEAVING:
                 if (Session_IsSlotTaken(session, session->local_slot) == 0) {
                     insect->action = TOWN_INSECT_ACTION_END;
-                    func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_TOWN);
+                    TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
                 } else if (LinkGlobal_HoldsScene() != 0) {
                     Vec3 at = insect->position;
                     SoundSource_UpdateAt(&insect->source, &at);
@@ -2053,7 +2044,7 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
                     insect->frames_left++;
                     if (insect->frames_left > 200) {
                         insect->action = TOWN_INSECT_ACTION_END;
-                        func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_TOWN);
+                        TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
                     }
                 } else {
                     Vec3 at = insect->position;
@@ -2062,7 +2053,7 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
                         insect->action = TOWN_INSECT_ACTION_END;
                     }
                     if (insect->action == TOWN_INSECT_ACTION_END) {
-                        func_ov003_0222fe18(process, insect, TOWN_INSECT_MODE_TOWN);
+                        TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
                     }
                 }
                 break;
@@ -2105,7 +2096,7 @@ void TownInsect_UpdateTown(TownInsectProcess *process)
             u8 place = 0xff;
             if (TownInsect_SpecialKind(&kind, &place, 0) != 0 &&
                 TownInsect_Place(process, (s8) kind, place, TOWN_INSECT_MODE_EVENT) != 0) {
-                func_ov068_0226fe00(&data_ov003_02260994[1]);
+                InsectPath_Show(&data_ov003_02260994[1]);
                 data_ov003_02260538 = 0;
             }
         }
@@ -2272,13 +2263,6 @@ extern int func_0205ca30(int size, int parent);
 extern void func_0205ca14(void);
 extern int func_0205c9fc(int size, int parent);
 extern void func_0205c9e0(void);
-/* Two members of the process with nothing to do: the destructor and the constructor. */
-/* The insect fades out: it leaves (TOWN_INSECT_STATE_LEAVING) with its model's alpha 0. */
-extern void func_ov003_02230f60(TownInsect *insect);
-
-/* The insect kinds' start and update functions (data_ov003_0223c2ac): the first is run once its
- * files are loaded, the second is kept in TownInsect.unk_170 and run each frame. */
-typedef void (*TownInsectKindFn)(TownInsect *insect);
 
 /* Whether a kind animates by visibility ("%s.nsbva", stepped by the model's own frames) rather
  * than by its joints ("%s.nsbca", stepped each frame here): byte 0 of its entry. */
@@ -2424,7 +2408,7 @@ void TownInsect_CountDown(int unused, TownInsect *insect)
                 if (insect->timer > 5) {
                     insect->timer--;
                 } else {
-                    func_ov003_02230f60(insect);
+                    TownInsectMove_Leave(insect);
                 }
             }
             break;
@@ -2433,7 +2417,7 @@ void TownInsect_CountDown(int unused, TownInsect *insect)
                 if (insect->timer > 0) {
                     insect->timer--;
                 } else {
-                    func_ov003_02230f60(insect);
+                    TownInsectMove_Leave(insect);
                 }
             }
             break;
@@ -2443,7 +2427,7 @@ void TownInsect_CountDown(int unused, TownInsect *insect)
                 if (insect->unk_236 > 0x1f) {
                     insect->unk_236--;
                 } else {
-                    func_ov003_02230f60(insect);
+                    TownInsectMove_Leave(insect);
                 }
             }
             break;
@@ -2553,8 +2537,8 @@ void TownInsect_Load(TownInsectProcess *process, TownInsect *insect, int pool)
     }
     Vec3 scale = insect->scale;
     SoundSource_Init(&insect->source);
-    ((TownInsectKindFn) (uintptr_t) data_ov003_0223c2ac[kind].function)(insect);
-    insect->unk_170 = (int) data_ov003_0223c2ac[kind].unk_04;
+    ((TownInsectKindFn) (uintptr_t) data_ov003_0223c2ac[kind].start)(insect);
+    insect->unk_170 = (int) data_ov003_0223c2ac[kind].update;
     insect->state = TOWN_INSECT_STATE_ACTIVE;
     insect->unk_24a = 0;
     TownInsect_SetMatrix((int) (uintptr_t) process, insect, 0);

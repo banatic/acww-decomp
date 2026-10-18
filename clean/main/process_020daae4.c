@@ -3,6 +3,10 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "event_entries.h"
+#include "link_scene.h"
+#include "object_claim.h"
+#include "scene_process_base.h"
 
 extern const u32 data_020daae4[]; /* its class */
 extern const u32 data_020da13c[]; /* the processes' root class */
@@ -38,32 +42,23 @@ extern List data_021c72c4;
 /* The scene's process, or NULL. */
 extern Process *data_021f42f4;
 
-/* Whether there is a current event. */
-extern int func_0203ec98(void);
-/* Every event of the list taken out and freed. */
-extern void func_0203f568(List *list);
-extern void func_020a6d24(void);
-extern void func_020a6ce4(void);
-/* A function of the scene's process (it reads the game-stop latch, game_stop.h). */
-extern void func_020a529c(Process *scene);
-
 /* func_0203e514 (slot 6): the current event stepped (running, then ending); without one, the
  * next queued one taken; a current one stepped while starting; then every event still queued
  * is dropped. Done at once (1).
  * QUIRK: an event asked for and not taken in the frame it was asked for is freed. */
 int Process020daae4_Execute(Process *process)
 {
-    if (func_0203ec98()) {
+    if (EventQueue_HasCurrent()) {
         EventQueue_StepRunning(process);
         EventQueue_StepEnding(process);
     }
-    if (!func_0203ec98()) {
+    if (!EventQueue_HasCurrent()) {
         EventQueue_TakeNext(process);
     }
-    if (func_0203ec98()) {
+    if (EventQueue_HasCurrent()) {
         EventQueue_StepStarting(process);
     }
-    func_0203f568(&data_021c72c4);
+    EventEntries_FreeList(&data_021c72c4);
     return 1;
 }
 CLEAN_AS(func_0203e514, Process020daae4_Execute)
@@ -73,10 +68,10 @@ CLEAN_AS(func_0203e514, Process020daae4_Execute)
 void Process020daae4_AfterExecute(Process *process, int outcome)
 {
     (void) outcome;
-    func_020a6d24();
-    func_020a6ce4();
+    LinkScene_SendLeftState();
+    LinkScene_SendAskedState();
     if (data_021f42f4 != NULL) {
-        func_020a529c(data_021f42f4);
+        SceneProcessBase_CheckChange(data_021f42f4);
     }
     Process_AfterExecute(process);
 }
@@ -93,15 +88,13 @@ CLEAN_AS(func_0203e510, Process020daae4_Draw)
 
 /* The flags of main's queue of events (event_queue.h). */
 extern u32 data_021c72c0;
-/* The session's slots of objects cleared, and its answer byte back to 6 (nothing asked). */
-extern void func_0203f4c4(void);
 
 /* func_0203ec78 (slot 0): the queue of events started over, the session's slots cleared and
  * every flag cleared; done at once. */
 int Process020daae4_Create(void)
 {
     EventQueue_Reset();
-    func_0203f4c4();
+    ObjectClaim_Reset();
     data_021c72c0 = 0;
     return 1;
 }

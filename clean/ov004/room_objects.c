@@ -36,7 +36,7 @@ static_assert(offsetof(RoomObject, unk_78C) == 0x78c, "unk_78C");
 static_assert(offsetof(RoomObject, top_height) == 0x790, "top height");
 static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 
-/* The player's actor (func_020961a8). */
+/* The player's actor (SessionPlayers_ActorOf). */
 #define ROOM_OBJECTS_PLAYER 4
 
 /* The kinds of RoomObject.unk_780 that RoomObjects_RequestOn and RoomObjects_RequestOff
@@ -77,7 +77,7 @@ extern const fx32 data_ov004_02247cec[2];
 extern Vec3 data_ov004_0225967c;
 
 /* The two offsets of RoomObjects_CheckStepXMinus and RoomObjects_CheckStepXPlus, built on the
- * first call (bit 0 of each guard) and registered for destruction (func_020012dc, which does
+ * first call (bit 0 of each guard) and registered for destruction (TrivialObject_Destruct, which does
  * nothing). */
 extern u32 data_ov004_022595c8;
 extern Vec3 data_ov004_02259664;

@@ -5,6 +5,9 @@
 #include "clean.h"
 #include "main/display_3d.h"
 #include "main/display_shadow.h"
+#include "oam_buffer.h"
+#include "screen_transition.h"
+#include "transfer_queue.h"
 
 #define REG16(addr) (*(volatile u16 *) (uintptr_t) (addr))
 #define REG32(addr) (*(volatile u32 *) (uintptr_t) (addr))
@@ -67,15 +70,6 @@ extern void func_02110a78(void);
 extern u32 GX_ResetBankForSubBGExtPltt(void);
 extern u32 GX_ResetBankForSubOBJExtPltt__autoload_2_02110a28(void);
 
-extern void func_02089954(void); /* flush both engines' OBJ attribute copies */
-extern void func_0208997c(void); /* load them into the OAM */
-extern void func_020898e8(void); /* reset the copies */
-extern void func_02041bb8(void); /* the screen transition's step after the VBlank */
-extern void func_02041c28(void); /* its step after the drawing */
-extern void func_02041dc4(void); /* its reset */
-extern void func_020b98dc(void);
-extern void func_020b9990(void);
-
 extern int data_021c8c9c;                /* POWCNT1's swap bit: 1 for the main engine on top */
 extern DisplayFrameHooks *data_021c8ca0; /* the running scene's hooks, or NULL */
 
@@ -135,9 +129,9 @@ void DisplayFrame_AfterVBlank(void)
     u32 swap = (u32) data_021c8c9c;
     REG16(REG_POWCNT1) = (u16) ((REG16(REG_POWCNT1) & ~POWCNT_SWAP) | swap << 15);
 
-    func_02089954();
-    func_0208997c();
-    func_02041bb8();
+    OamBuffer_Flush();
+    OamBuffer_Load();
+    ScreenTransition_AfterVBlank();
     Display3D_ApplyClearColor();
     DisplayShadow_WriteModes();
     if (data_021c8ca0 != NULL) {
@@ -155,7 +149,7 @@ void DisplayFrame_EndDraw(void)
     if (hooks != NULL) {
         hooks->vtable->end_draw(hooks);
     }
-    func_02041c28();
+    ScreenTransition_AfterDraw();
 }
 CLEAN_AS(func_02054070, DisplayFrame_EndDraw)
 
@@ -167,7 +161,7 @@ CLEAN_AS(func_02054090, DisplayFrame_NoEndDraw)
  * scene's hook, the 3D engine reset, and an empty hook. */
 void DisplayFrame_Begin(void)
 {
-    func_020898e8();
+    OamBuffer_Reset();
     if (data_021c8ca0 != NULL) {
         data_021c8ca0->vtable->begin(data_021c8ca0);
     }
@@ -201,7 +195,7 @@ void DisplayFrame_Init(void)
 {
     System_Nothing();
     DisplayFrame_ResetState();
-    func_02041dc4();
+    ScreenTransition_Reset();
     REG16(REG_POWCNT1) = (u16) ((REG16(REG_POWCNT1) & ~POWCNT_ENGINES) | POWCNT_ENGINES);
     GX_SetBankForLCDC(VRAM_LCDC_ALL_BUT_D);
     MIi_CpuClearFast(0, (void *) (uintptr_t) LCDC_VRAM, LCDC_CLEAR_SIZE);
@@ -210,7 +204,7 @@ void DisplayFrame_Init(void)
     MIi_CpuClearFast(0, (void *) (uintptr_t) PALETTES, PALETTES_SIZE);
     Display3D_Init();
     Display_LoadBackdropColor();
-    func_020b98dc();
-    func_020b9990();
+    TransferQueue_ClearMain();
+    TransferQueue_ClearVBlank();
 }
 CLEAN_AS(func_020540e4, DisplayFrame_Init)

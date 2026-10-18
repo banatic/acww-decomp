@@ -6,21 +6,15 @@
 #include "clean.h"
 #include "scene_query.h"
 #include "session.h"
+#include "main_random.h"
+#include "session_players.h"
+#include "town_acre_count.h"
+#include "town_place.h"
 
 extern TownDay data_021c779c;
 extern NetSession *data_020ccf94;
 /* The weights (out of 100) of the beach items 0x1554-0x155c. */
 extern const int data_020cac9c[TOWN_BEACH_ITEM_KINDS];
-
-extern u32 func_020644cc(int range); /* a random number below `range` */
-/* The item put on a free tile of acre (acre_x, acre_z) that `fits` accepts; whether it was. */
-extern int func_02048cb8(void *town, AcreMap *map, int acre_x, int acre_z, u16 item, int (*fits)(int, int, int), int arg);
-/* The tile test func_02048cb8 is handed for the beach. */
-extern int func_02048e34(int a, int b, int c);
-/* Beach acre `acre_x` (from 0) of the summary counted again. */
-extern void func_0204a370(TownDayAcres *acres, AcreMap *map, int acre_x, int acre_z);
-/* A player of the session: its scene and position (x and z); whether there is one. */
-extern int func_02096614(u8 *scene, int *x, int *z, int unk, int player);
 
 /* A player's actor, as far as it is read here. */
 typedef struct TownBeachActor {
@@ -29,9 +23,6 @@ typedef struct TownBeachActor {
     int y;
     int z; /* 0x64 */
 } TownBeachActor;
-
-/* The actor of the player at this console. */
-extern TownBeachActor *func_020961a8(int player);
 
 #define TOWN_BEACH_THIS_PLAYER 4
 #define TOWN_BEACH_PLAYERS 4
@@ -46,11 +37,11 @@ static AcreMap *TownBeach_Map(void)
  * whether it was. */
 int TownBeach_PutBottle(int town)
 {
-    u32 acre_x = func_020644cc(TOWN_BEACH_ACRE_ROW);
+    u32 acre_x = MainRandom_Below(TOWN_BEACH_ACRE_ROW);
     AcreMap *map = TownBeach_Map();
     for (int i = 0; i < 4; i++) {
-        if (func_02048cb8((void *) (uintptr_t) town, map, (int) acre_x + 1, TOWN_BEACH_ACRE_ROW, BOTTLE_ITEM, func_02048e34,
-                          0) != 0) {
+        if (TownPlace_PutInAcre((void *) (uintptr_t) town, map, (int) acre_x + 1, TOWN_BEACH_ACRE_ROW, BOTTLE_ITEM,
+                                func_02048e34, 0) != 0) {
             return 1;
         }
         acre_x = (acre_x + 1) & 3;
@@ -68,7 +59,7 @@ void TownBeach_Fill(TownDay *town, AcreMap *map)
         int missing = TOWN_BEACH_FILL - data_021c779c.acres.acres[acre_x][TOWN_DAY_BEACH_ROW].beach_items;
         for (; missing > 0; missing--) {
             u16 item = (u16) TownBeach_DrawItem(town);
-            func_02048cb8(town, map, acre_x + 1, TOWN_BEACH_ACRE_ROW, item, func_02048e34, 0);
+            TownPlace_PutInAcre(town, map, acre_x + 1, TOWN_BEACH_ACRE_ROW, item, func_02048e34, 0);
         }
     }
     Calendar_Now(&data_021c779c.beach_time);
@@ -116,7 +107,7 @@ void TownBeach_UpdateLinked(int town)
     for (int player = 0; player < TOWN_BEACH_PLAYERS; player++) {
         int x[2];
         int z;
-        if (func_02096614(&at.scene, x, &z, -1, player) == 0) {
+        if (SessionPlayers_ScenePoint(&at.scene, x, &z, -1, player) == 0) {
             continue;
         }
         if (SceneQuery_Is0(at.scene) == 0 && SceneQuery_Is31(at.scene) == 0) {
@@ -129,7 +120,7 @@ void TownBeach_UpdateLinked(int town)
     }
     if (!on_beach) {
         AcreMap *map = TownBeach_Map();
-        int acre_x = (int) func_020644cc(TOWN_BEACH_ACRE_ROW);
+        int acre_x = (int) MainRandom_Below(TOWN_BEACH_ACRE_ROW);
         TownBeach_WashUp(town, map, acre_x);
     }
     data_021c779c.beach_time = at.now;
@@ -146,10 +137,10 @@ void TownBeach_UpdateAlone(int town)
     if (!TownBeach_IsWashTime(now)) {
         return;
     }
-    const TownBeachActor *actor = func_020961a8(TOWN_BEACH_THIS_PLAYER);
+    const TownBeachActor *actor = SessionPlayers_ActorOf(TOWN_BEACH_THIS_PLAYER);
     if (actor != NULL) {
         AcreMap *map = TownBeach_Map();
-        int acre_x = (int) func_020644cc(TOWN_BEACH_ACRE_ROW);
+        int acre_x = (int) MainRandom_Below(TOWN_BEACH_ACRE_ROW);
         int on_x = actor->x >> TOWN_BEACH_ACRE_SHIFT;
         int on_z = actor->z >> TOWN_BEACH_ACRE_SHIFT;
         if (on_z != TOWN_BEACH_ACRE_ROW || on_x != acre_x + 1) {
@@ -164,10 +155,10 @@ CLEAN_AS(func_02047050, TownBeach_UpdateAlone)
  * holds fewer than four. */
 void TownBeach_WashUp(int town, AcreMap *map, int acre_x)
 {
-    func_0204a370(&data_021c779c.acres, map, acre_x, 3);
+    TownAcreCount_CountInner(&data_021c779c.acres, map, acre_x, 3);
     if (data_021c779c.acres.acres[acre_x][TOWN_DAY_BEACH_ROW].beach_items < TOWN_BEACH_MOST) {
         u16 item = (u16) TownBeach_DrawItem((TownDay *) (uintptr_t) town);
-        func_02048cb8((void *) (uintptr_t) town, map, acre_x + 1, TOWN_BEACH_ACRE_ROW, item, func_02048e34, 0);
+        TownPlace_PutInAcre((void *) (uintptr_t) town, map, acre_x + 1, TOWN_BEACH_ACRE_ROW, item, func_02048e34, 0);
     }
 }
 CLEAN_AS(func_020470c0, TownBeach_WashUp)
@@ -176,7 +167,7 @@ CLEAN_AS(func_020470c0, TownBeach_WashUp)
 int TownBeach_DrawItem(TownDay *town)
 {
     (void) town;
-    int left = (int) func_020644cc(100);
+    int left = (int) MainRandom_Below(100);
     int item = TOWN_BEACH_FIRST_ITEM;
     for (int i = 0; i < TOWN_BEACH_ITEM_KINDS; i++) {
         left -= data_020cac9c[i];

@@ -11,6 +11,11 @@
 #include "g3d_resource.h"
 #include "model_loader.h"
 #include "vram_copy_task.h"
+#include "fishing_float.h"
+#include "g3d_tex_copy.h"
+#include "globe.h"
+#include "held_item_pool.h"
+#include "item_info.h"
 
 /* The ModelLoaderTask.state of a task that is queued. */
 #define HELD_ITEM_TASK_QUEUED 1
@@ -81,49 +86,9 @@ extern const char data_020dd75c[];
 extern const char data_020dd764[];
 
 /* The pool's entry `index`: */
-extern ItemCode *func_0205f100(u8 *pool, int index);                    /* its item code */
-extern ModelAnim *func_0205f110(u8 *pool, int index);                   /* its item's material animation */
-extern void func_0205f120(u8 *pool, int index, void *anim);             /* (sets it) */
-extern AnimatedModel *func_0205f130(u8 *pool, int index);               /* its model */
-extern ModelLoaderTask *func_0205f140(u8 *pool, int index);             /* its upload task */
-extern int func_0205f2f0(u8 *pool, int index);                          /* its model file's buffer */
-extern Heap *func_0205f2e8(u8 *pool, int index);                        /* its heap */
-extern int func_0205f094(u8 *pool, int index, int model);               /* model `model`'s file read */
-extern void func_0205f070(u8 *pool, int index);                         /* the texture placed in its region */
-extern void func_0205f0c0(u8 *pool, int index);                         /* the upload stopped */
-extern void func_0205f2c8(u8 *pool, int index, void *buffer, int size); /* the joint animation's buffer */
-extern void func_0205f298(u8 *pool, int index, void *buffer, int size); /* the texture animation's buffer */
-extern void func_0205f274(u8 *pool, int index, Heap *heap);             /* the texture animation's heap */
-extern Heap *func_0205f280(u8 *pool, int index);
-extern u8 *func_0205f2b0(u8 *pool, int index);                                    /* the texture animation's file */
-extern int func_0205f20c(u8 *pool, int index, int number);                        /* texture animation `number` read */
-extern void func_0205f1bc(u8 *pool, int index, int action, int blend, int flags); /* joint animation */
-extern void func_0205f15c(u8 *pool, int index, int number, int flags);            /* texture animation started */
-/* An item's model kind and model number, and its number among the items with a model
- * (0xffffffff for none) of func_02062230 items. */
-extern int func_0205f64c(ItemCode *item);
-extern u8 func_0205f698(ItemCode *item);
-extern unsigned int func_02062148(ItemCode *item);
-extern unsigned int func_02062230(void);
-
-/* The item's line: */
-extern int func_020604e8(HeldItemLine *line);  /* whether its state is 4 or 5 */
-extern void func_020606c0(HeldItemLine *line); /* constructor */
-extern void func_020606bc(HeldItemLine *line); /* destructor */
-extern void func_0206060c(HeldItemLine *line); /* released */
-extern void func_02060214(HeldItemLine *line); /* updated */
-extern void func_0206026c(HeldItemLine *line, int state);
-extern void func_0206064c(HeldItemLine *line, int index, void *owner, unsigned int kind);
-extern void func_02060134(HeldItemLine *line, Mtx43 *joint, Vec3 *scale); /* following the joint */
-extern void func_02060438(HeldItemLine *line, Vec3 *at);
+extern AnimatedModel *func_0205f130(u8 *pool, int index); /* its model */
 
 extern G3dResTex *func_021077e8(int file); /* the file's texture resource */
-/* A texture resource's named image (func_0206439c) and named palette (func_0206435c) copied
- * over another's. */
-extern void func_0206439c(G3dResTex *from, G3dResTex *to, const char *from_name, const char *to_name);
-extern void func_0206435c(G3dResTex *from, G3dResTex *to, const char *from_name, const char *to_name);
-/* A point on the flat ground to the curved ground drawn. */
-extern int func_0203f7d0(Vec3 *out, const Vec3 *in);
 extern void *NNS_G3dGetTexSRTAnmSet(u8 *file);
 extern u8 *func_02107bbc(void *set, u32 index);
 
@@ -139,14 +104,14 @@ static int held_item_is(ItemCode *item, ItemCode code)
 /* func_0205e8d8: whether the line's state is 4 or 5. */
 int HeldItem_LineState4Or5(HeldItemObject *held)
 {
-    return func_020604e8(&held->line);
+    return FishingFloat_IsInWater((FishingFloat *) &held->line);
 }
 CLEAN_AS(func_0205e8d8, HeldItem_LineState4Or5)
 
 /* func_0205e8e4: the model of the item's entry, as an address. */
 int HeldItem_Model(const unsigned char *held)
 {
-    return (int) (uintptr_t) func_0205f130(data_021ca16c, *held);
+    return (int) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, *held);
 }
 CLEAN_AS(func_0205e8e4, HeldItem_Model)
 
@@ -157,7 +122,7 @@ void HeldItem_JointMatrix(Mtx43 *out, const u8 *held, u32 joint)
 {
     Mtx43 matrix;
     int index = *held;
-    if (*func_0205f100(data_021ca16c, index) != HELD_ITEM_NO_ITEM) {
+    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != HELD_ITEM_NO_ITEM) {
         ModelObject_JointMatrix(&func_0205f130(data_021ca16c, index)->object, &matrix, (int) joint);
     } else {
         memset(&matrix, 0, sizeof(matrix));
@@ -172,28 +137,28 @@ CLEAN_AS(func_0205e8f8, HeldItem_JointMatrix)
 void HeldItem_Draw(HeldItemObject *held, const Mtx43 *matrix)
 {
     int index = held->index;
-    if (*func_0205f100(data_021ca16c, index) == HELD_ITEM_NO_ITEM) {
+    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) == HELD_ITEM_NO_ITEM) {
         return;
     }
-    AnimatedModel *model = func_0205f130(data_021ca16c, index);
+    AnimatedModel *model = (AnimatedModel *) (uintptr_t) (HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index));
     memcpy(model->object.unk_64, matrix, sizeof(Mtx43));
     Vec3 scale = {held->scale, held->scale, held->scale};
     AnimatedModel_Draw(model, &scale);
 
     Mtx43 joint;
-    if (held_item_is(func_0205f100(data_021ca16c, index), HELD_ITEM_ROD_A) ||
-        held_item_is(func_0205f100(data_021ca16c, index), HELD_ITEM_ROD_B)) {
+    if (held_item_is(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index), HELD_ITEM_ROD_A) ||
+        held_item_is(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index), HELD_ITEM_ROD_B)) {
         HeldItem_JointMatrix(&joint, &held->index, HELD_ITEM_ROD_JOINT);
     } else {
         HeldItem_JointMatrix(&joint, &held->index, 0);
     }
-    func_02060134(&held->line, &joint, &scale);
+    FishingFloat_Draw((FishingFloat *) &held->line, &joint, &scale);
     Vec3 position = {joint.m[3][0], joint.m[3][1], joint.m[3][2]};
     Vec3 on_ground;
-    func_0203f7d0(&on_ground, &position);
+    Globe_Unbend(&on_ground, &position);
     if (held->line.state == HELD_ITEM_LINE_STATE_7 || held->line.state == HELD_ITEM_LINE_STATE_8) {
         Vec3 at = on_ground;
-        func_02060438(&held->line, &at);
+        FishingFloat_SetTarget((FishingFloat *) &held->line, &at);
     }
 }
 CLEAN_AS(func_0205e954, HeldItem_Draw)
@@ -204,25 +169,26 @@ CLEAN_AS(func_0205e954, HeldItem_Draw)
 void HeldItem_Update(HeldItemObject *held)
 {
     int index = held->index;
-    if (*func_0205f100(data_021ca16c, index) != HELD_ITEM_NO_ITEM) {
+    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != HELD_ITEM_NO_ITEM) {
         HeldItem_PollUpload(data_021ca16c, index);
-        int kind = func_0205f64c(func_0205f100(data_021ca16c, index));
+        int kind = HeldItemPool_ModelKind(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index));
         if (kind != HELD_ITEM_NO_MODEL) {
-            AnimatedModel_Update(func_0205f130(data_021ca16c, index));
+            AnimatedModel_Update(
+                (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index));
             if (kind == HELD_ITEM_TEXTURE_ANIMATED) {
                 FrameCtrl_Step(&held->anim.ctrl);
                 held->anim.anim->frame = held->anim.ctrl.frame;
             }
         }
     }
-    func_02060214(&held->line);
+    FishingFloat_Update((FishingFloat *) &held->line);
 }
 CLEAN_AS(func_0205ea60, HeldItem_Update)
 
 /* func_0205eac4: the speed of the item's model's animation. */
 void HeldItem_SetAnimSpeed(unsigned char *held, int speed)
 {
-    func_0205f130(data_021ca16c, *held)->frames.speed = speed;
+    ((AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, *held))->frames.speed = speed;
 }
 CLEAN_AS(func_0205eac4, HeldItem_SetAnimSpeed)
 
@@ -232,29 +198,29 @@ CLEAN_AS(func_0205eac4, HeldItem_SetAnimSpeed)
 void HeldItem_Act(u8 *held, int action, int blend, int flags)
 {
     HeldItemLine *line = (HeldItemLine *) (void *) (held + offsetof(HeldItemObject, line));
-    func_0205f1bc(data_021ca16c, held[0], action, blend, flags);
+    HeldItemPool_PlayJointAnim((HeldItemPool *) (void *) data_021ca16c, held[0], action, blend, flags);
     switch (action) {
         case 0x13:
-            func_0206026c(line, 1);
+            FishingFloat_SetState((FishingFloat *) line, 1);
             break;
         case 0x15:
-            func_0206026c(line, 3);
+            FishingFloat_SetState((FishingFloat *) line, 3);
             break;
         case 0x16:
-            func_0206026c(line, 2);
+            FishingFloat_SetState((FishingFloat *) line, 2);
             break;
         case 0x18:
-            func_0206026c(line, 6);
+            FishingFloat_SetState((FishingFloat *) line, 6);
             break;
         case 0x19:
         case 0x1b:
-            func_0206026c(line, 7);
+            FishingFloat_SetState((FishingFloat *) line, 7);
             break;
         case 0x1a:
-            func_0206026c(line, 8);
+            FishingFloat_SetState((FishingFloat *) line, 8);
             break;
         case HELD_ITEM_ACTION_TEXTURE_ANIM:
-            func_0205f15c(data_021ca16c, held[0], 1, flags);
+            HeldItemPool_StartTextureAnim((HeldItemPool *) (void *) data_021ca16c, held[0], 1, flags);
             break;
     }
 }
@@ -276,21 +242,22 @@ CLEAN_AS(func_0205eb8c, HeldItem_Take)
  * no item; the item then names no entry. */
 void HeldItem_Clear(HeldItemObject *held)
 {
-    func_0206060c(&held->line);
+    FishingFloat_Release((FishingFloat *) &held->line);
     int index = held->index;
-    if (func_0205f64c(func_0205f100(data_021ca16c, index)) != HELD_ITEM_NO_MODEL) {
-        AnimatedModel_DetachJoints(func_0205f130(data_021ca16c, index));
+    if (HeldItemPool_ModelKind(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index)) != HELD_ITEM_NO_MODEL) {
+        AnimatedModel_DetachJoints(
+            (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index));
         held->anim.anim = NULL;
         held->anim.model = NULL;
     }
-    func_0205f120(data_021ca16c, index, NULL);
+    HeldItemPool_SetMaterialAnim((HeldItemPool *) (void *) data_021ca16c, index, NULL);
     ModelObject_Release(&func_0205f130(data_021ca16c, index)->object);
-    func_0205f0c0(data_021ca16c, index);
-    Heap_FreeAll(func_0205f2e8(data_021ca16c, index));
-    func_0205f2c8(data_021ca16c, index, NULL, 0);
-    func_0205f298(data_021ca16c, index, NULL, 0);
-    func_0205f274(data_021ca16c, index, NULL);
-    *func_0205f100(data_021ca16c, index) = HELD_ITEM_NO_ITEM;
+    HeldItemPool_StopUpload((HeldItemPool *) (void *) data_021ca16c, index);
+    Heap_FreeAll((Heap *) (uintptr_t) HeldItemPool_Heap((HeldItemPool *) (void *) data_021ca16c, index));
+    HeldItemPool_SetJointAnim((HeldItemPool *) (void *) data_021ca16c, index, (int) (uintptr_t) NULL, 0);
+    HeldItemPool_SetTextureAnim((HeldItemPool *) (void *) data_021ca16c, index, (int) (uintptr_t) NULL, 0);
+    HeldItemPool_SetTextureAnimHeap((HeldItemPool *) (void *) data_021ca16c, index, (unsigned long) (uintptr_t) NULL);
+    *HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) = HELD_ITEM_NO_ITEM;
     held->index = HELD_ITEM_NONE;
 }
 CLEAN_AS(func_0205ebb4, HeldItem_Clear)
@@ -311,50 +278,59 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
 {
     u8 *pool = data_021ca16c;
     held->index = (u8) index;
-    func_0205f120(pool, index, &held->anim);
+    HeldItemPool_SetMaterialAnim((HeldItemPool *) (void *) pool, index, &held->anim);
     if (*item == HELD_ITEM_NO_ITEM) {
-        *func_0205f100(pool, index) = HELD_ITEM_NO_ITEM;
+        *HeldItemPool_Code((HeldItemPool *) (void *) pool, index) = HELD_ITEM_NO_ITEM;
     } else {
-        unsigned int number = func_02062148(item);
-        if ((int) number >= 0 && number < func_02062230()) {
-            *func_0205f100(pool, index) = *item;
-            func_0205f094(pool, index, func_0205f698(item));
-            int file = func_0205f2f0(pool, index);
+        unsigned int number = ItemInfo_HeldModelNumber(item);
+        if ((int) number >= 0 && number < ItemInfo_HeldModelCount()) {
+            *HeldItemPool_Code((HeldItemPool *) (void *) pool, index) = *item;
+            HeldItemPool_LoadModel((HeldItemPool *) (void *) pool, index, HeldItemPool_ModelNumber(item));
+            int file = HeldItemPool_ModelFile((HeldItemPool *) (void *) pool, index);
             if (plain == 0 && *item >= HELD_ITEM_DESIGN_FIRST && *item <= HELD_ITEM_DESIGN_LAST) {
                 u8 *scratch = (u8 *) (uintptr_t) ClothSlots_ScratchSlot();
                 ClothSlots_Load(scratch, item, record, 0, 0);
                 G3dResTex *design = func_021077e8(ClothSlots_SlotFile(scratch));
                 G3dResTex *texture = func_021077e8(file);
-                func_0206439c(design, texture, data_020dd75c, data_020dd764);
-                func_0206435c(design, texture, data_020dd75c, data_020dd764);
+                G3dTexCopy_Image(design, texture, data_020dd75c, data_020dd764);
+                G3dTexCopy_Palette(design, texture, data_020dd75c, data_020dd764);
             }
-            func_0205f070(pool, index);
-            AnimatedModel *model = func_0205f130(pool, index);
+            HeldItemPool_PlaceTexture((HeldItemPool *) (void *) pool, index);
+            AnimatedModel *model = (AnimatedModel *) (uintptr_t) (HeldItemPool_Model((HeldItemPool *) (void *) pool, index));
             ModelObject_UseFileModel(&model->object, (u8 *) (uintptr_t) file);
-            int kind = func_0205f64c(item);
+            int kind = HeldItemPool_ModelKind(item);
             if (kind != HELD_ITEM_NO_MODEL) {
-                AnimatedModel_LoadAnim(model, func_0205f2e8(pool, index));
-                ModelObject_AllocJointResults(&model->object, func_0205f2e8(pool, index));
+                AnimatedModel_LoadAnim(model, (Heap *) (uintptr_t) HeldItemPool_Heap((HeldItemPool *) (void *) pool, index));
+                ModelObject_AllocJointResults(&model->object,
+                                              (Heap *) (uintptr_t) HeldItemPool_Heap((HeldItemPool *) (void *) pool, index));
                 if (kind == HELD_ITEM_TEXTURE_ANIMATED) {
-                    Heap *heap = func_0205f2e8(pool, index);
-                    func_0205f298(pool, index, Heap_AllocAligned(heap, HELD_ITEM_TEXTURE_ANIM_SIZE, HELD_ITEM_ALIGN),
-                                  HELD_ITEM_TEXTURE_ANIM_SIZE);
-                    func_0205f274(pool, index, heap);
+                    Heap *heap = (Heap *) (uintptr_t) (HeldItemPool_Heap((HeldItemPool *) (void *) pool, index));
+                    HeldItemPool_SetTextureAnim(
+                        (HeldItemPool *) (void *) pool, index,
+                        (int) (uintptr_t) Heap_AllocAligned(heap, HELD_ITEM_TEXTURE_ANIM_SIZE, HELD_ITEM_ALIGN),
+                        HELD_ITEM_TEXTURE_ANIM_SIZE);
+                    HeldItemPool_SetTextureAnimHeap((HeldItemPool *) (void *) pool, index, (unsigned long) (uintptr_t) heap);
                     Heap_AllocAligned(heap, HELD_ITEM_TEXTURE_ANIM_EXTRA, HELD_ITEM_ALIGN);
-                    ModelAnim *anim = func_0205f110(pool, index);
+                    ModelAnim *anim =
+                        (ModelAnim *) (uintptr_t) (HeldItemPool_MaterialAnim((HeldItemPool *) (void *) pool, index));
                     anim->anim = NULL;
                     anim->model = NULL;
-                    func_0205f20c(pool, index, 0);
-                    u8 *texture_anim = func_02107bbc(NNS_G3dGetTexSRTAnmSet(func_0205f2b0(pool, index)), 0);
+                    HeldItemPool_LoadTextureAnim((HeldItemPool *) (void *) pool, index, 0);
+                    u8 *texture_anim = func_02107bbc(NNS_G3dGetTexSRTAnmSet((u8 *) (uintptr_t) HeldItemPool_TextureAnim(
+                                                         (HeldItemPool *) (void *) pool, index)),
+                                                     0);
                     u8 *resource = model->object.model;
-                    ModelAnim_AllocMaterialAnim(anim, resource, func_0205f280(pool, index));
+                    ModelAnim_AllocMaterialAnim(
+                        anim, resource,
+                        (Heap *) (uintptr_t) HeldItemPool_TextureAnimHeap((HeldItemPool *) (void *) pool, index));
                     ModelAnim_Start(anim, texture_anim, HELD_ITEM_TEXTURE_ANIM_FLAGS, HELD_ITEM_SPEED_ONE, 0);
                     ModelAnim_Attach(anim, ModelObject_RenderObject(&model->object));
                 }
-                Heap *heap = func_0205f2e8(pool, index);
+                Heap *heap = (Heap *) (uintptr_t) (HeldItemPool_Heap((HeldItemPool *) (void *) pool, index));
                 int size = Heap_GetFreeSize(heap);
-                func_0205f2c8(pool, index, Heap_AllocAligned(heap, size, HELD_ITEM_ALIGN), size);
-                func_0205f1bc(pool, index, kind, 0, 0);
+                HeldItemPool_SetJointAnim((HeldItemPool *) (void *) pool, index,
+                                          (int) (uintptr_t) Heap_AllocAligned(heap, size, HELD_ITEM_ALIGN), size);
+                HeldItemPool_PlayJointAnim((HeldItemPool *) (void *) pool, index, kind, 0, 0);
                 AnimatedModel_Attach(model);
                 if (plain == 0) {
                     ModelObject_SetNodeCallback(&model->object, (void *) (uintptr_t) func_0205ef5c, HELD_ITEM_NODE_COMMAND,
@@ -362,7 +338,7 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
                 }
             }
         } else {
-            *func_0205f100(pool, index) = HELD_ITEM_NO_ITEM;
+            *HeldItemPool_Code((HeldItemPool *) (void *) pool, index) = HELD_ITEM_NO_ITEM;
         }
     }
 
@@ -376,9 +352,9 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
     } else {
         line_kind = 3;
     }
-    func_0206064c(&held->line, index, owner, line_kind);
+    FishingFloat_Setup((FishingFloat *) &held->line, index, owner, line_kind);
     if (held_item_is(item, HELD_ITEM_ROD_A) || held_item_is(item, HELD_ITEM_ROD_B)) {
-        func_0206026c(&held->line, 1);
+        FishingFloat_SetState((FishingFloat *) &held->line, 1);
     }
 }
 CLEAN_AS(func_0205ec50, HeldItem_Setup)
@@ -390,7 +366,8 @@ void HeldItem_AfterNode(void *state)
     HeldItemNodeState *node = state;
     HeldItemObject *held = node->object->held;
     if (held != NULL) {
-        AnimatedModel_AfterNode(func_0205f130(data_021ca16c, held->index), state);
+        AnimatedModel_AfterNode(
+            (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, held->index), state);
     }
     node->node_callback = (u32) (uintptr_t) func_0205ef5c;
     node->node_timing = HELD_ITEM_NODE_BEFORE;
@@ -404,7 +381,8 @@ void HeldItem_BeforeNode(void *state)
     HeldItemNodeState *node = state;
     HeldItemObject *held = node->object->held;
     if (held != NULL) {
-        AnimatedModel_BeforeNode(func_0205f130(data_021ca16c, held->index), state);
+        AnimatedModel_BeforeNode(
+            (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, held->index), state);
     }
     node->node_callback = (u32) (uintptr_t) func_0205ef28;
     node->node_timing = HELD_ITEM_NODE_AFTER;
@@ -415,7 +393,7 @@ CLEAN_AS(func_0205ef5c, HeldItem_BeforeNode)
  * item. */
 HeldItemObject *HeldItem_Destruct(HeldItemObject *held)
 {
-    func_020606bc(&held->line);
+    FishingFloat_Destruct(&held->line);
     HeldItemAnim_Destruct(&held->anim);
     return held;
 }
@@ -426,7 +404,7 @@ CLEAN_AS(func_0205ef90, HeldItem_Destruct)
 HeldItemObject *HeldItem_Construct(HeldItemObject *held)
 {
     HeldItemAnim_Construct(&held->anim);
-    func_020606c0(&held->line);
+    FishingFloat_Construct((FishingFloat *) &held->line);
     held->index = HELD_ITEM_NONE;
     held->scale = HELD_ITEM_SPEED_ONE;
     return held;
@@ -465,12 +443,13 @@ CLEAN_AS(func_0205f00c, HeldItemAnim_Construct)
  * the task is neither done nor queued, the model file's texture is queued. */
 int HeldItem_PollUpload(u8 *pool, int index)
 {
-    ModelLoaderTask *task = func_0205f140(pool, index);
+    ModelLoaderTask *task = HeldItemPool_Task((HeldItemPool *) (void *) pool, index);
     if (task->state == MODEL_LOADER_TASK_DONE) {
         return 1;
     }
     if (task->state != HELD_ITEM_TASK_QUEUED) {
-        VramCopyTask_QueueTexture((VramCopyTask *) task, func_021077e8(func_0205f2f0(pool, index)), 1);
+        VramCopyTask_QueueTexture((VramCopyTask *) task,
+                                  func_021077e8(HeldItemPool_ModelFile((HeldItemPool *) (void *) pool, index)), 1);
     }
     return 0;
 }

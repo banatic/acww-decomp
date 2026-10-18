@@ -30,6 +30,15 @@
 #include "villager_mode.h"
 #include "villager_state.h"
 #include "villager_status.h"
+#include "item_lists.h"
+#include "item_traits.h"
+#include "main_random.h"
+#include "talk_item_draw.h"
+#include "talk_object.h"
+#include "villager_talk_approach.h"
+#include "villager_talk_offers.h"
+#include "villager_talk_part.h"
+#include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h). */
 #define VILLAGER_TALK_OBJECT_RECORD 0x830
@@ -186,51 +195,12 @@ extern u8 data_020d9f94[];
 
 extern NetSession *data_020ccf94;
 
-/* The scene's member setters: the three at 0xb0 from a table, the reply, the member run at the
- * command's end, the ones at 0xe0 and 0xe8. */
-extern void func_0202da88(VillagerTalk *talk, const MemberPointer *table);
-extern void func_0202da74(VillagerTalk *talk, MemberPointer reply);
-extern void func_0202dbf0(VillagerTalk *talk, MemberPointer next);
-extern void func_0202dbdc(VillagerTalk *talk, MemberPointer member);
-extern void func_0202db48(VillagerTalk *talk, MemberPointer member);
-/* A line drawn for the personality (villager_talk.h). */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The talk's object at 0x154. */
-extern ItemObject *func_0202d9c4(VillagerTalk *talk);
-/* The villager scene object's motion (at its 0x564) asked for kind 2. */
-extern int func_0202d730(VillagerTalk *talk);
-/* An item drawn from one of two sets of item lists into `*item` (for 0, or for a player's
- * record). */
-extern void func_0202d5e4(u16 *item, int arg);
-extern void func_0202d5cc(u16 *item, int arg);
-/* `bells` rounded to the nearest 10, at least 10. */
-extern int func_0202b510(int bells);
-/* The item of a bag holding `bells` (0x1492 when there is none). */
-extern void func_02027170(u16 *item, int bells);
-/* The pockets the player has an item matching the given one in, as a mask of 15 bits: by the
- * villager object's item, or by an item. */
-extern u16 func_02029910(VillagerObject *object);
-extern u16 func_02029a18(u16 *item);
 /* Pocket predicates the scene is handed (the game's). */
 extern int func_02029e18(u16 *item, int state);
 extern int func_02029e5c(u16 *item, int state);
 extern int func_02029ea0(u16 *item, int state);
 extern int func_0202a17c(u16 *item, int state);
 extern int func_0202a12c(u16 *item, int state);
-/* A value of the item's data, 0 when it has none. */
-extern int func_0204c228(u16 *item);
-/* The value of an item in bells. */
-extern int func_0204c878(u16 *item);
-/* An item drawn from `count` codes from `first`. */
-extern void func_02063414(u16 *item, int first, int count, int c, int d, u8 *record, int f, int g, int h, int i);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
-/* The talk: its message and text, and its byte 0x18 set; the message and text set only while
- * the talk is on the message data_021f43f8 (1 then, else 0). */
-extern void func_0206844c(u8 *talk, const u8 *message, int text);
-extern int func_02068484(u8 *talk, const u8 *message, int text);
-extern void func_02068388(u8 *talk, int cond);
 
 static u8 *object_talk(const VillagerTalk *talk)
 {
@@ -259,15 +229,16 @@ static ItemObject *object_villager_item_object(const VillagerTalk *talk)
 
 static int object_type(VillagerTalk *talk)
 {
-    return ItemObject_Type(func_0202d9c4(talk));
+    return ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
 }
 
 /* The line drawn for the personality of the talk's villager into the talk's text and
  * message. */
 static void object_draw(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
-                  NpcId_Personality(TownVillager_NpcId(object_record(talk))), (int) texts, per_group, group, range);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
+                               NpcId_Personality(TownVillager_NpcId(object_record(talk))), (int) texts, per_group, group,
+                               range);
 }
 
 /* `out` names the talk's text and message. */
@@ -309,13 +280,13 @@ static void object_say_set(VillagerTalk *talk)
 {
     VillagerTalkLine line = object_set_line(talk);
     u8 message = line.message;
-    func_0206844c(object_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessage((TalkObject *) (void *) object_talk(talk), &message, (const char *) (uintptr_t) ((int) line.text));
 }
 
 /* The three members set from `table` and their line said. */
 static void object_say(VillagerTalk *talk, const MemberPointer *table)
 {
-    func_0202da88(talk, table);
+    VillagerTalkScene_SetLines(talk, table);
     object_say_set(talk);
 }
 
@@ -323,10 +294,11 @@ static void object_say(VillagerTalk *talk, const MemberPointer *table)
  * message data_021f43f8 (func_02068484). */
 static void object_say_if_on(VillagerTalk *talk, const MemberPointer *table)
 {
-    func_0202da88(talk, table);
+    VillagerTalkScene_SetLines(talk, table);
     VillagerTalkLine line = object_set_line(talk);
     u8 message = line.message;
-    func_02068484(object_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessageIfNone((TalkObject *) (void *) object_talk(talk), &message,
+                                (const char *) (uintptr_t) ((int) line.text));
 }
 
 /* A line of the set `fallback`, or of the set whose texts `by_place` gives for the place of
@@ -336,7 +308,7 @@ static int object_line_by_place(VillagerTalk *talk, VillagerTalkLine *out, const
 {
     VillagerTalkObjectTexts texts = *fallback;
     int place = 0;
-    ItemObject_PlaceInGroup(func_0202d9c4(talk), &place);
+    ItemObject_PlaceInGroup((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), &place);
     if (place < VILLAGER_TALK_OBJECT_GROUP_PLACES) {
         texts.texts = by_place[place];
     }
@@ -353,7 +325,7 @@ static int object_line_by_place(VillagerTalk *talk, VillagerTalkLine *out, const
 void VillagerTalkObject_LineByPlace9d38(VillagerTalk *talk, VillagerTalkLine *out)
 {
     object_line_by_place(talk, out, &data_020d9128, data_020d9d38);
-    func_0202db48(talk, data_020d9120);
+    VillagerTalkScene_SetE8(talk, data_020d9120);
 }
 CLEAN_AS(func_020240f4, VillagerTalkObject_LineByPlace9d38)
 
@@ -386,9 +358,9 @@ CLEAN_AS(func_02024228, VillagerTalkObject_MarkDone)
 void VillagerTalkObject_LineByGroupPlace(VillagerTalk *talk, VillagerTalkLine *out)
 {
     const VillagerTalkObjectTexts *texts = &data_020c8fb8[0];
-    if (ItemObject_Group(func_0202d9c4(talk)) == 0) {
+    if (ItemObject_Group((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)) == 0) {
         int place = 0;
-        if (ItemObject_PlaceInGroup(func_0202d9c4(talk), &place) != 0) {
+        if (ItemObject_PlaceInGroup((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), &place) != 0) {
             texts = &data_020c8fb8[place];
         }
     }
@@ -437,7 +409,7 @@ CLEAN_AS(func_020243d8, VillagerTalkObject_SayByLastStep)
 void VillagerTalkObject_ShowGift91a8(VillagerTalk *talk)
 {
     SceneCommand_RequestMotion13(&talk->scene, &talk->gift, 0, 5, 0);
-    func_0202dbf0(talk, data_020d91a8);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d91a8);
 }
 CLEAN_AS(func_0202445c, VillagerTalkObject_ShowGift91a8)
 
@@ -480,8 +452,8 @@ static void object_bells_gift(VillagerTalk *talk, int base)
 {
     u16 bag;
     talk->bells = RoomScore_HouseLowX() * 4 + base;
-    talk->bells = func_0202b510(talk->bells);
-    func_02027170(&bag, talk->bells);
+    talk->bells = VillagerTalkApproach_RoundBells(talk->bells);
+    VillagerTalkPart_BellBag(&bag, talk->bells);
     talk->gift = bag;
 }
 
@@ -501,7 +473,7 @@ static void object_items_gift(VillagerTalk *talk, u8 *record, int random, int fr
         VillagerItems_Remove(record, &talk->gift);
     } else {
         if (fresh_chance) {
-            chance = func_020644cc(100);
+            chance = MainRandom_Below(100);
         }
         if (chance < VILLAGER_TALK_OBJECT_BELLS_CHANCE) {
             object_bells_gift(talk, base);
@@ -514,9 +486,9 @@ static void object_drawn_gift(VillagerTalk *talk, int clothes, int arg)
 {
     u16 item;
     if (clothes) {
-        func_0202d5cc(&item, arg);
+        TalkItemDraw_FourLists(&item, arg);
     } else {
-        func_0202d5e4(&item, arg);
+        TalkItemDraw_ThreeLists(&item, arg);
     }
     talk->gift = item;
 }
@@ -543,7 +515,7 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
     PlayerPockets *pockets = PlayerRecord_Pockets(player);
     u8 *record = object_record(talk);
     ItemObject *object = object_villager_item_object(talk);
-    int chance = func_020644cc(100);
+    int chance = MainRandom_Below(100);
     int step = VillagerObject_Step(object_villager_object(talk));
     switch (ItemObject_Type(object)) {
         case VILLAGER_TALK_OBJECT_TYPE_INSECT:
@@ -654,7 +626,7 @@ void VillagerTalkObject_SayByType2e6c(VillagerTalk *talk)
         object_say(talk, data_021c2e6c);
     } else {
         if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_CLOTHES) {
-            func_0202d730(talk);
+            VillagerTalkScene_Stand(talk);
         }
         object_say(talk, data_021c2e54);
     }
@@ -685,7 +657,7 @@ void VillagerTalkObject_EmptyPocketAndMotion(VillagerTalk *talk)
     } else {
         SceneCommand_RequestMotion16(&talk->scene);
     }
-    func_0202dbf0(talk, data_020d9348);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d9348);
 }
 CLEAN_AS(func_02024ab4, VillagerTalkObject_EmptyPocketAndMotion)
 
@@ -780,7 +752,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
     u8 *record = object_record(talk);
     switch (object_type(talk)) {
         case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM:
-            func_0202da88(talk, data_021c2e3c);
+            VillagerTalkScene_SetLines(talk, data_021c2e3c);
             if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
             }
@@ -798,16 +770,16 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
             break;
         case VILLAGER_TALK_OBJECT_TYPE_CLOTHES:
             if (VillagerObject_Step(object_villager_object(talk)) >= 2) {
-                func_0202da88(talk, data_021c2e3c);
+                VillagerTalkScene_SetLines(talk, data_021c2e3c);
             } else {
                 const u8 *data = VillagerData_Byte29(record);
                 u16 *clothes = TownVillager_Clothes(record);
                 if (object_same_item(&talk->item, clothes)) {
-                    func_0202da88(talk, data_021c2e24);
-                } else if (data[1] != func_0204c228(&talk->item)) {
-                    func_0202da88(talk, data_021c2e3c);
+                    VillagerTalkScene_SetLines(talk, data_021c2e24);
+                } else if (data[1] != ItemTraits_ClothStyle(&talk->item)) {
+                    VillagerTalkScene_SetLines(talk, data_021c2e3c);
                 } else {
-                    func_0202da88(talk, data_021c2e0c);
+                    VillagerTalkScene_SetLines(talk, data_021c2e0c);
                 }
             }
             if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
@@ -820,15 +792,15 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
                     int same = VillagerHouseItems_CountSame(record, &talk->item);
                     int shape = FurnitureInfo_ItemShape(&talk->item);
                     if (same >= 2 || (same == 1 && shape == 2)) {
-                        func_0202da88(talk, data_021c2e24);
+                        VillagerTalkScene_SetLines(talk, data_021c2e24);
                     } else {
-                        func_0202da88(talk, data_021c2e3c);
+                        VillagerTalkScene_SetLines(talk, data_021c2e3c);
                     }
                 } else {
-                    func_0202da88(talk, data_021c2e0c);
+                    VillagerTalkScene_SetLines(talk, data_021c2e0c);
                 }
             } else {
-                func_0202da88(talk, data_021c2e0c);
+                VillagerTalkScene_SetLines(talk, data_021c2e0c);
             }
             if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
@@ -860,7 +832,7 @@ static void object_take_pocket(VillagerTalk *talk, MemberPointer next, int empty
         CurrentPockets_Set(&none, 0, slot);
     }
     SceneCommand_RequestMotion14(&talk->scene, &talk->item, 0, 4, 0);
-    func_0202dbdc(talk, next);
+    VillagerTalkScene_SetNextCommandEnd(talk, next);
 }
 
 /* func_02024f40: the item of the pocket the pockets screen gave taken (data_020d9200 next), or
@@ -887,7 +859,7 @@ static void object_ask_mask(VillagerTalk *talk, u16 mask)
 static void object_open_pockets(VillagerTalk *talk, MemberPointer next)
 {
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_POCKETS);
-    func_0202dbf0(talk, next);
+    VillagerTalkScene_SetCommandEnd(talk, next);
 }
 
 /* func_02024fe4: the pockets screen opened by the talk object's type: for type 2 the items of
@@ -903,7 +875,7 @@ void VillagerTalkObject_AskPocketByType(VillagerTalk *talk)
             if (VillagerObject_Step(object_villager_object(talk)) <= 1) {
                 object_ask_predicate(talk, func_02029e18);
             } else {
-                object_ask_mask(talk, func_02029910(object_villager_object(talk)));
+                object_ask_mask(talk, VillagerTalkOffer_PocketsOfKind(object_villager_object(talk)));
             }
             object_open_pockets(talk, data_020d8f10);
             break;
@@ -911,7 +883,8 @@ void VillagerTalkObject_AskPocketByType(VillagerTalk *talk)
             if (VillagerObject_Step(object_villager_object(talk)) <= 1) {
                 object_ask_predicate(talk, func_02029e5c);
             } else {
-                object_ask_mask(talk, func_02029a18(ItemObject_Item(func_0202d9c4(talk))));
+                object_ask_mask(talk, VillagerTalkOffer_PocketsLike(
+                                          ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))));
             }
             object_open_pockets(talk, data_020d8e80);
             break;
@@ -937,7 +910,7 @@ void VillagerTalkObject_CountItem(VillagerTalk *talk)
         u8 count = VillagerObject_AddCount(object_villager_object(talk), liking);
         SessionVillager_SendObjectByte2E(record, count);
     }
-    ItemObject_SetLow5(func_0202d9c4(talk), 1);
+    ItemObject_SetLow5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), 1);
     SessionVillager_SendObjectByte0B(record, 1);
     VillagerState_SetFlag1UnlessScene(VillagerStatus_StateEntry(record));
 }
@@ -964,7 +937,7 @@ CLEAN_AS(func_02025148, VillagerTalkObject_Line8d08)
 void VillagerTalkObject_ShowGift8f70(VillagerTalk *talk)
 {
     SceneCommand_RequestMotion13(&talk->scene, &talk->gift, 0, 5, 0);
-    func_0202dbf0(talk, data_020d8f70);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d8f70);
 }
 CLEAN_AS(func_020251d0, VillagerTalkObject_ShowGift8f70)
 
@@ -1015,7 +988,7 @@ void VillagerTalkObject_Motion16(VillagerTalk *talk, int event)
 {
     (void) event;
     SceneCommand_RequestMotion16(&talk->scene);
-    func_0202dbf0(talk, data_020d9230);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d9230);
 }
 CLEAN_AS(func_020253a0, VillagerTalkObject_Motion16)
 
@@ -1068,7 +1041,8 @@ static void object_say_or_ask(VillagerTalk *talk, u16 first, u16 last, MemberPoi
     if (item >= first && item <= last) {
         object_say(talk, data_021c2d94);
     } else {
-        object_ask_mask(talk, func_02029a18(ItemObject_Item(func_0202d9c4(talk))));
+        object_ask_mask(
+            talk, VillagerTalkOffer_PocketsLike(ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))));
         object_open_pockets(talk, next);
     }
 }
@@ -1144,7 +1118,7 @@ void VillagerTalkObject_EmptyPocketMotion16(VillagerTalk *talk)
 {
     object_empty_pocket();
     SceneCommand_RequestMotion16(&talk->scene);
-    func_0202dbf0(talk, data_020d8f28);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d8f28);
 }
 CLEAN_AS(func_020259a8, VillagerTalkObject_EmptyPocketMotion16)
 
@@ -1168,18 +1142,18 @@ void VillagerTalkObject_SayByPrice(VillagerTalk *talk)
     int object_value = 0;
     DateTime_Now(&now);
     if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
-        value = func_0204c878(&talk->item);
+        value = ItemTraits_Price(&talk->item);
     }
     u16 object_item = *VillagerObject_Item(object_villager_object(talk));
     if (object_item != VILLAGER_TALK_OBJECT_NO_ITEM) {
-        object_value = func_0204c878(&object_item);
+        object_value = ItemTraits_Price(&object_item);
     }
     if (value == object_value) {
-        func_0202da88(talk, data_021c2d64);
+        VillagerTalkScene_SetLines(talk, data_021c2d64);
     } else if (value > object_value) {
-        func_0202da88(talk, data_021c2d1c);
+        VillagerTalkScene_SetLines(talk, data_021c2d1c);
     } else {
-        func_0202da88(talk, data_021c2d4c);
+        VillagerTalkScene_SetLines(talk, data_021c2d4c);
     }
     if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
         SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 2, 7);
@@ -1249,7 +1223,7 @@ void VillagerTalkObject_LineByPlaceStep(VillagerTalk *talk, VillagerTalkLine *ou
     int step = VillagerObject_Step(object_villager_object(talk));
     int type = object_type(talk);
     int place = 0;
-    ItemObject_PlaceInGroup(func_0202d9c4(talk), &place);
+    ItemObject_PlaceInGroup((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), &place);
     if (step < VillagerObject_StepsForType(type) && place < VILLAGER_TALK_OBJECT_GROUP_PLACES) {
         texts.texts = ((const u32 *) (uintptr_t) data_020d9d10[place])[step];
     }
@@ -1299,7 +1273,7 @@ CLEAN_AS(func_02025de8, VillagerTalkObject_Start)
 void VillagerTalkObject_Line8d48(VillagerTalk *talk, VillagerTalkLine *out)
 {
     object_line(talk, out, &data_020c8d48);
-    func_0202db48(talk, data_020d9370);
+    VillagerTalkScene_SetE8(talk, data_020d9370);
 }
 CLEAN_AS(func_02025e70, VillagerTalkObject_Line8d48)
 
@@ -1339,8 +1313,8 @@ void VillagerTalkObject_OfferChoices1f(VillagerTalk *talk)
     list.count = 2;
     list.cancel = 1;
     TalkChoices_Offer((TalkChoicesScene *) (void *) talk, &list);
-    func_0202da74(talk, data_020d9380);
-    func_02068388(object_talk(talk), 1);
+    VillagerTalkScene_SetReply(talk, data_020d9380);
+    TalkObject_OpenChoices((TalkObject *) (void *) object_talk(talk), 1);
 }
 CLEAN_AS(func_02025fec, VillagerTalkObject_OfferChoices1f)
 
@@ -1405,7 +1379,7 @@ void VillagerTalkObject_PutItemNames(VillagerTalk *talk)
         default:
             break;
     }
-    func_0202db48(talk, data_020d9388);
+    VillagerTalkScene_SetE8(talk, data_020d9388);
 }
 CLEAN_AS(func_02026058, VillagerTalkObject_PutItemNames)
 
@@ -1483,13 +1457,13 @@ void VillagerTalkObject_DrawKindItem(u16 *out, int unused_object, int unused_vil
     (void) unused_object;
     (void) unused_villager;
     u16 drawn[2];
-    func_02063414(&drawn[0], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, NULL, 1, 0xa, 0, 1);
-    func_02063414(&drawn[1], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, PlayerRecords_Current(), 0,
-                  0xa, 0, 1);
+    ItemLists_DrawRange(&drawn[0], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, NULL, 1, 0xa, 0, 1);
+    ItemLists_DrawRange(&drawn[1], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, PlayerRecords_Current(),
+                        0, 0xa, 0, 1);
     *out = VILLAGER_TALK_OBJECT_NO_ITEM;
     if (drawn[0] >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST && drawn[0] <= ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
         if (drawn[1] >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST && drawn[1] <= ITEM_ATTRIBUTES_KIND_ITEM_LAST &&
-            (func_020644cc(10) & 1) != 0) {
+            (MainRandom_Below(10) & 1) != 0) {
             *out = drawn[1];
         } else {
             *out = drawn[0];
@@ -1521,8 +1495,8 @@ CLEAN_AS(func_020263b0, VillagerTalkObject_PickClothesByStep)
  * and the byte at `data`. */
 static void object_draw_clothes(u16 *item, u8 *data, int clothes, u8 *player, int which)
 {
-    func_02063414(item, VILLAGER_TALK_OBJECT_CLOTHES_FIRST, VILLAGER_TALK_OBJECT_CLOTHES_COUNT, clothes, 1, player, which,
-                  *data, 0, 1);
+    ItemLists_DrawRange(item, VILLAGER_TALK_OBJECT_CLOTHES_FIRST, VILLAGER_TALK_OBJECT_CLOTHES_COUNT,
+                        (u16 *) (uintptr_t) clothes, 1, player, which, *data, 0, 1);
 }
 
 /* func_02026408: clothes drawn for the current player (func_02063414 with 0), or when that gave

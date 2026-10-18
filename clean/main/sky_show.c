@@ -2,6 +2,10 @@
 #include "sky_show.h"
 
 #include "clean.h"
+#include "event_announce.h"
+#include "main_random.h"
+#include "scene_lights.h"
+#include "sky_objects.h"
 
 #define SKY_SHOW_FIRST_ENTRY 46 /* the entries a place's launches are looked for in */
 #define SKY_SHOW_LAST_ENTRY 59  /* (not included) */
@@ -17,10 +21,6 @@
 extern const u8 data_020d2315[SKY_SHOW_PICKS];   /* the programs' shares out of 100, summed */
 extern const u8 data_020d2378[];                 /* per program: the range of its first launches */
 extern const s32 data_020d2354[SKY_SHOW_PLACES]; /* per place: its objects' look, plus 0x1d */
-extern u32 func_020644cc(int bound);             /* a random number below `bound` */
-extern int func_020bce60(SkyObjects *objects, int place);
-extern void *func_020bdc50(SkyObjects *objects, int kind, int arg2, const Vec3 *position, u32 param);
-extern void func_02065268(int number);
 
 /* The program's timer: below 0 the program is started (its delay, and a length of `length`
  * plus a random part below `length_spread`); at 0 program `next` is asked for. */
@@ -191,7 +191,7 @@ CLEAN_AS(func_020bc98c, SkyShow_LargeDelay20)
 void SkyShow_SetProgram(SkyObjects *objects, int program)
 {
     if (program == SKY_SHOW_ANY_PROGRAM) {
-        u32 draw = func_020644cc(100);
+        u32 draw = MainRandom_Below(100);
         int picked = SKY_SHOW_PICK_DEFAULT;
         for (int i = 1; i < 1 + SKY_SHOW_PICKS; i++) {
             if (draw < data_020d2315[i - 1]) {
@@ -211,12 +211,12 @@ void SkyShow_SetProgram(SkyObjects *objects, int program)
     }
     u32 bit = current - 1;
     if (bit <= 18 && ((1u << bit) & SKY_SHOW_COUNTDOWN_PROGRAMS) != 0) {
-        objects->countdown = (s32) func_020644cc(range);
+        objects->countdown = (s32) MainRandom_Below(range);
     } else {
-        objects->launch_timers[0] = (s32) func_020644cc(range);
-        objects->launch_timers[1] = (s32) func_020644cc(range);
-        objects->launch_timers[2] = (s32) func_020644cc(range);
-        objects->launch_timers[3] = (s32) func_020644cc(range);
+        objects->launch_timers[0] = (s32) MainRandom_Below(range);
+        objects->launch_timers[1] = (s32) MainRandom_Below(range);
+        objects->launch_timers[2] = (s32) MainRandom_Below(range);
+        objects->launch_timers[3] = (s32) MainRandom_Below(range);
     }
 }
 CLEAN_AS(func_020bc9c4, SkyShow_SetProgram)
@@ -226,7 +226,7 @@ CLEAN_AS(func_020bc9c4, SkyShow_SetProgram)
 void SkyShow_StartProgram(SkyObjects *objects, int delay, int length, int length_spread)
 {
     objects->launch_delay = delay;
-    objects->program_timer = length + (length_spread > 0 ? (int) func_020644cc(length_spread) : 0);
+    objects->program_timer = length + (length_spread > 0 ? (int) MainRandom_Below(length_spread) : 0);
 }
 CLEAN_AS(func_020bca80, SkyShow_StartProgram)
 
@@ -255,7 +255,7 @@ static int run_place_timers(SkyObjects *objects)
 /* A place's timer set to the delay plus a random part below 30 frames. */
 static void set_place_timer(SkyObjects *objects, int place)
 {
-    objects->launch_timers[place] = objects->launch_delay + (s32) func_020644cc(SKY_SHOW_LAUNCH_SPREAD);
+    objects->launch_timers[place] = objects->launch_delay + (s32) MainRandom_Below(SKY_SHOW_LAUNCH_SPREAD);
 }
 
 /* func_020bcab0: launches by the places' timers; once all four are idle, three of them (all but
@@ -265,7 +265,7 @@ void SkyShow_LaunchThrees(SkyObjects *objects)
     if (!run_place_timers(objects)) {
         return;
     }
-    int skipped = (int) func_020644cc(SKY_SHOW_PLACES);
+    int skipped = (int) MainRandom_Below(SKY_SHOW_PLACES);
     for (int place = 0; place < SKY_SHOW_PLACES; place++) {
         if (place != skipped) {
             set_place_timer(objects, place);
@@ -281,8 +281,8 @@ void SkyShow_LaunchPairs(SkyObjects *objects)
     if (!run_place_timers(objects)) {
         return;
     }
-    int first = (int) func_020644cc(SKY_SHOW_PLACES);
-    int second = (first + 1 + (int) func_020644cc(3)) & 3;
+    int first = (int) MainRandom_Below(SKY_SHOW_PLACES);
+    int second = (first + 1 + (int) MainRandom_Below(3)) & 3;
     for (int place = 0; place < SKY_SHOW_PLACES; place++) {
         if (place == first || place == second) {
             set_place_timer(objects, place);
@@ -317,8 +317,8 @@ static void launch_large(SkyObjects *objects, int marked)
     if (objects->countdown > 0) {
         return;
     }
-    int place = (int) func_020644cc(SKY_SHOW_PLACES);
-    if (!func_020bce60(objects, place)) {
+    int place = (int) MainRandom_Below(SKY_SHOW_PLACES);
+    if (!SkyShow_PlaceFreeForLarge(objects, place)) {
         return;
     }
     SkyShow_Launch(objects, place, 1, marked);
@@ -344,7 +344,7 @@ CLEAN_AS(func_020bcd30, SkyShow_LaunchLarge)
 void SkyShow_NextLaunchTime(SkyObjects *objects, s32 *timer)
 {
     s32 delay = objects->launch_delay;
-    *timer = (delay > 0 ? (s32) func_020644cc(delay) : 0) + SKY_SHOW_LAUNCH_MIN;
+    *timer = (delay > 0 ? (s32) MainRandom_Below(delay) : 0) + SKY_SHOW_LAUNCH_MIN;
 }
 CLEAN_AS(func_020bcd7c, SkyShow_NextLaunchTime)
 
@@ -357,11 +357,11 @@ void SkyShow_Launch(SkyObjects *objects, int place, int large, int marked)
     if (data_021f6cd8 != 0) {
         u32 param = ((u32) (data_020d2354[place] - SKY_SHOW_LOOK_BASE) & SKY_SHOW_PARAM_LOOK) | (((u32) place & 3) << 8) |
                     ((u32) large << 31) | ((u32) marked << 28);
-        func_020bdc50(objects, SKY_OBJECT_SHOW, SKY_OBJECT_COUNT, NULL, param);
+        SkyObjects_Add(objects, SKY_OBJECT_SHOW, SKY_OBJECT_COUNT, NULL, param);
     } else if (large != 0) {
-        func_02065268(place + 5);
+        SceneLights_StartFlash(place + 5);
     } else {
-        func_02065268(place + 1);
+        SceneLights_StartFlash(place + 1);
     }
 }
 CLEAN_AS(func_020bcda0, SkyShow_Launch)
@@ -405,7 +405,6 @@ CLEAN_AS(func_020bcdf8, SkyShow_PlaceFree)
 #define SKY_SHOW_SECOND_FIRST_PROGRAM 16
 
 extern NetSession *data_020ccf94;
-extern u32 func_02041614(void); /* the number of an event (data_020db6dc) */
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern u32 data_021f6ccc; /* the programs' table was filled */
 extern MemberPointer data_021f6ed0[SKY_SHOW_PROGRAMS];
@@ -445,7 +444,7 @@ CLEAN_AS(func_020bce60, SkyShow_PlaceFreeForLarge)
  * is running. */
 static int sky_show_is_on(SkyObjects *objects, int *midnight)
 {
-    u32 event = func_02041614();
+    u32 event = EventAnnounce_MusicEvent();
     DateTime now = {0};
     DateTime when;
     DateTime_Now(&now);
@@ -494,7 +493,7 @@ void SkyShow_Run(SkyObjects *objects)
     if (objects->program == 0) {
         int program = SKY_SHOW_MIDNIGHT_PROGRAM;
         if (!midnight) {
-            program = func_020644cc(2) == 0 ? SKY_SHOW_FIRST_PROGRAM : SKY_SHOW_SECOND_FIRST_PROGRAM;
+            program = MainRandom_Below(2) == 0 ? SKY_SHOW_FIRST_PROGRAM : SKY_SHOW_SECOND_FIRST_PROGRAM;
         }
         SkyShow_SetProgram(objects, program);
         objects->program_timer = 0;

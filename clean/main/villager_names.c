@@ -6,11 +6,11 @@
 #include "villager_pairs.h"
 #include "villager_roster.h"
 #include "villager_town.h"
+#include "town_villager.h"
 
 extern u8 data_021e5a2c[]; /* the town's villagers (VillagerTown) */
 
-extern NpcId *func_0208150c(const void *villager); /* the villager's NpcId, at 0x7a0 */
-extern void *func_02137550(void *dst, u32 size);   /* clears size bytes */
+extern void *func_02137550(void *dst, u32 size); /* clears size bytes */
 
 static VillagerTown *VillagerNames_Town(void)
 {
@@ -20,8 +20,8 @@ static VillagerTown *VillagerNames_Town(void)
 /* The name of `other` into `dst`, when there is such a villager and its NpcId is valid. */
 static void VillagerNames_Format(const u8 *other, char *dst)
 {
-    if (other != NULL && NpcId_IsValid(func_0208150c(other))) {
-        NpcId_FormatName(func_0208150c(other), dst);
+    if (other != NULL && NpcId_IsValid(TownVillager_NpcId((u8 *) other))) {
+        NpcId_FormatName(TownVillager_NpcId((u8 *) other), dst);
     }
 }
 
@@ -31,7 +31,7 @@ void VillagerNames_FormatOther(u8 *villager, char *dst)
 {
     const NpcId *excluded[1];
     func_02137550(excluded, sizeof(excluded));
-    excluded[0] = func_0208150c(villager);
+    excluded[0] = TownVillager_NpcId(villager);
     VillagerNames_Format(VillagerRoster_PickAny(VillagerNames_Town(), excluded, 1), dst);
 }
 CLEAN_AS(func_0207ee78, VillagerNames_FormatOther)

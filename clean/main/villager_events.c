@@ -6,6 +6,16 @@
 #include "npc_id.h"
 #include "session.h"
 #include "villager_state.h"
+#include "acre_record.h"
+#include "actor_table.h"
+#include "date_time.h"
+#include "scene_query.h"
+#include "town_villager.h"
+#include "villager_mode.h"
+#include "villager_mode_record.h"
+#include "villager_object.h"
+#include "villager_roster.h"
+#include "villager_status.h"
 
 #define VILLAGERS 8
 #define VILLAGER_SIZE 0x7ec
@@ -45,30 +55,13 @@ extern NetSession *data_020ccf94;        /* the game's session */
 extern u8 data_021e5a2c[];               /* the town's eight villagers, 0x7ec bytes each */
 extern VillagerEventGrid *data_021c80bc; /* the town's map; null while there is none */
 
-/* Whether the current scene is 0 (func_020b6674 of func_020b65c4). */
-extern int func_020b6660(void);
-/* Villager `index` of `villagers`, or null for an index outside 0-7. */
-extern void *func_0207cec0(void *villagers, int index);
-extern NpcId *func_0208150c(void *villager); /* the villager's NpcId, at 0x7a0 */
-extern void *func_0207f1c8(void *villager);  /* the villager's record, at 0x734 */
-extern void *func_0209b5ec(void *record);    /* the record itself */
-/* Whether the record's date is valid, its byte 0x10 is below 8 and its date is at least
- * seven days from `now`. */
-extern int func_0209c1c0(void *record, const DateTime *now);
-/* `amount` added to the villager's count of `kind` (0 to 10), when its NpcId is valid. */
-extern void func_0207dac8(void *villager, int kind, int amount);
-extern void func_0209e474(DateTime *now);                  /* the clock's date and time */
-extern VillagerEventActor *func_020825d8(const u16 *code); /* the actor table's actor (Actors_GetE) */
-/* Whether the cell has all of `bits`. */
-extern int func_02037d80(void *cell, u32 bits);
-
 /* ---- Counting idle frames */
 
 /* func_020795f4: in scene 0 and not linked, one more frame without an event; past 1200 such
  * frames VillagerEvent_Idle first (which restarts the count, so this frame counts as 1). */
 void VillagerEvent_CountIdleFrame(void)
 {
-    if (func_020b6660() == 0) {
+    if (SceneQuery_CurrentIs0() == 0) {
         return;
     }
     if (Session_IsLinked(data_020ccf94)) {
@@ -118,7 +111,7 @@ int VillagerEvent_IsMarkedTile(const Vec3 *position)
     }
     u32 offset = (x + z * grid->width) * VILLAGER_EVENT_CELL_SIZE;
     void *cell = (void *) ((uintptr_t) grid->cells + offset);
-    return func_02037d80(cell, VILLAGER_EVENT_CELL_MARK) != 0;
+    return AcreRecord_HasAllFlags(cell, VILLAGER_EVENT_CELL_MARK) != 0;
 }
 CLEAN_AS(func_02079690, VillagerEvent_IsMarkedTile)
 
@@ -195,13 +188,14 @@ void VillagerEvent_Spread(int kind, const Vec3 *position)
         min_z = (int) ((u32) position->z - VILLAGER_EVENT_NEAR_BEHIND);
         max_z = (int) ((u32) position->z + VILLAGER_EVENT_NEAR_AHEAD);
     }
-    func_0209e474(&now);
+    DateTime_Now(&now);
     for (int i = 0; i < VILLAGERS; i++) {
-        void *villager = func_0207cec0(data_021e5a2c, i);
-        if (villager == NULL || !NpcId_IsValid(func_0208150c(villager))) {
+        void *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, i);
+        if (villager == NULL || !NpcId_IsValid(TownVillager_NpcId(villager))) {
             continue;
         }
-        if (!func_0209c1c0(func_0209b5ec(func_0207f1c8(villager)), &now)) {
+        if (!VillagerModeRecord_IsKindAWeekOld(
+                VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager)), &now)) {
             continue;
         }
         int amount = 1;
@@ -211,7 +205,7 @@ void VillagerEvent_Spread(int kind, const Vec3 *position)
                 amount = 2;
             }
         }
-        func_0207dac8(villager, kind, amount);
+        VillagerMode_AddCount(villager, kind, amount);
     }
     VillagerState_Table()->word_168 = 0;
 }
@@ -222,7 +216,7 @@ CLEAN_AS(func_020797bc, VillagerEvent_Spread)
  * `max_x` and z between `min_z` and `max_z`. */
 int VillagerEvent_ActorInBox(const u16 *code, int min_x, int max_x, int min_z, int max_z)
 {
-    VillagerEventActor *actor = func_020825d8(code);
+    VillagerEventActor *actor = Actors_GetE(code);
 
     if (actor == NULL) {
         return 0;

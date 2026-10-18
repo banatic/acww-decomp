@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "villager_house_items.h"
 #include "villager_roster.h"
+#include "rom_file.h"
 
 static_assert(sizeof(AcreTemplateRecord) == 4, "AcreTemplateRecord");
 static_assert(sizeof(AcreMapTemplate) == 8, "AcreMapTemplate");
@@ -12,9 +13,6 @@ extern AcreMapTemplate *data_021c80c8; /* the templates, or 0 */
 /* Each set's two file numbers: the variants' sizes, and their records. */
 extern const u32 data_020cb764[ACRE_MAP_TEMPLATES][2];
 extern u8 data_021e5a2c[]; /* the town's villagers (villager_roster.h) */
-
-/* `size` bytes from `offset` in file `file` read into `dst`. */
-extern void func_02064828(u32 file, void *dst, int size, int offset);
 
 #define ACRE_TEMPLATES_RECORDS_FILE 1
 #define ACRE_TEMPLATES_RECORD_ALIGN 4
@@ -142,7 +140,7 @@ CLEAN_AS(func_0204d7f8, AcreTemplates_FillItems)
 int AcreTemplates_Read(AcreMapTemplate *templates, void *dst, int set, int variant, int size)
 {
     int offset = AcreTemplates_Offset(templates, set, variant);
-    func_02064828(data_020cb764[set][ACRE_TEMPLATES_RECORDS_FILE], dst, size, offset);
+    RomFile_ReadPartByPath((const char *) (uintptr_t) data_020cb764[set][ACRE_TEMPLATES_RECORDS_FILE], dst, size, offset);
     return 1;
 }
 CLEAN_AS(func_0204d828, AcreTemplates_Read)

@@ -15,6 +15,7 @@
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(CatalogScene, cursor) == 0x94, "cursor");
 static_assert(sizeof(Glider) == 0x64 && offsetof(CatalogScene, list) == 0xf8, "list");
+static_assert(sizeof(CatalogList) == 0x12c0, "list size");
 static_assert(sizeof(TextLabel) == 0x6c && offsetof(CatalogScene, label) == 0x13b8, "label");
 static_assert(offsetof(CatalogScene, wipe_y) == 0x1424 && offsetof(CatalogScene, flags) == 0x1428, "flags");
 static_assert(offsetof(CatalogScene, return_sub_state) == 0x142c, "return sub state");
@@ -93,7 +94,7 @@ static void destroy_members(CatalogScene *self)
 {
     self->base.vtable = data_ov115_0229e8b8;
     __cxa_vec_cleanup(&self->label, 1, sizeof(TextLabel), func_02070be8);
-    func_ov114_0229d9d8(self->list);
+    CatalogList_Destroy(&self->list);
     Glider0_Destroy(&self->cursor);
     MenuScene_DestroyBase(scene_of(self));
 }
@@ -171,7 +172,7 @@ CLEAN_AS(func_ov115_0229de2c, FishCatalog_GlideCursorTo)
  * of animations there. */
 static int cursor_on_bar_or_page_arrow(CatalogScene *self)
 {
-    return func_ov114_0229c60c(self->list) != -1 || func_ov114_0229c5f4(self->list) != 0;
+    return CatalogList_TabUnderCursor(&self->list) != -1 || CatalogList_OnPageArrow(&self->list) != 0;
 }
 
 /* func_ov115_0229de60: the list's cursor moved: the cursor sprite turns to the set of its new
@@ -200,14 +201,14 @@ CLEAN_AS(func_ov115_0229deb4, FishCatalog_HideCursor)
 /* func_ov115_0229ded0: the y of the list's cursor. */
 int FishCatalog_CursorY(CatalogScene *self)
 {
-    return func_ov114_0229c628(self->list);
+    return CatalogList_CursorY(&self->list);
 }
 CLEAN_AS(func_ov115_0229ded0, FishCatalog_CursorY)
 
 /* func_ov115_0229dedc: the x of the list's cursor. */
 int FishCatalog_CursorX(CatalogScene *self)
 {
-    return func_ov114_0229c690(self->list);
+    return CatalogList_CursorX(&self->list);
 }
 CLEAN_AS(func_ov115_0229dedc, FishCatalog_CursorX)
 
@@ -216,7 +217,7 @@ CLEAN_AS(func_ov115_0229dedc, FishCatalog_CursorX)
  * else 1-3) and shown. */
 void FishCatalog_PlaceCursor(CatalogScene *self)
 {
-    func_ov114_0229c3ac(self->list);
+    CatalogList_KeepCursorInView(&self->list);
     int x = FishCatalog_CursorX(self);
     int y = FishCatalog_CursorY(self);
     Glider_PlaceAt(&self->cursor, x, y);
@@ -270,17 +271,17 @@ CLEAN_AS(func_ov115_0229dfa8, FishCatalog_EnterTouchMode)
 /* The scroll handle and the cursor sprite kept at their places while the list scrolls. */
 static void follow_scroll(CatalogScene *self)
 {
-    func_ov114_0229d52c(self->list, self->wipe_y);
+    CatalogList_PlaceHandle(&self->list, self->wipe_y);
     int x = FishCatalog_CursorX(self);
     int y = FishCatalog_CursorY(self);
     Glider_PlaceAt(&self->cursor, x, y);
 }
 
 /* func_ov115_0229dfc0 (sub state 8): once the list is done with the scroll (overlay 114's
- * func_ov114_0229d1dc), back to the buttons (sub state 2) through the cursor's release. */
+ * CatalogList_FinishHandle), back to the buttons (sub state 2) through the cursor's release. */
 void FishCatalog_EndScrollByKeys(CatalogScene *self)
 {
-    if (func_ov114_0229d1dc(self->list)) {
+    if (CatalogList_FinishHandle(&self->list)) {
         MenuScene_SetSubState(scene_of(self), CATALOG_SCENE_SUB_KEYS_IDLE);
         FishCatalog_BeginRelease(self);
     }
@@ -293,9 +294,9 @@ CLEAN_AS(func_ov115_0229dfc0, FishCatalog_EndScrollByKeys)
 void FishCatalog_ScrollWhileHeld(CatalogScene *self)
 {
     if (data_021fbe40.held & FISH_CATALOG_PAD_A) {
-        func_ov114_0229d244(self->list);
+        CatalogList_ScrollByKeys(&self->list);
     } else {
-        func_ov114_0229d220(self->list);
+        CatalogList_ReleaseHandle(&self->list);
         MenuScene_SetSubState(scene_of(self), CATALOG_SCENE_SUB_SCROLL_END);
     }
     follow_scroll(self);
@@ -303,10 +304,10 @@ void FishCatalog_ScrollWhileHeld(CatalogScene *self)
 CLEAN_AS(func_ov115_0229e010, FishCatalog_ScrollWhileHeld)
 
 /* func_ov115_0229e074 (sub state 6): the first step of a scroll asked for with A; once the
- * list is ready (overlay 114's func_ov114_0229d2d8), sub state 7. */
+ * list is ready (overlay 114's CatalogList_HandleSettled), sub state 7. */
 void FishCatalog_StartScrollByKeys(CatalogScene *self)
 {
-    if (func_ov114_0229d2d8(self->list) != 0) {
+    if (CatalogList_HandleSettled(&self->list) != 0) {
         MenuScene_SetSubState(scene_of(self), CATALOG_SCENE_SUB_SCROLL_HOLD);
     }
     follow_scroll(self);
@@ -326,7 +327,7 @@ CLEAN_AS(func_ov115_0229e0c0, FishCatalog_FinishRelease)
 
 /* func_ov115_0229e0e8 (sub state 4): once the cursor sprite's press animation is over, A acts on
  * the list's cursor: on a tab of the bar the menu switches to it (unless it is this tab); on
- * any other place the list acts (overlay 114's func_ov114_0229c2c8) and on a scroll arrow or
+ * any other place the list acts (overlay 114's CatalogList_RunAction) and on a scroll arrow or
  * the handle a scroll starts (sub state 6). Otherwise back to the buttons (sub state 2)
  * through the cursor's release. Answers 0 while the animation runs, else what the last step
  * answers.
@@ -338,13 +339,13 @@ int FishCatalog_FinishPress(CatalogScene *self)
     if (done == 0) {
         return done;
     }
-    int tab = func_ov114_0229c60c(self->list);
+    int tab = CatalogList_TabUnderCursor(&self->list);
     if (tab != -1) {
         int switched = FishCatalog_SelectTab(self, tab);
         if (switched != 0) {
             return switched;
         }
-    } else if (func_ov114_0229c2c8(self->list) != 0) {
+    } else if (CatalogList_RunAction(&self->list) != 0) {
         return (int) (uintptr_t) MenuScene_SetSubState(scene_of(self), CATALOG_SCENE_SUB_SCROLL_START);
     }
     MenuScene_SetSubState(scene_of(self), CATALOG_SCENE_SUB_KEYS_IDLE);
@@ -373,7 +374,7 @@ void FishCatalog_IdleByKeys(CatalogScene *self)
         return;
     }
     u32 keys = MenuScene_LatchRepeatedKeys(scene_of(self));
-    if (func_ov114_0229c410(self->list, (void *) (uintptr_t) keys) != 0) {
+    if (CatalogList_MoveCursor(&self->list, keys) != 0) {
         FishCatalog_FollowListCursor(self);
         return;
     }
@@ -393,9 +394,9 @@ CLEAN_AS(func_ov115_0229e168, FishCatalog_IdleByKeys)
 void FishCatalog_DragByTouch(CatalogScene *self)
 {
     if (data_021fbdd8 != 0) {
-        func_ov114_0229d32c(self->list, data_021f6c58);
+        CatalogList_Drag(&self->list, data_021f6c58);
     } else {
-        func_ov114_0229d304(self->list);
+        CatalogList_EndDrag(&self->list);
         MenuScene_SetSubState(scene_of(self), CATALOG_SCENE_SUB_TOUCH_IDLE);
     }
 }
@@ -415,31 +416,31 @@ void FishCatalog_IdleByTouch(CatalogScene *self)
     }
     u8 x = data_021f6c58;
     u8 y = data_021f6c54;
-    if (func_ov114_0229d564(self->list, x, y) != 0) {
+    if (CatalogList_TouchPageArrow(&self->list, x, y) != 0) {
         return;
     }
-    if (func_ov114_0229d3f4(self->list, x, y) != 0) {
+    if (CatalogList_TouchHandle(&self->list, x, y) != 0) {
         MenuScene_SetSubState(scene_of(self), CATALOG_SCENE_SUB_DRAG);
         return;
     }
-    func_ov114_0229ca50(self->list, x, y);
+    CatalogList_TouchEntry(&self->list, x, y);
 }
 CLEAN_AS(func_ov115_0229e228, FishCatalog_IdleByTouch)
 
 /* func_ov115_0229e2b0: the list's OBJ files loaded and its entries filled. */
 void FishCatalog_LoadObjects(CatalogScene *self)
 {
-    func_ov114_0229d688(self->list);
-    func_ov114_0229cadc(self->list);
+    CatalogList_LoadObjFiles(&self->list);
+    CatalogList_FillEntries(&self->list);
 }
 CLEAN_AS(func_ov115_0229e2b0, FishCatalog_LoadObjects)
 
 /* func_ov115_0229e2c8: the list's background files loaded, then overlay 114's
- * func_ov114_0229c8dc. */
+ * CatalogList_ResetPicture. */
 void FishCatalog_LoadBackground(CatalogScene *self)
 {
-    func_ov114_0229d700(self->list);
-    func_ov114_0229c8dc(self->list);
+    CatalogList_LoadBackground(&self->list);
+    CatalogList_ResetPicture(&self->list);
 }
 CLEAN_AS(func_ov115_0229e2c8, FishCatalog_LoadBackground)
 
@@ -459,14 +460,14 @@ CLEAN_AS(func_ov115_0229e2e0, FishCatalog_SetUpLayers)
 /* func_ov115_0229e328: the end of a frame of the list. */
 void FishCatalog_EndFrame(CatalogScene *self)
 {
-    func_ov114_0229d824(self->list);
+    CatalogList_EndFrame(&self->list);
 }
 CLEAN_AS(func_ov115_0229e328, FishCatalog_EndFrame)
 
 /* func_ov115_0229e334: the start of a frame: the list's, the label's box closed. */
 void FishCatalog_BeginFrame(CatalogScene *self)
 {
-    func_ov114_0229d87c(self->list);
+    CatalogList_BeginFrame(&self->list);
     FishCatalog_CloseLabel(self);
 }
 CLEAN_AS(func_ov115_0229e334, FishCatalog_BeginFrame)
@@ -490,7 +491,7 @@ CLEAN_AS(func_ov115_0229e354, FishCatalog_BeginInteractiveFrame)
 /* func_ov115_0229e36c: the list's end, the label's box closed. */
 void FishCatalog_Teardown(CatalogScene *self)
 {
-    func_ov114_0229d8ac(self->list);
+    CatalogList_Teardown(&self->list);
     FishCatalog_CloseLabel(self);
 }
 CLEAN_AS(func_ov115_0229e36c, FishCatalog_Teardown)
@@ -499,7 +500,7 @@ CLEAN_AS(func_ov115_0229e36c, FishCatalog_Teardown)
 void FishCatalog_Init(CatalogScene *self)
 {
     self->flags = 0;
-    func_ov114_0229d8d0(self->list, CATALOG_SCENE_LAYER_A, CATALOG_SCENE_LAYER_B, CATALOG_SCENE_LAYER_C, FISH_CATALOG_KIND);
+    CatalogList_Start(&self->list, CATALOG_SCENE_LAYER_A, CATALOG_SCENE_LAYER_B, CATALOG_SCENE_LAYER_C, FISH_CATALOG_KIND);
 }
 CLEAN_AS(func_ov115_0229e384, FishCatalog_Init)
 
@@ -536,7 +537,7 @@ void FishCatalog_StartWipeOut(CatalogScene *self)
     MenuScene_StartWipeOnWindow2(scene_of(self), 0xb, 0, 0, 0x30);
     FishCatalog_ScrollLayers(self);
     MenuScene_SetState(scene_of(self), CATALOG_SCENE_STATE_WIPE_OUT);
-    func_ov114_0229c8b4(self->list);
+    CatalogList_HoldPicture(&self->list);
 }
 CLEAN_AS(func_ov115_0229e41c, FishCatalog_StartWipeOut)
 
@@ -696,13 +697,13 @@ int FishCatalog_Draw(CatalogScene *self)
     if (FishCatalog_TestFlags(self, CATALOG_SCENE_FLAG_DRAWN) == 0) {
         return 1;
     }
-    func_ov114_0229d52c(self->list, self->wipe_y);
+    CatalogList_PlaceHandle(&self->list, self->wipe_y);
     if (StateFlags_Test2()) {
         Glider_DrawWrapped(&self->cursor);
     }
-    func_ov114_0229d5b8(self->list, self->wipe_y);
-    func_ov114_0229cbe4(self->list, self->wipe_y);
-    func_ov114_0229d54c(self->list);
+    CatalogList_DrawArrows(&self->list, self->wipe_y);
+    CatalogList_DrawEntries(&self->list, self->wipe_y);
+    CatalogList_DrawHandle(&self->list);
     return 1;
 }
 CLEAN_AS(func_ov115_0229e748, FishCatalog_Draw)
@@ -739,7 +740,7 @@ CatalogScene *FishCatalog_New(void)
     MenuScene_Construct(&self->base);
     self->base.vtable = data_ov115_0229e8b8;
     Glider0_Construct(&self->cursor);
-    func_ov114_0229da18(self->list);
+    CatalogList_Construct(&self->list);
     __cxa_vec_ctor(&self->label, 1, sizeof(TextLabel), func_02070c08, func_02070be8);
     return self;
 }

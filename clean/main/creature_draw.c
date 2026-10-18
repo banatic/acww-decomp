@@ -4,6 +4,8 @@
 #include "clean.h"
 #include "creature_weight.h"
 #include "date_time.h"
+#include "insect_draw.h"
+#include "main_random.h"
 
 #define CREATURE_DRAW_FISH_FIRST 0x12e8
 #define CREATURE_DRAW_FISH_LAST 0x131f
@@ -21,10 +23,6 @@ extern u8 data_021c1d18[CREATURE_DRAW_BANDS];
 extern u8 data_021c1ce8[CREATURE_DRAW_TIME_SLOTS];
 extern u8 data_021c1ce4[CREATURE_DRAW_PLACES];
 
-/* A place drawn by `count` weights, -1 when they are all 0. */
-extern int func_0202d6e4(const u8 *weights, int count);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
 /* The SDK's fill and copy. */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -126,7 +124,7 @@ void CreatureDraw_FishNow(u16 *item)
     int second;
     MI_CpuFill8(tried, 0, (u32) left);
     while (left > 0) {
-        int pick = func_020644cc(left);
+        int pick = MainRandom_Below(left);
         for (int band = 0; band < CREATURE_DRAW_BANDS; band++) {
             if (tried[band] != 0) {
                 continue;
@@ -154,7 +152,7 @@ int CreatureDraw_FishByWeights(u16 *item, int *band, int *second, int *time_slot
 {
     MI_CpuCopy8(data_020c8950, data_021c1d18, CREATURE_DRAW_BANDS);
     for (int draw = 0; draw < CREATURE_DRAW_BANDS; draw++) {
-        int drawn = func_0202d6e4(data_021c1d18, CREATURE_DRAW_BANDS);
+        int drawn = InsectDraw_PickByWeights(data_021c1d18, CREATURE_DRAW_BANDS);
         if (drawn < 0 || drawn >= CREATURE_DRAW_BANDS) {
             break;
         }
@@ -193,7 +191,7 @@ int CreatureDraw_FishOfBandsHours(u16 *item, int first, int last, int month, u8 
         bands = (u8) (bands | creature_bit(band));
     }
     for (; left > 0; left--) {
-        int pick = func_020644cc(left);
+        int pick = MainRandom_Below(left);
         for (int band = 0; band < CREATURE_DRAW_BANDS; band++) {
             if (((bands >> band) & 1) == 0) {
                 continue;
@@ -247,7 +245,7 @@ int CreatureDraw_FishOfBandHours(u16 *item, int *second, int *time_slot, int ban
         }
     }
     if (found > 0) {
-        int pick = func_020644cc(found);
+        int pick = MainRandom_Below(found);
         for (int slot = 0; slot < CREATURE_DRAW_TIME_SLOTS; slot++) {
             if (data_021c1ce8[slot] == 1) {
                 if (pick == 0) {
@@ -283,7 +281,7 @@ int CreatureDraw_FishOfSlot(u16 *item, int *second, int band, CreatureTableList 
         }
     }
     if (found > 0) {
-        int pick = func_020644cc(found);
+        int pick = MainRandom_Below(found);
         for (int place = 0; place < CREATURE_DRAW_PLACES; place++) {
             if (data_021c1ce4[place] == 1) {
                 if (pick == 0) {
@@ -324,7 +322,7 @@ int CreatureDraw_FishOfList(u16 *item, int *second, int band, const CreatureTabl
     if (count <= 0) {
         return 0;
     }
-    int pick = func_020644cc(count);
+    int pick = MainRandom_Below(count);
     for (int i = 0; i < list->count; i++, entry += CREATURE_DRAW_ENTRY_SIZE) {
         if (entry[2] == 0 || entry[0] >= CREATURE_DRAW_KINDS || band != CreatureWeight_BandA(entry[2])) {
             continue;

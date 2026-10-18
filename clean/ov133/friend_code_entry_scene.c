@@ -18,6 +18,7 @@
 #include "main/state_flags.h"
 #include "ov004/member_pointer.h"
 #include "ov090/menu_tabs.h"
+#include "ov130/bank_pad.h"
 
 /* The scene's vtable and files: "menu/bank/g0_bg.bsc" (the code's row) and "menu/bank/g1_bg.bsc"
  * (the keypad); the text cursor's cell. */
@@ -34,11 +35,6 @@ extern u8 data_021f6c58, data_021f6c54;
 #define FRIEND_CODE_PAD_A 0x0001
 #define FRIEND_CODE_PAD_B 0x0002
 #define FRIEND_CODE_PAD_START 0x0008
-
-/* Overlay 130's: the frame drawn at a y; its graphics loaded (7, and 4 for the screens). */
-extern void func_ov130_0229a00c(void *y);
-extern int func_ov130_0229a3f0(int a);
-extern int func_ov130_0229a678(void *arg);
 
 /* The label's constructor and destructor, handed to __cxa_vec_ctor (the game's symbols). */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -327,7 +323,7 @@ CLEAN_AS(func_ov133_0229bf88, FriendCodeEntry_BrowseByTouch)
  * the label, its box in style 8, shown centred; the panel's text colours. */
 void FriendCodeEntry_OpenTitle(FriendCodeEntry *self)
 {
-    func_ov130_0229a3f0(7);
+    BankPad_LoadPicture(7);
     TextLabel *label = FriendCodeEntry_NextLabel(self);
     TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) FRIEND_CODE_TITLE_MESSAGE);
     TextLabel_OpenStyledBox2(label, 8, 0x14c, 0xe, 0xf, 0, 0);
@@ -340,7 +336,7 @@ CLEAN_AS(func_ov133_0229c050, FriendCodeEntry_OpenTitle)
  * code loaded into them; both to be loaded to their layers. */
 void FriendCodeEntry_LoadScreens(FriendCodeEntry *self)
 {
-    func_ov130_0229a678((void *) (uintptr_t) 4);
+    BankPad_LoadBackground(4);
     RomFile_Read(data_ov133_0229c968, self->code_screen, sizeof(self->code_screen));
     RomFile_Read(data_ov133_0229c97c, self->keypad_screen, sizeof(self->keypad_screen));
     FriendCodeEntry_LoadCode(self);
@@ -613,7 +609,7 @@ int FriendCodeEntry_Draw(FriendCodeEntry *self)
         Glider_DrawWrapped(&self->pointer);
     }
     ButtonPanel_Draw(&self->panel, self->wipe_y);
-    func_ov130_0229a00c((void *) (uintptr_t) self->wipe_y);
+    BankPad_DrawPayCells(self->wipe_y);
     if ((self->blink & 0x10) != 0) {
         OamBuffer_DrawCell(1, data_ov133_0229c868, (self->position << 4) + 0x20, self->wipe_y + 0x40, -1, 1, 0x1000, 0x1000, 0,
                            -1, 0, 0);

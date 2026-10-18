@@ -11,6 +11,10 @@
 #include "ov004/member_pointer.h"
 #include "pockets.h"
 #include "scene_talk.h"
+#include "scene_base.h"
+#include "scene_motion_request.h"
+#include "talk_object.h"
+#include "town_tune.h"
 
 static_assert(offsetof(SceneCommandParams, pocket_predicate) == 0x10, "SceneCommandParams layout");
 static_assert(offsetof(SceneCommandParams, sound_values) == 0x24, "SceneCommandParams layout");
@@ -91,22 +95,6 @@ extern u16 data_020c80f8;
 extern s32 data_020df2a0;  /* the sound set's state, SCENE_COMMAND_SOUND_IDLE while nothing plays */
 extern u8 data_021cfbbc[]; /* the sixteen values the sound set plays a sound with */
 
-extern void func_02068440(void *talk);
-extern void func_02068434(void *talk);
-extern void func_02016004(void *scene);
-extern void func_0201600c(void *scene);
-extern int func_02019d0c(void *motion, int kind, int priority, int a, int b, short c, short d, int e, int f, u16 g, u16 h);
-extern int func_02019e00(void *motion);
-extern int func_02019de8(void *motion);
-extern int func_02019b80(void *motion, int priority, const u16 *item, int a, u8 b, int c, int d);
-extern int func_02019bd0(void *motion, int priority, const u16 *item, int a, u8 b, int c, int d);
-extern void func_0206ea5c(const u32 *packed, u8 *values);
-extern void func_0206ea10(unsigned int sound);
-extern int func_0206e970(int sound);
-extern int func_0206f99c(void);
-extern int func_0206f7dc(int a, int b);
-extern int func_0206f640(int mode, int text, int units);
-
 static u32 scene_command_slot(const void *object, u32 slot)
 {
     const u8 *vtable = *(const u8 *const *) object;
@@ -121,15 +109,16 @@ static void *scene_command_motion(const SceneCommandScene *scene)
 /* Whether the first speaker's motion, with a talk held, is the given kind and done. */
 static int scene_command_motion_done(const SceneCommandScene *scene, int kind)
 {
-    return scene->speakers[0] != NULL && scene->talk != NULL && func_02019e00(scene_command_motion(scene)) == kind &&
-           func_02019de8(scene_command_motion(scene)) != 0;
+    return scene->speakers[0] != NULL && scene->talk != NULL && SceneMotion_Kind(scene_command_motion(scene)) == kind &&
+           SceneMotion_IsDone(scene_command_motion(scene)) != 0;
 }
 
 /* Whether the first speaker, with a talk, took the motion of the given kind. */
 static int scene_command_set_motion(const SceneCommandScene *scene, int kind)
 {
     return scene->speakers[0] != NULL && scene->talk != NULL &&
-           func_02019d0c(scene_command_motion(scene), kind, SCENE_COMMAND_PRIORITY, 0, 0, 0, 0, 0, 0, data_020c80f8, 0) != 0;
+           SceneMotion_Request(scene_command_motion(scene), kind, SCENE_COMMAND_PRIORITY, 0, 0, 0, 0, 0, 0, data_020c80f8,
+                               0) != 0;
 }
 
 static int scene_command_run_steps(SceneCommandScene *scene, u32 *guard, MemberPointer *table,
@@ -164,7 +153,7 @@ int SceneCommand_SoundEnd(SceneCommandScene *scene)
         return 0;
     }
     if (scene->talk != NULL) {
-        func_02068434(scene->talk);
+        TalkObject_Release((TalkObject *) scene->talk);
     }
     scene->state = 3;
     return 1;
@@ -200,13 +189,13 @@ int SceneCommand_SoundStart(SceneCommandScene *scene)
         return 1;
     }
     if (scene->talk != NULL) {
-        func_02068440(scene->talk);
+        TalkObject_Hold((TalkObject *) scene->talk);
     }
     if (scene->params.sound_without_values == 0) {
-        func_0206ea5c(scene->params.sound_values, data_021cfbbc);
-        func_0206ea10((u16) sound);
+        TownTune_Unpack((const TownTunePacked *) scene->params.sound_values, data_021cfbbc);
+        TownTune_Play((u16) sound);
     } else {
-        func_0206e970((u16) sound);
+        TownTune_PlayRandomPreset((u16) sound);
     }
     scene->state = 1;
     return 0;
@@ -257,8 +246,8 @@ int SceneCommand_WaitMotion19(SceneCommandScene *scene)
     if (!scene_command_motion_done(scene, 19)) {
         return 0;
     }
-    func_02068434(scene->talk);
-    func_02016004(scene);
+    TalkObject_Release((TalkObject *) scene->talk);
+    SceneBase_ClearHolding((SceneBase *) scene);
     scene->state = 2;
     return 1;
 }
@@ -269,7 +258,7 @@ CLEAN_AS(func_02014c60, SceneCommand_WaitMotion19)
 int SceneCommand_StartMotion19(SceneCommandScene *scene)
 {
     if (scene_command_set_motion(scene, 19)) {
-        func_02068440(scene->talk);
+        TalkObject_Hold((TalkObject *) scene->talk);
         scene->state = 1;
     }
     return 0;
@@ -302,7 +291,7 @@ int SceneCommand_WaitMotion18(SceneCommandScene *scene)
     if (!scene_command_motion_done(scene, 18)) {
         return 0;
     }
-    func_02068434(scene->talk);
+    TalkObject_Release((TalkObject *) scene->talk);
     scene->state = 2;
     return 1;
 }
@@ -313,7 +302,7 @@ CLEAN_AS(func_02014d8c, SceneCommand_WaitMotion18)
 int SceneCommand_StartMotion18(SceneCommandScene *scene)
 {
     if (scene_command_set_motion(scene, 18)) {
-        func_02068440(scene->talk);
+        TalkObject_Hold((TalkObject *) scene->talk);
         scene->state = 1;
     }
     return 0;
@@ -346,8 +335,8 @@ int SceneCommand_WaitMotion17(SceneCommandScene *scene)
     if (!scene_command_motion_done(scene, 17)) {
         return 0;
     }
-    func_02068434(scene->talk);
-    func_02016004(scene);
+    TalkObject_Release((TalkObject *) scene->talk);
+    SceneBase_ClearHolding((SceneBase *) scene);
     scene->state = 2;
     return 1;
 }
@@ -358,8 +347,8 @@ CLEAN_AS(func_02014eb4, SceneCommand_WaitMotion17)
 int SceneCommand_StartMotion17(SceneCommandScene *scene)
 {
     if (scene_command_set_motion(scene, 17)) {
-        func_0201600c(scene);
-        func_02068440(scene->talk);
+        SceneBase_SetHolding((SceneBase *) scene);
+        TalkObject_Hold((TalkObject *) scene->talk);
         scene->state = 1;
     }
     return 0;
@@ -392,8 +381,8 @@ int SceneCommand_WaitMotion16(SceneCommandScene *scene)
     if (!scene_command_motion_done(scene, 16)) {
         return 0;
     }
-    func_02068434(scene->talk);
-    func_02016004(scene);
+    TalkObject_Release((TalkObject *) scene->talk);
+    SceneBase_ClearHolding((SceneBase *) scene);
     scene->state = 2;
     return 1;
 }
@@ -404,8 +393,8 @@ CLEAN_AS(func_02014fe8, SceneCommand_WaitMotion16)
 int SceneCommand_StartMotion16(SceneCommandScene *scene)
 {
     if (scene_command_set_motion(scene, 16)) {
-        func_0201600c(scene);
-        func_02068440(scene->talk);
+        SceneBase_SetHolding((SceneBase *) scene);
+        TalkObject_Hold((TalkObject *) scene->talk);
         scene->state = 1;
     }
     return 0;
@@ -438,8 +427,8 @@ int SceneCommand_WaitMotion15(SceneCommandScene *scene)
     if (!scene_command_motion_done(scene, 15)) {
         return 0;
     }
-    func_02068434(scene->talk);
-    func_02016004(scene);
+    TalkObject_Release((TalkObject *) scene->talk);
+    SceneBase_ClearHolding((SceneBase *) scene);
     scene->state = 2;
     return 1;
 }
@@ -450,7 +439,7 @@ CLEAN_AS(func_0201511c, SceneCommand_WaitMotion15)
 int SceneCommand_StartMotion15(SceneCommandScene *scene)
 {
     if (scene_command_set_motion(scene, 15)) {
-        func_02068440(scene->talk);
+        TalkObject_Hold((TalkObject *) scene->talk);
         scene->state = 1;
     }
     return 0;
@@ -484,9 +473,9 @@ int SceneCommand_WaitMotion14(SceneCommandScene *scene)
     if (!scene_command_motion_done(scene, 14)) {
         return 0;
     }
-    func_02068434(scene->talk);
+    TalkObject_Release((TalkObject *) scene->talk);
     if (scene->params.motion_b != 4) {
-        func_02016004(scene);
+        SceneBase_ClearHolding((SceneBase *) scene);
     }
     scene->state = 2;
     return 1;
@@ -505,10 +494,10 @@ static int scene_command_item_motion_ready(SceneCommandScene *scene)
         return 0;
     }
     if (scene->talk != NULL) {
-        func_02068440(scene->talk);
+        TalkObject_Hold((TalkObject *) scene->talk);
     }
-    if (func_02019e00(scene_command_motion(scene)) == SCENE_COMMAND_MOTION_TALK &&
-        func_02019de8(scene_command_motion(scene)) == 0) {
+    if (SceneMotion_Kind(scene_command_motion(scene)) == SCENE_COMMAND_MOTION_TALK &&
+        SceneMotion_IsDone(scene_command_motion(scene)) == 0) {
         u32 speaker_talks = scene_command_slot(scene, SCENE_COMMAND_SLOT_SPEAKER_TALKS);
         ((SceneCommandSpeakerTalks) (uintptr_t) speaker_talks)(scene, 0);
         return 0;
@@ -522,9 +511,10 @@ static int scene_command_item_motion_ready(SceneCommandScene *scene)
 int SceneCommand_StartMotion14(SceneCommandScene *scene)
 {
     if (scene_command_item_motion_ready(scene) &&
-        func_02019b80(scene_command_motion(scene), SCENE_COMMAND_PRIORITY, &scene->params.item, (int) scene->params.motion_a,
-                      scene->params.motion_b, (int) scene->params.motion_c, scene->motion_d) != 0) {
-        func_0201600c(scene);
+        SceneMotion_RequestKind14(scene_command_motion(scene), SCENE_COMMAND_PRIORITY, &scene->params.item,
+                                  (int) scene->params.motion_a, scene->params.motion_b, (int) scene->params.motion_c,
+                                  scene->motion_d) != 0) {
+        SceneBase_SetHolding((SceneBase *) scene);
         scene->state = 1;
     }
     return 0;
@@ -565,7 +555,7 @@ int SceneCommand_WaitMotion13(SceneCommandScene *scene)
     if (!scene_command_motion_done(scene, 13)) {
         return 0;
     }
-    func_02068434(scene->talk);
+    TalkObject_Release((TalkObject *) scene->talk);
     scene->state = 2;
     return 1;
 }
@@ -576,8 +566,9 @@ CLEAN_AS(func_020153e0, SceneCommand_WaitMotion13)
 int SceneCommand_StartMotion13(SceneCommandScene *scene)
 {
     if (scene_command_item_motion_ready(scene) &&
-        func_02019bd0(scene_command_motion(scene), SCENE_COMMAND_PRIORITY, &scene->params.item, (int) scene->params.motion_a,
-                      scene->params.motion_b, (int) scene->params.motion_c, scene->motion_d) != 0) {
+        SceneMotion_RequestKind13(scene_command_motion(scene), SCENE_COMMAND_PRIORITY, &scene->params.item,
+                                  (int) scene->params.motion_a, scene->params.motion_b, (int) scene->params.motion_c,
+                                  scene->motion_d) != 0) {
         scene->state = 1;
     }
     return 0;
@@ -719,7 +710,7 @@ int SceneCommand_OpenScreen(SceneCommandScene *scene)
         }
         case SCENE_COMMAND_SCREEN_MODE_25:
             params->stay_on_line = 1;
-            opened = func_0206f99c();
+            opened = GroupParams_OpenLetter();
             break;
         case SCENE_COMMAND_SCREEN_MODE:
             opened = GroupParams_Open(params->mode);
@@ -728,13 +719,14 @@ int SceneCommand_OpenScreen(SceneCommandScene *scene)
             opened = GroupParams_OpenWithArg(params->mode, params->mode_arg);
             break;
         case SCENE_COMMAND_SCREEN_MODE_3D:
-            opened = func_0206f7dc(params->screen_a, params->screen_b);
+            opened = GroupParams_OpenWithC80C88(params->screen_a, params->screen_b);
             break;
         case SCENE_COMMAND_SCREEN_GROUP_12:
             opened = GroupParams_OpenGroup12((void *) (uintptr_t) params->group_12_pointer);
             break;
         case SCENE_COMMAND_SCREEN_MODE_TEXT:
-            opened = func_0206f640(params->mode, (int) params->text, (int) params->text_units);
+            opened = GroupParams_OpenWithText(params->mode, (const u16 *) (uintptr_t) ((int) params->text),
+                                              (int) params->text_units);
             break;
         case SCENE_COMMAND_SCREEN_NONE:
             if (params->stay_on_line != 1) {

@@ -5,6 +5,16 @@
 #include "autoload_2/vector.h" /* Vec3 */
 #include "clean.h"
 #include "main/actor.h" /* Actor_Spawn */
+#include "main/c_library.h"
+#include "main/house_record.h"
+#include "main/model_cache.h"
+#include "main/player_records.h"
+#include "main/rom_file.h"
+#include "main/vram_region.h"
+#include "house_files.h"
+#include "object_actors.h"
+#include "ov009/scene_actor.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(PlayerHouse, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(PlayerHouse, model) == 0x198, "model");
@@ -32,31 +42,10 @@ extern Heap *data_021c9b1c;
 extern const u8 data_ov003_02239254[];
 extern const u8 data_ov003_02239318[];
 
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
-/* The letter overlay 3 picks for the files' names. */
-extern signed char func_ov003_022203dc(void);
-/* Bits 18 to 23, whether they are nonzero, and bits 6 to 9 of the house's word at 0x15a0. */
-extern int func_02060be0(u8 *house);
-extern unsigned int func_02060e10(u8 *house);
-/* The player's index, and whether it is one of the four (below 4). */
-extern int func_020984d4(void);
-extern int func_020988d8(unsigned int index);
-/* A file loaded whole from `heap`, the texture in a model file, whether that texture still has
- * to be copied, and its copy on `heap`. */
-extern void *func_02064b2c(const char *path, Heap *heap, int align, u32 *size);
+/* The texture in a model file, and binding a texture to a model. */
 extern void *func_021077e8(void *file);
-extern int func_020560e0(void *texture, int arg);
-extern void *func_020561cc(void *texture, Heap *heap);
 extern int NNS_G3dBindMdlTex(void *model, void *texture);
 extern int NNS_G3dBindMdlPltt(void *model, void *texture);
-/* The scene actor of overlay 3 with the special character code `code`, NULL for none. */
-extern void *func_ov003_02220174(u16 code);
-/* Overlay 9's scene actor: the drawing of an actor's model, the point it gives (whether it
- * has one), its destructor and its constructor. */
-extern void func_ov009_022632c8(void *actor);
-extern int func_ov009_0226321c(PlayerHouse *house, Vec3 *point, s16 *angle);
-extern void *func_ov009_0226539c(PlayerHouse *house);
-extern void *func_ov009_0226552c(PlayerHouse *house);
 
 /* func_ov003_0221dc04 (vtable slot 0x98): always 1. */
 int PlayerHouse_Slot98(void)
@@ -78,7 +67,7 @@ CLEAN_AS(func_ov003_0221dc08, PlayerHouse_Slot8C)
  * the caller of the slot gets it. */
 void PlayerHouse_Slot9C(void)
 {
-    func_02060be0(data_021ebcd4);
+    HouseRecord_AnyLit((const HouseRecord *) data_021ebcd4);
 }
 CLEAN_AS(func_ov003_0221dc0c, PlayerHouse_Slot9C)
 
@@ -86,7 +75,7 @@ CLEAN_AS(func_ov003_0221dc0c, PlayerHouse_Slot9C)
  * else 0. */
 int PlayerHouse_Slot90(void)
 {
-    return func_020988d8((unsigned int) func_020984d4()) ? 0 : 1;
+    return PlayerRecords_IsTownNumber((unsigned int) PlayerRecords_CurrentNumber()) ? 0 : 1;
 }
 CLEAN_AS(func_ov003_0221dc1c, PlayerHouse_Slot90)
 
@@ -109,10 +98,10 @@ CLEAN_AS(func_ov003_0221dc38, PlayerHouse_BindTextures)
  * freed. */
 void PlayerHouse_LoadTexture(PlayerHouse *house)
 {
-    void *file = func_02064b2c(PlayerHouse_TexturePath(), data_021fbe94, PLAYER_HOUSE_FILE_ALIGN, NULL);
+    void *file = RomFile_Load(PlayerHouse_TexturePath(), data_021fbe94, PLAYER_HOUSE_FILE_ALIGN, NULL);
     house->texture = func_021077e8(file);
-    if (func_020560e0(house->texture, 0) != 0) {
-        house->texture = func_020561cc(house->texture, data_021c9b1c);
+    if (VramRegion_LoadImages(house->texture, 0) != 0) {
+        house->texture = ModelCache_CopyTexture(house->texture, data_021c9b1c);
     }
     Heap_FreeCurrent(file);
 }
@@ -123,8 +112,8 @@ CLEAN_AS(func_ov003_0221dc7c, PlayerHouse_LoadTexture)
 char *PlayerHouse_TexturePath(void)
 {
     int look = PlayerHouse_Look();
-    int letter = func_ov003_022203dc();
-    func_02064328(data_ov003_0223c998, data_ov003_02239390, data_ov003_02236654[look & (PLAYER_HOUSE_LOOKS - 1)], letter);
+    int letter = HouseFiles_SeasonLetter();
+    CLib_SPrintf(data_ov003_0223c998, data_ov003_02239390, data_ov003_02236654[look & (PLAYER_HOUSE_LOOKS - 1)], letter);
     return data_ov003_0223c998;
 }
 CLEAN_AS(func_ov003_0221dcd8, PlayerHouse_TexturePath)
@@ -132,7 +121,7 @@ CLEAN_AS(func_ov003_0221dcd8, PlayerHouse_TexturePath)
 /* func_ov003_0221dd0c: the house's look (0 to 15): bits 6 to 9 of its word at 0x15a0. */
 int PlayerHouse_Look(void)
 {
-    return (int) func_02060e10(data_021ebcd4);
+    return (int) HouseRecord_ShownLook((const HouseRecord *) data_021ebcd4);
 }
 CLEAN_AS(func_ov003_0221dd0c, PlayerHouse_Look)
 
@@ -140,9 +129,9 @@ CLEAN_AS(func_ov003_0221dd0c, PlayerHouse_Look)
  * scene has one; always 1. */
 int PlayerHouse_Draw(void)
 {
-    void *mailbox = func_ov003_02220174(PLAYER_HOUSE_MAILBOX_CODE);
+    void *mailbox = ObjectActors_FindByCode(PLAYER_HOUSE_MAILBOX_CODE);
     if (mailbox != NULL) {
-        func_ov009_022632c8(mailbox);
+        SceneActor_DrawModel(mailbox);
     }
     return 1;
 }
@@ -157,7 +146,7 @@ int PlayerHouse_Init(PlayerHouse *house)
     PlayerHouse_BindTextures(house);
     Vec3 point;
     s16 angle;
-    if (func_ov009_0226321c(house, &point, &angle)) {
+    if (SceneActor_GetStandPoint((SceneActor *) house, &point, &angle)) {
         point.x -= 0x2000;
         point.z += 0x1000;
         Actor_Spawn(PLAYER_HOUSE_MAILBOX_PROFILE, PLAYER_HOUSE_MAILBOX_CODE, &point, NULL, NULL);
@@ -171,7 +160,7 @@ static void player_house_destroy_parts(PlayerHouse *house)
 {
     house->vtable = data_ov003_02239254;
     house->receiver_vtable = data_ov003_02239318;
-    func_ov009_0226539c(house);
+    SceneActor_Destruct((SceneActor *) house);
 }
 
 /* func_ov003_0221dd90 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -195,7 +184,7 @@ CLEAN_AS(func_ov003_0221ddbc, PlayerHouse_Destroy)
 /* func_ov003_0221dde0: the constructor: overlay 9's, then the vtables. */
 PlayerHouse *PlayerHouse_Construct(PlayerHouse *house)
 {
-    func_ov009_0226552c(house);
+    SceneActor_ConstructBase((SceneActor *) house);
     house->vtable = data_ov003_02239254;
     house->receiver_vtable = data_ov003_02239318;
     return house;

@@ -1,6 +1,6 @@
 /* The walkers of 16-bit message texts that the forbidden-word filter uses (message_reader.h).
  *
- * A walker (class data_020e3e68, func_020a9484 builds it) steps through a text from a position
+ * A walker (base class data_020e3e24, MessageWalker_Construct builds it) steps through a text from a position
  * (func_020a9354 sets it, func_020a92d8 runs it) and calls its own virtual functions: slot 2
  * when its text is set, 3 when it reaches the end, 4 for each character, 5 for each tag, and
  * slot 6 before each step to ask whether to go on.

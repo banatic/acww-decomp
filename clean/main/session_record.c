@@ -5,6 +5,11 @@
 #include "main/packed_bytes.h"
 #include "main/session.h"
 #include "main/session_net.h"
+#include "c_library.h"
+#include "ov003/town_insect_tables.h"
+#include "quick_message.h"
+#include "scene_share_table.h"
+#include "session_players.h"
 
 #define RECORD_TABLE_SIZE 0x6a0
 #define RECORD_TABLE_ALIGN 4
@@ -12,20 +17,10 @@
 extern NetSession *data_020ccf94;                  /* the session */
 extern SessionRecordWriter *const data_020cd2f4[]; /* the writers, by record id */
 
-extern int func_02064344(const void *a, const void *b, u32 size); /* whether the bytes differ */
-extern void func_0208520c(u8 *record, int id);                    /* the record from its entry at data_021d232c */
-extern SessionRecordFiller *const data_020cd1dc[];                /* the fillers, by record id */
-extern const u16 data_020cd050[];                                 /* each record's offset in the table */
-extern const u8 data_020ccfa8[];                                  /* each record's size */
+extern SessionRecordFiller *const data_020cd1dc[]; /* the fillers, by record id */
+extern const u16 data_020cd050[];                  /* each record's offset in the table */
+extern const u8 data_020ccfa8[];                   /* each record's size */
 
-/* What the writers of records 8-31 hand their record to. */
-extern void func_0209649c(u8 *record, int id);                     /* records 8-11 */
-extern void func_02085310(u8 *record, int id);                     /* records 12-19: their entry at data_021d213c */
-extern void *func_02039128(u8 *record, int id, void *object);      /* records 20-23 */
-extern void func_ov003_02235c94(u8 *record, int id, void *object); /* records 24-31: data_ov003_02262aa8 */
-/* What fills records 12-19 when the table is made: func_02085310, then byte 0x18 and halfword
- * 0x1a of the matching entry of data_021d13e4 (func_0207b9d0(id - 12)) cleared. */
-extern void func_02085350(u8 *record, int id);
 /* The packers of records 0-7 (the actors' saved states use them too). */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -66,7 +61,7 @@ void SessionRecord_Update(int id, void *object, int mode, int force)
         Session_SetRecordFlag(session, id, 1);
     } else if (!flagged) {
         session = data_020ccf94;
-        Session_SetRecordFlag(session, id, func_02064344(record, session->record_scratch, size));
+        Session_SetRecordFlag(session, id, CLib_BytesDiffer(record, session->record_scratch, size));
     }
 }
 CLEAN_AS(func_020771cc, SessionRecord_Update)
@@ -76,7 +71,7 @@ void SessionRecord_Write69(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 69);
+    SceneShareTable_WriteRecordD(record, 69);
 }
 CLEAN_AS(func_02077254, SessionRecord_Write69)
 
@@ -85,7 +80,7 @@ void SessionRecord_Write68(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 68);
+    SceneShareTable_WriteRecordD(record, 68);
 }
 CLEAN_AS(func_02077260, SessionRecord_Write68)
 
@@ -94,7 +89,7 @@ void SessionRecord_Write67(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 67);
+    SceneShareTable_WriteRecordD(record, 67);
 }
 CLEAN_AS(func_0207726c, SessionRecord_Write67)
 
@@ -103,7 +98,7 @@ void SessionRecord_Write66(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 66);
+    SceneShareTable_WriteRecordD(record, 66);
 }
 CLEAN_AS(func_02077278, SessionRecord_Write66)
 
@@ -112,7 +107,7 @@ void SessionRecord_Write65(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 65);
+    SceneShareTable_WriteRecordD(record, 65);
 }
 CLEAN_AS(func_02077284, SessionRecord_Write65)
 
@@ -121,7 +116,7 @@ void SessionRecord_Write64(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 64);
+    SceneShareTable_WriteRecordD(record, 64);
 }
 CLEAN_AS(func_02077290, SessionRecord_Write64)
 
@@ -130,7 +125,7 @@ void SessionRecord_Write63(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 63);
+    SceneShareTable_WriteRecordD(record, 63);
 }
 CLEAN_AS(func_0207729c, SessionRecord_Write63)
 
@@ -139,7 +134,7 @@ void SessionRecord_Write62(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 62);
+    SceneShareTable_WriteRecordD(record, 62);
 }
 CLEAN_AS(func_020772a8, SessionRecord_Write62)
 
@@ -148,7 +143,7 @@ void SessionRecord_Write61(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 61);
+    SceneShareTable_WriteRecordD(record, 61);
 }
 CLEAN_AS(func_020772b4, SessionRecord_Write61)
 
@@ -157,7 +152,7 @@ void SessionRecord_Write60(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 60);
+    SceneShareTable_WriteRecordD(record, 60);
 }
 CLEAN_AS(func_020772c0, SessionRecord_Write60)
 
@@ -166,7 +161,7 @@ void SessionRecord_Write59(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 59);
+    SceneShareTable_WriteRecordD(record, 59);
 }
 CLEAN_AS(func_020772cc, SessionRecord_Write59)
 
@@ -175,7 +170,7 @@ void SessionRecord_Write58(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 58);
+    SceneShareTable_WriteRecordD(record, 58);
 }
 CLEAN_AS(func_020772d8, SessionRecord_Write58)
 
@@ -184,7 +179,7 @@ void SessionRecord_Write57(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 57);
+    SceneShareTable_WriteRecordD(record, 57);
 }
 CLEAN_AS(func_020772e4, SessionRecord_Write57)
 
@@ -193,7 +188,7 @@ void SessionRecord_Write56(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 56);
+    SceneShareTable_WriteRecordD(record, 56);
 }
 CLEAN_AS(func_020772f0, SessionRecord_Write56)
 
@@ -202,7 +197,7 @@ void SessionRecord_Write55(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 55);
+    SceneShareTable_WriteRecordD(record, 55);
 }
 CLEAN_AS(func_020772fc, SessionRecord_Write55)
 
@@ -211,7 +206,7 @@ void SessionRecord_Write54(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 54);
+    SceneShareTable_WriteRecordD(record, 54);
 }
 CLEAN_AS(func_02077308, SessionRecord_Write54)
 
@@ -220,7 +215,7 @@ void SessionRecord_Write53(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 53);
+    SceneShareTable_WriteRecordD(record, 53);
 }
 CLEAN_AS(func_02077314, SessionRecord_Write53)
 
@@ -229,7 +224,7 @@ void SessionRecord_Write52(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 52);
+    SceneShareTable_WriteRecordD(record, 52);
 }
 CLEAN_AS(func_02077320, SessionRecord_Write52)
 
@@ -238,7 +233,7 @@ void SessionRecord_Write51(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 51);
+    SceneShareTable_WriteRecordD(record, 51);
 }
 CLEAN_AS(func_0207732c, SessionRecord_Write51)
 
@@ -247,7 +242,7 @@ void SessionRecord_Write50(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 50);
+    SceneShareTable_WriteRecordD(record, 50);
 }
 CLEAN_AS(func_02077338, SessionRecord_Write50)
 
@@ -256,7 +251,7 @@ void SessionRecord_Write49(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 49);
+    SceneShareTable_WriteRecordD(record, 49);
 }
 CLEAN_AS(func_02077344, SessionRecord_Write49)
 
@@ -265,7 +260,7 @@ void SessionRecord_Write48(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 48);
+    SceneShareTable_WriteRecordD(record, 48);
 }
 CLEAN_AS(func_02077350, SessionRecord_Write48)
 
@@ -274,7 +269,7 @@ void SessionRecord_Write47(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 47);
+    SceneShareTable_WriteRecordD(record, 47);
 }
 CLEAN_AS(func_0207735c, SessionRecord_Write47)
 
@@ -283,7 +278,7 @@ void SessionRecord_Write46(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 46);
+    SceneShareTable_WriteRecordD(record, 46);
 }
 CLEAN_AS(func_02077368, SessionRecord_Write46)
 
@@ -292,7 +287,7 @@ void SessionRecord_Write45(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 45);
+    SceneShareTable_WriteRecordD(record, 45);
 }
 CLEAN_AS(func_02077374, SessionRecord_Write45)
 
@@ -301,7 +296,7 @@ void SessionRecord_Write44(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 44);
+    SceneShareTable_WriteRecordD(record, 44);
 }
 CLEAN_AS(func_02077380, SessionRecord_Write44)
 
@@ -310,7 +305,7 @@ void SessionRecord_Write43(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 43);
+    SceneShareTable_WriteRecordD(record, 43);
 }
 CLEAN_AS(func_0207738c, SessionRecord_Write43)
 
@@ -319,7 +314,7 @@ void SessionRecord_Write42(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 42);
+    SceneShareTable_WriteRecordD(record, 42);
 }
 CLEAN_AS(func_02077398, SessionRecord_Write42)
 
@@ -328,7 +323,7 @@ void SessionRecord_Write41(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 41);
+    SceneShareTable_WriteRecordD(record, 41);
 }
 CLEAN_AS(func_020773a4, SessionRecord_Write41)
 
@@ -337,7 +332,7 @@ void SessionRecord_Write40(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 40);
+    SceneShareTable_WriteRecordD(record, 40);
 }
 CLEAN_AS(func_020773b0, SessionRecord_Write40)
 
@@ -346,7 +341,7 @@ void SessionRecord_Write39(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 39);
+    SceneShareTable_WriteRecordD(record, 39);
 }
 CLEAN_AS(func_020773bc, SessionRecord_Write39)
 
@@ -355,7 +350,7 @@ void SessionRecord_Write38(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 38);
+    SceneShareTable_WriteRecordD(record, 38);
 }
 CLEAN_AS(func_020773c8, SessionRecord_Write38)
 
@@ -364,7 +359,7 @@ void SessionRecord_Write37(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 37);
+    SceneShareTable_WriteRecordD(record, 37);
 }
 CLEAN_AS(func_020773d4, SessionRecord_Write37)
 
@@ -373,7 +368,7 @@ void SessionRecord_Write36(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 36);
+    SceneShareTable_WriteRecordD(record, 36);
 }
 CLEAN_AS(func_020773e0, SessionRecord_Write36)
 
@@ -382,7 +377,7 @@ void SessionRecord_Write35(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 35);
+    SceneShareTable_WriteRecordD(record, 35);
 }
 CLEAN_AS(func_020773ec, SessionRecord_Write35)
 
@@ -391,7 +386,7 @@ void SessionRecord_Write34(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 34);
+    SceneShareTable_WriteRecordD(record, 34);
 }
 CLEAN_AS(func_020773f8, SessionRecord_Write34)
 
@@ -400,7 +395,7 @@ void SessionRecord_Write33(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 33);
+    SceneShareTable_WriteRecordD(record, 33);
 }
 CLEAN_AS(func_02077404, SessionRecord_Write33)
 
@@ -409,63 +404,63 @@ void SessionRecord_Write32(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0208520c(record, 32);
+    SceneShareTable_WriteRecordD(record, 32);
 }
 CLEAN_AS(func_02077410, SessionRecord_Write32)
 
 /* func_0207741c: the writer of record 31. */
 void SessionRecord_Write31(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 31, object);
+    TownInsectTables_WriteRecord(record, 31, object);
 }
 CLEAN_AS(func_0207741c, SessionRecord_Write31)
 
 /* func_02077428: the writer of record 30. */
 void SessionRecord_Write30(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 30, object);
+    TownInsectTables_WriteRecord(record, 30, object);
 }
 CLEAN_AS(func_02077428, SessionRecord_Write30)
 
 /* func_02077434: the writer of record 29. */
 void SessionRecord_Write29(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 29, object);
+    TownInsectTables_WriteRecord(record, 29, object);
 }
 CLEAN_AS(func_02077434, SessionRecord_Write29)
 
 /* func_02077440: the writer of record 28. */
 void SessionRecord_Write28(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 28, object);
+    TownInsectTables_WriteRecord(record, 28, object);
 }
 CLEAN_AS(func_02077440, SessionRecord_Write28)
 
 /* func_0207744c: the writer of record 27. */
 void SessionRecord_Write27(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 27, object);
+    TownInsectTables_WriteRecord(record, 27, object);
 }
 CLEAN_AS(func_0207744c, SessionRecord_Write27)
 
 /* func_02077458: the writer of record 26. */
 void SessionRecord_Write26(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 26, object);
+    TownInsectTables_WriteRecord(record, 26, object);
 }
 CLEAN_AS(func_02077458, SessionRecord_Write26)
 
 /* func_02077464: the writer of record 25. */
 void SessionRecord_Write25(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 25, object);
+    TownInsectTables_WriteRecord(record, 25, object);
 }
 CLEAN_AS(func_02077464, SessionRecord_Write25)
 
 /* func_02077470: the writer of record 24. */
 void SessionRecord_Write24(u8 *record, void *object)
 {
-    func_ov003_02235c94(record, 24, object);
+    TownInsectTables_WriteRecord(record, 24, object);
 }
 CLEAN_AS(func_02077470, SessionRecord_Write24)
 
@@ -473,7 +468,7 @@ CLEAN_AS(func_02077470, SessionRecord_Write24)
 void SessionRecord_Write23(u8 *record, void *object, int mode)
 {
     (void) mode;
-    func_02039128(record, 23, object);
+    QuickMessage_WriteRecordOf(record, 23, object);
 }
 CLEAN_AS(func_0207747c, SessionRecord_Write23)
 
@@ -481,7 +476,7 @@ CLEAN_AS(func_0207747c, SessionRecord_Write23)
 void SessionRecord_Write22(u8 *record, void *object, int mode)
 {
     (void) mode;
-    func_02039128(record, 22, object);
+    QuickMessage_WriteRecordOf(record, 22, object);
 }
 CLEAN_AS(func_02077488, SessionRecord_Write22)
 
@@ -489,7 +484,7 @@ CLEAN_AS(func_02077488, SessionRecord_Write22)
 void SessionRecord_Write21(u8 *record, void *object, int mode)
 {
     (void) mode;
-    func_02039128(record, 21, object);
+    QuickMessage_WriteRecordOf(record, 21, object);
 }
 CLEAN_AS(func_02077494, SessionRecord_Write21)
 
@@ -497,7 +492,7 @@ CLEAN_AS(func_02077494, SessionRecord_Write21)
 void SessionRecord_Write20(u8 *record, void *object, int mode)
 {
     (void) mode;
-    func_02039128(record, 20, object);
+    QuickMessage_WriteRecordOf(record, 20, object);
 }
 CLEAN_AS(func_020774a0, SessionRecord_Write20)
 
@@ -506,7 +501,7 @@ void SessionRecord_Write19(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 19);
+    SceneShareTable_WriteRecordE(record, 19);
 }
 CLEAN_AS(func_020774ac, SessionRecord_Write19)
 
@@ -515,7 +510,7 @@ void SessionRecord_Write18(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 18);
+    SceneShareTable_WriteRecordE(record, 18);
 }
 CLEAN_AS(func_020774b8, SessionRecord_Write18)
 
@@ -524,7 +519,7 @@ void SessionRecord_Write17(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 17);
+    SceneShareTable_WriteRecordE(record, 17);
 }
 CLEAN_AS(func_020774c4, SessionRecord_Write17)
 
@@ -533,7 +528,7 @@ void SessionRecord_Write16(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 16);
+    SceneShareTable_WriteRecordE(record, 16);
 }
 CLEAN_AS(func_020774d0, SessionRecord_Write16)
 
@@ -542,7 +537,7 @@ void SessionRecord_Write15(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 15);
+    SceneShareTable_WriteRecordE(record, 15);
 }
 CLEAN_AS(func_020774dc, SessionRecord_Write15)
 
@@ -551,7 +546,7 @@ void SessionRecord_Write14(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 14);
+    SceneShareTable_WriteRecordE(record, 14);
 }
 CLEAN_AS(func_020774e8, SessionRecord_Write14)
 
@@ -560,7 +555,7 @@ void SessionRecord_Write13(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 13);
+    SceneShareTable_WriteRecordE(record, 13);
 }
 CLEAN_AS(func_020774f4, SessionRecord_Write13)
 
@@ -569,7 +564,7 @@ void SessionRecord_Write12(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_02085310(record, 12);
+    SceneShareTable_WriteRecordE(record, 12);
 }
 CLEAN_AS(func_02077500, SessionRecord_Write12)
 
@@ -578,7 +573,7 @@ void SessionRecord_Write11(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0209649c(record, 11);
+    SessionPlayers_WriteStateRecord(record, 11);
 }
 CLEAN_AS(func_0207750c, SessionRecord_Write11)
 
@@ -587,7 +582,7 @@ void SessionRecord_Write10(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0209649c(record, 10);
+    SessionPlayers_WriteStateRecord(record, 10);
 }
 CLEAN_AS(func_02077518, SessionRecord_Write10)
 
@@ -596,7 +591,7 @@ void SessionRecord_Write9(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0209649c(record, 9);
+    SessionPlayers_WriteStateRecord(record, 9);
 }
 CLEAN_AS(func_02077524, SessionRecord_Write9)
 
@@ -605,7 +600,7 @@ void SessionRecord_Write8(u8 *record, void *object, int mode)
 {
     (void) object;
     (void) mode;
-    func_0209649c(record, 8);
+    SessionPlayers_WriteStateRecord(record, 8);
 }
 CLEAN_AS(func_02077530, SessionRecord_Write8)
 
@@ -704,56 +699,56 @@ CLEAN_AS(func_02077598, SessionRecord_Fill)
 /* func_020775c0: the filler of record 19. */
 void SessionRecord_Fill19(u8 *record)
 {
-    func_02085350(record, 19);
+    SceneShareTable_FillRecordE(record, 19);
 }
 CLEAN_AS(func_020775c0, SessionRecord_Fill19)
 
 /* func_020775cc: the filler of record 18. */
 void SessionRecord_Fill18(u8 *record)
 {
-    func_02085350(record, 18);
+    SceneShareTable_FillRecordE(record, 18);
 }
 CLEAN_AS(func_020775cc, SessionRecord_Fill18)
 
 /* func_020775d8: the filler of record 17. */
 void SessionRecord_Fill17(u8 *record)
 {
-    func_02085350(record, 17);
+    SceneShareTable_FillRecordE(record, 17);
 }
 CLEAN_AS(func_020775d8, SessionRecord_Fill17)
 
 /* func_020775e4: the filler of record 16. */
 void SessionRecord_Fill16(u8 *record)
 {
-    func_02085350(record, 16);
+    SceneShareTable_FillRecordE(record, 16);
 }
 CLEAN_AS(func_020775e4, SessionRecord_Fill16)
 
 /* func_020775f0: the filler of record 15. */
 void SessionRecord_Fill15(u8 *record)
 {
-    func_02085350(record, 15);
+    SceneShareTable_FillRecordE(record, 15);
 }
 CLEAN_AS(func_020775f0, SessionRecord_Fill15)
 
 /* func_020775fc: the filler of record 14. */
 void SessionRecord_Fill14(u8 *record)
 {
-    func_02085350(record, 14);
+    SceneShareTable_FillRecordE(record, 14);
 }
 CLEAN_AS(func_020775fc, SessionRecord_Fill14)
 
 /* func_02077608: the filler of record 13. */
 void SessionRecord_Fill13(u8 *record)
 {
-    func_02085350(record, 13);
+    SceneShareTable_FillRecordE(record, 13);
 }
 CLEAN_AS(func_02077608, SessionRecord_Fill13)
 
 /* func_02077614: the filler of record 12. */
 void SessionRecord_Fill12(u8 *record)
 {
-    func_02085350(record, 12);
+    SceneShareTable_FillRecordE(record, 12);
 }
 CLEAN_AS(func_02077614, SessionRecord_Fill12)
 

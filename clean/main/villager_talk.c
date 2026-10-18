@@ -27,6 +27,21 @@
 #include "villager_roster.h"
 #include "villager_scene_object.h"
 #include "villager_town.h"
+#include "camera_modes.h"
+#include "clock.h"
+#include "letter.h"
+#include "mail_part_texts.h"
+#include "mail_text.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "player_options.h"
+#include "talk_object.h"
+#include "villager_talk_lines.h"
+#include "villager_talk_nickname.h"
+#include "villager_talk_part.h"
+#include "villager_talk_scene.h"
+#include "villager_talk_subjects.h"
+#include "villager_talk_topics.h"
 
 static_assert(offsetof(VillagerTalk, line) == 0xb0, "VillagerTalk layout");
 static_assert(offsetof(VillagerTalk, on_last_message) == 0xc8, "VillagerTalk layout");
@@ -130,60 +145,8 @@ extern u8 data_020d9f5c[];
 extern const u8 data_020d8d1c[];
 extern u8 data_021c2604[]; /* a letter */
 
-/* The scene's member setters: the three at 0xb0 from a table, the reply, the member run at the
- * command's end; and the three at 0xb0 cleared. */
-extern void func_0202da88(VillagerTalk *talk, const MemberPointer *table);
-extern void func_0202da74(VillagerTalk *talk, MemberPointer reply);
-extern void func_0202dbf0(VillagerTalk *talk, MemberPointer next);
-extern void func_0202dac0(VillagerTalk *talk);
-/* A line drawn for the personality: the text of `texts` into `text`, and the message
- * per_group * group + a random number below `range` (or below per_group when `range` is 0)
- * into `*message`. */
-extern int func_0202da38(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts, int per_group,
-                         int group, int range);
-/* The player's memory noted by the villager (unless the byte 0x13c is set). */
-extern void func_0202d8f8(VillagerTalk *talk, u8 **memory, s32 *index, u8 *villager, int player);
-/* The talk: its message and text set, its byte 0x18 set (or its menu reset), its byte 0x1e93
- * set while a command holds it. */
-extern void func_0206844c(u8 *talk, const u8 *message, int text);
-extern void func_02068388(u8 *talk, int cond);
-extern void func_02068440(u8 *talk);
-/* The item of a bag holding `bells` (0x1492 when there is none). */
-extern void func_02027170(u16 *item, int bells);
-/* Bit 0 of the options at data_021c6998 set (1) or cleared, and the options kept by the player
- * (func_0203d394). */
-extern void func_0203d480(int set);
-extern void func_0203d394(void);
 /* Item records: `*item` marked as had. */
 extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
-/* The clock's year. */
-extern int func_0209dee8(void);
-/* A random number below `bound`. */
-extern unsigned int func_020644cc(int bound);
-/* An effect at a point. */
-extern int func_0203af80(s32 *point);
-/* Whether the player is set up (func_02064294) with its halfword 0xe set. */
-extern int func_020951bc(DesignCreator *player);
-/* The parts of a letter: three text parts constructed and destructed, the name buffer, the
- * parts loaded with a letter number, and the letter written from them. */
-extern void *func_0206daf8(void *part);
-extern void *func_0206da98(void *part);
-extern void *func_0206da38(void *part);
-extern void *func_0206da20(void *part);
-extern void *func_0206da80(void *part);
-extern void *func_0206dae0(void *part);
-extern void *func_02094fd4(void *name);
-extern void *func_02094fbc(void *name);
-extern void func_0203d73c(void *name);
-extern int func_0203d930(void *part1, void *part2, void *part3, int *result, const u8 *number, int data);
-extern void func_02066198(void *letter, int part1, int part2, int part3, int result, const u8 *data, int from, int to);
-/* Other members of the scene's classes. */
-extern int func_02021118(VillagerTalk *talk);
-extern int func_0202213c(VillagerTalk *talk);
-extern int func_02022034(VillagerTalk *talk);
-extern int func_02022454(VillagerTalk *talk);
-extern void func_02020360(VillagerTalk *talk);
-extern void func_0202a5e8(VillagerTalk *talk, VillagerTalkLine *out);
 
 static u8 *villager_talk_talk(const VillagerTalk *talk)
 {
@@ -223,19 +186,20 @@ static void villager_talk_call(const MemberPointer *member, VillagerTalk *talk, 
 static void villager_talk_say(VillagerTalk *talk, const MemberPointer *table)
 {
     VillagerTalkLine line = {0};
-    func_0202da88(talk, table);
+    VillagerTalkScene_SetLines(talk, table);
     if (talk->line.function != 0) {
         villager_talk_call(&talk->line, talk, &line);
     }
     u8 message = line.message;
-    func_0206844c(villager_talk_talk(talk), &message, (int) line.text);
+    TalkObject_SetMessage((TalkObject *) (void *) villager_talk_talk(talk), &message,
+                          (const char *) (uintptr_t) ((int) line.text));
 }
 
 /* The line drawn into the talk's text and message, which `out` then names. */
 static void villager_talk_draw(VillagerTalk *talk, VillagerTalkLine *out, u32 texts, int per_group, int group, int range)
 {
-    func_0202da38(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, villager_talk_personality(talk), (int) texts,
-                  per_group, group, range);
+    VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, villager_talk_personality(talk),
+                               (int) texts, per_group, group, range);
     out->text = (u32) (uintptr_t) talk->text;
     out->message = talk->message;
 }
@@ -402,7 +366,7 @@ int VillagerTalk_AskBirthday(VillagerTalk *talk)
 {
     SceneCommand_SetScreenMode(villager_talk_scene(talk), 0x32, 0);
     SceneCommand_RequestScreen(villager_talk_scene(talk), SCENE_COMMAND_SCREEN_MODE);
-    func_0202dbf0(talk, data_020d8e60);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d8e60);
     return 1;
 }
 CLEAN_AS(func_0201d3ec, VillagerTalk_AskBirthday)
@@ -410,8 +374,8 @@ CLEAN_AS(func_0201d3ec, VillagerTalk_AskBirthday)
 /* func_0201d418 */
 int VillagerTalk_ClearOption(void)
 {
-    func_0203d480(0);
-    func_0203d394();
+    PlayerOptions_ChangeFlag(0);
+    PlayerOptions_Store();
     return 1;
 }
 CLEAN_AS(func_0201d418, VillagerTalk_ClearOption)
@@ -419,8 +383,8 @@ CLEAN_AS(func_0201d418, VillagerTalk_ClearOption)
 /* func_0201d430 */
 int VillagerTalk_SetOption(void)
 {
-    func_0203d480(1);
-    func_0203d394();
+    PlayerOptions_ChangeFlag(1);
+    PlayerOptions_Store();
     return 1;
 }
 CLEAN_AS(func_0201d430, VillagerTalk_SetOption)
@@ -463,10 +427,10 @@ CLEAN_AS(func_0201d448, VillagerTalk_GiveGift)
 void VillagerTalk_HandBells(VillagerTalk *talk)
 {
     u16 item;
-    func_02027170(&item, talk->bells);
+    VillagerTalkPart_BellBag(&item, talk->bells);
     talk->item = item;
     SceneCommand_RequestMotion14(villager_talk_scene(talk), &talk->item, 0, 5, 0);
-    func_02068440(villager_talk_talk(talk));
+    TalkObject_Hold((TalkObject *) (void *) villager_talk_talk(talk));
 }
 CLEAN_AS(func_0201d4d8, VillagerTalk_HandBells)
 
@@ -491,7 +455,7 @@ int VillagerTalk_SellGift(VillagerTalk *talk)
     }
     PlayerPockets_AddBells(pockets, -talk->bells, 1);
     SceneCommand_RequestMotion13(villager_talk_scene(talk), &talk->gift, 0, 5, 0);
-    func_0202dbf0(talk, data_020d93f8);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d93f8);
     return 1;
 }
 CLEAN_AS(func_0201d514, VillagerTalk_SellGift)
@@ -509,7 +473,7 @@ static void villager_talk_take_item(VillagerTalk *talk)
             VillagerMemoryEntry_SetItem((VillagerMemory *) (void *) talk->memory, &talk->item);
         }
     }
-    func_02068440(villager_talk_talk(talk));
+    TalkObject_Hold((TalkObject *) (void *) villager_talk_talk(talk));
 }
 
 /* func_0201d5cc */
@@ -536,7 +500,7 @@ int VillagerTalk_TradeItem(VillagerTalk *talk)
     PlayerPockets_SetSlot(pockets, &talk->gift, slot, 0);
     OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), &talk->gift, 0, 1);
     SceneCommand_RequestMotion13(villager_talk_scene(talk), &talk->gift, 0, 5, 0);
-    func_0202dbf0(talk, data_020d9038);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d9038);
     return 1;
 }
 CLEAN_AS(func_0201d630, VillagerTalk_TradeItem)
@@ -566,10 +530,10 @@ int VillagerTalk_BuyItem(VillagerTalk *talk)
     PlayerPockets_SetSlot(pockets, &none, slot, 0);
     PlayerPockets_AddBells(pockets, talk->bells, 1);
     u16 bag;
-    func_02027170(&bag, talk->bells);
+    VillagerTalkPart_BellBag(&bag, talk->bells);
     talk->gift = bag;
     SceneCommand_RequestMotion13(villager_talk_scene(talk), &talk->gift, 0, 5, 0);
-    func_0202dbf0(talk, data_020d9060);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d9060);
     return 1;
 }
 CLEAN_AS(func_0201d71c, VillagerTalk_BuyItem)
@@ -604,25 +568,26 @@ int VillagerTalk_ShowLetter(VillagerTalk *talk)
         int result;
 
         NpcId *npc = TownVillager_NpcId(villager_talk_record(talk));
-        func_0206daf8(part1);
-        func_0206da98(part2);
-        func_0206da38(part3);
+        MailSuperText_Construct((MailSuperText *) part1);
+        MailMsgText_Construct((MailMsgText *) part2);
+        MailPsText_Construct((MailPsText *) part3);
         int number = 0;
         letter = data_021c2604;
         if (talk->memory != NULL) {
             number = VillagerMemoryEntry_DrawUnused((VillagerMemory *) (void *) talk->memory);
         }
-        func_02094fd4(name);
+        PlayerIdText_Construct((PlayerIdText *) name);
         NpcId_FormatName(npc, (char *) name);
-        func_0203d73c(name);
-        func_02094fbc(name);
+        MailText_SetParticleName(name);
+        PlayerIdText_Destruct((PlayerIdText *) name);
         u8 number_byte = (u8) number;
-        func_0203d930(part1, part2, part3, &result, &number_byte, (int) (uintptr_t) data_020d9f5c);
-        func_02066198(letter, (int) (uintptr_t) part1, (int) (uintptr_t) part2, (int) (uintptr_t) part3, result, data_020d8d1c,
-                      (int) (uintptr_t) npc, (int) (uintptr_t) npc);
-        func_0206da20(part3);
-        func_0206da80(part2);
-        func_0206dae0(part1);
+        MailText_LoadMail(part1, part2, part3, (s32 *) &result, &number_byte, (const char *) (uintptr_t) data_020d9f5c);
+        Letter_SetBetweenVillagers((Letter *) (void *) letter, (void *) (uintptr_t) part1, (void *) (uintptr_t) part2,
+                                   (void *) (uintptr_t) part3, result, data_020d8d1c, (const NpcId *) (uintptr_t) npc,
+                                   (const NpcId *) (uintptr_t) npc);
+        MailPsText_Destruct((MailPsText *) part3);
+        MailMsgText_Destruct((MailMsgText *) part2);
+        MailSuperText_Destruct((MailSuperText *) part1);
     }
     SceneCommand_SetScreenPointer(villager_talk_scene(talk), (int) (uintptr_t) letter, 0);
     SceneCommand_RequestScreen(villager_talk_scene(talk), SCENE_COMMAND_SCREEN_GROUP_12);
@@ -665,7 +630,7 @@ CLEAN_AS(func_0201d940, VillagerTalk_Line8be0)
 void VillagerTalk_NoteMemory(VillagerTalk *talk, void *unused)
 {
     (void) unused;
-    func_0202d8f8(talk, &talk->memory, &talk->memory_index, villager_talk_record(talk), 0);
+    VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, villager_talk_record(talk), 0);
 }
 CLEAN_AS(func_0201d9b8, VillagerTalk_NoteMemory)
 
@@ -682,7 +647,7 @@ CLEAN_AS(func_0201d9ec, VillagerTalk_Line8d68)
 void VillagerTalk_NoteMemoryAgain(VillagerTalk *talk, void *unused)
 {
     (void) unused;
-    func_0202d8f8(talk, &talk->memory, &talk->memory_index, villager_talk_record(talk), 0);
+    VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, villager_talk_record(talk), 0);
 }
 CLEAN_AS(func_0201da64, VillagerTalk_NoteMemoryAgain)
 
@@ -724,8 +689,8 @@ void VillagerTalk_OfferChoices32(VillagerTalk *talk)
     list.count = 2;
     list.cancel = -1;
     TalkChoices_Offer((TalkChoicesScene *) (void *) talk, &list);
-    func_0202da74(talk, data_020d91c8);
-    func_02068388(villager_talk_talk(talk), 1);
+    VillagerTalkScene_SetReply(talk, data_020d91c8);
+    TalkObject_OpenChoices((TalkObject *) (void *) villager_talk_talk(talk), 1);
 }
 CLEAN_AS(func_0201dbec, VillagerTalk_OfferChoices32)
 
@@ -742,7 +707,7 @@ void VillagerTalk_ShowItem3818(VillagerTalk *talk)
 {
     u16 item = VILLAGER_TALK_ITEM_3818;
     SceneCommand_RequestMotion13(villager_talk_scene(talk), &item, 0, 5, 0);
-    func_0202dbf0(talk, data_020d91d0);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d91d0);
 }
 CLEAN_AS(func_0201dcbc, VillagerTalk_ShowItem3818)
 
@@ -784,7 +749,7 @@ void VillagerTalk_GiveItem3818(VillagerTalk *talk)
     u16 item = VILLAGER_TALK_ITEM_3818;
     CurrentPockets_Give(&item, 0);
     u8 *record = PlayerRecords_Current();
-    PlayerRecord_SetBirthdayYear(record, (u8) func_0209dee8());
+    PlayerRecord_SetBirthdayYear(record, (u8) Clock_Year());
     villager_talk_say(talk, data_021c228c);
 }
 CLEAN_AS(func_0201df20, VillagerTalk_GiveItem3818)
@@ -802,7 +767,7 @@ void VillagerTalk_SayByVillagerCount(VillagerTalk *talk)
     } else {
         u16 item = VILLAGER_TALK_ITEM_3818;
         SceneCommand_RequestMotion13(villager_talk_scene(talk), &item, 0, 5, 0);
-        func_0202dbf0(talk, data_020d9138);
+        VillagerTalkScene_SetCommandEnd(talk, data_020d9138);
     }
 }
 CLEAN_AS(func_0201dfa0, VillagerTalk_SayByVillagerCount)
@@ -829,7 +794,7 @@ void VillagerTalk_Line8d18Group1(VillagerTalk *talk, VillagerTalkLine *out)
     talk->villager_bits = 0;
     talk->villager_count = 0;
 
-    if (player != NULL && func_020951bc(player) != 0 && self != NULL && NpcId_IsValid(self) != 0) {
+    if (player != NULL && PlayerId_IsSet(player) != 0 && self != NULL && NpcId_IsValid(self) != 0) {
         for (int i = 0; i < 8; i++) {
             u8 *other = VillagerRoster_At(&data_021e5a2c, i);
             if (other == NULL || NpcId_IsValid(TownVillager_NpcId(other)) == 0) {
@@ -885,7 +850,7 @@ void VillagerTalk_WalkSay(VillagerTalk *talk)
     }
     const s32 *position = (const s32 *) (const void *) (talk->villager + VILLAGER_TALK_OBJECT_POSITION);
     s32 point[3] = {position[0], position[1] + 0x2000, position[2]};
-    func_0203af80(point);
+    CameraControl_FocusOn((const Vec3 *) point);
     villager_talk_say(talk, data_021c222c);
     SceneCommand_RequestNextLine(villager_talk_scene(talk));
     talk->walk = __ptmf_null;
@@ -921,7 +886,7 @@ CLEAN_AS(func_0201e334, VillagerTalk_WalkStart)
 void VillagerTalk_StartWalk(VillagerTalk *talk)
 {
     SceneCommand_RequestTalkMode(villager_talk_scene(talk), 0);
-    func_0202dbf0(talk, data_020d8f98);
+    VillagerTalkScene_SetCommandEnd(talk, data_020d8f98);
 }
 CLEAN_AS(func_0201e3b0, VillagerTalk_StartWalk)
 
@@ -930,7 +895,7 @@ CLEAN_AS(func_0201e3b0, VillagerTalk_StartWalk)
 void VillagerTalk_Line8d18Group0(VillagerTalk *talk, VillagerTalkLine *out)
 {
     villager_talk_draw(talk, out, data_020c8d18.texts, 1, 0, data_020c8d18.count);
-    func_0202d8f8(talk, &talk->memory, &talk->memory_index, villager_talk_record(talk), 0);
+    VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, villager_talk_record(talk), 0);
     talk->music = data_020d92b0;
 }
 CLEAN_AS(func_0201e3d0, VillagerTalk_Line8d18Group0)
@@ -941,14 +906,14 @@ static void villager_talk_give_made_line(VillagerTalk *talk, VillagerTalkLine *o
 {
     out->text = (u32) (uintptr_t) talk->text;
     out->message = talk->message;
-    func_0202dac0(talk);
+    VillagerTalkScene_ClearLines(talk);
 }
 
 /* func_0201e46c */
 void VillagerTalk_Line213c(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_02021118(talk);
-    func_0202213c(talk);
+    VillagerTalkTopics_FillSlots(talk);
+    VillagerTalkTopics_SayPair(talk);
     villager_talk_give_made_line(talk, out);
 }
 CLEAN_AS(func_0201e46c, VillagerTalk_Line213c)
@@ -956,8 +921,8 @@ CLEAN_AS(func_0201e46c, VillagerTalk_Line213c)
 /* func_0201e4a0 */
 void VillagerTalk_Line2034(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_02021118(talk);
-    func_02022034(talk);
+    VillagerTalkTopics_FillSlots(talk);
+    VillagerTalkTopics_SayByAcre(talk);
     villager_talk_give_made_line(talk, out);
 }
 CLEAN_AS(func_0201e4a0, VillagerTalk_Line2034)
@@ -965,8 +930,8 @@ CLEAN_AS(func_0201e4a0, VillagerTalk_Line2034)
 /* func_0201e4d4 */
 void VillagerTalk_Line2454(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_02021118(talk);
-    func_02022454(talk);
+    VillagerTalkTopics_FillSlots(talk);
+    VillagerTalkSubjects_SayLast(talk);
     villager_talk_give_made_line(talk, out);
 }
 CLEAN_AS(func_0201e4d4, VillagerTalk_Line2454)
@@ -974,14 +939,14 @@ CLEAN_AS(func_0201e4d4, VillagerTalk_Line2454)
 /* func_0201e508 */
 void VillagerTalk_OfferChoices20360(VillagerTalk *talk)
 {
-    func_02020360(talk);
+    VillagerTalk_OfferChoices1e14(talk);
 }
 CLEAN_AS(func_0201e508, VillagerTalk_OfferChoices20360)
 
 /* func_0201e510 */
 void VillagerTalk_Line2a5e8(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_0202a5e8(talk, out);
+    VillagerTalkNickname_LineConnect(talk, out);
 }
 CLEAN_AS(func_0201e510, VillagerTalk_Line2a5e8)
 
@@ -1060,7 +1025,7 @@ void VillagerTalk_OfferChoicesRandom(VillagerTalk *talk)
 {
     TalkChoiceList list;
     u8 *first = data_021c1e14;
-    if ((func_020644cc(10) & 1) == 0) {
+    if ((MainRandom_Below(10) & 1) == 0) {
         first = data_021c23c4;
     }
     TalkChoices_SetFrom((int) (uintptr_t) talk, &list, 0, data_020c8928, (u32) (uintptr_t) first);
@@ -1068,15 +1033,15 @@ void VillagerTalk_OfferChoicesRandom(VillagerTalk *talk)
     list.count = 2;
     list.cancel = 1;
     TalkChoices_Offer((TalkChoicesScene *) (void *) talk, &list);
-    func_0202da74(talk, data_020d9358);
-    func_02068388(villager_talk_talk(talk), 1);
+    VillagerTalkScene_SetReply(talk, data_020d9358);
+    TalkObject_OpenChoices((TalkObject *) (void *) villager_talk_talk(talk), 1);
 }
 CLEAN_AS(func_0201e7b8, VillagerTalk_OfferChoicesRandom)
 
 /* func_0201e834 */
 void VillagerTalk_Line2a5e8Again(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    func_0202a5e8(talk, out);
+    VillagerTalkNickname_LineConnect(talk, out);
 }
 CLEAN_AS(func_0201e834, VillagerTalk_Line2a5e8Again)
 

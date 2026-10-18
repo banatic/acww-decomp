@@ -10,6 +10,22 @@
 #include "main/calendar.h"     /* DateTime */
 #include "main/group_params.h" /* GroupParams_CanOpen, GroupParams_C4CIs1, GroupParams_OpenWithArg */
 #include "ov004/member_pointer.h"
+#include "main/collision_query.h"
+#include "main/date_time.h"
+#include "main/event_queue.h"
+#include "main/fox_shop.h"
+#include "main/message_receiver.h"
+#include "main/player_actor_ops.h"
+#include "main/scene_exit.h"
+#include "main/scene_object_base.h"
+#include "main/scene_place.h"
+#include "main/scene_query.h"
+#include "main/scene_tables.h"
+#include "main/talk_object.h"
+#include "main/talk_receiver.h"
+#include "main/town_objects.h"
+#include "ov009/scene_actor.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(Fox, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(Fox, message) == 0x10a, "receiver byte 0x1e");
@@ -68,52 +84,6 @@ extern const MemberPointer data_ov003_02238578, data_ov003_02238580, data_ov003_
 /* A block of the town's data; func_020ae3b8 gives the part at 8 of it. */
 extern u8 data_021f3b30[];
 
-extern int func_02096174(void);
-extern int func_02096168(void);
-extern void func_02095944(unsigned int arg);
-/* Overlay 9's scene actor: its kind (from the character's code), something it counts by, the
- * point it stands at and the direction it faces (whether it has one), its event handler, its
- * destructor and its constructor. */
-extern int func_ov009_02264c90(Fox *fox);
-extern int func_ov009_022631b4(Fox *fox);
-extern int func_ov009_0226321c(Fox *fox, Vec3 *point, s16 *angle);
-extern void _ZN18Obj_ov009_022658dc19func_ov009_022633acEji(Fox *fox, unsigned int event, int arg);
-extern void *func_ov009_0226539c(Fox *fox);
-extern void *func_ov009_0226552c(Fox *fox);
-/* Main's table at data_021f69d0 (func_020b5e10 gives it), whether it takes `id`, and adding to
- * it; the scene; a height that is always 0x200. */
-extern void *func_020b5e10(void);
-extern int func_020b6098(void *table, int id);
-extern int func_020b5ea0(void *table, int scene, Vec3 *point, int p3, short angle, int p5, int p6);
-extern u8 func_020b65c4(void);
-extern int func_020310c8(int value);
-/* Hands the receiver back, takes it, and lets the scene go on. */
-extern void func_0203ee08(Fox *fox, void *receiver);
-extern void func_0203ee14(Fox *fox, void *receiver);
-extern int func_0203e020(Fox *fox);
-extern int func_0203e0a8(Fox *fox, int arg);
-/* Copies at most 25 characters of `name` into the receiver's name. */
-extern void func_020a8164(void *receiver, const char *name);
-extern void func_02066914(void *receiver, int arg);
-/* Gives the link message `*message`, spoken by `name`. */
-extern void func_0206844c(FoxLink *link, const u8 *message, const char *name);
-/* The character's visit record: asking for it, its answer, clearing bit `bit` of its flags. */
-extern void func_020b248c(u32 code);
-extern int func_020b2470(u16 code);
-extern void func_020b23ec(int code, int bit);
-extern int func_020ae2c4(void);
-extern int func_020ae270(void);
-extern void *func_020ae3b8(void *block);
-extern int func_020ae5f4(void *part);
-/* A text of main (0x38 bytes): built by func_020ae774, destroyed by func_020ae75c; func_020ae614
- * loads into it from the part of data_021f3b30, and func_02068404 hands it to the link. */
-extern void *func_020ae774(void *text);
-extern void *func_020ae75c(void *text);
-extern int func_020ae614(void *part, void *text);
-extern void func_02068404(FoxLink *link, int index, void *text);
-/* The clock's date and time (DateTime_Now). */
-extern void func_0209e474(DateTime *now);
-
 typedef struct FoxText {
     u32 words[0x38 / 4];
 } FoxText;
@@ -138,29 +108,30 @@ static Fox *fox_from_receiver(void *receiver)
  * QUIRK: the counter is 16 bits and wraps; nothing stops the update after the flag is set. */
 void Fox_UpdateGone(Fox *fox)
 {
-    if (func_02096174()) {
+    if (PlayerActorOps_TestOwnFlag1()) {
         fox->frames++;
     }
-    unsigned int wait = func_ov009_02264c90(fox) == 2 ? 20 : 15;
-    if (func_ov009_02264c90(fox) == 1) {
+    unsigned int wait = SceneActor_Kind((SceneActor *) fox) == 2 ? 20 : 15;
+    if (SceneActor_Kind((SceneActor *) fox) == 1) {
         wait += 12;
     }
     if (fox->frames < wait) {
         return;
     }
-    int id = func_ov009_022631b4(fox);
+    int id = SceneActor_RecordId((SceneActor *) fox);
     Vec3 point;
     s16 angle;
-    if (!func_ov009_0226321c(fox, &point, &angle)) {
+    if (!SceneActor_GetStandPoint((SceneActor *) fox, &point, &angle)) {
         return;
     }
-    if (!func_020b6098(func_020b5e10(), id)) {
+    if (!SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), id)) {
         return;
     }
-    point.y = func_020310c8(0);
+    point.y = CollisionQuery_FloorHeight(0);
     point.z += 0x1000;
-    void *table = func_020b5e10();
-    func_020b5ea0(table, func_020b65c4(), &point, 0x0f000000, (short) (angle + 0x8000), fox->unk_22c, fox->unk_230);
+    int table = SceneTables_EntryRecord();
+    ScenePlace_SetMarked(table, SceneQuery_Current(), &point, 0x0f000000, (short) (angle + 0x8000), fox->unk_22c,
+                         fox->unk_230);
     fox->flags |= FOX_FLAG_GONE;
 }
 CLEAN_AS(func_ov003_0221bac8, Fox_UpdateGone)
@@ -179,7 +150,7 @@ CLEAN_AS(func_ov003_0221bb9c, Fox_EnterGone)
  * 0x39, kind 2), and remembers when the player agreed. */
 void Fox_UpdateWalk(Fox *fox)
 {
-    if (func_02096168()) {
+    if (PlayerActorOps_TestOwnFlag4()) {
         Fox_SetState(fox, FOX_GONE);
         return;
     }
@@ -188,7 +159,7 @@ void Fox_UpdateWalk(Fox *fox)
     }
     Vec3 point;
     s16 angle;
-    if (func_ov009_0226321c(fox, &point, &angle) &&
+    if (SceneActor_GetStandPoint((SceneActor *) fox, &point, &angle) &&
         FieldActor_PlayerRequestState39(FOX_PLAYER_KIND, (int *) &point.x, (int *) &point.z, angle)) {
         fox->asked = 1;
     }
@@ -207,8 +178,8 @@ CLEAN_AS(func_ov003_0221bc00, Fox_EnterWalk)
  * agrees, moves to FOX_WALK and, when that worked, hands the receiver back. */
 void Fox_UpdateLeave(Fox *fox)
 {
-    if (func_02096174() && Fox_SetState(fox, FOX_WALK)) {
-        func_0203ee08(fox, fox_receiver(fox));
+    if (PlayerActorOps_TestOwnFlag1() && Fox_SetState(fox, FOX_WALK)) {
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) fox, fox_receiver(fox));
     }
 }
 CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bc10Ev, Fox_UpdateLeave)
@@ -217,7 +188,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bc10Ev, Fox_UpdateLeave)
 int Fox_EnterLeave(Fox *fox)
 {
     (void) fox;
-    func_02095944(0);
+    PlayerActorOps_Approach(0);
     return 1;
 }
 CLEAN_AS(func_ov003_0221bc3c, Fox_EnterLeave)
@@ -252,17 +223,17 @@ void Fox_UpdateScreen(Fox *fox)
     }
     u8 message;
     if (GroupParams_C4CIs1()) {
-        func_020ae270();
+        FoxShop_MarkCurrentPlayer();
         message = FOX_MESSAGE_SCREEN_C4C;
-        func_0206844c(fox->link, &message, data_ov003_02238778);
+        TalkObject_SetMessage((TalkObject *) fox->link, &message, data_ov003_02238778);
         fox->link->requested = 1;
         Fox_SetState(fox, FOX_TALK_END);
     } else {
         message = FOX_MESSAGE_SCREEN_OTHER;
-        func_0206844c(fox->link, &message, data_ov003_02238778);
+        TalkObject_SetMessage((TalkObject *) fox->link, &message, data_ov003_02238778);
         fox->link->requested = 1;
         Fox_SetState(fox, FOX_TALK_END);
-        func_020b23ec(fox->code, 0);
+        TownObjects_Leave(fox->code, 0);
     }
 }
 CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bc78Ev, Fox_UpdateScreen)
@@ -282,7 +253,7 @@ CLEAN_AS(func_ov003_0221bcf8, Fox_EnterScreen)
 void Fox_UpdateScreenAsk(Fox *fox)
 {
     if (fox->link->status == FOX_LINK_SCREEN) {
-        GroupParams_OpenWithArg(FOX_SCREEN_MODE, func_020ae5f4(func_020ae3b8(data_021f3b30)));
+        GroupParams_OpenWithArg(FOX_SCREEN_MODE, FoxPassword_LetterTextNumber(FoxShop_Password((FoxShop *) data_021f3b30)));
         Fox_SetState(fox, FOX_SCREEN);
     }
 }
@@ -301,8 +272,8 @@ CLEAN_AS(func_ov003_0221bd34, Fox_EnterScreenAsk)
 void Fox_UpdateTalkEnd(Fox *fox)
 {
     if (fox->link != NULL && fox->link->status == 0) {
-        func_0203ee08(fox, fox_receiver(fox));
-        func_0203e020(fox);
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) fox, fox_receiver(fox));
+        EventQueue_FinishObjectEvent(fox);
     }
 }
 CLEAN_AS(func_ov003_0221bd38, Fox_UpdateTalkEnd)
@@ -335,23 +306,23 @@ int Fox_EnterTalk(Fox *fox)
 {
     typedef int (*FoxSlot)(Fox *fox);
 
-    func_0203ee14(fox, fox_receiver(fox));
-    func_020a8164(&fox->receiver_vtable, data_ov003_02238778);
+    SceneObjectBase_TakeReceiver((SceneObjectBase *) fox, fox_receiver(fox));
+    MessageReceiver_SetName((MessageReceiver *) &fox->receiver_vtable, data_ov003_02238778);
     FoxSlot after_six = (FoxSlot) (uintptr_t) *(const u32 *) ((const u8 *) fox->vtable + 0x8c);
     if (after_six(fox) == 0) {
         fox->message = FOX_MESSAGE_EARLY;
         if (!(fox->flags & FOX_FLAG_VISIT_2)) {
-            func_020b23ec(fox->code, 0);
+            TownObjects_Leave(fox->code, 0);
         }
     } else if (fox->flags & FOX_FLAG_VISIT_2) {
         fox->message = FOX_MESSAGE_VISIT_2;
-    } else if (func_020ae2c4()) {
+    } else if (FoxShop_CurrentPlayerMarked()) {
         fox->message = FOX_MESSAGE_AGAIN;
     } else {
         fox->message = FOX_MESSAGE_FIRST;
     }
     fox->link->requested = 1;
-    func_02066914(&fox->receiver_vtable, 0);
+    TalkReceiver_ClearSpeaker((TalkReceiver *) &fox->receiver_vtable, 0);
     return 1;
 }
 CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd90Ev, Fox_EnterTalk)
@@ -361,7 +332,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd90Ev, Fox_EnterTalk)
  * starts the talk. */
 void Fox_UpdateVisit(Fox *fox)
 {
-    int answer = func_020b2470(fox->code);
+    int answer = TownObjects_VisitAnswer(fox->code);
     if (answer != 0) {
         fox->flags = (u8) ((fox->flags & ~FOX_FLAG_VISIT_2) | (answer == 2 ? FOX_FLAG_VISIT_2 : 0));
         Fox_SetState(fox, FOX_TALK);
@@ -372,7 +343,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221be34Ev, Fox_UpdateVisit)
 /* func_ov003_0221be7c (entry of FOX_VISIT): asks main for the character's visit record. */
 int Fox_EnterVisit(Fox *fox)
 {
-    func_020b248c(fox->code);
+    TownObjects_RequestVisit(fox->code);
     fox->flags &= (u8) ~FOX_FLAG_VISIT_2;
     return 1;
 }
@@ -383,7 +354,7 @@ CLEAN_AS(func_ov003_0221be7c, Fox_EnterVisit)
 void Fox_UpdateIdle(Fox *fox)
 {
     if (fox->flags_235 & 4) {
-        func_0203e0a8(fox, 0);
+        EventQueue_RequestKind6(fox, 0);
     }
 }
 CLEAN_AS(func_ov003_0221bea4, Fox_UpdateIdle)
@@ -490,11 +461,11 @@ void Fox_ReceiverSlot10(Fox *fox)
         return;
     }
     FoxText text;
-    func_020ae774(&text);
-    if (func_020ae614(func_020ae3b8(data_021f3b30), &text) != 0) {
-        func_02068404(fox->link, 0, &text);
+    FoxShopText_Construct((FoxShopText *) &text);
+    if (FoxPassword_LoadTalkText(FoxShop_Password((FoxShop *) data_021f3b30), (FoxShopText *) &text) != 0) {
+        TalkObject_SetPart((TalkObject *) fox->link, 0, (TextBase *) &text);
     }
-    func_020ae75c(&text);
+    FoxShopText_Destruct((FoxShopText *) &text);
 }
 CLEAN_AS(func_ov003_0221c0dc, Fox_ReceiverSlot10)
 
@@ -505,7 +476,7 @@ void Fox_OnSceneEvent(Fox *fox, unsigned int event, int arg)
 {
     switch (event) {
         case FOX_EVENT_BASE:
-            _ZN18Obj_ov009_022658dc19func_ov009_022633acEji(fox, event, arg);
+            SceneActor_OnSceneEvent((SceneActor *) fox, event, arg);
             break;
         case FOX_EVENT_TALK:
         case FOX_EVENT_TALK_AGAIN:
@@ -525,7 +496,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221c128Eji, Fox_OnSceneEvent)
 int Fox_IsAfterSix(Fox *fox)
 {
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     return now.hour >= FOX_HOUR_FROM && fox->hour >= FOX_HOUR_FROM;
 }
 CLEAN_AS(func_ov003_0221c16c, Fox_IsAfterSix)
@@ -542,7 +513,7 @@ CLEAN_AS(func_ov003_0221c1a4, Fox_Update)
 int Fox_KeepHour(Fox *fox)
 {
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     fox->hour = now.hour;
     return 1;
 }
@@ -553,7 +524,7 @@ static void fox_destroy_parts(Fox *fox)
 {
     fox->vtable = data_ov003_02238630;
     fox->receiver_vtable = data_ov003_022386f4;
-    func_ov009_0226539c(fox);
+    SceneActor_Destruct((SceneActor *) fox);
 }
 
 /* func_ov003_0221c1dc (the deleting destructor): the destructor's work, then the memory
@@ -577,7 +548,7 @@ CLEAN_AS(func_ov003_0221c208, Fox_Destroy)
 /* func_ov003_0221c22c: the constructor: overlay 9's, then the vtables. */
 Fox *Fox_Construct(Fox *fox)
 {
-    func_ov009_0226552c(fox);
+    SceneActor_ConstructBase((SceneActor *) fox);
     fox->vtable = data_ov003_02238630;
     fox->receiver_vtable = data_ov003_022386f4;
     return fox;

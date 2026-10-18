@@ -56,9 +56,7 @@ extern void PXI_SetFifoRecvCallback(int tag, void (*callback)(int tag, int data,
 /* Nvram_Read and Nvram_Init wait on the FIFO interrupt, so the runtime keeps the ROM's code for
  * them (runtime/native-reference.txt) and they are called through their DS addresses. The
  * reply callback is installed by its DS address: Nvram_OnReply is its Clean version. */
-extern void func_020010c0(u32 address, u32 size, void *dest);
 extern void func_02001238(int tag, int data, int error);
-extern void func_02001268(void);
 
 /* NvramReply of the last request; written by the FIFO interrupt. */
 extern volatile s32 data_0213fdc0;
@@ -98,10 +96,10 @@ void UserSettings_Load(void)
     *header_offset = FIRMWARE_SETTINGS_OFFSET;
     *header_size = 2;
     *scale = 3;
-    func_020010c0(*header_offset, *header_size, settings_address);
+    Nvram_Read(*header_offset, *header_size, settings_address);
     *settings_address <<= *scale;
-    func_020010c0(*settings_address, sizeof(UserSettingsPage), &pages[0]);
-    func_020010c0(*settings_address + sizeof(UserSettingsPage), sizeof(UserSettingsPage), &pages[1]);
+    Nvram_Read(*settings_address, sizeof(UserSettingsPage), &pages[0]);
+    Nvram_Read(*settings_address + sizeof(UserSettingsPage), sizeof(UserSettingsPage), &pages[1]);
 
     *choice = UserSettings_SelectPage(pages);
     if (*choice >= USER_SETTINGS_REFUSED) {
@@ -208,7 +206,7 @@ CLEAN_AS(func_0200103c, UserSettings_RegionLanguages)
 int UserSettings_HasExtension(void)
 {
     u8 *type = OS_AllocFromArenaHi(OS_ARENA_MAIN, 1, 0x20);
-    func_020010c0(FIRMWARE_CONSOLE_TYPE, 1, type);
+    Nvram_Read(FIRMWARE_CONSOLE_TYPE, 1, type);
     if (*type == 0xff) {
         return 0;
     }
@@ -295,7 +293,7 @@ CLEAN_AS(func_02001268, Nvram_Init)
 void UserSettings_StartUp(void)
 {
     OS_Init();
-    func_02001268();
+    Nvram_Init();
     UserSettings_Load();
 }
 CLEAN_AS(func_020012bc, UserSettings_StartUp)

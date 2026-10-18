@@ -5,6 +5,7 @@
 #include "actor.h" /* Vec_YawTo */
 #include "clean.h"
 #include "event_queue.h"
+#include "list_ops.h"
 
 /* The registered objects. */
 extern List data_021c72cc;
@@ -13,8 +14,6 @@ extern List data_021c72cc;
 extern const s16 data_020ca4cc[];
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* The node of `list` registered under `id`, or NULL (and NULL for id 0). */
-extern SceneObjectRegistryNode *func_02065c00(List *list, int id);
 
 static_assert(sizeof(Process) == 0x50, "Process size");
 static_assert(offsetof(SceneObjectBase, position) == 0x5c, "SceneObjectBase layout");
@@ -240,7 +239,7 @@ CLEAN_AS(func_0203ef5c, SceneObjectBase_FindActable)
 /* func_0203ef90: the object registered under `id`, as an address; 0 for none (and for id 0). */
 int SceneObjectBase_FindAddress(int id)
 {
-    SceneObjectRegistryNode *node = func_02065c00(&data_021c72cc, id);
+    SceneObjectRegistryNode *node = (SceneObjectRegistryNode *) ListOps_FindByKey(&data_021c72cc, id);
 
     return node != NULL ? (int) (uintptr_t) node->object : 0;
 }
@@ -262,11 +261,6 @@ extern const u32 data_020d7244[];
 extern const u32 data_020da13c[];
 /* Every actor, linked through the actor's link at 0x50 (actor.h). */
 extern List data_0213ff78;
-
-/* Appends `node` to `list`; 1. */
-extern int func_02065c1c(List *list, ListNode *node);
-/* Empties `list` (its first and last node set to NULL). */
-extern void func_02065c68(List *list);
 
 /* func_0203efbc (the events' ids): the object's id. */
 u32 SceneObjectBase_Id(SceneObjectBase *object)
@@ -300,7 +294,7 @@ CLEAN_AS(func_0203efdc, SceneObjectBase_CanDelete)
 void SceneObjectBase_AfterCreate(SceneObjectBase *object, int outcome)
 {
     if (outcome == OUTCOME_DONE) {
-        func_02065c1c(&data_021c72cc, &object->entry.link);
+        ListOps_Append(&data_021c72cc, &object->entry.link);
     }
     Actor_Vfunc08((Actor *) object, outcome);
 }
@@ -326,7 +320,7 @@ CLEAN_AS(func_0203f030, SceneObjectBase_CanCreate)
 /* func_0203f070: the registry emptied (the objects are not touched). */
 void SceneObjectBase_ClearRegistry(void)
 {
-    func_02065c68(&data_021c72cc);
+    ListOps_Clear(&data_021c72cc);
 }
 CLEAN_AS(func_0203f070, SceneObjectBase_ClearRegistry)
 

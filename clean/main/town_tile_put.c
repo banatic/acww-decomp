@@ -4,11 +4,8 @@
 #include "acre_tile.h"
 #include "clean.h"
 #include "scene_query.h"
-
-/* The overlay of the town's field told of a tile's new item (and its result). */
-extern void func_ov003_02224140(int x, int z, int item, int result);
-/* The overlay of a room told of a tile's new item (and its layer). */
-extern void func_ov004_02233ad4(int x, int z, int item, int layer);
+#include "ov003/tile_event.h"
+#include "ov004/dropped_items.h"
 
 /* func_0204a200: `code` put on tile (x, z) of acre (acre_x, acre_z) of the map (layer 0), the
  * tile marked or unmarked. */
@@ -68,9 +65,9 @@ CLEAN_AS(func_0204a2a4, TownTilePut_OnScene)
 void TownTilePut_TellScene(int x, int z, int code, int result)
 {
     if (SceneQuery_CurrentIs0() != 0 || SceneQuery_CurrentIs31() != 0) {
-        func_ov003_02224140(x, z, code, result);
+        TileEvent_SetTownItem(x, z, code, result);
     } else {
-        func_ov004_02233ad4(x, z, code, 0);
+        DroppedItems_PutOnMap(x, z, code, 0);
     }
 }
 CLEAN_AS(func_0204a330, TownTilePut_TellScene)

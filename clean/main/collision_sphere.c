@@ -3,13 +3,12 @@
 
 #include "clean.h"
 #include "itcm/vector.h"
+#include "collision_line.h"
 
 static_assert(sizeof(CollisionSphere) == 0x10, "CollisionSphere size");
 static_assert(offsetof(CollisionLine, direction) == 0x18, "CollisionLine layout");
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* The distance from `point` to the line (to the nearest point of the infinite line). */
-extern int func_0203000c(CollisionLine *line, Vec3 *point);
 
 /* func_0202f1cc: when the line passes within the sphere's radius of its centre, `*out` is the
  * nearer to the line's start of two points, and the result is 1; else 0 and `*out` is left.
@@ -20,7 +19,7 @@ extern int func_0203000c(CollisionLine *line, Vec3 *point);
 int CollisionSphere_HitLine(CollisionSphere *sphere, Vec3 *out, CollisionLine *line)
 {
     fx32 radius = sphere->radius;
-    if (func_0203000c(line, &sphere->centre) > radius) {
+    if (CollisionLine_Distance(line, &sphere->centre) > radius) {
         return 0;
     }
     Vec3 ahead;

@@ -8,6 +8,11 @@
 #include "scene_query.h"
 #include "session.h"
 #include "tile_changes.h"
+#include "item_lists.h"
+#include "ov003/growth_model.h"
+#include "ov003/tile_event.h"
+#include "session_players.h"
+#include "town_tile_put.h"
 
 static_assert(sizeof(TileRequestMessage) == 8, "TileRequestMessage");
 static_assert(sizeof(TileRequestAnswer) == TILE_REQUEST_ANSWER_SIZE, "TileRequestAnswer");
@@ -32,24 +37,8 @@ extern const u16 data_020ca670[];
 /* The codes the items 0x1518-0x151c become. */
 extern const u16 data_020ca658[];
 
-/* The item put on a tile through a change of the table (tile_changes.h); whether it was. */
-extern int func_02046024(int slot, const TileRequestTile *tile, u32 item, u32 code, u8 kind, u8 unk_1d, u8 unk_20, u8 place,
-                         u8 layer, s8 unk_1e);
-/* As func_02046024, a change already at the tile finished first. */
-extern int func_02045f24(int slot, const TileRequestTile *tile, u32 item, int code, u8 kind, u8 unk_1d, u8 unk_20, u8 place,
-                         u8 layer, s8 unk_1e);
-/* An item put on the tile (x, z) of the map of `scene` (the tile's bit set when `flag`). */
-extern void func_0204a2a4(int scene, int x, int z, int item, int flag);
 /* A misnamed main function: whether a player's actor has a flag. */
 extern int DWC_Alloc(int flag, int player);
-/* An item drawn at random: a drawer set up, drawn from and done with. */
-extern void func_02063ccc(int *drawer, int a, int b);
-extern void func_020638d4(u16 *out, int *drawer, int a, int b, u8 c, int d, int e);
-extern void func_02063cc8(int *drawer);
-/* Which of three ways from `position` this system's player looks (overlay 3). */
-extern int func_ov003_02223078(int slot, const Vec3 *position);
-extern int func_ov003_02221118(int player, int item, const TileRequestTile *tile);
-extern TileRequestsActor *func_020961a8(int player);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 #define TILE_REQUEST_GRANT_MESSAGE_ASK 0x31
@@ -180,13 +169,13 @@ void TileRequestGrant_PutOnScene(const TileRequestAnswer *answer, int scene)
     if (TileRequestGrant_PutsNothing(TileRequestGrant_AnswerKind(answer))) {
         return;
     }
-    func_0204a2a4(scene, answer->tile >> 8, answer->tile & 0xff, answer->item, (answer->what >> 3) & 3);
+    TownTilePut_OnScene(scene, answer->tile >> 8, answer->tile & 0xff, answer->item, (answer->what >> 3) & 3);
     if ((answer->who & TILE_REQUEST_ANSWER_EXTRAS) == 0) {
         return;
     }
     u16 dropped = answer->extra_item;
     for (int i = 0; i < 3; i++) {
-        func_0204a2a4(scene, answer->extra_tiles[i] >> 8, answer->extra_tiles[i] & 0xff, dropped, 0);
+        TownTilePut_OnScene(scene, answer->extra_tiles[i] >> 8, answer->extra_tiles[i] & 0xff, dropped, 0);
     }
 }
 CLEAN_AS(func_02044ec4, TileRequestGrant_PutOnScene)
@@ -236,7 +225,7 @@ void TileRequestGrant_Apply(const TileRequestAnswer *answer)
     }
     if (kind == TILE_REQUEST_SPLIT_DROP || kind == TILE_REQUEST_DROP_A7) {
         TileRequestTile shown = {x, z};
-        func_ov003_02221118(TileRequestGrant_AnswerSlot(answer), answer->item, &shown);
+        TileEvent_StartKind4(TileRequestGrant_AnswerSlot(answer), answer->item, (const TileChangesTile *) &shown);
     }
     u16 code = ITEM_CODE_NONE;
     AcreMap *map = data_021c80bc;
@@ -244,8 +233,9 @@ void TileRequestGrant_Apply(const TileRequestAnswer *answer)
         code = *TileRequestGrant_CodeAt(map, x, z);
     }
     TileRequestTile tile = {x, z};
-    func_02045f24(TileRequestGrant_AnswerSlot(answer), &tile, answer->item, code, (u8) kind, (answer->what >> 3) & 3,
-                  (answer->what >> 5) & 3, TILE_REQUEST_GRANT_PLACE, (u8) TileRequestGrant_AnswerLayer(answer), -1);
+    TileChanges_Replace(TileRequestGrant_AnswerSlot(answer), (const TileChangesTile *) &tile, answer->item, code, (u8) kind,
+                        (answer->what >> 3) & 3, (answer->what >> 5) & 3, TILE_REQUEST_GRANT_PLACE,
+                        (u8) TileRequestGrant_AnswerLayer(answer), -1);
     if ((answer->who & TILE_REQUEST_ANSWER_EXTRAS) == 0) {
         return;
     }
@@ -254,8 +244,8 @@ void TileRequestGrant_Apply(const TileRequestAnswer *answer)
         u16 extra = answer->extra_tiles[i];
         if (extra != TILE_CHANGES_NO_TILE) {
             TileRequestTile at = TileRequestGrant_TileOf(extra);
-            func_02045f24(TileRequestGrant_AnswerSlot(answer), &at, dropped, ITEM_CODE_NONE, 0, 0, 0, (u8) i,
-                          (u8) TileRequestGrant_AnswerLayer(answer), -1);
+            TileChanges_Replace(TileRequestGrant_AnswerSlot(answer), (const TileChangesTile *) &at, dropped, ITEM_CODE_NONE, 0,
+                                0, 0, (u8) i, (u8) TileRequestGrant_AnswerLayer(answer), -1);
         }
     }
 }
@@ -289,17 +279,17 @@ void TileRequestGrant_Answer(const TileRequestMessage *request, int granted, int
         TileRequestTile at = tile;
         switch (kind) {
             case TILE_REQUEST_SPLIT_DROP:
-                func_02046024((u8) slot, &at, answer.item, ITEM_CODE_NONE, (u8) kind, unk_1d, unk_20, TILE_REQUEST_GRANT_PLACE,
-                              layer, -1);
+                TileChanges_Put((u8) slot, (const TileChangesTile *) &at, answer.item, ITEM_CODE_NONE, (u8) kind, unk_1d,
+                                unk_20, TILE_REQUEST_GRANT_PLACE, layer, -1);
                 at = tile;
-                func_ov003_02221118(slot, answer.item, &at);
+                TileEvent_StartKind4(slot, answer.item, (const TileChangesTile *) &at);
                 break;
             case TILE_REQUEST_DROP_A7:
-                func_02046024((u8) slot, &at, answer.item, ITEM_CODE_NONE, (u8) kind, unk_1d, unk_20, TILE_REQUEST_GRANT_PLACE,
-                              layer, -1);
+                TileChanges_Put((u8) slot, (const TileChangesTile *) &at, answer.item, ITEM_CODE_NONE, (u8) kind, unk_1d,
+                                unk_20, TILE_REQUEST_GRANT_PLACE, layer, -1);
                 if (TileRequests_MayAsk(slot) == 0) {
                     at = tile;
-                    func_ov003_02221118(slot, answer.item, &at);
+                    TileEvent_StartKind4(slot, answer.item, (const TileChangesTile *) &at);
                 }
                 break;
             case 0xc:
@@ -309,8 +299,8 @@ void TileRequestGrant_Answer(const TileRequestMessage *request, int granted, int
                 break;
             default: {
                 u16 code = request->code;
-                func_02046024((u8) slot, &at, answer.item, code, (u8) kind, unk_1d, unk_20, TILE_REQUEST_GRANT_PLACE, layer,
-                              -1);
+                TileChanges_Put((u8) slot, (const TileChangesTile *) &at, answer.item, code, (u8) kind, unk_1d, unk_20,
+                                TILE_REQUEST_GRANT_PLACE, layer, -1);
                 if (TileRequestGrant_Drops(&answer, request, slot) != 0) {
                     answer.who |= TILE_REQUEST_ANSWER_EXTRAS;
                     size = TILE_REQUEST_ANSWER_SIZE;
@@ -387,19 +377,19 @@ void TileRequestGrant_DropOne(TileRequestAnswer *answer, const TileRequestMessag
         request->code != 0x6c) {
         int drawer[2];
         u16 drawn;
-        func_02063ccc(drawer, 0, 0);
-        func_020638d4(&drawn, drawer, 0, 0, 1, 1, 0);
+        ItemList_Construct((ItemList *) drawer, 0, 0);
+        ItemLists_Draw(&drawn, (ItemList *) drawer, 0, 0, 1, 1, 0);
         item = drawn;
-        func_02063cc8(drawer);
+        ItemList_Destruct(drawer);
     }
     u16 packed = request->tile;
     Vec3 centre;
     AcreTile_TileCentre(&centre, (u32) (packed >> 8), (u32) (packed & 0xff));
-    int side = func_ov003_02223078(slot, &centre);
+    int side = GrowthModel_PlayerSide(slot, &centre);
     TileRequestTile at = TileRequestGrant_Near(answer->tile, data_020ca67c[side]);
     if (TileRequestGrant_FindDropTile(answer, &at, side, town) != 0) {
         TileRequestTile to = at;
-        func_02046024((u8) slot, &to, item, ITEM_CODE_NONE, 0, 0, 0, 0, 0, -1);
+        TileChanges_Put((u8) slot, (const TileChangesTile *) &to, item, ITEM_CODE_NONE, 0, 0, 0, 0, 0, -1);
         TileRequestGrant_SetExtraTile(answer, 0, &at);
     } else {
         answer->extra_tiles[0] = TILE_CHANGES_NO_TILE;
@@ -423,7 +413,7 @@ void TileRequestGrant_DropMany(TileRequestAnswer *answer, int slot, int code)
         TileRequestTile at = TileRequestGrant_Near(answer->tile, data_020ca67c[i]);
         if (TileRequestGrant_FindDropTile(answer, &at, i, town) != 0) {
             TileRequestTile to = at;
-            func_02046024((u8) slot, &to, item, ITEM_CODE_NONE, 0, 0, 0, (u8) i, 0, -1);
+            TileChanges_Put((u8) slot, (const TileChangesTile *) &to, item, ITEM_CODE_NONE, 0, 0, 0, (u8) i, 0, -1);
             TileRequestGrant_SetExtraTile(answer, i, &at);
         } else {
             answer->extra_tiles[i] = TILE_CHANGES_NO_TILE;
@@ -537,9 +527,9 @@ void TileRequestGrant_Submit(u8 index, int unk_20)
     }
     s8 unk_1e = request->unk_1e;
     TileRequestTile to = request->tile;
-    if (func_02046024(0, &to, message.item, message.code, message.what & TILE_REQUEST_MESSAGE_KIND_MASK,
-                      (message.who >> 4) & 3, (message.what >> 5) & 3, TILE_REQUEST_GRANT_PLACE, message.what >> 7,
-                      unk_1e) == 0) {
+    if (TileChanges_Put(0, (const TileChangesTile *) &to, message.item, message.code,
+                        message.what & TILE_REQUEST_MESSAGE_KIND_MASK, (message.who >> 4) & 3, (message.what >> 5) & 3,
+                        TILE_REQUEST_GRANT_PLACE, message.what >> 7, unk_1e) == 0) {
         request->state = TILE_REQUEST_REFUSED;
         return;
     }
@@ -643,7 +633,7 @@ int TileRequestGrant_NoOneNear(const TileRequestTile *tile, int skip)
         if (i == skip) {
             continue;
         }
-        TileRequestsActor *actor = func_020961a8(i);
+        TileRequestsActor *actor = SessionPlayers_ActorOf(i);
         if (actor == NULL) {
             continue;
         }

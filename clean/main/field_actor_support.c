@@ -17,6 +17,37 @@
 #include "main/item_code.h"
 #include "main/session.h"
 #include "sound_emitter.h"
+#include "acre_tile.h"
+#include "actor_table.h"
+#include "angle_sector.h"
+#include "battery_warning.h"
+#include "collision_map.h"
+#include "control_mode_icon.h"
+#include "date_time.h"
+#include "effect_system.h"
+#include "event_queue.h"
+#include "frame_ctrl.h"
+#include "game_variables.h"
+#include "globe.h"
+#include "ground_sound.h"
+#include "held_item.h"
+#include "item_info.h"
+#include "layered_model.h"
+#include "model_object.h"
+#include "music_queue.h"
+#include "name_texts.h"
+#include "ov004/field_actor_room_states2.h"
+#include "player_actor_ops.h"
+#include "player_record.h"
+#include "scene_claim.h"
+#include "scene_exit.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "session_players.h"
+#include "talk_answers.h"
+#include "talk_object.h"
+#include "tile_requests.h"
 
 static_assert(offsetof(FieldActor, flags) == 0x6ec, "flags");
 static_assert(offsetof(FieldActor, player) == 0x800, "player");
@@ -52,87 +83,10 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-/* Items. */
-extern int func_0204bcdc(const u16 *item);
-extern int func_0204bc64(const u16 *item);
-extern u32 func_02062148(const u16 *item);
-
-/* What the session reports of a player's actor: its scene and tile point, its yaw; the actor of
- * a player (NULL for none) and its start position; whether a player's actor is in a state. */
-extern int func_02096614(u8 *scene, fx32 *x, fx32 *z, int a, int player);
-extern int func_0209658c(s16 *yaw, int a, int player);
-extern const Vec3 *func_02095794(int player);
-extern int func_020960f8(int state, int player);
-extern u8 func_020b65c4(void); /* the current scene */
-extern u8 func_020b65b8(void); /* the scene byte at data_020e54b0 */
-
-/* The receiver's conversation (as the ATM's): the player's choice, a message, a text slot. */
-extern void *func_0206837c(void *talk);
-extern unsigned int func_020ab504(void *menu);
-extern void func_0206844c(void *talk, const u8 *message, const char *name);
-extern void *func_02062f90(void *text, const u16 *item);
-extern void func_020683b4(void *talk, int slot, void *text, int kind);
-extern void *func_02062f4c(void *text);
-extern void func_02035638(int value);
-extern void func_02035684(int kind, int a, int b);
-
-/* The body's model and the held item. */
-extern int func_0203f8d0(Vec3 *pivot, Vec3 *position);
-extern int func_0203f7d0(Vec3 *out, const Vec3 *in);
-extern void func_02055d38(void *model, int value);
-extern void func_02054848(void *model, int a);
-extern int func_02055d0c(void *model, void *out, int joint);
-extern void func_0205eae0(void *held, int pose, int a, int b);
-
-/* Turning. */
-extern int func_02064558(int angle);
-
-/* Sounds and effects. */
-extern int func_02056f28(const FrameCtrl *ctrl, int frame);
-extern int func_020912d4(int kind, Vec3 *position, s16 *angle, int a);
-extern int func_020b1cb0(const Vec3 *point);
-
-/* The battery and the record of the player at this console. */
-extern int func_0202f188(void);
-extern int func_0208ffac(void);
-extern int func_0208ff98(void);
-extern s16 func_020997a8(void *record);
-extern void func_02099794(int record, u16 date);
-extern u16 *func_0209d358(int a, int b);
-extern u16 *func_0209627c(void);
-extern void func_0209e474(DateTime *now);
-extern int func_0209e3ac(const DateTime *a, const DateTime *b, int fields);
-extern void func_02096484(u8 *out, int item, int kind);
-
-/* Tiles and the targets on them. */
-extern void func_0204f794(Vec3 *point, u32 x, u32 z);
-extern void func_0204f7e0(Vec3 *out, const Vec3 *point);
-extern void func_0204f818(int *x, int *z, const Vec3 *point);
-extern u16 *func_0204f5e0(void *map, int acre_x, int acre_z, int x, int z, int layer);
-extern int func_02043a4c(int player, const int *tile, int value);
-extern int func_02043d84(int player, const int *tile, int a, int b, int item);
-extern int func_02043990(int player, const int *tile, int value);
-extern int func_020436a8(int target);
-extern int func_020431c8(int request);
-extern void func_020431b8(int target);
-extern const u8 *func_02042fc4(int target);
-extern int func_ov004_0222ac24(FieldActor *actor, const int *tile, int number, int priority, int arg);
-
 /* The object under the actor (FieldActor_NoteObjectUnderfoot): whether a player's actor has a
  * flag (named DWC_Alloc in the symbols, though it is not NitroDWC's), the object on a point (-1
  * for none), noting it and its kind in the actor of player 4, and what follows. */
 extern int DWC_Alloc(int flag, int player);
-extern int func_02030890(const Vec3 *point);
-extern void func_020953c4(const int *object);
-extern void func_020953a4(const int *kind);
-extern void *func_020b5e10(void);
-extern int func_020b6044(void *table, int object, int *kind, int *other);
-extern int func_0209d780(int object);
-extern int func_020b67ac(void);
-extern int func_0203e110(void);
-extern int func_0203e420(void);
-extern int func_02096190(int player);
-extern int func_0203e444(int a, int object);
 
 /* No object on the point (func_02030890). */
 #define NO_OBJECT (-1)
@@ -167,9 +121,9 @@ static u32 field_actor_support_flag_mask(int bit)
  * func_0204bc64 of it with that of 0xfff1. */
 static BOOL field_actor_support_item_is_nothing(const u16 *item)
 {
-    if (func_0204bcdc(item)) {
+    if (ItemCode_HasVariant(item)) {
         u16 nothing = ITEM_CODE_NONE;
-        return func_0204bc64(item) == func_0204bc64(&nothing);
+        return ItemCode_VariantItem(item) == ItemCode_VariantItem(&nothing);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -262,10 +216,10 @@ int FieldActor_ReportedPosition(FieldActor *actor, u8 *scene, int *x, int *z, s1
     fx32 reported_z;
     s16 reported_yaw;
 
-    if (func_02096614(&reported_scene, &reported_x, &reported_z, -1, actor->player) == 0) {
+    if (SessionPlayers_ScenePoint(&reported_scene, (int *) &reported_x, (int *) &reported_z, -1, actor->player) == 0) {
         return 0;
     }
-    if (func_0209658c(&reported_yaw, -1, actor->player) == 0) {
+    if (SessionPlayers_Yaw(&reported_yaw, -1, actor->player) == 0) {
         return 0;
     }
     *scene = reported_scene;
@@ -312,22 +266,22 @@ void FieldActor_TalkClosing(FieldActor *actor)
             start = 0x23;
             /* fall through */
         case 10:
-            func_02035638(0x39);
-            func_02035684(0xc, start, start + 5);
+            Music_DropMusic(0x39);
+            Music_AddValue(0xc, start, start + 5);
             actor->unk_81C = TALK_OVER;
             break;
         case 7: {
             u16 value = field_actor_support_work_halfword(actor);
             u16 item;
-            func_02035638(value);
+            Music_DropMusic(value);
             FieldActor_RecordHeldItem(&item, actor);
             if (!field_actor_support_item_is_nothing(&item) && FieldActor_HeldToolNumber(actor) == 0 && data_020e54a8 == 0) {
                 start += 0x15;
             }
             if (value == 0x3c || value == 0x3d) {
-                func_02035684(5, start, start + 5);
+                Music_AddValue(5, start, start + 5);
             } else {
-                func_02035684(0xc, start, start + 5);
+                Music_AddValue(0xc, start, start + 5);
             }
             actor->unk_81C = TALK_OVER;
             break;
@@ -351,8 +305,8 @@ void FieldActor_TalkClosing(FieldActor *actor)
             } else {
                 break;
             }
-            func_02035638(value);
-            func_02035684(kind, 0x14, 0x19);
+            Music_DropMusic(value);
+            Music_AddValue(kind, 0x14, 0x19);
             if (actor->unk_81C != 5) {
                 actor->unk_81C = TALK_OVER;
             }
@@ -366,14 +320,14 @@ void FieldActor_TalkClosing(FieldActor *actor)
             } else {
                 value = field_actor_support_work_halfword(actor);
             }
-            func_02035638(value);
-            func_02035684(0xc, start, start + 5);
+            Music_DropMusic(value);
+            Music_AddValue(0xc, start, start + 5);
             actor->unk_81C = TALK_OVER;
             break;
         }
         case 12:
-            func_02035638(0x42);
-            func_02035684(0xc, start, 0xb);
+            Music_DropMusic(0x42);
+            Music_AddValue(0xc, start, 0xb);
             actor->unk_81C = TALK_OVER;
             break;
         default:
@@ -392,9 +346,9 @@ void FieldActor_TalkChoice(FieldActor *actor)
     if (progress != 0 && progress != 2 && progress != 3 && progress != 4) {
         return;
     }
-    unsigned int choice = func_020ab504(func_0206837c(actor->link));
+    unsigned int choice = TalkAnswers_Picked(TalkObject_Answers((TalkObject *) actor->link));
     u8 message = data_021f43e8;
-    func_0206844c(actor->link, &message, NULL);
+    TalkObject_SetMessage((TalkObject *) actor->link, &message, NULL);
 
     if (choice == 0) {
         actor->unk_81C = 5;
@@ -418,16 +372,16 @@ CLEAN_AS(func_0200ebbc, FieldActor_TalkChoice)
 /* Shows message `number` of the actor's talk. */
 static void field_actor_support_show(FieldActor *actor, u8 number)
 {
-    func_0206844c(actor->link, &number, NULL);
+    TalkObject_SetMessage((TalkObject *) actor->link, &number, NULL);
 }
 
 /* Puts the name of `item` into the talk's text slot 0 (kind 7). */
 static void field_actor_support_name_item(FieldActor *actor, u16 item)
 {
     u8 text[0x28];
-    func_02062f90(text, &item);
-    func_020683b4(actor->link, 0, text, 7);
-    func_02062f4c(text);
+    NameText_ConstructItem((NameText *) (void *) text, &item);
+    TalkObject_SetValue((TalkObject *) actor->link, 0, (TextBase *) (void *) text, 7);
+    NameText_Destruct((NameText *) (void *) text);
 }
 
 /* func_0200ec4c (the receiver's slot 0x14): the message for the talk's progress: 0x3d for 0,
@@ -483,7 +437,7 @@ CLEAN_AS(func_0200eda4, FieldActor_TalkIgnore)
 int FieldActor_AnyPlayerUnreported(FieldActor *actor)
 {
     (void) actor;
-    u8 scene = func_020b65b8();
+    u8 scene = SceneQuery_Previous();
     if (scene != 0xc && scene != 0xd && scene != 0xe && scene != 0x2e && scene != 0x2f) {
         return 0;
     }
@@ -491,7 +445,7 @@ int FieldActor_AnyPlayerUnreported(FieldActor *actor)
     for (int slot = 0; slot < 4; slot++) {
         if (Session_IsSlotTaken(session, slot)) {
             s16 yaw;
-            if (func_0209658c(&yaw, -1, slot) == 0) {
+            if (SessionPlayers_Yaw(&yaw, -1, slot) == 0) {
                 return 1;
             }
         }
@@ -520,13 +474,13 @@ void FieldActor_RebuildPose(FieldActor *actor)
     Actor *base = FieldActor_Base(actor);
     Mtx43 model;
 
-    base->pitch = (u16) func_0203f8d0(&base->pivot, &base->position);
+    base->pitch = (u16) Globe_BendFar(&base->pivot, &base->position);
     Actor_ModelMatrix(base, &model);
     memcpy(&actor->unk_298, &model, sizeof(model));
     data_021cfe68 = actor->unk_298;
-    func_02055d38(actor->unk_234, 0);
-    func_02054848(actor->unk_234, 0);
-    func_02055d0c(actor->unk_234, &actor->unk_698, 0xb);
+    ModelObject_SetAlpha((ModelObject *) (void *) actor->unk_234, 0);
+    LayeredModel_DrawA((LayeredModel *) (void *) actor->unk_234, 0);
+    ModelObject_JointMatrix((ModelObject *) (void *) actor->unk_234, (Mtx43 *) &actor->unk_698, 0xb);
 }
 CLEAN_AS(func_0200ee40, FieldActor_RebuildPose)
 
@@ -536,16 +490,16 @@ void FieldActor_PoseHeldTool(FieldActor *actor)
 {
     switch (FieldActor_HeldTool(actor)) {
         case 4:
-            func_0205eae0(actor->held, 0, 9, 0);
+            HeldItem_Act(actor->held, 0, 9, 0);
             break;
         case 3:
-            func_0205eae0(actor->held, 0x13, 3, 0);
+            HeldItem_Act(actor->held, 0x13, 3, 0);
             break;
         case 10:
-            func_0205eae0(actor->held, 0x23, 3, 0);
+            HeldItem_Act(actor->held, 0x23, 3, 0);
             break;
         case 6:
-            func_0205eae0(actor->held, 0x21, 3, 0);
+            HeldItem_Act(actor->held, 0x21, 3, 0);
             break;
         default:
             break;
@@ -569,9 +523,9 @@ void FieldActor_RunChecksAside(FieldActor *actor)
         int other = FIELD_ACTOR_FIELD(actor, u8, 0x183);
         u8 scene;
         Vec3 reported;
-        if (Session_IsLocalPlayer(data_020ccf94, other) && func_020960f8(2, 4) &&
-            func_02096614(&scene, &reported.x, &reported.z, -1, actor->player)) {
-            const Vec3 *other_start = func_02095794(other);
+        if (Session_IsLocalPlayer(data_020ccf94, other) && PlayerActorOps_InState(2, 4) &&
+            SessionPlayers_ScenePoint(&scene, (int *) &reported.x, (int *) &reported.z, -1, actor->player)) {
+            const Vec3 *other_start = PlayerActorOps_StartPosition(other);
             Vec3 here = actor->position;
             int to_other = Math_Atan2(other_start->x - here.x, other_start->z - here.z);
             u16 to_reported = (u16) Math_Atan2(reported.x - here.x, reported.z - here.z);
@@ -666,7 +620,7 @@ void FieldActor_SendItem(FieldActor *actor, int kind, int item)
         return;
     }
     u8 bytes[4];
-    func_02096484(bytes, item, kind);
+    SessionPlayers_WriteItemKind(bytes, item, kind);
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, bytes, 3);
@@ -683,7 +637,7 @@ int FieldActor_JointBPoint(FieldActor *actor, Vec3 *out)
         return 0;
     }
     *out = *joint;
-    func_0203f7d0(out, out);
+    Globe_Unbend(out, out);
     return 1;
 }
 CLEAN_AS(func_0200f1ec, FieldActor_JointBPoint)
@@ -692,9 +646,9 @@ CLEAN_AS(func_0200f1ec, FieldActor_JointBPoint)
  * func_0208ff98 read: 1, 2, else 0. */
 void FieldActor_TakeAimMode(FieldActor *actor)
 {
-    if (func_0208ffac()) {
+    if (ControlModeIcon_IsButtons()) {
         actor->aim_mode = 1;
-    } else if (func_0208ff98()) {
+    } else if (ControlModeIcon_IsTouch()) {
         actor->aim_mode = 2;
     } else {
         actor->aim_mode = 0;
@@ -759,7 +713,7 @@ CLEAN_AS(func_0200f328, FieldActor_PlaySound)
  * 2 -Z, 3 -X). */
 static void field_actor_support_nudge(FieldActor *actor, int step)
 {
-    switch (func_02064558(actor->yaw)) {
+    switch (AngleSector_Four(actor->yaw)) {
         case 2:
             actor->position.z -= step;
             break;
@@ -832,7 +786,7 @@ CLEAN_AS(func_0200f434, FieldActor_FollowReportedTo)
 int FieldActor_FollowReportedToTile(FieldActor *actor, const int *tile)
 {
     Vec3 point;
-    func_0204f794(&point, (u32) tile[0], (u32) tile[1]);
+    AcreTile_TileCentre(&point, (u32) tile[0], (u32) tile[1]);
     return FieldActor_FollowReportedTo(actor, &point);
 }
 CLEAN_AS(func_0200f530, FieldActor_FollowReportedToTile)
@@ -885,7 +839,7 @@ int FieldActor_ReportedPlace(FieldActor *actor, Vec3 *point, s16 *yaw)
     }
     point->x = x;
     point->z = z;
-    return scene == func_020b65c4();
+    return scene == SceneQuery_Current();
 }
 CLEAN_AS(func_0200f5e4, FieldActor_ReportedPlace)
 
@@ -920,7 +874,7 @@ void FieldActor_JointBOffsetPoint(Vec3 *out, FieldActor *actor, const fx32 *scal
     MTX_MultVec43(&offset, &joint, &turned);
 
     Vec3 point = {translation.x + turned.x, translation.y + turned.y, translation.z + turned.z};
-    func_0203f7d0(out, &point);
+    Globe_Unbend(out, &point);
 }
 CLEAN_AS(func_0200f6bc, FieldActor_JointBOffsetPoint)
 
@@ -932,7 +886,7 @@ int FieldActor_CheckBatteryAndLid(FieldActor *actor)
     if (!Session_IsLocalPlayer(data_020ccf94, actor->player)) {
         return 0;
     }
-    if (func_0202f188()) {
+    if (BatteryWarning_IsLow()) {
         FieldActor_RequestState84(actor, 0, 6, -1);
         return 1;
     }
@@ -957,11 +911,11 @@ CLEAN_AS(func_0200f748, FieldActor_CheckBatteryAndLid)
  * unless FieldActor_LinkedNotPlayer0, the date is also kept at func_0209627c. */
 void FieldActor_StoreSunDate(FieldActor *actor, int record, const u16 *date)
 {
-    func_02099794(record, *date);
-    u16 *summary = func_0209d358(0, 0x50);
+    PlayerRecord_SetSunDate((u8 *) (uintptr_t) record, (PlayerRecordSunDate){*date});
+    u16 *summary = GameVariables_Slot(0, 0x50);
     *summary = (u16) (FieldActor_RecordSunLevel(actor) + PACKED_MONTH(*date) * 1000 + PACKED_DAY(*date) * 10);
     if (FieldActor_LinkedNotPlayer0(actor) == 0) {
-        *func_0209627c() = *date;
+        *SessionPlayers_SunDate() = *date;
     }
 }
 CLEAN_AS(func_0200f7ac, FieldActor_StoreSunDate)
@@ -971,13 +925,13 @@ CLEAN_AS(func_0200f7ac, FieldActor_StoreSunDate)
  * into `stored`, and their order (func_0209e3ac, fields 0x3f): -1, 0 or 1. */
 int FieldActor_CompareSunDate(FieldActor *actor, DateTime *now, DateTime *stored)
 {
-    u16 date = (u16) func_020997a8(FieldActor_Record(actor));
-    func_0209e474(now);
+    u16 date = (u16) PlayerRecord_SunDate(FieldActor_Record(actor));
+    DateTime_Now(now);
     MI_CpuCopy8(now, stored, 8);
     stored->year = (u8) PACKED_YEAR(date);
     stored->month = (u8) PACKED_MONTH(date);
     stored->day = (u8) PACKED_DAY(date);
-    return func_0209e3ac(now, stored, 0x3f);
+    return DateTime_Compare(now, stored, 0x3f);
 }
 CLEAN_AS(func_0200f814, FieldActor_CompareSunDate)
 
@@ -1012,7 +966,7 @@ void FieldActor_PlayFootstep(FieldActor *actor)
     between.z = field_actor_support_shift_right(a->z + b->z, 1);
 
     SoundEmitter *emitter = field_actor_support_emitter(actor);
-    int sound = func_020b1cb0(&between);
+    int sound = GroundSound_AtPoint(&between);
     SoundEmitter_PlayAlternating(emitter, (u32) sound, running);
 }
 CLEAN_AS(func_0200f888, FieldActor_PlayFootstep)
@@ -1022,22 +976,22 @@ CLEAN_AS(func_0200f888, FieldActor_PlayFootstep)
  * animation 2, effect 0 facing back) and the footstep sound. */
 void FieldActor_Footfall(FieldActor *actor)
 {
-    if (!func_02056f28(&actor->anim, 1) && !func_02056f28(&actor->anim, 9)) {
+    if (!FrameCtrl_Passed(&actor->anim, 1) && !FrameCtrl_Passed(&actor->anim, 9)) {
         return;
     }
     s16 ahead = actor->yaw;
     s16 back = (s16) (ahead + 0x8000);
     Vec3 at;
-    if (func_02056f28(&actor->anim, 9)) {
+    if (FrameCtrl_Passed(&actor->anim, 9)) {
         at = FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_POINT_JOINT_7);
     } else {
         at = FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_POINT_JOINT_4);
     }
     at.y = actor->position.y;
     if (actor->animation == 2) {
-        func_020912d4(0, &at, &back, 0);
+        EffectSystem_StartKind(0, &at, &back, 0);
     }
-    func_020912d4(0x27, &at, &ahead, 0);
+    EffectSystem_StartKind(0x27, &at, &ahead, 0);
     FieldActor_PlayFootstep(actor);
 }
 CLEAN_AS(func_0200f95c, FieldActor_Footfall)
@@ -1071,7 +1025,7 @@ void FieldActor_TileAhead(Vec3 *out, FieldActor *actor)
 {
     Vec3 ahead;
     FieldActor_PointAheadOfSelf(&ahead, actor);
-    func_0204f7e0(out, &ahead);
+    AcreTile_SnapToTileCentre(out, &ahead);
 }
 CLEAN_AS(func_0200fa8c, FieldActor_TileAhead)
 
@@ -1187,7 +1141,7 @@ int FieldActor_HeldToolNumber(FieldActor *actor)
     u16 item;
     FieldActor_RecordHeldItem(&item, actor);
     if (FieldActor_TestFlag(actor, 0) && !field_actor_support_item_is_nothing(&item)) {
-        return (int) (func_02062148(&item) + 1);
+        return (int) (ItemInfo_HeldModelNumber(&item) + 1);
     }
     return 0;
 }
@@ -1203,7 +1157,7 @@ int FieldActor_ActOnTarget(FieldActor *actor, const Vec3 *point, int overlay4)
 {
     int kind = FieldActor_TargetKind(actor);
     int tile[2] = {0, 0};
-    func_0204f818(&tile[0], &tile[1], point);
+    Position_Tile(&tile[0], &tile[1], (const Position *) point);
 
     switch (kind) {
         case 3:
@@ -1211,7 +1165,7 @@ int FieldActor_ActOnTarget(FieldActor *actor, const Vec3 *point, int overlay4)
         case 0x15:
         case 0x16:
             if (overlay4) {
-                func_ov004_0222ac24(actor, tile, -2, 6, -1);
+                FieldActorRoomStates2_RequestTakeItem(actor, tile, -2, 6, -1);
             } else {
                 FieldActor_RequestState18(actor, tile, -1, 6, -1);
             }
@@ -1240,8 +1194,8 @@ int FieldActor_FindMapTarget(FieldActor *actor, const int *tile, int a, int b)
     }
     int x = tile[0];
     int z = tile[1];
-    u16 *on_map = func_0204f5e0(data_021c80bc, field_actor_support_shift_right(x, 4), field_actor_support_shift_right(z, 4),
-                                x & 0xf, z & 0xf, 0);
+    u16 *on_map = AcreTile_ItemInAcre(data_021c80bc, field_actor_support_shift_right(x, 4),
+                                      field_actor_support_shift_right(z, 4), x & 0xf, z & 0xf, 0);
     if (on_map == NULL) {
         actor->unk_822 = ITEM_CODE_NONE;
         actor->item = actor->unk_822;
@@ -1251,7 +1205,7 @@ int FieldActor_FindMapTarget(FieldActor *actor, const int *tile, int a, int b)
     actor->item = actor->unk_822;
 
     int at[2] = {tile[0], tile[1]};
-    actor->target = func_02043d84(actor->player, at, a, b, ITEM_CODE_NONE);
+    actor->target = TileRequests_AskOpFor(actor->player, (const TileRequestTile *) at, a, b, ITEM_CODE_NONE);
     if (actor->target == NO_TARGET) {
         return 0;
     }
@@ -1274,10 +1228,10 @@ int FieldActor_PollTarget(FieldActor *actor)
     int answer = 0;
     actor->unk_814 = 0;
     if (actor->target != NO_TARGET) {
-        answer = func_020436a8(actor->target);
+        answer = TileRequests_Answer(actor->target);
         if (answer == 1 || answer == 2) {
             actor->unk_814 = FieldActor_TargetKind(actor);
-            func_020431b8(actor->target);
+            TileRequests_Release(actor->target);
             actor->target = NO_TARGET;
         }
     }
@@ -1292,11 +1246,11 @@ void FieldActor_PollRequest810(FieldActor *actor)
     if (actor->unk_810 == NO_TARGET) {
         return;
     }
-    int answer = func_020431c8(actor->unk_810);
+    int answer = TileRequests_Carry(actor->unk_810);
     if (answer != 1 && answer != 2) {
         return;
     }
-    func_020431b8(actor->unk_810);
+    TileRequests_Release(actor->unk_810);
     actor->unk_810 = NO_TARGET;
 }
 CLEAN_AS(func_0200fef0, FieldActor_PollRequest810)
@@ -1308,16 +1262,18 @@ int FieldActor_FindTarget(FieldActor *actor, const Vec3 *point, int mode, int to
 {
     if (actor->target == NO_TARGET && data_021c80bc != NULL) {
         int tile[2] = {0, 0};
-        func_0204f818(&tile[0], &tile[1], point);
+        Position_Tile(&tile[0], &tile[1], (const Position *) point);
         switch (mode) {
             case 0:
-                actor->target = func_02043a4c(actor->player, tile, data_020c7640[tool]);
+                actor->target =
+                    TileRequests_AskForTool0For(actor->player, (const TileRequestTile *) tile, data_020c7640[tool]);
                 break;
             case 1:
-                actor->target = func_02043d84(actor->player, tile, data_020c7640[tool], 0, ITEM_CODE_NONE);
+                actor->target = TileRequests_AskOpFor(actor->player, (const TileRequestTile *) tile, data_020c7640[tool], 0,
+                                                      ITEM_CODE_NONE);
                 break;
             case 2:
-                actor->target = func_02043990(actor->player, tile, data_020c7640[tool]);
+                actor->target = TileRequests_AskFcFdFor(actor->player, (const TileRequestTile *) tile, data_020c7640[tool]);
                 break;
             default:
                 break;
@@ -1330,7 +1286,7 @@ CLEAN_AS(func_0200ff28, FieldActor_FindTarget)
 /* func_0200ffec: the kind of the target held (the word at 0xc of its 0x24-byte entry). */
 int FieldActor_TargetKind(FieldActor *actor)
 {
-    return *(const int *) (func_02042fc4(actor->target) + 0xc);
+    return TileRequests_At(actor->target)->kind;
 }
 CLEAN_AS(func_0200ffec, FieldActor_TargetKind)
 
@@ -1489,27 +1445,27 @@ int FieldActor_NoteObjectUnderfoot(int player)
             return result;
         }
     }
-    const Vec3 *position = func_02095794(4);
+    const Vec3 *position = PlayerActorOps_StartPosition(4);
     if (position == NULL) {
         return 0;
     }
-    int object = func_02030890(position);
+    int object = CollisionMap_UnclaimedObjectAtPoint(position);
     if (object == NO_OBJECT) {
         return object;
     }
-    func_020953c4(&object);
+    PlayerActorOps_NoteObject((unsigned int *) &object);
     int kind;
     int other;
-    if (func_020b6044(func_020b5e10(), object, &kind, &other) == 0) {
+    if (SceneExit_DoorInfo((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), object, &kind, (s16 *) &other) == 0) {
         return 0;
     }
-    func_020953a4(&kind);
-    if (kind == 1 || kind == 2 || kind == 4 || func_0209d780(object) != 0) {
-        if (func_020b67ac() != 0) {
-            func_0203e110();
+    PlayerActorOps_NoteObjectKind(&kind);
+    if (kind == 1 || kind == 2 || kind == 4 || SceneClaim_IsClaimedExit(object) != 0) {
+        if (SceneKinds_CurrentIn6To8() != 0) {
+            EventQueue_FinishKind4Or12();
         }
-        return func_0203e420();
+        return EventQueue_RequestKind8();
     }
-    return func_0203e444(func_02096190(4), object);
+    return EventQueue_RequestUnderfoot((void *) (uintptr_t) SessionPlayers_ActorHandle(4), object);
 }
 CLEAN_AS(func_02011520, FieldActor_NoteObjectUnderfoot)

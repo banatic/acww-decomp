@@ -28,6 +28,9 @@
 #include "ov004/member_pointer.h"
 #include "outdoor_villager.h"
 #include "outdoor_villager_watch.h"
+#include "ov003/tile_event.h"
+#include "outdoor_villager_bonds.h"
+#include "outdoor_villager_walks.h"
 
 /* The word its motion requests carry, the range of its looks and the point they are given. */
 extern u16 data_020c80f8;
@@ -36,10 +39,6 @@ extern Vec3 data_021fbee8;
 /* An angle: within it either way of facing this console's player, behaviour 19 plays its
  * second animation. */
 extern s16 data_020c80f0;
-
-/* Overlay 3 (the town's field): what the player's field actor runs with its place when it
- * leaves state 0x74 (clean/ov003/field_actor.c). */
-extern int func_ov003_02220b44(int player, Vec3 *at);
 
 /* The updates' step tables (each filled once, bit 0 of its guard), and the member pointers
  * they are filled from. */
@@ -206,7 +205,7 @@ void OutdoorVillagerActs_Watch23(OutdoorVillagerBehaviour *self, u8 *villager)
     if (self->wait != 0) {
         return;
     }
-    if (func_ov068_0226c0a4(self) != 0) {
+    if (OutdoorVillagerWalks_PlayerShowsCatch(self) != 0) {
         return;
     }
     u32 frame = *(const u32 *) (const void *) acts_at(villager, OUTDOOR_VILLAGER_ANIM_FRAME);
@@ -270,7 +269,7 @@ static void acts_turn_and_talk(u8 *villager, int clear_motion_number)
  * differs between them). */
 static void acts_talk_ended(OutdoorVillagerBehaviour *self, u8 *villager)
 {
-    func_ov068_0226ad78(self, villager, ACTS_MOOD_WHICH, ACTS_MOOD_UNITS, 1);
+    OutdoorVillagerBonds_AskMood(self, villager, ACTS_MOOD_WHICH, ACTS_MOOD_UNITS, 1);
     SceneObjectBase_DefaultApproach((SceneObjectBase *) (void *) villager);
     EventQueue_FinishObjectEvent(villager);
     VillagerSceneObject_SetWord644((u32 *) (void *) villager, 0);
@@ -635,7 +634,7 @@ int OutdoorVillagerActs_Start18(OutdoorVillagerBehaviour *self, u8 *villager)
     CollisionGround_Init(&ground, &at, 0, 0);
     int attribute = ground.attr;
     Vec3 place = at;
-    func_ov003_02220b44(0, &place);
+    TileEvent_StartKindE(0, &place);
     EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_18 ? ACTS_EFFECT_18_GROUND : ACTS_EFFECT_18, &at, NULL,
                                            NULL);
     SoundEmitter_Play((SoundEmitter *) (void *) acts_at(villager, OUTDOOR_VILLAGER_EMITTER), ACTS_SOUND_18, ACTS_SOUND_VOLUME,
@@ -667,9 +666,6 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02267f84Ei, OutdoorVillagerActs_Upd
  * set speed with effect 0x4c following it for 100 frames (the countdown at 0x2c, which the
  * behaviour member counts down), then behaviour 18's leaving (0x12a or 0x12b). */
 
-/* Overlay 3 (the town's field): what the player's field actor runs with its place when its
- * animation 0x91 starts in state 0x73 (clean/ov003/field_actor.c). */
-extern int func_ov003_02221228(int player, Vec3 *at);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* The villager's body animation's frames (a FrameCtrl: its speed at 0x198, its flags at
@@ -790,7 +786,7 @@ void OutdoorVillagerActs_Stay17(OutdoorVillagerBehaviour *self, u8 *villager)
     CollisionGround_Init(&ground, &at, 0, 0);
     int attribute = ground.attr;
     Vec3 place = at;
-    func_ov003_02220b44(0, &place);
+    TileEvent_StartKindE(0, &place);
     EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_18 ? ACTS_EFFECT_18_GROUND : ACTS_EFFECT_18, &at, NULL,
                                            NULL);
     SoundEmitter_Play(acts_emitter(villager), ACTS_SOUND_18, ACTS_SOUND_VOLUME, 0);
@@ -849,7 +845,7 @@ void OutdoorVillagerActs_Enter17(OutdoorVillagerBehaviour *self, u8 *villager)
     CollisionGround_Init(&ground, &at, 0, 0);
     int attribute = ground.attr;
     Vec3 place = at;
-    func_ov003_02221228(0, &place);
+    TileEvent_StartUnitKind2(0, &place);
     EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_18 ? ACTS_EFFECT_17_GROUND : ACTS_EFFECT_17, &at, NULL,
                                            NULL);
     SoundEmitter_Play(acts_emitter(villager), ACTS_SOUND_17, ACTS_SOUND_VOLUME, 0);

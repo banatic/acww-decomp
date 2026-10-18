@@ -62,7 +62,7 @@ CLEAN_AS(func_ov004_0223b274, RoomManager_SetBroadcastChanged)
 static_assert(offsetof(RoomManager, unk_2a8) == 0x2a8, "TV sound state");
 static_assert(offsetof(RoomObject, sound.position) == 0x7b8, "object's sound point");
 
-/* The player's actor (func_020961a8). */
+/* The player's actor (SessionPlayers_ActorOf). */
 #define ROOM_MANAGER_PLAYER 4
 
 /* Set by the room's start in a house's room or a scene of kind 11: the TV is heard. */
@@ -86,13 +86,9 @@ int RoomObject_SettledUnk780Is10(RoomObject *object);
 struct Clock *Clock_MarkNearest(struct Clock *clock);
 struct Clock *Clock_MarkNearestStriker(struct Clock *clock);
 
-/* The table of the room's objects. */
-extern void *func_ov004_0223ce84(void);
-extern RoomObject *func_ov004_0223cd58(void *objects, unsigned int index);
-
 static RoomObject *room_object(unsigned int index)
 {
-    return func_ov004_0223cd58(func_ov004_0223ce84(), index);
+    return RoomObjects_At(RoomObjects_Table(), index);
 }
 
 /* The objects nearest_object looks for. */

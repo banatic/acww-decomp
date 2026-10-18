@@ -3,6 +3,15 @@
 
 #include "autoload_2/heap.h" /* Heap_FreeAux, Heap_AllocAuxZeroed */
 #include "clean.h"
+#include "main/actor_table.h"
+#include "main/animated_model.h"
+#include "main/c_library.h"
+#include "main/collision_map.h"
+#include "main/house_looks.h"
+#include "main/item_texture.h"
+#include "main/vram_copy_task.h"
+#include "house_files.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(Checkpoint, model) == 0x198, "model");
 static_assert(offsetof(Checkpoint, design) == 0x2b4, "design");
@@ -35,41 +44,10 @@ extern const char *const data_ov003_02238908[3];
 /* The record of the town's single design (design_sets.h). */
 extern u8 data_021f34b0[];
 
-/* A texture binding of main: its destructor (func_020b9e2c takes the texture off), its
- * constructor, and putting texture 0 and palette 0 of `texture` on the material named
- * `material` of `model` (whether it could). */
-extern void func_020b9e2c(CheckpointDesign *design);
-extern void *func_020b9e58(void *binding);
-extern int func_020b9d3c(void *binding, void *model, const char *material, void *texture, int tex_index, int plt_index);
-/* A texture file: loading a design into it (whether it could), its texture block, its
- * destructor and its constructor. */
-extern int func_0203cff8(void *file, void *design);
-extern void *func_0203cfc8(void *file);
-extern void func_0203d224(void *file);
-extern void func_0203d228(void *file);
-/* The design record: the part after its first word, the design in it, copying a design into
- * it, and the style byte after the design, reduced below 3. */
-extern void *func_020b374c(void *record);
-extern void *func_020b3848(void *record);
-extern void func_020b3850(void *record, void *design);
-extern int func_020b3858(void *record);
-/* A letter for the textures (from data_ov003_0223666c by func_020b6598). */
-extern signed char func_ov003_022203dc(void);
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
-/* The model object's animation: advanced, and its frame written where it goes. */
-extern void func_02055124(void *model_object);
-/* The tile a point is on. */
-extern void func_0204f818(int *x, int *z, const Vec3 *point);
-/* Sets the collision of the edges of tile (x, z) that `edges` names (bits 0-3) to solid. */
-extern int func_02030920(int x, int z, int edges);
-/* Overlay 9's scene actor: its destructor and its constructor. */
-extern void *func_ov009_0226539c(Checkpoint *checkpoint);
-extern void *func_ov009_0226552c(Checkpoint *checkpoint);
-
 /* func_ov003_0221c430: takes the design off the material (the binding's func_020b9e2c). */
 void Checkpoint_ReleaseDesign(CheckpointDesign *design)
 {
-    func_020b9e2c(design);
+    VramCopyMaterial_End((VramCopyMaterial *) design);
 }
 CLEAN_AS(func_ov003_0221c430, Checkpoint_ReleaseDesign)
 
@@ -78,14 +56,14 @@ CLEAN_AS(func_ov003_0221c430, Checkpoint_ReleaseDesign)
  * record and 1 is returned, else 0. */
 int Checkpoint_PutDesign(CheckpointDesign *design, void *model, void *source)
 {
-    if (func_0203cff8(design->texture_file, source) == 0) {
+    if (ClothTexture_SetDesign((DesignModel *) design->texture_file, source) == 0) {
         return 0;
     }
-    void *texture = func_0203cfc8(design->texture_file);
-    if (func_020b9d3c(design->binding, model, data_ov003_02238a70, texture, 0, 0) == 0) {
+    void *texture = ClothTexture_Textures((DesignModel *) design->texture_file);
+    if (VramCopyMaterial_Queue((VramCopyMaterial *) design->binding, model, data_ov003_02238a70, texture, 0, 0) == 0) {
         return 0;
     }
-    func_020b3850(func_020b374c(data_021f34b0), source);
+    HouseLooks_SetDesign((HouseLooksDesign *) (uintptr_t) HouseLooks_Design((HouseLooksRecord *) data_021f34b0), source);
     return 1;
 }
 CLEAN_AS(func_ov003_0221c438, Checkpoint_PutDesign)
@@ -94,7 +72,7 @@ CLEAN_AS(func_ov003_0221c438, Checkpoint_PutDesign)
  * destroyed here (Checkpoint_ReleaseDesign takes it down). */
 CheckpointDesign *Checkpoint_DestroyDesign(CheckpointDesign *design)
 {
-    func_0203d224(design->texture_file);
+    ClothTexture_Destruct((DesignModel *) design->texture_file);
     return design;
 }
 CLEAN_AS(func_ov003_0221c490, Checkpoint_DestroyDesign)
@@ -103,8 +81,8 @@ CLEAN_AS(func_ov003_0221c490, Checkpoint_DestroyDesign)
  * file's. */
 CheckpointDesign *Checkpoint_ConstructDesign(CheckpointDesign *design)
 {
-    func_020b9e58(design->binding);
-    func_0203d228(design->texture_file);
+    VramCopyMaterial_Construct((VramCopyMaterial *) design->binding);
+    ClothTexture_Construct((DesignModel *) design->texture_file);
     return design;
 }
 CLEAN_AS(func_ov003_0221c4a4, Checkpoint_ConstructDesign)
@@ -114,7 +92,8 @@ CLEAN_AS(func_ov003_0221c4a4, Checkpoint_ConstructDesign)
 int Checkpoint_RefreshDesign(Checkpoint *checkpoint)
 {
     void *model = checkpoint->model;
-    void *source = func_020b3848(func_020b374c(data_021f34b0));
+    void *source =
+        HouseLooks_DesignItself((HouseLooksDesign *) (uintptr_t) HouseLooks_Design((HouseLooksRecord *) data_021f34b0));
     Checkpoint_PutDesign(&checkpoint->design, model, source);
     return 1;
 }
@@ -132,8 +111,8 @@ CLEAN_AS(func_ov003_0221c4f4, Checkpoint_Slot94)
 char *Checkpoint_LtTexturePath(void)
 {
     const char *name = Checkpoint_ModelName();
-    int letter = func_ov003_022203dc();
-    func_02064328(data_ov003_0223c88c, data_ov003_02238a74, name, letter);
+    int letter = HouseFiles_SeasonLetter();
+    CLib_SPrintf(data_ov003_0223c88c, data_ov003_02238a74, name, letter);
     return data_ov003_0223c88c;
 }
 CLEAN_AS(func_ov003_0221c4f8, Checkpoint_LtTexturePath)
@@ -142,8 +121,8 @@ CLEAN_AS(func_ov003_0221c4f8, Checkpoint_LtTexturePath)
 char *Checkpoint_TexturePath(void)
 {
     const char *name = Checkpoint_ModelName();
-    int letter = func_ov003_022203dc();
-    func_02064328(data_ov003_0223c844, data_ov003_02238a8c, name, letter);
+    int letter = HouseFiles_SeasonLetter();
+    CLib_SPrintf(data_ov003_0223c844, data_ov003_02238a8c, name, letter);
     return data_ov003_0223c844;
 }
 CLEAN_AS(func_ov003_0221c520, Checkpoint_TexturePath)
@@ -152,8 +131,8 @@ CLEAN_AS(func_ov003_0221c520, Checkpoint_TexturePath)
 char *Checkpoint_ArchivePath(void)
 {
     const char *name = Checkpoint_ModelName();
-    int letter = func_ov003_022203dc();
-    func_02064328(data_ov003_0223c868, data_ov003_02238aa4, name, letter);
+    int letter = HouseFiles_SeasonLetter();
+    CLib_SPrintf(data_ov003_0223c868, data_ov003_02238aa4, name, letter);
     return data_ov003_0223c868;
 }
 CLEAN_AS(func_ov003_0221c548, Checkpoint_ArchivePath)
@@ -168,7 +147,7 @@ CLEAN_AS(func_ov003_0221c570, Checkpoint_ModelName)
 /* func_ov003_0221c588: the style kept after the town's design, 0 to 2. */
 int Checkpoint_Style(void)
 {
-    return func_020b3858(func_020b374c(data_021f34b0));
+    return HouseLooks_Style((HouseLooksDesign *) (uintptr_t) HouseLooks_Design((HouseLooksRecord *) data_021f34b0));
 }
 CLEAN_AS(func_ov003_0221c588, Checkpoint_Style)
 
@@ -191,7 +170,7 @@ CLEAN_AS(func_ov003_0221c5b8, Checkpoint_Slot24)
  * 1. */
 int Checkpoint_Update(Checkpoint *checkpoint)
 {
-    func_02055124(checkpoint->model_object);
+    AnimatedModel_StepFrames((AnimatedModel *) checkpoint->model_object);
     return 1;
 }
 CLEAN_AS(func_ov003_0221c5bc, Checkpoint_Update)
@@ -202,14 +181,15 @@ CLEAN_AS(func_ov003_0221c5bc, Checkpoint_Update)
 int Checkpoint_Init(Checkpoint *checkpoint)
 {
     void *model = checkpoint->model;
-    void *source = func_020b3848(func_020b374c(data_021f34b0));
+    void *source =
+        HouseLooks_DesignItself((HouseLooksDesign *) (uintptr_t) HouseLooks_Design((HouseLooksRecord *) data_021f34b0));
     Checkpoint_PutDesign(&checkpoint->design, model, source);
 
     int x;
     int z;
-    func_0204f818(&x, &z, &checkpoint->position);
+    Position_Tile(&x, &z, (const Position *) &checkpoint->position);
     for (int dx = -2; dx <= 2; dx++) {
-        func_02030920(x + dx, z - 1, CHECKPOINT_SOLID_EDGES);
+        CollisionMap_RetypeWithSides(x + dx, z - 1, CHECKPOINT_SOLID_EDGES);
     }
     return 1;
 }
@@ -221,7 +201,7 @@ static void checkpoint_destroy_parts(Checkpoint *checkpoint)
     checkpoint->vtable = data_ov003_02238934;
     checkpoint->receiver_vtable = data_ov003_022389f8;
     Checkpoint_DestroyDesign(&checkpoint->design);
-    func_ov009_0226539c(checkpoint);
+    SceneActor_Destruct((SceneActor *) checkpoint);
 }
 
 /* func_ov003_0221c630 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -245,7 +225,7 @@ CLEAN_AS(func_ov003_0221c668, Checkpoint_Destroy)
 /* func_ov003_0221c69c: the constructor: overlay 9's, the vtables, then the design part's. */
 Checkpoint *Checkpoint_Construct(Checkpoint *checkpoint)
 {
-    func_ov009_0226552c(checkpoint);
+    SceneActor_ConstructBase((SceneActor *) checkpoint);
     checkpoint->vtable = data_ov003_02238934;
     checkpoint->receiver_vtable = data_ov003_022389f8;
     Checkpoint_ConstructDesign(&checkpoint->design);

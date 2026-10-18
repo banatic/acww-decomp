@@ -11,6 +11,38 @@
 #include "main/item_code.h"
 #include "main/session.h"
 #include "sound_emitter.h"
+#include "act_effects.h"
+#include "actor_palettes.h"
+#include "anim_slots.h"
+#include "animated_model.h"
+#include "autoload_2/sound_emitter_class.h"
+#include "body_anim_heaps.h"
+#include "body_look.h"
+#include "cloth_slots.h"
+#include "effect_system.h"
+#include "face_anim_heaps.h"
+#include "face_anim_slots.h"
+#include "face_anim_timer.h"
+#include "face_texture.h"
+#include "field_body.h"
+#include "field_collision.h"
+#include "field_label.h"
+#include "fishing_float.h"
+#include "glasses_look.h"
+#include "head_look.h"
+#include "held_item.h"
+#include "layered_model.h"
+#include "model_object.h"
+#include "music_queue.h"
+#include "player_actor_ops.h"
+#include "player_actors.h"
+#include "scene_object_base.h"
+#include "session_players.h"
+#include "session_record.h"
+#include "talk_receiver.h"
+#include "tex_pattern_anim.h"
+#include "touch_pick_shapes.h"
+#include "vram_copy_task.h"
 
 /* The heap the field actors are made on. */
 extern Heap *data_021c9ab4;
@@ -21,88 +53,14 @@ extern const u8 data_020d82b4[];
 extern const u8 data_020d832c[];
 extern const u8 data_020d8414[];
 
-/* The alignment of the objects (4). */
-extern int func_020952e0(void);
-
-extern int func_020051b4(struct FieldActor *actor);
-extern void func_02005338(struct FieldActor *actor);
-extern void func_020058e4(struct FieldActor *actor);
-
 /* The destructors of the members and bases, in the order the deleting destructor runs them. */
 extern int func_0200e91c(void *request);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
-extern void func_0201a790(void *member);
-extern void func_020f5914(void *emitter);
-extern void *func_020f5400(void *emitter);
-extern void *func_02032c50(void *member);
-extern void func_0205f8d4(void *member);
-extern void func_0205d51c(void *member);
-extern void func_02064638(void *member);
-extern void *func_02056910(void *member);
-extern void func_0205db6c(void *member);
-extern void func_0205d8e8(void *member);
-extern void func_0205dcd4(void *member);
-extern void func_0205cce4(void *member);
-extern void *func_0205ef90(void *member);
-extern void func_0205df18(void *member);
-extern void *func_02055764(void *member);
-extern void func_0205e4ec(void *member);
-extern void func_0205d0bc(void *member);
-extern void func_0205f770(void *member);
-extern void *func_02054b64(void *member);
-extern int func_020b7ed8(void *member);
-extern void *func_02089bbc(void *member);
-extern void *func_02066994(void *receiver);
-extern void *func_0203f080(void *actor);
-
-/* The constructors of the base, the receiver and the members, as FieldActor_Construct runs
- * them; StateRequest_Construct makes an entry of the request queue. */
-extern void *func_0203f130(void *actor);
-extern void *func_02066a30(void *receiver);
-extern void *func_02089bd4(void *member);
-extern void *func_020b7ee8(void *member);
-extern void *func_02054bac(void *member);
-extern void func_0205f774(void *member);
-extern void func_0205d0c0(void *member);
-extern void *func_0205577c(void *member);
-extern void func_0205e4f0(void *member);
-extern void func_0205df1c(void *member);
-extern void *func_0205efac(void *member);
-extern void func_0205cce8(void *member);
-extern void func_0205dcd8(void *member);
-extern void func_0205d8ec(void *member);
-extern void func_0205db70(void *member);
-extern void *func_02056928(void *member);
-extern void func_0206463c(void *member);
-extern void func_0205d520(void *member);
-extern void *func_020b9e58(void *member);
-extern void func_0205f8d8(void *member);
-extern void *func_02032c64(void *member);
-extern void *func_020f5430(void *emitter);
-extern void *func_020f55cc(void *emitter);
-extern void func_0201a794(void *member);
 extern u32 func_0200e92c(void *request);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 
 /* What FieldActor_Shutdown releases. */
 extern NetSession *data_020ccf94;
-extern void func_0209129c(int effect);
-extern void func_020962b8(int player);
-extern int func_02073d90(NetSession *session);
-extern int func_02073908(void *session, int player);
-extern void func_020771cc(int a, void *out, int c, int d);
-extern void func_020b9e2c(void *member);
-extern void func_0205682c(void *member);
-extern int func_02055454(void *model);
-extern void func_0205502c(void *model);
-extern void func_0205ebb4(void *held);
-extern void func_0205defc(void *part);
-extern void func_0205e4b0(void *part);
-extern void func_0205d4e8(void *member);
-extern void func_0205d084(void *member);
-extern void func_020961e0(int player);
-extern void func_02035638(int a);
-extern void func_020b8db4(void);
 
 /* The queue of state requests at 0x934: 30 of 0x1c bytes. */
 #define REQUEST_QUEUE 0x934
@@ -131,7 +89,7 @@ CLEAN_AS(func_02004ba8, FieldActor_Delete)
 void *FieldActor_New(int size)
 {
     Heap *heap = data_021c9ab4;
-    void *actor = Heap_AllocAligned(heap, size, func_020952e0());
+    void *actor = Heap_AllocAligned(heap, size, PlayerActors_FieldActorAlignment());
     if (actor == NULL) {
         return NULL;
     }
@@ -145,14 +103,14 @@ CLEAN_AS(func_02004bbc, FieldActor_New)
  * returns none. */
 void FieldActor_Teardown(struct FieldActor *actor)
 {
-    func_020051b4(actor);
+    FieldActor_Shutdown(actor);
 }
 CLEAN_AS(func_02004bf4, FieldActor_Teardown)
 
 /* func_02004bfc: vtable slot 0x24 (func_02005338), then 1. */
 int FieldActor_Vfunc24(struct FieldActor *actor)
 {
-    func_02005338(actor);
+    FieldActor_PlaceForDraw(actor);
     return 1;
 }
 CLEAN_AS(func_02004bfc, FieldActor_Vfunc24)
@@ -161,7 +119,7 @@ CLEAN_AS(func_02004bfc, FieldActor_Vfunc24)
  * then 1. */
 int FieldActor_Update(struct FieldActor *actor)
 {
-    func_020058e4(actor);
+    FieldActor_RunFrame(actor);
     return 1;
 }
 CLEAN_AS(func_02004c0c, FieldActor_Update)
@@ -181,35 +139,35 @@ static void destroy(struct FieldActor *actor)
     set_vtable(actor, 0x000, data_020d82b4);
     set_vtable(actor, 0x0ec, data_020d832c);
     __cxa_vec_cleanup(at(actor, REQUEST_QUEUE), REQUEST_COUNT, REQUEST_SIZE, (void (*)(void *))(uintptr_t) func_0200e91c);
-    func_0201a790(at(actor, 0x90c));
+    ActEffects_Destruct((ActEffects *) (void *) at(actor, 0x90c));
     set_vtable(actor, 0x880, data_020d8414);
-    func_020f5914(at(actor, 0x880));
-    func_020f5400(at(actor, 0x83c));
-    func_02032c50(at(actor, 0x7a4));
-    func_0205f8d4(at(actor, 0x7a0));
-    func_0205d51c(at(actor, 0x774));
-    func_02064638(at(actor, 0x768));
-    func_02056910(at(actor, 0x73c));
-    func_02056910(at(actor, 0x710));
-    func_0205db6c(at(actor, 0x70f));
-    func_0205d8e8(at(actor, 0x70e));
-    func_0205dcd4(at(actor, 0x70d));
-    func_0205cce4(at(actor, 0x701));
-    func_0205cce4(at(actor, 0x700));
-    func_0205ef90(at(actor, 0x5a0));
-    func_0205df18(at(actor, 0x59c));
-    func_02055764(at(actor, 0x500));
-    func_02055764(at(actor, 0x464));
-    func_0205e4ec(at(actor, 0x428));
-    func_02055764(at(actor, 0x38c));
-    func_0205d0bc(at(actor, 0x389));
-    func_0205f770(at(actor, 0x388));
-    func_02054b64(at(actor, 0x234));
-    func_020b7ed8(at(actor, 0x214));
-    func_02089bbc(at(actor, 0x1c4));
-    func_02089bbc(at(actor, 0x174));
-    func_02066994(at(actor, 0x0ec));
-    func_0203f080(actor);
+    SoundEmitterClass_DestructBase((SoundEmitterObject *) (void *) at(actor, 0x880));
+    SoundEmitterClass_Destruct99((SoundEmitterObject *) (void *) at(actor, 0x83c));
+    CollisionContacts_Destroy((CollisionContacts *) (void *) at(actor, 0x7a4));
+    ActorPalettes_DestructSlot(at(actor, 0x7a0));
+    ClothSlots_DestructSlot(at(actor, 0x774));
+    FaceAnimTimer_Destruct(at(actor, 0x768));
+    TexPatternAnim_Destruct((TexPatternAnim *) (void *) at(actor, 0x73c));
+    TexPatternAnim_Destruct((TexPatternAnim *) (void *) at(actor, 0x710));
+    FaceAnimHeaps_DestructSlot(at(actor, 0x70f));
+    FaceAnimSlots_DestructSlot(at(actor, 0x70e));
+    FaceTexture_DestructSlot(at(actor, 0x70d));
+    AnimSlots_DestructSlot(at(actor, 0x701));
+    AnimSlots_DestructSlot(at(actor, 0x700));
+    HeldItem_Destruct((HeldItemObject *) (void *) at(actor, 0x5a0));
+    GlassesLook_DestructLook(at(actor, 0x59c));
+    ModelObject_DestructComplete((ModelObject *) (void *) at(actor, 0x500));
+    ModelObject_DestructComplete((ModelObject *) (void *) at(actor, 0x464));
+    HeadLook_DestructLook(at(actor, 0x428));
+    ModelObject_DestructComplete((ModelObject *) (void *) at(actor, 0x38c));
+    BodyLook_DestructLook(at(actor, 0x389));
+    BodyAnimHeaps_DestructSlot(at(actor, 0x388));
+    LayeredModel_DestructAComplete((LayeredModel *) (void *) at(actor, 0x234));
+    TouchPickCylinder_Destruct((TouchPickCylinder *) (void *) at(actor, 0x214));
+    FieldOwnedPointBody_Destruct((FieldOwnedPointBody *) (void *) at(actor, 0x1c4));
+    FieldOwnedPointBody_Destruct((FieldOwnedPointBody *) (void *) at(actor, 0x174));
+    TalkReceiver_Destruct((TalkReceiver *) (void *) at(actor, 0x0ec));
+    SceneObjectBase_DestructBase((SceneObjectBase *) actor);
 }
 
 /* func_02004c24: the deleting destructor (vtable slot 0x44): destroys the actor and frees its
@@ -235,38 +193,38 @@ CLEAN_AS(func_02004db0, FieldActor_Destruct)
  * FieldActor_New; what is not set here stays 0. */
 struct FieldActor *FieldActor_Construct(struct FieldActor *actor)
 {
-    func_0203f130(actor);
-    func_02066a30(at(actor, 0x0ec));
+    SceneObjectBase_Construct((SceneObjectBase *) actor);
+    TalkReceiver_ConstructBase((TalkReceiver *) (void *) at(actor, 0x0ec));
     set_vtable(actor, 0x000, data_020d82b4);
     set_vtable(actor, 0x0ec, data_020d832c);
-    func_02089bd4(at(actor, 0x174));
-    func_02089bd4(at(actor, 0x1c4));
-    func_020b7ee8(at(actor, 0x214));
-    func_02054bac(at(actor, 0x234));
-    func_0205f774(at(actor, 0x388));
-    func_0205d0c0(at(actor, 0x389));
-    func_0205577c(at(actor, 0x38c));
-    func_0205e4f0(at(actor, 0x428));
-    func_0205577c(at(actor, 0x464));
-    func_0205577c(at(actor, 0x500));
-    func_0205df1c(at(actor, 0x59c));
-    func_0205efac(at(actor, 0x5a0));
-    func_0205cce8(at(actor, 0x700));
-    func_0205cce8(at(actor, 0x701));
-    func_0205dcd8(at(actor, 0x70d));
-    func_0205d8ec(at(actor, 0x70e));
-    func_0205db70(at(actor, 0x70f));
-    func_02056928(at(actor, 0x710));
-    func_02056928(at(actor, 0x73c));
-    func_0206463c(at(actor, 0x768));
-    func_0205d520(at(actor, 0x774));
-    func_020b9e58(at(actor, 0x778));
-    func_0205f8d8(at(actor, 0x7a0));
-    func_02032c64(at(actor, 0x7a4));
+    FieldOwnedPointBody_Construct((FieldOwnedPointBody *) (void *) at(actor, 0x174));
+    FieldOwnedPointBody_Construct((FieldOwnedPointBody *) (void *) at(actor, 0x1c4));
+    TouchPickCylinder_Construct((TouchPickCylinder *) (void *) at(actor, 0x214));
+    LayeredModel_ConstructA((LayeredModel *) (void *) at(actor, 0x234));
+    BodyAnimHeaps_ConstructSlot(at(actor, 0x388));
+    BodyLook_ConstructLook(at(actor, 0x389));
+    ModelObject_Construct((ModelObject *) (void *) at(actor, 0x38c));
+    HeadLook_ConstructLook(at(actor, 0x428));
+    ModelObject_Construct((ModelObject *) (void *) at(actor, 0x464));
+    ModelObject_Construct((ModelObject *) (void *) at(actor, 0x500));
+    GlassesLook_ConstructLook(at(actor, 0x59c));
+    HeldItem_Construct((HeldItemObject *) (void *) at(actor, 0x5a0));
+    AnimSlots_ConstructSlot(at(actor, 0x700));
+    AnimSlots_ConstructSlot(at(actor, 0x701));
+    FaceTexture_ConstructSlot(at(actor, 0x70d));
+    FaceAnimSlots_ConstructSlot(at(actor, 0x70e));
+    FaceAnimHeaps_ConstructSlot(at(actor, 0x70f));
+    TexPatternAnim_Construct((TexPatternAnim *) (void *) at(actor, 0x710));
+    TexPatternAnim_Construct((TexPatternAnim *) (void *) at(actor, 0x73c));
+    FaceAnimTimer_Construct(at(actor, 0x768));
+    ClothSlots_ConstructSlot(at(actor, 0x774));
+    VramCopyMaterial_Construct((VramCopyMaterial *) (void *) at(actor, 0x778));
+    ActorPalettes_ConstructSlot(at(actor, 0x7a0));
+    CollisionContacts_Construct((CollisionContacts *) (void *) at(actor, 0x7a4));
     actor->item = ITEM_CODE_NONE;
     actor->unk_822 = ITEM_CODE_NONE;
-    func_020f5430(at(actor, 0x83c));
-    func_020f55cc(at(actor, 0x880));
+    SoundEmitterClass_Construct99((SoundEmitterObject *) (void *) at(actor, 0x83c));
+    SoundEmitterClass_Construct1((SoundEmitterObject *) (void *) at(actor, 0x880));
     for (int i = 0; i < 2; i++) {
         actor->front_tile[i] = 0;
         actor->tile[i] = 0;
@@ -274,7 +232,7 @@ struct FieldActor *FieldActor_Construct(struct FieldActor *actor)
     }
     FIELD_ACTOR_PENDING_X(actor) = 0;
     FIELD_ACTOR_PENDING_Z(actor) = 0;
-    func_0201a794(at(actor, 0x90c));
+    ActEffects_Construct((ActEffects *) (void *) at(actor, 0x90c));
     __cxa_vec_ctor(at(actor, REQUEST_QUEUE), REQUEST_COUNT, REQUEST_SIZE, (void (*)(void *))(uintptr_t) func_0200e92c,
                    (void (*)(void *))(uintptr_t) func_0200e91c);
     actor->player = 4; /* none */
@@ -366,30 +324,30 @@ CLEAN_AS(_ZThn236_N12Obj_020d82b4D1Ev, FieldActorReceiver_Destruct)
 int FieldActor_Shutdown(struct FieldActor *actor)
 {
     if (actor->state == 0x6d && actor->work.s6d.effect != -1) {
-        func_0209129c(actor->work.s6d.effect);
+        EffectSystem_EndHandle(actor->work.s6d.effect);
     }
-    func_020962b8(actor->player);
+    SessionPlayers_ClearActor(actor->player);
     NetSession *session = data_020ccf94;
-    if (func_02073d90(session) && func_02073908(session, actor->player)) {
-        func_020771cc(actor->player + 8, NULL, 0, 0);
+    if (Session_IsLinked(session) && Session_IsLocalPlayer(session, actor->player)) {
+        SessionRecord_Update(actor->player + 8, NULL, 0, 0);
     }
-    func_020b9e2c(at(actor, 0x778));
-    func_0205682c(at(actor, 0x710));
-    func_0205682c(at(actor, 0x73c));
-    func_02055454(at(actor, FIELD_ACTOR_MODEL_C));
-    func_02055454(at(actor, FIELD_ACTOR_MODEL_A));
-    func_02055454(at(actor, FIELD_ACTOR_MODEL_B));
-    func_0205502c(at(actor, FIELD_ACTOR_BODY));
-    func_02055454(at(actor, FIELD_ACTOR_BODY));
-    func_0205ebb4(actor->held);
-    func_0205defc(at(actor, FIELD_ACTOR_PART_C));
+    VramCopyMaterial_End((VramCopyMaterial *) (void *) at(actor, 0x778));
+    TexPatternAnim_Unload((TexPatternAnim *) (void *) at(actor, 0x710));
+    TexPatternAnim_Unload((TexPatternAnim *) (void *) at(actor, 0x73c));
+    ModelObject_Release((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_C));
+    ModelObject_Release((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_A));
+    ModelObject_Release((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_B));
+    AnimatedModel_DetachJoints((AnimatedModel *) (void *) at(actor, FIELD_ACTOR_BODY));
+    ModelObject_Release((ModelObject *) (void *) at(actor, FIELD_ACTOR_BODY));
+    HeldItem_Clear((HeldItemObject *) (void *) actor->held);
+    GlassesLook_Unload(at(actor, FIELD_ACTOR_PART_C));
     FIELD_ACTOR_FIELD(actor, int, 0xc8c) = 2;
-    func_0205e4b0(at(actor, FIELD_ACTOR_PART_B));
-    func_0205d4e8(at(actor, 0x774));
-    func_0205d084(at(actor, 0x389));
-    func_020961e0(actor->player);
+    HeadLook_Unload(at(actor, FIELD_ACTOR_PART_B));
+    ClothSlots_ResetSlot(at(actor, 0x774));
+    BodyLook_StopUpload(at(actor, 0x389));
+    SessionPlayers_ClearLookIndex(actor->player);
     if (FieldActor_TestFlag(actor, 0x1a)) {
-        func_02035638(0x3f);
+        Music_DropMusic(0x3f);
         FieldActor_ClearFlag(actor, 0x1a);
     }
     if (FieldActor_TestFlag(actor, 0xa)) {
@@ -402,7 +360,7 @@ int FieldActor_Shutdown(struct FieldActor *actor)
     }
     if (FieldActor_TestFlag(actor, 0x1b)) {
         FieldActor_ClearFlag(actor, 0x1b);
-        func_020b8db4();
+        FieldLabel_ClearMessage();
     }
     return 1;
 }
@@ -428,28 +386,7 @@ extern int data_020d83f0;
 /* The scene: 0 outdoors (overlay 3), else indoors. */
 extern u8 data_020e54a8;
 
-extern int func_02096188(u32 made_with);
-extern int func_02096180(u32 made_with);
-extern void func_0203efb0(struct FieldActor *actor, u16 player);
-extern void func_020962c8(int player, struct FieldActor *actor);
-extern int func_020961d0(int player);
-extern void func_0205f8cc(void *member, int value);
-extern void func_0205db4c(void *part, int value);
-extern void func_0205d8c4(void *part, int value);
-extern void func_0205dccc(void *part, int value);
-extern int func_0205dc94(void *part, int value);
-extern void func_0205ec50(void *held, int value, struct FieldActor *actor, u16 *item, void *record, int a);
-extern void func_02060500(void *line, int player);
-extern void func_0205df14(void *part, u8 value);
-extern void func_0205e4e8(void *part, u8 value);
-extern void func_0205d0b8(void *look, u8 value);
-extern void func_0205d058(void *look, int value);
-extern void func_0205d4f0(void *look, u8 value);
-extern int func_0205cfd4(void *look);
-extern int func_0205d25c(void *look);
-extern int func_0205f8b4(void *member);
 extern int func_021077e8(int value);
-extern void func_0205d034(void *look);
 
 /* func_0200e42c: the set-up; returns 1. The player is bits 30 and 31 of the word at 8
  * (func_02096188); it is noted at 0xdc (func_0203efb0) and with the session's players
@@ -465,27 +402,27 @@ int FieldActor_Init(struct FieldActor *actor)
 {
     Actor *base = FieldActor_Base(actor);
     u32 made_with = FIELD_ACTOR_FIELD(actor, u32, 8);
-    actor->player = func_02096188(made_with);
-    func_0203efb0(actor, (u16) actor->player);
-    func_020962c8(actor->player, actor);
-    func_0205f8cc(at(actor, 0x7a0), data_020c75c4[func_020961d0(actor->player)]);
+    actor->player = PlayerActorOps_Player(made_with);
+    SceneObjectBase_SetId((SceneObjectBase *) actor, (u16) actor->player);
+    SessionPlayers_SetActor(actor->player, actor);
+    ActorPalettes_SetSlot(at(actor, 0x7a0), data_020c75c4[SessionPlayers_LookIndex(actor->player)]);
     int index = FieldActor_RecordHairColor(actor);
     FieldActor_SetPalettes(actor, index, FieldActor_SunLevel(actor, 1));
     FieldActor_SetupLooks(actor);
-    func_0205db4c(at(actor, 0x70f), data_020c75d4[func_020961d0(actor->player)]);
-    func_0205d8c4(at(actor, 0x70e), data_020c75dc[func_020961d0(actor->player)]);
-    func_0205dccc(at(actor, 0x70d), data_020c75cc[func_020961d0(actor->player)]);
-    func_0205dc94(at(actor, 0x70d), FieldActor_RecordFace(actor));
+    FaceAnimHeaps_Assign(at(actor, 0x70f), data_020c75d4[SessionPlayers_LookIndex(actor->player)]);
+    FaceAnimSlots_Assign(at(actor, 0x70e), data_020c75dc[SessionPlayers_LookIndex(actor->player)]);
+    FaceTexture_Assign(at(actor, 0x70d), data_020c75cc[SessionPlayers_LookIndex(actor->player)]);
+    FaceTexture_Load(at(actor, 0x70d), FieldActor_RecordFace(actor));
     FieldActor_SetupPartB(actor);
     FieldActor_SetupPartC(actor);
-    index = func_020961d0(actor->player);
+    index = SessionPlayers_LookIndex(actor->player);
     u16 item;
     FieldActor_RecordHeldItem(&item, actor);
-    func_0205ec50(actor->held, data_020c75e0[index], actor, &item, FieldActor_Record(actor), 0);
-    func_02060500(at(actor, 0x5c8), actor->player);
+    HeldItem_Setup((HeldItemObject *) (void *) actor->held, data_020c75e0[index], actor, &item, FieldActor_Record(actor), 0);
+    FishingFloat_SetPlayer((FishingFloat *) (void *) at(actor, 0x5c8), actor->player);
     base->gravity = -0x5000;
     base->min_y_velocity = -0xa000;
-    FieldActor_RequestState0(actor, func_02096180(made_with), 9, -1);
+    FieldActor_RequestState0(actor, PlayerActorOps_StartState(made_with), 9, -1);
     FIELD_ACTOR_PENDING_BITS(actor) &= (u8) ~PENDING_ACTION_SET;
     FieldActor_TakeRequests(actor);
     actor->flags = 0;
@@ -514,7 +451,7 @@ CLEAN_AS(func_0200e42c, FieldActor_Init)
 void FieldActor_SetupPartC(struct FieldActor *actor)
 {
     u16 item;
-    func_0205df14(at(actor, FIELD_ACTOR_PART_C), data_020c75c8[func_020961d0(actor->player)]);
+    GlassesLook_SetLook(at(actor, FIELD_ACTOR_PART_C), data_020c75c8[SessionPlayers_LookIndex(actor->player)]);
     FieldActor_RecordPartCItem(&item, actor);
     u16 copy = item;
     FieldActor_RequestPartC(actor, &copy);
@@ -528,7 +465,7 @@ CLEAN_AS(func_0200e654, FieldActor_SetupPartC)
 void FieldActor_SetupPartB(struct FieldActor *actor)
 {
     u16 item;
-    func_0205e4e8(at(actor, FIELD_ACTOR_PART_B), data_020c75e4[func_020961d0(actor->player)]);
+    HeadLook_SetLook(at(actor, FIELD_ACTOR_PART_B), data_020c75e4[SessionPlayers_LookIndex(actor->player)]);
     FieldActor_RecordHeadItem(&item, actor);
     u16 copy = item;
     int a = FieldActor_RecordHeadKind(actor);
@@ -545,19 +482,19 @@ CLEAN_AS(func_0200e6a4, FieldActor_SetupPartB)
 void FieldActor_SetupLooks(struct FieldActor *actor)
 {
     u16 item;
-    func_0205d0b8(at(actor, 0x389), data_020c75d8[func_020961d0(actor->player)]);
-    func_0205d058(at(actor, 0x389), FieldActor_RecordFlag249A(actor) != 0);
-    func_0205d4f0(at(actor, 0x774), data_020c75d0[func_020961d0(actor->player)]);
+    BodyLook_SetLook(at(actor, 0x389), data_020c75d8[SessionPlayers_LookIndex(actor->player)]);
+    BodyLook_LoadModel(at(actor, 0x389), FieldActor_RecordFlag249A(actor) != 0);
+    ClothSlots_Assign(at(actor, 0x774), data_020c75d0[SessionPlayers_LookIndex(actor->player)]);
     FieldActor_RecordCloth(&item, actor);
     FieldActor_SetCloth(actor, &item);
 
-    int look_389 = func_021077e8(func_0205cfd4(at(actor, 0x389)));
-    int look_774 = func_021077e8(func_0205d25c(at(actor, 0x774)));
+    int look_389 = func_021077e8(BodyLook_File(at(actor, 0x389)));
+    int look_774 = func_021077e8(ClothSlots_SlotFile(at(actor, 0x774)));
     FieldActor_CopyTexture(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
     FieldActor_CopyPalette(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
-    int look_7a0 = func_021077e8(func_0205f8b4(at(actor, 0x7a0)));
-    look_389 = func_021077e8(func_0205cfd4(at(actor, 0x389)));
+    int look_7a0 = func_021077e8(ActorPalettes_SkinFile(at(actor, 0x7a0)));
+    look_389 = func_021077e8(BodyLook_File(at(actor, 0x389)));
     FieldActor_CopyPalette(actor, look_7a0, look_389, &data_020d83f0, &data_020d83f0);
-    func_0205d034(at(actor, 0x389));
+    BodyLook_PlaceTexture(at(actor, 0x389));
 }
 CLEAN_AS(func_0200e704, FieldActor_SetupLooks)

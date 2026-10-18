@@ -2,7 +2,7 @@
  * 0x02251bec, 0x848 bytes) whose receiver part is named "obj_etc_bromide". It talks over its
  * receiver like the telephone (telephone.h), through tables of member pointers
  * (member_pointer.h): idle until its switch is asked to change, when it asks the scene for an
- * event (func_0203e0a8); event 1 opens it, event 8 makes it idle again. Open, it talks at once:
+ * event (EventQueue_RequestKind6); event 1 opens it, event 8 makes it idle again. Open, it talks at once:
  * it takes the receiver, names it, and gives it the photo's number (its item code among
  * 0x47d8-0x4a47, four codes a photo); it waits for its link to open (BROMIDE_TALK), then for
  * it to close, when it hands the receiver back and lets the scene go on (BROMIDE_TALK_END).

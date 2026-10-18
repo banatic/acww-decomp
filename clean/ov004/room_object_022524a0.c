@@ -9,6 +9,10 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "main/animated_model.h"
+#include "main/field_collision.h"
+#include "main/frame_ctrl.h"
+#include "main/room_sync.h"
 
 static_assert(offsetof(RoomObject022524a0, state) == 0x844, "state");
 static_assert(sizeof(RoomObject022524a0) == 0x848, "the size of one");
@@ -28,13 +32,6 @@ typedef struct RoomObject022524a0Joint {
 
 static_assert(offsetof(RoomObject022524a0Joint, translation) == 0x4c, "translation");
 
-/* What func_02034270 tells of the ground at a point (func_0203423c releases it); 0x44 bytes. */
-typedef struct RoomObject022524a0Ground {
-    u8 unk_00[0x38];
-    s32 unk_38; /* what func_020341c8 gives when asked with 0 */
-    u8 unk_3c[8];
-} RoomObject022524a0Ground;
-
 /* The state tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov004_02257054;
 extern MemberPointer data_ov004_02257214[ROOM_OBJECT_022524A0_STATE_COUNT];
@@ -50,23 +47,9 @@ extern const u8 data_ov004_0225254c[];
 /* The main program's scratch matrix. */
 extern Mtx43 data_021fbe48;
 
-/* Advances the model's joint animation (the main program's model object at 0x538), and whether
- * that animation is at its end. */
-extern void func_02054cdc(void *model);
-extern int func_02056f94(void *anim);
 /* Request a state for the object at the object's cell (only when data_020e54a8 is 1), straight
- * to func_020526b8. */
-extern int func_02052738(unsigned int object, int state, int a2, int a3);
+ * to RoomSync_SetStateAt. */
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
-/* The ground at a point, its value (unk_38 when asked with 0), and its release. */
-extern int func_02034270(RoomObject022524a0Ground *out, Vec3 *at, int a, int b);
-extern int func_020341c8(RoomObject022524a0Ground *ground, int a);
-extern void func_0203423c(RoomObject022524a0Ground *ground);
-
-static unsigned int RoomObject022524a0_address(RoomObject022524a0 *object)
-{
-    return (unsigned int) (uintptr_t) object;
-}
 
 static void RoomObject022524a0_set_vtables(RoomObject022524a0 *object)
 {
@@ -78,11 +61,11 @@ static void RoomObject022524a0_set_vtables(RoomObject022524a0 *object)
  * requests IDLE and gives the answer, else 0. */
 int RoomObject022524a0_UpdatePlaying(RoomObject022524a0 *object)
 {
-    func_02054cdc(object->base.unk_538);
-    if (func_02056f94(object->base.joint_anim) == 0) {
+    AnimatedModel_Update(&object->base.model);
+    if (FrameCtrl_IsDone(&object->base.model.frames) == 0) {
         return 0;
     }
-    return func_02052738(RoomObject022524a0_address(object), ROOM_OBJECT_022524A0_IDLE, SLOT_70_VALUE, 1);
+    return RoomSync_SetState(&object->base, ROOM_OBJECT_022524A0_IDLE, SLOT_70_VALUE, 1);
 }
 CLEAN_AS(func_ov004_0221412c, RoomObject022524a0_UpdatePlaying)
 
@@ -102,7 +85,7 @@ CLEAN_AS(func_ov004_02214160, RoomObject022524a0_EnterPlaying)
 void RoomObject022524a0_UpdateIdle(RoomObject022524a0 *object)
 {
     if (Switch_IsPending(&object->base.light_switch)) {
-        func_02052738(RoomObject022524a0_address(object), ROOM_OBJECT_022524A0_PLAYING, SLOT_70_VALUE, 1);
+        RoomSync_SetState(&object->base, ROOM_OBJECT_022524A0_PLAYING, SLOT_70_VALUE, 1);
     }
 }
 CLEAN_AS(func_ov004_02214198, RoomObject022524a0_UpdateIdle)
@@ -162,14 +145,14 @@ void RoomObject022524a0_NodeGroundHook(RoomObject022524a0 *object, int node, Nod
     const RoomObject022524a0Joint *joint = state->unk_B4;
     Vec3 local = joint->translation;
     Vec3 world;
-    RoomObject022524a0Ground ground;
+    CollisionGround ground;
     data_021fbe48 = object->base.matrix;
     MTX_MultVec43(&local, &data_021fbe48, &world);
-    func_02034270(&ground, &world, 0, 0);
-    if (func_020341c8(&ground, 0) > 0) {
-        func_02052738(RoomObject022524a0_address(object), ROOM_OBJECT_022524A0_IDLE, SLOT_70_VALUE, 1);
+    CollisionGround_Init(&ground, &world, 0, 0);
+    if (CollisionGround_GetHeight(&ground, 0) > 0) {
+        RoomSync_SetState(&object->base, ROOM_OBJECT_022524A0_IDLE, SLOT_70_VALUE, 1);
     }
-    func_0203423c(&ground);
+    CollisionGround_Destroy(&ground);
 }
 CLEAN_AS(func_ov004_022142e0, RoomObject022524a0_NodeGroundHook)
 

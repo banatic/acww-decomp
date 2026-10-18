@@ -13,6 +13,9 @@
 #include "main/villager_data.h"
 #include "main/villager_roster.h"
 #include "ov004/member_pointer.h"
+#include "ov003/town_item_models.h"
+#include "ov004/icon_models.h"
+#include "scene_object_base.h"
 
 static_assert(sizeof(Process) == 0x50, "Process size");
 static_assert(offsetof(Obj020dd33c, stage) == 0x58, "Obj020dd33c stage");
@@ -29,9 +32,6 @@ extern const u32 data_020da13c[];
 
 /* The instance, NULL when there is none. */
 extern Obj020dd33c *data_021c9350;
-
-/* The instance's reset. */
-extern void func_02059ac4(Obj020dd33c *obj);
 
 /* func_02057b34: the destructor: the sound emitter base's, then the root class's. */
 void *Obj020dd33c_Destruct(Obj020dd33c *obj)
@@ -144,7 +144,7 @@ void Obj020dd33c_Finish(void *actor)
     if (model != -1) {
         FishDisp_ReleaseModel(model);
     }
-    func_02059ac4(data_021c9350);
+    Obj020dd33c_Reset(data_021c9350);
 }
 CLEAN_AS(func_02057cb8, Obj020dd33c_Finish)
 
@@ -296,12 +296,6 @@ CLEAN_AS(func_02059694, Obj020dd33c_Draw)
 /* 0 while the field's code is overlay 3's, else overlay 4's is used (the test the pockets
  * scene makes too). */
 extern u8 data_020e54a8;
-/* Each overlay's drawing of a model by number and of an item by its code, from a position and
- * a scale (copies) and three angles. */
-extern void func_ov003_022246c8(int model, Vec3 *position, Vec3 *scale, int x, int y, int z);
-extern void func_ov004_02233b5c(int model, Vec3 *position, Vec3 *scale, int x, int y, int z);
-extern void func_ov003_02224678(int item, Vec3 *position, Vec3 *scale, int x, int y, int z);
-extern void func_ov004_02233b10(int item, Vec3 *position, Vec3 *scale, int x, int y, int z);
 
 /* func_0205971c: model `model` drawn at `position` with `scale` and `rotation`, by overlay 3
  * when data_020e54a8 is 0, else by overlay 4. */
@@ -311,9 +305,9 @@ void Obj020dd33c_DrawModel(Obj020dd33c *obj, int model, const Vec3 *position, co
     Vec3 at = *position;
     Vec3 size = *scale;
     if (data_020e54a8 == 0) {
-        func_ov003_022246c8(model, &at, &size, rotation[0], rotation[1], rotation[2]);
+        TownItemModels_DrawHolderAt(model, &at, &size, rotation[0], rotation[1], rotation[2]);
     } else {
-        func_ov004_02233b5c(model, &at, &size, rotation[0], rotation[1], rotation[2]);
+        IconModels_DrawLookAt(model, &at, &size, rotation[0], rotation[1], rotation[2]);
     }
 }
 CLEAN_AS(func_0205971c, Obj020dd33c_DrawModel)
@@ -332,9 +326,9 @@ void Obj020dd33c_DrawItem(Obj020dd33c *obj, const u16 *item, const Vec3 *positio
     Vec3 at = *position;
     Vec3 size = *scale;
     if (data_020e54a8 == 0) {
-        func_ov003_02224678(*item, &at, &size, rotation[0], rotation[1], rotation[2]);
+        TownItemModels_DrawItemAt(*item, &at, &size, rotation[0], rotation[1], rotation[2]);
     } else {
-        func_ov004_02233b10(*item, &at, &size, rotation[0], rotation[1], rotation[2]);
+        IconModels_DrawItemAt(*item, &at, &size, rotation[0], rotation[1], rotation[2]);
     }
 }
 CLEAN_AS(func_020597a8, Obj020dd33c_DrawItem)
@@ -412,8 +406,8 @@ int Obj020dd33c_IsActor(Obj020dd33c *obj, void *actor, unsigned int index)
     if (index >= 2 || obj->actors[index] == NULL) {
         return 0;
     }
-    unsigned long person = func_0203efbc(actor);
-    return person == func_0203efbc(obj->actors[index]);
+    unsigned long person = SceneObjectBase_Id(actor);
+    return person == SceneObjectBase_Id((SceneObjectBase *) obj->actors[index]);
 }
 CLEAN_AS(func_0205996c, Obj020dd33c_IsActor)
 

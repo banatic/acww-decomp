@@ -86,7 +86,7 @@ typedef struct MuseumInsect {
     fx32 low[2];                /* 0x058: the x and z it is kept within (InsectRoom_KeepInBounds) */
     fx32 high[2];               /* 0x060 */
     CollisionContacts contacts; /* 0x068 */
-    s16 unk_98;                 /* 0x098: frames; 0x098-0x0af are its motion's (func_ov004_02240f2c) */
+    s16 unk_98;                 /* 0x098: frames; 0x098-0x0af are its motion's (InsectMotion_Start) */
     u8 unk_9a;                  /* 0x09a */
     u8 pad_9b;                  /* 0x09b */
     s16 unk_9c;                 /* 0x09c */

@@ -5,6 +5,8 @@
 #include "clean.h"
 #include "sky_resources.h"
 #include "sky_show.h"
+#include "main_random.h"
+#include "scene_lights.h"
 
 static_assert(sizeof(SkyShowObjectVars) == 0x14, "the words at 0x60");
 static_assert(sizeof(SkyShowColors) == 4, "a place's colours");
@@ -45,8 +47,6 @@ extern const SkyShowColors data_020d2344[];
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
-extern void func_02065268(int number);
 
 static SkyShowObjectVars *sky_show_object_vars(SkyObject *object)
 {
@@ -190,11 +190,11 @@ void SkyShowObject_ShellSetUp(SkyObject *object, u32 param)
     u32 x;
     u32 height;
     if (large) {
-        x = func_020644cc(0x60) + 0x50;
-        height = ((param & SKY_SHOW_PARAM_MARKED) != 0 ? 0 : func_020644cc(0x20)) + 0x52;
+        x = MainRandom_Below(0x60) + 0x50;
+        height = ((param & SKY_SHOW_PARAM_MARKED) != 0 ? 0 : MainRandom_Below(0x20)) + 0x52;
     } else {
-        x = func_020644cc(0xa0) + 0x30;
-        height = func_020644cc(0x60) + 0x32;
+        x = MainRandom_Below(0xa0) + 0x30;
+        height = MainRandom_Below(0x60) + 0x32;
     }
     vars->base_x = (fx32) (x << 12);
     vars->base_y = SKY_SHOW_OBJECT_START_Y;
@@ -226,9 +226,9 @@ void SkyShowObject_BurstSetUp(SkyObject *object, u32 param)
     SkyObjectKinds_PlayHeldAt(object, large ? SKY_SHOW_OBJECT_LARGE_SOURCE : place + 2, sound);
     if (large) {
         body->radius = SKY_SHOW_OBJECT_LARGE_RADIUS;
-        func_02065268(place + 5);
+        SceneLights_StartFlash(place + 5);
     } else {
-        func_02065268(place + 1);
+        SceneLights_StartFlash(place + 1);
     }
 }
 CLEAN_AS(func_020bffc4, SkyShowObject_BurstSetUp)

@@ -14,6 +14,15 @@
 #include "clean.h"
 #include "field_actor_parts.h"
 #include "main/session.h"
+#include "collision_query.h"
+#include "event_queue.h"
+#include "field_body.h"
+#include "field_collision.h"
+#include "ov004/field_actor_rooms.h"
+#include "scene_kinds.h"
+#include "scene_object_base.h"
+#include "scene_query.h"
+#include "touch_pick_shapes.h"
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
@@ -33,9 +42,6 @@ extern const int data_020c766c[];
 extern const u8 data_020c798c[];
 /* How far ahead (0.8) a point ahead is aimed at. */
 extern const fx32 data_020d72f8;
-/* The shadows. */
-extern void *func_020b6590(void);
-extern void *func_020b7d3c(void *shadows, u8 *shadow, Vec3 *point, fx32 size, int a, int b, u8 player);
 
 /* An angle a tool reaches to either side of the yaw (60 degrees). */
 #define TOOL_REACH_ANGLE 0x2aaa
@@ -50,29 +56,7 @@ extern void *func_020b7d3c(void *shadows, u8 *shadow, Vec3 *point, fx32 size, in
 #define CONTACT_HEIGHT 0x2800
 #define SHADOW_LIFT 0xb33
 
-extern int func_ov004_02225fb8(FieldActor *actor, int tool, int mode);
-extern int func_ov004_02225ef8(FieldActor *actor);
-extern int func_0203e31c(void);
-extern int func_0203e0e0(FieldActor *actor, void *picked);
-extern int func_0203ef5c(FieldActor *actor);
-extern int func_0203ee34(void *picked, FieldActor *actor);
 extern int FX_MulFunc(int a, int b);
-extern int func_020b67ac(void);
-extern int func_020b65c4(void); /* the scene */
-
-/* The contact bodies: one set up at a point (func_02089b80), entered for the frame
- * (func_02089fc8), and asked about (func_02089cc0, func_0208a038). */
-extern void func_02089b80(u8 *body, FieldActor *owner, const Vec3 *point, int size, int height, int flags, int a, int b, u8 c,
-                          int d);
-extern void func_02089fc8(u8 *body);
-extern int func_02089cc0(u8 *body, int flags);
-extern int func_0208a038(u8 *body, s16 yaw);
-
-/* The ground's height, colliders and turning. */
-extern int func_020310c8(int a);
-extern void *func_02032c64(void *collider);
-extern void *func_02032c50(void *collider);
-extern void func_02031288(void *collider, Vec3 *position, Vec3 *from, int yaw, int size, FieldActor *owner, int layer);
 
 /* A temporary collider (func_02032c64 makes it, func_02032c50 destroys it). */
 typedef struct FieldActorCollider {
@@ -111,7 +95,7 @@ typedef int (*FieldActorPickedMethod)(void *object, FieldActor *actor);
 int FieldActor_TryTargetInScene(FieldActor *actor, int tool)
 {
     if (data_020e54a8 == 1) {
-        return func_ov004_02225fb8(actor, tool, 0);
+        return FieldActorRooms_TryTarget(actor, tool, 0);
     }
     return FieldActor_TryTarget(actor, tool);
 }
@@ -121,7 +105,7 @@ CLEAN_AS(func_02010004, FieldActor_TryTargetInScene)
 int FieldActor_TryToolInScene(FieldActor *actor)
 {
     if (data_020e54a8 == 1) {
-        return func_ov004_02225ef8(actor);
+        return FieldActorRooms_TryTool(actor);
     }
     return FieldActor_TryTool(actor);
 }
@@ -153,17 +137,17 @@ CLEAN_AS(func_0201005c, FieldActor_InToolReach)
  * ahead stands in for the aim point while tool 0 is tried on it. */
 int FieldActor_TryAct(FieldActor *actor)
 {
-    if (func_0203e31c() || FieldActor_TestFlag(actor, 0x13)) {
+    if (EventQueue_TestFlag8() || FieldActor_TestFlag(actor, 0x13)) {
         return 0;
     }
     if (FieldActor_Act(actor)) {
-        func_0203e0e0(actor, FIELD_ACTOR_FIELD(actor, void *, 0x13c));
+        EventQueue_RequestAct(actor, FIELD_ACTOR_FIELD(actor, void *, 0x13c));
         void *picked = FIELD_ACTOR_FIELD(actor, void *, 0x13c);
         if (picked == NULL) {
-            if (func_0203ef5c(actor)) {
+            if (SceneObjectBase_FindActable(actor)) {
                 return 1;
             }
-        } else if (func_0203ee34(FIELD_ACTOR_FIELD(actor, void *, 0x13c), actor) != 0) {
+        } else if (SceneObjectBase_CanAct(FIELD_ACTOR_FIELD(actor, void *, 0x13c), (SceneObjectBase *) actor) != 0) {
             return 1;
         } else {
             void *object = FIELD_ACTOR_FIELD(actor, void *, 0x13c);
@@ -204,7 +188,8 @@ int FieldActor_WalkSpeed(FieldActor *actor)
         speed = 0;
     }
     u8 *contact = field_actor_motion_at(actor, FIELD_ACTOR_CONTACT);
-    if (func_02089cc0(contact, 8) != 0 && func_0208a038(contact, actor->yaw) != 0) {
+    if (FieldBody_TouchedWith((FieldBody *) (void *) contact, 8) != 0 &&
+        FieldBody_TouchedAhead((FieldBody *) (void *) contact, actor->yaw) != 0) {
         if (speed > WALK_SPEED_BLOCKED) {
             speed = WALK_SPEED_BLOCKED;
         }
@@ -263,7 +248,7 @@ int FieldActor_StepTowardReported(FieldActor *actor)
     if (FieldActor_ReportedPosition(actor, &scene, &x, &z, &reported_yaw) == 0) {
         return 0;
     }
-    if (scene != func_020b65c4()) {
+    if (scene != SceneQuery_Current()) {
         return 0;
     }
     s16 yaw = actor->yaw;
@@ -283,7 +268,7 @@ CLEAN_AS(func_02010f6c, FieldActor_StepTowardReported)
 int FieldActor_MoveFree(FieldActor *actor)
 {
     Actor_ApplyVelocity(FieldActor_Base(actor), NULL);
-    int ground = func_020310c8(0);
+    int ground = CollisionQuery_FloorHeight(0);
     actor->position.y = ground;
     return ground;
 }
@@ -298,15 +283,15 @@ int FieldActor_MoveWithCollision(FieldActor *actor)
     Actor *base = FieldActor_Base(actor);
     Actor_ApplyVelocity(base, (const ActorCarrier *) field_actor_motion_at(actor, FIELD_ACTOR_CONTACT));
     FieldActorCollider fresh;
-    func_02032c64(&fresh);
+    CollisionContacts_Construct((CollisionContacts *) &fresh);
     s16 yaw = actor->yaw;
     void *collider = &fresh;
     if (FieldActor_StateFlagB48(actor, actor->state) != 0) {
         collider = field_actor_motion_at(actor, FIELD_ACTOR_COLLIDER);
     }
-    func_02031288(collider, &base->position, &base->last_position, yaw, COLLIDER_SIZE, actor, 0xf);
-    func_02032c50(&fresh);
-    int ground = func_020310c8(0);
+    CollisionQuery_Move(collider, &base->position, &base->last_position, yaw, COLLIDER_SIZE, actor, 0xf);
+    CollisionContacts_Destroy((CollisionContacts *) &fresh);
+    int ground = CollisionQuery_FloorHeight(0);
     actor->position.y = ground;
     return ground;
 }
@@ -319,7 +304,7 @@ CLEAN_AS(func_0201100c, FieldActor_MoveWithCollision)
 int FieldActor_PlaceShadow(FieldActor *actor)
 {
     if (!Session_IsLocalPlayer(data_020ccf94, actor->player)) {
-        if (func_020b67ac() == 0) {
+        if (SceneKinds_CurrentIn6To8() == 0) {
             return 0;
         }
         if (actor->state != 8) {
@@ -328,9 +313,10 @@ int FieldActor_PlaceShadow(FieldActor *actor)
     }
     Vec3 point = actor->position;
     point.y = field_actor_motion_add32(point.y, SHADOW_LIFT);
-    void *shadows = func_020b6590();
-    return (int) (uintptr_t) func_020b7d3c(shadows, field_actor_motion_at(actor, 0x214), &point, 0xa00, 0x15cf, 1,
-                                           (u8) actor->player);
+    void *shadows = (void *) (uintptr_t) SceneQuery_FieldObject();
+    return (int) (uintptr_t) TouchPick_SetCylinderAndAdd(shadows,
+                                                         (TouchPickCylinder *) (void *) field_actor_motion_at(actor, 0x214),
+                                                         &point, 0xa00, 0x15cf, 1, (u8) actor->player);
 }
 CLEAN_AS(func_02010ca4, FieldActor_PlaceShadow)
 
@@ -348,8 +334,9 @@ CLEAN_AS(func_02010eb4, FieldActor_ContactFlags)
 void FieldActor_SetContactAt(FieldActor *actor, const Vec3 *point, const int *state)
 {
     int flags = FieldActor_ContactFlags(actor, state);
-    func_02089b80(field_actor_motion_at(actor, FIELD_ACTOR_CONTACT), actor, point, COLLIDER_SIZE, CONTACT_HEIGHT, flags | 4,
-                  0x2fc, 0x15, (u8) actor->player, FX32_ONE);
+    FieldOwnedPointBody_Set((FieldOwnedPointBody *) (void *) field_actor_motion_at(actor, FIELD_ACTOR_CONTACT),
+                            (Actor *) actor, point, COLLIDER_SIZE, CONTACT_HEIGHT, flags | 4, 0x2fc, 0x15, (u8) actor->player,
+                            FX32_ONE);
 }
 CLEAN_AS(func_02010e58, FieldActor_SetContactAt)
 
@@ -365,7 +352,7 @@ void FieldActor_SetContactOnGround(FieldActor *actor, const int *state)
 {
     Vec3 point;
     point.x = actor->start_position.x;
-    point.y = func_020310c8(0);
+    point.y = CollisionQuery_FloorHeight(0);
     point.z = actor->start_position.z;
     FieldActor_SetContactAt(actor, &point, state);
 }
@@ -375,7 +362,7 @@ CLEAN_AS(func_02010e10, FieldActor_SetContactOnGround)
 void FieldActor_EnterContact(FieldActor *actor)
 {
     FieldActor_SetContact(actor, &actor->state);
-    func_02089fc8(field_actor_motion_at(actor, FIELD_ACTOR_CONTACT));
+    FieldBody_Enter((FieldBody *) (void *) field_actor_motion_at(actor, FIELD_ACTOR_CONTACT));
 }
 CLEAN_AS(func_02010d64, FieldActor_EnterContact)
 
@@ -384,24 +371,24 @@ CLEAN_AS(func_02010d64, FieldActor_EnterContact)
 void FieldActor_EnterContacts(FieldActor *actor, const Vec3 *point)
 {
     FieldActor_SetContactOnGround(actor, &actor->state);
-    func_02089fc8(field_actor_motion_at(actor, FIELD_ACTOR_CONTACT));
+    FieldBody_Enter((FieldBody *) (void *) field_actor_motion_at(actor, FIELD_ACTOR_CONTACT));
     FieldActor_SetContactB(actor, point);
-    func_02089fc8(field_actor_motion_at(actor, FIELD_ACTOR_CONTACT_B));
+    FieldBody_Enter((FieldBody *) (void *) field_actor_motion_at(actor, FIELD_ACTOR_CONTACT_B));
 }
 CLEAN_AS(func_02010d28, FieldActor_EnterContacts)
 
 /* func_02010d88: the second contact body at `point`, of `size` and `height`. */
 void FieldActor_SetContactBSized(FieldActor *actor, const Vec3 *point, int size, int height)
 {
-    func_02089b80(field_actor_motion_at(actor, FIELD_ACTOR_CONTACT_B), actor, point, size, height, 0x11, 0x2c, 0, 0xff,
-                  FX32_ONE);
+    FieldOwnedPointBody_Set((FieldOwnedPointBody *) (void *) field_actor_motion_at(actor, FIELD_ACTOR_CONTACT_B),
+                            (Actor *) actor, point, size, height, 0x11, 0x2c, 0, 0xff, FX32_ONE);
 }
 CLEAN_AS(func_02010d88, FieldActor_SetContactBSized)
 
 /* func_02010dc8: the second contact body at `point`, of the actor's size. */
 void FieldActor_SetContactB(FieldActor *actor, const Vec3 *point)
 {
-    func_02089b80(field_actor_motion_at(actor, FIELD_ACTOR_CONTACT_B), actor, point, COLLIDER_SIZE, CONTACT_HEIGHT, 6, 0x2fc,
-                  0, 0xff, FX32_ONE);
+    FieldOwnedPointBody_Set((FieldOwnedPointBody *) (void *) field_actor_motion_at(actor, FIELD_ACTOR_CONTACT_B),
+                            (Actor *) actor, point, COLLIDER_SIZE, CONTACT_HEIGHT, 6, 0x2fc, 0, 0xff, FX32_ONE);
 }
 CLEAN_AS(func_02010dc8, FieldActor_SetContactB)

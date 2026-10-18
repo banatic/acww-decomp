@@ -146,7 +146,7 @@ SoundScene *SoundScene31_Construct(SoundScene *scene);
  *   kind 2: when func_020b22b8 or func_020b22dc says so;
  *   kind 3: on the days of events 0xf and 0x12, and of event 0x13 before 2:00;
  *   kind 1: otherwise. Classes 60, 3 and 2 derive from it; it has its own slots 7, 8 and 9,
- *   which reload sequence archive 0x8f after the keyboard's sounds are dropped.
+ *   which reload bank 0x8f after the keyboard's sounds are dropped.
  *
  * Also here: the base class's helpers that make the heaps of players 6, 12, 13, 17, 18 and
  * 19. */
@@ -158,7 +158,7 @@ typedef struct SoundScene10 {
     /* 0x1c: 0 when built, 1 once the scene's sounds are loaded (start or slot 8), 2 once the
      * keyboard's sounds replace them (slot 7) */
     u8 stage;
-    u8 heap_level; /* 0x1d: the sound heap's level before sequence archive 0x90 */
+    u8 heap_level; /* 0x1d: the sound heap's level before bank 0x90 */
     u8 pad_1e[2];
 } SoundScene10;
 

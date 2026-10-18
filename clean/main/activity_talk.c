@@ -2,25 +2,16 @@
 #include "activity_talk.h"
 
 #include "clean.h"
+#include "activity_process.h"
+#include "message_receiver.h"
+#include "talk_object.h"
+#include "talk_receiver.h"
 
 static_assert(sizeof(ActivityReceiver) == sizeof(((Activity *) 0)->receiver), "activity receiver");
 static_assert(offsetof(ActivityReceiver, message) == 0x1e && offsetof(ActivityReceiver, owner) == 0x48, "receiver");
 
 #define TALK_INDEX 0
 #define RECEIVER_SLOT_RESET 2 /* the receiver's vtable slot called before it gets a message */
-
-/* Talk `index`. */
-extern ActivityTalk *func_020682e0(int index);
-/* The talk's byte 0x1e93 set to 1 (its meaning is not known yet). */
-extern void func_02068440(ActivityTalk *talk);
-/* The talk's next message: the number at `message`, from the file `name` (none when NULL). */
-extern void func_0206844c(ActivityTalk *talk, const u8 *message, const char *name);
-/* The talk handed the receiver whose message it shows. */
-extern void func_02068340(ActivityTalk *talk, ActivityReceiver *receiver);
-/* The receiver given the name of its message file. */
-extern void func_020a8164(ActivityReceiver *receiver, const char *name);
-/* The activity's job `job` started (activity_job.h). */
-extern void func_020a4e94(Activity *activity, int job);
 
 /* A message number (bss) the talk is given after messages 8, 39 and 105. */
 extern u8 data_021f43e8;
@@ -40,13 +31,13 @@ enum ActivityMessage {
  * start; gives 1. */
 int ActivityTalk_Show(Activity *activity, const char *name, char message)
 {
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     ActivityReceiver *receiver = (ActivityReceiver *) (void *) activity->receiver;
     ((void (*)(ActivityReceiver *))(uintptr_t) receiver->vtable[RECEIVER_SLOT_RESET])(receiver);
-    func_020a8164(receiver, name);
+    MessageReceiver_SetName((MessageReceiver *) receiver, name);
     receiver->message = (u8) message;
-    func_02068440(talk);
-    func_02068340(talk, receiver);
+    TalkObject_Hold((TalkObject *) talk);
+    TalkObject_AttachReceiver((TalkObject *) talk, (TalkReceiver *) receiver);
     talk->request = 1;
     return 1;
 }
@@ -62,19 +53,19 @@ CLEAN_AS(func_020a24d4, ActivityReceiver_OnAnswer)
  * job 0x1e. Other messages change nothing. */
 void ActivityReceiver_OnMessage(ActivityReceiver *receiver)
 {
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     switch (receiver->message) {
         case ACTIVITY_MESSAGE_10:
-            func_02068440(talk);
+            TalkObject_Hold((TalkObject *) talk);
             break;
         case ACTIVITY_MESSAGE_8:
         case ACTIVITY_MESSAGE_39:
         case ACTIVITY_MESSAGE_105:
-            func_0206844c(talk, &data_021f43e8, NULL);
+            TalkObject_SetMessage((TalkObject *) talk, &data_021f43e8, NULL);
             break;
         case ACTIVITY_MESSAGE_38:
-            func_02068440(talk);
-            func_020a4e94(receiver->owner, JOB_AFTER_MESSAGE_38);
+            TalkObject_Hold((TalkObject *) talk);
+            ActivityProcess_StartJob(receiver->owner, JOB_AFTER_MESSAGE_38);
             break;
         default:
             break;
@@ -86,13 +77,6 @@ CLEAN_AS(func_020a24d8, ActivityReceiver_OnMessage)
 
 /* The receiver's vtable, and its base class's destructor and constructor. */
 extern const u32 data_020e3b38[];
-extern void *func_02066994(ActivityReceiver *receiver);
-extern void *func_02066a30(ActivityReceiver *receiver);
-/* Talk 0: func_02068c10 on its part at 0x1c, func_02068c24 given a value there, and its byte
- * 0x1e93 cleared (func_02068440 sets it). */
-extern void func_02068358(ActivityTalk *talk);
-extern void func_02068364(ActivityTalk *talk, int value);
-extern void func_02068434(ActivityTalk *talk);
 
 extern const char data_020e3c40[]; /* "sp_etc_sequence2" */
 
@@ -113,7 +97,7 @@ CLEAN_AS(func_020a2548, ActivityReceiver_SetOwner)
 ActivityReceiver *ActivityReceiver_DestructFree(ActivityReceiver *receiver)
 {
     receiver->vtable = data_020e3b38;
-    func_02066994(receiver);
+    TalkReceiver_Destruct((TalkReceiver *) receiver);
     Heap_OperatorDeleteB(receiver);
     return receiver;
 }
@@ -123,7 +107,7 @@ CLEAN_AS(func_020a254c, ActivityReceiver_DestructFree)
 ActivityReceiver *ActivityReceiver_Destruct(ActivityReceiver *receiver)
 {
     receiver->vtable = data_020e3b38;
-    func_02066994(receiver);
+    TalkReceiver_Destruct((TalkReceiver *) receiver);
     return receiver;
 }
 CLEAN_AS(func_020a256c, ActivityReceiver_Destruct)
@@ -131,7 +115,7 @@ CLEAN_AS(func_020a256c, ActivityReceiver_Destruct)
 /* func_020a2584: the receiver constructed: its base class's constructor, then its vtable. */
 ActivityReceiver *ActivityReceiver_Construct(ActivityReceiver *receiver)
 {
-    func_02066a30(receiver);
+    TalkReceiver_ConstructBase((TalkReceiver *) receiver);
     receiver->vtable = data_020e3b38;
     return receiver;
 }
@@ -142,11 +126,11 @@ CLEAN_AS(func_020a2584, ActivityReceiver_Construct)
 int ActivityTalk_FinishWaiting(Activity *activity, int value)
 {
     (void) activity;
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     if (talk->state != TALK_WAITING) {
         return 0;
     }
-    func_02068364(talk, value != 0);
+    TalkObject_StartSpinner((TalkObject *) talk, value != 0);
     return 1;
 }
 CLEAN_AS(func_020a259c, ActivityTalk_FinishWaiting)
@@ -156,19 +140,19 @@ CLEAN_AS(func_020a259c, ActivityTalk_FinishWaiting)
 void ActivityTalk_Close(Activity *activity)
 {
     (void) activity;
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
-    func_02068358(talk);
-    func_02068434(talk);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
+    TalkObject_StopSpinner((TalkObject *) talk);
+    TalkObject_Release((TalkObject *) talk);
 }
 CLEAN_AS(func_020a25cc, ActivityTalk_Close)
 
 /* The talk closed (ActivityTalk_Close) and given message `message` of "sp_etc_sequence2" next. */
 static void close_and_queue(u8 message)
 {
-    ActivityTalk *talk = func_020682e0(TALK_INDEX);
-    func_02068358(talk);
-    func_02068434(talk);
-    func_0206844c(talk, &message, data_020e3c40);
+    ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
+    TalkObject_StopSpinner((TalkObject *) talk);
+    TalkObject_Release((TalkObject *) talk);
+    TalkObject_SetMessage((TalkObject *) talk, &message, data_020e3c40);
 }
 
 /* func_020a25e8: talk 0 closed and given message 11 of "sp_etc_sequence2" next. `activity` is

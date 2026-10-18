@@ -11,6 +11,23 @@
 #include "ov004/member_pointer.h"
 #include "scene_actor_files.h" /* SceneActor_DrawShadows */
 #include "scene_actor_life.h"  /* SceneActor_Kind, SceneActor_UpdateModelMatrix, SceneActor_ViewRange* */
+#include "main/animated_model.h"
+#include "main/block_020b220c.h"
+#include "main/building_lights.h"
+#include "main/camera_control.h"
+#include "main/collision_area.h"
+#include "main/collision_query.h"
+#include "main/event_queue.h"
+#include "main/item_code.h"
+#include "main/message_receiver.h"
+#include "main/player_actor_ops.h"
+#include "main/scene_exit.h"
+#include "main/scene_object_base.h"
+#include "main/scene_place.h"
+#include "main/scene_query.h"
+#include "main/scene_tables.h"
+#include "main/talk_object.h"
+#include "main/town_objects.h"
 
 static_assert(offsetof(SceneActorSound, state.on) == 0x40, "sound on flag");
 static_assert(sizeof(SceneActorSound) == 0x44, "sound size");
@@ -118,53 +135,10 @@ extern MemberPointer data_ov009_02265c24[SCENE_ACTOR_STATES];
 extern const MemberPointer data_ov009_022657c0, data_ov009_022657f8, data_ov009_022657f0, data_ov009_02265898,
     data_ov009_02265808, data_ov009_02265820, data_ov009_02265828, data_ov009_02265848, data_ov009_02265888;
 
-extern void func_0205510c(void *model_object, int arg);
 /* The field actor asking a player to stand at a point (overlay 3, field_actor.h). */
 int FieldActor_PlayerRequestState39(u32 kind, int *x, int *z, int yaw);
 int FieldActor_PlayerRequestState38(int *x, int *z, short *yaw);
-/* A player's position. */
-extern const Vec3 *func_02095794(int player);
-/* A record of data_020d1f24 copied out, two of its bytes, and the copy's (empty) destructor. */
-extern void func_020b2a68(SceneActorRecord *dst, const SceneActorRecord *src);
-extern int func_020b2a4c(SceneActorRecord *record);
-extern int func_020b2a50(SceneActorRecord *record);
-extern void func_020b2a64(SceneActorRecord *record);
-/* Main's member object at 0x1f4: whether its first word is set. */
-extern int func_020b3310(void *member);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* The point of an area. */
-extern const Vec3 *func_02032754(SceneActorArea *area);
-/* Copies at most 25 characters of `name` into the receiver's name. */
-extern void func_020a8164(void *receiver, const char *name);
-/* Whether a code is of the kind func_0204bc64 converts, and the conversion. */
-extern int func_0204bcdc(u16 *code);
-extern int func_0204bc64(u16 *code);
-/* Sets the link's word at 0x10. */
-extern void func_020676c4(SceneActorLink *link, int value);
-/* The character's visit record: clearing bit `bit` of its flags, asking for it, its answer. */
-extern void func_020b23ec(int code, int bit);
-extern void func_020b248c(u16 code);
-extern int func_020b2470(u16 code);
-/* Main's byte at data_021f4b14 cleared; main's table at data_021f69d0 (func_020b5e10 gives
- * it), its neighbour at data_021f69b8 reset (func_020b5e90), whether the table takes `id`, and
- * adding to it; the scene; a height that is always 0x200; main's word at data_021f4b48. */
-extern void func_020b23c8(void);
-extern void *func_020b5e10(void);
-extern void func_020b5e90(void);
-extern int func_020b6098(void *table, int id);
-extern int func_020b5ea0(void *table, int scene, Vec3 *point, int p3, short angle, int p5, int p6);
-extern u8 func_020b65c4(void);
-extern int func_020310c8(int value);
-extern void func_020b22ac(int value);
-/* Hands the receiver back, takes it, lets the scene go on, and what CanTalkTo runs. */
-extern void func_0203ee08(SceneActor *actor, void *receiver);
-extern void func_0203ee14(SceneActor *actor, void *receiver);
-extern int func_0203e020(SceneActor *actor);
-extern void func_0203edd0(SceneActor *actor);
-extern int func_02096174(void);
-extern int func_02096168(void);
-extern void func_02095944(unsigned int arg);
-extern void func_0203aec4(void);
 
 /* The receiver part as C++ converts a pointer to the actor to it: NULL stays NULL. */
 static void *scene_actor_receiver(SceneActor *actor)
@@ -210,10 +184,10 @@ static const SceneActorRecord *scene_actor_record(const SceneActor *actor)
 /* Whether `*code` is `value`, through func_0204bc64 when func_0204bcdc says it converts. */
 static int scene_actor_code_is(u16 *code, u16 value)
 {
-    if (func_0204bcdc(code) != 0) {
+    if (ItemCode_HasVariant(code) != 0) {
         u16 other = value;
-        int converted = func_0204bc64(code);
-        return converted == func_0204bc64(&other);
+        int converted = ItemCode_VariantItem(code);
+        return converted == ItemCode_VariantItem(&other);
     }
     return *code == value;
 }
@@ -306,7 +280,7 @@ CLEAN_AS(func_ov009_02262f8c, SceneActorSound_Construct)
 /* func_ov009_02262fa4: whether the first word of the member object at 0x1f4 is set (1 or 0). */
 int SceneActor_Member1F4IsSet(SceneActor *actor)
 {
-    return func_020b3310(actor->member_1f4);
+    return BuildingLights_IsLit((const BuildingLights *) actor->member_1f4);
 }
 CLEAN_AS(func_ov009_02262fa4, SceneActor_Member1F4IsSet)
 
@@ -468,9 +442,9 @@ CLEAN_AS(func_ov009_02263148, SceneActor_WalksWithState38)
 int SceneActor_RecordByte5(SceneActor *actor)
 {
     SceneActorRecord record;
-    func_020b2a68(&record, scene_actor_record(actor));
-    int value = func_020b2a4c(&record);
-    func_020b2a64(&record);
+    TownObjects_CopyRecord(&record, scene_actor_record(actor));
+    int value = TownObjects_RecordByte5(&record);
+    TownObjects_DestroyRecord(&record);
     return value;
 }
 CLEAN_AS(func_ov009_0226314c, SceneActor_RecordByte5)
@@ -480,9 +454,9 @@ CLEAN_AS(func_ov009_0226314c, SceneActor_RecordByte5)
 int SceneActor_RecordId(SceneActor *actor)
 {
     SceneActorRecord record;
-    func_020b2a68(&record, scene_actor_record(actor));
-    int value = func_020b2a50(&record);
-    func_020b2a64(&record);
+    TownObjects_CopyRecord(&record, scene_actor_record(actor));
+    int value = TownObjects_RecordId(&record);
+    TownObjects_DestroyRecord(&record);
     return value;
 }
 CLEAN_AS(func_ov009_022631b4, SceneActor_RecordId)
@@ -510,7 +484,7 @@ int SceneActor_GetStandPoint(SceneActor *actor, Vec3 *point, s16 *angle)
     }
     if (point != NULL) {
         Vec3 sum;
-        Vec_Add(&sum, func_02032754(area), &ahead);
+        Vec_Add(&sum, CollisionArea_GetCentre((CollisionArea *) area), &ahead);
         *point = sum;
         point->y = SCENE_ACTOR_STAND_HEIGHT;
         point->z -= SCENE_ACTOR_STAND_BACK;
@@ -526,7 +500,7 @@ void SceneActor_DrawModel(SceneActor *actor)
         return;
     }
     SceneActor_UpdateModelMatrix(actor, NULL);
-    func_0205510c(actor->model_object, 0);
+    AnimatedModel_Draw((AnimatedModel *) actor->model_object, 0);
     Mtx43 matrix = actor->model_matrix;
     SceneActor_DrawShadows(actor, &matrix);
 }
@@ -560,7 +534,7 @@ CLEAN_AS(func_ov009_0226331c, SceneActor_OnTalkOpen)
  * "obj_etc_error" and clears its message. */
 void SceneActor_PrepareTalk(SceneActor *actor)
 {
-    func_020a8164(&actor->receiver_vtable, data_ov009_02265a18);
+    MessageReceiver_SetName((MessageReceiver *) &actor->receiver_vtable, data_ov009_02265a18);
     actor->message = 0;
 }
 CLEAN_AS(func_ov009_02263320, SceneActor_PrepareTalk)
@@ -571,7 +545,7 @@ CLEAN_AS(func_ov009_02263320, SceneActor_PrepareTalk)
 void SceneActor_OnMessageEnd(SceneActor *actor)
 {
     if (!scene_actor_code_is(&actor->code, SCENE_ACTOR_CODE_NO_WAIT)) {
-        func_020676c4(actor->link, 100);
+        TalkObject_SetAutoAdvance((TalkObject *) actor->link, 100);
     }
 }
 CLEAN_AS(func_ov009_02263344, SceneActor_OnMessageEnd)
@@ -585,10 +559,10 @@ void SceneActor_OnSceneEvent(SceneActor *actor, unsigned int event, int arg)
     (void) arg;
     switch (event) {
         case SCENE_ACTOR_EVENT_6:
-            func_020b23ec(actor->code, 0);
-            func_020b23c8();
-            func_020b5e10();
-            func_020b5e90();
+            TownObjects_Leave(actor->code, 0);
+            TownObjects_ClearExtraVisitors();
+            SceneTables_EntryRecord();
+            ScenePlace_ResetMarked();
             actor->exit_step = 1;
             break;
         case SCENE_ACTOR_EVENT_TALK:
@@ -624,7 +598,7 @@ int SceneActor_CanTalkTo(SceneActor *actor, SceneActor *other)
             return 0;
         }
         int slot_8c = scene_actor_call_int(actor, SLOT_8C);
-        func_0203edd0(actor);
+        SceneObjectBase_ClearApproach((SceneObjectBase *) actor);
         actor->skip_visit = slot_8c == 0;
         return 1;
     }
@@ -634,7 +608,7 @@ int SceneActor_CanTalkTo(SceneActor *actor, SceneActor *other)
     const Vec3 *theirs = (const Vec3 *) (uintptr_t) scene_actor_call_int(other, SLOT_TALK_POINT);
     const Vec3 *mine = (const Vec3 *) (uintptr_t) scene_actor_call_int(actor, SLOT_TALK_POINT);
     fx32 distance = Vec_DistanceXZ(theirs, mine);
-    func_0203edd0(actor);
+    SceneObjectBase_ClearApproach((SceneObjectBase *) actor);
     actor->skip_visit = 1;
     return distance < SCENE_ACTOR_TALK_DISTANCE;
 }
@@ -661,7 +635,7 @@ void SceneActor_UpdateWalkAgain(SceneActor *actor)
     int x = point.x;
     int z = point.z;
     if (scene_actor_call_int(actor, SLOT_KEEP_X) == 0) {
-        const Vec3 *player = func_02095794(SCENE_ACTOR_PLAYER);
+        const Vec3 *player = PlayerActorOps_StartPosition(SCENE_ACTOR_PLAYER);
         if (player != NULL) {
             x = player->x;
         }
@@ -684,7 +658,7 @@ CLEAN_AS(func_ov009_02263548, SceneActor_EnterWalkAgain)
  * SCENE_ACTOR_WALK_AGAIN once func_02096174 agrees. */
 void SceneActor_UpdateLeaveAgain(SceneActor *actor)
 {
-    if (func_02096174()) {
+    if (PlayerActorOps_TestOwnFlag1()) {
         SceneActor_SetState(actor, SCENE_ACTOR_WALK_AGAIN);
     }
 }
@@ -694,7 +668,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_0226354cEv, SceneActor_UpdateLeaveA
 int SceneActor_EnterLeaveAgain(SceneActor *actor)
 {
     (void) actor;
-    func_02095944(0);
+    PlayerActorOps_Approach(0);
     return 1;
 }
 CLEAN_AS(func_ov009_02263568, SceneActor_EnterLeaveAgain)
@@ -722,15 +696,15 @@ void SceneActor_UpdateGone(SceneActor *actor)
     if (!SceneActor_GetStandPoint(actor, &point, &angle)) {
         return;
     }
-    if (!func_020b6098(func_020b5e10(), id)) {
+    if (!SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), id)) {
         return;
     }
-    point.y = func_020310c8(0);
+    point.y = CollisionQuery_FloorHeight(0);
     point.z += SCENE_ACTOR_GONE_AHEAD;
-    void *table = func_020b5e10();
-    int scene = func_020b65c4();
-    func_020b5ea0(table, scene, &point, SCENE_ACTOR_GONE_ARG, (short) (angle + 0x8000), actor->tile_x, actor->tile_z);
-    func_020b22ac(SceneActor_Kind(actor));
+    int table = SceneTables_EntryRecord();
+    int scene = SceneQuery_Current();
+    ScenePlace_SetMarked(table, scene, &point, SCENE_ACTOR_GONE_ARG, (short) (angle + 0x8000), actor->tile_x, actor->tile_z);
+    Block020b220c_SetGoneKind(SceneActor_Kind(actor));
     actor->flags |= SCENE_ACTOR_FLAG_GONE;
 }
 CLEAN_AS(func_ov009_0226357c, SceneActor_UpdateGone)
@@ -749,13 +723,13 @@ CLEAN_AS(func_ov009_02263648, SceneActor_EnterGone)
  * QUIRK: other kinds stay in SCENE_ACTOR_WALK. */
 void SceneActor_UpdateWalk(SceneActor *actor)
 {
-    if (!func_02096168()) {
+    if (!PlayerActorOps_TestOwnFlag4()) {
         return;
     }
     switch (SceneActor_Kind(actor)) {
         case 2:
         case 3:
-            func_0203aec4();
+            CameraControl_SetMode3();
             SceneActor_SetState(actor, SCENE_ACTOR_GONE);
             break;
         default:
@@ -778,7 +752,7 @@ int SceneActor_EnterWalk(SceneActor *actor)
     int x = point.x;
     int z = point.z;
     if (scene_actor_call_int(actor, SLOT_KEEP_X) == 0) {
-        const Vec3 *player = func_02095794(SCENE_ACTOR_PLAYER);
+        const Vec3 *player = PlayerActorOps_StartPosition(SCENE_ACTOR_PLAYER);
         if (player != NULL) {
             x = player->x;
         }
@@ -795,7 +769,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_02263694Ev, SceneActor_EnterWalk)
  * SCENE_ACTOR_WALK once func_02096174 agrees. */
 void SceneActor_UpdateLeave(SceneActor *actor)
 {
-    if (func_02096174()) {
+    if (PlayerActorOps_TestOwnFlag1()) {
         SceneActor_SetState(actor, SCENE_ACTOR_WALK);
     }
 }
@@ -805,7 +779,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_02263718Ev, SceneActor_UpdateLeave)
 int SceneActor_EnterLeave(SceneActor *actor)
 {
     (void) actor;
-    func_02095944(0);
+    PlayerActorOps_Approach(0);
     return 1;
 }
 CLEAN_AS(func_ov009_02263734, SceneActor_EnterLeave)
@@ -818,8 +792,8 @@ void SceneActor_UpdateTalkEnd(SceneActor *actor)
 {
     if (actor->link != NULL && actor->link->status == 0) {
         scene_actor_call_void(actor, SLOT_TALK_CLOSED);
-        func_0203ee08(actor, scene_actor_receiver(actor));
-        func_0203e020(actor);
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) actor, scene_actor_receiver(actor));
+        EventQueue_FinishObjectEvent(actor);
     } else {
         scene_actor_call_void(actor, SLOT_TALK_WAIT);
     }
@@ -850,7 +824,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_02263790Ev, SceneActor_UpdateTalk)
  * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
 int SceneActor_EnterTalk(SceneActor *actor)
 {
-    func_0203ee14(actor, scene_actor_receiver(actor));
+    SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, scene_actor_receiver(actor));
     actor->link->requested = 1;
     scene_actor_call_void(actor, SLOT_PREPARE_TALK);
     return 1;
@@ -867,7 +841,7 @@ void SceneActor_UpdateVisit(SceneActor *actor)
         SceneActor_SetState(actor, SCENE_ACTOR_TALK);
         return;
     }
-    int answer = func_020b2470(actor->code);
+    int answer = TownObjects_VisitAnswer(actor->code);
     if (answer == 0) {
         return;
     }
@@ -888,7 +862,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_022637ecEv, SceneActor_UpdateVisit)
 int SceneActor_EnterVisit(SceneActor *actor)
 {
     if (!actor->skip_visit) {
-        func_020b248c(actor->code);
+        TownObjects_RequestVisit(actor->code);
     }
     actor->flags &= ~SCENE_ACTOR_FLAG_VISIT_2;
     actor->visit_3 = 0;

@@ -7,6 +7,10 @@
 #include "player_records.h"
 #include "start_menu.h"
 #include "system_packet.h"
+#include "activity_talk.h"
+#include "catch_panel.h"
+#include "link_global.h"
+#include "screen_panels.h"
 
 static_assert(offsetof(Activity, receiver) == 0x54 && offsetof(Activity, state) == 0xa1, "activity");
 static_assert(offsetof(Activity, slot_reported) == 0xf8, "activity");
@@ -20,18 +24,6 @@ extern NetSession *data_020ccf94;
 extern const char data_020e3c40[]; /* "sp_etc_sequence2" */
 extern const char data_020e3c2c[]; /* "sp_npc_gatekeeper" */
 
-/* The receiver's destructor. */
-extern void *func_020a256c(void *receiver);
-/* Message `message` of file `name` shown through the activity's receiver in talk 0. */
-extern int func_020a1954(Activity *activity, const char *name, int message);
-/* The object func_0208d0bc is told 0 and 1 by both talks. */
-extern void *func_0208b500(void);
-extern void func_0208d0bc(void *object, int a, int b);
-/* A slot's scene in the link state table (0x3f above slot 3), and the third byte of its
- * entry. */
-extern int func_020a7330(int slot);
-extern int func_020a72d0(int slot);
-
 #define PLAYER_FLAG_2 2
 #define SEQUENCE2_MESSAGE 7
 #define GATEKEEPER_MESSAGE 105
@@ -41,7 +33,7 @@ extern int func_020a72d0(int slot);
 Activity *Activity_Destruct(Activity *activity)
 {
     activity->process.vtable = data_020e3ae8;
-    func_020a256c(activity->receiver);
+    ActivityReceiver_Destruct((ActivityReceiver *) (void *) activity->receiver);
     activity->process.vtable = data_020da13c;
     Process_Destruct(&activity->process);
     return activity;
@@ -52,7 +44,7 @@ CLEAN_AS(func_0209fb74, Activity_Destruct)
 Activity *Activity_DestructFree(Activity *activity)
 {
     activity->process.vtable = data_020e3ae8;
-    func_020a256c(activity->receiver);
+    ActivityReceiver_Destruct((ActivityReceiver *) (void *) activity->receiver);
     activity->process.vtable = data_020da13c;
     Process_Destruct(&activity->process);
     Heap_FreeAux(activity);
@@ -65,10 +57,10 @@ CLEAN_AS(func_0209fba0, Activity_DestructFree)
  * is called and the flag set again. */
 void Activity_TalkSequence2(Activity *activity)
 {
-    func_020a1954(activity, data_020e3c40, SEQUENCE2_MESSAGE);
+    ActivityTalk_Show(activity, data_020e3c40, SEQUENCE2_MESSAGE);
     PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
     if (StartMenu_LeaveChoice() != 0) {
-        func_0208d0bc(func_0208b500(), 0, 1);
+        CatchPanel_Start((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel(), 0, 1);
         PlayerRecord_SetFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
     }
 }
@@ -79,10 +71,10 @@ CLEAN_AS(func_020a0244, Activity_TalkSequence2)
 void Activity_TalkGatekeeper(Activity *activity, int quiet)
 {
     if (quiet == 0) {
-        func_020a1954(activity, data_020e3c2c, GATEKEEPER_MESSAGE);
+        ActivityTalk_Show(activity, data_020e3c2c, GATEKEEPER_MESSAGE);
     }
     PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
-    func_0208d0bc(func_0208b500(), 0, 1);
+    CatchPanel_Start((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel(), 0, 1);
 }
 CLEAN_AS(func_020a0284, Activity_TalkGatekeeper)
 
@@ -131,8 +123,8 @@ void Activity_StepRequestMode1(Activity *activity, u8 *step, int first, int scen
             if (Session_IsSlotTaken(session, slot) == 0 || Session_IsLocalSlot(session, slot) != 0) {
                 continue;
             }
-            int in_scene = scene_a == func_020a7330(slot) || scene_b == func_020a7330(slot);
-            if (!in_scene || func_020a72d0(slot) != 0) {
+            int in_scene = scene_a == LinkGlobal_PlaceScene(slot) || scene_b == LinkGlobal_PlaceScene(slot);
+            if (!in_scene || LinkGlobal_PlaceMoving(slot) != 0) {
                 return;
             }
         }

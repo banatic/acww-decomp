@@ -50,6 +50,7 @@
 #include "main/villager_talk_scene.h"
 #include "ov004/birthday_guest.h"
 #include "ov004/member_pointer.h"
+#include "ov004/room_objects.h"
 
 static_assert(sizeof(HouseVisitorTalk) == 0x1a8, "its talk scene");
 static_assert(offsetof(HouseVisitor, state) == 0x898, "state");
@@ -158,9 +159,6 @@ extern const char data_ov068_02278254[];
 #define HOUSE_VISITOR_MARKS 10
 extern const u16 data_ov068_0227807c[HOUSE_VISITOR_MARKS];
 
-/* Overlay 4's table of items (and its message for a personality, drawn at random among the
- * rows of that personality; -1 for none). */
-extern int func_ov004_0223c144(int personality);
 /* The system's sound effect `number` (func_020f1fb4 on the sound set). */
 extern void RtcSendPxiCommand(int number);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -967,7 +965,7 @@ void HouseVisitorTalk_Line(HouseVisitorTalk *talk, VillagerTalkLine *out)
         visitor->talks_left--;
     }
     unsigned int chance = MainRandom_Below(HOUSE_VISITOR_CHANCES);
-    int message = func_ov004_0223c144(NpcId_Personality(TownVillager_NpcId(hv_record_field(talk->visitor))));
+    int message = RoomObjects_PickUnk778(NpcId_Personality(TownVillager_NpcId(hv_record_field(talk->visitor))));
     u32 rating = (u32) talk->visitor->rating;
     if (rating >= HOUSE_VISITOR_MAX_RATING) {
         rating = HOUSE_VISITOR_MAX_RATING;

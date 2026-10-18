@@ -47,6 +47,7 @@ CLEAN_AS(func_ov004_02233538, IconModels_Delete)
 #include "main/item_traits.h"
 #include "main/scene_lights.h"
 #include "main/town_day.h"
+#include "room_objects.h"
 
 static_assert(sizeof(IconModels) == 0x184, "icon models");
 
@@ -61,9 +62,6 @@ extern const Vec3 data_021c67d0; /* the point it looks at */
 extern Mtx43 data_021fbe48;      /* the matrix being built */
 
 extern void NNS_G3dMdlSetMdlEmi(u8 *model, int material, unsigned short colour);
-
-/* The height of what stands where `point` is in the room, else of its floor. */
-extern int func_ov004_0223c5a4(const Vec3 *point);
 
 #define ICON_MODELS_ONE 0x1000
 #define ICON_MODELS_TILE 0x2000
@@ -127,7 +125,7 @@ static void IconModels_draw_tile_item(IconModels *self, AcreMap *map, const Vec3
         return;
     }
     Vec3 position;
-    position.y = at->y + func_ov004_0223c5a4(at);
+    position.y = at->y + RoomObjects_HeightAtPoint(at);
     position.x = at->x;
     position.z = at->z;
     Vec3 scale = {ICON_MODELS_ONE, ICON_MODELS_ONE, ICON_MODELS_ONE};

@@ -4,10 +4,10 @@
  * (member_pointer.h):
  *
  * - its call (Telephone.state): idle until its switch is asked to change, when it takes the
- *   values of its entry among two (func_ov004_0223ca9c of data_ov004_02259784) and asks the
- *   scene for an event (func_0203e0a8); events 0 and 1 then open it (its switch turns on, one
+ *   values of its entry among two (RoomPushes_FindObject of data_ov004_02259784) and asks the
+ *   scene for an event (EventQueue_RequestKind6); events 0 and 1 then open it (its switch turns on, one
  *   frame), it talks over its receiver while the link is open, closes (its switch turns off,
- *   one frame) and lets the scene go on (func_0203e020); event 8 makes it idle;
+ *   one frame) and lets the scene go on (EventQueue_FinishObjectEvent); event 8 makes it idle;
  * - its switch (Telephone.switch_state), entered through vtable slot 0x70: off, turning on (one
  *   frame, with sound 1), on, and turning off (one frame, with sound 1).
  *
@@ -22,8 +22,8 @@
 
 typedef struct Telephone {
     RoomObject base;
-    s32 entry_words[3]; /* at 0x2c in its entry (func_ov004_0223cb24) */
-    u16 entry_value;    /* at 0x38 in its entry (func_ov004_0223cb18) */
+    s32 entry_words[3]; /* at 0x2c in its entry (RoomPushes_Destination) */
+    u16 entry_value;    /* at 0x38 in its entry (RoomPushes_Facing) */
     u16 wait;           /* frames left in TELEPHONE_OPEN and TELEPHONE_CLOSE */
     u8 switch_state;    /* TelephoneSwitch */
     u8 unk_855[3];

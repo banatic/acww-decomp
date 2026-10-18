@@ -10,6 +10,8 @@
 #include "player_records.h"
 #include "state_block.h"
 #include "wifi_friends.h"
+#include "exchange_block.h"
+#include "waiting_letter.h"
 
 static_assert(offsetof(ActivityCard, run_start) == 0xa4 - 0xa0 && offsetof(ActivityCard, image) == 0xb0 - 0xa0,
               "activity card");
@@ -30,13 +32,6 @@ extern const u32 data_020d1c08[3];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-/* The exchange block (part_11c70, 0x950 bytes): the checksum kept at its 0x94a. */
-extern u16 func_0209015c(u8 *block);
-extern void func_02090168(u8 *block, u16 checksum);
-/* The part at 0x1704c of the state block (0x104 bytes): the checksum byte kept at its 0x100. */
-extern u8 func_0208ffe8(u8 *part);
-extern void func_0208fff4(u8 *part, u8 checksum);
 
 /* The steps' tables (function-local statics of the game, filled once) and their constants. */
 extern u32 data_021f3c2c;
@@ -470,9 +465,13 @@ int ActivityCard_WriteStepSums(Activity *activity, int part)
             SaveStamp_Destruct(&read);
         }
         u8 *exchange = block + offsetof(StateBlock, part_11c70);
-        func_02090168(exchange, checksum(exchange, EXCHANGE_BLOCK_SIZE, func_0209015c(exchange)));
+        ExchangeBlock_SetChecksum(
+            (ExchangeBlock *) (void *) exchange,
+            checksum(exchange, EXCHANGE_BLOCK_SIZE, ExchangeBlock_Checksum((ExchangeBlock *) (void *) exchange)));
         u8 *part_1704c = block + offsetof(StateBlock, part_1704c);
-        func_0208fff4(part_1704c, (u8) checksum(part_1704c, PART_1704C_SIZE, func_0208ffe8(part_1704c)));
+        WaitingLetter_SetChecksum(
+            (WaitingLetter *) (void *) part_1704c,
+            (u8) checksum(part_1704c, PART_1704C_SIZE, WaitingLetter_Checksum((WaitingLetter *) (void *) part_1704c)));
         u8 *players = block + offsetof(StateBlock, players);
         for (int player = 0; player < PLAYER_RECORDS_TOWN; player++) {
             WifiAccount *account = PlayerRecord_WifiAccount(PlayerRecords_TownRecord(players, player));
@@ -640,8 +639,6 @@ CLEAN_AS(func_020a238c, ActivityCard_StepCheck)
 
 /* This system's exchange block. */
 extern u8 data_021ee418[EXCHANGE_BLOCK_SIZE];
-/* The exchange block's count (at its 0x938) raised by 1, to 5 at most. */
-extern void func_0209010c(u8 *block);
 /* The record number used for a guest's (7, which no record has). */
 extern const u8 data_020e37f8;
 
@@ -658,7 +655,7 @@ CLEAN_AS(func_020a2468, Activity_ExchangeBlockToSystem)
 void Activity_SystemExchangeBlockToActivity(Activity *activity)
 {
     u8 *block = data_021ee418;
-    func_0209010c(block);
+    ExchangeBlock_AddDrift((ExchangeBlock *) (void *) block);
     MI_CpuCopy8(block, activity->exchange_block, EXCHANGE_BLOCK_SIZE);
 }
 CLEAN_AS(func_020a2480, Activity_SystemExchangeBlockToActivity)

@@ -7,6 +7,10 @@
 #include "itcm/field_units.h"
 #include "itcm/vector.h"
 #include "unit_type_info.h"
+#include "collision_area.h"
+#include "collision_box.h"
+#include "collision_post_source.h"
+#include "collision_visitor.h"
 
 static_assert(sizeof(CollisionSegmentTest) == 0x40, "segment test");
 static_assert(offsetof(CollisionSegmentTest, tag) == 0x1c && offsetof(CollisionSegmentTest, attr) == 0x30,
@@ -29,25 +33,6 @@ extern const u8 data_020da1e8[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
-
-/* The visitors' base class: constructor and destructor (they set its vtable, 0x020da1c0). */
-extern void func_02031e74(void *visitor);
-extern void func_02031e68(void *visitor);
-/* `*bound` becomes the smaller (func_02031e08) or the larger (func_02031e28) of itself and
- * `point`, axis by axis. */
-extern void func_02031e08(Vec3 *bound, const Vec3 *point);
-extern void func_02031e28(Vec3 *bound, const Vec3 *point);
-/* The post source of the current map, or a default one. */
-extern CollisionPostSource *func_02031c50(void);
-/* The walls and floors of the objects listed by the world's byte at 0x1a90, in the box of
- * `centre` and half size `half`: those above height 0 in pass 0, the others in pass 1. */
-extern void func_02031ecc(u8 *list, const Vec3 *centre, const Vec3 *half, CollisionWallList *walls, CollisionFloorList *floors,
-                          int flags, int pass);
-/* Whether the ground under `position` is above 0 or a post stands on its unit. */
-extern int func_02031bb8(const Vec3 *position);
-/* Tells the objects listed by the world's byte at 0x1a91 that `owner` of `radius` is at
- * `position`, each one within its reach. */
-extern void func_02032610(const Vec3 *position, fx32 radius, void *owner);
 
 /* A gathering's box covers at most this far around a move (6.0) with the margins. */
 #define COLLISION_QUERY_MOVE_REACH 0xc000
@@ -121,11 +106,11 @@ void CollisionQuery_Gather(const Vec3 *min, const Vec3 *max, CollisionVisitor *v
 
     if ((flags & (COLLISION_QUERY_GROUND | COLLISION_QUERY_WALLS | COLLISION_QUERY_ALL)) != 0 &&
         (flags & COLLISION_QUERY_NO_POSTS) == 0) {
-        CollisionPosts_Gather(&world->posts, func_02031c50(), x0, x1, z0, z1, all);
+        CollisionPosts_Gather(&world->posts, CollisionPostSource_Current(), x0, x1, z0, z1, all);
     }
     if ((flags & COLLISION_QUERY_NO_LISTED) == 0) {
-        func_02031ecc(&world->unk_1a90, &centre, &half, &world->walls, &world->floors, flags, 0);
-        func_02031ecc(&world->unk_1a90, &centre, &half, &world->walls, &world->floors, flags, 1);
+        CollisionBox_GatherAll(&world->unk_1a90, &centre, &half, &world->walls, &world->floors, flags, 0);
+        CollisionBox_GatherAll(&world->unk_1a90, &centre, &half, &world->walls, &world->floors, flags, 1);
     }
     if ((flags & (COLLISION_QUERY_WALLS | COLLISION_QUERY_ALL)) != 0) {
         if ((flags & COLLISION_QUERY_NO_FENCES) == 0) {
@@ -267,9 +252,9 @@ int CollisionQuery_Trace(CollisionTraceHit *result, Vec3 *end, const Vec3 *start
     Vec3 high = *start;
     CollisionSegmentTest test;
 
-    func_02031e08(&low, &to);
-    func_02031e28(&high, &to);
-    func_02031e74(&test);
+    CollisionBox_KeepMin(&low, &to);
+    CollisionBox_KeepMax(&high, &to);
+    CollisionVisitor_Construct((CollisionVisitor *) &test);
     test.vtable = data_020da1d4;
     CollisionHitTag_Clear(&test.tag);
     test.attr = 0;
@@ -291,7 +276,7 @@ int CollisionQuery_Trace(CollisionTraceHit *result, Vec3 *end, const Vec3 *start
     int hit = test.hit;
     test.vtable = data_020da1d4;
     CollisionHitTag_Destroy(&test.tag);
-    func_02031e68(&test);
+    CollisionVisitor_Destruct((CollisionVisitor *) &test);
     return hit;
 }
 CLEAN_AS(func_020311bc, CollisionQuery_Trace)
@@ -323,13 +308,13 @@ void CollisionQuery_Move(CollisionContacts *contacts, Vec3 *position, const Vec3
     Vec3 size = {radius, radius, radius};
     Vec3 high = from;
     Vec3 low = from;
-    func_02031e28(&high, &at);
-    func_02031e08(&low, &at);
+    CollisionBox_KeepMax(&high, &at);
+    CollisionBox_KeepMin(&low, &at);
     VEC_Add(&high, &size, &high);
     VEC_Subtract(&low, &size, &low);
 
     CollisionPushOut push;
-    func_02031e74(&push);
+    CollisionVisitor_Construct((CollisionVisitor *) &push);
     push.vtable = data_020da1e8;
     push.contacts = contacts;
     push.position = &at;
@@ -343,7 +328,7 @@ void CollisionQuery_Move(CollisionContacts *contacts, Vec3 *position, const Vec3
     CollisionQuery_Gather(&low, &high, (CollisionVisitor *) &push, flags, 0,
                           (contacts->previous_flags & COLLISION_BELOW_LIMIT) ? 1 : 0);
 
-    if ((flags & COLLISION_QUERY_ALL) != 0 && func_02031bb8(&at) != 0) {
+    if ((flags & COLLISION_QUERY_ALL) != 0 && CollisionQuery_IsRaisedOrPost(&at) != 0) {
         at = *previous;
     }
     if ((flags & COLLISION_QUERY_GROUND) != 0) {
@@ -369,10 +354,10 @@ void CollisionQuery_Move(CollisionContacts *contacts, Vec3 *position, const Vec3
         *position = at;
     }
     if (owner != NULL) {
-        func_02032610(&at, radius, owner);
+        CollisionArea_TellNear(&at, radius, owner);
     }
     push.vtable = data_020da1e8;
-    func_02031e68(&push);
+    CollisionVisitor_Destruct((CollisionVisitor *) &push);
 }
 CLEAN_AS(func_02031288, CollisionQuery_Move)
 
@@ -587,7 +572,7 @@ CLEAN_AS(func_020317c4, CollisionQuery_CanStep)
  * the map's post source, or the default one). */
 int CollisionQuery_Byte08IfNoPost(int x, int z)
 {
-    CollisionPostSource *source = func_02031c50();
+    CollisionPostSource *source = CollisionPostSource_Current();
     if (source != NULL) {
         fx32 radius;
         fx32 height;

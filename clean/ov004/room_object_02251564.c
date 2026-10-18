@@ -11,6 +11,10 @@
 #include "room_object_life.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "main/player_pockets.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
+#include "main/room_sync.h"
 
 static_assert(offsetof(RoomObject02251564, state) == 0x844, "state");
 static_assert(sizeof(RoomObject02251564) == 0x848, "the size RoomObject02251564_Create allocates");
@@ -32,19 +36,9 @@ extern const u8 data_ov004_02251610[];
 
 extern NetSession *data_020ccf94; /* the session */
 
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-/* The current player's record (0 for none) and its pockets. */
-extern int func_020984e8(void);
-extern int func_02099734(int player);
-/* The bells in the pockets' wallet (at 0xa68), with more added when the flag is set; and
- * storing them (held to 0-99999). */
-extern int func_02098cf8(void *pockets, int with_more);
-extern void func_02098aa0(void *pockets, int bells, int mode);
-
-static void *RoomObject02251564_pockets(int player)
+static PlayerPockets *RoomObject02251564_pockets(u8 *player)
 {
-    return (void *) (uintptr_t) func_02099734(player);
+    return PlayerRecord_Pockets(player);
 }
 
 /* func_ov004_02213008 (update of USED): the same as idle's. */
@@ -61,11 +55,11 @@ int RoomObject02251564_EnterUsed(RoomObject02251564 *object)
 {
     RoomObject_PlaySound1(&object->base);
     if (object->base.unk_77C == data_020ccf94->local_player) {
-        int player = func_020984e8();
-        if (player != 0 && func_02098cf8(RoomObject02251564_pockets(player), 0) > 0) {
-            void *pockets = RoomObject02251564_pockets(player);
-            int bells = func_02098cf8(RoomObject02251564_pockets(player), 0);
-            func_02098aa0(pockets, bells - 1, 0);
+        u8 *player = PlayerRecords_Current();
+        if (player != NULL && PlayerPockets_Bells(RoomObject02251564_pockets(player), 0) > 0) {
+            PlayerPockets *pockets = RoomObject02251564_pockets(player);
+            int bells = PlayerPockets_Bells(RoomObject02251564_pockets(player), 0);
+            PlayerPockets_SetBells(pockets, bells - 1, 0);
         }
     }
     return 1;
@@ -77,7 +71,7 @@ CLEAN_AS(func_ov004_02213010, RoomObject02251564_EnterUsed)
 void RoomObject02251564_UpdateIdle(RoomObject02251564 *object)
 {
     if (Switch_IsPending(&object->base.light_switch)) {
-        func_0205265c((unsigned int) (uintptr_t) object, ROOM_OBJECT_02251564_USED, (u8) data_020ccf94->local_player, 1);
+        RoomSync_RequestState(&object->base, ROOM_OBJECT_02251564_USED, (u8) data_020ccf94->local_player, 1);
         return;
     }
     if (RoomObject_Unk76CIs2(&object->base)) {

@@ -1,6 +1,5 @@
 /* A cockroach of the player's house (scene object 0xc0; the C++ class with vtable
- * data_ov004_0225622c on the actor, 0x268 bytes; house_roaches.h lets them out and knows the
- * same object as HouseRoach). Its model is shared under the name "GOKI" and loaded from
+ * data_ov004_0225622c on the actor, 0x268 bytes; house_roaches.h lets them out). Its model is shared under the name "GOKI" and loaded from
  * /insect/51/bug52.nsbmd with the visibility animation /insect/51/bug52.nsbva.
  *
  * As a process: slot 0 loads it in a room of the house (HouseRoach_Create), slot 3 releases it
@@ -28,7 +27,14 @@
 #include "main/sound_emitter.h"
 #include "types.h"
 
-/* HouseRoachActor.state */
+/* HouseRoach.sound_state */
+enum {
+    HOUSE_ROACH_QUIET = 0,
+    HOUSE_ROACH_ASKING = 1,   /* it would make its sound */
+    HOUSE_ROACH_SOUNDING = 2, /* it was chosen to make it (house_roaches.h) */
+};
+
+/* HouseRoach.state */
 enum {
     HOUSE_ROACH_STAND = 0,
     HOUSE_ROACH_RUN = 1,
@@ -36,7 +42,7 @@ enum {
     HOUSE_ROACH_DECIDE = 3, /* just made: stands or runs, at random */
 };
 
-/* HouseRoachActor.life */
+/* HouseRoach.life */
 enum {
     HOUSE_ROACH_OUT = 1,
     HOUSE_ROACH_LEAVING = 2, /* vanished, fading out */
@@ -50,13 +56,15 @@ enum {
     HOUSE_ROACH_SOUND_VANISH = 2,
 };
 
-/* The feelers ahead of it (HouseRoachActor.feelers). */
+/* The feelers ahead of it (HouseRoach.feelers). */
 #define HOUSE_ROACH_FEELERS 2
 /* The bytes of its model: an animated model without the blended model's ramp. */
 #define HOUSE_ROACH_MODEL_SIZE 0xb8
 
-typedef struct HouseRoachActor {
-    Actor actor;                            /* 0x000: the process's param is its alpha */
+typedef struct HouseRoach {
+    /* 0x000: the process's param is its alpha; it becomes 0xffff once the cockroach is made
+     * away with (house_roaches.h) */
+    Actor actor;
     fx32 walk_speed;                        /* 0x0d4 */
     fx32 run_speed;                         /* 0x0d8: while it jumps */
     CollisionContacts contacts;             /* 0x0dc */
@@ -76,34 +84,34 @@ typedef struct HouseRoachActor {
     u8 pad_261;                             /* 0x261 */
     u8 turn;                                /* 0x262: the way it turned last (1, 2; times 10 once free) */
     u8 sound_asked;                         /* 0x263: it asked for its rustle this frame */
-    int sound_state;                        /* 0x264: HOUSE_ROACH_QUIET... (house_roaches.h) */
-} HouseRoachActor;
+    int sound_state;                        /* 0x264: HOUSE_ROACH_QUIET... */
+} HouseRoach;
 
-void HouseRoach_Remove(HouseRoachActor *roach);
-void HouseRoach_Execute(HouseRoachActor *roach);
-int HouseRoach_Create(HouseRoachActor *roach);
-void HouseRoach_DrawPhase(HouseRoachActor *roach);
-int HouseRoach_Run(HouseRoachActor *roach);
-void HouseRoach_SetBody(HouseRoachActor *roach);
-void HouseRoach_Stand(HouseRoachActor *roach);
-Actor *HouseRoach_NearestOther(HouseRoachActor *roach);
-void HouseRoach_SetFeelers(HouseRoachActor *roach, int distance, int spread);
-unsigned char HouseRoach_FeelersBlocked(HouseRoachActor *roach);
-void HouseRoach_PlaySound(HouseRoachActor *roach, int sound);
-int HouseRoach_Release(HouseRoachActor *roach);
-int HouseRoach_Draw(HouseRoachActor *roach);
-int HouseRoach_CheckStepped(HouseRoachActor *roach);
-int HouseRoach_CheckRaised(HouseRoachActor *roach);
-int HouseRoach_Update(HouseRoachActor *roach);
-void HouseRoach_StepAppearing(HouseRoachActor *roach);
-void HouseRoach_Move(HouseRoachActor *roach);
-void HouseRoach_Act(HouseRoachActor *roach);
-int HouseRoach_Load(HouseRoachActor *roach);
-void HouseRoach_SetSoundState(HouseRoachActor *roach, int state);
-int HouseRoach_SoundState(HouseRoachActor *roach);
-void HouseRoach_FindVillager(HouseRoachActor *roach);
-HouseRoachActor *HouseRoach_Delete(HouseRoachActor *roach);
-HouseRoachActor *HouseRoach_Destruct(HouseRoachActor *roach);
-HouseRoachActor *HouseRoach_Construct(HouseRoachActor *roach);
+void HouseRoach_Remove(HouseRoach *roach);
+void HouseRoach_Execute(HouseRoach *roach);
+int HouseRoach_Create(HouseRoach *roach);
+void HouseRoach_DrawPhase(HouseRoach *roach);
+int HouseRoach_Run(HouseRoach *roach);
+void HouseRoach_SetBody(HouseRoach *roach);
+void HouseRoach_Stand(HouseRoach *roach);
+Actor *HouseRoach_NearestOther(HouseRoach *roach);
+void HouseRoach_SetFeelers(HouseRoach *roach, int distance, int spread);
+unsigned char HouseRoach_FeelersBlocked(HouseRoach *roach);
+void HouseRoach_PlaySound(HouseRoach *roach, int sound);
+int HouseRoach_Release(HouseRoach *roach);
+int HouseRoach_Draw(HouseRoach *roach);
+int HouseRoach_CheckStepped(HouseRoach *roach);
+int HouseRoach_CheckRaised(HouseRoach *roach);
+int HouseRoach_Update(HouseRoach *roach);
+void HouseRoach_StepAppearing(HouseRoach *roach);
+void HouseRoach_Move(HouseRoach *roach);
+void HouseRoach_Act(HouseRoach *roach);
+int HouseRoach_Load(HouseRoach *roach);
+void HouseRoach_SetSoundState(HouseRoach *roach, int state);
+int HouseRoach_SoundState(HouseRoach *roach);
+void HouseRoach_FindVillager(HouseRoach *roach);
+HouseRoach *HouseRoach_Delete(HouseRoach *roach);
+HouseRoach *HouseRoach_Destruct(HouseRoach *roach);
+HouseRoach *HouseRoach_Construct(HouseRoach *roach);
 
 #endif

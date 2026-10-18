@@ -8,6 +8,9 @@
 #include "map_item.h"
 #include "scene_query.h"
 #include "sky.h"
+#include "effect_system.h"
+#include "main_random.h"
+#include "town_family.h"
 
 static_assert(sizeof(TileEffectsSource) == 0x18, "TileEffectsSource");
 static_assert(offsetof(TileEffectsSource, position) == 0x08, "TileEffectsSource.position");
@@ -29,17 +32,6 @@ extern const u16 *const data_020db770[];
 extern const u16 *const data_020db7a8[];
 /* The colour of the first effect for each category and stage. */
 extern const u16 *const data_020db78c[];
-
-/* An effect by number started at `position`; `setup` points at the word holding the function
- * that sets each of its emitters up. */
-extern int func_02090c2c(int id, const Vec3 *position, const s16 *angle, void *setup);
-/* The category of a code: 0-3 its line in the families, 4 for 0x1a, 0x88 and 0xa4, 5 for 0x1d,
- * 6 for 0x1e, 7 for any other. */
-extern int func_02049ec4(const u16 *code);
-/* The code's place in its line, from 1. */
-extern int func_02049d78(const u16 *code);
-/* A random number below `range`. */
-extern int func_020644cc(int range);
 
 #define TILE_EFFECTS_BRUSH_RANGE 80
 #define TILE_EFFECTS_BRUSH_FIRST_ONLY 70 /* of 80: mode 1 */
@@ -89,8 +81,8 @@ void TileEffects_Brush(const TileEffectsTile *tile)
     if (code == NULL) {
         return;
     }
-    int mode = func_020644cc(TILE_EFFECTS_BRUSH_RANGE) < TILE_EFFECTS_BRUSH_FIRST_ONLY ? TILE_EFFECTS_MODE_FIRST
-                                                                                       : TILE_EFFECTS_MODE_BOTH;
+    int mode = MainRandom_Below(TILE_EFFECTS_BRUSH_RANGE) < TILE_EFFECTS_BRUSH_FIRST_ONLY ? TILE_EFFECTS_MODE_FIRST
+                                                                                          : TILE_EFFECTS_MODE_BOTH;
     TileEffectsTile at = *tile;
     TileEffects_StartFor(code, &at, mode);
 }
@@ -128,7 +120,7 @@ void TileEffects_StartE2(const TileEffectsTile *tile)
 {
     Vec3 centre;
     AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    func_02090c2c(0x94, &centre, NULL, &data_020e25d4);
+    EffectSystem_StartSet(0x94, &centre, NULL, &data_020e25d4);
 }
 CLEAN_AS(func_020449ac, TileEffects_StartE2)
 
@@ -150,7 +142,7 @@ void TileEffects_Start1f(const u16 *code, const TileEffectsTile *tile)
     }
     Vec3 centre;
     AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    func_02090c2c(id, &centre, NULL, &data_020e25d4);
+    EffectSystem_StartSet(id, &centre, NULL, &data_020e25d4);
 }
 CLEAN_AS(func_020449d4, TileEffects_Start1f)
 
@@ -172,7 +164,7 @@ CLEAN_AS(func_02044a14, TileEffects_StartTurned)
  * source and starts none. */
 void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mode)
 {
-    int category = (u8) func_02049ec4(code);
+    int category = (u8) TownFamily_Line(code);
     int first;
     int second;
     switch (category) {
@@ -224,16 +216,16 @@ void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mo
         /* Families B and C, the codes after them (0x88, 0xa4, 0xa5) and 0x89. */
         families = 1;
     } else {
-        stage = (u8) func_02049d78(code);
+        stage = (u8) TownFamily_Stage(code);
     }
     Vec3 place = centre;
     TileEffects_SetSource(&data_021c77a0, mode, (u8) category, (u8) stage, (u8) families, &place, (s16) angle);
     if (first < 0) {
         return;
     }
-    func_02090c2c(first, &centre, NULL, &data_020db76c);
+    EffectSystem_StartSet(first, &centre, NULL, &data_020db76c);
     if (mode != TILE_EFFECTS_MODE_FIRST) {
-        func_02090c2c(second, &centre, NULL, &data_020db768);
+        EffectSystem_StartSet(second, &centre, NULL, &data_020db768);
     }
 }
 CLEAN_AS(func_02044a30, TileEffects_Start)

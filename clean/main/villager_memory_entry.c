@@ -6,6 +6,11 @@
 #include "clean.h"
 #include "date_time.h"
 #include "text_string.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "small_texts.h"
+#include "text_base.h"
+#include "town_name.h"
 
 /* Where the parts villager_memories.h leaves unnamed are. */
 #define VILLAGER_MEMORY_DRAWN 0x70
@@ -27,39 +32,6 @@ extern const u8 data_021f3b68[];      /* type 12's values, packed (player_messag
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern int func_020644cc(int bound); /* a random number below `bound` */
-/* Texts: set a wide text from `length` 16-bit characters; convert a wide text to 8 bits into a
- * label (newlines and end code as asked); convert a label to 16 bits into a wide text; copy
- * `count` characters of a wide text out. */
-extern void func_020a8874(void *wide, const u16 *text, int length);
-extern int func_020a8a70(void *label, void *wide, int escape_newlines, int end_code);
-extern int func_020a87e0(void *wide, void *label);
-extern void func_02094f34(void *wide, u16 *dst, int count);
-/* The six-character text's and another 10-character wide text's (vtable data_020e194c)
- * constructors and destructors. */
-extern void *func_02094f7c(VillagerMemoryNicknameText *text);
-extern void *func_02094f64(VillagerMemoryNicknameText *text);
-extern void *func_020820a0(VillagerMemoryWide *text);
-extern void *func_02082088(VillagerMemoryWide *text);
-/* A player (DesignCreator): constructed, destroyed, emptied; whether it is set; whether two are
- * the same player number and name; copied; its name (0x10). */
-extern DesignCreator *func_0209529c(DesignCreator *player);
-extern int func_0209526c(DesignCreator *player);
-extern void func_02095238(DesignCreator *player);
-extern int func_020951bc(const DesignCreator *player);
-extern int func_0209518c(const DesignCreator *a, const DesignCreator *b);
-extern void func_0209525c(DesignCreator *dst, const DesignCreator *src);
-extern u16 *func_020950a8(const DesignCreator *player);
-/* A town head (npc_id.h): copied, destroyed, constructed. */
-extern void func_020642d0(NpcIdHead *dst, const NpcIdHead *src);
-extern void func_020642f8(NpcIdHead *head);
-extern void func_020642fc(NpcIdHead *head);
-/* Dates: 1 when not a valid date and time; -1, 0 or 1 as `a` is before, at or after `b` in
- * `fields`; the days from `from` to `to`; the clock's date and time. */
-extern int func_0209dffc(const DateTime *when);
-extern int func_0209e3ac(const DateTime *a, const DateTime *b, int fields);
-extern int func_0209e380(const DateTime *from, const DateTime *to);
-extern void func_0209e474(DateTime *now);
 
 static u8 *memory_at(VillagerMemory *memory, int offset)
 {
@@ -159,7 +131,7 @@ int VillagerMemoryEntry_DrawUnused(VillagerMemory *memory)
             left++;
         }
     }
-    int skip = func_020644cc(left);
+    int skip = MainRandom_Below(left);
     int pick = 0;
     for (int i = 0; i < VILLAGER_MEMORY_DRAW_COUNT; i++) {
         if (((*drawn >> i) & 1) == 0) {
@@ -242,7 +214,7 @@ CLEAN_AS(func_02081ac8, VillagerMemoryEntry_SetText3E)
 void VillagerMemoryEntry_Text3EToWide(VillagerMemory *memory, void *wide)
 {
     TextString_ClearWide((TextObject *) wide);
-    func_020a8874(wide, memory->text_3e, VILLAGER_MEMORY_TEXT_LENGTH);
+    TextBase_SetWide(wide, memory->text_3e, VILLAGER_MEMORY_TEXT_LENGTH);
 }
 CLEAN_AS(func_02081b00, VillagerMemoryEntry_Text3EToWide)
 
@@ -252,7 +224,7 @@ void VillagerMemoryEntry_Text3EToLabel(VillagerMemory *memory, void *label)
     VillagerMemoryWide wide;
     VillagerMemoryWide_Construct(&wide);
     VillagerMemoryEntry_Text3EToWide(memory, &wide);
-    func_020a8a70(label, &wide, 0, 0);
+    TextBase_WideToBytes(label, (WideTextBase *) &wide, 0, 0);
     VillagerMemoryWide_Destruct(&wide);
 }
 CLEAN_AS(func_02081b24, VillagerMemoryEntry_Text3EToLabel)
@@ -281,7 +253,7 @@ CLEAN_AS(func_02081b68, VillagerMemoryEntry_SetText2A)
 void VillagerMemoryEntry_Text2AToWide(VillagerMemory *memory, void *wide)
 {
     TextString_ClearWide((TextObject *) wide);
-    func_020a8874(wide, memory->text_2a, VILLAGER_MEMORY_TEXT_LENGTH);
+    TextBase_SetWide(wide, memory->text_2a, VILLAGER_MEMORY_TEXT_LENGTH);
 }
 CLEAN_AS(func_02081ba0, VillagerMemoryEntry_Text2AToWide)
 
@@ -292,11 +264,11 @@ CLEAN_AS(func_02081ba0, VillagerMemoryEntry_Text2AToWide)
 void *VillagerMemoryEntry_Text2AToLabel(VillagerMemory *memory, void *label)
 {
     VillagerMemoryWide wide;
-    func_020820a0(&wide);
+    Wide10Text_Construct((Wide10Text *) &wide);
     VillagerMemoryEntry_Text2AToWide(memory, &wide);
-    func_020a8874(&wide, memory->text_2a, VILLAGER_MEMORY_TEXT_LENGTH);
-    func_020a8a70(label, &wide, 0, 0);
-    return func_02082088(&wide);
+    TextBase_SetWide(&wide, memory->text_2a, VILLAGER_MEMORY_TEXT_LENGTH);
+    TextBase_WideToBytes(label, (WideTextBase *) &wide, 0, 0);
+    return Wide10Text_Destruct((Wide10Text *) &wide);
 }
 CLEAN_AS(func_02081bc4, VillagerMemoryEntry_Text2AToLabel)
 
@@ -326,10 +298,10 @@ CLEAN_AS(func_02081c14, VillagerMemoryEntry_SetNicknameChars)
 void *VillagerMemoryEntry_SetNickname(VillagerMemory *memory, void *label)
 {
     VillagerMemoryNicknameText text;
-    func_02094f7c(&text);
-    func_020a87e0(&text, label);
-    func_02094f34(&text, memory->nickname, VILLAGER_MEMORY_NICKNAME_LENGTH);
-    return func_02094f64(&text);
+    PlayerIdWideText_Construct((PlayerIdWideText *) &text);
+    TextBase_BytesToWide((WideTextBase *) &text, label);
+    PlayerIdWideText_CopyOut((PlayerIdWideText *) &text, memory->nickname, VILLAGER_MEMORY_NICKNAME_LENGTH);
+    return PlayerIdWideText_Destruct((PlayerIdWideText *) &text);
 }
 CLEAN_AS(func_02081c40, VillagerMemoryEntry_SetNickname)
 
@@ -337,7 +309,7 @@ CLEAN_AS(func_02081c40, VillagerMemoryEntry_SetNickname)
 void VillagerMemoryEntry_NicknameToWide(VillagerMemory *memory, void *wide)
 {
     TextString_ClearWide((TextObject *) wide);
-    func_020a8874(wide, memory->nickname, VILLAGER_MEMORY_NICKNAME_LENGTH);
+    TextBase_SetWide(wide, memory->nickname, VILLAGER_MEMORY_NICKNAME_LENGTH);
 }
 CLEAN_AS(func_02081c70, VillagerMemoryEntry_NicknameToWide)
 
@@ -345,10 +317,10 @@ CLEAN_AS(func_02081c70, VillagerMemoryEntry_NicknameToWide)
 void VillagerMemoryEntry_NicknameToLabel(VillagerMemory *memory, void *label)
 {
     VillagerMemoryNicknameText text;
-    func_02094f7c(&text);
+    PlayerIdWideText_Construct((PlayerIdWideText *) &text);
     VillagerMemoryEntry_NicknameToWide(memory, &text);
-    func_020a8a70(label, &text, 0, 0);
-    func_02094f64(&text);
+    TextBase_WideToBytes(label, (WideTextBase *) &text, 0, 0);
+    PlayerIdWideText_Destruct((PlayerIdWideText *) &text);
 }
 CLEAN_AS(func_02081c94, VillagerMemoryEntry_NicknameToLabel)
 
@@ -408,7 +380,7 @@ int VillagerMemoryEntry_IsPlayer(const VillagerMemory *memory, const DesignCreat
     if (memcmp(memory->player.town_name, player->town_name, sizeof(player->town_name)) != 0) {
         return 0;
     }
-    return func_0209518c(&memory->player, player) != 0;
+    return PlayerId_SamePlayer(&memory->player, player) != 0;
 }
 CLEAN_AS(func_02081d28, VillagerMemoryEntry_IsPlayer)
 
@@ -448,10 +420,10 @@ int VillagerMemoryEntry_CountDays(VillagerMemory *memory, const DateTime *now)
     int days = 0;
     int new_day = 1;
 
-    if (func_0209dffc(last) == 0 && func_0209e3ac(now, last,
-                                                  DATE_TIME_YEAR | DATE_TIME_MONTH | DATE_TIME_DAY | DATE_TIME_HOUR |
-                                                      DATE_TIME_MINUTE | DATE_TIME_SECOND) == 1) {
-        int apart = func_0209e380(last, now);
+    if (DateTime_IsInvalid(last) == 0 && DateTime_Compare(now, last,
+                                                          DATE_TIME_YEAR | DATE_TIME_MONTH | DATE_TIME_DAY | DATE_TIME_HOUR |
+                                                              DATE_TIME_MINUTE | DATE_TIME_SECOND) == 1) {
+        int apart = DateTime_DaysBetween(last, now);
         if (apart == 0) {
             days = days_in_row(memory);
             new_day = 0;
@@ -482,20 +454,20 @@ void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *pla
 {
     DateTime clock = {0};
 
-    if (player != NULL && func_020951bc(player)) {
-        func_0209525c(&memory->player, player);
+    if (player != NULL && PlayerId_IsSet((DesignCreator *) player)) {
+        PlayerId_Copy(&memory->player, player);
     }
     if (town == NULL) {
         town = &data_021dc7aa;
     }
     if (now == NULL) {
-        func_0209e474(&clock);
+        DateTime_Now(&clock);
         now = &clock;
     }
     if (VillagerMemoryEntry_CountDays(memory, now)) {
         VillagerMemoryEntry_RaiseFondness(memory);
     }
-    func_020642d0((NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory), town);
+    TownName_Copy((TownName *) ((NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory)), (const TownName *) town);
     MI_CpuCopy8(now, (void *) (uintptr_t) VillagerMemoryEntry_When(memory), sizeof(DateTime));
     VillagerMemoryEntry_SetValues(memory, data_021f3b68);
 }
@@ -505,12 +477,13 @@ CLEAN_AS(func_02081e14, VillagerMemoryEntry_Update)
  * meeting, and the villager calls the player by its name. Gives whether it was taken. */
 int VillagerMemoryEntry_Take(VillagerMemory *memory, const DesignCreator *player, const NpcIdHead *town, const DateTime *now)
 {
-    if (!func_020951bc(player)) {
+    if (!PlayerId_IsSet((DesignCreator *) player)) {
         return 0;
     }
     VillagerMemoryEntry_Clear(memory);
     VillagerMemoryEntry_Update(memory, player, town, now);
-    MI_CpuCopy8(func_020950a8(player), memory->nickname, sizeof(memory->nickname));
+    MI_CpuCopy8((const void *) (uintptr_t) PlayerId_Name((int) (uintptr_t) player), memory->nickname,
+                sizeof(memory->nickname));
     return 1;
 }
 CLEAN_AS(func_02081e94, VillagerMemoryEntry_Take)
@@ -518,7 +491,7 @@ CLEAN_AS(func_02081e94, VillagerMemoryEntry_Take)
 /* func_02081edc: whether the memory is in use (its player is set). */
 int VillagerMemoryEntry_InUse(VillagerMemory *memory)
 {
-    return func_020951bc(VillagerMemoryEntry_Player(memory));
+    return PlayerId_IsSet(VillagerMemoryEntry_Player(memory));
 }
 CLEAN_AS(func_02081edc, VillagerMemoryEntry_InUse)
 
@@ -528,7 +501,7 @@ CLEAN_AS(func_02081edc, VillagerMemoryEntry_InUse)
 void VillagerMemoryEntry_Clear(VillagerMemory *memory)
 {
     MI_CpuFill8(memory, 0, sizeof(*memory));
-    func_02095238(&memory->player);
+    PlayerId_Clear(&memory->player);
     memset(&memory->when, 0, sizeof(memory->when));
     memory->item = NO_ITEM;
 }
@@ -537,8 +510,8 @@ CLEAN_AS(func_02081ef0, VillagerMemoryEntry_Clear)
 /* func_02081f18: the destructor, the town then the player. */
 VillagerMemory *VillagerMemoryEntry_Destruct(VillagerMemory *memory)
 {
-    func_020642f8(&memory->town);
-    func_0209526c(&memory->player);
+    TownName_Destruct(&memory->town);
+    PlayerId_Destruct(&memory->player);
     return memory;
 }
 CLEAN_AS(func_02081f18, VillagerMemoryEntry_Destruct)
@@ -546,9 +519,9 @@ CLEAN_AS(func_02081f18, VillagerMemoryEntry_Destruct)
 /* func_02081f30: the constructor, then emptied. */
 VillagerMemory *VillagerMemoryEntry_Construct(VillagerMemory *memory)
 {
-    func_0209529c(&memory->player);
+    PlayerId_Construct(&memory->player);
     memset(&memory->when, 0, sizeof(memory->when));
-    func_020642fc(&memory->town);
+    TownName_Construct(&memory->town);
     memory->item = NO_ITEM;
     VillagerMemoryEntry_Clear(memory);
     return memory;

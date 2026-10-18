@@ -3,6 +3,9 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "model_cache.h"
+#include "rom_file.h"
+#include "vram_copy_task.h"
 
 static_assert(offsetof(ModelLoaderTask, state) == 0x0d, "ModelLoaderTask state");
 static_assert(sizeof(ModelLoaderTask) == 0x1c, "ModelLoaderTask size");
@@ -16,20 +19,9 @@ extern const u8 data_020dd10c[];
 
 extern Heap *data_021fbe94; /* the current heap, which files are read into */
 
-/* The task: constructed; queued to take `texture` to VRAM (`flag` 1); ended. */
-extern ModelLoaderTask *func_020ba01c(ModelLoaderTask *task);
-extern int func_020b9eec(ModelLoaderTask *task, void *texture, int flag);
-extern void func_020b9ec4(ModelLoaderTask *task);
-
-/* A file read whole into `heap` (from its end when `align` is negative). */
-extern u8 *func_02064b2c(const char *path, Heap *heap, int align, u32 *size);
 /* The model set of a model file, and the texture resource of a file. */
 extern u8 *func_02107828(u8 *file);
 extern void *func_021077e8(u8 *file);
-/* A copy of the texture resource, or of the model, on `heap` (NULL for the texture when there
- * is no room). */
-extern void *func_020561cc(void *texture, Heap *heap);
-extern u8 *func_02056268(u8 *model, Heap *heap);
 
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);
@@ -77,7 +69,7 @@ int ModelLoader_StepTexture(ModelLoader *loader, void *texture, VramRegion *regi
     }
     if (step == MODEL_LOADER_START) {
         VramRegion_PlaceTexture(region, texture);
-        func_020b9eec(&loader->task, texture, 1);
+        VramCopyTask_QueueTexture((VramCopyTask *) &loader->task, texture, 1);
         loader->step = MODEL_LOADER_SENDING;
         return loader->step;
     }
@@ -88,7 +80,7 @@ int ModelLoader_StepTexture(ModelLoader *loader, void *texture, VramRegion *regi
         loader->step = MODEL_LOADER_SENT;
     }
     if (loader->step == MODEL_LOADER_SENT) {
-        loader->texture = func_020561cc(texture, heap);
+        loader->texture = ModelCache_CopyTexture(texture, heap);
         loader->step = MODEL_LOADER_DONE;
     }
     return loader->step;
@@ -111,11 +103,11 @@ u8 ModelLoader_StepModel(ModelLoader *loader, const char *path, VramRegion *regi
         file_heap = data_021fbe94;
     }
     if (step == MODEL_LOADER_START) {
-        loader->file = func_02064b2c(path, file_heap, -4, NULL);
+        loader->file = RomFile_Load(path, file_heap, -4, NULL);
         loader->file_heap = file_heap;
         void *texture = func_021077e8(loader->file);
         VramRegion_PlaceTexture(region, texture);
-        func_020b9eec(&loader->task, texture, 1);
+        VramCopyTask_QueueTexture((VramCopyTask *) &loader->task, texture, 1);
         loader->step = MODEL_LOADER_SENDING;
         return loader->step;
     }
@@ -127,7 +119,7 @@ u8 ModelLoader_StepModel(ModelLoader *loader, const char *path, VramRegion *regi
     }
     if (loader->step == MODEL_LOADER_SENT) {
         u8 *model = first_model(func_02107828(loader->file));
-        loader->model = func_02056268(model, heap);
+        loader->model = ModelCache_CopyModel(model, heap);
         void *texture = func_021077e8(loader->file);
         NNS_G3dBindMdlTex(loader->model, texture);
         NNS_G3dBindMdlPltt(loader->model, texture);
@@ -152,7 +144,7 @@ void ModelLoader_Release(ModelLoader *loader)
     loader->model = NULL;
     loader->texture = NULL;
     loader->step = MODEL_LOADER_START;
-    func_020b9ec4(&loader->task);
+    VramCopyTask_End((VramCopyTask *) &loader->task);
 }
 CLEAN_AS(func_02055aac, ModelLoader_Release)
 
@@ -176,7 +168,7 @@ CLEAN_AS(func_02055af4, ModelLoader_Destruct)
 ModelLoader *ModelLoader_Construct(ModelLoader *loader)
 {
     loader->vtable = data_020dd10c;
-    func_020ba01c(&loader->task);
+    VramCopyTask_Construct((VramCopyTask *) &loader->task);
     loader->file = NULL;
     loader->file_heap = NULL;
     loader->model = NULL;

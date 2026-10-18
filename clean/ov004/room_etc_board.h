@@ -1,7 +1,7 @@
 /* The "obj_etc_board" scene object of overlay 4 (class vtable 0x0225328c, receiver part
  * 0x022532f4, 0x15c bytes): the rooms' counterpart of overlay 3's board (ov003/etc_board.h).
  *
- * func_ov004_02231c7c makes one for each entry of a list of the room (RoomEtcBoard_Spawn):
+ * RoomShell_SpawnBoards makes one for each entry of a list of the room (RoomEtcBoard_Spawn):
  * where it stands, how far it can be talked to from and which message it shows. Up to 64 exist
  * at once: a table at data_ov004_02257804 holds them by their index (the byte at 0x154), with
  * their count at data_ov004_022577ac; main's pen picking reads it (touch pick kind 16,

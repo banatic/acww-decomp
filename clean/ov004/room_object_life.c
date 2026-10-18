@@ -10,6 +10,15 @@
 #include "room_object_light.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "furniture_mover.h"
+#include "main/animated_model.h"
+#include "main/model_object.h"
+#include "main/model_pool.h"
+#include "main/scene_object_base.h"
+#include "main/talk_receiver.h"
+#include "main/touch_pick_shapes.h"
+#include "room_objects.h"
+#include "room_sound.h"
 
 static_assert(offsetof(RoomObjectVtable, material_hook) == 0x60, "vtable slot 0x60");
 static_assert(offsetof(RoomObjectVtable, vfunc_70) == 0x70, "vtable slot 0x70");
@@ -36,7 +45,7 @@ static_assert(sizeof(RoomObject) == 0x844, "the size RoomObject_Create allocates
 extern const u8 data_ov004_0224fe6c[];
 extern const u8 data_ov004_0224ff18[];
 /* The pool the objects' slots are in (RoomObject.slot). */
-extern u8 data_ov004_02259698[];
+extern ModelPool data_ov004_02259698;
 
 /* NitroSystem's 3D state; the light colours (the hardware's LIGHT_COLOR command, the light's
  * number in bits 30-31) are at 0xa8. */
@@ -56,36 +65,6 @@ extern void func_020b7ee8(void *shadow);
 extern void func_020b7ed8(void *shadow);
 extern void func_ov004_0220e4ec(void *anim);
 extern void func_ov004_0220e4d4(void *anim);
-
-/* The scene object's slots, and its other members. */
-extern void func_0203f004(RoomObject *object, int mode);
-extern unsigned long func_0203efbc(RoomObject *object);
-extern void func_0203efb0(RoomObject *object, unsigned int reference);
-extern void *func_0203f130(RoomObject *object);
-extern void *func_0203f080(RoomObject *object);
-extern void *func_02066a30(void *receiver);
-extern void *func_02066994(void *receiver);
-extern void func_0209d34c(u16 *slot);
-extern void func_0209d340(u16 *slot);
-extern void *func_0209d238(u8 *pool, u16 *slot);
-extern void *func_020b82ec(void *shadow);
-extern void *func_020b82d0(void *shadow);
-extern void *func_02054e54(void *model);
-extern void *func_02054e18(void *model);
-extern void func_0205510c(void *model, const int *scale);
-extern int func_02055f2c(void *model, u8 *model_resource, u8 *texture);
-extern void func_ov004_0223b250(void *mover);
-extern void func_ov004_0223b248(void *mover);
-extern void func_ov004_0223cfbc(RoomSound *sound);
-extern void func_ov004_0223cfb8(RoomSound *sound);
-extern void func_ov004_0223cf80(RoomSound *sound);
-
-/* The room's objects and its heap. */
-extern void *func_ov004_0223ce84(void);
-extern int func_ov004_0223ce18(void *objects, RoomObject *object);
-extern void **func_ov004_0223cf10(void);
-extern void func_ov004_0223ce8c(void **heap, void *block);
-extern void *func_ov004_0223ce98(void **heap, u32 size);
 
 /* func_ov004_022109e4 (vtable slot 0x28): draws the model at its scale (when it has one) unless
  * the scene object (Actor_CanDraw) or the class (vtable slot 0x88) says not to, then what it
@@ -109,7 +88,7 @@ int RoomObject_Draw(RoomObject *object)
                 NNS_G3dGlb.light_colors[light] = light << 30 | LIGHT_WHITE;
             }
         }
-        func_0205510c(object->unk_538, &object->scale_x);
+        AnimatedModel_Draw(&object->model, &object->scale);
         if (RoomObject_Unk76CIs2(object)) {
             for (u32 light = 0; light < 4; light++) {
                 NNS_G3dGlb.light_colors[light] = saved[light];
@@ -139,7 +118,7 @@ CLEAN_AS(func_ov004_02210ab8, RoomObject_Vfunc80)
 
 /* _ZN10RoomObject19func_ov004_02210abcEv (vtable slot 0x18, each frame): its sound follows its
  * centre, then the state's update, the box, shadow and matrices. While neither appearing nor
- * vanishing the class's slot 0x80 runs (after func_ov004_0221081c's lookup when unk_780 is 0);
+ * vanishing the class's slot 0x80 runs (after RoomObject_Lookup020537a8's lookup when unk_780 is 0);
  * otherwise slot 0x84 runs and a switch that was asked to change is put back (Switch_Toggle
  * with the change shown). Then, except for a preview, the light, the switch and the shadows of
  * what stands on it. */
@@ -147,7 +126,7 @@ int RoomObject_Update(RoomObject *object)
 {
     if (!RoomObject_Unk76CIs2(object)) {
         Vec3 centre;
-        func_ov004_0223cf80(&object->sound);
+        RoomSound_Start(&object->sound);
         RoomObject_Centre(object, &centre);
         object->sound.position = centre;
     }
@@ -175,13 +154,13 @@ int RoomObject_Update(RoomObject *object)
 CLEAN_AS(_ZN10RoomObject19func_ov004_02210abcEv, RoomObject_Update)
 
 /* func_ov004_02210b94 (vtable slot 0x08): with 2 a light starts (RoomObject_StartLight); the
- * scene object's slot (func_0203f004) runs for every value. */
+ * scene object's slot (SceneObjectBase_AfterCreate) runs for every value. */
 void RoomObject_Vfunc08(RoomObject *object, int mode)
 {
     if (mode == STATE_CHANGE_START) {
         RoomObject_StartLight(object);
     }
-    func_0203f004(object, mode);
+    SceneObjectBase_AfterCreate(&object->scene, mode);
 }
 CLEAN_AS(func_ov004_02210b94, RoomObject_Vfunc08)
 
@@ -191,7 +170,7 @@ CLEAN_AS(func_ov004_02210b94, RoomObject_Vfunc08)
 static int bind_model(RoomObject *object)
 {
     u8 *model = FurnitureModel_Model(&object->model_files);
-    func_02055f2c(object->unk_538, model, FurnitureModel_Texture(&object->model_files));
+    ModelObject_SetModel(&object->model.object, model, FurnitureModel_Texture(&object->model_files));
     object->unk_77E = 1;
     RoomObject_BindModel(object);
     if (object->vtable->on_model_bound(object)) {
@@ -202,19 +181,19 @@ static int bind_model(RoomObject *object)
 }
 
 /* func_ov004_02210bb4 (vtable slot 0x00, run until it gives 1): its mode from its placement
- * word, a place among the room's objects (func_ov004_0223ce18) and a slot in the pool, then
- * RoomObject_SetUp; the scene object's reference (func_0203efbc) is set to
+ * word, a place among the room's objects (RoomObjects_Add) and a slot in the pool, then
+ * RoomObject_SetUp; the scene object's reference (SceneObjectBase_Id) is set to
  * RoomObject_Reference when it has none. In mode 0 the model files are loaded at once; in the
  * others a step a frame (FurnitureModel_LoadStep), and -1 while they are not in. Then
  * bind_model. */
 int RoomObject_Init(RoomObject *object)
 {
     object->unk_76C = (s32) ((object->placement >> 26) & 3);
-    func_ov004_0223ce18(func_ov004_0223ce84(), object);
-    void *slot = func_0209d238(data_ov004_02259698, &object->slot);
+    RoomObjects_Add(RoomObjects_Table(), object);
+    void *slot = ModelPool_Take(&data_ov004_02259698, &object->slot);
     RoomObject_SetUp(object);
-    if (!func_0203efbc(object)) {
-        func_0203efb0(object, RoomObject_Reference(object, NULL, 0));
+    if (!SceneObjectBase_Id(&object->scene)) {
+        SceneObjectBase_SetId(&object->scene, RoomObject_Reference(object, NULL, 0));
     }
     if (object->unk_76C == MODE_FIRST) {
         FurnitureModel_Load(&object->model_files, slot, object->unk_284, object->vtable->keeps_texture_copy(object));
@@ -234,22 +213,22 @@ static void destroy(RoomObject *object)
     object->vtable = (const RoomObjectVtable *) data_ov004_0224fe6c;
     object->receiver_vtable = data_ov004_0224ff18;
     __cxa_vec_cleanup(object->anims, 4, ANIM_SIZE, func_ov004_0220e4d4);
-    func_ov004_0223cfb8(&object->sound);
+    RoomSound_Destruct(&object->sound);
     ByteSet_Destruct(&object->node_set);
     Glow_Destruct(&object->glow);
     NodePair_Destruct(&object->nodes);
     Switch_Destruct(&object->light_switch);
     FurnitureModel_Destruct(&object->model_files);
     PushBox_Destruct(&object->push_box);
-    func_02054e18(object->unk_538);
-    func_020b82d0(object->shadow);
-    func_ov004_0223b248(object->unk_250);
+    AnimatedModel_DestructBlendedComplete(&object->model);
+    TouchPickFaces_DestructBox(object->shadow);
+    FurnitureMoveFlag_Destruct(&object->move_flag);
     __cxa_vec_cleanup(object->item_shadows, 4, ITEM_SHADOW_SIZE, func_020b7ed8);
     CarriedItems_Destruct(&object->carried);
     Mount_Destruct(&object->mount);
-    func_0209d340(&object->slot);
-    func_02066994(&object->receiver_vtable);
-    func_0203f080(object);
+    ModelPoolSlot_Destruct(&object->slot);
+    TalkReceiver_Destruct(&object->receiver);
+    SceneObjectBase_DestructBase(&object->scene);
 }
 
 /* func_ov004_02210cf0 (the destructor the derived classes' destructors end with) */
@@ -281,24 +260,24 @@ CLEAN_AS(func_ov004_02210ee4, RoomObject_Destroy)
  * the first to the last. */
 static void construct(RoomObject *object)
 {
-    func_0203f130(object);
-    func_02066a30(&object->receiver_vtable);
+    SceneObjectBase_Construct(&object->scene);
+    TalkReceiver_ConstructBase(&object->receiver);
     object->vtable = (const RoomObjectVtable *) data_ov004_0224fe6c;
     object->receiver_vtable = data_ov004_0224ff18;
-    func_0209d34c(&object->slot);
+    ModelPoolSlot_Construct(&object->slot);
     Mount_Construct(&object->mount);
     CarriedItems_Construct(&object->carried);
     __cxa_vec_ctor(object->item_shadows, 4, ITEM_SHADOW_SIZE, func_020b7ee8, func_020b7ed8);
-    func_ov004_0223b250(object->unk_250);
-    func_020b82ec(object->shadow);
-    func_02054e54(object->unk_538);
+    FurnitureMoveFlag_Construct(&object->move_flag);
+    TouchPickFaces_ConstructBox(object->shadow);
+    AnimatedModel_ConstructBlended(&object->model);
     PushBox_Construct(&object->push_box);
     FurnitureModel_Construct(&object->model_files);
     Switch_Construct(&object->light_switch);
     NodePair_Construct(&object->nodes);
     Glow_Construct(&object->glow);
     ByteSet_Construct(&object->node_set);
-    func_ov004_0223cfbc(&object->sound);
+    RoomSound_Construct(&object->sound);
     __cxa_vec_ctor(object->anims, 4, ANIM_SIZE, func_ov004_0220e4ec, func_ov004_0220e4d4);
 }
 
@@ -329,16 +308,16 @@ CLEAN_AS(func_ov004_022111ec, RoomObject_Vfunc7C)
 /* func_ov004_02211518 (the class's operator delete): back to the room's heap. */
 void RoomObject_Free(void *block)
 {
-    func_ov004_0223ce8c(func_ov004_0223cf10(), block);
+    RoomObjects_HeapFree(RoomObjects_Heap(), block);
 }
 CLEAN_AS(func_ov004_02211518, RoomObject_Free)
 
 /* func_ov004_0221152c (the classes' operator new): `size` bytes from the room's heap, zeroed;
- * NULL when there are none. func_ov004_0223ce98 is handed the size but takes blocks of its own
+ * NULL when there are none. RoomObjects_HeapAlloc is handed the size but takes blocks of its own
  * size. */
 void *RoomObject_Alloc(u32 size)
 {
-    void *block = func_ov004_0223ce98(func_ov004_0223cf10(), size);
+    void *block = RoomObjects_HeapAlloc(RoomObjects_Heap(), size);
     if (block == NULL) {
         return NULL;
     }

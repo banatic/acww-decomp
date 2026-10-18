@@ -3,6 +3,7 @@
 
 #include "autoload_2/heap.h" /* Heap_FreeCurrent */
 #include "clean.h"
+#include "rom_file.h"
 
 static_assert(sizeof(TextFontHeader) == 8, "TextFontHeader size");
 static_assert(sizeof(TextFontGlyph) == 4, "TextFontGlyph size");
@@ -20,9 +21,6 @@ extern const char data_020dcfa8[];                             /* "/font/%s_%s_%
 extern const char data_020dcfbc[];                             /* "/font/%s_%s.bin" */
 extern const char data_020dcfcc[];                             /* "/font/%s_img.bin" */
 
-/* A file of the ROM read whole into a new block of the current heap, its path formatted from
- * `format` as by sprintf. */
-extern void *func_0206493c(const char *format, ...);
 /* sprintf (the runtime library's, not named in the ROM's symbols) */
 extern int func_0212a13c(void *buffer, const void *format, int arg);
 extern int FS_OpenFile(void *file, const void *path);
@@ -99,9 +97,9 @@ void TextFont_Open(TextFont *font, const char *name, const char *variant, TextFo
 
     for (int i = 0; i < TEXT_FONT_TABLE_FILES; i++) {
         if (variant != NULL) {
-            tables[i] = func_0206493c(data_020dcfa8, name, data_020cb918[i], variant);
+            tables[i] = RomFile_LoadFormatted(data_020dcfa8, name, data_020cb918[i], variant);
         } else {
-            tables[i] = func_0206493c(data_020dcfbc, name, data_020cb918[i]);
+            tables[i] = RomFile_LoadFormatted(data_020dcfbc, name, data_020cb918[i]);
         }
     }
     font->header = tables[0];

@@ -4,28 +4,16 @@
 #include "acre_tile.h"
 #include "clean.h"
 #include "map_item.h"
+#include "main_random.h"
+#include "town_lines.h"
+#include "town_tile_put.h"
 
 static_assert(sizeof(TownGrowthQuarter) == 0x288, "TownGrowthQuarter");
 
 extern TownDay data_021c779c;
 
-extern u32 func_020644cc(int range); /* a random number below `range` */
-/* Item `code` put on tile (x, z) of the map, marked or not. */
-extern void func_0204a25c(AcreMap *map, int x, int z, u16 code, int marked);
-/* The code at `code` (tile (x, z)) moved on a stage. */
-extern void func_0204a150(AcreMap *map, u16 *code, int x, int z);
-/* A stage-0 code of the growth lines put back (its quarter's count goes down). */
-extern void func_0204a198(AcreMap *map, u16 code, int x, int z);
-/* Each of the eight tiles around `tile` (data_020ca5d4) inside `size` handed to `visit` until
- * it answers non-zero; its last answer. */
-extern int func_02049944(AcreMap *map, TownGrowthTiles *size, TownGrowthTiles *tile,
-                         int (*visit)(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile, TownGrowthTiles *size));
 /* What func_02049944 is handed by TownGrowth_SpreadFamilyA. */
 extern int func_02049bc4(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile, TownGrowthTiles *size);
-/* What the day does to the map before the growth lines' codes move on. */
-extern void func_020496f8(TownDay *town, AcreMap *map, TownGrowthTiles *size);
-extern void func_02049638(TownDay *town, AcreMap *map, TownGrowthTiles *size);
-extern void func_020493d4(TownDay *town, AcreMap *map, TownGrowthTiles *size);
 
 #define TOWN_GROWTH_FAMILY_A_LAST 0x19
 #define TOWN_GROWTH_SPREAD_PERCENT 20
@@ -51,7 +39,7 @@ void TownGrowth_SpreadFamilyA(TownDay *town, AcreMap *map, int wide, int high)
     (void) town;
     for (int acre_z = 0; acre_z < high; acre_z++) {
         for (int acre_x = 0; acre_x < wide; acre_x++) {
-            if (func_020644cc(100) >= TOWN_GROWTH_SPREAD_PERCENT) {
+            if (MainRandom_Below(100) >= TOWN_GROWTH_SPREAD_PERCENT) {
                 continue;
             }
             TownGrowthTiles tiles[TOWN_GROWTH_ACRE_TILES];
@@ -67,10 +55,10 @@ void TownGrowth_SpreadFamilyA(TownDay *town, AcreMap *map, int wide, int high)
                 }
             }
             if (count > 0) {
-                int pick = (int) func_020644cc(count);
+                int pick = (int) MainRandom_Below(count);
                 TownGrowthTiles size = TownGrowth_MapTiles(map);
                 TownGrowthTiles tile = tiles[pick];
-                func_02049944(map, &size, &tile, func_02049bc4);
+                TownLines_VisitAround(map, &size, &tile, func_02049bc4);
             }
         }
     }
@@ -113,8 +101,8 @@ void TownGrowth_ChangeLastStagesTo66(TownDay *town, AcreMap *map, int wide, int 
     }
 #endif
     for (; missing != 0; missing--) {
-        int acre_x = (int) func_020644cc(wide);
-        int acre_z = (int) func_020644cc(high);
+        int acre_x = (int) MainRandom_Below(wide);
+        int acre_z = (int) MainRandom_Below(high);
         TownGrowth_ChangeLastStage(town, map, acre_x + 1, acre_z + 1, 0);
     }
 }
@@ -133,7 +121,7 @@ void TownGrowth_ChangeLastStagesTo67(TownDay *town, AcreMap *map, int wide, int 
             }
         }
         if (!found) {
-            int acre_z = (int) func_020644cc(high) + 1;
+            int acre_z = (int) MainRandom_Below(high) + 1;
             TownGrowth_ChangeLastStage(town, map, acre_x + 1, acre_z, 1);
         }
     }
@@ -168,8 +156,8 @@ int TownGrowth_ChangeLastStage(TownDay *town, AcreMap *map, int acre_x, int acre
     if (count <= 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(count);
-    func_0204a25c(map, tiles[pick].x, tiles[pick].z, (u16) (stage + after[pick]), 0);
+    int pick = (int) MainRandom_Below(count);
+    TownTilePut_At(map, tiles[pick].x, tiles[pick].z, (u16) (stage + after[pick]), 0);
     return 1;
 }
 CLEAN_AS(func_02048bc0, TownGrowth_ChangeLastStage)
@@ -181,11 +169,11 @@ void TownGrowth_Day(TownDay *town, AcreMap *map, int wide, int high)
 {
     TownGrowthTiles size = TownGrowth_MapTiles(map);
     TownGrowthTiles copy = size;
-    func_020496f8(town, map, &copy);
+    TownLines_CheckGround(town, map, &copy);
     copy = size;
-    func_02049638(town, map, &copy);
+    TownLines_ThinNeighbours(town, map, &copy);
     copy = size;
-    func_020493d4(town, map, &copy);
+    TownLines_ThinCrowded(town, map, &copy);
     TownGrowth_Thin(town, map, wide, high);
     copy = size;
     TownGrowth_Advance(town, map, &copy);
@@ -210,7 +198,7 @@ void TownGrowth_Advance(TownDay *town, AcreMap *map, const TownGrowthTiles *size
         for (int x = 0; x < size->x; x++) {
             u16 *code = TownAcreCount_CodeAt(map, x, z);
             if (code != NULL && TownGrowth_IsLineCode(*code)) {
-                func_0204a150(map, code, x, z);
+                TownLines_Advance(map, code, x, z);
             }
         }
     }
@@ -288,7 +276,7 @@ void TownGrowth_ThinQuarter(TownGrowthQuarter *quarter)
     AcreMap *map = (AcreMap *) (uintptr_t) AcreMap_Town();
     int listed = quarter->count;
     for (; remove > 0; remove--) {
-        int left = (int) func_020644cc(quarter->count);
+        int left = (int) MainRandom_Below(quarter->count);
         for (int i = 0; i < listed; i++) {
             TownGrowthTiles *tile = &quarter->tiles[i];
             if (tile->x < 0) {
@@ -298,7 +286,7 @@ void TownGrowth_ThinQuarter(TownGrowthQuarter *quarter)
             if (left >= 0) {
                 continue;
             }
-            func_0204a198(map, quarter->codes[i], tile->x, tile->z);
+            TownLines_PutBack(map, quarter->codes[i], tile->x, tile->z);
             tile->x = -1;
             tile->z = -1;
             quarter->count--;

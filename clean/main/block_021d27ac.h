@@ -39,7 +39,7 @@ void Block021d27ac_ClearFlag(u32 *flags, u32 flag);
 void Block021d27ac_SetFlag(u32 *flags, u32 flag);
 int Block021d27ac_TestFlag(u32 *flags, u32 flag);
 void Block021d27ac_Reset(Block021d27ac *self);
-Block021d27ac *Block021d27ac_Construct(Block021d27ac *self);
 Block021d27ac *Block021d27ac_Destruct(Block021d27ac *self);
+Block021d27ac *Block021d27ac_Construct(Block021d27ac *self);
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "sound.h"
+#include "effect_system.h"
 
 static_assert(sizeof(ActEffectCue) == 4, "ActEffectCue layout");
 static_assert(offsetof(ActEffects, cues) == 0x10, "ActEffects layout");
@@ -21,11 +22,6 @@ static_assert(sizeof(SceneMotionActPart) == 0xc, "SceneMotionActPart layout");
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-/* The effects: one started (its handle), moved, stopped. */
-extern int func_020912ac(int kind, int arg, Vec3 *point, s16 *angle);
-extern void func_02091278(int effect, Vec3 *point, s16 *angle, int a);
-extern void func_0209129c(int effect);
 
 /* The act's sound number. */
 static int act_effects_sound(const ActEffects *self)
@@ -49,7 +45,7 @@ void ActEffects_Update(ActEffects *self, Vec3 *point, short yaw, int animation, 
     ActEffects_KeepSound(self);
     for (int i = 0; i < ACT_EFFECTS_SLOTS; i++) {
         if (self->slots[i] != ACT_EFFECTS_NO_EFFECT) {
-            func_02091278(self->slots[i], point, &angle, 0);
+            EffectSystem_MoveHandle(self->slots[i], point, &angle, 0);
         }
     }
     for (int i = 0; i < ACT_EFFECTS_CUES; i++) {
@@ -66,7 +62,7 @@ void ActEffects_StopAll(ActEffects *self)
         if (self->slots[i] == ACT_EFFECTS_NO_EFFECT) {
             continue;
         }
-        func_0209129c(self->slots[i]);
+        EffectSystem_EndHandle(self->slots[i]);
         self->slots[i] = ACT_EFFECTS_NO_EFFECT;
     }
     ActEffects_StopSound(self);
@@ -93,7 +89,7 @@ void ActEffects_StepCue(ActEffects *self, Vec3 *point, int yaw, int animation, u
     if (cue->frame == frame) {
         int slot = ActEffects_FreeSlot(self);
         if (slot != -1) {
-            self->slots[slot] = func_020912ac((u16) cue->effect, self->effect_arg, point, &angle);
+            self->slots[slot] = EffectSystem_StartKindWithExtra((u16) cue->effect, self->effect_arg, point, &angle);
             if (cue->repeat == 0) {
                 ActEffects_ClearCues(self, cue, 1);
             }

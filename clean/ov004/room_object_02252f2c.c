@@ -10,6 +10,9 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_methods.h"
+#include "main/main_random.h"
+#include "main/room_sync.h"
+#include "room_sound.h"
 
 static_assert(offsetof(RoomObject02252f2c, state) == 0x844, "state");
 static_assert(offsetof(RoomObject02252f2c, glows) == 0x848, "glows");
@@ -39,19 +42,10 @@ extern const MemberPointer data_ov004_02250628, data_ov004_02250580;
 /* Whether each state shows the object on (for vtable slot 0x74): ON does. */
 extern const u8 data_ov004_0224766c[ROOM_OBJECT_02252F2C_STATE_COUNT];
 
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-/* A random number below `range`. */
-extern int func_020644cc(int range);
-/* The sound at a point: setting its variable to `value` while it plays, and playing sound `id`
- * at `position` (while it plays). */
-extern void func_ov004_0223cf18(RoomSound *sound, s16 value);
-extern void func_ov004_0223cf40(RoomSound *sound, int id, Vec3 *position);
-
 /* Whether the joint animation's last step reached `frame`. */
 static int RoomObject02252f2c_joints_passed(RoomObject02252f2c *object, int frame)
 {
-    return FrameCtrl_Passed((const FrameCtrl *) (const void *) object->base.joint_anim, frame);
+    return FrameCtrl_Passed(&object->base.model.frames, frame);
 }
 
 /* Sound `id` at the object's point, unless RoomObject.unk_76C is 2; whether it was played. */
@@ -61,7 +55,7 @@ static int RoomObject02252f2c_play_sound(RoomObject02252f2c *object, int id)
     if (RoomObject_Unk76CIs2(base)) {
         return 0;
     }
-    func_ov004_0223cf40(&base->sound, id, &base->sound.position);
+    RoomSound_PlayAt(&base->sound, id, &base->sound.position);
     return 1;
 }
 
@@ -87,7 +81,7 @@ void RoomObject02252f2c_UpdateOff(RoomObject02252f2c *object)
 {
     if (Switch_IsPending(&object->base.light_switch)) {
         int other = (object->state + 1) & 1;
-        func_0205265c((unsigned int) (uintptr_t) object, other, SLOT_70_VALUE, 1);
+        RoomSync_RequestState(&object->base, other, SLOT_70_VALUE, 1);
     }
 }
 CLEAN_AS(func_ov004_0221a17c, RoomObject02252f2c_UpdateOff)
@@ -155,7 +149,7 @@ CLEAN_AS(func_ov004_0221a2d8, RoomObject02252f2c_Vfunc0C)
 
 /* _ZN18Obj_ov004_02252f2c19func_ov004_0221a2dcEv (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the animations (with unk_780 at 1), each glow's frame and the glows
- * on (at once), func_020537a8 of its number and the state's update. Then, unless unk_76C is 2,
+ * on (at once), FurnitureInfo_IndoorBit6 of its number and the state's update. Then, unless unk_76C is 2,
  * furniture 0x123 plays sound 0x429 at its point, setting the sound's variable to 1 at frame
  * 0x43 of the joint animation; 0x1fb plays 0x42b, 1 at frame 4 and 2 at frame 0x16; 0x1fc plays
  * 0x42c, 1 at frames 5 and 0x12. Other furniture plays the sound at 0. */
@@ -173,23 +167,23 @@ int RoomObject02252f2c_Update(RoomObject02252f2c *object)
         case FURNITURE_0123:
             if (RoomObject02252f2c_play_sound(object, SOUND_0123)) {
                 if (RoomObject02252f2c_joints_passed(object, 0x43)) {
-                    func_ov004_0223cf18(&base->sound, 1);
+                    RoomSound_SetVariable(&base->sound, 1);
                 }
             }
             break;
         case FURNITURE_01FB:
             if (RoomObject02252f2c_play_sound(object, SOUND_01FB)) {
                 if (RoomObject02252f2c_joints_passed(object, 4)) {
-                    func_ov004_0223cf18(&base->sound, 1);
+                    RoomSound_SetVariable(&base->sound, 1);
                 } else if (RoomObject02252f2c_joints_passed(object, 0x16)) {
-                    func_ov004_0223cf18(&base->sound, 2);
+                    RoomSound_SetVariable(&base->sound, 2);
                 }
             }
             break;
         case FURNITURE_01FC:
             if (RoomObject02252f2c_play_sound(object, SOUND_01FC)) {
                 if (RoomObject02252f2c_joints_passed(object, 5) || RoomObject02252f2c_joints_passed(object, 0x12)) {
-                    func_ov004_0223cf18(&base->sound, 1);
+                    RoomSound_SetVariable(&base->sound, 1);
                 }
             }
             break;
@@ -214,7 +208,7 @@ int RoomObject02252f2c_Start(RoomObject02252f2c *object)
         if (base->unk_76C == 1) {
             start = 0;
         } else {
-            start = func_020644cc(frames);
+            start = MainRandom_Below(frames);
         }
         RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, (u16) start);
         GlowSet_Bind(&object->glows, base->model_resource, 1);

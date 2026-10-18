@@ -8,6 +8,8 @@
 #include "room_object_anims.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "main/player_actors.h"
+#include "room_pushes.h"
 
 static_assert(sizeof(RoomObject02250c04) == 0x844, "the size RoomObject02250c04_Create allocates");
 
@@ -22,14 +24,6 @@ static_assert(sizeof(RoomObject02250c04) == 0x844, "the size RoomObject02250c04_
 /* The class's vtables, and its receiver part's. */
 extern const u8 data_ov004_02250c04[];
 extern const u8 data_ov004_02250cb0[];
-
-/* The two entries at data_ov004_02259784 (0x40 bytes each), the one of `object` among them
- * (NULL for none), and an entry's state (its word at 0x3c). */
-extern void *func_ov004_0223cb10(void);
-extern void *func_ov004_0223ca9c(void *entries, RoomObject02250c04 *object);
-extern int func_ov004_0223cb20(void *entry);
-/* Plays a sound (through func_02096718(4) and func_0200f328). */
-extern int func_02095380(int sound);
 
 /* Plays the animations of variant 0 once from the start (`forward`), else in mode 3 from the
  * last frame of `joints`; the sound at 2 first, whether it played added to `played`.
@@ -47,7 +41,7 @@ static void RoomObject02250c04_play(RoomObject02250c04 *object, int forward, con
 }
 
 /* func_ov004_02215504 (vtable slot 0x94, when a move starts: `ahead` 1 in state 3, 0 in 4):
- * with an entry among func_ov004_0223cb10's, the animations of variant 0 are played by its
+ * with an entry among RoomPushes_Records's, the animations of variant 0 are played by its
  * state: for kind 0x16 state 2 plays forwards ahead and backwards otherwise, state 0 the other
  * way round; for the other kinds states 3 and 1 do the same. Unless the sound at 2 played,
  * the sound of the move (RoomObject_MoveSound) is played when there is one.
@@ -55,27 +49,27 @@ static void RoomObject02250c04_play(RoomObject02250c04 *object, int forward, con
  * frame count is read). */
 void RoomObject02250c04_OnMoveStart(RoomObject02250c04 *object, int ahead)
 {
-    void *entry = func_ov004_0223ca9c(func_ov004_0223cb10(), object);
+    void *entry = RoomPushes_FindObject(RoomPushes_Records(), &object->base);
     int played = 0;
     if (entry != NULL) {
         const AnimFile *joints =
             (const AnimFile *) (uintptr_t) (u32) AnimSet_Anim00(FurnitureModel_Anims(&object->base.model_files), 0);
-        int forward_state = 3;
-        int backward_state = 1;
+        u32 forward_state = 3;
+        u32 backward_state = 1;
         if (object->base.unk_780 == KIND_16) {
             forward_state = 2;
             backward_state = 0;
         }
-        if (func_ov004_0223cb20(entry) == forward_state) {
+        if (RoomPushes_Side(entry) == forward_state) {
             RoomObject02250c04_play(object, ahead != 0, joints, &played);
-        } else if (func_ov004_0223cb20(entry) == backward_state) {
+        } else if (RoomPushes_Side(entry) == backward_state) {
             RoomObject02250c04_play(object, ahead == 0, joints, &played);
         }
     }
     if (played == 0) {
         int sound = RoomObject_MoveSound(&object->base);
         if (sound != NO_SOUND) {
-            func_02095380(sound);
+            PlayerActors_OwnPlaySound(sound);
         }
     }
 }

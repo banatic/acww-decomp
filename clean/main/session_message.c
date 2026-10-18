@@ -9,6 +9,41 @@
 #include "main/session.h"
 #include "main/session_link.h"
 #include "main/session_villager.h"
+#include "acre_map.h"
+#include "acre_tile.h"
+#include "activity.h"
+#include "fish_disp.h"
+#include "item_code.h"
+#include "item_info.h"
+#include "item_object.h"
+#include "link_global.h"
+#include "link_parts.h"
+#include "link_scene.h"
+#include "linked_map_items.h"
+#include "object_claim.h"
+#include "ov003/town_insect.h"
+#include "place_claim.h"
+#include "player_actor_ops.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "room_interior.h"
+#include "room_object_state.h"
+#include "room_sync.h"
+#include "scene_claim.h"
+#include "scene_query.h"
+#include "session_players.h"
+#include "shops.h"
+#include "tile_changes.h"
+#include "tile_request_grant.h"
+#include "town_objects.h"
+#include "town_villager.h"
+#include "villager_items.h"
+#include "villager_memories.h"
+#include "villager_memory_entry.h"
+#include "villager_object.h"
+#include "villager_roster.h"
+#include "villager_state.h"
+#include "villager_status.h"
 
 /* The scene (func_020b65c4) the activity handlers act in. */
 #define SCENE_2E 46
@@ -30,91 +65,6 @@ extern SessionMessageHandler *const data_020cd0dc[]; /* the handlers, by number 
 extern u8 data_021e5a2c[];                           /* the villagers (0x7ec bytes each) */
 extern const char data_021dc7aa[];
 
-extern u8 func_020b65c4(void);  /* the current scene */
-extern u8 *func_020a132c(void); /* the current activity object (data_021f3c3c), or NULL */
-
-/* The activity object's setters: the byte at the offset in their name plus the slot. */
-extern void func_020a1240(u8 *activity, int slot, int value); /* 0xeb + slot */
-extern void func_020a1248(u8 *activity, int slot, int value); /* 0xe7 + slot */
-extern void func_020a1208(u8 *activity, int slot, int value); /* 0xf4 + slot */
-extern void func_020a1264(u8 *activity, u8 value);            /* 0xe6 */
-extern void func_020a1210(u8 value);                          /* 0xf3 of the current activity */
-
-/* The link state (data_021f4320) and its parts. */
-extern void func_020a6f74(int slot, int status); /* sets a slot's link status */
-extern void func_020a6f20(int slot, int value);  /* its word 0xa8 + 4 * slot */
-extern void func_020a6f10(int value);            /* its word 0xa4 */
-extern void func_020a6f34(int value);            /* through func_020a5bf8 */
-extern void func_020a6e8c(int slot, int value);  /* its byte 0x68 + slot */
-extern void func_020a6e7c(int slot);             /* its word 0x74 */
-extern void func_020a6e6c(int value);            /* its byte 0x7c */
-extern void func_020a6db0(void);                 /* takes in a received category 15 bundle */
-extern void func_020a7380(int slot, u8 value);   /* its word 0x2c + 4 * slot */
-extern void func_020a7408(int slot, u8 value);   /* the first free pair from 0x0c takes both */
-/* A link state entry as two bytes: made (func_020a7880, func_020a7820), ended (func_020a7870,
- * func_020a7810), and read out (func_020a7830 the three bytes and the fields set,
- * func_020a77dc also the slot it is for). */
-extern u8 *func_020a7880(u8 *entry);
-extern u8 *func_020a7870(u8 *entry);
-extern u8 *func_020a7820(u8 *entry);
-extern u8 *func_020a7810(u8 *entry);
-extern void func_020a7830(const u8 *entry, u8 *byte0, u8 *byte1, u8 *byte2, u32 *fields);
-extern void func_020a77dc(const u8 *entry, int *slot, u8 *byte0, u8 *byte1, u8 *byte2, int *fields);
-extern void func_020a7394(int slot, int byte0, int byte1, int byte2, int fields); /* the 3-byte entries */
-extern void func_020a7360(int slot, u8 byte0, u8 byte1, u8 byte2, int fields);    /* the entries from 0x3c */
-/* A status byte, split by func_020a7684 into bits 0-2, 5-7 and 3-4. */
-extern void func_020a76cc(u8 *byte);
-extern void func_020a76c8(u8 *byte);
-extern void func_020a7684(const u8 *byte, int *low, int *high, int *middle);
-/* A one-byte value: made (func_020a7948), ended (func_020a7944), copied (func_020a7938). */
-extern void func_020a7948(u8 *value);
-extern void func_020a7944(u8 *value);
-extern void func_020a7938(const u8 *src, u8 *dst);
-
-/* Town items: an item record is the item (2 bytes), a source byte (the scene in bits 0-5 and a
- * flag in bits 6-7, PackedBytes_SplitScene) and the x and y (signed bytes). */
-extern int func_0205fa84(u8 *record); /* puts an item record on the town map */
-/* Puts an item on the town map here, or sends it on as message 19. */
-extern void func_0205f9d4(int x, int y, int scene, int item, int flag);
-
-/* The two halves of message 53 and its answer 52 (func_0209d57c, func_0209d4c0). */
-extern void func_0209d498(const u8 *answer);
-extern void func_0209d484(const u8 *request, int slot);
-
-/* The villagers. A payload byte names a villager in its high nibble and an entry of it in its
- * low one (SessionVillager_UnpackEntry); the other unpackers read the same way. */
-extern u8 *func_0207cec0(u8 *villagers, int index);       /* a villager, NULL when there is none */
-extern u8 *func_020807c0(u8 *villager, int index);        /* villager + 0x80 * index, or NULL */
-extern void func_02080cd8(u8 *villager, const u16 *item); /* its item 0x7d2 */
-extern u16 *func_0207dfd4(u8 *villager, u32 index);       /* its item 0x7b0 + 2 * index, NULL from 4 */
-extern u8 *func_0207f1c8(u8 *villager);                   /* villager + 0x734 */
-extern u8 *func_0209b5e8(u8 *part);                       /* part + 0x24: the villager's object */
-extern int func_0207f270(u8 *villager);
-extern u8 *func_020794d0(int value); /* value + 4 */
-/* The villager's object: its type (byte 0xa, func_0209bc40) and whether it is in use
- * (func_0209bd44); func_0209b91c returns its argument. */
-extern u8 *func_0209b91c(u8 *object);
-extern int func_0209bd44(u8 *object);
-extern int func_0209bc40(u8 *object);
-extern u16 *func_0209b8c4(u8 *object); /* its item 0x2c */
-extern void func_0209bb90(u8 *object, int value);
-extern void func_0209ba7c(u8 *object);
-extern void func_0209b920(u8 *object);
-extern void func_0209b8a4(u8 *object, u8 value);
-extern void func_0209b890(u8 *object, int bit);
-extern void func_0209bd5c(u8 *object); /* empties one */
-extern void func_0209b9cc(u8 *object, int kind, u16 *item, u8 *name, int flag);
-/* An entry of a villager. */
-extern int func_02081edc(u8 *entry);
-extern void func_02081ac0(u8 *entry, const u16 *item); /* its item 0x6a */
-extern void func_02081d18(u8 *entry, int value);       /* its byte 0x6c */
-extern void func_02081a80(u8 *entry, u8 value);        /* its byte 0x6d */
-extern void func_02081e14(u8 *entry, u8 *name, const char *text, u8 *date);
-extern int func_02081e94(u8 *entry, u8 *name, const char *text, u8 *date);
-
-extern u8 *func_020984fc(int slot);   /* the player record at a session slot */
-extern u8 *func_02099870(u8 *record); /* where its name is */
-
 /* func_02076168: hands a message to handler `handler` with its payload as the read cursor.
  * REQUIRES: a handler that the table holds. */
 void SessionMessage_Dispatch(int handler, const u8 *payload, int size, int kind, u8 scene, u32 slot)
@@ -132,7 +82,7 @@ void SessionMessage_SetSenderStatus(u32 size, u32 kind, u32 scene, u32 slot)
     (void) scene;
     u8 status;
     Session_ReadMessage(data_020ccf94, &status, 1);
-    func_020a6f74((int) slot, status);
+    LinkGlobal_SetStatus((int) slot, status);
 }
 CLEAN_AS(func_02076540, SessionMessage_SetSenderStatus)
 
@@ -146,7 +96,7 @@ void SessionMessage_SetOwnStatus(int size, int kind, u8 scene, u32 slot)
     NetSession *session = data_020ccf94;
     u8 status;
     Session_ReadMessage(session, &status, 1);
-    func_020a6f74(session->local_slot, status);
+    LinkGlobal_SetStatus(session->local_slot, status);
 }
 CLEAN_AS(func_02076518, SessionMessage_SetOwnStatus)
 
@@ -156,11 +106,11 @@ void SessionMessage_SetActivityPlayerEB(int size, int kind, u8 scene, u32 slot)
     (void) size;
     (void) kind;
     (void) scene;
-    if (func_020b65c4() != SCENE_2E) {
+    if (SceneQuery_Current() != SCENE_2E) {
         return;
     }
-    if (func_020a132c() != NULL) {
-        func_020a1240(func_020a132c(), (int) slot, 1);
+    if (Activity_Current() != NULL) {
+        Activity_SetSlotEB(Activity_Current(), (int) slot, 1);
     }
 }
 CLEAN_AS(func_020764f0, SessionMessage_SetActivityPlayerEB)
@@ -174,9 +124,9 @@ void SessionMessage_SetActivityFlagF3(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    if (func_020b65c4() == SCENE_2E && func_020a132c() != NULL) {
-        func_020a132c();
-        func_020a1210(1);
+    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+        Activity_Current();
+        Activity_SetCurrentFlagF3(1);
     }
 }
 CLEAN_AS(func_020764cc, SessionMessage_SetActivityFlagF3)
@@ -187,8 +137,8 @@ void SessionMessage_SetActivityPlayerE7(int size, int kind, int scene, int slot)
     (void) size;
     (void) kind;
     (void) scene;
-    if (func_020b65c4() == SCENE_2E && func_020a132c() != NULL) {
-        func_020a1248(func_020a132c(), slot, 1);
+    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+        Activity_SetSlotE7(Activity_Current(), slot, 1);
     }
 }
 CLEAN_AS(func_020764a4, SessionMessage_SetActivityPlayerE7)
@@ -212,8 +162,8 @@ void SessionMessage_SetActivityPlayerF4(int size, int kind, int scene, int slot)
     (void) size;
     (void) kind;
     (void) scene;
-    if (func_020b65c4() == SCENE_2E && func_020a132c() != NULL) {
-        func_020a1208(func_020a132c(), slot, 1);
+    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+        Activity_SetSlotAck(Activity_Current(), slot, 1);
     }
 }
 CLEAN_AS(func_02076458, SessionMessage_SetActivityPlayerF4)
@@ -225,8 +175,8 @@ void SessionMessage_SetActivityFlagE6(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    if (func_020b65c4() == SCENE_2E && func_020a132c() != NULL) {
-        func_020a1264(func_020a132c(), 1);
+    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+        Activity_SetFlagE6(Activity_Current(), 1);
     }
 }
 CLEAN_AS(func_02076434, SessionMessage_SetActivityFlagE6)
@@ -239,11 +189,11 @@ void SessionMessage_AddLinkPair(int size, int kind, int scene, int slot)
     (void) kind;
     (void) scene;
     u8 value[2];
-    func_020a7948(value);
+    LinkPart_MakeByte(value);
     Session_ReadMessage(data_020ccf94, value, 1);
-    func_020a7938(&value[0], &value[1]);
-    func_020a7408(slot, value[1]);
-    func_020a7944(value);
+    LinkPart_CopyByte(&value[0], &value[1]);
+    LinkGlobal_QueueMove(slot, value[1]);
+    LinkPart_EndByte(value);
 }
 CLEAN_AS(func_020763f4, SessionMessage_AddLinkPair)
 
@@ -260,11 +210,11 @@ void SessionMessage_SetLinkEntry(int size, int kind, u8 scene, u32 slot)
     u8 byte1;
     u8 byte2;
     int fields;
-    func_020a7820(entry);
+    LinkPart_MakeEntry(entry);
     Session_ReadMessage(data_020ccf94, entry, 2);
-    func_020a77dc(entry, &entry_slot, &byte0, &byte1, &byte2, &fields);
-    func_020a7394(entry_slot, byte0, byte1, byte2, fields);
-    func_020a7810(entry);
+    LinkPart_ReadEntry(entry, (s32 *) &entry_slot, &byte0, &byte1, &byte2, (s32 *) &fields);
+    LinkGlobal_SetPlace(entry_slot, byte0, byte1, byte2, fields);
+    LinkPart_EndEntry(entry);
 }
 CLEAN_AS(func_0207639c, SessionMessage_SetLinkEntry)
 
@@ -276,7 +226,7 @@ void SessionMessage_SetLinkWord2C(int size, int kind, int scene, int slot)
     (void) scene;
     u8 value;
     Session_ReadMessage(data_020ccf94, &value, 1);
-    func_020a7380(slot, value);
+    LinkGlobal_SetArrived(slot, value);
 }
 CLEAN_AS(func_02076374, SessionMessage_SetLinkWord2C)
 
@@ -291,11 +241,11 @@ void SessionMessage_SetLinkEntry3C(int size, int kind, int scene, int slot)
     u8 byte1;
     u8 byte2;
     u32 fields;
-    func_020a7880(entry);
+    LinkPart_MakeEntryB(entry);
     Session_ReadMessage(data_020ccf94, entry, 2);
-    func_020a7830(entry, &byte0, &byte1, &byte2, &fields);
-    func_020a7360(slot, byte0, byte1, byte2, (int) fields);
-    func_020a7870(entry);
+    LinkPart_ReadEntryChange(entry, &byte0, &byte1, &byte2, (s32 *) &fields);
+    LinkGlobal_AddPlaceChange(slot, byte0, byte1, byte2, (int) fields);
+    LinkPart_EndEntryB(entry);
 }
 CLEAN_AS(func_0207631c, SessionMessage_SetLinkEntry3C)
 
@@ -311,22 +261,22 @@ void SessionMessage_SetLinkStatusBits(int size, int kind, int scene, int slot)
     int low;
     int high;
     int middle;
-    func_020a76cc(&byte);
+    LinkPart_MakeStatusByte(&byte);
     NetSession *session = data_020ccf94;
     Session_ReadMessage(session, &byte, 1);
-    func_020a7684(&byte, &low, &high, &middle);
+    LinkPart_UnpackStatusByte(&byte, (u32 *) &low, (u32 *) &high, (u32 *) &middle);
     if (slot == 0) {
-        func_020a6f20(session->local_slot, low);
+        LinkGlobal_SetAnswer(session->local_slot, low);
     } else {
-        func_020a6f20(slot, low);
+        LinkGlobal_SetAnswer(slot, low);
     }
     if (high < 4) {
-        func_020a6f10(high);
+        LinkGlobal_SetKind(high);
     }
     if (middle < 4) {
-        func_020a6f34(middle);
+        LinkGlobal_SetChosen(middle);
     }
-    func_020a76c8(&byte);
+    LinkPart_EndStatusByte(&byte);
 }
 CLEAN_AS(func_020762b8, SessionMessage_SetLinkStatusBits)
 
@@ -336,7 +286,7 @@ void SessionMessage_SetLinkSlotFlag68(int size, int kind, u8 scene, u32 slot)
     (void) size;
     (void) kind;
     (void) scene;
-    func_020a6e8c((int) slot, 1);
+    LinkScene_GlobalSetAcked((int) slot, 1);
 }
 CLEAN_AS(func_020762ac, SessionMessage_SetLinkSlotFlag68)
 
@@ -346,7 +296,7 @@ void SessionMessage_SetLinkWord74(int size, int kind, u8 scene, u32 slot)
     (void) size;
     (void) kind;
     (void) scene;
-    func_020a6e7c((int) slot);
+    LinkScene_GlobalSetStateAsker((int) slot);
 }
 CLEAN_AS(func_020762a0, SessionMessage_SetLinkWord74)
 
@@ -359,7 +309,7 @@ void SessionMessage_ReceiveBundle15(int size, int kind, u8 scene, u32 slot)
     NetSession *session = data_020ccf94;
     Session_ReadMessage(session, Session_GetBundle15Buffer(session), size);
     Session_SetBundle15Length(session, size);
-    func_020a6db0();
+    LinkScene_TakeLeftState();
 }
 CLEAN_AS(func_0207626c, SessionMessage_ReceiveBundle15)
 
@@ -382,7 +332,7 @@ void SessionMessage_SetLinkFlag7C(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    func_020a6e6c(1);
+    LinkScene_GlobalSetReleased(1);
 }
 CLEAN_AS(func_02076230, SessionMessage_SetLinkFlag7C)
 
@@ -396,7 +346,7 @@ void SessionMessage_PlaceTownItems(u32 size, int kind, u8 scene, u32 slot)
     for (u32 done = 0; done < size; done += 5) {
         u8 record[5];
         Session_ReadMessage(session, record, 5);
-        func_0205fa84(record);
+        LinkedMapItems_Place(record);
     }
 }
 CLEAN_AS(func_020761fc, SessionMessage_PlaceTownItems)
@@ -416,7 +366,7 @@ void SessionMessage_RelayTownItems(u32 size, int kind, u8 scene, u32 slot)
         Session_ReadMessage(session, record, 5);
         u16 item = PackedBytes_ReadItem(record);
         PackedBytes_SplitScene(&record[2], &item_scene, &flag);
-        func_0205f9d4((s8) record[3], (s8) record[4], item_scene, item, flag != 0 ? 1 : 0);
+        LinkedMapItems_Set((s8) record[3], (s8) record[4], item_scene, item, flag != 0 ? 1 : 0);
     }
 }
 CLEAN_AS(func_02076198, SessionMessage_RelayTownItems)
@@ -430,7 +380,7 @@ void SessionMessage_ReceiveAnswer(int size, int kind, u8 scene, u32 slot)
     (void) slot;
     u8 answer;
     Session_ReadMessage(data_020ccf94, &answer, 1);
-    func_0209d498(&answer);
+    SceneClaim_ReceiveAnswer(&answer);
 }
 CLEAN_AS(func_02076aa0, SessionMessage_ReceiveAnswer)
 
@@ -442,7 +392,7 @@ void SessionMessage_ReceiveRequest(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     u8 request;
     Session_ReadMessage(data_020ccf94, &request, 1);
-    func_0209d484(&request, (int) slot);
+    SceneClaim_ReceiveRelease(&request, (int) slot);
 }
 CLEAN_AS(func_02076a78, SessionMessage_ReceiveRequest)
 
@@ -452,11 +402,11 @@ static u8 *session_message_villager_entry(const u8 *byte)
     int villager;
     int entry;
     SessionVillager_UnpackEntry(&villager, &entry, byte);
-    u8 *record = func_0207cec0(data_021e5a2c, villager);
+    u8 *record = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, villager);
     if (record == NULL) {
         return NULL;
     }
-    return func_020807c0(record, entry);
+    return (u8 *) VillagerMemory_At(record, entry);
 }
 
 /* func_02076a18: the entry the payload names gets the sender's name (func_02081e94).
@@ -470,8 +420,9 @@ void SessionMessage_SetVillagerEntrySender(int size, int kind, int scene, int sl
     Session_ReadMessage(data_020ccf94, bytes, size);
     u8 *entry = session_message_villager_entry(bytes);
     if (entry != NULL) {
-        u8 *name = func_02099870(func_020984fc(slot));
-        func_02081e94(entry, name, data_021dc7aa, NULL);
+        u8 *name = (u8 *) PlayerRecord_Player(PlayerRecords_OfPlayer(slot));
+        VillagerMemoryEntry_Take((VillagerMemory *) (void *) entry, (const DesignCreator *) (void *) name,
+                                 (const NpcIdHead *) (void *) data_021dc7aa, NULL);
     }
 }
 CLEAN_AS(func_02076a18, SessionMessage_SetVillagerEntrySender)
@@ -488,8 +439,9 @@ void SessionMessage_FillVillagerEntry(int size, int kind, int scene, int slot)
     Session_ReadMessage(data_020ccf94, bytes, size);
     u8 *entry = session_message_villager_entry(bytes);
     if (entry != NULL) {
-        u8 *name = func_02099870(func_020984fc(slot));
-        func_02081e14(entry, name, data_021dc7aa, NULL);
+        u8 *name = (u8 *) PlayerRecord_Player(PlayerRecords_OfPlayer(slot));
+        VillagerMemoryEntry_Update((VillagerMemory *) (void *) entry, (const DesignCreator *) (void *) name,
+                                   (const NpcIdHead *) (void *) data_021dc7aa, NULL);
     }
 }
 CLEAN_AS(func_020769b8, SessionMessage_FillVillagerEntry)
@@ -508,7 +460,7 @@ void SessionMessage_SetVillagerEntryByte6D(int size, int kind, u8 scene, u32 slo
     u8 *entry = session_message_villager_entry(&bytes[0]);
     if (entry != NULL) {
         Session_ReadMessage(session, &bytes[1], 1);
-        func_02081a80(entry, bytes[1]);
+        VillagerMemoryEntry_SetImpression((VillagerMemory *) (void *) entry, bytes[1]);
     }
 }
 CLEAN_AS(func_0207695c, SessionMessage_SetVillagerEntryByte6D)
@@ -527,7 +479,7 @@ void SessionMessage_SetVillagerEntryByte6C(int size, int kind, u8 scene, u32 slo
     u8 *entry = session_message_villager_entry(&bytes[0]);
     if (entry != NULL) {
         Session_ReadMessage(session, &bytes[1], 1);
-        func_02081d18(entry, (s8) bytes[1]);
+        VillagerMemoryEntry_SetFondness((VillagerMemory *) (void *) entry, (s8) bytes[1]);
     }
 }
 CLEAN_AS(func_02076900, SessionMessage_SetVillagerEntryByte6C)
@@ -545,9 +497,9 @@ void SessionMessage_SetVillagerItem7D2(int size, int kind, u8 scene, u32 slot)
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 3);
     SessionVillager_UnpackItem(&index, &item, bytes);
-    u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
+    u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, (int) index);
     if (villager != NULL && item >= VILLAGER_ITEM_FIRST && item <= VILLAGER_ITEM_LAST) {
-        func_02080cd8(villager, &item);
+        TownVillager_SetClothes(villager, &item);
     }
 }
 CLEAN_AS(func_020765cc, SessionMessage_SetVillagerItem7D2)
@@ -565,12 +517,12 @@ void SessionMessage_SetVillagerItems7B0(int size, int kind, u8 scene, u32 slot)
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 9);
     SessionVillager_UnpackItems(&index, items, bytes);
-    u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
+    u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;
     }
     for (u32 i = 0; i < 4; i++) {
-        u16 *slot_item = func_0207dfd4(villager, i);
+        u16 *slot_item = VillagerItems_At(villager, i);
         if (slot_item != NULL) {
             *slot_item = items[i];
         }
@@ -595,37 +547,37 @@ void SessionMessage_ChangeVillagerObject(int size, int kind, u8 scene, u32 slot)
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 2);
     SessionVillager_UnpackObjectChange(&index, &operation, &value, bytes);
-    u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
+    u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;
     }
-    u8 *object = func_0209b5e8(func_0207f1c8(villager));
+    u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager));
     switch (operation) {
         case 0:
-            if (func_0209bd44(func_0209b91c(object)) != 0) {
-                func_0209bb90(func_0209b91c(object), value);
+            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+                ItemObject_SetLow5((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object), value);
             }
             break;
         case 1:
-            func_0209ba7c(object);
+            VillagerObject_ClearItem((VillagerObject *) (void *) object);
             break;
         case 2:
-            if (func_0209bd44(func_0209b91c(object)) != 0) {
-                func_0209b920(object);
+            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+                VillagerObject_NextStep((VillagerObject *) (void *) object);
             }
             break;
         case 3:
-            if (func_0209bd44(func_0209b91c(object)) != 0) {
-                func_0209b8a4(object, value);
+            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+                VillagerObject_SetKind((VillagerObject *) (void *) object, value);
             }
             break;
         case 4:
-            if (func_0209bd44(func_0209b91c(object)) != 0) {
-                func_0209b890(object, value);
+            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+                VillagerObject_SetFlag((VillagerObject *) (void *) object, value);
             }
             /* fall through */
         case 5:
-            if (func_0209bd44(func_0209b91c(object)) != 0) {
+            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
                 object[0x2e] = value;
             }
             break;
@@ -653,21 +605,21 @@ void SessionMessage_SetVillagerObject(int size, int kind, u8 scene, u32 slot)
     int index;
     Session_ReadMessage(data_020ccf94, bytes, 4);
     SessionVillager_UnpackObject(&index, &object_kind, &item, &player_slot, &flag, bytes);
-    u8 *villager = func_0207cec0(data_021e5a2c, index);
+    u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, index);
     if (villager == NULL) {
         return;
     }
-    u8 *object = func_0209b5e8(func_0207f1c8(villager));
+    u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager));
     int flagged = flag != 0;
-    func_0209bd5c(func_020794d0(func_0207f270(villager)));
+    ItemObject_Clear((ItemObject *) (void *) VillagerState_Object(VillagerStatus_StateEntry(villager)));
     u8 *name = NULL;
     if (player_slot < 4) {
-        u8 *record = func_020984fc(player_slot);
+        u8 *record = PlayerRecords_OfPlayer(player_slot);
         if (record != NULL) {
-            name = func_02099870(record);
+            name = (u8 *) PlayerRecord_Player(record);
         }
     }
-    func_0209b9cc(object, object_kind, &item, name, flagged);
+    VillagerObject_Set((VillagerObject *) (void *) object, object_kind, &item, (const DesignCreator *) (void *) name, flagged);
 }
 CLEAN_AS(func_020766f8, SessionMessage_SetVillagerObject)
 
@@ -685,13 +637,13 @@ void SessionMessage_SetVillagerEntryItem(int size, int kind, u8 scene, u32 slot)
     u32 entry_index;
     Session_ReadMessage(data_020ccf94, bytes, 3);
     SessionVillager_UnpackEntryItem(&index, &entry_index, &item, bytes);
-    u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
+    u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;
     }
-    u8 *entry = func_020807c0(villager, (int) entry_index);
-    if (entry != NULL && func_02081edc(entry) != 0) {
-        func_02081ac0(entry, &item);
+    u8 *entry = (u8 *) VillagerMemory_At(villager, (int) entry_index);
+    if (entry != NULL && VillagerMemoryEntry_InUse((VillagerMemory *) (void *) entry) != 0) {
+        VillagerMemoryEntry_SetItem((VillagerMemory *) (void *) entry, &item);
     }
 }
 CLEAN_AS(func_0207689c, SessionMessage_SetVillagerEntryItem)
@@ -710,25 +662,25 @@ void SessionMessage_SetVillagerObjectItem(int size, int kind, u8 scene, u32 slot
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 4);
     SessionVillager_UnpackItem(&index, &item, bytes);
-    u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
+    u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;
     }
-    u8 *object = func_0209b5e8(func_0207f1c8(villager));
-    u8 *in_use = func_0209b91c(object);
-    if (func_0209bd44(in_use) == 0) {
+    u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager));
+    u8 *in_use = VillagerObject_Base((VillagerObject *) (void *) object);
+    if (ItemObject_IsInUse((ItemObject *) (void *) in_use) == 0) {
         return;
     }
-    int fits = func_0209bc40(in_use) == 0 && item >= OBJECT0_ITEM_FIRST && item <= OBJECT0_ITEM_LAST;
+    int fits = ItemObject_Type((ItemObject *) (void *) in_use) == 0 && item >= OBJECT0_ITEM_FIRST && item <= OBJECT0_ITEM_LAST;
     if (!fits) {
-        if (func_0209bc40(in_use) != 1) {
+        if (ItemObject_Type((ItemObject *) (void *) in_use) != 1) {
             return;
         }
         if (item < OBJECT1_ITEM_FIRST || item > OBJECT1_ITEM_LAST) {
             return;
         }
     }
-    *func_0209b8c4(object) = item;
+    *VillagerObject_Item((VillagerObject *) (void *) object) = item;
 }
 CLEAN_AS(func_02076638, SessionMessage_SetVillagerObjectItem)
 
@@ -739,52 +691,6 @@ extern u8 data_020e54a8;       /* while 0, handlers 40, 41, 47 and 48 act on ove
 extern u8 data_ov003_0226053c; /* set by handler 41 */
 extern Heap *data_021fbe94;    /* the current heap */
 
-extern void func_020348fc(const u16 *payload);
-extern void func_0203f4ec(u8 *payload, int slot); /* through data_020dab98, by its first byte */
-extern void func_02052b90(const u32 *payload);    /* sends message 24 on when its bit 29 is set */
-extern void func_02052b20(const u8 *payload);     /* sends message 25 on when its bit 7 is set */
-extern void func_02052a3c(int scene, const u32 *payload);
-extern void func_02052ac8(int scene, const u32 *payload);
-extern void func_02052a64(int scene, const u32 *payload);
-extern void func_02052960(const u16 *payload);
-extern void func_020528fc(const u8 *payload, int slot); /* answers with message 31 or 32 */
-extern void func_020528e4(int answer);                  /* data_021c8750: 1 when set, else 2 */
-extern void *func_020528d4(int slot);
-extern void func_020b2734(const u16 *payload);
-extern void func_020b260c(u8 *payload, int slot);
-extern void func_020b25e0(const u8 *index, u32 bit); /* clears a bit of data_021f4bac[*index] */
-extern int func_0209d3a8(const u8 *payload);
-extern void func_020ad7f4(const u32 *payload, int slot); /* answers with message 39 */
-extern int func_020ad7e4(int slot);
-/* Overlay 3's objects: a byte names one, its index in bits 0-3 and its set in bits 4-5. */
-extern int func_ov003_0222d7d0(int object); /* 0 when the object took state 0x10 */
-extern void func_ov003_0222e750(int object);
-extern void func_ov003_0222e4c0(int object);
-extern void func_ov003_0222e6c4(u8 object, int send);
-extern void func_ov003_0222e7f8(int object);
-extern void func_02050884(u8 *payload, int slot); /* through data_020dcefc, by its first byte */
-extern void func_0209646c(const u8 *payload, u16 *item, int *operation);
-extern int func_020955e0(u16 *item, int operation, int slot);
-extern u16 *func_02099728(u8 *record); /* the player record's item at 0x2406 */
-extern int func_0204bcdc(u16 *item);
-extern int func_0204bc64(u16 *item);
-extern u32 func_02062148(u16 *item);
-extern void func_0209971c(u8 *record, const u16 *item); /* sets its item at 0x2406 */
-extern int func_02095694(u32 count, int slot);
-extern void func_02096440(const u8 *byte, u8 *low, u8 *high); /* bits 0-3 and 4-6 */
-extern void func_02099808(u8 *record, int value);             /* bits 4-7 of its byte 0x243c */
-extern void func_020997e0(u8 *record, int value);             /* bits 0-2 of its byte 0x243d */
-extern int func_02095578(int value, int slot);
-extern int func_02095558(int value, int slot);
-extern u16 *func_0204e414(void); /* the town's grid of blocks (data_021c80c0), or NULL */
-extern u16 *func_0204f5e0(u16 *grid, u32 block_x, u32 block_z, int x, int z, u8 layer);
-extern int func_02045d80(const int *position, int layer);
-extern int func_02045aa4(const int *position, int slot);
-extern u8 *func_02045bac(int index);                         /* data_021c7884 + 16 * index */
-extern void func_0204510c(u8 *request, int found, int slot); /* answers with message 50 */
-extern void func_02044e28(u8 *payload, int scene);
-extern void func_0209d4c0(const u8 *request, int slot); /* answers with message 52 */
-
 /* func_0207716c: 4 bytes for func_020348fc.
  * REQUIRES: size <= 4. */
 void SessionMessage_Handle20(int size, int kind, u8 scene, u32 slot)
@@ -794,7 +700,7 @@ void SessionMessage_Handle20(int size, int kind, u8 scene, u32 slot)
     (void) slot;
     u16 payload[2];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_020348fc(payload);
+    RoomInterior_ReceiveChange((const RoomInteriorChange *) payload);
 }
 CLEAN_AS(func_0207716c, SessionMessage_Handle20)
 
@@ -834,7 +740,7 @@ void SessionMessage_Handle23(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_0203f4ec(payload, (int) slot);
+    ObjectClaim_Dispatch(payload, (int) slot);
 }
 CLEAN_AS(func_020770e0, SessionMessage_Handle23)
 
@@ -847,7 +753,7 @@ void SessionMessage_Handle24(int size, int kind, u8 scene, u32 slot)
     (void) slot;
     u32 payload;
     Session_ReadMessage(data_020ccf94, &payload, size);
-    func_02052b90(&payload);
+    RoomSync_ReceiveState(&payload);
 }
 CLEAN_AS(func_020770c0, SessionMessage_Handle24)
 
@@ -860,7 +766,7 @@ void SessionMessage_Handle25(int size, int kind, u8 scene, u32 slot)
     (void) slot;
     u8 payload[4];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_02052b20(payload);
+    RoomSync_ReceiveLit(payload);
 }
 CLEAN_AS(func_020770a0, SessionMessage_Handle25)
 
@@ -872,7 +778,7 @@ void SessionMessage_Handle26(int size, int kind, int scene, u32 slot)
     (void) slot;
     u32 payload;
     Session_ReadMessage(data_020ccf94, &payload, 4);
-    func_02052a3c(scene, &payload);
+    RoomSync_ReceivePutItem(scene, &payload);
 }
 CLEAN_AS(func_02077078, SessionMessage_Handle26)
 
@@ -884,7 +790,7 @@ void SessionMessage_Handle27(int size, int kind, int scene, u32 slot)
     (void) slot;
     u32 payload;
     Session_ReadMessage(data_020ccf94, &payload, 4);
-    func_02052ac8(scene, &payload);
+    RoomSync_ReceiveTakeFurniture(scene, &payload);
 }
 CLEAN_AS(func_02077050, SessionMessage_Handle27)
 
@@ -896,7 +802,7 @@ void SessionMessage_Handle28(int size, int kind, int scene, u32 slot)
     (void) slot;
     u32 payload;
     Session_ReadMessage(data_020ccf94, &payload, 4);
-    func_02052a64(scene, &payload);
+    RoomSync_ReceivePutFurniture(scene, &payload);
 }
 CLEAN_AS(func_02077028, SessionMessage_Handle28)
 
@@ -909,7 +815,7 @@ void SessionMessage_Handle29(u32 size, int kind, u8 scene, u32 slot)
     (void) slot;
     u16 payload[2];
     Session_ReadMessage(data_020ccf94, payload, (int) size);
-    func_02052960(payload);
+    RoomSync_ReceiveToggle(payload);
 }
 CLEAN_AS(func_02077008, SessionMessage_Handle29)
 
@@ -922,7 +828,7 @@ void SessionMessage_Handle30(int size, int kind, int scene, int slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, 3);
-    func_020528fc(payload, slot);
+    PlaceClaim_ReceiveRequest((const PlaceClaimRequest *) (void *) payload, slot);
 }
 CLEAN_AS(func_02076fe0, SessionMessage_Handle30)
 
@@ -933,7 +839,7 @@ void SessionMessage_Handle31(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    func_020528e4(1);
+    PlaceClaim_ReceiveAnswer(1);
 }
 CLEAN_AS(func_02076fd4, SessionMessage_Handle31)
 
@@ -944,7 +850,7 @@ void SessionMessage_Handle32(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    func_020528e4(0);
+    PlaceClaim_ReceiveAnswer(0);
 }
 CLEAN_AS(func_02076fc8, SessionMessage_Handle32)
 
@@ -954,7 +860,7 @@ void SessionMessage_Handle33(int size, int kind, int scene, int slot)
     (void) size;
     (void) kind;
     (void) scene;
-    func_020528d4(slot);
+    PlaceClaim_ReceiveRelease(slot);
 }
 CLEAN_AS(func_02076fbc, SessionMessage_Handle33)
 
@@ -967,7 +873,7 @@ void SessionMessage_Handle34(int size, int kind, u8 scene, u32 slot)
     (void) slot;
     u16 payload[2];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_020b2734(payload);
+    TownObjects_OnModeMessage(payload);
 }
 CLEAN_AS(func_02076f9c, SessionMessage_Handle34)
 
@@ -979,7 +885,7 @@ void SessionMessage_Handle35(u32 size, u32 kind, u32 scene, u32 slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, (int) size);
-    func_020b260c(payload, (int) slot);
+    TownObjects_OnVisitMessage(payload, (int) slot);
 }
 CLEAN_AS(func_02076f74, SessionMessage_Handle35)
 
@@ -992,7 +898,7 @@ void SessionMessage_Handle36(int size, int kind, int scene, int slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_020b25e0(payload, (u32) slot);
+    TownObjects_OnLeftMessage(payload, (u32) slot);
 }
 CLEAN_AS(func_02076f4c, SessionMessage_Handle36)
 
@@ -1005,7 +911,7 @@ void SessionMessage_Handle37(int size, int kind, u8 scene, u32 slot)
     (void) slot;
     u8 payload[4];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_0209d3a8(payload);
+    RoomObjectState_Receive((RoomObjectStateMessage *) (void *) payload);
 }
 CLEAN_AS(func_02076f2c, SessionMessage_Handle37)
 
@@ -1018,7 +924,7 @@ void SessionMessage_Handle38(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     u32 payload;
     Session_ReadMessage(data_020ccf94, &payload, size);
-    func_020ad7f4(&payload, (int) slot);
+    Shops_ApplyMessage(&payload, (int) slot);
 }
 CLEAN_AS(func_02076f04, SessionMessage_Handle38)
 
@@ -1029,7 +935,7 @@ int SessionMessage_Handle39(int size, int kind, int scene, int slot)
     (void) size;
     (void) kind;
     (void) scene;
-    return func_020ad7e4(slot);
+    return Shops_CountAnswer(slot);
 }
 CLEAN_AS(func_02076ef8, SessionMessage_Handle39)
 
@@ -1047,7 +953,7 @@ void SessionMessage_Handle40(int size, int kind, int scene, int slot)
     NetSession *session = data_020ccf94;
     Session_ReadMessage(session, bytes, size);
     if (data_020e54a8 == 0) {
-        bytes[1] = (u8) func_ov003_0222d7d0(bytes[0]);
+        bytes[1] = (u8) TownInsect_Hide(bytes[0]);
     }
     Session_BeginMessage(session);
     if (bytes[1] == 0) {
@@ -1086,7 +992,7 @@ void SessionMessage_Handle41(int size, int kind, u8 scene, u32 slot)
     u8 object = (u8) ((byte & 0xfu) | 0x10);
     if (answer_slot - 1 == (u32) session->local_slot) {
         data_ov003_0226053c = 0;
-        func_ov003_0222e750(object);
+        TownInsect_HideById(object);
     } else {
         data_ov003_0226053c = 1;
     }
@@ -1101,7 +1007,7 @@ void SessionMessage_Handle42(int size, int kind, int scene, int slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_02050884(payload, slot);
+    FishDisp_HandleMessage(payload, slot);
 }
 CLEAN_AS(func_02076d40, SessionMessage_Handle42)
 
@@ -1117,27 +1023,27 @@ void SessionMessage_Handle43(int size, int kind, int scene, int slot)
     u16 item;
     int operation;
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_0209646c(payload, &item, &operation);
+    SessionPlayers_ReadItemOperation(payload, &item, &operation);
     switch (operation) {
         case 0:
         case 1:
         case 2:
-            func_020955e0(&item, operation, slot);
+            PlayerActorOps_SetWorn(&item, operation, slot);
             break;
         case 3: {
-            u8 *record = func_020984fc(slot);
-            u16 *current = func_02099728(record);
+            u8 *record = PlayerRecords_OfPlayer(slot);
+            u16 *current = PlayerRecord_HeldItem(record);
             int same;
-            if (func_0204bcdc(&item) != 0) {
-                int code = func_0204bc64(&item);
-                same = code == func_0204bc64(current);
+            if (ItemCode_HasVariant(&item) != 0) {
+                int code = ItemCode_VariantItem(&item);
+                same = code == ItemCode_VariantItem(current);
             } else {
                 same = item == *current;
             }
             if (!same) {
-                u32 count = func_02062148(&item);
-                func_0209971c(record, &item);
-                func_02095694(count + 1, slot);
+                u32 count = ItemInfo_HeldModelNumber(&item);
+                PlayerRecord_SetHeldItem(record, &item);
+                PlayerActorOps_SetHeldModel(count + 1, slot);
             }
             break;
         }
@@ -1156,10 +1062,10 @@ void SessionMessage_Handle44(int size, int kind, int scene, int slot)
     (void) scene;
     u8 bytes[3];
     Session_ReadMessage(data_020ccf94, bytes, size);
-    func_02096440(&bytes[0], &bytes[1], &bytes[2]);
-    u8 *record = func_020984fc(slot);
-    func_02099808(record, bytes[1]);
-    func_020997e0(record, bytes[2]);
+    SessionPlayers_SplitLowHigh(&bytes[0], &bytes[1], &bytes[2]);
+    u8 *record = PlayerRecords_OfPlayer(slot);
+    PlayerRecord_SetHeadKind(record, bytes[1]);
+    PlayerRecord_SetHairColor(record, bytes[2]);
 }
 CLEAN_AS(func_02076c3c, SessionMessage_Handle44)
 
@@ -1171,7 +1077,7 @@ void SessionMessage_Handle45(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_02095578(payload[0], (int) slot);
+    PlayerActorOps_SetFlag0(payload[0], (int) slot);
 }
 CLEAN_AS(func_02076c14, SessionMessage_Handle45)
 
@@ -1184,7 +1090,7 @@ void SessionMessage_Handle46(int size, int kind, int scene, int slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, size);
-    func_02095558(payload[0], slot);
+    PlayerActorOps_SetSunLevel(payload[0], slot);
 }
 CLEAN_AS(func_02076bec, SessionMessage_Handle46)
 
@@ -1199,7 +1105,7 @@ void SessionMessage_Handle47(int size, int kind, u8 scene, u32 slot)
     u8 payload[4];
     Session_ReadMessage(data_020ccf94, payload, size);
     if (data_020e54a8 == 0) {
-        func_ov003_0222e4c0(payload[0]);
+        TownInsect_Show(payload[0]);
     }
 }
 CLEAN_AS(func_02076dac, SessionMessage_Handle47)
@@ -1217,9 +1123,9 @@ void SessionMessage_Handle48(int size, int kind, u8 scene, u32 slot)
     Session_ReadMessage(data_020ccf94, &object, size);
     if (data_020e54a8 == 0) {
         if (object < 4) {
-            func_ov003_0222e6c4(object, 0);
+            TownInsect_EndHeld(object, 0);
         } else {
-            func_ov003_0222e7f8(object);
+            TownInsect_Startle(object);
         }
     }
 }
@@ -1237,7 +1143,7 @@ void SessionMessage_Handle49(int size, int kind, int scene, int slot)
     (void) size;
     (void) kind;
     (void) scene;
-    u16 *grid = func_0204e414();
+    u16 *grid = (u16 *) (uintptr_t) AcreMap_Town();
     if (grid == NULL) {
         return;
     }
@@ -1252,19 +1158,19 @@ void SessionMessage_Handle49(int size, int kind, int scene, int slot)
     u32 block_z = z >> 4;
 
     int found = 0;
-    u16 *item = func_0204f5e0(grid, block_x, block_z, (int) (x & 0xfu), (int) (z & 0xfu), layer);
+    u16 *item = AcreTile_ItemInAcre((AcreMap *) grid, block_x, block_z, (int) (x & 0xfu), (int) (z & 0xfu), layer);
     if (item != NULL && *item == expected) {
         int position[2] = {(int) x, (int) z};
-        int index = func_02045d80(position, layer);
+        int index = TileChanges_IndexAt((const TileChangesTile *) position, layer);
         if (index < 0) {
             int position2[2] = {(int) x, (int) z};
-            found = func_02045aa4(position2, slot) != 0;
+            found = TileRequestGrant_NoOtherNearFor((const TileRequestTile *) position2, slot) != 0;
         } else {
-            const u8 *entry = func_02045bac(index);
+            const u8 *entry = (const u8 *) (uintptr_t) TileChanges_At(index);
             found = (entry[0] & 7) == (request[0] & 3) && (entry[1] & 0x80) != 0 && (entry[2] & 1) == 0;
         }
     }
-    func_0204510c(request, found, slot);
+    TileRequestGrant_Answer((const TileRequestMessage *) (void *) request, found, slot);
 }
 CLEAN_AS(func_02076b10, SessionMessage_Handle49)
 
@@ -1277,7 +1183,7 @@ void SessionMessage_Handle50(int size, int kind, int scene, u32 slot)
     (void) slot;
     u8 payload[16];
     Session_ReadMessage(data_020ccf94, payload, 14);
-    func_02044e28(payload, scene);
+    TileRequestGrant_ReceiveAnswer((const TileRequestAnswer *) (void *) payload, scene);
 }
 CLEAN_AS(func_02076ae8, SessionMessage_Handle50)
 
@@ -1290,6 +1196,6 @@ void SessionMessage_Handle51(int size, int kind, int scene, int slot)
     (void) scene;
     u8 request[4];
     Session_ReadMessage(data_020ccf94, request, 1);
-    func_0209d4c0(request, slot);
+    SceneClaim_ReceiveRequest(request, slot);
 }
 CLEAN_AS(func_02076ac0, SessionMessage_Handle51)

@@ -2,6 +2,8 @@
 #include "town_pack.h"
 
 #include "clean.h"
+#include "activity.h"
+#include "activity_vars.h"
 
 static_assert(sizeof(TownPackBuffer) == 0x17400, "the activity's buffer");
 static_assert(sizeof(TownPackThread) == 0x10cc && offsetof(TownPackThread, done) == 0x10c8, "the thread object");
@@ -29,10 +31,6 @@ extern void OS_ExitThread(void);
 /* The thread's function (TownPack_ThreadMain), handed to the SDK by its game symbol, as the
  * SDK calls it: its argument is TownPack_StartThread's `pack`. */
 extern void func_020a00c0(void *pack);
-/* The activity's buffer and thread object, and the received state block. */
-extern TownPackBuffer *func_020a1350(void);
-extern TownPackThread *func_020a1338(void);
-extern StateBlock *func_020a13b8(void);
 
 /* func_020a0030 */
 u8 TownPack_IsDone(TownPackThread *thread)
@@ -78,11 +76,11 @@ CLEAN_AS(func_020a008c, TownPack_InitThread)
 void TownPack_ThreadMain(int pack)
 {
     if (pack != 0) {
-        TownPack_Pack(func_020a1350());
+        TownPack_Pack(Activity_CurrentPackBuffer());
     } else {
-        TownPack_Unpack(func_020a1350());
+        TownPack_Unpack(Activity_CurrentPackBuffer());
     }
-    func_020a1338()->done = 1;
+    Activity_CurrentPackThread()->done = 1;
     OS_ExitThread();
 }
 CLEAN_AS(func_020a00c0, TownPack_ThreadMain)
@@ -97,7 +95,7 @@ CLEAN_AS(func_020a00fc, TownPack_PackedSize)
 /* func_020a0100: the buffer unpacked into the received state block. */
 void TownPack_Unpack(TownPackBuffer *buffer)
 {
-    StateBlock *to = func_020a13b8();
+    StateBlock *to = ActivityVars_ReceivedBlock();
     if (buffer->packed_size != 0) {
         u32 context[4]; /* MIUncompContextLZ */
         MI_InitUncompContextLZ(context, to, buffer->data);

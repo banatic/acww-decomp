@@ -9,6 +9,12 @@
 #include "player_record.h"
 #include "player_records.h"
 #include "scene_music.h"
+#include "block_020b220c.h"
+#include "clock.h"
+#include "event_announce.h"
+#include "event_calendar.h"
+#include "scene_query.h"
+#include "villager_part.h"
 
 static_assert(sizeof(MusicClock) == 0x18, "music clock size");
 static_assert(sizeof(HourMusic) == 0x14, "hour music size");
@@ -24,22 +30,9 @@ extern const u32 data_020da304[];
 extern const u32 data_020da2e4[];
 extern const u32 data_020da324[];
 
-/* The current scene is 0; the current scene is 0x31. */
-extern int func_020b6660(void);
-extern int func_020b6640(void);
-
-/* The number of an event (data_020db6dc, set to 0x12 by func_02041644), and whether an event is
- * on at a date (3 for event 0x12 in the part func_02041644 waits for). */
-extern u32 func_02041614(void);
-extern int func_0203fc78(int event, const DateTime *when, int arg);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The session. */
 extern NetSession *data_020ccf94;
-/* Whether a villager part has the state func_0209ac04 looks for. */
-extern int func_0209ac04(int part);
-/* Two bytes, data_021f4b18 and data_021f4b1c. */
-extern u8 func_020b22b8(void);
-extern u8 func_020b22dc(void);
 /* Clears `size` bytes. */
 extern void *func_02137550(void *dst, u32 size);
 
@@ -85,7 +78,7 @@ CLEAN_AS(func_02036894, Music264_SetKeep)
  * parts from the last to the first. */
 void Music264_OnSceneEnd(Music264 *self)
 {
-    if (func_020b6660() == 0 && func_020b6640() == 0) {
+    if (SceneQuery_CurrentIs0() == 0 && SceneQuery_CurrentIs31() == 0) {
         return;
     }
     EventMusic_OnSceneEnd(&self->event);
@@ -97,7 +90,7 @@ CLEAN_AS(func_020368c0, Music264_OnSceneEnd)
 /* func_020368f0: the scene's start (Music_OnSceneStart), in scenes 0 and 0x31 only. */
 void Music264_OnSceneStart(Music264 *self)
 {
-    if (func_020b6660() != 0 || func_020b6640() != 0) {
+    if (SceneQuery_CurrentIs0() != 0 || SceneQuery_CurrentIs31() != 0) {
         HourMusic_OnSceneStart(&self->hour);
         Music27c_OnSceneStart(&self->part_18);
         EventMusic_OnSceneStart(&self->event);
@@ -417,7 +410,7 @@ CLEAN_AS(func_02036d24, EventMusic_UpdateEvent13)
  * event 0xf, while linked, when it is on, else when it is data_020db6dc. */
 void EventMusic_Update(EventMusic *self)
 {
-    u32 current = func_02041614();
+    u32 current = EventAnnounce_MusicEvent();
     DateTime now = {0};
     DateTime copy;
     int event13;
@@ -427,18 +420,18 @@ void EventMusic_Update(EventMusic *self)
     DateTime_Now(&now);
 
     MI_CpuCopy8(&now, &copy, sizeof(copy));
-    event13 = func_0203fc78(EVENT_13, &copy, 0) != 0;
+    event13 = EventCalendar_State(EVENT_13, &copy, 0) != 0;
 
     if (current != EVENT_12) {
         MI_CpuCopy8(&now, &copy, sizeof(copy));
-        if (func_0203fc78(EVENT_12, &copy, 0) != 3) {
+        if (EventCalendar_State(EVENT_12, &copy, 0) != 3) {
             event12 = 0;
         }
     }
 
     if (Session_IsLinked(data_020ccf94) != 0) {
         MI_CpuCopy8(&now, &copy, sizeof(copy));
-        event0f = func_0203fc78(EVENT_0F, &copy, 0) != 0;
+        event0f = EventCalendar_State(EVENT_0F, &copy, 0) != 0;
     } else {
         event0f = current == EVENT_0F;
     }
@@ -608,12 +601,12 @@ void Music27c_OnSceneStart(Music27c *self)
     }
 
     record = PlayerRecords_Current();
-    if (func_020b22b8() != 0) {
+    if (Block020b220c_Flag4b18() != 0) {
         Music_AddValue(3, 0, 5);
         Music27c_Start(self, 4, 0x45, 1);
         return;
     }
-    if (func_020b22dc() != 0) {
+    if (Block020b220c_Flag4b1c() != 0) {
         Music27c_Start(self, 0x0d, 0x4a, 0);
         return;
     }
@@ -621,7 +614,8 @@ void Music27c_OnSceneStart(Music27c *self)
         return;
     }
     if (PlayerRecord_TestFlag(record, 0x23) == 0) {
-        if (PlayerRecord_TestFlag(record, 1) == 0 || func_0209ac04((int) (uintptr_t) PlayerRecord_VillagerPart(record)) != 0) {
+        if (PlayerRecord_TestFlag(record, 1) == 0 ||
+            VillagerPart_HasStep((VillagerPart *) (uintptr_t) ((int) (uintptr_t) PlayerRecord_VillagerPart(record))) != 0) {
             if (PlayerRecord_TestFlag(record, 1) != 0) {
                 Music27c_Start(self, 0x1d, 0x48, 0);
             }
@@ -882,8 +876,6 @@ CLEAN_AS(func_020372f8, HourMusic_Construct)
  * QUIRK: the second's reader is named CARDi_GetTargetMode in the symbols; it returns the word at
  * 0x18 of data_021dc744, RtcTime.second. */
 extern u32 func_0209dee8(void);
-extern void func_0209df94(u8 *day_month);
-extern void func_0209def4(u8 *minute_hour);
 extern u32 CARDi_GetTargetMode(void);
 
 /* A time of day in seconds. */
@@ -906,9 +898,9 @@ static int in_span(u32 t, u32 start, u32 end)
 void MusicClock_Read(MusicClock *self)
 {
     self->before = self->now;
-    self->now.year = func_0209dee8();
-    func_0209df94(&self->now.day);
-    func_0209def4(&self->now.minute);
+    self->now.year = Clock_Year();
+    Clock_GetDayMonth(&self->now.day);
+    Calendar_Now((Time *) (void *) &self->now.minute);
     self->now.second = CARDi_GetTargetMode();
 }
 CLEAN_AS(func_02037318, MusicClock_Read)

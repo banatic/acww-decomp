@@ -29,7 +29,7 @@ void BesideSpot_ClearServed(u8 *spot);
 int BesideSpot_WasServed(const u8 *spot);
 void BesideSpot_Choose(u8 *spot);
 void BesideSpot_Clear(u8 *spot);
-void BesideSpot_Construct(u8 *spot);
 void BesideSpot_Destruct(u8 *spot);
+void BesideSpot_Construct(u8 *spot);
 
 #endif

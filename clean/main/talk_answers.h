@@ -25,7 +25,7 @@
 typedef struct TalkAnswer {
     u8 unk_00;                         /* 0x00: data_021f43ec's byte when cleared */
     u8 pad_01[3];                      /* 0x01 */
-    u32 style;                         /* 0x04: one of data_020d1de0's entries (TalkAnswers_Style) */
+    u32 file_name;                     /* 0x04: the address of its select file's name (TalkAnswers_Style) */
     u8 text[TALK_ANSWERS_TEXT_SIZE];   /* 0x08: its text (an 8-bit text, text_base.h) */
     Block020a8248 record;              /* 0x64 */
     u8 unk_70;                         /* 0x70: data_021f43ec's byte when cleared */

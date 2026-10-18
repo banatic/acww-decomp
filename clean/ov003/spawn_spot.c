@@ -5,6 +5,7 @@
 #include "clean.h"
 #include "main/scene_query.h"
 #include "main/spawner.h"
+#include "ov009/scene_actor_life.h"
 
 static_assert(offsetof(SceneActor, position) == 0x5c, "position");
 static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
@@ -17,10 +18,6 @@ extern const u16 data_ov003_022398c4[];
 /* The vtables: the class's and its receiver part's. */
 extern const u8 data_ov003_022398e8[];
 extern const u8 data_ov003_022399ac[];
-
-/* Overlay 9's scene actor's destructor and constructor. */
-extern void *func_ov009_0226539c(SpawnSpot *spot);
-extern void *func_ov009_0226552c(SpawnSpot *spot);
 
 /* func_ov003_0221ee48 (vtable slot 0x0c): always 1. */
 int SpawnSpot_Slot0C(void)
@@ -57,7 +54,7 @@ static void spawn_spot_destroy_parts(SpawnSpot *spot)
 {
     spot->actor.vtable = data_ov003_022398e8;
     spot->actor.receiver_vtable = data_ov003_022399ac;
-    func_ov009_0226539c(spot);
+    SceneActor_Destruct((SceneActor *) spot);
 }
 
 /* func_ov003_0221ee74 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -81,7 +78,7 @@ CLEAN_AS(func_ov003_0221eea0, SpawnSpot_Destroy)
 /* func_ov003_0221eec4: the constructor: overlay 9's, then the vtables. */
 SpawnSpot *SpawnSpot_Construct(SpawnSpot *spot)
 {
-    func_ov009_0226552c(spot);
+    SceneActor_ConstructBase((SceneActor *) spot);
     spot->actor.vtable = data_ov003_022398e8;
     spot->actor.receiver_vtable = data_ov003_022399ac;
     return spot;

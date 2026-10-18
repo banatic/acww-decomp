@@ -15,6 +15,9 @@
 #include "villager_roster.h"
 #include "villager_status.h"
 #include "villager_town.h"
+#include "item_lists.h"
+#include "main_random.h"
+#include "town_tile_put.h"
 
 extern TownDay data_021c779c;
 extern VillagerTown data_021e5a2c;
@@ -28,13 +31,6 @@ extern const u8 data_020cab28[17];
 extern const u16 data_020cabc4[12];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern u32 func_020644cc(int range); /* a random number below `range` */
-/* Item `code` put on tile (x, z) of acre (acre_x, acre_z), marked or not. */
-extern void func_0204a200(TownDay *town, AcreMap *map, int acre_x, int acre_z, int x, int z, u16 code, int marked);
-/* Item `code` put on tile (x, z) of the map, marked or not. */
-extern void func_0204a25c(AcreMap *map, int x, int z, u16 code, int marked);
-/* An item drawn among `count` from `first`. */
-extern void func_02063414(u16 *item, int first, int count, int c, int d, u8 *record, int f, int g, int h, int i);
 
 #define TOWN_SPAWN_RANGE_PERCENT 100
 #define TOWN_SPAWN_ITEM_1369 0x1369
@@ -77,7 +73,7 @@ void TownSpawn_AdvanceMarked1369(TownDay *town, AcreMap *map, int wide, int high
                         continue;
                     }
                     if (AcreTile_IsMarkedInAcre(map, (u32) acre_x, (u32) acre_z, (u32) x, (u32) z) != 0) {
-                        func_0204a200(town, map, acre_x, acre_z, x, z, TOWN_SPAWN_ITEM_136A, 1);
+                        TownTilePut_InAcre(town, map, acre_x, acre_z, x, z, TOWN_SPAWN_ITEM_136A, 1);
                     }
                 }
             }
@@ -100,13 +96,13 @@ void TownSpawn_AfterWetDay(TownDay *town, AcreMap *map, int wide, int high, u8 w
     if (weather != 0 && weather != 1 && weather != 2) {
         return;
     }
-    int acre_x = (int) func_020644cc(wide - 1);
-    int acre_z = (int) func_020644cc(high - 1);
+    int acre_x = (int) MainRandom_Below(wide - 1);
+    int acre_z = (int) MainRandom_Below(high - 1);
     for (int i = 0; i < TOWN_SPAWN_WET_ITEMS; i++) {
         u16 item;
-        func_02063414(&item, TOWN_SPAWN_WET_FIRST, TOWN_SPAWN_WET_COUNT, 0, 0, NULL, 1, 10, 0, 1);
-        acre_x = (acre_x + 1 + (int) func_020644cc(wide - 1)) % wide;
-        acre_z = (acre_z + 1 + (int) func_020644cc(high - 1)) % high;
+        ItemLists_DrawRange(&item, TOWN_SPAWN_WET_FIRST, TOWN_SPAWN_WET_COUNT, 0, 0, NULL, 1, 10, 0, 1);
+        acre_x = (acre_x + 1 + (int) MainRandom_Below(wide - 1)) % wide;
+        acre_z = (acre_z + 1 + (int) MainRandom_Below(high - 1)) % high;
         TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, item, func_02048e54, 1);
     }
 }
@@ -119,10 +115,10 @@ void TownSpawn_Put1548OnBeach(TownDay *town, AcreMap *map, int wide)
     if (TownAcreCount_Totals(&data_021c779c)->flags & TOWN_TOTALS_HAS_1548) {
         return;
     }
-    if (func_020644cc(TOWN_SPAWN_RANGE_PERCENT) >= 10) {
+    if (MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) >= 10) {
         return;
     }
-    int acre_x = (int) func_020644cc(wide) + 1;
+    int acre_x = (int) MainRandom_Below(wide) + 1;
     TownPlace_PutInAcre(town, map, acre_x, TOWN_SPAWN_BEACH_ROW, TOWN_SPAWN_ITEM_1548, func_02048e4c, 0);
 }
 CLEAN_AS(func_02047fac, TownSpawn_Put1548OnBeach)
@@ -143,19 +139,19 @@ void TownSpawn_AdvanceCodesD4(TownDay *town, AcreMap *map, int days)
             }
             u16 code = *at;
             if (code >= 0xd4 && code <= 0xda) {
-                func_0204a25c(map, x, z, 0xe2, 0);
+                TownTilePut_At(map, x, z, 0xe2, 0);
             } else if (code >= 0xdb && code <= 0xe1) {
                 if (days > 1) {
-                    func_0204a25c(map, x, z, 0xe2, 0);
+                    TownTilePut_At(map, x, z, 0xe2, 0);
                 } else if (code != 0xe1) {
-                    func_0204a25c(map, x, z, (u16) (code - 6), 0);
+                    TownTilePut_At(map, x, z, (u16) (code - 6), 0);
                 } else {
-                    func_0204a25c(map, x, z, (u16) (code - 7), 0);
+                    TownTilePut_At(map, x, z, (u16) (code - 7), 0);
                 }
             } else if (code == 0xe2) {
-                func_0204a25c(map, x, z, ACRE_MAP_ITEM_NONE, 0);
+                TownTilePut_At(map, x, z, ACRE_MAP_ITEM_NONE, 0);
             } else if (code >= 0x154a && code <= 0x1553) {
-                func_0204a25c(map, x, z, ACRE_MAP_ITEM_NONE, 0);
+                TownTilePut_At(map, x, z, ACRE_MAP_ITEM_NONE, 0);
             }
         }
     }
@@ -185,7 +181,7 @@ void TownSpawn_ClearTileAt(TownDay *town, const Position *position)
     if (TileChanges_IndexAt(&tile, 0) >= 0) {
         return;
     }
-    func_0204a25c(map, x, z, ACRE_MAP_ITEM_NONE, 0);
+    TownTilePut_At(map, x, z, ACRE_MAP_ITEM_NONE, 0);
 }
 CLEAN_AS(func_0204811c, TownSpawn_ClearTileAt)
 
@@ -204,7 +200,7 @@ void TownSpawn_ClearCodesFc(TownDay *town)
                 for (int x = 0; x < 16; x++) {
                     const u16 *code = AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, x, z, 0);
                     if (code != NULL && *code >= 0xfc && *code <= 0xfd) {
-                        func_0204a200(town, map, acre_x, acre_z, x, z, ACRE_MAP_ITEM_NONE, 0);
+                        TownTilePut_InAcre(town, map, acre_x, acre_z, x, z, ACRE_MAP_ITEM_NONE, 0);
                     }
                 }
             }
@@ -240,7 +236,7 @@ CLEAN_AS(func_02048238, TownSpawn_MakeMoneyRocks)
  * `kind`; whether one was. Once the draw is passed, each acre with rocks is tried in turn. */
 int TownSpawn_MakeMoneyRock(TownDay *town, AcreMap *map, int wide, int high, int kind, int rocks)
 {
-    int left = (int) func_020644cc(rocks);
+    int left = (int) MainRandom_Below(rocks);
     for (int acre_z = 0; acre_z < high; acre_z++) {
         for (int acre_x = 0; acre_x < wide; acre_x++) {
             TownAcreCount *acre = TownAcreCount_Of(&data_021c779c, acre_x, acre_z);
@@ -264,7 +260,7 @@ int TownSpawn_MakeMoneyRockIn(TownDay *town, AcreMap *map, TownAcreCount *acre, 
 {
     (void) town;
     int rocks = acre->rocks;
-    int left = (int) func_020644cc(rocks);
+    int left = (int) MainRandom_Below(rocks);
     acre->rocks = (u16) (rocks - 1);
     for (int z = 0; z < 16; z++) {
         for (int x = 0; x < 16; x++) {
@@ -284,7 +280,7 @@ int TownSpawn_MakeMoneyRockIn(TownDay *town, AcreMap *map, TownAcreCount *acre, 
             int tile_z;
             AcreTile_TileOfAcre(&tile_x, &tile_z, acre_x + 1, acre_z + 1, x, z);
             u16 money = (u16) (data_020ca59c[kind] + (value - TOWN_SPAWN_ROCK) % TOWN_SPAWN_ROCK_CODES);
-            func_0204a25c(map, tile_x, tile_z, money, 0);
+            TownTilePut_At(map, tile_x, tile_z, money, 0);
             return 1;
         }
     }
@@ -302,8 +298,8 @@ void TownSpawn_PutMarked1566(TownDay *town, AcreMap *map, int wide, int high)
     if (TownAcreCount_Totals(&data_021c779c)->flags & TOWN_TOTALS_HAS_MARKED_1566) {
         return;
     }
-    int acre_x = (int) func_020644cc(wide - 1);
-    int acre_z = (int) func_020644cc(high - 1);
+    int acre_x = (int) MainRandom_Below(wide - 1);
+    int acre_z = (int) MainRandom_Below(high - 1);
     TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_ITEM_1566, func_02048ee4, 1);
 }
 CLEAN_AS(func_020483c4, TownSpawn_PutMarked1566)
@@ -313,11 +309,11 @@ CLEAN_AS(func_020483c4, TownSpawn_PutMarked1566)
 void TownSpawn_PutMarked1549(TownDay *town, AcreMap *map, int wide, int high)
 {
     int missing = TOWN_SPAWN_MARKED_1549 - TownAcreCount_Totals(&data_021c779c)->marked_1549;
-    int acre_x = (int) func_020644cc(wide - 1);
-    int acre_z = (int) func_020644cc(high - 1);
+    int acre_x = (int) MainRandom_Below(wide - 1);
+    int acre_z = (int) MainRandom_Below(high - 1);
     for (; missing > 0; missing--) {
-        acre_x = (acre_x + 1 + (int) func_020644cc(wide - 1)) % wide;
-        acre_z = (acre_z + 1 + (int) func_020644cc(high - 1)) % high;
+        acre_x = (acre_x + 1 + (int) MainRandom_Below(wide - 1)) % wide;
+        acre_z = (acre_z + 1 + (int) MainRandom_Below(high - 1)) % high;
         TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_ITEM_1549, func_02048e54, 1);
     }
 }
@@ -345,7 +341,7 @@ void TownSpawn_SpotTo89(TownDay *town, AcreMap *map)
     int acre_x = acres->spot_acre_x + 1;
     int acre_z = acres->spot_acre_z + 1;
     if (AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, acres->spot_x, acres->spot_z, 0) != NULL) {
-        func_0204a200(town, map, acre_x, acre_z, acres->spot_x, acres->spot_z, TOWN_SPAWN_CODE_89, 0);
+        TownTilePut_InAcre(town, map, acre_x, acre_z, acres->spot_x, acres->spot_z, TOWN_SPAWN_CODE_89, 0);
     }
 }
 CLEAN_AS(func_020484c8, TownSpawn_SpotTo89)
@@ -353,8 +349,8 @@ CLEAN_AS(func_020484c8, TownSpawn_SpotTo89)
 /* func_0204851c: code 0x1b put on an acre drawn at random; whether it was. */
 int TownSpawn_PutSpot(TownDay *town, AcreMap *map, int wide, int high)
 {
-    int acre_x = (int) func_020644cc(wide);
-    int acre_z = (int) func_020644cc(high);
+    int acre_x = (int) MainRandom_Below(wide);
+    int acre_z = (int) MainRandom_Below(high);
     return TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_CODE_SPOT, func_02048ee4, 0);
 }
 CLEAN_AS(func_0204851c, TownSpawn_PutSpot)
@@ -365,7 +361,7 @@ void TownSpawn_Maybe1a(TownDay *town, AcreMap *map, int wide, int high)
     if (data_021c779c.acres.unk_00 != TOWN_SPAWN_STATE_1A) {
         return;
     }
-    if (func_020644cc(TOWN_SPAWN_RANGE_PERCENT) < 50) {
+    if (MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 50) {
         TownSpawn_Put1a(town, map, wide, high);
     }
 }
@@ -390,7 +386,7 @@ void TownSpawn_PickAcreWithout1a(TownSpawnAcre *out, TownDay *town, int wide, in
     (void) town;
     int count = wide * high - TownAcreCount_Totals(&data_021c779c)->acres_1a;
     if (count > 0) {
-        int left = (int) func_020644cc(count);
+        int left = (int) MainRandom_Below(count);
         for (int acre_z = 0; acre_z < high; acre_z++) {
             for (int acre_x = 0; acre_x < wide; acre_x++) {
                 if (TownAcreCount_Of(&data_021c779c, acre_x, acre_z)->flags & TOWN_ACRE_HAS_1A) {
@@ -413,9 +409,9 @@ CLEAN_AS(func_020485d4, TownSpawn_PickAcreWithout1a)
 /* func_0204864c: code 0x1f (0x20 two times in a hundred) put on an acre drawn at random. */
 void TownSpawn_Put1f(TownDay *town, AcreMap *map, int wide, int high)
 {
-    int acre_x = (int) func_020644cc(wide);
-    int acre_z = (int) func_020644cc(high);
-    u16 code = func_020644cc(TOWN_SPAWN_RANGE_PERCENT) < 2 ? TOWN_SPAWN_CODE_20 : TOWN_SPAWN_CODE_1F;
+    int acre_x = (int) MainRandom_Below(wide);
+    int acre_z = (int) MainRandom_Below(high);
+    u16 code = MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 2 ? TOWN_SPAWN_CODE_20 : TOWN_SPAWN_CODE_1F;
     TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, code, func_02048f6c, 0);
 }
 CLEAN_AS(func_0204864c, TownSpawn_Put1f)
@@ -423,8 +419,8 @@ CLEAN_AS(func_0204864c, TownSpawn_Put1f)
 /* func_02048698: code 0x1d put on an acre drawn at random. */
 void TownSpawn_Put1d(TownDay *town, AcreMap *map, int wide, int high)
 {
-    int acre_x = (int) func_020644cc(wide);
-    int acre_z = (int) func_020644cc(high);
+    int acre_x = (int) MainRandom_Below(wide);
+    int acre_z = (int) MainRandom_Below(high);
     TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_CODE_1D, func_02048f54, 0);
 }
 CLEAN_AS(func_02048698, TownSpawn_Put1d)
@@ -432,9 +428,9 @@ CLEAN_AS(func_02048698, TownSpawn_Put1d)
 /* func_020487d8: one of data_020cabc4's family A codes put on an acre drawn at random. */
 void TownSpawn_PutFamilyA(TownDay *town, AcreMap *map, int wide, int high)
 {
-    int acre_x = (int) func_020644cc(wide);
-    int acre_z = (int) func_020644cc(high);
-    int index = (int) func_020644cc(TOWN_SPAWN_FAMILY_A_CODES);
+    int acre_x = (int) MainRandom_Below(wide);
+    int acre_z = (int) MainRandom_Below(high);
+    int index = (int) MainRandom_Below(TOWN_SPAWN_FAMILY_A_CODES);
     TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, data_020cabc4[index], func_02048ec8, 0);
 }
 CLEAN_AS(func_020487d8, TownSpawn_PutFamilyA)
@@ -504,7 +500,7 @@ void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *hou
     }
     int left = days * 2;
     while (count > 0) {
-        u16 code = data_020cabc4[func_020644cc(TOWN_SPAWN_FAMILY_A_CODES)];
+        u16 code = data_020cabc4[MainRandom_Below(TOWN_SPAWN_FAMILY_A_CODES)];
         int used = TownPlace_PutOneOf(town, map, count, free_tiles, code, 0);
         left--;
         if (left <= 0) {
@@ -529,11 +525,11 @@ void TownSpawn_Put21(TownDay *town, AcreMap *map)
     for (int i = 0; i < 3; i++) {
         TownSpawnAcre acre;
         do {
-            int value = (int) func_020644cc(16);
+            int value = (int) MainRandom_Below(16);
             acre.x = value % 4;
             acre.z = value / 4;
         } while (TownSpawn_IsListed(town, &acre, used, count) != 0);
-        u16 code = (u16) (func_020644cc(4) + TOWN_SPAWN_CODE_21);
+        u16 code = (u16) (MainRandom_Below(4) + TOWN_SPAWN_CODE_21);
         TownPlace_PutInAcre(town, map, acre.x + 1, acre.z + 1, code, func_02048ee4, 0);
         used[count] = acre;
         count++;

@@ -4,6 +4,8 @@
 #include "acre_tile.h"
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "c_library.h"
+#include "rom_file.h"
 
 static_assert(sizeof(BuildingShapeEntry) == 4, "entry");
 static_assert(sizeof(BuildingShapeTriangle) == 0x24, "triangle");
@@ -23,8 +25,6 @@ typedef struct BuildingShapesArchive {
     u8 bytes[0x6c];
 } BuildingShapesArchive;
 
-extern u8 *func_02064b2c(const char *path, Heap *heap, int align, u32 *size); /* a file loaded whole */
-extern int func_02064328(char *buffer, const char *format, ...);              /* sprintf */
 extern int NNS_FndMountArchive(BuildingShapesArchive *archive, const char *name, void *data);
 extern void *NNS_FndGetArchiveFileByName(const char *path);
 extern int func_0210285c(BuildingShapesArchive *archive); /* the archive unmounted */
@@ -82,7 +82,7 @@ void BuildingShapes_Load(void)
     char name[BUILDING_SHAPES_NAME_SIZE];
     BuildingShapesArchive archive;
 
-    data_021f4b44 = func_02064b2c(data_020e5110, data_021fbe94, 4, NULL);
+    data_021f4b44 = RomFile_Load(data_020e5110, data_021fbe94, 4, NULL);
     if (data_021f4b44 == NULL) {
         for (unsigned int i = 0; i < BUILDING_SHAPES_COUNT; i++) {
             data_021f4bf4[i] = NULL;
@@ -93,7 +93,7 @@ void BuildingShapes_Load(void)
         return;
     }
     for (unsigned int i = 0; i < BUILDING_SHAPES_COUNT; i++) {
-        func_02064328(name, data_020e5124, i);
+        CLib_SPrintf(name, data_020e5124, i);
         data_021f4bf4[i] = NNS_FndGetArchiveFileByName(name);
     }
     func_0210285c(&archive);

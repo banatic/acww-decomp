@@ -6,6 +6,9 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "c_library.h"
+#include "npc_lookup.h"
+#include "town_name.h"
 
 static_assert(sizeof(NpcIdHead) == 14, "NpcIdHead layout");
 static_assert(offsetof(NpcId, personality) == 0x0e, "NpcId layout");
@@ -22,24 +25,13 @@ extern const NpcIdHead data_021dc7aa;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-/* The villager's name ("st_npc_name") into `dst`; 0 for a number out of range. */
-extern int func_0208249c(char *dst, int number);
-/* sprintf */
-extern int func_02064328(char *dst, const char *format, ...);
-extern u32 func_02064294(const NpcIdHead *head);                 /* is it set */
-extern void func_020642a8(const NpcIdHead *src, NpcIdHead *dst); /* copy */
-extern void func_020642bc(NpcIdHead *dst, const NpcIdHead *src); /* assign */
-extern void func_020642d0(NpcIdHead *dst, const NpcIdHead *src); /* copy */
-extern void func_020642e0(NpcIdHead *head);                      /* clear */
-extern void func_020642f8(NpcIdHead *head);                      /* destructor */
-extern void func_020642fc(NpcIdHead *head);                      /* constructor */
 
 /* func_02003618: the villager's name into `dst` when the reference is valid; whether it was
  * written. */
 int NpcId_FormatName(const NpcId *npc, char *dst)
 {
     if (NpcId_IsValid(npc) == 1) {
-        return func_0208249c(dst, npc->number);
+        return NpcLookup_FormatName(dst, npc->number);
     }
     return 0;
 }
@@ -89,7 +81,7 @@ CLEAN_AS(func_0200366c, NpcId_FormatResourceName)
 int Personality_FormatResourceName(char *dst, int size, const char *name, int personality)
 {
     MI_CpuFill8(dst, 0, (u32) size);
-    return func_02064328(dst, data_020d72bc, data_020d72a4[personality], name);
+    return CLib_SPrintf(dst, data_020d72bc, data_020d72a4[personality], name);
 }
 CLEAN_AS(func_0200368c, Personality_FormatResourceName)
 
@@ -129,14 +121,14 @@ void NpcId_Set(NpcId *npc, u8 number, u8 personality, const NpcIdHead *head)
     if (head == NULL) {
         head = &data_021dc7aa;
     }
-    func_020642d0(&npc->head, head);
+    TownName_Copy((TownName *) &npc->head, (const TownName *) head);
 }
 CLEAN_AS(func_020036ec, NpcId_Set)
 
 /* func_02003704: a set head and a villager number in range. */
 int NpcId_IsValid(const NpcId *npc)
 {
-    return func_02064294(&npc->head) == 1 && Npc_IsValidNumber(npc->number) == 1;
+    return TownName_IsSet((const u16 *) &npc->head) == 1 && Npc_IsValidNumber(npc->number) == 1;
 }
 CLEAN_AS(func_02003704, NpcId_IsValid)
 
@@ -150,7 +142,7 @@ CLEAN_AS(func_02003728, NpcId_Copy)
 /* func_02003738: no villager. */
 void NpcId_Clear(NpcId *npc)
 {
-    func_020642e0(&npc->head);
+    TownName_Clear((TownName *) &npc->head);
     npc->number = NPC_NONE;
     npc->personality = PERSONALITY_NONE;
 }
@@ -159,7 +151,7 @@ CLEAN_AS(func_02003738, NpcId_Clear)
 /* func_02003750: the destructor; returns the reference's address. */
 int NpcId_Destruct(NpcId *npc)
 {
-    func_020642f8(&npc->head);
+    TownName_Destruct(&npc->head);
     return (int) (intptr_t) npc;
 }
 CLEAN_AS(func_02003750, NpcId_Destruct)
@@ -167,7 +159,7 @@ CLEAN_AS(func_02003750, NpcId_Destruct)
 /* func_02003760: the copy constructor. */
 NpcId *NpcId_ConstructCopy(NpcId *npc, const NpcId *src)
 {
-    func_020642fc(&npc->head);
+    TownName_Construct(&npc->head);
     NpcId_Assign(npc, src);
     return npc;
 }
@@ -176,7 +168,7 @@ CLEAN_AS(func_02003760, NpcId_ConstructCopy)
 /* func_02003780: the constructor; returns the reference's address. */
 int NpcId_Construct(NpcId *npc)
 {
-    func_020642fc(&npc->head);
+    TownName_Construct(&npc->head);
     return (int) (intptr_t) npc;
 }
 CLEAN_AS(func_02003780, NpcId_Construct)
@@ -184,7 +176,7 @@ CLEAN_AS(func_02003780, NpcId_Construct)
 /* func_02003790 */
 void NpcId_CopyTo(const NpcId *src, NpcId *dst)
 {
-    func_020642a8(&src->head, &dst->head);
+    TownName_CopyTo((const u16 *) &src->head, (u16 *) &dst->head);
     dst->number = src->number;
     dst->personality = src->personality;
 }
@@ -193,7 +185,7 @@ CLEAN_AS(func_02003790, NpcId_CopyTo)
 /* func_020037ac: the assignment operator. */
 void NpcId_Assign(NpcId *npc, const NpcId *src)
 {
-    func_020642bc(&npc->head, &src->head);
+    TownName_Assign((TownName *) &npc->head, (const TownName *) &src->head);
     npc->number = src->number;
     npc->personality = src->personality;
 }

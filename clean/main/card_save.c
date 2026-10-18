@@ -10,6 +10,9 @@
 #include "save_stamp.h"
 #include "state_block.h"
 #include "wifi_friends.h"
+#include "activity_card.h"
+#include "exchange_block.h"
+#include "waiting_letter.h"
 
 static_assert(offsetof(StateBlock, part_11c70) == 0x11c70 && offsetof(StateBlock, part_1704c) == 0x1704c, "state block");
 static_assert(offsetof(StateBlock, part_173f8) == 0x173f8 && offsetof(StateBlock, players) == 0x14, "state block");
@@ -23,16 +26,6 @@ extern const u32 data_020d1c20[3];
 
 /* The record number used for a guest's (data_020e37f8: 7, which no record has). */
 extern const u8 data_020e37f8;
-
-/* The exchange block (part_11c70, 0x950 bytes): the checksum kept at its 0x94a. */
-extern u16 func_0209015c(u8 *block);
-extern void func_02090168(u8 *block, u16 checksum);
-/* The part at 0x1704c of the state block (0x104 bytes): the checksum byte kept at its 0x100. */
-extern u8 func_0208ffe8(u8 *part);
-extern void func_0208fff4(u8 *part, u8 checksum);
-
-/* Copy `copy`'s stamp read from the card (4 bytes, synchronously). */
-extern int func_020a1738(int copy, SaveStamp *stamp);
 
 #define EXCHANGE_BLOCK_SIZE 0x950
 #define PART_1704C_SIZE 0x104
@@ -72,8 +65,12 @@ int CardSave_WriteExchangeBlock(void)
 {
     u8 *exchange = data_021dc7a8.part_11c70;
     u8 *part = data_021dc7a8.part_1704c;
-    func_02090168(exchange, BackupCard_Checksum((const u16 *) exchange, EXCHANGE_BLOCK_SIZE, func_0209015c(exchange)));
-    func_0208fff4(part, (u8) BackupCard_Checksum((const u16 *) part, PART_1704C_SIZE, func_0208ffe8(part)));
+    ExchangeBlock_SetChecksum((ExchangeBlock *) (void *) exchange,
+                              BackupCard_Checksum((const u16 *) exchange, EXCHANGE_BLOCK_SIZE,
+                                                  ExchangeBlock_Checksum((ExchangeBlock *) (void *) exchange)));
+    WaitingLetter_SetChecksum((WaitingLetter *) (void *) part,
+                              (u8) BackupCard_Checksum((const u16 *) part, PART_1704C_SIZE,
+                                                       WaitingLetter_Checksum((WaitingLetter *) (void *) part)));
     if (write_both_copies(exchange, EXCHANGE_BLOCK_SIZE) != 0) {
         return 1;
     }
@@ -163,9 +160,9 @@ int CardSave_SameSerial(void)
     SaveStamp first;
     SaveStamp second;
     SaveStamp_Construct(&first);
-    func_020a1738(CARD_SAVE_COPY_0, &first);
+    ActivityCard_ReadStamp(CARD_SAVE_COPY_0, &first);
     SaveStamp_Construct(&second);
-    func_020a1738(CARD_SAVE_COPY_1, &second);
+    ActivityCard_ReadStamp(CARD_SAVE_COPY_1, &second);
     int same = SaveStamp_Serial(&first) == SaveStamp_Serial(&second);
     SaveStamp_Destruct(&second);
     SaveStamp_Destruct(&first);

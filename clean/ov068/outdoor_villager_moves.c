@@ -38,6 +38,7 @@
 #include "ov004/member_pointer.h"
 #include "outdoor_villager.h"
 #include "outdoor_villager_watch.h"
+#include "outdoor_villager_walks.h"
 
 /* The word its motion requests carry, the range of its looks and the point they are given. */
 extern u16 data_020c80f8;
@@ -58,9 +59,6 @@ typedef struct MovesCall {
     u8 unk_03;
 } MovesCall;
 extern const MovesCall data_ov068_022767a4[2];
-
-/* Whether the byte at 0xa05 is set (behaviour 19 takes over). */
-extern int func_ov068_0226c0e0(OutdoorVillagerBehaviour *self, u8 *villager);
 
 /* The updates' step tables (each filled once, bit 0 of its guard), and the member pointers
  * they are filled from. */
@@ -611,7 +609,7 @@ void OutdoorVillagerMoves_Watch11(OutdoorVillagerBehaviour *self, u8 *villager)
     } else if (*(const u16 *) (const void *) moves_at(villager, OUTDOOR_VILLAGER_COUNT_A06) >= data_ov068_02276724[0]) {
         OutdoorVillagerEffect_SetCountdown(moves_effect(villager), 0);
         OutdoorVillagerBehaviour_Start(self, villager, 21);
-    } else if (func_ov068_0226c0e0(self, villager) != 0) {
+    } else if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0) {
         OutdoorVillagerEffect_SetCountdown(moves_effect(villager), 0);
         OutdoorVillagerBehaviour_Start(self, villager, 19);
     }
@@ -741,7 +739,7 @@ static int moves_taken_over(OutdoorVillagerBehaviour *self, u8 *villager)
         OutdoorVillagerBehaviour_Start(self, villager, 21);
         return 1;
     }
-    if (func_ov068_0226c0e0(self, villager) != 0) {
+    if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0) {
         OutdoorVillagerBehaviour_Start(self, villager, 19);
         return 1;
     }
@@ -815,7 +813,7 @@ void OutdoorVillagerMoves_Turn7(OutdoorVillagerBehaviour *self, u8 *villager)
         SceneMotion_RequestStand(moves_motion(villager), MOVES_PRIORITY, data_020c80f8);
         self->step = 4;
         self->wait = MOVES_TURN_WAIT;
-    } else if (func_ov068_0226c0e0(self, villager) != 0) {
+    } else if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0) {
         OutdoorVillagerBehaviour_Start(self, villager, 19);
     }
 }

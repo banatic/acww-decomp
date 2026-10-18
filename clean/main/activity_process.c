@@ -27,6 +27,10 @@
 #include "town_pack.h"
 #include "villager_town.h"
 #include "wfc_session.h"
+#include "scene_map.h"
+#include "state_flags.h"
+#include "town_record.h"
+#include "worker_thread.h"
 
 static_assert(offsetof(Activity, unk_50) == 0x50 && offsetof(Activity, receiver) == 0x54, "activity");
 static_assert(offsetof(Activity, state) == 0xa1 && offsetof(Activity, block_copy) == 0xb8, "activity");
@@ -84,17 +88,6 @@ extern const char data_020e3c54[]; /* "sp_etc_sequence1" */
 extern u8 data_021f39fc[4];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-/* The jobs 1 and 2: three calls of func_0206fee0 (with 8, 0x20 and 0x40), and func_0204cdc8. */
-extern void func_0206f74c(void);
-extern void func_0204cdc8(u8 *value);
-/* The object at data_021c779c + 0x20: allocated (0x10ec bytes) and set up; whether it is done
- * (func_02042324, which first lets it work) and whether its byte 0x10e9 is set
- * (func_020422f8); both release it with func_020422a0 when they give 1. */
-extern void func_02042458(void);
-extern int func_02042324(void);
-extern int func_020422f8(void);
-/* The town map's own models (activity_save.c). */
-extern void func_0204d0ac(AcreMap *map);
 
 #define TALK_WAIT_NONE 0
 
@@ -245,14 +238,14 @@ void ActivityProcess_StepJob4(Activity *activity)
             activity->state = 1;
             break;
         case 1:
-            if (func_02042324()) {
+            if (WorkerThread_StartJob()) {
                 activity->state = 2;
             } else {
                 activity->state = 3;
             }
             break;
         case 2:
-            if (func_020422f8()) {
+            if (WorkerThread_TakeDone()) {
                 activity->state = 3;
             }
             break;
@@ -323,7 +316,7 @@ void ActivityProcess_StepJob3(Activity *activity)
             activity->state++;
             break;
         case 3:
-            func_02042458();
+            WorkerThread_Create();
             activity->state++;
             break;
         case 4:
@@ -416,9 +409,9 @@ static void start_end_and_save(Activity *activity, const char *name, int message
 {
     u8 *player = PlayerRecords_Current();
     ActivityTalk_Show(activity, name, (char) message);
-    func_0206f74c();
+    StateFlags_Clear8And20And40();
     PlayerRecord_ClearFlag(player, PLAYER_FLAG_2);
-    func_0204cdc8(data_021f39fc);
+    TownRecord_PullBackDay((Date *) (void *) data_021f39fc);
     activity->state = 0;
 }
 
@@ -572,7 +565,7 @@ int ActivityProcess_Create(Activity *activity)
         if (AcreMap_Town() != 0) {
             AcreMap_SetTownModels(town_map());
             AcreMap_LoadTownData(town_map());
-            func_0204d0ac(town_map());
+            SceneMap_ClearRimGrowth(town_map());
         }
         AcreMap_SetRoomsModels();
         AcreMap_LoadRoomsData();

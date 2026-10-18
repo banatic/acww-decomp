@@ -5,7 +5,7 @@
 
 #include "types.h"
 
-/* A time window, start included and end excluded (func_020821d4 tests the clock against it). */
+/* A time window, both ends excluded (NpcLookup_IsInNightWindow, func_020821d4, tests the clock against it). */
 typedef struct DayWindow {
     u8 start_hour;
     u8 start_minute;

@@ -5,6 +5,14 @@
 #include "main/actor_table.h"
 #include "ov003/etc_board.h"
 #include "ov004/atm.h"
+#include "ov003/object_actors.h"
+#include "ov003/snowman.h"
+#include "ov004/etc_museum.h"
+#include "ov004/rmo_telephone.h"
+#include "ov004/room_etc_board.h"
+#include "ov004/room_objects.h"
+#include "ov004/trash_box.h"
+#include "session_players.h"
 
 /* The modes of data_020e54a8: 0 outdoors, 1 in a room. */
 #define TOUCH_PICK_MODE_OUTDOORS 0
@@ -13,20 +21,6 @@
 extern u8 data_020e54a8;
 /* Each kind's function: the object for an index, or 0. */
 extern int (*const data_020e57ac[TOUCH_PICK_KINDS])(int index);
-
-/* Overlay 3's object of an id (of its eight), and its table of 0x20 entries. */
-extern int func_ov003_02236204(int id);
-extern int func_ov003_022201e4(int index);
-/* Overlay 4's tables of 0x40 and 0x20 entries, and two objects it keeps. */
-extern int func_ov004_0221ad40(int index);
-extern int func_ov004_0221b27c(int index);
-extern unsigned int func_ov004_022318f8(void);
-extern unsigned int func_ov004_0222fc84(void);
-/* Overlay 4's room objects, and the one of an index among them. */
-extern void *func_ov004_0223ce84(void);
-extern int func_ov004_0223cd58(int objects, int index);
-/* The actor of a session player (4 for this system's). */
-extern int func_02096190(int player);
 
 /* func_020b7338: the object of kind `kind` with `index`; 0 for a kind of 23 or more.
  * REQUIRES: `kind` is not negative (the table is read at it as the ROM does). */
@@ -43,7 +37,7 @@ CLEAN_AS(func_020b7338, TouchPick_Object)
 int TouchPick_OutdoorObjectById(int id)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_OUTDOORS) {
-        return func_ov003_02236204(id);
+        return (int) (uintptr_t) Snowman_Find(id);
     }
     return 0;
 }
@@ -53,7 +47,7 @@ CLEAN_AS(func_020b735c, TouchPick_OutdoorObjectById)
 int TouchPick_RoomEntry40(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return func_ov004_0221ad40(index);
+        return (int) (uintptr_t) RoomEtcBoard_Get(index);
     }
     return 0;
 }
@@ -63,7 +57,7 @@ CLEAN_AS(func_020b7384, TouchPick_RoomEntry40)
 int TouchPick_RoomObject13(void)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return (int) func_ov004_022318f8();
+        return (int) RmoTelephone_Current();
     }
     return 0;
 }
@@ -73,7 +67,7 @@ CLEAN_AS(func_020b73ac, TouchPick_RoomObject13)
 int TouchPick_RoomObject12(void)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return (int) func_ov004_0222fc84();
+        return (int) TrashBox_Current();
     }
     return 0;
 }
@@ -83,7 +77,7 @@ CLEAN_AS(func_020b73d4, TouchPick_RoomObject12)
 int TouchPick_RoomEntry20(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return func_ov004_0221b27c(index);
+        return (int) (uintptr_t) EtcMuseum_Get(index);
     }
     return 0;
 }
@@ -113,7 +107,7 @@ CLEAN_AS(func_020b744c, TouchPick_EtcBoard)
 int TouchPick_RoomObject(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return func_ov004_0223cd58((int) (uintptr_t) func_ov004_0223ce84(), index);
+        return (int) (uintptr_t) (RoomObjects_At((RoomObject **) (uintptr_t) ((int) (uintptr_t) RoomObjects_Table()), index));
     }
     return 0;
 }
@@ -132,7 +126,7 @@ CLEAN_AS(func_020b74a4, TouchPick_OutdoorEntryKind6)
 int TouchPick_OutdoorEntry20(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_OUTDOORS) {
-        return func_ov003_022201e4(index);
+        return (int) (uintptr_t) ObjectActors_At(index);
     }
     return 0;
 }
@@ -156,6 +150,6 @@ CLEAN_AS(func_020b74dc, TouchPick_ActorE)
  * kind 6). */
 void TouchPick_PlayerActor(int player)
 {
-    (void) func_02096190(player);
+    (void) SessionPlayers_ActorHandle(player);
 }
 CLEAN_AS(func_020b74e4, TouchPick_PlayerActor)

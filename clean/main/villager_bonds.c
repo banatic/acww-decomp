@@ -3,6 +3,10 @@
 
 #include "clean.h"
 #include "npc_id.h"
+#include "actor_table.h"
+#include "town_villager.h"
+#include "villager_data.h"
+#include "villager_roster.h"
 
 #define VILLAGERS 8
 
@@ -34,16 +38,6 @@ extern const VillagerBondSpeciesPair data_020cd464[7];
 extern const VillagerBondSpeciesPair data_020cd434[4];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-/* Villager `index` of `villagers`, or null for an index outside 0-7. */
-extern void *func_0207cec0(void *villagers, int index);
-extern NpcId *func_0208150c(void *villager); /* the villager's NpcId, at 0x7a0 */
-extern int func_0207cf74(u32 index);         /* whether the index is 0-7 */
-/* The villager's data (data_020cd884), or 0 when its number has none. */
-extern int func_02080890(void *villager);
-/* The villager's species (the byte at 0x4c of its data, 0-32), 0x21 without data. */
-extern int func_020808ec(void *villager);
-/* The star sign of the villager's birthday (at 0x26 of its data), 12 without data. */
-extern int func_0208090c(void *villager);
 
 /* ---- How well two villagers get on */
 
@@ -54,10 +48,10 @@ extern int func_0208090c(void *villager);
  * negative number. */
 int VillagerBond_Compatibility(const s8 *bonds, int first, int second)
 {
-    void *a = func_0207cec0(data_021e5a2c, first);
-    void *b = func_0207cec0(data_021e5a2c, second);
+    void *a = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, first);
+    void *b = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, second);
 
-    if (a == NULL || !NpcId_IsValid(func_0208150c(a)) || b == NULL || !NpcId_IsValid(func_0208150c(b))) {
+    if (a == NULL || !NpcId_IsValid(TownVillager_NpcId(a)) || b == NULL || !NpcId_IsValid(TownVillager_NpcId(b))) {
         return 0;
     }
     int bond = VillagerBond_Get(bonds, first, second);
@@ -71,13 +65,13 @@ CLEAN_AS(func_02079924, VillagerBond_Compatibility)
  * that is below 200, its distance from the difference of the bytes 4. */
 int VillagerBond_Affinity(const s8 *bonds, void *first, void *second)
 {
-    if (first == NULL || !NpcId_IsValid(func_0208150c(first))) {
+    if (first == NULL || !NpcId_IsValid(TownVillager_NpcId(first))) {
         return 0;
     }
-    if (second == NULL || !NpcId_IsValid(func_0208150c(second))) {
+    if (second == NULL || !NpcId_IsValid(TownVillager_NpcId(second))) {
         return 0;
     }
-    int sum = VillagerBond_PersonalityScore(bonds, func_0208150c(first), func_0208150c(second));
+    int sum = VillagerBond_PersonalityScore(bonds, TownVillager_NpcId(first), TownVillager_NpcId(second));
     sum += VillagerBond_ElementScore(bonds, first, second);
     sum += VillagerBond_SpeciesScore(bonds, first, second);
     sum += VillagerBond_BothHaveData(bonds, first, second);
@@ -94,8 +88,8 @@ CLEAN_AS(func_02079994, VillagerBond_Affinity)
 int VillagerBond_ByteDifference(const s8 *bonds, void *first, void *second)
 {
     (void) bonds;
-    const u8 *a = (const u8 *) (uintptr_t) func_02080890(first);
-    const u8 *b = (const u8 *) (uintptr_t) func_02080890(second);
+    const u8 *a = (const u8 *) (uintptr_t) VillagerData_Of(first);
+    const u8 *b = (const u8 *) (uintptr_t) VillagerData_Of(second);
 
     if (a == NULL || b == NULL) {
         return 0;
@@ -110,8 +104,8 @@ CLEAN_AS(func_02079a24, VillagerBond_ByteDifference)
 int VillagerBond_BothHaveData(const s8 *bonds, void *first, void *second)
 {
     (void) bonds;
-    int a = func_02080890(first);
-    int b = func_02080890(second);
+    int a = (int) (uintptr_t) VillagerData_Of(first);
+    int b = (int) (uintptr_t) VillagerData_Of(second);
 
     return a != 0 && b != 0 ? VILLAGER_BOND_BOTH_HAVE_DATA : 0;
 }
@@ -132,8 +126,8 @@ static int villager_bond_species_listed(const VillagerBondSpeciesPair *pairs, in
 int VillagerBond_SpeciesScore(const s8 *bonds, void *first, void *second)
 {
     (void) bonds;
-    int x = func_020808ec(first);
-    int y = func_020808ec(second);
+    int x = VillagerData_Species(first);
+    int y = VillagerData_Species(second);
 
     if (x == y) {
         return VILLAGER_BOND_SAME_SPECIES;
@@ -153,8 +147,8 @@ CLEAN_AS(func_02079a88, VillagerBond_SpeciesScore)
 unsigned char VillagerBond_ElementScore(const s8 *bonds, void *first, void *second)
 {
     (void) bonds;
-    int a = VILLAGER_BOND_ELEMENT(func_0208090c(first));
-    int b = VILLAGER_BOND_ELEMENT(func_0208090c(second));
+    int a = VILLAGER_BOND_ELEMENT(VillagerData_StarSign(first));
+    int b = VILLAGER_BOND_ELEMENT(VillagerData_StarSign(second));
 
     return data_020cd484[a][b];
 }
@@ -180,7 +174,7 @@ CLEAN_AS(func_02079b3c, VillagerBond_PersonalityScore)
  * villager indexes and the pair is in the table (see VillagerBond_PairIndex). */
 int VillagerBond_Get(const s8 *bonds, int first, int second)
 {
-    if (!func_0207cf74((u32) first) || !func_0207cf74((u32) second)) {
+    if (!ActorTable_IsKindESlot((u32) first) || !ActorTable_IsKindESlot((u32) second)) {
         return VILLAGER_BOND_NONE;
     }
     int index = VillagerBond_PairIndex(bonds, first, second);
@@ -195,7 +189,7 @@ CLEAN_AS(func_02079b7c, VillagerBond_Get)
  * indexes). */
 void VillagerBond_Add(s8 *bonds, int first, int second, int amount)
 {
-    if (func_0207cf74((u32) first) && func_0207cf74((u32) second)) {
+    if (ActorTable_IsKindESlot((u32) first) && ActorTable_IsKindESlot((u32) second)) {
         VillagerBond_AddAt(bonds, VillagerBond_PairIndex(bonds, first, second), amount);
     }
 }
@@ -221,7 +215,7 @@ CLEAN_AS(func_02079c00, VillagerBond_AddAt)
 /* func_02079c30: every bond of villager `villager` (a villager index) with the others set to 0. */
 void VillagerBond_ForgetVillager(s8 *bonds, int villager)
 {
-    if (!func_0207cf74((u32) villager)) {
+    if (!ActorTable_IsKindESlot((u32) villager)) {
         return;
     }
     for (int other = 0; other < VILLAGERS; other++) {

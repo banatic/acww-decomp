@@ -2,6 +2,13 @@
 #include "event_queue.h"
 
 #include "clean.h"
+#include "event_entries.h"
+#include "list_ops.h"
+#include "player_actor_ops.h"
+#include "scene_object_base.h"
+#include "session_players.h"
+#include "state_flags.h"
+#include "talk_object.h"
 
 /* The four tables of functions, by kind (event_queue.h). */
 extern EventQueueStepFn const data_020da9ec[15]; /* EVENT_RUNNING */
@@ -14,31 +21,6 @@ extern u32 data_021c72bc;              /* the id of the object events of kinds 2
 extern u32 data_021c72c0;              /* the flags */
 extern List data_021c72c4;             /* the events waiting */
 
-/* A free entry of the 15 (data_021c72e8), or NULL. */
-extern EventQueueEntry *func_0203f504(void);
-/* The entry freed: state EVENT_FREE, both ids 0. */
-extern void func_0203f58c(EventQueueEntry *event);
-/* The event inserted into the list after the last one of a priority not above its own (the
- * first one stays first). */
-extern int func_02065c2c(List *list, EventQueueEntry *event);
-/* An object's id (its word 0xdc). */
-extern u32 func_0203efbc(void *object);
-/* The object registered under an id (the list data_021c72cc), or 0. */
-extern int func_0203ef90(u32 id);
-/* An actor of the scene; 4 is this console's player (NULL when there is none). */
-extern void *func_020961a8(int actor);
-/* Whether there is a current event (data_021c72b8). */
-extern int func_0203ec98(void);
-extern int func_02095f28(void);
-extern int func_02095f08(int on);
-extern void func_0206f5cc(void);
-/* The talk showing a receiver lets it go. */
-extern void func_02068320(struct TalkFlowTalk *talk);
-/* Talk `index` (0x1e9c bytes each). */
-extern struct TalkFlowTalk *func_020682e0(int index);
-/* The talk handed a receiver whose message it shows. */
-extern void func_02068340(struct TalkFlowTalk *talk, TalkReceiver *receiver);
-
 static_assert(sizeof(EventQueueEntry) == 0x1c, "EventQueueEntry size");
 static_assert(offsetof(EventQueueEntry, priority) == 0x08, "EventQueueEntry layout");
 static_assert(offsetof(EventQueueEntry, first_id) == 0x0c, "EventQueueEntry layout");
@@ -49,7 +31,7 @@ static_assert(offsetof(EventQueueEntry, unk_19) == 0x19, "EventQueueEntry layout
 /* The id of this console's player. */
 static u32 player_id(void)
 {
-    return func_0203efbc(func_020961a8(4));
+    return SceneObjectBase_Id(SessionPlayers_ActorOf(4));
 }
 
 /* Whether the current event is of kind 2, 6 or 7, asked in that order. */
@@ -102,18 +84,18 @@ int EventQueue_StartKind13(void)
 {
     EventQueueEntry *event;
 
-    if (func_020961a8(4) == NULL) {
+    if (SessionPlayers_ActorOf(4) == NULL) {
         return 0;
     }
-    if (func_0203ec98()) {
-        func_0206f5cc();
+    if (EventQueue_HasCurrent()) {
+        StateFlags_AskMenuClose();
         return 0;
     }
-    if (!func_02095f28()) {
+    if (!PlayerActorOps_StateFlagA20()) {
         return 0;
     }
-    func_02095f08(1);
-    event = func_0203f504();
+    PlayerActorOps_SwitchOwnFlag0b(1);
+    event = EventEntries_FindFree();
     event->first_id = 0;
     event->second_id = 0;
     event->kind = 13;
@@ -127,7 +109,7 @@ CLEAN_AS(func_0203df10, EventQueue_StartKind13)
 /* func_0203df6c: the current event freed; none is current. */
 void EventQueue_EndCurrent(void)
 {
-    func_0203f58c(data_021c72b8);
+    EventEntries_Free(data_021c72b8);
     data_021c72b8 = NULL;
 }
 CLEAN_AS(func_0203df6c, EventQueue_EndCurrent)
@@ -135,14 +117,14 @@ CLEAN_AS(func_0203df6c, EventQueue_EndCurrent)
 /* func_0203df88 (from func_0203ee08): the talk showing the receiver lets it go. */
 void EventQueue_ReceiverLeaveTalk(TalkReceiver *receiver)
 {
-    func_02068320(receiver->talk);
+    TalkObject_DetachReceiver((TalkObject *) receiver->talk);
 }
 CLEAN_AS(func_0203df88, EventQueue_ReceiverLeaveTalk)
 
 /* func_0203df94 (from func_0203ee14): the receiver handed to talk 0. */
 void EventQueue_ReceiverToTalk(TalkReceiver *receiver)
 {
-    func_02068340(func_020682e0(0), receiver);
+    TalkObject_AttachReceiver(TalkObject_Get(0), receiver);
 }
 CLEAN_AS(func_0203df94, EventQueue_ReceiverToTalk)
 
@@ -151,7 +133,7 @@ CLEAN_AS(func_0203df94, EventQueue_ReceiverToTalk)
 int EventQueue_TargetObjectAddress(void)
 {
     if (is_object_event()) {
-        return func_0203ef90(data_021c72bc);
+        return SceneObjectBase_FindAddress(data_021c72bc);
     }
     return 0;
 }
@@ -181,7 +163,7 @@ int EventQueue_FinishObjectEvent(void *object)
         return 0;
     }
     event = data_021c72b8;
-    if (event->second_id != func_0203efbc(object)) {
+    if (event->second_id != SceneObjectBase_Id(object)) {
         return 0;
     }
     event->step = EVENT_STEP_FINISHED;
@@ -200,7 +182,7 @@ int EventQueue_RequestKind7(void *object, int blocked)
         return 0;
     }
     player = player_id();
-    return EventQueue_Push((int) player, (int) func_0203efbc(object), 7, 3, 0);
+    return EventQueue_Push((int) player, (int) SceneObjectBase_Id(object), 7, 3, 0);
 }
 CLEAN_AS(func_0203e070, EventQueue_RequestKind7)
 
@@ -214,7 +196,7 @@ int EventQueue_RequestKind6(void *object, int blocked)
         return 0;
     }
     player = player_id();
-    return EventQueue_Push((int) player, (int) func_0203efbc(object), 6, 3, 0);
+    return EventQueue_Push((int) player, (int) SceneObjectBase_Id(object), 6, 3, 0);
 }
 CLEAN_AS(func_0203e0a8, EventQueue_RequestKind6)
 
@@ -225,9 +207,9 @@ int EventQueue_RequestAct(void *actor, void *picked)
     u32 picked_id = 0;
 
     if (picked != NULL) {
-        picked_id = func_0203efbc(picked);
+        picked_id = SceneObjectBase_Id(picked);
     }
-    return EventQueue_Push((int) func_0203efbc(actor), (int) picked_id, 2, 3, 0);
+    return EventQueue_Push((int) SceneObjectBase_Id(actor), (int) picked_id, 2, 3, 0);
 }
 CLEAN_AS(func_0203e0e0, EventQueue_RequestAct)
 
@@ -482,12 +464,12 @@ int EventQueue_RequestKind11(void)
     if (EventQueue_TestFlag8() || EventQueue_TestFlag20()) {
         return 0;
     }
-    player = func_020961a8(4);
+    player = SessionPlayers_ActorOf(4);
     if (player == NULL) {
         return 0;
     }
     EventQueue_ClearFlags(2 | 4);
-    return EventQueue_Push(0, (int) func_0203efbc(player), 11, 1, 0);
+    return EventQueue_Push(0, (int) SceneObjectBase_Id(player), 11, 1, 0);
 }
 CLEAN_AS(func_0203e37c, EventQueue_RequestKind11)
 
@@ -495,12 +477,12 @@ CLEAN_AS(func_0203e37c, EventQueue_RequestKind11)
  * (priority 2) about it, starting at `step`. */
 int EventQueue_RequestKind1(int step)
 {
-    void *player = func_020961a8(4);
+    void *player = SessionPlayers_ActorOf(4);
 
     if (player == NULL) {
         return 0;
     }
-    return EventQueue_Push(0, (int) func_0203efbc(player), 1, 2, (u8) step);
+    return EventQueue_Push(0, (int) SceneObjectBase_Id(player), 1, 2, (u8) step);
 }
 CLEAN_AS(func_0203e3c8, EventQueue_RequestKind1)
 
@@ -536,7 +518,7 @@ int EventQueue_RequestUnderfoot(void *player, int object)
     }
     id = 0;
     if (player != NULL) {
-        id = func_0203efbc(player);
+        id = SceneObjectBase_Id(player);
     }
     return EventQueue_Push((int) id, 0, 3, 1, (u8) object);
 }
@@ -546,7 +528,7 @@ CLEAN_AS(func_0203e444, EventQueue_RequestUnderfoot)
  * cleared) and inserted into the queue by priority. 0 when all 15 are taken. */
 int EventQueue_Push(int first_id, int second_id, int kind, int priority, u8 step)
 {
-    EventQueueEntry *event = func_0203f504();
+    EventQueueEntry *event = EventEntries_FindFree();
 
     if (event == NULL) {
         return 0;
@@ -560,7 +542,7 @@ int EventQueue_Push(int first_id, int second_id, int kind, int priority, u8 step
     event->unk_18 = 0;
     event->unk_19 = 0;
     event->state = EVENT_QUEUED;
-    func_02065c2c(&data_021c72c4, event);
+    ListOps_InsertByPriority(&data_021c72c4, (ListOpsPriorityNode *) event);
     return 1;
 }
 CLEAN_AS(func_0203e478, EventQueue_Push)
@@ -641,11 +623,6 @@ CLEAN_AS(func_0203e5f4, EventQueue_TakeNext)
 
 #include "town_objects.h"
 
-/* The list cleared (both ends NULL). */
-extern void func_02065c68(List *list);
-/* All 15 entries freed and cleared. */
-extern void func_0203f53c(void);
-
 /* func_0203ec98: whether there is a current event. */
 int EventQueue_HasCurrent(void)
 {
@@ -663,7 +640,7 @@ void EventQueue_StartScene(void)
     int object;
 
     EventQueue_Reset();
-    event = func_0203f504();
+    event = EventEntries_FindFree();
     object = TownObjects_AtKeptTile();
     if (object != 0) {
         event->first_id = (u32) object;
@@ -688,8 +665,8 @@ CLEAN_AS(func_0203ecac, EventQueue_StartScene)
  * flags 2 and 4 cleared. */
 void EventQueue_Reset(void)
 {
-    func_02065c68(&data_021c72c4);
-    func_0203f53c();
+    ListOps_Clear(&data_021c72c4);
+    EventEntries_FreeAll();
     data_021c72b8 = NULL;
     data_021c72bc = 0;
     EventQueue_ClearFlags(2 | 4);

@@ -5,6 +5,9 @@
 #include "layered_model.h"
 #include "model_matrix.h"
 #include "scene_look.h"
+#include "globe.h"
+#include "item_code.h"
+#include "scene_query.h"
 
 static_assert(offsetof(SceneObjectNodeState, callbacks) == 0x0c, "SceneObjectNodeState layout");
 static_assert(offsetof(SceneObjectNodeState, timings) == 0x8c, "SceneObjectNodeState layout");
@@ -41,16 +44,6 @@ extern const fx16 FX_SinCosTable_[4096 * 2];
 extern void MTX_RotY33_(Mtx33 *mtx, fx32 sine, fx32 cosine);
 extern void MTX_RotX33_(Mtx33 *mtx, fx32 sine, fx32 cosine);
 extern void MTX_Concat33(const Mtx33 *a, const Mtx33 *b, Mtx33 *ab);
-/* Whether a code has a variant (item_code.h), and its item without the variant. */
-extern int func_0204bcdc(u16 *code);
-extern int func_0204bc64(u16 *code);
-/* The two tests that, together, keep person 0xd011's translations from being kept. */
-extern int func_020b66d8(void);
-extern int func_020b6708(void);
-/* A point onto the curved ground drawn, from `in` into `out`; the angle it tilts by. */
-extern int func_0203f844(Vec3 *out, Vec3 *in);
-/* The curved ground's radius (0x1f576). */
-extern int func_0203f758(void);
 /* The callbacks themselves, handed on by their addresses. */
 extern void func_0201c48c(void *state);
 extern void func_0201c49c(void *state);
@@ -76,10 +69,10 @@ static void scene_object_nodes_hand_on(SceneObjectNodeState *state, void (*next)
 static int scene_object_nodes_is_person(u8 *object, u16 code)
 {
     u16 *person = (u16 *) (void *) (object + SCENE_OBJECT_NODES_PERSON);
-    if (func_0204bcdc(person) != 0) {
+    if (ItemCode_HasVariant(person) != 0) {
         u16 wanted = code;
-        int own = func_0204bc64(person);
-        return own == func_0204bc64(&wanted);
+        int own = ItemCode_VariantItem(person);
+        return own == ItemCode_VariantItem(&wanted);
     }
     return *person == code;
 }
@@ -133,7 +126,7 @@ void SceneObjectNodes_Joint(SceneObjectNodeState *state)
 
     if (object != NULL) {
         if (!scene_object_nodes_is_person(object, SCENE_OBJECT_NODES_PERSON_D011) ||
-            (func_020b66d8() != 0 && func_020b6708() == 1)) {
+            (SceneQuery_CurrentIn20() != 0 && SceneQuery_CurrentIndexIn20() == 1)) {
             AnimatedModel_RestoreNodeTranslation((AnimatedModelNodeState *) (void *) state, SCENE_OBJECT_NODES_HEIGHT);
         } else if (node == SCENE_OBJECT_NODES_NODE_16) {
             const s32 *rest = scene_object_nodes_rest_translation(state->node_info, node);
@@ -158,9 +151,9 @@ void SceneObjectNodes_Joint(SceneObjectNodeState *state)
         AnimatedModelJoint *joint = state->joint;
         Vec3 bent = joint->translation;
         Vec3 from = joint->translation;
-        int tilt = func_0203f844(&bent, &from);
+        int tilt = Globe_Bend(&bent, &from);
         joint->translation.z = bent.z;
-        joint->translation.y = (s32) ((u32) bent.y - (u32) func_0203f758());
+        joint->translation.y = (s32) ((u32) bent.y - (u32) Globe_Radius());
         scene_object_nodes_turn(&joint->rotation, tilt, 0);
     }
 

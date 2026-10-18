@@ -13,6 +13,16 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "field_actor_parts.h"
+#include "anim_slots.h"
+#include "anim_tables.h"
+#include "face_anim_heaps.h"
+#include "face_anim_slots.h"
+#include "face_anim_timer.h"
+#include "face_texture.h"
+#include "frame_ctrl.h"
+#include "held_item_pool.h"
+#include "layered_model.h"
+#include "tex_pattern_anim.h"
 
 static_assert(offsetof(FieldActor, anim) == 0x2d0, "body animation");
 static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
@@ -37,41 +47,8 @@ extern const u16 data_020c7d04[];
 #define MODEL_G3D 0x5c
 
 /* The animation sets and the joint animations in them. */
-extern void func_0205cc1c(u8 *set, int resource, int a, int b);
-extern int func_0205cb94(u8 *set);
 extern int NNS_G3dGetJntAnmSet(int resource);
 extern int func_02107b44(int set, int index);
-/* The body's model: a joint animation started (func_02054828 and, for the held item's,
- * func_020547b0), the held item's joints (func_02054740, func_02054718) or none
- * (func_02054768), and its update. */
-extern void func_02054828(u8 *body, int animation, int blend, u8 flags, int speed, int start, int a);
-extern void func_020547b0(u8 *body, int animation, int frames, int a, int b, int c, int d, int e);
-extern void func_02054740(u8 *body, int a, int b);
-extern void func_02054718(u8 *body, int a, int b);
-extern void func_02054768(u8 *body, int frames, int a);
-extern void func_02054860(u8 *body);
-
-/* The held item's animation and the tables of its joints. */
-extern u32 func_0205f670(u16 *item);
-extern u8 func_0205ceb0(int animation);
-extern u16 func_0205cebc(u32 held_anim);
-extern u8 func_0205cf10(u32 group);
-extern u8 func_0205ceec(int group, int index);
-extern u8 func_0205cec8(int group, int index);
-
-/* The face animations: their numbers by animation number, their set, their objects. */
-extern u16 func_0205cf28(u32 animation);
-extern u16 func_0205cf1c(u32 animation);
-extern void func_0205d7b8(u8 *set, int number, int a, int b);
-extern int func_0205d8a0(const u8 *set);
-extern int func_0205d894(const u8 *set);
-extern int func_0205dc80(const u8 *face);
-extern Heap *func_0205db38(const u8 *part);
-extern int func_0205685c(u8 *anim, int model, int texture, u8 a, Heap *heap);
-extern void func_0205678c(u8 *anim, int resource, int frame, int a, u8 flags, fx32 speed);
-extern void func_02056778(u8 *anim);
-extern int func_02056f28(const u8 *anim, int frame);
-extern int func_020645e0(u8 *timer);
 
 /* The byte `offset` into the actor. */
 static u8 *field_actor_anim_at(FieldActor *actor, u32 offset)
@@ -97,33 +74,33 @@ static u16 field_actor_anim_whole_frame(fx32 frame)
 void FieldActor_PlayHeldAnimation(FieldActor *actor, u16 *item, int animation, int frames)
 {
     u8 *body = field_actor_anim_at(actor, FIELD_ACTOR_BODY);
-    u32 held = func_0205f670(item);
-    int mode = func_0205ceb0(animation);
+    u32 held = HeldItemPool_ItemAnim(item);
+    int mode = AnimTables_HeldMode(animation);
     int play = mode != 3 && held != HELD_ANIM_NONE;
     if (play && mode == 1 && (*item < 0x1380 || *item > 0x13a7)) {
         play = 0;
     }
 
     if (!play) {
-        func_02054768(body, frames, 0);
+        LayeredModel_StartAFromBase((LayeredModel *) (void *) body, frames, 0);
     } else {
         u8 *set = field_actor_anim_at(actor, FIELD_ACTOR_HELD_ANIM_SET);
-        func_0205cc1c(set, (int) held, 1, 0);
-        int joints = func_02107b44(NNS_G3dGetJntAnmSet(func_0205cb94(set)), 0);
-        func_020547b0(body, joints, frames, 0, FX32_ONE, 0, 0, 0);
-        u32 group = func_0205cebc(held);
+        AnimSlots_Load(set, (int) held, 1, 0);
+        int joints = func_02107b44(NNS_G3dGetJntAnmSet(AnimSlots_SlotData(set)), 0);
+        LayeredModel_PlayA((LayeredModel *) (void *) body, (const void *) (uintptr_t) joints, frames, 0, FX32_ONE, 0, 0, 0);
+        u32 group = AnimTables_HeldJointGroup(held);
         if (group < 4) {
-            u32 count = func_0205cf10(group);
+            u32 count = AnimTables_HeldJointCount(group);
             for (u32 i = 0; i < count; i++) {
-                int a = func_0205ceec((int) group, (int) i);
-                func_02054740(body, a, func_0205cec8((int) group, (int) i));
+                int a = AnimTables_HeldJointA((int) group, (int) i);
+                LayeredModel_AddNodesA((LayeredModel *) (void *) body, a, AnimTables_HeldJointB((int) group, (int) i));
             }
             if (mode == 2) {
-                int a = func_0205ceec(1, 0);
-                func_02054718(body, a, func_0205cec8(1, 0));
+                int a = AnimTables_HeldJointA(1, 0);
+                LayeredModel_RemoveNodesA((LayeredModel *) (void *) body, a, AnimTables_HeldJointB(1, 0));
             }
         } else {
-            func_02054768(body, frames, 0);
+            LayeredModel_StartAFromBase((LayeredModel *) (void *) body, frames, 0);
         }
     }
     FIELD_ACTOR_HELD_ANIM(actor) = (int) held;
@@ -208,9 +185,10 @@ void FieldActor_PlayAnimation(FieldActor *actor, int animation, int blend, u8 fl
 
     if (animation != 0 || current != 0 || start != 0 || blend == 0 || resource < ANIM_RESOURCE_BY_NUMBER) {
         u8 *set = field_actor_anim_at(actor, FIELD_ACTOR_BODY_ANIM_SET);
-        func_0205cc1c(set, body_resource, 1, 0);
-        int joints = func_02107b44(NNS_G3dGetJntAnmSet(func_0205cb94(set)), 0);
-        func_02054828(field_actor_anim_at(actor, FIELD_ACTOR_BODY), joints, blend, flags, speed, start, 0);
+        AnimSlots_Load(set, body_resource, 1, 0);
+        int joints = func_02107b44(NNS_G3dGetJntAnmSet(AnimSlots_SlotData(set)), 0);
+        LayeredModel_PlayBaseA((LayeredModel *) (void *) field_actor_anim_at(actor, FIELD_ACTOR_BODY),
+                               (const void *) (uintptr_t) joints, blend, flags, speed, start, 0);
         actor->animation = animation;
         FIELD_ACTOR_ANIM_FLAGS(actor) = flags;
     }
@@ -232,7 +210,7 @@ CLEAN_AS(func_020110b4, FieldActor_AnimationResource)
 /* func_02010f5c: the body's model runs a frame (func_02054860). */
 void FieldActor_UpdateBody(FieldActor *actor)
 {
-    func_02054860(field_actor_anim_at(actor, FIELD_ACTOR_BODY));
+    LayeredModel_UpdateA((LayeredModel *) (void *) field_actor_anim_at(actor, FIELD_ACTOR_BODY));
 }
 CLEAN_AS(func_02010f5c, FieldActor_UpdateBody)
 
@@ -244,9 +222,10 @@ void FieldActor_PlayFaceAnimB(FieldActor *actor, const int *number, const u8 *fl
 {
     u8 *set = field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_SET);
     u8 *anim = field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_B);
-    func_0205d7b8(set, *number, 1, 0);
-    func_0205678c(anim, func_0205d894(set), 0, 0, *flags, FX32_ONE);
-    func_02056778(anim);
+    FaceAnimSlots_Load(set, *number, 1, 0);
+    TexPatternAnim_Start((TexPatternAnim *) (void *) anim, (void *) (uintptr_t) FaceAnimSlots_SlotDataB(set), 0, 0, *flags,
+                         FX32_ONE);
+    TexPatternAnim_Step((TexPatternAnim *) (void *) anim);
     FIELD_ACTOR_FACE_ANIM_B_NUMBER(actor) = *number;
 }
 CLEAN_AS(func_02010af4, FieldActor_PlayFaceAnimB)
@@ -256,9 +235,10 @@ void FieldActor_PlayFaceAnimA(FieldActor *actor, const int *number, const u8 *fl
 {
     u8 *set = field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_SET);
     u8 *anim = field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_A);
-    func_0205d7b8(set, *number, 1, 0);
-    func_0205678c(anim, func_0205d8a0(set), 0, 0, *flags, FX32_ONE);
-    func_02056778(anim);
+    FaceAnimSlots_Load(set, *number, 1, 0);
+    TexPatternAnim_Start((TexPatternAnim *) (void *) anim, (void *) (uintptr_t) FaceAnimSlots_SlotDataA(set), 0, 0, *flags,
+                         FX32_ONE);
+    TexPatternAnim_Step((TexPatternAnim *) (void *) anim);
     FIELD_ACTOR_FACE_ANIM_A_NUMBER(actor) = *number;
 }
 CLEAN_AS(func_02010b50, FieldActor_PlayFaceAnimA)
@@ -269,7 +249,7 @@ CLEAN_AS(func_02010b50, FieldActor_PlayFaceAnimA)
 void FieldActor_MatchFaceAnimB(FieldActor *actor, const int *animation, const u8 *flags)
 {
     int playing = FIELD_ACTOR_FACE_ANIM_B_NUMBER(actor);
-    int number = func_0205cf1c((u32) *animation);
+    int number = AnimTables_FaceAnimB((u32) *animation);
     if (number == FACE_ANIM_NONE && playing != FACE_ANIM_B_DEFAULT) {
         number = FACE_ANIM_B_DEFAULT;
     }
@@ -283,7 +263,7 @@ CLEAN_AS(func_02010bac, FieldActor_MatchFaceAnimB)
 void FieldActor_MatchFaceAnimA(FieldActor *actor, const int *animation, const u8 *flags)
 {
     int playing = FIELD_ACTOR_FACE_ANIM_A_NUMBER(actor);
-    int number = func_0205cf28((u32) *animation);
+    int number = AnimTables_FaceAnimA((u32) *animation);
     if (number == FACE_ANIM_NONE && playing != FACE_ANIM_A_DEFAULT) {
         number = FACE_ANIM_A_DEFAULT;
     }
@@ -300,9 +280,10 @@ void FieldActor_BindFaceAnims(FieldActor *actor)
     static const u32 anims[2] = {FIELD_ACTOR_FACE_ANIM_A, FIELD_ACTOR_FACE_ANIM_B};
     for (int i = 0; i < 2; i++) {
         int model = FIELD_ACTOR_FIELD(actor, int, FIELD_ACTOR_MODEL_A + MODEL_G3D);
-        int texture = func_0205dc80(field_actor_anim_at(actor, FIELD_ACTOR_FACE));
-        Heap *heap = func_0205db38(field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_HEAP));
-        func_0205685c(field_actor_anim_at(actor, anims[i]), model, texture, 1, heap);
+        int texture = FaceTexture_SlotFile(field_actor_anim_at(actor, FIELD_ACTOR_FACE));
+        Heap *heap = (Heap *) (uintptr_t) FaceAnimHeaps_SlotHeap(field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_HEAP));
+        TexPatternAnim_Load((TexPatternAnim *) (void *) field_actor_anim_at(actor, anims[i]), (u8 *) (uintptr_t) model,
+                            (u8 *) (uintptr_t) texture, 1, heap);
     }
 }
 CLEAN_AS(func_02010c34, FieldActor_BindFaceAnims)
@@ -311,7 +292,7 @@ CLEAN_AS(func_02010c34, FieldActor_BindFaceAnims)
 void FieldActor_StepFaceAnimB(FieldActor *actor)
 {
     if (FIELD_ACTOR_FACE_ANIM_B_NUMBER(actor) != FACE_ANIM_NONE) {
-        func_02056778(field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_B));
+        TexPatternAnim_Step((TexPatternAnim *) (void *) field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_B));
     }
 }
 CLEAN_AS(func_02010ecc, FieldActor_StepFaceAnimB)
@@ -325,9 +306,9 @@ void FieldActor_StepFaceAnimA(FieldActor *actor)
     if (number == FACE_ANIM_NONE) {
         return;
     }
-    if (number != 0 || func_02056f28(anim, 0) == 0 ||
-        func_020645e0(field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_TIMER)) != 0) {
-        func_02056778(anim);
+    if (number != 0 || FrameCtrl_Passed((const FrameCtrl *) (void *) anim, 0) == 0 ||
+        FaceAnimTimer_Step((FaceAnimTimer *) (void *) field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_TIMER)) != 0) {
+        TexPatternAnim_Step((TexPatternAnim *) (void *) anim);
     }
 }
 CLEAN_AS(func_02010ef4, FieldActor_StepFaceAnimA)

@@ -102,17 +102,6 @@ extern s32 data_020c904c; /* the water's surface height */
 extern const fx16 FX_SinCosTable_[4096 * 2];
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* The overlay's: the shadow's animation speed set to `speed` sixteenths of a frame
- * (func_ov003_022277fc), a random number in [lo, hi) and one of either sign
- * (func_ov003_0222793c, func_ov003_0222791c), whether `b` is in the box around `a`
- * (func_ov003_0222799c), a point drifted by the water's current (func_ov003_0222803c), and the
- * shadow escaping over ground of its group (func_ov003_022282b8). */
-extern void func_ov003_022277fc(FishShadow *fish, int speed);
-extern int func_ov003_0222793c(int lo, int hi);
-extern int func_ov003_0222791c(int lo, int hi);
-extern int func_ov003_0222799c(const Vec3 *a, const Vec3 *b, int dx, int dz_ahead, int dz_behind);
-extern void func_ov003_0222803c(Vec3 *position, int amount);
-extern int func_ov003_022282b8(FishShadow *fish, Vec3 *last_position);
 
 /* Entry `index` of a table of member pointers, the address computed without a bound. */
 static const MemberPointer *fish_swim_member(const MemberPointer *table, unsigned int index)
@@ -166,7 +155,7 @@ static int fish_swim_bite_frames(const FishShadow *fish, int rod)
 
 static int fish_swim_in_box(const FishShadow *fish, const Vec3 *point, fx32 size)
 {
-    return func_ov003_0222799c(&fish->position, point, size, size, size);
+    return FishShadow_InBox(&fish->position, point, size, size, size);
 }
 
 /* The first part of a stepped approach: 1/16 more a frame, at most 1/16 of a unit. */
@@ -188,11 +177,11 @@ static void fish_swim_move_effect(const FishShadow *fish)
 static void fish_swim_fin_speed(FishShadow *fish, int frames, int fast, int middle)
 {
     if (frames >= fast) {
-        func_ov003_022277fc(fish, 3);
+        FishShadow_SetAnimSpeed(fish, 3);
     } else if (frames >= middle) {
-        func_ov003_022277fc(fish, 0x10);
+        FishShadow_SetAnimSpeed(fish, 0x10);
     } else {
-        func_ov003_022277fc(fish, 0x20);
+        FishShadow_SetAnimSpeed(fish, 0x20);
     }
 }
 
@@ -245,9 +234,9 @@ int FishShadowHook_Strike(FishShadow *fish)
             fish->hook_step = FISH_HOOK_PULL_STEP;
             fish->unk_13c = 0;
             FishingFloat_SetState(fishing_float, FISHING_FLOAT_RIPPLING);
-            fish->pull_left = func_ov003_0222793c(0, 2) != 0;
+            fish->pull_left = FishShadow_Random(0, 2) != 0;
             const FishSwimSize *size = fish_swim_size(fish->size);
-            fish->pull_frames = (u8) func_ov003_0222793c(size->pull_min, size->pull_max);
+            fish->pull_frames = (u8) FishShadow_Random(size->pull_min, size->pull_max);
             fish->pull_point = fishing_float->position;
             fish->yaw = (s16) (fish->pull_left ? fish->yaw - 0x4000 : fish->yaw + 0x4000);
             return 1;
@@ -296,7 +285,7 @@ CLEAN_AS(func_ov003_0222ad2c, FishShadowHook_LetGo)
  * swims. */
 int FishShadowHook_StepFlee(FishShadow *fish)
 {
-    func_ov003_022277fc(fish, 0x1c);
+    FishShadow_SetAnimSpeed(fish, 0x1c);
     int frames = fish->unk_13c;
     int distance = 0x19 * (frames + 10);
     if (distance >= 0x180) {
@@ -337,14 +326,14 @@ int FishShadowHook_StepPull(FishShadow *fish)
         fish->yaw = (s16) (fish->yaw - turn);
         angle = (s16) (fish->yaw + 0x4000);
     }
-    int drift = data_ov003_0225f0c0 + func_ov003_0222791c(3, 10);
+    int drift = data_ov003_0225f0c0 + FishShadow_RandomSigned(3, 10);
     data_ov003_0225f0c0 = drift;
     if (drift < -12) {
         data_ov003_0225f0c0 = -12;
     } else if (drift > 20) {
         data_ov003_0225f0c0 = 20;
     }
-    int distance = data_ov003_0225f0c0 + func_ov003_0222791c(0, 0xf);
+    int distance = data_ov003_0225f0c0 + FishShadow_RandomSigned(0, 0xf);
     distance = fish_swim_hundredths(distance + fish_swim_size(fish->size)->pull_distance);
     Vec3 float_at = fishing_float->position;
     fish->position.x = float_at.x;
@@ -372,7 +361,7 @@ int FishShadowHook_StepBite(FishShadow *fish)
         return 0;
     }
     const Vec3 *target = &fishing_float->position;
-    func_ov003_022277fc(fish, 0x18);
+    FishShadow_SetAnimSpeed(fish, 0x18);
     int rod = fish_swim_rod(fish->player);
     if (rod < 0) {
         return 0;
@@ -400,14 +389,14 @@ int FishShadowHook_StepBite(FishShadow *fish)
         case FISH_HOOK_BITE_AWAY: {
             fx32 box = fish_swim_hundredths(fish_swim_size(fish->size)->near);
             FishShadow_MoveAlong(&fish->position, 0x180, (u16) Vec_YawTo(target, &fish->position));
-            int chance = func_ov003_0222793c(0, 100);
+            int chance = FishShadow_Random(0, 100);
             if (!fish_swim_in_box(fish, target, box)) {
                 fish->hook_step = chance >= 70 ? FISH_HOOK_BITE_RIGHT : FISH_HOOK_BITE_REST;
             }
             break;
         }
         case FISH_HOOK_BITE_REST:
-            if (func_ov003_0222793c(0, 100) <= 50) {
+            if (FishShadow_Random(0, 100) <= 50) {
                 fish->hook_step = FISH_HOOK_BITE_LEFT;
             }
             break;
@@ -460,17 +449,17 @@ int FishShadowHook_StepNibble(FishShadow *fish)
                 FishingFloat_ToSurface(fishing_float);
                 fish->hook_step = FISH_HOOK_NIBBLE_PECK;
             }
-            func_ov003_022277fc(fish, 0x18);
+            FishShadow_SetAnimSpeed(fish, 0x18);
             break;
         }
         case FISH_HOOK_NIBBLE_PECK: {
-            int frames = func_ov003_0222793c(10, 20);
+            int frames = FishShadow_Random(10, 20);
             int angle;
-            if (func_ov003_0222793c(0, 100) < 50) {
+            if (FishShadow_Random(0, 100) < 50) {
                 angle = Vec_YawTo(target, &fish->position);
             } else {
                 angle = Vec_YawTo(&fish->position, target);
-                if (func_ov003_0222793c(0, 100) < 5) {
+                if (FishShadow_Random(0, 100) < 5) {
                     FishingFloat_ToSurface(fishing_float);
                 }
             }
@@ -492,7 +481,7 @@ int FishShadowHook_StepNibble(FishShadow *fish)
                 fish->unk_23d = 0;
                 fish->hook_step = FISH_HOOK_NIBBLE_CLOSE;
             }
-            func_ov003_022277fc(fish, 0x10);
+            FishShadow_SetAnimSpeed(fish, 0x10);
             break;
         }
     }
@@ -531,8 +520,8 @@ int FishShadowHook_StepHesitate(FishShadow *fish)
             break;
         }
         case FISH_HOOK_HESITATE_DITHER: {
-            int frames = func_ov003_0222793c(10, 15);
-            if (func_ov003_0222793c(0, 100) < 50) {
+            int frames = FishShadow_Random(10, 15);
+            if (FishShadow_Random(0, 100) < 50) {
                 fish->yaw = Vec_YawTo(target, &fish->position);
             } else {
                 fish->yaw = Vec_YawTo(&fish->position, target);
@@ -541,7 +530,7 @@ int FishShadowHook_StepHesitate(FishShadow *fish)
             fish->yaw = Vec_YawTo(&fish->position, target);
             if (fish->unk_23d > frames) {
                 fish->unk_23d = 0;
-                int sixths = func_ov003_0222791c(1, 2);
+                int sixths = FishShadow_RandomSigned(1, 2);
                 fish->yaw = (s16) (fish->yaw + (s16) (0x1554 * sixths));
                 fish->hook_step = FISH_HOOK_HESITATE_LEAVE;
             }
@@ -556,7 +545,7 @@ int FishShadowHook_StepHesitate(FishShadow *fish)
             break;
         }
     }
-    func_ov003_022277fc(fish, 0x18);
+    FishShadow_SetAnimSpeed(fish, 0x18);
     fish->unk_23d++;
     return 1;
 }
@@ -577,9 +566,9 @@ int FishShadowHook_StepApproach(FishShadow *fish)
     int step = fish_swim_ramp(fish);
     fish->yaw = Vec_YawTo(&fish->position, target);
     FishShadow_MoveAlong(&fish->position, step, (u16) fish->yaw);
-    func_ov003_022277fc(fish, 0x18);
+    FishShadow_SetAnimSpeed(fish, 0x18);
     if (fish_swim_in_box(fish, target, box)) {
-        int chance = func_ov003_0222793c(0, 100);
+        int chance = FishShadow_Random(0, 100);
         int limit = 95;
         int x;
         int z;
@@ -601,7 +590,7 @@ int FishShadowHook_StepApproach(FishShadow *fish)
                 break;
         }
         if (chance <= limit) {
-            fish->nibble_wait = (u8) func_ov003_0222793c(4, 0xb4);
+            fish->nibble_wait = (u8) FishShadow_Random(4, 0xb4);
             fish->unk_13c = 0;
             fish->unk_23d = 0;
             fish->hook_step = FISH_HOOK_NIBBLE_CLOSE;
@@ -675,7 +664,7 @@ void FishShadowSwim_Flee(FishShadow *fish)
     if (fish->has_fin) {
         fish_swim_fin_speed(fish, fish->unk_13c, 10, 5);
     } else {
-        func_ov003_022277fc(fish, 0x20);
+        FishShadow_SetAnimSpeed(fish, 0x20);
     }
     fish_swim_move_effect(fish);
 }
@@ -685,9 +674,9 @@ CLEAN_AS(func_ov003_0222b798, FishShadowSwim_Flee)
  * once in 100 frames, or after 100 frames, it starts again (FISH_SWIM_START). */
 void FishShadowSwim_Drift(FishShadow *fish)
 {
-    func_ov003_022277fc(fish, 10);
-    func_ov003_0222803c(&fish->position, 0x40);
-    if (func_ov003_0222793c(0, 100) == 1 || fish->unk_13c > 100) {
+    FishShadow_SetAnimSpeed(fish, 10);
+    FishShadow_Drift(&fish->position, 0x40);
+    if (FishShadow_Random(0, 100) == 1 || fish->unk_13c > 100) {
         fish->behaviour = FISH_SWIM_START;
     }
 }
@@ -700,9 +689,9 @@ void FishShadowSwim_SlowDown(FishShadow *fish)
     int speed = FISH_SWIM_SPEED - (int) ((u32) fish->unk_13c << 3);
     FishShadow_MoveAlong(&fish->position, speed, (u16) fish->yaw);
     if (fish->unk_13c >= 10) {
-        func_ov003_022277fc(fish, 3);
+        FishShadow_SetAnimSpeed(fish, 3);
     } else {
-        func_ov003_022277fc(fish, 0x10);
+        FishShadow_SetAnimSpeed(fish, 0x10);
     }
     if (speed <= 0) {
         fish->unk_13c = 0;
@@ -717,7 +706,7 @@ CLEAN_AS(func_ov003_0222b8fc, FishShadowSwim_SlowDown)
 void FishShadowSwim_Cruise(FishShadow *fish)
 {
     FishShadow_MoveAlong(&fish->position, FISH_SWIM_SPEED, (u16) fish->yaw);
-    func_ov003_022277fc(fish, 0x20);
+    FishShadow_SetAnimSpeed(fish, 0x20);
     fish->unk_140 = (s16) (fish->unk_140 - 1);
     if (fish->unk_140 == 0) {
         fish->unk_13c = 0;
@@ -733,9 +722,9 @@ void FishShadowSwim_SpeedUp(FishShadow *fish)
     int speed = (int) ((u32) fish->unk_13c << 3);
     fish_swim_wobble_move(fish, speed, speed >> 2);
     if (fish->unk_13c >= 10) {
-        func_ov003_022277fc(fish, 0x20);
+        FishShadow_SetAnimSpeed(fish, 0x20);
     } else {
-        func_ov003_022277fc(fish, 0x10);
+        FishShadow_SetAnimSpeed(fish, 0x10);
     }
     if (speed > FISH_SWIM_SPEED) {
         fish->behaviour = FISH_SWIM_CRUISE;
@@ -748,11 +737,11 @@ CLEAN_AS(func_ov003_0222b9b4, FishShadowSwim_SpeedUp)
  * then it speeds up (FISH_SWIM_SPEED_UP). */
 void FishShadowSwim_Start(FishShadow *fish)
 {
-    fish->yaw = (s16) (fish->yaw + (s16) func_ov003_0222791c(0, 0x2aa8));
+    fish->yaw = (s16) (fish->yaw + (s16) FishShadow_RandomSigned(0, 0x2aa8));
     fish->unk_13c = 0;
-    fish->unk_140 = (u8) func_ov003_0222793c(1, 3);
-    fish->wobble = (s16) func_ov003_0222791c(0xaaa, 0x2000);
-    fish->unk_210 = func_ov003_0222791c(0, 2) != 0;
+    fish->unk_140 = (u8) FishShadow_Random(1, 3);
+    fish->wobble = (s16) FishShadow_RandomSigned(0xaaa, 0x2000);
+    fish->unk_210 = FishShadow_RandomSigned(0, 2) != 0;
     fish->behaviour = FISH_SWIM_SPEED_UP;
 }
 CLEAN_AS(func_ov003_0222ba8c, FishShadowSwim_Start)
@@ -841,7 +830,7 @@ void FishShadowSwim_Update(FishShadow *fish)
     int z;
     Position_Tile(&x, &z, (const Position *) &fish->position);
     if (UnitTypeInfo_GroupAt(x, z) == water_group) {
-        func_ov003_022282b8(fish, &fish->last_position);
+        FishShadow_TryFlee(fish, &fish->last_position);
     }
 }
 CLEAN_AS(func_ov003_0222bb0c, FishShadowSwim_Update)
@@ -860,7 +849,7 @@ void FishShadowSwim_Settle(FishShadow *fish)
         if (fish->group_state == FISH_SHADOW_IN_GROUP0) {
             fish->yaw = (s16) (fish->yaw + 0x2aa8);
         } else {
-            fish->yaw = (s16) func_ov003_0222791c(0, 0xaaa);
+            fish->yaw = (s16) FishShadow_RandomSigned(0, 0xaaa);
         }
         fish->unk_201 = 0;
     } else {

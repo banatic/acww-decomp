@@ -2,6 +2,10 @@
 #include "held_item_link.h"
 
 #include "clean.h"
+#include "held_item.h"
+#include "model_object.h"
+#include "pool_link.h"
+#include "speaker_anim.h"
 
 static_assert(offsetof(HeldItem, scale) == 0x04, "HeldItem layout");
 static_assert(offsetof(HeldItemLink, link) == 0x04, "HeldItemLink layout");
@@ -22,25 +26,10 @@ static_assert(offsetof(HeldItemLink, follows_hand) == 0x3c, "HeldItemLink layout
 /* In a held item's pool record (func_0205e8e4): the word HeldItemLink_SetRecordValue sets. */
 #define HELD_ITEM_LINK_RECORD_VALUE (0x9c + 0x10)
 
-extern int func_02082c98(void *link);
-extern void func_0205eac4(unsigned char *item, int value);
-extern int func_0205e8e4(const unsigned char *item);
-extern void func_0205e954(HeldItem *item, void *matrix);
-extern int func_02055d0c(char *model, int matrix, int joint);
-extern void func_0205ea60(HeldItem *item);
-extern void func_02083068(void *link);
-extern void func_0205eae0(u8 *item, int action, int a, int b);
-extern void func_0205eb8c(void *item, void *code, int c);
-extern void func_02016638(int motion, char *owner, unsigned short *code, int p3, unsigned short p4);
-extern int func_0208308c(void *link);
-extern int func_02082cb8(void *link, int arg);
-extern void *func_02082d04(void *link);
-extern void *func_02082d1c(void *link);
-
 /* The held item the link stands for, or null. */
 static HeldItem *held_item_link_item(HeldItemLink *link)
 {
-    return (HeldItem *) (uintptr_t) (u32) func_02082c98(link->link);
+    return (HeldItem *) (uintptr_t) (u32) PoolLink_Item((PoolLink *) (void *) link->link);
 }
 
 /* The item codes the actions 0 and 15 to 18 are for. */
@@ -54,7 +43,7 @@ void HeldItemLink_SetRecordValue(HeldItemLink *link, int value)
 {
     HeldItem *item = held_item_link_item(link);
     if (item != NULL) {
-        func_0205eac4(&item->index, value);
+        HeldItem_SetAnimSpeed(&item->index, value);
     }
 }
 CLEAN_AS(func_020121a8, HeldItemLink_SetRecordValue)
@@ -64,7 +53,7 @@ int HeldItemLink_Record(HeldItemLink *link)
 {
     HeldItem *item = held_item_link_item(link);
     if (item != NULL) {
-        return func_0205e8e4(&item->index);
+        return HeldItem_Model(&item->index);
     }
     return 0;
 }
@@ -102,10 +91,11 @@ void HeldItemLink_FollowHand(HeldItemLink *link, void *owner)
     }
     HeldItem *item = held_item_link_item(link);
     if (owner != NULL) {
-        func_02055d0c((char *) owner + HELD_ITEM_LINK_OWNER_MODEL, (int) (uintptr_t) link->hand, HELD_ITEM_LINK_HAND_JOINT);
+        ModelObject_JointMatrix((ModelObject *) (void *) ((char *) owner + HELD_ITEM_LINK_OWNER_MODEL),
+                                (Mtx43 *) (uintptr_t) link->hand, HELD_ITEM_LINK_HAND_JOINT);
     }
     if (item != NULL) {
-        func_0205e954(item, link->hand);
+        HeldItem_Draw((HeldItemObject *) item, (const Mtx43 *) (void *) link->hand);
     }
 }
 CLEAN_AS(func_02012214, HeldItemLink_FollowHand)
@@ -117,9 +107,9 @@ void HeldItemLink_UpdateFromOwner(HeldItemLink *link, void *owner)
     HeldItem *item = held_item_link_item(link);
     if (item != NULL) {
         int value = *(int *) ((u8 *) owner + HELD_ITEM_LINK_OWNER_VALUE);
-        u8 *record = (u8 *) (uintptr_t) (u32) func_0205e8e4(&item->index);
+        u8 *record = (u8 *) (uintptr_t) (u32) HeldItem_Model(&item->index);
         *(int *) (record + HELD_ITEM_LINK_RECORD_VALUE) = value;
-        func_0205ea60(item);
+        HeldItem_Update((HeldItemObject *) item);
     }
 }
 CLEAN_AS(func_02012250, HeldItemLink_UpdateFromOwner)
@@ -127,7 +117,7 @@ CLEAN_AS(func_02012250, HeldItemLink_UpdateFromOwner)
 /* func_02012280: the link lets go of its item (func_02083068). */
 void HeldItemLink_Release(HeldItemLink *link)
 {
-    func_02083068(link->link);
+    PoolLink_Release((PoolLink *) (void *) link->link);
 }
 CLEAN_AS(func_02012280, HeldItemLink_Release)
 
@@ -250,7 +240,7 @@ void HeldItemLink_Act(HeldItemLink *link, int action, int a, int b)
 {
     HeldItem *item = held_item_link_item(link);
     if (item != NULL) {
-        func_0205eae0(&item->index, action, a, b);
+        HeldItem_Act(&item->index, action, a, b);
     }
 }
 CLEAN_AS(func_020124e4, HeldItemLink_Act)
@@ -264,9 +254,9 @@ int HeldItemLink_Take(HeldItemLink *link, void *owner, u16 *item, void *p3, u16 
     if (held == NULL) {
         return 0;
     }
-    func_0205eb8c(held, item, 0);
-    func_02016638((int) (uintptr_t) ((u8 *) owner + HELD_ITEM_LINK_OWNER_MOTION), (char *) owner, item, (int) (uintptr_t) p3,
-                  p4);
+    HeldItem_Take((HeldItemObject *) held, item, 0);
+    SpeakerAnim_PlayItemPose((SpeakerAnim *) (uintptr_t) ((int) (uintptr_t) ((u8 *) owner + HELD_ITEM_LINK_OWNER_MOTION)),
+                             (u8 *) ((char *) owner), item, (int) (uintptr_t) p3, p4);
     link->item = *item;
     return 1;
 }
@@ -277,10 +267,10 @@ CLEAN_AS(func_02012508, HeldItemLink_Take)
  * answer is 1, else 0. */
 int HeldItemLink_Open(HeldItemLink *link, void *arg)
 {
-    if (!func_0208308c(link->link)) {
+    if (!PoolLink_Take((PoolLink *) (void *) link->link)) {
         return 0;
     }
-    if (!func_02082cb8(link->link, (int) (uintptr_t) arg)) {
+    if (!PoolLink_ItemOpen((PoolLink *) (void *) link->link, (int) (uintptr_t) arg)) {
         return 0;
     }
     link->item = HELD_ITEM_LINK_NONE;
@@ -288,19 +278,22 @@ int HeldItemLink_Open(HeldItemLink *link, void *arg)
 }
 CLEAN_AS(func_02012550, HeldItemLink_Open)
 
-/* func_02012588: the constructor; only the link object is built (the code stays as it was). */
+/* func_02012588: the destructor; only the link object is destroyed (the code stays as it was).
+ * Its name and HeldItemLink_Destruct's are the wrong way round: overlay 68 calls them by these
+ * names. */
 HeldItemLink *HeldItemLink_Construct(HeldItemLink *link)
 {
-    func_02082d04(link->link);
+    PoolLink_ItemDestruct((PoolLink *) (void *) link->link);
     return link;
 }
 CLEAN_AS(func_02012588, HeldItemLink_Construct)
 
-/* func_0201259c: the destructor: no item code, the link object destroyed (func_02082d1c). */
+/* func_0201259c: the constructor (see HeldItemLink_Construct): no item code, and the link
+ * object built with no entry. */
 HeldItemLink *HeldItemLink_Destruct(HeldItemLink *link)
 {
     link->item = HELD_ITEM_LINK_NONE;
-    func_02082d1c(link->link);
+    PoolLink_ItemConstruct((PoolLink *) (void *) link->link);
     link->item = HELD_ITEM_LINK_NONE;
     return link;
 }

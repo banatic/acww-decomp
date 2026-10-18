@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "room_objects.h"
 
 static_assert(sizeof(ObjectSet) == 0x14, "object set");
 static_assert(offsetof(CellList, cells) == 4, "cell list cells");
@@ -14,9 +15,6 @@ static_assert(sizeof(CellList) == 0x24, "cell list");
 #define LIST_SIZE 4
 #define LAYER_FLOOR 0
 #define LAYER_ON_TOP 1
-
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int y, int layer);
 
 /* func_ov004_0220da70: `object` added unless it is null, the set is full or already holds it;
  * whether it was. */
@@ -79,10 +77,10 @@ void ObjectSet_AddOnCells(ObjectSet *set, CellList *cells, int layer)
         return;
     }
     for (unsigned long i = 0; i < CellList_Count(cells); i++) {
-        void *grid = func_ov004_0223cd50();
+        void *grid = RoomObjects_Grid();
         int x = CellList_At(cells, (int) i)->x;
         int y = CellList_At(cells, (int) i)->y;
-        RoomObject *object = func_ov004_0223cc10(grid, x, y, LAYER_ON_TOP);
+        RoomObject *object = RoomObjects_GridObjectAt(grid, x, y, LAYER_ON_TOP);
         if (object != NULL) {
             ObjectSet_Add(set, object);
         }

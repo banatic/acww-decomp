@@ -6,8 +6,6 @@
 #include "clean.h"
 #include "text_codes.h"
 
-/* The width of one character in pixels: 0 for the newline and the end, else 10. */
-extern int func_02051d30(int c);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
@@ -226,7 +224,7 @@ int TextString_FitLine(const u16 *text, int max, int width, int *count, int newl
     int length = TextString_LineLength((u16 *) text, max, newline_extra);
 
     for (int i = 0; i < length; i++) {
-        total += func_02051d30(text[i]);
+        total += TextString_CharWidth(text[i]);
         if (total > width) {
             *count = i;
             return TEXT_LINE_TOO_WIDE;
@@ -299,7 +297,7 @@ int TextString_Width(u16 *text, int count)
 {
     int width = 0;
     for (int i = 0; i < count; i++) {
-        width += func_02051d30(text[i]);
+        width += TextString_CharWidth(text[i]);
     }
     return width;
 }

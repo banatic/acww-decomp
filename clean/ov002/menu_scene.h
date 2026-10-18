@@ -21,16 +21,24 @@ typedef struct MenuSceneLink {
     struct MenuScene *owner;
 } MenuSceneLink;
 
-/* The phases MenuScene_Update runs, each by a virtual function (at the offset in the vtable).
- * What phases 0-2 and 4 are for is not known; the base's versions do nothing. */
+/* The phases MenuScene_Update runs, each by a virtual function (at the offset in the vtable;
+ * the table data_ov002_0220bec4 is filled from the constants at 0x0220babc-0x0220bae4). Only
+ * the wait has a body in the base; the derived classes override the others (ov090/menu_tabs.h,
+ * ov092/menu_dispatch.h). What phases 3 and 4 are for is not known. */
 enum MenuScenePhase {
-    MENU_SCENE_PHASE_0 = 0, /* slot 0x54 */
-    MENU_SCENE_PHASE_1 = 1, /* slot 0x58 */
-    MENU_SCENE_PHASE_2 = 2, /* slot 0x50 */
-    MENU_SCENE_WAIT = 3,    /* slot 0x48: MenuScene_Wait */
-    MENU_SCENE_PHASE_4 = 4, /* slot 0x5c */
-    MENU_SCENE_RUN = 5,     /* slot 0x4c: the scene's own state table */
-    MENU_SCENE_PHASES = 6
+    MENU_SCENE_PHASE_WAIT = 0,        /* slot 0x48: MenuScene_Wait */
+    MENU_SCENE_PHASE_STATES = 1,      /* slot 0x4c: the scene's own state table */
+    MENU_SCENE_PHASE_INTERACTIVE = 2, /* slot 0x50 */
+    MENU_SCENE_PHASE_3 = 3,           /* slot 0x54 */
+    MENU_SCENE_PHASE_4 = 4,           /* slot 0x58 */
+    MENU_SCENE_PHASE_DELETE = 5,      /* slot 0x5c: the scene asks to be deleted */
+    MENU_SCENE_PHASES = 6,
+
+    /* Older names of the same values. */
+    MENU_SCENE_PHASE_0 = MENU_SCENE_PHASE_WAIT,
+    MENU_SCENE_PHASE_1 = MENU_SCENE_PHASE_STATES,
+    MENU_SCENE_PHASE_2 = MENU_SCENE_PHASE_INTERACTIVE,
+    MENU_SCENE_RUN = MENU_SCENE_PHASE_DELETE
 };
 
 typedef struct MenuScene {
@@ -76,11 +84,11 @@ void MenuScene_SetState(MenuScene *scene, u8 state);
 u8 *MenuScene_SetSubState(MenuScene *scene, u8 sub_state);
 u8 *MenuScene_SetPhase(MenuScene *scene, u8 phase);
 int MenuScene_Update(MenuScene *scene);
+int MenuScene_Phase5(void);
 int MenuScene_Phase4(void);
-int MenuScene_Phase1(void);
-int MenuScene_Phase0(void);
+int MenuScene_Phase3(void);
 int MenuScene_Phase2(void);
-int MenuScene_Run(void);
+int MenuScene_Phase1(void);
 int MenuScene_Wait(MenuScene *scene);
 void MenuScene_Slot20(MenuScene *scene);
 int MenuScene_Slot1c(MenuScene *scene);

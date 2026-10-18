@@ -12,7 +12,7 @@ static_assert(offsetof(Bbs, last_notice) == 0xb7c, "last notice");
 static_assert(offsetof(Bbs, count) == 0xb7e, "post count");
 static_assert(offsetof(BbsWideText, text) == 0xe, "wide text characters");
 static_assert(offsetof(BbsLabel, text) == 0x12, "label characters");
-static_assert(sizeof(BbsLabel) == 0xd8, "label size");
+static_assert(sizeof(BbsLabel) == 0xd4, "label size");
 
 #define NEWLINE 0x0a
 

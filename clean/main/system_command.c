@@ -6,6 +6,9 @@
 #include "main/library_overlay.h"
 #include "main/session.h"
 #include "main/session_net.h"
+#include "item_object.h"
+#include "villager_state.h"
+#include "villager_town.h"
 
 #define SHARE_BLOCK 4          /* Session_GetSendBlock(session, 4): where system packets are built */
 #define SYSTEM_RUN_COMMANDS 13 /* the system packet kind of a command list */
@@ -45,17 +48,6 @@ extern SystemCommandWriter *const data_020ccf98[];  /* the section writers, by o
 extern SystemCommandHandler *const data_020ccfa0[]; /* the section handlers, by opcode */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-extern SystemCommandEntry *func_0207b9d0(int index); /* entry `index` of data_021d13e4; NULL from 8 */
-extern void func_020794d4(SystemCommandEntry *entry, u8 status);
-extern u8 func_020794d8(SystemCommandEntry *entry);  /* entry->status */
-extern u8 *func_020794d0(SystemCommandEntry *entry); /* &entry->object */
-extern void func_0209bd80(SystemCommandObject *object);
-extern void func_0209bd7c(SystemCommandObject *object); /* does nothing */
-extern int func_0209bc40(SystemCommandObject *object);  /* its type */
-extern u16 *func_0209bb70(SystemCommandObject *object); /* &object->item */
-/* Sets an object's type and item, and the low 5 bits of its byte 0xb. */
-extern void func_0209bd30(u8 *object, u8 type, u16 *item, u8 low_bits);
 
 /* func_02077638: hands each section of the list to the handler of its opcode.
  * QUIRK: the lengths are trusted: a list whose sections do not add up to `length` runs on past
@@ -129,21 +121,21 @@ void SystemCommand_ReadEntries(u8 *data, u16 length)
     (void) length;
     SystemCommandObject object;
 
-    func_0209bd80(&object);
+    ItemObject_Construct((ItemObject *) &object);
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
-        SystemCommandEntry *entry = func_0207b9d0(i);
+        SystemCommandEntry *entry = (SystemCommandEntry *) VillagerTown_StateAt(i);
         u8 status;
         u32 word;
         u16 half;
 
         MI_CpuCopy8(data, &status, 1);
-        func_020794d4(entry, status);
+        VillagerState_SetByte01((VillagerState *) entry, status);
 
         MI_CpuCopy8(data + 1, &object, sizeof(object));
-        u8 *dst = func_020794d0(entry);
-        u8 type = (u8) func_0209bc40(&object);
-        u16 *item = func_0209bb70(&object);
-        func_0209bd30(dst, type, item, 0);
+        u8 *dst = VillagerState_Object((VillagerState *) entry);
+        u8 type = (u8) ItemObject_Type((ItemObject *) &object);
+        u16 *item = ItemObject_Item((ItemObject *) &object);
+        ItemObject_Set((ItemObject *) (void *) dst, type, item, 0);
 
         MI_CpuCopy8(data + 13, &word, 4);
         entry->unk_20 = word;
@@ -152,7 +144,7 @@ void SystemCommand_ReadEntries(u8 *data, u16 length)
 
         data += COMMAND_ENTRY_SIZE;
     }
-    func_0209bd7c(&object);
+    ItemObject_Destruct((ItemObject *) &object);
 }
 CLEAN_AS(func_02077744, SystemCommand_ReadEntries)
 
@@ -175,10 +167,10 @@ void SystemCommand_WriteEntries(int slot)
     NetSession *session = data_020ccf94;
 
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
-        SystemCommandEntry *entry = func_0207b9d0(i);
-        u8 status = entry != NULL ? func_020794d8(entry) : 3;
+        SystemCommandEntry *entry = (SystemCommandEntry *) VillagerTown_StateAt(i);
+        u8 status = entry != NULL ? VillagerState_LinkedByte01((const VillagerState *) entry) : 3;
         Session_AppendShareData(session, &status, 1);
-        Session_AppendShareData(session, func_020794d0(entry), sizeof(SystemCommandObject));
+        Session_AppendShareData(session, VillagerState_Object((VillagerState *) entry), sizeof(SystemCommandObject));
         u32 word = entry->unk_20;
         Session_AppendShareData(session, &word, 4);
         u16 half = entry->unk_24;

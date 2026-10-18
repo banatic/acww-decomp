@@ -2,14 +2,14 @@
  * without states of its own (vtable slot 0x70 is the base class's). Each frame:
  *
  * - kind 0x2c (RoomObject.unk_780): the node set's value 0, or 1 while a player (actors 0 to 3,
- *   in state 0x28, func_ov004_0222c268) stands on one of its cells, which also advances the
+ *   in state 0x28, RoomPlayerActor_PointAtSpot) stands on one of its cells, which also advances the
  *   animations and plays sound 0 for each such player; kind 9 advances the animations and plays
  *   sound 0 every frame;
- * - with its entry among two (func_ov004_0223ca9c of func_ov004_0223cb10) in state 0 (or, for
- *   kind 0x26, in state 0, 3 or 1, giving the player's action 0, 1 or 2) and func_ov004_0223c700
+ * - with its entry among two (RoomPushes_FindObject of RoomPushes_Records) in state 0 (or, for
+ *   kind 0x26, in state 0, 3 or 1, giving the player's action 0, 1 or 2) and RoomPushes_Allowed
  *   allowing it, nobody near the point in front of the entry (RoomObject02252cd4_ProbePoint)
  *   counts up to 7 frames; once the entry has moved more than 0x200 with the count at 7, the
- *   player is sent to that point (func_ov004_0222c0b8) and the count starts again.
+ *   player is sent to that point (RoomPlayerActor_RequestSpotApproach) and the count starts again.
  *
  * Its start binds the animations of variant 0 in a loop for kinds 9 and 0x2c. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02252CD4_H

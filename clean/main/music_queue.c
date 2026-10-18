@@ -4,6 +4,20 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "block_020b220c.h"
+#include "item_code.h"
+#include "music_264.h"
+#include "music_commands.h"
+#include "music_request.h"
+#include "music_volume.h"
+#include "player_actor_ops.h"
+#include "scene_exit.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "sky.h"
+#include "town_tune.h"
+#include "scene_music.h"
 
 static_assert(sizeof(Process) == 0x50, "process size");
 static_assert(sizeof(MusicRequest) == 0x1c, "request size");
@@ -21,36 +35,12 @@ extern const u32 data_020da13c[];
 /* MusicRequest_ClearCurrent as a member function pointer. */
 extern const MemberFn data_020da26c;
 
-/* The object's own: delete, execute, create, destructor, constructor. */
-extern void func_0203539c(Obj021c526c *object);
-extern void func_02035344(Obj021c526c *object);
-extern void func_02035404(Obj021c526c *object);
-extern void *func_02035494(Obj021c526c *object);
-extern void *func_02035510(Obj021c526c *object);
-/* The member at 0x24c: whether its bytes 0x07 and 0x13 differ, and whether its words 0x00 and
- * 0x0c do. */
-extern int func_0203735c(void *member);
-extern int func_0203734c(void *member);
-/* A value of the current scene's table entry (data_020d2150) when the conditions on the
- * player's actor hold; func_020b6674 for the current scene; the byte data_021f4b18. */
-extern int func_020b6840(int arg);
-extern int func_020b6660(void);
-extern u8 func_020b22b8(void);
-/* The sound set at data_021cfbcc told again, and a delay of 0x190 or 0x14 frames set. */
-extern void func_0206e9bc(int changed);
-/* A request copied over another (clearing it first), and its timer counted down (whether it
- * ran out). */
-extern void func_02037470(MusicRequest *to, const MusicRequest *from);
-extern int func_02037458(MusicRequest *request);
-/* The music asked of the sound system next frame. */
-extern void func_02035fec(void *commands, int music);
-
 /* ---- The process */
 
 /* func_02034cec: vtable slot 3, the deletion. */
 int Process020da334_Delete(Process020da334 *self)
 {
-    func_0203539c(&self->object);
+    Obj021c526c_Delete(&self->object);
     return 1;
 }
 CLEAN_AS(func_02034cec, Process020da334_Delete)
@@ -58,7 +48,7 @@ CLEAN_AS(func_02034cec, Process020da334_Delete)
 /* func_02034d00: vtable slot 6, the frame's work. */
 int Process020da334_Execute(Process020da334 *self)
 {
-    func_02035344(&self->object);
+    Obj021c526c_Execute(&self->object);
     return 1;
 }
 CLEAN_AS(func_02034d00, Process020da334_Execute)
@@ -66,7 +56,7 @@ CLEAN_AS(func_02034d00, Process020da334_Execute)
 /* func_02034d14: vtable slot 0, the creation. */
 int Process020da334_Create(Process020da334 *self)
 {
-    func_02035404(&self->object);
+    Obj021c526c_Create(&self->object);
     return 1;
 }
 CLEAN_AS(func_02034d14, Process020da334_Create)
@@ -75,7 +65,7 @@ CLEAN_AS(func_02034d14, Process020da334_Create)
 void *Process020da334_DestructDelete(Process020da334 *self)
 {
     self->base.vtable = data_020da334;
-    func_02035494(&self->object);
+    Obj021c526c_Destruct(&self->object);
     self->base.vtable = data_020da13c;
     Process_Destruct(&self->base);
     Heap_FreeAux(self);
@@ -87,7 +77,7 @@ CLEAN_AS(func_02034d28, Process020da334_DestructDelete)
 void *Process020da334_Destruct(Process020da334 *self)
 {
     self->base.vtable = data_020da334;
-    func_02035494(&self->object);
+    Obj021c526c_Destruct(&self->object);
     self->base.vtable = data_020da13c;
     Process_Destruct(&self->base);
     return self;
@@ -100,7 +90,7 @@ void *Process020da334_Construct(Process020da334 *self)
     Process_Construct(&self->base);
     self->base.vtable = data_020da13c;
     self->base.vtable = data_020da334;
-    func_02035510(&self->object);
+    Obj021c526c_Construct(&self->object);
     return self;
 }
 CLEAN_AS(func_02034d84, Process020da334_Construct)
@@ -136,20 +126,20 @@ void Obj021c526c_ApplyChange24c(Obj021c526c *self)
 {
     int apply = 1;
 
-    if (func_0203735c(self->unk_24c) == 0) {
+    if (MusicClock_HourChanged((const MusicClock *) (void *) self->unk_24c) == 0) {
         return;
     }
-    if (func_020b6840(1) == 0) {
+    if (SceneKinds_SoundKind(1) == 0) {
         apply = 0;
     }
-    if (func_020b6660() != 0 && func_020b22b8() != 0) {
+    if (SceneQuery_CurrentIs0() != 0 && Block020b220c_Flag4b18() != 0) {
         apply = 0;
     }
     if (self->unk_2f4 != 0) {
         apply = 0;
     }
     if (apply) {
-        func_0206e9bc(func_0203734c(self->unk_24c));
+        TownTune_StartFirst(MusicClock_YearChanged((const MusicClock *) (void *) self->unk_24c));
     }
 }
 CLEAN_AS(func_02034dcc, Obj021c526c_ApplyChange24c)
@@ -183,7 +173,7 @@ void MusicQueue_OpenAt(MusicQueue *queue, int index)
 
     if (count > 0) {
         for (i = count - 1; i >= index; i--) {
-            func_02037470(&queue->requests[i + 1], &queue->requests[i]);
+            MusicRequest_Copy(&queue->requests[i + 1], &queue->requests[i]);
         }
     }
     queue->count++;
@@ -274,7 +264,7 @@ void MusicQueue_Tick(MusicQueue *queue)
 
     for (i = 0; i < count; i++) {
         MusicRequest *request = &queue->requests[i];
-        if (func_02037458(request) != 0) {
+        if (MusicRequest_CountDown(request) != 0) {
             request->done = 1;
         }
         if (i != 0 && request->head_only != 0) {
@@ -294,7 +284,7 @@ void MusicQueue_StartHead(Obj021c526c *self)
         return;
     }
     if (head->music != MUSIC_NONE) {
-        func_02035fec(self->music_commands, head->music);
+        MusicCommands_SetMusic((MusicCommands *) (void *) self->music_commands, head->music);
         head->music_started = 1;
     }
     MusicQueue_ForEach(&self->queue, data_020da26c);
@@ -345,78 +335,10 @@ extern const u32 data_020da314[];
 /* A request reset (priority 0x25, no music, all else 0; bytes 0x15-0x17 are left), its
  * destructor (nothing) and default constructor (the reset), and a request made of a priority,
  * a music, the words 0x0c and 0x08 and the byte 0x10. */
-extern void func_020374ac(MusicRequest *request);
 extern void func_020374cc(void *request);
 extern void *func_020374fc(void *request);
-extern MusicRequest *func_020374d0(MusicRequest *request, int priority, int music, int unk_0c, int unk_08, int unk_10);
-/* The member at 0x2b4: the word handed next frame to SoundSys_Call020f1c00 set, what it asks
- * of the sound system done, its fields cleared, constructed, destructed. */
-extern void func_02035fe4(void *commands, int value);
-extern void func_02035f6c(void *commands);
-extern void func_02035fc0(void *commands);
-extern void *func_02035ff8(void *commands, Obj021c526c *owner);
-extern void func_02035ff4(void *commands);
-/* The member at 0x1c4: frame, reset, delete, create, construct, destruct. */
-extern void func_020364c0(void *member);
-extern void func_02036490(void *member);
-extern void func_020364e8(void *member);
-extern void func_020364ec(void *member);
-extern void *func_0203652c(void *member, Obj021c526c *owner);
-extern void *func_02036510(void *member);
-/* The member at 0x24c: the same. */
-extern void func_02037430(void *member);
-extern void func_0203741c(void *member);
-extern void func_02037438(void *member);
-extern void func_0203743c(void *member);
-extern void func_02037454(void *member);
-extern void func_02037450(void *member);
-/* The member at 0x264: the same, what the scene's end and start tell it, and a value handed
- * to its three parts. */
-extern void func_02036940(void *member);
-extern void func_02036920(void *member);
-extern void func_02036960(void *member);
-extern void func_02036980(void *member);
-extern void *func_020369fc(void *member, Obj021c526c *owner);
-extern void *func_020369d0(void *member);
-extern void func_020368c0(void *member);
-extern void func_020368f0(void *member);
-extern void func_02036894(void *member, void *value);
-/* The member at 0x2a0: the same, and its byte 0x10 set. */
-extern void func_0203680c(void *member);
-extern void func_020367ec(void *member);
-extern void func_02036828(void *member);
-extern void func_02036830(void *member);
-extern void func_02036870(void *member, Obj021c526c *owner);
-extern void func_02036864(void *member);
-extern void func_02036788(void *member);
-extern void func_020367cc(void *member);
-extern void func_02036784(void *member, int value);
-/* The member at 0x2d0: construct and destruct. */
-extern void func_02035f50(Music2d0 *member, Obj021c526c *owner);
-extern void func_02035f44(Music2d0 *member);
-/* The address of the member at 0x2f0. */
-extern int func_02035e7c(void);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
-
-/* The current scene, the one before it, and whether the current scene is 0x31. */
-extern u8 func_020b65c4(void);
-extern u8 func_020b65b8(void);
-extern int func_020b6640(void);
-/* The scene table at data_021f69d0 and its first byte: the scene being gone to. */
-extern void *func_020b5e10(void);
-extern int func_020b5e84(u8 *table);
-/* A kind (word 0x34 of data_021f8ab0) and its two words 0x24 and 0x28. */
-extern int func_020ba4b8(void);
-extern void func_020ba4c4(s32 *out0, s32 *out1);
-/* The item held by a field actor (ITEM_NONE without one); whether an item code converts, and
- * the conversion. */
-extern void func_02095764(u16 *item, int actor);
-extern int func_0204bcdc(u16 *item);
-extern int func_0204bc64(u16 *item);
-/* The player's field actor's state (word 0x7f0, else bits 22-29 of word 0x08; 0x93 without
- * an actor). */
-extern int func_02095f90(void);
 
 static Music2d0 *member_2d0(Obj021c526c *self)
 {
@@ -444,9 +366,9 @@ void MusicQueue_RemoveDone(MusicQueue *queue)
             int last = queue->count - 1;
             int j;
             for (j = i; j < last; j++) {
-                func_02037470(&queue->requests[j], &queue->requests[j + 1]);
+                MusicRequest_Copy(&queue->requests[j], &queue->requests[j + 1]);
             }
-            func_020374ac(&queue->requests[last]);
+            MusicRequest_Clear(&queue->requests[last]);
             queue->count = last;
         }
     }
@@ -471,12 +393,12 @@ void Obj021c526c_SendRequestValue(Obj021c526c *self)
     if (index > 0) {
         MusicRequest *ahead = MusicQueue_FirstNotDone(self->queue.requests, index);
         if (ahead != NULL) {
-            func_02035fe4(self->music_commands, ahead->unk_08);
+            MusicCommands_SetValue((MusicCommands *) (void *) self->music_commands, ahead->unk_08);
             return;
         }
     }
     if (current->done != 0) {
-        func_02035fe4(self->music_commands, current->unk_08);
+        MusicCommands_SetValue((MusicCommands *) (void *) self->music_commands, current->unk_08);
     }
 }
 CLEAN_AS(func_020350a4, Obj021c526c_SendRequestValue)
@@ -488,8 +410,8 @@ void Obj021c526c_UpdateQueue(Obj021c526c *self)
     Obj021c526c_SendRequestValue(self);
     MusicQueue_RemoveDone(&self->queue);
     MusicQueue_StartHead(self);
-    func_020364c0(self->unk_1c4);
-    func_02035f6c(self->music_commands);
+    MusicVolume_Execute((MusicVolume *) (void *) self->unk_1c4);
+    MusicCommands_Apply((MusicCommands *) (void *) self->music_commands);
     Music2f0_Update(member_2f0(self));
     MusicQueue_Tick(&self->queue);
 }
@@ -528,7 +450,7 @@ void MusicQueue_Add(MusicQueue *queue, const MusicRequest *request)
         return;
     }
     MusicQueue_OpenAt(queue, index);
-    func_02037470(&queue->requests[index], request);
+    MusicRequest_Copy(&queue->requests[index], request);
 }
 CLEAN_AS(func_02035198, MusicQueue_Add)
 
@@ -546,9 +468,9 @@ CLEAN_AS(func_020351c4, Music_CurrentRequest)
 void Music_OnSceneEnd(void)
 {
     if (data_020e54a8 == 0) {
-        func_020368c0(data_021c526c->unk_264);
+        Music264_OnSceneEnd((Music264 *) (void *) data_021c526c->unk_264);
     } else if (data_020e54a8 == 1) {
-        func_02036788(data_021c526c->unk_2a0);
+        SceneMusic_OnSceneEnd((SceneMusic *) (void *) data_021c526c->unk_2a0);
     }
 }
 CLEAN_AS(func_020351ec, Music_OnSceneEnd)
@@ -557,9 +479,9 @@ CLEAN_AS(func_020351ec, Music_OnSceneEnd)
 void Music_OnSceneStart(void)
 {
     if (data_020e54a8 == 0) {
-        func_020368f0(data_021c526c->unk_264);
+        Music264_OnSceneStart((Music264 *) (void *) data_021c526c->unk_264);
     } else if (data_020e54a8 == 1) {
-        func_020367cc(data_021c526c->unk_2a0);
+        SceneMusic_OnSceneStart((SceneMusic *) (void *) data_021c526c->unk_2a0);
     }
 }
 CLEAN_AS(func_02035240, Music_OnSceneStart)
@@ -572,13 +494,13 @@ void Music_Reset(void)
 
     Music2e4_Release(member_2e4(self));
     Music2d0_Reset(member_2d0(self));
-    func_02035fc0(self->music_commands);
-    func_020367ec(self->unk_2a0);
-    func_02036920(self->unk_264);
-    func_0203741c(self->unk_24c);
-    func_02036490(self->unk_1c4);
+    MusicCommands_Clear((MusicCommands *) (void *) self->music_commands);
+    SceneMusic_Reset((SceneMusic *) (void *) self->unk_2a0);
+    Music264_Reset((Music264 *) (void *) self->unk_264);
+    MusicClock_Reset((MusicClock *) (void *) self->unk_24c);
+    MusicVolume_Reset((MusicVolume *) (void *) self->unk_1c4);
     for (i = 0; i < MUSIC_QUEUE_SIZE; i++) {
-        func_020374ac(&self->queue.requests[i]);
+        MusicRequest_Clear(&self->queue.requests[i]);
     }
     self->queue.count = 0;
     self->unk_2f4 = 0;
@@ -590,9 +512,9 @@ void Obj021c526c_Execute(Obj021c526c *self)
 {
     Music2e4_Execute(member_2e4(self));
     Music2d0_Execute(member_2d0(self));
-    func_02037430(self->unk_24c);
-    func_02036940(self->unk_264);
-    func_0203680c(self->unk_2a0);
+    MusicClock_Execute((MusicClock *) (void *) self->unk_24c);
+    Music264_Execute((Music264 *) (void *) self->unk_264);
+    SceneMusic_Execute((SceneMusic *) (void *) self->unk_2a0);
     Obj021c526c_UpdateQueue(self);
     Obj021c526c_ApplyChange24c(self);
     Obj021c526c_EndUpdate(self);
@@ -604,11 +526,11 @@ void Obj021c526c_Delete(Obj021c526c *self)
 {
     Music2e4_Delete(member_2e4(self));
     Music2d0_Delete(member_2d0(self));
-    func_02035fc0(self->music_commands);
-    func_02036828(self->unk_2a0);
-    func_02036960(self->unk_264);
-    func_02037438(self->unk_24c);
-    func_020364e8(self->unk_1c4);
+    MusicCommands_Clear((MusicCommands *) (void *) self->music_commands);
+    SceneMusic_Delete((SceneMusic *) (void *) self->unk_2a0);
+    Music264_Delete((Music264 *) (void *) self->unk_264);
+    MusicClock_Delete((MusicClock *) (void *) self->unk_24c);
+    MusicVolume_Delete((MusicVolume *) (void *) self->unk_1c4);
     data_021c526c = NULL;
 }
 CLEAN_AS(func_0203539c, Obj021c526c_Delete)
@@ -621,14 +543,14 @@ void Obj021c526c_Create(Obj021c526c *self)
 
     data_021c526c = self;
     for (i = 0; i < MUSIC_QUEUE_SIZE; i++) {
-        func_020374ac(&self->queue.requests[i]);
+        MusicRequest_Clear(&self->queue.requests[i]);
     }
     self->queue.count = 0;
-    func_020364ec(self->unk_1c4);
-    func_0203743c(self->unk_24c);
-    func_02036980(self->unk_264);
-    func_02036830(self->unk_2a0);
-    func_02035fc0(self->music_commands);
+    MusicVolume_Create((MusicVolume *) (void *) self->unk_1c4);
+    MusicClock_Create((MusicClock *) (void *) self->unk_24c);
+    Music264_Create((Music264 *) (void *) self->unk_264);
+    SceneMusic_Create((SceneMusic *) (void *) self->unk_2a0);
+    MusicCommands_Clear((MusicCommands *) (void *) self->music_commands);
     Music2d0_Create(member_2d0(self));
     Music2e4_Create(member_2e4(self));
     self->unk_2f4 = 0;
@@ -641,12 +563,12 @@ void *Obj021c526c_Destruct(Obj021c526c *self)
 {
     Music2f0_Destruct(member_2f0(self));
     Music2e4_Destruct(member_2e4(self));
-    func_02035f44(member_2d0(self));
-    func_02035ff4(self->music_commands);
-    func_02036864(self->unk_2a0);
-    func_020369d0(self->unk_264);
-    func_02037450(self->unk_24c);
-    func_02036510(self->unk_1c4);
+    Music2d0_Destruct(member_2d0(self));
+    MusicCommands_Destruct((MusicCommands *) (void *) self->music_commands);
+    SceneMusic_Destruct((SceneMusic *) (void *) self->unk_2a0);
+    Music264_Destruct((Music264 *) (void *) self->unk_264);
+    MusicClock_Destruct((MusicClock *) (void *) self->unk_24c);
+    MusicVolume_Destruct((MusicVolume *) (void *) self->unk_1c4);
     __cxa_vec_cleanup(self->queue.requests, MUSIC_QUEUE_SIZE, sizeof(MusicRequest),
                       (void (*)(void *))(uintptr_t) func_020374cc);
     return self;
@@ -660,12 +582,12 @@ Obj021c526c *Obj021c526c_Construct(Obj021c526c *self)
     __cxa_vec_ctor(self->queue.requests, MUSIC_QUEUE_SIZE, sizeof(MusicRequest), (void (*)(void *))(uintptr_t) func_020374fc,
                    (void (*)(void *))(uintptr_t) func_020374cc);
     self->queue.count = 0;
-    func_0203652c(self->unk_1c4, self);
-    func_02037454(self->unk_24c);
-    func_020369fc(self->unk_264, self);
-    func_02036870(self->unk_2a0, self);
-    func_02035ff8(self->music_commands, self);
-    func_02035f50(member_2d0(self), self);
+    MusicVolume_Construct((MusicVolume *) (void *) self->unk_1c4, self);
+    MusicClock_Construct((MusicClock *) (void *) self->unk_24c);
+    Music264_Construct((Music264 *) (void *) self->unk_264, self);
+    SceneMusic_Construct((SceneMusic *) (void *) self->unk_2a0, self);
+    MusicCommands_Construct((MusicCommands *) (void *) self->music_commands, self);
+    Music2d0_Construct(member_2d0(self), self);
     Music2e4_Construct(member_2e4(self), self);
     Music2f0_Construct(member_2f0(self));
     self->unk_2f4 = 0;
@@ -725,10 +647,10 @@ void Music_AddHeadOnly(int priority, int music)
 {
     MusicRequest request;
 
-    func_020374d0(&request, priority, music, 0x7f, 0, 0);
+    MusicRequest_Make(&request, priority, music, 0x7f, 0, 0);
     request.head_only = 1;
     MusicQueue_Add(&data_021c526c->queue, &request);
-    func_020374cc(&request);
+    MusicRequest_Destruct(&request);
 }
 CLEAN_AS(func_0203564c, Music_AddHeadOnly)
 
@@ -738,12 +660,12 @@ void Music_AddValue(int priority, int value, int frames)
 {
     MusicRequest request;
 
-    func_020374d0(&request, priority, MUSIC_NONE, 0, value, 0);
+    MusicRequest_Make(&request, priority, MUSIC_NONE, 0, value, 0);
     if (frames > 0) {
         request.timer = frames;
     }
     MusicQueue_Add(&data_021c526c->queue, &request);
-    func_020374cc(&request);
+    MusicRequest_Destruct(&request);
 }
 CLEAN_AS(func_02035684, Music_AddValue)
 
@@ -752,9 +674,9 @@ void Music_Add(int priority, int music, int unk_0c, int unk_10)
 {
     MusicRequest request;
 
-    func_020374d0(&request, priority, music, unk_0c, 0, unk_10);
+    MusicRequest_Make(&request, priority, music, unk_0c, 0, unk_10);
     MusicQueue_Add(&data_021c526c->queue, &request);
-    func_020374cc(&request);
+    MusicRequest_Destruct(&request);
 }
 CLEAN_AS(func_020356c4, Music_Add)
 
@@ -762,12 +684,12 @@ CLEAN_AS(func_020356c4, Music_Add)
  * least 3, 0x0d when the kind is 2 and it is, else 0x0b. */
 void Music2f0_ApplyMode(Music2f0 *self)
 {
-    int kind = func_020ba4b8();
+    int kind = Sky_Precipitation();
     s32 first, second;
     int mode = 0x0b;
 
     (void) self;
-    func_020ba4c4(&first, &second);
+    Sky_GetWeathers(&first, &second);
     if (second >= 3 && kind == 1) {
         mode = 0x0c;
     } else if (second >= 3 && kind == 2) {
@@ -782,7 +704,7 @@ void Music2f0_SetTracksForScene(void)
 {
     int set = 0;
 
-    switch (func_020b65c4()) {
+    switch (SceneQuery_Current()) {
         case 0x20:
             set = 6;
             break;
@@ -812,7 +734,7 @@ CLEAN_AS(func_02035750, Music2f0_SetTracksForScene)
 /* func_02035800: each frame, in scene 0 or 0x31, the sound system's mode chosen. */
 void Music2f0_Update(Music2f0 *self)
 {
-    if (func_020b6660() != 0 || func_020b6640() != 0) {
+    if (SceneQuery_CurrentIs0() != 0 || SceneQuery_CurrentIs31() != 0) {
         Music2f0_ApplyMode(self);
     }
 }
@@ -833,7 +755,7 @@ CLEAN_AS(func_02035820, Music2f0_OnMusic)
 void Music2f0_FadeInForScene22(Music2f0 *self)
 {
     (void) self;
-    if (func_020b65c4() == 0x22) {
+    if (SceneQuery_Current() == 0x22) {
         SoundSys_FadeInTracks(5);
     }
 }
@@ -843,7 +765,7 @@ CLEAN_AS(func_02035834, Music2f0_FadeInForScene22)
 void Music2f0_SetTracksForScene22(Music2f0 *self)
 {
     (void) self;
-    if (func_020b65c4() == 0x22) {
+    if (SceneQuery_Current() == 0x22) {
         SoundSys_SetTracks(5);
     }
 }
@@ -875,8 +797,8 @@ static int music_tracks_for_change(int from, int to)
  * one. */
 void Music_FadeInForSceneChange(void)
 {
-    int previous = func_020b65b8();
-    int current = func_020b65c4();
+    int previous = SceneQuery_Previous();
+    int current = SceneQuery_Current();
     int set = music_tracks_for_change(previous, current);
 
     if (set != 0) {
@@ -889,8 +811,8 @@ CLEAN_AS(func_02035864, Music_FadeInForSceneChange)
  * same table read the other way round (the scene gone to in the place of the previous one). */
 void Music_SetTracksForSceneChange(void)
 {
-    int current = func_020b65c4();
-    int next = func_020b5e84(func_020b5e10());
+    int current = SceneQuery_Current();
+    int next = SceneExit_Scene((const SceneExit *) (uintptr_t) SceneTables_EntryRecord());
     int set = music_tracks_for_change(next, current);
 
     if (set != 0) {
@@ -1036,15 +958,15 @@ void Music2d0_Tick(Music2d0 *self)
         self->delay--;
         if (self->delay <= 0) {
             int frames = 1;
-            if (data_020e54a8 == 0 && func_020b6660() != 0) {
+            if (data_020e54a8 == 0 && SceneQuery_CurrentIs0() != 0) {
                 u16 item[2];
                 int empty;
-                func_02095764(&item[0], PLAYER_ACTOR);
-                if (func_0204bcdc(item) != 0) {
+                PlayerActorOps_HeldItem(&item[0], PLAYER_ACTOR);
+                if (ItemCode_HasVariant(item) != 0) {
                     int held;
                     item[1] = ITEM_NONE;
-                    held = func_0204bc64(&item[0]);
-                    empty = held == func_0204bc64(&item[1]);
+                    held = ItemCode_VariantItem(&item[0]);
+                    empty = held == ItemCode_VariantItem(&item[1]);
                 } else {
                     empty = item[0] == ITEM_NONE;
                 }
@@ -1120,7 +1042,7 @@ void Music2d0_Mark08And0b(Music2d0 *self, int x, int y)
     int pass = 0;
     int mark_0b = 0;
 
-    if (func_020b6660() == 0) {
+    if (SceneQuery_CurrentIs0() == 0) {
         pass = 1;
         mark_0b = 1;
     } else {
@@ -1205,7 +1127,7 @@ void Music2d0_Finish(Music2d0 *self)
         return;
     }
     if (self->delay < 0) {
-        switch (func_02095f90()) {
+        switch (PlayerActorOps_StateOrStartState()) {
             case 0x3c:
                 break;
             case 0x8b:
@@ -1223,14 +1145,14 @@ void Music2d0_Finish(Music2d0 *self)
         }
     }
     if (self->unk_09 != 0) {
-        func_02035e7c();
+        Music_Object2f0();
         Music_FadeInForSceneChange();
     }
     self->unk_08 = 0;
     self->unk_09 = 0;
     self->unk_0a = 0;
-    func_02036894(Music_Object264(), NULL);
-    func_02036784(Music_Object2a0(), 0);
+    Music264_SetKeep(Music_Object264(), NULL);
+    SceneMusic_SetKeep(Music_Object2a0(), 0);
 }
 CLEAN_AS(func_02035dcc, Music2d0_Finish)
 
@@ -1250,8 +1172,6 @@ CLEAN_AS(func_02035e68, Music_Object264)
 
 /* ---- The member at 0x2f0's address, and the member at 0x2d0's start, destructors and
  * constructor */
-
-#include "scene_music.h"
 
 /* The member at 0x2d0's vtable. */
 extern const u32 data_020da2d4[];
@@ -1296,7 +1216,7 @@ void Music2d0_Start(Music2d0 *self)
         self->timer = 0;
         Music_AddValue(7, 0x0f, 0);
     } else {
-        func_02036894(Music_Object264(), (void *) 1);
+        Music264_SetKeep(Music_Object264(), (void *) 1);
         if (self->unk_09 != 0) {
             Music_Object2f0();
             Music_SetTracksForSceneChange();

@@ -49,21 +49,10 @@ extern u8 data_021e5a2c[];
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern int func_02051c8c_unk(const u16 *text, int max); /* the characters before a 0, at most max */
 
-/* A player's 0x1e bytes copied into a party (the kind is not touched). */
-extern void func_020951dc(const DesignCreator *player, LetterParty *party);
-
-/* A player on the stack: built, copied from another and taken down. */
-extern DesignCreator *func_0209529c(DesignCreator *player);
-extern void func_0209525c(DesignCreator *player, const DesignCreator *src);
-extern DesignCreator *func_0209526c(DesignCreator *player);
-
 /* A name as a text object (0x24 bytes): built and taken down, and a player's name put in it. */
 typedef struct LetterNameText {
     u32 words[9];
 } LetterNameText;
-extern void *func_02094fd4(LetterNameText *text);
-extern void *func_02094fbc(LetterNameText *text);
-extern void *func_02095074(const DesignCreator *player, LetterNameText *text);
 
 #define LETTER_MESSAGE_HEADER 0x23      /* "2d_menu" message: the default header */
 #define LETTER_MESSAGE_SELF_HEADER 0x26 /* the default header to oneself */
@@ -390,10 +379,10 @@ void Letter_WriteSpecialToPlayer(Letter *letter, const u8 *message, const char *
     LetterNameText text;
     s32 first_line;
 
-    func_02094fd4(&text);
-    func_02095074(player, &text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
+    PlayerId_NameToText((DesignCreator *) player, (TextBase *) &text);
     MailText_SetParticleName(&text);
-    func_02094fbc(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
     MailText_LoadMail(data_021cd8c4, data_021cd9b0, data_021cd8ec, &first_line, message, name);
     Letter_SetSpecialToPlayer(letter, data_021cd8c4, data_021cd9b0, data_021cd8ec, first_line, tag, paper, player);
 }
@@ -406,8 +395,8 @@ void Letter_SetSpecialToPlayer(Letter *letter, void *header, void *body, void *f
 {
     DesignCreator addressee;
 
-    func_0209529c(&addressee);
-    func_0209525c(&addressee, player);
+    PlayerId_Construct(&addressee);
+    PlayerId_Copy(&addressee, player);
     Letter_Clear(letter);
     letter->paper = *paper;
     letter->tag = *tag;
@@ -419,7 +408,7 @@ void Letter_SetSpecialToPlayer(Letter *letter, void *header, void *body, void *f
     }
     Letter_SetState(letter, LETTER_STATE_RECEIVED);
     Letter_SetTexts(letter, &first_line, header, body, footer);
-    func_0209526c(&addressee);
+    PlayerId_Destruct(&addressee);
 }
 CLEAN_AS(func_02066088, Letter_SetSpecialToPlayer)
 
@@ -432,10 +421,10 @@ static void set_sender_part(const NpcId *sender, int part)
     if (part == LETTER_NO_PART) {
         return;
     }
-    func_02094fd4(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
     NpcId_FormatName(sender, (char *) &text);
     MailText_SetPartText(part, &text);
-    func_02094fbc(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
 }
 
 /* func_02066104: a villager's letter to another, written from the "mailz" messages with the
@@ -449,10 +438,10 @@ void Letter_WriteBetweenVillagersZ(Letter *letter, const u8 *super_message, cons
     s32 first_line;
 
     set_sender_part(sender, sender_part);
-    func_02094fd4(&text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
     NpcId_FormatName(addressee, (char *) &text);
     MailText_SetParticleName(&text);
-    func_02094fbc(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
     MailText_LoadMailz(data_021cd8c4, data_021cd9b0, data_021cd8ec, &first_line, super_message, msga_message, msgb_message,
                        psz_message, name);
     Letter_SetBetweenVillagers(letter, data_021cd8c4, data_021cd9b0, data_021cd8ec, first_line, paper, sender, addressee);
@@ -498,10 +487,10 @@ void Letter_WriteVillagerToPlayerZ(Letter *letter, const u8 *super_message, cons
     s32 first_line;
 
     set_sender_part(sender, sender_part);
-    func_02094fd4(&text);
-    func_02095074(player, &text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
+    PlayerId_NameToText((DesignCreator *) player, (TextBase *) &text);
     MailText_SetParticleName(&text);
-    func_02094fbc(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
     MailText_LoadMailz(data_021cd8c4, data_021cd9b0, data_021cd8ec, &first_line, super_message, msga_message, msgb_message,
                        psz_message, name);
     Letter_SetVillagerToPlayer(letter, data_021cd8c4, data_021cd9b0, data_021cd8ec, first_line, paper, sender, player);
@@ -518,10 +507,10 @@ void Letter_WriteVillagerToPlayer(Letter *letter, const u8 *message, const char 
     s32 first_line;
 
     set_sender_part(sender, sender_part);
-    func_02094fd4(&text);
-    func_02095074(player, &text);
+    PlayerIdText_Construct((PlayerIdText *) &text);
+    PlayerId_NameToText((DesignCreator *) player, (TextBase *) &text);
     MailText_SetParticleName(&text);
-    func_02094fbc(&text);
+    PlayerIdText_Destruct((PlayerIdText *) &text);
     MailText_LoadMail(data_021cd8c4, data_021cd9b0, data_021cd8ec, &first_line, message, name);
     Letter_SetVillagerToPlayer(letter, data_021cd8c4, data_021cd9b0, data_021cd8ec, first_line, paper, sender, player);
 }
@@ -538,9 +527,9 @@ void Letter_SetVillagerToPlayer(Letter *letter, void *header, void *body, void *
     DesignCreator to;
 
     NpcId_Construct(&from);
-    func_0209529c(&to);
+    PlayerId_Construct(&to);
     NpcId_Copy(&from, sender);
-    func_0209525c(&to, player);
+    PlayerId_Copy(&to, player);
     Letter_Clear(letter);
     letter->paper = *paper;
     letter->tag = 0;
@@ -552,7 +541,7 @@ void Letter_SetVillagerToPlayer(Letter *letter, void *header, void *body, void *
     }
     Letter_SetState(letter, LETTER_STATE_RECEIVED);
     Letter_SetTexts(letter, &first_line, header, body, footer);
-    func_0209526c(&to);
+    PlayerId_Destruct(&to);
     NpcId_Destruct(&from);
 }
 CLEAN_AS(func_02066344, Letter_SetVillagerToPlayer)
@@ -693,7 +682,7 @@ void Letter_StartWriting(Letter *letter, int paper)
     letter->paper = (u8) paper;
     letter->tag = 0;
     letter->sender.kind = LETTER_PARTY_PLAYER;
-    func_020951dc(PlayerRecord_Player(record), &letter->sender);
+    PlayerId_CopyTo(PlayerRecord_Player(record), (DesignCreator *) &letter->sender);
     Letter_SetState(letter, LETTER_STATE_WRITTEN);
     LetterDefaults *defaults = (LetterDefaults *) (void *) PlayerPockets_LetterDefaults(PlayerRecord_Pockets(record));
     Letter_SetFooter(letter, defaults->footer);
@@ -765,7 +754,7 @@ CLEAN_AS(func_020666b4, LetterParty_Clear)
 void LetterParty_SetPlayer(LetterParty *party, const DesignCreator *player)
 {
     party->kind = LETTER_PARTY_SELF;
-    func_020951dc(player, party);
+    PlayerId_CopyTo(player, (DesignCreator *) party);
 }
 CLEAN_AS(func_020666bc, LetterParty_SetPlayer)
 

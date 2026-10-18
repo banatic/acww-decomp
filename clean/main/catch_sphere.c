@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "itcm/vector.h"
 #include "main/scene_query.h"
+#include "globe.h"
 
 static_assert(offsetof(CatchSphere, next) == 0x1c && offsetof(CatchSphere, reach) == 0x24, "CatchSphere");
 
@@ -11,8 +12,6 @@ static_assert(offsetof(CatchSphere, next) == 0x1c && offsetof(CatchSphere, reach
 
 extern CatchSphere *data_021d3124; /* the list */
 
-/* A map point bent into the drawn world (touch_pick_shapes.h). */
-extern int func_0203f844(Vec3 *out, const Vec3 *in);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
@@ -31,8 +30,8 @@ int CatchSphere_FindAlong(const Vec3 *from, const Vec3 *to, fx32 radius, u8 *ind
     Vec3 step;
     Vec3 points[CATCH_SPHERE_SWEEP_POINTS];
 
-    func_0203f844(&start, from);
-    func_0203f844(&end, to);
+    Globe_Bend(&start, from);
+    Globe_Bend(&end, to);
     Vec_Subtract(&step, &end, &start);
     step.x = FX_Div(step.x, SWEEP_STEPS);
     step.y = FX_Div(step.y, SWEEP_STEPS);

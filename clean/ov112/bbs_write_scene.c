@@ -679,7 +679,7 @@ BbsWriteScene *BbsWrite_New(void)
     PushButton_Construct(&self->scroll_button);
     ButtonPanel_Construct(&self->panel);
     Glider0_Construct(&self->pointer);
-    BbsLabel_Construct((BbsLabel *) (void *) self->filter_text);
+    BbsLabel_Construct(&self->filter_text);
     BbsWideText_Construct(&self->filter_wide);
     return self;
 }

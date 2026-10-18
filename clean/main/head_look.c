@@ -6,6 +6,11 @@
 #include "scene_heaps.h"
 #include "session.h"
 #include "vram_copy_task.h"
+#include "c_library.h"
+#include "g3d_tex_copy.h"
+#include "item_info.h"
+#include "item_traits.h"
+#include "rom_file.h"
 
 /* The ModelLoaderTask.state of a task that is queued. */
 #define HEAD_LOOK_TASK_QUEUED 1
@@ -60,18 +65,7 @@ extern const u8 data_020cc840[];
 extern const u8 data_020cc858[];
 extern const u8 data_020cc878[];
 
-extern G3dResTex *func_021077e8(int file);                          /* the file's texture resource */
-extern int func_02064328(char *buffer, const char *format, ...);    /* sprintf */
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
-/* A texture resource's named image (func_0206439c) and named palette (func_0206435c) copied
- * over another's. */
-extern void func_0206439c(G3dResTex *from, G3dResTex *to, const char *from_name, const char *to_name);
-extern void func_0206435c(G3dResTex *from, G3dResTex *to, const char *from_name, const char *to_name);
-/* The item's attribute bit 2 (byte 9 of its record): the hair is shown whole under it. */
-extern int func_020624d4(ItemCode *item);
-/* Whether an item 0x1408 to 0x1428 is one of those with an index (func_0204bff4, -1 for none). */
-extern int func_0204be38(ItemCode *item);
-extern int func_0204bff4(ItemCode *item);
+extern G3dResTex *func_021077e8(int file); /* the file's texture resource */
 
 /* NitroSystem: the VRAM sizes of a texture resource's plain textures, 4x4 compressed textures
  * and palettes. */
@@ -222,7 +216,7 @@ int HeadLook_Load(unsigned char *look, int first, int second, ItemCode *item, u8
 {
     u8 *buffer = (u8 *) (uintptr_t) HeadLook_File(look);
     int room = HeadLook_BlockSize();
-    int first_size = func_02064af4(HeadLook_Path((unsigned int) first), buffer, room);
+    int first_size = RomFile_Read(HeadLook_Path((unsigned int) first), buffer, room);
     int second_size = 0;
     if (first_size == 0) {
         return 0;
@@ -233,7 +227,7 @@ int HeadLook_Load(unsigned char *look, int first, int second, ItemCode *item, u8
     HeadLook_SetKind(look, 1, second);
     if (second < HEAD_LOOK_NO_KIND) {
         buffer += first_size;
-        second_size = func_02064af4(HeadLook_Path((unsigned int) second), buffer, room - first_size);
+        second_size = RomFile_Read(HeadLook_Path((unsigned int) second), buffer, room - first_size);
         if (second_size != 0) {
             HeadLook_SetModel(look, 1, buffer);
             if (head_look_in(*item, HEAD_LOOK_DESIGN_FIRST, HEAD_LOOK_DESIGN_LAST)) {
@@ -241,8 +235,8 @@ int HeadLook_Load(unsigned char *look, int first, int second, ItemCode *item, u8
                 ClothSlots_Load(scratch, item, record, 0, 0);
                 G3dResTex *design = func_021077e8(ClothSlots_SlotFile(scratch));
                 G3dResTex *texture = func_021077e8((int) (uintptr_t) buffer);
-                func_0206439c(design, texture, data_020dd72c, data_020dd734);
-                func_0206435c(design, texture, data_020dd72c, data_020dd734);
+                G3dTexCopy_Image(design, texture, data_020dd72c, data_020dd734);
+                G3dTexCopy_Palette(design, texture, data_020dd72c, data_020dd734);
             }
         } else {
             HeadLook_SetKind(look, 1, HEAD_LOOK_NO_KIND);
@@ -465,7 +459,7 @@ void HeadLook_ChooseModels(int flag, int hair, ItemCode *item, int *first, int *
         first_model = HeadLook_ItemAModel((unsigned int) (code - HEAD_LOOK_ITEM_A_FIRST));
     } else if ((head_look_in(code, HEAD_LOOK_ITEM_B_FIRST, HEAD_LOOK_ITEM_B_LAST) ||
                 head_look_in(code, HEAD_LOOK_DESIGN_FIRST, HEAD_LOOK_DESIGN_LAST)) &&
-               func_020624d4(item) == 0) {
+               ItemInfo_FlagBit2(item) == 0) {
         first_model = HeadLook_CoveredHairModel((unsigned char) hair);
     } else {
         first_model = HeadLook_HairModel((unsigned int) hair);
@@ -476,8 +470,8 @@ void HeadLook_ChooseModels(int flag, int hair, ItemCode *item, int *first, int *
         second_model = flag == 0 ? HEAD_LOOK_DESIGN_MODEL : HEAD_LOOK_DESIGN_MODEL_FLAGGED;
     } else if (head_look_in(code, HEAD_LOOK_ITEM_B_FIRST, HEAD_LOOK_ITEM_B_LAST)) {
         second_model = HeadLook_ItemBModel((unsigned int) (code - HEAD_LOOK_ITEM_B_FIRST));
-    } else if (head_look_in(code, HEAD_LOOK_ITEM_C_FIRST, HEAD_LOOK_ITEM_C_LAST) && func_0204be38(item) != 0) {
-        int index = func_0204bff4(item);
+    } else if (head_look_in(code, HEAD_LOOK_ITEM_C_FIRST, HEAD_LOOK_ITEM_C_LAST) && ItemTraits_IsPairHeadItem(item) != 0) {
+        int index = ItemTraits_PairHeadNumber(item);
         if (index >= 0 && index < HEAD_LOOK_ITEM_C_COUNT) {
             second_model = HeadLook_ItemCModel((unsigned int) index);
             if (second_model == HEAD_LOOK_SKIPPED_MODEL) {
@@ -529,7 +523,7 @@ CLEAN_AS(func_0205e86c, HeadLook_HairModel)
  * overwrites the last one's path). */
 char *HeadLook_Path(unsigned int kind)
 {
-    func_02064328(data_021c9f48, data_020dd738, kind >> 5, kind);
+    CLib_SPrintf(data_021c9f48, data_020dd738, kind >> 5, kind);
     return data_021c9f48;
 }
 CLEAN_AS(func_0205e878, HeadLook_Path)

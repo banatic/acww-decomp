@@ -1,13 +1,13 @@
 /* Overlay 4's room objects built from an "RMO" archive (a C++ base class with vtable
- * 0x02254b28, built by func_ov004_0222c87c and taken down by func_ov004_0222c7a0): a scene
+ * 0x02254b28, built by RmoObjectBase_Construct and taken down by RmoObjectSlots_Destruct): a scene
  * object (actor.h) with one animated model whose model, animations and textures come from a
- * /roomObj/ archive (func_ov004_0222c600 loads it, func_ov004_0222c598 releases it).
+ * /roomObj/ archive (RmoObjectSlots_Load loads it, RmoObjectSlots_ReleaseBody releases it).
  *
  * An archive is held by an RmoModel: the archive file, its model ("RMO:a/bmd/bmd0") and up to
  * 13 animations of each kind ("RMO:a/bca/bca%d" for the joints, "bma" for the materials, "bta"
- * for the texture coordinates), loaded by func_ov004_0222c3f4; func_ov004_0222c3c4 gives the
+ * for the texture coordinates), loaded by RmoModel_Load; RmoModel_JointAnim gives the
  * joint animation of an index, NULL for none. The textures come from a separate .nsbtx file,
- * held by an RmoTexture (func_ov004_0222c348). */
+ * held by an RmoTexture (RmoTexture_Load). */
 #ifndef CLEAN_OV004_RMO_OBJECT_H
 #define CLEAN_OV004_RMO_OBJECT_H
 

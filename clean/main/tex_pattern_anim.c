@@ -2,6 +2,8 @@
 #include "tex_pattern_anim.h"
 
 #include "clean.h"
+#include "g3d_resource.h"
+#include "vram_copy_task.h"
 
 static_assert(sizeof(ModelLoaderTask) == 0x1c, "ModelLoaderTask size");
 static_assert(offsetof(TexPatternAnimEntry, texture) == 0x20, "TexPatternAnimEntry texture");
@@ -17,19 +19,6 @@ extern const u8 data_020dd184[];
 /* The current heap. */
 extern Heap *data_021fbe94;
 
-/* The index of the model's material named `name`, or -1. */
-extern int func_02057a50(u8 *model, const char *name);
-/* The index of the texture resource's texture named `name`, or -1. */
-extern int func_02057a40(void *texture, const char *name);
-/* The image of the texture resource's texture `index`. */
-extern void *func_020579f0(void *texture, u8 index);
-/* `image` queued to be copied over the VRAM of the texture of the model's `material` by
- * `transfer`; 0 when it could not be. */
-extern int func_020b9e80(ModelLoaderTask *transfer, u8 *model, u8 material, void *image);
-/* The transfer task's constructor, its setup, and its end. */
-extern ModelLoaderTask *func_020ba01c(ModelLoaderTask *transfer);
-extern void func_020ba004(ModelLoaderTask *transfer);
-extern void func_020b9ec4(ModelLoaderTask *transfer);
 /* The texture resource of a file. */
 extern void *func_021077e8(u8 *file);
 
@@ -85,7 +74,7 @@ static TexPatternAnimEntry *find_entry(TexPatternAnim *self, int material)
 /* func_02056610: the material named `material` animated again. */
 void TexPatternAnim_Release(TexPatternAnim *self, const char *material)
 {
-    int index = func_02057a50(self->model, material);
+    int index = G3dRes_MaterialIndex(self->model, material);
     if (index == -1) {
         return;
     }
@@ -100,7 +89,7 @@ CLEAN_AS(func_02056610, TexPatternAnim_Release)
  * shows until TexPatternAnim_Show changes it or TexPatternAnim_Release lets it go. */
 void TexPatternAnim_Hold(TexPatternAnim *self, const char *material)
 {
-    int index = func_02057a50(self->model, material);
+    int index = G3dRes_MaterialIndex(self->model, material);
     if (index == -1) {
         return;
     }
@@ -118,11 +107,11 @@ CLEAN_AS(func_02056658, TexPatternAnim_Hold)
  * texture resource does not have is not caught: texture 0xff is copied instead. */
 int TexPatternAnim_Show(TexPatternAnim *self, const char *material, const char *texture)
 {
-    int index = func_02057a50(self->model, material);
+    int index = G3dRes_MaterialIndex(self->model, material);
     if (index == -1) {
         return 0;
     }
-    u8 shown = (u8) func_02057a40(self->texture, texture);
+    u8 shown = (u8) G3dRes_TextureIndex(self->texture, texture);
     TexPatternAnimEntry *entry = find_entry(self, index);
     if (entry == NULL || entry->texture == shown) {
         return 0;
@@ -273,8 +262,8 @@ CLEAN_AS(func_02056958, TexPatternAnim_IsHeld)
  * again. */
 void TexPatternAnim_CopyTexture(TexPatternAnimEntry *entry, u8 *model, u8 *texture)
 {
-    void *image = func_020579f0(texture, entry->texture);
-    if (func_020b9e80(&entry->transfer, model, entry->material, image) == 0) {
+    void *image = G3dRes_TextureImage((G3dResTex *) (void *) texture, entry->texture);
+    if (VramCopyTask_QueueMaterialImage((VramCopyTask *) &entry->transfer, model, entry->material, image) == 0) {
         entry->key = TEX_PATTERN_ANIM_NONE;
         entry->texture = TEX_PATTERN_ANIM_NONE;
         entry->frame = TEX_PATTERN_ANIM_NO_FRAME;
@@ -321,7 +310,7 @@ CLEAN_AS(func_020569b0, TexPatternAnim_UpdateEntry)
 void TexPatternAnim_ReleaseEntry(TexPatternAnimEntry *entry)
 {
     TexPatternAnim_ResetEntry(entry);
-    func_020b9ec4(&entry->transfer);
+    VramCopyTask_End((VramCopyTask *) &entry->transfer);
 }
 CLEAN_AS(func_02056a38, TexPatternAnim_ReleaseEntry)
 
@@ -329,7 +318,7 @@ CLEAN_AS(func_02056a38, TexPatternAnim_ReleaseEntry)
 int TexPatternAnim_InitEntry(TexPatternAnimEntry *entry)
 {
     TexPatternAnim_ResetEntry(entry);
-    func_020ba004(&entry->transfer);
+    VramCopyTask_Reset((VramCopyTask *) &entry->transfer);
     return 1;
 }
 CLEAN_AS(func_02056a4c, TexPatternAnim_InitEntry)
@@ -349,7 +338,7 @@ CLEAN_AS(func_02056a64, TexPatternAnim_ResetEntry)
 /* func_02056a8c: the entry's constructor: its transfer's. */
 TexPatternAnimEntry *TexPatternAnim_ConstructEntry(TexPatternAnimEntry *entry)
 {
-    func_020ba01c(&entry->transfer);
+    VramCopyTask_Construct((VramCopyTask *) &entry->transfer);
     return entry;
 }
 CLEAN_AS(func_02056a8c, TexPatternAnim_ConstructEntry)

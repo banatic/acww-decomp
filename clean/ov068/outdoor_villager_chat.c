@@ -39,6 +39,8 @@
 #include "ov004/member_pointer.h"
 #include "outdoor_villager.h"
 #include "outdoor_villager_watch.h"
+#include "outdoor_villager_bonds.h"
+#include "outdoor_villager_walks.h"
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -67,21 +69,6 @@ extern const u8 data_ov068_02276754[];
 extern const u8 data_ov068_0227678c[];
 
 /* The behaviour member's and the villager's functions used here (outdoor_villager.h has more). */
-/* Whether the byte at 0xa05 is set. */
-extern int func_ov068_0226c0e0(OutdoorVillagerBehaviour *self, u8 *villager);
-/* The tier of the pair (0 to 4; 2 without the town's villagers). */
-extern int func_ov068_0226ae80(OutdoorVillagerBehaviour *self, u8 *villager);
-/* The two town records sorted: the one fonder of the current player first (either at random
- * when they are as fond; as given without a player); whether they were swapped. */
-extern int func_ov068_0226aca8(OutdoorVillagerBehaviour *self, u8 **first, u8 **second, u8 *a, u8 *b);
-/* One mood of `moods` drawn (MainRandom_Below(count)), asked for with `units` (0 for mood 0). */
-extern void func_ov068_0226ad44(OutdoorVillagerBehaviour *self, u8 *villager, const u8 *moods, int count, u8 units, u8 apply);
-/* A record of the chat kept with `data`: of the town's villagers (func_ov068_0226ada8) or of
- * the pair (func_ov068_0226ae00). */
-extern void func_ov068_0226ada8(OutdoorVillagerBehaviour *self, u8 *villager, const u8 *data);
-extern void func_ov068_0226ae00(OutdoorVillagerBehaviour *self, u8 *villager, const u8 *data);
-/* A design of data_021ed278's eight drawn at random, other than `design`; null without one. */
-extern u8 *func_ov068_0226ac40(OutdoorVillagerBehaviour *self, u8 *design);
 
 /* The update's step table and the exchanges' table (each filled once, bit 0 of its guard), and
  * the member pointers they are filled from. */
@@ -167,7 +154,7 @@ static void chat_part_for_19(OutdoorVillagerBehaviour *self, u8 *villager)
     VillagerSceneObject_SetWord644((u32 *) (void *) villager, 0);
     VillagerSceneObject_SetByte648(villager, 0);
     OutdoorVillagerBehaviour_Start(self, villager, CHAT_DO_19);
-    func_ov068_0226cbf4(self);
+    OutdoorVillagerWalks_StartCooldown(self);
 }
 
 /* The chat stopped: the byte at 0x838 set for both; step 3. */
@@ -269,7 +256,7 @@ void OutdoorVillagerChat_End9(OutdoorVillagerBehaviour *self, u8 *villager)
     if (OutdoorVillagerBehaviour_Resume(self, villager) == 0) {
         OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
-    func_ov068_0226cbf4(self);
+    OutdoorVillagerWalks_StartCooldown(self);
 }
 CLEAN_AS(func_ov068_02269ae4, OutdoorVillagerChat_End9)
 
@@ -339,8 +326,8 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02269b88Ei, OutdoorVillagerChat_Exc
 void OutdoorVillagerChat_Talk9(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
-    if (func_ov068_0226c0e0(self, villager) != 0 && VillagerSceneObject_HasByte838(villager) == 0 && partner != NULL &&
-        chat_unpair(partner) != 0) {
+    if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0 && VillagerSceneObject_HasByte838(villager) == 0 &&
+        partner != NULL && chat_unpair(partner) != 0) {
         chat_part_for_19(self, villager);
         return;
     }
@@ -356,9 +343,9 @@ void OutdoorVillagerChat_Talk9(OutdoorVillagerBehaviour *self, u8 *villager)
     }
     if (OutdoorVillagerChat_BadPairNear(self, villager, distance) != 0) {
         chat_stop(self, villager, partner);
-        func_ov068_0226ad78(self, villager, 2, 1, 1);
+        OutdoorVillagerBonds_AskMood(self, villager, 2, 1, 1);
         if (partner != NULL) {
-            func_ov068_0226ad78(self, partner, 2, 1, 1);
+            OutdoorVillagerBonds_AskMood(self, partner, 2, 1, 1);
         }
         return;
     }
@@ -392,8 +379,8 @@ void OutdoorVillagerChat_Talk9(OutdoorVillagerBehaviour *self, u8 *villager)
             return;
         }
         if (MainRandom_Below(2) == 0) {
-            func_ov068_0226ad44(self, villager, data_ov068_02276740, 4, 2, 1);
-            func_ov068_0226ad44(self, partner, data_ov068_02276740, 4, 2, 1);
+            OutdoorVillagerBonds_AskMoodOf(self, villager, data_ov068_02276740, 4, 2, 1);
+            OutdoorVillagerBonds_AskMoodOf(self, partner, data_ov068_02276740, 4, 2, 1);
         }
         self->step = 3;
         return;
@@ -489,11 +476,11 @@ void OutdoorVillagerChat_Turn9(OutdoorVillagerBehaviour *self, u8 *villager)
     if (SceneMotion_Kind(motion) == CHAT_MOTION_TURN && SceneMotion_IsDone(motion) != 0) {
         SceneMotion_RequestStand(motion, CHAT_PRIORITY, data_020c80f8);
         self->step = 1;
-        int tier = func_ov068_0226ae80(self, villager);
+        int tier = OutdoorVillagerBonds_PairTier(self, villager);
         self->wait = tier < CHAT_TIERS ? data_ov068_022767b8[tier] : CHAT_WAIT_PAST_TABLE;
         return;
     }
-    if (func_ov068_0226c0e0(self, villager) != 0) {
+    if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0) {
         u8 *partner = chat_partner(villager);
         if (partner != NULL && chat_unpair(partner) != 0) {
             chat_part_for_19(self, villager);
@@ -516,7 +503,7 @@ int OutdoorVillagerChat_Start9(OutdoorVillagerBehaviour *self, u8 *villager)
                               (int) (uintptr_t) partner, &data_021fbee8, OUTDOOR_VILLAGER_PLAYER_ACTOR, data_020c814c, 1);
     self->step = 0;
     VillagerSceneObject_ClearByte838(villager);
-    func_ov068_0226ad78(self, villager, 0, 0, 1);
+    OutdoorVillagerBonds_AskMood(self, villager, 0, 0, 1);
     VillagerMood_SetSoundsOn(chat_mood(villager));
     return 1;
 }
@@ -536,21 +523,21 @@ int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehaviour *self, u8 *villager)
     u8 *second = NULL;
     u8 *mine = chat_record(villager);
     u8 *theirs = chat_record(partner);
-    u8 *speaker = func_ov068_0226aca8(self, &first, &second, mine, theirs) == 0 ? villager : partner;
+    u8 *speaker = OutdoorVillagerBonds_Sort(self, &first, &second, mine, theirs) == 0 ? villager : partner;
     *chat_speaker(self) = speaker;
 
     u8 *worn = NULL;
     if (chat_wears_design(first)) {
         worn = TownVillager_Design(first);
     }
-    u8 *design = func_ov068_0226ac40(self, worn);
+    u8 *design = OutdoorVillagerBonds_DrawShopDesign(self, worn);
     if (design == NULL) {
         return 0;
     }
     VillagerMode_LearnFrom(second, first);
     VillagerMemory_ShareNickname(second, first, NULL);
-    func_ov068_0226ae00(self, villager, data_ov068_02276784);
-    func_ov068_0226ad78(self, speaker, 1, 2, 0);
+    OutdoorVillagerBonds_ChangePair(self, villager, (const s8 *) data_ov068_02276784);
+    OutdoorVillagerBonds_AskMood(self, speaker, 1, 2, 0);
     chat_copy_design(TownVillager_Design(first), design);
     u16 clothes = CHAT_DESIGN_CLOTHES_FIRST;
     TownVillager_SetClothes(first, &clothes);
@@ -571,18 +558,18 @@ int OutdoorVillagerChat_DefaultCatchphrase(OutdoorVillagerBehaviour *self, u8 *v
     u8 *second = NULL;
     u8 *mine = chat_record(villager);
     u8 *theirs = chat_record(partner);
-    func_ov068_0226aca8(self, &first, &second, mine, theirs);
+    OutdoorVillagerBonds_Sort(self, &first, &second, mine, theirs);
     VillagerMode_LearnFrom(second, first);
     VillagerMemory_ShareNickname(second, first, NULL);
-    func_ov068_0226ada8(self, villager, data_ov068_0227676c);
+    OutdoorVillagerBonds_ChangeOthers(self, villager, (const s8 *) data_ov068_0227676c);
 
     CatchphraseWide text;
     CatchphraseWide_Construct(&text);
     if (NpcLookup_CatchphraseToWide(&text, NpcId_Number(TownVillager_NpcId(second))) != 0) {
         VillagerCatchphrase_SetFromText(second, (VillagerCatchphraseText *) (void *) &text);
     }
-    func_ov068_0226ad44(self, villager, data_ov068_02276738, 4, 2, 1);
-    func_ov068_0226ad44(self, partner, data_ov068_02276738, 4, 2, 1);
+    OutdoorVillagerBonds_AskMoodOf(self, villager, data_ov068_02276738, 4, 2, 1);
+    OutdoorVillagerBonds_AskMoodOf(self, partner, data_ov068_02276738, 4, 2, 1);
     self->step = 3;
     CatchphraseWide_Destruct(&text);
     return 1;
@@ -601,11 +588,11 @@ int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villa
     u8 *partner = chat_partner(villager);
     u8 *mine = chat_record(villager);
     u8 *theirs = chat_record(partner);
-    int swapped = func_ov068_0226aca8(self, &first, &second, mine, theirs);
+    int swapped = OutdoorVillagerBonds_Sort(self, &first, &second, mine, theirs);
     VillagerMode_LearnFrom(second, first);
     VillagerMemory_ShareNickname(second, first, NULL);
     *chat_speaker(self) = swapped == 0 ? villager : partner;
-    func_ov068_0226ada8(self, villager, data_ov068_02276744);
+    OutdoorVillagerBonds_ChangeOthers(self, villager, (const s8 *) data_ov068_02276744);
 
     u16 item = *VillagerState_Item(VillagerStatus_StateEntry(first));
     u16 wanted;
@@ -629,14 +616,14 @@ int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villa
     }
 
     if (!same) {
-        func_ov068_0226ad44(self, villager, data_ov068_02276730, 4, 2, 0);
-        func_ov068_0226ad44(self, partner, data_ov068_02276730, 4, 2, 0);
+        OutdoorVillagerBonds_AskMoodOf(self, villager, data_ov068_02276730, 4, 2, 0);
+        OutdoorVillagerBonds_AskMoodOf(self, partner, data_ov068_02276730, 4, 2, 0);
         TownVillager_SetClothes(first, &wanted);
         SceneMotion_RequestKind20(chat_motion(*chat_speaker(self)), CHAT_PRIORITY, &wanted);
         self->step = 2;
     } else {
-        func_ov068_0226ad44(self, villager, data_ov068_02276730, 4, 2, 1);
-        func_ov068_0226ad44(self, partner, data_ov068_02276730, 4, 2, 1);
+        OutdoorVillagerBonds_AskMoodOf(self, villager, data_ov068_02276730, 4, 2, 1);
+        OutdoorVillagerBonds_AskMoodOf(self, partner, data_ov068_02276730, 4, 2, 1);
         self->step = 3;
     }
     return 1;
@@ -657,7 +644,7 @@ int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehaviour *self, u8 *villager)
     u8 *second = NULL;
     u8 *mine = chat_record(villager);
     u8 *theirs = chat_record(partner);
-    *chat_speaker(self) = func_ov068_0226aca8(self, &first, &second, mine, theirs) == 0 ? partner : villager;
+    *chat_speaker(self) = OutdoorVillagerBonds_Sort(self, &first, &second, mine, theirs) == 0 ? partner : villager;
 
     if (!chat_wears_design(first)) {
         return 0;
@@ -702,16 +689,16 @@ int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehaviour *self, u8 *villager)
         u16 clothes = CHAT_DESIGN_CLOTHES_FIRST;
         TownVillager_SetClothes(second, &clothes);
     }
-    func_ov068_0226ae00(self, villager, data_ov068_02276754);
+    OutdoorVillagerBonds_ChangePair(self, villager, (const s8 *) data_ov068_02276754);
     if (to_second && second != NULL) {
-        func_ov068_0226ad78(self, villager, 1, 2, 0);
-        func_ov068_0226ad78(self, partner, 1, 2, 0);
+        OutdoorVillagerBonds_AskMood(self, villager, 1, 2, 0);
+        OutdoorVillagerBonds_AskMood(self, partner, 1, 2, 0);
         u16 shown = CHAT_DESIGN_CLOTHES_FIRST;
         SceneMotion_RequestKind20(chat_motion(*chat_speaker(self)), CHAT_PRIORITY, &shown);
         self->step = 2;
     } else {
-        func_ov068_0226ad78(self, villager, 1, 2, 1);
-        func_ov068_0226ad78(self, partner, 1, 2, 1);
+        OutdoorVillagerBonds_AskMood(self, villager, 1, 2, 1);
+        OutdoorVillagerBonds_AskMood(self, partner, 1, 2, 1);
         self->step = 3;
     }
     return 1;
@@ -729,7 +716,7 @@ int OutdoorVillagerChat_PassCatchphrase(OutdoorVillagerBehaviour *self, u8 *vill
     u8 *second = NULL;
     u8 *mine = chat_record(villager);
     u8 *theirs = chat_record(partner);
-    func_ov068_0226aca8(self, &first, &second, mine, theirs);
+    OutdoorVillagerBonds_Sort(self, &first, &second, mine, theirs);
 
     Label10Text said;
     Label10Text other;
@@ -770,9 +757,9 @@ int OutdoorVillagerChat_PassCatchphrase(OutdoorVillagerBehaviour *self, u8 *vill
     if (second != NULL) {
         VillagerCatchphrase_SetFromLabel(second, &said);
     }
-    func_ov068_0226ada8(self, villager, data_ov068_0227678c);
-    func_ov068_0226ad78(self, villager, 1, 2, 1);
-    func_ov068_0226ad78(self, partner, 1, 2, 1);
+    OutdoorVillagerBonds_ChangeOthers(self, villager, (const s8 *) data_ov068_0227678c);
+    OutdoorVillagerBonds_AskMood(self, villager, 1, 2, 1);
+    OutdoorVillagerBonds_AskMood(self, partner, 1, 2, 1);
     self->step = 3;
     Label10Text_Destruct(&other);
     Label10Text_Destruct(&said);

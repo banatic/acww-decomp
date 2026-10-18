@@ -7,6 +7,18 @@
 #include "main/block_020b220c.h"
 #include "main/session.h"
 #include "main/villager_roster.h"
+#include "acre_kind.h"
+#include "acre_record.h"
+#include "building_shapes.h"
+#include "item_code.h"
+#include "map_code.h"
+#include "ov003/object_actors.h"
+#include "ov009/scene_actor_life.h"
+#include "scene_kinds.h"
+#include "scene_place.h"
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "villager_status.h"
 
 #define TOWN_OBJECTS_VISITORS 0x0f /* the low four bits of a visit record */
 #define TOWN_OBJECTS_ANSWER_SHIFT 4
@@ -60,44 +72,6 @@ extern u8 data_021f4ba0[];
 
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020051b0(void *item); /* the item code's destructor (does nothing) */
-
-extern u8 func_020b65c4(void);                /* the scene */
-extern int func_020b67e8(unsigned int scene); /* whether 1 <= scene <= 5 */
-/* An object's index (-1 outside the codes), and the code of an index (0x5000 past them). */
-extern int func_020b3f58(u16 code);
-extern u16 func_0204bbd4(unsigned int index);
-/* The number of bits set among the low four. */
-extern int func_020b3fc0(int bits);
-/* A record of data_020d1f24 copied out, its byte 9, and the copy's (empty) destructor; the
- * record's code with a tile's x and z packed below it. */
-extern void func_020b2a68(SceneActorRecord *dst, const SceneActorRecord *src);
-extern unsigned int func_020b2a3c(SceneActorRecord *record);
-extern void func_020b2a64(SceneActorRecord *record);
-extern unsigned int func_020b2a20(SceneActorRecord *record, int x, int z);
-/* A villager's state (2 is the one TownObjects_HouseState2 asks about). */
-extern int func_0207f1d8(void *villager);
-/* Overlay 3's scene actor of a code, or 0; the mode recorded for an object without one. */
-extern void *func_ov003_02220174(u16 code);
-extern int func_020b30e8(unsigned int code, u8 mode);
-/* main's table at data_021f69d0 (its address), whether the map's mode applies, and the two
- * bytes of the kept tile. */
-extern int func_020b5e10(void);
-extern int func_020b6660(void);
-extern s8 func_020b64d4(s8 *tile);
-extern s8 func_020b64cc(s8 *tile);
-/* Acre records: the model number, its flags, the code of tile (x, z) in a layer (or 0). */
-extern int func_02037e84(u8 *acre);
-extern int func_02037bd8(unsigned int model);
-extern u16 *func_02037e0c(u8 *acre, int x, int z, u8 layer);
-/* Item codes: 0x5014-0x501a, 0x500d-0x5010, a code with a variant, a code's item. */
-extern int func_0204bb00(u16 *code);
-extern int func_0204bba8(u16 *code);
-extern int func_0204bcdc(u16 *code);
-extern int func_0204bc64(u16 *code);
-/* An object's shape: the tiles it covers, as offsets from its own tile. */
-extern void *func_020b3b50(u16 *object);
-extern unsigned int func_020b3eb8(void *shape);
-extern int func_020b3e08(void *shape, int *x, int *z, unsigned int index);
 
 typedef int TownObjectsSetMode(void *actor, unsigned int mode);
 
@@ -161,10 +135,10 @@ static TownObjectsSetMode *town_objects_set_mode(const void *actor)
  * their items are the same. */
 static int town_objects_is(u16 *item, u16 code)
 {
-    if (func_0204bcdc(item)) {
+    if (ItemCode_HasVariant(item)) {
         u16 wanted = code;
-        int own = func_0204bc64(item);
-        return own == func_0204bc64(&wanted);
+        int own = ItemCode_VariantItem(item);
+        return own == ItemCode_VariantItem(&wanted);
     }
     return *item == code;
 }
@@ -257,21 +231,21 @@ void TownObjects_MarkFootprints(void)
             if ((u32) acre_x < (u32) town->acres_wide && (u32) acre_z < (u32) town->acres_high && town->acres != NULL) {
                 acre = town->acres + ACRE_MAP_ACRE_SIZE * (acre_x + acre_z * town->acres_wide);
             }
-            int model = func_02037e84(acre);
-            int flags = func_02037bd8((unsigned int) model);
+            int model = AcreRecord_Model((const AcreRecord *) (void *) acre);
+            int flags = AcreKind_ModelFlags((unsigned int) model);
 
             for (int z = 0; z < TOWN_OBJECTS_ACRE_TILES; z++) {
                 for (int x = 0; x < TOWN_OBJECTS_ACRE_TILES; x++) {
-                    u16 *object = acre != NULL ? func_02037e0c(acre, x, z, 0) : NULL;
+                    u16 *object = acre != NULL ? AcreRecord_Tile((AcreRecord *) (void *) acre, x, z, 0) : NULL;
                     if (object == NULL) {
                         continue;
                     }
                     int mark = 0;
-                    if (func_0204bb00(object) &&
+                    if (MapCode_IsPlayerHouse(object) &&
                         town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_5014, town_objects_5014_row(model), x, z)) {
                         mark = 1;
                     }
-                    if (func_0204bba8(object) &&
+                    if (MapCode_IsStore(object) &&
                         town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_STORE, town_objects_store_row(model), x, z)) {
                         mark = 1;
                     }
@@ -294,15 +268,15 @@ void TownObjects_MarkFootprints(void)
                     int tile_x;
                     int tile_z;
                     AcreTile_TileOfAcre(&tile_x, &tile_z, acre_x, acre_z, x, z);
-                    void *shape = func_020b3b50(object);
+                    void *shape = BuildingShapes_Of(object);
                     if (shape == NULL) {
                         continue;
                     }
-                    unsigned int count = func_020b3eb8(shape);
+                    unsigned int count = BuildingShapes_CoveredCount(shape);
                     for (unsigned int i = 0; i < count; i++) {
                         int dx = 0;
                         int dz = 0;
-                        if (func_020b3e08(shape, &dx, &dz, i)) {
+                        if (BuildingShapes_CoveredTile(shape, &dx, &dz, i)) {
                             AcreTile_SetItem(town, &data_021f4b28, tile_x + dx, tile_z + dz, 0);
                         }
                     }
@@ -319,7 +293,7 @@ CLEAN_AS(func_020b1e54, TownObjects_MarkFootprints)
 int TownObjects_VisitorsHere(void)
 {
     if (data_020e54a8 == 1) {
-        return TownObjects_VisitorsInScene(func_020b65c4());
+        return TownObjects_VisitorsInScene(SceneQuery_Current());
     }
     return 0;
 }
@@ -329,8 +303,8 @@ CLEAN_AS(func_020b2300, TownObjects_VisitorsHere)
  * TownObjects_ExtraVisitors is set. */
 int TownObjects_VisitorsInScene(int scene)
 {
-    int count = func_020b3fc0(TownObjects_VisitorMask(scene));
-    if (func_020b67e8((unsigned int) scene) != 0 && TownObjects_ExtraVisitors() != 0) {
+    int count = TownObjects_CountVisitors(TownObjects_VisitorMask(scene));
+    if (SceneKinds_IsHouseRoom((unsigned int) scene) != 0 && TownObjects_ExtraVisitors() != 0) {
         return count + 2;
     }
     return count;
@@ -349,7 +323,7 @@ int TownObjects_VisitorMask(int scene)
     if (code < TOWN_OBJECTS_FIRST || code > TOWN_OBJECTS_LAST) {
         return 0;
     }
-    return (int) town_objects_visitors(town_objects_record((u32) func_020b3f58(code)));
+    return (int) town_objects_visitors(town_objects_record((u32) TownObjects_Index(code)));
 }
 CLEAN_AS(func_020b235c, TownObjects_VisitorMask)
 
@@ -380,7 +354,7 @@ CLEAN_AS(func_020b23e0, TownObjects_ExtraVisitors)
  * changed, or index 0xff sent. */
 void TownObjects_Leave(int code, int slot)
 {
-    int index = func_020b3f58((u16) code);
+    int index = TownObjects_Index((u16) code);
     NetSession *session = data_020ccf94;
     if (!Session_IsLinked(session) || Session_IsLocalSlot(session, 0) || Session_IsLocalSlot(session, SESSION_SLOTS)) {
         u8 *record = town_objects_record((u32) index);
@@ -397,7 +371,7 @@ CLEAN_AS(func_020b23ec, TownObjects_Leave)
 /* func_020b2470: the answer to the last request to visit object `code`, 0 while none came. */
 int TownObjects_VisitAnswer(u16 code)
 {
-    return (int) town_objects_answer(town_objects_record((u32) func_020b3f58(code)));
+    return (int) town_objects_answer(town_objects_record((u32) TownObjects_Index(code)));
 }
 CLEAN_AS(func_020b2470, TownObjects_VisitAnswer)
 
@@ -408,17 +382,17 @@ CLEAN_AS(func_020b2470, TownObjects_VisitAnswer)
  * dropped. */
 void TownObjects_RequestVisit(u32 code)
 {
-    u32 index = (u32) func_020b3f58((u16) code);
+    u32 index = (u32) TownObjects_Index((u16) code);
     NetSession *session = data_020ccf94;
     if (!Session_IsLinked(session) || Session_IsLocalSlot(session, 0)) {
         u8 *record = town_objects_record(index);
         u32 visitors = town_objects_visitors(record);
-        u32 before = (u32) func_020b3fc0((int) visitors);
+        u32 before = (u32) TownObjects_CountVisitors((int) visitors);
         visitors |= 1;
-        u32 after = (u32) func_020b3fc0((int) visitors);
+        u32 after = (u32) TownObjects_CountVisitors((int) visitors);
         SceneActorRecord info;
-        func_020b2a68(&info, town_objects_info(index));
-        if (after > func_020b2a3c(&info)) {
+        TownObjects_CopyRecord(&info, town_objects_info(index));
+        if (after > (u32) TownObjects_RecordMaxVisitors(&info)) {
             town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_FULL);
         } else if (TownObjects_HouseState2((int) code) && before == 0) {
             town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_HOUSE);
@@ -427,7 +401,7 @@ void TownObjects_RequestVisit(u32 code)
             town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_LET_IN);
             TownObjects_HouseState2((int) code);
         }
-        func_020b2a64(&info);
+        TownObjects_DestroyRecord(&info);
     } else {
         town_objects_set_answer(town_objects_record(index), 0);
         u8 request = (u8) ((index & TOWN_OBJECTS_MODE_INDEX) << TOWN_OBJECTS_VISIT_INDEX_SHIFT);
@@ -472,15 +446,15 @@ void TownObjects_OnVisitMessage(u8 *payload, int slot)
     }
 
     u32 visitors = town_objects_visitors(record);
-    u32 before = (u32) func_020b3fc0((int) visitors);
+    u32 before = (u32) TownObjects_CountVisitors((int) visitors);
     visitors = (u8) (visitors | town_objects_bit(slot));
-    u32 after = (u32) func_020b3fc0((int) visitors);
+    u32 after = (u32) TownObjects_CountVisitors((int) visitors);
     SceneActorRecord info;
-    func_020b2a68(&info, town_objects_info(index));
-    if (after > func_020b2a3c(&info)) {
+    TownObjects_CopyRecord(&info, town_objects_info(index));
+    if (after > (u32) TownObjects_RecordMaxVisitors(&info)) {
         town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_FULL);
     } else {
-        int code = func_0204bbd4(index);
+        int code = MapCode_Building(index);
         if (TownObjects_HouseState2(code) && before == 0) {
             town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_HOUSE);
         } else {
@@ -495,7 +469,7 @@ void TownObjects_OnVisitMessage(u8 *payload, int slot)
     Session_BeginMessage(session);
     Session_AppendMessage(session, &reply, 1);
     Session_EndMessage(session, TOWN_OBJECTS_MESSAGE_VISIT, (u32) slot);
-    func_020b2a64(&info);
+    TownObjects_DestroyRecord(&info);
 }
 CLEAN_AS(func_020b260c, TownObjects_OnVisitMessage)
 
@@ -503,16 +477,16 @@ CLEAN_AS(func_020b260c, TownObjects_OnVisitMessage)
  * mode; without one, or in mode 1, the mode is recorded (func_020b30e8). */
 void TownObjects_OnModeMessage(const u16 *payload)
 {
-    u16 code = func_0204bbd4(*payload & TOWN_OBJECTS_MODE_INDEX);
+    u16 code = MapCode_Building(*payload & TOWN_OBJECTS_MODE_INDEX);
     u8 mode = (u8) ((*payload >> TOWN_OBJECTS_MODE_SHIFT) & TOWN_OBJECTS_MODE_MASK);
     if (data_020e54a8 == 0) {
-        void *actor = func_ov003_02220174(code);
+        void *actor = ObjectActors_FindByCode(code);
         if (actor != NULL) {
             town_objects_set_mode(actor)(actor, mode);
             return;
         }
     }
-    func_020b30e8(code, mode);
+    TownObjects_SetRecordedMode(code, mode);
 }
 CLEAN_AS(func_020b2734, TownObjects_OnModeMessage)
 
@@ -535,7 +509,7 @@ int TownObjects_VillagerState2(int villager)
     if (record == NULL) {
         return 0;
     }
-    return func_0207f1d8(record) == TOWN_OBJECTS_VILLAGER_STATE_2;
+    return VillagerStatus_Get(record) == TOWN_OBJECTS_VILLAGER_STATE_2;
 }
 CLEAN_AS(func_020b27d4, TownObjects_VillagerState2)
 
@@ -564,16 +538,16 @@ CLEAN_AS(func_020b2800, TownObjects_SetActorMode)
  * record's code with the tile's x and z packed below it (func_020b2a20); else 0. */
 int TownObjects_AtKeptTile(void)
 {
-    if (func_020b6660() == 0 || Block020b220c_Flag4b18() != 0) {
+    if (SceneQuery_CurrentIs0() == 0 || Block020b220c_Flag4b18() != 0) {
         return 0;
     }
     if (data_020e54a8 != 0) {
         return 0;
     }
-    func_020b5e10();
-    int x = func_020b64d4(data_021f69b8);
-    func_020b5e10();
-    int z = func_020b64cc(data_021f69b8);
+    SceneTables_EntryRecord();
+    int x = ScenePlace_TileX((const ScenePlace *) (void *) data_021f69b8);
+    SceneTables_EntryRecord();
+    int z = ScenePlace_TileZ((const ScenePlace *) (void *) data_021f69b8);
     AcreMap *map = data_021c80bc;
     if (map == NULL) {
         return 0;
@@ -586,9 +560,9 @@ int TownObjects_AtKeptTile(void)
         return 0;
     }
     SceneActorRecord info;
-    func_020b2a68(&info, town_objects_info(*object & 0xfffu));
-    int packed = (int) func_020b2a20(&info, x, z);
-    func_020b2a64(&info);
+    TownObjects_CopyRecord(&info, town_objects_info(*object & 0xfffu));
+    int packed = (int) TownObjects_PackRecordTile(&info, x, z);
+    TownObjects_DestroyRecord(&info);
     return packed;
 }
 CLEAN_AS(func_020b289c, TownObjects_AtKeptTile)
@@ -604,7 +578,7 @@ CLEAN_AS(func_020b2980, TownObjects_KeepAtKeptTile)
  * always 1 where func_020b6660 says 0. */
 int TownObjects_HasKeptObject(void)
 {
-    if (func_020b6660() == 0) {
+    if (SceneQuery_CurrentIs0() == 0) {
         return 1;
     }
     return data_021f4b50 != 0;
@@ -614,7 +588,6 @@ CLEAN_AS(func_020b2998, TownObjects_HasKeptObject)
 /* The scene actor near a position (searched on the map being played on, up to 5 tiles back
  * in z and 3 to each side in x), or 0; byte 2 of an actor's record. */
 extern void *func_ov003_02220294(const Vec3 *position);
-extern int func_ov009_02264c90(void *actor);
 
 /* A scene actor's vtable slot 0x64, which gives a structure with a halfword at 4, or 0. */
 #define TOWN_OBJECTS_VALUE_SLOT 0x64
@@ -638,8 +611,8 @@ int TownObjects_NearbyActorValue(const Vec3 *position)
     if (data_020e54a8 != 0) {
         return 1;
     }
-    void *actor = func_ov003_02220294(position);
-    if (actor == NULL || func_ov009_02264c90(actor) != 1) {
+    void *actor = ObjectActors_FindNear(position);
+    if (actor == NULL || SceneActor_Kind(actor) != 1) {
         return 1;
     }
     const u8 *value = town_objects_value_of(actor)(actor);
@@ -785,7 +758,6 @@ CLEAN_AS(func_020b316c, TownObjects_ResetRecordedModes)
 /* Item codes: whether a code is one of 0x5014-0x501a and the first of them, whether it is one
  * of 0x500d-0x5010 and the first of those. */
 extern u16 func_0204bb68(unsigned int unused);
-extern u16 func_0204bae8(unsigned int unused);
 
 /* func_020b3f58: the index of object `code` (0-0x21: the code's low bits, the codes 0x5014-
  * 0x501a counted as 0x5014 and 0x500d-0x5010 as 0x500d), -1 for a code outside the objects. */
@@ -793,11 +765,11 @@ int TownObjects_Index(u16 code)
 {
     u16 object = code;
 
-    if (func_0204bba8(&object)) {
-        object = func_0204bb68(0);
+    if (MapCode_IsStore(&object)) {
+        object = MapCode_Store(0);
     }
-    if (func_0204bb00(&object)) {
-        object = func_0204bae8(0);
+    if (MapCode_IsPlayerHouse(&object)) {
+        object = MapCode_PlayerHouse(0);
     }
     if (object < TOWN_OBJECTS_FIRST || object > TOWN_OBJECTS_LAST) {
         return -1;

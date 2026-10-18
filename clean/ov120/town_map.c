@@ -37,7 +37,7 @@ static_assert(offsetof(TownMap, knob) == 0x674 && offsetof(TownMap, pointer) == 
 static_assert(offsetof(TownMap, map_screen) == 0x720 && offsetof(TownMap, list_template) == 0x1f20, "screens");
 static_assert(offsetof(TownMap, people) == 0x2720 && offsetof(TownMap, places) == 0x272d, "lists");
 static_assert(sizeof(TownMapMark) == 3 && offsetof(TownMap, marks) == 0x2743, "marks");
-static_assert(sizeof(TownMapPlace) == 6 && sizeof(TownMap) == 0x2770, "size (func_ov120_0229c45c)");
+static_assert(sizeof(TownMapMarker) == 6 && sizeof(TownMap) == 0x2770, "size (func_ov120_0229c45c)");
 
 /* The scene's vtable. */
 extern const u8 data_ov120_0229c650[];
@@ -104,12 +104,10 @@ extern const char data_ov120_0229c760[]; /* b_map_b_bg.bsc */
  * at data_ov120_0229c78c. */
 extern u32 data_ov120_0229c780;
 extern u8 data_ov120_0229c78c[];
-extern TownMapPlace data_ov120_0229c820[17];
-extern TownMapPlace *func_ov117_0229a2f0(TownMapPlace *places); /* constructs */
-extern void func_ov117_0229a2c8(TownMapPlace *places);          /* every place unset */
-extern void func_ov117_0229a2ec(void *places);                  /* destructs (nothing) */
-/* Draws the town's map into the characters at `chars` and sets the places. */
-extern void func_ov117_02299a48(int chars, int places);
+extern TownMapMarker data_ov120_0229c820[TOWN_MAP_MARKERS];
+/* The table's destructor (TownMapMarkers_Destruct, which does nothing) is registered with the
+ * C++ runtime, so it is the game's symbol. */
+extern void func_ov117_0229a2ec(void *places);
 extern void __register_global_object(void *object, void *destruct, void *record);
 
 /* The members' constructors and destructors handed to __cxa_vec_ctor and __cxa_vec_cleanup
@@ -671,12 +669,12 @@ void TownMap_LoadMap(TownMap *self)
     void *chars = Heap_AllocBack(heap, TOWN_MAP_MAP_CHARS_BYTES);
 
     if (!(data_ov120_0229c780 & 1)) {
-        func_ov117_0229a2f0(data_ov120_0229c820);
+        TownMapMarkers_Construct(data_ov120_0229c820);
         __register_global_object(data_ov120_0229c820, (void *) (uintptr_t) func_ov117_0229a2ec, data_ov120_0229c78c);
         data_ov120_0229c780 |= 1;
     }
-    func_ov117_0229a2c8(data_ov120_0229c820);
-    func_ov117_02299a48((int) (uintptr_t) chars, (int) (uintptr_t) data_ov120_0229c820);
+    TownMapMarkers_Clear(data_ov120_0229c820);
+    TownMapImage_Build((int) (uintptr_t) chars, (int) (uintptr_t) data_ov120_0229c820);
     DisplayLayer_LoadChars((u32) (uintptr_t) chars, LAYER_SUB_BG1, 0x60, 0x60, 0x15f);
     TownMap_ReadMarks(self, data_ov120_0229c820);
     Heap_Free(heap, chars);

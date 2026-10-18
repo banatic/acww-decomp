@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "overlay_slots.h"
 
 static_assert(offsetof(LibraryOverlaySlot, loading) == 0x04, "loading");
 static_assert(offsetof(LibraryOverlaySlot, info) == 0x08, "info");
@@ -13,7 +14,6 @@ extern char SDK_OVERLAY_ov065_ID;
 extern char SDK_OVERLAY_ov066_ID;
 extern char SDK_OVERLAY_ov067_ID;
 extern void OS_Terminate(void);
-extern void func_0204fa5c(void *info, int overlay); /* FS_LoadOverlayInfo of the main processor */
 extern int FS_LoadOverlayImage(void *info);
 extern void FS_StartOverlay(void *info);
 extern void FS_EndOverlay(void *info);
@@ -79,7 +79,7 @@ int LibraryOverlay_Load(LibraryOverlaySlot *slot, int overlay)
 {
     slot->loading = 1;
     slot->overlay = overlay;
-    func_0204fa5c(slot->info, overlay);
+    OverlaySlots_ReadInfo((OverlaySlotsInfo *) (void *) slot->info, overlay);
     FS_LoadOverlayImage(slot->info);
     FS_StartOverlay(slot->info);
     slot->loading = 0;

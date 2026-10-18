@@ -12,6 +12,16 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "furniture_mover.h"
+#include "furniture_sounds.h"
+#include "main/actor_table.h"
+#include "main/animated_model.h"
+#include "main/model_object.h"
+#include "main/model_pool.h"
+#include "main/room_cells.h"
+#include "main/room_sync.h"
+#include "main/scene_query.h"
+#include "room_manager.h"
 
 static_assert(offsetof(RoomObject02252ba8, cue) == 0x844, "cue");
 static_assert(offsetof(RoomObject02252ba8, cue_ready) == 0x858, "cue ready");
@@ -49,41 +59,10 @@ extern const u8 data_ov004_02252c54[];
 
 extern NetSession *data_020ccf94; /* the session */
 
-/* The model object at 0x538: its joint animation advanced; `file` played on its joints by
- * `mode` and `speed` from `frame`; the same after func_02056e60 put `value` at its 0xb8; its
- * hooks for a node's description and after it; and a block for its materials from `heap`. */
-extern void func_02054cdc(void *model);
-extern void func_02055060(void *model, const AnimFile *file, int mode, int speed, int frame, int a5);
-extern void func_02054cac(void *model, const AnimFile *file, int value, int mode, int speed, int frame, int a6);
-extern void func_02054d60(void *model, NodeHookState *state);
-extern void func_02054cf4(void *model, NodeHookState *state);
-extern int func_02055478(void *model, int heap);
-extern int func_0209d324(void *entry);
-/* The tile a point is on. */
-extern void func_0204f818(int *x, int *y, const Vec3 *point);
-/* The scene. */
-extern u8 func_020b65c4(void);
-/* Whether func_020b6694 says so of the scene. */
-extern int func_020b6680(void);
-/* The scene's record for the cells (func_02052f3c): func_02052e98 puts a step at a cell,
- * func_02052ec0 reads it (-1 without a record), func_02052e70 is the third call on it. */
-extern int func_02052e98(int x, int y, int step, int scene);
-extern int func_02052ec0(int x, int y, int scene);
-extern int func_02052e70(int x, int y, int scene);
-/* Hands the change of the switch at the tile of `point` on (through the session when it is
- * linked, func_02051f74). */
-extern void func_02051f4c(int scene, Vec3 *point, int layer);
-/* The room's object at data_ov004_022595c0 + 0x1c4 (NULL without the room), and its word at
- * 0x20: here an animation for the joints. */
-extern void *func_ov004_0223b22c(void);
-extern int func_ov004_0223adf4(void *object);
-/* The sound at 6 of the furniture's row. */
-extern int func_ov004_0223a730(int number);
-
 /* The mover's animation for the joints. */
 static const AnimFile *RoomObject02252ba8_mover_anim(void *mover)
 {
-    return (const AnimFile *) (uintptr_t) (u32) func_ov004_0223adf4(mover);
+    return (const AnimFile *) (uintptr_t) (u32) FurnitureMover_IdleAnim(mover);
 }
 
 /* The joint animation of variant 0 of the furniture's archive. */
@@ -95,8 +74,8 @@ static const AnimFile *RoomObject02252ba8_joint_anim(RoomObject02252ba8 *object)
 /* Hands a change of the switch on, from the object's position. */
 static void RoomObject02252ba8_hand_on(RoomObject02252ba8 *object)
 {
-    int scene = func_020b65c4();
-    func_02051f4c(scene, &object->base.position, RoomObject_Layer(&object->base));
+    int scene = SceneQuery_Current();
+    RoomSync_ToggleSwitchAtPoint(scene, &object->base.position, RoomObject_Layer(&object->base));
 }
 
 /* func_ov004_02214c50 (update of PLAYING): the cue's update at the position; when it gives a
@@ -107,9 +86,9 @@ void RoomObject02252ba8_UpdatePlaying(RoomObject02252ba8 *object)
 {
     int frame = RoomObject02252ba8_UpdateCue(object, &object->base.position);
     if (frame >= 0) {
-        func_02055060(object->base.unk_538, RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP, frame & 0xfff,
-                      (u16) (frame >> 12), 0);
-        func_02054cdc(object->base.unk_538);
+        AnimatedModel_Start(&object->base.model, (const u8 *) RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP,
+                            frame & 0xfff, (u16) (frame >> 12), 0);
+        AnimatedModel_Update(&object->base.model);
     }
     if (Switch_IsPending(&object->base.light_switch)) {
         Switch_Set(&object->base.light_switch, 1, 0);
@@ -124,7 +103,7 @@ int RoomObject02252ba8_EnterPlaying(RoomObject02252ba8 *object)
 {
     Switch_Set(&object->base.light_switch, 1, 0);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_LOOP, ONE, 0);
-    func_02055060(object->base.unk_538, RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP, 0, 0, 0);
+    AnimatedModel_Start(&object->base.model, (const u8 *) RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP, 0, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02214cd8, RoomObject02252ba8_EnterPlaying)
@@ -139,7 +118,7 @@ void RoomObject02252ba8_UpdateStarting(RoomObject02252ba8 *object)
     RoomObject *base = &object->base;
     RoomObject02252ba8_UpdateCue(object, &base->position);
     if (object->countdown != 0) {
-        func_02054cdc(base->unk_538);
+        AnimatedModel_Update(&base->model);
         object->countdown = (u16) (object->countdown - 1);
     }
     if (object->countdown == 0) {
@@ -149,7 +128,7 @@ void RoomObject02252ba8_UpdateStarting(RoomObject02252ba8 *object)
         int start = RoomObject02252ba8_CueStart(object);
         if (start >= 0) {
             object->countdown = (u16) start;
-            func_02054cac(base->unk_538, RoomObject02252ba8_joint_anim(object), (u16) start, 0, 0, 0, 0);
+            AnimatedModel_Play(&base->model, (const u8 *) RoomObject02252ba8_joint_anim(object), (u16) start, 0, 0, 0, 0);
         }
     }
     if (Switch_IsPending(&base->light_switch)) {
@@ -162,14 +141,14 @@ CLEAN_AS(func_ov004_02214d34, RoomObject02252ba8_UpdateStarting)
 /* The end of each way into STARTING: the joints take `file` at frame 0, held, and advance. */
 static void RoomObject02252ba8_hold_joints(RoomObject02252ba8 *object, const AnimFile *file)
 {
-    func_02055060(object->base.unk_538, file, ANIM_MODE_LOOP, 0, 0, 0);
-    func_02054cdc(object->base.unk_538);
+    AnimatedModel_Start(&object->base.model, (const u8 *) file, ANIM_MODE_LOOP, 0, 0, 0);
+    AnimatedModel_Update(&object->base.model);
 }
 
 /* func_ov004_02214df8 (entry of STARTING): the sound at 2, the switch on, at once, and the
  * countdown at 0xffff. Then, by the tile it is on:
  * - while its model is being bound (RoomObject.unk_77E) in the mode given (unk_76C not 0) or
- *   where func_020b6680 says so: the cue plays (even when it was not set up) and its step goes
+ *   where SceneQuery_CurrentIn11 says so: the cue plays (even when it was not set up) and its step goes
  *   to the cell and to unk_77C; the joints take the archive's animation; the countdown at 0;
  * - while its model is being bound otherwise: the cue waits for the step the cell keeps, which
  *   goes to unk_77C; the joints take the mover's animation;
@@ -177,7 +156,7 @@ static void RoomObject02252ba8_hold_joints(RoomObject02252ba8 *object, const Ani
  *   goes to the cell (unk_77C stays); the joints take the mover's animation;
  * - else: the cue plays and its step goes to the cell and to unk_77C; the joints take the
  *   mover's animation.
- * REQUIRES: but in the first case the mover exists (func_ov004_0223adf4 is given its NULL). */
+ * REQUIRES: but in the first case the mover exists (FurnitureMover_IdleAnim is given its NULL). */
 int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
 {
     RoomObject *base = &object->base;
@@ -186,33 +165,33 @@ int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
     RoomObject_PlaySound1(base);
     Switch_Set(&base->light_switch, 1, 0);
     object->countdown = 0xffff;
-    func_0204f818(&x, &y, &base->position);
+    Position_Tile(&x, &y, (const Position *) (const void *) &base->position);
     if (base->unk_77E != 0) {
-        if (base->unk_76C != 0 || func_020b6680() != 0) {
+        if (base->unk_76C != 0 || SceneQuery_CurrentIn11() != 0) {
             SoundCue_SetMode(object->cue, CUE_PLAY);
             step = SoundCue_ReadVariable((char *) object->cue) & STEP_MASK;
-            func_02052e98(x, y, (u8) step, func_020b65c4());
+            RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());
             base->unk_77C = (u8) step;
             RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_joint_anim(object));
             object->countdown = 0;
         } else {
             RoomObject02252ba8_CueSetMode(object, CUE_WAIT);
-            step = func_02052ec0(x, y, func_020b65c4()) & STEP_MASK;
+            step = RoomCells_GetStep(x, y, SceneQuery_Current()) & STEP_MASK;
             RoomObject02252ba8_CueSetTarget(object, (u8) step);
             base->unk_77C = (u8) step;
-            RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(func_ov004_0223b22c()));
+            RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(RoomManager_Mover()));
         }
     } else if (Session_IsLinked(data_020ccf94) != 0 && base->vtable->vfunc_78(base) != NO_STEP) {
         RoomObject02252ba8_CueSetMode(object, CUE_PLAY);
         step = base->vtable->vfunc_78(base);
-        func_02052e98(x, y, (u8) (step & STEP_MASK), func_020b65c4());
-        RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(func_ov004_0223b22c()));
+        RoomCells_SetStep(x, y, (u8) (step & STEP_MASK), SceneQuery_Current());
+        RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(RoomManager_Mover()));
     } else {
         RoomObject02252ba8_CueSetMode(object, CUE_PLAY);
         step = RoomObject02252ba8_CueStep(object) & STEP_MASK;
-        func_02052e98(x, y, (u8) step, func_020b65c4());
+        RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());
         base->unk_77C = (u8) step;
-        RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(func_ov004_0223b22c()));
+        RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(RoomManager_Mover()));
     }
     return 1;
 }
@@ -224,7 +203,7 @@ CLEAN_AS(func_ov004_02214df8, RoomObject02252ba8_EnterStarting)
 void RoomObject02252ba8_UpdateOff(RoomObject02252ba8 *object)
 {
     RoomObject02252ba8_UpdateCue(object, &object->base.position);
-    func_02054cdc(object->base.unk_538);
+    AnimatedModel_Update(&object->base.model);
     if (Switch_IsPending(&object->base.light_switch)) {
         Switch_Set(&object->base.light_switch, 0, 0);
         RoomObject02252ba8_hand_on(object);
@@ -232,7 +211,7 @@ void RoomObject02252ba8_UpdateOff(RoomObject02252ba8 *object)
 }
 CLEAN_AS(func_ov004_02214fc8, RoomObject02252ba8_UpdateOff)
 
-/* func_ov004_02215020 (entry of OFF): no step (unk_77C), func_02052e70 at its tile, the cue
+/* func_ov004_02215020 (entry of OFF): no step (unk_77C), RoomCells_ClearStep at its tile, the cue
  * off, the sound at 4 and the switch off, at once. With the mover the joints take its
  * animation, held at frame 0: at once while the model is being bound, else with the value 0x20
  * at the model's 0xb8. */
@@ -240,18 +219,18 @@ int RoomObject02252ba8_EnterOff(RoomObject02252ba8 *object)
 {
     RoomObject *base = &object->base;
     int x, y;
-    func_0204f818(&x, &y, &base->position);
+    Position_Tile(&x, &y, (const Position *) (const void *) &base->position);
     base->unk_77C = NO_STEP;
-    func_02052e70(x, y, func_020b65c4());
+    RoomCells_ClearStep(x, y, SceneQuery_Current());
     RoomObject02252ba8_CueSetMode(object, CUE_OFF);
     RoomObject_PlaySound2(base);
     Switch_Set(&base->light_switch, 0, 0);
-    if (func_ov004_0223b22c() != NULL) {
-        const AnimFile *file = RoomObject02252ba8_mover_anim(func_ov004_0223b22c());
+    if (RoomManager_Mover() != NULL) {
+        const AnimFile *file = RoomObject02252ba8_mover_anim(RoomManager_Mover());
         if (base->unk_77E != 0) {
-            func_02055060(base->unk_538, file, ANIM_MODE_LOOP, 0, 0, 0);
+            AnimatedModel_Start(&base->model, (const u8 *) file, ANIM_MODE_LOOP, 0, 0, 0);
         } else {
-            func_02054cac(base->unk_538, file, BLEND_FRAMES, ANIM_MODE_LOOP, 0, 0, 0);
+            AnimatedModel_Play(&base->model, (const u8 *) file, BLEND_FRAMES, ANIM_MODE_LOOP, 0, 0, 0);
         }
     }
     return 1;
@@ -411,7 +390,7 @@ static_assert(offsetof(RoomObject02252ba8Joint, translation) == 0x4c, "joint tra
  * joint's translation set back to that of the node `node` in the model's resource (its entry in
  * the dictionary, offset 6 the entries, their size first and the data after a 4-byte head, each
  * an offset from the dictionary to the node), then the model object's own hook
- * (func_02054cf4).
+ * (AnimatedModel_AfterNode).
  * REQUIRES: the node's data carries a translation. */
 void RoomObject02252ba8_NodeDescAfterHook(RoomObject02252ba8 *object, int node, NodeHookState *state)
 {
@@ -423,16 +402,16 @@ void RoomObject02252ba8_NodeDescAfterHook(RoomObject02252ba8 *object, int node, 
     const RoomObject02252ba8NodeData *data =
         (const RoomObject02252ba8NodeData *) (const void *) (info + *(const s32 *) (entry + 4));
     render->joint->translation = data->translation;
-    func_02054cf4(object->base.unk_538, state);
+    AnimatedModel_AfterNode(&object->base.model, (AnimatedModelNodeState *) (void *) state);
 }
 CLEAN_AS(func_ov004_022152f8, RoomObject02252ba8_NodeDescAfterHook)
 
 /* func_ov004_0221533c (vtable slot 0x68, the model's hook for a node's description): the
- * model object's own hook (func_02054d60). */
+ * model object's own hook (AnimatedModel_BeforeNode). */
 void RoomObject02252ba8_NodeDescHook(RoomObject02252ba8 *object, int node, NodeHookState *state)
 {
     (void) node;
-    func_02054d60(object->base.unk_538, state);
+    AnimatedModel_BeforeNode(&object->base.model, (AnimatedModelNodeState *) (void *) state);
 }
 CLEAN_AS(func_ov004_0221533c, RoomObject02252ba8_NodeDescHook)
 
@@ -466,7 +445,7 @@ CLEAN_AS(_ZN18Obj_ov004_02252ba819func_ov004_02215374Ev, RoomObject02252ba8_Upda
 /* func_ov004_02215394 (vtable slot 0x7c, once the model is bound): no frames counted and no
  * step; the cue set up for the sound at 6 of the furniture's row; the animations of variant 0
  * bound to play once from the start; the model's block from the heap of its pool entry
- * (func_02055478). Then, in mode 1 (unk_76C), the switch off at once and handed on without a
+ * (ModelObject_AllocJointResults). Then, in mode 1 (unk_76C), the switch off at once and handed on without a
  * state; for a preview (unk_76C 2) OFF; else STARTING when the switch is on, OFF when off. Done
  * at once. */
 int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
@@ -474,9 +453,10 @@ int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
     RoomObject *base = &object->base;
     object->frames = 0;
     base->unk_77C = NO_STEP;
-    RoomObject02252ba8_InitCue(object, (u16) func_ov004_0223a730(RoomObject_Number(base)));
+    RoomObject02252ba8_InitCue(object, (u16) FurnitureSounds_Sound3(RoomObject_Number(base)));
     RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
-    func_02055478(base->unk_538, func_0209d324((void *) (uintptr_t) (u32) RoomObject_PoolEntry(base)));
+    ModelObject_AllocJointResults(
+        &base->model.object, (Heap *) (uintptr_t) ModelPoolEntry_Heap((void *) (uintptr_t) (u32) RoomObject_PoolEntry(base)));
     if (base->unk_76C == 1) {
         Switch_Set(&base->light_switch, 0, 0);
         RoomObject02252ba8_hand_on(object);

@@ -19,6 +19,9 @@
 #include "villager_data.h"
 #include "villager_memory_entry.h"
 #include "villager_roster.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "talk_receiver.h"
 
 static_assert(offsetof(TalkTagsWalker, talk) == 0x24, "walker talk");
 static_assert(offsetof(TalkTagsWalker, state) == 0x30, "walker state");
@@ -130,17 +133,6 @@ static TalkObject *talk_tags_object(TalkTagsWalker *walker)
 {
     return (TalkObject *) (void *) walker->talk;
 }
-/* An answer; all of them cleared (the pick too); an answer's weight and its byte 0x70; the
- * first answer's text. */
-extern TalkAnswer *func_020ab550(TalkAnswers *answers, int index);
-extern void func_020ab5e4(TalkAnswers *answers);
-extern u8 *func_020ab788(TalkAnswer *answer);
-extern u8 *func_020ab794(TalkAnswer *answer);
-extern MessageTagText *func_020ab53c(TalkAnswers *answers);
-/* The signed byte 0x1c of a player's id: its kind. */
-extern int func_020950c0(const DesignCreator *player);
-/* A random number below `bound`. */
-extern u32 func_020644cc(int bound);
 
 typedef void TalkTagsSlot(void *receiver);
 typedef void *TalkTagsPointerSlot(void *receiver);
@@ -572,7 +564,7 @@ void TalkTags_BranchByPlayerKind(TalkTagsWalker *walker)
 
     talk_tags_branch(walker, TALK_TAGS_BRANCH_PLAYER_KIND, 2);
     MessageTag_ReadTwoBytes(&walker->tag, &messages[0], &messages[1]);
-    int other = func_020950c0(PlayerRecord_Player(PlayerRecords_Current())) != 0;
+    int other = PlayerId_Byte1c((const s8 *) PlayerRecord_Player(PlayerRecords_Current())) != 0;
     talk_tags_go_to(walker, messages[other]);
 }
 CLEAN_AS(func_02069a94, TalkTags_BranchByPlayerKind)
@@ -610,7 +602,7 @@ void TalkTags_BranchRandom3(TalkTagsWalker *walker)
 
     talk_tags_branch(walker, TALK_TAGS_BRANCH_RANDOM3, 3);
     MessageTag_ReadThreeBytes(&walker->tag, &messages[0], &messages[1], &messages[2]);
-    talk_tags_go_to(walker, messages[func_020644cc(3)]);
+    talk_tags_go_to(walker, messages[MainRandom_Below(3)]);
 }
 CLEAN_AS(func_02069b80, TalkTags_BranchRandom3)
 
@@ -621,7 +613,7 @@ void TalkTags_BranchRandom2(TalkTagsWalker *walker)
 
     talk_tags_branch(walker, TALK_TAGS_BRANCH_RANDOM2, 2);
     MessageTag_ReadTwoBytes(&walker->tag, &messages[0], &messages[1]);
-    talk_tags_go_to(walker, messages[func_020644cc(2)]);
+    talk_tags_go_to(walker, messages[MainRandom_Below(2)]);
 }
 CLEAN_AS(func_02069bd0, TalkTags_BranchRandom2)
 
@@ -642,20 +634,20 @@ void TalkTags_SliderChoices(TalkTagsWalker *walker)
 
     walker->choices_shown = 0;
     TalkAnswers *answers = TalkObject_Answers(talk_tags_talk(walker));
-    TalkAnswer *first = func_020ab550(answers, 0);
-    TalkAnswer *second = func_020ab550(answers, 1);
-    TalkAnswer *third = func_020ab550(answers, 2);
-    TalkAnswer *fourth = func_020ab550(answers, 3);
-    func_020ab5e4(answers);
-    u8 *weight0 = func_020ab788(first);
-    u8 *byte0 = func_020ab794(first);
-    u8 *weight1 = func_020ab788(second);
-    u8 *byte1 = func_020ab794(second);
-    u8 *weight2 = func_020ab788(third);
-    u8 *byte2 = func_020ab794(third);
-    u8 *weight3 = func_020ab788(fourth);
-    u8 *byte3 = func_020ab794(fourth);
-    MessageTagText *text0 = func_020ab53c(answers);
+    TalkAnswer *first = TalkAnswers_Answer(answers, 0);
+    TalkAnswer *second = TalkAnswers_Answer(answers, 1);
+    TalkAnswer *third = TalkAnswers_Answer(answers, 2);
+    TalkAnswer *fourth = TalkAnswers_Answer(answers, 3);
+    TalkAnswers_Clear(answers);
+    u8 *weight0 = TalkAnswers_Weight(first);
+    u8 *byte0 = TalkAnswers_Answer70(first);
+    u8 *weight1 = TalkAnswers_Weight(second);
+    u8 *byte1 = TalkAnswers_Answer70(second);
+    u8 *weight2 = TalkAnswers_Weight(third);
+    u8 *byte2 = TalkAnswers_Answer70(third);
+    u8 *weight3 = TalkAnswers_Weight(fourth);
+    u8 *byte3 = TalkAnswers_Answer70(fourth);
+    MessageTagText *text0 = (MessageTagText *) (void *) TalkAnswers_FirstText(answers);
     MessageTagText *text4 = (MessageTagText *) (void *) TalkAnswers_FifthText(answers);
     int texts = MessageTag_ReadEightBytesTwoTexts(&walker->tag, weight0, byte0, weight1, byte1, weight2, byte2, weight3, byte3,
                                                   text0, text4);
@@ -882,15 +874,6 @@ CLEAN_AS(func_0206a150, TalkTags_PutLikedNpc)
 #define TALK_TAGS_NOTE_CATCHPHRASE 0xc39
 extern const char data_020df1b8[];
 
-/* The talk's texts of the date and time it began (func_02067c20 kept them at 0x1a64 to
- * 0x1a70) are set and answered by TalkObject_SecondText to TalkObject_YearText. */
-/* The town's name and this system's player's name (both answer 1), the villager's
- * catchphrase, and the text the villager remembers of the player, are loaded into the talk
- * (TalkObject_LoadTownName, TalkObject_LoadPlayerName, TalkObject_LoadCatchphrase,
- * TalkObject_LoadMemory); 0 when not. */
-/* The text of the receiver's name (the receiver plus 0x20). */
-extern void *func_020668d4(void *receiver);
-
 /* The tables of the handlers (function-local statics of the game, filled on the first call),
  * by group: the guard, the table, and the constants it is filled from. */
 extern const MemberPointer __ptmf_null;
@@ -1090,10 +1073,10 @@ void TalkTags_PutReceiverName(TalkTagsWalker *walker)
 {
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
     void *receiver = talk_tags_receiver(walker);
-    MessageWalker_Enter(&walker->base, talk_tags_characters(func_020668d4(receiver)));
+    MessageWalker_Enter(&walker->base, talk_tags_characters(TalkReceiver_SpeakerName(receiver)));
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(TALK_TAGS_COLOUR_NPC));
     MailParticles_TakeLastSyllable((MailTextParticles *) (void *) talk_tags_at(walker, TALK_TAGS_PARTICLES),
-                                   (const char *) (uintptr_t) talk_tags_characters(func_020668d4(receiver)));
+                                   (const char *) (uintptr_t) talk_tags_characters(TalkReceiver_SpeakerName(receiver)));
     *(s32 *) (void *) talk_tags_at(walker, TALK_TAGS_RO_AFTER_RIEUL) = 0;
 }
 CLEAN_AS(func_0206a4a0, TalkTags_PutReceiverName)

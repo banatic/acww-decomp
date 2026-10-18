@@ -86,6 +86,7 @@ BOOL OverlayGroups_RequestForOwner(int group)
     request(group);
     return TRUE;
 }
+CLEAN_AS(func_0207000c, OverlayGroups_RequestForOwner)
 
 /* func_0207004c: ask for a group when there is no owner; TRUE when the request was made. */
 BOOL OverlayGroups_Request(int group)

@@ -3,6 +3,10 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "frame_ctrl.h"
+#include "joint_blend.h"
+#include "model_anim.h"
+#include "model_object.h"
 
 static_assert(sizeof(AnimatedModelAnim) == 0x14, "AnimatedModelAnim layout");
 static_assert(sizeof(AnimatedModelRamp) == 0x3c, "AnimatedModelRamp layout");
@@ -26,22 +30,6 @@ extern const u8 data_020dd184[];
 
 /* The joint animation header NitroSystem sizes an animation object by ("J\0AC"). */
 extern const u8 data_020dd030[];
-
-/* An animation object for `model` of the kind of `header`, from `heap`. */
-extern AnimatedModelAnim *func_02056548(u8 *model, const void *header, Heap *heap);
-/* The holder drawn, with `scale` (NULL: 1.0). */
-extern void func_02055e7c(AnimatedModel *model, const Vec3 *scale);
-
-/* Frame controls and Ramps (frame_ctrl.h). */
-extern void func_02056fcc(FrameCtrl *ctrl, u32 frames, int flags, fx32 speed, u16 start); /* FrameCtrl_Init */
-extern void func_02056ffc(FrameCtrl *ctrl);                                               /* FrameCtrl_Step */
-extern void func_02057054(FrameCtrl *ctrl);                                               /* its destructor */
-extern void func_02056e60(AnimatedModelRamp *ramp, int frames);                           /* start a blend */
-extern int func_02056e84(AnimatedModelRamp *ramp);                                        /* Ramp_Step */
-extern void func_02056aa0(AnimatedModelRamp *ramp, AnimatedModelNodeState *state);        /* record the pose */
-extern void func_02056b18(AnimatedModelRamp *ramp, AnimatedModelNodeState *state);        /* blend from it */
-extern void func_02056eb0(AnimatedModelRamp *ramp);                                       /* its destructor */
-extern AnimatedModelRamp *func_02056f04(AnimatedModelRamp *ramp);                         /* its constructor */
 
 extern void NNS_G3dAnmObjInit(AnimatedModelAnim *anim, const u8 *file, u8 *model, void *texture);
 extern void NNS_G3dRenderObjAddAnmObj(ModelRenderObject *render, AnimatedModelAnim *anim);
@@ -73,7 +61,7 @@ CLEAN_AS(func_02054a9c, AnimatedModel_UseJointAnim)
  * frames. */
 void AnimatedModel_Play(AnimatedModel *model, const u8 *file, int blend, int flags, fx32 speed, u16 start, u16 frames)
 {
-    func_02056e60(&model->ramp, blend);
+    Ramp_Start((Ramp *) &model->ramp, blend);
     AnimatedModel_Start(model, file, flags, speed, start, frames);
 }
 CLEAN_AS(func_02054cac, AnimatedModel_Play)
@@ -81,7 +69,7 @@ CLEAN_AS(func_02054cac, AnimatedModel_Play)
 /* func_02054cdc: one frame of the blended model: the blend, then the animation. */
 void AnimatedModel_Update(AnimatedModel *model)
 {
-    func_02056e84(&model->ramp);
+    Ramp_Step((Ramp *) &model->ramp);
     AnimatedModel_StepFrames(model);
 }
 CLEAN_AS(func_02054cdc, AnimatedModel_Update)
@@ -110,7 +98,7 @@ void AnimatedModel_BlendNode(AnimatedModel *model, AnimatedModelNodeState *state
         MTX_Identity33_(&joint->rotation);
     }
     if (model->ramp.rate != 0) {
-        func_02056b18(&model->ramp, state);
+        JointBlend_Apply((JointBlend *) &model->ramp, state);
     }
 }
 CLEAN_AS(func_02054d14, AnimatedModel_BlendNode)
@@ -128,7 +116,7 @@ CLEAN_AS(func_02054d60, AnimatedModel_BeforeNode)
 void AnimatedModel_RecordNode(AnimatedModel *model, AnimatedModelNodeState *state)
 {
     if (model->ramp.rate != 0) {
-        func_02056aa0(&model->ramp, state);
+        JointBlend_RecordPose((JointBlend *) &model->ramp, state);
     }
 }
 CLEAN_AS(func_02054d80, AnimatedModel_RecordNode)
@@ -140,7 +128,7 @@ static void destruct_blended(AnimatedModel *model)
     model->object.vtable = data_020dd0dc;
     model->frames.vtable = data_020dd0ec;
     model->ramp.vtable = data_020dd0fc;
-    func_02056eb0(&model->ramp);
+    JointBlend_Destruct((JointBlend *) &model->ramp);
     AnimatedModel_Destruct(model);
 }
 
@@ -174,7 +162,7 @@ CLEAN_AS(func_02054e18, AnimatedModel_DestructBlendedComplete)
 static void construct_blended(AnimatedModel *model)
 {
     AnimatedModel_ConstructBase(model);
-    func_02056f04(&model->ramp);
+    JointBlend_ConstructBase((JointBlend *) &model->ramp);
     model->object.vtable = data_020dd0dc;
     model->frames.vtable = data_020dd0ec;
     model->ramp.vtable = data_020dd0fc;
@@ -332,7 +320,7 @@ void AnimatedModel_Start(AnimatedModel *model, const u8 *file, int flags, fx32 s
     if (frames == 0) {
         frames = AnimatedModel_FrameCount(flags, file);
     }
-    func_02056fcc(&model->frames, frames, flags, speed, start);
+    FrameCtrl_Init(&model->frames, frames, flags, speed, start);
     NNS_G3dAnmObjInit(model->anim, file, model->object.model, NULL);
     model->anim->frame = model->frames.frame;
 }
@@ -376,14 +364,14 @@ void AnimatedModel_Draw(AnimatedModel *model, const Vec3 *scale)
     if (model->object.render.joint_results != NULL) {
         model->object.render.flags |= MODEL_RENDER_RECORD;
     }
-    func_02055e7c(model, scale);
+    ModelObject_Draw((ModelObject *) model, scale);
 }
 CLEAN_AS(func_0205510c, AnimatedModel_Draw)
 
 /* func_02055124: one step of the frame control, whose frame the animation object takes. */
 void AnimatedModel_StepFrames(AnimatedModel *model)
 {
-    func_02056ffc(&model->frames);
+    FrameCtrl_Step(&model->frames);
     model->anim->frame = model->frames.frame;
 }
 CLEAN_AS(func_02055124, AnimatedModel_StepFrames)
@@ -395,7 +383,7 @@ int AnimatedModel_LoadAnim(AnimatedModel *model, Heap *heap)
     if (model->anim != NULL || model->object.model == NULL) {
         return 0;
     }
-    model->anim = func_02056548(model->object.model, data_020dd030, heap);
+    model->anim = ModelAnim_AllocAnmObj(model->object.model, data_020dd030, heap);
     return model->anim != NULL;
 }
 CLEAN_AS(func_02055140, AnimatedModel_LoadAnim)
@@ -406,7 +394,7 @@ static void destruct_animated(AnimatedModel *model)
 {
     model->object.vtable = data_020dd05c;
     model->frames.vtable = data_020dd06c;
-    func_02057054(&model->frames);
+    FrameCtrl_Destruct(&model->frames);
     ModelObject_Destruct(&model->object);
 }
 

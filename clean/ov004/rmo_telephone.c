@@ -61,7 +61,7 @@ static_assert(offsetof(TalkObject, next_state) == 0x08, "talk next state");
 /* Its receiver's vtable slot 0x08: the reset (talk_receiver.h). */
 #define RMO_TELEPHONE_RECEIVER_SLOT_RESET 0x08
 
-/* State 14's messages in "sp_etc_sequence1", by func_0206fc6c (GroupParams_C4CIs1); the scene
+/* State 14's messages in "sp_etc_sequence1", by GroupParams_C4CIs1 (GroupParams_C4CIs1); the scene
  * after which it goes on to state 12 instead of 4; the group whose screen state 13 opens. */
 #define RMO_TELEPHONE_MESSAGE_IF_SET 0x10
 #define RMO_TELEPHONE_MESSAGE_ELSE 0x18
@@ -73,9 +73,6 @@ extern RmoTelephone *data_ov004_022588c8;
 
 /* "sp_etc_sequence1", the message file. */
 extern const char data_ov004_022558ac[];
-
-/* Enters a state: its entry from the table data_ov004_022588d8, then RmoTelephone.state. */
-extern void func_ov004_0223121c(RmoTelephone *self, int state);
 
 static AnimatedModel *RmoTelephone_body(RmoTelephone *self)
 {
@@ -140,7 +137,7 @@ int RmoTelephone_EnterState10Current(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
-        func_ov004_0223121c(self, RMO_TELEPHONE_STATE_10);
+        RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_10);
         return 1;
     }
     return 0;
@@ -173,7 +170,7 @@ void RmoTelephone_StartTalk(RmoTelephone *self, const char *name, u8 message)
 CLEAN_AS(func_ov004_02230db8, RmoTelephone_StartTalk)
 
 /* func_ov004_02230e08 (update of state 14): once the group screen has closed (it could open
- * again), talk 0 shows message 0x10 of "sp_etc_sequence1" (0x18 when func_0206fc6c answers 0)
+ * again), talk 0 shows message 0x10 of "sp_etc_sequence1" (0x18 when GroupParams_C4CIs1 answers 0)
  * and is asked to open; then state 12 in scene 6, else state 4. */
 void RmoTelephone_UpdateState14(RmoTelephone *self)
 {
@@ -186,9 +183,9 @@ void RmoTelephone_UpdateState14(RmoTelephone *self)
         TalkObject_SetMessage(talk, &message, data_ov004_022558ac);
         talk->next_state = TALK_OBJECT_OPENING;
         if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_12) {
-            func_ov004_0223121c(self, RMO_TELEPHONE_STATE_12);
+            RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_12);
         } else {
-            func_ov004_0223121c(self, RMO_TELEPHONE_STATE_4);
+            RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_4);
         }
     }
 }
@@ -204,7 +201,7 @@ void RmoTelephone_UpdateState13(RmoTelephone *self)
 {
     if (TalkObject_Get(RMO_TELEPHONE_TALK)->state == TALK_OBJECT_GONE) {
         GroupParams_Open(RMO_TELEPHONE_SCREEN_GROUP);
-        func_ov004_0223121c(self, RMO_TELEPHONE_STATE_14);
+        RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_14);
     }
 }
 CLEAN_AS(func_ov004_02230e6c, RmoTelephone_UpdateState13)
@@ -221,7 +218,7 @@ static void RmoTelephone_end_talk(RmoTelephone *self)
     if (talk->state == TALK_OBJECT_CLOSED) {
         TalkObject_DetachReceiver(talk);
         self->talking = 0;
-        func_ov004_0223121c(self, RMO_TELEPHONE_STATE_7);
+        RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_7);
     }
 }
 
@@ -252,7 +249,7 @@ void RmoTelephone_UpdateState10(RmoTelephone *self)
 {
     struct TalkFlowTalk *talk = self->receiver.talk;
     if (talk != NULL && talk->state != TALK_FLOW_CLOSED) {
-        func_ov004_0223121c(self, RMO_TELEPHONE_STATE_11);
+        RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_11);
     }
 }
 CLEAN_AS(func_ov004_02230ef4, RmoTelephone_UpdateState10)

@@ -9,6 +9,7 @@
 #include "room_object_body.h"
 #include "room_object_life.h"
 #include "room_object_parts.h"
+#include "main/room_sync.h"
 
 static_assert(offsetof(SwitchShownObject, state) == 0x844, "state");
 static_assert(offsetof(SwitchShownObject, always_drawn) == 0x845, "always drawn");
@@ -33,9 +34,6 @@ extern const u8 data_ov004_02247670[SWITCH_SHOWN_STATE_COUNT];
 /* The class's vtables, and its receiver part's. */
 extern const u8 data_ov004_02250ad8[];
 extern const u8 data_ov004_02250b84[];
-
-/* Requests a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
 
 /* The state's frame: the switch and the node set's value both `value`. */
 static void show(SwitchShownObject *object, u8 value)
@@ -122,14 +120,14 @@ CLEAN_AS(func_ov004_0221253c, SwitchShown_StateIsOn)
 /* func_ov004_02212550: requests SWITCH_SHOWN_ON for the object at its cell; the answer. */
 int SwitchShown_RequestOn(SwitchShownObject *object)
 {
-    return func_0205265c((unsigned int) (uintptr_t) object, SWITCH_SHOWN_ON, SLOT_70_VALUE, 1);
+    return RoomSync_RequestState(&object->base, SWITCH_SHOWN_ON, SLOT_70_VALUE, 1);
 }
 CLEAN_AS(func_ov004_02212550, SwitchShown_RequestOn)
 
 /* func_ov004_02212564: requests SWITCH_SHOWN_OFF for the object at its cell; the answer. */
 int SwitchShown_RequestOff(SwitchShownObject *object)
 {
-    return func_0205265c((unsigned int) (uintptr_t) object, SWITCH_SHOWN_OFF, SLOT_70_VALUE, 1);
+    return RoomSync_RequestState(&object->base, SWITCH_SHOWN_OFF, SLOT_70_VALUE, 1);
 }
 CLEAN_AS(func_ov004_02212564, SwitchShown_RequestOff)
 

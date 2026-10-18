@@ -31,11 +31,6 @@ extern const u8 data_ov120_0229c508[5];
 /* The OBJ every mark is drawn with: its tile and flips are changed for each (TownMap_DrawMark). */
 extern OamEntry data_ov120_0229c558;
 
-/* Overlay 117's table of places: the place `index` (below 17) when both its coordinates are set,
- * else NULL; and its kind (place 0's for an index from 17). */
-extern TownMapPlace *func_ov117_0229a280(TownMapPlace *places, unsigned int index);
-extern unsigned char func_ov117_0229a26c(TownMapPlace *places, unsigned int index);
-
 extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 
@@ -491,13 +486,13 @@ static u8 town_map_extra_kind(unsigned int kind)
 /* func_ov120_0229af10: the marks from overlay 117's places, 8 pixels left of and 16 below each
  * place (in a byte): places 0-2 the extra marks, 3-10 the villagers' houses (kind 0), 11 the
  * players' house (kind 1), 12-16 places (data_ov120_0229c500). A place not set is no mark. */
-void TownMap_ReadMarks(TownMap *self, TownMapPlace *places)
+void TownMap_ReadMarks(TownMap *self, TownMapMarker *places)
 {
     for (unsigned int i = 0; i < TOWN_MAP_EXTRA_MARKS; i++) {
         TownMapMark *mark = &self->extra_marks[i];
-        const TownMapPlace *place = func_ov117_0229a280(places, i);
+        const TownMapMarker *place = TownMapMarkers_Get(places, i);
         if (place != NULL) {
-            mark->kind = town_map_extra_kind(func_ov117_0229a26c(places, i));
+            mark->kind = town_map_extra_kind(TownMapMarkers_Kind(places, i));
             mark->x = (u8) (place->x - 8);
             mark->y = (u8) (place->y + 0x10);
         } else {
@@ -507,7 +502,7 @@ void TownMap_ReadMarks(TownMap *self, TownMapPlace *places)
     for (unsigned int i = 0; i < TOWN_MAP_MARKS; i++) {
         unsigned int index = i + TOWN_MAP_EXTRA_MARKS;
         TownMapMark *mark = &self->marks[i];
-        const TownMapPlace *place = func_ov117_0229a280(places, index);
+        const TownMapMarker *place = TownMapMarkers_Get(places, index);
         if (place != NULL) {
             if (i < TOWN_MAP_MARK_PLAYERS_HOUSE) {
                 mark->kind = 0;

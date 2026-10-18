@@ -3,6 +3,8 @@
 
 #include "clean.h"
 #include "scene_base.h"
+#include "main_random.h"
+#include "talk_answers.h"
 
 static_assert(offsetof(TalkChoiceList, functions) == 0x0c, "TalkChoiceList layout");
 static_assert(offsetof(TalkChoiceList, count) == 0x20, "TalkChoiceList layout");
@@ -17,15 +19,6 @@ extern const MemberPointer __ptmf_null;
 /* The message data each choice is set with. */
 extern u8 data_021f43f8[];
 
-/* The talk's menu of choices: the choice made; its count and the choice for cancelling (after
- * it is reset); one choice's message; the choices made ready. */
-extern int func_020ab504(void *menu);
-extern void func_020ab670(void *menu, int count, int cancel);
-extern void func_020ab628(void *menu, int index, const u8 *message, int a, const u8 *data, int b, int c);
-extern void func_020ab5f8(void *menu);
-/* A random number below `bound`. */
-extern int func_020644cc(int bound);
-
 static void *talk_choices_menu(TalkChoicesScene *scene)
 {
     return (void *) (uintptr_t) SceneBase_TalkChoices((SceneBase *) (void *) scene);
@@ -39,7 +32,7 @@ void TalkChoices_Reply(TalkChoicesScene *scene, void *arg)
         return;
     }
     void *menu = talk_choices_menu(scene);
-    int choice = menu != NULL ? func_020ab504(menu) : TALK_CHOICES_NONE;
+    int choice = menu != NULL ? (int) TalkAnswers_Picked(menu) : TALK_CHOICES_NONE;
     void *target = MemberPointer_Object(&scene->reply, scene);
     ((void (*)(void *, void *, int))(uintptr_t) MemberPointer_Code(&scene->reply, target))(target, arg, choice);
     scene->reply = __ptmf_null;
@@ -57,15 +50,15 @@ void TalkChoices_Offer(TalkChoicesScene *scene, TalkChoiceList *list)
         return;
     }
     TalkChoices_ClearFunctions(scene);
-    func_020ab670(menu, list->count, list->cancel);
+    TalkAnswers_Reset(menu, list->count, list->cancel);
     for (int i = 0; i < list->count; i++) {
         int first = list->range[i][0];
-        int drawn = func_020644cc(list->range[i][1] - first + 1);
+        int drawn = MainRandom_Below(list->range[i][1] - first + 1);
         u8 message = (u8) (list->range[i][0] + drawn);
-        func_020ab628(menu, i, &message, 0, data_021f43f8, 0, 0);
+        TalkAnswers_Set(menu, i, &message, 0, data_021f43f8, 0, 0);
         scene->functions[i] = list->functions[i];
     }
-    func_020ab5f8(menu);
+    TalkAnswers_LoadTexts(menu);
 }
 CLEAN_AS(func_0201cec8, TalkChoices_Offer)
 

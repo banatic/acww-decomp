@@ -10,15 +10,12 @@
 #include "room_object_body.h"
 #include "room_object_map.h"
 #include "room_objects.h"
+#include "room_manager.h"
 
 static_assert(sizeof(RoomPush) == 0x40, "push");
 static_assert(offsetof(RoomPush, standoff) == 0x1c, "standoff");
 static_assert(offsetof(RoomPush, facing) == 0x38, "facing");
 static_assert(offsetof(RoomPush, side) == 0x3c, "side");
-
-/* Whether a villager of the flea market is in the room, or the scene is one where the
- * room's objects stay off (set by the room's start). */
-extern unsigned char func_ov004_0223d348(void);
 
 /* The C++ constructor and destructor of the array's elements (RoomPushes_ConstructOne and
  * RoomPushes_DestructOne), handed to the C++ runtime. */
@@ -44,11 +41,11 @@ int RoomPushes_Allowed(void)
 }
 CLEAN_AS(func_ov004_0223c700, RoomPushes_Allowed)
 
-/* func_ov004_0223c72c: unless func_ov004_0223d348 says no, whether the scene is a house's room
+/* func_ov004_0223c72c: unless RoomManager_ShopMode says no, whether the scene is a house's room
  * (SceneKinds_CurrentIsHouseRoom) or of kind 11 (SceneQuery_CurrentIn11). */
 int RoomPushes_Enabled(void)
 {
-    if (func_ov004_0223d348() != 0) {
+    if (RoomManager_ShopMode() != 0) {
         return 0;
     }
     if (SceneKinds_CurrentIsHouseRoom() != 0 || SceneQuery_CurrentIn11() != 0) {
@@ -105,7 +102,7 @@ CLEAN_AS(func_ov004_0223c7f4, RoomPushes_Construct)
 
 /* The step RoomPushes_StepAlong gives: one cell (0x2000) along z, turned by its angle. It is a
  * local static object of the original, built on every call and registered for destruction
- * (func_020012dc, which does nothing) on the first (bit 0 of the guard). */
+ * (TrivialObject_Destruct, which does nothing) on the first (bit 0 of the guard). */
 extern u32 data_ov004_022595dc;
 extern Vec3 data_ov004_02259628;
 extern u8 data_ov004_0225961c[];

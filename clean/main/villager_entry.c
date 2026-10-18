@@ -5,6 +5,19 @@
 #include "npc_id.h"
 #include "villager_roster.h"
 #include "villager_state.h"
+#include "date_time.h"
+#include "item_code.h"
+#include "main_random.h"
+#include "npc_lookup.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "town_villager.h"
+#include "villager_house_items.h"
+#include "villager_memories.h"
+#include "villager_memory_bits.h"
+#include "villager_memory_entry.h"
+#include "villager_status.h"
 
 #define VILLAGER_ENTRY_ITEM_CODES 0x78c
 #define VILLAGER_ENTRY_ITEM_MARKS 0x7d0
@@ -22,32 +35,9 @@
 
 extern const NpcIdHead data_021dc7aa; /* this town (number and name) */
 
-extern NpcId *func_0208150c(const void *villager);         /* the villager's NpcId, at 0x7a0 */
-extern VillagerState *func_0207f270(const void *villager); /* its entry of the state table */
-extern unsigned int func_020644cc(int bound);              /* a random number below `bound` */
-extern void func_0209e474(DateTime *now);                  /* the clock's date and time */
-/* Whether `when` falls in the hours a villager of that personality sleeps. */
-extern int func_020821d4(int personality, const DateTime *when);
-extern void *func_020984e8(void);                /* the current player's record, or NULL */
-extern u8 *func_02099870(void *record);          /* the player's id (town and name), at 0x247e */
-extern u8 *func_02099158(void *record);          /* the record's part at 0x245c */
-extern int func_02099020(void *record, u32 bit); /* a bit of the record's flags */
-extern int func_020951bc(const void *player);    /* whether the player id is set */
-/* 0 for a player of this town, 1 for one of another town, 2 for an id not set. */
-extern int func_02094ffc(const void *player);
-/* The villager's memory of the player (0x80 bytes), or NULL when it does not know the player. */
-extern s8 *func_020807a8(const void *villager, const void *player);
-extern int func_02081d20(const s8 *memory); /* how fond the villager is (signed byte 0x6c) */
-extern void func_020818c0(s8 *memory);      /* sets bit 14 of its halfword 0x7c */
-extern void func_020819d0(u8 *memory);      /* clears bit 6 of its halfword 0x7c */
-/* The villager put on the record's part at 0x245c with how fond it is and its town. */
-extern int func_02099d08(u8 *part, const NpcId *npc, int fondness, const NpcIdHead *town);
-extern int func_0207ffa0(const u8 *villager, u32 item); /* whether the item index is 0-9 */
-extern int func_0204bcdc(u16 *item);                    /* whether the item code is of kind 3 or 4 (its top four bits) */
-
 static int has_villager(const u8 *villager)
 {
-    return NpcId_IsValid(func_0208150c(villager));
+    return NpcId_IsValid(TownVillager_NpcId((u8 *) villager));
 }
 
 static u16 *item_codes(u8 *villager)
@@ -63,7 +53,7 @@ static u16 *item_marks(u8 *villager)
 /* How fond of a player the villager is, as a factor: 1 below 0, 2 from 0. */
 static int fondness_factor(const s8 *memory)
 {
-    return (func_02081d20(memory) + 0x100) >> 7;
+    return (VillagerMemoryEntry_Fondness((VillagerMemory *) (void *) memory) + 0x100) >> 7;
 }
 
 /* ---- Byte 0x1e of its state entry */
@@ -74,7 +64,7 @@ void VillagerEntry_AddByte1E(u8 *villager, int amount)
     if (!has_villager(villager)) {
         return;
     }
-    VillagerState *state = func_0207f270(villager);
+    VillagerState *state = VillagerStatus_StateEntry(villager);
     int value = amount + state->byte_1e;
     if (value < 0) {
         value = 0;
@@ -89,7 +79,7 @@ CLEAN_AS(func_0207d0f0, VillagerEntry_AddByte1E)
 void VillagerEntry_DoubleByte1E(u8 *villager)
 {
     if (has_villager(villager)) {
-        VillagerState_DoubleByte1E(func_0207f270(villager));
+        VillagerState_DoubleByte1E(VillagerStatus_StateEntry(villager));
     }
 }
 CLEAN_AS(func_0207d128, VillagerEntry_DoubleByte1E)
@@ -98,7 +88,7 @@ CLEAN_AS(func_0207d128, VillagerEntry_DoubleByte1E)
 void VillagerEntry_HalveByte1E(u8 *villager)
 {
     if (has_villager(villager)) {
-        VillagerState *state = func_0207f270(villager);
+        VillagerState *state = VillagerStatus_StateEntry(villager);
         state->byte_1e = (u8) (state->byte_1e >> 1);
     }
 }
@@ -108,7 +98,7 @@ CLEAN_AS(func_0207d148, VillagerEntry_HalveByte1E)
 void VillagerEntry_ClearByte1E(u8 *villager)
 {
     if (has_villager(villager)) {
-        func_0207f270(villager)->byte_1e = 0;
+        VillagerStatus_StateEntry(villager)->byte_1e = 0;
     }
 }
 CLEAN_AS(func_0207d16c, VillagerEntry_ClearByte1E)
@@ -118,10 +108,10 @@ CLEAN_AS(func_0207d16c, VillagerEntry_ClearByte1E)
 static void *usable_record(void *record)
 {
     if (record == NULL) {
-        record = func_020984e8();
+        record = PlayerRecords_Current();
     }
-    if (record == NULL || func_020951bc(func_02099870(record)) == 0 ||
-        func_02099020(record, VILLAGER_ENTRY_RECORD_FLAG) != 0) {
+    if (record == NULL || PlayerId_IsSet(PlayerRecord_Player(record)) == 0 ||
+        PlayerRecord_TestFlag(record, VILLAGER_ENTRY_RECORD_FLAG) != 0) {
         return NULL;
     }
     return record;
@@ -133,7 +123,7 @@ int VillagerEntry_IsByte1EFull(u8 *villager, void *record)
 {
     int full = 0;
     if (usable_record(record) != NULL && has_villager(villager) &&
-        func_0207f270(villager)->byte_1e == VILLAGER_ENTRY_BYTE_1E_MAX) {
+        VillagerStatus_StateEntry(villager)->byte_1e == VILLAGER_ENTRY_BYTE_1E_MAX) {
         full = 1;
     }
     return full && VillagerEntry_IsByte18Low(villager) != 0;
@@ -151,10 +141,10 @@ void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
     int amount = 0;
     record = usable_record(record);
     if (record != NULL && VillagerEntry_IsByte18Low(villager)) {
-        const s8 *memory = func_020807a8(villager, func_02099870(record));
+        const s8 *memory = (const s8 *) VillagerMemory_Of(villager, PlayerRecord_Player(record));
         if (memory != NULL) {
             int factor = fondness_factor(memory);
-            amount = (int) func_020644cc(VILLAGER_ENTRY_RAISE_DRAW) * factor;
+            amount = (int) MainRandom_Below(VILLAGER_ENTRY_RAISE_DRAW) * factor;
         }
     }
     VillagerEntry_AddByte1E(villager, amount);
@@ -167,7 +157,7 @@ int VillagerEntry_IsByte18Low(u8 *villager)
     if (!has_villager(villager)) {
         return 0;
     }
-    VillagerState *state = func_0207f270(villager);
+    VillagerState *state = VillagerStatus_StateEntry(villager);
     if (state == NULL) {
         return 0;
     }
@@ -183,18 +173,18 @@ void VillagerEntry_SetByte1E(u8 *villager, void *record)
     if (!has_villager(villager)) {
         return;
     }
-    VillagerState *state = func_0207f270(villager);
+    VillagerState *state = VillagerStatus_StateEntry(villager);
     state->byte_1e = 0;
     record = usable_record(record);
     if (record == NULL) {
         return;
     }
-    const s8 *memory = func_020807a8(villager, func_02099870(record));
+    const s8 *memory = (const s8 *) VillagerMemory_Of(villager, PlayerRecord_Player(record));
     if (memory == NULL) {
         return;
     }
     int factor = fondness_factor(memory);
-    int value = factor * ((int) func_020644cc(VILLAGER_ENTRY_SET_DRAW) + 1);
+    int value = factor * ((int) MainRandom_Below(VILLAGER_ENTRY_SET_DRAW) + 1);
     if (value < 0) {
         value = 0;
     } else if (value > VILLAGER_ENTRY_BYTE_1E_MAX) {
@@ -215,22 +205,24 @@ int VillagerEntry_NoteVisitor(u8 *villager, void *record)
         return 0;
     }
     if (record == NULL) {
-        record = func_020984e8();
+        record = PlayerRecords_Current();
     }
     if (record == NULL) {
         return 0;
     }
-    u8 *player = func_02099870(record);
-    if (func_020951bc(player) == 0 || func_02094ffc(player) != VILLAGER_ENTRY_OTHER_TOWN) {
+    u8 *player = (u8 *) PlayerRecord_Player(record);
+    if (PlayerId_IsSet((DesignCreator *) (void *) player) == 0 ||
+        PlayerId_WhichTown((DesignCreator *) (void *) player) != VILLAGER_ENTRY_OTHER_TOWN) {
         return 0;
     }
-    const s8 *memory = func_020807a8(villager, player);
+    const s8 *memory = (const s8 *) VillagerMemory_Of(villager, (const DesignCreator *) (void *) player);
     if (memory == NULL) {
         return 0;
     }
-    u8 *part = func_02099158(record);
-    const NpcId *npc = func_0208150c(villager);
-    return func_02099d08(part, npc, func_02081d20(memory), &data_021dc7aa);
+    u8 *part = (u8 *) PlayerRecord_Villager(record);
+    const NpcId *npc = TownVillager_NpcId(villager);
+    return PlayerRecordVillager_Note((PlayerRecordVillager *) (void *) part, npc,
+                                     VillagerMemoryEntry_Fondness((VillagerMemory *) (void *) memory), &data_021dc7aa);
 }
 CLEAN_AS(func_0207d4bc, VillagerEntry_NoteVisitor)
 
@@ -238,12 +230,12 @@ CLEAN_AS(func_0207d4bc, VillagerEntry_NoteVisitor)
  * the player. */
 void VillagerEntry_FlagMemory(u8 *villager, const void *player)
 {
-    if (!has_villager(villager) || func_020951bc(player) == 0) {
+    if (!has_villager(villager) || PlayerId_IsSet((DesignCreator *) player) == 0) {
         return;
     }
-    s8 *memory = func_020807a8(villager, player);
+    s8 *memory = (s8 *) VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        func_020818c0(memory);
+        VillagerMemoryBits_SetBit14((VillagerMemory *) (void *) memory);
     }
 }
 CLEAN_AS(func_0207d540, VillagerEntry_FlagMemory)
@@ -252,7 +244,7 @@ CLEAN_AS(func_0207d540, VillagerEntry_FlagMemory)
 void VillagerEntry_ClearMemoryFlag6(u8 *villager)
 {
     for (int i = 0; i < VILLAGER_ENTRY_MEMORIES; i++) {
-        func_020819d0(villager + i * VILLAGER_ENTRY_MEMORY_SIZE);
+        VillagerMemoryEntry_ClearBit6((VillagerMemory *) (void *) (villager + i * VILLAGER_ENTRY_MEMORY_SIZE));
     }
 }
 CLEAN_AS(func_0207d5bc, VillagerEntry_ClearMemoryFlag6)
@@ -266,10 +258,10 @@ int VillagerEntry_IsSleepTime(u8 *villager, const DateTime *when)
     }
     DateTime now = {0};
     if (when == NULL) {
-        func_0209e474(&now);
+        DateTime_Now(&now);
         when = &now;
     }
-    return func_020821d4(NpcId_Personality(func_0208150c(villager)), when);
+    return NpcLookup_IsInNightWindow(NpcId_Personality(TownVillager_NpcId(villager)), when);
 }
 CLEAN_AS(func_0207d578, VillagerEntry_IsSleepTime)
 
@@ -278,7 +270,7 @@ CLEAN_AS(func_0207d578, VillagerEntry_IsSleepTime)
 /* func_0207d5dc: item `item` (0-9) unmarked. */
 void VillagerEntry_UnmarkItem(u8 *villager, int item)
 {
-    if (func_0207ffa0(villager, (u32) item)) {
+    if (VillagerHouseItems_IsSlot(villager, (u32) item)) {
         *item_marks(villager) &= (u16) ~(1u << item);
     }
 }
@@ -287,7 +279,7 @@ CLEAN_AS(func_0207d5dc, VillagerEntry_UnmarkItem)
 /* func_0207d608: whether item `item` (0-9) is marked. */
 int VillagerEntry_IsItemMarked(u8 *villager, int item)
 {
-    return func_0207ffa0(villager, (u32) item) && ((*item_marks(villager) >> item) & 1);
+    return VillagerHouseItems_IsSlot(villager, (u32) item) && ((*item_marks(villager) >> item) & 1);
 }
 CLEAN_AS(func_0207d608, VillagerEntry_IsItemMarked)
 
@@ -302,7 +294,7 @@ void VillagerEntry_MarkItems(u8 *villager)
 
     *marks = 0;
     for (int i = 0; i < VILLAGER_ENTRY_ITEMS; i++) {
-        if (func_0204bcdc(&items[i])) {
+        if (ItemCode_HasVariant(&items[i])) {
             candidates |= (u16) (1u << i);
             count++;
         }
@@ -310,7 +302,7 @@ void VillagerEntry_MarkItems(u8 *villager)
 
     int to_mark = count > VILLAGER_ENTRY_MARK_MOST ? VILLAGER_ENTRY_MARK_MOST : count;
     if (to_mark > VILLAGER_ENTRY_MARK_LEAST) {
-        to_mark = (int) func_020644cc(to_mark - (VILLAGER_ENTRY_MARK_LEAST - 1)) + VILLAGER_ENTRY_MARK_LEAST;
+        to_mark = (int) MainRandom_Below(to_mark - (VILLAGER_ENTRY_MARK_LEAST - 1)) + VILLAGER_ENTRY_MARK_LEAST;
     }
     if (count <= 0) {
         return;

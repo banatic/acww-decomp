@@ -45,6 +45,8 @@
 #include "main/town_name.h"
 #include "gatekeeper_talk_lines.h"
 #include "ov004/member_pointer.h"
+#include "ov004/check_in_gate.h"
+#include "ov004/room_camera.h"
 
 /* The steps of states 9 and 0xb. */
 #define GATEKEEPER_STATES_STEPS 4
@@ -575,10 +577,6 @@ CLEAN_AS(func_ov048_02262d4c, Gatekeeper_State9WalkIn)
 /* The frames of the wait left when both looks are locked. */
 #define GATEKEEPER_STATES_WAIT_LOOK 2
 
-/* The camera's modes of overlay 4's func_ov004_02246f90 (0xe) and func_ov004_02246f7c (0xf). */
-extern int func_ov004_02246f90(void);
-extern int func_ov004_02246f7c(void);
-
 /* The points the player walks to: before the gate (16.0, 0, 19.0), then through it
  * (16.0, 0, 2.0); with these accelerations. */
 extern const Vec3 data_ov048_02263980;
@@ -749,7 +747,7 @@ int Gatekeeper_PassWalkThrough(Gatekeeper *self)
     SceneMotion_RequestAnimation(own, GATEKEEPER_STATES_PRIORITY, GATEKEEPER_STATES_ANIM_81, 1, data_020c80f8, 0);
     self->anim_countdown = (u8) (MainRandom_Below(GATEKEEPER_STATES_WAIT_RANDOM) + GATEKEEPER_STATES_WAIT_BASE);
     self->countdown = GATEKEEPER_STATES_WAIT_ANIM;
-    func_ov004_02246f7c();
+    RoomCamera_SetMode15();
     return 1;
 }
 CLEAN_AS(func_ov048_02263084, Gatekeeper_PassWalkThrough)
@@ -791,7 +789,7 @@ int Gatekeeper_PassWalkToGate(Gatekeeper *self)
     if (SceneAction_IsBusy(gatekeeper_states_action(self))) {
         return 0;
     }
-    func_ov004_02246f90();
+    RoomCamera_SetMode14();
     Vec3 point = data_ov048_02263980;
     PlayerActorOps_MoveTo(&point, GATEKEEPER_STATES_WALK_TO_GATE, GATEKEEPER_STATES_PLAYER);
     PlayerActorOps_SwitchFlag0e(1, GATEKEEPER_STATES_PLAYER);
@@ -809,11 +807,6 @@ CLEAN_AS(func_ov048_02263238, Gatekeeper_PassWalkToGate)
 
 /* The frames states 6 and 7 wait. */
 #define GATEKEEPER_STATES_WAIT_GATE 0x3c
-
-/* Overlay 4's scene that leaves for the next line (data_ov004_0225827c, its vtable slot 0x60
- * given 3 or 1, when it exists). */
-extern int func_ov004_0222d4f4(void);
-extern int func_ov004_0222d518(void);
 
 /* The network modes of the Wi-Fi Connection (autoload_2/network.h). */
 #define GATEKEEPER_STATES_MODE_HOSTING 3
@@ -842,7 +835,7 @@ static u8 gatekeeper_states_line(Gatekeeper *self)
 }
 
 /* func_ov048_02263284 (state 7's run): once no action of its runs and the camera stands
- * still, overlay 4's func_ov004_0222d4f4 and a wait of 60 frames; then the event ends. Agrees
+ * still, overlay 4's CheckInGate_Close and a wait of 60 frames; then the event ends. Agrees
  * always. */
 int Gatekeeper_RunState7(Gatekeeper *self)
 {
@@ -854,7 +847,7 @@ int Gatekeeper_RunState7(Gatekeeper *self)
             break;
         case GATEKEEPER_STATES_STEP_CAMERA:
             if (!CameraControl_IsMoving()) {
-                func_ov004_0222d4f4();
+                CheckInGate_Close();
                 self->countdown = GATEKEEPER_STATES_WAIT_GATE;
                 self->setup_step = GATEKEEPER_STATES_STEP_WAIT;
             }
@@ -897,7 +890,7 @@ static void gatekeeper_states_host_local(Gatekeeper *self)
 }
 
 /* func_ov048_02263300 (state 6's run): once no action of its runs and the camera stands
- * still, overlay 4's func_ov004_0222d518 and a wait of 60 frames; a system joining over the
+ * still, overlay 4's CheckInGate_Open and a wait of 60 frames; a system joining over the
  * Wi-Fi Connection then hosts its game instead (overlay 65, Wfc_HostGame, connect mode 0, the
  * session hosted). Once the wait is over, after line 0x46 or 0x6c: when hosting over the Wi-Fi
  * Connection, the event ends once the connection is updated; else a local session is started
@@ -916,7 +909,7 @@ int Gatekeeper_RunState6(Gatekeeper *self)
             break;
         case GATEKEEPER_STATES_STEP_CAMERA:
             if (!CameraControl_IsMoving()) {
-                func_ov004_0222d518();
+                CheckInGate_Open();
                 self->countdown = GATEKEEPER_STATES_WAIT_GATE;
                 self->setup_step = GATEKEEPER_STATES_STEP_WAIT;
                 if (Net_GetMode() == GATEKEEPER_STATES_MODE_JOINING) {

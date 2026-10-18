@@ -1,6 +1,6 @@
 /* A class of overlay 4's room objects (vtable 0x022526f8, receiver part 0x022527a4) that plays
  * its model's animations from the start (variant 0) as soon as its model is bound, from the
- * frame func_02062b14 gives (always 0). The rest is the base class's (room_object_life.h). */
+ * frame ItemInfo_Zero gives (always 0). The rest is the base class's (room_object_life.h). */
 #ifndef CLEAN_OV004_ROOM_OBJECT_ANIMATED_H
 #define CLEAN_OV004_ROOM_OBJECT_ANIMATED_H
 
@@ -10,7 +10,7 @@
 
 typedef struct AnimatedRoomObject {
     RoomObject base;
-    s32 start_frame; /* what func_02062b14 gave */
+    s32 start_frame; /* what ItemInfo_Zero gave */
 } AnimatedRoomObject;
 
 int AnimatedRoomObject_Vfunc0C(void);

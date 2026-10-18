@@ -44,6 +44,7 @@
 #include "main/villager_scene_slots.h"
 #include "main/villager_status.h"
 #include "main/villager_talk_scene.h"
+#include "room_objects.h"
 
 static_assert(sizeof(VillagerTalk) == 0x1a4, "the town villager's talk scene");
 static_assert(sizeof(BirthdayVillagerTalk) == 0x1a8, "its talk scene");
@@ -303,7 +304,7 @@ int BirthdayVillager_EnterChoosing(BirthdayVillager *villager)
 CLEAN_AS(func_ov004_0221c084, BirthdayVillager_EnterChoosing)
 
 /* func_ov004_0221c088: state 10's update: once the talk's state is 5 (its line out), the pockets
- * screen is opened (mode 0xd) on the pockets func_ov004_0221d468 picks; when it opens, state 11.
+ * screen is opened (mode 0xd) on the pockets BirthdayVillager_CanOffer picks; when it opens, state 11.
  * REQUIRES: its talk scene has a talk. */
 void BirthdayVillager_UpdateAsk(BirthdayVillager *villager)
 {
@@ -1269,14 +1270,14 @@ int BirthdayVillager_Draw(BirthdayVillager *villager)
 }
 CLEAN_AS(func_ov004_0221d278, BirthdayVillager_Draw)
 
-/* The member pointer to func_ov004_0221d278. */
+/* The member pointer to BirthdayVillager_Draw. */
 extern const MemberPointer data_ov004_0225353c;
 
 /* Its footsteps, in the town villager scene object. */
 #define BIRTHDAY_VILLAGER_FOOTSTEPS 0x558
 
 /* func_ov004_0221d290 (vtable slot 0x00, its start): the town villager's start; then its drawing
- * member is func_ov004_0221d278 and its footsteps are on. */
+ * member is BirthdayVillager_Draw and its footsteps are on. */
 int BirthdayVillager_Start(BirthdayVillager *villager)
 {
     if (!VillagerSceneObject_Start(villager->base)) {
@@ -1294,7 +1295,7 @@ extern int data_020ca0e8;
 #define BIRTHDAY_VILLAGER_START_X 0x1000
 #define BIRTHDAY_VILLAGER_START_Z (-0x7000)
 /* The steps tried from the start point, in order, until one leads to a point
- * func_ov004_0223c5a4 answers 0 for: a function-local static built once (bit 0 of
+ * RoomObjects_HeightAtPoint answers 0 for: a function-local static built once (bit 0 of
  * data_ov004_02257a08 says it was), each vector registered for destruction with its record. */
 #define BIRTHDAY_VILLAGER_START_STEPS 6
 #define BIRTHDAY_VILLAGER_STEP 0x2000
@@ -1303,11 +1304,10 @@ extern u32 data_ov004_02257a08;
 extern Vec3 data_ov004_02257a94[BIRTHDAY_VILLAGER_START_STEPS];
 extern u8 data_ov004_02257a24[BIRTHDAY_VILLAGER_START_STEPS][BIRTHDAY_VILLAGER_STEP_RECORD_SIZE];
 /* What stands at the room's cell under a point (0: nothing). */
-extern int func_ov004_0223c5a4(Vec3 *point);
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020012dc(void *object);
 
-/* The six steps built and registered (with func_020012dc, which does nothing) the first time. */
+/* The six steps built and registered (with TrivialObject_Destruct, which does nothing) the first time. */
 static void birthday_villager_init_steps(void)
 {
     static const Vec3 steps[BIRTHDAY_VILLAGER_START_STEPS] = {
@@ -1346,7 +1346,7 @@ int BirthdayVillager_Init(BirthdayVillager *villager)
     for (int i = 0; i < BIRTHDAY_VILLAGER_START_STEPS; i++) {
         Vec3 candidate;
         Vec_Add(&candidate, position, &data_ov004_02257a94[i]);
-        if (!func_ov004_0223c5a4(&candidate)) {
+        if (!RoomObjects_HeightAtPoint(&candidate)) {
             *position = candidate;
             break;
         }

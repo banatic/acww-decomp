@@ -3,7 +3,7 @@
  *
  * A motion is a state machine on MuseumInsect.mode: MUSEUM_INSECT_MODE_REST (25) waits out
  * MuseumInsect.timer, 4 moves, 3 turns towards MuseumInsect.unk_ac, and each motion adds its
- * own modes. The player is watched through func_ov004_02244658 (InsectSighting): each frame it
+ * own modes. The player is watched through InsectMotion_WatchPlayer (InsectSighting): each frame it
  * moves the insect's alarm (unk_9c, 0-255) up while the player is near or moving and down
  * otherwise, and says how the alarm stands against the insect's threshold (unk_9e). An alarmed
  * insect runs, hops, flies off or hides, by its motion.
@@ -29,7 +29,7 @@
 #include "museum_insects.h"
 #include "types.h"
 
-/* What func_ov004_02244658 sees of the player (0x1c bytes). */
+/* What InsectMotion_WatchPlayer sees of the player (0x1c bytes). */
 typedef struct InsectSighting {
     Vec3 player;       /* 0x00: the player's position */
     fx32 player_speed; /* 0x0c */

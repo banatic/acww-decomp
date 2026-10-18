@@ -26,6 +26,7 @@
 #include "town_insect.h"
 #include "autoload_2/sound_emitter_class.h"
 #include "growth_model.h" /* GrowthModels_Construct */
+#include "town_item_models.h"
 
 static_assert(sizeof(ModelObject) == 0x9c, "model object");
 static_assert(sizeof(ModelSet) == 0x10, "model set");
@@ -54,8 +55,6 @@ extern const u32 data_ov003_0223bc7c[];
 /* The tile and its eight neighbours, each a byte: x + 8 in the high nibble, z + 8 in the low. */
 extern const u8 data_ov003_02236670[9];
 
-/* The process's member at 0x4b20: its destructor. */
-extern void *func_ov003_02223b34(void *member);
 /* The array helper and what it is handed: the game's own model object destructor. */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void func_02055764(void *model);
@@ -327,7 +326,7 @@ CLEAN_AS(func_ov003_02221150, TileEvent_StartKind3)
 static void tile_event_destroy_process(TileEventProcess *process)
 {
     process->process.vtable = data_ov003_0223bc7c;
-    func_ov003_02223b34(process->member_4b20);
+    GrowthModels_Destruct((GrowthModels *) process->member_4b20);
     for (int i = 3; i >= 0; i--) {
         ModelSet_Destruct(&process->sets[i]);
     }
@@ -393,26 +392,8 @@ extern const fx32 data_ov003_02236c5c[];
 
 /* NitroSDK's VEC_Add. */
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
-/* Writes `item` to tile (x, z) of the town's map (data_021c80bc) and updates the tile's marks
- * (by func_0204f380 when the item is not 0xfff1 and `flag` is set, else func_0204f31c). */
-extern void func_ov003_02224140(int x, int z, u16 item, int flag);
 /* The setup kind 12 hands EffectSystem_StartModel: the game's symbol of TileEvent_PlaceKind12Effect. */
 extern void func_ov003_02221c9c(void *transform);
-/* The drawers of the codes (the process, the record, the matrix). */
-extern void *func_ov003_02225404(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_02225598(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_02225538(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_02225474(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_022252fc(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_02225608(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_02225768(TileEventProcess *process, TileEventDraw *draw, int x, int z, Vec3 *point, Mtx43 matrix);
-extern void *func_ov003_02225694(TileEventProcess *process, TileEventDraw *draw, int x, int z, Mtx43 matrix);
-extern void *func_ov003_022253a8(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_02225240(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-extern void *func_ov003_022251e8(TileEventProcess *process, TileEventDraw *draw, Mtx43 matrix);
-/* The drawer of items (codes of kinds 1, 3 and 4). */
-extern int func_ov003_02225da0(TileEventProcess *process, int id, Vec3 *point, void *countdown, Vec3 *scale, short a, short b,
-                               short c);
 
 /* The sounds the kinds play. */
 #define TILE_EVENT_SOUND_LAND 0x70
@@ -641,8 +622,8 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
             draw->item_scale.x = TILE_EVENT_ONE;
             draw->item_scale.y = TILE_EVENT_ONE;
             draw->item_scale.z = TILE_EVENT_ONE;
-            func_ov003_02225da0(data_ov003_0223cf70, entry->id, &draw->item_point, (void *) (intptr_t) entry->countdown,
-                                &draw->item_scale, 0, 0, 0);
+            TownItemModels_DrawItem(data_ov003_0223cf70, entry->id, &draw->item_point, entry->countdown, &draw->item_scale, 0,
+                                    0, 0);
             return;
     }
 
@@ -654,29 +635,30 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
 
     u16 code = draw->id;
     if (code >= 0x1f && code <= 0x24) {
-        func_ov003_02225404(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawCode1f(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_family(code)) {
-        func_ov003_02225598(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawFamily(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0x6e && code <= 0x87) {
         /* Family B. */
-        func_ov003_02225538(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawFamilyB(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code == 0x1a || code == 0x1b || code == 0x1d || code == 0x1e || code == 0x88 || code == 0x89) {
-        func_ov003_02225474(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawCode1a(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code == TILE_EVENT_ID_UNIT_0 || code == TILE_EVENT_ID_UNIT_SET) {
-        func_ov003_022252fc(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawCodeFc(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_short(code)) {
-        func_ov003_02225608(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawShortLine(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_growth(code)) {
         draw->growth_point = draw->point;
-        func_ov003_02225768(data_ov003_0223cf70, draw, entry->tile.x, entry->tile.z, &draw->growth_point, data_021fbe48);
+        TownItemModels_DrawGrowth(data_ov003_0223cf70, (const u16 *) draw, entry->tile.x, entry->tile.z, &draw->growth_point,
+                                  data_021fbe48);
     } else if (code == 0x25 || code == 0x5c || code == 0xc7) {
-        func_ov003_02225694(data_ov003_0223cf70, draw, entry->tile.x, entry->tile.z, data_021fbe48);
+        TownItemModels_DrawCode25(data_ov003_0223cf70, (const u16 *) draw, entry->tile.x, entry->tile.z, data_021fbe48);
     } else if (code >= 0xe3 && code <= 0xfb) {
-        func_ov003_022253a8(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawCodeE3(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0xd4 && code <= 0xe1) {
-        func_ov003_02225240(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawCodeD4(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0xa7 && code <= 0xc6) {
-        func_ov003_022251e8(data_ov003_0223cf70, draw, data_021fbe48);
+        TownItemModels_DrawCodeA7(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     }
 }
 
@@ -771,7 +753,7 @@ void TileEvent_InitKind14(TileEventEntry *entry, const TileChangesTile *tile, st
     entry->id = AcreTile_UnitByte09(map, tile->x, tile->z) == 0 ? TILE_EVENT_ID_UNIT_0 : TILE_EVENT_ID_UNIT_SET;
     tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
     tile_event_stop(entry);
-    func_ov003_02224140(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
+    TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
     TileChangesTile at = entry->tile;
     int index = TileChanges_FindAt(&at, 0);
     if (index >= 0) {
@@ -846,7 +828,7 @@ void TileEvent_StepKind12(TileEventEntry *entry)
                 if (entry->id == 0x137b) {
                     PlayerRecord_SetFlag(PlayerRecords_Current(), 0x30);
                 }
-                func_ov003_02224140(entry->tile.x, entry->tile.z, entry->id, 0);
+                TileEvent_SetTownItem(entry->tile.x, entry->tile.z, entry->id, 0);
             }
             entry->finish_change = 0;
             TileEvent_End(entry);
@@ -900,7 +882,7 @@ CLEAN_AS(func_ov003_02221cb4, TileEvent_StepKind11)
 void TileEvent_InitKind11(TileEventEntry *entry, const TileChangesTile *tile)
 {
     tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
-    func_ov003_02224140(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
+    TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
 }
 CLEAN_AS(func_ov003_02221d3c, TileEvent_InitKind11)
 
@@ -1002,7 +984,7 @@ void TileEvent_InitKind8(TileEventEntry *entry, const TileChangesTile *tile, int
     entry->velocity.z = (tile_event_cos((u16) angle) * 0x400) >> 12;
     tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
     entry->finish_change = 0;
-    func_ov003_02224140(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
+    TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
 }
 CLEAN_AS(func_ov003_02221f50, TileEvent_InitKind8)
 
@@ -1220,7 +1202,7 @@ void TileEvent_InitKind3(TileEventEntry *entry, const TileChangesTile *tile, str
     entry->id = AcreTile_UnitByte09(map, tile->x, tile->z) == 0 ? TILE_EVENT_ID_UNIT_0 : TILE_EVENT_ID_UNIT_SET;
     tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
     tile_event_stop(entry);
-    func_ov003_02224140(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
+    TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
 }
 CLEAN_AS(func_ov003_0222250c, TileEvent_InitKind3)
 
@@ -1282,7 +1264,7 @@ void TileEvent_InitKind1(TileEventEntry *entry, const TileChangesTile *tile, str
         }
     }
     if (AcreTile_IsMarked(map, tile->x, tile->z) != 0) {
-        func_ov003_02224140(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
+        TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
     }
 }
 CLEAN_AS(func_ov003_022225c4, TileEvent_InitKind1)

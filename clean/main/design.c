@@ -9,6 +9,29 @@
 #include "clean.h"
 #include "design_assets.h"
 #include "main/item_code.h"
+#include "acre_map.h"
+#include "acre_record.h"
+#include "design_info.h"
+#include "design_sets.h"
+#include "house_looks.h"
+#include "house_record.h"
+#include "item_form.h"
+#include "main_random.h"
+#include "npc_id.h"
+#include "ov003/checkpoint.h"
+#include "ov003/object_actors.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "scene_query.h"
+#include "session.h"
+#include "shop_list_a.h"
+#include "town_villager.h"
+#include "villager_data.h"
+#include "villager_mode_record.h"
+#include "villager_object.h"
+#include "villager_roster.h"
+#include "villager_status.h"
+#include "wfc_stats.h"
 
 static_assert(sizeof(DesignCreator) == 0x1e, "creator");
 static_assert(offsetof(DesignInfo, title) == 0x1e, "title");
@@ -100,56 +123,8 @@ extern ItemCode data_021d046c;
 extern u8 data_021d048c[]; /* its destruction record */
 
 extern void __register_global_object(void *object, void *destruct, void *record);
-extern void func_020051b0(void *item);                                   /* an item code's destructor: nothing */
-extern int func_02073d90(Session *session);                              /* whether a session with others is running */
-extern void func_02073820(Session *message);                             /* begin a message */
-extern void func_020737f0(Session *message, const void *data, int size); /* append */
-extern void func_02073770(Session *message, u32 category, u32 player);   /* end and send */
-
-extern int func_020984fc(int slot);                                          /* the player record at a session slot */
-extern int func_020984e8(void);                                              /* this system's player record */
-extern void *func_020996b8(void *record);                                    /* a player record's designs */
-extern int func_02072bd0(int designs, int index);                            /* designs + (index & 7) designs */
-extern unsigned int func_02072a48(unsigned int designs, unsigned int index); /* the same */
-extern void *func_02088220(void *design);                                    /* returns its argument */
-extern int func_02072824(void);                                              /* the sample's place (data_021d0800) */
-extern int func_02072830(void *sample, unsigned int index);                  /* read sample `index` into it */
-extern void *func_0207282c(void *sample);                                    /* its design */
-extern void *func_0207cec0(void *villagers, int villager);                   /* a villager, NULL when there is none */
-extern unsigned int func_02081500(unsigned int villager);                    /* its design (at 0x400) */
-extern int func_020b374c(int record);                                        /* record + 4 */
-extern void *func_020b3848(void *record);                                    /* its design */
-extern char *func_02072dbc(char *design);                                    /* the design's constructor */
-extern void *func_02072da4(void *design);                                    /* and destructor */
-extern unsigned int func_02072d4c(unsigned int design);                      /* its DesignInfo */
-extern int func_02072e30(DesignInfo *info);                                  /* the low four bits of its byte 0x32 */
-
-extern unsigned int func_0204e414(void); /* the town's ItemMap */
-extern int func_0204df30(int room);      /* a room's ItemMap, or 0 */
-extern u16 *func_02037e0c(void *acre, int x, int y, int layer);
-extern int func_02037e44(void *acre, const ItemCode *code, int x, int y, u8 layer);
-extern int func_02060ee0(void *records, int index);         /* one of the records at data_021ebcd4, or 0 */
-extern u16 *func_02061204(void *record, int *flag);         /* its code at 0x448 */
-extern u8 *func_020611e8(void *record, unsigned int *flag); /* its code at 0x44a */
-extern void func_020611bc(void *record, const ItemCode *code, int flag);
-extern void func_02061194(void *record, const ItemCode *code, int flag);
-
-extern unsigned int func_0208150c(unsigned int villager); /* + 0x7a0 */
-extern int func_02003704(void *data);                     /* whether that part is valid */
-extern int func_020808b0(unsigned int villager);          /* the address of its byte compared */
-extern unsigned int func_0207f1c8(unsigned int villager); /* + 0x734 */
-extern void *func_0209b5ec(void *data);                   /* returns its argument */
-extern int func_0209c330(unsigned char *data);            /* its byte 16 */
-extern unsigned int func_020644cc(int bound);             /* a random number below `bound` */
-extern int func_020ae8e4(void *list, int index, ItemCode *item);
-extern void func_02061e2c(ItemCode *out, const ItemCode *item);
-
-extern int func_0209985c(int record); /* the player number of a player record, or -1 */
-extern u8 func_020b65c4(void);        /* the scene */
-extern void func_020727a4(int manager, int index);
-extern int func_020b6660(void);
-extern void *func_ov003_02220174(unsigned short id); /* an actor of overlay 3 */
-extern int func_ov003_0221c4bc(void *actor);
+extern void func_020051b0(void *item);    /* an item code's destructor: nothing */
+extern void *func_02072da4(void *design); /* and destructor */
 
 static int design_address(const void *design)
 {
@@ -191,11 +166,12 @@ CLEAN_AS(func_02071604, Design_Find)
 /* func_02071628: DESIGN_KIND_LOCAL: one of this system's player's designs, 0 without one. */
 int Design_FindLocal(int index)
 {
-    int record = func_020984e8();
+    int record = (int) (uintptr_t) PlayerRecords_Current();
     if (record == 0) {
         return 0;
     }
-    return func_02072bd0(design_address(func_020996b8((void *) (uintptr_t) record)), index);
+    return PlayerDesigns_At((PlayerDesigns *) (uintptr_t) (design_address(PlayerRecord_Designs((void *) (uintptr_t) record))),
+                            index);
 }
 CLEAN_AS(func_02071628, Design_FindLocal)
 
@@ -203,7 +179,7 @@ CLEAN_AS(func_02071628, Design_FindLocal)
 int Design_FindRecord8(int index)
 {
     (void) index;
-    return design_address(func_02088220(data_021f3278));
+    return design_address(WfcStats_Design((WfcStats *) (void *) data_021f3278));
 }
 CLEAN_AS(func_02071648, Design_FindRecord8)
 
@@ -211,20 +187,20 @@ CLEAN_AS(func_02071648, Design_FindRecord8)
  * returns it. */
 int Design_FindSample(int index)
 {
-    int sample = func_02072824();
-    func_02072830((void *) (uintptr_t) sample, (unsigned int) index);
-    return design_address(func_0207282c((void *) (uintptr_t) sample));
+    int sample = DesignSample_Get();
+    DesignSample_Load((void *) (uintptr_t) sample, (unsigned int) index);
+    return design_address(DesignSample_Design((void *) (uintptr_t) sample));
 }
 CLEAN_AS(func_02071658, Design_FindSample)
 
 /* func_02071678: DESIGN_KIND_VILLAGER: the design of a villager, 0 without the villager. */
 int Design_FindVillager(int villager)
 {
-    void *record = func_0207cec0(data_021e5a2c, villager);
+    void *record = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, villager);
     if (record == NULL) {
         return 0;
     }
-    return (int) func_02081500((unsigned int) (uintptr_t) record);
+    return (int) TownVillager_Design((u8 *) (uintptr_t) record);
 }
 CLEAN_AS(func_02071678, Design_FindVillager)
 
@@ -232,15 +208,15 @@ CLEAN_AS(func_02071678, Design_FindVillager)
 int Design_FindRecord5(int index)
 {
     (void) index;
-    int record = func_020b374c(design_address(data_021f34b0));
-    return design_address(func_020b3848((void *) (uintptr_t) record));
+    int record = HouseLooks_Design((HouseLooksRecord *) (uintptr_t) design_address(data_021f34b0));
+    return design_address(HouseLooks_DesignItself((void *) (uintptr_t) record));
 }
 CLEAN_AS(func_0207169c, Design_FindRecord5)
 
 /* func_020716b4: DESIGN_KIND_SHOP. */
 int Design_FindShop(int index)
 {
-    return (int) func_02072a48((unsigned int) (uintptr_t) data_021ed278, (unsigned int) index);
+    return (int) ShopDesigns_At((unsigned int) (uintptr_t) data_021ed278, (unsigned int) index);
 }
 CLEAN_AS(func_020716b4, Design_FindShop)
 
@@ -276,14 +252,15 @@ CLEAN_AS(func_020716e8, Design_FindSlot0)
  * without that player. */
 int Design_FindSessionPlayer(int slot, int index)
 {
-    if (func_02073d90(data_020ccf94) == 0) {
+    if (Session_IsLinked((NetSession *) data_020ccf94) == 0) {
         return 0;
     }
-    int record = func_020984fc(slot);
+    int record = (int) (uintptr_t) PlayerRecords_OfPlayer(slot);
     if (record == 0) {
         return 0;
     }
-    return func_02072bd0(design_address(func_020996b8((void *) (uintptr_t) record)), index);
+    return PlayerDesigns_At((PlayerDesigns *) (uintptr_t) (design_address(PlayerRecord_Designs((void *) (uintptr_t) record))),
+                            index);
 }
 CLEAN_AS(func_020716f4, Design_FindSessionPlayer)
 
@@ -331,7 +308,7 @@ void Design_RemovePlayerItems(int player)
         data_021d0488 |= 1;
     }
 
-    ItemMap *town = (ItemMap *) (uintptr_t) func_0204e414();
+    ItemMap *town = (ItemMap *) (uintptr_t) AcreMap_Town();
     if (town != NULL) {
         for (int y = 1; y < town->height - 1; y++) {
             for (int x = 1; x < town->width - 1; x++) {
@@ -341,14 +318,14 @@ void Design_RemovePlayerItems(int player)
                 }
                 for (int row = 0; row < ACRE_ITEMS; row++) {
                     for (int column = 0; column < ACRE_ITEMS; column++) {
-                        u16 *item = func_02037e0c(acre, column, row, 0);
+                        u16 *item = AcreRecord_Tile(acre, column, row, 0);
                         if (item == NULL) {
                             continue;
                         }
                         unsigned int code = *item;
                         if (code >= TOWN_DESIGN_FIRST && code <= TOWN_DESIGN_LAST &&
                             (int) (code - TOWN_DESIGN_FIRST) / 8 == player) {
-                            func_02037e44(acre, &data_021d046c, column, row, 0);
+                            AcreRecord_SetTile(acre, &data_021d046c, column, row, 0);
                         }
                     }
                 }
@@ -357,44 +334,44 @@ void Design_RemovePlayerItems(int player)
     }
 
     for (int i = 0; i < ROOMS; i++) {
-        ItemMap *room = (ItemMap *) (uintptr_t) func_0204df30(i);
+        ItemMap *room = (ItemMap *) (uintptr_t) AcreMap_Room(i);
         if (room != NULL) {
             void *acre = acre_at(room, 0, 0);
             if (acre != NULL) {
                 for (int y = 0; y < ACRE_ITEMS; y++) {
                     for (int x = 0; x < ACRE_ITEMS; x++) {
-                        u16 *item = func_02037e0c(acre, x, y, 0);
+                        u16 *item = AcreRecord_Tile(acre, x, y, 0);
                         if (item == NULL) {
                             continue;
                         }
                         int owner = room_design_owner(*item);
                         if (owner != -1 && owner == player) {
-                            func_02037e44(acre, &data_021d046c, x, y, 0);
+                            AcreRecord_SetTile(acre, &data_021d046c, x, y, 0);
                         }
                     }
                 }
             }
         }
 
-        void *record = (void *) (uintptr_t) func_02060ee0(data_021ebcd4, i);
+        void *record = (void *) (uintptr_t) HouseRecord_Room((HouseRecord *) (void *) data_021ebcd4, i);
         if (record == NULL) {
             continue;
         }
         /* Each code is read once to test it and again to see whose it is. */
-        if (is_record_design(*func_02061204(record, NULL))) {
-            unsigned int code = *func_02061204(record, NULL);
+        if (is_record_design(*HouseRecord_RoomWallpaper(record, NULL))) {
+            unsigned int code = *HouseRecord_RoomWallpaper(record, NULL);
             if (record_design_owner(code) == player) {
                 ItemCode first = RECORD_FIRST_DEFAULT;
-                func_020611bc(record, &first, 0);
+                HouseRecord_RoomSetWallpaper(record, &first, 0);
             }
         }
-        if (!is_record_design(*(u16 *) func_020611e8(record, NULL))) {
+        if (!is_record_design(*(u16 *) HouseRecord_RoomCarpet(record, NULL))) {
             continue;
         }
-        unsigned int code = *(u16 *) func_020611e8(record, NULL);
+        unsigned int code = *(u16 *) HouseRecord_RoomCarpet(record, NULL);
         if (record_design_owner(code) == player) {
             ItemCode second = RECORD_SECOND_DEFAULT;
-            func_02061194(record, &second, 0);
+            HouseRecord_RoomSetCarpet(record, &second, 0);
         }
     }
 }
@@ -409,9 +386,9 @@ static void send_message(int kind_a, int index_a, int kind_b, int index_b, int s
                    ((u32) (kind_b & MESSAGE_KIND_BITS) << MESSAGE_KIND_B_SHIFT) |
                    ((u32) (index_b & MESSAGE_INDEX_BITS) << MESSAGE_INDEX_B_SHIFT) | (swap ? MESSAGE_SWAP : 0);
     Session *outgoing = data_020ccf94;
-    func_02073820(outgoing);
-    func_020737f0(outgoing, &message, sizeof(message));
-    func_02073770(outgoing, DESIGN_MESSAGE_CATEGORY, DESIGN_MESSAGE_TARGET);
+    Session_BeginMessage((NetSession *) outgoing);
+    Session_AppendMessage((NetSession *) outgoing, &message, sizeof(message));
+    Session_EndMessage((NetSession *) outgoing, DESIGN_MESSAGE_CATEGORY, DESIGN_MESSAGE_TARGET);
 }
 
 /* func_02071aa8: swaps two designs, refreshes what shows them and, when asked and in a session,
@@ -429,7 +406,7 @@ int Design_Swap(int kind_a, int index_a, int kind_b, int index_b, u8 announce_it
     Design *design_a = design_at(Design_Find(a, index_a));
     Design *design_b = design_at(Design_Find(b, index_b));
     if ((data_021d0474 & 1) == 0) {
-        func_02072dbc((char *) &data_021d05cc);
+        Design_Construct((char *) &data_021d05cc);
         __register_global_object(&data_021d05cc, (void *) func_02072da4, data_021d0498);
         data_021d0474 |= 1;
     }
@@ -439,7 +416,7 @@ int Design_Swap(int kind_a, int index_a, int kind_b, int index_b, u8 announce_it
 
     Design_Changed(a, index_a);
     Design_Changed(b, index_b);
-    if (announce_it != 0 && func_02073d90(data_020ccf94) != 0) {
+    if (announce_it != 0 && Session_IsLinked((NetSession *) data_020ccf94) != 0) {
         send_message(a, index_a, b, index_b, 1);
     }
     return 1;
@@ -451,7 +428,7 @@ CLEAN_AS(func_02071aa8, Design_Swap)
 int Design_ResolveKind(int kind)
 {
     Session *session = data_020ccf94;
-    if (func_02073d90(session) != 0 && kind == DESIGN_KIND_LOCAL) {
+    if (Session_IsLinked((NetSession *) session) != 0 && kind == DESIGN_KIND_LOCAL) {
         return session->local_slot;
     }
     return kind;
@@ -472,7 +449,7 @@ int Design_Copy(int kind_from, int index_from, int kind_to, int index_to, u8 ann
     Design *target = design_at(Design_Find(to, index_to));
     memmove(target, source, DESIGN_COPIED_SIZE);
     Design_Changed(to, index_to);
-    if (announce_it != 0 && func_02073d90(data_020ccf94) != 0) {
+    if (announce_it != 0 && Session_IsLinked((NetSession *) data_020ccf94) != 0) {
         send_message(from, index_from, to, index_to, 0);
     }
     return 1;
@@ -481,8 +458,8 @@ CLEAN_AS(func_02071d8c, Design_Copy)
 
 static int shop_design_kind(unsigned int index)
 {
-    unsigned int design = func_02072a48((unsigned int) (uintptr_t) data_021ed278, (u8) index);
-    return func_02072e30((DesignInfo *) (uintptr_t) func_02072d4c(design));
+    unsigned int design = ShopDesigns_At((unsigned int) (uintptr_t) data_021ed278, (u8) index);
+    return DesignInfo_Kind((DesignInfo *) (uintptr_t) Design_Info(design));
 }
 
 /* func_02071efc: a villager may take one of the shop's designs as its own. A draw of 100 decides:
@@ -495,17 +472,18 @@ static int shop_design_kind(unsigned int index)
  * REQUIRES: the villager's byte exists (func_020808b0 gives no 0). */
 int Design_VillagerTakeShopDesign(int villager, int announce_it)
 {
-    void *record = func_0207cec0(data_021e5a2c, villager);
+    void *record = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, villager);
     if (record == NULL) {
         return 0;
     }
     unsigned int address = (unsigned int) (uintptr_t) record;
-    if (func_02003704((void *) (uintptr_t) func_0208150c(address)) == 0) {
+    if (NpcId_IsValid((void *) (uintptr_t) TownVillager_NpcId((u8 *) (uintptr_t) address)) == 0) {
         return 0;
     }
-    int wanted = *(u8 *) (uintptr_t) func_020808b0(address);
-    int mode = func_0209c330(func_0209b5ec((void *) (uintptr_t) func_0207f1c8(address)));
-    unsigned int draw = func_020644cc(TAKE_DRAW);
+    int wanted = *(u8 *) (uintptr_t) VillagerData_Byte29((u8 *) (uintptr_t) address);
+    int mode = VillagerModeRecord_Mode(
+        VillagerObject_RecordMode((void *) (uintptr_t) VillagerStatus_ModeRecord((u8 *) (uintptr_t) address)));
+    unsigned int draw = MainRandom_Below(TAKE_DRAW);
 
     int take = 0;
     int matching = 0;
@@ -532,7 +510,7 @@ int Design_VillagerTakeShopDesign(int villager, int announce_it)
         ItemCode item = ITEM_CODE_NONE;
         int found = 0;
         for (int i = 0; i < TAKE_ITEMS; i++) {
-            func_020ae8e4(data_021f3b44, i, &item);
+            ShopListA_Item((ShopListA *) (void *) data_021f3b44, i, &item);
             if ((item >= TAKE_ITEM_FIRST && item <= TAKE_ITEM_LAST) ||
                 (item >= TAKE_ROOM_ITEM_FIRST && item <= TAKE_ROOM_ITEM_LAST)) {
                 found = 1;
@@ -541,7 +519,7 @@ int Design_VillagerTakeShopDesign(int villager, int announce_it)
         }
         if (found) {
             ItemCode converted;
-            func_02061e2c(&converted, &item);
+            ItemForm_ToCarried(&converted, &item);
         }
     }
 
@@ -558,7 +536,7 @@ int Design_VillagerTakeShopDesign(int villager, int announce_it)
     if (candidates <= 0) {
         return 0;
     }
-    int pick = (int) func_020644cc(candidates);
+    int pick = (int) MainRandom_Below(candidates);
     int seen = 0;
     unsigned int chosen;
     for (chosen = 0; chosen < DESIGNS_PER_SET; chosen++) {
@@ -583,9 +561,9 @@ int Design_Changed(int kind, int index)
     switch (kind) {
         case DESIGN_KIND_SLOT_0:
         case DESIGN_KIND_LOCAL: {
-            int record = func_020984fc(0);
+            int record = (int) (uintptr_t) PlayerRecords_OfPlayer(0);
             if (record != 0) {
-                int player = func_0209985c(record);
+                int player = PlayerRecord_Number((u8 *) (uintptr_t) record);
                 if (player != -1) {
                     DesignTextures_UpdatePlayer((u8) (player & 3), index);
                 }
@@ -593,16 +571,16 @@ int Design_Changed(int kind, int index)
             return 1;
         }
         case DESIGN_KIND_SHOP:
-            if (data_020e54a8 == 1 && func_020b65c4() == SHOP_SCENE) {
+            if (data_020e54a8 == 1 && SceneQuery_Current() == SHOP_SCENE) {
                 DesignTextures_UpdateShop((unsigned int) index);
-                func_020727a4(DesignManager_Get(), index & 7);
+                DesignManager_MarkShopChanged((DesignManager *) (uintptr_t) DesignManager_Get(), index & 7);
             }
             return 1;
         case DESIGN_KIND_RECORD_5:
-            if (data_020e54a8 == 0 && func_020b6660() != 0) {
-                void *actor = func_ov003_02220174(RECORD_5_ACTOR);
+            if (data_020e54a8 == 0 && SceneQuery_CurrentIs0() != 0) {
+                void *actor = ObjectActors_FindByCode(RECORD_5_ACTOR);
                 if (actor != NULL) {
-                    func_ov003_0221c4bc(actor);
+                    Checkpoint_RefreshDesign(actor);
                 }
             }
             return 1;

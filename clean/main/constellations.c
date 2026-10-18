@@ -6,6 +6,13 @@
 #include "main/player_record.h"
 #include "main/player_records.h"
 #include "main/text_string.h"
+#include "date_time.h"
+#include "exchange_block.h"
+#include "main_random.h"
+#include "ov127/star_scope.h"
+#include "player_id.h"
+#include "sky.h"
+#include "text_base.h"
 
 static_assert(sizeof(DesignCreator) == 0x1e, "constellation creator");
 static_assert(sizeof(Constellation) == 0x4a, "constellation");
@@ -52,27 +59,6 @@ extern u32 data_021f4b08[2];
 extern const u8 data_020e42a0[];
 /* Overlay 127, which judges a draft. */
 extern char SDK_OVERLAY_ov127_ID;
-
-extern int func_020b1974(const ConstellationStore *store, int number);    /* whether it is kept */
-extern void func_020b198c(ConstellationStore *store, int number);         /* not kept */
-extern void func_020b19a0(ConstellationStore *store, int number);         /* kept */
-extern void *func_020b1a0c(Constellation *dst, const Constellation *src); /* copied */
-extern void func_020b1a24(Constellation *constellation);                  /* emptied */
-extern int func_02090158(void *holder);                                   /* always 1 */
-extern Constellation *func_020900e4(void *holder);                        /* the draft */
-extern int func_ov127_022995a0(Constellation *draft);                     /* whether the draft may be kept */
-extern u32 func_020644cc(int range);                                      /* a random number below `range` */
-extern void func_0209e474(DateTime *now);                                 /* the clock's date and time */
-/* The sky's scroll, and the time at which the sky is scrolled so (func_020ba3bc). */
-extern u16 func_020ba494(void);
-extern u16 func_020ba488(void);
-extern void func_020ba3bc(DateTime *when, int scroll_x, int scroll_y);
-/* A wide text object (0x1c bytes): constructor, set from characters, copied into an 8-bit
- * text object, destructor. */
-extern void *func_020b18fc(void *text);
-extern void func_020a8874(void *text, const u16 *chars, int count);
-extern int func_020a8a70(void *dst, void *src, int a, int b);
-extern void *func_020b18e4(void *text);
 
 /* One bit, shifted as the ARM shifts by a register: by the low byte, nothing left past 31. */
 static u32 constellations_bit(int shift)
@@ -196,10 +182,10 @@ CLEAN_AS(func_020b1078, Constellations_NameTaken)
 void Constellations_FileDraft(void)
 {
     void *holder = data_021ee418;
-    if (func_02090158(holder) == 0) {
+    if (ExchangeBlock_IsSendable(holder) == 0) {
         return;
     }
-    Constellation *draft = func_020900e4(holder);
+    Constellation *draft = (Constellation *) (uintptr_t) ExchangeBlock_Constellation(holder);
     int pieces = 0;
     for (int i = 0; i < CONSTELLATIONS_PIECES; i++) {
         if (draft->pieces[i] == CONSTELLATIONS_NO_PIECE) {
@@ -208,13 +194,13 @@ void Constellations_FileDraft(void)
         pieces++;
         for (int j = 0; j < i; j++) {
             if (draft->pieces[i] == draft->pieces[j]) {
-                func_020b1a24(draft);
+                Constellations_Clear(draft);
                 return;
             }
         }
     }
     if (pieces != 0 && Constellations_Add(draft) != 0) {
-        func_020b1a24(draft);
+        Constellations_Clear(draft);
     }
 }
 CLEAN_AS(func_020b10b8, Constellations_FileDraft)
@@ -223,27 +209,28 @@ CLEAN_AS(func_020b10b8, Constellations_FileDraft)
  * when there is one. */
 void Constellations_DraftRandom(void)
 {
-    Constellation *draft = func_020900e4(data_021ee418);
-    func_020b1a24(draft);
+    Constellation *draft =
+        (Constellation *) (uintptr_t) (ExchangeBlock_Constellation((ExchangeBlock *) (void *) data_021ee418));
+    Constellations_Clear(draft);
     int kept = 0;
     ConstellationStore *store = constellations_store(Constellations_StoreAddress());
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
-        if (func_020b1974(store, i) != 0) {
+        if (Constellations_IsKept(store, i) != 0) {
             kept++;
         }
     }
     if (kept == 0) {
         return;
     }
-    int skip = (int) func_020644cc(kept);
+    int skip = (int) MainRandom_Below(kept);
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
-        if (func_020b1974(store, i) == 0) {
+        if (Constellations_IsKept(store, i) == 0) {
             continue;
         }
         if (skip > 0) {
             skip--;
         } else {
-            func_020b1a0c(draft, (const Constellation *) (uintptr_t) (u32) Constellations_Get(i));
+            Constellations_Copy(draft, (const Constellation *) (uintptr_t) (u32) Constellations_Get(i));
             return;
         }
     }
@@ -262,7 +249,7 @@ int Constellations_Add(Constellation *constellation)
         return 0;
     }
     Constellations_LoadJudge();
-    int accepted = func_ov127_022995a0(constellation);
+    int accepted = StarScope_StarsAreFree(constellation);
     Constellations_ReleaseJudge();
     if (accepted != 0) {
         Constellations_Put(constellation, number, 1);
@@ -290,12 +277,12 @@ CLEAN_AS(func_020b11fc, Constellations_LoadJudge)
 int Constellations_Nearest(void)
 {
     DateTime now = {0};
-    func_0209e474(&now);
+    DateTime_Now(&now);
     if (now.hour >= CONSTELLATIONS_DAY_START && now.hour < CONSTELLATIONS_NIGHT_START) {
         return -1;
     }
-    int scroll_x = func_020ba494();
-    int scroll_y = func_020ba488();
+    int scroll_x = Sky_StarsX();
+    int scroll_y = Sky_StarsY();
     int nearest = -1;
     int nearest_distance = 0;
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
@@ -344,7 +331,7 @@ void Constellations_TimeInView(DateTime *when, int number)
 {
     int x, y;
     Constellations_Center(constellations_pieces(Constellations_Get(number)), &x, &y);
-    func_020ba3bc(when, x - CONSTELLATIONS_SCREEN_MIDDLE_X, y - CONSTELLATIONS_SCREEN_MIDDLE_Y);
+    Sky_TimeForStarScroll(when, x - CONSTELLATIONS_SCREEN_MIDDLE_X, y - CONSTELLATIONS_SCREEN_MIDDLE_Y);
 }
 CLEAN_AS(func_020b12e0, Constellations_TimeInView)
 
@@ -366,7 +353,7 @@ int Constellations_TakeNew(int *number)
         if ((store->unseen & mask) == 0) {
             continue;
         }
-        if (func_020b1974(store, i) != 0) {
+        if (Constellations_IsKept(store, i) != 0) {
             if (*number != -1) {
                 return 2;
             }
@@ -385,14 +372,14 @@ int Constellations_NameToText(void *text, int number)
 {
     u32 wide[0x1c / sizeof(u32)];
 
-    if (func_020b1974(constellations_store(Constellations_StoreAddress()), number) == 0) {
+    if (Constellations_IsKept(constellations_store(Constellations_StoreAddress()), number) == 0) {
         return 0;
     }
     const Constellation *constellation = (const Constellation *) (uintptr_t) (u32) Constellations_Get(number);
-    func_020b18fc(wide);
-    func_020a8874(wide, constellation->name, CONSTELLATIONS_NAME_LENGTH);
-    func_020a8a70(text, wide, 0, 0);
-    func_020b18e4(wide);
+    ConstellationsWideName_Construct((ConstellationsWideName *) wide);
+    TextBase_SetWide(wide, constellation->name, CONSTELLATIONS_NAME_LENGTH);
+    TextBase_WideToBytes(text, (WideTextBase *) wide, 0, 0);
+    ConstellationsWideName_Destruct((ConstellationsWideName *) wide);
     return 1;
 }
 CLEAN_AS(func_020b1394, Constellations_NameToText)
@@ -402,7 +389,7 @@ void Constellations_GetName(u16 *name, int number)
 {
     int store = Constellations_StoreAddress();
     TextString_ClearChars(name, CONSTELLATIONS_NAME_LENGTH);
-    if (func_020b1974(constellations_store(store), number) != 0) {
+    if (Constellations_IsKept(constellations_store(store), number) != 0) {
         TextString_CopyChars(constellations_slot(store, number)->name, name, CONSTELLATIONS_NAME_LENGTH);
     }
 }
@@ -427,7 +414,7 @@ CLEAN_AS(func_020b1444, Constellations_SetCreator)
 int Constellations_At(int number)
 {
     int store = Constellations_StoreAddress();
-    if (func_020b1974(constellations_store(store), number) == 0) {
+    if (Constellations_IsKept(constellations_store(store), number) == 0) {
         return 0;
     }
     return store + number * (int) sizeof(Constellation);
@@ -438,7 +425,7 @@ CLEAN_AS(func_020b1498, Constellations_At)
 void Constellations_Remove(int number)
 {
     ConstellationStore *store = constellations_store(Constellations_StoreAddress());
-    func_020b198c(store, number);
+    Constellations_ClearKept(store, number);
     store->unseen = (u16) (store->unseen & ~constellations_bit(number));
 }
 CLEAN_AS(func_020b14c0, Constellations_Remove)
@@ -447,8 +434,8 @@ CLEAN_AS(func_020b14c0, Constellations_Remove)
 void Constellations_Put(const Constellation *constellation, int number, int is_new)
 {
     int store = Constellations_StoreAddress();
-    func_020b19a0(constellations_store(store), number);
-    func_020b1a0c(constellations_slot(store, number), constellation);
+    Constellations_SetKept(constellations_store(store), number);
+    Constellations_Copy(constellations_slot(store, number), constellation);
     if (is_new != 0) {
         constellations_store(store)->unseen = (u16) (constellations_store(store)->unseen | constellations_bit(number));
     }
@@ -459,7 +446,7 @@ CLEAN_AS(func_020b14ec, Constellations_Put)
 int Constellations_Get(int number)
 {
     int store = Constellations_StoreAddress();
-    if (func_020b1974(constellations_store(store), number) == 0) {
+    if (Constellations_IsKept(constellations_store(store), number) == 0) {
         return 0;
     }
     return store + number * (int) sizeof(Constellation);
@@ -472,7 +459,7 @@ int Constellations_CountFree(void)
     ConstellationStore *store = constellations_store(Constellations_StoreAddress());
     int free_places = 0;
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
-        if (func_020b1974(store, i) == 0) {
+        if (Constellations_IsKept(store, i) == 0) {
             free_places++;
         }
     }
@@ -485,7 +472,7 @@ int Constellations_FreeSlot(void)
 {
     ConstellationStore *store = constellations_store(Constellations_StoreAddress());
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
-        if (func_020b1974(store, i) == 0) {
+        if (Constellations_IsKept(store, i) == 0) {
             return i;
         }
     }
@@ -630,18 +617,7 @@ static_assert(sizeof(ConstellationsLabel) == 0x20, "label");
 extern const TextVtable data_020e4278; /* the wide name's vtable */
 extern const TextVtable data_020e4290; /* the label's vtable */
 
-/* The text base's constructors and destructors (text_label.c), and operator delete. */
-extern void *func_020a88ec(void *text);  /* base of a wide text */
-extern void *func_020a887c(void *text);  /* its destructor */
-extern void *func_020a8cac(void *label); /* base of a label */
-extern void func_020a8c1c(void *label);  /* empty a label's text */
-extern void *func_020a8c38(void *label); /* its destructor */
 extern void Heap_OperatorDeleteB(void *block);
-
-/* The maker's constructor, destructor and emptying (design.h). */
-extern void *func_0209529c(DesignCreator *creator);
-extern int func_0209526c(DesignCreator *creator);
-extern void func_02095238(DesignCreator *creator);
 
 /* The vector helpers are handed the game's own constructor and destructor of a
  * constellation, declared as the helpers call them (their results are not used). */
@@ -670,7 +646,7 @@ CLEAN_AS(func_020b18c0, ConstellationsWideName_Capacity)
 ConstellationsWideName *ConstellationsWideName_DestructDelete(ConstellationsWideName *text)
 {
     text->vtable = &data_020e4278;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -680,7 +656,7 @@ CLEAN_AS(func_020b18c4, ConstellationsWideName_DestructDelete)
 ConstellationsWideName *ConstellationsWideName_Destruct(ConstellationsWideName *text)
 {
     text->vtable = &data_020e4278;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     return text;
 }
 CLEAN_AS(func_020b18e4, ConstellationsWideName_Destruct)
@@ -688,7 +664,7 @@ CLEAN_AS(func_020b18e4, ConstellationsWideName_Destruct)
 /* func_020b18fc */
 ConstellationsWideName *ConstellationsWideName_Construct(ConstellationsWideName *text)
 {
-    func_020a88ec(text);
+    TextBase_WideConstruct(text);
     text->vtable = &data_020e4278;
     return text;
 }
@@ -712,7 +688,7 @@ CLEAN_AS(func_020b1918, ConstellationsLabel_Capacity)
 ConstellationsLabel *ConstellationsLabel_DestructDelete(ConstellationsLabel *label)
 {
     label->vtable = &data_020e4290;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
@@ -722,7 +698,7 @@ CLEAN_AS(func_020b191c, ConstellationsLabel_DestructDelete)
 ConstellationsLabel *ConstellationsLabel_Destruct(ConstellationsLabel *label)
 {
     label->vtable = &data_020e4290;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_020b193c, ConstellationsLabel_Destruct)
@@ -730,9 +706,9 @@ CLEAN_AS(func_020b193c, ConstellationsLabel_Destruct)
 /* func_020b1954: an empty label. */
 ConstellationsLabel *ConstellationsLabel_Construct(ConstellationsLabel *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = &data_020e4290;
-    func_020a8c1c(label);
+    TextBase_Clear(label);
     return label;
 }
 CLEAN_AS(func_020b1954, ConstellationsLabel_Construct)
@@ -801,14 +777,14 @@ void Constellations_Clear(Constellation *constellation)
         constellation->pieces[i] = CONSTELLATIONS_NO_PIECE;
     }
     TextString_ClearChars(constellation->name, CONSTELLATIONS_NAME_LENGTH);
-    func_02095238(&constellation->creator);
+    PlayerId_Clear(&constellation->creator);
 }
 CLEAN_AS(func_020b1a24, Constellations_Clear)
 
 /* func_020b1a54: a constellation's destructor (its maker's). */
 Constellation *Constellations_DestructOne(Constellation *constellation)
 {
-    func_0209526c(&constellation->creator);
+    PlayerId_Destruct(&constellation->creator);
     return constellation;
 }
 CLEAN_AS(func_020b1a54, Constellations_DestructOne)
@@ -816,7 +792,7 @@ CLEAN_AS(func_020b1a54, Constellations_DestructOne)
 /* func_020b1a64: a constellation's constructor (its maker's). */
 int Constellations_ConstructOne(int constellation)
 {
-    func_0209529c((DesignCreator *) (uintptr_t) (u32) constellation);
+    PlayerId_Construct((DesignCreator *) (uintptr_t) (u32) constellation);
     return constellation;
 }
 CLEAN_AS(func_020b1a64, Constellations_ConstructOne)

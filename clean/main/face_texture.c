@@ -4,6 +4,8 @@
 #include "clean.h"
 #include "scene_heaps.h"
 #include "session.h"
+#include "c_library.h"
+#include "rom_file.h"
 
 /* Each buffer's size and alignment. */
 #define FACE_TEXTURE_FILE_SIZE 11824
@@ -19,9 +21,6 @@ extern NetSession *data_020ccf94;  /* the session */
 extern char data_021c9e34[];
 extern const char data_020dd704[];
 
-extern int func_02064328(char *buffer, const char *format, ...);    /* sprintf */
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
-
 /* func_0205dc80: the buffer the byte `face` names, as an address. */
 unsigned long FaceTexture_SlotFile(unsigned char *face)
 {
@@ -35,7 +34,7 @@ int FaceTexture_Load(unsigned char *face, int number)
 {
     unsigned long file = FaceTexture_File(&data_021c9e24, *face);
     char *path = FaceTexture_Path((unsigned int) number);
-    return func_02064af4(path, (void *) (uintptr_t) file, FaceTexture_FileSize());
+    return RomFile_Read(path, (void *) (uintptr_t) file, FaceTexture_FileSize());
 }
 CLEAN_AS(func_0205dc94, FaceTexture_Load)
 
@@ -126,7 +125,7 @@ CLEAN_AS(func_0205dd58, FaceTexture_FileSize)
  * (each call overwrites the last one's path). */
 char *FaceTexture_Path(unsigned int number)
 {
-    func_02064328(data_021c9e34, data_020dd704, number >> 5, number);
+    CLib_SPrintf(data_021c9e34, data_020dd704, number >> 5, number);
     return data_021c9e34;
 }
 CLEAN_AS(func_0205dd60, FaceTexture_Path)

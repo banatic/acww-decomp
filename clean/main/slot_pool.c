@@ -3,6 +3,11 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "anim_slots.h"
+#include "cloth_slots.h"
+#include "face_anim_heaps.h"
+#include "face_anim_slots.h"
+#include "held_item.h"
 
 static_assert(sizeof(SlotPoolItemEntry) == 0x6c, "item entry size");
 static_assert(offsetof(SlotPoolItemEntry, item) == 0x04, "item entry item");
@@ -18,13 +23,6 @@ extern const SlotPoolVtable data_020e1b00; /* the held item pool's vtable */
 extern const SlotPoolVtable data_020e1b38; /* the part pool's vtable */
 extern const SlotPoolVtable data_020e1a90; /* the animation set pool's vtable */
 
-/* The slot pool base class. */
-extern void func_02083c30(SlotPool *pool, u32 index); /* clears entry `index`'s "taken" byte */
-extern void func_02083c78(SlotPool *pool);            /* destructor */
-extern void func_02083ca8(SlotPool *pool, u32 count); /* constructor */
-extern void func_02083cb4(void *entry);               /* an entry's destructor (does nothing) */
-extern void func_02083cb8(void *entry);               /* an entry's constructor: not taken */
-
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 /* The entry constructors and destructors, as the game hands them to __cxa_vec_ctor and
@@ -35,18 +33,6 @@ extern void func_020833d4(void *entry);
 extern void func_020833ec(void *entry);
 extern void func_02083514(void *entry);
 extern void func_0208352c(void *entry);
-
-/* The held items. */
-extern void func_0205ec50(void *held, int number, void *actor, const u16 *item, void *record, int a);
-extern void func_0205ebb4(void *held);
-extern void *func_0205ef90(void *held); /* destructor */
-extern void *func_0205efac(void *held); /* constructor */
-/* The parts and animation sets. */
-extern void func_0205db4c(u8 *part, u8 number);
-extern void func_0205db6c(u8 *part); /* destructor (does nothing) */
-extern void func_0205db70(u8 *part); /* constructor */
-extern void func_0205d8c4(u8 *set, int number);
-extern void func_0205d8e8(u8 *set); /* destructor (does nothing) */
 
 /* ---- The held items (data_021d1f04, vtable data_020e1b00) */
 
@@ -85,7 +71,7 @@ CLEAN_AS(func_02083148, SlotPool_ItemTakeWith)
 /* func_02083178 (vtable entry 3): entry `index` given back and its held item cleared. */
 void SlotPool_ItemGiveBack(SlotPoolItems *pool, u32 index)
 {
-    func_02083c30(&pool->base, index);
+    SlotPool_BaseGiveBack(&pool->base, index);
     if (index < pool->base.count) {
         SlotPool_ItemEntryClear(&SlotPool_Items()->entries[index]);
     }
@@ -112,7 +98,7 @@ SlotPoolItems *SlotPool_ItemsDestructDelete(SlotPoolItems *pool)
 {
     pool->base.vtable = &data_020e1b00;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolItemEntry), func_02083294);
-    func_02083c78(&pool->base);
+    SlotPool_BaseDestruct(&pool->base);
     Heap_OperatorDeleteB(pool);
     return pool;
 }
@@ -123,7 +109,7 @@ SlotPoolItems *SlotPool_ItemsDestruct(SlotPoolItems *pool)
 {
     pool->base.vtable = &data_020e1b00;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolItemEntry), func_02083294);
-    func_02083c78(&pool->base);
+    SlotPool_BaseDestruct(&pool->base);
     return pool;
 }
 CLEAN_AS(func_020831fc, SlotPool_ItemsDestruct)
@@ -131,7 +117,7 @@ CLEAN_AS(func_020831fc, SlotPool_ItemsDestruct)
 /* func_02083228 */
 SlotPoolItems *SlotPool_ItemsConstruct(SlotPoolItems *pool)
 {
-    func_02083ca8(&pool->base, SLOT_POOL_ENTRIES);
+    SlotPool_BaseConstruct(&pool->base, SLOT_POOL_ENTRIES);
     pool->base.vtable = &data_020e1b00;
     __cxa_vec_ctor(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolItemEntry), func_020832ac, func_02083294);
     return pool;
@@ -141,7 +127,7 @@ CLEAN_AS(func_02083228, SlotPool_ItemsConstruct)
 /* func_02083260: the entry's held item cleared (func_0205ebb4), the entry no longer taken. */
 void SlotPool_ItemEntryClear(SlotPoolItemEntry *entry)
 {
-    func_0205ebb4(entry->item);
+    HeldItem_Clear((HeldItemObject *) (void *) entry->item);
     entry->taken = 0;
 }
 CLEAN_AS(func_02083260, SlotPool_ItemEntryClear)
@@ -150,7 +136,7 @@ CLEAN_AS(func_02083260, SlotPool_ItemEntryClear)
  * actor or record; the entry taken. */
 void SlotPool_ItemEntrySet(SlotPoolItemEntry *entry, int number, const u16 *item)
 {
-    func_0205ec50(entry->item, number, NULL, item, NULL, 0);
+    HeldItem_Setup((HeldItemObject *) (void *) entry->item, number, NULL, (ItemCode *) item, NULL, 0);
     entry->taken = 1;
 }
 CLEAN_AS(func_02083274, SlotPool_ItemEntrySet)
@@ -158,8 +144,8 @@ CLEAN_AS(func_02083274, SlotPool_ItemEntrySet)
 /* func_02083294 */
 SlotPoolItemEntry *SlotPool_ItemEntryDestruct(SlotPoolItemEntry *entry)
 {
-    func_0205ef90(entry->item);
-    func_02083cb4(entry);
+    HeldItem_Destruct((HeldItemObject *) (void *) entry->item);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_02083294, SlotPool_ItemEntryDestruct)
@@ -167,8 +153,8 @@ CLEAN_AS(func_02083294, SlotPool_ItemEntryDestruct)
 /* func_020832ac */
 SlotPoolItemEntry *SlotPool_ItemEntryConstruct(SlotPoolItemEntry *entry)
 {
-    func_02083cb8(entry);
-    func_0205efac(entry->item);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
+    HeldItem_Construct((HeldItemObject *) (void *) entry->item);
     return entry;
 }
 CLEAN_AS(func_020832ac, SlotPool_ItemEntryConstruct)
@@ -216,7 +202,7 @@ SlotPoolBytes *SlotPool_PartsDestructDelete(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1b38;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_020833d4);
-    func_02083c78(&pool->base);
+    SlotPool_BaseDestruct(&pool->base);
     Heap_OperatorDeleteB(pool);
     return pool;
 }
@@ -227,7 +213,7 @@ SlotPoolBytes *SlotPool_PartsDestruct(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1b38;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_020833d4);
-    func_02083c78(&pool->base);
+    SlotPool_BaseDestruct(&pool->base);
     return pool;
 }
 CLEAN_AS(func_0208335c, SlotPool_PartsDestruct)
@@ -235,7 +221,7 @@ CLEAN_AS(func_0208335c, SlotPool_PartsDestruct)
 /* func_02083388 */
 SlotPoolBytes *SlotPool_PartsConstruct(SlotPoolBytes *pool)
 {
-    func_02083ca8(&pool->base, SLOT_POOL_ENTRIES);
+    SlotPool_BaseConstruct(&pool->base, SLOT_POOL_ENTRIES);
     pool->base.vtable = &data_020e1b38;
     __cxa_vec_ctor(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_020833ec, func_020833d4);
     return pool;
@@ -245,7 +231,7 @@ CLEAN_AS(func_02083388, SlotPool_PartsConstruct)
 /* func_020833c0: the entry set to part `number` (func_0205db4c) and taken. */
 void SlotPool_PartEntrySet(SlotPoolByteEntry *entry, u8 number)
 {
-    func_0205db4c(&entry->number, number);
+    FaceAnimHeaps_Assign(&entry->number, number);
     entry->taken = 1;
 }
 CLEAN_AS(func_020833c0, SlotPool_PartEntrySet)
@@ -253,8 +239,8 @@ CLEAN_AS(func_020833c0, SlotPool_PartEntrySet)
 /* func_020833d4 */
 SlotPoolByteEntry *SlotPool_PartEntryDestruct(SlotPoolByteEntry *entry)
 {
-    func_0205db6c(&entry->number);
-    func_02083cb4(entry);
+    FaceAnimHeaps_DestructSlot(&entry->number);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_020833d4, SlotPool_PartEntryDestruct)
@@ -262,8 +248,8 @@ CLEAN_AS(func_020833d4, SlotPool_PartEntryDestruct)
 /* func_020833ec */
 SlotPoolByteEntry *SlotPool_PartEntryConstruct(SlotPoolByteEntry *entry)
 {
-    func_02083cb8(entry);
-    func_0205db70(&entry->number);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
+    FaceAnimHeaps_ConstructSlot(&entry->number);
     return entry;
 }
 CLEAN_AS(func_020833ec, SlotPool_PartEntryConstruct)
@@ -313,7 +299,7 @@ SlotPoolBytes *SlotPool_AnimSetsDestructDelete(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1a90;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_02083514);
-    func_02083c78(&pool->base);
+    SlotPool_BaseDestruct(&pool->base);
     Heap_OperatorDeleteB(pool);
     return pool;
 }
@@ -324,7 +310,7 @@ SlotPoolBytes *SlotPool_AnimSetsDestruct(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1a90;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_02083514);
-    func_02083c78(&pool->base);
+    SlotPool_BaseDestruct(&pool->base);
     return pool;
 }
 CLEAN_AS(func_0208349c, SlotPool_AnimSetsDestruct)
@@ -332,7 +318,7 @@ CLEAN_AS(func_0208349c, SlotPool_AnimSetsDestruct)
 /* func_020834c8 */
 SlotPoolBytes *SlotPool_AnimSetsConstruct(SlotPoolBytes *pool)
 {
-    func_02083ca8(&pool->base, SLOT_POOL_ENTRIES);
+    SlotPool_BaseConstruct(&pool->base, SLOT_POOL_ENTRIES);
     pool->base.vtable = &data_020e1a90;
     __cxa_vec_ctor(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_0208352c, func_02083514);
     return pool;
@@ -342,7 +328,7 @@ CLEAN_AS(func_020834c8, SlotPool_AnimSetsConstruct)
 /* func_02083500: the entry set to animation set `number` (func_0205d8c4) and taken. */
 void SlotPool_AnimSetEntrySet(SlotPoolByteEntry *entry, int number)
 {
-    func_0205d8c4(&entry->number, number);
+    FaceAnimSlots_Assign(&entry->number, number);
     entry->taken = 1;
 }
 CLEAN_AS(func_02083500, SlotPool_AnimSetEntrySet)
@@ -350,8 +336,8 @@ CLEAN_AS(func_02083500, SlotPool_AnimSetEntrySet)
 /* func_02083514 */
 SlotPoolByteEntry *SlotPool_AnimSetEntryDestruct(SlotPoolByteEntry *entry)
 {
-    func_0205d8e8(&entry->number);
-    func_02083cb4(entry);
+    FaceAnimSlots_DestructSlot(&entry->number);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_02083514, SlotPool_AnimSetEntryDestruct)
@@ -361,8 +347,8 @@ extern void func_0205d8ec(u8 *set); /* constructor */
 /* func_0208352c */
 SlotPoolByteEntry *SlotPool_AnimSetEntryConstruct(SlotPoolByteEntry *entry)
 {
-    func_02083cb8(entry);
-    func_0205d8ec(&entry->number);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
+    FaceAnimSlots_ConstructSlot(&entry->number);
     return entry;
 }
 CLEAN_AS(func_0208352c, SlotPool_AnimSetEntryConstruct)
@@ -404,14 +390,8 @@ extern void func_02083bac(void *entry);
 extern void func_02083bd0(void *entry);
 
 /* The clothes. */
-extern void func_0205d4e8(u8 *cloth);             /* cleared */
-extern void func_0205d4f0(u8 *cloth, int number); /* set up as clothes `number` */
-extern void func_0205d51c(u8 *cloth);             /* destructor */
-extern void func_0205d520(u8 *cloth);             /* constructor */
-/* An animation set (as at a field actor's 0x700 and 0x701, field_actor_parts.h). */
-extern void func_0205ccc4(u8 *set, int number); /* set up as set `number` */
-extern void func_0205cce4(void *set);           /* destructor */
-extern void func_0205cce8(void *set);           /* constructor */
+extern void func_0205cce4(void *set); /* destructor */
+extern void func_0205cce8(void *set); /* constructor */
 
 /* The offsets of the three animation sets of a speaker entry from its number. */
 extern const s32 data_020d0638[SLOT_POOL_SPEAKER_ANIMS];
@@ -497,7 +477,7 @@ CLEAN_AS(func_02083640, SlotPool_BlockEntrySet)
 SlotPoolResourceEntry *SlotPool_BlockEntryDestruct(SlotPoolResourceEntry *entry)
 {
     ResourcePools_BlockSlotDestruct(&entry->slot);
-    func_02083cb4(entry);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_02083654, SlotPool_BlockEntryDestruct)
@@ -505,7 +485,7 @@ CLEAN_AS(func_02083654, SlotPool_BlockEntryDestruct)
 /* func_0208366c */
 SlotPoolResourceEntry *SlotPool_BlockEntryConstruct(SlotPoolResourceEntry *entry)
 {
-    func_02083cb8(entry);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
     ResourcePools_BlockSlotConstruct(&entry->slot);
     return entry;
 }
@@ -597,7 +577,7 @@ CLEAN_AS(func_02083770, SlotPool_ClothesConstruct)
  * Always 0. */
 int SlotPool_ClothEntryClear(SlotPoolByteEntry *entry)
 {
-    func_0205d4e8(&entry->number);
+    ClothSlots_ResetSlot(&entry->number);
     entry->taken = 0;
     return 0;
 }
@@ -606,7 +586,7 @@ CLEAN_AS(func_020837a8, SlotPool_ClothEntryClear)
 /* func_020837bc: the entry set up as clothes `number` (func_0205d4f0) and taken. */
 void SlotPool_ClothEntrySet(SlotPoolByteEntry *entry, int number)
 {
-    func_0205d4f0(&entry->number, number);
+    ClothSlots_Assign(&entry->number, number);
     entry->taken = 1;
 }
 CLEAN_AS(func_020837bc, SlotPool_ClothEntrySet)
@@ -614,8 +594,8 @@ CLEAN_AS(func_020837bc, SlotPool_ClothEntrySet)
 /* func_020837d0 */
 SlotPoolByteEntry *SlotPool_ClothEntryDestruct(SlotPoolByteEntry *entry)
 {
-    func_0205d51c(&entry->number);
-    func_02083cb4(entry);
+    ClothSlots_DestructSlot(&entry->number);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_020837d0, SlotPool_ClothEntryDestruct)
@@ -623,8 +603,8 @@ CLEAN_AS(func_020837d0, SlotPool_ClothEntryDestruct)
 /* func_020837e8 */
 SlotPoolByteEntry *SlotPool_ClothEntryConstruct(SlotPoolByteEntry *entry)
 {
-    func_02083cb8(entry);
-    func_0205d520(&entry->number);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
+    ClothSlots_ConstructSlot(&entry->number);
     return entry;
 }
 CLEAN_AS(func_020837e8, SlotPool_ClothEntryConstruct)
@@ -711,7 +691,7 @@ CLEAN_AS(func_020838fc, SlotPool_Heap4EntrySet)
 SlotPoolResourceEntry *SlotPool_Heap4EntryDestruct(SlotPoolResourceEntry *entry)
 {
     ResourcePools_Heap4SlotDestruct(&entry->slot);
-    func_02083cb4(entry);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_02083910, SlotPool_Heap4EntryDestruct)
@@ -719,7 +699,7 @@ CLEAN_AS(func_02083910, SlotPool_Heap4EntryDestruct)
 /* func_02083928 */
 SlotPoolResourceEntry *SlotPool_Heap4EntryConstruct(SlotPoolResourceEntry *entry)
 {
-    func_02083cb8(entry);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
     ResourcePools_Heap4SlotConstruct(&entry->slot);
     return entry;
 }
@@ -807,7 +787,7 @@ CLEAN_AS(func_02083a3c, SlotPool_Heap8EntrySet)
 SlotPoolResourceEntry *SlotPool_Heap8EntryDestruct(SlotPoolResourceEntry *entry)
 {
     ResourcePools_Heap8SlotDestruct(&entry->slot);
-    func_02083cb4(entry);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_02083a50, SlotPool_Heap8EntryDestruct)
@@ -815,7 +795,7 @@ CLEAN_AS(func_02083a50, SlotPool_Heap8EntryDestruct)
 /* func_02083a68 */
 SlotPoolResourceEntry *SlotPool_Heap8EntryConstruct(SlotPoolResourceEntry *entry)
 {
-    func_02083cb8(entry);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
     ResourcePools_Heap8SlotConstruct(&entry->slot);
     return entry;
 }
@@ -901,7 +881,7 @@ CLEAN_AS(func_02083b68, SlotPool_SpeakersConstruct)
  * REQUIRES: `which` below SLOT_POOL_SPEAKER_ANIMS (only SlotPool_SpeakerTake calls it). */
 void SlotPool_SpeakerEntrySetAnim(SlotPoolSpeakerEntry *entry, int number, int which)
 {
-    func_0205ccc4(&entry->anim_sets[which], number);
+    AnimSlots_Assign(&entry->anim_sets[which], number);
 }
 CLEAN_AS(func_02083ba0, SlotPool_SpeakerEntrySetAnim)
 
@@ -909,7 +889,7 @@ CLEAN_AS(func_02083ba0, SlotPool_SpeakerEntrySetAnim)
 SlotPoolSpeakerEntry *SlotPool_SpeakerEntryDestruct(SlotPoolSpeakerEntry *entry)
 {
     __cxa_vec_cleanup(entry->anim_sets, SLOT_POOL_SPEAKER_ANIMS, 1, func_0205cce4);
-    func_02083cb4(entry);
+    SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
 CLEAN_AS(func_02083bac, SlotPool_SpeakerEntryDestruct)
@@ -917,7 +897,7 @@ CLEAN_AS(func_02083bac, SlotPool_SpeakerEntryDestruct)
 /* func_02083bd0 */
 SlotPoolSpeakerEntry *SlotPool_SpeakerEntryConstruct(SlotPoolSpeakerEntry *entry)
 {
-    func_02083cb8(entry);
+    SlotPool_BaseEntryConstruct((u8 *) entry);
     __cxa_vec_ctor(entry->anim_sets, SLOT_POOL_SPEAKER_ANIMS, 1, func_0205cce8, func_0205cce4);
     return entry;
 }

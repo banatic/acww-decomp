@@ -3,6 +3,8 @@
 
 #include "acre_kind.h"
 #include "clean.h"
+#include "collision_map.h"
+#include "town_generator.h"
 
 static_assert(offsetof(AcreRecord, x) == 0x04, "acre x");
 static_assert(offsetof(AcreRecord, position) == 0x0c, "acre position");
@@ -11,13 +13,6 @@ static_assert(offsetof(AcreRecord, bg_model) == 0x20, "acre background model");
 static_assert(offsetof(AcreRecord, bits) == 0x24, "acre bits");
 static_assert(sizeof(AcreRecord) == 0x28, "acre size");
 static_assert(offsetof(BgModel, data) == 0x0c, "background model data");
-
-/* Whether a model number is one of the six of the table at data_020d1ac0 (0x18, 0x19, 0x1c,
- * 0x1f, 0x22 and 0x25). */
-extern int func_0209d048(int model);
-/* Registers acre data with the map in entry `slot` of the table at data_021c31ec, for the acre
- * at (x, z). */
-extern int func_02030c84(int x, int z, int data, int slot);
 
 /* func_02037d14: the tile (x, z) of an index into a layer: x in its low 4 bits, z in the next
  * four. */
@@ -117,7 +112,7 @@ CLEAN_AS(func_02037e44, AcreRecord_SetTile)
 /* func_02037e70: whether the acre's model is one of the six func_0209d048 knows. */
 int AcreRecord_ModelIsListed(AcreRecord *acre)
 {
-    return func_0209d048(AcreRecord_Model(acre));
+    return TownGenerator_IsListedModel(AcreRecord_Model(acre));
 }
 CLEAN_AS(func_02037e70, AcreRecord_ModelIsListed)
 
@@ -166,7 +161,7 @@ void AcreRecord_SetBgModel(AcreRecord *acre, BgModel *bg_model, int data, int sl
         data = (int) (uintptr_t) bg_model->data;
     }
     if (data != 0) {
-        func_02030c84(acre->x, acre->z, data, slot);
+        CollisionMap_SetBlock(acre->x, acre->z, data, slot);
     }
 }
 CLEAN_AS(func_02037ecc, AcreRecord_SetBgModel)

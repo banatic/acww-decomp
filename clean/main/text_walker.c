@@ -6,6 +6,8 @@
 #include "label_box.h"
 #include "message_tag.h"
 #include "text_codes.h"
+#include "message_walker.h"
+#include "talk_object.h"
 
 static_assert(offsetof(TextWalker, handler) == 0x24, "text walker handler");
 static_assert(offsetof(TextWalker, stop_at_newline) == 0x28, "text walker flag");
@@ -29,21 +31,6 @@ static_assert(sizeof(BoxWalker) == 0x30, "box walker");
 extern const u8 data_020e3de4[]; /* the text walker's vtable */
 extern const u8 data_020e3e04[]; /* the text copier's */
 extern const u8 data_020e3dc4[]; /* the box walker's */
-
-/* The walkers' base (message_cursor.h): built, destroyed; its walk started at `text` (calls
- * slot 2); one step, a newline ending the text like a 0 with `stop_at_newline` (0 once the
- * text has ended); the position moved on by `bytes` (when it has one); a nested text walked
- * from here on, the walk coming back here after it (nothing for 0); back from a nested text;
- * its nested texts dropped. */
-extern void *func_020a9484(void *walker);
-extern void *func_020a941c(void *walker);
-extern void func_020a9354(void *walker, int text);
-extern int func_020a9368(void *walker, int stop_at_newline);
-extern void func_020a93e8(void *walker, int bytes);
-extern void func_020a9334(void *walker, int text);
-extern void func_020a9318(void *walker);
-/* 1 when the player option PlayerOptions_FlagInUse reads is 0. */
-extern int func_02068114(void);
 
 typedef void TextWalkerOnEnd(void *walker);
 typedef int TextWalkerWantsMore(void *walker);
@@ -101,7 +88,7 @@ void TextCopier_Start(TextCopier *copier, TextBase *target, int source, int mode
     } else {
         TextWalker_StopAtNewlineOff(&copier->walker);
     }
-    func_020a9354(copier, source);
+    MessageWalker_Start((MessageWalker *) copier, source);
 }
 CLEAN_AS(func_020a8d20, TextCopier_Start)
 
@@ -179,24 +166,24 @@ void BoxWalker_OnTag(BoxWalker *walker, int position)
     MessageTag_Construct(&tag);
     MessageTag_Read(&tag, position);
     if (tag.group == TEXT_WALKER_GROUP_TEXTS) {
-        func_020a93e8(walker, (int) MessageTag_TextsSize(&tag));
+        MessageWalker_Skip((MessageWalker *) walker, (int) MessageTag_TextsSize(&tag));
     } else if (tag.group == TEXT_WALKER_GROUP_FORMAT) {
         if (tag.kind == TEXT_WALKER_KIND_REPLACE) {
             u32 skip;
             s32 end;
             const s8 *rest;
             MessageTag_SplitParams(&tag, &skip, &end, &rest);
-            if (func_02068114() == 0) {
+            if (TalkObject_OptionFlagOff() == 0) {
                 u32 text = (u32) (uintptr_t) rest;
-                func_020a93e8(walker, (int) (skip * 2));
-                func_020a9334(walker, (int) text);
+                MessageWalker_Skip((MessageWalker *) walker, (int) (skip * 2));
+                MessageWalker_Enter((MessageWalker *) walker, (int) text);
                 walker->return_at = text + (((u32) end - text) ^ 1);
             }
         }
     } else if (tag.group == TEXT_WALKER_GROUP_CODE) {
         int text = box_walker_code_text((int) tag.kind);
         if (text != 0) {
-            func_020a9334(walker, text);
+            MessageWalker_Enter((MessageWalker *) walker, text);
         }
     }
     if (walker->walker.handler != NULL) {
@@ -214,7 +201,7 @@ void BoxWalker_OnCharacter(BoxWalker *walker, int character)
     }
     if (walker->return_at != 0 && walker->walker.base.position == walker->return_at) {
         walker->return_at = 0;
-        func_020a9318(walker);
+        MessageWalker_Return((MessageWalker *) walker);
     }
 }
 CLEAN_AS(func_020a9164, BoxWalker_OnCharacter)
@@ -307,7 +294,7 @@ int TextWalker_RunTo(TextWalker *walker, int end)
             ((TextWalkerOnEnd *) text_walker_slot(&walker->base, TEXT_WALKER_SLOT_ON_END))(walker);
             break;
         }
-        if (!func_020a9368(walker, walker->stop_at_newline)) {
+        if (!MessageWalker_Step((MessageWalker *) walker, walker->stop_at_newline)) {
             break;
         }
     }
@@ -319,7 +306,7 @@ CLEAN_AS(func_020a922c, TextWalker_RunTo)
 void *TextWalker_Destruct(void *walker)
 {
     ((TextWalker *) walker)->base.vtable = data_020e3de4;
-    func_020a941c(walker);
+    MessageWalker_BaseDestruct(walker);
     return walker;
 }
 CLEAN_AS(func_020a9260, TextWalker_Destruct)
@@ -328,7 +315,7 @@ CLEAN_AS(func_020a9260, TextWalker_Destruct)
 void *TextWalker_Delete(void *walker)
 {
     ((TextWalker *) walker)->base.vtable = data_020e3de4;
-    func_020a941c(walker);
+    MessageWalker_BaseDestruct(walker);
     Heap_OperatorDeleteB(walker);
     return walker;
 }
@@ -338,7 +325,7 @@ CLEAN_AS(func_020a9278, TextWalker_Delete)
 TextWalker *TextWalker_DestructSlot(TextWalker *walker)
 {
     walker->base.vtable = data_020e3de4;
-    func_020a941c(walker);
+    MessageWalker_BaseDestruct(walker);
     return walker;
 }
 CLEAN_AS(func_020a9298, TextWalker_DestructSlot)
@@ -346,7 +333,7 @@ CLEAN_AS(func_020a9298, TextWalker_DestructSlot)
 /* func_020a92b0: a walker with no handler. */
 TextWalker *TextWalker_Construct(TextWalker *walker, char stop_at_newline)
 {
-    func_020a9484(walker);
+    MessageWalker_Construct((MessageWalker *) walker);
     walker->base.vtable = data_020e3de4;
     walker->handler = NULL;
     walker->stop_at_newline = (u8) stop_at_newline;
@@ -367,7 +354,7 @@ int TextWalker_Run(MessageWalker *walker, int end)
         if (((TextWalkerWantsMore *) text_walker_slot(walker, TEXT_WALKER_SLOT_WANTS_MORE))(walker) == 0) {
             return (int) walker->position;
         }
-    } while (func_020a9368(walker, 0) != 0);
+    } while (MessageWalker_Step(walker, 0) != 0);
     return 0;
 }
 CLEAN_AS(func_020a92d8, TextWalker_Run)

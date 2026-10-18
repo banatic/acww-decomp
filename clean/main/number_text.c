@@ -2,24 +2,24 @@
 #include "number_text.h"
 
 #include "clean.h"
-
-/* `text` set to the decimal digits of `value`, at most `digits` of them, with three options
- * (all 0 here); whether it worked. */
-extern int func_020b45d0(void *text, int value, int digits, int option_a, int option_b, int option_c);
+#include "message_reader.h"
+#include "message_receiver.h"
+#include "message_texts.h"
+#include "text_base.h"
 
 #define NUMBER_TEXT_TWO_DIGITS 2
 
 /* func_020b44a4: `text` set to `value` in at most two digits, plain. */
 int NumberText_SetTwoDigits(void *text, int value)
 {
-    return func_020b45d0(text, value, NUMBER_TEXT_TWO_DIGITS, 0, 0, 0);
+    return NumberText_Format(text, value, NUMBER_TEXT_TWO_DIGITS, 0, 0, 0);
 }
 CLEAN_AS(func_020b44a4, NumberText_SetTwoDigits)
 
 /* func_020b44bc: the same as NumberText_SetTwoDigits; the game has both. */
 int NumberText_SetTwoDigitsB(void *text, int value)
 {
-    return func_020b45d0(text, value, NUMBER_TEXT_TWO_DIGITS, 0, 0, 0);
+    return NumberText_Format(text, value, NUMBER_TEXT_TWO_DIGITS, 0, 0, 0);
 }
 CLEAN_AS(func_020b44bc, NumberText_SetTwoDigitsB)
 
@@ -41,18 +41,6 @@ typedef struct NumberTextPart {
 
 extern s32 FX_Modf(s32 value, s32 *integer); /* the fraction; the integer part in *integer */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
-extern void *func_020b5630(NumberTextBuffer *text);
-extern void *func_020b5618(NumberTextBuffer *text);
-extern void *func_020a8228(NumberTextPart *part);
-extern void *func_020a8210(NumberTextPart *part);
-/* Texts: set from another text, appended raw characters, appended another text, set from raw
- * characters; each says whether it worked. */
-extern int func_020a8bb8(void *text, const void *source);
-extern int func_020a89f8(void *text, const void *characters);
-extern int func_020a89dc(void *text, const void *source);
-extern int func_020a8be4(void *text, const void *characters);
-/* Message *message of the group `group` (in "/script/KOR/string") read into `text`. */
-extern int func_020b4a20(void *text, u8 *message, const char *group);
 /* The bytes before the first 0x0000 character of a text, at most `size`. */
 extern int func_020b4950_unk(const void *text, unsigned int size);
 
@@ -80,17 +68,17 @@ int NumberText_SetFixed(void *text, s32 value, int decimals)
     for (int i = 0; i < decimals; i++) {
         fraction *= 10;
     }
-    func_020b5630(&integer_text);
-    func_020b5630(&fraction_text);
-    func_020a8228(&unused);
+    MessageText46_Construct((MessageText46 *) &integer_text);
+    MessageText46_Construct((MessageText46 *) &fraction_text);
+    MessagePart_Construct((MessagePart *) &unused);
     int ok = NumberText_Format(&integer_text, integer >> NUMBER_TEXT_FX_SHIFT, NUMBER_TEXT_DIGITS_MAX, 0, 0, 0) & 1;
     ok = (ok & NumberText_Format(&fraction_text, fraction >> NUMBER_TEXT_FX_SHIFT, NUMBER_TEXT_DIGITS_MAX, 0, 0, 0)) != 0;
-    ok = (ok & func_020a8bb8(text, &integer_text)) != 0;
-    ok = (ok & func_020a89f8(text, data_020d2080)) != 0;
-    ok = (ok & func_020a89dc(text, &fraction_text)) != 0;
-    func_020a8210(&unused);
-    func_020b5618(&fraction_text);
-    func_020b5618(&integer_text);
+    ok = (ok & (int) (uintptr_t) TextBase_Copy(text, (TextBase *) &integer_text)) != 0;
+    ok = (ok & TextBase_AppendChars(text, data_020d2080)) != 0;
+    ok = (ok & TextBase_AppendText(text, (TextBase *) &fraction_text)) != 0;
+    MessagePart_Destruct((MessagePart *) &unused);
+    MessageText46_Destruct((MessageText46 *) &fraction_text);
+    MessageText46_Destruct((MessageText46 *) &integer_text);
     return ok;
 }
 CLEAN_AS(func_020b4508, NumberText_SetFixed)
@@ -126,7 +114,7 @@ int NumberText_Format(void *text, int value, int digits, int format, int unit, u
         NumberText_ToFullWidth(wide, sizeof(wide), work, sizeof(work));
         characters = wide;
     }
-    int ok = func_020a8be4(text, characters);
+    int ok = TextBase_SetChars(text, characters);
     if (unit != 0) {
         ok = (ok & NumberText_AppendUnit(text, value, unit)) != 0;
     }
@@ -150,7 +138,7 @@ int NumberText_AppendUnit(void *text, int value, int unit)
     int last_digit = value % 10;
     u8 message = 0;
 
-    func_020a8228(&word);
+    MessagePart_Construct((MessagePart *) &word);
     switch (unit) {
         case 1:
             message = 0;
@@ -185,11 +173,11 @@ int NumberText_AppendUnit(void *text, int value, int unit)
         default:
             break;
     }
-    int ok = func_020b4a20(&word, &message, data_020e5300);
+    int ok = MessageReader_LoadMessage((int) (uintptr_t) &word, &message, (int) (uintptr_t) data_020e5300);
     if (ok != 0) {
-        ok = (ok & func_020a89dc(text, &word)) != 0;
+        ok = (ok & TextBase_AppendText(text, (TextBase *) &word)) != 0;
     }
-    func_020a8210(&word);
+    MessagePart_Destruct((MessagePart *) &word);
     return ok;
 }
 CLEAN_AS(func_020b46a4, NumberText_AppendUnit)

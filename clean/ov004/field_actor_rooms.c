@@ -25,6 +25,8 @@
 #include "main/session_players.h"
 #include "main/town_objects.h"
 #include "ov004/field_actor_room_states2.h"
+#include "room_objects.h"
+#include "room_pushes.h"
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
@@ -60,7 +62,7 @@ static_assert(offsetof(StateRequest, payload) == 0x0c, "payload");
 #define FIELD_ACTOR_ROOMS_POCKETS_FULL (-1)
 #define FIELD_ACTOR_ROOMS_VISITORS (-3)
 
-/* What func_ov004_0223bbc0 answers besides an object's index: an item on the floor ahead. */
+/* What RoomObjects_FindAheadOfPlayer answers besides an object's index: an item on the floor ahead. */
 #define FIELD_ACTOR_ROOMS_FLOOR_ITEM (-2)
 /* The tools' reaches (FieldActor_InToolReach) for the floor's item and the last try. */
 #define FIELD_ACTOR_ROOMS_REACH_ITEM 14
@@ -113,23 +115,9 @@ extern const s16 FX_SinCosTable_[];
 extern int FX_MulFunc(int a, int b);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 
-/* The room's objects: the index of the one in front of this console's player's actor (its
- * tile in `x` and `z`; -1 for none, -2 for an item on the floor), and whether one goes with a
- * tile (its byte 0x288). */
-extern int func_ov004_0223bbc0(int *x, int *z, u16 *item, u16 *item_2);
-extern int func_ov004_0223bb88(unsigned int index);
-/* The room's two object entries (0x40 bytes each, data_ov004_02259784): the first when it is
- * in use, its point (0x2c) and angle (0x38). */
-extern void *func_ov004_0223cb10(void);
-extern void *func_ov004_0223cadc(void *entries, int index);
-extern int *func_ov004_0223cb24(void *entry);
-extern int func_ov004_0223cb18(void *entry);
 /* Requests for states 0x1d (a point and an angle) and 0x1c (a tile and an object). */
 /* The rest of the door states' frame, elsewhere in the overlay: the walk of state 0x8c, the
  * animation by the speed, and the end of the walk. */
-extern void func_ov004_022266c4(FieldActor *actor);
-extern void func_ov004_02226920(FieldActor *actor);
-extern void func_ov004_022268b8(FieldActor *actor);
 
 static FieldActorRoomsWalk *far_walk_of(FieldActor *actor)
 {
@@ -200,14 +188,14 @@ CLEAN_AS(func_ov004_02225de0, FieldActorRooms_WalkToward)
 int FieldActorRooms_TryTool(FieldActor *actor)
 {
     if (FIELD_ACTOR_HOLD(actor) != 0) {
-        void *entry = func_ov004_0223cadc(func_ov004_0223cb10(), 0);
+        void *entry = RoomPushes_Get(RoomPushes_Records(), 0);
         if (entry == NULL) {
             return 0;
         }
-        const int *point = func_ov004_0223cb24(entry);
-        int x = point[0];
-        int z = point[2];
-        return FieldActorRoomStates2_RequestFurnitureReach(actor, x, z, func_ov004_0223cb18(entry),
+        const Vec3 *point = RoomPushes_Destination(entry);
+        int x = point->x;
+        int z = point->z;
+        return FieldActorRoomStates2_RequestFurnitureReach(actor, x, z, RoomPushes_Facing(entry),
                                                            FIELD_ACTOR_ROOMS_ENTRY_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
     }
     if (actor->unk_148 != 0) {
@@ -277,9 +265,9 @@ int FieldActorRooms_TryTarget(FieldActor *actor, int tool, int mode)
     if (actor->player != 0) {
         return 0;
     }
-    int index = func_ov004_0223bbc0(&x, &z, &actor->item, &actor->unk_822);
+    int index = RoomObjects_FindAheadOfPlayer(&x, &z, &actor->item, &actor->unk_822);
     if (index >= 0 && (index == FIELD_ACTOR_PICK_EXTRA(actor) || actor->aim_mode == 1)) {
-        if (!func_ov004_0223bb88((unsigned int) index)) {
+        if (!RoomObjects_Unk288Of((unsigned int) index)) {
             int none[2] = {0, 0};
             FieldActor_RequestState18(actor, none, index, FIELD_ACTOR_ROOMS_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
         } else {
@@ -360,10 +348,10 @@ CLEAN_AS(func_ov004_0222626c, FieldActorRooms_FadeAlpha)
 void FieldActorRooms_UpdateWalkIn(FieldActor *actor)
 {
     FieldActorRooms_StepWalkIn(actor);
-    func_ov004_02226920(actor);
+    FieldActorRooms_AnimateBySpeed(actor);
     FieldActor_MoveFree(actor);
     FieldActor_EnterContact(actor);
-    func_ov004_022268b8(actor);
+    FieldActorRooms_EndWalk(actor);
 }
 CLEAN_AS(func_ov004_0222629c, FieldActorRooms_UpdateWalkIn)
 
@@ -492,7 +480,7 @@ CLEAN_AS(func_ov004_02226494, FieldActorRooms_PutWalkInPoint)
 void FieldActorRooms_UpdateStepOff(FieldActor *actor)
 {
     FieldActorRooms_StepStepOff(actor);
-    func_ov004_02226920(actor);
+    FieldActorRooms_AnimateBySpeed(actor);
     FieldActor_MoveFree(actor);
     FieldActor_EnterContact(actor);
 }
@@ -598,8 +586,8 @@ CLEAN_AS(func_ov004_0222661c, FieldActorRooms_PutStepOffPoint)
  * through in way 1 or 2 takes the scene's exit (0x804). The frames counted. */
 void FieldActorRooms_UpdateExit(FieldActor *actor)
 {
-    func_ov004_022266c4(actor);
-    func_ov004_02226920(actor);
+    FieldActorRooms_StepExit(actor);
+    FieldActorRooms_AnimateBySpeed(actor);
     FieldActor_MoveFree(actor);
     FieldActor_EnterContact(actor);
 

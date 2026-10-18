@@ -2,14 +2,13 @@
 #include "letter_store.h"
 
 #include "clean.h"
-
-extern void func_02066650(MailLetter *letter); /* empty it */
+#include "letter.h"
 
 /* func_02097f38: empty all 50 letters. */
 void LetterStore_Clear(MailLetter *letters)
 {
     for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
-        func_02066650(&letters[i]);
+        Letter_Clear((Letter *) &letters[i]);
     }
 }
 CLEAN_AS(func_02097f38, LetterStore_Clear)

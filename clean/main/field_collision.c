@@ -6,6 +6,13 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "itcm/field_units.h"
+#include "collision_area.h"
+#include "collision_box.h"
+#include "collision_cylinder.h"
+#include "collision_query.h"
+#include "collision_segment.h"
+#include "collision_triangle.h"
+#include "unit_type_info.h"
 
 static_assert(sizeof(CollisionTag) == 8, "tag");
 static_assert(sizeof(CollisionSegment) == 0x20, "segment");
@@ -80,48 +87,13 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __register_global_object(void *object, void *destruct, void *record);
 
-/* Points seen from above: set, difference a - b, normalize (whether it had a length), the unit
- * normal of the line from a to b, the squared distance, and the destructor (nothing). */
-extern void func_0202f8fc(CollisionPoint *point, fx32 x, fx32 z);
-extern void func_0202f898(CollisionPoint *difference, const CollisionPoint *a, const CollisionPoint *b);
-extern int func_0202f7f4(CollisionPoint *v);
-extern void func_0202f7a0(CollisionPoint *normal, const CollisionPoint *a, const CollisionPoint *b);
-extern s64 func_0202f838(const CollisionPoint *a, const CollisionPoint *b);
+/* The destructor of a point seen from above (nothing). */
 extern void func_0202f2f0(void *point);
 /* Segments: set the three points (and the offset), the base destructor; the three tests that
  * push `moved` out of a wall coming from `from`, and whether they did. */
-extern void func_0202f6ac(CollisionSegment *segment, const CollisionPoint *start, const CollisionPoint *end,
-                          const CollisionPoint *normal);
-extern void func_0202f6dc(CollisionSegment *segment);
 extern int func_0202f288(CollisionWall *wall, CollisionPoint *moved, const CollisionPoint *from, fx32 radius);
 extern int func_0202f3e4(CollisionWall *wall, CollisionPoint *moved, const CollisionPoint *from, fx32 radius);
 extern int func_0202f2f4(CollisionWall *wall, CollisionPoint *moved, const CollisionPoint *from, fx32 radius);
-/* Triangles: base constructor, set the corners and normal, construct and set, whether a point
- * is inside seen from above, base destructor and destructor. */
-extern void func_0202ff00(CollisionTriangle *triangle);
-extern int func_0202fc18(CollisionTriangle *triangle, const Vec3 *a, const Vec3 *b, const Vec3 *c, const Vec3 *normal);
-extern CollisionTriangle *func_0202feb4(CollisionTriangle *triangle, const Vec3 *a, const Vec3 *b, const Vec3 *c,
-                                        const Vec3 *normal);
-extern int func_0202fb8c(CollisionTriangle *triangle, const Vec3 *point);
-extern void func_0202fed4(CollisionTriangle *triangle);
-extern void func_0202fee0(CollisionTriangle *triangle);
-/* Cylinders: set position, radius and height; construct; destruct; land on the top coming
- * from above; push a point of `radius` out of the side. */
-extern void func_02030640(CollisionPost *post, const Vec3 *position, fx32 radius, fx32 height);
-extern void *func_02030690(CollisionPost *post);
-extern int func_02030658(CollisionPost *post);
-extern int func_02030580(CollisionPost *post, Vec3 *position, const Vec3 *previous);
-extern int func_020305b0(CollisionPost *post, Vec3 *position, fx32 radius);
-/* What main's tables say of a unit: a post's radius and added height, and its kind. */
-extern int func_02031078(int x, int z, int *radius, int *height, int *kind);
-/* The quarter of its unit a point is in, and the attribute of a unit in that quarter (from
- * one table set or the other); whether an attribute is ground in a mode. */
-extern int func_02031da8(const Vec3 *position);
-extern int func_02031ca8(int x, int z, int quarter);
-extern int func_02031d28(int x, int z, int quarter);
-extern int func_02031c14(int attr, int mode);
-extern int func_02034600(void *extra_posts, int x, int z);
-extern void func_02034448(CollisionCell *cell, int x, int z, int alternate);
 
 /* The members' constructors and destructors handed to __cxa_vec_ctor: the game's own. */
 extern void *func_020339dc(void *wall);
@@ -437,7 +409,7 @@ void CollisionPosts_Gather(CollisionPostList *posts, CollisionPostSource *source
                 if (!all || data_021c5124 == 0) {
                     continue;
                 }
-                extra = func_02034600(&data_021c5124, x, z);
+                extra = CollisionExtraPosts_RadiusAt((const CollisionExtraPosts *) (void *) &data_021c5124, x, z);
                 if (extra == 0) {
                     continue;
                 }
@@ -474,7 +446,8 @@ int CollisionPosts_Land(CollisionPostList *posts, Vec3 *position, const Vec3 *pr
     for (at = collision_first(posts->posts); at < collision_end(posts->posts, posts->count, sizeof(CollisionPost));
          at += sizeof(CollisionPost)) {
         CollisionPost *post = (CollisionPost *) (uintptr_t) at;
-        if (post->kind == COLLISION_KIND_1 && func_02030580(post, position, previous) != 0) {
+        if (post->kind == COLLISION_KIND_1 &&
+            CollisionCylinder_LandOnTop((CollisionCylinder *) post, position, previous) != 0) {
             *attr = post->tag.attr;
             return 1;
         }
@@ -496,7 +469,7 @@ int CollisionPosts_PushOut(CollisionPostList *posts, Vec3 *position, fx32 radius
     for (at = collision_first(posts->posts); at < collision_end(posts->posts, posts->count, sizeof(CollisionPost));
          at += sizeof(CollisionPost)) {
         CollisionPost *post = (CollisionPost *) (uintptr_t) at;
-        if (func_020305b0(post, position, radius) != 0) {
+        if (CollisionCylinder_PushOut((CollisionCylinder *) post, position, radius) != 0) {
             Vec3 away;
             Vec_Subtract(&away, position, &post->position);
             CollisionContactList_Add(&contacts->walls, Math_Atan2(away.x, away.z), post->kind, post->tag.attr);
@@ -540,21 +513,21 @@ int CollisionPost_AddFence(CollisionPost *post, CollisionWallList *walls, Collis
     if (!((dx == 0 && dz == 1) || (dx == 1 && dz >= -1 && dz <= 1))) {
         return 0;
     }
-    func_0202f8fc(&from, post->position.x, post->position.z);
-    func_0202f8fc(&to, other->position.x, other->position.z);
-    func_0202f898(&direction, &to, &from);
-    func_0202f7f4(&direction);
+    CollisionPoint_Set(&from, post->position.x, post->position.z);
+    CollisionPoint_Set(&to, other->position.x, other->position.z);
+    CollisionPoint_Difference(&direction, &to, &from);
+    CollisionPoint_Normalize(&direction);
 
     z = from.z - FX_MulFunc(direction.z, post->radius);
     x = from.x - FX_MulFunc(direction.x, post->radius);
-    func_0202f8fc(&start, x, z);
+    CollisionPoint_Set(&start, x, z);
     z = to.z + FX_MulFunc(direction.z, other->radius);
     x = to.x + FX_MulFunc(direction.x, other->radius);
-    func_0202f8fc(&end, x, z);
+    CollisionPoint_Set(&end, x, z);
 
-    func_0202f8fc(&normal, 0, 0);
-    func_0202f7a0(&normal, &from, &to);
-    func_0202f8fc(&back, -normal.x, -normal.z);
+    CollisionPoint_Set(&normal, 0, 0);
+    CollisionPoint_LineNormal(&normal, &from, &to);
+    CollisionPoint_Set(&back, -normal.x, -normal.z);
 
     top = other->height > post->height ? post->height : other->height;
     CollisionWalls_AddWall(walls, &start, &end, &normal, top, COLLISION_KIND_SILENT, 0, NULL);
@@ -568,7 +541,7 @@ void CollisionPost_Init(CollisionPost *post, const Vec3 *position, fx32 radius, 
 {
     post->unit_x = (s16) (position->x >> COLLISION_UNIT_SHIFT);
     post->unit_z = (s16) (position->z >> COLLISION_UNIT_SHIFT);
-    func_02030640(post, position, radius, height);
+    CollisionCylinder_Set((CollisionCylinder *) post, position, radius, height);
     post->kind = kind;
     CollisionTag_Set(&post->tag, attr, NULL);
 }
@@ -578,7 +551,7 @@ CLEAN_AS(func_020330bc, CollisionPost_Init)
 void *CollisionPost_Destroy(CollisionPost *post)
 {
     CollisionTag_Destroy(&post->tag);
-    func_02030658(post);
+    CollisionCylinder_DestructBase((CollisionCylinder *) post);
     return post;
 }
 CLEAN_AS(func_020330e8, CollisionPost_Destroy)
@@ -586,7 +559,7 @@ CLEAN_AS(func_020330e8, CollisionPost_Destroy)
 /* func_02033100 */
 void *CollisionPost_Construct(CollisionPost *post)
 {
-    func_02030690(post);
+    CollisionCylinder_Construct((CollisionCylinder *) post);
     CollisionTag_Clear(&post->tag);
     return post;
 }
@@ -598,9 +571,9 @@ CLEAN_AS(func_02033100, CollisionPost_Construct)
 static void collision_wall_construct(CollisionWall *wall)
 {
     wall->segment.vtable = data_020da1a4;
-    func_0202f8fc(&wall->segment.start, 0, 0);
-    func_0202f8fc(&wall->segment.end, 0, 0);
-    func_0202f8fc(&wall->segment.normal, 0, 0);
+    CollisionPoint_Set(&wall->segment.start, 0, 0);
+    CollisionPoint_Set(&wall->segment.end, 0, 0);
+    CollisionPoint_Set(&wall->segment.normal, 0, 0);
     CollisionTag_Clear(&wall->tag);
     wall->segment.vtable = data_020da210;
 }
@@ -609,7 +582,7 @@ static void collision_wall_construct(CollisionWall *wall)
 static const CollisionPoint *collision_static_normal(CollisionPoint *normal, u32 *guard, fx32 x, fx32 z, u8 *record)
 {
     if ((*guard & 1) == 0) {
-        func_0202f8fc(normal, x, z);
+        CollisionPoint_Set(normal, x, z);
         __register_global_object(normal, (void *) (uintptr_t) func_0202f2f0, record);
         *guard |= 1;
     }
@@ -663,8 +636,8 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
                     collision_static_normal(&data_021c3128, &data_021c30e8, 0x1000, 0, data_021c31c4);
                 const CollisionPoint *minus_x =
                     collision_static_normal(&data_021c3138, &data_021c30d8, -0x1000, 0, data_021c31dc);
-                func_0202f8fc(&start, cx + 0x1000, cz - 0x1000);
-                func_0202f8fc(&end, start.x, cz + 0x1000);
+                CollisionPoint_Set(&start, cx + 0x1000, cz - 0x1000);
+                CollisionPoint_Set(&end, start.x, cz + 0x1000);
                 if (cell->side_height[COLLISION_EAST] > east->side_height[COLLISION_WEST]) {
                     collision_add_step(walls, &start, &end, plus_x, minus_x, cell->side_height[COLLISION_EAST],
                                        cell->side_attr[COLLISION_EAST], back);
@@ -679,8 +652,8 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
                     collision_static_normal(&data_021c3100, &data_021c30d4, 0, 0x1000, data_021c3140);
                 const CollisionPoint *minus_z =
                     collision_static_normal(&data_021c3110, &data_021c30cc, 0, -0x1000, data_021c3164);
-                func_0202f8fc(&start, cx - 0x1000, cz + 0x1000);
-                func_0202f8fc(&end, cx + 0x1000, start.z);
+                CollisionPoint_Set(&start, cx - 0x1000, cz + 0x1000);
+                CollisionPoint_Set(&end, cx + 0x1000, start.z);
                 if (cell->side_height[COLLISION_SOUTH] > south->side_height[COLLISION_NORTH]) {
                     collision_add_step(walls, &start, &end, plus_z, minus_z, cell->side_height[COLLISION_SOUTH],
                                        cell->side_attr[COLLISION_SOUTH], back);
@@ -696,8 +669,8 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
                     collision_static_normal(&data_021c3120, &data_021c30f0, -0xb50, 0xb50, data_021c3188);
                 const CollisionPoint *north_east =
                     collision_static_normal(&data_021c3118, &data_021c30ec, -data_021c3120.x, -data_021c3120.z, data_021c31ac);
-                func_0202f8fc(&start, cx - 0x1000, cz - 0x1000);
-                func_0202f8fc(&end, cx + 0x1000, cz + 0x1000);
+                CollisionPoint_Set(&start, cx - 0x1000, cz - 0x1000);
+                CollisionPoint_Set(&end, cx + 0x1000, cz + 0x1000);
                 if (cell->side_height[COLLISION_NORTH] > cell->side_height[COLLISION_WEST]) {
                     collision_add_step(walls, &start, &end, south_west, north_east, cell->side_height[COLLISION_NORTH],
                                        cell->side_attr[COLLISION_NORTH], back);
@@ -711,8 +684,8 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
                     collision_static_normal(&data_021c3130, &data_021c30fc, 0xb50, 0xb50, data_021c31d0);
                 const CollisionPoint *north_west =
                     collision_static_normal(&data_021c3108, &data_021c30f4, -data_021c3130.x, -data_021c3130.z, data_021c314c);
-                func_0202f8fc(&start, cx - 0x1000, cz + 0x1000);
-                func_0202f8fc(&end, cx + 0x1000, cz - 0x1000);
+                CollisionPoint_Set(&start, cx - 0x1000, cz + 0x1000);
+                CollisionPoint_Set(&end, cx + 0x1000, cz - 0x1000);
                 if (cell->side_height[COLLISION_NORTH] > cell->side_height[COLLISION_EAST]) {
                     collision_add_step(walls, &start, &end, south_east, north_west, cell->side_height[COLLISION_NORTH],
                                        cell->side_attr[COLLISION_NORTH], back);
@@ -794,10 +767,10 @@ int CollisionWalls_PushOut(CollisionWallList *walls, Vec3 *position, const Vec3 
     CollisionPoint step;
     int pushed = 0;
 
-    func_0202f8fc(&moved, position->x, position->z);
-    func_0202f8fc(&from, previous->x, previous->z);
-    func_0202f8fc(&step, position->x - previous->x, position->z - previous->z);
-    if (func_0202f838(&step, &data_021c30b8) >= (s64) FX_MulFunc(radius, radius)) {
+    CollisionPoint_Set(&moved, position->x, position->z);
+    CollisionPoint_Set(&from, previous->x, previous->z);
+    CollisionPoint_Set(&step, position->x - previous->x, position->z - previous->z);
+    if (CollisionPoint_DistanceSquared(&step, &data_021c30b8) >= (s64) FX_MulFunc(radius, radius)) {
         pushed |= collision_walls_pass(walls, func_0202f288, position, &moved, &from, radius, contacts, owner);
     }
     pushed |= collision_walls_pass(walls, func_0202f3e4, position, &moved, &from, radius, contacts, owner);
@@ -831,7 +804,7 @@ int CollisionWall_Init(CollisionWall *wall, const CollisionPoint *start, const C
                        const CollisionPoint *normal, fx32 top, int kind, int attr, CollisionHandler *handler)
 {
     CollisionTag_Set(&wall->tag, attr, handler);
-    func_0202f6ac(&wall->segment, start, end, normal);
+    CollisionSegment_Set(&wall->segment, start, end, normal);
     wall->kind = kind;
     wall->top = top;
     return 1;
@@ -842,7 +815,7 @@ CLEAN_AS(func_020338c4, CollisionWall_Init)
 int CollisionWall_Copy(CollisionWall *wall, const CollisionWall *from)
 {
     CollisionTag_Copy(&wall->tag, &from->tag);
-    func_0202f6ac(&wall->segment, &from->segment.start, &from->segment.end, &from->segment.normal);
+    CollisionSegment_Set(&wall->segment, &from->segment.start, &from->segment.end, &from->segment.normal);
     wall->kind = from->kind;
     wall->top = from->top;
     return 1;
@@ -852,8 +825,8 @@ CLEAN_AS(func_020338f8, CollisionWall_Copy)
 /* func_0203392c */
 void CollisionWall_GetMiddle(CollisionPoint *middle, const CollisionWall *wall)
 {
-    func_0202f8fc(middle, (wall->segment.start.x + wall->segment.end.x) >> 1,
-                  (wall->segment.start.z + wall->segment.end.z) >> 1);
+    CollisionPoint_Set(middle, (wall->segment.start.x + wall->segment.end.x) >> 1,
+                       (wall->segment.start.z + wall->segment.end.z) >> 1);
 }
 CLEAN_AS(func_0203392c, CollisionWall_GetMiddle)
 
@@ -873,7 +846,7 @@ CollisionWall *CollisionWall_Destroy(CollisionWall *wall)
 {
     wall->segment.vtable = data_020da210;
     CollisionTag_Destroy(&wall->tag);
-    func_0202f6dc(&wall->segment);
+    CollisionSegment_DestructBase(&wall->segment);
     return wall;
 }
 CLEAN_AS(func_020339b8, CollisionWall_Destroy)
@@ -1003,7 +976,7 @@ int CollisionFloor_Init(CollisionFloor *floor, const Vec3 *a, const Vec3 *b, con
                         CollisionHandler *handler)
 {
     CollisionTag_Set(&floor->tag, attr, handler);
-    func_0202fc18(&floor->triangle, a, b, c, normal);
+    CollisionTriangle_Set(&floor->triangle, a, b, c, normal);
     return 1;
 }
 CLEAN_AS(func_02033c78, CollisionFloor_Init)
@@ -1013,7 +986,7 @@ void *CollisionFloor_Destroy(CollisionFloor *floor)
 {
     floor->triangle.vtable = data_020da21c;
     CollisionTag_Destroy(&floor->tag);
-    func_0202fed4(&floor->triangle);
+    CollisionTriangle_DestructBase(&floor->triangle);
     return floor;
 }
 CLEAN_AS(func_02033ca8, CollisionFloor_Destroy)
@@ -1021,7 +994,7 @@ CLEAN_AS(func_02033ca8, CollisionFloor_Destroy)
 /* func_02033ccc */
 void *CollisionFloor_Construct(CollisionFloor *floor)
 {
-    func_0202ff00(&floor->triangle);
+    CollisionTriangle_ConstructBase(&floor->triangle);
     CollisionTag_Clear(&floor->tag);
     floor->triangle.vtable = data_020da21c;
     return floor;
@@ -1046,8 +1019,8 @@ static void collision_corner_slope(CollisionGround *ground, const Vec3 *position
 {
     CollisionTriangle triangle;
 
-    func_0202feb4(&triangle, p, q, r, &data_021c317c);
-    if ((func_0202fb8c(&triangle, position) != 0) == slope_inside) {
+    CollisionTriangle_ConstructSet(&triangle, p, q, r, &data_021c317c);
+    if ((CollisionTriangle_ContainsXZ(&triangle, position) != 0) == slope_inside) {
         ground->attr = COLLISION_ATTR_16;
         CollisionGround_SetSlopeNormal(ground, from, level, angle);
     } else {
@@ -1058,7 +1031,7 @@ static void collision_corner_slope(CollisionGround *ground, const Vec3 *position
     ground->point.x = (b->x + c->x) >> 1;
     ground->point.y = (b->y + c->y) >> 1;
     ground->point.z = (b->z + c->z) >> 1;
-    func_0202fee0(&triangle);
+    CollisionTriangle_Destruct(&triangle);
 }
 
 /* func_02033cec: the ground at `position`: its attribute from the unit's type and the quarter
@@ -1081,11 +1054,11 @@ void CollisionGround_Query(CollisionGround *ground, const Vec3 *position, int al
     ground->unit_x = position->x >> COLLISION_UNIT_SHIFT;
     ground->unit_z = position->z >> COLLISION_UNIT_SHIFT;
     type = FieldUnits_GetType(ground->unit_x, ground->unit_z);
-    quarter = func_02031da8(position);
+    quarter = UnitTypeInfo_SideNearest(position);
     if (alternate != 0) {
-        ground->attr = func_02031ca8(ground->unit_x, ground->unit_z, quarter);
+        ground->attr = UnitTypeInfo_AltSideAttrAt(ground->unit_x, ground->unit_z, quarter);
     } else {
-        ground->attr = func_02031d28(ground->unit_x, ground->unit_z, quarter);
+        ground->attr = UnitTypeInfo_SideAttrAt(ground->unit_x, ground->unit_z, quarter);
     }
     info = collision_type_info(ground->attr);
     ground->height = ground->attr < COLLISION_TYPE_COUNT ? info->height * 256 : 0;
@@ -1095,7 +1068,7 @@ void CollisionGround_Query(CollisionGround *ground, const Vec3 *position, int al
     ground->normal.y = 0;
     ground->normal.z = 0x1000;
 
-    if (func_02031c14(ground->attr, mode) == 0) {
+    if (UnitTypeInfo_HasByte14InMode(ground->attr, mode) == 0) {
         ground->unk_30 = 0;
         return;
     }
@@ -1221,7 +1194,8 @@ fx32 CollisionGround_GetHeight(const CollisionGround *ground, int with_post)
     if (with_post == 0) {
         return ground->height;
     }
-    if (func_02031078(ground->unit_x, ground->unit_z, &radius, &height, &kind) != 0 && kind != COLLISION_KIND_2) {
+    if (CollisionQuery_PostAt(ground->unit_x, ground->unit_z, (fx32 *) &radius, (fx32 *) &height, &kind) != 0 &&
+        kind != COLLISION_KIND_2) {
         Vec3 centre;
         s64 distance;
         centre.x = collision_unit_centre(ground->unit_x);
@@ -1315,7 +1289,7 @@ void CollisionCellGrid_Load(CollisionCellGrid *grid, int x0, int x1, int z0, int
             CollisionCell *cell = (CollisionCell *) (uintptr_t) ((uintptr_t) grid +
                                                                  ((u32) z - (u32) grid->min_z) * (u32) sizeof(grid->cells[0]) +
                                                                  ((u32) x - (u32) grid->min_x) * (u32) sizeof(CollisionCell));
-            func_02034448(cell, x, z, alternate);
+            CollisionCell_Load(cell, x, z, alternate);
         }
     }
 }
@@ -1359,8 +1333,6 @@ extern void func_02031608(void *cell);
 extern void func_02034850(void *block);
 extern void func_02034820(void *block);
 extern void func_02034804(void *map);
-extern void func_02032438(void *object);
-extern void func_020326bc(void *object);
 
 /* func_020343f4: the grid's constructor: 7 by 7 empty units and all bounds 0. */
 void *CollisionCellGrid_Construct(CollisionCellGrid *grid)
@@ -1531,8 +1503,8 @@ CLEAN_AS(func_02034780, CollisionWall_IsRecorded)
 void *CollisionWorld_Destroy(CollisionWorld *world)
 {
     __cxa_vec_cleanup(world->grid.cells, COLLISION_GRID_SIZE * COLLISION_GRID_SIZE, sizeof(CollisionCell), func_02031608);
-    func_020326bc(&world->unk_1a91);
-    func_02032438(&world->unk_1a90);
+    CollisionArea_ListDestruct(&world->unk_1a91);
+    CollisionBox_ListDestruct(&world->unk_1a90);
     CollisionPosts_Destroy(&world->posts);
     CollisionFloors_Destroy(&world->floors);
     CollisionWalls_Destroy(&world->walls);

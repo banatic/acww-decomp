@@ -17,9 +17,8 @@ extern const u32 data_020e2008[]; /* FieldOwnedBody's vtable */
 extern const u32 data_020e2030[]; /* FieldPointBody's vtable */
 extern const u32 data_020e2044[]; /* FieldOwnedPointBody's vtable */
 
-extern void func_0208a07c(FieldBody *body);       /* the base class's destructor */
-extern FieldBody *func_0208a088(FieldBody *body); /* the base class's constructor */
-extern int func_02089c48(FieldOwnedBody *body);   /* FieldOwnedBody_Identity */
+/* FieldOwnedBody_Identity, called by its symbol (FieldOwnedPointBody_Identity). */
+extern int func_02089c48(FieldOwnedBody *body);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
@@ -56,7 +55,7 @@ static void note_touch(FieldBody *body, FieldBody *other)
 FieldPointBody *FieldPointBody_Destruct(FieldPointBody *body)
 {
     body->body.vtable = data_020e2030;
-    func_0208a07c(&body->body);
+    FieldBody_Destruct(&body->body);
     return body;
 }
 CLEAN_AS(func_02089b20, FieldPointBody_Destruct)
@@ -65,7 +64,7 @@ CLEAN_AS(func_02089b20, FieldPointBody_Destruct)
 FieldPointBody *FieldPointBody_Destruct2(FieldPointBody *body)
 {
     body->body.vtable = data_020e2030;
-    func_0208a07c(&body->body);
+    FieldBody_Destruct(&body->body);
     return body;
 }
 CLEAN_AS(func_02089b38, FieldPointBody_Destruct2)
@@ -73,7 +72,7 @@ CLEAN_AS(func_02089b38, FieldPointBody_Destruct2)
 /* func_02089b50: the constructor. */
 FieldPointBody *FieldPointBody_Construct(FieldPointBody *body)
 {
-    func_0208a088(&body->body);
+    FieldBody_Construct(&body->body);
     body->body.vtable = data_020e2030;
     return body;
 }
@@ -82,7 +81,7 @@ CLEAN_AS(func_02089b50, FieldPointBody_Construct)
 /* func_02089b68: the same as func_02089b50. */
 FieldPointBody *FieldPointBody_Construct2(FieldPointBody *body)
 {
-    func_0208a088(&body->body);
+    FieldBody_Construct(&body->body);
     body->body.vtable = data_020e2030;
     return body;
 }
@@ -155,7 +154,7 @@ CLEAN_AS(func_02089c50, FieldOwnedBody_Position)
 FieldOwnedBody *FieldOwnedBody_Destruct(FieldOwnedBody *body)
 {
     body->body.vtable = data_020e2008;
-    func_0208a07c(&body->body);
+    FieldBody_Destruct(&body->body);
     return body;
 }
 CLEAN_AS(func_02089c58, FieldOwnedBody_Destruct)
@@ -164,7 +163,7 @@ CLEAN_AS(func_02089c58, FieldOwnedBody_Destruct)
 FieldOwnedBody *FieldOwnedBody_Destruct2(FieldOwnedBody *body)
 {
     body->body.vtable = data_020e2008;
-    func_0208a07c(&body->body);
+    FieldBody_Destruct(&body->body);
     return body;
 }
 CLEAN_AS(func_02089c70, FieldOwnedBody_Destruct2)
@@ -172,7 +171,7 @@ CLEAN_AS(func_02089c70, FieldOwnedBody_Destruct2)
 /* func_02089c88: the constructor, with no owner. */
 FieldOwnedBody *FieldOwnedBody_Construct2(FieldOwnedBody *body)
 {
-    func_0208a088(&body->body);
+    FieldBody_Construct(&body->body);
     body->body.vtable = data_020e2008;
     body->owner = NULL;
     return body;
@@ -182,7 +181,7 @@ CLEAN_AS(func_02089c88, FieldOwnedBody_Construct2)
 /* func_02089ca4: the same as func_02089c88. */
 FieldOwnedBody *FieldOwnedBody_Construct(FieldOwnedBody *body)
 {
-    func_0208a088(&body->body);
+    FieldBody_Construct(&body->body);
     body->body.vtable = data_020e2008;
     body->owner = NULL;
     return body;

@@ -7,6 +7,24 @@
 #include "clean.h"
 #include "main/mail.h"
 #include "main/session.h"
+#include "calendar.h"
+#include "item_code.h"
+#include "item_form.h"
+#include "item_traits.h"
+#include "letter.h"
+#include "mail_text.h"
+#include "main_random.h"
+#include "name_texts.h"
+#include "nook_store.h"
+#include "ov004/shop_display.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "scene_query.h"
+#include "shop_answers.h"
+#include "shop_field.h"
+#include "shop_list_a.h"
+#include "fox_shop.h"
 
 /* Message 39, the answer to message 38. */
 #define SHOPS_MESSAGE_ANSWER 0x27
@@ -34,49 +52,17 @@ extern const char data_020e4180[];
 extern const u8 data_020e415c[];
 extern const u8 data_020e4158[];
 
-extern int func_020b6660(void);
-extern int func_020aea84(void);
-extern void func_020af3a0(u32 *store, int a);
-extern void func_0209def4(u8 *now);  /* the minute, then the hour */
-extern u32 func_020644cc(int range); /* a random number below `range` */
-extern int func_020b01dc(u8 *answers);
-extern void func_020b0200(u8 *answers);
-extern int func_020afc5c(void);
-extern void func_020adb70(int place, int amount, int kind, int flag, int mode, u8 send, int g);
-extern int func_020b6744(u32 kind); /* whether the kind is one of Nook's */
-extern void *func_ov004_02245ff8(int a, int b);
-extern u16 *func_ov004_022460c8(int a, int b);
-extern int func_020adf8c(u8 *list, int item);  /* the place of an item in data_021f3b30, or -1 */
-extern int func_020ae8cc(u8 *list, u16 *item); /* the same in data_021f3b44 */
-extern int func_020ada14(void);                /* not linked and the post office has room */
-extern void func_02061e2c(u16 *out, const u16 *item);
-extern void *func_02062f90(void *object, u16 *item);
-extern void *func_02062f4c(void *object);
-extern int func_0203d7c4(int index, void *object);
-extern void func_02066694(MailLetter *letter); /* an empty letter */
-extern void func_02066688(MailLetter *letter);
-extern int func_020984e8(void); /* the current player */
-extern int func_02099870(int player);
-extern u32 func_020af028(u32 *store); /* the store's level */
-extern void func_02066024(MailLetter *letter, void *sender, const char *name, const void *a, const void *b, int c);
-extern u16 func_02065ed0(MailLetter *letter, u16 item, int a);
-extern int func_0204c7f0(u16 *item); /* the item's price */
-extern void func_020af750(u32 *store, u32 amount, u32 a);
-extern u32 func_020996a0(u32 player);
-extern u16 *func_020adf50(void *record);
-extern void func_020ade0c(int record, int amount);
-
 /* func_020ad74c: when func_020b6660 allows it, a pending state of 2 is carried out (unless
  * linked to other systems) and the state cleared. */
 void Shops_ApplyPending(void)
 {
-    if (func_020b6660() == 0) {
+    if (SceneQuery_CurrentIs0() == 0) {
         return;
     }
     if (Shops_PendingState() == 2) {
         if (Session_IsLinked(data_020ccf94) == 0) {
-            func_020aea84();
-            func_020af3a0(data_021f395c, 0);
+            NookStore_UpgradeIfDue();
+            NookStore_Refresh((NookStore *) data_021f395c, 0);
         }
     }
     Shops_SetPendingState(0);
@@ -101,7 +87,7 @@ CLEAN_AS(func_020ad798, Shops_PendingState)
 int Shops_IsHour8To22(void)
 {
     u8 now[4];
-    func_0209def4(now);
+    Calendar_Now((Time *) (void *) now);
     u8 hour = now[1];
     return hour >= 8 && hour < 23;
 }
@@ -110,7 +96,7 @@ CLEAN_AS(func_020ad7a4, Shops_IsHour8To22)
 /* func_020ad7c8: one of twelve items at random. */
 void Shops_PickRandomItem(u16 *out)
 {
-    *out = data_020d1e5c[func_020644cc(SHOPS_RANDOM_ITEMS)];
+    *out = data_020d1e5c[MainRandom_Below(SHOPS_RANDOM_ITEMS)];
 }
 CLEAN_AS(func_020ad7c8, Shops_PickRandomItem)
 
@@ -119,7 +105,7 @@ CLEAN_AS(func_020ad7c8, Shops_PickRandomItem)
 int Shops_CountAnswer(int slot)
 {
     (void) slot;
-    return func_020b01dc(data_021f49ec);
+    return ShopAnswers_Count((ShopAnswers *) (void *) data_021f49ec);
 }
 CLEAN_AS(func_020ad7e4, Shops_CountAnswer)
 
@@ -134,12 +120,12 @@ void Shops_ApplyMessage(const u32 *payload, int slot)
     int flag = (int) ((word >> SHOPS_FLAG_SHIFT) & 1);
 
     if (kind == SHOPS_KIND_LIST_A) {
-        func_020adb70(place, 0, kind, 1, 1, 0, 1);
+        Shops_ChangePlace(place, 0, kind, 1, 1, 0, 1);
     } else if (kind == SHOPS_KIND_LIST_B) {
         Shops_SetListBPlace(place, kind, 0, 1);
-    } else if (func_020b6744((u32) kind) != 0) {
+    } else if (SceneQuery_InNook((u32) kind) != 0) {
         int amount = (int) ((*payload >> SHOPS_AMOUNT_SHIFT) & SHOPS_AMOUNT_MASK);
-        func_020adb70(place, amount, kind, flag, 0, 0, 1);
+        Shops_ChangePlace(place, amount, kind, flag, 0, 0, 1);
     }
 
     if (place != SHOPS_NO_PLACE) {
@@ -153,7 +139,7 @@ CLEAN_AS(func_020ad7f4, Shops_ApplyMessage)
 /* func_020ad888: whether every answer came (always, when not linked). */
 int Shops_AllAnsweredA(void)
 {
-    return func_020afc5c();
+    return ShopAnswers_AllCameIfLinked();
 }
 CLEAN_AS(func_020ad888, Shops_AllAnsweredA)
 
@@ -161,10 +147,10 @@ CLEAN_AS(func_020ad888, Shops_AllAnsweredA)
  * to the other systems, when it is there. */
 void Shops_TakeFromListB(int a, int b, int kind)
 {
-    void *item = func_ov004_02245ff8(a, b);
-    int place = func_020adf8c(data_021f3b30, (int) (uintptr_t) item);
+    void *item = ShopDisplay_FoxItemAt(a, b);
+    int place = FoxShop_FindItem((FoxShop *) (void *) data_021f3b30, (u16 *) (uintptr_t) item);
     if (place != -1) {
-        func_020b0200(data_021f49ec);
+        ShopAnswers_Expect((ShopAnswers *) (void *) data_021f49ec);
         Shops_SetListBPlace(place, kind, 1, 0);
     }
 }
@@ -173,14 +159,14 @@ CLEAN_AS(func_020ad890, Shops_TakeFromListB)
 /* func_020ad8d0 */
 void Shops_SetListBPlace(int place, int kind, int send, int g)
 {
-    func_020adb70(place, 0, kind, 1, 2, (u8) send, g);
+    Shops_ChangePlace(place, 0, kind, 1, 2, (u8) send, g);
 }
 CLEAN_AS(func_020ad8d0, Shops_SetListBPlace)
 
 /* func_020ad8f0: the same as Shops_AllAnsweredA. */
 int Shops_AllAnsweredB(void)
 {
-    return func_020afc5c();
+    return ShopAnswers_AllCameIfLinked();
 }
 CLEAN_AS(func_020ad8f0, Shops_AllAnsweredB)
 
@@ -188,11 +174,11 @@ CLEAN_AS(func_020ad8f0, Shops_AllAnsweredB)
  * to the other systems, when it is there. */
 void Shops_TakeFromListA(int a, int b, int kind)
 {
-    u16 item = *func_ov004_022460c8(a, b);
-    int place = func_020ae8cc(data_021f3b44, &item);
+    u16 item = *ShopDisplay_ListAItemAt(a, b);
+    int place = ShopListA_FindItem((ShopListA *) (void *) data_021f3b44, &item);
     if (place != -1) {
-        func_020b0200(data_021f49ec);
-        func_020adb70(place, 0, kind, 1, 1, 1, 0);
+        ShopAnswers_Expect((ShopAnswers *) (void *) data_021f49ec);
+        Shops_ChangePlace(place, 0, kind, 1, 1, 1, 0);
     }
 }
 CLEAN_AS(func_020ad8f8, Shops_TakeFromListA)
@@ -211,36 +197,37 @@ int Shops_MailNookItem(const u16 *item)
     u8 object[0x28];
     MailLetter letter;
 
-    if (func_020ada14() == 0) {
+    if (Shops_CanMail() == 0) {
         return 0;
     }
-    func_02061e2c(&sender.item, item);
-    func_02062f90(object, &sender.item);
-    func_0203d7c4(1, object);
+    ItemForm_ToCarried(&sender.item, (u16 *) item);
+    NameText_ConstructItem((NameText *) (void *) object, &sender.item);
+    MailText_SetPartText(1, object);
 
-    func_02066694(&letter);
-    int player = func_020984e8();
-    sender.store_level = (u8) func_020af028(data_021f395c);
-    int c = func_02099870(player);
-    func_02066024(&letter, &sender, data_020e4180, data_020e415c, data_020e4158, c);
-    func_02065ed0(&letter, sender.item, 1);
-    int price = func_0204c7f0(&sender.item);
+    Letter_Construct((Letter *) &letter);
+    int player = (int) (uintptr_t) PlayerRecords_Current();
+    sender.store_level = (u8) NookStore_Level((NookStore *) data_021f395c);
+    int c = (int) (uintptr_t) PlayerRecord_Player((u8 *) (uintptr_t) player);
+    Letter_WriteSpecialToPlayer((Letter *) &letter, (const u8 *) &sender, data_020e4180, data_020e415c, data_020e4158,
+                                (const DesignCreator *) (uintptr_t) c);
+    Letter_SetItem((Letter *) &letter, sender.item, 1);
+    int price = ItemTraits_MemberPrice(&sender.item);
 
     if (Mail_HoldAtPostOffice(&letter, 0) != 0) {
-        func_020af750(data_021f395c, (u32) price, 1);
-        u16 *record = func_020adf50((void *) (uintptr_t) func_020996a0((u32) func_020984e8()));
-        func_020ade0c((int) (uintptr_t) record, price);
-        func_02066688(&letter);
-        func_02062f4c(object);
+        NookStore_AddSpent((NookStore *) data_021f395c, (u32) price, 1);
+        u16 *record =
+            ShopPoints_Count((void *) (uintptr_t) PlayerRecord_ShopPoints((u8 *) (uintptr_t) ((u32) PlayerRecords_Current())));
+        ShopPoints_AddSpent((u16 *) (uintptr_t) record, price);
+        Letter_Destruct((Letter *) &letter);
+        NameText_Destruct((NameText *) (void *) object);
         return 1;
     }
-    func_02066688(&letter);
-    func_02062f4c(object);
+    Letter_Destruct((Letter *) &letter);
+    NameText_Destruct((NameText *) (void *) object);
     return 0;
 }
 CLEAN_AS(func_020ad944, Shops_MailNookItem)
 
-#include "fox_shop.h"
 #include "shop_points.h"
 
 /* Message 38, the change of a place, and the kind its handler gets. */
@@ -262,21 +249,6 @@ extern u16 data_021f49f4;
 /* 1 while the field shows the changes of places (func_020afe94, func_020afdc8). */
 extern u8 data_020e54a8;
 
-extern u16 *func_020af854(u32 *store, int place, u16 *out); /* a place of Nook's store */
-extern int func_020af83c(u32 *store, u16 *item);            /* the place of an item, or -1 */
-extern int func_020af674(u32 *store, int place, int amount, int flag);
-extern u16 *func_020ae8e4(u8 *list, int place, u16 *out); /* a place of data_021f3b44 */
-extern int func_020ae850(u8 *list, u16 *item);
-extern void func_020afdc8(u16 *item, int kind, int g);
-extern void func_020afe94(int x, int z, int kind, int g);
-extern int func_0204bcdc(u16 *item);
-extern int func_0204bc64(u16 *item);
-extern u8 func_020b65c4(void); /* the kind of the shop the player is in */
-extern int func_02094ffc(int name);
-extern u16 *func_ov004_02246378(void *a, void *b);
-extern int func_ov004_0224632c(void *a, void *b);
-extern int func_ov004_0224627c(int *x, int *z, int place);
-
 /* func_020ada14: whether a letter can be posted now: not linked, and the post office has room. */
 int Shops_CanMail(void)
 {
@@ -290,14 +262,14 @@ CLEAN_AS(func_020ada14, Shops_CanMail)
 /* func_020ada40: the same as Shops_AllAnsweredA. */
 int Shops_AllAnsweredC(void)
 {
-    return func_020afc5c();
+    return ShopAnswers_AllCameIfLinked();
 }
 CLEAN_AS(func_020ada40, Shops_AllAnsweredC)
 
 /* The flag of a change made here: whether this system's player is of this town. */
 static int shops_player_is_local(void)
 {
-    return func_02094ffc(func_02099870(func_020984e8())) == SHOPS_THIS_TOWN;
+    return PlayerId_WhichTown(PlayerRecord_Player(PlayerRecords_Current())) == SHOPS_THIS_TOWN;
 }
 
 /* Whether `item` is in the paired range. */
@@ -312,26 +284,26 @@ static int shops_is_paired(u16 item)
  * QUIRK: when no place holds one of the pair the place is 0x25 moved on, past the store. */
 void Shops_TakeFromStore(void *a, void *b, int amount, int kind)
 {
-    u16 item = *func_ov004_02246378(a, b);
+    u16 item = *ShopDisplay_ItemAt((int) (uintptr_t) a, (int) (uintptr_t) b);
     int place;
 
-    if (shops_is_paired(item) && func_020b65c4() == SHOPS_KIND_PAIRED) {
+    if (shops_is_paired(item) && SceneQuery_Current() == SHOPS_KIND_PAIRED) {
         u16 here = 0xfff1;
         int i;
         for (i = 0; i < SHOPS_STORE_PLACES; i++) {
-            func_020af854(data_021f395c, i, &here);
+            NookStore_Item((NookStore *) data_021f395c, i, &here);
             if (shops_is_paired(here)) {
                 break;
             }
         }
-        place = i + func_ov004_0224632c(a, b);
+        place = i + ShopDisplay_PairedIndex((int) (uintptr_t) a, (int) (uintptr_t) b);
     } else {
-        place = func_020af83c(data_021f395c, &item);
+        place = NookStore_FindItem((NookStore *) data_021f395c, &item);
     }
 
     if (place != -1) {
         int flag = shops_player_is_local();
-        func_020b0200(data_021f49ec);
+        ShopAnswers_Expect((ShopAnswers *) (void *) data_021f49ec);
         Shops_ChangePlace(place, amount, kind, flag, 0, 1, 0);
     }
 }
@@ -345,15 +317,15 @@ void Shops_SpendAtStore(int spent)
     if (spent > SHOPS_MAX_SPENT) {
         spent = SHOPS_MAX_SPENT;
     }
-    Shops_ChangePlace(SHOPS_NO_PLACE, spent, func_020b65c4(), flag, 0, 1, 0);
+    Shops_ChangePlace(SHOPS_NO_PLACE, spent, SceneQuery_Current(), flag, 0, 1, 0);
 }
 CLEAN_AS(func_020adb24, Shops_SpendAtStore)
 
 /* Whether `item` reads as a sold place. */
 static int shops_is_sold(u16 *item)
 {
-    if (func_0204bcdc(item) != 0) {
-        return func_0204bc64(item) == func_0204bc64(&data_021f49f4);
+    if (ItemCode_HasVariant(item) != 0) {
+        return ItemCode_VariantItem(item) == ItemCode_VariantItem(&data_021f49f4);
     }
     return *item == data_021f49f4;
 }
@@ -379,7 +351,7 @@ static void shops_send_change(int place, int amount, int kind, int flag)
 void Shops_ChangePlace(int place, int amount, int kind, int flag, int mode, u8 send, int g)
 {
     if (place == SHOPS_NO_PLACE) {
-        func_020af750(data_021f395c, (u32) amount, (u32) flag);
+        NookStore_AddSpent((NookStore *) data_021f395c, (u32) amount, (u32) flag);
         if (Session_IsLinked(data_020ccf94) != 0 && send != 0) {
             shops_send_change(place, amount, kind, flag);
         }
@@ -389,10 +361,10 @@ void Shops_ChangePlace(int place, int amount, int kind, int flag, int mode, u8 s
     u16 item = data_021f49f4;
     switch (mode) {
         case 0:
-            item = *func_020af854(data_021f395c, place, NULL);
+            item = *NookStore_Item((NookStore *) data_021f395c, place, NULL);
             break;
         case 1:
-            item = *func_020ae8e4(data_021f3b44, place, NULL);
+            item = *ShopListA_Item((ShopListA *) (void *) data_021f3b44, place, NULL);
             break;
         case 2:
             item = *FoxShop_Item((FoxShop *) data_021f3b30, place, NULL);
@@ -404,25 +376,27 @@ void Shops_ChangePlace(int place, int amount, int kind, int flag, int mode, u8 s
 
     switch (mode) {
         case 0:
-            func_020af674(data_021f395c, place, amount, flag);
+            NookStore_Sell((NookStore *) data_021f395c, place, amount, flag);
             if (send != 0) {
-                ShopPoints_AddSpent(ShopPoints_Count((void *) (uintptr_t) func_020996a0((u32) func_020984e8())), amount);
+                ShopPoints_AddSpent(ShopPoints_Count((void *) (uintptr_t) PlayerRecord_ShopPoints(
+                                        (u8 *) (uintptr_t) ((u32) PlayerRecords_Current()))),
+                                    amount);
             }
             if (data_020e54a8 == 1) {
                 int x;
                 int z;
-                if (func_ov004_0224627c(&x, &z, place) != 0) {
-                    func_020afe94(x, z, kind, g);
+                if (ShopDisplay_FindNookPlace(&x, &z, place) != 0) {
+                    ShopField_ShowTakenAt(x, z, kind, g);
                 }
             }
             break;
         case 1:
-            func_020ae850(data_021f3b44, &item);
-            func_020afdc8(&item, kind, g);
+            ShopListA_TakeItem((ShopListA *) (void *) data_021f3b44, &item);
+            ShopField_ShowItemTaken(&item, kind, g);
             break;
         case 2:
             FoxShop_TakeItem((FoxShop *) data_021f3b30, &item);
-            func_020afdc8(&item, kind, g);
+            ShopField_ShowItemTaken(&item, kind, g);
             break;
     }
 

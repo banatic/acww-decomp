@@ -1,7 +1,7 @@
 /* The character drawn with the model npc_sp/model/hgs who sews at the tailor's machine
  * (tailor_object.h) and talks with the lines of the message file "sp_npc_osister": a special
  * character's scene object (main's special_scene_object.h) of vtable data_ov004_0225445c,
- * 0x714 bytes, made by func_ov004_0222353c (the create function its record at 0x02254378
+ * 0x714 bytes, made by TailorSister_Create (the create function its record at 0x02254378
  * names, after its model's file name).
  *
  * Its parts read here, beyond the special character's: its state at 0x654, its talk scene at

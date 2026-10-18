@@ -44,6 +44,14 @@
 #include "villager_day.h"
 #include "wfc_stats.h"
 #include "worker_thread.h"
+#include "house_record.h"
+#include "item_form.h"
+#include "main_random.h"
+#include "scene_map.h"
+#include "state_flags.h"
+#include "town_family.h"
+#include "town_record.h"
+#include "town_tile_put.h"
 
 static_assert(sizeof(TileEffectsSource) == 0x18, "TileEffectsSource");
 static_assert(sizeof(TownDayAcre) == 0x24, "TownDayAcre");
@@ -80,39 +88,6 @@ extern TurnipPrices data_021f3b0c;
 extern const u8 data_020db764[3];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern u32 func_020644cc(int range); /* a random number below `range` */
-
-/* The acre summary made anew for the town's map; an answer of its own. */
-extern int func_0204a3cc(TownDayAcres *acres, AcreMap *map);
-/* The acre summary updated for the town's map. */
-extern void func_0204a5d4(TownDayAcres *acres, AcreMap *map, int wide, int high);
-/* One inner acre's summary counted. */
-extern void func_0204a848(TownDayAcre *acre, AcreMap *map, int acre_x, int acre_z);
-/* Other parts of the day's change (TownDay_Pass). */
-extern void func_0204d0ac(AcreMap *map);
-extern void func_0204cac0(u8 *record, int value, int days);
-extern void func_02049ad0(TownDay *town, AcreMap *map);
-extern void func_020499cc(TownDay *town, AcreMap *map, int day);
-/* The house rooms' records (data_021ebcd4) moved on by the days. */
-extern void func_02060f5c(u8 *rooms);
-extern void func_02060d48(u8 *rooms, int days);
-extern void func_020617f0(void);
-/* The code put on the tile (x, z) of the map. */
-extern void func_0204a25c(AcreMap *map, int x, int z, int code, int flag);
-/* Whether something holds the clock's check back (it then counts as gone back). */
-extern int func_0206f7a4(void);
-/* The day's period (0-0x16) noted, unless linked. */
-extern void func_0204ca8c(u32 period);
-/* The record's events moved on after the clock went back to `today`. */
-extern void func_0204cc34(u8 *record, const TownDayStamp *today);
-/* Event `event` marked in the record (its own answer). */
-extern int func_0204cb50(int record, int event);
-/* Event `event` of the record set free. */
-extern void func_0204cbc0(int record, int event);
-/* The record's event entry `index` (TownDayEvent). */
-extern int func_0204cc04(int index);
-/* The place of event `event` among the record's entries (TownDayEvent), -1 for none. */
-extern int func_0204cb90(u8 *record, int event);
 
 #define TOWN_DAY_MINUTES_PER_DAY (60 * 24)
 #define TOWN_DAY_LINKED_SUMMARY 5 /* TownDay_Summarize's answer without the town's map */
@@ -271,7 +246,7 @@ int TownDay_Summarize(void)
     if (map == NULL) {
         return TOWN_DAY_LINKED_SUMMARY;
     }
-    return func_0204a3cc(&data_021c779c.acres, map);
+    return TownAcreCount_Summarize(&data_021c779c.acres, map);
 }
 CLEAN_AS(func_0204678c, TownDay_Summarize)
 
@@ -296,7 +271,7 @@ void TownDay_Refresh(void)
     }
     int wide = map->acres_wide - 2;
     int high = map->acres_high - 2;
-    func_0204a5d4(&data_021c779c.acres, map, wide, high);
+    TownAcreCount_SummarizeDay(&data_021c779c.acres, map, wide, high);
     TownSpawn_PutMarked1549(&data_021c779c, map, wide, high);
     TownSpawn_PutMarked1566(&data_021c779c, map, wide, high);
     TownGrowth_ChangeLastStages(&data_021c779c, map, wide, high);
@@ -319,7 +294,7 @@ void TownDay_Load(void)
         int high = map->acres_high - 2;
         for (int x = 0; x < wide; x++) {
             for (int z = 0; z < high; z++) {
-                func_0204a848(&data_021c779c.acres.acres[x][z], map, x + 1, z + 1);
+                TownAcreCount_Count((TownAcreCount *) &data_021c779c.acres.acres[x][z], map, x + 1, z + 1);
             }
         }
         TownBeach_Fill(&data_021c779c, map);
@@ -347,7 +322,7 @@ CLEAN_AS(func_02046830, TownDay_Load)
  * says so. */
 int TownDay_ClockWentBack(void)
 {
-    if (func_0206f7a4() != 0) {
+    if (StateFlags_Test8() != 0) {
         return 1;
     }
     DateTime now = {0};
@@ -449,7 +424,7 @@ void TownDay_Check(int loaded)
             TownDayStamp today = {now.day, now.month, now.year};
             RoomScoreRoom house;
             TownSpoil_All(&data_021c779c);
-            func_0204cc34(data_021dc7a8.part_17254, &today);
+            TownRecord_DrawPelicanDay((TownRecord *) (void *) data_021dc7a8.part_17254, &today);
             RoomScore_InitRoom(&house);
             RoomScore_JudgeHouse(&house);
             RoomScore_DestructRoom(&house);
@@ -468,7 +443,7 @@ void TownDay_SetPeriod(void)
     DateTime now = {0};
     DateTime_Now(&now);
     DateTime_SubtractHours(&now, TOWN_DAY_START_HOUR);
-    func_0204ca8c((u8) Calendar_PeriodBOf(&now));
+    TownRecord_SetPeriod((u8) Calendar_PeriodBOf(&now));
 }
 CLEAN_AS(func_02046bc8, TownDay_SetPeriod)
 
@@ -518,12 +493,12 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
     if (map != NULL) {
         int wide = map->acres_wide - 2;
         int high = map->acres_high - 2;
-        func_0204d0ac(map);
+        SceneMap_ClearRimGrowth(map);
         if (wet != 0) {
             TownDay_ChangeFamilyB(town, map, wide, high);
         }
-        func_0204a5d4(&data_021c779c.acres, map, wide, high);
-        func_0204cac0((u8 *) &data_021f39fc, data_021c779c.acres.unk_00, days);
+        TownAcreCount_SummarizeDay(&data_021c779c.acres, map, wide, high);
+        TownRecord_CountSummaryDays((TownRecord *) (void *) ((u8 *) &data_021f39fc), data_021c779c.acres.unk_00, days);
 
         int grow_days = TownDay_AtMost(days, 5);
         for (int i = 0; i < grow_days; i++) {
@@ -537,7 +512,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         for (int i = 0; i < year_days; i++) {
             int quiet = TownDay_QuietPeriod(Calendar_PeriodBOf(&day));
             TownSpawn_Put21(town, map);
-            if (!quiet && func_020644cc(100) < 50) {
+            if (!quiet && MainRandom_Below(100) < 50) {
                 TownSpawn_Put1f(town, map, wide, high);
             }
             DateTime_AddDays(&day, 1);
@@ -548,18 +523,18 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         int month_days = TownDay_AtMost(days, 30);
         DateTime_SubtractDays(&month_day, month_days);
         for (int i = 0; i < month_days; i++) {
-            if (!TownDay_QuietPeriod(Calendar_PeriodBOf(&month_day)) && func_020644cc(100) < 20) {
+            if (!TownDay_QuietPeriod(Calendar_PeriodBOf(&month_day)) && MainRandom_Below(100) < 20) {
                 TownSpawn_Put1d(town, map, wide, high);
             }
             DateTime_AddDays(&month_day, 1);
         }
 
         int long_days = TownDay_AtMost(days, 60);
-        func_02049ad0(town, map);
+        TownFamily_FirstDay(town, map);
         TownGrowth_SpreadFamilyA(town, map, wide, high);
         TownSpawn_PutFamilyA(town, map, wide, high);
         for (int i = 1; i < long_days; i++) {
-            func_020499cc(town, map, i);
+            TownFamily_Day(town, map, i);
             TownGrowth_SpreadFamilyA(town, map, wide, high);
             TownSpawn_PutFamilyA(town, map, wide, high);
         }
@@ -580,10 +555,10 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         TownSpawn_AdvanceMarked1369(town, map, wide, high);
         EventWinner_SendLetters(&data_021f3aa4);
         MuseumRecord_CheckLetters(&data_021f38f8);
-        func_02060f5c(data_021ebcd4);
+        HouseRecord_Build((HouseRecord *) (void *) data_021ebcd4);
         NookStore_UpgradeIfDue();
-        func_02060d48(data_021ebcd4, days);
-        func_020617f0();
+        HouseRecord_AddRoachesForAbsence((HouseRecord *) (void *) data_021ebcd4, days);
+        ItemForm_ReplaceEverywhere();
         TownItemLists_FillListA(data_021f3a68, days);
         TownItemLists_EmptyListBOnDays(data_021f3a86, to, days);
         RoomScoreRoom house;
@@ -632,7 +607,7 @@ void TownDay_ChangeFamilyB(TownDay *town, AcreMap *map, int wide, int high)
                     int x;
                     int z;
                     AcreTile_TileOfAcre(&x, &z, acre_x + 1, acre_z + 1, k % 16, k / 16);
-                    func_0204a25c(map, x, z, code, 0);
+                    TownTilePut_At(map, x, z, code, 0);
                 }
             }
         }
@@ -682,7 +657,7 @@ void TownDay_Start(TownDay *town, int loaded)
     DateTime_Now(&now);
     int wide = map->acres_wide - 2;
     int high = map->acres_high - 2;
-    func_0204a3cc(&data_021c779c.acres, map);
+    TownAcreCount_Summarize(&data_021c779c.acres, map);
     TownDay_UpdateEvents(town, map, wide, high, &now, loaded);
 }
 CLEAN_AS(func_0204763c, TownDay_Start)
@@ -748,7 +723,7 @@ void TownDay_EndEvents(TownDay *town, AcreMap *map, int wide, int high, StateBlo
 {
     EventKey now;
     Clock_GetMonthDayHour((u8 *) &now);
-    const TownDayEvent *event = (const TownDayEvent *) (uintptr_t) func_0204cc04(0);
+    const TownDayEvent *event = (const TownDayEvent *) (uintptr_t) TownRecord_Event(0);
     for (int i = 0; i < TOWN_DAY_EVENTS; i++, event++) {
         u16 id = event->id;
         if (id == TOWN_DAY_NO_EVENT) {
@@ -756,7 +731,7 @@ void TownDay_EndEvents(TownDay *town, AcreMap *map, int wide, int high, StateBlo
         }
         if (event->year != Clock_Year() || event->start > now || event->end < now) {
             if (TownDay_EndEvent(town, id, map, wide, high)) {
-                func_0204cbc0((int) (uintptr_t) block->part_17254, id);
+                TownRecord_FreeEvent((int) (uintptr_t) block->part_17254, id);
             }
         }
     }
@@ -856,7 +831,7 @@ CLEAN_AS(func_0204790c, TownDay_StartEvents)
 void TownDay_MarkEvent(TownDay *town, int event)
 {
     (void) town;
-    func_0204cb50((int) (uintptr_t) &data_021f39fc, event);
+    TownRecord_MarkEvent((int) (uintptr_t) &data_021f39fc, event);
 }
 CLEAN_AS(func_020479e0, TownDay_MarkEvent)
 
@@ -899,7 +874,7 @@ void TownDay_RevertCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z)
                 int tile_x;
                 int tile_z;
                 AcreTile_TileOfAcre(&tile_x, &tile_z, acre_x + 1, acre_z + 1, x, z);
-                func_0204a25c(map, tile_x, tile_z, TOWN_DAY_LINE_5D_LAST, 0);
+                TownTilePut_At(map, tile_x, tile_z, TOWN_DAY_LINE_5D_LAST, 0);
             }
         }
     }
@@ -948,8 +923,8 @@ void TownDay_PutCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z)
         }
     }
     for (u32 missing = (u32) (TOWN_DAY_CODE_6D_PER_ACRE - code_6d); missing != 0 && count > 0; missing--) {
-        int pick = (int) func_020644cc(count);
-        func_0204a25c(map, grown[pick].x, grown[pick].z, TOWN_DAY_CODE_6D, 0);
+        int pick = (int) MainRandom_Below(count);
+        TownTilePut_At(map, grown[pick].x, grown[pick].z, TOWN_DAY_CODE_6D, 0);
         TownDay_AddCode6d((u32) grown[pick].x, (u32) grown[pick].z);
         grown[pick] = grown[count - 1];
         count--;
@@ -1019,14 +994,14 @@ void TownDay_DropAroundLine(TownDay *town, AcreMap *map, int acre_x, int acre_z)
     if (count <= 0) {
         return;
     }
-    const TownDayTile *line = &lines[func_020644cc(count)];
+    const TownDayTile *line = &lines[MainRandom_Below(count)];
     for (int i = 0; i < TOWN_DAY_AROUND_LINE; i++) {
         u8 offset = data_020ca57c[i];
         int x = line->x + ((offset >> 4) - 8);
         int z = line->z + ((offset & 0xf) - 8);
         const u16 *code = TownAcreCount_CodeAt(map, x, z);
         if (code != NULL && *code == ACRE_MAP_ITEM_NONE) {
-            func_0204a25c(map, x, z, TownDay_DrawItem1542(town), 0);
+            TownTilePut_At(map, x, z, TownDay_DrawItem1542(town), 0);
         }
     }
 }
@@ -1036,7 +1011,7 @@ CLEAN_AS(func_02047c98, TownDay_DropAroundLine)
 u16 TownDay_DrawItem1542(TownDay *town)
 {
     (void) town;
-    return (u16) (TOWN_DAY_ITEM_1542 + func_020644cc(TOWN_DAY_ITEM_1542_KINDS));
+    return (u16) (TOWN_DAY_ITEM_1542 + MainRandom_Below(TOWN_DAY_ITEM_1542_KINDS));
 }
 CLEAN_AS(func_02047db8, TownDay_DrawItem1542)
 
@@ -1051,7 +1026,7 @@ int TownDay_EventDays(TownDay *town, int event, const EventCalendarEvent *entry,
     if (loaded == 0) {
         return 1;
     }
-    if (func_0204cb90(block->part_17254, event) < 0) {
+    if (TownRecord_FindEvent((int) (uintptr_t) block->part_17254, event) < 0) {
         if (started != 0) {
             return 1;
         }

@@ -2,6 +2,7 @@
 #include "sky_resources.h"
 
 #include "clean.h"
+#include "main_random.h"
 
 static_assert(sizeof(SkyResourceFile) == 16, "a resource");
 static_assert(offsetof(SkyResourceFile, palette) == 0x0c, "the palette");
@@ -37,7 +38,6 @@ extern const SkyPalettePath data_020e6100;             /* "/sky/a_sky_obj_ncl.bi
 extern const SkyMoonPalettePath data_020e6168;         /* "/sky/a_sky_moon_obj_ncl.bin" */
 extern SkyPalettes data_021fba00;                      /* the objects' palettes */
 
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void DC_FlushRange(const void *start, u32 size);
@@ -135,7 +135,7 @@ CLEAN_AS(func_020becbc, SkyPalettes_Forget)
  * palette forgotten. */
 void SkyPalettes_PickVariant(SkyPalettes *palettes)
 {
-    palettes->variant = (s32) func_020644cc(SKY_PALETTES_VARIANTS);
+    palettes->variant = (s32) MainRandom_Below(SKY_PALETTES_VARIANTS);
     SkyPalettes_Forget(palettes, data_020d2bac[SKY_RESOURCE_VARIANT_FIRST].obj_palette);
 }
 CLEAN_AS(func_020bece0, SkyPalettes_PickVariant)

@@ -27,6 +27,7 @@
 #include "main/villager_status.h"
 #include "main/villager_talk_scene.h"
 #include "outdoor_villager_watch.h"
+#include "outdoor_villager_walks.h"
 
 static_assert(offsetof(OutdoorVillagerEffect, countdown) == 0x02, "countdown");
 static_assert(sizeof(OutdoorVillagerEffect) == 0x04, "effect size");
@@ -146,7 +147,7 @@ void OutdoorVillager_OnTalkEnd(u8 *object)
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) object, 0);
     VillagerSceneObject_SetByte648(object, 0);
-    func_ov068_0226cbf4(behaviour);
+    OutdoorVillagerWalks_StartCooldown(behaviour);
 }
 CLEAN_AS(func_ov068_02266cf4, OutdoorVillager_OnTalkEnd)
 
@@ -170,7 +171,7 @@ int OutdoorVillager_Unpair(u8 *object)
     if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
         OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
-    func_ov068_0226cbf4(behaviour);
+    OutdoorVillagerWalks_StartCooldown(behaviour);
     VillagerSceneObject_SetWord644((u32 *) (void *) object, 0);
     VillagerSceneObject_SetByte648(object, 0);
     return 1;
@@ -302,7 +303,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
                 *partner = VillagerSceneObject_Word644((u32 *) (void *) object);
                 u8 *other = (u8 *) (uintptr_t) *partner;
                 ((void (*)(u8 *)) ov_slot(other, OUTDOOR_VILLAGER_SLOT_SPEAKER_JOINED))(other);
-            } else if (func_ov068_0226cbe4(behaviour, OUTDOOR_VILLAGER_DO_7) != 0) {
+            } else if (OutdoorVillagerWalks_IsDoing(behaviour, OUTDOOR_VILLAGER_DO_7) != 0) {
                 *lines = OUTDOOR_VILLAGER_LINES_DOING_7;
             } else if (*byte_a04 != 0) {
                 *lines = OUTDOOR_VILLAGER_LINES_BYTE_A04;
@@ -409,7 +410,7 @@ int OutdoorVillager_Ask54(u8 *object, u8 *other)
     if (VillagerSceneObject_HasByte838(object) != 0) {
         return 0;
     }
-    if (func_ov068_0226cbe4(ov_behaviour(object), OUTDOOR_VILLAGER_DO_DEFAULT) == 0) {
+    if (OutdoorVillagerWalks_IsDoing(ov_behaviour(object), OUTDOOR_VILLAGER_DO_DEFAULT) == 0) {
         return 0;
     }
     if (level > 1) {

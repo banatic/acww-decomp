@@ -41,7 +41,7 @@ int NearSpot_Found(const NearSpot *spot);
 void NearSpot_ToPosition(const NearSpot *spot, Vec3 *position);
 void NearSpot_SetFromPosition(NearSpot *spot, const Vec3 *position);
 void NearSpot_Clear(NearSpot *spot);
-void NearSpot_Construct(NearSpot *spot);
 void NearSpot_Destruct(NearSpot *spot);
+void NearSpot_Construct(NearSpot *spot);
 
 #endif

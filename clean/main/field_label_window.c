@@ -5,6 +5,9 @@
 #include "clean.h"
 #include "sound.h"
 #include "state_flags.h"
+#include "cell_anim.h"
+#include "oam_buffer.h"
+#include "sliding_window.h"
 
 static_assert(offsetof(FieldLabelWindow, marker) == 0xcc, "FieldLabelWindow");
 static_assert(offsetof(FieldLabelWindow, mode) == 0xe8, "FieldLabelWindow");
@@ -25,36 +28,6 @@ enum FieldLabelWindowState {
 
 extern const u32 data_020e5858[]; /* this class's vtable */
 extern const u8 data_020d71d4[];  /* the marker's cells */
-
-/* main's sliding window: its state, its own animation, its place on the screen (x, y), its
- * update and draw, its reset, constructor and destructor. */
-extern int func_0208a844(FieldLabelWindow *window);
-extern CellAnim *func_0208a840(FieldLabelWindow *window);
-extern int func_0208a824(FieldLabelWindow *window);
-extern int func_0208a80c(FieldLabelWindow *window);
-extern void func_0208aaa0(FieldLabelWindow *window);
-extern void func_0208ab3c(FieldLabelWindow *window);
-extern void func_0208a784(FieldLabelWindow *window);
-extern void *func_0208ade8(FieldLabelWindow *window, int param);
-extern void *func_0208ad24(FieldLabelWindow *window);
-/* Cell animations: the frame shown, its cell and its offsets (x, y; frame -1 for the frame
- * shown), the setters of the cells, the frame and time, the speed and the hold, the advance,
- * the constructor and the destructor. */
-extern int func_0208a1cc(CellAnim *anim);
-extern int func_0208a1d0(CellAnim *anim);
-extern s16 func_0208a1b0(CellAnim *anim, int frame);
-extern s16 func_0208a198(CellAnim *anim, int frame);
-extern void func_0208a1f0(CellAnim *anim, const void *data);
-extern void *func_0208a1e0(CellAnim *anim, int frame, fx32 time);
-extern void *func_0208a1e8(CellAnim *anim, fx32 speed);
-extern void func_0208a1ec(CellAnim *anim, int hold);
-extern void func_0208a0c8(CellAnim *anim);
-extern void func_0208a1f8(CellAnim *anim);
-extern void func_0208a1f4(CellAnim *anim);
-/* Draws a cell at (x, y): palette, priority, scales, rotation and the rest as the game's other
- * indicators pass them. */
-extern void func_02088df8(int a0, int cell, int x, int y, int palette, int priority, fx32 scale_x, fx32 scale_y, int rotation,
-                          int p9, int p10, int p11);
 
 /* func_020b8edc: whether the marker is held hidden: state flag 0x10 is set, or state flag 4 is
  * set with a value under 1.0. The three are read every time. */
@@ -83,7 +56,7 @@ void FieldLabelWindow_UpdateMarker(FieldLabelWindow *window)
         return;
     }
 
-    int state = func_0208a844(window);
+    int state = SlidingWindow_State((SlidingWindow *) window);
     if (state == FIELD_LABEL_WINDOW_CLOSED) {
         window->request = 0;
         window->shown = 0;
@@ -110,13 +83,13 @@ CLEAN_AS(func_020b8f20, FieldLabelWindow_UpdateMarker)
  * window's own animation shows, and advanced once. */
 void FieldLabelWindow_StartMarker(FieldLabelWindow *window)
 {
-    int frame = func_0208a1cc(func_0208a840(window));
+    int frame = CellAnim_Frame(SlidingWindow_Body((SlidingWindow *) window));
 
-    func_0208a1f0(&window->marker, data_020d71d4);
-    func_0208a1ec(&window->marker, 1);
-    func_0208a1e8(&window->marker, 0);
-    func_0208a1e0(&window->marker, frame, 0);
-    func_0208a0c8(&window->marker);
+    CellAnim_SetData(&window->marker, (const CellAnimData *) (void *) data_020d71d4);
+    CellAnim_SetHold(&window->marker, 1);
+    CellAnim_SetSpeed(&window->marker, 0);
+    CellAnim_SetFrame(&window->marker, frame, 0);
+    CellAnim_Advance(&window->marker);
 }
 CLEAN_AS(func_020b8fe0, FieldLabelWindow_StartMarker)
 
@@ -144,7 +117,7 @@ CLEAN_AS(func_020b9068, FieldLabelWindow_SetMode)
 /* func_020b9070: the sliding window reset (func_0208a784), the marker gone. */
 void FieldLabelWindow_Reset(FieldLabelWindow *window)
 {
-    func_0208a784(window);
+    SlidingWindow_Reset((SlidingWindow *) window);
     window->request = 0;
     window->shown = 0;
     window->frames = 0;
@@ -165,7 +138,7 @@ CLEAN_AS(func_020b90a4, FieldLabelWindow_RequestMarker)
 void FieldLabelWindow_Update(FieldLabelWindow *window)
 {
     window->drawn_before = window->drawn;
-    func_0208aaa0(window);
+    SlidingWindow_Update((SlidingWindow *) window);
     FieldLabelWindow_UpdateMarker(window);
 }
 CLEAN_AS(func_020b90ac, FieldLabelWindow_Update)
@@ -179,19 +152,19 @@ void FieldLabelWindow_Draw(FieldLabelWindow *window)
 
     if (window->frames < FIELD_LABEL_WINDOW_HIDDEN_FRAME) {
         if (window->shown) {
-            int cell = func_0208a1d0(&window->marker);
-            CellAnim *body = func_0208a840(window);
-            int x = func_0208a824(window);
-            int y = func_0208a80c(window);
+            int cell = (int) (uintptr_t) CellAnim_Cell(&window->marker);
+            CellAnim *body = SlidingWindow_Body((SlidingWindow *) window);
+            int x = SlidingWindow_DrawX((SlidingWindow *) window);
+            int y = SlidingWindow_DrawY((SlidingWindow *) window);
 
-            x += func_0208a1b0(body, -1);
-            x += func_0208a1b0(&window->marker, -1);
-            y += func_0208a198(body, -1);
-            y += func_0208a198(&window->marker, -1);
-            func_02088df8(0, cell, x, y, -1, -1, 0x1000, 0x1000, 0, -1, 0, 0);
+            x += CellAnim_FrameX(body, -1);
+            x += CellAnim_FrameX(&window->marker, -1);
+            y += CellAnim_FrameY(body, -1);
+            y += CellAnim_FrameY(&window->marker, -1);
+            OamBuffer_DrawCell(0, (const OamEntry *) (uintptr_t) cell, x, y, -1, -1, 0x1000, 0x1000, 0, -1, 0, 0);
             drawn = 1;
         }
-        func_0208ab3c(window);
+        SlidingWindow_Draw((SlidingWindow *) window);
     }
     window->drawn = drawn;
 }
@@ -201,8 +174,8 @@ CLEAN_AS(func_020b90cc, FieldLabelWindow_Draw)
 FieldLabelWindow *FieldLabelWindow_Delete(FieldLabelWindow *window)
 {
     window->vtable = data_020e5858;
-    func_0208a1f4(&window->marker);
-    func_0208ad24(window);
+    CellAnim_Destruct(&window->marker);
+    SlidingWindow_DestructBase((SlidingWindow *) window);
     Heap_OperatorDeleteB(window);
     return window;
 }
@@ -212,8 +185,8 @@ CLEAN_AS(func_020b9178, FieldLabelWindow_Delete)
 FieldLabelWindow *FieldLabelWindow_Destroy(FieldLabelWindow *window)
 {
     window->vtable = data_020e5858;
-    func_0208a1f4(&window->marker);
-    func_0208ad24(window);
+    CellAnim_Destruct(&window->marker);
+    SlidingWindow_DestructBase((SlidingWindow *) window);
     return window;
 }
 CLEAN_AS(func_020b91a0, FieldLabelWindow_Destroy)
@@ -221,9 +194,9 @@ CLEAN_AS(func_020b91a0, FieldLabelWindow_Destroy)
 /* func_020b91c4: the constructor (the sliding window's with 1). */
 FieldLabelWindow *FieldLabelWindow_Construct(FieldLabelWindow *window)
 {
-    func_0208ade8(window, 1);
+    SlidingWindow_Construct((SlidingWindow *) window, 1);
     window->vtable = data_020e5858;
-    func_0208a1f8(&window->marker);
+    CellAnim_Construct(&window->marker);
     window->frames = 0;
     window->request = 0;
     window->shown = 0;

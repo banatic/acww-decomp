@@ -3,63 +3,23 @@
 
 #include "clean.h"
 #include "main/session.h"
+#include "acre_record.h"
+#include "actor_table.h"
+#include "building_shapes.h"
+#include "building_taker.h"
+#include "collision_map.h"
+#include "item_code.h"
+#include "map_code.h"
+#include "map_item.h"
+#include "ov003/object_actors.h"
+#include "snowmen.h"
+#include "town_item_lists.h"
+#include "unit_type_info.h"
 
 /* The session (Session_IsLinked). */
 extern NetSession *data_020ccf94;
 /* The snowmen's records, handed to func_020b0650. */
 extern u8 data_021f3b56[];
-
-/* Makes entry `slot` of the table at data_021c31ec the current map of units (0 is the
- * default one). */
-extern void func_02030e4c(int slot);
-/* What the current map of units says of the unit at (x, z): the unit's type (func_01ffcb2c)
- * looked up in the table of 0x1e-byte records at data_020c907c. */
-extern int func_02030a18(int x, int z); /* rewrites the unit's type: 3 to 0x1d, 9 to 0x1e, others by the table */
-extern int func_02031a08(int x, int z); /* the unit's path directions, four bits */
-extern int func_02031aa0(int x, int z); /* the halfword at 6: 1 when above 0; -1 outside the table */
-extern u8 func_02031acc(int x, int z);  /* the byte at 9; 2 outside the table */
-extern int func_02031a74(int x, int z); /* whether the byte at 0x17 is set */
-extern int func_02031b14(int x, int z); /* the byte at 8 */
-extern int func_02031af0(int x, int z); /* the byte at 5 */
-extern u8 func_02031b38(int x, int z);  /* the byte at 4 */
-/* The tile a position is on (Position_Tile). */
-extern void func_0204f818(int *x, int *z, const Vec3 *position);
-
-/* An acre record's parts. */
-extern u16 *func_02037e0c(u8 *acre, int x, int z, u8 layer);           /* the code of tile (x, z) in a layer, or 0 */
-extern int func_02037e44(u8 *acre, u16 *code, int x, int z, u8 layer); /* sets it; 0 without one */
-extern int func_02037d2c(u8 *acre, int x, int z);                      /* clears the tile's bit */
-extern int func_02037d48(u8 *acre, int x, int z);                      /* sets the tile's bit */
-extern int func_02037d64(u8 *acre, int flags);                         /* whether the acre has any of the flags */
-extern int func_02037d80(u8 *acre, int flags);                         /* whether it has all of them */
-extern int func_02037d9c(u8 *acre);                                    /* its model's flags */
-/* Searches the acre's layer for a code in [*first, *last]: the tile to (*x, *z). */
-extern int func_02037da8(u8 *acre, int *x, int *z, u16 *first, u16 *last, u8 layer);
-
-/* Item codes (item_code.h, map_item.h, snowman.c). */
-extern int func_0204bd08(u16 *code); /* a code of kind 1 */
-extern int func_0204bcdc(u16 *code); /* a code with a variant */
-extern int func_0204bc64(u16 *code); /* a code's item without its variant */
-extern int func_0204ba94(u16 *code); /* the first stage of a growth line */
-extern int func_0204b5ac(u16 *code); /* the stage of a short line's code, or -1 */
-extern int func_0204bb54(u16 *code); /* a snowman's map object */
-extern int func_0204bb2c(u16 *code); /* the snowman's number */
-/* Removes snowman `number`'s record when it is in use. */
-extern int func_020b0650(u8 *records, unsigned int number);
-/* Adds an item to the list of fifteen replaced items. */
-extern void func_0203a76c(u16 code);
-
-/* A building's shape (func_020b3b50): two lists of tiles given as offsets from the building's
- * tile; an entry at offset (0, 0) is skipped. */
-extern void *func_020b3b50(u16 *building);
-extern unsigned int func_020b3eb8(void *shape); /* the number of tiles the building covers */
-extern int func_020b3e08(void *shape, int *x, int *z, unsigned int index);
-extern unsigned int func_020b3f2c(void *shape); /* the number of tiles of the second list */
-extern int func_020b3e58(void *shape, int *x, int *z, unsigned int index);
-
-/* The object that takes the buildings put down while it exists (overlay 3), or 0. */
-extern int func_020b3b14(void);
-extern int func_ov003_02220460(int handler, int building, int x, int z, int unk);
 
 /* Rounding down as the ARM's arithmetic shift does. */
 static int acre_tile_shift(int value, int bits)
@@ -112,14 +72,14 @@ int AcreTile_StampBuildingNoting(AcreMap *map, u16 *building, int x, int z, u8 t
     if (tile != NULL) {
         replaced = *tile;
     }
-    if (to_handler != 0 && func_020b3b14() != 0) {
-        return func_ov003_02220460(func_020b3b14(), (int) (uintptr_t) building, x, z, 1);
+    if (to_handler != 0 && BuildingTaker_Get() != 0) {
+        return ObjectActors_Place((ObjectActors *) (uintptr_t) BuildingTaker_Get(), (u16 *) (uintptr_t) building, x, z, 1);
     }
     if (AcreTile_StampBuilding(map, building, x, z) == 0) {
         return 0;
     }
-    if (func_0204bd08(&replaced) || func_0204bcdc(&replaced)) {
-        func_0203a76c(replaced);
+    if (ItemCode_IsKind1(&replaced) || ItemCode_HasVariant(&replaced)) {
+        TownItemLists_PushListA(replaced);
     }
     return 1;
 }
@@ -131,9 +91,9 @@ CLEAN_AS(func_0204eb1c, AcreTile_StampBuildingNoting)
 /* func_0204ed08 */
 int AcreTile_RetypeUnit(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02030a18(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = CollisionMap_RetypeToPlain(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204ed08, AcreTile_RetypeUnit)
@@ -144,7 +104,7 @@ int AcreTile_PathDirectionsAt(AcreMap *map, const Vec3 *position)
     int x = 0;
     int z = 0;
 
-    func_0204f818(&x, &z, position);
+    Position_Tile(&x, &z, (const Position *) position);
     return AcreTile_PathDirections(map, x, z);
 }
 CLEAN_AS(func_0204ed30, AcreTile_PathDirectionsAt)
@@ -152,9 +112,9 @@ CLEAN_AS(func_0204ed30, AcreTile_PathDirectionsAt)
 /* func_0204ed58: the directions 1, 2, 4 and 8 a path leaves the tile in (path_walker.h). */
 int AcreTile_PathDirections(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02031a08(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = CollisionMap_PathDirections(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204ed58, AcreTile_PathDirections)
@@ -162,9 +122,9 @@ CLEAN_AS(func_0204ed58, AcreTile_PathDirections)
 /* func_0204ed80 */
 int AcreTile_UnitWord06(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02031aa0(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = UnitTypeInfo_Word06At(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204ed80, AcreTile_UnitWord06)
@@ -172,9 +132,9 @@ CLEAN_AS(func_0204ed80, AcreTile_UnitWord06)
 /* func_0204eda8 */
 int AcreTile_UnitByte09(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02031acc(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = UnitTypeInfo_Byte09At(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204eda8, AcreTile_UnitByte09)
@@ -182,9 +142,9 @@ CLEAN_AS(func_0204eda8, AcreTile_UnitByte09)
 /* func_0204edd0 */
 int AcreTile_UnitHasByte17(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02031a74(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = UnitTypeInfo_HasByte17At(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204edd0, AcreTile_UnitHasByte17)
@@ -192,9 +152,9 @@ CLEAN_AS(func_0204edd0, AcreTile_UnitHasByte17)
 /* func_0204edf8 */
 int AcreTile_UnitByte08(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02031b14(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = UnitTypeInfo_Byte08At(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204edf8, AcreTile_UnitByte08)
@@ -202,9 +162,9 @@ CLEAN_AS(func_0204edf8, AcreTile_UnitByte08)
 /* func_0204ee20: (town_tile.c: whether the map takes the tile). */
 int AcreTile_UnitByte05(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02031af0(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = UnitTypeInfo_Byte05At(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204ee20, AcreTile_UnitByte05)
@@ -223,9 +183,9 @@ CLEAN_AS(func_0204ee48, AcreTile_UnitByte04InAcre)
 /* func_0204ee7c */
 int AcreTile_UnitByte04(AcreMap *map, int x, int z)
 {
-    func_02030e4c(map->slot);
-    int result = func_02031b38(x, z);
-    func_02030e4c(0);
+    CollisionMap_Select(map->slot);
+    int result = UnitTypeInfo_Byte04At(x, z);
+    CollisionMap_Select(0);
     return result;
 }
 CLEAN_AS(func_0204ee7c, AcreTile_UnitByte04)
@@ -273,10 +233,10 @@ static int acre_tile_grows(u32 code)
 /* Whether a code is ACRE_TILE_ITEM_OCCUPIED; for a code with a variant, whether its item is. */
 static int acre_tile_is_occupied(u16 *code)
 {
-    if (func_0204bcdc(code)) {
+    if (ItemCode_HasVariant(code)) {
         u16 occupied = ACRE_TILE_ITEM_OCCUPIED;
-        int item = func_0204bc64(code);
-        return item == func_0204bc64(&occupied);
+        int item = ItemCode_VariantItem(code);
+        return item == ItemCode_VariantItem(&occupied);
     }
     return *code == ACRE_TILE_ITEM_OCCUPIED;
 }
@@ -298,12 +258,12 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
 
     if (tile != NULL) {
         u16 replaced = *tile;
-        if (func_0204bd08(&replaced) || func_0204bcdc(&replaced)) {
-            func_0203a76c(replaced);
+        if (ItemCode_IsKind1(&replaced) || ItemCode_HasVariant(&replaced)) {
+            TownItemLists_PushListA(replaced);
         }
     }
     if (acre_tile_is_building(*building)) {
-        shape = func_020b3b50(building);
+        shape = BuildingShapes_Of(building);
     }
     if (shape == NULL) {
         return 0;
@@ -311,21 +271,21 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
 
     int offset_x;
     int offset_z;
-    unsigned int covered = func_020b3eb8(shape);
+    unsigned int covered = BuildingShapes_CoveredCount(shape);
     for (unsigned int i = 0; i < covered; i++) {
-        if (!func_020b3e08(shape, &offset_x, &offset_z, i)) {
+        if (!BuildingShapes_CoveredTile(shape, &offset_x, &offset_z, i)) {
             continue;
         }
         int tile_x = x + offset_x;
         int tile_z = z + offset_z;
         u16 *other = acre_tile_item(map, tile_x, tile_z);
         if (other != NULL) {
-            if (func_0204bcdc(other) || func_0204bd08(other)) {
+            if (ItemCode_HasVariant(other) || ItemCode_IsKind1(other)) {
                 if (!Session_IsLinked(data_020ccf94)) {
-                    func_0203a76c(*other);
+                    TownItemLists_PushListA(*other);
                 }
-            } else if (func_0204bb54(other)) {
-                func_020b0650(data_021f3b56, (unsigned int) func_0204bb2c(other));
+            } else if (MapCode_IsSnowman(other)) {
+                Snowmen_Forget((SnowmenRecord *) (void *) data_021f3b56, (unsigned int) MapCode_SnowmanIndex(other));
             }
         }
         AcreTile_SetItem(map, fill, tile_x, tile_z, 0);
@@ -334,9 +294,9 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
     AcreTile_SetItem(map, code, x, z, 0);
 
     if (acre_tile_is_occupied(fill)) {
-        unsigned int around = func_020b3f2c(shape);
+        unsigned int around = BuildingShapes_AroundCount(shape);
         for (unsigned int i = 0; i < around; i++) {
-            if (!func_020b3e58(shape, &offset_x, &offset_z, i)) {
+            if (!BuildingShapes_AroundTile(shape, &offset_x, &offset_z, i)) {
                 continue;
             }
             int tile_x = x + offset_x;
@@ -345,8 +305,8 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
             if (other == NULL) {
                 continue;
             }
-            if (!acre_tile_grows(*other) || func_0204ba94(other)) {
-                if (func_0204b5ac(other) == -1) {
+            if (!acre_tile_grows(*other) || MapItem_IsStage0(other)) {
+                if (MapItem_ShortStage(other) == -1) {
                     continue;
                 }
             }
@@ -412,7 +372,7 @@ int AcreTile_UnmarkInAcre(AcreMap *map, u32 acre_x, u32 acre_z, int x, int z)
     if (acre == NULL) {
         return 0;
     }
-    return func_02037d2c(acre, x, z);
+    return AcreRecord_ClearTileBit((AcreRecord *) (void *) acre, x, z);
 }
 CLEAN_AS(func_0204f340, AcreTile_UnmarkInAcre)
 
@@ -432,7 +392,7 @@ int AcreTile_MarkInAcre(AcreMap *map, u32 acre_x, u32 acre_z, int x, int z)
     if (acre == NULL) {
         return 0;
     }
-    return func_02037d48(acre, x, z);
+    return AcreRecord_SetTileBit((AcreRecord *) (void *) acre, x, z);
 }
 CLEAN_AS(func_0204f3a4, AcreTile_MarkInAcre)
 
@@ -450,8 +410,8 @@ int AcreTile_FindItemAnyFlag(AcreMap *map, int *acre_x, int *acre_z, int *x, int
     for (int az = 0; az < high; az++) {
         for (int ax = 0; ax < wide; ax++) {
             u8 *acre = acre_tile_acre_at(map, (u32) ax, (u32) az);
-            if (acre != NULL && (flags == 0 || func_02037d64(acre, flags)) &&
-                func_02037da8(acre, x, z, first, last, (u8) layer)) {
+            if (acre != NULL && (flags == 0 || AcreRecord_HasAnyFlag((AcreRecord *) (void *) acre, flags)) &&
+                AcreRecord_FindCode((AcreRecord *) (void *) acre, x, z, first, last, (u8) layer)) {
                 *acre_x = ax;
                 *acre_z = az;
                 return 1;
@@ -472,7 +432,8 @@ int AcreTile_FindItemAllFlags(AcreMap *map, int *acre_x, int *acre_z, int *x, in
     for (int az = 0; az < high; az++) {
         for (int ax = 0; ax < wide; ax++) {
             u8 *acre = acre_tile_acre_at(map, (u32) ax, (u32) az);
-            if (acre != NULL && func_02037d80(acre, flags) && func_02037da8(acre, x, z, first, last, (u8) layer)) {
+            if (acre != NULL && AcreRecord_HasAllFlags((AcreRecord *) (void *) acre, flags) &&
+                AcreRecord_FindCode((AcreRecord *) (void *) acre, x, z, first, last, (u8) layer)) {
                 *acre_x = ax;
                 *acre_z = az;
                 return 1;
@@ -502,7 +463,7 @@ int AcreTile_SetItemInAcre(AcreMap *map, u16 *code, u32 acre_x, u32 acre_z, int 
     if (acre == NULL) {
         return 0;
     }
-    return func_02037e44(acre, code, x, z, layer);
+    return AcreRecord_SetTile((AcreRecord *) (void *) acre, code, x, z, layer);
 }
 CLEAN_AS(func_0204f564, AcreTile_SetItemInAcre)
 
@@ -525,7 +486,7 @@ u16 *AcreTile_ItemInAcre(AcreMap *map, u32 acre_x, u32 acre_z, int x, int z, u8 
     if (acre == NULL) {
         return NULL;
     }
-    return func_02037e0c(acre, x, z, layer);
+    return AcreRecord_Tile((AcreRecord *) (void *) acre, x, z, layer);
 }
 CLEAN_AS(func_0204f5e0, AcreTile_ItemInAcre)
 
@@ -540,7 +501,7 @@ void *AcreTile_AcreHasFlags(AcreMap *map, u32 acre_x, u32 acre_z, u32 flags)
     if (acre == NULL) {
         return NULL;
     }
-    return (void *) (uintptr_t) (u32) func_02037d80(acre, (int) flags);
+    return (void *) (uintptr_t) (u32) AcreRecord_HasAllFlags((AcreRecord *) (void *) acre, (int) flags);
 }
 CLEAN_AS(func_0204f61c, AcreTile_AcreHasFlags)
 
@@ -553,7 +514,7 @@ void *AcreTile_AcreFlags(AcreMap *map, u32 acre_x, u32 acre_z)
     if (acre == NULL) {
         return NULL;
     }
-    return (void *) (uintptr_t) (u32) func_02037d9c(acre);
+    return (void *) (uintptr_t) (u32) AcreRecord_Flags((AcreRecord *) (void *) acre);
 }
 CLEAN_AS(func_0204f658, AcreTile_AcreFlags)
 
@@ -567,7 +528,7 @@ void *AcreTile_FindAcreAnyFlag(AcreMap *map, void *flags)
     for (int az = 0; az < high; az++) {
         for (int ax = 0; ax < wide; ax++) {
             u8 *acre = acre_tile_acre_at(map, (u32) ax, (u32) az);
-            if (acre != NULL && func_02037d64(acre, (int) (uintptr_t) flags)) {
+            if (acre != NULL && AcreRecord_HasAnyFlag((AcreRecord *) (void *) acre, (int) (uintptr_t) flags)) {
                 return acre;
             }
         }
@@ -589,7 +550,7 @@ void *AcreTile_FindAcreAllFlags(AcreMap *map, void *flags)
     for (int az = 0; az < high; az++) {
         for (int ax = 0; ax < wide; ax++) {
             u8 *acre = acre_tile_acre_at(map, (u32) ax, (u32) az);
-            if (acre != NULL && func_02037d80(acre, (int) (uintptr_t) flags)) {
+            if (acre != NULL && AcreRecord_HasAllFlags((AcreRecord *) (void *) acre, (int) (uintptr_t) flags)) {
                 return acre;
             }
         }

@@ -12,6 +12,7 @@
 #include "main/museum_record.h"
 #include "ov004/rmo_object_slots.h"
 #include "rmo_object_base.h"
+#include "main/c_library.h"
 
 static_assert(offsetof(MuseumDisplay, nodes) == 0x290, "nodes");
 static_assert(offsetof(MuseumDisplayHookState, hooks) == 0x0c, "hooks");
@@ -32,10 +33,8 @@ extern const char data_ov004_02255268[];
 extern MuseumRecord data_021f38f8;
 extern Heap *data_021c9b24;
 
-extern const MuseumDisplayKind *func_ov004_0222f320(u32 kind);
-extern void func_ov004_0222f304(MuseumDisplayHookState *state);  /* the node hook */
-extern void func_ov004_0222f2f4(MuseumDisplayHookState *state);  /* sets it */
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
+extern void func_ov004_0222f304(MuseumDisplayHookState *state); /* the node hook */
+extern void func_ov004_0222f2f4(MuseumDisplayHookState *state); /* sets it */
 
 /* The RMO family's base class (rmo_object.h). */
 
@@ -44,7 +43,7 @@ static const MuseumDisplayKind *kind_of(const MuseumDisplay *self)
 {
     u32 kind;
     memcpy(&kind, self->base.actor.unk_08, sizeof(kind));
-    return func_ov004_0222f320(kind);
+    return MuseumDisplay_Kind(kind);
 }
 
 /* func_ov004_0222f17c: whether `node` is one of those drawn. QUIRK: the nodes are compared as
@@ -71,7 +70,7 @@ void MuseumDisplay_FindNodes(MuseumDisplay *self)
     for (u32 i = 0; i < kind->count; i++) {
         u16 item = kind->item(i);
         int given = MuseumRecord_IsGiven(&data_021f38f8, &item) != 0;
-        func_02064328(data_ov004_02258460, data_ov004_02255268, i, given);
+        CLib_SPrintf(data_ov004_02258460, data_ov004_02255268, i, given);
         self->nodes[i] = (s8) G3dRes_NodeIndex(self->base.body.object.model, data_ov004_02258460);
     }
 }
@@ -112,7 +111,7 @@ int MuseumDisplay_Update(void)
 CLEAN_AS(func_ov004_0222f26c, MuseumDisplay_Update)
 
 /* func_ov004_0222f270 (vtable slot 0x00): the case's archive loaded, the hook set that is run
- * before each draw (the game's func_ov004_0222f2f4), and the nodes looked up. */
+ * before each draw (the game's MuseumDisplay_SetModelHooks), and the nodes looked up. */
 int MuseumDisplay_Start(MuseumDisplay *self)
 {
     const MuseumDisplayKind *kind = kind_of(self);
@@ -151,7 +150,7 @@ MuseumDisplay *MuseumDisplay_Construct(MuseumDisplay *self)
 }
 CLEAN_AS(func_ov004_0222f2dc, MuseumDisplay_Construct)
 
-/* func_ov004_0222f2f4 (run before each draw): the nodes' hook (the game's func_ov004_0222f304)
+/* func_ov004_0222f2f4 (run before each draw): the nodes' hook (the game's MuseumDisplay_NodeHook)
  * set, run after each node's visibility is decided. */
 void MuseumDisplay_SetModelHooks(MuseumDisplayHookState *state)
 {

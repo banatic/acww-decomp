@@ -12,12 +12,12 @@
  *   that is on switched off (this one included), then the switch on and the song played; kind
  *   0x29 loops the animations of variant 1. Each frame the sound at 0 follows the object.
  * Touching it does not switch it: the switch is put back and the scene is asked for an event
- * (func_0203e0a8), whose answer (vtable slot 0x4c) starts a talk: event 1 the song menu when
- * func_020b67d4 and Room_Check0220fed0 allow it, else the talk that tells the song; event 8
+ * (EventQueue_RequestKind6), whose answer (vtable slot 0x4c) starts a talk: event 1 the song menu when
+ * SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else the talk that tells the song; event 8
  * ends the talk.
  *
  * Once its model is bound (vtable slot 0x7c) it plays when its switch is on, outside the areas
- * func_ov004_0223c10c names: in a villager's house the villager's song, unless a player already
+ * RoomObjects_InNookOrScene0AOr0F names: in a villager's house the villager's song, unless a player already
  * started it there (data_ov004_02256fec), elsewhere the house's music item; else it is
  * stopped. Vtable slot 0x0c stops the song and forgets the villager's song started.
  *
@@ -27,7 +27,7 @@
  * - MUSIC_PLAYER_TALK_MENU_NEXT (1): the next frame opens the menu;
  * - MUSIC_PLAYER_TALK_MENU (2): the song menu (group 9 in mode 0x40) is opened on entry, a step
  *   refused when it cannot be; once it has closed, a song chosen there is requested
- *   (MUSIC_PLAYER_PLAYING with the song) and the scene goes on (func_0203e020);
+ *   (MUSIC_PLAYER_PLAYING with the song) and the scene goes on (EventQueue_FinishObjectEvent);
  * - MUSIC_PLAYER_TALK_NEXT (3): the next frame talks;
  * - MUSIC_PLAYER_TALK (4): it takes the receiver as "obj_etc_player" and tells the song of the
  *   place (in a villager's house the villager's, else the house's music item); it waits for

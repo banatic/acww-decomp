@@ -4,6 +4,15 @@
 #include "clean.h"
 #include "scene_kinds.h"
 #include "scene_query.h"
+#include "cell_anim.h"
+#include "main_random.h"
+#include "oam_buffer.h"
+#include "sky_object_kinds.h"
+#include "sky_resources.h"
+#include "sky_shots.h"
+#include "sky_show.h"
+#include "sky_events.h"
+#include "sky_object_sounds.h"
 
 static_assert(sizeof(SkyObject) == 0x74, "an object");
 static_assert(offsetof(SkyObject, anim) == 0x10, "the animation");
@@ -31,39 +40,6 @@ static_assert(offsetof(SkyObjects, unk_2fcc) == 0x2fcc, "0x2fcc");
 #define SKY_OBJECTS_BLEND_FADE_LINES 0x20
 #define SKY_OBJECTS_BLEND_BACKDROP 0x1000 /* BLDALPHA: the backdrop's weight 16 */
 
-extern int func_0208a1d0(const CellAnim *anim);            /* the cells shown, 0: none */
-extern s16 func_0208a1b0(const CellAnim *anim, int frame); /* a frame's x, the current one for -1 */
-extern s16 func_0208a198(const CellAnim *anim, int frame); /* a frame's y, the current one for -1 */
-extern void func_0208a0c8(CellAnim *anim);                 /* the animation advanced */
-extern void func_02088df8(int engine, const void *cells, int x, int y, int palette, int priority, int scale_x, int scale_y,
-                          int rotation, int arg9, int arg10, int arg11);
-extern void func_020bde24(SkyObjects *objects);
-extern void func_020be388(SkyObjects *objects);
-extern void func_020bf5b8(SkyObject *object);
-extern void func_020bf700(SkyObject *object);
-extern void func_020bf5f0(SkyObject *object);
-extern void func_020be348(SkyObjects *objects);
-extern void func_020bea1c(void *part);
-extern void func_020be568(void *part);
-extern void func_020bda88(SkyObjects *objects); /* the thunder */
-extern void func_020bd3b4(SkyObjects *objects); /* the show's program (sky_show.h) */
-extern void func_020bd938(SkyObjects *objects);
-extern void func_020bd7a4(SkyObjects *objects);
-extern void func_020bceb4(SkyObjects *objects);
-extern void func_020bd688(SkyObjects *objects);
-extern void func_020bd054(SkyObjects *objects);
-extern void func_020bd6d0(SkyObjects *objects);
-extern void func_020bd2d0(SkyObjects *objects);
-extern void func_020bd1c4(SkyObjects *objects);
-extern void func_020bd124(SkyObjects *objects);
-extern void func_020bcfbc(SkyObjects *objects);
-extern void func_020be600(void *part);
-extern void func_020be0a0(SkyObjects *objects);
-extern void func_020be0a8(SkyObjects *objects);
-extern void func_020be628(void *part);
-extern int func_020be0d4(SkyObjects *objects, int kind); /* the first entry of `kind`, 60: none */
-extern void *func_020bdc50(SkyObjects *objects, int kind, int limit, const Vec3 *position, u32 param);
-
 /* An object drawn by `engine` at (x, y) unless it is out of view; one of radius 0 never is. */
 static void draw_object(int engine, const SkyObject *object, const void *cells, int x, int y)
 {
@@ -71,8 +47,8 @@ static void draw_object(int engine, const SkyObject *object, const void *cells, 
     if (radius != 0 && (y + radius < 0 || y - radius > SKY_OBJECTS_LAST_LINE)) {
         return;
     }
-    func_02088df8(engine, cells, x, y, object->palette, object->priority, object->scale_x, object->scale_y, object->rotation,
-                  -1, object->unk_56, object->unk_57);
+    OamBuffer_DrawCell(engine, cells, x, y, object->palette, object->priority, object->scale_x, object->scale_y,
+                       object->rotation, -1, object->unk_56, object->unk_57);
 }
 
 /* func_020bc1bc: the running objects drawn (but the kind never drawn and the hidden ones) at their
@@ -88,12 +64,12 @@ void SkyObjects_Draw(SkyObjects *objects)
         if (object->kind == SKY_OBJECT_UNDRAWN || object->state != SKY_OBJECT_RUNNING || object->hidden != 0) {
             continue;
         }
-        int cells = func_0208a1d0(&object->anim);
+        int cells = (int) (uintptr_t) CellAnim_Cell(&object->anim);
         if (cells == 0) {
             continue;
         }
-        int x = func_0208a1b0(&object->anim, -1);
-        int y = func_0208a198(&object->anim, -1);
+        int x = CellAnim_FrameX(&object->anim, -1);
+        int y = CellAnim_FrameY(&object->anim, -1);
         const void *cell_data = (const void *) (uintptr_t) (u32) cells;
         x += (object->position.x + 0x800) >> 12;
         y += (object->position.y + 0x800) >> 12;
@@ -121,7 +97,7 @@ CLEAN_AS(func_020bc380, SkyObjects_FrameHidden)
  * taken down), then the slots and the two parts at 0x2fa8 and 0x2fcc run. */
 void SkyObjects_Frame(SkyObjects *objects)
 {
-    func_020bde24(objects);
+    SkyObjects_TakeTime(objects);
     SkyObjects_FrameHook(objects);
     SkyObjects_RunWeather(objects);
 
@@ -132,17 +108,17 @@ void SkyObjects_Frame(SkyObjects *objects)
         switch (object->state) {
             case SKY_OBJECT_NEW:
                 if (object->slot != SKY_OBJECT_NO_SLOT) {
-                    func_020be388(objects);
+                    SkyObjects_LoadSlots(objects);
                 }
-                func_020bf5b8(object);
+                SkyObjectKinds_StartAnimation(object);
                 object->state = SKY_OBJECT_RUNNING;
                 break;
             case SKY_OBJECT_RUNNING:
-                func_0208a0c8(&object->anim);
-                func_020bf700(object);
+                CellAnim_Advance(&object->anim);
+                SkyObjectKinds_Run(object);
                 break;
             case SKY_OBJECT_DONE:
-                func_020bf5f0(object);
+                SkyObjectKinds_TakeDown(object);
                 objects->count--;
                 break;
             default:
@@ -150,9 +126,9 @@ void SkyObjects_Frame(SkyObjects *objects)
         }
     }
 
-    func_020be348(objects);
-    func_020bea1c(objects->unk_2fa8);
-    func_020be568(objects->unk_2fcc);
+    SkyObjects_ReadSlotFiles(objects);
+    SkyShots_RunHit((SkyShotsHit *) (void *) objects->unk_2fa8);
+    SkyObjectSounds_Update((SkyObjectSounds *) (void *) objects->unk_2fcc);
 }
 CLEAN_AS(func_020bc388, SkyObjects_Frame)
 
@@ -172,9 +148,9 @@ void SkyObjects_RunEvents(SkyObjects *objects)
         return;
     }
     if (data_021f75b0.precipitation == SKY_FALLING_RAIN && data_021f75b0.weather == SKY_WEATHER_HEAVY_RAIN) {
-        func_020bda88(objects);
+        SkyEvents_Thunder(objects);
     }
-    func_020bd3b4(objects);
+    SkyShow_Run(objects);
 }
 CLEAN_AS(func_020bc42c, SkyObjects_RunEvents)
 
@@ -184,26 +160,26 @@ void SkyObjects_RunWeather(SkyObjects *objects)
 {
     switch (data_021f75b0.precipitation) {
         case SKY_FALLING_RAIN:
-            func_020bd938(objects);
+            SkyEvents_Rain(objects);
             break;
         case SKY_FALLING_SNOW:
-            func_020bd7a4(objects);
+            SkyEvents_Snow(objects);
             break;
         default:
             objects->unk_2f08 = 0;
             objects->unk_2f0c = 0;
             break;
     }
-    func_020bceb4(objects);
-    func_020bd688(objects);
-    func_020bd054(objects);
-    func_020bd6d0(objects);
-    func_020bd3b4(objects);
+    SkyEvents_AddKind12(objects);
+    SkyEvents_UpdateMoon(objects);
+    SkyEvents_UpdateKind10(objects);
+    SkyEvents_AddKind3(objects);
+    SkyShow_Run(objects);
     if (SceneQuery_Current() != SKY_OBJECTS_SCENE_2C) {
-        func_020bd2d0(objects);
-        func_020bd1c4(objects);
-        func_020bd124(objects);
-        func_020bcfbc(objects);
+        SkyEvents_AddKind5(objects);
+        SkyEvents_AddKind6(objects);
+        SkyEvents_AddKind7(objects);
+        SkyShots_Launch(objects);
     }
 }
 CLEAN_AS(func_020bc464, SkyObjects_RunWeather)
@@ -211,16 +187,16 @@ CLEAN_AS(func_020bc464, SkyObjects_RunWeather)
 /* func_020bc4dc: taken down: the part at 0x2fcc, then the objects. */
 void SkyObjects_Delete(SkyObjects *objects)
 {
-    func_020be600(objects->unk_2fcc);
-    func_020be0a0(objects);
+    SkyObjectSounds_Release((SkyObjectSounds *) (void *) objects->unk_2fcc);
+    SkyObjects_DeleteObjects(objects);
 }
 CLEAN_AS(func_020bc4dc, SkyObjects_Delete)
 
 /* func_020bc4f8: started: the objects, then the part at 0x2fcc. */
 void SkyObjects_Start(SkyObjects *objects)
 {
-    func_020be0a8(objects);
-    func_020be628(objects->unk_2fcc);
+    SkyObjects_StartObjects(objects);
+    SkyObjectSounds_Init((SkyObjectSounds *) (void *) objects->unk_2fcc);
 }
 CLEAN_AS(func_020bc4f8, SkyObjects_Start)
 
@@ -230,10 +206,10 @@ CLEAN_AS(func_020bc4f8, SkyObjects_Start)
  * the part after them); the game also checks that address, which is never null. */
 void SkyObjects_Add2Mark3(SkyObjects *objects)
 {
-    int index = func_020be0d4(objects, SKY_OBJECT_KIND_3);
+    int index = SkyObjects_FindKind(objects, SKY_OBJECT_KIND_3);
     uintptr_t marked = (uintptr_t) objects + (u32) index * (u32) sizeof(SkyObject);
     if (marked != 0) {
-        func_020bdc50(objects, SKY_OBJECT_KIND_2, SKY_OBJECT_COUNT, NULL, 1);
+        SkyObjects_Add(objects, SKY_OBJECT_KIND_2, SKY_OBJECT_COUNT, NULL, 1);
         ((SkyObject *) marked)->param = 1;
     }
 }
@@ -263,8 +239,6 @@ CLEAN_AS(func_020bc548, SkyObjects_SetBlend)
 
 #include "calendar.h"
 #include "clock.h"
-#include "sky_events.h"
-#include "sky_object_sounds.h"
 
 static_assert(sizeof(SkyObjectSlot) == 12, "a slot");
 static_assert(sizeof(SkyResource) == 16, "a resource");
@@ -282,26 +256,13 @@ static_assert(offsetof(SkyObjects, unk_2f58) == 0x2f58, "the shots' requests");
 #define SKY_OBJECTS_MOON_HUNDREDTHS 2953
 #define SKY_OBJECTS_MOON_OFFSET 2420 /* hundredths of a day into the cycle on 2000-01-01 */
 
-extern const s32 data_020d266c[];                        /* per kind: its resource */
-extern const SkyResource data_020d2bb4[];                /* per resource */
-extern void func_020bf948(SkyObject *object);            /* the object's fields reset */
-extern void func_020bf810(SkyObject *object, int param); /* set up by its kind */
-extern void func_020bee74(SkyObjectSlot *slot, int resource, void *palettes);
-extern int func_020bf064(void *files, int resource);                  /* a resource's files read */
-extern void func_020bee9c(SkyObjectSlot *slot, void *files);          /* its cells loaded */
-extern int func_020bec70(void *palettes, int resource);               /* its palette is loaded */
-extern void func_020bed64(void *palettes, void *files, int resource); /* and loaded */
-extern void func_020bf9ac(void *object);                              /* an object's constructor */
-extern void func_020be554(void *object);                              /* and destructor (SkyObject_Destruct) */
-extern void func_020bef78(SkyObjectSlot *slot);
-extern void func_020bedf4(void *palettes);
+extern const s32 data_020d266c[];         /* per kind: its resource */
+extern const SkyResource data_020d2bb4[]; /* per resource */
+extern void func_020bf9ac(void *object);  /* an object's constructor */
+extern void func_020be554(void *object);  /* and destructor (SkyObject_Destruct) */
 extern void func_020bec04(void *request); /* a shot's request's constructor (sky_shots.h) */
 extern void func_020be550(void *request); /* and destructor */
-extern void func_020bebc8(void *hit);     /* the hit's constructor (sky_shots.h) */
-extern void func_020bf1b8(void *files);
-extern void func_0208a1f4(CellAnim *anim); /* an animation's destructor */
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 
 /* An entry or a slot by an index the game computes, at the address the ARM would use. */
@@ -328,7 +289,7 @@ void SkyObjects_RemoveAll(SkyObjects *objects)
 {
     for (SkyObject *object = objects->entries; object < objects->entries + SKY_OBJECT_COUNT; object++) {
         if (object->kind != SKY_OBJECT_UNDRAWN) {
-            func_020bf5f0(object);
+            SkyObjectKinds_TakeDown(object);
             objects->count--;
         }
     }
@@ -340,7 +301,7 @@ void SkyObjects_RemoveKind(SkyObjects *objects, int kind)
 {
     for (SkyObject *object = objects->entries; object < objects->entries + SKY_OBJECT_COUNT; object++) {
         if (object->kind == kind) {
-            func_020bf5f0(object);
+            SkyObjectKinds_TakeDown(object);
             objects->count--;
         }
     }
@@ -363,11 +324,11 @@ SkyObject *SkyObjects_Add(SkyObjects *objects, int kind, int entry, const Vec3 *
         return NULL;
     }
     if (slot != SKY_OBJECT_NO_SLOT) {
-        func_020bee74(sky_objects_slot_at(objects, slot), resource, objects->unk_2eb8);
+        SkySlot_Use(sky_objects_slot_at(objects, slot), resource, (SkyPalettes *) (void *) objects->unk_2eb8);
         SkyObjects_ReleaseOverlapping(objects, slot);
     }
     SkyObject *object = sky_objects_entry_at(objects, index);
-    func_020bf948(object);
+    SkyObjectKinds_Reset(object);
     object->kind = kind;
     object->state = SKY_OBJECT_NEW;
     object->slot = slot;
@@ -378,7 +339,7 @@ SkyObject *SkyObjects_Add(SkyObjects *objects, int kind, int entry, const Vec3 *
         object->position.y = position->y;
         object->position.z = position->z;
     }
-    func_020bf810(object, param);
+    SkyObjectKinds_SetUp(object, param);
     objects->count++;
     return object;
 }
@@ -397,7 +358,7 @@ int SkyObjects_ResourceFor(SkyObjects *objects, int kind, int param)
         case SKY_OBJECT_MOON:
             return SkyObjects_MoonResource();
         case SKY_OBJECT_KIND_7:
-            if (func_020644cc(2) != 0) {
+            if (MainRandom_Below(2) != 0) {
                 return 40;
             }
             return data_020d266c[kind];
@@ -601,19 +562,19 @@ static void sky_objects_show_slot(SkyObjects *objects, SkyObjectSlot *slot, int 
 {
     int resource = slot->kind;
     int loaded = slot->loaded;
-    int palette_loaded = func_020bec70(objects->unk_2eb8, resource);
+    int palette_loaded = SkyPalettes_IsLoaded((SkyPalettes *) (void *) objects->unk_2eb8, resource);
     if (!loaded) {
         if (read_files) {
-            func_020bf064(objects->files, resource);
+            SkyFiles_ReadCells((SkyFiles *) (void *) objects->files, resource);
         }
-        func_020bee9c(slot, objects->files);
+        SkySlot_LoadCells(slot, (SkyFiles *) (void *) objects->files);
         slot->loaded = 1;
         if (read_files) {
             slot->changed = 0;
         }
     }
     if (!palette_loaded) {
-        func_020bed64(objects->unk_2eb8, objects->files, resource);
+        SkyPalettes_Load((SkyPalettes *) (void *) objects->unk_2eb8, (SkyFiles *) (void *) objects->files, resource);
     }
 }
 
@@ -645,7 +606,7 @@ void SkyObjects_ReadSlotFiles(SkyObjects *objects)
         if (slot->kind == SKY_OBJECT_NO_RESOURCE) {
             slot->changed = 0;
         } else if (slot->loaded == 0) {
-            func_020bf064(objects->files, slot->kind);
+            SkyFiles_ReadCells((SkyFiles *) (void *) objects->files, slot->kind);
         }
     }
 }
@@ -670,11 +631,11 @@ SkyObjects *SkyObjects_Construct(SkyObjects *objects)
 {
     __cxa_vec_ctor(objects->entries, SKY_OBJECT_COUNT, sizeof(SkyObject), func_020bf9ac, func_020be554);
     for (SkyObjectSlot *slot = objects->slots; slot != objects->slots + SKY_SLOTS; slot++) {
-        func_020bef78(slot);
+        SkySlot_Construct(slot);
     }
-    func_020bedf4(objects->unk_2eb8);
+    SkyPalettes_Construct((SkyPalettes *) (void *) objects->unk_2eb8);
     __cxa_vec_ctor(objects->unk_2f58, 4, 0x14, func_020bec04, func_020be550);
-    func_020bebc8(objects->unk_2fa8);
+    SkyShots_ConstructHit((SkyShotsHit *) (void *) objects->unk_2fa8);
     SkyObjectSounds_Construct((SkyObjectSounds *) (void *) objects->unk_2fcc);
 
     objects->unk_2f00 = 0;
@@ -698,7 +659,7 @@ SkyObjects *SkyObjects_Construct(SkyObjects *objects)
     objects->blend_alpha = 0;
     objects->unk_2f54 = 0;
 
-    func_020bf1b8(objects->files);
+    SkyFiles_Init((SkyFiles *) (void *) objects->files);
     return objects;
 }
 CLEAN_AS(func_020be400, SkyObjects_Construct)
@@ -706,7 +667,7 @@ CLEAN_AS(func_020be400, SkyObjects_Construct)
 /* func_020be554: an entry's destructor: its animation's. */
 SkyObject *SkyObject_Destruct(SkyObject *object)
 {
-    func_0208a1f4(&object->anim);
+    CellAnim_Destruct(&object->anim);
     return object;
 }
 CLEAN_AS(func_020be554, SkyObject_Destruct)

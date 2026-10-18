@@ -16,6 +16,10 @@
 #include "sky_object_kinds.h"
 #include "sky_object_sounds.h"
 #include "state_block.h"
+#include "event_announce.h"
+#include "ov003/tile_event.h"
+#include "player_actor_ops.h"
+#include "player_actors.h"
 
 static_assert(sizeof(SkyShotRequest) == 0x14, "a request");
 static_assert(offsetof(SkyShotRequest, triple) == 0x10, "triple");
@@ -45,12 +49,6 @@ extern const MemberPointer __ptmf_null;
 extern const MemberPointer data_020e5af8, data_020e5ac0, data_020e5a00, data_020e5bd0, data_020e5ce8, data_020e5a68,
     data_020e59a0, data_020e5988, data_020e5be0;
 
-extern const Position *func_02095794(int player);             /* the player's position, NULL without one */
-extern void func_02095764(u16 *item, int player);             /* the item the player holds */
-extern int func_02095518(int pitch, int yaw, int player);     /* the player's look */
-extern void func_020c14bc(fx32 *x, const Position *position); /* a position's x on the screen */
-extern int func_ov003_02220c8c(int variant, int x);
-extern void func_0204130c(int event, int a, int b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 static const MemberPointer *const sky_shots_hit_constants[SKY_SHOTS_HIT_STATES] = {
@@ -98,14 +96,14 @@ CLEAN_AS(func_020bdf58, SkyShots_Request)
 void SkyShots_Fire(SkyObjects *objects, int player)
 {
     int index = player < SKY_SHOTS_PLAYERS ? player : 0;
-    const Position *from = func_02095794(player);
+    const Position *from = (const Position *) PlayerActorOps_StartPosition(player);
     SkyShotsHit *hit = (SkyShotsHit *) (void *) objects->unk_2fa8;
     if (from == NULL) {
         SkyShots_EndPlayerState(hit, player);
         return;
     }
     u16 item;
-    func_02095764(&item, player);
+    PlayerActorOps_HeldItem(&item, player);
     SkyShots_SetRequest(SkyShots_Request(objects, index), player, (const Vec3 *) (const void *) from,
                         item == SKY_SHOTS_TRIPLE_ITEM);
     SkyShots_StartWaiting(hit, player);
@@ -125,7 +123,7 @@ void SkyShots_EaseLook(SkyShotsHit *hit, int pitch_step, int yaw_step)
 {
     Approach_S16Wrapped(&hit->pitch, 0, (s16) pitch_step);
     Approach_S16Wrapped(&hit->yaw, 0, (s16) yaw_step);
-    func_02095518(hit->pitch, hit->yaw, SKY_SHOTS_THIS_PLAYER);
+    PlayerActorOps_SetLook(hit->pitch, hit->yaw, SKY_SHOTS_THIS_PLAYER);
 }
 CLEAN_AS(func_020be6ac, SkyShots_EaseLook)
 
@@ -134,10 +132,10 @@ CLEAN_AS(func_020be6ac, SkyShots_EaseLook)
  * pixels the other way, at most 5000 either way. */
 void SkyShots_LookAtHit(SkyShotsHit *hit)
 {
-    const Position *player = func_02095794(SKY_SHOTS_THIS_PLAYER);
+    const Position *player = (const Position *) PlayerActorOps_StartPosition(SKY_SHOTS_THIS_PLAYER);
     fx32 player_x = SKY_SHOTS_SCREEN_MIDDLE;
     if (player != NULL) {
-        func_020c14bc(&player_x, player);
+        SkyShots_ScreenX(&player_x, (const Vec3 *) player);
     }
     int yaw = (FX_Div(hit->x - player_x, 0x100000) * -10000) >> 12;
     if (yaw < -SKY_SHOTS_LOOK_YAW_MAX) {
@@ -145,7 +143,7 @@ void SkyShots_LookAtHit(SkyShotsHit *hit)
     } else if (yaw > SKY_SHOTS_LOOK_YAW_MAX) {
         yaw = SKY_SHOTS_LOOK_YAW_MAX;
     }
-    func_02095518(SKY_SHOTS_LOOK_PITCH, (s16) yaw, SKY_SHOTS_THIS_PLAYER);
+    PlayerActorOps_SetLook(SKY_SHOTS_LOOK_PITCH, (s16) yaw, SKY_SHOTS_THIS_PLAYER);
     hit->pitch = SKY_SHOTS_LOOK_PITCH;
     hit->yaw = (s16) yaw;
 }
@@ -188,7 +186,7 @@ void SkyShots_HitEnd9(SkyShotsHit *hit)
     if (hit->timer > 0) {
         return;
     }
-    const Position *from = func_02095794(hit->player);
+    const Position *from = (const Position *) PlayerActorOps_StartPosition(hit->player);
     if (from != NULL) {
         NearSpot_Pick((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()), from, hit->side);
     }
@@ -240,7 +238,7 @@ void SkyShots_HitEnd6(SkyShotsHit *hit)
         }
     }
     Item1568Count_Clear(data_021ebcd2);
-    func_0204130c(0x44, 0x63, 0);
+    EventAnnounce_Request(0x44, 0x63, 0);
     SkyShots_ResetHit(hit);
 }
 CLEAN_AS(func_020be830, SkyShots_HitEnd6)
@@ -277,7 +275,7 @@ void SkyShots_HitDrop3(SkyShotsHit *hit)
     if (hit->timer > 0) {
         hit->timer--;
         if (hit->timer == 0 &&
-            func_ov003_02220c8c(hit->variant != 0, ((hit->x + 0x800) >> 12) - (SKY_SHOTS_SCREEN_MIDDLE >> 12)) == 0) {
+            TileEvent_StartKindC(hit->variant != 0, ((hit->x + 0x800) >> 12) - (SKY_SHOTS_SCREEN_MIDDLE >> 12)) == 0) {
             hit->done = 1;
         }
     }
@@ -369,7 +367,6 @@ extern SkyObject data_021f9a3c[SKY_SHOTS_PLAYERS * 3]; /* the shots' entries, 33
 extern u8 data_021f8b48[];                             /* the sky's objects (SkyObjects) */
 extern const Vec3 data_021c67d0;                       /* the point the camera looks at */
 extern const fx32 data_020ca0e8;                       /* an acre's depth in world units */
-extern int func_020952ec(void);                        /* this system's player */
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 
@@ -450,7 +447,7 @@ CLEAN_AS(func_020beb98, SkyShots_EndPlayerState)
 /* func_020beba4: for this system's player, the hit waiting 43 frames for its shot to hit. */
 void SkyShots_StartWaiting(SkyShotsHit *hit, int player)
 {
-    if (player == func_020952ec()) {
+    if (player == PlayerActors_OwnPlayer()) {
         hit->state = SKY_SHOTS_HIT_WAITING;
         hit->player = player;
         hit->timer = SKY_SHOTS_WAIT_FRAMES;
@@ -581,7 +578,7 @@ void SkyShots_ObjectSetUp(SkyObject *object, int param)
     int player = request->player;
     shot->shot_player = player;
     fx32 x;
-    func_020c14bc(&x, (const Position *) (const void *) &request->from);
+    SkyShots_ScreenX(&x, (const Vec3 *) ((const Position *) (const void *) &request->from));
     shot->position.x = x;
     shot->position.y = SKY_SHOTS_START_Y;
     shot->position.z = 0;
@@ -589,7 +586,7 @@ void SkyShots_ObjectSetUp(SkyObject *object, int param)
     shot->velocity.y = SKY_SHOTS_SPEED;
     shot->velocity.z = 0;
     fx32 north_rows = data_020ca0e8 * 2;
-    if (player == func_020952ec() && request->from.z < north_rows) {
+    if (player == PlayerActors_OwnPlayer() && request->from.z < north_rows) {
         shot->can_hit = 1;
     }
     fx32 from_camera = request->from.z - data_021c67d0.z;

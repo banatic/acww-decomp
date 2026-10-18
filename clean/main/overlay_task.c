@@ -11,6 +11,14 @@
 #include "control_mode.h"
 #include "overlay_groups.h"
 #include "state_flags.h"
+#include "a_mes_obj.h"
+#include "empty_0203de64.h"
+#include "event_queue.h"
+#include "list_ops.h"
+#include "menu_backdrop.h"
+#include "room_sync.h"
+#include "scene_heaps.h"
+#include "scene_query.h"
 
 /* The buttons the update answers (PadState.pressed bits). */
 #define BUTTON_SELECT 0x0004
@@ -49,21 +57,6 @@ extern u8 data_021f6c58; /* the touch's x, as a byte */
 extern u8 data_021f6c54; /* the touch's y */
 extern u8 data_021dc6c4;
 
-extern void *func_020edf70(int size);   /* a zeroed block from the game's heap */
-extern void *func_020ee660(void *self); /* the base class's constructor */
-extern void func_0205cb00(int size, void *heap);
-extern void func_0205cae4(void);
-extern void func_0206ef70(void);
-extern void func_0206ef34(void);
-extern void func_0206eec8(void);
-extern void func_02051d40(void);
-extern void func_02065c68(List *list); /* empties a list */
-extern int func_0203de78(void);
-extern u8 func_020b65c4(void);
-extern int func_0203ec98(void);
-extern int func_0203e3c8(int arg);
-extern u8 func_02011ed4(void);
-
 /* func_02070214: slot 9 of the vtable; always TRUE. */
 BOOL OverlayTask_Slot9(void)
 {
@@ -74,7 +67,7 @@ CLEAN_AS(func_02070214, OverlayTask_Slot9)
 /* Answer a button or the corner: func_0203e3c8(0), group 9's mode, and the control mode. */
 static void answer(int mode, void (*control)(void))
 {
-    func_0203e3c8(0);
+    EventQueue_RequestKind1(0);
     data_021cfc5c = (u8) mode;
     control();
 }
@@ -85,9 +78,9 @@ BOOL OverlayTask_Update(void)
     OverlayGroups_ReleaseMarked();
     OverlayGroups_LoadRequested();
     OverlayGroups_StartLoaded();
-    func_0206eec8();
+    MenuBackdrop_Update();
 
-    if (func_0203de78() != 0 || func_020b65c4() == 6 || data_021dc6c4 != 0 || func_0203ec98() != 0) {
+    if (Empty0203de64_No78() != 0 || SceneQuery_Current() == 6 || data_021dc6c4 != 0 || EventQueue_HasCurrent() != 0) {
         return TRUE;
     }
     if (!OverlayGroups_IsIdle()) {
@@ -101,7 +94,7 @@ BOOL OverlayTask_Update(void)
         answer(MODE_SELECT, ControlMode_UseButtons);
     } else if (data_021fbe40.pressed & BUTTON_Y) {
         answer(MODE_Y, ControlMode_UseButtons);
-    } else if (func_02011ed4() != 2 && (data_021fbe40.pressed & BUTTON_X)) {
+    } else if (AMesObj_Style() != 2 && (data_021fbe40.pressed & BUTTON_X)) {
         answer(MODE_X, ControlMode_UseButtons);
     }
     return TRUE;
@@ -115,9 +108,9 @@ BOOL OverlayTask_End(void)
         data_021cfcb4[i] |= data_021cfccc[i];
     }
     OverlayGroups_ReleaseMarked();
-    func_0206ef34();
-    func_0205cae4();
-    func_02065c68(&data_021cfca0);
+    MenuBackdrop_End();
+    SceneHeaps_DestroyOverlayTask();
+    ListOps_Clear(&data_021cfca0);
     data_020df328.group = REQUEST_NO_GROUP;
     data_020df328.state = OVERLAY_GROUPS_OFF;
     data_021cfc84 = NULL;
@@ -129,7 +122,7 @@ CLEAN_AS(func_02070334, OverlayTask_End)
  * always TRUE. */
 BOOL OverlayTask_Init(OverlayTask *self)
 {
-    func_0205cb00(0x8c00, NULL);
+    SceneHeaps_CreateOverlayTask(0x8c00, NULL);
     for (int i = 0; i < 3; i++) {
         data_021cfccc[i] = 0;
         data_021cfcb4[i] = 0;
@@ -140,9 +133,9 @@ BOOL OverlayTask_Init(OverlayTask *self)
     /* QUIRK: the flags are cleared here and again by StateFlags_Reset. */
     data_021cfc6c = 0;
     StateFlags_Reset();
-    func_0206ef70();
+    MenuBackdrop_Reset();
     data_021cfc8c = NULL;
-    func_02051d40();
+    RoomSync_Nothing();
     data_021cfc74 = 0;
     return TRUE;
 }
@@ -152,9 +145,9 @@ CLEAN_AS(func_02070390, OverlayTask_Init)
  * the base class's while its constructor runs, then this class's. */
 OverlayTask *OverlayTask_New(void)
 {
-    OverlayTask *task = func_020edf70(sizeof(OverlayTask));
+    OverlayTask *task = Heap_AllocAuxZeroed(sizeof(OverlayTask));
     if (task != NULL) {
-        func_020ee660(task);
+        Process_Construct((Process *) task);
         task->vtable = data_020da13c;
         task->vtable = data_020df548;
     }

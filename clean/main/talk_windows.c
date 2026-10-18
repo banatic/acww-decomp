@@ -6,6 +6,11 @@
 #include "game_variables.h" /* GameVariables_Tweak */
 #include "ov004/member_pointer.h"
 #include "sound.h" /* SoundSys_PlaySe */
+#include "mes_bg.h"
+#include "mes_choice_window.h"
+#include "mes_slider_window.h"
+#include "talk_choice_cursor.h"
+#include "talk_slider.h"
 
 static_assert(sizeof(TalkWindow) == 0x08, "talk window");
 static_assert(offsetof(TalkSliderWindow, slider) == 0x154, "talk slider window");
@@ -50,93 +55,6 @@ extern const MemberPointer data_020e3f6c, data_020e3f74, data_020e3edc, data_020
 extern u32 data_021f45a4;
 extern MemberPointer data_021f45f0[4];
 extern const MemberPointer data_020e3f3c, data_020e3f34, data_020e3f24, data_020e3f2c;
-
-/* The message windows (both classes): constructors and destructors, the place they are drawn
- * at, the screen read from the file and freed, uploaded, the colours set and uploaded, the BG
- * control register, the plane hidden and shown, the width in columns. */
-extern void *func_020ac0ac(void *window);
-extern void *func_020ac078(void *window);
-extern void *func_020ac2ec(void *window);
-extern void *func_020ac2c8(void *window);
-extern void func_020ac39c(void *window, int x, int y);
-extern int func_020ac8c8(void *window);
-extern void func_020ac8a8(void *window);
-extern void func_020ac424(void *window);
-extern void func_020ac384(void *window);
-extern void func_020ac3f8(void *window);
-extern void func_020ac444(void *window);
-extern void func_020ac3e0(void *window);
-extern void func_020ac3ec(void *window);
-extern void func_020ac46c(void *window, int columns);
-/* The shapes of the frame, by the choices' layout 1 to 5 (5 also the slider window's). */
-extern void func_020ac71c(void *window);
-extern void func_020ac624(void *window);
-extern void func_020ac588(void *window);
-extern void func_020ac50c(void *window);
-extern void func_020ac4ec(void *window);
-
-/* The slider window's message window: the input mode it shows (with its sound when `sound`),
- * the knob's level, its animation's state, and the marks it shows. */
-extern void func_020abd68(unsigned char *window, unsigned char buttons, int sound);
-extern void func_020abd5c(void *window, int level);
-extern int func_020abcc0(void *window);
-extern void func_020abdc8(void *window);
-extern void func_020abdc0(unsigned char *window);
-extern void func_020abc84(unsigned char *window);
-extern int func_020abccc(unsigned char *window);
-extern void func_020abcb4(unsigned char *window);
-extern void func_020abca8(void *window);
-extern void func_020abc9c(unsigned char *window);
-extern int func_020abce4(void *window);
-extern void func_020abc90(unsigned char *window);
-
-/* The choice window's message window: the input mode it shows (with its sound when `sound`),
- * the cursor, and its marker's animations. */
-extern void func_020ac11c(unsigned char *window, unsigned char buttons, int sound);
-extern void func_020ac1cc(void *window, int cursor);
-extern int func_020ac240(void *window);
-extern void func_020ac1d0(void *window);
-extern void func_020ac1c4(void *window);
-extern int func_020ac218(void *window);
-extern int func_020ac198(void *window, int choice);
-extern void func_020ac1dc(void *window);
-extern void func_020ac1e8(void *window);
-
-/* The slider (talk_slider.h): constructor and destructor, the choices set, its frame, reset,
- * the input it shows (touch screen or START), its level, the choice taken, which control is
- * focused, its width in columns and its marks. */
-extern void func_020aaeb4(void *slider, void *window);
-extern int func_020aaea4(void *slider);
-extern void func_020aae8c(void *slider, void *choices);
-extern void func_020aad9c(void *slider);
-extern void func_020aae40(void *slider);
-extern int func_020aad3c(void *slider);
-extern int func_020aae88(void *slider);
-extern int func_020aae78(void *slider);
-extern int func_020aad8c(void *slider);
-extern int func_020aad5c(void *slider);
-extern int func_020aad7c(void *slider);
-extern int func_020aae84(void *slider);
-extern void func_020aae30(void *slider);
-extern void func_020aae38(void *slider);
-extern void func_020aae14(void *slider);
-
-/* The choice window's cursor over the choices: constructor and destructor, the choices set,
- * its frame, the input mode, where it is, the choice taken, the choices' layout and width,
- * and its resets. */
-extern void func_020ab37c(void *list, void *window);
-extern int func_020ab36c(void *list);
-extern void func_020ab354(void *list, void *choices);
-extern void func_020ab278(void *list);
-extern int func_020ab270(void *list);
-extern int func_020ab344(void *list);
-extern int func_020ab338(void *list);
-extern unsigned int func_020ab348(void *list);
-extern int func_020ab334(void *list);
-extern void func_020ab30c(void *list);
-extern void func_020ab304(void *list);
-extern void func_020ab2fc(void *list);
-extern void func_020ab2e0(void *list);
 
 typedef void TalkWindowCall(void *object);
 typedef int TalkWindowQuery(void *object);
@@ -251,8 +169,8 @@ CLEAN_AS(func_020a9dc8, TalkWindows_ShowChoices)
 /* func_020a9ddc: the message window as wide as the slider says, with the slider's frame. */
 void TalkSliderWindow_LayOut(TalkSliderWindow *self)
 {
-    func_020ac46c(self->window, func_020aae84(&self->slider));
-    func_020ac4ec(self->window);
+    MesBg_SetColumns((MesBg *) (void *) self->window, TalkSlider_LabelCells(&self->slider));
+    MesBg_ShapeFiveLines((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020a9ddc, TalkSliderWindow_LayOut)
 
@@ -267,9 +185,9 @@ void TalkSliderWindow_StepClosing(TalkSliderWindow *self)
     self->offset_y += GameVariables_Tweak(TALK_WINDOW_TWEAK_CLOSING, 4) - 11;
     self->frames_left--;
     int done = self->frames_left <= 0;
-    func_020ac39c(self->window, self->offset_x, self->offset_y);
+    MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y);
     if (done) {
-        func_020aae14(&self->slider);
+        TalkSlider_Close(&self->slider);
         TalkSliderWindow_EnterClosed(self);
     }
 }
@@ -294,29 +212,29 @@ void TalkSliderWindow_StepOpen(TalkSliderWindow *self)
     void *slider = &self->slider;
     unsigned char *window = self->window;
 
-    func_020aad9c(slider);
-    func_020abd68(window, func_020aad3c(slider) == 0, 1);
-    func_020abd5c(window, func_020aae88(slider));
-    int choice = func_020aae78(slider);
-    int anim = func_020abcc0(window);
+    TalkSlider_Update(slider);
+    MesSliderWindow_SetButtons((MesSliderWindow *) (void *) window, TalkSlider_TouchOrStart(slider) == 0, 1);
+    MesSliderWindow_SetLevel((MesSliderWindow *) (void *) window, TalkSlider_Level(slider));
+    int choice = TalkSlider_Picked(slider);
+    int anim = MesSliderWindow_State((MesSliderWindow *) (void *) window);
     if (choice >= 0) {
         if (anim == TALK_SLIDER_WINDOW_ANIM_DONE) {
-            func_020abdc0(window);
-            func_020aae30(slider);
+            MesSliderWindow_Dismiss((MesSliderWindow *) (void *) window);
+            TalkSlider_Hide(slider);
             TalkSliderWindow_StartClosing(self);
         } else {
-            func_020abc84(window);
+            MesSliderWindow_Choose((MesSliderWindow *) (void *) window);
         }
-    } else if (func_020aad8c(slider)) {
-        if (func_020abccc(window)) {
-            func_020abcb4(window);
-        } else if (func_020aad5c(slider)) {
-            func_020abca8(window);
+    } else if (TalkSlider_KnobFocused(slider)) {
+        if (MesSliderWindow_OnButton((MesSliderWindow *) (void *) window)) {
+            MesSliderWindow_RequestFocusSlider((MesSliderWindow *) (void *) window);
+        } else if (TalkSlider_KnobHeld(slider)) {
+            MesSliderWindow_Grab((MesSliderWindow *) (void *) window);
         } else {
-            func_020abc9c(window);
+            MesSliderWindow_Release((MesSliderWindow *) (void *) window);
         }
-    } else if (func_020aad7c(slider) && func_020abce4(window)) {
-        func_020abc90(window);
+    } else if (TalkSlider_OkFocused(slider) && MesSliderWindow_OnSlider((MesSliderWindow *) (void *) window)) {
+        MesSliderWindow_RequestFocusButton((MesSliderWindow *) (void *) window);
     }
 }
 CLEAN_AS(func_020a9ebc, TalkSliderWindow_StepOpen)
@@ -345,11 +263,11 @@ void TalkSliderWindow_StepOpening(TalkSliderWindow *self)
         self->offset_x = 0;
         self->offset_y = 0;
     }
-    func_020ac39c(self->window, self->offset_x, self->offset_y + 4);
+    MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y + 4);
     if (done) {
-        func_020abdc8(self->window);
-        func_020abd68(self->window, func_020aad3c(&self->slider) == 0, 0);
-        func_020aae38(&self->slider);
+        MesSliderWindow_Open((MesSliderWindow *) (void *) self->window);
+        MesSliderWindow_SetButtons((MesSliderWindow *) (void *) self->window, TalkSlider_TouchOrStart(&self->slider) == 0, 0);
+        TalkSlider_Show(&self->slider);
         TalkSliderWindow_EnterOpen(self);
     }
 }
@@ -360,18 +278,18 @@ CLEAN_AS(func_020a9fac, TalkSliderWindow_StepOpening)
 void TalkSliderWindow_StartOpening(TalkSliderWindow *self)
 {
     self->state = TALK_WINDOW_OPENING;
-    func_020ac8c8(self->window);
-    func_020aae40(&self->slider);
+    MesBg_Load((MesBg *) (void *) self->window);
+    TalkSlider_Start(&self->slider);
     TalkSliderWindow_LayOut(self);
-    func_020ac444(self->window);
-    func_020ac424(self->window);
-    func_020ac3ec(self->window);
-    func_020ac8a8(self->window);
+    MesBg_SetBgControl((MesBg *) (void *) self->window);
+    MesBg_UploadScreen((MesBg *) (void *) self->window);
+    MesBg_Show((MesBg *) (void *) self->window);
+    MesBg_FreeScreen((MesBg *) (void *) self->window);
     self->frames_left = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 2) + 3;
     self->offset_x = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 4) + 5;
     self->offset_y = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 5) - 5;
-    func_020ac39c(self->window, self->offset_x, self->offset_y + 4);
-    func_020ac384(self->window);
+    MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y + 4);
+    MesBg_ResetLineColours((MesBg *) (void *) self->window);
     SoundSys_PlaySe(TALK_WINDOW_SE_OPEN);
 }
 CLEAN_AS(func_020aa09c, TalkSliderWindow_StartOpening)
@@ -390,7 +308,7 @@ CLEAN_AS(func_020aa13c, TalkSliderWindow_StepClosed)
 void TalkSliderWindow_EnterClosed(TalkSliderWindow *self)
 {
     self->state = TALK_WINDOW_CLOSED;
-    func_020ac3e0(self->window);
+    MesBg_Hide((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020aa154, TalkSliderWindow_EnterClosed)
 
@@ -412,7 +330,7 @@ CLEAN_AS(func_020aa170, TalkSliderWindow_IsClosed)
 void TalkSliderWindow_Draw(TalkSliderWindow *self)
 {
     talk_window_call(self->window, TALK_WINDOW_MESSAGE_SLOT_DRAW);
-    func_020ac3f8(self->window);
+    MesBg_UploadColours((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020aa180, TalkSliderWindow_Draw)
 
@@ -437,8 +355,8 @@ CLEAN_AS(func_020aa19c, TalkSliderWindow_Update)
 TalkSliderWindow *TalkSliderWindow_Delete(TalkSliderWindow *self)
 {
     self->base.vtable = data_020e404c;
-    func_020aaea4(&self->slider);
-    func_020ac078(self->window);
+    TalkSlider_Destruct(&self->slider);
+    MesSliderWindow_Destruct((MesSliderWindow *) (void *) self->window);
     TalkWindow_BaseDestruct(&self->base);
     Heap_OperatorDeleteB(self);
     return self;
@@ -449,8 +367,8 @@ CLEAN_AS(func_020aa228, TalkSliderWindow_Delete)
 TalkSliderWindow *TalkSliderWindow_Destruct(TalkSliderWindow *self)
 {
     self->base.vtable = data_020e404c;
-    func_020aaea4(&self->slider);
-    func_020ac078(self->window);
+    TalkSlider_Destruct(&self->slider);
+    MesSliderWindow_Destruct((MesSliderWindow *) (void *) self->window);
     TalkWindow_BaseDestruct(&self->base);
     return self;
 }
@@ -462,8 +380,8 @@ TalkSliderWindow *TalkSliderWindow_Construct(TalkSliderWindow *self)
     TalkWindow_Construct(&self->base);
     self->base.vtable = data_020e404c;
     self->state = TALK_WINDOW_CLOSED;
-    func_020ac0ac(self->window);
-    func_020aaeb4(&self->slider, self->window);
+    MesSliderWindow_Construct((MesSliderWindow *) (void *) self->window);
+    TalkSlider_Construct(&self->slider, self->window);
     self->offset_x = 0;
     self->offset_y = 0;
     self->frames_left = 0;
@@ -475,7 +393,7 @@ CLEAN_AS(func_020aa28c, TalkSliderWindow_Construct)
 /* func_020aa2e4: the slider handed `choices`. */
 void TalkSliderWindow_SetChoices(TalkSliderWindow *self, void *choices)
 {
-    func_020aae8c(&self->slider, choices);
+    TalkSlider_SetChoices(&self->slider, choices);
 }
 CLEAN_AS(func_020aa2e4, TalkSliderWindow_SetChoices)
 
@@ -485,23 +403,23 @@ CLEAN_AS(func_020aa2e4, TalkSliderWindow_SetChoices)
  * layout (none for another layout). */
 void TalkChoiceWindow_LayOut(TalkChoiceWindow *self)
 {
-    unsigned int layout = func_020ab348(self->list);
-    func_020ac46c(self->window, func_020ab334(self->list));
+    unsigned int layout = TalkChoiceCursor_Count((TalkChoiceCursor *) (void *) self->list);
+    MesBg_SetColumns((MesBg *) (void *) self->window, TalkChoiceCursor_LabelCells((TalkChoiceCursor *) (void *) self->list));
     switch (layout) {
         case 1:
-            func_020ac71c(self->window);
+            MesBg_ShapeOneLine((MesBg *) (void *) self->window);
             break;
         case 2:
-            func_020ac624(self->window);
+            MesBg_ShapeTwoLines((MesBg *) (void *) self->window);
             break;
         case 3:
-            func_020ac588(self->window);
+            MesBg_ShapeThreeLines((MesBg *) (void *) self->window);
             break;
         case 4:
-            func_020ac50c(self->window);
+            MesBg_ShapeFourLines((MesBg *) (void *) self->window);
             break;
         case 5:
-            func_020ac4ec(self->window);
+            MesBg_ShapeFiveLines((MesBg *) (void *) self->window);
             break;
         default:
             break;
@@ -517,11 +435,11 @@ void TalkChoiceWindow_StepClosing(TalkChoiceWindow *self)
     self->offset_y += GameVariables_Tweak(TALK_WINDOW_TWEAK_CLOSING, 4) - 0x11;
     self->frames_left--;
     int done = self->frames_left <= 0;
-    func_020ac39c(self->window, self->offset_x, self->offset_y);
+    MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y);
     self->decided = 0;
     if (done) {
-        func_020ab2e0(self->list);
-        func_020ac3e0(self->window);
+        TalkChoiceCursor_Close((TalkChoiceCursor *) (void *) self->list);
+        MesBg_Hide((MesBg *) (void *) self->window);
         TalkChoiceWindow_EnterClosed(self);
     }
 }
@@ -544,21 +462,24 @@ void TalkChoiceWindow_StepOpen(TalkChoiceWindow *self)
 {
     unsigned char *window = self->window;
 
-    func_020ab278(self->list);
-    func_020ac11c(window, func_020ab270(self->list) == 0, 1);
-    func_020ac1cc(window, func_020ab344(self->list));
-    int choice = func_020ab338(self->list);
+    TalkChoiceCursor_Update((TalkChoiceCursor *) (void *) self->list);
+    MesChoiceWindow_SetButtons((MesChoiceWindow *) (void *) window,
+                               TalkChoiceCursor_UsesTouch((TalkChoiceCursor *) (void *) self->list) == 0, 1);
+    MesChoiceWindow_SetCursor((MesChoiceWindow *) (void *) window,
+                              TalkChoiceCursor_Position((TalkChoiceCursor *) (void *) self->list));
+    int choice = TalkChoiceCursor_Picked((TalkChoiceCursor *) (void *) self->list);
     if (choice < 0) {
         return;
     }
-    if (func_020ac240(window)) {
-        func_020ac1d0(window);
-        func_020ac1c4(window);
+    if (MesChoiceWindow_MarkerBeside((MesChoiceWindow *) (void *) window)) {
+        MesChoiceWindow_PressMarker((MesChoiceWindow *) (void *) window);
+        MesChoiceWindow_ResetFlash((MesChoiceWindow *) (void *) window);
         return;
     }
-    if (func_020ac218(window) && func_020ac198(window, choice)) {
-        func_020ac1dc(window);
-        func_020ab2fc(self->list);
+    if (MesChoiceWindow_PressDone((MesChoiceWindow *) (void *) window) &&
+        MesChoiceWindow_FlashChoice((MesChoiceWindow *) (void *) window, choice)) {
+        MesChoiceWindow_HideMarker((MesChoiceWindow *) (void *) window);
+        TalkChoiceCursor_Hide((TalkChoiceCursor *) (void *) self->list);
         TalkChoiceWindow_StartClosing(self);
     }
 }
@@ -568,8 +489,9 @@ CLEAN_AS(func_020aa420, TalkChoiceWindow_StepOpen)
 void TalkChoiceWindow_EnterOpen(TalkChoiceWindow *self)
 {
     self->state = TALK_WINDOW_OPEN;
-    func_020ac1e8(self->window);
-    func_020ac11c(self->window, func_020ab270(self->list) == 0, 0);
+    MesChoiceWindow_Open((MesChoiceWindow *) (void *) self->window);
+    MesChoiceWindow_SetButtons((MesChoiceWindow *) (void *) self->window,
+                               TalkChoiceCursor_UsesTouch((TalkChoiceCursor *) (void *) self->list) == 0, 0);
 }
 CLEAN_AS(func_020aa4c0, TalkChoiceWindow_EnterOpen)
 
@@ -590,9 +512,9 @@ void TalkChoiceWindow_StepOpening(TalkChoiceWindow *self)
         self->offset_x = 0;
         self->offset_y = 0;
     }
-    func_020ac39c(self->window, self->offset_x, self->offset_y);
+    MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y);
     if (done) {
-        func_020ab304(self->list);
+        TalkChoiceCursor_Show((TalkChoiceCursor *) (void *) self->list);
         TalkChoiceWindow_EnterOpen(self);
     }
 }
@@ -604,18 +526,18 @@ CLEAN_AS(func_020aa4f4, TalkChoiceWindow_StepOpening)
 void TalkChoiceWindow_StartOpening(TalkChoiceWindow *self)
 {
     self->state = TALK_WINDOW_OPENING;
-    func_020ac8c8(self->window);
-    func_020ab30c(self->list);
+    MesBg_Load((MesBg *) (void *) self->window);
+    TalkChoiceCursor_Start((TalkChoiceCursor *) (void *) self->list);
     TalkChoiceWindow_LayOut(self);
-    func_020ac444(self->window);
-    func_020ac424(self->window);
-    func_020ac3ec(self->window);
-    func_020ac8a8(self->window);
+    MesBg_SetBgControl((MesBg *) (void *) self->window);
+    MesBg_UploadScreen((MesBg *) (void *) self->window);
+    MesBg_Show((MesBg *) (void *) self->window);
+    MesBg_FreeScreen((MesBg *) (void *) self->window);
     self->frames_left = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 2) + 3;
     self->offset_x = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 4) + 5;
     self->offset_y = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 5) - 5;
-    func_020ac39c(self->window, self->offset_x, self->offset_y);
-    func_020ac384(self->window);
+    MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y);
+    MesBg_ResetLineColours((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020aa5d0, TalkChoiceWindow_StartOpening)
 
@@ -654,7 +576,7 @@ CLEAN_AS(func_020aa688, TalkChoiceWindow_IsClosed)
 void TalkChoiceWindow_Draw(TalkChoiceWindow *self)
 {
     talk_window_call(self->window, TALK_WINDOW_MESSAGE_SLOT_DRAW);
-    func_020ac3f8(self->window);
+    MesBg_UploadColours((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020aa698, TalkChoiceWindow_Draw)
 
@@ -679,8 +601,8 @@ CLEAN_AS(func_020aa6b4, TalkChoiceWindow_Update)
 TalkChoiceWindow *TalkChoiceWindow_Delete(TalkChoiceWindow *self)
 {
     self->base.vtable = data_020e406c;
-    func_020ab36c(self->list);
-    func_020ac2c8(self->window);
+    TalkChoiceCursor_Destruct((TalkChoiceCursor *) (void *) self->list);
+    MesChoiceWindow_Destruct((MesChoiceWindow *) (void *) self->window);
     TalkWindow_BaseDestruct(&self->base);
     Heap_OperatorDeleteB(self);
     return self;
@@ -691,8 +613,8 @@ CLEAN_AS(func_020aa740, TalkChoiceWindow_Delete)
 TalkChoiceWindow *TalkChoiceWindow_Destruct(TalkChoiceWindow *self)
 {
     self->base.vtable = data_020e406c;
-    func_020ab36c(self->list);
-    func_020ac2c8(self->window);
+    TalkChoiceCursor_Destruct((TalkChoiceCursor *) (void *) self->list);
+    MesChoiceWindow_Destruct((MesChoiceWindow *) (void *) self->window);
     TalkWindow_BaseDestruct(&self->base);
     return self;
 }
@@ -704,8 +626,8 @@ TalkChoiceWindow *TalkChoiceWindow_Construct(TalkChoiceWindow *self)
     TalkWindow_Construct(&self->base);
     self->base.vtable = data_020e406c;
     self->state = TALK_WINDOW_CLOSED;
-    func_020ac2ec(self->window);
-    func_020ab37c(self->list, self->window);
+    MesChoiceWindow_Construct((MesChoiceWindow *) (void *) self->window);
+    TalkChoiceCursor_Construct((TalkChoiceCursor *) (void *) self->list, self->window);
     self->offset_x = 0;
     self->offset_y = 0;
     self->frames_left = 0;
@@ -717,7 +639,7 @@ CLEAN_AS(func_020aa79c, TalkChoiceWindow_Construct)
 /* func_020aa7e8: the cursor handed `choices`. */
 void TalkChoiceWindow_SetChoices(TalkChoiceWindow *self, void *choices)
 {
-    func_020ab354(self->list, choices);
+    TalkChoiceCursor_SetAnswers((TalkChoiceCursor *) (void *) self->list, choices);
 }
 CLEAN_AS(func_020aa7e8, TalkChoiceWindow_SetChoices)
 

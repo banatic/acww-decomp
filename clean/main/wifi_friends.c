@@ -3,6 +3,7 @@
 
 #include "autoload_2/network.h"
 #include "clean.h"
+#include "text_string.h"
 
 static_assert(offsetof(WifiFriend, text_0c) == 0x0c, "text 0c");
 static_assert(offsetof(WifiFriend, text_18) == 0x18, "text 18");
@@ -17,7 +18,6 @@ static_assert(sizeof(WifiAccount) == 0x50, "account size");
 #define FRIEND_DATA_KEY 2    /* Wfc_GetFriendDataType: a friend key */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_02051bf8(u16 *dst, int units); /* clears `units` 16-bit units */
 
 extern void MI_CpuFill8(void *dst, int value, u32 size);
 
@@ -130,8 +130,8 @@ CLEAN_AS(func_02077c3c, WifiFriend_GetFriendData)
 void WifiFriend_Clear(WifiFriend *entry)
 {
     WifiFriendData_Clear(&entry->friend_data);
-    func_02051bf8(entry->text_0c, WIFI_FRIEND_TEXT_LENGTH);
-    func_02051bf8(entry->text_18, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_ClearChars(entry->text_0c, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_ClearChars(entry->text_18, WIFI_FRIEND_TEXT_LENGTH);
 }
 CLEAN_AS(func_02077c40, WifiFriend_Clear)
 

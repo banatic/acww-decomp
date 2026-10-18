@@ -6,6 +6,9 @@
 #include "player_pockets.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "item_form.h"
+#include "item_lists.h"
+#include "item_traits.h"
 
 /* An item marked in the record of items when a 0x151f is given in state 0. */
 #define CURRENT_POCKETS_151F 0x151f
@@ -25,12 +28,7 @@ typedef struct CurrentPocketsItemList {
     int group;
 } CurrentPocketsItemList;
 
-extern void func_02061e2c(u16 *out, const u16 *item); /* the item's pocket form */
-extern int func_0204c520(u16 *item);                  /* the item's class */
 extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
-extern void func_02063ccc(CurrentPocketsItemList *list, int kind, int group);
-extern void func_020638d4(u16 *item, CurrentPocketsItemList *list, int a, int b, int c, int d, int e);
-extern void func_02063cc8(CurrentPocketsItemList *list);
 
 /* Whether the slot's item is `*item`: for codes with a variant (ItemCode_HasVariant), the item
  * without its variant is compared. */
@@ -86,7 +84,7 @@ u8 CurrentPockets_MarkClass(PocketsMarks *marks, int item_class)
     u16 *slots = PlayerPockets_Slot(PlayerRecord_Pockets(record), 0);
     for (int i = 0; i < PLAYER_POCKETS_SLOTS; i++) {
         if (PlayerPockets_SlotStateIsZero(PlayerRecord_Pockets(record), i) != 0) {
-            if (func_0204c520(&slots[i]) == item_class) {
+            if (ItemTraits_Class(&slots[i]) == item_class) {
                 marks->slots |= (u16) (1u << i);
                 marks->count++;
             }
@@ -120,7 +118,7 @@ int CurrentPockets_Give(const u16 *item, int state)
         return 0;
     }
     u16 carried;
-    func_02061e2c(&carried, item);
+    ItemForm_ToCarried(&carried, (u16 *) item);
     CurrentPockets_Set(&carried, state, slot);
     return 1;
 }
@@ -195,7 +193,7 @@ void CurrentPockets_ReceiveAt(u16 *item, u32 slot)
         state = 1;
     } else {
         u16 carried;
-        func_02061e2c(&carried, item);
+        ItemForm_ToCarried(&carried, item);
         given = carried;
     }
     CurrentPockets_Set(&given, state, (int) slot);
@@ -207,9 +205,9 @@ u16 CurrentPockets_DrawFor156B(void)
 {
     u16 item;
     CurrentPocketsItemList list;
-    func_02063ccc(&list, CURRENT_POCKETS_DRAW_KIND, CURRENT_POCKETS_DRAW_GROUP);
-    func_020638d4(&item, &list, 0, 0, 1, 1, 0);
-    func_02063cc8(&list);
+    ItemList_Construct((ItemList *) &list, CURRENT_POCKETS_DRAW_KIND, CURRENT_POCKETS_DRAW_GROUP);
+    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemList_Destruct(&list);
     return item;
 }
 CLEAN_AS(func_0209a19c, CurrentPockets_DrawFor156B)

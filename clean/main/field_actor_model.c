@@ -14,6 +14,17 @@
 #include "clean.h"
 #include "field_actor_parts.h"
 #include "main/model_matrix.h"
+#include "animated_model.h"
+#include "collision_query.h"
+#include "glasses_look.h"
+#include "globe.h"
+#include "head_look.h"
+#include "held_item.h"
+#include "layered_model.h"
+#include "model_object.h"
+#include "ov003/town_item_models.h"
+#include "ov004/icon_models.h"
+#include "shadow.h"
 
 /* The render state the node callbacks are handed, as far as they read it. */
 typedef struct NodeRenderObject {
@@ -60,34 +71,9 @@ extern u32 data_021bfff4;
 extern MemberPointer data_021c0008[2];
 extern const MemberPointer data_020d747c, data_020d74b4;
 
-extern int func_020310c8(int value);
-/* A point on the flat ground to the curved ground drawn (func_0203f7d0), back
- * (func_0203f8d0, giving the angle of the slope), and the same with the slope's angle about X
- * (func_0203f844); func_0203f758 is the curve's radius. */
-extern int func_0203f7d0(Vec3 *out, const Vec3 *in);
-extern int func_0203f8d0(Vec3 *out, Vec3 *in);
-extern int func_0203f844(Vec3 *out, Vec3 *in);
-extern int func_0203f758(void);
-/* The models. */
-extern void func_02055d38(void *model, int value);
-extern void func_02054848(void *model, int a);
-extern int func_02055d0c(void *model, Mtx43 *out, int joint);
-extern void func_02055e7c(void *model, void *a);
-extern int func_0205e138(const u8 *part, int a);
-extern int func_0205ddd4(u8 *part);
-extern void func_020acbc8(Vec3 *point, int mark);
-extern void func_0205e954(void *held, Mtx43 *hand);
-extern void func_0205e8f8(Mtx43 *out, const u8 *held, u32 mode);
-extern void func_02054f68(NodeRenderState *state, int a);
-extern void func_0205490c(void *model, NodeRenderState *state);
-extern void func_02054ed4(void *model, NodeRenderState *state, int a);
-extern void func_02054988(void *model, NodeRenderState *state);
 extern void MTX_RotY33_(Mtx33 *mtx, fx32 sin, fx32 cos);
 extern void MTX_RotX33_(Mtx33 *mtx, fx32 sin, fx32 cos);
 extern void MTX_Concat33(const Mtx33 *a, const Mtx33 *b, Mtx33 *out);
-/* An item's model drawn at a point with a scale, outdoors and indoors. */
-extern void func_ov003_0222462c(int item, const Vec3 *position, const Vec3 *scale, int a3, int a4, int a5);
-extern void func_ov004_02233b10(int item, const Vec3 *position, const Vec3 *scale, int a3, int a4, int a5);
 
 /* The node callbacks, installed by their DS addresses. */
 extern void func_02005730(NodeRenderState *state);
@@ -135,9 +121,9 @@ void FieldActor_PlaceForDraw(FieldActor *actor)
         Vec3 position = actor->unk_824;
         Vec3 scale = {actor->unk_830[0], actor->unk_830[1], actor->unk_830[2]};
         if (data_020e54a8 == 0) {
-            func_ov003_0222462c(actor->unk_822, &position, &scale, 0, 0, 0);
+            TownItemModels_DrawCodeAt(actor->unk_822, &position, &scale, 0, 0, 0);
         } else {
-            func_ov004_02233b10(actor->unk_822, &position, &scale, 0, 0, 0);
+            IconModels_DrawItemAt(actor->unk_822, &position, &scale, 0, 0, 0);
         }
     }
 }
@@ -148,7 +134,7 @@ CLEAN_AS(func_02005338, FieldActor_PlaceForDraw)
 int FieldActor_ModelY(FieldActor *actor, int y)
 {
     if (data_020e54a8 != 0 && FieldActor_TestFlag(actor, 3)) {
-        return func_020310c8(0);
+        return CollisionQuery_FloorHeight(0);
     }
     return y;
 }
@@ -169,47 +155,47 @@ void FieldActor_PlaceModel(FieldActor *actor)
     Vec3 point;
 
     data_021cfe68 = *matrix_at(actor, FIELD_ACTOR_MATRIX_MODEL);
-    func_02055d38(body, FIELD_ACTOR_BODY_ARG(actor));
-    func_02054848(body, 0);
-    func_02055d0c(body, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_F), 0xf);
-    func_02055d0c(body, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_E), 0xe);
-    func_02055d0c(body, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_B), 0xb);
-    func_02055d0c(body, &joint, 7);
+    ModelObject_SetAlpha((ModelObject *) (void *) body, FIELD_ACTOR_BODY_ARG(actor));
+    LayeredModel_DrawA((LayeredModel *) (void *) body, 0);
+    ModelObject_JointMatrix((ModelObject *) (void *) body, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_F), 0xf);
+    ModelObject_JointMatrix((ModelObject *) (void *) body, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_E), 0xe);
+    ModelObject_JointMatrix((ModelObject *) (void *) body, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_B), 0xb);
+    ModelObject_JointMatrix((ModelObject *) (void *) body, &joint, 7);
     point = translation_of(&joint);
-    func_0203f7d0((Vec3 *) at(actor, FIELD_ACTOR_POINT_JOINT_7), &point);
-    func_02055d0c(body, &joint, 4);
+    Globe_Unbend((Vec3 *) at(actor, FIELD_ACTOR_POINT_JOINT_7), &point);
+    ModelObject_JointMatrix((ModelObject *) (void *) body, &joint, 4);
     point = translation_of(&joint);
-    func_0203f7d0((Vec3 *) at(actor, FIELD_ACTOR_POINT_JOINT_4), &point);
-    func_02055d0c(body, &joint, 0x10);
+    Globe_Unbend((Vec3 *) at(actor, FIELD_ACTOR_POINT_JOINT_4), &point);
+    ModelObject_JointMatrix((ModelObject *) (void *) body, &joint, 0x10);
     point = translation_of(&joint);
-    func_0203f7d0(&actor->effect_point, &point);
+    Globe_Unbend(&actor->effect_point, &point);
 
     *matrix_at(actor, FIELD_ACTOR_MODEL_A + FIELD_ACTOR_MODEL_MATRIX) = *matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_F);
-    func_02055d38(at(actor, FIELD_ACTOR_MODEL_A), FIELD_ACTOR_BODY_ARG(actor));
-    func_02055e7c(at(actor, FIELD_ACTOR_MODEL_A), NULL);
-    if (func_0205e138(at(actor, FIELD_ACTOR_PART_B), 1) < 0x9e) {
+    ModelObject_SetAlpha((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_A), FIELD_ACTOR_BODY_ARG(actor));
+    ModelObject_Draw((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_A), NULL);
+    if (HeadLook_Kind(at(actor, FIELD_ACTOR_PART_B), 1) < 0x9e) {
         *matrix_at(actor, FIELD_ACTOR_MODEL_B + FIELD_ACTOR_MODEL_MATRIX) = *matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_F);
-        func_02055d38(at(actor, FIELD_ACTOR_MODEL_B), FIELD_ACTOR_BODY_ARG(actor));
-        func_02055e7c(at(actor, FIELD_ACTOR_MODEL_B), NULL);
+        ModelObject_SetAlpha((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_B), FIELD_ACTOR_BODY_ARG(actor));
+        ModelObject_Draw((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_B), NULL);
     }
-    if (func_0205ddd4(at(actor, FIELD_ACTOR_PART_C)) != 0x4b) {
+    if (GlassesLook_Kind(at(actor, FIELD_ACTOR_PART_C)) != 0x4b) {
         *matrix_at(actor, FIELD_ACTOR_MODEL_C + FIELD_ACTOR_MODEL_MATRIX) = *matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_F);
-        func_02055d38(at(actor, FIELD_ACTOR_MODEL_C), FIELD_ACTOR_BODY_ARG(actor));
-        func_02055e7c(at(actor, FIELD_ACTOR_MODEL_C), NULL);
+        ModelObject_SetAlpha((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_C), FIELD_ACTOR_BODY_ARG(actor));
+        ModelObject_Draw((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_C), NULL);
     }
 
     if (FIELD_ACTOR_MARK(actor) > 0) {
         Vec3 ground;
-        func_02055d0c(body, &joint, 1);
+        ModelObject_JointMatrix((ModelObject *) (void *) body, &joint, 1);
         point = translation_of(&joint);
-        func_0203f7d0(&ground, &point);
-        func_020acbc8(&ground, FIELD_ACTOR_MARK(actor));
+        Globe_Unbend(&ground, &point);
+        CharaShadow_DrawUnder(&ground, FIELD_ACTOR_MARK(actor));
     }
 
     if (FieldActor_TestFlag(actor, 0)) {
         Mtx43 placement;
         int mode;
-        func_0205e954(actor->held, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_E));
+        HeldItem_Draw((HeldItemObject *) (void *) actor->held, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_E));
         switch (FieldActor_HeldTool(actor)) {
             case 4:
             case 10:
@@ -224,10 +210,10 @@ void FieldActor_PlaceModel(FieldActor *actor)
                 mode = 0;
                 break;
         }
-        func_0205e8f8(&placement, actor->held, (u32) mode);
+        HeldItem_JointMatrix(&placement, actor->held, (u32) mode);
         *matrix_at(actor, FIELD_ACTOR_MATRIX_HELD) = placement;
         if (FieldActor_HeldTool(actor) == 4) {
-            func_0205e8f8(&placement, actor->held, 3);
+            HeldItem_JointMatrix(&placement, actor->held, 3);
             *matrix_at(actor, FIELD_ACTOR_MATRIX_HELD_ALT) = placement;
         }
     }
@@ -259,7 +245,7 @@ CLEAN_AS(func_02005730, FieldActor_NodeAfter)
  * timing 3. */
 void FieldActor_NodeTransform(NodeRenderState *state)
 {
-    func_02054f68(state, 0);
+    AnimatedModel_RestoreNodeTranslation((AnimatedModelNodeState *) state, 0);
     FieldActor *actor = state->object->actor;
     if (state->command[1] == NODE_HEAD && actor != NULL) {
         int turn = actor->head_pitch;
@@ -276,26 +262,26 @@ void FieldActor_NodeTransform(NodeRenderState *state)
     actor = state->object->actor;
     if (actor != NULL) {
         u8 *body = at(actor, FIELD_ACTOR_BODY);
-        func_0205490c(body, state);
+        LayeredModel_ApplyNodeA((LayeredModel *) (void *) body, (LayeredModelNodeState *) state);
         if (state->command[1] == NODE_ROOT) {
             if (actor->animation == 0x82 || actor->animation == 0x83) {
                 NodeJoint *joint = state->joint;
                 Vec3 bent = joint->translation;
                 Vec3 flat = joint->translation;
-                int slope = func_0203f844(&bent, &flat);
+                int slope = Globe_Bend(&bent, &flat);
                 joint->translation.z = bent.z;
-                joint->translation.y = bent.y - func_0203f758();
+                joint->translation.y = bent.y - Globe_Radius();
                 if (slope != 0) {
                     Mtx33 step;
                     MTX_RotX33_(&step, sin_of((u16) slope), cos_of((u16) slope));
                     MTX_Concat33(&joint->rotation, &step, &joint->rotation);
                 }
             }
-            func_02054ed4(body, state, 0);
+            AnimatedModel_ApplyNodeMatrix(body, (AnimatedModelNodeState *) state, 0);
             Mtx43 current = data_021cfe68;
             Vec3 root = translation_of(&current);
             root.y = FieldActor_ModelY(actor, root.y);
-            func_0203f7d0(&actor->start_position, &root);
+            Globe_Unbend(&actor->start_position, &root);
         }
     }
     state->node_callback = (u32) (uintptr_t) func_02005730;
@@ -309,7 +295,7 @@ void FieldActor_NodeBefore(NodeRenderState *state)
 {
     FieldActor *actor = state->object->actor;
     if (actor != NULL) {
-        func_02054988(at(actor, FIELD_ACTOR_BODY), state);
+        LayeredModel_PrepareNodeA((LayeredModel *) (void *) at(actor, FIELD_ACTOR_BODY), (LayeredModelNodeState *) state);
     }
     state->node_callback = (u32) (uintptr_t) func_02005740;
     state->node_timing = 2;
@@ -322,7 +308,7 @@ void FieldActor_UpdateModelMatrix(FieldActor *actor)
 {
     Actor *base = FieldActor_Base(actor);
     Mtx43 matrix;
-    base->pitch = (u16) func_0203f8d0(&base->pivot, &base->position);
+    base->pitch = (u16) Globe_BendFar(&base->pivot, &base->position);
     Actor_ModelMatrix(base, &matrix);
     *matrix_at(actor, FIELD_ACTOR_MATRIX_MODEL) = matrix;
 }

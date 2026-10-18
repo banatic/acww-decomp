@@ -7,6 +7,8 @@
 #include "item_info.h"
 #include "item_record.h"
 #include "player_record.h"
+#include "item_group_order.h"
+#include "item_traits.h"
 
 static_assert(sizeof(ItemListsKind) == 0x14, "ItemListsKind size");
 static_assert(sizeof(ItemList) == 8, "ItemList size");
@@ -20,15 +22,6 @@ extern const u8 data_020de640[3];
 /* The state block's nine bytes at 0x173d4, one per kind: the town's order of the groups. */
 extern u8 data_021f3b7c[];
 
-/* The group of one of the three places of a kind's order (`place` 1-3); `source` is used for
- * place 0 only (in the next block of main). */
-extern int func_02063f94(u8 *order, int place, DateRandom *source);
-/* The weight of group `index` + 1 (0-2), from the town's values. */
-extern u8 func_02063f40(u32 index);
-/* The style of a piece of clothing. */
-extern int func_0204c228(u16 *item);
-/* An item flag (bit 4 of item_info.h's flags for an item of kind 1); 1 for an item without one. */
-extern int func_0204c260(u16 *item);
 /* An array's elements built and destroyed; an item code's constructor (sets it to nothing) and
  * destructor, handed to them. */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -147,7 +140,7 @@ int ItemLists_GroupOf(u16 *item, int raw)
     }
     u8 *order = ItemLists_TierByte(data_021f3b7c, kind);
     for (u32 i = 0; i < 3; i++) {
-        if (group == func_02063f94(order, data_020cca90[i], NULL)) {
+        if (group == ItemGroupOrder_PickGroup(order, data_020cca90[i], NULL)) {
             return data_020cca90[i];
         }
     }
@@ -202,7 +195,7 @@ void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source)
         u32 total = 0;
         for (u32 i = 0; i < ITEM_LISTS_BY_GROUP_GROUPS; i++) {
             if (in_play[i]) {
-                total += func_02063f40(i);
+                total += ItemGroupOrder_Weight(i);
             }
         }
         if (total == 0) {
@@ -214,7 +207,7 @@ void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source)
             if (!in_play[group]) {
                 continue;
             }
-            reach += func_02063f40(group);
+            reach += ItemGroupOrder_Weight(group);
             if (pick >= reach) {
                 continue;
             }
@@ -266,7 +259,7 @@ static int range_candidate(u16 *code, u16 *drawn, u32 drawn_count, int skip_draw
         }
     }
     if (*code >= ITEM_LISTS_CLOTHES_FIRST && *code <= ITEM_LISTS_CLOTHES_LAST && style != ITEM_LISTS_ANY_STYLE &&
-        style != func_0204c228(code)) {
+        style != (int) ItemTraits_ClothStyle(code)) {
         return 0;
     }
     int group = 0;
@@ -278,7 +271,7 @@ static int range_candidate(u16 *code, u16 *drawn, u32 drawn_count, int skip_draw
     if (group == ITEM_LISTS_GROUP_19 || group == ITEM_LISTS_GROUP_18) {
         return 0;
     }
-    if (filter && func_0204c260(code)) {
+    if (filter && ItemTraits_FlagBit4(code)) {
         return 0;
     }
     return 1;
@@ -420,7 +413,7 @@ static int many_candidate(const ItemListsKind *kind, u16 *code, int group, int s
     if (ItemLists_InRecord((int) (uintptr_t) record, (int) (uintptr_t) code)) {
         return 0;
     }
-    if (filter && func_0204c260(code)) {
+    if (filter && ItemTraits_FlagBit4(code)) {
         return 0;
     }
     return 1;
@@ -458,7 +451,7 @@ int ItemLists_DrawMany(u16 *out, unsigned int count, ItemList *lists, int list_c
         u8 *order = ItemLists_TierByte(data_021f3b7c, kind_number);
         int group;
         if (turn == 1) {
-            group = func_02063f94(order, ItemList_Group(list), picker);
+            group = ItemGroupOrder_PickGroup(order, ItemList_Group(list), picker);
         } else {
             group = ItemList_Group(list);
         }

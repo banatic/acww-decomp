@@ -2,6 +2,7 @@
 #include "item_object.h"
 
 #include "clean.h"
+#include "date_time.h"
 
 static_assert(offsetof(ItemObject, item) == 0x08, "item");
 static_assert(offsetof(ItemObject, type) == 0x0a, "type");
@@ -18,11 +19,6 @@ static_assert(sizeof(ItemObject) == 12, "size");
 /* The first type of each class and of each group. */
 extern const int data_020d1a6c[ITEM_OBJECT_CLASSES]; /* 0, 10, 20, 21 */
 extern const int data_020d1a40[ITEM_OBJECT_GROUPS];  /* 0, 5 */
-
-/* The date set to now (func_0209e474), and minutes added to a date, carrying into the hours
- * (func_0209e234). */
-extern void func_0209e474(DateTime *date);
-extern void func_0209e234(DateTime *date, int minutes);
 
 /* func_0209bb68 */
 void ItemObject_SetItem(ItemObject *object, const u16 *item)
@@ -131,8 +127,8 @@ CLEAN_AS(func_0209bc20, ItemObject_Date)
 /* func_0209bc24: the date set to now, then `minutes` added to it. */
 void ItemObject_StampNow(ItemObject *object, int minutes)
 {
-    func_0209e474(&object->date);
-    func_0209e234(&object->date, minutes);
+    DateTime_Now(&object->date);
+    DateTime_AddMinutes(&object->date, minutes);
 }
 CLEAN_AS(func_0209bc24, ItemObject_StampNow)
 

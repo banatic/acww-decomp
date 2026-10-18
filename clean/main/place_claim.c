@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "session.h"
+#include "scene_query.h"
 
 static_assert(sizeof(PlaceClaim) == 20, "PlaceClaim size");
 static_assert(offsetof(PlaceClaim, scene) == 0x10, "PlaceClaim scene");
@@ -17,13 +18,6 @@ extern PlaceClaim data_021c87fc[PLACE_CLAIM_SLOTS];
 
 /* The point's x and z in a request are in units of 0x200. */
 #define REQUEST_SHIFT 9
-
-extern u8 func_020b65c4(void); /* the scene */
-/* Gives `slot` the claim of `point` in `scene` unless another slot holds one too near; whether
- * it did. */
-extern int func_02053380(PlaceClaim *claims, int slot, int scene, const Vec3 *point);
-/* Lets `slot`'s claim go (nothing for slot 4 or above); whether it did. */
-extern int func_0205340c(PlaceClaim *claims, int slot);
 
 /* Whether claims are decided here: the session is not linked or this system is the host. */
 static int decides_here(NetSession *session)
@@ -88,7 +82,7 @@ void PlaceClaim_Release(int slot)
     NetSession *session = data_020ccf94;
     data_021c8750 = PLACE_CLAIM_WAITING;
     if (decides_here(session) || Session_IsLocalSlot(session, NO_SLOT)) {
-        func_0205340c(data_021c87fc, slot);
+        PlaceClaim_Free(data_021c87fc, slot);
         return;
     }
     session = data_020ccf94;
@@ -127,7 +121,7 @@ void PlaceClaim_Request(const Vec3 *point)
     NetSession *session = data_020ccf94;
     data_021c8750 = PLACE_CLAIM_WAITING;
     if (decides_here(session)) {
-        if (func_02053380(data_021c87fc, HOST_SLOT, func_020b65c4(), point)) {
+        if (PlaceClaim_Claim(data_021c87fc, HOST_SLOT, SceneQuery_Current(), point)) {
             data_021c8750 = PLACE_CLAIM_GIVEN;
         } else {
             data_021c8750 = PLACE_CLAIM_REFUSED;
@@ -137,7 +131,7 @@ void PlaceClaim_Request(const Vec3 *point)
     PlaceClaimRequest request;
     request.x = (u8) (point->x >> REQUEST_SHIFT);
     request.z = (u8) (point->z >> REQUEST_SHIFT);
-    request.scene = func_020b65c4();
+    request.scene = SceneQuery_Current();
     session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, &request, sizeof(request));
@@ -148,7 +142,7 @@ CLEAN_AS(func_02051eb8, PlaceClaim_Request)
 /* func_020528d4 (message 33, on the host): lets the sender's claim go; whether it did. */
 void *PlaceClaim_ReceiveRelease(int slot)
 {
-    return (void *) (intptr_t) func_0205340c(data_021c87fc, slot);
+    return (void *) (intptr_t) PlaceClaim_Free(data_021c87fc, slot);
 }
 CLEAN_AS(func_020528d4, PlaceClaim_ReceiveRelease)
 
@@ -168,7 +162,7 @@ void PlaceClaim_ReceiveRequest(const PlaceClaimRequest *request, int slot)
         .y = 0,
         .z = request->z << REQUEST_SHIFT,
     };
-    int given = func_02053380(data_021c87fc, slot, request->scene, &point);
+    int given = PlaceClaim_Claim(data_021c87fc, slot, request->scene, &point);
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
     Session_EndMessage(session, given ? PLACE_CLAIM_MSG_GIVEN : PLACE_CLAIM_MSG_REFUSED, (u32) slot);

@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include "clean.h"
+#include "autoload_2/heap.h"
+#include "text_base.h"
 
 static_assert(offsetof(MessageReceiver, name) == 0x04, "receiver name");
 static_assert(offsetof(MessageReceiver, message) == 0x1e, "receiver message");
@@ -17,12 +19,6 @@ extern const u8 data_020e3d64[]; /* the message part's vtable */
 extern u8 data_021f43ec;
 
 extern void MI_CpuFill8(void *dst, int value, unsigned int size);
-/* What most of the game frees with (autoload_2/heap.h). */
-extern void func_020edb3c(void *block);
-/* The labels' text base: built, destroyed, emptied (text_label.h). */
-extern void *func_020a8cac(void *text);
-extern void *func_020a8c38(void *text);
-extern void func_020a8c1c(void *text);
 
 /* func_020a8164: the file's name set to `name`.
  * QUIRK: at most 25 characters are copied and the 26th byte is left as it is (0 from
@@ -52,7 +48,7 @@ CLEAN_AS(func_020a8188, MessageReceiver_DestructBase)
 MessageReceiver *MessageReceiver_Delete(MessageReceiver *receiver)
 {
     receiver->vtable = data_020e3d4c;
-    func_020edb3c(receiver);
+    Heap_OperatorDeleteB(receiver);
     return receiver;
 }
 CLEAN_AS(func_020a8194, MessageReceiver_Delete)
@@ -77,7 +73,7 @@ CLEAN_AS(func_020a81b8, MessageReceiver_Construct)
 /* func_020a81e0: the text emptied. */
 void MessagePart_Clear(MessagePart *part)
 {
-    func_020a8c1c(part);
+    TextBase_Clear(part);
 }
 CLEAN_AS(func_020a81e0, MessagePart_Clear)
 
@@ -99,8 +95,8 @@ CLEAN_AS(func_020a81ec, MessagePart_Capacity)
 MessagePart *MessagePart_Delete(MessagePart *part)
 {
     part->vtable = data_020e3d64;
-    func_020a8c38(part);
-    func_020edb3c(part);
+    TextBase_Destruct((TextBase *) part);
+    Heap_OperatorDeleteB(part);
     return part;
 }
 CLEAN_AS(func_020a81f0, MessagePart_Delete)
@@ -109,7 +105,7 @@ CLEAN_AS(func_020a81f0, MessagePart_Delete)
 MessagePart *MessagePart_Destruct(MessagePart *part)
 {
     part->vtable = data_020e3d64;
-    func_020a8c38(part);
+    TextBase_Destruct((TextBase *) part);
     return part;
 }
 CLEAN_AS(func_020a8210, MessagePart_Destruct)
@@ -117,7 +113,7 @@ CLEAN_AS(func_020a8210, MessagePart_Destruct)
 /* func_020a8228: the constructor; an empty text. */
 MessagePart *MessagePart_Construct(MessagePart *part)
 {
-    func_020a8cac(part);
+    TextBase_Construct(part);
     part->vtable = data_020e3d64;
     MessagePart_Clear(part);
     return part;

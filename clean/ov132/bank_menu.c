@@ -22,6 +22,7 @@
 #include "main/state_flags.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
+#include "ov130/bank_pad.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(BankMenu, cursor_sprite) == 0x94, "sprite");
 static_assert(offsetof(BankMenu, panel) == 0xf8 && offsetof(BankMenu, labels) == 0x2c4, "panel");
@@ -49,9 +50,6 @@ extern u8 data_021fbddc;
 extern u8 data_021f6c58, data_021f6c54;
 #define BANK_MENU_PAD_A 0x0001
 #define BANK_MENU_PAD_B 0x0002
-
-/* Overlay 130's: the bank's background characters and palettes loaded for `layer`. */
-extern int func_ov130_0229a678(void *layer);
 
 /* The labels' constructor and destructor (TextLabel_Construct, TextLabel_Destruct), as the game
  * hands them to the vector helpers. */
@@ -528,7 +526,7 @@ CLEAN_AS(func_ov132_0229b3cc, BankMenu_LoadPanelColors)
  * style 4 at (0x114, 0xe) and (0x130, 0xe), shown. */
 void BankMenu_LoadScreens(BankMenu *self)
 {
-    func_ov130_0229a678((void *) (uintptr_t) 6);
+    BankPad_LoadBackground(6);
     RomFile_Read(data_ov132_0229b9f0, self->screen_a, BANK_MENU_SCREEN_SIZE);
     ScreenMap_SetPalette(self->screen_a, 6, 7, 0x19, 0xf, 6);
     DisplayLayer_LoadScreen(self->screen_a, 6, BANK_MENU_SCREEN_SIZE, 0);

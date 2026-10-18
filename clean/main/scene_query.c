@@ -2,6 +2,7 @@
 #include "scene_query.h"
 
 #include "clean.h"
+#include "scene_kinds.h"
 
 /* The group of scenes 0x11-0x18, Nook's scenes and the group 0x20-0x29. */
 #define SCENE_QUERY_GROUP_11_FIRST 0x11
@@ -27,9 +28,6 @@ extern u8 data_021ebcc8[]; /* the town layout; bits 2-7 of its byte 8 are the se
 extern u8 data_020e54b0;   /* the previous scene */
 extern u8 data_020e54ac;   /* the current scene */
 extern u8 data_020e54a8;   /* the mode */
-
-/* Whether the scene is one of 6-8. */
-extern int func_020b67c0(int scene);
 
 /* func_020b6590: the object at data_021f6a14, as an address. */
 int SceneQuery_FieldObject(void)
@@ -84,7 +82,7 @@ CLEAN_AS(func_020b65d0, SceneQuery_OnOrdinaryField)
  * byte. */
 int SceneQuery_IsOrdinary(int scene)
 {
-    if (func_020b67c0(scene) != 0) {
+    if (SceneKinds_In6To8(scene) != 0) {
         return 0;
     }
     if (scene >= SCENE_QUERY_SPECIAL_LATE_FIRST && scene <= SCENE_QUERY_SPECIAL_LATE_LAST) {

@@ -9,6 +9,7 @@
 #include "scene_query.h" /* SceneQuery_Current */
 
 #include "ov004/member_pointer.h" /* MemberPointer */
+#include "player_actor_ops.h"
 
 static_assert(offsetof(ScreenMark, anim) == 0x0c && offsetof(ScreenMark, state) == 0x20, "ScreenMark");
 static_assert(sizeof(ScreenMark) == 0x24, "ScreenMark");
@@ -24,9 +25,6 @@ extern const CellAnimData data_020d5b3c[];
 /* POWCNT1's swap bit: 1 for the main engine on the top screen. */
 extern int data_021c8c9c;
 
-/* The scene number (func_020960d8(4)); the mark is not shown in scenes 8 to 15 and 0x24 to
- * 0x2c, nor while the scene query's current scene is 6. */
-extern int func_020960d8(int which);
 #define SCREEN_MARK_SCENE_WHICH 4
 #define SCREEN_MARK_NO_SCENE_FIRST_1 8
 #define SCREEN_MARK_NO_SCENE_COUNT_1 8
@@ -47,7 +45,7 @@ int ScreenMark_ShouldShow(void)
     int main_on_bottom = data_021c8c9c == 0;
     int no_event = EventQueue_HasCurrent() == 0;
     int query_scene = SceneQuery_Current() == SCREEN_MARK_NO_QUERY_SCENE;
-    u32 scene = (u32) func_020960d8(SCREEN_MARK_SCENE_WHICH);
+    u32 scene = (u32) PlayerActorOps_State(SCREEN_MARK_SCENE_WHICH);
     int no_scene_1 = scene - SCREEN_MARK_NO_SCENE_FIRST_1 < SCREEN_MARK_NO_SCENE_COUNT_1;
     int no_scene_2 = scene - SCREEN_MARK_NO_SCENE_FIRST_2 < SCREEN_MARK_NO_SCENE_COUNT_2;
 

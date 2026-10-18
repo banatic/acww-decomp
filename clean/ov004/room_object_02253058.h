@@ -2,25 +2,25 @@
  * of kind 0x37 (RoomObject.unk_00C). Its state (RoomObject02253058.state), entered through
  * vtable slot 0x70, runs through tables of member pointers (member_pointer.h):
  *
- * - PUSHED (0): while its entry among two (func_ov004_0223ca9c of data_ov004_02259784) is in
- *   state 0 or 2 and func_ov004_0223c700 allows it, the player (actor 4) standing nearer one of
+ * - PUSHED (0): while its entry among two (RoomPushes_FindObject of data_ov004_02259784) is in
+ *   state 0 or 2 and RoomPushes_Allowed allows it, the player (actor 4) standing nearer one of
  *   its two cells in front, with that cell free and nobody one step ahead of the entry, counts
  *   up to 7 frames; once the entry has moved more than 0x200 the player is sent to the entry's
- *   point (func_ov004_0222c14c);
+ *   point (RoomPlayerActor_RequestPlaceApproach);
  * - WATCH (1): entered with the quarter of the room it stands in (RoomObject02253058.quarter);
- *   in the quarter of this console's player (func_020984d4), with the entry in state 0 or 2, it
+ *   in the quarter of this console's player (PlayerRecords_CurrentNumber), with the entry in state 0 or 2, it
  *   is marked to be pushed (mode 1) and counts up to 7 frames, after which it asks the scene for
- *   an event (func_0203e0a8) unless the session is linked; with the entry in another state it is
- *   marked for the talk (mode 2) when func_020b2300 is at most 1;
+ *   an event (EventQueue_RequestKind6) unless the session is linked; with the entry in another state it is
+ *   marked for the talk (mode 2) when TownObjects_VisitorsHere is at most 1;
  * - the scene's events (vtable slot 0x4c): 0 and 1 start the push (MOVE_PLAYER) in mode 1, else
  *   the talk (TALK_NEXT); 8 goes back to WATCH;
  * - MOVE_PLAYER (2) sends the player to the entry's point and WAIT (3) waits 24 frames;
  * - SEQUENCE (4) takes the receiver, named "sp_etc_sequence4" (state byte 0x19) when
- *   func_020a12d4 or func_020a12c0 says so, else "sp_etc_sequence2" (state byte 0); at 0x19 it
- *   ends (SEQUENCE_END, 5: the player is told func_ov004_0222c110 once the link closes);
+ *   StartKind_IsNewTown or StartKind_IsNewPlayer says so, else "sp_etc_sequence2" (state byte 0); at 0x19 it
+ *   ends (SEQUENCE_END, 5: the player is told RoomPlayerActor_RequestPlaceOff once the link closes);
  * - whenever the receiver's state byte is 0 it offers two choices (messages 0xc and 0xd). The
  *   answer in mode 1 ends the sequence (0: SEQUENCE_DONE, 6, which also queues event 0x2e of
- *   func_020b5e10; 1: SEQUENCE_END), otherwise it picks (0: CHOOSE_ITEM, 10; 1: TALK_END, 9);
+ *   SceneTables_EntryRecord; 1: SEQUENCE_END), otherwise it picks (0: CHOOSE_ITEM, 10; 1: TALK_END, 9);
  * - TALK_NEXT (7) goes on to TALK (8), which takes the receiver named "obj_etc_player" in state
  *   4; TALK_END (9) lets the scene go on once the link closes;
  * - CHOOSE_ITEM (10): once the link closes, opens the pockets (group 9) on the items
@@ -28,7 +28,7 @@
  *   chosen (GroupParams_C4CIs1) that item is kept (RoomObject02253058.item) and the pockets'
  *   slot gets this object's item instead, else the scene goes on;
  * - PLACE (12) shrinks it away at the cell RoomObject_FindVariantCell finds and then places the
- *   kept item there (func_ov004_0223c660); VANISH (13) waits 22 frames, lets the scene go on and
+ *   kept item there (RoomObjects_Spawn); VANISH (13) waits 22 frames, lets the scene go on and
  *   deletes the object.
  *
  * Kind 0x2a (RoomObject.unk_780) also has a set of three glows: each frame a player (actors 0 to
@@ -89,7 +89,7 @@ enum RoomObject02253058State {
 enum RoomObject02253058Step {
     ROOM_OBJECT_02253058_STEP_BLOCKED = 0,
     ROOM_OBJECT_02253058_STEP_JOINED = 1, /* itself, or another of its kind joined to it */
-    ROOM_OBJECT_02253058_STEP_OPEN = 2    /* an object func_020538dc accepts, or nothing at all */
+    ROOM_OBJECT_02253058_STEP_OPEN = 2    /* an object FurnitureInfo_IndoorBit2 accepts, or nothing at all */
 };
 
 void RoomObject02253058_OnChoice(RoomObject02253058 *object);

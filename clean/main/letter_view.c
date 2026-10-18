@@ -10,6 +10,7 @@
 #include "main/text_draw.h"
 #include "main/text_string.h"
 #include "ov002/paper.h"
+#include "letter.h"
 
 static_assert(offsetof(LetterLine, text) == 0x12, "line characters");
 static_assert(offsetof(LetterLine, box) == 0x64, "line box");
@@ -41,9 +42,7 @@ extern void func_0206dd6c(void *line);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
-extern int func_02065f4c(const LetterViewLetter *letter, u16 *name); /* the addressee's name */
-extern u8 func_02066648(const LetterViewLetter *letter);             /* the letter's paper */
-extern int func_02051c8c_unk(u16 *text, int max);                    /* the characters before a 0, at most max */
+extern int func_02051c8c_unk(u16 *text, int max); /* the characters before a 0, at most max */
 
 /* The colours of a line's marks (text, background). */
 #define MARK_COLOR 0xe
@@ -443,7 +442,7 @@ CLEAN_AS(func_0206e114, LetterView_SetGreeting)
 void LetterView_SetName(LetterView *view, const LetterViewLetter *letter)
 {
     TextString_ClearChars(view->name, LETTER_VIEW_NAME_LENGTH);
-    func_02065f4c(letter, view->name);
+    Letter_AddresseeName((Letter *) letter, view->name);
     view->name_length = func_02051c8c_unk(view->name, LETTER_VIEW_NAME_LENGTH);
     view->name_width = TextString_Width(view->name, LETTER_VIEW_NAME_LENGTH);
 }
@@ -463,7 +462,7 @@ void LetterView_Show(LetterView *view, const LetterViewLetter *letter, int text_
     DisplayLayer_Hide((unsigned int) paper_layer);
     DisplayLayer_SetPriority(paper_layer, 1);
     DisplayLayer_SetBgControl((unsigned int) paper_layer, 0, 0, 0);
-    Paper_LoadBackground(func_02066648(letter), paper_layer);
+    Paper_LoadBackground(Letter_Paper((const Letter *) letter), paper_layer);
     DisplayLayer_SetScroll((unsigned int) paper_layer, 0, 0);
 
     DisplayLayer_Hide((unsigned int) text_layer);

@@ -5,6 +5,8 @@
 #include "scene_heaps.h"
 #include "session.h"
 #include "vram_copy_task.h"
+#include "c_library.h"
+#include "rom_file.h"
 
 /* The ModelLoaderTask.state of a task that is queued. */
 #define GLASSES_LOOK_TASK_QUEUED 1
@@ -28,9 +30,7 @@ extern NetSession *data_020ccf94;      /* the session */
 extern const u8 data_020cc7e0[];       /* the kinds of items 0x1431 and up: 0 to 63 */
 extern const u8 data_020cc7d4[];       /* the kinds of items 0x1471 and up: 64 to 74 */
 
-extern G3dResTex *func_021077e8(void *file);                        /* the file's texture resource */
-extern char *func_0205e0b8(unsigned int kind);                      /* the path of the kind's model file */
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
+extern G3dResTex *func_021077e8(void *file); /* the file's texture resource */
 
 /* The VRAM regions' constructor and destructor, handed to __cxa_vec_ctor and
  * __cxa_vec_cleanup (VramRegion_Construct, VramRegion_Destruct). */
@@ -109,8 +109,8 @@ void GlassesLook_Load(unsigned char *look, int kind)
     if (kind >= GLASSES_LOOK_NO_KIND) {
         return;
     }
-    char *path = func_0205e0b8((unsigned int) kind);
-    func_02064af4(path, (void *) (uintptr_t) file, GlassesLook_FileSize());
+    char *path = GlassesLook_Path((unsigned int) kind);
+    RomFile_Read(path, (void *) (uintptr_t) file, GlassesLook_FileSize());
 }
 CLEAN_AS(func_0205de94, GlassesLook_Load)
 
@@ -302,13 +302,11 @@ CLEAN_AS(func_0205e0b0, GlassesLook_FileSize)
 extern char data_021c9e54[];
 extern const char data_020dd718[];
 
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
-
 /* func_0205e0b8: the path of part C kind `kind`'s model file, written into one shared buffer
  * (each call overwrites the last one's path). */
 char *GlassesLook_Path(unsigned int kind)
 {
-    func_02064328(data_021c9e54, data_020dd718, kind >> 5, kind);
+    CLib_SPrintf(data_021c9e54, data_020dd718, kind >> 5, kind);
     return data_021c9e54;
 }
 CLEAN_AS(func_0205e0b8, GlassesLook_Path)

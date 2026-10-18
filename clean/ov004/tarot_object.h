@@ -4,9 +4,9 @@
  * Only one exists at a time: data_ov004_02258870 points to it from its start to its release.
  *
  * It draws nothing itself (vtable slot 0x24): overlay 45's code draws it (TarotObject_DrawCurrent)
- * at a matrix of its own object (func_ov045_02260630), and asks for its states 1 to 3 (on its
- * values 0x1e, 0x1f and 0x20, func_ov045_02260cb0). Its updates follow the whole frame
- * of that object's animation (func_ov045_02260618) to show and hide the body and the parts:
+ * at a matrix of its own object (FortuneTeller_CurrentMatrix), and asks for its states 1 to 3 (on its
+ * values 0x1e, 0x1f and 0x20, FortuneTellerTalk_SetTalkStyle). Its updates follow the whole frame
+ * of that object's animation (FortuneTeller_CurrentFrame) to show and hide the body and the parts:
  *
  * - 0 (idle): all hidden;
  * - 1: the body and part 1 shown; part 2's joint animation 0 and part 1's texture animation 0

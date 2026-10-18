@@ -13,6 +13,7 @@
 #include "town_villager.h"
 #include "villager_state.h"
 #include "villager_status.h"
+#include "effect_system.h"
 
 static_assert(offsetof(VillagerMood, shown) == 0x40, "VillagerMood layout");
 static_assert(offsetof(VillagerMood, effect_mood) == 0x44, "VillagerMood layout");
@@ -69,9 +70,6 @@ extern const MemberPointer data_020d9328; /* VillagerMood_StartEffect1 */
 extern const MemberPointer data_020d8ef0; /* VillagerMood_StartEffect2 */
 extern const MemberPointer data_020d9010; /* VillagerMood_StartEffect3 */
 extern const MemberPointer data_020d9098; /* VillagerMood_StartEffect2 */
-
-/* Spawns effect `effect` at `point` turned by `angle`. */
-extern int func_020912d4(int effect, Vec3 *point, s16 *angle, int a);
 
 static u8 *villager_mood_at(u8 *villager, u32 offset)
 {
@@ -422,7 +420,7 @@ int VillagerMood_PlayEffect(VillagerMood *mood, u8 *villager, int effect, int so
     Vec3 point = *(const Vec3 *) (const void *) villager_mood_at(villager, VILLAGER_MOOD_JOINT_16_POINT);
     s16 angle = *(const s16 *) (const void *) villager_mood_at(villager, VILLAGER_MOOD_ANGLE);
     SoundEmitter_PlayB(villager_mood_emitter(mood), sound, VILLAGER_MOOD_VOLUME, 0);
-    return func_020912d4(effect, &point, &angle, 0);
+    return EffectSystem_StartKind(effect, &point, &angle, 0);
 }
 CLEAN_AS(func_0201cbec, VillagerMood_PlayEffect)
 

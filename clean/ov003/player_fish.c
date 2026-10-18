@@ -14,6 +14,7 @@
 #include "main/session.h"
 #include "main/session_players.h"
 #include "ov004/member_pointer.h"
+#include "thrown_bottle.h"
 
 /* A size class's numbers (data_ov003_0223c014, eight rows of 0x14 bytes); the shadow's scale
  * is read here. */
@@ -68,20 +69,6 @@ extern s32 data_020c904c; /* the water's surface height */
 extern const fx16 FX_SinCosTable_[4096 * 2];
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* The overlay's: the throw towards a point ahead of the player (func_ov003_0222a960), a
- * point moved `distance` along `angle` (func_ov003_0222be78), the arc's end reached
- * (func_ov003_0222796c), the fish's model past its first frame (func_ov003_0222a88c), a fish's
- * scale (func_ov003_0222aaa0), the shadows near a point fleeing it (func_ov003_02228400), and
- * the player's line in the water (func_ov003_0222c364, func_ov003_0222c1f4, func_ov003_0222c1bc). */
-extern int func_ov003_0222a960(int player, int arrive);
-extern void func_ov003_0222be78(Vec3 *position, int distance, u16 angle);
-extern int func_ov003_0222796c(const Vec3 *position, const Vec3 *from, const Vec3 *to);
-extern int func_ov003_0222a88c(PlayerFish *self, int player);
-extern void func_ov003_0222aaa0(Vec3 *scale, int kind);
-extern int func_ov003_02228400(const Vec3 *point, int reach);
-extern int func_ov003_0222c364(int player);
-extern Vec3 *func_ov003_0222c1f4(int player);
-extern int func_ov003_0222c1bc(int player);
 
 /* Player `player`'s fish, the address computed as the original does, without a bound. */
 static PlayerFish *player_fish_at(int player)
@@ -165,7 +152,7 @@ static int player_fish_end_unless(PlayerFish *fish, int ok)
 }
 
 /* func_ov003_02229100: another console's player's fish display state 2 (that player threw the
- * fish back, func_ov003_0222a960): a shown fish is thrown, an idle one starts and is thrown
+ * fish back, PlayerFish_ThrowBack): a shown fish is thrown, an idle one starts and is thrown
  * (state PLAYER_FISH_TAKE), a waiting one is shown and thrown. A throw that fails ends it (0). */
 int PlayerFish_OnRemoteState2(FishShadowProcess *self, unsigned int player)
 {
@@ -176,14 +163,14 @@ int PlayerFish_OnRemoteState2(FishShadowProcess *self, unsigned int player)
     PlayerFish *fish = &data_ov003_0225f4dc[player];
     int state = fish->state;
     if (state == PLAYER_FISH_SHOW) {
-        return player_fish_end_unless(fish, func_ov003_0222a960((int) player, 0));
+        return player_fish_end_unless(fish, PlayerFish_ThrowBack((int) player, 0));
     }
     if (state == PLAYER_FISH_IDLE) {
-        return player_fish_end_unless(fish, func_ov003_0222a960((int) player, 1));
+        return player_fish_end_unless(fish, PlayerFish_ThrowBack((int) player, 1));
     }
     if (state == PLAYER_FISH_WAIT) {
         fish->state = PLAYER_FISH_SHOW;
-        return player_fish_end_unless(fish, func_ov003_0222a960((int) player, 0));
+        return player_fish_end_unless(fish, PlayerFish_ThrowBack((int) player, 0));
     }
     return 1;
 }
@@ -314,7 +301,7 @@ int PlayerFish_Swim(PlayerFish *self, const Vec3 *player_position)
     if (step > PLAYER_FISH_SWIM_MAX_STEP) {
         step = PLAYER_FISH_SWIM_MAX_STEP;
     }
-    func_ov003_0222be78(&self->position, step, (u16) self->rotation[1]);
+    FishShadow_MoveAlong(&self->position, step, (u16) self->rotation[1]);
     self->frames++;
     Vec3 at = self->position;
     at.y = data_020c904c;
@@ -340,7 +327,7 @@ int PlayerFish_ArcStep(Vec3 *position, const Vec3 *from, const Vec3 *to, int fra
     int yaw = Vec_YawTo(from, to);
     int speed = player_fish_div(rise + ((gravity * frames_sq) >> 1), frames);
     position->y = from->y + (frame * speed - ((frame * frame * gravity) >> 1));
-    func_ov003_0222be78(position, player_fish_div(distance, frames), (u16) yaw);
+    FishShadow_MoveAlong(position, player_fish_div(distance, frames), (u16) yaw);
     return 1;
 }
 CLEAN_AS(func_ov003_02229428, PlayerFish_ArcStep)
@@ -366,7 +353,7 @@ void PlayerFish_StepArc(PlayerFish *self, int back)
     Vec3 at = self->position;
     Vec3 check_from = from;
     Vec3 check_to = to;
-    if (func_ov003_0222796c(&at, &check_from, &check_to)) {
+    if (FishShadow_ReachedXZ(&at, &check_from, &check_to)) {
         self->state = PLAYER_FISH_END;
         self->splash = 1;
     } else {
@@ -413,7 +400,7 @@ void PlayerFish_Splash(PlayerFish *self, int player)
     NetSession *session = data_020ccf94;
     if (!Session_IsLinked(session) || Session_IsLocalSlot(session, player)) {
         int reach = (data_ov003_0223bf00[0].ranges[info->unk_01].reach << 12) / 10;
-        func_ov003_02228400(&at, reach);
+        FishShadow_ScareNear(&at, reach);
     }
 }
 CLEAN_AS(func_ov003_02229590, PlayerFish_Splash)
@@ -514,7 +501,7 @@ int PlayerFish_FollowRemote(PlayerFish *self, int player)
     if (self->arrived == 0) {
         player_fish_fly_to_hand(self, actor);
     } else {
-        func_ov003_0222a88c(self, player);
+        PlayerFish_ModelPastFirst(self, player);
         Vec3 hand = player_fish_hand(player, NULL);
         self->position = hand;
         self->point_b = hand;
@@ -538,7 +525,7 @@ int PlayerFish_FollowLocal(PlayerFish *self, int player)
         return 1;
     }
     if (self->unk_a0 == 0) {
-        func_ov003_0222a88c(self, player);
+        PlayerFish_ModelPastFirst(self, player);
         return 1;
     }
     return 0;
@@ -646,7 +633,7 @@ int PlayerFish_StepTake(PlayerFish *self, int player)
     }
     self->model = FishDisp_TakeModel();
     if (self->mode != PLAYER_FISH_SWIM) {
-        func_ov003_0222aaa0(&self->scale, self->kind);
+        PlayerFish_KindScale(&self->scale, self->kind);
     }
     if (self->mode == PLAYER_FISH_HOOKED) {
         if (PlayerFish_StartArc(self, (unsigned int) player) == 0) {
@@ -680,21 +667,22 @@ static const MemberPointer *player_fish_step(int state)
     return (const MemberPointer *) (uintptr_t) ((u32) (uintptr_t) data_ov003_0225f138 + (u32) state * sizeof(MemberPointer));
 }
 
-/* func_ov003_02229ca8: a player's fish's frame. While the player's line is in the water
- * (func_ov003_0222c364) the emitter follows the line's point and plays sound 0x7e0 for its
- * state 1, or 0x7e1 and effect 0x15 on the surface for state 2; else it follows the fish. Then
- * its state's step (data_ov003_0225f138) when it has one; another console's player's fish that
- * ended sets that player's fish display state to 8 (none). */
+/* func_ov003_02229ca8: a player's fish's frame. While the player's thrown bottle is in play
+ * (ThrownBottle_IsActive) the emitter follows the bottle and plays sound 0x7e0 when it is
+ * thrown (ThrownBottle_SoundCue 1), or 0x7e1 and effect 0x15 on the surface when it lands (2);
+ * else it follows the fish. Then its state's step (data_ov003_0225f138) when it has one;
+ * another console's player's fish that ended sets that player's fish display state to 8
+ * (none). */
 void PlayerFish_Update(PlayerFish *self, int player)
 {
     SoundEmitter *emitter = (SoundEmitter *) self->emitter;
-    if (func_ov003_0222c364(player)) {
-        Vec3 at = *func_ov003_0222c1f4(player);
+    if (ThrownBottle_IsActive(player)) {
+        Vec3 at = *ThrownBottle_PositionOf(player);
         Vec3 water = at;
         SoundEmitter_UpdateAtB(emitter, &at);
-        if (func_ov003_0222c1bc(player) == 1) {
+        if (ThrownBottle_SoundCue(player) == 1) {
             SoundEmitter_PlayB(emitter, 0x7e0, PLAYER_FISH_VOLUME, 0);
-        } else if (func_ov003_0222c1bc(player) == 2) {
+        } else if (ThrownBottle_SoundCue(player) == 2) {
             SoundEmitter_PlayB(emitter, 0x7e1, PLAYER_FISH_VOLUME, 0);
             water.y = data_020c904c;
             EffectSystem_StartKind(0x15, &water, NULL, NULL);

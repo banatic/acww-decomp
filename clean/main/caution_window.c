@@ -15,6 +15,16 @@
 #include "sound.h"        /* SoundSys_MasterVolumeOff */
 #include "text_draw.h"    /* TextDrawBox, TextDraw_Center, TextDraw_RequestDraw */
 #include "tile_convert.h" /* TileConvert_CharsToBitmap */
+#include "c_library.h"
+#include "g3d_resource.h"
+#include "label_box.h"
+#include "message_query.h"
+#include "message_reader.h"
+#include "message_texts.h"
+#include "model_object.h"
+#include "number_text.h"
+#include "text_base.h"
+#include "vram_copy_task.h"
 
 static_assert(offsetof(CautionWindow, model_resource) == 0x060, "model resource");
 static_assert(offsetof(CautionWindow, matrix) == 0x068, "matrix");
@@ -108,35 +118,12 @@ extern u8 data_027e0114[]; /* the camera matrix */
 /* The camera's position. */
 extern Vec3 data_021fbee8;
 
-/* A 3D model (the window's): loaded from a file under a tag, freed, scaled. */
-extern int func_0205556c(void *model, u32 tag, const char *path);
-extern int func_02055454(void *model);
-extern void func_02055e7c(void *model, const Vec3 *scale);
-/* The address in texture VRAM (in bytes) of a texture's image. */
-extern unsigned int func_02057a7c(const u8 *texture);
-/* Starts the copy of `size` bytes from `src` into texture VRAM at `dst` (kind 2). */
-extern int func_020b9f80(void *transfer, const void *src, unsigned int dst, int size, u8 kind);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void G3i_PerspectiveW_(unsigned int sin, unsigned int cos, unsigned int aspect, unsigned int near, unsigned int far,
                               unsigned int scale_w, unsigned int draw, void *matrix);
 extern void G3i_LookAt_(Vec3 *position, Vec3 *up, Vec3 *target, int draw, void *matrix);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
-/* Labels (text_label.h): emptied, a line set, measured, characters or another label
- * appended, another's text copied over. */
-extern void func_020a8c1c(void *label);
-extern const char *func_020a7bf4(const char *text, int line); /* line `line` of a text, or NULL */
-extern int func_020a8a34(void *label, const char *line);
-extern int func_020a8f74(void *label);
-extern int func_020a89f8(void *label, const void *chars);
-extern int func_020a89dc(void *label, void *other);
-extern void *func_020a8bb8(void *label, const void *from);
-/* Queues the loading of message `*number` into a label. */
-extern int func_020b4980(void *label, u8 *number, int table);
-/* The network's error code as text (" <%d>"). */
-extern void *func_02038b80(void);
-/* Records the network's error code and whether its mode is 3 or 4 (data_021c5934). */
-extern void func_02038bfc(void);
 /* The library routine the end of the shutdown calls (also on other fatal errors). */
 extern void func_02116a1c(int arg);
 
@@ -144,13 +131,6 @@ extern void func_02116a1c(int arg);
 typedef struct CautionWindowNumber {
     u32 words[0x40 / 4];
 } CautionWindowNumber;
-extern void *func_020b5630(void *text);
-extern void *func_020b5618(void *text);
-extern int func_020b45d0(void *text, int value, int format, int a, int b, int c);
-
-/* Text boxes drawing into a RAM buffer (`cells` x `rows` tiles), freed by func_020a8fb8. */
-extern TextDrawBox *func_020a8fe8(void *ram, int cells, int rows);
-extern void func_020a8fb8(TextDrawBox *box);
 
 #define CAUTION_WINDOW_CELLS 0x20
 #define CAUTION_WINDOW_ROWS 2
@@ -231,7 +211,7 @@ CLEAN_AS(func_02038078, CautionWindow_EnterLastMessage)
 /* func_020380a8: state 5: the last message becomes the window's message. */
 void CautionWindow_ShutdownUpdate(CautionWindow *self)
 {
-    func_020a8bb8(self->message, data_021c5b38);
+    TextBase_Copy((TextBase *) (void *) self->message, (TextBase *) (void *) data_021c5b38);
     CautionWindow_EnterLastMessage(self);
 }
 CLEAN_AS(func_020380a8, CautionWindow_ShutdownUpdate)
@@ -244,7 +224,7 @@ void CautionWindow_EnterShutdown(CautionWindow *self)
     self->shown = 1;
     CautionWindow_ClearTexture(self);
     CautionWindow_StopSound(self);
-    func_02038bfc();
+    CautionWindow_RecordNetError();
     BackupCard_Shutdown();
     Session_Close();
 }
@@ -296,8 +276,8 @@ CLEAN_AS(func_020381a4, CautionWindow_EnterCountdown)
 /* func_020381d8: state 3: the message and the seconds' unit copied in. */
 void CautionWindow_OpenUpdate(CautionWindow *self)
 {
-    func_020a8bb8(self->message, data_021c5a24);
-    func_020a8bb8(self->unit, data_021c59d0);
+    TextBase_Copy((TextBase *) (void *) self->message, (TextBase *) (void *) data_021c5a24);
+    TextBase_Copy((TextBase *) (void *) self->unit, (TextBase *) (void *) data_021c59d0);
     CautionWindow_EnterCountdown(self);
 }
 CLEAN_AS(func_020381d8, CautionWindow_OpenUpdate)
@@ -459,24 +439,25 @@ CLEAN_AS(func_02038424, CautionWindow_Reset)
  * drawn in between); with `with_code` and the network in mode 3 or 4, its error code follows. */
 void CautionWindow_ComposeLine(CautionWindow *self, int line, int with_code)
 {
-    func_020a8c1c(self->line_text);
+    TextBase_Clear(self->line_text);
     self->text_width = 0;
-    const char *text = func_020a7bf4(caution_window_text(self->message), line);
+    const char *text =
+        (const char *) (uintptr_t) MessageQuery_Line((int) (uintptr_t) caution_window_text(self->message), line);
     if (text == NULL) {
         return;
     }
-    func_020a8a34(self->line_text, text);
+    TextBase_SetLine((TextBase *) (void *) self->line_text, text);
     if (self->seconds >= 0 && line == CAUTION_WINDOW_SECONDS_LINE) {
-        self->text_width = func_020a8f74(self->line_text);
+        self->text_width = LabelBox_TextWidth((TextBase *) (void *) self->line_text);
         u16 gap[3];
         for (int i = 0; i < 3; i++) {
             gap[i] = data_020da4d0[i];
         }
-        func_020a89f8(self->line_text, gap);
-        func_020a89dc(self->line_text, self->unit);
+        TextBase_AppendChars((TextBase *) (void *) self->line_text, (const char *) gap);
+        TextBase_AppendText(self->line_text, (TextBase *) (void *) self->unit);
     }
     if (with_code != 0 && line == CAUTION_WINDOW_SECONDS_LINE && data_021c5934 != 0) {
-        func_020a89f8(self->line_text, func_02038b80());
+        TextBase_AppendChars((TextBase *) (void *) self->line_text, CautionWindow_ErrorCodeText());
     }
 }
 CLEAN_AS(func_02038444, CautionWindow_ComposeLine)
@@ -487,12 +468,12 @@ void CautionWindow_DrawSeconds(CautionWindow *self, void *chars, int x)
 {
     CautionWindowNumber number;
 
-    func_020b5630(&number);
-    func_020b45d0(&number, self->seconds, 2, 0, 0, 0);
-    unsigned int width = (unsigned int) func_020a8f74(&number);
+    MessageText46_Construct((MessageText46 *) &number);
+    NumberText_Format(&number, self->seconds, 2, 0, 0, 0);
+    unsigned int width = (unsigned int) LabelBox_TextWidth((TextBase *) &number);
     unsigned int margin = width < CAUTION_WINDOW_SECONDS_WIDTH ? (CAUTION_WINDOW_SECONDS_WIDTH - width) / 2 : 0;
     u32 offset = margin + (u32) (x + self->text_width);
-    TextDrawBox *box = func_020a8fe8(chars, CAUTION_WINDOW_CELLS, CAUTION_WINDOW_ROWS);
+    TextDrawBox *box = (TextDrawBox *) (LabelBox_New((int) (uintptr_t) chars, CAUTION_WINDOW_CELLS, CAUTION_WINDOW_ROWS));
     if (box != NULL) {
         caution_window_box_text(box, &number);
         box->offset = offset;
@@ -500,9 +481,9 @@ void CautionWindow_DrawSeconds(CautionWindow *self, void *chars, int x)
         box->color = 0;
         box->merge = 1;
         TextDraw_RequestDraw(box);
-        func_020a8fb8(box);
+        LabelBox_Free((LabelBox *) box);
     }
-    func_020b5618(&number);
+    MessageText46_Destruct((MessageText46 *) &number);
 }
 CLEAN_AS(func_020384f8, CautionWindow_DrawSeconds)
 
@@ -514,7 +495,7 @@ void CautionWindow_DrawLine(CautionWindow *self)
     if (chars == NULL) {
         return;
     }
-    TextDrawBox *box = func_020a8fe8(chars, CAUTION_WINDOW_CELLS, CAUTION_WINDOW_ROWS);
+    TextDrawBox *box = (TextDrawBox *) (LabelBox_New((int) (uintptr_t) chars, CAUTION_WINDOW_CELLS, CAUTION_WINDOW_ROWS));
     if (box != NULL) {
         caution_window_box_text(box, self->line_text);
         TextDraw_Center(box);
@@ -522,7 +503,7 @@ void CautionWindow_DrawLine(CautionWindow *self)
         box->color = 0;
         TextDraw_RequestDraw(box);
         int x = (int) box->offset;
-        func_020a8fb8(box);
+        LabelBox_Free((LabelBox *) box);
         if (self->seconds >= 0 && self->text_width != 0) {
             CautionWindow_DrawSeconds(self, chars, x);
         }
@@ -551,9 +532,9 @@ void CautionWindow_UploadLine(CautionWindow *self, int part)
     const u8 *block = resource + *(const s32 *) (resource + 8);
     const u8 *dictionary = block + *(const u16 *) (block + 0xa);
     const u8 *texture = block + *(const s32 *) (dictionary + 8);
-    unsigned int address = func_02057a7c(texture);
-    func_020b9f80(self->transfer, self->bitmap, address + (unsigned int) part * CAUTION_WINDOW_BITMAP_SIZE,
-                  CAUTION_WINDOW_BITMAP_SIZE, 2);
+    unsigned int address = G3dRes_MaterialTextureAddress((const G3dResMaterial *) (void *) texture);
+    VramCopyTask_QueueImage((VramCopyTask *) (void *) self->transfer, self->bitmap,
+                            address + (unsigned int) part * CAUTION_WINDOW_BITMAP_SIZE, CAUTION_WINDOW_BITMAP_SIZE, 2);
 }
 CLEAN_AS(func_02038680, CautionWindow_UploadLine)
 
@@ -605,7 +586,7 @@ void CautionWindow_SetCamera(CautionWindow *self)
     data_027e0148.flags &= ~0xe8u;
     fx32 scale = FX_MulFunc(0xb7, 0xf6d);
     Vec3 scales = {scale, scale, 0x1000};
-    func_02055e7c(self->model, &scales);
+    ModelObject_Draw((ModelObject *) (void *) self->model, &scales);
 }
 CLEAN_AS(func_02038758, CautionWindow_SetCamera)
 
@@ -636,7 +617,7 @@ CLEAN_AS(func_02038828, CautionWindow_Update)
 void CautionWindow_Close(CautionWindow *self)
 {
     if (self->state != CAUTION_WINDOW_OFF) {
-        func_02055454(self->model);
+        ModelObject_Release((ModelObject *) (void *) self->model);
         self->state = CAUTION_WINDOW_OFF;
     }
 }
@@ -650,7 +631,7 @@ void CautionWindow_Start(CautionWindow *self)
     int mode_5 = data_021f42f4->mode == 5;
     CautionWindow_Reset(self);
     if (field || mode_5) {
-        func_0205556c(self->model, CAUTION_WINDOW_TAG, data_020da570);
+        ModelObject_LoadShared((ModelObject *) (void *) self->model, CAUTION_WINDOW_TAG, data_020da570);
         CautionWindow_SetMatrix(self);
         self->line = 0;
         self->shown = 0;
@@ -665,9 +646,9 @@ CLEAN_AS(func_02038910, CautionWindow_Start)
 int CautionWindow_LoadMessages(void)
 {
     u8 numbers[3] = {0xe3, 0xe4, 0xe5};
-    func_020b4980(data_021c5a24, &numbers[0], 0);
-    func_020b4980(data_021c59d0, &numbers[1], 0);
-    return func_020b4980(data_021c5b38, &numbers[2], 0);
+    MessageReader_LoadMenuMessage((int) (uintptr_t) data_021c5a24, &numbers[0], 0);
+    MessageReader_LoadMenuMessage((int) (uintptr_t) data_021c59d0, &numbers[1], 0);
+    return MessageReader_LoadMenuMessage((int) (uintptr_t) data_021c5b38, &numbers[2], 0);
 }
 CLEAN_AS(func_02038998, CautionWindow_LoadMessages)
 
@@ -724,22 +705,11 @@ extern const u8 data_020da530[];
 extern const u8 data_020da548[];
 extern const u8 data_020da560[];
 
-/* The window's model: constructed and destroyed. The copy into texture VRAM: constructed. */
-extern void *func_0205577c(void *model);
-extern void *func_02055764(void *model);
-extern void *func_020ba01c(void *transfer);
-
-/* The label base (text_label.h): constructed, destroyed. The deleting destructors' delete. */
-extern void *func_020a8cac(void *label);
-extern void *func_020a8c38(void *label);
-extern void func_020edb3c(void *block);
-
 /* The network's error detail when the session shut down (CautionWindow_RecordNetError) and its
  * text, as 16-bit characters (CautionWindow_ErrorCodeText). */
 extern int data_021c5938;
 extern u8 data_021c5970[];
-extern const char data_020da590[];                               /* " <%d>" */
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
+extern const char data_020da590[]; /* " <%d>" */
 
 /* The characters CautionWindow_WidenText knows (" -0123456789ABCDEF<>", then a 0) and the
  * 16-bit character of each, as two bytes: the full-width forms. */
@@ -761,7 +731,7 @@ CLEAN_AS(func_02038a44, CautionWindow_ArePlanesHidden)
 CautionWindow *CautionWindow_DestructDelete(CautionWindow *self)
 {
     CautionWindow_Destruct(self);
-    func_020edb3c(self);
+    Heap_OperatorDeleteB(self);
     return self;
 }
 CLEAN_AS(func_02038a50, CautionWindow_DestructDelete)
@@ -773,7 +743,7 @@ CautionWindow *CautionWindow_Destruct(CautionWindow *self)
     CautionWindowLine_Destruct((CautionWindowLabel *) self->line_text);
     CautionWindowUnit_Destruct((CautionWindowLabel *) self->unit);
     CautionWindowMessage_Destruct((CautionWindowLabel *) self->message);
-    func_02055764(self->model);
+    ModelObject_DestructComplete((ModelObject *) (void *) self->model);
     return self;
 }
 CLEAN_AS(func_02038a90, CautionWindow_Destruct)
@@ -783,8 +753,8 @@ CLEAN_AS(func_02038a90, CautionWindow_Destruct)
 CautionWindow *CautionWindow_Construct(CautionWindow *self)
 {
     self->vtable = data_020da520;
-    func_0205577c(self->model);
-    func_020ba01c(self->transfer);
+    ModelObject_Construct((ModelObject *) (void *) self->model);
+    VramCopyTask_Construct((VramCopyTask *) (void *) self->transfer);
     self->state = CAUTION_WINDOW_OFF;
     self->timer = 0;
     self->line = 0;
@@ -812,7 +782,7 @@ CLEAN_AS(func_02038acc, CautionWindow_Construct)
 char *CautionWindow_ErrorCodeText(void)
 {
     char text[20];
-    func_02064328(text, data_020da590, data_021c5938);
+    CLib_SPrintf(text, data_020da590, data_021c5938);
     CautionWindow_WidenText(data_021c5970, (signed char *) text);
     return (char *) data_021c5970;
 }
@@ -865,8 +835,8 @@ CLEAN_AS(func_02038c30, CautionWindowLine_Capacity)
 CautionWindowLabel *CautionWindowLine_DestructDelete(CautionWindowLabel *label)
 {
     label->vtable = data_020da548;
-    func_020a8c38(label);
-    func_020edb3c(label);
+    TextBase_Destruct((TextBase *) label);
+    Heap_OperatorDeleteB(label);
     return label;
 }
 CLEAN_AS(func_02038c34, CautionWindowLine_DestructDelete)
@@ -875,7 +845,7 @@ CLEAN_AS(func_02038c34, CautionWindowLine_DestructDelete)
 CautionWindowLabel *CautionWindowLine_Destruct(CautionWindowLabel *label)
 {
     label->vtable = data_020da548;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_02038c54, CautionWindowLine_Destruct)
@@ -883,9 +853,9 @@ CLEAN_AS(func_02038c54, CautionWindowLine_Destruct)
 /* func_02038c6c: an empty label. */
 CautionWindowLabel *CautionWindowLine_Construct(CautionWindowLabel *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = data_020da548;
-    func_020a8c1c(label);
+    TextBase_Clear(label);
     return label;
 }
 CLEAN_AS(func_02038c6c, CautionWindowLine_Construct)
@@ -908,8 +878,8 @@ CLEAN_AS(func_02038c90, CautionWindowUnit_Capacity)
 CautionWindowLabel *CautionWindowUnit_DestructDelete(CautionWindowLabel *label)
 {
     label->vtable = data_020da560;
-    func_020a8c38(label);
-    func_020edb3c(label);
+    TextBase_Destruct((TextBase *) label);
+    Heap_OperatorDeleteB(label);
     return label;
 }
 CLEAN_AS(func_02038c94, CautionWindowUnit_DestructDelete)
@@ -918,7 +888,7 @@ CLEAN_AS(func_02038c94, CautionWindowUnit_DestructDelete)
 CautionWindowLabel *CautionWindowUnit_Destruct(CautionWindowLabel *label)
 {
     label->vtable = data_020da560;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_02038cb4, CautionWindowUnit_Destruct)
@@ -926,9 +896,9 @@ CLEAN_AS(func_02038cb4, CautionWindowUnit_Destruct)
 /* func_02038ccc: an empty label. */
 CautionWindowLabel *CautionWindowUnit_Construct(CautionWindowLabel *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = data_020da560;
-    func_020a8c1c(label);
+    TextBase_Clear(label);
     return label;
 }
 CLEAN_AS(func_02038ccc, CautionWindowUnit_Construct)
@@ -951,8 +921,8 @@ CLEAN_AS(func_02038cf0, CautionWindowMessage_Capacity)
 CautionWindowLabel *CautionWindowMessage_DestructDelete(CautionWindowLabel *label)
 {
     label->vtable = data_020da530;
-    func_020a8c38(label);
-    func_020edb3c(label);
+    TextBase_Destruct((TextBase *) label);
+    Heap_OperatorDeleteB(label);
     return label;
 }
 CLEAN_AS(func_02038cf8, CautionWindowMessage_DestructDelete)
@@ -961,7 +931,7 @@ CLEAN_AS(func_02038cf8, CautionWindowMessage_DestructDelete)
 CautionWindowLabel *CautionWindowMessage_Destruct(CautionWindowLabel *label)
 {
     label->vtable = data_020da530;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) label);
     return label;
 }
 CLEAN_AS(func_02038d18, CautionWindowMessage_Destruct)
@@ -970,9 +940,9 @@ CLEAN_AS(func_02038d18, CautionWindowMessage_Destruct)
 int CautionWindowMessage_Construct(int label)
 {
     CautionWindowLabel *object = (CautionWindowLabel *) (uintptr_t) label;
-    func_020a8cac(object);
+    TextBase_Construct(object);
     object->vtable = data_020da530;
-    func_020a8c1c(object);
+    TextBase_Clear(object);
     return label;
 }
 CLEAN_AS(func_02038d30, CautionWindowMessage_Construct)

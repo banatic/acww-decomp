@@ -9,6 +9,22 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "tile_convert.h"
+#include "c_library.h"
+#include "design_info.h"
+#include "design_sets.h"
+#include "item_texture.h"
+#include "model_cache.h"
+#include "name_texts.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "record_file.h"
+#include "rom_file.h"
+#include "scene_query.h"
+#include "tex_upload.h"
+#include "text_base.h"
+#include "town_name.h"
+#include "vram_region.h"
 
 static_assert(sizeof(DesignPalettes) == 0x44, "palettes");
 static_assert(offsetof(DesignManager, palettes) == 4, "manager");
@@ -43,10 +59,6 @@ typedef struct TitleText {
     u32 words[0xa];
 } TitleText;
 
-typedef struct NameText {
-    u32 words[8];
-} NameText;
-
 /* A town (0xe bytes, func_020642fc) followed by a creator (func_0209529c). */
 typedef struct CreatorText {
     u16 town[7];
@@ -80,55 +92,6 @@ extern u8 data_021ed278[];  /* the shop's designs */
 extern u8 data_021dc7bc[];  /* the four players' records */
 extern Heap *data_021fbe94; /* the current heap */
 
-extern int func_02064328(char *buffer, const char *format, ...);    /* sprintf */
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file */
-extern void *func_02064b18(const char *path);                       /* read a whole file */
-
-extern char *func_0206e7bc(RecordFile *file, unsigned int entry); /* a record, NULL when unread */
-extern void func_0206e808(RecordFile *file);
-extern int func_0206e890(RecordFile *file, const char *path, int record_size, int records);
-extern int func_0206e8b4(RecordFile *file);
-extern void func_0206e8c4(RecordFile *file);
-
-extern void *func_02062fbc(TitleText *text);
-extern void *func_02062f4c(TitleText *text);
-extern void *func_020641c8(NameText *text); /* the 8-bit text of a town's name */
-extern void *func_020641b0(NameText *text);
-extern void *func_02094fd4(NameText *text); /* the text of a player's name */
-extern void *func_02094fbc(NameText *text);
-extern int func_020a8be4(void *text, const u8 *data); /* set a text from raw bytes */
-extern void func_020642fc(CreatorText *town);
-extern void func_020642f8(CreatorText *town);
-extern void func_020641e0(CreatorText *town, NameText *name);
-extern void *func_0209529c(DesignCreator *creator);
-extern int func_0209526c(DesignCreator *creator);
-extern void func_02095044(DesignCreator *creator, NameText *name);
-extern void func_02095038(DesignCreator *creator, CreatorText *town);
-extern void func_02072e64(DesignInfo *info, TitleText *title);
-extern void func_02072f54(DesignInfo *info, int palette);
-extern void func_02072e18(DesignInfo *info, int kind);
-extern void func_02072eec(DesignInfo *info, DesignCreator *creator);
-
-extern u8 *func_02098844(u8 *players, int player);                           /* a player's record; NULL past 3 */
-extern void *func_020996b8(void *record);                                    /* its designs */
-extern int func_02072bd0(int designs, int index);                            /* designs + (index & 7) designs */
-extern unsigned int func_02072a48(unsigned int designs, unsigned int index); /* the same */
-extern void *func_02072da0(void *design);                                    /* its pixels */
-extern unsigned int func_02072d4c(unsigned int design);                      /* its DesignInfo */
-extern int func_02072f88(int info);                                          /* its palette's colours */
-extern void func_0203d228(DesignModel *model);                               /* constructor: nothing */
-extern int func_0203d064(DesignModel *model, const u16 *item, void *unused);
-extern int func_0203cff8(DesignModel *model, void *design); /* the item's model with the design */
-extern unsigned int func_0203cfc8(DesignModel *model);      /* its resource */
-extern void *func_0203cfe4(DesignModel *model);             /* its image */
-extern int func_0203cfd0(DesignModel *model);               /* its palette */
-extern int func_02056064(void *resource, int unused);
-extern int func_02056160(void *resource, void *name); /* a texture handle */
-extern void *func_020578ec(DesignTexture *texture);   /* constructor */
-extern int func_020577c8(DesignTexture *texture, void *handle, int a2, int a3, void *resource, int a5, u32 a6);
-extern u8 func_020b65c4(void); /* the scene */
-extern void func_02072808(DesignManager *manager);
-
 static void *as_pointer(unsigned int address)
 {
     return (void *) (uintptr_t) address;
@@ -137,8 +100,9 @@ static void *as_pointer(unsigned int address)
 /* Puts a design in one of the models and sends it to its texture. */
 static void update_texture(DesignModel *model, DesignTexture *texture, u32 handle, void *design)
 {
-    func_0203cff8(model, design);
-    func_020577c8(texture, as_pointer(handle), 0, 0, as_pointer(func_0203cfc8(model)), 0, 0);
+    ClothTexture_SetDesign(model, design);
+    TexUpload_Send((TexUpload *) texture, as_pointer(handle), 0, 0,
+                   as_pointer((unsigned int) (uintptr_t) ClothTexture_Textures(model)), 0, 0);
 }
 
 /* func_020714e0: puts the shop's design `index` (0-7) in its texture; 0 when it has none. */
@@ -149,7 +113,7 @@ int DesignTextures_UpdateShop(unsigned int index)
     if (handle == 0 || data_021d0470 == NULL || data_021d0480 == NULL) {
         return 0;
     }
-    void *design = as_pointer(func_02072a48((unsigned int) (uintptr_t) data_021ed278, index));
+    void *design = as_pointer(ShopDesigns_At((unsigned int) (uintptr_t) data_021ed278, index));
     update_texture(&data_021d0470[i], &data_021d0480[i], handle, design);
     return 1;
 }
@@ -166,8 +130,8 @@ int DesignTextures_UpdatePlayer(int player, int index)
     if (handle == 0 || data_021d0484 == NULL || data_021d047c == NULL) {
         return 0;
     }
-    void *designs = func_020996b8(func_02098844(data_021dc7bc, p));
-    void *design = as_pointer((unsigned int) func_02072bd0((int) (uintptr_t) designs, i));
+    void *designs = PlayerRecord_Designs(PlayerRecords_TownRecord(data_021dc7bc, p));
+    void *design = as_pointer((unsigned int) PlayerDesigns_At((PlayerDesigns *) (uintptr_t) designs, i));
     update_texture(&data_021d0484[i], &data_021d047c[i], handle, design);
     return 1;
 }
@@ -185,8 +149,8 @@ CLEAN_AS(func_0207216c, DesignSampleImage_ToBitmap)
 int DesignSampleImage_Load(void *image, int sample)
 {
     char path[0x28];
-    func_02064328(path, data_020e17c0, sample + SAMPLE_FILE_FIRST);
-    return func_02064af4(path, image, SAMPLE_IMAGE_SIZE);
+    CLib_SPrintf(path, data_020e17c0, sample + SAMPLE_FILE_FIRST);
+    return RomFile_Read(path, image, SAMPLE_IMAGE_SIZE);
 }
 CLEAN_AS(func_02072180, DesignSampleImage_Load)
 
@@ -205,7 +169,7 @@ CLEAN_AS(func_020721b0, DesignBlankImage_ToBitmap)
 /* func_020721c4: reads "menu/desi/myc/obj0.bch". */
 void DesignBlankImage_Load(void *image)
 {
-    func_02064af4(data_020e17d8, image, SAMPLE_IMAGE_SIZE);
+    RomFile_Read(data_020e17d8, image, SAMPLE_IMAGE_SIZE);
 }
 CLEAN_AS(func_020721c4, DesignBlankImage_Load)
 
@@ -228,7 +192,7 @@ CLEAN_AS(func_020721e0, DesignBuSheet_ToBitmap)
 /* func_02072204: reads "menu/desi/b_myd_bu_obj.bch". */
 void DesignBuSheet_Load(unsigned char *sheet)
 {
-    func_02064af4(data_020e17f0, sheet, SHEET_SIZE);
+    RomFile_Read(data_020e17f0, sheet, SHEET_SIZE);
 }
 CLEAN_AS(func_02072204, DesignBuSheet_Load)
 
@@ -251,7 +215,7 @@ CLEAN_AS(func_02072220, DesignMySheet_ToBitmap)
 /* func_02072244: reads "menu/desi/b_myd_my_obj.bch". */
 void DesignMySheet_Load(void *sheet)
 {
-    func_02064af4(data_020e180c, sheet, SHEET_SIZE);
+    RomFile_Read(data_020e180c, sheet, SHEET_SIZE);
 }
 CLEAN_AS(func_02072244, DesignMySheet_Load)
 
@@ -274,38 +238,39 @@ int DesignArchive_ReadInfo(RecordFile *archive, DesignInfo *info, int entry)
     if (entry >= ARCHIVE_ENTRIES) {
         return 0;
     }
-    const ArchiveEntry *record = (const ArchiveEntry *) func_0206e7bc(archive, (unsigned int) entry);
+    const ArchiveEntry *record =
+        (const ArchiveEntry *) RecordFile_Record((FurnitureRecordFile *) archive, (unsigned int) entry);
     if (record == NULL) {
         return 0;
     }
 
     TitleText title;
-    func_02062fbc(&title);
-    func_020a8be4(&title, record->title);
-    func_02072e64(info, &title);
-    func_02072f54(info, record->palette);
-    func_02072e18(info, record->kind);
+    NameText_Construct((NameText *) &title);
+    TextBase_SetChars((TextBase *) &title, (const char *) record->title);
+    DesignInfo_SetTitleFromText(info, &title);
+    DesignInfo_SetPalette(info, record->palette);
+    DesignInfo_SetKind((u8 *) info, record->kind);
 
-    NameText town;
-    func_020641c8(&town);
-    func_020a8be4(&town, record->town_name);
-    NameText name;
-    func_02094fd4(&name);
-    func_020a8be4(&name, record->player_name);
+    TownNameText town;
+    TownNameText_Construct(&town);
+    TextBase_SetChars((TextBase *) &town, (const char *) record->town_name);
+    PlayerIdText name;
+    PlayerIdText_Construct(&name);
+    TextBase_SetChars((TextBase *) &name, (const char *) record->player_name);
 
     CreatorText creator;
-    func_020642fc(&creator);
-    func_020641e0(&creator, &town);
-    func_0209529c(&creator.creator);
-    func_02095044(&creator.creator, &name);
-    func_02095038(&creator.creator, &creator);
-    func_02072eec(info, &creator.creator);
+    TownName_Construct(&creator);
+    TownName_SetNameFromText((TownName *) &creator, (TextBase *) &town);
+    PlayerId_Construct(&creator.creator);
+    PlayerId_SetNameFromText(&creator.creator, (TextBase *) &name);
+    PlayerId_SetTown(&creator.creator, (const TownName *) &creator);
+    DesignInfo_SetCreator(info, &creator.creator);
 
-    func_0209526c(&creator.creator);
-    func_020642f8(&creator);
-    func_02094fbc(&name);
-    func_020641b0(&town);
-    func_02062f4c(&title);
+    PlayerId_Destruct(&creator.creator);
+    TownName_Destruct(&creator);
+    PlayerIdText_Destruct(&name);
+    TownNameText_Destruct(&town);
+    NameText_Destruct((NameText *) &title);
     return 1;
 }
 CLEAN_AS(func_02072268, DesignArchive_ReadInfo)
@@ -313,21 +278,21 @@ CLEAN_AS(func_02072268, DesignArchive_ReadInfo)
 /* func_02072330 */
 void DesignArchive_Close(RecordFile *archive)
 {
-    func_0206e808(archive);
+    RecordFile_Close((FurnitureRecordFile *) archive);
 }
 CLEAN_AS(func_02072330, DesignArchive_Close)
 
 /* func_02072338: opens "/myOrg/myD.bin". */
 void DesignArchive_Open(RecordFile *archive)
 {
-    func_0206e890(archive, data_020e1828, ARCHIVE_ENTRY_SIZE, ARCHIVE_ENTRIES);
+    RecordFile_Open((FurnitureRecordFile *) archive, data_020e1828, ARCHIVE_ENTRY_SIZE, ARCHIVE_ENTRIES);
 }
 CLEAN_AS(func_02072338, DesignArchive_Open)
 
 /* func_02072350: the file's destructor (registered by __sinit_020c5c94). */
 int DesignArchive_Destruct(RecordFile *archive)
 {
-    func_0206e8b4(archive);
+    RecordFile_Destruct((FurnitureRecordFile *) archive);
     return (int) (uintptr_t) archive;
 }
 CLEAN_AS(func_02072350, DesignArchive_Destruct)
@@ -335,7 +300,7 @@ CLEAN_AS(func_02072350, DesignArchive_Destruct)
 /* func_02072360: its constructor. */
 int DesignArchive_Construct(RecordFile *archive)
 {
-    func_0206e8c4(archive);
+    RecordFile_Construct((FurnitureRecordFile *) archive);
     return (int) (uintptr_t) archive;
 }
 CLEAN_AS(func_02072360, DesignArchive_Construct)
@@ -367,8 +332,9 @@ CLEAN_AS(func_020723a0, DesignTextures_Release)
  * a texture handle made from it; else leaves `handle` as it is. */
 static void make_texture(DesignModel *model, u32 *handle)
 {
-    if (func_02056064(as_pointer(func_0203cfc8(model)), 0) != 0) {
-        *handle = (u32) func_02056160(as_pointer(func_0203cfc8(model)), as_pointer(NO_NAME));
+    if (VramRegion_LoadTexture(as_pointer((unsigned int) (uintptr_t) ClothTexture_Textures(model)), 0) != 0) {
+        *handle = (u32) ModelCache_KeepTexture(as_pointer((unsigned int) (uintptr_t) ClothTexture_Textures(model)),
+                                               (u32) (uintptr_t) as_pointer(NO_NAME));
     }
 }
 
@@ -392,28 +358,29 @@ void DesignTextures_Build(DesignManager *manager)
 #endif
         return;
     }
-    func_0203d228(item);
-    func_0203d228(copy);
+    ClothTexture_Construct(item);
+    ClothTexture_Construct(copy);
     u16 code = DESIGN_ITEM;
-    func_0203d064(item, &code, NULL);
+    ClothTexture_Load(item, &code, NULL);
 
     for (int player = 0; player < DESIGN_PLAYERS; player++) {
         for (int i = 0; i < DESIGNS_PER_SET; i++) {
             u32 *handles = data_021d054c[player];
-            void *designs = func_020996b8(func_02098844(data_021dc7bc, player));
-            int design = func_02072bd0((int) (uintptr_t) designs, i);
+            void *designs = PlayerRecord_Designs(PlayerRecords_TownRecord(data_021dc7bc, player));
+            int design = PlayerDesigns_At((PlayerDesigns *) (uintptr_t) designs, i);
             memcpy(copy, item, sizeof(DesignModel));
-            u8 *image = func_0203cfe4(copy);
-            memcpy(image, func_02072da0(as_pointer((unsigned int) design)), DESIGN_PIXELS_SIZE);
-            u16 *palette = as_pointer((unsigned int) func_0203cfd0(copy));
-            u16 *colours = as_pointer((unsigned int) func_02072f88((int) func_02072d4c((unsigned int) design)));
+            u8 *image = ClothTexture_Image(copy);
+            memcpy(image, Design_Pixels(as_pointer((unsigned int) design)), DESIGN_PIXELS_SIZE);
+            u16 *palette = as_pointer((unsigned int) ClothTexture_Palette(copy));
+            u16 *colours = as_pointer((unsigned int) DesignInfo_PaletteColours(
+                (DesignInfo *) (uintptr_t) ((int) Design_Info((unsigned int) design))));
             memcpy(palette, colours, DESIGN_PALETTE_SIZE);
             make_texture(copy, &handles[i]);
         }
     }
-    if (func_020b65c4() == SHOP_SCENE) {
+    if (SceneQuery_Current() == SHOP_SCENE) {
         for (int i = 0; i < DESIGNS_PER_SET; i++) {
-            func_0203cff8(copy, as_pointer(func_02072a48((unsigned int) (uintptr_t) data_021ed278, i)));
+            ClothTexture_SetDesign(copy, as_pointer(ShopDesigns_At((unsigned int) (uintptr_t) data_021ed278, i)));
             make_texture(copy, &data_021d04e4[i]);
         }
     }
@@ -476,7 +443,7 @@ void DesignPalettes_Load(DesignPalettes *set)
     if (set->file != NULL) {
         return;
     }
-    set->file = func_02064b18(data_020e1838);
+    set->file = RomFile_LoadDefault(data_020e1838);
     if (set->file != NULL) {
         for (unsigned int i = 0; i < DESIGN_PALETTES; i++) {
             set->palettes[i] = (u16 *) (set->file + i * DESIGN_PALETTE_SIZE);
@@ -574,17 +541,17 @@ static void construct_set(uintptr_t models, uintptr_t textures)
         uintptr_t texture = textures + i * sizeof(DesignTexture);
 #ifdef BUGFIX
         if (models != 0) {
-            func_0203d228((DesignModel *) model);
+            ClothTexture_Construct((DesignModel *) model);
         }
         if (textures != 0) {
-            func_020578ec((DesignTexture *) texture);
+            TexUpload_Construct((DesignTexture *) texture);
         }
 #else
         if (model != 0) {
-            func_0203d228((DesignModel *) model);
+            ClothTexture_Construct((DesignModel *) model);
         }
         if (texture != 0) {
-            func_020578ec((DesignTexture *) texture);
+            TexUpload_Construct((TexUpload *) ((DesignTexture *) texture));
         }
 #endif
     }
@@ -595,7 +562,7 @@ static void construct_set(uintptr_t models, uintptr_t textures)
  * from the current heap. */
 void DesignManager_Startup(DesignManager *manager)
 {
-    func_02072808(manager);
+    DesignManager_Reset(manager);
     DesignPalettes_Load(&manager->palettes);
     DesignTextures_Build(manager);
 

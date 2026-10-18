@@ -176,9 +176,7 @@ typedef struct BbsWriteScene {
     PushButton scroll_button;                                  /* 0x4234: the scroll bar's knob */
     ButtonPanel panel;                                         /* 0x427c */
     Glider pointer;                                            /* 0x4448: a Glider0 */
-    u8 filter_text[0xd4];                                      /* 0x44ac: the 8-bit text the taboo filter reads,
-                                                                * a BbsLabel of main's (bbs.h), its first 0xd4
-                                                                * bytes */
+    BbsLabel filter_text;                                      /* 0x44ac: the 8-bit text the taboo filter reads */
     BbsWideText filter_wide;                                   /* 0x4580: the post carried through it */
     u16 screen[0x400];                                         /* 0x4650: the board's screen ("b_bbs.bsc") */
     u8 line_chars[BBS_WRITE_LINES][BBS_WRITE_LINE_CHAR_BYTES]; /* 0x4e50: the lines drawn as characters */

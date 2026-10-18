@@ -6,6 +6,13 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "main/main_loop.h"
+#include "ov066/local_host.h"
+#include "ov066/local_join.h"
+#include "ov066/local_mp.h"
+#include "ov066/local_relay.h"
+#include "ov066/local_search.h"
+#include "ov066/local_wireless.h"
 
 static_assert(sizeof(FriendStatus) == 0x23, "a friend's status");
 static_assert(offsetof(FriendList, status) == 0x180, "the statuses follow the friend data");
@@ -179,15 +186,6 @@ extern void func_020ed658(int peer, int buffer, int size);
 extern void func_020ed6a8(int status, int local, int cancelled, int peer, int connection, void *argument);
 extern void func_ov065_0227e67c(void);
 extern void func_ov065_022784a0(void);
-
-/* The local wireless library. */
-extern int func_ov066_0226760c(void);
-extern int func_ov066_022682ec(void *entry, int a, int b);
-extern void *func_ov066_02267784(int a, u8 index);
-extern int func_ov066_02266c7c(void *entry);
-extern int func_ov066_02266cc8(void *entry);
-extern void *func_ov066_02266c8c(void *entry);
-extern int func_ov066_02269638(const void *data, u32 length);
 
 /* func_020ead48: TRUE once the data was exchanged. */
 u32 Exchange_IsDone(void)
@@ -595,11 +593,11 @@ CLEAN_AS(func_020eb8a0, Wfc_FriendIndexOf)
  * library; its result, or FALSE when the library is not ready or there is no entry. */
 int Local_SelectEntry(const void *entry)
 {
-    if (func_ov066_0226760c() != LOCAL_STATE_READY || entry == NULL) {
+    if (LocalWireless_GetState() != LOCAL_STATE_READY || entry == NULL) {
         return FALSE;
     }
     MI_CpuCopy8(entry, data_021fc040, LOCAL_ENTRY_SIZE);
-    return func_ov066_022682ec(data_021fc040, 0, 0);
+    return LocalJoin_Select((LocalParent *) (void *) data_021fc040, 0, 0);
 }
 CLEAN_AS(func_020eb8d8, Local_SelectEntry)
 
@@ -609,11 +607,11 @@ CLEAN_AS(func_020eb8d8, Local_SelectEntry)
 void **Local_ListEntries(void)
 {
     MI_CpuFill8(data_021fbf78, 0, sizeof(data_021fbf78));
-    if (func_ov066_0226760c() == LOCAL_STATE_READY) {
+    if (LocalWireless_GetState() == LOCAL_STATE_READY) {
         int count = 0;
         for (u32 slot = 0; slot < LOCAL_ENTRY_COUNT; slot++) {
-            void *entry = func_ov066_02267784(0, (u8) slot);
-            if (func_ov066_02266c7c(entry)) {
+            void *entry = LocalSearch_ParentAt(0, (u8) slot);
+            if (LocalSearch_ParentState(entry)) {
                 data_021fbf78[count++] = entry;
             }
         }
@@ -628,7 +626,7 @@ int Local_EntryDataSize(void *entry)
     if (entry == NULL) {
         return 0;
     }
-    return func_ov066_02266cc8(entry);
+    return LocalSearch_ParentDataSize(entry);
 }
 CLEAN_AS(func_020eb998, Local_EntryDataSize)
 
@@ -638,14 +636,14 @@ void *Local_EntryData(void *entry)
     if (entry == NULL) {
         return NULL;
     }
-    return func_ov066_02266c8c(entry);
+    return LocalSearch_ParentData(entry);
 }
 CLEAN_AS(func_020eb9c4, Local_EntryData)
 
 /* func_020eb9f0: `length` bytes of `data` handed to the local wireless library. */
 int Local_Call02269638(const void *data, u32 length)
 {
-    return func_ov066_02269638(data, length);
+    return LocalHost_SetGameData(data, length);
 }
 CLEAN_AS(func_020eb9f0, Local_Call02269638)
 
@@ -802,21 +800,6 @@ extern int func_020edab8(int unused, int size, int align);
 extern void func_020edaa8(int unused, int block);
 extern GetCallback func_020ed370;
 
-/* The local wireless library. */
-extern int func_ov066_02269934(void);  /* TRUE when data can be sent */
-extern int func_ov066_022677e0(int a); /* the number of parents found */
-extern int func_ov066_0226997c(void);  /* the mask of the AIDs connected */
-extern int func_ov066_022699cc(void);  /* the child's AID */
-extern int func_ov066_0226807c(void);  /* the number of players connected */
-extern int func_ov066_0226a8c4(int aid, void *buffer, int size);
-extern int func_ov066_02266ce8(void);                    /* the link level */
-extern int func_ov066_022672b8(int state, int b, int c); /* a state asked for */
-extern void func_ov066_0226b90c(void);
-extern int func_ov066_02267404(void);
-/* The library's set-up: what it is given first, the allocator, the free function. */
-extern int func_ov066_0226748c(int a, void *(*alloc)(int, int), void (*free)(void *), int d);
-extern int func_ov066_022667e0(void (*on_event)(u8 *event));
-extern void func_ov066_02267fe8(ReceiveHandler *on_received);
 extern void func_020ed6e8(u8 *event);
 extern void CTRDG_WriteAgbFlashSectorAsync(int aid, char *buffer, unsigned int size);
 #define LOCAL_STATE_IDLE 2
@@ -832,14 +815,10 @@ typedef struct LocalParameters {
     u8 unk_06;
     u8 unk_07;
 } LocalParameters;
-extern int func_ov066_0226b9b8(LocalParameters *parameters);
 
 /* Net_OnBlockSent by the game's symbol, the callback the local library is given. */
 extern void func_020ed950(void *argument);
-extern int func_ov066_022698ec(const void *buffer, u32 size, u16 to, void (*sent)(void *argument));
 extern int func_ov065_0227ee74(u8 aid, const void *buffer, u32 size);
-/* Waits for the next frame (OS_SleepThread on the frame's thread queue). */
-extern void func_0206e6b0(void);
 
 static BOOL is_local(u8 mode)
 {
@@ -918,7 +897,7 @@ CLEAN_AS(func_020eba94, Wfc_GetError)
  * without one, 0x80ff once the library reported its end. */
 int Local_GetError(void)
 {
-    int state = func_ov066_0226760c();
+    int state = LocalWireless_GetState();
     if (state & LOCAL_STATE_ERROR) {
         int code = state & ~LOCAL_STATE_ERROR;
         if (code == 0) {
@@ -969,10 +948,10 @@ CLEAN_AS(func_020ec198, Wfc_CountFriends)
 /* func_020ec1b4: the parents found; -1 while the library is not ready. */
 int Local_CountParents(void)
 {
-    if (func_ov066_0226760c() != LOCAL_STATE_READY) {
+    if (LocalWireless_GetState() != LOCAL_STATE_READY) {
         return -1;
     }
-    return func_ov066_022677e0(0);
+    return LocalSearch_CountParents(0);
 }
 CLEAN_AS(func_020ec1b4, Local_CountParents)
 
@@ -981,7 +960,7 @@ int Net_GetConnectedMask(void)
 {
     u8 mode = data_021fbef8;
     if (is_local(mode)) {
-        return func_ov066_0226997c();
+        return LocalMp_ConnectedAids();
     }
     if (is_wfc(mode)) {
         return (u16) func_ov065_02277b98();
@@ -998,7 +977,7 @@ int Net_GetMyAid(void)
         if (mode == MODE_LOCAL_PARENT) {
             return 0;
         }
-        return func_ov066_022699cc();
+        return LocalMp_GetAid();
     }
     if (is_wfc(mode)) {
         return DWC_GetMyAID();
@@ -1012,7 +991,7 @@ int Net_CountPlayers(void)
 {
     u8 mode = data_021fbef8;
     if (is_local(mode)) {
-        return func_ov066_0226807c();
+        return LocalMp_PlayerCount();
     }
     if (!is_wfc(mode)) {
         return 1;
@@ -1026,7 +1005,7 @@ int Net_SetReceiveBuffer(int aid, void *buffer, int size)
 {
     u8 mode = data_021fbef8;
     if (is_local(mode)) {
-        return func_ov066_0226a8c4(aid, buffer, size);
+        return LocalRelay_SetReceiveBuffer(aid, buffer, size);
     }
     if (is_wfc(mode)) {
         return DWC_SetRecvBuffer((u8) aid, buffer, size);
@@ -1062,7 +1041,7 @@ CLEAN_AS(func_020ec3fc, Wfc_GetLinkLevel)
 /* func_020ec434: what the library says, other values than 1 to 3 as 0. */
 int Local_GetLinkLevel(void)
 {
-    int level = func_ov066_02266ce8();
+    int level = LocalWireless_GetLinkLevel();
     return level >= 1 && level <= 3 ? level : 0;
 }
 CLEAN_AS(func_020ec434, Local_GetLinkLevel)
@@ -1133,14 +1112,14 @@ void Local_Setup(int mode, ReceiveHandler *on_received)
     parameters.unk_05 = 8;
     parameters.unk_06 = 60;
     parameters.unk_07 = 2;
-    func_ov066_0226748c(data_0213e6b4, func_020edaf0, UTi_PutString, 0);
-    func_ov066_022667e0(func_020ed6e8);
-    func_ov066_0226b9b8(&parameters);
-    func_ov066_02267fe8(CTRDG_WriteAgbFlashSectorAsync);
+    LocalWireless_Init(data_0213e6b4, func_020edaf0, UTi_PutString, 0);
+    LocalWireless_SetEventHandler(func_020ed6e8);
+    LocalRelay_Start((LocalRelayParams *) &parameters);
+    LocalWireless_SetReceiveHandler(CTRDG_WriteAgbFlashSectorAsync);
     if (mode == MODE_LOCAL_PARENT) {
-        func_ov066_022672b8(3, 0, 0);
+        LocalWireless_Request(3, 0, 0);
     } else if (mode == MODE_LOCAL_CHILD) {
-        func_ov066_022672b8(4, 0, 0);
+        LocalWireless_Request(4, 0, 0);
     }
 }
 CLEAN_AS(func_020ecce4, Local_Setup)
@@ -1163,7 +1142,7 @@ CLEAN_AS(func_020ec920, Net_UpdateConnection)
 /* func_020ecb80 */
 int Local_IsConnected(void)
 {
-    int state = func_ov066_0226760c();
+    int state = LocalWireless_GetState();
     return state == LOCAL_STATE_CONNECTED_A || state == LOCAL_STATE_CONNECTED_B;
 }
 CLEAN_AS(func_020ecb80, Local_IsConnected)
@@ -1324,7 +1303,7 @@ int Net_CanSend(void)
 {
     u8 mode = data_021fbef8;
     if (is_local(mode)) {
-        return Net_IsSendQueueIdle((u32) func_ov066_02269934());
+        return Net_IsSendQueueIdle((u32) LocalMp_CanSend());
     }
     if (!is_wfc(mode)) {
         return FALSE;
@@ -1475,7 +1454,7 @@ int Net_SendNext(void)
     const SendSlot *slot = &data_021fc120[index];
     u8 mode = data_021fbef8;
     if (is_local(mode)) {
-        return func_ov066_022698ec(slot->buffer, slot->size, slot->to, func_020ed950);
+        return LocalMp_Send(slot->buffer, slot->size, slot->to, func_020ed950);
     }
     if (is_wfc(mode)) {
         return func_ov065_0227ee74((u8) slot->to, slot->buffer, slot->size);
@@ -1488,7 +1467,7 @@ CLEAN_AS(func_020ed9f4, Net_SendNext)
 void Net_WaitFrame(void)
 {
     Wfc_Process();
-    func_0206e6b0();
+    MainLoop_WaitVBlank();
 }
 CLEAN_AS(func_020edb14, Net_WaitFrame)
 
@@ -1640,15 +1619,15 @@ CLEAN_AS(func_020ec5ac, Wfc_EndStep)
  * HW: a busy wait: the library's state is changed by its callbacks, run from interrupts. */
 int Local_End(void)
 {
-    func_ov066_022672b8(0, 0, 0);
+    LocalWireless_Request(0, 0, 0);
     u32 start = now_ms();
-    while (func_ov066_0226760c() != LOCAL_STATE_IDLE) {
+    while (LocalWireless_GetState() != LOCAL_STATE_IDLE) {
         if (timed_out(start)) {
             return FALSE;
         }
     }
-    func_ov066_0226b90c();
-    if (!func_ov066_02267404()) {
+    LocalRelay_Shutdown();
+    if (!LocalWireless_Shutdown()) {
         return FALSE;
     }
     data_021fbef8 = MODE_ENDED;

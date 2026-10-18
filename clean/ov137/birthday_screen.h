@@ -3,8 +3,8 @@
  *
  * - overlay 92's dispatcher opens it with overlay 134 as overlay group 0x1e for GroupParams'
  *   mode 0x32 (ov092/menu_dispatch.c);
- * - it sets up overlay 134's entry picker (ov136/entry_picker.h) for a month and day (kind 2),
- *   whose fields 1 and 2 are the month and the day;
+ * - it sets up overlay 134's clock setter (ov134/clock_setter.h) for a month and day
+ *   (CLOCK_SETTER_MODE_MONTH_DAY), whose fields 1 and 2 are the month and the day;
  * - confirmed, the month and day entered become the current player's birthday
  *   (PlayerRecord_SetBirthday).
  *
@@ -17,6 +17,7 @@
 #include "ov002/button_panel.h"
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
+#include "ov134/clock_setter.h"
 #include "types.h"
 
 /* The places of the cursor (`place`). */
@@ -50,8 +51,8 @@ enum BirthdayScreenState {
 enum BirthdayScreenSubState {
     BIRTHDAY_SCREEN_SUB_TOUCH_FIELDS = 0, /* BirthdayScreen_FieldsByTouch */
     BIRTHDAY_SCREEN_SUB_TOUCH_LIST = 1,   /* BirthdayScreen_ListByTouch */
-    BIRTHDAY_SCREEN_SUB_DRAG_BAR = 2,     /* BirthdayScreen_DragListBar */
-    BIRTHDAY_SCREEN_SUB_DRAG_COLUMN = 3,  /* BirthdayScreen_DragListColumn */
+    BIRTHDAY_SCREEN_SUB_DRAG_THUMB = 2,   /* BirthdayScreen_DragThumb */
+    BIRTHDAY_SCREEN_SUB_THUMB_TO_PEN = 3, /* BirthdayScreen_ThumbTowardPen */
     BIRTHDAY_SCREEN_SUB_FIELDS = 4,       /* BirthdayScreen_FieldsByKeys */
     BIRTHDAY_SCREEN_SUB_LIST = 5,         /* BirthdayScreen_ListByKeys */
     BIRTHDAY_SCREEN_SUB_BAR = 6,          /* BirthdayScreen_ListBarByKeys */
@@ -69,7 +70,7 @@ typedef struct BirthdayScreen {
     MenuScene base;       /* 0x0000 */
     Glider cursor_sprite; /* 0x0094: a Glider0 */
     ButtonPanel panel;    /* 0x00f8 */
-    u8 picker[0x28b0];    /* 0x02c4: overlay 134's entry picker (ov136/entry_picker.h) */
+    ClockSetter picker;   /* 0x02c4: overlay 134's clock setter */
     u16 flags;            /* 0x2b74: BirthdayScreenFlag */
     u8 return_sub_state;  /* 0x2b76: the sub state to go back to once the sprite is done */
     u8 place;             /* 0x2b77: BirthdayScreenPlace */
@@ -110,8 +111,8 @@ void BirthdayScreen_ReturnFromBar(BirthdayScreen *self);
 void BirthdayScreen_ListBarByKeys(BirthdayScreen *self);
 void BirthdayScreen_ListByKeys(BirthdayScreen *self);
 void BirthdayScreen_FieldsByKeys(BirthdayScreen *self);
-void BirthdayScreen_DragListColumn(BirthdayScreen *self);
-void BirthdayScreen_DragListBar(BirthdayScreen *self);
+void BirthdayScreen_ThumbTowardPen(BirthdayScreen *self);
+void BirthdayScreen_DragThumb(BirthdayScreen *self);
 void BirthdayScreen_ListByTouch(BirthdayScreen *self);
 void BirthdayScreen_FieldsByTouch(BirthdayScreen *self);
 void BirthdayScreen_LoadGraphics(BirthdayScreen *self);

@@ -4,6 +4,7 @@
 #include "autoload_2/fx_math.h"
 #include "cell_anim.h"
 #include "clean.h"
+#include "main_random.h"
 
 static_assert(sizeof(SkyKind2Vars) == 0x14, "the words at 0x60");
 
@@ -28,7 +29,6 @@ extern const fx16 FX_SinCosTable_[4096 * 2];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
-extern u32 func_020644cc(int bound); /* a random number below `bound` */
 
 static SkyKind2Vars *sky_kind2_vars(SkyObject *object)
 {
@@ -71,14 +71,14 @@ void SkyKind3_SetUp(SkyObject *object)
     body->scale_y = 0x800;
     fx32 x;
     fx32 y;
-    if (func_020644cc(2) == 0) {
-        x = (fx32) ((func_020644cc(0x3c) + 0xc4) << 12);
+    if (MainRandom_Below(2) == 0) {
+        x = (fx32) ((MainRandom_Below(0x3c) + 0xc4) << 12);
         y = 0;
     } else {
         x = 0x100000;
-        y = (fx32) (func_020644cc(0x30) << 12);
+        y = (fx32) (MainRandom_Below(0x30) << 12);
     }
-    fx32 target_y = (fx32) ((func_020644cc(0x17) + 0x80) << 12);
+    fx32 target_y = (fx32) ((MainRandom_Below(0x17) + 0x80) << 12);
     int angle = Math_Atan2(target_y - y, -x);
     int index = ((u16) angle >> 4) * 2;
     int sin = FX_SinCosTable_[index];

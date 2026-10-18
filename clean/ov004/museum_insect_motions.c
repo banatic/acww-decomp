@@ -831,7 +831,7 @@ void InsectMotion_PairWalk(MuseumInsect *insect)
 CLEAN_AS(func_ov004_02242180, InsectMotion_PairWalk)
 
 /* func_ov004_02242228 (mode 23 of the pair): within 0x2000 of each other, the two face each
- * other, waggle, and each steps back four facing steps (func_ov004_02244fb8); apart, at the end
+ * other, waggle, and each steps back four facing steps (InsectMotion_Facing); apart, at the end
  * of its time the insect rests. */
 void InsectMotion_PairBackOff(MuseumInsect *insect)
 {
@@ -959,7 +959,7 @@ CLEAN_AS(func_ov004_02242470, InsectMotion_PairCircledBy)
 
 /* func_ov004_022425a8 (mode 20 of the pair): the two jostle. Every 15th frame a choice (unk_4c,
  * 0-99) and a side (unk_98: 5-9 for the other insect, as many negative for this one) are drawn;
- * the side counts towards 0. The one of the side moves, by facing steps (func_ov004_02244fb8)
+ * the side counts towards 0. The one of the side moves, by facing steps (InsectMotion_Facing)
  * along the line between them: close (within 0xccd), a choice below 30 moves this one 2 steps
  * towards the other or the other 2 steps back, below 60 this one 2 steps back or the other 2
  * towards it; while beyond 0x99a, far (beyond 0x5800) or below 80, 10 steps towards; nearer
@@ -1414,7 +1414,7 @@ void InsectMotion_UpdateVisitor(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_02243048, InsectMotion_UpdateVisitor)
 
-/* func_ov004_022430f8: the turn of a walker whose feelers meet a wall (func_ov004_02245188,
+/* func_ov004_022430f8: the turn of a walker whose feelers meet a wall (InsectMotion_FeelGround,
  * 02245174 for kind 52), given back: both blocked, 0xaaa (left after a left turn, unk_50 1 or
  * 10, else right); the left one, or still turning left, 0x38e left; the right one, or still
  * turning right, 0x38e right. unk_50 is the way it turns (1 left, 2 right); with nothing in the
@@ -1578,7 +1578,7 @@ CLEAN_AS(func_ov004_022433c8, InsectMotion_UpdateBurrower)
 
 /* func_ov004_02243484 (mode 4 of kind 48): a hop to its kept point, y rising and falling as
  * 0x99a t - 123 t^2 (t, unk_98, the hop's frames); landing, it rests 10-29 frames (10-49 with
- * the player within 0x6000). Its position stays on the floor (func_ov004_02244e94). */
+ * the player within 0x6000). Its position stays on the floor (InsectMotion_StayOnFloor). */
 void InsectMotion_HopToKept(MuseumInsect *insect)
 {
     short *hop = &insect->unk_98;
@@ -1655,7 +1655,7 @@ void InsectMotion_Fly(MuseumInsect *insect)
 CLEAN_AS(func_ov004_022435e0, InsectMotion_Fly)
 
 /* func_ov004_02243694 (kinds 10 and 51's frame): the flight (mode 0) with its sound; resting
- * (6, kind 10 drifting), func_ov004_02244c40; startled (7), back to flight turned by unk_ac;
+ * (6, kind 10 drifting), InsectMotion_Perched; startled (7), back to flight turned by unk_ac;
  * in any other mode, back to flight, kind 51 then hovering about one of two points. */
 void InsectMotion_UpdateFlier(MuseumInsect *insect)
 {
@@ -1902,7 +1902,7 @@ CLEAN_AS(func_ov004_02243c04, InsectMotion_SingWhenCalm)
 
 /* func_ov004_02243c30: where the feelers meet a wall, a glide away from it (mode 15) to a point
  * `distance` (0xa4) plus 0-2 units off, counted in unk_4c, *frames cleared. Gives back what
- * func_ov004_02245188 found (a bit set, not a pointer: the game declares it so). */
+ * InsectMotion_FeelGround found (a bit set, not a pointer: the game declares it so). */
 void *InsectMotion_TurnFromWall(MuseumInsect *insect, short *frames)
 {
     int blocked_by = InsectMotion_FeelGround(insect);
@@ -2015,7 +2015,7 @@ void InsectMotion_UpdateGlider(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_02243e04, InsectMotion_UpdateGlider)
 
-/* The player watched (func_ov004_02244658) is this system's own. */
+/* The player watched (InsectMotion_WatchPlayer) is this system's own. */
 #define INSECT_MOTION_OWN_PLAYER 4
 
 /* The ROM's signed remainder (_s32_div_f): 0 for a divisor of 0 or -1. */

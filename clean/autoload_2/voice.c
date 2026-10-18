@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "sound_system.h"
 
 /* The sound system (the only SoundSystem the game has). */
 extern SoundSystem data_021fd1bc;
@@ -20,10 +21,6 @@ extern u16 data_021fd1b8;
 extern const u8 data_0213e85c[];
 
 extern void OS_Terminate(void);
-/* Sound effect `number` played on the sound system, unless it is muted. */
-extern void func_020f1fb4(SoundSystem *system, int number);
-/* Voice sequence `number` played at `volume` (0 to 0x7f) and `pitch`, adjusted per voice kind. */
-extern void func_020f1da4(SoundSystem *system, int number, int volume, int pitch);
 
 /* The characters the voice treats apart (UTF-16). */
 enum {
@@ -132,7 +129,7 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
     switch (action) {
         case VOICE_CHARACTER:
             if (ch == CH_MIDDLE_DOT || ch2 == CH_MIDDLE_DOT) {
-                func_020f1fb4(&data_021fd1bc, EFFECT_TICK);
+                SoundSystem_PlayEffect(&data_021fd1bc, EFFECT_TICK);
             } else {
                 unsigned step = data_021fd1b0;
                 int spaces_to_restart = 0;
@@ -217,7 +214,7 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
                         break;
                 }
 
-                func_020f1da4(system, sequence, Voice_ClampVolume(system, tone.volume), tone.pitch - 0x40);
+                SoundSystem_PlayVoice(system, sequence, Voice_ClampVolume(system, tone.volume), tone.pitch - 0x40);
 
                 data_021fd1b0++;
                 if (data_021fd1b0 > 15) {
@@ -244,7 +241,7 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
             }
             break;
         case VOICE_TICK:
-            func_020f1fb4(&data_021fd1bc, EFFECT_TICK);
+            SoundSystem_PlayEffect(&data_021fd1bc, EFFECT_TICK);
             break;
         case VOICE_NOTHING:
             break;

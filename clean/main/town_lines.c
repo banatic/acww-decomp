@@ -6,15 +6,13 @@
 #include "map_item.h"
 #include "town_acre_count.h"
 #include "town_tile_put.h"
+#include "map_code.h"
 
 extern const u8 data_020ca5d4[8];     /* the eight tiles around one: 0x10 * (8 - dx) + (8 - dz) */
 extern const u8 data_020cacc0[48];    /* the tiles within three of one, the same way */
 extern const int data_020cac3c[3][2]; /* the first x of the three patterns, in even and odd rows */
 /* The summary's acre records as bytes (TownDayAcres.acres of data_021c779c). */
 extern u8 data_021c7a08[];
-
-/* An occupied tile or a code standing for one. */
-extern int func_0204bbec(const u16 *code);
 
 #define TOWN_LINES_AROUND 8
 #define TOWN_LINES_NEAR 48
@@ -240,7 +238,7 @@ CLEAN_AS(func_02049ff0, TownLines_IsGrownOrRock)
  * 0x62-0x65, 0xd0-0xd3, 0xff-0x102). */
 int TownLines_IsGrownOrOccupied(const u16 *code)
 {
-    if (func_0204bbec(code) != 0) {
+    if (MapCode_IsBuildingOrCovered(code) != 0) {
         return 1;
     }
     if (TownAcreCount_IsLineCode(*code) && MapItem_IsStage0(code) == 0) {

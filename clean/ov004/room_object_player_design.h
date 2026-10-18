@@ -3,7 +3,7 @@
  * of design.c's room codes, eight designs a player, four codes (variants) a design. Once the
  * model is bound the player's texture of that design is put on the model's material "w", and
  * one of the model's nodes, "g" or "b" as byte 0x1c of the player's identity
- * (func_020950c0) is 0 or not, has its node hook's word set to 0. */
+ * (PlayerId_Byte1c) is 0 or not, has its node hook's word set to 0. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_PLAYER_DESIGN_H
 #define CLEAN_OV004_ROOM_OBJECT_PLAYER_DESIGN_H
 

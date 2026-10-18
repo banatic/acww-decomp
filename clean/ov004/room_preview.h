@@ -1,4 +1,4 @@
-/* An item shown in the room as a room object (data_ov004_022596b0, func_ov004_0223d03c): a
+/* An item shown in the room as a room object (data_ov004_022596b0, RoomPreview_Get): a
  * scene of overlay 142 hands it the item picked (RoomPreview_Show) and clears it
  * (RoomPreview_Clear). A wallpaper (0x1100-0x1143) is shown as room object 0x4a64 and a carpet
  * (0x1144-0x1187) as 0x4a60, which read the number noted here (RoomPreview_Number) and load

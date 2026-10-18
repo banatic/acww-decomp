@@ -9,6 +9,14 @@
 #include "clean.h"
 #include "date_time.h"
 #include "state_block.h"
+#include "furniture_info.h"
+#include "letter.h"
+#include "mail.h"
+#include "mail_text.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "town_name.h"
 
 static_assert(offsetof(MuseumRecord, group_b) == 0x1b, "group B");
 static_assert(offsetof(MuseumRecord, group_c) == 0x38, "group C");
@@ -32,28 +40,6 @@ extern const int data_020e17ac;    /* 4 */
 extern const int data_020e17b0;    /* 0x10 */
 
 extern int FX_Div(int numerator, int denominator);
-extern int func_020535f0(const u16 *item);                 /* the kind of a group A item; 0 for others */
-extern int func_020984d4(void);                            /* the current player (0-3) */
-extern int func_020988d8(unsigned int player);             /* 1 for players 0-3 */
-extern u8 *func_02098844(u8 *players, int player);         /* a player's record; NULL past 3 */
-extern void *func_02099870(u8 *player);                    /* where its name is */
-extern int func_02099a28(u8 *player);                      /* whether there is such a player */
-extern void *func_02095074(void *player_name, void *name); /* copy a player's name to a text */
-/* The 8-bit text object (0x20 bytes, vtable data_020de694) the town's name is put in. */
-extern void *func_020641c8(void *text);
-extern void *func_020641b0(void *text);
-extern void func_02064210(const u8 *town, void *text);
-extern int func_0203d7c4(int entry, void *text); /* set a message entry */
-/* A letter (0x100 bytes): construct, write from a sender, attach an item, post, destruct. */
-extern void func_02066694(void *letter);
-extern void func_02066024(void *letter, char *unk, const char *sender, const int *a, const int *b, void *player_name);
-extern unsigned short func_02065ed0(void *letter, unsigned short item, int arg);
-extern int func_02097a54(void *letter); /* post it to the player; 0 when there is no room */
-extern void func_02066688(void *letter);
-
-typedef struct Letter {
-    u32 words[0x40];
-} Letter;
 
 typedef struct Text8 {
     u32 words[8];
@@ -97,7 +83,7 @@ int MuseumRecord_CountGroupAKind(MuseumRecord *record, int kind)
     int count = 0;
     for (unsigned int i = 0; i < MUSEUM_A_ITEMS; i++) {
         u16 item = group_a_item(i);
-        if (kind == func_020535f0(&item) && MuseumRecord_IsGiven(record, &item) != 0) {
+        if (kind == FurnitureInfo_MuseumKind(&item) && MuseumRecord_IsGiven(record, &item) != 0) {
             count++;
         }
     }
@@ -206,11 +192,11 @@ int MuseumRecord_GiverName(MuseumRecord *record, void *name, const u16 *item)
         return 0;
     }
     int player = (MuseumRecord_GiverBits(record, item) - MUSEUM_GIVEN_BY_PLAYER_0) & 3;
-    u8 *giver = func_02098844(data_021dc7bc, player);
+    u8 *giver = PlayerRecords_TownRecord(data_021dc7bc, player);
     if (giver == NULL) {
         return 0;
     }
-    func_02095074(func_02099870(giver), name);
+    PlayerId_NameToText(PlayerRecord_Player(giver), name);
     return 1;
 }
 CLEAN_AS(func_02070fe4, MuseumRecord_GiverName)
@@ -256,7 +242,7 @@ void MuseumRecord_Give(MuseumRecord *record, const u16 *item)
     int index;
     u8 *bits = locate(record, item, &index);
     if (bits != NULL) {
-        int giver = (func_020984d4() & 3) + MUSEUM_GIVEN_BY_PLAYER_0;
+        int giver = (PlayerRecords_CurrentNumber() & 3) + MUSEUM_GIVEN_BY_PLAYER_0;
         bits[index >> 1] |= (u8) (giver << bits_shift(index));
     }
     if (MuseumRecord_Complete(record) != 0) {
@@ -277,25 +263,26 @@ int MuseumRecord_SendLetters(void *record)
     (void) record;
     Text8 town;
     Letter letter;
-    func_020641c8(&town);
-    func_02064210(data_021dc7aa, &town);
-    func_0203d7c4(TOWN_NAME_ENTRY, &town);
+    TownNameText_Construct((TownNameText *) &town);
+    TownName_ToText((TownName *) (void *) data_021dc7aa, (TextBase *) &town);
+    MailText_SetPartText(TOWN_NAME_ENTRY, &town);
     int posted = 0;
     for (int i = 0; i < PLAYERS; i++) {
-        u8 *player = func_02098844(data_021dc7bc, i);
-        if (player == NULL || func_02099a28(player) == 0) {
+        u8 *player = PlayerRecords_TownRecord(data_021dc7bc, i);
+        if (player == NULL || PlayerRecord_HasPlayer(player) == 0) {
             continue;
         }
-        func_02066694(&letter);
+        Letter_Construct(&letter);
         char unk = 0;
-        func_02066024(&letter, &unk, data_020e17b4, &data_020e17ac, &data_020e17b0, func_02099870(player));
-        func_02065ed0(&letter, LETTER_ITEM, 1);
-        if (func_02097a54(&letter) != 0) {
+        Letter_WriteSpecialToPlayer(&letter, (const u8 *) &unk, data_020e17b4, (const u8 *) &data_020e17ac,
+                                    (const u8 *) &data_020e17b0, PlayerRecord_Player(player));
+        Letter_SetItem(&letter, LETTER_ITEM, 1);
+        if (Mail_Post((MailLetter *) &letter) != 0) {
             posted = 1;
         }
-        func_02066688(&letter);
+        Letter_Destruct(&letter);
     }
-    func_020641b0(&town);
+    TownNameText_Destruct((TownNameText *) &town);
     return posted;
 }
 CLEAN_AS(func_02071188, MuseumRecord_SendLetters)
@@ -339,8 +326,8 @@ int MuseumRecord_Giver(MuseumRecord *record, const u16 *item)
     if (giver == MUSEUM_GIVEN_BY_FORMER) {
         return MUSEUM_BY_FORMER_PLAYER;
     }
-    int player = func_020984d4();
-    if (func_020988d8((unsigned int) player) == 1 && giver == player + MUSEUM_GIVEN_BY_PLAYER_0) {
+    int player = PlayerRecords_CurrentNumber();
+    if (PlayerRecords_IsTownNumber((unsigned int) player) == 1 && giver == player + MUSEUM_GIVEN_BY_PLAYER_0) {
         return MUSEUM_BY_CURRENT_PLAYER;
     }
     return MUSEUM_BY_OTHER_PLAYER;

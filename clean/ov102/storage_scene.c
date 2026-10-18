@@ -51,7 +51,7 @@ static_assert(sizeof(StorageScene) == 0x25ac, "size (func_ov102_0229e8b0)");
 extern PadState data_021fbe40;
 #define STORAGE_PAD_A 0x0001
 #define STORAGE_PAD_B 0x0002
-#define STORAGE_PAD_X 0x0008
+#define STORAGE_PAD_START 0x0008
 #define STORAGE_PAD_R 0x0100
 #define STORAGE_PAD_L 0x0200
 #define STORAGE_PAD_Y 0x0800
@@ -1563,7 +1563,7 @@ CLEAN_AS(func_ov102_0229dae0, StorageScene_MoveHeldByKeys)
  * sprite and the popup (sub state 0). The d-pad moves the cursor. At a place not dimmed: A on a
  * grid place's item picks it up, on a tab or the close button presses it; Y on a grid place's
  * item sends it to the first free place of the other part (a pocket's to the page, the page's to
- * the pockets), if there is one. X or B closes the scene (the cursor sprite and the popup, its
+ * the pockets), if there is one. START or B closes the scene (the cursor sprite and the popup, its
  * queue kept, hidden); else L and R turn the page and a queued popup is shown. */
 void StorageScene_IdleByKeys(StorageScene *self)
 {
@@ -1606,7 +1606,7 @@ void StorageScene_IdleByKeys(StorageScene *self)
         }
     }
     u16 pressed = data_021fbe40.pressed;
-    if ((pressed & STORAGE_PAD_X) || (pressed & STORAGE_PAD_B)) {
+    if ((pressed & STORAGE_PAD_START) || (pressed & STORAGE_PAD_B)) {
         StorageScene_HideCursorSprite(self);
         StorageScene_SaveAndClose(self, 1);
         Popup_Hide(&self->popup, 0);

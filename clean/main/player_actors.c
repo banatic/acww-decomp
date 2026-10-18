@@ -7,6 +7,8 @@
 #include "field_actor.h"
 #include "scene_query.h"
 #include "town_tile_put.h"
+#include "player_actor_ops.h"
+#include "session_players.h"
 
 /* The field actor's class, and how its argument carries the player. */
 #define PLAYER_ACTORS_PROFILE 9
@@ -33,12 +35,6 @@ typedef struct PlayerActorsFieldActor {
     u8 unk_000[0x800];
     int player; /* 0x800 */
 } PlayerActorsFieldActor;
-
-extern PlayerActorsFieldActor *func_02096718(int player);
-/* Whether session player `player` has a field actor's process. */
-extern void *func_020961a8(int player);
-/* Whether session player `player`'s field actor is in state `state` (word 0x7f0). */
-extern int func_020960f8(int state, int player);
 
 /* func_020952ac: session player `player`'s field actor made at `position` and `angle`, its
  * argument the player in the top two bits and `param` in the others. */
@@ -68,7 +64,7 @@ CLEAN_AS(func_020952e4, PlayerActors_FieldActorSize)
  * REQUIRES: the actor exists (it is not checked for NULL). */
 int PlayerActors_OwnPlayer(void)
 {
-    return func_02096718(PLAYER_ACTORS_OWN)->player;
+    return ((PlayerActorsFieldActor *) (void *) SessionPlayers_FieldActor(PLAYER_ACTORS_OWN))->player;
 }
 CLEAN_AS(func_020952ec, PlayerActors_OwnPlayer)
 
@@ -82,7 +78,7 @@ void PlayerActors_ClearItemOnState75(int *player, u8 *scene, int *state, int *ne
         if (*state != PLAYER_ACTORS_STATE_75 || *new_state == PLAYER_ACTORS_STATE_75) {
             return;
         }
-        if (func_020961a8(*player) != NULL && func_020960f8(PLAYER_ACTORS_STATE_75, *player) != 0) {
+        if (SessionPlayers_ActorOf(*player) != NULL && PlayerActorOps_InState(PLAYER_ACTORS_STATE_75, *player) != 0) {
             return;
         }
     } else {
@@ -103,7 +99,7 @@ CLEAN_AS(func_02095304, PlayerActors_ClearItemOnState75)
  * else the sound's answer. */
 int PlayerActors_OwnPlaySound(int number)
 {
-    PlayerActorsFieldActor *actor = func_02096718(PLAYER_ACTORS_OWN);
+    PlayerActorsFieldActor *actor = (PlayerActorsFieldActor *) SessionPlayers_FieldActor(PLAYER_ACTORS_OWN);
     if (actor == NULL) {
         return 0;
     }

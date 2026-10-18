@@ -17,6 +17,10 @@
 #include "scene_tables.h"
 #include "session.h"
 #include "vram_copy_task.h"
+#include "c_library.h"
+#include "effect_system.h"
+#include "ov003/fish_shadow.h"
+#include "rom_file.h"
 
 static_assert(sizeof(FishingFloat) == 0x40, "FishingFloat");
 static_assert(offsetof(FishingFloat, target) == 0x1c && offsetof(FishingFloat, holder) == 0x28, "FishingFloat");
@@ -101,21 +105,8 @@ extern const fx16 FX_SinCosTable_[4096 * 2];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
-/* An effect of a kind started at a point (its handle), moved, and stopped. */
-extern int func_020912d4(int kind, const Vec3 *point, const u16 *angle, int a);
-extern void func_02091278(int effect, const Vec3 *point, const u16 *angle, int a);
-extern void func_0209129c(int effect);
-/* The fish's side (ov003). */
-extern void func_ov003_0222a56c(void);
-extern int func_ov003_0222a784(u8 *fish);
-extern int func_ov003_0222a960(int player, int a);
-extern int func_ov003_0222aae8(u8 *fish);
-extern int func_ov003_0222ab14(u8 *fish);
-extern int func_ov003_0222ab4c(u8 *fish);
-extern int func_ov003_0222aba4(u8 *fish);
 /* The model files: the file's texture resource and a file read (its size, 0 on failure). */
 extern G3dResTex *func_021077e8(void *file);
-extern int func_02064af4(const char *path, void *buffer, int size);
 
 static fx32 fishing_float_sin(u16 angle)
 {
@@ -243,9 +234,9 @@ static void fishing_float_ripple(FishingFloat *self, fx32 surface)
 {
     Vec3 at = fishing_float_at(self, surface);
     if (self->ripple == FISHING_FLOAT_NO_EFFECT) {
-        self->ripple = func_020912d4(FISHING_FLOAT_EFFECT_RIPPLE, &at, NULL, 0);
+        self->ripple = EffectSystem_StartKind(FISHING_FLOAT_EFFECT_RIPPLE, &at, NULL, 0);
     } else {
-        func_02091278(self->ripple, &at, NULL, 0);
+        EffectSystem_MoveHandle(self->ripple, &at, NULL, 0);
     }
 }
 
@@ -324,7 +315,7 @@ void FishingFloat_StepFloating(FishingFloat *self)
             self->position.y = y + FISHING_FLOAT_BOB_STEP;
             if (y < surface + FISHING_FLOAT_BOB_TOP && self->position.y >= surface + FISHING_FLOAT_BOB_TOP) {
                 Vec3 at = fishing_float_at(self, surface);
-                func_020912d4(FISHING_FLOAT_EFFECT_BOB, &at, NULL, 0);
+                EffectSystem_StartKind(FISHING_FLOAT_EFFECT_BOB, &at, NULL, 0);
             }
         } else {
             self->position.y = surface + FISHING_FLOAT_BOB_DROP;
@@ -339,18 +330,18 @@ void FishingFloat_StepFloating(FishingFloat *self)
         if (ground.unk_30 != 0) {
             Vec3 at = fishing_float_at(self, ground.limit);
             if (self->ripple == FISHING_FLOAT_NO_EFFECT) {
-                self->ripple = func_020912d4(FISHING_FLOAT_EFFECT_PULL, &at, &flow, 0);
+                self->ripple = EffectSystem_StartKind(FISHING_FLOAT_EFFECT_PULL, &at, (const s16 *) &flow, 0);
             } else {
-                func_02091278(self->ripple, &at, &flow, 0);
+                EffectSystem_MoveHandle(self->ripple, &at, (const s16 *) &flow, 0);
             }
         }
     } else if (self->ripple != FISHING_FLOAT_NO_EFFECT) {
         if (distance < FISHING_FLOAT_LINE_SLACK) {
-            func_0209129c(self->ripple);
+            EffectSystem_EndHandle(self->ripple);
             self->ripple = FISHING_FLOAT_NO_EFFECT;
         } else if (ground.unk_30 != 0) {
             Vec3 at = fishing_float_at(self, ground.limit);
-            func_02091278(self->ripple, &at, &flow, 0);
+            EffectSystem_MoveHandle(self->ripple, &at, (const s16 *) &flow, 0);
         }
     }
     CollisionGround_Destroy(&ground);
@@ -382,9 +373,9 @@ void FishingFloat_StepCast(FishingFloat *self)
             FishingFloat_SetState(self, FISHING_FLOAT_FLOATING);
             self->position.y = ground.limit - FISHING_FLOAT_LAND_DEPTH;
             Vec3 at = fishing_float_at(self, surface);
-            func_020912d4(FISHING_FLOAT_EFFECT_LAND, &at, NULL, 0);
+            EffectSystem_StartKind(FISHING_FLOAT_EFFECT_LAND, &at, NULL, 0);
             self->landed = 1;
-            func_ov003_0222a56c();
+            FishShadow_NoteSplash();
         }
     }
     CollisionGround_Destroy(&ground);
@@ -498,7 +489,7 @@ static void fishing_float_effect_on_water(FishingFloat *self, int kind, const Co
 {
     if (ground->unk_30 != 0) {
         Vec3 at = fishing_float_at(self, ground->limit);
-        func_020912d4(kind, &at, NULL, 0);
+        EffectSystem_StartKind(kind, &at, NULL, 0);
     }
 }
 
@@ -513,7 +504,7 @@ static void fishing_float_effect_on_water(FishingFloat *self, int kind, const Co
 void FishingFloat_SetState(FishingFloat *self, int state)
 {
     if (self->ripple != FISHING_FLOAT_NO_EFFECT) {
-        func_0209129c(self->ripple);
+        EffectSystem_EndHandle(self->ripple);
         self->ripple = FISHING_FLOAT_NO_EFFECT;
     }
     if (self->holder == NULL) {
@@ -528,7 +519,7 @@ void FishingFloat_SetState(FishingFloat *self, int state)
     CollisionGround_Init(&ground, &self->position, 1, 1);
     switch (state) {
         case FISHING_FLOAT_HELD:
-            if (self->fish != NULL && func_ov003_0222a784(self->fish) != 0) {
+            if (self->fish != NULL && FishShadow_FleeFromPlayer((FishShadow *) (void *) self->fish) != 0) {
                 self->fish = NULL;
             }
             break;
@@ -558,7 +549,7 @@ void FishingFloat_SetState(FishingFloat *self, int state)
         case FISHING_FLOAT_RIPPLING:
             if (ground.unk_30 != 0) {
                 Vec3 at = fishing_float_at(self, ground.limit);
-                self->ripple = func_020912d4(FISHING_FLOAT_EFFECT_RIPPLE, &at, NULL, 0);
+                self->ripple = EffectSystem_StartKind(FISHING_FLOAT_EFFECT_RIPPLE, &at, NULL, 0);
             }
             break;
         default:
@@ -589,7 +580,7 @@ CLEAN_AS(func_02060438, FishingFloat_SetTarget)
 /* func_02060448: the fish told of the player (func_ov003_0222a960 with 0), then forgotten. */
 void FishingFloat_TellPlayerFish(FishingFloat *self)
 {
-    func_ov003_0222a960(self->player, 0);
+    PlayerFish_ThrowBack(self->player, 0);
     self->fish = NULL;
 }
 CLEAN_AS(func_02060448, FishingFloat_TellPlayerFish)
@@ -597,7 +588,7 @@ CLEAN_AS(func_02060448, FishingFloat_TellPlayerFish)
 /* func_02060460: the fish let go (func_ov003_0222aae8), then forgotten. */
 void FishingFloat_LetFishGo(FishingFloat *self)
 {
-    func_ov003_0222aae8(self->fish);
+    PlayerFish_EndForShadow((FishShadow *) (void *) self->fish);
     self->fish = NULL;
 }
 CLEAN_AS(func_02060460, FishingFloat_LetFishGo)
@@ -605,7 +596,7 @@ CLEAN_AS(func_02060460, FishingFloat_LetFishGo)
 /* func_02060474: the fish's flag (func_ov003_0222ab14). */
 int FishingFloat_FishFlag80(FishingFloat *self)
 {
-    return func_ov003_0222ab14(self->fish);
+    return PlayerFish_ArrivedForShadow((FishShadow *) (void *) self->fish);
 }
 CLEAN_AS(func_02060474, FishingFloat_FishFlag80)
 
@@ -628,7 +619,7 @@ int FishingFloat_FishBite(FishingFloat *self)
     if (self->fish == NULL) {
         return 1;
     }
-    return func_ov003_0222ab4c(self->fish);
+    return FishShadowHook_TryLand((FishShadow *) (void *) self->fish);
 }
 CLEAN_AS(func_020604b0, FishingFloat_FishBite)
 
@@ -641,7 +632,7 @@ int FishingFloat_FishPull(FishingFloat *self)
         FishingFloat_SetState(self, FISHING_FLOAT_REEL);
         return 0;
     }
-    return func_ov003_0222aba4(fish);
+    return FishShadowHook_Strike((FishShadow *) (void *) fish);
 }
 CLEAN_AS(func_020604c8, FishingFloat_FishPull)
 
@@ -735,7 +726,7 @@ int FishingFloatPool_LoadModel(FishingFloatPool *pool, int entry, int model)
     char *path = FishingFloatPool_ModelPath(model);
     unsigned long file = FishingFloatPool_ModelFile(pool, entry);
     int size = FishingFloatPool_ModelFileSize();
-    return func_02064af4(path, (void *) (uintptr_t) file, size);
+    return RomFile_Read(path, (void *) (uintptr_t) file, size);
 }
 CLEAN_AS(func_020605ac, FishingFloatPool_LoadModel)
 
@@ -898,7 +889,6 @@ extern void *func_0205577c(void *model);
 extern void *func_02055764(void *model);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
-extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
 /* The model file's path: its buffer, and "/PItm/Uki0/%d.nsbmd". */
 extern char data_021cad1c[];
 extern const char data_020dd814[];
@@ -967,7 +957,7 @@ CLEAN_AS(func_020608fc, FishingFloatPool_ModelFileSize)
 /* func_02060904: the path of model `model`, "/PItm/Uki0/<model>.nsbmd", in its buffer. */
 char *FishingFloatPool_ModelPath(int model)
 {
-    func_02064328(data_021cad1c, data_020dd814, model);
+    CLib_SPrintf(data_021cad1c, data_020dd814, model);
     return data_021cad1c;
 }
 CLEAN_AS(func_02060904, FishingFloatPool_ModelPath)

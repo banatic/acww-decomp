@@ -1,5 +1,5 @@
 /* A town villager walking about a room (class vtable 0x022539cc, 0x8dc bytes, made by
- * func_ov004_0221ee98, the overlay's profile of kinds 0x85 and 0x89): a town villager scene
+ * RoomVillager_New, the overlay's profile of kinds 0x85 and 0x89): a town villager scene
  * object (main's villager_scene_slots.h) that talks through the talk scene of its base (0x680)
  * and takes part in a multiplayer session's sharing of objects (main's scene_share.h).
  *

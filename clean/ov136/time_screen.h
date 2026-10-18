@@ -3,8 +3,8 @@
  *
  * - overlay 92's dispatcher opens it with overlay 134 as overlay group 0x1d for GroupParams'
  *   mode 0x31 (ov092/menu_dispatch.c);
- * - it sets up overlay 134's entry picker (ov136/entry_picker.h) for a time (kind 1), whose
- *   fields 3 and 4 are the hour and the minute, with a clock whose hands the pen can drag;
+ * - it sets up overlay 134's clock setter (ov134/clock_setter.h) for a time
+ *   (CLOCK_SETTER_MODE_TIME), whose fields 3 and 4 are the hour and the minute, with a clock whose hands the pen can drag;
  * - confirmed, the time entered is kept as main's date and time (Global021cfc98_CopyIn), which
  *   a villager's talk reads back (VillagerTalkSteps_LineKeptTime), and main is told
  *   (GroupParams_SetC4C(1)).
@@ -18,6 +18,7 @@
 #include "ov002/button_panel.h"
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
+#include "ov134/clock_setter.h"
 #include "types.h"
 
 /* The places of the cursor (`place`). */
@@ -53,8 +54,8 @@ enum TimeScreenSubState {
     TIME_SCREEN_SUB_DRAG_HANDS = 1,   /* TimeScreen_DragHands */
     TIME_SCREEN_SUB_SETTLE_HANDS = 2, /* TimeScreen_SettleHands */
     TIME_SCREEN_SUB_TOUCH_LIST = 3,   /* TimeScreen_ListByTouch */
-    TIME_SCREEN_SUB_DRAG_BAR = 4,     /* TimeScreen_DragListBar */
-    TIME_SCREEN_SUB_DRAG_COLUMN = 5,  /* TimeScreen_DragListColumn */
+    TIME_SCREEN_SUB_DRAG_THUMB = 4,   /* TimeScreen_DragThumb */
+    TIME_SCREEN_SUB_THUMB_TO_PEN = 5, /* TimeScreen_ThumbTowardPen */
     TIME_SCREEN_SUB_FIELDS = 6,       /* TimeScreen_FieldsByKeys */
     TIME_SCREEN_SUB_LIST = 7,         /* TimeScreen_ListByKeys */
     TIME_SCREEN_SUB_BAR = 8,          /* TimeScreen_ListBarByKeys */
@@ -72,7 +73,7 @@ typedef struct TimeScreen {
     MenuScene base;       /* 0x0000 */
     Glider cursor_sprite; /* 0x0094: a Glider0 */
     ButtonPanel panel;    /* 0x00f8 */
-    u8 picker[0x28b0];    /* 0x02c4: overlay 134's entry picker (ov136/entry_picker.h) */
+    ClockSetter picker;   /* 0x02c4: overlay 134's clock setter */
     u16 flags;            /* 0x2b74: TimeScreenFlag */
     u8 return_sub_state;  /* 0x2b76: the sub state to go back to once the sprite is done */
     u8 place;             /* 0x2b77: TimeScreenPlace */
@@ -113,8 +114,8 @@ void TimeScreen_ReturnFromBar(TimeScreen *self);
 void TimeScreen_ListBarByKeys(TimeScreen *self);
 void TimeScreen_ListByKeys(TimeScreen *self);
 void TimeScreen_FieldsByKeys(TimeScreen *self);
-void TimeScreen_DragListColumn(TimeScreen *self);
-void TimeScreen_DragListBar(TimeScreen *self);
+void TimeScreen_ThumbTowardPen(TimeScreen *self);
+void TimeScreen_DragThumb(TimeScreen *self);
 void TimeScreen_ListByTouch(TimeScreen *self);
 void TimeScreen_SettleHands(TimeScreen *self);
 void TimeScreen_DragHands(TimeScreen *self);

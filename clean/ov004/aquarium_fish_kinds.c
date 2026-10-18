@@ -13,6 +13,7 @@
 #include "main/player_actor_ops.h"
 #include "main/session_players.h"
 #include "member_pointer.h"
+#include "aquarium_swim.h"
 
 static_assert(sizeof(AquariumKind10) == sizeof(AquariumFish), "kind 10 view");
 static_assert(offsetof(AquariumKind10, own.home) == 0x1fc, "kind 10 home");
@@ -41,30 +42,6 @@ extern const MemberPointer data_ov004_022593f4[3];
 
 extern const s16 FX_SinCosTable_[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-
-/* `low` plus a random number below `high - low`. */
-extern int func_ov004_02239460(int low, int high);
-/* A random angle of `low` up to `high` degrees, either way. */
-extern s16 func_ov004_02239474(int high, int low);
-/* A random number of whole units, `low` up to `high` (at least 1). */
-extern fx32 func_ov004_022394ac(int low, int high);
-/* `point` moved `distance` along `yaw` in the ground plane. */
-extern int func_ov004_02239bb4(Vec3 *point, fx32 distance, int yaw);
-/* Unless `from` is within `near` of `to`, `yaw` turns towards `to` (by 0x38e) and 0; else 1. */
-extern int func_ov004_02239424(s16 *yaw, const Vec3 *from, const Vec3 *to, fx32 near);
-/* The fish's turn from the glass ahead of it. */
-extern void func_ov004_02239b80(AquariumFish *fish);
-/* Its climb or dive towards its top or bottom. */
-extern void func_ov004_02239768(AquariumFish *fish);
-extern void func_ov004_02239700(AquariumFish *fish);
-/* Its pitch as it climbs or dives, kept within `most`. */
-extern void func_ov004_022395d0(AquariumFish *fish, int most, int rate);
-extern void func_ov004_022396a0(AquariumFish *fish);
-extern void func_ov004_02239524(AquariumFish *fish, int most);
-/* Its joint animation `anim` played. */
-extern void func_ov004_02239820(AquariumFish *fish, int anim);
-/* Its turn from the glass begun: glass_step a random 1 to 4 degrees, the way by its yaw. */
-extern void func_ov004_02239944(AquariumFish *fish, int flag, int low, int high);
 
 /* The model hook handed to the game (aquarium_fish.c). */
 extern void func_ov004_0223653c(AquariumFishHookState *state);
@@ -192,7 +169,7 @@ void AquariumKind47_TurnAtGlass(AquariumFish *fish)
         return;
     }
     if (fish->glass_turn == AQUARIUM_GLASS_NONE) {
-        if (func_ov004_02239460(0, 100) < 75) {
+        if (AquariumSwim_Random(0, 100) < 75) {
             fish->glass_turn = AQUARIUM_GLASS_TURN;
         } else {
             fish->glass_turn = AQUARIUM_GLASS_ROUND;
@@ -205,9 +182,9 @@ void AquariumKind47_TurnAtGlass(AquariumFish *fish)
     }
     if (fish->glass_turn == AQUARIUM_GLASS_TURN) {
         if (!fish->glass_turning) {
-            func_ov004_02239944(fish, 0, 1, 4);
+            AquariumSwim_StartGlassTurn(fish, 0, 1, 4);
             fish->glass_turning = 1;
-            if (fish->position.x >= 0xb000 && fish->position.x <= 0x17000 && func_ov004_02239460(0, 100) < 20) {
+            if (fish->position.x >= 0xb000 && fish->position.x <= 0x17000 && AquariumSwim_Random(0, 100) < 20) {
                 fish->glass_step = (s16) -fish->glass_step;
             }
         }
@@ -225,7 +202,7 @@ CLEAN_AS(func_ov004_022368bc, AquariumKind47_TurnAtGlass)
 static void AquariumKind47_back_to_first(AquariumKind47 *fish)
 {
     fish->own.second_anim = 0;
-    func_ov004_02239820(&fish->base, 0);
+    AquariumSwim_PlayAnim(&fish->base, 0);
     fish->own.may_swim = 1;
 }
 
@@ -240,7 +217,7 @@ void AquariumKind47_Swim(AquariumKind47 *fish)
     AquariumFish *base = &fish->base;
     if (!fish->own.second_anim && FrameCtrl_Passed(&base->model.frames, Kinds_last_frame(base, 1))) {
         fish->own.second_anim = 1;
-        func_ov004_02239820(base, 1);
+        AquariumSwim_PlayAnim(base, 1);
     }
     if (base->mode == AQUARIUM_MODE_NEW_COURSE) {
         fish->own.may_swim = 0;
@@ -254,8 +231,8 @@ void AquariumKind47_Swim(AquariumKind47 *fish)
         Kinds_run_mode(base);
         AquariumKind47_TurnAtGlass(base);
         if (base->mode == AQUARIUM_MODE_CRUISE) {
-            func_ov004_02239700(base);
-            func_ov004_02239524(base, 0x1554);
+            AquariumSwim_ClimbByFocus(base);
+            AquariumSwim_TiltEased(base, 0x1554);
         }
     }
     if (base->mode != AQUARIUM_MODE_REST && base->mode != AQUARIUM_MODE_SLOW_DOWN) {
@@ -322,7 +299,7 @@ CLEAN_AS(func_ov004_02236c1c, AquariumKind10_Glide)
  * moves at its speed; after its darting time it glides, its animation at half speed. */
 void AquariumKind10_Dart(AquariumKind10 *fish)
 {
-    func_ov004_02239424(&fish->base.yaw, &fish->base.position, &fish->own.home, 0x1600);
+    AquariumSwim_TurnTowards(&fish->base.yaw, &fish->base.position, &fish->own.home, 0x1600);
     AquariumKind10_move(fish, fish->own.speed);
     if (fish->base.timer >= fish->own.dart_frames) {
         fish->base.timer = 0;
@@ -338,10 +315,10 @@ CLEAN_AS(func_ov004_02236cfc, AquariumKind10_Dart)
  * at height 0.4375, its animation at full speed. */
 void AquariumKind10_StartDart(AquariumKind10 *fish)
 {
-    fish->base.yaw = (s16) (fish->base.yaw + func_ov004_02239474(90, 0));
-    fish->own.dart_frames = (u8) func_ov004_02239460(20, 120);
-    fish->own.rest_frames = (u16) func_ov004_02239460(60, 240);
-    fish->own.speed = func_ov004_022394ac(2, 4) / 100;
+    fish->base.yaw = (s16) (fish->base.yaw + AquariumSwim_RandomAngle(90, 0));
+    fish->own.dart_frames = (u8) AquariumSwim_Random(20, 120);
+    fish->own.rest_frames = (u16) AquariumSwim_Random(60, 240);
+    fish->own.speed = AquariumSwim_RandomUnits(2, 4) / 100;
     fish->base.timer = 0;
     fish->base.position.y = 0x700;
     fish->own.anim_speed = ONE;
@@ -420,11 +397,11 @@ void AquariumHomeFish_GoToRest(AquariumHomeFish *fish, int hurry)
         if (base->position.y <= fish->own.rest_point.y) {
             fish->own.homing = AQUARIUM_HOMING_REST;
             base->timer = 0;
-            fish->own.rest_frames = func_ov004_02239460(60, 120);
+            fish->own.rest_frames = AquariumSwim_Random(60, 120);
         }
     } else {
         base->yaw = Vec_YawTo(&base->position, &fish->own.rest_point);
-        func_ov004_02239bb4(&base->position, hurry ? Kinds_shl(base->top_speed, 1) : base->top_speed >> 1, base->yaw);
+        AquariumSwim_Move(&base->position, hurry ? Kinds_shl(base->top_speed, 1) : base->top_speed >> 1, base->yaw);
     }
 }
 CLEAN_AS(func_ov004_02236fa0, AquariumHomeFish_GoToRest)
@@ -479,13 +456,13 @@ void AquariumHomeFish_SwimKind12(AquariumHomeFish *fish)
 {
     AquariumFish *base = &fish->base;
     if (base->mode != AQUARIUM_MODE_NEW_COURSE && base->mode != AQUARIUM_MODE_REST) {
-        func_ov004_02239768(base);
-        func_ov004_022396a0(base);
+        AquariumSwim_Climb(base);
+        AquariumSwim_TiltFixed(base);
     }
     Kinds_run_mode(base);
     AquariumFish_Turn(base);
-    if (func_ov004_02239424(&base->yaw, &base->position, &fish->own.home, ONE)) {
-        func_ov004_02239b80(base);
+    if (AquariumSwim_TurnTowards(&base->yaw, &base->position, &fish->own.home, ONE)) {
+        AquariumSwim_WatchGlass(base);
     } else if (base->glass_turning) {
         base->mode = AQUARIUM_MODE_NEW_COURSE;
         base->glass_turning = 0;
@@ -511,16 +488,16 @@ void AquariumHomeFish_SwimKind38(AquariumHomeFish *fish)
         return;
     }
     if (base->mode != AQUARIUM_MODE_NEW_COURSE && base->mode != AQUARIUM_MODE_REST) {
-        func_ov004_02239700(base);
-        func_ov004_02239524(base, 0x1554);
+        AquariumSwim_ClimbByFocus(base);
+        AquariumSwim_TiltEased(base, 0x1554);
     }
     Kinds_run_mode(base);
     AquariumFish_Turn(base);
-    if (func_ov004_02239424(&base->yaw, &base->position, &fish->own.home, ONE)) {
+    if (AquariumSwim_TurnTowards(&base->yaw, &base->position, &fish->own.home, ONE)) {
         if (fish->own.since_rest >= fish->own.rest_interval) {
             fish->own.since_rest = 0;
             fish->own.homing = AQUARIUM_HOMING_GO;
-            fish->own.rest_interval = (u32) func_ov004_02239460(200, 320);
+            fish->own.rest_interval = (u32) AquariumSwim_Random(200, 320);
         }
         u8 focus = base->focus;
         if (base->last_focus != focus && focus != base->index) {
@@ -673,21 +650,21 @@ void AquariumRisingFish_Wander(AquariumRisingFish *fish)
     AquariumFish *base = &fish->base;
     if (base->mode == AQUARIUM_MODE_NEW_COURSE) {
         if (fish->own.came_down) {
-            if (func_ov004_02239460(0, 100) < 15) {
+            if (AquariumSwim_Random(0, 100) < 15) {
                 fish->own.rising = 1;
                 return;
             }
             fish->own.came_down = 0;
-        } else if (func_ov004_02239460(0, 100) < 70) {
+        } else if (AquariumSwim_Random(0, 100) < 70) {
             fish->own.rising = 1;
             return;
         }
     }
     Kinds_run_mode(base);
-    func_ov004_02239b80(base);
+    AquariumSwim_WatchGlass(base);
     if (base->mode != AQUARIUM_MODE_NEW_COURSE && base->mode != AQUARIUM_MODE_REST) {
-        func_ov004_02239768(base);
-        func_ov004_022395d0(base, 0x1554, 0x3e8);
+        AquariumSwim_Climb(base);
+        AquariumSwim_TiltBySpeed(base, 0x1554, 0x3e8);
         AquariumFish_Turn(base);
     }
 }
@@ -726,7 +703,7 @@ CLEAN_AS(func_ov004_02237764, AquariumRisingFish_SetUp)
  * its snapping time is over. */
 void AquariumKind30_Drift(AquariumKind30 *fish)
 {
-    func_ov004_02239bb4(&fish->base.position, 0xcd, (s16) -fish->base.yaw);
+    AquariumSwim_Move(&fish->base.position, 0xcd, (s16) -fish->base.yaw);
     if (fish->base.timer % 4 == 1) {
         fish->own.snap = AQUARIUM_SNAP_LUNGE;
     }
@@ -741,8 +718,8 @@ CLEAN_AS(func_ov004_02237794, AquariumKind30_Drift)
  * QUIRK: the result is the offset of the field it set, left over in the game's code. */
 int AquariumKind30_Lunge(AquariumKind30 *fish)
 {
-    func_ov004_02239bb4(&fish->base.position, 0x266, fish->base.yaw);
-    func_ov004_02239bb4(&fish->base.position, 0x52, func_ov004_02239474(360, 0));
+    AquariumSwim_Move(&fish->base.position, 0x266, fish->base.yaw);
+    AquariumSwim_Move(&fish->base.position, 0x52, AquariumSwim_RandomAngle(360, 0));
     fish->own.snap = AQUARIUM_SNAP_DRIFT;
     return (int) offsetof(AquariumKind30, own.snap);
 }
@@ -752,9 +729,9 @@ CLEAN_AS(func_ov004_022377ec, AquariumKind30_Lunge)
  * 8 to 12 frames. */
 void AquariumKind30_Wait(AquariumKind30 *fish)
 {
-    if (func_ov004_02239460(0, 100) < 15) {
+    if (AquariumSwim_Random(0, 100) < 15) {
         fish->own.snap = AQUARIUM_SNAP_LUNGE;
-        fish->own.snap_frames = (u8) func_ov004_02239460(8, 13);
+        fish->own.snap_frames = (u8) AquariumSwim_Random(8, 13);
         fish->base.timer = 0;
     }
 }
@@ -766,7 +743,7 @@ void AquariumKind30_Bob(AquariumKind30 *fish)
 {
     AquariumFish *base = &fish->base;
     base->position.y += Kinds_mul(base->swim_224, base->vertical);
-    if (func_ov004_02239460(0, 100) < 15) {
+    if (AquariumSwim_Random(0, 100) < 15) {
         base->vertical = (s8) -base->vertical;
     }
     if (base->position.y > base->level) {
@@ -836,7 +813,7 @@ void AquariumKind30_Follow(AquariumKind30 *fish)
     }
     Vec3 at = player->position;
     Approach_S16(&base->yaw, Vec_YawTo(&base->position, &at), 0x222);
-    func_ov004_02239bb4(&base->position, base->top_speed, base->yaw);
+    AquariumSwim_Move(&base->position, base->top_speed, base->yaw);
     if (player->speed != 0) {
         if (base->pitch != 0) {
             Approach_S16(&base->pitch, 0, 0x222);
@@ -878,10 +855,10 @@ void AquariumKind30_Wander(AquariumKind30 *fish)
 {
     AquariumFish *base = &fish->base;
     Kinds_run_mode(base);
-    func_ov004_02239b80(base);
+    AquariumSwim_WatchGlass(base);
     if (base->mode != AQUARIUM_MODE_NEW_COURSE && base->mode != AQUARIUM_MODE_REST) {
-        func_ov004_02239768(base);
-        func_ov004_022395d0(base, 0x1554, 0x384);
+        AquariumSwim_Climb(base);
+        AquariumSwim_TiltBySpeed(base, 0x1554, 0x384);
         AquariumFish_Turn(base);
     }
     AquariumFish_SetAnimSpeed(base, 0x666);
@@ -955,16 +932,16 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
             if (fish->own.touched && FrameCtrl_Passed(&base->model.frames, last)) {
                 fish->own.phase = AQUARIUM_KIND40_START;
                 base->top_speed = Kinds_shl(base->top_speed, 1);
-                func_ov004_02239820(base, 1);
+                AquariumSwim_PlayAnim(base, 1);
                 fish->own.touched = 0;
             }
             break;
         case AQUARIUM_KIND40_START:
             if (FrameCtrl_Passed(&base->model.frames, last)) {
-                fish->own.hold_frames = (u8) func_ov004_02239460(60, 80);
+                fish->own.hold_frames = (u8) AquariumSwim_Random(60, 80);
                 fish->own.held = 0;
                 fish->own.phase = AQUARIUM_KIND40_HOLD;
-                func_ov004_02239820(base, 2);
+                AquariumSwim_PlayAnim(base, 2);
             }
             break;
         case AQUARIUM_KIND40_HOLD:
@@ -972,7 +949,7 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
                 if (FrameCtrl_Passed(&base->model.frames, last)) {
                     fish->own.phase = AQUARIUM_KIND40_END;
                     base->top_speed >>= 1;
-                    func_ov004_02239820(base, 3);
+                    AquariumSwim_PlayAnim(base, 3);
                 }
             } else {
                 fish->own.held++;
@@ -981,13 +958,13 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
         case AQUARIUM_KIND40_END:
             if (FrameCtrl_Passed(&base->model.frames, last)) {
                 fish->own.phase = AQUARIUM_KIND40_CALM;
-                func_ov004_02239820(base, 0);
+                AquariumSwim_PlayAnim(base, 0);
             }
             break;
     }
     if (base->mode != AQUARIUM_MODE_NEW_COURSE && base->mode != AQUARIUM_MODE_REST) {
-        func_ov004_02239700(base);
-        func_ov004_02239524(base, 0x1554);
+        AquariumSwim_ClimbByFocus(base);
+        AquariumSwim_TiltEased(base, 0x1554);
         AquariumFish_Turn(base);
     }
     AquariumFish_SetAnimSpeed(base, 0x666);

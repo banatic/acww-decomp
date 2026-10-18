@@ -5,6 +5,7 @@
 #include "scene_heaps.h"
 #include "session.h"
 #include "vram_copy_task.h"
+#include "rom_file.h"
 
 /* The ModelLoaderTask.state of a task that is queued. */
 #define BODY_LOOK_TASK_QUEUED 1
@@ -13,7 +14,6 @@ extern u8 data_021c9c2c[]; /* the looks' table */
 #define BODY_LOOK_TABLE ((BodyLookTable *) data_021c9c2c)
 
 extern void *func_021077e8(u8 *file); /* the file's texture resource */
-extern int func_020b9eec(ModelLoaderTask *task, void *texture, int flag);
 
 /* func_0205cfac: the task of the entry `look` names. */
 ModelLoaderTask *BodyLook_Task(unsigned char *look)
@@ -47,7 +47,7 @@ int BodyLook_PollUpload(void *look)
     }
     if (state != BODY_LOOK_TASK_QUEUED) {
         u8 *file = (u8 *) (uintptr_t) BodyLook_File(look);
-        func_020b9eec(task, func_021077e8(file), 1);
+        VramCopyTask_QueueTexture((VramCopyTask *) task, func_021077e8(file), 1);
     }
     return 0;
 }
@@ -85,7 +85,6 @@ extern void *func_02055cf4(void *region);
 extern void func_02055ce8(void *region);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
-extern int func_02064af4(const char *path, void *buffer, int size); /* read a file: its size, 0 on failure */
 
 /* func_0205d058: the body model file (the girl's when `girl`, else the boy's) read into the
  * buffer of the entry `look` names, at most BodyLook_FileSize bytes. */
@@ -93,7 +92,7 @@ void BodyLook_LoadModel(unsigned char *look, int girl)
 {
     int file = BodyLook_File(look);
     const char *path = (const char *) (uintptr_t) BodyLook_ModelPath((unsigned int) girl);
-    func_02064af4(path, (void *) (uintptr_t) file, BodyLook_FileSize());
+    RomFile_Read(path, (void *) (uintptr_t) file, BodyLook_FileSize());
 }
 CLEAN_AS(func_0205d058, BodyLook_LoadModel)
 

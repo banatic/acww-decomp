@@ -4,8 +4,9 @@
  *
  * Items: three item codes (0xfff1 for none) with a bit each in `sold` (FoxShop_Item gives a
  * sold one as the marker data_021f49f4). FoxShop_Stock draws them: the first from the item
- * group 0x26 or 0x27, the other two from group 5 or 0, with chances that grow with three of
- * the town's values (func_0205be20, func_0205be38, func_0205be2c), then shuffled.
+ * group 0x26 or 0x27, the other two from group 5 or 0, with chances that grow with the edge
+ * counts of the player's house's five rooms (room_score.c: RoomScore_HouseHighX, _HouseLowX and
+ * _HouseHighZ), then shuffled.
  *
  * Password: one of 32, each used once until all have been (`used`); `current` is the one in
  * force (-1 for none). Its texts are 2n and 2n + 1 of "st_password": the fox's talk loads the

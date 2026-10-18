@@ -10,6 +10,7 @@
 #include "player_records.h"
 #include "player_storage.h"
 #include "town_item_lists.h"
+#include "item_traits.h"
 
 /* The items replaced, and the first of their replacements. */
 #define ITEM_FORM_REPLACED_FIRST 0x38e4
@@ -45,10 +46,6 @@ extern u8 data_020e54a8;
 /* The town's list A of 15 items (TownItemLists, at 0x172c0 of the state block). */
 extern u16 data_021f3a68[TOWN_ITEM_LIST_PLACES];
 extern PlayerStorage data_021f2fa8[ITEM_FORM_STORAGES];
-
-/* Whether a shared code's item is the first or the second item of its pair. */
-extern int func_0204be38(u16 *item);
-extern int func_0204bd84(u16 *item);
 
 /* A run of carried items and the codes they are placed as (four codes per item in a room, one
  * outdoors). */
@@ -251,12 +248,12 @@ void ItemForm_ToCarried(u16 *out, u16 *item)
     }
     if (index != -1) {
         u16 first = (u16) (ITEM_FORM_SHARED_FIRST_A + index);
-        if (func_0204be38(&first)) {
+        if (ItemTraits_IsPairHeadItem(&first)) {
             *out = first;
             return;
         }
         u16 second = (u16) (ITEM_FORM_SHARED_FIRST_B + index);
-        if (func_0204bd84(&second)) {
+        if (ItemTraits_IsPairFaceItem(&second)) {
             *out = second;
             return;
         }

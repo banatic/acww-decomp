@@ -5,6 +5,10 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "snowmen.h"
+#include "collision_post_source.h"
+#include "map_code.h"
+#include "ov003/town_post_source.h"
+#include "scene_query.h"
 
 /* Main's source's vtable: destructor, deleting destructor, TownPosts_PostAt. */
 extern const u8 data_020e50e8[];
@@ -15,16 +19,6 @@ extern u8 data_020e54a8;    /* 0 in the town's case, when the town's map is read
 extern u8 data_021f4b3c[];  /* overlay 3's source */
 extern void *data_021c80bc; /* the town's map */
 extern u8 data_021f3b56[];  /* the snowmen's records (snowmen.h) */
-
-/* Overlay 3's post function, which asks overlay 3's table of the town's objects. */
-extern int func_ov003_02227394(void *source, fx32 *radius, fx32 *height, int *kind, int x, int z);
-extern int func_0204bb54(u16 *code); /* a snowman's map object */
-extern int func_0204bb2c(u16 *code); /* the snowman's number */
-extern u8 func_020b65c4(void);       /* the scene */
-/* The base class of the post sources (vtable data_020da1fc): its constructor and destructor,
- * each of which puts the base vtable in. */
-extern void func_02031ec0(void *source);
-extern void func_02031e84(void *source);
 
 /* The post of the object 0x500a, the snowmen's, and the one of scene 0x1d. */
 #define TOWN_POSTS_RADIUS_500A 0xb33
@@ -59,14 +53,14 @@ int TownPosts_PostAt(CollisionPostSource *source, fx32 *radius, fx32 *height, in
 {
     (void) source;
     if (data_020e54a8 != 0) {
-        if (func_020b65c4() != TOWN_POSTS_SCENE || x != TOWN_POSTS_SCENE_X || z != TOWN_POSTS_SCENE_Z) {
+        if (SceneQuery_Current() != TOWN_POSTS_SCENE || x != TOWN_POSTS_SCENE_X || z != TOWN_POSTS_SCENE_Z) {
             return 0;
         }
         town_posts_set(radius, height, kind, TOWN_POSTS_RADIUS_SCENE, TOWN_POSTS_KIND_10);
         return 1;
     }
 
-    if (func_ov003_02227394(data_021f4b3c, radius, height, kind, x, z) != 0) {
+    if (TownPostSource_PostAt((CollisionPostSource *) (void *) data_021f4b3c, radius, height, kind, x, z) != 0) {
         return 1;
     }
     AcreMap *map = data_021c80bc;
@@ -83,10 +77,10 @@ int TownPosts_PostAt(CollisionPostSource *source, fx32 *radius, fx32 *height, in
         town_posts_set(radius, height, kind, TOWN_POSTS_RADIUS_500A, TOWN_POSTS_KIND_10);
         return 1;
     }
-    if (func_0204bb54(item) == 0) {
+    if (MapCode_IsSnowman(item) == 0) {
         return 0;
     }
-    int number = func_0204bb2c(item);
+    int number = MapCode_SnowmanIndex(item);
     int head_size;
     int body_size;
     Snowmen_Get((SnowmenRecord *) data_021f3b56, (u32) number, &head_size, &body_size, NULL, NULL, NULL, NULL);
@@ -99,7 +93,7 @@ CLEAN_AS(func_020b39bc, TownPosts_PostAt)
 CollisionPostSource *TownPosts_DeleteSource(CollisionPostSource *source)
 {
     source->vtable = (const CollisionPostSourceVtable *) data_020e50e8;
-    func_02031e84(source);
+    CollisionPostSource_DestructBase(source);
     Heap_OperatorDeleteB(source);
     return source;
 }
@@ -109,7 +103,7 @@ CLEAN_AS(func_020b3ac4, TownPosts_DeleteSource)
 CollisionPostSource *TownPosts_DestructSource(CollisionPostSource *source)
 {
     source->vtable = (const CollisionPostSourceVtable *) data_020e50e8;
-    func_02031e84(source);
+    CollisionPostSource_DestructBase(source);
     return source;
 }
 CLEAN_AS(func_020b3ae4, TownPosts_DestructSource)
@@ -117,7 +111,7 @@ CLEAN_AS(func_020b3ae4, TownPosts_DestructSource)
 /* func_020b3afc: main's source's constructor: the base class's, then its vtable. */
 CollisionPostSource *TownPosts_ConstructSource(CollisionPostSource *source)
 {
-    func_02031ec0(source);
+    CollisionPostSource_Construct(source);
     source->vtable = (const CollisionPostSourceVtable *) data_020e50e8;
     return source;
 }
@@ -128,7 +122,7 @@ CLEAN_AS(func_020b3afc, TownPosts_ConstructSource)
 CollisionPostSource *TownPosts_DestructOverlaySource(CollisionPostSource *source)
 {
     source->vtable = (const CollisionPostSourceVtable *) data_ov003_0223a248;
-    func_02031e84(source);
+    CollisionPostSource_DestructBase(source);
     return source;
 }
 CLEAN_AS(func_020b3fe4, TownPosts_DestructOverlaySource)

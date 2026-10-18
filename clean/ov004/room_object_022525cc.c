@@ -11,14 +11,16 @@
 #include "room_object_anims.h"
 #include "room_object_body.h"
 #include "room_object_life.h"
+#include "main/room_sync.h"
+#include "room_objects.h"
 
 static_assert(offsetof(RoomObject022525cc, state) == 0x844, "state");
 static_assert(offsetof(RoomObject022525cc, speed) == 0x848, "speed");
 static_assert(offsetof(RoomObject022525cc, glows) == 0x84c, "glows");
 static_assert(sizeof(RoomObject022525cc) == 0x8a4, "the size RoomObject022525cc_Create allocates");
-static_assert(offsetof(RoomObject, joint_anim) == 0x5d4, "joint animation");
+static_assert(offsetof(RoomObject, model.frames) == 0x5d4, "joint animation");
 static_assert(offsetof(RoomObject, anims) == 0x7c4, "animations");
-static_assert(offsetof(FurnitureAnim, speed) == 0x10, "animation speed");
+static_assert(offsetof(FurnitureAnim, base.ctrl.speed) == 0x10, "animation speed");
 
 #define ROOM_OBJECT_022525CC_SIZE 0x8a4
 #define ONE 0x1000         /* normal speed, 20.12 fixed point */
@@ -41,14 +43,9 @@ extern const u8 data_ov004_0224767c[ROOM_OBJECT_022525CC_STATE_COUNT];
 extern const u8 data_ov004_022525cc[];
 extern const u8 data_ov004_02252678[];
 
-/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
-extern int func_ov004_0223c10c(void);
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
-extern int func_0205265c(unsigned int object, int state, int a2, int a3);
-
 static int RoomObject022525cc_request(RoomObject022525cc *object, int state)
 {
-    return func_0205265c((unsigned int) (uintptr_t) object, state, SLOT_70_VALUE, 1);
+    return RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
 }
 
 /* Vtable slot 0x70: RoomObject022525cc_EnterState for this class. */
@@ -80,7 +77,7 @@ int RoomObject022525cc_EnterStopping(RoomObject022525cc *object)
 }
 CLEAN_AS(func_ov004_0221977c, RoomObject022525cc_EnterStopping)
 
-/* func_ov004_022197b0 (update of ON): func_020537a8 of its number, the sound at 0; with a change
+/* func_ov004_022197b0 (update of ON): FurnitureInfo_IndoorBit6 of its number, the sound at 0; with a change
  * of the switch pending, requests STOPPING and gives the answer, else 0. */
 int RoomObject022525cc_UpdateOn(RoomObject022525cc *object)
 {
@@ -187,10 +184,10 @@ int RoomObject022525cc_Update(RoomObject022525cc *object)
     RoomObject *base = &object->base;
     GlowSet_Update(&object->glows);
     RoomObject022525cc_UpdateState(object);
-    ((FrameCtrl *) (void *) base->joint_anim)->speed = object->speed;
+    base->model.frames.speed = object->speed;
     for (int i = 0; i < 4; i++) {
         if (FurnitureAnim_Target(&base->anims[i]) != NULL) {
-            base->anims[i].speed = object->speed;
+            base->anims[i].base.ctrl.speed = object->speed;
         }
     }
     RoomObject_AdvanceAnims(base);
@@ -200,13 +197,13 @@ CLEAN_AS(_ZN18Obj_ov004_022525cc19func_ov004_022199a8Ev, RoomObject022525cc_Upda
 
 /* func_ov004_02219a0c (vtable slot 0x7c, once the model is bound): binds the animations of
  * variant 0 (in a loop, from the start) and the glows, lit as the switch is; then enters ON
- * when the switch is on and func_ov004_0223c10c says no, OFF otherwise; done at once. */
+ * when the switch is on and RoomObjects_InNookOrScene0AOr0F says no, OFF otherwise; done at once. */
 int RoomObject022525cc_Start(RoomObject022525cc *object)
 {
     RoomObject *base = &object->base;
     RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
-    if (Switch_Value(&base->light_switch) != 0 && func_ov004_0223c10c() == 0) {
+    if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         RoomObject022525cc_switch_to(object, ROOM_OBJECT_022525CC_ON);
     } else {
         RoomObject022525cc_switch_to(object, ROOM_OBJECT_022525CC_OFF);

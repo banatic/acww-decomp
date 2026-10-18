@@ -12,6 +12,29 @@
 #include "main/session_net.h"
 #include "main/system_packet.h"
 #include "main/wifi_friends.h"
+#include "block_021d27ac.h"
+#include "caution_window.h"
+#include "field_label.h"
+#include "fox_shop.h"
+#include "link_global.h"
+#include "link_scene.h"
+#include "link_state.h"
+#include "map_code.h"
+#include "object_claim.h"
+#include "place_claim.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "room_cells.h"
+#include "room_object_state.h"
+#include "scene_claim.h"
+#include "scene_heaps.h"
+#include "scene_query.h"
+#include "session_players.h"
+#include "session_record.h"
+#include "town_name.h"
+#include "town_objects.h"
+#include "villager_state.h"
 
 static_assert(offsetof(NetSession, max_record_size) == 0x6d, "max record size");
 static_assert(offsetof(NetSession, record_scratch) == 0x70, "record scratch");
@@ -63,52 +86,9 @@ extern u32 OS_DisableInterrupts(void);
 extern void *func_02077afc(int size, int align);
 extern void func_02077ae8(void *block);
 
-extern u8 func_0207762c(u32 record); /* a shared record's size */
-extern void func_0207718c(void);     /* allocates and fills the shared records */
-extern u8 func_020b65c4(void);       /* the current scene */
-/* Where a message of `kind` for `scene` goes from this system to `slot`: the slot it is for;
- * *hold is set when it must wait in the held queue. */
-extern int func_020a70ec(int slot, int kind, int scene, u8 *hold);
-extern int func_02038a30(void); /* whether data_021c5ccc's field 0x3c is 5 or more */
-
-extern int func_020a6f64(int slot);              /* a slot's link status */
-extern void func_020a6f74(int slot, int status); /* sets a slot's link status */
-extern int func_020a6ea0(void);                  /* the link state's word 0x60 */
-extern void func_020a6eb0(int value);            /* sets the link state's word 0x60 */
-extern void func_020a6c7c(void);                 /* resets the link state */
-extern void func_020a6c8c(void);                 /* does nothing */
-extern void func_020a6c6c(int slot);             /* resets a slot's link state */
-/* Sets the bytes of a slot's 3-byte link state entry that `fields` selects (bits 0-2), then
- * routes the held messages. */
-extern void func_020a7394(int slot, int byte0, int byte1, int byte2, int fields);
-
-extern void func_0205cb4c(void);                   /* destroys the network heap */
-extern void func_0205cb68(int size, void *parent); /* creates the network heap */
-extern void func_020b8d6c(void);                   /* called when the library could not end */
-
-extern u8 *func_020984e8(void);       /* this system's player record */
-extern u8 *func_02099658(u8 *record); /* the friend roster in a player record (wifi_friends.h) */
-extern u8 *func_02099870(u8 *record); /* a player record's field 0x247e */
-extern u8 *func_02099664(u8 *record); /* the Wi-Fi account in a player record (wifi_friends.h) */
-extern u8 *func_020950a8(u8 *field);  /* field + 0x10 */
-extern u8 *func_020642a4(u8 *field);  /* field + 2 */
-extern void func_02099e78(void);      /* does nothing; the friend-deleted callback */
+extern void func_02099e78(void); /* does nothing; the friend-deleted callback */
 /* The receive callback handed to the library: Session_OnReceived. */
 extern void func_02075050(int aid, char *buffer, unsigned int size);
-
-extern void func_020792a0(void);
-extern void *func_0208602c(void);
-extern void func_02086130(void *object);
-extern void func_02053010(void);
-extern void func_0209d3e4(void);
-extern void func_020b316c(void);
-extern void func_0203f4c4(void);
-extern u16 func_0204bbd4(u32 index); /* 0x5000 + index, for an index below 34 */
-extern void func_020b23ec(int id, int slot);
-extern void func_02051e38(int slot);
-extern void func_0209d57c(u8 index, int slot);
-extern void func_02096204(u32 slot);
-extern void func_020ae4f0(void);
 
 /* -value as the ARM computes it: the most negative int stays itself. */
 static int negate(int value)
@@ -272,9 +252,9 @@ void Session_FinishLocalStatus(void)
     NetSession *session = data_020ccf94;
     int slot = session->local_slot;
     if (Session_IsSlotTaken(session, slot) == 0) {
-        func_020a6f74(SESSION_UNLINKED_SLOT, STATUS_DONE);
+        LinkGlobal_SetStatus(SESSION_UNLINKED_SLOT, STATUS_DONE);
     } else {
-        func_020a6f74(slot, STATUS_DONE);
+        LinkGlobal_SetStatus(slot, STATUS_DONE);
     }
 }
 CLEAN_AS(func_02074120, Session_FinishLocalStatus)
@@ -285,9 +265,9 @@ int Session_GetLocalStatus(void)
     NetSession *session = data_020ccf94;
     int slot = session->local_slot;
     if (Session_IsSlotTaken(session, slot) == 0) {
-        return func_020a6f64(SESSION_UNLINKED_SLOT);
+        return LinkGlobal_Status(SESSION_UNLINKED_SLOT);
     }
-    return func_020a6f64(slot);
+    return LinkGlobal_Status(slot);
 }
 CLEAN_AS(func_02074150, Session_GetLocalStatus)
 
@@ -301,16 +281,16 @@ int Session_SendLocalStatus(int status)
     NetSession *session = data_020ccf94;
     int slot = session->local_slot;
     if (Session_IsSlotTaken(session, slot) == 0) {
-        func_020a6f74(SESSION_UNLINKED_SLOT, STATUS_WAITING);
+        LinkGlobal_SetStatus(SESSION_UNLINKED_SLOT, STATUS_WAITING);
         u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
         SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_SENDER_STATUS);
         packet[1] = 0;
         return Session_SendBlocks(session, Session_GetSendBlock(session, SHARE_BLOCK), 2, 1, NULL, 0, 0, NULL, 0, 0);
     }
     if (Session_IsLocalSlot(session, 0) != 0) {
-        func_020a6f74(slot, status);
+        LinkGlobal_SetStatus(slot, status);
     } else {
-        func_020a6f74(slot, STATUS_WAITING);
+        LinkGlobal_SetStatus(slot, STATUS_WAITING);
         u8 byte = (u8) status;
         session = data_020ccf94;
         Session_BeginMessage(session);
@@ -343,7 +323,7 @@ CLEAN_AS(func_02074228, Session_SetReceiveBuffers)
 /* func_0207428c */
 void Session_ResetLinkStatus(void)
 {
-    func_020a6c7c();
+    LinkState_GlobalReset();
 }
 CLEAN_AS(func_0207428c, Session_ResetLinkStatus)
 
@@ -364,8 +344,8 @@ void Session_Host(void)
     session->local_slot = 0;
     Session_SetSlotTaken(session, session->local_slot, 1);
     Session_SetReceiveBuffers(0);
-    func_020a6c8c();
-    func_020a7394(0, func_020b65c4(), 1, 0, 7);
+    LinkScene_Empty6C8C();
+    LinkGlobal_SetPlace(0, SceneQuery_Current(), 1, 0, 7);
 }
 CLEAN_AS(func_020742b4, Session_Host)
 
@@ -406,7 +386,7 @@ static void flush_send_buffer(NetSession *session)
     u32 flags = Session_GetErrorFlags(session);
     if (Session_QueueOutgoing(session, Session_GetSendBuffer(session), (int) length) != 0) {
         Session_ClearSendBuffer(session);
-        if ((flags & SESSION_ERROR_OUTBOX_FULL) != 0 && func_02038a30() == 0) {
+        if ((flags & SESSION_ERROR_OUTBOX_FULL) != 0 && CautionWindow_IsShuttingDown() == 0) {
             Session_SetErrorFlags(session, (int) (flags ^ SESSION_ERROR_OUTBOX_FULL));
         }
     } else if ((flags & SESSION_ERROR_OUTBOX_FULL) == 0) {
@@ -481,11 +461,11 @@ static void send_data(NetSession *session)
                 Session_SetOwedCredits(session, slot, 0);
             }
         } else if (sent != 0 && Session_IsLocalSlot(session, 0) != 0 && Session_IsStatusPending(slot) != 0) {
-            func_020a6f74(slot, STATUS_DONE);
+            LinkGlobal_SetStatus(slot, STATUS_DONE);
         }
     }
-    if (func_020a6ea0() == 7) {
-        func_020a6eb0(8);
+    if (LinkScene_GlobalPhase() == 7) {
+        LinkScene_GlobalSetPhase(8);
     }
 }
 
@@ -575,7 +555,7 @@ static void check_link(NetSession *session, int local_slot)
         if ((flags & SESSION_ERROR_PEER_SILENT) == 0) {
             Session_SetErrorFlags(session, (int) (flags | SESSION_ERROR_PEER_SILENT));
         }
-    } else if ((flags & SESSION_ERROR_PEER_SILENT) != 0 && func_02038a30() == 0) {
+    } else if ((flags & SESSION_ERROR_PEER_SILENT) != 0 && CautionWindow_IsShuttingDown() == 0) {
         Session_SetErrorFlags(session, (int) (flags ^ SESSION_ERROR_PEER_SILENT));
     }
 
@@ -679,7 +659,7 @@ CLEAN_AS(func_02074904, Session_Deliver)
 void Session_FreeHeap(void)
 {
     Net_Empty020ecf1c();
-    func_0205cb4c();
+    SceneHeaps_DestroyNetwork();
 }
 CLEAN_AS(func_02074944, Session_FreeHeap)
 
@@ -693,7 +673,7 @@ static int end_library(void)
     Heap_SetFlags(heap, flags | HEAP_ANY_MODE);
     LibraryOverlay_RequireAny();
     if (Net_End() == 0) {
-        func_020b8d6c();
+        FieldLabel_RaiseEndFailure();
         ended = 0;
     }
     Heap_SetFlags(heap, flags);
@@ -768,7 +748,7 @@ void Session_Start(int mode, int players, int connect_mode)
 {
     NetSession *session = data_020ccf94;
     session->active = 1;
-    func_0207718c();
+    SessionRecord_Init();
     session->record_scratch = SessionNet_Alloc(session->max_record_size, BLOCK_ALIGN);
     Session_SetSendBlocks(session, SessionNet_Alloc(SESSION_PEERS * SESSION_BLOCK_SIZE, BLOCK_ALIGN));
     Session_SetRecvBlocks(session, SessionNet_Alloc(SESSION_PEERS * SESSION_RECV_ENTRIES * SESSION_BLOCK_SIZE, BLOCK_ALIGN));
@@ -791,16 +771,16 @@ void Session_Start(int mode, int players, int connect_mode)
         u8 *user_block = Session_GetStartHeader(state);
         MI_CpuFill8(friends, 0, sizeof(FriendList));
         MI_CpuFill8(user_block, 0, sizeof(state->start_header));
-        u8 *record = func_020984e8();
-        WifiFriend *friend_record = WifiFriendList_GetEntries((WifiFriendList *) func_02099658(record));
+        u8 *record = PlayerRecords_Current();
+        WifiFriend *friend_record = WifiFriendList_GetEntries((WifiFriendList *) PlayerRecord_WifiFriends(record));
         for (int i = 0; i < FRIEND_COUNT; i++) {
             MI_CpuCopy8(WifiFriendData_GetData(WifiFriend_GetFriendData(friend_record)), friends->friend_data[i],
                         FRIEND_DATA_SIZE);
             friend_record++;
         }
-        MI_CpuCopy8(func_020950a8(func_02099870(record)), user_block, 0xc);
-        MI_CpuCopy8(func_020642a4(data_021dc7a8 + 2), user_block + 0x10, 0xc);
-        MI_CpuCopy8(WifiAccount_GetUserData((WifiAccount *) func_02099664(record)), user_block + 0x20, 0x40);
+        MI_CpuCopy8((const void *) (uintptr_t) PlayerId_Name((int) (uintptr_t) PlayerRecord_Player(record)), user_block, 0xc);
+        MI_CpuCopy8((const void *) (uintptr_t) TownName_Name((int) (uintptr_t) (data_021dc7a8 + 2)), user_block + 0x10, 0xc);
+        MI_CpuCopy8(WifiAccount_GetUserData((WifiAccount *) PlayerRecord_WifiAccount(record)), user_block + 0x20, 0x40);
         LibraryOverlay_Require65();
         Wfc_Setup(mode, func_02075050, (void (*)(int)) func_02099e78, user_block, friends);
     }
@@ -814,13 +794,13 @@ void Session_CreateHeap(void *parent)
 {
     u32 largest = 0;
     for (int record = SESSION_RECORDS - 1; record >= 0; record--) {
-        u32 size = func_0207762c((u32) record);
+        u32 size = SessionRecord_GetSize((u32) record);
         if (size > largest) {
             largest = size;
         }
     }
     data_020ccf94->max_record_size = (u8) largest;
-    func_0205cb68(NET_HEAP_SIZE, parent);
+    SceneHeaps_CreateNetwork(NET_HEAP_SIZE, parent);
     Net_Empty020ecf20();
 }
 CLEAN_AS(func_02074d24, Session_CreateHeap)
@@ -834,20 +814,20 @@ void Session_RemovePlayer(int slot)
     for (int i = SESSION_SLOTS - 1; i >= 0; i--) {
         if (Session_IsSlotTaken(session, i) != 0) {
             if (i == 0) {
-                func_020a7394(0, 0x3f, 1, 0, 2);
+                LinkGlobal_SetPlace(0, 0x3f, 1, 0, 2);
             } else {
-                func_020a7394(i, 0x3f, 0, 0, 2);
+                LinkGlobal_SetPlace(i, 0x3f, 0, 0, 2);
             }
         }
     }
-    func_020a7394(slot, 0x3f, 0, 0, 7);
+    LinkGlobal_SetPlace(slot, 0x3f, 0, 0, 7);
 
     session = data_020ccf94;
     Session_SetSlotTaken(session, slot, 0);
     Session_SetPlayerCount(session, (u8) (session->player_count - 1));
     Session_ResetCredit(session, slot);
     Session_SetOwedCredits(session, slot, 0);
-    func_020a6c6c(slot);
+    LinkState_GlobalForgetSlot(slot);
     Session_OnPlayersChanged(negate(slot));
 }
 CLEAN_AS(func_02074d60, Session_RemovePlayer)
@@ -862,7 +842,7 @@ int Session_WriteStatusPacket(int slot)
     }
     u8 *packet = Session_GetSendBlock(data_020ccf94, slot);
     SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_OWN_STATUS);
-    int status = func_020a6f64(slot);
+    int status = LinkGlobal_Status(slot);
     unsigned int members = Session_GetMemberMask();
     packet[1] = (u8) ((status & 7) | ((members << 4) & 0xf0));
     return 2;
@@ -872,7 +852,7 @@ CLEAN_AS(func_02074dfc, Session_WriteStatusPacket)
 /* func_02074e48: whether `slot`'s link status is 5 or 6. */
 int Session_IsStatusPending(int slot)
 {
-    u32 status = (u32) func_020a6f64(slot);
+    u32 status = (u32) LinkGlobal_Status(slot);
     return status - STATUS_PENDING_FIRST <= 1;
 }
 CLEAN_AS(func_02074e48, Session_IsStatusPending)
@@ -894,9 +874,9 @@ int Session_CollectMessages(u8 *dst, int slot)
         u8 sender;
         PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &sender);
         u32 size = MESSAGE_HEADER_SIZE + (u32) PackedBytes_ReadU16(header);
-        func_020b65c4();
+        SceneQuery_Current();
         u8 hold;
-        int to = func_020a70ec(slot, kind, scene, &hold);
+        int to = LinkGlobal_MessageTarget(slot, kind, scene, &hold);
         if (hold != 0) {
             u32 held = Session_GetHeldQueueLength(session);
             u8 *queue = Session_GetHeldQueue(session);
@@ -932,7 +912,7 @@ int Session_WriteRecords(u8 *dst, const u8 *copy, int size)
             dst++;
             written++;
             const u8 *record = Session_GetRecord(session, id);
-            u32 length = func_0207762c((u32) id);
+            u32 length = SessionRecord_GetSize((u32) id);
             MI_CpuCopy8(record, dst, length);
             dst += length;
             written += (int) length;
@@ -1047,13 +1027,13 @@ CLEAN_AS(func_020750fc, Session_DisableInterrupts)
 void Session_OnPlayersChanged(int change)
 {
     if (change == ALL_PLAYERS) {
-        func_020792a0();
-        func_02086130(func_0208602c());
+        VillagerState_Clear();
+        Block021d27ac_Reset(Block021d27ac_Get());
     }
-    func_02053010();
-    func_0209d3e4();
-    func_020b316c();
-    func_0203f4c4();
+    RoomCells_ResetAll();
+    RoomObjectState_Clear();
+    TownObjects_ResetRecordedModes();
+    ObjectClaim_Reset();
     PlayerMessages_ClearReply();
 
     if (change < 0) {
@@ -1061,40 +1041,40 @@ void Session_OnPlayersChanged(int change)
         if (Session_IsLocalSlot(session, 0) != 0 || Session_IsLocalSlot(session, NO_SLOT) != 0) {
             if (change == -ALL_PLAYERS) {
                 for (u32 i = 0; i < 34; i++) {
-                    u16 id = func_0204bbd4(i);
-                    func_020b23ec(id, 1);
-                    func_020b23ec(id, 2);
-                    func_020b23ec(id, 3);
+                    u16 id = MapCode_Building(i);
+                    TownObjects_Leave(id, 1);
+                    TownObjects_Leave(id, 2);
+                    TownObjects_Leave(id, 3);
                 }
-                func_02051e38(1);
-                func_02051e38(2);
-                func_02051e38(3);
+                PlaceClaim_Release(1);
+                PlaceClaim_Release(2);
+                PlaceClaim_Release(3);
                 for (u32 i = 0; i < 51; i++) {
-                    func_0209d57c((u8) i, 1);
-                    func_0209d57c((u8) i, 2);
-                    func_0209d57c((u8) i, 3);
+                    SceneClaim_Release((u8) i, 1);
+                    SceneClaim_Release((u8) i, 2);
+                    SceneClaim_Release((u8) i, 3);
                 }
             } else {
                 int slot = negate(change);
                 for (u32 i = 0; i < 34; i++) {
-                    func_020b23ec(func_0204bbd4(i), slot);
+                    TownObjects_Leave(MapCode_Building(i), slot);
                 }
-                func_02051e38(slot);
+                PlaceClaim_Release(slot);
                 for (u32 i = 0; i < 51; i++) {
-                    func_0209d57c((u8) i, slot);
+                    SceneClaim_Release((u8) i, slot);
                 }
             }
         }
         if (change == -ALL_PLAYERS) {
             for (u32 slot = 0; slot < SESSION_SLOTS; slot++) {
-                func_02096204(slot);
+                SessionPlayers_ClearSaved(slot);
             }
         } else {
-            func_02096204((u32) negate(change));
+            SessionPlayers_ClearSaved((u32) negate(change));
         }
     }
     if (change == -ALL_PLAYERS) {
-        func_020ae4f0();
+        FoxPassword_ClearVisitor();
     }
     int slot = change < 0 ? negate(change) : change;
     if (slot < ALL_PLAYERS) {

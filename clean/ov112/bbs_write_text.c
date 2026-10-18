@@ -83,7 +83,7 @@ static MenuScene *bbs_write_scene(BbsWriteScene *self)
 
 static BbsLabel *bbs_write_filter_text(BbsWriteScene *self)
 {
-    return (BbsLabel *) (void *) self->filter_text;
+    return &self->filter_text;
 }
 
 static int bbs_write_keyboard_arg(BbsWriteScene *self)
@@ -259,9 +259,9 @@ CLEAN_AS(func_ov112_0229f11c, BbsWrite_ShowDate)
 void BbsWrite_FilterTaboo(BbsWriteScene *self)
 {
     TextBase_SetWide(&self->filter_wide, self->text, BBS_POST_LENGTH);
-    TextBase_WideToBytes((TextBase *) (void *) self->filter_text, (WideTextBase *) (void *) &self->filter_wide, 0, 0);
-    if (MessageReader_FilterTaboo(self->filter_text) != 0) {
-        TextBase_BytesToWide((WideTextBase *) (void *) &self->filter_wide, (TextBase *) (void *) self->filter_text);
+    TextBase_WideToBytes((TextBase *) (void *) &self->filter_text, (WideTextBase *) (void *) &self->filter_wide, 0, 0);
+    if (MessageReader_FilterTaboo(&self->filter_text) != 0) {
+        TextBase_BytesToWide((WideTextBase *) (void *) &self->filter_wide, (TextBase *) (void *) &self->filter_text);
         TextString_CopyWideOut((TextObject *) (void *) &self->filter_wide, self->text, BBS_POST_LENGTH);
     }
 }

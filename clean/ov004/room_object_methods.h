@@ -10,11 +10,11 @@
 #include "room_object.h"
 
 /* The object a model is drawn through (NitroSystem's NNSG3dRenderObj): the room object it
- * belongs to is kept at 0x2c (func_02055dc8 puts it there). */
-typedef struct G3dRenderObject {
+ * belongs to is kept at 0x2c (ModelObject_SetInitHook puts it there). */
+typedef struct RoomRenderObject {
     u8 unk_00[0x2c];
     struct RoomObject *user;
-} G3dRenderObject;
+} RoomRenderObject;
 
 /* The model's commands with hooks here (NitroSystem's NNS_G3D_SBC_*), and when the hook runs
  * (NNS_G3D_SBC_CALLBACK_TIMING_*). */
@@ -25,11 +25,11 @@ enum {
 };
 
 /* What the model's hooks get: the state of the model being drawn (NitroSystem's NNSG3dRS).
- * The main program's func_020b3188 and func_020b3220 turn the node at 0xb4; 0xb8 points to the
+ * The main program's ClockHands_TurnMinuteHand and ClockHands_TurnHourHand turn the node at 0xb4; 0xb8 points to the
  * word the node set's value goes to. */
 typedef struct NodeHookState {
     const u8 *command; /* the command being run: byte 1 is its node or material */
-    G3dRenderObject *render_object;
+    RoomRenderObject *render_object;
     u32 flags;
     u32 hooks[G3D_COMMAND_COUNT]; /* the address of each command's hook, 0 for none */
     u8 hook_timings[G3D_COMMAND_COUNT];

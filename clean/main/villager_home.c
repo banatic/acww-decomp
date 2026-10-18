@@ -3,12 +3,10 @@
 
 #include "acre_map.h"
 #include "clean.h"
+#include "villager_plot_tile.h"
 
 #define VILLAGER_HOME_TILE 0x7ce
 #define VILLAGER_HOME_LAST_TOWN 0x7b8
-
-extern int func_02081f80(const VillagerPlot *plot); /* whether it is set */
-extern void func_02081f94(VillagerPlot *plot);      /* none */
 
 /* func_02080078: a free plot (item 0x500a) put on the tile of the villager's house, when the
  * town's map is there and the villager has a house tile. */
@@ -45,14 +43,14 @@ CLEAN_AS(func_020800d0, VillagerHome_Tile)
 /* func_020800dc: whether the villager has a house tile. */
 int VillagerHome_HasTile(u8 *villager)
 {
-    return func_02081f80(VillagerHome_Tile(villager));
+    return VillagerPlotTile_IsSet(VillagerHome_Tile(villager));
 }
 CLEAN_AS(func_020800dc, VillagerHome_HasTile)
 
 /* func_020800ec: the villager's house tile set to none. */
 void VillagerHome_ClearTile(u8 *villager)
 {
-    func_02081f94(VillagerHome_Tile(villager));
+    VillagerPlotTile_Clear(VillagerHome_Tile(villager));
 }
 CLEAN_AS(func_020800ec, VillagerHome_ClearTile)
 

@@ -13,6 +13,11 @@
 #include "session_link.h"
 #include "state_block.h"
 #include "wifi_friends.h"
+#include "c_library.h"
+#include "card_save.h"
+#include "talk_object.h"
+#include "wfc_delivery.h"
+#include "wfc_stats.h"
 
 #define NOTICE_SIZE 0xd2
 #define LETTER_SIZE 0x114
@@ -62,37 +67,8 @@ extern const char data_020e3c2c[];      /* "sp_npc_gatekeeper" */
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void DGT_Hash1CalcHmac(void *digest, const void *data, int length, const void *key, int key_length);
-extern char *func_0212d914(char *dst, const char *src);           /* appends `src` to `dst` */
-extern int func_02064344(const void *a, const void *b, u32 size); /* whether the bytes differ */
-extern const void *func_02000b7c(void);                           /* the HMAC key */
-
-/* A notice: its constructor and destructor (they do nothing), where its HMAC is, and posting
- * it on the board when its serial is new. */
-extern void func_0203f5e0(u8 *notice);
-extern void func_0203f5dc(u8 *notice);
-extern u8 *func_0203f5d8(u8 *notice);
-extern int func_0203f5a4(u8 *notice);
-/* A letter: its constructor and destructor, where its HMAC is, and delivering it to the
- * current player when its number is new. */
-extern u8 *func_0203f674(u8 *letter);
-extern u8 *func_0203f664(u8 *letter);
-extern u8 *func_0203f658(u8 *letter);
-extern int func_0203f5e4(u8 *letter);
-/* The statistics record: its status (get, set), its checksum (get, set) and resetting it. */
-extern u8 func_02088208(u8 *record);
-extern void func_02088214(u8 *record, u8 status);
-extern u16 func_020881ac(u8 *record);
-extern void func_020881b8(u8 *record, u16 checksum);
-extern void func_02088250(u8 *record);
-
-/* The current player's friend roster written to both copies on the card: 1 when a write
- * failed. */
-extern int func_020a1518(void);
-/* Talk `index`, its two flags reset, and a message of a file given to it. */
-extern void *func_020682e0(int index);
-extern void func_02068358(void *talk);
-extern void func_02068434(void *talk);
-extern void func_0206844c(void *talk, const u8 *message, const char *name);
+extern char *func_0212d914(char *dst, const char *src); /* appends `src` to `dst` */
+extern const void *func_02000b7c(void);                 /* the HMAC key */
 
 /* func_0209fc60: a notice that was received checked against its HMAC and, when it matches,
  * posted on the board; the received notice is then cleared. */
@@ -104,15 +80,16 @@ void WfcSession_ApplyNotice(void)
     data_021f3c18 = 0;
     u8 copy[NOTICE_SIZE];
     u8 digest[HMAC_SIZE];
-    func_0203f5e0(copy);
+    WfcDelivery_ConstructNotice((WfcNotice *) (void *) copy);
     MI_CpuCopy8(data_021f3cbc, copy, NOTICE_SIZE);
-    MI_CpuFill8(func_0203f5d8(copy), 0, HMAC_SIZE);
+    MI_CpuFill8((void *) (uintptr_t) WfcDelivery_NoticeHmac((WfcNotice *) (void *) copy), 0, HMAC_SIZE);
     DGT_Hash1CalcHmac(digest, copy, NOTICE_SIZE, func_02000b7c(), HMAC_SIZE);
-    if (func_02064344(func_0203f5d8(data_021f3cbc), digest, HMAC_SIZE) == 0) {
-        func_0203f5a4(data_021f3cbc);
+    if (CLib_BytesDiffer((const void *) (uintptr_t) WfcDelivery_NoticeHmac((WfcNotice *) (void *) data_021f3cbc), digest,
+                         HMAC_SIZE) == 0) {
+        WfcDelivery_PostNotice((WfcNotice *) (void *) data_021f3cbc);
     }
     MI_CpuFill8(data_021f3cbc, 0, NOTICE_SIZE);
-    func_0203f5dc(copy);
+    WfcDelivery_DestructNotice((WfcNotice *) (void *) copy);
 }
 CLEAN_AS(func_0209fc60, WfcSession_ApplyNotice)
 
@@ -126,15 +103,16 @@ void WfcSession_ApplyLetter(void)
     data_021f3c04 = 0;
     u8 copy[LETTER_SIZE];
     u8 digest[HMAC_SIZE];
-    func_0203f674(copy);
+    WfcDelivery_ConstructLetter((WfcLetter *) (void *) copy);
     MI_CpuCopy8(data_021f3d90, copy, LETTER_SIZE);
-    MI_CpuFill8(func_0203f658(copy), 0, HMAC_SIZE);
+    MI_CpuFill8((void *) (uintptr_t) WfcDelivery_LetterHmac((u32) (uintptr_t) copy), 0, HMAC_SIZE);
     DGT_Hash1CalcHmac(digest, copy, LETTER_SIZE, func_02000b7c(), HMAC_SIZE);
-    if (func_02064344(func_0203f658(data_021f3d90), digest, HMAC_SIZE) == 0) {
-        func_0203f5e4(data_021f3d90);
+    if (CLib_BytesDiffer((const void *) (uintptr_t) WfcDelivery_LetterHmac((u32) (uintptr_t) data_021f3d90), digest,
+                         HMAC_SIZE) == 0) {
+        WfcDelivery_DeliverLetter((WfcLetter *) (void *) data_021f3d90);
     }
     MI_CpuFill8(data_021f3d90, 0, LETTER_SIZE);
-    func_0203f664(copy);
+    WfcDelivery_DestructLetter((WfcLetter *) (void *) copy);
 }
 CLEAN_AS(func_0209fcd8, WfcSession_ApplyLetter)
 
@@ -148,11 +126,11 @@ void WfcSession_ApplyStats(void)
     }
     data_021f3c14 = 0;
     if (BackupCard_Sum((unsigned short *) (void *) data_021f40a4, STATS_SIZE) == 0) {
-        func_02088214(data_021f40a4, WFC_STATS_RECEIVED);
+        WfcStats_SetStatus((WfcStats *) (void *) data_021f40a4, WFC_STATS_RECEIVED);
         MI_CpuCopy8(data_021f40a4, data_021f3278, STATS_SIZE);
     }
     MI_CpuFill8(data_021f40a4, 0, STATS_SIZE);
-    func_020881b8(data_021f40a4, 1);
+    WfcStats_SetChecksum((WfcStats *) (void *) data_021f40a4, 1);
 }
 CLEAN_AS(func_0209fd54, WfcSession_ApplyStats)
 
@@ -162,7 +140,7 @@ int WfcSession_FinishStatsUpload(void)
 {
     LibraryOverlay_Require65();
     if (Wfc_FinishPost() != 0) {
-        func_02088250(data_021f3278);
+        WfcStats_Reset((WfcStats *) (void *) data_021f3278);
         return 1;
     }
     return 0;
@@ -240,7 +218,7 @@ CLEAN_AS(func_0209fea4, WfcSession_StartLetterGet)
  * of a new one started; whether it was. */
 int WfcSession_StartStatsGet(void)
 {
-    if (func_02088208(data_021f3278) != WFC_STATS_NONE) {
+    if (WfcStats_Status((const WfcStats *) (void *) data_021f3278) != WFC_STATS_NONE) {
         return 0;
     }
     LibraryOverlay_Require65();
@@ -255,11 +233,12 @@ CLEAN_AS(func_0209ff0c, WfcSession_StartStatsGet)
 int WfcSession_StartStatsUpload(void)
 {
     u8 *record = data_021f3278;
-    if (func_02088208(record) != WFC_STATS_TO_SEND) {
+    if (WfcStats_Status((const WfcStats *) (void *) record) != WFC_STATS_TO_SEND) {
         return 0;
     }
-    u16 checksum = BackupCard_Checksum((const u16 *) (const void *) record, STATS_SIZE, func_020881ac(record));
-    func_020881b8(record, checksum);
+    u16 checksum = BackupCard_Checksum((const u16 *) (const void *) record, STATS_SIZE,
+                                       WfcStats_Checksum((const WfcStats *) (void *) record));
+    WfcStats_SetChecksum((WfcStats *) (void *) record, checksum);
     LibraryOverlay_Require65();
     Wfc_PostSigned(data_020e3bf0, record, STATS_SIZE, data_020e3800);
     return 1;
@@ -290,12 +269,12 @@ int WfcSession_End(void *unused)
     WfcSession_ApplyLetter();
     WfcSession_ApplyNotice();
     WfcSession_KeepFriendData();
-    if (func_020a1518() != 0) {
-        void *talk = func_020682e0(GATEKEEPER_TALK);
-        func_02068358(talk);
-        func_02068434(talk);
+    if (CardSave_WriteFriendRoster() != 0) {
+        void *talk = TalkObject_Get(GATEKEEPER_TALK);
+        TalkObject_StopSpinner(talk);
+        TalkObject_Release(talk);
         u8 message = GATEKEEPER_SAVE_FAILED;
-        func_0206844c(talk, &message, data_020e3c2c);
+        TalkObject_SetMessage(talk, &message, data_020e3c2c);
     }
     return result;
 }

@@ -4,6 +4,9 @@
 #include <string.h>
 
 #include "clean.h"
+#include "item_object.h"
+#include "main_random.h"
+#include "player_id.h"
 
 static_assert(sizeof(DesignCreator) == VILLAGER_MOVE_PLAYER_ID_SIZE, "player id");
 
@@ -11,21 +14,8 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
-extern unsigned int func_020644cc(int bound); /* a random number below `bound` */
-/* The player ids: whether one is set (a town and a player), whether two name the same player
- * (number and name), copied, emptied, destroyed and constructed. */
-extern int func_020951bc(const DesignCreator *player);
-extern int func_0209518c(const DesignCreator *a, const DesignCreator *b);
-extern void func_0209525c(DesignCreator *dst, const DesignCreator *src);
-extern void func_02095238(DesignCreator *player);
 extern void func_0209526c(void *player);
 extern void func_0209529c(void *player);
-/* The plan's object: set to a type and item, emptied (type 22, no item), destroyed and
- * constructed. */
-extern void func_0209bd30(u8 *object, u8 type, const u16 *item, u8 low_bits);
-extern void func_0209bd5c(u8 *object);
-extern void func_0209bd7c(u8 *object);
-extern void func_0209bd80(u8 *object);
 
 static DesignCreator *stage_player(VillagerMove *move, int stage)
 {
@@ -55,7 +45,7 @@ DesignCreator *VillagerMoveRecord_MostNamedPlayer(VillagerMove *move)
             continue;
         }
         DesignCreator *player = stage_player(move, i);
-        if (func_020951bc(player) == 0) {
+        if (PlayerId_IsSet(player) == 0) {
             continue;
         }
         /* The later stages naming the same player share stage i's count. */
@@ -64,7 +54,7 @@ DesignCreator *VillagerMoveRecord_MostNamedPlayer(VillagerMove *move)
         counts[i] = 1;
         for (int j = i + 1; j < VILLAGER_MOVE_STAGES; j++) {
             DesignCreator *other = stage_player(move, j);
-            if (same_town(player, other) && func_0209518c(player, other) != 0) {
+            if (same_town(player, other) && PlayerId_SamePlayer(player, other) != 0) {
                 same |= (u8) (1u << j);
                 counted |= (u8) (1u << j);
                 counts[i]++;
@@ -127,7 +117,7 @@ void VillagerMoveRecord_SetStagePlayer(VillagerMove *move, const DesignCreator *
 {
     DesignCreator *stage = VillagerMoveRecord_StagePlayer(move);
     if (stage != NULL) {
-        func_0209525c(stage, player);
+        PlayerId_Copy(stage, player);
     }
 }
 CLEAN_AS(func_0209a664, VillagerMoveRecord_SetStagePlayer)
@@ -136,7 +126,7 @@ CLEAN_AS(func_0209a664, VillagerMoveRecord_SetStagePlayer)
 int VillagerMoveRecord_HasStagePlayer(VillagerMove *move)
 {
     DesignCreator *stage = VillagerMoveRecord_StagePlayer(move);
-    return stage != NULL && func_020951bc(stage) != 0;
+    return stage != NULL && PlayerId_IsSet(stage) != 0;
 }
 CLEAN_AS(func_0209a67c, VillagerMoveRecord_HasStagePlayer)
 
@@ -145,7 +135,7 @@ CLEAN_AS(func_0209a67c, VillagerMoveRecord_HasStagePlayer)
  * times). */
 int VillagerMoveRecord_NamesPlayer(VillagerMove *move, const DesignCreator *player)
 {
-    if (func_020951bc(player) == 0) {
+    if (PlayerId_IsSet((DesignCreator *) player) == 0) {
         return 0;
     }
     const DesignCreator *stage = stage_player(move, 0);
@@ -153,7 +143,7 @@ int VillagerMoveRecord_NamesPlayer(VillagerMove *move, const DesignCreator *play
 #ifdef BUGFIX
         stage = stage_player(move, i);
 #endif
-        if (same_town(player, stage) && func_0209518c(player, stage) != 0) {
+        if (same_town(player, stage) && PlayerId_SamePlayer(player, stage) != 0) {
             return 1;
         }
     }
@@ -186,11 +176,11 @@ void VillagerMoveRecord_Start(VillagerMove *move, const NpcId *npc, const Date *
     VillagerMoveRecord_Clear(move);
     NpcId_Copy(&move->npc, npc);
     u16 item = VILLAGER_MOVE_RECORD_ITEM;
-    func_0209bd30(move->object, VILLAGER_MOVE_RECORD_TYPE, &item, 0);
+    ItemObject_Set((ItemObject *) (void *) move->object, VILLAGER_MOVE_RECORD_TYPE, &item, 0);
     MI_CpuCopy8(today, &move->started, sizeof(Date));
     MI_CpuCopy8(today, &move->last_step, sizeof(Date));
     move->last_step.unused = 1;
-    move->stage = (u8) (func_020644cc(2) + 1);
+    move->stage = (u8) (MainRandom_Below(2) + 1);
 }
 CLEAN_AS(func_0209a710, VillagerMoveRecord_Start)
 
@@ -212,10 +202,10 @@ CLEAN_AS(func_0209a778, VillagerMoveRecord_Object)
  * 1/1/2000 and stage 5. */
 void VillagerMoveRecord_Clear(VillagerMove *move)
 {
-    func_0209bd5c(move->object);
+    ItemObject_Clear((ItemObject *) (void *) move->object);
     NpcId_Clear(&move->npc);
     for (int i = 0; i < VILLAGER_MOVE_STAGES; i++) {
-        func_02095238(stage_player(move, i));
+        PlayerId_Clear(stage_player(move, i));
     }
     move->started.day = 1;
     move->started.month = 1;
@@ -234,7 +224,7 @@ VillagerMove *VillagerMoveRecord_Destruct(VillagerMove *move)
 {
     __cxa_vec_cleanup(move->players, VILLAGER_MOVE_STAGES, VILLAGER_MOVE_PLAYER_ID_SIZE, func_0209526c);
     NpcId_Destruct(&move->npc);
-    func_0209bd7c(move->object);
+    ItemObject_Destruct((ItemObject *) (void *) move->object);
     return move;
 }
 CLEAN_AS(func_0209a7e8, VillagerMoveRecord_Destruct)
@@ -242,7 +232,7 @@ CLEAN_AS(func_0209a7e8, VillagerMoveRecord_Destruct)
 /* func_0209a814: the constructor: the parts constructed, then the record cleared. */
 VillagerMove *VillagerMoveRecord_Construct(VillagerMove *move)
 {
-    func_0209bd80(move->object);
+    ItemObject_Construct((ItemObject *) (void *) move->object);
     NpcId_Construct(&move->npc);
     __cxa_vec_ctor(move->players, VILLAGER_MOVE_STAGES, VILLAGER_MOVE_PLAYER_ID_SIZE, func_0209529c, func_0209526c);
     VillagerMoveRecord_Clear(move);

@@ -8,6 +8,11 @@
 #include "player_record.h"
 #include "player_records.h"
 #include "villager_roster.h"
+#include "item_object.h"
+#include "letter.h"
+#include "town_villager.h"
+#include "villager_part_block.h"
+#include "villager_part_entry.h"
 
 static_assert(sizeof(VillagerPartBlock) == 0x30, "block");
 static_assert(offsetof(VillagerPart, picks) == 0x60, "picks");
@@ -27,27 +32,7 @@ static_assert(sizeof(VillagerPart) == 0xcc, "part");
 
 extern u8 data_021e5a2c[]; /* the town's villagers (VillagerTown) */
 
-extern void *func_02137550(void *dst, u32 size);             /* clears size bytes */
-extern NpcId *func_0208150c(const u8 *villager);             /* the villager's NpcId, at 0x7a0 */
-extern u8 func_02065ec0(const MailLetter *letter);           /* its state; 0: no letter */
-extern const NpcId *func_02065f64(const MailLetter *letter); /* its villager addressee, or NULL */
-/* A block: its object (the block itself), its index-th NpcId, emptied, and set to a type with
- * the NpcIds given (NULL: none), 1 when the type has a setup. */
-extern u8 *func_0209b4d4(VillagerPartBlock *block);
-extern NpcId *func_0209b4cc(VillagerPartBlock *block, int index);
-extern void func_0209b56c(VillagerPartBlock *block);
-extern int func_0209b4d8(VillagerPartBlock *block, int type, const NpcId *first, const NpcId *second);
-/* An object: whether it holds something (type below 22), its type, the low five bits of byte
- * 0x0b and their setter, the band of its type, its item. */
-extern int func_0209bd44(const u8 *object);
-extern int func_0209bc40(const u8 *object);
-extern u32 func_0209bba0(const u8 *object);
-extern void func_0209bb90(u8 *object, int value);
-extern int func_0209bba8(const u8 *object);
-extern u16 *func_0209bb70(u8 *object);
-/* The object at 0x94: itself, and the name of its entry written into `text`. */
-extern u8 *func_0209b0f0(u8 *object);
-extern int func_0209b0c4(u8 *object, void *text);
+extern void *func_02137550(void *dst, u32 size); /* clears size bytes */
 
 static int same_npc(const NpcId *a, const NpcId *b)
 {
@@ -90,7 +75,7 @@ CLEAN_AS(func_0209a854, VillagerPart_IsSecondPick)
 void VillagerPart_EndStep(VillagerPart *part)
 {
     if (VillagerPart_HasStep(part) != 0) {
-        func_0209b56c(VillagerPart_Block(part, 0));
+        VillagerPartBlock_Clear(VillagerPart_Block(part, 0));
     }
 }
 CLEAN_AS(func_0209a8a4, VillagerPart_EndStep)
@@ -98,9 +83,11 @@ CLEAN_AS(func_0209a8a4, VillagerPart_EndStep)
 /* func_0209a8c4: block 0's value set to 1 when it holds type 18 with value 0. */
 void VillagerPart_MarkType18(VillagerPart *part)
 {
-    u8 *object = func_0209b4d4(VillagerPart_Block(part, 0));
-    if (func_0209bd44(object) != 0 && func_0209bc40(object) == VILLAGER_PART_TYPE_18 && func_0209bba0(object) == 0) {
-        func_0209bb90(object, VILLAGER_PART_MARKED);
+    u8 *object = VillagerPartBlock_Object(VillagerPart_Block(part, 0));
+    if (ItemObject_IsInUse((ItemObject *) (void *) object) != 0 &&
+        ItemObject_Type((ItemObject *) (void *) object) == VILLAGER_PART_TYPE_18 &&
+        ItemObject_Low5((ItemObject *) (void *) object) == 0) {
+        ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
     }
 }
 CLEAN_AS(func_0209a8c4, VillagerPart_MarkType18)
@@ -108,7 +95,7 @@ CLEAN_AS(func_0209a8c4, VillagerPart_MarkType18)
 /* func_0209a8fc: block 0 set to type 18, naming no villager. */
 int VillagerPart_SetType18(VillagerPart *part)
 {
-    return func_0209b4d8(VillagerPart_Block(part, 0), VILLAGER_PART_TYPE_18, NULL, NULL);
+    return VillagerPartBlock_SetType(VillagerPart_Block(part, 0), VILLAGER_PART_TYPE_18, NULL, NULL);
 }
 CLEAN_AS(func_0209a8fc, VillagerPart_SetType18)
 
@@ -116,7 +103,7 @@ CLEAN_AS(func_0209a8fc, VillagerPart_SetType18)
 void VillagerPart_SetSecondAgain(VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    func_0209b4d8(block, VILLAGER_PART_TYPE_SECOND_AGAIN, NULL, &part->picks[1]);
+    VillagerPartBlock_SetType(block, VILLAGER_PART_TYPE_SECOND_AGAIN, NULL, &part->picks[1]);
 }
 CLEAN_AS(func_0209a918, VillagerPart_SetSecondAgain)
 
@@ -137,8 +124,8 @@ void VillagerPart_SetThirdPick(VillagerPart *part)
         }
     }
     u8 *villager = villager_part_pick(excluded, count);
-    func_0209b4d8(block, VILLAGER_PART_TYPE_THIRD_PICK, NULL, func_0208150c(villager));
-    NpcId_Copy(&part->picks[2], func_0208150c(villager));
+    VillagerPartBlock_SetType(block, VILLAGER_PART_TYPE_THIRD_PICK, NULL, TownVillager_NpcId(villager));
+    NpcId_Copy(&part->picks[2], TownVillager_NpcId(villager));
 }
 CLEAN_AS(func_0209a934, VillagerPart_SetThirdPick)
 
@@ -147,19 +134,19 @@ CLEAN_AS(func_0209a934, VillagerPart_SetThirdPick)
  * when it is below; any other letter sets it to 1 when it is 0. 0 for no letter. */
 int VillagerPart_NoteLetter(VillagerPart *part, MailLetter *letter)
 {
-    if (letter == NULL || func_02065ec0(letter) == 0) {
+    if (letter == NULL || Letter_State((const Letter *) letter) == 0) {
         return 0;
     }
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    u8 *object = func_0209b4d4(block);
-    if (func_0209bc40(object) != VILLAGER_PART_TYPE_SECOND_PICK) {
+    u8 *object = VillagerPartBlock_Object(block);
+    if (ItemObject_Type((ItemObject *) (void *) object) != VILLAGER_PART_TYPE_SECOND_PICK) {
         return 0;
     }
 
-    const NpcId *addressee = func_02065f64(letter);
+    const NpcId *addressee = (const NpcId *) Letter_VillagerAddressee((Letter *) letter);
     if (addressee == NULL) {
-        if (func_0209bba0(object) == 0) {
-            func_0209bb90(object, VILLAGER_PART_MARKED);
+        if (ItemObject_Low5((ItemObject *) (void *) object) == 0) {
+            ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
             return 1;
         }
         return 0;
@@ -168,15 +155,15 @@ int VillagerPart_NoteLetter(VillagerPart *part, MailLetter *letter)
     int noted;
     NpcId npc;
     NpcId_ConstructCopy(&npc, addressee);
-    if (NpcId_IsValid(&npc) != 0 && same_npc(func_0209b4cc(block, 1), &npc)) {
-        noted = func_0209bba0(object) < VILLAGER_PART_MARKED_FOR_VILLAGER;
+    if (NpcId_IsValid(&npc) != 0 && same_npc(VillagerPartBlock_Npc(block, 1), &npc)) {
+        noted = ItemObject_Low5((ItemObject *) (void *) object) < VILLAGER_PART_MARKED_FOR_VILLAGER;
         if (noted) {
-            func_0209bb90(object, VILLAGER_PART_MARKED_FOR_VILLAGER);
+            ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED_FOR_VILLAGER);
         }
     } else {
-        noted = func_0209bba0(object) == 0;
+        noted = ItemObject_Low5((ItemObject *) (void *) object) == 0;
         if (noted) {
-            func_0209bb90(object, VILLAGER_PART_MARKED);
+            ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
         }
     }
     NpcId_Destruct(&npc);
@@ -197,9 +184,10 @@ CLEAN_AS(func_0209aa80, VillagerPart_CurrentMarkSecondPick)
 /* func_0209aa9c: block 0's value set to 1 when it holds type 15 with value 0. */
 void VillagerPart_MarkSecondPick(VillagerPart *part)
 {
-    u8 *object = func_0209b4d4(VillagerPart_Block(part, 0));
-    if (func_0209bc40(object) == VILLAGER_PART_TYPE_SECOND_PICK && func_0209bba0(object) == 0) {
-        func_0209bb90(object, VILLAGER_PART_MARKED);
+    u8 *object = VillagerPartBlock_Object(VillagerPart_Block(part, 0));
+    if (ItemObject_Type((ItemObject *) (void *) object) == VILLAGER_PART_TYPE_SECOND_PICK &&
+        ItemObject_Low5((ItemObject *) (void *) object) == 0) {
+        ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
     }
 }
 CLEAN_AS(func_0209aa9c, VillagerPart_MarkSecondPick)
@@ -209,7 +197,7 @@ CLEAN_AS(func_0209aa9c, VillagerPart_MarkSecondPick)
 void VillagerPart_SetSecondPick(VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    func_0209b4d4(block);
+    VillagerPartBlock_Object(block);
     const NpcId *excluded;
     func_02137550(&excluded, sizeof(excluded));
     int count = 0;
@@ -218,8 +206,8 @@ void VillagerPart_SetSecondPick(VillagerPart *part)
         count = 1;
     }
     u8 *villager = villager_part_pick(&excluded, count);
-    func_0209b4d8(block, VILLAGER_PART_TYPE_SECOND_PICK, NULL, func_0208150c(villager));
-    NpcId_Copy(&part->picks[1], func_0208150c(villager));
+    VillagerPartBlock_SetType(block, VILLAGER_PART_TYPE_SECOND_PICK, NULL, TownVillager_NpcId(villager));
+    NpcId_Copy(&part->picks[1], TownVillager_NpcId(villager));
 }
 CLEAN_AS(func_0209aacc, VillagerPart_SetSecondPick)
 
@@ -229,22 +217,22 @@ void VillagerPart_SetFirstPick(VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
     u8 *villager = villager_part_pick(NULL, 0);
-    func_0209b4d8(block, VILLAGER_PART_TYPE_FIRST_PICK, NULL, func_0208150c(villager));
-    NpcId_Copy(&part->picks[0], func_0208150c(villager));
+    VillagerPartBlock_SetType(block, VILLAGER_PART_TYPE_FIRST_PICK, NULL, TownVillager_NpcId(villager));
+    NpcId_Copy(&part->picks[0], TownVillager_NpcId(villager));
 }
 CLEAN_AS(func_0209ab34, VillagerPart_SetFirstPick)
 
 /* func_0209ab78: block 0 set to type 13, naming no villager. */
 void VillagerPart_SetType13(VillagerPart *part)
 {
-    func_0209b4d8(VillagerPart_Block(part, 0), VILLAGER_PART_TYPE_13, NULL, NULL);
+    VillagerPartBlock_SetType(VillagerPart_Block(part, 0), VILLAGER_PART_TYPE_13, NULL, NULL);
 }
 CLEAN_AS(func_0209ab78, VillagerPart_SetType13)
 
 /* func_0209ab94: block 0 set to type 12, naming no villager. */
 void VillagerPart_SetType12(VillagerPart *part)
 {
-    func_0209b4d8(VillagerPart_Block(part, 0), VILLAGER_PART_TYPE_12, NULL, NULL);
+    VillagerPartBlock_SetType(VillagerPart_Block(part, 0), VILLAGER_PART_TYPE_12, NULL, NULL);
 }
 CLEAN_AS(func_0209ab94, VillagerPart_SetType12)
 
@@ -273,8 +261,8 @@ CLEAN_AS(func_0209abc8, VillagerPart_SetFlag)
 void VillagerPart_Reset(VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    func_0209b56c(block);
-    func_0209b4d8(block, VILLAGER_PART_TYPE_RESET, NULL, NULL);
+    VillagerPartBlock_Clear(block);
+    VillagerPartBlock_SetType(block, VILLAGER_PART_TYPE_RESET, NULL, NULL);
     VillagerPart_ClearPicks(part);
     VillagerPart_ClearFlag(part);
 }
@@ -283,8 +271,9 @@ CLEAN_AS(func_0209abd0, VillagerPart_Reset)
 /* func_0209ac04: whether block 0 holds one of the step types (11-18). */
 int VillagerPart_HasStep(VillagerPart *part)
 {
-    u8 *object = func_0209b4d4(VillagerPart_Block(part, 0));
-    return func_0209bd44(object) != 0 && func_0209bba8(object) == VILLAGER_PART_STEP_BAND;
+    u8 *object = VillagerPartBlock_Object(VillagerPart_Block(part, 0));
+    return ItemObject_IsInUse((ItemObject *) (void *) object) != 0 &&
+           ItemObject_StepBand((ItemObject *) (void *) object) == VILLAGER_PART_STEP_BAND;
 }
 CLEAN_AS(func_0209ac04, VillagerPart_HasStep)
 
@@ -305,8 +294,8 @@ CLEAN_AS(func_0209ac30, VillagerPart_ClearPicks)
 int VillagerPart_NameFor(VillagerPart *part, void *text, u16 *item)
 {
     if (*item >= VILLAGER_PART_ENTRY_ITEM_FIRST && *item <= VILLAGER_PART_ENTRY_ITEM_LAST) {
-        if (func_0209bd44(func_0209b0f0(part->object_94)) != 0) {
-            return func_0209b0c4(part->object_94, text);
+        if (ItemObject_IsInUse((ItemObject *) VillagerPartEntry_Self((VillagerPartEntry *) (void *) part->object_94)) != 0) {
+            return VillagerPartEntry_WriteName((VillagerPartEntry *) (void *) part->object_94, text);
         }
     }
 
@@ -314,11 +303,11 @@ int VillagerPart_NameFor(VillagerPart *part, void *text, u16 *item)
     if (block == NULL) {
         return 0;
     }
-    u8 *object = func_0209b4d4(block);
-    if (func_0209bd44(object) == 0) {
+    u8 *object = VillagerPartBlock_Object(block);
+    if (ItemObject_IsInUse((ItemObject *) (void *) object) == 0) {
         return 0;
     }
-    u16 *held = func_0209bb70(object);
+    u16 *held = ItemObject_Item((ItemObject *) (void *) object);
     int same;
     if (ItemCode_HasVariant(held)) {
         int held_item = ItemCode_VariantItem(held);
@@ -329,7 +318,7 @@ int VillagerPart_NameFor(VillagerPart *part, void *text, u16 *item)
     if (!same) {
         return 0;
     }
-    return NpcId_FormatName(func_0209b4cc(block, 1), (char *) text);
+    return NpcId_FormatName(VillagerPartBlock_Npc(block, 1), (char *) text);
 }
 CLEAN_AS(func_0209ac50, VillagerPart_NameFor)
 
@@ -342,10 +331,10 @@ VillagerPartBlock *VillagerPart_FindBlock(VillagerPart *part, const NpcId *npc, 
     }
     for (int i = 0; i < VILLAGER_PART_BLOCKS; i++) {
         VillagerPartBlock *block = &part->blocks[i];
-        if (func_0209bd44(func_0209b4d4(block)) == 0) {
+        if (ItemObject_IsInUse((ItemObject *) (void *) VillagerPartBlock_Object(block)) == 0) {
             continue;
         }
-        if (same_npc(func_0209b4cc(block, which), npc)) {
+        if (same_npc(VillagerPartBlock_Npc(block, which), npc)) {
             return block;
         }
     }

@@ -9,6 +9,7 @@
 
 #include "autoload_2/heap.h" /* Heap_OperatorDeleteB */
 #include "clean.h"
+#include "rom_file.h"
 
 static_assert(offsetof(BmgFile, path) == 0x05, "bmg path");
 static_assert(offsetof(BmgFile, fs_file) == 0x44, "bmg fs file");
@@ -54,10 +55,6 @@ extern BmgDataHeader data_021f4428;
 /* A static object whose first byte is 0xff (set at start-up): the index of no message. */
 extern u8 data_021f43ec;
 
-/* `size` bytes at `offset` of an open file read into `dst`; a file starting with "LZ77" is
- * read through its compressed blocks. */
-extern void func_02064658(void *fs_file, void *dst, int size, int offset);
-
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void FS_InitFile(void *fs_file);
@@ -99,7 +96,7 @@ int BmgFile_ReadText(BmgFile *file)
     u32 text = file->text_offset + BMG_DATA_HEAD;
     u32 size = capacity < file->text_size ? capacity : file->text_size;
     u32 data = data_021f4458.size + BMG_INFO_OFFSET;
-    func_02064658(file->fs_file, (void *) (uintptr_t) buffer, (int) size, (int) (data + text));
+    RomFile_ReadPart((RomFileFs *) (void *) file->fs_file, (void *) (uintptr_t) buffer, (int) size, (int) (data + text));
     return 1;
 }
 CLEAN_AS(func_020a9540, BmgFile_ReadText)
@@ -113,8 +110,8 @@ int BmgFile_ReadEntryWithAttributes(BmgFile *file)
     int last = data_021f4458.count - 1 == (int) index;
     int count = last ? 1 : 2;
 
-    func_02064658(file->fs_file, entries, count * (int) sizeof(BmgEntry),
-                  (int) (index * sizeof(BmgEntry)) + BMG_INFO_ENTRIES + BMG_INFO_OFFSET);
+    RomFile_ReadPart((RomFileFs *) (void *) file->fs_file, (u8 *) entries, count * (int) sizeof(BmgEntry),
+                     (int) (index * sizeof(BmgEntry)) + BMG_INFO_ENTRIES + BMG_INFO_OFFSET);
     for (int i = 0; i < count; i++) {
         entries[i].text_offset = (u32) BmgFile_ReadU32((const s32 *) &entries[i].text_offset);
         for (int j = 0; j < 6; j++) {
@@ -141,7 +138,8 @@ int BmgFile_ReadEntryOffset(BmgFile *file)
     unsigned int index = file->index;
     int last = data_021f4458.count - 1 == (int) index;
 
-    func_02064658(file->fs_file, offsets, last ? 4 : 8, (int) (index * 4) + BMG_INFO_ENTRIES + BMG_INFO_OFFSET);
+    RomFile_ReadPart((RomFileFs *) (void *) file->fs_file, (u8 *) offsets, last ? 4 : 8,
+                     (int) (index * 4) + BMG_INFO_ENTRIES + BMG_INFO_OFFSET);
     file->text_offset = (u32) BmgFile_ReadU32(&offsets[0]);
     if (last) {
         file->text_size = data_021f4428.size - (file->text_offset + BMG_DATA_HEAD);
@@ -156,7 +154,8 @@ CLEAN_AS(func_020a967c, BmgFile_ReadEntryOffset)
 /* func_020a9708: DAT1's header read (after INF1); 1 when its magic is right. */
 int BmgFile_ReadDataHeader(BmgFile *file)
 {
-    func_02064658(file->fs_file, &data_021f4428, sizeof(BmgDataHeader), (int) data_021f4458.size + BMG_INFO_OFFSET);
+    RomFile_ReadPart((RomFileFs *) (void *) file->fs_file, (u8 *) &data_021f4428, sizeof(BmgDataHeader),
+                     (int) data_021f4458.size + BMG_INFO_OFFSET);
     data_021f4428.magic = BmgFile_ReadMagic(&data_021f4428.magic);
     data_021f4428.size = (u32) BmgFile_ReadU32((const s32 *) &data_021f4428.size);
     return data_021f4428.magic == BMG_MAGIC_DAT1;
@@ -167,7 +166,7 @@ CLEAN_AS(func_020a9708, BmgFile_ReadDataHeader)
  * (and at most 0x100), its entries have the size the file expects, and its 0x0c is 0. */
 int BmgFile_ReadInfoHeader(BmgFile *file)
 {
-    func_02064658(file->fs_file, &data_021f4458, sizeof(BmgInfoHeader), BMG_INFO_OFFSET);
+    RomFile_ReadPart((RomFileFs *) (void *) file->fs_file, (u8 *) &data_021f4458, sizeof(BmgInfoHeader), BMG_INFO_OFFSET);
     data_021f4458.magic = BmgFile_ReadMagic(&data_021f4458.magic);
     data_021f4458.size = (u32) BmgFile_ReadU32((const s32 *) &data_021f4458.size);
     data_021f4458.count = (u16) BmgFile_ReadU16(&data_021f4458.count);
@@ -189,7 +188,7 @@ CLEAN_AS(func_020a9754, BmgFile_ReadInfoHeader)
  * a size. */
 int BmgFile_ReadHeader(BmgFile *file)
 {
-    func_02064658(file->fs_file, &data_021f446c, sizeof(BmgHeader), 0);
+    RomFile_ReadPart((RomFileFs *) (void *) file->fs_file, (u8 *) &data_021f446c, sizeof(BmgHeader), 0);
     data_021f446c.magic = BmgFile_ReadMagic(&data_021f446c.magic);
     data_021f446c.type = BmgFile_ReadMagic(&data_021f446c.type);
     data_021f446c.size = (u32) BmgFile_ReadU32((const s32 *) &data_021f446c.size);

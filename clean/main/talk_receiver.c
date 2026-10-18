@@ -4,6 +4,8 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "talk_flow.h"
+#include "talk_object.h"
+#include "talk_voice.h"
 
 static_assert(offsetof(TalkReceiverName, style) == 0x0c, "name style");
 static_assert(offsetof(TalkReceiverName, chars) == 0x12, "name chars");
@@ -20,11 +22,6 @@ extern const TextVtable data_020def4c;
 
 /* The folder of the message files: "/script/KOR/message". */
 extern const char data_020df080[];
-
-/* The talk's name plate drawn again for the speaker, and its last characters' (talk_span.h)
- * handling of the new speaker. */
-extern void func_02067e84(struct TalkFlowTalk *talk);
-extern void func_02068b64(void *last_chars);
 
 /* --- The speaker's name --- */
 
@@ -234,8 +231,8 @@ void TalkReceiver_NextSpeaker(TalkReceiver *receiver, TextBase *name, int style)
     s32 state = receiver->talk->state;
     TalkReceiver_SetSpeakerText(receiver, name, style);
     if (state != TALK_FLOW_CLOSED && state != TALK_FLOW_GONE) {
-        func_02067e84(receiver->talk);
-        func_02068b64(receiver->talk->last_chars);
+        TalkObject_ColourNamePlate((TalkObject *) receiver->talk);
+        TalkVoice_TakeSpeakerMode((TalkVoice *) (void *) receiver->talk->last_chars);
     }
 }
 CLEAN_AS(func_020668d8, TalkReceiver_NextSpeaker)

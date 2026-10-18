@@ -15,6 +15,8 @@
 #include "text_draw.h"      /* TextDraw_AlignRight, TextDraw_Center, TextDraw_RequestClear, TextDraw_RequestDraw */
 
 #include "ov004/member_pointer.h" /* MemberPointer */
+#include "catch_panel.h"
+#include "player_actor_ops.h"
 
 static_assert(offsetof(ClockPanel, anim) == 0x0c && offsetof(ClockPanel, state) == 0x20, "ClockPanel");
 static_assert(offsetof(ClockPanel, month_box) == 0x28 && offsetof(ClockPanel, colon_box) == 0x40, "ClockPanel");
@@ -54,12 +56,8 @@ extern u32 data_021d3158;
 extern MemberPointer data_021d3170[4];
 extern const MemberPointer data_020e213c, data_020e212c, data_020e215c, data_020e214c;
 
-/* Player `player`'s session state is `state`. */
-extern int func_020960f8(int state, int player);
 #define CLOCK_PANEL_PLAYER 4
 #define CLOCK_PANEL_PLAYER_STATE 2
-/* The number text's constructor. */
-extern void *func_0208e024(CatchPanelText *text);
 
 /* The ease of `shift`, as the catch panel's: 20 pixels higher while this system's balloon is
  * out, eased by 0x600 of the distance a frame, the step from 0x2300 up to `shift_speed`, which
@@ -491,7 +489,7 @@ int ClockPanel_ShouldShow(ClockPanel *panel)
         return 0;
     }
     int event = EventQueue_HasCurrent();
-    int standing = func_020960f8(CLOCK_PANEL_PLAYER_STATE, CLOCK_PANEL_PLAYER);
+    int standing = PlayerActorOps_InState(CLOCK_PANEL_PLAYER_STATE, CLOCK_PANEL_PLAYER);
     int owner = OverlayGroups_HasOwner();
     int event_no_owner = event != 0 && owner == 0;
     int away = owner == 0 && standing == 0;
@@ -744,10 +742,10 @@ ClockPanel *ClockPanel_Construct(ClockPanel *panel)
     panel->shift_speed = 0;
     panel->shift_wait = -1;
     panel->weekday = 0;
-    func_0208e024(&panel->month_text);
-    func_0208e024(&panel->day_text);
-    func_0208e024(&panel->hour_text);
-    func_0208e024(&panel->minutes_text);
+    CatchPanelText_Construct(&panel->month_text);
+    CatchPanelText_Construct(&panel->day_text);
+    CatchPanelText_Construct(&panel->hour_text);
+    CatchPanelText_Construct(&panel->minutes_text);
     panel->day_month[0] = 0;
     panel->day_month[1] = 0;
     panel->time.minute = 0;

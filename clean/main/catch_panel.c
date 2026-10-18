@@ -497,7 +497,6 @@ extern MemberPointer data_021d3190[4];
 extern const MemberPointer data_020e21b4, data_020e2164, data_020e20fc, data_020e20dc;
 /* The number text's vtable, and its constructor. */
 extern const TextVtable data_020e21e4;
-extern void *func_0208e024(CatchPanelText *text);
 
 #define CATCH_PANEL_IN_A_ROOM 1
 /* The field label's notices of a countdown started and stopped. */
@@ -691,10 +690,10 @@ CatchPanel *CatchPanel_Construct(CatchPanel *panel)
     panel->seconds_box = NULL;
     panel->fish_box = NULL;
     panel->insects_box = NULL;
-    func_0208e024(&panel->minutes_text);
-    func_0208e024(&panel->seconds_text);
-    func_0208e024(&panel->fish_text);
-    func_0208e024(&panel->insects_text);
+    CatchPanelText_Construct(&panel->minutes_text);
+    CatchPanelText_Construct(&panel->seconds_text);
+    CatchPanelText_Construct(&panel->fish_text);
+    CatchPanelText_Construct(&panel->insects_text);
     panel->minutes_changed = 0;
     panel->seconds_changed = 0;
     panel->fish_changed = 0;

@@ -17,6 +17,27 @@
 #include "field_actor_parts.h"
 #include "main/calendar.h"
 #include "main/session.h"
+#include "actor_palettes.h"
+#include "cloth_slots.h"
+#include "date_time.h"
+#include "face_anim_heaps.h"
+#include "face_anim_slots.h"
+#include "face_texture.h"
+#include "g3d_tex_copy.h"
+#include "glasses_look.h"
+#include "head_look.h"
+#include "item_texture.h"
+#include "item_traits.h"
+#include "model_object.h"
+#include "player_actor_ops.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "session_players.h"
+#include "tex_pattern_anim.h"
+#include "vram_copy_task.h"
 
 static_assert(offsetof(FieldActor, unk_234) == FIELD_ACTOR_BODY, "body");
 static_assert(offsetof(FieldActor, flags) == 0x6ec, "flags");
@@ -56,78 +77,8 @@ extern u32 data_020cc7d0;
 #define SUN_BYTE_BIT1 0x02
 #define SUN_BYTE_BIT4 0x10
 
-/* A texture's named palette copied into another's (func_0206435c) and the same for a named
- * texture's image (func_0206439c). */
-extern void func_0206435c(int from, int to, const void *from_name, const void *to_name);
-extern void func_0206439c(int from, int to, const void *from_name, const void *to_name);
-
-/* A player's record number, and the record of a number (NULL for none). */
-extern u8 func_02096284(int player);
-extern u8 *func_0209847c(int number);
-
-/* The player's record of the actor (NULL for none) and its fields. */
-extern u16 *func_02099728(u8 *record);      /* the held item (slot 5, 0x2406) */
-extern u16 *func_02099710(u8 *record);      /* the clothes (slot 2, 0x2408) */
-extern u16 *func_020996f8(u8 *record);      /* the head's item (slot 4, 0x240a) */
-extern u16 *func_020996e0(u8 *record);      /* part C's item (slot 3, 0x240c) */
-extern u32 func_0209984c(u8 *record);       /* bits 0-3 of byte 0x243c */
-extern u32 func_02099824(const u8 *record); /* bits 4-7 of byte 0x243c */
-extern u32 func_020997f8(u8 *record);       /* bits 0-2 of byte 0x243d */
-extern u32 func_020997d0(u8 *record);       /* bits 3-5 of byte 0x243d: the sun level */
-extern void func_020997b4(u8 *record, int level);
-extern int func_0209975c(u8 *record);     /* bit 0 of its flags at 0x23f8 */
-extern u8 *func_02099870(u8 *record);     /* the player's name and town at 0x247e */
-extern int func_020950c0(const s8 *name); /* its signed byte 28 */
-
 /* The textures of the parts and their files. */
 extern int func_021077e8(int file);
-extern int func_0205dc80(const u8 *face);
-extern int func_0205f8b4(const u8 *palettes); /* "skin_pl"'s file */
-extern int func_0205f8a0(const u8 *palettes); /* "hair_pl"'s file */
-extern int func_0205f874(const u8 *palettes, int index);
-extern int func_0205f848(const u8 *palettes, int index);
-
-/* The clothes. */
-extern void func_0205d3d4(u8 *cloth, u16 *item, int record, int a, int b);
-extern int func_0205d25c(const u8 *cloth);
-extern int func_0203cfa8(int texture);
-extern int func_020b9d3c(void *binding, int model, const char *material, int texture, int tex_index, int plt_index);
-
-/* The head (part B) and its models. */
-extern int func_0205e708(int flag, int kind, u16 *item, int *model_kind, int *second);
-extern int func_0205e348(u8 *head, int model_kind, int second, u16 *item, int record);
-extern int func_0205e194(u8 *head, int index);
-extern int func_0205e138(const u8 *head, int index);
-extern int func_0205e1bc(u8 *head);
-extern void func_0205e274(u8 *head);
-extern void func_0205e444(u8 *head);
-extern int func_02055454(void *model);
-extern void func_020554b0(void *model, int resource);
-extern void func_0205682c(void *anim);
-extern Heap *func_0205db38(const u8 *part);
-extern int func_0205d8a0(const u8 *set);
-extern int func_0205d894(const u8 *set);
-extern void func_0205678c(void *anim, int resource, int frame, int a, u8 flags, fx32 speed);
-
-/* Part C and its model. */
-extern u8 func_0205e0a4(u32 index);
-extern u8 func_0205e098(u32 index);
-extern int func_0204bd84(u16 *item);
-extern int func_0204bfa0(u16 *item);
-extern void func_0205de94(u8 *part, int kind);
-extern int func_0205ddd4(u8 *part);
-extern void func_0205de70(u8 *part);
-extern void func_0205dec8(u8 *part);
-extern int func_0205de10(u8 *part);
-extern int func_0205de24(u8 *part);
-
-/* The sun level's update. */
-extern int func_020b65c4(void); /* the scene */
-extern int func_020b67ac(void);
-extern int func_02096180(u32 made_with);                            /* the state the actor started in */
-extern int func_0209e380(const DateTime *from, const DateTime *to); /* days between dates */
-extern u8 *func_0209626c(void);
-extern u16 *func_02096274(void);
 
 /* The byte `offset` into the actor. */
 static u8 *field_actor_looks_at(FieldActor *actor, u32 offset)
@@ -142,7 +93,7 @@ static u8 *field_actor_looks_at(FieldActor *actor, u32 offset)
 void FieldActor_CopyPalette(FieldActor *actor, int from, int to, const void *from_name, const void *to_name)
 {
     (void) actor;
-    func_0206435c(from, to, from_name, to_name);
+    G3dTexCopy_Palette((G3dResTex *) (uintptr_t) from, (G3dResTex *) (uintptr_t) to, from_name, to_name);
 }
 CLEAN_AS(func_020100b8, FieldActor_CopyPalette)
 
@@ -150,7 +101,7 @@ CLEAN_AS(func_020100b8, FieldActor_CopyPalette)
 void FieldActor_CopyTexture(FieldActor *actor, int from, int to, const void *from_name, const void *to_name)
 {
     (void) actor;
-    func_0206439c(from, to, from_name, to_name);
+    G3dTexCopy_Image((G3dResTex *) (uintptr_t) from, (G3dResTex *) (uintptr_t) to, from_name, to_name);
 }
 CLEAN_AS(func_020100d0, FieldActor_CopyTexture)
 
@@ -176,7 +127,8 @@ CLEAN_AS(func_020100e8, FieldActor_RequestHead)
 /* func_02010134: a head being loaded is ready once func_0205e1bc says so. */
 void FieldActor_PollHead(FieldActor *actor)
 {
-    if (FIELD_ACTOR_HEAD_STATUS(actor) == LOOKS_LOADING && func_0205e1bc(field_actor_looks_at(actor, FIELD_ACTOR_PART_B))) {
+    if (FIELD_ACTOR_HEAD_STATUS(actor) == LOOKS_LOADING &&
+        HeadLook_PollUpload(field_actor_looks_at(actor, FIELD_ACTOR_PART_B))) {
         FIELD_ACTOR_HEAD_STATUS(actor) = LOOKS_READY;
     }
 }
@@ -201,37 +153,39 @@ void FieldActor_ApplyHead(FieldActor *actor)
     u16 item = FieldActor_TestFlag(actor, 0xc) ? ITEM_NONE : FIELD_ACTOR_HEAD_ITEM(actor);
     int model_kind;
     int second;
-    func_0205e708(FieldActor_RecordFlag249A(actor), FIELD_ACTOR_HEAD_KIND(actor), &item, &model_kind, &second);
+    HeadLook_ChooseModels(FieldActor_RecordFlag249A(actor), FIELD_ACTOR_HEAD_KIND(actor), &item, &model_kind, &second);
     u16 loaded = FIELD_ACTOR_HEAD_ITEM(actor);
-    func_0205e348(head, model_kind, second, &loaded, (int) (uintptr_t) FieldActor_Record(actor));
+    HeadLook_Load(head, model_kind, second, &loaded, (u8 *) (uintptr_t) ((int) (uintptr_t) FieldActor_Record(actor)));
     FieldActor_SetPalettes(actor, FIELD_ACTOR_HEAD_HAIR_COLOR(actor), FieldActor_SunLevel(actor, 0));
 
-    int first_texture = func_021077e8(func_0205e194(head, 0));
+    int first_texture = func_021077e8(HeadLook_Model(head, 0));
     int second_texture = 0;
     if (second < HEAD_MODEL_NONE) {
-        second_texture = func_021077e8(func_0205e194(head, 1));
+        second_texture = func_021077e8(HeadLook_Model(head, 1));
     }
     if (FIELD_ACTOR_HEAD_WITH_FACE(actor)) {
-        int face = func_021077e8(func_0205dc80(field_actor_looks_at(actor, FIELD_ACTOR_FACE)));
+        int face = func_021077e8(FaceTexture_SlotFile(field_actor_looks_at(actor, FIELD_ACTOR_FACE)));
         FieldActor_CopyTexture(actor, face, first_texture, data_020d83f8, data_020d83f8);
         FieldActor_CopyTexture(actor, face, first_texture, data_020d83fc, data_020d83fc);
     }
-    int skin = func_021077e8(func_0205f8b4(field_actor_looks_at(actor, FIELD_ACTOR_PALETTES)));
-    int hair = func_021077e8(func_0205f8a0(field_actor_looks_at(actor, FIELD_ACTOR_PALETTES)));
+    int skin = func_021077e8(ActorPalettes_SkinFile(field_actor_looks_at(actor, FIELD_ACTOR_PALETTES)));
+    int hair = func_021077e8(ActorPalettes_HairFile(field_actor_looks_at(actor, FIELD_ACTOR_PALETTES)));
     FieldActor_CopyPalette(actor, skin, first_texture, data_020d83f0, data_020d83f0);
     FieldActor_CopyPalette(actor, hair, first_texture, data_020d8400, data_020d8400);
     if (second_texture != 0) {
         FieldActor_CopyPalette(actor, skin, second_texture, data_020d83f0, data_020d83f0);
     }
 
-    func_0205e274(head);
-    func_0205e444(head);
-    func_0205e1bc(head);
-    func_02055454(field_actor_looks_at(actor, FIELD_ACTOR_MODEL_A));
-    func_02055454(field_actor_looks_at(actor, FIELD_ACTOR_MODEL_B));
-    func_020554b0(field_actor_looks_at(actor, FIELD_ACTOR_MODEL_A), func_0205e194(head, 0));
-    if (func_0205e138(head, 1) < HEAD_MODEL_NONE) {
-        func_020554b0(field_actor_looks_at(actor, FIELD_ACTOR_MODEL_B), func_0205e194(head, 1));
+    HeadLook_PlaceTextures(head);
+    HeadLook_StopUploads(head);
+    HeadLook_PollUpload(head);
+    ModelObject_Release((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_A));
+    ModelObject_Release((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_B));
+    ModelObject_UseFileModel((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_A),
+                             (u8 *) (uintptr_t) HeadLook_Model(head, 0));
+    if (HeadLook_Kind(head, 1) < HEAD_MODEL_NONE) {
+        ModelObject_UseFileModel((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_B),
+                                 (u8 *) (uintptr_t) HeadLook_Model(head, 1));
     }
 
     if (!FIELD_ACTOR_HEAD_WITH_FACE(actor)) {
@@ -241,12 +195,16 @@ void FieldActor_ApplyHead(FieldActor *actor)
         u8 *anim_a = field_actor_looks_at(actor, FIELD_ACTOR_FACE_ANIM_A);
         u8 *anim_b = field_actor_looks_at(actor, FIELD_ACTOR_FACE_ANIM_B);
         const u8 *set = field_actor_looks_at(actor, FIELD_ACTOR_FACE_ANIM_SET);
-        func_0205682c(anim_a);
-        func_0205682c(anim_b);
-        Heap_FreeAll(func_0205db38(field_actor_looks_at(actor, FIELD_ACTOR_FACE_ANIM_HEAP)));
+        TexPatternAnim_Unload((TexPatternAnim *) (void *) anim_a);
+        TexPatternAnim_Unload((TexPatternAnim *) (void *) anim_b);
+        Heap_FreeAll((Heap *) (uintptr_t) FaceAnimHeaps_SlotHeap(field_actor_looks_at(actor, FIELD_ACTOR_FACE_ANIM_HEAP)));
         FieldActor_BindFaceAnims(actor);
-        func_0205678c(anim_a, func_0205d8a0(set), frame_a, 0, FIELD_ACTOR_ANIM_FLAGS(actor), FX32_ONE);
-        func_0205678c(anim_b, func_0205d894(set), frame_b, 0, FIELD_ACTOR_ANIM_FLAGS(actor), FX32_ONE);
+        TexPatternAnim_Start((TexPatternAnim *) (void *) anim_a,
+                             (void *) (uintptr_t) FaceAnimSlots_SlotDataA((unsigned char *) set), frame_a, 0,
+                             FIELD_ACTOR_ANIM_FLAGS(actor), FX32_ONE);
+        TexPatternAnim_Start((TexPatternAnim *) (void *) anim_b,
+                             (void *) (uintptr_t) FaceAnimSlots_SlotDataB((unsigned char *) set), frame_b, 0,
+                             FIELD_ACTOR_ANIM_FLAGS(actor), FX32_ONE);
     }
     FIELD_ACTOR_HEAD_STATUS(actor) = LOOKS_LOADING;
 }
@@ -276,8 +234,8 @@ void FieldActor_PollPartC(FieldActor *actor)
     }
     u8 *part = field_actor_looks_at(actor, FIELD_ACTOR_PART_C);
     int ready = 1;
-    if (func_0205ddd4(part) != PART_C_NONE) {
-        ready = func_0205de24(part);
+    if (GlassesLook_Kind(part) != PART_C_NONE) {
+        ready = GlassesLook_PollUpload(part);
     }
     if (ready) {
         FIELD_ACTOR_PART_C_STATUS(actor) = LOOKS_READY;
@@ -301,22 +259,23 @@ void FieldActor_ApplyPartC(FieldActor *actor)
     if (item >= 0x1431 && item <= 0x1470) {
         u32 index = (u32) item - 0x1431;
         if (index < data_020cc7cc) {
-            kind = func_0205e0a4(index);
+            kind = GlassesLook_FirstKind(index);
         }
-    } else if (item >= 0x1471 && item <= 0x1491 && func_0204bd84(&item)) {
-        int index = func_0204bfa0(&item);
+    } else if (item >= 0x1471 && item <= 0x1491 && ItemTraits_IsPairFaceItem(&item)) {
+        int index = ItemTraits_PairFaceNumber(&item);
         if (index >= 0 && (u32) index < data_020cc7d0) {
-            kind = func_0205e098((u32) index);
+            kind = GlassesLook_SecondKind((u32) index);
         }
     }
 
-    func_0205de94(part, kind);
-    if (func_0205ddd4(part) != PART_C_NONE) {
-        func_0205de70(part);
-        func_0205dec8(part);
-        func_02055454(field_actor_looks_at(actor, FIELD_ACTOR_MODEL_C));
-        func_020554b0(field_actor_looks_at(actor, FIELD_ACTOR_MODEL_C), func_0205de10(part));
-        func_0205de24(part);
+    GlassesLook_Load(part, kind);
+    if (GlassesLook_Kind(part) != PART_C_NONE) {
+        GlassesLook_PlaceTexture(part);
+        GlassesLook_StopUpload(part);
+        ModelObject_Release((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_C));
+        ModelObject_UseFileModel((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_C),
+                                 (u8 *) (uintptr_t) GlassesLook_File(part));
+        GlassesLook_PollUpload(part);
         FIELD_ACTOR_PART_C_STATUS(actor) = LOOKS_LOADING;
     } else {
         FIELD_ACTOR_PART_C_STATUS(actor) = LOOKS_LOADING;
@@ -332,15 +291,18 @@ CLEAN_AS(func_02010424, FieldActor_ApplyPartC)
 int FieldActor_BindCloth(FieldActor *actor)
 {
     int model = FIELD_ACTOR_FIELD(actor, int, 0x290);
-    int texture = func_0203cfa8(func_0205d25c(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH)));
-    return func_020b9d3c(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH_BINDING), model, data_020d8408, texture, 0, 0);
+    int texture = (int) (uintptr_t) (ClothTexture_GetTextures(
+        (DesignModel *) (uintptr_t) ClothSlots_SlotFile(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH))));
+    return VramCopyMaterial_Queue((VramCopyMaterial *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_CLOTH_BINDING),
+                                  (const u8 *) (uintptr_t) model, data_020d8408, (G3dResTex *) (uintptr_t) texture, 0, 0);
 }
 CLEAN_AS(func_0201063c, FieldActor_BindCloth)
 
 /* func_02010680: the clothes become `item` (func_0205d3d4, with the player's record). */
 void FieldActor_SetCloth(FieldActor *actor, u16 *item)
 {
-    func_0205d3d4(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH), item, (int) (uintptr_t) FieldActor_Record(actor), 0, 0);
+    ClothSlots_Load(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH), item,
+                    (u8 *) (uintptr_t) ((int) (uintptr_t) FieldActor_Record(actor)), 0, 0);
 }
 CLEAN_AS(func_02010680, FieldActor_SetCloth)
 
@@ -369,10 +331,10 @@ void FieldActor_SetPalettes(FieldActor *actor, int hair_color, int sun_level)
     int hair = sun_level + hair_color * 8 + 0x80;
     const u8 *palettes = field_actor_looks_at(actor, FIELD_ACTOR_PALETTES);
     if (skin < 0x80) {
-        func_0205f874(palettes, skin);
+        ActorPalettes_LoadSkin((unsigned char *) palettes, skin);
     }
     if (hair >= 0x80 && hair < 0xc0) {
-        func_0205f848(palettes, hair);
+        ActorPalettes_LoadHair((unsigned char *) palettes, hair);
     }
 }
 CLEAN_AS(func_020106a8, FieldActor_SetPalettes)
@@ -385,7 +347,7 @@ void FieldActor_RecordHeldItem(u16 *item, FieldActor *actor)
     *item = ITEM_NONE;
     u8 *record = FieldActor_Record(actor);
     if (record != NULL) {
-        *item = *func_02099728(record);
+        *item = *PlayerRecord_HeldItem(record);
     }
 }
 CLEAN_AS(func_020110c4, FieldActor_RecordHeldItem)
@@ -397,8 +359,8 @@ int FieldActor_RecordFace(FieldActor *actor)
     u8 *record = FieldActor_Record(actor);
     int face = 0x20;
     if (record != NULL) {
-        face = (int) func_0209984c(record);
-        if (func_0209975c(record) != 0) {
+        face = (int) PlayerRecord_Face(record);
+        if (PlayerRecord_Flag0(record) != 0) {
             face += 0x10;
         }
     }
@@ -413,7 +375,7 @@ int FieldActor_RecordFlag0(FieldActor *actor)
     if (record == NULL) {
         return 0;
     }
-    return func_0209975c(record);
+    return PlayerRecord_Flag0(record);
 }
 CLEAN_AS(func_0201111c, FieldActor_RecordFlag0)
 
@@ -421,7 +383,7 @@ CLEAN_AS(func_0201111c, FieldActor_RecordFlag0)
  * REQUIRES: the actor's player has a record (without one, the halfword at 0x240c is read). */
 void FieldActor_RecordPartCItem(u16 *item, FieldActor *actor)
 {
-    *item = *func_020996e0(FieldActor_Record(actor));
+    *item = *PlayerRecord_PartCItem(FieldActor_Record(actor));
 }
 CLEAN_AS(func_02011138, FieldActor_RecordPartCItem)
 
@@ -443,11 +405,11 @@ u8 FieldActor_SunLevel(FieldActor *actor, int store)
     u8 level = (u8) FieldActor_RecordSunLevel(actor);
     int linked = 0;
 
-    int scene = func_020b65c4();
+    int scene = SceneQuery_Current();
     if (scene == SCENE_2E || scene == SCENE_0D || scene == SCENE_0E || scene == SCENE_0C || scene == SCENE_2F) {
         return level;
     }
-    if (func_020b67ac() != 0 && func_02096180(FIELD_ACTOR_FIELD(actor, u32, 8)) == 8) {
+    if (SceneKinds_CurrentIn6To8() != 0 && PlayerActorOps_StartState(FIELD_ACTOR_FIELD(actor, u32, 8)) == 8) {
         if (store == 1) {
             store = 0;
         }
@@ -469,13 +431,13 @@ u8 FieldActor_SunLevel(FieldActor *actor, int store)
             FieldActor_StoreSunDate(actor, (int) (uintptr_t) record, &today);
         }
     } else if (order != 0) {
-        int days = func_0209e380(&stored, &now);
-        u8 *bits = func_0209626c();
+        int days = DateTime_DaysBetween(&stored, &now);
+        u8 *bits = SessionPlayers_SunFlags();
         if (days >= 2) {
             int fade = days >> 1;
             level = level > fade ? (u8) (level - fade) : 0;
             if (store != 0) {
-                func_020997b4(record, level);
+                PlayerRecord_SetSunLevel(record, level);
                 FieldActor_StoreSunDate(actor, (int) (uintptr_t) record, &today);
                 *bits &= (u8) ~SUN_BYTE_BIT1;
                 if (!linked) {
@@ -487,7 +449,7 @@ u8 FieldActor_SunLevel(FieldActor *actor, int store)
         *bits &= (u8) ~SUN_BYTE_BIT0;
     }
 
-    u16 *value = func_02096274();
+    u16 *value = SessionPlayers_SunCountdown();
     if (*value == 0) {
         *value = 0x4650;
     }
@@ -499,7 +461,7 @@ CLEAN_AS(func_02011150, FieldActor_SunLevel)
  * REQUIRES: the actor's player has a record (without one, the byte at 0x243d is read). */
 unsigned int FieldActor_RecordSunLevel(FieldActor *actor)
 {
-    return func_020997d0(FieldActor_Record(actor));
+    return PlayerRecord_SunLevel(FieldActor_Record(actor));
 }
 CLEAN_AS(func_020112bc, FieldActor_RecordSunLevel)
 
@@ -508,7 +470,7 @@ CLEAN_AS(func_020112bc, FieldActor_RecordSunLevel)
  * REQUIRES: the actor's player has a record (without one, the byte at 0x243d is read). */
 unsigned int FieldActor_RecordHairColor(FieldActor *actor)
 {
-    return func_020997f8(FieldActor_Record(actor));
+    return PlayerRecord_HairColor(FieldActor_Record(actor));
 }
 CLEAN_AS(func_020112d0, FieldActor_RecordHairColor)
 
@@ -517,7 +479,7 @@ CLEAN_AS(func_020112d0, FieldActor_RecordHairColor)
  * REQUIRES: the actor's player has a record (without one, the byte at 0x243c is read). */
 unsigned int FieldActor_RecordHeadKind(FieldActor *actor)
 {
-    return func_02099824(FieldActor_Record(actor));
+    return PlayerRecord_HeadKind(FieldActor_Record(actor));
 }
 CLEAN_AS(func_020112e4, FieldActor_RecordHeadKind)
 
@@ -527,7 +489,7 @@ void FieldActor_RecordHeadItem(u16 *item, FieldActor *actor)
     u8 *record = FieldActor_Record(actor);
     *item = ITEM_NONE;
     if (record != NULL) {
-        *item = *func_020996f8(record);
+        *item = *PlayerRecord_HeadItem(record);
     }
 }
 CLEAN_AS(func_020112f8, FieldActor_RecordHeadItem)
@@ -538,7 +500,7 @@ void FieldActor_RecordCloth(u16 *item, FieldActor *actor)
     u8 *record = FieldActor_Record(actor);
     *item = ITEM_NONE;
     if (record != NULL) {
-        *item = *func_02099710(record);
+        *item = *PlayerRecord_Clothes(record);
     }
 }
 CLEAN_AS(func_0201131c, FieldActor_RecordCloth)
@@ -551,7 +513,7 @@ int FieldActor_RecordFlag249A(FieldActor *actor)
     if (record == NULL) {
         return 0;
     }
-    return func_020950c0((const s8 *) func_02099870(record)) != 0;
+    return PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record)) != 0;
 }
 CLEAN_AS(func_02011340, FieldActor_RecordFlag249A)
 
@@ -559,9 +521,9 @@ CLEAN_AS(func_02011340, FieldActor_RecordFlag249A)
  * number, func_02096284), NULL for a number of 7 or more. */
 u8 *FieldActor_Record(FieldActor *actor)
 {
-    int number = func_02096284(actor->player);
+    int number = SessionPlayers_RecordNumber(actor->player);
     if (number < 7) {
-        return func_0209847c(number);
+        return PlayerRecords_Get(number);
     }
     return NULL;
 }

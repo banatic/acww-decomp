@@ -3,6 +3,10 @@
 
 #include "clean.h"
 #include "session.h"
+#include "main_random.h"
+#include "player_id.h"
+#include "player_record.h"
+#include "session_players.h"
 
 #define NO_ITEM 0xfff1
 
@@ -29,21 +33,6 @@ extern void func_020051b0(void *item);
 extern void *func_02099bc8(void *record);
 extern void *func_02099ad0(void *record);
 
-extern u8 func_02096284(int player);                    /* a session player's record number */
-extern int func_020988d8(u32 number);                   /* 1 for 0-3 */
-extern int func_020988a4(u8 *players, int number);      /* whether that town player exists */
-extern u8 *func_02098844(u8 *players, int number);      /* that town record; NULL past 3 */
-extern int func_02099a28(u8 *record);                   /* whether its player exists */
-extern void func_02099a38(u8 *record);                  /* clear it */
-extern void *func_02099870(u8 *record);                 /* its player's name and ids (0x247e) */
-extern int func_020951bc(void *name);                   /* whether that is set */
-extern int func_020950d0(void *name);                   /* its player id */
-extern int func_020950f8(u16 *taken, int count);        /* a new player id, none of `taken` */
-extern void func_020996bc(u8 *record, const u16 *item); /* set its item at 0x240e */
-/* Make a new player in the record: its name, player id and `arg`, the item at 0x2406 *item. */
-extern void func_0209987c(u8 *record, const void *name, int id, int arg, int a4, u8 a5, u8 a6, u8 a7, u8 a8, u8 a9, int a10,
-                          const u16 *item);
-
 static u8 *player_records_at(u8 *records, int index)
 {
     return records + index * PLAYER_RECORD_SIZE;
@@ -52,12 +41,12 @@ static u8 *player_records_at(u8 *records, int index)
 /* func_02098420: whether record `number` holds a player (0 outside 0-6). */
 int PlayerRecords_Exists(int number)
 {
-    if (func_020988d8((u32) number) == 1) {
-        return func_020988a4(data_021dc7bc, number);
+    if (PlayerRecords_IsTownNumber((u32) number) == 1) {
+        return PlayerRecords_TownExists(data_021dc7bc, number);
     }
     if (PlayerRecords_IsGuest(number) == 1 && PlayerRecords_Guests() != NULL) {
         int index = PlayerRecords_GuestIndex(number);
-        return func_02099a28(player_records_at(PlayerRecords_Guests(), index));
+        return PlayerRecord_HasPlayer(player_records_at(PlayerRecords_Guests(), index));
     }
     return 0;
 }
@@ -66,8 +55,8 @@ CLEAN_AS(func_02098420, PlayerRecords_Exists)
 /* func_0209847c: record `number`; NULL outside 0-6. */
 u8 *PlayerRecords_Get(int number)
 {
-    if (func_020988d8((u32) number) == 1) {
-        return func_02098844(data_021dc7bc, number);
+    if (PlayerRecords_IsTownNumber((u32) number) == 1) {
+        return PlayerRecords_TownRecord(data_021dc7bc, number);
     }
     if (PlayerRecords_IsGuest(number) == 1 && PlayerRecords_Guests() != NULL) {
         u8 *guests = PlayerRecords_Guests();
@@ -80,7 +69,7 @@ CLEAN_AS(func_0209847c, PlayerRecords_Get)
 /* func_020984d4: the record number of this system's player. */
 int PlayerRecords_CurrentNumber(void)
 {
-    return func_02096284(data_020ccf94->local_player);
+    return SessionPlayers_RecordNumber(data_020ccf94->local_player);
 }
 CLEAN_AS(func_020984d4, PlayerRecords_CurrentNumber)
 
@@ -94,7 +83,7 @@ CLEAN_AS(func_020984e8, PlayerRecords_Current)
 /* func_020984fc: the record of session player `player`. */
 u8 *PlayerRecords_OfPlayer(int player)
 {
-    return PlayerRecords_Get(func_02096284(player));
+    return PlayerRecords_Get(SessionPlayers_RecordNumber(player));
 }
 CLEAN_AS(func_020984fc, PlayerRecords_OfPlayer)
 
@@ -126,7 +115,7 @@ CLEAN_AS(func_02098540, PlayerRecords_ClearGuests)
 void PlayerRecords_ClearThree(u8 *records)
 {
     for (int i = 0; i < PLAYER_RECORDS_GUESTS; i++) {
-        func_02099a38(player_records_at(records, i));
+        PlayerRecord_Clear(player_records_at(records, i));
     }
 }
 CLEAN_AS(func_02098554, PlayerRecords_ClearThree)
@@ -161,7 +150,7 @@ CLEAN_AS(func_020985a0, PlayerRecords_ConstructGuests)
  * number. */
 u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number)
 {
-    if (func_020988d8((u32) number) != 1) {
+    if (PlayerRecords_IsTownNumber((u32) number) != 1) {
         return NULL;
     }
     if ((data_021d56f0 & 1) == 0) {
@@ -183,16 +172,16 @@ u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number)
             continue;
         }
         u8 *other = player_records_at(players, i);
-        if (func_020951bc(func_02099870(other)) == 1) {
-            taken[count] = (u16) func_020950d0(func_02099870(other));
+        if (PlayerId_IsSet(PlayerRecord_Player(other)) == 1) {
+            taken[count] = (u16) PlayerId_Number((const u16 *) PlayerRecord_Player(other));
             count++;
         }
     }
 
-    func_02099a38(self);
+    PlayerRecord_Clear(self);
     u16 no_item = NO_ITEM;
-    func_0209987c(self, name, func_020950f8(taken, count), arg, 0, 0, 0, 0, 0, 0, 0, &no_item);
-    func_020996bc(self, &data_021d56f4[number & 3]);
+    PlayerRecord_NewPlayer(self, name, PlayerId_NewNumberNotIn(taken, count), arg, 0, 0, 0, 0, 0, 0, 0, &no_item);
+    PlayerRecord_SetItem240E(self, &data_021d56f4[number & 3]);
     return self;
 }
 CLEAN_AS(func_020985cc, PlayerRecords_NewPlayer)
@@ -201,26 +190,22 @@ CLEAN_AS(func_020985cc, PlayerRecords_NewPlayer)
 
 #include <string.h>
 
-extern int func_02099314(u8 *records, int count); /* the first of `count` records without a player, or -1 */
-extern int func_0209518c(const PlayerRecordsId *a, const PlayerRecordsId *b); /* the same player number and name */
-extern u32 func_020644cc(int bound);                                          /* a random number below `bound` */
-
 /* Whether two ids name the same player: the same town, then func_0209518c. */
 static int player_records_same(const PlayerRecordsId *a, const PlayerRecordsId *b)
 {
     return a->town_id == b->town_id && memcmp(a->town_name, b->town_name, sizeof(a->town_name)) == 0 &&
-           func_0209518c(a, b) != 0;
+           PlayerId_SamePlayer((const DesignCreator *) a, (const DesignCreator *) b) != 0;
 }
 
 /* func_0209871c: the number of the town record whose player has id `player`; -1 when there is
  * none, or when that id is not set. */
 int PlayerRecords_FindIndex(u8 *players, const PlayerRecordsId *player)
 {
-    if (func_020951bc((void *) (uintptr_t) player) != 1) {
+    if (PlayerId_IsSet((void *) (uintptr_t) player) != 1) {
         return -1;
     }
     for (int i = 0; i < PLAYER_RECORDS_TOWN; i++) {
-        const PlayerRecordsId *id = func_02099870(player_records_at(players, i));
+        const PlayerRecordsId *id = (const PlayerRecordsId *) PlayerRecord_Player(player_records_at(players, i));
         if (player_records_same(player, id)) {
             return i;
         }
@@ -232,7 +217,7 @@ CLEAN_AS(func_0209871c, PlayerRecords_FindIndex)
 /* func_0209877c: the first town record without a player, or -1. */
 int PlayerRecords_FirstFree(u8 *players)
 {
-    return func_02099314(players, PLAYER_RECORDS_TOWN);
+    return PlayerRecord_FindFree(players, PLAYER_RECORDS_TOWN);
 }
 CLEAN_AS(func_0209877c, PlayerRecords_FirstFree)
 
@@ -240,7 +225,7 @@ CLEAN_AS(func_0209877c, PlayerRecords_FirstFree)
 void PlayerRecords_ClearTown(u8 *players)
 {
     for (int i = 0; i < PLAYER_RECORDS_TOWN; i++) {
-        func_02099a38(player_records_at(players, i));
+        PlayerRecord_Clear(player_records_at(players, i));
     }
 }
 CLEAN_AS(func_02098788, PlayerRecords_ClearTown)
@@ -258,13 +243,13 @@ u8 *PlayerRecords_RandomOther(u8 *players, const PlayerRecordsId *player)
     if (count <= 0) {
         return NULL;
     }
-    u32 left = func_020644cc(count);
+    u32 left = MainRandom_Below(count);
     for (int i = 0; i < PLAYER_RECORDS_TOWN; i++) {
         u8 *record = player_records_at(players, i);
-        if (func_02099a28(record) != 1) {
+        if (PlayerRecord_HasPlayer(record) != 1) {
             continue;
         }
-        if (player != NULL && player_records_same(player, func_02099870(record))) {
+        if (player != NULL && player_records_same(player, (const PlayerRecordsId *) PlayerRecord_Player(record))) {
             continue;
         }
         if (left == 0) {
@@ -309,7 +294,7 @@ CLEAN_AS(func_02098880, PlayerRecords_CountTown)
 /* func_020988a4: whether town record `number` holds a player (0 outside 0-3). */
 int PlayerRecords_TownExists(u8 *players, int number)
 {
-    if (PlayerRecords_IsTownNumber((u32) number) != 0 && func_02099a28(player_records_at(players, number)) != 0) {
+    if (PlayerRecords_IsTownNumber((u32) number) != 0 && PlayerRecord_HasPlayer(player_records_at(players, number)) != 0) {
         return 1;
     }
     return 0;
