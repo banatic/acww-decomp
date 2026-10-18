@@ -21,11 +21,21 @@ extern void (UnkStruct_020a7b34::*data_020e3cf4)();
 extern void (UnkStruct_020a7b34::*data_020e3d04)();
 extern void (UnkStruct_020a7b34::*data_020e3ce4)();
 
+extern int data_021f43fc;
+extern void (UnkStruct_020a7b34::*data_021f448c[5])();
+
 extern "C" void func_020a7b34(UnkStruct_020a7b34 *self, unsigned int arg)
 {
     self->unk_3C = arg;
-    static void (UnkStruct_020a7b34::*table[5])() = {__ptmf_null, data_020e3cf4, __ptmf_null, data_020e3d04, data_020e3ce4};
-    void (UnkStruct_020a7b34::*pmf)() = table[self->unk_24];
+    if (!(data_021f43fc & 1)) {
+        data_021f448c[0] = __ptmf_null;
+        data_021f448c[1] = data_020e3cf4;
+        data_021f448c[2] = __ptmf_null;
+        data_021f448c[3] = data_020e3d04;
+        data_021f448c[4] = data_020e3ce4;
+        data_021f43fc |= 1;
+    }
+    void (UnkStruct_020a7b34::*pmf)() = data_021f448c[self->unk_24];
     if (pmf) {
         (self->*pmf)();
     }

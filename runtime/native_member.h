@@ -43,6 +43,15 @@ template <class Class, class Result, class... Args> struct NativeMember {
     {
         return function != 0;
     }
+    /* `pmf = 0`: mwccarm copies both words of __ptmf_null, zero in .bss
+     * (func_0201c8fc at 0201c912-0201c91c). Not a copy assignment, so the
+     * type stays a trivially copyable aggregate. */
+    NativeMember &operator=(decltype(nullptr))
+    {
+        function = 0;
+        adjustment = 0;
+        return *this;
+    }
 
     Bound bind(Class *object) const
     {

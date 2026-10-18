@@ -19,17 +19,22 @@ struct UnkStruct_02026fc0_3 {
     char pad_00[0x18];
 };
 extern UnkStruct_02026fc0_3 data_021c29d4[];
+// {0x17, 0x18, 0x19}, the template of the local index table
+struct Map {
+    int v[3];
+};
+extern const Map data_020d9b50;
 extern "C" void func_0202da88(UnkStruct_02026fc0_2 *self, void *tbl);
 extern "C" int func_02068484(int a, void *b, int c);
 extern "C" void func_02026fc0(UnkStruct_02026fc0_2 *self, int unused, int i)
 {
     unsigned char arg;
     UnkStruct_02026fc0 out;
-    int map[3] = {0x17, 0x18, 0x19};
+    Map map = data_020d9b50;
     if (i < 0 || i >= 3) {
         i = 0;
     }
-    func_0202da88(self, &data_021c29d4[map[i]]);
+    func_0202da88(self, &data_021c29d4[map.v[i]]);
     if (self->pmf) {
         (self->*(self->pmf))(&out);
     }

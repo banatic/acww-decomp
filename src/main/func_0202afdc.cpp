@@ -51,10 +51,23 @@ extern "C" void func_02015de4(UnkStruct_0202afdc *, void *, int, int);
 
 extern "C" void func_0202afdc(UnkStruct_0202afdc *s, UnkStruct_0202afdc_2 *out);
 
+extern int data_021c1cfc;
+extern PMF data_021c1f4c[9];
+
 extern "C" void func_0202afdc(UnkStruct_0202afdc *s, UnkStruct_0202afdc_2 *out)
 {
-    static PMF tbl[9] = {data_020d8ec8, data_020d8ea8, data_020d8dd8, data_020d8ed8, data_020d8de0,
-                         data_020d8dd0, data_020d8eb0, data_020d9088, data_020d9258};
+    if (!(data_021c1cfc & 1)) {
+        data_021c1f4c[0] = data_020d8ec8;
+        data_021c1f4c[1] = data_020d8ea8;
+        data_021c1f4c[2] = data_020d8dd8;
+        data_021c1f4c[3] = data_020d8ed8;
+        data_021c1f4c[4] = data_020d8de0;
+        data_021c1f4c[5] = data_020d8dd0;
+        data_021c1f4c[6] = data_020d8eb0;
+        data_021c1f4c[7] = data_020d9088;
+        data_021c1f4c[8] = data_020d9258;
+        data_021c1cfc |= 1;
+    }
     unsigned char flags[9];
     int ret;
     int i;
@@ -65,12 +78,12 @@ extern "C" void func_0202afdc(UnkStruct_0202afdc *s, UnkStruct_0202afdc_2 *out)
     while (ret == 0) {
         i = func_0202114c(s, flags, 9);
         if (i >= 0 && i < 9) {
-            ret = (s->*tbl[i])();
+            ret = (s->*data_021c1f4c[i])();
             if (ret == 0) {
                 flags[i] = 0;
             }
         } else {
-            (s->*tbl[func_020644cc(2)])();
+            (s->*data_021c1f4c[func_020644cc(2)])();
             break;
         }
     }

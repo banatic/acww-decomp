@@ -3,9 +3,9 @@
  */
 
 extern "C" {
-int data_ov004_0224fbf0[2];
-int data_ov004_0224fc00[2];
-int data_ov004_0224fc18[2];
+extern int data_ov004_0224fbf0[2];
+extern int data_ov004_0224fc00[2];
+extern int data_ov004_0224fc18[2];
 }
 
 class UnkStruct_0220c0c8 {

@@ -31,13 +31,15 @@ extern PMF data_020d74b4;
 extern volatile u8 data_020e54a8;
 
 extern "C" {
+extern int data_021bfff4;
+extern PMF data_021c0008[2];
+
 extern int func_0200f290(UnkStruct_02005338_2 *, int);
 extern void func_ov003_0222462c(u16, UnkStruct_02005338 *, UnkStruct_02005338 *, int, int, int);
 extern void func_ov004_02233b10(u16, UnkStruct_02005338 *, UnkStruct_02005338 *, int, int, int);
 
 void func_02005338(UnkStruct_02005338_2 *obj)
 {
-    static PMF tbl[2] = {data_020d747c, data_020d74b4};
     PMF f;
     UnkStruct_02005338 v1;
     UnkStruct_02005338 v2;
@@ -45,7 +47,12 @@ void func_02005338(UnkStruct_02005338_2 *obj)
     UnkStruct_02005338 v4;
     int t;
 
-    f = tbl[obj->unk_7F8];
+    if (!(data_021bfff4 & 1)) {
+        data_021c0008[0] = data_020d747c;
+        data_021c0008[1] = data_020d74b4;
+        data_021bfff4 |= 1;
+    }
+    f = data_021c0008[obj->unk_7F8];
     (obj->*f)();
     if (func_0200f290(obj, 0xd)) {
         t = (data_020e54a8 == 0);

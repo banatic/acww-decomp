@@ -61,15 +61,31 @@ extern PMF data_020d8974;
 extern PMF data_020d8984;
 extern PMF data_020d8994;
 
+extern int data_021c1524;
+extern PMF data_021c1814[12];
+
 extern "C" void func_0201584c(UnkStruct_0201584c *obj)
 {
-    static PMF tbl[12] = {data_020d881c, data_020d8844, data_020d86cc, data_020d88c4, data_020d8904, data_020d8934,
-                          data_020d893c, data_020d8954, data_020d896c, data_020d8974, data_020d8984, data_020d8994};
+    if (!(data_021c1524 & 1)) {
+        data_021c1814[0] = data_020d881c;
+        data_021c1814[1] = data_020d8844;
+        data_021c1814[2] = data_020d86cc;
+        data_021c1814[3] = data_020d88c4;
+        data_021c1814[4] = data_020d8904;
+        data_021c1814[5] = data_020d8934;
+        data_021c1814[6] = data_020d893c;
+        data_021c1814[7] = data_020d8954;
+        data_021c1814[8] = data_020d896c;
+        data_021c1814[9] = data_020d8974;
+        data_021c1814[10] = data_020d8984;
+        data_021c1814[11] = data_020d8994;
+        data_021c1524 |= 1;
+    }
     int idx;
 
     idx = obj->unk_64;
     if (idx < 12) {
-        if ((obj->*tbl[idx])()) {
+        if ((obj->*data_021c1814[idx])()) {
             idx = obj->unk_64;
             obj->unk_AD = 0;
             obj->unk_64 = 0xc;

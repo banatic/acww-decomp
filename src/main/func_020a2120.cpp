@@ -10,27 +10,26 @@ class UnkStruct_020a2120 {
 };
 
 typedef int (UnkStruct_020a2120::*PMF)(void *);
+extern unsigned int data_021f3c2c;
+extern PMF data_021f3c84[7];
 extern PMF data_020e38a8, data_020e3918, data_020e3930, data_020e3968, data_020e39d8, data_020e3a60, __ptmf_null;
 
 extern "C" int func_020a2120(UnkStruct_020a2120 *self, void *arg)
 {
-    static unsigned int guard = 0;
-    static PMF table[7];
-
-    if ((guard & 1) == 0) {
-        table[0] = data_020e38a8;
-        table[1] = data_020e3918;
-        table[2] = data_020e3930;
-        table[3] = data_020e3968;
-        table[4] = data_020e39d8;
-        table[5] = data_020e3a60;
-        table[6] = __ptmf_null;
-        guard |= 1;
+    if ((data_021f3c2c & 1) == 0) {
+        data_021f3c84[0] = data_020e38a8;
+        data_021f3c84[1] = data_020e3918;
+        data_021f3c84[2] = data_020e3930;
+        data_021f3c84[3] = data_020e3968;
+        data_021f3c84[4] = data_020e39d8;
+        data_021f3c84[5] = data_020e3a60;
+        data_021f3c84[6] = __ptmf_null;
+        data_021f3c2c |= 1;
     }
 
     int result = 3;
-    if (table[self->idx] != 0) {
-        result = (self->*table[self->idx])(arg);
+    if (data_021f3c84[self->idx] != 0) {
+        result = (self->*data_021f3c84[self->idx])(arg);
     }
     if (self->idx == 6) {
         self->idx = 0;

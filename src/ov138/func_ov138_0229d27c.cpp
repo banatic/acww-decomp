@@ -7,16 +7,15 @@
 
 typedef void (Obj_ov138_0229d4e0::*PMF)();
 
-#define STATE_func_ov138_0229d0b4 (PMF) & Obj_ov138_0229d4e0::func_ov138_0229d0b4
-#define STATE_func_ov138_0229d04c (PMF) & Obj_ov138_0229d4e0::func_ov138_0229d04c
-
 extern "C" void func_ov138_0229cf98(Obj_ov138_0229d4e0 *);
 extern "C" void func_ov138_0229cf88(Obj_ov138_0229d4e0 *);
 
-static PMF g_src0 = &Obj_ov138_0229d4e0::func_ov138_0229d0dc;
-static PMF g_src1 = STATE_func_ov138_0229d0b4;
-static PMF g_src2 = &Obj_ov138_0229d4e0::func_ov138_0229d07c;
-static PMF g_src3 = STATE_func_ov138_0229d04c;
+// The state handlers, as member-function pointer constants in the ROM's data:
+// func_ov138_0229d0dc, func_ov138_0229d0b4, func_ov138_0229d07c, func_ov138_0229d04c.
+extern PMF data_ov138_0229d448;
+extern PMF data_ov138_0229d440;
+extern PMF data_ov138_0229d450;
+extern PMF data_ov138_0229d4d0;
 
 int Obj_ov138_0229d4e0::func_ov138_0229d27c()
 {
@@ -25,10 +24,10 @@ int Obj_ov138_0229d4e0::func_ov138_0229d27c()
 
     unsigned int flg = s_flag;
     if ((flg & 1) == 0) {
-        s_table[0] = g_src0;
-        s_table[1] = g_src1;
-        s_table[2] = g_src2;
-        s_table[3] = g_src3;
+        s_table[0] = data_ov138_0229d448;
+        s_table[1] = data_ov138_0229d440;
+        s_table[2] = data_ov138_0229d450;
+        s_table[3] = data_ov138_0229d4d0;
         s_flag = flg | 1;
     }
 
@@ -39,6 +38,3 @@ int Obj_ov138_0229d4e0::func_ov138_0229d27c()
     func_ov138_0229cf88(this);
     return 1;
 }
-
-#undef STATE_func_ov138_0229d0b4
-#undef STATE_func_ov138_0229d04c

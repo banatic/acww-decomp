@@ -36,9 +36,19 @@ extern "C" void func_0201cec8(UnkStruct_02028924 *, ST *);
 extern "C" void func_0202da74(UnkStruct_02028924 *, UnkStruct_02028924_3);
 extern "C" void func_02068388(int, int);
 
+extern int data_021c1cf4;
+extern PMF data_021c1dc4[5];
+
 extern "C" void func_02028924(UnkStruct_02028924 *p)
 {
-    static PMF tbl[5] = {data_020d9108, data_020d94c0, data_020d9198, data_020d91b0, data_020d91b8};
+    if (!(data_021c1cf4 & 1)) {
+        data_021c1dc4[0] = data_020d9108;
+        data_021c1dc4[1] = data_020d94c0;
+        data_021c1dc4[2] = data_020d9198;
+        data_021c1dc4[3] = data_020d91b0;
+        data_021c1dc4[4] = data_020d91b8;
+        data_021c1cf4 |= 1;
+    }
     ST st;
     void *a;
     int b;
@@ -47,7 +57,7 @@ extern "C" void func_02028924(UnkStruct_02028924 *p)
     a = p->unk_100->unk_830;
     b = func_02099640((int) func_020984e8());
     for (i = 0; i < 5; i++) {
-        if ((p->*tbl[i])(a, b)) {
+        if ((p->*data_021c1dc4[i])(a, b)) {
             break;
         }
     }

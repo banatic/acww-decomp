@@ -18,9 +18,20 @@ extern "C" void func_02074904(int);
 extern "C" void func_020a6c08(void);
 extern "C" void func_02046600(void);
 
+extern int data_021f6930;
+extern PMF data_021f6a3c[6];
+
 extern "C" int func_020b6c0c(UnkStruct_020b6c0c *obj)
 {
-    static PMF tbl[6] = {data_020e54c4, data_020e54cc, data_020e54d4, data_020e54e4, data_020e54fc, data_020e54dc};
+    if (!(data_021f6930 & 1)) {
+        data_021f6a3c[0] = data_020e54c4;
+        data_021f6a3c[1] = data_020e54cc;
+        data_021f6a3c[2] = data_020e54d4;
+        data_021f6a3c[3] = data_020e54e4;
+        data_021f6a3c[4] = data_020e54fc;
+        data_021f6a3c[5] = data_020e54dc;
+        data_021f6930 |= 1;
+    }
     u64 start;
     int flag;
 
@@ -30,7 +41,7 @@ extern "C" int func_020b6c0c(UnkStruct_020b6c0c *obj)
         if ((u32) (data_021f42f0 - 1) >= 6) {
             break;
         }
-        if ((obj->*tbl[data_021f42f0 - 1])(start) != 0) {
+        if ((obj->*data_021f6a3c[data_021f42f0 - 1])(start) != 0) {
             data_021f42f0++;
             if (data_021f42f0 > 6) {
                 break;

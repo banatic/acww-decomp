@@ -46,10 +46,49 @@ external member-pointer variable is rejected.
 The 189 compiled copies do not imply 189 newly enabled functions. Independent
 Reference reasons, such as an argument-count mismatch, remain in force.
 
+## ROM tables and constants declared extern
+
+The link edits write a block-scope static table as mwccarm lowers it: the source
+declares the ROM's guard word and table extern at their DS addresses and fills the
+table under the guard; a `&Class::method` constant becomes the ROM's named 8-byte
+datum. The PC copy then reads and writes the ROM's own table, so Native and the
+interpreted body share one table and one guard, as two ROM callers would.
+
+runtime/native-member-boundary.json pins such a source with two more fields, which
+tools/native_pmf_boundary.py checks against the ROM before translating:
+
+- `rom_tables`: per table, its address, entry count, guard, and the body's literal
+  pool words naming both (`table_literal`, `guard_literal`); the source must declare
+  the table extern with that count and the guard as an extern int.
+- `rom_constants`: per constant, the two ROM words (callable, adjustment). Each was
+  checked against the ROM's data relocation, which names the target function, and
+  its Thumb bit against that function's symbol; where the relocation allows several
+  overlays at one address, every one must have a function there.
+
+Where an edit replaced an audited `&Class::method` constant, the replacing datum is
+at the constant's audited literal address and holds the same words (0206ac64,
+0206d26c, ov068 02274358, ov122 022a2110, ov138 0229d27c). Several ROM tables run
+into data the ROM names separately: 02013c34's three entries at 021c1574 overlap an
+object __sinit_020c4270 registers at 021c157c. The ROM's index bound reads there;
+the PC copy, which uses the same addresses, does too.
+
+`pmf = 0` in func_0201c8fc stores both zero words: ROM 0201c912-0201c91c copies
+__ptmf_null (zero in .bss). NativeMember's assignment from a null constant does
+the same.
+
+Seven audited functions stay Reference (runtime/native-reference.txt): 0203637c,
+02039f98, 02057d90, 02058634, 0205927c, 020aad9c and 020b8b88. Their Clean versions
+call the handlers directly and do not write the ROM's guard and table, which a
+`--clean` run compares (the title and new-game runs reach the first two and the last).
+
+Three keyed tables (ov049 02261848, ov051 022604a8, ov068 02274358) now write the
+ROM's keys in the source. keyed_copy accepts them only when they equal the pinned
+ROM keys (the zero placeholders of the earlier sources are still substituted).
+
 ## Validation and remaining forms
 
-tools/test_native_pmf.py compiles all 189 exact copies and rejects changed source
-digests. tests/native/member_pointer.cpp checks the generic boundary's direct and
+tools/test_native_pmf.py compiles all 189 exact copies and the 261 boundary copies, and
+rejects changed source digests. tests/native/member_pointer.cpp checks the generic boundary's direct and
 virtual calls, signed adjustments, null tests, raw copying and Thumb-bit retention.
 tests/native/member_null.cpp executes the five actual null-assignment copies,
 checking their fields, callbacks and clearing assignments. Full Windows and Linux

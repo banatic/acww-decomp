@@ -75,9 +75,45 @@ class BoundaryCopy(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'alias changed'):
             boundary.checked_copy(relative, source, C.ROOT, C.modules(), lambda module: bytes(data), specs=specs)
 
+    def test_rom_tables_and_constants_require_rom_literals_and_data(self):
+        relative = 'main/func_02005338.cpp'
+        source = (C.SRC/relative).read_bytes().decode()
+        specs = boundary.specifications()
+        boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=specs)
+        for key, value, error in [('table_literal', '02005440', 'table literal changed'),
+                                  ('guard_literal', '02005448', 'guard literal changed'),
+                                  ('count', 3, 'declaration changed'),
+                                  ('address', '021c0010', 'Invalid ROM member table')]:
+            changed = copy.deepcopy(specs)
+            changed[relative]['rom_tables']['data_021c0008'][key] = value
+            with self.assertRaisesRegex(ValueError, error):
+                boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
+        changed = copy.deepcopy(specs)
+        changed[relative]['rom_constants']['data_020d747c']['words'][1] = 2
+        with self.assertRaisesRegex(ValueError, 'ROM member constant changed'):
+            boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
+        changed = copy.deepcopy(specs)
+        changed[relative]['rom_constants']['data_020d7480'] = {'words': [0, 0]}
+        with self.assertRaisesRegex(ValueError, 'constant declaration changed'):
+            boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
+        data = bytearray(C.module_image('main'))
+        data[0x020d747c - C.modules()['main']['base']] ^= 2
+        with self.assertRaisesRegex(ValueError, 'ROM member constant changed'):
+            boundary.checked_copy(relative, source, C.ROOT, C.modules(), lambda module: bytes(data), specs=specs)
+
+    def test_written_keys_must_equal_rom_keys(self):
+        relative = 'ov049/func_ov049_02261848.cpp'
+        source = (C.SRC/relative).read_bytes().decode()
+        changed = source.replace('{0x04, data_ov049_022631d0}', '{0x05, data_ov049_022631d0}')
+        self.assertNotEqual(changed, source)
+        specs = copy.deepcopy(boundary.specifications())
+        specs[relative]['source_sha256'] = hashlib.sha256(changed.encode()).hexdigest()
+        with self.assertRaisesRegex(ValueError, 'initializer rows changed'):
+            boundary.checked_copy(relative, changed, C.ROOT, C.modules(), C.module_image, specs=specs)
+
     def test_all_audited_inputs_and_copies(self):
         specs = boundary.specifications()
-        self.assertEqual(len(specs), 204)
+        self.assertEqual(len(specs), 261)
         headers = 0
         for relative in specs:
             original = (C.SRC / relative).read_bytes().decode()
@@ -89,7 +125,7 @@ class BoundaryCopy(unittest.TestCase):
             headers += bool(copies)
             with self.assertRaisesRegex(ValueError, 'source changed'):
                 boundary.checked_copy(relative, original + '\n', C.ROOT, C.modules(), C.module_image, specs=specs)
-        self.assertEqual(headers, 2)
+        self.assertEqual(headers, 3)
 
     def test_body_header_and_literal_changes_are_rejected(self):
         specs = boundary.specifications()
@@ -162,7 +198,7 @@ def pair_fixture():
     # The consumer's literal is the RAM table, not a ROM table to read directly.
     assert int.from_bytes(rom[-4:], 'little') == 0x021c1914
     initializer_raw = (C.SRC / 'main/__sinit_020c4270.c').read_bytes()
-    assert hashlib.sha256(initializer_raw).hexdigest() == 'c791102c4f9431c8112da4bdc4b3e76ca98a6efa2efde0cb2eb450569e2930fe'
+    assert hashlib.sha256(initializer_raw).hexdigest() == 'a3628a170cb7d415762be90123859de8262b3f98e0d31404e26f4ee5357f7e55'
     initializer = initializer_raw.decode()
     assignments = {}
     for match in re.finditer(r'data_([0-9a-f]{8})\[(\d+)\] = data_([0-9a-f]{8});', initializer):

@@ -24,10 +24,22 @@ extern "C" int func_0209b5ec(void *);
 extern "C" int func_0209c330(int);
 extern "C" int func_0209c38c(int);
 
+extern int data_021c1d08;
+extern PMF data_021c1e44[8];
+
 extern "C" int func_02022c2c(UnkStruct_02022c2c *obj)
 {
-    static PMF tbl[8] = {data_020d9410, data_020d9400, data_020d93f0, data_020d93e8,
-                         data_020d93e0, data_020d93c8, data_020d93b8, data_020d93b0};
+    if (!(data_021c1d08 & 1)) {
+        data_021c1e44[0] = data_020d9410;
+        data_021c1e44[1] = data_020d9400;
+        data_021c1e44[2] = data_020d93f0;
+        data_021c1e44[3] = data_020d93e8;
+        data_021c1e44[4] = data_020d93e0;
+        data_021c1e44[5] = data_020d93c8;
+        data_021c1e44[6] = data_020d93b8;
+        data_021c1e44[7] = data_020d93b0;
+        data_021c1d08 |= 1;
+    }
     int idx;
     int t;
     int v;
@@ -41,7 +53,7 @@ extern "C" int func_02022c2c(UnkStruct_02022c2c *obj)
         }
     }
     if (func_0209c38c(idx)) {
-        return (obj->*tbl[idx])();
+        return (obj->*data_021c1e44[idx])();
     }
     return 0;
 }

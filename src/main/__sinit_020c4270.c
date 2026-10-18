@@ -55,6 +55,9 @@ extern UnkStruct_020c4270 data_020d8a7c, data_020d869c, data_020d856c, data_020d
 extern UnkStruct_020c4270 data_020d853c, data_020d859c, data_020d85bc, data_020d867c, data_020d874c, data_020d87f4,
     data_020d880c, data_020d8a14;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c4270(void)
 {
     UnkStruct_020c4270 t;
@@ -240,3 +243,5 @@ void __sinit_020c4270(void)
     data_021c1744.a = 1;
     data_021c1744.b = 0;
 }
+
+#pragma section INIT end

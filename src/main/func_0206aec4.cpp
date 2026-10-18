@@ -21,13 +21,25 @@ struct UnkStruct_0206aec4 {
     int method;
 };
 
+extern int data_021cda6c;
+extern PMF data_021cdc34[10];
+
 extern "C" void func_0206aec4(UnkStruct_0206aec4 *obj)
 {
-    static PMF tbl[10] = {
-        data_020de87c, data_020de974, data_020de96c, data_020de964, data_020de894,
-        data_020de954, data_020de8ac, data_020de944, data_020de8b4, data_020de934,
-    };
+    if (!(data_021cda6c & 1)) {
+        data_021cdc34[0] = data_020de87c;
+        data_021cdc34[1] = data_020de974;
+        data_021cdc34[2] = data_020de96c;
+        data_021cdc34[3] = data_020de964;
+        data_021cdc34[4] = data_020de894;
+        data_021cdc34[5] = data_020de954;
+        data_021cdc34[6] = data_020de8ac;
+        data_021cdc34[7] = data_020de944;
+        data_021cdc34[8] = data_020de8b4;
+        data_021cdc34[9] = data_020de934;
+        data_021cda6c |= 1;
+    }
 
-    PMF pmf = tbl[obj->method];
+    PMF pmf = data_021cdc34[obj->method];
     (obj->*pmf)();
 }

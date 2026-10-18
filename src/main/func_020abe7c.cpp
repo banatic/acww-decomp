@@ -42,6 +42,9 @@ extern "C" int func_020abccc(UnkStruct_020abe7c_2 *);
 extern "C" void func_0208f184(UnkStruct_020abe7c *, int *, int *);
 extern "C" void func_0208f210(UnkStruct_020abe7c *, int, int);
 
+extern int data_021f45b0;
+extern PMF data_021f4610[12];
+
 extern "C" void func_020abe7c(UnkStruct_020abe7c_2 *p)
 {
     int a, b, c, d;
@@ -59,9 +62,22 @@ extern "C" void func_020abe7c(UnkStruct_020abe7c_2 *p)
         p->unk_144 = 0;
         func_020abc40(p);
     }
-    static PMF tbl[12] = {data_020e3f84, data_020e3ee4, data_020e3f8c, data_020e3eec, data_020e3f14, data_020e3f1c,
-                          data_020e3f7c, data_020e3f04, data_020e3f44, data_020e3f4c, data_020e3f0c, data_020e3f64};
-    (p->*tbl[p->unk_13C])();
+    if (!(data_021f45b0 & 1)) {
+        data_021f4610[0] = data_020e3f84;
+        data_021f4610[1] = data_020e3ee4;
+        data_021f4610[2] = data_020e3f8c;
+        data_021f4610[3] = data_020e3eec;
+        data_021f4610[4] = data_020e3f14;
+        data_021f4610[5] = data_020e3f1c;
+        data_021f4610[6] = data_020e3f7c;
+        data_021f4610[7] = data_020e3f04;
+        data_021f4610[8] = data_020e3f44;
+        data_021f4610[9] = data_020e3f4c;
+        data_021f4610[10] = data_020e3f0c;
+        data_021f4610[11] = data_020e3f64;
+        data_021f45b0 |= 1;
+    }
+    (p->*data_021f4610[p->unk_13C])();
     if (func_020abce4(p)) {
         func_020aca60(&p->sube4, &a, &b);
         r = func_020aca80(&p->sube4);

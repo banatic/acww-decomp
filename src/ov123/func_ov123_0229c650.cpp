@@ -28,7 +28,6 @@ extern "C" void func_ov123_0229bf50(UnkStruct_0229c650 *self);
 
 extern "C" int func_ov123_0229c650(UnkStruct_0229c650 *self)
 {
-    static int guard = 0;
     static PMF pmf_table[12] = {data_ov123_0229ce70, data_ov123_0229ce80, data_ov123_0229ced8, data_ov123_0229ce48,
                                 data_ov123_0229ce58, data_ov123_0229cf38, data_ov123_0229cec0, data_ov123_0229ce40,
                                 data_ov123_0229cf58, data_ov123_0229cf50, data_ov123_0229cf48, data_ov123_0229cf40};

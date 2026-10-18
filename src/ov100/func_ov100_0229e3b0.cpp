@@ -6,10 +6,10 @@ extern "C" void func_ov100_0229e374(void *self);
 
 class CSub {
   public:
-    virtual void f0() {}
-    virtual void f1() {}
-    virtual void f2() {}
-    virtual void f3() {}
+    virtual void f0();
+    virtual void f1();
+    virtual void f2();
+    virtual void f3();
 };
 
 class UnkStruct_0229e3b0 {

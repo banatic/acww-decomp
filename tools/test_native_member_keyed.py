@@ -1,5 +1,6 @@
-"""Actual ARM versus PC keyed dispatch, including original zero-key negative controls."""
+"""Actual ARM versus PC keyed dispatch, including zero-key negative controls (the sources before the link edit)."""
 from pathlib import Path
+import hashlib
 import json
 import os
 import re
@@ -39,8 +40,14 @@ for relative, (name,count,call) in paths.items():
                   'static const unsigned char module_rom[] = {'+','.join(hex(b) for b in image)+'};\n')
         (folder/'keyed_rom.h').write_text(header,newline='\n')
         chosen = json.loads(json.dumps(boundary.specifications()))
-        if baseline: chosen[relative].pop('keyed_tables')
-        copy, headers = boundary.checked_copy(relative,source,C.ROOT,C.modules(),C.module_image,specs=chosen)
+        text = source
+        if baseline:
+            # the keys as the source had them before the link edit: all 0 (.bss, where LINK compares nothing)
+            text = re.sub(r'\{(0x[0-9a-f]+|\d+), (data_ov\d{3}_[0-9a-f]{8})\}', r'{0, \2}', source)
+            assert text != source
+            chosen[relative].pop('keyed_tables')
+            chosen[relative]['source_sha256'] = hashlib.sha256(text.encode()).hexdigest()
+        copy, headers = boundary.checked_copy(relative,text,C.ROOT,C.modules(),C.module_image,specs=chosen)
         assert not headers
         copy+='\nextern "C" void keyed_invoke(void *p) { '+call+'; }\n'
         body=folder/'body.cpp'; body.write_text(copy,newline='\n')

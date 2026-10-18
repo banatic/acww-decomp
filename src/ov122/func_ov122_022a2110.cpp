@@ -5,8 +5,6 @@
 
 #include "cpp/ov122/Obj_ov122_022a2738.h"
 
-#define STATE_func_ov122_022a1a84 (PMF) & Obj_ov122_022a2738::func_ov122_022a1a84
-
 extern "C" void func_ov122_022a1854(Obj_ov122_022a2738 *);
 extern "C" void func_ov122_022a1850(Obj_ov122_022a2738 *);
 
@@ -15,40 +13,42 @@ typedef void (Obj_ov122_022a2738::*PMF)();
 static int g_flag;
 static PMF g_table[15];
 
-static const PMF pmf0 = &Obj_ov122_022a2738::func_ov122_022a1d60;
-static const PMF pmf1 = &Obj_ov122_022a2738::func_ov122_022a1d04;
-static const PMF pmf2 = &Obj_ov122_022a2738::func_ov122_022a1cc8;
-static const PMF pmf3 = &Obj_ov122_022a2738::func_ov122_022a1c68;
-static const PMF pmf4 = &Obj_ov122_022a2738::func_ov122_022a1c24;
-static const PMF pmf5 = &Obj_ov122_022a2738::func_ov122_022a1bd4;
-static const PMF pmf6 = &Obj_ov122_022a2738::func_ov122_022a1ba4;
-static const PMF pmf7 = &Obj_ov122_022a2738::func_ov122_022a1b60;
-static const PMF pmf8 = &Obj_ov122_022a2738::func_ov122_022a1b50;
-static const PMF pmf9 = &Obj_ov122_022a2738::func_ov122_022a1b24;
-static const PMF pmf10 = &Obj_ov122_022a2738::func_ov122_022a1ac4;
-static const PMF pmf11 = STATE_func_ov122_022a1a84;
-static const PMF pmf12 = &Obj_ov122_022a2738::func_ov122_022a1a58;
-static const PMF pmf13 = &Obj_ov122_022a2738::func_ov122_022a1a04;
-static const PMF pmf14 = &Obj_ov122_022a2738::func_ov122_022a1998;
+// The state handlers func_ov122_022a1d60 ... func_ov122_022a1998, as member-function pointer
+// constants in the ROM's data.
+extern const PMF data_ov122_022a26f0;
+extern const PMF data_ov122_022a26f8;
+extern const PMF data_ov122_022a2630;
+extern const PMF data_ov122_022a26e8;
+extern const PMF data_ov122_022a26e0;
+extern const PMF data_ov122_022a26d8;
+extern const PMF data_ov122_022a26d0;
+extern const PMF data_ov122_022a26c8;
+extern const PMF data_ov122_022a26c0;
+extern const PMF data_ov122_022a26b8;
+extern const PMF data_ov122_022a2610;
+extern const PMF data_ov122_022a26a8;
+extern const PMF data_ov122_022a26a0;
+extern const PMF data_ov122_022a2698;
+extern const PMF data_ov122_022a2690;
 
 int Obj_ov122_022a2738::func_ov122_022a2110()
 {
     if (!(g_flag & 1)) {
-        g_table[0] = pmf0;
-        g_table[1] = pmf1;
-        g_table[2] = pmf2;
-        g_table[3] = pmf3;
-        g_table[4] = pmf4;
-        g_table[5] = pmf5;
-        g_table[6] = pmf6;
-        g_table[7] = pmf7;
-        g_table[8] = pmf8;
-        g_table[9] = pmf9;
-        g_table[10] = pmf10;
-        g_table[11] = pmf11;
-        g_table[12] = pmf12;
-        g_table[13] = pmf13;
-        g_table[14] = pmf14;
+        g_table[0] = data_ov122_022a26f0;
+        g_table[1] = data_ov122_022a26f8;
+        g_table[2] = data_ov122_022a2630;
+        g_table[3] = data_ov122_022a26e8;
+        g_table[4] = data_ov122_022a26e0;
+        g_table[5] = data_ov122_022a26d8;
+        g_table[6] = data_ov122_022a26d0;
+        g_table[7] = data_ov122_022a26c8;
+        g_table[8] = data_ov122_022a26c0;
+        g_table[9] = data_ov122_022a26b8;
+        g_table[10] = data_ov122_022a2610;
+        g_table[11] = data_ov122_022a26a8;
+        g_table[12] = data_ov122_022a26a0;
+        g_table[13] = data_ov122_022a2698;
+        g_table[14] = data_ov122_022a2690;
         g_flag |= 1;
     }
     func_ov122_022a1854(this);
@@ -58,5 +58,3 @@ int Obj_ov122_022a2738::func_ov122_022a2110()
     func_ov122_022a1850(this);
     return 1;
 }
-
-#undef STATE_func_ov122_022a1a84

@@ -40,9 +40,16 @@ extern int func_0208150c(int);
 extern int func_020036e8(int);
 extern int func_0202da38(UnkStruct_020214e0_3 *, u8 *, u8 *, int, int, int, int, int, int);
 
+extern int data_021c1d0c;
+extern PMF data_021c1d44[2];
+
 int func_020214e0(UnkStruct_020214e0_3 *obj)
 {
-    static PMF tbl[2] = {data_020d90c0, data_020d90a8};
+    if (!(data_021c1d0c & 1)) {
+        data_021c1d44[0] = data_020d90c0;
+        data_021c1d44[1] = data_020d90a8;
+        data_021c1d0c |= 1;
+    }
     UnkStruct_020214e0 s;
     UnkStruct_020214e0_2 buf[2];
     UnkStruct_020214e0_2 *p;
@@ -54,7 +61,7 @@ int func_020214e0(UnkStruct_020214e0_3 *obj)
     s.b = 0;
     func_0209e474(&s);
     for (i = 0; i < 2; i++) {
-        buf[i].unk_00 = (obj->*tbl[i])(&buf[i].unk_08, &buf[i].unk_04, &buf[i].unk_09, &s);
+        buf[i].unk_00 = (obj->*data_021c1d44[i])(&buf[i].unk_08, &buf[i].unk_04, &buf[i].unk_09, &s);
     }
     if (buf[0].unk_00) {
         if (buf[1].unk_00 && func_020644cc(2) == 0) {

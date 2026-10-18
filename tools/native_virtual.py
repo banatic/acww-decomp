@@ -4,10 +4,14 @@ from __future__ import annotations
 import hashlib
 
 
+# Source-relative path -> (source SHA-256, declaration in the source, PC declaration).
+# The ov100 source now declares f0-f3 without bodies itself (the link edit: inline
+# virtual bodies nothing calls are declarations), which is the PC form already; the
+# digest still pins it, so a changed source needs the ROM audit again.
 VERIFIED = {
     "ov100/func_ov100_0229e3b0.cpp": (
-        "db0ddfce3cc9d6f6edb8266ce1119bb65199b3379a9d58649a439fd20e1a271b",
-        "virtual void f3() {}", "virtual void f3();",
+        "4d8fc9087f59245ca0bc20d27cef461b150af7ab62f956be99fabf19a64f54ba",
+        "virtual void f3();", "virtual void f3();",
     ),
 }
 

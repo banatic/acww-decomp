@@ -31,10 +31,10 @@ extern "C" int func_020ab504(unsigned int a);
 extern "C" void func_ov051_022604a8(UnkStruct_022604a8 *self)
 {
     static Entry table[14] = {
-        {0, data_ov051_0226168c}, {0, data_ov051_022616cc}, {0, data_ov051_022616dc}, {0, data_ov051_02261664},
-        {0, data_ov051_022615dc}, {0, data_ov051_022615cc}, {0, data_ov051_022615d4}, {0, data_ov051_022615fc},
-        {0, data_ov051_02261614}, {0, data_ov051_022616a4}, {0, data_ov051_0226172c}, {0, data_ov051_02261654},
-        {0, data_ov051_022615ec}, {0, data_ov051_0226166c},
+        {0x05, data_ov051_0226168c}, {0x03, data_ov051_022616cc}, {0x28, data_ov051_022616dc}, {0x0b, data_ov051_02261664},
+        {0x0c, data_ov051_022615dc}, {0x15, data_ov051_022615cc}, {0x16, data_ov051_022615d4}, {0x19, data_ov051_022615fc},
+        {0x1a, data_ov051_02261614}, {0x1f, data_ov051_022616a4}, {0x20, data_ov051_0226172c}, {0x11, data_ov051_02261654},
+        {0x12, data_ov051_022615ec}, {0x30, data_ov051_0226166c},
     };
 
     int i = 0;

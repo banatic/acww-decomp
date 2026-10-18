@@ -76,6 +76,9 @@ class Planner:
     def __init__(self):
         self.chk = V.Checker()
         self.sections = {m: module_sections(m) for m in self.chk.mods}
+        # names only config/aliases.txt resolves: the linker does not see that file
+        self.aliases = {line.split()[0] for line in (C.CONFIG / "aliases.txt").read_text().splitlines()
+                        if line.strip() and not line.startswith("#")}
 
     def where(self, addr: int, prefer: str) -> tuple[str | None, str | None]:
         for m in (prefer, *C.RESIDENT, *self.sections):
@@ -131,6 +134,8 @@ class Planner:
         out["globals"] = [[y.name, min(anchors[y.shndx]) + y.value] for y in elf.symbols
                           if y.bind == 1 and y.name and y.shndx in secs and y.shndx != fn.shndx
                           and anchors.get(y.shndx)]
+        if "error" not in out and any(y.shndx == 0 and y.name in self.aliases for y in elf.symbols):
+            out["error"] = "uses a name only config/aliases.txt resolves"
         return out
 
 

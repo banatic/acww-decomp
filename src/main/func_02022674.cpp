@@ -31,19 +31,19 @@ extern "C" int func_0207f270(int);
 extern "C" int func_020794cc(int);
 extern "C" int func_0209c38c(int);
 
+extern PMF data_021c1ec4[8];
+
 extern "C" int func_02022674(UnkStruct_02022674_2 *self)
 {
-    static PMF pmf_table[8];
-
     if ((data_021c1cec & 1) == 0) {
-        pmf_table[0] = data_020d92d8;
-        pmf_table[1] = data_020d8fa8;
-        pmf_table[2] = data_020d92e0;
-        pmf_table[3] = data_020d9298;
-        pmf_table[4] = data_020d93a0;
-        pmf_table[5] = data_020d8fa0;
-        pmf_table[6] = data_020d91e0;
-        pmf_table[7] = data_020d9288;
+        data_021c1ec4[0] = data_020d92d8;
+        data_021c1ec4[1] = data_020d8fa8;
+        data_021c1ec4[2] = data_020d92e0;
+        data_021c1ec4[3] = data_020d9298;
+        data_021c1ec4[4] = data_020d93a0;
+        data_021c1ec4[5] = data_020d8fa0;
+        data_021c1ec4[6] = data_020d91e0;
+        data_021c1ec4[7] = data_020d9288;
         data_021c1cec |= 1;
     }
 
@@ -52,7 +52,7 @@ extern "C" int func_02022674(UnkStruct_02022674_2 *self)
         int a = func_0207f270(self->inner->data);
         int b = func_020794cc(a);
         if (func_0209c38c(b) != 0) {
-            return (self->*pmf_table[b])();
+            return (self->*data_021c1ec4[b])();
         }
     }
     return 0;

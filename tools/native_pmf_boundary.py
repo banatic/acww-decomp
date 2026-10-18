@@ -21,6 +21,9 @@ MEMBER = re.compile(
     r'\((?P<args>[^()]*)\)')
 METHOD = re.compile(r'&\s*(?P<class>\w+)\s*::\s*(?P<name>\w+)')
 REGISTER_CALLS = {'main/func_0201f40c.cpp': {'func_020819bc'}}
+# Headers whose member-pointer declarations are translated in PC copies (each pinned by
+# digest in every manifest entry that includes it).
+MEMBER_HEADERS = {'include/cpp/main/Base_02027460.h', 'include/cpp/main/Base_02038828.h'}
 
 PAIR_CALL = '''template<> struct NativeMemberCall<UnkStruct_02013948, Pair, void *, int> {
     static Pair invoke(unsigned int target, UnkStruct_02013948 *object, void *arg, int number)
@@ -78,13 +81,20 @@ def declarations(text: str) -> tuple[str, dict[str, str]]:
 
 
 def copy(text: str, constants: dict[str, tuple[int, int]], *,
-         pair_result: bool = False, array_receiver: bool = False, register_argument: bool = False) -> str:
+         pair_result: bool = False, array_receiver: bool = False, register_argument: bool = False,
+         header_types: bool = False) -> str:
     """Translate an audited body with exact ROM (function, adjustment) pairs.
 
     ``constants`` is keyed by the fully qualified C++ method spelling, including
-    methods used through DISCARD_HANDLER. All entries must be consumed.
+    methods used through DISCARD_HANDLER. All entries must be consumed. With
+    ``header_types``, the member types may all come from translated header copies.
     """
-    text, types = declarations(text)
+    if header_types and not MEMBER.search(text):
+        if re.search(r'::\s*\*', text) or METHOD.search(text):
+            raise ValueError('Untranslated member-pointer type')
+        types = {}
+    else:
+        text, types = declarations(text)
     if register_argument:
         declaration = 'extern "C" int func_020819bc(void);'
         call = 'func_020819bc()'
@@ -140,7 +150,10 @@ def specifications() -> dict:
 
 
 def keyed_copy(text: str, tables: dict) -> str:
-    """Use pinned ROM keys where the matching source declares zero placeholders."""
+    """Use pinned ROM keys where the matching source declares zero placeholders.
+
+    A source that already writes the keys must write exactly the pinned ROM keys.
+    """
     for name, spec in tables.items():
         pattern = r'\b' + re.escape(name) + r'\[(\d+)\]\s*=\s*\{'
         matches = list(re.finditer(pattern, text))
@@ -156,11 +169,12 @@ def keyed_copy(text: str, tables: dict) -> str:
         if depth or terminator is None:
             raise ValueError('Keyed member initializer changed: ' + name)
         initializer = text[start:position-1]
-        rows = list(re.finditer(r'(\{\s*)0(\s*,)', initializer))
-        if len(rows) != len(spec['keys']):
+        row = r'(\{\s*)(0x[0-9a-fA-F]+|\d+)(\s*,)'
+        rows = [int(m[2], 0) for m in re.finditer(row, initializer)]
+        if len(rows) != len(spec['keys']) or any(rows) and rows != spec['keys']:
             raise ValueError('Keyed member initializer rows changed: ' + name)
         keys = iter(spec['keys'])
-        initializer = re.sub(r'(\{\s*)0(\s*,)', lambda m: m[1] + str(next(keys)) + m[2], initializer)
+        initializer = re.sub(row, lambda m: m[1] + str(next(keys)) + m[3], initializer)
         end = position + terminator.end()
         assertion = (f'\n    static_assert(sizeof({name}[0]) == 12, "ROM keyed member stride");\n'
                      f'    static_assert(__builtin_offsetof(Entry, pmf) == 4, "ROM keyed member offset");')
@@ -213,6 +227,61 @@ def shared_copy(text: str, storage: dict) -> str:
     return text
 
 
+def _literal(data: bytes, base: int, start: int, size: int, literal: int, value: int) -> bool:
+    """Whether the body's literal pool word at `literal` holds `value`."""
+    return (literal % 4 == 0 and start <= literal <= start + size - 4
+            and data[literal - base:literal - base + 4] == value.to_bytes(4, 'little'))
+
+
+def rom_tables(text: str, tables: dict, data: bytes, base: int, start: int, size: int) -> None:
+    """Check member tables a source declares extern at the ROM's DS address.
+
+    The matching source fills the ROM's own table under the ROM's own guard word,
+    as the ROM body does: the PC copy reads and writes the same two-word entries.
+    The body's literal pool must name both, and the declarations must be exact.
+    """
+    for name, table in tables.items():
+        address, guard = int(table['address'], 16), int(table['guard_address'], 16)
+        count = table['count']
+        if (not re.fullmatch(r'data_(?:ov\d{3}_)?[0-9a-f]{8}', name) or int(name[-8:], 16) != address
+                or not re.fullmatch(r'data_(?:ov\d{3}_)?[0-9a-f]{8}', table['guard'])
+                or int(table['guard'][-8:], 16) != guard or not 0 < count <= 256
+                or address % 4 or guard % 4 or not 0x02000000 <= address <= 0x02400000 - count * 8
+                or not 0x02000000 <= guard <= 0x02400000 - 4):
+            raise ValueError('Invalid ROM member table: ' + name)
+        if not _literal(data, base, start, size, int(table['table_literal'], 16), address):
+            raise ValueError('ROM member table literal changed: ' + name)
+        if not _literal(data, base, start, size, int(table['guard_literal'], 16), guard):
+            raise ValueError('ROM member table guard literal changed: ' + name)
+        declared = re.findall(r'\bextern\s+(?:const\s+)?(?:\w+\s*::\s*)*\w+\s+(?:\w+\s*,\s*)*'
+                              + re.escape(name) + r'\[(\d+)\]\s*[;,]', text)
+        declared += re.findall(r'\bextern\s+\w+\s*\*?\s*\(\s*\w+\s*::\s*\*\s*' + re.escape(name)
+                               + r'\[(\d+)\]\s*\)\s*\([^()]*\)\s*;', text)
+        if declared != [str(count)]:
+            raise ValueError('ROM member table declaration changed: ' + name)
+        if len(re.findall(r'\bextern\s+(?:unsigned\s+)?int\s+' + re.escape(table['guard']) + r'\s*;', text)) != 1:
+            raise ValueError('ROM member table guard declaration changed: ' + name)
+
+
+def rom_constants(text: str, constants: dict, modules: dict, image, module: str) -> None:
+    """Check the ROM data words of member-pointer constants the source reads extern."""
+    for name, constant in constants.items():
+        m = re.fullmatch(r'data_(?:ov\d{3}_)?([0-9a-f]{8})', name)
+        if not m or not re.search(r'\bextern\b[^;{}]*\b' + re.escape(name) + r'\b', text):
+            raise ValueError('ROM member constant declaration changed: ' + name)
+        address = int(m[1], 16)
+        function, adjustment = constant['words']
+        expected = function.to_bytes(4, 'little') + adjustment.to_bytes(4, 'little', signed=True)
+        for owner in dict.fromkeys([module, 'main']):
+            data, base = image(owner), modules[owner]['base']
+            if base <= address <= base + len(data) - 8:
+                if data[address - base:address - base + 8] != expected:
+                    raise ValueError('ROM member constant changed: ' + name)
+                break
+        else:
+            raise ValueError('ROM member constant outside its module: ' + name)
+
+
 def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, specs=None) -> tuple[str, dict[str, str]]:
     """Check the complete original input closure before producing PC copies.
 
@@ -236,7 +305,7 @@ def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, 
             raise ValueError('Member boundary header changed: ' + name)
         original = raw.decode()
         if re.search(r'::\s*\*', original):
-            if name != 'include/cpp/main/Base_02027460.h':
+            if name not in MEMBER_HEADERS:
                 raise ValueError('Unaudited member boundary header: ' + name)
             translated, _ = declarations(original)
             headers[name.removeprefix('include/')] = '#include "native_member.h"\n' + translated
@@ -295,7 +364,9 @@ def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, 
         keys = [int.from_bytes(raw[i*12:i*12+4], 'little') for i in range(count)]
         if keys != table['keys']:
             raise ValueError('Keyed member ROM keys changed: ' + name)
+    rom_tables(text, spec.get('rom_tables', {}), data, base, base + begin, len(body))
+    rom_constants(text, spec.get('rom_constants', {}), modules, image, spec['module'])
     translated = copy(text, constants, pair_result=relative == 'main/func_02013948.cpp',
                       array_receiver=relative == 'main/func_02034e28.cpp',
-                      register_argument=relative == 'main/func_0201f40c.cpp')
+                      register_argument=relative == 'main/func_0201f40c.cpp', header_types=bool(headers))
     return keyed_copy(shared_copy(translated, storage), keyed), headers
