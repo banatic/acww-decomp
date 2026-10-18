@@ -29,6 +29,15 @@ static const struct {
 };
 #define REGION_COUNT (sizeof(regions) / sizeof(regions[0]))
 
+#ifndef _WIN32
+/* The kernel starts the heap (brk) right after the image, at a random offset of up to 32 MiB:
+ * after an image at 0x00400000 that can be the DS's memory (0x01ff8000-0x02800000), taken by
+ * the first malloc (an fopen, say) before memory_init maps it. tools/run.py and
+ * tools/diffcheck.py link this section at 0x10000000, above every DS address, so the image
+ * ends, and the heap starts, there. */
+__attribute__((section(".heap_floor"), used)) static char heap_floor = 1;
+#endif
+
 /* Private memory at a fixed address. Windows reserves on 64 KiB boundaries. */
 static int reserve(uint32_t base, uint32_t size)
 {

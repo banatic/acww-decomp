@@ -286,9 +286,11 @@ def build_native(clean: bool = False) -> pathlib.Path:
         srcs += run.build_clean(["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing",
                                  f"-I{RUNTIME}"])
     # Classes split one function per file define their destructors and vtable in several
-    # objects, identically; the linker keeps the first.
+    # objects, identically; the linker keeps the first. On Linux the heap starts after the
+    # image's last section (.heap_floor, above the DS's addresses: runtime/memory.c).
     link = (["-Wl,/SAFESEH:NO", "-Wl,/FORCE:MULTIPLE", "-Wl,/DYNAMICBASE:NO", "-Wl,/FIXED"] if os.name == "nt"
-            else ["-no-pie", "-Wl,--allow-multiple-definition", "-Wl,-Ttext-segment=0x400000"])
+            else ["-no-pie", "-Wl,--allow-multiple-definition", "-Wl,-Ttext-segment=0x400000",
+                  "-Wl,--section-start=.heap_floor=0x10000000"])
     p = subprocess.run([*compiler(), *flags, *map(str, srcs), *map(str, asm), f"@{native / 'objects.txt'}",
                         *link, "-o", str(exe)], capture_output=True, text=True)
     if p.returncode != 0:

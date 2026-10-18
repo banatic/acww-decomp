@@ -279,12 +279,6 @@ uint32_t native_os_reserve(uint32_t base, uint32_t size)
 
 #else
 
-/* The kernel starts the heap (brk) right after the image, at a random offset of up to 32 MiB:
- * after an image at 0x00400000 that can be the DS's main memory (0x02000000), taken before
- * memory_init maps it. tools/run.py links this section at 0x10000000, above every DS address,
- * so the image ends, and the heap starts, there. */
-__attribute__((section(".heap_floor"), used)) static char heap_floor = 1;
-
 static void on_fault(int sig, siginfo_t *info, void *context)
 {
     ucontext_t *uc = context;

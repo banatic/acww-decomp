@@ -346,7 +346,7 @@ def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.
         # address (below the DS's 0x01000000) and its data must not be executable: a call
         # into DS memory has to fault (runtime/native_run.h).
         # On Linux the heap starts after the image's last section (.heap_floor, above the DS's
-        # addresses: runtime/native_os.c).
+        # addresses: runtime/memory.c).
         # The map names the host code a fault report points at.
         # No identical-code folding: every Native function keeps its own address, which the
         # runtime patches (functions kept Reference) and looks up by.
