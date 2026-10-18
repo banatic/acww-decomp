@@ -2,9 +2,37 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 
 import native_profile
 import objrewrite
+import protos
+
+
+def source_copy(text: str) -> str:
+    """Keep public callees opaque before optimization, then wrap their bodies.
+
+    Renaming an object after compilation is too late: a compiler can omit
+    arguments that a visible callee ignores, although the runtime entry hook
+    must observe those arguments or redirect the call to Reference instead.
+    Give each registered definition its final body name in the PC copy; its
+    public name remains an external declaration for calls and function pointers.
+    """
+    masked = protos.COMMENT.sub(lambda m: ''.join('\n' if c == '\n' else ' ' for c in m[0]), text)
+    names = set(re.findall(r'^CLEAN_AS\(\w+,\s*(\w+)\)', masked, re.M))
+    found = {}
+    for match in protos.FUNC.finditer(masked):
+        if match[2] in names and match[4] == '{':
+            if match[2] in found or 'static' in match[1].split():
+                raise ValueError('Ambiguous Clean entry definition: ' + match[2])
+            found[match[2]] = match
+    if names != found.keys():
+        raise ValueError('Missing Clean entry definitions: ' + ', '.join(sorted(names - found.keys())))
+    for match in sorted(found.values(), key=lambda m: m.start(), reverse=True):
+        header = text[match.start(1):match.start(4)].rstrip()
+        text = (text[:match.start(1)] + header + ';\n' + text[match.start(1):match.start(2)]
+                + 'native_body_' + text[match.start(2):])
+    return text
 
 
 @dataclass(frozen=True)

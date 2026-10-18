@@ -9,6 +9,8 @@ from __future__ import annotations
 import hashlib
 import pathlib
 import re
+import common as C
+import native_pmf_boundary
 
 
 # Source-relative path -> (source SHA-256, original declaration, PC declaration,
@@ -47,10 +49,11 @@ READ_ONLY = dict(line.split() for line in SOURCES.read_text().splitlines()
 DECLARATION = re.compile(
     r"(?m)^[ \t]*(?P<declaration>(?P<prefix>typedef\s+|extern\s+)?(?P<result>void\s*\*?|int)\s*"
     r"\(\s*(?P<class>\w+)::\*(?P<name>\w+)\)\s*\((?P<args>[^()]*)\)\s*;)")
+BOUNDARY = native_pmf_boundary.specifications()
 
 
 def paths() -> set[str]:
-    return VERIFIED.keys() | READ_ONLY.keys()
+    return VERIFIED.keys() | READ_ONLY.keys() | BOUNDARY.keys()
 
 
 def read_only_copy(text: str) -> str:
@@ -87,7 +90,15 @@ def read_only_copy(text: str) -> str:
     return '#include "native_member.h"\n' + result + assertions
 
 
-def translate(relative: str, text: str) -> str | None:
+def translate(relative: str, text: str, headers: dict[str, str] | None = None) -> str | None:
+    if relative in BOUNDARY:
+        body, copies = native_pmf_boundary.checked_copy(relative, text, C.ROOT, C.modules(),
+                                                       C.module_image, specs=BOUNDARY)
+        if copies and headers is None:
+            raise ValueError('Member source requires its translated header copies: ' + relative)
+        if headers is not None:
+            headers.update(copies)
+        return body
     spec = VERIFIED.get(relative)
     if spec is None:
         if relative in READ_ONLY:

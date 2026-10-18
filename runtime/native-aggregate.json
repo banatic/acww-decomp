@@ -1,0 +1,32 @@
+{
+  "main/func_02013304.c": {
+    "kind": 8,
+    "size": 128,
+    "source_sha256": "367a3591ea60d84128df69381c2b3a9502a7e2799e078d485e37bca0388c7541",
+    "rom_sha256": "b2223260d6398cc7bb38a2d4d44fe1bee813e83ad1db22fb4b43d8bba259eac6",
+    "headers": {}
+  },
+  "main/func_020404b4.c": {
+    "kind": 9,
+    "size": 148,
+    "source_sha256": "83da83194fd20c4cbfbaef82c6cbb3da9ba3bba05535131f791d65ce2fded0aa",
+    "rom_sha256": "95f5439210881211eefacd236e0127f97056feb5059df400ebb4837c7fa2e229",
+    "headers": {
+      "include/types.h": "55b3864dec5d21f20dd2869c65a57ce6a4db16c7af033c69783b8b65aaddd5a7"
+    }
+  },
+  "main/func_0207fc7c.c": {
+    "kind": 10,
+    "size": 76,
+    "source_sha256": "1a8d5b9025351de2c263105fae0a7618ff611d30e4cb76dc0631c2f413661b39",
+    "rom_sha256": "3c0e3bc974cec8a19644e077343ffc2b3483c95dc794b295ba289a668a2c7942",
+    "headers": {}
+  },
+  "main/func_020afa48.c": {
+    "kind": 11,
+    "size": 140,
+    "source_sha256": "7367c04ecd7d56476648b9ae320a7b804f8ee915db254a0dd339707743bacde3",
+    "rom_sha256": "7e4db01de08db9cdaca44b34bba98250e557608bc9f0e619065498c2e0c7f07b",
+    "headers": {}
+  }
+}

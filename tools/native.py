@@ -41,6 +41,8 @@ import native_virtual  # noqa: E402
 import native_profile  # noqa: E402
 import native_stack  # noqa: E402
 import native_publish  # noqa: E402
+import native_aggregate  # noqa: E402
+import native_pmf_boundary  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -215,11 +217,20 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     source, text = path, path.read_bytes()
     relative = path.relative_to(C.SRC).as_posix()
     layout = native_layout.translate(relative, text.decode("utf-8")) if relative in native_layout.paths() else None
-    member = native_pmf.translate(relative, text.decode("utf-8")) if relative in native_pmf.paths() else None
+    member_headers = {}
+    member = native_pmf.translate(relative, text.decode("utf-8"), member_headers) if relative in native_pmf.paths() else None
+    if member_headers:
+        header_root = OUT / 'member-headers' / pathlib.Path(relative).with_suffix('')
+        for name, content in member_headers.items():
+            destination = header_root / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(content, newline='\n')
+        flags = ['-I' + str(header_root), *flags]
     virtual = native_virtual.translate(relative, text.decode("utf-8")) if relative in native_virtual.paths() else None
     stack = native_stack.translate(relative, text.decode("utf-8")) if relative in native_stack.paths() else None
     publish = native_publish.translate(relative, text.decode("utf-8")) if relative in native_publish.paths() else None
-    copies = [copy for copy in (layout, member, virtual, stack, publish) if copy is not None]
+    aggregate = native_aggregate.caller_copy(relative, text.decode("utf-8"))
+    copies = [copy for copy in (layout, member, virtual, stack, publish, aggregate) if copy is not None]
     if len(copies) > 1:
         raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
     if NARROWED.get(path) or copies:
@@ -241,6 +252,9 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     key.update((C.ROOT / "runtime" / "native.h").read_bytes())  # included first, by -include
     if member is not None:
         key.update((C.ROOT / "runtime" / "native_member.h").read_bytes())
+        for name, content in sorted(member_headers.items()):
+            key.update(name.encode())
+            key.update(content.encode())
     if stack is not None:
         key.update((C.ROOT / "runtime" / "native_guest.h").read_bytes())
     if publish is not None:
@@ -321,6 +335,11 @@ def signature(path: pathlib.Path, name: str) -> tuple[int, int, bool, int]:
         kind = RET_SKIP
     else:
         kind = RET_32
+    aggregate_kind = native_aggregate.return_kind(path)
+    if aggregate_kind is not None:
+        if kind != RET_SKIP or member or floating:
+            raise ValueError(f"Aggregate return signature changed: {path}")
+        kind = aggregate_kind
     return kind, count, member, floating
 
 
@@ -775,6 +794,9 @@ def main() -> None:
     # passes and returns neither.
     short: dict[str, list[str]] = collections.defaultdict(list)
     for rel, callee, n, dn, ret, dret, _drel in protos.disagreements():
+        relative = rel.removeprefix('src/')
+        if C.SRC / relative in PMF_TRANSLATED and callee in native_pmf_boundary.REGISTER_CALLS.get(relative, set()):
+            continue  # the guarded PC copy explicitly passes the audited ARM register
         if (n is not None and dn is not None and n < dn) or (ret and not dret):
             short[rel].append(callee)
     # A caller that declares a function with a char or short result the definition does not

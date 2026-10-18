@@ -4,6 +4,17 @@
 #ifndef RUNTIME_NATIVE_MEMBER_H
 #define RUNTIME_NATIVE_MEMBER_H
 
+/* Scalar results use the host callable ABI. An audited source with an ARM
+ * hidden result pointer supplies a specialization before instantiating its
+ * member type; it must not rely on the host's aggregate return convention. */
+template <class Class, class Result, class... Args> struct NativeMemberCall {
+    static Result invoke(unsigned int function, Class *object, Args... args)
+    {
+        static_assert(!__is_class(Result) && !__is_union(Result), "ARM aggregate result needs an audited adapter");
+        return reinterpret_cast<Result (*)(Class *, Args...)>(function)(object, args...);
+    }
+};
+
 template <class Class, class Result, class... Args> struct NativeMember {
     unsigned int function;
     int adjustment; /* twice the signed this offset, plus the virtual flag */
@@ -14,7 +25,7 @@ template <class Class, class Result, class... Args> struct NativeMember {
 
         Result operator()(Args... args) const
         {
-            return reinterpret_cast<Result (*)(Class *, Args...)>(function)(object, args...);
+            return NativeMemberCall<Class, Result, Args...>::invoke(function, object, args...);
         }
     };
 
@@ -49,10 +60,11 @@ template <class Class, class Result, class... Args> struct NativeMember {
     }
 };
 
-template <class Class, class Result, class... Args>
-typename NativeMember<Class, Result, Args...>::Bound operator->*(Class *object, NativeMember<Class, Result, Args...> member)
+template <class Object, class Class, class Result, class... Args>
+typename NativeMember<Class, Result, Args...>::Bound
+operator->*(Object *object, NativeMember<Class, Result, Args...> member)
 {
-    return member.bind(object);
+    return member.bind(static_cast<Class *>(object));
 }
 
 #endif

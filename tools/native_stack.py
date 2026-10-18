@@ -17,6 +17,23 @@ class Frame(NamedTuple):
 
 
 FRAMES: dict[tuple[str, int], Frame] = {
+    # Newly Native scheduler/member callbacks reach the audited house slots.
+    # 01ffd14c briefly uses 0x1c bytes via ip, but calls at entry SP - 0x18.
+    # Its fp-relative epilogue restores the original SP.
+    ('autoload_2', 0x020ee834): Frame(0x10, 0x74,
+        '8e29bedef588154174b86c441edcb3c34abd3613889a29b6cb6792ac5b768e17'),
+    ('autoload_2', 0x020ee934): Frame(0x8, 0x30,
+        '0a12ed6a46868a0b6aeedfafda6c3929d472fb127f3e242eb6cd4631b7f24121'),
+    ('autoload_2', 0x020ee964): Frame(0x8, 0x3c,
+        'a4b23da6aef9377bd83e195491108c8d0c5fea7814705790e78f993d6bd57155'),
+    ('autoload_2', 0x020ee9a0): Frame(0x8, 0x9c,
+        'c6789f59bce64d6b65a7dae168ad70d92307fc82a428437a87705af098c86bf0'),
+    ('autoload_2', 0x020eea4c): Frame(0x10, 0x80,
+        '0ed3218904f225ae19e9c989fa06080b5aa2873a81cc89cd2a88615899368492'),
+    ('itcm', 0x01ffd14c): Frame(0x18, 0x68,
+        '5d9768cabc8bfa50a219a6a7a2132232dbc9817484d8eb55007fbcbf392f6053'),
+    ('itcm', 0x01ffd44c): Frame(0x20, 0xc0,
+        '97be9e9481e520004c748417f3408881cf9e8cffe7d0df642eda1d75c3469269'),
     ('main', 0x02004c0c): Frame(0x8, 0x10,
         '73456a52c80d7eae4ddfea61c20268567c5eb980a6c45809d02417ec37e4b6cb'),
     ('main', 0x020058e4): Frame(0x28, 0xbe8,

@@ -45,13 +45,13 @@ def main() -> None:
     check_rom_subset()
     for relative in native_pmf.paths():
         source = (C.SRC / relative).read_text()
-        result = native_pmf.translate(relative, source)
+        result = native_pmf.translate(relative, source, {})
         assert result is not None
         if relative in native_pmf.VERIFIED:
             _, before, after, _ = native_pmf.VERIFIED[relative]
             assert before not in result and after in result
         try:
-            native_pmf.translate(relative, source + "\n")
+            native_pmf.translate(relative, source + "\n", {})
         except ValueError:
             pass
         else:
@@ -72,8 +72,15 @@ def main() -> None:
         # cache, so this check can run while an existing scene gate is active.
         source = C.SRC / relative
         copied = folder / source.name
-        copied.write_text(native_pmf.translate(relative, source.read_text()))
-        subprocess.run([*native.compiler(), *native.flags_for(source),
+        headers = {}
+        copied.write_text(native_pmf.translate(relative, source.read_text(), headers), newline='\n')
+        header_root = folder / 'headers' / source.relative_to(C.SRC).with_suffix('')
+        for name, text in headers.items():
+            destination = header_root / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(text, newline='\n')
+        header_flags = ['-I' + str(header_root)] if headers else []
+        subprocess.run([*native.compiler(), *header_flags, *native.flags_for(source),
                         "-I" + str(C.ROOT / "runtime"), "-iquote", str(source.parent),
                         "-c", str(copied), "-o", str(copied.with_suffix(".o"))], check=True)
     source = C.ROOT / "tests/native/member_null.cpp"

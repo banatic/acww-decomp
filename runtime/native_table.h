@@ -12,7 +12,11 @@ enum NativeReturn {
     NATIVE_RET_S16,
     NATIVE_RET_32,
     NATIVE_RET_64,
-    NATIVE_RET_SKIP /* not compared: floating point, or a structure returned by value */
+    NATIVE_RET_SKIP, /* not compared: floating point, or an unaudited structure returned by value */
+    NATIVE_RET_STRUCT3, /* 02013304: ARM byte1 | byte0<<8 | byte2<<16 */
+    NATIVE_RET_UNION4,  /* 020404b4: ARM word; third explicit argument is four bytes */
+    NATIVE_RET_PAIR8,   /* 0207fc7c: ARM hidden output, r0=second, r1=first */
+    NATIVE_RET_STRUCT4  /* 020afa48: ARM little-endian word */
 };
 
 typedef struct NativeFunction {

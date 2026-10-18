@@ -56,7 +56,6 @@ func_0201d448 calls func_02098eb8 with 0 of its 1 arguments: the ROM's code pass
 func_0201d514 calls func_02098eb8 with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201d9b8 calls func_0202d8f8 with 4 of its 5 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201e074 calls func_02081d20 with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0201f40c calls func_020819bc with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201f858 calls func_020819bc with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201fa58 calls func_020819bc with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_02020104 calls func_0202da38 with 4 of its 9 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)

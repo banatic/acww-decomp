@@ -84,7 +84,9 @@ import native as native_build  # noqa: E402
 import native_abi  # noqa: E402
 import native_clean_profile  # noqa: E402
 import native_stack  # noqa: E402
+import native_aggregate  # noqa: E402
 import native_publish  # noqa: E402
+import native_contract  # noqa: E402
 import objrewrite  # noqa: E402
 
 WINDOWS = os.name == "nt"
@@ -102,7 +104,7 @@ CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", 
 # DIFF_CHECK(symbol, "module", address, bits, ... (runtime/diffcheck.h)
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
-           "run.c", "native_run.c", "native_os.c", "host.c", "native_tramp.S")
+           "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S")
 
 # The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
 # the libs/Runtime package, and the C library functions the PC's own versions replace
@@ -234,6 +236,12 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
             continue
         native = table.get((address, module))
         info = native[1] if native else (5 | 4 << 4 | names[module] << 16)  # NATIVE_RET_32, 4 parameters
+        if symbol == 'func_020404b4':
+            if function != 'EventCalendar_ScheduleKey':
+                raise ValueError('Schedule-key Clean ABI needs an audit')
+            # The PC copy asserts this prototype against the real Clean header.
+            # Native's union and Clean's scalar need bridges in both directions.
+            info = (info & ~15) | 5
         if symbol not in selected:
             info |= 1 << 11
         lines += [f"extern void {function}(void);"]
@@ -277,8 +285,14 @@ def build_clean(flags: list[str]) -> list[str]:
         obj = tree / src.relative_to(C.ROOT).with_suffix(".o")
         obj.parent.mkdir(parents=True, exist_ok=True)
         source = src
+        original = src.read_bytes().decode()
+        copy = original
         if src.relative_to(C.ROOT).as_posix() == native_publish.CLEAN_SOURCE:
-            copy = native_publish.translate(native_publish.CLEAN_SOURCE, src.read_bytes().decode())
+            copy = native_publish.translate(native_publish.CLEAN_SOURCE, copy)
+        elif src.relative_to(C.ROOT).as_posix() == native_aggregate.CLEAN_SOURCE:
+            copy = native_aggregate.clean_copy(copy)
+        copy = native_clean_profile.source_copy(copy)
+        if copy != original:
             source = OUT / 'clean-copy' / src.relative_to(C.ROOT)
             source.parent.mkdir(parents=True, exist_ok=True)
             source.write_text(f'#line 1 "{src.as_posix()}"\n' + copy, newline='\n')
@@ -435,6 +449,7 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     """Every function of every module with the letter runtime/native_run.c reads: N, C, R, H
     or -. With `clean`, every function with a Clean version is N."""
     mods = C.modules()
+    contracts = native_contract.audited(C.ROOT, mods, C.module_image)
     syms = C.SymbolTable(mods)
     table = natives_table()
     image = C.module_image('main')
@@ -512,8 +527,10 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
                 start = s.address - mods[mod]["base"]
                 frame = native_stack.frame_extent(mod, s.address, images[mod][start:start + s.size])
                 spill_arg, spill_offset = native_stack.SPILLS.get((mod, s.address), (-1, -1))
+            contract = contracts.get((mod, s.address), 0)
+            words = contract & 0xff if contract else arg_words.get((mod, s.address), -1)
             rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)} "
-                        f"{arg_words.get((mod, s.address), -1)} {frame} {spill_arg} {spill_offset}\n")
+                        f"{words} {frame} {spill_arg} {spill_offset} {contract:x}\n")
     path = OUT / "native-policy.txt"
     path.write_text("".join(rows), newline="\n")
     print(f"native policy {policy}{' with Clean' if clean else ''}: {counts.get('N', 0)} Native, {counts.get('C', 0)} Native for Native callers "
