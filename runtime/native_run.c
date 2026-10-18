@@ -60,13 +60,13 @@ typedef struct Fn {
     char status;
     const NativeFunction *native;
     char *name;
-    int params;         /* parameters with `this`, as the source declares them; -1 unknown */
-    int arg_words;      /* proven ARM words, including audited aggregates; -1 for an unknown ABI */
-    uint32_t argument_contract; /* audited word count (low byte), pointer roles (next16 bits); zero: legacy */
-    int guest_frame;    /* audited constant ROM call extent; -1 when unproved */
+    int params;                              /* parameters with `this`, as the source declares them; -1 unknown */
+    int arg_words;                           /* proven ARM words, including audited aggregates; -1 for an unknown ABI */
+    uint32_t argument_contract;              /* audited word count (low byte), pointer roles (next16 bits); zero: legacy */
+    int guest_frame;                         /* audited constant ROM call extent; -1 when unproved */
     int guest_spill_arg, guest_spill_offset; /* audited entry spill; -1 when absent */
-    uint64_t calls_in;  /* from the interpreter, run as Native */
-    uint64_t calls_out; /* from Native code, run by the interpreter */
+    uint64_t calls_in;                       /* from the interpreter, run as Native */
+    uint64_t calls_out;                      /* from Native code, run by the interpreter */
 } Fn;
 
 typedef struct Module {
@@ -170,9 +170,9 @@ static int load_policy(const char *path)
         int params = -1, arg_words = -1, guest_frame = -1, spill_arg = -1, spill_offset = -1;
         unsigned contract = 0;
         int end = 0;
-        if (sscanf(line, "%x %31s %x %3s %399s%n %d%n %d%n %d%n %d%n %d%n %x%n", &address, module, &size, status, name,
-                   &end, &params, &end, &arg_words, &end, &guest_frame, &end, &spill_arg, &end, &spill_offset, &end,
-                   &contract, &end) < 5) {
+        if (sscanf(line, "%x %31s %x %3s %399s%n %d%n %d%n %d%n %d%n %d%n %x%n", &address, module, &size, status, name, &end,
+                   &params, &end, &arg_words, &end, &guest_frame, &end, &spill_arg, &end, &spill_offset, &end, &contract,
+                   &end) < 5) {
             continue;
         }
         if (line[end + strspn(line + end, " \t\r\n")] != '\0') {
@@ -184,8 +184,8 @@ static int load_policy(const char *path)
             continue;
         }
         unsigned words = contract & 0xffu;
-        if (contract && (words == 0 || words > ARG_WORDS || arg_words != (int) words ||
-                         (contract >> 8) >= (1u << words) || strncmp(module, "ov", 2) == 0)) {
+        if (contract && (words == 0 || words > ARG_WORDS || arg_words != (int) words || (contract >> 8) >= (1u << words) ||
+                         strncmp(module, "ov", 2) == 0)) {
             fclose(f);
             return -1; /* These audited contracts have unique, permanently resident addresses. */
         }
@@ -494,8 +494,8 @@ static void guest_trace(GuestContext *g, const uint32_t *args)
     path->count = count;
     path->sp = g->anchor_sp;
     path->anchor = g->anchor;
-    printf("native: GUEST_PATH frame %u root %s sp %08x", frame_now,
-           g->anchor != NULL ? g->anchor->name : "unknown", g->anchor_sp);
+    printf("native: GUEST_PATH frame %u root %s sp %08x", frame_now, g->anchor != NULL ? g->anchor->name : "unknown",
+           g->anchor_sp);
     for (unsigned i = 0; i < count; ++i) {
         uint32_t index = g->frames[g->anchor_depth + i].index;
         path->indices[i] = index;
@@ -531,8 +531,8 @@ static uint32_t guest_stack_slot(uint32_t owner, uint32_t offset, uint32_t size)
     }
     GuestFrame *frame = &g->frames[g->depth - 1];
     Fn *f = guest_functions[frame->index];
-    if (!frame->valid || (f->address & ~1u) != (owner & ~1u) || f->guest_frame < 0
-        || offset > (uint32_t) f->guest_frame || size > (uint32_t) f->guest_frame - offset) {
+    if (!frame->valid || (f->address & ~1u) != (owner & ~1u) || f->guest_frame < 0 || offset > (uint32_t) f->guest_frame ||
+        size > (uint32_t) f->guest_frame - offset) {
         guest_stack_failure(g, "slot outside a proved frame");
     }
     return frame->sp + offset;
@@ -565,7 +565,7 @@ static void guest_enter(uint32_t index, uintptr_t caller, const uint32_t *args)
     if (valid) {
         sp -= (uint32_t) f->guest_frame;
     }
-    g->frames[g->depth++] = (GuestFrame) {index, caller, sp, valid};
+    g->frames[g->depth++] = (GuestFrame){index, caller, sp, valid};
     guest_trace(g, args);
     if (f->guest_spill_arg >= 0) {
         if (f->guest_spill_arg >= ARG_WORDS || f->guest_spill_offset < 0) {
@@ -730,8 +730,8 @@ static void record_publication(ArmCpu *c, uint32_t address, uint32_t value)
         return;
     }
     /* Publication args describe the store, not the ARM argument registers. */
-    uint32_t r[RECORD_WORDS] = {s->key, CROSS_PUBLISH, pc, (uint32_t) c->steps,
-                              (uint32_t) (c->steps >> 32), value, address, 4, 0, 0};
+    uint32_t r[RECORD_WORDS] = {
+        s->key, CROSS_PUBLISH, pc, (uint32_t) c->steps, (uint32_t) (c->steps >> 32), value, address, 4, 0, 0};
     fwrite(r, 4, RECORD_WORDS, record_out);
     record_count++;
     peek(s->key, ++s->seen);
@@ -838,8 +838,7 @@ static int load_replay(const char *path)
         if (r->kind >= CROSS_ARGUMENTS) {
             goto malformed;
         }
-        unsigned count = (r->kind == CROSS_CALL || r->kind == CROSS_CALL_OUT) ?
-                         contract_words(contract_at(r->function)) : 0;
+        unsigned count = (r->kind == CROSS_CALL || r->kind == CROSS_CALL_OUT) ? contract_words(contract_at(r->function)) : 0;
         uint32_t parent = i + 1;
         for (unsigned first = 4; first < count; first += 3) {
             if (++i >= n) {
@@ -1217,13 +1216,14 @@ static void check_arguments(const Record *r, uint32_t function)
             int pointer = (f->argument_contract >> (8 + i)) & 1u;
             /* Only an explicitly declared pointer may refer to a readable PC
              * object instead of a mapped ROM object. Scalars never use this. */
-            if (a == b || (pointer && a != 0 && memory_host(a, 1) != NULL &&
-                           !native_fault_is_ds(b) && native_os_accessible(b, 1, 0))) {
+            if (a == b ||
+                (pointer && a != 0 && memory_host(a, 1) != NULL && !native_fault_is_ds(b) && native_os_accessible(b, 1, 0))) {
                 continue;
             }
-            fprintf(stderr, "native: ARGUMENT audited %s word %u: Native %08x, Reference %08x "
-                    "(frame %u, stream %08x, %s)\n", fn_name(function), i + 1, b, a, frame_now,
-                    r->stream, crossing_names[r->kind]);
+            fprintf(stderr,
+                    "native: ARGUMENT audited %s word %u: Native %08x, Reference %08x "
+                    "(frame %u, stream %08x, %s)\n",
+                    fn_name(function), i + 1, b, a, frame_now, r->stream, crossing_names[r->kind]);
             exit(7);
         }
         replay_events += extra;
@@ -1555,7 +1555,8 @@ static void publish_word(uint32_t pc, uint32_t *pointer, uint32_t value)
             diverged = 1;
         } else {
             if (r->args[0] != address || r->args[1] != 4 || r->check != value) {
-                fprintf(stderr, "native: publication mismatch at frame %u, pc %08x: "
+                fprintf(stderr,
+                        "native: publication mismatch at frame %u, pc %08x: "
                         "Native [%08x]=%08x, Reference [%08x]/%u=%08x\n",
                         frame_now, pc, address, value, r->args[0], r->args[1], r->check);
                 exit(7);
@@ -1631,9 +1632,8 @@ static int call_native(ArmCpu *c, void *user)
     guest->anchor_sp = c->r[13];
     guest->anchor = f;
     int return_kind = native_return(f->native);
-    uint64_t v = native_aggregate_kind(return_kind)
-                     ? native_aggregate_invoke(return_kind, f->native->host, args)
-                     : host_invoke(f->native->host, args, ARG_WORDS, is_member(f->native));
+    uint64_t v = native_aggregate_kind(return_kind) ? native_aggregate_invoke(return_kind, f->native->host, args)
+                                                    : host_invoke(f->native->host, args, ARG_WORDS, is_member(f->native));
     if (guest->depth != guest->anchor_depth) {
         fprintf(stderr, "native: unbalanced guest call stack at %s\n", f->name);
         abort();
@@ -1886,16 +1886,15 @@ uintptr_t native_fault_execute(uint32_t target, uint32_t *eax, uint32_t ecx)
 {
     (void) ecx; /* only a thiscall would need it (HOST_THISCALL) */
     Fn *f = loaded_at(target);
-    if ((target & ~1u) == 0x020404b4u && f != NULL && f->native != NULL
-        && native_return(f->native) == NATIVE_RET_32) {
+    if ((target & ~1u) == 0x020404b4u && f != NULL && f->native != NULL && native_return(f->native) == NATIVE_RET_32) {
         /* A DS function pointer has the Native declaration's union ABI. The
          * selected Clean entry has a scalar ABI, so go through the Native
          * public entry patched by patch_clean, including when Clean is forced
          * back through the interpreter. */
         for (uint32_t i = 0; i < native_function_count; i++) {
             const NativeFunction *n = &native_functions[i];
-            if ((n->address & ~1u) == (target & ~1u) && native_return(n) == NATIVE_RET_UNION4
-                && (n->info >> 16) == (f->native->info >> 16)) {
+            if ((n->address & ~1u) == (target & ~1u) && native_return(n) == NATIVE_RET_UNION4 &&
+                (n->info >> 16) == (f->native->info >> 16)) {
                 calls_pointer++;
                 return (uintptr_t) n->host;
             }
@@ -2251,8 +2250,8 @@ static int patch_clean(void)
                 const NativeFunction *n = &native_functions[i];
                 if (n->address == clean->address && (n->info >> 16) == (clean->info >> 16)) {
                     to = n->host;
-                    if ((n->address & ~1u) == 0x020404b4u && native_return(n) == NATIVE_RET_UNION4
-                        && native_return(clean) == NATIVE_RET_32) {
+                    if ((n->address & ~1u) == 0x020404b4u && native_return(n) == NATIVE_RET_UNION4 &&
+                        native_return(clean) == NATIVE_RET_32) {
                         to = native_aggregate_clean_bridge(NATIVE_RET_32, NATIVE_RET_UNION4, to);
                     }
                 }
@@ -2282,8 +2281,7 @@ static int patch_clean(void)
             }
             const void *to = clean->host;
             int kind = native_return(n);
-            if ((n->address & ~1u) == 0x020404b4u && kind == NATIVE_RET_UNION4
-                && native_return(clean) == NATIVE_RET_32) {
+            if ((n->address & ~1u) == 0x020404b4u && kind == NATIVE_RET_UNION4 && native_return(clean) == NATIVE_RET_32) {
                 to = native_aggregate_clean_bridge(NATIVE_RET_UNION4, NATIVE_RET_32, to);
             }
             if (kind == NATIVE_RET_U8 || kind == NATIVE_RET_S8 || kind == NATIVE_RET_U16 || kind == NATIVE_RET_S16) {

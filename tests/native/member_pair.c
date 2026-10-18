@@ -9,7 +9,13 @@
 #include "native_os.h"
 #include "member_pair_rom.h"
 
-#define CHECK(x) do { if (!(x)) { fprintf(stderr, "Failed %d: %s\n", __LINE__, #x); exit(2); } } while (0)
+#define CHECK(x)                                                                                                              \
+    do {                                                                                                                      \
+        if (!(x)) {                                                                                                           \
+            fprintf(stderr, "Failed %d: %s\n", __LINE__, #x);                                                                 \
+            exit(2);                                                                                                          \
+        }                                                                                                                     \
+    } while (0)
 extern void func_02013948(void *, void *, unsigned, int, int);
 uint32_t native_pop_bytes, native_return_floating;
 static uint32_t object, argument, number, expected_this, target, first, second;
@@ -50,14 +56,26 @@ uintptr_t native_fault_execute(uint32_t address, uint32_t *eax, uint32_t ecx)
     faults++;
     return (uintptr_t) callback;
 }
-int native_fault_is_ds(uint32_t address) { return address >= 0x01000000u && address < 0x10000000u; }
+int native_fault_is_ds(uint32_t address)
+{
+    return address >= 0x01000000u && address < 0x10000000u;
+}
 int native_fault_data(uint32_t eip, uint32_t address, uint32_t esp)
 {
     fprintf(stderr, "Unexpected data fault %08x at %08x sp %08x\n", address, eip, esp);
     exit(2);
 }
-int native_fault_divide(uint32_t eip) { (void) eip; CHECK(0); return 0; }
-void native_watch_hit(uint32_t eip) { (void) eip; CHECK(0); }
+int native_fault_divide(uint32_t eip)
+{
+    (void) eip;
+    CHECK(0);
+    return 0;
+}
+void native_watch_hit(uint32_t eip)
+{
+    (void) eip;
+    CHECK(0);
+}
 static int helper(ArmCpu *cpu, void *user)
 {
     uint32_t address = (uint32_t) (uintptr_t) user;
@@ -67,15 +85,18 @@ static int helper(ArmCpu *cpu, void *user)
         func_02012e58((void *) (uintptr_t) cpu->r[0], (void *) (uintptr_t) cpu->r[1]);
     } else {
         CHECK(address == (target & ~1u));
-        callback((uint32_t *) (uintptr_t) cpu->r[0], (void *) (uintptr_t) cpu->r[1],
-                 (void *) (uintptr_t) cpu->r[2], (int) cpu->r[3]);
+        callback((uint32_t *) (uintptr_t) cpu->r[0], (void *) (uintptr_t) cpu->r[1], (void *) (uintptr_t) cpu->r[2],
+                 (int) cpu->r[3]);
         /* The caller must use the pointed-to result, never these registers. */
         cpu->r[0] = 0xdeadbeef;
         cpu->r[1] = 0xcafebabe;
     }
     cpu->r[15] = cpu->r[14] & ~1u;
-    if (cpu->r[14] & 1) cpu->cpsr |= ARM_CPSR_T;
-    else cpu->cpsr &= ~ARM_CPSR_T;
+    if (cpu->r[14] & 1) {
+        cpu->cpsr |= ARM_CPSR_T;
+    } else {
+        cpu->cpsr &= ~ARM_CPSR_T;
+    }
     return 0;
 }
 static ArmHook hooks(void *user, uint32_t address, void **hook_user)
@@ -127,19 +148,23 @@ int main(void)
                     cpu.r[3] = state;
                     cpu.r[13] = 0x023f0000;
                     *(uint32_t *) (uintptr_t) cpu.r[13] = number;
-                    for (unsigned reg = 4; reg <= 11; reg++) cpu.r[reg] = 0x55550000 + reg;
+                    for (unsigned reg = 4; reg <= 11; reg++) {
+                        cpu.r[reg] = 0x55550000 + reg;
+                    }
                     event_count = 0;
                     CHECK(arm_call(&cpu, 0x02013949, 1000) == ARM_RETURNED);
                     CHECK(cpu.r[13] == 0x023f0000);
-                    for (unsigned reg = 4; reg <= 11; reg++) CHECK(cpu.r[reg] == 0x55550000 + reg);
+                    for (unsigned reg = 4; reg <= 11; reg++) {
+                        CHECK(cpu.r[reg] == 0x55550000 + reg);
+                    }
                     memcpy(expected, (void *) (uintptr_t) (object - 128), sizeof(expected));
                     unsigned expected_events = event_count;
                     uint32_t expected_log[4][3];
                     memcpy(expected_log, events, sizeof(events));
                     memcpy((void *) (uintptr_t) (object - 128), initial, sizeof(initial));
                     event_count = 0;
-                    func_02013948((void *) (uintptr_t) object, (void *) (uintptr_t) argument,
-                                  index, (int) state, (int) number);
+                    func_02013948((void *) (uintptr_t) object, (void *) (uintptr_t) argument, index, (int) state,
+                                  (int) number);
                     CHECK(memcmp(expected, (void *) (uintptr_t) (object - 128), sizeof(expected)) == 0);
                     CHECK(event_count == expected_events);
                     CHECK(memcmp(events, expected_log, event_count * sizeof(events[0])) == 0);
@@ -150,6 +175,7 @@ int main(void)
         }
     }
     CHECK(cases == 4320 && calls == 2240 && faults == calls && callbacks == 2 * calls);
-    puts("4320 actual ARM/PC Pair caller cases agree; 2240 DS callback faults; hidden output first, adjusted this second, stack argument, signed results, seven table targets, null, virtual and invalid indices");
+    puts("4320 actual ARM/PC Pair caller cases agree; 2240 DS callback faults; hidden output first, adjusted this second, "
+         "stack argument, signed results, seven table targets, null, virtual and invalid indices");
     return 0;
 }

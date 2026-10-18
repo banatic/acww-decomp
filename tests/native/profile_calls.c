@@ -21,9 +21,18 @@ __attribute__((naked)) void probe_void(void)
     __asm__("movl $0x12345678, %eax\n\tmovl $0x76543210, %edx\n\tret");
 }
 
-signed char probe_signed(int x) { return x; }
-unsigned short probe_unsigned(int x) { return x; }
-double probe_double(double x) { return x + 0.25; }
+signed char probe_signed(int x)
+{
+    return x;
+}
+unsigned short probe_unsigned(int x)
+{
+    return x;
+}
+double probe_double(double x)
+{
+    return x + 0.25;
+}
 
 Triple probe_struct(uint32_t a, uint32_t b)
 {
@@ -36,7 +45,10 @@ __attribute__((noinline)) uint32_t probe_recurse(uint32_t n)
     return n == 0 ? 7 : n + probe_recurse(n - 1);
 }
 
-uint32_t probe_tail_target(uint32_t n) { return n + 19; }
+uint32_t probe_tail_target(uint32_t n)
+{
+    return n + 19;
+}
 __attribute__((naked)) uint32_t probe_tail(uint32_t n)
 {
 #ifdef _WIN32
@@ -56,7 +68,14 @@ __attribute__((naked)) uint32_t probe_tail(uint32_t n)
 extern void abort(void);
 extern int puts(const char *);
 extern int fflush(void *);
-#define assert(test) do { if (!(test)) { puts("Failed: " #test); fflush(0); abort(); } } while (0)
+#define assert(test)                                                                                                          \
+    do {                                                                                                                      \
+        if (!(test)) {                                                                                                        \
+            puts("Failed: " #test);                                                                                           \
+            fflush(0);                                                                                                        \
+            abort();                                                                                                          \
+        }                                                                                                                     \
+    } while (0)
 
 uint32_t native_probe_args(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 uint64_t native_probe_wide(uint32_t, uint32_t);
@@ -69,7 +88,10 @@ Triple native_probe_struct(uint32_t, uint32_t);
 uint32_t native_probe_recurse(uint32_t);
 uint32_t native_probe_tail(uint32_t);
 
-static struct Frame { uint32_t index; uintptr_t caller; } frames[32];
+static struct Frame {
+    uint32_t index;
+    uintptr_t caller;
+} frames[32];
 static unsigned depth, peak, entries, exits, calls[10];
 
 #ifdef PROFILE_SIGNAL_CHECK
@@ -104,7 +126,9 @@ static void enter(uint32_t index, uintptr_t caller, const uint32_t *args)
     ++entries;
     ++calls[index];
     __asm__ volatile("movl $0xdeadbeef, %%eax\n\tmovl $0xabababab, %%ecx\n\tmovl $0xcdcdcdcd, %%edx"
-                     : : : "eax", "ecx", "edx");
+                     :
+                     :
+                     : "eax", "ecx", "edx");
 }
 
 __attribute__((target("general-regs-only"))) static uintptr_t leave(uint32_t index)

@@ -7,10 +7,19 @@
 /* These C layouts deliberately have the original fields' size and alignment.
  * The host compiler supplies its own hidden result pointer and stack cleanup.
  * The runtime's and Native C compilers use the same i386 aggregate ABI. */
-typedef struct { unsigned char bytes[3]; } Bytes3;
-typedef struct { unsigned char bytes[4]; } Bytes4;
-typedef union { uint32_t word; unsigned char bytes[4]; } Word4;
-typedef struct { uint32_t first, second; } Pair8;
+typedef struct {
+    unsigned char bytes[3];
+} Bytes3;
+typedef struct {
+    unsigned char bytes[4];
+} Bytes4;
+typedef union {
+    uint32_t word;
+    unsigned char bytes[4];
+} Word4;
+typedef struct {
+    uint32_t first, second;
+} Pair8;
 _Static_assert(sizeof(Bytes3) == 3 && _Alignof(Bytes3) == 1, "three-byte PC result");
 _Static_assert(sizeof(Bytes4) == 4 && _Alignof(Bytes4) == 1, "four-byte PC aggregate");
 _Static_assert(sizeof(Word4) == 4 && _Alignof(Word4) == 4, "four-byte PC union");
@@ -81,7 +90,9 @@ uint64_t native_aggregate_invoke(int kind, const void *function, const uint32_t 
 
 void native_aggregate_prepare(int kind, const uint32_t *pc, uint32_t *arm, NativeAggregateCall *call)
 {
-    if (!native_aggregate_kind(kind)) abort();
+    if (!native_aggregate_kind(kind)) {
+        abort();
+    }
 #ifdef _WIN32
     call->hidden = kind == NATIVE_RET_STRUCT3;
 #else
@@ -101,7 +112,9 @@ void native_aggregate_prepare(int kind, const uint32_t *pc, uint32_t *arm, Nativ
 
 uint64_t native_aggregate_finish(int kind, NativeAggregateCall *call, uint64_t registers, uint32_t *pop_bytes)
 {
-    if (!native_aggregate_kind(kind)) abort();
+    if (!native_aggregate_kind(kind)) {
+        abort();
+    }
     *pop_bytes = 0;
 #ifndef _WIN32
     *pop_bytes = call->hidden ? 4 : 0;
@@ -109,13 +122,14 @@ uint64_t native_aggregate_finish(int kind, NativeAggregateCall *call, uint64_t r
     uint32_t result = (uint32_t) registers;
     if (kind == NATIVE_RET_PAIR8) {
         /* ARM has already written the result through its hidden pointer. */
-        if (call->hidden) return (uint32_t) (uintptr_t) call->output;
+        if (call->hidden) {
+            return (uint32_t) (uintptr_t) call->output;
+        }
         return ((uint64_t) call->storage[1] << 32) | call->storage[0];
     }
     if (call->hidden) {
         if (kind == NATIVE_RET_STRUCT3) {
-            unsigned char bytes[3] = {(unsigned char) (result >> 8), (unsigned char) result,
-                                      (unsigned char) (result >> 16)};
+            unsigned char bytes[3] = {(unsigned char) (result >> 8), (unsigned char) result, (unsigned char) (result >> 16)};
             memcpy(call->output, bytes, 3);
         } else {
             memcpy(call->output, &result, 4);

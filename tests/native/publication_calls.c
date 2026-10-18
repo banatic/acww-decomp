@@ -17,7 +17,13 @@ extern int publication_nested_return(int old_boundary);
 extern void func_020bb090(void);
 extern void func_020ba340(void);
 
-#define CHECK(x) do { if (!(x)) { fprintf(stderr, "Failed: " #x "\n"); exit(2); } } while (0)
+#define CHECK(x)                                                                                                              \
+    do {                                                                                                                      \
+        if (!(x)) {                                                                                                           \
+            fprintf(stderr, "Failed: " #x "\n");                                                                              \
+            exit(2);                                                                                                          \
+        }                                                                                                                     \
+    } while (0)
 
 static unsigned irq_visits;
 static int irq_shift_expected = -1;
@@ -61,8 +67,8 @@ static void verify_recording(uint32_t entry, uint32_t size, uint32_t pc, uint32_
 {
     publication_reset_clock(100, 512, 0);
     cpu = publication_cpu();
-    Fn owner = {.address = entry | 1u, .size = size, .module = 0, .status = 'N',
-                .native = &native_functions[0], .name = "publisher"};
+    Fn owner = {
+        .address = entry | 1u, .size = size, .module = 0, .status = 'N', .native = &native_functions[0], .name = "publisher"};
     fns = &owner;
     fn_count = 1;
     modules[0].resident = resident_ready = 1;
@@ -113,8 +119,7 @@ static void prepare(uint64_t now, uint64_t end, uint64_t at, int irq)
     memset(streams, 0, sizeof(streams));
     stream_count = 1;
     streams[0].next = 1;
-    event = (Record) {0, CROSS_PUBLISH, 0x020bb16e, (uint32_t) at, (uint32_t) (at >> 32),
-                      1, {0x021f6f70, 4, 0, 0}, 0};
+    event = (Record){0, CROSS_PUBLISH, 0x020bb16e, (uint32_t) at, (uint32_t) (at >> 32), 1, {0x021f6f70, 4, 0, 0}, 0};
     records = &event;
     record_count = 1;
     running = replaying = 1;
@@ -220,10 +225,7 @@ int main(int argc, char **argv)
     /* HBlank samples a separate line-shift selector while the gradient is
      * still being calculated. Run both real compiled bodies around that IRQ. */
     prepare(500, 512, 520, 1);
-    Record sequence[2] = {
-        {0, CROSS_PUBLISH, 0x020ba348, 505, 0, 0, {0x021f8acc, 4, 0, 0}, 2},
-        event
-    };
+    Record sequence[2] = {{0, CROSS_PUBLISH, 0x020ba348, 505, 0, 0, {0x021f8acc, 4, 0, 0}, 2}, event};
     records = sequence;
     record_count = 2;
     CHECK(bus_write(0x021f8accu, 4, 1));

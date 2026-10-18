@@ -69,13 +69,12 @@ int func_0200e894(void *self, void *p)
             failed = 2;
         }
     } else if (expected_state == 0x5e) {
-        if (bytes[12] != 0x57 || words[4] != 0x11100 || words[5] != 0x22200 ||
-            words[6] != 0x33300) {
+        if (bytes[12] != 0x57 || words[4] != 0x11100 || words[5] != 0x22200 || words[6] != 0x33300) {
             failed = 5;
         }
     } else if (expected_state == 0x5f) {
         if (words[3] != 0x11100 || words[4] != 0x22200 || words[5] != 0x33300 ||
-            *(unsigned short *)(bytes + 24) != expected_item || bytes[26] != 0x57) {
+            *(unsigned short *) (bytes + 24) != expected_item || bytes[26] != 0x57) {
             failed = 6;
         }
     } else {
@@ -110,15 +109,13 @@ int main(void)
     }
     expected_state = 0x5f;
     expected_item = 0xa123;
-    if (func_ov003_022118f8(actor, vector, expected_item, 0x57, 6, -9) != 7 ||
-        items[0] != 0xfff1 || items[1] != 0xfff1) {
+    if (func_ov003_022118f8(actor, vector, expected_item, 0x57, 6, -9) != 7 || items[0] != 0xfff1 || items[1] != 0xfff1) {
         return 9;
     }
     local_actor = 1;
     items[0] = 0x1234;
     items[1] = 0x5678;
-    if (func_ov003_022118f8(actor, vector, expected_item, 0x57, 6, -9) != 7 ||
-        items[0] != 0x1234 || items[1] != 0x5678) {
+    if (func_ov003_022118f8(actor, vector, expected_item, 0x57, 6, -9) != 7 || items[0] != 0x1234 || items[1] != 0x5678) {
         return 10;
     }
     expected_item = 0xfff1;

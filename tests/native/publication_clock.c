@@ -21,10 +21,16 @@ void publication_io_advance(uint32_t cycles)
     }
 }
 
-uint32_t publication_io_frame(void) { return 0; }
-void publication_arm7_step(void) { }
+uint32_t publication_io_frame(void)
+{
+    return 0;
+}
+void publication_arm7_step(void) {}
 
-ArmCpu *publication_cpu(void) { return &cpu; }
+ArmCpu *publication_cpu(void)
+{
+    return &cpu;
+}
 
 void publication_reset_clock(uint64_t now, uint64_t end, int irq)
 {
@@ -39,9 +45,18 @@ void publication_reset_clock(uint64_t now, uint64_t end, int irq)
     request_irq = irq;
 }
 
-unsigned publication_advances(void) { return advances; }
-unsigned publication_old_seen(void) { return old_selector_seen; }
-unsigned publication_irq_requested(void) { return irq_requested; }
+unsigned publication_advances(void)
+{
+    return advances;
+}
+unsigned publication_old_seen(void)
+{
+    return old_selector_seen;
+}
+unsigned publication_irq_requested(void)
+{
+    return irq_requested;
+}
 
 int publication_nested_return(int old_boundary)
 {

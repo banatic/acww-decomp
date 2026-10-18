@@ -61,8 +61,7 @@ template <class Class, class Result, class... Args> struct NativeMember {
 };
 
 template <class Object, class Class, class Result, class... Args>
-typename NativeMember<Class, Result, Args...>::Bound
-operator->*(Object *object, NativeMember<Class, Result, Args...> member)
+typename NativeMember<Class, Result, Args...>::Bound operator->*(Object *object, NativeMember<Class, Result, Args...> member)
 {
     return member.bind(static_cast<Class *>(object));
 }

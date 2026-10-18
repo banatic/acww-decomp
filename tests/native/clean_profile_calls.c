@@ -26,11 +26,11 @@ int main(void)
 {
     assert((uintptr_t) clean_entry_address() == (uintptr_t) native_probe_args);
     assert(clean_call_pointer(6) == 28);
-    const void *expected[] = {(const void *) native_probe_args, (const void *) native_probe_wide,
-                             (const void *) native_probe_void, (const void *) native_probe_signed,
-                             (const void *) native_probe_unsigned, (const void *) native_probe_double,
-                             (const void *) native_probe_struct, (const void *) native_probe_recurse,
-                             (const void *) native_probe_tail, (const void *) native_probe_tail_target};
+    const void *expected[] = {(const void *) native_probe_args,     (const void *) native_probe_wide,
+                              (const void *) native_probe_void,     (const void *) native_probe_signed,
+                              (const void *) native_probe_unsigned, (const void *) native_probe_double,
+                              (const void *) native_probe_struct,   (const void *) native_probe_recurse,
+                              (const void *) native_probe_tail,     (const void *) native_probe_tail_target};
     assert(clean_body_count == 10);
     for (unsigned i = 0; i < clean_body_count; ++i) {
         assert(clean_bodies[i].wrapper == expected[i]);
