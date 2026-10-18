@@ -10,6 +10,7 @@
 #include "io.h"
 #include "memory.h"
 #include "native_guest.h"
+#include "native_publish.h"
 #include "native_os.h"
 #include "native_table.h"
 
@@ -356,9 +357,10 @@ enum Crossing {
     CROSS_CALL_OUT, /* Native code calls the interpreter */
     CROSS_BACK,     /* ...which returns to Native code */
     CROSS_RETURN,   /* the Native function returns to the interpreter */
-    CROSS_SNAPSHOT  /* memory is hashed here (a quiet moment after a requested frame) */
+    CROSS_SNAPSHOT, /* memory is hashed here (a quiet moment after a requested frame) */
+    CROSS_PUBLISH   /* an audited RAM store publishes a completed buffer */
 };
-static const char *const crossing_names[] = {"call", "call-out", "back", "return", "snapshot"};
+static const char *const crossing_names[] = {"call", "call-out", "back", "return", "snapshot", "publish"};
 
 /* One crossing: the stream (thread or interrupt), the kind, the function, the step count as
  * the hook saw it (the branching instruction not yet counted), and a value both runs must
@@ -629,6 +631,39 @@ static void write_record(uint32_t stream, uint32_t kind, uint32_t function, uint
     if (kind != CROSS_SNAPSHOT) {
         peek(stream, ++stream_for(stream)->seen);
     }
+}
+
+/* The exact ROM store is guarded by tools/native_publish.py. Ordinary writes
+ * to the selector, including initialization, are not publication events. */
+static uint32_t publication_owner(uint32_t pc, uint32_t address)
+{
+    if (pc == 0x020bb16eu && address == 0x021f6f70u) {
+        return 0x020bb090u; /* completed gradient */
+    }
+    if (pc == 0x020ba348u && address == 0x021f8accu) {
+        return 0x020ba340u; /* line shift sampled by HBlank */
+    }
+    return 0;
+}
+
+static void record_publication(ArmCpu *c, uint32_t address, uint32_t value)
+{
+    uint32_t pc = c->r[15] - ((c->cpsr & ARM_CPSR_T) ? 2u : 4u);
+    uint32_t owner_address = publication_owner(pc, address);
+    if (owner_address == 0 || !resident_ready) {
+        return;
+    }
+    Fn *owner = loaded_at(owner_address);
+    Stream *s = stream_for(stream_key());
+    if (!native_for_native(owner) || s->depth == 0 || !s->frames[s->depth - 1].native) {
+        return;
+    }
+    /* Publication args describe the store, not the ARM argument registers. */
+    uint32_t r[RECORD_WORDS] = {s->key, CROSS_PUBLISH, pc, (uint32_t) c->steps,
+                              (uint32_t) (c->steps >> 32), value, address, 4, 0, 0};
+    fwrite(r, 4, RECORD_WORDS, record_out);
+    record_count++;
+    peek(s->key, ++s->seen);
 }
 
 /* The registers a function takes its arguments in: r0 up to its parameter count (with
@@ -1326,6 +1361,52 @@ static void idle_until(uint64_t at)
     run_until_return();
     memcpy(cpu->r, saved, sizeof(saved));
     cpu->cpsr = saved_cpsr;
+}
+
+static uint64_t publications;
+
+static void publish_word(uint32_t pc, uint32_t *pointer, uint32_t value)
+{
+    uint32_t address = (uint32_t) (uintptr_t) pointer;
+    if (publication_owner(pc, address) == 0) {
+        fprintf(stderr, "native: unaudited publication %08x -> %08x\n", pc, address);
+        exit(7);
+    }
+    if (replaying && !diverged) {
+        Stream *s = stream_for(stream_key());
+        Record *r = s->next ? &records[s->next - 1] : NULL;
+        if (r == NULL || r->kind != CROSS_PUBLISH || r->function != pc) {
+            report_divergence(s, r, CROSS_PUBLISH, pc);
+            if (!record_ended) {
+                exit(7);
+            }
+            diverged = 1;
+        } else {
+            if (r->args[0] != address || r->args[1] != 4 || r->check != value) {
+                fprintf(stderr, "native: publication mismatch at frame %u, pc %08x: "
+                        "Native [%08x]=%08x, Reference [%08x]/%u=%08x\n",
+                        frame_now, pc, address, value, r->args[0], r->args[1], r->check);
+                exit(7);
+            }
+            uint64_t at = ((uint64_t) r->steps_hi << 32) | r->steps_lo;
+            idle_until(at);
+            if (cpu->steps > at) {
+                drift_rewound += run_rewind(at);
+            }
+            if (!run_native_store_boundary()) {
+                fprintf(stderr, "native: publication at %08x arrived after its hardware time\n", pc);
+                exit(7);
+            }
+            crossing(CROSS_PUBLISH, pc, value, 0);
+        }
+    }
+    /* The value is supplied by the compiled body, never taken from a record. */
+    if (!bus_write(address, 4, value)) {
+        fprintf(stderr, "native: publication address is not writable: %08x\n", address);
+        exit(7);
+    }
+    publications++;
+    idle_until(next_crossing_step());
 }
 
 static int call_native(ArmCpu *c, void *user)
@@ -2186,6 +2267,7 @@ int native_init(ArmCpu *c, const char *manifest)
         setvbuf(record_out, NULL, _IOFBF, 1 << 20);
         recording = 1;
         running = 0;
+        c->observe_word_store = record_publication;
     }
     if (running) {
         if (replay != NULL && *replay) {
@@ -2214,6 +2296,7 @@ int native_init(ArmCpu *c, const char *manifest)
         native_guest_return_hook = guest_return;
         native_guest_slot_hook = guest_stack_slot;
         native_guest_enter_hook = guest_enter;
+        native_publish_hook = publish_word;
         io_unmapped = host_access;
         if (native_os_watchdog(10, making_progress, stuck_in) != 0) {
             fprintf(stderr, "native: cannot start the watchdog\n");
@@ -2255,6 +2338,7 @@ void native_report(FILE *out)
         fprintf(out, "native: %d Clean functions in place of their Native ones, %d entered from the interpreter\n", clean,
                 clean_ran);
     }
+    fprintf(out, "native: %llu audited buffer publications\n", (unsigned long long) publications);
     if (replaying) {
         uint32_t left = 0;
         for (int i = 0; i < stream_count; i++) {

@@ -149,6 +149,10 @@ audited guest frame extents and an incoming-argument spill, with wrappers tracki
 and Clean entries. See [the audited guest-stack boundary](native-guest-stack.md) for its proof
 guards, supported effects and tests.
 
+RAM selectors sampled by HBlank need their publication time preserved too. The Native sky
+copies use audited store events for the line-shift slot and completed gradient buffer. See
+[the publication boundary](native-publications.md) for the source guards and clock ordering.
+
 **M5: Clean, one subsystem at a time.** Done: every one of the 25,247 game functions has a Clean
 version in `clean/`. With all of them in place of their Native ones (`tools/run.py --clean`), the
 M4 recordings give the Reference's frames and RAM on Windows and on Linux in CI. So do eight

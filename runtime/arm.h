@@ -85,6 +85,11 @@ struct ArmCpu {
     int (*io_write)(void *user, uint32_t address, int size, uint32_t value);
     void *io_user;
 
+    /* Optional observer after a successful RAM word store, before its step is
+     * counted. r15 points past the current instruction. No observer changes
+     * CPU state or the stored value. Used to record Native publication timing. */
+    void (*observe_word_store)(ArmCpu *cpu, uint32_t address, uint32_t value);
+
     /* Hooks, looked up by address on every branch target (not on every instruction). */
     ArmHook (*hook_at)(void *user, uint32_t address, void **hook_user);
     void *hook_user;

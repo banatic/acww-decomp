@@ -2,6 +2,9 @@
  * Reference run; tools/run.py without --native). native_run.c then finds nothing to run. */
 #include "native_table.h"
 #include "native_guest.h"
+#include "native_publish.h"
+
+void (*native_publish_hook)(uint32_t pc, uint32_t *address, uint32_t value);
 
 /* No Native objects or entry wrappers are linked into the Reference binary. */
 void (*native_guest_enter_hook)(uint32_t index, uintptr_t caller, const uint32_t *args);

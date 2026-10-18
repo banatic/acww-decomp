@@ -486,6 +486,31 @@ static void check_stuck(uint64_t slice_start)
     }
 }
 
+static void finish_slice(void)
+{
+    slice_end = 0;
+    if (cpu.steps > accounted) { /* not after run_rewind took back accounted steps */
+        io_advance((uint32_t) (cpu.steps - accounted) * IO_CYCLES_PER_INSTRUCTION);
+        accounted = cpu.steps;
+    }
+    arm7_step();
+    frame_check();
+}
+
+/* A nested return can leave a completed slice pending. A new Native store
+ * belongs after that slice's hardware effects, just as the next ARM store
+ * would. An open partial slice must retain its original boundary. */
+int run_native_store_boundary(void)
+{
+    if (accounted > cpu.steps) {
+        return 0; /* hardware has already seen a later time; rewinding cannot undo it */
+    }
+    if (slice_end != 0 && cpu.steps >= slice_end) {
+        finish_slice();
+    }
+    return 1;
+}
+
 /* Runs slices until the CPU branches to ARM_RETURN_ADDRESS, the end of a call Native code
  * made (returns), or, with `forever`, until the run ends (a branch there is then an error). */
 static void execute(int forever)
@@ -520,13 +545,7 @@ static void execute(int forever)
         }
         /* else the slice ran out at the branch into Native code that now calls back: it ends
            here, before the next instruction, as it does between the two in the Reference */
-        slice_end = 0;
-        if (cpu.steps > accounted) { /* not after run_rewind took back accounted steps */
-            io_advance((uint32_t) (cpu.steps - accounted) * IO_CYCLES_PER_INSTRUCTION);
-            accounted = cpu.steps;
-        }
-        arm7_step();
-        frame_check();
+        finish_slice();
 
         switch (stop) {
             case ARM_STEP_LIMIT:

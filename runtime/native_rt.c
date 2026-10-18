@@ -3,6 +3,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "native_guest.h"
+#include "native_publish.h"
+
+void (*native_publish_hook)(uint32_t pc, uint32_t *address, uint32_t value);
+
+void native_publish_word(uint32_t pc, uint32_t *address, uint32_t value)
+{
+    if (native_publish_hook != NULL) {
+        native_publish_hook(pc, address, value);
+    } else {
+        *address = value;
+    }
+}
 
 void (*native_guest_enter_hook)(uint32_t index, uintptr_t caller, const uint32_t *args);
 uintptr_t (*native_guest_return_hook)(uint32_t index);

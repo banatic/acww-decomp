@@ -84,6 +84,7 @@ import native as native_build  # noqa: E402
 import native_abi  # noqa: E402
 import native_clean_profile  # noqa: E402
 import native_stack  # noqa: E402
+import native_publish  # noqa: E402
 import objrewrite  # noqa: E402
 
 WINDOWS = os.name == "nt"
@@ -275,7 +276,14 @@ def build_clean(flags: list[str]) -> list[str]:
     for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         obj = tree / src.relative_to(C.ROOT).with_suffix(".o")
         obj.parent.mkdir(parents=True, exist_ok=True)
-        p = subprocess.run([*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}", "-c", str(src),
+        source = src
+        if src.relative_to(C.ROOT).as_posix() == native_publish.CLEAN_SOURCE:
+            copy = native_publish.translate(native_publish.CLEAN_SOURCE, src.read_bytes().decode())
+            source = OUT / 'clean-copy' / src.relative_to(C.ROOT)
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text(f'#line 1 "{src.as_posix()}"\n' + copy, newline='\n')
+        p = subprocess.run([*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}",
+                            '-iquote', str(src.parent), "-c", str(source),
                             "-o", str(obj)],
                            capture_output=True, text=True)
         if p.returncode != 0:
@@ -429,6 +437,10 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     mods = C.modules()
     syms = C.SymbolTable(mods)
     table = natives_table()
+    image = C.module_image('main')
+    for address, size, _sha in native_publish.ROM_SITES:
+        offset = address - mods['main']['base']
+        native_publish.validate_rom(image[offset:offset + size], address)
     for relative in native_stack.SOURCES:
         native_stack.validate_source(relative, (C.SRC / relative).read_bytes().decode())
     kept = kept_reference()

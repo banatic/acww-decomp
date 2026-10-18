@@ -40,6 +40,7 @@ import native_pmf  # noqa: E402
 import native_virtual  # noqa: E402
 import native_profile  # noqa: E402
 import native_stack  # noqa: E402
+import native_publish  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -56,7 +57,7 @@ RELAX = ["-Wno-error=implicit-int", "-Wno-error=implicit-function-declaration",
 # has its own memcpy and so on in the ROM, with the same behaviour, but the host's must win.
 HOST_NAMES = {"memcmp", "memcpy", "memmove", "memset", "strcat", "strchr", "strcmp", "strcpy", "strlen",
               "strncmp", "strncpy", "__udivdi3", "__umoddi3", "__divdi3", "__moddi3", "_alloca",
-              "native_guest_stack_slot"}
+              "native_guest_stack_slot", "native_publish_word"}
 
 # How a function returns its value, as runtime/native_table.h numbers them.
 RET_VOID, RET_U8, RET_S8, RET_U16, RET_S16, RET_32, RET_64, RET_SKIP = range(8)
@@ -217,14 +218,15 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     member = native_pmf.translate(relative, text.decode("utf-8")) if relative in native_pmf.paths() else None
     virtual = native_virtual.translate(relative, text.decode("utf-8")) if relative in native_virtual.paths() else None
     stack = native_stack.translate(relative, text.decode("utf-8")) if relative in native_stack.paths() else None
-    copies = [copy for copy in (layout, member, virtual, stack) if copy is not None]
+    publish = native_publish.translate(relative, text.decode("utf-8")) if relative in native_publish.paths() else None
+    copies = [copy for copy in (layout, member, virtual, stack, publish) if copy is not None]
     if len(copies) > 1:
         raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
     if NARROWED.get(path) or copies:
         wide = copies[0] if copies else text.decode("utf-8")
         if member is not None:
             PMF_TRANSLATED.add(path)
-        if member is not None or stack is not None:
+        if member is not None or stack is not None or publish is not None:
             flags = [*flags, "-I" + str(C.ROOT / "runtime")]
         if NARROWED.get(path):
             wide, done = protos.widen_declarations(wide, NARROWED[path])
@@ -241,6 +243,8 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
         key.update((C.ROOT / "runtime" / "native_member.h").read_bytes())
     if stack is not None:
         key.update((C.ROOT / "runtime" / "native_guest.h").read_bytes())
+    if publish is not None:
+        key.update((C.ROOT / "runtime" / "native_publish.h").read_bytes())
     for inc in C.included_files(path):
         key.update(inc.read_bytes())
     stamp = obj.with_suffix(".key")

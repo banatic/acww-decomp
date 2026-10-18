@@ -280,6 +280,9 @@ static int write_word(ArmCpu *cpu, uint32_t address, uint32_t value)
     uint8_t *p = memory_host(address, 4);
     if (p) {
         memcpy(p, &value, 4);
+        if (cpu->observe_word_store != NULL) {
+            cpu->observe_word_store(cpu, address, value);
+        }
         return 1;
     }
     if (cpu->io_write && cpu->io_write(cpu->io_user, address, 4, value)) {

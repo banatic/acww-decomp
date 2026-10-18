@@ -99,6 +99,11 @@ void native_report(FILE *out);
  * branches to ARM_RETURN_ADDRESS. */
 void run_until_return(void);
 
+/* Commit an already completed shared slice before a Native publication store.
+ * Preserve a partial slice, its deadline, and unaccounted instruction time.
+ * Return 0 if hardware time is already ahead of the CPU's requested step. */
+int run_native_store_boundary(void);
+
 /* Provided by run.c: the run loop at the base of a thread's fiber; does not return. */
 void run_forever(void);
 
