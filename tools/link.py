@@ -76,9 +76,13 @@ class Planner:
     def __init__(self):
         self.chk = V.Checker()
         self.sections = {m: module_sections(m) for m in self.chk.mods}
-        # names only config/aliases.txt resolves: the linker does not see that file
-        self.aliases = {line.split()[0] for line in (C.CONFIG / "aliases.txt").read_text().splitlines()
-                        if line.strip() and not line.startswith("#")}
+        # config/aliases.txt: second names some sources use; link() defines for the linker the
+        # ones whose canonical symbol exists, at its address
+        pairs = [line.split() for line in (C.CONFIG / "aliases.txt").read_text().splitlines()
+                 if line.strip() and not line.startswith("#")]
+        names = {m.group(1) for p in C.CONFIG.rglob("symbols.txt") for line in p.read_text().splitlines()
+                 if (m := SYMBOL.match(line))}
+        self.aliases = {a for a, c in pairs if c not in names}
 
     def where(self, addr: int, prefer: str) -> tuple[str | None, str | None]:
         for m in (prefer, *C.RESIDENT, *self.sections):
@@ -135,7 +139,7 @@ class Planner:
                           if y.bind == 1 and y.name and y.shndx in secs and y.shndx != fn.shndx
                           and anchors.get(y.shndx)]
         if "error" not in out and any(y.shndx == 0 and y.name in self.aliases for y in elf.symbols):
-            out["error"] = "uses a name only config/aliases.txt resolves"
+            out["error"] = "uses a name config/aliases.txt maps to no symbol"
         return out
 
 
@@ -326,6 +330,19 @@ def link() -> None:
     consts = [f"    {m.group(1)} = 0x{m.group(3)};"
               for line in (C.CONFIG / "absolute.txt").read_text().splitlines()
               if (m := SYMBOL.match(line)) and m.group(1) not in defined]
+    # config/aliases.txt: second names some sources use for a function or object (mostly C++
+    # member names of functions defined as C), as absolute symbols at the canonical symbol's
+    # address, with the Thumb bit for Thumb code
+    where = {}
+    for path in C.CONFIG.rglob("symbols.txt"):
+        for line in path.read_text().splitlines():
+            if m := SYMBOL.match(line):
+                where.setdefault(m.group(1), int(m.group(3), 16) | (1 if "thumb" in line else 0))
+    for line in (C.CONFIG / "aliases.txt").read_text().splitlines():
+        if line.strip() and not line.startswith("#"):
+            alias, canon = line.split()
+            if canon in where and alias not in defined:
+                consts.append(f"    {alias} = 0x{where[canon]:08x};")
     lcf.write_text(lcf.read_text().replace("SECTIONS {", "SECTIONS {\n" + "\n".join(consts), 1),
                    newline="\n")
     out = obj / "build"
