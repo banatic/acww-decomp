@@ -24,6 +24,9 @@
 02057918 halfword and word loads from misaligned addresses read the aligned (and rotated) value on ARM and the unaligned one on x86; p is an NNS G3D texture resource, whose offsets the format keeps aligned (reading as the ARM does makes every case agree)
 02057988 halfword loads from odd addresses read the aligned halfword on ARM and the unaligned one on x86; p is an NNS G3D texture resource (palette dictionary offset at +0x34, palette data at +0x38), whose offsets the format keeps 4-byte aligned
 020579f0 halfword and word loads from misaligned addresses read the aligned (and rotated) value on ARM and the unaligned one on x86; p is an NNS G3D texture resource, whose offsets the format keeps aligned (reading as the ARM does makes every case agree)
+02057d90 (main) the ROM builds its dispatch table on the first call (a guard word and three member pointers in autoload_3's .bss, which only this function reads) and calls through it; the Clean version calls the phase's handler directly, so it does not write the guard and table
+02058634 (main) the ROM builds its dispatch table on the first call (a guard word and three member pointers in autoload_3's .bss, which only this function reads) and calls through it; the Clean version calls the phase's handler directly, so it does not write the guard and table
+0205927c (main) the ROM builds its dispatch table on the first call (a guard word and three member pointers in autoload_3's .bss, which only this function reads) and calls through it; the Clean version calls the phase's handler directly, so it does not write the guard and table
 0205f2e8 word loads from misaligned addresses rotate the aligned word on ARM and read the unaligned one on x86; pool is the held item pool at data_021ca16c, which is word-aligned (aligning the pointer makes every case agree)
 0206cf3c a tag kind of 35 or more indexes past the 35-entry member table: the ROM calls whatever the words after it hold, Clean faults (REQUIRES: the kind is within the table)
 020727a4 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_020720ac, passes b & 7
@@ -62,12 +65,12 @@
 022624f4 (ov047) word stores through a misaligned owl pointer write the aligned word on ARM and the unaligned one on x86; the owl is allocated word-aligned (aligning the pointer makes every case agree)
 0226bb7c (ov066) word accesses through a misaligned ring node use the aligned word on ARM and the unaligned one on x86; ring nodes are allocated word-aligned (aligning the pointer makes every case agree)
 02278f4c index idx of 8 or more reads past the static table (the PC's copy is elsewhere); the only caller, func_ov073_02278ca4, passes 0
-02279528 index idx of 3 or more reads past the static table (the PC's copy is elsewhere); callers pass 0-2 (func_ov079_02279508, func_ov079_02279518)
 022791b0 index of 2 or more reads past the static table (the PC's copy is elsewhere); callers pass 0 or 1 (func_ov082_02279190, func_ov082_022791a0)
-0229cf64 shift 1 << b by 32 or more gives 0 on ARM and wraps on x86; callers pass 0-13
-0229adac shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass 9-15, func_ov121_0229ae68's result (0-15 or 24) or the cursor byte +0xb1 (0-23)
-0229adc0 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_ov121_0229ba60, passes 9-15
+02279528 index idx of 3 or more reads past the static table (the PC's copy is elsewhere); callers pass 0-2 (func_ov079_02279508, func_ov079_02279518)
 022997b0 index of 16 or more reads past the local 16-byte copy; func_ov143_0229a5cc and func_ov143_0229a6f8 keep it in 0-15
 022997d8 (ov143) index of 16 or more reads past the local 16-byte copy; callers pass notes of the 16-byte tune at data_021cfbbc (+0xa0), which func_ov143_0229a5cc writes only from func_ov143_022997b0's table (0-15)
 022999c4 a selector byte (+0xc0) of 4 or more reads past the static table (the PC's copy is elsewhere); func_ov145_0229996c sets it only to 3 or to +0xc1, which func_ov145_022998f0 keeps in 0-3
+0229adac shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass 9-15, func_ov121_0229ae68's result (0-15 or 24) or the cursor byte +0xb1 (0-23)
+0229adc0 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_ov121_0229ba60, passes 9-15
+0229cf64 shift 1 << b by 32 or more gives 0 on ARM and wraps on x86; callers pass 0-13
 022a2cd8 returns the address of its own static table, which the DS has at 022a3264 and the PC in its own memory; the only caller, func_ov098_022a2bfc, reads the pair through it and keeps nothing
