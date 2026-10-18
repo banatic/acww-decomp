@@ -160,4 +160,5 @@ check placed where the game does not (`diff_stack` in `runtime/diffcheck.h`). A 
 need not call what the ROM's code calls: the Reference run records nothing of its calls out
 (`runtime/native_run.c`).
 - Clean functions are added by subsystem; each passes the function-level check and the M4
-  recording. The progress map counts them.
+  recording. The Clean progress map shows how each one is checked (`tools/run.py --clean-ran`
+  lists the Clean functions a run reached).

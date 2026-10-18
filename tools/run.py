@@ -49,6 +49,10 @@ Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
                      place of its Native one, in both runs: the Native run then checks the Clean
                      code too (docs/runtime.md, M5). With FILE, only the functions it lists (names
                      or addresses, one per line)
+    --clean-ran FILE with --clean: also list which Clean functions ran in the Native run, however
+                     they were entered (from the interpreter, from Native or from Clean code), as
+                     JSON to FILE: [{"module", "address", "ran"}]. The Clean code is then built with
+                     -finstrument-functions (runtime/clean_ran.c), apart from the usual build
 
 Prints how far the boot gets: where it stopped, the registers the game touched, the BIOS
 calls, the PXI traffic, the functions branched to most and the last branch targets with their
@@ -65,6 +69,7 @@ Environment variables, for following a run on stderr:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import pathlib
 import re
@@ -228,12 +233,13 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
     return path
 
 
-def build_clean(flags: list[str]) -> list[str]:
+def build_clean(flags: list[str], ran: bool = False) -> list[str]:
     """The Clean code and its checks as objects, and the names they take from the game placed at
     their DS addresses (as tools/diffcheck.py builds them). Each object is rewritten as the Native
     objects are (tools/objrewrite.py): a call to a game function that has a Native version goes
     to it, as a Native caller's does, so it runs where the run's policy says (Native, Clean, or
-    the ROM's code through the patched entry) with the same crossings as the Reference records."""
+    the ROM's code through the patched entry) with the same crossings as the Reference records.
+    With `ran`, each function also reports its entry (runtime/clean_ran.c), in objects of their own."""
     syms = C.SymbolTable(C.modules())
     known = set(syms.by_name)
     native = {name for name, _ in natives_table().values()}
@@ -245,9 +251,12 @@ def build_clean(flags: list[str]) -> list[str]:
     # uninitialized locals filled as the Native objects' are (tools/native.py), so the memory
     # comparison tells the bytes a structure filled in part passes on from the game's values
     flags += ["-ftrivial-auto-var-init=pattern"]
+    if ran:
+        flags.append("-finstrument-functions")
+    tree = OUT / ("clean-ran" if ran else "clean")
     objects = []
     for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
-        obj = OUT / "clean" / src.relative_to(C.ROOT).with_suffix(".o")
+        obj = tree / src.relative_to(C.ROOT).with_suffix(".o")
         obj.parent.mkdir(parents=True, exist_ok=True)
         p = subprocess.run([*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}", "-c", str(src),
                             "-o", str(obj)],
@@ -260,16 +269,17 @@ def build_clean(flags: list[str]) -> list[str]:
     names = diffcheck.game_names(objects)
     # Through a response file, as the Native objects are: the paths would pass Windows's limit
     # on a command line.
-    listed = OUT / "clean" / "objects.txt"
+    listed = tree / "objects.txt"
     listed.write_text("".join(f"{p.as_posix()}\n" for p in [*objects, *([names] if names else [])]), newline="\n")
     return [f"@{listed}"]
 
 
-def build(native: bool, clean: str | None = None) -> pathlib.Path:
+def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.Path:
     """The runtime; with `native`, linked with every Native object as tools/diffcheck.py
     --native links them (runtime/native_table.h), else with an empty table; with `clean`, also
-    with the Clean code (write_clean_table)."""
-    exe = OUT / (("run-native" if native else "run") + (".exe" if WINDOWS else ""))
+    with the Clean code (write_clean_table); with `ran`, the Clean code reporting which of its
+    functions run (--clean-ran), as a program of its own."""
+    exe = OUT / (("run-native" if native else "run") + ("-ran" if ran else "") + (".exe" if WINDOWS else ""))
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
              "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
     if not WINDOWS:
@@ -284,9 +294,21 @@ def build(native: bool, clean: str | None = None) -> pathlib.Path:
         if WINDOWS:
             assembly.append(RUNTIME / "native_rt_win.s")
         extra = [str(compile_asm(a, OUT / ("run-" + a.name.replace(".s", ".o")))) for a in assembly]
-        extra += [str(RUNTIME / "native_rt.c"), str(write_clean_table(clean)), f"@{NATIVE / 'objects.txt'}"]
+        table = write_clean_table(clean)
+        if ran:
+            # the table's wrappers of the checks in tests/clean/ report their entries too
+            obj = OUT / "clean-ran" / "clean_table.o"
+            obj.parent.mkdir(parents=True, exist_ok=True)
+            p = subprocess.run([*diffcheck.compiler(), *flags, "-finstrument-functions", "-c", str(table), "-o",
+                                str(obj)], capture_output=True, text=True)
+            if p.returncode != 0:
+                raise SystemExit(p.stdout + p.stderr)
+            table = obj
+        extra += [str(RUNTIME / "native_rt.c"), str(table), f"@{NATIVE / 'objects.txt'}"]
+        if ran:
+            extra.append(str(RUNTIME / "clean_ran.c"))
         if clean:
-            extra += build_clean(flags)
+            extra += build_clean(flags, ran)
         # Classes split one function per file define their destructors and vtable in several
         # objects, identically; the linker keeps the first. The image sits at a fixed low
         # address (below the DS's 0x01000000) and its data must not be executable: a call
@@ -499,8 +521,9 @@ def summary(text: str) -> dict:
 
 
 def native_main(args, manifest, table, budget, env) -> int:
-    exe = build(native=True, clean=args.clean)
+    exe = build(native=True, clean=args.clean, ran=bool(args.clean_ran))
     env = dict(env)
+    env.pop("RUN_CLEAN_RAN", None)
     hash_file = env.pop("RUN_HASH", None)
     out = OUT / "native-run"
     out.mkdir(parents=True, exist_ok=True)
@@ -525,6 +548,10 @@ def native_main(args, manifest, table, budget, env) -> int:
     nat_env = dict(env, RUN_NATIVE="1", RUN_HASH=hash_file or str(out / "native-hashes.txt"))
     if not args.no_timing:
         nat_env["RUN_NATIVE_REPLAY"] = str(trace)
+    ran = out / "clean-ran.txt"
+    if args.clean_ran:
+        ran.unlink(missing_ok=True)
+        nat_env["RUN_CLEAN_RAN"] = str(ran)
     learn = out / "learned.txt"
     while True:
         if args.learn:
@@ -545,6 +572,8 @@ def native_main(args, manifest, table, budget, env) -> int:
         env["RUN_NATIVE_POLICY"] = nat_env["RUN_NATIVE_POLICY"] = str(write_policy(args.native, args.clean))
         ref = reference()
     nat = summary(nat_text)
+    if args.clean_ran:
+        write_ran(ran, pathlib.Path(args.clean_ran))
     # the run's directory may be outside the tree (ACWW_RUNTIME_OUT)
     shown = [p.relative_to(C.ROOT) if p.is_relative_to(C.ROOT) else p
              for p in (out / "reference.log", out / "native.log")]
@@ -571,6 +600,23 @@ def native_main(args, manifest, table, budget, env) -> int:
     return 0 if same else 1
 
 
+def write_ran(raw: pathlib.Path, out: pathlib.Path) -> None:
+    """The Native run's list (runtime/clean_ran.c: "address module 0|1" for each Clean function)
+    as JSON, one entry per function."""
+    if not raw.exists():
+        print(f"clean ran: the Native run wrote no {raw}")
+        return
+    ran: dict[tuple[str, int], bool] = {}
+    for line in raw.read_text().splitlines():
+        address, module, flag = line.split()
+        key = (module, int(address, 16) & ~1)
+        ran[key] = ran.get(key, False) or flag == "1"
+    rows = [{"module": m, "address": f"{a:08x}", "ran": r} for (m, a), r in sorted(ran.items())]
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(rows, indent=1) + "\n", newline="\n")
+    print(f"clean ran: {sum(ran.values())} of {len(ran)} Clean functions ran ({out})")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Boot the game in the interpreter.")
     ap.add_argument("max_instructions", nargs="?", help="instruction budget (0: none; default 200 M)")
@@ -590,7 +636,10 @@ def main() -> None:
     ap.add_argument("--expect", metavar="FILE", help="with --native: the frame sequence SHA-1 both runs must give")
     ap.add_argument("--clean", nargs="?", const="all", metavar="FILE",
                     help="with --native: Clean functions (all, or those FILE lists) in place of their Native ones")
+    ap.add_argument("--clean-ran", metavar="FILE", help="with --clean: which Clean functions ran, as JSON to FILE")
     args = ap.parse_args()
+    if args.clean_ran and not args.clean:
+        raise SystemExit("--clean-ran needs --clean")
     if args.clean and not args.native:
         raise SystemExit("--clean needs --native")
     if not ROM.exists():

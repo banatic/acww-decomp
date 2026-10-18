@@ -18,17 +18,27 @@ to build it.
 
 ## Status
 
-![Progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress.svg)
+![Decompilation progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-decomp.svg)
 
-CI draws the map from each build of `main` (`tools/progress_map.py`). Each function is coloured
-by the highest level it has reached:
+*Decompilation: blue is Matching, green is Linked.*
 
-- **Reference**: only the ROM's own code.
+![Clean code progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-clean.svg)
+
+*Clean code: gold is checked by function, purple is checked in a run, grey is read only.*
+
+CI draws both maps from each build of `main` (`tools/progress_map.py`). Each function counts at
+the highest level it has reached:
+
 - **Matching**: a C or C++ source that compiles with the original compiler (mwccarm) to the
   ROM's exact bytes, and whose calls and pointers resolve to the ROM's targets.
-- **Matching, linked**: the whole program, linked with the original linker, reproduces the
-  module byte for byte.
-- **Clean**: a readable rewrite, checked against the ROM's code.
+- **Linked**: Matching, and the whole program, linked with the original linker, also reproduces
+  the module byte for byte.
+- **Checked by function**: the Clean version (a readable rewrite) agrees with the ROM's code on
+  generated inputs; this covers the functions that call nothing.
+- **Checked in a run**: the Clean version ran in a recorded play run whose frames and memory
+  match the ROM's code.
+- **Read only**: the Clean version has been checked only by reading it against its matching
+  source.
 
 All 25,247 game functions have a matching source and a Clean version. The sources are still
 one file per function, and the data sections still come from the ROM. Linking the whole

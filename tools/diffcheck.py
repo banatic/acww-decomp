@@ -5,6 +5,7 @@ code on generated entry states (see docs/runtime.md and runtime/diffcheck.h).
     python tools/diffcheck.py func_02039444 # some
     python tools/diffcheck.py --native      # Native against Reference (tools/native.py first)
     python tools/diffcheck.py --native --clean   # the Clean functions, the same way
+                                                 # (the ones that agree: build/adm-kr/clean-checked.json)
 
 Needs a C compiler that targets 32-bit x86: clang on Windows (CC, default
 "C:/Program Files/LLVM/bin/clang.exe"), gcc with -m32 elsewhere.
@@ -304,7 +305,11 @@ def main() -> None:
         exe = build_native(clean)
         log = (OUT / "differences-clean.txt" if clean
                else C.BUILD / "native" / ("windows" if os.name == "nt" else "linux") / "differences.txt")
-        p = subprocess.run([str(exe), str(OUT / "modules.txt"), str(log), *rest], cwd=C.ROOT)
+        agree = OUT / "agree-clean.txt"
+        p = subprocess.run([str(exe), *(["--agree", str(agree)] if clean else []), str(OUT / "modules.txt"),
+                            str(log), *rest], cwd=C.ROOT)
+        if clean and len(rest) <= 1:  # every function checked (rest is at most the case count)
+            write_checked_list(agree)
         sys.exit(p.returncode)
     unit_tests()
     exe = build(generate())
@@ -330,6 +335,18 @@ def write_clean_list() -> None:
     rows += [(module, address) for _, _, module, address, _ in run.clean_registrations("all")]
     out = [{"module": module, "address": f"{address & ~1:08x}"} for module, address in sorted(set(rows))]
     (C.BUILD / "clean.json").write_text(json.dumps(out, indent=1) + "\n", newline="\n")
+
+
+def write_checked_list(agree: pathlib.Path) -> None:
+    """build/adm-kr/clean-checked.json: the Clean functions `--native --clean` ran against their
+    Reference that agree (the ones that call nothing), for tools/progress_map.py."""
+    rows = set()
+    for line in agree.read_text().splitlines() if agree.exists() else []:
+        address, module = line.split()
+        rows.add((module, int(address, 16) & ~1))
+    out = [{"module": module, "address": f"{address:08x}"} for module, address in sorted(rows)]
+    (C.BUILD / "clean-checked.json").write_text(json.dumps(out, indent=1) + "\n", newline="\n")
+    print(f"{len(out)} Clean functions agree: build/adm-kr/clean-checked.json")
 
 
 if __name__ == "__main__":

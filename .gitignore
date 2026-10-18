@@ -7,6 +7,8 @@ extract/*
 build/
 # Drawn by CI on the progress branch (tools/progress_map.py)
 docs/progress.svg
+docs/progress-decomp.svg
+docs/progress-clean.svg
 
 # Library code (NitroSDK, NitroSystem, NitroDWC, NitroWiFi, GameSpy, MSL, runtime) is not
 # distributed; see libs/README.md

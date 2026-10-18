@@ -1,8 +1,9 @@
 /* Native against Reference: every function that calls nothing, run from random entry states
  * as the ROM's code (interpreted) and as its matching source compiled for the PC.
  *
- *     nativecheck <manifest> <differences file> [cases] [address...]
+ *     nativecheck [--agree FILE] <manifest> <differences file> [cases] [address...]
  *
+ * With --agree, FILE lists the functions that agree ("address module", one per line).
  * For each function and each state: the arguments are small numbers, random words or pointers
  * into a block of random bytes; the Reference runs first, and a state it cannot finish (a fault
  * on a random pointer, a software interrupt) is skipped. A function that branches out of
@@ -278,8 +279,19 @@ static enum Outcome check(const NativeFunction *f, int cases, const MemorySnapsh
 
 int main(int argc, char **argv)
 {
+    FILE *agree = NULL;
+    if (argc > 2 && strcmp(argv[1], "--agree") == 0) {
+        agree = fopen(argv[2], "w");
+        if (agree == NULL) {
+            fprintf(stderr, "cannot write %s\n", argv[2]);
+            return 2;
+        }
+        argv[2] = argv[0];
+        argv += 2;
+        argc -= 2;
+    }
     if (argc < 3) {
-        fprintf(stderr, "usage: nativecheck <manifest> [cases] [address...]\n");
+        fprintf(stderr, "usage: nativecheck [--agree FILE] <manifest> <differences file> [cases] [address...]\n");
         return 2;
     }
     int cases = argc > 3 ? atoi(argv[3]) : 16;
@@ -328,6 +340,9 @@ int main(int argc, char **argv)
             if (outcome == DIFFERENT && is_known(f)) {
                 outcome = KNOWN;
             }
+            if (outcome == SAME && agree != NULL) {
+                fprintf(agree, "%08x %s\n", f->address & ~1u, native_module_names[m]);
+            }
             if (outcome == NO_STATE) {
                 fprintf(log, "%08x %s: no generated state the reference finishes\n", f->address & ~1u, native_module_names[m]);
             }
@@ -340,6 +355,9 @@ int main(int argc, char **argv)
     }
     if (log != stdout) {
         fclose(log);
+    }
+    if (agree != NULL) {
+        fclose(agree);
     }
     printf("functions that call nothing: %d agree, %d differ (%s), %d without a "
            "state the reference finishes\n",
