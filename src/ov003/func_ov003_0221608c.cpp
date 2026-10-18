@@ -20,18 +20,14 @@ struct S12c {
     int unk_08;
 };
 
-class Scope {
-  public:
-    Scope() {}
-    ~Scope() {}
-};
-
 extern unsigned char data_020ccf94[];
 extern unsigned char data_ov003_02238134[];
 
 void Obj_020d82b4::func_ov003_0221608c(Msg_02007364 *msg, int prev)
 {
-    Scope scope;
+    // A frame slot the code never uses; a pointer to a volatile local keeps it.
+    volatile int scope[1];
+    volatile int *scope_p = scope;
     func_020109fc(this, 0x48, 3, 0);
     func_ov003_0221611c(&unk_7D4);
     if (func_02073908(*(void **) data_020ccf94, unk_800) != 0) {

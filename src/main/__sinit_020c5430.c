@@ -140,6 +140,9 @@ extern struct G9400 {
     int unk_0C;
 } data_021c9400;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c5430(void)
 {
     UnkStruct_020c5430 t1;
@@ -238,3 +241,5 @@ void __sinit_020c5430(void)
     data_021c939c.c = 0x1300;
     __register_global_object((void *) (&data_021c939c), (((void *) func_020012dc)), (void *) (&data_021c9378));
 }
+
+#pragma section INIT end

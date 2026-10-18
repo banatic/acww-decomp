@@ -4,12 +4,22 @@
 
 #include "cpp/main/Base_0201c8fc.h"
 typedef int (Base_0201c8fc::*Pmf)(int);
+extern int data_021c1cf0;
+extern Pmf data_020d8ef0, data_020d9010, data_020d9098, data_020d9328;
+extern Pmf data_021c1dec[5];
+
 extern "C" int func_0201c8fc(Base_0201c8fc *self, int arg1, unsigned int idx)
 {
-    static Pmf tbl[] = {0, &Base_0201c8fc::func_0201cb24, &Base_0201c8fc::func_0201ca9c, &Base_0201c8fc::func_0201ca24,
-                        &Base_0201c8fc::func_0201ca9c};
-    if (idx < 5 && tbl[idx]) {
-        if ((self->*(tbl[idx]))(arg1) != 0) {
+    if (!(data_021c1cf0 & 1)) {
+        data_021c1dec[0] = 0;
+        data_021c1dec[1] = data_020d9328;
+        data_021c1dec[2] = data_020d8ef0;
+        data_021c1dec[3] = data_020d9010;
+        data_021c1dec[4] = data_020d9098;
+        data_021c1cf0 |= 1;
+    }
+    if (idx < 5 && data_021c1dec[idx]) {
+        if ((self->*(data_021c1dec[idx]))(arg1) != 0) {
             return 1;
         }
     }

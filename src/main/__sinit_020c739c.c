@@ -11,6 +11,9 @@ extern struct {
 extern void func_020012dc(void *);
 extern unsigned char data_021fbedc;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c739c(void)
 {
     data_021fbee8.f0 = 0;
@@ -18,3 +21,5 @@ void __sinit_020c739c(void)
     data_021fbee8.f8 = 0;
     __register_global_object(&data_021fbee8, (void *) func_020012dc, &data_021fbedc);
 }
+
+#pragma section INIT end

@@ -152,6 +152,9 @@ extern UnkStruct_022639b0 data_ov048_02263ff4;
 extern UnkStruct_022639b0 data_ov048_02263fec;
 extern UnkStruct_022639b0 data_ov048_02263fe4;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov048_022639b0(void)
 {
     data_ov048_02264344.unk_00 = __ptmf_null;
@@ -214,3 +217,5 @@ void __sinit_ov048_022639b0(void)
     data_ov048_022647a8.unk_110 = data_ov048_02263fec;
     data_ov048_022647a8.unk_118 = data_ov048_02263fe4;
 }
+
+#pragma section INIT end

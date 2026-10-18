@@ -39,14 +39,6 @@ struct Coord {
 };
 struct Footprint {
     int kind, direction;
-    Footprint(u16 *item)
-    {
-        func_02052e3c(this, item);
-    }
-    ~Footprint()
-    {
-        func_02052e38(this);
-    }
 };
 extern "C" int func_ov004_0223b574(int *out, u16 *item, Vec *position, int angle, int mode)
 {
@@ -93,7 +85,8 @@ extern "C" int func_ov004_0223b574(int *out, u16 *item, Vec *position, int angle
                             if (size == 1) {
                                 variant = func_0204bc50(index, facing);
                                 int direction = (short) (facing << 14);
-                                Footprint footprint(&variant);
+                                Footprint footprint;
+                                func_02052e3c(&footprint, &variant);
                                 Vec sum;
                                 sum.x = 0;
                                 sum.y = 0;
@@ -113,9 +106,11 @@ extern "C" int func_ov004_0223b574(int *out, u16 *item, Vec *position, int angle
                                     short *second = func_02052dc0(&footprint, 1);
                                     if (func_ov004_0223b7f8(out, x + first[0], z + second[1], (facing + 2) & 3, index,
                                                             (u8) pass, originalX, originalZ) == 3) {
+                                        func_02052e38(&footprint);
                                         return 3;
                                     }
                                 }
+                                func_02052e38(&footprint);
                             }
                             return 3;
                         }

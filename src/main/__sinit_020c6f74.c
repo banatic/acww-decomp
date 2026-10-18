@@ -19,6 +19,9 @@ extern int data_021f6d08;
 extern int data_020ca0ec;
 extern int data_021f6cdc;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c6f74(void)
 {
     func_020bb99c((void *) &data_021f75b0);
@@ -32,3 +35,5 @@ void __sinit_020c6f74(void)
                              (void *) ((void *) &data_021f6d08));
     data_021f6cdc = 6 * data_020ca0ec;
 }
+
+#pragma section INIT end

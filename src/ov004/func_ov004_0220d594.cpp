@@ -2,15 +2,6 @@
  * mwccarm 1.2/base -O4,s
  */
 
-struct UnkStruct_0220d594 {
-    unsigned short id;
-    UnkStruct_0220d594()
-    {
-        id = 0xfff1;
-    }
-    ~UnkStruct_0220d594() {}
-};
-
 extern "C" char *func_ov004_0220db94(void *list);
 extern "C" void func_ov004_0220f27c(void *arg, void *list, int a, int b);
 extern "C" int func_ov004_0220d6b8(void *self, void *arg);
@@ -25,12 +16,23 @@ extern "C" int func_0204bd08(int r);
 extern "C" void func_0204f794(void *item, int x, int y);
 extern "C" void MTX_MultVec43(void *item, void *a, void *out);
 extern "C" int func_ov004_0220d788(void *self, int r, void *out);
+extern "C" unsigned short data_ov004_02256c44;
+extern "C" int data_ov004_02256c84;
+extern "C" char data_ov004_02256dd4[];
+extern "C" void func_020051b0(void *p);
+extern "C" void __register_global_object(void *object, void *dtor, void *chain);
 extern void *data_021c80bc;
 extern char data_021fbe48[];
 
 extern "C" int func_ov004_0220d594(void *self, void *arg)
 {
-    static UnkStruct_0220d594 g;
+    // a function-local static (id 0xfff1) with an empty destructor, constructed on the
+    // first call; nothing reads it
+    if ((data_ov004_02256c84 & 1) == 0) {
+        data_ov004_02256c44 = 0xfff1;
+        __register_global_object(&data_ov004_02256c44, (void *) func_020051b0, data_ov004_02256dd4);
+        data_ov004_02256c84 |= 1;
+    }
     char list[0x24];
     char item[0xc];
     char out[0x10];

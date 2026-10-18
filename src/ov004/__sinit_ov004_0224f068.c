@@ -30,6 +30,9 @@ extern long data_020ca0e8;
 extern long data_ov004_022595d8;
 extern UnkStruct_0224f068 data_ov004_0225967c;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov004_0224f068(void)
 {
     func_0209d2b8((void *) &data_ov004_02259698);
@@ -51,3 +54,5 @@ void __sinit_ov004_0224f068(void)
     data_ov004_0225967c.unk_08 = 0;
     __register_global_object((void *) &data_ov004_0225967c, ((void *) &func_020012dc), (void *) &data_ov004_02259670);
 }
+
+#pragma section INIT end

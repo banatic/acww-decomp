@@ -18,10 +18,7 @@ class Entry {
     {
         return 0;
     }
-    virtual int f3()
-    {
-        return 0;
-    }
+    virtual int f3();
     u8 data[0x58];
 };
 

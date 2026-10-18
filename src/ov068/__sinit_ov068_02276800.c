@@ -61,6 +61,9 @@ extern short data_ov068_02278264;
 extern short data_020ca4cc;
 extern short data_ov068_02278260;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov068_02276800(void)
 {
     data_ov068_02278484[0] = data_ov068_02276eb8;
@@ -114,3 +117,5 @@ void __sinit_ov068_02276800(void)
     data_ov068_02278264 = data_020c80f0;
     data_ov068_02278260 = data_020ca4cc;
 }
+
+#pragma section INIT end

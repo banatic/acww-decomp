@@ -293,6 +293,9 @@ extern UnkStruct_02266904 data_ov069_02267be8;
 extern UnkStruct_02266904 data_ov069_02267d48;
 extern UnkStruct_02266904 data_ov069_02267ea0;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov069_02266904(void)
 {
     UnkStruct_02266904 t1;
@@ -794,3 +797,5 @@ void __sinit_ov069_02266904(void)
     data_ov069_0226857c[4] = t1;
     func_ov069_022667e0(t2.b, t2.a);
 }
+
+#pragma section INIT end

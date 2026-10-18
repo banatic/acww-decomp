@@ -45,6 +45,9 @@ extern UnkStruct_020c63bc data_020e34a8;
 extern UnkStruct_020c63bc data_020e34c0;
 extern UnkStruct_020c63bc data_020e34b0;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c63bc(void)
 {
     UnkStruct_020c63bc t1;
@@ -71,3 +74,5 @@ void __sinit_020c63bc(void)
     data_020e3504.unk_B4 = data_020e34b0;
     data_020e3504.unk_BC = t1;
 }
+
+#pragma section INIT end

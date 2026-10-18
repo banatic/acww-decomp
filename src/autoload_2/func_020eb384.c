@@ -8,6 +8,11 @@
 
 extern u16 data_021fbefc;
 extern int data_0213e6bc;
+// "0123456789abcdef", the template of the local digit table
+typedef struct {
+    u8 c[17];
+} HexDigits;
+extern const HexDigits data_0213e6dc;
 extern char *data_021fbf1c;
 extern char *data_021fbf2c;
 extern char *data_021fbf40;
@@ -65,11 +70,11 @@ int func_020eb384(int a0, const void *a1, u32 a2, int a3)
     enc = func_ov065_02277148(a1, a2, data_021fbf1c + len, cap);
     MATH_CalcSHA1(data_021fbf2c + 0x14, data_021fbf1c, len + enc);
     {
-        u8 hex[17] = "0123456789abcdef";
+        HexDigits hex = data_0213e6dc;
         d = (u8 *) data_021fbf2c + 0x14;
         for (i = 0; i < 0x14; i++) {
-            data_021fbf2c[i * 2] = hex[d[i] >> 4];
-            *(data_021fbf2c + i * 2 + 1) = hex[d[i] & 0xf];
+            data_021fbf2c[i * 2] = hex.c[d[i] >> 4];
+            *(data_021fbf2c + i * 2 + 1) = hex.c[d[i] & 0xf];
         }
     }
     data_021fbf2c[0x28] = 0;

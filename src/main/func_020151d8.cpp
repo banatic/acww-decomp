@@ -5,13 +5,21 @@
 
 #include "cpp/main/Obj_020d8bd4.h"
 typedef int (Obj_020d8bd4::*Pmf)();
+extern int data_021c14e4;
+extern Pmf data_020d8a94, data_020d8b24;
+extern Pmf data_021c15bc[2];
+
 int Obj_020d8bd4::func_020151d8()
 {
-    static Pmf tbl[] = {&Obj_020d8bd4::func_020152a4, &Obj_020d8bd4::func_02015248};
+    if (!(data_021c14e4 & 1)) {
+        data_021c15bc[0] = data_020d8b24;
+        data_021c15bc[1] = data_020d8a94;
+        data_021c14e4 |= 1;
+    }
     int r = 0;
     unsigned char i = unk_AC;
     if (i < 2) {
-        r = (this->*(tbl[i]))();
+        r = (this->*(data_021c15bc[i]))();
     }
     return r;
 }

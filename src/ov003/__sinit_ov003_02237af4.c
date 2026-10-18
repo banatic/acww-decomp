@@ -112,6 +112,9 @@ extern UnkStruct_02237af4 data_ov003_0223bdd0, data_ov003_0223be90, data_ov003_0
 #define VisitElement_ov003_0222c3e0 &func_ov003_0222c3e0
 #define VisitElement_ov003_0222c3d0 &func_ov003_0222c3d0
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov003_02237af4(void)
 {
     int v;
@@ -191,3 +194,5 @@ void __sinit_ov003_02237af4(void)
 #undef VisitElement_ov003_02228ec4
 #undef VisitElement_ov003_0222c3e0
 #undef VisitElement_ov003_0222c3d0
+
+#pragma section INIT end

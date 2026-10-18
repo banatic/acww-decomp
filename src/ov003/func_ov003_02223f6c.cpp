@@ -34,11 +34,10 @@ typedef struct {
     int unk_28;
 } UnkStruct_02223f6c_3;
 
-// The computed position; the empty destructor keeps the frame bytes the ROM reserves for it.
+// The computed position.
 struct Vec3 {
     int x, y, z;
     Vec3() {}
-    ~Vec3() {}
 };
 
 extern "C" short FX_SinCosTable_[];
@@ -52,6 +51,9 @@ extern "C" void func_ov003_02223f6c(UnkStruct_02223f6c *self, UnkStruct_02223f6c
     int c;
     int idx;
     Vec3 pos;
+    // A frame slot the code never uses; a pointer to a volatile local keeps it.
+    volatile int slot[2];
+    volatile int *slot_p = slot;
 
     v = data_ov003_02236bb8[self->unk_00][self->unk_0C];
     switch (self->unk_08) {

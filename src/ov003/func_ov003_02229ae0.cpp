@@ -4,19 +4,13 @@
 
 #include "types.h"
 
-// The empty destructor keeps the eight bytes the ROM reserves for this local.
-class Scope {
-  public:
-    Scope() {}
-    ~Scope() {}
-    int a, b;
-};
-
 extern "C" void *func_02096190(void *x);
 
 extern "C" int func_ov003_02229ae0(char *self, void *x)
 {
-    Scope scope;
+    // A frame slot the code never uses; a pointer to a volatile local keeps it.
+    volatile int scope[2];
+    volatile int *scope_p = scope;
     int r = 0;
     unsigned int c1;
     unsigned int c2;

@@ -84,6 +84,9 @@ extern struct {
     UnkStruct_02261cac f0;
 } data_ov046_02261fa8;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov046_02261cac(void)
 {
     data_ov046_02262444.f0 = 31;
@@ -121,3 +124,5 @@ void __sinit_ov046_02261cac(void)
     data_ov046_0226248c.f40 = __ptmf_null.f0;
     data_ov046_0226248c.f48 = data_ov046_02261fa8.f0;
 }
+
+#pragma section INIT end

@@ -35,6 +35,9 @@ extern El2 data_021c7c48[3];
 extern unsigned char data_021c77c0;
 extern void func_020012e0(void *);
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c51b8(void)
 {
     Big *p;
@@ -64,3 +67,5 @@ void __sinit_020c51b8(void)
     } while (r != data_021c7c48 + 3);
     __cxa_vec_ctor((void *) ((void *) &data_021c77c0), 0x18, 8, (void (*)(void *)) func_020012e0, 0);
 }
+
+#pragma section INIT end

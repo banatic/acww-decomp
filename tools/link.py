@@ -1,6 +1,7 @@
 """Link the whole ARM9 program with the original linker and check it against the ROM.
 
     python tools/link.py
+    python tools/link.py --why [FILE...]   # plan only: why each source stays out of the link
 
 Every game source whose object can stand alone becomes a `complete` translation unit; the
 rest of each module comes from ds-decomp's delinked objects. dsd writes the linker script,
@@ -164,15 +165,20 @@ def longest_increasing(items: list[tuple[str, int]]) -> set[str]:
     return keep
 
 
+# source -> the reason it stays out of the link (filled by choose)
+LEFT_OUT: dict[str, str] = {}
+
+
 def choose(plans: list[dict], mods: dict) -> tuple[dict[str, list], collections.Counter]:
     """module -> [(file, {section: (start, end)})] of the sources that can be linked, and
-    the reasons the others cannot."""
+    the reasons the others cannot (counted, and per source in LEFT_OUT)."""
     why: collections.Counter = collections.Counter()
     entries: dict[str, list] = collections.defaultdict(list)
     exported: dict[str, dict[int, str]] = {}
     for r in plans:
         if r.get("error"):
             why[r["error"]] += 1
+            LEFT_OUT[r["file"]] = r["error"]
             continue
         secs: dict[str, list] = {}
         reason = None
@@ -190,6 +196,7 @@ def choose(plans: list[dict], mods: dict) -> tuple[dict[str, list], collections.
             reason = "same-named sections not contiguous"
         if reason:
             why[reason] += 1
+            LEFT_OUT[r["file"]] = reason
             continue
         entries[r["module"]].append((r["file"], {n: (p[0][0], p[-1][1]) for n, p in secs.items()}))
         exported[r["file"]] = {a: n for n, a in r["globals"]}
@@ -200,6 +207,7 @@ def choose(plans: list[dict], mods: dict) -> tuple[dict[str, list], collections.
         if f not in bad:
             bad.add(f)
             why[reason] += 1
+            LEFT_OUT[f] = reason
 
     refs: dict[str, list] = collections.defaultdict(list)
     for p in C.CONFIG.rglob("relocs.txt"):
@@ -222,13 +230,13 @@ def choose(plans: list[dict], mods: dict) -> tuple[dict[str, list], collections.
         keys = [t for t, _ in targets]
         img, base = C.module_image(mod), mods[mod]["base"]
         for f, merged in es:
-            _, end = merged[".text"]
+            _, end = merged.get(".text") or merged[".init"]  # an initialiser sits in .init
             if end % 4 == 2 and img[end - base:end - base + 2] == b"\xc0\x46":
                 drop(f, "Thumb nop after the code: shares an object with what follows")
                 continue
             spans = list(merged.values())
             for name, (x, y) in merged.items():
-                if name == ".text":
+                if name in (".text", ".init"):
                     continue
                 if x not in bounds or (y not in bounds and (y + 3) & ~3 not in bounds):
                     drop(f, "data size differs from the ROM's symbols")
@@ -246,7 +254,7 @@ def choose(plans: list[dict], mods: dict) -> tuple[dict[str, list], collections.
                 drop(f0, "overlapping claims")
                 drop(f1, "overlapping claims")
         for sec in ORDER[1:]:
-            seq = sorted((m[".text"][0], f, m[sec][0]) for f, m in es if sec in m and f not in bad)
+            seq = sorted(((m.get(".text") or m[".init"])[0], f, m[sec][0]) for f, m in es if sec in m and f not in bad)
             keep = longest_increasing([(f, a) for _, f, a in seq])
             for _, f, _ in seq:
                 if f not in keep:
@@ -272,7 +280,7 @@ def write_config(entries: dict[str, list]) -> None:
     (CFG / "config.yaml").write_text(text, newline="\n")
     for mod, es in entries.items():
         lines = []
-        for f, merged in sorted(es, key=lambda e: e[1][".text"][0]):
+        for f, merged in sorted(es, key=lambda e: (e[1].get(".text") or e[1][".init"])[0]):
             lines += [f"{f}:", "    complete"]
             for name in sorted(merged, key=lambda n: ORDER.index(n) if n in ORDER else 99):
                 a, b = merged[name]
@@ -331,6 +339,9 @@ def link() -> None:
 
 
 def main() -> None:
+    # --why [FILE...]: plan only, and print why each named source (or every one left out) stays
+    # out of the link; nothing is linked or written
+    only = [pathlib.Path(a).as_posix() for a in sys.argv[2:]] if sys.argv[1:2] == ["--why"] else None
     planner = Planner()
     paths = [p for p in C.all_sources() if C.SRC in p.parents]
     with cf.ThreadPoolExecutor(max(1, (os.cpu_count() or 4) - 2)) as pool:
@@ -338,10 +349,14 @@ def main() -> None:
     step(f"planned {len(plans)} sources")
     entries, why = choose(plans, planner.chk.mods)
     linked = sorted(f for es in entries.values() for f, _ in es)
+    if only is not None:
+        for f in only or sorted(LEFT_OUT):
+            print(f"{f}: {LEFT_OUT.get(f, 'linked' if f in linked else 'not a planned source')}")
+        return
     write_config(entries)
     # where each source's own data lands in the ROM, for the runtime's checks (tools/native.py)
     (C.BUILD / "placement.json").write_text(json.dumps(
-        {r["file"]: [s for s in r["sections"] if s[0] != ".text" and s[3] is not None]
+        {r["file"]: [s for s in r["sections"] if s[0] not in (".text", ".init") and s[3] is not None]
          for r in plans if "sections" in r}) + "\n", newline="\n")
     (LINK / "left-out.txt").write_text("".join(f"{n:6} {k}\n" for k, n in why.most_common()),
                                        newline="\n")

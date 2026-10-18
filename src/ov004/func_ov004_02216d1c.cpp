@@ -27,10 +27,6 @@ extern int func_0204bcdc(void *tile);
 extern int data_ov004_02253200;
 extern void *data_021c80bc;
 }
-struct UnkStruct_02216d1c {
-    int q;
-    ~UnkStruct_02216d1c() {}
-};
 extern "C"
 
     int
@@ -41,7 +37,9 @@ extern "C"
     int v;
     int ah;
     int a;
-    UnkStruct_02216d1c dz;
+    // A frame slot the code never uses; a pointer to a volatile local keeps it.
+    volatile int dz[1];
+    volatile int *dz_p = dz;
     List list;
     int b;
     void *p;

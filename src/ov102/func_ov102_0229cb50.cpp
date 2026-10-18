@@ -6,10 +6,10 @@ extern "C" void func_ov002_0220a374(void *, int);
 
 class UnkStruct_0229cb50 {
   public:
-    virtual void v0() {}
-    virtual void v1() {}
-    virtual void v2() {}
-    virtual void v3() {}
+    virtual void v0();
+    virtual void v1();
+    virtual void v2();
+    virtual void v3();
 };
 
 struct UnkStruct_0229cb50_2 {

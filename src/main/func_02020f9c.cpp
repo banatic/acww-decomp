@@ -18,14 +18,42 @@ extern "C" int func_020211dc(Base_02020f9c *);
 extern "C" int func_0202114c(Base_02020f9c *, char *, int);
 extern "C" int func_02022454(Base_02020f9c *);
 
+extern int data_021c1cf8;
+extern int (Base_02020f9c::*data_020d8fe0)();
+extern int (Base_02020f9c::*data_020d8fe8)();
+extern int (Base_02020f9c::*data_020d8ff8)();
+extern int (Base_02020f9c::*data_020d9008)();
+extern int (Base_02020f9c::*data_020d9020)();
+extern int (Base_02020f9c::*data_020d9030)();
+extern int (Base_02020f9c::*data_020d9040)();
+extern int (Base_02020f9c::*data_020d9360)();
+extern int (Base_02020f9c::*data_020d9368)();
+extern int (Base_02020f9c::*data_020d93d0)();
+extern int (Base_02020f9c::*data_020d9408)();
+extern int (Base_02020f9c::*data_020d9440)();
+extern int (Base_02020f9c::*data_020d9450)();
+extern int (Base_02020f9c::*data_020d9468)();
+extern int (Base_02020f9c::*data_021c20a4[14])();
+
 extern "C" void func_02020f9c(Base_02020f9c *self, UnkStruct_02020f9c *out)
 {
-    static int (Base_02020f9c::*table[14])() = {
-        &Base_02020f9c::func_02022c2c, &Base_02020f9c::func_02022674, &Base_02020f9c::func_0202261c,
-        &Base_02020f9c::func_020224c4, &Base_02020f9c::func_02022454, &Base_02020f9c::func_020222dc,
-        &Base_02020f9c::func_0202213c, &Base_02020f9c::func_02022034, &Base_02020f9c::func_02021fb8,
-        &Base_02020f9c::func_02021f1c, &Base_02020f9c::func_0202179c, &Base_02020f9c::func_020214e0,
-        &Base_02020f9c::func_02021410, &Base_02020f9c::func_02021284};
+    if (!(data_021c1cf8 & 1)) {
+        data_021c20a4[0] = data_020d9468;
+        data_021c20a4[1] = data_020d9040;
+        data_021c20a4[2] = data_020d9450;
+        data_021c20a4[3] = data_020d9440;
+        data_021c20a4[4] = data_020d9030;
+        data_021c20a4[5] = data_020d9020;
+        data_021c20a4[6] = data_020d9408;
+        data_021c20a4[7] = data_020d9008;
+        data_021c20a4[8] = data_020d93d0;
+        data_021c20a4[9] = data_020d8ff8;
+        data_021c20a4[10] = data_020d8fe8;
+        data_021c20a4[11] = data_020d8fe0;
+        data_021c20a4[12] = data_020d9368;
+        data_021c20a4[13] = data_020d9360;
+        data_021c1cf8 |= 1;
+    }
     int result;
     int idx;
 
@@ -43,7 +71,7 @@ extern "C" void func_02020f9c(Base_02020f9c *self, UnkStruct_02020f9c *out)
         if (idx >= 14) {
             goto special;
         }
-        result = (self->*table[idx])();
+        result = (self->*data_021c20a4[idx])();
         if (result == 0) {
             data_021c1d34[idx] = 0;
         }

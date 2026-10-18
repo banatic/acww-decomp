@@ -28,62 +28,181 @@ extern "C" void func_0200f268(Obj_020d82b4 *, int);
 extern UnkStruct_02007364 *data_020ccf94;
 extern void *data_020c7e48[];
 
-#define TABLE                                                                                                                 \
-    static PMF tbl[147] = {                                                                                                   \
-        &Obj_020d82b4::func_0200db88,       &Obj_020d82b4::func_0200d548,       &Obj_020d82b4::func_0200d48c,                 \
-        &Obj_020d82b4::func_0200d148,       &Obj_020d82b4::func_0200cac0,       &Obj_020d82b4::func_0200c98c,                 \
-        &Obj_020d82b4::func_ov003_022194a8, &Obj_020d82b4::func_0200c80c,       &Obj_020d82b4::func_ov004_0222bd6c,           \
-        &Obj_020d82b4::func_ov004_0222bb0c, &Obj_020d82b4::func_ov004_0222b8bc, &Obj_020d82b4::func_ov004_0222b5e0,           \
-        &Obj_020d82b4::func_ov004_0222b494, &Obj_020d82b4::func_ov004_0222b31c, &Obj_020d82b4::func_ov004_0222b0fc,           \
-        &Obj_020d82b4::func_ov004_0222aea4, &Obj_020d82b4::func_0200c37c,       &Obj_020d82b4::func_ov003_02218f94,           \
-        &Obj_020d82b4::func_ov004_0222acc4, &Obj_020d82b4::func_0200c1a4,       &Obj_020d82b4::func_0200c050,                 \
-        &Obj_020d82b4::func_0200bea4,       &Obj_020d82b4::func_ov003_02218e4c, &Obj_020d82b4::func_ov003_02218c28,           \
-        &Obj_020d82b4::func_0200bc38,       &Obj_020d82b4::func_0200b428,       &Obj_020d82b4::func_0200ab44,                 \
-        &Obj_020d82b4::func_0200a5f8,       &Obj_020d82b4::func_ov004_0222aa90, &Obj_020d82b4::func_ov004_0222a404,           \
-        &Obj_020d82b4::func_ov004_0222a1ac, &Obj_020d82b4::func_ov004_02229e74, &Obj_020d82b4::func_ov004_02229d04,           \
-        &Obj_020d82b4::func_ov004_02229b94, &Obj_020d82b4::func_ov004_022299fc, &Obj_020d82b4::func_ov004_022298e0,           \
-        &Obj_020d82b4::func_ov004_02229678, &Obj_020d82b4::func_ov004_022293b8, &Obj_020d82b4::func_ov004_02229170,           \
-        &Obj_020d82b4::func_ov004_02228f28, &Obj_020d82b4::func_ov004_02228dc4, &Obj_020d82b4::func_ov004_02228bac,           \
-        &Obj_020d82b4::func_ov004_02228ae0, &Obj_020d82b4::func_ov004_022289b8, &Obj_020d82b4::func_ov004_022287e4,           \
-        &Obj_020d82b4::func_ov004_02228570, &Obj_020d82b4::func_ov004_02228344, &Obj_020d82b4::func_ov004_0222820c,           \
-        &Obj_020d82b4::func_0200a3ac,       &Obj_020d82b4::func_0200a2e4,       &Obj_020d82b4::func_0200a22c,                 \
-        &Obj_020d82b4::func_02009f98,       &Obj_020d82b4::func_02009ed8,       &Obj_020d82b4::func_02009e28,                 \
-        &Obj_020d82b4::func_ov004_022280b0, &Obj_020d82b4::func_ov004_02227f90, &Obj_020d82b4::func_ov003_02218844,           \
-        &Obj_020d82b4::func_ov003_022185b0, &Obj_020d82b4::func_ov003_022183d8, &Obj_020d82b4::func_ov003_02218210,           \
-        &Obj_020d82b4::func_ov003_02217d60, &Obj_020d82b4::func_ov003_02217adc, &Obj_020d82b4::func_ov003_02217678,           \
-        &Obj_020d82b4::func_02009c74,       &Obj_020d82b4::func_ov004_02227d80, &Obj_020d82b4::func_ov004_02227958,           \
-        &Obj_020d82b4::func_ov004_02227764, &Obj_020d82b4::func_ov004_02227580, &Obj_020d82b4::func_ov004_02227448,           \
-        &Obj_020d82b4::func_ov003_0221740c, &Obj_020d82b4::func_ov003_022170a4, &Obj_020d82b4::func_ov003_02216ea0,           \
-        &Obj_020d82b4::func_ov003_02216bb0, &Obj_020d82b4::func_ov003_02216a00, &Obj_020d82b4::func_ov003_02216644,           \
-        &Obj_020d82b4::func_ov003_02216390, &Obj_020d82b4::func_ov003_0221608c, &Obj_020d82b4::func_ov003_02215e78,           \
-        &Obj_020d82b4::func_ov003_02215cbc, &Obj_020d82b4::func_ov003_02215af0, &Obj_020d82b4::func_ov003_02215718,           \
-        &Obj_020d82b4::func_ov003_02215570, &Obj_020d82b4::func_ov003_02215460, &Obj_020d82b4::func_ov003_022152f8,           \
-        &Obj_020d82b4::func_ov003_02215190, &Obj_020d82b4::func_ov003_02214bc8, &Obj_020d82b4::func_ov003_02214604,           \
-        &Obj_020d82b4::func_ov003_02213988, &Obj_020d82b4::func_ov003_02213114, &Obj_020d82b4::func_ov003_02212afc,           \
-        &Obj_020d82b4::func_ov003_022127a0, &Obj_020d82b4::func_ov003_02212478, &Obj_020d82b4::func_ov003_02212394,           \
-        &Obj_020d82b4::func_ov003_0221220c, &Obj_020d82b4::func_ov003_02211cc0, &Obj_020d82b4::func_ov003_02211604,           \
-        &Obj_020d82b4::func_ov003_02210ef8, &Obj_020d82b4::func_ov003_02210b3c, &Obj_020d82b4::func_ov003_02210950,           \
-        &Obj_020d82b4::func_ov003_02210640, &Obj_020d82b4::func_ov003_022102dc, &Obj_020d82b4::func_ov003_02210140,           \
-        &Obj_020d82b4::func_ov003_02210010, &Obj_020d82b4::func_ov003_0220fd04, &Obj_020d82b4::func_ov003_0220fa5c,           \
-        &Obj_020d82b4::func_ov003_0220f6dc, &Obj_020d82b4::func_ov003_0220f4a8, &Obj_020d82b4::func_ov003_0220f39c,           \
-        &Obj_020d82b4::func_ov003_0220f2f8, &Obj_020d82b4::func_ov003_0220f180, &Obj_020d82b4::func_ov003_0220ef80,           \
-        &Obj_020d82b4::func_02009918,       &Obj_020d82b4::func_0200956c,       &Obj_020d82b4::func_ov003_0220ed30,           \
-        &Obj_020d82b4::func_ov003_0220ea10, &Obj_020d82b4::func_ov003_0220e860, &Obj_020d82b4::func_ov003_0220e548,           \
-        &Obj_020d82b4::func_ov003_0220e128, &Obj_020d82b4::func_0200934c,       &Obj_020d82b4::func_02008d5c,                 \
-        &Obj_020d82b4::func_ov003_0220e008, &Obj_020d82b4::func_02008bf4,       &Obj_020d82b4::func_ov004_022272f4,           \
-        &Obj_020d82b4::func_ov004_022271e0, &Obj_020d82b4::func_ov004_02227118, &Obj_020d82b4::func_ov004_02226f4c,           \
-        &Obj_020d82b4::func_ov004_02226e5c, &Obj_020d82b4::func_ov004_02226db4, &Obj_020d82b4::func_ov003_0220dd9c,           \
-        &Obj_020d82b4::func_ov003_0220db4c, &Obj_020d82b4::func_ov003_0220d880, &Obj_020d82b4::func_02008a38,                 \
-        &Obj_020d82b4::func_02008910,       &Obj_020d82b4::func_020086c4,       &Obj_020d82b4::func_02008444,                 \
-        &Obj_020d82b4::func_ov068_02271f80, &Obj_020d82b4::func_ov068_02271e7c, &Obj_020d82b4::func_ov003_0220d680,           \
-        &Obj_020d82b4::func_ov004_02226d00, &Obj_020d82b4::func_ov004_02226aac, &Obj_020d82b4::func_ov004_0222671c,           \
-        &Obj_020d82b4::func_ov004_0222654c, &Obj_020d82b4::func_ov004_0222631c, &Obj_020d82b4::func_ov003_0220d444,           \
-        &Obj_020d82b4::func_02008364,       &Obj_020d82b4::func_02008300,       &Obj_020d82b4::func_020082f0,                 \
-    };
+extern int data_021c0000;
+extern PMF data_020d74bc, data_020d754c, data_020d75cc, data_020d772c, data_020d773c, data_020d784c, data_020d794c,
+    data_020d7bfc, data_020d7c04, data_020d7c1c, data_020d7c24, data_020d7c34, data_020d7c3c, data_020d7c44, data_020d7c4c,
+    data_020d7c54, data_020d7c5c, data_020d7c64, data_020d7c6c, data_020d7c74, data_020d7c7c, data_020d7c84, data_020d7c8c,
+    data_020d7c94, data_020d7c9c, data_020d7ca4, data_020d7cac, data_020d7cb4, data_020d7cbc, data_020d7cc4, data_020d7ccc,
+    data_020d7cd4, data_020d7cdc, data_020d7ce4, data_020d7cec, data_020d7cf4, data_020d7cfc, data_020d7d04, data_020d7d0c,
+    data_020d7d14, data_020d7d1c, data_020d7d24, data_020d7d2c, data_020d7d34, data_020d7d3c, data_020d7d44, data_020d7d4c,
+    data_020d7d54, data_020d7d5c, data_020d7d64, data_020d7d6c, data_020d7d74, data_020d7d7c, data_020d7d84, data_020d7d8c,
+    data_020d7d94, data_020d7d9c, data_020d7da4, data_020d7dac, data_020d7db4, data_020d7dbc, data_020d7dc4, data_020d7dcc,
+    data_020d7dd4, data_020d7ddc, data_020d7de4, data_020d7dec, data_020d7df4, data_020d7dfc, data_020d7e04, data_020d7e0c,
+    data_020d7e14, data_020d7e1c, data_020d7e24, data_020d7e2c, data_020d7e34, data_020d7e3c, data_020d7e44, data_020d7e5c,
+    data_020d7e64, data_020d7e6c, data_020d7e74, data_020d7e7c, data_020d7e84, data_020d7e8c, data_020d7e94, data_020d7e9c,
+    data_020d7ea4, data_020d7eac, data_020d7eb4, data_020d7ebc, data_020d7ec4, data_020d7ecc, data_020d7ed4, data_020d7edc,
+    data_020d7ee4, data_020d7eec, data_020d7ef4, data_020d7efc, data_020d7f04, data_020d7f0c, data_020d7f14, data_020d7f1c,
+    data_020d7f24, data_020d7f2c, data_020d7f34, data_020d7f3c, data_020d7f44, data_020d7f4c, data_020d7f54, data_020d7f5c,
+    data_020d7f64, data_020d7f6c, data_020d7f74, data_020d7f7c, data_020d7f84, data_020d7f8c, data_020d7f94, data_020d7f9c,
+    data_020d7fa4, data_020d7fac, data_020d7fb4, data_020d7fbc, data_020d7fc4, data_020d7fcc, data_020d7fd4, data_020d7fdc,
+    data_020d7fe4, data_020d7fec, data_020d7ff4, data_020d7ffc, data_020d8004, data_020d800c, data_020d8014, data_020d801c,
+    data_020d8024, data_020d802c, data_020d8034, data_020d803c, data_020d8044, data_020d805c, data_020d8064, data_020d806c,
+    data_020d8074, data_020d807c, data_020d8084, data_020d808c;
+extern PMF data_021c0de0[147];
 
 extern "C" void func_02007364(Obj_020d82b4 *self, Msg_02007364 *msg)
 {
-    TABLE
+    if (!(data_021c0000 & 1)) {
+        data_021c0de0[0] = data_020d808c;
+        data_021c0de0[1] = data_020d8084;
+        data_021c0de0[2] = data_020d807c;
+        data_021c0de0[3] = data_020d8074;
+        data_021c0de0[4] = data_020d806c;
+        data_021c0de0[5] = data_020d8064;
+        data_021c0de0[6] = data_020d805c;
+        data_021c0de0[7] = data_020d794c;
+        data_021c0de0[8] = data_020d75cc;
+        data_021c0de0[9] = data_020d8044;
+        data_021c0de0[10] = data_020d803c;
+        data_021c0de0[11] = data_020d8034;
+        data_021c0de0[12] = data_020d802c;
+        data_021c0de0[13] = data_020d8024;
+        data_021c0de0[14] = data_020d801c;
+        data_021c0de0[15] = data_020d8014;
+        data_021c0de0[16] = data_020d800c;
+        data_021c0de0[17] = data_020d8004;
+        data_021c0de0[18] = data_020d7ffc;
+        data_021c0de0[19] = data_020d7ff4;
+        data_021c0de0[20] = data_020d7fec;
+        data_021c0de0[21] = data_020d7fe4;
+        data_021c0de0[22] = data_020d7fdc;
+        data_021c0de0[23] = data_020d7fd4;
+        data_021c0de0[24] = data_020d7fcc;
+        data_021c0de0[25] = data_020d7fc4;
+        data_021c0de0[26] = data_020d7fbc;
+        data_021c0de0[27] = data_020d7fb4;
+        data_021c0de0[28] = data_020d7fac;
+        data_021c0de0[29] = data_020d7fa4;
+        data_021c0de0[30] = data_020d7f9c;
+        data_021c0de0[31] = data_020d7f94;
+        data_021c0de0[32] = data_020d7f8c;
+        data_021c0de0[33] = data_020d7f84;
+        data_021c0de0[34] = data_020d7f7c;
+        data_021c0de0[35] = data_020d7f74;
+        data_021c0de0[36] = data_020d7f6c;
+        data_021c0de0[37] = data_020d7f64;
+        data_021c0de0[38] = data_020d7f5c;
+        data_021c0de0[39] = data_020d7f54;
+        data_021c0de0[40] = data_020d7f4c;
+        data_021c0de0[41] = data_020d7f44;
+        data_021c0de0[42] = data_020d7f3c;
+        data_021c0de0[43] = data_020d7f34;
+        data_021c0de0[44] = data_020d7f2c;
+        data_021c0de0[45] = data_020d7f24;
+        data_021c0de0[46] = data_020d7f1c;
+        data_021c0de0[47] = data_020d7f14;
+        data_021c0de0[48] = data_020d7f0c;
+        data_021c0de0[49] = data_020d7f04;
+        data_021c0de0[50] = data_020d7efc;
+        data_021c0de0[51] = data_020d7ef4;
+        data_021c0de0[52] = data_020d7eec;
+        data_021c0de0[53] = data_020d7ee4;
+        data_021c0de0[54] = data_020d7edc;
+        data_021c0de0[55] = data_020d7ed4;
+        data_021c0de0[56] = data_020d7ecc;
+        data_021c0de0[57] = data_020d7ec4;
+        data_021c0de0[58] = data_020d7ebc;
+        data_021c0de0[59] = data_020d7eb4;
+        data_021c0de0[60] = data_020d7eac;
+        data_021c0de0[61] = data_020d7ea4;
+        data_021c0de0[62] = data_020d7e9c;
+        data_021c0de0[63] = data_020d7e94;
+        data_021c0de0[64] = data_020d7e8c;
+        data_021c0de0[65] = data_020d7e84;
+        data_021c0de0[66] = data_020d7e7c;
+        data_021c0de0[67] = data_020d7e74;
+        data_021c0de0[68] = data_020d7e6c;
+        data_021c0de0[69] = data_020d7e64;
+        data_021c0de0[70] = data_020d7e5c;
+        data_021c0de0[71] = data_020d784c;
+        data_021c0de0[72] = data_020d754c;
+        data_021c0de0[73] = data_020d7e44;
+        data_021c0de0[74] = data_020d7e3c;
+        data_021c0de0[75] = data_020d7e34;
+        data_021c0de0[76] = data_020d7e2c;
+        data_021c0de0[77] = data_020d7e24;
+        data_021c0de0[78] = data_020d7e1c;
+        data_021c0de0[79] = data_020d7e14;
+        data_021c0de0[80] = data_020d7e0c;
+        data_021c0de0[81] = data_020d7e04;
+        data_021c0de0[82] = data_020d7dfc;
+        data_021c0de0[83] = data_020d7df4;
+        data_021c0de0[84] = data_020d7dec;
+        data_021c0de0[85] = data_020d7de4;
+        data_021c0de0[86] = data_020d7ddc;
+        data_021c0de0[87] = data_020d7dd4;
+        data_021c0de0[88] = data_020d7dcc;
+        data_021c0de0[89] = data_020d7dc4;
+        data_021c0de0[90] = data_020d7dbc;
+        data_021c0de0[91] = data_020d7db4;
+        data_021c0de0[92] = data_020d7dac;
+        data_021c0de0[93] = data_020d7da4;
+        data_021c0de0[94] = data_020d7d9c;
+        data_021c0de0[95] = data_020d7d94;
+        data_021c0de0[96] = data_020d7d8c;
+        data_021c0de0[97] = data_020d7d84;
+        data_021c0de0[98] = data_020d7d7c;
+        data_021c0de0[99] = data_020d7d74;
+        data_021c0de0[100] = data_020d7d6c;
+        data_021c0de0[101] = data_020d7d64;
+        data_021c0de0[102] = data_020d7d5c;
+        data_021c0de0[103] = data_020d7d54;
+        data_021c0de0[104] = data_020d7d4c;
+        data_021c0de0[105] = data_020d7d44;
+        data_021c0de0[106] = data_020d7d3c;
+        data_021c0de0[107] = data_020d7d34;
+        data_021c0de0[108] = data_020d7d2c;
+        data_021c0de0[109] = data_020d7d24;
+        data_021c0de0[110] = data_020d7d1c;
+        data_021c0de0[111] = data_020d7d14;
+        data_021c0de0[112] = data_020d7d0c;
+        data_021c0de0[113] = data_020d7d04;
+        data_021c0de0[114] = data_020d7cfc;
+        data_021c0de0[115] = data_020d7cf4;
+        data_021c0de0[116] = data_020d7cec;
+        data_021c0de0[117] = data_020d7ce4;
+        data_021c0de0[118] = data_020d7cdc;
+        data_021c0de0[119] = data_020d7cd4;
+        data_021c0de0[120] = data_020d7ccc;
+        data_021c0de0[121] = data_020d7cc4;
+        data_021c0de0[122] = data_020d7cbc;
+        data_021c0de0[123] = data_020d7cb4;
+        data_021c0de0[124] = data_020d7cac;
+        data_021c0de0[125] = data_020d7ca4;
+        data_021c0de0[126] = data_020d7c9c;
+        data_021c0de0[127] = data_020d7c94;
+        data_021c0de0[128] = data_020d7c8c;
+        data_021c0de0[129] = data_020d7c84;
+        data_021c0de0[130] = data_020d7c7c;
+        data_021c0de0[131] = data_020d7c74;
+        data_021c0de0[132] = data_020d7c6c;
+        data_021c0de0[133] = data_020d7c64;
+        data_021c0de0[134] = data_020d7c5c;
+        data_021c0de0[135] = data_020d7c54;
+        data_021c0de0[136] = data_020d7c4c;
+        data_021c0de0[137] = data_020d7c44;
+        data_021c0de0[138] = data_020d7c3c;
+        data_021c0de0[139] = data_020d7c34;
+        data_021c0de0[140] = data_020d773c;
+        data_021c0de0[141] = data_020d7c24;
+        data_021c0de0[142] = data_020d7c1c;
+        data_021c0de0[143] = data_020d772c;
+        data_021c0de0[144] = data_020d74bc;
+        data_021c0de0[145] = data_020d7c04;
+        data_021c0de0[146] = data_020d7bfc;
+        data_021c0000 |= 1;
+    }
+
     UnkStruct_02007364 *g;
     int id;
     PMF f;
@@ -92,7 +211,7 @@ extern "C" void func_02007364(Obj_020d82b4 *self, Msg_02007364 *msg)
 
     id = msg->unk_00;
     h = msg->unk_08;
-    f = tbl[id];
+    f = data_021c0de0[id];
     saved = self->unk_7F4;
     func_02007d40(self, id);
     func_02007d2c(self);

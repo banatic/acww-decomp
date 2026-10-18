@@ -187,6 +187,9 @@ extern int data_ov004_0225f7fc;
 extern int data_ov004_0225f808;
 extern int data_ov004_0225f814;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov004_0224f1a0(void)
 {
     func_ov004_02245558(&data_ov004_0225f858, &data_ov004_0224b91c);
@@ -308,3 +311,5 @@ void __sinit_ov004_0224f1a0(void)
     func_ov004_02245558(&data_ov004_0225fe78, &data_ov004_0224bdfc);
     __register_global_object(&data_ov004_0225fe78, ((void *) &func_ov004_02245648), &data_ov004_0225f550);
 }
+
+#pragma section INIT end

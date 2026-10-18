@@ -5,12 +5,25 @@
 
 #include "cpp/main/Obj_020d8bd4.h"
 
+extern int data_021c14ec;
+extern void (Obj_020d8bd4::*data_020d85dc)(int);
+extern void (Obj_020d8bd4::*data_020d860c)(int);
+extern void (Obj_020d8bd4::*data_020d890c)(int);
+extern void (Obj_020d8bd4::*data_020d8914)(int);
+extern void (Obj_020d8bd4::*data_020d891c)(int);
+extern void (Obj_020d8bd4::*data_021c176c[5])(int);
+
 void Obj_020d8bd4::func_02018610(int arg)
 {
-    static void (Obj_020d8bd4::*tbl[5])(int) = {&Obj_020d8bd4::func_020187b8, &Obj_020d8bd4::func_0201875c,
-                                                &Obj_020d8bd4::func_0201873c, &Obj_020d8bd4::func_02018714,
-                                                &Obj_020d8bd4::func_020186b0};
+    if (!(data_021c14ec & 1)) {
+        data_021c176c[0] = data_020d891c;
+        data_021c176c[1] = data_020d8914;
+        data_021c176c[2] = data_020d890c;
+        data_021c176c[3] = data_020d860c;
+        data_021c176c[4] = data_020d85dc;
+        data_021c14ec |= 1;
+    }
     if (unk_98 < 5) {
-        (this->*tbl[unk_98])(arg);
+        (this->*data_021c176c[unk_98])(arg);
     }
 }

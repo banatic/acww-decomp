@@ -36,6 +36,9 @@ extern unsigned char data_021d1f04;
 extern void *func_020831fc(void *);
 extern unsigned char data_021d1df4;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c5e84(void)
 {
     func_02083b68((void *) &data_021d1e48);
@@ -63,3 +66,5 @@ void __sinit_020c5e84(void)
     __register_global_object((void *) ((void *) &data_021d1f04), (((void *) func_020831fc)),
                              (void *) ((void *) &data_021d1df4));
 }
+
+#pragma section INIT end

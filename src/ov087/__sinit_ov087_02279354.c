@@ -14,6 +14,9 @@ extern int data_ov087_022793d8[];
 extern int __ptmf_null[];
 extern int data_ov087_022793d0[];
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 int __sinit_ov087_02279354(void)
 {
     ((struct UnkStruct_02279354 *) data_ov087_022795c0)[0] = *(const struct UnkStruct_02279354 *) data_ov087_022793c8;
@@ -24,3 +27,5 @@ int __sinit_ov087_02279354(void)
     ((struct UnkStruct_02279354 *) data_ov087_022795c0)[5] = *(const struct UnkStruct_02279354 *) data_ov087_022793d0;
     return (int) data_ov087_022795c0;
 }
+
+#pragma section INIT end

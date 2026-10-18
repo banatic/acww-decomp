@@ -16,6 +16,9 @@ extern unsigned char data_ov041_022601cc[];
 extern unsigned char data_ov041_0226021c[];
 extern unsigned char data_ov041_022601d8[];
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov041_02260020(void)
 {
     *((unsigned char *) data_ov041_02260168 + 0x1) = *(unsigned char *) data_ov004_02256914;
@@ -44,3 +47,5 @@ void __sinit_ov041_02260020(void)
         __register_global_object(data_ov041_0226021c, (void *) func_020b649c, data_ov041_022601d8);
     }
 }
+
+#pragma section INIT end

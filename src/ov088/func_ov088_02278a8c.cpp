@@ -5,9 +5,9 @@
 #include "types.h"
 
 struct UnkStruct_02278a8c_2 {
-    virtual void f0() {}
-    virtual void f1() {}
-    virtual void Method() {}
+    virtual void f0();
+    virtual void f1();
+    virtual void Method();
 };
 
 struct UnkStruct_02278a8c {

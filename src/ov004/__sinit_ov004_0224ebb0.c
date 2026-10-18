@@ -8,8 +8,13 @@ extern unsigned char data_ov004_022585ac;
 extern void func_0203d224(void *arg0);
 extern unsigned char data_ov004_02258560;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov004_0224ebb0(void)
 {
     func_0203d228((void *) &data_ov004_022585ac);
     __register_global_object((void *) &data_ov004_022585ac, ((void *) &func_0203d224), (void *) &data_ov004_02258560);
 }
+
+#pragma section INIT end

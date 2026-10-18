@@ -38,6 +38,9 @@ static __inline void InitTimer(Timer *t, s32 period, void *name)
     __register_global_object(t, DisposeGlobal_func_020012dc, name);
 }
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov071_02279fd4(void)
 {
     data_ov071_0227a340 = (u16) data_020c80f0;
@@ -66,3 +69,5 @@ void __sinit_ov071_02279fd4(void)
 }
 
 #undef DisposeGlobal_func_020012dc
+
+#pragma section INIT end

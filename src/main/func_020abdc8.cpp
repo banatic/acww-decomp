@@ -18,7 +18,7 @@ class UnkStruct_020abdc8_2 {
     virtual void v1() {}
     virtual void v2() {}
     virtual void v3() {}
-    virtual void e(int x, int y) {}
+    virtual void e(int x, int y);
 };
 
 struct UnkStruct_020abdc8 {

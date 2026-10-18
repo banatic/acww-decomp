@@ -12,6 +12,9 @@ extern int data_021c749c;
 extern void func_0203f724(void *);
 extern int data_021c7490;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c511c(void)
 {
     data_021c748c.unk_00 = data_020ca0e8;
@@ -19,3 +22,5 @@ void __sinit_020c511c(void)
     __register_global_object((void *) ((void *) &data_021c749c), (((void *) func_0203f724)),
                              (void *) ((void *) &data_021c7490));
 }
+
+#pragma section INIT end

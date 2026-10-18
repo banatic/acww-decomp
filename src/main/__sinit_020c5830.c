@@ -8,9 +8,14 @@ extern int data_021c9c2c;
 extern void *func_0205d19c(void *);
 extern int data_021c9c20;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c5830(void)
 {
     func_0205d1b8((void *) &data_021c9c2c);
     __register_global_object((void *) ((void *) &data_021c9c2c), (((void *) func_0205d19c)),
                              (void *) ((void *) &data_021c9c20));
 }
+
+#pragma section INIT end

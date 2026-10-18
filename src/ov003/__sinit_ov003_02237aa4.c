@@ -18,6 +18,9 @@ extern unsigned char data_ov003_0223cf94;
 #define VisitElement_ov003_022275ec (void (*)(void *)) func_ov003_022275ec
 #define VisitElement_ov003_022275d8 (void (*)(void *)) func_ov003_022275d8
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov003_02237aa4(void)
 {
     __cxa_vec_ctor((void *) &data_ov003_0223cfe4, 20, 164, VisitElement_ov003_022275ec, VisitElement_ov003_022275d8);
@@ -29,3 +32,5 @@ void __sinit_ov003_02237aa4(void)
 #undef DestroyGlobal_020012dc
 #undef VisitElement_ov003_022275ec
 #undef VisitElement_ov003_022275d8
+
+#pragma section INIT end

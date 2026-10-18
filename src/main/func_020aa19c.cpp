@@ -4,10 +4,19 @@
 
 #include "cpp/main/Obj_020e404c.h"
 typedef void (Obj_020e404c::*Pmf)();
+extern int data_021f45ac;
+extern Pmf data_020e3edc, data_020e3ef4, data_020e3f6c, data_020e3f74;
+extern Pmf data_021f45d0[4];
+
 extern "C" void func_020aa19c(Obj_020e404c *self)
 {
-    static Pmf tbl[] = {&Obj_020e404c::func_020aa13c, &Obj_020e404c::func_020a9fac, &Obj_020e404c::func_020a9ebc,
-                        &Obj_020e404c::func_020a9e04};
-    (self->*(tbl[self->unk_08]))();
+    if (!(data_021f45ac & 1)) {
+        data_021f45d0[0] = data_020e3f6c;
+        data_021f45d0[1] = data_020e3f74;
+        data_021f45d0[2] = data_020e3edc;
+        data_021f45d0[3] = data_020e3ef4;
+        data_021f45ac |= 1;
+    }
+    (self->*(data_021f45d0[self->unk_08]))();
     self->sub.vfunc_08();
 }

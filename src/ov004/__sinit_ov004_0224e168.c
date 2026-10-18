@@ -39,6 +39,9 @@ extern struct {
     unsigned char f3;
 } data_ov004_022577b4;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov004_0224e168(void)
 {
     data_ov004_022577bc.f0 = 31;
@@ -66,3 +69,5 @@ void __sinit_ov004_0224e168(void)
     data_ov004_022577b4.f2 = 24;
     data_ov004_022577b4.f3 = 31;
 }
+
+#pragma section INIT end

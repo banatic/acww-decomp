@@ -20,6 +20,9 @@ extern int data_ov076_022796a0[];
 extern int data_ov076_02279690[];
 extern int data_ov076_02279698[];
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 int __sinit_ov076_022795ac(void)
 {
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[0] = *(const struct UnkStruct_022795ac *) data_ov076_022796c8;
@@ -36,3 +39,5 @@ int __sinit_ov076_022795ac(void)
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[11] = *(const struct UnkStruct_022795ac *) data_ov076_02279698;
     return (int) data_ov076_0227988c;
 }
+
+#pragma section INIT end

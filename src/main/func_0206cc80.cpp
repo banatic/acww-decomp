@@ -12,10 +12,7 @@ class UnkStruct_0206cc80 {
     virtual void f0() {}
     virtual void f1() {}
     virtual void f2() {}
-    virtual int method()
-    {
-        return 0;
-    }
+    virtual int method();
 };
 
 struct UnkStruct_0206cc80_2 {

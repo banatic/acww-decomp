@@ -10,6 +10,9 @@ extern void func_020b0aa4(void *);
 extern void *func_020b0a88(void *);
 extern unsigned char data_021f4adc;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c6da8(void)
 {
     __cxa_vec_ctor((void *) ((void *) &data_021f4ae8), 2, 16, (void (*)(void *)) func_020b0aa8,
@@ -17,3 +20,5 @@ void __sinit_020c6da8(void)
     __register_global_object((void *) ((void *) &data_021f4ae8), (((void *) func_020b0a88)),
                              (void *) ((void *) &data_021f4adc));
 }
+
+#pragma section INIT end

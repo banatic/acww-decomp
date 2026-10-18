@@ -48,6 +48,9 @@ extern unsigned char data_ov009_02265b48;
 
 #define DestroyGlobal_ov009_0226569c ((void *) &func_ov009_0226569c)
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov009_022656f4(void)
 {
     data_ov009_02265b3c.f0 = 31;
@@ -79,3 +82,5 @@ void __sinit_ov009_022656f4(void)
 }
 
 #undef DestroyGlobal_ov009_0226569c
+
+#pragma section INIT end

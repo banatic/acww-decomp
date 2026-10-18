@@ -60,6 +60,9 @@ extern int data_ov003_0223cb08;
 #define DestroyGlobal_020012dc ((void *) &func_020012dc)
 #define DestroyGlobal_020b649c ((void *) &func_020b649c)
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov003_02237510(void)
 {
     UnkStruct_02237510 l0;
@@ -197,3 +200,5 @@ void __sinit_ov003_02237510(void)
 
 #undef DestroyGlobal_020012dc
 #undef DestroyGlobal_020b649c
+
+#pragma section INIT end

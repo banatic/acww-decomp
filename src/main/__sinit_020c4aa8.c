@@ -5,7 +5,12 @@
 extern int data_020c8120;
 extern int data_021c30ac;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c4aa8(void)
 {
     *(int *) ((char *) ((int) &data_021c30ac) + (0)) = ((int) (*(int *) ((char *) ((int) &data_020c8120) + (0))) - (32768));
 }
+
+#pragma section INIT end

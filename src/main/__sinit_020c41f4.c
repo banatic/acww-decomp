@@ -4,9 +4,14 @@
 
 extern int data_0213ff78[];
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 int __sinit_020c41f4(void)
 {
     data_0213ff78[0] = 0;
     data_0213ff78[1] = 0;
     return (int) data_0213ff78;
 }
+
+#pragma section INIT end

@@ -4,9 +4,9 @@
 
 class UnkStruct_02260668_2 {
   public:
-    virtual void f0() {}
-    virtual void f1() {}
-    virtual void f2() {}
+    virtual void f0();
+    virtual void f1();
+    virtual void f2();
 };
 
 struct UnkStruct_02260668 {

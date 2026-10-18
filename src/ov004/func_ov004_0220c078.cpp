@@ -15,16 +15,11 @@ struct UnkStruct_0220c078 {
     unsigned int unk_08;
 };
 
-// The empty destructor keeps the eight bytes the ROM reserves for this local.
-class Scope {
-  public:
-    Scope() {}
-    ~Scope() {}
-};
-
 int Obj_ov004_0224fc4c::func_ov004_0220c078()
 {
-    Scope scope;
+    // A frame slot the code never uses; a pointer to a volatile local keeps it.
+    volatile int scope[1];
+    volatile int *scope_p = scope;
     func_0203ee14(this, this);
     func_020a8164(*this, data_ov004_0224fbe0);
     unk_1E = 0;

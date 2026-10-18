@@ -37,6 +37,9 @@ extern void func_02053498(void *);
 extern void *func_0205347c(void *);
 extern unsigned char data_021c8774;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c52d8(void)
 {
     UnkStruct_020c52d8 *p;
@@ -81,3 +84,5 @@ void __sinit_020c52d8(void)
     data_021c87b0.unk_00 = 1;
     data_021c87b0.unk_02 = 1;
 }
+
+#pragma section INIT end

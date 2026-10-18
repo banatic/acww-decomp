@@ -15,6 +15,9 @@ extern struct {
 } data_021fd240;
 extern unsigned char data_021fd248;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c74c4(void)
 {
     int _r1;
@@ -28,3 +31,5 @@ void __sinit_020c74c4(void)
     _r3 = FX_Div(520192, 819);
     data_021fd240.f0 = (long) _r3;
 }
+
+#pragma section INIT end

@@ -12,12 +12,23 @@ extern "C" void func_0208b034(void *);
 
 typedef void (Base_0208b3ac::*PMF)();
 
+extern int data_021d3150;
+extern PMF data_020e20ec, data_020e2104, data_020e210c, data_020e2144, data_020e219c, data_020e21ac;
+extern PMF data_021d31f0[6];
+
 extern "C" void func_0208b3ac(Base_0208b3ac *self)
 {
-    static PMF table[6] = {&Base_0208b3ac::func_0208b34c, &Base_0208b3ac::func_0208b2cc, &Base_0208b3ac::func_0208b234,
-                           &Base_0208b3ac::func_0208b1dc, &Base_0208b3ac::func_0208b1b8, &Base_0208b3ac::func_0208b148};
+    if (!(data_021d3150 & 1)) {
+        data_021d31f0[0] = data_020e21ac;
+        data_021d31f0[1] = data_020e219c;
+        data_021d31f0[2] = data_020e210c;
+        data_021d31f0[3] = data_020e2104;
+        data_021d31f0[4] = data_020e2144;
+        data_021d31f0[5] = data_020e20ec;
+        data_021d3150 |= 1;
+    }
 
-    (self->*table[self->mIndex])();
+    (self->*data_021d31f0[self->mIndex])();
 
     func_0208dd50((char *) self + 8);
     func_0208d14c((char *) self + 0xe0);

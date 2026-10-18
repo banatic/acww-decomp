@@ -21,6 +21,9 @@ extern void func_020b649c(void *object);
 extern void func_020b6468(void *self, int id, const Vec *v, unsigned int flags, int a, int b, int c, int d, int e);
 extern void __register_global_object(void *obj, void (*dtor)(void *), void *node);
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov032_02260020(void)
 {
     Vec t1;
@@ -79,3 +82,5 @@ void __sinit_ov032_02260020(void)
     func_020b6468(&data_ov032_022603d4, 0x3f, &t7, 0x800000, 0, 2, 2, 0, 0);
     __register_global_object(&data_ov032_022603d4, func_020b649c, &data_ov032_02260314);
 }
+
+#pragma section INIT end

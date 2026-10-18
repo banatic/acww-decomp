@@ -6,8 +6,3 @@ int func_020e9b3c(void)
 {
     return -1;
 }
-
-int func_02102a2c(void)
-{
-    return -1;
-}

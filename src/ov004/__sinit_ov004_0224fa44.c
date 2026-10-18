@@ -71,6 +71,9 @@ extern unsigned char data_ov004_0225fff4;
 extern unsigned char data_ov004_02260000;
 extern unsigned char data_ov004_0225ffe8;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov004_0224fa44(void)
 {
     volatile unsigned char _frame[72];
@@ -121,3 +124,5 @@ void __sinit_ov004_0224fa44(void)
     data_ov004_0225698c.f18 = 512;
     data_ov004_0225698c.f1c = 75607;
 }
+
+#pragma section INIT end

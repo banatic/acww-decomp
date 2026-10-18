@@ -2,11 +2,6 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_02102a3c(void)
-{
-    return -1;
-}
-
 void func_ov002_02208a04(unsigned short *p0, int p1)
 {
     p0[10] = (p0[10] & ~p1);

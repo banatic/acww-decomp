@@ -44,6 +44,9 @@ extern UnkStruct_020c714c data_020e7d90;
 extern UnkStruct_020c714c data_020e7d28;
 extern UnkStruct_020c714c data_020e7d10;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c714c(void)
 {
     UnkStruct_020c714c_2 *p;
@@ -102,3 +105,5 @@ void __sinit_020c714c(void)
     p->c = 0x1000;
     __register_global_object((void *) (p), (((void *) func_020012dc)), (void *) (&data_021fbcb4));
 }
+
+#pragma section INIT end

@@ -7,11 +7,19 @@
 
 typedef void (Obj_020d8bd4::*PMF)(int arg);
 
+extern int data_021c1548;
+extern PMF data_020d86b4, data_020d8a64;
+extern PMF data_021c15cc[2];
+
 void Obj_020d8bd4::func_020191dc(int arg)
 {
-    static PMF table[2] = {&Obj_020d8bd4::func_02019304, &Obj_020d8bd4::func_0201924c};
+    if (!(data_021c1548 & 1)) {
+        data_021c15cc[0] = data_020d86b4;
+        data_021c15cc[1] = data_020d8a64;
+        data_021c1548 |= 1;
+    }
     unsigned char n = unk_98;
     if (n < 2) {
-        (this->*table[n])(arg);
+        (this->*data_021c15cc[n])(arg);
     }
 }

@@ -5,6 +5,9 @@
 extern int data_021f6ca0[];
 extern int data_021f6c98[];
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 int __sinit_020c6f5c(void)
 {
     data_021f6ca0[0] = 0;
@@ -13,3 +16,5 @@ int __sinit_020c6f5c(void)
     data_021f6c98[1] = 0;
     return (int) data_021f6c98;
 }
+
+#pragma section INIT end

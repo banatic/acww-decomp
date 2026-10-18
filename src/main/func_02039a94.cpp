@@ -19,10 +19,7 @@ class UnkStruct_02039a94 {
     {
         return 0;
     }
-    virtual unsigned int m3()
-    {
-        return 0;
-    }
+    virtual unsigned int m3();
     unsigned char pad[0x30 - 4];
     unsigned int unk_30;
 };

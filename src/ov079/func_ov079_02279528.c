@@ -7,22 +7,21 @@ typedef struct {
     int adj;
 } Pair;
 
-extern void func_ov079_02279374(void *self);
-extern void func_ov079_0227936c(void *self);
-extern void func_ov079_02278d58(void *self);
+// The ROM keeps these with the neighbouring functions' copies of the same kind: the
+// {fn, 0} pairs in .data, the array and its guard in .bss.
+extern Pair data_ov079_02279fc0; // {func_ov079_02279374, 0}
+extern Pair data_ov079_02279fc8; // {func_ov079_0227936c, 0}
+extern Pair data_ov079_02279fe0; // {func_ov079_02278d58, 0}
+extern Pair data_ov079_0227a20c[3];
+extern int data_ov079_0227a1c4;
 
 void func_ov079_02279528(int arg0, Pair *out, int idx)
 {
-    static Pair arr[3];
-    static const Pair src0 = {func_ov079_02279374, 0};
-    static const Pair src1 = {func_ov079_0227936c, 0};
-    static const Pair src2 = {func_ov079_02278d58, 0};
-    static int flag = 0;
-    if (!(flag & 1)) {
-        arr[0] = src0;
-        arr[1] = src1;
-        arr[2] = src2;
-        flag |= 1;
+    if (!(data_ov079_0227a1c4 & 1)) {
+        data_ov079_0227a20c[0] = data_ov079_02279fc0;
+        data_ov079_0227a20c[1] = data_ov079_02279fc8;
+        data_ov079_0227a20c[2] = data_ov079_02279fe0;
+        data_ov079_0227a1c4 |= 1;
     }
-    *out = arr[idx];
+    *out = data_ov079_0227a20c[idx];
 }

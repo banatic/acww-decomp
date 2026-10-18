@@ -4,16 +4,18 @@
 
 #include "types.h"
 
-// The empty destructor keeps one 12-byte temporary per case, which gives the 0x2A0-byte frame.
 struct Vec {
     int x, y, z;
     Vec(int a, int b, int c) : x(a), y(b), z(c) {}
-    ~Vec() {}
 };
 extern "C" int func_ov004_0223ea78(void);
 extern "C" int FX_MulFunc(int, int);
 extern "C" void func_ov004_0223fad0(void *unused, char *entry)
 {
+    // The ROM's 0x2A0-byte frame (a 12-byte slot per case) is never used; a pointer to a
+    // volatile local of that size keeps it.
+    volatile int slot[168];
+    volatile int *slot_p = slot;
     Vec *p = (Vec *) (entry + 0x2c8);
     int mask = func_ov004_0223ea78();
     switch (*(signed char *) (entry + 0x196)) {

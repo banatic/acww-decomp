@@ -4,8 +4,17 @@
 
 #include "cpp/main/Obj_020e2400.h"
 
+extern int data_021d3620;
+extern void (Obj_020e2400::*data_020e23bc)();
+extern void (Obj_020e2400::*data_020e23cc)();
+extern void (Obj_020e2400::*data_021d3644[2])();
+
 extern "C" void func_0208f9b8(Obj_020e2400 *self)
 {
-    static void (Obj_020e2400::*table[2])() = {&Obj_020e2400::func_0208f838, &Obj_020e2400::func_0208f748};
-    (self->*table[self->unk_20])();
+    if (!(data_021d3620 & 1)) {
+        data_021d3644[0] = data_020e23cc;
+        data_021d3644[1] = data_020e23bc;
+        data_021d3620 |= 1;
+    }
+    (self->*data_021d3644[self->unk_20])();
 }

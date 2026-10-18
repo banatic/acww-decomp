@@ -6,13 +6,23 @@
 
 extern "C" void func_020b8af0(Base_020b8b88 *self);
 
+typedef void (Base_020b8b88::*MFN)();
+
+extern int data_021f6af0;
+extern MFN data_020e5820, data_020e5828, data_020e5830, data_020e5838;
+extern MFN data_021f6b00[4];
+
 extern "C" void func_020b8b88(Base_020b8b88 *self)
 {
-    typedef void (Base_020b8b88::*MFN)();
-    static MFN table[4] = {&Base_020b8b88::func_020b87ac, &Base_020b8b88::func_020b8744, &Base_020b8b88::func_020b86e4,
-                           &Base_020b8b88::func_020b866c};
+    if (!(data_021f6af0 & 1)) {
+        data_021f6b00[0] = data_020e5830;
+        data_021f6b00[1] = data_020e5820;
+        data_021f6b00[2] = data_020e5838;
+        data_021f6b00[3] = data_020e5828;
+        data_021f6af0 |= 1;
+    }
     func_020b8af0(self);
-    (self->*table[self->index])();
+    (self->*data_021f6b00[self->index])();
     self->flag = 0;
     self->sub.vfunc_0c();
 }

@@ -12,13 +12,26 @@ extern "C" void func_020a93dc(Base_0206b510 *self, u32 arg);
 extern "C" void func_020a9334(Base_0206b510 *self, void *data);
 extern int data_020cce98;
 
+extern int data_021cda80;
+extern PMF data_020de8d4, data_020de904, data_020de914, data_020debec, data_020debf4, data_020debfc, data_020dec14,
+    data_020dec1c;
+extern PMF data_021cdbb4[8];
+
 extern "C" void func_0206b510(Base_0206b510 *self)
 {
-    static PMF table[8] = {&Base_0206b510::func_0206a8f4, &Base_0206b510::func_0206a854, &Base_0206b510::func_0206a790,
-                           &Base_0206b510::func_0206a6ac, &Base_0206b510::func_0206a694, &Base_0206b510::func_0206a67c,
-                           &Base_0206b510::func_0206a664, &Base_0206b510::func_0206a64c};
+    if (!(data_021cda80 & 1)) {
+        data_021cdbb4[0] = data_020dec1c;
+        data_021cdbb4[1] = data_020dec14;
+        data_021cdbb4[2] = data_020de914;
+        data_021cdbb4[3] = data_020de8d4;
+        data_021cdbb4[4] = data_020debfc;
+        data_021cdbb4[5] = data_020debf4;
+        data_021cdbb4[6] = data_020debec;
+        data_021cdbb4[7] = data_020de904;
+        data_021cda80 |= 1;
+    }
 
-    PMF pmf = table[self->idx];
+    PMF pmf = data_021cdbb4[self->idx];
 
     if (self->flag) {
         self->flag = 0;

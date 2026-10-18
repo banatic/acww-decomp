@@ -5,13 +5,26 @@
 #include "cpp/main/Base_0203637c.h"
 typedef void (Base_0203637c::*PMF)(void *);
 
+extern int data_021c5270;
+extern PMF data_020da254, data_020da25c, data_020da264, data_020da274, data_020da28c, data_020da294, data_020da29c,
+    data_020da2a4;
+extern PMF data_021c5274[8];
+
 extern "C" void func_0203637c(Base_0203637c *self)
 {
-    static PMF table[8] = {&Base_0203637c::func_02036378, &Base_0203637c::func_02036310, &Base_0203637c::func_020362a0,
-                           &Base_0203637c::func_02036264, &Base_0203637c::func_02036228, &Base_0203637c::func_02036188,
-                           &Base_0203637c::func_02036124, &Base_0203637c::func_020360d0};
+    if (!(data_021c5270 & 1)) {
+        data_021c5274[0] = data_020da2a4;
+        data_021c5274[1] = data_020da25c;
+        data_021c5274[2] = data_020da28c;
+        data_021c5274[3] = data_020da254;
+        data_021c5274[4] = data_020da274;
+        data_021c5274[5] = data_020da264;
+        data_021c5274[6] = data_020da294;
+        data_021c5274[7] = data_020da29c;
+        data_021c5270 |= 1;
+    }
     int i;
     for (i = 0; i < 8; i++) {
-        (self->*table[i])(&self->arr[i]);
+        (self->*data_021c5274[i])(&self->arr[i]);
     }
 }

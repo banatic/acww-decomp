@@ -51,6 +51,9 @@ extern UnkStruct_0224ee64 data_ov004_02255c78;
 extern UnkStruct_0224ee64 data_ov004_02255c80;
 extern UnkStruct_0224ee64 data_ov004_02255cb0;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov004_0224ee64(void)
 {
     UnkStruct_0224ee64_2 *p;
@@ -94,3 +97,5 @@ void __sinit_ov004_0224ee64(void)
     data_ov004_0225940c[1] = data_ov004_02255c80;
     data_ov004_0225940c[2] = data_ov004_02255cb0;
 }
+
+#pragma section INIT end

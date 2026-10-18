@@ -6,7 +6,12 @@ extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *))
 extern unsigned char data_021c72e8;
 extern void func_0203f598(void *);
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c50f8(void)
 {
     __cxa_vec_ctor((void *) ((void *) &data_021c72e8), 15, 28, (void (*)(void *)) func_0203f598, 0);
 }
+
+#pragma section INIT end

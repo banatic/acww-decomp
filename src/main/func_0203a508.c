@@ -9,6 +9,12 @@ typedef struct {
     int b;
 } UnkStruct_0203a508;
 
+// {1, 0, 2}, the template of the local kind table
+typedef struct {
+    int v[3];
+} KindTable;
+extern const KindTable data_020da6f8;
+
 extern int func_020644cc(int);
 extern void func_02063ccc(UnkStruct_0203a508 *o, int a, int b);
 extern void func_020638d4(u16 *out, UnkStruct_0203a508 *o, int a, int b, int c, int d, int e);
@@ -28,7 +34,7 @@ void func_0203a508(u16 *arr, int n)
     int kind;
     u16 h[2];
     UnkStruct_0203a508 o;
-    int tbl[3] = {1, 0, 2};
+    KindTable tbl = data_020da6f8;
 
     count = 0;
     for (j = 0; j < 0xf; j++) {
@@ -65,7 +71,7 @@ void func_0203a508(u16 *arr, int n)
             if (kind == 0xff) {
                 break;
             }
-            func_02063ccc(&o, tbl[kind], z1);
+            func_02063ccc(&o, tbl.v[kind], z1);
             func_020638d4(&h[0], &o, z2, z2, 1, 1, z2);
             func_02063cc8(&o);
             arr[i] = h[0];

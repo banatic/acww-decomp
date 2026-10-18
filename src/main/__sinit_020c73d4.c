@@ -45,6 +45,9 @@ extern struct {
     UnkStruct_020c73d4 f0;
 } data_0213e828;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c73d4(void)
 {
     data_021fcff8.f4 = data_0213e838.f0;
@@ -62,3 +65,5 @@ void __sinit_020c73d4(void)
     data_021fd034.f4 = 0;
     data_021fd034.f8 = data_0213e828.f0;
 }
+
+#pragma section INIT end

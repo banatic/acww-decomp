@@ -30,8 +30,6 @@ extern void (*CTRDGi_WriteAgbFlashSectorAsync)(int index, char *buffer, unsigned
 
 extern void (*CTRDGi_WriteAgbFlashSectorAsync)(int index, char *buffer, unsigned int length);
 
-const u16(*ctrdgi_fl_maxtime);
-
 void CTRDG_WriteAgbFlashSectorAsync(int index, char *buffer, unsigned int length)
 {
     (*CTRDGi_WriteAgbFlashSectorAsync)(index, buffer, length);

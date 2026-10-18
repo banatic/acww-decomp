@@ -192,6 +192,9 @@ extern struct {
 extern void func_02085f04(void *);
 extern unsigned char data_021d2130;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_020c5f70(void)
 {
     volatile unsigned char _frame[12];
@@ -236,3 +239,5 @@ void __sinit_020c5f70(void)
     data_020e1f0c.f2c = data_020e1bd0.f0;
     data_020e1f0c.f40 = data_020e1bf8.f0;
 }
+
+#pragma section INIT end

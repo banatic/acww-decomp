@@ -28,6 +28,9 @@ extern void func_020012dc(void *object);
 extern void func_020051b0(void *object);
 extern void __register_global_object(void *, void *destructor, void *);
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov004_0224e058(void)
 {
     data_ov004_022572c4.x = 8192;
@@ -77,3 +80,5 @@ void __sinit_ov004_0224e058(void)
     data_ov004_02256fec = 0xfff1;
     __register_global_object(&data_ov004_02256fec, ((void *) &func_020051b0), &data_ov004_022570b8);
 }
+
+#pragma section INIT end

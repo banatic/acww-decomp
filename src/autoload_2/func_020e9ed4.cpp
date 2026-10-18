@@ -7,7 +7,7 @@ void func_020ea0a4(void *self);
 int func_020e9d64(void *self, int c);
 void func_020ea084(void *self);
 void OS_Terminate(void);
-void (*g_callback)(void *self, int ret, int b, int c);
+extern void (*data_021fbe84)(void *self, int ret, int b, int c);
 }
 
 class UnkStruct_020e9ed4 {
@@ -37,8 +37,8 @@ extern "C" int func_020e9ed4(UnkStruct_020e9ed4 *self, int b, int c)
 
     ret = self->method6(b, c);
 
-    if (g_callback && (self->flags & 0x400)) {
-        g_callback(self, ret, b, c);
+    if (data_021fbe84 && (self->flags & 0x400)) {
+        data_021fbe84(self, ret, b, c);
     }
 
     if (ret == 0 && (self->flags & 0x4000)) {

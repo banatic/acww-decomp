@@ -5,9 +5,18 @@
 #include "cpp/main/Obj_020e21fc.h"
 
 typedef void (Obj_020e21fc::*Pmf)();
+extern int data_021d3160;
+extern Pmf data_020e20e4, data_020e20f4, data_020e2114, data_020e2154;
+extern Pmf data_021d31b0[4];
+
 extern "C" void func_0208ba54(Obj_020e21fc *self)
 {
-    static Pmf tbl[] = {&Obj_020e21fc::func_0208b990, &Obj_020e21fc::func_0208b930, &Obj_020e21fc::func_0208b900,
-                        &Obj_020e21fc::func_0208b8a8};
-    (self->*(tbl[self->unk_20]))();
+    if (!(data_021d3160 & 1)) {
+        data_021d31b0[0] = data_020e20f4;
+        data_021d31b0[1] = data_020e20e4;
+        data_021d31b0[2] = data_020e2154;
+        data_021d31b0[3] = data_020e2114;
+        data_021d3160 |= 1;
+    }
+    (self->*(data_021d31b0[self->unk_20]))();
 }

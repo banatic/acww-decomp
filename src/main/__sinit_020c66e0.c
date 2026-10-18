@@ -20,6 +20,9 @@ extern int data_020e36b8[];
 extern int data_020e36b0[];
 extern int data_020e36c8[];
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 int __sinit_020c66e0(void)
 {
     ((struct UnkStruct_020c66e0 *) data_021f3ba4)[0] = *(const struct UnkStruct_020c66e0 *) data_020e3698;
@@ -36,3 +39,5 @@ int __sinit_020c66e0(void)
     ((struct UnkStruct_020c66e0 *) data_021f3ba4)[11] = *(const struct UnkStruct_020c66e0 *) data_020e36c8;
     return (int) data_021f3ba4;
 }
+
+#pragma section INIT end

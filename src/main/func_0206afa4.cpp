@@ -4,9 +4,18 @@
 
 #include "cpp/main/Base_0206afa4.h"
 typedef void (Base_0206afa4::*Pmf)();
+extern int data_021cda8c;
+extern Pmf data_020de854, data_020de994, data_020de9a4;
+extern Pmf data_021cdabc[3];
+
 extern "C" void func_0206afa4(Base_0206afa4 *self)
 {
-    static Pmf tbl[] = {&Base_0206afa4::func_0206965c, &Base_0206afa4::func_02069658, &Base_0206afa4::func_02069654};
-    Pmf p = tbl[self->unk_3C];
+    if (!(data_021cda8c & 1)) {
+        data_021cdabc[0] = data_020de9a4;
+        data_021cdabc[1] = data_020de854;
+        data_021cdabc[2] = data_020de994;
+        data_021cda8c |= 1;
+    }
+    Pmf p = data_021cdabc[self->unk_3C];
     (self->*p)();
 }

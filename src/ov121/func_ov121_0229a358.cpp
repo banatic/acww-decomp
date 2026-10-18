@@ -5,10 +5,10 @@
 extern "C" void func_ov002_0220a374(void *, int);
 
 struct SubStruct {
-    virtual void f1() {}
-    virtual void f2() {}
-    virtual void f3() {}
-    virtual void f4() {}
+    virtual void f1();
+    virtual void f2();
+    virtual void f3();
+    virtual void f4();
 };
 
 struct UnkStruct_0229a358 {

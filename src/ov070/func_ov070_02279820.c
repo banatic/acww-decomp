@@ -9,15 +9,17 @@ typedef struct {
 
 extern void func_ov070_02279778(void *self);
 
+// the table and its guard sit with the neighbouring functions' tables and guards in .bss
+extern Pair data_ov070_02279f1c[8];
+extern int data_ov070_02279f10;
+
 void func_ov070_02279820(void *self, int idx)
 {
-    static Pair table[8];
-    static const Pair src0 = {func_ov070_02279778, 0};
-    static int flag = 0;
+    static Pair src0 = {func_ov070_02279778, 0};
 
-    if (!(flag & 1)) {
-        table[0] = src0;
-        flag |= 1;
+    if (!(data_ov070_02279f10 & 1)) {
+        data_ov070_02279f1c[0] = src0;
+        data_ov070_02279f10 |= 1;
     }
-    *(Pair *) ((char *) self + 0xb8) = table[idx];
+    *(Pair *) ((char *) self + 0xb8) = data_ov070_02279f1c[idx];
 }

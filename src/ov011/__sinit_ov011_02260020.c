@@ -5,8 +5,13 @@
 extern int data_ov004_02256914;
 extern int data_ov011_0226008c;
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov011_02260020(void)
 {
     *(unsigned char *) ((char *) ((int) &data_ov011_0226008c) + (9)) =
         *(unsigned char *) ((char *) ((int) &data_ov004_02256914) + (0));
 }
+
+#pragma section INIT end

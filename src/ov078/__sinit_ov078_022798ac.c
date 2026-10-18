@@ -28,6 +28,9 @@ extern void __register_global_object(void *o, void *destructor, void *n);
 
 #define DisposeGlobal_func_020012dc ((void *) &func_020012dc)
 
+#pragma define_section INIT ".init" RX
+#pragma section INIT begin
+
 void __sinit_ov078_022798ac(void)
 {
     UnkStruct_022798ac_3 *p;
@@ -78,3 +81,5 @@ void __sinit_ov078_022798ac(void)
 }
 
 #undef DisposeGlobal_func_020012dc
+
+#pragma section INIT end

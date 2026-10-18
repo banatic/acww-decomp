@@ -6,10 +6,21 @@
 
 typedef void (Obj_020e2234::*PMF)();
 
+extern int data_021d315c;
+extern PMF data_020e216c, data_020e2174, data_020e217c, data_020e2184, data_020e218c, data_020e2194, data_020e21a4;
+extern PMF data_021d3220[7];
+
 extern "C" void func_0208c04c(Obj_020e2234 *self)
 {
-    static PMF tbl[7] = {&Obj_020e2234::func_0208be24, &Obj_020e2234::func_0208bdd0, &Obj_020e2234::func_0208bd50,
-                         &Obj_020e2234::func_0208bcfc, &Obj_020e2234::func_0208bca4, &Obj_020e2234::func_0208bc60,
-                         &Obj_020e2234::func_0208bc0c};
-    (self->*tbl[self->idx])();
+    if (!(data_021d315c & 1)) {
+        data_021d3220[0] = data_020e21a4;
+        data_021d3220[1] = data_020e216c;
+        data_021d3220[2] = data_020e2194;
+        data_021d3220[3] = data_020e218c;
+        data_021d3220[4] = data_020e2184;
+        data_021d3220[5] = data_020e217c;
+        data_021d3220[6] = data_020e2174;
+        data_021d315c |= 1;
+    }
+    (self->*data_021d3220[self->idx])();
 }
