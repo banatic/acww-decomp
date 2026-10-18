@@ -51,8 +51,9 @@ Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
                      or addresses, one per line)
     --clean-ran FILE with --clean: also list which Clean functions ran in the Native run, however
                      they were entered (from the interpreter, from Native or from Clean code), as
-                     JSON to FILE: [{"module", "address", "ran"}]. The Clean code is then built with
-                     -finstrument-functions (runtime/clean_ran.c), apart from the usual build
+                     JSON to FILE: [{"module", "address", "ran"}]. The program is the usual one
+                     with runtime/clean_ran.c linked in, which marks each Clean function's entry
+                     with a breakpoint until it first runs; the Clean code is the usual build's
 
 Prints how far the boot gets: where it stopped, the registers the game touched, the BIOS
 calls, the PXI traffic, the functions branched to most and the last branch targets with their
@@ -233,13 +234,12 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
     return path
 
 
-def build_clean(flags: list[str], ran: bool = False) -> list[str]:
+def build_clean(flags: list[str]) -> list[str]:
     """The Clean code and its checks as objects, and the names they take from the game placed at
     their DS addresses (as tools/diffcheck.py builds them). Each object is rewritten as the Native
     objects are (tools/objrewrite.py): a call to a game function that has a Native version goes
     to it, as a Native caller's does, so it runs where the run's policy says (Native, Clean, or
-    the ROM's code through the patched entry) with the same crossings as the Reference records.
-    With `ran`, each function also reports its entry (runtime/clean_ran.c), in objects of their own."""
+    the ROM's code through the patched entry) with the same crossings as the Reference records."""
     syms = C.SymbolTable(C.modules())
     known = set(syms.by_name)
     native = {name for name, _ in natives_table().values()}
@@ -251,9 +251,7 @@ def build_clean(flags: list[str], ran: bool = False) -> list[str]:
     # uninitialized locals filled as the Native objects' are (tools/native.py), so the memory
     # comparison tells the bytes a structure filled in part passes on from the game's values
     flags += ["-ftrivial-auto-var-init=pattern"]
-    if ran:
-        flags.append("-finstrument-functions")
-    tree = OUT / ("clean-ran" if ran else "clean")
+    tree = OUT / "clean"
     objects = []
     for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         obj = tree / src.relative_to(C.ROOT).with_suffix(".o")
@@ -277,8 +275,9 @@ def build_clean(flags: list[str], ran: bool = False) -> list[str]:
 def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.Path:
     """The runtime; with `native`, linked with every Native object as tools/diffcheck.py
     --native links them (runtime/native_table.h), else with an empty table; with `clean`, also
-    with the Clean code (write_clean_table); with `ran`, the Clean code reporting which of its
-    functions run (--clean-ran), as a program of its own."""
+    with the Clean code (write_clean_table); with `ran`, also with runtime/clean_ran.c, which
+    lists the Clean functions that run (--clean-ran), as a program of its own. The Clean code is
+    the same: what each function computes and leaves in registers must not change."""
     exe = OUT / (("run-native" if native else "run") + ("-ran" if ran else "") + (".exe" if WINDOWS else ""))
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
              "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
@@ -295,20 +294,11 @@ def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.
             assembly.append(RUNTIME / "native_rt_win.s")
         extra = [str(compile_asm(a, OUT / ("run-" + a.name.replace(".s", ".o")))) for a in assembly]
         table = write_clean_table(clean)
-        if ran:
-            # the table's wrappers of the checks in tests/clean/ report their entries too
-            obj = OUT / "clean-ran" / "clean_table.o"
-            obj.parent.mkdir(parents=True, exist_ok=True)
-            p = subprocess.run([*diffcheck.compiler(), *flags, "-finstrument-functions", "-c", str(table), "-o",
-                                str(obj)], capture_output=True, text=True)
-            if p.returncode != 0:
-                raise SystemExit(p.stdout + p.stderr)
-            table = obj
         extra += [str(RUNTIME / "native_rt.c"), str(table), f"@{NATIVE / 'objects.txt'}"]
         if ran:
             extra.append(str(RUNTIME / "clean_ran.c"))
         if clean:
-            extra += build_clean(flags, ran)
+            extra += build_clean(flags)
         # Classes split one function per file define their destructors and vtable in several
         # objects, identically; the linker keeps the first. The image sits at a fixed low
         # address (below the DS's 0x01000000) and its data must not be executable: a call

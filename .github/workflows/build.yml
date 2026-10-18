@@ -116,8 +116,9 @@ jobs:
             > build/adm-kr/native-new-game.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-new-game.log | tail -40; exit 1; }
           grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-new-game.log | tail -12
 
-      # Which Clean functions ran, for the Clean map (tools/run.py --clean-ran builds the Clean code
-      # instrumented). Not a check: the runs above are; if this fails, the map shows no runs.
+      # Which Clean functions ran, for the Clean map (tools/run.py --clean-ran: a breakpoint at each
+      # Clean function's entry until it first runs). Not a check: the runs above are; if this
+      # fails, the map shows no runs.
       - name: Record which Clean functions run
         continue-on-error: true
         run: |
