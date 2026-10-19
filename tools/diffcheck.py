@@ -86,8 +86,9 @@ def game_names(objects: list[pathlib.Path]) -> pathlib.Path | None:
     tool = "C:/Program Files/LLVM/bin/llvm-nm.exe" if windows else "nm"
     prefix = "_" if windows else ""
     defined, undefined = set(), set()
+    import native  # noqa: PLC0415
     for obj in objects:
-        for line in subprocess.run([tool, str(obj)], capture_output=True, text=True).stdout.splitlines():
+        for line in native.tool_output(obj, [tool]).splitlines():  # kept by the object's bytes
             parts = line.split()
             if len(parts) == 2 and parts[0] == "U":
                 undefined.add(parts[1])
@@ -95,7 +96,6 @@ def game_names(objects: list[pathlib.Path]) -> pathlib.Path | None:
                 defined.add(parts[2])
     syms = C.SymbolTable(C.modules())
     rows = []
-    import native  # noqa: PLC0415
     for host in sorted(undefined - defined):
         name = host[len(prefix):] if host.startswith(prefix) else host
         if name in native.HOST_NAMES:

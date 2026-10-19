@@ -13,6 +13,7 @@ import shutil
 import struct
 import subprocess
 import threading
+import time
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config" / "adm-kr" / "arm9"
@@ -52,8 +53,10 @@ def tree_free(text: str) -> str:
 
 def cache_get(kind: str, key: str, dest: pathlib.Path) -> bool:
     """Copy the shared cache's `kind` object for `key` to `dest`; False when it has none."""
+    entry = CACHE_DIR / kind / key[:2] / key
     try:
-        shutil.copyfile(CACHE_DIR / kind / key[:2] / key, dest)
+        shutil.copyfile(entry, dest)
+        os.utime(entry)  # used: prune_cache keeps what was used last
         return True
     except OSError:
         return False
@@ -63,12 +66,60 @@ def cache_put(kind: str, key: str, src: pathlib.Path) -> None:
     """Keep a copy of `src` in the shared cache under `key` (written whole, then renamed)."""
     entry = CACHE_DIR / kind / key[:2] / key
     if entry.exists():
+        try:
+            os.utime(entry)
+        except OSError:
+            pass
         return
     try:
         entry.parent.mkdir(parents=True, exist_ok=True)
         tmp = entry.with_name(f"{key}.{os.getpid()}-{threading.get_ident()}")
         shutil.copyfile(src, tmp)
         os.replace(tmp, entry)
+    except OSError:
+        pass
+
+
+def prune_cache() -> None:
+    """Keep the shared cache under ACWW_CACHE_LIMIT_GB (default 20): what was used longest ago
+    goes first, a directory entry (a Reference run's results) as a whole. Nothing used in the
+    last ten minutes is removed, and the cache is looked over at most once an hour."""
+    stamp = CACHE_DIR / ".pruned"
+    now = time.time()
+    try:
+        if now - stamp.stat().st_mtime < 3600:
+            return
+    except OSError:
+        pass
+    limit = float(os.environ.get("ACWW_CACHE_LIMIT_GB", "20")) * (1 << 30)
+    entries = []  # (last used, size, path)
+    for kind in (CACHE_DIR.iterdir() if CACHE_DIR.is_dir() else ()):
+        if not kind.is_dir():
+            continue
+        for group in kind.iterdir():
+            for entry in (group.iterdir() if group.is_dir() else ()):
+                try:
+                    if entry.is_dir():
+                        files = [f.stat() for f in entry.rglob("*") if f.is_file()]
+                        used, size = entry.stat().st_mtime, sum(f.st_size for f in files)
+                    else:
+                        st = entry.stat()
+                        used, size = st.st_mtime, st.st_size
+                except OSError:
+                    continue
+                entries.append((used, size, entry))
+    total = sum(size for _, size, _ in entries)
+    for used, size, entry in sorted(entries, key=lambda e: e[0]):
+        if total <= limit or now - used < 600:
+            break
+        try:
+            shutil.rmtree(entry) if entry.is_dir() else entry.unlink()
+            total -= size
+        except OSError:
+            pass
+    try:
+        stamp.parent.mkdir(parents=True, exist_ok=True)
+        stamp.touch()
     except OSError:
         pass
 

@@ -70,10 +70,14 @@ Environment variables, for following a run on stderr:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
+import functools
+import hashlib
 import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 
@@ -261,6 +265,34 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
     return path
 
 
+def clean_headers(path: pathlib.Path) -> list[pathlib.Path]:
+    """Every header a Clean source pulls in through #include "...", transitively (its own
+    directory, clean/, include/ and include/msl/ are searched, as the compile does)."""
+    seen: dict[str, None] = {}
+    todo = [os.path.normpath(path)]
+    while todo:
+        for cand in direct_includes(todo.pop()):
+            if cand not in seen:
+                seen[cand] = None
+                todo.append(cand)
+    return [pathlib.Path(p) for p in sorted(seen)]
+
+
+@functools.cache
+def direct_includes(path: str) -> tuple[str, ...]:
+    """The headers one file names in #include "..." (see clean_headers), found once per run."""
+    out = []
+    with open(path, "rb") as f:
+        names = C.INCLUDE_LINE.findall(f.read())
+    for name in names:
+        for base in (os.path.dirname(path), str(C.ROOT / "clean"), str(C.INCLUDE), str(C.INCLUDE / "msl")):
+            cand = os.path.normpath(os.path.join(base, name.decode()))
+            if os.path.isfile(cand):
+                out.append(cand)
+                break
+    return tuple(out)
+
+
 def build_clean(flags: list[str]) -> list[str]:
     """The Clean code and its checks as objects, and the names they take from the game placed at
     their DS addresses (as tools/diffcheck.py builds them). Each object is rewritten as the Native
@@ -279,9 +311,14 @@ def build_clean(flags: list[str]) -> list[str]:
     # comparison tells the bytes a structure filled in part passes on from the game's values
     flags += ["-ftrivial-auto-var-init=pattern"]
     tree = OUT / "clean"
-    objects = []
     profiles = {r[1] for r in clean_registrations("all")}
-    for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
+    # what the rewrite of every object depends on besides the object
+    rewritten = hashlib.sha1("\n".join([*sorted(known), "", *sorted(native), "", prefix, *sorted(profiles)]).encode())
+    for tool in ("objrewrite.py", "native_clean_profile.py"):
+        rewritten.update((C.ROOT / "tools" / tool).read_bytes())
+    compiler = [*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}"]
+
+    def one(src: pathlib.Path) -> tuple[pathlib.Path, str | None]:
         obj = tree / src.relative_to(C.ROOT).with_suffix(".o")
         obj.parent.mkdir(parents=True, exist_ok=True)
         source = src
@@ -296,15 +333,36 @@ def build_clean(flags: list[str]) -> list[str]:
             source = OUT / 'clean-copy' / src.relative_to(C.ROOT)
             source.parent.mkdir(parents=True, exist_ok=True)
             source.write_text(f'#line 1 "{src.as_posix()}"\n' + copy, newline='\n')
-        p = subprocess.run([*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}",
-                            '-iquote', str(src.parent), "-c", str(source),
-                            "-o", str(obj)],
-                           capture_output=True, text=True)
+        cmd = [*compiler, '-iquote', str(src.parent), "-c", str(source), "-o", str(obj)]
+        # the object as linked, kept by everything it is made from (here and in the cache every
+        # checkout shares): an unchanged file is not compiled again
+        key = hashlib.sha1(C.tree_free(" ".join(cmd) + "\0" + copy).encode() + rewritten.digest())
+        for header in clean_headers(src):
+            key.update(header.read_bytes())
+        key = key.hexdigest()
+        stamp = obj.with_suffix(".key")
+        if obj.exists() and stamp.exists() and stamp.read_text() == key:
+            C.cache_put("clean", key, obj)
+            return obj, None
+        if C.cache_get("clean", key, obj):
+            stamp.write_text(key)
+            return obj, None
+        stamp.unlink(missing_ok=True)
+        p = subprocess.run(cmd, capture_output=True, text=True)
         if p.returncode != 0:
             raise SystemExit(p.stdout + p.stderr)
-        data, _ = native_clean_profile.rewrite(obj.read_bytes(), known, native, prefix, profiles)
-        obj.write_bytes(data)
-        objects.append(obj)
+        return obj, key
+    sources = sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c"))
+    with cf.ThreadPoolExecutor(max(1, (os.cpu_count() or 4) - 2)) as pool:
+        built = list(pool.map(one, sources))
+    # the compiles run side by side; the rewrite (module state in tools/objrewrite.py) one by one
+    for obj, key in built:
+        if key:
+            data, _ = native_clean_profile.rewrite(obj.read_bytes(), known, native, prefix, profiles)
+            obj.write_bytes(data)
+            obj.with_suffix(".key").write_text(key)
+            C.cache_put("clean", key, obj)
+    objects = [obj for obj, _ in built]
     objects.append(compile_asm(OUT / "clean-profile.s", OUT / "clean-profile.o"))
     names = diffcheck.game_names(objects)
     # Through a response file, as the Native objects are: the paths would pass Windows's limit
@@ -469,15 +527,40 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     params: dict[tuple[str, int], int] = {}
     arg_words: dict[tuple[str, int], int] = {}
     helpers: dict[tuple[str, int], str] = {}
+    # (what each source says, kept by its text and by the code that reads it: an unchanged
+    # source is not parsed again)
+    memo_path = OUT / "source-facts.json"
+    readers = hashlib.sha1(b"".join((C.ROOT / "tools" / n).read_bytes()
+                                    for n in ("common.py", "native.py", "native_abi.py"))).hexdigest()
+    try:
+        memo = json.loads(memo_path.read_text())
+        memo = memo["facts"] if memo.get("readers") == readers else {}
+    except (OSError, ValueError, KeyError):
+        memo = {}
+    facts = {}
     for path in C.all_sources():
-        src = C.parse_source(path)
-        if src:
-            _kind, count, member, _floating = native_build.signature(path, src.name)
-            params[(src.module, src.address)] = count + int(member) if _kind != native_build.RET_SKIP or count else -1
-            words = native_abi.word_arguments(path.read_text(encoding="utf-8", errors="replace"), src.name)
-            arg_words[(src.module, src.address)] = words if words is not None else -1
-        if src and (C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES)):
-            helpers[(src.module, src.address)] = src.name
+        rel = path.relative_to(C.ROOT).as_posix()
+        digest = hashlib.sha1(path.read_bytes()).hexdigest()
+        fact = memo.get(rel)
+        if fact is None or fact[0] != digest:
+            src = C.parse_source(path)
+            fact = [digest, None]
+            if src:
+                _kind, count, member, _floating = native_build.signature(path, src.name)
+                words = native_abi.word_arguments(path.read_text(encoding="utf-8", errors="replace"), src.name)
+                fact = [digest, [src.module, src.address, src.name,
+                                 count + int(member) if _kind != native_build.RET_SKIP or count else -1,
+                                 words if words is not None else -1]]
+        facts[rel] = fact
+        if fact[1] is None:
+            continue
+        module, address, name, count, words = fact[1]
+        params[(module, address)] = count
+        arg_words[(module, address)] = words
+        if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES):
+            helpers[(module, address)] = name
+    OUT.mkdir(parents=True, exist_ok=True)
+    memo_path.write_text(json.dumps({"readers": readers, "facts": facts}), newline="\n")
     helpers = compiler_helpers(helpers)
     wanted: set[str] | None = None
     if policy not in ("all", "leaf", "none"):
@@ -572,6 +655,87 @@ def summary(text: str) -> dict:
     return out
 
 
+# The Reference pass only interprets the ROM: what it writes (its log, frame hashes, memory
+# images, the crossings record) follows from the interpreter, the inputs, and which functions
+# the policy makes Native or Clean (it records the crossings at those, and with Clean the
+# runtime runs the static initialisers itself), not from what the Native or Clean code does.
+# A run with all of those the same reuses an earlier run's results, from the cache every
+# checkout shares (tools/common.py). ACWW_NO_REFERENCE_CACHE=1 always runs it.
+REFERENCE_PATHS = ("RUN_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_RECORD")
+
+
+def reference_key(env: dict, budget: list[str], manifest: pathlib.Path, table: pathlib.Path, args) -> str:
+    h = hashlib.sha1()
+
+    def add(label: str, data: bytes) -> None:
+        h.update(f"{label}\0{len(data)}\0".encode() + data)
+    for path in sorted(p for p in RUNTIME.iterdir() if p.is_file()):  # the interpreter and the runtime
+        add(path.name, path.read_bytes())
+    add("run.py", pathlib.Path(__file__).read_bytes())
+    add("rom", ROM.read_bytes())
+    add("modules", C.tree_free(manifest.read_text()).encode())
+    add("symbols", table.read_bytes())
+    for name in ("natives.s", "absolute.s"):  # which functions have a Native, and where
+        add(name, (NATIVE / name).read_bytes())
+    if args.clean:
+        add("clean table", (OUT / "clean_table.c").read_bytes())
+    add("budget", " ".join(budget).encode())
+    for name, value in sorted(env.items()):
+        if not name.startswith("RUN_") or name in REFERENCE_PATHS:
+            continue
+        path = pathlib.Path(value)
+        add(name, path.read_bytes() if path.is_file() else value.encode())  # a file by its content
+    add("paths", " ".join(n for n in REFERENCE_PATHS if n in env).encode())
+    return h.hexdigest()
+
+
+def reference_files(out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> dict[str, pathlib.Path]:
+    files = {"reference.log": out / "reference.log", "reference-hashes.txt": out / "reference-hashes.txt"}
+    if trace.exists():
+        files["crossings.bin"] = trace
+    files |= {f"ram/{p.name}": p for p in ram_dir.glob("ram-*-reference.bin")}
+    return files
+
+
+def reference_cached(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> bool:
+    """Put a cached Reference run's results in place; False when there is none."""
+    entry = C.CACHE_DIR / "reference" / key[:2] / key
+    if os.environ.get("ACWW_NO_REFERENCE_CACHE") or not (entry / "done").exists():
+        return False
+    try:
+        trace.unlink(missing_ok=True)
+        for old in ram_dir.glob("ram-*-reference.bin"):
+            old.unlink()
+        for src in entry.rglob("*"):
+            name = src.relative_to(entry).as_posix()
+            if src.is_file() and name != "done":
+                dest = ram_dir / src.name if name.startswith("ram/") else out / name
+                shutil.copyfile(src, dest)
+        os.utime(entry)
+        return True
+    except OSError:
+        return False
+
+
+def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> None:
+    """Keep this Reference run's results in the shared cache (written whole, then renamed)."""
+    if os.environ.get("ACWW_NO_REFERENCE_CACHE"):
+        return
+    entry = C.CACHE_DIR / "reference" / key[:2] / key
+    if (entry / "done").exists():
+        return
+    tmp = entry.with_name(f"{key}.{os.getpid()}")
+    try:
+        for name, src in reference_files(out, ram_dir, trace).items():
+            (tmp / name).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, tmp / name)
+        (tmp / "done").touch()
+        os.replace(tmp, entry)
+    except OSError:
+        shutil.rmtree(tmp, ignore_errors=True)
+    C.prune_cache()
+
+
 def native_main(args, manifest, table, budget, env) -> int:
     exe = build(native=True, clean=args.clean, ran=bool(args.clean_ran))
     env = dict(env)
@@ -592,8 +756,15 @@ def native_main(args, manifest, table, budget, env) -> int:
         ref_env = dict(env, RUN_HASH=str(out / "reference-hashes.txt"))
         if not args.no_timing:
             ref_env["RUN_NATIVE_RECORD"] = str(trace)
+        # (a run that writes pictures, RUN_PNG, keeps nothing: the cache holds no pictures)
+        key = None if "RUN_PNG" in ref_env else reference_key(ref_env, budget, manifest, table, args)
+        if key and reference_cached(key, out, ram_dir, trace):
+            print(f"reference run: the results of an identical one ({key[:12]})", flush=True)
+            return summary((out / "reference.log").read_text(encoding="utf-8", errors="replace"))
         print("reference run" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
         _, text = run_once(exe, manifest, table, budget, ref_env, out / "reference.log")
+        if key:
+            keep_reference(key, out, ram_dir, trace)
         return summary(text)
 
     ref = reference()
