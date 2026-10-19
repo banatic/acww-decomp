@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 
 static_assert(offsetof(HeapVtable, adjust) == 0x4c, "vtable slot 19");
 static_assert(sizeof(Heap) == 0x18, "the heap object before its NNS heap");
@@ -56,7 +57,6 @@ extern u8 data_021fbe78;
 
 extern u32 OS_DisableInterrupts(void);
 extern u32 OS_RestoreInterrupts(u32 state);
-extern void OS_Terminate(void);
 extern u32 NNS_FndAdjustFrmHeap(void *heap);
 extern u32 NNS_FndGetGroupIDForExpHeap(void *heap);
 extern u16 NNS_FndSetGroupIDForExpHeap(void *heap, u16 group_id);
@@ -262,7 +262,7 @@ int Heap_Adjust(Heap *heap)
     Heap_Lock(heap);
     int size = heap->vtable->adjust(heap);
     if (size == 0 && (heap->flags & HEAP_STOP_ON_FAILURE) != 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     Heap_Unlock(heap);
     return size;
@@ -357,7 +357,7 @@ void FrameHeap_Free(Heap *heap, void *block)
     if (block == NULL) {
         return;
     }
-    OS_Terminate();
+    GameHalt_Terminate();
 }
 CLEAN_AS(func_020e9bf4, FrameHeap_Free)
 
@@ -571,7 +571,7 @@ void *Heap_AllocBlock(Heap *heap, int size, int align)
         data_021fbe84(heap, block, size, align);
     }
     if (block == NULL && (heap->flags & HEAP_STOP_ON_FAILURE) != 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     Heap_Unlock(heap);
     return block;
@@ -671,7 +671,7 @@ CLEAN_AS(func_020ea084, Heap_Unlock)
 void Heap_Lock(Heap *heap)
 {
     if (OS_GetProcMode() != CPU_MODE_SYSTEM && (heap->flags & HEAP_ANY_MODE) == 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     heap->vtable->lock(heap);
 }

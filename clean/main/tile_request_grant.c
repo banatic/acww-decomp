@@ -4,6 +4,7 @@
 #include "acre_tile.h"
 #include "clean.h"
 #include "link_global.h"
+#include "player_actor_ops.h"
 #include "map_item.h"
 #include "scene_query.h"
 #include "session.h"
@@ -37,8 +38,6 @@ extern const u16 data_020ca670[];
 /* The codes the items 0x1518-0x151c become. */
 extern const u16 data_020ca658[];
 
-/* A misnamed main function: whether a player's actor has a flag. */
-extern int DWC_Alloc(int flag, int player);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 #define TILE_REQUEST_GRANT_MESSAGE_ASK 0x31
@@ -147,7 +146,7 @@ void TileRequestGrant_ReceiveAnswer(const TileRequestAnswer *answer, int scene)
         return;
     }
     if (scene == SceneQuery_Current() && data_021c7880.active != 0) {
-        if (DWC_Alloc(10, 4)) {
+        if (PlayerActorOps_TestFlag(10, 4)) {
             TileRequests_ReceiveAction((const TileRequestsActionMessage *) answer);
             TileRequestGrant_Apply(answer);
         } else {

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "sound_position.h"
 
 static_assert(offsetof(SoundSystem, fader) == 0x04, "the music's fader");
@@ -37,7 +38,6 @@ typedef struct HourlyTracks {
 } HourlyTracks;
 extern const HourlyTracks data_0213e8d0[MUSIC_HOURLY_LAST - MUSIC_HOURLY_FIRST + 1];
 
-extern void OS_Terminate(void);
 extern u64 OS_GetTick(void);
 /* The ROM's symbol name: it gives the priority the sound capture's thread is made one above. */
 extern int CARD_GetThreadPriority(void);
@@ -900,7 +900,7 @@ void SoundSystem_Init(SoundSystem *sys, u8 *memory, u32 size, const void *archiv
     sys->scene_heap = NULL;
     sys->scene_heap = NNS_SndHeapCreate(memory, SCENE_HEAP_SIZE);
     if (sys->scene_heap == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     Sound_Init(memory + SCENE_HEAP_SIZE, size - SCENE_HEAP_SIZE, archive_path, NULL);
     NNS_SndCaptureCreateThread(CARD_GetThreadPriority() - 1);

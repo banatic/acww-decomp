@@ -43,8 +43,8 @@ static_assert(sizeof(TtiNpc) == 0x65c, "the size func_ov004_02225cd4 allocates")
 #define TTI_NPC_ACTION 0x618     /* SceneAction */
 #define TTI_NPC_HEAP 0x640       /* PoolLink */
 
-static_assert(0xec + offsetof(LayeredModel, base_frames) + offsetof(FrameCtrl, end) == TTI_NPC_MODEL_END, "frame count");
-static_assert(0xec + offsetof(LayeredModel, base_frames) + offsetof(FrameCtrl, frame) == TTI_NPC_MODEL_FRAME, "frame");
+static_assert(0xec + offsetof(LayeredModel, base.frames) + offsetof(FrameCtrl, end) == TTI_NPC_MODEL_END, "frame count");
+static_assert(0xec + offsetof(LayeredModel, base.frames) + offsetof(FrameCtrl, frame) == TTI_NPC_MODEL_FRAME, "frame");
 
 #define TTI_NPC_NO_PERSON 0xfff1
 #define TTI_NPC_HELD 2

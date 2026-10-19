@@ -565,7 +565,7 @@ int PlayerPick_Create(PlayerPick *self)
         NameTag_SetKind(&self->tags[i], i);
     }
     u8 message = PLAYER_PICK_FIXED_MESSAGE;
-    MessageReader_LoadMenuMessage((int) (uintptr_t) &self->fixed, &message, NULL);
+    MessageReader_LoadMenuMessage(&self->fixed, &message, NULL);
     if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, 0) == 0) {
         PlayerPick_EnterState(self, PLAYER_PICK_WAIT);
     } else if (ControlModeIcon_IsButtons() != 0) {

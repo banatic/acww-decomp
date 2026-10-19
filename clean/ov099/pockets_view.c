@@ -20,11 +20,6 @@
 /* The class's vtable. */
 extern const u8 data_ov099_0229e040[];
 
-/* The members' destructors, and main's. */
-extern void func_02066688(void *object); /* sets the vtable data_020de760 */
-
-/* Main's. */
-
 /* The touch (main's bytes, as ov096/pockets_screen.c reads them) and a byte of main's set to 0
  * by func_020b93e8. */
 extern u8 data_021f6c58, data_021f6c54, data_021f6c60, data_021f6c5c;
@@ -95,7 +90,7 @@ static void update_cursor_sprite(PocketsView *self)
 static void destroy_members(PocketsView *self)
 {
     self->base.vtable = data_ov099_0229e040;
-    func_02066688(self->letter);
+    Letter_Destruct(&self->letter);
     ErrorMessage_Destruct(&self->error);
     PagedChoice_Destroy(choice_of(self));
     Glider0_Destroy(&self->cursor_sprite);
@@ -847,9 +842,6 @@ extern PadState data_021fbe40;
 /* The pen (main's bytes, as menu_scene.c reads them). */
 extern u8 data_021fbdd8; /* the pen is down */
 extern u8 data_021fbddc; /* the pen went down or up this frame */
-
-/* Main's. */
-extern void func_02066694(void *letter);
 
 /* The tables of member functions (member_pointer.h): the guards, the tables (one block at
  * 0x0229e0a8 in the symbol table: the 5 states, then the 21 sub states at 0x0229e0d0) and
@@ -1657,7 +1649,7 @@ PocketsView *PocketsView_New(void)
     Glider0_Construct(&self->cursor_sprite);
     PagedChoice_Construct(choice_of(self));
     ErrorMessage_Construct(&self->error);
-    func_02066694(self->letter);
+    Letter_Construct(&self->letter);
     return self;
 }
 CLEAN_AS(func_ov099_0229deb8, PocketsView_New)

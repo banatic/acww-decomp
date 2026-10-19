@@ -34,6 +34,7 @@
 #include "ov002/menu_scene.h"
 #include "ov002/paged_choice.h"
 #include "ov002/popup.h"
+#include "ov094/pockets_letters.h"
 #include "types.h"
 
 /* In `flags`. */
@@ -128,30 +129,29 @@ typedef struct PocketsScreen {
     u8 blink;        /* 0xc1: frames left of PocketsScreen_BlinkSlot */
     u8 open_delay;   /* 0xc2: frames before a touched place's choice opens (2) */
     u8 pad_c3;
-    s32 unk_c4;            /* 0xc4: func_020435fc's result */
-    u8 unk_c8[0x20];       /* 0xc8 */
-    u8 unk_e8[0x200];      /* 0xe8 */
-    u8 unk_2e8[0x38];      /* 0x2e8: an object of main's class (PocketsScreen_UpdateObjects2e8) */
-    u8 unk_320[0x38];      /* 0x320: one more (PocketsScreen_UpdateObjects2e8) */
-    u8 grid[0xa60];        /* 0x358: an object of ov094's (destructor func_ov094_0229afe0) */
-    u8 letters[0x28];      /* 0xdb8: an object of ov094's (func_ov094_0229bc30) */
-    u8 unk_de0[0x1638];    /* 0xde0: an object of ov094's (destructor func_ov094_0229a2d0) */
-    Popup popup;           /* 0x2418 */
-    Glide glide;           /* 0x24e8 */
-    Glider cursor_sprite;  /* 0x2500 */
-    u8 choice[0x3e8];      /* 0x2564: a PagedChoice */
-    ChoiceEntries entries; /* 0x294c */
-    u8 pad_2957;           /* 0x2957 */
-    ErrorMessage error;    /* 0x2958 */
-    u8 unk_2a74[0x328];    /* 0x2a74: main's letter view (constructor func_0206e388, destructor
+    s32 unk_c4;             /* 0xc4: func_020435fc's result */
+    u8 unk_c8[0x20];        /* 0xc8 */
+    u8 unk_e8[0x200];       /* 0xe8 */
+    u8 unk_2e8[0x38];       /* 0x2e8: an object of main's class (PocketsScreen_UpdateObjects2e8) */
+    u8 unk_320[0x38];       /* 0x320: one more (PocketsScreen_UpdateObjects2e8) */
+    u8 grid[0xa60];         /* 0x358: an object of ov094's (destructor func_ov094_0229afe0) */
+    PocketsLetters letters; /* 0xdb8: ov094's letters object */
+    u8 unk_de0[0x1638];     /* 0xde0: an object of ov094's (destructor func_ov094_0229a2d0) */
+    Popup popup;            /* 0x2418 */
+    Glide glide;            /* 0x24e8 */
+    Glider cursor_sprite;   /* 0x2500 */
+    u8 choice[0x3e8];       /* 0x2564: a PagedChoice */
+    ChoiceEntries entries;  /* 0x294c */
+    u8 pad_2957;            /* 0x2957 */
+    ErrorMessage error;     /* 0x2958 */
+    u8 unk_2a74[0x328];     /* 0x2a74: main's letter view (constructor func_0206e388, destructor
                             * func_0206e35c): shows a letter on layers 3 and 4 */
-    LabelButton button;    /* 0x2d9c: a LabelButton0 */
-    u8 pad_2e14[0xc];      /* 0x2e14 */
-    u32 unk_2e20;          /* 0x2e20: cleared by PocketsScreen_New */
-    u32 unk_2e24;          /* 0x2e24 */
-    u8 held_letter[0x100]; /* 0x2e28: the held letter's copy; vtable reset by func_02066688 */
-    u8 unk_2f28[0x100];    /* 0x2f28: a second letter copy (func_02066830); vtable reset by
-                            * func_02066688 */
+    LabelButton button;     /* 0x2d9c: a LabelButton0 */
+    u8 pad_2e14[0xc];       /* 0x2e14 */
+    u32 unk_2e20;           /* 0x2e20: cleared by PocketsScreen_New */
+    u32 unk_2e24;           /* 0x2e24 */
+    Letter held_letter;     /* 0x2e28: the held letter's copy */
+    Letter unk_2f28;        /* 0x2f28: a second letter copy (Letter_Assign) */
 } PocketsScreen;
 
 PocketsScreen *PocketsScreen_Destroy(PocketsScreen *self);

@@ -574,10 +574,10 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
         }
         if ((u8) (now->type - 3) <= 1) {
             LayeredModel *model = guest_model(owner);
-            model->base_frames.frame = 0;
-            model->base_frames.speed = now->frame_a;
+            model->base.frames.frame = 0;
+            model->base.frames.speed = now->frame_a;
             LayeredModel_UpdateB(model);
-            model->base_frames.speed = 0;
+            model->base.frames.speed = 0;
         }
         if (now->var2 != seen->var2) {
             if (now->var2 == 0) {
@@ -1194,7 +1194,7 @@ int CafeGuest_Start(CafeGuest *self)
         return 0;
     }
     if (self->kind == CAFE_GUEST_KIND_MUSIC) {
-        func_021074dc(guest_model(self)->model_resource, 3);
+        func_021074dc(guest_model(self)->base.object.model, 3);
     }
     CafeGuest_SetState(self, CAFE_GUEST_WAIT);
     self->flags |= GUEST_HELD;

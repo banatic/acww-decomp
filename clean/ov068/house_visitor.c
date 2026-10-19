@@ -34,6 +34,7 @@
 #include "main/scene_query.h"
 #include "main/scene_tables.h"
 #include "main/session_players.h"
+#include "main/sound.h"
 #include "main/sound_emitter.h"
 #include "main/talk_choices.h"
 #include "main/talk_object.h"
@@ -159,8 +160,6 @@ extern const char data_ov068_02278254[];
 #define HOUSE_VISITOR_MARKS 10
 extern const u16 data_ov068_0227807c[HOUSE_VISITOR_MARKS];
 
-/* The system's sound effect `number` (func_020f1fb4 on the sound set). */
-extern void RtcSendPxiCommand(int number);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 static u8 *hv_part(HouseVisitor *visitor, u32 offset)
@@ -845,7 +844,7 @@ void HouseVisitorTalk_OnMessageEnded(HouseVisitorTalk *talk, int event)
         u8 message = data_021f43e8;
         TalkObject_SetMessage(hv_talk(talk->visitor), &message, NULL);
         HouseVisitor_SetState(talk->visitor, HOUSE_VISITOR_LEAVE);
-        RtcSendPxiCommand(HOUSE_VISITOR_SOUND_BYE);
+        SoundSys_PlaySe(HOUSE_VISITOR_SOUND_BYE);
     }
 }
 CLEAN_AS(func_ov068_02275d98, HouseVisitorTalk_OnMessageEnded)

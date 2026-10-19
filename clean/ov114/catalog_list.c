@@ -902,7 +902,7 @@ void CatalogList_LoadDescription(CatalogList *self)
         self->pages = 1;
     } else {
         u8 number = entry;
-        MessageReader_LoadMessage((int) (uintptr_t) &self->description, &number, (int) (uintptr_t) archive);
+        MessageReader_LoadMessage(&self->description, &number, archive);
         self->pages = (u8) CatalogList_CountPages(self);
     }
     self->page = 0;

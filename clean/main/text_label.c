@@ -180,7 +180,7 @@ CLEAN_AS(func_02070918, TextLabel_Compose)
 /* func_02070934: load message `number` of the named archive. */
 void TextLabel_LoadMessage(TextLabel *label, char *archive, char number)
 {
-    MessageReader_LoadMessage((int) (uintptr_t) label, (unsigned char *) &number, (int) (uintptr_t) archive);
+    MessageReader_LoadMessage(label, (unsigned char *) &number, archive);
 }
 CLEAN_AS(func_02070934, TextLabel_LoadMessage)
 
@@ -194,8 +194,7 @@ CLEAN_AS(func_0207094c, TextLabel_LoadMenuMessage)
 /* func_02070960: load the message of "2d_menu" whose number `number` points to. */
 int TextLabel_LoadMenuMessageAt(TextLabel *label, int number)
 {
-    return MessageReader_LoadMenuMessage((int) (uintptr_t) label, (unsigned char *) ((const char *) (uintptr_t) number),
-                                         DEFAULT_ARCHIVE);
+    return MessageReader_LoadMenuMessage(label, (unsigned char *) ((const char *) (uintptr_t) number), DEFAULT_ARCHIVE);
 }
 CLEAN_AS(func_02070960, TextLabel_LoadMenuMessageAt)
 

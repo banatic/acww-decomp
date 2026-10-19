@@ -2,6 +2,7 @@
 #include "model_cache.h"
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "main/model_object.h"
 #include "scene_heaps.h"
 
@@ -20,7 +21,6 @@ extern ModelCacheEntry data_021c8e8c[MODEL_CACHE_MODELS];
  * same way). */
 extern u8 data_020e54a8;
 
-extern void OS_Terminate(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The shared model heap's size in town and in a building. */
@@ -55,12 +55,12 @@ void *ModelCache_KeepTexture(void *texture, u32 name)
         }
     }
     if (data_021c8ca4 >= MODEL_CACHE_TEXTURES) {
-        OS_Terminate();
+        GameHalt_Terminate();
         return NULL;
     }
     copy = ModelCache_CopyTexture(texture, heap);
     if (copy == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
         return NULL;
     }
     data_021c8cac[data_021c8ca4].copy = copy;
@@ -99,12 +99,12 @@ u8 *ModelCache_KeepModel(u8 *model, u32 name)
         }
     }
     if (data_021c8ca8 >= MODEL_CACHE_MODELS) {
-        OS_Terminate();
+        GameHalt_Terminate();
         return NULL;
     }
     copy = ModelCache_CopyModel(model, heap);
     if (copy == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
         return NULL;
     }
     data_021c8e8c[data_021c8ca8].copy = copy;

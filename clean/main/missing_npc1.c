@@ -182,11 +182,6 @@ extern u8 data_021c75b8;
 extern const Vec3 data_020d3150;
 #define MISSING_NPC1_PLAYER_ANGLE 0x35c
 
-/* What is asked of the player's actor numbered `player` in scene 0x2f: whether it is ready
- * (with 1), whether it is still busy (DWCi_GsMalloc is the symbol's name), to be put at a point
- * and angle, and to turn. */
-extern int DWCi_GsMalloc(int player);
-
 static u8 *missing_npc1_at(MissingNpc1 *self, u32 offset)
 {
     return (u8 *) self + offset;
@@ -526,7 +521,7 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
             break;
         }
         case 2:
-            if (DWCi_GsMalloc(player) != 0 || !SceneMotion_IsDone(missing_npc1_motion(self))) {
+            if (PlayerActorOps_IsBusy(player) != 0 || !SceneMotion_IsDone(missing_npc1_motion(self))) {
                 break;
             }
             self->step = 3;

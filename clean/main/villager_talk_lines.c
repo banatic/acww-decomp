@@ -10,6 +10,7 @@
 #include "group_params.h"
 #include "item_code.h"
 #include "lookups.h"
+#include "item_record.h"
 #include "npc_id.h"
 #include "player_pockets.h"
 #include "player_record.h"
@@ -123,8 +124,6 @@ extern u32 data_021dc7a8[];
 /* The item list kinds VillagerTalk_GiveItemFor1546 draws from. */
 extern const u32 data_020c8e98[3];
 
-/* Item records: `*item` marked as had. */
-extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
 /* The predicates this file hands to the game (the game's own functions; the first returns a
  * halfword where PocketPredicate has an int, which the ARM caller reads alike). */
 extern u16 func_0201f520(u16 *item, int state);
@@ -426,7 +425,7 @@ void VillagerTalk_GiveItemFor1546(VillagerTalk *talk)
     }
 
     PlayerPockets_SetSlot(pockets, &talk->gift, slot, 0);
-    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(player), &talk->gift, 0, 1);
+    ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(player), &talk->gift, 0, 1);
     SceneCommand_RequestMotion13(&talk->scene, &talk->gift, 0, 5, 0);
     if (talk->gift != VILLAGER_TALK_LINES_NO_ITEM) {
         SceneBase_PutItemName(lines_base(talk), (int) (uintptr_t) &talk->gift, 0, 7);

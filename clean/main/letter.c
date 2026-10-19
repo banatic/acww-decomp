@@ -134,7 +134,7 @@ void Letter_LoadText(const char *message, u16 *dst, u8 *first_line, const u16 *n
 
     TextLabel_Construct(&label);
     WideText_Construct(&wide);
-    MessageReader_LoadMenuMessage((int) (uintptr_t) &label, (unsigned char *) (uintptr_t) message, NULL);
+    MessageReader_LoadMenuMessage(&label, (unsigned char *) (uintptr_t) message, NULL);
     TextBase_BytesToWide((WideTextBase *) (void *) &wide, (TextBase *) (void *) &label);
 
     u16 *text = wide.text;

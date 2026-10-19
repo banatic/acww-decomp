@@ -11,6 +11,7 @@
 #include "autoload_2/process.h"
 #include "debug_text.h"
 #include "display_frame.h"
+#include "main/game_halt.h"
 
 static_assert(offsetof(ExceptionContext, spsr) == 0x64, "ExceptionContext layout");
 
@@ -103,7 +104,6 @@ extern int OS_GetStackStatus(const OSThread *thread);
 extern void *OS_GetDTCMAddress(void);
 extern u32 OS_DisableInterrupts(void);
 extern int OS_VSNPrintf(char *dest, u32 size, const char *format, const void *args);
-extern void OS_Terminate(void);
 extern void MIi_CpuClearFast(u32 data, void *dest, u32 size);
 extern void GX_SetBankForBG(u32 banks);
 extern void GX_SetBankForSubBG(u32 banks);
@@ -460,7 +460,7 @@ void Fatal_Report(const char *file, int line, const char *format, const void *ar
     data_0213fde8 = line;
     data_0213fde4 = FX_SinCosTable_;
     OS_VSNPrintf(FX_SinCosTable_, 0x80, format, args);
-    OS_Terminate();
+    GameHalt_Terminate();
 }
 CLEAN_AS(func_02001988, Fatal_Report)
 

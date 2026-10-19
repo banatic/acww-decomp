@@ -313,7 +313,7 @@ void FriendRoster_ShowHeader(FriendRoster *self)
     } else {
         message = FRIEND_ROSTER_MESSAGE_ACCOUNT;
     }
-    MessageReader_LoadMenuMessage((int) (uintptr_t) &self->header, &message, NULL);
+    MessageReader_LoadMenuMessage(&self->header, &message, NULL);
     for (int i = 0; i < FRIEND_ROSTER_HEADER_LINES; i++) {
         TextLabel *label = FriendRoster_NextLabel(self);
         int line = MessageQuery_Line((int) (uintptr_t) self->header.text, i);

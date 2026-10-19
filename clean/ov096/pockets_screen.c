@@ -101,19 +101,6 @@ extern const MemberPointer data_ov096_022a21a0, data_ov096_022a2198, data_ov096_
 extern u8 data_020e54a8;
 extern NetSession *data_020ccf94;
 
-/* The members' destructors, and main's. */
-extern void func_02066688(void *object); /* sets the vtable data_020de760 */
-
-/* Letters (0x100 bytes; kind at 0xfa, attached item at 0xfc). */
-extern void func_020665f0(void *letter, int pile_item);
-extern void func_020665b8(void *letter);
-extern u8 func_02065ec0(void *letter);
-extern u16 func_02065f18(void *letter);
-
-/* Others of main's. */
-extern int CARD_IsEnabled(void);            /* the byte at 0x1f4 of the object at data_021c67a4 is set */
-extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
-
 /* The scene's own, outside these functions. Its Clean version (PocketsScreen_GridIndex) takes
  * the 16-bit halves its matching source declares, so it is called by its symbol with the whole
  * scene pointer, as the ROM's callers do. */
@@ -123,14 +110,6 @@ extern int func_ov096_0229f7ac(PocketsScreen *self, int place);
  * label_button.c does) and a byte of main's set to 0 by func_020b93e8. */
 extern u8 data_021f6c58, data_021f6c54, data_021f6c60, data_021f6c5c;
 extern u8 data_021f6c30;
-
-/* Letters (0x100 bytes): copy, state bits. */
-extern int func_02066830(void *dst, const void *src);
-extern unsigned int func_02065f08(void *letter);
-
-/* The objects of ov094's at 0x358 (the grid and the places 0x22-0x25), 0xdb8 (the letters)
- * and 0xde0 (the wallet's display). */
-extern void func_ov094_0229b5e8(void *letters, int x, int y, void *letter);
 
 static PagedChoice *choice_of(PocketsScreen *self)
 {
@@ -146,8 +125,8 @@ static MenuScene *scene_of(PocketsScreen *self)
 static void destroy_members(PocketsScreen *self)
 {
     self->base.vtable = data_ov096_022a23e8;
-    func_02066688(self->unk_2f28);
-    func_02066688(self->held_letter);
+    Letter_Destruct(&self->unk_2f28);
+    Letter_Destruct(&self->held_letter);
     LabelButton0_Destroy(&self->button);
     LetterView_Destruct((LetterView *) (void *) self->unk_2a74);
     ErrorMessage_Destruct(&self->error);
@@ -158,7 +137,7 @@ static void destroy_members(PocketsScreen *self)
     PocketsWallet_Destruct((PocketsWallet *) (void *) self->unk_de0);
     /* The ROM calls 0x0229bc30, ov094's function (ov094 is the overlay of the objects next to
      * it); the matching source of func_ov096_0229c180 names ov128's at the same address. */
-    PocketsLetters_Destruct((PocketsLetters *) (void *) self->letters);
+    PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct((PocketsGrid *) (void *) self->grid);
     MenuScene_DestroyBase(scene_of(self));
 }
@@ -224,19 +203,19 @@ void PocketsScreen_SwapRecordItem(PocketsScreen *self)
     } else {
         PocketsScreen_DropHeld(self);
     }
-    RtcSendPxiCommand(0x6b);
+    SoundSys_PlaySe(0x6b);
 }
 CLEAN_AS(func_ov096_0229c348, PocketsScreen_SwapRecordItem)
 
-/* func_ov096_0229c3c4: when a change is pending, makes the byte CARD_IsEnabled reads what
- * POCKETS_FLAG_SWITCH_ON asks: func_0203ac2c when it is set and not wanted, func_0203ac44 when
+/* func_ov096_0229c3c4: when a change is pending, makes the byte CameraControl_IsViewSaved reads
+ * what POCKETS_FLAG_SWITCH_ON asks: func_0203ac2c when it is set and not wanted, func_0203ac44 when
  * it is clear and wanted. */
 void PocketsScreen_ApplySwitch(PocketsScreen *self)
 {
     if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_SWITCH_PENDING)) {
         return;
     }
-    if (CARD_IsEnabled()) {
+    if (CameraControl_IsViewSaved()) {
         if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_SWITCH_ON)) {
             CameraControl_RestoreView();
         }
@@ -266,7 +245,7 @@ void PocketsScreen_RequestSwitchOn(PocketsScreen *self)
 CLEAN_AS(func_ov096_0229c434, PocketsScreen_RequestSwitchOn)
 
 /* func_ov096_0229c454: one item of the pile at the previous place goes with the letter at the
- * place picked: the letter is set up with the pile's item (func_020665f0), the choice code is
+ * place picked: the letter is set up with the pile's item (Letter_StartWriting), the choice code is
  * applied to it, and the previous place is left with a pile of one less (nothing when it held
  * one). */
 void PocketsScreen_PutPileInLetter(PocketsScreen *self)
@@ -274,7 +253,7 @@ void PocketsScreen_PutPileInLetter(PocketsScreen *self)
     int letter = PocketsScreen_SlotLetter(self);
     u16 pile = PocketsScreen_PlaceItem(self, self->prev_slot);
     int pile_item = ItemCode_PileItem(&pile);
-    func_020665f0((void *) (uintptr_t) letter, (u8) pile_item);
+    Letter_StartWriting((Letter *) (uintptr_t) letter, (u8) pile_item);
     PagedChoice_Apply(choice_of(self), (void *) (uintptr_t) letter, self->choice_code);
     GroupParams_SetPointer((u32) letter);
     PocketsScreen_SwitchTab(self, 8);
@@ -306,7 +285,7 @@ void PocketsScreen_PressButton(PocketsScreen *self)
 {
     MenuScene_SetSubState(scene_of(self), 0x21);
     LabelSprite_SetState((LabelSprite *) (void *) &self->button, 2);
-    RtcSendPxiCommand(0x29);
+    SoundSys_PlaySe(0x29);
 }
 CLEAN_AS(func_ov096_0229c514, PocketsScreen_PressButton)
 
@@ -715,11 +694,11 @@ CLEAN_AS(func_ov096_0229cdec, PocketsScreen_AddBellEntries)
 void PocketsScreen_AddLetterEntries(PocketsScreen *self, int place)
 {
     int letter = PocketsScreen_PlaceLetter(self, place);
-    void *letter_ptr = (void *) (uintptr_t) letter;
+    const Letter *letter_ptr = (const Letter *) (uintptr_t) letter;
     if (StateFlags_Test2() != 0) {
         ChoiceEntries_Add(&self->entries, 0, 1);
     }
-    unsigned int kind = func_02065ec0(letter_ptr);
+    unsigned int kind = Letter_State(letter_ptr);
     PocketsScreen_ClearFlags(self, POCKETS_FLAG_08);
 
     switch (kind) {
@@ -734,7 +713,7 @@ void PocketsScreen_AddLetterEntries(PocketsScreen *self, int place)
                 PocketsTown_AddLetterRows(self);
             }
             ChoiceEntries_Add(&self->entries, 0x16, 5);
-            if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_08) && func_02065f18(letter_ptr) == ITEM_NONE &&
+            if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_08) && Letter_Item(letter_ptr) == ITEM_NONE &&
                 data_020e54a8 == 0) {
                 ChoiceEntries_Add(&self->entries, 0x15, 0x0a);
             }
@@ -747,7 +726,7 @@ void PocketsScreen_AddLetterEntries(PocketsScreen *self, int place)
             break;
     }
 
-    if (func_02065f18(letter_ptr) != ITEM_NONE) {
+    if (Letter_Item(letter_ptr) != ITEM_NONE) {
         ChoiceEntries_Add(&self->entries, 0x18, 6);
     } else if ((kind == 1 || kind == 3 || kind == 6) && data_020e54a8 == 0) {
         ChoiceEntries_Add(&self->entries, 0x15, 0x0a);
@@ -807,18 +786,18 @@ int PocketsScreen_CueAction(PocketsScreen *self)
     switch (self->action) {
         case 18:
         case 19:
-            RtcSendPxiCommand(0x50);
+            SoundSys_PlaySe(0x50);
             break;
         case 20:
-            RtcSendPxiCommand(0x71);
+            SoundSys_PlaySe(0x71);
             break;
         case 9:
-            RtcSendPxiCommand(0x24);
+            SoundSys_PlaySe(0x24);
             return 0;
         case 2:
         case 22:
         case 23:
-            RtcSendPxiCommand(0x25);
+            SoundSys_PlaySe(0x25);
             return 0;
         case 28:
         case 29:
@@ -837,7 +816,7 @@ CLEAN_AS(func_ov096_0229d0e4, PocketsScreen_CueAction)
  * to close, sub state 0x24. */
 void PocketsScreen_CloseChoiceToLeave(PocketsScreen *self)
 {
-    RtcSendPxiCommand(0x28);
+    SoundSys_PlaySe(0x28);
     self->choice_code = CHOICE_LEAVE;
     PagedChoice_RequestClose(choice_of(self), 1);
     MenuScene_SetSubState(scene_of(self), 0x24);
@@ -849,7 +828,7 @@ CLEAN_AS(func_ov096_0229d16c, PocketsScreen_CloseChoiceToLeave)
  * asked to close, sub state 0x1f. */
 void PocketsScreen_CancelChoice(PocketsScreen *self)
 {
-    RtcSendPxiCommand(0x2a);
+    SoundSys_PlaySe(0x2a);
     self->action = POCKETS_ACTION_CANCEL;
     PocketsScreen_PlaceCursorSprite(self);
     PagedChoice_RequestClose(choice_of(self), 0);
@@ -1007,7 +986,7 @@ void PocketsScreen_ActionLetterSubState2a(PocketsScreen *self)
     PocketsScreen_PickUpLetter(self, place);
     set_menu_place(self, place);
     MenuScene_SetSubState(scene_of(self), 0x2a);
-    PocketsLetters_StartPickUp((PocketsLetters *) (void *) self->letters);
+    PocketsLetters_StartPickUp(&self->letters);
 }
 CLEAN_AS(func_ov096_0229d5f4, PocketsScreen_ActionLetterSubState2a)
 
@@ -1058,7 +1037,7 @@ void PocketsScreen_ActionTakeRecordItem(PocketsScreen *self)
     if (need_slot && free_slot == POCKETS_NO_PLACE) {
         PocketsScreen_EndAction(self);
         PocketsScreen_ShowError(self, 0x0a, 0xff, 0);
-        RtcSendPxiCommand(0x73);
+        SoundSys_PlaySe(0x73);
     } else {
         self->held_place = (u8) free_slot;
         PocketsScreen_DropHeld(self);
@@ -1100,13 +1079,13 @@ void PocketsScreen_ActionTakeBells(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229d7d0, PocketsScreen_ActionTakeBells)
 
-/* func_ov096_0229d878 (action 8): with a free letter, sets it up (func_020665b8) and hands it
+/* func_ov096_0229d878 (action 8): with a free letter, sets it up (Letter_StartBottle) and hands it
  * on. */
 void PocketsScreen_ActionNewLetterFromSlot(PocketsScreen *self)
 {
     if (PocketsScreen_MoveToFreeLetter(self)) {
         int letter = PocketsScreen_SlotLetter(self);
-        func_020665b8((void *) (uintptr_t) letter);
+        Letter_StartBottle((Letter *) (uintptr_t) letter);
         GroupParams_SetPointer((u32) letter);
         PocketsScreen_EmptyPlace(self, self->prev_slot);
         PocketsScreen_SwitchTab(self, 8);
@@ -1215,7 +1194,7 @@ int PocketsScreen_CheckUseItem(PocketsScreen *self, int item)
         if (self->unk_c4 == -1) {
             PocketsScreen_EndAction(self);
             PocketsScreen_ShowError(self, 3, 0xff, 0);
-            RtcSendPxiCommand(0x73);
+            SoundSys_PlaySe(0x73);
             return 0;
         }
         return 2;
@@ -1626,9 +1605,9 @@ int PocketsScreen_ActorReadyForSlot(PocketsScreen *self, int record_slot)
 }
 CLEAN_AS(func_ov096_0229e2c8, PocketsScreen_ActorReadyForSlot)
 
-/* func_ov096_0229e2fc: asks the player's field actor to take `item` for record slot
- * `record_slot` (main's requests of it); whether it was asked. Slot 6 also clears slot 4's
- * item; slot 7, when CARD_IsEnabled's byte is clear, sends command 0x40; slot 8 hands nothing. */
+/* func_ov096_0229e2fc: asks the player's field actor to take `item` for record slot `record_slot`
+ * (main's requests of it); whether it was asked. Slot 6 also clears slot 4's item; slot 7, when
+ * CameraControl_IsViewSaved's byte is clear, sends command 0x40; slot 8 hands nothing. */
 int PocketsScreen_ActorTakeSlotItem(PocketsScreen *self, unsigned int record_slot, u16 item)
 {
     (void) self;
@@ -1651,8 +1630,8 @@ int PocketsScreen_ActorTakeSlotItem(PocketsScreen *self, unsigned int record_slo
             return PlayerActorOps_RequestState3F(&asked) != 0;
         case 7:
             if (PlayerActorOps_RequestState85(&asked) != 0) {
-                if (CARD_IsEnabled() == 0) {
-                    RtcSendPxiCommand(0x40);
+                if (CameraControl_IsViewSaved() == 0) {
+                    SoundSys_PlaySe(0x40);
                 }
                 return 1;
             }
@@ -1857,9 +1836,9 @@ void PocketsScreen_SwapHeldWith(PocketsScreen *self, int place)
 {
     switch (self->held_kind) {
         case POCKETS_HELD_LETTER:
-            func_02066830(self->unk_2f28, self->held_letter);
+            Letter_Assign(&self->unk_2f28, &self->held_letter);
             PocketsScreen_PickUpAt(self, place);
-            PocketsScreen_PutLetterAt(self, place, self->unk_2f28);
+            PocketsScreen_PutLetterAt(self, place, &self->unk_2f28);
             break;
         case POCKETS_HELD_ITEM: {
             u16 item = self->item;
@@ -1897,7 +1876,7 @@ void PocketsScreen_PlaceHeldAt(PocketsScreen *self, int place, int drop)
 {
     switch (self->held_kind) {
         case POCKETS_HELD_LETTER:
-            PocketsScreen_PutLetterAt(self, place, self->held_letter);
+            PocketsScreen_PutLetterAt(self, place, &self->held_letter);
             break;
         case POCKETS_HELD_ITEM:
             PocketsScreen_SetPlaceItem(self, place, self->item, self->held_state);
@@ -1939,8 +1918,8 @@ void PocketsScreen_PickUpLetter(PocketsScreen *self, unsigned int place)
 {
     int index = PocketsScreen_LetterIndex(self, (int) place);
     self->held_kind = POCKETS_HELD_LETTER;
-    func_02066830(self->held_letter, (void *) PocketsLetters_LetterAt((PocketsLetters *) (void *) self->letters, index));
-    PocketsLetters_ClearPlace((PocketsLetters *) (void *) self->letters, index);
+    Letter_Assign(&self->held_letter, PocketsLetters_LetterAt(&self->letters, index));
+    PocketsLetters_ClearPlace(&self->letters, index);
 }
 CLEAN_AS(func_ov096_0229e95c, PocketsScreen_PickUpLetter)
 
@@ -2008,7 +1987,7 @@ void PocketsScreen_DrawHeld(PocketsScreen *self)
             PocketsGrid_DrawHeld((PocketsGrid *) (void *) self->grid, self->menu_x, self->menu_y);
             break;
         case POCKETS_HELD_LETTER:
-            func_ov094_0229b5e8(self->letters, self->menu_x, self->menu_y, self->held_letter);
+            PocketsLetters_DrawHeld(&self->letters, self->menu_x, self->menu_y, &self->held_letter);
             break;
     }
 }
@@ -2047,8 +2026,7 @@ void PocketsScreen_PlacePopup(PocketsScreen *self)
         PocketsGrid_ShowItemText((PocketsGrid *) (void *) self->grid, &self->popup,
                                  func_ov096_0229f7ac(self, self->popup_place));
     } else if (PocketsScreen_IsLetterPlace(self, self->popup_place)) {
-        PocketsLetters_ShowPlaceText((PocketsLetters *) (void *) self->letters, &self->popup,
-                                     PocketsScreen_LetterIndex(self, self->popup_place));
+        PocketsLetters_ShowPlaceText(&self->letters, &self->popup, PocketsScreen_LetterIndex(self, self->popup_place));
     }
 }
 CLEAN_AS(func_ov096_0229eb98, PocketsScreen_PlacePopup)
@@ -2084,7 +2062,7 @@ void PocketsScreen_HighlightPlace(PocketsScreen *self, unsigned int place)
     if (PocketsScreen_IsGridPlace(self, (int) place)) {
         PocketsGrid_MarkPlace((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, (int) place));
     } else if (PocketsScreen_IsLetterPlace(self, (int) place)) {
-        PocketsLetters_MarkPlace((PocketsLetters *) (void *) self->letters, PocketsScreen_LetterIndex(self, (int) place));
+        PocketsLetters_MarkPlace(&self->letters, PocketsScreen_LetterIndex(self, (int) place));
     } else if (PocketsScreen_IsTopPlace(self, (int) place)) {
         switch (place) {
             case POCKETS_PLACE_BELLS:
@@ -2108,7 +2086,7 @@ CLEAN_AS(func_ov096_0229ec90, PocketsScreen_HighlightPlace)
 void PocketsScreen_ClearHighlights(PocketsScreen *self)
 {
     PocketsGrid_ClearMarks((PocketsGrid *) (void *) self->grid);
-    PocketsLetters_ClearMarks((PocketsLetters *) (void *) self->letters);
+    PocketsLetters_ClearMarks(&self->letters);
     PocketsWallet_ShowPlainFrame((PocketsWallet *) (void *) self->unk_de0);
 }
 CLEAN_AS(func_ov096_0229ed44, PocketsScreen_ClearHighlights)
@@ -2119,15 +2097,15 @@ void PocketsScreen_SelectPlace(PocketsScreen *self, int place)
 {
     if (PocketsScreen_IsGridPlace(self, place)) {
         int index = func_ov096_0229f7ac(self, place);
-        PocketsLetters_Unlift((PocketsLetters *) (void *) self->letters);
+        PocketsLetters_Unlift(&self->letters);
         PocketsGrid_Lift((PocketsGrid *) (void *) self->grid, index);
     } else if (PocketsScreen_IsLetterPlace(self, place)) {
         int index = PocketsScreen_LetterIndex(self, place);
         PocketsGrid_Unlift((PocketsGrid *) (void *) self->grid);
-        PocketsLetters_Lift((PocketsLetters *) (void *) self->letters, index);
+        PocketsLetters_Lift(&self->letters, index);
     } else {
         PocketsGrid_Unlift((PocketsGrid *) (void *) self->grid);
-        PocketsLetters_Unlift((PocketsLetters *) (void *) self->letters);
+        PocketsLetters_Unlift(&self->letters);
     }
 }
 CLEAN_AS(func_ov096_0229ed74, PocketsScreen_SelectPlace)
@@ -2136,7 +2114,7 @@ CLEAN_AS(func_ov096_0229ed74, PocketsScreen_SelectPlace)
 void PocketsScreen_ClearSelection(PocketsScreen *self)
 {
     PocketsGrid_Unlift((PocketsGrid *) (void *) self->grid);
-    PocketsLetters_Unlift((PocketsLetters *) (void *) self->letters);
+    PocketsLetters_Unlift(&self->letters);
 }
 CLEAN_AS(func_ov096_0229edec, PocketsScreen_ClearSelection)
 
@@ -2238,11 +2216,11 @@ int PocketsScreen_CheckDrop(PocketsScreen *self, int place, int item, int state)
         if (state == 2) {
             return 1;
         }
-        void *letter = (void *) (uintptr_t) PocketsScreen_PlaceLetter(self, place);
-        if (func_02065f18(letter) != ITEM_NONE) {
+        const Letter *letter = (const Letter *) (uintptr_t) PocketsScreen_PlaceLetter(self, place);
+        if (Letter_Item(letter) != ITEM_NONE) {
             return 3;
         }
-        int kind = func_02065ec0(letter);
+        int kind = Letter_State(letter);
         if (kind == 7 || kind == 8 || PocketsItem_Is155d(item) != 0) {
             return 2;
         }
@@ -2278,8 +2256,7 @@ int PocketsScreen_PlaceLetter(PocketsScreen *self, int place)
     if (PocketsScreen_IsLetterPlace(self, place) == 0) {
         return 0;
     }
-    return (int) (uintptr_t) PocketsLetters_LetterAt((PocketsLetters *) (void *) self->letters,
-                                                     PocketsScreen_LetterIndex(self, place));
+    return (int) (uintptr_t) PocketsLetters_LetterAt(&self->letters, PocketsScreen_LetterIndex(self, place));
 }
 CLEAN_AS(func_ov096_0229f054, PocketsScreen_PlaceLetter)
 
@@ -2292,7 +2269,7 @@ int PocketsScreen_PlaceItemState(PocketsScreen *self, int place)
         return PocketsGrid_ItemState((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, place));
     }
     if (PocketsScreen_IsLetterPlace(self, place)) {
-        return func_02065f08((void *) (uintptr_t) PocketsScreen_PlaceLetter(self, place));
+        return Letter_Mark((const Letter *) (uintptr_t) PocketsScreen_PlaceLetter(self, place));
     }
     PocketsScreen_IsTopPlace(self, place);
     return 0;
@@ -2310,7 +2287,7 @@ u16 PocketsScreen_PlaceItem(PocketsScreen *self, int place)
         if (PocketsScreen_PlaceIsEmpty(self, place)) {
             return ITEM_NONE;
         }
-        return func_02065f18((void *) (uintptr_t) PocketsScreen_PlaceLetter(self, place));
+        return Letter_Item((const Letter *) (uintptr_t) PocketsScreen_PlaceLetter(self, place));
     }
     if (PocketsScreen_IsTopPlace(self, place)) {
         return self->place_item;
@@ -2327,7 +2304,7 @@ int PocketsScreen_PlaceIsEmpty(PocketsScreen *self, int place)
         return PocketsGrid_IsEmpty((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, place));
     }
     if (PocketsScreen_IsLetterPlace(self, place)) {
-        return PocketsLetters_IsEmpty((PocketsLetters *) (void *) self->letters, PocketsScreen_LetterIndex(self, place));
+        return PocketsLetters_IsEmpty(&self->letters, PocketsScreen_LetterIndex(self, place));
     }
     return 1;
 }
@@ -2341,7 +2318,7 @@ int PocketsScreen_PlaceIsTaken(PocketsScreen *self, int place)
         return PocketsGrid_IsDimmed((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, place));
     }
     if (PocketsScreen_IsLetterPlace(self, place)) {
-        return PocketsLetters_IsDimmed((PocketsLetters *) (void *) self->letters, PocketsScreen_LetterIndex(self, place));
+        return PocketsLetters_IsDimmed(&self->letters, PocketsScreen_LetterIndex(self, place));
     }
     return 0;
 }
@@ -2355,7 +2332,7 @@ int PocketsScreen_PlaceY(PocketsScreen *self, int place)
         return PocketsGrid_PlaceY((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, place));
     }
     if (PocketsScreen_IsLetterPlace(self, place)) {
-        return PocketsLetters_PlaceY((PocketsLetters *) (void *) self->letters, PocketsScreen_LetterIndex(self, place));
+        return PocketsLetters_PlaceY(&self->letters, PocketsScreen_LetterIndex(self, place));
     }
     if (PocketsScreen_IsRowPlace(self, place)) {
         return 8;
@@ -2369,14 +2346,6 @@ int PocketsScreen_PlaceY(PocketsScreen *self, int place)
     return 0;
 }
 CLEAN_AS(func_ov096_0229f200, PocketsScreen_PlaceY)
-
-/* The objects of ov094's: the grid's (0x358) places under a touch and their x, its slots set
- * and redrawn; the letters' (0xdb8) places under a touch, their x, a letter put in; the
- * wallet's display (0xde0) blinking and redrawn. */
-extern void func_ov094_0229b8b4(void *letters, int index, void *letter);
-
-/* Main's. */
-extern u16 func_02065ed0(void *letter, u16 item, int state);
 
 /* The item codes PocketsScreen_WaitGridObject records. */
 #define ITEM_136A 0x136a
@@ -2394,8 +2363,7 @@ int PocketsScreen_PlaceX(PocketsScreen *self, int place)
         return PocketsGrid_PlaceX((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, place));
     }
     if (PocketsScreen_IsLetterPlace(self, (unsigned int) place)) {
-        return PocketsLetters_PlaceX((PocketsLetters *) (void *) self->letters,
-                                     PocketsScreen_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_PlaceX(&self->letters, PocketsScreen_LetterIndex(self, (unsigned int) place));
     }
     if (PocketsScreen_IsRowPlace(self, (unsigned int) place)) {
         return MenuTabs_TabX(place - POCKETS_ROW_FIRST) - 8;
@@ -2489,7 +2457,7 @@ CLEAN_AS(func_ov096_0229f460, PocketsScreen_TouchOnPlace21)
 void PocketsScreen_PutLetterAt(PocketsScreen *self, int place, void *letter)
 {
     if (PocketsScreen_IsLetterPlace(self, (unsigned int) place)) {
-        func_ov094_0229b8b4(self->letters, PocketsScreen_LetterIndex(self, (unsigned int) place), letter);
+        PocketsLetters_SetPlace(&self->letters, PocketsScreen_LetterIndex(self, (unsigned int) place), letter);
     }
 }
 CLEAN_AS(func_ov096_0229f47c, PocketsScreen_PutLetterAt)
@@ -2499,8 +2467,8 @@ CLEAN_AS(func_ov096_0229f47c, PocketsScreen_PutLetterAt)
 int PocketsScreen_PutHeldLetterAt(PocketsScreen *self, int place)
 {
     if (PocketsScreen_PlaceIsEmpty(self, place) == 0) {
-        func_02066830(self->unk_2f28, (void *) (uintptr_t) PocketsScreen_PlaceLetter(self, place));
-        PocketsScreen_PutLetterAt(self, self->held_place, self->unk_2f28);
+        Letter_Assign(&self->unk_2f28, (const Letter *) (uintptr_t) PocketsScreen_PlaceLetter(self, place));
+        PocketsScreen_PutLetterAt(self, self->held_place, &self->unk_2f28);
     }
     PocketsScreen_PlaceHeldAt(self, place, 1);
     return 1;
@@ -2511,11 +2479,11 @@ CLEAN_AS(func_ov096_0229f4ac, PocketsScreen_PutHeldLetterAt)
  * `with_letter`, only one that holds a letter. POCKETS_NO_PLACE for none. */
 int PocketsScreen_LetterPlaceAtTouch(PocketsScreen *self, int x, int y, int with_letter)
 {
-    int index = PocketsLetters_PocketAtTouch((PocketsLetters *) (void *) self->letters, x, y);
+    int index = PocketsLetters_PocketAtTouch(&self->letters, x, y);
     if (index == LETTERS_NO_INDEX) {
         return POCKETS_NO_PLACE;
     }
-    if (with_letter != 0 && PocketsLetters_IsEmpty((PocketsLetters *) (void *) self->letters, index) != 0) {
+    if (with_letter != 0 && PocketsLetters_IsEmpty(&self->letters, index) != 0) {
         return POCKETS_NO_PLACE;
     }
     return PocketsScreen_LetterPlace(self, (unsigned int) index);
@@ -2561,8 +2529,7 @@ CLEAN_AS(func_ov096_0229f55c, PocketsScreen_FreePocketSlot)
 void PocketsScreen_RemoveLetterAt(PocketsScreen *self, int place)
 {
     if (PocketsScreen_IsLetterPlace(self, (unsigned int) place)) {
-        PocketsLetters_ClearPlace((PocketsLetters *) (void *) self->letters,
-                                  PocketsScreen_LetterIndex(self, (unsigned int) place));
+        PocketsLetters_ClearPlace(&self->letters, PocketsScreen_LetterIndex(self, (unsigned int) place));
     }
 }
 CLEAN_AS(func_ov096_0229f57c, PocketsScreen_RemoveLetterAt)
@@ -2586,7 +2553,7 @@ void PocketsScreen_SetPlaceItem(PocketsScreen *self, int place, int item, int st
         PocketsGrid_SetItem((PocketsGrid *) (void *) self->grid, index, item, state);
         PocketsGrid_RefreshPlace((PocketsGrid *) (void *) self->grid, index);
     } else if (PocketsScreen_IsLetterPlace(self, (unsigned int) place)) {
-        func_02065ed0((void *) (uintptr_t) PocketsScreen_PlaceLetter(self, place), (u16) item, state);
+        Letter_SetItem((Letter *) (uintptr_t) PocketsScreen_PlaceLetter(self, place), (u16) item, state);
     } else if (place == POCKETS_PLACE_BELLS) {
         PocketsScreen_AddBagToWallet(self, (u16) item);
     }
@@ -2965,7 +2932,7 @@ static void finish_use_request(PocketsScreen *self, int result, int message)
             }
             PocketsScreen_EndAction(self);
             PocketsScreen_ShowError(self, message, 0xff, 0);
-            RtcSendPxiCommand(0x73);
+            SoundSys_PlaySe(0x73);
             break;
         default:
             return;
@@ -3018,7 +2985,7 @@ CLEAN_AS(func_ov096_0229fd44, PocketsScreen_BlinkSlot)
  * Taken: the place is emptied and sub state 0x2f's pointer answered; else NULL. */
 u8 *PocketsScreen_HandSlotItemToActor(PocketsScreen *self)
 {
-    RtcSendPxiCommand(0x40);
+    SoundSys_PlaySe(0x40);
     PocketsScreen_RequestSwitchOn(self);
     u16 item = PocketsScreen_PlaceItem(self, self->slot);
     if (PlayerActorOps_RequestState85(&item) != 0) {
@@ -3062,7 +3029,7 @@ CLEAN_AS(func_ov096_0229fe10, PocketsScreen_WaitGridObject)
  * the action ends. */
 void PocketsScreen_WaitLettersObject(PocketsScreen *self)
 {
-    if (PocketsLetters_StepPickUp((PocketsLetters *) (void *) self->letters)) {
+    if (PocketsLetters_StepPickUp(&self->letters)) {
         PocketsScreen_DropHeld(self);
         PocketsScreen_EndAction(self);
     }
@@ -3313,13 +3280,8 @@ extern u8 data_021fbddc; /* the pen went down or up this frame */
 #define POCKETS_TAB_SELF 0  /* this scene's own tab */
 #define POCKETS_TAB_CLOSE 7 /* the menu closes */
 
-/* The letter view at 0x2a74 (main's): its setup and teardown, and a letter shown on two 2D
- * layers; a letter of kind 2, 5 or 7 becomes 3, 6 or 8 (func_020664a8: the letter is read). */
-extern void func_020664a8(void *letter);
-
 /* Main's: the objects at 0x2e8 and 0x320, a letter copy's constructor, the button's offset
  * (words 0x0c and 0x10), the held bells (data_021cfc74). */
-extern void func_02066694(void *letter);
 
 /* The sub state tables: the guard, the table (one array of 58 at 0x022a25d4, which the
  * symbol table cuts at 0x022a2654, 0x022a26d4 and 0x022a2754) and its constants; the state
@@ -4218,7 +4180,7 @@ void PocketsScreen_BeginFrame(PocketsScreen *self)
     PocketsScreen_UpdateObjects2e8(self);
     PocketsWallet_BeginFrame((PocketsWallet *) (void *) self->unk_de0);
     PocketsGrid_BeginFrame((PocketsGrid *) (void *) self->grid);
-    PocketsLetters_BeginFrame((PocketsLetters *) (void *) self->letters);
+    PocketsLetters_BeginFrame(&self->letters);
 }
 CLEAN_AS(func_ov096_022a13f0, PocketsScreen_BeginFrame)
 
@@ -4257,7 +4219,7 @@ void PocketsScreen_Setup(PocketsScreen *self)
 {
     self->flags = 0;
     PocketsGrid_Init((PocketsGrid *) (void *) self->grid, 2);
-    PocketsLetters_Init((PocketsLetters *) (void *) self->letters, 2);
+    PocketsLetters_Init(&self->letters, 2);
     PocketsWallet_Init((PocketsWallet *) (void *) self->unk_de0, 6);
     self->popup_place = POCKETS_NO_PLACE;
     Popup_SetDrawValue(&self->popup, 2);
@@ -4339,8 +4301,8 @@ CLEAN_AS(func_ov096_022a1610, PocketsScreen_WipeInReader)
  * lower right with its message 0x88 (and drawn). */
 void PocketsScreen_OpenReader(PocketsScreen *self)
 {
-    void *letter = (void *) (uintptr_t) PocketsScreen_SlotLetter(self);
-    func_020664a8(letter);
+    Letter *letter = (Letter *) (uintptr_t) PocketsScreen_SlotLetter(self);
+    Letter_AdvanceReceived(letter);
     LetterView_Show((LetterView *) (void *) self->unk_2a74, letter, READER_LAYER, READER_UNDER_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), READER_LAYER, 0, 0, POCKETS_WIPE_MARGIN);
     DisplayLayer_Show(READER_LAYER);
@@ -4405,7 +4367,7 @@ CLEAN_AS(func_ov096_022a1794, PocketsScreen_WipeIn)
 void PocketsScreen_StartWipeIn(PocketsScreen *self)
 {
     PocketsGrid_LoadPockets((PocketsGrid *) (void *) self->grid);
-    PocketsLetters_LoadPockets((PocketsLetters *) (void *) self->letters);
+    PocketsLetters_LoadPockets(&self->letters);
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), 8, 3, 0, POCKETS_WIPE_MARGIN);
     DisplayLayer_Show(POCKETS_LAYER);
     MenuScene_ScrollWipe(scene_of(self), POCKETS_LAYER, 0, 0);
@@ -4646,7 +4608,7 @@ int PocketsScreen_Draw(PocketsScreen *self)
     if (PocketsScreen_TestFlags(self, POCKETS_FLAG_OBJECTS_DRAWN) != 0) {
         PocketsGrid_DrawPockets((PocketsGrid *) (void *) self->grid, 0, self->wipe_y);
         PocketsGrid_DrawSideMarks((PocketsGrid *) (void *) self->grid, 0, self->wipe_y);
-        PocketsLetters_DrawPockets((PocketsLetters *) (void *) self->letters, 0, self->wipe_y);
+        PocketsLetters_DrawPockets(&self->letters, 0, self->wipe_y);
         PocketsWallet_Draw((PocketsWallet *) (void *) self->unk_de0, self->wipe_y);
     }
     if (PocketsScreen_TestFlags(self, POCKETS_FLAG_BUTTON_DRAWN) != 0) {
@@ -4693,7 +4655,7 @@ PocketsScreen *PocketsScreen_New(void)
     LayerTask_ConstructPair((LayerTaskPair *) (void *) self->unk_2e8);
     LayerTask_ConstructPair((LayerTaskPair *) (void *) self->unk_320);
     PocketsGrid_Construct((PocketsGrid *) (void *) self->grid);
-    PocketsLetters_Construct((PocketsLetters *) (void *) self->letters);
+    PocketsLetters_Construct(&self->letters);
     PocketsWallet_Construct((PocketsWallet *) (void *) self->unk_de0);
     Popup_Construct(&self->popup);
     Glide_Construct(&self->glide);
@@ -4704,8 +4666,8 @@ PocketsScreen *PocketsScreen_New(void)
     LabelButton0_Construct(&self->button);
     self->unk_2e20 = 0;
     self->unk_2e24 = 0;
-    func_02066694(self->held_letter);
-    func_02066694(self->unk_2f28);
+    Letter_Construct(&self->held_letter);
+    Letter_Construct(&self->unk_2f28);
     return self;
 }
 CLEAN_AS(func_ov096_022a1fa4, PocketsScreen_New)

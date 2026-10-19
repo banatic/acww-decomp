@@ -435,7 +435,7 @@ void MesSliderWindow_Open(MesSliderWindow *self)
     LabelSpriteText label;
     LabelSprite_TextConstruct(&label);
     u8 message = MES_SLIDER_WINDOW_BUTTON_TEXT;
-    MessageReader_LoadMenuMessage((int) (uintptr_t) &label, &message, NULL);
+    MessageReader_LoadMenuMessage(&label, &message, NULL);
     LabelSprite_SetText(button, (TextBase *) &label);
     MesBgSlider_SetLevel(&self->slider, MES_BG_SLIDER_LEVEL_TOP / 2);
     MesSliderWindow_RequestFocusSlider(self);

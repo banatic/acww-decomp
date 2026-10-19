@@ -173,7 +173,7 @@ int NumberText_AppendUnit(void *text, int value, int unit)
         default:
             break;
     }
-    int ok = MessageReader_LoadMessage((int) (uintptr_t) &word, &message, (int) (uintptr_t) data_020e5300);
+    int ok = MessageReader_LoadMessage(&word, &message, data_020e5300);
     if (ok != 0) {
         ok = (ok & TextBase_AppendText(text, (TextBase *) &word)) != 0;
     }

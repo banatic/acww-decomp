@@ -31,6 +31,7 @@
 #include "ov002/menu_scene.h"
 #include "ov002/paged_choice.h"
 #include "ov002/popup.h"
+#include "ov094/pockets_letters.h"
 #include "types.h"
 
 /* In `flags`. */
@@ -117,7 +118,7 @@ typedef struct LetterStorage {
     u8 open_delay;                       /* 0x2c3: frames before a touched place's choice opens (2) */
     u8 unk_2c4[0x38];                    /* 0x2c4: an object of main's (constructor func_020b9af4) */
     u8 grid[0xa60];                      /* 0x2fc: ov094's grid object (destructor func_ov094_0229afe0) */
-    u8 letters[0x28];                    /* 0xd5c: ov094's letters object (func_ov094_0229bc30) */
+    PocketsLetters letters;              /* 0xd5c: ov094's letters object */
     u8 wallet[0x1638];                   /* 0xd84: ov094's wallet display (destructor func_ov094_0229a2d0) */
     Popup popup;                         /* 0x23bc */
     Glide glide;                         /* 0x248c: the held letter's glide to a place */

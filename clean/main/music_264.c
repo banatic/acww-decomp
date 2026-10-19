@@ -871,13 +871,6 @@ CLEAN_AS(func_020372f8, HourMusic_Construct)
 
 /* ---- The clock at the object's 0x24c */
 
-/* The RTC's year (RtcDate.year), its day and month (two bytes), its minute and hour (two
- * bytes) and its second.
- * QUIRK: the second's reader is named CARDi_GetTargetMode in the symbols; it returns the word at
- * 0x18 of data_021dc744, RtcTime.second. */
-extern u32 func_0209dee8(void);
-extern u32 CARDi_GetTargetMode(void);
-
 /* A time of day in seconds. */
 static u32 seconds_of_day(u32 hour, u32 minute, u32 second)
 {
@@ -901,7 +894,7 @@ void MusicClock_Read(MusicClock *self)
     self->now.year = Clock_Year();
     Clock_GetDayMonth(&self->now.day);
     Calendar_Now((Time *) (void *) &self->now.minute);
-    self->now.second = CARDi_GetTargetMode();
+    self->now.second = (u32) Clock_Second();
 }
 CLEAN_AS(func_02037318, MusicClock_Read)
 

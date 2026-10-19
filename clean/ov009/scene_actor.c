@@ -821,7 +821,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_02263790Ev, SceneActor_UpdateTalk)
 
 /* _ZN18Obj_ov009_022658dc19func_ov009_022637bcEv (entry of SCENE_ACTOR_TALK): takes the
  * receiver, raises the link's request and prepares the talk (vtable slot 0x78).
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int SceneActor_EnterTalk(SceneActor *actor)
 {
     SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, scene_actor_receiver(actor));

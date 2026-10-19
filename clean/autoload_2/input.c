@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 
 static_assert(sizeof(TouchSample) == 8, "NitroSDK's TPData");
 
@@ -26,7 +27,6 @@ extern void TP_RequestSetStabilityAsync(int retry, int range);
 extern void TP_RequestAutoSamplingStartAsync(int vcount, int frequency, TouchSample *ring, int size);
 extern void TP_WaitBusy(int command);
 extern int TP_CheckError(int command);
-extern void OS_Terminate(void);
 
 /* NitroSDK's TP_REQUEST_COMMAND_FLAG_* */
 #define TP_COMMAND_AUTO_ON 2
@@ -85,12 +85,12 @@ void Touch_Init(void)
     TP_RequestSetStabilityAsync(3, 30);
     TP_WaitBusy(TP_COMMAND_SET_STABILITY);
     if (TP_CheckError(TP_COMMAND_SET_STABILITY) != 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     TP_RequestAutoSamplingStartAsync(0, 4, data_021fbdf0, TOUCH_RING_SIZE);
     TP_WaitBusy(TP_COMMAND_AUTO_ON);
     if (TP_CheckError(TP_COMMAND_AUTO_ON) != 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     data_021fbdd8 = 0;
     data_021fbddc = 0;

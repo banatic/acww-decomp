@@ -278,7 +278,7 @@ void MysteryCatFace_Show(MysteryCatFace *face, u8 *model)
     if (textures == 0) {
         return;
     }
-    const u8 *resource = ((const LayeredModel *) (const void *) model)->model_resource;
+    const u8 *resource = ((const LayeredModel *) (const void *) model)->base.object.model;
     VramCopyMaterial_Queue(&face->copy, resource, data_ov074_02279b44, (G3dResTex *) (uintptr_t) textures, 0, 0);
 }
 CLEAN_AS(func_ov074_02278a90, MysteryCatFace_Show)

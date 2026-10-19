@@ -68,7 +68,7 @@ void VillagerCatchphrase_ToLabel(u8 *villager, void *label, int itchy)
     TextBase_Clear(label);
     if (itchy != 0 && VillagerCheck_IsIndex160(villager)) {
         u8 line = (u8) MainRandom_Below(VILLAGER_CATCHPHRASE_ITCHY_LINES);
-        MessageReader_LoadMessage((int) (uintptr_t) label, &line, (int) (uintptr_t) data_020e1968);
+        MessageReader_LoadMessage(label, &line, data_020e1968);
     } else {
         VillagerCatchphrase_ToText(villager, &text);
         TextBase_WideToBytes(label, (WideTextBase *) &text, 0, 0);

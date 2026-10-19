@@ -73,8 +73,8 @@ u8 *PlayerRecord_Bytes23e8(u8 *record);
 
 /* More of the record, by offset:
  *   0x0000  the player's designs (PlayerDesigns, design_sets.h)
- *   0x1c18  the record of items the player has had (OSi_DoUnlockByWord__main_0203cd2c sets an
- *           item's bit in it)
+ *   0x1c18  the record of items the player has had (ItemRecord_SetBit sets an item's bit
+ *           in it)
  *   0x1d3b  a byte object (func_0203d38c, func_0203d388)
  *   0x1e40  the villagers' part: two 48-byte blocks naming villagers (func_0209ad9c), an
  *           object at 0x94 and an NpcId with an object at 0xa4 (villager_kinds.h)

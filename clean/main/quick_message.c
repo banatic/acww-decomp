@@ -285,7 +285,7 @@ void QuickMessage_PollButtons(int unused)
     }
 
     if (post) {
-        MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &number, 0);
+        MessageReader_LoadMenuMessage(&text, &number, 0);
         QuickMessagePlayerName name;
         PlayerIdText_Construct((PlayerIdText *) &name);
         PlayerId_NameToText(PlayerRecord_Player(PlayerRecords_Current()), (TextBase *) &name);
@@ -361,7 +361,7 @@ void QuickMessage_PostDefault(void)
     QuickMessage_TextConstruct(&text);
     PlayerId_NameToText(PlayerRecord_Player((u8 *) (uintptr_t) record), (TextBase *) &name);
     u8 number = QUICK_MESSAGE_START;
-    MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &number, 0);
+    MessageReader_LoadMenuMessage(&text, &number, 0);
     QuickMessage_Post(data_020ccf94->local_slot, &name, &text);
     SoundSys_PlaySe(QUICK_MESSAGE_SOUND);
     data_021c6730 = QUICK_MESSAGE_COOLDOWN;

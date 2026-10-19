@@ -6,6 +6,7 @@
 #include "date_time.h"
 #include "group_params.h"
 #include "item_object.h"
+#include "item_record.h"
 #include "npc_id.h"
 #include "player_pockets.h"
 #include "player_record.h"
@@ -123,8 +124,6 @@ extern u8 data_021c2a1c[];
 extern VillagerTown data_021e5a2c; /* the town's villagers */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-/* Item records: `*item` marked as had. */
-extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
 /* The pocket predicate VillagerTalkSteps_AskPocket1561 hands the scene (the game's). */
 extern int func_020240a8(u16 *item, int state);
 
@@ -428,7 +427,7 @@ void VillagerTalkSteps_GiveGiftToPockets(VillagerTalk *talk)
     }
     SceneCommand_RequestMotion13(&talk->scene, &talk->gift, 0, 5, 0);
     PlayerPockets_SetSlot(pockets, &talk->gift, slot, 0);
-    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(player), &talk->gift, 0, 1);
+    ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(player), &talk->gift, 0, 1);
     VillagerTalkScene_SetCommandEnd(talk, data_020d90e0);
 }
 CLEAN_AS(func_02023a54, VillagerTalkSteps_GiveGiftToPockets)
@@ -521,7 +520,7 @@ void VillagerTalkSteps_GiveByObjectType(VillagerTalk *talk)
             int slot = CurrentPockets_FreeSlot();
             if (slot >= 0) {
                 CurrentPockets_Set(&talk->gift, 0, slot);
-                OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(PlayerRecords_Current()), &talk->gift, 0, 1);
+                ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(PlayerRecords_Current()), &talk->gift, 0, 1);
             }
             SceneCommand_RequestMotion13(&talk->scene, &talk->gift, 0, 5, 0);
             VillagerTalkScene_SetCommandEnd(talk, data_020d9100);

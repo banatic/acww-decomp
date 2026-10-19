@@ -114,14 +114,14 @@ void EventQueue_EndCurrent(void)
 }
 CLEAN_AS(func_0203df6c, EventQueue_EndCurrent)
 
-/* func_0203df88 (from func_0203ee08): the talk showing the receiver lets it go. */
+/* func_0203df88 (from SceneObjectBase_ReleaseReceiver): the talk showing the receiver lets it go. */
 void EventQueue_ReceiverLeaveTalk(TalkReceiver *receiver)
 {
     TalkObject_DetachReceiver((TalkObject *) receiver->talk);
 }
 CLEAN_AS(func_0203df88, EventQueue_ReceiverLeaveTalk)
 
-/* func_0203df94 (from func_0203ee14): the receiver handed to talk 0. */
+/* func_0203df94 (from SceneObjectBase_TakeReceiver): the receiver handed to talk 0. */
 void EventQueue_ReceiverToTalk(TalkReceiver *receiver)
 {
     TalkObject_AttachReceiver(TalkObject_Get(0), receiver);

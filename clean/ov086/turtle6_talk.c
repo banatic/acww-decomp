@@ -136,7 +136,7 @@ static void t6t_write_fortune(Turtle6Talk *talk, Letter *letter, u8 *record)
     for (int i = 0; i < TURTLE6_FORTUNE_PARTS; i++) {
         u8 number = (u8) message;
         const Turtle6FortunePart *part = &data_ov086_022791d0[i];
-        MessageReader_LoadMessage((int) (u32) (uintptr_t) &text, &number, (int) part->name);
+        MessageReader_LoadMessage(&text, &number, (const char *) (uintptr_t) part->name);
         MailText_SetPartText(part->part, &text);
         message = fortune * T6T_FORTUNE_VARIANTS + (int) MainRandom_Below(T6T_FORTUNE_VARIANTS) + i * T6T_FORTUNE_PART_STEP;
     }

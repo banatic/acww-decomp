@@ -167,7 +167,7 @@ void LetterGrade_LoadKeywords(void)
     data_021ce2f4 = 0;
     for (int i = 0; i < LETTER_GRADE_KEYWORD_MESSAGES; i++) {
         TextBase_Clear(&message);
-        LetterGrade_LoadMessage((int) (uintptr_t) &message, (int) (uintptr_t) data_020df1f8, (char) i);
+        LetterGrade_LoadMessage(&message, data_020df1f8, (char) i);
         TextBase_BytesToWide((WideTextBase *) (void *) &wide, (TextBase *) (void *) &message);
         u16 *line = wide.text;
         while (*line != 0) {
@@ -246,7 +246,7 @@ CLEAN_AS(func_0206d964, LetterGradeWide_Construct)
 
 /* func_0206d97c: message `message` of the file `name` read into the 8-bit text `text`; whether
  * it was. */
-int LetterGrade_LoadMessage(int text, int name, char message)
+int LetterGrade_LoadMessage(void *text, const char *name, char message)
 {
     unsigned char index = (unsigned char) message;
     return MessageReader_LoadMessage(text, &index, name);

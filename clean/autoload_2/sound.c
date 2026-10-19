@@ -6,6 +6,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "sound_system.h"
 
 static_assert(sizeof(SoundList) == 0xc, "NNSFndList");
@@ -26,7 +27,6 @@ extern void *data_021fd050;
 extern u8 data_021fd10c[];
 extern u8 data_021fd07c[];
 
-extern void OS_Terminate(void);
 extern int NNS_SndHeapGetCurrentLevel(void *heap);
 extern void NNS_SndHeapLoadState(void *heap, int level);
 extern int NNS_SndHeapSaveState(void *heap);
@@ -82,14 +82,14 @@ CLEAN_AS(func_020eec48, Sound_GetHeapLevel)
 void Sound_RestoreHeapLevel(int level)
 {
     if (level == SOUND_NONE) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if (level == 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     NNS_SndHeapLoadState(data_021fd048, level);
     if (level != Sound_GetHeapLevel()) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     Sound_GetHeapLevel();
 }
@@ -105,7 +105,7 @@ int Sound_LoadGroup(int group)
         return -1;
     }
     if (NNS_SndHeapSaveState(data_021fd048) == -1) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     return level;
 }
@@ -116,7 +116,7 @@ CLEAN_AS(func_020eecb0, Sound_LoadGroup)
 int Sound_StopSequence(void *handle, int fade_frames)
 {
     if (handle == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     return NNS_SndPlayerStopSeq(handle, fade_frames);
 }
@@ -127,7 +127,7 @@ CLEAN_AS(func_020eed18, Sound_StopSequence)
 void Sound_InitHandle(SoundHandle *handle)
 {
     if (handle == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     func_0210b7e0(handle);
 }
@@ -138,7 +138,7 @@ CLEAN_AS(ENV_AppendResourceSet, Sound_InitHandle)
 void Sound_StartSeqArcEx(SoundHandle *handle, int player_no, int bank_no, int player_priority, int seq_arc, int index)
 {
     if (handle == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     NNS_SndArcPlayerStartSeqArcEx(handle, player_no, bank_no, player_priority, seq_arc, index);
 }
@@ -149,7 +149,7 @@ CLEAN_AS(func_020eed68, Sound_StartSeqArcEx)
 int Sound_StartSeqArc(int index, int seq_arc, SoundHandle *handle)
 {
     if (handle == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     return NNS_SndArcPlayerStartSeqArc(handle, seq_arc, index);
 }
@@ -175,7 +175,7 @@ void Sound_AllocEffectBuffer(void)
 {
     data_021fd050 = NNS_SndHeapAlloc((void *) Sound_GetHeap(), EFFECT_BUFFER_SIZE + EFFECT_BUFFER_ALIGN, func_020eeea0, 0, 0);
     if (data_021fd050 == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
 }
 CLEAN_AS(func_020eee08, Sound_AllocEffectBuffer)
@@ -186,7 +186,7 @@ void Sound_StartOutputEffect(int type)
     u32 buffer = (u32) data_021fd050;
 
     if (data_021fd050 == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     buffer = (buffer + (EFFECT_BUFFER_ALIGN - 1)) & ~(u32) (EFFECT_BUFFER_ALIGN - 1);
     NNS_SndCaptureStartOutputEffect((void *) buffer, EFFECT_BUFFER_SIZE, type);
@@ -211,23 +211,23 @@ void Sound_Init(void *heap_memory, unsigned int heap_size, const void *arc_path,
 {
     NNS_SndInit();
     if (data_021fd048 != NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     data_021fd048 = NNS_SndHeapCreate(heap_memory, heap_size);
     if (data_021fd048 == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     Sound_AllocEffectBuffer();
     if (arc_path != NULL) {
         NNS_SndArcInit(data_021fd10c, arc_path, data_021fd048, 0);
     } else {
         if (arc_in_memory == NULL) {
-            OS_Terminate();
+            GameHalt_Terminate();
         }
         NNS_SndArcInitOnMemory(data_021fd07c, arc_in_memory);
     }
     if (!NNS_SndArcPlayerSetup(data_021fd048)) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     func_0210b7e0(&data_021fd04c);
 }
@@ -247,7 +247,7 @@ void SoundGroup_StopAll(SoundGroup *group)
     void *slots;
 
     if (group == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     for (slots = (void *) SoundList_First(&group->playing); slots != NULL; slots = SoundList_Next(&group->playing, slots)) {
         SoundSlots_Shutdown(slots);
@@ -260,7 +260,7 @@ CLEAN_AS(func_020eef80, SoundGroup_StopAll)
 void SoundGroup_Unload(SoundGroup *group)
 {
     if (group->key.group == SOUND_NONE) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if (group->heap_level != SOUND_NONE) {
         Sound_RestoreHeapLevel(group->heap_level);
@@ -287,10 +287,10 @@ CLEAN_AS(func_020ef008, SoundGroup_Close)
 int SoundGroup_Open(SoundGroup *group, void *unk_10, u8 unk_14, SoundGroupKey key)
 {
     if (group->state != 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if (key.group == SOUND_NONE) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     group->key = key;
     if (key.keep_heap == 0) {
@@ -374,7 +374,7 @@ CLEAN_AS(func_020efc44, SoundList_Append)
 void SoundLink_Clear(ListNode *link)
 {
     if (link == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     link->prev = NULL;
     link->next = NULL;

@@ -137,7 +137,7 @@ static void t4t_write_fortune(Letter *letter, u8 *record)
     for (int i = 0; i < TURTLE4_FORTUNE_PARTS; i++) {
         u8 number = (u8) message;
         const Turtle4FortunePart *part = &data_ov084_022792fc[i];
-        MessageReader_LoadMessage((int) (u32) (uintptr_t) &text, &number, (int) part->name);
+        MessageReader_LoadMessage(&text, &number, (const char *) (uintptr_t) part->name);
         MailText_SetPartText(part->part, &text);
         message = fortune * T4T_FORTUNE_VARIANTS + (int) MainRandom_Below(T4T_FORTUNE_VARIANTS) + i * T4T_FORTUNE_PART_STEP;
     }

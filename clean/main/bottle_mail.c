@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "mail.h"
+#include "item_record.h"
 #include "player_messages.h"
 #include "session.h"
 #include "acre_map.h"
@@ -42,10 +43,6 @@ typedef struct BottleMap {
     int width; /* in items */
     int height;
 } BottleMap;
-
-/* Set (`set`) or clear an item's bit in a record of items; mode 0 refuses some items. The
- * symbol's name is wrong: this is the game's code. */
-extern int OSi_DoUnlockByWord__main_0203cd2c(void *items, u16 *item, int mode, int set);
 
 /* func_02096c88: the letter in a bottle from another console arrives: at once with its flag,
  * else from count 1 on, by a draw of one in data_020d18c8[count] up to count 4 and always
@@ -161,7 +158,7 @@ int BottleMail_Open(void)
         return 1;
     }
     u16 item = MARKED_ITEM;
-    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(PlayerRecords_Current()), &item, 0, 1);
+    ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(PlayerRecords_Current()), &item, 0, 1);
     Letter_Assign(place, bottle);
     Letter_Clear(bottle);
     NetSession *session = data_020ccf94;

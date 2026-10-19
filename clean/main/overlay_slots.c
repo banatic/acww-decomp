@@ -2,6 +2,7 @@
 #include "overlay_slots.h"
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "rom_file.h"
 
 static_assert(sizeof(OverlaySlot) == 12, "OverlaySlot size");
@@ -16,7 +17,6 @@ typedef struct OverlaySlotsFileId {
     u32 file_id;
 } OverlaySlotsFileId;
 
-extern void OS_Terminate(void);
 extern int FS_LoadOverlayInfo(OverlaySlotsInfo *info, int target, int overlay);
 extern OverlaySlotsFileId FS_GetOverlayFileID(const void *info);
 
@@ -52,7 +52,7 @@ void OverlaySlots_Release(u8 overlay)
         }
     }
     if (found == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
         return; /* not reached: OS_Terminate does not return */
     }
     if (found->holds == 0) {
@@ -101,7 +101,7 @@ void OverlaySlots_Load(u8 overlay)
                 free_slot = slot;
             }
         } else {
-            OS_Terminate();
+            GameHalt_Terminate();
         }
     }
     if (free_slot != NULL) {

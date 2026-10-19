@@ -646,9 +646,9 @@ CLEAN_AS(func_02038910, CautionWindow_Start)
 int CautionWindow_LoadMessages(void)
 {
     u8 numbers[3] = {0xe3, 0xe4, 0xe5};
-    MessageReader_LoadMenuMessage((int) (uintptr_t) data_021c5a24, &numbers[0], 0);
-    MessageReader_LoadMenuMessage((int) (uintptr_t) data_021c59d0, &numbers[1], 0);
-    return MessageReader_LoadMenuMessage((int) (uintptr_t) data_021c5b38, &numbers[2], 0);
+    MessageReader_LoadMenuMessage(data_021c5a24, &numbers[0], 0);
+    MessageReader_LoadMenuMessage(data_021c59d0, &numbers[1], 0);
+    return MessageReader_LoadMenuMessage(data_021c5b38, &numbers[2], 0);
 }
 CLEAN_AS(func_02038998, CautionWindow_LoadMessages)
 

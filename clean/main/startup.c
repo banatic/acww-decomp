@@ -8,6 +8,7 @@
 #include "itcm/interrupts.h"
 #include "main/backup_card.h"
 #include "main/card_pulled.h"
+#include "main/game_halt.h"
 #include "main/library_overlay.h"
 #include "main/overlay_slots.h"
 #include "main/scene_sound.h"
@@ -80,7 +81,6 @@ extern void FS_Init(int dma);
 extern void DC_FlushRange(const void *start, u32 size);
 extern void OS_SetProtectionRegion2(u32 region);
 extern void OS_SetArenaHi(int arena, u32 top);
-extern void OS_Terminate(void);
 extern void OS_SetIrqFunction(int mask, void (*handler)(void));
 extern int OS_EnableIrqMask(int mask);
 extern int GX_VBlankIntr(int enable);
@@ -165,7 +165,7 @@ void Startup_OnWirelessStarted(void *argument, int result)
 {
     (void) argument;
     if (result != 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     data_021f4b10 = 1;
 }

@@ -326,7 +326,7 @@ void MessageReader_LoadGeneral(void *text, int index, int decoded)
     if (decoded != 0) {
         MessageReader_LoadDecoded(text, &message, data_020e52f4);
     } else {
-        MessageReader_LoadMessage((int) (uintptr_t) text, &message, (int) (uintptr_t) data_020e52f4);
+        MessageReader_LoadMessage(text, &message, data_020e52f4);
     }
 }
 CLEAN_AS(func_020b44d4, MessageReader_LoadGeneral)
@@ -340,7 +340,7 @@ CLEAN_AS(func_020b496c, MessageReader_SetPart)
 
 /* func_020b4980: message *message of the file `name` ("2d_menu" for NULL) in
  * "/script/KOR/2d" read into `text` by the global reader; whether it worked. */
-int MessageReader_LoadMenuMessage(int text, unsigned char *message, const char *name)
+int MessageReader_LoadMenuMessage(void *text, unsigned char *message, const char *name)
 {
     MessageRequest request;
 
@@ -351,7 +351,7 @@ int MessageReader_LoadMenuMessage(int text, unsigned char *message, const char *
     request.folder = 1;
     MessageReceiver_SetName((MessageReceiver *) &request, name);
     request.message = *message;
-    request.text = (void *) (uintptr_t) text;
+    request.text = text;
     MessageReader_Clear(&data_021f4dac);
     int loaded = MessageReader_Load(&data_021f4dac, &request);
     MessageRequest_Destruct(&request);
@@ -379,14 +379,14 @@ CLEAN_AS(func_020b49d4, MessageReader_LoadDecoded)
 
 /* func_020b4a20: message *message of the file `name` in "/script/KOR/string" read into
  * `text` by the global reader; whether it worked. */
-int MessageReader_LoadMessage(int text, unsigned char *message, int name)
+int MessageReader_LoadMessage(void *text, unsigned char *message, const char *name)
 {
     MessageRequest request;
 
     MessageRequest_Construct(&request);
-    MessageReceiver_SetName((MessageReceiver *) &request, (const char *) (uintptr_t) name);
+    MessageReceiver_SetName((MessageReceiver *) &request, name);
     request.message = *message;
-    request.text = (void *) (uintptr_t) text;
+    request.text = text;
     MessageReader_Clear(&data_021f4dac);
     int loaded = MessageReader_Load(&data_021f4dac, &request);
     MessageRequest_Destruct(&request);

@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "sound_position.h"
 #include "sound_system.h"
 
@@ -25,7 +26,6 @@ extern SoundSystem data_021fd1bc;
 /* The tracks a source's pan is given to: 0-3 (0x000f). */
 extern const u16 data_0213e858;
 
-extern void OS_Terminate(void);
 extern const SourceSeqParam *NNS_SndArcGetSeqArcParam(int seq_arc, int index);
 extern void NNS_SndHandleReleaseSeq(SoundHandle *handle);
 extern void NNS_SndPlayerSetVolume(SoundHandle *handle, int volume);
@@ -228,7 +228,7 @@ int SoundSourceClass_Priority(int number, int volume)
     int priority;
 
     if (param == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
         return 0; /* not reached */
     }
     priority = volume + (param->player_priority - 100);

@@ -47,7 +47,7 @@ int LetterGrade_IsSeparator(unsigned short character);
 int LetterGrade_BodyLength(Letter *letter);
 int LetterGrade_Grade(Letter *letter);
 void LetterGrade_LoadKeywords(void);
-int LetterGrade_LoadMessage(int text, int name, char message);
+int LetterGrade_LoadMessage(void *text, const char *name, char message);
 
 int LetterGradeWide_Buffer(int text);
 int LetterGradeWide_Capacity(void);

@@ -247,7 +247,7 @@ void FieldLabel_ShowMessageText(FieldLabel *label, int first)
                 message_text = FIELD_LABEL_SECOND_TEXT_2;
             }
         }
-        MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &message_text, NULL);
+        MessageReader_LoadMenuMessage(&text, &message_text, NULL);
         SlidingWindow_SetText(window_of(label), (struct TextObject *) &text);
         if (first == 0) {
             SlidingWindow_RefreshText(window_of(label), 1);
@@ -272,7 +272,7 @@ void FieldLabel_ShowNoticeText(FieldLabel *label)
     u8 notice_text = data_020d226c[label->notice];
 
     MessagePart_Construct((MessagePart *) &text);
-    MessageReader_LoadMenuMessage((int) (uintptr_t) &text, &notice_text, NULL);
+    MessageReader_LoadMenuMessage(&text, &notice_text, NULL);
     SlidingWindow_SetText(window_of(label), (struct TextObject *) &text);
     MessagePart_Destruct((MessagePart *) &text);
 }

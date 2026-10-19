@@ -1,7 +1,7 @@
 /* The base of the small menu scenes (vtable 0x0220bb24, include/cpp/ov002/Obj_ov002_0220bb24.h):
  * each scene overlay (096-125 among others) derives one class from it, allocates it with
  * MenuScene_Alloc and drives it through the slots of the scene class of autoload_2 (vtable
- * 0x020da13c, constructor func_020ee660).
+ * 0x020da13c, constructor Process_Construct).
  *
  * The base keeps a key repeat for the d-pad, a screen wipe (wipe.h), a link in a list of main's
  * (data_021cfca0) and a phase: each frame (MenuScene_Update) runs the virtual function of the
@@ -13,8 +13,8 @@
 #include "key_repeat.h"
 #include "wipe.h"
 
-/* An entry of main's list at data_021cfca0 (func_02070204 adds, func_020701e4 removes); the
- * list reads the owner's `list_value`. */
+/* An entry of main's list at data_021cfca0 (OverlayGroups_AddOwner adds, OverlayGroups_RemoveOwner
+ * removes); the list reads the owner's `list_value`. */
 typedef struct MenuSceneLink {
     u32 unk_00;
     u32 unk_04;

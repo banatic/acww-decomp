@@ -336,9 +336,9 @@ CLEAN_AS(func_02013ee4, SceneAction_WaitSpeakers1)
 
 /* While the scene's talk goes on, the scene's func_02016110 and the talking flag follow it
  * (SceneAction_ShowTalking). Once it is over: the scene is told (vtable slot 0x7c), and
- * func_0203ee08; the speaker's talking flag is cleared; if a speaker is still in the talk's
- * motion, func_02016024 tells the scene of each (the object 0, the other 1) and the phase is
- * 2, else the action ends with the phase `phase`. Nothing without a scene or a talk. */
+ * SceneObjectBase_ReleaseReceiver; the speaker's talking flag is cleared; if a speaker is still in
+ * the talk's motion, func_02016024 tells the scene of each (the object 0, the other 1) and the
+ * phase is 2, else the action ends with the phase `phase`. Nothing without a scene or a talk. */
 static void scene_action_wait_talk(SceneAction *self, void *object, u8 phase)
 {
     u8 *scene = scene_action_scene(object);
@@ -570,9 +570,9 @@ CLEAN_AS(func_020146cc, SceneAction_StartPending)
 
 /* func_02014718: the talk in the object's scene opens (nothing without a scene): the object's
  * name (its vtable slot 0x74 fills a string object) goes to the scene as the speaker's
- * (func_02066954, with func_0201c250's answer), func_0203ee14, the scene's line (its vtable slot
- * 0x78) gives the talk's name (func_020a8164) and the scene's byte 0x1e, and the talk begins
- * (word 8 is 1). */
+ * (func_02066954, with func_0201c250's answer), SceneObjectBase_TakeReceiver, the scene's line
+ * (its vtable slot 0x78) gives the talk's name (func_020a8164) and the scene's byte 0x1e, and the
+ * talk begins (word 8 is 1). */
 void SceneAction_OpenTalk(SceneAction *self, void *object)
 {
     typedef void (*SceneActionFill)(void *object, void *out);

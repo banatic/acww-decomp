@@ -146,7 +146,7 @@ CLEAN_AS(func_0209bfec, VillagerModeRecord_Since)
 int VillagerModeRecord_LoadKindText(void *text, int mode)
 {
     u8 message = (u8) (VillagerModeRecord_IsKindMode((u32) mode) ? mode : VILLAGER_MODE_RECORD_TEXT_OTHER);
-    return MessageReader_LoadMessage((int) (uintptr_t) text, &message, (int) (uintptr_t) data_020e35cc);
+    return MessageReader_LoadMessage(text, &message, data_020e35cc);
 }
 CLEAN_AS(func_0209bff0, VillagerModeRecord_LoadKindText)
 

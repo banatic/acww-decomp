@@ -8,6 +8,7 @@
 #include "current_pockets.h"
 #include "date_time.h"
 #include "lookups.h"
+#include "item_record.h"
 #include "music_queue.h"
 #include "npc_id.h"
 #include "player_pockets.h"
@@ -144,9 +145,6 @@ extern u8 data_020d9f48[];
 extern u8 data_020d9f5c[];
 extern const u8 data_020d8d1c[];
 extern u8 data_021c2604[]; /* a letter */
-
-/* Item records: `*item` marked as had. */
-extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
 
 static u8 *villager_talk_talk(const VillagerTalk *talk)
 {
@@ -399,7 +397,7 @@ static int villager_talk_give(u16 *item)
         return 0;
     }
     PlayerPockets_SetSlot(pockets, item, slot, 0);
-    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), item, 0, 1);
+    ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), item, 0, 1);
     return 1;
 }
 
@@ -449,7 +447,7 @@ int VillagerTalk_SellGift(VillagerTalk *talk)
         return 0;
     }
     PlayerPockets_SetSlot(pockets, &talk->gift, slot, 0);
-    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), &talk->gift, 0, 1);
+    ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), &talk->gift, 0, 1);
     if (talk->gift_from_items == 1) {
         VillagerItems_Remove(villager_talk_record(talk), &talk->gift);
     }
@@ -498,7 +496,7 @@ int VillagerTalk_TradeItem(VillagerTalk *talk)
         return 0;
     }
     PlayerPockets_SetSlot(pockets, &talk->gift, slot, 0);
-    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), &talk->gift, 0, 1);
+    ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), &talk->gift, 0, 1);
     SceneCommand_RequestMotion13(villager_talk_scene(talk), &talk->gift, 0, 5, 0);
     VillagerTalkScene_SetCommandEnd(talk, data_020d9038);
     return 1;
@@ -611,7 +609,7 @@ int VillagerTalk_GiveItem(VillagerTalk *talk)
         return 0;
     }
     PlayerPockets_SetSlot(pockets, &item, slot, 0);
-    OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), &item, 0, 1);
+    ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), &item, 0, 1);
     SceneCommand_RequestMotion13(villager_talk_scene(talk), &item, 0, 5, 0);
     return 1;
 }

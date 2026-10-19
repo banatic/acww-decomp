@@ -9,14 +9,12 @@
 #include "clean.h"
 #include "main/dual_cell_sprite.h"
 #include "main/screen_sprite.h"
+#include "main/sound.h"
 
 static_assert(offsetof(PushButton, anim) == 0x14 && offsetof(PushButton, anim2) == 0x28, "push button");
 static_assert(offsetof(PushButton, anim_id) == 0x3c && offsetof(PushButton, unk_44) == 0x44, "push button");
 
 extern const u8 data_ov002_0220bcec[]; /* the button's vtable */
-
-/* Main's second sprite class. */
-extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
 
 /* PushButton_Contains: the size of the touch area from the screen place, both ends included. */
 #define BUTTON_SIZE 0x10
@@ -37,7 +35,7 @@ static int sub32(int a, int b)
 void PushButton_PressCue(PushButton *button)
 {
     (void) button;
-    RtcSendPxiCommand(0x33);
+    SoundSys_PlaySe(0x33);
 }
 CLEAN_AS(func_ov002_0220a4bc, PushButton_PressCue)
 
@@ -46,7 +44,7 @@ CLEAN_AS(func_ov002_0220a4bc, PushButton_PressCue)
 void PushButton_ScrollCue(PushButton *button)
 {
     (void) button;
-    RtcSendPxiCommand(0x19);
+    SoundSys_PlaySe(0x19);
 }
 CLEAN_AS(func_ov002_0220a4c8, PushButton_ScrollCue)
 

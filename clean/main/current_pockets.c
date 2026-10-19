@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "item_code.h"
+#include "item_record.h"
 #include "player_pockets.h"
 #include "player_record.h"
 #include "player_records.h"
@@ -27,8 +28,6 @@ typedef struct CurrentPocketsItemList {
     int kind;
     int group;
 } CurrentPocketsItemList;
-
-extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
 
 /* Whether the slot's item is `*item`: for codes with a variant (ItemCode_HasVariant), the item
  * without its variant is compared. */
@@ -151,11 +150,11 @@ void CurrentPockets_Set(u16 *item, int state, int slot)
         return;
     }
     if (*item != PLAYER_POCKETS_NO_ITEM && state == 0) {
-        OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), item, 0, 1);
+        ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), item, 0, 1);
     }
     if (state == 0 && *item == CURRENT_POCKETS_151F) {
         u16 mark = CURRENT_POCKETS_151F_MARK;
-        OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), &mark, 0, 1);
+        ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), &mark, 0, 1);
     }
     PlayerPockets_SetSlot(PlayerRecord_Pockets(record), item, slot, state);
 }

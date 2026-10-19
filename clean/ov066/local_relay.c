@@ -9,6 +9,7 @@
 #include "local_mp.h"
 #include "local_session.h"
 #include "local_wireless.h"
+#include "main/game_halt.h"
 
 static_assert(sizeof(LocalRelayParams) == 8, "the parameters");
 static_assert(sizeof(LocalRelayHeader) == 4, "a relay packet's head");
@@ -65,7 +66,6 @@ extern int WM_SetPortCallback(u16 port, void (*callback)(void *), void *argument
 extern int WM_SetIndCallback(void (*callback)(void *));
 extern u32 OS_DisableInterrupts(void);
 extern u32 OS_RestoreInterrupts(u32 state);
-extern void OS_Terminate(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
@@ -258,7 +258,7 @@ void LocalRelay_OnPortSent(LocalPortSent *result)
         return;
     }
     LocalWireless_Fail(result->base.result);
-    OS_Terminate();
+    GameHalt_Terminate();
 }
 CLEAN_AS(func_ov066_0226adcc, LocalRelay_OnPortSent)
 

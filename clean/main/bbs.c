@@ -3,7 +3,12 @@
 
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/mail_text.h"
+#include "main/message_query.h"
+#include "main/text_base.h"
+#include "main/text_string.h"
 
 static_assert(offsetof(BbsPost, day) == 0xc0, "post date");
 static_assert(offsetof(BbsPost, flags) == 0xc3, "post flags");
@@ -22,27 +27,6 @@ extern const TextVtable data_020e1870;  /* the wide text's vtable */
 extern const TextVtable data_020e1888;  /* the label's vtable */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_02051bf8(u16 *dst, int units); /* clears `units` 16-bit units */
-extern void func_0209df64(Date *today);         /* today's date (Calendar_Today) */
-
-/* The text base's constructors and destructors (text_label.c). */
-extern void *func_020a88ec(void *text);  /* base of a wide text */
-extern void *func_020a887c(void *text);  /* its destructor */
-extern void *func_020a8cac(void *label); /* base of a label */
-extern void func_020a8c1c(void *label);  /* empty a label's text */
-extern void *func_020a8c38(void *label); /* its destructor */
-extern void func_020edb3c(void *block);  /* operator delete */
-
-/* Load message `*number` of the message archive `archive` into a label. */
-extern int func_0203d7d8(BbsLabel *label, const u8 *number, const char *archive);
-/* Line `line` of an 8-bit text, 0 when it has none. */
-extern int func_020a7bf4(const char *text, int line);
-/* Set a label from a line func_020a7bf4 gave. */
-extern int func_020a8a34(TextLabel *label, int line);
-/* Convert a label's 8-bit text to 16 bits into a wide text. */
-extern int func_020a87e0(void *dst, void *src);
-/* Copy a text's characters into `count` 16-bit characters, padding with 0. */
-extern int func_0205182c(void *src, u16 *dst, int count);
 
 /* The vector helpers are handed the game's own post constructor and destructor. */
 extern void func_020782d0(void *post);
@@ -65,7 +49,7 @@ void Bbs_PostText(const u16 *text)
 {
     BbsPost *post = Bbs_NewPost(&data_021eed68);
     Date today;
-    func_0209df64(&today);
+    Calendar_Today(&today);
     BbsPost_Init(post, &today);
     BbsPost_MarkText(post);
     MI_CpuCopy8(text, BbsPost_Text(post), sizeof(post->text));
@@ -77,7 +61,7 @@ CLEAN_AS(func_02077ed4, Bbs_PostText)
 void *Bbs_PostMessage(int number, const char *archive)
 {
     Date today;
-    func_0209df64(&today);
+    Calendar_Today(&today);
     return Bbs_PostMessageDated(number, archive, today.year, today.month, today.day);
 }
 CLEAN_AS(func_02077f14, Bbs_PostMessage)
@@ -115,15 +99,15 @@ int BbsPost_SetTextFromLabel(BbsPost *post, BbsLabel *label)
     u16 *text = BbsPost_Text(post);
     int length = 0;
     for (int i = 0; i < BBS_POST_LINES; i++) {
-        int line = func_020a7bf4(label->text, i);
-        if (line == 0) {
-            func_020a8c1c(&line_label);
+        const char *line = (const char *) (uintptr_t) MessageQuery_Line((int) (uintptr_t) label->text, i);
+        if (line == NULL) {
+            TextBase_Clear(&line_label);
             text[length++] = NEWLINE;
             continue;
         }
-        func_020a8a34(&line_label, line);
-        func_020a87e0(&line_text, &line_label);
-        func_0205182c(&line_text, &text[length], BBS_LINE_LENGTH);
+        TextBase_SetLine((TextBase *) (void *) &line_label, line);
+        TextBase_BytesToWide((WideTextBase *) (void *) &line_text, (TextBase *) (void *) &line_label);
+        TextString_CopyWideOut((TextObject *) (void *) &line_text, &text[length], BBS_LINE_LENGTH);
         int line_length = WideText_Length(&line_text);
         length += line_length;
         if (line_length != BBS_LINE_LENGTH) {
@@ -156,8 +140,8 @@ CLEAN_AS(func_0207801c, BbsWideText_Capacity)
 BbsWideText *BbsWideText_DestructDelete(BbsWideText *text)
 {
     text->vtable = &data_020e1870;
-    func_020a887c(text);
-    func_020edb3c(text);
+    TextBase_WideDestruct(text);
+    Heap_OperatorDeleteB(text);
     return text;
 }
 CLEAN_AS(func_02078020, BbsWideText_DestructDelete)
@@ -166,7 +150,7 @@ CLEAN_AS(func_02078020, BbsWideText_DestructDelete)
 BbsWideText *BbsWideText_Destruct(BbsWideText *text)
 {
     text->vtable = &data_020e1870;
-    func_020a887c(text);
+    TextBase_WideDestruct(text);
     return text;
 }
 CLEAN_AS(func_02078040, BbsWideText_Destruct)
@@ -174,7 +158,7 @@ CLEAN_AS(func_02078040, BbsWideText_Destruct)
 /* func_02078058 */
 BbsWideText *BbsWideText_Construct(BbsWideText *text)
 {
-    func_020a88ec(text);
+    TextBase_WideConstruct(text);
     text->vtable = &data_020e1870;
     return text;
 }
@@ -186,7 +170,7 @@ CLEAN_AS(func_02078058, BbsWideText_Construct)
 void BbsLabel_LoadMessage(BbsLabel *label, int number, const char *archive)
 {
     u8 message = (u8) number;
-    func_0203d7d8(label, &message, archive);
+    MailText_LoadBbs(label, &message, archive);
 }
 CLEAN_AS(func_02078070, BbsLabel_LoadMessage)
 
@@ -208,8 +192,8 @@ CLEAN_AS(func_02078094, BbsLabel_Capacity)
 BbsLabel *BbsLabel_DestructDelete(BbsLabel *label)
 {
     label->vtable = &data_020e1888;
-    func_020a8c38(label);
-    func_020edb3c(label);
+    TextBase_Destruct((TextBase *) (void *) label);
+    Heap_OperatorDeleteB(label);
     return label;
 }
 CLEAN_AS(func_02078098, BbsLabel_DestructDelete)
@@ -218,7 +202,7 @@ CLEAN_AS(func_02078098, BbsLabel_DestructDelete)
 BbsLabel *BbsLabel_Destruct(BbsLabel *label)
 {
     label->vtable = &data_020e1888;
-    func_020a8c38(label);
+    TextBase_Destruct((TextBase *) (void *) label);
     return label;
 }
 CLEAN_AS(func_020780b8, BbsLabel_Destruct)
@@ -226,9 +210,9 @@ CLEAN_AS(func_020780b8, BbsLabel_Destruct)
 /* func_020780d0: an empty label. */
 BbsLabel *BbsLabel_Construct(BbsLabel *label)
 {
-    func_020a8cac(label);
+    TextBase_Construct(label);
     label->vtable = &data_020e1888;
-    func_020a8c1c(label);
+    TextBase_Clear(label);
     return label;
 }
 CLEAN_AS(func_020780d0, BbsLabel_Construct)
@@ -394,7 +378,7 @@ void BbsPost_Init(BbsPost *post, const Date *date)
     post->month = date->month;
     post->year = date->year;
     post->flags = 0;
-    func_02051bf8(post->text, BBS_POST_LENGTH);
+    TextString_ClearChars(post->text, BBS_POST_LENGTH);
 }
 CLEAN_AS(func_020782a0, BbsPost_Init)
 

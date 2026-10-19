@@ -301,7 +301,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd6cEv, Fox_UpdateTalk)
  * (Fox_IsAfterSix) says no, clearing bit 0 of the character's flags unless the visit record
  * said 2; else FOX_MESSAGE_VISIT_2 when it did, FOX_MESSAGE_AGAIN when func_020ae2c4 agrees,
  * else FOX_MESSAGE_FIRST. The link's request is raised and func_02066914 runs on the receiver.
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Fox_EnterTalk(Fox *fox)
 {
     typedef int (*FoxSlot)(Fox *fox);

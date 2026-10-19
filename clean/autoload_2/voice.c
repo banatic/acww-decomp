@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "sound_system.h"
 
 /* The sound system (the only SoundSystem the game has). */
@@ -19,8 +20,6 @@ extern u16 data_021fd1b4;
 extern u16 data_021fd1b8;
 /* The vowel sample (1 to 5) of each sample: a lengthening mark repeats the last vowel. */
 extern const u8 data_0213e85c[];
-
-extern void OS_Terminate(void);
 
 /* The characters the voice treats apart (UTF-16). */
 enum {
@@ -123,7 +122,7 @@ static int is_long_mark(unsigned ch)
 void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch, unsigned short ch2)
 {
     if (system->voice_type == 5) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
 
     switch (action) {

@@ -60,7 +60,7 @@ void VillagerImpression_LoadText(u8 *villager, int label, u8 *record)
     u32 impression = VillagerMemoryEntry_Impression((VillagerMemory *) (void *) memory);
     if (impression < VILLAGER_IMPRESSION_COUNT) {
         char number = (char) impression;
-        MessageReader_LoadMessage(label, (unsigned char *) &number, (int) (uintptr_t) data_020e195c);
+        MessageReader_LoadMessage((void *) (uintptr_t) label, (unsigned char *) &number, data_020e195c);
     }
 }
 CLEAN_AS(func_0207e008, VillagerImpression_LoadText)

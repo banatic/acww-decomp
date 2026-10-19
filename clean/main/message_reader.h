@@ -73,8 +73,8 @@ int MessageReader_LoadNickname(void *text, void *context, unsigned char *message
  * files, decoded, or plain. */
 void MessageReader_LoadGeneral(void *text, int index, int decoded);
 void *MessageReader_SetPart(int index, int source);
-int MessageReader_LoadMenuMessage(int text, unsigned char *message, const char *name);
+int MessageReader_LoadMenuMessage(void *text, unsigned char *message, const char *name);
 void *MessageReader_LoadDecoded(void *text, unsigned char *message, const char *name);
-int MessageReader_LoadMessage(int text, unsigned char *message, int name);
+int MessageReader_LoadMessage(void *text, unsigned char *message, const char *name);
 
 #endif

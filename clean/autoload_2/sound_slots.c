@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "sound.h"
 
 static_assert(sizeof(SoundSlot) == 0xc, "a slot");
@@ -34,7 +35,6 @@ extern SoundGroup data_021fd054;
 /* The tracks the slots change: 0-3 (0x000f). */
 extern const u16 data_0213e858;
 
-extern void OS_Terminate(void);
 extern int NNS_SndPlayerStopSeq(SoundHandle *handle, int fade_frames);
 extern void NNS_SndHandleReleaseSeq(SoundHandle *handle);
 extern const SoundSeqParam *NNS_SndArcGetSeqArcParam(int seq_arc, int index);
@@ -93,7 +93,7 @@ CLEAN_AS(func_020ef1b0, SoundSlots_StopAll)
 void SoundSlots_StopSlot(SoundSlots *slots, int index, int fade_frames)
 {
     if (index >= slots->count) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     SoundSlot_Stop(&slots->slots[index], fade_frames);
 }
@@ -105,7 +105,7 @@ void SoundSlots_ReleaseAll(SoundSlots *slots)
     int i;
 
     if (slots == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     for (i = 0; i < slots->count; i++) {
         NNS_SndHandleReleaseSeq(&slots->slots[i].handle);
@@ -188,7 +188,7 @@ static int priority_of(const SoundSlot *slot, int base)
     int priority;
 
     if (param == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     priority = base + (param->player_priority - PRIORITY_MIDDLE);
     if (priority <= 0) {
@@ -209,7 +209,7 @@ void SoundSlots_Update(SoundSlots *slots, void *source)
     int i;
 
     if (slots->count == 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if ((slots->flags & (1 << SLOTS_ENABLED)) == 0) {
         if ((slots->flags & (1 << SLOTS_UPDATED)) != 0) {
@@ -292,7 +292,7 @@ void SoundSlots_Init(SoundSlots *slots)
         SoundSlot_Init(&slots->slots[i]);
     }
     if (data_021fd054.state < 1 || data_021fd054.state >= 4) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
 }
 CLEAN_AS(func_020ef760, SoundSlots_Init)
@@ -317,7 +317,7 @@ CLEAN_AS(func_020ef7fc, SoundSlots_FindFree)
 void SoundSlots_SetEnabled(SoundSlots *slots, int enabled)
 {
     if (slots == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     SoundSlots_SetFlag(slots, SLOTS_ENABLED, enabled);
 }
@@ -328,7 +328,7 @@ CLEAN_AS(func_020ef840, SoundSlots_SetEnabled)
 void SoundSlots_SetFlag(SoundSlots *slots, int bit, int on)
 {
     if (slots == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if (on == 1) {
         slots->flags |= bit_of(bit);
@@ -346,7 +346,7 @@ void SoundSlots_ApplySlot(SoundSlots *slots, int index, int priority)
 
     (void) priority;
     if (slots->count == 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     NNS_SndPlayerSetTrackVolume(&slot->handle, data_0213e858, slot->volume);
     NNS_SndPlayerSetTrackPitch(&slot->handle, data_0213e858, (s16) slot->pitch);
@@ -360,7 +360,7 @@ void SoundSlots_StartSlot(SoundSlots *slots, int index, int priority)
     SoundSlot *slot = &slots->slots[index];
 
     if (slots->count == 0) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     NNS_SndArcPlayerStartSeqArcEx(&slot->handle, -1, -1, priority, slot->seq_arc, slot->index);
 }
@@ -378,7 +378,7 @@ CLEAN_AS(func_020ef8bc, SoundSlot_IsHeld)
 void SoundSlot_SetFlag(SoundSlot *slot, int bit, int on)
 {
     if (slot == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if (on == 1) {
         slot->flags |= bit_of(bit);
@@ -422,7 +422,7 @@ CLEAN_AS(func_020ef998, SoundSlot_SetHeld)
 void SoundSlot_Set(SoundSlot *slot, unsigned char seq_arc, unsigned short index, int volume, signed short pitch)
 {
     if (slot == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     slot->seq_arc = seq_arc;
     slot->index = index;
@@ -463,13 +463,13 @@ void SoundParams_Get(SoundParams *params)
         return;
     }
     if (data_021fd19c == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if (data_021fd1a4 == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     if (data_021fd1a0 == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     params->unk_10 = data_021fd19c(params);
     params->volume = data_021fd1a4(params);

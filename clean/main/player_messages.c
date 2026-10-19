@@ -12,6 +12,7 @@
 #include "exchange_block.h"
 #include "letter.h"
 #include "mail.h"
+#include "main/sound.h"
 #include "ov003/fish_shadow.h"
 #include "ov003/thrown_bottle.h"
 #include "ov003/town_insect.h"
@@ -58,7 +59,6 @@ extern u8 data_020e54a8;  /* types 1, 2 and 5 are ignored unless 0 */
 extern s32 data_020c904c; /* the height types 2 and 5 are placed at */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void RtcSendPxiCommand(int command);
 
 /* The handlers by type (PLAYER_MESSAGE_TYPES of them), as DS addresses. */
 extern const u32 data_020df6bc[];
@@ -102,11 +102,11 @@ void PlayerMessages_SetMode(const u8 *message, int player)
 }
 CLEAN_AS(func_02070444, PlayerMessages_SetMode)
 
-/* func_02070490: request 0x67 for mode 0 and 0x66 for the others (RtcSendPxiCommand), then set
+/* func_02070490: request 0x67 for mode 0 and 0x66 for the others (SoundSys_PlaySe), then set
  * the mode's word. REQUIRES: 0 <= mode < 5. */
 void PlayerMessages_ApplyMode(int mode)
 {
-    RtcSendPxiCommand(mode == 0 ? 0x67 : 0x66);
+    SoundSys_PlaySe(mode == 0 ? 0x67 : 0x66);
     CatchPanel_Start(mode_object(), data_020df6a8[mode], 0);
 }
 CLEAN_AS(func_02070490, PlayerMessages_ApplyMode)

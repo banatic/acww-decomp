@@ -86,7 +86,7 @@ int NpcLookup_FormatCatchphrase(void *label, int number)
         return 0;
     }
     u8 message = (u8) number;
-    MessageReader_LoadMessage((int) (uintptr_t) label, &message, (int) (uintptr_t) data_020e19a8);
+    MessageReader_LoadMessage(label, &message, data_020e19a8);
     return 1;
 }
 CLEAN_AS(func_02082340, NpcLookup_FormatCatchphrase)
@@ -151,7 +151,7 @@ int NpcLookup_FormatPersonName(void *label, ItemCode *code)
         case NPC_CODE_KIND_SPECIAL:
             if (index < NPC_SPECIAL_COUNT) {
                 u8 message = (u8) index;
-                MessageReader_LoadMessage((int) (uintptr_t) label, &message, (int) (uintptr_t) data_020e19b8);
+                MessageReader_LoadMessage(label, &message, data_020e19b8);
                 return 1;
             }
             break;
@@ -175,7 +175,7 @@ int NpcLookup_FormatName(char *label, int number)
         return 0;
     }
     u8 message = (u8) number;
-    MessageReader_LoadMessage((int) (uintptr_t) label, &message, (int) (uintptr_t) data_020e19c8);
+    MessageReader_LoadMessage(label, &message, data_020e19c8);
     return 1;
 }
 CLEAN_AS(func_0208249c, NpcLookup_FormatName)

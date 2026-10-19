@@ -414,7 +414,7 @@ void ReactionNpcTalk_SetAnswers(ReactionNpcTalk *talk, int way)
         TalkAnswer *answer = TalkAnswers_Answer(answers, i);
         u8 message = (u8) reaction;
         const char *file = way != REACTION_NPC_ANSWERS_SLOTS ? data_ov088_02279db4 : data_ov088_02279da8;
-        MessageReader_LoadMessage((int) (u32) (uintptr_t) &text, &message, (int) (u32) (uintptr_t) file);
+        MessageReader_LoadMessage(&text, &message, file);
         TextBase_Copy(TalkAnswers_Text(answer), (TextBase *) (void *) &text);
     }
 

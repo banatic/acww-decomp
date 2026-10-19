@@ -22,7 +22,8 @@
 
 typedef struct ModelObject {
     const void *vtable;     /* 0x00 */
-    u8 unk_04[4];           /* 0x04 */
+    u16 flags;              /* 0x04: the derived classes' (LAYERED_MODEL_RELEASE_*), 0 at first */
+    u8 unk_06[2];           /* 0x06 */
     G3dRenderObject render; /* 0x08 */
     u8 *model;              /* 0x5c: the model resource drawn (NNSG3dResMdl) */
     void *texture;          /* 0x60: the texture resource kept with it, by func_02055f40 */

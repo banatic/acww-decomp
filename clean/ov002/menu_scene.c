@@ -6,7 +6,14 @@
 
 #include "autoload_2/heap.h"
 #include "autoload_2/input.h"
+#include "autoload_2/process.h"
 #include "clean.h"
+#include "itcm/process_phases.h"
+#include "main/control_mode.h"
+#include "main/game_process.h"
+#include "main/menu_backdrop.h"
+#include "main/overlay_groups.h"
+#include "main/sound.h"
 
 static_assert(offsetof(MenuScene, keys) == 0x50 && sizeof(KeyRepeat) == 0x14, "key repeat");
 static_assert(offsetof(MenuScene, link) == 0x64 && offsetof(MenuScene, wipe) == 0x70, "link and wipe");
@@ -17,35 +24,22 @@ extern const u8 data_020da13c[];       /* autoload_2's scene vtable */
 
 extern Heap *data_021c9b28; /* the heap the menu scenes are allocated from */
 
-/* autoload_2's scene class */
-extern void *func_020ee660(void *scene);         /* constructor */
-extern void func_020ee62c(void *scene);          /* destructor */
-extern int func_020ee61c(void);                  /* returns 1 */
-extern void func_020ee4d8(void *scene, int how); /* slot 0x14 */
-extern int func_020ee550(void *scene);           /* slot 0x10 */
-extern void *func_020ee45c(void *scene);         /* the word at 0x10 of the object at 0x14, or 0 */
-extern void func_020ee3c0(void *scene, unsigned short value);
-extern void func_020ee324(void *scene, unsigned short value);
-extern void func_0202f144(void *scene, int how);
-extern void func_01ffd418(void *scene); /* does nothing */
-extern int func_01ffd41c(unsigned char *scene);
-
-/* main's list at data_021cfca0 */
-extern void func_02070204(void *link); /* adds */
-extern void func_020701e4(void *link); /* removes */
-
-/* input, and the command the input checks send */
+/* The pen and the buttons. */
 extern u8 data_021fbdd8; /* the pen is down */
 extern u8 data_021fbddc; /* the pen went down or up this frame */
 extern PadState data_021fbe40;
-extern void func_0206fe90(void);            /* clears state flag 2, sets the word at 0x021d36a8 to 2 */
-extern void func_0206fe7c(void);            /* sets state flag 2, sets the word at 0x021d36a8 to 1 */
-extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
 
-/* what MenuScene_Wait waits on */
-extern int func_0206f258(void);  /* data_021cfc20 is 5, 6 or 7 */
-extern int func_0206f244(void);  /* data_021cfc20 is 12 */
-extern void func_0206ef70(void); /* clears data_021cfc18, data_021cfc1c and data_021cfc20 */
+/* The scene as the process of autoload_2 it derives from (its first 0x50 bytes). */
+static Process *process_of(MenuScene *scene)
+{
+    return (Process *) (void *) scene;
+}
+
+/* The scene's entry in main's list of overlay group owners. */
+static OverlayGroupsOwner *owner_of(MenuScene *scene)
+{
+    return (OverlayGroupsOwner *) (void *) &scene->link;
+}
 
 #define WIPE_MARGIN 0x30
 #define BUTTONS_ALL 0xfff
@@ -227,34 +221,34 @@ u32 MenuScene_LatchRepeatedKeys(MenuScene *scene)
 }
 CLEAN_AS(func_ov002_02208008, MenuScene_LatchRepeatedKeys)
 
-/* func_ov002_02208014: when the pen touched the screen this frame, clears state flag 2 and
- * marks the input as by touch (func_0206fe90), sends command 0x866 and returns 1; else 0. The
+/* func_ov002_02208014: when the pen touched the screen this frame, clears state flag 2 and marks
+ * the input as by touch (ControlMode_UseTouch), sends command 0x866 and returns 1; else 0. The
  * scene is not read. */
 int MenuScene_TakeTouch(MenuScene *scene)
 {
     (void) scene;
     if (data_021fbdd8 != 0 && data_021fbddc != 0) {
-        func_0206fe90();
-        RtcSendPxiCommand(0x866);
+        ControlMode_UseTouch();
+        SoundSys_PlaySe(0x866);
         return 1;
     }
     return 0;
 }
 CLEAN_AS(func_ov002_02208014, MenuScene_TakeTouch)
 
-/* func_ov002_02208054: when a button was pressed this frame, sets state flag 2 and marks the
- * input as by buttons (func_0206fe7c), sends command 0x866 (and 0x3b with `also_command_3b`)
- * and returns 1; else 0. The scene is not read. */
+/* func_ov002_02208054: when a button was pressed this frame, sets state flag 2 and marks the input
+ * as by buttons (ControlMode_UseButtons), sends command 0x866 (and 0x3b with `also_command_3b`) and
+ * returns 1; else 0. The scene is not read. */
 int MenuScene_TakeButtons(MenuScene *scene, int also_command_3b)
 {
     (void) scene;
     if ((data_021fbe40.pressed & BUTTONS_ALL) == 0) {
         return 0;
     }
-    func_0206fe7c();
-    RtcSendPxiCommand(0x866);
+    ControlMode_UseButtons();
+    SoundSys_PlaySe(0x866);
     if (also_command_3b) {
-        RtcSendPxiCommand(0x3b);
+        SoundSys_PlaySe(0x3b);
     }
     return 1;
 }
@@ -381,11 +375,11 @@ CLEAN_AS(func_ov002_02208164, MenuScene_Phase1)
  * request (phase 5). */
 int MenuScene_Wait(MenuScene *scene)
 {
-    if (func_0206f258()) {
+    if (MenuBackdrop_IsUp()) {
         MenuScene_SetPhase(scene, MENU_SCENE_PHASE_STATES);
     }
-    if (func_0206f244()) {
-        func_0206ef70();
+    if (MenuBackdrop_IsClosed()) {
+        MenuBackdrop_Reset();
         MenuScene_SetPhase(scene, MENU_SCENE_PHASE_DELETE);
     }
     return 1;
@@ -395,15 +389,15 @@ CLEAN_AS(func_ov002_02208168, MenuScene_Wait)
 /* func_ov002_02208198 (slot 0x20) */
 void MenuScene_Slot20(MenuScene *scene)
 {
-    func_01ffd418(scene);
+    Process_AfterExecute(process_of(scene));
 }
 CLEAN_AS(func_ov002_02208198, MenuScene_Slot20)
 
 /* func_ov002_022081a0 (slot 0x1c): whether the scene's byte at 0x0f is 0 and bit 1 of its byte
- * at 0x13 clear (func_01ffd41c). */
+ * at 0x13 clear (Process_CanExecute). */
 int MenuScene_Slot1c(MenuScene *scene)
 {
-    return func_01ffd41c((unsigned char *) scene) != 0;
+    return Process_CanExecute(process_of(scene)) != 0;
 }
 CLEAN_AS(func_ov002_022081a0, MenuScene_Slot1c)
 
@@ -411,41 +405,40 @@ CLEAN_AS(func_ov002_022081a0, MenuScene_Slot1c)
 void MenuScene_Slot14(MenuScene *scene, int how)
 {
     if (how == 2) {
-        func_020701e4(&scene->link);
+        OverlayGroups_RemoveOwner(owner_of(scene));
     }
-    func_020ee4d8(scene, how);
+    Process_AfterDelete(process_of(scene), how);
 }
 CLEAN_AS(func_ov002_022081b8, MenuScene_Slot14)
 
 /* func_ov002_022081dc (slot 0x10): the base's answer, as 0 or 1. */
 int MenuScene_Slot10(MenuScene *scene)
 {
-    return func_020ee550(scene) != 0;
+    return Process_CanDelete(process_of(scene)) != 0;
 }
 CLEAN_AS(func_ov002_022081dc, MenuScene_Slot10)
 
-/* func_ov002_022081f4 (slot 0x08): joins main's list; with `how` 2 and an object at 0x14 that
- * has one, takes the halfwords at 0x34 and 0x44 of that object, plus one, as its own two
- * values (func_020ee3c0, func_020ee324). Then the base's. */
+/* func_ov002_022081f4 (slot 0x08): joins main's list; with `how` 2 and a parent process, takes
+ * the parent's execute and draw orders, plus one, as its own. Then the base's. */
 void MenuScene_Slot08(MenuScene *scene, int how)
 {
-    func_02070204(&scene->link);
+    OverlayGroups_AddOwner(owner_of(scene));
     if (how == 2) {
-        const u8 *other = func_020ee45c(scene);
-        if (other != NULL) {
-            func_020ee3c0(scene, (unsigned short) (*(const u16 *) (other + 0x34) + 1));
-            func_020ee324(scene, (unsigned short) (*(const u16 *) (other + 0x44) + 1));
+        const Process *parent = Process_GetParent(process_of(scene));
+        if (parent != NULL) {
+            Process_SetExecuteOrder(process_of(scene), (u16) (parent->link.order + 1));
+            Process_SetDrawOrder(process_of(scene), (u16) (parent->draw_link.order + 1));
         }
     }
-    func_0202f144(scene, how);
+    GameProcess_AfterCreate(process_of(scene), how);
 }
 CLEAN_AS(func_ov002_022081f4, MenuScene_Slot08)
 
 /* func_ov002_0220823c (slot 0x04): links the scene to main's list and sets the usual key
- * repeat. Returns 0 if func_020ee61c does (it never does). */
+ * repeat. Returns 0 if Process_CanCreateDefault does (it never does). */
 int MenuScene_Setup(MenuScene *scene)
 {
-    if (!func_020ee61c()) {
+    if (!Process_CanCreateDefault()) {
         return 0;
     }
     scene->list_value = (u8) scene->unk_08;
@@ -463,7 +456,7 @@ MenuScene *MenuScene_DestroyBase(MenuScene *scene)
     Wipe_Destroy(&scene->wipe);
     KeyRepeat_Destroy(&scene->keys);
     scene->vtable = data_020da13c;
-    func_020ee62c(scene);
+    Process_Destruct(process_of(scene));
     return scene;
 }
 CLEAN_AS(func_ov002_0220826c, MenuScene_DestroyBase)
@@ -484,7 +477,7 @@ MenuScene *MenuScene_Destroy(MenuScene *scene)
     Wipe_Destroy(&scene->wipe);
     KeyRepeat_Destroy(&scene->keys);
     scene->vtable = data_020da13c;
-    func_020ee62c(scene);
+    Process_Destruct(process_of(scene));
     return scene;
 }
 CLEAN_AS(func_ov002_022082d8, MenuScene_Destroy)
@@ -493,7 +486,7 @@ CLEAN_AS(func_ov002_022082d8, MenuScene_Destroy)
  * QUIRK: stores the base's vtable before its own, as a C++ constructor does. */
 MenuScene *MenuScene_Construct(MenuScene *scene)
 {
-    func_020ee660(scene);
+    Process_Construct(process_of(scene));
     scene->vtable = data_020da13c;
     scene->vtable = data_ov002_0220bb24;
     KeyRepeat_Construct(&scene->keys);

@@ -5517,7 +5517,6 @@ static_assert(sizeof(State2Work) <= sizeof(FieldActorWork), "state 2 work");
 extern u8 data_ov004_02259a08;
 /* 2 while the player may steer. */
 extern u8 data_021c75b8;
-extern int DWC_Alloc(int a, int b);
 
 static State2Work *state2_work(FieldActor *actor)
 {
@@ -5546,8 +5545,8 @@ void FieldActor_UpdateState2(FieldActor *actor)
 }
 CLEAN_AS(func_0200d1e4, FieldActor_UpdateState2)
 
-/* func_0200d258: another console's actor: when it should walk, state 3 (priority 1). Unless
- * already set, the word at 0x7f8 becomes 1 when DWC_Alloc(0x1b, 4) answers nonzero, or when
+/* func_0200d258: another console's actor: when it should walk, state 3 (priority 1). Unless already
+ * set, the word at 0x7f8 becomes 1 when PlayerActorOps_TestFlag(0x1b, 4) answers nonzero, or when
  * func_02096518 gives the player's state as 2 or 0x40. */
 void FieldActor_EndState2(FieldActor *actor, const u8 *moved)
 {
@@ -5557,7 +5556,7 @@ void FieldActor_EndState2(FieldActor *actor, const u8 *moved)
     if (actor->unk_7F8 != 0) {
         return;
     }
-    if (DWC_Alloc(0x1b, 4)) {
+    if (PlayerActorOps_TestFlag(0x1b, 4)) {
         actor->unk_7F8 = 1;
     } else {
         int remote_state;

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "sound_position.h"
 #include "sound_system.h"
 
@@ -22,7 +23,6 @@ static_assert(sizeof(SoundObject10) == 0x14, "SoundObject10 size");
 
 extern SoundSystem data_021fd1bc;
 
-extern void OS_Terminate(void);
 extern int NNS_SndArcPlayerStartSeq(SoundHandle *handle, int seq_no);
 extern int NNS_SndArcPlayerStartSeqArc(SoundHandle *handle, int seq_arc, int index);
 extern void NNS_SndHandleReleaseSeq(SoundHandle *handle);
@@ -422,7 +422,7 @@ int SoundObject_PlaySeq(SoundObjectBody *obj, int number, SoundHandle *handle)
 {
     (void) obj;
     if (handle == NULL) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
     return NNS_SndArcPlayerStartSeqArc(handle, OBJECT_SEQ_ARC, number % 1000);
 }

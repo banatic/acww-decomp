@@ -97,8 +97,6 @@ extern Vec3 data_021fbee8;
 /* "st_general", the name of a message archive. */
 extern const char data_020d8d0c[];
 
-extern void _ZN13Base_0206699417vfunc_02066994_08Ev(void *receiver);
-
 /* The text objects, as stack space for the game's constructors. */
 typedef struct SceneBaseText {
     u32 words[0x20 / 4];
@@ -507,7 +505,7 @@ void SceneBase_PutCount(SceneBase *scene, int value, int slot, int format, u8 wi
         SceneBaseLabel unit;
         u8 message = SCENE_BASE_COUNT_UNIT_MESSAGE;
         MessagePart_Construct((MessagePart *) &unit);
-        MessageReader_LoadMessage((int) (uintptr_t) &unit, &message, (int) (uintptr_t) data_020d8d0c);
+        MessageReader_LoadMessage(&unit, &message, data_020d8d0c);
         TextBase_AppendText(&text, (TextBase *) &unit);
         kind = SCENE_BASE_TEXT_KIND_LABEL;
         MessagePart_Destruct((MessagePart *) &unit);
@@ -692,7 +690,7 @@ CLEAN_AS(func_02016128, SceneBase_Nothing80)
  * QUIRK: the first speaker is kept. */
 void SceneBase_Reset(SceneBase *scene)
 {
-    _ZN13Base_0206699417vfunc_02066994_08Ev(scene);
+    TalkReceiver_Reset((TalkReceiver *) (void *) scene);
     scene->motion_arg = 0;
     scene->speakers[1] = NULL;
     scene->focus = SCENE_BASE_FOCUS_FIRST;

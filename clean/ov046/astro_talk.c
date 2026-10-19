@@ -958,7 +958,7 @@ void AstroTalk_ListConstellations(AstroTalk *talk)
     ConstellationsLabel_Construct(&name);
     ConstellationsLabel_Construct(&suffix);
     message = ASTRO_TALK_ANSWER_SUFFIX;
-    MessageReader_LoadMenuMessage((int) (uintptr_t) &suffix, &message, NULL);
+    MessageReader_LoadMenuMessage(&suffix, &message, NULL);
     for (int i = 0; i < ASTRO_TALK_LIST_ENTRIES; i++) {
         talk->listed[i] = -1;
     }

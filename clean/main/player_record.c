@@ -502,10 +502,6 @@ extern void func_020051b0(void *item);
 extern u8 data_021dc7bc[];                              /* the town's four records */
 extern const int data_020d19c4[VILLAGER_PRESENT_LISTS]; /* the item lists of a villager's present */
 
-/* Set (`set`) or clear an item's bit in the record of items; mode 0 refuses some items. The
- * symbol's name is wrong: this is the game's code. */
-extern int OSi_DoUnlockByWord__main_0203cd2c(u8 *items, u16 *item, int mode, int set);
-
 static u16 *player_record_u16(u8 *record, u32 offset)
 {
     return (u16 *) (void *) (record + offset);
@@ -604,7 +600,7 @@ void PlayerRecord_ResetForNewTown(u8 *record)
         }
         if (*slot >= CLOTHES_FIRST && *slot <= CLOTHES_LAST) {
             PlayerPockets_SetSlot(pockets, slot, i, SLOT_STATE_1);
-            OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), slot, 0, 1);
+            ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), slot, 0, 1);
         }
     }
 
@@ -676,7 +672,7 @@ void PlayerRecord_NewDayPocketItems(u8 *record)
 
         PlayerPockets_SetSlot(pockets, &item, i, SLOT_STATE_0);
         if (item != PLAYER_RECORD_NO_ITEM) {
-            OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(record), &item, 0, 1);
+            ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), &item, 0, 1);
         }
     }
 }

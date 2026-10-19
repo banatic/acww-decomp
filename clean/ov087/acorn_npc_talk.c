@@ -172,7 +172,7 @@ static int act_write_fortune(u8 *record)
     for (int i = 0; i < ACORN_NPC_FORTUNE_PARTS; i++) {
         u8 number = (u8) message;
         const AcornNpcFortunePart *part = &data_ov087_02279304[i];
-        MessageReader_LoadMessage((int) (u32) (uintptr_t) &text, &number, (int) (u32) (uintptr_t) part->file);
+        MessageReader_LoadMessage(&text, &number, part->file);
         MailText_SetPartText(part->part, &text);
         message = (kind - ACT_FORTUNE_KIND_FIRST) * ACT_FORTUNE_LINES_PER_KIND;
         message += (int) MainRandom_Below(ACT_FORTUNE_LINES_PER_KIND);

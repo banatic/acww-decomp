@@ -2,6 +2,7 @@
 #include "vram_frame.h"
 
 #include "clean.h"
+#include "main/game_halt.h"
 
 /* The banks GX_GetBankForTex reports: A, B and C, or A to D. */
 #define VRAM_FRAME_BANKS_ABC 7
@@ -11,7 +12,6 @@
 /* What a failed 4x4 allocation gives. */
 #define VRAM_FRAME_FAILED_INDEXES 0x20000
 
-extern void OS_Terminate(void);
 extern void NNS_GfdInitFrmTexVramManager(int slots, int use_as_default);
 extern void NNS_GfdInitFrmPlttVramManager(int size, int use_as_default);
 extern int GX_GetSizeOfTexPltt(void);
@@ -68,7 +68,7 @@ void VramFrame_Init(void)
         data_021f6c78 = 0x40000;
         data_021f6c74 = banks == VRAM_FRAME_BANKS_ABCD ? 0x80000 : 0x60000;
     } else {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
 }
 CLEAN_AS(func_020b947c, VramFrame_Init)
@@ -120,7 +120,7 @@ u32 VramFrame_TakePltt(u32 size)
     data_021f6c70 = end;
     if (end >= data_021f6c94) {
         data_021f6c70 = address;
-        OS_Terminate();
+        GameHalt_Terminate();
         return 0;
     }
     return address;
@@ -161,7 +161,7 @@ void VramFrame_TakeTex(u32 *address, u32 size)
         return;
     }
     VramFrame_ReportFull();
-    OS_Terminate();
+    GameHalt_Terminate();
     *address = 0;
 }
 CLEAN_AS(func_020b962c, VramFrame_TakeTex)
@@ -186,7 +186,7 @@ void VramFrame_TakeTex4x4(u32 *texels, u32 *indexes, u32 size)
         data_021f6c88 += index_size;
     } else {
         VramFrame_ReportFull();
-        OS_Terminate();
+        GameHalt_Terminate();
         *texels = 0;
         *indexes = VRAM_FRAME_FAILED_INDEXES;
     }

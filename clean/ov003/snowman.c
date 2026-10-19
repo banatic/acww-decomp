@@ -120,8 +120,8 @@ static void *snowman_receiver(Snowman *snowman)
     return snowman != NULL ? (u8 *) snowman + SNOWMAN_RECEIVER_OFFSET : NULL;
 }
 
-/* func_ov003_02219e64 (update of SNOWMAN_TALK_END): once the link has closed, hands the
- * receiver back (func_0203ee08) and lets the scene go on (func_0203e020). Its state stays
+/* func_ov003_02219e64 (update of SNOWMAN_TALK_END): once the link has closed, hands the receiver
+ * back (SceneObjectBase_ReleaseReceiver) and lets the scene go on (func_0203e020). Its state stays
  * SNOWMAN_TALK_END until the scene sets another. */
 void SnowmanTalk_UpdateEnd(Snowman *snowman)
 {
@@ -148,11 +148,12 @@ void SnowmanTalk_UpdateOpen(Snowman *snowman)
 }
 CLEAN_AS(func_ov003_02219e98, SnowmanTalk_UpdateOpen)
 
-/* func_ov003_02219ebc (entry of SNOWMAN_TALK_OPEN): takes the receiver (func_0203ee14), names
- * it "sp_npc_snowman" and gives it one of the three messages of the snowman's kind, drawn at
- * random: 0-0xb while SNOWMAN_FLAG_FIRST_TALK is set, else 0xc-0x17. The link's request is
- * raised, the receiver's speaker name is set from "st_spnpc_name", and the flag is cleared.
- * REQUIRES: the receiver has a link once func_0203ee14 has taken it. */
+/* func_ov003_02219ebc (entry of SNOWMAN_TALK_OPEN): takes the receiver
+ * (SceneObjectBase_TakeReceiver), names it "sp_npc_snowman" and gives it one of the three messages
+ * of the snowman's kind, drawn at random: 0-0xb while SNOWMAN_FLAG_FIRST_TALK is set, else
+ * 0xc-0x17. The link's request is raised, the receiver's speaker name is set from "st_spnpc_name",
+ * and the flag is cleared.
+ * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int SnowmanTalk_EnterOpen(Snowman *snowman)
 {
     SceneObjectBase_TakeReceiver((SceneObjectBase *) snowman, snowman_receiver(snowman));
@@ -170,7 +171,7 @@ int SnowmanTalk_EnterOpen(Snowman *snowman)
     char number = SNOWMAN_NAME_MESSAGE;
     SnowmanNameText name;
     MessageText256_Construct((MessageText256 *) &name);
-    MessageReader_LoadMessage((int) (uintptr_t) &name, (unsigned char *) &number, (int) (uintptr_t) data_ov003_0223839c);
+    MessageReader_LoadMessage(&name, (unsigned char *) &number, data_ov003_0223839c);
     const char *text = ((SnowmanTextBuffer) (uintptr_t) name.vtable->buffer)(&name);
     TalkReceiver_SetSpeaker((TalkReceiver *) &snowman->receiver_vtable, text, 0);
     snowman->flags &= (u16) ~SNOWMAN_FLAG_FIRST_TALK;

@@ -134,7 +134,7 @@ static_assert(offsetof(CafeMaster, look_timer) == 0x778, "look timer");
 static_assert(offsetof(CafeMaster, talk_frames) == 0x77c, "talk frames");
 static_assert(offsetof(CafeMaster, on_beat) == 0x77e, "on beat");
 static_assert(sizeof(CafeMaster) == 0x780, "the size func_ov004_02224c68 allocates");
-static_assert(0xec + offsetof(LayeredModel, base_frames) + offsetof(FrameCtrl, frame) == CAFE_MASTER_MODEL_FRAME,
+static_assert(0xec + offsetof(LayeredModel, base.frames) + offsetof(FrameCtrl, frame) == CAFE_MASTER_MODEL_FRAME,
               "model frame");
 
 /* The other parts of the special character's scene object used here, by place (main's
@@ -1297,17 +1297,17 @@ int CafeMaster_Update(CafeMaster *master)
     LayeredModel *model = cm_model_of(master);
     if (Math_IsBetween(Music_CurrentMusic(), CAFE_MASTER_BEAT_MUSIC_FIRST, CAFE_MASTER_BEAT_MUSIC_LAST)) {
         if (master->on_beat == 0) {
-            if ((u16) (model->base_frames.frame >> 12) != 0) {
-                Ramp_Start((Ramp *) (void *) &model->base_ramp, CAFE_MASTER_BEAT_BLEND_FRAMES);
+            if ((u16) (model->base.frames.frame >> 12) != 0) {
+                Ramp_Start((Ramp *) (void *) &model->base.ramp, CAFE_MASTER_BEAT_BLEND_FRAMES);
             }
             master->on_beat = 1;
         }
         const int *entry = SoundSys_FirstEntryData();
         if (entry != NULL && ((const s8 *) entry)[3] != CAFE_MASTER_SOUND_STOPPED) {
-            model->base_frames.frame = 0;
-            model->base_frames.speed = entry[4];
+            model->base.frames.frame = 0;
+            model->base.frames.speed = entry[4];
             LayeredModel_UpdateB(model);
-            model->base_frames.speed = 0;
+            model->base.frames.speed = 0;
         }
     } else {
         master->on_beat = 0;

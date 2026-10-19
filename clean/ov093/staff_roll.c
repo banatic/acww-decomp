@@ -368,7 +368,7 @@ int StaffRoll_Line(StaffRoll *self, int line)
 {
     int message = line / STAFF_ROLL_LINES_PER_MESSAGE;
     unsigned char number = (unsigned char) message;
-    MessageReader_LoadMessage((int) (uintptr_t) &self->text, &number, (int) (uintptr_t) data_ov093_0229990c);
+    MessageReader_LoadMessage(&self->text, &number, data_ov093_0229990c);
     return MessageQuery_Line((int) (uintptr_t) self->text.chars, line - message * STAFF_ROLL_LINES_PER_MESSAGE);
 }
 CLEAN_AS(func_ov093_02299338, StaffRoll_Line)

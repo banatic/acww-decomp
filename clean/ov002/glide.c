@@ -9,6 +9,7 @@
 #include "main/cell_anim.h"
 #include "main/cell_layer_sprite.h"
 #include "main/screen_sprite.h"
+#include "main/sound.h"
 
 static_assert(sizeof(Glide) == 0x18 && offsetof(Glide, mode) == 0x15, "glide");
 static_assert(offsetof(Glider, anim) == 0x0c && offsetof(Glider, offset_x) == 0x20, "glider");
@@ -19,9 +20,6 @@ extern const u8 data_ov002_0220bc40[]; /* the Glide's vtable */
 extern const u8 data_ov002_0220bc88[]; /* the Glider's vtable */
 extern const u8 data_ov002_0220bc50[]; /* Glider0's vtable */
 extern const u8 data_ov002_0220bc6c[]; /* Glider1's vtable */
-
-/* Main's sprite (glide.h). */
-extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
 
 static int add32(int a, int b)
 {
@@ -342,7 +340,7 @@ void Glider_EaseToByDistance(Glider *glider, int x, int y, int steps, u8 near_st
 {
     int place_x = ScreenSprite_X((ScreenSprite *) (void *) glider);
     int dx = sub32(x, add32(glider->offset_x, place_x));
-    RtcSendPxiCommand(0xb);
+    SoundSys_PlaySe(0xb);
     if (dx >= -NEAR_DISTANCE && dx <= NEAR_DISTANCE) {
         int place_y = ScreenSprite_Y((ScreenSprite *) (void *) glider);
         int dy = sub32(y, add32(glider->offset_y, place_y));
@@ -358,7 +356,7 @@ CLEAN_AS(func_ov002_0220a000, Glider_EaseToByDistance)
 void Glider_EaseTo(Glider *glider, int x, int y, int steps, int cue)
 {
     if (cue) {
-        RtcSendPxiCommand(0xb);
+        SoundSys_PlaySe(0xb);
     }
     Glide_EaseTo(&glider->glide, x, y, steps);
 }
@@ -368,7 +366,7 @@ CLEAN_AS(func_ov002_0220a05c, Glider_EaseTo)
  * returns the vertical step. */
 int Glider_MoveTo(Glider *glider, int x, int y, int steps)
 {
-    RtcSendPxiCommand(0xb);
+    SoundSys_PlaySe(0xb);
     return Glide_MoveTo(&glider->glide, x, y, steps);
 }
 CLEAN_AS(func_ov002_0220a08c, Glider_MoveTo)

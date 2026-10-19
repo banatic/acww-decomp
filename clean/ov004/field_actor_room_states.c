@@ -1661,7 +1661,7 @@ static_assert(offsetof(FieldActor, has_other) == 0x200, "an object met");
 static_assert(offsetof(FieldActor, anim.flags) == 0x2e4, "animation flags");
 static_assert(offsetof(FieldActor, unk_C84) == 0xc84, "0xc84");
 static_assert(offsetof(Actor, cull_flags) == 0xb0, "cull flags");
-static_assert(offsetof(LayeredModel, base_frames) == 0x2d0 - FIELD_ACTOR_BODY, "the body's animation");
+static_assert(offsetof(LayeredModel, base.frames) == 0x2d0 - FIELD_ACTOR_BODY, "the body's animation");
 static_assert(offsetof(FieldActorChestApproach, index) == 0x0a, "the chest's index");
 static_assert(sizeof(FieldActorChestApproach) <= sizeof(FieldActorWork), "state 0x2d's work");
 static_assert(sizeof(FieldActorChestApproach) <= sizeof(((StateRequest *) 0)->payload), "state 0x2d's arguments");
@@ -2312,14 +2312,14 @@ void FieldActorRoomStates_BeatSpotStay(FieldActor *actor)
             FieldActorSpotStay *work = fars_spot_stay_of(actor);
             if (work->on_beat == 0) {
                 work->on_beat = 1;
-                if (fars_whole_frames(model->base_frames.frame) != 0) {
-                    Ramp_Start((Ramp *) (void *) &model->base_ramp, FARS_BEAT_BLEND_FRAMES);
+                if (fars_whole_frames(model->base.frames.frame) != 0) {
+                    Ramp_Start((Ramp *) (void *) &model->base.ramp, FARS_BEAT_BLEND_FRAMES);
                 }
             }
-            model->base_frames.frame = 0;
-            model->base_frames.speed = entry[FARS_BEAT_SPEED_WORD];
+            model->base.frames.frame = 0;
+            model->base.frames.speed = entry[FARS_BEAT_SPEED_WORD];
             LayeredModel_UpdateA(model);
-            model->base_frames.speed = FARS_BEAT_AFTER_SPEED;
+            model->base.frames.speed = FARS_BEAT_AFTER_SPEED;
             FieldActor_Base(actor)->cull_flags = 0;
             return;
         }

@@ -5,56 +5,32 @@
  * each node descriptor command while the model is drawn) pick the animation of the node's
  * layer before the node and blend it after.
  *
- * Three classes of main share the layout: the base model object (constructor func_02054e8c,
- * up to 0xf4), the class with layer A (constructor func_02054c2c, up to 0x154) and the class
- * with both (constructor func_0205467c, 0x1b4 bytes). The functions of the two upper classes
- * are here, named for the layer they work on. */
+ * Three classes of main share the layout: the blended model of animated_model.h (0xf4 bytes,
+ * whose animation is the base one), the class with layer A that extends it (constructor
+ * func_02054c2c, up to 0x154) and the class with both (constructor func_0205467c, 0x1b4 bytes).
+ * The functions of the two upper classes are here, named for the layer they work on. */
 #ifndef CLEAN_MAIN_LAYERED_MODEL_H
 #define CLEAN_MAIN_LAYERED_MODEL_H
 
-#include "main/g3d_render.h"
-#include "itcm/node_hook.h"
+#include "main/animated_model.h"
 #include "main/frame_ctrl.h"
+#include "main/g3d_render.h"
 #include "types.h"
 
-/* LayeredModel.flags */
+/* The model object's flags (ModelObject.flags) in a LayeredModel. */
 #define LAYERED_MODEL_RELEASE_A 0x4000 /* free layer A's nodes once its blend is done */
 #define LAYERED_MODEL_RELEASE_B 0x8000 /* the same for layer B */
 
-/* NitroSystem's NNSG3dAnmObj, the parts read here. */
-typedef struct LayeredModelAnim {
-    fx32 frame;           /* 0x00 */
-    fx32 ratio;           /* 0x04 */
-    const void *resource; /* 0x08: the animation */
-} LayeredModelAnim;
-
-/* A blend from a node's pose to its animation's, the weight stepped by func_02056e84 (the Ramp
- * of frame_ctrl.h, with its class's vtable). */
-typedef struct LayeredModelRamp {
-    const void *vtable;
-    u8 pose[0x30]; /* 0x04: the pose blended from */
-    fx32 weight;   /* 0x34 */
-    fx32 rate;     /* 0x38: 0 when no blend runs */
-} LayeredModelRamp;
-
 typedef struct LayeredModel {
-    const void *vtable;          /* 0x00 */
-    u16 flags;                   /* 0x04: LAYERED_MODEL_RELEASE_* */
-    u8 unk_06[2];                /* 0x06 */
-    G3dRenderObject render;      /* 0x08 */
-    void *model_resource;        /* 0x5c: the model (NNSG3dResMdl) */
-    u8 unk_60[0x3c];             /* 0x60 */
-    FrameCtrl base_frames;       /* 0x9c */
-    LayeredModelAnim *base_anim; /* 0xb4 */
-    LayeredModelRamp base_ramp;  /* 0xb8 */
-    LayeredModelAnim *anim_a;    /* 0xf4 */
-    FrameCtrl frames_a;          /* 0xf8 */
-    LayeredModelRamp ramp_a;     /* 0x110 */
-    u32 nodes_a[2];              /* 0x14c: nodes 0-31, then 32-63 */
-    LayeredModelAnim *anim_b;    /* 0x154 */
-    FrameCtrl frames_b;          /* 0x158 */
-    LayeredModelRamp ramp_b;     /* 0x170 */
-    u32 nodes_b[2];              /* 0x1ac */
+    AnimatedModel base;        /* 0x00: the blended model; its animation is the base one */
+    AnimatedModelAnim *anim_a; /* 0xf4 */
+    FrameCtrl frames_a;        /* 0xf8 */
+    AnimatedModelRamp ramp_a;  /* 0x110 */
+    u32 nodes_a[2];            /* 0x14c: nodes 0-31, then 32-63 */
+    AnimatedModelAnim *anim_b; /* 0x154 */
+    FrameCtrl frames_b;        /* 0x158 */
+    AnimatedModelRamp ramp_b;  /* 0x170 */
+    u32 nodes_b[2];            /* 0x1ac */
 } LayeredModel;
 
 void LayeredModel_ClearNodesB(LayeredModel *model);
@@ -104,11 +80,11 @@ LayeredModel *LayeredModel_ConstructA(LayeredModel *model);
 LayeredModel *LayeredModel_ConstructABase(LayeredModel *model);
 LayeredModel *LayeredModel_DeleteAFromFrames(FrameCtrl *frames);
 LayeredModel *LayeredModel_DestructAFromFrames(FrameCtrl *frames);
-LayeredModel *LayeredModel_DeleteAFromRamp(LayeredModelRamp *ramp);
-LayeredModel *LayeredModel_DestructAFromRamp(LayeredModelRamp *ramp);
+LayeredModel *LayeredModel_DeleteAFromRamp(AnimatedModelRamp *ramp);
+LayeredModel *LayeredModel_DestructAFromRamp(AnimatedModelRamp *ramp);
 LayeredModel *LayeredModel_DeleteBFromFrames(FrameCtrl *frames);
 LayeredModel *LayeredModel_DestructBFromFrames(FrameCtrl *frames);
-LayeredModel *LayeredModel_DeleteBFromRamp(LayeredModelRamp *ramp);
-LayeredModel *LayeredModel_DestructBFromRamp(LayeredModelRamp *ramp);
+LayeredModel *LayeredModel_DeleteBFromRamp(AnimatedModelRamp *ramp);
+LayeredModel *LayeredModel_DestructBFromRamp(AnimatedModelRamp *ramp);
 
 #endif

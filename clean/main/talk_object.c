@@ -546,7 +546,8 @@ CLEAN_AS(func_020683b4, TalkObject_SetValue)
 /* func_020683e4: part `index` loaded with message `*message` of the file `name`. */
 int TalkObject_LoadPart(TalkObject *talk, int index, const u8 *message, unsigned int name)
 {
-    return MessageReader_LoadMessage((int) (uintptr_t) &talk->parts[index], (unsigned char *) (uintptr_t) message, (int) name);
+    return MessageReader_LoadMessage(&talk->parts[index], (unsigned char *) (uintptr_t) message,
+                                     (const char *) (uintptr_t) name);
 }
 CLEAN_AS(func_020683e4, TalkObject_LoadPart)
 

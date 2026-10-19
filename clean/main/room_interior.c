@@ -2,6 +2,7 @@
 #include "room_interior.h"
 
 #include "clean.h"
+#include "item_group.h"
 #include "session.h"
 #include "house_record.h"
 #include "ov004/room_shell.h"
@@ -32,8 +33,6 @@ extern NetSession *data_020ccf94;
 /* The four players' records. */
 extern u8 data_021dc7bc[];
 
-/* The item code of design `design` of player `player`, to `code` (misnamed in the symbols). */
-extern void NNS_G3dAllocAnmObj(u16 *code, int player, int design);
 /* The item code's destructor (nothing to do), handed to __cxa_vec_cleanup. */
 extern void func_020051b0(void *code);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
@@ -245,7 +244,7 @@ void RoomInterior_DesignCode(u16 *code, int design)
     if (record != NULL) {
         player = PlayerRecords_FindIndex(data_021dc7bc, (const PlayerRecordsId *) PlayerRecord_Player(record)) & 3;
     }
-    NNS_G3dAllocAnmObj(code, player, design & 7);
+    ItemGroup_ConstructDesign(code, player, design & 7);
 }
 CLEAN_AS(func_02034c64, RoomInterior_DesignCode)
 

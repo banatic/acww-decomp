@@ -11,6 +11,7 @@
 #include "main/display_layers.h"
 #include "main/display_shadow.h"
 #include "main/label_sprite.h"
+#include "main/letter.h"
 #include "main/message_reader.h"
 #include "main/npc_id.h"
 #include "main/player_id.h"
@@ -18,6 +19,7 @@
 #include "main/player_records.h"
 #include "main/rom_file.h"
 #include "main/sliding_window.h"
+#include "main/sound.h"
 #include "main/state_flags.h"
 #include "main/text_base.h"
 #include "main/town_villager.h"
@@ -36,12 +38,6 @@ static_assert(offsetof(ChoiceEntries, text_rows) == 0x0a, "choice entries");
 
 /* The full-width slash (U+FF0F), between the page and the page count. */
 extern const u16 data_ov002_0220ba50[];
-
-/* The effects of the picking codes: 13, 1-4 and 5-12. */
-extern void func_02066514(void *target);
-extern void func_02066560(int target, int index);
-extern void func_0206658c(void *target, int index);
-extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
 
 #define FULLWIDTH_ZERO 0xff10
 
@@ -68,7 +64,7 @@ void PagedChoice_RequestRowText(PagedChoice *choice, PagedChoiceRow *row, char c
 {
     unsigned char byte = (unsigned char) code;
     (void) choice;
-    MessageReader_LoadMenuMessage((int) (uintptr_t) row, &byte, NULL);
+    MessageReader_LoadMenuMessage(row, &byte, NULL);
 }
 CLEAN_AS(func_ov002_022089ec, PagedChoice_RequestRowText)
 
@@ -93,9 +89,10 @@ int PagedChoice_TestFlags(PagedChoice *choice, int flags)
 }
 CLEAN_AS(func_ov002_02208a14, PagedChoice_TestFlags)
 
-/* func_ov002_02208a24: applies the choice `code` to `target`; returns what the code did
- * (PagedChoiceKind), CHOICE_KIND_NONE for a code that is none of the game's. The choice is
- * not read. */
+/* func_ov002_02208a24: applies the choice `code` to `target`, a letter it addresses (to its writer,
+ * to player `code - CHOICE_LIST_A` or to villager `code - CHOICE_LIST_B`); returns what the code
+ * did (PagedChoiceKind), CHOICE_KIND_NONE for a code that is none of the game's. The choice is not
+ * read. */
 int PagedChoice_Apply(PagedChoice *choice, void *target, unsigned int code)
 {
     (void) choice;
@@ -105,15 +102,15 @@ int PagedChoice_Apply(PagedChoice *choice, void *target, unsigned int code)
         case CHOICE_NEXT_PAGE:
             return CHOICE_KIND_NEXT_PAGE;
         case CHOICE_SPECIAL:
-            func_02066514(target);
+            Letter_AddressToSelf(target);
             return CHOICE_KIND_PICK;
     }
     if (code >= CHOICE_LIST_A && code < CHOICE_LIST_B) {
-        func_02066560((int) (uintptr_t) target, (int) (code - CHOICE_LIST_A));
+        Letter_AddressToPlayer(target, (int) (code - CHOICE_LIST_A));
         return CHOICE_KIND_PICK;
     }
     if (code >= CHOICE_LIST_B && code < CHOICE_SPECIAL) {
-        func_0206658c(target, (int) (code - CHOICE_LIST_B));
+        Letter_AddressToVillager(target, (int) (code - CHOICE_LIST_B));
         return CHOICE_KIND_PICK;
     }
     return CHOICE_KIND_NONE;
@@ -148,13 +145,13 @@ int PagedChoice_Decide(PagedChoice *choice, int page, int row)
     }
     switch (code) {
         case CHOICE_LEAVE:
-            RtcSendPxiCommand(0x28);
+            SoundSys_PlaySe(0x28);
             break;
         case CHOICE_NEXT_PAGE:
-            RtcSendPxiCommand(0x29);
+            SoundSys_PlaySe(0x29);
             break;
         default:
-            RtcSendPxiCommand(0x27);
+            SoundSys_PlaySe(0x27);
             break;
     }
     return code;
@@ -650,9 +647,9 @@ void PagedChoice_PickRow(PagedChoice *choice, int row)
 {
     PagedChoice_Highlight(choice, (u8) row);
     if (PagedChoice_Decide(choice, choice->page, (u8) row) == CHOICE_LEAVE) {
-        RtcSendPxiCommand(0x2a);
+        SoundSys_PlaySe(0x2a);
     } else {
-        RtcSendPxiCommand(0x29);
+        SoundSys_PlaySe(0x29);
     }
 }
 CLEAN_AS(func_ov002_022090b0, PagedChoice_PickRow)
@@ -667,7 +664,7 @@ u8 PagedChoice_PickLastRow(PagedChoice *choice, int sound)
     if (sound == 0) {
         PagedChoice_SetFlags(choice, CHOICE_FLAG_QUIET);
     } else {
-        RtcSendPxiCommand(0x2a);
+        SoundSys_PlaySe(0x2a);
     }
     return (u8) last;
 }
@@ -681,9 +678,9 @@ void PagedChoice_PickRowWithSound(PagedChoice *choice, int row, int sound)
     if (sound == 0) {
         PagedChoice_SetFlags(choice, CHOICE_FLAG_QUIET);
     } else if (choice->row_count - 1 == row) {
-        RtcSendPxiCommand(0x2a);
+        SoundSys_PlaySe(0x2a);
     } else {
-        RtcSendPxiCommand(0x29);
+        SoundSys_PlaySe(0x29);
     }
 }
 CLEAN_AS(func_ov002_02209114, PagedChoice_PickRowWithSound)
@@ -1019,7 +1016,7 @@ void PagedChoice_RequestClose(PagedChoice *choice, int wipe)
     if (PagedChoice_TestFlags(choice, CHOICE_FLAG_QUIET)) {
         PagedChoice_ClearFlags(choice, CHOICE_FLAG_QUIET);
     } else {
-        RtcSendPxiCommand(0x14);
+        SoundSys_PlaySe(0x14);
     }
 }
 CLEAN_AS(func_ov002_022096d8, PagedChoice_RequestClose)
@@ -1033,7 +1030,7 @@ void PagedChoice_RequestOpen(PagedChoice *choice, int wipe)
     if (wipe != 0) {
         PagedChoice_SetFlags(choice, CHOICE_FLAG_WIPE_OPEN);
     }
-    RtcSendPxiCommand(0x13);
+    SoundSys_PlaySe(0x13);
     PagedChoice_ClearFlags(choice, CHOICE_FLAG_QUIET);
 }
 CLEAN_AS(func_ov002_0220970c, PagedChoice_RequestOpen)

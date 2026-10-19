@@ -43,9 +43,6 @@ extern const u8 data_020cce88[];
 #define TALK_VOICE_SLOT_VILLAGER 0x68
 #define TALK_VOICE_SLOT_MODE 0x6c
 
-/* A sound effect (misnamed: func_020f1fb4 on the sound state). */
-extern void RtcSendPxiCommand(int command);
-
 typedef int TalkVoiceSlot(void *receiver);
 
 static int talk_voice_ask_receiver(TalkVoice *voice, u32 slot)
@@ -177,7 +174,7 @@ void TalkVoice_Update(TalkVoice *voice)
         if (voice->count >= 1) {
             if (voice->mode == TALK_VOICE_NO_MODE) {
                 if (style != TALK_VOICE_STYLE_SILENT) {
-                    RtcSendPxiCommand(TALK_VOICE_BEEP);
+                    SoundSys_PlaySe(TALK_VOICE_BEEP);
                 }
             } else {
                 SoundSys_PlayKeyboardSound(style, kind, voice->chars[0], voice->chars[1]);

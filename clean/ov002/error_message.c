@@ -8,7 +8,10 @@
 #include "autoload_2/input.h"
 #include "clean.h"
 #include "main/display_shadow.h"
+#include "main/sliding_window.h"
+#include "main/state_flags.h"
 #include "main/talk_flow.h"
+#include "main/talk_object.h"
 #include "main/text_label.h"
 
 static_assert(offsetof(TalkReceiver, base.message) == 0x1e && offsetof(TalkReceiver, talk) == 0x40, "receiver");
@@ -19,26 +22,8 @@ static_assert(offsetof(ErrorMessage, fatal) == 0x119, "error message");
 /* "obj_etc_error", the receiver's message file */
 extern const char data_ov002_0220bea0[];
 
-/* The talks */
-extern TalkObject *func_020682e0(int index);                                     /* talk `index`, null when there are none */
-extern void func_02068340(TalkObject *talk, TalkReceiver *receiver);             /* the receiver it shows; links both */
-extern void func_02068320(TalkObject *talk);                                     /* unlinks its receiver, if any */
-extern void func_02068314(TalkObject *talk);                                     /* byte 0x1e98 = 1 */
-extern void func_02068308(TalkObject *talk);                                     /* byte 0x1e99 = 1 */
-extern void func_02068440(TalkObject *talk);                                     /* byte 0x1e93 = 1 */
-extern void func_02068434(TalkObject *talk);                                     /* byte 0x1e93 = 0 */
-extern void func_02068428(TalkObject *talk);                                     /* byte 0x1e92 = 1 */
-extern int func_02068484(TalkObject *talk, const u8 *message, const char *name); /* see ErrorMessage_EndTalk */
-/* The message number ErrorMessage_EndTalk gives func_02068484. */
+/* The message number ErrorMessage_EndTalk gives TalkObject_SetMessageIfNone. */
 extern u8 data_021f43e8;
-
-/* main's sliding window, under the popup */
-extern void func_0208aa48(Popup *popup, TextLabel *label); /* copies the label's text in */
-extern void func_0208aa60(Popup *popup, int x, int y);     /* words 0x3c and 0x40: an offset */
-extern void func_0208aa98(Popup *popup);                   /* byte 0x58 = 1 */
-
-/* Flag 0x80 of the state flags (StateFlags_Test), 0 while the byte at 0x021cfc54 is set. */
-extern int func_0206f56c(void);
 
 extern PadState data_021fbe40;
 extern u8 data_021fbdd8; /* the pen is down */
@@ -78,15 +63,21 @@ static void draw_popup(ErrorMessage *error)
     ((PopupMethod *) virtual_slot(error->popup.vtable, SLOT_DRAW))(&error->popup);
 }
 
+/* The popup as main's sliding window, which it is. */
+static SlidingWindow *window_of(ErrorMessage *error)
+{
+    return (SlidingWindow *) (void *) &error->popup;
+}
+
 /* Gives the popup its text through `label` and queues it to show. */
 static void queue_window(ErrorMessage *error, TextLabel *label)
 {
     TextLabel_Construct(label);
     TextLabel_LoadMenuMessage(label, WINDOW_MESSAGE);
-    func_0208aa48(&error->popup, label);
-    func_0208aa60(&error->popup, 0, WINDOW_OFFSET_Y);
+    SlidingWindow_SetText(window_of(error), (struct TextObject *) (void *) label);
+    SlidingWindow_SetPlace(window_of(error), 0, WINDOW_OFFSET_Y);
     Popup_Queue(&error->popup);
-    func_0208aa98(&error->popup);
+    SlidingWindow_SetObjWindow(window_of(error));
     Popup_SetDrawValue(&error->popup, 0);
 }
 
@@ -115,32 +106,32 @@ int ErrorMessage_ReleaseTalkIfClosed(ErrorMessage *error)
     TalkObject *talk = error->receiver.talk;
 
     if (talk->state == TALK_OBJECT_CLOSED) {
-        func_02068320(talk);
+        TalkObject_DetachReceiver(talk);
         return 1;
     }
     return 0;
 }
 CLEAN_AS(func_ov002_0220b6d0, ErrorMessage_ReleaseTalkIfClosed)
 
-/* func_ov002_0220b6f4: asks the error's talk to end. When its message is the one at
- * 0x021f43f8, func_02068484 sets the message at 0x021f43e8 with no file name; the bytes at
- * 0x1e92 and 0x1e93 are then set to 1 and 0. */
+/* func_ov002_0220b6f4: asks the error's talk to end. When its message is the one at 0x021f43f8,
+ * TalkObject_SetMessageIfNone sets the message at 0x021f43e8 with no file name; the bytes at 0x1e92
+ * and 0x1e93 are then set to 1 and 0. */
 void ErrorMessage_EndTalk(void)
 {
-    TalkObject *talk = func_020682e0(ERROR_TALK);
+    TalkObject *talk = TalkObject_Get(ERROR_TALK);
 
-    func_02068484(talk, &data_021f43e8, NULL);
-    func_02068428(talk);
-    func_02068434(talk);
+    TalkObject_SetMessageIfNone(talk, &data_021f43e8, NULL);
+    TalkObject_GoOn(talk);
+    TalkObject_Release(talk);
 }
 CLEAN_AS(func_ov002_0220b6f4, ErrorMessage_EndTalk)
 
 /* func_ov002_0220b71c: whether the error's talk is up.
- * REQUIRES: the talks exist (func_020682e0 does not give null). */
+ * REQUIRES: the talks exist (TalkObject_Get does not give null). */
 int ErrorMessage_IsTalkUp(ErrorMessage *error)
 {
     (void) error;
-    return func_020682e0(ERROR_TALK)->state == TALK_OBJECT_WAITING;
+    return TalkObject_Get(ERROR_TALK)->state == TALK_OBJECT_WAITING;
 }
 CLEAN_AS(func_ov002_0220b71c, ErrorMessage_IsTalkUp)
 
@@ -226,19 +217,19 @@ CLEAN_AS(func_ov002_0220b804, ErrorMessage_WaitUp)
  * too); a message that is not fatal darkens the sub screen now. */
 void ErrorMessage_StartTalk(ErrorMessage *error, const u8 *message, int flag)
 {
-    TalkObject *talk = func_020682e0(ERROR_TALK);
+    TalkObject *talk = TalkObject_Get(ERROR_TALK);
     TalkReceiver *receiver = &error->receiver;
 
     ((ReceiverMethod *) virtual_slot(receiver->base.vtable, SLOT_RESET))(receiver);
     MessageReceiver_SetName(&receiver->base, data_ov002_0220bea0);
     receiver->base.message = *message;
-    func_02068340(talk, receiver);
-    func_02068314(talk);
+    TalkObject_AttachReceiver(talk, receiver);
+    TalkObject_SetSilent(talk);
     if (flag == 0) {
-        func_02068308(talk);
+        TalkObject_SetUnk1e99(talk);
     }
     talk->next_state = TALK_OBJECT_OPENING;
-    func_02068440(talk);
+    TalkObject_Hold(talk);
     error->step = ERROR_MESSAGE_STARTING;
     if (error->fatal == 0) {
         ErrorMessage_Dim(error);
@@ -247,10 +238,10 @@ void ErrorMessage_StartTalk(ErrorMessage *error, const u8 *message, int flag)
 CLEAN_AS(func_ov002_0220b830, ErrorMessage_StartTalk)
 
 /* Whether the player closes the message this frame: with `check_flag80`, flag 0x80 of the
- * state flags (func_0206f56c); the pen going down; A, B, X or Y pressed. */
+ * state flags (StateFlags_MenuCloseAsked); the pen going down; A, B, X or Y pressed. */
 static int closing_input(int check_flag80)
 {
-    if (check_flag80 && func_0206f56c()) {
+    if (check_flag80 && StateFlags_MenuCloseAsked()) {
         return 1;
     }
     if (data_021fbdd8 != 0 && data_021fbddc != 0) {

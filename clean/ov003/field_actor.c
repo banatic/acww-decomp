@@ -60,6 +60,7 @@
 #include "main/screen_panels.h"
 #include "main/session_players.h"
 #include "main/sky.h"
+#include "main/sound.h"
 #include "main/talk_object.h"
 #include "main/tile_changes.h"
 #include "main/tile_effects.h"
@@ -198,7 +199,6 @@ extern const char data_ov003_02238134[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 VEC_Mag(const Vec3 *v);
-extern void RtcSendPxiCommand(int command);
 
 /* ---- Helpers */
 
@@ -1478,11 +1478,13 @@ CLEAN_AS(func_ov003_0220dde8, FieldActor_UpdateState78)
  * record exists (func_020984e8), marks it (func_02099740, flag 0x19 once flag 0x17 is set) and
  * writes its value plus 0x10 at 0x70d. During 0x75 the actor turns to yaw 0 (func_0200faf0,
  * 0x59a), which on arrival runs func_02035624 and func_020356c4, and `step` goes:
- *   0: the receiver at 0xec is registered (func_0203ee14) as "obj_etc_player", flag 0x11 set,
- *      its byte 0x1e set to 20, the link's request raised and func_0203ae98 run; then as 1;
+ *   0: the receiver at 0xec is registered (SceneObjectBase_TakeReceiver) as "obj_etc_player",
+ *      flag 0x11 set, its byte 0x1e set to 20, the link's request raised and func_0203ae98 run;
+ *      then as 1;
  *   1: once the link reports itself open, 2;
- *   2: once it is closed, the receiver is released (func_0203ee08), flags 0x11 and 7 cleared,
- *      the actor moves on and func_0203e19c, func_0203b144, func_02035638 and func_02035684 run.
+ *   2: once it is closed, the receiver is released (SceneObjectBase_ReleaseReceiver), flags 0x11
+ *      and 7 cleared, the actor moves on and func_0203e19c, func_0203b144, func_02035638 and
+ *      func_02035684 run.
  * REQUIRES: the link is set when `step` is 0 (the ROM writes through it unchecked there). */
 void FieldActor_RunState78(FieldActor *actor)
 {
@@ -2409,7 +2411,7 @@ CLEAN_AS(func_ov003_0220f16c, FieldActor_State6DMessage)
 
 /* func_ov003_0220f180: entering state 0x6d with the request's kind: animation 0x69 for tools 3
  * (the held object in pose 0x14), 4 (pose 2) and 10, else 0x68; func_0203e420; effect 0x34 at
- * effect_point. A kind of 2 or more also runs RtcSendPxiCommand(0x51), sound 0x839 (kind 2) or
+ * effect_point. A kind of 2 or more also runs SoundSys_PlaySe(0x51), sound 0x839 (kind 2) or
  * 0x838 and func_02035684. Sound 0x816 plays. */
 void FieldActor_EnterState6D(FieldActor *actor, const StateRequest *request, int previous)
 {
@@ -2431,7 +2433,7 @@ void FieldActor_EnterState6D(FieldActor *actor, const StateRequest *request, int
     actor->work.s6d.effect = EffectSystem_StartKind(0x34, &actor->effect_point, NULL, 0);
     actor->work.s6d.kind = kind;
     if (kind >= 2) {
-        RtcSendPxiCommand(0x51);
+        SoundSys_PlaySe(0x51);
         FieldActor_PlaySound(actor, kind == 2 ? 0x839 : 0x838);
         Music_AddValue(0xc, 0, 0);
     }
@@ -10747,9 +10749,6 @@ CLEAN_AS(func_ov003_022195c8, FieldActor_RequestState6)
 /* ---- A player's actor, as other code asks about it or asks for its states. Player 4 is the
  *      player at this console; func_02096718 finds the actor (NULL when there is none). */
 
-/* A misnamed main function: whether a player's actor has a flag (func_0200f290). */
-extern int DWC_Alloc(int flag, int player);
-
 #define THIS_PLAYER 4
 
 /* func_ov003_02219604: whether the player at this console holds item 0x1376 or 0x1377
@@ -11217,6 +11216,6 @@ CLEAN_AS(func_ov003_02219e14, FieldActor_SameTile)
 /* func_ov003_02219e58: whether a player's actor has flag 9. */
 int FieldActor_PlayerFlag9(int player)
 {
-    return DWC_Alloc(9, player);
+    return PlayerActorOps_TestFlag(9, player);
 }
 CLEAN_AS(func_ov003_02219e58, FieldActor_PlayerFlag9)

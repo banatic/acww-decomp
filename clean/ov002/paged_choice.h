@@ -26,7 +26,7 @@ enum PagedChoiceCode {
     CHOICE_NONE = 0,     /* ends the page */
     CHOICE_LIST_A = 1,   /* 1-4: player code - 1 of the town's four (records at data_021dc7bc) */
     CHOICE_LIST_B = 5,   /* 5-12: entry code - 5 of the list at data_021e5a2c */
-    CHOICE_SPECIAL = 13, /* func_02066514's */
+    CHOICE_SPECIAL = 13, /* the letter to its writer (Letter_AddressToSelf) */
     CHOICE_NEXT_PAGE = 14,
     CHOICE_LEAVE = 15
 };

@@ -83,11 +83,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-/* The object under the actor (FieldActor_NoteObjectUnderfoot): whether a player's actor has a
- * flag (named DWC_Alloc in the symbols, though it is not NitroDWC's), the object on a point (-1
- * for none), noting it and its kind in the actor of player 4, and what follows. */
-extern int DWC_Alloc(int flag, int player);
-
 /* No object on the point (func_02030890). */
 #define NO_OBJECT (-1)
 
@@ -1425,7 +1420,7 @@ void FieldActor_EaseValueBy(fx32 *value, int target, fx32 rate, int max_step, in
 CLEAN_AS(func_020114b0, FieldActor_EaseValueBy)
 
 /* func_02011520: run after each frame's update. For this console's player, unless its actor has
- * flag 0xb, 0x13 or 5 (DWC_Alloc): the object at the position of player 4's actor
+ * flag 0xb, 0x13 or 5 (PlayerActorOps_TestFlag): the object at the position of player 4's actor
  * (func_02030890, -1 for none) is noted (func_020953c4), its kind looked up in func_020b5e10's
  * table (func_020b6044) and noted (func_020953a4). For kinds 1, 2 and 4, or an object
  * func_0209d780 accepts, func_0203e110 (only while func_020b67ac) and func_0203e420 run;
@@ -1440,7 +1435,7 @@ int FieldActor_NoteObjectUnderfoot(int player)
         return result;
     }
     for (size_t i = 0; i < sizeof blocking_flags / sizeof blocking_flags[0]; i++) {
-        result = DWC_Alloc(blocking_flags[i], player);
+        result = PlayerActorOps_TestFlag(blocking_flags[i], player);
         if (result != 0) {
             return result;
         }

@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "main/game_halt.h"
 #include "overlay_slots.h"
 
 static_assert(offsetof(LibraryOverlaySlot, loading) == 0x04, "loading");
@@ -13,7 +14,6 @@ extern LibraryOverlaySlot data_021d11c4;
 extern char SDK_OVERLAY_ov065_ID;
 extern char SDK_OVERLAY_ov066_ID;
 extern char SDK_OVERLAY_ov067_ID;
-extern void OS_Terminate(void);
 extern int FS_LoadOverlayImage(void *info);
 extern void FS_StartOverlay(void *info);
 extern void FS_EndOverlay(void *info);
@@ -41,7 +41,7 @@ unsigned int LibraryOverlay_RequireAny(void)
         overlay == overlay_id(&SDK_OVERLAY_ov067_ID)) {
         return 1;
     }
-    OS_Terminate();
+    GameHalt_Terminate();
     return 0; /* not reached: OS_Terminate does not return */
 }
 CLEAN_AS(func_02073044, LibraryOverlay_RequireAny)
@@ -50,7 +50,7 @@ CLEAN_AS(func_02073044, LibraryOverlay_RequireAny)
 void LibraryOverlay_Require67(void)
 {
     if (current_overlay() != overlay_id(&SDK_OVERLAY_ov067_ID)) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
 }
 CLEAN_AS(func_02073090, LibraryOverlay_Require67)
@@ -59,7 +59,7 @@ CLEAN_AS(func_02073090, LibraryOverlay_Require67)
 void LibraryOverlay_Require66(void)
 {
     if (current_overlay() != overlay_id(&SDK_OVERLAY_ov066_ID)) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
 }
 CLEAN_AS(func_020730c8, LibraryOverlay_Require66)
@@ -68,7 +68,7 @@ CLEAN_AS(func_020730c8, LibraryOverlay_Require66)
 void LibraryOverlay_Require65(void)
 {
     if (current_overlay() != overlay_id(&SDK_OVERLAY_ov065_ID)) {
-        OS_Terminate();
+        GameHalt_Terminate();
     }
 }
 CLEAN_AS(func_02073100, LibraryOverlay_Require65)

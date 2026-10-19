@@ -656,7 +656,7 @@ void ModelObject_ResetRender(ModelObject *object)
     object->model = NULL;
     object->texture = NULL;
     MTX_Identity43_(base_transform(object));
-    *(u16 *) (void *) object->unk_04 = 0;
+    object->flags = 0;
     object->vram = NULL;
 }
 CLEAN_AS(func_02055fcc, ModelObject_ResetRender)

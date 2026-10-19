@@ -22,6 +22,7 @@
 #define CLEAN_OV099_POCKETS_VIEW_H
 
 #include "clean.h"
+#include "main/letter.h"
 #include "ov002/error_message.h"
 #include "ov002/glide.h"
 #include "ov002/menu_scene.h"
@@ -85,7 +86,7 @@ typedef struct PocketsView {
     s32 grab_dy;           /* 0x27f4 */
     s32 held_x;            /* 0x27f8: where the held item is drawn */
     s32 held_y;            /* 0x27fc */
-    u8 letter[0x100];      /* 0x2800: a letter's copy; vtable reset by func_02066688 */
+    Letter letter;         /* 0x2800: a letter's copy */
     u16 item;              /* 0x2900: the held item's code */
     u8 held_state;         /* 0x2902: the held item's state (the grid's func_ov094_0229aa84) */
     u8 held_kind;          /* 0x2903: PocketsViewHeldKind */
