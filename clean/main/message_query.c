@@ -5,6 +5,7 @@
 #include "clean.h"
 #include "message_tag.h"
 #include "message_walker.h"
+#include "ov004/member_pointer.h"
 #include "text_walker.h"
 
 static_assert(offsetof(MessageQuery, mode) == 0x24, "mode");
@@ -24,6 +25,13 @@ extern const u8 data_020e3e44[]; /* the query's */
 
 /* The game's one query object. */
 extern MessageQuery data_021f4548;
+
+/* The actions func_020a7aa8 and func_020a7b34 pick by the mode: function-local statics the
+ * game fills from constants on its first call (ov004/member_pointer.h). data_020e3cf4[1] is
+ * func_020a7a14's member pointer. */
+extern u32 data_021f4400, data_021f43fc;
+extern MemberPointer data_021f44b4[5], data_021f448c[5];
+extern const MemberPointer data_020e3cf4[2], data_020e3d04, data_020e3ce4, __ptmf_null;
 
 /* func_020a7a14: done when the tag met is the one looked for. */
 void MessageQuery_CheckTag(MessageQuery *query)
@@ -91,7 +99,11 @@ CLEAN_AS(func_020a7a98, MessageQuery_WantsMore)
  * REQUIRES: mode 0 to 4 (the ROM picks the action from a 5-entry table by the mode). */
 void MessageQuery_OnTag(MessageQuery *query, int position)
 {
+    static const MemberPointer *const actions[5] = {
+        &data_020e3cf4[1], &__ptmf_null, &__ptmf_null, &__ptmf_null, &__ptmf_null,
+    };
     MessageTag_Read(&query->tag, position);
+    MemberTable_InitOnce(&data_021f4400, data_021f44b4, actions, 5);
     if (query->mode == MESSAGE_QUERY_TAG) {
         MessageQuery_CheckTag(query);
     }
@@ -102,7 +114,11 @@ CLEAN_AS(func_020a7aa8, MessageQuery_OnTag)
  * REQUIRES: mode 0 to 4 (the ROM picks the action from a 5-entry table by the mode). */
 void MessageQuery_OnCharacter(MessageQuery *query, unsigned int character)
 {
+    static const MemberPointer *const actions[5] = {
+        &__ptmf_null, &data_020e3cf4[0], &__ptmf_null, &data_020e3d04, &data_020e3ce4,
+    };
     query->character = character;
+    MemberTable_InitOnce(&data_021f43fc, data_021f448c, actions, 5);
     switch (query->mode) {
         case MESSAGE_QUERY_CHARACTER:
             MessageQuery_CountToIndex(query);
