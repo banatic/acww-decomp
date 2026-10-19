@@ -766,6 +766,7 @@ data_ov068_02277718 kind:data(any) addr:0x02277718
 data_ov068_02277720 kind:data(any) addr:0x02277720
 data_ov068_02277728 kind:data(any) addr:0x02277728
 data_ov068_02277730 kind:data(any) addr:0x02277730
+data_ov068_02277748 kind:data(any) addr:0x02277748
 data_ov068_02277750 kind:data(any) addr:0x02277750
 data_ov068_02277814 kind:data(any) addr:0x02277814
 data_ov068_02277890 kind:data(any) addr:0x02277890

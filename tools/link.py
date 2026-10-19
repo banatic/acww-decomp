@@ -16,7 +16,8 @@ original file differed (the rewritten copies are under build/adm-kr/link/obj):
 - a shared copy: an inline body the ROM keeps in another object (in another module, or
   apart from the source's own code and data) is dropped and used by its ROM name;
 - the sections of one name are put in ROM order, and the ROM's name is defined as well for
-  data that a word elsewhere in the ROM points at;
+  data that a word elsewhere in the ROM points at, or that a source of the same link unit
+  uses by that name (a .c constructor storing a vtable by its address point);
 - a link unit: sources whose pieces interleave in the ROM (the original file held their
   functions and data together) are joined into one object, a hole in their data that no
   source defines filled with the ROM's bytes, as ds-decomp's own objects hold it;
@@ -32,7 +33,9 @@ A source (or link unit) stays out of the link, with its reason counted, when:
 - its data order contradicts its code order relative to the other sources (link order);
 - a word outside it points into its data where the ROM has no symbol;
 - its code ends on a 2-byte boundary followed by a Thumb nop, which the compiler emits only
-  between two functions of one object.
+  between two functions of one object;
+- it uses a name that neither config/ nor its own object defines (a vtable slot naming a base
+  method that its class's header does not override, or a method defined as C).
 
 Needs ds-decomp's `dsd` (DSD; default build/tools/dsd, see INSTALL.md) and mwldarm from
 MWCC_ROOT (1.2/base).
@@ -211,14 +214,19 @@ def write_object(objs: list[Obj], keep: list[tuple[int, int]],
         name, value, _, info, _, _ = objs[k].syms[j]
         if info >> 4:
             if name not in globals_ or not globals_[name][5]:  # a second name for the kept copy
-                globals_[name] = [name, value, *objs[k].syms[j][2:5], new[ks]]
+                # of size 0 when the copy has a sized name already: mwldarm refuses a section
+                # whose symbols' sizes add up to more than the section
+                named = any(r[5] == new[ks] and r[1] == value and r[2] for r in globals_.values())
+                globals_[name] = [name, value, 0 if named else objs[k].syms[j][2],
+                                  *objs[k].syms[j][3:5], new[ks]]
             symmap[k, j] = ("G", name)
         else:
             row = next((n for n, r in enumerate(locals_) if r[0] == name and r[1] == value
                         and r[5] == new[ks]), None)
             if row is None:
                 row = len(locals_)
-                locals_.append([name, value, *objs[k].syms[j][2:5], new[ks]])
+                named = any(r[5] == new[ks] and r[1] == value and r[2] for r in locals_ + list(globals_.values()))
+                locals_.append([name, value, 0 if named else objs[k].syms[j][2], *objs[k].syms[j][3:5], new[ks]])
             symmap[k, j] = ("L", row)
     gnames = list(globals_)
     index = {("L", n): n for n in range(len(locals_))}
@@ -370,6 +378,11 @@ def filler(template: Obj, mod: str, holes: list[tuple[str, int, int]]) -> Obj:
         o.secs.append([name, 8 if bss else 1, flags.get(name, 3 if name != ".rodata" else 2), 4, 0,
                        b"" if bss else img[a - base:b - base], b - a])
         o.syms += [[n, x - a, 0, (1 << 4) | 1, 0, si] for x, n, _ in between(module_symbols(at), a, b)]
+        if not between(module_symbols(at), a, a + 1):
+            # a hole that starts with no ROM symbol (padding a source's own data ends on):
+            # mwldarm does not keep a section in its place without a symbol at its start
+            inside = between(module_symbols(at), a, b)
+            o.syms.append([f"@hole_{a:08x}", 0, (inside[0][0] if inside else b) - a, 1, 0, si])
         rows = []
         for off, name_, add in ([] if bss else filler_targets(at, a, b)):
             if name_ not in undef:
@@ -427,6 +440,9 @@ class Planner:
                  if (m := SYMBOL.match(line))}
         self.aliases = {a for a, c in pairs if c not in names}
         self.rename = {a: c for a, c in pairs if c in names}
+        # every name the link defines whatever is linked: the ROM's and the linker script's
+        self.known = names | {m.group(1) for line in (C.CONFIG / "absolute.txt").read_text().splitlines()
+                              if (m := SYMBOL.match(line))}
         # module -> {address: name} from symbols.txt, and module -> {address: the modules
         # relocs.txt says the word there points into}
         self.names: dict[str, dict[int, str]] = {}
@@ -442,6 +458,9 @@ class Planner:
             self.targets[m] = {int(x.group(1), 16): reloc_modules(x.group(3))
                                for line in (d / "relocs.txt").read_text().splitlines()
                                if (x := RELOC.match(line)) and x.group(3) != "none"}
+        # (module, address) of every function that has a source of its own
+        self.sourced = {(f.parent.name, int(x.group(1), 16)) for f in (C.ROOT / "src").glob("*/*.c*")
+                        if (x := re.search(r"([0-9a-f]{8})$", f.stem))}
 
     def where(self, addr: int, prefer: str, only: list[str] | None = None) -> tuple[str | None, str | None]:
         for m in only or (prefer, *C.RESIDENT, *self.sections):
@@ -451,13 +470,18 @@ class Planner:
         return None, None
 
     def place(self, elf: C.Elf, src: C.Source, fn: C.ElfSymbol, secs: dict):
-        """Each section's candidate addresses, and the modules the relocation that placed it
-        names (overlays share addresses)."""
+        """Each section's candidate addresses, the modules the relocation that placed it names
+        (overlays share addresses), and the sections placed by their words alone."""
         anchors = collections.defaultdict(set)
         anchors[fn.shndx].add(src.address - fn.value)
         only: dict[int, list[str] | None] = {fn.shndx: [src.module]}
-        work, done = [fn.shndx], set()
-        while work:
+        work, done, by_words = [fn.shndx], set(), set()
+        while True:
+            if not work:
+                work = self.place_by_words(elf, src, secs, anchors, only)
+                if not work:
+                    break
+                by_words |= set(work)
             si = work.pop()
             if si in done:
                 continue
@@ -478,10 +502,53 @@ class Planner:
                     only[s.shndx] = next((self.targets[m][base + off] for m in (here, *C.RESIDENT)
                                           if base + off in self.targets.get(m, {})), None)
                 work.append(s.shndx)
-        return anchors, only
+        return anchors, only, by_words
+
+    def place_by_words(self, elf: C.Elf, src: C.Source, secs: dict, anchors: dict,
+                       only: dict) -> list[int]:
+        """A .data or .ctor section nothing placed points to (a vtable that only the destructors it
+        holds reach) is where the ROM holds its words: the one spot with every pointer it has into
+        a placed section, and its other bytes. The source's own module is searched first, then
+        every other (an overlay's vtable can hold a thunk another overlay defines)."""
+        for si, s in secs.items():
+            if anchors.get(si) or s.type != 1 or s.name not in (".data", ".ctor"):
+                continue
+            raw = elf.section_bytes(si)
+            words, other = [], set()
+            for off, typ, y, add in elf.relocations(si):
+                if typ == 2 and anchors.get(y.shndx) and y.shndx != si:
+                    words.append((off, (min(anchors[y.shndx]) + y.value + (add or 0)) & ~1))
+                other |= {off, off + 1, off + 2, off + 3}
+            if not words:
+                continue
+            fixed = [i for i in range(len(raw)) if i not in other]
+            first, want = words[0]
+            for group in ([src.module], [m for m in self.sections if m != src.module]):
+                found = set()
+                for mod in group:
+                    try:
+                        img, start = C.module_image(mod), self.chk.mods[mod]["base"]
+                    except (KeyError, OSError):
+                        continue
+                    for value in (want, want | 1):
+                        pat = struct.pack("<I", value)
+                        at = img.find(pat)
+                        while at >= 0:
+                            at0 = at - first
+                            if at % 4 == 0 and at0 >= 0 and at0 + len(raw) <= len(img) and                                     all(struct.unpack_from("<I", img, at0 + o)[0] & ~1 == v for o, v in words) and                                     all(img[at0 + i] == raw[i] for i in fixed):
+                                found.add((mod, start + at0))
+                            at = img.find(pat, at + 1)
+                if found:
+                    break
+            if len(found) == 1:
+                mod, at = found.pop()
+                anchors[si].add(at)
+                only[si] = [mod]
+                return [si]
+        return []
 
     def shared(self, elf: C.Elf, root: int, secs: dict, anchors: dict, only: dict,
-               module: str) -> dict[int, dict[int, str | None]]:
+               module: str, by_words: set[int]) -> dict[int, dict[int, str | None]]:
         """The placed copies of inline bodies (sections whose symbols are all weak) that are
         the ROM's copy kept from another object: in another module, or apart from this
         source's own code and data of that kind (a run of same-named sections with no
@@ -493,6 +560,19 @@ class Planner:
         weak = {si for si in secs if si != root and defs(si) and all(y.bind in (2, 13) for y in defs(si))}
         mod = {si: self.where(min(anchors[si]), module, only.get(si))[0] for si in secs if anchors.get(si)}
         cand = {si for si in weak if si in mod and mod[si] != module}
+        # code at the start of a function another source defines is that source's copy (an
+        # inline body, or a destructor a thunk's file defines again)
+        cand |= {si for si in secs if si != root and si in mod and elf.sections[si].name == ".text"
+                 and (mod[si], min(anchors[si])) in self.sourced}
+        cand |= by_words & set(mod)  # a vtable copy: its file is the one whose code points to it
+        # what only such copies reach is a copy too (the vtable a shared destructor stores)
+        users = collections.defaultdict(set)
+        for si in secs:
+            for _, _, y, _ in elf.relocations(si):
+                if y.shndx in secs and y.shndx != si:
+                    users[y.shndx].add(si)
+        while more := {si for si in mod if si != root and si not in cand and users[si] and users[si] <= cand}:
+            cand |= more
         by = collections.defaultdict(list)
         for si, m in mod.items():
             if m == module:
@@ -539,8 +619,8 @@ class Planner:
                 and not s.name.startswith(META)}
         dead = dead_sections(elf, fn.shndx, secs)
         secs = {i: s for i, s in secs.items() if i not in dead}
-        anchors, only = self.place(elf, src, fn, secs)
-        shared = self.shared(elf, fn.shndx, secs, anchors, only, src.module)
+        anchors, only, by_words = self.place(elf, src, fn, secs)
+        shared = self.shared(elf, fn.shndx, secs, anchors, only, src.module, by_words)
         extern = []
         if shared:
             # what only the shared copies used goes with them
@@ -571,6 +651,13 @@ class Planner:
         out["globals"] = [[y.name, min(anchors[y.shndx]) + y.value] for y in elf.symbols
                           if y.bind == 1 and y.name and y.shndx in secs and y.shndx != fn.shndx
                           and anchors.get(y.shndx)]
+        # the names the kept sections use that the object does not define (by the names
+        # aliases.txt maps them to, as source_object writes them), and the names it defines
+        out["undef"] = sorted({self.rename.get(y.name, y.name) for si in secs
+                               for _, _, y, _ in elf.relocations(si)
+                               if y.shndx == 0 and y.name and not y.name.startswith("$")}
+                              | {n for _, n in extern})
+        out["defs"] = sorted({y.name for y in elf.symbols if y.bind and y.name and y.shndx in secs})
         # the statics in .bss, by address: named by the ROM when the .bss is another object's
         out["bss_locals"] = sorted(min(anchors[y.shndx]) + y.value for y in elf.symbols
                                    if y.bind == 0 and y.name and not y.name.startswith("$")
@@ -616,6 +703,11 @@ LEFT_OUT: dict[str, str] = {}
 # the first source of a link unit -> (its sources in ROM order, {(source, section index):
 # (source, section index)} for each section that is a copy of another member's)
 UNITS: dict[str, tuple[list[str], dict, list]] = {}
+# a source -> the neighbour it is tried in a link unit with, after it failed alone in a way
+# that says the two were one file: its code ends in the Thumb nop the next function's object
+# holds, or its data lies in the opposite order to its code; PAIRED: every one ever tried
+PAIRS: dict[str, str] = {}
+PAIRED: set[str] = set()
 
 
 # source (or link unit) -> {address: name}: the ROM's names its object defines as well
@@ -698,7 +790,7 @@ def find_units(good: dict[str, dict], seeds: list[str], module: dict[str, str], 
     for seed in seeds:
         if seed in done:
             continue
-        mod, group = module[seed], {seed}
+        mod, group = module[seed], {seed} | ({PAIRS[seed]} & good.keys() if seed in PAIRS else set())
         while True:
             spans = {}
             for f in group:
@@ -745,17 +837,23 @@ def find_units(good: dict[str, dict], seeds: list[str], module: dict[str, str], 
     return units, failed
 
 
-def choose(plans: list[dict], mods: dict) -> tuple[dict[str, list], collections.Counter]:
+def choose(plans: list[dict], mods: dict, known: set[str]) -> tuple[dict[str, list], collections.Counter]:
     """module -> [(file, {section: (start, end)})] of the sources (and link units, by their
     first source) that can be linked, and the reasons the others cannot (counted, and per
     source in LEFT_OUT). A link unit that fails a check is taken apart and its sources tried
     alone."""
     banned: dict[frozenset, str] = {}
+    PAIRS.clear()
+    PAIRED.clear()
     while True:
-        entries, why, broken = choose_once(plans, mods, banned)
-        if not broken:
+        tried = len(PAIRED)
+        entries, why, broken = choose_once(plans, mods, banned, known)
+        if not broken and len(PAIRED) == tried:
             return entries, why
         banned.update(broken)
+        for group in broken:  # a pair that does not hold: the source goes back to failing alone
+            for f in group & PAIRS.keys():
+                del PAIRS[f]
 
 
 @functools.cache
@@ -771,7 +869,7 @@ def reloc_targets() -> dict[str, list[tuple[int, int]]]:
     return refs
 
 
-def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
+def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str], known: set[str]):
     LEFT_OUT.clear()
     UNITS.clear()
     EXPORTS.clear()
@@ -813,6 +911,7 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
                 seeds.remove(f)
             why["a static in autoload_3's .bss has no symbol there"] += 1
             LEFT_OUT[f] = "a static in autoload_3's .bss has no symbol there"
+    seeds += [f for f in PAIRS if f in good and f not in seeds]
     units, failed = find_units(good, seeds, module, {r["file"]: r.get("root") for r in plans}, banned)
     in_unit = {f for members, *_ in units.values() for f in members}
     for f, reason in failed.items():
@@ -831,6 +930,11 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
 
     bad: set[str] = set()
     broken: dict[frozenset, str] = {}
+
+    def pair(f: str, g: str | None) -> None:
+        if g and f not in UNITS and f not in PAIRED:
+            PAIRS[f] = g
+            PAIRED.add(f)
 
     def drop(f: str, reason: str) -> None:
         if f not in bad:
@@ -851,6 +955,7 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
     for mod, es in entries.items():
         bounds: set[int] = set()
         names: dict[int, str] = {}
+        address: dict[str, int] = {}  # the other way round, every name
         targets = []
         ends = []  # where each ROM section of the module ends
         for at in dict.fromkeys((mod, home(mod, ".bss"))):
@@ -861,6 +966,7 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
                 if m:
                     a = int(m.group(3), 16)
                     names.setdefault(a, m.group(1))
+                    address.setdefault(m.group(1), a)
                     if m.group(2) in ("data", "bss"):
                         bounds.add(a)
             targets += refs[at]
@@ -871,8 +977,13 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
             _, end = merged.get(".text") or merged[".init"]  # an initialiser sits in .init
             if end % 4 == 2 and img[end - base:end - base + 2] == b"\xc0\x46":
                 drop(f, "Thumb nop after the code: shares an object with what follows")
+                after = [(m.get(".text") or m[".init"])[0] for _, m in es]
+                pair(f, min(((a, g) for a, (g, _) in zip(after, es) if a >= end), default=(0, None))[1])
                 continue
             spans = list(merged.values())
+            group = [by_file[g] for g in (UNITS[f][0] if f in UNITS else [f])]
+            defined = {n for r in group for n in r["defs"]}
+            need = {n for r in group for n in r["undef"]} - defined
             for name, (x, y) in merged.items():
                 if name in (".text", ".init"):
                     continue
@@ -897,6 +1008,20 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
                     drop(f, DETAIL[f][0])
                     break
                 EXPORTS.setdefault(f, {}).update({t: names[t] for t in miss})
+                # a member uses the ROM's name for data another member defines under its own
+                # (a vtable a .c constructor stores by its address point): the object defines
+                # the ROM's name too, as ds-decomp's object did
+                EXPORTS.setdefault(f, {}).update({address[n]: n for n in need
+                                                  if n in address and x <= address[n] < y})
+            if f in bad:
+                continue
+            # a name nothing linked defines: the original link had a definition this source
+            # does not reproduce (a vtable slot naming a method that is defined as C, or a
+            # base method a header does not override)
+            left = sorted(need - known - set(EXPORTS.get(f, {}).values()))
+            if left:
+                DETAIL[f] = ("uses a name nothing defines", " ".join(left[:3]) + (" ..." if len(left) > 3 else ""))
+                drop(f, DETAIL[f][0])
         # an object's tail padding up to the next object belongs to it
         es[:] = [(f, {n: (a, (b + 3) & ~3) for n, (a, b) in m.items()}) for f, m in es]
         claims = sorted([(a, b, f) for f, m in es if f not in bad for n, (a, b) in m.items()
@@ -904,14 +1029,16 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str]):
                         + [(a, (b + 3) & ~3, f) for a, b, f in foreign if mod == "autoload_3" and f not in bad])
         for (_, a1, f0), (b0, _, f1) in zip(claims, claims[1:]):
             if b0 < a1:
-                drop(f0, "overlapping claims")
-                drop(f1, "overlapping claims")
+                for f in (f0, f1):
+                    DETAIL[f] = ("overlapping claims", f"{f0} to {a1:#x}, {f1} from {b0:#x}")
+                    drop(f, DETAIL[f][0])
         for sec in ORDER[1:]:
             seq = sorted(((m.get(".text") or m[".init"])[0], f, m[sec][0]) for f, m in es if sec in m and f not in bad)
             keep = longest_increasing([(f, a) for _, f, a in seq])
-            for _, f, _ in seq:
+            for i, (_, f, a) in enumerate(seq):
                 if f not in keep:
                     drop(f, "link order")
+                    pair(f, seq[i - 1][1] if i and seq[i - 1][2] > a else seq[i + 1][1] if i + 1 < len(seq) else None)
     return {m: [e for e in es if e[0] not in bad] for m, es in entries.items()}, why, broken
 
 
@@ -1034,7 +1161,7 @@ def main() -> None:
     with cf.ThreadPoolExecutor(max(1, (os.cpu_count() or 4) - 2)) as pool:
         plans = [r for r in pool.map(planner.plan, paths) if r]
     step(f"planned {len(plans)} sources")
-    entries, why = choose(plans, planner.chk.mods)
+    entries, why = choose(plans, planner.chk.mods, planner.known)
     linked = sorted(g for es in entries.values() for f, _ in es for g in UNITS.get(f, ([f],))[0])
     chosen = set(linked)
     in_units = {f for members, *_ in UNITS.values() for f in members}

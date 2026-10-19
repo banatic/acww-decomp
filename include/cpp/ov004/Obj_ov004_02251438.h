@@ -7,6 +7,12 @@
 // vtable 0x02251438: a room object that is itself a base class (destructor 02215e70)
 struct Obj_ov004_02251438 : public RoomObject {
     virtual ~Obj_ov004_02251438();
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_0c();            // func_ov004_02215ddc
+    virtual int vfunc_70(int a, int b); // func_ov004_02215cdc
+    virtual void vfunc_74();            // func_ov004_02215d60
+    virtual void vfunc_7c();            // func_ov004_02215e08
+    virtual void vfunc_80();            // Obj_ov004_02251438::func_ov004_02215de0
 
     // update entry: runs the state handler dispatch below, then returns 1
     int func_ov004_02215de0();

@@ -262,4 +262,5 @@ data_ov147_022a29e5 kind:bss addr:0x022a29e5 ambiguous
 data_ov147_022a2a0d kind:bss addr:0x022a2a0d ambiguous
 data_ov147_022a2aac kind:bss addr:0x022a2aac
 data_ov147_022a2ab0 kind:bss addr:0x022a2ab0
+data_ov147_022a2ac8 kind:bss addr:0x022a2ac8
 data_ov147_022a2ac9 kind:bss addr:0x022a2ac9 ambiguous

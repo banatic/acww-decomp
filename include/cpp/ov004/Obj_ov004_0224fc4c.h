@@ -9,6 +9,13 @@
 // vtable 0x0224fc4c
 struct Obj_ov004_0224fc4c : public Base_0203f080, public Base_02066994 {
     virtual ~Obj_ov004_0224fc4c();
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_00(); // func_ov004_0220c3a0
+    virtual void vfunc_0c(); // func_ov004_0220c36c
+    virtual void vfunc_18(); // func_ov004_0220c380
+    virtual void vfunc_24(); // func_ov004_0220c37c
+    virtual void vfunc_48(); // func_ov004_0220c1f4
+    virtual void vfunc_4c(); // func_ov004_0220c1d0
     // Base_02066994 slots; primary slots 0x60..0x68
     virtual void vfunc_02066994_10(); // func_ov004_0220c01c
     virtual void vfunc_02066994_14(); // func_ov004_0220bfb4

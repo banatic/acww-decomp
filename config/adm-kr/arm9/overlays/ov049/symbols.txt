@@ -207,6 +207,7 @@ data_ov049_02263608 kind:bss addr:0x02263608
 data_ov049_0226360c kind:bss addr:0x0226360c
 data_ov049_02263610 kind:bss addr:0x02263610
 data_ov049_02263628 kind:bss addr:0x02263628
+data_ov049_02263638 kind:bss addr:0x02263638
 data_ov049_02263640 kind:bss addr:0x02263640
 data_ov049_02263648 kind:bss addr:0x02263648
 data_ov049_022636c0 kind:bss addr:0x022636c0

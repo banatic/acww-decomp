@@ -156,6 +156,7 @@ data_ov100_0229ec90 kind:data(any) addr:0x0229ec90
 data_ov100_0229ec98 kind:data(any) addr:0x0229ec98
 data_ov100_0229eca0 kind:data(any) addr:0x0229eca0
 data_ov100_0229eca8 kind:data(any) addr:0x0229eca8
+data_ov100_0229ecb0 kind:data(any) addr:0x0229ecb0
 data_ov100_0229ecb8 kind:data(any) addr:0x0229ecb8
 data_ov100_0229ed18 kind:data(any) addr:0x0229ed18
 data_ov100_0229ed3c kind:data(any) addr:0x0229ed3c

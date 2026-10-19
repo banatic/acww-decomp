@@ -22,14 +22,37 @@
 // Base of ov004's room objects (vtable 0x0224fe6c, destructor func_ov004_02210cf0,
 // operator delete func_ov004_02211518). The ROM keeps each class's destructors
 // together with the this-adjusting thunks its Base_02066994 vtable points at.
+// The primary vtable has 41 slots: Base_0203f080's 24, then 17 of its own
+// (0x60..0xa0, ending with func_ov004_0220ce20); its Base_02066994 vtable
+// (0x0224ff18) follows, so that one is at +0xac from this one.
 struct RoomObject : public Base_0203f080, public Base_02066994 {
     virtual ~RoomObject();
     static void operator delete(void *p);
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_00(); // func_ov004_02210bb4
+    virtual void vfunc_08(); // func_ov004_02210b94
+    virtual void vfunc_10(); // func_ov004_022109cc
+    virtual void vfunc_14(); // func_ov004_022108d0
+    virtual void vfunc_18(); // RoomObject::func_ov004_02210abc
+    virtual void vfunc_28(); // func_ov004_022109e4
+    virtual void vfunc_50(); // func_ov004_02210838
     virtual void vfunc_60();
     virtual void vfunc_64();
     virtual void vfunc_68();
     virtual void vfunc_6c();
     virtual int vfunc_70(int a, int b);
+    virtual void vfunc_74();
+    virtual void vfunc_78();
+    virtual void vfunc_7c();
+    virtual void vfunc_80();
+    virtual void vfunc_84();
+    virtual void vfunc_88();
+    virtual void vfunc_8c();
+    virtual void vfunc_90();
+    virtual void vfunc_94();
+    virtual void vfunc_98();
+    virtual void vfunc_9c();
+    virtual void vfunc_a0();
 
     // update entry: runs the state handler dispatch below, then returns 1
     int func_ov004_02210abc();

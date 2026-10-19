@@ -135,10 +135,12 @@ data_ov101_0229e050 kind:data(any) addr:0x0229e050
 data_ov101_0229e058 kind:data(any) addr:0x0229e058
 data_ov101_0229e060 kind:data(any) addr:0x0229e060
 data_ov101_0229e068 kind:data(any) addr:0x0229e068
+data_ov101_0229e070 kind:data(any) addr:0x0229e070
 data_ov101_0229e078 kind:data(any) addr:0x0229e078
 data_ov101_0229e0e0 kind:bss addr:0x0229e0e0
 data_ov101_0229e0e4 kind:bss addr:0x0229e0e4
 data_ov101_0229e0e8 kind:bss addr:0x0229e0e8
 data_ov101_0229e110 kind:bss addr:0x0229e110
 data_ov101_0229e190 kind:bss addr:0x0229e190
+data_ov101_0229e1d0 kind:bss addr:0x0229e1d0
 data_ov101_0229e1d8 kind:bss addr:0x0229e1d8 ambiguous

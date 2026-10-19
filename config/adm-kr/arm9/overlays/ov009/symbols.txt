@@ -163,6 +163,7 @@ data_ov009_02265890 kind:data(any) addr:0x02265890
 data_ov009_02265898 kind:data(any) addr:0x02265898
 data_ov009_022658a0 kind:data(any) addr:0x022658a0 ambiguous
 data_ov009_022658c0 kind:data(any) addr:0x022658c0
+data_ov009_022658d4 kind:data(any) addr:0x022658d4
 data_ov009_022658dc kind:data(any) addr:0x022658dc
 data_ov009_022658e8 kind:data(any) addr:0x022658e8 ambiguous
 data_ov009_02265900 kind:data(any) addr:0x02265900 ambiguous

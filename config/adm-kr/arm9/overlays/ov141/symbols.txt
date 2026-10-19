@@ -70,6 +70,7 @@ data_ov141_0229af20 kind:data(any) addr:0x0229af20
 data_ov141_0229af28 kind:data(any) addr:0x0229af28
 data_ov141_0229af30 kind:data(any) addr:0x0229af30
 data_ov141_0229af38 kind:data(any) addr:0x0229af38
+data_ov141_0229af40 kind:data(any) addr:0x0229af40
 data_ov141_0229af48 kind:data(any) addr:0x0229af48
 data_ov141_0229af58 kind:data(any) addr:0x0229af58 ambiguous
 data_ov141_0229afa8 kind:data(any) addr:0x0229afa8

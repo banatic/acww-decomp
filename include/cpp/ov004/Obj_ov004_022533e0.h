@@ -8,6 +8,13 @@
 // vtable 0x022533e0
 struct Obj_ov004_022533e0 : public Base_0203f080, public Base_02066994 {
     virtual ~Obj_ov004_022533e0();
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_00(); // func_ov004_0221bd28
+    virtual void vfunc_0c(); // func_ov004_0221bcbc
+    virtual void vfunc_18(); // Obj_ov004_022533e0::func_ov004_0221bce0
+    virtual void vfunc_24(); // func_ov004_0221bcdc
+    virtual void vfunc_48(); // func_ov004_0221b938
+    virtual void vfunc_4c(); // func_ov004_0221b908
     // Base_02066994 slots; primary slots 0x60..0x68
     virtual void vfunc_02066994_10(); // func_ov004_0221b808
     virtual void vfunc_02066994_14(); // func_ov004_0221b6d8

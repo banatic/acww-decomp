@@ -8,6 +8,13 @@
 // vtable 0x02254c58: room object of the 0x290-offset family
 struct Obj_ov004_02254c58 : public Obj_ov004_02254b28, public Base_02066994 {
     virtual ~Obj_ov004_02254c58();
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_00();                 // func_ov004_0222cc84
+    virtual void vfunc_0c();                 // func_ov004_0222cc40
+    virtual void vfunc_18();                 // Obj_ov004_02254c58::func_ov004_0222cc74
+    virtual void vfunc_24();                 // func_ov004_0222cc60
+    virtual int vfunc_60(unsigned int mode); // func_ov004_0222cb88
+    virtual void vfunc_64(void *position);   // func_ov004_0222cc24
 
     // state handlers, dispatched through tables in func_ov004_0222cafc, func_ov004_0222cb88
     void func_ov004_0222cafc();

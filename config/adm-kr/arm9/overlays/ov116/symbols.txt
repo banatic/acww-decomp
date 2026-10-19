@@ -64,6 +64,7 @@ data_ov116_0229e890 kind:data(any) addr:0x0229e890
 data_ov116_0229e898 kind:data(any) addr:0x0229e898
 data_ov116_0229e8a0 kind:data(any) addr:0x0229e8a0
 data_ov116_0229e8a8 kind:data(any) addr:0x0229e8a8
+data_ov116_0229e8b0 kind:data(any) addr:0x0229e8b0
 data_ov116_0229e8b8 kind:data(any) addr:0x0229e8b8
 data_ov116_0229e920 kind:bss addr:0x0229e920
 data_ov116_0229e924 kind:bss addr:0x0229e924

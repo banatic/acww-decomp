@@ -124,6 +124,7 @@ data_ov002_0220bacc kind:data(any) addr:0x0220bacc
 data_ov002_0220bad4 kind:data(any) addr:0x0220bad4
 data_ov002_0220badc kind:data(any) addr:0x0220badc
 data_ov002_0220bae4 kind:data(any) addr:0x0220bae4
+data_ov002_0220baec kind:data(any) addr:0x0220baec
 data_ov002_0220baf4 kind:data(any) addr:0x0220baf4
 data_ov002_0220bb04 kind:data(any) addr:0x0220bb04
 data_ov002_0220bb14 kind:data(any) addr:0x0220bb14

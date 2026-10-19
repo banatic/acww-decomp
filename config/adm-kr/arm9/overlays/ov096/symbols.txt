@@ -341,6 +341,7 @@ data_ov096_022a23c0 kind:data(any) addr:0x022a23c0
 data_ov096_022a23c8 kind:data(any) addr:0x022a23c8
 data_ov096_022a23d0 kind:data(any) addr:0x022a23d0
 data_ov096_022a23d8 kind:data(any) addr:0x022a23d8
+data_ov096_022a23e0 kind:data(any) addr:0x022a23e0
 data_ov096_022a23e8 kind:data(any) addr:0x022a23e8
 data_ov096_022a2460 kind:bss addr:0x022a2460
 data_ov096_022a2464 kind:bss addr:0x022a2464

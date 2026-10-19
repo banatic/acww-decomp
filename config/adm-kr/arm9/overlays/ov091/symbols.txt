@@ -32,6 +32,7 @@ data_ov091_02299508 kind:data(any) addr:0x02299508
 data_ov091_02299510 kind:data(any) addr:0x02299510
 data_ov091_02299518 kind:data(any) addr:0x02299518
 data_ov091_02299520 kind:data(any) addr:0x02299520
+data_ov091_02299528 kind:data(any) addr:0x02299528
 data_ov091_02299530 kind:data(any) addr:0x02299530
 data_ov091_022995a0 kind:bss addr:0x022995a0
 data_ov091_022995a4 kind:bss addr:0x022995a4

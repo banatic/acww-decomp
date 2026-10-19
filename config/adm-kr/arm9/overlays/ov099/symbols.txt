@@ -133,6 +133,7 @@ data_ov099_0229e018 kind:data(any) addr:0x0229e018
 data_ov099_0229e020 kind:data(any) addr:0x0229e020
 data_ov099_0229e028 kind:data(any) addr:0x0229e028
 data_ov099_0229e030 kind:data(any) addr:0x0229e030
+data_ov099_0229e038 kind:data(any) addr:0x0229e038
 data_ov099_0229e040 kind:data(any) addr:0x0229e040
 data_ov099_0229e0a0 kind:bss addr:0x0229e0a0
 data_ov099_0229e0a4 kind:bss addr:0x0229e0a4

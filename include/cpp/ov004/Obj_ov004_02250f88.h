@@ -6,6 +6,12 @@
 // vtable 0x02250f88: room object derived from Obj_ov004_02251438
 struct Obj_ov004_02250f88 : public Obj_ov004_02251438 {
     virtual ~Obj_ov004_02250f88();
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_0c();            // func_ov004_02215a7c
+    virtual int vfunc_70(int a, int b); // func_ov004_022159c8
+    virtual void vfunc_74();            // func_ov004_02215a68
+    virtual void vfunc_7c();            // func_ov004_02215aa0
+    virtual void vfunc_80();            // Obj_ov004_02250f88::func_ov004_02215a80
 
     // update entry: runs the state handler dispatch below, then returns 1
     int func_ov004_02215a80();

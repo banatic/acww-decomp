@@ -8,6 +8,13 @@
 // vtable 0x0225328c: object with the main-module bases
 struct Obj_ov004_0225328c : public Base_0203f080, public Base_02066994 {
     virtual ~Obj_ov004_0225328c();
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_00(); // func_ov004_0221b060
+    virtual void vfunc_0c(); // func_ov004_0221b00c
+    virtual void vfunc_18(); // Obj_ov004_0225328c::func_ov004_0221b020
+    virtual void vfunc_24(); // func_ov004_0221b01c
+    virtual void vfunc_48(); // func_ov004_0221af2c
+    virtual void vfunc_4c(); // func_ov004_0221af08
 
     // state handlers, dispatched through tables in func_ov004_0221ae00, func_ov004_0221ae7c
     void func_ov004_0221ae00();

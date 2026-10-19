@@ -3,8 +3,8 @@
  */
 
 extern "C" {
-void *g_021c9b1c;
-void *g_020ccf94;
+extern void *data_021c9b1c;
+extern void *data_020ccf94;
 int func_ov009_02264cf8(void *self, int param);
 int func_0205650c(void *ptr, int val, void *glob);
 void func_02056478(void *ptr, int val, int a, int b, int c);
@@ -72,7 +72,7 @@ class UnkStruct_0221e7ac {
 extern "C" int func_ov003_0221e7ac(UnkStruct_0221e7ac *self)
 {
     if (func_ov009_02264cf8(self, 0) != 0) {
-        if (func_0205650c(&self->unk_2B8, self->unk_198, g_021c9b1c) != 0) {
+        if (func_0205650c(&self->unk_2B8, self->unk_198, data_021c9b1c) != 0) {
             int val = func_ov009_02264cf8(self, 0);
             func_02056478(&self->unk_2B8, val, 1, 0x1000, 0);
             int val2 = func_02055e00(&self->unk_13C);
@@ -91,7 +91,7 @@ extern "C" int func_ov003_0221e7ac(UnkStruct_0221e7ac *self)
     if (func_020b6660() == 0) {
         self->unk_2F4 = 0;
     } else {
-        void *global = g_020ccf94;
+        void *global = data_020ccf94;
         if (func_02073d90(global) != 0 && func_02073918(global, 0) == 0) {
             self->unk_2F4 = 0;
         }

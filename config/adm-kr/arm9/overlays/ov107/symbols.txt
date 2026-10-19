@@ -140,6 +140,7 @@ data_ov107_0229e390 kind:data(any) addr:0x0229e390
 data_ov107_0229e398 kind:data(any) addr:0x0229e398
 data_ov107_0229e3a0 kind:data(any) addr:0x0229e3a0
 data_ov107_0229e3a8 kind:data(any) addr:0x0229e3a8
+data_ov107_0229e3b0 kind:data(any) addr:0x0229e3b0
 data_ov107_0229e3b8 kind:data(any) addr:0x0229e3b8
 data_ov107_0229e420 kind:bss addr:0x0229e420
 data_ov107_0229e424 kind:bss addr:0x0229e424

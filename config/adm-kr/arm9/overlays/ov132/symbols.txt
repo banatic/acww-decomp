@@ -67,6 +67,7 @@ data_ov132_0229b968 kind:data(any) addr:0x0229b968
 data_ov132_0229b970 kind:data(any) addr:0x0229b970
 data_ov132_0229b978 kind:data(any) addr:0x0229b978
 data_ov132_0229b980 kind:data(any) addr:0x0229b980
+data_ov132_0229b988 kind:data(any) addr:0x0229b988
 data_ov132_0229b990 kind:data(any) addr:0x0229b990
 data_ov132_0229b9f0 kind:data(any) addr:0x0229b9f0
 data_ov132_0229ba04 kind:data(any) addr:0x0229ba04

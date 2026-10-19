@@ -63,6 +63,7 @@ data_ov131_0229b8c8 kind:data(any) addr:0x0229b8c8
 data_ov131_0229b8d0 kind:data(any) addr:0x0229b8d0
 data_ov131_0229b8d8 kind:data(any) addr:0x0229b8d8
 data_ov131_0229b8e0 kind:data(any) addr:0x0229b8e0
+data_ov131_0229b8e8 kind:data(any) addr:0x0229b8e8
 data_ov131_0229b8f0 kind:data(any) addr:0x0229b8f0
 data_ov131_0229b928 kind:data(any) addr:0x0229b928 ambiguous
 data_ov131_0229b960 kind:bss addr:0x0229b960

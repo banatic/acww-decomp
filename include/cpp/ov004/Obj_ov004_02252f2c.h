@@ -7,6 +7,12 @@
 // vtable 0x02252f2c: room object
 struct Obj_ov004_02252f2c : public RoomObject {
     virtual ~Obj_ov004_02252f2c();
+    // slots overridden here, with the function the ROM vtable holds
+    virtual void vfunc_0c();            // func_ov004_0221a2d8
+    virtual int vfunc_70(int a, int b); // func_ov004_0221a240
+    virtual void vfunc_74();            // func_ov004_0221a2c4
+    virtual void vfunc_7c();            // func_ov004_0221a420
+    virtual void vfunc_80();            // Obj_ov004_02252f2c::func_ov004_0221a2dc
 
     // state handlers, dispatched through tables in func_ov004_0221a1d4, func_ov004_0221a240
     void func_ov004_0221a1d4();
