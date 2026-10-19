@@ -334,8 +334,8 @@ def main() -> int:
         if args.look:
             print(f"  {r['status']=} pngs in {(OUT / name / 'png').as_posix()} ({r['seconds']} s)")
             continue
-        clean = f", {r['clean'][1]} of {r['clean'][0]} Clean functions entered from the interpreter" if r["clean"] else ""
-        print(f"  {'PASS' if r['agree'] and r['status'] == 0 else 'FAIL'}: frames {r['frames']}{clean} "
+        entered = f", {r['clean'][1]} of {r['clean'][0]} Clean functions entered from the interpreter" if r["clean"] else ""
+        print(f"  {'PASS' if r['agree'] and r['status'] == 0 else 'FAIL'}: frames {r['frames']}{entered} "
               f"({r['seconds']} s; log {(OUT / name / 'run.log').as_posix()})", flush=True)
         if r["first"] is not None:
             print(f"    the frames first differ at frame {r['first']}")
