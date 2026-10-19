@@ -311,6 +311,15 @@ def source_object(plan: dict, rename: dict[str, str], exports: dict[int, str],
     obj, _ = C.compile_source(C.parse_source(C.ROOT / plan["file"]))
     o = Obj(obj)
     changed = bool(plan.get("extern")) or away
+    # Thumb code that ends half a word short, where the ROM has a nop: the original object held
+    # what follows too (a link unit's next piece), and the nop padded the code to it
+    for si, (name, mod, _, a, b) in zip(plan["index"], plan["sections"]):
+        if name == ".text" and mod and b % 4 == 2:
+            img, base = C.module_image(mod), C.modules()[mod]["base"]
+            if img[b - base:b - base + 2] == b"\xc0\x46":
+                o.secs[si][5] += b"\xc0\x46"
+                o.secs[si][6] += 2
+                changed = True
     if away:
         start = {si: s[3] for si, s in zip(plan["index"], plan["sections"])}
         rom = {a: n for a, n, _ in module_symbols("autoload_3")}
@@ -523,25 +532,35 @@ class Planner:
                 continue
             fixed = [i for i in range(len(raw)) if i not in other]
             first, want = words[0]
-            for group in ([src.module], [m for m in self.sections if m != src.module]):
-                found = set()
-                for mod in group:
-                    try:
-                        img, start = C.module_image(mod), self.chk.mods[mod]["base"]
-                    except (KeyError, OSError):
-                        continue
-                    for value in (want, want | 1):
-                        pat = struct.pack("<I", value)
-                        at = img.find(pat)
-                        while at >= 0:
-                            at0 = at - first
-                            if at % 4 == 0 and at0 >= 0 and at0 + len(raw) <= len(img) and                                     all(struct.unpack_from("<I", img, at0 + o)[0] & ~1 == v for o, v in words) and                                     all(img[at0 + i] == raw[i] for i in fixed):
-                                found.add((mod, start + at0))
-                            at = img.find(pat, at + 1)
-                if found:
-                    break
-            if len(found) == 1:
-                mod, at = found.pop()
+
+            def matches(img: bytes, at0: int) -> bool:
+                return (at0 >= 0 and at0 + len(raw) <= len(img)
+                        and all(struct.unpack_from("<I", img, at0 + o)[0] & ~1 == v for o, v in words)
+                        and all(img[at0 + i] == raw[i] for i in fixed))
+            found: dict[str, set[int]] = {}
+            for mod in [src.module, *(m for m in self.sections if m != src.module)]:
+                try:
+                    img, start = C.module_image(mod), self.chk.mods[mod]["base"]
+                except (KeyError, OSError):
+                    continue
+                for value in (want, want | 1):
+                    pat = struct.pack("<I", value)
+                    at = img.find(pat)
+                    while at >= 0:
+                        if at % 4 == 0 and matches(img, at - first):
+                            found.setdefault(mod, set()).add(start + at - first)
+                        at = img.find(pat, at + 1)
+            # one place in the source's own module, else one anywhere, else (derived classes'
+            # vtables that hold the same words) the one the class is named by: Obj_<module>_<its
+            # address point>, 8 bytes in
+            spots = {(m, a) for m, s in found.items() for a in s}
+            own = {(m, a) for m, a in spots if m == src.module}
+            named = {(m, a) for m, a in spots for y in elf.symbols if y.shndx == si
+                     and (x := re.search(r"_([a-z0-9]+)_([0-9a-f]{8})$", y.name)) and x.group(1) == m
+                     and int(x.group(2), 16) == a + 8}
+            pick = own if len(own) == 1 else spots if len(spots) == 1 else named if len(named) == 1 else set()
+            if pick:
+                mod, at = pick.pop()
                 anchors[si].add(at)
                 only[si] = [mod]
                 return [si]
@@ -564,7 +583,8 @@ class Planner:
         # inline body, or a destructor a thunk's file defines again)
         cand |= {si for si in secs if si != root and si in mod and elf.sections[si].name == ".text"
                  and (mod[si], min(anchors[si])) in self.sourced}
-        cand |= by_words & set(mod)  # a vtable copy: its file is the one whose code points to it
+        # a vtable copy: its file is the one whose code points to it (a .ctor entry is the source's own)
+        cand |= {si for si in by_words & set(mod) if elf.sections[si].name == ".data"}
         # what only such copies reach is a copy too (the vtable a shared destructor stores)
         users = collections.defaultdict(set)
         for si in secs:
@@ -763,6 +783,20 @@ def filler_targets(mod: str, a: int, b: int) -> list[tuple[int, str, int]] | Non
     return out
 
 
+@functools.cache
+def data_symbols(mod: str) -> frozenset[int]:
+    """The addresses of the module's data symbols (symbols.txt kind data)."""
+    return frozenset(int(m.group(3), 16) for line in (C.config_dir(mod) / "symbols.txt").read_text().splitlines()
+                     if (m := SYMBOL.match(line)) and m.group(2) == "data")
+
+
+def code_data(mod: str, a: int, b: int) -> bool:
+    """Whether a hole [a, b) in a link unit's code is data the ROM holds between two functions
+    (a constant no source defines): it starts at a data symbol and every symbol in it is one."""
+    inside = [x for x, _, _ in between(module_symbols(mod), a, b)]
+    return bool(inside) and inside[0] == a and all(x in data_symbols(mod) for x in inside)
+
+
 def find_units(good: dict[str, dict], seeds: list[str], module: dict[str, str], root: dict[str, int],
                banned: dict[frozenset, str]) -> tuple[dict, dict[str, str]]:
     """Link units: the sources a source with gaps between its same-named sections has to be
@@ -820,7 +854,10 @@ def find_units(good: dict[str, dict], seeds: list[str], module: dict[str, str], 
                     reason = reason or "link unit: two sources claim the same bytes"
                 elif not aligned(end, cur[0]):
                     hole = (name, (end + 3) & ~3, cur[0])
-                    if name in (".text", ".init") or (
+                    if (name in (".text", ".init") and code_data(mod, *hole[1:])
+                            and filler_targets(mod, *hole[1:]) is not None):
+                        pass
+                    elif name in (".text", ".init") or (
                             name != ".bss" and filler_targets(home(mod, name), *hole[1:]) is None):
                         if not reason:
                             reason = "link unit: a hole no source defines"
@@ -852,7 +889,7 @@ def choose(plans: list[dict], mods: dict, known: set[str]) -> tuple[dict[str, li
             return entries, why
         banned.update(broken)
         for group in broken:  # a pair that does not hold: the source goes back to failing alone
-            for f in group & PAIRS.keys():
+            for f in [f for f in group & PAIRS.keys() if PAIRS[f] in group]:
                 del PAIRS[f]
 
 
@@ -932,7 +969,7 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str], kno
     broken: dict[frozenset, str] = {}
 
     def pair(f: str, g: str | None) -> None:
-        if g and f not in UNITS and f not in PAIRED:
+        if g and f not in PAIRED:
             PAIRS[f] = g
             PAIRED.add(f)
 
@@ -1032,11 +1069,15 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str], kno
                 for f in (f0, f1):
                     DETAIL[f] = ("overlapping claims", f"{f0} to {a1:#x}, {f1} from {b0:#x}")
                     drop(f, DETAIL[f][0])
+        # (a section another module holds, main's .bss in autoload_3, is an object of its own
+        # there, placed by its own address: no order to keep with the code)
         for sec in ORDER[1:]:
-            seq = sorted(((m.get(".text") or m[".init"])[0], f, m[sec][0]) for f, m in es if sec in m and f not in bad)
+            seq = sorted(((m.get(".text") or m[".init"])[0], f, m[sec][0]) for f, m in es
+                         if sec in m and f not in bad and home(mod, sec) == mod)
             keep = longest_increasing([(f, a) for _, f, a in seq])
             for i, (_, f, a) in enumerate(seq):
                 if f not in keep:
+                    DETAIL[f] = ("link order", f"{sec} {a:#x}, after {seq[i - 1][1]} at {seq[i - 1][2]:#x}" if i else sec)
                     drop(f, "link order")
                     pair(f, seq[i - 1][1] if i and seq[i - 1][2] > a else seq[i + 1][1] if i + 1 < len(seq) else None)
     return {m: [e for e in es if e[0] not in bad] for m, es in entries.items()}, why, broken

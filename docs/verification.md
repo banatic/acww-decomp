@@ -29,7 +29,7 @@ purpose (a redundant mask, a dead branch) carries a `FAKEMATCH` comment explaini
 | Functions | 25,247 | 29,330 |
 | BYTES | 25,247 | 29,330 |
 | LINK | 25,247 | 29,330 |
-| Linked with mwldarm, modules match the ROM | 25,243 | |
+| Linked with mwldarm, modules match the ROM | 25,247 | |
 | `FAKEMATCH` | 17 | |
 
 Not covered yet: regrouping functions into their original source files, the data sections
