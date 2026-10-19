@@ -16,7 +16,7 @@ extern void func_ov123_0229b598(UnkStruct_0229ae84 *);
 extern void func_ov123_0229a278(UnkStruct_0229ae84 *, unsigned char arg1);
 extern void func_ov123_0229a248(UnkStruct_0229ae84 *, unsigned char arg1);
 extern void func_ov123_0229b0dc(UnkStruct_0229ae84 *, unsigned char);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov123_02299dc4(UnkStruct_0229ae84 *);
 extern void func_ov123_0229b160(UnkStruct_0229ae84 *, unsigned char);
 extern void func_ov123_02299980(UnkStruct_0229ae84 *);
@@ -54,7 +54,7 @@ void func_ov123_0229ae84(UnkStruct_0229ae84 *self)
         func_ov123_0229a248(self, cmd);
         val = (unsigned char) ((self->unk_A1 + 1) & 0xf);
         func_ov123_0229b0dc(self, val);
-        RtcSendPxiCommand(0x868);
+        func_0200467c(0x868);
         return;
     }
 
@@ -69,7 +69,7 @@ void func_ov123_0229ae84(UnkStruct_0229ae84 *self)
 
         idx = (unsigned char) (cmd - 0xd);
         func_ov123_0229b160(self, idx);
-        RtcSendPxiCommand(0x86a);
+        func_0200467c(0x86a);
         return;
     }
 
@@ -83,7 +83,7 @@ void func_ov123_0229ae84(UnkStruct_0229ae84 *self)
         func_ov123_0229b56c(self, 2, 3);
         if (func_ov123_02299650(self, 8) != 0) {
             func_0206fc4c(0);
-            RtcSendPxiCommand(0x28);
+            func_0200467c(0x28);
         } else {
             state = func_0206fca4();
             if (state == 2) {
@@ -100,7 +100,7 @@ void func_ov123_0229ae84(UnkStruct_0229ae84 *self)
             func_ov123_0229b384(self);
         LC:
             func_0206fc4c(1);
-            RtcSendPxiCommand(0x27);
+            func_0200467c(0x27);
         }
         return;
     }
@@ -109,10 +109,10 @@ void func_ov123_0229ae84(UnkStruct_0229ae84 *self)
         func_ov123_0229b56c(self, 9, 4);
         if (func_ov123_02299650(self, 8) != 0) {
             self->unk_AA = 0x1e;
-            RtcSendPxiCommand(0x29);
+            func_0200467c(0x29);
         } else {
             self->unk_AA = 0x1d;
-            RtcSendPxiCommand(0x2a);
+            func_0200467c(0x2a);
         }
         return;
     }

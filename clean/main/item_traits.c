@@ -55,13 +55,13 @@ static ItemCode carried_form(const ItemCode *item)
     return carried;
 }
 
-/* NNS_FndAllocFromAllocator (the ROM's symbol, misnamed): an item code's constructor with its
+/* func_0204b3cc: an item code's constructor with its
  * code. QUIRK: keeps the low 16 bits of `code`. */
 void ItemTraits_ConstructCode(ItemCode *item, int code)
 {
     *item = (ItemCode) code;
 }
-CLEAN_AS(NNS_FndAllocFromAllocator, ItemTraits_ConstructCode)
+CLEAN_AS(func_0204b3cc, ItemTraits_ConstructCode)
 
 /* func_0204c4b8 */
 void ItemTraits_CopyCode(ItemCode *dst, const ItemCode *src)

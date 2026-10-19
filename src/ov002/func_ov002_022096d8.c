@@ -12,7 +12,7 @@ struct UnkStruct_022096d8 {
 extern void func_ov002_02208a0c(struct UnkStruct_022096d8 *self, int bit);
 extern int func_ov002_02208a14(struct UnkStruct_022096d8 *self, int bit);
 extern void func_ov002_02208a04(struct UnkStruct_022096d8 *self, int bit);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov002_022096d8(struct UnkStruct_022096d8 *self, int flag)
 {
@@ -23,6 +23,6 @@ void func_ov002_022096d8(struct UnkStruct_022096d8 *self, int flag)
     if (func_ov002_02208a14(self, 0x10)) {
         func_ov002_02208a04(self, 0x10);
     } else {
-        RtcSendPxiCommand(0x14);
+        func_0200467c(0x14);
     }
 }

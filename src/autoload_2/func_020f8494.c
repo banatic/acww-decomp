@@ -6,7 +6,7 @@ extern int func_020eed18(void *h, int a);
 extern int func_020eedb8(int seq, int a, void *h);
 extern unsigned int func_020f1d3c(void *rng, unsigned int range);
 extern void func_0210b6d4(void *h, int a, int b);
-extern void ciAddUNQUIETFilter(void *p, void *q);
+extern void func_020f7c1c(void *p, void *q);
 extern char data_021fd1bc[];
 
 typedef struct {
@@ -98,5 +98,5 @@ void func_020f8494(UnkStruct_020f8494 *p, int code, void *q)
         }
         p->unk_12 = p->unk_14;
     }
-    ciAddUNQUIETFilter(p, q);
+    func_020f7c1c(p, q);
 }

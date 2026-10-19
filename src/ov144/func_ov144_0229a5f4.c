@@ -24,7 +24,7 @@ extern void func_ov144_02299694(UnkStruct_0229a5f4 *self, int a);
 extern void func_ov144_02299c2c(UnkStruct_0229a5f4 *self, int a);
 extern unsigned char *func_ov002_02208098(UnkStruct_0229a5f4 *self, unsigned char value);
 extern void func_ov144_02299670(UnkStruct_0229a5f4 *self, int a);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern u8 data_020e54a8;
 
 int func_ov144_0229a5f4(UnkStruct_0229a5f4 *self)
@@ -60,6 +60,6 @@ int func_ov144_0229a5f4(UnkStruct_0229a5f4 *self)
     func_ov144_02299c2c(self, 8);
     func_ov002_02208098(self, 0xa);
     func_ov144_02299670(self, 0x10);
-    RtcSendPxiCommand(0x58);
+    func_0200467c(0x58);
     return 1;
 }

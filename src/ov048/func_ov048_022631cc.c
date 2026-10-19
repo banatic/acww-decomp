@@ -9,7 +9,7 @@ typedef struct {
     unsigned short unk_E6E;
 } UnkStruct_022631cc;
 
-extern int DWCi_GsMalloc(int);
+extern int func_0209615c(int);
 extern int func_02095a8c(int, int);
 extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern int func_020644cc(int);
@@ -17,7 +17,7 @@ extern unsigned short data_020c80f8;
 
 int func_ov048_022631cc(UnkStruct_022631cc *obj)
 {
-    if (DWCi_GsMalloc(4) == 0) {
+    if (func_0209615c(4) == 0) {
         func_02095a8c(-0x8000, 4);
         func_02019d0c(&obj->unk_564, 3, 1, 0, 0, 0, -0x4000, 0, 0, data_020c80f8, 0);
         obj->unk_E6E = (unsigned char) (func_020644cc(5) + 5);

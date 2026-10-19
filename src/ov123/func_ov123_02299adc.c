@@ -12,7 +12,7 @@ extern int func_ov002_022088ac(void *);
 extern int func_ov002_0220889c(void *);
 extern int func_ov002_022088bc(void *);
 extern void func_ov123_02299640(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 typedef struct {
     char pad_00[0xaa];
@@ -89,7 +89,7 @@ after_first_if:
     }
 
     func_ov123_02299640(p, 0x200);
-    RtcSendPxiCommand(0x869);
+    func_0200467c(0x869);
 ret1:
     return 1;
 ret0:

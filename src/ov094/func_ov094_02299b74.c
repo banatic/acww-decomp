@@ -5,7 +5,7 @@
 extern int func_ov094_02299c5c(void);
 extern void func_ov094_02299c74(void *self, int);
 extern void func_02004644(int, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov094_022999a8(void *self, int);
 extern int func_ov094_022999b0(void *self, int);
 extern void func_ov094_022999a0(void *self, int);
@@ -28,7 +28,7 @@ void func_ov094_02299b74(UnkStruct_02299b74 *self)
             self->unk_00 = ret;
             func_ov094_02299c74(self, 0);
             func_02004644(0x2d, 1);
-            RtcSendPxiCommand(0x3e);
+            func_0200467c(0x3e);
         } else {
             if (self->unk_00 >= ret) {
                 goto subtract;

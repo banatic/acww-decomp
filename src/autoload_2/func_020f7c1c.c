@@ -1,4 +1,4 @@
-/* ciAddUNQUIETFilter @ 0x020f7c1c, 0x94 bytes, ARM, module autoload_2
+/* func_020f7c1c @ 0x020f7c1c, 0x94 bytes, ARM, module autoload_2
  * mwccarm 1.2/base -O4,p
  */
 
@@ -8,7 +8,7 @@ extern int func_020f5e50(int a1, int a2);
 extern int func_020f5e24(int a1);
 extern int func_020f5c64(int a1, int a2);
 
-void ciAddUNQUIETFilter(char *ctx, int arg1)
+void func_020f7c1c(char *ctx, int arg1)
 {
     if (arg1 == 0) {
         NNS_SndPlayerSetVolume(ctx + 4, 0);

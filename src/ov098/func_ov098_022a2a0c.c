@@ -26,7 +26,7 @@ extern int func_02043db4(void *a, u32 *b, int c, int d, int e);
 extern int func_02043634(void *a, int b, int c);
 extern void func_ov096_0229fb9c(UnkStruct_022a2a0c *self);
 extern void func_ov096_0229f874(UnkStruct_022a2a0c *self, int a, int b, int c);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern unsigned char *func_ov002_02208098(UnkStruct_022a2a0c *self, unsigned char value);
 extern void func_ov096_0229c2ec(UnkStruct_022a2a0c *self, int val);
 
@@ -53,7 +53,7 @@ void func_ov098_022a2a0c(UnkStruct_022a2a0c *self)
     if (self->unk_C4 == -1) {
         func_ov096_0229fb9c(self);
         func_ov096_0229f874(self, 8, 0xff, 0);
-        RtcSendPxiCommand(0x73);
+        func_0200467c(0x73);
     } else {
         func_ov002_02208098(self, 0x29);
         func_ov096_0229c2ec(self, 0x1000);

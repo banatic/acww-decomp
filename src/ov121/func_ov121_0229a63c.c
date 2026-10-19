@@ -26,7 +26,7 @@ extern int func_ov121_0229abac(UnkStruct_0229a63c *self, int k);
 extern u16 data_ov121_0229c2b8[];
 extern int func_020435fc(void *a, int b);
 extern void func_ov121_0229af7c(UnkStruct_0229a63c *self, int n, int z);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern unsigned char *func_ov002_02208098(UnkStruct_0229a63c *self, unsigned char value);
 
 void func_ov121_0229a63c(UnkStruct_0229a63c *self)
@@ -37,7 +37,7 @@ void func_ov121_0229a63c(UnkStruct_0229a63c *self)
     self->unk_98 = func_020435fc(data_020ccf94->unk_64, self->unk_A0);
     if (self->unk_98 == -1) {
         func_ov121_0229af7c(self, 3, 0);
-        RtcSendPxiCommand(0x73);
+        func_0200467c(0x73);
     } else {
         func_ov002_02208098(self, 0x14);
     }

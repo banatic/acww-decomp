@@ -12,7 +12,7 @@ typedef struct {
 
 extern void func_ov110_0229c2a8(UnkStruct_0229c3b8 *, int);
 extern int func_0206fca4(void);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov110_0229c4f8(UnkStruct_0229c3b8 *, int);
 extern int func_ov110_0229c388(UnkStruct_0229c3b8 *, unsigned short *);
@@ -33,9 +33,9 @@ void func_ov110_0229c3b8(UnkStruct_0229c3b8 *s, int flag)
     func_ov110_0229c2a8(s, 8);
     m = func_0206fca4();
     if (m == 0x20) {
-        RtcSendPxiCommand(0x28);
+        func_0200467c(0x28);
     } else {
-        RtcSendPxiCommand(0x27);
+        func_0200467c(0x27);
     }
     if (flag != 0) {
         s->st = 5;

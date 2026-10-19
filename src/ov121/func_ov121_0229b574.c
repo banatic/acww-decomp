@@ -10,7 +10,7 @@ extern void func_ov121_0229a53c(unsigned char *);
 extern void func_ov121_0229a1e4(unsigned char *);
 extern unsigned char *func_ov002_02208098(unsigned char *, unsigned char value);
 extern void func_ov002_02209114(unsigned char *, int, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
@@ -54,7 +54,7 @@ void func_ov121_0229b574(unsigned char *self)
                 case 1:
                 case 2:
                 case 3:
-                    RtcSendPxiCommand(0x50);
+                    func_0200467c(0x50);
                     break;
                 case 4:
                 case 5:

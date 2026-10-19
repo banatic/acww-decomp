@@ -6,7 +6,7 @@
 #include "cpp/ov009/Obj_ov009_022658dc.h"
 
 extern "C" {
-int DWC_Alloc(int, int);
+int func_02096124(int, int);
 int func_0203e31c(void);
 int func_ov009_02264c90(int);
 void func_0203edd0(int);
@@ -24,7 +24,7 @@ void Obj_ov009_022658dc::func_ov009_02263fbc()
     int tmp;
     int from6590;
 
-    if (DWC_Alloc(0x13, 4) != 0) {
+    if (func_02096124(0x13, 4) != 0) {
         return;
     }
     if (func_0203e31c() != 0) {

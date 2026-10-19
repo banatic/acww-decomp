@@ -36,7 +36,7 @@ extern void func_020e8b60(void *, int, int, int);
 extern void func_ov004_0222d30c(void *, void *);
 extern int func_02056f94(void *);
 extern int func_02056f28(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 }
 
 extern "C" void func_ov004_0222cfbc(UnkStruct_0222cfbc *self)
@@ -52,6 +52,6 @@ extern "C" void func_ov004_0222cfbc(UnkStruct_0222cfbc *self)
     if (func_02056f94(b + 0x188) != 0) {
         self->vf(2);
     } else if (func_02056f28(b + 0x188, 0x3a) != 0) {
-        RtcSendPxiCommand(0x4ed);
+        func_0200467c(0x4ed);
     }
 }

@@ -21,7 +21,7 @@ extern int func_0204bcdc(unsigned short *ptr);
 extern int func_ov004_0223b540(int *out, unsigned short *in, int flag);
 extern void func_ov096_0229fb9c(UnkStruct_022a27fc *self);
 extern void func_ov096_0229f874(UnkStruct_022a27fc *self, int a, int b, int c);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern int func_020435fc(int value, unsigned short param);
 extern int func_ov004_0223c660(int value);
 
@@ -38,17 +38,17 @@ int func_ov097_022a27fc(UnkStruct_022a27fc *self, unsigned short param2)
             case 0:
                 func_ov096_0229fb9c(self);
                 func_ov096_0229f874(self, 3, 0xff, 0);
-                RtcSendPxiCommand(0x73);
+                func_0200467c(0x73);
                 return 0;
             case 1:
                 func_ov096_0229fb9c(self);
                 func_ov096_0229f874(self, 5, 0xff, 1);
-                RtcSendPxiCommand(0x73);
+                func_0200467c(0x73);
                 return 0;
             case 2:
                 func_ov096_0229fb9c(self);
                 func_ov096_0229f874(self, 3, 0xff, 0);
-                RtcSendPxiCommand(0x73);
+                func_0200467c(0x73);
                 return 0;
             default:
                 func_ov004_0223c660(c);
@@ -60,7 +60,7 @@ int func_ov097_022a27fc(UnkStruct_022a27fc *self, unsigned short param2)
         if (self->unk_C4 == -1) {
             func_ov096_0229fb9c(self);
             func_ov096_0229f874(self, 3, 0xff, 0);
-            RtcSendPxiCommand(0x73);
+            func_0200467c(0x73);
             return 0;
         } else {
             return 2;

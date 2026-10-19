@@ -12,7 +12,7 @@ typedef struct {
 } UnkStruct_0229cf18;
 
 extern void func_ov114_0229cf58(void *arg0);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 int func_ov114_0229cf18(UnkStruct_0229cf18 *p)
 {
@@ -20,7 +20,7 @@ int func_ov114_0229cf18(UnkStruct_0229cf18 *p)
         p->unk_12B5 = p->unk_12B5 + 1;
         p->unk_12AE = 5;
         func_ov114_0229cf58((void *) p);
-        RtcSendPxiCommand(0x39);
+        func_0200467c(0x39);
         return 1;
     }
     return 0;

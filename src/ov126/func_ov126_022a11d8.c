@@ -8,7 +8,7 @@ extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov126_022a0854(void *, unsigned char);
 extern void func_ov126_022a0680(void *);
 extern void func_ov126_022a0168(void *);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 typedef struct {
     char pad_00[0xA8];
@@ -29,6 +29,6 @@ void func_ov126_022a11d8(UnkStruct_022a11d8 *s)
         }
         func_ov126_022a0680(s);
         func_ov126_022a0168(s);
-        RtcSendPxiCommand(0x15);
+        func_0200467c(0x15);
     }
 }

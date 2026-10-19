@@ -19,7 +19,7 @@ typedef struct {
 
 extern int func_ov129_0229bcf0(UnkStruct_0229ba2c *, u16);
 extern void func_ov002_0220a658(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern u8 *func_ov127_022996bc(u16);
 extern int func_ov127_022996d8(u8);
 extern int func_ov127_022996c8(u8);
@@ -71,7 +71,7 @@ int func_ov129_0229ba2c(UnkStruct_0229ba2c *self)
         func_ov002_0220a658(self->unk_1D4, 6);
         self->b1 = 0;
         self->b3 = 0xff;
-        RtcSendPxiCommand(0x882);
+        func_0200467c(0x882);
         return 2;
     }
     while (changed) {
@@ -123,6 +123,6 @@ int func_ov129_0229ba2c(UnkStruct_0229ba2c *self)
             self->b3 = c;
         }
     }
-    RtcSendPxiCommand(0x882);
+    func_0200467c(0x882);
     return 2;
 }

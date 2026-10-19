@@ -12,7 +12,7 @@ extern int func_02099fe8(void);
 extern void func_0209a088(void *, int, int);
 extern void *func_020984e8(void);
 extern void *func_020996ac(void *);
-extern int OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
+extern int func_0203cd2c(void *, void *, int, int);
 extern int func_020154b4(void *, void *, int, int, int);
 extern void func_0202dbf0(void *, Pair);
 extern void func_0202dac0(void *);
@@ -28,7 +28,7 @@ void func_02023ddc(void *obj)
             st = func_02099fe8();
             if (st >= 0) {
                 func_0209a088((char *) obj + 0x19c, 0, st);
-                OSi_DoUnlockByWord__main_0203cd2c(func_020996ac(func_020984e8()), (char *) obj + 0x19c, 0, 1);
+                func_0203cd2c(func_020996ac(func_020984e8()), (char *) obj + 0x19c, 0, 1);
             }
             func_020154b4(obj, (char *) obj + 0x19c, 0, 5, 0);
             func_0202dbf0(obj, data_020d9100);

@@ -11,7 +11,7 @@ typedef struct UnkStruct_020f78e8 {
 } UnkStruct_020f78e8;
 
 extern int func_020f7bc4(UnkStruct_020f78e8 *obj, int id, int *slot);
-extern void ciAddUNQUIETFilter(UnkStruct_020f78e8 *obj, int arg);
+extern void func_020f7c1c(UnkStruct_020f78e8 *obj, int arg);
 extern int NNS_SndArcPlayerStartSeq(int *slot, int a);
 extern void NNS_SndPlayerMoveVolume(int *slot, int a, int b);
 extern int NNS_SndPlayerWriteVariable(int *slot, int a, int b);
@@ -85,5 +85,5 @@ void func_020f78e8(UnkStruct_020f78e8 *obj, int key, int arg)
             break;
     }
 
-    ciAddUNQUIETFilter(obj, arg);
+    func_020f7c1c(obj, arg);
 }

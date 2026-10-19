@@ -29,7 +29,7 @@ extern void func_ov134_02299a3c(UnkStruct_022997dc *);
 extern int func_ov134_022995c0(UnkStruct_022997dc *, int);
 extern void func_ov134_022995a0(UnkStruct_022997dc *, int);
 extern void func_ov134_022995b0(UnkStruct_022997dc *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 int func_ov134_022997dc(UnkStruct_022997dc *self, void *other)
 {
@@ -78,7 +78,7 @@ L_ge6:
     }
     if (func_ov134_022995c0(self, 0x100)) {
         func_ov134_022995a0(self, 0x100);
-        RtcSendPxiCommand(0xb);
+        func_0200467c(0xb);
     } else {
         func_ov134_022995b0(self, 0x100);
     }
@@ -107,7 +107,7 @@ L_less6:
     }
     if (func_ov134_022995c0(self, 0x100)) {
         func_ov134_022995a0(self, 0x100);
-        RtcSendPxiCommand(0xb);
+        func_0200467c(0xb);
     } else {
         func_ov134_022995b0(self, 0x100);
     }

@@ -4,7 +4,7 @@
 
 extern int func_020b6660(void);
 extern int func_020b6640(void);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern unsigned short data_020ccb6c[];
 extern unsigned short data_020ccb68[];
 
@@ -24,7 +24,7 @@ void func_02065564(struct UnkStruct_02065564 *p)
             } else {
                 arg = data_020ccb68[p->state];
             }
-            RtcSendPxiCommand(arg);
+            func_0200467c(arg);
             p->state = 2;
         }
     } else {

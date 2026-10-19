@@ -8,7 +8,7 @@ extern int func_ov121_0229a50c(void *receiver);
 extern void func_ov121_02299c88(void *, unsigned char);
 extern unsigned char *func_ov121_0229afb8(void *);
 extern void func_ov121_0229af7c(void *, int, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 typedef struct {
     unsigned char pad_00[0x98];
@@ -28,7 +28,7 @@ void func_ov121_0229b020(UnkStruct_0229b020 *self)
             break;
         case 2:
             func_ov121_0229af7c(self, 3, 0);
-            RtcSendPxiCommand(0x73);
+            func_0200467c(0x73);
             break;
         default:
             return;

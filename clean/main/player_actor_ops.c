@@ -936,7 +936,7 @@ int PlayerActorOps_InState(int state, int player)
 }
 CLEAN_AS(func_020960f8, PlayerActorOps_InState)
 
-/* DWC_Alloc (a name the symbols give this function, not NitroDWC's): flag `bit` of player
+/* func_02096124: flag `bit` of player
  * `player`'s actor; 0 without one. */
 int PlayerActorOps_TestFlag(int bit, int player)
 {
@@ -946,7 +946,7 @@ int PlayerActorOps_TestFlag(int bit, int player)
     }
     return FieldActor_TestFlag(actor, bit);
 }
-CLEAN_AS(DWC_Alloc, PlayerActorOps_TestFlag)
+CLEAN_AS(func_02096124, PlayerActorOps_TestFlag)
 
 /* func_02096144: whether this console's actor is in state 0x90. */
 int PlayerActorOps_InState90(void)
@@ -962,13 +962,13 @@ int PlayerActorOps_InState5(void)
 }
 CLEAN_AS(func_02096150, PlayerActorOps_InState5)
 
-/* DWCi_GsMalloc (a name the symbols give this function, not NitroDWC's): flag 5 of player
+/* func_0209615c: flag 5 of player
  * `player`'s actor, set while it is busy. */
 int PlayerActorOps_IsBusy(int player)
 {
     return PlayerActorOps_TestFlag(PLAYER_ACTOR_OPS_FLAG_BUSY, player);
 }
-CLEAN_AS(DWCi_GsMalloc, PlayerActorOps_IsBusy)
+CLEAN_AS(func_0209615c, PlayerActorOps_IsBusy)
 
 /* func_02096168: flag 4 of this console's actor. */
 int PlayerActorOps_TestOwnFlag4(void)

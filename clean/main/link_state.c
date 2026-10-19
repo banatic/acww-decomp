@@ -389,19 +389,19 @@ void LinkState_ResetChosen(LinkState *state)
 }
 CLEAN_AS(func_020a5be8, LinkState_ResetChosen)
 
-/* OSi_GetSystemErrno (0x020a5bf0; the symbol's name is not this function's). */
+/* func_020a5bf0. */
 int LinkState_Chosen(LinkState *state)
 {
     return state->chosen;
 }
-CLEAN_AS(OSi_GetSystemErrno, LinkState_Chosen)
+CLEAN_AS(func_020a5bf0, LinkState_Chosen)
 
-/* OSi_SetSystemErrno (0x020a5bf8; the symbol's name is not this function's). */
+/* func_020a5bf8. */
 void LinkState_SetChosen(LinkState *state, int slot)
 {
     state->chosen = slot;
 }
-CLEAN_AS(OSi_SetSystemErrno, LinkState_SetChosen)
+CLEAN_AS(func_020a5bf8, LinkState_SetChosen)
 
 /* func_020a5c00 */
 void LinkState_ResetHostPhase(LinkState *state)

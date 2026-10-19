@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov133_0229b190(u8 *self);
 extern void func_ov133_0229b320(u8 *self, u8 v);
 extern void func_ov133_0229ad78(u8 *self, int v);
@@ -14,11 +14,11 @@ int func_ov133_0229b0f0(u8 *self, u8 v)
     int i;
 
     if (self[0x9f] == 0xc && self[0xa2] == self[0xa3]) {
-        RtcSendPxiCommand(0x34);
+        func_0200467c(0x34);
         return 0;
     }
     if (self[0xa2] == self[0xa3] && self[0xaf] != 0xa) {
-        RtcSendPxiCommand(0x34);
+        func_0200467c(0x34);
         return 0;
     }
     if (self[0xa2] != self[0xa3]) {

@@ -4,7 +4,7 @@
 
 extern void WXC_End(void);
 extern void func_020edb14(void);
-extern int UTi_PutString(int);
+extern int func_020edacc(int);
 extern int data_021fbf48;
 extern int data_021fbf28;
 extern unsigned char data_021fbef8;
@@ -17,7 +17,7 @@ int func_020ec548(void)
             func_020edb14();
         } while (data_021fbf48 == 0);
     }
-    UTi_PutString(data_021fbf28);
+    func_020edacc(data_021fbf28);
     data_021fbf28 = 0;
     data_021fbef8 = 6;
     return 1;

@@ -26,7 +26,7 @@ extern GObj_02044e28 *data_020ccf94;
 extern TableElem_02044e28 data_021c7c48[4];
 extern void *data_021c7880;
 extern void *func_020b65c4(void);
-extern int DWC_Alloc(int a, int b);
+extern int func_02096124(int a, int b);
 extern void func_02042a9c(A_02044e28 *a);
 extern void func_02044fe8(A_02044e28 *a);
 extern void func_02044f3c(A_02044e28 *a);
@@ -45,7 +45,7 @@ void func_02044e28(A_02044e28 *a, void *b)
         }
     } else if (a->flag) {
         if (b == func_020b65c4() && data_021c7880 != 0) {
-            if (DWC_Alloc(10, 4)) {
+            if (func_02096124(10, 4)) {
                 func_02042a9c(a);
                 func_02044fe8(a);
             } else {

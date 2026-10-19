@@ -20,7 +20,7 @@ extern void func_ov144_02299694(struct UnkStruct_0229a71c *p, int a);
 extern void func_0206fc4c(int a);
 extern void func_0206f674(int a);
 extern void func_ov002_02208090(struct UnkStruct_0229a71c *p, int a);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 int func_ov144_0229a71c(struct UnkStruct_0229a71c *p)
 {
@@ -41,6 +41,6 @@ int func_ov144_0229a71c(struct UnkStruct_0229a71c *p)
     func_0206fc4c(1);
     func_0206f674(p->array_86c[p->unk_BA]);
     func_ov002_02208090(p, 2);
-    RtcSendPxiCommand(0x55);
+    func_0200467c(0x55);
     return 1;
 }

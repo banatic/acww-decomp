@@ -23,7 +23,7 @@ extern void *func_020984e8(void);
 extern void *func_02099870(void *);
 extern int func_020950c0(void *);
 extern int func_ov004_0222c1b0(int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern int func_ov053_0226075c(void *receiver);
 extern void func_ov053_02261524(void *, int);
 extern int func_0202ea80(int, int);
@@ -78,7 +78,7 @@ void func_ov053_02260894(UnkStruct_02260894 *obj)
             break;
         case 0x40:
             func_ov004_0222c1b0(0);
-            RtcSendPxiCommand(0x43);
+            func_0200467c(0x43);
             code = func_ov053_0226075c((void *) obj);
             break;
         case 0x42:
@@ -92,7 +92,7 @@ void func_ov053_02260894(UnkStruct_02260894 *obj)
             break;
         case 0x41:
             func_ov004_0222c1b0(1);
-            RtcSendPxiCommand(0x44);
+            func_0200467c(0x44);
             break;
         case 0x45:
             break;

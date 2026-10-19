@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void OSi_SetSystemErrno(void *param1, void *param2);
+extern void func_020a5bf8(void *param1, void *param2);
 
 extern unsigned char data_021f4320[];
 
 void func_020a6f34(void *param1)
 {
-    OSi_SetSystemErrno((void *) data_021f4320, param1);
+    func_020a5bf8((void *) data_021f4320, param1);
 }

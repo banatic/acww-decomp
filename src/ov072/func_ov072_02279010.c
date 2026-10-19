@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 extern int func_02087178(const void *);
-extern int gt2GetIncomingBufferSize(const void *);
+extern int func_02016104(const void *);
 extern int func_0201c314(const void *, int);
 extern int func_020147fc(void *, int, int, int);
 extern int func_020147e0(void *, int, int);
@@ -22,7 +22,7 @@ int func_ov072_02279010(void *self)
 
     if (func_02087178((const void *) data_021ebcd2) != 0) {
         if (*(int *) (s + 0x720) == 0) {
-            tmp = gt2GetIncomingBufferSize(s + 0x658);
+            tmp = func_02016104(s + 0x658);
             s16 = *(signed short *) (s + 0x8e);
             if (tmp == 0) {
                 arg2 = s16;

@@ -39,7 +39,7 @@ typedef struct {
     u16 unk_1870[0x20 * 0x20];
 } UnkStruct_0229a5c8;
 
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_0200277c(int);
 extern u8 func_ov134_0229aaa8(UnkStruct_0229a5c8 *, int);
 extern u8 func_ov134_0229aa78(UnkStruct_0229a5c8 *, int);
@@ -78,7 +78,7 @@ void func_ov134_0229a5c8(UnkStruct_0229a5c8 *p, int mode)
     int t;
     u16 *row;
 
-    RtcSendPxiCommand(0x13);
+    func_0200467c(0x13);
     p->a5 = (u8) mode;
     p->a9 = 0;
     func_0200277c(p->a4);

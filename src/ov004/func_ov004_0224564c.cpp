@@ -41,7 +41,7 @@ extern "C" {
 extern Controller *func_ov004_022318f8(void);
 extern char *func_02096190(unsigned int);
 extern void func_0203aa24(int *, int *, void *);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_0208e594(void *, int, int);
 extern Pair data_ov004_0224be24[], data_ov004_0224be14;
 extern unsigned char data_021c75b8;
@@ -77,7 +77,7 @@ extern "C" void func_ov004_0224564c(unsigned char *self)
     }
     if (special_mode() && *(int *) (self + 0x320) == 2 &&
         (*(int *) (self + 0x330) != local.x || *(int *) (self + 0x334) != local.y)) {
-        RtcSendPxiCommand(11);
+        func_0200467c(11);
     }
     func_0208e594(self + 0x50, local.x, local.y);
     ((Pane *) (self + 0x50))->update();

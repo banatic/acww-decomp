@@ -19,7 +19,7 @@ extern void func_ov123_02299f08(UnkStruct_0229a438 *self);
 extern unsigned char *func_ov002_02208098(UnkStruct_0229a438 *self, unsigned char value);
 extern void func_ov123_02299e28(UnkStruct_0229a438 *self);
 extern void func_ov123_0229a538(UnkStruct_0229a438 *self, u8 a, u8 b);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov123_02299640(UnkStruct_0229a438 *self, int a);
 
 void func_ov123_0229a438(UnkStruct_0229a438 *self)
@@ -34,8 +34,8 @@ void func_ov123_0229a438(UnkStruct_0229a438 *self)
         func_ov123_02299e28(self);
         func_ov123_0229a538(self, self->unk_A8, self->unk_A9);
         if (self->unk_A4 <= 2) {
-            RtcSendPxiCommand(0x85f);
-            RtcSendPxiCommand(0x861);
+            func_0200467c(0x85f);
+            func_0200467c(0x861);
             func_ov002_02208098(self, 5);
         }
         func_ov123_02299640(self, 0x40);

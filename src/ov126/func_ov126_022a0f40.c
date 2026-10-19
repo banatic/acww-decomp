@@ -19,7 +19,7 @@ extern void func_ov126_022a0728(UnkStruct_022a0f40 *self);
 extern void func_ov126_022a08c4(UnkStruct_022a0f40 *self);
 extern void func_ov126_022a0168(UnkStruct_022a0f40 *self);
 extern void func_ov126_0229ff0c(UnkStruct_022a0f40 *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern int func_ov002_02209f00(unsigned char *ptr);
 extern void func_ov095_0229a134(unsigned char *ptr, int val);
 extern void func_ov126_022a0f20(UnkStruct_022a0f40 *self);
@@ -54,7 +54,7 @@ void func_ov126_022a0f40(UnkStruct_022a0f40 *self)
             func_ov126_022a08c4(self);
             func_ov126_022a0168(self);
             func_ov126_0229ff0c(self);
-            RtcSendPxiCommand(0xb);
+            func_0200467c(0xb);
             break;
         case 2:
             val = func_ov002_02209f00(self->unk_3F90);

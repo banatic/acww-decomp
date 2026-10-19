@@ -122,7 +122,7 @@ int Sound_StopSequence(void *handle, int fade_frames)
 }
 CLEAN_AS(func_020eed18, Sound_StopSequence)
 
-/* ENV_AppendResourceSet (the ROM's symbol name does not fit it): a handle made empty; the game
+/* func_020eed48: a handle made empty; the game
  * stops without one. */
 void Sound_InitHandle(SoundHandle *handle)
 {
@@ -131,7 +131,7 @@ void Sound_InitHandle(SoundHandle *handle)
     }
     func_0210b7e0(handle);
 }
-CLEAN_AS(ENV_AppendResourceSet, Sound_InitHandle)
+CLEAN_AS(func_020eed48, Sound_InitHandle)
 
 /* func_020eed68: a sequence of a sequence archive started on `handle` with a player, bank and
  * player priority of its own (-1: the archive's); the game stops without a handle. */
@@ -334,13 +334,13 @@ int SoundList_Last(SoundList *list)
 }
 CLEAN_AS(func_020efc10, SoundList_Last)
 
-/* MIi_ReadWordStreamFromMemory (the ROM's symbol name does not fit it): the list's first
+/* func_020efc18: the list's first
  * object. */
 unsigned long SoundList_First(const SoundList *list)
 {
     return (unsigned long) list->first;
 }
-CLEAN_AS(MIi_ReadWordStreamFromMemory, SoundList_First)
+CLEAN_AS(func_020efc18, SoundList_First)
 
 /* func_020efc20 */
 void *SoundList_Prev(SoundList *list, void *object)

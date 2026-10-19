@@ -14,7 +14,7 @@ extern int func_ov004_0223cc10(int a, int x, int y, int z);
 extern int func_ov004_0223ce84(void);
 extern int func_ov004_0223cd78(int a, int b);
 extern int func_ov004_0223bb14(int);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern int func_0204bd08(u16 *p);
 extern int func_0204f538(int a, void *b, int x, int y, int e);
 extern int data_021f49f4;
@@ -52,7 +52,7 @@ void func_020afe94(int x, int y, int p2, int p3)
             func_ov004_0223bb14((int) func_ov004_0223cd78(func_ov004_0223ce84(), h));
         }
         if (p3 != 0) {
-            RtcSendPxiCommand(0x2e);
+            func_0200467c(0x2e);
         }
         return;
     }
@@ -75,6 +75,6 @@ void func_020afe94(int x, int y, int p2, int p3)
     }
 
     if (p3 != 0) {
-        RtcSendPxiCommand(0x2e);
+        func_0200467c(0x2e);
     }
 }

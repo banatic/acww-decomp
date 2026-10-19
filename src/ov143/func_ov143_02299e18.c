@@ -21,7 +21,7 @@ extern u8 func_ov143_022997d8(UnkStruct_02299e18 *self, u8 v);
 extern unsigned char *func_ov002_02208098(UnkStruct_02299e18 *self, unsigned char value);
 extern void func_0206e9ac(u8 v);
 extern void func_ov143_02299ad4(UnkStruct_02299e18 *self);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov143_02299b2c(UnkStruct_02299e18 *self);
 extern void func_ov143_0229a230(UnkStruct_02299e18 *self);
 extern void func_ov143_0229a200(UnkStruct_02299e18 *self);
@@ -47,7 +47,7 @@ int func_ov143_02299e18(UnkStruct_02299e18 *self, unsigned int p)
     switch (p - 0x10) {
         case 0:
             func_ov143_02299ad4(self);
-            RtcSendPxiCommand(0x2a);
+            func_0200467c(0x2a);
             return 1;
         case 1:
             func_ov143_02299b2c(self);

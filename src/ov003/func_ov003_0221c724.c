@@ -14,7 +14,7 @@ typedef struct {
 
 extern void func_0209e474(int *p);
 extern int func_020b65c4(void);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 extern unsigned int data_ov003_0223c8b8; // hours
 extern unsigned int data_ov003_0223c8c0; // minutes
@@ -82,17 +82,17 @@ void func_ov003_0221c724(UnkStruct_0221c724 *self)
         switch (st) {
             case 1:
                 if (self->unk_2D9 == 0) {
-                    RtcSendPxiCommand(0x61);
+                    func_0200467c(0x61);
                 }
                 break;
             case 2:
                 if (self->unk_2D9 == 0) {
-                    RtcSendPxiCommand(0x60);
+                    func_0200467c(0x60);
                 }
                 break;
             case 3:
                 if (self->unk_2D9 == 0) {
-                    RtcSendPxiCommand(0x62);
+                    func_0200467c(0x62);
                 }
                 break;
         }

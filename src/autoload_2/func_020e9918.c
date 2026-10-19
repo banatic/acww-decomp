@@ -1,4 +1,4 @@
-/* GXS_BeginLoadOBJExtPltt @ 0x020e9918, 0x24 bytes, ARM, module autoload_2
+/* func_020e9918 @ 0x020e9918, 0x24 bytes, ARM, module autoload_2
  * mwccarm 1.2/base -O4,p
  */
 
@@ -17,15 +17,15 @@ typedef enum {
 
 typedef enum { GX_VRAM_SUB_OBJEXTPLTT_NONE = 0x0000, GX_VRAM_SUB_OBJEXTPLTT_0_I = GX_VRAM_I } GXVRamSubOBJExtPltt;
 
-void *GX_ResetBankForSubOBJExtPltt(int size, void *heap);
+void *func_020ea1bc(int size, void *heap);
 
-void GXS_BeginLoadOBJExtPltt(int size, void *heap);
+void func_020e9918(int size, void *heap);
 
 extern void *sSubOBJExtPltt;
 
-void GXS_BeginLoadOBJExtPltt(int size, void *heap)
+void func_020e9918(int size, void *heap)
 {
     ((void) 0);
-    sSubOBJExtPltt = GX_ResetBankForSubOBJExtPltt(size, heap);
+    sSubOBJExtPltt = func_020ea1bc(size, heap);
     ((void) 0);
 }

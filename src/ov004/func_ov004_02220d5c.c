@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int gt2GetIncomingBufferSize(void *p);
+extern int func_02016104(void *p);
 extern int func_0201c314(void *self, int h);
 extern int func_020147fc(void *p, int a, int b, int c);
 extern unsigned char func_020e8858(void *p);
@@ -21,7 +21,7 @@ int func_ov004_02220d5c(char *s)
     v = *(u8 *) (s + 0xadd);
     if (v != 0) {
         if (v == 1) {
-            h = gt2GetIncomingBufferSize(s + 0x918);
+            h = func_02016104(s + 0x918);
             n = 0;
             if (h != 0) {
                 n = func_0201c314(s, h);

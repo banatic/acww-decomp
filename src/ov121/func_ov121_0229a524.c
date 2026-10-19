@@ -4,12 +4,12 @@
 
 #include "types.h"
 
-extern BOOL CARD_IsEnabled(void);
+extern BOOL func_0203ac5c(void);
 extern int func_0203ac44(void);
 
 void func_ov121_0229a524(void *receiver)
 {
-    if (!CARD_IsEnabled()) {
+    if (!func_0203ac5c()) {
         func_0203ac44();
     }
 }

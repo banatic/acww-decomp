@@ -5,15 +5,15 @@
 extern int func_ov123_02299650(int a, int b);
 extern void func_ov123_02299930(int a);
 extern void func_ov123_02299954(int a);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov123_02299980(int a)
 {
     if (func_ov123_02299650(a, 0x20) != 0) {
         func_ov123_02299930(a);
-        RtcSendPxiCommand(0x42);
+        func_0200467c(0x42);
     } else {
         func_ov123_02299954(a);
-        RtcSendPxiCommand(0x41);
+        func_0200467c(0x41);
     }
 }

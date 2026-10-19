@@ -1,4 +1,4 @@
-/* GX_ResetBankForSubOBJExtPltt @ 0x020ea1bc, 0xdc bytes, ARM, module autoload_2
+/* func_020ea1bc @ 0x020ea1bc, 0xdc bytes, ARM, module autoload_2
  * mwccarm 1.2/base -O4,p
  */
 
@@ -13,7 +13,7 @@ extern void func_020e9c48(void *heap, void *block);
 extern int NNS_FndCreateExpHeapEx(void *p, int n, u16 c);
 extern void *func_020ea41c(void *obj, void *p, int n, void *heap, int ret);
 
-void *GX_ResetBankForSubOBJExtPltt(int size, void *heap)
+void *func_020ea1bc(int size, void *heap)
 {
     u32 allocSize;
     int total;

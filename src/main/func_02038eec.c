@@ -19,7 +19,7 @@ extern int func_020984e8(void);
 extern int func_02099870(int);
 extern void *func_02095074(int, void *);
 extern void func_020398e8(int, void *, void *);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void *func_02094fbc(void *);
 extern void *func_0203a3ec(void *);
 
@@ -131,7 +131,7 @@ void func_02038eec(int argument)
         func_02094fd4(buf2);
         func_02095074(func_02099870((int) func_020984e8()), buf2);
         func_020398e8(obj->unk_64, buf2, buf1);
-        RtcSendPxiCommand(0x32);
+        func_0200467c(0x32);
         data_021c6730 = 0x1e;
         func_02094fbc(buf2);
     }

@@ -25,7 +25,7 @@ extern void func_02098a24(int, int, int);
 extern int func_02098eb8(int);
 extern int func_02098f0c(int, u16 *, int, int);
 extern int func_020996ac(int);
-extern int OSi_DoUnlockByWord__main_0203cd2c(int, u16 *, int, int);
+extern int func_0203cd2c(int, u16 *, int, int);
 extern void func_02015f38(char *, int, int, int, int, int, int);
 extern void func_02015de4(char *, u16 *, int, int);
 
@@ -174,7 +174,7 @@ void func_02024580(char *p)
         c = func_02098eb8(b);
         if (c != -1) {
             func_02098f0c(b, &P16(0x19c), c, 0);
-            OSi_DoUnlockByWord__main_0203cd2c(func_020996ac(a), &P16(0x19c), 0, 1);
+            func_0203cd2c(func_020996ac(a), &P16(0x19c), 0, 1);
         }
     }
     flag = 0;

@@ -6,7 +6,7 @@ extern int func_020eed18(void *h, int a);
 extern int func_020eedb8(int seq, int a, void *h);
 extern unsigned int func_020f1d3c(void *rng, unsigned int range);
 extern int NNS_SndPlayerWriteVariable(void *h, int varNo, int val);
-extern void ciAddUNQUIETFilter(void *p, void *q);
+extern void func_020f7c1c(void *p, void *q);
 extern char data_021fd1bc[];
 
 typedef struct {
@@ -92,5 +92,5 @@ void func_020f8834(UnkStruct_020f8834 *p, int code, void *q)
         p->unk_10 = 0;
     }
     p->unk_10 = (unsigned short) (p->unk_10 + 1);
-    ciAddUNQUIETFilter(p, q);
+    func_020f7c1c(p, q);
 }

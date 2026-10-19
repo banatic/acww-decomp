@@ -6,7 +6,7 @@ extern unsigned int func_ov004_02222b3c(void *self);
 extern void func_0201ad18(void *p, int a, int b, int c, int d, int e, int f, int g);
 extern int func_ov004_0222fd94(void);
 extern int func_020147e0(void *p, int a, int b);
-extern int gt2GetIncomingBufferSize(void *p);
+extern int func_02016104(void *p);
 extern int func_0201c314(void *self, int n);
 extern int func_020147fc(void *p, int a, int b, int c);
 extern int data_021fbee8;
@@ -23,7 +23,7 @@ int func_ov004_02223228(char *self)
     if (func_ov004_02222b3c(self) < 6) {
         func_020147e0(self + 0x618, 1, 0);
     } else {
-        n = gt2GetIncomingBufferSize(self + 0x658);
+        n = func_02016104(self + 0x658);
         r = 0;
         if (n != 0) {
             r = func_0201c314(self, n);

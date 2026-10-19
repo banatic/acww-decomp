@@ -14,7 +14,7 @@ typedef struct UnkStruct_0229a6b4 {
 
 extern unsigned int func_020b2300(void);
 extern void func_ov121_0229af7c(UnkStruct_0229a6b4 *, int, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern int func_ov121_0229abac(UnkStruct_0229a6b4 *, u8);
 extern unsigned char *func_ov121_0229afb8(UnkStruct_0229a6b4 *);
 extern int func_ov121_0229a50c(void *receiver);
@@ -32,7 +32,7 @@ void func_ov121_0229a6b4(UnkStruct_0229a6b4 *o)
 
     if (func_020b2300() > 1) {
         func_ov121_0229af7c(o, 9, 0);
-        RtcSendPxiCommand(0x73);
+        func_0200467c(0x73);
         return;
     }
     switch (o->unk_AF) {
@@ -58,11 +58,11 @@ void func_ov121_0229a6b4(UnkStruct_0229a6b4 *o)
         case 0:
         case 1:
             func_ov121_0229af7c(o, 5, 0);
-            RtcSendPxiCommand(0x73);
+            func_0200467c(0x73);
             break;
         case 2:
             func_ov121_0229af7c(o, 3, 0);
-            RtcSendPxiCommand(0x73);
+            func_0200467c(0x73);
             break;
         default:
             func_ov121_0229a50c(o);

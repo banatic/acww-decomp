@@ -64,12 +64,12 @@ u32 Clock_Seed(void)
 }
 CLEAN_AS(func_0209dbbc, Clock_Seed)
 
-/* CARDi_GetTargetMode (the symbols' name for it): the clock's second. */
+/* func_0209dedc: the clock's second. */
 int Clock_Second(void)
 {
     return (int) data_021dc754.second;
 }
-CLEAN_AS(CARDi_GetTargetMode, Clock_Second)
+CLEAN_AS(func_0209dedc, Clock_Second)
 
 /* func_0209dee8: the clock's year (0-99). */
 int Clock_Year(void)

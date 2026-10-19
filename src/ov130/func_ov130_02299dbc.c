@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov130_02299dbc(void)
 {
-    RtcSendPxiCommand(0x2a);
+    func_0200467c(0x2a);
 }

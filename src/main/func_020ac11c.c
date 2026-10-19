@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_020ac11c(unsigned char *param0, unsigned char param1, int param2)
 {
@@ -15,7 +15,7 @@ void func_020ac11c(unsigned char *param0, unsigned char param1, int param2)
     if (param2 != 0) {
         if (param0[0x74] == 0) {
             if (val != 0) {
-                RtcSendPxiCommand(0x3b);
+                func_0200467c(0x3b);
             }
         }
     }

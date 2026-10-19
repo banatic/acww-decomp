@@ -255,7 +255,7 @@ CLEAN_AS(func_0203f400, ObjectClaim_Ask)
 
 /* ---- The host's table ---- */
 
-/* OS_ClearAlloc (0x0203f444; the symbol's name is not what it does): `slot`'s claim let go;
+/* func_0203f444: `slot`'s claim let go;
  * the table's address.
  * REQUIRES: `slot` is a session slot (0-3). */
 int ObjectClaim_Clear(int slot)
@@ -263,7 +263,7 @@ int ObjectClaim_Clear(int slot)
     OSiHeapInfo[slot] = 0;
     return (int) (uintptr_t) OSiHeapInfo;
 }
-CLEAN_AS(OS_ClearAlloc, ObjectClaim_Clear)
+CLEAN_AS(func_0203f444, ObjectClaim_Clear)
 
 /* func_0203f454: whether `slot` may claim `id`: it holds no claim, `id` is not the id that may
  * not be claimed and no slot holds it.

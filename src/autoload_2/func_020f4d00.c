@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern unsigned long MIi_ReadWordStreamFromMemory(const unsigned long *stream);
+extern unsigned long func_020efc18(const unsigned long *stream);
 extern void func_020efc38(void *stream, unsigned int len);
 extern unsigned int func_020efc2c(void *stream, unsigned int val);
 
 unsigned int func_020f4d00(void *stream, unsigned int len)
 {
-    unsigned int ret = MIi_ReadWordStreamFromMemory((const unsigned long *) stream);
+    unsigned int ret = func_020efc18((const unsigned long *) stream);
 
     if (ret == 0) {
         return ret;

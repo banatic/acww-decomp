@@ -10,7 +10,7 @@ typedef struct UnkStruct_020f7780 {
 } UnkStruct_020f7780;
 
 extern int func_020f7bc4(UnkStruct_020f7780 *self, int code, void *arg);
-extern void ciAddUNQUIETFilter(UnkStruct_020f7780 *self, void *p3);
+extern void func_020f7c1c(UnkStruct_020f7780 *self, void *p3);
 
 void func_020f7780(UnkStruct_020f7780 *self, int msgId, void *p3)
 {
@@ -47,5 +47,5 @@ void func_020f7780(UnkStruct_020f7780 *self, int msgId, void *p3)
             }
             break;
     }
-    ciAddUNQUIETFilter(self, p3);
+    func_020f7c1c(self, p3);
 }

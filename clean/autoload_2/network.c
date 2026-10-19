@@ -100,10 +100,9 @@ extern const char data_0213e73c[]; /* "region" */
 extern void *data_021fbf78[LOCAL_ENTRY_COUNT];
 extern u8 data_021fc040[LOCAL_ENTRY_SIZE];
 
-/* Net_Alloc and Net_Free by the game's symbols, handed to the local library. UTi_PutString's
- * name is NitroSDK's but does not fit: it calls the free function. */
+/* Net_Alloc and Net_Free by the game's symbols, handed to the local library. */
 extern void *func_020edaf0(int size, int align);
-extern void UTi_PutString(void *block);
+extern void func_020edacc(void *block);
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
@@ -700,7 +699,7 @@ extern void (*data_021fbf30)(int index);
 
 /* Set up by Net_Init: the game code ('ADMK'), the value handed first to the local library,
  * how long a wait may take before it is given up (milliseconds), and the allocator and the
- * free function the libraries use (func_020edaf0, UTi_PutString). OS_PutString's name is
+ * free function the libraries use (func_020edaf0, func_020edacc). OS_PutString's name is
  * NitroSDK's but does not fit: it holds the free function. */
 extern int data_021fbf04;
 extern u8 data_0213e6b4;
@@ -801,7 +800,7 @@ extern void func_020edaa8(int unused, int block);
 extern GetCallback func_020ed370;
 
 extern void func_020ed6e8(u8 *event);
-extern void CTRDG_WriteAgbFlashSectorAsync(int aid, char *buffer, unsigned int size);
+extern void func_020ed6c4(int aid, char *buffer, unsigned int size);
 #define LOCAL_STATE_IDLE 2
 #define LOCAL_STATE_CONNECTED_A 10
 #define LOCAL_STATE_CONNECTED_B 11
@@ -1112,10 +1111,10 @@ void Local_Setup(int mode, ReceiveHandler *on_received)
     parameters.unk_05 = 8;
     parameters.unk_06 = 60;
     parameters.unk_07 = 2;
-    LocalWireless_Init(data_0213e6b4, func_020edaf0, UTi_PutString, 0);
+    LocalWireless_Init(data_0213e6b4, func_020edaf0, func_020edacc, 0);
     LocalWireless_SetEventHandler(func_020ed6e8);
     LocalRelay_Start((LocalRelayParams *) &parameters);
-    LocalWireless_SetReceiveHandler(CTRDG_WriteAgbFlashSectorAsync);
+    LocalWireless_SetReceiveHandler(func_020ed6c4);
     if (mode == MODE_LOCAL_PARENT) {
         LocalWireless_Request(3, 0, 0);
     } else if (mode == MODE_LOCAL_CHILD) {
@@ -1491,13 +1490,13 @@ void *Wfc_Alloc(int name, int size, int align)
 }
 CLEAN_AS(func_020edab8, Wfc_Alloc)
 
-/* UTi_PutString: a block freed through the free function the game installed (Net_Init).
+/* func_020edacc: a block freed through the free function the game installed (Net_Init).
  * QUIRK: what the free function leaves in the result register is returned. */
 int Net_Free(void *block)
 {
     return ((int (*)(void *)) OS_PutString)(block);
 }
-CLEAN_AS(UTi_PutString, Net_Free)
+CLEAN_AS(func_020edacc, Net_Free)
 
 /* func_020edaf0: a block from the allocator the game installed (Net_Init). */
 void *Net_Alloc(int size, int align)
@@ -1840,13 +1839,13 @@ void Wfc_OnJoined(u32 result, int local, int is_server, int cancelled, int aid, 
 }
 CLEAN_AS(func_020ed6ac, Wfc_OnJoined)
 
-/* CTRDG_WriteAgbFlashSectorAsync (the name is NitroSDK's but does not fit): data received by
+/* func_020ed6c4: data received by
  * the local library handed to the game's handler. */
 void Net_DispatchReceived(int aid, char *buffer, unsigned int size)
 {
     CTRDGi_WriteAgbFlashSectorAsync(aid, buffer, size);
 }
-CLEAN_AS(CTRDG_WriteAgbFlashSectorAsync, Net_DispatchReceived)
+CLEAN_AS(func_020ed6c4, Net_DispatchReceived)
 
 /* func_020ed6e8: the local library's events: event[0] 0 and 1 for the peer event[1] connected
  * and disconnected, 2 for the library's end.

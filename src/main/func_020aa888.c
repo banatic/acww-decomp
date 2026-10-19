@@ -22,7 +22,7 @@ extern int func_020abd14(void *p);
 extern int func_020a7e44(void);
 extern int func_020a7ebc(void);
 extern int func_020a7e94(void);
-extern void RtcSendPxiCommand(int command);
+extern void func_0200467c(int command);
 
 void func_020aa888(UnkStruct_020aa888 *self)
 {
@@ -110,7 +110,7 @@ void func_020aa888(UnkStruct_020aa888 *self)
             crossed = 1;
         }
         if (crossed != 0) {
-            RtcSendPxiCommand(0x19);
+            func_0200467c(0x19);
         }
     }
     self->unk_0C = self->unk_08;

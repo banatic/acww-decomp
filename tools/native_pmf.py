@@ -24,7 +24,7 @@ VERIFIED: dict[str, tuple[str, str, str, str]] = {
         'static_assert(__builtin_offsetof(UnkStruct_02013518, unk_28) == 0x28, "ROM field");',
     ),
     "main/func_0201cfe4.cpp": (
-        "05f3c72a036b99bdedeaa4cc190cf773b0540bf9004a9156db365c53efa26079",
+        "dd736357200171c19e4b42adedeb6c9475050542a8b2b574551a0187785cefde",
         "typedef void (UnkStruct_0201cfe4::*PMF)(int);",
         "typedef NativeMember<UnkStruct_0201cfe4, void, int> PMF;",
         'static_assert(sizeof(PMF) == 8, "ROM member-pointer size");\n'

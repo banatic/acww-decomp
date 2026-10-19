@@ -4,7 +4,7 @@
 
 extern void func_ov123_02299630(void *, int);
 extern void func_ov123_0229b65c(void *);
-extern void RtcSendPxiCommand(int command);
+extern void func_0200467c(int command);
 extern int func_ov002_02208008(void *);
 extern int func_ov123_022999b0(void *, int, int);
 extern void func_ov123_0229a340(void *);
@@ -16,7 +16,7 @@ void func_ov123_0229b89c(void *arg)
     if ((data_021fbe40 & 2) == 0) {
         func_ov123_02299630(arg, 0x800);
         func_ov123_0229b65c(arg);
-        RtcSendPxiCommand(0x86d);
+        func_0200467c(0x86d);
     } else {
         int ret = func_ov002_02208008(arg);
         if (func_ov123_022999b0(arg, ret, 0) != 0) {

@@ -8,7 +8,7 @@ extern void func_ov144_02299694(void *p, short s);
 extern void func_ov144_02299670(void *p, int n);
 extern void func_ov144_02299b7c(void *p);
 extern int func_ov144_0229a7c8(void *p);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov144_0229a6c8(void *p)
 {
@@ -25,5 +25,5 @@ void func_ov144_0229a6c8(void *p)
     func_ov144_02299670(p, 8);
     func_ov144_02299b7c(p);
     func_ov144_0229a7c8(p);
-    RtcSendPxiCommand(0x56);
+    func_0200467c(0x56);
 }

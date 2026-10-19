@@ -24,7 +24,7 @@ extern u8 data_ov134_0229c03c[];
 extern u8 data_ov134_0229c04c[];
 
 extern void func_ov134_022995d4(UnkStruct_0229a24c *, u8);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_02001b7c(int);
 extern void func_02001b6c(int);
 extern void func_ov134_02299ecc(UnkStruct_0229a24c *);
@@ -55,7 +55,7 @@ int func_ov134_0229a24c(UnkStruct_0229a24c *o)
                 o->unk_AF = o->unk_AF - 1;
                 func_ov134_022995d4(o, o->unk_AF);
             } else {
-                RtcSendPxiCommand(0x14);
+                func_0200467c(0x14);
                 o->unk_A9 = 6;
                 o->unk_AF = 3;
                 func_02001b7c(1);

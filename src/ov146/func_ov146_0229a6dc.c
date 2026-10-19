@@ -15,7 +15,7 @@ extern void func_0206fc80(int);
 extern void func_ov146_02299660(struct UnkStruct_0229a6dc *, int);
 extern void func_ov002_02208090(struct UnkStruct_0229a6dc *, int);
 extern unsigned char *func_ov002_02208098(struct UnkStruct_0229a6dc *, unsigned char value);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 void func_ov146_0229a6dc(struct UnkStruct_0229a6dc *self)
 {
@@ -26,5 +26,5 @@ void func_ov146_0229a6dc(struct UnkStruct_0229a6dc *self)
     self->unk_BA = 5;
     func_ov002_02208090(self, 2);
     func_ov002_02208098(self, 9);
-    RtcSendPxiCommand(0x27);
+    func_0200467c(0x27);
 }

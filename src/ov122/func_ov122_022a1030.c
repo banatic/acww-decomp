@@ -8,7 +8,7 @@ extern void func_ov122_0229f89c(void *);
 extern void *func_ov122_0229f634(void *);
 extern int func_ov095_0229b3a0(void *, void *, unsigned char);
 extern void func_ov122_0229f388(void *receiver);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov122_022a15b8(void *, int, int);
 extern void func_ov122_0229f9a8(void *);
 
@@ -55,7 +55,7 @@ int func_ov122_022a1030(void *self, int param)
         }
     }
 
-    RtcSendPxiCommand(0x35);
+    func_0200467c(0x35);
     func_ov122_022a15b8(self, 0, 1);
     func_ov122_0229f9a8(self);
     return 1;

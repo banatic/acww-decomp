@@ -5,7 +5,7 @@
 extern int func_02051c8c_unk(const void *, int);
 extern void func_ov111_0229f854(void *receiver);
 extern int func_02095804(void);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov111_0229fc9c(void *receiver);
 
 int func_ov111_0229f660(unsigned char *self)
@@ -17,7 +17,7 @@ int func_ov111_0229f660(unsigned char *self)
         func_ov111_0229f854((void *) self);
     } else {
         func_02095804();
-        RtcSendPxiCommand(0x32);
+        func_0200467c(0x32);
         func_ov111_0229fc9c((void *) self);
         return 1;
     }

@@ -4,7 +4,7 @@
 
 extern unsigned int data_020ccf94;
 extern int func_02073d90(void *);
-extern int OS_ClearAlloc(int);
+extern int func_0203f444(int);
 extern void func_0203f490(int, int);
 
 void func_0203f364(void)
@@ -16,7 +16,7 @@ void func_0203f364(void)
     r0 = func_02073d90(r4);
     if (r0 != 0) {
         if (*(int *) ((char *) r4 + 0x64) == 0) {
-            OS_ClearAlloc(0);
+            func_0203f444(0);
         } else {
             func_0203f490(3, 0);
         }

@@ -11,7 +11,7 @@ extern void func_ov112_0229fd20(void *obj);
 extern void func_ov112_0229f668(void *obj);
 extern void func_ov112_0229f2bc(void *obj);
 extern void func_ov112_0229fe50(void *obj, int arg);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 typedef struct {
     unsigned char pad_00[0xbd];
@@ -35,7 +35,7 @@ void func_ov112_022a0a3c(UnkStruct_022a0a3c *obj)
             func_ov112_0229fd20(obj);
             func_ov112_0229f668(obj);
             func_ov112_0229f2bc(obj);
-            RtcSendPxiCommand(0x15);
+            func_0200467c(0x15);
         }
     }
 }

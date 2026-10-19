@@ -5,7 +5,7 @@
 extern void func_0208c630(void *param1, int param2);
 extern void func_020a7e64(void);
 extern void func_020a7e70(void);
-extern void RtcSendPxiCommand(int param1);
+extern void func_0200467c(int param1);
 
 void func_0208bd18(void *param0)
 {
@@ -22,5 +22,5 @@ void func_0208bd18(void *param0)
     } else {
         func_020a7e70();
     }
-    RtcSendPxiCommand(0x4a);
+    func_0200467c(0x4a);
 }

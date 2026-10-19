@@ -9,7 +9,7 @@ extern int func_02099734(int);
 extern int func_02098eb8(int object);
 extern int func_02098f0c(int, void *, int, int);
 extern int func_020996ac(int);
-extern int OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
+extern int func_0203cd2c(int, void *, int, int);
 extern int func_0207de70(int, void *);
 extern void func_02098a24(int, int, int);
 extern int func_020154b4(void *, void *, int, int, int);
@@ -44,7 +44,7 @@ int func_0201d514(UnkStruct_0201d514 *p)
 
         if (c >= 0) {
             func_02098f0c(b, &p->unk_19C, c, 0);
-            OSi_DoUnlockByWord__main_0203cd2c(func_020996ac(a), &p->unk_19C, 0, 1);
+            func_0203cd2c(func_020996ac(a), &p->unk_19C, 0, 1);
 
             if (p->unk_19E == 1) {
                 func_0207de70(*(unsigned int *) (p->unk_100 + 0x830), &p->unk_19C);

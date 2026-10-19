@@ -22,7 +22,7 @@ extern void func_ov112_0229f8e4(struct UnkStruct_022a0ab0 *self);
 extern void func_ov112_0229f668(struct UnkStruct_022a0ab0 *self);
 extern void func_ov112_0229f2bc(struct UnkStruct_022a0ab0 *self);
 extern void func_ov112_0229f488(struct UnkStruct_022a0ab0 *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern int func_ov112_022a0620(struct UnkStruct_022a0ab0 *self);
 extern int func_ov112_022a06b8(struct UnkStruct_022a0ab0 *self);
 extern void func_ov112_0229fe60(struct UnkStruct_022a0ab0 *self, int arg);
@@ -42,7 +42,7 @@ void func_ov112_022a0ab0(struct UnkStruct_022a0ab0 *self)
         func_ov112_0229f668(self);
         func_ov112_0229f2bc(self);
         func_ov112_0229f488(self);
-        RtcSendPxiCommand(0xb);
+        func_0200467c(0xb);
         return;
     }
 

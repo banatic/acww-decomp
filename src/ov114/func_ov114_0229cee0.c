@@ -3,7 +3,7 @@
  */
 
 extern void func_ov114_0229cf58(unsigned char *p);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 int func_ov114_0229cee0(unsigned char *p)
 {
@@ -11,7 +11,7 @@ int func_ov114_0229cee0(unsigned char *p)
         p[0x12b5]--;
         p[0x12af] = 5;
         func_ov114_0229cf58(p);
-        RtcSendPxiCommand(0x39);
+        func_0200467c(0x39);
         return 1;
     } else {
         return 0;

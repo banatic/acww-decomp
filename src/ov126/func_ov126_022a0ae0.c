@@ -6,7 +6,7 @@ extern void *func_ov002_0220a720(void *self, int arg);
 extern void func_ov126_0229f7b8(void *self, int arg);
 extern void func_ov126_0229f7a8(void *self, int arg);
 extern int func_ov126_0229f7c8(void *self, int arg);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern int func_0206fca4(void);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
@@ -25,19 +25,19 @@ void func_ov126_022a0ae0(void *self, int flag)
     }
     if (func_ov126_0229f7c8(self, 0x20) != 0) {
         if (func_ov126_0229f7c8(self, 0x40) != 0) {
-            RtcSendPxiCommand(0x2a);
+            func_0200467c(0x2a);
         } else {
             if (func_0206fca4() == 0x19) {
-                RtcSendPxiCommand(0x27);
+                func_0200467c(0x27);
             } else {
-                RtcSendPxiCommand(0x29);
+                func_0200467c(0x29);
             }
         }
     } else {
         if (func_ov126_0229f7c8(self, 0x40) != 0) {
-            RtcSendPxiCommand(0x28);
+            func_0200467c(0x28);
         } else {
-            RtcSendPxiCommand(0x27);
+            func_0200467c(0x27);
         }
     }
     *(unsigned char *) ((char *) self + 0x8c) = 3;

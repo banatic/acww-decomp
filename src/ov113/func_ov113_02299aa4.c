@@ -12,7 +12,7 @@ typedef struct {
     unsigned char unk_9D;
 } UnkStruct_02299aa4;
 
-extern void RtcSendPxiCommand(int command);
+extern void func_0200467c(int command);
 extern void func_ov113_02299a80(UnkStruct_02299aa4 *o);
 extern void func_ov113_02299c44(UnkStruct_02299aa4 *o, int a);
 extern void func_ov113_02299d84(UnkStruct_02299aa4 *o, int a);
@@ -32,7 +32,7 @@ int func_ov113_02299aa4(UnkStruct_02299aa4 *o)
     v = o->unk_9B;
     switch (v) {
         case 2:
-            RtcSendPxiCommand(0x29);
+            func_0200467c(0x29);
         case 3:
             func_ov113_02299c44(o, 1);
             o->unk_8C = 3;
@@ -40,7 +40,7 @@ int func_ov113_02299aa4(UnkStruct_02299aa4 *o)
             p = func_020ee45c(o);
             if (o->unk_9B == 3) {
                 func_ov092_02299324(p, 0x43, 0);
-                RtcSendPxiCommand(0x12);
+                func_0200467c(0x12);
             } else {
                 func_ov092_02299324(p, 1, 1);
             }

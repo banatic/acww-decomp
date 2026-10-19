@@ -12,7 +12,7 @@ struct UnkStruct_0220a000 {
 
 extern int func_0208aef0(struct UnkStruct_0220a000 *self);
 extern int func_0208aeec(struct UnkStruct_0220a000 *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov002_02209d08(char *p, int x, int y, int a);
 
 void func_ov002_0220a000(struct UnkStruct_0220a000 *self, int x, int y, int a, u8 b)
@@ -21,7 +21,7 @@ void func_ov002_0220a000(struct UnkStruct_0220a000 *self, int x, int y, int a, u
     int u;
 
     t = x - (self->unk_20 + func_0208aef0(self));
-    RtcSendPxiCommand(0xb);
+    func_0200467c(0xb);
     if (t >= -0x30 && t <= 0x30) {
         u = y - (self->unk_24 + func_0208aeec(self));
         if (u >= -0x30 && u <= 0x30) {

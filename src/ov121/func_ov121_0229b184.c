@@ -16,7 +16,7 @@ extern int func_0206f56c(void);
 extern void func_ov121_0229a53c(UnkStruct_0229b184 *this);
 extern int func_0208e484(int *field_3a8);
 extern int func_ov121_0229ab80(UnkStruct_0229b184 *this, int b3);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov002_02209114(int *field_528, int b3, int r5);
 extern unsigned char *func_ov002_02208098(UnkStruct_0229b184 *this, unsigned char value);
 
@@ -37,7 +37,7 @@ void func_ov121_0229b184(UnkStruct_0229b184 *this)
             case 1:
             case 2:
             case 3:
-                RtcSendPxiCommand(0x50);
+                func_0200467c(0x50);
                 break;
             case 4:
             case 5:

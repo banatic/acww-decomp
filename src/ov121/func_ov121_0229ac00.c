@@ -10,7 +10,7 @@ typedef struct {
     unsigned char unk_AF;
 } UnkStruct_0229ac00;
 
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov121_0229abc8(UnkStruct_0229ac00 *, int, int);
 extern void func_ov121_0229aab4(UnkStruct_0229ac00 *);
 extern int func_ov121_02299a70(void);
@@ -24,7 +24,7 @@ extern void func_ov121_0229a63c(UnkStruct_0229ac00 *);
 int func_ov121_0229ac00(UnkStruct_0229ac00 *s)
 {
     if (s->unk_AF <= 7) {
-        RtcSendPxiCommand(0xe);
+        func_0200467c(0xe);
         func_ov121_0229abc8(s, s->unk_AF, s->unk_AE);
         return 0;
     }

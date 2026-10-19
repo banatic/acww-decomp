@@ -5,12 +5,12 @@
 
 #include "cpp/ov068/Obj_ov068_02277750.h"
 
-extern "C" int DWCi_GsMalloc(int param);
+extern "C" int func_0209615c(int param);
 
 void Obj_ov068_02277750::func_ov068_02272530()
 {
     void *param = (void *) this;
-    if (DWCi_GsMalloc(4) == 0) {
+    if (func_0209615c(4) == 0) {
         ((Obj_ov068_02277750 *) param)->func_ov068_02272a7c(8);
     }
 }

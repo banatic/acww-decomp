@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int gt2GetIncomingBufferSize(void *);
+extern int func_02016104(void *);
 extern void func_0201ad18(void *, int, int, int, int, int, int, int);
 extern int func_0201c314(void *, int);
 extern int func_020147fc(void *, int, int, int);
@@ -24,7 +24,7 @@ extern unsigned char data_021fbee8[];
 
 int func_ov075_02278e44(struct UnkStruct_02278e44 *self)
 {
-    int result = gt2GetIncomingBufferSize(self->unk_658);
+    int result = func_02016104(self->unk_658);
     int s = self->unk_8E;
     if (self->unk_718 != 0) {
         func_0201ad18(self->unk_3B0, 1, 0, 0, (unsigned int) data_021fbee8, 4, data_020c814c, 1);

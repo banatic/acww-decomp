@@ -10,7 +10,7 @@ extern void func_ov140_0229a774(void *);
 extern void func_ov140_0229a73c(void *);
 extern void func_ov140_0229a3fc(void *, int _x);
 extern void func_ov140_02299fa0(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov140_0229a544(void *);
 
@@ -47,7 +47,7 @@ void func_ov140_0229a914(UnkStruct_0229a914 *self)
         } else {
             if (self->arr1[c] != 0 && self->arr2[c] != 4) {
                 func_ov140_0229a3fc(self, c);
-                RtcSendPxiCommand(0x29);
+                func_0200467c(0x29);
                 func_ov140_02299fa0(self, 8);
                 func_ov140_02299fa0(self, 0x10);
             }

@@ -81,7 +81,7 @@ extern "C" void func_02068d38(void *sub);
 extern "C" void func_020675e0(void *self);
 extern "C" void func_0206c154(void *sub);
 extern "C" void func_020398d4(void *p);
-extern "C" void RtcSendPxiCommand(int cmd);
+extern "C" void func_0200467c(int cmd);
 extern "C" void func_02036488(void *p);
 
 extern unsigned char data_021c526c[];
@@ -139,7 +139,7 @@ extern "C" void func_02066f8c(UnkStruct_02066f8c_3 *self)
     }
 
     if (self->unk_1E99 == 0) {
-        RtcSendPxiCommand(9);
+        func_0200467c(9);
     }
 
     if (self->unk_1E98 == 0 && self->unk_14 != 1 && self->unk_14 != 2 && self->unk_14 != 3) {

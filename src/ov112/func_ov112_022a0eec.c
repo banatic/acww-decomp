@@ -13,7 +13,7 @@ typedef struct {
 extern unsigned char *func_ov002_02208098(UnkStruct_022a0eec *self, unsigned char value);
 extern void func_ov112_0229fe50(UnkStruct_022a0eec *self, int val);
 extern int func_ov112_0229f730(UnkStruct_022a0eec *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov112_0229fab4(UnkStruct_022a0eec *self);
 extern void func_ov112_0229fd20(UnkStruct_022a0eec *self);
 
@@ -29,7 +29,7 @@ void func_ov112_022a0eec(UnkStruct_022a0eec *self)
     } else {
         result = func_ov112_0229f730(self);
         if (result != 0) {
-            RtcSendPxiCommand(0x15);
+            func_0200467c(0x15);
         }
     }
     if (result != 0) {

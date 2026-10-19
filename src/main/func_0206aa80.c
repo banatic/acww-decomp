@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_02067f28(int a, int b, int c, int d, int e);
 
 typedef struct {
@@ -12,6 +12,6 @@ typedef struct {
 
 void func_0206aa80(UnkStruct_0206aa80 *param)
 {
-    RtcSendPxiCommand(7);
+    func_0200467c(7);
     func_02067f28(param->unk_24, 0xa000, 0x800, 0x800, 0x1333);
 }

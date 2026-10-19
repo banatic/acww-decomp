@@ -14,7 +14,7 @@ extern void func_ov142_0229b350(void *self);
 extern void func_ov142_0229b2f8(void *self);
 extern void func_ov142_02299928(void *self);
 extern void func_ov142_02299918(void *self);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov142_0229ab68(void *self, u8 a);
 extern int func_ov142_0229a0f8(void *self, u8 a, s16 b);
 
@@ -65,7 +65,7 @@ int func_ov142_0229a298(char *self, int param)
         default:
             if ((u32) param <= 8) {
                 if (*(u8 *) (self + 0xbd) != param) {
-                    RtcSendPxiCommand(0xc);
+                    func_0200467c(0xc);
                     func_ov142_0229ab68(self, (u8) param);
                 }
                 return 0;
@@ -75,7 +75,7 @@ int func_ov142_0229a298(char *self, int param)
                     return 0;
                 }
                 if (func_ov142_0229a0f8(self, *(u8 *) (self + 0xbc), (s16) (*(s16 *) (self + 0xb4) + (param - 9))) != 0) {
-                    RtcSendPxiCommand(0x29);
+                    func_0200467c(0x29);
                 }
             }
             return 0;

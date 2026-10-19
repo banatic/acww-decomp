@@ -10,7 +10,7 @@ extern int func_ov133_0229c3d4(void *p, int x);
 extern int func_0206fca4(void);
 extern int func_ov133_0229b714(void *receiver);
 extern void func_02077c40(void *p);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov133_0229b4b0(char *self)
 {
@@ -22,5 +22,5 @@ void func_ov133_0229b4b0(char *self)
     if (func_0206fca4() == 0xe) {
         func_02077c40((void *) func_ov133_0229b714(self));
     }
-    RtcSendPxiCommand(0x28);
+    func_0200467c(0x28);
 }

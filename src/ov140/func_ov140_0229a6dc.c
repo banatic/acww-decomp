@@ -16,7 +16,7 @@ extern void func_ov140_02299fa0(struct UnkStruct_0229a6dc *self, int n);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov140_02299fc8(struct UnkStruct_0229a6dc *self);
 extern void func_ov140_0229a3fc(struct UnkStruct_0229a6dc *self, int n);
-extern void RtcSendPxiCommand(int n);
+extern void func_0200467c(int n);
 
 void func_ov140_0229a6dc(struct UnkStruct_0229a6dc *self)
 {
@@ -30,5 +30,5 @@ void func_ov140_0229a6dc(struct UnkStruct_0229a6dc *self)
     func_ov140_02299fc8(self);
     self->unk_A8 = 0xa;
     func_ov140_0229a3fc(self, -1);
-    RtcSendPxiCommand(0xc);
+    func_0200467c(0xc);
 }

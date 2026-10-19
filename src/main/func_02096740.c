@@ -21,7 +21,7 @@ extern int func_020952ec(void);
 extern int func_02096518(int *, int, int);
 extern int func_02096614(u8 *, int *, int *, int, int);
 extern int func_0209658c(s16 *, int, int);
-extern int DWC_Alloc(int, int);
+extern int func_02096124(int, int);
 extern u8 *func_02096254(int);
 extern int *func_02096260(int);
 extern int *func_02096244(int);
@@ -158,7 +158,7 @@ int func_02096740(void)
                 continue;
             }
         }
-        if (DWC_Alloc(0x1b, s4) == 0) {
+        if (func_02096124(0x1b, s4) == 0) {
             continue;
         }
         s10 = func_02096254(i);
@@ -189,7 +189,7 @@ int func_02096740(void)
         if (func_02073908(gp, i2) != 0) {
             continue;
         }
-        if (DWC_Alloc(0x1b, s4) != 0) {
+        if (func_02096124(0x1b, s4) != 0) {
             continue;
         }
         u = func_020961a8(i2);

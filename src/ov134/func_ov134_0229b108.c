@@ -16,7 +16,7 @@ typedef struct UnkStruct_0229b108 {
 extern void func_ov134_0229afec(UnkStruct_0229b108 *self, int a, int b);
 extern void func_ov134_0229afc0(UnkStruct_0229b108 *self, int a, int b);
 extern int func_ov134_0229ae9c(UnkStruct_0229b108 *self, u16 a, u16 b);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 
 void func_ov134_0229b108(UnkStruct_0229b108 *self, int a, int b)
 {
@@ -38,7 +38,7 @@ void func_ov134_0229b108(UnkStruct_0229b108 *self, int a, int b)
 
     d = func_ov134_0229ae9c(self, self->unk_96, v);
     if (d < -1000 || d > 1000) {
-        RtcSendPxiCommand(0x1a);
+        func_0200467c(0x1a);
         self->unk_96 = v;
     }
 }

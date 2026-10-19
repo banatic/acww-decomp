@@ -3,7 +3,7 @@
  */
 
 extern int func_02056f28(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern int func_ov068_02273230(void *, int);
 
 typedef struct {
@@ -15,9 +15,9 @@ typedef struct {
 void func_ov068_022730c8(UnkStruct_022730c8 *self)
 {
     if (func_02056f28((char *) self + 0x188, 0) != 0) {
-        RtcSendPxiCommand(0x886);
+        func_0200467c(0x886);
     } else if (func_02056f28((char *) self + 0x188, 0x1c) != 0) {
-        RtcSendPxiCommand(0x887);
+        func_0200467c(0x887);
     }
     if (self->unk_598 % 3 == 0) {
         if (self->unk_59A >= 0) {

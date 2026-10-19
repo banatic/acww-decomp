@@ -16,7 +16,7 @@ typedef struct UnkStruct_022993cc {
 
 extern void func_ov090_02298fac(UnkStruct_022993cc *self, u32 p);
 extern void func_0206efc0(void);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern char *data_021c526c;
 extern void func_02036468(void *p);
 extern void func_0206fbb4(void);
@@ -37,10 +37,10 @@ void func_ov090_022993cc(UnkStruct_022993cc *self, u32 p)
         if (self->unk_97 == 0) {
             func_0206efc0();
         }
-        RtcSendPxiCommand(2);
+        func_0200467c(2);
         func_02036468(data_021c526c + 0x1c4);
     } else if (p <= 6 && v <= 6) {
-        RtcSendPxiCommand(3);
+        func_0200467c(3);
     }
 
     if (p == 0) {

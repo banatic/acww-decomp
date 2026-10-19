@@ -29,7 +29,7 @@ struct UnkStruct_020f4d4c_4 {
 
 extern struct UnkStruct_020f4d4c_2 data_021fd1bc;
 
-extern struct Node *MIi_ReadWordStreamFromMemory(struct UnkStruct_020f4d4c_5 *);
+extern struct Node *func_020efc18(struct UnkStruct_020f4d4c_5 *);
 extern int func_020f5134(struct Node *);
 extern void func_020f5178(struct Node *);
 extern void func_020efc38(struct UnkStruct_020f4d4c_5 *, struct Node *);
@@ -53,7 +53,7 @@ void func_020f4d4c(struct UnkStruct_020f4d4c_5 *self)
     struct Node *e2;
     int j;
 
-    e = MIi_ReadWordStreamFromMemory(self);
+    e = func_020efc18(self);
     while (e != 0) {
         if (func_020f5134(e)) {
             func_020f5178(e);
@@ -69,7 +69,7 @@ void func_020f4d4c(struct UnkStruct_020f4d4c_5 *self)
         func_020f51c4((void *) t);
         func_020f51c4(func_020efc20(self, t));
     } else if (n > 2) {
-        e2 = MIi_ReadWordStreamFromMemory(self);
+        e2 = func_020efc18(self);
         n = n - 2;
         j = 0;
         if (n > 0) {
@@ -83,7 +83,7 @@ void func_020f4d4c(struct UnkStruct_020f4d4c_5 *self)
         func_020f51c4((void *) t);
         func_020f51c4(func_020efc20(self, t));
     }
-    p = MIi_ReadWordStreamFromMemory(self);
+    p = func_020efc18(self);
     while (p != 0) {
         p->unk_1B = 0;
         p = func_020efc2c(self, p);

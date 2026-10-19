@@ -15,7 +15,7 @@ extern void func_ov101_0229cef8(void *self, int n);
 extern int func_ov002_0220a784(void *p, int a);
 extern void *func_ov002_0220a720(void *p, int a);
 extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 
 void func_ov101_0229d7c0(char *self)
 {
@@ -43,5 +43,5 @@ void func_ov101_0229d7c0(char *self)
     }
     func_ov002_0220a720(self + 0x2810, 9);
     func_ov002_02208098(self, 0x17);
-    RtcSendPxiCommand(0x28);
+    func_0200467c(0x28);
 }

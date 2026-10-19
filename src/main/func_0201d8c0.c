@@ -16,7 +16,7 @@ extern int func_02099734(int a);
 extern int func_02098eb8(int id);
 extern int func_02098f0c(u16 *p0, u16 *p1, int p2, int p3);
 extern int func_020996ac(int a);
-extern s32 OSi_DoUnlockByWord__main_0203cd2c(int lockID, void *lockp, void *ctrlFuncp, BOOL b);
+extern s32 func_0203cd2c(int lockID, void *lockp, void *ctrlFuncp, BOOL b);
 extern int func_020154b4(UnkStruct_0201d8c0 *s, u16 *p, unsigned int v2, unsigned char v3, unsigned int v4);
 
 int func_0201d8c0(UnkStruct_0201d8c0 *self)
@@ -42,7 +42,7 @@ int func_0201d8c0(UnkStruct_0201d8c0 *self)
         func_02098f0c((u16 *) b, &code, slotIdx, 0);
         {
             int lockId = func_020996ac(a);
-            OSi_DoUnlockByWord__main_0203cd2c(lockId, &code, 0, 1);
+            func_0203cd2c(lockId, &code, 0, 1);
         }
         func_020154b4(self, &code, 0, 5, 0);
         return 1;

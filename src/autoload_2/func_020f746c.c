@@ -4,7 +4,7 @@
 
 extern int func_020f7bc4(void *p, int a, void *h);
 extern int NNS_SndPlayerWriteVariable(void *h, int v, int x);
-extern void ciAddUNQUIETFilter(void *p, void *q);
+extern void func_020f7c1c(void *p, void *q);
 
 typedef struct {
     int unk_00;
@@ -91,5 +91,5 @@ void func_020f746c(UnkStruct_020f746c *p, int code, void *q)
             }
             break;
     }
-    ciAddUNQUIETFilter(p, q);
+    func_020f7c1c(p, q);
 }

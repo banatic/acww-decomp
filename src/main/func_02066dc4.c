@@ -17,7 +17,7 @@ extern void func_02068d14(void *arg);
 extern int func_02068c3c(void *arg);
 extern void func_02066abc(void *arg);
 extern void func_02068d38(void *arg);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_02066dc4(unsigned char *s)
 {
@@ -67,10 +67,10 @@ void func_02066dc4(unsigned char *s)
                         if (func_02067dbc(s) != 0 || func_020676ac(s) != 0) {
                             func_02068d20(s + 0x1c);
                             if (s[0x1e9a] == 0) {
-                                RtcSendPxiCommand(0x10);
+                                func_0200467c(0x10);
                             }
                             if (s[0x18] != 0 || s[0x1490] != 0) {
-                                RtcSendPxiCommand(0x13);
+                                func_0200467c(0x13);
                             }
                             return;
                         } else {

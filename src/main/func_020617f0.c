@@ -23,7 +23,7 @@ extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
 extern int func_02098f0c(void *, u16 *, u32, int);
 extern void *func_020996ac(void *);
-extern int OS_UnlockByWord_IrqAndFiq(void *, u16 *, int);
+extern int func_0203cd1c(void *, u16 *, int);
 extern u16 func_0203a6d4(u32);
 extern int func_0203a694(u32, u16);
 extern u16 *func_0203a674(struct UnkStruct_020617f0 *);
@@ -80,7 +80,7 @@ void func_020617f0(void)
                 if (res == 0) {
                     if (flag == 0) {
                         func_02098f0c(func_02099734(obj), &t[1], j, z3);
-                        OS_UnlockByWord_IrqAndFiq(func_020996ac(obj), &t[1], z4);
+                        func_0203cd1c(func_020996ac(obj), &t[1], z4);
                     }
                 }
             }

@@ -28,7 +28,7 @@ extern void func_0209df04(UnkStruct_0208c978 *k);
 extern int func_0209e3ac(UnkStruct_0208c978 *a, UnkStruct_0208c978 *b, int m);
 extern void func_0209e040(UnkStruct_0208c978 *a, UnkStruct_0208c978 *b);
 extern int func_020b65c4(void);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_020b8d74(int a);
 extern u64 OS_GetTick(void);
 
@@ -90,14 +90,14 @@ void func_0208c978(UnkStruct_0208c978_2 *s)
                     s->c8 = 0x258;
                     s->b4 = 0;
                     if (func_020b65c4() != 0x2e) {
-                        RtcSendPxiCommand(0x65);
+                        func_0200467c(0x65);
                     }
                     func_020b8d74(3);
                 } else if (b0 <= 0xa) {
                     tick = OS_GetTick();
                     if (((tick - *(u64 *) &s->dc) << 6) / 0x82eaULL <= 0x44cULL) {
                         if (func_020b65c4() != 0x2e) {
-                            RtcSendPxiCommand(0x64);
+                            func_0200467c(0x64);
                         }
                     }
                     s->dc = (u32) tick;

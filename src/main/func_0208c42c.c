@@ -16,7 +16,7 @@ extern unsigned char data_020d0a98[];
 extern signed char data_020d0a85[];
 
 extern int func_0203aad0(int, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 void func_0208c42c(struct UnkStruct_0208c42c *self)
 {
@@ -33,7 +33,7 @@ void func_0208c42c(struct UnkStruct_0208c42c *self)
         } else {
             cmd = 0x4e;
         }
-        RtcSendPxiCommand(cmd);
+        func_0200467c(cmd);
         self->d0 = self->c4;
     }
 }

@@ -12,7 +12,7 @@ typedef struct UnkStruct_020f70ec {
 
 extern int func_020f7bc4(UnkStruct_020f70ec *self, int id, unsigned char *p);
 extern void func_020f7218(UnkStruct_020f70ec *self);
-extern void ciAddUNQUIETFilter(UnkStruct_020f70ec *self, void *arg);
+extern void func_020f7c1c(UnkStruct_020f70ec *self, void *arg);
 
 void func_020f70ec(UnkStruct_020f70ec *self, int msg, void *arg)
 {
@@ -49,5 +49,5 @@ void func_020f70ec(UnkStruct_020f70ec *self, int msg, void *arg)
             }
             break;
     }
-    ciAddUNQUIETFilter(self, arg);
+    func_020f7c1c(self, arg);
 }

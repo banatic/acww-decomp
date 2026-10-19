@@ -16,7 +16,7 @@ typedef struct {
 extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(UnkStruct_0229b8ec *self);
 extern int func_ov123_022999b0(UnkStruct_0229b8ec *self, int r1, int r2);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov123_02299ec4(UnkStruct_0229b8ec *self);
 extern void func_ov123_0229b6d0(UnkStruct_0229b8ec *self);
 extern void func_ov123_02299ea8(UnkStruct_0229b8ec *self);
@@ -27,7 +27,7 @@ extern unsigned short data_021fbe40[2];
 void func_ov123_0229b8ec(UnkStruct_0229b8ec *self)
 {
     if (func_ov002_02208014(self) != 0) {
-        RtcSendPxiCommand(0x86e);
+        func_0200467c(0x86e);
         func_ov123_02299ec4(self);
         func_ov123_0229b6d0(self);
         return;
@@ -47,13 +47,13 @@ void func_ov123_0229b8ec(UnkStruct_0229b8ec *self)
             return;
         }
         if (flags & 2) {
-            RtcSendPxiCommand(0x86e);
+            func_0200467c(0x86e);
             func_ov123_02299ec4(self);
             func_ov123_0229b65c(self);
             return;
         }
         if (flags & 0x800) {
-            RtcSendPxiCommand(0x864);
+            func_0200467c(0x864);
             func_ov123_02299ec4(self);
             self->ac = 0;
             func_ov123_0229b65c(self);

@@ -11,7 +11,7 @@ typedef struct {
     unsigned char unk_AF;
 } UnkStruct_0229a398;
 
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_02001b6c(int a);
 extern void func_02001d74(int a, int b);
 extern int func_02002d8c(int x);
@@ -20,7 +20,7 @@ extern void func_ov134_022995a0(UnkStruct_0229a398 *p, int a);
 
 void func_ov134_0229a398(UnkStruct_0229a398 *p)
 {
-    RtcSendPxiCommand(0x2a);
+    func_0200467c(0x2a);
     p->unk_A9 = 4;
     p->unk_AF = 3;
     func_02001b6c(1);

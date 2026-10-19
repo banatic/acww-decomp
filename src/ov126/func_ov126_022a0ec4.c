@@ -11,7 +11,7 @@ extern void func_ov126_022a0680(void *self);
 extern void func_ov126_022a08c4(void *self);
 extern void func_ov126_022a0168(void *self);
 extern void func_ov126_0229ff0c(void *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov126_022a0ec4(void *self)
 {
@@ -25,7 +25,7 @@ void func_ov126_022a0ec4(void *self)
             func_ov126_022a08c4(self);
             func_ov126_022a0168(self);
             func_ov126_0229ff0c(self);
-            RtcSendPxiCommand(0x15);
+            func_0200467c(0x15);
         }
     }
 }

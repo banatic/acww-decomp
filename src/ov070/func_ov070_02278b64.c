@@ -40,7 +40,7 @@ extern int func_02099870(void *);
 extern void func_02066024(void *, Loc *, void *, void *, void *, int);
 extern u16 func_0204bd20(int, int);
 extern int func_020996ac(void *);
-extern int OS_UnlockByWord_IrqAndFiq(int object, u16 *item, int mode);
+extern int func_0203cd1c(int object, u16 *item, int mode);
 extern unsigned short func_02065ed0(void *, int, int);
 extern void *func_020b5618(void *);
 extern int func_ov070_02279724(Big *, u8 *, int);
@@ -115,7 +115,7 @@ void func_ov070_02278b64(UnkStruct_02278b64 *self)
                 func_02066024(sub, &loc, &data_ov070_02279d58, &data_ov070_02279d20, &data_ov070_02279d24, func_02099870(ent));
                 if (ent != 0) {
                     loc.d = func_0204bd20(0x10, 4);
-                    OS_UnlockByWord_IrqAndFiq(func_020996ac(ent), &loc.d, 0);
+                    func_0203cd1c(func_020996ac(ent), &loc.d, 0);
                 }
                 if (n <= 2) {
                     func_02065ed0(sub, 0x12a7, 1);

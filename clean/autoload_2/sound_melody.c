@@ -787,14 +787,14 @@ int MelodyPlayer_StartArc(MelodyPlayer *player, unsigned short seq_arc, const u8
 }
 CLEAN_AS(func_020f7054, MelodyPlayer_StartArc)
 
-/* ENV_SetResourceSet (the ROM's symbol name does not fit it): the player reset and its handle
+/* func_020f70b4: the player reset and its handle
  * made empty. */
 void MelodyPlayer_Init(MelodyPlayer *player)
 {
     MelodyPlayer_Reset(player);
     Sound_InitHandle(&player->handle);
 }
-CLEAN_AS(ENV_SetResourceSet, MelodyPlayer_Init)
+CLEAN_AS(func_020f70b4, MelodyPlayer_Init)
 
 /* func_020f70d0: the destructor: the handle's sequence released. */
 MelodyPlayer *MelodyPlayer_Destruct(MelodyPlayer *player)

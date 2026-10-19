@@ -15,7 +15,7 @@ func_020bf1b8 calls FS_InitFile with its own first argument (r0 passed through);
 func_020e9ec4 passes its second and third arguments on to NNS_FndAllocFromExpHeapEx in r1 and r2 untouched; the source declares one parameter and calls it with one argument
 func_020b1b84 touches the hardware at 04000208
 func_01ffcc30 touches the hardware at 04000006
-GXS_BeginLoadOBJExtPltt passes its own r0 and r1 on to GX_ResetBankForSubOBJExtPltt (size, heap); the source declares both without parameters
+func_020e9918 passes its own r0 and r1 on to func_020ea1bc (size, heap); the source declares both without parameters
 func_02002f68 touches the hardware at 04000060
 func_02002e54 touches the hardware at 04000060
 func_020540e4 touches the hardware at 04000304
@@ -51,7 +51,7 @@ func_020198bc calls func_0201b1a4 with 4 of its 5 arguments: the ROM's code pass
 func_0201b744 calls func_0201bf24 with 2 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201b910 calls func_0201bf24 with 2 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201bcec calls func_0201bf24 with 2 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0201cfe4 calls RtcSendPxiCommand with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0201cfe4 calls func_0200467c with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201d448 calls func_02098eb8 with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201d514 calls func_02098eb8 with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0201d9b8 calls func_0202d8f8 with 4 of its 5 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
@@ -85,19 +85,19 @@ func_0204f7ac calls func_0204f800 with 4 of its 6 arguments: the ROM's code pass
 func_020512d4 calls func_020516b8 with 1 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0205156c calls func_020516b8 with 1 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_02059d28 calls func_020808ec with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205c8c4 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205c8f8 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205c92c calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205c960 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205c994 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205c9c8 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205c9fc calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205ca30 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205ca98 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205cacc calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205cb00 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205cb34 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205cb68 calls GX_ResetBankForSubOBJExtPltt with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205c8c4 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205c8f8 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205c92c calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205c960 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205c994 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205c9c8 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205c9fc calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205ca30 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205ca98 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205cacc calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205cb00 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205cb34 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
+func_0205cb68 calls func_020ea1bc with 0 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0205d8c4 calls func_0205d74c with 4 of its 5 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0205e954 calls func_0205e8f8 with 2 of its 3 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0205ec50 calls func_020e9e34 with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)

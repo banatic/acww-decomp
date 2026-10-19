@@ -10,7 +10,7 @@ extern void func_02068388(int, int);
 extern int func_020644cc(int);
 extern char data_021f43f8[];
 extern int func_ov004_02222178(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 void func_ov004_022223b8(unsigned char *self)
 {
     unsigned char *owner = *(unsigned char **) (self + 0x1a8);
@@ -59,7 +59,7 @@ void func_ov004_022223b8(unsigned char *self)
             case 16:
             case 17:
             case 18:
-                RtcSendPxiCommand(95);
+                func_0200467c(95);
                 break;
         }
     }

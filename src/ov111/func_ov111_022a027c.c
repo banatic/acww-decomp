@@ -25,7 +25,7 @@ extern void func_ov111_0229f10c(struct Param *p);
 extern void func_ov111_0229fd08(struct Param *p);
 extern void func_ov111_0229efec(struct Param *p);
 extern void func_ov111_0229efb8(struct Param *p, int x);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov111_022a027c(struct Param *p)
 {
@@ -40,7 +40,7 @@ void func_ov111_022a027c(struct Param *p)
             func_ov111_0229f524(p);
             p->unk_A0 = p->unk_9E;
             func_ov111_0229f10c(p);
-            RtcSendPxiCommand(21);
+            func_0200467c(21);
         }
     }
     func_ov111_0229fd08(p);

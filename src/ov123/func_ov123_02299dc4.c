@@ -5,7 +5,7 @@
 extern int func_ov123_02299650(void *p, int n);
 extern void func_ov123_02299630(void *p, int n);
 extern void func_ov123_02299640(void *p, int n);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov123_02299dc4(void *arg)
 {
@@ -16,10 +16,10 @@ void func_ov123_02299dc4(void *arg)
     }
 
     if (func_ov123_02299650(arg, 0x4000)) {
-        RtcSendPxiCommand(0x86c);
+        func_0200467c(0x86c);
         func_ov123_02299630(arg, 0x4000);
     } else {
-        RtcSendPxiCommand(0x86b);
+        func_0200467c(0x86b);
         func_ov123_02299640(arg, 0x4000);
     }
 

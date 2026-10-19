@@ -13,7 +13,7 @@ typedef struct {
 extern int func_ov130_02299d98(UnkStruct_02299d48 *self);
 extern int func_ov130_02299dc8(int value);
 extern void func_ov130_02299c08(UnkStruct_02299d48 *self);
-extern void RtcSendPxiCommand(int command);
+extern void func_0200467c(int command);
 
 void func_ov130_02299d48(UnkStruct_02299d48 *self)
 {
@@ -29,7 +29,7 @@ void func_ov130_02299d48(UnkStruct_02299d48 *self)
         if (func_ov130_02299d98(self) != 0) {
             return;
         }
-        RtcSendPxiCommand(0x34);
+        func_0200467c(0x34);
         return;
     } else {
         val = idx + 10 * base;
@@ -38,7 +38,7 @@ void func_ov130_02299d48(UnkStruct_02299d48 *self)
             val = max;
         }
         if (val == base) {
-            RtcSendPxiCommand(0x34);
+            func_0200467c(0x34);
         } else {
             func_ov130_02299dc8(idx);
             self->unk_0C = val;

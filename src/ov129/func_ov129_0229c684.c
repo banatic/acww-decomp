@@ -16,7 +16,7 @@ extern void func_020b1a24(void *ptr);
 extern void func_020b1444(void *ptr);
 extern void func_020b14ec(void *ptr, int a, int b);
 extern void *func_020b1a54(void *object);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 extern u32 data_ov129_0229dcc0;
 extern int data_ov129_0229dccc;
@@ -41,7 +41,7 @@ void func_ov129_0229c684(void *p)
 
     if (func_ov129_0229b7ec(p, 4) != 0) {
         func_0206fc4c(0);
-        RtcSendPxiCommand(0x28);
+        func_0200467c(0x28);
         return;
     }
 
@@ -65,7 +65,7 @@ void func_ov129_0229c684(void *p)
     }
 
     func_020b14ec(&data_ov129_0229dcd8, ret, 0);
-    RtcSendPxiCommand(0x27);
+    func_0200467c(0x27);
 }
 
 #undef DestroyGlobal_020b1a54

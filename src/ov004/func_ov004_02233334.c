@@ -15,7 +15,7 @@ typedef union {
 
 extern u8 func_020b65c4(void);
 extern void func_0209e474(TmBuf *);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern u8 data_ov004_022478f0[];
 
 int func_ov004_02233334(u8 *self)
@@ -38,20 +38,20 @@ int func_ov004_02233334(u8 *self)
                 if (h == 0) {
                     if (m == 1 && rem == 0) {
                         if (self[0x52] == 0) {
-                            RtcSendPxiCommand(0x62);
+                            func_0200467c(0x62);
                         }
                     } else if (m == 0) {
                         if (rem == 0) {
                             if (self[0x52] == 0) {
-                                RtcSendPxiCommand(0x61);
+                                func_0200467c(0x61);
                             }
                         } else if (rem <= 10) {
                             if (self[0x52] == 0) {
-                                RtcSendPxiCommand(0x60);
+                                func_0200467c(0x60);
                             }
                         } else {
                             if (self[0x52] == 0) {
-                                RtcSendPxiCommand(0x62);
+                                func_0200467c(0x62);
                             }
                         }
                     }
@@ -61,7 +61,7 @@ int func_ov004_02233334(u8 *self)
             self[0x50] = self[0x51];
         } else if (tm.t.mon == 1 && tm.t.day == 1 && tm.t.hour == 0 && tm.t.min == 0 && tm.t.sec == 0) {
             if (self[0x53] == 0) {
-                RtcSendPxiCommand(0x61);
+                func_0200467c(0x61);
                 self[0x53] = 1;
             }
         }

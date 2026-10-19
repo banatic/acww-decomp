@@ -9,7 +9,7 @@ extern void func_ov140_0229a3fc(void *, int _x);
 extern void func_ov140_0229a73c(void *);
 extern void func_ov140_0229a774(void *);
 extern void func_ov140_0229a6dc(void *);
-extern void RtcSendPxiCommand(unsigned int);
+extern void func_0200467c(unsigned int);
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
@@ -38,7 +38,7 @@ void func_ov140_0229aa4c(unsigned char *self)
             base = self + idx;
             if (base[0x8af] != 0 && base[0x8e0] != 4) {
                 func_ov140_0229a3fc(self, idx);
-                RtcSendPxiCommand(0x29);
+                func_0200467c(0x29);
             }
         } else if (x >= 0x96 && x < 0xa7) {
             if (y >= 0x5e && y < 0x9a) {

@@ -6,7 +6,7 @@
 02001c30 shift 0xf78 >> (param * 2) by 32 or more gives 0 on ARM and wraps on x86; callers pass 0 or 1 (func_02001bf0 passes its own argument, 0)
 0200f268 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-29, func_02095e84 passes 14 or 16, func_ov068_02271f80 leaves 0 in r1
 0200f27c shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-28, func_02095ea4 passes 14 or 16
-0200f290 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-29, and DWC_Alloc passes its first argument, which its callers give as constants 1-27
+0200f290 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-29, and func_02096124 passes its first argument, which its callers give as constants 1-27
 02012748 word stores to misaligned addresses write the aligned word on ARM and the unaligned one on x86; out is a tile pair in a path walker, which the game keeps word-aligned
 02014a20 word stores to misaligned addresses write the aligned word on ARM and the unaligned one on x86; the talk object at scene+0x40 is allocated word-aligned (aligning the pointer makes every case agree)
 02015578 word accesses at misaligned addresses use the aligned word on ARM and the unaligned one on x86; the talk object at scene+0x40 is allocated word-aligned (aligning the pointer makes every case agree)

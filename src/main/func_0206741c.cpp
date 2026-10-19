@@ -40,7 +40,7 @@ void func_02067588(UnkStruct_0206741c *);
 void func_020674d8(UnkStruct_0206741c *);
 void func_020a9508(void *);
 void func_020a94c8(void *, int);
-void NNS_G2dSetRndCore3DSoftSpriteZvalue(void *, int);
+void func_0206bd40(void *, int);
 }
 
 extern "C" void func_0206741c(UnkStruct_0206741c *self)
@@ -58,7 +58,7 @@ extern "C" void func_0206741c(UnkStruct_0206741c *self)
     func_0206c19c((void *) &self->unk_684, flag);
 
     ret = func_020a8260((void *) &self->unk_14AC);
-    NNS_G2dSetRndCore3DSoftSpriteZvalue((void *) &self->unk_13B8, ret);
+    func_0206bd40((void *) &self->unk_13B8, ret);
     self->unk_1A48 = (ret == 1);
 
     func_020a8290((void *) &local, (void *) &self->unk_14AC);

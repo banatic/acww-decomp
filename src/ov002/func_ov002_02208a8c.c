@@ -3,7 +3,7 @@
  */
 
 extern void func_ov002_02208a0c(void *ptr, int arg);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 int func_ov002_02208a8c(void *base, int index, int offset)
 {
@@ -14,13 +14,13 @@ int func_ov002_02208a8c(void *base, int index, int offset)
     }
     switch (v) {
         case 0xf:
-            RtcSendPxiCommand(0x28);
+            func_0200467c(0x28);
             break;
         case 0xe:
-            RtcSendPxiCommand(0x29);
+            func_0200467c(0x29);
             break;
         default:
-            RtcSendPxiCommand(0x27);
+            func_0200467c(0x27);
             break;
     }
     return v;

@@ -3,7 +3,7 @@
  */
 
 extern void func_0206fe7c(void);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 struct UnkStruct_02208054 {
     unsigned short pad_00; // offset 0
@@ -17,9 +17,9 @@ int func_ov002_02208054(int unused, int p)
     masked = data_021fbe40.val & 0xFFF;
     if (masked) {
         func_0206fe7c();
-        RtcSendPxiCommand(0x866);
+        func_0200467c(0x866);
         if (p != 0) {
-            RtcSendPxiCommand(0x3B);
+            func_0200467c(0x3B);
         }
         return 1;
     } else {

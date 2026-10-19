@@ -5,7 +5,7 @@
 extern void func_ov002_02208090(void *a, int b);
 extern int func_020b9bbc(void *a, void *b, int c, int d, int e);
 extern unsigned char *func_ov002_02208098(void *a, unsigned char value);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov132_0229b068(void *base)
 {
@@ -14,5 +14,5 @@ void func_ov132_0229b068(void *base)
     func_020b9bbc((char *) base + 0x39c, (char *) base + 0x500, 6, 0x800, 0);
     func_020b9bbc((char *) base + 0x3c0, (char *) base + 0xd00, 4, 0x800, 0);
     func_ov002_02208098(base, 6);
-    RtcSendPxiCommand(0x29);
+    func_0200467c(0x29);
 }

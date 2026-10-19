@@ -3,7 +3,7 @@
  */
 
 extern int func_0208e484(void *ptr);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov002_02209114(void *ptr, int idx, int flag);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
@@ -29,7 +29,7 @@ void func_ov106_0229e014(UnkStruct_0229e014 *self)
         int flag = 1;
         if (self->unk_BC == 2) {
             flag = 0;
-            RtcSendPxiCommand(0x24);
+            func_0200467c(0x24);
         }
         func_ov002_02209114(&self->unk_2304, self->unk_BD, flag);
     }

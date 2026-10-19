@@ -12,7 +12,7 @@ extern int data_ov003_0223cfa0[];
 extern int data_ov003_0223cfe4[];
 
 extern void *func_020ea298(void *p, int n);
-extern void *GX_ResetBankForSubOBJExtPltt(int a, void *h);
+extern void *func_020ea1bc(int a, void *h);
 extern int func_ov003_0222726c(char *self);
 extern int func_ov003_02225f68(void *receiver);
 extern void func_ov003_02223a90(void *p);
@@ -27,7 +27,7 @@ int func_ov003_02225ebc(char *self)
         data_ov003_0223cf74 = func_020ea298(data_ov003_0223dcb4, data_ov003_0225f0b4 - data_ov003_0223dcb4);
     }
     if (data_ov003_0223cf78 == 0) {
-        data_ov003_0223cf78 = GX_ResetBankForSubOBJExtPltt(0x8c00, data_021fbe94);
+        data_ov003_0223cf78 = func_020ea1bc(0x8c00, data_021fbe94);
     }
     if (func_ov003_0222726c(self)) {
         data_ov003_0223cf70 = self;

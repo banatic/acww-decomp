@@ -12,7 +12,7 @@ extern void func_0209af04(unsigned char *);
 extern int func_02098e8c(void *, int);
 extern int func_02098f0c(void *, unsigned char *, int, int);
 extern unsigned char *func_020996ac(void *);
-extern int OSi_DoUnlockByWord__main_0203cd2c(unsigned int, unsigned char *, unsigned int, int);
+extern int func_0203cd2c(unsigned int, unsigned char *, unsigned int, int);
 extern unsigned char *func_02098e44(void *, int);
 extern int func_02065ec0(unsigned char *);
 extern void func_02066650(unsigned char *);
@@ -47,7 +47,7 @@ void func_020993b4(void *param)
                 }
                 if (cond) {
                     func_02098f0c(p1, p2, i, 1);
-                    OSi_DoUnlockByWord__main_0203cd2c((unsigned int) func_020996ac(param), p2, (unsigned int) val3, 1);
+                    func_0203cd2c((unsigned int) func_020996ac(param), p2, (unsigned int) val3, 1);
                 }
             }
             p2 += 2;

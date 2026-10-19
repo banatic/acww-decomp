@@ -18,7 +18,7 @@ extern void func_ov101_0229c660(void *self);
 extern void func_ov101_0229c844(void *self);
 extern void *func_ov002_0220a720(void *p, int v);
 extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov002_02207d00(void *p);
 
 struct UnkStruct_0229d4b4 {
@@ -68,7 +68,7 @@ void func_ov101_0229d4b4(struct UnkStruct_0229d4b4 *self)
                 func_ov101_0229c844(self);
                 func_ov002_0220a720(&self->unk_2810, 9);
                 func_ov002_02208098(self, 0x17);
-                RtcSendPxiCommand(0x28);
+                func_0200467c(0x28);
                 func_ov002_02207d24(&self->unk_21B4, 0);
                 return;
             } else {

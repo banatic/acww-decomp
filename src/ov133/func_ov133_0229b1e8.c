@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void func_ov133_0229b190(u8 *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov133_0229ad78(u8 *self, int v);
 extern void func_ov133_0229b320(u8 *self, u8 v);
 
@@ -15,7 +15,7 @@ int func_ov133_0229b1e8(u8 *self, int flag)
 
     if (self[0xa2] != self[0xa3]) {
         func_ov133_0229b190(self);
-        RtcSendPxiCommand(0x35);
+        func_0200467c(0x35);
         return 1;
     }
     if (self[0x9f] == 0) {
@@ -23,7 +23,7 @@ int func_ov133_0229b1e8(u8 *self, int flag)
             self[0x9f] = 1;
         } else {
             if (flag) {
-                RtcSendPxiCommand(0x34);
+                func_0200467c(0x34);
             }
             return 0;
         }
@@ -38,6 +38,6 @@ int func_ov133_0229b1e8(u8 *self, int flag)
     self[0xaf] = 0xa;
     func_ov133_0229ad78(self, 8);
     func_ov133_0229b320(self, self[0x9f] - 1);
-    RtcSendPxiCommand(0x35);
+    func_0200467c(0x35);
     return 1;
 }

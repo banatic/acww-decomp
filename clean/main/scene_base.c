@@ -645,13 +645,13 @@ void SceneBase_SetSecondSpeaker(SceneBase *scene, u8 *speaker)
 }
 CLEAN_AS(func_020160d8, SceneBase_SetSecondSpeaker)
 
-/* gt2GetIncomingBufferSize (0x02016104, misnamed in the symbols): the word at 0x48 the
+/* func_02016104: the word at 0x48 the
  * commands' motions take (scene_command.h). */
 int SceneBase_MotionArg(SceneBase *scene)
 {
     return scene->motion_arg;
 }
-CLEAN_AS(gt2GetIncomingBufferSize, SceneBase_MotionArg)
+CLEAN_AS(func_02016104, SceneBase_MotionArg)
 
 /* func_02016108 */
 void SceneBase_SetMotionArg(SceneBase *scene, int value)

@@ -18,7 +18,7 @@ extern int func_0206fca4(void);
 extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_0206ef98(void);
 extern void func_0206ead8(int arg);
-extern void RtcSendPxiCommand(int arg);
+extern void func_0200467c(int arg);
 extern void func_020045ac(int arg);
 extern void func_02036470(void *p, int arg);
 
@@ -60,10 +60,10 @@ void func_ov092_02298f5c(UnkStruct_02298f5c *self)
 
     switch (self->unk_91) {
         case 0:
-            RtcSendPxiCommand(0x11);
+            func_0200467c(0x11);
             break;
         default:
-            RtcSendPxiCommand(1);
+            func_0200467c(1);
             break;
         case 3:
             func_020045ac(1);

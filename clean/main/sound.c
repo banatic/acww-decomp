@@ -401,14 +401,14 @@ void SoundSys_StartIndexOnHandle38(int index, int value)
 }
 CLEAN_AS(func_02004668, SoundSys_StartIndexOnHandle38)
 
-/* RtcSendPxiCommand: play sound effect `number` (some on the handles at 0x38 and 0x40, the
+/* func_0200467c: play sound effect `number` (some on the handles at 0x38 and 0x40, the
  * others on the shared handle). Nothing plays while the byte at 0x4d is set. The symbol's
  * name is not what the function does. */
 void SoundSys_PlaySe(int number)
 {
     SoundSystem_PlayEffect((SoundSystem *) (void *) data_021fd1bc, number);
 }
-CLEAN_AS(RtcSendPxiCommand, SoundSys_PlaySe)
+CLEAN_AS(func_0200467c, SoundSys_PlaySe)
 
 /* func_020046a4: the master volume to 0x7f. The callee takes no argument (the original still
  * hands it the sound state). */

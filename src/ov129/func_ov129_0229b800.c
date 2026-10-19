@@ -12,7 +12,7 @@ typedef struct UnkStruct_0229b800 {
 extern int func_ov129_0229b9d8(UnkStruct_0229b800 *self);
 extern int func_ov129_0229b910(UnkStruct_0229b800 *self);
 extern int func_ov129_0229b85c(UnkStruct_0229b800 *self);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov129_0229bee4(UnkStruct_0229b800 *self, int a);
 
 int func_ov129_0229b800(UnkStruct_0229b800 *self)
@@ -32,7 +32,7 @@ int func_ov129_0229b800(UnkStruct_0229b800 *self)
     }
 
     if (r == 1) {
-        RtcSendPxiCommand(0x880);
+        func_0200467c(0x880);
     }
     switch (r) {
         case 1:

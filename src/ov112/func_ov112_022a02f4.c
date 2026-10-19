@@ -11,7 +11,7 @@ extern void func_ov112_0229f89c(void *self);
 extern void func_ov112_0229ff50(void *receiver);
 extern void func_ov112_0229fd20(void *self);
 extern void func_ov112_0229f668(void *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 typedef struct UnkStruct_022a02f4 {
     u8 pad_00[0xbd];
@@ -54,7 +54,7 @@ int func_ov112_022a02f4(UnkStruct_022a02f4 *self, int flag)
     }
 
 fail_ret:
-    RtcSendPxiCommand(0x35);
+    func_0200467c(0x35);
     func_ov112_0229fd20(self);
     func_ov112_0229f668(self);
     return 1;

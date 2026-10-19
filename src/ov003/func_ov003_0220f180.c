@@ -7,7 +7,7 @@ extern void func_020109a0(void *, int b, int c, unsigned short d);
 extern void func_0205eae0(void *, int, int, int);
 extern int func_020912d4(int, void *, int, int);
 extern int func_0203e420(void);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern int func_0200f328(void *, int);
 extern void func_02035684(int, int, int);
 
@@ -38,7 +38,7 @@ void func_ov003_0220f180(char *self, unsigned char *other, int previous)
     p[4] = b;
 
     if (b >= 2) {
-        RtcSendPxiCommand(0x51);
+        func_0200467c(0x51);
         if (b == 2) {
             func_0200f328(self, 0x839);
         } else {

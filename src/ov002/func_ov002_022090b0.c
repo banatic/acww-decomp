@@ -6,14 +6,14 @@
 
 extern void func_ov002_0220914c(void *self, int v);
 extern int func_ov002_02208a8c(void *self, int a, u8 b);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov002_022090b0(char *self, int v)
 {
     func_ov002_0220914c(self, v);
     if (func_ov002_02208a8c(self, *(u8 *) (self + 0x20), v) == 0xf) {
-        RtcSendPxiCommand(0x2a);
+        func_0200467c(0x2a);
     } else {
-        RtcSendPxiCommand(0x29);
+        func_0200467c(0x29);
     }
 }

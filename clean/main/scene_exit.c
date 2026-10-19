@@ -72,13 +72,13 @@ static SceneExit *scene_exit_find(int index)
     return &list->exits[index];
 }
 
-/* SBServerGetFlags (0x020b5e18, named after a GameSpy function by mistake): the byte kept for
+/* func_020b5e18: the byte kept for
  * process class 6. */
 int SceneExit_NextArg(const SceneExit *exit)
 {
     return exit->next_arg;
 }
-CLEAN_AS(SBServerGetFlags, SceneExit_NextArg)
+CLEAN_AS(func_020b5e18, SceneExit_NextArg)
 
 /* func_020b5e1c */
 void SceneExit_SetChangeArg(SceneExit *exit, int value)
@@ -87,13 +87,13 @@ void SceneExit_SetChangeArg(SceneExit *exit, int value)
 }
 CLEAN_AS(func_020b5e1c, SceneExit_SetChangeArg)
 
-/* SBServerGetState (0x020b5e20, named after a GameSpy function by mistake): what process
+/* func_020b5e20: what process
  * class 5 is asked for with. */
 int SceneExit_ChangeArg(const SceneExit *exit)
 {
     return exit->change_arg;
 }
-CLEAN_AS(SBServerGetState, SceneExit_ChangeArg)
+CLEAN_AS(func_020b5e20, SceneExit_ChangeArg)
 
 /* func_020b5e24 */
 int SceneExit_UsesOwnPoint(const SceneExit *exit)

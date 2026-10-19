@@ -5,7 +5,7 @@
 extern void func_02061e2c(void *, void *);
 extern int func_0204bcf8(void *);
 extern int func_0204b42c(void *);
-extern void NNS_FndAllocFromAllocator(void *, int);
+extern void func_0204b3cc(void *, int);
 extern int func_02062780(void *);
 extern void func_020051b0(void *);
 extern int func_0204c5ec(void *);
@@ -23,7 +23,7 @@ int func_0204c63c(void *param)
             int result;
 
             r = func_0204b42c(local);
-            NNS_FndAllocFromAllocator(local + 2, r);
+            func_0204b3cc(local + 2, r);
             result = func_02062780(local + 2);
             func_020051b0(local + 2);
             func_020051b0(local);

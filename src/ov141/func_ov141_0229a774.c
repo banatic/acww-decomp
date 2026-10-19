@@ -8,7 +8,7 @@ extern void func_ov141_0229a174(void *self);
 extern int func_ov141_02299f94(void *self, int _x);
 extern void func_ov141_0229a4e8(void *self);
 extern void func_ov141_0229a524(void *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
@@ -39,7 +39,7 @@ void func_ov141_0229a774(void *self)
             if (!func_ov141_02299f94(self, idx)) {
                 return;
             }
-            RtcSendPxiCommand(0x29);
+            func_0200467c(0x29);
         } else if (x >= 0x96 && x < 0xa7) {
             if (y >= 0x37 && y < 0x7b) {
                 func_ov141_0229a4e8(self);

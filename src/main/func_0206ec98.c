@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int CARD_IsEnabled(void);
+extern int func_0203ac5c(void);
 extern int func_0203ac2c(void);
 extern void func_0203de6c(int screen);
 extern int func_020ba540(int);
@@ -18,7 +18,7 @@ int func_0206ec98(void)
 {
     unsigned int flag2;
 
-    if (CARD_IsEnabled()) {
+    if (func_0203ac5c()) {
         func_0203ac2c();
     }
     flag2 = (data_020e54a8 == 0) ? 1 : 0;

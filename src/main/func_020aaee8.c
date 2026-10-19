@@ -4,7 +4,7 @@
 
 extern int func_020ab550(int a, int b);
 extern int func_020ab780(int a);
-extern void RtcSendPxiCommand(int command);
+extern void func_0200467c(int command);
 
 struct UnkStruct_020aaee8 {
     int unk_00;
@@ -26,5 +26,5 @@ void func_020aaee8(struct UnkStruct_020aaee8 *arg)
     } else if (result == 3) {
         cmd = 0x6c;
     }
-    RtcSendPxiCommand(cmd);
+    func_0200467c(cmd);
 }

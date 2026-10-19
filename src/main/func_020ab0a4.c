@@ -12,7 +12,7 @@ typedef struct {
 extern int func_020a806c(int *a, int *b);
 extern int func_020ac148(int a, int b, int c);
 extern int func_020ab510(int a);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_020aaee8(Param *p);
 
 int func_020ab0a4(Param *param)
@@ -28,7 +28,7 @@ int func_020ab0a4(Param *param)
             r6 = 1;
             r0 = func_020ab510(param->unk_20);
             if (r0 >= 0 && r0 == r4) {
-                RtcSendPxiCommand(0x2a);
+                func_0200467c(0x2a);
             } else {
                 func_020aaee8(param);
             }

@@ -34,7 +34,7 @@ extern int func_ov122_022a0098(struct UnkStruct_022a0848 *self);
 extern int func_ov122_022a00fc(struct UnkStruct_022a0848 *self);
 extern int func_ov122_022a006c(struct UnkStruct_022a0848 *self);
 extern unsigned char *func_ov122_022a0054(struct UnkStruct_022a0848 *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov122_022a0848(struct UnkStruct_022a0848 *self)
 {
@@ -53,7 +53,7 @@ void func_ov122_022a0848(struct UnkStruct_022a0848 *self)
         func_ov122_0229f9a8(self);
         func_ov122_0229f1b4(self);
         func_ov122_022a14c0(self);
-        RtcSendPxiCommand(0xb);
+        func_0200467c(0xb);
         return;
     }
 

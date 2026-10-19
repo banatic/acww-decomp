@@ -24,7 +24,7 @@ extern int func_020ab510(int);
 extern int func_020ab51c(int);
 extern void func_020a7e7c(void);
 extern void func_020a7e88(void);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_020aaee8(Menu *);
 
 typedef struct {
@@ -61,7 +61,7 @@ int func_020aaf20(Menu *self)
     trig = data_021fbe40.trig;
     if ((trig & 1) != 0) {
         if (v >= 0 && v == self->sel) {
-            RtcSendPxiCommand(0x2a);
+            func_0200467c(0x2a);
         } else {
             func_020aaee8(self);
         }
@@ -71,7 +71,7 @@ int func_020aaf20(Menu *self)
     }
 
     if (v >= 0 && (trig & 2) != 0) {
-        RtcSendPxiCommand(0x2a);
+        func_0200467c(0x2a);
         self->sel = func_020ab510(self->unk_20);
         self->unk_24 = 1;
         func_020a7e88();
@@ -140,7 +140,7 @@ int func_020aaf20(Menu *self)
     }
 
     if (locals.old != self->sel) {
-        RtcSendPxiCommand(0xb);
+        func_0200467c(0xb);
     }
 
 done:

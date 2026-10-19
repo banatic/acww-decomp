@@ -16,7 +16,7 @@ extern int func_ov002_022088bc(void *in);
 extern int func_ov002_022088cc(void *in);
 extern void func_ov113_02299d94(UnkStruct_02299644 *o, int n);
 extern int func_ov002_02209f3c(void *p);
-extern void RtcSendPxiCommand(int n);
+extern void func_0200467c(int n);
 
 int func_ov113_02299644(UnkStruct_02299644 *o, void *in)
 {
@@ -91,7 +91,7 @@ int func_ov113_02299644(UnkStruct_02299644 *o, void *in)
             if (o->st > 6) {
                 o->st = o->st - 1;
                 func_ov113_02299d94(o, 0x80);
-                RtcSendPxiCommand(0xb);
+                func_0200467c(0xb);
             } else {
                 o->st = 5;
             }
@@ -99,7 +99,7 @@ int func_ov113_02299644(UnkStruct_02299644 *o, void *in)
             if (o->st + 1 < o->unk_9D + 6) {
                 o->st = o->st + 1;
                 func_ov113_02299d94(o, 0x80);
-                RtcSendPxiCommand(0xb);
+                func_0200467c(0xb);
             } else {
                 o->st = 4;
             }

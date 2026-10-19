@@ -3,7 +3,7 @@
  */
 
 extern int func_0208e484(void *);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov002_02209114(void *, unsigned char, int);
 extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
@@ -20,7 +20,7 @@ void func_ov105_0229e1cc(void *base)
     flag = 1;
     if (*((unsigned char *) ((char *) base + 0x2BE)) == 2) {
         flag = 0;
-        RtcSendPxiCommand(0x24);
+        func_0200467c(0x24);
     }
     func_ov002_02209114((char *) base + 0x2508, *((unsigned char *) ((char *) base + 0x2BF)), flag);
     func_ov002_02208098(base, 0x17);

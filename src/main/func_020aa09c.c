@@ -22,7 +22,7 @@ extern void func_020ac8a8(unsigned char *s);
 extern int func_0209d368(int a, int b);
 extern void func_020ac39c(unsigned char *s, int a, int b);
 extern void func_020ac384(unsigned char *s);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_020aa09c(UnkStruct_020aa09c *p)
 {
@@ -39,5 +39,5 @@ void func_020aa09c(UnkStruct_020aa09c *p)
     p->unk_190 = func_0209d368(100, 5) - 5;
     func_020ac39c(p->sub, p->unk_18C, p->unk_190 + 4);
     func_020ac384(p->sub);
-    RtcSendPxiCommand(0x13);
+    func_0200467c(0x13);
 }

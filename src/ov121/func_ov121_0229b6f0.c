@@ -8,7 +8,7 @@ extern void func_ov002_02207ce4(void *p, int a);
 extern int func_ov121_0229ad68(void);
 extern void func_ov121_02299a4c(void *s, int a);
 extern int func_ov002_02207d24(void *p, int a);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov002_02207d00(void *p);
 
 typedef struct {
@@ -30,7 +30,7 @@ void func_ov121_0229b6f0(UnkStruct_0229b6f0 *s)
             s->unk_AF = 0x18;
             func_ov002_02208098(s, 2);
             func_ov002_02207d24((char *) s + 0x2d8, 1);
-            RtcSendPxiCommand(0xd);
+            func_0200467c(0xd);
         } else {
             func_ov002_02207d00((char *) s + 0x2d8);
         }

@@ -8,7 +8,7 @@ extern unsigned char func_02065ec0(unsigned char *param);
 extern void func_02066650(void *);
 extern void *func_020984e8(void);
 extern void *func_020996ac(void *);
-extern int OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
+extern int func_0203cd2c(void *, void *, int, int);
 extern int func_02066830(void *, void *);
 extern int func_02073d90(void *);
 extern void func_0207055c(int, int);
@@ -32,7 +32,7 @@ int func_02096e38(void)
     }
     c = func_020984e8();
     key = 0x1033;
-    OSi_DoUnlockByWord__main_0203cd2c(func_020996ac(c), &key, 0, 1);
+    func_0203cd2c(func_020996ac(c), &key, 0, 1);
     func_02066830(a, b);
     func_02066650(b);
     c = data_020ccf94;

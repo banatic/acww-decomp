@@ -3,7 +3,7 @@
  */
 
 extern int func_02088cf4(int, int, int, int, int, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
@@ -38,6 +38,6 @@ int func_ov095_0229aff0(struct UnkStruct_0229aff0 *self)
         return 0;
     }
     self->unk_16 = (unsigned char) val;
-    RtcSendPxiCommand(0x18);
+    func_0200467c(0x18);
     return 1;
 }

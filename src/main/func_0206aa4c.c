@@ -7,11 +7,11 @@ typedef struct {
     unsigned int value;
 } UnkStruct_0206aa4c;
 
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_02067f28(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e);
 
 void func_0206aa4c(UnkStruct_0206aa4c *param)
 {
-    RtcSendPxiCommand(8);
+    func_0200467c(8);
     func_02067f28(param->value, 0x11000, 0xa66, 0xccc, 0x1000);
 }

@@ -26,7 +26,7 @@ extern void *func_02099870(void *);
 extern void func_02066024(void *, u8 *, void *, void *, void *, void *);
 extern unsigned int func_0204bd20(unsigned int, unsigned int);
 extern void *func_020996ac(void *);
-extern int OS_UnlockByWord_IrqAndFiq(void *, u16 *, int);
+extern int func_0203cd1c(void *, u16 *, int);
 extern int func_0202ea80(int, int);
 extern void func_0206844c(void *, u8 *, void *);
 typedef struct {
@@ -161,7 +161,7 @@ void func_ov087_02278ab8(UnkStruct_02278ab8 *p)
             func_02066024(h, &m.b0, &data_ov087_022795a8, &data_ov087_022793c4, &data_ov087_022793c0, func_02099870(g));
             if (g != 0) {
                 m.h6 = (u16) func_0204bd20(0x1d, 4);
-                OS_UnlockByWord_IrqAndFiq(func_020996ac(g), &m.h6, 0);
+                func_0203cd1c(func_020996ac(g), &m.h6, 0);
             }
             func_0202ea80(0x1a, 1);
             func_020a8210(buf);

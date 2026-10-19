@@ -9,7 +9,7 @@ extern int func_ov002_02208b00(unsigned char *, unsigned char, unsigned char);
 extern int func_ov104_0229c364(unsigned char *, int);
 extern void func_ov002_02209114(unsigned char *, int, int);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
-extern void RtcSendPxiCommand(unsigned int);
+extern void func_0200467c(unsigned int);
 
 extern unsigned char data_021f6c54;
 extern unsigned char data_021f6c58;
@@ -46,7 +46,7 @@ void func_ov104_0229e54c(unsigned char *p)
     do_x = 1;
     if (p[0xbc] == 2) {
         do_x = 0;
-        RtcSendPxiCommand(0x24);
+        func_0200467c(0x24);
     }
     func_ov002_02209114(p + 0x2504, r, do_x);
     func_ov002_02208098((void *) (p), 0x17);

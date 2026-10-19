@@ -5,7 +5,7 @@
 extern int func_0208a844(void *self);
 extern int func_020b8edc(void);
 extern void func_020b8fe0(void *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 typedef struct {
     unsigned char pad_00[0xe0];
@@ -30,7 +30,7 @@ void func_020b8f20(UnkStruct_020b8f20 *self)
             return;
         } else if (res == 2) {
             if (self->unk_E0 == 0) {
-                RtcSendPxiCommand(0x3d);
+                func_0200467c(0x3d);
             }
             if (func_020b8edc() != 0) {
                 self->unk_E0 = 0x19;

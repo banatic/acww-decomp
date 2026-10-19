@@ -3,13 +3,13 @@
  */
 
 extern int func_0208e484(void *ptr);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_020aba24(void *ptr);
 
 void func_020aba3c(void *ptr)
 {
     if (func_0208e484((char *) ptr + 0x20)) {
-        RtcSendPxiCommand(0x27);
+        func_0200467c(0x27);
         func_020aba24(ptr);
     }
 }

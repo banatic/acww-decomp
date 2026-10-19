@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int gt2GetIncomingBufferSize(int);
+extern int func_02016104(int);
 extern void func_02013aac(int);
 extern int func_0201c314(int, int);
 extern void func_ov068_02266c34(int, int, int, int, int, int, int, int, int);
@@ -13,7 +13,7 @@ extern int data_020c814c;
 int func_ov068_02267634(int param0, int param1)
 {
     int r4, r6;
-    r4 = gt2GetIncomingBufferSize(param1 + 0x680);
+    r4 = func_02016104(param1 + 0x680);
     r6 = 0;
     func_02013aac(param1);
     if (r4 != 0) {

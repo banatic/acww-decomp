@@ -11,7 +11,7 @@ extern int func_0200366c(void *a, void *b, int c, void *d);
 extern int func_020644cc(int a);
 extern int func_02068484(void *a, u8 *b, void *c);
 extern void func_0206844c(void *a, u8 *b, int c);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern u8 data_021f43e8;
 extern u8 data_ov068_022788f8[];
 extern u8 data_ov068_02278200[];
@@ -47,6 +47,6 @@ void func_ov068_02275d98(u8 *self, int event)
         b = data_021f43e8;
         func_0206844c(*(void **) (*(u8 **) (self + 0x1a4) + 0x8dc), &b, 0);
         func_ov068_02275c78(*(u8 **) (self + 0x1a4), 0xa);
-        RtcSendPxiCommand(0x5f);
+        func_0200467c(0x5f);
     }
 }

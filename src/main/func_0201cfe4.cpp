@@ -11,7 +11,7 @@ extern unsigned char data_021f43e8;
 
 extern "C" {
 extern int func_0201d198(UnkStruct_0201cfe4 *self, unsigned int idx);
-extern void RtcSendPxiCommand(int command);
+extern void func_0200467c(int command);
 extern int func_0207e054(int a, int b, int c);
 extern int func_02081a88(int a);
 extern void func_02078864(int a, int b, int c);
@@ -44,7 +44,7 @@ extern "C" void func_0201cfe4(UnkStruct_0201cfe4 *self, int event)
 
     if (func_0201d198(self, event) == 0) {
         if (self->flag != 0) {
-            RtcSendPxiCommand(self->flag);
+            func_0200467c(self->flag);
             self->flag = 0;
         }
 

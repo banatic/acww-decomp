@@ -123,15 +123,15 @@ int ItemRecord_CountHad(int first, int count)
 }
 CLEAN_AS(func_0203cc54, ItemRecord_CountHad)
 
-/* OS_UnlockByWord_IrqAndFiq (the symbol's name is wrong: this is the game's code): `*item`
+/* func_0203cd1c: `*item`
  * marked as had. */
 int ItemRecord_Mark(ItemRecord *record, const ItemCode *item, int mode)
 {
     return ItemRecord_SetBit(record, item, mode, 1);
 }
-CLEAN_AS(OS_UnlockByWord_IrqAndFiq, ItemRecord_Mark)
+CLEAN_AS(func_0203cd1c, ItemRecord_Mark)
 
-/* OSi_DoUnlockByWord__main_0203cd2c: the bit of `*item` set (`set`) or cleared; 1 when the
+/* func_0203cd2c: the bit of `*item` set (`set`) or cleared; 1 when the
  * item has a bit. With ITEM_RECORD_MARK_CHECKED the insects, the fish and the variant items
  * 0x42a4-0x4463 are refused (0, nothing written), by their code as given. */
 int ItemRecord_SetBit(ItemRecord *record, const ItemCode *item, int mode, int set)
@@ -157,7 +157,7 @@ int ItemRecord_SetBit(ItemRecord *record, const ItemCode *item, int mode, int se
     }
     return 1;
 }
-CLEAN_AS(OSi_DoUnlockByWord__main_0203cd2c, ItemRecord_SetBit)
+CLEAN_AS(func_0203cd2c, ItemRecord_SetBit)
 
 /* func_0203cdcc: whether `*item` was had (0 for an item without a bit). */
 int ItemRecord_Has(ItemRecord *record, const ItemCode *item)

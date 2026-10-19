@@ -10,7 +10,7 @@ typedef struct {
 
 extern int func_020f7bc4(Snd *p, int id, unsigned int *addr);
 extern int NNS_SndPlayerWriteVariable(unsigned int *addr, int var, int value);
-extern void ciAddUNQUIETFilter(Snd *p, int arg);
+extern void func_020f7c1c(Snd *p, int arg);
 
 void func_020f72b8(Snd *p, int cmd, int arg)
 {
@@ -55,5 +55,5 @@ void func_020f72b8(Snd *p, int cmd, int arg)
             break;
     }
 
-    ciAddUNQUIETFilter(p, arg);
+    func_020f7c1c(p, arg);
 }

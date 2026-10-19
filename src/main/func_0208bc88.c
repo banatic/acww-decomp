@@ -3,7 +3,7 @@
  */
 
 extern void func_0208c630(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 struct Func0208bc88_Struct {
     unsigned char pad_00[0x20];
@@ -16,5 +16,5 @@ void func_0208bc88(struct Func0208bc88_Struct *obj)
 {
     obj->unk_20 = 5;
     func_0208c630(obj->unk_28, 0);
-    RtcSendPxiCommand(0x4b);
+    func_0200467c(0x4b);
 }

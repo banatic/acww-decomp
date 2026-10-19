@@ -22,7 +22,7 @@ extern void func_ov126_022a0168(UnkStruct_022a027c *self);
 extern void func_ov126_022a08c4(UnkStruct_022a027c *self);
 extern void func_ov095_0229b3ec(const void *p);
 extern int func_ov095_0229b3a0(const void *p, const void *q, int _x);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 int func_ov126_022a027c(UnkStruct_022a027c *self, int b)
 {
@@ -45,7 +45,7 @@ int func_ov126_022a027c(UnkStruct_022a027c *self, int b)
         }
         return 0;
     }
-    RtcSendPxiCommand(0x35);
+    func_0200467c(0x35);
     func_ov126_022a0168(self);
     func_ov126_022a08c4(self);
     return 1;

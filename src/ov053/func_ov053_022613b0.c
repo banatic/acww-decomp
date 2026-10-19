@@ -25,7 +25,7 @@ extern char data_021fbee8[];
 extern int data_020c814c;
 
 extern void func_0201ad18(void *p, int a, int b, int c, void *d, int e, int f, int g);
-extern int gt2GetIncomingBufferSize(void *p);
+extern int func_02016104(void *p);
 extern int func_0201c314(UnkStruct_022613b0 *self, int a);
 extern int func_ov053_02260ba8(void *p);
 extern int func_ov004_0224719c(Vec3 *v);
@@ -39,7 +39,7 @@ int func_ov053_022613b0(UnkStruct_022613b0 *self)
     int x;
 
     func_0201ad18(&self->unk_3B0, 1, 0, 0, data_021fbee8, 4, data_020c814c, 1);
-    x = gt2GetIncomingBufferSize(&self->unk_658);
+    x = func_02016104(&self->unk_658);
     n = 0;
     if (x != 0) {
         n = func_0201c314(self, x);

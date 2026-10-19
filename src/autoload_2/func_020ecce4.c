@@ -6,9 +6,9 @@
 
 extern void MI_CpuFill8(void *dest, u8 fill, u32 size);
 extern int func_020edaf0(int size, int align);
-extern int UTi_PutString(int pointer);
+extern int func_020edacc(int pointer);
 extern void func_020ed6e8(unsigned char *command);
-extern void CTRDG_WriteAgbFlashSectorAsync(int index, char *buffer, unsigned int length);
+extern void func_020ed6c4(int index, char *buffer, unsigned int length);
 extern int func_ov066_022667e0(void (*fp)(unsigned char *));
 extern void func_ov066_02267fe8(void (*callback)(int, char *, unsigned int));
 extern int func_ov066_022672b8(int, int, int);
@@ -45,11 +45,11 @@ void func_020ecce4(int action, void (*data)(int, char *, unsigned int))
     msg.c3 = 2;
     msg.c1 = 8;
 
-    func_ov066_0226748c(data_0213e6b4, func_020edaf0, UTi_PutString, 0);
+    func_ov066_0226748c(data_0213e6b4, func_020edaf0, func_020edacc, 0);
 
     func_ov066_022667e0(func_020ed6e8);
     func_ov066_0226b9b8(&msg);
-    func_ov066_02267fe8(CTRDG_WriteAgbFlashSectorAsync);
+    func_ov066_02267fe8(func_020ed6c4);
 
     if (action == 1) {
         func_ov066_022672b8(3, 0, 0);

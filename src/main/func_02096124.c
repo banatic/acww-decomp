@@ -1,11 +1,11 @@
-/* DWC_Alloc @ 0x02096124, 0x1e bytes, Thumb, module main
+/* func_02096124 @ 0x02096124, 0x1e bytes, Thumb, module main
  * mwccarm 1.2/base -O4,s
  */
 
 extern int func_02096718(int);
 extern int func_0200f290(int, int);
 
-int DWC_Alloc(int a, int b)
+int func_02096124(int a, int b)
 {
     int result = func_02096718(b);
     if (result != 0) {

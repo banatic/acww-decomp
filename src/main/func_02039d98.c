@@ -3,7 +3,7 @@
  */
 
 extern int func_0209d368(int id, int index);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 void func_02039d98(void *self)
 {
@@ -37,6 +37,6 @@ void func_02039d98(void *self)
     *p = r4;
     *(int *) ((char *) self + 0x4c) = r1;
     if (*(int *) ((char *) self + 0xc) != 0) {
-        RtcSendPxiCommand(0x3f);
+        func_0200467c(0x3f);
     }
 }

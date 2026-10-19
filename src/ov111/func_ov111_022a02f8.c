@@ -11,7 +11,7 @@ extern void func_ov111_0229f4c4(void *);
 extern void func_ov111_0229f524(void *);
 extern void func_ov111_0229fd08(void *);
 extern void func_ov111_0229f10c(void *);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov095_0229a148(void *);
 extern void func_ov111_0229efb8(void *, int);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
@@ -47,7 +47,7 @@ void func_ov111_022a02f8(void *self)
                 func_ov111_0229f524(self);
                 func_ov111_0229fd08(self);
                 func_ov111_0229f10c(self);
-                RtcSendPxiCommand(0xb);
+                func_0200467c(0xb);
                 break;
 
             case 4:

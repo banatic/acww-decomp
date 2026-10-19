@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_FndAllocFromAllocator(void *dst, int val);
+extern void func_0204b3cc(void *dst, int val);
 extern void func_02061e2c(void *p, void *q);
 extern int func_0204bd08(void *p);
 extern int func_0204bcdc(void *p);
@@ -16,7 +16,7 @@ int func_0204c438(void *p0, void *p1)
     char local[8];
     int result;
 
-    NNS_FndAllocFromAllocator(local, 0x0000fff1);
+    func_0204b3cc(local, 0x0000fff1);
     result = 0;
     func_02061e2c(local + 2, p0);
     if (func_0204bd08(local + 2) || func_0204bcdc(local + 2)) {

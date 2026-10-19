@@ -7,7 +7,7 @@
 extern int func_ov111_0229f4dc(void *self);
 extern void func_ov095_0229b3ec(void *ptr);
 extern int func_ov095_0229b3a0(void *ptr, void *ptr2, int _x);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov111_0229fb48(void *self);
 extern void func_ov111_0229fd08(void *self);
 extern void func_ov111_0229f524(void *self);
@@ -42,13 +42,13 @@ int func_ov111_0229fb8c(UnkStruct_0229fb8c *self, int param1)
                 func_ov111_0229fb48(self);
             } else {
                 if (param1 != 0) {
-                    RtcSendPxiCommand(0x34);
+                    func_0200467c(0x34);
                 }
                 return 0;
             }
         }
     }
-    RtcSendPxiCommand(0x35);
+    func_0200467c(0x35);
     func_ov111_0229fd08(self);
     func_ov111_0229f524(self);
     return 1;

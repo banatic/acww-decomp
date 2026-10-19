@@ -19,7 +19,7 @@ typedef struct UnkStruct_020f8bbc {
 extern void NNS_SndPlayerSetTrackVolume(NNSSndHandle *handle, u16 trackBitMask, int volume);
 extern int func_020eed18(int a, int b);
 extern int func_020eedb8(int r0, int r1, int r2);
-extern void ciAddUNQUIETFilter(void *a, int b);
+extern void func_020f7c1c(void *a, int b);
 
 void func_020f8bbc(UnkStruct_020f8bbc *self, int r1, int r2)
 {
@@ -72,5 +72,5 @@ void func_020f8bbc(UnkStruct_020f8bbc *self, int r1, int r2)
         self->flag = ((self->flag + 1) % 2) != 0;
     }
 
-    ciAddUNQUIETFilter(self, r2);
+    func_020f7c1c(self, r2);
 }

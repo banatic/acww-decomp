@@ -13,7 +13,7 @@ typedef struct UnkStruct_022998f0 {
     UnkSub unk_12C;
 } UnkStruct_022998f0;
 
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov145_02299954(UnkStruct_022998f0 *self, unsigned char param);
 extern void func_ov145_0229a2e0(UnkStruct_022998f0 *self);
 extern void func_ov002_0220a574(UnkSub *sub);
@@ -24,7 +24,7 @@ int func_ov145_022998f0(UnkStruct_022998f0 *self, unsigned int param)
 {
     if (param <= 3) {
         if (param != self->unk_C1) {
-            RtcSendPxiCommand(0xc);
+            func_0200467c(0xc);
             func_ov145_02299954(self, (unsigned char) param);
         }
         return 0;

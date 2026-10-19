@@ -13,7 +13,7 @@ typedef struct UnkStruct_0229a538 {
 
 extern int func_ov123_0229ac80(UnkStruct_0229a538 *self, int a, int b, u8 c, int d, int e);
 extern void func_ov123_0229a5cc(UnkStruct_0229a538 *self, int a, int b, u8 c, int d);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov123_0229a654(UnkStruct_0229a538 *self, int a, int b, u8 c);
 extern void func_ov123_0229a988(UnkStruct_0229a538 *self, u8 c);
 extern void func_ov123_0229a918(UnkStruct_0229a538 *self, u8 c);
@@ -26,10 +26,10 @@ void func_ov123_0229a538(UnkStruct_0229a538 *self, int a, int b)
         func_ov123_0229ac80(self, a, b, self->unk_A2, st, 1);
     } else if (st >= 3 && st <= 4) {
         func_ov123_0229a5cc(self, a, b, self->unk_A2, st - 3);
-        RtcSendPxiCommand(0x867);
+        func_0200467c(0x867);
     } else {
         if (st >= 9 && st <= 0xb) {
-            RtcSendPxiCommand(0x867);
+            func_0200467c(0x867);
         }
 
         switch (self->unk_A4) {

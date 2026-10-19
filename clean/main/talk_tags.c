@@ -1887,14 +1887,14 @@ void TalkTags_Hurry(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206bd2c, TalkTags_Hurry)
 
-/* NNS_G2dSetRndCore3DSoftSpriteZvalue (0x0206bd40, a misnamed symbol): the message's speed
+/* func_0206bd40: the message's speed
  * (func_0206741c hands it the value of the message's kind, and keeps whether it is
  * TALK_TAGS_SPEED_INSTANT in the talk's byte 0x1a48). */
 void TalkTags_SetSpeed(TalkTagsWalker *walker, int speed)
 {
     walker->unk_34 = speed;
 }
-CLEAN_AS(NNS_G2dSetRndCore3DSoftSpriteZvalue, TalkTags_SetSpeed)
+CLEAN_AS(func_0206bd40, TalkTags_SetSpeed)
 
 /* func_0206bd44: a new page: no line shown, the page emptied in the name colour, and its first
  * line begun where the walk is. */

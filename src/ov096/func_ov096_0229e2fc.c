@@ -10,8 +10,8 @@ extern int func_02095b84(u16 *p);
 extern int func_02095b1c(u16 *p);
 extern int func_02095aec(u16 *p);
 extern int func_02095b64(void);
-extern int CARD_IsEnabled(void);
-extern void RtcSendPxiCommand(int a);
+extern int func_0203ac5c(void);
+extern void func_0200467c(int a);
 
 int func_ov096_0229e2fc(void *unused, unsigned int p, u16 x)
 {
@@ -49,8 +49,8 @@ int func_ov096_0229e2fc(void *unused, unsigned int p, u16 x)
             break;
         case 7:
             if (func_02095aec(&t) != 0) {
-                if (CARD_IsEnabled() == 0) {
-                    RtcSendPxiCommand(0x40);
+                if (func_0203ac5c() == 0) {
+                    func_0200467c(0x40);
                 }
                 return 1;
             }

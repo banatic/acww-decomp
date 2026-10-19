@@ -10,7 +10,7 @@ extern int func_020984e8(void);
 extern UnkStruct_02263430 *func_02095794(int);
 extern int func_02014868(void *);
 extern int func_02095ab0(void *, int, int);
-extern int DWCi_GsMalloc(int);
+extern int func_0209615c(int);
 extern int func_0203e020(void *);
 extern UnkStruct_02263430 data_ov048_02263974;
 
@@ -41,7 +41,7 @@ int func_ov048_02263430(unsigned char *self)
             self[0xe71] = 3;
             break;
         case 3:
-            if (DWCi_GsMalloc(4) == 0) {
+            if (func_0209615c(4) == 0) {
                 func_0203e020(self);
             }
             break;

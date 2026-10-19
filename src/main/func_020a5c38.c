@@ -18,8 +18,8 @@ extern int func_020a5bb8(struct UnkStruct_020a5c38_2 *o, int i);
 extern void func_020a5bc4(struct UnkStruct_020a5c38_2 *o, int i, int v);
 extern unsigned long func_020a5bd8(struct UnkStruct_020a5c38_2 *o);
 extern void func_020a5be0(struct UnkStruct_020a5c38_2 *o, unsigned long v);
-extern unsigned long OSi_GetSystemErrno(struct UnkStruct_020a5c38_2 *o);
-extern void OSi_SetSystemErrno(struct UnkStruct_020a5c38_2 *o, unsigned long v);
+extern unsigned long func_020a5bf0(struct UnkStruct_020a5c38_2 *o);
+extern void func_020a5bf8(struct UnkStruct_020a5c38_2 *o, unsigned long v);
 extern int func_020a5c08(struct UnkStruct_020a5c38_2 *o);
 extern void func_020a5c10(struct UnkStruct_020a5c38_2 *o, unsigned long v);
 extern void func_020a5c30(struct UnkStruct_020a5c38_2 *o, unsigned long v);
@@ -109,7 +109,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
         }
         if (ok) {
             func_020a5c10(self, zA);
-            OSi_SetSystemErrno(self, i);
+            func_020a5bf8(self, i);
             if (st == 0) {
                 func_020a5be0(self, zB);
             } else if (st == 1) {
@@ -126,7 +126,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
     }
 
     if (func_020a5c08(self) == 0) {
-        me = OSi_GetSystemErrno(self);
+        me = func_020a5bf0(self);
         j = 3;
         g = data_020ccf94;
         for (; j >= 0; j--) {
@@ -135,7 +135,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
                     func_020a5bc4(self, 0, 0);
                 } else {
                     func_020a76cc(&b0);
-                    func_020a76ac(&b0, 0, func_020a5bd8(self), OSi_GetSystemErrno(self));
+                    func_020a76ac(&b0, 0, func_020a5bd8(self), func_020a5bf0(self));
                     func_02073820(g);
                     func_020737f0(g, &b0, 1);
                     func_02073770(g, 0xc, j);
@@ -149,7 +149,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
 
     if (func_020a5c08(self) == 1) {
         ok2 = 1;
-        me = OSi_GetSystemErrno(self);
+        me = func_020a5bf0(self);
         j = 3;
         h = data_020ccf94;
         for (; j >= 0; j--) {
@@ -178,7 +178,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
                             func_020a5bc4(self, 0, 5);
                         } else {
                             func_020a76cc(&b1);
-                            func_020a76ac(&b1, 5, 4, OSi_GetSystemErrno(self));
+                            func_020a76ac(&b1, 5, 4, func_020a5bf0(self));
                             func_02073820(h);
                             func_020737f0(h, &b1, 1);
                             func_02073770(h, 0xc, j);
@@ -210,7 +210,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
                                 func_020a5bc4(self, 0, 4);
                             } else {
                                 func_020a76cc(&b3);
-                                func_020a76ac(&b3, 4, 4, OSi_GetSystemErrno(self));
+                                func_020a76ac(&b3, 4, 4, func_020a5bf0(self));
                                 func_02073820(h);
                                 func_020737f0(h, &b3, 1);
                                 func_02073770(h, 0xc, j);
@@ -229,7 +229,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
 
     if (func_020a5c08(self) == 2) {
         ok4 = 1;
-        me = OSi_GetSystemErrno(self);
+        me = func_020a5bf0(self);
         j = 3;
         g = data_020ccf94;
         for (; j >= 0; j--) {
@@ -247,7 +247,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
 
     if (func_020a5c08(self) == 3) {
         ok5 = 1;
-        me = OSi_GetSystemErrno(self);
+        me = func_020a5bf0(self);
         j = 3;
         h = data_020ccf94;
         for (; j >= 0; j--) {

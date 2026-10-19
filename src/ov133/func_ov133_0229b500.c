@@ -16,7 +16,7 @@ extern void *func_02099664(void *a);
 extern void *func_02077bcc(void *record);
 extern int func_02077dd4(void *p, char *q, void *r);
 extern void func_ov133_0229bb78(char *self, int a, int b);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_02077ebc(void *buf);
 extern int func_ov133_0229b660(char *self);
 extern int func_ov133_0229b6b8(char *self, void *buf);
@@ -53,19 +53,19 @@ void func_ov133_0229b500(char *self)
     func_02077e68(buf);
     if (func_02077dd4(buf, self + 0xa4, func_02077bcc(func_02099664(a))) == 0) {
         func_ov133_0229bb78(self, 0x19, 0);
-        RtcSendPxiCommand(0x73);
+        func_0200467c(0x73);
         func_02077ebc(buf);
         return;
     }
     if (func_ov133_0229b660(self)) {
         func_ov133_0229bb78(self, 0x1d, 0);
-        RtcSendPxiCommand(0x73);
+        func_0200467c(0x73);
         func_02077ebc(buf);
         return;
     }
     if (func_ov133_0229b6b8(self, buf)) {
         func_ov133_0229bb78(self, 0x14, 0);
-        RtcSendPxiCommand(0x73);
+        func_0200467c(0x73);
         func_02077ebc(buf);
         return;
     }
@@ -76,7 +76,7 @@ void func_ov133_0229b500(char *self)
     func_ov002_0220a720(self + 0x180, 6);
     func_ov002_02208090(self, 3);
     func_ov002_02208098(self, 0xa);
-    RtcSendPxiCommand(0x29);
+    func_0200467c(0x29);
     if (func_0206fca4() == 0xe) {
         func_ov133_0229c3d4(self, 0xc);
     } else {

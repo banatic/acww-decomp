@@ -1079,12 +1079,12 @@ void TalkObject_SetAutoAdvance(TalkObject *talk, int frames)
 }
 CLEAN_AS(func_020676c4, TalkObject_SetAutoAdvance)
 
-/* func_020676c8 (named NNS_G2dResetEntityPaletteTable in the symbols): the countdown off. */
+/* func_020676c8: the countdown off. */
 void TalkObject_ClearAutoAdvance(TalkObject *talk)
 {
     talk->unk_10 = 0;
 }
-CLEAN_AS(NNS_G2dResetEntityPaletteTable, TalkObject_ClearAutoAdvance)
+CLEAN_AS(func_020676c8, TalkObject_ClearAutoAdvance)
 
 /* The texts loaded from the villager talked to (or about) for a message's tags: each loader
  * clears its text and, with a villager, loads it; 1 when it did. Each is cleared again for the

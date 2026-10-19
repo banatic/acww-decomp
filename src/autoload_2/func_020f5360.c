@@ -4,7 +4,7 @@
 
 extern int data_021fd234;
 extern void func_020efc50(void *);
-extern void ENV_AppendResourceSet(void *);
+extern void func_020eed48(void *);
 
 struct UnkStruct_020f5360 {
     char pad_00[8];
@@ -22,5 +22,5 @@ void func_020f5360(struct UnkStruct_020f5360 *p, int value)
     p->b2 = 0;
     p->b1 = p->b2;
     func_020efc50(p);
-    ENV_AppendResourceSet(&p->resource);
+    func_020eed48(&p->resource);
 }

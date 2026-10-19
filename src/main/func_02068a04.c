@@ -22,7 +22,7 @@ extern void func_020688e0(UnkStruct_02068a04 *self);
 extern void func_020688dc(UnkStruct_02068a04 *self);
 extern int func_02068958(UnkStruct_02068a04 *self);
 extern int func_02068924(UnkStruct_02068a04 *self);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_020045f4(int a, int b, int c, int d);
 extern void func_020680ec(u32 p, int flag);
 extern void func_020680d0(u32 p);
@@ -43,7 +43,7 @@ void func_02068a04(UnkStruct_02068a04 *self)
         if (self->count >= 1) {
             if (self->unk_24 == 5) {
                 if (res1 != 2) {
-                    RtcSendPxiCommand(0x2c);
+                    func_0200467c(0x2c);
                 }
             } else {
                 func_020045f4(res1, res2, self->data[0], self->data[1]);

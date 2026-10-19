@@ -15,7 +15,7 @@ extern int data_021fbf10;
 extern int data_0213e6f0;
 
 extern int func_020edaf0(int, int);
-extern int UTi_PutString(int);
+extern int func_020edacc(int);
 extern unsigned long long func_020eb694(char *);
 extern int OS_SNPrintf(char *buffer, unsigned int size, const char *format, ...);
 extern int DWC_GetGHTTPData(int, int, int);
@@ -35,7 +35,7 @@ int func_020eb188(int a, int b, int c, int d)
 
         data_021fbf0c = func_020edaf0(0x29, 4);
         if (data_021fbf0c == 0) {
-            UTi_PutString(data_021fbf44);
+            func_020edacc(data_021fbf44);
             data_021fbf44 = 0;
             return 0;
         }

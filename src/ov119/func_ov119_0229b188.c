@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov119_0229a410(void *p, int n);
 extern int func_ov119_0229c608(void *p, int n);
 
@@ -38,9 +38,9 @@ int func_ov119_0229b188(State *p)
             p->unk_9D = r;
             func_ov002_02208098(p, 14);
             if (r == 4) {
-                RtcSendPxiCommand(0xf);
+                func_0200467c(0xf);
             } else {
-                RtcSendPxiCommand(0xb);
+                func_0200467c(0xb);
             }
             return 1;
         } else {
@@ -51,7 +51,7 @@ int func_ov119_0229b188(State *p)
         p->unk_B0 = 8;
         p->unk_B1 = 3;
         func_ov002_02208098(p, 8);
-        RtcSendPxiCommand(0x2b);
+        func_0200467c(0x2b);
         return 1;
     }
     if (v <= 7) {
@@ -59,7 +59,7 @@ int func_ov119_0229b188(State *p)
         func_ov119_0229a410(p, 4);
         p->unk_B1 = 3;
         func_ov002_02208098(p, 8);
-        RtcSendPxiCommand(0x2b);
+        func_0200467c(0x2b);
         return 1;
     }
     return 0;

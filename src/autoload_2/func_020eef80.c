@@ -3,7 +3,7 @@
  */
 
 extern void OS_Terminate(void);
-extern unsigned long MIi_ReadWordStreamFromMemory(const unsigned long *p);
+extern unsigned long func_020efc18(const unsigned long *p);
 extern void func_020ef284(int node);
 extern void *func_020efc2c(void *list, void *object);
 
@@ -13,7 +13,7 @@ void func_020eef80(void *list)
     if (list == 0) {
         OS_Terminate();
     }
-    node = (void *) MIi_ReadWordStreamFromMemory((const unsigned long *) list);
+    node = (void *) func_020efc18((const unsigned long *) list);
     if (node == 0) {
         return;
     }

@@ -21,7 +21,7 @@ extern char data_021d11c4[];
 extern char data_020e3134[];
 extern void func_020b93e8(void);
 extern void func_020edb98(void);
-extern void GXS_BeginLoadOBJExtPltt(int size, void *heap);
+extern void func_020e9918(int size, void *heap);
 extern void func_020540e4(void);
 extern void func_02004b70(void);
 extern void func_020e906c(void);
@@ -57,7 +57,7 @@ void func_020b1b84(void)
 
     (func_020b93e8(), func_020edb98());
 
-    (((GXS_BeginLoadOBJExtPltt(0x13fc8, 0), func_020540e4()), func_02004b70()), func_020e906c());
+    (((func_020e9918(0x13fc8, 0), func_020540e4()), func_02004b70()), func_020e906c());
 
     ((func_0209dfc0(), func_02046620()), func_02038998());
 

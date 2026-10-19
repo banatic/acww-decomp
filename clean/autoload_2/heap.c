@@ -136,13 +136,13 @@ void *Heap_AllocCurrentAligned(int size, int align)
 }
 CLEAN_AS(func_020e98f4, Heap_AllocCurrentAligned)
 
-/* GXS_BeginLoadOBJExtPltt: the start-up (func_020b1b84) makes the expanded heap at
+/* func_020e9918: the start-up (func_020b1b84) makes the expanded heap at
  * sSubOBJExtPltt, 0x13fc8 bytes from the current heap. */
 void Heap_CreateAuxHeap(int size, Heap *parent)
 {
     sSubOBJExtPltt = ExpHeap_Create(size, parent);
 }
-CLEAN_AS(GXS_BeginLoadOBJExtPltt, Heap_CreateAuxHeap)
+CLEAN_AS(func_020e9918, Heap_CreateAuxHeap)
 
 /* func_020e993c */
 void Heap_Free(Heap *heap, void *block)
@@ -712,7 +712,7 @@ Heap *FrameHeap_Create(int size, Heap *parent)
 }
 CLEAN_AS(func_020ea0e0, FrameHeap_Create)
 
-/* GX_ResetBankForSubOBJExtPltt: a new expanded heap, as FrameHeap_Create makes a frame heap.
+/* func_020ea1bc: a new expanded heap, as FrameHeap_Create makes a frame heap.
  * Its symbol carries a NitroSDK name that does not fit what it does. */
 Heap *ExpHeap_Create(int size, Heap *parent)
 {
@@ -745,7 +745,7 @@ Heap *ExpHeap_Create(int size, Heap *parent)
     ExpHeap_Construct(heap, start, (int) nns_size, parent, handle);
     return &heap->heap;
 }
-CLEAN_AS(GX_ResetBankForSubOBJExtPltt, ExpHeap_Create)
+CLEAN_AS(func_020ea1bc, ExpHeap_Create)
 
 /* func_020ea298: an expanded heap without a parent, made in the `size` bytes at `memory` (the
  * root heap in the arena, and a heap of overlay 3 in memory of its own); NULL when NNS cannot.

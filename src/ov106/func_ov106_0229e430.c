@@ -13,7 +13,7 @@ extern int func_ov002_02208054(const void *, int);
 extern int func_ov002_02208b00(const char *, unsigned char, unsigned char);
 extern int func_ov106_0229c364(const void *, int);
 extern void func_ov106_0229c868(const void *);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov002_02209114(const char *, int, int);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
@@ -66,7 +66,7 @@ void func_ov106_0229e430(UnkStruct_0229e430 *self)
     r6 = 1;
     if (self->unk_BC == 2) {
         r6 = 0;
-        RtcSendPxiCommand(0x24);
+        func_0200467c(0x24);
     }
 
     func_ov002_02209114(self->unk_2304, res, r6);

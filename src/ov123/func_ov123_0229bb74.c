@@ -20,7 +20,7 @@ extern void func_ov123_0229b6d0(UnkStruct_0229bb74 *self);
 extern int func_ov123_02299adc(UnkStruct_0229bb74 *self, int arg);
 extern void func_ov123_02299c04(UnkStruct_0229bb74 *self);
 extern void func_ov123_02299cc0(UnkStruct_0229bb74 *self);
-extern void RtcSendPxiCommand(u32 cmd);
+extern void func_0200467c(u32 cmd);
 extern void func_ov123_0229b65c(UnkStruct_0229bb74 *self);
 extern int func_ov123_022998c0(UnkStruct_0229bb74 *self);
 extern void func_ov123_02299980(UnkStruct_0229bb74 *self);
@@ -52,7 +52,7 @@ void func_ov123_0229bb74(UnkStruct_0229bb74 *self)
             return;
         }
         if (flags & 0x800) {
-            RtcSendPxiCommand(0x864);
+            func_0200467c(0x864);
             if (self->unk_AC == 0) {
                 self->unk_AC = 1;
                 self->unk_AA = self->unk_A2 + 13;

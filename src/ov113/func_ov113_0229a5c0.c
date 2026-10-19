@@ -4,7 +4,7 @@
 
 extern void func_ov113_02299d94(void *self, int a);
 extern int func_ov113_02299da4(void *self, int a);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov002_02207ecc(void *self, int a, int b, int c, int d);
 extern void func_ov002_02207e80(void *self, int a, int b, int c);
 extern void func_ov002_02208090(void *self, int a);
@@ -37,10 +37,10 @@ void func_ov113_0229a5c0(struct UnkStruct_0229a5c0 *self)
     switch (self->mode_byte) {
         case 0:
         case 1:
-            RtcSendPxiCommand(0x3c);
+            func_0200467c(0x3c);
             break;
         default:
-            RtcSendPxiCommand(0x39);
+            func_0200467c(0x39);
             break;
     }
 

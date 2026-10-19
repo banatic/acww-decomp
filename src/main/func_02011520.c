@@ -4,7 +4,7 @@
 
 extern void *data_020ccf94;
 extern int func_02073908(void *a, int b);
-extern int DWC_Alloc(int size, int kind);
+extern int func_02096124(int size, int kind);
 extern int func_02095794(int);
 extern int func_02030890(int *);
 extern void func_020953c4(int *);
@@ -30,17 +30,17 @@ int func_02011520(int param)
         return ret;
     }
 
-    ret = DWC_Alloc(0xb, param);
+    ret = func_02096124(0xb, param);
     if (ret != 0) {
         return ret;
     }
 
-    ret = DWC_Alloc(0x13, param);
+    ret = func_02096124(0x13, param);
     if (ret != 0) {
         return ret;
     }
 
-    ret = DWC_Alloc(5, param);
+    ret = func_02096124(5, param);
     if (ret != 0) {
         return ret;
     }

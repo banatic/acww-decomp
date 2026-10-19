@@ -9,7 +9,7 @@ extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov129_0229bee4(void *p, int n);
 extern void func_020b15b8(void *p, int *a, int *b);
 extern void func_ov127_022999c0(void *p, int x, int y);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov129_0229c79c(unsigned char *self)
 {
@@ -25,6 +25,6 @@ void func_ov129_0229c79c(unsigned char *self)
     x &= 0xfffc;
     y &= 0xfffc;
     func_ov127_022999c0(self + 0x734, x, y);
-    RtcSendPxiCommand(0x87f);
+    func_0200467c(0x87f);
     func_ov129_0229b7cc(self, 0x80);
 }

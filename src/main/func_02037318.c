@@ -5,7 +5,7 @@
 extern unsigned int func_0209dee8(void);
 extern void func_0209df94(unsigned short *);
 extern void func_0209def4(void *object);
-extern int CARDi_GetTargetMode(void);
+extern int func_0209dedc(void);
 
 typedef struct {
     unsigned int unk_00;
@@ -29,5 +29,5 @@ void func_02037318(UnkStruct_02037318 *p)
     p->unk_00 = func_0209dee8();
     func_0209df94(&p->unk_04);
     func_0209def4(&p->unk_06);
-    p->unk_08 = CARDi_GetTargetMode();
+    p->unk_08 = func_0209dedc();
 }

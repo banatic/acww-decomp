@@ -7,7 +7,7 @@
 extern "C" {
 extern void *func_020a13d0(void);
 extern void *func_020984fc(void *arg0);
-extern int DWCi_GsMalloc(void *);
+extern int func_0209615c(void *);
 extern void *func_020682e0(int);
 extern void func_020a8164(void *, void *);
 extern void func_02068340(void *, void *);
@@ -52,7 +52,7 @@ extern "C" int func_ov048_02262cc0(UnkStruct_02262cc0_3 *obj)
 
     a = func_020a13d0();
     b = func_020984fc((void *) a);
-    if (DWCi_GsMalloc(a) == 0) {
+    if (func_0209615c(a) == 0) {
         r = (Res *) func_020682e0(0);
         obj->sub.v2();
         func_020a8164(&obj->sub, data_ov048_02263d20);

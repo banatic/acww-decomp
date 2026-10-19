@@ -21,7 +21,7 @@ extern void func_ov118_0229a450(Ov118Obj *p, unsigned short mask);
 extern void func_ov002_0220a4bc(void *receiver);
 extern void func_ov118_0229b454(Ov118Obj *p);
 extern void func_ov118_0229b43c(Ov118Obj *p);
-extern void RtcSendPxiCommand(int a0);
+extern void func_0200467c(int a0);
 extern int func_ov118_0229c438(Ov118Obj *p, unsigned char a1);
 
 int func_ov118_0229a4b8(Ov118Obj *p)
@@ -45,7 +45,7 @@ int func_ov118_0229a4b8(Ov118Obj *p)
         if (func_ov118_0229a460(p, 1) != 0) {
             func_ov118_0229afd4(p, 0);
             func_ov118_0229b454(p);
-            RtcSendPxiCommand(0x36);
+            func_0200467c(0x36);
             return 2;
         }
         return 0;
@@ -53,7 +53,7 @@ int func_ov118_0229a4b8(Ov118Obj *p)
         if (func_ov118_0229a460(p, 1) == 0) {
             func_ov118_0229afd4(p, 0);
             func_ov118_0229b43c(p);
-            RtcSendPxiCommand(0x36);
+            func_0200467c(0x36);
             return 2;
         }
         return 0;

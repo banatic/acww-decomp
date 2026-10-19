@@ -24,7 +24,7 @@ extern void func_ov123_0229a438(void *);
 extern void func_ov123_02299640(void *, unsigned int);
 extern void func_ov123_0229a340(void *);
 extern unsigned char *func_ov002_02208098(void *, unsigned char value);
-extern void RtcSendPxiCommand(unsigned int);
+extern void func_0200467c(unsigned int);
 extern void func_ov123_0229b65c(void *);
 extern int func_ov123_022998c0(void *);
 extern void func_ov123_02299980(void *);
@@ -54,7 +54,7 @@ void func_ov123_0229baa4(ThisType *this)
         return;
     }
     if (flags & 0x800) {
-        RtcSendPxiCommand(0x864);
+        func_0200467c(0x864);
         this->unk_AC = 0;
         this->unk_AA = this->unk_AB;
         func_ov123_0229b65c(this);

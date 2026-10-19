@@ -18,7 +18,7 @@ extern int func_ov122_0229f684(UnkStruct_022a07d4 *p, int a, int b);
 extern void func_ov122_022a15b8(UnkStruct_022a07d4 *p, int a, int b);
 extern void func_ov122_0229f9a8(UnkStruct_022a07d4 *p);
 extern void func_ov122_0229f1b4(UnkStruct_022a07d4 *p);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov122_022a07d4(UnkStruct_022a07d4 *param)
 {
@@ -34,7 +34,7 @@ void func_ov122_022a07d4(UnkStruct_022a07d4 *param)
             func_ov122_022a15b8(param, 0, 1);
             func_ov122_0229f9a8(param);
             func_ov122_0229f1b4(param);
-            RtcSendPxiCommand(0x15);
+            func_0200467c(0x15);
         }
     }
 }

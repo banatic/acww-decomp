@@ -6,7 +6,7 @@ extern unsigned short data_021fbefc; // 0x021fbefc
 extern int data_0213e6c0;            // 0x0213e6c0
 extern int data_021fbf44;            // 0x021fbf44
 extern int data_021fbf0c;            // 0x021fbf0c
-int UTi_PutString(int arg);
+int func_020edacc(int arg);
 
 int func_020eb070(void)
 {
@@ -17,8 +17,8 @@ int func_020eb070(void)
         goto ret0;
     }
     if (data_021fbf44 != 0) {
-        UTi_PutString(data_021fbf44);
-        UTi_PutString(data_021fbf0c);
+        func_020edacc(data_021fbf44);
+        func_020edacc(data_021fbf0c);
         data_021fbf44 = 0;
         data_021fbf0c = 0;
     }

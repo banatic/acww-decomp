@@ -5,7 +5,7 @@
 extern void func_02013aac(void *);
 extern int func_020164a0(void *, int);
 extern int func_02019de8(void *);
-extern int gt2GetIncomingBufferSize(void *);
+extern int func_02016104(void *);
 extern int func_0201c314(void *, int);
 extern void func_ov068_02266c34(void *, void *, int, int, int, const void *, int, int, int);
 extern int func_020147fc(void *, int, int, int);
@@ -22,7 +22,7 @@ int func_ov068_02267830(char *self, char *obj)
             goto zero;
         }
     }
-    a = gt2GetIncomingBufferSize(obj + 0x680);
+    a = func_02016104(obj + 0x680);
     b = 0;
     if (a != 0) {
         b = func_0201c314(obj, a);

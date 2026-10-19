@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void func_0200277c(int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov002_02208a04(void *, int);
 extern void func_ov002_02208a0c(void *, int);
 
@@ -18,6 +18,6 @@ void func_ov002_0220970c(char *self, int a1)
     if (a1 != 0x0) {
         func_ov002_02208a0c(self, 0x2);
     }
-    RtcSendPxiCommand(0x13);
+    func_0200467c(0x13);
     func_ov002_02208a04(self, 0x10);
 }

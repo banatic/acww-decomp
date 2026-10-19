@@ -18,7 +18,7 @@ extern unsigned int func_ov121_0229abac(UnkStruct_0229aab4 *self, u8 a);
 extern void func_0206f190(volatile u16 *out, void *a, void *b, void *c);
 extern int func_0209a000(volatile u16 *p, int a);
 extern unsigned char *func_ov121_0229afb8(UnkStruct_0229aab4 *self);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 
 void func_ov121_0229aab4(UnkStruct_0229aab4 *self)
 {
@@ -72,5 +72,5 @@ void func_ov121_0229aab4(UnkStruct_0229aab4 *self)
     }
 
     func_ov121_0229afb8(self);
-    RtcSendPxiCommand(0x6b);
+    func_0200467c(0x6b);
 }

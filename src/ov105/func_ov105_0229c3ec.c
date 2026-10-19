@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void RtcSendPxiCommand(unsigned int command);
+extern void func_0200467c(unsigned int command);
 extern int func_ov002_02207d24(void *ptr, unsigned int value);
 extern void func_ov105_0229cfc0(void *self);
 extern unsigned char *func_ov002_022080a0(void *self, unsigned char value);
@@ -20,7 +20,7 @@ struct UnkStruct_0229c3ec {
 
 void func_ov105_0229c3ec(struct UnkStruct_0229c3ec *self)
 {
-    RtcSendPxiCommand(data_ov105_0229f85c[self->unk_2C0]);
+    func_0200467c(data_ov105_0229f85c[self->unk_2C0]);
     func_ov002_02207d24(&self->unk_23BC, 1);
     func_ov105_0229cfc0(self);
     self->unk_8C = 0xb;

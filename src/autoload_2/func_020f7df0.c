@@ -6,7 +6,7 @@ extern int func_020eed18(void *h, int a);
 extern int func_020eedb8(int seq, int a, void *h);
 extern unsigned int func_020f1d3c(void *rng, unsigned int range);
 extern void NNS_SndPlayerSetTrackVolume(void *h, int track, int vol);
-extern void ciAddUNQUIETFilter(void *p, void *q);
+extern void func_020f7c1c(void *p, void *q);
 extern char data_021fd1bc[];
 
 typedef struct {
@@ -172,5 +172,5 @@ void func_020f7df0(UnkStruct_020f7df0 *p, int code, void *q)
         }
         p->unk_0D = 0;
     }
-    ciAddUNQUIETFilter(p, q);
+    func_020f7c1c(p, q);
 }

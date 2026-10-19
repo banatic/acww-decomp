@@ -18,7 +18,7 @@ extern u64 OS_GetTick(void);
 #define OS_TicksToMilliSeconds(t) (((u64) (t) << 6) / 0x82eaULL)
 
 extern int func_020eba18(void);
-extern int UTi_PutString(void *p);
+extern int func_020edacc(void *p);
 extern int func_ov065_02277cbc(void);
 extern int func_ov065_02277c28(void);
 extern int func_ov065_0227f710(void);
@@ -66,14 +66,14 @@ int func_020ec5ac(void)
             break;
         case 6:
             if (data_021fbf1c != 0) {
-                UTi_PutString(data_021fbf1c);
-                UTi_PutString(data_021fbf2c);
+                func_020edacc(data_021fbf1c);
+                func_020edacc(data_021fbf2c);
                 data_021fbf1c = 0;
                 data_021fbf2c = 0;
             }
             if (data_021fbf44 != 0) {
-                UTi_PutString(data_021fbf44);
-                UTi_PutString(data_021fbf0c);
+                func_020edacc(data_021fbf44);
+                func_020edacc(data_021fbf0c);
                 data_021fbf44 = 0;
                 data_021fbf0c = 0;
             }

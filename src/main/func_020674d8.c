@@ -3,7 +3,7 @@
  */
 
 extern int func_020a8298(int);
-extern void RtcSendPxiCommand(unsigned short);
+extern void func_0200467c(unsigned short);
 extern unsigned short data_020cce84[];
 
 void func_020674d8(int arg)
@@ -15,7 +15,7 @@ void func_020674d8(int arg)
     if (ret < 2) {
         cmd = data_020cce84[ret];
         if (cmd != 0) {
-            RtcSendPxiCommand(cmd);
+            func_0200467c(cmd);
         }
     }
 }

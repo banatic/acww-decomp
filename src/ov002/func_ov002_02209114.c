@@ -11,7 +11,7 @@ struct UnkStruct_02209114 {
 
 extern void func_ov002_0220914c(struct UnkStruct_02209114 *self, int v);
 extern void func_ov002_02208a0c(struct UnkStruct_02209114 *self, int bit);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov002_02209114(struct UnkStruct_02209114 *self, int v, int flag)
 {
@@ -19,8 +19,8 @@ void func_ov002_02209114(struct UnkStruct_02209114 *self, int v, int flag)
     if (flag == 0) {
         func_ov002_02208a0c(self, 0x10);
     } else if (self->unk_1C - 1 == v) {
-        RtcSendPxiCommand(0x2a);
+        func_0200467c(0x2a);
     } else {
-        RtcSendPxiCommand(0x29);
+        func_0200467c(0x29);
     }
 }

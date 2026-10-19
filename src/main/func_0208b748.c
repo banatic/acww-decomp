@@ -4,7 +4,7 @@
 
 extern void func_0200452c(void);
 extern void func_0200453c(void);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 void func_0208b748(unsigned char *param0, int param1)
 {
@@ -17,7 +17,7 @@ void func_0208b748(unsigned char *param0, int param1)
     if (param0[0x81] != 0) {
         if (r4 == 0) {
             func_0200452c();
-            RtcSendPxiCommand(0x2e);
+            func_0200467c(0x2e);
         }
     } else {
         if (r4 != 0) {

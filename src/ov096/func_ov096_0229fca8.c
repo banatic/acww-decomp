@@ -19,7 +19,7 @@ extern void func_ov096_0229e6a0(UnkStruct_0229fca8 *);
 extern void func_ov096_0229fb9c(UnkStruct_0229fca8 *);
 extern void func_ov096_0229e82c(UnkStruct_0229fca8 *, int);
 extern void func_ov096_0229f874(UnkStruct_0229fca8 *, int, int, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_020431b8(u32);
 
 void func_ov096_0229fca8(UnkStruct_0229fca8 *self)
@@ -42,7 +42,7 @@ void func_ov096_0229fca8(UnkStruct_0229fca8 *self)
             }
             func_ov096_0229fb9c(self);
             func_ov096_0229f874(self, 3, 0xff, 0);
-            RtcSendPxiCommand(0x73);
+            func_0200467c(0x73);
             break;
         default:
             return;

@@ -18,7 +18,7 @@ extern int func_02099870(int);
 extern void func_02066024(int, u8 *, void *, void *, void *, int);
 extern int func_0204bd20(int, int);
 extern int func_020996ac(int);
-extern int OS_UnlockByWord_IrqAndFiq(int object, u16 *item, int mode);
+extern int func_0203cd1c(int object, u16 *item, int mode);
 extern int func_0208602c(void);
 extern void func_020860f0(int, int);
 extern void func_0206844c(int, u8 *, void *);
@@ -112,7 +112,7 @@ void func_ov086_02278b24(UnkStruct_02278b24 *p)
                 func_02066024(h, &m.b0, &data_ov086_02279458, &data_ov086_02279260, &data_ov086_02279264, func_02099870(g));
                 if (g != 0) {
                     m.ha = (u16) func_0204bd20(0x1d, 4);
-                    OS_UnlockByWord_IrqAndFiq(func_020996ac(g), &m.ha, 0);
+                    func_0203cd1c(func_020996ac(g), &m.ha, 0);
                 }
                 func_020860f0(func_0208602c(), 4);
                 m.hc = 0x1565;

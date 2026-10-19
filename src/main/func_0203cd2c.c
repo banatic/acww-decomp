@@ -1,4 +1,4 @@
-/* OSi_DoUnlockByWord__main_0203cd2c @ 0x0203cd2c, 0xa0 bytes, Thumb, module main
+/* func_0203cd2c @ 0x0203cd2c, 0xa0 bytes, Thumb, module main
  * mwccarm 1.2/base -O4,s
  */
 
@@ -7,7 +7,7 @@
 // Looks the id up and hands back the byte holding its bit, plus the mask.
 extern u8 *func_0203cdf8(int a, u8 *maskOut, u16 *p);
 
-int OSi_DoUnlockByWord__main_0203cd2c(int a, u16 *p, int mode, int set)
+int func_0203cd2c(int a, u16 *p, int mode, int set)
 {
     u8 mask;
     u8 *slot;

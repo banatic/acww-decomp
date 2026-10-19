@@ -7,7 +7,7 @@ extern void func_ov123_02299f08(void *);
 extern void func_ov123_02299878(void *);
 extern void func_ov123_02299e28(void *);
 extern void func_ov123_0229a538(void *, unsigned char, unsigned char);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void func_ov123_02299640(void *, int);
 
 void func_ov123_0229a4bc(void *self)
@@ -24,8 +24,8 @@ void func_ov123_0229a4bc(void *self)
     func_ov123_0229a538(self, *(unsigned char *) ((char *) self + 0xa8), *(unsigned char *) ((char *) self + 0xa9));
     v = *(unsigned char *) ((char *) self + 0xa4);
     if (v <= 2) {
-        RtcSendPxiCommand(0x85f);
-        RtcSendPxiCommand(0x861);
+        func_0200467c(0x85f);
+        func_0200467c(0x861);
         func_ov123_02299640(self, 0x1000);
     }
     func_ov123_02299878(self);

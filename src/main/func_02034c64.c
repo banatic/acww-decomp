@@ -5,7 +5,7 @@
 extern int func_020984e8(void);
 extern int func_02099870(int);
 extern int func_0209871c(int *, int);
-extern void NNS_G3dAllocAnmObj(int, int, int);
+extern void func_0204c048(int, int, int);
 extern int data_021dc7bc;
 
 void func_02034c64(int a, int b)
@@ -19,5 +19,5 @@ void func_02034c64(int a, int b)
         result = func_0209871c(&data_021dc7bc, x) & 3;
     }
 
-    NNS_G3dAllocAnmObj(a, result, mask);
+    func_0204c048(a, result, mask);
 }

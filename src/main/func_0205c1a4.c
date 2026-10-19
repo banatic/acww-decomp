@@ -4,7 +4,7 @@
 
 extern unsigned int func_020952e4(void);
 extern unsigned int func_020952e0(void);
-extern unsigned int GX_ResetBankForSubOBJExtPltt(unsigned int, unsigned int);
+extern unsigned int func_020ea1bc(unsigned int, unsigned int);
 extern unsigned int data_021c9ab4;
 
 void func_0205c1a4(unsigned int arg)
@@ -17,5 +17,5 @@ void func_0205c1a4(unsigned int arg)
     extra = func_020952e0();
     extra = ~(extra - 1) & (extra + 15);
     total += (len + extra) << 2;
-    data_021c9ab4 = GX_ResetBankForSubOBJExtPltt(total, arg);
+    data_021c9ab4 = func_020ea1bc(total, arg);
 }

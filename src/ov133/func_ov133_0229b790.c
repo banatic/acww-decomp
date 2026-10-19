@@ -12,7 +12,7 @@ extern int func_ov002_022088cc(void *pad);
 extern int func_ov002_022088bc(void *pad);
 extern int func_ov002_02209f00(u8 *p);
 extern int func_ov133_0229b36c(u8 *self, void *pad);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_ov133_0229b320(u8 *self, u8 v);
 
 int func_ov133_0229b790(u8 *self, void *pad)
@@ -63,7 +63,7 @@ int func_ov133_0229b790(u8 *self, void *pad)
                 CUR(self) = 2;
             }
         } else if (func_ov133_0229b36c(self, pad)) {
-            RtcSendPxiCommand(0xb);
+            func_0200467c(0xb);
             func_ov133_0229b320(self, *(u8 *) (self + 0x9f));
         }
     } else if (prev == 0xd) {

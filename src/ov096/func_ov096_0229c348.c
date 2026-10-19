@@ -14,7 +14,7 @@ extern u16 *func_020993a8(unsigned int argument0);
 extern void func_0206f190(volatile u16 *out, void *a, void *b, void *c);
 extern void func_ov096_0229e82c(UnkStruct_0229c348 *self, int a);
 extern void func_ov096_0229e6a0(UnkStruct_0229c348 *self);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 
 void func_ov096_0229c348(UnkStruct_0229c348 *self)
 {
@@ -40,5 +40,5 @@ void func_ov096_0229c348(UnkStruct_0229c348 *self)
     } else {
         func_ov096_0229e6a0(self);
     }
-    RtcSendPxiCommand(0x6b);
+    func_0200467c(0x6b);
 }

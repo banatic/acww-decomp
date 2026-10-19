@@ -1037,12 +1037,12 @@ int EffectSystem_StartKind64(int kind, const Vec3 *position, const s16 *angle, c
 }
 CLEAN_AS(func_02091528, EffectSystem_StartKind64)
 
-/* CMD_ReservedReqCmd (0x0209154c): kind 0x63, which starts nothing. */
+/* func_0209154c: kind 0x63, which starts nothing. */
 int EffectSystem_StartKind63(void)
 {
     return EFFECT_SYSTEM_NOT_STARTED;
 }
-CLEAN_AS(CMD_ReservedReqCmd, EffectSystem_StartKind63)
+CLEAN_AS(func_0209154c, EffectSystem_StartKind63)
 
 /* func_02091550: kind 0x62, one-shot set 0x7d. */
 int EffectSystem_StartKind62(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)

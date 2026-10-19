@@ -3,7 +3,7 @@
  */
 
 extern void func_0209def4(void *ptr);
-extern unsigned int CARDi_GetTargetMode(void);
+extern unsigned int func_0209dedc(void);
 
 void func_020bde5c(void *base)
 {
@@ -12,7 +12,7 @@ void func_020bde5c(void *base)
     unsigned int *dst;
 
     func_0209def4((char *) base + 0x2f18);
-    mode = CARDi_GetTargetMode();
+    mode = func_0209dedc();
     dst = (unsigned int *) ((char *) base + 0x2f1c);
     *dst = mode;
     val = *(unsigned short *) ((char *) base + 0x2f18);

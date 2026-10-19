@@ -16,7 +16,7 @@ extern void func_020aa9c0(UnkStruct_020aab48 *p);
 extern int func_020a7f5c(void);
 extern int func_020a7f34(void);
 extern int func_020a7f84(void);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_020aab48(UnkStruct_020aab48 *p)
 {
@@ -41,14 +41,14 @@ void func_020aab48(UnkStruct_020aab48 *p)
                 b = func_020a7f34();
                 if (a || b) {
                     if (a) {
-                        RtcSendPxiCommand(0xb);
+                        func_0200467c(0xb);
                     }
                     func_020aa880(p);
                 }
             }
         } else if (p->unk_2C == 1) {
             if (func_020a7f84()) {
-                RtcSendPxiCommand(0xb);
+                func_0200467c(0xb);
                 func_020aa9c0(p);
             }
         }

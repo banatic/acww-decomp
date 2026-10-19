@@ -30,7 +30,7 @@ extern void func_ov123_02299640(struct UnkStruct_022996dc *self, u32 param);
 extern void func_ov123_02299630(struct UnkStruct_022996dc *self, u32 param);
 extern void func_0200459c(int a);
 extern int func_ov123_0229ab80(struct UnkStruct_022996dc *self, u8 cur_a8, u8 cur_a9, u8 orig_a8, u8 orig_a9, u8 a2, u8 a4);
-extern void RtcSendPxiCommand(u16 cmd);
+extern void func_0200467c(u16 cmd);
 extern u8 func_ov123_0229afa8(struct UnkStruct_022996dc *self);
 extern void func_02004644(int cmd, int arg);
 extern void func_ov123_0229ae84(struct UnkStruct_022996dc *self);
@@ -68,7 +68,7 @@ void func_ov123_022996dc(struct UnkStruct_022996dc *self)
 
         if (self->unk_A8 != a8 || self->unk_A9 != a9) {
             if (func_ov123_0229ab80(self, self->unk_A8, self->unk_A9, a8, a9, self->unk_A2, self->unk_A4) != 0) {
-                RtcSendPxiCommand(0x861);
+                func_0200467c(0x861);
             }
             func_ov123_02299640(self, 0x40);
         }

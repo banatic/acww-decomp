@@ -10,8 +10,8 @@ extern int data_021f69d0;
 extern void *func_020b5e84(void *);
 extern int func_020b64c0(void *);
 extern void *func_020b5e10(void);
-extern int SBServerGetState(void *);
-extern int SBServerGetFlags(void *);
+extern int func_020b5e20(void *);
+extern int func_020b5e18(void *);
 extern void func_020b5e44(int, int);
 
 int func_020b6a7c(int a0)
@@ -32,8 +32,8 @@ int func_020b6a7c(int a0)
         }
     }
     if (func_020b64c0(func_020b5e84(&data_021f69d0)) != 0) {
-        st = SBServerGetState(func_020b5e10());
-        func_020b5e44(st, SBServerGetFlags(func_020b5e10()));
+        st = func_020b5e20(func_020b5e10());
+        func_020b5e44(st, func_020b5e18(func_020b5e10()));
     }
     return 1;
 }

@@ -4,7 +4,7 @@
 
 extern int data_020c814c;
 extern void func_0201ad18(void *a, int b, int c, int d, void *e, int f, int g, int h);
-extern int gt2GetIncomingBufferSize(void *a);
+extern int func_02016104(void *a);
 extern int func_0201c314(void *a, int b);
 extern void func_0201b38c(void *a, int b);
 extern void func_0201b388(void *a, int b);
@@ -18,7 +18,7 @@ int func_020c2378(void *self)
     int size;
 
     func_0201ad18((char *) self + 0x3b0, 1, 0, 0, (void *) data_021fbee8, 4, data_020c814c, 1);
-    size = gt2GetIncomingBufferSize((char *) self + 0x658);
+    size = func_02016104((char *) self + 0x658);
     ret = 0;
     if (size != 0) {
         ret = func_0201c314(self, size);

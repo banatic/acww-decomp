@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void ENV_AppendResourceSet(void *);
+extern void func_020eed48(void *);
 
 void func_020f4c4c(void *r0)
 {
-    ENV_AppendResourceSet((char *) r0 + 4);
+    func_020eed48((char *) r0 + 4);
     *(unsigned short *) ((char *) r0 + 8) = 0;
     *(unsigned char *) ((char *) r0 + 10) = 0;
 }

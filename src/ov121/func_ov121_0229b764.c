@@ -9,7 +9,7 @@ extern unsigned char data_021fbddc;
 extern int func_ov121_0229ae18(void *self);
 extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void func_ov002_02207cf8(void *p);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov121_0229b764(void *self)
 {
@@ -39,6 +39,6 @@ done:
         func_ov002_02208098(self, 1);
         *((unsigned char *) self + 0xad) = r;
         func_ov002_02207cf8((unsigned char *) self + 0x2d8);
-        RtcSendPxiCommand(0xc);
+        func_0200467c(0xc);
     }
 }

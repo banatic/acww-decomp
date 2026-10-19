@@ -24,7 +24,7 @@ extern int func_ov123_0229ac80(UnkStruct_0229b9bc *self, int a, int b, int c, in
 extern int func_ov002_02208008(UnkStruct_0229b9bc *self);
 extern void func_02004644(int a, int b);
 extern void func_02004658(int a);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov123_0229b9bc(UnkStruct_0229b9bc *self)
 {
@@ -46,12 +46,12 @@ void func_ov123_0229b9bc(UnkStruct_0229b9bc *self)
     if (func_ov123_022999b0(self, tmp, 1) != 0) {
         func_ov123_0229ac80(self, self->af, self->b0, self->a2, self->a4, 1);
         func_ov123_02299640(self, 0x40);
-        RtcSendPxiCommand(0x861);
+        func_0200467c(0x861);
 
         if (self->b3 == 0) {
             flag = 1;
         } else {
-            RtcSendPxiCommand(0x860);
+            func_0200467c(0x860);
         }
     }
 

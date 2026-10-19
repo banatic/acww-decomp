@@ -21,7 +21,7 @@ extern "C" int func_ov002_0220b9b8(void *a, void *b, int c, int d);
 extern "C" int func_ov090_02299078(u8 v);
 extern "C" int func_ov090_02299098(u8 v);
 extern "C" void func_ov090_02298fac(S *self, int v);
-extern "C" void RtcSendPxiCommand(int cmd);
+extern "C" void func_0200467c(int cmd);
 
 int Obj_ov090_02299820::func_ov090_02299470()
 {
@@ -70,12 +70,12 @@ int Obj_ov090_02299820::func_ov090_02299470()
         if (data_021fbe40[1] & 0x100) {
             int v = func_ov090_02299078(unk_93);
             func_ov090_02298fac(this, v);
-            RtcSendPxiCommand(3);
+            func_0200467c(3);
         }
         if (data_021fbe40[1] & 0x200) {
             int w = func_ov090_02299098(unk_93);
             func_ov090_02298fac(this, w);
-            RtcSendPxiCommand(3);
+            func_0200467c(3);
         }
     }
 

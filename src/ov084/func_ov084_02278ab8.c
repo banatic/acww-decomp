@@ -47,7 +47,7 @@ extern int func_02099870(int);
 extern void func_02066024(int, u8 *, const void *, const void *, const void *, int);
 extern u16 func_0204bd20(int, int);
 extern int func_020996ac(int);
-extern int OS_UnlockByWord_IrqAndFiq(int object, u16 *item, int mode);
+extern int func_0203cd1c(int object, u16 *item, int mode);
 extern int func_0208602c(void);
 extern void func_020860f0(int, int);
 extern UnkStruct_02278ab8_2 data_ov084_022792fc[];
@@ -116,7 +116,7 @@ void func_ov084_02278ab8(UnkStruct_02278ab8 *this)
                               (const void *) &data_ov084_02279380, func_02099870(a));
                 if (a != 0) {
                     m.unk_08 = func_0204bd20(0x1d, 4);
-                    OS_UnlockByWord_IrqAndFiq(func_020996ac(a), &m.unk_08, 0);
+                    func_0203cd1c(func_020996ac(a), &m.unk_08, 0);
                 }
                 func_020860f0(func_0208602c(), 3);
                 func_020a8210(blk2);

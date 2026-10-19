@@ -23,7 +23,7 @@ extern unsigned long long OS_GetTick(void);
 extern void func_020b5794(void *receiver);
 extern void func_02001aac(int);
 #define gGlobalConst (*(int *) 0x0000088c)
-extern void RtcSendPxiCommand(void *);
+extern void func_0200467c(void *);
 extern void func_020b5724(struct UnkStruct_020b5898 *);
 extern void func_020b56a8(struct UnkStruct_020b5898 *);
 extern void func_02001b54(int);
@@ -64,7 +64,7 @@ int func_020b5898(struct UnkStruct_020b5898 *this)
             func_02001aac(-16);
             this->state = 1;
             this->timer = 0x10;
-            RtcSendPxiCommand(&gGlobalConst);
+            func_0200467c(&gGlobalConst);
             break;
         case 1:
             if (this->timer != 0) {

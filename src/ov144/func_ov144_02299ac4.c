@@ -10,14 +10,14 @@ extern int func_ov144_02299b48(void *self, unsigned int x);
 extern void func_ov002_0220a574(void *p);
 extern void func_ov002_0220a4bc(void *receiver);
 extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
-extern void RtcSendPxiCommand(unsigned int cmd);
+extern void func_0200467c(unsigned int cmd);
 
 int func_ov144_02299ac4(unsigned char *self, unsigned int cmd)
 {
     if (cmd <= 8) {
         short k = *(short *) (self + 0xb6);
         if (func_ov144_02299b48(self, cmd + k)) {
-            RtcSendPxiCommand(0x29);
+            func_0200467c(0x29);
         }
         return 0;
     } else {

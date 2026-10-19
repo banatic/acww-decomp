@@ -3,10 +3,10 @@
  */
 
 extern void NNS_FndInitList(char *self, int flag);
-extern void ENV_AppendResourceSet(char *res);
+extern void func_020eed48(char *res);
 
 void func_020f4f44(char *self)
 {
     NNS_FndInitList(self, 0);
-    ENV_AppendResourceSet(self + 0xC);
+    func_020eed48(self + 0xC);
 }

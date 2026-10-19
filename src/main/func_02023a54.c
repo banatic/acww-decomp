@@ -8,7 +8,7 @@ extern int func_02098eb8(int);
 extern int func_020154b4(void *, void *, int, int, int);
 extern int func_02098f0c(int, void *, int, int);
 extern int func_020996ac(int);
-extern int OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
+extern int func_0203cd2c(int, void *, int, int);
 
 typedef struct {
     int a;
@@ -35,6 +35,6 @@ void func_02023a54(void *obj)
     func_020154b4(obj, (char *) obj + 0x19c, 0, 5, 0);
     func_02098f0c(b, (char *) obj + 0x19c, c, 0);
     d = func_020996ac(a);
-    OSi_DoUnlockByWord__main_0203cd2c(d, (char *) obj + 0x19c, 0, 1);
+    func_0203cd2c(d, (char *) obj + 0x19c, 0, 1);
     func_0202dbf0(obj, data_020d90e0);
 }

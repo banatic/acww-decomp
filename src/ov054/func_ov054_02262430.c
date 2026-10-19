@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int DWCi_GsMalloc(int);
+extern int func_0209615c(int);
 extern void func_ov054_02262528(int, int);
 
 int func_ov054_02262430(int param)
 {
-    if (DWCi_GsMalloc(4) == 0) {
+    if (func_0209615c(4) == 0) {
         func_ov054_02262528(param, 4);
     }
     return 1;

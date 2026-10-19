@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 extern void *func_ov002_0220a720(int, int);
 extern void func_ov105_0229c320(int, int);
 extern unsigned char *func_ov002_02208098(int, unsigned char value);
@@ -10,7 +10,7 @@ extern unsigned char *func_ov002_02208098(int, unsigned char value);
 void func_ov105_0229c62c(int param)
 {
     int local;
-    RtcSendPxiCommand(0x27);
+    func_0200467c(0x27);
     local = param + 0x5fb8;
     func_ov002_0220a720(local, 3);
     *(unsigned char *) (param + 0x8c) = 4;

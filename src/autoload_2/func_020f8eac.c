@@ -12,7 +12,7 @@ struct UnkStruct_020f8eac {
 
 extern int func_020f8e6c(struct UnkStruct_020f8eac *self);
 extern int func_020f7bc4(struct UnkStruct_020f8eac *self, int off, int *ptr);
-extern void ciAddUNQUIETFilter(struct UnkStruct_020f8eac *self, int value);
+extern void func_020f7c1c(struct UnkStruct_020f8eac *self, int value);
 
 void func_020f8eac(struct UnkStruct_020f8eac *self, int unused, int value)
 {
@@ -38,5 +38,5 @@ void func_020f8eac(struct UnkStruct_020f8eac *self, int unused, int value)
         default:
             break;
     }
-    ciAddUNQUIETFilter(self, value);
+    func_020f7c1c(self, value);
 }

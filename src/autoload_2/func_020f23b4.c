@@ -13,7 +13,7 @@ extern int func_020eef70(void);
 extern void func_0210fe08(int, int);
 extern int func_020eecb0(int);
 extern void func_0210fbf8(void *);
-extern void ENV_AppendResourceSet(void *);
+extern void func_020eed48(void *);
 
 typedef struct {
     int unk_00;
@@ -55,10 +55,10 @@ void func_020f23b4(UnkStruct_020f23b4 *self, char *p1, char *p2, void *p3)
     func_0210fe08(0xa, func_020eef70());
     func_0210fbf8(&self->unk_34);
     func_020eecb0(0);
-    ENV_AppendResourceSet(&self->unk_48);
-    ENV_AppendResourceSet(&self->unk_38);
-    ENV_AppendResourceSet(&self->unk_3C);
-    ENV_AppendResourceSet(&self->unk_40);
+    func_020eed48(&self->unk_48);
+    func_020eed48(&self->unk_38);
+    func_020eed48(&self->unk_3C);
+    func_020eed48(&self->unk_40);
     self->unk_00 = 0;
     self->unk_64 = 0;
     self->unk_68 = 0;

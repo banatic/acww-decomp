@@ -428,7 +428,7 @@ int SoundObject_PlaySeq(SoundObjectBody *obj, int number, SoundHandle *handle)
 }
 CLEAN_AS(func_020f7bc4, SoundObject_PlaySeq)
 
-/* ciAddUNQUIETFilter (the ROM's symbol name does not fit it): both handles silent without a
+/* func_020f7c1c: both handles silent without a
  * position, else given the volume of its distance and the pan of its side (tracks 0-3). */
 void SoundObjectBase_ApplyPosition(SoundObjectBody *obj, const Vec3 *pos)
 {
@@ -445,7 +445,7 @@ void SoundObjectBase_ApplyPosition(SoundObjectBody *obj, const Vec3 *pos)
     func_0210b634(&obj->handle_a, POSITION_TRACKS, pan);
     func_0210b634(&obj->handle_b, POSITION_TRACKS, pan);
 }
-CLEAN_AS(ciAddUNQUIETFilter, SoundObjectBase_ApplyPosition)
+CLEAN_AS(func_020f7c1c, SoundObjectBase_ApplyPosition)
 
 /* func_020f7cb0: slot 4, both handles silent. */
 void SoundObjectBase_Silence(SoundObjectBody *obj)
@@ -464,14 +464,14 @@ void SoundObjectBase_Raise(SoundObjectBody *obj, unsigned char raised)
 }
 CLEAN_AS(func_020f7cd8, SoundObjectBase_Raise)
 
-/* ciSetQuietModeEnumJoinedChannelsA (the ROM's symbol name does not fit it): slot 2 of the base
+/* func_020f7d04: slot 2 of the base
  * class and of kinds 0 and 1, the position's volume and pan only. */
 void SoundObjectBase_Update(SoundObjectBody *obj, int count, const Vec3 *pos)
 {
     (void) count;
     SoundObjectBase_ApplyPosition(obj, pos);
 }
-CLEAN_AS(ciSetQuietModeEnumJoinedChannelsA, SoundObjectBase_Update)
+CLEAN_AS(func_020f7d04, SoundObjectBase_Update)
 
 /* func_020f7d14: slot 1, both handles' sequences stopped at once and released. */
 void SoundObjectBase_Release(SoundObjectBody *obj)

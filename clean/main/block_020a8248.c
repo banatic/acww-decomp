@@ -10,7 +10,7 @@ static_assert(sizeof(Block020a8248) == 0x0c, "record");
 
 /* Per kind: 0 or 1 (func_0206741c tests for 1). */
 extern const s32 data_020d1d0c[];
-/* Per kind: 0, 1 or 2 (func_0206741c hands it to NNS_G2dSetRndCore3DSoftSpriteZvalue). */
+/* Per kind: 0, 1 or 2 (func_0206741c hands it to func_0206bd40). */
 extern void *const data_020d1ca8[];
 /* Per kind: 0 to 6, rising with the kind. */
 extern const s32 data_020d1c44[];

@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_0229a278;
 
 extern void func_ov123_0229a2f8(UnkStruct_0229a278 *p, unsigned char b, int n);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 void func_ov123_0229a278(UnkStruct_0229a278 *p, unsigned char val)
 {
@@ -16,7 +16,7 @@ void func_ov123_0229a278(UnkStruct_0229a278 *p, unsigned char val)
     if (cur != val) {
         if (cur != 0x22) {
             func_ov123_0229a2f8(p, cur, 4);
-            RtcSendPxiCommand(0xb);
+            func_0200467c(0xb);
         }
         p->unk_A4 = val;
         func_ov123_0229a2f8(p, p->unk_A4, 5);

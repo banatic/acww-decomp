@@ -5,7 +5,7 @@
 extern int func_ov134_0229ac84(void *a, void *b, int c, int d, int e);
 extern void func_ov134_0229af14(void *a);
 extern void func_02004644(int a, int b);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 
 int func_ov134_0229ac38(void *obj)
 {
@@ -20,7 +20,7 @@ int func_ov134_0229ac38(void *obj)
     }
     if (ret == 1) {
         func_02004644(0x54, 1);
-        RtcSendPxiCommand(0x2e);
+        func_0200467c(0x2e);
     }
     return ret;
 }

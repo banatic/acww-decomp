@@ -301,7 +301,7 @@ int ItemGroup_DesignPlayer(const u16 *code)
 }
 CLEAN_AS(func_0204c100, ItemGroup_DesignPlayer)
 
-/* NNS_G3dAnmObjCalcSizeRequired (the ROM's symbol, misnamed): the code of a player's design.
+/* func_0204c064: the code of a player's design.
  * QUIRK: only the low two bits of `player` and the low three of `slot` count. */
 int ItemGroup_DesignOf(int player, int slot)
 {
@@ -309,14 +309,14 @@ int ItemGroup_DesignOf(int player, int slot)
                 ((u32) slot & (ITEM_GROUP_DESIGNS_PER_PLAYER - 1));
     return ItemGroup_Design(index);
 }
-CLEAN_AS(NNS_G3dAnmObjCalcSizeRequired, ItemGroup_DesignOf)
+CLEAN_AS(func_0204c064, ItemGroup_DesignOf)
 
-/* NNS_G3dAllocAnmObj (the ROM's symbol, misnamed): `code` made the player's design. */
+/* func_0204c048: `code` made the player's design. */
 void ItemGroup_ConstructDesign(u16 *code, int player, int slot)
 {
     *code = (u16) ItemGroup_DesignOf(player, slot);
 }
-CLEAN_AS(NNS_G3dAllocAnmObj, ItemGroup_ConstructDesign)
+CLEAN_AS(func_0204c048, ItemGroup_ConstructDesign)
 
 /* func_0204c358 */
 int ItemGroup_IsInsect(const u16 *code)

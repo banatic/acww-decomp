@@ -1,4 +1,4 @@
-/* CTRDG_WriteAgbFlashSectorAsync @ 0x020ed6c4, 0x24 bytes, ARM, module autoload_2
+/* func_020ed6c4 @ 0x020ed6c4, 0x24 bytes, ARM, module autoload_2
  * mwccarm 1.2/base -O4,p
  */
 
@@ -22,7 +22,7 @@ typedef struct CTRDGTaskInfo_tag {
     u8 param[1];
 } CTRDGTaskInfo;
 
-extern void CTRDG_WriteAgbFlashSectorAsync(int index, char *buffer, unsigned int length);
+extern void func_020ed6c4(int index, char *buffer, unsigned int length);
 
 extern const u16(*ctrdgi_fl_maxtime);
 
@@ -30,7 +30,7 @@ extern void (*CTRDGi_WriteAgbFlashSectorAsync)(int index, char *buffer, unsigned
 
 extern void (*CTRDGi_WriteAgbFlashSectorAsync)(int index, char *buffer, unsigned int length);
 
-void CTRDG_WriteAgbFlashSectorAsync(int index, char *buffer, unsigned int length)
+void func_020ed6c4(int index, char *buffer, unsigned int length)
 {
     (*CTRDGi_WriteAgbFlashSectorAsync)(index, buffer, length);
 }

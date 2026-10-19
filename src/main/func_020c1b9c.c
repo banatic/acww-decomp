@@ -39,7 +39,7 @@ extern void *func_020984fc(void *);
 extern int func_02095ed0(int, void *);
 extern int func_02095ab0(Tri *, int, void *);
 extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
-extern int DWCi_GsMalloc(void *);
+extern int func_0209615c(void *);
 extern int func_02019de8(void *);
 extern void func_020c1b28(void *, int);
 extern void func_0201ad18(void *, int, int, int, const void *, int, int, int);
@@ -112,7 +112,7 @@ int func_020c1b9c(UnkStruct_020c1b9c *self)
             self->unk_728 = 2;
             break;
         case 2:
-            if (DWCi_GsMalloc(a) != 0) {
+            if (func_0209615c(a) != 0) {
                 break;
             }
             if (func_02019de8(&self->unk_564) == 0) {

@@ -18,7 +18,7 @@ struct Big {
 extern int func_0208e484(void *);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void *func_ov002_0220a720(void *, int);
-extern void RtcSendPxiCommand(int);
+extern void func_0200467c(int);
 
 void func_ov106_0229da80(struct Big *p)
 {
@@ -30,9 +30,9 @@ void func_ov106_0229da80(struct Big *p)
     s = &p->sub;
     if (s->flag != 0) {
         func_ov002_0220a720(&p->unk_3FB4, 4);
-        RtcSendPxiCommand(0x28);
+        func_0200467c(0x28);
     } else {
         func_ov002_0220a720(&p->unk_3FB4, 3);
-        RtcSendPxiCommand(0x27);
+        func_0200467c(0x27);
     }
 }

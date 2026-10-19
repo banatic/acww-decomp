@@ -4,7 +4,7 @@
 
 extern unsigned char data_021f6c58;
 extern void func_ov111_0229f598(void *self, int val);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 struct UnkStruct_0229f5bc {
     char pad_00[0x9e];
@@ -25,7 +25,7 @@ void func_ov111_0229f5bc(struct UnkStruct_0229f5bc *self)
     }
     func_ov111_0229f598(self, val);
     if (self->unk_A0 != self->unk_9E) {
-        RtcSendPxiCommand(0x15);
+        func_0200467c(0x15);
     }
     self->unk_A0 = self->unk_9E;
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int DWC_Alloc(int, int);
+extern int func_02096124(int, int);
 
 int func_02096168(void)
 {
@@ -11,5 +11,5 @@ int func_02096168(void)
 
     r0 = 4;
     r1 = r0;
-    return DWC_Alloc(r0, r1);
+    return func_02096124(r0, r1);
 }

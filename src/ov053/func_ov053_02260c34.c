@@ -8,7 +8,7 @@ extern void func_0204f818(int *a, int *b, const int *c);
 extern int func_02014868(void *ptr);
 extern int func_0203b144(void);
 extern int func_02095ab0(void *dst, int val, int size);
-extern void *DWCi_GsMalloc(unsigned int size);
+extern void *func_0209615c(unsigned int size);
 extern int func_0203e020(unsigned char *self);
 extern void func_ov053_02261524(unsigned char *self, int param);
 
@@ -59,7 +59,7 @@ int func_ov053_02260c34(unsigned char *self)
             self[0x718] = 2;
             break;
         case 2:
-            if (DWCi_GsMalloc(4) == 0) {
+            if (func_0209615c(4) == 0) {
                 func_0203e020(self);
                 func_ov053_02261524(self, 4);
             }

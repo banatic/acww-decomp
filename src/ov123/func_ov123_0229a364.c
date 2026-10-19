@@ -22,7 +22,7 @@ extern int func_ov123_0229ab80(UnkStruct_0229a364 *self, u8 a, u8 b, u8 c, u8 d,
 extern void func_ov123_0229ab18(UnkStruct_0229a364 *self, int a, int b, int c, int d, u8 e);
 extern void func_ov123_0229a9b0(UnkStruct_0229a364 *self, int a, int b, int c, int d, u8 e, int f);
 extern void func_ov123_02299640(UnkStruct_0229a364 *self, int a);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 inline u8 inline_fn(UnkStruct_0229a364 *arg0)
 {
     return arg0->unk_AD;
@@ -78,5 +78,5 @@ void func_ov123_0229a364(UnkStruct_0229a364 *self)
     }
 
     func_ov123_02299640(self, 0x40);
-    RtcSendPxiCommand(0x867);
+    func_0200467c(0x867);
 }

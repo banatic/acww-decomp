@@ -13,7 +13,7 @@ typedef struct UnkStruct_0229c2c8 {
 } UnkStruct_0229c2c8;
 
 extern int func_ov114_0229c1b8(UnkStruct_0229c2c8 *self, unsigned int a);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov114_0229c6f8(UnkStruct_0229c2c8 *self, u8 a);
 extern int func_ov114_0229cee0(UnkStruct_0229c2c8 *self);
 extern int func_ov114_0229cf18(UnkStruct_0229c2c8 *self);
@@ -28,7 +28,7 @@ int func_ov114_0229c2c8(UnkStruct_0229c2c8 *self)
         v -= 0xd;
         if (func_ov114_0229c1b8(self, v) != 0) {
             if (self->unk_12B9 != v) {
-                RtcSendPxiCommand(0x29);
+                func_0200467c(0x29);
             }
             func_ov114_0229c6f8(self, (u8) v);
         }

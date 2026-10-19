@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void RtcSendPxiCommand(int n);
+extern void func_0200467c(int n);
 extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void func_ov102_0229c4c0(void *self, int n);
 extern void func_0206fc4c(int n);
@@ -20,7 +20,7 @@ void func_ov102_0229c460(struct UnkStruct_0229c460 *self, int flag)
 {
     unsigned short *v;
 
-    RtcSendPxiCommand(0x27);
+    func_0200467c(0x27);
     if (flag) {
         self->unk_25A9 = 5;
     } else {

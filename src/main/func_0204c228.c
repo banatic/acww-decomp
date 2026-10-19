@@ -4,7 +4,7 @@
 
 extern void *func_0204b2c8(void *arg);
 extern int func_0204b42c(void *arg);
-extern void NNS_FndAllocFromAllocator(void *object, unsigned int value);
+extern void func_0204b3cc(void *object, unsigned int value);
 extern void *func_020622c4(void *ptr);
 extern void func_020051b0(void *ptr);
 
@@ -16,7 +16,7 @@ void *func_0204c228(void *arg)
 
     if (func_0204b2c8(arg) != 0) {
         size = func_0204b42c(arg);
-        NNS_FndAllocFromAllocator(local, size);
+        func_0204b3cc(local, size);
         result = func_020622c4(local);
         func_020051b0(local);
         return result;

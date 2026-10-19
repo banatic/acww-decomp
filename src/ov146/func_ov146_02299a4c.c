@@ -15,7 +15,7 @@ typedef struct UnkStruct_02299a4c {
 } UnkStruct_02299a4c;
 
 extern int func_ov146_02299e9c(UnkStruct_02299a4c *self, u8 v);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern void func_ov146_02299660(UnkStruct_02299a4c *self, int a);
 extern void func_ov002_0220a574(void *p);
 extern void func_ov002_0220a4bc(void *receiver);
@@ -36,7 +36,7 @@ int func_ov146_02299a4c(UnkStruct_02299a4c *self, unsigned int p)
         v = self->arr_ea[i];
         if (func_ov146_02299e9c(self, v) != 0) {
             self->unk_BB = v;
-            RtcSendPxiCommand(0x29);
+            func_0200467c(0x29);
             func_ov146_02299660(self, 0x10);
             func_ov146_02299660(self, 0x20);
         }

@@ -1,4 +1,4 @@
-/* NNS_G2dResetEntityPaletteTable @ 0x020676c8, 0x6 bytes, Thumb, module main
+/* func_020676c8 @ 0x020676c8, 0x6 bytes, Thumb, module main
  * mwccarm 1.2/base -O4,p
  */
 
@@ -68,9 +68,9 @@ typedef struct NNSG2dEntity {
     NNSG2dPaletteSwapTable *pPaletteTbl;
 } NNSG2dEntity;
 
-void NNS_G2dResetEntityPaletteTable(NNSG2dEntity *pEntity);
+void func_020676c8(NNSG2dEntity *pEntity);
 
-void NNS_G2dResetEntityPaletteTable(NNSG2dEntity *pEntity)
+void func_020676c8(NNSG2dEntity *pEntity)
 {
     ((void) 0);
     pEntity->pPaletteTbl = ((void *) 0);

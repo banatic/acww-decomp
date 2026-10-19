@@ -3,7 +3,7 @@
  */
 
 extern void func_0206fe90(void);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
@@ -13,7 +13,7 @@ int func_ov002_02208014(void *receiver)
     unsigned int cond = (data_021fbdd8 != 0) && (data_021fbddc != 0);
     if (cond > 0) {
         func_0206fe90();
-        RtcSendPxiCommand(0x866);
+        func_0200467c(0x866);
         return 1;
     }
     return 0;

@@ -3,7 +3,7 @@
  */
 
 extern int func_0209d368(int id, int index);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 struct UnkStruct_020aa3f4 {
     char pad_00[8];
@@ -18,5 +18,5 @@ void func_020aa3f4(struct UnkStruct_020aa3f4 *p)
     p->unk_08 = 3;
     p->unk_C0 = 1;
     p->unk_BC = func_0209d368(0x65, 2) + 2;
-    RtcSendPxiCommand(0x14);
+    func_0200467c(0x14);
 }

@@ -3,7 +3,7 @@
  */
 
 extern void func_ov121_02299a4c(int, int);
-extern void RtcSendPxiCommand(int command);
+extern void func_0200467c(int command);
 extern int func_ov002_02209f9c(int);
 extern unsigned char *func_ov002_02208098(int, unsigned char value);
 
@@ -13,6 +13,6 @@ void func_ov121_0229b340(int param)
         func_ov002_02208098(param, 10);
         *(unsigned char *) (param + 0xae) = *(unsigned char *) (param + 0xb1);
         func_ov121_02299a4c(param, 4);
-        RtcSendPxiCommand(0xd);
+        func_0200467c(0xd);
     }
 }

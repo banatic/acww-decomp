@@ -8,7 +8,7 @@
 extern "C" {
 void func_02056ffc(Obj_020dd184 *p);
 void func_0209e474(void *out);
-void RtcSendPxiCommand(int command);
+void func_0200467c(int command);
 }
 
 void Obj_ov003_02238c54::func_ov003_0221cbc0()
@@ -20,7 +20,7 @@ void Obj_ov003_02238c54::func_ov003_0221cbc0()
     local[1] = 0;
     func_0209e474(local);
     if (((unsigned char *) local)[4] == 1) {
-        RtcSendPxiCommand(0x61);
+        func_0200467c(0x61);
         vfunc_6c(1);
     }
 }

@@ -30,7 +30,7 @@ extern void func_02063cc8(UnkStruct_0201edcc_2 *k);
 extern void func_020638d4(UnkStruct_0201edcc *h, UnkStruct_0201edcc_2 *k, int a, int b, int c, int d, int e);
 extern int func_02098f0c(int b, u16 *w, int c, int d);
 extern int func_020996ac(int a);
-extern int OSi_DoUnlockByWord__main_0203cd2c(int r, u16 *w, int a, int b);
+extern int func_0203cd2c(int r, u16 *w, int a, int b);
 extern int func_020154b4(UnkStruct_0201edcc_3 *p, u16 *w, int a, int b, int c);
 extern void func_02015de4(UnkStruct_0201edcc_3 *p, u16 *w, int a, int b);
 extern void *data_020c8e98[];
@@ -67,7 +67,7 @@ void func_0201edcc(UnkStruct_0201edcc_3 *p)
         func_02063cc8(&obj);
     }
     func_02098f0c(b, &p->w, c, 0);
-    OSi_DoUnlockByWord__main_0203cd2c(func_020996ac(a), &p->w, 0, 1);
+    func_0203cd2c(func_020996ac(a), &p->w, 0, 1);
     func_020154b4(p, &p->w, 0, 5, 0);
     if (p->w != 0xfff1) {
         func_02015de4(p, &p->w, 0, 7);

@@ -5,13 +5,13 @@
 extern int func_0208e484(void *ptr);
 extern void func_0208f0c4(void *ptr, int value);
 extern void func_ov002_02208090(void *ptr, int value);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 
 void func_ov091_022991b0(void *obj)
 {
     if (func_0208e484((char *) obj + 0x434)) {
         func_0208f0c4((char *) obj + 0x3bc, 2);
         func_ov002_02208090(obj, 3);
-        RtcSendPxiCommand(0x27);
+        func_0200467c(0x27);
     }
 }

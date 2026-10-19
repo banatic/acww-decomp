@@ -10,7 +10,7 @@ struct UnkStruct_02299324 {
 };
 
 extern void func_0206efc0(void);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_02036468(void *p);
 extern char *data_021c526c;
 
@@ -30,7 +30,7 @@ void func_ov092_02299324(struct UnkStruct_02299324 *self, int i, int flag)
         case 0x43:
         case 0x44:
             if (flag) {
-                RtcSendPxiCommand(2);
+                func_0200467c(2);
             }
             func_02036468(data_021c526c + 0x1c4);
             break;

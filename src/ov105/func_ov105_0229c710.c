@@ -4,10 +4,10 @@
 
 extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void func_0208f0c4(void *p, int n);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 void func_ov105_0229c710(void *arg)
 {
     func_ov002_02208098(arg, 0x1a);
     func_0208f0c4((char *) arg + 0x2d40, 2);
-    RtcSendPxiCommand(0x29);
+    func_0200467c(0x29);
 }

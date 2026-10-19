@@ -9,25 +9,25 @@ typedef struct UnkStruct_0229d0e4 {
     u8 unk_BB;
 } UnkStruct_0229d0e4;
 
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 
 int func_ov096_0229d0e4(UnkStruct_0229d0e4 *self)
 {
     switch (self->unk_BB) {
         case 18:
         case 19:
-            RtcSendPxiCommand(0x50);
+            func_0200467c(0x50);
             break;
         case 20:
-            RtcSendPxiCommand(0x71);
+            func_0200467c(0x71);
             break;
         case 9:
-            RtcSendPxiCommand(0x24);
+            func_0200467c(0x24);
             return 0;
         case 2:
         case 22:
         case 23:
-            RtcSendPxiCommand(0x25);
+            func_0200467c(0x25);
             return 0;
         case 28:
         case 29:

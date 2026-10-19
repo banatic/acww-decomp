@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int UTi_PutString(int);
+extern int func_020edacc(int);
 
 void func_020edaa8(int a, int b)
 {
-    UTi_PutString(b);
+    func_020edacc(b);
 }

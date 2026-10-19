@@ -10,7 +10,7 @@ typedef struct {
 } UnkStruct_020c0e44;
 
 extern void func_0209def4(unsigned short *p);
-extern unsigned int CARDi_GetTargetMode(void);
+extern unsigned int func_0209dedc(void);
 extern int FX_MulFunc(int a, int b);
 extern int FX_Sqrt(int a);
 extern int FX_Div(int a, int b);
@@ -25,7 +25,7 @@ int func_020c0e44(int *out)
     func_0209def4((unsigned short *) &t);
     h = t.unk_01;
     m = t.unk_00;
-    base = CARDi_GetTargetMode();
+    base = func_0209dedc();
     secs = 0;
     if (h >= 0x13) {
         secs = base + (0x3c * m + 0xe10 * (h - 0x13));

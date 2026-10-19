@@ -6,7 +6,7 @@ struct UnkStruct_0229ca50;
 
 extern int func_ov114_0229c1b8(struct UnkStruct_0229ca50 *a, int b);
 extern void func_ov114_0229c6f8(struct UnkStruct_0229ca50 *a, unsigned char b);
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern int _s32_div_f(int numerator, int denominator);
 
 struct UnkStruct_0229ca50 {
@@ -53,7 +53,7 @@ int func_ov114_0229ca50(struct UnkStruct_0229ca50 *a, int b, int c)
 
     if (func_ov114_0229c1b8(a, r4) != 0) {
         if (a->unk_12B9 != r4) {
-            RtcSendPxiCommand(0x29);
+            func_0200467c(0x29);
         }
         func_ov114_0229c6f8(a, (unsigned char) r4);
         return 1;

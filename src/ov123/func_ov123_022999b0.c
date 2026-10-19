@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40[2];
-extern void RtcSendPxiCommand(int cmd);
+extern void func_0200467c(int cmd);
 extern void func_020041bc(unsigned char byte);
 extern int func_ov123_0229ae7c(void *obj, unsigned char byte);
 
@@ -80,7 +80,7 @@ common:
     obj->unk_AF = new_af;
     obj->unk_B0 = new_b0;
     if (param2 == 0) {
-        RtcSendPxiCommand(0x865);
+        func_0200467c(0x865);
     }
     func_020041bc((unsigned char) func_ov123_0229ae7c(obj, new_af));
     return 1;

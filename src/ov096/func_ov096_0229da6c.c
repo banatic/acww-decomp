@@ -19,7 +19,7 @@ extern UnkStruct_0229da6c_2 *data_020ccf94;
 extern int func_020435fc(int a, int b);
 extern void func_ov096_0229fb9c(UnkStruct_0229da6c *self);
 extern void func_ov096_0229f874(UnkStruct_0229da6c *self, int a, int b, int c);
-extern void RtcSendPxiCommand(int a);
+extern void func_0200467c(int a);
 extern int func_020b67d4(void);
 extern int func_ov097_022a27fc(UnkStruct_0229da6c *self, int p);
 
@@ -33,7 +33,7 @@ int func_ov096_0229da6c(UnkStruct_0229da6c *self, int p)
         if (self->unk_C4 == -1) {
             func_ov096_0229fb9c(self);
             func_ov096_0229f874(self, 3, 0xff, 0);
-            RtcSendPxiCommand(0x73);
+            func_0200467c(0x73);
             return 0;
         }
         return 2;

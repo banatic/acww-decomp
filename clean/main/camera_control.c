@@ -199,13 +199,13 @@ int CameraControl_SaveView(void)
 }
 CLEAN_AS(func_0203ac44, CameraControl_SaveView)
 
-/* CARD_IsEnabled (the ROM's symbol name, though the function reads the camera): whether a view is
+/* func_0203ac5c: whether a view is
  * saved. */
 int CameraControl_IsViewSaved(void)
 {
     return data_021c67a4->view_saved != 0;
 }
-CLEAN_AS(CARD_IsEnabled, CameraControl_IsViewSaved)
+CLEAN_AS(func_0203ac5c, CameraControl_IsViewSaved)
 
 /* func_0203ac78: the goal view and the point set to those kept outside the camera. */
 void CameraControl_LoadKeptView(void)

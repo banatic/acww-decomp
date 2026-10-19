@@ -6,7 +6,7 @@ extern "C" {
 void func_02068d38(void *);
 void func_0206899c(void *);
 void func_02036480(void *);
-void RtcSendPxiCommand(int);
+void func_0200467c(int);
 extern const short data_020def28[];
 extern char *data_021c526c;
 }
@@ -75,7 +75,7 @@ extern "C" void func_02066c54(struct UnkStruct_02066c54 *self)
         }
     }
     if (self->unk_1E9A == 0) {
-        RtcSendPxiCommand(10);
+        func_0200467c(10);
     }
     self->unk_14A8->f28();
 }

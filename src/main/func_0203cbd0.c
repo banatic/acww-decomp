@@ -4,13 +4,13 @@
 
 extern int func_020984e8(void);
 extern int func_020996ac(int);
-extern int OS_UnlockByWord_IrqAndFiq(int, int, int);
+extern int func_0203cd1c(int, int, int);
 
 int func_0203cbd0(int param)
 {
     int result = func_020984e8();
     if (result != 0) {
-        return OS_UnlockByWord_IrqAndFiq(func_020996ac(result), param, 1);
+        return func_0203cd1c(func_020996ac(result), param, 1);
     } else {
         return 0;
     }

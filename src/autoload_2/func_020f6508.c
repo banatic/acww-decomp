@@ -3,7 +3,7 @@
  */
 
 extern int func_020f6948(int param);
-extern void ENV_AppendResourceSet(void *res);
+extern void func_020eed48(void *res);
 extern int data_021fd1bc[];
 extern int data_021fd268;
 
@@ -19,7 +19,7 @@ typedef struct {
 void func_020f6508(UnkStruct_020f6508 *self)
 {
     data_021fd268 = func_020f6948(data_021fd1bc[12]);
-    ENV_AppendResourceSet((void *) self);
+    func_020eed48((void *) self);
     self->unk_0A = 0;
     self->unk_06 = -1;
     self->unk_07 = 0;

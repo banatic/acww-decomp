@@ -7,7 +7,7 @@ extern int data_020dcf90;
 extern int data_020dcf98;
 extern int data_020dcfa0;
 extern void func_02051794(int, int *, int, int, int);
-extern int GX_ResetBankForSubOBJExtPltt(int, int);
+extern int func_020ea1bc(int, int);
 extern void NNS_FndInitList(int, int);
 
 extern unsigned char data_021c8194[];
@@ -28,7 +28,7 @@ void func_020514dc(void)
     func_02051794((unsigned int) data_021c82e8, &data_020dcf98, 0, 0, 0);
     func_02051794((unsigned int) data_021c81d4, &data_020dcfa0, 0, 0, 0);
 
-    result = GX_ResetBankForSubOBJExtPltt(0x1800, *((int *) data_021fbe94));
+    result = func_020ea1bc(0x1800, *((int *) data_021fbe94));
     *((int *) data_021c8194) = result;
 
     if (result) {
