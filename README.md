@@ -40,11 +40,11 @@ the highest level it has reached:
 - **Read only**: the Clean version has been checked only by reading it against its matching
   source.
 
-All 25,247 game functions have a matching source and a Clean version. The sources are still
-one file per function, and the data sections still come from the ROM. Linking the whole
-program with the original linker and regrouping the functions into their original source files
-are in progress. [docs/verification.md](docs/verification.md) describes what is checked and
-what is not yet.
+All 25,247 game functions have a matching source and a Clean version, and the whole program,
+linked with the original linker, reproduces every module of the ROM. The sources are still one
+file per function, and the data sections still come from the ROM; regrouping the functions into
+their original source files is in progress. [docs/verification.md](docs/verification.md)
+describes what is checked and what is not yet.
 
 ## Running the game from its sources
 
