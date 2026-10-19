@@ -5,6 +5,7 @@ which is not part of this repository.
     python tools/scenes.py --list
     python tools/scenes.py --seed PATH                       # every scene, Native+Clean vs Reference
     python tools/scenes.py --seed PATH fish-cast tool-axe    # some of them
+    python tools/scenes.py --seed PATH -j 4                  # four scenes at a time
     python tools/scenes.py --seed PATH --look fish-cast      # Reference only, PNGs of its key frames
     python tools/scenes.py --seed PATH --bisect house       # which Clean function breaks a scene
     python tools/scenes.py --convert SCRIPT.pad --at 3000:2400   # a pad script as a recording
@@ -33,9 +34,11 @@ that start at FROM to TO (the runtimes reach the town at different frames).
 from __future__ import annotations
 
 import argparse
+import concurrent.futures as cf
 import hashlib
 import os
 import pathlib
+import queue
 import re
 import struct
 import subprocess
@@ -181,7 +184,10 @@ def convert(text: str, moves: list[tuple[int, int]]) -> str:
 
 # ------------------------------------------------------------------------------ runs
 
-def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str | None) -> dict:
+def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str | None,
+        runtime: pathlib.Path | None = None) -> dict:
+    """One scene's run; with `runtime`, tools/run.py builds and runs there (ACWW_RUNTIME_OUT), so
+    scenes can run side by side: each one's runs write their programs and logs in one place."""
     sc = SCENES[name]
     recording = RECORDINGS / f"{sc['recording']}.txt"
     save = derive_save(seed, sc["save"])
@@ -198,7 +204,8 @@ def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str 
         if expect.exists():
             cmd += ["--expect", str(expect)]
     started = time.monotonic()
-    p = subprocess.run(cmd, cwd=C.ROOT, capture_output=True, text=True, errors="replace")
+    env = dict(os.environ, ACWW_RUNTIME_OUT=str(runtime)) if runtime else None
+    p = subprocess.run(cmd, cwd=C.ROOT, capture_output=True, text=True, errors="replace", env=env)
     text = p.stdout + p.stderr
     (work / ("look.log" if look else "run.log")).write_text(text, encoding="utf-8")
     result = dict(name=name, status=p.returncode, seconds=round(time.monotonic() - started), log=text)
@@ -212,7 +219,7 @@ def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str 
     if not look:
         # tools/run.py leaves both runs' logs and frame hashes in one place for every run: keep
         # this scene's, and name the first frame the two runs show differently
-        run_dir = OUT.parent / "native-run"
+        run_dir = (runtime or OUT.parent) / "native-run"
         for log in ("reference.log", "native.log", "reference-hashes.txt"):
             if (run_dir / log).exists():
                 (work / log).write_bytes((run_dir / log).read_bytes())
@@ -279,6 +286,8 @@ def main() -> int:
     ap.add_argument("--clean", default="all", help="the --clean list for tools/run.py (default all; 'none': Native only)")
     ap.add_argument("--bisect", action="store_true", help="find the Clean function that breaks each scene")
     ap.add_argument("--skip", default="", help="with --bisect: functions (comma-separated) left Native")
+    ap.add_argument("-j", "--jobs", type=int, default=1, help="scenes run at a time (each in a runtime "
+                    "directory of its own under the scenes', built the first time)")
     ap.add_argument("--convert", metavar="PAD", help="print a pad script as a recording")
     ap.add_argument("--at", default="", help="with --convert: FROM:TO[,FROM:TO...] moves rows")
     args = ap.parse_args()
@@ -301,10 +310,26 @@ def main() -> int:
         for name in names:
             bisect(name, seed, args.native, set(filter(None, args.skip.split(","))))
         return 0
+    clean = None if args.clean == "none" else args.clean
+    if args.jobs > 1:
+        for sc in dict.fromkeys(SCENES[n]["save"] for n in names):  # written once, before the runs read them
+            derive_save(seed, sc)
+        slots = queue.Queue()
+        for i in range(args.jobs):
+            slots.put(OUT / f".runtime-{i}")
+
+        def one(name: str) -> dict:
+            runtime = slots.get()
+            try:
+                return run(name, seed, args.look, args.native, clean, runtime)
+            finally:
+                slots.put(runtime)
+        pool = cf.ThreadPoolExecutor(args.jobs)
+        pending = [pool.submit(one, n) for n in names]
     results = []
-    for name in names:
+    for i, name in enumerate(names):
         print(f"{name}...", flush=True)
-        r = run(name, seed, args.look, args.native, None if args.clean == "none" else args.clean)
+        r = pending[i].result() if args.jobs > 1 else run(name, seed, args.look, args.native, clean)
         results.append(r)
         if args.look:
             print(f"  {r['status']=} pngs in {(OUT / name / 'png').as_posix()} ({r['seconds']} s)")

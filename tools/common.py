@@ -9,6 +9,7 @@ import os
 import pathlib
 import re
 import shlex
+import shutil
 import struct
 import subprocess
 import threading
@@ -25,6 +26,52 @@ BUILD = ROOT / "build" / "adm-kr"
 ROM_DIR = BUILD / "rom"
 OBJ_DIR = BUILD / "obj"
 WORK_DIR = BUILD / "mwcc-cwd"
+
+
+def main_checkout() -> pathlib.Path:
+    """The main checkout: a git worktree's .git file names <main>/.git/worktrees/<name>."""
+    git = ROOT / ".git"
+    if git.is_file() and (m := re.match(r"gitdir:\s*(.+)", git.read_text())):
+        gitdir = pathlib.Path(m.group(1).strip())
+        if gitdir.parent.name == "worktrees":
+            return gitdir.parent.parent.parent
+    return ROOT
+
+
+# Objects shared by every checkout and worktree, by a key that names no checkout's own path
+# (ACWW_CACHE moves it): a new worktree copies what another already compiled.
+CACHE_DIR = pathlib.Path(os.environ.get("ACWW_CACHE", main_checkout() / "build" / "cache"))
+
+
+def tree_free(text: str) -> str:
+    """`text` with this checkout's own path in place of `<root>`, for a shared cache key."""
+    for root in (str(ROOT), ROOT.as_posix()):
+        text = text.replace(root, "<root>")
+    return text
+
+
+def cache_get(kind: str, key: str, dest: pathlib.Path) -> bool:
+    """Copy the shared cache's `kind` object for `key` to `dest`; False when it has none."""
+    try:
+        shutil.copyfile(CACHE_DIR / kind / key[:2] / key, dest)
+        return True
+    except OSError:
+        return False
+
+
+def cache_put(kind: str, key: str, src: pathlib.Path) -> None:
+    """Keep a copy of `src` in the shared cache under `key` (written whole, then renamed)."""
+    entry = CACHE_DIR / kind / key[:2] / key
+    if entry.exists():
+        return
+    try:
+        entry.parent.mkdir(parents=True, exist_ok=True)
+        tmp = entry.with_name(f"{key}.{os.getpid()}-{threading.get_ident()}")
+        shutil.copyfile(src, tmp)
+        os.replace(tmp, entry)
+    except OSError:
+        pass
+
 
 # mwccarm is proprietary and never committed. INSTALL.md says where to put it.
 MWCC_ROOT = pathlib.Path(os.environ.get("MWCC_ROOT", ROOT / "tools" / "mwccarm"))
@@ -270,15 +317,23 @@ def compile_source(src: Source, wrapper: str | None = None,
     text = src.path.read_bytes()
     flags = compile_flags(src)
     h = hashlib.sha1(text + "\0".join([src.drop, *flags]).encode())
+    # the same, naming no checkout's own path: the key in the shared cache
+    shared = hashlib.sha1(text + tree_free("\0".join([src.drop, *flags])).encode())
     for inc in included_files(src.path):
-        h.update(b"\0" + inc.read_bytes())
-    key = h.hexdigest()
+        data = inc.read_bytes()
+        h.update(b"\0" + data)
+        shared.update(b"\0" + data)
+    key, shared = h.hexdigest(), shared.hexdigest()
     rel = src.path.resolve().relative_to(ROOT)
     obj = OBJ_DIR / rel.with_suffix(".o")
     stamp = obj.with_suffix(".key")
     if not force and obj.exists() and stamp.exists() and stamp.read_text() == key:
+        cache_put("mwcc", shared, obj)
         return obj.read_bytes(), ""
     obj.parent.mkdir(parents=True, exist_ok=True)
+    if not force and cache_get("mwcc", shared, obj):
+        stamp.write_text(key)
+        return obj.read_bytes(), ""
     env = dict(os.environ, LM_LICENSE_FILE=str(MWCC_ROOT / "license.dat"))
     # MWCC_WRAPPER (e.g. "wibo") runs the Windows compiler on another host. It is meant not to
     # change the output, so it is not part of the cache key; see verify.py for the few
@@ -298,6 +353,7 @@ def compile_source(src: Source, wrapper: str | None = None,
         return None, log
     os.replace(tmp, obj)
     stamp.write_text(key)
+    cache_put("mwcc", shared, obj)
     return obj.read_bytes(), log
 
 

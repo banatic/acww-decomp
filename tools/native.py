@@ -105,10 +105,25 @@ def flags_for(path: pathlib.Path) -> list[str]:
             "-include", str(C.ROOT / "runtime" / "native.h"), f"-I{C.INCLUDE}", f"-I{C.INCLUDE / 'msl'}"]
 
 
+def tool_output(obj: pathlib.Path, cmd: list[str]) -> str:
+    """What `cmd` (a tool reading the object, named last) prints for `obj`, kept by the
+    object's bytes: unchanged objects are not read again, here or in another checkout."""
+    key = hashlib.sha1(" ".join(cmd).encode() + b"\0" + obj.read_bytes()).hexdigest()
+    kept = OUT / "tool-output" / key[:2] / key
+    kept.parent.mkdir(parents=True, exist_ok=True)
+    if kept.exists() or C.cache_get("tool-output", key, kept):
+        return kept.read_text()
+    out = subprocess.run([*cmd, str(obj)], capture_output=True, text=True).stdout
+    tmp = kept.with_name(f"{key}.{os.getpid()}-{id(out)}")
+    tmp.write_text(out)
+    os.replace(tmp, kept)
+    C.cache_put("tool-output", key, kept)
+    return out
+
+
 def nm(obj: pathlib.Path) -> tuple[set[str], set[str]]:
     """(defined global names, undefined names) of an object."""
-    tool = str(LLVM / "llvm-nm.exe") if WINDOWS else "nm"
-    out = subprocess.run([tool, str(obj)], capture_output=True, text=True).stdout
+    out = tool_output(obj, [str(LLVM / "llvm-nm.exe") if WINDOWS else "nm"])
     defined, undefined = set(), set()
     for line in out.splitlines():
         parts = line.split()
@@ -123,8 +138,7 @@ def code_references(obj: pathlib.Path) -> set[str]:
     """The names an object's code refers to (not its data: a vtable the PC's compiler emits
     with the class's key function lists the bases' methods, but Native code installs the
     ROM's vtable, and the PC's copy is never read)."""
-    tool = str(LLVM / "llvm-objdump.exe") if WINDOWS else "objdump"
-    out = subprocess.run([tool, "-r", str(obj)], capture_output=True, text=True).stdout
+    out = tool_output(obj, [str(LLVM / "llvm-objdump.exe") if WINDOWS else "objdump", "-r"])
     names, code = set(), False
     for line in out.splitlines():
         m = re.match(r"RELOCATION RECORDS FOR \[(.*)\]:", line)
@@ -173,8 +187,10 @@ def virtual_calls(objects: list[tuple[pathlib.Path, pathlib.Path]], nowhere: set
     (probe_virtuals). A name the sources lay out in more than one way is left out, and so is
     any source with a virtual destructor in sight: mwccarm gives it one slot, the PC two."""
     work = []
-    for path, obj in objects:
-        refs = sorted(code_references(obj) & nowhere)
+    with cf.ThreadPoolExecutor(max(1, (os.cpu_count() or 4) - 2)) as pool:
+        refs_of = list(pool.map(lambda po: code_references(po[1]), objects))
+    for (path, obj), code in zip(objects, refs_of):
+        refs = sorted(code & nowhere)
         methods = [r[len(PREFIX):] for r in refs if r[len(PREFIX):].startswith("_ZN")]
         if not methods:
             continue
@@ -248,29 +264,36 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
         flags = [*flags, "-iquote", str(path.parent)]
         source.parent.mkdir(parents=True, exist_ok=True)
         source.write_bytes(text)
-    key = hashlib.sha1(text + " ".join(compiler() + flags).encode())
-    key.update((C.ROOT / "runtime" / "native.h").read_bytes())  # included first, by -include
+    head = text + " ".join(compiler() + flags).encode()
+    parts = [(C.ROOT / "runtime" / "native.h").read_bytes()]  # included first, by -include
     if member is not None:
-        key.update((C.ROOT / "runtime" / "native_member.h").read_bytes())
+        parts.append((C.ROOT / "runtime" / "native_member.h").read_bytes())
         for name, content in sorted(member_headers.items()):
-            key.update(name.encode())
-            key.update(content.encode())
+            parts += [name.encode(), content.encode()]
     if stack is not None:
-        key.update((C.ROOT / "runtime" / "native_guest.h").read_bytes())
+        parts.append((C.ROOT / "runtime" / "native_guest.h").read_bytes())
     if publish is not None:
-        key.update((C.ROOT / "runtime" / "native_publish.h").read_bytes())
-    for inc in C.included_files(path):
-        key.update(inc.read_bytes())
+        parts.append((C.ROOT / "runtime" / "native_publish.h").read_bytes())
+    parts += [inc.read_bytes() for inc in C.included_files(path)]
+    key = hashlib.sha1(head + b"".join(parts)).hexdigest()
+    # the same, naming no checkout's own path (the #line and -I paths): the shared cache's key.
+    # An object differs between checkouts only in the source file name it records.
+    shared = hashlib.sha1(C.tree_free(head.decode("latin-1")).encode("latin-1") + b"".join(parts)).hexdigest()
     stamp = obj.with_suffix(".key")
-    if obj.exists() and stamp.exists() and stamp.read_text() == key.hexdigest():
+    if obj.exists() and stamp.exists() and stamp.read_text() == key:
+        C.cache_put("native", shared, obj)
         return path, obj, ""
     obj.parent.mkdir(parents=True, exist_ok=True)
+    if C.cache_get("native", shared, obj):
+        stamp.write_text(key)
+        return path, obj, ""
     p = subprocess.run([*compiler(), "-c", *flags, str(source), "-o", str(obj)], capture_output=True,
                        text=True, errors="replace")
     if p.returncode != 0:
         first = next((line for line in p.stderr.splitlines() if "error" in line), p.stderr.strip()[-200:])
         return path, None, first.split("error:", 1)[-1].strip()
-    stamp.write_text(key.hexdigest())
+    stamp.write_text(key)
+    C.cache_put("native", shared, obj)
     return path, obj, ""
 
 
@@ -285,11 +308,17 @@ def rewrite_one(obj: pathlib.Path, known: set[str], native: set[str], names_key:
     stamp = out.with_suffix(".names")
     key = hashlib.sha1(data + names_key.encode() + (b"pmf" if pmf else b"")).hexdigest()
     if out.exists() and stamp.exists() and stamp.read_text().startswith(key):
+        C.cache_put("rewritten", key, out)
+        C.cache_put("rewritten", key + ".names", stamp)
+        return out, set(stamp.read_text().split()[1:])
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if C.cache_get("rewritten", key + ".names", stamp) and C.cache_get("rewritten", key, out):
         return out, set(stamp.read_text().split()[1:])
     new, names = objrewrite.rewrite(data, known, native, PREFIX, pmf)
-    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(new)
     stamp.write_text(" ".join([key, *sorted(names)]))
+    C.cache_put("rewritten", key, out)
+    C.cache_put("rewritten", key + ".names", stamp)
     return out, names
 
 
