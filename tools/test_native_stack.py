@@ -50,6 +50,17 @@ class NativeStackTests(unittest.TestCase):
         self.assertLess(copy.index('func_020324fc(&collision[3]);'), copy.index('    centers ='))
         self.assertIsNone(native_stack.translate('unknown.cpp', text))
 
+    def test_clean_consumer_copy(self):
+        text = (C.ROOT / native_stack.CLEAN_SOURCE).read_bytes().decode()
+        copy = native_stack.clean_copy(text)
+        self.assertNotIn('Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};', copy)
+        self.assertIn('    Vec3 *centres;', copy)
+        slot = copy.index('native_guest_stack_slot(0x0223df88u, 0x28u, sizeof(Vec3) * 4)')
+        self.assertLess(copy.index('CollisionBox_Construct(&boxes[i]);'), slot)
+        self.assertLess(slot, copy.index('centres[0].x'))
+        with self.assertRaises(ValueError):
+            native_stack.clean_copy(text + '\n')
+
 
 if __name__ == '__main__':
     unittest.main()

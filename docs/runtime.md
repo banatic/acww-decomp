@@ -160,8 +160,10 @@ scenes started from a town save (`tools/scenes.py`: fish-cast, fish-night, house
 tool-shovel, pockets, pockets-furni, able-sisters); the save is not part of the repository. The
 6,482 Clean functions that call nothing also pass the function-level check. Clean code that no
 recording reaches, most of the menu screens (overlays 90-147) among it, has been checked only by
-reading it against its matching source. Three scenes, house, shop-talk and villager-talk, still
-differ from the Reference with Native and with Clean alike; the cause is on the Native side. The
+reading it against its matching source. The other five scenes (tool-net, villager-talk,
+fish-carry, shop-talk, house) agree too, with Native alone and with every Clean function; in
+house the Clean house collider reads its centres' heights from the guest stack slot the Native
+one uses ([guest stack](native-guest-stack.md)). The
 first recording run found what random entry
 states had not: callers that ask the calendar about month 0 or 13, which the game's tables
 answer from their neighbouring bytes (`clean/main/calendar.c`), and a fifth argument that a

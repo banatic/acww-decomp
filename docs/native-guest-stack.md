@@ -75,7 +75,12 @@ The producer entry hook reproduces its r3 spill at +0x14 for both Native and
 its Clean replacement, `PushBox_OnSideHit`. A source-hash-guarded PC copy of
 the consumer uses guest storage at +0x28 for its four centers. It obtains the
 slot after its four collider constructor calls, before assigning the centers.
-The original sources and Clean implementations remain unchanged.
+The Clean consumer, `HouseRoach_Move` in `clean/ov004/house_roach.c`, sets the
+centers' Y words to 0 (its `BUG:` note), which changes the collision result
+(the house scene, frame 4199, with every Clean function in place). The mixed
+Native/Clean build compiles a source-hash-guarded copy of that file
+(`native_stack.clean_copy`) whose centers use the same guest slot, requested at
+the same point. The original sources and Clean implementations remain unchanged.
 
 For example, consumer entry from root SP 0x027e2f04 through extents
 0 + 0x40 + 0x18 + 0x2e0 puts its body at 0x027e2bcc. Its y words are

@@ -84,6 +84,30 @@ CONSUMER = 'ov004/func_ov004_0223df88.cpp'
 SPILLS = {('ov004', 0x0220dd80): (3, 0x14)}
 
 
+# The Clean consumer (HouseRoach_Move) zero-fills the centres; the ROM leaves their Y words
+# as the stack held them. The mixed Native/Clean build compiles a copy that keeps the four
+# centres at the same guest slot as the Native consumer, so they read the same residue.
+CLEAN_SOURCE = 'clean/ov004/house_roach.c'
+CLEAN_SHA = '8f67dcec77f544092fa1997e53c1d0ef1ce4384d3bf9d8b9ddd002e7ef8da5b6'
+
+
+def clean_copy(text: str) -> str:
+    if hashlib.sha256(text.encode()).hexdigest() != CLEAN_SHA:
+        raise ValueError(f'Clean stack source changed; repeat the stack effect audit: {CLEAN_SOURCE}')
+    declaration = '    Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};'
+    # after the four box constructors, before any centre is set (as in the Native consumer)
+    use = '\n'.join(['        CollisionBox_Construct(&boxes[i]);', '    }',
+                     '    Vec3 *position = &roach->actor.position;'])
+    assert text.count(declaration) == text.count(use) == 1
+    text = text.replace(declaration, '    Vec3 *centres;')
+    slot = '\n'.join([
+        '    _Static_assert(HOUSE_ROACH_KEEP_OUT_BOXES == 4 && sizeof(Vec3) == 12, "house centre storage");',
+        '    centres = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x0223df88u, 0x28u, sizeof(Vec3) * 4);',
+        '    Vec3 *position'])
+    text = text.replace(use, use.replace('    Vec3 *position', slot))
+    return '\n'.join(['#include "native_guest.h"', text])
+
+
 def frame_extent(module: str, address: int, code: bytes) -> int | None:
     spec = FRAMES.get((module, address & ~1))
     if spec is None:
