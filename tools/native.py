@@ -116,7 +116,12 @@ def tool_output(obj: pathlib.Path, cmd: list[str]) -> str:
     out = subprocess.run([*cmd, str(obj)], capture_output=True, text=True).stdout
     tmp = kept.with_name(f"{key}.{os.getpid()}-{id(out)}")
     tmp.write_text(out)
-    os.replace(tmp, kept)
+    try:
+        os.replace(tmp, kept)
+    except OSError:  # another run (a scene alongside) kept the same output first; Windows
+        tmp.unlink(missing_ok=True)  # refuses to replace a file that one is reading
+        if not kept.exists():
+            raise
     C.cache_put("tool-output", key, kept)
     return out
 
