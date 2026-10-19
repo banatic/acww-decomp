@@ -277,8 +277,7 @@ int Camel_Leave(Camel *self)
     if (SpecialSceneObject_Leave(self) == 0) {
         return 0;
     }
-    TownSpot_Set((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()), (u32) self->position.x,
-                 (u32) self->position.z);
+    TownSpot_Set((TownSpot *) Block021d27ac_Part04(Block021d27ac_Get()), (u32) self->position.x, (u32) self->position.z);
     return 1;
 }
 CLEAN_AS(func_ov078_02279710, Camel_Leave)
@@ -322,9 +321,7 @@ Camel *Camel_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) camel_at(self, CAMEL_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) camel_at(self, CAMEL_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) camel_at(self, CAMEL_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) camel_at(self, CAMEL_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) camel_at(self, CAMEL_ANIM));
     SceneMover_Construct(camel_mover(self));
     SceneProbe_Construct(camel_at(self, CAMEL_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) camel_at(self, CAMEL_VALUE_3AA));

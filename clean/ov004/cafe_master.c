@@ -392,7 +392,7 @@ static int cm_linked_or_variable(NetSession *session)
 /* The player record's object at 0x2416 of the current player. */
 static PlayerField2416 *cm_current_field(void)
 {
-    return (PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current());
+    return (PlayerField2416 *) PlayerRecord_Field2416(PlayerRecords_Current());
 }
 
 /* A quarter of the coffees the player of `field` has had (0 to 3). */
@@ -687,7 +687,7 @@ void CafeMasterTalk_Drink(CafeMasterTalk *talk)
     }
     if (master->talk_frames == 70) {
         u8 *record = PlayerRecords_Current();
-        if (PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
+        if (PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record)) == 0) {
             cm_play(master, 0x4e4);
         } else {
             cm_play(master, 0x4e5);
@@ -1424,9 +1424,7 @@ CafeMaster *CafeMaster_Create(void)
     LayeredModel_ConstructB(cm_model_of(master));
     SceneStandardAnims_Init(cm_anims_of(master));
     SceneFace_Construct((SceneFace *) (void *) cm_part(master, CAFE_MASTER_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) cm_part(master, CAFE_MASTER_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) cm_part(master, CAFE_MASTER_ANIM));
     SceneMover_Construct((SceneMover *) (void *) cm_part(master, CAFE_MASTER_MOVER));
     SceneProbe_Construct(cm_part(master, CAFE_MASTER_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) cm_part(master, CAFE_MASTER_VALUE_3AA));

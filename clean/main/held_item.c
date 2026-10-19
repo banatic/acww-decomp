@@ -85,9 +85,6 @@ extern const u8 data_020dd754[]; /* HeldItemAnim's vtable */
 extern const char data_020dd75c[];
 extern const char data_020dd764[];
 
-/* The pool's entry `index`: */
-extern AnimatedModel *func_0205f130(u8 *pool, int index); /* its model */
-
 extern G3dResTex *func_021077e8(int file); /* the file's texture resource */
 extern void *NNS_G3dGetTexSRTAnmSet(u8 *file);
 extern u8 *func_02107bbc(void *set, u32 index);
@@ -123,7 +120,9 @@ void HeldItem_JointMatrix(Mtx43 *out, const u8 *held, u32 joint)
     Mtx43 matrix;
     int index = *held;
     if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != HELD_ITEM_NO_ITEM) {
-        ModelObject_JointMatrix(&func_0205f130(data_021ca16c, index)->object, &matrix, (int) joint);
+        ModelObject_JointMatrix(
+            &((AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index))->object,
+            &matrix, (int) joint);
     } else {
         memset(&matrix, 0, sizeof(matrix));
     }
@@ -251,7 +250,8 @@ void HeldItem_Clear(HeldItemObject *held)
         held->anim.model = NULL;
     }
     HeldItemPool_SetMaterialAnim((HeldItemPool *) (void *) data_021ca16c, index, NULL);
-    ModelObject_Release(&func_0205f130(data_021ca16c, index)->object);
+    ModelObject_Release(
+        &((AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index))->object);
     HeldItemPool_StopUpload((HeldItemPool *) (void *) data_021ca16c, index);
     Heap_FreeAll((Heap *) (uintptr_t) HeldItemPool_Heap((HeldItemPool *) (void *) data_021ca16c, index));
     HeldItemPool_SetJointAnim((HeldItemPool *) (void *) data_021ca16c, index, (int) (uintptr_t) NULL, 0);

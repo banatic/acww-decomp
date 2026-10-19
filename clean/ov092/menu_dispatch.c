@@ -12,6 +12,7 @@
 #include "main/group_params.h"
 #include "main/menu_backdrop.h"
 #include "main/music_volume.h"
+#include "main/overlay_groups.h"
 #include "main/scene_sound.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
@@ -24,10 +25,6 @@ extern const u8 data_ov092_02299508[];
 
 /* The field's sound object; its music volume is at 0x1c4 (main/music_volume.h). */
 extern u8 *data_021c526c;
-
-/* An overlay group asked for under the current owner (main/overlay_groups.c,
- * OverlayGroups_RequestForOwner). */
-extern int func_0207000c(int group);
 
 /* The tables of member functions (ov004/member_pointer.h): their guards, the tables and the
  * constants they are filled from. */
@@ -212,7 +209,7 @@ void MenuDispatch_RequestGroup(MenuDispatch *self)
             break;
     }
     if (mode < MENU_DISPATCH_MODES && menu_dispatch_groups[mode] != 0) {
-        func_0207000c(menu_dispatch_groups[mode]);
+        OverlayGroups_RequestForOwner(menu_dispatch_groups[mode]);
     }
     self->base.sub_state = MENU_DISPATCH_SUB_IDLE;
 }

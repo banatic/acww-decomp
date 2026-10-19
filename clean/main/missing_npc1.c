@@ -254,7 +254,7 @@ static void missing_npc1_set_standard(MissingNpc1 *self, int first, int second)
 /* The middle spot of the town (part 0x0c of data_021d27ac). */
 static MiddleSpot *missing_npc1_spot(void)
 {
-    return (MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get());
+    return (MiddleSpot *) Block021d27ac_Part0C(Block021d27ac_Get());
 }
 
 /* The current player's paired town (paired_town.h). */
@@ -1158,7 +1158,7 @@ MissingNpc1 *MissingNpc1_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) (object + MISSING_NPC1_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) (object + MISSING_NPC1_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) (object + MISSING_NPC1_FACE));
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) (object + MISSING_NPC1_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) (object + MISSING_NPC1_ANIM));
     SceneMover_Construct((SceneMover *) (void *) (object + MISSING_NPC1_MOVER));
     SceneProbe_Construct(object + MISSING_NPC1_PROBE);
     SceneValue3aa_Clear((SceneValue3aa *) (void *) (object + MISSING_NPC1_VALUE_3AA));

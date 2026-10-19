@@ -26,6 +26,7 @@
 #include "main/state_flags.h"
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
+#include "ov092/menu_dispatch.h"
 #include "ov094/pockets_common.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(MailboxScene, flags) == 0x94, "flags");
@@ -57,7 +58,6 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern void func_02066688(void *letter);
 
 /* What the parent (overlay 92's) is told (func_ov092_02299324): the scene ends. */
-extern void func_ov092_02299324(Process *parent, int code, int flag);
 #define MAILBOX_SCENE_PARENT_CODE_END 0x44
 
 static PagedChoice *mbx_choice(MailboxScene *self)
@@ -197,7 +197,7 @@ void MailboxScene_CloseOnRequest(MailboxScene *self)
     MailboxScene_HideCursorSprite(self);
     MenuScene_SetState(mbx_scene(self), 9);
     MenuScene_SetPhase(mbx_scene(self), 1);
-    func_ov092_02299324(Process_GetParent((Process *) (void *) self), MAILBOX_SCENE_PARENT_CODE_END, 1);
+    MenuDispatch_SetMode((MenuDispatch *) Process_GetParent((Process *) (void *) self), MAILBOX_SCENE_PARENT_CODE_END, 1);
 }
 CLEAN_AS(func_ov106_0229c418, MailboxScene_CloseOnRequest)
 
@@ -856,7 +856,7 @@ void MailboxScene_RecordPaper(MailboxScene *self, Letter *letter)
     if (Letter_State(letter) == 2 || Letter_State(letter) == 3) {
         u8 *player = PlayerRecords_Current();
         ItemCode paper = ItemCode_MakePile(Letter_Paper(letter), 4);
-        ItemRecord_SetBit((ItemRecord *) (void *) PlayerRecord_ItemRecord(player), &paper, 0, 1);
+        ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(player), &paper, 0, 1);
     }
 }
 CLEAN_AS(func_ov106_0229d1b8, MailboxScene_RecordPaper)
@@ -2038,9 +2038,6 @@ extern const char data_ov106_0229f740[];
 extern const char data_ov106_0229f760[];
 extern const char data_ov106_0229f784[];
 
-/* What the parent (overlay 92's) is told when the scene closes. */
-extern void func_ov092_0229929c(Process *parent);
-
 /* A letter's constructor, handed to __cxa_vec_ctor with its destructor (so the game's symbols). */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void func_02066694(void *letter);
@@ -2252,7 +2249,7 @@ void MailboxScene_Setup(MailboxScene *self)
     }
     MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
     /* The mailbox's first letter: the other nine follow it. */
-    const Letter *src = (const Letter *) (void *) MailBox_Letter(box, 0);
+    const Letter *src = (const Letter *) MailBox_Letter(box, 0);
     for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
         Letter_Assign(&self->mailbox[i], &src[i]);
     }
@@ -2406,7 +2403,7 @@ void MailboxScene_StartWipeOut(MailboxScene *self)
     Popup_Hide(&self->popup, 1);
     MailboxScene_HideCursorSprite(self);
     if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_100) == 0) {
-        func_ov092_02299324(mbx_parent(self), MAILBOX_SCENE_PARENT_CODE_END, 1);
+        MenuDispatch_SetMode((MenuDispatch *) (void *) mbx_parent(self), MAILBOX_SCENE_PARENT_CODE_END, 1);
     }
     MenuScene_StartWipeOnWindow2(mbx_scene(self), 2, 0, 2, MAILBOX_SCENE_WIPE_MARGIN);
     MenuScene_SetWipeExtent(mbx_scene(self), 0xc0);
@@ -2490,7 +2487,7 @@ int MailboxScene_End(MailboxScene *self)
     GroupParams_SetC4C(1);
     Mail_Compact((MailLetter *) (void *) self->mailbox, MAILBOX_SCENE_LETTERS);
     MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
-    Letter *dst = (Letter *) (void *) MailBox_Letter(box, 0);
+    Letter *dst = (Letter *) MailBox_Letter(box, 0);
     for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
         Letter_Assign(&dst[i], &self->mailbox[i]);
     }
@@ -2615,7 +2612,7 @@ CLEAN_AS(func_ov106_0229f2fc, MailboxScene_Draw)
  * torn down. Answers 1. */
 int MailboxScene_Close(MailboxScene *self)
 {
-    func_ov092_0229929c(mbx_parent(self));
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) mbx_parent(self));
     MailboxScene_Teardown(self);
     return 1;
 }

@@ -481,7 +481,8 @@ CLEAN_AS(func_ov004_0222d5c0, CheckInGate_StartJointAnim)
  * their polygon attributes and of the mask that says which bits are the material's).
  * BUG: a material the model lacks (index -1) is not skipped: the word before the dictionary's
  * first entry is taken for a record's offset and that address written; the test of the
- * record's address against NULL never fails for a real model. */
+ * record's address against NULL never fails for a real model. BUGFIX: skip a missing
+ * material. */
 void CheckInGate_LightMaterials(CheckInGate *self)
 {
     u8 *model = RmoModel_Model(&self->base.body_model);
@@ -489,6 +490,11 @@ void CheckInGate_LightMaterials(CheckInGate *self)
     u32 lights = data_ov004_022478a4;
     for (unsigned int i = 0; i < CHECK_IN_GATE_GROUND_MATERIALS; i++) {
         int index = G3dRes_MaterialIndex(RmoModel_Model(&self->base.body_model), data_ov004_02254e28[i]);
+#ifdef BUGFIX
+        if (index < 0) {
+            continue;
+        }
+#endif
         /* the dictionary after the 4-byte header: its entries start at its halfword 6 */
         uintptr_t entries = materials + 4 + *(const u16 *) (uintptr_t) (materials + 0x0a);
         u16 unit = *(const u16 *) entries;
@@ -575,7 +581,7 @@ static void CheckInGate_point_once(u32 *guard, Vec3 *point, u8 *record, fx32 x)
  * field. */
 int CheckInGate_Start(CheckInGate *self)
 {
-    Block021d27acPart20 *part = (Block021d27acPart20 *) (void *) Block021d27ac_Part20(Block021d27ac_Get());
+    Block021d27acPart20 *part = (Block021d27acPart20 *) Block021d27ac_Part20(Block021d27ac_Get());
     RmoModel_Load(&self->base.body_model, data_ov004_02254eb4);
     RmoTexture_Load(&self->base.body_texture, data_ov004_02254ed0);
     ModelObject_SetModel(&self->base.body.object, RmoModel_Model(&self->base.body_model), NULL);

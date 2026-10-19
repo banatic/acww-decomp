@@ -297,9 +297,7 @@ void *Giraffe_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) gr_part(giraffe, GR_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) gr_part(giraffe, GR_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) gr_part(giraffe, GR_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) gr_part(giraffe, GR_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) gr_part(giraffe, GR_ANIM));
     SceneMover_Construct((SceneMover *) (void *) gr_part(giraffe, GR_MOVER));
     SceneProbe_Construct(gr_part(giraffe, GR_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) gr_part(giraffe, GR_VALUE_3AA));

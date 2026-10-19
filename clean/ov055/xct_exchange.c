@@ -408,9 +408,7 @@ void *XctExchange_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) xct_exchange_part(xct, XCT_EXCHANGE_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) xct_exchange_part(xct, XCT_EXCHANGE_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) xct_exchange_part(xct, XCT_EXCHANGE_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) xct_exchange_part(xct, XCT_EXCHANGE_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) xct_exchange_part(xct, XCT_EXCHANGE_ANIM));
     SceneMover_Construct((SceneMover *) (void *) xct_exchange_part(xct, XCT_EXCHANGE_MOVER));
     SceneProbe_Construct(xct_exchange_part(xct, XCT_EXCHANGE_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) xct_exchange_part(xct, XCT_EXCHANGE_VALUE_3AA));

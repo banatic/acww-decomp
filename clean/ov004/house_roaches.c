@@ -67,7 +67,7 @@ static u32 shift_right(u32 value, int n)
 int HouseRoaches_ReadCount(Process *self)
 {
     (void) self;
-    data_ov004_02259a0c = HouseRecord_Absence(&data_021ebcd4);
+    data_ov004_02259a0c = HouseRecord_Roaches(&data_021ebcd4);
     return data_ov004_02259a0c != 0;
 }
 CLEAN_AS(func_ov004_0223e5f0, HouseRoaches_ReadCount)
@@ -263,7 +263,7 @@ int HouseRoaches_Release(void)
     if (!HouseRoaches_active()) {
         return 1;
     }
-    HouseRecord_SetAbsence(&data_021ebcd4, data_ov004_02259a0c);
+    HouseRecord_SetRoaches(&data_021ebcd4, data_ov004_02259a0c);
     data_ov004_02259a10 = NULL;
     return 1;
 }

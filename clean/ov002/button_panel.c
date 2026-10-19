@@ -6,7 +6,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/sliding_window.h"
 
 static_assert(sizeof(PanelSprite) == 0x7c && offsetof(PanelSprite, flags) == 0x78, "panel sprite");
 static_assert(offsetof(ButtonPanel, window) == 0xfc && offsetof(ButtonPanel, selected) == 0x1c9, "button panel");
@@ -19,17 +21,6 @@ extern const u8 data_ov002_0220ba74[];
 
 extern u8 data_021f6c58; /* the touch's x, as a byte */
 extern u8 data_021f6c54; /* the touch's y */
-
-extern int func_ov002_0220b12c(PanelSprite *sprite);  /* flag 4 set */
-extern void func_ov002_0220b138(PanelSprite *sprite); /* clear flag 4 */
-extern void func_ov002_0220b144(PanelSprite *sprite); /* set flag 4 */
-extern void func_ov002_0220b150(PanelSprite *sprite); /* clear flag 2 */
-extern void func_ov002_0220b15c(PanelSprite *sprite); /* set flag 2 */
-extern int func_ov002_0220b168(PanelSprite *sprite);  /* step the press */
-extern int func_ov002_0220b280(PanelSprite *sprite);  /* the press's frame */
-extern void func_0208aa70(MessageWindow *window);     /* byte 0x5b = 1 */
-extern void func_0208aa90(MessageWindow *window);     /* byte 0x58 = 0 */
-extern void func_0208aa98(MessageWindow *window);     /* byte 0x58 = 1 */
 
 #define SELECTED (-1)
 
@@ -63,21 +54,21 @@ static int layout_rise(int layout)
  * flag 4. */
 int ButtonPanel_HasSpriteFlag4(ButtonPanel *panel, int button)
 {
-    return func_ov002_0220b12c(sprite_at(panel, ButtonPanel_SpriteOf(panel, button)));
+    return PanelSprite_HasFlag4(sprite_at(panel, ButtonPanel_SpriteOf(panel, button)));
 }
 CLEAN_AS(func_ov002_0220a620, ButtonPanel_HasSpriteFlag4)
 
 /* func_ov002_0220a63c */
 void ButtonPanel_ClearSpriteFlag4(ButtonPanel *panel, int button)
 {
-    func_ov002_0220b138(sprite_at(panel, ButtonPanel_SpriteOf(panel, button)));
+    PanelSprite_ClearFlag4(sprite_at(panel, ButtonPanel_SpriteOf(panel, button)));
 }
 CLEAN_AS(func_ov002_0220a63c, ButtonPanel_ClearSpriteFlag4)
 
 /* func_ov002_0220a658 */
 void ButtonPanel_SetSpriteFlag4(ButtonPanel *panel, int button)
 {
-    func_ov002_0220b144(sprite_at(panel, ButtonPanel_SpriteOf(panel, button)));
+    PanelSprite_SetFlag4(sprite_at(panel, ButtonPanel_SpriteOf(panel, button)));
 }
 CLEAN_AS(func_ov002_0220a658, ButtonPanel_SetSpriteFlag4)
 
@@ -91,9 +82,9 @@ CLEAN_AS(func_ov002_0220a674, ButtonPanel_SpriteOf)
 /* func_ov002_0220a690: clears the window's byte 0x58 and flag 2 of both sprites. */
 void ButtonPanel_ClearFlag2(ButtonPanel *panel)
 {
-    func_0208aa90(&panel->window);
+    SlidingWindow_ClearObjWindow((SlidingWindow *) (void *) &panel->window);
     for (int i = 0; i < BUTTON_PANEL_SPRITES; i++) {
-        func_ov002_0220b150(&panel->sprites[i]);
+        PanelSprite_ClearFlag2(&panel->sprites[i]);
     }
 }
 CLEAN_AS(func_ov002_0220a690, ButtonPanel_ClearFlag2)
@@ -101,9 +92,9 @@ CLEAN_AS(func_ov002_0220a690, ButtonPanel_ClearFlag2)
 /* func_ov002_0220a6b8: sets the window's byte 0x58 and flag 2 of both sprites. */
 void ButtonPanel_SetFlag2(ButtonPanel *panel)
 {
-    func_0208aa98(&panel->window);
+    SlidingWindow_SetObjWindow((SlidingWindow *) (void *) &panel->window);
     for (int i = 0; i < BUTTON_PANEL_SPRITES; i++) {
-        func_ov002_0220b15c(&panel->sprites[i]);
+        PanelSprite_SetFlag2(&panel->sprites[i]);
     }
 }
 CLEAN_AS(func_ov002_0220a6b8, ButtonPanel_SetFlag2)
@@ -111,7 +102,7 @@ CLEAN_AS(func_ov002_0220a6b8, ButtonPanel_SetFlag2)
 /* func_ov002_0220a6e0: the frame of the press of the selected button's sprite. */
 int ButtonPanel_SelectedPressFrame(ButtonPanel *panel)
 {
-    return func_ov002_0220b280(sprite_at(panel, ButtonPanel_SpriteOf(panel, SELECTED)));
+    return PanelSprite_PressDepth(sprite_at(panel, ButtonPanel_SpriteOf(panel, SELECTED)));
 }
 CLEAN_AS(func_ov002_0220a6e0, ButtonPanel_SelectedPressFrame)
 
@@ -119,7 +110,7 @@ CLEAN_AS(func_ov002_0220a6e0, ButtonPanel_SelectedPressFrame)
  * over. */
 int ButtonPanel_StepSelectedPress(ButtonPanel *panel)
 {
-    return func_ov002_0220b168(sprite_at(panel, ButtonPanel_SpriteOf(panel, SELECTED)));
+    return PanelSprite_StepPress(sprite_at(panel, ButtonPanel_SpriteOf(panel, SELECTED)));
 }
 CLEAN_AS(func_ov002_0220a700, ButtonPanel_StepSelectedPress)
 
@@ -187,21 +178,18 @@ CLEAN_AS(func_ov002_0220a7c0, ButtonPanel_HitTest)
 /* func_ov002_0220a8dc: sets the window's byte 0x5b. */
 void ButtonPanel_SetWindowFlag5b(ButtonPanel *panel)
 {
-    func_0208aa70(&panel->window);
+    SlidingWindow_ShowExtra((SlidingWindow *) (void *) &panel->window);
 }
 CLEAN_AS(func_ov002_0220a8dc, ButtonPanel_SetWindowFlag5b)
 
 /* The panel's class. */
 extern const u8 data_ov002_0220bd08[];  /* the panel's vtable */
 extern const u16 data_ov002_0220ba58[]; /* the two text colours, 14 and 15 */
-extern void func_020edb3c(void *block); /* operator delete */
 extern void GXS_LoadOBJPltt(const void *src, u32 offset, u32 size);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
-extern void *func_ov002_0220b3a4(void *sprite);                 /* PanelSprite_Destroy, for the array */
-extern void *func_ov002_0220b3c4(void *sprite);                 /* PanelSprite_Construct, for the array */
-extern void func_0208aa68(MessageWindow *window);               /* byte 0x5b = 0 */
-extern void func_0208aa60(MessageWindow *window, int x, int y); /* words 0x3c and 0x40: an offset */
+extern void *func_ov002_0220b3a4(void *sprite); /* PanelSprite_Destroy, for the array */
+extern void *func_ov002_0220b3c4(void *sprite); /* PanelSprite_Construct, for the array */
 
 /* The cells the layouts give the sprites, with the text's width and the shadow's cell each
  * is given. */
@@ -253,7 +241,7 @@ static int set_layout(ButtonPanel *panel, u8 layout)
 int ButtonPanel_SetLayout13(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x12);
-    func_0208aa70(&panel->window);
+    SlidingWindow_ShowExtra((SlidingWindow *) (void *) &panel->window);
     ButtonPanel_ShowMessages4And13(panel);
     return set_layout(panel, 13);
 }
@@ -263,7 +251,7 @@ CLEAN_AS(func_ov002_0220a8e8, ButtonPanel_SetLayout13)
 int ButtonPanel_SetLayout12(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x2a);
-    func_0208aa70(&panel->window);
+    SlidingWindow_ShowExtra((SlidingWindow *) (void *) &panel->window);
     ButtonPanel_ShowMessages4And13(panel);
     return set_layout(panel, 12);
 }
@@ -273,7 +261,7 @@ CLEAN_AS(func_ov002_0220a924, ButtonPanel_SetLayout12)
 int ButtonPanel_SetLayout11(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x22);
-    func_0208aa68(&panel->window);
+    SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
     ButtonPanel_ShowMessages4And13(panel);
     return set_layout(panel, 11);
 }
@@ -292,7 +280,7 @@ CLEAN_AS(func_ov002_0220a99c, ButtonPanel_SetLayout10)
 int ButtonPanel_SetLayout9(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 4);
-    func_0208aa68(&panel->window);
+    SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
     ButtonPanel_ShowMessages4And13(panel);
     return set_layout(panel, 9);
 }
@@ -318,7 +306,7 @@ static void show_small_4_and_13(ButtonPanel *panel)
 int ButtonPanel_SetLayout8(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x11);
-    func_0208aa68(&panel->window);
+    SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
     show_small_4_and_13(panel);
     return set_layout(panel, 8);
 }
@@ -328,7 +316,7 @@ CLEAN_AS(func_ov002_0220aa60, ButtonPanel_SetLayout8)
 int ButtonPanel_SetLayout7(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 4);
-    func_0208aa68(&panel->window);
+    SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
     show_small_4_and_13(panel);
     return set_layout(panel, 7);
 }
@@ -408,7 +396,7 @@ CLEAN_AS(func_ov002_0220ad0c, ButtonPanel_ClearLayout)
 /* The window moved by (0, dy) from its place and drawn. */
 static void draw_window(ButtonPanel *panel, int dy)
 {
-    func_0208aa60(&panel->window, 0, dy);
+    SlidingWindow_SetPlace((SlidingWindow *) (void *) &panel->window, 0, dy);
     const u32 *vtable = panel->window.vtable;
     ((WindowMethod *) (uintptr_t) vtable[WINDOW_SLOT_DRAW])(&panel->window);
 }
@@ -523,7 +511,7 @@ static void destroy(ButtonPanel *panel)
 ButtonPanel *ButtonPanel_Delete(ButtonPanel *panel)
 {
     destroy(panel);
-    func_020edb3c(panel);
+    Heap_OperatorDeleteB(panel);
     return panel;
 }
 CLEAN_AS(func_ov002_0220afa8, ButtonPanel_Delete)

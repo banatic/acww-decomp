@@ -870,9 +870,7 @@ void *FoxTent_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) fox_tent_part(fox, FOX_TENT_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) fox_tent_part(fox, FOX_TENT_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) fox_tent_part(fox, FOX_TENT_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) fox_tent_part(fox, FOX_TENT_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) fox_tent_part(fox, FOX_TENT_ANIM));
     SceneMover_Construct(fox_tent_mover(fox));
     SceneProbe_Construct(fox_tent_part(fox, FOX_TENT_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) fox_tent_part(fox, FOX_TENT_VALUE_3AA));

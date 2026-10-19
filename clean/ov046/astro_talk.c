@@ -82,7 +82,7 @@ extern const u8 data_ov046_0226204c[];
 #define ASTRO_TALK_ANSWER_SUFFIX 0x7d
 #define ASTRO_TALK_ANSWER_MORE 0xf
 #define ASTRO_TALK_ANSWER_STOP 0x10
-#define ASTRO_TALK_ANSWER_STYLE 1
+#define ASTRO_TALK_ANSWER_SELECT2 1 /* the select file "select2" */
 
 /* The daily bit of its first talk of the day (talk_checks.h). */
 #define ASTRO_TALK_DAILY_BIT 2
@@ -984,7 +984,7 @@ void AstroTalk_ListConstellations(AstroTalk *talk)
     message = talk->remaining == 0 ? ASTRO_TALK_ANSWER_STOP : ASTRO_TALK_ANSWER_MORE;
     answer = TalkAnswers_Answer(answers, count);
     TalkAnswers_SetMessage(answer, &message);
-    TalkAnswers_SetFile(answer, (int) TalkAnswers_Style(ASTRO_TALK_ANSWER_STYLE));
+    TalkAnswers_SetFile(answer, (int) TalkAnswers_SelectFileName(ASTRO_TALK_ANSWER_SELECT2));
     TalkAnswers_LoadAnswerText(answer);
     TalkAnswers_SetCount(answers, count + 1);
     TalkAnswers_SetCancelToLast(answers);

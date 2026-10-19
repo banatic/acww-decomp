@@ -50,7 +50,7 @@ void HeldItemLink_Action0ByItem(HeldItemLink *link, const u16 *item, int a, int 
 void HeldItemLink_Act(HeldItemLink *link, int action, int a, int b);
 int HeldItemLink_Take(HeldItemLink *link, void *owner, u16 *item, void *p3, u16 p4);
 int HeldItemLink_Open(HeldItemLink *link, void *arg);
-HeldItemLink *HeldItemLink_Construct(HeldItemLink *link);
 HeldItemLink *HeldItemLink_Destruct(HeldItemLink *link);
+HeldItemLink *HeldItemLink_Construct(HeldItemLink *link);
 
 #endif

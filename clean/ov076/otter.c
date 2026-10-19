@@ -330,9 +330,7 @@ void *Otter_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) otter_part(otter, OTTER_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) otter_part(otter, OTTER_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) otter_part(otter, OTTER_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct(otter_anim(otter));
+    SpeakerAnim_Construct(otter_anim(otter));
     SceneMover_Construct(otter_mover(otter));
     SceneProbe_Construct(otter_part(otter, OTTER_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) otter_part(otter, OTTER_VALUE_3AA));

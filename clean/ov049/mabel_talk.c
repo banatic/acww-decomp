@@ -40,6 +40,8 @@
 #include "main/villager_events.h"
 #include "main/villager_part.h"
 #include "main/villager_part_entry.h"
+#include "ov004/room_objects.h"
+#include "ov004/room_player_actor.h"
 
 static_assert(sizeof(MabelTalkStep) == 12, "a sequence's function");
 static_assert(sizeof(MabelTalkLine) == 8, "a line");
@@ -78,12 +80,6 @@ extern NetSession *data_020ccf94;
 
 /* The test of the items the pockets offer for the errand (the game's function). */
 extern unsigned short func_ov049_02261224(unsigned short *r0, int r1);
-
-/* Overlay 4: a question asked before the room object on a tile is changed for a try-on
- * (func_ov004_0222c2bc), and the changes while the player tries it on and after. */
-extern int func_ov004_0222c2bc(void);
-extern int func_ov004_0223b340(char *self, int a1);
-extern int func_ov004_0223b39c(char *self, int a1);
 
 /* The handlers by line; each table is a function-local static the compiler fills from the
  * constants on the first call (bit 0 of its guard says it was). */
@@ -391,7 +387,7 @@ void MabelTalk_TakeErrand(MabelTalk *talk)
     u8 line = MABEL_LINE_NO_ERRAND;
 
     if (GroupParams_C4CIs1()) {
-        u8 *errand = VillagerPart_Object94((VillagerPart *) (void *) PlayerRecord_VillagerPart(PlayerRecords_Current()));
+        u8 *errand = VillagerPart_Object94((VillagerPart *) PlayerRecord_VillagerPart(PlayerRecords_Current()));
         if (TalkChecks_IsHostOrAlone()) {
             u8 slot = GroupParams_Arg();
             u16 item = CurrentPockets_Item(slot);
@@ -406,7 +402,7 @@ void MabelTalk_TakeErrand(MabelTalk *talk)
             if (!empty) {
                 SceneCommand_RequestMotion14(mtalk_scene(talk), &item, 2, 5, 0);
                 line = MABEL_LINE_ERRAND_TAKEN;
-                ItemObject_SetLow5((ItemObject *) (void *) VillagerPartEntry_Self((VillagerPartEntry *) (void *) errand), 1);
+                ItemObject_SetLow5((ItemObject *) VillagerPartEntry_Self((VillagerPartEntry *) (void *) errand), 1);
             }
         }
     }
@@ -418,8 +414,8 @@ CLEAN_AS(func_ov049_02260b9c, MabelTalk_TakeErrand)
  * room object at the item's tile is put back (func_ov004_0223b340) and the sequence ends. */
 void MabelTalk_EndTryOn(MabelTalk *talk)
 {
-    if (func_ov004_0222c2bc() != 0) {
-        func_ov004_0223b340((char *) (uintptr_t) talk->owner->tile_x, talk->owner->tile_z);
+    if (RoomPlayerActor_TestFlag15() != 0) {
+        RoomObjects_RequestOnAt(talk->owner->tile_x, talk->owner->tile_z);
         MabelTalk_SetSequence(talk, MABEL_TALK_SEQUENCE_NONE);
     }
 }
@@ -430,8 +426,8 @@ CLEAN_AS(func_ov049_02260c60, MabelTalk_EndTryOn)
  * player's actor is in state 16 the talk is let go, line 0x2d is shown and the sequence ends. */
 void MabelTalk_WatchTryOn(MabelTalk *talk)
 {
-    if (func_ov004_0222c2bc() != 0) {
-        func_ov004_0223b39c((char *) (uintptr_t) talk->owner->tile_x, talk->owner->tile_z);
+    if (RoomPlayerActor_TestFlag15() != 0) {
+        RoomObjects_RequestOffAt(talk->owner->tile_x, talk->owner->tile_z);
     }
     if (PlayerActorOps_InState(MABEL_TALK_PLAYER_STATE_TRIED, MABEL_TALK_PLAYER) != 0) {
         TalkObject *object = mtalk_object(talk);
@@ -1014,7 +1010,7 @@ CLEAN_AS(func_ov049_02261cb0, MabelTalk_OnLineEnded)
 void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out)
 {
     u8 *record = PlayerRecords_Current();
-    u8 *errand = VillagerPart_Object94((VillagerPart *) (void *) PlayerRecord_VillagerPart(record));
+    u8 *errand = VillagerPart_Object94((VillagerPart *) PlayerRecord_VillagerPart(record));
     Mabel *owner;
 
     if (StartKind_IsSet() != 0 && MabelTalk_Mode(talk) == MABEL_TALK_MODE_TALKED) {

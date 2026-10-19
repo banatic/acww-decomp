@@ -367,9 +367,7 @@ Astro *Astro_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) astro_at(self, ASTRO_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) astro_at(self, ASTRO_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) astro_at(self, ASTRO_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) astro_at(self, ASTRO_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) astro_at(self, ASTRO_ANIM));
     SceneMover_Construct((SceneMover *) (void *) astro_at(self, ASTRO_MOVER));
     SceneProbe_Construct(astro_at(self, ASTRO_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) astro_at(self, ASTRO_VALUE_3AA));

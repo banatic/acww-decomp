@@ -1327,9 +1327,7 @@ CafeGuest *CafeGuest_Create(void)
     LayeredModel_ConstructB(guest_model(self));
     SceneStandardAnims_Init(guest_standard_anims(self));
     SceneFace_Construct(guest_face(self));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) guest_at(self, GUEST_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) guest_at(self, GUEST_ANIM));
     SceneMover_Construct((SceneMover *) (void *) guest_at(self, GUEST_MOVER));
     SceneProbe_Construct(guest_at(self, GUEST_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) guest_at(self, GUEST_VALUE_3AA));

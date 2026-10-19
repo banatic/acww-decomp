@@ -51,6 +51,8 @@
 #include "main/speaker_anim.h"
 #include "main/talk_checks.h"
 #include "main/touch_pick_shapes.h"
+#include "ov004/room_objects.h"
+#include "ov004/shop_display.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(MabelTalk, owner) == 0xb0 && offsetof(MabelTalk, mode) == 0xb4, "MabelTalk");
@@ -206,12 +208,6 @@ extern NetSession *data_020ccf94;
 /* The sine and cosine table (FX_SinCosTable_), and the SDK's fixed-point product. */
 extern const fx16 FX_SinCosTable_[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-
-/* Overlay 4's room objects: the grid of them, the one standing on a tile, and the item code on
- * a tile of the room. */
-extern void *func_ov004_0223cd50(void);
-extern void *func_ov004_0223cc10(char *base, int x, int y, int layer);
-extern void *func_ov004_022460c8(int arg0, int arg1);
 
 static u8 *mabel_part(Mabel *mabel, u32 offset)
 {
@@ -407,7 +403,7 @@ int Mabel_FindShown(Mabel *mabel)
     Position_Tile(&x, &z, (const Position *) (const void *) &ahead);
 
     if (touched) {
-        int object = (int) (uintptr_t) func_ov004_0223cc10((char *) func_ov004_0223cd50(), x, z, 0);
+        int object = (int) (uintptr_t) RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, 0);
         if (object != 0) {
             if (object != TouchPick_PickedObject((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), NULL, NULL)) {
                 return 0;
@@ -424,7 +420,7 @@ int Mabel_FindShown(Mabel *mabel)
         }
     }
 
-    u16 item = *(const u16 *) func_ov004_022460c8(x, z);
+    u16 item = *(const u16 *) ShopDisplay_ListAItemAt(x, z);
     if (mabel_is_empty(&item)) {
         return 0;
     }
@@ -1123,9 +1119,7 @@ void *Mabel_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) mabel_part(mabel, MABEL_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) mabel_part(mabel, MABEL_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) mabel_part(mabel, MABEL_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) mabel_part(mabel, MABEL_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) mabel_part(mabel, MABEL_ANIM));
     SceneMover_Construct(mabel_mover(mabel));
     SceneProbe_Construct(mabel_part(mabel, MABEL_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) mabel_part(mabel, MABEL_VALUE_3AA));

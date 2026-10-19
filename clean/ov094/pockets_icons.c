@@ -1,6 +1,7 @@
 /* Overlay 094's sheet of item icons (pockets_icons.h). */
 #include "pockets_icons.h"
 
+#include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/c_library.h"
 #include "main/rom_file.h"
@@ -15,8 +16,6 @@ extern const u8 data_ov094_0229bc8c[];
 /* "menu/icon/pre%d.bch" and "menu/icon/icon%02d.bch". */
 extern const char data_ov094_0229c0c0[];
 extern const char data_ov094_0229c0d4[];
-
-extern void func_020edb3c(void *block); /* operator delete */
 
 #define POCKETS_ICONS_PATH_SIZE 0x28
 #define POCKETS_ICONS_CHARS_SIZE 0x20 /* of one icon */
@@ -78,7 +77,7 @@ CLEAN_AS(func_ov094_0229b0d4, PocketsIcons_Forget)
 PocketsIcons *PocketsIcons_DestructDelete(PocketsIcons *icons)
 {
     icons->vtable = (u32) (uintptr_t) data_ov094_0229bf80;
-    func_020edb3c(icons);
+    Heap_OperatorDeleteB(icons);
     return icons;
 }
 CLEAN_AS(func_ov094_0229b0e0, PocketsIcons_DestructDelete)

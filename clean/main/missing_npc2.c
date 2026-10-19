@@ -922,7 +922,7 @@ MissingNpc2 *MissingNpc2_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) (object + MISSING_NPC2_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) (object + MISSING_NPC2_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) (object + MISSING_NPC2_FACE));
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) (object + MISSING_NPC2_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) (object + MISSING_NPC2_ANIM));
     SceneMover_Construct((SceneMover *) (void *) (object + MISSING_NPC2_MOVER));
     SceneProbe_Construct(object + MISSING_NPC2_PROBE);
     SceneValue3aa_Clear((SceneValue3aa *) (void *) (object + MISSING_NPC2_VALUE_3AA));

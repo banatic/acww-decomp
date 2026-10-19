@@ -53,7 +53,7 @@ int SpeakerAnim_IsBody(SpeakerAnim *anim, int number, void *standard);
 int SpeakerAnim_Resolve(SpeakerAnim *anim, int number, void *standard);
 int SpeakerAnim_Load(SpeakerAnim *anim, int number, int slot);
 int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale);
-SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim);
 SpeakerAnim *SpeakerAnim_Destruct(SpeakerAnim *anim);
+SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim);
 
 #endif

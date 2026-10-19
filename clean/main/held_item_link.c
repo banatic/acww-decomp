@@ -255,8 +255,8 @@ int HeldItemLink_Take(HeldItemLink *link, void *owner, u16 *item, void *p3, u16 
         return 0;
     }
     HeldItem_Take((HeldItemObject *) held, item, 0);
-    SpeakerAnim_PlayItemPose((SpeakerAnim *) (uintptr_t) ((int) (uintptr_t) ((u8 *) owner + HELD_ITEM_LINK_OWNER_MOTION)),
-                             (u8 *) ((char *) owner), item, (int) (uintptr_t) p3, p4);
+    SpeakerAnim_PlayItemPose((SpeakerAnim *) (void *) ((u8 *) owner + HELD_ITEM_LINK_OWNER_MOTION), (u8 *) ((char *) owner),
+                             item, (int) (uintptr_t) p3, p4);
     link->item = *item;
     return 1;
 }
@@ -278,23 +278,20 @@ int HeldItemLink_Open(HeldItemLink *link, void *arg)
 }
 CLEAN_AS(func_02012550, HeldItemLink_Open)
 
-/* func_02012588: the destructor; only the link object is destroyed (the code stays as it was).
- * Its name and HeldItemLink_Destruct's are the wrong way round: overlay 68 calls them by these
- * names. */
-HeldItemLink *HeldItemLink_Construct(HeldItemLink *link)
+/* func_02012588: the destructor; only the link object is destroyed (the code stays as it was). */
+HeldItemLink *HeldItemLink_Destruct(HeldItemLink *link)
 {
     PoolLink_ItemDestruct((PoolLink *) (void *) link->link);
     return link;
 }
-CLEAN_AS(func_02012588, HeldItemLink_Construct)
+CLEAN_AS(func_02012588, HeldItemLink_Destruct)
 
-/* func_0201259c: the constructor (see HeldItemLink_Construct): no item code, and the link
- * object built with no entry. */
-HeldItemLink *HeldItemLink_Destruct(HeldItemLink *link)
+/* func_0201259c: the constructor: no item code, and the link object built with no entry. */
+HeldItemLink *HeldItemLink_Construct(HeldItemLink *link)
 {
     link->item = HELD_ITEM_LINK_NONE;
     PoolLink_ItemConstruct((PoolLink *) (void *) link->link);
     link->item = HELD_ITEM_LINK_NONE;
     return link;
 }
-CLEAN_AS(func_0201259c, HeldItemLink_Destruct)
+CLEAN_AS(func_0201259c, HeldItemLink_Construct)

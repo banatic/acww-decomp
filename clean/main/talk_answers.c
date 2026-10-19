@@ -26,12 +26,13 @@ static_assert(sizeof(TalkAnswers) == 0x364, "talk answers");
 /* The names of the answers' two select files: "select" and "select2". */
 extern u32 data_020d1de0[];
 
-/* func_020ab39c: entry `index` of data_020d1de0: the address of a select file's name (two). */
-u32 TalkAnswers_Style(unsigned int index)
+/* func_020ab39c: entry `index` of data_020d1de0: the address of a select file's name, "select"
+ * (0) or "select2" (1); func_020ab71c reads /script/KOR/select/<name>.bmg. */
+u32 TalkAnswers_SelectFileName(unsigned int index)
 {
     return data_020d1de0[index];
 }
-CLEAN_AS(func_020ab39c, TalkAnswers_Style)
+CLEAN_AS(func_020ab39c, TalkAnswers_SelectFileName)
 
 /* func_020ab3a8: the answer the slider's level (0 to 0x1000) picks. The level is cut into 16
  * steps (the top level counts as the last step); the first four answers share the steps by
@@ -225,7 +226,7 @@ void TalkAnswers_LoadTexts(TalkAnswers *answers)
 CLEAN_AS(func_020ab5f8, TalkAnswers_LoadTexts)
 
 /* func_020ab628: answer `index` set: its message (the byte at `message`), its message file
- * (entry `file` of TalkAnswers_Style's table), its unk_70 (the byte at `unk_70`), its sound
+ * (entry `file` of TalkAnswers_SelectFileName's table), its unk_70 (the byte at `unk_70`), its sound
  * kind and, unless `name` is NULL, its name. Its text is not read here
  * (TalkAnswers_LoadTexts). */
 void TalkAnswers_Set(TalkAnswers *answers, int index, const u8 *message, int file, const u8 *unk_70, const char *name,
@@ -233,7 +234,7 @@ void TalkAnswers_Set(TalkAnswers *answers, int index, const u8 *message, int fil
 {
     TalkAnswer *answer = &answers->answers[index];
     TalkAnswers_SetMessage(answer, message);
-    TalkAnswers_SetFile(answer, (int) TalkAnswers_Style((unsigned int) file));
+    TalkAnswers_SetFile(answer, (int) TalkAnswers_SelectFileName((unsigned int) file));
     TalkAnswers_Set70(answer, unk_70);
     TalkAnswers_SetSoundKind(answer, (u32) sound_kind);
     if (name != NULL) {

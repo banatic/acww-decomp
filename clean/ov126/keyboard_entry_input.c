@@ -7,6 +7,8 @@
 #include "main/sound.h"
 #include "main/text_string.h"
 #include "ov002/key_repeat.h"
+#include "ov095/soft_keyboard.h"
+#include "ov124/han_panel.h"
 
 /* The characters before a 0, at most `max` (main's). */
 extern int func_02051c8c_unk(u16 *text, int max);
@@ -33,11 +35,11 @@ int KeyboardEntry_PressL(KeyboardEntry *self)
     if ((data_021fbe40.pressed & KEYBOARD_ENTRY_PAD_L) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_KEY_COPY)) {
+    if (SoftKeyboard_IsSpecialDisabled(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_KEY_COPY)) {
         return 0;
     }
     KeyboardEntry_RunCode(self, KEYBOARD_ENTRY_CODE_COPY);
-    func_ov095_0229c8e4(keyboard_entry_keyboard_arg(self), KEYBOARD_ENTRY_KEY_L);
+    SoftKeyboard_ShowKeyPressed(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_KEY_L);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_WHILE_L);
     return 0;
@@ -52,11 +54,11 @@ int KeyboardEntry_PressR(KeyboardEntry *self)
     if ((data_021fbe40.pressed & KEYBOARD_ENTRY_PAD_R) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_KEY_PASTE)) {
+    if (SoftKeyboard_IsSpecialDisabled(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_KEY_PASTE)) {
         return 0;
     }
     KeyboardEntry_RunCode(self, KEYBOARD_ENTRY_CODE_PASTE);
-    func_ov095_0229c8e4(keyboard_entry_keyboard_arg(self), KEYBOARD_ENTRY_KEY_R);
+    SoftKeyboard_ShowKeyPressed(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_KEY_R);
     KeyboardEntry_PlacePointer(self);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_WHILE_R);
@@ -73,7 +75,7 @@ int KeyboardEntry_HoldB(KeyboardEntry *self)
         return 0;
     }
     if (KeyboardEntry_Backspace(self, 0) != 0) {
-        func_ov095_0229bf3c(keyboard_entry_keyboard(self));
+        SoftKeyboard_StartRepeat(keyboard_entry_keyboard(self));
         self->return_sub_state = self->base.sub_state;
         MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_BACKSPACE);
     } else {
@@ -92,15 +94,15 @@ int KeyboardEntry_PressA(KeyboardEntry *self)
     if ((data_021fbe40.pressed & KEYBOARD_ENTRY_PAD_A) == 0) {
         return 0;
     }
-    int key = func_ov095_02299a00(keyboard_entry_keyboard(self));
+    int key = SoftKeyboard_PressCursorKey(keyboard_entry_keyboard(self));
     if (key == -1) {
         return 0;
     }
     if (ButtonPanel_HasSpriteFlag4(&self->panel, KEYBOARD_ENTRY_BUTTON_OK) != 0 && key == KEYBOARD_ENTRY_KEY_107) {
         return 0;
     }
-    func_ov095_0229c448(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE);
-    func_ov095_0229c8e4(keyboard_entry_keyboard_arg(self), key);
+    SoftKeyboard_KeyCode(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE);
+    SoftKeyboard_ShowKeyPressed(keyboard_entry_keyboard(self), key);
     KeyboardEntry_BeginKeyPress(self);
     return 1;
 }
@@ -120,7 +122,7 @@ CLEAN_AS(func_ov126_0229fea0, KeyboardEntry_PointerFirstOfSet)
  * the keys (KEYBOARD_ENTRY_SUB_BACK_TO_KEYS). */
 void KeyboardEntry_ReleaseToKeys(KeyboardEntry *self)
 {
-    func_ov095_0229cce0(keyboard_entry_keyboard(self));
+    SoftKeyboard_ReleasePressed(keyboard_entry_keyboard(self));
     Glider_ShowThirdOfSet(&self->pointer);
     MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_BACK_TO_KEYS);
 }
@@ -141,8 +143,8 @@ void KeyboardEntry_PlacePointer(KeyboardEntry *self)
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_POINTER_ON_TEXT) != 0) {
         Glider_PlaceAt(&self->pointer, self->cursor_x, KEYBOARD_ENTRY_CURSOR_Y);
     } else {
-        int x = func_ov095_02299b7c(keyboard_entry_keyboard(self));
-        int y = func_ov095_02299b38(keyboard_entry_keyboard(self));
+        int x = SoftKeyboard_CursorX(keyboard_entry_keyboard(self));
+        int y = SoftKeyboard_CursorY(keyboard_entry_keyboard(self));
         Glider_PlaceAt(&self->pointer, x, y);
     }
     keyboard_entry_update_pointer(self);
@@ -157,8 +159,8 @@ void KeyboardEntry_GlidePointer(KeyboardEntry *self)
         Glider_EaseToByDistance(&self->pointer, self->cursor_x, KEYBOARD_ENTRY_CURSOR_Y, 3, 2);
         self->return_sub_state = KEYBOARD_ENTRY_SUB_TEXT_KEYS;
     } else {
-        int x = func_ov095_02299b7c(keyboard_entry_keyboard(self));
-        int y = func_ov095_02299b38(keyboard_entry_keyboard(self));
+        int x = SoftKeyboard_CursorX(keyboard_entry_keyboard(self));
+        int y = SoftKeyboard_CursorY(keyboard_entry_keyboard(self));
         Glider_EaseToByDistance(&self->pointer, x, y, 3, 2);
         self->return_sub_state = KEYBOARD_ENTRY_SUB_KEYS;
     }
@@ -179,9 +181,9 @@ CLEAN_AS(func_ov126_0229ffdc, KeyboardEntry_RestPointer)
 void KeyboardEntry_PointAtKey(KeyboardEntry *self)
 {
     KeyboardEntry_ClearFlags(self, KEYBOARD_ENTRY_FLAG_POINTER_ON_TEXT);
-    func_ov095_02299aec(keyboard_entry_keyboard(self));
-    int x = func_ov095_02299b7c(keyboard_entry_keyboard(self));
-    int y = func_ov095_02299b38(keyboard_entry_keyboard(self));
+    SoftKeyboard_PlaceCursorHome(keyboard_entry_keyboard(self));
+    int x = SoftKeyboard_CursorX(keyboard_entry_keyboard(self));
+    int y = SoftKeyboard_CursorY(keyboard_entry_keyboard(self));
     Glider_PlaceAt(&self->pointer, x, y);
     Glider_SetAnim(&self->pointer, 1);
     KeyboardEntry_PointerFirstOfSet(self);
@@ -257,7 +259,7 @@ void KeyboardEntry_ShowMarks(KeyboardEntry *self)
         count = self->mark_to - self->mark_from;
     }
     if (count != 0) {
-        func_ov124_0229f2c8(keyboard_entry_field_arg(self), 7, 6, first, count);
+        HanPanel_SetTextBoxParams((HanPanel *) (void *) self->field, 7, 6, first, count);
     }
 }
 CLEAN_AS(func_ov126_022a011c, KeyboardEntry_ShowMarks)
@@ -266,14 +268,14 @@ CLEAN_AS(func_ov126_022a011c, KeyboardEntry_ShowMarks)
  * text's width; the box opened, the marks, the label shown; then the keys the text allows. */
 void KeyboardEntry_ShowField(KeyboardEntry *self)
 {
-    func_ov124_0229f2dc(self->field, self->text, (void *) (uintptr_t) self->max_chars);
+    HanPanel_SetTextFromWide((HanPanel *) (void *) self->field, self->text, (void *) (uintptr_t) self->max_chars);
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_HINT) != 0) {
         int width = TextString_Width(self->text, self->max_chars);
         self->hint_x = width + 2 - self->field_width;
     }
-    func_ov124_0229f320(keyboard_entry_field_arg(self));
+    HanPanel_OpenTextBox((HanPanel *) (void *) self->field);
     KeyboardEntry_ShowMarks(self);
-    func_ov124_0229f2e4(keyboard_entry_field_arg(self));
+    HanPanel_ShowText((HanPanel *) (void *) self->field);
     KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_FIELD_SHOWN);
     KeyboardEntry_UpdateKeys(self);
 }
@@ -287,7 +289,7 @@ int KeyboardEntry_Type(KeyboardEntry *self, int character)
 {
     if (KeyboardEntry_IsMarking(self)) {
         KeyboardEntry_DeleteMarked(self);
-        func_ov095_0229b3ec(keyboard_entry_keyboard(self));
+        SoftKeyboard_HangulReset(keyboard_entry_keyboard(self));
     }
     int fitted = KeyboardEntry_PutCharacter(self, character);
     KeyboardEntry_ShowField(self);
@@ -302,8 +304,8 @@ int KeyboardEntry_PutCharacter(KeyboardEntry *self, int character)
 {
     u8 position = self->position;
 
-    if (func_ov095_0229bcec(keyboard_entry_keyboard_arg(self), (int) (uintptr_t) self->text, character,
-                            (int) (uintptr_t) &position, self->max_chars, self->field_width, 0, 1)) {
+    if (SoftKeyboard_Insert(keyboard_entry_keyboard(self), (u16 *) (void *) self->text, character, (u8 *) (void *) &position,
+                            self->max_chars, self->field_width, 0, 1)) {
         KeyboardEntry_SetPosition(self, (char) position);
         return 1;
     }
@@ -318,10 +320,10 @@ CLEAN_AS(func_ov126_022a0220, KeyboardEntry_PutCharacter)
 int KeyboardEntry_Backspace(KeyboardEntry *self, int buzz)
 {
     if (KeyboardEntry_IsMarking(self)) {
-        func_ov095_0229b3ec(keyboard_entry_keyboard(self));
+        SoftKeyboard_HangulReset(keyboard_entry_keyboard(self));
         KeyboardEntry_DeleteMarked(self);
     } else if (self->position != 0) {
-        if (func_ov095_0229b3a0(keyboard_entry_keyboard(self), self->text, self->position) == 0) {
+        if (SoftKeyboard_HangulBackspace(keyboard_entry_keyboard(self), self->text, self->position) == 0) {
             self->mark_from = self->position;
             self->mark_to = (u8) (self->position - 1);
             KeyboardEntry_DeleteMarked(self);
@@ -354,19 +356,19 @@ int KeyboardEntry_Convert(KeyboardEntry *self, int code)
     }
     switch (code) {
         case KEYBOARD_ENTRY_CODE_CONVERT_1:
-            character = func_ov095_0229bb9c(keyboard_entry_keyboard(self), character);
+            character = SoftKeyboard_Convert1(keyboard_entry_keyboard(self), character);
             break;
         case KEYBOARD_ENTRY_CODE_CONVERT_2:
-            character = func_ov095_0229bb98(keyboard_entry_keyboard(self), character);
+            character = SoftKeyboard_Convert2(keyboard_entry_keyboard(self), character);
             break;
         case KEYBOARD_ENTRY_CODE_CONVERT_3:
-            character = func_ov095_0229bb94(keyboard_entry_keyboard(self), character);
+            character = SoftKeyboard_Convert3(keyboard_entry_keyboard(self), character);
             break;
     }
     if (character == 0) {
         return 0;
     }
-    if (func_ov095_0229bba0(keyboard_entry_keyboard_arg(self), self->text, character, self->position) == 0) {
+    if (SoftKeyboard_ReplaceBefore(keyboard_entry_keyboard(self), self->text, character, self->position) == 0) {
         return 0;
     }
     KeyboardEntry_ShowField(self);
@@ -384,12 +386,12 @@ int KeyboardEntry_RunCode(KeyboardEntry *self, int code)
 {
     int result = 1;
 
-    int own = func_ov095_0229ba44(keyboard_entry_keyboard(self), code, KEYBOARD_ENTRY_LAYER);
+    int own = SoftKeyboard_HandleCommand(keyboard_entry_keyboard(self), code, KEYBOARD_ENTRY_LAYER);
     if (own != 0) {
         KeyboardEntry_ShowField(self);
         return own;
     }
-    if (func_ov095_0229bebc(keyboard_entry_keyboard_arg(self), code) != 0) {
+    if (SoftKeyboard_IsCommand(keyboard_entry_keyboard(self), code) != 0) {
         switch (code) {
             case KEYBOARD_ENTRY_CODE_BACKSPACE:
                 KeyboardEntry_Backspace(self, 1);
@@ -434,14 +436,15 @@ CLEAN_AS(func_ov126_022a03dc, KeyboardEntry_RunCode)
  * key. */
 int KeyboardEntry_TouchKey(KeyboardEntry *self)
 {
-    func_ov095_0229cce0(keyboard_entry_keyboard(self));
-    int key = func_ov095_0229c54c(keyboard_entry_keyboard(self), data_021f6c58, data_021f6c54);
+    SoftKeyboard_ReleasePressed(keyboard_entry_keyboard(self));
+    int key = SoftKeyboard_KeyAt(keyboard_entry_keyboard(self), data_021f6c58, data_021f6c54);
     if (key == -1) {
         return 0;
     }
-    int result = KeyboardEntry_RunCode(self, func_ov095_0229c448(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE));
-    func_ov095_0229c8e4(keyboard_entry_keyboard_arg(self), key);
-    func_ov095_0229bf3c(keyboard_entry_keyboard(self));
+    int result =
+        KeyboardEntry_RunCode(self, SoftKeyboard_KeyCode(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE));
+    SoftKeyboard_ShowKeyPressed(keyboard_entry_keyboard(self), key);
+    SoftKeyboard_StartRepeat(keyboard_entry_keyboard(self));
     return result;
 }
 CLEAN_AS(func_ov126_022a04e8, KeyboardEntry_TouchKey)
@@ -455,27 +458,27 @@ void KeyboardEntry_Paste(KeyboardEntry *self)
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_COPIED) == 0) {
         return;
     }
-    func_ov095_0229b394(keyboard_entry_keyboard_arg(self));
-    func_ov095_0229b3ec(keyboard_entry_keyboard(self));
+    SoftKeyboard_SetFlag02(keyboard_entry_keyboard(self));
+    SoftKeyboard_HangulReset(keyboard_entry_keyboard(self));
     if (KeyboardEntry_IsMarking(self) != 0) {
         KeyboardEntry_DeleteMarked(self);
     }
     int count = func_02051c8c_unk(self->clipboard, KEYBOARD_ENTRY_TEXT_CHARS);
     u8 position = self->position;
     for (int i = 0; i < count; i++) {
-        if (func_ov095_0229bcec(keyboard_entry_keyboard_arg(self), (int) (uintptr_t) self->text, self->clipboard[i],
-                                (int) (uintptr_t) &position, self->max_chars, self->field_width, 0, 0) == 0) {
+        if (SoftKeyboard_Insert(keyboard_entry_keyboard(self), (u16 *) (void *) self->text, self->clipboard[i],
+                                (u8 *) (void *) &position, self->max_chars, self->field_width, 0, 0) == 0) {
             if (i == 0) {
                 KeyboardEntry_Buzz(self);
             }
             break;
         }
     }
-    func_ov095_022999e8(keyboard_entry_keyboard(self));
+    SoftKeyboard_PlaySe23(keyboard_entry_keyboard(self));
     KeyboardEntry_SetPosition(self, (char) position);
     KeyboardEntry_PlaceCursor(self);
     KeyboardEntry_ShowField(self);
-    func_ov095_0229b388(keyboard_entry_keyboard_arg(self));
+    SoftKeyboard_ClearFlag02(keyboard_entry_keyboard(self));
 }
 CLEAN_AS(func_ov126_022a054c, KeyboardEntry_Paste)
 
@@ -497,7 +500,7 @@ void KeyboardEntry_Copy(KeyboardEntry *self)
     TextString_ClearChars(self->clipboard, KEYBOARD_ENTRY_TEXT_CHARS);
     TextString_CopyChars(&self->text[first], self->clipboard, count);
     KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_COPIED);
-    func_ov095_022999f4(keyboard_entry_keyboard(self));
+    SoftKeyboard_PlaySe22(keyboard_entry_keyboard(self));
     KeyboardEntry_UpdateKeys(self);
 }
 CLEAN_AS(func_ov126_022a0614, KeyboardEntry_Copy)
@@ -537,7 +540,7 @@ void KeyboardEntry_DeleteMarked(KeyboardEntry *self)
         low = self->mark_from;
         high = self->mark_to;
     }
-    u8 position = (u8) func_ov095_0229bbc0(keyboard_entry_keyboard_arg(self), self->text, low, high, self->max_chars);
+    u8 position = (u8) SoftKeyboard_DeleteRange(keyboard_entry_keyboard(self), self->text, low, high, self->max_chars);
     KeyboardEntry_SetPosition(self, (char) position);
     KeyboardEntry_ClearMarks(self);
 }
@@ -614,7 +617,7 @@ int KeyboardEntry_TouchText(KeyboardEntry *self)
     KeyboardEntry_PlaceCursorAtX(self, x);
     KeyboardEntry_MarkFromPosition(self);
     MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_MARK_DRAG);
-    func_ov095_0229b3ec(keyboard_entry_keyboard(self));
+    SoftKeyboard_HangulReset(keyboard_entry_keyboard(self));
     KeyboardEntry_ShowField(self);
     return 1;
 }
@@ -629,8 +632,8 @@ void KeyboardEntry_PlaceCursorAtX(KeyboardEntry *self, int x)
         offset = 0;
     }
     u8 position;
-    u8 before = func_ov095_0229bb34(keyboard_entry_keyboard_arg(self), self->text, self->max_chars, self->field_width,
-                                    (u8) offset, &position);
+    u8 before = SoftKeyboard_TextColumnAt(keyboard_entry_keyboard(self), self->text, self->max_chars, self->field_width,
+                                          (u8) offset, &position);
     self->cursor_x = before + self->field_left;
     KeyboardEntry_SetPosition(self, (char) position);
     KeyboardEntry_UpdateKeys(self);
@@ -675,7 +678,7 @@ void KeyboardEntry_ShowCursor(KeyboardEntry *self)
     self->cursor_y = KEYBOARD_ENTRY_CURSOR_Y;
     KeyboardEntry_SetPosition(self, 0);
     KeyboardEntry_ClearMarks(self);
-    func_ov095_0229cd30(keyboard_entry_keyboard_arg(self));
+    SoftKeyboard_ResetKeyLooks(keyboard_entry_keyboard(self));
     KeyboardEntry_UpdateKeys(self);
 }
 CLEAN_AS(func_ov126_022a0934, KeyboardEntry_ShowCursor)
@@ -694,24 +697,24 @@ void KeyboardEntry_UpdateKeys(KeyboardEntry *self)
             ButtonPanel_ClearSpriteFlag4(&self->panel, KEYBOARD_ENTRY_BUTTON_OK);
         }
     }
-    func_ov095_0229cef4(keyboard, KEYBOARD_ENTRY_KEY_0);
+    SoftKeyboard_DisableSpecial(keyboard, KEYBOARD_ENTRY_KEY_0);
     if (KeyboardEntry_IsMarking(self) != 0) {
-        func_ov095_0229ce84(keyboard, KEYBOARD_ENTRY_KEY_COPY);
+        SoftKeyboard_EnableSpecial(keyboard, KEYBOARD_ENTRY_KEY_COPY);
     } else {
-        func_ov095_0229cef4(keyboard, KEYBOARD_ENTRY_KEY_COPY);
+        SoftKeyboard_DisableSpecial(keyboard, KEYBOARD_ENTRY_KEY_COPY);
     }
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_COPIED) != 0) {
-        func_ov095_0229ce84(keyboard, KEYBOARD_ENTRY_KEY_PASTE);
+        SoftKeyboard_EnableSpecial(keyboard, KEYBOARD_ENTRY_KEY_PASTE);
     } else {
-        func_ov095_0229cef4(keyboard, KEYBOARD_ENTRY_KEY_PASTE);
+        SoftKeyboard_DisableSpecial(keyboard, KEYBOARD_ENTRY_KEY_PASTE);
     }
     if (KeyboardEntry_IsMarking(self) != 0) {
-        func_ov095_0229bee4(keyboard);
-        func_ov095_0229ce84(keyboard, KEYBOARD_ENTRY_KEY_6);
+        SoftKeyboard_DisableEditKeys(keyboard);
+        SoftKeyboard_EnableSpecial(keyboard, KEYBOARD_ENTRY_KEY_6);
     } else if (self->position == 0) {
-        func_ov095_0229bee4(keyboard);
+        SoftKeyboard_DisableEditKeys(keyboard);
     } else {
-        func_ov095_0229bed8(keyboard, KeyboardEntry_CharacterBeforeCursor(self));
+        SoftKeyboard_EnableBackspace(keyboard, KeyboardEntry_CharacterBeforeCursor(self));
     }
 }
 CLEAN_AS(func_ov126_022a0978, KeyboardEntry_UpdateKeys)

@@ -270,9 +270,7 @@ Gull *Gull_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) gull_at(self, GULL_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) gull_at(self, GULL_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) gull_at(self, GULL_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) gull_at(self, GULL_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) gull_at(self, GULL_ANIM));
     SceneMover_Construct((SceneMover *) (void *) gull_at(self, GULL_MOVER));
     SceneProbe_Construct(gull_at(self, GULL_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) gull_at(self, GULL_VALUE_3AA));

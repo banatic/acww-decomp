@@ -370,7 +370,7 @@ static int nclerk_in(u16 item, u16 first, u16 last)
 /* Main's block's part 0x18, a date. */
 static DateTime *nclerk_part18(void)
 {
-    return (DateTime *) (void *) Block021d27ac_Part18(Block021d27ac_Get());
+    return (DateTime *) Block021d27ac_Part18(Block021d27ac_Get());
 }
 
 /* Tom Nook's dated event of kind 3 today. */
@@ -1206,7 +1206,7 @@ int NookClerk_UpdateTalk(NookClerk *clerk)
     if (clerk->bought != 0 && Shops_AllAnsweredC() == 0) {
         return 1;
     }
-    if (Block021d27ac_TestFlag((u32 *) (void *) Block021d27ac_Get(), NOOK_CLERK_BLOCK_FLAG_EXIT) != 0) {
+    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), NOOK_CLERK_BLOCK_FLAG_EXIT) != 0) {
         SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0);
     } else {
         EventQueue_FinishObjectEvent(clerk);
@@ -1499,9 +1499,9 @@ int NookClerk_Start(NookClerk *clerk)
     nclerk_date_today_if_invalid();
     DateTime *date = nclerk_part18();
     u8 *record = PlayerRecords_Current();
-    VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(record);
+    VillagerPart *part = (VillagerPart *) PlayerRecord_VillagerPart(record);
     if (PlayerRecord_TestFlag(record, NOOK_CLERK_JOB_FLAG) != 0) {
-        ItemObject *errand = (ItemObject *) (void *) VillagerPartBlock_Object(VillagerPart_Block(part, 0));
+        ItemObject *errand = (ItemObject *) VillagerPartBlock_Object(VillagerPart_Block(part, 0));
         CollisionMap_Claim(1);
         NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_NOOK_TALKED);
         Block021d27acPart18_SetToday(date);
@@ -1615,9 +1615,7 @@ static void *nclerk_create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) nclerk_part(clerk, NOOK_CLERK_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) nclerk_part(clerk, NOOK_CLERK_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) nclerk_part(clerk, NOOK_CLERK_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) nclerk_part(clerk, NOOK_CLERK_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) nclerk_part(clerk, NOOK_CLERK_ANIM));
     SceneMover_Construct(nclerk_mover(clerk));
     SceneProbe_Construct(nclerk_part(clerk, NOOK_CLERK_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) nclerk_part(clerk, NOOK_CLERK_VALUE_3AA));

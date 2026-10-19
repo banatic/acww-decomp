@@ -14,6 +14,7 @@
 #include "main/sound.h"
 #include "main/state_flags.h"
 #include "ov002/key_repeat.h"
+#include "ov139/res_rows.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(TownList, rows) == 0x94, "rows");
 static_assert(offsetof(TownList, cursor_sprite) == 0xa38 && offsetof(TownList, panel) == 0xa9c, "sprite");
@@ -27,14 +28,6 @@ static_assert(sizeof(TownList) == 0x1a90, "size (func_ov141_0229ae80)");
 
 /* The scene's vtable. */
 extern const u8 data_ov141_0229af48[];
-
-/* Overlay 139's object (the rows): its destructor, a row's colour set to `level` of `full`
- * (palette entry `index`), a row's texts cleared or set from a parent's data (the town's name,
- * then the player's 12 bytes on). */
-extern void *func_ov139_02299b30(void *rows);
-extern void func_ov139_02299888(void *rows, int row, int level, int full, int index);
-extern void func_ov139_02299798(void *rows, int row);
-extern void func_ov139_022997c0(void *rows, int row, const void *data);
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -75,7 +68,7 @@ static void town_list_destroy_members(TownList *self)
     self->base.vtable = data_ov141_0229af48;
     ButtonPanel_Destroy(&self->panel);
     Glider0_Destroy(&self->cursor_sprite);
-    func_ov139_02299b30(self->rows);
+    ResRows_Destroy((ResRows *) (void *) self->rows);
     MenuScene_DestroyBase(town_list_scene(self));
 }
 
@@ -191,16 +184,18 @@ void TownList_StepFades(TownList *self)
             case TOWN_LIST_ROW_FOUND:
                 if (self->fade[row] < TOWN_LIST_FADE_FULL) {
                     self->fade[row]++;
-                    func_ov139_02299888(self->rows, row, self->fade[row], TOWN_LIST_FADE_FULL, TOWN_LIST_FADE_INDEX);
+                    ResRows_FadeRow((ResRows *) (void *) self->rows, row, self->fade[row], TOWN_LIST_FADE_FULL,
+                                    TOWN_LIST_FADE_INDEX);
                 }
                 break;
             case TOWN_LIST_ROW_STALE:
                 if (self->fade[row] > 1) {
                     self->fade[row]--;
-                    func_ov139_02299888(self->rows, row, self->fade[row], TOWN_LIST_FADE_FULL, TOWN_LIST_FADE_INDEX);
+                    ResRows_FadeRow((ResRows *) (void *) self->rows, row, self->fade[row], TOWN_LIST_FADE_FULL,
+                                    TOWN_LIST_FADE_INDEX);
                 } else {
                     self->row_state[row] = TOWN_LIST_ROW_EMPTY;
-                    func_ov139_02299798(self->rows, row);
+                    ResRows_ClearRow((ResRows *) (void *) self->rows, row);
                     if (self->picked == row) {
                         TownList_SetPicked(self, -1);
                     }
@@ -263,7 +258,7 @@ void TownList_Scan(TownList *self)
         int data_size = Local_EntryDataSize(parent);
         LibraryOverlay_Require66();
         MI_CpuCopy8(Local_EntryData(parent), self->data[row], (u32) data_size);
-        func_ov139_022997c0(self->rows, row, self->data[row]);
+        ResRows_SetRow((ResRows *) (void *) self->rows, row, (const u16 *) (void *) self->data[row]);
         self->fade[row] = 0;
     }
 

@@ -189,7 +189,7 @@ static int ts_local_slot(void)
 /* The player record's object at 0x2416 of the current player. */
 static PlayerField2416 *ts_current_field(void)
 {
-    return (PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current());
+    return (PlayerField2416 *) PlayerRecord_Field2416(PlayerRecords_Current());
 }
 
 /* Its look asked for: `kind`, priority 0, with the defaults for what it does not name. */
@@ -813,9 +813,7 @@ TailorSister *TailorSister_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) ts_part(sister, TAILOR_SISTER_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) ts_part(sister, TAILOR_SISTER_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) ts_part(sister, TAILOR_SISTER_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) ts_part(sister, TAILOR_SISTER_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) ts_part(sister, TAILOR_SISTER_ANIM));
     SceneMover_Construct((SceneMover *) (void *) ts_part(sister, TAILOR_SISTER_MOVER));
     SceneProbe_Construct(ts_part(sister, TAILOR_SISTER_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) ts_part(sister, TAILOR_SISTER_VALUE_3AA));

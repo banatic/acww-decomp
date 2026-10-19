@@ -663,9 +663,7 @@ void *Owl_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) owl_part(owl, OWL_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) owl_part(owl, OWL_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) owl_part(owl, OWL_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) owl_part(owl, OWL_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) owl_part(owl, OWL_ANIM));
     SceneMover_Construct((SceneMover *) (void *) owl_part(owl, OWL_MOVER));
     SceneProbe_Construct(owl_part(owl, OWL_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) owl_part(owl, OWL_VALUE_3AA));

@@ -25,6 +25,11 @@
 #include "main/state_flags.h"
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
+#include "ov092/menu_dispatch.h"
+#include "ov094/pockets_common.h"
+#include "ov094/pockets_grid.h"
+#include "ov094/pockets_letters.h"
+#include "ov094/pockets_wallet.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterStorage, flags) == 0x94, "flags");
 static_assert(offsetof(LetterStorage, wipe_x) == 0xa0 && offsetof(LetterStorage, held_x) == 0xac, "places");
@@ -67,22 +72,10 @@ extern const OamEntry data_ov105_0229fa80[LETTER_STORE_PAGES * LETTER_STORAGE_TA
  * symbol). */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void func_02066688(void *letter);
-extern void *func_ov094_0229a2d0(void *wallet);
-extern void func_ov094_0229bc30(void *letters);
-extern void *func_ov094_0229afe0(void *grid);
 
 /* The objects of ov094's: the grid at 0x2fc and the letters at 0xd5c. */
-extern void func_ov094_0229ab0c(void *grid);
-extern void func_ov094_0229ab5c(void *grid);
 extern void func_ov094_0229b288(void *letters, Letter *page);
-extern void func_ov094_0229b1d8(void *letters);
-extern Letter *func_ov094_0229b8d8(void *letters, int index); /* the letter */
-extern void func_ov094_0229b890(void *letters, int index);
 extern void func_ov094_0229b5e8(void *letters, int x, int y, Letter *letter);
-extern int func_ov094_0229b9b4(void *letters, Popup *popup, int index);
-extern void func_ov094_0229b938(void *letters, int index);
-extern void func_ov094_0229b944(void *letters);
-extern void func_ov094_0229b950(void *letters, int index);
 
 static PagedChoice *choice_of(LetterStorage *self)
 {
@@ -121,9 +114,9 @@ static void destroy_members(LetterStorage *self)
     Glider0_Destroy(&self->cursor_sprite);
     Glide_Destroy(&self->glide);
     Popup_Destroy(&self->popup);
-    func_ov094_0229a2d0(self->wallet);
-    func_ov094_0229bc30(self->letters);
-    func_ov094_0229afe0(self->grid);
+    PocketsWallet_Destruct((PocketsWallet *) (void *) self->wallet);
+    PocketsLetters_Destruct((PocketsLetters *) (void *) self->letters);
+    PocketsGrid_Destruct((PocketsGrid *) (void *) self->grid);
     Letter_Destruct(&self->swapped);
     Letter_Destruct(&self->held);
     MenuScene_DestroyBase(scene_of(self));
@@ -350,7 +343,7 @@ void LetterStorage_PickUpSlotLetter(LetterStorage *self)
         self->held_y -= 2;
     }
     MenuScene_SetSubState(scene_of(self), 0x1c);
-    func_ov094_0229b1d8(self->letters);
+    PocketsLetters_StartPickUp((PocketsLetters *) (void *) self->letters);
 }
 CLEAN_AS(func_ov105_0229c6a0, LetterStorage_PickUpSlotLetter)
 
@@ -844,8 +837,8 @@ void LetterStorage_PickUpLetter(LetterStorage *self, int place)
     }
     int index = LetterStorage_LetterIndex(self, (unsigned int) place);
     self->held_kind = LETTER_STORAGE_HELD_LETTER;
-    Letter_Assign(&self->held, func_ov094_0229b8d8(self->letters, index));
-    func_ov094_0229b890(self->letters, index);
+    Letter_Assign(&self->held, PocketsLetters_LetterAt((PocketsLetters *) (void *) self->letters, index));
+    PocketsLetters_ClearPlace((PocketsLetters *) (void *) self->letters, index);
 }
 CLEAN_AS(func_ov105_0229d0f8, LetterStorage_PickUpLetter)
 
@@ -919,7 +912,7 @@ void LetterStorage_PlacePopup(LetterStorage *self)
     SlidingWindow_SetPlace((SlidingWindow *) (void *) &self->popup, x, y);
     if (is_letter_place(self, self->popup_place)) {
         int index = LetterStorage_LetterIndex(self, self->popup_place);
-        func_ov094_0229b9b4(self->letters, &self->popup, index);
+        PocketsLetters_ShowPlaceText((PocketsLetters *) (void *) self->letters, &self->popup, index);
     }
 }
 CLEAN_AS(func_ov105_0229d294, LetterStorage_PlacePopup)
@@ -944,15 +937,15 @@ void LetterStorage_HighlightPlace(LetterStorage *self, int place)
     if (!is_letter_place(self, place)) {
         return;
     }
-    func_ov094_0229b938(self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
+    PocketsLetters_MarkPlace((PocketsLetters *) (void *) self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
 }
 CLEAN_AS(func_ov105_0229d354, LetterStorage_HighlightPlace)
 
 /* func_ov105_0229d390: the highlights of the grid and the letters cleared. */
 void LetterStorage_ClearHighlights(LetterStorage *self)
 {
-    func_ov094_0229ab0c(self->grid);
-    func_ov094_0229b944(self->letters);
+    PocketsGrid_ClearMarks((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_ClearMarks((PocketsLetters *) (void *) self->letters);
 }
 CLEAN_AS(func_ov105_0229d390, LetterStorage_ClearHighlights)
 
@@ -962,8 +955,8 @@ void LetterStorage_SelectPlace(LetterStorage *self, int place)
 {
     if (is_letter_place(self, place)) {
         int index = LetterStorage_LetterIndex(self, (unsigned int) place);
-        func_ov094_0229b950(self->letters, index);
-        func_ov094_0229ab5c(self->grid);
+        PocketsLetters_Lift((PocketsLetters *) (void *) self->letters, index);
+        PocketsGrid_Unlift((PocketsGrid *) (void *) self->grid);
     } else {
         LetterStorage_ClearSelection(self);
     }
@@ -995,20 +988,7 @@ extern u8 data_021fbddc;
  * (only for x from 0xc0) and among the page's, a letter put in, the carried letters of some
  * states marked, its selection cleared, its count down after a letter is let go; the grid's
  * slots 0 to 14 set by func_ov094_0229a888; the sounds 0xd, 0xc and 0xe (RtcSendPxiCommand). */
-extern int func_ov094_0229b30c(void *letters, int index);
-extern int func_ov094_0229b788(void *letters, int index);
-extern int func_ov094_0229b384(void *letters, int index);
-extern int func_ov094_0229b328(void *letters, int index);
-extern int func_ov094_0229bba4(void *letters, int x, int y);
-extern int func_ov094_0229bb70(void *letters, int x, int y);
 extern void func_ov094_0229b8b4(void *letters, int index, Letter *letter);
-extern void func_ov094_0229b794(void *letters, unsigned int states);
-extern void func_ov094_0229b98c(void *letters);
-extern int func_ov094_0229b19c(void *letters);
-extern void func_ov094_0229a898(void *grid, int first, int last);
-extern void func_ov094_022999c0(void);
-extern void func_ov094_022999cc(void);
-extern void func_ov094_022999d8(void);
 
 static CellLayerSprite *cursor_cells(LetterStorage *self)
 {
@@ -1049,8 +1029,8 @@ static void pick_choice_row(LetterStorage *self, int row)
 /* func_ov105_0229d404: the selections of the grid and the letters cleared. */
 void LetterStorage_ClearSelection(LetterStorage *self)
 {
-    func_ov094_0229ab5c(self->grid);
-    func_ov094_0229b98c(self->letters);
+    PocketsGrid_Unlift((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_Unlift((PocketsLetters *) (void *) self->letters);
 }
 CLEAN_AS(func_ov105_0229d404, LetterStorage_ClearSelection)
 
@@ -1059,7 +1039,8 @@ CLEAN_AS(func_ov105_0229d404, LetterStorage_ClearSelection)
 int LetterStorage_PlaceIsEmpty(LetterStorage *self, int place)
 {
     if (is_letter_place(self, place)) {
-        return func_ov094_0229b30c(self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_IsEmpty((PocketsLetters *) (void *) self->letters,
+                                      LetterStorage_LetterIndex(self, (unsigned int) place));
     }
     return 1;
 }
@@ -1070,7 +1051,8 @@ CLEAN_AS(func_ov105_0229d428, LetterStorage_PlaceIsEmpty)
 int LetterStorage_PlaceIsMarked(LetterStorage *self, int place)
 {
     if (LetterStorage_IsCarriedPlace(self, (unsigned int) place)) {
-        return func_ov094_0229b788(self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_IsDimmed((PocketsLetters *) (void *) self->letters,
+                                       LetterStorage_LetterIndex(self, (unsigned int) place));
     }
     return 0;
 }
@@ -1080,8 +1062,8 @@ CLEAN_AS(func_ov105_0229d468, LetterStorage_PlaceIsMarked)
  * func_ov094_0229a888, and the carried letters of states 7 and 8 marked (its states flag 4). */
 void LetterStorage_MarkCarriedLetters(LetterStorage *self)
 {
-    func_ov094_0229a898(self->grid, 0, 0xe);
-    func_ov094_0229b794(self->letters, 4);
+    PocketsGrid_DimPlaces((PocketsGrid *) (void *) self->grid, 0, 0xe);
+    PocketsLetters_DimByState((PocketsLetters *) (void *) self->letters, 4);
 }
 CLEAN_AS(func_ov105_0229d49c, LetterStorage_MarkCarriedLetters)
 
@@ -1090,7 +1072,9 @@ CLEAN_AS(func_ov105_0229d49c, LetterStorage_MarkCarriedLetters)
 int LetterStorage_PlaceY(LetterStorage *self, int place)
 {
     if (is_letter_place(self, place)) {
-        return func_ov094_0229b328(self->letters, LetterStorage_LetterIndex(self, (unsigned int) place)) - 0x10;
+        return PocketsLetters_PlaceY((PocketsLetters *) (void *) self->letters,
+                                     LetterStorage_LetterIndex(self, (unsigned int) place)) -
+               0x10;
     }
     if (place == LETTER_STORAGE_BELOW) {
         return 0xb6;
@@ -1107,7 +1091,8 @@ CLEAN_AS(func_ov105_0229d4c4, LetterStorage_PlaceY)
 int LetterStorage_PlaceX(LetterStorage *self, int place)
 {
     if (is_letter_place(self, place)) {
-        return func_ov094_0229b384(self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_PlaceX((PocketsLetters *) (void *) self->letters,
+                                     LetterStorage_LetterIndex(self, (unsigned int) place));
     }
     if (place == LETTER_STORAGE_BELOW) {
         return 0xbc;
@@ -1123,7 +1108,8 @@ CLEAN_AS(func_ov105_0229d530, LetterStorage_PlaceX)
 Letter *LetterStorage_PlaceLetter(LetterStorage *self, int place)
 {
     if (is_letter_place(self, place)) {
-        return func_ov094_0229b8d8(self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_LetterAt((PocketsLetters *) (void *) self->letters,
+                                       LetterStorage_LetterIndex(self, (unsigned int) place));
     }
     return NULL;
 }
@@ -1163,14 +1149,14 @@ CLEAN_AS(func_ov105_0229d650, LetterStorage_PutHeldLetterAt)
  * LETTER_STORAGE_NO_PLACE for none. */
 int LetterStorage_LetterPlaceAtTouch(LetterStorage *self, int x, int y, int with_letter)
 {
-    int index = func_ov094_0229bba4(self->letters, x, y);
+    int index = PocketsLetters_PocketAtTouch((PocketsLetters *) (void *) self->letters, x, y);
     if (index == LETTER_STORAGE_LETTERS_NO_INDEX) {
-        index = func_ov094_0229bb70(self->letters, x, y);
+        index = PocketsLetters_PageAtTouch((PocketsLetters *) (void *) self->letters, x, y);
     }
     if (index == LETTER_STORAGE_LETTERS_NO_INDEX) {
         return LETTER_STORAGE_NO_PLACE;
     }
-    if (with_letter != 0 && func_ov094_0229b30c(self->letters, index) != 0) {
+    if (with_letter != 0 && PocketsLetters_IsEmpty((PocketsLetters *) (void *) self->letters, index) != 0) {
         return LETTER_STORAGE_NO_PLACE;
     }
     return LetterStorage_LetterPlace(self, (unsigned int) index);
@@ -1338,7 +1324,7 @@ void LetterStorage_PickUpWithCursor(LetterStorage *self, u8 place)
         self->return_state = LETTER_STORAGE_SUB_HOLD;
     }
     LetterStorage_FollowCursorSprite(self);
-    func_ov094_022999c0();
+    PocketsSound_Play0d();
 }
 CLEAN_AS(func_ov105_0229d908, LetterStorage_PickUpWithCursor)
 
@@ -1357,7 +1343,7 @@ void LetterStorage_PickUpWithTouch(LetterStorage *self, u8 place)
         MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_DRAG);
     }
     LetterStorage_FollowTouch(self);
-    func_ov094_022999c0();
+    PocketsSound_Play0d();
 }
 CLEAN_AS(func_ov105_0229d970, LetterStorage_PickUpWithTouch)
 
@@ -1380,7 +1366,7 @@ void LetterStorage_TouchPlace(LetterStorage *self, int place)
         LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_DRAGGABLE);
     } else {
         LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_DRAGGABLE);
-        func_ov094_022999cc();
+        PocketsSound_Play0c();
     }
 }
 CLEAN_AS(func_ov105_0229d9e0, LetterStorage_TouchPlace)
@@ -1541,7 +1527,7 @@ CLEAN_AS(func_ov105_0229dcc4, LetterStorage_ChoosePanelButtonByTouch)
  * marked changed) and the action ends. */
 void LetterStorage_WaitLetGo(LetterStorage *self)
 {
-    if (func_ov094_0229b19c(self->letters)) {
+    if (PocketsLetters_StepPickUp((PocketsLetters *) (void *) self->letters)) {
         LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_CHANGED);
         self->held_kind = LETTER_STORAGE_HELD_NONE;
         LetterStorage_EndAction(self);
@@ -1650,7 +1636,7 @@ void LetterStorage_StepHeldGlide(LetterStorage *self)
         } else {
             LetterStorage_PutHeldAt(self, self->unk_2b7);
             LetterStorage_EndAction(self);
-            func_ov094_022999d8();
+            PocketsSound_Play0e();
         }
     } else {
         LetterStorage_FollowGlide(self);
@@ -1669,7 +1655,7 @@ void LetterStorage_FinishSwap(LetterStorage *self)
     if (Glider_IsTurnSettled(&self->cursor_sprite)) {
         if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_HELD_HIDDEN)) {
             LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_HELD_HIDDEN);
-            func_ov094_022999c0();
+            PocketsSound_Play0d();
         }
         LetterStorage_FollowCursorSprite(self);
     }
@@ -1703,7 +1689,7 @@ void LetterStorage_PutDown(LetterStorage *self)
             LetterStorage_PutHeldLetterAt(self, target);
             LetterStorage_UpdatePopup(self);
             MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_BROWSE);
-            func_ov094_022999d8();
+            PocketsSound_Play0e();
         } else {
             LetterStorage_GlideHeldTo(self, target, 4);
         }
@@ -2031,7 +2017,7 @@ void LetterStorage_DragHeld(LetterStorage *self)
         return;
     }
     if (LetterStorage_PlaceIsMarked(self, place) == 0 && LetterStorage_PutHeldLetterAt(self, place) != 0) {
-        func_ov094_022999d8();
+        PocketsSound_Play0e();
         LetterStorage_EndAction(self);
         return;
     }
@@ -2075,34 +2061,6 @@ CLEAN_AS(func_ov105_0229e7bc, LetterStorage_OpenTouchedChoice)
 extern const char data_ov105_0229fb30[]; /* "menu/inventory/b_itm_post.bpl" */
 extern const char data_ov105_0229fb50[]; /* "menu/inventory/b_itm_bg_ltr0.bsc" */
 extern const char data_ov105_0229fb74[]; /* "menu/inventory/b_itm_post.bch" */
-
-/* The parent process (ov092's): told the scene ends (code 0x44, with `flag`), and of the close. */
-extern void func_ov092_02299324(Process *parent, int code, int flag);
-extern void func_ov092_0229929c(Process *parent);
-
-/* The objects of ov094's: setup, the frame's updates, the draws at an offset, the teardown and
- * the constructors. */
-extern void func_ov094_0229af40(void *grid, int value);
-extern void func_ov094_0229bbd8(void *letters, int value);
-extern void func_ov094_0229a2b0(void *wallet, int value);
-extern void func_ov094_0229a29c(void *wallet, int value);
-extern int func_ov094_0229a098(void *wallet);
-extern void func_ov094_0229ad20(void *grid);
-extern void func_ov094_0229b2b0(void *letters);
-extern void func_ov094_0229a084(void *wallet);
-extern void func_ov094_0229af20(void *grid);
-extern void func_ov094_0229bbc0(void *letters);
-extern void func_ov094_0229a05c(void *wallet);
-extern void func_ov094_0229a850(void *grid, int x, int offset_y);
-extern void func_ov094_0229a804(void *grid, int x, int offset_y, int offset_x);
-extern void func_ov094_0229b738(void *letters, int x, int offset_y);
-extern void func_ov094_0229b700(void *letters, int offset_x, int offset_y);
-extern void func_ov094_02299d84(void *wallet, int offset_y);
-extern void func_ov094_0229a038(void *wallet);
-extern void func_ov094_0229af18(void *grid);
-extern void *func_ov094_0229b000(void *grid);
-extern void func_ov094_0229bc3c(void *letters);
-extern void *func_ov094_0229a2ec(void *wallet);
 
 /* A letter's constructor, handed to __cxa_vec_ctor with its destructor (so the game's symbols). */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -2239,7 +2197,7 @@ CLEAN_AS(func_ov105_0229e90c, LetterStorage_IdleByTouch)
  * text colours loaded and its layout 5 with message 0x21. */
 void LetterStorage_PreparePanel(LetterStorage *self)
 {
-    func_ov094_0229a098(self->wallet);
+    PocketsWallet_LoadObjFiles((PocketsWallet *) (void *) self->wallet);
     ButtonPanel_LoadTextColors(&self->panel);
     ButtonPanel_SetLayout5(&self->panel, LETTER_STORAGE_PANEL_MESSAGE);
 }
@@ -2260,7 +2218,7 @@ CLEAN_AS(func_ov105_0229e9d0, LetterStorage_LoadPageLayer)
 /* func_ov105_0229ea24: the wallet's display started with 0 and prepared. */
 void LetterStorage_PrepareWallet(LetterStorage *self)
 {
-    func_ov094_0229a29c(self->wallet, 0);
+    PocketsWallet_SetUp((PocketsWallet *) (void *) self->wallet, 0);
 }
 CLEAN_AS(func_ov105_0229ea24, LetterStorage_PrepareWallet)
 
@@ -2280,7 +2238,7 @@ CLEAN_AS(func_ov105_0229ea38, LetterStorage_SetUpLayers)
 void LetterStorage_EndFrame(LetterStorage *self)
 {
     PagedChoice_Update(choice_of(self));
-    func_ov094_0229a05c(self->wallet);
+    PocketsWallet_Update((PocketsWallet *) (void *) self->wallet);
     if (Popup_Update(&self->popup) != 0) {
         LetterStorage_PlacePopup(self);
     }
@@ -2292,9 +2250,9 @@ CLEAN_AS(func_ov105_0229ea6c, LetterStorage_EndFrame)
 void LetterStorage_BeginFrame(LetterStorage *self)
 {
     LetterStorage_EndLayerTask(self);
-    func_ov094_0229a084(self->wallet);
-    func_ov094_0229af20(self->grid);
-    func_ov094_0229bbc0(self->letters);
+    PocketsWallet_BeginFrame((PocketsWallet *) (void *) self->wallet);
+    PocketsGrid_BeginFrame((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_BeginFrame((PocketsLetters *) (void *) self->letters);
     ButtonPanel_CloseTexts(&self->panel);
 }
 CLEAN_AS(func_ov105_0229eaa4, LetterStorage_BeginFrame)
@@ -2319,8 +2277,8 @@ CLEAN_AS(func_ov105_0229eaec, LetterStorage_BeginInteractiveFrame)
 void LetterStorage_Teardown(LetterStorage *self)
 {
     LetterStorage_EndLayerTask(self);
-    func_ov094_0229a038(self->wallet);
-    func_ov094_0229af18(self->grid);
+    PocketsWallet_Teardown((PocketsWallet *) (void *) self->wallet);
+    PocketsGrid_Teardown((PocketsGrid *) (void *) self->grid);
     PagedChoice_Dismiss(choice_of(self));
     LetterView_ReleaseBoxes(&self->view);
     ButtonPanel_CloseTexts(&self->panel);
@@ -2334,9 +2292,9 @@ CLEAN_AS(func_ov105_0229eb08, LetterStorage_Teardown)
 void LetterStorage_Setup(LetterStorage *self)
 {
     self->flags = 0;
-    func_ov094_0229af40(self->grid, 2);
-    func_ov094_0229bbd8(self->letters, 1);
-    func_ov094_0229a2b0(self->wallet, 6);
+    PocketsGrid_Init((PocketsGrid *) (void *) self->grid, 2);
+    PocketsLetters_Init((PocketsLetters *) (void *) self->letters, 1);
+    PocketsWallet_Init((PocketsWallet *) (void *) self->wallet, 6);
     self->popup_place = LETTER_STORAGE_NO_PLACE;
     Glide_Stop(&self->glide);
     self->held_kind = LETTER_STORAGE_HELD_NONE;
@@ -2350,7 +2308,7 @@ void LetterStorage_Setup(LetterStorage *self)
     MailLetter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
     if (kept != NULL) {
         /* Page 0's first letter: all 50 follow it. */
-        const Letter *src = (const Letter *) (void *) LetterStore_Page(kept, 0);
+        const Letter *src = (const Letter *) LetterStore_Page(kept, 0);
         for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
             Letter_Assign(&self->stored[i], &src[i]);
         }
@@ -2627,7 +2585,7 @@ void LetterStorage_StartWipeOut(LetterStorage *self)
 {
     LetterStorage_EndPanelDim(self);
     if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_100) == 0) {
-        func_ov092_02299324(parent_of(self), LETTER_STORAGE_PARENT_CODE_END, 1);
+        MenuDispatch_SetMode((MenuDispatch *) (void *) parent_of(self), LETTER_STORAGE_PARENT_CODE_END, 1);
     }
     LetterStorage_StartPageWipeOut(self);
     MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PAGE_WIPE_OUT);
@@ -2677,8 +2635,8 @@ CLEAN_AS(func_ov105_0229f11c, LetterStorage_SceneWipeIn)
 void LetterStorage_StartWipeIn(LetterStorage *self)
 {
     LetterStorage_PreparePanel(self);
-    func_ov094_0229ad20(self->grid);
-    func_ov094_0229b2b0(self->letters);
+    PocketsGrid_LoadPockets((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_LoadPockets((PocketsLetters *) (void *) self->letters);
     LetterStorage_MarkCarriedLetters(self);
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), 8, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
     DisplayLayer_Show(LETTER_STORAGE_SCENE_LAYER);
@@ -2710,7 +2668,7 @@ int LetterStorage_End(LetterStorage *self)
         GroupParams_SetC4C(1);
         MailLetter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
         if (kept != NULL) {
-            Letter *dst = (Letter *) (void *) LetterStore_Page(kept, 0);
+            Letter *dst = (Letter *) LetterStore_Page(kept, 0);
             for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
                 Letter_Assign(&dst[i], &self->stored[i]);
             }
@@ -2807,15 +2765,15 @@ int LetterStorage_Draw(LetterStorage *self)
         ButtonPanel_Draw(&self->panel, self->wipe_y);
         int y = (int) ((u32) self->objects_y - 0x10);
         if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE) == 0) {
-            func_ov094_0229a850(self->grid, 0, y);
+            PocketsGrid_DrawPockets((PocketsGrid *) (void *) self->grid, 0, y);
         } else if (self->wipe_x != 0) {
-            func_ov094_0229a804(self->grid, 0, y, (int) ((u32) self->wipe_x + 0xc0));
+            PocketsGrid_DrawPocketsRightOf((PocketsGrid *) (void *) self->grid, 0, y, (int) ((u32) self->wipe_x + 0xc0));
         }
-        func_ov094_0229b738(self->letters, 0, y);
-        func_ov094_02299d84(self->wallet, y);
+        PocketsLetters_DrawPockets((PocketsLetters *) (void *) self->letters, 0, y);
+        PocketsWallet_Draw((PocketsWallet *) (void *) self->wallet, y);
     }
     if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE) != 0) {
-        func_ov094_0229b700(self->letters, self->wipe_x, -0x10);
+        PocketsLetters_DrawPage((PocketsLetters *) (void *) self->letters, self->wipe_x, -0x10);
         LetterStorage_DrawPageTabs(self);
     }
     if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_80) != 0) {
@@ -2832,7 +2790,7 @@ CLEAN_AS(func_ov105_0229f604, LetterStorage_Draw)
  * torn down. Answers 1. */
 int LetterStorage_Close(LetterStorage *self)
 {
-    func_ov092_0229929c(parent_of(self));
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) parent_of(self));
     LetterStorage_Teardown(self);
     return 1;
 }
@@ -2863,9 +2821,9 @@ LetterStorage *LetterStorage_New(void)
     Letter_Construct(&self->held);
     Letter_Construct(&self->swapped);
     LayerTask_ConstructPair((LayerTaskPair *) (void *) self->unk_2c4);
-    func_ov094_0229b000(self->grid);
-    func_ov094_0229bc3c(self->letters);
-    func_ov094_0229a2ec(self->wallet);
+    PocketsGrid_Construct((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_Construct((PocketsLetters *) (void *) self->letters);
+    PocketsWallet_Construct((PocketsWallet *) (void *) self->wallet);
     Popup_Construct(&self->popup);
     Glide_Construct(&self->glide);
     Glider0_Construct(&self->cursor_sprite);

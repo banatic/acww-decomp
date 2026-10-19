@@ -1,7 +1,7 @@
 /* The cockroaches of the player's house: a process of overlay 4 (vtable 0x022561dc on the
  * Process base: HouseRoaches_Init, HouseRoaches_Release, HouseRoaches_Update) that, in a room of
  * the house and outside a link with other players, lets out the cockroaches the house's record
- * counts (HouseRecord_Absence: a long absence leaves them) on its empty floor cells, up to
+ * counts (HouseRecord_Roaches: a long absence leaves them) on its empty floor cells, up to
  * three at once (scene object 0xc0, whose class names its model "GOKI" and loads it from
  * /insect/51/bug52). A cockroach made away with (its process's param becomes 0xffff) leaves the count one smaller, which is written back to the record when the process ends.
  *

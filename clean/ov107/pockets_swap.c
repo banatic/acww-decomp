@@ -35,6 +35,7 @@
 #include "ov003/fish_shadow.h"
 #include "ov003/town_insect.h"
 #include "ov004/member_pointer.h"
+#include "ov092/menu_dispatch.h"
 #include "ov094/pockets_common.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(PocketsSwap, flags) == 0x94, "flags");
@@ -73,8 +74,6 @@ extern const s16 data_ov107_0229e280[8];
 
 /* What the parent (overlay 92's) is told (func_ov092_02299324): the scene ends; and when the
  * scene closes (func_ov092_0229929c). */
-extern void func_ov092_02299324(Process *parent, int code, int flag);
-extern void func_ov092_0229929c(Process *parent);
 #define POCKETS_SWAP_PARENT_CODE_END 0x44
 
 /* The SDK's byte copy, as the ROM calls it. */
@@ -277,7 +276,7 @@ void PocketsSwap_EndGetting(PocketsSwap *self, int free_tile)
             TownInsect_EndHeld((u8) slot, 1);
             break;
         case POCKETS_SWAP_MODE_FISH:
-            PlayerFish_EndForShadow((FishShadow *) (void *) GroupParams_C80());
+            PlayerFish_EndForShadow((FishShadow *) GroupParams_C80());
             break;
         default:
             break;
@@ -659,7 +658,7 @@ void PocketsSwap_TakeNewItem(PocketsSwap *self)
         item = CurrentPockets_DrawFor156B();
         state = 1;
     }
-    ItemRecord *record = (ItemRecord *) (void *) PlayerRecord_ItemRecord(PlayerRecords_Current());
+    ItemRecord *record = (ItemRecord *) PlayerRecord_ItemRecord(PlayerRecords_Current());
     ItemRecord_SetBit(record, &carried, 0, 1);
     GroupParams_SetItemC((u16) PocketsSwap_PlaceItem(self, self->slot));
     PocketsSwap_SetPlaceItem(self, self->slot, item, state);
@@ -1596,7 +1595,7 @@ void PocketsSwap_StartWipeOut(PocketsSwap *self)
 {
     Popup_Hide(&self->popup, 1);
     PocketsSwap_HideCursorSprite(self);
-    func_ov092_02299324(psw_parent(self), POCKETS_SWAP_PARENT_CODE_END, 1);
+    MenuDispatch_SetMode((MenuDispatch *) (void *) psw_parent(self), POCKETS_SWAP_PARENT_CODE_END, 1);
     MenuScene_StartWipeOnWindow2(psw_scene(self), 8, 0, 0, 0x30);
     MenuScene_ScrollWipe(psw_scene(self), POCKETS_SWAP_LAYER, 0, -16);
     MenuScene_SetState(psw_scene(self), POCKETS_SWAP_STATE_WIPE_OUT);
@@ -1746,7 +1745,7 @@ CLEAN_AS(func_ov107_0229e0e8, PocketsSwap_Draw)
  * torn down. Answers 1. */
 int PocketsSwap_Close(PocketsSwap *self)
 {
-    func_ov092_0229929c(psw_parent(self));
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) psw_parent(self));
     PocketsSwap_Teardown(self);
     return 1;
 }

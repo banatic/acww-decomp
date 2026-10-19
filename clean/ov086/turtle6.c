@@ -301,9 +301,7 @@ void *Turtle6_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) t6_part(turtle, T6_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) t6_part(turtle, T6_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) t6_part(turtle, T6_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) t6_part(turtle, T6_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) t6_part(turtle, T6_ANIM));
     SceneMover_Construct((SceneMover *) (void *) t6_part(turtle, T6_MOVER));
     SceneProbe_Construct(t6_part(turtle, T6_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) t6_part(turtle, T6_VALUE_3AA));

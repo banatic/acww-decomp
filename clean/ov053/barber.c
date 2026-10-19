@@ -260,7 +260,7 @@ CLEAN_AS(func_ov053_02260448, Barber_DestructDelete)
 int Barber_IsPaid(int unused)
 {
     (void) unused;
-    return Block021d27ac_TestFlag((u32 *) (void *) Block021d27ac_Get(), BARBER_FLAG_PAID);
+    return Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BARBER_FLAG_PAID);
 }
 CLEAN_AS(func_ov053_02260474, Barber_IsPaid)
 
@@ -873,9 +873,7 @@ void *Barber_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) barber_part(barber, BARBER_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) barber_part(barber, BARBER_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) barber_part(barber, BARBER_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) barber_part(barber, BARBER_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) barber_part(barber, BARBER_ANIM));
     SceneMover_Construct((SceneMover *) (void *) barber_part(barber, BARBER_MOVER));
     SceneProbe_Construct(barber_part(barber, BARBER_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) barber_part(barber, BARBER_VALUE_3AA));

@@ -4,60 +4,31 @@
 #include "autoload_2/input.h"
 #include "autoload_2/process.h"
 #include "clean.h"
+#include "main/cell_layer_sprite.h"
+#include "main/current_pockets.h"
 #include "main/display_layers.h"
+#include "main/layer_load_task.h"
+#include "main/sliding_window.h"
+#include "main/state_flags.h"
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
+#include "ov092/menu_dispatch.h"
+#include "ov094/pockets_grid.h"
+#include "ov094/pockets_letters.h"
+#include "ov094/pockets_wallet.h"
 
 /* The class's vtable. */
 extern const u8 data_ov099_0229e040[];
 
 /* The members' destructors, and main's. */
 extern void func_02066688(void *object); /* sets the vtable data_020de760 */
-extern void *func_ov094_0229a2d0(void *object);
-extern void func_ov094_0229bc30(void *object);
-extern void *func_ov094_0229afe0(void *object);
 
 /* Main's. */
-extern int func_0206fe54(void);                        /* state flag 2 is set */
-extern void func_0208aa60(Popup *popup, int x, int y); /* words 0x3c and 0x40: an offset */
-extern void func_020b9ccc(void *object);
 
 /* The touch (main's bytes, as ov096/pockets_screen.c reads them) and a byte of main's set to 0
  * by func_020b93e8. */
 extern u8 data_021f6c58, data_021f6c54, data_021f6c60, data_021f6c5c;
 extern u8 data_021f6c30;
-
-/* ov094's object of the pocket slots (`grid`). */
-extern int func_ov094_0229a69c(void *grid, int index); /* the slot is empty */
-extern int func_ov094_0229a8bc(void *grid, int index);
-extern int func_ov094_0229aba4(void *grid, int index);                       /* the slot's x */
-extern int func_ov094_0229ab90(void *grid, int index);                       /* the slot's y */
-extern u16 func_ov094_0229aaac(void *grid, int index);                       /* the slot's item */
-extern u8 func_ov094_0229aa84(void *grid, int index);                        /* the slot's item's state */
-extern void func_ov094_0229aa58(void *grid, int index);                      /* the slot emptied */
-extern void func_ov094_0229aa14(void *grid, int index, int item, int state); /* the slot set (and
-                                                                              * the pocket slot) */
-extern void func_ov094_0229a9b4(void *grid, unsigned int index);             /* the slot redrawn */
-extern void func_ov094_0229a99c(void *grid, int item, int state);            /* the held item's sprite */
-extern void func_ov094_0229a6bc(void *grid, int x, int y);                   /* draws the held item */
-extern void func_ov094_0229abb8(void *grid, Popup *popup, int index);
-extern void func_ov094_0229aafc(void *grid, int index);
-extern void func_ov094_0229ab0c(void *grid);
-extern void func_ov094_0229ab1c(void *grid, int index);
-extern void func_ov094_0229ab5c(void *grid);
-extern int func_ov094_0229aee8(void *grid, int x, int y); /* the slot under the touch */
-
-/* ov094's object of the letters (`letters`). */
-extern int func_ov094_0229b30c(void *letters, int index); /* the letter's place is empty */
-extern int func_ov094_0229b788(void *letters, int index);
-extern int func_ov094_0229b384(void *letters, int index); /* the place's x */
-extern int func_ov094_0229b328(void *letters, int index); /* the place's y */
-extern int func_ov094_0229b9b4(void *letters, Popup *popup, int index);
-extern void func_ov094_0229b938(void *letters, int index);
-extern void func_ov094_0229b944(void *letters);
-extern void func_ov094_0229b950(void *letters, int index);
-extern void func_ov094_0229b98c(void *letters);
-extern int func_ov094_0229bba4(void *letters, int x, int y); /* the place under the touch */
 
 /* What the grid's and the letters' objects answer for no place under the touch. */
 #define GRID_NO_INDEX 0x23
@@ -130,9 +101,9 @@ static void destroy_members(PocketsView *self)
     Glider0_Destroy(&self->cursor_sprite);
     Glide_Destroy(&self->glide);
     Popup_Destroy(&self->popup);
-    func_ov094_0229a2d0(self->wallet);
-    func_ov094_0229bc30(self->letters);
-    func_ov094_0229afe0(self->grid);
+    PocketsWallet_Destruct((PocketsWallet *) (void *) self->wallet);
+    PocketsLetters_Destruct((PocketsLetters *) (void *) self->letters);
+    PocketsGrid_Destruct((PocketsGrid *) (void *) self->grid);
     MenuScene_DestroyBase(scene_of(self));
 }
 
@@ -252,7 +223,7 @@ CLEAN_AS(func_ov099_0229c3e0, PocketsView_OpenChoice)
  * rows that close it. */
 void PocketsView_AddEntries(PocketsView *self)
 {
-    if (func_0206fe54()) {
+    if (StateFlags_Test2()) {
         ChoiceEntries_Add(&self->entries, ROW_PICK_UP, ACTION_PICK_UP);
     }
     ChoiceEntries_Add(&self->entries, ROW_1, ACTION_CLOSE);
@@ -468,10 +439,10 @@ void PocketsView_PickUpItem(PocketsView *self, int place)
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
         int index = PocketsView_GridIndex(self, place);
         self->held_kind = POCKETS_VIEW_HELD_ITEM;
-        self->item = func_ov094_0229aaac(self->grid, index);
-        self->held_state = func_ov094_0229aa84(self->grid, index);
-        func_ov094_0229aa58(self->grid, index);
-        func_ov094_0229a99c(self->grid, self->item, self->held_state);
+        self->item = PocketsGrid_Item((PocketsGrid *) (void *) self->grid, index);
+        self->held_state = PocketsGrid_ItemState((PocketsGrid *) (void *) self->grid, index);
+        PocketsGrid_EmptyPlace((PocketsGrid *) (void *) self->grid, index);
+        PocketsGrid_SetHeldIcon((PocketsGrid *) (void *) self->grid, self->item, self->held_state);
     } else {
         PocketsView_IsLetterPlace(self, (unsigned int) place);
     }
@@ -510,7 +481,7 @@ void PocketsView_DrawHeld(PocketsView *self)
         return;
     }
     if (self->held_kind == POCKETS_VIEW_HELD_ITEM) {
-        func_ov094_0229a6bc(self->grid, self->held_x, self->held_y);
+        PocketsGrid_DrawHeld((PocketsGrid *) (void *) self->grid, self->held_x, self->held_y);
     }
 }
 CLEAN_AS(func_ov099_0229c994, PocketsView_DrawHeld)
@@ -536,14 +507,16 @@ void PocketsView_PlacePopup(PocketsView *self)
 {
     int x = PocketsView_PlaceX(self, self->popup_place) - 0x6d;
     int y = PocketsView_PlaceY(self, self->popup_place) - 0x78;
-    if (func_0206fe54() != 0) {
+    if (StateFlags_Test2() != 0) {
         y -= 8;
     }
-    func_0208aa60(&self->popup, x, y);
+    SlidingWindow_SetPlace((SlidingWindow *) (void *) &self->popup, x, y);
     if (PocketsView_IsGridPlace(self, self->popup_place)) {
-        func_ov094_0229abb8(self->grid, &self->popup, PocketsView_GridIndex(self, self->popup_place));
+        PocketsGrid_ShowItemText((PocketsGrid *) (void *) self->grid, &self->popup,
+                                 PocketsView_GridIndex(self, self->popup_place));
     } else if (PocketsView_IsLetterPlace(self, self->popup_place)) {
-        func_ov094_0229b9b4(self->letters, &self->popup, PocketsView_LetterIndex(self, self->popup_place));
+        PocketsLetters_ShowPlaceText((PocketsLetters *) (void *) self->letters, &self->popup,
+                                     PocketsView_LetterIndex(self, self->popup_place));
     }
 }
 CLEAN_AS(func_ov099_0229ca34, PocketsView_PlacePopup)
@@ -576,9 +549,10 @@ CLEAN_AS(func_ov099_0229cadc, PocketsView_TouchMoved)
 void PocketsView_HighlightPlace(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        func_ov094_0229aafc(self->grid, PocketsView_GridIndex(self, place));
+        PocketsGrid_MarkPlace((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     } else if (PocketsView_IsLetterPlace(self, (unsigned int) place)) {
-        func_ov094_0229b938(self->letters, PocketsView_LetterIndex(self, (unsigned int) place));
+        PocketsLetters_MarkPlace((PocketsLetters *) (void *) self->letters,
+                                 PocketsView_LetterIndex(self, (unsigned int) place));
     }
 }
 CLEAN_AS(func_ov099_0229cb20, PocketsView_HighlightPlace)
@@ -586,8 +560,8 @@ CLEAN_AS(func_ov099_0229cb20, PocketsView_HighlightPlace)
 /* func_ov099_0229cb70: no place marked in either object. */
 void PocketsView_ClearHighlights(PocketsView *self)
 {
-    func_ov094_0229ab0c(self->grid);
-    func_ov094_0229b944(self->letters);
+    PocketsGrid_ClearMarks((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_ClearMarks((PocketsLetters *) (void *) self->letters);
 }
 CLEAN_AS(func_ov099_0229cb70, PocketsView_ClearHighlights)
 
@@ -596,11 +570,11 @@ CLEAN_AS(func_ov099_0229cb70, PocketsView_ClearHighlights)
 void PocketsView_SelectPlace(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        func_ov094_0229ab1c(self->grid, PocketsView_GridIndex(self, place));
-        func_ov094_0229b98c(self->letters);
+        PocketsGrid_Lift((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
+        PocketsLetters_Unlift((PocketsLetters *) (void *) self->letters);
     } else if (PocketsView_IsLetterPlace(self, (unsigned int) place)) {
-        func_ov094_0229b950(self->letters, PocketsView_LetterIndex(self, (unsigned int) place));
-        func_ov094_0229ab5c(self->grid);
+        PocketsLetters_Lift((PocketsLetters *) (void *) self->letters, PocketsView_LetterIndex(self, (unsigned int) place));
+        PocketsGrid_Unlift((PocketsGrid *) (void *) self->grid);
     } else {
         PocketsView_ClearSelection(self);
     }
@@ -610,8 +584,8 @@ CLEAN_AS(func_ov099_0229cb8c, PocketsView_SelectPlace)
 /* func_ov099_0229cbf4 */
 void PocketsView_ClearSelection(PocketsView *self)
 {
-    func_ov094_0229ab5c(self->grid);
-    func_ov094_0229b98c(self->letters);
+    PocketsGrid_Unlift((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_Unlift((PocketsLetters *) (void *) self->letters);
 }
 CLEAN_AS(func_ov099_0229cbf4, PocketsView_ClearSelection)
 
@@ -619,7 +593,7 @@ CLEAN_AS(func_ov099_0229cbf4, PocketsView_ClearSelection)
 int PocketsView_PlaceItemState(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        return func_ov094_0229aa84(self->grid, PocketsView_GridIndex(self, place));
+        return PocketsGrid_ItemState((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     }
     return NO_ITEM_STATE;
 }
@@ -629,7 +603,7 @@ CLEAN_AS(func_ov099_0229cc10, PocketsView_PlaceItemState)
 int PocketsView_PlaceItem(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        return func_ov094_0229aaac(self->grid, PocketsView_GridIndex(self, place));
+        return PocketsGrid_Item((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     }
     return NO_ITEM;
 }
@@ -640,10 +614,11 @@ CLEAN_AS(func_ov099_0229cc40, PocketsView_PlaceItem)
 int PocketsView_PlaceIsEmpty(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        return func_ov094_0229a69c(self->grid, PocketsView_GridIndex(self, place));
+        return PocketsGrid_IsEmpty((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     }
     if (PocketsView_IsLetterPlace(self, (unsigned int) place)) {
-        return func_ov094_0229b30c(self->letters, PocketsView_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_IsEmpty((PocketsLetters *) (void *) self->letters,
+                                      PocketsView_LetterIndex(self, (unsigned int) place));
     }
     return 1;
 }
@@ -654,10 +629,11 @@ CLEAN_AS(func_ov099_0229cc74, PocketsView_PlaceIsEmpty)
 int PocketsView_PlaceIsTaken(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        return func_ov094_0229a8bc(self->grid, PocketsView_GridIndex(self, place));
+        return PocketsGrid_IsDimmed((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     }
     if (PocketsView_IsLetterPlace(self, (unsigned int) place)) {
-        return func_ov094_0229b788(self->letters, PocketsView_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_IsDimmed((PocketsLetters *) (void *) self->letters,
+                                       PocketsView_LetterIndex(self, (unsigned int) place));
     }
     return 0;
 }
@@ -667,10 +643,11 @@ CLEAN_AS(func_ov099_0229ccc8, PocketsView_PlaceIsTaken)
 int PocketsView_PlaceY(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        return func_ov094_0229ab90(self->grid, PocketsView_GridIndex(self, place));
+        return PocketsGrid_PlaceY((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     }
     if (PocketsView_IsLetterPlace(self, (unsigned int) place)) {
-        return func_ov094_0229b328(self->letters, PocketsView_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_PlaceY((PocketsLetters *) (void *) self->letters,
+                                     PocketsView_LetterIndex(self, (unsigned int) place));
     }
     return 0;
 }
@@ -680,10 +657,11 @@ CLEAN_AS(func_ov099_0229cd1c, PocketsView_PlaceY)
 int PocketsView_PlaceX(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
-        return func_ov094_0229aba4(self->grid, PocketsView_GridIndex(self, place));
+        return PocketsGrid_PlaceX((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     }
     if (PocketsView_IsLetterPlace(self, (unsigned int) place)) {
-        return func_ov094_0229b384(self->letters, PocketsView_LetterIndex(self, (unsigned int) place));
+        return PocketsLetters_PlaceX((PocketsLetters *) (void *) self->letters,
+                                     PocketsView_LetterIndex(self, (unsigned int) place));
     }
     return 0;
 }
@@ -693,11 +671,11 @@ CLEAN_AS(func_ov099_0229cd70, PocketsView_PlaceX)
  * `with_letter`, only one that holds a letter. POCKETS_VIEW_NO_PLACE for none. */
 int PocketsView_LetterPlaceAtTouch(PocketsView *self, int x, int y, int with_letter)
 {
-    int index = func_ov094_0229bba4(self->letters, x, y);
+    int index = PocketsLetters_PocketAtTouch((PocketsLetters *) (void *) self->letters, x, y);
     if (index == LETTERS_NO_INDEX) {
         return POCKETS_VIEW_NO_PLACE;
     }
-    if (with_letter != 0 && func_ov094_0229b30c(self->letters, index) != 0) {
+    if (with_letter != 0 && PocketsLetters_IsEmpty((PocketsLetters *) (void *) self->letters, index) != 0) {
         return POCKETS_VIEW_NO_PLACE;
     }
     return PocketsView_LetterPlace(self, (unsigned int) index);
@@ -732,8 +710,8 @@ void PocketsView_SetSlotItem(PocketsView *self, int place, int item, int state)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
         int index = PocketsView_GridIndex(self, place);
-        func_ov094_0229aa14(self->grid, index, item, state);
-        func_ov094_0229a9b4(self->grid, (unsigned int) index);
+        PocketsGrid_SetItem((PocketsGrid *) (void *) self->grid, index, item, state);
+        PocketsGrid_RefreshPlace((PocketsGrid *) (void *) self->grid, (unsigned int) index);
     }
 }
 CLEAN_AS(func_ov099_0229ce28, PocketsView_SetSlotItem)
@@ -758,11 +736,11 @@ CLEAN_AS(func_ov099_0229ce68, PocketsView_DropHeldAt)
  * `with_item`, only one that holds an item. POCKETS_VIEW_NO_PLACE for none. */
 int PocketsView_GridPlaceAtTouch(PocketsView *self, int x, int y, int with_item)
 {
-    int index = func_ov094_0229aee8(self->grid, x, y);
+    int index = PocketsGrid_PocketPlaceAtTouch((PocketsGrid *) (void *) self->grid, x, y);
     if (index == GRID_NO_INDEX) {
         return POCKETS_VIEW_NO_PLACE;
     }
-    if (with_item != 0 && func_ov094_0229a69c(self->grid, index) != 0) {
+    if (with_item != 0 && PocketsGrid_IsEmpty((PocketsGrid *) (void *) self->grid, index) != 0) {
         return POCKETS_VIEW_NO_PLACE;
     }
     return PocketsView_GridPlace(self, (unsigned int) index);
@@ -809,7 +787,7 @@ CLEAN_AS(func_ov099_0229cf30, PocketsView_IsGridPlace)
 /* func_ov099_0229cf3c: the object at 0x94 updated by main's func_020b9ccc. */
 void PocketsView_UpdateObject94(PocketsView *self)
 {
-    func_020b9ccc(self->unk_94);
+    LayerTask_End((LayerTask *) (void *) self->unk_94);
 }
 CLEAN_AS(func_ov099_0229cf3c, PocketsView_UpdateObject94)
 
@@ -871,40 +849,7 @@ extern u8 data_021fbdd8; /* the pen is down */
 extern u8 data_021fbddc; /* the pen went down or up this frame */
 
 /* Main's. */
-extern int func_0206fe60(void);                            /* state flag 2 is clear */
-extern int func_0208e484(Glider *glider);                  /* whether the animation ended */
-extern int func_0208e4bc(Glider *glider);                  /* the animation, anim_id */
-extern void func_0208e5cc(Glider *glider);                 /* unk_4a = 1 */
-extern void func_0209a088(u16 *item, int state, int slot); /* stores a pocket slot */
-extern void *func_020b9af4(void *object);
 extern void func_02066694(void *letter);
-
-/* The parent process (ov092's): told the scene ends (its byte 0x91 set to the code; code 0x44
- * also calls func_0206efc0 and, with `flag`, sends PXI command 2), and told of the close. */
-extern void func_ov092_02299324(Process *parent, int code, int flag);
-extern void func_ov092_0229929c(Process *parent);
-
-/* The objects of ov094's: setup, the frame's updates, the draws at a vertical offset, the
- * teardown and the constructors. */
-extern void func_ov094_0229af40(void *grid, int value);
-extern void func_ov094_0229bbd8(void *letters, int value);
-extern void func_ov094_0229a2b0(void *wallet, int value);
-extern void func_ov094_0229a29c(void *wallet, int value); /* func_ov094_0229a204, then func_ov094_0229a1c0 */
-extern int func_ov094_0229a098(void *wallet);
-extern void func_ov094_0229ad20(void *grid);
-extern void func_ov094_0229b2b0(void *letters);
-extern void func_ov094_0229a084(void *wallet);
-extern void func_ov094_0229af20(void *grid);
-extern void func_ov094_0229bbc0(void *letters);
-extern void func_ov094_0229a05c(void *wallet);
-extern void func_ov094_0229a850(void *grid, int x, int offset_y);
-extern void func_ov094_0229b738(void *letters, int x, int offset_y);
-extern void func_ov094_02299d84(void *wallet, int offset_y);
-extern void func_ov094_0229a038(void *wallet);
-extern void func_ov094_0229af18(void *grid);
-extern void *func_ov094_0229b000(void *grid);
-extern void func_ov094_0229bc3c(void *letters);
-extern void *func_ov094_0229a2ec(void *wallet);
 
 /* The tables of member functions (member_pointer.h): the guards, the tables (one block at
  * 0x0229e0a8 in the symbol table: the 5 states, then the 21 sub states at 0x0229e0d0) and
@@ -1016,7 +961,7 @@ CLEAN_AS(func_ov099_0229d050, PocketsView_TouchPlace)
  * while state flag 2 is clear, else to sub state 4 with it at the cursor. */
 void PocketsView_EndAction(PocketsView *self)
 {
-    if (func_0206fe60() != 0) {
+    if (StateFlags_IsClear2() != 0) {
         PocketsView_EndActionHidden(self);
     } else {
         PocketsView_EndActionAtCursor(self);
@@ -1052,7 +997,7 @@ void PocketsView_WaitError(PocketsView *self)
 {
     if (ErrorMessage_Update(&self->error, 0)) {
         MenuScene_SetSubState(scene_of(self), self->return_state);
-        func_0208e5cc(&self->cursor_sprite);
+        CellLayerSprite_SetWindow((CellLayerSprite *) (void *) &self->cursor_sprite);
     }
 }
 CLEAN_AS(func_ov099_0229d168, PocketsView_WaitError)
@@ -1075,7 +1020,7 @@ void PocketsView_CloseChoice(PocketsView *self)
         return;
     }
     PagedChoice_RequestClose(choice_of(self), 0);
-    if (func_0208e4bc(&self->cursor_sprite) != 0) {
+    if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) &self->cursor_sprite) != 0) {
         PocketsView_PlaceCursorSprite(self);
     }
     MenuScene_SetSubState(scene_of(self), SUB_CHOICE_CLOSING);
@@ -1089,7 +1034,7 @@ void PocketsView_WaitChoiceToPoint(PocketsView *self)
     if (PagedChoice_IsShown(choice_of(self)) == 0) {
         return;
     }
-    if (func_0206fe54() != 0) {
+    if (StateFlags_Test2() != 0) {
         PocketsView_PointAtFirstRow(self);
         MenuScene_SetSubState(scene_of(self), SUB_CHOICE_BY_KEYS);
     } else {
@@ -1116,7 +1061,7 @@ CLEAN_AS(func_ov099_0229d240, PocketsView_StepHeldGlide)
  * follows the cursor sprite. */
 void PocketsView_FinishSwapWithCursor(PocketsView *self)
 {
-    if (func_0208e484(&self->cursor_sprite)) {
+    if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite)) {
         MenuScene_SetSubState(scene_of(self), self->return_state);
     }
     if (Glider_IsTurnSettled(&self->cursor_sprite)) {
@@ -1166,7 +1111,7 @@ CLEAN_AS(func_ov099_0229d304, PocketsView_PutDownWithCursor)
  * cursor sprite's animation ends; the held item follows the cursor sprite. */
 void PocketsView_FinishPickUp(PocketsView *self)
 {
-    if (func_0208e484(&self->cursor_sprite) != 0) {
+    if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite) != 0) {
         MenuScene_SetSubState(scene_of(self), self->return_state);
     }
     PocketsView_FollowCursorSprite(self);
@@ -1188,7 +1133,7 @@ CLEAN_AS(func_ov099_0229d388, PocketsView_PickUpOnTurn)
  * its set and sub state 4. */
 void PocketsView_WaitCursorAnim(PocketsView *self)
 {
-    if (func_0208e484(&self->cursor_sprite)) {
+    if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite)) {
         PocketsView_ShowCursorFirstOfSet(self);
         MenuScene_SetSubState(scene_of(self), SUB_IDLE_BY_KEYS);
     }
@@ -1199,7 +1144,7 @@ CLEAN_AS(func_ov099_0229d3b8, PocketsView_WaitCursorAnim)
  * PocketsView_BeginSubState10. */
 void PocketsView_WaitAnimToSubState10(PocketsView *self)
 {
-    if (func_0208e484(&self->cursor_sprite)) {
+    if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite)) {
         PocketsView_BeginSubState10(self);
     }
 }
@@ -1224,7 +1169,7 @@ CLEAN_AS(func_ov099_0229d400, PocketsView_WaitCursorGlide)
  * points at is picked. */
 void PocketsView_PickActionRow(PocketsView *self)
 {
-    if (func_0208e484(&self->cursor_sprite)) {
+    if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite)) {
         pick_row(self, self->choice_row);
     }
 }
@@ -1414,14 +1359,14 @@ CLEAN_AS(func_ov099_0229d814, PocketsView_IdleByTouch)
 /* func_ov099_0229d894: a step of the wallet display's setup; its answer. */
 int PocketsView_StepWalletSetup(PocketsView *self)
 {
-    return func_ov094_0229a098(self->wallet);
+    return PocketsWallet_LoadObjFiles((PocketsWallet *) (void *) self->wallet);
 }
 CLEAN_AS(func_ov099_0229d894, PocketsView_StepWalletSetup)
 
 /* func_ov099_0229d8a4: the wallet's display started with 0 and prepared. */
 void PocketsView_PrepareWallet(PocketsView *self)
 {
-    func_ov094_0229a29c(self->wallet, 0);
+    PocketsWallet_SetUp((PocketsWallet *) (void *) self->wallet, 0);
 }
 CLEAN_AS(func_ov099_0229d8a4, PocketsView_PrepareWallet)
 
@@ -1438,7 +1383,7 @@ CLEAN_AS(func_ov099_0229d8b8, PocketsView_SetUpLayer6)
 void PocketsView_EndFrame(PocketsView *self)
 {
     PagedChoice_Update(choice_of(self));
-    func_ov094_0229a05c(self->wallet);
+    PocketsWallet_Update((PocketsWallet *) (void *) self->wallet);
     if (Popup_Update(&self->popup) != 0) {
         PocketsView_PlacePopup(self);
     }
@@ -1450,9 +1395,9 @@ CLEAN_AS(func_ov099_0229d8d8, PocketsView_EndFrame)
 void PocketsView_BeginFrame(PocketsView *self)
 {
     PocketsView_UpdateObject94(self);
-    func_ov094_0229a084(self->wallet);
-    func_ov094_0229af20(self->grid);
-    func_ov094_0229bbc0(self->letters);
+    PocketsWallet_BeginFrame((PocketsWallet *) (void *) self->wallet);
+    PocketsGrid_BeginFrame((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_BeginFrame((PocketsLetters *) (void *) self->letters);
 }
 CLEAN_AS(func_ov099_0229d910, PocketsView_BeginFrame)
 
@@ -1476,8 +1421,8 @@ CLEAN_AS(func_ov099_0229d948, PocketsView_BeginInteractiveFrame)
 void PocketsView_Teardown(PocketsView *self)
 {
     PocketsView_UpdateObject94(self);
-    func_ov094_0229a038(self->wallet);
-    func_ov094_0229af18(self->grid);
+    PocketsWallet_Teardown((PocketsWallet *) (void *) self->wallet);
+    PocketsGrid_Teardown((PocketsGrid *) (void *) self->grid);
     PagedChoice_Dismiss(choice_of(self));
 }
 CLEAN_AS(func_ov099_0229d964, PocketsView_Teardown)
@@ -1488,18 +1433,18 @@ CLEAN_AS(func_ov099_0229d964, PocketsView_Teardown)
 void PocketsView_Setup(PocketsView *self)
 {
     self->flags = 0;
-    func_ov094_0229af40(self->grid, 2);
-    func_ov094_0229bbd8(self->letters, 2);
-    func_ov094_0229a2b0(self->wallet, 6);
+    PocketsGrid_Init((PocketsGrid *) (void *) self->grid, 2);
+    PocketsLetters_Init((PocketsLetters *) (void *) self->letters, 2);
+    PocketsWallet_Init((PocketsWallet *) (void *) self->wallet, 6);
     self->popup_place = POCKETS_VIEW_NO_PLACE;
     Glide_Stop(&self->glide);
     self->held_kind = POCKETS_VIEW_HELD_NONE;
     self->cursor = POCKETS_VIEW_GRID_FIRST;
     PagedChoice_Init(choice_of(self), 3, 1, NULL);
     u16 first = 0x11a9;
-    func_0209a088(&first, 1, 0);
+    CurrentPockets_Set(&first, 1, 0);
     u16 second = 0x1548;
-    func_0209a088(&second, 0, 2);
+    CurrentPockets_Set(&second, 0, 2);
 }
 CLEAN_AS(func_ov099_0229d994, PocketsView_Setup)
 
@@ -1525,7 +1470,7 @@ void PocketsView_StartWipeOut(PocketsView *self)
 {
     Popup_Hide(&self->popup, 1);
     PocketsView_HideCursorSprite(self);
-    func_ov092_02299324(parent_of(self), PARENT_CODE_END, 1);
+    MenuDispatch_SetMode((MenuDispatch *) (void *) parent_of(self), PARENT_CODE_END, 1);
     MenuScene_StartWipeOnWindow2(scene_of(self), WIPE_LAYERS, 0, 0, WIPE_MARGIN);
     MenuScene_ScrollWipe(scene_of(self), POCKETS_VIEW_LAYER, 0, 0);
     MenuScene_SetState(scene_of(self), STATE_WIPE_OUT);
@@ -1552,8 +1497,8 @@ CLEAN_AS(func_ov099_0229dae8, PocketsView_WipeIn)
 void PocketsView_StartWipeIn(PocketsView *self)
 {
     PocketsView_StepWalletSetup(self);
-    func_ov094_0229ad20(self->grid);
-    func_ov094_0229b2b0(self->letters);
+    PocketsGrid_LoadPockets((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_LoadPockets((PocketsLetters *) (void *) self->letters);
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), WIPE_LAYERS, 0, 0, WIPE_MARGIN);
     DisplayLayer_Show(POCKETS_VIEW_LAYER);
     MenuScene_ScrollWipe(scene_of(self), POCKETS_VIEW_LAYER, 0, 0);
@@ -1659,14 +1604,14 @@ int PocketsView_Draw(PocketsView *self)
         return 1;
     }
     draw_member(&self->popup);
-    if (func_0206fe54() != 0) {
+    if (StateFlags_Test2() != 0) {
         Glider_DrawWrapped(&self->cursor_sprite);
     }
     PocketsView_DrawHeld(self);
     if (PocketsView_TestFlags(self, POCKETS_VIEW_FLAG_OBJECTS_DRAWN) != 0) {
-        func_ov094_0229a850(self->grid, 0, self->wipe_y);
-        func_ov094_0229b738(self->letters, 0, self->wipe_y);
-        func_ov094_02299d84(self->wallet, self->wipe_y);
+        PocketsGrid_DrawPockets((PocketsGrid *) (void *) self->grid, 0, self->wipe_y);
+        PocketsLetters_DrawPockets((PocketsLetters *) (void *) self->letters, 0, self->wipe_y);
+        PocketsWallet_Draw((PocketsWallet *) (void *) self->wallet, self->wipe_y);
     }
     return 1;
 }
@@ -1676,7 +1621,7 @@ CLEAN_AS(func_ov099_0229ddec, PocketsView_Draw)
  * torn down. Answers 1. */
 int PocketsView_Close(PocketsView *self)
 {
-    func_ov092_0229929c(parent_of(self));
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) parent_of(self));
     PocketsView_Teardown(self);
     return 1;
 }
@@ -1703,10 +1648,10 @@ PocketsView *PocketsView_New(void)
     }
     MenuScene_Construct(&self->base);
     self->base.vtable = data_ov099_0229e040;
-    func_020b9af4(self->unk_94);
-    func_ov094_0229b000(self->grid);
-    func_ov094_0229bc3c(self->letters);
-    func_ov094_0229a2ec(self->wallet);
+    LayerTask_ConstructPair((LayerTaskPair *) (void *) self->unk_94);
+    PocketsGrid_Construct((PocketsGrid *) (void *) self->grid);
+    PocketsLetters_Construct((PocketsLetters *) (void *) self->letters);
+    PocketsWallet_Construct((PocketsWallet *) (void *) self->wallet);
     Popup_Construct(&self->popup);
     Glide_Construct(&self->glide);
     Glider0_Construct(&self->cursor_sprite);

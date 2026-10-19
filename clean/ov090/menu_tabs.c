@@ -18,6 +18,7 @@
 #include "main/menu_backdrop.h"
 #include "main/music_volume.h"
 #include "main/oam_buffer.h"
+#include "main/overlay_groups.h"
 #include "main/rom_file.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
@@ -78,10 +79,6 @@ extern u8 *data_021c526c;
 
 /* Set when the player is in a room. */
 extern u8 data_020e54a8;
-
-/* An overlay group asked for under the current owner (main/overlay_groups.c,
- * OverlayGroups_RequestForOwner). */
-extern int func_0207000c(int group);
 
 /* The tables of member functions (ov004/member_pointer.h): their guards, the tables and the
  * constants they are filled from. */
@@ -371,16 +368,16 @@ void MenuTabs_RequestTabGroup(MenuTabs *self)
     self->switching = 0;
     u8 tab = *menu_tabs_byte(self, MENU_TABS_BYTE_TAB);
     if (tab == MENU_TAB_POCKETS) {
-        func_0207000c(data_020e54a8 == 0 ? MENU_TABS_POCKETS_TOWN_GROUP : MENU_TABS_POCKETS_ROOM_GROUP);
+        OverlayGroups_RequestForOwner(data_020e54a8 == 0 ? MENU_TABS_POCKETS_TOWN_GROUP : MENU_TABS_POCKETS_ROOM_GROUP);
     } else if (tab <= MENU_TAB_6) {
-        func_0207000c(bar_groups[tab]);
+        OverlayGroups_RequestForOwner(bar_groups[tab]);
     } else if (tab == MENU_TAB_LETTER_WRITE) {
-        func_0207000c(8);
+        OverlayGroups_RequestForOwner(8);
     } else if (tab >= MENU_TAB_9 && tab <= MENU_TAB_12) {
-        func_0207000c(MENU_TABS_GROUP_9_12);
+        OverlayGroups_RequestForOwner(MENU_TABS_GROUP_9_12);
         GroupParams_SetMode((char) (tab + MENU_TABS_MODE_9_12));
     } else if (tab == MENU_TAB_13 || tab == MENU_TAB_14) {
-        func_0207000c(MENU_TABS_GROUP_13_14);
+        OverlayGroups_RequestForOwner(MENU_TABS_GROUP_13_14);
         GroupParams_SetMode((char) tab);
     }
     self->base.sub_state = MENU_TABS_SUB_IDLE;

@@ -306,9 +306,7 @@ void *AcornNpc_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) acn_part(npc, ACN_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) acn_part(npc, ACN_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) acn_part(npc, ACN_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) acn_part(npc, ACN_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) acn_part(npc, ACN_ANIM));
     SceneMover_Construct((SceneMover *) (void *) acn_part(npc, ACN_MOVER));
     SceneProbe_Construct(acn_part(npc, ACN_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) acn_part(npc, ACN_VALUE_3AA));

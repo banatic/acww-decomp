@@ -312,9 +312,7 @@ Turtle *Turtle_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) turtle_part(turtle, TURTLE_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) turtle_part(turtle, TURTLE_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) turtle_part(turtle, TURTLE_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) turtle_part(turtle, TURTLE_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) turtle_part(turtle, TURTLE_ANIM));
     SceneMover_Construct((SceneMover *) (void *) turtle_part(turtle, TURTLE_MOVER));
     SceneProbe_Construct(turtle_part(turtle, TURTLE_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) turtle_part(turtle, TURTLE_VALUE_3AA));

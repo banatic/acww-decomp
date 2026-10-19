@@ -267,9 +267,7 @@ void *TurtleGardens_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_ANIM));
     SceneMover_Construct((SceneMover *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_MOVER));
     SceneProbe_Construct(turtle_gardens_part(turtle, TURTLE_GARDENS_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_VALUE_3AA));

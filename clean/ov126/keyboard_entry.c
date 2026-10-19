@@ -17,6 +17,7 @@
 #include "main/text_string.h"
 #include "main/town_name.h"
 #include "main/wfc_stats.h"
+#include "ov124/han_panel.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(KeyboardEntry, wipe_y) == 0x94, "wipe");
 static_assert(offsetof(KeyboardEntry, hint_x) == 0xa0 && offsetof(KeyboardEntry, flags) == 0xa4, "flags");
@@ -71,7 +72,7 @@ static void keyboard_entry_destroy_members(KeyboardEntry *self)
     Glider0_Destroy(&self->pointer);
     ButtonPanel_Destroy(&self->panel);
     __cxa_vec_cleanup(self->labels, 2, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    func_ov124_0229f43c(self->field);
+    HanPanel_Destroy((HanPanel *) (void *) self->field);
     MenuScene_DestroyBase(&self->base);
 }
 

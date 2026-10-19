@@ -408,7 +408,7 @@ int Gatekeeper_Start(Gatekeeper *self)
         }
         return 1;
     }
-    part = (Block021d27acPart20 *) (void *) Block021d27ac_Part20(Block021d27ac_Get());
+    part = (Block021d27acPart20 *) Block021d27ac_Part20(Block021d27ac_Get());
     if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_C ||
         Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_D) {
         if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_C) {
@@ -512,9 +512,7 @@ Gatekeeper *Gatekeeper_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) gatekeeper_at(self, GATEKEEPER_MODEL));
     SceneStandardAnims_Init(gatekeeper_standard_anims(self));
     SceneFace_Construct((SceneFace *) (void *) gatekeeper_at(self, GATEKEEPER_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) gatekeeper_at(self, GATEKEEPER_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) gatekeeper_at(self, GATEKEEPER_ANIM));
     SceneMover_Construct((SceneMover *) (void *) gatekeeper_at(self, GATEKEEPER_MOVER));
     SceneProbe_Construct(gatekeeper_at(self, GATEKEEPER_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) gatekeeper_at(self, GATEKEEPER_VALUE_3AA));

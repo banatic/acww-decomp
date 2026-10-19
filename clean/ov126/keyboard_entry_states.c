@@ -6,6 +6,7 @@
 #include "main/cell_layer_sprite.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
+#include "ov095/soft_keyboard.h"
 
 /* The pointer's base is main's cell layer sprite (ov002/glide.h). */
 static CellLayerSprite *keyboard_entry_pointer_cells(KeyboardEntry *self)
@@ -78,7 +79,7 @@ CLEAN_AS(func_ov126_022a0c1c, KeyboardEntry_BeginTouch)
 /* func_ov126_022a0c34 (KEYBOARD_ENTRY_SUB_ERROR): the error message, then the input again. */
 void KeyboardEntry_Error(KeyboardEntry *self)
 {
-    func_ov095_0229bf48(keyboard_entry_keyboard(self));
+    SoftKeyboard_StepPressed(keyboard_entry_keyboard(self));
     if (ErrorMessage_Update(&self->error, 1)) {
         KeyboardEntry_BeginInput(self);
     }
@@ -136,7 +137,7 @@ void KeyboardEntry_BackspaceRepeat(KeyboardEntry *self)
         MenuScene_SetSubState(keyboard_entry_scene(self), self->return_sub_state);
         return;
     }
-    if (func_ov095_0229bf0c(keyboard_entry_keyboard(self)) == 0) {
+    if (SoftKeyboard_StepRepeat(keyboard_entry_keyboard(self)) == 0) {
         return;
     }
     if (KeyboardEntry_Backspace(self, 0) != 0) {
@@ -163,9 +164,9 @@ CLEAN_AS(func_ov126_022a0d8c, KeyboardEntry_BackToKeys)
 /* The code of the key held down run, and the key shown pressed. */
 static void keyboard_entry_repeat_held_key(KeyboardEntry *self)
 {
-    int key = func_ov095_0229c548(keyboard_entry_keyboard(self));
-    KeyboardEntry_RunCode(self, func_ov095_0229c448(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE));
-    func_ov095_0229c8e4(keyboard_entry_keyboard_arg(self), key);
+    int key = SoftKeyboard_PressedKey(keyboard_entry_keyboard(self));
+    KeyboardEntry_RunCode(self, SoftKeyboard_KeyCode(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE));
+    SoftKeyboard_ShowKeyPressed(keyboard_entry_keyboard(self), key);
 }
 
 /* func_ov126_022a0db4 (KEYBOARD_ENTRY_SUB_KEY_REPEAT): while A is held, the key's code again each
@@ -176,7 +177,7 @@ void KeyboardEntry_KeyRepeat(KeyboardEntry *self)
         KeyboardEntry_ReleaseToKeys(self);
         return;
     }
-    if (func_ov095_0229bf0c(keyboard_entry_keyboard(self)) != 0) {
+    if (SoftKeyboard_StepRepeat(keyboard_entry_keyboard(self)) != 0) {
         keyboard_entry_repeat_held_key(self);
     }
 }
@@ -191,16 +192,17 @@ void KeyboardEntry_KeyPress(KeyboardEntry *self)
     if (CellLayerSprite_IsDone(keyboard_entry_pointer_cells(self)) == 0) {
         return;
     }
-    int key = func_ov095_02299a00(keyboard_entry_keyboard(self));
-    int result = KeyboardEntry_RunCode(self, func_ov095_0229c448(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE));
+    int key = SoftKeyboard_PressCursorKey(keyboard_entry_keyboard(self));
+    int result =
+        KeyboardEntry_RunCode(self, SoftKeyboard_KeyCode(keyboard_entry_keyboard(self), key, KEYBOARD_ENTRY_KEY_MODE));
     if (result == 1 && (data_021fbe40.held & KEYBOARD_ENTRY_PAD_A) != 0) {
-        func_ov095_0229bf3c(keyboard_entry_keyboard(self));
+        SoftKeyboard_StartRepeat(keyboard_entry_keyboard(self));
         MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_KEY_REPEAT);
-        func_ov095_0229c8e4(keyboard_entry_keyboard_arg(self), key);
+        SoftKeyboard_ShowKeyPressed(keyboard_entry_keyboard(self), key);
         return;
     }
     if (result == 4) {
-        func_ov095_0229cce0(keyboard_entry_keyboard(self));
+        SoftKeyboard_ReleasePressed(keyboard_entry_keyboard(self));
     } else if (result != 3) {
         KeyboardEntry_ReleaseToKeys(self);
     }
@@ -229,7 +231,7 @@ void KeyboardEntry_MarkKeys(KeyboardEntry *self)
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(keyboard_entry_scene(self));
     if (KeyboardEntry_MoveByKeys(self, keys) == 1) {
-        func_ov095_0229b3ec(keyboard_entry_keyboard(self));
+        SoftKeyboard_HangulReset(keyboard_entry_keyboard(self));
         KeyboardEntry_MarkToPosition(self);
         KeyboardEntry_PlaceCursor(self);
         KeyboardEntry_ShowField(self);
@@ -263,7 +265,7 @@ void KeyboardEntry_TextKeys(KeyboardEntry *self)
     int keys = (int) MenuScene_LatchRepeatedKeys(keyboard_entry_scene(self));
     switch (KeyboardEntry_MoveByKeys(self, keys)) {
         case 1:
-            func_ov095_0229b3ec(keyboard_entry_keyboard(self));
+            SoftKeyboard_HangulReset(keyboard_entry_keyboard(self));
             KeyboardEntry_ClearMarks(self);
             KeyboardEntry_PlaceCursor(self);
             KeyboardEntry_ShowField(self);
@@ -272,7 +274,7 @@ void KeyboardEntry_TextKeys(KeyboardEntry *self)
             break;
         case 2: {
             int x = Glider_ScreenX(&self->pointer);
-            func_ov095_0229a134(keyboard_entry_keyboard_arg(self), x);
+            SoftKeyboard_CursorToTabRowAt(keyboard_entry_keyboard(self), x);
             KeyboardEntry_TextToKeys(self);
             break;
         }
@@ -317,7 +319,7 @@ void KeyboardEntry_Keys(KeyboardEntry *self)
         return;
     }
     u32 keys = MenuScene_LatchRepeatedKeys(keyboard_entry_scene(self));
-    switch (func_ov095_02299a54(keyboard_entry_keyboard(self), (void *) (uintptr_t) keys)) {
+    switch (SoftKeyboard_MoveCursor(keyboard_entry_keyboard(self), (int) keys)) {
         case 1:
             Glider_TurnToSetA(&self->pointer);
             KeyboardEntry_GlidePointer(self);
@@ -378,7 +380,7 @@ void KeyboardEntry_KeyTouchHeld(KeyboardEntry *self)
         MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_TOUCH);
         return;
     }
-    if (func_ov095_0229bf0c(keyboard_entry_keyboard(self)) != 0) {
+    if (SoftKeyboard_StepRepeat(keyboard_entry_keyboard(self)) != 0) {
         keyboard_entry_repeat_held_key(self);
     }
 }
@@ -414,7 +416,7 @@ void KeyboardEntry_Touch(KeyboardEntry *self)
         KeyboardEntry_BeginKeys(self);
         return;
     }
-    int pressed_shown = func_ov095_0229bf48(keyboard_entry_keyboard(self));
+    int pressed_shown = SoftKeyboard_StepPressed(keyboard_entry_keyboard(self));
     if (data_021fbdd8 == 0 || data_021fbddc == 0) {
         return;
     }
@@ -424,8 +426,8 @@ void KeyboardEntry_Touch(KeyboardEntry *self)
     if (KeyboardEntry_TouchText(self) != 0) {
         return;
     }
-    if (func_ov095_0229aff0(keyboard_entry_keyboard(self)) != 0) {
-        func_ov095_0229c22c(keyboard_entry_keyboard(self), 9, KEYBOARD_ENTRY_LAYER, 1);
+    if (SoftKeyboard_TouchPageTab(keyboard_entry_keyboard(self)) != 0) {
+        SoftKeyboard_LoadLayout(keyboard_entry_keyboard(self), 9, KEYBOARD_ENTRY_LAYER, 1);
         KeyboardEntry_ShowField(self);
         return;
     }

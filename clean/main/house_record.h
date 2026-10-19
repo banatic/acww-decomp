@@ -100,10 +100,6 @@ int HouseRecord_Loan(const HouseRecord *house);
 void HouseRecord_AddRoachesForAbsence(HouseRecord *house, int days);
 void HouseRecord_SetRoaches(HouseRecord *house, unsigned char count);
 unsigned char HouseRecord_Roaches(const HouseRecord *house);
-/* The names these had before, for the callers in overlay 4 (house_roaches.c) until they use
- * the ones above. */
-#define HouseRecord_Absence HouseRecord_Roaches
-#define HouseRecord_SetAbsence HouseRecord_SetRoaches
 unsigned short HouseRecord_SizeModel(void *unused);
 unsigned short HouseRecord_RoomModel(int unused, int room);
 int HouseRecord_SetLook(HouseRecord *house, unsigned char look);

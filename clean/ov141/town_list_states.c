@@ -17,26 +17,10 @@
 #include "main/state_flags.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
+#include "ov139/res_rows.h"
 
 /* The scene's vtable. */
 extern const u8 data_ov141_0229af48[];
-
-/* Overlay 139's object (the rows): its constructor; its OBJ characters and palettes loaded,
- * its BG characters and palettes loaded, all rows cleared, its labels opened, its frame's start
- * and end, its teardown, its setup (layer, palette entry), the address of its cell `n` (0 the
- * list's frame, 1 the mark of the row picked, 2 the quit button, 3 the OK button) and its draw
- * (moved by a y). */
-extern void *func_ov139_02299b54(void *rows);
-extern void func_ov139_02299964(void *rows);
-extern void func_ov139_022999f8(void *rows);
-extern void func_ov139_022999c4(void *rows);
-extern void func_ov139_022997f0(void *rows);
-extern void func_ov139_02299ac0(void *rows);
-extern void func_ov139_02299a80(void *rows);
-extern void func_ov139_02299adc(void *rows);
-extern void func_ov139_02299af8(void *rows, u8 layer, int arg);
-extern unsigned int func_ov139_022995d8(unsigned int rows, unsigned int cell);
-extern void func_ov139_02299a68(void *rows, int a, int y);
 
 /* The cells of overlay 139's object (func_ov139_022995d8). */
 #define TOWN_LIST_CELL_FRAME 0
@@ -61,7 +45,7 @@ static MenuScene *town_list_scene(TownList *self)
 
 static MenuDispatch *town_list_parent(TownList *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) Process_GetParent((Process *) (void *) self);
 }
 
 static void *town_list_rows(TownList *self)
@@ -72,7 +56,7 @@ static void *town_list_rows(TownList *self)
 /* func_ov141_0229a834: overlay 139's OBJ graphics and the panel's text colours loaded. */
 void TownList_LoadPanelGraphics(TownList *self)
 {
-    func_ov139_02299964(town_list_rows(self));
+    ResRows_LoadObjFiles(town_list_rows(self));
     ButtonPanel_LoadTextColors(&self->panel);
 }
 CLEAN_AS(func_ov141_0229a834, TownList_LoadPanelGraphics)
@@ -82,8 +66,8 @@ CLEAN_AS(func_ov141_0229a834, TownList_LoadPanelGraphics)
  * loaded. */
 void TownList_LoadGraphics(TownList *self)
 {
-    func_ov139_022999f8(town_list_rows(self));
-    func_ov139_022999c4(town_list_rows(self));
+    ResRows_LoadBg(town_list_rows(self));
+    ResRows_ClearRows(town_list_rows(self));
     RomFile_Read(data_ov141_0229afa8, self->screen, sizeof(self->screen));
     ScreenMap_SetPalette(self->screen, 7, 8, 0x10, 0x13, 7);
     ScreenMap_SetPalette(self->screen, 0x12, 8, 0x19, 0x13, 7);
@@ -111,7 +95,7 @@ CLEAN_AS(func_ov141_0229a8d0, TownList_SetUpLayers)
 void TownList_EndFrame(TownList *self)
 {
     TownList_QueueScreen(self);
-    func_ov139_02299a80(town_list_rows(self));
+    ResRows_QueuePalette(town_list_rows(self));
 }
 CLEAN_AS(func_ov141_0229a91c, TownList_EndFrame)
 
@@ -121,7 +105,7 @@ void TownList_BeginFrame(TownList *self)
 {
     LayerTask_End(&self->screen_task);
     ButtonPanel_CloseTexts(&self->panel);
-    func_ov139_02299ac0(town_list_rows(self));
+    ResRows_Teardown(town_list_rows(self));
 }
 CLEAN_AS(func_ov141_0229a934, TownList_BeginFrame)
 
@@ -147,7 +131,7 @@ CLEAN_AS(func_ov141_0229a968, TownList_BeginInteractiveFrame)
 void TownList_Teardown(TownList *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
-    func_ov139_02299adc(town_list_rows(self));
+    ResRows_End(town_list_rows(self));
     LayerTask_End(&self->screen_task);
 }
 CLEAN_AS(func_ov141_0229a984, TownList_Teardown)
@@ -157,7 +141,7 @@ CLEAN_AS(func_ov141_0229a984, TownList_Teardown)
 void TownList_Setup(TownList *self)
 {
     self->flags = 0;
-    func_ov139_02299af8(town_list_rows(self), 6, 0x7e);
+    ResRows_Open(town_list_rows(self), 6, 0x7e);
     for (int row = 0; row < TOWN_LIST_ROWS; row++) {
         self->row_state[row] = TOWN_LIST_ROW_EMPTY;
     }
@@ -218,7 +202,7 @@ CLEAN_AS(func_ov141_0229aa94, TownList_WipeIn)
  * state 2. */
 void TownList_StartWipeIn(TownList *self)
 {
-    func_ov139_022997f0(town_list_rows(self));
+    ResRows_MakeHeadings(town_list_rows(self));
     MenuScene_StartWipeCoveredOnWindow2(town_list_scene(self), 8, 4, 0, 0x30);
     DisplayLayer_Show(6);
     TownList_ScrollWithWipe(self);
@@ -333,7 +317,7 @@ CLEAN_AS(_ZN18Obj_ov141_0229af4819func_ov141_0229ac60Ev, TownList_RunState)
 /* The address of cell `cell` of overlay 139's object. */
 static const OamEntry *town_list_cell(TownList *self, unsigned int cell)
 {
-    return (const OamEntry *) (uintptr_t) func_ov139_022995d8((unsigned int) (uintptr_t) town_list_rows(self), cell);
+    return (const OamEntry *) (uintptr_t) ResRows_Cells((unsigned int) (uintptr_t) town_list_rows(self), cell);
 }
 
 /* A cell drawn at (0x80, y) on the sub screen in `palette` (-1: its own) at priority 2,
@@ -368,7 +352,7 @@ int TownList_Draw(TownList *self)
     town_list_draw_cell(frame, y, -1);
     town_list_draw_cell(quit, y, self->quit_palette);
     town_list_draw_cell(ok, y, self->ok_palette);
-    func_ov139_02299a68(town_list_rows(self), 0, self->wipe_y);
+    ResRows_DrawAt(town_list_rows(self), 0, self->wipe_y);
     return 1;
 }
 CLEAN_AS(func_ov141_0229ad00, TownList_Draw)
@@ -405,7 +389,7 @@ TownList *TownList_New(void)
     }
     MenuScene_Construct(&self->base);
     self->base.vtable = data_ov141_0229af48;
-    func_ov139_02299b54(self->rows);
+    ResRows_Construct((ResRows *) (void *) self->rows);
     Glider0_Construct(&self->cursor_sprite);
     ButtonPanel_Construct(&self->panel);
     LayerTask_Construct(&self->screen_task);

@@ -25,7 +25,7 @@
 typedef struct TalkAnswer {
     u8 unk_00;                         /* 0x00: data_021f43ec's byte when cleared */
     u8 pad_01[3];                      /* 0x01 */
-    u32 file_name;                     /* 0x04: the address of its select file's name (TalkAnswers_Style) */
+    u32 file_name;                     /* 0x04: the address of its select file's name (TalkAnswers_SelectFileName) */
     u8 text[TALK_ANSWERS_TEXT_SIZE];   /* 0x08: its text (an 8-bit text, text_base.h) */
     Block020a8248 record;              /* 0x64 */
     u8 unk_70;                         /* 0x70: data_021f43ec's byte when cleared */
@@ -48,7 +48,7 @@ typedef struct TalkAnswers {
     u32 picked_step;                          /* 0x360: the slider's step (0 to 15) it was picked at */
 } TalkAnswers;
 
-u32 TalkAnswers_Style(unsigned int index);
+u32 TalkAnswers_SelectFileName(unsigned int index);
 void TalkAnswers_PickByLevel(TalkAnswers *answers, int level);
 void TalkAnswers_Pick(TalkAnswers *answers, int index);
 void TalkAnswers_SetCancelToLast(TalkAnswers *answers);

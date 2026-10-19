@@ -421,9 +421,7 @@ void *TaxiDriver_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) td_part(driver, TD_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) td_part(driver, TD_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) td_part(driver, TD_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) td_part(driver, TD_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) td_part(driver, TD_ANIM));
     SceneMover_Construct((SceneMover *) (void *) td_part(driver, TD_MOVER));
     SceneProbe_Construct(td_part(driver, TD_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) td_part(driver, TD_VALUE_3AA));

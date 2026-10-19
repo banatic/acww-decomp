@@ -70,7 +70,7 @@ extern StateBlock data_021dc7a8;
 #define T5T_PART_WINNER 1
 
 /* The villagers listed at a time, the town's places, and the message of the answer that goes
- * on to the next ones (of the file TalkAnswers_Style(0)). */
+ * on to the next ones (of the file TalkAnswers_SelectFileName(0)). */
 #define T5T_LISTED 4
 #define T5T_PLACES 8
 #define T5T_MORE_MESSAGE 0x3d
@@ -406,7 +406,7 @@ static int t5t_place_filled(int place)
  * hold one, each answer's text the villager's name and its place noted (the others -1); the
  * list then goes on from the place after the last one looked at (0 past the eighth). When the
  * town has more than four villagers a last answer goes on to the next ones (message 0x3d of
- * the file TalkAnswers_Style(0)), and B picks it. */
+ * the file TalkAnswers_SelectFileName(0)), and B picks it. */
 void Turtle5Talk_OfferVillagers(Turtle5Talk *talk)
 {
     TalkAnswers *answers = TalkObject_Answers(t5t_talk_object(talk));
@@ -441,7 +441,7 @@ void Turtle5Talk_OfferVillagers(Turtle5Talk *talk)
     if (VillagerRoster_Count(&data_021e5a2c) > T5T_LISTED) {
         TalkAnswer *answer = TalkAnswers_Answer(answers, count);
         TalkAnswers_SetMessage(answer, &more);
-        TalkAnswers_SetFile(answer, (int) TalkAnswers_Style(0));
+        TalkAnswers_SetFile(answer, (int) TalkAnswers_SelectFileName(0));
         TalkAnswers_LoadAnswerText(answer);
         count++;
     }

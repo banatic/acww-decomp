@@ -236,7 +236,7 @@ static int tpel_is_walking(TownPelican *pelican)
 /* The town's near spot (part 0x24 of the object at data_021d27ac). */
 static NearSpot *tpel_near_spot(void)
 {
-    return (NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get());
+    return (NearSpot *) Block021d27ac_Part24(Block021d27ac_Get());
 }
 
 /* ---- The object */
@@ -707,9 +707,7 @@ void *TownPelican_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) tpel_part(pelican, TPEL_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) tpel_part(pelican, TPEL_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) tpel_part(pelican, TPEL_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) tpel_part(pelican, TPEL_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) tpel_part(pelican, TPEL_ANIM));
     SceneMover_Construct(tpel_mover(pelican));
     SceneProbe_Construct(tpel_part(pelican, TPEL_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) tpel_part(pelican, TPEL_VALUE_3AA));

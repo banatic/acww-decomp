@@ -24,6 +24,7 @@
 #include "ov002/key_repeat.h"
 #include "ov002/paper.h"
 #include "ov004/member_pointer.h"
+#include "ov090/menu_tabs.h"
 #include "ov095/soft_keyboard.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterWriteScene, cursor_x) == 0x9c, "cursor");
@@ -2542,9 +2543,6 @@ CLEAN_AS(func_ov122_022a1a04, LetterWrite_StartWipeOut)
 #define LETTER_WRITE_TAB_NONE (-1)
 #define LETTER_WRITE_TAB_CLOSE 7
 #define LETTER_WRITE_TAB_8 8 /* never switched to */
-extern void func_ov090_022993cc(Process *parent, u32 tab);
-extern u8 func_ov090_0229936c(Process *parent);
-extern void func_ov090_022990d0(Process *parent); /* its bytes 0x94 and 0x91 = 1 */
 
 /* The cells drawn by the draw: one above the keyboard and one over it while the keys are in use. */
 extern const OamEntry data_ov122_022a2700[];
@@ -2787,7 +2785,7 @@ CLEAN_AS(func_ov122_022a1d60, LetterWrite_StartWipeIn)
  * hidden and the taboo words filtered out. */
 void LetterWrite_ExitMenu(LetterWriteScene *self)
 {
-    func_ov090_022993cc(letter_write_parent(self), LETTER_WRITE_TAB_CLOSE);
+    MenuTabs_SelectTab((MenuTabs *) (void *) letter_write_parent(self), LETTER_WRITE_TAB_CLOSE);
     LetterWrite_ScrollTo(self, 0);
     LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_CURSOR_SHOWN);
     self->base.state = LETTER_WRITE_STATE_EXIT;
@@ -2808,7 +2806,7 @@ int LetterWrite_SwitchTab(LetterWriteScene *self, int tab)
         return 0;
     }
     u8 kept = GroupParams_C50();
-    func_ov090_022993cc(parent, (u8) tab);
+    MenuTabs_SelectTab((MenuTabs *) (void *) parent, (u8) tab);
     GroupParams_SetC50((char) kept);
     self->base.state = LETTER_WRITE_STATE_TAB_SWITCH;
     MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_1);
@@ -3015,8 +3013,8 @@ CLEAN_AS(func_ov122_022a223c, LetterWrite_DrawScene)
 int LetterWrite_Close(LetterWriteScene *self)
 {
     Process *parent = letter_write_parent(self);
-    func_ov090_0229936c(parent);
-    func_ov090_022990d0(parent);
+    MenuTabs_ChildClosed((MenuTabs *) (void *) parent);
+    MenuTabs_SlideIn((MenuTabs *) (void *) parent);
     LetterWrite_Release(self);
     return 1;
 }

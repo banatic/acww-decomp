@@ -17,6 +17,8 @@
 #include "ov004/member_pointer.h"
 #include "ov090/menu_tabs.h"
 #include "ov092/menu_dispatch.h"
+#include "ov095/soft_keyboard.h"
+#include "ov124/han_panel.h"
 
 /* The heap the scene loads its files with. */
 extern Heap *data_021fbe94;
@@ -80,8 +82,8 @@ static int keyboard_entry_is_friend_mode(unsigned int mode)
  * its box and shown. */
 void KeyboardEntry_LoadField(KeyboardEntry *self)
 {
-    func_ov095_0229b324(keyboard_entry_keyboard(self));
-    func_ov124_0229ef4c(self->field, KEYBOARD_ENTRY_LAYER);
+    SoftKeyboard_LoadObjGraphics(keyboard_entry_keyboard(self));
+    HanPanel_LoadSign((HanPanel *) (void *) self->field, KEYBOARD_ENTRY_LAYER);
     DisplayLayer_LoadPalettesFromFile(data_ov126_022a2140, data_021fbe94, LAYER_SUB_OBJ, 5, 5, 5);
     ButtonPanel_LoadTextColors(&self->panel);
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_HINT) != 0) {
@@ -106,12 +108,12 @@ CLEAN_AS(func_ov126_022a12d4, KeyboardEntry_LoadField)
  * allows, and the keyboard's own on background 3. */
 void KeyboardEntry_LoadScreens(KeyboardEntry *self)
 {
-    func_ov124_0229f378(keyboard_entry_field_arg(self), KEYBOARD_ENTRY_FIELD_LAYER);
+    HanPanel_LoadStyledBackground((HanPanel *) (void *) self->field, KEYBOARD_ENTRY_FIELD_LAYER);
     DisplayLayer_LoadCharsFromFile(data_ov126_022a2154, data_021fbe94, KEYBOARD_ENTRY_FIELD_LAYER, 0x13d, 0x13d, 0x1e9);
-    func_ov095_0229c000(keyboard_entry_keyboard_arg(self), (int) (uintptr_t) data_ov126_022a216c);
+    SoftKeyboard_ReadScreen(keyboard_entry_keyboard(self), (const char *) (void *) data_ov126_022a216c);
     KeyboardEntry_UpdateKeys(self);
-    func_ov095_0229bfd8(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_LAYER);
-    func_ov095_0229c01c(keyboard_entry_keyboard_arg(self), KEYBOARD_ENTRY_LAYER);
+    SoftKeyboard_LoadScreenNow(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_LAYER);
+    SoftKeyboard_LoadLetterChars(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_LAYER);
 }
 CLEAN_AS(func_ov126_022a1394, KeyboardEntry_LoadScreens)
 
@@ -132,7 +134,7 @@ CLEAN_AS(func_ov126_022a13fc, KeyboardEntry_SetUpLayers)
 /* func_ov126_022a1434: a frame's end: the keyboard drawn on background 3. */
 void KeyboardEntry_EndFrame(KeyboardEntry *self)
 {
-    func_ov095_0229bf7c(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_LAYER);
+    SoftKeyboard_QueueScreen(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_LAYER);
 }
 CLEAN_AS(func_ov126_022a1434, KeyboardEntry_EndFrame)
 
@@ -141,7 +143,7 @@ CLEAN_AS(func_ov126_022a1434, KeyboardEntry_EndFrame)
 void KeyboardEntry_BeginFrame(KeyboardEntry *self)
 {
     KeyboardEntry_ClearFlags(self, KEYBOARD_ENTRY_FLAG_FIELD_SHOWN);
-    func_ov124_0229eea0((char *) self->field);
+    HanPanel_CloseTexts((HanPanel *) (void *) self->field);
     ButtonPanel_CloseTexts(&self->panel);
     TextLabel_CloseBox(&self->hint);
 }
@@ -165,8 +167,8 @@ CLEAN_AS(func_ov126_022a1480, KeyboardEntry_BeginInputFrame)
 /* func_ov126_022a149c: the members' boxes closed and the keyboard's own teardown. */
 void KeyboardEntry_Teardown(KeyboardEntry *self)
 {
-    func_ov124_0229eea0((char *) self->field);
-    func_ov095_0229c05c(keyboard_entry_keyboard(self));
+    HanPanel_CloseTexts((HanPanel *) (void *) self->field);
+    SoftKeyboard_Finish(keyboard_entry_keyboard(self));
     ButtonPanel_CloseTexts(&self->panel);
     TextLabel_CloseBox(&self->hint);
 }
@@ -207,17 +209,17 @@ void KeyboardEntry_Setup(KeyboardEntry *self)
     }
     switch (self->panel_kind) {
         case KEYBOARD_ENTRY_PANEL_OK_CANCEL:
-            func_ov095_0229c084(keyboard_entry_keyboard(self), 5);
+            SoftKeyboard_Init(keyboard_entry_keyboard(self), 5);
             break;
         case KEYBOARD_ENTRY_PANEL_CANCEL:
         case KEYBOARD_ENTRY_PANEL_OK:
-            func_ov095_0229c084(keyboard_entry_keyboard(self), 4);
+            SoftKeyboard_Init(keyboard_entry_keyboard(self), 4);
             break;
         case KEYBOARD_ENTRY_PANEL_NONE:
-            func_ov095_0229c084(keyboard_entry_keyboard(self), 3);
+            SoftKeyboard_Init(keyboard_entry_keyboard(self), 3);
             break;
     }
-    switch (func_ov124_0229f27c(keyboard_entry_field_arg(self))) {
+    switch (HanPanel_TextStyle((HanPanel *) (void *) self->field)) {
         case KEYBOARD_ENTRY_FIELD_10:
             self->max_chars = 10;
             self->field_left = 0x52;
@@ -455,7 +457,7 @@ CLEAN_AS(func_ov126_022a19a8, KeyboardEntry_WipeIn)
  * and wiping in on window 2 (state 2), the scene drawn. */
 void KeyboardEntry_StartWipeIn(KeyboardEntry *self)
 {
-    func_ov095_0229c420(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_LAYER);
+    SoftKeyboard_LoadSavedLayout(keyboard_entry_keyboard(self), KEYBOARD_ENTRY_LAYER);
     KeyboardEntry_LoadField(self);
     KeyboardEntry_ShowField(self);
     KeyboardEntry_SetPanelLayout(self);
@@ -599,10 +601,10 @@ int KeyboardEntry_Draw(KeyboardEntry *self)
     if (StateFlags_Test2()) {
         Glider_DrawWrapped(&self->pointer);
     }
-    func_ov124_0229eeb8(self->field, NULL, (void *) (uintptr_t) y);
+    HanPanel_DrawWithSign((HanPanel *) (void *) self->field, 0, y);
     ButtonPanel_Draw(&self->panel, MenuScene_WipeOffsetY(keyboard_entry_scene(self)));
-    func_ov095_0229b1c8(keyboard_entry_keyboard(self), 0x80, y + 0x60, 1);
-    func_ov095_0229ae84(keyboard_entry_keyboard(self), (void *) (uintptr_t) 0x80, (void *) (uintptr_t) (y + 0x60));
+    SoftKeyboard_DrawTabRow(keyboard_entry_keyboard(self), 0x80, y + 0x60, 1);
+    SoftKeyboard_DrawSideButtons(keyboard_entry_keyboard(self), 0x80, y + 0x60);
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_HINT)) {
         OamBuffer_DrawCell(1, data_ov126_022a20b0, self->hint_x + 0x80, y + 0x60, -1, 1, 0x1000, 0x1000, 0, -1, 0, 0);
     }
@@ -611,7 +613,7 @@ int KeyboardEntry_Draw(KeyboardEntry *self)
         s32 cursor_y = self->cursor_y;
         self->blink++;
         if ((self->blink & 0x10) != 0) {
-            func_ov095_0229af58(keyboard_entry_keyboard_arg(self), x, cursor_y, 2);
+            SoftKeyboard_DrawCaret(keyboard_entry_keyboard(self), x, cursor_y, 2);
         }
     }
     return 1;
@@ -659,7 +661,7 @@ KeyboardEntry *KeyboardEntry_New(void)
     }
     MenuScene_Construct(&self->base);
     self->base.vtable = data_ov126_022a20c8;
-    func_ov124_0229f460(self->field);
+    HanPanel_Construct((HanPanel *) (void *) self->field);
     for (int i = 0; i < 2; i++) {
         LayerTask_Construct(&self->tasks[i]);
     }

@@ -16,6 +16,7 @@
 #include "main/link_global.h"
 #include "main/main_random.h"
 #include "main/model_pool.h"
+#include "main/overlay_groups.h"
 #include "main/session.h"
 #include "main/session_players.h"
 #include "main/sound_emitter.h"
@@ -44,7 +45,6 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern int NNS_G3dMdlGetMdlAlpha(void *model, int material);
 extern void NNS_G3dMdlSetMdlAlpha(void *model, int material, int alpha);
-extern int func_02070070(void);
 
 /* Whether this system has a slot in the session. */
 static int town_insect_moves_in_session(void)
@@ -1097,7 +1097,7 @@ void TownInsectMove_Update36(TownInsect *insect)
     u8 action = insect->action;
     Vec3 *position = &insect->position;
     s16 *fall = &insect->unk_23e;
-    if (func_02070070() == 0) {
+    if (OverlayGroups_HasOwner() == 0) {
         insect->unk_247 = FieldActor_PlayerHolds1376() != 0 ? 1 : 0;
     }
     if (insect->unk_24c == 0 && action != TOWN_INSECT_ACTION_LET_GO && action != 9) {

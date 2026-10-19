@@ -42,7 +42,6 @@ extern const OamEntry data_ov094_0229bfa0;
 extern const OamEntry data_ov094_0229bfa8;
 
 /* The rest of the grid (overlay 094's code). */
-extern void *func_ov094_0229b048(char *animation, unsigned int frame, unsigned int variant);
 extern void func_ov094_0229a8cc(void *grid, OamEntry *obj, void *chars, int palette);
 extern void func_ov094_0229a99c(void *grid, int item, int unused);
 extern int func_ov094_0229ab7c(unsigned char *grid, unsigned char place);
@@ -108,15 +107,16 @@ int PocketsGrid_StepPickUp(PocketsGrid *grid)
     if (step < POCKETS_GRID_PICKUP_FRAMES) {
         u8 frame = data_ov094_0229bc50[step];
         if (frame != POCKETS_GRID_NO_FRAME) {
-            void *chars = func_ov094_0229b048((char *) grid->animation, frame, grid->pickup_variant);
-            func_ov094_0229a8cc(grid, &data_ov094_0229bf70, chars, POCKETS_GRID_HELD_PALETTE);
+            void *chars =
+                (void *) PocketsIcons_LoadPickUpFrame((PocketsIcons *) (void *) grid->animation, frame, grid->pickup_variant);
+            PocketsGrid_SetObjChars(grid, &data_ov094_0229bf70, chars, POCKETS_GRID_HELD_PALETTE);
         }
         grid->pickup_step++;
     } else if (step < POCKETS_GRID_PICKUP_HIDDEN) {
         grid->held_size = PocketsGrid_PickUpSize(grid);
         grid->pickup_step++;
     } else if (step == POCKETS_GRID_PICKUP_HIDDEN) {
-        func_ov094_0229a99c(grid, grid->held_item, 0);
+        PocketsGrid_SetHeldIcon(grid, grid->held_item, 0);
         grid->held_size = 0;
         grid->pickup_step++;
     } else if (step < POCKETS_GRID_PICKUP_END) {
@@ -205,8 +205,8 @@ void PocketsGrid_DrawPlace(PocketsGrid *grid, const OamEntry *obj, int place, in
     int at_y = OamBuffer_ObjY(obj) + y;
     int lift = 0;
 
-    if (func_ov094_0229ab7c((unsigned char *) grid, (unsigned char) place) != 0) {
-        lift = (int) (intptr_t) func_ov094_0229ab68(grid);
+    if (PocketsGrid_IsLifted((PocketsGrid *) (void *) grid, (unsigned char) place) != 0) {
+        lift = PocketsGrid_LiftOffset(grid);
         at_x += lift;
         at_y += lift;
     }
@@ -216,12 +216,12 @@ void PocketsGrid_DrawPlace(PocketsGrid *grid, const OamEntry *obj, int place, in
     if (PocketsBits_Test(&grid->filled, place) != 0) {
         int palette = POCKETS_GRID_OWN_PALETTE;
 
-        if (func_ov094_0229a8bc((int) (uintptr_t) grid, (unsigned char) place) != 0) {
+        if (PocketsGrid_IsDimmed((PocketsGrid *) (void *) grid, (unsigned char) place) != 0) {
             palette = POCKETS_GRID_DIMMED_PALETTE;
         }
         OamBuffer_DrawObjAffine(OAM_BUFFER_SCREEN_SUB, obj, x + lift, y + lift, palette, grid->priority, NULL);
         PocketsGrid_DrawSurround(grid, at_x, at_y, palette);
-        if (func_ov094_0229ab7c((unsigned char *) grid, (unsigned char) place) != 0) {
+        if (PocketsGrid_IsLifted((PocketsGrid *) (void *) grid, (unsigned char) place) != 0) {
             PocketsGrid_DrawLowered(grid, at_x, at_y);
         }
     }
@@ -298,7 +298,6 @@ extern const u32 data_ov094_0229bf90[];
 extern const s32 data_ov094_0229bc58[];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_020edb3c(void *block); /* operator delete */
 
 static PocketsIcons *grid_icons(PocketsGrid *grid)
 {
@@ -852,7 +851,7 @@ PocketsGrid *PocketsGrid_DestructDelete(PocketsGrid *grid)
 {
     grid->vtable = (u32) (uintptr_t) data_ov094_0229bf90;
     PocketsIcons_Destruct(grid_icons(grid));
-    func_020edb3c(grid);
+    Heap_OperatorDeleteB(grid);
     return grid;
 }
 CLEAN_AS(func_ov094_0229afb8, PocketsGrid_DestructDelete)

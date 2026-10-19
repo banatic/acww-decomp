@@ -7,8 +7,23 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "key_repeat.h"
+#include "label_button.h"
 #include "main/display_layers.h"
 #include "main/display_shadow.h"
+#include "main/label_sprite.h"
+#include "main/message_reader.h"
+#include "main/npc_id.h"
+#include "main/player_id.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
+#include "main/rom_file.h"
+#include "main/sliding_window.h"
+#include "main/state_flags.h"
+#include "main/text_base.h"
+#include "main/town_villager.h"
+#include "main/villager_memories.h"
+#include "main/villager_roster.h"
+#include "message_window.h"
 
 static_assert(sizeof(PagedChoiceRow) == 0x74 && offsetof(PagedChoice, rows) == 0x28, "choice rows");
 static_assert(offsetof(PagedChoice, flags) == 0x14 && offsetof(PagedChoice, page) == 0x20, "choice fields");
@@ -22,24 +37,11 @@ static_assert(offsetof(ChoiceEntries, text_rows) == 0x0a, "choice entries");
 /* The full-width slash (U+FF0F), between the page and the page count. */
 extern const u16 data_ov002_0220ba50[];
 
-/* Queues a request (to data_021f4dac) for `target` with the one-byte code at `code`. */
-extern int func_020b4980(int target, unsigned char *code, int *table);
 /* The effects of the picking codes: 13, 1-4 and 5-12. */
 extern void func_02066514(void *target);
 extern void func_02066560(int target, int index);
 extern void func_0206658c(void *target, int index);
 extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
-
-/* main's text labels */
-extern void *func_02070c08(void *label);                             /* constructor */
-extern int **func_02070be8(int **label);                             /* destructor */
-extern void func_020708e4(void *label, const u16 *chars, int count); /* sets its characters */
-extern void *func_020a8bb8(char *label, char *from);                 /* copies another's text */
-extern int func_020a89f8(void *label, const u16 *chars);             /* appends characters */
-extern int func_020a89dc(void *label, void *other);                  /* appends another's text */
-extern void func_0208f218(void *shown, char *label);                 /* gives a shown label its text */
-extern void func_02070a04(void *label, int a, int b);
-extern void func_02070b84(void *label); /* frees the object at 0x68 */
 
 #define FULLWIDTH_ZERO 0xff10
 
@@ -66,7 +68,7 @@ void PagedChoice_RequestRowText(PagedChoice *choice, PagedChoiceRow *row, char c
 {
     unsigned char byte = (unsigned char) code;
     (void) choice;
-    func_020b4980((int) (uintptr_t) row, &byte, NULL);
+    MessageReader_LoadMenuMessage((int) (uintptr_t) row, &byte, NULL);
 }
 CLEAN_AS(func_ov002_022089ec, PagedChoice_RequestRowText)
 
@@ -263,21 +265,21 @@ void PagedChoice_ShowPage(PagedChoice *choice, const u8 *page)
     count_digit[0] = (u16) (choice->page_count + FULLWIDTH_ZERO);
     count_digit[1] = 0;
 
-    func_02070c08(text);
-    func_02070c08(digit);
-    func_020708e4(digit, page_digit, 2);
-    func_020a8bb8((char *) text, (char *) digit);
-    func_020a89f8(text, data_ov002_0220ba50);
-    func_020708e4(digit, count_digit, 2);
-    func_020a89dc(text, digit);
-    func_0208f218(choice->page_label, (char *) text);
+    TextLabel_Construct((TextLabel *) (void *) text);
+    TextLabel_Construct((TextLabel *) (void *) digit);
+    TextLabel_SetFromWide(digit, page_digit, (void *) (uintptr_t) 2);
+    TextBase_Copy((TextBase *) (void *) text, (TextBase *) (void *) digit);
+    TextBase_AppendChars((TextBase *) (void *) text, (const char *) (void *) data_ov002_0220ba50);
+    TextLabel_SetFromWide(digit, count_digit, (void *) (uintptr_t) 2);
+    TextBase_AppendText(text, (TextBase *) (void *) digit);
+    LabelSprite_SetText((LabelSprite *) (void *) choice->page_label, (TextBase *) (void *) text);
     {
         u32 vtable = *(const u32 *) (const void *) choice->page_label;
         ((LabelMethod) (uintptr_t) *(const u32 *) (uintptr_t) (vtable + 0x0c))(choice->page_label);
     }
     choice->page = *page;
-    func_02070be8((int **) digit);
-    func_02070be8((int **) text);
+    TextLabel_Destruct((TextLabel *) (void *) digit);
+    TextLabel_Destruct((TextLabel *) (void *) text);
 }
 CLEAN_AS(func_ov002_02208b74, PagedChoice_ShowPage)
 
@@ -318,7 +320,7 @@ int PagedChoice_AddTextEntry(PagedChoice *choice, ChoiceEntries *entries, const 
 
     for (i = 0; i < PAGED_CHOICE_ROWS; i++) {
         if (entries->ids[i] == CHOICE_ENTRY_EMPTY) {
-            func_020a8bb8((char *) &choice->rows[i], (char *) (uintptr_t) text);
+            TextBase_Copy((TextBase *) (void *) &choice->rows[i], (TextBase *) text);
             entries->values[i] = value;
             entries->text_rows |= (u8) (1 << i);
             entries->ids[i] = CHOICE_ENTRY_TEXT;
@@ -382,7 +384,7 @@ void PagedChoice_RefreshRows(PagedChoice *choice)
     PagedChoice_DrawRows(choice);
     for (i = 0; i < choice->row_count; i++) {
         int apart = i == 0 && PagedChoice_TestFlags(choice, CHOICE_FLAG_FIRST_ROW);
-        func_02070a04(&choice->rows[i], 0, apart ? 0 : 1);
+        TextLabel_Show((TextLabel *) (void *) &choice->rows[i], 0, apart ? 0 : 1);
     }
 }
 CLEAN_AS(func_ov002_02208d74, PagedChoice_RefreshRows)
@@ -404,7 +406,7 @@ void PagedChoice_ReleaseRows(PagedChoice *choice)
     int i;
 
     for (i = 0; i < PAGED_CHOICE_ROWS; i++) {
-        func_02070b84(&choice->rows[i]);
+        TextLabel_CloseBox(&choice->rows[i]);
     }
 }
 CLEAN_AS(func_ov002_02208df8, PagedChoice_ReleaseRows)
@@ -430,29 +432,12 @@ CLEAN_AS(func_ov002_02208e18, PagedChoice_IsIdle)
 #define FRAME_RIGHT 14   /* its column holding the frame's right edge */
 
 /* the town's players */
-extern u8 data_021dc7bc[];                             /* the four players' records */
-extern void *func_020984e8(void);                      /* the current player's record */
-extern void *func_02098844(void *players, int player); /* a player's record */
-extern void *func_02099870(void *player);              /* where its name is */
-extern int func_0209871c(void *players, void *name);   /* the player with that name */
-extern int func_020988a4(void *players, int player);   /* whether there is such a player */
-extern void *func_02095074(void *name, void *text);    /* copies a player's name to a text */
+extern u8 data_021dc7bc[]; /* the four players' records */
 /* the eight entries of the list at data_021e5a2c (0x7ec bytes each) */
 extern u8 data_021e5a2c[];
-extern void *func_0207cec0(void *list, int index); /* entry `index` */
-extern int func_0207cee4(void *list, int index);   /* whether it is in use */
-extern int func_020807a8(void *entry, void *name); /* tests the entry against a player's name */
-extern void *func_0208150c(void *entry);           /* its text, 0x7a0 bytes in */
-extern int func_02003618(const void *source, void *text);
-/* A string object (0x24 bytes): built by func_02094fd4, destroyed by func_02094fbc. */
-extern void *func_02094fd4(void *text);
-extern int func_02094fbc(void *text);
-
-extern int func_0206fe54(void); /* whether state flag 2 is set */
 
 /* files */
 extern Heap *data_021fbe94; /* the heap files are loaded on */
-extern void *func_02064b2c(const void *file, Heap *heap, int align, u32 *size);
 extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 extern const char data_ov002_0220bbb8[]; /* "menu/friend/bg1.bpl" */
@@ -461,29 +446,10 @@ extern const char data_ov002_0220bbe0[]; /* "menu/inventory/b_itm.bpl" */
 extern const char data_ov002_0220bbfc[]; /* "menu/inventory/b_choice.bch" */
 extern const char data_ov002_0220bc18[]; /* "menu/inventory/b_itm_bg_b.bsc" */
 
-/* the page label (0x26c) and the window (0x2e4) */
-extern void func_0208f210(void *label, int x, int y); /* its offset */
-extern void func_0208f258(void *label);
-extern void func_0208f260(void *label);
-extern void func_0208f0c4(void *label, int a);
-extern void func_0208aa60(void *window, int x, int y); /* its place */
-extern int func_0208a808(void *window);                /* its x */
-extern int func_0208a804(void *window);                /* its y */
-extern int func_0208a7f0(void *window);                /* its width */
-extern void func_0208a9e4(void *window, int a);
-extern void func_0208aa98(void *window);
-extern void func_ov002_0220b04c(void *window);
-extern void func_ov002_0220b06c(void *window, int message, int a, int b);
-extern void *func_ov002_0220b0f4(void *window); /* destructor */
-extern void *func_ov002_0220b10c(void *window); /* constructor */
-extern void *func_ov002_0220b464(void *label);  /* destructor */
-extern void *func_ov002_0220b47c(void *label);  /* constructor */
-
 /* the classes */
 extern const u8 data_ov002_0220bb98[];  /* the choice's vtable */
 extern const u8 data_ov002_0220bba8[];  /* a row's */
 extern const int data_ov002_0220bb84[]; /* the pop's offsets: -5, 1, 0 */
-extern void func_020edb3c(void *block); /* operator delete */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void *func_ov002_02209bf0(void *row); /* ChoiceRow_Destroy, for the array */
@@ -535,10 +501,10 @@ void PagedChoice_BuildPages(PagedChoice *choice)
         choice->codes[i] = CHOICE_NONE;
     }
 
-    name = func_02099870(func_020984e8());
-    self = func_0209871c(data_021dc7bc, name);
+    name = (void *) PlayerRecord_Player((void *) PlayerRecords_Current());
+    self = PlayerRecords_FindIndex(data_021dc7bc, name);
     for (i = 0; i < PLAYERS; i++) {
-        if (i != self && func_020988a4(data_021dc7bc, i)) {
+        if (i != self && PlayerRecords_TownExists(data_021dc7bc, i)) {
             choice->codes[count++] = (u8) (CHOICE_LIST_A + i);
         }
     }
@@ -546,7 +512,9 @@ void PagedChoice_BuildPages(PagedChoice *choice)
         choice->codes[count++] = CHOICE_NEXT_PAGE;
     }
     for (i = 0; i < LIST_B_ENTRIES; i++) {
-        if (func_0207cee4(data_021e5a2c, i) && func_020807a8(func_0207cec0(data_021e5a2c, i), name)) {
+        if (VillagerRoster_IsFilled((VillagerTown *) (void *) data_021e5a2c, i) &&
+            (int) (uintptr_t) VillagerMemory_Of((void *) VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, i),
+                                                name)) {
             choice->codes[count++] = (u8) (CHOICE_LIST_B + i);
         }
         if (count % PAGED_CHOICE_ROWS == PAGED_CHOICE_ROWS - 1) {
@@ -598,7 +566,8 @@ CLEAN_AS(func_ov002_02208f58, PagedChoice_SetRowText)
 /* func_ov002_02208fac: the text of entry `index` of the second list. */
 int ChoiceRow_SetListBName(PagedChoiceRow *row, int index)
 {
-    return ChoiceRow_SetTextFrom(row, func_0208150c(func_0207cec0(data_021e5a2c, index)));
+    return ChoiceRow_SetTextFrom(
+        row, (void *) TownVillager_NpcId((void *) VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, index)));
 }
 CLEAN_AS(func_ov002_02208fac, ChoiceRow_SetListBName)
 
@@ -608,17 +577,17 @@ int ChoiceRow_SetTextFrom(PagedChoiceRow *row, const void *source)
 {
     u8 text[0x24];
 
-    func_02094fd4(text);
-    func_02003618(source, text);
-    func_020a8bb8((char *) row, (char *) text);
-    return func_02094fbc(text);
+    PlayerIdText_Construct((PlayerIdText *) (void *) text);
+    NpcId_FormatName(source, (char *) text);
+    TextBase_Copy((TextBase *) (void *) row, (TextBase *) (void *) text);
+    return (int) (uintptr_t) PlayerIdText_Destruct((PlayerIdText *) (void *) text);
 }
 CLEAN_AS(func_ov002_02208fcc, ChoiceRow_SetTextFrom)
 
 /* func_ov002_02208ff8: the name of the town's player `player`. */
 int ChoiceRow_SetPlayerName(PagedChoiceRow *row, int player)
 {
-    return ChoiceRow_SetName(row, func_02099870(func_02098844(data_021dc7bc, player)));
+    return ChoiceRow_SetName(row, (void *) PlayerRecord_Player((void *) PlayerRecords_TownRecord(data_021dc7bc, player)));
 }
 CLEAN_AS(func_ov002_02208ff8, ChoiceRow_SetPlayerName)
 
@@ -628,10 +597,10 @@ int ChoiceRow_SetName(PagedChoiceRow *row, const void *name)
 {
     u8 text[0x24];
 
-    func_02094fd4(text);
-    func_02095074((void *) (uintptr_t) name, text);
-    func_020a8bb8((char *) row, (char *) text);
-    return func_02094fbc(text);
+    PlayerIdText_Construct((PlayerIdText *) (void *) text);
+    PlayerId_NameToText((DesignCreator *) name, (TextBase *) (void *) text);
+    TextBase_Copy((TextBase *) (void *) row, (TextBase *) (void *) text);
+    return (int) (uintptr_t) PlayerIdText_Destruct((PlayerIdText *) (void *) text);
 }
 CLEAN_AS(func_ov002_02209018, ChoiceRow_SetName)
 
@@ -724,7 +693,7 @@ CLEAN_AS(func_ov002_02209114, PagedChoice_PickRowWithSound)
 void PagedChoice_Highlight(PagedChoice *choice, u8 row)
 {
     PagedChoice_SetFlags(choice, CHOICE_FLAG_HIGHLIGHT);
-    if (func_0206fe54()) {
+    if (StateFlags_Test2()) {
         choice->delay = 2;
     } else {
         choice->delay = 5;
@@ -907,7 +876,7 @@ void PagedChoice_WipeOpen(PagedChoice *choice)
     if (choice->window_delay != 0) {
         choice->window_delay--;
         if (choice->window_delay == 0) {
-            func_0208a9e4(choice->window, 0);
+            SlidingWindow_RefreshText((SlidingWindow *) (void *) choice->window, 0);
         }
     }
     PagedChoice_ApplyWipe(choice);
@@ -922,8 +891,8 @@ void PagedChoice_ApplyWipe(PagedChoice *choice)
 
     Wipe_ApplyScroll(&choice->wipe, choice->layer, neg32(choice->scroll_x), neg32(choice->scroll_y));
     offset = Wipe_OffsetY(&choice->wipe);
-    func_0208f210(choice->page_label, 0, offset);
-    func_0208aa60(choice->window, 0, neg32(offset >> 2));
+    LabelSprite_SetOffset((LabelSprite *) (void *) choice->page_label, 0, offset);
+    SlidingWindow_SetPlace((SlidingWindow *) (void *) choice->window, 0, neg32(offset >> 2));
 }
 CLEAN_AS(func_ov002_02209464, PagedChoice_ApplyWipe)
 
@@ -988,7 +957,7 @@ void PagedChoice_DrawFrame(PagedChoice *choice)
     DisplayLayer_SetPriority(choice->layer, choice->priority);
     DisplayLayer_SetBgControl(choice->layer, 0, 0, 0);
     heap = data_021fbe94;
-    screen = func_02064b2c(choice->screen_file, heap, -4, NULL);
+    screen = RomFile_Load(choice->screen_file, heap, -4, NULL);
 
     if (choice->row_count != PAGED_CHOICE_ROWS) {
         int rows = choice->row_count;
@@ -1157,10 +1126,10 @@ void PagedChoice_PlaceAboveWindow(PagedChoice *choice, void *window)
     int edge;
 
     choice->on_left = 0;
-    x = add32(func_0208a808(window), 0x80);
-    y = add32(func_0208a804(window), 0x60);
+    x = add32(SlidingWindow_X(window), 0x80);
+    y = add32(SlidingWindow_Y(window), 0x60);
     height = PagedChoice_Height(choice);
-    half = func_0208a7f0(window) >> 1;
+    half = SlidingWindow_Width(window) >> 1;
     edge = add32(x, half);
     if (edge > 0x100) {
         x = sub32(x, sub32(edge, 0x100));
@@ -1262,7 +1231,7 @@ void PagedChoice_Init(PagedChoice *choice, u8 layer, int priority, const char *s
     choice->screen_file = screen_file != NULL ? screen_file : data_ov002_0220bc18;
 
     heap = data_021fbe94;
-    screen = func_02064b2c(choice->screen_file, heap, -4, NULL);
+    screen = RomFile_Load(choice->screen_file, heap, -4, NULL);
     choice->first_tile = *(u16 *) screen_cell(screen, 1, 2) & 0x3ff;
     Heap_Free(heap, screen);
 
@@ -1273,13 +1242,13 @@ void PagedChoice_Init(PagedChoice *choice, u8 layer, int priority, const char *s
     }
 
     ((ObjectMethod2) (uintptr_t) virtual_at(choice->page_label, 0x10))(choice->page_label, 0x60, 0x8c);
-    func_0208f210(choice->page_label, 0, 0);
-    func_0208f258(choice->page_label);
-    func_0208f260(choice->page_label);
-    func_0208f0c4(choice->page_label, 1);
-    func_ov002_0220b04c(choice->window);
-    func_ov002_0220b06c(choice->window, 0x1f, 0x80, 0xc);
-    func_0208aa98(choice->window);
+    LabelSprite_SetOffset((LabelSprite *) (void *) choice->page_label, 0, 0);
+    LabelSprite_HideSecond((LabelSprite *) (void *) choice->page_label);
+    LabelSprite_SetWindow((LabelSprite *) (void *) choice->page_label);
+    LabelSprite_SetState((LabelSprite *) (void *) choice->page_label, 1);
+    MessageWindow_Close((MessageWindow *) (void *) choice->window);
+    MessageWindow_Open((MessageWindow *) (void *) choice->window, 0x1f, 0x80, 0xc);
+    SlidingWindow_SetObjWindow((SlidingWindow *) (void *) choice->window);
     choice->flags = 0;
 }
 CLEAN_AS(func_ov002_02209984, PagedChoice_Init)
@@ -1289,8 +1258,8 @@ static void destroy_members(PagedChoice *choice)
 {
     choice->vtable = data_ov002_0220bb98;
     Wipe_Destroy(&choice->wipe);
-    func_ov002_0220b0f4(choice->window);
-    func_ov002_0220b464(choice->page_label);
+    MessageWindow_Destroy((MessageWindow *) (void *) choice->window);
+    LabelButton0_Destroy((LabelButton *) (void *) choice->page_label);
     __cxa_vec_cleanup(choice->rows, PAGED_CHOICE_ROWS, sizeof(PagedChoiceRow), (void (*)(void *)) func_ov002_02209bf0);
 }
 
@@ -1298,7 +1267,7 @@ static void destroy_members(PagedChoice *choice)
 PagedChoice *PagedChoice_Delete(PagedChoice *choice)
 {
     destroy_members(choice);
-    func_020edb3c(choice);
+    Heap_OperatorDeleteB(choice);
     return choice;
 }
 CLEAN_AS(func_ov002_02209a78, PagedChoice_Delete)
@@ -1317,8 +1286,8 @@ PagedChoice *PagedChoice_Construct(PagedChoice *choice)
     choice->vtable = data_ov002_0220bb98;
     __cxa_vec_ctor(choice->rows, PAGED_CHOICE_ROWS, sizeof(PagedChoiceRow), (void (*)(void *)) func_ov002_02209c08,
                    (void (*)(void *)) func_ov002_02209bf0);
-    func_ov002_0220b47c(choice->page_label);
-    func_ov002_0220b10c(choice->window);
+    LabelButton0_Construct((LabelButton *) (void *) choice->page_label);
+    MessageWindow_Construct((MessageWindow *) (void *) choice->window);
     Wipe_Construct(&choice->wipe);
     return choice;
 }
@@ -1352,7 +1321,7 @@ PagedChoiceRow *ChoiceRow_Delete(PagedChoiceRow *row)
 {
     row->label.vtable = (const TextVtable *) (const void *) data_ov002_0220bba8;
     TextLabel_DestructCopy(&row->label);
-    func_020edb3c(row);
+    Heap_OperatorDeleteB(row);
     return row;
 }
 CLEAN_AS(func_ov002_02209bd0, ChoiceRow_Delete)

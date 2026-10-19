@@ -628,7 +628,7 @@ int ReactionNpc_Leave(ReactionNpc *npc)
         return 0;
     }
     if (EventAnnounce_Entered() == 0) {
-        TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()));
+        TownSpot_PickRandom((TownSpot *) Block021d27ac_Part04(Block021d27ac_Get()));
     }
     return 1;
 }
@@ -685,9 +685,7 @@ void *ReactionNpc_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) rnpc_part(npc, RNPC_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) rnpc_part(npc, RNPC_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) rnpc_part(npc, RNPC_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) rnpc_part(npc, RNPC_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) rnpc_part(npc, RNPC_ANIM));
     SceneMover_Construct(rnpc_mover(npc));
     SceneProbe_Construct(rnpc_part(npc, RNPC_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) rnpc_part(npc, RNPC_VALUE_3AA));

@@ -109,15 +109,12 @@ static u8 *ov_record(u8 *object)
 /* ---- The destructors */
 
 /* func_ov068_022667e0 (slot 0x40): its members from the last to the first, then the town
- * villager's body (VillagerSceneObject_DestructBody). The held item link's destructor is the
- * function main registers as HeldItemLink_Construct (func_02012588): this class's constructor
- * (OutdoorVillagerObject_New) runs the one main registers as HeldItemLink_Destruct. Returns the
- * object. */
+ * villager's body (VillagerSceneObject_DestructBody). Returns the object. */
 u8 *OutdoorVillager_Destruct(u8 *object)
 {
     *(const u8 **) (void *) object = data_ov068_022771c0;
     OutdoorVillagerEffect_Destruct((OutdoorVillagerEffect *) (void *) ov_at(object, OUTDOOR_VILLAGER_EFFECT));
-    HeldItemLink_Construct((HeldItemLink *) (void *) ov_at(object, OUTDOOR_VILLAGER_LINK));
+    HeldItemLink_Destruct((HeldItemLink *) (void *) ov_at(object, OUTDOOR_VILLAGER_LINK));
     OutdoorVillagerBehaviour_Destruct(ov_behaviour(object));
     OutdoorVillagerWatch_Destruct((OutdoorVillagerWatch *) (void *) ov_at(object, OUTDOOR_VILLAGER_WATCH));
     VillagerSceneObject_DestructBody(object);

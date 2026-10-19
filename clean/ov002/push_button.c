@@ -5,24 +5,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/dual_cell_sprite.h"
+#include "main/screen_sprite.h"
 
 static_assert(offsetof(PushButton, anim) == 0x14 && offsetof(PushButton, anim2) == 0x28, "push button");
 static_assert(offsetof(PushButton, anim_id) == 0x3c && offsetof(PushButton, unk_44) == 0x44, "push button");
 
-extern const u8 data_ov002_0220bcec[];  /* the button's vtable */
-extern void func_020edb3c(void *block); /* operator delete */
+extern const u8 data_ov002_0220bcec[]; /* the button's vtable */
 
 /* Main's second sprite class. */
-extern void *func_0208ec88(PushButton *button, int kind);        /* constructor */
-extern void *func_0208ebb8(PushButton *button);                  /* destructor */
-extern void *func_0208e95c(PushButton *button, int anim);        /* start an animation */
-extern int func_0208e958(PushButton *button);                    /* the animation, anim_id */
-extern int func_0208e930(PushButton *button);                    /* whether both layers ended */
-extern void func_0208e9e0(PushButton *button, int *dx, int *dy); /* see PushButton_FaceY */
-extern int func_0208aef0(PushButton *button);                    /* x */
-extern int func_0208aeec(PushButton *button);                    /* y */
-extern void RtcSendPxiCommand(int command);                      /* func_020f1fb4(&data_021fd1bc, command) */
+extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
 
 /* PushButton_Contains: the size of the touch area from the screen place, both ends included. */
 #define BUTTON_SIZE 0x10
@@ -63,7 +57,7 @@ int PushButton_FaceY(PushButton *button)
 {
     int dx;
     int dy;
-    func_0208e9e0(button, &dx, &dy);
+    DualCellSprite_Travel((DualCellSprite *) (void *) button, &dx, &dy);
     return add32(add32(dy, PushButton_ScreenY(button)), FACE_INSET);
 }
 CLEAN_AS(func_ov002_0220a4d4, PushButton_FaceY)
@@ -73,7 +67,7 @@ int PushButton_FaceX(PushButton *button)
 {
     int dx;
     int dy;
-    func_0208e9e0(button, &dx, &dy);
+    DualCellSprite_Travel((DualCellSprite *) (void *) button, &dx, &dy);
     return add32(add32(dx, PushButton_ScreenX(button)), FACE_INSET);
 }
 CLEAN_AS(func_ov002_0220a4f8, PushButton_FaceX)
@@ -81,7 +75,7 @@ CLEAN_AS(func_ov002_0220a4f8, PushButton_FaceX)
 /* func_ov002_0220a51c: y on the screen, the place plus the offset. */
 int PushButton_ScreenY(PushButton *button)
 {
-    int y = func_0208aeec(button);
+    int y = ScreenSprite_Y((ScreenSprite *) (void *) button);
     return add32(button->offset_y, y);
 }
 CLEAN_AS(func_ov002_0220a51c, PushButton_ScreenY)
@@ -89,7 +83,7 @@ CLEAN_AS(func_ov002_0220a51c, PushButton_ScreenY)
 /* func_ov002_0220a530 */
 int PushButton_ScreenX(PushButton *button)
 {
-    int x = func_0208aef0(button);
+    int x = ScreenSprite_X((ScreenSprite *) (void *) button);
     return add32(button->offset_x, x);
 }
 CLEAN_AS(func_ov002_0220a530, PushButton_ScreenX)
@@ -97,7 +91,8 @@ CLEAN_AS(func_ov002_0220a530, PushButton_ScreenX)
 /* func_ov002_0220a544: a release that has played out leaves the button at rest. */
 void PushButton_SettleRelease(PushButton *button)
 {
-    if (func_0208e958(button) == PUSH_BUTTON_ANIM_RELEASING && func_0208e930(button) != 0) {
+    if (DualCellSprite_State((DualCellSprite *) (void *) button) == PUSH_BUTTON_ANIM_RELEASING &&
+        DualCellSprite_IsDone((DualCellSprite *) (void *) button) != 0) {
         PushButton_ShowUp(button);
     }
 }
@@ -106,21 +101,21 @@ CLEAN_AS(func_ov002_0220a544, PushButton_SettleRelease)
 /* func_ov002_0220a568: returns what func_0208e95c returns. */
 int PushButton_Release(PushButton *button)
 {
-    return (int) (intptr_t) func_0208e95c(button, PUSH_BUTTON_ANIM_RELEASING);
+    return (int) (intptr_t) DualCellSprite_SetState((DualCellSprite *) (void *) button, PUSH_BUTTON_ANIM_RELEASING);
 }
 CLEAN_AS(func_ov002_0220a568, PushButton_Release)
 
 /* func_ov002_0220a574 */
 void PushButton_Press(PushButton *button)
 {
-    func_0208e95c(button, PUSH_BUTTON_ANIM_PRESSED);
+    DualCellSprite_SetState((DualCellSprite *) (void *) button, PUSH_BUTTON_ANIM_PRESSED);
 }
 CLEAN_AS(func_ov002_0220a574, PushButton_Press)
 
 /* func_ov002_0220a580 */
 void PushButton_ShowUp(PushButton *button)
 {
-    func_0208e95c(button, PUSH_BUTTON_ANIM_UP);
+    DualCellSprite_SetState((DualCellSprite *) (void *) button, PUSH_BUTTON_ANIM_UP);
 }
 CLEAN_AS(func_ov002_0220a580, PushButton_ShowUp)
 
@@ -138,8 +133,8 @@ CLEAN_AS(func_ov002_0220a58c, PushButton_Contains)
 PushButton *PushButton_Delete(PushButton *button)
 {
     button->vtable = data_ov002_0220bcec;
-    func_0208ebb8(button);
-    func_020edb3c(button);
+    DualCellSprite_DestructCopy((DualCellSprite *) (void *) button);
+    Heap_OperatorDeleteB(button);
     return button;
 }
 CLEAN_AS(func_ov002_0220a5c4, PushButton_Delete)
@@ -148,7 +143,7 @@ CLEAN_AS(func_ov002_0220a5c4, PushButton_Delete)
 PushButton *PushButton_Destroy(PushButton *button)
 {
     button->vtable = data_ov002_0220bcec;
-    func_0208ebb8(button);
+    DualCellSprite_DestructCopy((DualCellSprite *) (void *) button);
     return button;
 }
 CLEAN_AS(func_ov002_0220a5e4, PushButton_Destroy)
@@ -156,9 +151,9 @@ CLEAN_AS(func_ov002_0220a5e4, PushButton_Destroy)
 /* func_ov002_0220a5fc: main's sprite of kind 0, without an animation. */
 PushButton *PushButton_Construct(PushButton *button)
 {
-    func_0208ec88(button, 0);
+    DualCellSprite_ConstructCopy((DualCellSprite *) (void *) button, 0);
     button->vtable = data_ov002_0220bcec;
-    func_0208e95c(button, PUSH_BUTTON_ANIM_NONE);
+    DualCellSprite_SetState((DualCellSprite *) (void *) button, PUSH_BUTTON_ANIM_NONE);
     return button;
 }
 CLEAN_AS(func_ov002_0220a5fc, PushButton_Construct)

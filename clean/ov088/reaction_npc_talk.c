@@ -62,7 +62,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 /* The fifth answer (the slots offered): message 5 of the file of answer style 1. */
 #define RT_EXTRA_ANSWER 4
 #define RT_EXTRA_MESSAGE 5
-#define RT_EXTRA_STYLE 1
+#define RT_EXTRA_SELECT2 1 /* the select file "select2" */
 
 /* No motion number (Obj020d8c64_LastMotionNumber). */
 #define RT_NO_NUMBER (-1)
@@ -422,7 +422,7 @@ void ReactionNpcTalk_SetAnswers(ReactionNpcTalk *talk, int way)
         TalkAnswer *extra = TalkAnswers_Answer(answers, i);
         u8 message = RT_EXTRA_MESSAGE;
         TalkAnswers_SetMessage(extra, &message);
-        TalkAnswers_SetFile(extra, (int) TalkAnswers_Style(RT_EXTRA_STYLE));
+        TalkAnswers_SetFile(extra, (int) TalkAnswers_SelectFileName(RT_EXTRA_SELECT2));
         TalkAnswers_LoadAnswerText(extra);
         TalkAnswers_SetCount(answers, i + 1);
         TalkAnswers_SetCancelToLast(answers);

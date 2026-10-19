@@ -905,9 +905,7 @@ PostClerk *PostClerk_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) clerk_part(clerk, POST_CLERK_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) clerk_part(clerk, POST_CLERK_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) clerk_part(clerk, POST_CLERK_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) clerk_part(clerk, POST_CLERK_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) clerk_part(clerk, POST_CLERK_ANIM));
     SceneMover_Construct(clerk_mover(clerk));
     SceneProbe_Construct(clerk_part(clerk, POST_CLERK_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) clerk_part(clerk, POST_CLERK_VALUE_3AA));

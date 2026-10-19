@@ -808,7 +808,7 @@ int Insurer_Leave(void *insurer)
         return 0;
     }
     if (EventAnnounce_Entered() == 0) {
-        TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()));
+        TownSpot_PickRandom((TownSpot *) Block021d27ac_Part04(Block021d27ac_Get()));
     }
     return 1;
 }
@@ -872,9 +872,7 @@ void *Insurer_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) ins_part(insurer, INS_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) ins_part(insurer, INS_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) ins_part(insurer, INS_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) ins_part(insurer, INS_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) ins_part(insurer, INS_ANIM));
     SceneMover_Construct(ins_mover(insurer));
     SceneProbe_Construct(ins_part(insurer, INS_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) ins_part(insurer, INS_VALUE_3AA));

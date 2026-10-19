@@ -482,21 +482,19 @@ int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale)
 }
 CLEAN_AS(func_0201691c, SpeakerAnim_Init)
 
-/* func_02016998: the destructor: the holder's (PoolLink_Pool1E48Destruct). Returns the member.
- * Its name and SpeakerAnim_Destruct's are the wrong way round: their callers in the overlays
- * use these names. */
-SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim)
+/* func_02016998: the destructor: the holder's (PoolLink_Pool1E48Destruct). Returns the member. */
+SpeakerAnim *SpeakerAnim_Destruct(SpeakerAnim *anim)
 {
     PoolLink_Pool1E48Destruct((PoolLink *) anim);
     return anim;
 }
-CLEAN_AS(func_02016998, SpeakerAnim_Construct)
+CLEAN_AS(func_02016998, SpeakerAnim_Destruct)
 
-/* func_020169a8: the constructor (see SpeakerAnim_Construct): the holder's
- * (PoolLink_Pool1E48Construct). Returns the member. */
-SpeakerAnim *SpeakerAnim_Destruct(SpeakerAnim *anim)
+/* func_020169a8: the constructor: the holder's (PoolLink_Pool1E48Construct). Returns the
+ * member. */
+SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim)
 {
     PoolLink_Pool1E48Construct((PoolLink *) anim);
     return anim;
 }
-CLEAN_AS(func_020169a8, SpeakerAnim_Destruct)
+CLEAN_AS(func_020169a8, SpeakerAnim_Construct)

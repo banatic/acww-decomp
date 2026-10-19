@@ -3,26 +3,17 @@
 
 #include <stddef.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/sliding_window.h"
 
 static_assert(offsetof(Popup, step) == 0xcc && offsetof(Popup, timer) == 0xce, "popup fields");
 
 extern const u8 data_ov002_0220baa8[]; /* the popup's vtable */
 
-/* main's sliding window */
-extern void *func_0208ade8(void *window, int param); /* constructor */
-extern void *func_0208ad24(void *window);            /* destructor */
-extern int func_0208a844(void *window);              /* its state: PopupWindowState */
-extern void *func_0208a9ac(void *window);            /* close if open: whether it was */
-extern void *func_0208a9c8(void *window);            /* open if closed: whether it was */
-extern void func_0208aa38(void *window, u8 value);   /* sets its byte at 0x57 */
-extern void func_0208aa40(void *window);             /* sets its byte at 0x5c */
-extern void func_0208aaa0(void *window);             /* runs its state for a frame */
-extern void func_020edb3c(void *block);              /* operator delete */
-
 static int window_state(Popup *popup)
 {
-    return func_0208a844(popup);
+    return SlidingWindow_State((SlidingWindow *) (void *) popup);
 }
 
 /* func_ov002_02207cc0: whether the window is open or opening.
@@ -111,25 +102,26 @@ int Popup_Update(Popup *popup)
     switch (popup->step) {
         case POPUP_CLOSING_TO_SHOW:
             if (window_state(popup) != POPUP_WINDOW_CLOSED) {
-                func_0208a9ac(popup);
+                SlidingWindow_RequestClose((SlidingWindow *) (void *) popup);
             } else {
                 closed_to_show = 1;
                 popup->step = POPUP_OPENING;
             }
             break;
         case POPUP_OPENING:
-            if (func_0208a9c8(popup) != NULL) {
+            if (SlidingWindow_RequestOpen((SlidingWindow *) (void *) popup) != NULL) {
                 popup->step = POPUP_SHOWN;
             }
             break;
         case POPUP_HIDING:
-            if (window_state(popup) == POPUP_WINDOW_CLOSED || func_0208a9ac(popup) != NULL) {
+            if (window_state(popup) == POPUP_WINDOW_CLOSED ||
+                SlidingWindow_RequestClose((SlidingWindow *) (void *) popup) != NULL) {
                 popup->step = POPUP_IDLE;
             }
             break;
     }
 
-    func_0208aaa0(popup);
+    SlidingWindow_Update((SlidingWindow *) (void *) popup);
     return closed_to_show;
 }
 CLEAN_AS(func_ov002_02207d5c, Popup_Update)
@@ -138,8 +130,8 @@ CLEAN_AS(func_ov002_02207d5c, Popup_Update)
 Popup *Popup_Delete(Popup *popup)
 {
     popup->vtable = data_ov002_0220baa8;
-    func_0208ad24(popup);
-    func_020edb3c(popup);
+    SlidingWindow_DestructBase((SlidingWindow *) (void *) popup);
+    Heap_OperatorDeleteB(popup);
     return popup;
 }
 CLEAN_AS(func_ov002_02207e08, Popup_Delete)
@@ -148,7 +140,7 @@ CLEAN_AS(func_ov002_02207e08, Popup_Delete)
 Popup *Popup_Destroy(Popup *popup)
 {
     popup->vtable = data_ov002_0220baa8;
-    func_0208ad24(popup);
+    SlidingWindow_DestructBase((SlidingWindow *) (void *) popup);
     return popup;
 }
 CLEAN_AS(func_ov002_02207e28, Popup_Destroy)
@@ -156,11 +148,11 @@ CLEAN_AS(func_ov002_02207e28, Popup_Destroy)
 /* func_ov002_02207e40 */
 Popup *Popup_Construct(Popup *popup)
 {
-    func_0208ade8(popup, 0);
+    SlidingWindow_Construct((SlidingWindow *) (void *) popup, 0);
     popup->vtable = data_ov002_0220baa8;
     popup->step = POPUP_IDLE;
-    func_0208aa38(popup, 1);
-    func_0208aa40(popup);
+    SlidingWindow_SetKeepOnScreen((SlidingWindow *) (void *) popup, 1);
+    SlidingWindow_CenterText((SlidingWindow *) (void *) popup);
     popup->queued = 0;
     popup->timer = 0;
     return popup;

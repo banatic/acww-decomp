@@ -435,9 +435,8 @@ CLEAN_AS(func_ov068_0226da28, OutdoorVillagerObject_IsLinked)
 
 /* func_ov068_0226da64 (made by the profile record data_ov068_022771a0): the object, zeroed on
  * the auxiliary heap, made as a town villager and given this class's vtable and its members:
- * the watch, the behaviour, the held item link (by the function main registers as
- * HeldItemLink_Destruct, which is the link's constructor) and the effect. Null when the heap
- * has no room. */
+ * the watch, the behaviour, the held item link and the effect. Null when the heap has no
+ * room. */
 u8 *OutdoorVillagerObject_New(void)
 {
     u8 *villager = Heap_AllocAuxZeroed(OBJECT_SIZE);
@@ -448,7 +447,7 @@ u8 *OutdoorVillagerObject_New(void)
     *(const u8 **) (void *) villager = data_ov068_022771c0;
     OutdoorVillagerWatch_Construct((OutdoorVillagerWatch *) (void *) object_at(villager, OUTDOOR_VILLAGER_WATCH));
     OutdoorVillagerBehaviour_Construct(object_behaviour(villager));
-    HeldItemLink_Destruct(object_link(villager));
+    HeldItemLink_Construct(object_link(villager));
     OutdoorVillagerEffect_Construct(object_effect(villager));
     return villager;
 }

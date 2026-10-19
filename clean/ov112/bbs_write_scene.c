@@ -25,6 +25,7 @@
 #include "main/text_string.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
+#include "ov095/soft_keyboard.h"
 
 /* The scene's vtable. */
 extern const u8 data_ov112_022a20d0[];
@@ -94,7 +95,7 @@ static MenuScene *bbs_write_scene(BbsWriteScene *self)
 
 static MenuDispatch *bbs_write_parent(BbsWriteScene *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) Process_GetParent((Process *) (void *) self);
 }
 
 static DualCellSprite *bbs_write_button_cells(BbsWriteScene *self)
@@ -126,11 +127,11 @@ void BbsWrite_LoadScreens(BbsWriteScene *self)
     DisplayLayer_LoadCharsFromFile(data_ov112_022a2160, heap, BBS_WRITE_TEXT_LAYER, 317, 317, 489);
     DisplayLayer_LoadCharsFromFile(data_ov112_022a2178, heap, BBS_WRITE_TEXT_LAYER, 16, 16, 319);
     DisplayLayer_LoadCharsFromFile(data_ov112_022a2190, heap, BBS_WRITE_TEXT_LAYER, 257, 257, 272);
-    func_ov095_0229c000(self->keyboard, data_ov112_022a21a8);
+    SoftKeyboard_ReadScreen((SoftKeyboard *) (void *) self->keyboard, data_ov112_022a21a8);
     BbsWrite_UpdateKeys(self);
-    func_ov095_0229bfd8(self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
-    func_ov095_0229c01c(self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
-    func_ov095_0229b324(self->keyboard);
+    SoftKeyboard_LoadScreenNow((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
+    SoftKeyboard_LoadLetterChars((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
+    SoftKeyboard_LoadObjGraphics((SoftKeyboard *) (void *) self->keyboard);
 }
 CLEAN_AS(func_ov112_022a1104, BbsWrite_LoadScreens)
 
@@ -151,7 +152,7 @@ CLEAN_AS(func_ov112_022a11f4, BbsWrite_SetLayers)
  * changed. */
 void BbsWrite_EndFrame(BbsWriteScene *self)
 {
-    func_ov095_0229bf7c(self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
+    SoftKeyboard_QueueScreen((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
     if (BbsWrite_TestFlags(self, BBS_WRITE_FLAG_LINES_DIRTY) != 0) {
         BbsWrite_ShowLines(self);
         BbsWrite_ClearFlags(self, BBS_WRITE_FLAG_LINES_DIRTY);
@@ -186,7 +187,7 @@ CLEAN_AS(func_ov112_022a12a4, BbsWrite_UpdateSprites)
 void BbsWrite_Release(BbsWriteScene *self)
 {
     BbsWrite_CloseLineBoxes(self);
-    func_ov095_0229c05c(self->keyboard);
+    SoftKeyboard_Finish((SoftKeyboard *) (void *) self->keyboard);
     LayerTask_End(&self->chars_task);
     ButtonPanel_CloseTexts(&self->panel);
 }
@@ -203,7 +204,7 @@ void BbsWrite_Setup(BbsWriteScene *self)
     WideText wide;
 
     self->flags = 0;
-    func_ov095_0229c084(self->keyboard, 2);
+    SoftKeyboard_Init((SoftKeyboard *) (void *) self->keyboard, 2);
     TextString_ClearChars(self->text, BBS_POST_LENGTH);
 
     TextLabel_Construct(&message);
@@ -462,8 +463,8 @@ void BbsWrite_StartWipeIn(BbsWriteScene *self)
     BbsWrite_LoadScreens(self);
     BbsWrite_QueueLineChars(self);
     BbsWrite_SetFlags(self, BBS_WRITE_FLAG_DATE_PENDING);
-    func_ov095_0229c420(self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
-    func_ov095_0229bf7c(self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
+    SoftKeyboard_LoadSavedLayout((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
+    SoftKeyboard_QueueScreen((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
     MenuScene_StartWipeCoveredOnWindow2(bbs_write_scene(self), BBS_WRITE_WIPE_TEXT | BBS_WRITE_WIPE_KEYBOARD, 7, 0,
                                         BBS_WRITE_WIPE_MARGIN);
     DisplayLayer_Show(BBS_WRITE_TEXT_LAYER);
@@ -599,8 +600,8 @@ int BbsWrite_Draw(BbsWriteScene *self)
     if (BbsWrite_TestFlags(self, BBS_WRITE_FLAG_DRAWN) != 0) {
         int y = (int) ((u32) self->keyboard_y + 0x60);
         OamBuffer_DrawCell(1, data_ov112_022a2098, 0x80, (int) ((u32) y - 8), -1, 2, 0x1000, 0x1000, 0, -1, 0, 0);
-        func_ov095_0229b1c8(self->keyboard, 0x80, y, 1);
-        func_ov095_0229ae84(self->keyboard, (void *) (uintptr_t) 0x80, (void *) (uintptr_t) (u32) y);
+        SoftKeyboard_DrawTabRow((SoftKeyboard *) (void *) self->keyboard, 0x80, y, 1);
+        SoftKeyboard_DrawSideButtons((SoftKeyboard *) (void *) self->keyboard, 0x80, y);
         if (StateFlags_Test2()) {
             OamBuffer_DrawObjAffine(1, data_ov112_022a2080, 0x80, y, -1, 1, NULL);
         }
@@ -608,7 +609,7 @@ int BbsWrite_Draw(BbsWriteScene *self)
         DualCellSprite_SetOffset(bbs_write_button_cells(self), 0x5d, knob_y);
         int face_x = PushButton_FaceX(&self->scroll_button);
         int face_y = PushButton_FaceY(&self->scroll_button);
-        func_ov095_02299b30((int *) (void *) self->keyboard, face_x, face_y);
+        SoftKeyboard_SetMovableKeyPlace((SoftKeyboard *) (void *) self->keyboard, face_x, face_y);
         bbs_write_call_slot(&self->scroll_button, 2);
     }
 
@@ -626,7 +627,7 @@ int BbsWrite_Draw(BbsWriteScene *self)
         int y = (int) ((u32) self->cursor_y - (u32) (self->scroll + 8));
         self->blink = (u8) (self->blink + 1);
         if (self->blink & 0x10) {
-            func_ov095_0229af58((int) (uintptr_t) self->keyboard, x, y, 2);
+            SoftKeyboard_DrawCaret((SoftKeyboard *) (void *) self->keyboard, x, y, 2);
         }
     }
 

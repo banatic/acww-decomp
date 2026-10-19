@@ -3,7 +3,9 @@
 
 #include <stddef.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/display_layers.h"
 #include "main/display_shadow.h"
 
 static_assert(offsetof(Wipe, position) == 0x0c && offsetof(Wipe, direction) == 0x18, "wipe fields");
@@ -12,16 +14,7 @@ static_assert(offsetof(Progress, left) == 0x08 && sizeof(Wipe) == 0x1c, "progres
 extern const u8 data_ov002_0220bb04[]; /* the progress's vtable */
 extern const u8 data_ov002_0220baf4[]; /* the wipe's vtable */
 
-/* Sets window `window` (0-3) to the rectangle (x1, y1, x2, y2). */
-extern void func_02002808(unsigned int window, int x1, int y1, int x2, int y2);
-/* Sets the offset of background `layer` (0-6). */
-extern void func_0200284c(unsigned int layer, int x, int y);
 /* The parts of the display copy (display_shadow.h) that have no Clean version yet. */
-extern void func_02001da0(u8 planes);          /* main_win0_planes, marked to be written */
-extern void func_02001d0c(u8 planes);          /* clears planes from main_outside_planes */
-extern void func_02001d1c(u8 planes);          /* sets main_outside_planes */
-extern void func_02001d74(char planes, int b); /* sets sub_win0_planes, marks it (4 or 0x100) */
-extern void func_020edb3c(void *block);        /* operator delete */
 extern s32 FX_MulFunc(s32 a, s32 b);
 
 static int sub32(int a, int b)
@@ -83,7 +76,7 @@ void Wipe_ApplyWindow(Wipe *wipe, int window)
             break;
     }
 
-    func_02002808((unsigned int) window, x1, y1, x2, y2);
+    DisplayShadow_SetWindow((unsigned int) window, x1, y1, x2, y2);
 }
 CLEAN_AS(func_ov002_02208348, Wipe_ApplyWindow)
 
@@ -93,16 +86,16 @@ void Wipe_ApplyScroll(Wipe *wipe, int layer, int x, int y)
 {
     switch (wipe->direction) {
         case WIPE_TOP:
-            func_0200284c((unsigned int) layer, -x, -(wipe->position + y));
+            DisplayLayer_SetScroll((unsigned int) layer, -x, -(wipe->position + y));
             break;
         case WIPE_BOTTOM:
-            func_0200284c((unsigned int) layer, -x, wipe->position - y);
+            DisplayLayer_SetScroll((unsigned int) layer, -x, wipe->position - y);
             break;
         case WIPE_RIGHT:
-            func_0200284c((unsigned int) layer, wipe->position - x, -y);
+            DisplayLayer_SetScroll((unsigned int) layer, wipe->position - x, -y);
             break;
         case WIPE_LEFT:
-            func_0200284c((unsigned int) layer, -(wipe->position + x), -y);
+            DisplayLayer_SetScroll((unsigned int) layer, -(wipe->position + x), -y);
             break;
     }
 }
@@ -158,11 +151,11 @@ void Wipe_StartOnWindow0(Wipe *wipe, int layers, int frames, int direction, int 
 {
     Wipe_Start(wipe, frames, (u8) direction, margin);
     DisplayShadow_EnableMainWindows(WINDOW_0);
-    func_02001da0(0x1f);
+    DisplayShadow_SetMainWindow0Planes(0x1f);
     if (DisplayShadow_GetMainWindows() & WINDOW_1) {
-        func_02001d0c((u8) layers);
+        DisplayShadow_HideMainOutsidePlanes((u8) layers);
     } else {
-        func_02001d1c((u8) (~layers & 0x1f));
+        DisplayShadow_SetMainOutsidePlanes((u8) (~layers & 0x1f));
     }
     Wipe_ApplyWindow(wipe, 0);
 }
@@ -174,8 +167,8 @@ void Wipe_StartCoveredOnWindow0(Wipe *wipe, int layers, int frames, int directio
 {
     Wipe_StartCovered(wipe, frames, (u8) direction, (u32) margin);
     DisplayShadow_EnableMainWindows(WINDOW_0);
-    func_02001da0(0x1f);
-    func_02001d1c((u8) (~layers & 0x1f));
+    DisplayShadow_SetMainWindow0Planes(0x1f);
+    DisplayShadow_SetMainOutsidePlanes((u8) (~layers & 0x1f));
     Wipe_ApplyWindow(wipe, 0);
 }
 CLEAN_AS(func_ov002_022084e4, Wipe_StartCoveredOnWindow0)
@@ -186,7 +179,7 @@ void Wipe_StartOnWindow2(Wipe *wipe, int layers, int frames, int direction, int 
 {
     Wipe_Start(wipe, frames, (u8) direction, margin);
     DisplayShadow_EnableSubWindows(WINDOW_0);
-    func_02001d74(0x1f, 1);
+    DisplayShadow_SetSubWindow0Planes(0x1f, 1);
     DisplayShadow_SetSubOutsidePlanes((u8) (~layers & 0x1f));
     Wipe_ApplyWindow(wipe, 2);
 }
@@ -198,7 +191,7 @@ void Wipe_StartCoveredOnWindow2(Wipe *wipe, int layers, int frames, int directio
 {
     Wipe_StartCovered(wipe, frames, (u8) direction, (u32) margin);
     DisplayShadow_EnableSubWindows(WINDOW_0);
-    func_02001d74(0x1f, 1);
+    DisplayShadow_SetSubWindow0Planes(0x1f, 1);
     DisplayShadow_SetSubOutsidePlanes((u8) (~layers & 0x1f));
     Wipe_ApplyWindow(wipe, 2);
 }
@@ -279,7 +272,7 @@ static void close_window(int screen)
             break;
         case WIPE_ON_MAIN:
             DisplayShadow_DisableMainWindows(WINDOW_0);
-            func_02001d1c(0x1f);
+            DisplayShadow_SetMainOutsidePlanes(0x1f);
             break;
     }
 }
@@ -377,7 +370,7 @@ Wipe *Wipe_Delete(Wipe *wipe)
 {
     wipe->progress.vtable = data_ov002_0220baf4;
     Progress_Destroy(&wipe->progress);
-    func_020edb3c(wipe);
+    Heap_OperatorDeleteB(wipe);
     return wipe;
 }
 CLEAN_AS(func_ov002_0220879c, Wipe_Delete)
@@ -453,7 +446,7 @@ CLEAN_AS(func_ov002_02208844, Progress_Destroy)
 Progress *Progress_Delete(Progress *progress)
 {
     progress->vtable = data_ov002_0220bb04;
-    func_020edb3c(progress);
+    Heap_OperatorDeleteB(progress);
     return progress;
 }
 CLEAN_AS(func_ov002_02208850, Progress_Delete)

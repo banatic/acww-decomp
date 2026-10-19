@@ -4,35 +4,24 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/cell_anim.h"
+#include "main/cell_layer_sprite.h"
+#include "main/screen_sprite.h"
 
 static_assert(sizeof(Glide) == 0x18 && offsetof(Glide, mode) == 0x15, "glide");
 static_assert(offsetof(Glider, anim) == 0x0c && offsetof(Glider, offset_x) == 0x20, "glider");
 static_assert(offsetof(Glider, anim2) == 0x2c && offsetof(Glider, anim_id) == 0x40, "glider");
 static_assert(offsetof(Glider, has_anim2) == 0x49 && offsetof(Glider, glide) == 0x4c, "glider");
 
-extern const u8 data_ov002_0220bc40[];  /* the Glide's vtable */
-extern const u8 data_ov002_0220bc88[];  /* the Glider's vtable */
-extern const u8 data_ov002_0220bc50[];  /* Glider0's vtable */
-extern const u8 data_ov002_0220bc6c[];  /* Glider1's vtable */
-extern void func_020edb3c(void *block); /* operator delete */
+extern const u8 data_ov002_0220bc40[]; /* the Glide's vtable */
+extern const u8 data_ov002_0220bc88[]; /* the Glider's vtable */
+extern const u8 data_ov002_0220bc50[]; /* Glider0's vtable */
+extern const u8 data_ov002_0220bc6c[]; /* Glider1's vtable */
 
 /* Main's sprite (glide.h). */
-extern void *func_0208e8d4(Glider *glider, u8 kind);     /* constructor */
-extern void *func_0208e7f0(Glider *glider);              /* destructor */
-extern void func_0208e508(Glider *glider, int anim);     /* start an animation */
-extern int func_0208e4bc(Glider *glider);                /* the animation, anim_id */
-extern int func_0208e484(Glider *glider);                /* whether the animation ended */
-extern void func_0208e5d4(Glider *glider);               /* advance the animations */
-extern void func_0208e5cc(Glider *glider);               /* unk_4a = 1 */
-extern void func_0208e594(Glider *glider, int x, int y); /* the offset */
-extern void func_0208e600(Glider *glider);               /* draw */
-extern int func_0208aef0(Glider *glider);                /* x */
-extern int func_0208aeec(Glider *glider);                /* y */
-extern s16 func_0208a1b0(CellAnim *anim, int frame);     /* a frame's x, the current one for -1 */
-extern s16 func_0208a198(CellAnim *anim, int frame);     /* a frame's y, the current one for -1 */
-extern int func_0208a1cc(CellAnim *anim);                /* the frame */
-extern void RtcSendPxiCommand(int command);              /* func_020f1fb4(&data_021fd1bc, command) */
+extern void RtcSendPxiCommand(int command); /* func_020f1fb4(&data_021fd1bc, command) */
 
 static int add32(int a, int b)
 {
@@ -55,7 +44,7 @@ Glider *Glider1_Delete(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc6c;
     Glider_Destroy(glider);
-    func_020edb3c(glider);
+    Heap_OperatorDeleteB(glider);
     return glider;
 }
 CLEAN_AS(func_ov002_02209c40, Glider1_Delete)
@@ -83,7 +72,7 @@ Glider *Glider0_Delete(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc50;
     Glider_Destroy(glider);
-    func_020edb3c(glider);
+    Heap_OperatorDeleteB(glider);
     return glider;
 }
 CLEAN_AS(func_ov002_02209c94, Glider0_Delete)
@@ -221,7 +210,7 @@ CLEAN_AS(func_ov002_02209e18, Glide_Stop)
 Glide *Glide_Delete(Glide *glide)
 {
     glide->vtable = data_ov002_0220bc40;
-    func_020edb3c(glide);
+    Heap_OperatorDeleteB(glide);
     return glide;
 }
 CLEAN_AS(func_ov002_02209e20, Glide_Delete)
@@ -248,14 +237,14 @@ void Glider_Update(Glider *glider)
     int x = Glide_X(&glider->glide);
     int y = Glide_Y(&glider->glide);
     Glider_SetCenter(glider, x, y);
-    if (func_0208e484(glider)) {
-        if (func_0208e4bc(glider) == GLIDER_ANIM_TURN_A + 1) {
-            func_0208e508(glider, GLIDER_ANIM_SET_A);
-        } else if (func_0208e4bc(glider) == GLIDER_ANIM_TURN_B + 1) {
-            func_0208e508(glider, GLIDER_ANIM_SET_B);
+    if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) glider)) {
+        if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_TURN_A + 1) {
+            CellLayerSprite_SetAnim((CellLayerSprite *) (void *) glider, GLIDER_ANIM_SET_A);
+        } else if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_TURN_B + 1) {
+            CellLayerSprite_SetAnim((CellLayerSprite *) (void *) glider, GLIDER_ANIM_SET_B);
         }
     }
-    func_0208e5d4(glider);
+    CellLayerSprite_Update((CellLayerSprite *) (void *) glider);
 }
 CLEAN_AS(func_ov002_02209e50, Glider_Update)
 
@@ -263,11 +252,11 @@ CLEAN_AS(func_ov002_02209e50, Glider_Update)
  * width to the left, so that it shows on both edges while it wraps. */
 void Glider_DrawWrapped(Glider *glider)
 {
-    func_0208e600(glider);
+    CellLayerSprite_Draw((CellLayerSprite *) (void *) glider);
     int offset_x = glider->offset_x;
-    if (add32(offset_x, func_0208aef0(glider)) > WRAP_DRAW_X) {
+    if (add32(offset_x, ScreenSprite_X((ScreenSprite *) (void *) glider)) > WRAP_DRAW_X) {
         glider->offset_x = sub32(glider->offset_x, SCREEN_WIDTH);
-        func_0208e600(glider);
+        CellLayerSprite_Draw((CellLayerSprite *) (void *) glider);
         glider->offset_x = offset_x;
     }
 }
@@ -276,7 +265,7 @@ CLEAN_AS(func_ov002_02209eb8, Glider_DrawWrapped)
 /* func_ov002_02209eec: y on the screen, the place plus the offset. */
 int Glider_ScreenY(Glider *glider)
 {
-    int y = func_0208aeec(glider);
+    int y = ScreenSprite_Y((ScreenSprite *) (void *) glider);
     return add32(glider->offset_y, y);
 }
 CLEAN_AS(func_ov002_02209eec, Glider_ScreenY)
@@ -284,7 +273,7 @@ CLEAN_AS(func_ov002_02209eec, Glider_ScreenY)
 /* func_ov002_02209f00 */
 int Glider_ScreenX(Glider *glider)
 {
-    int x = func_0208aef0(glider);
+    int x = ScreenSprite_X((ScreenSprite *) (void *) glider);
     return add32(glider->offset_x, x);
 }
 CLEAN_AS(func_ov002_02209f00, Glider_ScreenX)
@@ -292,8 +281,8 @@ CLEAN_AS(func_ov002_02209f00, Glider_ScreenX)
 /* func_ov002_02209f14: y on the screen of the current frame of the animation. */
 int Glider_FrameY(Glider *glider)
 {
-    int frame_y = func_0208a198(&glider->anim, -1);
-    int y = func_0208aeec(glider);
+    int frame_y = CellAnim_FrameY(&glider->anim, -1);
+    int y = ScreenSprite_Y((ScreenSprite *) (void *) glider);
     return add32(frame_y, add32(glider->offset_y, y));
 }
 CLEAN_AS(func_ov002_02209f14, Glider_FrameY)
@@ -301,8 +290,8 @@ CLEAN_AS(func_ov002_02209f14, Glider_FrameY)
 /* func_ov002_02209f3c */
 int Glider_FrameX(Glider *glider)
 {
-    int frame_x = func_0208a1b0(&glider->anim, -1);
-    int x = func_0208aef0(glider);
+    int frame_x = CellAnim_FrameX(&glider->anim, -1);
+    int x = ScreenSprite_X((ScreenSprite *) (void *) glider);
     return add32(frame_x, add32(glider->offset_x, x));
 }
 CLEAN_AS(func_ov002_02209f3c, Glider_FrameX)
@@ -318,9 +307,9 @@ CLEAN_AS(func_ov002_02209f64, Glider_IsMoving)
  * any other animation. */
 int Glider_IsTurnAtFrame2(Glider *glider)
 {
-    int anim = func_0208e4bc(glider);
+    int anim = CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider);
     if (anim == GLIDER_ANIM_TURN_A + 2 || anim == GLIDER_ANIM_TURN_B + 2) {
-        return func_0208a1cc(&glider->anim) == 2;
+        return CellAnim_Frame(&glider->anim) == 2;
     }
     return 1;
 }
@@ -331,13 +320,13 @@ CLEAN_AS(func_ov002_02209f70, Glider_IsTurnAtFrame2)
  * animations. */
 int Glider_IsTurnSettled(Glider *glider)
 {
-    switch (func_0208e4bc(glider)) {
+    switch (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider)) {
         case GLIDER_ANIM_TURN_A:
         case GLIDER_ANIM_TURN_B:
-            return func_0208a1cc(&glider->anim) >= 4;
+            return CellAnim_Frame(&glider->anim) >= 4;
         case GLIDER_ANIM_TURN_A + 1:
         case GLIDER_ANIM_TURN_B + 1:
-            return func_0208a1cc(&glider->anim) < 3;
+            return CellAnim_Frame(&glider->anim) < 3;
         case GLIDER_ANIM_TURN_A + 2:
         case GLIDER_ANIM_TURN_B + 2:
             return 1;
@@ -351,11 +340,11 @@ CLEAN_AS(func_ov002_02209f9c, Glider_IsTurnSettled)
  * in `near_steps` when it is within NEAR_DISTANCE pixels of the glider on both axes. */
 void Glider_EaseToByDistance(Glider *glider, int x, int y, int steps, u8 near_steps)
 {
-    int place_x = func_0208aef0(glider);
+    int place_x = ScreenSprite_X((ScreenSprite *) (void *) glider);
     int dx = sub32(x, add32(glider->offset_x, place_x));
     RtcSendPxiCommand(0xb);
     if (dx >= -NEAR_DISTANCE && dx <= NEAR_DISTANCE) {
-        int place_y = func_0208aeec(glider);
+        int place_y = ScreenSprite_Y((ScreenSprite *) (void *) glider);
         int dy = sub32(y, add32(glider->offset_y, place_y));
         if (dy >= -NEAR_DISTANCE && dy <= NEAR_DISTANCE) {
             steps = near_steps;
@@ -396,7 +385,7 @@ CLEAN_AS(func_ov002_0220a0b4, Glider_PlaceAt)
 /* func_ov002_0220a0e0: the sprite's offset for the pixel (x, y), from the screen's centre. */
 void Glider_SetCenter(Glider *glider, int x, int y)
 {
-    func_0208e594(glider, sub32(x, SCREEN_CENTER_X), sub32(y, SCREEN_CENTER_Y));
+    CellLayerSprite_SetOffset((CellLayerSprite *) (void *) glider, sub32(x, SCREEN_CENTER_X), sub32(y, SCREEN_CENTER_Y));
 }
 CLEAN_AS(func_ov002_0220a0e0, Glider_SetCenter)
 
@@ -432,11 +421,11 @@ static int set_of(int anim)
  * or a number outside the sets; nothing while there is no animation. */
 static void show_of_set(Glider *glider, int index, int otherwise)
 {
-    int set = set_of(func_0208e4bc(glider));
+    int set = set_of(CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider));
     if (set == 0) {
         return;
     }
-    func_0208e508(glider, set < 0 ? otherwise : set + index);
+    CellLayerSprite_SetAnim((CellLayerSprite *) (void *) glider, set < 0 ? otherwise : set + index);
 }
 
 /* func_ov002_0220a0ec: the first animation of the current one's set.
@@ -475,9 +464,9 @@ static void place_from_frame(Glider *glider, int dx, int dy)
  * (-4, -24) from the current frame's place. */
 void Glider_TurnToSetC(Glider *glider)
 {
-    if (func_0208e4bc(glider) == GLIDER_ANIM_SET_A) {
+    if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_SET_A) {
         place_from_frame(glider, 0xc, -0x18);
-    } else if (func_0208e4bc(glider) == GLIDER_ANIM_SET_B) {
+    } else if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_SET_B) {
         place_from_frame(glider, -4, -0x18);
     }
     Glider_SetAnim(glider, GLIDER_ANIM_SET_C);
@@ -488,9 +477,9 @@ CLEAN_AS(func_ov002_0220a254, Glider_TurnToSetC)
  * (-12, 24) from the current frame's place. */
 void Glider_TurnToSetA(Glider *glider)
 {
-    if (func_0208e4bc(glider) == GLIDER_ANIM_SET_B) {
+    if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_SET_B) {
         place_from_frame(glider, -0x10, 0);
-    } else if (func_0208e4bc(glider) == GLIDER_ANIM_SET_C) {
+    } else if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_SET_C) {
         place_from_frame(glider, -0xc, 0x18);
     }
     Glider_SetAnim(glider, GLIDER_ANIM_SET_A);
@@ -501,9 +490,9 @@ CLEAN_AS(func_ov002_0220a2b4, Glider_TurnToSetA)
  * (4, 24) from the current frame's place. */
 void Glider_TurnToSetB(Glider *glider)
 {
-    if (func_0208e4bc(glider) == GLIDER_ANIM_SET_A) {
+    if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_SET_A) {
         place_from_frame(glider, 0x10, 0);
-    } else if (func_0208e4bc(glider) == GLIDER_ANIM_SET_C) {
+    } else if (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) == GLIDER_ANIM_SET_C) {
         place_from_frame(glider, 4, 0x18);
     }
     Glider_SetAnim(glider, GLIDER_ANIM_SET_B);
@@ -514,8 +503,9 @@ CLEAN_AS(func_ov002_0220a314, Glider_TurnToSetB)
  * start again. */
 void Glider_SetAnim(Glider *glider, int anim)
 {
-    if (anim != func_0208e4bc(glider) || anim == GLIDER_ANIM_TURN_A + 2 || anim == GLIDER_ANIM_TURN_B + 2) {
-        func_0208e508(glider, anim);
+    if (anim != CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider) || anim == GLIDER_ANIM_TURN_A + 2 ||
+        anim == GLIDER_ANIM_TURN_B + 2) {
+        CellLayerSprite_SetAnim((CellLayerSprite *) (void *) glider, anim);
     }
 }
 CLEAN_AS(func_ov002_0220a374, Glider_SetAnim)
@@ -525,7 +515,7 @@ Glider *Glider_Destroy(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc88;
     Glide_Destroy(&glider->glide);
-    func_0208e7f0(glider);
+    CellLayerSprite_DestructCopy((CellLayerSprite *) (void *) glider);
     return glider;
 }
 CLEAN_AS(func_ov002_0220a39c, Glider_Destroy)
@@ -535,8 +525,8 @@ Glider *Glider_Delete(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc88;
     Glide_Destroy(&glider->glide);
-    func_0208e7f0(glider);
-    func_020edb3c(glider);
+    CellLayerSprite_DestructCopy((CellLayerSprite *) (void *) glider);
+    Heap_OperatorDeleteB(glider);
     return glider;
 }
 CLEAN_AS(func_ov002_0220a3c0, Glider_Delete)
@@ -546,7 +536,7 @@ Glider *Glider_DestroyVirtual(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc88;
     Glide_Destroy(&glider->glide);
-    func_0208e7f0(glider);
+    CellLayerSprite_DestructCopy((CellLayerSprite *) (void *) glider);
     return glider;
 }
 CLEAN_AS(func_ov002_0220a3e8, Glider_DestroyVirtual)
@@ -554,13 +544,13 @@ CLEAN_AS(func_ov002_0220a3e8, Glider_DestroyVirtual)
 /* func_ov002_0220a40c: main's sprite with `kind`, without an animation, standing still. */
 Glider *Glider_Construct(Glider *glider, u8 kind)
 {
-    func_0208e8d4(glider, kind);
+    CellLayerSprite_Construct((CellLayerSprite *) (void *) glider, kind);
     glider->vtable = data_ov002_0220bc88;
     Glide_Construct(&glider->glide);
-    func_0208e508(glider, GLIDER_ANIM_NONE);
+    CellLayerSprite_SetAnim((CellLayerSprite *) (void *) glider, GLIDER_ANIM_NONE);
     Glide_Stop(&glider->glide);
     glider->unk_28 = 0;
-    func_0208e5cc(glider);
+    CellLayerSprite_SetWindow((CellLayerSprite *) (void *) glider);
     return glider;
 }
 CLEAN_AS(func_ov002_0220a40c, Glider_Construct)

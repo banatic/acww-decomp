@@ -403,7 +403,7 @@ u8 *VillagerSceneObject_Construct(u8 *object)
     LayeredModel_ConstructB((LayeredModel *) (void *) vso_at(object, VSO_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) vso_at(object, 0x2a0));
     SceneFace_Construct((SceneFace *) (void *) vso_at(object, VSO_FACE));
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) vso_at(object, VSO_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) vso_at(object, VSO_ANIM));
     SceneMover_Construct((SceneMover *) (void *) vso_at(object, 0x350));
     SceneProbe_Construct(vso_at(object, 0x3a8));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) vso_at(object, 0x3aa));

@@ -29,6 +29,7 @@
 #include "main/villager_part.h"
 #include "ov002/key_repeat.h"
 #include "ov004/member_pointer.h"
+#include "ov092/menu_dispatch.h"
 #include "ov094/pockets_common.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterSendScene, flags) == 0x94, "flags");
@@ -2221,8 +2222,6 @@ CLEAN_AS(func_ov104_0229e98c, LetterSend_SetUpLayers)
 /* What the parent (overlay 92's) is told (func_ov092_02299324) when the scene ends without a
  * letter to show, and what it is told when the scene closes. */
 #define LETTER_SEND_PARENT_CODE_END 0x44
-extern void func_ov092_02299324(Process *parent, int code, int flag);
-extern void func_ov092_0229929c(Process *parent);
 
 /* A letter's constructor, handed to __cxa_vec_ctor with its destructor (so the game's symbols). */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -2472,7 +2471,7 @@ void LetterSend_StartWipeOut(LetterSendScene *self)
     Popup_Hide(&self->popup, 1);
     LetterSend_HideCursorSprite(self);
     if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_ACTION_1) == 0) {
-        func_ov092_02299324(lsend_parent(self), LETTER_SEND_PARENT_CODE_END, 1);
+        MenuDispatch_SetMode((MenuDispatch *) (void *) lsend_parent(self), LETTER_SEND_PARENT_CODE_END, 1);
     }
     MenuScene_StartWipeOnWindow2(lsend_scene(self), 2, 0, 2, LETTER_SEND_WIPE_MARGIN);
     MenuScene_SetWipeExtent(lsend_scene(self), 0xc0);
@@ -2717,7 +2716,7 @@ CLEAN_AS(func_ov104_0229f33c, LetterSend_Draw)
  * torn down. Answers 1. */
 int LetterSend_Close(LetterSendScene *self)
 {
-    func_ov092_0229929c(lsend_parent(self));
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) lsend_parent(self));
     LetterSend_Teardown(self);
     return 1;
 }

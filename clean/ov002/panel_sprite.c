@@ -5,14 +5,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/oam_buffer.h"
 
 static_assert(offsetof(PanelSprite, cells) == 0x70 && offsetof(PanelSprite, message) == 0x77, "panel sprite");
 static_assert(offsetof(PanelSprite, flags) == 0x78 && sizeof(PanelSprite) == 0x7c, "panel sprite");
 
-extern const u8 data_ov002_0220bd18[];  /* the sprite's vtable */
-extern const u8 data_ov002_0220ba54[];  /* by press step: how far the button has sunk, 0, 2, 3 */
-extern void func_020edb3c(void *block); /* operator delete */
+extern const u8 data_ov002_0220bd18[]; /* the sprite's vtable */
+extern const u8 data_ov002_0220ba54[]; /* by press step: how far the button has sunk, 0, 2, 3 */
 /* Draws one cell (main's sprite drawing, the first argument 1 as for the sub screen). */
 extern void func_02088df8(int a0, const PanelCell *cell, int x, int y, int palette, int priority, int scale_x, int scale_y,
                           int rotation, int a9, int a10, int a11);
@@ -94,14 +95,16 @@ void PanelSprite_Draw(PanelSprite *sprite, int x, int y, int priority)
     int button_y = y + CENTER_Y + depth;
     int button_x = x + CENTER_X + depth;
 
-    func_02088df8(1, sprite->cells, button_x, button_y, palette, priority, SCALE_ONE, SCALE_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, palette, priority, SCALE_ONE,
+                       SCALE_ONE, 0, -1, 0, 0);
     if (PanelSprite_HasFlags(sprite, PANEL_SPRITE_FLAG2)) {
-        func_02088df8(1, sprite->cells, button_x, button_y, -1, priority, SCALE_ONE, SCALE_ONE, 0, 2, 0, 0);
+        OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, -1, priority, SCALE_ONE,
+                           SCALE_ONE, 0, 2, 0, 0);
     }
     if (!PanelSprite_HasFlags(sprite, PANEL_SPRITE_NO_SHADOW) && sprite->press_step + 1 != PANEL_PRESS_STEPS) {
         const PanelCell *shadow = &sprite->cells[sprite->shadow_cell];
-        func_02088df8(1, shadow, x + CENTER_X + SHADOW_OFFSET, y + CENTER_Y + SHADOW_OFFSET, 1, priority, SCALE_ONE, SCALE_ONE,
-                      0, -1, 0, 0);
+        OamBuffer_DrawCell(1, (const OamEntry *) (void *) shadow, x + CENTER_X + SHADOW_OFFSET, y + CENTER_Y + SHADOW_OFFSET,
+                           1, priority, SCALE_ONE, SCALE_ONE, 0, -1, 0, 0);
     }
 }
 CLEAN_AS(func_ov002_0220b1a4, PanelSprite_Draw)
@@ -194,7 +197,7 @@ PanelSprite *PanelSprite_Delete(PanelSprite *sprite)
     sprite->vtable = data_ov002_0220bd18;
     TextLabel_CloseBox(label_of(sprite));
     TextLabel_Destruct(label_of(sprite));
-    func_020edb3c(sprite);
+    Heap_OperatorDeleteB(sprite);
     return sprite;
 }
 CLEAN_AS(func_ov002_0220b37c, PanelSprite_Delete)

@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+#include "autoload_2/heap.h"
 #include "autoload_2/input.h"
 #include "clean.h"
 
@@ -11,7 +12,6 @@ static_assert(sizeof(KeyRepeat) == 0x14, "key repeat size");
 
 extern const u8 data_ov002_0220bb14[]; /* the key repeat's vtable */
 extern PadState data_021fbe40;
-extern void func_020edb3c(void *block); /* operator delete */
 
 /* func_ov002_02208880: sets the delays and forgets the keys. */
 void KeyRepeat_Set(KeyRepeat *keys, unsigned short first_delay, unsigned short min_delay, unsigned short speedup)
@@ -126,7 +126,7 @@ CLEAN_AS(func_ov002_02208938, KeyRepeat_Update)
 KeyRepeat *KeyRepeat_Delete(KeyRepeat *keys)
 {
     keys->vtable = data_ov002_0220bb14;
-    func_020edb3c(keys);
+    Heap_OperatorDeleteB(keys);
     return keys;
 }
 CLEAN_AS(func_ov002_022089bc, KeyRepeat_Delete)

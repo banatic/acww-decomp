@@ -270,7 +270,7 @@ int Walrus_Leave(Walrus *self)
         return 0;
     }
     if (EventAnnounce_Entered() == 0) {
-        TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()));
+        TownSpot_PickRandom((TownSpot *) Block021d27ac_Part04(Block021d27ac_Get()));
     }
     return 1;
 }
@@ -315,9 +315,7 @@ Walrus *Walrus_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) walrus_at(self, WALRUS_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) walrus_at(self, WALRUS_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) walrus_at(self, WALRUS_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) walrus_at(self, WALRUS_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) walrus_at(self, WALRUS_ANIM));
     SceneMover_Construct(walrus_mover(self));
     SceneProbe_Construct(walrus_at(self, WALRUS_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) walrus_at(self, WALRUS_VALUE_3AA));

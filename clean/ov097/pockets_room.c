@@ -2,10 +2,17 @@
 #include "pockets_room.h"
 
 #include "clean.h"
+#include "main/item_code.h"
+#include "main/item_form.h"
+#include "main/room_interior.h"
 #include "main/session.h"
 #include "main/sound.h"
+#include "main/tile_requests.h"
+#include "main/town_objects.h"
 #include "ov002/menu_scene.h"
 #include "ov002/paged_choice.h"
+#include "ov004/room_objects.h"
+#include "ov004/room_placement.h"
 
 /* The item codes of the wallpapers and the carpets (ov004/room_object_022511e0.c,
  * ov004/room_object_02250e5c.c). */
@@ -30,25 +37,6 @@
 
 extern NetSession *data_020ccf94;
 
-/* Main's: a count that must be at most 1 for a wallpaper or a carpet to be used (also tested by
- * field actor state 0x18, main/field_actor_states.c). */
-extern unsigned int func_020b2300(void);
-/* Main's: the item code an item becomes (in `out`), and whether func_0204bcdc accepts it. */
-extern void func_02061b1c(unsigned short *out, unsigned short *in, int flag);
-extern int func_0204bcdc(unsigned short *item);
-/* Main's use request of an item for a session slot (pockets_screen.c: PocketsScreen_CheckUseItem),
- * -1 when none could be made. */
-extern int func_020435fc(int slot, unsigned short item);
-/* Main's: the room's wallpaper (func_02034b80) or carpet (func_02034b04) set to `*item`; the
- * one it replaces comes back. Only when data_020e54a8 is 1; else they answer a word of main's
- * (data_021c5174). */
-extern u16 *func_02034b80(u16 *item, int a, int b, int c);
-extern u16 *func_02034b04(u16 *item, int a, int b, int c);
-/* Overlay 4's: an answer for the converted item (0-2 are refusals, others carry a value in
- * `out` for func_ov004_0223c660). */
-extern int func_ov004_0223b540(int *out, unsigned short *item, int flag);
-extern int func_ov004_0223c660(int value);
-
 /* func_ov097_022a27c0: a wallpaper or a carpet can be used when func_020b2300 is at most 1,
  * and, in a linked session, only on the console in slot 0. */
 int PocketsRoom_CanUse(PocketsScreen *self)
@@ -56,9 +44,9 @@ int PocketsRoom_CanUse(PocketsScreen *self)
     (void) self;
     NetSession *session = data_020ccf94;
     if (Session_IsLinked(session)) {
-        return session->local_slot == 0 && func_020b2300() <= 1;
+        return session->local_slot == 0 && (unsigned int) TownObjects_VisitorsHere() <= 1;
     }
-    return func_020b2300() <= 1;
+    return (unsigned int) TownObjects_VisitorsHere() <= 1;
 }
 CLEAN_AS(func_ov097_022a27c0, PocketsRoom_CanUse)
 
@@ -80,10 +68,10 @@ int PocketsRoom_CheckUseItem(PocketsScreen *self, u16 item)
 {
     u16 original = item;
     u16 converted;
-    func_02061b1c(&converted, &original, 0);
-    if (func_0204bcdc(&converted) != 0) {
+    ItemForm_ToPlaced(&converted, &original, 0);
+    if (ItemCode_HasVariant(&converted) != 0) {
         int value;
-        switch (func_ov004_0223b540(&value, &converted, 1)) {
+        switch (RoomPlacement_FindNearPlayer((u32 *) (void *) &value, &converted, 1)) {
             case 0:
             case 2:
                 refuse(self, ERROR_3, 0);
@@ -92,11 +80,11 @@ int PocketsRoom_CheckUseItem(PocketsScreen *self, u16 item)
                 refuse(self, ERROR_5, 1);
                 return 0;
             default:
-                func_ov004_0223c660(value);
+                RoomObjects_Spawn(value);
                 return 1;
         }
     }
-    self->unk_c4 = func_020435fc(data_020ccf94->local_slot, item);
+    self->unk_c4 = TileRequests_AskDrop(data_020ccf94->local_slot, item);
     if (self->unk_c4 == -1) {
         refuse(self, ERROR_3, 0);
         return 0;
@@ -127,7 +115,8 @@ static void swap_with_room(PocketsScreen *self, int carpet)
     int place = self->slot;
     u16 item = PocketsScreen_PlaceItem(self, place);
     PocketsScreen_RequestSwitchOff(self);
-    u16 old = carpet ? *func_02034b04(&item, 0, 1, 1) : *func_02034b80(&item, 0, 1, 1);
+    u16 old =
+        carpet ? *RoomInterior_SetCarpet(&item, 0, 1, 1) : *(u16 *) (uintptr_t) RoomInterior_SetWallpaper(&item, 0, 1, 1);
     unsigned int first = carpet ? ITEM_CARPET_FIRST : ITEM_WALLPAPER_FIRST;
     unsigned int last = carpet ? ITEM_CARPET_LAST : ITEM_WALLPAPER_LAST;
     if (old >= first && old <= last) {

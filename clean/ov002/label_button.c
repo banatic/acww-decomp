@@ -5,33 +5,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/label_sprite.h"
+#include "main/screen_sprite.h"
 #include "main/text_label.h"
 
 static_assert(offsetof(LabelButton, anim_id) == 0x44 && offsetof(LabelButton, kind) == 0x72, "label button");
 static_assert(sizeof(LabelButton) == 0x78, "label button");
 
-extern const u8 data_ov002_0220bd58[];  /* LabelButton1's vtable */
-extern const u8 data_ov002_0220bd74[];  /* LabelButton0's */
-extern void func_020edb3c(void *block); /* operator delete */
+extern const u8 data_ov002_0220bd58[]; /* LabelButton1's vtable */
+extern const u8 data_ov002_0220bd74[]; /* LabelButton0's */
 
 extern const u8 data_ov002_0220bd90[]; /* the base class's vtable */
-
-/* main's labelled sprite class */
-extern void *func_0208f58c(LabelButton *button, char kind, int param); /* constructor */
-extern void *func_0208f46c(LabelButton *button);                       /* destructor */
-extern void func_0208aef4(LabelButton *button, int x, int y);          /* its place, from the screen's centre */
-
-/* main's labelled sprite */
-extern int func_0208aef0(LabelButton *button);                    /* x */
-extern int func_0208aeec(LabelButton *button);                    /* y */
-extern void func_0208f210(LabelButton *button, int x, int y);     /* the offset */
-extern void func_0208f250(LabelButton *button);                   /* byte 0x74 = 0 */
-extern void func_0208f0c4(LabelButton *button, int anim);         /* start an animation */
-extern int func_0208f0c0(LabelButton *button);                    /* the animation, anim_id */
-extern int func_0208f098(LabelButton *button);                    /* whether both layers ended */
-extern void func_0208f184(LabelButton *button, int *dx, int *dy); /* see LabelButton_AnchorY */
-extern void func_0208f218(LabelButton *button, TextLabel *label); /* takes the label's text */
 
 extern u8 data_021fbdd8; /* the pen is down */
 extern u8 data_021fbddc; /* the pen went down or up this frame */
@@ -73,7 +59,7 @@ LabelButton *LabelButton1_Delete(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd58;
     LabelButtonBase_Destruct(button);
-    func_020edb3c(button);
+    Heap_OperatorDeleteB(button);
     return button;
 }
 CLEAN_AS(func_ov002_0220b3f0, LabelButton1_Delete)
@@ -101,7 +87,7 @@ LabelButton *LabelButton0_Delete(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd74;
     LabelButtonBase_Destruct(button);
-    func_020edb3c(button);
+    Heap_OperatorDeleteB(button);
     return button;
 }
 CLEAN_AS(func_ov002_0220b444, LabelButton0_Delete)
@@ -131,8 +117,8 @@ int LabelButton_IsTouched(LabelButton *button)
     if (data_021fbdd8 == 0 || data_021fbddc == 0) {
         return 0;
     }
-    int dx = data_021f6c60 - func_0208aef0(button);
-    int dy = data_021f6c5c - func_0208aeec(button);
+    int dx = data_021f6c60 - ScreenSprite_X((ScreenSprite *) (void *) button);
+    int dy = data_021f6c5c - ScreenSprite_Y((ScreenSprite *) (void *) button);
     return dx >= 0 && dx <= TOUCH_WIDTH && dy >= 0 && dy <= TOUCH_HEIGHT;
 }
 CLEAN_AS(func_ov002_0220b498, LabelButton_IsTouched)
@@ -143,9 +129,9 @@ void LabelButton_ShowAt(LabelButton *button, int message, int x, int y)
 {
     LabelButton_SetMessage(button, message);
     ((ButtonPlaceMethod *) virtual_slot(button, SLOT_SET_PLACE))(button, x, y);
-    func_0208f210(button, 0, 0);
-    func_0208f250(button);
-    func_0208f0c4(button, ANIM_SHOWN);
+    LabelSprite_SetOffset((LabelSprite *) (void *) button, 0, 0);
+    LabelSprite_ShowSecond((LabelSprite *) (void *) button);
+    LabelSprite_SetState((LabelSprite *) (void *) button, ANIM_SHOWN);
     step(button);
 }
 CLEAN_AS(func_ov002_0220b4fc, LabelButton_ShowAt)
@@ -166,7 +152,7 @@ int LabelButton_SetMessage(LabelButton *button, int message)
 
     TextLabel_Construct(&label);
     TextLabel_LoadMenuMessage((int) (uintptr_t) &label, (char) message);
-    func_0208f218(button, &label);
+    LabelSprite_SetText((LabelSprite *) (void *) button, (TextBase *) (void *) &label);
     return (int) (uintptr_t) TextLabel_Destruct(&label);
 }
 CLEAN_AS(func_ov002_0220b550, LabelButton_SetMessage)
@@ -175,7 +161,7 @@ CLEAN_AS(func_ov002_0220b550, LabelButton_SetMessage)
  * both layers have ended. */
 int LabelButton_StepAnimation(LabelButton *button)
 {
-    if (func_0208f098(button) == 0) {
+    if (LabelSprite_IsDone((LabelSprite *) (void *) button) == 0) {
         step(button);
         return 1;
     }
@@ -188,11 +174,11 @@ CLEAN_AS(func_ov002_0220b57c, LabelButton_StepAnimation)
  * (and nothing for 2 or any other). LabelButton_AnchorX gives the x. */
 int LabelButton_AnchorY(LabelButton *button, int anchor)
 {
-    int y = func_0208aeec(button);
-    if (func_0208f0c0(button) == ANIM_PRESSED) {
+    int y = ScreenSprite_Y((ScreenSprite *) (void *) button);
+    if (LabelSprite_State((LabelSprite *) (void *) button) == ANIM_PRESSED) {
         int dx;
         int dy;
-        func_0208f184(button, &dx, &dy);
+        LabelSprite_Travel((LabelSprite *) (void *) button, &dx, &dy);
         y += dy;
     }
     switch (anchor) {
@@ -213,11 +199,11 @@ CLEAN_AS(func_ov002_0220b59c, LabelButton_AnchorY)
  * 0x20 for 1 and 3 (and nothing for any other). */
 int LabelButton_AnchorX(LabelButton *button, int anchor)
 {
-    int x = func_0208aef0(button);
-    if (func_0208f0c0(button) == ANIM_PRESSED) {
+    int x = ScreenSprite_X((ScreenSprite *) (void *) button);
+    if (LabelSprite_State((LabelSprite *) (void *) button) == ANIM_PRESSED) {
         int dx;
         int dy;
-        func_0208f184(button, &dx, &dy);
+        LabelSprite_Travel((LabelSprite *) (void *) button, &dx, &dy);
         x += dx;
     }
     switch (anchor) {
@@ -240,7 +226,7 @@ CLEAN_AS(func_ov002_0220b5ec, LabelButton_AnchorX)
  * the screen. */
 void LabelButton_SetPlace(LabelButton *button, int x, int y)
 {
-    func_0208aef4(button, x - CENTER_X, y - CENTER_Y);
+    ScreenSprite_SetPlace((ScreenSprite *) (void *) button, x - CENTER_X, y - CENTER_Y);
 }
 CLEAN_AS(func_ov002_0220b63c, LabelButton_SetPlace)
 
@@ -249,7 +235,7 @@ CLEAN_AS(func_ov002_0220b63c, LabelButton_SetPlace)
 LabelButton *LabelButtonBase_Destruct(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd90;
-    func_0208f46c(button);
+    LabelSprite_DestructCopy((LabelSprite *) (void *) button);
     return button;
 }
 CLEAN_AS(func_ov002_0220b648, LabelButtonBase_Destruct)
@@ -258,8 +244,8 @@ CLEAN_AS(func_ov002_0220b648, LabelButtonBase_Destruct)
 LabelButton *LabelButtonBase_Delete(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd90;
-    func_0208f46c(button);
-    func_020edb3c(button);
+    LabelSprite_DestructCopy((LabelSprite *) (void *) button);
+    Heap_OperatorDeleteB(button);
     return button;
 }
 CLEAN_AS(func_ov002_0220b660, LabelButtonBase_Delete)
@@ -269,7 +255,7 @@ CLEAN_AS(func_ov002_0220b660, LabelButtonBase_Delete)
 LabelButton *LabelButtonBase_Destroy(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd90;
-    func_0208f46c(button);
+    LabelSprite_DestructCopy((LabelSprite *) (void *) button);
     return button;
 }
 CLEAN_AS(func_ov002_0220b680, LabelButtonBase_Destroy)
@@ -278,7 +264,7 @@ CLEAN_AS(func_ov002_0220b680, LabelButtonBase_Destroy)
  * it a base class button. */
 LabelButton *LabelButtonBase_Construct(LabelButton *button, char kind, int param)
 {
-    func_0208f58c(button, kind, param);
+    LabelSprite_ConstructCopy((LabelSprite *) (void *) button, kind, param);
     button->vtable = data_ov002_0220bd90;
     return button;
 }

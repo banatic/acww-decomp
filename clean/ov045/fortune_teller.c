@@ -542,9 +542,7 @@ void *FortuneTeller_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) ft_part(teller, FT_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) ft_part(teller, FT_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) ft_part(teller, FT_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) ft_part(teller, FT_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) ft_part(teller, FT_ANIM));
     SceneMover_Construct((SceneMover *) (void *) ft_part(teller, FT_MOVER));
     SceneProbe_Construct(ft_part(teller, FT_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) ft_part(teller, FT_VALUE_3AA));

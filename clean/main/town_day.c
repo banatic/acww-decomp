@@ -498,7 +498,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
             TownDay_ChangeFamilyB(town, map, wide, high);
         }
         TownAcreCount_SummarizeDay(&data_021c779c.acres, map, wide, high);
-        TownRecord_CountSummaryDays((TownRecord *) (void *) ((u8 *) &data_021f39fc), data_021c779c.acres.unk_00, days);
+        TownRecord_CountSummaryDays((TownRecord *) (void *) &data_021f39fc, data_021c779c.acres.unk_00, days);
 
         int grow_days = TownDay_AtMost(days, 5);
         for (int i = 0; i < grow_days; i++) {
@@ -898,8 +898,8 @@ CLEAN_AS(func_02047a8c, TownDay_PutCode6d)
  * of code 0x6d's tiles, while there are some.
  *
  * BUG: with more than three codes 0x6d the count of codes to make is below 0; every grown code
- * is then made 0x6d, and the ROM's loop goes round about 2^32 times before it ends (here it
- * stops once no grown code is left). */
+ * is then made 0x6d, and the loop goes on round about 2^32 times, doing nothing, until the count
+ * wraps to 0 (the game stands still meanwhile). BUGFIX: stop once no grown code is left. */
 void TownDay_PutCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z)
 {
     (void) town;
@@ -922,12 +922,19 @@ void TownDay_PutCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z)
             }
         }
     }
-    for (u32 missing = (u32) (TOWN_DAY_CODE_6D_PER_ACRE - code_6d); missing != 0 && count > 0; missing--) {
-        int pick = (int) MainRandom_Below(count);
-        TownTilePut_At(map, grown[pick].x, grown[pick].z, TOWN_DAY_CODE_6D, 0);
-        TownDay_AddCode6d((u32) grown[pick].x, (u32) grown[pick].z);
-        grown[pick] = grown[count - 1];
-        count--;
+    for (u32 missing = (u32) (TOWN_DAY_CODE_6D_PER_ACRE - code_6d); missing != 0; missing--) {
+#ifdef BUGFIX
+        if (count == 0) {
+            break;
+        }
+#endif
+        if (count > 0) {
+            int pick = (int) MainRandom_Below(count);
+            TownTilePut_At(map, grown[pick].x, grown[pick].z, TOWN_DAY_CODE_6D, 0);
+            TownDay_AddCode6d((u32) grown[pick].x, (u32) grown[pick].z);
+            grown[pick] = grown[count - 1];
+            count--;
+        }
     }
 }
 CLEAN_AS(func_02047ac0, TownDay_PutCode6dIn)

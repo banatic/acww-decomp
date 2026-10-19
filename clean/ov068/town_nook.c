@@ -746,9 +746,7 @@ u8 *TownNook_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) nook_at(object, NOOK_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) nook_at(object, NOOK_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) nook_at(object, NOOK_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) nook_at(object, NOOK_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) nook_at(object, NOOK_ANIM));
     SceneMover_Construct((SceneMover *) (void *) nook_at(object, NOOK_MOVER));
     SceneProbe_Construct(nook_at(object, NOOK_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) nook_at(object, NOOK_VALUE_3AA));

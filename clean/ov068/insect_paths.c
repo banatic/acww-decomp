@@ -13,6 +13,7 @@
 #include "main/frame_ctrl.h"
 #include "main/main_random.h"
 #include "main/model_pool.h"
+#include "main/overlay_groups.h"
 #include "main/session_players.h"
 #include "main/tile_requests.h"
 #include "main/town_family.h"
@@ -51,9 +52,6 @@ extern int NNS_G3dMdlGetMdlAlpha(void *model, int material);
 extern void NNS_G3dMdlSetMdlAlpha(void *model, int material, int alpha);
 extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *ab);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *ab);
-/* Whether a session runs (its flag and its state). */
-extern int func_02070070(void);
-
 /* Overlay 3's helpers of the insects. */
 
 static void *insect_model(TownInsect *insect)
@@ -598,7 +596,7 @@ void InsectPath_Chase(TownInsect *insect)
     s16 timer = insect->timer;
     if (timer > 0) {
         insect->timer = (s16) (timer - 1);
-    } else if (func_02070070() != 0) {
+    } else if (OverlayGroups_HasOwner() != 0) {
         angle = (s16) (angle + 0x1554);
         insect->angle_y = angle;
         Vec3 way;

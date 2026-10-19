@@ -268,8 +268,7 @@ int Boar_Leave(Boar *self)
     if (SpecialSceneObject_Leave(self) == 0) {
         return 0;
     }
-    TownSpot_Set((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()), (u32) self->position.x,
-                 (u32) self->position.z);
+    TownSpot_Set((TownSpot *) Block021d27ac_Part04(Block021d27ac_Get()), (u32) self->position.x, (u32) self->position.z);
     return 1;
 }
 CLEAN_AS(func_ov073_022796c8, Boar_Leave)
@@ -313,9 +312,7 @@ Boar *Boar_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) boar_at(self, BOAR_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) boar_at(self, BOAR_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) boar_at(self, BOAR_FACE));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) boar_at(self, BOAR_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) boar_at(self, BOAR_ANIM));
     SceneMover_Construct(boar_mover(self));
     SceneProbe_Construct(boar_at(self, BOAR_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) boar_at(self, BOAR_VALUE_3AA));

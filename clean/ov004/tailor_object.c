@@ -14,6 +14,7 @@
 #include "main/item_lists.h"
 #include "main/item_texture.h"
 #include "main/model_object.h"
+#include "main/overlay_groups.h"
 #include "member_pointer.h"
 #include "ov004/rmo_model.h"
 #include "ov004/rmo_object_slots.h"
@@ -128,9 +129,6 @@ extern const MemberPointer data_ov004_022554d8, data_ov004_02255510, data_ov004_
 
 /* The RMO family's base class and holders (rmo_object.h). */
 
-/* Whether main's byte data_020df328 and word data_021cfca0 are both set. */
-extern int func_02070070(void);
-
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);
 
@@ -224,7 +222,7 @@ void TailorObject_UpdateRunning(TailorObject *self)
     /* QUIRK: the whole frame is cut to 16 bits */
     u32 frame = (u16) ((u32) self->part.frames.frame >> TAILOR_OBJECT_FRAME_SHIFT);
     int in_turn = (int) (frame % TAILOR_OBJECT_TURN_FRAMES);
-    if (Math_IsBetween(in_turn, TAILOR_OBJECT_SOUND_FIRST, TAILOR_OBJECT_SOUND_LAST) && func_02070070() == 0) {
+    if (Math_IsBetween(in_turn, TAILOR_OBJECT_SOUND_FIRST, TAILOR_OBJECT_SOUND_LAST) && OverlayGroups_HasOwner() == 0) {
         RmoSound_PlayEx(TailorObject_sound_source(self), TAILOR_OBJECT_SOUND);
     }
 }

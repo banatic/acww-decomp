@@ -21,6 +21,7 @@
 #include "main/text_base.h"
 #include "main/text_string.h"
 #include "ov002/key_repeat.h"
+#include "ov095/soft_keyboard.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(BbsWriteScene, last_line) == 0x94, "last line");
 static_assert(offsetof(BbsWriteScene, keyboard_y) == 0xa0 && offsetof(BbsWriteScene, flags) == 0xac, "flags");
@@ -86,9 +87,9 @@ static BbsLabel *bbs_write_filter_text(BbsWriteScene *self)
     return &self->filter_text;
 }
 
-static int bbs_write_keyboard_arg(BbsWriteScene *self)
+static SoftKeyboard *bbs_write_keyboard(BbsWriteScene *self)
 {
-    return (int) (uintptr_t) self->keyboard;
+    return (SoftKeyboard *) (void *) self->keyboard;
 }
 
 /* The pointer's update through its class (vtable slot 3). */
@@ -281,7 +282,7 @@ CLEAN_AS(func_ov112_0229f250, BbsWrite_PointerFirstOfSet)
  * set, then back to the keyboard once it has played. */
 void BbsWrite_BeginKeyReleased(BbsWriteScene *self)
 {
-    func_ov095_0229cce0(self->keyboard);
+    SoftKeyboard_ReleasePressed((SoftKeyboard *) (void *) self->keyboard);
     Glider_ShowThirdOfSet(&self->pointer);
     MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_KEY_RELEASED);
 }
@@ -303,8 +304,8 @@ void BbsWrite_PlacePointer(BbsWriteScene *self)
     if (BbsWrite_TestFlags(self, BBS_WRITE_FLAG_POINTER_ON_TEXT) != 0) {
         Glider_PlaceAt(&self->pointer, self->cursor_x, self->cursor_y - self->scroll_target);
     } else {
-        int x = func_ov095_02299b7c(self->keyboard);
-        int y = func_ov095_02299b38(self->keyboard);
+        int x = SoftKeyboard_CursorX((SoftKeyboard *) (void *) self->keyboard);
+        int y = SoftKeyboard_CursorY((SoftKeyboard *) (void *) self->keyboard);
         Glider_PlaceAt(&self->pointer, x, y);
     }
     bbs_write_update_pointer(self);
@@ -328,8 +329,8 @@ void BbsWrite_GlidePointer(BbsWriteScene *self)
         Glider_EaseToByDistance(&self->pointer, self->cursor_x, self->cursor_y - self->scroll_target, 3, 2);
         self->return_sub_state = BBS_WRITE_SUB_TEXT_KEYS;
     } else {
-        int x = func_ov095_02299b7c(self->keyboard);
-        int y = func_ov095_02299b38(self->keyboard);
+        int x = SoftKeyboard_CursorX((SoftKeyboard *) (void *) self->keyboard);
+        int y = SoftKeyboard_CursorY((SoftKeyboard *) (void *) self->keyboard);
         Glider_EaseToByDistance(&self->pointer, x, y, 3, 2);
         self->return_sub_state = BBS_WRITE_SUB_KEYS;
     }
@@ -349,9 +350,9 @@ CLEAN_AS(func_ov112_0229f3e0, BbsWrite_HidePointer)
 void BbsWrite_PointAtKey(BbsWriteScene *self)
 {
     BbsWrite_ClearFlags(self, BBS_WRITE_FLAG_POINTER_ON_TEXT);
-    func_ov095_02299aec(self->keyboard);
-    int x = func_ov095_02299b7c(self->keyboard);
-    int y = func_ov095_02299b38(self->keyboard);
+    SoftKeyboard_PlaceCursorHome((SoftKeyboard *) (void *) self->keyboard);
+    int x = SoftKeyboard_CursorX((SoftKeyboard *) (void *) self->keyboard);
+    int y = SoftKeyboard_CursorY((SoftKeyboard *) (void *) self->keyboard);
     Glider_PlaceAt(&self->pointer, x, y);
     Glider_SetAnim(&self->pointer, GLIDER_ANIM_SET_A);
     BbsWrite_PointerFirstOfSet(self);
@@ -377,29 +378,29 @@ void BbsWrite_UpdateKeys(BbsWriteScene *self)
 {
     void *keyboard = self->keyboard;
 
-    if (func_ov095_0229bc00(keyboard, self->text, BBS_WRITE_CODE_NEWLINE, &self->position, BBS_POST_LENGTH,
-                            BBS_WRITE_LINE_CHARS, BBS_WRITE_LINES, BBS_WRITE_LINE_WIDTH, 1, 1) != 0) {
-        func_ov095_0229ce84(keyboard, BBS_WRITE_KEY_NEWLINE);
+    if (SoftKeyboard_InsertInLines(keyboard, self->text, BBS_WRITE_CODE_NEWLINE, &self->position, BBS_POST_LENGTH,
+                                   BBS_WRITE_LINE_CHARS, BBS_WRITE_LINES, BBS_WRITE_LINE_WIDTH, 1, 1) != 0) {
+        SoftKeyboard_EnableSpecial(keyboard, BBS_WRITE_KEY_NEWLINE);
     } else {
-        func_ov095_0229cef4(keyboard, BBS_WRITE_KEY_NEWLINE);
+        SoftKeyboard_DisableSpecial(keyboard, BBS_WRITE_KEY_NEWLINE);
     }
     if (BbsWrite_HasMark(self) != 0) {
-        func_ov095_0229ce84(keyboard, BBS_WRITE_KEY_COPY);
+        SoftKeyboard_EnableSpecial(keyboard, BBS_WRITE_KEY_COPY);
     } else {
-        func_ov095_0229cef4(keyboard, BBS_WRITE_KEY_COPY);
+        SoftKeyboard_DisableSpecial(keyboard, BBS_WRITE_KEY_COPY);
     }
     if (BbsWrite_TestFlags(self, BBS_WRITE_FLAG_COPIED) != 0) {
-        func_ov095_0229ce84(keyboard, BBS_WRITE_KEY_PASTE);
+        SoftKeyboard_EnableSpecial(keyboard, BBS_WRITE_KEY_PASTE);
     } else {
-        func_ov095_0229cef4(keyboard, BBS_WRITE_KEY_PASTE);
+        SoftKeyboard_DisableSpecial(keyboard, BBS_WRITE_KEY_PASTE);
     }
     if (BbsWrite_HasMark(self) != 0) {
-        func_ov095_0229bee4(keyboard);
-        func_ov095_0229ce84(keyboard, BBS_WRITE_KEY_6);
+        SoftKeyboard_DisableEditKeys(keyboard);
+        SoftKeyboard_EnableSpecial(keyboard, BBS_WRITE_KEY_6);
     } else if (self->position <= self->first_position) {
-        func_ov095_0229bee4(keyboard);
+        SoftKeyboard_DisableEditKeys(keyboard);
     } else {
-        func_ov095_0229bed8(keyboard, BbsWrite_CharBeforeCursor(self));
+        SoftKeyboard_EnableBackspace(keyboard, BbsWrite_CharBeforeCursor(self));
     }
 }
 CLEAN_AS(func_ov112_0229f488, BbsWrite_UpdateKeys)
@@ -505,9 +506,9 @@ void BbsWrite_StartEditing(BbsWriteScene *self)
     self->cursor_y = 0x38;
     BbsWrite_SetPosition(self, (char) self->first_position);
     BbsWrite_EndMark(self);
-    func_ov095_0229cd30(bbs_write_keyboard_arg(self));
+    SoftKeyboard_ResetKeyLooks(bbs_write_keyboard(self));
     BbsWrite_UpdateKeys(self);
-    func_ov095_0229b3ec(self->keyboard);
+    SoftKeyboard_HangulReset((SoftKeyboard *) (void *) self->keyboard);
 }
 CLEAN_AS(func_ov112_0229f6e4, BbsWrite_StartEditing)
 
@@ -590,8 +591,8 @@ unsigned char BbsWrite_PositionAt(BbsWriteScene *self, int line, s32 *x)
     int start = self->line_start[line];
     unsigned char index;
 
-    *x = func_ov095_0229bb34(bbs_write_keyboard_arg(self), &self->text[start], BBS_POST_LENGTH - start, BBS_WRITE_LINE_WIDTH,
-                             (unsigned char) (*x - 0x30), &index) +
+    *x = SoftKeyboard_TextColumnAt(bbs_write_keyboard(self), &self->text[start], BBS_POST_LENGTH - start, BBS_WRITE_LINE_WIDTH,
+                                   (unsigned char) (*x - 0x30), &index) +
          0x30;
     return (unsigned char) (index + start);
 }
@@ -611,7 +612,7 @@ void BbsWrite_DeleteMarked(BbsWriteScene *self)
         low = from;
         high = to;
     }
-    u8 position = (u8) func_ov095_0229bbc0(bbs_write_keyboard_arg(self), self->text, low, high, BBS_POST_LENGTH);
+    u8 position = (u8) SoftKeyboard_DeleteRange(bbs_write_keyboard(self), self->text, low, high, BBS_POST_LENGTH);
     BbsWrite_SetPosition(self, (char) position);
     BbsWrite_EndMark(self);
 }

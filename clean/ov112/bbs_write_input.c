@@ -19,6 +19,7 @@
 #include "main/text_string.h"
 #include "main/villager_part.h"
 #include "ov002/key_repeat.h"
+#include "ov095/soft_keyboard.h"
 
 /* The buttons (main's PadState bits), and the pen: down, and down or up since the frame before. */
 extern PadState data_021fbe40;
@@ -48,9 +49,9 @@ static MenuScene *bbs_write_scene(BbsWriteScene *self)
     return &self->base;
 }
 
-static int bbs_write_keyboard_arg(BbsWriteScene *self)
+static SoftKeyboard *bbs_write_keyboard(BbsWriteScene *self)
 {
-    return (int) (uintptr_t) self->keyboard;
+    return (SoftKeyboard *) (void *) self->keyboard;
 }
 
 static CellLayerSprite *bbs_write_pointer_cells(BbsWriteScene *self)
@@ -80,9 +81,9 @@ static int bbs_write_pen_put_down(void)
 /* The key held down (by A or the pen) acted on again. */
 static void bbs_write_repeat_held_key(BbsWriteScene *self)
 {
-    int key = func_ov095_0229c548(self->keyboard);
-    BbsWrite_Command(self, func_ov095_0229c448(self->keyboard, key, BBS_WRITE_CODE_MODE));
-    func_ov095_0229c8e4(bbs_write_keyboard_arg(self), key);
+    int key = SoftKeyboard_PressedKey((SoftKeyboard *) (void *) self->keyboard);
+    BbsWrite_Command(self, SoftKeyboard_KeyCode((SoftKeyboard *) (void *) self->keyboard, key, BBS_WRITE_CODE_MODE));
+    SoftKeyboard_ShowKeyPressed(bbs_write_keyboard(self), key);
 }
 
 /* --- Beginning the input --- */
@@ -189,7 +190,7 @@ void BbsWrite_AnswerYes(BbsWriteScene *self)
         Bbs_PostText(self->text);
         SoundSys_PlaySe(0x27);
         BbsWrite_SendPost(self);
-        VillagerPart_MarkType18((VillagerPart *) (void *) PlayerRecord_VillagerPart(PlayerRecords_Current()));
+        VillagerPart_MarkType18((VillagerPart *) PlayerRecord_VillagerPart(PlayerRecords_Current()));
     }
 }
 CLEAN_AS(func_ov112_0229ffdc, BbsWrite_AnswerYes)
@@ -233,8 +234,8 @@ void BbsWrite_Paste(BbsWriteScene *self)
     if (BbsWrite_HasMark(self) != 0) {
         BbsWrite_DeleteMarked(self);
     }
-    func_ov095_0229b3ec(self->keyboard);
-    func_ov095_0229b394(bbs_write_keyboard_arg(self));
+    SoftKeyboard_HangulReset((SoftKeyboard *) (void *) self->keyboard);
+    SoftKeyboard_SetFlag02(bbs_write_keyboard(self));
     int count = func_02051c8c_unk(self->clipboard, BBS_POST_LENGTH);
     for (int i = 0; i < count; i++) {
         if (BbsWrite_InsertChar(self, self->clipboard[i], 0) == 0) {
@@ -244,10 +245,10 @@ void BbsWrite_Paste(BbsWriteScene *self)
             break;
         }
     }
-    func_ov095_022999e8(self->keyboard);
+    SoftKeyboard_PlaySe23((SoftKeyboard *) (void *) self->keyboard);
     BbsWrite_Refresh(self);
     BbsWrite_PlaceCursor(self);
-    func_ov095_0229b388(bbs_write_keyboard_arg(self));
+    SoftKeyboard_ClearFlag02(bbs_write_keyboard(self));
 }
 CLEAN_AS(func_ov112_022a00ac, BbsWrite_Paste)
 
@@ -270,7 +271,7 @@ void BbsWrite_Copy(BbsWriteScene *self)
     TextString_ClearChars(self->clipboard, BBS_POST_LENGTH);
     TextString_CopyChars(&self->text[first], self->clipboard, (int) count);
     BbsWrite_SetFlags(self, BBS_WRITE_FLAG_COPIED);
-    func_ov095_022999f4(self->keyboard);
+    SoftKeyboard_PlaySe22((SoftKeyboard *) (void *) self->keyboard);
     BbsWrite_UpdateKeys(self);
 }
 CLEAN_AS(func_ov112_022a0144, BbsWrite_Copy)
@@ -286,13 +287,13 @@ int BbsWrite_ConvertChar(BbsWriteScene *self, int code)
     }
     switch (code) {
         case BBS_WRITE_CODE_CONVERT_1:
-            character = func_ov095_0229bb9c(self->keyboard, character);
+            character = SoftKeyboard_Convert1((SoftKeyboard *) (void *) self->keyboard, character);
             break;
         case BBS_WRITE_CODE_CONVERT_2:
-            character = func_ov095_0229bb98(self->keyboard, character);
+            character = SoftKeyboard_Convert2((SoftKeyboard *) (void *) self->keyboard, character);
             break;
         case BBS_WRITE_CODE_CONVERT_3:
-            character = func_ov095_0229bb94(self->keyboard, character);
+            character = SoftKeyboard_Convert3((SoftKeyboard *) (void *) self->keyboard, character);
             break;
         default:
             break;
@@ -300,7 +301,7 @@ int BbsWrite_ConvertChar(BbsWriteScene *self, int code)
     if (character == 0) {
         return 0;
     }
-    if (func_ov095_0229bba0(bbs_write_keyboard_arg(self), self->text, character, self->position) == 0) {
+    if (SoftKeyboard_ReplaceBefore(bbs_write_keyboard(self), self->text, character, self->position) == 0) {
         return 0;
     }
     BbsWrite_Refresh(self);
@@ -315,7 +316,7 @@ int BbsWrite_TypeChar(BbsWriteScene *self, int code)
 {
     if (BbsWrite_HasMark(self) != 0) {
         BbsWrite_DeleteMarked(self);
-        func_ov095_0229b3ec(self->keyboard);
+        SoftKeyboard_HangulReset((SoftKeyboard *) (void *) self->keyboard);
     }
     int result = BbsWrite_InsertChar(self, code, 1);
     BbsWrite_Refresh(self);
@@ -329,8 +330,8 @@ CLEAN_AS(func_ov112_022a0258, BbsWrite_TypeChar)
 int BbsWrite_InsertChar(BbsWriteScene *self, int code, int notify)
 {
     u8 position = self->position;
-    if (func_ov095_0229bc00(self->keyboard, self->text, code, &position, BBS_POST_LENGTH, BBS_WRITE_LINE_CHARS,
-                            BBS_WRITE_LINES, BBS_WRITE_LINE_WIDTH, 0, notify) != 0) {
+    if (SoftKeyboard_InsertInLines((SoftKeyboard *) (void *) self->keyboard, self->text, code, &position, BBS_POST_LENGTH,
+                                   BBS_WRITE_LINE_CHARS, BBS_WRITE_LINES, BBS_WRITE_LINE_WIDTH, 0, notify) != 0) {
         BbsWrite_SetPosition(self, (char) position);
         return 1;
     }
@@ -345,10 +346,10 @@ CLEAN_AS(func_ov112_022a029c, BbsWrite_InsertChar)
 int BbsWrite_Backspace(BbsWriteScene *self, int sound_on_fail)
 {
     if (BbsWrite_HasMark(self) != 0) {
-        func_ov095_0229b3ec(self->keyboard);
+        SoftKeyboard_HangulReset((SoftKeyboard *) (void *) self->keyboard);
         BbsWrite_DeleteMarked(self);
     } else if (self->position > self->first_position) {
-        if (func_ov095_0229b3a0(self->keyboard, self->text, self->position) == 0) {
+        if (SoftKeyboard_HangulBackspace((SoftKeyboard *) (void *) self->keyboard, self->text, self->position) == 0) {
             self->mark_from = self->position;
             self->mark_to = (u8) (self->position - 1);
             BbsWrite_DeleteMarked(self);
@@ -376,13 +377,13 @@ CLEAN_AS(func_ov112_022a02f4, BbsWrite_Backspace)
 int BbsWrite_Command(BbsWriteScene *self, int code)
 {
     int result = 1;
-    int own = func_ov095_0229ba44(self->keyboard, code, BBS_WRITE_KEYBOARD_LAYER);
+    int own = SoftKeyboard_HandleCommand((SoftKeyboard *) (void *) self->keyboard, code, BBS_WRITE_KEYBOARD_LAYER);
 
     if (own != 0) {
         BbsWrite_Refresh(self);
         return own;
     }
-    if (func_ov095_0229bebc(self->keyboard, code) != 0) {
+    if (SoftKeyboard_IsCommand((SoftKeyboard *) (void *) self->keyboard, code) != 0) {
         switch (code) {
             case BBS_WRITE_CODE_BACKSPACE:
                 BbsWrite_Backspace(self, 1);
@@ -432,14 +433,15 @@ CLEAN_AS(func_ov112_022a03ac, BbsWrite_Command)
  * BbsWrite_Command's result), its repeat started; 0 when no key is there. */
 int BbsWrite_TouchKey(BbsWriteScene *self)
 {
-    func_ov095_0229cce0(self->keyboard);
-    int key = func_ov095_0229c54c(self->keyboard, data_021f6c58, data_021f6c54);
+    SoftKeyboard_ReleasePressed((SoftKeyboard *) (void *) self->keyboard);
+    int key = SoftKeyboard_KeyAt((SoftKeyboard *) (void *) self->keyboard, data_021f6c58, data_021f6c54);
     if (key == -1) {
         return 0;
     }
-    int result = BbsWrite_Command(self, func_ov095_0229c448(self->keyboard, key, BBS_WRITE_CODE_MODE));
-    func_ov095_0229c8e4(bbs_write_keyboard_arg(self), key);
-    func_ov095_0229bf3c(self->keyboard);
+    int result =
+        BbsWrite_Command(self, SoftKeyboard_KeyCode((SoftKeyboard *) (void *) self->keyboard, key, BBS_WRITE_CODE_MODE));
+    SoftKeyboard_ShowKeyPressed(bbs_write_keyboard(self), key);
+    SoftKeyboard_StartRepeat((SoftKeyboard *) (void *) self->keyboard);
     return result;
 }
 CLEAN_AS(func_ov112_022a04b8, BbsWrite_TouchKey)
@@ -465,11 +467,11 @@ int BbsWrite_CopyKey(BbsWriteScene *self)
     if ((data_021fbe40.pressed & BBS_WRITE_PAD_L) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(self->keyboard, BBS_WRITE_KEY_COPY) != 0) {
+    if (SoftKeyboard_IsSpecialDisabled((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEY_COPY) != 0) {
         return 0;
     }
     BbsWrite_Command(self, BBS_WRITE_CODE_COPY);
-    func_ov095_0229c8e4(bbs_write_keyboard_arg(self), BBS_WRITE_KEY_L);
+    SoftKeyboard_ShowKeyPressed(bbs_write_keyboard(self), BBS_WRITE_KEY_L);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_WHILE_L);
     return 1;
@@ -483,11 +485,11 @@ int BbsWrite_PasteKey(BbsWriteScene *self)
     if ((data_021fbe40.pressed & BBS_WRITE_PAD_R) == 0) {
         return 0;
     }
-    if (func_ov095_0229cf64(self->keyboard, BBS_WRITE_KEY_PASTE) != 0) {
+    if (SoftKeyboard_IsSpecialDisabled((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEY_PASTE) != 0) {
         return 0;
     }
     BbsWrite_Command(self, BBS_WRITE_CODE_PASTE);
-    func_ov095_0229c8e4(bbs_write_keyboard_arg(self), BBS_WRITE_KEY_R);
+    SoftKeyboard_ShowKeyPressed(bbs_write_keyboard(self), BBS_WRITE_KEY_R);
     BbsWrite_PlacePointer(self);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_WHILE_R);
@@ -509,7 +511,7 @@ int BbsWrite_SwitchPointerKey(BbsWriteScene *self)
         BbsWrite_SetFlags(self, BBS_WRITE_FLAG_POINTER_ON_TEXT);
         BbsWrite_ScrollToCursor(self);
     }
-    if (func_ov095_0229cda4(self->keyboard, -1) != 0) {
+    if (SoftKeyboard_IsButtonKey((SoftKeyboard *) (void *) self->keyboard, -1) != 0) {
         if (BbsWrite_TestFlags(self, BBS_WRITE_FLAG_POINTER_ON_TEXT) != 0) {
             Glider_TurnToSetA(&self->pointer);
             MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_TEXT_KEYS);
@@ -531,7 +533,7 @@ int BbsWrite_BackspaceKey(BbsWriteScene *self)
         return 0;
     }
     if (BbsWrite_Backspace(self, 0) != 0) {
-        func_ov095_0229bf3c(self->keyboard);
+        SoftKeyboard_StartRepeat((SoftKeyboard *) (void *) self->keyboard);
         self->return_sub_state = self->base.sub_state;
         MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_BACKSPACE_REPEAT);
     } else {
@@ -549,13 +551,13 @@ int BbsWrite_PressKeyByA(BbsWriteScene *self)
     if ((data_021fbe40.pressed & BBS_WRITE_PAD_A) == 0) {
         return 0;
     }
-    int key = func_ov095_02299a00(self->keyboard);
+    int key = SoftKeyboard_PressCursorKey((SoftKeyboard *) (void *) self->keyboard);
     if (key == -1) {
         return 0;
     }
     /* QUIRK: the key's code is looked up and not used. */
-    func_ov095_0229c448(self->keyboard, key, BBS_WRITE_CODE_MODE);
-    func_ov095_0229c8e4(bbs_write_keyboard_arg(self), key);
+    SoftKeyboard_KeyCode((SoftKeyboard *) (void *) self->keyboard, key, BBS_WRITE_CODE_MODE);
+    SoftKeyboard_ShowKeyPressed(bbs_write_keyboard(self), key);
     BbsWrite_BeginKeyPressed(self);
     return 1;
 }
@@ -567,7 +569,7 @@ CLEAN_AS(func_ov112_022a0710, BbsWrite_PressKeyByA)
  * input. */
 void BbsWrite_RunError(BbsWriteScene *self)
 {
-    func_ov095_0229bf48(self->keyboard);
+    SoftKeyboard_StepPressed((SoftKeyboard *) (void *) self->keyboard);
     if (ErrorMessage_Update(&self->error, 1) != 0) {
         BbsWrite_BeginInput(self);
     }
@@ -784,7 +786,7 @@ void BbsWrite_RunBackspaceRepeat(BbsWriteScene *self)
         MenuScene_SetSubState(bbs_write_scene(self), self->return_sub_state);
         return;
     }
-    if (func_ov095_0229bf0c(self->keyboard) == 0) {
+    if (SoftKeyboard_StepRepeat((SoftKeyboard *) (void *) self->keyboard) == 0) {
         return;
     }
     if (BbsWrite_Backspace(self, 0) != 0) {
@@ -817,7 +819,7 @@ void BbsWrite_RunKeyRepeat(BbsWriteScene *self)
         BbsWrite_BeginKeyReleased(self);
         return;
     }
-    if (func_ov095_0229bf0c(self->keyboard) != 0) {
+    if (SoftKeyboard_StepRepeat((SoftKeyboard *) (void *) self->keyboard) != 0) {
         bbs_write_repeat_held_key(self);
     }
 }
@@ -832,8 +834,8 @@ void BbsWrite_RunKeyPressed(BbsWriteScene *self)
     if (CellLayerSprite_IsDone(bbs_write_pointer_cells(self)) == 0) {
         return;
     }
-    int key = func_ov095_02299a00(self->keyboard);
-    int code = func_ov095_0229c448(self->keyboard, key, BBS_WRITE_CODE_MODE);
+    int key = SoftKeyboard_PressCursorKey((SoftKeyboard *) (void *) self->keyboard);
+    int code = SoftKeyboard_KeyCode((SoftKeyboard *) (void *) self->keyboard, key, BBS_WRITE_CODE_MODE);
     if (code == BBS_WRITE_CODE_SCROLL) {
         MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_SCROLL_PRESS);
         PushButton_Press(&self->scroll_button);
@@ -847,12 +849,12 @@ void BbsWrite_RunKeyPressed(BbsWriteScene *self)
     }
     int result = BbsWrite_Command(self, code);
     if (result == 1 && (data_021fbe40.held & BBS_WRITE_PAD_A) != 0) {
-        func_ov095_0229bf3c(self->keyboard);
+        SoftKeyboard_StartRepeat((SoftKeyboard *) (void *) self->keyboard);
         MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_KEY_REPEAT);
-        func_ov095_0229c8e4(bbs_write_keyboard_arg(self), key);
+        SoftKeyboard_ShowKeyPressed(bbs_write_keyboard(self), key);
     } else if (result != 3) {
         if (result == 4) {
-            func_ov095_0229cce0(self->keyboard);
+            SoftKeyboard_ReleasePressed((SoftKeyboard *) (void *) self->keyboard);
         } else {
             BbsWrite_BeginKeyReleased(self);
         }
@@ -881,7 +883,7 @@ void BbsWrite_RunKeys(BbsWriteScene *self)
         return;
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(bbs_write_scene(self));
-    switch (func_ov095_02299a54(self->keyboard, keys)) {
+    switch (SoftKeyboard_MoveCursor((SoftKeyboard *) (void *) self->keyboard, keys)) {
         case 1:
             Glider_TurnToSetA(&self->pointer);
             BbsWrite_GlidePointer(self);
@@ -945,7 +947,7 @@ void BbsWrite_RunKeyTouchHeld(BbsWriteScene *self)
         MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_TOUCH);
         return;
     }
-    if (func_ov095_0229bf0c(self->keyboard) != 0) {
+    if (SoftKeyboard_StepRepeat((SoftKeyboard *) (void *) self->keyboard) != 0) {
         bbs_write_repeat_held_key(self);
     }
 }
@@ -1018,7 +1020,7 @@ void BbsWrite_RunTouch(BbsWriteScene *self)
         return;
     }
     int key_shown = 0;
-    if (func_ov095_0229bf48(self->keyboard) != 0) {
+    if (SoftKeyboard_StepPressed((SoftKeyboard *) (void *) self->keyboard) != 0) {
         key_shown = 1;
     }
     if (!bbs_write_pen_put_down()) {
@@ -1033,14 +1035,14 @@ void BbsWrite_RunTouch(BbsWriteScene *self)
         BbsWrite_AskQuit(self);
         return;
     }
-    if (func_ov095_0229aff0(self->keyboard) != 0) {
-        func_ov095_0229c22c(self->keyboard, 9, BBS_WRITE_KEYBOARD_LAYER, 1);
+    if (SoftKeyboard_TouchPageTab((SoftKeyboard *) (void *) self->keyboard) != 0) {
+        SoftKeyboard_LoadLayout((SoftKeyboard *) (void *) self->keyboard, 9, BBS_WRITE_KEYBOARD_LAYER, 1);
         BbsWrite_Refresh(self);
         return;
     }
     if (BbsWrite_StartTouch(self) != 0) {
         MenuScene_SetSubState(bbs_write_scene(self), BBS_WRITE_SUB_MARK_DRAG);
-        func_ov095_0229b3ec(self->keyboard);
+        SoftKeyboard_HangulReset((SoftKeyboard *) (void *) self->keyboard);
         BbsWrite_Refresh(self);
         return;
     }

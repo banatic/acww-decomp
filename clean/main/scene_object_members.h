@@ -40,7 +40,7 @@ static inline void SceneObjectMembers_Destruct(u8 *object)
     SceneTalkState_Destruct((SceneTalkState *) (void *) (object + 0x418));
     SceneLook_Destruct((SceneLook *) (void *) (object + 0x3b0));
     SceneMover_Destruct((SceneMover *) (void *) (object + 0x350));
-    SpeakerAnim_Construct((SpeakerAnim *) (void *) (object + 0x334));
+    SpeakerAnim_Destruct((SpeakerAnim *) (void *) (object + 0x334));
     SceneFace_Destruct((SceneFace *) (void *) (object + 0x2ac));
     SceneStandardAnims_Destruct((SceneStandardAnims *) (void *) (object + 0x2a0));
     LayeredModel_DestructB((LayeredModel *) (void *) (object + 0xec));

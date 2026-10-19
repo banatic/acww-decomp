@@ -735,9 +735,7 @@ void *MysteryCat_Create(void)
     LayeredModel_ConstructB((LayeredModel *) (void *) mcat_part(cat, MCAT_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) mcat_part(cat, MCAT_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) mcat_part(cat, MCAT_FACE_PART));
-    /* func_020169a8, the animation player's constructor (registered under the destructor's
-     * name). */
-    SpeakerAnim_Destruct((SpeakerAnim *) (void *) mcat_part(cat, MCAT_ANIM));
+    SpeakerAnim_Construct((SpeakerAnim *) (void *) mcat_part(cat, MCAT_ANIM));
     SceneMover_Construct(mcat_mover(cat));
     SceneProbe_Construct(mcat_part(cat, MCAT_PROBE));
     SceneValue3aa_Clear((SceneValue3aa *) (void *) mcat_part(cat, MCAT_VALUE_3AA));

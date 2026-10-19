@@ -4,23 +4,15 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/screen_sprite.h"
+#include "main/sliding_window.h"
 #include "main/text_label.h"
 
 static_assert(sizeof(MessageWindow) == 0xcc, "message window");
 
-extern const u8 data_ov002_0220bdac[];  /* the window's vtable */
-extern void func_020edb3c(void *block); /* operator delete */
-
-/* main's sliding window */
-extern void *func_0208ade8(MessageWindow *window, int param);       /* constructor */
-extern void *func_0208ad24(MessageWindow *window);                  /* destructor */
-extern void func_0208aef4(MessageWindow *window, int x, int y);     /* its place, from the screen's centre */
-extern void func_0208aa60(MessageWindow *window, int x, int y);     /* words 0x3c and 0x40: an offset */
-extern void func_0208aa48(MessageWindow *window, TextLabel *label); /* copies the label's text in */
-extern void func_0208aa88(MessageWindow *window);                   /* byte 0x59 = 1 */
-extern void *func_0208a9c8(MessageWindow *window);                  /* asks a closed window to open */
-extern void *func_0208a9ac(MessageWindow *window);                  /* asks an open window to close */
+extern const u8 data_ov002_0220bdac[]; /* the window's vtable */
 
 /* The screen's centre, (0, 0) of main's places. */
 #define CENTER_X 0x80
@@ -47,7 +39,7 @@ static void update(MessageWindow *window)
 /* func_ov002_0220b04c: asks the window to close when it is open, and updates it twice. */
 void MessageWindow_Close(MessageWindow *window)
 {
-    func_0208a9ac(window);
+    SlidingWindow_RequestClose((SlidingWindow *) (void *) window);
     update(window);
     update(window);
 }
@@ -60,12 +52,12 @@ void MessageWindow_Open(MessageWindow *window, int message, int x, int y)
     TextLabel label;
 
     ((WindowPlaceMethod *) virtual_slot(window, SLOT_SET_PLACE))(window, x, y);
-    func_0208aa60(window, 0, 0);
+    SlidingWindow_SetPlace((SlidingWindow *) (void *) window, 0, 0);
     TextLabel_Construct(&label);
     TextLabel_LoadMenuMessage((int) (uintptr_t) &label, (char) message);
-    func_0208aa48(window, &label);
-    func_0208aa88(window);
-    func_0208a9c8(window);
+    SlidingWindow_SetText((SlidingWindow *) (void *) window, (struct TextObject *) (void *) &label);
+    SlidingWindow_SetInstant((SlidingWindow *) (void *) window);
+    SlidingWindow_RequestOpen((SlidingWindow *) (void *) window);
     update(window);
     update(window);
     TextLabel_Destruct(&label);
@@ -75,7 +67,7 @@ CLEAN_AS(func_ov002_0220b06c, MessageWindow_Open)
 /* func_ov002_0220b0c8 (vtable slot 4): places the window at (x, y) on the screen. */
 void MessageWindow_SetPlace(MessageWindow *window, int x, int y)
 {
-    func_0208aef4(window, x - CENTER_X, y - CENTER_Y);
+    ScreenSprite_SetPlace((ScreenSprite *) (void *) window, x - CENTER_X, y - CENTER_Y);
 }
 CLEAN_AS(func_ov002_0220b0c8, MessageWindow_SetPlace)
 
@@ -83,8 +75,8 @@ CLEAN_AS(func_ov002_0220b0c8, MessageWindow_SetPlace)
 MessageWindow *MessageWindow_Delete(MessageWindow *window)
 {
     window->vtable = data_ov002_0220bdac;
-    func_0208ad24(window);
-    func_020edb3c(window);
+    SlidingWindow_DestructBase((SlidingWindow *) (void *) window);
+    Heap_OperatorDeleteB(window);
     return window;
 }
 CLEAN_AS(func_ov002_0220b0d4, MessageWindow_Delete)
@@ -93,7 +85,7 @@ CLEAN_AS(func_ov002_0220b0d4, MessageWindow_Delete)
 MessageWindow *MessageWindow_Destroy(MessageWindow *window)
 {
     window->vtable = data_ov002_0220bdac;
-    func_0208ad24(window);
+    SlidingWindow_DestructBase((SlidingWindow *) (void *) window);
     return window;
 }
 CLEAN_AS(func_ov002_0220b0f4, MessageWindow_Destroy)
@@ -101,9 +93,9 @@ CLEAN_AS(func_ov002_0220b0f4, MessageWindow_Destroy)
 /* func_ov002_0220b10c */
 MessageWindow *MessageWindow_Construct(MessageWindow *window)
 {
-    func_0208ade8(window, 0);
+    SlidingWindow_Construct((SlidingWindow *) (void *) window, 0);
     window->vtable = data_ov002_0220bdac;
-    func_0208aa88(window);
+    SlidingWindow_SetInstant((SlidingWindow *) (void *) window);
     return window;
 }
 CLEAN_AS(func_ov002_0220b10c, MessageWindow_Construct)
