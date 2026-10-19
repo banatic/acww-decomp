@@ -33,36 +33,14 @@ typedef struct WideText {
     u16 text[WIDE_TEXT_CAPACITY];
 } WideText;
 
-/* What a label's text box holds that the label sets (func_02050cb4 / func_02050d6c construct
- * it). */
-typedef struct TextBox {
-    const void *vtable;
-    u8 unk_04[0xc];
-    const char *text; /* 0x10: the characters it shows */
-    u8 unk_14[0xc];
-    u32 cells; /* 0x20: its width in 8-pixel cells */
-    u32 unk_24;
-    const void *font; /* 0x28: data_021c8230 when constructed */
-    s32 style;        /* 0x2c: func_02002dc8 of the label's style */
-    u32 offset;       /* 0x30: where the text starts, in pixels */
-    u8 unk_34[4];
-    u8 color_38;
-    u8 color_39;
-    u8 unk_3a[0x16];
-    u32 unk_50; /* 2 for the styles func_02002e04 accepts, else 1 */
-    u8 pending; /* 0x54: set by func_02051694, cleared once drawn */
-    u8 unk_55;  /* 1 when the style is 4 */
-    u8 unk_56;
-    u8 unk_57;
-    u32 update_mode; /* 0x58: func_02051694 draws at once when 2 */
-} TextBox;
+struct LabelBox; /* label_box.h */
 
 typedef struct TextLabel {
     const TextVtable *vtable; /* data_020e179c */
     u8 base_04[0xe];          /* the text base's */
     char text[TEXT_LABEL_CAPACITY];
     u8 unk_66[2];
-    TextBox *box; /* 0x68, or NULL */
+    struct LabelBox *box; /* 0x68, or NULL */
 } TextLabel;
 
 int WideText_Length(WideText *text);
@@ -76,15 +54,15 @@ void TextLabel_SetBoxParams(TextLabel *label, int a, int b, int c, int d);
 void TextLabel_SetFromWideConverted(TextLabel *label, const u16 *text, int length, int escape_newlines, u8 end_code);
 void TextLabel_CopyWide(void *label, u16 *out);
 void TextLabel_SetFromWide(void *label, const u16 *text, void *length);
-int TextLabel_Compose(int label, int a, int b, int kind, int extra, u8 raw);
-void TextLabel_LoadMessage(int label, char *archive, char number);
-int TextLabel_LoadMenuMessage(int label, char number);
-int TextLabel_LoadMenuMessageAt(int label, int number);
+int TextLabel_Compose(TextLabel *label, int a, int b, int kind, int extra, u8 raw);
+void TextLabel_LoadMessage(TextLabel *label, char *archive, char number);
+int TextLabel_LoadMenuMessage(TextLabel *label, char number);
+int TextLabel_LoadMenuMessageAt(TextLabel *label, int number);
 int TextLabel_TextWidth(void *label);
 void TextLabel_ShowAt(TextLabel *label, int offset);
 void TextLabel_ShowRightAligned(TextLabel *label);
 void TextLabel_ShowShifted(TextLabel *label, int center, int shift);
-void TextLabel_Show(TextLabel *label, int center, int flag_57);
+void TextLabel_Show(TextLabel *label, int center, int underline);
 void TextLabel_OpenBox(TextLabel *label, int a, int b, int color_38, u8 color_39);
 void TextLabel_OpenStyledBox(TextLabel *label, int style, int a, int b, u8 color_38, u8 color_39, int unused);
 void TextLabel_OpenStyledBox2(TextLabel *label, int style, int a, int b, u8 color_38, u8 color_39, int other_font);

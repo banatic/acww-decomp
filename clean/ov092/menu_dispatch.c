@@ -132,10 +132,10 @@ void MenuDispatch_Setup(MenuDispatch *self)
     *mode = GroupParams_Mode();
     self->base.sub_state = MENU_DISPATCH_SUB_REQUEST;
     if (*mode == MENU_DISPATCH_MODE_0) {
-        MenuScene_SetPhase(menu_dispatch_scene(self), MENU_DISPATCH_PHASE_INTERACTIVE);
+        MenuScene_SetPhase(menu_dispatch_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
     } else {
         self->base.state = MENU_DISPATCH_STATE_OPEN;
-        MenuScene_SetPhase(menu_dispatch_scene(self), MENU_DISPATCH_PHASE_WAIT);
+        MenuScene_SetPhase(menu_dispatch_scene(self), MENU_SCENE_PHASE_WAIT);
         MenuBackdrop_Open();
     }
 
@@ -183,7 +183,7 @@ CLEAN_AS(func_ov092_02298f5c, MenuDispatch_Setup)
 void MenuDispatch_Open(MenuDispatch *self)
 {
     DisplayShadow_SetSubBgMode(0);
-    MenuScene_SetPhase(menu_dispatch_scene(self), MENU_DISPATCH_PHASE_INTERACTIVE);
+    MenuScene_SetPhase(menu_dispatch_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
 }
 CLEAN_AS(func_ov092_0229906c, MenuDispatch_Open)
 
@@ -228,10 +228,10 @@ void MenuDispatch_ChildClosed(MenuDispatch *self)
     u8 mode = *menu_dispatch_mode(self);
     switch (mode) {
         case MENU_DISPATCH_MODE_END:
-            MenuScene_SetPhase(menu_dispatch_scene(self), MENU_DISPATCH_PHASE_DELETE);
+            MenuScene_SetPhase(menu_dispatch_scene(self), MENU_SCENE_PHASE_DELETE);
             break;
         case MENU_DISPATCH_MODE_CLOSE:
-            MenuScene_SetPhase(menu_dispatch_scene(self), MENU_DISPATCH_PHASE_WAIT);
+            MenuScene_SetPhase(menu_dispatch_scene(self), MENU_SCENE_PHASE_WAIT);
             DisplayShadow_SetSubBgMode(1);
             MenuBackdrop_ReleaseClose();
             break;

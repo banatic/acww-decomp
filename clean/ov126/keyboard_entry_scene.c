@@ -92,9 +92,9 @@ void KeyboardEntry_LoadField(KeyboardEntry *self)
         TextBase_Clear(&empty);
         MessageReader_SetPart(0, (int) (uintptr_t) &empty);
         if (GroupParams_Mode() == KEYBOARD_ENTRY_MODE_CONSTELLATION) {
-            TextLabel_LoadMenuMessage((int) (uintptr_t) &self->hint, (char) 0x80);
+            TextLabel_LoadMenuMessage(&self->hint, (char) 0x80);
         } else {
-            TextLabel_LoadMenuMessage((int) (uintptr_t) &self->hint, 0x66);
+            TextLabel_LoadMenuMessage(&self->hint, 0x66);
         }
         TextLabel_OpenStyledBox2(&self->hint, 8, 0x1c0, 6, 15, 0, 0);
         TextLabel_Show(&self->hint, 0, 0);

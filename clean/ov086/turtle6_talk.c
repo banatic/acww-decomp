@@ -186,7 +186,7 @@ void Turtle6Talk_OnLineEnded(Turtle6Talk *talk)
             if (letter_index == -1) {
                 break;
             }
-            Letter *letter = (Letter *) (void *) CurrentPockets_FreeLetter();
+            Letter *letter = CurrentPockets_FreeLetter();
             if (letter == NULL) {
                 break;
             }

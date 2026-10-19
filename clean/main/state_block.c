@@ -520,7 +520,7 @@ void StateBlock_ForgetPlayer(StateBlock *block, int player)
     FoxShop_ClearPlayer((u8) player);
     int letters = (int) (uintptr_t) Activity_CurrentLetters();
     if (letters != 0) {
-        LetterStore_Clear((MailLetter *) (uintptr_t) (u32) (letters + LETTER_STORE_PLAYER_SIZE * player));
+        LetterStore_Clear((Letter *) (uintptr_t) (u32) (letters + LETTER_STORE_PLAYER_SIZE * player));
     }
 }
 CLEAN_AS(func_0209ef10, StateBlock_ForgetPlayer)

@@ -106,17 +106,17 @@ void ShopPoints_SendLevelLetters(void)
     for (unsigned i = 0; i < level; i++) {
         int flag = (int) i + SHOP_POINTS_LETTER_FLAG;
         if (i < SHOP_POINTS_LETTERS && PlayerRecord_TestFlag(player, flag) == 0) {
-            MailLetter letter;
+            Letter letter;
             u8 message;
-            Letter_Construct((Letter *) &letter);
+            Letter_Construct(&letter);
             message = (u8) i;
-            Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e4190, data_020e4150, data_020e4154,
+            Letter_WriteSpecialToPlayer(&letter, &message, data_020e4190, data_020e4150, data_020e4154,
                                         PlayerRecord_Player(player));
-            Letter_SetItem((Letter *) &letter, data_020d1e34[i], 1);
+            Letter_SetItem(&letter, data_020d1e34[i], 1);
             if (Mail_HoldAtPostOffice(&letter, 0) != 0) {
                 PlayerRecord_SetFlag(player, flag);
             }
-            Letter_Destruct((Letter *) &letter);
+            Letter_Destruct(&letter);
         }
     }
 }

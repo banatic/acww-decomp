@@ -37,10 +37,10 @@ extern const u8 data_ov004_0225209c[];
 
 /* func_ov004_02213b70 (vtable slot 0x64, the model's hook for a node): for the cleared node,
  * sets the word the state points to to 0. */
-void PlayerDesignObject_NodeHook(PlayerDesignObject *object, int node, NodeHookState *state)
+void PlayerDesignObject_NodeHook(PlayerDesignObject *object, int node, G3dRenderState *state)
 {
     if (node == object->cleared_node) {
-        *state->unk_B8 = 0;
+        *state->visible = 0;
     }
 }
 CLEAN_AS(func_ov004_02213b70, PlayerDesignObject_NodeHook)

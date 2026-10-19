@@ -29,7 +29,7 @@ int BottleMail_Open(void);
 
 /* What data_021f36ec holds: the bottle's letter and a bit for each message used. */
 typedef struct BottleState {
-    MailLetter letter;
+    Letter letter;
     u8 used[BOTTLE_USED_BYTES];
 } BottleState;
 
@@ -38,7 +38,7 @@ void BottleMail_ClearUsed(BottleState *bottle);
 int BottleMail_IsMessageUsed(BottleState *bottle, int message);
 void BottleMail_MarkMessageUsed(BottleState *bottle, int message);
 void BottleMail_InitState(BottleState *bottle);
-MailLetter *BottleMail_Letter(BottleState *bottle);
+Letter *BottleMail_Letter(BottleState *bottle);
 BottleState *BottleMail_DestructState(BottleState *bottle);
 BottleState *BottleMail_ConstructState(BottleState *bottle);
 

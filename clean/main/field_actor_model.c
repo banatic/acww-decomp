@@ -26,35 +26,6 @@
 #include "ov004/icon_models.h"
 #include "shadow.h"
 
-/* The render state the node callbacks are handed, as far as they read it. */
-typedef struct NodeRenderObject {
-    u8 unk_00[0x2c];
-    FieldActor *actor; /* 0x2c: the actor the model belongs to, or NULL */
-} NodeRenderObject;
-
-typedef struct NodeJoint {
-    u8 unk_00[0x28];
-    Mtx33 rotation;   /* 0x28 */
-    Vec3 translation; /* 0x4c */
-} NodeJoint;
-
-typedef struct NodeRenderState {
-    const u8 *command;              /* 0x00: the node command being run; byte 1 is the node */
-    const NodeRenderObject *object; /* 0x04 */
-    u8 unk_08[0x24 - 0x08];
-    u32 node_callback; /* 0x24: the callback of the node commands (a DS address) */
-    u8 unk_28[0x92 - 0x28];
-    u8 node_timing; /* 0x92: when in the command it runs: 1, 2 or 3 */
-    u8 unk_93[0xb4 - 0x93];
-    NodeJoint *joint; /* 0xb4: the node's transform */
-} NodeRenderState;
-
-static_assert(offsetof(NodeRenderObject, actor) == 0x2c, "render object actor");
-static_assert(offsetof(NodeJoint, translation) == 0x4c, "joint translation");
-static_assert(offsetof(NodeRenderState, node_callback) == 0x24, "node callback");
-static_assert(offsetof(NodeRenderState, node_timing) == 0x92, "node timing");
-static_assert(offsetof(NodeRenderState, joint) == 0xb4, "joint");
-
 #define NODE_ROOT 0
 #define NODE_HEAD 0xf
 
@@ -76,9 +47,9 @@ extern void MTX_RotX33_(Mtx33 *mtx, fx32 sin, fx32 cos);
 extern void MTX_Concat33(const Mtx33 *a, const Mtx33 *b, Mtx33 *out);
 
 /* The node callbacks, installed by their DS addresses. */
-extern void func_02005730(NodeRenderState *state);
-extern void func_02005740(NodeRenderState *state);
-extern void func_020058b4(NodeRenderState *state);
+extern void func_02005730(G3dRenderState *state);
+extern void func_02005740(G3dRenderState *state);
+extern void func_020058b4(G3dRenderState *state);
 
 static u8 *at(FieldActor *actor, u32 offset)
 {
@@ -228,10 +199,10 @@ void FieldActor_PlaceAtPosition(FieldActor *actor)
 CLEAN_AS(func_0200570c, FieldActor_PlaceAtPosition)
 
 /* func_02005730: after a node: FieldActor_NodeBefore at timing 1 for the next. */
-void FieldActor_NodeAfter(NodeRenderState *state)
+void FieldActor_NodeAfter(G3dRenderState *state)
 {
-    state->node_callback = (u32) (uintptr_t) func_020058b4;
-    state->node_timing = 1;
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_020058b4;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_A;
 }
 CLEAN_AS(func_02005730, FieldActor_NodeAfter)
 
@@ -243,10 +214,10 @@ CLEAN_AS(func_02005730, FieldActor_NodeAfter)
  * transform is applied (func_02054ed4) and the start position is the current matrix's
  * translation, at FieldActor_ModelY's height, on the curved ground. Then FieldActor_NodeAfter at
  * timing 3. */
-void FieldActor_NodeTransform(NodeRenderState *state)
+void FieldActor_NodeTransform(G3dRenderState *state)
 {
-    AnimatedModel_RestoreNodeTranslation((AnimatedModelNodeState *) state, 0);
-    FieldActor *actor = state->object->actor;
+    AnimatedModel_RestoreNodeTranslation(state, 0);
+    FieldActor *actor = state->object->user;
     if (state->command[1] == NODE_HEAD && actor != NULL) {
         int turn = actor->head_pitch;
         if (turn != 0 || actor->head_yaw != 0) {
@@ -259,13 +230,13 @@ void FieldActor_NodeTransform(NodeRenderState *state)
         }
     }
 
-    actor = state->object->actor;
+    actor = state->object->user;
     if (actor != NULL) {
         u8 *body = at(actor, FIELD_ACTOR_BODY);
-        LayeredModel_ApplyNodeA((LayeredModel *) (void *) body, (LayeredModelNodeState *) state);
+        LayeredModel_ApplyNodeA((LayeredModel *) (void *) body, state);
         if (state->command[1] == NODE_ROOT) {
             if (actor->animation == 0x82 || actor->animation == 0x83) {
-                NodeJoint *joint = state->joint;
+                G3dJointResult *joint = state->joint;
                 Vec3 bent = joint->translation;
                 Vec3 flat = joint->translation;
                 int slope = Globe_Bend(&bent, &flat);
@@ -277,28 +248,28 @@ void FieldActor_NodeTransform(NodeRenderState *state)
                     MTX_Concat33(&joint->rotation, &step, &joint->rotation);
                 }
             }
-            AnimatedModel_ApplyNodeMatrix(body, (AnimatedModelNodeState *) state, 0);
+            AnimatedModel_ApplyNodeMatrix(body, state, 0);
             Mtx43 current = data_021cfe68;
             Vec3 root = translation_of(&current);
             root.y = FieldActor_ModelY(actor, root.y);
             Globe_Unbend(&actor->start_position, &root);
         }
     }
-    state->node_callback = (u32) (uintptr_t) func_02005730;
-    state->node_timing = 3;
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_02005730;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_C;
 }
 CLEAN_AS(func_02005740, FieldActor_NodeTransform)
 
 /* func_020058b4: before a node: func_02054988 with the body, when the actor is known; then
  * FieldActor_NodeTransform at timing 2. */
-void FieldActor_NodeBefore(NodeRenderState *state)
+void FieldActor_NodeBefore(G3dRenderState *state)
 {
-    FieldActor *actor = state->object->actor;
+    FieldActor *actor = state->object->user;
     if (actor != NULL) {
-        LayeredModel_PrepareNodeA((LayeredModel *) (void *) at(actor, FIELD_ACTOR_BODY), (LayeredModelNodeState *) state);
+        LayeredModel_PrepareNodeA((LayeredModel *) (void *) at(actor, FIELD_ACTOR_BODY), state);
     }
-    state->node_callback = (u32) (uintptr_t) func_02005740;
-    state->node_timing = 2;
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_02005740;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_B;
 }
 CLEAN_AS(func_020058b4, FieldActor_NodeBefore)
 

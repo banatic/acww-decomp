@@ -146,12 +146,12 @@ typedef struct VillagerTownPlayerId {
  * player of the town, that player's record takes note of it first (func_0209a9a8). Then the
  * villager reads it (func_02081144) and keeps it (func_02081418, whose result is given back);
  * 0 when the letter has no sender set or no villager of the town to go to. */
-int VillagerTown_GiveLetter(VillagerTown *town, MailLetter *letter)
+int VillagerTown_GiveLetter(VillagerTown *town, Letter *letter)
 {
     if (letter == NULL) {
         return 0;
     }
-    void *sender = (void *) (uintptr_t) Letter_PlayerSender((Letter *) letter);
+    void *sender = (void *) (uintptr_t) Letter_PlayerSender(letter);
     if (sender == NULL) {
         return 0;
     }
@@ -160,7 +160,7 @@ int VillagerTown_GiveLetter(VillagerTown *town, MailLetter *letter)
     PlayerId_CopyConstruct((DesignCreator *) &id, sender);
     if (PlayerId_IsSet((DesignCreator *) &id)) {
         void *player = PlayerRecords_Find(data_021dc7bc, (const PlayerRecordsId *) &id);
-        void *addressee = Letter_VillagerAddressee((Letter *) letter);
+        void *addressee = Letter_VillagerAddressee(letter);
         if (player != NULL) {
             VillagerPart_NoteLetter((VillagerPart *) (void *) PlayerRecord_VillagerPart(player), letter);
         }

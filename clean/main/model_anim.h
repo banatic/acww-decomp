@@ -8,6 +8,7 @@
 #ifndef CLEAN_MAIN_MODEL_ANIM_H
 #define CLEAN_MAIN_MODEL_ANIM_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/heap.h"
 #include "main/animated_model.h"
 #include "main/frame_ctrl.h"
@@ -20,12 +21,12 @@ typedef struct ModelAnim {
     u8 *model;               /* 0x1c: the model resource it was allocated for */
 } ModelAnim;
 
-void ModelAnim_Detach(ModelAnim *anim, ModelRenderObject *render);
-void ModelAnim_Attach(ModelAnim *anim, ModelRenderObject *render);
-void ModelAnim_RestartTextured(ModelAnim *anim, ModelRenderObject *render, const u8 *file, void *texture, u8 flags, fx32 speed,
+void ModelAnim_Detach(ModelAnim *anim, G3dRenderObject *render);
+void ModelAnim_Attach(ModelAnim *anim, G3dRenderObject *render);
+void ModelAnim_RestartTextured(ModelAnim *anim, G3dRenderObject *render, const u8 *file, void *texture, u8 flags, fx32 speed,
                                u16 start);
 void ModelAnim_StartTextured(ModelAnim *anim, const u8 *file, void *texture, int flags, fx32 speed, u16 start);
-void ModelAnim_Restart(ModelAnim *anim, ModelRenderObject *render, const u8 *file, int flags, fx32 speed, u16 start);
+void ModelAnim_Restart(ModelAnim *anim, G3dRenderObject *render, const u8 *file, int flags, fx32 speed, u16 start);
 void ModelAnim_Start(ModelAnim *anim, const u8 *file, int flags, fx32 speed, u16 start);
 void ModelAnim_Init(ModelAnim *anim, const u8 *file, void *texture, int flags, fx32 speed, u16 start);
 int ModelAnim_AllocJointAnim(ModelAnim *anim, u8 *model, Heap *heap);

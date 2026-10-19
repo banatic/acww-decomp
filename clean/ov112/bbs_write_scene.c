@@ -212,7 +212,7 @@ void BbsWrite_Setup(BbsWriteScene *self)
     PlayerIdText_Construct(&name);
     PlayerId_NameToText(PlayerRecord_Player(record), (TextBase *) (void *) &name);
     MessageReader_SetPart(0, (int) (uintptr_t) &name);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) &message, BBS_WRITE_SIGNATURE_MESSAGE);
+    TextLabel_LoadMenuMessage(&message, BBS_WRITE_SIGNATURE_MESSAGE);
     WideText_Construct(&wide);
     TextBase_BytesToWide((WideTextBase *) (void *) &wide, (TextBase *) (void *) &message);
 

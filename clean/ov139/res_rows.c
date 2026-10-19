@@ -163,7 +163,7 @@ void ResRows_SetFirstColumn(ResRows *self, int row, const u16 *name, int color)
         TextBase_SetWide(&data_ov139_02299ea0, name, RES_ROWS_NAME_LENGTH);
         TextBase_WideToBytes((TextBase *) (void *) &data_ov139_02299ebc, (WideTextBase *) (void *) &data_ov139_02299ea0, 0, 0);
         MessageReader_SetPart(0, (int) (uintptr_t) &data_ov139_02299ebc);
-        TextLabel_LoadMenuMessage((int) (uintptr_t) label, RES_ROWS_FIRST_MESSAGE);
+        TextLabel_LoadMenuMessage(label, RES_ROWS_FIRST_MESSAGE);
     }
     res_rows_show_label(self, label, row * 20 + 0x11e, 10, color);
 }
@@ -222,7 +222,7 @@ void ResRows_MakeHeadings(ResRows *self)
 
     for (int i = 0; i < 3; i++) {
         TextLabel *label = ResRows_TakeLabel(self);
-        TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) headings[i].message);
+        TextLabel_LoadMenuMessage(label, (char) headings[i].message);
         TextLabel_OpenStyledBox2(label, LAYER_SUB_OBJ, headings[i].chars, 6, 0xf, 0, 0);
         TextLabel_Show(label, 1, 0);
     }

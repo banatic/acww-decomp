@@ -149,7 +149,7 @@ CLEAN_AS(func_ov002_0220b2bc, PanelSprite_HasFlags)
  * colours given (the box's colours 0x38 and 0x39). */
 void PanelSprite_ShowText(PanelSprite *sprite, int color_38, int color_39)
 {
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label_of(sprite), (char) sprite->message);
+    TextLabel_LoadMenuMessage(label_of(sprite), (char) sprite->message);
     TextLabel_OpenStyledBox2(label_of(sprite), TEXT_STYLE, sprite->cells[0].attr2 & 0x3ff, sprite->text_cells, (u8) color_38,
                              (u8) color_39, 0);
     TextLabel_Show(label_of(sprite), 1, 0);

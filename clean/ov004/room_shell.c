@@ -38,13 +38,6 @@ static_assert(offsetof(RoomShell, carpet.bind) == 0x331c, "carpet material");
 static_assert(offsetof(RoomShell, hour_hand_node) == 0x3520, "hour hand node");
 static_assert(offsetof(RoomShell, size) == 0x3522, "size");
 static_assert(offsetof(RoomShell, hour_hand_position) == 0x3528, "hour hand position");
-static_assert(offsetof(RoomShellMaterialResult, texture_image) == 0x10, "texture image");
-static_assert(offsetof(RoomShellMaterialResult, width) == 0x2c, "width");
-static_assert(offsetof(RoomShellMaterialResult, magnify_h) == 0x34, "magnify h");
-static_assert(offsetof(RoomShellRenderState, material) == 0xb0, "material result");
-static_assert(offsetof(RoomShellRenderState, materials) == 0xd8, "materials");
-static_assert(offsetof(NodeHookState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(NodeHookState, hook_timings) == 0x8c, "hook timings");
 
 /* The vtable slots the hooks are sent to. */
 #define ROOM_SHELL_SLOT_NODE_DESC_HOOK 0x48
@@ -96,10 +89,10 @@ extern AcreMap *data_021c80bc; /* the map of the scene shown */
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 /* The hooks are the game's functions: their addresses go into the render state. */
-extern int func_ov004_02231b58(NodeHookState *state);
-extern int func_ov004_02231b78(NodeHookState *state);
+extern int func_ov004_02231b58(G3dRenderState *state);
+extern int func_ov004_02231b78(G3dRenderState *state);
 
-static void RoomShell_set_hook(NodeHookState *state, int command, u32 hook, u8 timing)
+static void RoomShell_set_hook(G3dRenderState *state, int command, u32 hook, u8 timing)
 {
     state->hooks[command] = hook;
     state->hook_timings[command] = timing;
@@ -107,34 +100,34 @@ static void RoomShell_set_hook(NodeHookState *state, int command, u32 hook, u8 t
 
 /* func_ov004_02231b38 (the model's init hook, given by ModelObject_SetInitHook): the hooks for materials
  * and after nodes' descriptions. */
-void RoomShell_SetModelHooks(NodeHookState *state)
+void RoomShell_SetModelHooks(G3dRenderState *state)
 {
-    RoomShell_set_hook(state, G3D_COMMAND_MATERIAL, (u32) (uintptr_t) func_ov004_02231b78, G3D_TIMING_AFTER);
-    RoomShell_set_hook(state, G3D_COMMAND_NODE_DESC, (u32) (uintptr_t) func_ov004_02231b58, G3D_TIMING_AFTER);
+    RoomShell_set_hook(state, G3D_COMMAND_MATERIAL, (u32) (uintptr_t) func_ov004_02231b78, G3D_TIMING_B);
+    RoomShell_set_hook(state, G3D_COMMAND_NODE_DESC, (u32) (uintptr_t) func_ov004_02231b58, G3D_TIMING_B);
 }
 CLEAN_AS(func_ov004_02231b38, RoomShell_SetModelHooks)
 
 /* Sends the hook to vtable slot `slot` of the model's object with byte 1 of the command (its
  * node or material) and the state; its answer, or 0 without an object. */
-static int RoomShell_run_hook(NodeHookState *state, int slot)
+static int RoomShell_run_hook(G3dRenderState *state, int slot)
 {
-    void *user = state->render_object->user;
+    void *user = state->object->user;
     if (user == NULL) {
         return 0;
     }
     const u32 *vtable = *(const u32 *const *) user;
-    return ((int (*)(void *, int, NodeHookState *))(uintptr_t) vtable[slot / 4])(user, state->command[1], state);
+    return ((int (*)(void *, int, G3dRenderState *))(uintptr_t) vtable[slot / 4])(user, state->command[1], state);
 }
 
 /* func_ov004_02231b58: after a node's description, vtable slot 0x48 (RoomShell_NodeDescHook). */
-int RoomShell_RunNodeDescHook(NodeHookState *state)
+int RoomShell_RunNodeDescHook(G3dRenderState *state)
 {
     return RoomShell_run_hook(state, ROOM_SHELL_SLOT_NODE_DESC_HOOK);
 }
 CLEAN_AS(func_ov004_02231b58, RoomShell_RunNodeDescHook)
 
 /* func_ov004_02231b78: a material's hook, vtable slot 0x4c (RoomShell_MaterialHook). */
-int RoomShell_RunMaterialHook(NodeHookState *state)
+int RoomShell_RunMaterialHook(G3dRenderState *state)
 {
     return RoomShell_run_hook(state, ROOM_SHELL_SLOT_MATERIAL_HOOK);
 }
@@ -270,7 +263,7 @@ static const u8 *RoomShell_material_record(const u8 *materials, u32 material)
  * BUG: a size other than 4, 6 or 8 writes the ROM's stack words that were never set as the
  * scale; Clean writes 0.
  * REQUIRES: the room's size is 4, 6 or 8. */
-void RoomShell_MaterialHook(RoomShell *self, u32 material, RoomShellRenderState *state)
+void RoomShell_MaterialHook(RoomShell *self, u32 material, G3dRenderState *state)
 {
     const u8 *record = RoomShell_material_record(state->materials, material);
     int wallpaper = material == (u32) (int) MaterialBind_Material(&self->wallpaper.bind);
@@ -280,7 +273,7 @@ void RoomShell_MaterialHook(RoomShell *self, u32 material, RoomShellRenderState 
         return;
     }
 
-    RoomShellMaterialResult *result = state->material;
+    G3dMaterialResult *result = state->material;
     result->texture_image &= ~(ROOM_SHELL_TEXTURE_SOURCE_MASK | ROOM_SHELL_TEXTURE_FLIP_S | ROOM_SHELL_TEXTURE_FLIP_T |
                                ROOM_SHELL_TEXTURE_REPEAT_S | ROOM_SHELL_TEXTURE_REPEAT_T);
     result->texture_image |= ROOM_SHELL_TEXTURE_SOURCE_TEXCOORD;
@@ -333,16 +326,16 @@ CLEAN_AS(func_ov004_02231cf8, RoomShell_MaterialHook)
  * turned and its translation kept; the minute hand's turned; for node "hasu1" (when there is a
  * state) its X and Z kept at height 0x3700 in data_ov004_02258a30.
  * QUIRK: only the "hasu1" case checks that there is a state. */
-void RoomShell_NodeDescHook(RoomShell *self, int node, RoomShellRenderState *state)
+void RoomShell_NodeDescHook(RoomShell *self, int node, G3dRenderState *state)
 {
     if (self->hour_hand_node == node) {
-        ClockHands_TurnHourHand((ClockHandsRenderState *) (void *) state);
+        ClockHands_TurnHourHand(state);
         self->hour_hand_position = state->joint->translation;
     } else if (self->minute_hand_node == node) {
-        ClockHands_TurnMinuteHand((ClockHandsRenderState *) (void *) state);
+        ClockHands_TurnMinuteHand(state);
     } else if (self->hasu1_node == node) {
         if (state != NULL) {
-            const RoomShellJoint *joint = state->joint;
+            const G3dJointResult *joint = state->joint;
             fx32 z = joint->translation.z;
             fx32 x = joint->translation.x;
             data_ov004_02258a30.x = x;
@@ -458,7 +451,7 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 
 /* Functions handed to the game: its symbols. */
-extern void func_ov004_02231b38(NodeHookState *state);
+extern void func_ov004_02231b38(G3dRenderState *state);
 extern RoomShellMaterialAnim *func_ov004_022324d8(RoomShellMaterialAnim *anim);
 extern RoomShellMaterialAnim *func_ov004_022324f0(RoomShellMaterialAnim *anim);
 extern void func_020051b0(void *item);

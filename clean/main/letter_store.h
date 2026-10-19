@@ -10,8 +10,8 @@
 #define LETTER_STORE_PAGE_LETTERS 25
 #define LETTER_STORE_LETTERS (LETTER_STORE_PAGES * LETTER_STORE_PAGE_LETTERS)
 
-void LetterStore_Clear(MailLetter *letters);
-MailLetter *LetterStore_Page(MailLetter *letters, int page);
+void LetterStore_Clear(Letter *letters);
+Letter *LetterStore_Page(Letter *letters, int page);
 void LetterStore_MarkBlockReady(u8 *block);
 void LetterStore_MarkBlock1C(u8 *block);
 int LetterStore_IsBlockReady(u8 *block);

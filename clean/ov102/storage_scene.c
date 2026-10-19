@@ -304,7 +304,7 @@ void StorageScene_ShowTitle(StorageScene *self, int highlighted)
     int color = highlighted ? 15 : 1;
     TextLabel *label = StorageScene_NextLabel(self);
     TextLabel_OpenStyledBox2(label, STORAGE_TITLE_STYLE, STORAGE_TITLE_X, STORAGE_TITLE_Y, (u8) color, 9, 0);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) STORAGE_TITLE_MESSAGE);
+    TextLabel_LoadMenuMessage(label, (char) STORAGE_TITLE_MESSAGE);
     TextLabel_Show(label, 1, 1);
 }
 CLEAN_AS(func_ov102_0229c4c0, StorageScene_ShowTitle)

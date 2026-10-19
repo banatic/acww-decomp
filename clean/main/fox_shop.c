@@ -186,10 +186,10 @@ void FoxShop_SendLetters(void)
         return;
     }
 
-    MailLetter letter;
+    Letter letter;
     FoxShopText text;
     u8 message;
-    Letter_Construct((Letter *) &letter);
+    Letter_Construct(&letter);
     message = (u8) MainRandom_Below(FOX_LETTER_MESSAGES);
     FoxShopText_Construct(&text);
     FoxPassword_LoadLetterText(FoxShop_Password(&data_021f3b30), &text);
@@ -201,7 +201,7 @@ void FoxShop_SendLetters(void)
             PlayerRecord_TestFlag(player, FOX_LETTER_PLAYER_FLAG) == 0) {
             continue;
         }
-        Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e419c, data_020e4160, data_020e4164,
+        Letter_WriteSpecialToPlayer(&letter, &message, data_020e419c, data_020e4160, data_020e4164,
                                     PlayerRecord_Player(player));
         if (Mail_Post(&letter) == 0) {
             Mail_HoldAtPostOffice(&letter, 0);
@@ -210,7 +210,7 @@ void FoxShop_SendLetters(void)
 
     FoxPassword_SetLettersSent(FoxShop_Password(&data_021f3b30));
     FoxShopText_Destruct(&text);
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
 }
 CLEAN_AS(func_020ae190, FoxShop_SendLetters)
 

@@ -5,6 +5,7 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "music_commands.h"
+#include "ov004/member_pointer.h"
 #include "sound.h"
 #include "field_collision.h"
 #include "player_actor_ops.h"
@@ -299,10 +300,22 @@ void MusicVolume_UpdateSlot0(MusicVolume *self, MusicVolumeSlot *slot)
 }
 CLEAN_AS(func_02036378, MusicVolume_UpdateSlot0)
 
+/* The slots' handlers func_0203637c calls through: a function-local static the game fills from
+ * these constants on its first call (ov004/member_pointer.h). */
+extern u32 data_021c5270;
+extern MemberPointer data_021c5274[8];
+extern const MemberPointer data_020da2a4, data_020da25c, data_020da28c, data_020da254, data_020da274, data_020da264,
+    data_020da294, data_020da29c;
+
 /* func_0203637c: each slot's handler, from slot 0 to slot 7 (the ROM calls them through a table
  * of member function pointers). */
 void MusicVolume_UpdateSlots(MusicVolume *self)
 {
+    static const MemberPointer *const handlers[8] = {
+        &data_020da2a4, &data_020da25c, &data_020da28c, &data_020da254,
+        &data_020da274, &data_020da264, &data_020da294, &data_020da29c,
+    };
+    MemberTable_InitOnce(&data_021c5270, data_021c5274, handlers, 8);
     MusicVolume_UpdateSlot0(self, &self->slots[0]);
     MusicVolume_UpdateSlot1(self, &self->slots[1]);
     MusicVolume_UpdateSlot2(self, &self->slots[2]);

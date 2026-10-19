@@ -11,6 +11,7 @@
 #ifndef CLEAN_OV004_MUSEUM_DISPLAY_H
 #define CLEAN_OV004_MUSEUM_DISPLAY_H
 
+#include "main/g3d_render.h"
 #include "rmo_object.h"
 #include "types.h"
 
@@ -27,20 +28,9 @@ typedef struct MuseumDisplay {
     s8 *nodes; /* 0x290: the node drawn for each exhibit (from the room's heap) */
 } MuseumDisplay;
 
-/* What the model's hooks get: the state of the model being drawn (NitroSystem's NNSG3dRS). */
-typedef struct MuseumDisplayHookState {
-    const u8 *command; /* the command being run: byte 1 is its node */
-    void *render_object;
-    u32 flags;
-    u32 hooks[0x20]; /* the address of each command's hook, 0 for none */
-    u8 hook_timings[0x20];
-    u8 unk_ac[0xc];
-    u32 *visible; /* 0xb8: the node's visibility */
-} MuseumDisplayHookState;
-
 int MuseumDisplay_ShowsNode(MuseumDisplay *self, int node);
 void MuseumDisplay_FindNodes(MuseumDisplay *self);
-int MuseumDisplay_SetNodeVisibility(MuseumDisplay *self, int node, MuseumDisplayHookState *state);
+int MuseumDisplay_SetNodeVisibility(MuseumDisplay *self, int node, G3dRenderState *state);
 int MuseumDisplay_Release(MuseumDisplay *self);
 int MuseumDisplay_Draw(MuseumDisplay *self);
 int MuseumDisplay_Update(void);
@@ -48,9 +38,9 @@ int MuseumDisplay_Start(MuseumDisplay *self);
 MuseumDisplay *MuseumDisplay_Delete(MuseumDisplay *self);
 MuseumDisplay *MuseumDisplay_Destruct(MuseumDisplay *self);
 MuseumDisplay *MuseumDisplay_Construct(MuseumDisplay *self);
-void MuseumDisplay_SetModelHooks(MuseumDisplayHookState *state);
+void MuseumDisplay_SetModelHooks(G3dRenderState *state);
 
-void MuseumDisplay_NodeHook(MuseumDisplayHookState *state);
+void MuseumDisplay_NodeHook(G3dRenderState *state);
 const MuseumDisplayKind *MuseumDisplay_Kind(u32 kind);
 u16 MuseumDisplay_PaintingItem(u32 index);
 void MuseumDisplay_Create(void);

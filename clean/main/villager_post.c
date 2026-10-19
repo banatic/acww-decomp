@@ -178,15 +178,14 @@ int VillagerPost_Send(const char *name, int text, const DesignCreator *player, c
     if (paper != VILLAGER_POST_PERSONALITY_PAPER) {
         letter_paper = (u8) paper;
     }
-    MailLetter letter;
-    Letter_Construct((Letter *) &letter);
-    Letter_WriteVillagerToPlayer((Letter *) &letter, &message, data_021c9704, &letter_paper, npc, player,
-                                 VILLAGER_POST_FROM_VILLAGER);
+    Letter letter;
+    Letter_Construct(&letter);
+    Letter_WriteVillagerToPlayer(&letter, &message, data_021c9704, &letter_paper, npc, player, VILLAGER_POST_FROM_VILLAGER);
     if (item != NULL) {
-        Letter_SetItem((Letter *) &letter, *item, 1);
+        Letter_SetItem(&letter, *item, 1);
     }
     int sent = Mail_Post(&letter) != 0 || Mail_HoldAtPostOffice(&letter, 0) != 0;
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
     return sent;
 }
 CLEAN_AS(func_0205a240, VillagerPost_Send)

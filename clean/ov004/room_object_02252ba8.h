@@ -19,10 +19,11 @@
 #ifndef CLEAN_OV004_ROOM_OBJECT_02252BA8_H
 #define CLEAN_OV004_ROOM_OBJECT_02252BA8_H
 
+#include "main/g3d_render.h"
 #include "types.h"
 
 #include "room_object.h"
-#include "room_object_methods.h" /* NodeHookState */
+#include "room_object_methods.h" /* G3dRenderState */
 
 typedef struct RoomObject02252ba8 {
     RoomObject base;
@@ -58,8 +59,8 @@ void RoomObject02252ba8_CueSetMode(RoomObject02252ba8 *object, int mode);
 int RoomObject02252ba8_StopCue(RoomObject02252ba8 *object);
 int RoomObject02252ba8_UpdateCue(RoomObject02252ba8 *object, const Vec3 *point);
 int RoomObject02252ba8_InitCue(RoomObject02252ba8 *object, u16 sound);
-void RoomObject02252ba8_NodeDescAfterHook(RoomObject02252ba8 *object, int node, NodeHookState *state);
-void RoomObject02252ba8_NodeDescHook(RoomObject02252ba8 *object, int node, NodeHookState *state);
+void RoomObject02252ba8_NodeDescAfterHook(RoomObject02252ba8 *object, int node, G3dRenderState *state);
+void RoomObject02252ba8_NodeDescHook(RoomObject02252ba8 *object, int node, G3dRenderState *state);
 int RoomObject02252ba8_Vfunc0C(RoomObject02252ba8 *object);
 int RoomObject02252ba8_UpdateUnsettled(RoomObject02252ba8 *object);
 int RoomObject02252ba8_Update(RoomObject02252ba8 *object);

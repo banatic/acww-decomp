@@ -341,7 +341,7 @@ void HanPanel_ShowModeMessage(HanPanel *self, int layer, int second_layer)
             message = 0x3a;
             break;
     }
-    TextLabel_LoadMenuMessage((int) (uintptr_t) &self->label, (char) message);
+    TextLabel_LoadMenuMessage(&self->label, (char) message);
     TextLabel_OpenStyledBox2(&self->label, layer, 0x11, 0xd, 4, 1, 0);
     TextLabel_Show(&self->label, 1, 0);
 }

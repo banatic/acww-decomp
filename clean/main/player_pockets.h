@@ -23,7 +23,7 @@
 #define PLAYER_POCKETS_BAG_LAST 0x14fd
 
 typedef struct PlayerPockets {
-    MailLetter letters[PLAYER_POCKETS_LETTERS];              /* 0x000 */
+    Letter letters[PLAYER_POCKETS_LETTERS];                  /* 0x000 */
     u8 letter_defaults[PLAYER_POCKETS_LETTER_DEFAULTS_SIZE]; /* 0xa00, set up by func_02065cc8 */
     u16 items[PLAYER_POCKETS_SLOTS];                         /* 0xa4a */
     int bells;                                               /* 0xa68, the wallet */
@@ -46,9 +46,9 @@ int PlayerPockets_Bells(PlayerPockets *pockets, int with_bags);
 int PlayerPockets_BagsRoom(PlayerPockets *pockets, int extra_bags);
 int PlayerPockets_BagsBells(PlayerPockets *pockets);
 u8 *PlayerPockets_LetterDefaults(PlayerPockets *pockets);
-MailLetter *PlayerPockets_FreeLetter(PlayerPockets *pockets);
+Letter *PlayerPockets_FreeLetter(PlayerPockets *pockets);
 int PlayerPockets_FreeLetterIndex(PlayerPockets *pockets);
-MailLetter *PlayerPockets_Letter(PlayerPockets *pockets, int index);
+Letter *PlayerPockets_Letter(PlayerPockets *pockets, int index);
 int PlayerPockets_IsLetterIndex(int index);
 int PlayerPockets_SlotStateIsZero(PlayerPockets *pockets, int slot);
 int PlayerPockets_SlotState(PlayerPockets *pockets, int slot);

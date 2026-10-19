@@ -596,8 +596,8 @@ int Mailbox_CountLetters(Mailbox *mailbox)
     }
     int count = 0;
     for (int i = 0; i < MAILBOX_LETTERS; i++) {
-        MailLetter *letter = MailBox_Letter(box, i);
-        if (letter != NULL && Letter_State((const Letter *) (const void *) letter) != 0) {
+        Letter *letter = MailBox_Letter(box, i);
+        if (letter != NULL && Letter_State(letter) != 0) {
             count++;
         }
     }

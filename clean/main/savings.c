@@ -84,19 +84,18 @@ void Savings_SendRankLetter(int days)
         return;
     }
     int rank = Savings_Rank(account);
-    MailLetter letter;
-    Letter_Construct((Letter *) &letter);
+    Letter letter;
+    Letter_Construct(&letter);
     u8 message = (u8) rank;
-    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e3118, data_020e3100, data_020e3114,
-                                PlayerRecord_Player(player));
+    Letter_WriteSpecialToPlayer(&letter, &message, data_020e3118, data_020e3100, data_020e3114, PlayerRecord_Player(player));
     u16 present = savings_rank_present(rank);
     if (present != NO_ITEM) {
-        Letter_SetItem((Letter *) &letter, present, 1);
+        Letter_SetItem(&letter, present, 1);
     }
     if (Mail_Post(&letter) != 0) {
         PlayerRecord_ClearFlag(player, SAVINGS_FLAG_RANK_LETTER);
     }
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
 }
 CLEAN_AS(func_020980f0, Savings_SendRankLetter)
 
@@ -138,20 +137,19 @@ void Savings_SendMilestoneLetter(int days)
         return;
     }
     u8 message = (u8) (MILESTONE_MESSAGE + step);
-    MailLetter letter;
+    Letter letter;
     SavingsText8 town;
-    Letter_Construct((Letter *) &letter);
+    Letter_Construct(&letter);
     TownNameText_Construct((TownNameText *) &town);
     TownName_ToText((TownName *) (void *) data_021dc7aa, (TextBase *) &town);
     MailText_SetPartText(TOWN_NAME_ENTRY, &town);
-    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e3118, data_020e3108, data_020e3104,
-                                PlayerRecord_Player(player));
-    Letter_SetItem((Letter *) &letter, present, 1);
+    Letter_WriteSpecialToPlayer(&letter, &message, data_020e3118, data_020e3108, data_020e3104, PlayerRecord_Player(player));
+    Letter_SetItem(&letter, present, 1);
     if (Mail_Post(&letter) != 0) {
         PlayerRecord_SetFlag(player, flag);
     }
     TownNameText_Destruct((TownNameText *) &town);
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
 }
 CLEAN_AS(func_020981f4, Savings_SendMilestoneLetter)
 
@@ -191,18 +189,17 @@ void Savings_PayInterest(int months)
     }
     Savings_SetBalance(account, total);
 
-    MailLetter letter;
+    Letter letter;
     SavingsNumberText amount;
-    Letter_Construct((Letter *) &letter);
+    Letter_Construct(&letter);
     u8 message = INTEREST_MESSAGE;
     MessageText46_Construct((MessageText46 *) &amount);
     NumberText_Format(&amount, interest, 10, 0, 0, 0);
     MailText_SetPartText(INTEREST_ENTRY, &amount);
-    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e3118, data_020e3110, data_020e310c,
-                                PlayerRecord_Player(player));
+    Letter_WriteSpecialToPlayer(&letter, &message, data_020e3118, data_020e3110, data_020e310c, PlayerRecord_Player(player));
     Mail_Post(&letter);
     MessageText46_Destruct((MessageText46 *) &amount);
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
 }
 CLEAN_AS(func_020982f8, Savings_PayInterest)
 

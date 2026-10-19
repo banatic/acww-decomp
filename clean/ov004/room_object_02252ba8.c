@@ -368,50 +368,31 @@ typedef struct RoomObject02252ba8NodeData {
     Vec3 translation;
 } RoomObject02252ba8NodeData;
 
-/* The joint being drawn (NitroSystem's NNSG3dJntAnmResult): its translation at 0x4c. */
-typedef struct RoomObject02252ba8Joint {
-    u8 unk_00[0x4c]; /* its flags, scales and rotation */
-    Vec3 translation;
-} RoomObject02252ba8Joint;
-
-/* The render state seen as far as 0xd4 (NodeHookState runs to 0xbc): the model's node
- * dictionary (NitroSystem's NNSG3dResNodeInfo). */
-typedef struct RoomObject02252ba8RenderState {
-    u8 unk_00[0xb4];
-    RoomObject02252ba8Joint *joint;
-    u8 unk_b8[0x1c];
-    const u8 *node_info;
-} RoomObject02252ba8RenderState;
-
-static_assert(offsetof(RoomObject02252ba8RenderState, node_info) == 0xd4, "node info");
-static_assert(offsetof(RoomObject02252ba8Joint, translation) == 0x4c, "joint translation");
-
 /* func_ov004_022152f8 (vtable slot 0x6c, the model's hook after a node's description): the
  * joint's translation set back to that of the node `node` in the model's resource (its entry in
  * the dictionary, offset 6 the entries, their size first and the data after a 4-byte head, each
  * an offset from the dictionary to the node), then the model object's own hook
  * (AnimatedModel_AfterNode).
  * REQUIRES: the node's data carries a translation. */
-void RoomObject02252ba8_NodeDescAfterHook(RoomObject02252ba8 *object, int node, NodeHookState *state)
+void RoomObject02252ba8_NodeDescAfterHook(RoomObject02252ba8 *object, int node, G3dRenderState *state)
 {
-    const RoomObject02252ba8RenderState *render = (const RoomObject02252ba8RenderState *) (const void *) state;
-    const u8 *info = render->node_info;
+    const u8 *info = state->node_info;
     u16 entries = *(const u16 *) (info + 6);
     u16 entry_size = *(const u16 *) (info + entries);
     const u8 *entry = info + entries + entry_size * node;
     const RoomObject02252ba8NodeData *data =
         (const RoomObject02252ba8NodeData *) (const void *) (info + *(const s32 *) (entry + 4));
-    render->joint->translation = data->translation;
-    AnimatedModel_AfterNode(&object->base.model, (AnimatedModelNodeState *) (void *) state);
+    state->joint->translation = data->translation;
+    AnimatedModel_AfterNode(&object->base.model, state);
 }
 CLEAN_AS(func_ov004_022152f8, RoomObject02252ba8_NodeDescAfterHook)
 
 /* func_ov004_0221533c (vtable slot 0x68, the model's hook for a node's description): the
  * model object's own hook (AnimatedModel_BeforeNode). */
-void RoomObject02252ba8_NodeDescHook(RoomObject02252ba8 *object, int node, NodeHookState *state)
+void RoomObject02252ba8_NodeDescHook(RoomObject02252ba8 *object, int node, G3dRenderState *state)
 {
     (void) node;
-    AnimatedModel_BeforeNode(&object->base.model, (AnimatedModelNodeState *) (void *) state);
+    AnimatedModel_BeforeNode(&object->base.model, state);
 }
 CLEAN_AS(func_ov004_0221533c, RoomObject02252ba8_NodeDescHook)
 

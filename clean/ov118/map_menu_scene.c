@@ -401,7 +401,7 @@ void MapMenu_StateShow(MapMenu *self)
     MessageReader_SetPart(0, (int) (uintptr_t) &name);
     TextLabel *label = MapMenu_NextLabel(self);
     TextLabel_OpenStyledBox2(label, 8, 0x1ab, 0x12, 0xf, 0, 0);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) MAP_MENU_TITLE_MESSAGE);
+    TextLabel_LoadMenuMessage(label, (char) MAP_MENU_TITLE_MESSAGE);
     TextLabel_Show(label, 1, 0);
     TownNameText_Destruct(&name);
     MenuScene_StartWipeCoveredOnWindow2(map_menu_scene(self), MAP_MENU_WIPE_LAYERS, 3, 0, MAP_MENU_WIPE_MARGIN);

@@ -325,7 +325,7 @@ void FriendCodeEntry_OpenTitle(FriendCodeEntry *self)
 {
     BankPad_LoadPicture(7);
     TextLabel *label = FriendCodeEntry_NextLabel(self);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) FRIEND_CODE_TITLE_MESSAGE);
+    TextLabel_LoadMenuMessage(label, (char) FRIEND_CODE_TITLE_MESSAGE);
     TextLabel_OpenStyledBox2(label, 8, 0x14c, 0xe, 0xf, 0, 0);
     TextLabel_Show(label, 1, 0);
     ButtonPanel_LoadTextColors(&self->panel);

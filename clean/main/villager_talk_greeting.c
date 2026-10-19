@@ -323,9 +323,9 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
                         break;
                     }
                     case VILLAGER_TALK_GREETING_TYPE_LETTER: {
-                        MailLetter *letter = VillagerTalkScene_LetterToSend(PlayerRecord_Pockets(player));
-                        if (letter != NULL && Letter_State((const Letter *) letter) == VILLAGER_TALK_GREETING_LETTER_STATE) {
-                            Letter_Clear((Letter *) letter);
+                        Letter *letter = VillagerTalkScene_LetterToSend(PlayerRecord_Pockets(player));
+                        if (letter != NULL && Letter_State(letter) == VILLAGER_TALK_GREETING_LETTER_STATE) {
+                            Letter_Clear(letter);
                             VillagerTalkScene_SetLines(talk, data_021c2aac);
                             VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) greeting_block_object(talk));
                         }

@@ -5,16 +5,16 @@
 #include "letter.h"
 
 /* func_02097f38: empty all 50 letters. */
-void LetterStore_Clear(MailLetter *letters)
+void LetterStore_Clear(Letter *letters)
 {
     for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
-        Letter_Clear((Letter *) &letters[i]);
+        Letter_Clear(&letters[i]);
     }
 }
 CLEAN_AS(func_02097f38, LetterStore_Clear)
 
 /* func_02097f58: the first letter of page `page`; NULL outside 0-1. */
-MailLetter *LetterStore_Page(MailLetter *letters, int page)
+Letter *LetterStore_Page(Letter *letters, int page)
 {
     if (page >= 0 && page < LETTER_STORE_PAGES) {
         return &letters[page * LETTER_STORE_PAGE_LETTERS];

@@ -9,6 +9,7 @@
 #include "text_draw.h"
 #include "mes_bg.h"
 #include "mes_slider_window.h"
+#include "ov004/member_pointer.h"
 
 static_assert(offsetof(TalkSlider, focus) == 0x2c, "talk slider");
 static_assert(offsetof(TalkSlider, choices) == 0x34, "talk slider");
@@ -435,14 +436,22 @@ static void (*const talk_slider_steps[])(TalkSlider *) = {
     TalkSlider_PressOk,  /* TALK_SLIDER_FOCUS_OK */
 };
 
+/* The focus's steps func_020aad9c calls through: a function-local static the game fills from
+ * these constants on its first call (ov004/member_pointer.h). */
+extern u32 data_021f45a8;
+extern MemberPointer data_021f45c0[2];
+extern const MemberPointer data_020e3f54, data_020e3f5c;
+
 /* func_020aad9c (each frame): unless the input was switched on this frame, the knob taken or
  * let go, the focus moved, and the focus's step.
  * REQUIRES: the focus is TALK_SLIDER_FOCUS_KNOB or TALK_SLIDER_FOCUS_OK. */
 void TalkSlider_Update(TalkSlider *slider)
 {
+    static const MemberPointer *const steps[2] = {&data_020e3f5c, &data_020e3f54};
     if (TalkSlider_SwitchInput()) {
         return;
     }
+    MemberTable_InitOnce(&data_021f45a8, data_021f45c0, steps, 2);
     TalkSlider_UpdateHold(slider);
     TalkSlider_UpdateFocus(slider);
     talk_slider_steps[slider->focus](slider);

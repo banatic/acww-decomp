@@ -168,20 +168,20 @@ CLEAN_AS(func_020970a4, MomLetters_Template)
  * either. */
 int MomLetters_Send(int letter, int month)
 {
-    MailLetter mail;
-    Letter_Construct((Letter *) &mail);
-    Letter_Clear((Letter *) &mail);
+    Letter mail;
+    Letter_Construct(&mail);
+    Letter_Clear(&mail);
     void *name = PlayerRecord_Player(PlayerRecords_Current());
     u8 message = MomLetters_GroupIndex(letter);
     u8 kind = letter == MOM_FATHERS_DAY ? LETTER_KIND_FATHERS_DAY : LETTER_KIND;
     u8 paper = (u8) MomLetters_DrawPaper(PAPER_SET_MOM, month);
-    Letter_WriteSpecialToPlayer((Letter *) &mail, &message, MomLetters_Template(letter), &kind, &paper, name);
+    Letter_WriteSpecialToPlayer(&mail, &message, MomLetters_Template(letter), &kind, &paper, name);
     int item = MomLetters_Present(letter);
     if (item != NO_ITEM) {
-        Letter_SetItem((Letter *) &mail, (u16) item, 1);
+        Letter_SetItem(&mail, (u16) item, 1);
     }
     int sent = Mail_Post(&mail) != 0 || Mail_HoldAtPostOffice(&mail, 0) != 0;
-    Letter_Destruct((Letter *) &mail);
+    Letter_Destruct(&mail);
     return sent;
 }
 CLEAN_AS(func_020970cc, MomLetters_Send)

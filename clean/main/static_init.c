@@ -1365,10 +1365,9 @@ CLEAN_AS(__sinit_020c5e84, StaticInit_SlotPools)
 
 /* The spawner's request, its checks and its spawn table (spawner.h): the checks' member
  * functions and the placers of the table's 23 entries come from the program's constants. */
-#define STATIC_INIT_SPAWN_ENTRIES 23
 extern SpawnerRequest data_020e1ca8;
 extern SpawnerCheck data_020e1d08[SPAWNER_CHECKS];
-extern SpawnerEntry data_020e1d8c[STATIC_INIT_SPAWN_ENTRIES];
+extern SpawnerEntry data_020e1d8c[SPAWNER_ENTRIES];
 extern StaticInitRecord data_021d2130;
 extern void func_02085f04(void *request); /* Spawner_RequestDestruct */
 extern const MemberFn data_020e1bb8, data_020e1c90, data_020e1c00, data_020e1ba0, data_020e1be8, data_020e1bc0, data_020e1ca0,
@@ -1388,7 +1387,7 @@ void StaticInit_Spawner(void)
         &data_020e1bb8, &data_020e1c90, &data_020e1c00, &data_020e1ba0, &data_020e1be8, &data_020e1bc0,
         &data_020e1ca0, &data_020e1c98, &data_020e1bd8, &data_020e1c88, &data_020e1c80,
     };
-    static const MemberFn *const place_fns[STATIC_INIT_SPAWN_ENTRIES] = {
+    static const MemberFn *const place_fns[SPAWNER_ENTRIES] = {
         &data_020e1c68, &data_020e1c60, &data_020e1c18, &data_020e1c20, &data_020e1c48, &data_020e1c28,
         &data_020e1c30, &data_020e1c38, &data_020e1c50, &data_020e1c58, &data_020e1c70, &data_020e1c78,
         &data_020e1c10, &data_020e1c08, &data_020e1b90, &data_020e1b98, &data_020e1bf0, &data_020e1ba8,
@@ -1399,7 +1398,7 @@ void StaticInit_Spawner(void)
     for (int i = 0; i < SPAWNER_CHECKS; i++) {
         data_020e1d08[i].check = *check_fns[i];
     }
-    for (int i = 0; i < STATIC_INIT_SPAWN_ENTRIES; i++) {
+    for (int i = 0; i < SPAWNER_ENTRIES; i++) {
         data_020e1d8c[i].place = *place_fns[i];
     }
 }

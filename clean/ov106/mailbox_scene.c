@@ -2249,7 +2249,7 @@ void MailboxScene_Setup(MailboxScene *self)
     }
     MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
     /* The mailbox's first letter: the other nine follow it. */
-    const Letter *src = (const Letter *) MailBox_Letter(box, 0);
+    const Letter *src = MailBox_Letter(box, 0);
     for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
         Letter_Assign(&self->mailbox[i], &src[i]);
     }
@@ -2296,7 +2296,7 @@ void MailboxScene_LetterWipeOut(MailboxScene *self)
         DisplayLayer_HideAndResetScroll(MAILBOX_SCENE_MAILBOX_LAYER);
         MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_LETTER_SHOWN);
         if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_CLOSING) != 0) {
-            MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_RUN);
+            MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_DELETE);
             MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_DRAWN);
         } else {
             MailboxScene_StartSetup(self);
@@ -2323,7 +2323,7 @@ CLEAN_AS(func_ov106_0229eba0, MailboxScene_StartLetterWipeOut)
 void MailboxScene_LetterWipeIn(MailboxScene *self)
 {
     if (MenuScene_StepWipeBack(mbx_scene(self), 0) != 0) {
-        MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         if (StateFlags_IsClear2()) {
             MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_LABEL_BY_TOUCH);
         } else {
@@ -2344,8 +2344,7 @@ void MailboxScene_ShowLetter(MailboxScene *self)
     Letter *letter = MailboxScene_PlaceLetter(self, self->slot);
     MailboxScene_RecordPaper(self, letter);
     Letter_AdvanceReceived(letter);
-    LetterView_Show(&self->view, (const LetterViewLetter *) (const void *) letter, MAILBOX_SCENE_TEXT_LAYER,
-                    MAILBOX_SCENE_MAILBOX_LAYER, 1);
+    LetterView_Show(&self->view, letter, MAILBOX_SCENE_TEXT_LAYER, MAILBOX_SCENE_MAILBOX_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(mbx_scene(self), 3, 0, 0, MAILBOX_SCENE_WIPE_MARGIN);
     DisplayLayer_Show(MAILBOX_SCENE_TEXT_LAYER);
     DisplayLayer_Show(MAILBOX_SCENE_MAILBOX_LAYER);
@@ -2369,7 +2368,7 @@ void MailboxScene_SceneWipeOut(MailboxScene *self)
             MailboxScene_ShowLetter(self);
         } else {
             MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_DRAWN);
-            MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_RUN);
+            MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_DELETE);
         }
     } else {
         MailboxScene_ScrollSceneLayer(self);
@@ -2417,7 +2416,7 @@ CLEAN_AS(func_ov106_0229ed38, MailboxScene_StartWipeOut)
 void MailboxScene_MailboxWipeIn(MailboxScene *self)
 {
     if (MenuScene_StepWipeBack(mbx_scene(self), 0) != 0) {
-        MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_TAKE_LETTERS) != 0) {
             MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_TAKE_LETTERS);
             MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TAKE_NEXT);
@@ -2485,9 +2484,9 @@ CLEAN_AS(func_ov106_0229eeb4, MailboxScene_StartSetup)
 int MailboxScene_End(MailboxScene *self)
 {
     GroupParams_SetC4C(1);
-    Mail_Compact((MailLetter *) (void *) self->mailbox, MAILBOX_SCENE_LETTERS);
+    Mail_Compact(self->mailbox, MAILBOX_SCENE_LETTERS);
     MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
-    Letter *dst = (Letter *) MailBox_Letter(box, 0);
+    Letter *dst = MailBox_Letter(box, 0);
     for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
         Letter_Assign(&dst[i], &self->mailbox[i]);
     }
@@ -2624,7 +2623,7 @@ int MailboxScene_Start(MailboxScene *self)
 {
     MailboxScene_Setup(self);
     MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_START_SETUP);
-    MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_0);
+    MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_WAIT);
     return 1;
 }
 CLEAN_AS(func_ov106_0229f3fc, MailboxScene_Start)

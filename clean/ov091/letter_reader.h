@@ -34,14 +34,6 @@ enum LetterReaderSubState {
     LETTER_READER_SUB_STATES = 2
 };
 
-/* The phases the scene sets (MenuScene.phase; menu_scene.c's MenuScene_Update runs phase 1 by
- * the vtable's slot 0x4c, 2 by 0x50 and 5 by 0x5c). */
-enum LetterReaderPhase {
-    LETTER_READER_PHASE_STATES = 1,      /* LetterReader_RunState */
-    LETTER_READER_PHASE_INTERACTIVE = 2, /* LetterReader_RunInteractive */
-    LETTER_READER_PHASE_DELETE = 5       /* LetterReader_RequestDelete */
-};
-
 typedef struct LetterReader {
     MenuScene base;     /* 0x00 */
     LetterView view;    /* 0x94 */

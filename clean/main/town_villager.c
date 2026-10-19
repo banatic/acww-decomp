@@ -189,9 +189,9 @@ u16 *TownVillager_Clothes(u8 *villager)
 CLEAN_AS(func_02080ce4, TownVillager_Clothes)
 
 /* func_020814f4 */
-MailLetter *TownVillager_Letter(u8 *villager)
+Letter *TownVillager_Letter(u8 *villager)
 {
-    return (MailLetter *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER);
+    return (Letter *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER);
 }
 CLEAN_AS(func_020814f4, TownVillager_Letter)
 
@@ -280,7 +280,7 @@ void TownVillager_Reset(u8 *villager)
     VillagerPlotTile_Clear((VillagerPlot *) (void *) town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
     VillagerObject_ClearRecord((VillagerRecord *) (void *) town_villager_at(villager, TOWN_VILLAGER_RECORD));
     villager[TOWN_VILLAGER_CAME] = TOWN_VILLAGER_CAME_RESET;
-    Letter_Clear((Letter *) TownVillager_Letter(villager));
+    Letter_Clear(TownVillager_Letter(villager));
     VillagerItems_Clear(villager);
     TownName_Clear((TownName *) ((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN)));
 }
@@ -296,7 +296,7 @@ u8 *TownVillager_Destruct(u8 *villager)
     NpcId_Destruct((NpcId *) (void *) town_villager_at(villager, TOWN_VILLAGER_NPC));
     __cxa_vec_cleanup(town_villager_house_items(villager), TOWN_VILLAGER_HOUSE_ITEM_COUNT, sizeof(u16), func_020051b0);
     VillagerObject_DestructRecord((VillagerRecord *) (void *) town_villager_at(villager, TOWN_VILLAGER_RECORD));
-    Letter_Destruct((Letter *) TownVillager_Letter(villager));
+    Letter_Destruct(TownVillager_Letter(villager));
     Design_Destruct((Design *) (void *) town_villager_at(villager, TOWN_VILLAGER_DESIGN));
     __cxa_vec_cleanup(villager, VILLAGER_MEMORIES, sizeof(VillagerMemory), func_02081f18);
     return villager;
@@ -308,7 +308,7 @@ u8 *TownVillager_Construct(u8 *villager)
 {
     __cxa_vec_ctor(villager, VILLAGER_MEMORIES, sizeof(VillagerMemory), func_02081f30, func_02081f18);
     Design_Construct((char *) town_villager_at(villager, TOWN_VILLAGER_DESIGN));
-    Letter_Construct((Letter *) TownVillager_Letter(villager));
+    Letter_Construct(TownVillager_Letter(villager));
     VillagerObject_ConstructRecord((VillagerRecord *) (void *) town_villager_at(villager, TOWN_VILLAGER_RECORD));
     __cxa_vec_ctor(town_villager_house_items(villager), TOWN_VILLAGER_HOUSE_ITEM_COUNT, sizeof(u16), func_02034ce0,
                    func_020051b0);

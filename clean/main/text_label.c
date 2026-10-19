@@ -19,14 +19,6 @@ static_assert(offsetof(WideText, text) == 0xe, "wide text characters");
 static_assert(sizeof(WideText) == 0x60, "wide text size");
 static_assert(offsetof(TextLabel, text) == 0x12, "label characters");
 static_assert(offsetof(TextLabel, box) == 0x68, "label box");
-static_assert(offsetof(TextBox, text) == 0x10, "box text");
-static_assert(offsetof(TextBox, cells) == 0x20, "box cells");
-static_assert(offsetof(TextBox, font) == 0x28, "box font");
-static_assert(offsetof(TextBox, offset) == 0x30, "box offset");
-static_assert(offsetof(TextBox, color_38) == 0x38, "box colors");
-static_assert(offsetof(TextBox, unk_50) == 0x50, "box 0x50");
-static_assert(offsetof(TextBox, unk_57) == 0x57, "box 0x57");
-static_assert(offsetof(TextBox, update_mode) == 0x58, "box update mode");
 
 /* The number of 16-bit characters TextLabel_CopyWide writes. */
 #define LABEL_WIDE_COPY WIDE_TEXT_CAPACITY
@@ -40,8 +32,8 @@ static_assert(offsetof(TextBox, update_mode) == 0x58, "box update mode");
 
 extern const TextVtable data_020e1784; /* the wide text's vtable */
 extern const TextVtable data_020e179c; /* the label's vtable */
-extern const u8 data_021c828c[];       /* the font TextLabel_OpenStyledBox gives its box */
-extern const u8 data_021c82e8[];       /* the other font TextLabel_OpenStyledBox2 can */
+extern TextFont data_021c828c;         /* the font TextLabel_OpenStyledBox gives its box */
+extern TextFont data_021c82e8;         /* the other font TextLabel_OpenStyledBox2 can */
 
 extern int func_02051c8c_unk(u16 *text, int max); /* the 16-bit characters before a 0, at most max */
 
@@ -136,7 +128,7 @@ CLEAN_AS(func_020707e8, TextLabel_EqualsTrimmed)
 void TextLabel_SetBoxParams(TextLabel *label, int a, int b, int c, int d)
 {
     if (label->box != NULL) {
-        TextDraw_SetMark((TextDrawBox *) label->box, (u8) a, (u8) b, c, d);
+        TextDraw_SetMark(&label->box->base, (u8) a, (u8) b, c, d);
     }
 }
 CLEAN_AS(func_02070854, TextLabel_SetBoxParams)
@@ -179,30 +171,31 @@ void TextLabel_SetFromWide(void *label, const u16 *text, void *length)
 CLEAN_AS(func_020708e4, TextLabel_SetFromWide)
 
 /* func_02070918: build the label's text with func_020b45d0. */
-int TextLabel_Compose(int label, int a, int b, int kind, int extra, u8 raw)
+int TextLabel_Compose(TextLabel *label, int a, int b, int kind, int extra, u8 raw)
 {
-    return NumberText_Format((void *) (uintptr_t) label, a, b, kind, extra, raw);
+    return NumberText_Format(label, a, b, kind, extra, raw);
 }
 CLEAN_AS(func_02070918, TextLabel_Compose)
 
 /* func_02070934: load message `number` of the named archive. */
-void TextLabel_LoadMessage(int label, char *archive, char number)
+void TextLabel_LoadMessage(TextLabel *label, char *archive, char number)
 {
-    MessageReader_LoadMessage(label, (unsigned char *) &number, (int) (uintptr_t) archive);
+    MessageReader_LoadMessage((int) (uintptr_t) label, (unsigned char *) &number, (int) (uintptr_t) archive);
 }
 CLEAN_AS(func_02070934, TextLabel_LoadMessage)
 
 /* func_0207094c: load message `number` of "2d_menu". */
-int TextLabel_LoadMenuMessage(int label, char number)
+int TextLabel_LoadMenuMessage(TextLabel *label, char number)
 {
     return TextLabel_LoadMenuMessageAt(label, (int) (uintptr_t) &number);
 }
 CLEAN_AS(func_0207094c, TextLabel_LoadMenuMessage)
 
 /* func_02070960: load the message of "2d_menu" whose number `number` points to. */
-int TextLabel_LoadMenuMessageAt(int label, int number)
+int TextLabel_LoadMenuMessageAt(TextLabel *label, int number)
 {
-    return MessageReader_LoadMenuMessage(label, (unsigned char *) ((const char *) (uintptr_t) number), DEFAULT_ARCHIVE);
+    return MessageReader_LoadMenuMessage((int) (uintptr_t) label, (unsigned char *) ((const char *) (uintptr_t) number),
+                                         DEFAULT_ARCHIVE);
 }
 CLEAN_AS(func_02070960, TextLabel_LoadMenuMessageAt)
 
@@ -221,9 +214,9 @@ void TextLabel_ShowAt(TextLabel *label, int offset)
     if (label->box == NULL) {
         return;
     }
-    label->box->text = buffer_of(label);
-    label->box->offset = (u32) offset;
-    TextDraw_RequestDraw((TextDrawBox *) label->box);
+    label->box->base.text = buffer_of(label);
+    label->box->base.offset = (u32) offset;
+    TextDraw_RequestDraw(&label->box->base);
 }
 CLEAN_AS(func_02070978, TextLabel_ShowAt)
 
@@ -233,9 +226,9 @@ void TextLabel_ShowRightAligned(TextLabel *label)
     if (label->box == NULL) {
         return;
     }
-    label->box->text = buffer_of(label);
-    TextDraw_AlignRight((TextDrawBox *) label->box);
-    TextDraw_RequestDraw((TextDrawBox *) label->box);
+    label->box->base.text = buffer_of(label);
+    TextDraw_AlignRight(&label->box->base);
+    TextDraw_RequestDraw(&label->box->base);
 }
 CLEAN_AS(func_0207099c, TextLabel_ShowRightAligned)
 
@@ -246,32 +239,32 @@ void TextLabel_ShowShifted(TextLabel *label, int center, int shift)
     if (label->box == NULL) {
         return;
     }
-    label->box->text = buffer_of(label);
+    label->box->base.text = buffer_of(label);
     if (center != 0) {
-        TextDraw_Center((TextDrawBox *) label->box);
+        TextDraw_Center(&label->box->base);
     } else {
-        label->box->offset = 0;
+        label->box->base.offset = 0;
     }
-    label->box->offset += (u32) shift;
-    TextDraw_RequestDraw((TextDrawBox *) label->box);
+    label->box->base.offset += (u32) shift;
+    TextDraw_RequestDraw(&label->box->base);
 }
 CLEAN_AS(func_020709c4, TextLabel_ShowShifted)
 
-/* func_02070a04: show the text in the middle or from the left, with the box's byte 0x57 set
- * from `flag_57`; nothing without a box. */
-void TextLabel_Show(TextLabel *label, int center, int flag_57)
+/* func_02070a04: show the text in the middle or from the left, with the text underlined
+ * when `underline` is set; nothing without a box. */
+void TextLabel_Show(TextLabel *label, int center, int underline)
 {
     if (label->box == NULL) {
         return;
     }
-    label->box->text = buffer_of(label);
-    label->box->unk_57 = flag_57 != 0;
+    label->box->base.text = buffer_of(label);
+    label->box->base.underline = underline != 0;
     if (center != 0) {
-        TextDraw_Center((TextDrawBox *) label->box);
+        TextDraw_Center(&label->box->base);
     } else {
-        label->box->offset = 0;
+        label->box->base.offset = 0;
     }
-    TextDraw_RequestDraw((TextDrawBox *) label->box);
+    TextDraw_RequestDraw(&label->box->base);
 }
 CLEAN_AS(func_02070a04, TextLabel_Show)
 
@@ -282,11 +275,11 @@ void TextLabel_OpenBox(TextLabel *label, int a, int b, int color_38, u8 color_39
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = (TextBox *) LabelBox_New(a, b, BOX_MODE_2);
+    label->box = LabelBox_New(a, b, BOX_MODE_2);
     if (label->box != NULL) {
-        label->box->color_39 = color_39;
-        label->box->color_38 = (u8) color_38;
-        label->box->update_mode = 2;
+        label->box->base.background = color_39;
+        label->box->base.color = (u8) color_38;
+        label->box->base.update_mode = 2;
     }
 }
 CLEAN_AS(func_02070a54, TextLabel_OpenBox)
@@ -300,9 +293,9 @@ void TextLabel_OpenStyledBox(TextLabel *label, int style, int a, int b, u8 color
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = (TextBox *) LabelBox_NewInVram(a, b, BOX_MODE_1);
+    label->box = LabelBox_NewInVram(a, b, BOX_MODE_1);
     TextLabel_SetStyle(label, style, (char) color_38, (char) color_39);
-    label->box->font = data_021c828c;
+    label->box->base.font = &data_021c828c;
 }
 CLEAN_AS(func_02070a98, TextLabel_OpenStyledBox)
 
@@ -314,10 +307,10 @@ void TextLabel_OpenStyledBox2(TextLabel *label, int style, int a, int b, u8 colo
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = (TextBox *) LabelBox_NewInVram(a, b, BOX_MODE_2);
+    label->box = LabelBox_NewInVram(a, b, BOX_MODE_2);
     TextLabel_SetStyle(label, style, (char) color_38, (char) color_39);
     if (other_font != 0) {
-        label->box->font = data_021c82e8;
+        label->box->base.font = &data_021c82e8;
     }
 }
 CLEAN_AS(func_02070adc, TextLabel_OpenStyledBox2)
@@ -327,15 +320,15 @@ CLEAN_AS(func_02070adc, TextLabel_OpenStyledBox2)
 void TextLabel_SetStyle(TextLabel *label, int style, char color_38, char color_39)
 {
     int box_style = DisplayLayer_PlaneNumber(style);
-    TextBox *box = label->box;
+    LabelBox *box = label->box;
     if (box == NULL) {
         return;
     }
-    box->style = box_style;
-    label->box->unk_50 = DisplayLayer_IsMainScreen((unsigned int) style) != 0 ? 2 : 1;
-    label->box->unk_55 = box_style == 4;
-    label->box->color_39 = (u8) color_39;
-    label->box->color_38 = (u8) color_38;
+    box->base.layer = box_style;
+    label->box->base.screens = DisplayLayer_IsMainScreen((unsigned int) style) != 0 ? TEXT_DRAW_TO_MAIN : TEXT_DRAW_TO_SUB;
+    label->box->base.rows_full_width = box_style == 4;
+    label->box->base.background = (u8) color_39;
+    label->box->base.color = (u8) color_38;
 }
 CLEAN_AS(func_02070b24, TextLabel_SetStyle)
 
@@ -344,7 +337,7 @@ void TextLabel_CloseBox(void *label)
 {
     TextLabel *l = label;
     if (l->box != NULL) {
-        LabelBox_Free((LabelBox *) l->box);
+        LabelBox_Free(l->box);
         l->box = NULL;
     }
 }

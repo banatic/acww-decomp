@@ -101,9 +101,9 @@ static PagedChoice *lsend_choice(LetterSendScene *self)
     return (PagedChoice *) (void *) self->choice;
 }
 
-static MailLetter *lsend_mail(Letter *letter)
+static Letter *lsend_mail(Letter *letter)
 {
-    return (MailLetter *) (void *) letter;
+    return letter;
 }
 
 /* The place is a letter of the letters object: carried or to post. */
@@ -2391,7 +2391,7 @@ CLEAN_AS(func_ov104_0229ebe0, LetterSend_StartLetterWipeOut)
 void LetterSend_LetterWipeIn(LetterSendScene *self)
 {
     if (MenuScene_StepWipeBack(lsend_scene(self), 0) != 0) {
-        MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         if (StateFlags_IsClear2()) {
             MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_LABEL_BY_TOUCH);
         } else {
@@ -2411,8 +2411,7 @@ void LetterSend_ShowLetter(LetterSendScene *self)
 {
     Letter *letter = LetterSend_PlaceLetter(self, self->slot);
     Letter_AdvanceReceived(letter);
-    LetterView_Show(&self->view, (const LetterViewLetter *) (const void *) letter, LETTER_SEND_TEXT_LAYER,
-                    LETTER_SEND_PAGE_LAYER, 1);
+    LetterView_Show(&self->view, letter, LETTER_SEND_TEXT_LAYER, LETTER_SEND_PAGE_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(lsend_scene(self), 3, 0, 0, LETTER_SEND_WIPE_MARGIN);
     DisplayLayer_Show(LETTER_SEND_TEXT_LAYER);
     DisplayLayer_Show(LETTER_SEND_PAGE_LAYER);
@@ -2437,7 +2436,7 @@ void LetterSend_SceneWipeOut(LetterSendScene *self)
             LetterSend_ShowLetter(self);
         } else {
             LetterSend_ClearFlags(self, LETTER_SEND_FLAG_SHOWN);
-            MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_RUN);
+            MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_DELETE);
         }
     } else {
         LetterSend_ScrollSceneLayer(self);
@@ -2484,7 +2483,7 @@ CLEAN_AS(func_ov104_0229ed6c, LetterSend_StartWipeOut)
 void LetterSend_OutboxWipeIn(LetterSendScene *self)
 {
     if (MenuScene_StepWipeBack(lsend_scene(self), 0) != 0) {
-        MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         LetterSend_EndAction(self);
     }
     LetterSend_ScrollOutboxLayer(self);
@@ -2728,7 +2727,7 @@ int LetterSend_Start(LetterSendScene *self)
 {
     LetterSend_Setup(self);
     MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_START_SETUP);
-    MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_0);
+    MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_WAIT);
     return 1;
 }
 CLEAN_AS(func_ov104_0229f440, LetterSend_Start)

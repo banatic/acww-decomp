@@ -480,7 +480,7 @@ void PocketsWallet_ShowNames(PocketsWallet *wallet)
     TownName_ToText(PlayerId_Town(player), (TextBase *) &town);
     MessageReader_SetPart(0, (int) (uintptr_t) &town);
     TextLabel_OpenStyledBox2(town_label, wallet->layer, 17, 10, 15, 12, 0);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) town_label, POCKETS_WALLET_MESSAGE_TOWN);
+    TextLabel_LoadMenuMessage(town_label, POCKETS_WALLET_MESSAGE_TOWN);
     TextLabel_Show(town_label, 1, 0);
 
     PlayerIdText_Construct(&name);

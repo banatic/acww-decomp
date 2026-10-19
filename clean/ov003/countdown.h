@@ -22,6 +22,7 @@
 #ifndef CLEAN_OV003_COUNTDOWN_H
 #define CLEAN_OV003_COUNTDOWN_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/vector.h" /* Vec3 */
 #include "types.h"
 
@@ -91,29 +92,6 @@ typedef struct CountdownBoard {
     CountdownDigit *digits[COUNTDOWN_PLACES];
 } CountdownBoard;
 
-/* What the model's hooks get: the state of the model being drawn (NitroSystem's NNSG3dRS). */
-typedef struct CountdownRenderObject {
-    u8 unk_00[0x2c];
-    CountdownBoard *board; /* the object func_02055dc8 was given */
-} CountdownRenderObject;
-
-typedef struct CountdownMaterialResult {
-    u32 flags;
-    u32 color0;
-    u32 color1;
-    u32 polygon_attr; /* bits 16-20: the alpha */
-} CountdownMaterialResult;
-
-typedef struct CountdownRenderState {
-    const u8 *command; /* the command being run: byte 1 is its material */
-    CountdownRenderObject *render_object;
-    u32 flags;
-    u32 hooks[0x20]; /* the address of each command's hook, 0 for none */
-    u8 hook_timings[0x20];
-    u8 unk_AC[4];
-    CountdownMaterialResult *material_result;
-} CountdownRenderState;
-
 int CountdownDigit_Slot0B0(void);
 void CountdownDigit_Tick(CountdownDigit *digit);
 int CountdownDigit_Update(CountdownDigit *digit);
@@ -139,9 +117,9 @@ int CountdownBoard_Init(CountdownBoard *board);
 CountdownBoard *CountdownBoard_DestroyAndFree(CountdownBoard *board);
 CountdownBoard *CountdownBoard_Destroy(CountdownBoard *board);
 CountdownBoard *CountdownBoard_Construct(CountdownBoard *board);
-void CountdownBoard_MaterialHook(CountdownBoard *board, int material, CountdownRenderState *state);
-void CountdownBoard_SetModelHooks(CountdownRenderState *state);
-void CountdownBoard_RunMaterialHook(CountdownRenderState *state);
+void CountdownBoard_MaterialHook(CountdownBoard *board, int material, G3dRenderState *state);
+void CountdownBoard_SetModelHooks(G3dRenderState *state);
+void CountdownBoard_RunMaterialHook(G3dRenderState *state);
 void CountdownDigit_New(void);
 void CountdownBoard_New(void);
 CountdownBoard *CountdownBoard_ReceiverDestroyAndFree(void *receiver);

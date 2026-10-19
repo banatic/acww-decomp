@@ -1248,7 +1248,7 @@ void PocketsView_IdleByKeys(PocketsView *self)
     }
     if (data_021fbe40.pressed & PAD_Y) {
         self->base.state = STATE_START_WIPE_OUT;
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_1);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
         Popup_Hide(&self->popup, 1);
         PocketsView_HideCursorSprite(self);
     } else {
@@ -1454,7 +1454,7 @@ void PocketsView_WipeOut(PocketsView *self)
 {
     if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
         DisplayLayer_HideAndResetScroll(POCKETS_VIEW_LAYER);
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_RUN);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_DELETE);
         PocketsView_ClearFlags(self, POCKETS_VIEW_FLAG_DRAWN);
         PocketsView_ClearFlags(self, POCKETS_VIEW_FLAG_OBJECTS_DRAWN);
     } else {
@@ -1483,7 +1483,7 @@ CLEAN_AS(func_ov099_0229da84, PocketsView_StartWipeOut)
 void PocketsView_WipeIn(PocketsView *self)
 {
     if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_INTERACTIVE);
         PocketsView_EndAction(self);
     }
     MenuScene_ScrollWipe(scene_of(self), POCKETS_VIEW_LAYER, 0, 0);
@@ -1633,7 +1633,7 @@ int PocketsView_Start(PocketsView *self)
 {
     PocketsView_Setup(self);
     MenuScene_SetState(scene_of(self), STATE_START_SETUP);
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_0);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_WAIT);
     return 1;
 }
 CLEAN_AS(func_ov099_0229de98, PocketsView_Start)

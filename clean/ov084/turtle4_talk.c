@@ -180,7 +180,7 @@ void Turtle4Talk_OnAnswer(Turtle4Talk *talk)
     if (t4t_line_shown(talk) == TURTLE4_LINE_OFFER_FORTUNE && answer == 0) {
         next = TURTLE4_LINE_NO_LETTER;
         if (CurrentPockets_FreeLetterIndex() != -1) {
-            Letter *letter = (Letter *) (void *) CurrentPockets_FreeLetter();
+            Letter *letter = CurrentPockets_FreeLetter();
             if (letter != NULL) {
                 next = TURTLE4_LINE_FORTUNE;
                 t4t_write_fortune(letter, PlayerRecords_Current());

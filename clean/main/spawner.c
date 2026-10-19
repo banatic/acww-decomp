@@ -92,7 +92,7 @@ extern const u32 data_020da13c[];
 /* The request, the checks and the spawn table (filled by __sinit_020c5f70). */
 extern SpawnerRequest data_020e1ca8;
 extern SpawnerCheck data_020e1d08[SPAWNER_CHECKS];
-extern SpawnerEntry data_020e1d8c[];
+extern SpawnerEntry data_020e1d8c[SPAWNER_ENTRIES];
 extern int data_020d0644; /* the spawn table's number of entries */
 /* The profile the cleared request names (0), and the profile 0x56 two checks ask for. */
 extern const u16 data_020e1b8c;

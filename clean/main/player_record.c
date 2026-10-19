@@ -138,7 +138,7 @@ MailBox *PlayerRecord_Mailbox(u8 *record)
 CLEAN_AS(func_020989b4, PlayerRecord_Mailbox)
 
 /* func_020989e0: the letters the record's player keeps, or NULL (also without their block). */
-MailLetter *PlayerRecord_KeptLetters(u8 *record)
+Letter *PlayerRecord_KeptLetters(u8 *record)
 {
     int number = player_number(record);
     if (number == -1) {
@@ -148,7 +148,7 @@ MailLetter *PlayerRecord_KeptLetters(u8 *record)
     if (block == 0) {
         return NULL;
     }
-    return (MailLetter *) (uintptr_t) (u32) (block + KEPT_LETTERS_SIZE * number);
+    return (Letter *) (uintptr_t) (u32) (block + KEPT_LETTERS_SIZE * number);
 }
 CLEAN_AS(func_020989e0, PlayerRecord_KeptLetters)
 
@@ -608,11 +608,11 @@ void PlayerRecord_ResetForNewTown(u8 *record)
         }
     }
 
-    MailLetter *letter = PlayerPockets_Letter(pockets, 0);
+    Letter *letter = PlayerPockets_Letter(pockets, 0);
     for (int i = 0; i < PLAYER_POCKETS_LETTERS; i++, letter++) {
-        u8 state = Letter_State((const Letter *) letter);
+        u8 state = Letter_State(letter);
         if (state >= LETTER_STATE_EMPTIED_FIRST && state <= LETTER_STATE_EMPTIED_LAST) {
-            Letter_Clear((Letter *) letter);
+            Letter_Clear(letter);
         }
     }
 }
@@ -1055,7 +1055,7 @@ u8 *PlayerRecord_Destruct(u8 *record)
     PlayerOptions_Destruct(record + RECORD_FIELD_1D3B);
     ItemRecord_Destruct((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
     __cxa_vec_cleanup(pockets->items, PLAYER_POCKETS_SLOTS, sizeof(u16), func_020051b0);
-    __cxa_vec_cleanup(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(MailLetter), func_02066688);
+    __cxa_vec_cleanup(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(Letter), func_02066688);
     PlayerDesigns_Destruct((PlayerDesigns *) (void *) record);
     return record;
 }
@@ -1068,7 +1068,7 @@ u8 *PlayerRecord_Construct(u8 *record)
     PlayerPockets *pockets = player_record_pockets_at(record);
 
     PlayerDesigns_Construct((PlayerDesigns *) (void *) record);
-    __cxa_vec_ctor(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(MailLetter), func_02066694, func_02066688);
+    __cxa_vec_ctor(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(Letter), func_02066694, func_02066688);
     __cxa_vec_ctor(pockets->items, PLAYER_POCKETS_SLOTS, sizeof(u16), func_02034ce0, func_020051b0);
     ItemRecord_Construct((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
     PlayerOptions_Construct(record + RECORD_FIELD_1D3B);

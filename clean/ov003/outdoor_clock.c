@@ -16,13 +16,9 @@ static_assert(offsetof(OutdoorClock, model) == 0x198, "model");
 static_assert(offsetof(OutdoorClock, hour_node) == 0x2b4, "hour node");
 static_assert(offsetof(OutdoorClock, minute_node) == 0x2b5, "minute node");
 static_assert(sizeof(OutdoorClock) == 0x2b8, "the size OutdoorClock_New allocates");
-static_assert(offsetof(OutdoorClockRenderObject, clock) == 0x2c, "render object user");
 
 #define OUTDOOR_CLOCK_RECEIVER_OFFSET 0xec
 #define OUTDOOR_CLOCK_NO_NODE (-1)
-/* The render state's command whose hook the clock sets: a joint's description, after it. */
-#define OUTDOOR_CLOCK_COMMAND_NODE_DESC 6
-#define OUTDOOR_CLOCK_TIMING_AFTER 2
 /* The vtable slot the hook hands each joint to (OutdoorClock_TurnHand). */
 #define OUTDOOR_CLOCK_SLOT_TURN_HAND 0x60
 
@@ -34,7 +30,7 @@ extern const u8 data_ov003_022390e8[];
 extern const u8 data_ov003_022391ac[];
 
 /* The hook is the game's function: its address goes to the model object. */
-extern void func_ov003_0221db90(OutdoorClockRenderState *state);
+extern void func_ov003_0221db90(G3dRenderState *state);
 
 /* func_ov003_0221da64 (vtable slot 0x98): always 1. */
 int OutdoorClock_Slot98(void)
@@ -45,12 +41,12 @@ CLEAN_AS(func_ov003_0221da64, OutdoorClock_Slot98)
 
 /* func_ov003_0221da68 (vtable slot 0x60, a joint being described): turns the hour hand's joint
  * and the minute hand's joint; other joints are left alone. */
-void OutdoorClock_TurnHand(OutdoorClock *clock, int node, OutdoorClockRenderState *state)
+void OutdoorClock_TurnHand(OutdoorClock *clock, int node, G3dRenderState *state)
 {
     if (node == clock->hour_node) {
-        ClockHands_TurnHourHand((ClockHandsRenderState *) state);
+        ClockHands_TurnHourHand(state);
     } else if (node == clock->minute_node) {
-        ClockHands_TurnMinuteHand((ClockHandsRenderState *) state);
+        ClockHands_TurnMinuteHand(state);
     }
 }
 CLEAN_AS(func_ov003_0221da68, OutdoorClock_TurnHand)
@@ -64,7 +60,7 @@ int OutdoorClock_Init(OutdoorClock *clock)
     clock->minute_node = (s8) G3dRes_NodeIndex(clock->model, data_ov003_0223922c);
     if (clock->hour_node != OUTDOOR_CLOCK_NO_NODE && clock->minute_node != OUTDOOR_CLOCK_NO_NODE) {
         ModelObject_SetNodeCallback((ModelObject *) clock->model_object, (void *) (uintptr_t) func_ov003_0221db90,
-                                    OUTDOOR_CLOCK_COMMAND_NODE_DESC, OUTDOOR_CLOCK_TIMING_AFTER, clock, 0);
+                                    G3D_COMMAND_NODE_DESC, G3D_TIMING_B, clock, 0);
     }
     return 1;
 }
@@ -111,11 +107,11 @@ CLEAN_AS(func_ov003_0221db54, OutdoorClock_Construct)
 /* func_ov003_0221db90 (the hook func_02055de0 is given, run after each joint's description):
  * hands the joint (byte 1 of the command) and the state to vtable slot 0x60 of the clock, when
  * the render object has one. */
-void OutdoorClock_RunNodeHook(OutdoorClockRenderState *state)
+void OutdoorClock_RunNodeHook(G3dRenderState *state)
 {
-    typedef void (*OutdoorClockTurnSlot)(OutdoorClock *clock, int node, OutdoorClockRenderState *state);
+    typedef void (*OutdoorClockTurnSlot)(OutdoorClock *clock, int node, G3dRenderState *state);
 
-    OutdoorClock *clock = state->render_object->clock;
+    OutdoorClock *clock = state->object->user;
     if (clock != NULL) {
         u32 slot = *(const u32 *) ((const u8 *) clock->vtable + OUTDOOR_CLOCK_SLOT_TURN_HAND);
         ((OutdoorClockTurnSlot) (uintptr_t) slot)(clock, state->command[1], state);

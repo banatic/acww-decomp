@@ -507,9 +507,9 @@ CLEAN_AS(func_0206f8e0, GroupParams_LetterKind)
  * there is one. */
 void GroupParams_LetterToPockets(void)
 {
-    MailLetter *free_letter = CurrentPockets_FreeLetter();
+    Letter *free_letter = CurrentPockets_FreeLetter();
     if (free_letter != NULL) {
-        Letter_Assign((Letter *) (void *) free_letter, &data_021cfd68);
+        Letter_Assign(free_letter, &data_021cfd68);
     }
 }
 CLEAN_AS(func_0206f910, GroupParams_LetterToPockets)
@@ -520,9 +520,9 @@ CLEAN_AS(func_0206f910, GroupParams_LetterToPockets)
 void GroupParams_LetterToDated(void)
 {
     u8 *player = PlayerRecords_Current();
-    MailLetter *letter = MailDated_Letter((MailDatedLetter *) (void *) PlayerRecord_DatedLetter(player));
-    Letter_Assign((Letter *) (void *) letter, &data_021cfd68);
-    Letter_AdvanceWritten((Letter *) (void *) letter);
+    Letter *letter = MailDated_Letter((MailDatedLetter *) (void *) PlayerRecord_DatedLetter(player));
+    Letter_Assign(letter, &data_021cfd68);
+    Letter_AdvanceWritten(letter);
     MailTime *date = MailDated_Date((MailDatedLetter *) (void *) PlayerRecord_DatedLetter(player));
     date->day = 1;
     date->month = 1;

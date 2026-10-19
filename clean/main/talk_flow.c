@@ -11,20 +11,6 @@
 #include "talk_object.h"
 #include "talk_voice.h"
 
-static_assert(offsetof(TalkFlowTalk, slide) == 0x0c, "talk slide");
-static_assert(offsetof(TalkFlowTalk, mode) == 0x14, "talk mode");
-static_assert(offsetof(TalkFlowTalk, window) == 0x1c, "talk window");
-static_assert(offsetof(TalkFlowTalk, window_offset) == 0x9c, "talk window offset");
-static_assert(offsetof(TalkFlowTalk, page) == 0x684, "talk page");
-static_assert(offsetof(TalkFlowTalk, walker) == 0x13b8, "talk walker");
-static_assert(offsetof(TalkFlowTalk, walk) == 0x149c, "talk walk");
-static_assert(offsetof(TalkFlowTalk, receiver) == 0x14a8, "talk receiver");
-static_assert(offsetof(TalkFlowTalk, last_chars) == 0x1a2c, "talk last characters");
-static_assert(offsetof(TalkFlowTalk, message) == 0x1e77, "talk message");
-static_assert(offsetof(TalkFlowTalk, silent) == 0x1e98, "talk silent");
-static_assert(offsetof(TalkFlowTalk, quiet) == 0x1e9a, "talk quiet");
-static_assert(sizeof(TalkFlowTalk) == 0x1e9c, "talk");
-
 /* The window's offsets by slide step: -101, -48, -20, -10, 0. */
 extern const s16 data_020def28[];
 
@@ -42,11 +28,8 @@ extern u8 *data_021c526c;
 /* The receiver's slot told the talk closes. */
 #define TALK_FLOW_SLOT_CLOSING 0x70
 
-/* The talk as talk_object.h lays it out. */
-static TalkObject *talk_flow_object(TalkFlowTalk *talk)
-{
-    return (TalkObject *) (void *) talk;
-}
+/* In TalkFlow_WalkStopped: the walker's state left as it is. */
+#define TALK_FLOW_WALK_KEPT (-1)
 
 /* What TalkFlow_WalkStopped does after setting the states. */
 enum TalkFlowAction {
@@ -66,23 +49,23 @@ enum TalkFlowAction {
  * - else the talk closes when its message is the last one (data_021f43e8) or it is not kept
  *   open (mode 4), the walker idle; a kept talk given a message follows with it (writing);
  *   one given none stays as it is. */
-void TalkFlow_WalkStopped(TalkFlowTalk *talk)
+void TalkFlow_WalkStopped(TalkObject *talk)
 {
     s32 walk = talk->walker.state;
     int page_full = walk == TALK_TAGS_STATE_PAGE_FULL;
     int stop_keep = walk == TALK_TAGS_STATE_STOP_KEEP;
     int choosing = walk == TALK_TAGS_STATE_CHOOSING;
-    s32 new_walk = TALK_FLOW_NONE;
-    s32 next = TALK_FLOW_NONE;
+    s32 new_walk = TALK_FLOW_WALK_KEPT;
+    s32 next = TALK_OBJECT_NO_STATE;
     int follow = 0;
     enum TalkFlowAction action = TALK_FLOW_NO_ACTION;
 
     if (talk->choices_asked != 0) {
         talk->choices_asked = 0;
-        TalkObject_OpenChoices((TalkObject *) talk, 0);
+        TalkObject_OpenChoices(talk, 0);
     } else if (page_full || stop_keep || choosing) {
         new_walk = TALK_TAGS_STATE_RUNNING;
-        next = TALK_FLOW_WRITING;
+        next = TALK_OBJECT_WRITING;
         if (choosing) {
             action = TALK_FLOW_AFTER_CHOICES;
         } else if (stop_keep) {
@@ -96,11 +79,11 @@ void TalkFlow_WalkStopped(TalkFlowTalk *talk)
         u8 last = data_021f43e8;
         if (message == last) {
             new_walk = TALK_TAGS_STATE_IDLE;
-            next = TALK_FLOW_CLOSING;
+            next = TALK_OBJECT_CLOSING;
             action = TALK_FLOW_END_LAST;
         } else if (talk->mode != TALK_FLOW_MODE_KEPT) {
             new_walk = TALK_TAGS_STATE_IDLE;
-            next = TALK_FLOW_CLOSING;
+            next = TALK_OBJECT_CLOSING;
             action = TALK_FLOW_END;
         } else if (message != none) {
             follow = 1;
@@ -109,35 +92,35 @@ void TalkFlow_WalkStopped(TalkFlowTalk *talk)
     }
 
     if (follow) {
-        TalkObject_StartGivenMessage(talk_flow_object(talk));
+        TalkObject_StartGivenMessage(talk);
         new_walk = TALK_TAGS_STATE_RUNNING;
-        next = TALK_FLOW_WRITING;
+        next = TALK_OBJECT_WRITING;
     }
-    if (new_walk != TALK_FLOW_NONE) {
+    if (new_walk != TALK_FLOW_WALK_KEPT) {
         talk->walker.state = new_walk;
     }
-    if (next == TALK_FLOW_NONE) {
+    if (next == TALK_OBJECT_NO_STATE) {
         return;
     }
-    talk->next = next;
+    talk->next_state = next;
     switch (action) {
         case TALK_FLOW_AFTER_CHOICES:
-            TalkFlow_AfterChoices(talk_flow_object(talk));
+            TalkFlow_AfterChoices(talk);
             break;
         case TALK_FLOW_SAME_WINDOW:
-            TalkFlow_SameWindow(talk_flow_object(talk));
+            TalkFlow_SameWindow(talk);
             break;
         case TALK_FLOW_NEW_PAGE:
-            TalkFlow_NewPage(talk_flow_object(talk));
+            TalkFlow_NewPage(talk);
             break;
         case TALK_FLOW_NEXT_MESSAGE:
-            TalkFlow_NextMessage(talk_flow_object(talk));
+            TalkFlow_NextMessage(talk);
             break;
         case TALK_FLOW_END:
-            TalkFlow_End(talk_flow_object(talk));
+            TalkFlow_End(talk);
             break;
         case TALK_FLOW_END_LAST:
-            TalkFlow_EndAtLast(talk_flow_object(talk));
+            TalkFlow_EndAtLast(talk);
             break;
         case TALK_FLOW_NO_ACTION:
             break;
@@ -153,9 +136,9 @@ void TalkFlow_StepGone(void *talk)
 CLEAN_AS(func_02066bd0, TalkFlow_StepGone)
 
 /* func_02066bd4 (entry of state 5, gone): the window closed. */
-void TalkFlow_EnterGone(TalkFlowTalk *talk)
+void TalkFlow_EnterGone(TalkObject *talk)
 {
-    TalkBox_Hide((TalkBox *) (void *) talk->window);
+    TalkBox_Hide(&talk->window);
 }
 CLEAN_AS(func_02066bd4, TalkFlow_EnterGone)
 
@@ -164,7 +147,7 @@ CLEAN_AS(func_02066bd4, TalkFlow_EnterGone)
  * and the talk is gone, or, kept open (mode 4), at rest with its sounds back on.
  * REQUIRES: slide is 0 to 4 (TalkFlow_EnterClosing sets 4); below 0 the ROM reads before the
  * offsets. */
-void TalkFlow_StepClosing(TalkFlowTalk *talk)
+void TalkFlow_StepClosing(TalkObject *talk)
 {
     int done = 0;
     if (talk->slide > 0) {
@@ -173,18 +156,18 @@ void TalkFlow_StepClosing(TalkFlowTalk *talk)
         done = 1;
     }
     talk->window_offset = data_020def28[talk->slide];
-    TalkBox_SetOffset((TalkBox *) (void *) talk->window, talk->window_offset);
+    TalkBox_SetOffset(&talk->window, talk->window_offset);
     if (!done) {
         return;
     }
-    TalkObject_FreeNameBox(talk_flow_object(talk));
+    TalkObject_FreeNameBox(talk);
     TalkPage_FreeBoxes(&talk->page);
     if (talk->mode != TALK_FLOW_MODE_KEPT) {
-        talk->next = TALK_FLOW_GONE;
+        talk->next_state = TALK_OBJECT_GONE;
     } else {
         talk->silent = 0;
         talk->quiet = 0;
-        talk->next = TALK_FLOW_CLOSED;
+        talk->next_state = TALK_OBJECT_CLOSED;
     }
 }
 CLEAN_AS(func_02066be0, TalkFlow_StepClosing)
@@ -194,15 +177,15 @@ CLEAN_AS(func_02066be0, TalkFlow_StepClosing)
  * back (slot 2 of the field's volume slots); unless quiet, the closing sound; the receiver
  * told (its slot 0x70).
  * REQUIRES: the talk has a receiver. */
-void TalkFlow_EnterClosing(TalkFlowTalk *talk)
+void TalkFlow_EnterClosing(TalkObject *talk)
 {
     typedef void TalkFlowReceiverSlot(TalkReceiver * receiver);
 
-    TalkBox_HideArrow((TalkBox *) (void *) talk->window);
+    TalkBox_HideArrow(&talk->window);
     talk->slide = TALK_FLOW_SLIDE_STEPS;
     talk->window_offset = data_020def28[talk->slide];
     if (talk->silent == 0) {
-        TalkVoice_Stop((TalkVoice *) (void *) talk->last_chars);
+        TalkVoice_Stop(&talk->voice);
         if (talk->mode != 1 && talk->mode != 2 && talk->mode != 3) {
             MusicVolume_EndSlot2((MusicVolume *) (void *) (data_021c526c + TALK_FLOW_MUSIC_VOLUME));
         }
@@ -222,16 +205,16 @@ CLEAN_AS(func_02066c54, TalkFlow_EnterClosing)
  * characters voiced unless silent. Once the text ended (slide cleared the frame before), or
  * the walk stopped (a full page, a stop, the choices) or is idle, the talk waits (state 2),
  * the receiver first told its answer when the text ended; its last characters cleared. */
-void TalkFlow_StepWriting(TalkFlowTalk *talk)
+void TalkFlow_StepWriting(TalkObject *talk)
 {
-    if (TalkObject_HurryPressed((TalkObject *) talk)) {
+    if (TalkObject_HurryPressed(talk)) {
         TalkTags_Hurry(&talk->walker);
     }
-    TalkVoice_Clear((TalkVoice *) (void *) talk->last_chars, 0);
-    MessageWalkRun_Step(&talk->walk);
+    TalkVoice_Clear(&talk->voice, 0);
+    MessageWalkRun_Step(&talk->run);
     TalkPage_Update(&talk->page);
     if (talk->silent == 0) {
-        TalkVoice_Update((TalkVoice *) (void *) talk->last_chars);
+        TalkVoice_Update(&talk->voice);
     }
 
     s32 walk = talk->walker.state;
@@ -245,10 +228,10 @@ void TalkFlow_StepWriting(TalkFlowTalk *talk)
         return;
     }
     if (ended) {
-        TalkObject_TellMessageEnded(talk_flow_object(talk));
+        TalkObject_TellMessageEnded(talk);
     }
-    talk->next = TALK_FLOW_WAITING;
-    TalkObject_ClearVoice((TalkObject *) talk);
+    talk->next_state = TALK_OBJECT_WAITING;
+    TalkObject_ClearVoice(talk);
 }
 CLEAN_AS(func_02066cd4, TalkFlow_StepWriting)
 
@@ -293,16 +276,10 @@ static u32 talk_flow_receiver_slot(const TalkReceiver *receiver, int slot)
     return *(const u32 *) (const void *) (vtable + slot);
 }
 
-/* The talk's message window. */
-static TalkBox *talk_flow_box(TalkObject *talk)
-{
-    return (TalkBox *) (void *) talk->window;
-}
-
 /* func_02066db0 (entry of state 3, writing): the window's arrow in pose 0; the text going. */
 void TalkFlow_EnterWriting(TalkObject *talk)
 {
-    TalkBox_HideArrow(talk_flow_box(talk));
+    TalkBox_HideArrow(&talk->window);
     talk->slide = TALK_FLOW_TEXT_GOING;
 }
 CLEAN_AS(func_02066db0, TalkFlow_EnterWriting)
@@ -322,26 +299,25 @@ void TalkFlow_StepWaiting(TalkObject *talk)
     s32 walk = talk->walker.state;
     int stopped = walk == TALK_TAGS_STATE_PAGE_FULL || walk == TALK_TAGS_STATE_ENDED || walk == TALK_TAGS_STATE_STOP_KEEP;
     int choosing = walk == TALK_TAGS_STATE_CHOOSING;
-    TalkFlowTalk *flow = (TalkFlowTalk *) (void *) talk;
-    TalkBox *box = talk_flow_box(talk);
+    TalkBox *box = &talk->window;
 
     if (TalkWindows_Decided(&talk->choice_windows)) {
         TalkFlow_TakeAnswer(talk);
     }
     if (!stopped) {
         if (choosing && TalkWindows_NoneShown(&talk->choice_windows)) {
-            TalkFlow_WalkStopped(flow);
+            TalkFlow_WalkStopped(talk);
         }
         return;
     }
     if (talk->held != 0 || !TalkWindows_NoneShown(&talk->choice_windows)) {
         if (!TalkBox_ArrowHidden(box)) {
-            TalkBox_HideArrow(talk_flow_box(talk));
+            TalkBox_HideArrow(&talk->window);
         }
         return;
     }
     if (talk->go_on != 0) {
-        TalkFlow_WalkStopped(flow);
+        TalkFlow_WalkStopped(talk);
         return;
     }
     if (TalkBox_ArrowHidden(box)) {
@@ -365,7 +341,7 @@ void TalkFlow_StepWaiting(TalkObject *talk)
         return;
     }
     if (TalkBox_ArrowPose3Done(box)) {
-        TalkFlow_WalkStopped(flow);
+        TalkFlow_WalkStopped(talk);
     }
 }
 CLEAN_AS(func_02066dc4, TalkFlow_StepWaiting)
@@ -373,7 +349,7 @@ CLEAN_AS(func_02066dc4, TalkFlow_StepWaiting)
 /* func_02066f20 (entry of state 2, waiting): the window's arrow in pose 0. */
 void TalkFlow_EnterWaiting(TalkObject *talk)
 {
-    TalkBox_HideArrow(talk_flow_box(talk));
+    TalkBox_HideArrow(&talk->window);
 }
 CLEAN_AS(func_02066f20, TalkFlow_EnterWaiting)
 
@@ -391,7 +367,7 @@ void TalkFlow_StepOpening(TalkObject *talk)
         done = 1;
     }
     talk->window_offset = data_020def1c[talk->slide];
-    TalkBox_SetOffset(talk_flow_box(talk), talk->window_offset);
+    TalkBox_SetOffset(&talk->window, talk->window_offset);
     if (!done) {
         return;
     }
@@ -435,17 +411,17 @@ void TalkFlow_EnterOpening(TalkObject *talk)
     if (nameless == 0 && kind == 0 && name[0] == 0 && name[1] == 0) {
         kind = TALK_FLOW_KIND_NO_SPEAKER;
     }
-    TalkBox_Load(talk_flow_box(talk), kind, nameless, style, (u8) no_villager);
+    TalkBox_Load(&talk->window, kind, nameless, style, (u8) no_villager);
     TalkVoice_SetKind(&talk->voice, kind);
 
     TalkBox_SetUpBg2();
-    TalkBox_Upload(talk_flow_box(talk));
+    TalkBox_Upload(&talk->window);
     TalkBox_Show();
-    TalkBox_FreeFiles(talk_flow_box(talk));
+    TalkBox_FreeFiles(&talk->window);
     talk->slide = TALK_FLOW_OPEN_STEPS;
     talk->window_offset = data_020def1c[talk->slide];
-    TalkBox_SetOffset(talk_flow_box(talk), talk->window_offset);
-    TalkBox_HideArrow(talk_flow_box(talk));
+    TalkBox_SetOffset(&talk->window, talk->window_offset);
+    TalkBox_HideArrow(&talk->window);
     TalkObject_MakeNameBox(talk);
     TalkPage_NewBoxes(&talk->page);
 
@@ -474,7 +450,7 @@ CLEAN_AS(func_020670f8, TalkFlow_StepClosed)
 /* func_020670fc (entry of state 0, closed): the window closed. */
 void TalkFlow_EnterClosed(TalkObject *talk)
 {
-    TalkBox_Hide(talk_flow_box(talk));
+    TalkBox_Hide(&talk->window);
 }
 CLEAN_AS(func_020670fc, TalkFlow_EnterClosed)
 

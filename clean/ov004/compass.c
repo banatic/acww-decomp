@@ -26,19 +26,6 @@ static_assert(sizeof(Compass) == 0x854, "the size Compass_Create allocates");
 #define COMPASS_STEP 0x5a00          /* 5.625 degrees: the most the swing and deflection change a frame */
 #define COMPASS_PHASE_STEP 0x960
 
-/* NNS_G3D_JNTANM_RESULTFLAG_ROT_ZERO: the joint's rotation is the identity, not yet written. */
-#define COMPASS_ROTATION_IDENTITY 2
-
-/* The joint being drawn (NitroSystem's NNSG3dJntAnmResult), as NodeHookState.unk_B4 points to
- * it. */
-typedef struct CompassJoint {
-    u32 flags;
-    u8 unk_04[0x24]; /* its scales */
-    Mtx33 rotation;
-} CompassJoint;
-
-static_assert(offsetof(CompassJoint, rotation) == 0x28, "rotation");
-
 /* "compass", the needle's node. */
 extern const char data_ov004_022531c0[];
 
@@ -63,12 +50,12 @@ static s32 Compass_shift_right(s32 value, int bits)
  * needle, turns its joint about Y by the deflection less the object's facing; that of the
  * object it stands on, plus its turn on it (Mount_Angle), when it stands on one. The turn is
  * put before the joint's rotation, or in its place while that is the identity. */
-void Compass_NeedleHook(Compass *compass, int node, NodeHookState *state)
+void Compass_NeedleHook(Compass *compass, int node, G3dRenderState *state)
 {
     if (compass->needle != node) {
         return;
     }
-    CompassJoint *joint = state->unk_B4;
+    G3dJointResult *joint = state->joint;
     /* The deflection as a 16-bit angle: its fraction of a turn (FX_Div by 360) times 0x10000. */
     fx32 turns = FX_MulFunc(FX_Div(compass->deflection, COMPASS_DEGREES_360), 0x10000000);
     s32 deflection = Compass_shift_right((s32) ((u32) turns << 4), 16);
@@ -84,12 +71,12 @@ void Compass_NeedleHook(Compass *compass, int node, NodeHookState *state)
     int index = (angle >> 4) * 2;
     Mtx33 turn;
     MTX_RotY33_(&turn, FX_SinCosTable_[index], FX_SinCosTable_[index + 1]);
-    if ((joint->flags & COMPASS_ROTATION_IDENTITY) != 0) {
+    if ((joint->flags & G3D_JOINT_ROTATION_IDENTITY) != 0) {
         joint->rotation = turn;
     } else {
         MTX_Concat33(&joint->rotation, &turn, &joint->rotation);
     }
-    joint->flags &= ~(u32) COMPASS_ROTATION_IDENTITY;
+    joint->flags &= ~(u32) G3D_JOINT_ROTATION_IDENTITY;
 }
 CLEAN_AS(func_ov004_022136f8, Compass_NeedleHook)
 

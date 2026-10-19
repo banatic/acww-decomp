@@ -15,6 +15,7 @@
 #ifndef CLEAN_OV004_AQUARIUM_FISH_H
 #define CLEAN_OV004_AQUARIUM_FISH_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/vector.h"
 #include "main/animated_model.h"
 #include "main/field_body.h"
@@ -172,14 +173,6 @@ enum {
     AQUARIUM_MEET_FACING_SAME = 0x80,
 };
 
-/* The state of a model being drawn (NitroSystem's NNSG3dRS), as far as the fish's hook set up
- * before each draw writes it: the hook run for each kind of model command, and when. */
-typedef struct AquariumFishHookState {
-    u8 unk_00[0x0c];
-    u32 hooks[0x20];       /* 0x0c: the address of each command's hook */
-    u8 hook_timings[0x20]; /* 0x8c */
-} AquariumFishHookState;
-
 int AquariumFish_MeetingWay(AquariumFish *fish, AquariumFish **other);
 void AquariumFish_ForgetFocus(AquariumFish *fish);
 void AquariumFish_GiveWay(AquariumFish *fish);
@@ -200,9 +193,9 @@ void AquariumFish_SetUpByRoom(AquariumFish *fish);
 void AquariumFish_Startle(AquariumFish *fish, const Vec3 *from);
 int AquariumFish_CheckTapped(AquariumFish *fish);
 int AquariumFish_FindTap(AquariumFish *fish, Vec3 *tap);
-void AquariumFish_SetModelHooks(AquariumFishHookState *state);
-void AquariumFish_NodeDescAfterHook(AnimatedModelNodeState *state);
-void AquariumFish_NodeDescBeforeHook(AnimatedModelNodeState *state);
+void AquariumFish_SetModelHooks(G3dRenderState *state);
+void AquariumFish_NodeDescAfterHook(G3dRenderState *state);
+void AquariumFish_NodeDescBeforeHook(G3dRenderState *state);
 void AquariumFish_SwimRiver(AquariumFish *fish);
 void AquariumFish_SetUpRiver(AquariumFish *fish);
 void AquariumFish_SwimSea(AquariumFish *fish);

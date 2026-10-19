@@ -25,6 +25,7 @@
 #define CLEAN_MAIN_LETTER_VIEW_H
 
 #include "main/label_box.h"
+#include "main/letter.h"
 #include "main/text_label.h"
 #include "types.h"
 
@@ -78,18 +79,6 @@ typedef struct LetterView {
     s32 name_width;                             /* 0x324: in pixels */
 } LetterView;
 
-/* What the view reads of a letter (a MailLetter of mail.h, 0x100 bytes). */
-typedef struct LetterViewLetter {
-    u8 unk_00[4];
-    u8 addressee[0x40];                     /* 0x04 */
-    u16 greeting[LETTER_GREETING_LENGTH];   /* 0x44 */
-    u16 body[LETTER_BODY_LENGTH];           /* 0x58 */
-    u16 signature[LETTER_SIGNATURE_LENGTH]; /* 0xd8 */
-    u8 name_position;                       /* 0xf8: where the name goes in the greeting */
-    u8 paper;                               /* 0xf9 */
-    u8 unk_fa[6];
-} LetterViewLetter;
-
 void LetterLine_Show(LetterLine *line, int align_right);
 void LetterLine_OpenBox(LetterLine *line);
 void LetterLine_CloseBox(LetterLine *line);
@@ -114,10 +103,10 @@ void LetterView_MarkBody(LetterView *view, unsigned int first, unsigned int coun
 void LetterView_MarkGreeting(LetterView *view, int first, int count, int style);
 void LetterView_SetSignature(LetterView *view, const u16 *signature);
 void LetterView_SetBody(LetterView *view, const u16 *body, int editing);
-void LetterView_SetGreeting(LetterView *view, const LetterViewLetter *letter, u16 *out);
-void LetterView_SetName(LetterView *view, const LetterViewLetter *letter);
+void LetterView_SetGreeting(LetterView *view, const Letter *letter, u16 *out);
+void LetterView_SetName(LetterView *view, const Letter *letter);
 unsigned int LetterView_NameLength(LetterView *view);
-void LetterView_Show(LetterView *view, const LetterViewLetter *letter, int text_layer, int paper_layer, int priority);
+void LetterView_Show(LetterView *view, const Letter *letter, int text_layer, int paper_layer, int priority);
 void LetterView_Redraw(LetterView *view);
 void LetterView_ReleaseBoxes(LetterView *view);
 void LetterView_Init(LetterView *view, int layer);

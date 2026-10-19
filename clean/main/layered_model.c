@@ -19,8 +19,6 @@ static_assert(offsetof(LayeredModel, nodes_a) == 0x14c, "LayeredModel nodes_a");
 static_assert(offsetof(LayeredModel, anim_b) == 0x154, "LayeredModel anim_b");
 static_assert(offsetof(LayeredModel, ramp_b) == 0x170, "LayeredModel ramp_b");
 static_assert(sizeof(LayeredModel) == 0x1b4, "LayeredModel size");
-static_assert(offsetof(LayeredModelJoint, translation) == 0x4c, "LayeredModelJoint layout");
-static_assert(offsetof(LayeredModelNodeState, joint) == 0xb4, "LayeredModelNodeState layout");
 
 /* The vtables of the class with both layers: its own and those of its frame control and Ramp
  * parts (at 0x9c and 0xb8), and the frame control's. */
@@ -71,13 +69,13 @@ static void mask_set(u32 mask[2], u32 node)
 
 /* What the blend after a node does first: a joint result flagged as without translation gets
  * its translation written as 0. */
-static void zero_translation(LayeredModelNodeState *state)
+static void zero_translation(G3dRenderState *state)
 {
-    LayeredModelJoint *joint = state->joint;
-    if (joint->flags & LAYERED_MODEL_JOINT_TRANSLATION_ZERO) {
-        joint->translation[0] = 0;
-        joint->translation[1] = 0;
-        joint->translation[2] = 0;
+    G3dJointResult *joint = state->joint;
+    if (joint->flags & G3D_JOINT_TRANSLATION_ZERO) {
+        joint->translation.x = 0;
+        joint->translation.y = 0;
+        joint->translation.z = 0;
     }
 }
 
@@ -202,19 +200,19 @@ CLEAN_AS(func_02054354, LayeredModel_LoadB)
  * layer it is in, B before A, else as a base node.
  * QUIRK: it first tests bit (node & 31) of the four mask words together, a quick test that
  * only sends nodes to the base. */
-void LayeredModel_ApplyNodeB(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_ApplyNodeB(LayeredModel *model, G3dRenderState *state)
 {
-    if (NodeHook_IsSkipped(model, &state->state)) {
+    if (NodeHook_IsSkipped(model, state)) {
         return;
     }
     u32 any = model->nodes_b[1] | model->nodes_b[0] | model->nodes_a[0] | model->nodes_a[1];
     if (any == 0) {
-        AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
+        AnimatedModel_BlendNode((AnimatedModel *) model, state);
         return;
     }
-    u8 node = state->state.command[1];
+    u8 node = state->command[1];
     if ((any & 1u << (node & 0x1f)) == 0) {
-        AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
+        AnimatedModel_BlendNode((AnimatedModel *) model, state);
         return;
     }
     if (LayeredModel_HasNodeB(model, node)) {
@@ -225,17 +223,17 @@ void LayeredModel_ApplyNodeB(LayeredModel *model, LayeredModelNodeState *state)
         LayeredModel_BlendNodeA(model, state);
         return;
     }
-    AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
+    AnimatedModel_BlendNode((AnimatedModel *) model, state);
 }
 CLEAN_AS(func_02054394, LayeredModel_ApplyNodeB)
 
 /* func_02054430: after a node of layer B: the translation written when it is flagged 0, then,
  * while B's blend runs, the node blended from the pose recorded before it. */
-void LayeredModel_BlendNodeB(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_BlendNodeB(LayeredModel *model, G3dRenderState *state)
 {
     zero_translation(state);
     if (model->ramp_b.rate != 0) {
-        JointBlend_Apply((JointBlend *) &model->ramp_b, (AnimatedModelNodeState *) state);
+        JointBlend_Apply((JointBlend *) &model->ramp_b, state);
     }
 }
 CLEAN_AS(func_02054430, LayeredModel_BlendNodeB)
@@ -243,12 +241,12 @@ CLEAN_AS(func_02054430, LayeredModel_BlendNodeB)
 /* func_02054474: the node callback before a node (func_0201c6a8): the joints take the
  * animation of the node's layer, B before A, else the base one, and the node's pose is
  * recorded for that layer's blend. */
-void LayeredModel_PrepareNodeB(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_PrepareNodeB(LayeredModel *model, G3dRenderState *state)
 {
-    if (NodeHook_IsSkipped(model, &state->state)) {
+    if (NodeHook_IsSkipped(model, state)) {
         return;
     }
-    u8 node = state->state.command[1];
+    u8 node = state->command[1];
     if (mask_has(model->nodes_b, node)) {
         AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->anim_b);
         LayeredModel_RecordNodeB(model, state);
@@ -260,15 +258,15 @@ void LayeredModel_PrepareNodeB(LayeredModel *model, LayeredModelNodeState *state
         return;
     }
     AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->base_anim);
-    AnimatedModel_RecordNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
+    AnimatedModel_RecordNode((AnimatedModel *) model, state);
 }
 CLEAN_AS(func_02054474, LayeredModel_PrepareNodeB)
 
 /* func_02054524: while layer B's blend runs, the node's pose before it is recorded. */
-void LayeredModel_RecordNodeB(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_RecordNodeB(LayeredModel *model, G3dRenderState *state)
 {
     if (model->ramp_b.rate != 0) {
-        JointBlend_RecordPose((JointBlend *) &model->ramp_b, (AnimatedModelNodeState *) state);
+        JointBlend_RecordPose((JointBlend *) &model->ramp_b, state);
     }
 }
 CLEAN_AS(func_02054524, LayeredModel_RecordNodeB)
@@ -450,50 +448,50 @@ int LayeredModel_LoadA(LayeredModel *model, int heap)
 CLEAN_AS(func_020548cc, LayeredModel_LoadA)
 
 /* func_0205490c: LayeredModel_ApplyNodeB for layer A (func_02005740). */
-void LayeredModel_ApplyNodeA(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_ApplyNodeA(LayeredModel *model, G3dRenderState *state)
 {
-    if (NodeHook_IsSkipped(model, &state->state)) {
+    if (NodeHook_IsSkipped(model, state)) {
         return;
     }
-    if (LayeredModel_HasNodeA(model, state->state.command[1])) {
+    if (LayeredModel_HasNodeA(model, state->command[1])) {
         LayeredModel_BlendNodeA(model, state);
     } else {
-        AnimatedModel_BlendNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
+        AnimatedModel_BlendNode((AnimatedModel *) model, state);
     }
 }
 CLEAN_AS(func_0205490c, LayeredModel_ApplyNodeA)
 
 /* func_02054944: LayeredModel_BlendNodeB for layer A. */
-void LayeredModel_BlendNodeA(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_BlendNodeA(LayeredModel *model, G3dRenderState *state)
 {
     zero_translation(state);
     if (model->ramp_a.rate != 0) {
-        JointBlend_Apply((JointBlend *) &model->ramp_a, (AnimatedModelNodeState *) state);
+        JointBlend_Apply((JointBlend *) &model->ramp_a, state);
     }
 }
 CLEAN_AS(func_02054944, LayeredModel_BlendNodeA)
 
 /* func_02054988: LayeredModel_PrepareNodeB for layer A (func_020058b4). */
-void LayeredModel_PrepareNodeA(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_PrepareNodeA(LayeredModel *model, G3dRenderState *state)
 {
-    if (NodeHook_IsSkipped(model, &state->state)) {
+    if (NodeHook_IsSkipped(model, state)) {
         return;
     }
-    if (LayeredModel_HasNodeA(model, state->state.command[1])) {
+    if (LayeredModel_HasNodeA(model, state->command[1])) {
         AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->anim_a);
         LayeredModel_RecordNodeA(model, state);
     } else {
         AnimatedModel_UseJointAnim((AnimatedModel *) model, (AnimatedModelAnim *) model->base_anim);
-        AnimatedModel_RecordNode((AnimatedModel *) model, (AnimatedModelNodeState *) state);
+        AnimatedModel_RecordNode((AnimatedModel *) model, state);
     }
 }
 CLEAN_AS(func_02054988, LayeredModel_PrepareNodeA)
 
 /* func_020549d8: LayeredModel_RecordNodeB for layer A. */
-void LayeredModel_RecordNodeA(LayeredModel *model, LayeredModelNodeState *state)
+void LayeredModel_RecordNodeA(LayeredModel *model, G3dRenderState *state)
 {
     if (model->ramp_a.rate != 0) {
-        JointBlend_RecordPose((JointBlend *) &model->ramp_a, (AnimatedModelNodeState *) state);
+        JointBlend_RecordPose((JointBlend *) &model->ramp_a, state);
     }
 }
 CLEAN_AS(func_020549d8, LayeredModel_RecordNodeA)

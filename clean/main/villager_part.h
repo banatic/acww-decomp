@@ -56,7 +56,7 @@ void VillagerPart_MarkType18(VillagerPart *part);
 int VillagerPart_SetType18(VillagerPart *part);
 void VillagerPart_SetSecondAgain(VillagerPart *part);
 void VillagerPart_SetThirdPick(VillagerPart *part);
-int VillagerPart_NoteLetter(VillagerPart *part, MailLetter *letter);
+int VillagerPart_NoteLetter(VillagerPart *part, Letter *letter);
 void VillagerPart_CurrentMarkSecondPick(void);
 void VillagerPart_MarkSecondPick(VillagerPart *part);
 void VillagerPart_SetSecondPick(VillagerPart *part);

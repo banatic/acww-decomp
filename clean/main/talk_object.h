@@ -32,6 +32,7 @@
 #include "player_id.h"
 #include "small_texts.h"
 #include "talk_answers.h"
+#include "talk_box.h"
 #include "talk_page.h"
 #include "talk_receiver.h"
 #include "talk_tags.h"
@@ -68,7 +69,7 @@ typedef struct TalkObject {
     s32 mode;         /* 0x0014: set by the scene commands; 4 keeps the talk for more messages */
     u8 choices_asked; /* 0x0018: the choices open when the walk stops (TalkObject_OpenChoices) */
     u8 pad_19[3];
-    u8 window[0x80];   /* 0x001c: the message window */
+    TalkBox window;    /* 0x001c: the message window */
     s32 window_offset; /* 0x009c: its offset in the slide, the height it is shaken about */
     u16 shake_angle;   /* 0x00a0: a quarter turn more each frame of the shake */
     u16 pad_a2;

@@ -14,10 +14,6 @@ static_assert(offsetof(AnimatedModel, frames) == 0x9c, "AnimatedModel frames");
 static_assert(offsetof(AnimatedModel, anim) == 0xb4, "AnimatedModel anim");
 static_assert(offsetof(AnimatedModel, ramp) == 0xb8, "AnimatedModel ramp");
 static_assert(sizeof(AnimatedModel) == 0xf4, "AnimatedModel size");
-static_assert(offsetof(AnimatedModelJoint, rotation) == 0x28, "AnimatedModelJoint rotation");
-static_assert(offsetof(AnimatedModelJoint, translation) == 0x4c, "AnimatedModelJoint translation");
-static_assert(offsetof(AnimatedModelNodeState, joint) == 0xb4, "AnimatedModelNodeState joint");
-static_assert(offsetof(AnimatedModelNodeState, node_info) == 0xd4, "AnimatedModelNodeState node_info");
 
 /* The vtables: the animated model's and its frame control part's; the blended model's and its
  * frame control and Ramp parts'; the frame control's own. */
@@ -32,8 +28,8 @@ extern const u8 data_020dd184[];
 extern const u8 data_020dd030[];
 
 extern void NNS_G3dAnmObjInit(AnimatedModelAnim *anim, const u8 *file, u8 *model, void *texture);
-extern void NNS_G3dRenderObjAddAnmObj(ModelRenderObject *render, AnimatedModelAnim *anim);
-extern void NNS_G3dRenderObjRemoveAnmObj(ModelRenderObject *render, AnimatedModelAnim *anim);
+extern void NNS_G3dRenderObjAddAnmObj(G3dRenderObject *render, AnimatedModelAnim *anim);
+extern void NNS_G3dRenderObjRemoveAnmObj(G3dRenderObject *render, AnimatedModelAnim *anim);
 extern void MTX_Identity33_(Mtx33 *mtx);
 
 static u16 read_u16(const u8 *p)
@@ -75,9 +71,9 @@ void AnimatedModel_Update(AnimatedModel *model)
 CLEAN_AS(func_02054cdc, AnimatedModel_Update)
 
 /* func_02054cf4: the node callback after a node (AnimatedModel_BlendNode). */
-void AnimatedModel_AfterNode(AnimatedModel *model, AnimatedModelNodeState *state)
+void AnimatedModel_AfterNode(AnimatedModel *model, G3dRenderState *state)
 {
-    if (!NodeHook_IsSkipped(model, &state->state)) {
+    if (!NodeHook_IsSkipped(model, state)) {
         AnimatedModel_BlendNode(model, state);
     }
 }
@@ -86,15 +82,15 @@ CLEAN_AS(func_02054cf4, AnimatedModel_AfterNode)
 /* func_02054d14: after a node: the parts of its transform flagged as not written are written
  * (a translation of 0, an identity rotation), then, while a blend runs, the node is blended
  * from the pose recorded before it. */
-void AnimatedModel_BlendNode(AnimatedModel *model, AnimatedModelNodeState *state)
+void AnimatedModel_BlendNode(AnimatedModel *model, G3dRenderState *state)
 {
-    AnimatedModelJoint *joint = state->joint;
-    if (joint->flags & ANIMATED_MODEL_JOINT_TRANSLATION_ZERO) {
+    G3dJointResult *joint = state->joint;
+    if (joint->flags & G3D_JOINT_TRANSLATION_ZERO) {
         joint->translation.x = 0;
         joint->translation.y = 0;
         joint->translation.z = 0;
     }
-    if (joint->flags & ANIMATED_MODEL_JOINT_ROTATION_IDENTITY) {
+    if (joint->flags & G3D_JOINT_ROTATION_IDENTITY) {
         MTX_Identity33_(&joint->rotation);
     }
     if (model->ramp.rate != 0) {
@@ -104,16 +100,16 @@ void AnimatedModel_BlendNode(AnimatedModel *model, AnimatedModelNodeState *state
 CLEAN_AS(func_02054d14, AnimatedModel_BlendNode)
 
 /* func_02054d60: the node callback before a node (AnimatedModel_RecordNode). */
-void AnimatedModel_BeforeNode(AnimatedModel *model, AnimatedModelNodeState *state)
+void AnimatedModel_BeforeNode(AnimatedModel *model, G3dRenderState *state)
 {
-    if (!NodeHook_IsSkipped(model, &state->state)) {
+    if (!NodeHook_IsSkipped(model, state)) {
         AnimatedModel_RecordNode(model, state);
     }
 }
 CLEAN_AS(func_02054d60, AnimatedModel_BeforeNode)
 
 /* func_02054d80: while a blend runs, the node's pose before it is recorded. */
-void AnimatedModel_RecordNode(AnimatedModel *model, AnimatedModelNodeState *state)
+void AnimatedModel_RecordNode(AnimatedModel *model, G3dRenderState *state)
 {
     if (model->ramp.rate != 0) {
         JointBlend_RecordPose((JointBlend *) &model->ramp, state);
@@ -203,10 +199,10 @@ CLEAN_AS(func_02054ecc, AnimatedModel_AnimFile)
  * `scale` when it is not NULL, else leaving out the parts flagged as not written), then the
  * matrix saved.
  * QUIRK: the first parameter is not used. */
-void AnimatedModel_ApplyNodeMatrix(void *unused, AnimatedModelNodeState *state, const Vec3 *scale)
+void AnimatedModel_ApplyNodeMatrix(void *unused, G3dRenderState *state, const Vec3 *scale)
 {
     (void) unused;
-    const u8 *command = state->state.command;
+    const u8 *command = state->command;
     u32 flags = command[0] & ANIMATED_MODEL_NODE_FLAGS;
     if (flags == ANIMATED_MODEL_NODE_RESTORE) {
         ModelMatrix_Load(command[4]);
@@ -214,16 +210,16 @@ void AnimatedModel_ApplyNodeMatrix(void *unused, AnimatedModelNodeState *state, 
         ModelMatrix_Load(command[5]);
     }
 
-    AnimatedModelJoint *joint = state->joint;
+    G3dJointResult *joint = state->joint;
     if (scale != NULL) {
         ModelMatrix_ApplyScaledTransform(&joint->rotation, &joint->translation, scale);
     } else {
         u32 written = joint->flags;
-        if (written & ANIMATED_MODEL_JOINT_ROTATION_IDENTITY) {
-            if (!(written & ANIMATED_MODEL_JOINT_TRANSLATION_ZERO)) {
+        if (written & G3D_JOINT_ROTATION_IDENTITY) {
+            if (!(written & G3D_JOINT_TRANSLATION_ZERO)) {
                 ModelMatrix_ApplyTranslation(&joint->translation);
             }
-        } else if (written & ANIMATED_MODEL_JOINT_TRANSLATION_ZERO) {
+        } else if (written & G3D_JOINT_TRANSLATION_ZERO) {
             ModelMatrix_ApplyRotation(&joint->rotation);
         } else {
             ModelMatrix_ApplyTransform(&joint->rotation, &joint->translation);
@@ -231,7 +227,7 @@ void AnimatedModel_ApplyNodeMatrix(void *unused, AnimatedModelNodeState *state, 
     }
 
     if (flags == ANIMATED_MODEL_NODE_STORE || flags == ANIMATED_MODEL_NODE_RESTORE_STORE) {
-        ModelMatrix_Save(state->state.command[4]);
+        ModelMatrix_Save(state->command[4]);
     }
 }
 CLEAN_AS(func_02054ed4, AnimatedModel_ApplyNodeMatrix)
@@ -247,17 +243,17 @@ static const u8 *rest_translation(const u8 *node_info, u32 node)
 
 /* func_02054f68: the animation's translation of the node replaced by the model's own, from
  * node 2 on; node 1 (with a `height`) is moved up by its own height less `height`. */
-void AnimatedModel_RestoreNodeTranslation(AnimatedModelNodeState *state, fx32 height)
+void AnimatedModel_RestoreNodeTranslation(G3dRenderState *state, fx32 height)
 {
-    u32 node = state->state.command[1];
+    u32 node = state->command[1];
     if (node >= 2) {
         const u8 *rest = rest_translation(state->node_info, node);
-        AnimatedModelJoint *joint = state->joint;
+        G3dJointResult *joint = state->joint;
         joint->translation.x = (fx32) read_u32(rest);
         joint->translation.y = (fx32) read_u32(rest + 4);
         joint->translation.z = (fx32) read_u32(rest + 8);
     } else if (node == 1 && height != 0) {
-        AnimatedModelJoint *joint = state->joint;
+        G3dJointResult *joint = state->joint;
         const u8 *rest = rest_translation(state->node_info, node);
         joint->translation.y = (fx32) ((u32) joint->translation.y + read_u32(rest + 4) - (u32) height);
     }
@@ -272,7 +268,7 @@ void AnimatedModel_DetachAnim(AnimatedModel *model)
     if (anim == NULL) {
         return;
     }
-    ModelRenderObject *render = &model->object.render;
+    G3dRenderObject *render = &model->object.render;
     if (render->joint_anims == anim) {
         NNS_G3dRenderObjRemoveAnmObj(render, render->joint_anims);
         model->anim = NULL;

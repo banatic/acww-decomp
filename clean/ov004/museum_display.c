@@ -15,13 +15,7 @@
 #include "main/c_library.h"
 
 static_assert(offsetof(MuseumDisplay, nodes) == 0x290, "nodes");
-static_assert(offsetof(MuseumDisplayHookState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(MuseumDisplayHookState, hook_timings) == 0x8c, "hook timings");
-static_assert(offsetof(MuseumDisplayHookState, visible) == 0xb8, "visible");
 static_assert(sizeof(MuseumDisplayKind) == 0x10, "MuseumDisplayKind size");
-
-#define G3D_COMMAND_NODE 2 /* NitroSystem's NNS_G3D_SBC_NODE */
-#define G3D_TIMING_B 2     /* NNS_G3D_SBC_CALLBACK_TIMING_B */
 
 /* The class's vtable. */
 extern const u8 data_ov004_02255200[];
@@ -33,8 +27,8 @@ extern const char data_ov004_02255268[];
 extern MuseumRecord data_021f38f8;
 extern Heap *data_021c9b24;
 
-extern void func_ov004_0222f304(MuseumDisplayHookState *state); /* the node hook */
-extern void func_ov004_0222f2f4(MuseumDisplayHookState *state); /* sets it */
+extern void func_ov004_0222f304(G3dRenderState *state); /* the node hook */
+extern void func_ov004_0222f2f4(G3dRenderState *state); /* sets it */
 
 /* The RMO family's base class (rmo_object.h). */
 
@@ -78,7 +72,7 @@ CLEAN_AS(func_ov004_0222f1b4, MuseumDisplay_FindNodes)
 
 /* func_ov004_0222f234 (from the node hook): the node is visible when it is drawn; that, too,
  * is the result. */
-int MuseumDisplay_SetNodeVisibility(MuseumDisplay *self, int node, MuseumDisplayHookState *state)
+int MuseumDisplay_SetNodeVisibility(MuseumDisplay *self, int node, G3dRenderState *state)
 {
     int shown = MuseumDisplay_ShowsNode(self, node);
     *state->visible = (u32) shown;
@@ -152,21 +146,13 @@ CLEAN_AS(func_ov004_0222f2dc, MuseumDisplay_Construct)
 
 /* func_ov004_0222f2f4 (run before each draw): the nodes' hook (the game's MuseumDisplay_NodeHook)
  * set, run after each node's visibility is decided. */
-void MuseumDisplay_SetModelHooks(MuseumDisplayHookState *state)
+void MuseumDisplay_SetModelHooks(G3dRenderState *state)
 {
     state->hooks[G3D_COMMAND_NODE] = (u32) (uintptr_t) func_ov004_0222f304;
     state->hook_timings[G3D_COMMAND_NODE] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov004_0222f2f4, MuseumDisplay_SetModelHooks)
 
-/* The model being drawn (NitroSystem's NNSG3dRenderObj): its user word is the display case,
- * set by ModelObject_SetInitHook in MuseumDisplay_Start. */
-typedef struct MuseumDisplayRenderObject {
-    u8 unk_00[0x2c];
-    MuseumDisplay *user; /* 0x2c */
-} MuseumDisplayRenderObject;
-
-static_assert(offsetof(MuseumDisplayHookState, render_object) == 0x04, "render object");
 static_assert(sizeof(MuseumDisplay) == 0x294, "the size MuseumDisplay_Create allocates");
 
 /* The cases of data_ov004_022478a8: the paintings, then the insects. */
@@ -181,9 +167,9 @@ extern const MuseumDisplayKind data_ov004_022478a8[MUSEUM_DISPLAY_KINDS];
 /* func_ov004_0222f304 (the node hook MuseumDisplay_SetModelHooks sets): shows the node being
  * drawn (the command's byte 1) when it is one of the case's, else hides it; nothing for a
  * model without a case. */
-void MuseumDisplay_NodeHook(MuseumDisplayHookState *state)
+void MuseumDisplay_NodeHook(G3dRenderState *state)
 {
-    MuseumDisplay *self = ((const MuseumDisplayRenderObject *) state->render_object)->user;
+    MuseumDisplay *self = state->object->user;
     if (self != NULL) {
         MuseumDisplay_SetNodeVisibility(self, state->command[1], state);
     }

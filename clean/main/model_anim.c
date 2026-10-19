@@ -19,8 +19,8 @@ extern const u8 data_020dd148[];
  * `kind` for `model` takes. */
 extern u32 NNS_G3dAnmObjCalcSizeRequired__autoload_2_021055f8(const void *kind, const u8 *model);
 extern void NNS_G3dAnmObjInit(AnimatedModelAnim *anim, const u8 *file, u8 *model, void *texture);
-extern void NNS_G3dRenderObjAddAnmObj(ModelRenderObject *render, AnimatedModelAnim *anim);
-extern void NNS_G3dRenderObjRemoveAnmObj(ModelRenderObject *render, AnimatedModelAnim *anim);
+extern void NNS_G3dRenderObjAddAnmObj(G3dRenderObject *render, AnimatedModelAnim *anim);
+extern void NNS_G3dRenderObjRemoveAnmObj(G3dRenderObject *render, AnimatedModelAnim *anim);
 
 /* The current heap. */
 extern Heap *data_021fbe94;
@@ -42,14 +42,14 @@ static void construct_frame_ctrl(FrameCtrl *ctrl)
 }
 
 /* func_020563cc: the animation taken off `render`. */
-void ModelAnim_Detach(ModelAnim *anim, ModelRenderObject *render)
+void ModelAnim_Detach(ModelAnim *anim, G3dRenderObject *render)
 {
     NNS_G3dRenderObjRemoveAnmObj(render, anim->anim);
 }
 CLEAN_AS(func_020563cc, ModelAnim_Detach)
 
 /* func_020563dc: the animation put on `render`. */
-void ModelAnim_Attach(ModelAnim *anim, ModelRenderObject *render)
+void ModelAnim_Attach(ModelAnim *anim, G3dRenderObject *render)
 {
     NNS_G3dRenderObjAddAnmObj(render, anim->anim);
 }
@@ -57,7 +57,7 @@ CLEAN_AS(func_020563dc, ModelAnim_Attach)
 
 /* func_020563ec: the animation taken off `render`, started again from `file` with `texture`
  * (ModelAnim_Init) and put back on. */
-void ModelAnim_RestartTextured(ModelAnim *anim, ModelRenderObject *render, const u8 *file, void *texture, u8 flags, fx32 speed,
+void ModelAnim_RestartTextured(ModelAnim *anim, G3dRenderObject *render, const u8 *file, void *texture, u8 flags, fx32 speed,
                                u16 start)
 {
     ModelAnim_Detach(anim, render);
@@ -75,7 +75,7 @@ CLEAN_AS(func_02056424, ModelAnim_StartTextured)
 
 /* func_02056440: the animation taken off `render`, started again from `file` without a texture
  * and put back on. */
-void ModelAnim_Restart(ModelAnim *anim, ModelRenderObject *render, const u8 *file, int flags, fx32 speed, u16 start)
+void ModelAnim_Restart(ModelAnim *anim, G3dRenderObject *render, const u8 *file, int flags, fx32 speed, u16 start)
 {
     ModelAnim_Detach(anim, render);
     ModelAnim_Init(anim, file, NULL, flags, speed, start);

@@ -310,7 +310,7 @@ void PublicBox_ShowDoneLabel(PublicBox *self, int lit)
     TextLabel *label = PublicBox_NextLabel(self);
     TextLabel_OpenStyledBox2(label, PUBLIC_BOX_LABEL_STYLE, PUBLIC_BOX_LABEL_TILE, PUBLIC_BOX_LABEL_CELLS, (u8) colour,
                              PUBLIC_BOX_LABEL_COLOUR_39, 0);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) PUBLIC_BOX_LABEL_MESSAGE);
+    TextLabel_LoadMenuMessage(label, (char) PUBLIC_BOX_LABEL_MESSAGE);
     TextLabel_Show(label, 1, 1);
 }
 CLEAN_AS(func_ov110_0229c4f8, PublicBox_ShowDoneLabel)

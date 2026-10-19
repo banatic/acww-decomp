@@ -473,8 +473,6 @@ static_assert(offsetof(Sequence4, effect_a) == 0x2e4, "effect a");
 static_assert(sizeof(Sequence4) == 0x2e8, "the size Sequence4_New allocates");
 static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(SceneActor, message) == 0x10a, "message");
-static_assert(offsetof(AnimatedModelNodeState, joint) == 0xb4, "joint");
-static_assert(offsetof(AnimatedModelJoint, translation) == 0x4c, "translation");
 
 #define SEQUENCE4_STATES 17
 #define SEQUENCE4_RECEIVER_OFFSET 0xec
@@ -826,7 +824,7 @@ CLEAN_AS(func_ov068_02272d60, Sequence4_ReceiverSlot6c)
 
 /* func_ov068_02272d64 (vtable slot 0x60, a joint of its model being described): at joint 0 the
  * effect point becomes its position moved by the joint's translation. */
-void Sequence4_PlaceEffectPoint(Sequence4 *actor, int node, const AnimatedModelNodeState *state)
+void Sequence4_PlaceEffectPoint(Sequence4 *actor, int node, const G3dRenderState *state)
 {
     if (node != 0) {
         return;

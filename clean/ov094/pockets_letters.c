@@ -558,7 +558,7 @@ Letter *PocketsLetters_LetterAt(PocketsLetters *letters, int place)
     PlayerPockets *pockets = PlayerRecord_Pockets(PlayerRecords_Current());
 
     if (in_group(place, 0, POCKETS_LETTERS_POCKETS)) {
-        return (Letter *) (void *) PlayerPockets_Letter(pockets, place);
+        return PlayerPockets_Letter(pockets, place);
     }
     if (in_group(place, POCKETS_LETTERS_PAGE_FIRST, POCKETS_LETTERS_PAGE)) {
         return &letters->letters[place - POCKETS_LETTERS_PAGE_FIRST];
@@ -661,29 +661,29 @@ TextLabel *PocketsLetters_SetPopupText(PocketsLetters *letters, Popup *popup, Le
     if (tag == POCKETS_LETTERS_TAG_DELIVERED) {
         Letter_SenderNameText(letter, &texts.name);
         MessageReader_SetPart(1, (int) (uintptr_t) &texts.name);
-        TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.label, POCKETS_LETTERS_MESSAGE_FROM);
+        TextLabel_LoadMenuMessage(&texts.label, POCKETS_LETTERS_MESSAGE_FROM);
     } else if (tag == 0) {
         Letter_SenderNameText(letter, &texts.name);
         MessageReader_SetPart(1, (int) (uintptr_t) &texts.name);
         if (state == LETTER_STATE_BOTTLE_WRITTEN) {
-            TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.label, POCKETS_LETTERS_MESSAGE_FROM);
+            TextLabel_LoadMenuMessage(&texts.label, POCKETS_LETTERS_MESSAGE_FROM);
         } else {
-            TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.label, POCKETS_LETTERS_MESSAGE_FROM_TAG_0);
+            TextLabel_LoadMenuMessage(&texts.label, POCKETS_LETTERS_MESSAGE_FROM_TAG_0);
         }
     } else {
-        TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.label, (char) data_ov094_0229bdec[tag]);
+        TextLabel_LoadMenuMessage(&texts.label, (char) data_ov094_0229bdec[tag]);
     }
     TextString_CopyBytes((TextObject *) (void *) &texts.from, (TextObject *) (void *) &texts.label);
     if (Letter_HasNoAddressee(letter)) {
         TextLabel_Construct(&texts.no_addressee);
-        TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.no_addressee, POCKETS_LETTERS_MESSAGE_NO_ADDRESSEE);
+        TextLabel_LoadMenuMessage(&texts.no_addressee, POCKETS_LETTERS_MESSAGE_NO_ADDRESSEE);
         MessageReader_SetPart(0, (int) (uintptr_t) &texts.no_addressee);
         TextLabel_Destruct(&texts.no_addressee);
     } else {
         Letter_AddresseeNameText(letter, &texts.name);
         MessageReader_SetPart(0, (int) (uintptr_t) &texts.name);
     }
-    TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.label, POCKETS_LETTERS_MESSAGE_TO);
+    TextLabel_LoadMenuMessage(&texts.label, POCKETS_LETTERS_MESSAGE_TO);
     TextString_CopyBytes((TextObject *) (void *) &texts.to, (TextObject *) (void *) &texts.label);
     switch (state) {
         case LETTER_STATE_WRITTEN:

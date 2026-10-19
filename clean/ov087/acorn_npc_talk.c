@@ -161,7 +161,7 @@ static int act_write_fortune(u8 *record)
     if (CurrentPockets_FreeLetterIndex() == -1) {
         return ACORN_NPC_LINE_NO_LETTER;
     }
-    Letter *letter = (Letter *) (void *) CurrentPockets_FreeLetter();
+    Letter *letter = CurrentPockets_FreeLetter();
     if (letter == NULL) {
         return ACORN_NPC_LINE_NO_LETTER;
     }

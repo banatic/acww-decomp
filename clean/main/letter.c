@@ -855,7 +855,7 @@ void *LetterParty_Name(LetterParty *party, u16 *name)
             PlayerIdWideText_CopyOut(&wide, name, LETTER_NAME_CHARS);
             break;
         case LETTER_PARTY_NONE:
-            TextLabel_LoadMenuMessage((int) (uintptr_t) &label, LETTER_MESSAGE_NO_ONE);
+            TextLabel_LoadMenuMessage(&label, LETTER_MESSAGE_NO_ONE);
             TextLabel_CopyWide(&label, name);
             break;
         default:

@@ -32,10 +32,6 @@ static_assert(offsetof(CheckInGate, boxes) == 0x358, "boxes");
 static_assert(offsetof(CheckInGate, door_on) == 0x490, "door on");
 static_assert(offsetof(CheckInGate, door_offset) == 0x494, "door offset");
 static_assert(sizeof(CheckInGate) == 0x498, "the size CheckInGate_Create allocates");
-static_assert(offsetof(CheckInGateHookState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(CheckInGateHookState, hook_timings) == 0x8c, "hook timings");
-static_assert(offsetof(CheckInGateHookState, material) == 0xb0, "material result");
-static_assert(offsetof(CheckInGateMaterialResult, polygon_attr) == 0x0c, "polygon attr");
 
 #define CHECK_IN_GATE_ONE 0x1000 /* normal speed, and 1.0, in 20.12 fixed point */
 #define CHECK_IN_GATE_LOOP 0
@@ -96,10 +92,6 @@ static_assert(offsetof(CheckInGateMaterialResult, polygon_attr) == 0x0c, "polygo
 #define CHECK_IN_GATE_ALPHA_MASK 0x001f0000u
 #define CHECK_IN_GATE_DIFFUSE_MASK 0x7fffu
 #define CHECK_IN_GATE_RENDER_FLAG_8 0x100u
-
-/* The model command with the hook, and when it runs (room_object_methods.h). */
-#define CHECK_IN_GATE_G3D_MATERIAL 4
-#define CHECK_IN_GATE_G3D_AFTER 2
 
 /* The vtable slot that enters a state (CheckInGate_SetState). */
 #define CHECK_IN_GATE_SLOT_SET_STATE 0x60
@@ -163,8 +155,8 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void __register_global_object(void *object, void *destruct, void *record);
 
 /* The hooks are the game's functions: their addresses go into the model and the render state. */
-extern void func_ov004_0222da90(CheckInGateHookState *state);
-extern void func_ov004_0222daa0(CheckInGateHookState *state);
+extern void func_ov004_0222da90(G3dRenderState *state);
+extern void func_ov004_0222daa0(G3dRenderState *state);
 extern void func_020012dc(void *object); /* TrivialObject_Destruct */
 
 static AnimatedModel *CheckInGate_body(CheckInGate *self)
@@ -189,7 +181,7 @@ static void CheckInGate_play(CheckInGate *self, int index, int flags)
 {
     AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, index), flags, CHECK_IN_GATE_ONE, 0,
                         0);
-    ModelRenderObject *render = ModelObject_RenderObject(&self->base.body.object);
+    G3dRenderObject *render = ModelObject_RenderObject(&self->base.body.object);
     const u8 *material_anim = RmoModel_MaterialAnim(&self->base.body_model, index);
     ModelAnim_Restart(&self->material_anim, render, material_anim, flags, CHECK_IN_GATE_ONE, 0);
 }
@@ -379,7 +371,7 @@ static s32 CheckInGate_blend(s32 from, s32 to, fx32 t)
  * QUIRK: a channel is truncated to 8 bits, not 5, before it is shifted into place, so one over
  * 31 runs into the next (the table's never are); the colour is truncated to 16 bits and its
  * bit 15 still reaches the result's word. */
-void CheckInGate_MaterialHook(CheckInGate *self, int material, CheckInGateHookState *state)
+void CheckInGate_MaterialHook(CheckInGate *self, int material, G3dRenderState *state)
 {
     Time now;
     Calendar_Now(&now);
@@ -672,18 +664,18 @@ CLEAN_AS(func_ov004_0222da48, CheckInGate_Construct)
 
 /* func_ov004_0222da90 (the model's init hook, given by ModelObject_SetInitHook): the material
  * hook, run after each material's command. */
-void CheckInGate_SetModelHooks(CheckInGateHookState *state)
+void CheckInGate_SetModelHooks(G3dRenderState *state)
 {
-    state->hooks[CHECK_IN_GATE_G3D_MATERIAL] = (u32) (uintptr_t) func_ov004_0222daa0;
-    state->hook_timings[CHECK_IN_GATE_G3D_MATERIAL] = CHECK_IN_GATE_G3D_AFTER;
+    state->hooks[G3D_COMMAND_MATERIAL] = (u32) (uintptr_t) func_ov004_0222daa0;
+    state->hook_timings[G3D_COMMAND_MATERIAL] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov004_0222da90, CheckInGate_SetModelHooks)
 
 /* func_ov004_0222daa0: a material's hook: CheckInGate_MaterialHook of the model's object with
  * the material (byte 1 of the command); nothing without an object. */
-void CheckInGate_RunMaterialHook(CheckInGateHookState *state)
+void CheckInGate_RunMaterialHook(G3dRenderState *state)
 {
-    CheckInGate *gate = state->render_object->user;
+    CheckInGate *gate = state->object->user;
     if (gate != NULL) {
         CheckInGate_MaterialHook(gate, state->command[1], state);
     }

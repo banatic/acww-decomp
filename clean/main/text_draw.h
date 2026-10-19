@@ -1,11 +1,11 @@
 /* Drawing the text boxes: a box's text, rendered glyph by glyph in a font (text_font.h), into
  * graphics tiles of VRAM or of a buffer in RAM.
  *
- * A box (0x7c bytes; the base class TextBoxBase of text_box.h, seen here with the fields its
- * drawing uses) is `cells` 8-pixel tiles wide and `rows` tiles high. Its text is drawn one strip
- * of 8 pixel rows at a time (TextDraw_Draw): the strip is cleared to the background colour in
- * the 32-tile buffer data_021c8344 (4 bits per pixel), the derived class's layout (vtable slot
- * 2) calls TextDraw_DrawChar for each character, and the strip is sent to its destination
+ * A box (TextDrawBox, 0x7c bytes, class data_020dcf28: its constructors are in text_box.h) is
+ * `cells` 8-pixel tiles wide and `rows` tiles high. Its text is drawn one strip of 8 pixel rows
+ * at a time (TextDraw_Draw): the strip is cleared to the background colour in the 32-tile buffer
+ * data_021c8344 (4 bits per pixel), the derived class's layout (vtable slot 2) calls
+ * TextDraw_DrawChar for each character, and the strip is sent to its destination
  * (TextDraw_UploadStrip): the tiles of BG0-BG3 or of the objects on the main screen, the sub
  * screen or both (through GX_Load...Char, from `first_tile` on), or a buffer in RAM.
  *

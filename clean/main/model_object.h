@@ -10,40 +10,25 @@
 #define CLEAN_MAIN_MODEL_OBJECT_H
 
 #include "autoload_2/heap.h"
+#include "main/g3d_render.h"
 #include "types.h"
 
 /* The name of a holder that shares its model with no other ("NULL"). */
 #define MODEL_OBJECT_NO_NAME 0x4e554c4c
 
-/* ModelRenderObject.flags (NitroSystem's NNS_G3D_RENDEROBJ_FLAG_RECORD): the joints'
+/* G3dRenderObject.flags (NitroSystem's NNS_G3D_RENDEROBJ_FLAG_RECORD): the joints'
  * animation results are computed and kept in joint_results on the next draw. */
 #define MODEL_RENDER_RECORD 0x01
 
-struct AnimatedModelAnim;
-
-/* NitroSystem's NNSG3dRenderObj. */
-typedef struct ModelRenderObject {
-    u32 flags;                                  /* 0x00: MODEL_RENDER_* */
-    u8 *model;                                  /* 0x04: the model (NNSG3dResMdl) */
-    struct AnimatedModelAnim *material_anims;   /* 0x08 */
-    void *blend_materials;                      /* 0x0c */
-    struct AnimatedModelAnim *joint_anims;      /* 0x10: a list through AnimatedModelAnim.next */
-    void *blend_joints;                         /* 0x14 */
-    struct AnimatedModelAnim *visibility_anims; /* 0x18 */
-    u8 unk_1c[0x18];                            /* 0x1c */
-    void *joint_results;                        /* 0x34: kept joint results, one per node */
-    u8 unk_38[0x1c];                            /* 0x38 */
-} ModelRenderObject;
-
 typedef struct ModelObject {
-    const void *vtable;       /* 0x00 */
-    u8 unk_04[4];             /* 0x04 */
-    ModelRenderObject render; /* 0x08 */
-    u8 *model;                /* 0x5c: the model resource drawn (NNSG3dResMdl) */
-    void *texture;            /* 0x60: the texture resource kept with it, by func_02055f40 */
-    u8 unk_64[0x30];          /* 0x64 */
-    void *vram;               /* 0x94: where its textures go in VRAM (func_02056064; NULL: anywhere) */
-    u32 name;                 /* 0x98: the name it is shared by, MODEL_OBJECT_NO_NAME for none */
+    const void *vtable;     /* 0x00 */
+    u8 unk_04[4];           /* 0x04 */
+    G3dRenderObject render; /* 0x08 */
+    u8 *model;              /* 0x5c: the model resource drawn (NNSG3dResMdl) */
+    void *texture;          /* 0x60: the texture resource kept with it, by func_02055f40 */
+    u8 unk_64[0x30];        /* 0x64 */
+    void *vram;             /* 0x94: where its textures go in VRAM (func_02056064; NULL: anywhere) */
+    u32 name;               /* 0x98: the name it is shared by, MODEL_OBJECT_NO_NAME for none */
 } ModelObject;
 
 typedef struct ModelSet {
@@ -87,7 +72,7 @@ void ModelObject_SetAlpha(ModelObject *object, int alpha);
 void ModelObject_SetPolygonId(ModelObject *object, int id);
 void ModelObject_SetInitHook(ModelObject *object, void *hook, void *user);
 void ModelObject_SetNodeCallback(ModelObject *object, void *callback, int command, int timing, void *user, void *at);
-ModelRenderObject *ModelObject_RenderObject(ModelObject *object);
+G3dRenderObject *ModelObject_RenderObject(ModelObject *object);
 void ModelObject_DrawRender(ModelObject *object);
 void ModelObject_SetBaseTransform(ModelObject *object, const Vec3 *scale);
 void ModelObject_DrawWithoutCommands(ModelObject *object);

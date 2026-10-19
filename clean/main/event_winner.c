@@ -672,12 +672,12 @@ void EventWinner_SendLetters(EventWinner *record)
     MessageText46 size_text;
     MessageText46 unused_text_a;
     MessageText46 unused_text_b;
-    MailLetter letter;
+    Letter letter;
     EventWinnerName name;
     MessageText46_Construct(&size_text);
     MessageText46_Construct(&unused_text_a);
     MessageText46_Construct(&unused_text_b);
-    Letter_Construct((Letter *) &letter);
+    Letter_Construct(&letter);
     PlayerIdText_Construct((PlayerIdText *) &name);
 
     u8 message = 0;
@@ -723,7 +723,7 @@ void EventWinner_SendLetters(EventWinner *record)
             PlayerId_NameToText(PlayerRecord_Player(player), (TextBase *) &name);
             MailText_SetPartText(EVENT_WINNER_SLOT_NAME, &name);
         }
-        Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e1fcc[kind], data_020e1f64, data_020e1f5c,
+        Letter_WriteSpecialToPlayer(&letter, &message, data_020e1fcc[kind], data_020e1f64, data_020e1f5c,
                                     PlayerRecord_Player(player));
         DesignCreator *who = PlayerRecord_Player(player);
         if (event_winner_same_player(&record->player, who) || kind == EVENT_WINNER_KIND_GARDENS) {
@@ -733,7 +733,7 @@ void EventWinner_SendLetters(EventWinner *record)
             } else if (kind == EVENT_WINNER_KIND_GARDENS) {
                 prize = EVENT_WINNER_PRIZE_GARDENS;
             }
-            Letter_SetItem((Letter *) &letter, prize, 1);
+            Letter_SetItem(&letter, prize, 1);
         }
         Mail_Post(&letter);
     }
@@ -741,7 +741,7 @@ void EventWinner_SendLetters(EventWinner *record)
     EventWinner_PostNotice(record);
     EventWinner_Reset(record);
     PlayerIdText_Destruct((PlayerIdText *) &name);
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
     MessageText46_Destruct(&unused_text_b);
     MessageText46_Destruct(&unused_text_a);
     MessageText46_Destruct(&size_text);

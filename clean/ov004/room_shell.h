@@ -17,12 +17,13 @@
 #ifndef CLEAN_OV004_ROOM_SHELL_H
 #define CLEAN_OV004_ROOM_SHELL_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/process.h"
 #include "autoload_2/vector.h"
 #include "main/collision_box.h"
 #include "main/material_bind.h"
 #include "main/sound_emitter.h"
-#include "room_object_methods.h" /* NodeHookState */
+#include "room_object_methods.h" /* G3dRenderState */
 #include "room_shell_members.h"
 #include "room_surface.h"
 #include "types.h"
@@ -52,47 +53,13 @@ typedef struct RoomShell {
     u8 pad_3541[3];
 } RoomShell;
 
-/* NitroSystem's material animation result (NNSG3dMatAnmResult) as far as the material hook
- * writes it. */
-typedef struct RoomShellMaterialResult {
-    u32 flags; /* ROOM_SHELL_TEXTURE_MATRIX_... */
-    u8 unk_04[0x0c];
-    u32 texture_image; /* 0x10: the texture's TEXIMAGE_PARAM */
-    u32 unk_14;
-    fx32 scale_s; /* 0x18 */
-    fx32 scale_t; /* 0x1c */
-    u8 unk_20[0x0c];
-    u16 width;      /* 0x2c */
-    u16 height;     /* 0x2e */
-    fx32 magnify_w; /* 0x30 */
-    fx32 magnify_h; /* 0x34 */
-} RoomShellMaterialResult;
-
-/* NitroSystem's joint animation result (NNSG3dJntAnmResult) up to its translation. */
-typedef struct RoomShellJoint {
-    u8 unk_00[0x4c];
-    Vec3 translation; /* 0x4c */
-} RoomShellJoint;
-
-/* The state of the model being drawn (NitroSystem's NNSG3dRS), as the hooks of vtable slots
- * 0x48 and 0x4c read it. */
-typedef struct RoomShellRenderState {
-    u8 unk_00[8];
-    u32 flags; /* 0x08 */
-    u8 unk_0c[0xa4];
-    RoomShellMaterialResult *material; /* 0xb0 */
-    RoomShellJoint *joint;             /* 0xb4 */
-    u8 unk_b8[0x20];
-    const u8 *materials; /* 0xd8: the model's materials (NNSG3dResMat) */
-} RoomShellRenderState;
-
-void RoomShell_SetModelHooks(NodeHookState *state);
-int RoomShell_RunNodeDescHook(NodeHookState *state);
-int RoomShell_RunMaterialHook(NodeHookState *state);
+void RoomShell_SetModelHooks(G3dRenderState *state);
+int RoomShell_RunNodeDescHook(G3dRenderState *state);
+int RoomShell_RunMaterialHook(G3dRenderState *state);
 short RoomShell_WdDiffuse(RoomShell *self);
 void RoomShell_SpawnBoards(RoomShell *self);
-void RoomShell_MaterialHook(RoomShell *self, u32 material, RoomShellRenderState *state);
-void RoomShell_NodeDescHook(RoomShell *self, int node, RoomShellRenderState *state);
+void RoomShell_MaterialHook(RoomShell *self, u32 material, G3dRenderState *state);
+void RoomShell_NodeDescHook(RoomShell *self, int node, G3dRenderState *state);
 u16 *RoomShell_WallpaperCode(void);
 u16 *RoomShell_WallpaperCode2(void);
 u16 *RoomShell_CarpetCode(void);

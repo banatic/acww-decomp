@@ -180,7 +180,7 @@ void TuneEditor_OpenLabels(TuneEditor *self)
     TuneEditor_OpenNoteLabel(self, TUNE_EDITOR_MESSAGE_NOTE_14, 14);
 
     TextLabel *label = TuneEditor_NextLabel(self);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) TUNE_EDITOR_MESSAGE_TITLE);
+    TextLabel_LoadMenuMessage(label, (char) TUNE_EDITOR_MESSAGE_TITLE);
     TextLabel_OpenStyledBox2(label, 8, data_ov143_0229afc0[0].attr2 & 0x3ff, 8, 15, 0, 0);
     TextLabel_Show(label, 1, 0);
 }
@@ -192,7 +192,7 @@ void TuneEditor_OpenNoteLabel(TuneEditor *self, int message, int note)
 {
     const OamEntry *objs = data_ov143_0229b178[note];
     TextLabel *label = TuneEditor_NextLabel(self);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_OpenStyledBox2(label, 8, objs[0].attr2 & 0x3ff, 3, 15, 0, 0);
     TextLabel_Show(label, 1, 0);
 }

@@ -213,7 +213,7 @@ u16 CurrentPockets_DrawFor156B(void)
 CLEAN_AS(func_0209a19c, CurrentPockets_DrawFor156B)
 
 /* func_0209a1d0: the first empty letter place, or NULL. */
-MailLetter *CurrentPockets_FreeLetter(void)
+Letter *CurrentPockets_FreeLetter(void)
 {
     return PlayerPockets_FreeLetter(PlayerRecord_Pockets(PlayerRecords_Current()));
 }

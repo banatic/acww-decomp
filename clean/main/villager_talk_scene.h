@@ -26,7 +26,7 @@
 #include "villager_talk.h"
 
 int VillagerTalkScene_Stand(VillagerTalk *talk);
-MailLetter *VillagerTalkScene_LetterToSend(PlayerPockets *pockets);
+Letter *VillagerTalkScene_LetterToSend(PlayerPockets *pockets);
 int VillagerTalkScene_PocketOfItem(PlayerPockets *pockets, u16 *item);
 void VillagerTalkScene_RunMusic(VillagerTalk *talk);
 void VillagerTalkScene_AskMood4(VillagerTalk *talk, int length);

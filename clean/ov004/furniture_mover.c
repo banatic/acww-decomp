@@ -23,17 +23,11 @@ static_assert(offsetof(FurnitureMover, model.frames) == 0xc8, "the model's frame
 #define ANIM_MODE_ONCE 1  /* stop at the end */
 #define ONE 0x1000        /* normal speed, 20.12 fixed point */
 #define ROOT_NODE 0
-#define NODE_COMMAND 6     /* NitroSystem's NNS_G3D_SBC_NODEDESC */
-#define NODE_HOOK_TIMING 2 /* the hook's timing for that command */
 
 /* NitroSystem's archive (NNSFndArchive), mounted on the stack while the files are taken out. */
 typedef struct FurnitureMoverArchive {
     u32 words[26];
 } FurnitureMoverArchive;
-
-static_assert(offsetof(FurnitureMoverRenderState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(FurnitureMoverRenderState, hook_timings) == 0x8c, "hook timings");
-static_assert(offsetof(FurnitureMoverRenderState, joint) == 0xb4, "joint");
 
 /* The heap files are loaded on. */
 extern Heap *data_021fbe94;
@@ -357,16 +351,16 @@ CLEAN_AS(func_ov004_0223b18c, FurnitureMover_Construct)
 
 /* func_ov004_0223b1b8 (the model's hook before it is drawn): the node commands' hook set to
  * FurnitureMover_RootNodeHook (FurnitureMover_RootNodeHook). */
-void FurnitureMover_SetModelHooks(FurnitureMoverRenderState *state)
+void FurnitureMover_SetModelHooks(G3dRenderState *state)
 {
-    state->hooks[NODE_COMMAND] = (u32) (uintptr_t) func_ov004_0223b1c8;
-    state->hook_timings[NODE_COMMAND] = NODE_HOOK_TIMING;
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_ov004_0223b1c8;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov004_0223b1b8, FurnitureMover_SetModelHooks)
 
 /* func_ov004_0223b1c8 (a node's hook): at the root node, the mover's position is the node's
  * translation through the mover's transform (copied into data_021fbe48). */
-void FurnitureMover_RootNodeHook(FurnitureMoverRenderState *state)
+void FurnitureMover_RootNodeHook(G3dRenderState *state)
 {
     if (state == NULL || state->command[1] != ROOT_NODE) {
         return;

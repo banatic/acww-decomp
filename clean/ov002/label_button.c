@@ -151,7 +151,7 @@ int LabelButton_SetMessage(LabelButton *button, int message)
     TextLabel label;
 
     TextLabel_Construct(&label);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) &label, (char) message);
+    TextLabel_LoadMenuMessage(&label, (char) message);
     LabelSprite_SetText((LabelSprite *) (void *) button, (TextBase *) (void *) &label);
     return (int) (uintptr_t) TextLabel_Destruct(&label);
 }

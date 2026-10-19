@@ -54,7 +54,7 @@ void MessageWindow_Open(MessageWindow *window, int message, int x, int y)
     ((WindowPlaceMethod *) virtual_slot(window, SLOT_SET_PLACE))(window, x, y);
     SlidingWindow_SetPlace((SlidingWindow *) (void *) window, 0, 0);
     TextLabel_Construct(&label);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) &label, (char) message);
+    TextLabel_LoadMenuMessage(&label, (char) message);
     SlidingWindow_SetText((SlidingWindow *) (void *) window, (struct TextObject *) (void *) &label);
     SlidingWindow_SetInstant((SlidingWindow *) (void *) window);
     SlidingWindow_RequestOpen((SlidingWindow *) (void *) window);

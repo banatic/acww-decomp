@@ -57,22 +57,22 @@ CLEAN_AS(func_0203f5e0, WfcDelivery_ConstructNotice)
  * that player and put in the player's mailbox; once it is in, the number is kept and 1. */
 int WfcDelivery_DeliverLetter(WfcLetter *letter)
 {
-    MailLetter copy;
+    Letter copy;
     int delivered = 0;
 
-    Letter_Construct((Letter *) &copy);
+    Letter_Construct(&copy);
     u8 *record = PlayerRecords_Current();
     if (letter->number != PlayerRecord_MailMark(record)) {
-        Letter_Assign((Letter *) &copy, (const Letter *) &letter->letter);
+        Letter_Assign(&copy, &letter->letter);
         int player = PlayerRecord_Number(record);
-        Letter_AddressToPlayer((Letter *) &copy, player);
-        Letter_MarkDelivered((Letter *) &copy);
+        Letter_AddressToPlayer(&copy, player);
+        Letter_MarkDelivered(&copy);
         if (Mail_PutInMailbox(&copy, player, 0) != 0) {
             PlayerRecord_SetMailMark(record, letter->number);
             delivered = 1;
         }
     }
-    Letter_Destruct((Letter *) &copy);
+    Letter_Destruct(&copy);
     return delivered;
 }
 CLEAN_AS(func_0203f5e4, WfcDelivery_DeliverLetter)
@@ -87,7 +87,7 @@ CLEAN_AS(func_0203f658, WfcDelivery_LetterHmac)
 /* func_0203f664: the letter's destructor; its address. */
 int WfcDelivery_DestructLetter(WfcLetter *letter)
 {
-    Letter_Destruct((Letter *) &letter->letter);
+    Letter_Destruct(&letter->letter);
     return (int) (uintptr_t) letter;
 }
 CLEAN_AS(func_0203f664, WfcDelivery_DestructLetter)
@@ -95,7 +95,7 @@ CLEAN_AS(func_0203f664, WfcDelivery_DestructLetter)
 /* func_0203f674: the letter's constructor; its address. */
 int WfcDelivery_ConstructLetter(WfcLetter *letter)
 {
-    Letter_Construct((Letter *) &letter->letter);
+    Letter_Construct(&letter->letter);
     return (int) (uintptr_t) letter;
 }
 CLEAN_AS(func_0203f674, WfcDelivery_ConstructLetter)

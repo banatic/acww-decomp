@@ -18,6 +18,7 @@
 #define CLEAN_MAIN_MAIL_H
 
 #include "autoload_2/process.h"
+#include "main/letter.h"
 #include "types.h"
 
 #define MAIL_LETTER_SIZE 0x100
@@ -28,13 +29,9 @@
 #define MAIL_NOT_THAT_KIND (-1) /* the letter is not addressed to that kind of addressee */
 #define MAIL_NOT_HERE (-2)      /* it is, but not to one of this town */
 
-typedef struct MailLetter {
-    u8 bytes[MAIL_LETTER_SIZE];
-} MailLetter;
-
 /* A player's mailbox (0xa04 bytes each, at data_021ef8ec). */
 typedef struct MailBox {
-    MailLetter letters[MAILBOX_LETTERS];
+    Letter letters[MAILBOX_LETTERS];
     u8 unk_a00[4];
 } MailBox;
 
@@ -48,7 +45,7 @@ typedef struct MailTime {
 
 /* The letters waiting at the post office (data_021f20fc). */
 typedef struct MailPostOffice {
-    MailLetter letters[MAILBOX_LETTERS];
+    Letter letters[MAILBOX_LETTERS];
     MailTime last_check; /* 0xa00: when Mail_DeliverDue last looked, to the hour */
     u16 flags;           /* 0xa04: MAIL_CHECKED */
 } MailPostOffice;
@@ -70,15 +67,15 @@ void Mail_DeliverDue(void);
 int Mail_PostOfficeHasRoom(void);
 int Mail_HasDatedLetter(void *player);
 void Mail_DoNothing(void);
-int Mail_CountLetters(MailLetter *letters, int count);
-int Mail_Compact(MailLetter *letters, int count);
-int Mail_FindVillagerAddressee(MailLetter *letter);
-int Mail_FindPlayerAddressee(MailLetter *letter);
-int Mail_HasAddressee(MailLetter *letter);
-int Mail_HoldAtPostOffice(MailLetter *letter, int advance);
-void Mail_GiveToVillager(MailLetter *letter);
-int Mail_Post(MailLetter *letter);
-int Mail_PutInMailbox(MailLetter *letter, int player, int advance);
+int Mail_CountLetters(Letter *letters, int count);
+int Mail_Compact(Letter *letters, int count);
+int Mail_FindVillagerAddressee(Letter *letter);
+int Mail_FindPlayerAddressee(Letter *letter);
+int Mail_HasAddressee(Letter *letter);
+int Mail_HoldAtPostOffice(Letter *letter, int advance);
+void Mail_GiveToVillager(Letter *letter);
+int Mail_Post(Letter *letter);
+int Mail_PutInMailbox(Letter *letter, int player, int advance);
 int Mail_IsMailboxFull(int player);
 int Mail_DeliverHeld(void);
 
@@ -96,13 +93,13 @@ MailTask *MailTask_New(void);
 
 /* The letter a player's record keeps for a date (at 0x1d3c), posted once the date has come. */
 typedef struct MailDatedLetter {
-    MailLetter letter;
+    Letter letter;
     MailTime date;
 } MailDatedLetter;
 
 void MailDated_Init(MailDatedLetter *dated);
 MailTime *MailDated_Date(MailDatedLetter *dated);
-MailLetter *MailDated_Letter(MailDatedLetter *dated);
+Letter *MailDated_Letter(MailDatedLetter *dated);
 MailDatedLetter *MailDated_Destruct(MailDatedLetter *dated);
 MailDatedLetter *MailDated_Construct(MailDatedLetter *dated);
 
@@ -110,7 +107,7 @@ int MailPostOffice_TestFlags(MailPostOffice *office, u32 flags);
 void MailPostOffice_SetFlags(MailPostOffice *office, u16 flags);
 MailTime *MailPostOffice_LastCheck(MailPostOffice *office);
 void MailPostOffice_Init(MailPostOffice *office);
-MailLetter *MailPostOffice_Letter(MailPostOffice *office, int index);
+Letter *MailPostOffice_Letter(MailPostOffice *office, int index);
 MailPostOffice *MailPostOffice_Destruct(MailPostOffice *office);
 MailPostOffice *MailPostOffice_Construct(MailPostOffice *office);
 
@@ -118,7 +115,7 @@ MailPostOffice *MailPostOffice_Construct(MailPostOffice *office);
 void MailBox_SetMark(MailBox *box, u32 mark);
 u16 MailBox_Mark(MailBox *box);
 void MailBox_Init(MailBox *box);
-MailLetter *MailBox_Letter(MailBox *box, int index);
+Letter *MailBox_Letter(MailBox *box, int index);
 MailBox *MailBox_Destruct(MailBox *box);
 MailBox *MailBox_Construct(MailBox *box);
 

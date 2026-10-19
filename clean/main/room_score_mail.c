@@ -61,17 +61,16 @@ int RoomScoreMail_SendWelcome(void)
         PlayerRecord_TestFlag(record, ROOM_SCORE_MAIL_RECORD_MEMBER) != 0) {
         return 0;
     }
-    MailLetter letter;
-    Letter_Construct((Letter *) &letter);
+    Letter letter;
+    Letter_Construct(&letter);
     u8 message = ROOM_SCORE_MAIL_WELCOME;
-    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020dd3d8, data_020dd388, data_020dd398,
-                                PlayerRecord_Player(record));
+    Letter_WriteSpecialToPlayer(&letter, &message, data_020dd3d8, data_020dd388, data_020dd398, PlayerRecord_Player(record));
     if (Mail_Post(&letter) != 0) {
         PlayerRecord_SetFlag(record, ROOM_SCORE_MAIL_RECORD_MEMBER);
-        Letter_Destruct((Letter *) &letter);
+        Letter_Destruct(&letter);
         return 1;
     }
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
     return 0;
 }
 CLEAN_AS(func_0205a2f0, RoomScoreMail_SendWelcome)
@@ -119,18 +118,17 @@ void RoomScoreMail_SendPrize(RoomScoreRoom *room, int total)
             PlayerRecord_TestFlag(record, ROOM_SCORE_MAIL_RECORD_MEMBER) == 0 || Mail_IsMailboxFull(i) != 0) {
             continue;
         }
-        MailLetter letter;
-        Letter_Construct((Letter *) &letter);
+        Letter letter;
+        Letter_Construct(&letter);
         u8 text = (u8) message;
-        Letter_WriteSpecialToPlayer((Letter *) &letter, &text, data_020dd3d8, data_020dd38c, data_020dd394,
-                                    PlayerRecord_Player(record));
-        Letter_SetItem((Letter *) &letter, item, 1);
+        Letter_WriteSpecialToPlayer(&letter, &text, data_020dd3d8, data_020dd38c, data_020dd394, PlayerRecord_Player(record));
+        Letter_SetItem(&letter, item, 1);
         if (Mail_Post(&letter) != 0 || Mail_HoldAtPostOffice(&letter, 0) != 0) {
             StateBlock_SetFlag(data_021dc7a8, flag);
-            Letter_Destruct((Letter *) &letter);
+            Letter_Destruct(&letter);
             return;
         }
-        Letter_Destruct((Letter *) &letter);
+        Letter_Destruct(&letter);
     }
 }
 CLEAN_AS(func_0205a41c, RoomScoreMail_SendPrize)
@@ -169,13 +167,12 @@ int RoomScoreMail_SendJudgement(RoomScoreRoom *room, int message, int total, int
             PlayerRecord_TestFlag(record, ROOM_SCORE_MAIL_RECORD_MEMBER) == 0) {
             continue;
         }
-        MailLetter letter;
-        Letter_Construct((Letter *) &letter);
+        Letter letter;
+        Letter_Construct(&letter);
         u8 text = (u8) message;
-        Letter_WriteSpecialToPlayer((Letter *) &letter, &text, data_020dd3d8, data_020dd390, data_020dd384,
-                                    PlayerRecord_Player(record));
+        Letter_WriteSpecialToPlayer(&letter, &text, data_020dd3d8, data_020dd390, data_020dd384, PlayerRecord_Player(record));
         Mail_Post(&letter);
-        Letter_Destruct((Letter *) &letter);
+        Letter_Destruct(&letter);
     }
     NameText_Destruct((NameText *) &group_name);
     MessageText46_Destruct(&total_text);

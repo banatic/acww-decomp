@@ -277,7 +277,7 @@ int MuseumRecord_SendLetters(void *record)
         Letter_WriteSpecialToPlayer(&letter, (const u8 *) &unk, data_020e17b4, (const u8 *) &data_020e17ac,
                                     (const u8 *) &data_020e17b0, PlayerRecord_Player(player));
         Letter_SetItem(&letter, LETTER_ITEM, 1);
-        if (Mail_Post((MailLetter *) &letter) != 0) {
+        if (Mail_Post(&letter) != 0) {
             posted = 1;
         }
         Letter_Destruct(&letter);

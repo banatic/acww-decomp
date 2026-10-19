@@ -44,7 +44,7 @@ extern const s16 FX_SinCosTable_[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* The model hook handed to the game (aquarium_fish.c). */
-extern void func_ov004_0223653c(AquariumFishHookState *state);
+extern void func_ov004_0223653c(G3dRenderState *state);
 
 #define ONE 0x1000
 

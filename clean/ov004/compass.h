@@ -11,6 +11,7 @@
 #ifndef CLEAN_OV004_COMPASS_H
 #define CLEAN_OV004_COMPASS_H
 
+#include "main/g3d_render.h"
 #include "types.h"
 
 #include "room_object.h"
@@ -26,7 +27,7 @@ typedef struct Compass {
     int deflection; /* degrees, 20.12 fixed point */
 } Compass;
 
-void Compass_NeedleHook(Compass *compass, int node, NodeHookState *state);
+void Compass_NeedleHook(Compass *compass, int node, G3dRenderState *state);
 void Compass_OnTurnFrame(Compass *compass, int down);
 Compass *Compass_OnTurnStart(Compass *compass);
 int Compass_Vfunc0C(void);

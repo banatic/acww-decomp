@@ -143,12 +143,12 @@ int VillagerTalkScene_Stand(VillagerTalk *talk)
 CLEAN_AS(func_0202d730, VillagerTalkScene_Stand)
 
 /* func_0202d754: the first of the pockets' ten letters whose state is 7 or 8, or 0. */
-MailLetter *VillagerTalkScene_LetterToSend(PlayerPockets *pockets)
+Letter *VillagerTalkScene_LetterToSend(PlayerPockets *pockets)
 {
     u8 *letter = (u8 *) PlayerPockets_Letter(pockets, 0);
     for (int i = 0; i < VILLAGER_TALK_SCENE_LETTERS; i++, letter += VILLAGER_TALK_SCENE_LETTER_SIZE) {
-        if ((u8) (Letter_State((const Letter *) ((MailLetter *) (void *) letter)) - VILLAGER_TALK_SCENE_LETTER_TO_SEND) <= 1) {
-            return (MailLetter *) (void *) letter;
+        if ((u8) (Letter_State((const Letter *) ((Letter *) (void *) letter)) - VILLAGER_TALK_SCENE_LETTER_TO_SEND) <= 1) {
+            return (Letter *) (void *) letter;
         }
     }
     return NULL;

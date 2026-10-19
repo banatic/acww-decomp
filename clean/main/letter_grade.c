@@ -36,9 +36,8 @@ extern const char data_020df1f8[];
 extern const TextVtable data_020df1e8; /* LetterGradeWide */
 extern const TextVtable data_020df1d0; /* LetterGradeMessage */
 
-/* The letter's body: 64 characters at 0x58. */
-#define LETTER_GRADE_BODY 0x58
-#define LETTER_GRADE_BODY_LENGTH 0x40
+/* The letter's body's length in characters. */
+#define LETTER_GRADE_BODY_LENGTH LETTER_BODY_CHARS
 
 /* The characters that end a keyword shorter than three, or a word. */
 #define LETTER_GRADE_IDEOGRAPHIC_SPACE 0x3000
@@ -47,9 +46,9 @@ extern const TextVtable data_020df1d0; /* LetterGradeMessage */
 /* The characters before a 0, at most `max`. */
 extern int func_02051c8c_unk(u16 *text, int max);
 
-static u16 *letter_grade_body(MailLetter *letter)
+static u16 *letter_grade_body(Letter *letter)
 {
-    return (u16 *) (void *) (letter->bytes + LETTER_GRADE_BODY);
+    return letter->body;
 }
 
 /* Whether a keyword's character ends it: a space of either width, or 0. */
@@ -110,7 +109,7 @@ int LetterGrade_IsSeparator(unsigned short character)
 CLEAN_AS(func_0206d780, LetterGrade_IsSeparator)
 
 /* func_0206d7a0: the characters of the letter's body before its 0. */
-int LetterGrade_BodyLength(MailLetter *letter)
+int LetterGrade_BodyLength(Letter *letter)
 {
     return func_02051c8c_unk(letter_grade_body(letter), LETTER_GRADE_BODY_LENGTH);
 }
@@ -119,7 +118,7 @@ CLEAN_AS(func_0206d7a0, LetterGrade_BodyLength)
 /* func_0206d7ac: the letter graded (LETTER_GRADE_*) by the words of its body (a copy of it, up
  * to its 0) and how many of them count as keywords; the keywords' use counts start again from
  * 0. */
-int LetterGrade_Grade(MailLetter *letter)
+int LetterGrade_Grade(Letter *letter)
 {
     u16 body[LETTER_GRADE_BODY_LENGTH];
     TextString_CopyChars(letter_grade_body(letter), body, LETTER_GRADE_BODY_LENGTH);

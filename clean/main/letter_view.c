@@ -25,11 +25,6 @@ static_assert(offsetof(LetterView, line_start) == 0x308, "view line starts");
 static_assert(offsetof(LetterView, end_line) == 0x31c, "view end line");
 static_assert(offsetof(LetterView, name_width) == 0x324, "view name width");
 static_assert(sizeof(LetterView) == 0x328, "view size");
-static_assert(offsetof(LetterViewLetter, greeting) == 0x44, "letter greeting");
-static_assert(offsetof(LetterViewLetter, body) == 0x58, "letter body");
-static_assert(offsetof(LetterViewLetter, signature) == 0xd8, "letter signature");
-static_assert(offsetof(LetterViewLetter, name_position) == 0xf8, "letter name position");
-static_assert(sizeof(LetterViewLetter) == 0x100, "letter size");
 
 extern const TextVtable data_020df258; /* the line's vtable */
 extern const TextVtable data_020df270; /* the wide text's vtable */
@@ -409,7 +404,7 @@ CLEAN_AS(func_0206e03c, LetterView_SetBody)
  * before its name position, the addressee's name, the rest of the greeting, then zeros. They are
  * also written to `out` when not NULL. The name is marked when it has characters.
  * REQUIRES: name_position <= 10 and name_position + name_length <= 40. */
-void LetterView_SetGreeting(LetterView *view, const LetterViewLetter *letter, u16 *out)
+void LetterView_SetGreeting(LetterView *view, const Letter *letter, u16 *out)
 {
     u16 own[LETTER_WIDE_CAPACITY];
     u16 *chars = out != NULL ? out : own;
@@ -418,17 +413,17 @@ void LetterView_SetGreeting(LetterView *view, const LetterViewLetter *letter, u1
     int from = 0;
 
     LetterLine_Clear(&view->greeting);
-    for (; i < letter->name_position; i++, from++) {
-        chars[i] = letter->greeting[from];
+    for (; i < letter->header_line; i++, from++) {
+        chars[i] = letter->header[from];
     }
     for (int k = 0; k < view->name_length; k++, i++) {
         chars[i] = view->name[k];
     }
     for (; i < LETTER_WIDE_CAPACITY; i++, from++) {
-        chars[i] = from < LETTER_GREETING_LENGTH ? letter->greeting[from] : 0;
+        chars[i] = from < LETTER_GREETING_LENGTH ? letter->header[from] : 0;
     }
     if (view->name_length > 0) {
-        LetterLine_SetNameMark(&view->greeting, letter->name_position, (u8) view->name_length);
+        LetterLine_SetNameMark(&view->greeting, letter->header_line, (u8) view->name_length);
     }
 
     wide_construct(&text);
@@ -439,10 +434,10 @@ void LetterView_SetGreeting(LetterView *view, const LetterViewLetter *letter, u1
 CLEAN_AS(func_0206e114, LetterView_SetGreeting)
 
 /* func_0206e1d8: the addressee's name taken from the letter, with its length and width. */
-void LetterView_SetName(LetterView *view, const LetterViewLetter *letter)
+void LetterView_SetName(LetterView *view, const Letter *letter)
 {
     TextString_ClearChars(view->name, LETTER_VIEW_NAME_LENGTH);
-    Letter_AddresseeName((Letter *) letter, view->name);
+    Letter_AddresseeName((Letter *) letter, view->name); /* which only reads it */
     view->name_length = func_02051c8c_unk(view->name, LETTER_VIEW_NAME_LENGTH);
     view->name_width = TextString_Width(view->name, LETTER_VIEW_NAME_LENGTH);
 }
@@ -457,12 +452,12 @@ CLEAN_AS(func_0206e224, LetterView_NameLength)
 
 /* func_0206e230: a letter shown for reading: its paper on `paper_layer` (priority 1), its text on
  * `text_layer` (at `priority`), both hidden while they are set up and scrolled to 0. */
-void LetterView_Show(LetterView *view, const LetterViewLetter *letter, int text_layer, int paper_layer, int priority)
+void LetterView_Show(LetterView *view, const Letter *letter, int text_layer, int paper_layer, int priority)
 {
     DisplayLayer_Hide((unsigned int) paper_layer);
     DisplayLayer_SetPriority(paper_layer, 1);
     DisplayLayer_SetBgControl((unsigned int) paper_layer, 0, 0, 0);
-    Paper_LoadBackground(Letter_Paper((const Letter *) letter), paper_layer);
+    Paper_LoadBackground(Letter_Paper(letter), paper_layer);
     DisplayLayer_SetScroll((unsigned int) paper_layer, 0, 0);
 
     DisplayLayer_Hide((unsigned int) text_layer);
@@ -471,7 +466,7 @@ void LetterView_Show(LetterView *view, const LetterViewLetter *letter, int text_
     LetterView_SetName(view, letter);
     LetterView_SetGreeting(view, letter, NULL);
     LetterView_SetBody(view, letter->body, 0);
-    LetterView_SetSignature(view, letter->signature);
+    LetterView_SetSignature(view, letter->footer);
     LetterView_LoadScreen(view, text_layer);
     LetterView_Redraw(view);
     DisplayLayer_SetScroll((unsigned int) text_layer, 0, 0);

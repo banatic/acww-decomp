@@ -1151,9 +1151,9 @@ static DualCellSprite *letter_write_button_cells(LetterWriteScene *self)
     return (DualCellSprite *) (void *) &self->scroll_button;
 }
 
-static const LetterViewLetter *letter_write_view_letter(LetterWriteScene *self)
+static const Letter *letter_write_view_letter(LetterWriteScene *self)
 {
-    return (const LetterViewLetter *) (const void *) self->letter;
+    return self->letter;
 }
 
 /* func_ov122_022a0054: the input by the pen, the pointer hidden. */
@@ -2483,7 +2483,7 @@ CLEAN_AS(func_ov122_022a18c4, LetterWrite_Release)
  * choice on background 3. Without an addressee, no header. */
 void LetterWrite_Setup(LetterWriteScene *self)
 {
-    self->letter = (Letter *) GroupParams_Pointer();
+    self->letter = GroupParams_Pointer();
     SoftKeyboard_Init(letter_write_keyboard(self), 1);
     LetterView_Init(&self->view, LAYER_SUB_BG0);
     LetterView_SetName(&self->view, letter_write_view_letter(self));
@@ -2588,7 +2588,7 @@ void LetterWrite_OpenChoice(LetterWriteScene *self)
     self->choice_page = 0;
     PagedChoice_LoadChoiceGraphics(letter_write_choice(self));
     LetterWrite_OpenChoicePage(self, 1);
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
 }
 CLEAN_AS(func_ov122_022a1a58, LetterWrite_OpenChoice)
 
@@ -2599,7 +2599,7 @@ int LetterWrite_KeyboardWipeIn(LetterWriteScene *self)
 {
     if (MenuScene_StepWipeBack(letter_write_scene(self), 0) != 0) {
         LetterWrite_Start(self);
-        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         LetterWrite_BeginInput(self);
     }
     MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
@@ -2656,7 +2656,7 @@ void LetterWrite_SlidePanelIn(LetterWriteScene *self)
         return;
     }
     self->unk_98 = 0;
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
     if (StateFlags_IsClear2()) {
         LetterWrite_BeginSub04(self);
     } else {
@@ -2718,7 +2718,7 @@ void LetterWrite_LetterWipeOut(LetterWriteScene *self)
         DisplayLayer_Hide(LAYER_SUB_BG0);
         DisplayLayer_SetScroll(LAYER_SUB_BG1, 0, 0);
         DisplayLayer_SetScroll(LAYER_SUB_BG0, 0, 0);
-        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_RUN);
+        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_DELETE);
     } else {
         MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, 0);
         MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, 0);
@@ -2744,7 +2744,7 @@ CLEAN_AS(func_ov122_022a1cc8, LetterWrite_StartLetterWipeOut)
 void LetterWrite_WipeIn(LetterWriteScene *self)
 {
     if (MenuScene_StepWipeBack(letter_write_scene(self), 0) != 0) {
-        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         LetterWrite_Start(self);
         LetterWrite_BeginInput(self);
     }
@@ -2789,7 +2789,7 @@ void LetterWrite_ExitMenu(LetterWriteScene *self)
     LetterWrite_ScrollTo(self, 0);
     LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_CURSOR_SHOWN);
     self->base.state = LETTER_WRITE_STATE_EXIT;
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_1);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATES);
     LetterWrite_HidePointer(self);
     LetterWrite_FilterTaboo(self);
 }
@@ -2809,7 +2809,7 @@ int LetterWrite_SwitchTab(LetterWriteScene *self, int tab)
     MenuTabs_SelectTab((MenuTabs *) (void *) parent, (u8) tab);
     GroupParams_SetC50((char) kept);
     self->base.state = LETTER_WRITE_STATE_TAB_SWITCH;
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_1);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATES);
     return 1;
 }
 CLEAN_AS(func_ov122_022a1e40, LetterWrite_SwitchTab)
@@ -3026,7 +3026,7 @@ int LetterWrite_Begin(LetterWriteScene *self)
 {
     LetterWrite_Setup(self);
     MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_START);
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_1);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATES);
     return 1;
 }
 CLEAN_AS(func_ov122_022a249c, LetterWrite_Begin)

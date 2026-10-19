@@ -36,8 +36,9 @@
 #ifndef CLEAN_OV068_SEQUENCE4_H
 #define CLEAN_OV068_SEQUENCE4_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/vector.h"
-#include "main/animated_model.h" /* AnimatedModelNodeState */
+#include "main/animated_model.h" /* G3dRenderState */
 #include "ov009/scene_actor.h"
 #include "types.h"
 
@@ -105,7 +106,7 @@ int Sequence4_YawToEffect(Sequence4 *actor);
 void Sequence4_EffectPointAhead(Vec3 *out, const Sequence4 *actor);
 void Sequence4_OnMessageEnd(void *actor);
 int Sequence4_ReceiverSlot6c(void *actor);
-void Sequence4_PlaceEffectPoint(Sequence4 *actor, int node, const AnimatedModelNodeState *state);
+void Sequence4_PlaceEffectPoint(Sequence4 *actor, int node, const G3dRenderState *state);
 int Sequence4_DrawsModel(const Sequence4 *actor);
 int Sequence4_ThirdAnimation(Sequence4 *actor);
 void Sequence4_EffectPoint(Vec3 *out, const Sequence4 *actor);

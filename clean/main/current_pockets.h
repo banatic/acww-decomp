@@ -28,7 +28,7 @@ void CurrentPockets_Set(u16 *item, int state, int slot);
 int CurrentPockets_Receive(u16 *item);
 void CurrentPockets_ReceiveAt(u16 *item, u32 slot);
 u16 CurrentPockets_DrawFor156B(void);
-MailLetter *CurrentPockets_FreeLetter(void);
+Letter *CurrentPockets_FreeLetter(void);
 int CurrentPockets_FreeLetterIndex(void);
 
 #endif

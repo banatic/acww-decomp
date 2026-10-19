@@ -78,7 +78,7 @@ void TalkReceiver_DropTalk(TalkReceiver *receiver)
 CLEAN_AS(func_0206684c, TalkReceiver_DropTalk)
 
 /* func_02066854: the talk showing the receiver's message. */
-void TalkReceiver_SetTalk(TalkReceiver *receiver, struct TalkFlowTalk *talk)
+void TalkReceiver_SetTalk(TalkReceiver *receiver, struct TalkObject *talk)
 {
     receiver->talk = talk;
 }
@@ -230,9 +230,9 @@ void TalkReceiver_NextSpeaker(TalkReceiver *receiver, TextBase *name, int style)
 {
     s32 state = receiver->talk->state;
     TalkReceiver_SetSpeakerText(receiver, name, style);
-    if (state != TALK_FLOW_CLOSED && state != TALK_FLOW_GONE) {
-        TalkObject_ColourNamePlate((TalkObject *) receiver->talk);
-        TalkVoice_TakeSpeakerMode((TalkVoice *) (void *) receiver->talk->last_chars);
+    if (state != TALK_OBJECT_CLOSED && state != TALK_OBJECT_GONE) {
+        TalkObject_ColourNamePlate(receiver->talk);
+        TalkVoice_TakeSpeakerMode(&receiver->talk->voice);
     }
 }
 CLEAN_AS(func_020668d8, TalkReceiver_NextSpeaker)

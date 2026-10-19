@@ -249,7 +249,7 @@ u8 *PlayerPockets_LetterDefaults(PlayerPockets *pockets)
 CLEAN_AS(func_02098ddc, PlayerPockets_LetterDefaults)
 
 /* func_02098de8: the first empty letter place, or NULL. */
-MailLetter *PlayerPockets_FreeLetter(PlayerPockets *pockets)
+Letter *PlayerPockets_FreeLetter(PlayerPockets *pockets)
 {
     int index = PlayerPockets_FreeLetterIndex(pockets);
     if (PlayerPockets_IsLetterIndex(index) == 1) {
@@ -262,9 +262,9 @@ CLEAN_AS(func_02098de8, PlayerPockets_FreeLetter)
 /* func_02098e10: the index of the first empty letter place, or -1. */
 int PlayerPockets_FreeLetterIndex(PlayerPockets *pockets)
 {
-    MailLetter *letter = PlayerPockets_Letter(pockets, 0);
+    Letter *letter = PlayerPockets_Letter(pockets, 0);
     for (int index = 0; index < PLAYER_POCKETS_LETTERS; index++, letter++) {
-        if (Letter_State((const Letter *) letter) == 0) {
+        if (Letter_State(letter) == 0) {
             return index;
         }
     }
@@ -273,7 +273,7 @@ int PlayerPockets_FreeLetterIndex(PlayerPockets *pockets)
 CLEAN_AS(func_02098e10, PlayerPockets_FreeLetterIndex)
 
 /* func_02098e44: letter place `index`; NULL outside 0-9. */
-MailLetter *PlayerPockets_Letter(PlayerPockets *pockets, int index)
+Letter *PlayerPockets_Letter(PlayerPockets *pockets, int index)
 {
     if (PlayerPockets_IsLetterIndex(index) == 1) {
         return &pockets->letters[index];
@@ -364,7 +364,7 @@ CLEAN_AS(func_02098f70, PlayerPockets_IsSlot)
 void PlayerPockets_Init(PlayerPockets *pockets)
 {
     for (int i = 0; i < PLAYER_POCKETS_LETTERS; i++) {
-        Letter_Clear((Letter *) &pockets->letters[i]);
+        Letter_Clear(&pockets->letters[i]);
     }
     LetterDefaults_Init((LetterDefaults *) (void *) pockets->letter_defaults);
     for (int slot = 0; slot < PLAYER_POCKETS_SLOTS; slot++) {

@@ -298,7 +298,6 @@ static_assert(offsetof(AquariumFish, flee_yaw) == 0x24c, "fish flee yaw");
 static_assert(offsetof(AquariumFish, levelling) == 0x24e, "fish levelling");
 static_assert(offsetof(AquariumFish, last_focus) == 0x252, "fish last focus");
 static_assert(offsetof(AquariumFish, unk_255) == 0x255, "fish class bytes");
-static_assert(offsetof(AquariumFishHookState, hook_timings) == 0x8c, "hook timings");
 
 /* The member functions of the modes; and those of the room shown (data_ov004_022593a0): a
  * plain fish's set-up and frame in each. */
@@ -310,14 +309,9 @@ extern u8 data_021f6c38;
 extern u8 data_021f6c34;
 
 /* The model hooks handed to the game. */
-extern void func_ov004_0223653c(AquariumFishHookState *state);
-extern void func_ov004_0223655c(AnimatedModelNodeState *state);
-extern void func_ov004_02236578(AnimatedModelNodeState *state);
-
-/* NitroSystem's node description command, and when its hook runs (timings A and B). */
-#define G3D_COMMAND_NODE_DESC 6
-#define G3D_TIMING_BEFORE 1
-#define G3D_TIMING_AFTER 2
+extern void func_ov004_0223653c(G3dRenderState *state);
+extern void func_ov004_0223655c(G3dRenderState *state);
+extern void func_ov004_02236578(G3dRenderState *state);
 
 #define QUARTER_TURN 0x4000
 #define HALF_TURN 0x8000
@@ -819,26 +813,24 @@ CLEAN_AS(func_ov004_02236464, AquariumFish_FindTap)
 /* func_ov004_0223653c (run before the model of a fish of three animations is drawn): its node
  * descriptions get the hook after them (the game's AquariumFish_NodeDescAfterHook).
  * QUIRK: the hook before them (AquariumFish_NodeDescBeforeHook) is set first and replaced at once. */
-void AquariumFish_SetModelHooks(AquariumFishHookState *state)
+void AquariumFish_SetModelHooks(G3dRenderState *state)
 {
     state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_ov004_02236578;
-    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_BEFORE;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_A;
     state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_ov004_0223655c;
-    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_AFTER;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov004_0223653c, AquariumFish_SetModelHooks)
 
 /* The fish a model's hooks run for: the render object's user pointer (at 0x2c, set by
  * ModelObject_SetInitHook). */
-static AquariumFish *AquariumFish_hooked(const AnimatedModelNodeState *state)
+static AquariumFish *AquariumFish_hooked(const G3dRenderState *state)
 {
-    AquariumFish *fish;
-    memcpy(&fish, (const u8 *) state->state.object + 0x2c, sizeof fish);
-    return fish;
+    return state->object->user;
 }
 
 /* func_ov004_0223655c: after a node's description, the fish's model's own hook. */
-void AquariumFish_NodeDescAfterHook(AnimatedModelNodeState *state)
+void AquariumFish_NodeDescAfterHook(G3dRenderState *state)
 {
     if (AquariumFish_hooked(state) != NULL) {
         AnimatedModel_AfterNode(&AquariumFish_hooked(state)->model, state);
@@ -847,7 +839,7 @@ void AquariumFish_NodeDescAfterHook(AnimatedModelNodeState *state)
 CLEAN_AS(func_ov004_0223655c, AquariumFish_NodeDescAfterHook)
 
 /* func_ov004_02236578: before a node's description, the fish's model's own hook. */
-void AquariumFish_NodeDescBeforeHook(AnimatedModelNodeState *state)
+void AquariumFish_NodeDescBeforeHook(G3dRenderState *state)
 {
     if (AquariumFish_hooked(state) != NULL) {
         AnimatedModel_BeforeNode(&AquariumFish_hooked(state)->model, state);

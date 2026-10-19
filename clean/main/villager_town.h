@@ -71,7 +71,7 @@ void VillagerTown_ClearMemoryFlags(VillagerTown *town);
 int VillagerTown_IsMarked(VillagerTown *town, const NpcId *npc);
 void VillagerTown_Mark(VillagerTown *town, const NpcId *npc);
 void VillagerTown_ClearMark(VillagerTown *town);
-int VillagerTown_GiveLetter(VillagerTown *town, MailLetter *letter);
+int VillagerTown_GiveLetter(VillagerTown *town, Letter *letter);
 int VillagerTown_AllRemember(VillagerTown *town, const void *player);
 void VillagerTown_SetDate404C(VillagerTown *town, const Date *date);
 int VillagerTown_IsFarFromDate404C(VillagerTown *town, const Date *date);

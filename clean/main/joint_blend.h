@@ -7,6 +7,7 @@
 #ifndef CLEAN_MAIN_JOINT_BLEND_H
 #define CLEAN_MAIN_JOINT_BLEND_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/vector.h"
 #include "main/animated_model.h"
 #include "types.h"
@@ -26,8 +27,8 @@ typedef struct JointBlend {
     fx32 rate;               /* 0x38: 0 when no blend runs */
 } JointBlend;
 
-void JointBlend_RecordPose(JointBlend *blend, AnimatedModelNodeState *state);
-void JointBlend_Apply(JointBlend *blend, AnimatedModelNodeState *state);
+void JointBlend_RecordPose(JointBlend *blend, G3dRenderState *state);
+void JointBlend_Apply(JointBlend *blend, G3dRenderState *state);
 void JointBlend_MixVec(const Vec3 *to, const Vec3 *from, Vec3 *out, fx32 weight);
 void JointBlend_MixAxes(const JointBlendAxes *to, const JointBlendAxes *from, JointBlendAxes *out, fx32 weight);
 void JointBlend_Normalize(Vec3 *v);

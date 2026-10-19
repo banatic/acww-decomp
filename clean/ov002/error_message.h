@@ -24,7 +24,7 @@ enum ErrorMessageStep {
 
 /* Its message receiver is a talk's receiver (main/talk_receiver.h: class data_020df008, 0x48
  * bytes, the message receiver of main/message_receiver.h at its start); the talk showing it
- * (TalkReceiver.talk) is a talk of main/talk_flow.h. */
+ * (TalkReceiver.talk) is a talk of main/talk_object.h. */
 typedef struct ErrorMessage {
     Popup popup;           /* 0x00 */
     TalkReceiver receiver; /* 0xd0: vtable data_020df008 */

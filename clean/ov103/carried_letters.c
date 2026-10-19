@@ -1477,8 +1477,7 @@ void CarriedLetters_ShowLetter(CarriedLetters *self)
 {
     Letter *letter = CarriedLetters_PlaceLetter(self, self->slot);
     Letter_AdvanceReceived(letter);
-    LetterView_Show(&self->view, (const LetterViewLetter *) (const void *) letter, CARRIED_LETTERS_TEXT_LAYER,
-                    CARRIED_LETTERS_PAPER_LAYER, 1);
+    LetterView_Show(&self->view, letter, CARRIED_LETTERS_TEXT_LAYER, CARRIED_LETTERS_PAPER_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(carried_scene(self), 3, 0, 0, CARRIED_LETTERS_WIPE_MARGIN);
     DisplayLayer_Show(CARRIED_LETTERS_TEXT_LAYER);
     MenuScene_ScrollWipe(carried_scene(self), CARRIED_LETTERS_TEXT_LAYER, 0, 0);

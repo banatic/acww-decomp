@@ -44,8 +44,8 @@ typedef struct LetterGradeWide {
 int LetterGrade_MatchesKeyword(unsigned short *word, int left, int keyword);
 int LetterGrade_UseKeyword(unsigned short *word, int left);
 int LetterGrade_IsSeparator(unsigned short character);
-int LetterGrade_BodyLength(MailLetter *letter);
-int LetterGrade_Grade(MailLetter *letter);
+int LetterGrade_BodyLength(Letter *letter);
+int LetterGrade_Grade(Letter *letter);
 void LetterGrade_LoadKeywords(void);
 int LetterGrade_LoadMessage(int text, int name, char message);
 

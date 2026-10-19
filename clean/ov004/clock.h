@@ -15,11 +15,12 @@
 #ifndef CLEAN_OV004_CLOCK_H
 #define CLEAN_OV004_CLOCK_H
 
+#include "main/g3d_render.h"
 #include "types.h"
 
 #include "main/calendar.h" /* Time */
 #include "room_object.h"
-#include "room_object_methods.h" /* NodeHookState */
+#include "room_object_methods.h" /* G3dRenderState */
 
 typedef struct Clock {
     RoomObject base;
@@ -33,7 +34,7 @@ typedef struct Clock {
 
 Clock *Clock_MarkNearestStriker(Clock *clock);
 Clock *Clock_MarkNearest(Clock *clock);
-void Clock_NodeDescAfterHook(Clock *clock, int node, NodeHookState *state);
+void Clock_NodeDescAfterHook(Clock *clock, int node, G3dRenderState *state);
 int Clock_Vfunc0C(void);
 int Clock_Update(Clock *clock);
 int Clock_Start(Clock *clock);

@@ -20,15 +20,15 @@ static_assert(offsetof(ErrorMessage, fatal) == 0x119, "error message");
 extern const char data_ov002_0220bea0[];
 
 /* The talks */
-extern TalkFlowTalk *func_020682e0(int index);                                     /* talk `index`, null when there are none */
-extern void func_02068340(TalkFlowTalk *talk, TalkReceiver *receiver);             /* the receiver it shows; links both */
-extern void func_02068320(TalkFlowTalk *talk);                                     /* unlinks its receiver, if any */
-extern void func_02068314(TalkFlowTalk *talk);                                     /* byte 0x1e98 = 1 */
-extern void func_02068308(TalkFlowTalk *talk);                                     /* byte 0x1e99 = 1 */
-extern void func_02068440(TalkFlowTalk *talk);                                     /* byte 0x1e93 = 1 */
-extern void func_02068434(TalkFlowTalk *talk);                                     /* byte 0x1e93 = 0 */
-extern void func_02068428(TalkFlowTalk *talk);                                     /* byte 0x1e92 = 1 */
-extern int func_02068484(TalkFlowTalk *talk, const u8 *message, const char *name); /* see ErrorMessage_EndTalk */
+extern TalkObject *func_020682e0(int index);                                     /* talk `index`, null when there are none */
+extern void func_02068340(TalkObject *talk, TalkReceiver *receiver);             /* the receiver it shows; links both */
+extern void func_02068320(TalkObject *talk);                                     /* unlinks its receiver, if any */
+extern void func_02068314(TalkObject *talk);                                     /* byte 0x1e98 = 1 */
+extern void func_02068308(TalkObject *talk);                                     /* byte 0x1e99 = 1 */
+extern void func_02068440(TalkObject *talk);                                     /* byte 0x1e93 = 1 */
+extern void func_02068434(TalkObject *talk);                                     /* byte 0x1e93 = 0 */
+extern void func_02068428(TalkObject *talk);                                     /* byte 0x1e92 = 1 */
+extern int func_02068484(TalkObject *talk, const u8 *message, const char *name); /* see ErrorMessage_EndTalk */
 /* The message number ErrorMessage_EndTalk gives func_02068484. */
 extern u8 data_021f43e8;
 
@@ -82,7 +82,7 @@ static void draw_popup(ErrorMessage *error)
 static void queue_window(ErrorMessage *error, TextLabel *label)
 {
     TextLabel_Construct(label);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, WINDOW_MESSAGE);
+    TextLabel_LoadMenuMessage(label, WINDOW_MESSAGE);
     func_0208aa48(&error->popup, label);
     func_0208aa60(&error->popup, 0, WINDOW_OFFSET_Y);
     Popup_Queue(&error->popup);
@@ -112,9 +112,9 @@ CLEAN_AS(func_ov002_0220b6b8, ErrorMessage_Dim)
  * REQUIRES: the receiver is linked to a talk (ErrorMessage_StartTalk ran). */
 int ErrorMessage_ReleaseTalkIfClosed(ErrorMessage *error)
 {
-    TalkFlowTalk *talk = error->receiver.talk;
+    TalkObject *talk = error->receiver.talk;
 
-    if (talk->state == TALK_FLOW_CLOSED) {
+    if (talk->state == TALK_OBJECT_CLOSED) {
         func_02068320(talk);
         return 1;
     }
@@ -127,7 +127,7 @@ CLEAN_AS(func_ov002_0220b6d0, ErrorMessage_ReleaseTalkIfClosed)
  * 0x1e92 and 0x1e93 are then set to 1 and 0. */
 void ErrorMessage_EndTalk(void)
 {
-    TalkFlowTalk *talk = func_020682e0(ERROR_TALK);
+    TalkObject *talk = func_020682e0(ERROR_TALK);
 
     func_02068484(talk, &data_021f43e8, NULL);
     func_02068428(talk);
@@ -140,7 +140,7 @@ CLEAN_AS(func_ov002_0220b6f4, ErrorMessage_EndTalk)
 int ErrorMessage_IsTalkUp(ErrorMessage *error)
 {
     (void) error;
-    return func_020682e0(ERROR_TALK)->state == TALK_FLOW_WAITING;
+    return func_020682e0(ERROR_TALK)->state == TALK_OBJECT_WAITING;
 }
 CLEAN_AS(func_ov002_0220b71c, ErrorMessage_IsTalkUp)
 
@@ -226,7 +226,7 @@ CLEAN_AS(func_ov002_0220b804, ErrorMessage_WaitUp)
  * too); a message that is not fatal darkens the sub screen now. */
 void ErrorMessage_StartTalk(ErrorMessage *error, const u8 *message, int flag)
 {
-    TalkFlowTalk *talk = func_020682e0(ERROR_TALK);
+    TalkObject *talk = func_020682e0(ERROR_TALK);
     TalkReceiver *receiver = &error->receiver;
 
     ((ReceiverMethod *) virtual_slot(receiver->base.vtable, SLOT_RESET))(receiver);
@@ -237,7 +237,7 @@ void ErrorMessage_StartTalk(ErrorMessage *error, const u8 *message, int flag)
     if (flag == 0) {
         func_02068308(talk);
     }
-    talk->next = TALK_OBJECT_OPENING;
+    talk->next_state = TALK_OBJECT_OPENING;
     func_02068440(talk);
     error->step = ERROR_MESSAGE_STARTING;
     if (error->fatal == 0) {

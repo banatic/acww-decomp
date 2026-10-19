@@ -15,10 +15,11 @@
 #ifndef CLEAN_OV004_ROOM_OBJECT_022524A0_H
 #define CLEAN_OV004_ROOM_OBJECT_022524A0_H
 
+#include "main/g3d_render.h"
 #include "types.h"
 
 #include "room_object.h"
-#include "room_object_methods.h" /* NodeHookState */
+#include "room_object_methods.h" /* G3dRenderState */
 
 typedef struct RoomObject022524a0 {
     RoomObject base;
@@ -38,7 +39,7 @@ void RoomObject022524a0_UpdateIdle(RoomObject022524a0 *object);
 int RoomObject022524a0_EnterIdle(RoomObject022524a0 *object);
 void RoomObject022524a0_UpdateState(RoomObject022524a0 *object);
 int RoomObject022524a0_EnterState(RoomObject022524a0 *object, unsigned int state, int value);
-void RoomObject022524a0_NodeGroundHook(RoomObject022524a0 *object, int node, NodeHookState *state);
+void RoomObject022524a0_NodeGroundHook(RoomObject022524a0 *object, int node, G3dRenderState *state);
 void RoomObject022524a0_OnVanish(RoomObject022524a0 *object);
 int RoomObject022524a0_Vfunc0C(RoomObject022524a0 *object);
 int RoomObject022524a0_Update(RoomObject022524a0 *object);

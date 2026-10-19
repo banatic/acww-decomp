@@ -827,7 +827,7 @@ CLEAN_AS(func_ov142_0229ac38, OrderCatalog_ShowNotOrderable)
 void OrderCatalog_ShowMessage(OrderCatalog *self, int message, int x, int y, u8 colour, int centred)
 {
     TextLabel *label = OrderCatalog_NextLabel(self);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_OpenStyledBox2(label, 6, x, y, colour, 4, 0);
     TextLabel_Show(label, centred, 0);
 }
@@ -837,7 +837,7 @@ CLEAN_AS(func_ov142_0229ac58, OrderCatalog_ShowMessage)
 void OrderCatalog_ShowPrice(OrderCatalog *self, int price)
 {
     TextLabel *label = OrderCatalog_NextLabel(self);
-    TextLabel_Compose((int) (uintptr_t) label, price, 8, 0, 0, 1);
+    TextLabel_Compose(label, price, 8, 0, 0, 1);
     TextLabel_OpenStyledBox2(label, 6, ORDER_CATALOG_PRICE_X, ORDER_CATALOG_PRICE_Y, 0xe, 4, 1);
     TextLabel_ShowRightAligned(label);
 }
@@ -849,12 +849,12 @@ void OrderCatalog_ShowCounts(OrderCatalog *self)
 {
     TextLabel *label = OrderCatalog_NextLabel(self);
     int count = OrderCatalog_Count(self);
-    TextLabel_Compose((int) (uintptr_t) label, count, 3, 0, 0, 0);
+    TextLabel_Compose(label, count, 3, 0, 0, 0);
     TextLabel_OpenStyledBox(label, 6, 0x156, 3, 0xe, 4, 0);
     TextLabel_ShowRightAligned(label);
     label = OrderCatalog_NextLabel(self);
     int listed = OrderCatalog_Listed(self);
-    TextLabel_Compose((int) (uintptr_t) label, listed, 3, 0, 0, 0);
+    TextLabel_Compose(label, listed, 3, 0, 0, 0);
     TextLabel_OpenStyledBox(label, 6, 0x15a, 3, 0xe, 4, 0);
     TextLabel_Show(label, 0, 0);
 }

@@ -314,7 +314,7 @@ CLEAN_AS(func_ov096_0229c514, PocketsScreen_PressButton)
 void PocketsScreen_FinishScene(PocketsScreen *self)
 {
     MenuScene_SetState(scene_of(self), 5);
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_1);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
     PocketsScreen_SetFlags(self, POCKETS_FLAG_80);
     PocketsScreen_ClearParentByte94(self);
 }
@@ -3188,7 +3188,7 @@ void PocketsScreen_FollowButton(PocketsScreen *self)
     } else {
         PocketsScreen_HideCursorSprite(self);
         MenuScene_SetState(scene_of(self), 9);
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_1);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
     }
 }
 CLEAN_AS(func_ov096_022a00b4, PocketsScreen_FollowButton)
@@ -4297,7 +4297,7 @@ void PocketsScreen_WipeOutReader(PocketsScreen *self)
     PocketsScreen_ClearFlags(self, POCKETS_FLAG_BUTTON_DRAWN);
     Process *parent = parent_of(self);
     if (PocketsScreen_TestFlags(self, POCKETS_FLAG_EXITING)) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_RUN);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_DELETE);
         PocketsScreen_ClearFlags(self, POCKETS_FLAG_DRAWN);
     } else {
         MenuTabs_SlideIn((MenuTabs *) (void *) parent);
@@ -4321,7 +4321,7 @@ CLEAN_AS(func_ov096_022a15d4, PocketsScreen_StartWipeOutReader)
 void PocketsScreen_WipeInReader(PocketsScreen *self)
 {
     if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_INTERACTIVE);
         if (StateFlags_IsClear2() != 0) {
             MenuScene_SetSubState(scene_of(self), 7);
         } else {
@@ -4364,7 +4364,7 @@ void PocketsScreen_WipeOut(PocketsScreen *self)
         if (PocketsScreen_TestFlags(self, POCKETS_FLAG_80) != 0) {
             MenuScene_SetState(scene_of(self), 7);
         } else {
-            MenuScene_SetPhase(scene_of(self), MENU_SCENE_RUN);
+            MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_DELETE);
             PocketsScreen_ClearFlags(self, POCKETS_FLAG_DRAWN);
         }
     } else {
@@ -4392,7 +4392,7 @@ CLEAN_AS(func_ov096_022a1744, PocketsScreen_StartWipeOut)
 void PocketsScreen_WipeIn(PocketsScreen *self)
 {
     if (MenuScene_StepWipeBack(scene_of(self), 0)) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_INTERACTIVE);
         PocketsScreen_EndAction(self);
     }
     MenuScene_ScrollWipe(scene_of(self), POCKETS_LAYER, 0, 0);
@@ -4468,7 +4468,7 @@ int PocketsScreen_SwitchTab(PocketsScreen *self, int tab)
     }
     MenuTabs_SelectTab((MenuTabs *) (void *) parent, (u8) tab);
     self->base.state = 5;
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_1);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
     if (tab != POCKETS_TAB_CLOSE) {
         PocketsScreen_RequestSwitchOff(self);
     }
@@ -4674,7 +4674,7 @@ int PocketsScreen_Start(PocketsScreen *self)
 {
     PocketsScreen_Setup(self);
     MenuScene_SetState(scene_of(self), 0);
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_1);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
     return 1;
 }
 CLEAN_AS(func_ov096_022a1f84, PocketsScreen_Start)

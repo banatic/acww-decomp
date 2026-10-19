@@ -53,30 +53,6 @@ static_assert(sizeof(Taxi) == 0x5a4, "the size func_ov068_02273904 allocates");
 #define TAXI_SPEAKER_ANIM_4 0x90
 #define TAXI_SPEAKER_ANIM_5 0x91
 
-/* The model command whose hook it sets (NitroSystem's NNS_G3D_SBC_MAT), run at timing B. */
-#define TAXI_COMMAND_MAT 4
-#define TAXI_TIMING_B 2
-
-/* The state of the model being drawn (NitroSystem's NNSG3dRS), as ov004/museum_display.h
- * describes it. */
-typedef struct TaxiRenderState {
-    const u8 *command; /* the command being run: byte 1 is its material */
-    void *render_object;
-    u32 flags;
-    u32 hooks[0x20]; /* the address of each command's hook, 0 for none */
-    u8 hook_timings[0x20];
-} TaxiRenderState;
-
-/* The model being drawn (NitroSystem's NNSG3dRenderObj): its user word is the taxi, set by
- * ModelObject_SetInitHook in Taxi_Start. */
-typedef struct TaxiRenderObject {
-    u8 unk_00[0x2c];
-    Taxi *user; /* 0x2c */
-} TaxiRenderObject;
-
-static_assert(offsetof(TaxiRenderState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(TaxiRenderState, hook_timings) == 0x8c, "hook timings");
-
 /* The class's vtable. */
 extern const u8 data_ov068_022778f4[];
 
@@ -101,8 +77,8 @@ extern const MemberPointer data_ov068_022778a4, data_ov068_022778cc, data_ov068_
 extern void NNS_G3dMdlSetMdlAlpha(u8 *model, int material, u8 alpha);
 
 /* The hooks are the game's functions: their addresses go to the model. */
-extern void func_ov068_022738d8(TaxiRenderState *state);
-extern void func_ov068_022738e8(TaxiRenderState *state);
+extern void func_ov068_022738d8(G3dRenderState *state);
+extern void func_ov068_022738e8(G3dRenderState *state);
 
 static AnimatedModel *animated(RmoAnimatedModel *model)
 {
@@ -252,7 +228,7 @@ void Taxi_RestartCar(Taxi *self, int flags)
     AnimatedModel *body = animated(&self->base.body);
     const u8 *joints = RmoModel_JointAnim(&self->base.body_model, 0);
     AnimatedModel_Start(body, joints, flags, TAXI_ONE, (u16) ((u32) self->base.body.frames.frame >> 12), 0);
-    ModelRenderObject *render = ModelObject_RenderObject(&body->object);
+    G3dRenderObject *render = ModelObject_RenderObject(&body->object);
     const u8 *materials = RmoModel_MaterialAnim(&self->base.body_model, 0);
     ModelAnim_Restart(&self->material_anim, render, materials, flags, TAXI_ONE,
                       (u16) ((u32) self->material_anim.ctrl.frame >> 12));
@@ -437,10 +413,10 @@ CLEAN_AS(func_ov068_02273860, Taxi_Construct)
 
 /* func_ov068_022738d8 (run before each draw of the car): the materials' hook (the game's
  * func_ov068_022738e8) set, run at timing B. */
-void Taxi_SetModelHooks(TaxiRenderState *state)
+void Taxi_SetModelHooks(G3dRenderState *state)
 {
-    state->hooks[TAXI_COMMAND_MAT] = (u32) (uintptr_t) func_ov068_022738e8;
-    state->hook_timings[TAXI_COMMAND_MAT] = TAXI_TIMING_B;
+    state->hooks[G3D_COMMAND_MATERIAL] = (u32) (uintptr_t) func_ov068_022738e8;
+    state->hook_timings[G3D_COMMAND_MATERIAL] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov068_022738d8, Taxi_SetModelHooks)
 
@@ -450,9 +426,9 @@ CLEAN_AS(func_ov068_022738d8, Taxi_SetModelHooks)
  * it ignores.
  * QUIRK: the code is assembly that leaves the model's user word (the taxi, or NULL) in its
  * result register; NitroSystem does not read it, and it is returned here as the word it is. */
-const Taxi *Taxi_MaterialHook(TaxiRenderState *state)
+const Taxi *Taxi_MaterialHook(G3dRenderState *state)
 {
-    const Taxi *self = ((const TaxiRenderObject *) state->render_object)->user;
+    const Taxi *self = state->object->user;
     if (self != NULL) {
         Taxi_OnMaterial();
     }

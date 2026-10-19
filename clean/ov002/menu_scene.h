@@ -32,13 +32,7 @@ enum MenuScenePhase {
     MENU_SCENE_PHASE_3 = 3,           /* slot 0x54 */
     MENU_SCENE_PHASE_4 = 4,           /* slot 0x58 */
     MENU_SCENE_PHASE_DELETE = 5,      /* slot 0x5c: the scene asks to be deleted */
-    MENU_SCENE_PHASES = 6,
-
-    /* Older names of the same values. */
-    MENU_SCENE_PHASE_0 = MENU_SCENE_PHASE_WAIT,
-    MENU_SCENE_PHASE_1 = MENU_SCENE_PHASE_STATES,
-    MENU_SCENE_PHASE_2 = MENU_SCENE_PHASE_INTERACTIVE,
-    MENU_SCENE_RUN = MENU_SCENE_PHASE_DELETE
+    MENU_SCENE_PHASES = 6
 };
 
 typedef struct MenuScene {

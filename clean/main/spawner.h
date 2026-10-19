@@ -23,6 +23,8 @@
 #define SPAWNER_PRIORITY_NONE 0
 #define SPAWNER_PRIORITY_MAX 4
 #define SPAWNER_CHECKS 11
+/* The spawn table's entries (data_020d0644 holds the number too). */
+#define SPAWNER_ENTRIES 23
 #define SPAWNER_NO_SCENE 0x33 /* the scene of a cleared request */
 
 /* The request (data_020e1ca8). */

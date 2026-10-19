@@ -43,17 +43,17 @@ typedef struct RoomSound {
     Vec3 position;
 } RoomSound;
 
-struct NodeHookState;
+struct G3dRenderState;
 
 /* The vtable slots used here; derived classes override them. */
 typedef struct RoomObjectVtable {
     const void *unk_00[24];
     /* The model's hooks (room_object_methods.c): for a material, a node, and before and after a
      * node's description; each is given byte 1 of the model's command and the render state. */
-    int (*material_hook)(struct RoomObject *object, int material, struct NodeHookState *state);
-    int (*node_hook)(struct RoomObject *object, int node, struct NodeHookState *state);
-    int (*node_desc_hook)(struct RoomObject *object, int node, struct NodeHookState *state);
-    int (*node_desc_after_hook)(struct RoomObject *object, int node, struct NodeHookState *state);
+    int (*material_hook)(struct RoomObject *object, int material, struct G3dRenderState *state);
+    int (*node_hook)(struct RoomObject *object, int node, struct G3dRenderState *state);
+    int (*node_desc_hook)(struct RoomObject *object, int node, struct G3dRenderState *state);
+    int (*node_desc_after_hook)(struct RoomObject *object, int node, struct G3dRenderState *state);
     int (*vfunc_70)(struct RoomObject *object, int a1, int a2); /* RoomObject_SetUnk77C in the base */
     const void *unk_74;
     int (*vfunc_78)(struct RoomObject *object);             /* RoomObject_Unk77C in the base */

@@ -535,11 +535,11 @@ void BankMenu_LoadScreens(BankMenu *self)
     DisplayLayer_LoadScreen(self->screen_b, 4, BANK_MENU_SCREEN_SIZE, 0);
 
     TextLabel *deposit = BankMenu_NextLabel(self);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) deposit, BANK_MENU_MESSAGE_DEPOSIT);
+    TextLabel_LoadMenuMessage(deposit, BANK_MENU_MESSAGE_DEPOSIT);
     TextLabel_OpenStyledBox2(deposit, 4, 0x114, 0xe, 0xf, 0, 0);
     TextLabel_Show(deposit, 1, 0);
     TextLabel *withdraw = BankMenu_NextLabel(self);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) withdraw, BANK_MENU_MESSAGE_WITHDRAW);
+    TextLabel_LoadMenuMessage(withdraw, BANK_MENU_MESSAGE_WITHDRAW);
     TextLabel_OpenStyledBox2(withdraw, 4, 0x130, 0xe, 0xf, 0, 0);
     TextLabel_Show(withdraw, 1, 0);
 }

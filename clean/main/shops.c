@@ -195,7 +195,7 @@ int Shops_MailNookItem(const u16 *item)
         u16 item;
     } sender;
     u8 object[0x28];
-    MailLetter letter;
+    Letter letter;
 
     if (Shops_CanMail() == 0) {
         return 0;
@@ -204,13 +204,13 @@ int Shops_MailNookItem(const u16 *item)
     NameText_ConstructItem((NameText *) (void *) object, &sender.item);
     MailText_SetPartText(1, object);
 
-    Letter_Construct((Letter *) &letter);
+    Letter_Construct(&letter);
     int player = (int) (uintptr_t) PlayerRecords_Current();
     sender.store_level = (u8) NookStore_Level((NookStore *) data_021f395c);
     int c = (int) (uintptr_t) PlayerRecord_Player((u8 *) (uintptr_t) player);
-    Letter_WriteSpecialToPlayer((Letter *) &letter, (const u8 *) &sender, data_020e4180, data_020e415c, data_020e4158,
+    Letter_WriteSpecialToPlayer(&letter, (const u8 *) &sender, data_020e4180, data_020e415c, data_020e4158,
                                 (const DesignCreator *) (uintptr_t) c);
-    Letter_SetItem((Letter *) &letter, sender.item, 1);
+    Letter_SetItem(&letter, sender.item, 1);
     int price = ItemTraits_MemberPrice(&sender.item);
 
     if (Mail_HoldAtPostOffice(&letter, 0) != 0) {
@@ -218,11 +218,11 @@ int Shops_MailNookItem(const u16 *item)
         u16 *record =
             ShopPoints_Count((void *) (uintptr_t) PlayerRecord_ShopPoints((u8 *) (uintptr_t) ((u32) PlayerRecords_Current())));
         ShopPoints_AddSpent((u16 *) (uintptr_t) record, price);
-        Letter_Destruct((Letter *) &letter);
+        Letter_Destruct(&letter);
         NameText_Destruct((NameText *) (void *) object);
         return 1;
     }
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
     NameText_Destruct((NameText *) (void *) object);
     return 0;
 }

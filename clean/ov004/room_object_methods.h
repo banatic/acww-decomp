@@ -5,41 +5,13 @@
 #ifndef CLEAN_OV004_ROOM_OBJECT_METHODS_H
 #define CLEAN_OV004_ROOM_OBJECT_METHODS_H
 
+#include "main/g3d_render.h"
 #include "types.h"
 
 #include "room_object.h"
 
-/* The object a model is drawn through (NitroSystem's NNSG3dRenderObj): the room object it
- * belongs to is kept at 0x2c (ModelObject_SetInitHook puts it there). */
-typedef struct RoomRenderObject {
-    u8 unk_00[0x2c];
-    struct RoomObject *user;
-} RoomRenderObject;
-
-/* The model's commands with hooks here (NitroSystem's NNS_G3D_SBC_*), and when the hook runs
- * (NNS_G3D_SBC_CALLBACK_TIMING_*). */
-enum { G3D_COMMAND_NODE = 2, G3D_COMMAND_MATERIAL = 4, G3D_COMMAND_NODE_DESC = 6, G3D_COMMAND_COUNT = 0x20 };
-enum {
-    G3D_TIMING_BEFORE = 1, /* timing A */
-    G3D_TIMING_AFTER = 2   /* timing B */
-};
-
-/* What the model's hooks get: the state of the model being drawn (NitroSystem's NNSG3dRS).
- * The main program's ClockHands_TurnMinuteHand and ClockHands_TurnHourHand turn the node at 0xb4; 0xb8 points to the
- * word the node set's value goes to. */
-typedef struct NodeHookState {
-    const u8 *command; /* the command being run: byte 1 is its node or material */
-    RoomRenderObject *render_object;
-    u32 flags;
-    u32 hooks[G3D_COMMAND_COUNT]; /* the address of each command's hook, 0 for none */
-    u8 hook_timings[G3D_COMMAND_COUNT];
-    u8 unk_ac[8];
-    void *unk_B4;
-    u32 *unk_B8;
-} NodeHookState;
-
-int RoomObject_NodeSetHook(RoomObject *object, int node, NodeHookState *state);
-void RoomObject_ClockHandsHook(RoomObject *object, int node, NodeHookState *state);
+int RoomObject_NodeSetHook(RoomObject *object, int node, G3dRenderState *state);
+void RoomObject_ClockHandsHook(RoomObject *object, int node, G3dRenderState *state);
 void RoomObject_IgnoreHook68(void);
 void RoomObject_IgnoreHook60(void);
 void RoomObject_ItemCode(ItemCode *code, RoomObject *object);
@@ -63,10 +35,10 @@ int RoomObject_Unk00CIs3BOr3CAndOn(RoomObject *object);
 int RoomObject_Unk00CIs3AAndOn(RoomObject *object);
 int RoomObject_TestUnk00CIs3A(const RoomObject *object);
 int RoomObject_IsLight(RoomObject *object);
-void RoomObject_SetModelHooks(NodeHookState *state);
-int RoomObject_RunNodeHook(NodeHookState *state);
-void RoomObject_RunNodeDescAfterHook(NodeHookState *state);
-void RoomObject_RunNodeDescHook(NodeHookState *state);
-int RoomObject_RunMaterialHook(NodeHookState *state);
+void RoomObject_SetModelHooks(G3dRenderState *state);
+int RoomObject_RunNodeHook(G3dRenderState *state);
+void RoomObject_RunNodeDescAfterHook(G3dRenderState *state);
+void RoomObject_RunNodeDescHook(G3dRenderState *state);
+int RoomObject_RunMaterialHook(G3dRenderState *state);
 
 #endif

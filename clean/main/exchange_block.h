@@ -12,20 +12,20 @@
 #ifndef CLEAN_MAIN_EXCHANGE_BLOCK_H
 #define CLEAN_MAIN_EXCHANGE_BLOCK_H
 
-#include "mail.h" /* MailLetter */
+#include "mail.h" /* Letter */
 #include "types.h"
 
 #define EXCHANGE_BLOCK_VISITORS 3   /* the blocks kept for the other slots */
 #define EXCHANGE_BLOCK_MAX_DRIFTS 5 /* ExchangeBlock.drifts stops there */
 
 typedef struct ExchangeBlock {
-    MailLetter bottle_letter; /* 0x000 */
-    u8 constellation[0x4c];   /* 0x100: Constellation */
-    u8 villager[0x7ec];       /* 0x14c: a villager (villager_copy.h) */
-    u8 drifts;                /* 0x938: times the bottle drifted */
-    u8 flags;                 /* 0x939: bit 0: the bottle arrives at once */
-    u8 paired_town[0x10];     /* 0x93a: PairedTown */
-    u16 checksum;             /* 0x94a */
+    Letter bottle_letter;   /* 0x000 */
+    u8 constellation[0x4c]; /* 0x100: Constellation */
+    u8 villager[0x7ec];     /* 0x14c: a villager (villager_copy.h) */
+    u8 drifts;              /* 0x938: times the bottle drifted */
+    u8 flags;               /* 0x939: bit 0: the bottle arrives at once */
+    u8 paired_town[0x10];   /* 0x93a: PairedTown */
+    u16 checksum;           /* 0x94a */
     u8 pad_94c[4];
 } ExchangeBlock;
 
@@ -35,7 +35,7 @@ int ExchangeBlock_DestructVisitors(ExchangeBlock *blocks);
 int ExchangeBlock_ConstructVisitors(ExchangeBlock *blocks);
 int ExchangeBlock_Villager(ExchangeBlock *block);
 int ExchangeBlock_Constellation(ExchangeBlock *block);
-MailLetter *ExchangeBlock_BottleLetter(ExchangeBlock *block);
+Letter *ExchangeBlock_BottleLetter(ExchangeBlock *block);
 u8 ExchangeBlock_Drifts(ExchangeBlock *block);
 void ExchangeBlock_ClearDrifts(ExchangeBlock *block);
 void ExchangeBlock_AddDrift(ExchangeBlock *block);

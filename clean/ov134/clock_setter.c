@@ -500,7 +500,7 @@ CLEAN_AS(func_ov134_0229b220, ClockSetter_Draw)
 void ClockSetter_DrawNumber(ClockSetter *self, int layer, int first_char, int cells, int number, u8 color_38, u8 color_39)
 {
     TextLabel *label = ClockSetter_NextLabel(self);
-    TextLabel_Compose(panel_address(label), number, 4, 0, 0, 0);
+    TextLabel_Compose(label, number, 4, 0, 0, 0);
     TextLabel_OpenStyledBox2(label, layer, first_char, cells, color_38, color_39, 0);
     TextLabel_ShowRightAligned(label);
 }
@@ -512,7 +512,7 @@ CLEAN_AS(func_ov134_0229b5ac, ClockSetter_DrawNumber)
 void ClockSetter_DrawTitle(ClockSetter *self, int layer, int first_char, int cells, u8 message, int text_cells)
 {
     TextLabel *label = ClockSetter_NextLabel(self);
-    TextLabel_LoadMenuMessage(panel_address(label), (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_OpenStyledBox2(label, layer, first_char, cells, 15, 0, 0);
     TextLabel_ShowShifted(label, 1, -(int) ((u32) (cells - text_cells) << 2));
 }
@@ -523,7 +523,7 @@ void ClockSetter_DrawMessage(ClockSetter *self, int layer, int first_char, int c
                              u8 color_39)
 {
     TextLabel *label = ClockSetter_NextLabel(self);
-    TextLabel_LoadMenuMessage(panel_address(label), (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_OpenStyledBox2(label, layer, first_char, cells, color_38, color_39, 0);
     TextLabel_Show(label, center, 0);
 }

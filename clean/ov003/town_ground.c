@@ -46,11 +46,6 @@ static_assert(offsetof(TownGround, river) == 0x1f0, "river");
 static_assert(offsetof(TownGround, beach) == 0x280, "beach");
 static_assert(offsetof(TownGround, sound) == 0x310, "sound");
 static_assert(sizeof(TownGround) == 0x31c, "the size TownGround_New allocates");
-static_assert(offsetof(TownGroundRenderObject, acre) == 0x2c, "render object user");
-static_assert(offsetof(TownGroundRenderState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(TownGroundRenderState, hook_timings) == 0x8c, "hook timings");
-static_assert(offsetof(TownGroundRenderState, material_result) == 0xb0, "material result");
-static_assert(offsetof(TownGroundMaterialResult, translate_s) == 0x28, "scroll along S");
 
 /* The background models: model 0x83 (TownGroundFollow), and the units' models by kind
  * (data_ov003_02236664: 0x84 and 0x85). */
@@ -65,9 +60,6 @@ extern const int data_ov003_02236664[];
 #define TOWN_GROUND_ANIM_SPEED 0x1000
 /* An acre's kind flag: the acre has a beach (its "m_grd_beA" gets the hook). */
 #define TOWN_GROUND_KIND_BEACH 8
-/* The render state's command whose hook the acre sets: materials, after the material. */
-#define TOWN_GROUND_COMMAND_MATERIAL 4
-#define TOWN_GROUND_TIMING_AFTER 2
 /* The beach's texture scroll goes to the collision map in steps of this. */
 #define TOWN_GROUND_BEACH_STEP 0xda2
 /* NNSG3dResMatData's polygon attribute bit 11: translucent pixels update the depth buffer. */
@@ -116,8 +108,8 @@ extern const u32 data_020da13c[];
 extern const u32 data_ov003_02239a58[];
 
 /* The hooks are the game's functions: their addresses go to the model and its render state. */
-extern void func_ov003_0221fdb8(TownGroundRenderState *state);
-extern void func_ov003_0221fdc8(TownGroundRenderState *state);
+extern void func_ov003_0221fdb8(G3dRenderState *state);
+extern void func_ov003_0221fdc8(G3dRenderState *state);
 /* The array helpers and what they are handed: the game's own animation constructor and
  * destructor. */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -738,23 +730,23 @@ CLEAN_AS(func_ov003_0221fd60, TownGround_Construct)
 
 /* func_ov003_0221fdb8 (the hook ModelObject_SetInitHook is given, run before an acre's model is
  * drawn): sets the materials' hook (after each material) to func_ov003_0221fdc8. */
-void TownGroundAcre_SetModelHooks(TownGroundRenderState *state)
+void TownGroundAcre_SetModelHooks(G3dRenderState *state)
 {
-    state->hooks[TOWN_GROUND_COMMAND_MATERIAL] = (u32) (uintptr_t) func_ov003_0221fdc8;
-    state->hook_timings[TOWN_GROUND_COMMAND_MATERIAL] = TOWN_GROUND_TIMING_AFTER;
+    state->hooks[G3D_COMMAND_MATERIAL] = (u32) (uintptr_t) func_ov003_0221fdc8;
+    state->hook_timings[G3D_COMMAND_MATERIAL] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov003_0221fdb8, TownGroundAcre_SetModelHooks)
 
 /* func_ov003_0221fdc8 (a material's hook): at the acre's "m_grd_beA", the first time in the
- * frame, the collision map's value 0x134 becomes the material's scroll along S plus 0xda2, in
+ * frame, the collision map's value 0x134 becomes the material's scroll along T plus 0xda2, in
  * steps of 0xda2. */
-void TownGroundAcre_BeachHook(TownGroundRenderState *state)
+void TownGroundAcre_BeachHook(G3dRenderState *state)
 {
     if (data_ov003_0223cad4 == 0) {
-        TownGroundAcre *acre = state->render_object->acre;
+        TownGroundAcre *acre = state->object->user;
         u8 material = state->command[1];
         if (acre != NULL && acre->beach_material == material) {
-            fx32 scroll = state->material_result->translate_s;
+            fx32 scroll = state->material->translate_t;
             CollisionMap_SetValue134((s16) FX_Div(scroll + TOWN_GROUND_BEACH_STEP, TOWN_GROUND_BEACH_STEP));
             data_ov003_0223cad4 = 1;
         }

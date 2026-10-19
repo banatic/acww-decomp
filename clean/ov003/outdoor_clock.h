@@ -10,6 +10,7 @@
 #ifndef CLEAN_OV003_OUTDOOR_CLOCK_H
 #define CLEAN_OV003_OUTDOOR_CLOCK_H
 
+#include "main/g3d_render.h"
 #include "types.h"
 
 typedef struct OutdoorClock {
@@ -25,24 +26,13 @@ typedef struct OutdoorClock {
     u8 unk_2B6[2];
 } OutdoorClock;
 
-/* What the model's hooks get: the state of the model being drawn (NitroSystem's NNSG3dRS). */
-typedef struct OutdoorClockRenderObject {
-    u8 unk_00[0x2c];
-    OutdoorClock *clock; /* the object func_02055de0 was given */
-} OutdoorClockRenderObject;
-
-typedef struct OutdoorClockRenderState {
-    const u8 *command; /* the command being run: byte 1 is its joint */
-    OutdoorClockRenderObject *render_object;
-} OutdoorClockRenderState;
-
 int OutdoorClock_Slot98(void);
-void OutdoorClock_TurnHand(OutdoorClock *clock, int node, OutdoorClockRenderState *state);
+void OutdoorClock_TurnHand(OutdoorClock *clock, int node, G3dRenderState *state);
 int OutdoorClock_Init(OutdoorClock *clock);
 OutdoorClock *OutdoorClock_DestroyAndFree(OutdoorClock *clock);
 OutdoorClock *OutdoorClock_Destroy(OutdoorClock *clock);
 OutdoorClock *OutdoorClock_Construct(OutdoorClock *clock);
-void OutdoorClock_RunNodeHook(OutdoorClockRenderState *state);
+void OutdoorClock_RunNodeHook(G3dRenderState *state);
 void OutdoorClock_New(void);
 OutdoorClock *OutdoorClock_ReceiverDestroyAndFree(void *receiver);
 OutdoorClock *OutdoorClock_ReceiverDestroy(void *receiver);

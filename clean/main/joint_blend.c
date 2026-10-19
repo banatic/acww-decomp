@@ -8,7 +8,6 @@ static_assert(offsetof(JointBlend, translation) == 0x28, "JointBlend translation
 static_assert(offsetof(JointBlend, weight) == 0x34, "JointBlend weight");
 static_assert(sizeof(JointBlend) == 0x3c, "JointBlend size");
 static_assert(sizeof(JointBlendAxes) == sizeof(Mtx33), "JointBlendAxes layout");
-static_assert(sizeof(AnimatedModelJoint) == 0x58, "AnimatedModelJoint size");
 
 /* The class's vtable. */
 extern const u8 data_020dd174[];
@@ -40,13 +39,13 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define JOINT_BLEND_LAST_MOVED_NODE 1
 
 /* The node a node descriptor command places (its byte 1). */
-static int command_node(const AnimatedModelNodeState *state)
+static int command_node(const G3dRenderState *state)
 {
-    return state->state.command[1];
+    return state->command[1];
 }
 
 /* A joint result's rotation as its rows. */
-static JointBlendAxes *joint_axes(AnimatedModelJoint *joint)
+static JointBlendAxes *joint_axes(G3dJointResult *joint)
 {
     return (JointBlendAxes *) (void *) &joint->rotation;
 }
@@ -68,10 +67,10 @@ static fx32 rest_of(fx32 weight)
 /* func_02056aa0: the pose of the node being placed recorded from the joint result the render
  * object keeps for it: its rotation (the identity when it was left all zero) and its
  * translation. */
-void JointBlend_RecordPose(JointBlend *blend, AnimatedModelNodeState *state)
+void JointBlend_RecordPose(JointBlend *blend, G3dRenderState *state)
 {
-    AnimatedModelJoint *results = state->state.object->joint_results;
-    AnimatedModelJoint *joint = &results[command_node(state)];
+    G3dJointResult *results = state->object->joint_results;
+    G3dJointResult *joint = &results[command_node(state)];
     const fx32 *m = &joint->rotation.m[0][0];
 
     if (m[0] == 0 && m[1] == 0 && m[2] == 0 && m[3] == 0 && m[4] == 0 && m[5] == 0 && m[6] == 0 && m[7] == 0 && m[8] == 0) {
@@ -86,22 +85,22 @@ CLEAN_AS(func_02056aa0, JointBlend_RecordPose)
 /* func_02056b18: the node's new transform mixed with the recorded pose by the weight. The
  * translation only for the first two nodes and when the joint has one; the rotation always,
  * the identity first when the joint's was left unwritten, which it is no longer. */
-void JointBlend_Apply(JointBlend *blend, AnimatedModelNodeState *state)
+void JointBlend_Apply(JointBlend *blend, G3dRenderState *state)
 {
     int node = command_node(state);
 
-    if (!(state->joint->flags & ANIMATED_MODEL_JOINT_TRANSLATION_ZERO) && node <= JOINT_BLEND_LAST_MOVED_NODE) {
+    if (!(state->joint->flags & G3D_JOINT_TRANSLATION_ZERO) && node <= JOINT_BLEND_LAST_MOVED_NODE) {
         Vec3 translation;
         JointBlend_MixVec(&state->joint->translation, &blend->translation, &translation, blend->weight);
         state->joint->translation = translation;
     }
-    if (state->joint->flags & ANIMATED_MODEL_JOINT_ROTATION_IDENTITY) {
+    if (state->joint->flags & G3D_JOINT_ROTATION_IDENTITY) {
         MTX_Identity33_(&state->joint->rotation);
     }
     JointBlendAxes rotation;
     JointBlend_MixAxes(joint_axes(state->joint), &blend->rotation, &rotation, blend->weight);
     *joint_axes(state->joint) = rotation;
-    state->joint->flags &= ~(u32) ANIMATED_MODEL_JOINT_ROTATION_IDENTITY;
+    state->joint->flags &= ~(u32) G3D_JOINT_ROTATION_IDENTITY;
 }
 CLEAN_AS(func_02056b18, JointBlend_Apply)
 

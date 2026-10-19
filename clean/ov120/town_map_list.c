@@ -647,7 +647,7 @@ void TownMap_SetRowText(TownMap *self, TextLabel *label, unsigned int value)
         ChoiceRow_SetListBName(row, (int) (value - TOWN_MAP_ROW_VILLAGER_FIRST));
     } else if (value <= TOWN_MAP_ROW_PLACE_LAST) {
         /* menu messages 0x96-0x9a */
-        TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) (value + 0x88));
+        TextLabel_LoadMenuMessage(label, (char) (value + 0x88));
     } else {
         TextBase_Clear(label);
     }

@@ -18,6 +18,7 @@
 #ifndef CLEAN_OV004_CHECK_IN_GATE_H
 #define CLEAN_OV004_CHECK_IN_GATE_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/vector.h"
 #include "main/collision_box.h"
 #include "main/model_anim.h"
@@ -47,33 +48,6 @@ enum CheckInGateState {
     CHECK_IN_GATE_STATE_COUNT = 4
 };
 
-/* The parts of NitroSystem's NNSG3dRenderObj and NNSG3dRS the material hook uses: the user
- * object is kept at 0x2c (ModelObject_SetInitHook puts it there). */
-typedef struct CheckInGateRenderObject {
-    u8 unk_00[0x2c];
-    struct CheckInGate *user; /* 0x2c */
-} CheckInGateRenderObject;
-
-/* NitroSystem's NNSG3dMatAnmResult, its colour and polygon words. */
-typedef struct CheckInGateMaterialResult {
-    u32 flags;        /* 0x00 */
-    u32 diffuse;      /* 0x04: diffuse colour in bits 0-14 */
-    u32 unk_08;       /* 0x08 */
-    u32 polygon_attr; /* 0x0c: POLYGON_ATTR, the alpha in bits 16-20 */
-} CheckInGateMaterialResult;
-
-#define CHECK_IN_GATE_G3D_COMMANDS 0x20
-
-typedef struct CheckInGateHookState {
-    const u8 *command;                           /* 0x00: byte 1 is the material */
-    CheckInGateRenderObject *render_object;      /* 0x04 */
-    u32 flags;                                   /* 0x08 */
-    u32 hooks[CHECK_IN_GATE_G3D_COMMANDS];       /* 0x0c: each command's hook, 0 for none */
-    u8 hook_timings[CHECK_IN_GATE_G3D_COMMANDS]; /* 0x8c */
-    u8 unk_ac[4];                                /* 0xac */
-    CheckInGateMaterialResult *material;         /* 0xb0 */
-} CheckInGateHookState;
-
 void CheckInGate_UpdateClosing(CheckInGate *self);
 int CheckInGate_EnterClosing(CheckInGate *self);
 void CheckInGate_UpdateOpen(CheckInGate *self);
@@ -88,7 +62,7 @@ void CheckInGate_RemoveDoorBox(CheckInGate *self);
 void CheckInGate_UpdateDoorBox(CheckInGate *self);
 void CheckInGate_SetDoor(CheckInGate *self, fx32 offset);
 CheckInGate *CheckInGate_ClearDoor(CheckInGate *self);
-void CheckInGate_MaterialHook(CheckInGate *self, int material, CheckInGateHookState *state);
+void CheckInGate_MaterialHook(CheckInGate *self, int material, G3dRenderState *state);
 int CheckInGate_IsOpen(void);
 int CheckInGate_Close(void);
 int CheckInGate_Open(void);
@@ -104,8 +78,8 @@ int CheckInGate_Start(CheckInGate *self);
 CheckInGate *CheckInGate_Delete(CheckInGate *self);
 CheckInGate *CheckInGate_Destruct(CheckInGate *self);
 CheckInGate *CheckInGate_Construct(CheckInGate *self);
-void CheckInGate_SetModelHooks(CheckInGateHookState *state);
-void CheckInGate_RunMaterialHook(CheckInGateHookState *state);
+void CheckInGate_SetModelHooks(G3dRenderState *state);
+void CheckInGate_RunMaterialHook(G3dRenderState *state);
 void CheckInGate_Create(void);
 
 #endif

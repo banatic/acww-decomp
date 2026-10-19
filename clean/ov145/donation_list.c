@@ -549,7 +549,7 @@ void DonationList_RefreshRows(DonationList *self)
                 if (MuseumRecord_GiverName(&data_021f38f8, &giver_name, &code) != 0) {
                     TextBase_Copy((TextBase *) (void *) giver, (TextBase *) (void *) &giver_name);
                 } else {
-                    TextLabel_LoadMenuMessage((int) (uintptr_t) giver, (char) DONATION_NO_GIVER_MESSAGE);
+                    TextLabel_LoadMenuMessage(giver, (char) DONATION_NO_GIVER_MESSAGE);
                 }
             }
             item++;

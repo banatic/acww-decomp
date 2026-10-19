@@ -314,7 +314,7 @@ void MenuTabs_Hide(MenuTabs *self)
     u8 *slide = menu_tabs_byte(self, MENU_TABS_BYTE_SLIDE);
     if (*slide <= 4) {
         *menu_tabs_byte(self, MENU_TABS_BYTE_DRAWN) = 0;
-        MenuScene_SetPhase(menu_tabs_scene(self), MENU_TABS_PHASE_WAIT);
+        MenuScene_SetPhase(menu_tabs_scene(self), MENU_SCENE_PHASE_WAIT);
     } else {
         *slide = (u8) (*slide - 4);
     }
@@ -325,7 +325,7 @@ CLEAN_AS(func_ov090_0229919c, MenuTabs_Hide)
 void MenuTabs_Show(MenuTabs *self)
 {
     self->shown = 1;
-    MenuScene_SetPhase(menu_tabs_scene(self), MENU_TABS_PHASE_INTERACTIVE);
+    MenuScene_SetPhase(menu_tabs_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
 }
 CLEAN_AS(func_ov090_022991cc, MenuTabs_Show)
 
@@ -396,7 +396,7 @@ CLEAN_AS(func_ov090_02299348, MenuTabs_Idle)
 void MenuTabs_Close(MenuTabs *self)
 {
     self->base.state = MENU_TABS_STATE_HIDE;
-    MenuScene_SetPhase(menu_tabs_scene(self), MENU_TABS_PHASE_STATES);
+    MenuScene_SetPhase(menu_tabs_scene(self), MENU_SCENE_PHASE_STATES);
     DisplayShadow_SetSubBgMode(1);
 }
 CLEAN_AS(func_ov090_0229934c, MenuTabs_Close)
@@ -596,7 +596,7 @@ int MenuTabs_Start(MenuTabs *self)
     self->roster = MENU_TABS_ROSTER_SAVED;
     self->base.sub_state = MENU_TABS_SUB_REQUEST;
     self->base.state = MENU_TABS_STATE_SETUP;
-    MenuScene_SetPhase(menu_tabs_scene(self), MENU_TABS_PHASE_WAIT);
+    MenuScene_SetPhase(menu_tabs_scene(self), MENU_SCENE_PHASE_WAIT);
     GroupParams_ClearC50();
     SoundSys_LowerMusic();
     ControlMode_Reapply();

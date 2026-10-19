@@ -62,7 +62,7 @@ static_assert(offsetof(Actor, angle) == 0x8c, "angle");
 #define TRASH_BOX_FACING 0x1200
 #define TRASH_BOX_HALF_TURN 0x8000
 
-/* What the talk is asked for (TalkFlowTalk.next) when it starts. */
+/* What the talk is asked for (TalkObject.next_state) when it starts. */
 #define TRASH_BOX_TALK_OPEN 1
 
 /* The vtable slot that enters a lid state (TrashBox_SetLid). */
@@ -238,8 +238,8 @@ CLEAN_AS(func_ov004_0222f584, TrashBox_EnterOpenLid)
  * receiver back and opens the lid. */
 void TrashBox_UpdateTalkEnd(TrashBox *self)
 {
-    struct TalkFlowTalk *talk = self->receiver.talk;
-    if (talk != NULL && talk->state == TALK_FLOW_CLOSED) {
+    TalkObject *talk = self->receiver.talk;
+    if (talk != NULL && talk->state == TALK_OBJECT_CLOSED) {
         SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) self, TrashBox_receiver(self));
         TrashBox_EnterState(self, TRASH_BOX_OPEN_LID);
     }
@@ -257,8 +257,8 @@ CLEAN_AS(func_ov004_0222f5c8, TrashBox_EnterTalkEnd)
 /* func_ov004_0222f5cc (update of TRASH_BOX_TALK): on once the talk has opened. */
 void TrashBox_UpdateTalk(TrashBox *self)
 {
-    struct TalkFlowTalk *talk = self->receiver.talk;
-    if (talk != NULL && talk->state != TALK_FLOW_CLOSED) {
+    TalkObject *talk = self->receiver.talk;
+    if (talk != NULL && talk->state != TALK_OBJECT_CLOSED) {
         TrashBox_EnterState(self, TRASH_BOX_TALK_END);
     }
 }
@@ -272,7 +272,7 @@ int TrashBox_EnterTalk(TrashBox *self)
     SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) self, TrashBox_receiver(self));
     MessageReceiver_SetName(&self->receiver.base, data_ov004_02255304);
     self->receiver.base.message = 0;
-    self->receiver.talk->next = TRASH_BOX_TALK_OPEN;
+    self->receiver.talk->next_state = TRASH_BOX_TALK_OPEN;
     return 1;
 }
 CLEAN_AS(func_ov004_0222f5f0, TrashBox_EnterTalk)

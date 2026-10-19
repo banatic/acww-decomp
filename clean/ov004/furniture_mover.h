@@ -11,6 +11,7 @@
 #ifndef CLEAN_OV004_FURNITURE_MOVER_H
 #define CLEAN_OV004_FURNITURE_MOVER_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/heap.h"
 #include "autoload_2/matrix.h"
 #include "autoload_2/vector.h"
@@ -36,22 +37,6 @@ typedef struct FurnitureMoveFlag {
     u8 moving;
 } FurnitureMoveFlag;
 
-/* The parts of NitroSystem's NNSG3dRenderObj and NNSG3dRS the model's hooks use. */
-typedef struct FurnitureMoverRender {
-    u8 unk_00[0x2c];
-    FurnitureMover *user; /* 0x2c: what ModelObject_SetInitHook was given */
-} FurnitureMoverRender;
-
-typedef struct FurnitureMoverRenderState {
-    const u8 *command;               /* 0x00: the command being run: byte 1 is its node */
-    FurnitureMoverRender *object;    /* 0x04 */
-    u32 flags;                       /* 0x08 */
-    u32 hooks[0x20];                 /* 0x0c: each command's hook, 0 for none */
-    u8 hook_timings[0x20];           /* 0x8c */
-    u8 unk_ac[8];                    /* 0xac */
-    const AnimatedModelJoint *joint; /* 0xb4: the node's transform */
-} FurnitureMoverRenderState;
-
 u32 FurnitureMover_IdleAnim(FurnitureMover *mover);
 u32 FurnitureMover_PullAnim(FurnitureMover *mover);
 u32 FurnitureMover_PushAnim(FurnitureMover *mover);
@@ -71,8 +56,8 @@ void FurnitureMover_Release(FurnitureMover *mover);
 void FurnitureMover_Load(FurnitureMover *mover);
 FurnitureMover *FurnitureMover_Destruct(FurnitureMover *mover);
 FurnitureMover *FurnitureMover_Construct(FurnitureMover *mover);
-void FurnitureMover_SetModelHooks(FurnitureMoverRenderState *state);
-void FurnitureMover_RootNodeHook(FurnitureMoverRenderState *state);
+void FurnitureMover_SetModelHooks(G3dRenderState *state);
+void FurnitureMover_RootNodeHook(G3dRenderState *state);
 void FurnitureMoveFlag_Destruct(FurnitureMoveFlag *flag);
 void FurnitureMoveFlag_Construct(FurnitureMoveFlag *flag);
 

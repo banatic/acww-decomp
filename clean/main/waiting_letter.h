@@ -4,16 +4,16 @@
 #ifndef CLEAN_MAIN_WAITING_LETTER_H
 #define CLEAN_MAIN_WAITING_LETTER_H
 
-#include "mail.h" /* MailLetter */
+#include "mail.h" /* Letter */
 #include "types.h"
 
 typedef struct WaitingLetter {
-    MailLetter letter; /* its first word is the letter's vtable (data_020de760) */
-    u8 checksum;       /* 0x100 */
+    Letter letter; /* its first word is the letter's vtable (data_020de760) */
+    u8 checksum;   /* 0x100 */
     u8 pad_101[3];
 } WaitingLetter;
 
-MailLetter *WaitingLetter_Letter(WaitingLetter *waiting);
+Letter *WaitingLetter_Letter(WaitingLetter *waiting);
 u8 WaitingLetter_Checksum(WaitingLetter *waiting);
 void WaitingLetter_SetChecksum(WaitingLetter *waiting, u8 checksum);
 int WaitingLetter_IsSet(WaitingLetter *waiting);

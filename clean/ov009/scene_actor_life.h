@@ -19,19 +19,9 @@
 #ifndef CLEAN_OV009_SCENE_ACTOR_LIFE_H
 #define CLEAN_OV009_SCENE_ACTOR_LIFE_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/matrix.h"
 #include "scene_actor.h"
-
-/* The render state handed to the model's node callbacks (NitroSystem's NNSG3dRS, the parts
- * used here). */
-typedef struct SceneActorRenderState {
-    const u8 *command; /* 0x00: the model's command being run; byte 1 of NODEDESC is its node */
-    const u8 *object;  /* 0x04: the render object; its word 0x2c is the model object's user */
-    u8 unk_08[0x24 - 0x08];
-    void *node_callback; /* 0x24: the callback of command 6 (NODEDESC) */
-    u8 unk_28[0x92 - 0x28];
-    u8 node_timing; /* 0x92: when it runs (2: after the command) */
-} SceneActorRenderState;
 
 int SceneActor_IsNight(SceneActor *actor);
 int SceneActor_AsksToVisit(SceneActor *actor);
@@ -56,8 +46,8 @@ SceneActor *SceneActor_DestructDelete(SceneActor *actor);
 void *SceneActor_DestructComplete(SceneActor *actor);
 void *SceneActor_Construct(SceneActor *actor);
 void *SceneActor_ConstructBase(SceneActor *actor);
-void SceneActor_SetNodeHook(SceneActorRenderState *state);
-void SceneActor_AfterNode(SceneActorRenderState *state);
+void SceneActor_SetNodeHook(G3dRenderState *state);
+void SceneActor_AfterNode(G3dRenderState *state);
 void SceneActor_Slot60(SceneActor *actor);
 void SceneActor_Create(void);
 SceneActor *SceneActor_ReceiverDestructDelete(void *receiver);

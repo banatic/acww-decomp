@@ -132,17 +132,17 @@ CLEAN_AS(func_020a8eec, LabelBox_SetWalker)
 void *LabelBox_Delete(LabelBox *box)
 {
     box->base.vtable = data_020e3dac;
-    TextBoxBase_Destruct((unsigned int *) box);
+    TextBoxBase_Destruct(&box->base);
     Heap_OperatorDeleteB(box);
     return box;
 }
 CLEAN_AS(func_020a8ef4, LabelBox_Delete)
 
 /* func_020a8f14 (vtable slot 0) */
-void *LabelBox_Destruct(void *box)
+void *LabelBox_Destruct(LabelBox *box)
 {
-    ((LabelBox *) box)->base.vtable = data_020e3dac;
-    TextBoxBase_Destruct(box);
+    box->base.vtable = data_020e3dac;
+    TextBoxBase_Destruct(&box->base);
     return box;
 }
 CLEAN_AS(func_020a8f14, LabelBox_Destruct)
@@ -150,7 +150,7 @@ CLEAN_AS(func_020a8f14, LabelBox_Destruct)
 /* func_020a8f2c: a box drawing into RAM at `ram`. */
 LabelBox *LabelBox_Construct(LabelBox *box, int ram, int cells, int rows)
 {
-    TextBoxBase_Construct((TextBoxBase *) box, ram, cells, rows);
+    TextBoxBase_Construct(&box->base, ram, cells, rows);
     box->base.vtable = data_020e3dac;
     box->mode = LABEL_BOX_IDLE;
     box->walker = NULL;
@@ -161,7 +161,7 @@ CLEAN_AS(func_020a8f2c, LabelBox_Construct)
 /* func_020a8f50: a box drawing into VRAM tiles from `first_tile`. */
 LabelBox *LabelBox_ConstructInVram(LabelBox *box, unsigned int first_tile, unsigned int cells, unsigned int rows)
 {
-    TextBoxBase_ConstructInVram((TextBoxBase *) box, first_tile, cells, rows);
+    TextBoxBase_ConstructInVram(&box->base, first_tile, cells, rows);
     box->base.vtable = data_020e3dac;
     box->mode = LABEL_BOX_IDLE;
     box->walker = NULL;

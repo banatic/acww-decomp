@@ -54,11 +54,6 @@ extern const char data_ov126_022a2134[];
 
 #define KEYBOARD_ENTRY_PLAYERS 4
 
-static int keyboard_entry_label_arg(TextLabel *label)
-{
-    return (int) (uintptr_t) label;
-}
-
 /* --- The destructors and the flags --- */
 
 /* The members' destructors, last member first, then the base's. */
@@ -256,7 +251,7 @@ static void keyboard_entry_check_message(KeyboardEntry *self, const char *archiv
 
     TextLabel_Construct(&label);
     int number = GroupParams_Arg();
-    TextLabel_LoadMessage(keyboard_entry_label_arg(&label), (char *) (uintptr_t) archive, (char) number);
+    TextLabel_LoadMessage(&label, (char *) (uintptr_t) archive, (char) number);
     if (TextLabel_EqualsTrimmed(&label, self->text, self->max_chars) == 0) {
         GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELLED);
     }

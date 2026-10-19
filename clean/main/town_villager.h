@@ -50,7 +50,7 @@ void TownVillager_SetItem1380(u8 *villager, const u16 *item);
 void TownVillager_Item1380(u16 *out, u8 *villager);
 void TownVillager_SetClothes(u8 *villager, const u16 *clothes);
 u16 *TownVillager_Clothes(u8 *villager);
-MailLetter *TownVillager_Letter(u8 *villager);
+Letter *TownVillager_Letter(u8 *villager);
 u8 *TownVillager_Design(u8 *villager);
 NpcId *TownVillager_NpcId(u8 *villager);
 void TownVillager_Setup(u8 *villager, u32 number, int came, const NpcIdHead *town, u8 mode_draw);

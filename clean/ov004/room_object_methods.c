@@ -21,11 +21,6 @@
 #include "room_object_map.h"
 #include "room_objects.h"
 
-static_assert(offsetof(NodeHookState, unk_B8) == 0xb8, "node hook state");
-static_assert(offsetof(NodeHookState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(NodeHookState, hook_timings) == 0x8c, "hook timings");
-static_assert(offsetof(RoomRenderObject, user) == 0x2c, "render object's user");
-
 #define PLAYER 4             /* the actor PlayerActorOps_StartPosition is asked for */
 #define KIND_NO_ITEM 0x1c    /* unk_780 of an object that is no item of the map */
 #define EFFECT_3D 0x3d       /* what RoomObject_Effect3dAt gives EffectSystem_StartOneShotSetNumber */
@@ -47,11 +42,11 @@ static s32 shift_right(s32 value, int bits)
 
 /* func_ov004_0220e504 (vtable slot 0x64): for a node of the node set, its value goes to the
  * word the state points to; the value, or 0 for other nodes. */
-int RoomObject_NodeSetHook(RoomObject *object, int node, NodeHookState *state)
+int RoomObject_NodeSetHook(RoomObject *object, int node, G3dRenderState *state)
 {
     if (ByteSet_Contains(&object->node_set, node)) {
         int value = ByteSet_Value(&object->node_set);
-        *state->unk_B8 = (u32) value;
+        *state->visible = (u32) value;
         return value;
     }
     return 0;
@@ -60,13 +55,13 @@ CLEAN_AS(func_ov004_0220e504, RoomObject_NodeSetHook)
 
 /* func_ov004_0220e534 (vtable slot 0x6c): turns the clock's hands, "kh_j" by the hour
  * (ClockHands_TurnHourHand) and "km_j" by the minute (ClockHands_TurnMinuteHand), when the model has them. */
-void RoomObject_ClockHandsHook(RoomObject *object, int node, NodeHookState *state)
+void RoomObject_ClockHandsHook(RoomObject *object, int node, G3dRenderState *state)
 {
     if (object->nodes.found) {
         if (object->nodes.nodes[0] == node) {
-            ClockHands_TurnHourHand((ClockHandsRenderState *) (void *) state);
+            ClockHands_TurnHourHand(state);
         } else if (object->nodes.nodes[1] == node) {
-            ClockHands_TurnMinuteHand((ClockHandsRenderState *) (void *) state);
+            ClockHands_TurnMinuteHand(state);
         }
     }
 }
@@ -380,20 +375,20 @@ CLEAN_AS(func_ov004_0221134c, RoomObject_IsLight)
 /* The hooks a room object's model runs while it is drawn (set up by RoomObject_SetModelHooks).
  * Each passes byte 1 of the command (the node or material) and the render state to a slot of
  * the room object's vtable; nothing without a room object. */
-static RoomObject *hooked_object(const NodeHookState *state)
+static RoomObject *hooked_object(const G3dRenderState *state)
 {
-    return state->render_object->user;
+    return state->object->user;
 }
 
-extern int func_ov004_02211480(NodeHookState *state);
-extern void func_ov004_022114a0(NodeHookState *state);
-extern void func_ov004_022114cc(NodeHookState *state);
-extern int func_ov004_022114f8(NodeHookState *state);
+extern int func_ov004_02211480(G3dRenderState *state);
+extern void func_ov004_022114a0(G3dRenderState *state);
+extern void func_ov004_022114cc(G3dRenderState *state);
+extern int func_ov004_022114f8(G3dRenderState *state);
 
 /* The hooks are the game's functions: their addresses go into the render state. */
 #define HOOK(function) ((u32) (uintptr_t) (function))
 
-static void set_hook(NodeHookState *state, int command, u32 hook, u8 timing)
+static void set_hook(G3dRenderState *state, int command, u32 hook, u8 timing)
 {
     state->hooks[command] = hook;
     state->hook_timings[command] = timing;
@@ -401,16 +396,16 @@ static void set_hook(NodeHookState *state, int command, u32 hook, u8 timing)
 
 /* func_ov004_02211450 (the hook ModelObject_SetInitHook is given, run before the model is drawn): sets the
  * hooks for materials (after), nodes (after) and nodes' descriptions (before). */
-void RoomObject_SetModelHooks(NodeHookState *state)
+void RoomObject_SetModelHooks(G3dRenderState *state)
 {
-    set_hook(state, G3D_COMMAND_MATERIAL, HOOK(func_ov004_022114f8), G3D_TIMING_AFTER);
-    set_hook(state, G3D_COMMAND_NODE, HOOK(func_ov004_02211480), G3D_TIMING_AFTER);
-    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114cc), G3D_TIMING_BEFORE);
+    set_hook(state, G3D_COMMAND_MATERIAL, HOOK(func_ov004_022114f8), G3D_TIMING_B);
+    set_hook(state, G3D_COMMAND_NODE, HOOK(func_ov004_02211480), G3D_TIMING_B);
+    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114cc), G3D_TIMING_A);
 }
 CLEAN_AS(func_ov004_02211450, RoomObject_SetModelHooks)
 
 /* func_ov004_02211480: a node's hook (vtable slot 0x64); its result, or 0 without an object. */
-int RoomObject_RunNodeHook(NodeHookState *state)
+int RoomObject_RunNodeHook(G3dRenderState *state)
 {
     RoomObject *object = hooked_object(state);
     if (object == NULL) {
@@ -422,31 +417,31 @@ CLEAN_AS(func_ov004_02211480, RoomObject_RunNodeHook)
 
 /* func_ov004_022114a0: after a node's description, its hook (vtable slot 0x6c); then the hook
  * before the next description is set back. */
-void RoomObject_RunNodeDescAfterHook(NodeHookState *state)
+void RoomObject_RunNodeDescAfterHook(G3dRenderState *state)
 {
     RoomObject *object = hooked_object(state);
     if (object != NULL) {
         object->vtable->node_desc_after_hook(object, state->command[1], state);
     }
-    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114cc), G3D_TIMING_BEFORE);
+    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114cc), G3D_TIMING_A);
 }
 CLEAN_AS(func_ov004_022114a0, RoomObject_RunNodeDescAfterHook)
 
 /* func_ov004_022114cc: before a node's description, its hook (vtable slot 0x68); then the hook
  * after it is set. */
-void RoomObject_RunNodeDescHook(NodeHookState *state)
+void RoomObject_RunNodeDescHook(G3dRenderState *state)
 {
     RoomObject *object = hooked_object(state);
     if (object != NULL) {
         object->vtable->node_desc_hook(object, state->command[1], state);
     }
-    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114a0), G3D_TIMING_AFTER);
+    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114a0), G3D_TIMING_B);
 }
 CLEAN_AS(func_ov004_022114cc, RoomObject_RunNodeDescHook)
 
 /* func_ov004_022114f8: a material's hook (vtable slot 0x60); its result, or 0 without an
  * object. */
-int RoomObject_RunMaterialHook(NodeHookState *state)
+int RoomObject_RunMaterialHook(G3dRenderState *state)
 {
     RoomObject *object = hooked_object(state);
     if (object == NULL) {

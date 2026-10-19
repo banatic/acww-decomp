@@ -39,13 +39,6 @@ enum MenuDispatchSubState {
     MENU_DISPATCH_SUB_STATES = 2
 };
 
-enum MenuDispatchPhase {
-    MENU_DISPATCH_PHASE_WAIT = 0,
-    MENU_DISPATCH_PHASE_STATES = 1,      /* MenuDispatch_RunState */
-    MENU_DISPATCH_PHASE_INTERACTIVE = 2, /* MenuDispatch_RunInteractive */
-    MENU_DISPATCH_PHASE_DELETE = 5       /* MenuDispatch_RequestDelete */
-};
-
 typedef struct MenuDispatch {
     MenuScene base; /* 0x00: its byte 0x91 is the mode */
 } MenuDispatch;

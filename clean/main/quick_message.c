@@ -17,6 +17,7 @@
 #include "game_variables.h"
 #include "label_box.h"
 #include "message_reader.h"
+#include "ov004/member_pointer.h"
 #include "oam_buffer.h"
 #include "player_actor_ops.h"
 #include "player_id.h"
@@ -1302,14 +1303,27 @@ void QuickMessage_BalloonPlaceY(QuickMessageBalloon *balloon)
 }
 CLEAN_AS(func_02039f30, QuickMessage_BalloonPlaceY)
 
+/* The balloon's states func_02039f98 calls through: a function-local static the game fills
+ * from these constants on its first call (ov004/member_pointer.h). */
+extern u32 data_021c6734;
+extern MemberPointer data_021c673c[4];
+extern const MemberPointer data_020da5a0, data_020da5a8, data_020da5b0, data_020da5b8;
+
 /* func_02039f98 (vtable entry 3): the delay counted down, the state run, and the animations
  * of a balloon that is out advanced.
  * REQUIRES: the state is 0-3; the original indexes a table of four member pointers with it. */
 void QuickMessage_BalloonUpdate(QuickMessageBalloon *balloon)
 {
+    static const MemberPointer *const states[4] = {
+        &data_020da5a0,
+        &data_020da5a8,
+        &data_020da5b8,
+        &data_020da5b0,
+    };
     if (balloon->delay > 0) {
         balloon->delay--;
     }
+    MemberTable_InitOnce(&data_021c6734, data_021c673c, states, 4);
     switch (balloon->unk_a4) {
         case QUICK_BALLOON_IDLE:
             QuickMessage_BalloonIdle(balloon);

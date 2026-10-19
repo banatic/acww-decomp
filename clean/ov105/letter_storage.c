@@ -2305,10 +2305,10 @@ void LetterStorage_Setup(LetterStorage *self)
     for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
         Letter_Clear(&self->stored[i]);
     }
-    MailLetter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
+    Letter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
     if (kept != NULL) {
         /* Page 0's first letter: all 50 follow it. */
-        const Letter *src = (const Letter *) LetterStore_Page(kept, 0);
+        const Letter *src = LetterStore_Page(kept, 0);
         for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
             Letter_Assign(&self->stored[i], &src[i]);
         }
@@ -2323,7 +2323,7 @@ CLEAN_AS(func_ov105_0229eb54, LetterStorage_Setup)
 void LetterStorage_PanelWipeIn(LetterStorage *self)
 {
     if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_INTERACTIVE);
         LetterStorage_EndAction(self);
     }
     self->wipe_y = MenuScene_WipeOffsetY(scene_of(self));
@@ -2366,7 +2366,7 @@ CLEAN_AS(func_ov105_0229ecb8, LetterStorage_ClosePrompt)
 void LetterStorage_PromptWipeIn(LetterStorage *self)
 {
     if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_INTERACTIVE);
         LetterStorage_OfferPanelButtons(self);
     }
     self->wipe_y = MenuScene_WipeOffsetY(scene_of(self));
@@ -2499,7 +2499,7 @@ CLEAN_AS(func_ov105_0229ee90, LetterStorage_StartLetterWipeOut)
 void LetterStorage_LetterWipeIn(LetterStorage *self)
 {
     if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_INTERACTIVE);
         if (StateFlags_IsClear2()) {
             MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_LABEL_BY_TOUCH);
         } else {
@@ -2523,8 +2523,7 @@ void LetterStorage_ShowLetter(LetterStorage *self)
         LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_CHANGED);
     }
     Letter_AdvanceReceived(letter);
-    LetterView_Show(&self->view, (const LetterViewLetter *) (const void *) letter, LETTER_STORAGE_TEXT_LAYER,
-                    LETTER_STORAGE_PAGE_LAYER, 1);
+    LetterView_Show(&self->view, letter, LETTER_STORAGE_TEXT_LAYER, LETTER_STORAGE_PAGE_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), 3, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
     DisplayLayer_Show(LETTER_STORAGE_TEXT_LAYER);
     DisplayLayer_Show(LETTER_STORAGE_PAGE_LAYER);
@@ -2549,7 +2548,7 @@ void LetterStorage_SceneWipeOut(LetterStorage *self)
             LetterStorage_ShowLetter(self);
         } else {
             LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_DRAWN);
-            MenuScene_SetPhase(scene_of(self), MENU_SCENE_RUN);
+            MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_DELETE);
         }
     } else {
         MenuScene_ScrollWipe(scene_of(self), LETTER_STORAGE_SCENE_LAYER, 0, -0x10);
@@ -2599,7 +2598,7 @@ CLEAN_AS(func_ov105_0229f064, LetterStorage_StartWipeOut)
 void LetterStorage_PageWipeIn(LetterStorage *self)
 {
     if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_INTERACTIVE);
         LetterStorage_EndAction(self);
         LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_HELD_HIDDEN);
         if (self->held_kind != LETTER_STORAGE_HELD_NONE && StateFlags_Test2()) {
@@ -2666,9 +2665,9 @@ int LetterStorage_End(LetterStorage *self)
         GroupParams_SetC4C(0);
     } else {
         GroupParams_SetC4C(1);
-        MailLetter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
+        Letter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
         if (kept != NULL) {
-            Letter *dst = (Letter *) LetterStore_Page(kept, 0);
+            Letter *dst = LetterStore_Page(kept, 0);
             for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
                 Letter_Assign(&dst[i], &self->stored[i]);
             }
@@ -2802,7 +2801,7 @@ int LetterStorage_Start(LetterStorage *self)
 {
     LetterStorage_Setup(self);
     MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_START_SETUP);
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_0);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_WAIT);
     return 1;
 }
 CLEAN_AS(func_ov105_0229f740, LetterStorage_Start)

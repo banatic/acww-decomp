@@ -134,7 +134,7 @@ void Snowmen_MailGiftItem(u32 gift)
 {
     SnowmenGiftSender sender;
     u8 name[0x28];
-    MailLetter letter;
+    Letter letter;
 
     if (gift >= SNOWMEN_GIFTS) {
         return;
@@ -144,16 +144,16 @@ void Snowmen_MailGiftItem(u32 gift)
     if (player == NULL) {
         return;
     }
-    Letter_Construct((Letter *) &letter);
+    Letter_Construct(&letter);
     sender.gift = (u8) gift;
     NameText_ConstructItem((NameText *) (void *) name, &sender.item);
     MailText_SetPartText(SNOWMEN_GIFT_NAME_ARG, name);
-    Letter_WriteSpecialToPlayer((Letter *) &letter, (const u8 *) &sender, data_020e41dc, data_020e41d4, data_020e41d8,
+    Letter_WriteSpecialToPlayer(&letter, (const u8 *) &sender, data_020e41dc, data_020e41d4, data_020e41d8,
                                 PlayerRecord_Player((u8 *) (uintptr_t) player));
-    Letter_SetItem((Letter *) &letter, sender.item, 1);
+    Letter_SetItem(&letter, sender.item, 1);
     Mail_HoldAtPostOffice(&letter, 0);
     NameText_Destruct((NameText *) (void *) name);
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
 }
 CLEAN_AS(func_020b048c, Snowmen_MailGiftItem)
 

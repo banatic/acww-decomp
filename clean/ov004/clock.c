@@ -73,7 +73,7 @@ CLEAN_AS(func_ov004_022168e4, Clock_MarkNearest)
 
 /* func_ov004_022168f0 (vtable slot 0x6c, the model's hook after a node's description): turns
  * the hands. */
-void Clock_NodeDescAfterHook(Clock *clock, int node, NodeHookState *state)
+void Clock_NodeDescAfterHook(Clock *clock, int node, G3dRenderState *state)
 {
     RoomObject_ClockHandsHook(&clock->base, node, state);
 }

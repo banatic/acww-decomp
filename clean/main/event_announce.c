@@ -165,11 +165,11 @@ CLEAN_AS(func_020413f8, EventAnnounce_SetStep)
 void EventAnnounce_StepTalking(void *unused)
 {
     (void) unused;
-    TalkFlowTalk *talk = (TalkFlowTalk *) TalkObject_Get(0);
-    if (talk->state != TALK_FLOW_CLOSED) {
+    TalkObject *talk = TalkObject_Get(0);
+    if (talk->state != TALK_OBJECT_CLOSED) {
         return;
     }
-    TalkObject_DetachReceiver((TalkObject *) talk);
+    TalkObject_DetachReceiver(talk);
     SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), EXIT_RETURN);
     Music2d0_Mark08Unless(music_2d0(), data_021c758c, data_021c75a0.message);
     data_021c758c = 0;
@@ -185,14 +185,14 @@ void EventAnnounce_StepShow(EventAnnounceProcess *process)
     if (data_021c75b8 != SCREEN_SHOWN) {
         return;
     }
-    TalkFlowTalk *talk = (TalkFlowTalk *) TalkObject_Get(0);
+    TalkObject *talk = TalkObject_Get(0);
     TalkReceiver *receiver = &process->receiver;
     void (*const *vtable)(TalkReceiver *) = (void (*const *)(TalkReceiver *)) receiver->base.vtable;
     vtable[2](receiver);
     MessageReceiver_SetName(&receiver->base, data_020db6f0[data_021c75a0.ending]);
     receiver->base.message = data_021c75a0.message;
-    TalkObject_AttachReceiver((TalkObject *) talk, receiver);
-    talk->next = TALK_OBJECT_OPENING;
+    TalkObject_AttachReceiver(talk, receiver);
+    talk->next_state = TALK_OBJECT_OPENING;
     data_021c75a0.step = EVENT_ANNOUNCE_TALKING;
 }
 CLEAN_AS(func_02041470, EventAnnounce_StepShow)

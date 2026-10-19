@@ -78,14 +78,6 @@ enum MenuTabsSubState {
     MENU_TABS_SUB_STATES = 3
 };
 
-/* The phases the menu sets (MenuScene.phase; menu_scene.c's MenuScene_Update runs phase 0 by
- * the vtable's slot 0x48, 1 by 0x4c, 2 by 0x50 and 5 by 0x5c). */
-enum MenuTabsPhase {
-    MENU_TABS_PHASE_WAIT = 0,       /* the base's wait */
-    MENU_TABS_PHASE_STATES = 1,     /* MenuTabs_RunState */
-    MENU_TABS_PHASE_INTERACTIVE = 2 /* MenuTabs_RunInteractive */
-};
-
 #define MENU_TABS_TASKS 3
 
 typedef struct MenuTabs {

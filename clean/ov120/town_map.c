@@ -886,7 +886,7 @@ void TownMap_StateStartWipeIn(TownMap *self)
     MessageReader_SetPart(0, (int) (uintptr_t) &name);
     title = TownMap_TakeLabel(self);
     TextLabel_OpenStyledBox2(title, 8, 0x1ab, 0x12, 0xf, 0, 0);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) title, (char) TOWN_MAP_TITLE_MESSAGE);
+    TextLabel_LoadMenuMessage(title, (char) TOWN_MAP_TITLE_MESSAGE);
     TextLabel_Show(title, 1, 0);
     TownNameText_Destruct(&name);
 

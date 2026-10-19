@@ -21,6 +21,7 @@
 #ifndef CLEAN_OV003_TOWN_GROUND_H
 #define CLEAN_OV003_TOWN_GROUND_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/process.h"
 #include "autoload_2/vector.h"
 #include "main/acre_record.h"
@@ -77,38 +78,6 @@ typedef struct TownGround {
     SoundSource sound;       /* 0x310 (sound_source_member.h) */
 } TownGround;
 
-/* What the model's hooks get: the state of the model being drawn (NitroSystem's NNSG3dRS). */
-typedef struct TownGroundRenderObject {
-    u8 unk_00[0x2c];
-    TownGroundAcre *acre; /* the object ModelObject_SetInitHook was given */
-} TownGroundRenderObject;
-
-/* NitroSystem's NNSG3dMatAnmResult, up to the texture's scroll along S. */
-typedef struct TownGroundMaterialResult {
-    u32 flags;        /* 0x00 */
-    u32 color0;       /* 0x04 */
-    u32 color1;       /* 0x08 */
-    u32 polygon_attr; /* 0x0c */
-    u32 tex_image;    /* 0x10 */
-    u32 tex_palette;  /* 0x14 */
-    fx32 scale_s;     /* 0x18 */
-    fx32 scale_t;     /* 0x1c */
-    fx32 rotate_sin;  /* 0x20 */
-    fx32 rotate_cos;  /* 0x24 */
-    fx32 translate_s; /* 0x28 */
-    fx32 translate_t; /* 0x2c */
-} TownGroundMaterialResult;
-
-typedef struct TownGroundRenderState {
-    const u8 *command; /* the command being run: byte 1 is its material */
-    TownGroundRenderObject *render_object;
-    u32 flags;
-    u32 hooks[0x20]; /* the address of each command's hook, 0 for none */
-    u8 hook_timings[0x20];
-    u8 unk_AC[4];
-    TownGroundMaterialResult *material_result;
-} TownGroundRenderState;
-
 int TownGroundFollow_Release(TownGroundFollow *follow);
 int TownGroundFollow_Draw(TownGroundFollow *follow);
 int TownGroundFollow_Place(TownGroundFollow *follow);
@@ -141,8 +110,8 @@ int TownGround_SetUp(TownGround *ground);
 TownGround *TownGround_DestroyAndFree(TownGround *ground);
 TownGround *TownGround_Destroy(TownGround *ground);
 TownGround *TownGround_Construct(TownGround *ground);
-void TownGroundAcre_SetModelHooks(TownGroundRenderState *state);
-void TownGroundAcre_BeachHook(TownGroundRenderState *state);
+void TownGroundAcre_SetModelHooks(G3dRenderState *state);
+void TownGroundAcre_BeachHook(G3dRenderState *state);
 void TownGround_New(void);
 
 #endif

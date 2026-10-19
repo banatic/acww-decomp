@@ -19,6 +19,7 @@
 #include "globe.h"
 #include "message_receiver.h"
 #include "name_texts.h"
+#include "ov004/member_pointer.h"
 #include "player_actor_ops.h"
 #include "sliding_window.h"
 #include "state_flags.h"
@@ -415,11 +416,24 @@ void FieldLabel_Draw(FieldLabel *label)
 }
 CLEAN_AS(func_020b8b74, FieldLabel_Draw)
 
+/* The states func_020b8b88 calls through: a function-local static the game fills from these
+ * constants on its first call (ov004/member_pointer.h). */
+extern u32 data_021f6af0;
+extern MemberPointer data_021f6b00[4];
+extern const MemberPointer data_020e5820, data_020e5828, data_020e5830, data_020e5838;
+
 /* func_020b8b88: one frame: the item picked, the state's handler run, the notice's renewal
  * forgotten, and the window updated (its vtable slot 3).
  * REQUIRES: `state` is a FieldLabelState (the original calls through a table of four). */
 void FieldLabel_Update(FieldLabel *label)
 {
+    static const MemberPointer *const states[4] = {
+        &data_020e5830,
+        &data_020e5820,
+        &data_020e5838,
+        &data_020e5828,
+    };
+    MemberTable_InitOnce(&data_021f6af0, data_021f6b00, states, 4);
     FieldLabel_PickItem(label);
     switch (label->state) {
         case FIELD_LABEL_CLOSED:

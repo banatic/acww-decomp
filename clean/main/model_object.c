@@ -11,8 +11,6 @@
 #include "scene_lights.h"
 #include "vram_region.h"
 
-static_assert(sizeof(ModelRenderObject) == 0x54, "ModelRenderObject size");
-static_assert(offsetof(ModelRenderObject, joint_results) == 0x34, "ModelRenderObject joint_results");
 static_assert(offsetof(ModelObject, render) == 0x08, "ModelObject render");
 static_assert(offsetof(ModelObject, model) == 0x5c, "ModelObject model");
 static_assert(offsetof(ModelObject, vram) == 0x94, "ModelObject vram");
@@ -378,7 +376,7 @@ extern u8 data_027e0184[];
  * are out of date). */
 #define MODEL_OBJECT_GLB_BASE_CHANGED 0xa4u
 
-/* ModelRenderObject.flags (NitroSystem's NNS_G3D_RENDEROBJ_FLAG_NOGECMD): drawing computes
+/* G3dRenderObject.flags (NitroSystem's NNS_G3D_RENDEROBJ_FLAG_NOGECMD): drawing computes
  * the matrices but sends no geometry commands. */
 #define MODEL_RENDER_NO_COMMANDS 0x02
 
@@ -400,7 +398,7 @@ extern u8 data_027e0184[];
 #define MODEL_MATERIAL_FLAG_EMISSION 0x400
 
 /* The joint results' matrix of node `joint` (NNS_G3dGetResultMtx: no normal matrix wanted). */
-extern int NNS_G3dGetResultMtx(ModelRenderObject *render, Mtx43 *out, void *normal, int joint);
+extern int NNS_G3dGetResultMtx(G3dRenderObject *render, Mtx43 *out, void *normal, int joint);
 extern const Mtx43 *NNS_G3dGlbGetInvV(void);
 extern void MTX_Concat43(const Mtx43 *a, const Mtx43 *b, Mtx43 *product);
 extern void MTX_Identity43_(Mtx43 *mtx);
@@ -408,10 +406,10 @@ extern void MI_Copy36B(const void *src, void *dst);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 /* The render object set up for `model` (NNS_G3dRenderObjInit), its hook run before a draw
  * (NNS_G3dRenderObjSetInitFunc) and drawn (NNS_G3dDraw). */
-extern void func_021054e4(ModelRenderObject *render, u8 *model);
-extern void func_02105294(ModelRenderObject *render, void *hook);
-extern void func_01ff8ad4(ModelRenderObject *render);
-extern void NNS_G3dRenderObjSetCallBack(ModelRenderObject *render, void *callback, void *at, int command, int timing);
+extern void func_021054e4(G3dRenderObject *render, u8 *model);
+extern void func_02105294(G3dRenderObject *render, void *hook);
+extern void func_01ff8ad4(G3dRenderObject *render);
+extern void NNS_G3dRenderObjSetCallBack(G3dRenderObject *render, void *callback, void *at, int command, int timing);
 /* NNS_G3dGlb's base translation and scale (NNS_G3dGlbSetBaseTrans, NNS_G3dGlbSetBaseScale). */
 extern void func_0210581c(const Vec3 *translation);
 extern void func_021057f4(const Vec3 *scale);
@@ -508,7 +506,7 @@ void ModelObject_SetNodeCallback(ModelObject *object, void *callback, int comman
 CLEAN_AS(func_02055de0, ModelObject_SetNodeCallback)
 
 /* func_02055e00: the render object. */
-ModelRenderObject *ModelObject_RenderObject(ModelObject *object)
+G3dRenderObject *ModelObject_RenderObject(ModelObject *object)
 {
     return &object->render;
 }

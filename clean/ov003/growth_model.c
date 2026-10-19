@@ -37,7 +37,6 @@ static_assert(offsetof(GrowthModels, line_c8) == 0x18a4, "line_c8");
 static_assert(offsetof(GrowthModels, requests) == 0x1dd4, "requests");
 static_assert(offsetof(GrowthModels, files) == 0x1e4c, "files");
 static_assert(offsetof(GrowthModelFiles, anims) == 0x80, "anims");
-static_assert(offsetof(GrowthModelRenderState, unk_b8) == 0xb8, "unk_b8");
 static_assert(offsetof(AnimatedModel, frames) == 0x9c, "frames");
 
 /* The tile events' process, which holds the models at 0x4b20. */
@@ -164,11 +163,11 @@ CLEAN_AS(func_ov003_02222bc0, GrowthModel_LoadFiles)
 
 /* func_ov003_02222c34 (the hook func_ov003_02223580 sets on each model): at node 2, in modes
  * 0-3, the render state's word at 0xb8 is cleared. */
-void GrowthModel_NodeHook(GrowthModelRenderState *state)
+void GrowthModel_NodeHook(G3dRenderState *state)
 {
-    GrowthModel *model = state->render_object->user;
+    GrowthModel *model = state->object->user;
     if (state->command[1] == GROWTH_MODEL_HIDDEN_NODE && (u32) model->mode <= 3) {
-        *state->unk_b8 = 0;
+        *state->visible = 0;
     }
 }
 CLEAN_AS(func_ov003_02222c34, GrowthModel_NodeHook)

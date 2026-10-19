@@ -45,11 +45,6 @@
 /* The animation action that starts texture SRT animation 1, and the line states the action
  * gives (HeldItem_Act). */
 #define HELD_ITEM_ACTION_TEXTURE_ANIM 0x28
-/* The command and timings of the node callbacks (NitroSystem's NNS_G3D_SBC_NODEDESC, before
- * and after a node). */
-#define HELD_ITEM_NODE_COMMAND 6
-#define HELD_ITEM_NODE_BEFORE 1
-#define HELD_ITEM_NODE_AFTER 2
 /* The line states in which its position is set again after the item is drawn. */
 #define HELD_ITEM_LINE_STATE_7 7
 #define HELD_ITEM_LINE_STATE_8 8
@@ -57,26 +52,6 @@
 static_assert(offsetof(HeldItemObject, anim) == 0x08, "HeldItemObject.anim");
 static_assert(offsetof(HeldItemObject, line) == 0x28, "HeldItemObject.line");
 static_assert(offsetof(AnimatedModel, frames) == 0x9c, "AnimatedModel.frames");
-
-/* The parts of NitroSystem's NNSG3dRenderObj and NNSG3dRS the node callbacks use: the user
- * value of the render object (ModelObject_SetNodeCallback's), the callback of the node commands
- * (a DS address) and when in the command it runs. */
-typedef struct HeldItemNodeObject {
-    u8 unk_00[0x2c];
-    HeldItemObject *held; /* 0x2c */
-} HeldItemNodeObject;
-
-typedef struct HeldItemNodeState {
-    const u8 *command;                /* 0x00 */
-    const HeldItemNodeObject *object; /* 0x04 */
-    u8 unk_08[0x1c];
-    u32 node_callback; /* 0x24 */
-    u8 unk_28[0x6a];
-    u8 node_timing; /* 0x92 */
-} HeldItemNodeState;
-
-static_assert(offsetof(HeldItemNodeState, node_callback) == 0x24, "node callback");
-static_assert(offsetof(HeldItemNodeState, node_timing) == 0x92, "node timing");
 
 extern u8 data_021ca16c[];       /* the held items' pool */
 extern const u8 data_020dd754[]; /* HeldItemAnim's vtable */
@@ -333,8 +308,8 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
                 HeldItemPool_PlayJointAnim((HeldItemPool *) (void *) pool, index, kind, 0, 0);
                 AnimatedModel_Attach(model);
                 if (plain == 0) {
-                    ModelObject_SetNodeCallback(&model->object, (void *) (uintptr_t) func_0205ef5c, HELD_ITEM_NODE_COMMAND,
-                                                HELD_ITEM_NODE_BEFORE, held, NULL);
+                    ModelObject_SetNodeCallback(&model->object, (void *) (uintptr_t) func_0205ef5c, G3D_COMMAND_NODE_DESC,
+                                                G3D_TIMING_A, held, NULL);
                 }
             }
         } else {
@@ -363,14 +338,14 @@ CLEAN_AS(func_0205ec50, HeldItem_Setup)
  * then HeldItem_BeforeNode for the next node. */
 void HeldItem_AfterNode(void *state)
 {
-    HeldItemNodeState *node = state;
-    HeldItemObject *held = node->object->held;
+    G3dRenderState *node = state;
+    HeldItemObject *held = node->object->user;
     if (held != NULL) {
         AnimatedModel_AfterNode(
             (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, held->index), state);
     }
-    node->node_callback = (u32) (uintptr_t) func_0205ef5c;
-    node->node_timing = HELD_ITEM_NODE_BEFORE;
+    node->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_0205ef5c;
+    node->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_A;
 }
 CLEAN_AS(func_0205ef28, HeldItem_AfterNode)
 
@@ -378,14 +353,14 @@ CLEAN_AS(func_0205ef28, HeldItem_AfterNode)
  * (AnimatedModel_BeforeNode), then HeldItem_AfterNode after it. */
 void HeldItem_BeforeNode(void *state)
 {
-    HeldItemNodeState *node = state;
-    HeldItemObject *held = node->object->held;
+    G3dRenderState *node = state;
+    HeldItemObject *held = node->object->user;
     if (held != NULL) {
         AnimatedModel_BeforeNode(
             (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, held->index), state);
     }
-    node->node_callback = (u32) (uintptr_t) func_0205ef28;
-    node->node_timing = HELD_ITEM_NODE_AFTER;
+    node->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_0205ef28;
+    node->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_B;
 }
 CLEAN_AS(func_0205ef5c, HeldItem_BeforeNode)
 

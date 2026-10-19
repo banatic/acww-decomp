@@ -30,7 +30,7 @@ static_assert(sizeof(RoomEtcBoard) == 0x15c, "the size RoomEtcBoard_New allocate
  * opposite of the board's own direction) the viewer may turn. */
 #define ROOM_ETC_BOARD_TALK_DISTANCE 0x2ccd
 #define ROOM_ETC_BOARD_TALK_ANGLE 0x1300
-/* What a talk's next state is set to to open it (TalkFlowTalk.next). */
+/* What a talk's next state is set to to open it (TalkObject.next_state). */
 #define ROOM_ETC_BOARD_TALK_OPENING TALK_OBJECT_OPENING
 
 /* The boards by index, and how many there are. */
@@ -83,7 +83,7 @@ CLEAN_AS(func_ov004_0221ad40, RoomEtcBoard_Get)
  * the event ends. */
 void RoomEtcBoard_UpdateOpen(RoomEtcBoard *board)
 {
-    if (board->receiver.talk != NULL && board->receiver.talk->state == TALK_FLOW_CLOSED) {
+    if (board->receiver.talk != NULL && board->receiver.talk->state == TALK_OBJECT_CLOSED) {
         SceneObjectBase_ReleaseReceiver(&board->base, receiver_of(board));
         EventQueue_FinishObjectEvent(board);
     }
@@ -101,7 +101,7 @@ CLEAN_AS(func_ov004_0221ad88, RoomEtcBoard_EnterOpen)
 /* func_ov004_0221ad8c: state 1's update: on to state 2 once the talk is up. */
 void RoomEtcBoard_UpdateWaiting(RoomEtcBoard *board)
 {
-    if (board->receiver.talk != NULL && board->receiver.talk->state != TALK_FLOW_CLOSED) {
+    if (board->receiver.talk != NULL && board->receiver.talk->state != TALK_OBJECT_CLOSED) {
         RoomEtcBoard_SetState(board, ROOM_ETC_BOARD_OPEN);
     }
 }
@@ -115,7 +115,7 @@ int RoomEtcBoard_EnterWaiting(RoomEtcBoard *board)
     SceneObjectBase_TakeReceiver(&board->base, receiver_of(board));
     MessageReceiver_SetName(&board->receiver.base, data_ov004_0225336c);
     board->receiver.base.message = (u8) board->message;
-    board->receiver.talk->next = ROOM_ETC_BOARD_TALK_OPENING;
+    board->receiver.talk->next_state = ROOM_ETC_BOARD_TALK_OPENING;
     return 1;
 }
 CLEAN_AS(func_ov004_0221adb0, RoomEtcBoard_EnterWaiting)

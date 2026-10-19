@@ -214,7 +214,7 @@ static void gt_write_letter(GiraffeTalk *talk, u8 *record)
     if (CurrentPockets_FreeLetterIndex() == -1) {
         return;
     }
-    Letter *letter = (Letter *) (void *) CurrentPockets_FreeLetter();
+    Letter *letter = CurrentPockets_FreeLetter();
     if (letter == NULL) {
         return;
     }

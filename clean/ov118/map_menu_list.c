@@ -550,7 +550,7 @@ void MapMenu_SetRowText(MapMenu *self, TextLabel *label, unsigned int entry)
     } else if (entry >= MAP_MENU_ENTRY_VILLAGER && entry < MAP_MENU_ENTRY_PLACE) {
         ChoiceRow_SetListBName(row, (int) (entry - MAP_MENU_ENTRY_VILLAGER));
     } else if (entry >= MAP_MENU_ENTRY_PLACE && entry < MAP_MENU_ENTRY_END) {
-        TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) (entry + MAP_MENU_PLACE_MESSAGE));
+        TextLabel_LoadMenuMessage(label, (char) (entry + MAP_MENU_PLACE_MESSAGE));
     } else {
         TextBase_Clear(label);
     }

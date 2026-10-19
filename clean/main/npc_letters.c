@@ -132,15 +132,14 @@ CLEAN_AS(func_02088810, NpcLetters_SendInsurance)
 int NpcLetters_SendInsuranceLetter(PlayerField2416 *field, int message, u16 *item)
 {
     (void) field;
-    MailLetter letter;
-    Letter_Construct((Letter *) &letter);
+    Letter letter;
+    Letter_Construct(&letter);
     u8 *record = PlayerRecords_Current();
     u8 number = (u8) message;
-    Letter_WriteSpecialToPlayer((Letter *) &letter, &number, data_020e1fdc, data_020e1f60, data_020e1f68,
-                                PlayerRecord_Player(record));
-    Letter_SetItem((Letter *) &letter, *item, 1);
+    Letter_WriteSpecialToPlayer(&letter, &number, data_020e1fdc, data_020e1f60, data_020e1f68, PlayerRecord_Player(record));
+    Letter_SetItem(&letter, *item, 1);
     int taken = Mail_HoldAtPostOffice(&letter, 0) != 0;
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
     return taken;
 }
 CLEAN_AS(func_0208893c, NpcLetters_SendInsuranceLetter)
@@ -158,25 +157,24 @@ void NpcLetters_SendMissing(void)
         return;
     }
 
-    MailLetter letter;
-    Letter_Construct((Letter *) &letter);
+    Letter letter;
+    Letter_Construct(&letter);
     u8 message = (u8) MainRandom_Below(NPC_LETTERS_MISSING_MESSAGES);
     Date today;
     Calendar_Today(&today);
     u8 paper = (u8) MomLetters_DrawPaper(NPC_LETTERS_MISSING_PAPER_SET, today.month);
-    Letter_WriteSpecialToPlayer((Letter *) &letter, &message, data_020e1ff0, data_020e1f58, &paper,
-                                PlayerRecord_Player(record));
+    Letter_WriteSpecialToPlayer(&letter, &message, data_020e1ff0, data_020e1f58, &paper, PlayerRecord_Player(record));
 
     NpcLettersItemList list;
     u16 item;
     ItemList_Construct((ItemList *) &list, 0, NPC_LETTERS_MISSING_LIST_GROUP);
     ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
-    Letter_SetItem((Letter *) &letter, item, 1);
+    Letter_SetItem(&letter, item, 1);
     ItemList_Destruct(&list);
 
     if (Mail_HoldAtPostOffice(&letter, 0) != 0) {
         PlayerRecord_ClearFlag(record, NPC_LETTERS_FLAG_MISSING);
     }
-    Letter_Destruct((Letter *) &letter);
+    Letter_Destruct(&letter);
 }
 CLEAN_AS(func_020889a8, NpcLetters_SendMissing)

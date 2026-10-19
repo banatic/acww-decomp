@@ -519,25 +519,25 @@ void SkyEvents_PostFlag32Letters(SkyObjects *objects)
         if (record == NULL || !PlayerRecord_TestFlag(record, SKY_EVENTS_FLAG_32)) {
             continue;
         }
-        MailLetter letter;
+        Letter letter;
         u8 message;
         u16 item;
         SkyEventsItemList list;
         SkyEventsItemList copy;
-        Letter_Construct((Letter *) &letter);
+        Letter_Construct(&letter);
         message = (u8) MainRandom_Below(3);
-        Letter_WriteSpecialToPlayer((Letter *) &letter, &message, (const char *) data_020e7ad0, data_020e5970, data_020e596c,
+        Letter_WriteSpecialToPlayer(&letter, &message, (const char *) data_020e7ad0, data_020e5970, data_020e596c,
                                     PlayerRecord_Player(record));
         ItemList_Construct((ItemList *) &list, 0, 4);
         copy = list;
         ItemLists_Draw(&item, (ItemList *) &copy, 0, 0, 1, 1, 0);
         ItemList_Destruct(&copy);
-        Letter_SetItem((Letter *) &letter, item, 1);
+        Letter_SetItem(&letter, item, 1);
         if (Mail_Post(&letter)) {
             PlayerRecord_ClearFlag(record, SKY_EVENTS_FLAG_32);
         }
         ItemList_Destruct(&list);
-        Letter_Destruct((Letter *) &letter);
+        Letter_Destruct(&letter);
     }
 }
 CLEAN_AS(func_020bde98, SkyEvents_PostFlag32Letters)

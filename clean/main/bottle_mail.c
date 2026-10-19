@@ -56,8 +56,8 @@ void BottleMail_ReceiveDrifting(void)
     if (ExchangeBlock_IsSendable((ExchangeBlock *) (void *) pending) == 0) {
         return;
     }
-    MailLetter *letter = ExchangeBlock_BottleLetter((ExchangeBlock *) (void *) pending);
-    if (Letter_State((const Letter *) letter) == 0) {
+    Letter *letter = ExchangeBlock_BottleLetter((ExchangeBlock *) (void *) pending);
+    if (Letter_State(letter) == 0) {
         return;
     }
     if (ExchangeBlock_ArrivesAtOnce((ExchangeBlock *) (void *) pending) == 0) {
@@ -70,9 +70,9 @@ void BottleMail_ReceiveDrifting(void)
         }
     }
     ExchangeBlock_ClearDrifts((ExchangeBlock *) (void *) pending);
-    Letter_AdvanceWritten((Letter *) letter);
-    Letter_Assign((Letter *) BottleMail_Letter(&data_021f36ec), (const Letter *) letter);
-    Letter_Clear((Letter *) letter);
+    Letter_AdvanceWritten(letter);
+    Letter_Assign(BottleMail_Letter(&data_021f36ec), letter);
+    Letter_Clear(letter);
     if (BottleMail_IsOnMap() != 0) {
         return;
     }
@@ -92,7 +92,7 @@ void BottleMail_DailyCheck(int days)
         return;
     }
     BottleState *bottle = &data_021f36ec;
-    if (Letter_State((const Letter *) BottleMail_Letter(bottle)) != 0) {
+    if (Letter_State(BottleMail_Letter(bottle)) != 0) {
         BottleMail_PlaceOnMap();
         return;
     }
@@ -134,14 +134,14 @@ CLEAN_AS(func_02096de0, BottleMail_PlaceOnMap)
  * write message `*message` of "ev_bottle" as its letter; whether it was written. */
 int BottleMail_Write(const u8 *message)
 {
-    MailLetter *bottle = BottleMail_Letter(&data_021f36ec);
-    if (Letter_State((const Letter *) bottle) != 0) {
+    Letter *bottle = BottleMail_Letter(&data_021f36ec);
+    if (Letter_State(bottle) != 0) {
         return 0;
     }
     if (BottleMail_PlaceOnMap() == 0) {
         return 0;
     }
-    Letter_WriteBottle((Letter *) bottle, message, data_020e3070);
+    Letter_WriteBottle(bottle, message, data_020e3070);
     return 1;
 }
 CLEAN_AS(func_02096df4, BottleMail_Write)
@@ -151,19 +151,19 @@ CLEAN_AS(func_02096df4, BottleMail_Write)
  * a linked session tells the host (player 0) to empty its own. 0 when the player has no room. */
 int BottleMail_Open(void)
 {
-    MailLetter *place = CurrentPockets_FreeLetter();
+    Letter *place = CurrentPockets_FreeLetter();
     if (place == NULL) {
         return 0;
     }
-    MailLetter *bottle = BottleMail_Letter(&data_021f36ec);
-    if (Letter_State((const Letter *) bottle) == 0) {
-        Letter_Clear((Letter *) bottle);
+    Letter *bottle = BottleMail_Letter(&data_021f36ec);
+    if (Letter_State(bottle) == 0) {
+        Letter_Clear(bottle);
         return 1;
     }
     u16 item = MARKED_ITEM;
     OSi_DoUnlockByWord__main_0203cd2c(PlayerRecord_ItemRecord(PlayerRecords_Current()), &item, 0, 1);
-    Letter_Assign((Letter *) place, (const Letter *) bottle);
-    Letter_Clear((Letter *) bottle);
+    Letter_Assign(place, bottle);
+    Letter_Clear(bottle);
     NetSession *session = data_020ccf94;
     if (Session_IsLinked(session) && session->local_slot != 0) {
         PlayerMessages_Send(PLAYER_MESSAGE_CLEAR_RECORD, 0);
@@ -230,13 +230,13 @@ CLEAN_AS(func_02097edc, BottleMail_MarkMessageUsed)
 /* func_02097f00: no letter, every message unused. */
 void BottleMail_InitState(BottleState *bottle)
 {
-    Letter_Clear((Letter *) &bottle->letter);
+    Letter_Clear(&bottle->letter);
     BottleMail_ClearUsed(bottle);
 }
 CLEAN_AS(func_02097f00, BottleMail_InitState)
 
 /* func_02097f14 */
-MailLetter *BottleMail_Letter(BottleState *bottle)
+Letter *BottleMail_Letter(BottleState *bottle)
 {
     return &bottle->letter;
 }
@@ -245,7 +245,7 @@ CLEAN_AS(func_02097f14, BottleMail_Letter)
 /* func_02097f18: the destructor. */
 BottleState *BottleMail_DestructState(BottleState *bottle)
 {
-    Letter_Destruct((Letter *) &bottle->letter);
+    Letter_Destruct(&bottle->letter);
     return bottle;
 }
 CLEAN_AS(func_02097f18, BottleMail_DestructState)
@@ -253,7 +253,7 @@ CLEAN_AS(func_02097f18, BottleMail_DestructState)
 /* func_02097f28: the constructor. */
 BottleState *BottleMail_ConstructState(BottleState *bottle)
 {
-    Letter_Construct((Letter *) &bottle->letter);
+    Letter_Construct(&bottle->letter);
     return bottle;
 }
 CLEAN_AS(func_02097f28, BottleMail_ConstructState)

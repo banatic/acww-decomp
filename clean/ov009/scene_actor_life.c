@@ -34,8 +34,6 @@ static_assert(offsetof(SceneActor, model_slot) == 0x292, "model slot");
 static_assert(offsetof(SceneActor, bounds_centre) == 0x294, "bounds centre");
 static_assert(offsetof(SceneActor, bounds_width) == 0x2a0, "bounds width");
 static_assert(offsetof(SceneActor, bounds_depth) == 0x2a4, "bounds depth");
-static_assert(offsetof(SceneActorRenderState, node_callback) == 0x24, "node callback");
-static_assert(offsetof(SceneActorRenderState, node_timing) == 0x92, "node timing");
 static_assert(sizeof(AnimatedModel) >= 0xb4 && offsetof(AnimatedModel, object) == 0, "animated model");
 static_assert(sizeof(BuildingLights) == 0x38, "building lights");
 
@@ -88,9 +86,6 @@ static_assert(sizeof(BuildingLights) == 0x38, "building lights");
 
 /* The animations start at normal speed. */
 #define SCENE_ACTOR_LIFE_ANIM_SPEED 0x1000
-/* A node callback runs after its command. */
-#define SCENE_ACTOR_NODE_AFTER 2
-
 /* The class's vtables. */
 extern const u8 data_ov009_022658dc[];
 extern const u8 data_ov009_022659a0[];
@@ -578,20 +573,20 @@ CLEAN_AS(func_ov009_0226552c, SceneActor_ConstructBase)
 
 /* func_ov009_022655c4: the model's hook before each draw, given the render state: a callback
  * (func_ov009_022655d4) after each node is placed. */
-void SceneActor_SetNodeHook(SceneActorRenderState *state)
+void SceneActor_SetNodeHook(G3dRenderState *state)
 {
-    state->node_callback = (void *) (uintptr_t) func_ov009_022655d4;
-    state->node_timing = SCENE_ACTOR_NODE_AFTER;
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_ov009_022655d4;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov009_022655c4, SceneActor_SetNodeHook)
 
 /* func_ov009_022655d4: after a node is placed, the actor the model object belongs to (its
  * user) is told the node and the state through vtable slot 0x60. */
-void SceneActor_AfterNode(SceneActorRenderState *state)
+void SceneActor_AfterNode(G3dRenderState *state)
 {
-    SceneActor *actor = *(SceneActor *const *) (const void *) (state->object + 0x2c);
+    SceneActor *actor = state->object->user;
     if (actor != NULL) {
-        ((void (*)(SceneActor *, int, SceneActorRenderState *)) life_slot(actor, SCENE_ACTOR_LIFE_SLOT_NODE))(
+        ((void (*)(SceneActor *, int, G3dRenderState *)) life_slot(actor, SCENE_ACTOR_LIFE_SLOT_NODE))(
             actor, state->command[1], state);
     }
 }

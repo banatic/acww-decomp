@@ -4,9 +4,6 @@
 #include "clean.h"
 #include "main/calendar.h" /* Time */
 
-static_assert(offsetof(ClockHandsJoint, rotation) == 0x28, "rotation");
-static_assert(offsetof(ClockHandsRenderState, joint) == 0xb4, "joint");
-
 /* A full turn, as the angle the sine table is indexed by (16 bits, 4096 entries). */
 #define CLOCK_HANDS_TURN 0xffff
 /* How far the hour hand moves in an hour: a twelfth of a turn. */
@@ -32,20 +29,20 @@ static u32 clock_hands_entry(u32 angle)
 
 /* The joint's rotation turned by `rotation`: replaced while it is the identity, else
  * multiplied by it; then it is no longer the identity. */
-static void clock_hands_apply(ClockHandsJoint *joint, const Mtx33 *rotation)
+static void clock_hands_apply(G3dJointResult *joint, const Mtx33 *rotation)
 {
-    if ((joint->flags & CLOCK_HANDS_ROTATION_ZERO) != 0) {
+    if ((joint->flags & G3D_JOINT_ROTATION_IDENTITY) != 0) {
         joint->rotation = *rotation;
     } else {
         MTX_Concat33(&joint->rotation, rotation, &joint->rotation);
     }
-    joint->flags &= ~(u32) CLOCK_HANDS_ROTATION_ZERO;
+    joint->flags &= ~(u32) G3D_JOINT_ROTATION_IDENTITY;
 }
 
 /* func_020b3188: the minute hand, a turn clockwise (negative about z) per hour. */
-void ClockHands_TurnMinuteHand(ClockHandsRenderState *state)
+void ClockHands_TurnMinuteHand(G3dRenderState *state)
 {
-    ClockHandsJoint *joint = state->joint;
+    G3dJointResult *joint = state->joint;
     Time now;
     Calendar_Now(&now);
     fx32 part = FX_Div((now.minute % 60) << 12, 60 << 12);
@@ -59,9 +56,9 @@ CLEAN_AS(func_020b3188, ClockHands_TurnMinuteHand)
 
 /* func_020b3220: the hour hand, a turn clockwise per twelve hours, moved on by the minutes.
  * QUIRK: the minute is not taken modulo 60 here, unlike for the minute hand. */
-void ClockHands_TurnHourHand(ClockHandsRenderState *state)
+void ClockHands_TurnHourHand(G3dRenderState *state)
 {
-    ClockHandsJoint *joint = state->joint;
+    G3dJointResult *joint = state->joint;
     Time now;
     Calendar_Now(&now);
     if (data_021f4b30 != data_021fbdd0) {

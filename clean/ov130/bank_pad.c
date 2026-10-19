@@ -697,7 +697,7 @@ void BankPad_ShowMessage(BankPad *pad)
 {
     BankPad_LoadPicture(pad->picture);
     TextLabel *label = BankPad_NextLabel(pad);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) data_ov130_0229a7fc[pad->kind]);
+    TextLabel_LoadMenuMessage(label, (char) data_ov130_0229a7fc[pad->kind]);
     TextLabel_OpenStyledBox2(label, 8, 0x14c, 14, 15, 0, 0);
     TextLabel_Show(label, 1, 0);
 }
@@ -731,7 +731,7 @@ CLEAN_AS(func_ov130_0229a3f0, BankPad_LoadPicture)
 static void show_caption(BankPad *pad, int message, int box_a, int box_b)
 {
     TextLabel *label = BankPad_NextLabel(pad);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_OpenStyledBox2(label, pad->keys_layer, box_a, box_b, 0xf, 0, 0);
     TextLabel_Show(label, 1, 0);
 }

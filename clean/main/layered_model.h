@@ -12,6 +12,7 @@
 #ifndef CLEAN_MAIN_LAYERED_MODEL_H
 #define CLEAN_MAIN_LAYERED_MODEL_H
 
+#include "main/g3d_render.h"
 #include "itcm/node_hook.h"
 #include "main/frame_ctrl.h"
 #include "types.h"
@@ -40,7 +41,7 @@ typedef struct LayeredModel {
     const void *vtable;          /* 0x00 */
     u16 flags;                   /* 0x04: LAYERED_MODEL_RELEASE_* */
     u8 unk_06[2];                /* 0x06 */
-    u8 render_object[0x54];      /* 0x08: NitroSystem's NNSG3dRenderObj */
+    G3dRenderObject render;      /* 0x08 */
     void *model_resource;        /* 0x5c: the model (NNSG3dResMdl) */
     u8 unk_60[0x3c];             /* 0x60 */
     FrameCtrl base_frames;       /* 0x9c */
@@ -56,23 +57,6 @@ typedef struct LayeredModel {
     u32 nodes_b[2];              /* 0x1ac */
 } LayeredModel;
 
-/* NitroSystem's NNSG3dJntAnmResult, the parts read here. */
-typedef struct LayeredModelJoint {
-    u32 flags;          /* 0x00: LAYERED_MODEL_JOINT_* */
-    u8 unk_04[0x24];    /* 0x04: the scale */
-    s32 rotation[9];    /* 0x28 */
-    s32 translation[3]; /* 0x4c */
-} LayeredModelJoint;
-
-#define LAYERED_MODEL_JOINT_TRANSLATION_ZERO 0x04 /* the translation is 0 and was not written */
-
-/* NitroSystem's NNSG3dRS, the parts read here. */
-typedef struct LayeredModelNodeState {
-    G3dRenderState state;     /* 0x00: the command being run (its byte 1 the node) */
-    u8 unk_08[0xac];          /* 0x08 */
-    LayeredModelJoint *joint; /* 0xb4: the node's joint result */
-} LayeredModelNodeState;
-
 void LayeredModel_ClearNodesB(LayeredModel *model);
 void LayeredModel_MoveNodesToA(LayeredModel *model, u32 first, u32 last);
 void LayeredModel_MoveNodesToB(LayeredModel *model, u32 first, u32 last);
@@ -83,10 +67,10 @@ void LayeredModel_PlayB(LayeredModel *model, const void *file, int blend, int fl
 void LayeredModel_PlayBaseB(LayeredModel *model, const void *file, int blend, int flags, fx32 speed, u16 start, u16 frames);
 void LayeredModel_UpdateB(LayeredModel *model);
 int LayeredModel_LoadB(LayeredModel *model, int heap);
-void LayeredModel_ApplyNodeB(LayeredModel *model, LayeredModelNodeState *state);
-void LayeredModel_BlendNodeB(LayeredModel *model, LayeredModelNodeState *state);
-void LayeredModel_PrepareNodeB(LayeredModel *model, LayeredModelNodeState *state);
-void LayeredModel_RecordNodeB(LayeredModel *model, LayeredModelNodeState *state);
+void LayeredModel_ApplyNodeB(LayeredModel *model, G3dRenderState *state);
+void LayeredModel_BlendNodeB(LayeredModel *model, G3dRenderState *state);
+void LayeredModel_PrepareNodeB(LayeredModel *model, G3dRenderState *state);
+void LayeredModel_RecordNodeB(LayeredModel *model, G3dRenderState *state);
 u32 LayeredModel_HasNodeB(LayeredModel *model, u32 node);
 void LayeredModel_ClearNodeB(LayeredModel *model, u32 node);
 void LayeredModel_SetNodeB(LayeredModel *model, u32 node);
@@ -103,10 +87,10 @@ void LayeredModel_PlayBaseA(LayeredModel *model, const void *file, int blend, in
 void LayeredModel_DrawA(LayeredModel *model, const void *scale);
 void LayeredModel_UpdateA(LayeredModel *model);
 int LayeredModel_LoadA(LayeredModel *model, int heap);
-void LayeredModel_ApplyNodeA(LayeredModel *model, LayeredModelNodeState *state);
-void LayeredModel_BlendNodeA(LayeredModel *model, LayeredModelNodeState *state);
-void LayeredModel_PrepareNodeA(LayeredModel *model, LayeredModelNodeState *state);
-void LayeredModel_RecordNodeA(LayeredModel *model, LayeredModelNodeState *state);
+void LayeredModel_ApplyNodeA(LayeredModel *model, G3dRenderState *state);
+void LayeredModel_BlendNodeA(LayeredModel *model, G3dRenderState *state);
+void LayeredModel_PrepareNodeA(LayeredModel *model, G3dRenderState *state);
+void LayeredModel_RecordNodeA(LayeredModel *model, G3dRenderState *state);
 int LayeredModel_HasNodeA(LayeredModel *model, u32 node);
 void LayeredModel_ClearNodeA(LayeredModel *model, u32 node);
 

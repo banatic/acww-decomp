@@ -114,9 +114,9 @@ extern u8 data_021dc7bc[];            /* the town's four players' records */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-static MailLetter *villager_mail_held(u8 *villager)
+static Letter *villager_mail_held(u8 *villager)
 {
-    return (MailLetter *) (void *) (villager + TOWN_VILLAGER_LETTER);
+    return (Letter *) (void *) (villager + TOWN_VILLAGER_LETTER);
 }
 
 /* An item drawn from item list `kind`, as the game does it: from a copy of the list. */
@@ -143,8 +143,7 @@ CLEAN_AS(func_02080cf0, VillagerMail_HasHeldLetter)
  * a set sender the villager knows and the memory's bit 0 is set; -1 otherwise. */
 int VillagerMail_HeldLetterMemory(u8 *villager)
 {
-    const DesignCreator *sender =
-        (const DesignCreator *) (uintptr_t) (Letter_PlayerSender((Letter *) villager_mail_held(villager)));
+    const DesignCreator *sender = (const DesignCreator *) (uintptr_t) (Letter_PlayerSender(villager_mail_held(villager)));
     if (sender == NULL) {
         return -1;
     }
@@ -349,7 +348,7 @@ CLEAN_AS(func_02080ff8, VillagerMail_SendBirthdayLetter)
  * likes the player 3 less; a good one "re_normal" with the player's name and six drawn words,
  * a present when the letter carried an item, and the villager likes the player 3 more (5 with
  * an item). A letter graded neither gets nothing. */
-void VillagerMail_Reply(u8 *villager, u8 *record, MailLetter *letter)
+void VillagerMail_Reply(u8 *villager, u8 *record, Letter *letter)
 {
     NpcId *npc = TownVillager_NpcId(villager);
     if (record == NULL || PlayerRecord_TestFlag(record, VILLAGER_MAIL_RECORD_FLAG) != 0) {
@@ -386,7 +385,7 @@ void VillagerMail_Reply(u8 *villager, u8 *record, MailLetter *letter)
             MessageReader_LoadDecoded(&label, &message, group);
             MailText_SetPartText(VILLAGER_MAIL_SLOT_WORDS + i, &label);
         }
-        if (Letter_Item((const Letter *) letter) != VILLAGER_MAIL_NO_ITEM) {
+        if (Letter_Item(letter) != VILLAGER_MAIL_NO_ITEM) {
             int length = LetterGrade_BodyLength(letter);
             if (length <= VILLAGER_MAIL_SHORT_LETTER) {
                 if (MainRandom_Below(2) == 0) {
@@ -407,8 +406,8 @@ void VillagerMail_Reply(u8 *villager, u8 *record, MailLetter *letter)
         }
         VillagerLetter_PostDrawn(data_020e199c, first, VILLAGER_MAIL_REPLY_TEXTS, player, npc, &present);
         if (memory != NULL) {
-            int delta = Letter_Item((const Letter *) letter) != VILLAGER_MAIL_NO_ITEM ? VILLAGER_MAIL_GIFT_FONDNESS
-                                                                                      : VILLAGER_MAIL_GOOD_FONDNESS;
+            int delta =
+                Letter_Item(letter) != VILLAGER_MAIL_NO_ITEM ? VILLAGER_MAIL_GIFT_FONDNESS : VILLAGER_MAIL_GOOD_FONDNESS;
             VillagerMemoryEntry_ChangeFondness(memory, delta);
         }
         MessagePart_Destruct((MessagePart *) &label);
@@ -421,8 +420,7 @@ CLEAN_AS(func_02081144, VillagerMail_Reply)
  * town, number and name) and its memory of the player has bit 0 set. */
 int VillagerMail_HoldsLetterFrom(u8 *villager, const DesignCreator *player)
 {
-    const DesignCreator *sender =
-        (const DesignCreator *) (uintptr_t) (Letter_PlayerSender((Letter *) villager_mail_held(villager)));
+    const DesignCreator *sender = (const DesignCreator *) (uintptr_t) (Letter_PlayerSender(villager_mail_held(villager)));
     if (!PlayerId_IsSet((DesignCreator *) player) || sender == NULL) {
         return 0;
     }
@@ -443,10 +441,10 @@ CLEAN_AS(func_02081398, VillagerMail_HoldsLetterFrom)
  * sender: the memory's bit 0 set, the letter kept with this town as the town it came in, and its
  * item added to the house's items (VillagerItems_Add) when the item it stands for is one
  * func_0204bcdc accepts, a wallpaper or a carpet. Whether the villager took it. */
-int VillagerMail_Receive(u8 *villager, MailLetter *letter)
+int VillagerMail_Receive(u8 *villager, Letter *letter)
 {
     VillagerMemory *memory = NULL;
-    const DesignCreator *sender = (const DesignCreator *) (uintptr_t) Letter_PlayerSender((Letter *) letter);
+    const DesignCreator *sender = (const DesignCreator *) (uintptr_t) Letter_PlayerSender(letter);
     if (sender != NULL) {
         DesignCreator id;
         PlayerId_CopyConstruct(&id, (DesignCreator *) sender);
@@ -459,10 +457,10 @@ int VillagerMail_Receive(u8 *villager, MailLetter *letter)
         return 0;
     }
     VillagerMemoryEntry_SetLetterHeld(memory);
-    Letter_Assign((Letter *) villager_mail_held(villager), (const Letter *) letter);
+    Letter_Assign(villager_mail_held(villager), letter);
     TownName_Copy((TownName *) ((NpcIdHead *) (void *) (villager + TOWN_VILLAGER_LETTER_TOWN)),
                   (const TownName *) &data_021dc7aa);
-    u16 item = Letter_Item((const Letter *) letter);
+    u16 item = Letter_Item(letter);
     if (item != VILLAGER_MAIL_NO_ITEM) {
         u16 stands_for;
         ItemForm_ToPlaced(&stands_for, &item, 1);

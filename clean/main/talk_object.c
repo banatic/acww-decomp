@@ -149,14 +149,14 @@ void TalkObject_Shake(TalkObject *talk)
         u16 angle = talk->shake_angle;
         x = FX_MulFunc(talk_object_cos((u16) (angle + 0x2000)), x);
         y = FX_MulFunc(talk_object_sin((u16) (angle * 2 - 0x4000)), y);
-        TalkBox_SetPlace((TalkBox *) (void *) talk->window, -(x >> 12), talk->window_offset + (y >> 12));
+        TalkBox_SetPlace(&talk->window, -(x >> 12), talk->window_offset + (y >> 12));
     } else {
         talk->shake_angle = 0;
         talk->shake_amplitude = 0;
         talk->shake_fall = 0;
         talk->shake_scale_x = 0;
         talk->shake_scale_y = 0;
-        TalkBox_SetPlace((TalkBox *) (void *) talk->window, 0, talk->window_offset);
+        TalkBox_SetPlace(&talk->window, 0, talk->window_offset);
     }
 }
 CLEAN_AS(func_02067c74, TalkObject_Shake)
@@ -375,7 +375,7 @@ CLEAN_AS(func_02068114, TalkObject_OptionFlagOff)
 /* func_0206812c: the message window and the choice windows drawn. */
 void TalkObject_Draw(TalkObject *talk)
 {
-    TalkBox_Draw((TalkBox *) (void *) talk->window);
+    TalkBox_Draw(&talk->window);
     TalkWindows_Draw(&talk->choice_windows);
 }
 CLEAN_AS(func_0206812c, TalkObject_Draw)
@@ -391,7 +391,7 @@ void TalkObject_Update(TalkObject *talk)
     MemberPointer_CallVoid(&data_021cdb14[talk->state], talk);
     TalkFlow_EnterNext(talk);
     TalkObject_Shake(talk);
-    TalkBox_Update((TalkBox *) (void *) talk->window);
+    TalkBox_Update(&talk->window);
     TalkWindows_Update(&talk->choice_windows);
     if (talk->state != TALK_OBJECT_CLOSED && talk->state != TALK_OBJECT_GONE) {
         TalkObject_ApplyInputMode(talk);
@@ -490,21 +490,21 @@ CLEAN_AS(func_02068320, TalkObject_DetachReceiver)
 void TalkObject_AttachReceiver(TalkObject *talk, TalkReceiver *receiver)
 {
     talk->receiver = receiver;
-    TalkReceiver_SetTalk(receiver, (struct TalkFlowTalk *) (void *) talk);
+    TalkReceiver_SetTalk(receiver, talk);
 }
 CLEAN_AS(func_02068340, TalkObject_AttachReceiver)
 
 /* func_02068358 */
 void TalkObject_StopSpinner(TalkObject *talk)
 {
-    TalkBox_StopSpinner((TalkBox *) (void *) talk->window);
+    TalkBox_StopSpinner(&talk->window);
 }
 CLEAN_AS(func_02068358, TalkObject_StopSpinner)
 
 /* func_02068364 */
 void TalkObject_StartSpinner(TalkObject *talk, int sound)
 {
-    TalkBox_StartSpinner((TalkBox *) (void *) talk->window, sound);
+    TalkBox_StartSpinner(&talk->window, sound);
 }
 CLEAN_AS(func_02068364, TalkObject_StartSpinner)
 
@@ -645,7 +645,7 @@ TalkObject *TalkObject_Destruct(TalkObject *talk)
     TalkPage_Destruct(&talk->page);
     TalkAnswers_Destruct(&talk->answers);
     TalkWindows_Destruct(&talk->choice_windows);
-    TalkBox_Destruct((TalkBox *) (void *) talk->window);
+    TalkBox_Destruct(&talk->window);
     return talk;
 }
 CLEAN_AS(func_020684b0, TalkObject_Destruct)
@@ -662,7 +662,7 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     talk->unk_10 = 0;
     talk->mode = 4;
     talk->choices_asked = 0;
-    TalkBox_Construct((TalkBox *) (void *) talk->window);
+    TalkBox_Construct(&talk->window);
     talk->window_offset = 0;
     talk->shake_angle = 0;
     talk->shake_amplitude = 0;

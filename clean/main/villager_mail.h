@@ -31,8 +31,8 @@ void VillagerMail_SendNewYearLetters(u8 *villager, const DateTime *today);
 void VillagerMail_SendNewYearLetter(u8 *villager, u8 *record, const DateTime *today);
 void VillagerMail_SendBirthdayLetters(u8 *villager, const DateTime *today);
 void VillagerMail_SendBirthdayLetter(u8 *villager, u8 *record, const DateTime *today);
-void VillagerMail_Reply(u8 *villager, u8 *record, MailLetter *letter);
+void VillagerMail_Reply(u8 *villager, u8 *record, Letter *letter);
 int VillagerMail_HoldsLetterFrom(u8 *villager, const DesignCreator *player);
-int VillagerMail_Receive(u8 *villager, MailLetter *letter);
+int VillagerMail_Receive(u8 *villager, Letter *letter);
 
 #endif

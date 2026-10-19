@@ -324,7 +324,7 @@ static void show_label(PocketsBox *self, int lit, int tile, int message)
     int colour = lit ? LABEL_COLOUR_LIT : LABEL_COLOUR_DIM;
     TextLabel *label = PocketsBox_NextLabel(self);
     TextLabel_OpenStyledBox2(label, LABEL_STYLE, tile, LABEL_CELLS, (u8) colour, LABEL_COLOUR_39, 0);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_Show(label, 1, 1);
 }
 

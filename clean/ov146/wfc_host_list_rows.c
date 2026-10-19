@@ -470,7 +470,7 @@ CLEAN_AS(func_ov146_0229a17c, WfcHostList_ShowTitlesOnce)
 static void wfc_host_list_show_title(WfcHostList *self, int message, int tile)
 {
     TextLabel *label = WfcHostList_TakeLabel(self);
-    TextLabel_LoadMenuMessage((int) (uintptr_t) label, (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_OpenStyledBox2(label, 8, tile, 6, 0xf, 0, 0);
     TextLabel_Show(label, 1, 0);
 }
@@ -532,7 +532,7 @@ void WfcHostList_RefreshRowLabels(WfcHostList *self)
                 TextBase_WideToBytes((TextBase *) (void *) &data_ov146_0229b7e4,
                                      (WideTextBase *) (void *) &data_ov146_0229b7a8, 0, 0);
                 MessageReader_SetPart(0, (int) (uintptr_t) &data_ov146_0229b7e4);
-                TextLabel_LoadMenuMessage((int) (uintptr_t) town, WFC_HOST_LIST_TOWN_MESSAGE);
+                TextLabel_LoadMenuMessage(town, WFC_HOST_LIST_TOWN_MESSAGE);
                 name = WfcHostList_TakeLabel(self);
                 TextLabel_SetFromWide(name, (const u16 *) (const void *) host->data,
                                       (void *) (uintptr_t) WFC_HOST_LIST_NAME_LENGTH);

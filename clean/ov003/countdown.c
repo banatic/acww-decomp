@@ -44,11 +44,6 @@ static_assert(offsetof(CountdownBoard, material) == 0x2d4, "board material");
 static_assert(offsetof(CountdownBoard, alpha) == 0x2d5, "board alpha");
 static_assert(offsetof(CountdownBoard, digits) == 0x2d8, "board digits");
 static_assert(sizeof(CountdownBoard) == 0x2f0, "the size CountdownBoard_New allocates");
-static_assert(offsetof(CountdownRenderObject, board) == 0x2c, "render object user");
-static_assert(offsetof(CountdownMaterialResult, polygon_attr) == 0x0c, "polygon attributes");
-static_assert(offsetof(CountdownRenderState, hooks) == 0x0c, "hooks");
-static_assert(offsetof(CountdownRenderState, hook_timings) == 0x8c, "hook timings");
-static_assert(offsetof(CountdownRenderState, material_result) == 0xb0, "material result");
 
 #define COUNTDOWN_RECEIVER_OFFSET 0xec
 #define COUNTDOWN_ONE 0x1000       /* normal speed, 20.12 fixed point */
@@ -68,9 +63,6 @@ static_assert(offsetof(CountdownRenderState, material_result) == 0xb0, "material
 #define COUNTDOWN_ALPHA_FADED 1
 #define COUNTDOWN_ALPHA_MASK 0x001f0000u
 #define COUNTDOWN_ALPHA_SHIFT 16
-/* The render state's command whose hook the board sets: materials, after the material. */
-#define COUNTDOWN_COMMAND_MATERIAL 4
-#define COUNTDOWN_TIMING_AFTER 2
 /* The status Actor_Draw gets when the digits are drawn first. */
 #define COUNTDOWN_DRAW_STATUS 2
 /* The modes the mode tables let through (see CountdownBoard_RunMode). */
@@ -114,8 +106,8 @@ extern MemberPointer data_ov003_0223c8c8[3];
 extern const MemberPointer data_ov003_02238ac0, data_ov003_02238ac8;
 
 /* The hooks are the game's functions: their addresses go to the model and its render state. */
-extern void func_ov003_0221d038(CountdownRenderState *state);
-extern void func_ov003_0221d048(CountdownRenderState *state);
+extern void func_ov003_0221d038(G3dRenderState *state);
+extern void func_ov003_0221d048(G3dRenderState *state);
 
 /* The place `place` of the time left, kept as the byte a digit keeps; whether `place` is one of
  * the six.
@@ -557,29 +549,29 @@ CLEAN_AS(func_ov003_0221cfc0, CountdownBoard_Construct)
 /* func_ov003_0221cffc: when `material` is "m_cbs_Adt", draws it with the board's alpha. The
  * alpha bits are cleared and then set, in two writes.
  * QUIRK: the alpha is not masked to 5 bits; the board only sets 1 and 31. */
-void CountdownBoard_MaterialHook(CountdownBoard *board, int material, CountdownRenderState *state)
+void CountdownBoard_MaterialHook(CountdownBoard *board, int material, G3dRenderState *state)
 {
     if (material == board->material) {
-        state->material_result->polygon_attr &= ~COUNTDOWN_ALPHA_MASK;
-        state->material_result->polygon_attr |= (u32) board->alpha << COUNTDOWN_ALPHA_SHIFT;
+        state->material->polygon_attr &= ~COUNTDOWN_ALPHA_MASK;
+        state->material->polygon_attr |= (u32) board->alpha << COUNTDOWN_ALPHA_SHIFT;
     }
 }
 CLEAN_AS(func_ov003_0221cffc, CountdownBoard_MaterialHook)
 
 /* func_ov003_0221d038 (the hook func_02055dc8 is given, run before the model is drawn): sets
  * the materials' hook (after each material) to func_ov003_0221d048. */
-void CountdownBoard_SetModelHooks(CountdownRenderState *state)
+void CountdownBoard_SetModelHooks(G3dRenderState *state)
 {
-    state->hooks[COUNTDOWN_COMMAND_MATERIAL] = (u32) (uintptr_t) func_ov003_0221d048;
-    state->hook_timings[COUNTDOWN_COMMAND_MATERIAL] = COUNTDOWN_TIMING_AFTER;
+    state->hooks[G3D_COMMAND_MATERIAL] = (u32) (uintptr_t) func_ov003_0221d048;
+    state->hook_timings[G3D_COMMAND_MATERIAL] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov003_0221d038, CountdownBoard_SetModelHooks)
 
 /* func_ov003_0221d048: a material's hook: CountdownBoard_MaterialHook on the board, when the
  * render object has one. */
-void CountdownBoard_RunMaterialHook(CountdownRenderState *state)
+void CountdownBoard_RunMaterialHook(G3dRenderState *state)
 {
-    CountdownBoard *board = state->render_object->board;
+    CountdownBoard *board = state->object->user;
     if (board != NULL) {
         CountdownBoard_MaterialHook(board, state->command[1], state);
     }

@@ -9,20 +9,6 @@
 #include "item_code.h"
 #include "scene_query.h"
 
-static_assert(offsetof(SceneObjectNodeState, callbacks) == 0x0c, "SceneObjectNodeState layout");
-static_assert(offsetof(SceneObjectNodeState, timings) == 0x8c, "SceneObjectNodeState layout");
-static_assert(offsetof(SceneObjectNodeState, joint) == 0xb4, "SceneObjectNodeState layout");
-static_assert(offsetof(SceneObjectNodeState, node_info) == 0xd4, "SceneObjectNodeState layout");
-
-/* The command whose callback these are, and NitroSystem's timings. */
-#define SCENE_OBJECT_NODES_COMMAND 6 /* NODEDESC */
-#define SCENE_OBJECT_NODES_BEFORE 1
-#define SCENE_OBJECT_NODES_JOINT 2
-#define SCENE_OBJECT_NODES_AFTER 3
-
-/* The render object's user data (NNSG3dRenderObj's at 0x2c): the scene object, or null. */
-#define SCENE_OBJECT_NODES_USER 0x2c
-
 /* The object's parts read here (scene_object.h). */
 #define SCENE_OBJECT_NODES_PERSON 0xea /* u16 */
 #define SCENE_OBJECT_NODES_MODEL 0xec
@@ -49,9 +35,9 @@ extern void func_0201c48c(void *state);
 extern void func_0201c49c(void *state);
 extern void func_0201c6a8(void *state);
 
-static u8 *scene_object_nodes_object(const SceneObjectNodeState *state)
+static u8 *scene_object_nodes_object(const G3dRenderState *state)
 {
-    return *(u8 *const *) (const void *) ((const u8 *) state->state.object + SCENE_OBJECT_NODES_USER);
+    return state->object->user; /* the scene object, or null */
 }
 
 static LayeredModel *scene_object_nodes_model(u8 *object)
@@ -59,10 +45,10 @@ static LayeredModel *scene_object_nodes_model(u8 *object)
     return (LayeredModel *) (void *) (object + SCENE_OBJECT_NODES_MODEL);
 }
 
-static void scene_object_nodes_hand_on(SceneObjectNodeState *state, void (*next)(void *), u8 timing)
+static void scene_object_nodes_hand_on(G3dRenderState *state, void (*next)(void *), u8 timing)
 {
-    state->callbacks[SCENE_OBJECT_NODES_COMMAND] = (u32) (uintptr_t) next;
-    state->timings[SCENE_OBJECT_NODES_COMMAND] = timing;
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) next;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = timing;
 }
 
 /* Whether the object is person `code`, the variant of a code with one left out. */
@@ -103,9 +89,9 @@ static const s32 *scene_object_nodes_rest_translation(const u8 *node_info, int n
 }
 
 /* func_0201c48c: after a node: the command's callback is SceneObjectNodes_Before again. */
-void SceneObjectNodes_After(SceneObjectNodeState *state)
+void SceneObjectNodes_After(G3dRenderState *state)
 {
-    scene_object_nodes_hand_on(state, func_0201c6a8, SCENE_OBJECT_NODES_BEFORE);
+    scene_object_nodes_hand_on(state, func_0201c6a8, G3D_TIMING_A);
 }
 CLEAN_AS(func_0201c48c, SceneObjectNodes_After)
 
@@ -119,15 +105,15 @@ CLEAN_AS(func_0201c48c, SceneObjectNodes_After)
  *   and the joint tilted about its x axis by the ground's angle there;
  * - the node is blended by its layer (LayeredModel_ApplyNodeB).
  * Then the command's callback is SceneObjectNodes_After. */
-void SceneObjectNodes_Joint(SceneObjectNodeState *state)
+void SceneObjectNodes_Joint(G3dRenderState *state)
 {
-    int node = state->state.command[1];
+    int node = state->command[1];
     u8 *object = scene_object_nodes_object(state);
 
     if (object != NULL) {
         if (!scene_object_nodes_is_person(object, SCENE_OBJECT_NODES_PERSON_D011) ||
             (SceneQuery_CurrentIn20() != 0 && SceneQuery_CurrentIndexIn20() == 1)) {
-            AnimatedModel_RestoreNodeTranslation((AnimatedModelNodeState *) (void *) state, SCENE_OBJECT_NODES_HEIGHT);
+            AnimatedModel_RestoreNodeTranslation(state, SCENE_OBJECT_NODES_HEIGHT);
         } else if (node == SCENE_OBJECT_NODES_NODE_16) {
             const s32 *rest = scene_object_nodes_rest_translation(state->node_info, node);
             Vec3 *translation = &state->joint->translation;
@@ -148,7 +134,7 @@ void SceneObjectNodes_Joint(SceneObjectNodeState *state)
 
     if (node == SCENE_OBJECT_NODES_ROOT && object != NULL &&
         scene_object_nodes_is_person(object, SCENE_OBJECT_NODES_PERSON_D016)) {
-        AnimatedModelJoint *joint = state->joint;
+        G3dJointResult *joint = state->joint;
         Vec3 bent = joint->translation;
         Vec3 from = joint->translation;
         int tilt = Globe_Bend(&bent, &from);
@@ -158,21 +144,21 @@ void SceneObjectNodes_Joint(SceneObjectNodeState *state)
     }
 
     if (object != NULL) {
-        LayeredModel_ApplyNodeB(scene_object_nodes_model(object), (LayeredModelNodeState *) (void *) state);
+        LayeredModel_ApplyNodeB(scene_object_nodes_model(object), state);
     }
-    scene_object_nodes_hand_on(state, func_0201c48c, SCENE_OBJECT_NODES_AFTER);
+    scene_object_nodes_hand_on(state, func_0201c48c, G3D_TIMING_C);
 }
 CLEAN_AS(func_0201c49c, SceneObjectNodes_Joint)
 
 /* func_0201c6a8: before a node: the joints take the animation of the node's layer
  * (LayeredModel_PrepareNodeB), with the scene object; then the command's callback is
  * SceneObjectNodes_Joint. */
-void SceneObjectNodes_Before(SceneObjectNodeState *state)
+void SceneObjectNodes_Before(G3dRenderState *state)
 {
     u8 *object = scene_object_nodes_object(state);
     if (object != NULL) {
-        LayeredModel_PrepareNodeB(scene_object_nodes_model(object), (LayeredModelNodeState *) (void *) state);
+        LayeredModel_PrepareNodeB(scene_object_nodes_model(object), state);
     }
-    scene_object_nodes_hand_on(state, func_0201c49c, SCENE_OBJECT_NODES_JOINT);
+    scene_object_nodes_hand_on(state, func_0201c49c, G3D_TIMING_B);
 }
 CLEAN_AS(func_0201c6a8, SceneObjectNodes_Before)

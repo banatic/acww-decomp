@@ -81,7 +81,7 @@ int ExchangeBlock_Constellation(ExchangeBlock *block)
 CLEAN_AS(func_020900e4, ExchangeBlock_Constellation)
 
 /* func_020900f0 */
-MailLetter *ExchangeBlock_BottleLetter(ExchangeBlock *block)
+Letter *ExchangeBlock_BottleLetter(ExchangeBlock *block)
 {
     return &block->bottle_letter;
 }
@@ -166,7 +166,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 void ExchangeBlock_Clear(ExchangeBlock *block)
 {
     MI_CpuFill8(block, 0, sizeof(ExchangeBlock));
-    Letter_Clear((Letter *) &block->bottle_letter);
+    Letter_Clear(&block->bottle_letter);
     Constellations_Clear((Constellation *) (void *) block->constellation);
 }
 CLEAN_AS(func_02090174, ExchangeBlock_Clear)
@@ -184,7 +184,7 @@ ExchangeBlock *ExchangeBlock_Destruct(ExchangeBlock *block)
     PairedTown_Destruct(block->paired_town);
     VillagerCopy_Destruct(block->villager);
     Constellations_DestructOne((Constellation *) (void *) block->constellation);
-    Letter_Destruct((Letter *) &block->bottle_letter);
+    Letter_Destruct(&block->bottle_letter);
     return block;
 }
 CLEAN_AS(func_020901a0, ExchangeBlock_Destruct)
@@ -193,7 +193,7 @@ CLEAN_AS(func_020901a0, ExchangeBlock_Destruct)
  * town's. */
 ExchangeBlock *ExchangeBlock_Construct(ExchangeBlock *block)
 {
-    Letter_Construct((Letter *) &block->bottle_letter);
+    Letter_Construct(&block->bottle_letter);
     Constellations_ConstructOne((int) (uintptr_t) block->constellation);
     VillagerCopy_Construct(block->villager);
     PairedTown_Construct(block->paired_town);

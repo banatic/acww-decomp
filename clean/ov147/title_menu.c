@@ -156,7 +156,7 @@ CLEAN_AS(func_ov147_02299320, TitleMenu_GreetingMessage)
 void TitleMenu_CheckBottleLetter(TitleReceiver *self)
 {
     ExchangeBlock *block = &data_021ee418;
-    if (Letter_State((const Letter *) ExchangeBlock_BottleLetter(block)) == 0) {
+    if (Letter_State(ExchangeBlock_BottleLetter(block)) == 0) {
         return;
     }
     if (ExchangeBlock_Drifts(block) != 0) {

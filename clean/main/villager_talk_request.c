@@ -219,7 +219,7 @@ void VillagerTalkRequest_Accept(VillagerTalk *talk)
                 break;
             }
             case VILLAGER_TALK_REQUEST_TYPE_LETTER: {
-                MailLetter *letter = CurrentPockets_FreeLetter();
+                Letter *letter = CurrentPockets_FreeLetter();
                 if (letter != NULL) {
                     VillagerPartBlock_WriteLetter(request_block(talk), letter);
                 }

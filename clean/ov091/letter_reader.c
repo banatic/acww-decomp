@@ -152,7 +152,7 @@ void LetterReader_PadInput(LetterReader *self)
     if ((pressed & LETTER_READER_PAD_A) || (pressed & LETTER_READER_PAD_B)) {
         Glider_ShowSecondOfSet(&self->cursor);
         self->base.state = LETTER_READER_STATE_PRESS;
-        MenuScene_SetPhase(letter_reader_scene(self), LETTER_READER_PHASE_STATES);
+        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATES);
     }
 }
 CLEAN_AS(func_ov091_02298fb4, LetterReader_PadInput)
@@ -168,7 +168,7 @@ void LetterReader_TouchInput(LetterReader *self)
     if (LabelButton_IsTouched(&self->button)) {
         LabelSprite_SetState(letter_reader_button_sprite(self), LETTER_READER_BUTTON_PRESSED);
         self->base.state = LETTER_READER_STATE_BUTTON;
-        MenuScene_SetPhase(letter_reader_scene(self), LETTER_READER_PHASE_STATES);
+        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATES);
         SoundSys_PlaySe(0x27);
     }
 }
@@ -206,7 +206,7 @@ void LetterReader_WipeOut(LetterReader *self)
     if (MenuScene_StepWipe(letter_reader_scene(self), LETTER_READER_WIPE_SCREEN) != 0) {
         DisplayLayer_HideAndResetScroll(LETTER_READER_TEXT_LAYER);
         DisplayLayer_HideAndResetScroll(LETTER_READER_PAPER_LAYER);
-        MenuScene_SetPhase(letter_reader_scene(self), LETTER_READER_PHASE_DELETE);
+        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_DELETE);
     } else {
         MenuScene_ScrollWipe(letter_reader_scene(self), LETTER_READER_TEXT_LAYER, 0, 0);
         MenuScene_ScrollWipe(letter_reader_scene(self), LETTER_READER_PAPER_LAYER, 0, 0);
@@ -261,7 +261,7 @@ CLEAN_AS(func_ov091_022991b0, LetterReader_WaitCursorPress)
 void LetterReader_WipeIn(LetterReader *self)
 {
     if (MenuScene_StepWipeBack(letter_reader_scene(self), LETTER_READER_WIPE_SCREEN) != 0) {
-        MenuScene_SetPhase(letter_reader_scene(self), LETTER_READER_PHASE_INTERACTIVE);
+        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         Glider_SetAnim(&self->cursor, GLIDER_ANIM_SET_A);
         if (StateFlags_IsClear2()) {
             MenuScene_SetSubState(letter_reader_scene(self), LETTER_READER_SUB_TOUCH);
@@ -283,7 +283,7 @@ void LetterReader_ShowLetter(LetterReader *self)
     SoundSys_PlaySe(1);
     MusicVolume_SetSlot1(letter_reader_music_volume(), 0);
     DisplayShadow_SetMainBgMode(0);
-    const LetterViewLetter *letter = GroupParams_Pointer();
+    const Letter *letter = GroupParams_Pointer();
     LetterView_Show(&self->view, letter, LETTER_READER_TEXT_LAYER, LETTER_READER_PAPER_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow0(letter_reader_scene(self), LETTER_READER_WIPE_LAYERS, 0, 0, LETTER_READER_WIPE_MARGIN);
     DisplayLayer_Show(LETTER_READER_TEXT_LAYER);
@@ -384,7 +384,7 @@ int LetterReader_Start(LetterReader *self)
 {
     LetterReader_Init(self);
     MenuScene_SetState(letter_reader_scene(self), LETTER_READER_STATE_SHOW);
-    MenuScene_SetPhase(letter_reader_scene(self), LETTER_READER_PHASE_STATES);
+    MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATES);
     SoundSys_LowerMusic();
     return 1;
 }

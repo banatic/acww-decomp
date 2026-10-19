@@ -29,7 +29,7 @@
 /* What slot 0x6c answers without a speaker (as SceneBase_SpeakingKind does). */
 #define TALK_RECEIVER_NO_KIND 5
 
-struct TalkFlowTalk;
+struct TalkObject; /* talk_object.h */
 
 /* The speaker's name (0x20 bytes). */
 typedef struct TalkReceiverName {
@@ -42,10 +42,10 @@ typedef struct TalkReceiverName {
 } TalkReceiverName;
 
 typedef struct TalkReceiver {
-    MessageReceiver base;      /* 0x00: its vtable data_020df008, or a derived class's */
-    TalkReceiverName speaker;  /* 0x20 */
-    struct TalkFlowTalk *talk; /* 0x40: the talk showing the receiver's message, or NULL */
-    u8 nameless;               /* 0x44: set when the speaker's name was cleared */
+    MessageReceiver base;     /* 0x00: its vtable data_020df008, or a derived class's */
+    TalkReceiverName speaker; /* 0x20 */
+    struct TalkObject *talk;  /* 0x40: the talk showing the receiver's message, or NULL */
+    u8 nameless;              /* 0x44: set when the speaker's name was cleared */
     u8 unk_45[3];
 } TalkReceiver;
 
@@ -56,7 +56,7 @@ void *TalkReceiverName_Destruct(void *name);
 void *TalkReceiverName_Construct(void *name);
 
 void TalkReceiver_DropTalk(TalkReceiver *receiver);
-void TalkReceiver_SetTalk(TalkReceiver *receiver, struct TalkFlowTalk *talk);
+void TalkReceiver_SetTalk(TalkReceiver *receiver, struct TalkObject *talk);
 void TalkReceiver_Nothing74(void);
 void TalkReceiver_Nothing70(void);
 int TalkReceiver_SpeakingKind(void);

@@ -24,7 +24,7 @@ typedef struct WfcNotice {
 
 /* A letter (0x114 bytes). */
 typedef struct WfcLetter {
-    MailLetter letter;               /* 0x000 */
+    Letter letter;                   /* 0x000 */
     u16 number;                      /* 0x100 */
     u8 hmac[WFC_DELIVERY_HMAC_SIZE]; /* 0x102: of the letter with these bytes zero */
     u8 pad_112[2];

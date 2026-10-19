@@ -38,14 +38,14 @@ void FieldActorReceiver_TalkIgnore(void *receiver);
 void *FieldActorReceiver_Destruct(void *receiver);
 
 /* field_actor_model.c: placing the actor's models for drawing. */
-struct NodeRenderState;
+struct G3dRenderState;
 void FieldActor_PlaceForDraw(struct FieldActor *actor);
 int FieldActor_ModelY(struct FieldActor *actor, int y);
 void FieldActor_PlaceModel(struct FieldActor *actor);
 void FieldActor_PlaceAtPosition(struct FieldActor *actor);
-void FieldActor_NodeAfter(struct NodeRenderState *state);
-void FieldActor_NodeTransform(struct NodeRenderState *state);
-void FieldActor_NodeBefore(struct NodeRenderState *state);
+void FieldActor_NodeAfter(struct G3dRenderState *state);
+void FieldActor_NodeTransform(struct G3dRenderState *state);
+void FieldActor_NodeBefore(struct G3dRenderState *state);
 void FieldActor_UpdateModelMatrix(struct FieldActor *actor);
 
 /* field_actor_states.c: the state machine. */

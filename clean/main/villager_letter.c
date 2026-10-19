@@ -18,13 +18,13 @@ extern char data_021d1358[VILLAGER_LETTER_NAME_SIZE];
 
 /* The item put on the letter, when there is one, and the letter held at the post office; it is
  * destroyed after. Whether it was held. */
-static int send(MailLetter *letter, const u16 *item)
+static int send(Letter *letter, const u16 *item)
 {
     if (item != NULL && *item != VILLAGER_LETTER_NO_ITEM) {
-        Letter_SetItem((Letter *) letter, *item, 1);
+        Letter_SetItem(letter, *item, 1);
     }
     int held = Mail_HoldAtPostOffice(letter, 0) != 0;
-    Letter_Destruct((Letter *) letter);
+    Letter_Destruct(letter);
     return held;
 }
 
@@ -36,13 +36,12 @@ int VillagerLetter_Post(const char *name, int text, const void *player, const Np
     if (PlayerId_IsSet((DesignCreator *) player) == 0 || !NpcId_IsValid(npc)) {
         return 0;
     }
-    MailLetter letter;
-    Letter_Construct((Letter *) &letter);
+    Letter letter;
+    Letter_Construct(&letter);
     u8 paper = MomLetters_PaperFromSet(NpcId_Personality(npc));
     NpcId_FormatResourceName(npc, data_021d1380, VILLAGER_LETTER_NAME_SIZE, name);
     u8 message = (u8) text;
-    Letter_WriteVillagerToPlayer((Letter *) &letter, &message, data_021d1380, &paper, npc, player,
-                                 VILLAGER_LETTER_FROM_VILLAGER);
+    Letter_WriteVillagerToPlayer(&letter, &message, data_021d1380, &paper, npc, player, VILLAGER_LETTER_FROM_VILLAGER);
     return send(&letter, item);
 }
 CLEAN_AS(func_0207d33c, VillagerLetter_Post)
@@ -53,16 +52,16 @@ int VillagerLetter_PostDrawn(const char *name, int first, int choices, const voi
     if (PlayerId_IsSet((DesignCreator *) player) == 0 || !NpcId_IsValid(npc)) {
         return 0;
     }
-    MailLetter letter;
-    Letter_Construct((Letter *) &letter);
+    Letter letter;
+    Letter_Construct(&letter);
     u8 paper = MomLetters_PaperFromSet(NpcId_Personality(npc));
     u8 parts[VILLAGER_LETTER_PARTS];
     for (int i = 0; i < VILLAGER_LETTER_PARTS; i++) {
         parts[i] = (u8) (first + (int) MainRandom_Below(choices));
     }
     NpcId_FormatResourceName(npc, data_021d1358, VILLAGER_LETTER_NAME_SIZE, name);
-    Letter_WriteVillagerToPlayerZ((Letter *) &letter, &parts[0], &parts[1], &parts[2], &parts[3], data_021d1358, &paper, npc,
-                                  player, VILLAGER_LETTER_FROM_VILLAGER);
+    Letter_WriteVillagerToPlayerZ(&letter, &parts[0], &parts[1], &parts[2], &parts[3], data_021d1358, &paper, npc, player,
+                                  VILLAGER_LETTER_FROM_VILLAGER);
     return send(&letter, item);
 }
 CLEAN_AS(func_0207d3dc, VillagerLetter_PostDrawn)

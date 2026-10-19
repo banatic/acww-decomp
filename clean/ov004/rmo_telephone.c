@@ -247,8 +247,8 @@ CLEAN_AS(func_ov004_02230ef0, RmoTelephone_EnterState11)
 /* func_ov004_02230ef4 (update of state 10): state 11 once its receiver's talk has opened. */
 void RmoTelephone_UpdateState10(RmoTelephone *self)
 {
-    struct TalkFlowTalk *talk = self->receiver.talk;
-    if (talk != NULL && talk->state != TALK_FLOW_CLOSED) {
+    TalkObject *talk = self->receiver.talk;
+    if (talk != NULL && talk->state != TALK_OBJECT_CLOSED) {
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_11);
     }
 }
@@ -262,7 +262,6 @@ static_assert(offsetof(Actor, position) == 0x5c, "position");
 static_assert(offsetof(Actor, angle) == 0x8c, "angle");
 static_assert(offsetof(TalkObject, mode) == 0x14, "talk mode");
 static_assert(offsetof(TalkObject, voice) == 0x1a2c, "talk voice");
-static_assert(offsetof(TalkFlowTalk, next) == 0x08, "talk flow next");
 static_assert(sizeof(RmoTelephoneAnswers) == 8, "answer list");
 
 /* Its states' entries and updates (filled by __sinit_ov004_0224ebd8): member pointers whose
@@ -515,8 +514,8 @@ CLEAN_AS(func_ov004_02231084, RmoTelephone_EnterState5)
 /* State 5 once its receiver's talk has closed. */
 static void RmoTelephone_after_talk(RmoTelephone *self)
 {
-    struct TalkFlowTalk *talk = self->receiver.talk;
-    if (talk != NULL && talk->state == TALK_FLOW_CLOSED) {
+    TalkObject *talk = self->receiver.talk;
+    if (talk != NULL && talk->state == TALK_OBJECT_CLOSED) {
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_5);
     }
 }
@@ -546,8 +545,8 @@ CLEAN_AS(func_ov004_022310f0, RmoTelephone_EnterState3)
 /* func_ov004_022310f4 (update of state 2): state 3 once its receiver's talk has opened. */
 void RmoTelephone_UpdateState2(RmoTelephone *self)
 {
-    struct TalkFlowTalk *talk = self->receiver.talk;
-    if (talk != NULL && talk->state != TALK_FLOW_CLOSED) {
+    TalkObject *talk = self->receiver.talk;
+    if (talk != NULL && talk->state != TALK_OBJECT_CLOSED) {
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_3);
     }
 }
@@ -565,7 +564,7 @@ void RmoTelephone_EnterState2(RmoTelephone *self)
     } else {
         self->receiver.base.message = RMO_TELEPHONE_MESSAGE_MENU;
     }
-    self->receiver.talk->next = TALK_OBJECT_OPENING;
+    self->receiver.talk->next_state = TALK_OBJECT_OPENING;
 }
 CLEAN_AS(func_ov004_02231118, RmoTelephone_EnterState2)
 

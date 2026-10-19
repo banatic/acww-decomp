@@ -19,6 +19,7 @@
 #ifndef CLEAN_OV003_GROWTH_MODEL_H
 #define CLEAN_OV003_GROWTH_MODEL_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/vector.h"
 #include "main/sound_emitter.h"
 #include "main/tile_changes.h" /* TileChangesTile */
@@ -73,24 +74,11 @@ typedef struct GrowthModels {
     GrowthModelFiles files;         /* 0x1e4c */
 } GrowthModels;
 
-/* The node hook's view of NitroSystem's render state (NNSG3dRS). */
-typedef struct GrowthModelRenderObject {
-    u8 unk_00[0x2c];
-    struct GrowthModel *user; /* 0x2c: the model the hook was set up with */
-} GrowthModelRenderObject;
-
-typedef struct GrowthModelRenderState {
-    const u8 *command;                      /* 0x00: the command being run: byte 1 is its node */
-    GrowthModelRenderObject *render_object; /* 0x04 */
-    u8 unk_08[0xb0];                        /* 0x08 */
-    int *unk_b8;                            /* 0xb8: a word the hook clears */
-} GrowthModelRenderState;
-
 int GrowthModel_SkipRequest(GrowthModelRequest *request);
 int GrowthModel_FilePath(GrowthModelFiles *files, int mode, int stage);
 void GrowthModel_FreeFiles(GrowthModelFiles *files);
 void GrowthModel_LoadFiles(GrowthModelFiles *files);
-void GrowthModel_NodeHook(GrowthModelRenderState *state);
+void GrowthModel_NodeHook(G3dRenderState *state);
 void GrowthModel_Reset(GrowthModel *model);
 void GrowthModel_Start(GrowthModel *model, int player, const TileChangesTile *tile, int mode, int stage, int quiet);
 void GrowthModel_DropAt(GrowthModel *model, u16 *item);

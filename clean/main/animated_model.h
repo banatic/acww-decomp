@@ -10,6 +10,7 @@
 #ifndef CLEAN_MAIN_ANIMATED_MODEL_H
 #define CLEAN_MAIN_ANIMATED_MODEL_H
 
+#include "main/g3d_render.h"
 #include "autoload_2/vector.h"
 #include "itcm/node_hook.h"
 #include "main/frame_ctrl.h"
@@ -42,26 +43,6 @@ typedef struct AnimatedModel {
     AnimatedModelRamp ramp;  /* 0xb8: the blended model's */
 } AnimatedModel;
 
-/* NitroSystem's NNSG3dJntAnmResult, a node's transform. */
-typedef struct AnimatedModelJoint {
-    u32 flags;        /* 0x00: ANIMATED_MODEL_JOINT_* */
-    u8 unk_04[0x24];  /* 0x04: the scale */
-    Mtx33 rotation;   /* 0x28 */
-    Vec3 translation; /* 0x4c */
-} AnimatedModelJoint;
-
-#define ANIMATED_MODEL_JOINT_ROTATION_IDENTITY 0x02 /* the rotation is the identity, not written */
-#define ANIMATED_MODEL_JOINT_TRANSLATION_ZERO 0x04  /* the translation is 0, not written */
-
-/* NitroSystem's NNSG3dRS, the parts read here. */
-typedef struct AnimatedModelNodeState {
-    G3dRenderState state;      /* 0x00: the command being run: NODEDESC, byte 1 the node */
-    u8 unk_08[0xac];           /* 0x08 */
-    AnimatedModelJoint *joint; /* 0xb4: the node's transform */
-    u8 unk_b8[0x1c];           /* 0xb8 */
-    const u8 *node_info;       /* 0xd4: the model's node information (NNSG3dResNodeInfo) */
-} AnimatedModelNodeState;
-
 /* The flags of the NODEDESC command, in the top 3 bits of its first byte. */
 #define ANIMATED_MODEL_NODE_FLAGS 0xe0
 #define ANIMATED_MODEL_NODE_STORE 0x20         /* the matrix is saved after, to index byte 4 */
@@ -71,10 +52,10 @@ typedef struct AnimatedModelNodeState {
 void AnimatedModel_UseJointAnim(AnimatedModel *model, AnimatedModelAnim *anim);
 void AnimatedModel_Play(AnimatedModel *model, const u8 *file, int blend, int flags, fx32 speed, u16 start, u16 frames);
 void AnimatedModel_Update(AnimatedModel *model);
-void AnimatedModel_AfterNode(AnimatedModel *model, AnimatedModelNodeState *state);
-void AnimatedModel_BlendNode(AnimatedModel *model, AnimatedModelNodeState *state);
-void AnimatedModel_BeforeNode(AnimatedModel *model, AnimatedModelNodeState *state);
-void AnimatedModel_RecordNode(AnimatedModel *model, AnimatedModelNodeState *state);
+void AnimatedModel_AfterNode(AnimatedModel *model, G3dRenderState *state);
+void AnimatedModel_BlendNode(AnimatedModel *model, G3dRenderState *state);
+void AnimatedModel_BeforeNode(AnimatedModel *model, G3dRenderState *state);
+void AnimatedModel_RecordNode(AnimatedModel *model, G3dRenderState *state);
 AnimatedModel *AnimatedModel_DestructBlended(AnimatedModel *model);
 AnimatedModel *AnimatedModel_DeleteBlended(AnimatedModel *model);
 AnimatedModel *AnimatedModel_DestructBlendedComplete(AnimatedModel *model);
@@ -82,8 +63,8 @@ AnimatedModel *AnimatedModel_ConstructBlended(AnimatedModel *model);
 AnimatedModel *AnimatedModel_ConstructBlendedBase(AnimatedModel *model);
 AnimatedModelAnim *AnimatedModel_Anim(AnimatedModel *model);
 const u8 *AnimatedModel_AnimFile(AnimatedModel *model);
-void AnimatedModel_ApplyNodeMatrix(void *unused, AnimatedModelNodeState *state, const Vec3 *scale);
-void AnimatedModel_RestoreNodeTranslation(AnimatedModelNodeState *state, fx32 height);
+void AnimatedModel_ApplyNodeMatrix(void *unused, G3dRenderState *state, const Vec3 *scale);
+void AnimatedModel_RestoreNodeTranslation(G3dRenderState *state, fx32 height);
 void AnimatedModel_DetachAnim(AnimatedModel *model);
 void AnimatedModel_DetachVisibility(AnimatedModel *model);
 void AnimatedModel_DetachJoints(AnimatedModel *model);

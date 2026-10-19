@@ -647,7 +647,7 @@ void PocketsGrid_SetPopupText(PocketsGrid *grid, Popup *popup, u16 *item, int st
     PlayerIdText_Construct(&texts.villager);
     switch (state) {
         case 1:
-            TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.label, POCKETS_GRID_MESSAGE_STATE_1);
+            TextLabel_LoadMenuMessage(&texts.label, POCKETS_GRID_MESSAGE_STATE_1);
             TextString_CopyBytes((TextObject *) (void *) &texts.line, (TextObject *) (void *) &texts.label);
             break;
         case 2:
@@ -657,7 +657,7 @@ void PocketsGrid_SetPopupText(PocketsGrid *grid, Popup *popup, u16 *item, int st
             } else {
                 VillagerPart_CurrentNameFor(&texts.villager, item);
                 MessageReader_SetPart(0, (int) (uintptr_t) &texts.villager);
-                TextLabel_LoadMenuMessage((int) (uintptr_t) &texts.label, POCKETS_GRID_MESSAGE_STATE_2);
+                TextLabel_LoadMenuMessage(&texts.label, POCKETS_GRID_MESSAGE_STATE_2);
                 TextString_CopyBytes((TextObject *) (void *) &texts.line, (TextObject *) (void *) &texts.label);
             }
             break;

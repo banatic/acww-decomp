@@ -56,7 +56,7 @@ extern Mtx43 data_021fbe48; /* the matrix being built */
 extern void MTX_MultVec43(const Vec3 *vec, const Mtx43 *mtx, Vec3 *dst);
 
 /* The model hook handed to the game (aquarium_fish.c). */
-extern void func_ov004_0223653c(AquariumFishHookState *state);
+extern void func_ov004_0223653c(G3dRenderState *state);
 
 #define ONE 0x1000
 #define QUARTER_TURN 0x4000

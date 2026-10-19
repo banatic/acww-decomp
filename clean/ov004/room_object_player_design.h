@@ -7,6 +7,7 @@
 #ifndef CLEAN_OV004_ROOM_OBJECT_PLAYER_DESIGN_H
 #define CLEAN_OV004_ROOM_OBJECT_PLAYER_DESIGN_H
 
+#include "main/g3d_render.h"
 #include "types.h"
 
 #include "room_object.h"
@@ -17,7 +18,7 @@ typedef struct PlayerDesignObject {
     s32 cleared_node; /* "g" or "b"; -1 when the player has no record */
 } PlayerDesignObject;
 
-void PlayerDesignObject_NodeHook(PlayerDesignObject *object, int node, NodeHookState *state);
+void PlayerDesignObject_NodeHook(PlayerDesignObject *object, int node, G3dRenderState *state);
 int PlayerDesignObject_Vfunc0C(void);
 int PlayerDesignObject_Update(void);
 int PlayerDesignObject_Start(PlayerDesignObject *object);

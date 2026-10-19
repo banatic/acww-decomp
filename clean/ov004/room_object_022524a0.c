@@ -22,16 +22,6 @@ static_assert(sizeof(RoomObject022524a0) == 0x848, "the size of one");
 #define ANIM_MODE_ONCE 1   /* RoomObject_PlayAnimsFrom: stop at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 
-/* The joint being drawn (NitroSystem's NNSG3dJntAnmResult), as NodeHookState.unk_B4 points to
- * it: its translation at 0x4c. */
-typedef struct RoomObject022524a0Joint {
-    u32 flags;
-    u8 unk_04[0x48]; /* its scales and rotation */
-    Vec3 translation;
-} RoomObject022524a0Joint;
-
-static_assert(offsetof(RoomObject022524a0Joint, translation) == 0x4c, "translation");
-
 /* The state tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov004_02257054;
 extern MemberPointer data_ov004_02257214[ROOM_OBJECT_022524A0_STATE_COUNT];
@@ -137,12 +127,12 @@ CLEAN_AS(func_ov004_0221425c, RoomObject022524a0_EnterState)
  * node of the node set while PLAYING, the joint's translation taken into the world by the
  * object's matrix (through the scratch matrix data_021fbe48, which keeps that copy); where the
  * ground there answers above 0, requests IDLE. */
-void RoomObject022524a0_NodeGroundHook(RoomObject022524a0 *object, int node, NodeHookState *state)
+void RoomObject022524a0_NodeGroundHook(RoomObject022524a0 *object, int node, G3dRenderState *state)
 {
     if (ByteSet_Contains(&object->base.node_set, node) == 0 || object->state != ROOM_OBJECT_022524A0_PLAYING) {
         return;
     }
-    const RoomObject022524a0Joint *joint = state->unk_B4;
+    const G3dJointResult *joint = state->joint;
     Vec3 local = joint->translation;
     Vec3 world;
     CollisionGround ground;

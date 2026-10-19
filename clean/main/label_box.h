@@ -39,7 +39,7 @@ void LabelBox_OnEnd(LabelBox *box);
 void LabelBox_OnText(LabelBox *box);
 void LabelBox_SetWalker(LabelBox *box, u32 walker);
 void *LabelBox_Delete(LabelBox *box);
-void *LabelBox_Destruct(void *box);
+void *LabelBox_Destruct(LabelBox *box);
 LabelBox *LabelBox_Construct(LabelBox *box, int ram, int cells, int rows);
 LabelBox *LabelBox_ConstructInVram(LabelBox *box, unsigned int first_tile, unsigned int cells, unsigned int rows);
 int LabelBox_TextWidth(TextBase *text);

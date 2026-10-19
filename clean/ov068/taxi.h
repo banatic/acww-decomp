@@ -16,6 +16,7 @@
 #ifndef CLEAN_OV068_TAXI_H
 #define CLEAN_OV068_TAXI_H
 
+#include "main/g3d_render.h"
 #include "main/model_anim.h"
 #include "ov004/rmo_object.h"
 #include "types.h"
@@ -63,9 +64,9 @@ int Taxi_Start(Taxi *self);
 Taxi *Taxi_Delete(Taxi *self);
 Taxi *Taxi_Destruct(Taxi *self);
 Taxi *Taxi_Construct(Taxi *self);
-struct TaxiRenderState;
-void Taxi_SetModelHooks(struct TaxiRenderState *state);
-const Taxi *Taxi_MaterialHook(struct TaxiRenderState *state);
+struct G3dRenderState;
+void Taxi_SetModelHooks(struct G3dRenderState *state);
+const Taxi *Taxi_MaterialHook(struct G3dRenderState *state);
 void Taxi_Create(void);
 
 #endif

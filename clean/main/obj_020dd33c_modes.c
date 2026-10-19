@@ -38,6 +38,7 @@
 #include "main/scene_query.h"
 #include "main/sound_emitter.h"
 #include "effect_system.h"
+#include "ov004/member_pointer.h"
 
 static_assert(offsetof(Obj020dd33c, item) == 0x50, "Obj020dd33c item");
 static_assert(offsetof(Obj020dd33c, look) == 0x54, "Obj020dd33c look");
@@ -219,10 +220,22 @@ static void target_drop_tile(Obj020dd33c *obj, u32 *made, Vec3 *fixed, u8 *recor
     obj->target.y += 0x1000;
 }
 
+/* The phases' handlers func_02057d90 calls through: a function-local static the game fills from
+ * these constants on its first call (ov004/member_pointer.h). */
+extern u32 data_021c936c;
+extern MemberPointer data_021c9428[3];
+extern const MemberPointer data_020dd1ec, data_020dd1f4, data_020dd2a4;
+
 /* func_02057d90: mode 9 kind 1, each frame: the phase's handler (wait, follow, shrink); none
  * after the third. */
 void Obj020dd33c_UpdateMode9Kind1(Obj020dd33c *obj)
 {
+    static const MemberPointer *const phases[3] = {
+        &data_020dd1ec,
+        &data_020dd1f4,
+        &data_020dd2a4,
+    };
+    MemberTable_InitOnce(&data_021c936c, data_021c9428, phases, 3);
     switch (obj->phase) {
         case 0:
             Obj020dd33c_Mode9Kind1Wait(obj);
@@ -467,10 +480,22 @@ void Obj020dd33c_EnterMode2Kind1(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02058528, Obj020dd33c_EnterMode2Kind1)
 
+/* The phases' handlers func_02058634 calls through: a function-local static the game fills from
+ * these constants on its first call (ov004/member_pointer.h). */
+extern u32 data_021c9370;
+extern MemberPointer data_021c9410[3];
+extern const MemberPointer data_020dd284, data_020dd29c, data_020dd2fc;
+
 /* func_02058634: mode 1 kind 1, each frame: the phase's handler (wait, grow, drop); none
  * after the third. */
 void Obj020dd33c_UpdateMode1Kind1(Obj020dd33c *obj)
 {
+    static const MemberPointer *const phases[3] = {
+        &data_020dd284,
+        &data_020dd29c,
+        &data_020dd2fc,
+    };
+    MemberTable_InitOnce(&data_021c9370, data_021c9410, phases, 3);
     switch (obj->phase) {
         case 0:
             Obj020dd33c_Mode1Kind1Wait(obj);
@@ -909,10 +934,23 @@ void Obj020dd33c_EnterMode2Kind0(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02059270, Obj020dd33c_EnterMode2Kind0)
 
+/* The phases' handlers func_0205927c calls through: a function-local static the game fills from
+ * these constants on its first call (ov004/member_pointer.h). */
+extern u32 data_021c934c;
+extern MemberPointer data_021c9440[4];
+extern const MemberPointer data_020dd1ac, data_020dd1b4, data_020dd2bc, data_020dd2ec;
+
 /* func_0205927c: mode 1 kind 0, each frame: phase 0 holds the item at the hold point, phases 1
  * to 3 raise it to the goal; nothing after. */
 void Obj020dd33c_UpdateMode1Kind0(Obj020dd33c *obj)
 {
+    static const MemberPointer *const phases[4] = {
+        &data_020dd2bc,
+        &data_020dd2ec,
+        &data_020dd1ac,
+        &data_020dd1b4,
+    };
+    MemberTable_InitOnce(&data_021c934c, data_021c9440, phases, 4);
     switch (obj->phase) {
         case 0:
             Obj020dd33c_Mode1Kind0Hold(obj);

@@ -73,11 +73,6 @@ enum FriendRosterIcon {
 #define FRIEND_ROSTER_BLANK_DIGIT 10
 #define FRIEND_ROSTER_HEADER_LINES 3
 
-static int fr_label_address(TextLabel *label)
-{
-    return (int) (uintptr_t) label;
-}
-
 /* A label's text box opened (style, first tile, width in cells, colour 15) and shown. */
 static void fr_open_label(TextLabel *label, int style, int first_tile, int cells, int center)
 {
@@ -253,7 +248,7 @@ void FriendRoster_DrawFriendRows(FriendRoster *self)
             TextBase_SetWide(&wide, WifiFriend_GetText18(entry), WIFI_FRIEND_TEXT_LENGTH);
             TextBase_WideToBytes((TextBase *) (void *) &town, (WideTextBase *) (void *) &wide, 0, 0);
             MessageReader_SetPart(0, (int) (uintptr_t) &town);
-            TextLabel_LoadMenuMessage(fr_label_address(town_label), FRIEND_ROSTER_MESSAGE_TOWN);
+            TextLabel_LoadMenuMessage(town_label, FRIEND_ROSTER_MESSAGE_TOWN);
             TextLabel_SetFromWide(name_label, WifiFriend_GetText0C(entry), (void *) (uintptr_t) WIFI_FRIEND_TEXT_LENGTH);
             self->rows_shown++;
             if (WifiFriendData_IsNotFriendKey(WifiFriend_GetFriendData(entry))) {
@@ -338,7 +333,7 @@ void FriendRoster_DrawOwnInfo(FriendRoster *self)
     TownNameText_Construct(&town);
     TownName_ToText(PlayerId_Town(player), (TextBase *) (void *) &town);
     MessageReader_SetPart(0, (int) (uintptr_t) &town);
-    TextLabel_LoadMenuMessage(fr_label_address(label), FRIEND_ROSTER_MESSAGE_TOWN);
+    TextLabel_LoadMenuMessage(label, FRIEND_ROSTER_MESSAGE_TOWN);
     fr_open_label(label, 4, 0x102, 0xa, 0);
     label = FriendRoster_NextLabel(self);
     PlayerIdText_Construct(&name);
@@ -383,7 +378,7 @@ void FriendRoster_DrawPlayerRows(FriendRoster *self)
             DesignCreator *player = PlayerRecord_Player(record);
             TownName_ToText(PlayerId_Town(player), (TextBase *) (void *) &town);
             MessageReader_SetPart(0, (int) (uintptr_t) &town);
-            TextLabel_LoadMenuMessage(fr_label_address(town_label), FRIEND_ROSTER_MESSAGE_TOWN);
+            TextLabel_LoadMenuMessage(town_label, FRIEND_ROSTER_MESSAGE_TOWN);
             PlayerId_NameToText(player, (TextBase *) (void *) &name);
             TextBase_Copy((TextBase *) (void *) name_label, (TextBase *) (void *) &name);
             FriendRoster_SetRowIcon((int) (uintptr_t) self, &self->list_map[icon], FRIEND_ROSTER_ICON_PLAYER);
@@ -489,7 +484,7 @@ CLEAN_AS(func_ov119_0229b00c, FriendRoster_UpdateGraphics)
 void FriendRoster_ShowPageTitle(FriendRoster *self, int message)
 {
     TextLabel *label = FriendRoster_NextLabel(self);
-    TextLabel_LoadMenuMessage(fr_label_address(label), (char) message);
+    TextLabel_LoadMenuMessage(label, (char) message);
     fr_open_label(label, 8, 0x160, 0xd, 1);
 }
 CLEAN_AS(func_ov119_0229bacc, FriendRoster_ShowPageTitle)
@@ -498,7 +493,7 @@ CLEAN_AS(func_ov119_0229bacc, FriendRoster_ShowPageTitle)
 void FriendRoster_ShowTitle(FriendRoster *self)
 {
     TextLabel *label = FriendRoster_NextLabel(self);
-    TextLabel_LoadMenuMessage(fr_label_address(label), (char) FRIEND_ROSTER_MESSAGE_TITLE);
+    TextLabel_LoadMenuMessage(label, (char) FRIEND_ROSTER_MESSAGE_TITLE);
     fr_open_label(label, 8, 0xca, 6, 1);
 }
 CLEAN_AS(func_ov119_0229bb0c, FriendRoster_ShowTitle)

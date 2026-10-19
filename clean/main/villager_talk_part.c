@@ -659,11 +659,11 @@ void VillagerTalkPart_LineTakeByType(VillagerTalk *talk, VillagerTalkLine *out)
             }
             break;
         case VILLAGER_TALK_PART_TYPE_19: {
-            MailLetter *letter = VillagerTalkScene_LetterToSend(part_pockets());
+            Letter *letter = VillagerTalkScene_LetterToSend(part_pockets());
             ItemObject_SetLow5(part_block_object(talk), 1);
             texts = &data_020c8de8;
             if (letter != NULL) {
-                Letter_Clear((Letter *) letter);
+                Letter_Clear(letter);
             }
             break;
         }
@@ -679,7 +679,7 @@ CLEAN_AS(func_020272c0, VillagerTalkPart_LineTakeByType)
 void VillagerTalkPart_OpenLetter(VillagerTalk *talk, int event)
 {
     (void) event;
-    MailLetter *letter = VillagerTalkScene_LetterToSend(part_pockets());
+    Letter *letter = VillagerTalkScene_LetterToSend(part_pockets());
     SceneCommand_SetScreenPointer(&talk->scene, (int) (uintptr_t) letter, 1);
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_GROUP_12);
     VillagerTalkScene_SetCommandEnd(talk, data_020d9488);
@@ -865,12 +865,12 @@ void VillagerTalkPart_RaiseBondByType(VillagerTalk *talk)
             VillagerTalkScene_SetCommandEnd(talk, data_020d94d8);
             break;
         case VILLAGER_TALK_PART_TYPE_19: {
-            MailLetter *letter = VillagerTalkScene_LetterToSend(part_pockets());
+            Letter *letter = VillagerTalkScene_LetterToSend(part_pockets());
             if (letter != NULL) {
-                if (Letter_State((const Letter *) letter) == VILLAGER_TALK_PART_LETTER_STATE_7) {
+                if (Letter_State(letter) == VILLAGER_TALK_PART_LETTER_STATE_7) {
                     VillagerTalkScene_SetLines(talk, data_021c2b84);
                 } else {
-                    Letter_Clear((Letter *) letter);
+                    Letter_Clear(letter);
                     VillagerTalkScene_SetLines(talk, data_021c2b6c);
                 }
                 part_say_set_if_on(talk);
@@ -1098,14 +1098,14 @@ void VillagerTalkPart_SayByLetter(VillagerTalk *talk)
 {
     PlayerPockets *pockets = part_pockets();
     if (part_type(talk) == VILLAGER_TALK_PART_TYPE_19) {
-        MailLetter *letter = VillagerTalkScene_LetterToSend(pockets);
+        Letter *letter = VillagerTalkScene_LetterToSend(pockets);
         if (letter != NULL) {
-            if (Letter_State((const Letter *) letter) == VILLAGER_TALK_PART_LETTER_STATE_7) {
+            if (Letter_State(letter) == VILLAGER_TALK_PART_LETTER_STATE_7) {
                 VillagerTalkScene_SetLines(talk, data_021c2a7c);
             } else {
                 VillagerTalkScene_SetLines(talk, data_021c2a94);
             }
-            Letter_Clear((Letter *) letter);
+            Letter_Clear(letter);
         }
     }
     part_say_set_if_on(talk);

@@ -132,9 +132,9 @@ CLEAN_AS(func_0209a934, VillagerPart_SetThirdPick)
 /* func_0209a9a8: a letter the player sends noted in block 0, while it holds type 15; whether it
  * was. A letter to the villager the block names (a valid one) raises the block's value to 2
  * when it is below; any other letter sets it to 1 when it is 0. 0 for no letter. */
-int VillagerPart_NoteLetter(VillagerPart *part, MailLetter *letter)
+int VillagerPart_NoteLetter(VillagerPart *part, Letter *letter)
 {
-    if (letter == NULL || Letter_State((const Letter *) letter) == 0) {
+    if (letter == NULL || Letter_State(letter) == 0) {
         return 0;
     }
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
@@ -143,7 +143,7 @@ int VillagerPart_NoteLetter(VillagerPart *part, MailLetter *letter)
         return 0;
     }
 
-    const NpcId *addressee = (const NpcId *) Letter_VillagerAddressee((Letter *) letter);
+    const NpcId *addressee = (const NpcId *) Letter_VillagerAddressee(letter);
     if (addressee == NULL) {
         if (ItemObject_Low5((ItemObject *) (void *) object) == 0) {
             ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
