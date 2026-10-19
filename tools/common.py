@@ -230,6 +230,9 @@ def compile_flags(src: Source) -> list[str]:
     # built without exception tables.
     if SRC in src.path.resolve().parents:
         flags += ["-Cpp_exceptions", "off"]
+        # The ROM's vtables hold 0 in the type-info slot (e.g. 0x020d82b4): no RTTI either.
+        if src.lang == "c++":
+            flags += ["-RTTI", "off"]
     if src.thumb:
         flags.append("-thumb")
     return flags

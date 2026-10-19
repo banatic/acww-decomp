@@ -130,6 +130,7 @@ data_ov051_022617e0 kind:data(any) addr:0x022617e0
 data_ov051_02261804 kind:data(any) addr:0x02261804
 data_ov051_0226188c kind:data(any) addr:0x0226188c
 data_ov051_0226190c kind:data(any) addr:0x0226190c
+data_ov051_02261934 kind:data(any) addr:0x02261934
 data_ov051_0226193c kind:data(any) addr:0x0226193c
 data_ov051_022619e8 kind:data(any) addr:0x022619e8
 data_ov051_02261a5c kind:data(any) addr:0x02261a5c ambiguous
