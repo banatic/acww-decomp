@@ -262,7 +262,7 @@ def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str 
         # tools/run.py leaves both runs' logs and frame hashes in one place for every run: keep
         # this scene's, and name the first frame the two runs show differently
         run_dir = (runtime or OUT.parent) / "native-run"
-        for log in ("reference.log", "native.log", "reference-hashes.txt"):
+        for log in ("reference.log", "native.log", "reference-hashes.txt", "functions-seen.txt"):
             if (run_dir / log).exists():
                 (work / log).write_bytes((run_dir / log).read_bytes())
         # the run's crossings record and memory images (half a gigabyte a scene) are not kept:
@@ -337,6 +337,9 @@ def main() -> int:
                     "each scene that passes and has none (the frame sequence SHA-1 only)")
     ap.add_argument("--bisect", action="store_true", help="find the Clean function that breaks each scene")
     ap.add_argument("--skip", default="", help="with --bisect: functions (comma-separated) left Native")
+    ap.add_argument("--affected", nargs="?", const="main", metavar="BASE", help="only the scenes a change "
+                    "since BASE (default main) can affect: those whose last run ran a changed function "
+                    "(tools/affected.py)")
     ap.add_argument("-j", "--jobs", type=int, default=1, help="scenes run at a time (each in a runtime "
                     "directory of its own under the scenes', built the first time)")
     ap.add_argument("--convert", metavar="PAD", help="print a pad script as a recording")
@@ -357,6 +360,12 @@ def main() -> int:
     unknown = [n for n in names if n not in SCENES]
     if unknown:
         raise SystemExit(f"unknown scenes {unknown}; --list")
+    if args.affected:
+        import affected  # noqa: PLC0415
+        names = affected.select(names, args.affected, OUT)
+        if not names:
+            print("scenes: none affected")
+            return 0
     if args.bisect:
         for name in names:
             bisect(name, seed, args.native, set(filter(None, args.skip.split(","))))

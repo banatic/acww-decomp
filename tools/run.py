@@ -741,7 +741,7 @@ def summary(text: str) -> dict:
 # runtime runs the static initialisers itself), not from what the Native or Clean code does.
 # A run with all of those the same reuses an earlier run's results, from the cache every
 # checkout shares (tools/common.py). ACWW_NO_REFERENCE_CACHE=1 always runs it.
-REFERENCE_PATHS = ("RUN_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_RECORD")
+REFERENCE_PATHS = ("RUN_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_RECORD", "RUN_FUNCTIONS_SEEN")
 
 
 def reference_key(env: dict, budget: list[str], manifest: pathlib.Path, table: pathlib.Path, args) -> str:
@@ -771,6 +771,8 @@ def reference_key(env: dict, budget: list[str], manifest: pathlib.Path, table: p
 
 def reference_files(out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> dict[str, pathlib.Path]:
     files = {"reference.log": out / "reference.log", "reference-hashes.txt": out / "reference-hashes.txt"}
+    if (out / "functions-seen.txt").exists():
+        files["functions-seen.txt"] = out / "functions-seen.txt"
     if trace.exists():
         files["crossings.bin"] = trace
     files |= {f"ram/{p.name}": p for p in ram_dir.glob("ram-*-reference.bin")}
@@ -784,6 +786,7 @@ def reference_cached(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: 
         return False
     try:
         trace.unlink(missing_ok=True)
+        (out / "functions-seen.txt").unlink(missing_ok=True)  # (an older entry has none)
         for old in ram_dir.glob("ram-*-reference.bin"):
             old.unlink()
         for src in entry.rglob("*"):
@@ -836,6 +839,8 @@ def native_main(args, manifest, table, budget, env) -> int:
         ref_env = dict(env, RUN_HASH=str(out / "reference-hashes.txt"))
         if not args.no_timing:
             ref_env["RUN_NATIVE_RECORD"] = str(trace)
+            # the functions the game runs, for scenes.py --affected
+            ref_env["RUN_FUNCTIONS_SEEN"] = str(out / "functions-seen.txt")
         # (a run that writes pictures, RUN_PNG, keeps nothing: the cache holds no pictures)
         key = None if "RUN_PNG" in ref_env else reference_key(ref_env, budget, manifest, table, args)
         if key and reference_cached(key, out, ram_dir, trace):

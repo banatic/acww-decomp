@@ -83,6 +83,10 @@ static Module modules[MAX_MODULES];
 static int module_count;
 static Fn *fns; /* sorted by address (bit 0 clear) */
 static int fn_count;
+/* RUN_FUNCTIONS_SEEN (a Reference recording): the functions the game ran, for choosing the
+ * checks a change can affect (tools/scenes.py --affected). An overlay's function is told apart
+ * from another's at its address by its bytes, once a frame per address. */
+static uint8_t *fn_seen, *fn_seen_frame;
 static const NativeFunction **by_host; /* the Native functions by host address */
 static uint32_t by_host_count;
 static Fn **guest_functions; /* Native/Clean table index to policy function, including its module */
@@ -1080,6 +1084,9 @@ static void print_hash(uint32_t frame, const char *hex)
 void native_frame_ended(uint32_t frame)
 {
     frame_now = frame;
+    if (fn_seen_frame != NULL) {
+        memset(fn_seen_frame, 0, (size_t) fn_count); /* an overlay may have been swapped */
+    }
     /* without a trace there are no crossings to wait for: hash at the frame's end */
     if (!recording && !replaying && hash_next < hash_frame_count && frame >= hash_frames[hash_next]) {
         char hex[41];
@@ -1466,6 +1473,13 @@ static void record_branch(uint32_t address)
     }
     int inside = s->depth > 0 && s->frames[s->depth - 1].native;
     Fn *f = first_at(address);
+    if (f != NULL && fn_seen != NULL && !fn_seen_frame[f - fns]) {
+        fn_seen_frame[f - fns] = 1;
+        Fn *g = loaded_at(address);
+        if (g != NULL) {
+            fn_seen[g - fns] = 1;
+        }
+    }
     if (f == NULL) {
         /* No function starts here. From Native code, a call to such an address (a veneer
            the linker put between two functions, which goes on to its target) is a call out
@@ -2521,6 +2535,11 @@ int native_init(ArmCpu *c, const char *manifest)
         }
         setvbuf(record_out, NULL, _IOFBF, 1 << 20);
         recording = 1;
+        const char *seen = getenv("RUN_FUNCTIONS_SEEN");
+        if (seen != NULL && *seen) {
+            fn_seen = calloc((size_t) fn_count + 1, 1);
+            fn_seen_frame = calloc((size_t) fn_count + 1, 1);
+        }
         running = 0;
         c->observe_word_store = record_publication;
     }
@@ -2566,6 +2585,19 @@ void native_report(FILE *out)
     if (record_out != NULL) {
         fflush(record_out);
         fprintf(out, "native: recorded %u crossings for a Native run\n", record_count);
+        const char *seen = getenv("RUN_FUNCTIONS_SEEN");
+        FILE *list = fn_seen != NULL ? fopen(seen, "w") : NULL;
+        if (list != NULL) {
+            int n = 0;
+            for (int i = 0; i < fn_count; i++) {
+                if (fn_seen[i]) {
+                    fprintf(list, "%s %08x %s\n", modules[fns[i].module].name, fns[i].address & ~1u, fns[i].name);
+                    n++;
+                }
+            }
+            fclose(list);
+            fprintf(out, "native: %d functions ran (%s)\n", n, seen);
+        }
         return;
     }
     if (!running) {
