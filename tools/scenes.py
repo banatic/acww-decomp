@@ -150,6 +150,8 @@ scene("post-office", "seed", 7950, [2600, 4300, 5100, 6400, 7100, 7949], frames(
       "at the town hall's post office window, store a letter, then deposit 50 bells")
 scene("menus", "seed", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
       "open the pockets, visit its tabs (designs, fish list, chat, map, friends), close")
+scene("insect-list", "seed", 4600, [2600, 3600, 3800, 4050, 4250, 4599], frames(3400, 4600, 25),
+      "open the pockets' fish list, then the insect list, page it, the fish list again, close")
 
 
 # ------------------------------------------------------------------------------ saves

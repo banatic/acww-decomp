@@ -130,7 +130,11 @@ frames of `runtime/recordings/new-game.txt` (power-on to walking in the town). A
 in Native code gives the ROM's helpers' result (the dividend), not a trap (`runtime/native_os.c`).
 `runtime/native_run.c` dispatches between the two: Reference code calling a Native function, a
 Native function calling the ROM's code through the interpreter (`native_tramp.S`), and a trace of
-the Reference run's crossings that gives Native code the Reference's timing. A source that
+the Reference run's crossings that gives Native code the Reference's timing. Overlays loaded
+at one address can share most of their code (the pockets' fish and insect lists, ov115 and
+ov116, differ in three functions); a call to such an address runs the function of the overlay
+whose functions are all in memory, since its Native code calls its own module's functions
+directly. A source that
 declares a callee with a char or short result its definition does not produce is compiled from
 a copy that declares it returning int: mwccarm trusts the callee to have extended r0 and goes on
 with the whole register, and so does the PC's code with eax (`tools/protos.py`,

@@ -74,6 +74,8 @@ typedef struct Module {
     uint32_t base, size;
     uint8_t *image;
     int resident;
+    struct Fn **code; /* its functions, for telling overlays apart whose code is mostly the same */
+    int code_count;
 } Module;
 
 #define MAX_MODULES 160
@@ -223,6 +225,20 @@ static int load_policy(const char *path)
             entry_bits[bit >> 3] |= (uint8_t) (1u << (bit & 7));
         }
     }
+    for (int i = 0; i < fn_count; i++) {
+        modules[fns[i].module].code_count++;
+    }
+    for (int i = 0; i < module_count; i++) {
+        modules[i].code = calloc((size_t) modules[i].code_count + 1, sizeof(Fn *));
+        if (modules[i].code == NULL) {
+            return -1;
+        }
+        modules[i].code_count = 0;
+    }
+    for (int i = 0; i < fn_count; i++) {
+        Module *m = &modules[fns[i].module];
+        m->code[m->code_count++] = &fns[i];
+    }
     return 0;
 }
 
@@ -262,19 +278,50 @@ static int is_loaded(const Fn *f)
            memcmp(p, m->image + (a - m->base), f->size) == 0;
 }
 
-/* The function whose code is at `address` now, or NULL. */
+/* Whether every function of an overlay has its own bytes in memory. */
+static int module_code_loaded(const Module *m)
+{
+    for (int i = 0; i < m->code_count; i++) {
+        if (!is_loaded(m->code[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* The function whose code is at `address` now, or NULL. Overlays loaded at one address can
+ * share most of their code (the pockets' fish and insect lists, ov115 and ov116, differ in
+ * three functions): where more than one has its bytes at `address`, the one whose other
+ * functions are in memory too is the loaded one. The Native code of a function calls its
+ * module's functions directly, so taking the other overlay's would run that overlay's code
+ * where its bytes differ. */
 static Fn *loaded_at(uint32_t address)
 {
     Fn *f = first_at(address);
     if (f == NULL) {
         return NULL;
     }
+    Fn *found = NULL;
     for (Fn *end = fns + fn_count; f < end && (f->address & ~1u) == (address & ~1u); f++) {
-        if (is_loaded(f)) {
-            return f;
+        if (!is_loaded(f)) {
+            continue;
+        }
+        if (found == NULL) {
+            found = f;
+            if (modules[f->module].resident) {
+                return f;
+            }
+        } else {
+            /* (checked only when two overlays both match here) */
+            if (module_code_loaded(&modules[found->module])) {
+                return found;
+            }
+            if (module_code_loaded(&modules[f->module])) {
+                return f;
+            }
         }
     }
-    return NULL;
+    return found;
 }
 
 static int native_for_interpreter(const Fn *f)
