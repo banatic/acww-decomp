@@ -44,18 +44,33 @@ Native body mappings retain the actual body start for fault-offset diagnosis.
 ## Audited extents and effects
 
 `native_stack.py` records whole-function ROM SHA256 and size guards for these
-constant extents. Reachable control flow, including the two bounded Thumb
+constant extents. The furniture pull in the house (scene house-pull) reaches the collider's
+producer through two more states, 0222a28c and 022297d8, and the consumer through 0223df48;
+the other 30 callers of 0201100c, through which the producer is reached, were audited with
+them: each saves registers with one push and reserves its frame with one sub at entry, and
+its only other SP change is the matching add before its single pop sequence. Reachable control flow, including the two bounded Thumb
 switch tables and the literal tail trampoline, was inspected. Each listed
 function has one call-site extent; stack adjustments and restored returns
 were checked across its reachable paths.
 
 | Module | Function | Extent |
 | --- | --- | --- |
+| autoload_2 | 020ee834 | 0x010 |
+| autoload_2 | 020ee934 | 0x008 |
+| autoload_2 | 020ee964 | 0x008 |
+| autoload_2 | 020ee9a0 | 0x008 |
+| autoload_2 | 020eea4c | 0x010 |
+| itcm | 01ffd14c | 0x018 |
+| itcm | 01ffd44c | 0x020 |
 | main | 02004c0c | 0x008 |
 | main | 020058e4 | 0x028 |
+| main | 02008304 | 0x008 |
 | main | 020095f4 | 0x010 |
 | main | 020096ac | 0x018 |
+| main | 02009fe4 | 0x008 |
 | main | 0200c200 | 0x008 |
+| main | 0200c954 | 0x008 |
+| main | 0200c9ec | 0x008 |
 | main | 0200cc44 | 0x010 |
 | main | 0200d1e4 | 0x010 |
 | main | 0201100c | 0x050 |
@@ -63,11 +78,40 @@ were checked across its reachable paths.
 | main | 02031288 | 0x0d0 |
 | main | 02032aa8 | 0x010 |
 | main | 02033678 | 0x098 |
+| ov003 | 0220d2a4 | 0x008 |
+| ov003 | 0220d6d4 | 0x008 |
+| ov003 | 0220d8f4 | 0x008 |
+| ov003 | 0220dbec | 0x008 |
+| ov003 | 0220e938 | 0x008 |
+| ov003 | 0220ea78 | 0x008 |
+| ov003 | 02210fa0 | 0x018 |
+| ov003 | 022119f0 | 0x018 |
+| ov003 | 02211db0 | 0x010 |
+| ov003 | 02212308 | 0x010 |
+| ov003 | 022124c4 | 0x020 |
+| ov003 | 02212884 | 0x010 |
+| ov003 | 02213b28 | 0x028 |
+| ov003 | 02215394 | 0x010 |
+| ov003 | 02215bf8 | 0x010 |
+| ov003 | 02215d1c | 0x010 |
+| ov003 | 0221615c | 0x008 |
+| ov003 | 022166f8 | 0x010 |
+| ov003 | 02216bfc | 0x010 |
+| ov003 | 02216eec | 0x018 |
+| ov003 | 022172c4 | 0x008 |
+| ov003 | 02218ff0 | 0x080 |
 | ov004 | 0220dd80 | 0x0a0 |
+| ov004 | 022297d8 | 0x008 |
+| ov004 | 02229860 | 0x018 |
+| ov004 | 02229a7c | 0x008 |
+| ov004 | 02229bec | 0x008 |
+| ov004 | 02229f60 | 0x008 |
+| ov004 | 0222a28c | 0x008 |
 | ov004 | 0223d610 | 0x000 |
 | ov004 | 0223d63c | 0x020 |
 | ov004 | 0223db08 | 0x0d8 |
 | ov004 | 0223de70 | 0x040 |
+| ov004 | 0223df48 | 0x018 |
 | ov004 | 0223df88 | 0x2e0 |
 | ov004 | 0223e1f0 | 0x018 |
 
