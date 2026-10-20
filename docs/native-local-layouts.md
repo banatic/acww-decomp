@@ -3,7 +3,7 @@
 Some matching sources declare separate locals even though the ROM passes a
 pointer that covers more than one of them. The ARM stack gives those locals a
 specific order. Independent host locals have no such ordering guarantee.
-tools/native_layout.py groups only the 29 audited layouts below in PC source
+tools/native_layout.py groups only the 47 audited layouts below in PC source
 copies. Values and calls are unchanged. Source digests and exact declarations
 reject an unaudited source change, and each copy asserts the observed offset.
 
@@ -28,7 +28,7 @@ the first pixel difference to 3490; the caller's local layout must be preserved.
 
 ## Validation
 
-tools/test_native_layout.py compiles all 29 exact copied game functions, the
+tools/test_native_layout.py compiles all 47 exact copied game functions, the
 real vector consumer and three real request payload writers. Its fixture checks
 the coordinates, tags, item identifiers and signed header arguments received by
 the request consumer, returned values, and rejection of changed source digests.
@@ -66,7 +66,7 @@ the first local's address is the second local.
 
 ## Other request builders
 
-Twenty-two more request builders keep the header and the payload in separate locals. In
+Forty more request builders keep the header and the payload in separate locals. In
 each ROM body the header's stack offset goes to func_0200e894 and the payload, 12 bytes
 further, to the function that fills it (an `add rN, sp, #x` before each call):
 
@@ -94,7 +94,28 @@ further, to the function that fills it (an `add rN, sp, #x` before each call):
 | func_ov003_022188d0 | sp+4 | func_ov003_02218918 |
 | func_ov004_02228628 | sp+8 | func_ov004_02228678 |
 | func_ov004_0222ac24 | sp+8 | func_ov004_0222ac74 |
+| func_0200a448 | sp+8 | func_0200a4ac |
+| func_0200b83c | sp+16 | func_0200b894 |
+| func_0200bdbc | sp+8 | func_0200be0c |
+| func_0200c904 | sp+4 | func_0200c94c |
+| func_0200d1a0 | sp | func_0200d1e0 |
+| func_0200d4e8 | sp | func_0200d528 |
+| func_ov003_0220f768 | sp+8 | func_ov003_0220f7b8 |
+| func_ov003_022100c4 | sp+8 | func_ov003_02210114 |
+| func_ov003_022122ac | sp+8 | func_ov003_022122fc |
+| func_ov003_02218ec4 | sp+8 | func_ov003_02218f0c |
+| func_ov003_02218fac | sp | func_ov003_02218fec |
+| func_ov004_02228100 | sp+8 | func_ov004_02228164 |
+| func_ov004_02229010 | sp+4 | func_ov004_02229078 |
+| func_ov004_02229258 | sp+4 | func_ov004_022292c0 |
+| func_ov004_022294a0 | sp+4 | func_ov004_02229508 |
+| func_ov004_02229774 | sp+8 | func_ov004_022297c4 |
+| func_ov004_0222a494 | sp+4 | func_ov004_0222a4dc |
+| func_ov004_0222af6c | sp+8 | func_ov004_0222afbc |
 
-tests/native/request_layout.c runs the 22 copies with payload writers that mark their
+tests/native/request_layout.c runs the 40 copies with payload writers that mark their
 payload and a submission that must find the mark 12 bytes after the header it receives.
-Built from the original sources instead, 10 of them fail on Windows.
+Built from the original sources instead, 15 of them fail on Windows. Two of the C++ builders
+(func_0200c904, func_ov004_0222a494) declare the payload after the header's construction; their
+copies declare both in the header's place. One of these layouts left the rock-shovel scene's
+RAM different (the strike target's coordinates, read from the payload as bytes).

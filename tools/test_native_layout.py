@@ -17,6 +17,12 @@ REQUESTS = {
     "ov003/func_ov003_02216698.c", "ov003/func_ov003_02216ab8.c", "ov003/func_ov003_022171ec.c",
     "ov003/func_ov003_02217838.c", "ov003/func_ov003_022186cc.c", "ov003/func_ov003_022188d0.c",
     "ov004/func_ov004_02228628.c", "ov004/func_ov004_0222ac24.c",
+    "main/func_0200a448.c", "main/func_0200b83c.c", "main/func_0200bdbc.c",
+    "main/func_0200c904.cpp", "main/func_0200d1a0.c", "main/func_0200d4e8.c",
+    "ov003/func_ov003_0220f768.c", "ov003/func_ov003_022100c4.c", "ov003/func_ov003_022122ac.c",
+    "ov003/func_ov003_02218ec4.c", "ov003/func_ov003_02218fac.c", "ov004/func_ov004_02228100.c",
+    "ov004/func_ov004_02229010.c", "ov004/func_ov004_02229258.c", "ov004/func_ov004_022294a0.c",
+    "ov004/func_ov004_02229774.c", "ov004/func_ov004_0222a494.cpp", "ov004/func_ov004_0222af6c.c",
 }
 
 

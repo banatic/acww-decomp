@@ -32,6 +32,15 @@ int func_0200e91c(void *p)
     return 0;
 }
 /* other callees: nothing to do */
+int data_ov004_02247780;
+void func_0200fa1c(int *out, void *a, void *b, void *c, void *d)
+{
+    (void) a;
+    (void) b;
+    (void) c;
+    (void) d;
+    out[0] = out[1] = out[2] = 0;
+}
 void func_0200f268(void *p, int n)
 {
     (void) p;
@@ -69,6 +78,23 @@ WRITER(func_ov003_0221871c)
 WRITER(func_ov003_02218918)
 WRITER(func_ov004_02228678)
 WRITER(func_ov004_0222ac74)
+WRITER(func_0200a4ac)
+WRITER(func_0200be0c)
+WRITER(func_0200c94c)
+WRITER(func_0200d1e0)
+WRITER(func_0200d528)
+WRITER(func_ov003_0220f7b8)
+WRITER(func_ov003_02210114)
+WRITER(func_ov003_022122fc)
+WRITER(func_ov003_02218f0c)
+WRITER(func_ov003_02218fec)
+WRITER(func_ov004_02228164)
+WRITER(func_ov004_02229078)
+WRITER(func_ov004_022292c0)
+WRITER(func_ov004_02229508)
+WRITER(func_ov004_022297c4)
+WRITER(func_ov004_0222a4dc)
+WRITER(func_ov004_0222afbc)
 
 /* Called with more arguments than any of them takes (the caller removes them): every pointer
  * points at zeroed memory, every number is 0. */
@@ -76,13 +102,19 @@ typedef int Builder(void *, void *, void *, void *, void *, void *, void *, void
 extern Builder func_02009a44, func_0200a6a0, func_0200acd4, func_0200ad24, func_0200b7e8, func_0200c3b0, func_0200cc00,
     func_0200dbb4, func_ov003_0220fb30, func_ov003_0220fda0, func_ov003_02212830, func_ov003_02212c10, func_ov003_02215624,
     func_ov003_02216410, func_ov003_02216698, func_ov003_02216ab8, func_ov003_022171ec, func_ov003_02217838,
-    func_ov003_022186cc, func_ov003_022188d0, func_ov004_02228628, func_ov004_0222ac24;
+    func_ov003_022186cc, func_ov003_022188d0, func_ov004_02228628, func_ov004_0222ac24, func_0200a448, func_0200b83c,
+    func_0200bdbc, func_0200c904, func_0200d1a0, func_0200d4e8, func_ov003_0220f768, func_ov003_022100c4, func_ov003_022122ac,
+    func_ov003_02218ec4, func_ov003_02218fac, func_ov004_02228100, func_ov004_02229010, func_ov004_02229258,
+    func_ov004_022294a0, func_ov004_02229774, func_ov004_0222a494, func_ov004_0222af6c;
 static Builder *const builders[] = {
     func_02009a44,       func_0200a6a0,       func_0200acd4,       func_0200ad24,       func_0200b7e8,
     func_0200c3b0,       func_0200cc00,       func_0200dbb4,       func_ov003_0220fb30, func_ov003_0220fda0,
     func_ov003_02212830, func_ov003_02212c10, func_ov003_02215624, func_ov003_02216410, func_ov003_02216698,
     func_ov003_02216ab8, func_ov003_022171ec, func_ov003_02217838, func_ov003_022186cc, func_ov003_022188d0,
-    func_ov004_02228628, func_ov004_0222ac24,
+    func_ov004_02228628, func_ov004_0222ac24, func_0200a448,       func_0200b83c,       func_0200bdbc,
+    func_0200c904,       func_0200d1a0,       func_0200d4e8,       func_ov003_0220f768, func_ov003_022100c4,
+    func_ov003_022122ac, func_ov003_02218ec4, func_ov003_02218fac, func_ov004_02228100, func_ov004_02229010,
+    func_ov004_02229258, func_ov004_022294a0, func_ov004_02229774, func_ov004_0222a494, func_ov004_0222af6c,
 };
 
 int main(void)

@@ -195,6 +195,114 @@ VERIFIED = {
         "char local1[12];\n    char local2[16];",
         "char local1[12]; char local2[16];", ("local1", "local2"), 12,
     ),
+    # ROM 0200a448: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_0200a4ac.
+    "main/func_0200a448.c": (
+        "a0c040fd8e8deb8bb47e993137acf18382878990204cc8fda5f0289ab79dc970",
+        "UnkStruct_0200a448_2 s;\n    UnkStruct_0200a448_3 t;",
+        "UnkStruct_0200a448_2 s; UnkStruct_0200a448_3 t;", ("s", "t"), 12,
+    ),
+    # ROM 0200b83c: header at sp+0x10 to func_0200e894, payload at sp+0x1c to func_0200b894.
+    "main/func_0200b83c.c": (
+        "ff80d69ec94c36beb54405bb04f8a0b5337e5be5e4e9ecd43071e95de7590384",
+        "UnkStruct_0200b83c obj;\n    int out[4];",
+        "UnkStruct_0200b83c obj; int out[4];", ("obj", "out"), 12,
+    ),
+    # ROM 0200bdbc: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_0200be0c.
+    "main/func_0200bdbc.c": (
+        "33580af237efce48d25f6be2cd750c31684e88bfcfaa5232e510912f3ed64af3",
+        "UnkStruct_0200bdbc obj;\n    Other other;",
+        "UnkStruct_0200bdbc obj; Other other;", ("obj", "other"), 12,
+    ),
+    # ROM 0200c904: header at sp+0x4 to func_0200e894, payload at sp+0x10 to func_0200c94c.
+    "main/func_0200c904.cpp": (
+        "83a2acdaa36b2244de95ecf58b406f55e3f113c620f51d5098d0b7531ca2cd63",
+        ("QueueEntry local1;", "\n    UnkStruct_0200c904 local2;"),
+        "QueueEntry local1; UnkStruct_0200c904 local2;", ("local1", "local2"), 12,
+    ),
+    # ROM 0200d1a0: header at sp+0x0 to func_0200e894, payload at sp+0xc to func_0200d1e0.
+    "main/func_0200d1a0.c": (
+        "b310cc441a3b3bdb12afacb6ec7fbde5f8da9f3fb8772591b84e1149f29936b0",
+        "UnkStruct_0200d1a0 v1;\n    UnkStruct_0200d1a0_2 v2;",
+        "UnkStruct_0200d1a0 v1; UnkStruct_0200d1a0_2 v2;", ("v1", "v2"), 12,
+    ),
+    # ROM 0200d4e8: header at sp+0x0 to func_0200e894, payload at sp+0xc to func_0200d528.
+    "main/func_0200d4e8.c": (
+        "2c2b4d211b71dcc51e57c7ff491462f0e63be2e6a4f438e68cbb7bf515b3f596",
+        "UnkStruct_0200d4e8 s1;\n    UnkStruct_0200d4e8_2 s2;",
+        "UnkStruct_0200d4e8 s1; UnkStruct_0200d4e8_2 s2;", ("s1", "s2"), 12,
+    ),
+    # ROM 0220f768: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_ov003_0220f7b8.
+    "ov003/func_ov003_0220f768.c": (
+        "df2d31450feb8930b32fc1159efd832e6a503836d723c8c6d0dab28520f8ad92",
+        "CType c;\n    DType d;",
+        "CType c; DType d;", ("c", "d"), 12,
+    ),
+    # ROM 022100c4: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_ov003_02210114.
+    "ov003/func_ov003_022100c4.c": (
+        "c43d26c20daf76c9fe15f1452f695f43b1d7df6121ab9cc911b35442e262ba22",
+        "struct UnkStruct_022100c4 s12;\n    char out[16];",
+        "struct UnkStruct_022100c4 s12; char out[16];", ("s12", "out"), 12,
+    ),
+    # ROM 022122ac: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_ov003_022122fc.
+    "ov003/func_ov003_022122ac.c": (
+        "2d4070186199741c14230d3983649a55d5950841f8ef87270fdd70157f2789f7",
+        "UnkStruct_022122ac obj;\n    Result result;",
+        "UnkStruct_022122ac obj; Result result;", ("obj", "result"), 12,
+    ),
+    # ROM 02218ec4: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_ov003_02218f0c.
+    "ov003/func_ov003_02218ec4.c": (
+        "b592675e86efb2ed65f715fed916d1f40bec0be8328138a1d9b9f3ad90b25ae5",
+        "UnkStruct_02218ec4 obj;\n    UnkStruct_02218ec4_2 out;",
+        "UnkStruct_02218ec4 obj; UnkStruct_02218ec4_2 out;", ("obj", "out"), 12,
+    ),
+    # ROM 02218fac: header at sp+0x0 to func_0200e894, payload at sp+0xc to func_ov003_02218fec.
+    "ov003/func_ov003_02218fac.c": (
+        "9bf0935fc5afe501ed87a7a94d8bb8ae7f39fe0cbd9c0b62d136b3f30628ad4a",
+        "UnkStruct_02218fac l1;\n    UnkStruct_02218fac_2 l2;",
+        "UnkStruct_02218fac l1; UnkStruct_02218fac_2 l2;", ("l1", "l2"), 12,
+    ),
+    # ROM 02228100: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_ov004_02228164.
+    "ov004/func_ov004_02228100.c": (
+        "08ee6f580bb8a47cf1c81e8b3eed9b31c47fe087363a4122441f0ea7bdca5bf6",
+        "UnkStruct_02228100_2 s;\n    UnkStruct_02228100_3 t;",
+        "UnkStruct_02228100_2 s; UnkStruct_02228100_3 t;", ("s", "t"), 12,
+    ),
+    # ROM 02229010: header at sp+0x4 to func_0200e894, payload at sp+0x10 to func_ov004_02229078.
+    "ov004/func_ov004_02229010.c": (
+        "cc21b8867f00ab47cda9a11da12129651bd57b40402fe2880bfe0d27bc0e7f20",
+        "struct UnkStruct_02229010_2 ctx;\n    struct UnkStruct_02229010_3 obj;",
+        "struct UnkStruct_02229010_2 ctx; struct UnkStruct_02229010_3 obj;", ("ctx", "obj"), 12,
+    ),
+    # ROM 02229258: header at sp+0x4 to func_0200e894, payload at sp+0x10 to func_ov004_022292c0.
+    "ov004/func_ov004_02229258.c": (
+        "4594a782cd6fa667316ec55e1d9dd3742561ac3eed1fa9b618bd2edaa4358d88",
+        "struct UnkStruct_02229258_2 ctx;\n    struct UnkStruct_02229258_3 obj;",
+        "struct UnkStruct_02229258_2 ctx; struct UnkStruct_02229258_3 obj;", ("ctx", "obj"), 12,
+    ),
+    # ROM 022294a0: header at sp+0x4 to func_0200e894, payload at sp+0x10 to func_ov004_02229508.
+    "ov004/func_ov004_022294a0.c": (
+        "82eeaeb0e28a0436086e787c3b9edd59544bd09f52713ee45e74f3d100762b20",
+        "struct UnkStruct_022294a0_2 ctx;\n    struct UnkStruct_022294a0_3 obj;",
+        "struct UnkStruct_022294a0_2 ctx; struct UnkStruct_022294a0_3 obj;", ("ctx", "obj"), 12,
+    ),
+    # ROM 02229774: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_ov004_022297c4.
+    "ov004/func_ov004_02229774.c": (
+        "9d473417adc1fc073d1a0733e8909a202d9873dbc3450b6df8e206162cf40ec9",
+        "CType c;\n    DType d;",
+        "CType c; DType d;", ("c", "d"), 12,
+    ),
+    # ROM 0222a494: header at sp+0x4 to func_0200e894, payload at sp+0x10 to func_ov004_0222a4dc.
+    "ov004/func_ov004_0222a494.cpp": (
+        "a74360e886ba90132c1c6e3fcce08ea7e576e0481bc46f7cd11850d6a2c66bef",
+        ("QueueEntry local1;", "\n    UnkStruct_0222a494 local2;"),
+        "QueueEntry local1; UnkStruct_0222a494 local2;", ("local1", "local2"), 12,
+    ),
+    # ROM 0222af6c: header at sp+0x8 to func_0200e894, payload at sp+0x14 to func_ov004_0222afbc.
+    "ov004/func_ov004_0222af6c.c": (
+        "aa68216b0b0adff48004d65b3af7a8c7d33e10f4e7fdc959eb85ec4d32a310b4",
+        "CType c;\n    DType d;",
+        "CType c; DType d;", ("c", "d"), 12,
+    ),
 }
 
 
@@ -207,11 +315,18 @@ def translate(relative: str, text: str) -> str | None:
     if spec is None:
         return None
     digest, before, fields, names, offset = spec
-    if hashlib.sha256(text.encode()).hexdigest() != digest or text.count(before) != 1:
+    # (declaration, later declaration): the second local is declared after statements; the
+    # copy declares both in the first one's place
+    before, later = before if isinstance(before, tuple) else (before, None)
+    if (hashlib.sha256(text.encode()).hexdigest() != digest or text.count(before) != 1
+            or later is not None and text.count(later) != 1):
         raise ValueError(f"Native local layout changed; repeat the ROM audit: {relative}")
+    if later is not None:
+        text = text.replace(later, "")
     head, tail = text.split(before)
     pattern = r"\b(" + "|".join(map(re.escape, names)) + r")\b"
     tail = re.sub(pattern, lambda m: "native_frame." + m.group(), tail)
+    assertion = "static_assert" if relative.endswith(".cpp") else "_Static_assert"
     return (head + "struct { " + fields + " } native_frame;\n    "
-            + '_Static_assert(__builtin_offsetof(__typeof__(native_frame), '
+            + assertion + '(__builtin_offsetof(__typeof__(native_frame), '
             + names[1] + f') == {offset}, "ROM local adjacency");' + tail)
