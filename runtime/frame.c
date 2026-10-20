@@ -172,14 +172,134 @@ static void sha1_block(uint32_t h[5], const uint8_t *block)
     h[4] += e;
 }
 
+/* The same blocks with the CPU's SHA instructions (SHA-NI), where it has them: a run hashes
+ * both screens of every frame, and these do it several times faster than the code above. The
+ * state is kept as the instructions want it (A-D in one register, E in the top lane of
+ * another); each four steps take one sha1rnds4 with the round's function number. */
+#if defined(__i386__) || defined(__x86_64__)
+#include <cpuid.h>
+#include <immintrin.h>
+
+__attribute__((target("sha,sse4.1,ssse3"))) static void sha1_blocks_ni(uint32_t h[5], const uint8_t *p, size_t blocks)
+{
+    const __m128i swap = _mm_set_epi64x(0x0001020304050607LL, 0x08090a0b0c0d0e0fLL);
+    __m128i abcd = _mm_shuffle_epi32(_mm_loadu_si128((const __m128i *) h), 0x1b);
+    __m128i e0 = _mm_set_epi32((int) h[4], 0, 0, 0);
+    for (; blocks > 0; blocks--, p += 64) {
+        __m128i abcd_was = abcd, e0_was = e0, e1;
+        __m128i m0 = _mm_shuffle_epi8(_mm_loadu_si128((const __m128i *) (p + 0)), swap);
+        __m128i m1 = _mm_shuffle_epi8(_mm_loadu_si128((const __m128i *) (p + 16)), swap);
+        __m128i m2 = _mm_shuffle_epi8(_mm_loadu_si128((const __m128i *) (p + 32)), swap);
+        __m128i m3 = _mm_shuffle_epi8(_mm_loadu_si128((const __m128i *) (p + 48)), swap);
+
+        /* steps 0-15: the message words as they are */
+        e0 = _mm_add_epi32(e0, m0);
+        e1 = abcd;
+        abcd = _mm_sha1rnds4_epu32(abcd, e0, 0);
+        e1 = _mm_sha1nexte_epu32(e1, m1);
+        e0 = abcd;
+        abcd = _mm_sha1rnds4_epu32(abcd, e1, 0);
+        m0 = _mm_sha1msg1_epu32(m0, m1);
+        e0 = _mm_sha1nexte_epu32(e0, m2);
+        e1 = abcd;
+        abcd = _mm_sha1rnds4_epu32(abcd, e0, 0);
+        m1 = _mm_sha1msg1_epu32(m1, m2);
+        m0 = _mm_xor_si128(m0, m2);
+        e1 = _mm_sha1nexte_epu32(e1, m3);
+        e0 = abcd;
+        m0 = _mm_sha1msg2_epu32(m0, m3);
+        abcd = _mm_sha1rnds4_epu32(abcd, e1, 0);
+        m2 = _mm_sha1msg1_epu32(m2, m3);
+        m1 = _mm_xor_si128(m1, m3);
+
+        /* steps 16-79: four words of the schedule at a time, the registers taking turns */
+#define SHA1_NI4(func, ea, eb, mx, my, mz, mw)                                                                                \
+    do {                                                                                                                      \
+        ea = _mm_sha1nexte_epu32(ea, mx);                                                                                     \
+        eb = abcd;                                                                                                            \
+        my = _mm_sha1msg2_epu32(my, mx);                                                                                      \
+        abcd = _mm_sha1rnds4_epu32(abcd, ea, func);                                                                           \
+        mw = _mm_sha1msg1_epu32(mw, mx);                                                                                      \
+        mz = _mm_xor_si128(mz, mx);                                                                                           \
+    } while (0)
+        SHA1_NI4(0, e0, e1, m0, m1, m2, m3); /* 16-19 */
+        SHA1_NI4(1, e1, e0, m1, m2, m3, m0); /* 20-23 */
+        SHA1_NI4(1, e0, e1, m2, m3, m0, m1); /* 24-27 */
+        SHA1_NI4(1, e1, e0, m3, m0, m1, m2); /* 28-31 */
+        SHA1_NI4(1, e0, e1, m0, m1, m2, m3); /* 32-35 */
+        SHA1_NI4(1, e1, e0, m1, m2, m3, m0); /* 36-39 */
+        SHA1_NI4(2, e0, e1, m2, m3, m0, m1); /* 40-43 */
+        SHA1_NI4(2, e1, e0, m3, m0, m1, m2); /* 44-47 */
+        SHA1_NI4(2, e0, e1, m0, m1, m2, m3); /* 48-51 */
+        SHA1_NI4(2, e1, e0, m1, m2, m3, m0); /* 52-55 */
+        SHA1_NI4(2, e0, e1, m2, m3, m0, m1); /* 56-59 */
+        SHA1_NI4(3, e1, e0, m3, m0, m1, m2); /* 60-63 */
+        SHA1_NI4(3, e0, e1, m0, m1, m2, m3); /* 64-67 */
+#undef SHA1_NI4
+        /* 68-71 */
+        e1 = _mm_sha1nexte_epu32(e1, m1);
+        e0 = abcd;
+        m2 = _mm_sha1msg2_epu32(m2, m1);
+        abcd = _mm_sha1rnds4_epu32(abcd, e1, 3);
+        m3 = _mm_xor_si128(m3, m1);
+        /* 72-75 */
+        e0 = _mm_sha1nexte_epu32(e0, m2);
+        e1 = abcd;
+        m3 = _mm_sha1msg2_epu32(m3, m2);
+        abcd = _mm_sha1rnds4_epu32(abcd, e0, 3);
+        /* 76-79 */
+        e1 = _mm_sha1nexte_epu32(e1, m3);
+        e0 = abcd;
+        abcd = _mm_sha1rnds4_epu32(abcd, e1, 3);
+
+        e0 = _mm_sha1nexte_epu32(e0, e0_was);
+        abcd = _mm_add_epi32(abcd, abcd_was);
+    }
+    _mm_storeu_si128((__m128i *) h, _mm_shuffle_epi32(abcd, 0x1b));
+    h[4] = (uint32_t) _mm_extract_epi32(e0, 3);
+}
+
+/* CPUID leaf 7, EBX bit 29: the SHA extensions */
+static int have_sha_ni(void)
+{
+    static int known = -1;
+    if (known < 0) {
+        unsigned a = 0, b = 0, c = 0, d = 0;
+        known = __get_cpuid_count(7, 0, &a, &b, &c, &d) && (b & (1u << 29)) != 0;
+    }
+    return known;
+}
+#else
+static void sha1_blocks_ni(uint32_t h[5], const uint8_t *p, size_t blocks)
+{
+    (void) h;
+    (void) p;
+    (void) blocks;
+}
+
+static int have_sha_ni(void)
+{
+    return 0;
+}
+#endif
+
+static void sha1_blocks(uint32_t h[5], const uint8_t *p, size_t blocks)
+{
+    if (have_sha_ni() && getenv("RUN_NO_SHA_NI") == NULL) {
+        sha1_blocks_ni(h, p, blocks);
+        return;
+    }
+    for (size_t i = 0; i < blocks; i++) {
+        sha1_block(h, p + 64 * i);
+    }
+}
+
 void sha1_hex(const void *data, size_t size, char hex[41])
 {
     uint32_t h[5] = {0x67452301u, 0xefcdab89u, 0x98badcfeu, 0x10325476u, 0xc3d2e1f0u};
     const uint8_t *p = data;
-    size_t off = 0;
-    for (; off + 64 <= size; off += 64) {
-        sha1_block(h, p + off);
-    }
+    size_t off = size / 64 * 64;
+    sha1_blocks(h, p, size / 64);
     uint8_t tail[128];
     size_t n = size - off;
     memcpy(tail, p + off, n);
@@ -190,10 +310,7 @@ void sha1_hex(const void *data, size_t size, char hex[41])
     for (int i = 0; i < 8; i++) {
         tail[total - 1 - (size_t) i] = (uint8_t) (bits >> (8 * i));
     }
-    sha1_block(h, tail);
-    if (total == 128) {
-        sha1_block(h, tail + 64);
-    }
+    sha1_blocks(h, tail, total / 64);
     for (int i = 0; i < 5; i++) {
         snprintf(hex + 8 * i, 9, "%08x", h[i]);
     }
