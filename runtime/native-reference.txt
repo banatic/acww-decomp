@@ -10,18 +10,12 @@ func_020fda90 touches the hardware at 04000500
 func_02001268 touches the hardware at 04000208
 func_020010c0 loops waiting for interrupts or other threads
 NitroStartUp touches the hardware at 04000208
-func_020bf1b8 calls FS_InitFile with its own first argument (r0 passed through); the source declares FS_InitFile(void)
-func_020e9ec4 passes its second and third arguments on to NNS_FndAllocFromExpHeapEx in r1 and r2 untouched; the source declares one parameter and calls it with one argument
 func_020b1b84 touches the hardware at 04000208
 func_01ffcc30 touches the hardware at 04000006
-func_020e9918 passes its own r0 and r1 on to func_020ea1bc (size, heap); the source declares both without parameters
 func_02002f68 touches the hardware at 04000060
 func_02002e54 touches the hardware at 04000060
 func_020540e4 touches the hardware at 04000304
 func_02002ee8 touches the hardware at 04000060
-func_02064658 calls MI_CpuCopy8 (021175fc autoload_2) with other arguments than the ROM's code (it returns 021cd860, not 021cd716; frame 56)
-func_020a9540 passes func_02064658 (02064658 main) argument 3 as 00000a00 where the ROM's code passes 0000004e (frame 56)
-func_02061530 returns 1705000b where the ROM's code returns 021cb5a0 (frame 57)
 func_0206e560 touches the hardware at 04001002
 func_02002ec0 touches the hardware at 04000440
 func_02053f20 touches the hardware at 04000304
@@ -34,16 +28,11 @@ func_02002354 touches the hardware at 04000000
 func_02001ecc touches the hardware at 04000000
 func_020b5794 touches the hardware at 04000000
 func_020028bc touches the hardware at 0400100e
-func_020b5898 faults (wild pointer) at 1c04b510
-func_020b56a8 faults (wild pointer) at 1c04b510
 func_020b68f8 touches the hardware at 04000000
-func_ov003_0221c570 faults (wild pointer) at 0aa05bd8
-func_ov003_0221c548 calls func_ov003_0221c570 (0221c570 ov003) with other arguments than the ROM's code (it returns 00000000, not 022388e4; frame 416)
 func_020ba540 touches the hardware at 0400100a
 func_020bad44 touches the hardware at 05000400
 func_020b698c touches the hardware at 04000358
 func_020b6d20 touches the hardware at 04000008
-_ZN18Obj_ov009_022658dc19func_ov009_02265144Ev calls _ZN18Obj_ov009_022658dc8vfunc_74Ev (022640d8 ov009) with other arguments than the ROM's code (it returns 00000001, not 00000002; frame 577)
 func_02064ddc touches the hardware at 04000440
 func_020aced0 touches the hardware at 040004a8
 func_020fa204 touches the hardware at 04000060
@@ -54,7 +43,6 @@ func_020b983c touches the hardware at 04000006
 func_ov147_0229a3ac touches the hardware at 0400000e
 func_ov147_0229a374 touches the hardware at 04000000
 func_02068e04 touches the hardware at 0400000c
-func_020bae60 updates the title sky's per-line tables and their variables while the display draws them (interrupts read them mid-run): Native code takes no time, so its stores land on other lines than the ROM's (frames 933, 963, 974)
 func_020ac444 touches the hardware at 0400000a
 func_0206f408 touches the hardware at 04000042
 func_01ffccf4 touches the hardware at 04000004
@@ -68,3 +56,4 @@ func_020bab74 touches the hardware at 05000400
 func_0201b744 calls func_0201bf24 with 2 of its 4 arguments: func_0201bf24 spills r0-r3 and hands &param2 to a callback (data_020cd2f4) that reads past it into the r2 and r3 slots, which the ROM's code leaves as earlier calls set them (scene able-sisters)
 func_0201b910 calls func_0201bf24 with 2 of its 4 arguments: func_0201bf24 spills r0-r3 and hands &param2 to a callback (data_020cd2f4) that reads past it into the r2 and r3 slots, which the ROM's code leaves as earlier calls set them (scene able-sisters)
 func_0201bcec calls func_0201bf24 with 2 of its 4 arguments: func_0201bf24 spills r0-r3 and hands &param2 to a callback (data_020cd2f4) that reads past it into the r2 and r3 slots, which the ROM's code leaves as earlier calls set them (scene able-sisters)
+func_020bae60 updates the title sky's per-line tables and their variables while the display draws them (interrupts read them mid-run): Native code takes no time, so its stores land on other lines than the ROM's (frames 933, 963, 974)
