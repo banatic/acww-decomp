@@ -795,6 +795,7 @@ def main() -> None:
 
     # every name used but not defined goes to its DS address
     absolute, unknown = [], []
+    placed_nowhere: set[str] = set()  # no address known: placed at 0 (a symbol at 0 has one)
     for host in sorted(undefined - defined):
         name = host[len(PREFIX):] if host.startswith(PREFIX) else host
         if name in HOST_NAMES:
@@ -815,10 +816,11 @@ def main() -> None:
             # through one faults at address 0, which the runtime reports
             unknown.append((host, len(addrs)))
             absolute.append((host, 0))
+            placed_nowhere.add(host)
     # A virtual method the PC's compiler calls directly (the object's type is known to it) has
     # no address of its own; the ROM's code calls it through the object's vtable. Such a name
     # becomes a jump through the object's vtable, at the slot the PC's compiler counts for it.
-    vcalls = virtual_calls(objects, {h for h, a in absolute if a == 0})
+    vcalls = virtual_calls(objects, placed_nowhere)
     absolute = [(h, a) for h, a in absolute if h not in vcalls]
     (OUT / "absolute.s").write_text("".join(f"\t.globl {h}\n\t.set {h}, 0x{a:08x}\n" for h, a in absolute),
                                     newline="\n")
@@ -887,7 +889,7 @@ def main() -> None:
     # call through; and one that calls a function no address is known for, mostly a virtual
     # call on an object (not a pointer) that the PC's compiler makes directly, to a method the
     # ROM only reaches through the vtable.
-    nowhere = {h for h, a in absolute if a == 0}
+    nowhere = placed_nowhere - set(vcalls)
     # A caller that declares a function with fewer parameters than its definition leaves the
     # rest to whatever r1-r3 hold, which on the DS are often the caller's own arguments passed
     # on; one that uses the result of a function defined void reads whatever r0 holds. The PC

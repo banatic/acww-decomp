@@ -301,3 +301,16 @@ returning a structure, each pinned by the source's SHA-256 with the ROM addresse
   (out, unused, index)), func_ov009_02263c84, func_ov009_02263e58 and func_ov009_022650d0
   (slot 45, func_ov009_02262ec4 (out, this) in Obj_ov009_022658dc's vtable, which writes three
   words). The copies call the slot as a C function with those arguments.
+
+## Addresses for names the PC's code needs
+
+- SDK_OVERLAY_ov000_ID is the linker symbol of value 0 (config absolute.txt; func_020b1b0c
+  loads 0 at 020b1b12): tools/native.py now tells a symbol at 0 from a name it knows no
+  address for, which it also places at 0.
+- RoomObject's this-adjusting destructor thunks (02211574, 02211590) subtract 236 from `this`
+  and go on to func_ov004_02210de8 and func_ov004_02210ee4. Their sources define the
+  destructor, whose PC copy would install the PC's `_ZTV10RoomObject`; the PC copies define
+  the thunks as the ROM has them (`EDITS`).
+- func_ov147_02299d58 calls slot 2 of a member object's vtable (02299d74-02299d78), which the
+  PC's compiler makes as a direct call to a method without an address; its copy calls the
+  slot.

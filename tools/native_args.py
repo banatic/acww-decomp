@@ -166,6 +166,28 @@ EDITS = {
          "extern void func_ov094_0229a888(unsigned int, unsigned char);"),
         ("void func_ov094_0229a898(unsigned char r0,", "void func_ov094_0229a898(unsigned int r0,"),
         ("    unsigned char r6 = r0;", "    unsigned int r6 = r0;"))),
+    # The ROM's this-adjusting thunks of RoomObject's destructors (02211574, 02211590) subtract
+    # 236 from `this` and go on to the destructors at func_ov004_02210de8 (deleting) and
+    # func_ov004_02210ee4, keeping r1-r3. The source defines the destructor itself, whose PC
+    # copy would install the PC's vtable (_ZTV10RoomObject; the ROM's are 0224fe6c and
+    # 0224ff18, laid out with mwccarm's one destructor slot): the copies define the thunks as
+    # the ROM has them.
+    "ov004/func_ov004_02211574.cpp": ("b295aae01ffb100857da6ed573eee000340334afe1abb277c1841f9d385b8f86",
+                                      '#include "cpp/ov004/RoomObject.h"\n\nRoomObject::~RoomObject() {}\n',
+                                      'extern "C" void *func_ov004_02210de8(char *self);\n\n'
+                                      'extern "C" void *_ZThn236_N10RoomObjectD0Ev(char *self)\n{\n'
+                                      '    return func_ov004_02210de8(self - 236);\n}\n'),
+    "ov004/func_ov004_02211590.cpp": ("96e56729c0ab89344476d4da9a7697440e9189b76b2ea9fc279eaddf42460726",
+                                      '#include "cpp/ov004/RoomObject.h"\n\nRoomObject::~RoomObject() {}\n',
+                                      'extern "C" void *func_ov004_02210ee4(char *self);\n\n'
+                                      'extern "C" void *_ZThn236_N10RoomObjectD1Ev(char *self)\n{\n'
+                                      '    return func_ov004_02210ee4(self - 236);\n}\n'),
+    # A virtual call on a member object, which the PC's compiler makes directly to
+    # UnkStruct_02299d58::v2, a method with no address of its own: the ROM's code calls slot 2
+    # of the object's vtable (02299d74-02299d78: ldr r1, [r0]; ldr r1, [r1, #8]; blx r1).
+    "ov147/func_ov147_02299d58.cpp": ("99b54e29c62c273777f6b2b31ed526cbbe5f4f5df48ec2e724cf22c9048a1755",
+                                      "        obj->sub.v2();\n",
+                                      "        ((void (*)(void *))(*(void ***) &obj->sub)[2])(&obj->sub);\n"),
     # A shift by a register: 020ad0f4 asrs r0, r4 shifts by r4's low byte, and a count of 32 or
     # more gives the sign; x86 masks the count to five bits.
     "main/func_020ad0c0.c": ("15b7cf92775c065f2fe439d1af6076ad8e0d15117392c543bffdfb769e337ca8",
