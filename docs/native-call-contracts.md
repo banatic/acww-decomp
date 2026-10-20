@@ -233,3 +233,36 @@ source's SHA-256 and justified by ROM addresses in the table:
 
 `python tools/test_native_args.py` checks that every copy applies, that a changed source is
 rejected, and the passed arguments.
+
+## Narrow parameters given a word
+
+Where a caller's declaration has a pointer (or a word) and the definition takes a char or a
+short, the ROM's callee trusts the caller to have extended the register; the PC's definition
+keeps only the low bits. 85 declarations name 55 such parameters. Each was audited against the
+ROM's callee and, where the callee uses more than the low bits, its callers:
+
+- Wrong, fixed by a word-typed PC copy (`tools/native_args.py` EDITS): func_0205f120 (r2),
+  func_ov123_0229ab18 (r0) and func_ov094_0229a898 (r0): it keeps r0 in r6 and passes it on to
+  func_ov094_0229a888, and func_ov103_0229cc70, func_ov104_0229d830, func_ov105_0229d49c,
+  func_ov106_0229d104 and func_ov108_0229cbbc pass a pointer there.
+- The ROM's code uses only the low bits (stores them with strb/strh, masks them, shifts them
+  out, or cuts the result to the narrow type): 0200a6f0 r2, 02015800 r1, 02034bd4 r3,
+  02056fcc r2, 02077a54 r1, 02077a8c r0 (and with a 16-bit mask), 02077ca8 r1, 02078380 r1,
+  02078460 r1, 020785dc r2, 02084dc8 r2, 02091494 r2, 020a5718 r1, 020a5c20 r1, 020a6248 r1,
+  020af004 r1, 020b3f58 r0, 0207094c r1, 02001b1c/02001b54/02001b8c/02001bc4 r0, 020036ec r1,
+  020508fc r2 (the result is cut to 16 bits), 02052fdc r0 (the sum is cut to 8 bits at
+  02052fe2), 020881fc r1, ov003_022122fc r2, ov004_0220cfec r1, ov004_02233dc0 r1,
+  ov096_0229f7ac r0, ov103_0229cde8 r0, ov106_0229d340 r0.
+- Stack arguments, which the callee loads with ldrh/ldrsh: 0200c904 (5th), 02019d0c (6th),
+  02044df8 (6th), 02048cb8 (4th), ov003_022131c8 (4th), ov004_0223362c (6th),
+  ov004_02240f2c (4th).
+- The callee uses the whole register, but no ROM caller passes more than the narrow value:
+  02001c08 (0 and 1); 020f0f7c (func_020041bc's callers narrow to a byte first); 02035148
+  (func_02035638's callers pass constants and halfword loads); 0203fda0 (item IDs: constants
+  and byte loads, a word compared with 0x63); 0204f8ec (constants and byte loads; a key no
+  entry has ends in OS_Terminate); 0209a498 (byte loads); 0209c410 (func_0209bee8 calls it
+  only after func_0209c38c checked the whole register below 8); 0209c470 (func_0209c020
+  passes func_0209c4a8's result, at most 8); ov003_02225b24 (0x1520); ov096_0229f7ac r1 and
+  ov096_0229f90c (byte fields at 0xb3-0xb9, behind func_ov096_0229f830's whole-register
+  check); ov103_0229cde8 r1 (behind func_ov103_0229cdfc, 0xb-0x14 on the whole register);
+  ov127_022996c8 (byte loads at 0xb0 and 0xb3).

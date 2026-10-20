@@ -91,7 +91,7 @@ PASSED = {
 
 # Audited exact edits to a source's PC copy, where the matching source relies on what the
 # ROM's code does beyond C: source (under src/) -> (SHA-256 of the source, the text as
-# written, the text of the PC copy).
+# written, the text of the PC copy), or (SHA-256, ((as written, PC copy), ...)) for several.
 EDITS = {
     # Local buffers a callee writes past: func_0209df64 stores four bytes (0209df74: strb r1,
     # [r0, #3]) into three-byte arrays. Each ROM frame has room for the fourth byte (the array
@@ -117,6 +117,14 @@ EDITS = {
     "ov123/func_ov123_0229ab18.c": ("a102da53d76aba8babb402a40937c6d2a102ef5cc6ef67e3878ef836a5fbf33f",
                                     "void func_ov123_0229ab18(unsigned char a,",
                                     "void func_ov123_0229ab18(unsigned int a,"),
+    # 0229a89a keeps r0 whole in r6 and passes it on to func_ov094_0229a888 (0229a8a2), which
+    # adds 0xa48 and goes on to func_ov094_0229a36c; func_ov104_0229d830, func_ov105_0229d49c,
+    # func_ov106_0229d104, func_ov108_0229cbbc and func_ov103_0229cc70 pass a pointer there.
+    "ov094/func_ov094_0229a898.c": ("6fa02d9ba9fa620b0a77eaccb9d0a0738c06ce98d8bfa9246dd0e106031496f7", (
+        ("extern void func_ov094_0229a888(unsigned char, unsigned char);",
+         "extern void func_ov094_0229a888(unsigned int, unsigned char);"),
+        ("void func_ov094_0229a898(unsigned char r0,", "void func_ov094_0229a898(unsigned int r0,"),
+        ("    unsigned char r6 = r0;", "    unsigned int r6 = r0;"))),
     # A shift by a register: 020ad0f4 asrs r0, r4 shifts by r4's low byte, and a count of 32 or
     # more gives the sign; x86 masks the count to five bits.
     "main/func_020ad0c0.c": ("15b7cf92775c065f2fe439d1af6076ad8e0d15117392c543bffdfb769e337ca8",
@@ -125,11 +133,20 @@ EDITS = {
 }
 
 
+def replacements(relative: str) -> tuple[tuple[str, str], ...]:
+    """The (text as written, text of the PC copy) pairs of an EDITS entry."""
+    spec = EDITS[relative]
+    return spec[1] if len(spec) == 2 else (spec[1:],)
+
+
 def edited(relative: str, text: str) -> str:
-    digest, before, after = EDITS[relative]
-    if hashlib.sha256(text.encode()).hexdigest() != digest or text.count(before) != 1:
+    if hashlib.sha256(text.encode()).hexdigest() != EDITS[relative][0]:
         raise ValueError(f"Native audited edit no longer applies; repeat the ROM audit: {relative}")
-    return text.replace(before, after)
+    for before, after in replacements(relative):
+        if text.count(before) != 1:
+            raise ValueError(f"Native audited edit no longer applies; repeat the ROM audit: {relative}")
+        text = text.replace(before, after)
+    return text
 
 
 def paths() -> set[str]:
