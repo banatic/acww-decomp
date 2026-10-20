@@ -9,7 +9,35 @@ import native_aggregate
 import run
 
 
+def caller_guards():
+    """Each audited caller copy applies, and a changed source is rejected."""
+    for relative, (_digest, callees, changes) in native_aggregate.CALLERS.items():
+        text = (C.SRC / relative).read_bytes().decode()
+        copy = native_aggregate.caller_copy(relative, text)
+        assert callees and native_aggregate.handled(relative) == set(callees), relative
+        assert (copy is None) == (not changes), relative
+        try:
+            native_aggregate.caller_copy(relative, text + '\n')
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('changed source accepted: ' + relative)
+    for relative in native_aggregate.CLEAN_CALLERS:
+        text = (C.ROOT / relative).read_bytes().decode()
+        assert native_aggregate.clean_caller_copy(relative, text) != text, relative
+        try:
+            native_aggregate.clean_caller_copy(relative, text + '\n')
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('changed Clean source accepted: ' + relative)
+    assert native_aggregate.returns_word('main/func_020401b8.c')
+    print(f'{len(native_aggregate.CALLERS)} audited aggregate caller copies and '
+          f'{len(native_aggregate.CLEAN_CALLERS)} Clean ones apply and reject changed sources')
+
+
 def main():
+    caller_guards()
     folder = C.BUILD / 'native-aggregate-check'
     folder.mkdir(parents=True, exist_ok=True)
     runtime = C.ROOT / 'runtime'

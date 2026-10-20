@@ -376,6 +376,7 @@ def build_clean(flags: list[str]) -> list[str]:
             copy = native_aggregate.clean_copy(copy)
         elif src.relative_to(C.ROOT).as_posix() == native_stack.CLEAN_SOURCE:
             copy = native_stack.clean_copy(copy)
+        copy = native_aggregate.clean_caller_copy(src.relative_to(C.ROOT).as_posix(), copy)
         copy = native_clean_profile.source_copy(copy)
         if copy != original:
             source = OUT / 'clean-copy' / src.relative_to(C.ROOT)

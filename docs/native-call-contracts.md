@@ -266,3 +266,25 @@ ROM's callee and, where the callee uses more than the low bits, its callers:
   ov096_0229f90c (byte fields at 0xb3-0xb9, behind func_ov096_0229f830's whole-register
   check); ov103_0229cde8 r1 (behind func_ov103_0229cdfc, 0xb-0x14 on the whole register);
   ov127_022996c8 (byte loads at 0xb0 and 0xb3).
+
+## Structure results by value
+
+`CALLERS` in `tools/native_aggregate.py` covers the callers of functions their sources declare
+returning a structure, each pinned by the source's SHA-256 with the ROM addresses:
+
+- Declarations with the definition's layout, adapted at the crossings by the return kinds
+  above: func_02012e58 (func_02013304) and func_020401b8 (func_020404b4). func_020401b8 itself
+  returns a four-byte union in r0, which its callers declare as int: its PC copy returns the
+  union's word (RET_32).
+- Callers whose callee returns a scalar: func_0203ff98 (func_0204019c, func_02040180 return
+  int, stored as the structure's word), func_02065604 and func_020656ac (func_020bbf00 returns
+  a short, stored as the colour's halfword).
+- The library's FS_GetOverlayFileID returns its 8-byte FSFileID through r0: func_0204f934's
+  copy passes the result's address and the overlay's information as the ROM's code does
+  (0204f972-0204f976). `CLEAN_CALLERS` gives OverlaySlots_Load (clean/main/overlay_slots.c)
+  the same PC copy, compiled by tools/run.py.
+- Virtual methods returning a structure, which mwccarm calls with the result's address in r0
+  and `this` in r1: func_0205b270 (slots 1 and 2 of vtables 020dd3a4 and 020dd3b8, C functions
+  (out, unused, index)), func_ov009_02263c84, func_ov009_02263e58 and func_ov009_022650d0
+  (slot 45, func_ov009_02262ec4 (out, this) in Obj_ov009_022658dc's vtable, which writes three
+  words). The copies call the slot as a C function with those arguments.

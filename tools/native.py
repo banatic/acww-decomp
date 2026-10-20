@@ -427,6 +427,8 @@ def signature_read(path: pathlib.Path, name: str) -> tuple[int, int, bool, int]:
         kind = RET_SKIP
     else:
         kind = RET_32
+    if kind == RET_SKIP and path.is_relative_to(C.SRC) and native_aggregate.returns_word(path.relative_to(C.SRC).as_posix()):
+        kind = RET_32  # the PC copy returns the structure's word, as the ROM's code does in r0
     aggregate_kind = native_aggregate.return_kind(path)
     if aggregate_kind is not None:
         if kind != RET_SKIP or member or floating:
@@ -914,7 +916,7 @@ def main() -> None:
         vts = sorted({n[strip:] for n in names if n[strip:].startswith("_ZTV") and n[strip:] not in vtables})
         zero = sorted(n[strip:] for n in code_references(_) & nowhere) if names & nowhere else []
         text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
-        by_value = struct_results(text)
+        by_value = [n for n in struct_results(text) if n not in native_aggregate.handled(path.relative_to(C.SRC).as_posix())]
         if "__MWERKS__" in text and ASM_FUNCTION.search(text):
             keep.append(f"{name} matches as assembly (`asm`, under #ifdef __MWERKS__); its C version for the PC "
                         "is a rewrite, and passes registers on differently" + chr(10))
