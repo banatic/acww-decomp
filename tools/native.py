@@ -43,6 +43,7 @@ import native_stack  # noqa: E402
 import native_publish  # noqa: E402
 import native_aggregate  # noqa: E402
 import native_pmf_boundary  # noqa: E402
+import native_args  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -826,13 +827,18 @@ def main() -> None:
     # rest to whatever r1-r3 hold, which on the DS are often the caller's own arguments passed
     # on; one that uses the result of a function defined void reads whatever r0 holds. The PC
     # passes and returns neither.
+    # Neither matters where the callee's ROM code never reads the missing registers, or where
+    # the callee is library code, which always runs as the ROM's code and hands back r0
+    # (tools/native_args.py).
     short: dict[str, list[str]] = collections.defaultdict(list)
-    for rel, callee, n, dn, ret, dret, _drel in protos.disagreements():
+    for rel, callee, n, dn, ret, dret, drel in protos.disagreements():
         relative = rel.removeprefix('src/')
         if C.SRC / relative in PMF_TRANSLATED and callee in native_pmf_boundary.REGISTER_CALLS.get(relative, set()):
             continue  # the guarded PC copy explicitly passes the audited ARM register
         if (n is not None and dn is not None and n < dn) or (ret and not dret):
-            short[rel].append(callee)
+            caller = C.parse_source(C.ROOT / rel)
+            if caller is None or not native_args.harmless(syms, caller.module, callee, n, dn, ret, dret, drel):
+                short[rel].append(callee)
     # A caller that declares a function with a char or short result the definition does not
     # produce (protos.narrowed_results): mwccarm trusts the callee to have extended r0 as
     # declared, so the ROM's code goes on with the whole register (returns it, compares it, adds

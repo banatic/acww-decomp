@@ -24,21 +24,9 @@ func_02064658 calls MI_CpuCopy8 (021175fc autoload_2) with other arguments than 
 func_020a9540 passes func_02064658 (02064658 main) argument 3 as 00000a00 where the ROM's code passes 0000004e (frame 56)
 func_020a967c has func_02064658 read 8 bytes into int local1 and takes the second word from local2: it relies on the ROM's stack layout (two separate locals)
 func_02061530 returns 1705000b where the ROM's code returns 021cb5a0 (frame 57)
-func_020eae40 calls func_ov065_0227e67c with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_020ec5ac calls func_ov065_0227f22c with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_020ec980 calls func_ov065_0227f380 with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_020ecf24 calls func_ov065_0227e67c with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0200c8c0 calls func_020778b0 with 0 of its 3 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0205ec50 calls func_020e9e34 with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_02078194 calls func_020781bc with 0 of its 1 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0209036c calls NNS_G3dGetVisAnmSet with 1 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_0209050c calls NNS_G3dGetVisAnmSet with 1 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_02096484 calls func_020778b0 with 0 of its 3 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_ov003_0222fa20 calls NNS_G3dGetVisAnmSet with 1 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_ov004_0220e224 calls NNS_G3dGetVisAnmSet with 1 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_ov004_0223e2f0 calls NNS_G3dGetVisAnmSet with 1 of its 4 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_ov004_0223f6dc calls NNS_G3dGetVisAnmSet with 1 of its 4 arguments; func_02064328 with 2 of its 3 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
-func_ov118_0229a9ac calls func_ov093_022990b8 with 1 of its 2 arguments: the ROM's code passes the rest as the registers hold them (static check of the sources)
 func_0206e560 touches the hardware at 04001002
 func_02002ec0 touches the hardware at 04000440
 func_02053f20 touches the hardware at 04000304

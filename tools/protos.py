@@ -48,6 +48,15 @@ def returns(ret: str) -> bool:
     return not (words == ["void"])
 
 
+# `extern "C"` in a C++ source: what it marks is a C function of the game, read as if the
+# source said `extern` (the "C" becomes spaces, so offsets stay)
+LINKAGE = re.compile(r'(?<=\bextern)(\s*)"C"')
+
+
+def plain_linkage(text: str) -> str:
+    return LINKAGE.sub(lambda m: m.group(1) + "   ", text)
+
+
 CLASS_BODY = re.compile(r"\b(?:class|struct|union)\b[^;{}()=]*\{")
 
 
@@ -98,7 +107,7 @@ def narrowed_results() -> list[tuple[str, str]]:
         if C.SRC not in path.parents:
             continue
         rel = path.relative_to(C.ROOT).as_posix()
-        text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
+        text = plain_linkage(COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace")))
         local = {m.group(2) for m in FUNC.finditer(text) if "static" in m.group(1).split()}
         members = class_bodies(text)
         for m in FUNC.finditer(text):
@@ -133,7 +142,7 @@ def widen_declarations(text: str, names: set[str]) -> tuple[str, set[str]]:
     promotion); the PC's caller, given int, goes on with eax as the callee left it, which the
     Native, Clean and Reference callees all leave as the definition's result (extended as the
     definition's type). For tools/native.py only: the DS build compiles the source as it is."""
-    plain = COMMENT.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)  # same offsets
+    plain = plain_linkage(COMMENT.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text))  # same offsets
     members = class_bodies(plain)
     edits, done = [], set()
     for m in FUNC.finditer(plain):
@@ -146,6 +155,8 @@ def widen_declarations(text: str, names: set[str]) -> tuple[str, set[str]]:
         if width is None or width[0] >= 4:
             continue
         keep = [w for w in ret.split() if w in ("extern", "static", "inline", "const", "volatile", "__arm", "__thumb")]
+        if LINKAGE.search(text[m.start(1):m.end(1)]):
+            keep = ['extern "C"' if w == "extern" else w for w in keep]
         edits.append((m.start(1), m.end(1), " ".join([*keep, "int"]) + " "))
         done.add(name)
     for start, stop, new in reversed(edits):
@@ -163,7 +174,7 @@ def disagreements() -> list[tuple[str, str, int | None, int | None, bool, bool, 
     for path in C.all_sources():
         game = C.SRC in path.parents
         rel = path.relative_to(C.ROOT).as_posix()
-        text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
+        text = plain_linkage(COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace")))
         # a file's own static functions are its business, whatever other files name theirs
         local = {m.group(2) for m in FUNC.finditer(text) if "static" in m.group(1).split()}
         members = class_bodies(text)
@@ -174,6 +185,9 @@ def disagreements() -> list[tuple[str, str, int | None, int | None, bool, bool, 
             if any(start <= m.start(2) < stop for start, stop in members):
                 continue
             entry = (params(ps), returns(ret))
+            if end == ";" and path.suffix == ".c" and not ps.strip():
+                # `int f();` in C says nothing of the parameters: a call passes what it names
+                entry = (None, entry[1])
             if end == "{" and "asm" in ret.split():
                 # an assembly body says nothing of its parameters or result
                 entry = (None, None)

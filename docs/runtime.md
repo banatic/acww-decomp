@@ -134,7 +134,10 @@ the Reference run's crossings that gives Native code the Reference's timing. A s
 declares a callee with a char or short result its definition does not produce is compiled from
 a copy that declares it returning int: mwccarm trusts the callee to have extended r0 and goes on
 with the whole register, and so does the PC's code with eax (`tools/protos.py`,
-`widen_declarations`). Audited member-pointer callers use the ROM's two-word encoding in
+`widen_declarations`). A source that declares a function with fewer parameters than its
+definition stays Reference unless the callee's ROM code never reads the missing argument
+registers; a declared result that a library function's definition does not give is fine, as
+library code always runs as the ROM's code and hands back r0 (`tools/native_args.py`). Audited member-pointer callers use the ROM's two-word encoding in
 PC copies (`runtime/native_member.h`, `tools/native_pmf.py`); see
 [the supported boundary](native-member-pointers.md). Functions still kept Reference are
 those `tools/native.py` finds by reading the sources (unsupported shared member-pointer
