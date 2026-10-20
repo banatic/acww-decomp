@@ -134,6 +134,14 @@ scene("bulletin-board", "seed", 5200, [2600, 3500, 4250, 5199], frames(3400, 520
       "read the bulletin board by the town hall, page through it, write a message on it")
 scene("gate-flag", "seed", 7600, [2600, 3800, 4700, 5900, 6700, 7599], frames(3400, 7600, 50),
       "walk to the gate, talk to the gatekeeper, give the town flag one of the player's designs")
+scene("shop-order", "rich", 6400, [2600, 3800, 4800, 5600, 6399], frames(4250, 6400, 50),
+      "in Nook's shop, open his catalog and order a piece of furniture from it")
+scene("design-wear", "seed", 4800, [2600, 3500, 3850, 4300, 4799], frames(3150, 4800, 50),
+      "in the pockets, wear one design as a shirt and another as an umbrella")
+scene("shop-sell", "furni", 6200, [2600, 3800, 4800, 5450, 6199], frames(4650, 6200, 50),
+      "in Nook's shop, sell him a piece of furniture from the pockets")
+scene("design-draw", "rod", 8600, [2600, 3800, 5000, 6100, 7000, 8100, 8599], frames(4650, 8600, 50),
+      "at the Able Sisters' shop, draw a design in Mabel's design editor, name it and pay for it")
 scene("menus", "seed", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
       "open the pockets, visit its tabs (designs, fish list, chat, map, friends), close")
 
