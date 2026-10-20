@@ -8794,7 +8794,19 @@
       "size": 108,
       "rom_sha256": "44bdb424538d667e569a507123069c8edb920153ae5be6a1e2d48bc1db246c7b",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "initialized": {
+          "address": "0223c8b4",
+          "literal": "0221cca0",
+          "count": 0
+        },
+        "table": {
+          "address": "0223c8e0",
+          "literal": "0221cca4",
+          "count": 3
+        }
+      }
     },
     "ov003/func_ov003_0221ccb4.cpp": {
       "source_sha256": "38e87082227939d69df8bbadd40f77949817bd2f358340b1419449426b6f7489",
@@ -8842,7 +8854,19 @@
       "size": 216,
       "rom_sha256": "3166e40a01f2b9a4cb34b671fd71d2224e5b4d0357696d1a04cb8691636f9471",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "guard": {
+          "address": "0223c9dc",
+          "literal": "0221e2f8",
+          "count": 0
+        },
+        "tbl": {
+          "address": "0223ca68",
+          "literal": "0221e2fc",
+          "count": 7
+        }
+      }
     },
     "ov003/func_ov003_0221e32c.cpp": {
       "source_sha256": "ed2f58f3347fb5d7d58f7f38fcef22beeaf863c80a0da33acb8bf5a3ea182bae",
@@ -10176,7 +10200,19 @@
       "size": 128,
       "rom_sha256": "c6d6b9049b6d9e4e7ecf0e952e53eefc1edabdc0cffe4921903aafaabfb8d31d",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "s_flag": {
+          "address": "02263008",
+          "literal": "02261ff8",
+          "count": 0
+        },
+        "s_table": {
+          "address": "02263020",
+          "literal": "02261ffc",
+          "count": 5
+        }
+      }
     },
     "ov047/func_ov047_02262014.cpp": {
       "source_sha256": "cd60d1a128a2ffe2497b29c344740fb38dc55e1abd41676d10f80990657ffa73",
@@ -12156,7 +12192,19 @@
       "size": 144,
       "rom_sha256": "0582ccd842747a634e95c34976dad5c2fa4cfdc873737cf00697aeb6e1e633df",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "init_done": {
+          "address": "022782b8",
+          "literal": "02269acc",
+          "count": 0
+        },
+        "table": {
+          "address": "022783dc",
+          "literal": "02269ad0",
+          "count": 4
+        }
+      }
     },
     "ov068/func_ov068_0226af00.cpp": {
       "source_sha256": "83d29d2a11b3add97e090e02e8d203a6ca9ce2fac32599e6ccf45a14d131acd1",
@@ -12899,7 +12947,19 @@
       "size": 252,
       "rom_sha256": "e70c38cedaf6149cbc247d85cdd6b30c3101f8d4980626e3069f1867f0cc7d26",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "initialized": {
+          "address": "022788f4",
+          "literal": "02275d3c",
+          "count": 0
+        },
+        "table": {
+          "address": "022789a0",
+          "literal": "02275d40",
+          "count": 11
+        }
+      }
     },
     "ov071/func_ov071_0227918c.cpp": {
       "source_sha256": "77a8d359f89b1f2e0bc1a08bea6beab6aba1b23d8c67f0fd5c901a7c8928b469",
@@ -16367,7 +16427,19 @@
       "size": 148,
       "rom_sha256": "2785e219741fafa40c1c5b9a91292b076ade21c62931fd42ca725cb02ea51a36",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "s_guard": {
+          "address": "0229e420",
+          "literal": "0229cc90",
+          "count": 0
+        },
+        "s_arr": {
+          "address": "0229e42c",
+          "literal": "0229cc94",
+          "count": 4
+        }
+      }
     },
     "ov107/func_ov107_0229dea4.cpp": {
       "source_sha256": "85735ae98c03c147e329b58b858a974fbb889e19c4af2a302e54bc1f08d0c86d",
@@ -16471,7 +16543,19 @@
       "size": 300,
       "rom_sha256": "817558a5afbcbb278f223b83dae468417c7f4c4a123ef1880628e3b90b565afc",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "flag": {
+          "address": "0229dc44",
+          "literal": "0229d898",
+          "count": 0
+        },
+        "table": {
+          "address": "0229dc70",
+          "literal": "0229d89c",
+          "count": 16
+        }
+      }
     },
     "ov109/func_ov109_0229d8e0.cpp": {
       "source_sha256": "c9b4a653458d763c0f1617a0da98ea524990e26b2626a14cc8a13bff330569d9",
@@ -17253,7 +17337,14 @@
       "size": 148,
       "rom_sha256": "7189fb42f8da2d62c94842d28ccf643634877b7809c2d92bc4c8362d9a9bf2eb",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "state": {
+          "address": "0229e924",
+          "literal": "0229e730",
+          "count": 0
+        }
+      }
     },
     "ov116/func_ov116_0229e6b4.cpp": {
       "source_sha256": "328868753598fbe4017c9fb5e694edbc1c657ce0ee2a8511e0c19502c3fe2c5e",
@@ -18171,6 +18262,18 @@
             0
           ]
         }
+      },
+      "rom_statics": {
+        "g_flag": {
+          "address": "022a27e4",
+          "literal": "022a21f8",
+          "count": 0
+        },
+        "g_table": {
+          "address": "022a27e8",
+          "literal": "022a21fc",
+          "count": 15
+        }
       }
     },
     "ov123/func_ov123_0229c650.cpp": {
@@ -18698,7 +18801,19 @@
       "size": 288,
       "rom_sha256": "adf2d08f5025a48e3f3d8c32e6905c5a7a18b940bf8cabdf87e034107af83a7e",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "flag": {
+          "address": "0229dcc4",
+          "literal": "0229d85c",
+          "count": 0
+        },
+        "arr": {
+          "address": "0229dd84",
+          "literal": "0229d860",
+          "count": 15
+        }
+      }
     },
     "ov129/func_ov129_0229d8a0.cpp": {
       "source_sha256": "b573a27536bfc0da2fa4fdf289baaafdc15d8b5facfac8f3050e13cc9cfe20ad",
@@ -18809,7 +18924,19 @@
       "size": 148,
       "rom_sha256": "9b06d3a3dadd382e473c83cfb96a2ccb2b749a3ff9a281c7f27587601a16699f",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "initialized": {
+          "address": "0229b964",
+          "literal": "0229b77c",
+          "count": 0
+        },
+        "pmf_table": {
+          "address": "0229b968",
+          "literal": "0229b780",
+          "count": 4
+        }
+      }
     },
     "ov132/func_ov132_0229b6c0.cpp": {
       "source_sha256": "b97f8f7bd70f9e48d0316c663d02e10b122042ac30af515a3aac814fb99c51a8",
@@ -19047,7 +19174,19 @@
       "size": 148,
       "rom_sha256": "7ab577a7e1e3ab4819b9c49b490b5ec0087109a6458920e83a7ca7aec74fa2e3",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "initialized": {
+          "address": "0229d580",
+          "literal": "0229d32c",
+          "count": 0
+        },
+        "table": {
+          "address": "0229d588",
+          "literal": "0229d330",
+          "count": 4
+        }
+      }
     },
     "ov137/func_ov137_0229d0e0.cpp": {
       "source_sha256": "0619500a6554c0d6feb93b6fe0f70352c21422ded949cb39bc6b91da57ca7364",
@@ -19250,6 +19389,18 @@
             36294733,
             0
           ]
+        }
+      },
+      "rom_statics": {
+        "s_flag": {
+          "address": "0229d544",
+          "literal": "0229d2f8",
+          "count": 0
+        },
+        "s_table": {
+          "address": "0229d548",
+          "literal": "0229d2fc",
+          "count": 4
         }
       }
     },
@@ -20012,7 +20163,19 @@
       "size": 148,
       "rom_sha256": "acb648c80c03e5c91150534123d2134caa231f87b4b11c5defec104ec43067c2",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "rom_statics": {
+        "initialized": {
+          "address": "0229b500",
+          "literal": "0229b1ac",
+          "count": 0
+        },
+        "table": {
+          "address": "0229b508",
+          "literal": "0229b1b0",
+          "count": 4
+        }
+      }
     },
     "ov145/func_ov145_0229aa64.cpp": {
       "source_sha256": "f2add44ee492a47d426f3be52c53b4e2679f3377b840ffef101aae3c3a618255",

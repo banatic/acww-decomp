@@ -72,6 +72,13 @@ into data the ROM names separately: 02013c34's three entries at 021c1574 overlap
 object __sinit_020c4270 registers at 021c157c. The ROM's index bound reads there;
 the PC copy, which uses the same addresses, does too.
 
+Fourteen sources declare the guard (and, in thirteen, the table) as block-scope statics left
+uninitialized, and fill the table under the guard as the ROM's code does. `rom_statics` pins
+each one's DS address and the body's literal naming it; the PC copy refers to that storage
+instead of a static of its own. The ROM keeps them in the overlay's .bss, which loading the
+overlay again clears, so the table is filled again: a private guard stayed set while the
+DS table was cleared, and the insect list's func_ov115_0229e6b4 called a null member.
+
 `pmf = 0` in func_0201c8fc stores both zero words: ROM 0201c912-0201c91c copies
 __ptmf_null (zero in .bss). NativeMember's assignment from a null constant does
 the same.

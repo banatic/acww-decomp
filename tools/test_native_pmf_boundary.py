@@ -34,6 +34,26 @@ class BoundaryCopy(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Invalid shared member storage'):
             boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
 
+    def test_rom_statics_are_the_rom_literals_and_declarations(self):
+        relative = 'ov109/func_ov109_0229d7b4.cpp'
+        source = (C.SRC/relative).read_bytes().decode()
+        specs = boundary.specifications()
+        translated, _ = boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=specs)
+        self.assertIn('int &flag = *reinterpret_cast<int *>(0x0229dc44u);', translated)
+        self.assertIn('reinterpret_cast<PMF *>(0x0229dc70u);', translated)
+        self.assertNotIn('static int flag', translated)
+        for name in ('flag', 'table'):
+            for key in ('address', 'literal'):
+                changed = copy.deepcopy(specs)
+                entry = changed[relative]['rom_statics'][name]
+                entry[key] = f'{int(entry[key], 16) + 4:08x}'
+                with self.assertRaisesRegex(ValueError, 'ROM static changed'):
+                    boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
+        changed = copy.deepcopy(specs)
+        changed[relative]['rom_statics']['table']['count'] = 15
+        with self.assertRaisesRegex(ValueError, 'ROM static declaration changed'):
+            boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
+
     def test_keyed_tables_require_rom_data_and_exact_layout(self):
         relative = 'ov051/func_ov051_022604a8.cpp'
         source = (C.SRC/relative).read_bytes().decode()

@@ -373,7 +373,41 @@ def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, 
             raise ValueError('Keyed member ROM keys changed: ' + name)
     rom_tables(text, spec.get('rom_tables', {}), data, base, base + begin, len(body))
     rom_constants(text, spec.get('rom_constants', {}), modules, image, spec['module'])
+    statics = spec.get('rom_statics', {})
+    for name, item in statics.items():
+        address, literal, count = int(item['address'], 16), int(item['literal'], 16), item['count']
+        size = count * 8 if count else 4
+        if (not 0 <= count <= 64 or address % 4 or not 0x02000000 <= address <= 0x02400000 - size
+                or literal % 4 or not base + begin <= literal <= base + begin + len(body) - 4
+                or data[literal-base:literal-base+4] != address.to_bytes(4, 'little')):
+            raise ValueError('ROM static changed: ' + name)
     translated = copy(text, constants, pair_result=relative == 'main/func_02013948.cpp',
                       array_receiver=relative == 'main/func_02034e28.cpp',
                       register_argument=relative == 'main/func_0201f40c.cpp', header_types=bool(headers))
-    return keyed_copy(shared_copy(translated, storage), keyed), headers
+    return statics_copy(keyed_copy(shared_copy(translated, storage), keyed), statics), headers
+
+
+def statics_copy(text: str, statics: dict) -> str:
+    """Block-scope statics the ROM keeps in its module's .bss, at their DS addresses.
+
+    A guard word and the member table it guards (left uninitialized in the source) stay in the
+    owner's overlay: the ROM's code finds them cleared when the overlay is loaded again, and
+    fills the table again. Private PC storage would keep the old guard and skip that.
+    """
+    for name, item in statics.items():
+        if item['count']:
+            pattern = r'\bstatic\s+(\w+|NativeMember<[^;{}<>]*>)\s+' + re.escape(name) + r'\s*\[(\d+)\]\s*;'
+        else:
+            pattern = r'\bstatic\s+((?:unsigned\s+)?\w+)\s+' + re.escape(name) + r'(\s*=\s*0)?\s*;'
+        matches = list(re.finditer(pattern, text))
+        if len(matches) != 1 or item['count'] and int(matches[0][2]) != item['count']:
+            raise ValueError('ROM static declaration changed: ' + name)
+        kind, address = matches[0][1], item['address']
+        if item['count']:
+            replacement = (f'{kind} *const {name} = reinterpret_cast<{kind} *>(0x{address}u);\n'
+                           f'    static_assert(sizeof({kind}) == 8, "ROM member table stride");')
+        else:
+            replacement = (f'{kind} &{name} = *reinterpret_cast<{kind} *>(0x{address}u);\n'
+                           f'    static_assert(sizeof({kind}) == 4, "ROM guard word");')
+        text = text[:matches[0].start()] + replacement + text[matches[0].end():]
+    return text
