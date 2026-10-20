@@ -4,11 +4,12 @@ HBlank samples the sky's RAM while the frame producer is running. Moving all
 Native work to the next call boundary can delay a selector change past those
 reads, even when both completed buffers and the frame-end RAM agree.
 
-There are two independent selectors covered by this boundary:
+There are three independent selectors covered by this boundary:
 
 | Owner | Store PC | Destination | Published state |
 | --- | --- | --- | --- |
 | `func_020ba340` | `020ba348` | `021f8acc` | The line-shift slot sampled by HBlank |
+| `func_020bae60` | `020bb040` | `021f75b4` | The set of cloud tables shown |
 | `func_020bb090` | `020bb16e` | `021f6f70` | The completed gradient buffer |
 
 The distinction matters in `villager-talk`. At frame 4160, line 20, the ROM's
@@ -44,7 +45,10 @@ step counter cannot undo a displayed line.
 
 This is an explicit list of audited stores, not a timing model for arbitrary
 RAM writes. Other observable stores need their own source and ROM audit.
-The cloud-buffer timing keep for `func_020bae60` is not removed by this change.
+`func_020bae60` fills the set of cloud tables not shown, then shows it. Native, the
+selector changed at the call's start: the new-game recording showed the new set early
+in frames 7475, 7481, 7584, 7591, 7600 and 7692 (memory equal at every checkpoint).
+Published at the ROM's store, the frames agree, and the function runs as Native.
 
 Run `python tools/test_native_publish.py` for the boundary tests. They compile
 both actual Native copies, execute both ARM store instructions through the

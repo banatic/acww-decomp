@@ -714,6 +714,9 @@ static uint32_t publication_owner(uint32_t pc, uint32_t address)
     if (pc == 0x020ba348u && address == 0x021f8accu) {
         return 0x020ba340u; /* line shift sampled by HBlank */
     }
+    if (pc == 0x020bb040u && address == 0x021f75b4u) {
+        return 0x020bae60u; /* the cloud tables' set shown */
+    }
     return 0;
 }
 

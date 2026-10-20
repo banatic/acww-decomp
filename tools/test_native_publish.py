@@ -23,10 +23,11 @@ class PublicationGuards(unittest.TestCase):
     def test_both_source_copies(self):
         for relative, path in [(publish.SOURCE, C.SRC / publish.SOURCE),
                                (publish.SHIFT_SOURCE, C.SRC / publish.SHIFT_SOURCE),
+                               (publish.CLOUD_SOURCE, C.SRC / publish.CLOUD_SOURCE),
                                (publish.CLEAN_SOURCE, C.ROOT / publish.CLEAN_SOURCE)]:
             text = path.read_bytes().decode()
             copy = publish.translate(relative, text)
-            self.assertEqual(copy.count('native_publish_word('), 2 if relative == publish.CLEAN_SOURCE else 1)
+            self.assertEqual(copy.count('native_publish_word('), 3 if relative == publish.CLEAN_SOURCE else 1)
             with self.assertRaises(ValueError):
                 publish.translate(relative, text + '\n')
         self.assertIsNone(publish.translate('unknown.c', ''))
