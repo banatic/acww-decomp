@@ -18,7 +18,8 @@ typedef struct OverlaySlotsFileId {
 } OverlaySlotsFileId;
 
 extern int FS_LoadOverlayInfo(OverlaySlotsInfo *info, int target, int overlay);
-extern OverlaySlotsFileId FS_GetOverlayFileID(const void *info);
+/* the ROM's FSFileID result is 8 bytes: it comes back through the address in r0 */
+extern void FS_GetOverlayFileID(OverlaySlotsFileId *result, const void *info);
 
 /* func_0204f8bc: every slot empty. */
 void OverlaySlots_Clear(void)
@@ -83,7 +84,8 @@ void OverlaySlots_Load(u8 overlay)
         }
     }
     OverlaySlots_ReadInfo(&info, overlay);
-    FS_GetOverlayFileID(&info);
+    OverlaySlotsFileId file;
+    FS_GetOverlayFileID(&file, &info);
 
     u32 start = info.ram_address;
     u32 end = info.ram_size + info.bss_size + start;

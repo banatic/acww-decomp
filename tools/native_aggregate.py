@@ -99,15 +99,9 @@ CALLERS = {
 
 # The same for Clean sources, whose PC copies tools/run.py compiles: source (from the root) ->
 # (SHA-256, replacements).
-CLEAN_CALLERS = {
-    # OverlaySlots_Load (func_0204f934) looks the file up as the ROM's code does: the result's
-    # address in r0, the overlay's information in r1
-    "clean/main/overlay_slots.c": ("4e340264830c0961fb327c4a9456d0731015a09ab428e6f9a39e0803301017e2", (
-        ("extern OverlaySlotsFileId FS_GetOverlayFileID(const void *info);",
-         "extern void FS_GetOverlayFileID(OverlaySlotsFileId *result, const void *info);"),
-        ("    FS_GetOverlayFileID(&info);\n",
-         "    OverlaySlotsFileId file;\n    FS_GetOverlayFileID(&file, &info);\n"))),
-}
+# (source, its SHA-256, [(before, after)]): a Clean source whose PC copy must call a ROM function
+# returning a structure as the ROM's code does; none now, overlay_slots.c declares it so itself
+CLEAN_CALLERS: dict[str, tuple[str, tuple]] = {}
 
 
 def clean_caller_copy(relative: str, text: str) -> str:
