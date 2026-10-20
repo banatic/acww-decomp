@@ -18,6 +18,15 @@ base.mkdir(exist_ok=True)
 storage = {p: {**s.get('shared_storage', {}), **s.get('retained_storage', {})}
            for p, s in boundary.specifications().items() if s.get('shared_storage') or s.get('retained_storage')}
 reports = []
+# ov009 owners: the offset of the state their table is indexed by and its size in bytes (0: the
+# owner takes the index as its second argument), and the PC call. Every index is tried, and two
+# past the table.
+OV009 = {
+    'ov009/func_ov009_022638d0.cpp': (0x27c, 4, 'static_cast<Obj_ov009_022658dc *>(p)->func_ov009_022638d0()'),
+    'ov009/func_ov009_022639a0.cpp': (0x27c, 0, 'static_cast<Obj_ov009_022658dc *>(p)->func_ov009_022639a0(page)'),
+    'ov009/func_ov009_022640d8.cpp': (0x134, 1, 'static_cast<Obj_ov009_022658dc *>(p)->Obj_ov009_022658dc::vfunc_74()'),
+    'ov009/func_ov009_0226418c.cpp': (0x134, 0, 'func_ov009_0226418c(static_cast<CEx *>(p), page)'),
+}
 for relative, tables in storage.items():
     path = C.SRC/relative
     parsed = C.parse_source(path)
@@ -36,6 +45,8 @@ for relative, tables in storage.items():
         values = []
         for expression in match[1].split(','):
             expression = expression.strip()
+            if not expression:
+                continue  # after a trailing comma
             if expression.startswith('&'):
                 values.extend(spec['constants'][expression[1:]]['words'])
             elif expression.startswith('STATE_'):
@@ -57,12 +68,16 @@ for relative, tables in storage.items():
                                      '{'+','.join(hex(v) for v in values)+'}'])+'}')
     storage_start = min(int(entry['guard_address'],16) for entry in tables.values())-4
     storage_end = max(int(entry['address'],16)+entry['count']*8 for entry in tables.values())+4
+    selector = OV009.get(relative)
+    pages = (3 if state_table else 9 if case == 147 else 5 if selector is None
+             else next(iter(tables.values()))['count'] + 2)
     header = (f'#define CASE_ID {case}\n#define STATE_TABLE {int(state_table)}\n'
-              f'#define PAGES {3 if state_table else 9 if case==147 else 5}\n'
+              + (f'#define STATE_OFFSET {selector[0]:#x}\n#define STATE_BYTES {selector[1]}\n' if selector else '')
+              + f'#define PAGES {pages}\n'
               f'#define MODULE_BASE {module_base:#x}u\n#define OWNER {parsed.address:#x}u\n#define OWNER_SIZE {parsed.size}\n'
               f'#define STORAGE_BASE {storage_start:#x}u\n#define STORAGE_SIZE {storage_end-storage_start}\n'
               f'#define TABLE_COUNT {len(tables)}\n'
-              'struct Table { unsigned address, guard, count, words[10]; };\n'
+              'struct Table { unsigned address, guard, count, words[18]; };\n'
               'static const struct Table tables[] = {'+','.join(entries)+'};\n'
               'static const unsigned char module_rom[] = {'+','.join(hex(b) for b in image)+'};\n')
     (folder/'shared_rom.h').write_text(header,newline='\n')
@@ -71,8 +86,9 @@ for relative, tables in storage.items():
         copy = boundary.copy(source, {name: tuple(value['words']) for name, value in spec['constants'].items()})
     call = ('static_cast<Obj_ov147_0229ac1c *>(p)->func_ov147_0229a634()' if state_table else
             'static_cast<Obj_ov054_02263004 *>(p)->func_ov054_022608ac(0x80000001u)' if case==54 else
+            selector[2] if selector else
             'func_ov147_0229942c(static_cast<UnkStruct_0229942c_2 *>(p))')
-    copy += '\nextern "C" void shared_invoke(void *p) { '+call+'; }\n'
+    copy += '\nextern "C" void shared_invoke(void *p, unsigned page) { (void) page; '+call+'; }\n'
     body = folder/'body.cpp'; body.write_text(copy,newline='\n')
     obj = folder/'body.o'
     subprocess.run([*native.compiler(),*native.flags_for(path),'-I'+str(C.ROOT/'runtime'),'-c',str(body),'-o',str(obj)],check=True)

@@ -17,7 +17,7 @@
 #define SELF 0x023c0000u
 #define HANDLE 0x023d0000u
 #define CHILD 0x023d1000u
-extern void shared_invoke(void *);
+extern void shared_invoke(void *, unsigned);
 uint32_t native_pop_bytes, native_return_floating;
 static unsigned count, faults, callback_target, number, page;
 static int b, c;
@@ -81,11 +81,18 @@ void func_ov147_02299374(void *p)
     CHECK((uintptr_t) p == SELF);
     event(8, SELF, 0);
 }
-static void callback(void *p)
+/* Returns its object, as the ROM's r0 is left: the int-returning ov009 members are tested. */
+static uintptr_t callback(void *p)
 {
     CHECK((uintptr_t) p == SELF);
     event(9, callback_target, SELF);
     *(uint32_t *) (uintptr_t) (SELF + 0x10) ^= callback_target;
+    return (uintptr_t) p;
+}
+int func_020b30e8(unsigned short a, unsigned int b)
+{
+    event(10, a, b);
+    return (int) (number & 1);
 }
 uintptr_t native_fault_execute(uint32_t at, uint32_t *eax, uint32_t ecx)
 {
@@ -157,6 +164,9 @@ static int helper(ArmCpu *cpu, void *user)
         case 0x02299374:
             func_ov147_02299374(p);
             break;
+        case 0x020b30e8:
+            cpu->r[0] = (uint32_t) func_020b30e8((unsigned short) cpu->r[0], cpu->r[1]);
+            break;
         default:
             callback_target = at | 1u;
             callback(p);
@@ -190,7 +200,7 @@ int main(void)
             for (page = 0; page < PAGES; page++) {
                 for (number = 0; number < 6; number++) {
                     uint8_t initial_storage[STORAGE_SIZE], expected_storage[STORAGE_SIZE];
-                    uint8_t initial_object[0x100], expected_object[0x100];
+                    uint8_t initial_object[0x300], expected_object[0x300];
                     memset((void *) (uintptr_t) STORAGE_BASE, 0x5a, STORAGE_SIZE);
                     memset((void *) (uintptr_t) SELF, 0xa5, sizeof(initial_object));
 #if STATE_TABLE
@@ -206,6 +216,12 @@ int main(void)
                     if (page < 4 && number >= tables[selected].count) {
                         continue;
                     }
+#elif defined(STATE_OFFSET)
+#if STATE_BYTES == 4
+                    *(uint32_t *) (uintptr_t) (SELF + STATE_OFFSET) = page;
+#elif STATE_BYTES == 1
+                    *(uint8_t *) (uintptr_t) (SELF + STATE_OFFSET) = (uint8_t) page;
+#endif
 #else
                     *(uint32_t *) (uintptr_t) (SELF + 0xb4) = page;
 #endif
@@ -225,7 +241,11 @@ int main(void)
                     arm_init(&cpu);
                     cpu.hook_at = hooks;
                     cpu.r[0] = SELF;
+#if defined(STATE_OFFSET) && STATE_BYTES == 0
+                    cpu.r[1] = page;
+#else
                     cpu.r[1] = 0x80000001;
+#endif
                     cpu.r[13] = 0x023f0000;
                     for (unsigned r = 4; r <= 11; r++) {
                         cpu.r[r] = 0x55550000 + r;
@@ -249,7 +269,7 @@ int main(void)
                     memcpy((void *) (uintptr_t) SELF, initial_object, sizeof(initial_object));
                     *(uint8_t *) (uintptr_t) 0x021f43e8 = 0x55;
                     count = 0;
-                    shared_invoke((void *) (uintptr_t) SELF);
+                    shared_invoke((void *) (uintptr_t) SELF, page);
                     CHECK(memcmp(expected_storage, (void *) (uintptr_t) STORAGE_BASE, STORAGE_SIZE) == 0);
                     CHECK(memcmp(expected_object, (void *) (uintptr_t) SELF, sizeof(expected_object)) == 0);
                     CHECK(expected_flag == *(uint8_t *) (uintptr_t) 0x021f43e8);

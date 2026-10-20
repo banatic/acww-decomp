@@ -87,7 +87,7 @@ ROM keys (the zero placeholders of the earlier sources are still substituted).
 
 ## Validation and remaining forms
 
-tools/test_native_pmf.py compiles all 189 exact copies and the 261 boundary copies, and
+tools/test_native_pmf.py compiles all 189 exact copies and the 264 boundary copies, and
 rejects changed source digests. tests/native/member_pointer.cpp checks the generic boundary's direct and
 virtual calls, signed adjustments, null tests, raw copying and Thumb-bit retention.
 tests/native/member_null.cpp executes the five actual null-assignment copies,

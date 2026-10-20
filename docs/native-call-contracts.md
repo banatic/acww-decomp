@@ -63,8 +63,8 @@ argument cleanup also require the corresponding ABI adapter and body tests.
 
 ## Remaining member-pointer copies
 
-`native_pmf_boundary.checked_copy` validates 204 unchanged sources, their header
-closures, their original ROM bodies, and 426 method constants pinned in
+`native_pmf_boundary.checked_copy` validates 264 unchanged sources, their header
+closures, their original ROM bodies, and 423 method constants pinned in
 `runtime/native-member-boundary.json`. Each constant was independently resolved
 by both host compilers and compared with a literal referenced by its ROM owner.
 The declarations cover multiple member types, named parameters, inline parameters,
@@ -136,6 +136,14 @@ same guarded DS copy preserves those writes, without changing RAM comparison.
 The shared-storage fixture also compares this actual owner in 432 cases per
 host, with every state, guard bits, repeated resets, full storage/object memory,
 callback targets and order. The former private copy must fail the comparison.
+
+Four ov009 owners keep a table the same way: `022638d0` (02265c6c, guard 02265b28),
+`022639a0` (02265c24, 02265b2c), `022640d8` (02265bb4, 02265b44) and `0226418c`
+(02265bec, 02265b24), all in ov009's .bss. With private PC tables, their guards and tables
+stayed zero (the gate-flag scene, 28 words from frame 4700). Their `retained_storage`
+entries pin the same literals; the fixture runs each owner by the state field or argument
+that indexes its table (every index and two past the end), 1,296 to 1,584 cases per host,
+and the former private copies must fail it.
 
 ## Clean entry visibility
 

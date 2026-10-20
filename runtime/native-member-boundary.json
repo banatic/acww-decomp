@@ -8754,6 +8754,294 @@
       },
       "constants": {}
     },
+    "ov009/func_ov009_022638d0.cpp": {
+      "source_sha256": "4f1e0b2c5a967638ca8bc61b751fc457acada13e7662c6b174e2eba1f7ab91ae",
+      "module": "ov009",
+      "address": "022638d0",
+      "size": 208,
+      "rom_sha256": "59ef05a2a29c198bb9025e14c6a99d586289209b06ffd192d228bc472491fde1",
+      "headers": {
+        "include/cpp/ov009/Obj_ov009_022658dc.h": "939fdb5ea5eec86d023e3002aab5a7c6cb9ae071f8d41194da145dcef3bddf53"
+      },
+      "constants": {
+        "Obj_ov009_022658dc::func_ov009_022638c8": {
+          "words": [
+            36059337,
+            0
+          ],
+          "literal_addresses": [
+            "02265810"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_022637ec": {
+          "words": [
+            36059117,
+            0
+          ],
+          "literal_addresses": [
+            "022657c8"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263790": {
+          "words": [
+            36059025,
+            0
+          ],
+          "literal_addresses": [
+            "022657d8"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263748": {
+          "words": [
+            36058953,
+            0
+          ],
+          "literal_addresses": [
+            "022657e0"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263718": {
+          "words": [
+            36058905,
+            0
+          ],
+          "literal_addresses": [
+            "02265840"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263658": {
+          "words": [
+            36058713,
+            0
+          ],
+          "literal_addresses": [
+            "02265850"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_0226357c": {
+          "words": [
+            36058493,
+            0
+          ],
+          "literal_addresses": [
+            "022657b8"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_0226354c": {
+          "words": [
+            36058445,
+            0
+          ],
+          "literal_addresses": [
+            "022657a8"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_022634f0": {
+          "words": [
+            36058353,
+            0
+          ],
+          "literal_addresses": [
+            "022657d0"
+          ]
+        }
+      },
+      "retained_storage": {
+        "tbl": {
+          "address": "02265c6c",
+          "guard_address": "02265b28",
+          "count": 9,
+          "table_literal": "02263974",
+          "guard_literal": "02263970"
+        }
+      }
+    },
+    "ov009/func_ov009_022639a0.cpp": {
+      "source_sha256": "1b8739575931b82e06e4234506db116ba11220dddf6d4722c861ba80b13428e2",
+      "module": "ov009",
+      "address": "022639a0",
+      "size": 224,
+      "rom_sha256": "8140677ed88875d5ced220690c8f6b210b51717ee1236d465794d0e63b295b92",
+      "headers": {
+        "include/cpp/ov009/Obj_ov009_022658dc.h": "939fdb5ea5eec86d023e3002aab5a7c6cb9ae071f8d41194da145dcef3bddf53"
+      },
+      "constants": {
+        "Obj_ov009_022658dc::func_ov009_022638cc": {
+          "words": [
+            36059341,
+            0
+          ],
+          "literal_addresses": [
+            "022657c0"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263888": {
+          "words": [
+            36059273,
+            0
+          ],
+          "literal_addresses": [
+            "022657f8"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_022637bc": {
+          "words": [
+            36059069,
+            0
+          ],
+          "literal_addresses": [
+            "022657f0"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_0226378c": {
+          "words": [
+            36059021,
+            0
+          ],
+          "literal_addresses": [
+            "02265898"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263734": {
+          "words": [
+            36058933,
+            0
+          ],
+          "literal_addresses": [
+            "02265808"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263694": {
+          "words": [
+            36058773,
+            0
+          ],
+          "literal_addresses": [
+            "02265820"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263648": {
+          "words": [
+            36058697,
+            0
+          ],
+          "literal_addresses": [
+            "02265828"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263568": {
+          "words": [
+            36058473,
+            0
+          ],
+          "literal_addresses": [
+            "02265848"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263548": {
+          "words": [
+            36058441,
+            0
+          ],
+          "literal_addresses": [
+            "02265888"
+          ]
+        }
+      },
+      "retained_storage": {
+        "table": {
+          "address": "02265c24",
+          "guard_address": "02265b2c",
+          "count": 9,
+          "table_literal": "02263a54",
+          "guard_literal": "02263a50"
+        }
+      }
+    },
+    "ov009/func_ov009_022640d8.cpp": {
+      "source_sha256": "412fb2e072553a8c18f6e8cde4fa5281fb94006d1241df07808c05f96fbbe937",
+      "module": "ov009",
+      "address": "022640d8",
+      "size": 180,
+      "rom_sha256": "cdb76579f683e2d9ea3695ab9b43cdfaa3b11533ceed425bce4ccbb8966b3d67",
+      "headers": {
+        "include/cpp/ov009/Obj_ov009_022658dc.h": "939fdb5ea5eec86d023e3002aab5a7c6cb9ae071f8d41194da145dcef3bddf53"
+      },
+      "constants": {
+        "Obj_ov009_022658dc::func_ov009_02263fbc": {
+          "words": [
+            36061117,
+            0
+          ],
+          "literal_addresses": [
+            "02265858"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263de8": {
+          "words": [
+            36060649,
+            0
+          ],
+          "literal_addresses": [
+            "02265880"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263c14": {
+          "words": [
+            36060181,
+            0
+          ],
+          "literal_addresses": [
+            "02265838"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263b78": {
+          "words": [
+            36060025,
+            0
+          ],
+          "literal_addresses": [
+            "02265830"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263ab0": {
+          "words": [
+            36059825,
+            0
+          ],
+          "literal_addresses": [
+            "022657b0"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263a98": {
+          "words": [
+            36059801,
+            0
+          ],
+          "literal_addresses": [
+            "022657a0"
+          ]
+        },
+        "Obj_ov009_022658dc::func_ov009_02263a80": {
+          "words": [
+            36059777,
+            0
+          ],
+          "literal_addresses": [
+            "02265818"
+          ]
+        }
+      },
+      "retained_storage": {
+        "tbl": {
+          "address": "02265bb4",
+          "guard_address": "02265b44",
+          "count": 7,
+          "table_literal": "02264168",
+          "guard_literal": "02264164"
+        }
+      }
+    },
     "ov009/func_ov009_0226418c.cpp": {
       "source_sha256": "aac349467dd85f3be12f9042bf981cdcfcf5805c66adeb9322cd5d2a32471285",
       "module": "ov009",
@@ -8761,7 +9049,16 @@
       "size": 216,
       "rom_sha256": "96e52ade9fc4f7214dde85ccfa333a26d902fa0619f93076edd8123510f87454",
       "headers": {},
-      "constants": {}
+      "constants": {},
+      "retained_storage": {
+        "table": {
+          "address": "02265bec",
+          "guard_address": "02265b24",
+          "count": 7,
+          "table_literal": "0226423c",
+          "guard_literal": "02264238"
+        }
+      }
     },
     "ov045/func_ov045_022607b4.cpp": {
       "source_sha256": "65a6b7f29c930135be5f47255bda5642dc3e4bb95e1932a82bf4abd12fe2c935",
