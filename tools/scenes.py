@@ -142,6 +142,10 @@ scene("shop-sell", "furni", 6200, [2600, 3800, 4800, 5450, 6199], frames(4650, 6
       "in Nook's shop, sell him a piece of furniture from the pockets")
 scene("design-draw", "rod", 8600, [2600, 3800, 5000, 6100, 7000, 8100, 8599], frames(4650, 8600, 50),
       "at the Able Sisters' shop, draw a design in Mabel's design editor, name it and pay for it")
+scene("phone-settings", "seed", 5000, [1400, 2300, 3200, 4300, 4999], frames(1300, 5000, 50),
+      "in the continue menu's room, phone the settings centre: set the clock, the sound, hang up")
+scene("shop-buy-letter", "rich", 9200, [2600, 3800, 4800, 5500, 7200, 8200, 9199], frames(3800, 9200, 50),
+      "in Nook's shop, buy seeds and a bottle letter's paper, write a letter on the paper")
 scene("menus", "seed", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
       "open the pockets, visit its tabs (designs, fish list, chat, map, friends), close")
 
