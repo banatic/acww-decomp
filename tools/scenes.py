@@ -6,6 +6,7 @@ which is not part of this repository.
     python tools/scenes.py --seed PATH                       # every scene, Native+Clean vs Reference
     python tools/scenes.py --seed PATH fish-cast tool-axe    # some of them
     python tools/scenes.py --seed PATH -j 4                  # four scenes at a time
+    python tools/scenes.py --seed PATH -j 4 --affected       # only those a change since main can affect
     python tools/scenes.py --seed PATH --look fish-cast      # Reference only, PNGs of its key frames
     python tools/scenes.py --seed PATH --clean-ran DIR       # also DIR/<scene>.json: the Clean functions entered
     python tools/scenes.py --seed PATH --write-expect NEW    # a new scene's <scene>.sha1, once it passes
