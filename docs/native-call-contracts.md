@@ -267,6 +267,19 @@ ROM's callee and, where the callee uses more than the low bits, its callers:
   check); ov103_0229cde8 r1 (behind func_ov103_0229cdfc, 0xb-0x14 on the whole register);
   ov127_022996c8 (byte loads at 0xb0 and 0xb3).
 
+## Calls into the middle of other code
+
+dsd splits a few loops in two: a stub of four bytes (set a register, branch to the loop's
+test), named with a size-0 `_unk` symbol, and the loop's body from its start, a function of
+its own with a source. `ENTRIES` in `tools/native_args.py` lists the three (func_02050bdc_unk,
+func_02051c8c_unk, func_020b4950_unk), pinned by the ROM bytes from the stub to the body's
+end. A Native caller reaches the stub through the Reference, as any call to ROM code; when the
+loop goes round, the stub's code branches to the body's start, which runs as its Native with
+the registers the ROM's code has there (each body's source takes all of them). A caller is
+released when its declaration passes the registers the stub reads: func_020b47d0 declares the
+string only, and its PC copy passes its `size` on in r1, as the ROM's call leaves it
+(`PASSED`). That releases the 28 callers.
+
 ## Structure results by value
 
 `CALLERS` in `tools/native_aggregate.py` covers the callers of functions their sources declare

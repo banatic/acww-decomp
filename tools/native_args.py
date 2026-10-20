@@ -87,7 +87,48 @@ PASSED = {
     # leave for sprintf(buf, "menu/icon/icon%02d.bch") at 0229b0a2
     "ov094/func_ov094_0229b088.c": ("f47362f2eff378318b4cb63405dbcbb646bb83d94fd7037c13ee2b1bf5fd4787",
                                     "func_02064328", ("bank",)),
+    # ROM 020b47d4-020b47d6: r1 reaches the bl to func_020b4950_unk (ENTRIES), which reads it as
+    # the buffer's length, as it came in: the second parameter, size
+    "main/func_020b47d0.c": ("e7451d7ea7f5fb0adb0412b6008f9ffe3e7756430ce4b370f565b54dadc766ce",
+                             "func_020b4950_unk", ("size",)),
 }
+
+# Calls into the middle of other code that are the ROM's own function starts: a loop whose
+# entry stub (set a register, branch to the loop's test) dsd names with a symbol of size 0,
+# and whose body from the loop's start it makes a function of its own, with a source. A
+# Native caller reaches the stub through the Reference, as any call to ROM code; when the
+# loop goes round, the stub's code branches to the body function's start, and that runs as
+# its Native with the registers the ROM's code has there (each body's source takes all of
+# them as parameters). name -> (module, address, bytes from the stub to the body's end,
+# their SHA-256, the argument registers r0.. the code reads as they came in).
+ENTRIES = {
+    # 02050bdc ldr r2, =table; b 02050bea (ldrh r1, [r2]; ...; bne func_02050be0 (key, r1, r2))
+    "func_02050bdc_unk": ("main", 0x02050BDC, 0x16,
+                          "a539b36930f75a284a10cab773dcb37c37feca2cd52639205be52da31bc2c7fb", 1),
+    # 02051c8c movs r3, #0; b 02051c9e (cmp r3, r1; blt func_02051c90 (array, count, -, r3))
+    "func_02051c8c_unk": ("main", 0x02051C8C, 0x1A,
+                          "09c9df6319715e75ced3e40cf4df166b7db1f04389078ac470eb9e4e6a28c77a", 2),
+    # 020b4950 movs r3, #0; b 020b4964 (cmp r3, r1; blo func_020b4954 (string, length, -, r3))
+    "func_020b4950_unk": ("main", 0x020B4950, 0x1C,
+                          "7ff94603db6d452558f78600bf35c7a9ba26c1639a8c325b374d28f928817e74", 2),
+}
+
+
+def entry_call_ok(relative: str, text: str, name: str) -> bool:
+    """Whether the source `relative` (under src/), with text `text`, calls `name` (an
+    ENTRIES entry) passing the argument registers its code reads (counting what a PASSED copy
+    adds)."""
+    if name not in ENTRIES:
+        return False
+    decl = re.search(r"\bextern\s+(?:\"C\"\s+)?[\w\s\*]*\b" + re.escape(name) + r"\s*\(([^()]*)\)\s*;", text)
+    if decl is None:
+        return False
+    params = decl.group(1).strip()
+    count = 0 if params in ("", "void") else params.count(",") + 1
+    spec = PASSED.get(relative)
+    if spec is not None and spec[1] == name:
+        count += len(spec[2])
+    return count >= ENTRIES[name][4]
 
 # Audited exact edits to a source's PC copy, where the matching source relies on what the
 # ROM's code does beyond C: source (under src/) -> (SHA-256 of the source, the text as

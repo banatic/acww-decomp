@@ -141,7 +141,8 @@ library code always runs as the ROM's code and hands back r0 (`tools/native_args
 PC copies (`runtime/native_member.h`, `tools/native_pmf.py`); see
 [the supported boundary](native-member-pointers.md). Functions still kept Reference are
 those `tools/native.py` finds by reading the sources (unsupported shared member-pointer
-forms; calls to a function's middle), and those listed with a
+forms, calls into the middle of other code that `tools/native_args.py` does not know), and
+those listed with a
 reason in `runtime/native-reference.txt` (hardware access, calls with fewer arguments than the
 callee takes, undefined behaviour, a source that relies on mwccarm's stack layout).
 - The same recording run with Native for every function that has a source gives the same frames

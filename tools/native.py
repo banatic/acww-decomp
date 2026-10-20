@@ -921,7 +921,8 @@ def main() -> None:
             keep.append(f"{name} matches as assembly (`asm`, under #ifdef __MWERKS__); its C version for the PC "
                         "is a rewrite, and passes registers on differently" + chr(10))
             continue
-        inner = sorted(set(re.findall(r"\b(\w+_unk)\s*\(", text)) - {name})
+        inner = sorted(n for n in set(re.findall(r"\b(\w+_unk)\s*\(", text)) - {name}
+                       if not native_args.entry_call_ok(path.relative_to(C.SRC).as_posix(), text, n))
         narrow = sorted(NARROWED.get(path, set()) - WIDENED.get(path, set()))
         if inner:
             keep.append(f"{name} calls {' '.join(inner)}, an entry into the middle of other code: the ROM's code "

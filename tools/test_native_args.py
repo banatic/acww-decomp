@@ -1,4 +1,5 @@
 """Check tools/native_args.py: the short declarations it lets run as Native, and its ROM facts."""
+import hashlib
 import pathlib
 import sys
 import unittest
@@ -83,6 +84,25 @@ class Copies(unittest.TestCase):
                 extra = ", ".join(f"(unsigned int) ({n})" for n in names)
                 self.assertIn(extra + ")", copy)
                 self.assertRegex(copy, r"extern [^;]*" + callee + r"\([^;]*unsigned int\);")
+
+    def test_entries(self):
+        image = C.module_image("main")
+        base = C.modules()["main"]["base"]
+        for name, (module, address, size, digest, reads) in native_args.ENTRIES.items():
+            with self.subTest(entry=name):
+                sym = SYMS.lookup(name, module)
+                self.assertEqual((sym.address, sym.size), (address, 0))
+                self.assertEqual(hashlib.sha256(image[address - base:address - base + size]).hexdigest(), digest)
+                # the loop's body is a function of its own right after the stub, with a source
+                self.assertTrue(any(s.kind == "function" and s.size for s in SYMS.by_addr[(module, address + 4)]))
+        self.assertTrue(native_args.entry_call_ok("main/x.c", "extern int func_02051c8c_unk(void *, int);",
+                                                  "func_02051c8c_unk"))
+        self.assertFalse(native_args.entry_call_ok("main/x.c", "extern int func_020b4950_unk(const char *s);",
+                                                   "func_020b4950_unk"))
+        # the PASSED copy passes the length
+        text = (C.SRC / "main/func_020b47d0.c").read_bytes().decode("utf-8")
+        self.assertTrue(native_args.entry_call_ok("main/func_020b47d0.c", text, "func_020b4950_unk"))
+        self.assertFalse(native_args.entry_call_ok("main/x.c", "extern int func_02050be0(int);", "func_02050be0"))
 
     def test_others_unchanged(self):
         self.assertIsNone(native_args.translate("main/func_02008748.c", "int x;"))
