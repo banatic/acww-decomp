@@ -131,9 +131,19 @@ class BoundaryCopy(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'initializer rows changed'):
             boundary.checked_copy(relative, changed, C.ROOT, C.modules(), C.module_image, specs=specs)
 
+    def test_discard_handler_casts_and_const_member_arrays(self):
+        text = ('typedef void (C::*Pmf)();\n#define DISCARD_HANDLER(Class, Method) (Pmf) & Class::Method\n'
+                'static Pmf t[2] = {&C::f, DISCARD_HANDLER(C, g)};\n')
+        self.assertEqual(boundary.methods(boundary.discard_handlers(text)), ['C::f', 'C::g'])
+        self.assertNotIn('#define', boundary.discard_handlers(text))
+        with self.assertRaisesRegex(ValueError, 'unaudited type'):
+            boundary.discard_handlers(text.replace('typedef void (C::*Pmf)();', 'typedef int Pmf;'))
+        translated, _ = boundary.declarations('static void (C::*const t[2])(int) = {&C::f, &C::g};')
+        self.assertEqual(translated, 'static NativeMember<C, void, int> const t[2] = {&C::f, &C::g};')
+
     def test_all_audited_inputs_and_copies(self):
         specs = boundary.specifications()
-        self.assertEqual(len(specs), 337)
+        self.assertEqual(len(specs), 345)
         headers = 0
         for relative in specs:
             original = (C.SRC / relative).read_bytes().decode()

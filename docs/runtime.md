@@ -143,7 +143,10 @@ definition stays Reference unless the callee's ROM code never reads the missing 
 registers; a declared result that a library function's definition does not give is fine, as
 library code always runs as the ROM's code and hands back r0 (`tools/native_args.py`). Audited member-pointer callers use the ROM's two-word encoding in
 PC copies (`runtime/native_member.h`, `tools/native_pmf.py`); see
-[the supported boundary](native-member-pointers.md). Functions still kept Reference are
+[the supported boundary](native-member-pointers.md). A function's block-scope statics live
+where the ROM keeps them, in its module's .bss or .data, initialized under the ROM's guard word,
+so an overlay loaded again finds them cleared as the ROM's code does (`tools/native_statics.py`,
+[call contracts](native-call-contracts.md)). Functions still kept Reference are
 those `tools/native.py` finds by reading the sources (unsupported shared member-pointer
 forms, calls into the middle of other code that `tools/native_args.py` does not know), and
 those listed with a

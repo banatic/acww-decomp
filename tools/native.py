@@ -46,6 +46,7 @@ import native_publish  # noqa: E402
 import native_aggregate  # noqa: E402
 import native_pmf_boundary  # noqa: E402
 import native_args  # noqa: E402
+import native_statics  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -278,8 +279,12 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     copies = [copy for copy in (layout, member, virtual, stack, publish, aggregate, args) if copy is not None]
     if len(copies) > 1:
         raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
-    if NARROWED.get(path) or copies:
+    # block-scope statics at the ROM's addresses (tools/native_statics.py), in whichever copy
+    statics = relative in native_statics.paths()
+    if NARROWED.get(path) or copies or statics:
         wide = copies[0] if copies else text.decode("utf-8")
+        if statics:
+            wide = native_statics.translate(relative, text.decode("utf-8"), wide)
         if member is not None:
             PMF_TRANSLATED.add(path)
         if member is not None or stack is not None or publish is not None:

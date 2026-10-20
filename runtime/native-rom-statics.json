@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "sources": {
+    "ov003/func_ov003_0221a244.cpp": {
+      "source_sha256": "65a47b00613bb568ae47d235bcf593b0c37afaa5ea515c6c6d9539ca4f2a0808",
+      "module": "ov003",
+      "address": "0221a244",
+      "size": 280,
+      "rom_sha256": "81c8a69c548063f2aab87783235fc98fb025d72f9586d86e6c7a4107204a6049",
+      "statics": {
+        "table": {
+          "symbol": "table$8",
+          "section": "bss",
+          "address": "0223c6c4",
+          "size": 112,
+          "literals": [
+            "0221a31c"
+          ],
+          "count": 14,
+          "guard": "0223c614",
+          "guard_literals": [
+            "0221a318"
+          ]
+        }
+      }
+    },
+    "ov090/func_ov090_02299470.cpp": {
+      "source_sha256": "f3c5808fc5411c579ad90f8bba3b356e80a6ec5e236617db6dbb07c9e03eb4be",
+      "module": "ov090",
+      "address": "02299470",
+      "size": 408,
+      "rom_sha256": "9917bf467995035038537f5037ca3a7457342fe57a7b8181f58828f2324ecf45",
+      "statics": {
+        "tbl": {
+          "symbol": "tbl$21",
+          "section": "bss",
+          "address": "02299984",
+          "size": 24,
+          "literals": [
+            "022995e4"
+          ],
+          "count": 3,
+          "guard": "02299968",
+          "guard_literals": [
+            "022995e0"
+          ]
+        }
+      }
+    },
+    "ov102/func_ov102_0229e5b8.cpp": {
+      "source_sha256": "b2a6ada955d6204fdb1d297a9f7fc724bbe0adb0735417597227c12596c273fb",
+      "module": "ov102",
+      "address": "0229e5b8",
+      "size": 300,
+      "rom_sha256": "331ea37228677fe8196faf3f541ba657a3e3c636ddff9d73217f1a507af6b137",
+      "statics": {
+        "tbl": {
+          "symbol": "tbl$69",
+          "section": "bss",
+          "address": "0229ec18",
+          "size": 128,
+          "literals": [
+            "0229e6a0"
+          ],
+          "count": 16,
+          "guard": "0229ebc4",
+          "guard_literals": [
+            "0229e69c"
+          ]
+        }
+      }
+    },
+    "ov116/func_ov116_0229e5e8.cpp": {
+      "source_sha256": "76613997bc1e74610f09aee8cea9e4fcc4d5f6bfbafe726a653a01a7a7db6a0b",
+      "module": "ov116",
+      "address": "0229e5e8",
+      "size": 204,
+      "rom_sha256": "d1c75ef7612b2293d3dbfcf67f51b0bac350a57008479b5e40ce81185992578d",
+      "statics": {
+        "table": {
+          "symbol": "table$11",
+          "section": "bss",
+          "address": "0229e948",
+          "size": 72,
+          "literals": [
+            "0229e68c"
+          ],
+          "count": 9,
+          "guard": "0229e920",
+          "guard_literals": [
+            "0229e688"
+          ]
+        }
+      }
+    },
+    "ov121/func_ov121_0229bdc0.cpp": {
+      "source_sha256": "d7a930c13be6bfd67b30049d2fc032b5fcab1003da906b0f95bae5552748ef83",
+      "module": "ov121",
+      "address": "0229bdc0",
+      "size": 376,
+      "rom_sha256": "13bceb34207ce3f2ce1dfbc6496e039f5a6c9cce000c45aca0dacfb781c3236c",
+      "statics": {
+        "tbl": {
+          "symbol": "tbl$11",
+          "section": "bss",
+          "address": "0229c4c8",
+          "size": 168,
+          "literals": [
+            "0229bedc",
+            "0229bf20+128"
+          ],
+          "count": 21,
+          "guard": "0229c4a0",
+          "guard_literals": [
+            "0229bed8"
+          ]
+        }
+      }
+    },
+    "ov126/func_ov126_022a1b4c.cpp": {
+      "source_sha256": "d36d0a0e99b4bc14cfab13f731f68328a432621ab382ad547e94180d6f9bcdff",
+      "module": "ov126",
+      "address": "022a1b4c",
+      "size": 320,
+      "rom_sha256": "e1d5a0a40c5e57170abe7420702a1971ca5fb80a6b6a668b9e01c1f8db467f3e",
+      "statics": {
+        "table": {
+          "symbol": "table$11",
+          "section": "bss",
+          "address": "022a2208",
+          "size": 136,
+          "literals": [
+            "022a1c40",
+            "022a1c84+128"
+          ],
+          "count": 17,
+          "guard": "022a21a0",
+          "guard_literals": [
+            "022a1c3c"
+          ]
+        }
+      }
+    },
+    "ov133/func_ov133_0229c58c.cpp": {
+      "source_sha256": "3307a796e7a008bbe4ccaa6b9c189fc5922742a89a3725c5bdbc026270d3d422",
+      "module": "ov133",
+      "address": "0229c58c",
+      "size": 160,
+      "rom_sha256": "597cec073d494d31fc4c61478658395b533e77a6d683b78270d9e9237f5b225c",
+      "statics": {
+        "table": {
+          "symbol": "table$13",
+          "section": "bss",
+          "address": "0229c9a8",
+          "size": 40,
+          "literals": [
+            "0229c614"
+          ],
+          "count": 5,
+          "guard": "0229c9a0",
+          "guard_literals": [
+            "0229c610"
+          ]
+        }
+      }
+    },
+    "ov146/func_ov146_0229b004.cpp": {
+      "source_sha256": "ef3bbd9659fa41b57027b0018aad073489d61c25a32a958e8741dcdd2c9a938f",
+      "module": "ov146",
+      "address": "0229b004",
+      "size": 148,
+      "rom_sha256": "d0dd90bd55f09505100f5da90d4185d3d8151dfe9975a28468ab915e0a5796f6",
+      "statics": {
+        "pmf": {
+          "symbol": "pmf$11",
+          "section": "bss",
+          "address": "0229b7c4",
+          "size": 32,
+          "literals": [
+            "0229b084"
+          ],
+          "count": 4,
+          "guard": "0229b784",
+          "guard_literals": [
+            "0229b080"
+          ]
+        }
+      }
+    }
+  }
+}

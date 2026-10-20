@@ -16,7 +16,7 @@ from pathlib import Path
 # than allowing an unchanged host member pointer into the translated copy.
 MEMBER = re.compile(
     r'(?P<result>\b(?:void|int|bool|Pair)\s*\*?)\s*'
-    r'\(\s*(?P<class>\w+)\s*::\s*\*\s*(?P<indirect>\*)?\s*'
+    r'\(\s*(?P<class>\w+)\s*::\s*\*\s*(?P<indirect>\*)?\s*(?P<const>const\b\s*)?'
     r'(?P<name>\w+)?\s*(?P<array>\[[^\[\]]*\])?\s*\)\s*'
     r'\((?P<args>[^()]*)\)')
 METHOD = re.compile(r'&\s*(?P<class>\w+)\s*::\s*(?P<name>\w+)')
@@ -69,7 +69,7 @@ def declarations(text: str) -> tuple[str, dict[str, str]]:
             types[match['class']] = ''
         else:
             types[match['class']] = member
-        return member + (' *' if match['indirect'] else '') + (
+        return member + (' *' if match['indirect'] else '') + (' const' if match['const'] else '') + (
             ' ' + match['name'] if match['name'] else '') + (match['array'] or '')
 
     result, count = MEMBER.subn(replace, text)
@@ -78,6 +78,32 @@ def declarations(text: str) -> tuple[str, dict[str, str]]:
     if re.search(r'::\s*\*', result):
         raise ValueError('Untranslated member-pointer type')
     return result, types
+
+
+DISCARD = re.compile(r'#define DISCARD_HANDLER\(Class, Method\) \((\w+)\) & Class::Method')
+
+
+def discard_handlers(text: str) -> str:
+    """`DISCARD_HANDLER(C, m)`, a cast of `&C::m` to the source's own member type, as `&C::m`.
+
+    The cast must name the typedef of a member type the source declares (PMF, Pmf, ...;
+    original or translated), so the constant needs no conversion.
+    """
+    macro = DISCARD.search(text)
+    if macro is None:
+        return text
+    name = re.escape(macro[1])
+    if (len(DISCARD.findall(text)) != 1
+            or not re.search(r'\btypedef\s+[^;()]*\(\s*\w+\s*::\s*\*\s*' + name + r'\s*\)', text)
+            and not re.search(r'\btypedef\s+NativeMember<[^;]*>\s+' + name + r'\s*;', text)):
+        raise ValueError('DISCARD_HANDLER casts to an unaudited type: ' + macro[1])
+    text = text[:macro.start()] + text[macro.end():]
+    return re.sub(r'DISCARD_HANDLER\(\s*(\w+)\s*,\s*(\w+)\s*\)', r'&\1::\2', text)
+
+
+def methods(text: str) -> list[str]:
+    """The `Class::method` spellings of the member constants `text` takes the address of."""
+    return [m['class'] + '::' + m['name'] for m in METHOD.finditer(text)]
 
 
 def copy(text: str, constants: dict[str, tuple[int, int]], *,
@@ -103,10 +129,7 @@ def copy(text: str, constants: dict[str, tuple[int, int]], *,
         text = text.replace(declaration, 'extern "C" int func_020819bc(void *);').replace(
             call, 'func_020819bc(reinterpret_cast<void *>(static_cast<unsigned int>(p->unk_12C)))')
     used = set()
-    macro = '#define DISCARD_HANDLER(Class, Method) (PMF) & Class::Method'
-    if macro in text:
-        text = text.replace(macro, '')
-        text = re.sub(r'DISCARD_HANDLER\(\s*(\w+)\s*,\s*(\w+)\s*\)', r'&\1::\2', text)
+    text = discard_handlers(text)
 
     def method(match):
         name = match['class'] + '::' + match['name']
