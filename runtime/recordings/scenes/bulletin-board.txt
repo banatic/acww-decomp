@@ -1,0 +1,104 @@
+# bulletin-board (format: runtime/input.h), played from a town save by tools/scenes.py (the save
+# is not in this repository). Boot: as in tools.txt; the player stands in front of the house
+# from about 2550.
+# Save: the seed town. South a step, west 3 tiles, north from 2860 to the town hall, then south a
+# step and west to the bulletin board, facing it; A at 3420 opens it (about 3475). A pen tap at
+# 3550 (the board takes no touch before a first one); the pen pages back twice (3600, 3700) and
+# on (3800), taps First (3900), Latest (4000) and Write (4100): the keyboard is up from about
+# 4200; six letters (4300-4500), Decide (4600) and Yes (4750) put the message up, and the board
+# closes (about 4850).
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 DOWN -
+2780 - -
+2790 LEFT -
+2846 - -
+2860 UP -
+3260 - -
+3270 DOWN -
+3290 - -
+3300 LEFT -
+3360 - -
+3370 UP -
+3378 - -
+3420 A -
+3426 - -
+3550 - 128,186
+3556 - -
+3600 - 12,90
+3606 - -
+3700 - 12,90
+3706 - -
+3800 - 243,90
+3806 - -
+3900 - 55,171
+3906 - -
+4000 - 100,171
+4006 - -
+4100 - 150,171
+4106 - -
+4300 - 24,110
+4306 - -
+4340 - 44,110
+4346 - -
+4380 - 64,126
+4386 - -
+4420 - 84,126
+4426 - -
+4460 - 104,110
+4466 - -
+4500 - 124,126
+4506 - -
+4600 - 238,182
+4606 - -
+4750 - 79,141
+4756 - -

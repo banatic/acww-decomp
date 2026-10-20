@@ -126,6 +126,14 @@ scene("letter-gift", "seed", 5600, [2600, 3700, 4500, 5599], frames(3150, 5600, 
       "read a letter in the pockets, take out its present, open it, put the furniture down")
 scene("mailbox", "seed", 4100, [2600, 3250, 3750, 4099], frames(2850, 4100, 25),
       "open the mailbox (its letter goes to the pockets), drag letters about, close it")
+scene("town-hall", "seed", 8300, [2600, 3700, 4900, 6000, 7600, 8299], frames(3300, 8300, 50),
+      "walk into the town hall, open the town tune editor with Pelly, donate 100 bells")
+scene("recycle-box", "seed", 5400, [2600, 3700, 4500, 4700, 5399], frames(3300, 5400, 50),
+      "walk into the town hall, put the work clothes in the recycle box and take them back")
+scene("bulletin-board", "seed", 5200, [2600, 3500, 4250, 5199], frames(3400, 5200, 50),
+      "read the bulletin board by the town hall, page through it, write a message on it")
+scene("gate-flag", "seed", 7600, [2600, 3800, 4700, 5900, 6700, 7599], frames(3400, 7600, 50),
+      "walk to the gate, talk to the gatekeeper, give the town flag one of the player's designs")
 scene("menus", "seed", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
       "open the pockets, visit its tabs (designs, fish list, chat, map, friends), close")
 
