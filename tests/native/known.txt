@@ -61,12 +61,9 @@
 02261f94 index of 5 or more reads past the static table of five member-function pointers (the PC's copy is elsewhere); the only callers, func_ov047_02261f74 and func_ov047_02261f84, pass their callers' constants 0-4
 022624f4 (ov047) word stores through a misaligned owl pointer write the aligned word on ARM and the unaligned one on x86; the owl is allocated word-aligned (aligning the pointer makes every case agree)
 0226bb7c (ov066) word accesses through a misaligned ring node use the aligned word on ARM and the unaligned one on x86; ring nodes are allocated word-aligned (aligning the pointer makes every case agree)
-02278f4c index idx of 8 or more reads past the static table (the PC's copy is elsewhere); the only caller, func_ov073_02278ca4, passes 0
-022791b0 index of 2 or more reads past the static table (the PC's copy is elsewhere); callers pass 0 or 1 (func_ov082_02279190, func_ov082_022791a0)
 02279528 index idx of 3 or more reads past the static table (the PC's copy is elsewhere); callers pass 0-2 (func_ov079_02279508, func_ov079_02279518)
 022997b0 index of 16 or more reads past the local 16-byte copy; func_ov143_0229a5cc and func_ov143_0229a6f8 keep it in 0-15
 022997d8 (ov143) index of 16 or more reads past the local 16-byte copy; callers pass notes of the 16-byte tune at data_021cfbbc (+0xa0), which func_ov143_0229a5cc writes only from func_ov143_022997b0's table (0-15)
-022999c4 a selector byte (+0xc0) of 4 or more reads past the static table (the PC's copy is elsewhere); func_ov145_0229996c sets it only to 3 or to +0xc1, which func_ov145_022998f0 keeps in 0-3
 0229adac shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass 9-15, func_ov121_0229ae68's result (0-15 or 24) or the cursor byte +0xb1 (0-23)
 0229adc0 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_ov121_0229ba60, passes 9-15
 0229cf64 shift 1 << b by 32 or more gives 0 on ARM and wraps on x86; callers pass 0-13
