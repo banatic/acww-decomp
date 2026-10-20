@@ -213,3 +213,23 @@ signed receiver adjustments, null and empty lists, and dispatcher outcomes.
 Seven negative controls corrupt one owner's expected extent at a time and must
 fail at its actual call. `python tools/test_native_stack.py` additionally rejects
 changed ROM bytes and sizes. Full recordings and scene gates remain required.
+
+## Audited PC copies for arguments and locals
+
+`tools/native_args.py` holds two more kinds of guarded PC copy, each pinned by the
+source's SHA-256 and justified by ROM addresses in the table:
+
+- `PASSED`: a call that passes fewer arguments than the callee reads, where the ROM's
+  call leaves values the source names in the next registers (the caller's own incoming
+  arguments, or a local just computed there). The copy declares the callee with those
+  arguments and passes them: func_0200c8c0 and func_02096484 (their r0 and r1 to
+  func_020778b0), func_ov094_0229b048 and func_ov094_0229b088 (the value a "%d" format
+  takes, which the source leaves out of sprintf).
+- `EDITS`: exact replacements where the matching source relies on what the ROM's code does
+  beyond C: three-byte local arrays that func_0209df64 fills with four bytes (the ROM's frame
+  has the fourth; the PC's may not), char parameters that the ROM's code uses as the whole
+  register and a caller passes a pointer to (func_0205f120, func_ov123_0229ab18), and a
+  shift by a register count of 32 or more (func_020ad0c0).
+
+`python tools/test_native_args.py` checks that every copy applies, that a changed source is
+rejected, and the passed arguments.

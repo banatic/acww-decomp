@@ -66,5 +66,27 @@ class Audit(unittest.TestCase):
             self.assertEqual(set(rom.reads(sym.module, sym.address | int(sym.thumb))), expected, name)
 
 
+class Copies(unittest.TestCase):
+    def test_copies_apply_and_guard(self):
+        for relative in sorted(native_args.paths()):
+            with self.subTest(source=relative):
+                text = (C.SRC / relative).read_bytes().decode("utf-8")
+                copy = native_args.translate(relative, text)
+                self.assertNotEqual(copy, text)
+                with self.assertRaises(ValueError):
+                    native_args.translate(relative, text + "\n")
+
+    def test_passed_arguments(self):
+        for relative, (_digest, callee, names) in native_args.PASSED.items():
+            with self.subTest(source=relative):
+                copy = native_args.translate(relative, (C.SRC / relative).read_bytes().decode("utf-8"))
+                extra = ", ".join(f"(unsigned int) ({n})" for n in names)
+                self.assertIn(extra + ")", copy)
+                self.assertRegex(copy, r"extern [^;]*" + callee + r"\([^;]*unsigned int\);")
+
+    def test_others_unchanged(self):
+        self.assertIsNone(native_args.translate("main/func_02008748.c", "int x;"))
+
+
 if __name__ == "__main__":
     unittest.main()

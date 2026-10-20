@@ -3,7 +3,7 @@
 Some matching sources declare separate locals even though the ROM passes a
 pointer that covers more than one of them. The ARM stack gives those locals a
 specific order. Independent host locals have no such ordering guarantee.
-tools/native_layout.py groups only the five audited layouts below in PC source
+tools/native_layout.py groups only the seven audited layouts below in PC source
 copies. Values and calls are unchanged. Source digests and exact declarations
 reject an unaudited source change, and each copy asserts the observed offset.
 
@@ -28,7 +28,7 @@ the first pixel difference to 3490; the caller's local layout must be preserved.
 
 ## Validation
 
-tools/test_native_layout.py compiles all five exact copied game functions, the
+tools/test_native_layout.py compiles all seven exact copied game functions, the
 real vector consumer and three real request payload writers. Its fixture checks
 the coordinates, tags, item identifiers and signed header arguments received by
 the request consumer, returned values, and rejection of changed source digests.
@@ -53,3 +53,13 @@ three coordinates. The other two use state 0x5f and func_ov003_022119d8 writes
 three coordinates, a 16-bit item and an 8-bit tag. The no-item form supplies
 0xfff1. Grouping only each header/payload pair preserves these fields without
 changing their values, calls, or the independent coordinate-copy local.
+
+## Two-word outputs: func_020a967c and func_0201354c
+
+At 020a96a8 the ROM passes sp to func_02064658, which reads eight bytes there, and at
+020a96d6 it passes sp+4, the second word, to func_020a9ae4; the source declares the words as
+the separate locals local1 and local2. At 0201357a/0201357c the ROM passes sp+0x2c and
+sp+0x30 to func_0204f818 as its two outputs, and at 02013614 it passes sp+0x2c to
+func_020137ec as a two-word point; the source declares s2c and s30. The PC copies group each
+pair with the second word at 4. The layout fixture checks both: the second word read through
+the first local's address is the second local.

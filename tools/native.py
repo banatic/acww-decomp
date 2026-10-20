@@ -252,7 +252,9 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     stack = native_stack.translate(relative, text.decode("utf-8")) if relative in native_stack.paths() else None
     publish = native_publish.translate(relative, text.decode("utf-8")) if relative in native_publish.paths() else None
     aggregate = native_aggregate.caller_copy(relative, text.decode("utf-8"))
-    copies = [copy for copy in (layout, member, virtual, stack, publish, aggregate) if copy is not None]
+    # audited copies for arguments and locals the ROM's code has beyond C (tools/native_args.py)
+    args = native_args.translate(relative, text.decode("utf-8")) if relative in native_args.paths() else None
+    copies = [copy for copy in (layout, member, virtual, stack, publish, aggregate, args) if copy is not None]
     if len(copies) > 1:
         raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
     if NARROWED.get(path) or copies:

@@ -88,6 +88,95 @@ int func_0200e91c(void *p)
     return 0;
 }
 
+/* func_020a967c: func_02064658 fills eight bytes at the first local's address; the second word
+ * is read through the second local (ROM 020a96a8 and 020a96d6: sp and sp+4). */
+extern int func_020a967c(void *);
+unsigned short data_021f4458[8];
+int data_021f4428[2];
+void func_02064658(void *a, int *b, int c, int d)
+{
+    (void) a;
+    (void) d;
+    if (c != 8) {
+        failed = 12;
+    }
+    b[0] = 0x111;
+    b[1] = 0x333;
+}
+int func_020a9ae4(int *a)
+{
+    return *a;
+}
+
+/* func_0201354c: func_020137ec reads a two-word point at the first local's address, the second
+ * word being the second local (ROM 0201357a/0201357c and 02013614: sp+0x2c and sp+0x30). */
+extern int func_0201354c(void *, unsigned int *, int *);
+static unsigned int object_0201354c[5];
+unsigned int *data_021c80bc = object_0201354c;
+unsigned int data_021c172c[2], data_021c173c[2], data_021c1734[2], data_021c1744[2];
+void func_0204f818(unsigned int *a, unsigned int *b, int *p)
+{
+    (void) p;
+    *a = 0x12345;
+    *b = 0x6789a;
+}
+int func_0204ed30(void *o, int *p)
+{
+    (void) o;
+    (void) p;
+    return 0;
+}
+int func_0204f658(void *o, int a, int b)
+{
+    (void) o;
+    (void) a;
+    (void) b;
+    return 0;
+}
+int func_020137ec(void *p0, int *arr, unsigned int *point, void *step, int n, void *lim, int f, void *o)
+{
+    (void) p0;
+    (void) arr;
+    (void) step;
+    (void) n;
+    (void) lim;
+    (void) f;
+    (void) o;
+    if (point[0] != 0x12345 || point[1] != 0x6789a) {
+        failed = 13;
+    }
+    return 0;
+}
+int func_020ea990(int *a, int *b)
+{
+    (void) a;
+    (void) b;
+    return 0;
+}
+unsigned int func_02013738(void *p0, int *out, void *o)
+{
+    (void) p0;
+    (void) out;
+    (void) o;
+    return 9;
+}
+
+static int check_point_layouts(void)
+{
+    unsigned char self[0xa4] = {0};
+    self[0x8d] = 2;
+    if (func_020a967c(self) != 1 || *(int *) (self + 0x9c) != 0x111 || *(int *) (self + 0xa0) != 0x222 ||
+        *(int *) (self + 0x90) != 0x111) {
+        return 14;
+    }
+    unsigned int p1[2] = {0, 0};
+    int p2[3] = {0x1000, 0x2000, 0x3000};
+    if (func_0201354c(self, p1, p2) != 4 || p1[0] != 0x12345 || p1[1] != 0x6789a) {
+        return 15;
+    }
+    return 0;
+}
+
 int main(void)
 {
     int self[32] = {0};
@@ -121,6 +210,10 @@ int main(void)
     expected_item = 0xfff1;
     if (func_ov003_02211980(actor, vector, 0x57, 6, -9) != 7) {
         return 11;
+    }
+    int layouts = check_point_layouts();
+    if (layouts) {
+        return layouts;
     }
     return failed;
 }

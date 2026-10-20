@@ -46,6 +46,20 @@ VERIFIED = {
         "char ctx[12];\n    int out[4];",
         "char ctx[12]; int out[4];", ("ctx", "out"), 12,
     ),
+    # ROM 020a96a8 passes sp to func_02064658, which reads eight bytes there; 020a96d6 passes
+    # sp+4, the second word, to func_020a9ae4.
+    "main/func_020a967c.c": (
+        "ca88991a5cbe2d7ac890b5e8a99f420b2e0e0ebb0d68528aa9b9cef67ff8d735",
+        "int local1;\n    int local2;",
+        "int local1; int local2;", ("local1", "local2"), 4,
+    ),
+    # ROM 0201357a/0201357c pass sp+0x2c and sp+0x30 to func_0204f818 as the two outputs;
+    # 02013614 passes sp+0x2c to func_020137ec as a two-word point.
+    "main/func_0201354c.c": (
+        "6973828aef4f4b7f1d1cd3dffe1a89e9a09709d97486f0b1967995945f5afd77",
+        "u32 s2c;\n    u32 s30;",
+        "u32 s2c; u32 s30;", ("s2c", "s30"), 4,
+    ),
 }
 
 
