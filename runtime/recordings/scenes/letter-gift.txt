@@ -1,0 +1,89 @@
+# letter-gift (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: the seed town, with a letter from Nook's shop in the pockets. Y at 2760 opens the pockets
+# page; a pen tap on the empty bar at 3000 (the page takes no touch before a first one). The pen
+# taps the letter at 3200 (its menu) and Read at 3400: the letter is up from about 3500; A at
+# 3600 and 3800 closes it. Again from a tap on the bar at 3950: the letter at 4100, Present at
+# 4250 (the present moves into the first pocket); the present at 4450, Open at 4600 (it turns
+# into a piece of furniture); the furniture at 4800, Put down at 4950 (it lies south of the
+# player from about 5000); the arrow at 5300 closes the page.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 Y -
+2768 - -
+3000 - 30,10
+3006 - -
+3200 - 211,63
+3206 - -
+3400 - 211,63
+3406 - -
+3600 A -
+3606 - -
+3800 A -
+3806 - -
+3950 - 30,10
+3956 - -
+4100 - 211,63
+4106 - -
+4250 - 210,78
+4256 - -
+4450 - 20,118
+4456 - -
+4600 - 26,62
+4606 - -
+4800 - 20,118
+4806 - -
+4950 - 37,62
+4956 - -
+5300 - 244,10
+5306 - -

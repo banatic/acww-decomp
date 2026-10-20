@@ -7,6 +7,8 @@ which is not part of this repository.
     python tools/scenes.py --seed PATH fish-cast tool-axe    # some of them
     python tools/scenes.py --seed PATH -j 4                  # four scenes at a time
     python tools/scenes.py --seed PATH --look fish-cast      # Reference only, PNGs of its key frames
+    python tools/scenes.py --seed PATH --clean-ran DIR       # also DIR/<scene>.json: the Clean functions entered
+    python tools/scenes.py --seed PATH --write-expect NEW    # a new scene's <scene>.sha1, once it passes
     python tools/scenes.py --seed PATH --bisect house       # which Clean function breaks a scene
     python tools/scenes.py --convert SCRIPT.pad --at 3000:2400   # a pad script as a recording
 
@@ -116,6 +118,16 @@ scene("pockets", "seed", 3500, [2600, 3000, 3499], frames(2700, 3500, 50),
       "open the pockets, drag the work clothes onto the player to wear them")
 scene("pockets-furni", "furni", 3200, [2600, 2900, 3199], frames(2700, 3200, 50),
       "open the pockets holding a piece of furniture and a hat, close")
+scene("tree-chop", "axe", 3600, [2600, 3200, 3599], frames(2900, 3600, 25),
+      "chop a tree down with the axe, then strike the stump")
+scene("rock-shovel", "shovel", 3400, [2600, 3100, 3399], frames(2900, 3400, 25),
+      "walk up to a rock and strike it with the shovel twice")
+scene("letter-gift", "seed", 5600, [2600, 3700, 4500, 5599], frames(3150, 5600, 50),
+      "read a letter in the pockets, take out its present, open it, put the furniture down")
+scene("mailbox", "seed", 4100, [2600, 3250, 3750, 4099], frames(2850, 4100, 25),
+      "open the mailbox (its letter goes to the pockets), drag letters about, close it")
+scene("menus", "seed", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
+      "open the pockets, visit its tabs (designs, fish list, chat, map, friends), close")
 
 
 # ------------------------------------------------------------------------------ saves
@@ -185,9 +197,10 @@ def convert(text: str, moves: list[tuple[int, int]]) -> str:
 # ------------------------------------------------------------------------------ runs
 
 def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str | None,
-        runtime: pathlib.Path | None = None) -> dict:
+        runtime: pathlib.Path | None = None, ran: pathlib.Path | None = None) -> dict:
     """One scene's run; with `runtime`, tools/run.py builds and runs there (ACWW_RUNTIME_OUT), so
-    scenes can run side by side: each one's runs write their programs and logs in one place."""
+    scenes can run side by side: each one's runs write their programs and logs in one place. With
+    `ran` (and `clean`), the Clean functions the scene entered go to ran/<name>.json."""
     sc = SCENES[name]
     recording = RECORDINGS / f"{sc['recording']}.txt"
     save = derive_save(seed, sc["save"])
@@ -200,6 +213,9 @@ def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str 
     else:
         cmd += ["--native", only_native, *([f"--clean={clean}"] if clean else []),
                 "--ram-hash", ",".join(map(str, sc["ram"])), "--hash", str(work / "hashes.txt")]
+        if ran and clean:
+            ran.mkdir(parents=True, exist_ok=True)
+            cmd += ["--clean-ran", str(ran / f"{name}.json")]
         expect = RECORDINGS / f"{name}.sha1"
         if expect.exists():
             cmd += ["--expect", str(expect)]
@@ -284,6 +300,10 @@ def main() -> int:
     ap.add_argument("--look", action="store_true", help="Reference only, PNGs of the key frames")
     ap.add_argument("--native", default="all", help="the --native policy for tools/run.py (default all)")
     ap.add_argument("--clean", default="all", help="the --clean list for tools/run.py (default all; 'none': Native only)")
+    ap.add_argument("--clean-ran", metavar="DIR", help="also list the Clean functions each scene entered, "
+                    "as DIR/<scene>.json (tools/run.py --clean-ran; merge with tools/progress_map.py --merge-ran)")
+    ap.add_argument("--write-expect", action="store_true", help="write <scene>.sha1 beside the recording for "
+                    "each scene that passes and has none (the frame sequence SHA-1 only)")
     ap.add_argument("--bisect", action="store_true", help="find the Clean function that breaks each scene")
     ap.add_argument("--skip", default="", help="with --bisect: functions (comma-separated) left Native")
     ap.add_argument("-j", "--jobs", type=int, default=1, help="scenes run at a time (each in a runtime "
@@ -311,6 +331,7 @@ def main() -> int:
             bisect(name, seed, args.native, set(filter(None, args.skip.split(","))))
         return 0
     clean = None if args.clean == "none" else args.clean
+    ran = pathlib.Path(args.clean_ran).resolve() if args.clean_ran else None
     if args.jobs > 1:
         for sc in dict.fromkeys(SCENES[n]["save"] for n in names):  # written once, before the runs read them
             derive_save(seed, sc)
@@ -321,7 +342,7 @@ def main() -> int:
         def one(name: str) -> dict:
             runtime = slots.get()
             try:
-                return run(name, seed, args.look, args.native, clean, runtime)
+                return run(name, seed, args.look, args.native, clean, runtime, ran)
             finally:
                 slots.put(runtime)
         pool = cf.ThreadPoolExecutor(args.jobs)
@@ -329,7 +350,7 @@ def main() -> int:
     results = []
     for i, name in enumerate(names):
         print(f"{name}...", flush=True)
-        r = pending[i].result() if args.jobs > 1 else run(name, seed, args.look, args.native, clean)
+        r = pending[i].result() if args.jobs > 1 else run(name, seed, args.look, args.native, clean, ran=ran)
         results.append(r)
         if args.look:
             print(f"  {r['status']=} pngs in {(OUT / name / 'png').as_posix()} ({r['seconds']} s)")
@@ -337,6 +358,10 @@ def main() -> int:
         entered = f", {r['clean'][1]} of {r['clean'][0]} Clean functions entered from the interpreter" if r["clean"] else ""
         print(f"  {'PASS' if r['agree'] and r['status'] == 0 else 'FAIL'}: frames {r['frames']}{entered} "
               f"({r['seconds']} s; log {(OUT / name / 'run.log').as_posix()})", flush=True)
+        expect = RECORDINGS / f"{name}.sha1"
+        if args.write_expect and r["agree"] and r["status"] == 0 and r["frames"] and not expect.exists():
+            expect.write_text(r["frames"] + "\n", newline="\n")
+            print(f"    wrote {expect.relative_to(C.ROOT).as_posix()}")
         if r["first"] is not None:
             print(f"    the frames first differ at frame {r['first']}")
         for line in r["log"].splitlines():
