@@ -63,8 +63,8 @@ argument cleanup also require the corresponding ABI adapter and body tests.
 
 ## Remaining member-pointer copies
 
-`native_pmf_boundary.checked_copy` validates 264 unchanged sources, their header
-closures, their original ROM bodies, and 423 method constants pinned in
+`native_pmf_boundary.checked_copy` validates 337 unchanged sources, their header
+closures, their original ROM bodies, and 926 method constants pinned in
 `runtime/native-member-boundary.json`. Each constant was independently resolved
 by both host compilers and compared with a literal referenced by its ROM owner.
 The declarations cover multiple member types, named parameters, inline parameters,
@@ -144,6 +144,16 @@ stayed zero (the gate-flag scene, 28 words from frame 4700). Their `retained_sto
 entries pin the same literals; the fixture runs each owner by the state field or argument
 that indexes its table (every index and two past the end), 1,296 to 1,584 cases per host,
 and the former private copies must fail it.
+
+Every other Native source with such a table and `&Class::method` initializers has a
+`retained_storage` entry too: 73 more owners (ov132's `0229b6c0` and `0229b77c` left the post
+office scene's RAM 14 words different). Their entries were derived from the ROM bodies: the
+guard is the first literal the body tests, and each table word the body stores comes from one
+8-byte constant whose words are the method's address with its Thumb bit and a zero
+adjustment. `checked_copy` also requires the owner's literal pool to name every constant.
+Eight owners whose initializers use macros or name functions the symbol table does not
+(ov003 `0221a244`, ov090 `02299470`, ov102 `0229e5b8`, ov116 `0229e5e8`, ov121 `0229bdc0`,
+ov126 `022a1b4c`, ov133 `0229c58c`, ov146 `0229b004`) keep private tables for now.
 
 ## Clean entry visibility
 

@@ -192,7 +192,8 @@ def shared_copy(text: str, storage: dict) -> str:
     """
     edits = []
     for name, spec in storage.items():
-        pattern = r'\bstatic\s+(\w+)\s+' + re.escape(name) + r'\[(\d+)\]\s*=\s*\{'
+        # a typedef name, or the member type declarations() wrote for an inline declarator
+        pattern = r'\bstatic\s+(\w+|NativeMember<[^;{}<>]*>)\s+' + re.escape(name) + r'\[(\d+)\]\s*=\s*\{'
         matches = list(re.finditer(pattern, text))
         if len(matches) != 1:
             raise ValueError('Shared member array declaration changed: ' + name)
@@ -346,6 +347,12 @@ def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, 
             offset = int(literal, 16) - base
             if offset < 0 or data[offset:offset+4] != int(table['address'], 16).to_bytes(4, 'little'):
                 raise ValueError('Shared member alias changed: ' + name)
+    if retained:
+        # A retained table's owner fills it from the constants: its literal pool names each one.
+        pool = {int.from_bytes(body[i:i+4], 'little') for i in range(0, len(body) - 3, 2)}
+        for name, constant in constants.items():
+            if not any(int(address, 16) in pool for address in spec['constants'][name]['literal_addresses']):
+                raise ValueError('Retained member constant not loaded by its owner: ' + name)
     keyed = spec.get('keyed_tables', {})
     for name, table in keyed.items():
         address, literal = int(table['address'], 16), int(table['table_literal'], 16)

@@ -27,6 +27,10 @@ OV009 = {
     'ov009/func_ov009_022640d8.cpp': (0x134, 1, 'static_cast<Obj_ov009_022658dc *>(p)->Obj_ov009_022658dc::vfunc_74()'),
     'ov009/func_ov009_0226418c.cpp': (0x134, 0, 'func_ov009_0226418c(static_cast<CEx *>(p), page)'),
 }
+FIXTURES = {'ov054/func_ov054_022608ac.cpp', 'ov147/func_ov147_0229942c.cpp', 'ov147/func_ov147_0229a634.cpp', *OV009}
+# The other retained tables are checked by native_pmf_boundary.checked_copy (source, ROM body,
+# the guard's, the table's and every constant's literal) and by the game runs.
+storage = {relative: tables for relative, tables in storage.items() if relative in FIXTURES}
 for relative, tables in storage.items():
     path = C.SRC/relative
     parsed = C.parse_source(path)
