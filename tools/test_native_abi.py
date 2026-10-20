@@ -4,6 +4,9 @@ import unittest
 
 from native_abi import word_arguments
 
+ROOT = Path(__file__).resolve().parents[1]
+MATH = [('FX_Div', 2), ('FX_MulFunc', 2), ('VEC_Add', 3)]
+
 
 class WordArguments(unittest.TestCase):
     def test_register_and_stack_arguments(self):
@@ -43,11 +46,20 @@ class WordArguments(unittest.TestCase):
         self.assertEqual(word_arguments('struct Vec *sample(void) {}', 'sample'), 0)
         self.assertEqual(word_arguments('long long sample(int n) {}', 'sample'), 1)
 
+    @unittest.skipUnless((ROOT / 'libs/NitroSDK').is_dir(), 'no library sources (libs/README.md)')
     def test_actual_math_callees(self):
-        root = Path(__file__).resolve().parents[1]
-        for name, count in [('FX_Div', 2), ('FX_MulFunc', 2), ('VEC_Add', 3)]:
-            source = root / 'libs/NitroSDK/itcm' / (name + '.c')
+        for name, count in MATH:
+            source = ROOT / 'libs/NitroSDK/itcm' / (name + '.c')
             self.assertEqual(word_arguments(source.read_text(), name), count)
+
+    def test_kept_library_counts(self):
+        # what tools/run.py uses in a checkout without the library sources
+        kept = {}
+        for line in (ROOT / 'runtime/library-arguments.txt').read_text().splitlines():
+            _module, _address, name, _count, words = line.split()
+            kept[name] = int(words)
+        for name, count in MATH:
+            self.assertEqual(kept.get(name), count)
 
 
 if __name__ == '__main__':

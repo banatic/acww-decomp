@@ -137,6 +137,13 @@ of supported free-function definitions. The Native-to-Reference bridge writes
 only the actual stack arguments for such signatures, so unused host words do
 not erase guest stack residue. Unsupported or ambiguous ABIs keep the existing
 bridge behavior. This does not change the bridge's call-SP selection.
+The library sources are not distributed (`libs/README.md`), so `tools/run.py`
+keeps the library functions' counts in `runtime/library-arguments.txt` when it
+reads them and uses that file in a checkout without them. Without it, every
+Native call into library code (`FX_MulFunc` among them) copied the whole host
+extent onto the ROM's stack, and in the house scene those words became the
+collider centres' y components: a checkout without `libs/` (CI's Linux one)
+diverged at frame 3422 where one with them agreed.
 
 ## Verification and limits
 

@@ -102,6 +102,7 @@ ROM = C.ROOT / "extract" / "adm-kr.nds"
 NATIVE = C.BUILD / "native" / ("windows" if WINDOWS else "linux")
 KEPT = RUNTIME / "native-reference.txt"
 HELPERS = RUNTIME / "compiler-helpers.txt"
+LIBRARY_ARGUMENTS = RUNTIME / "library-arguments.txt"
 # CLEAN_AS(symbol, function), or CLEAN_AS_SYMBOL("symbol", function) for a symbol that is not a C
 # name (clean/clean.h): the symbol is the first group that matched
 CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", re.M)
@@ -556,6 +557,25 @@ def compiler_helpers(found: dict[tuple[str, int], str]) -> set[tuple[str, int]]:
     return out
 
 
+def library_arguments(found: dict[tuple[str, int], tuple[str, int, int]]) -> dict[tuple[str, int], tuple[int, int]]:
+    """The library functions' parameter counts and argument words by (module, address): those
+    `found` in the library sources, which are not distributed (libs/README.md), kept in
+    LIBRARY_ARGUMENTS for a checkout without them. Without the words, a Native call into
+    library code would copy the bridge's whole extent of host stack words onto the ROM's
+    stack, over residue that the game's code reads later (the house's collision centres)."""
+    if found:
+        text = "".join(f"{mod} {addr:08x} {name} {count} {words}\n"
+                       for (mod, addr), (name, count, words) in sorted(found.items()))
+        if not LIBRARY_ARGUMENTS.exists() or LIBRARY_ARGUMENTS.read_text() != text:
+            LIBRARY_ARGUMENTS.write_text(text, newline="\n")
+        return {key: (count, words) for key, (_name, count, words) in found.items()}
+    out = {}
+    for line in LIBRARY_ARGUMENTS.read_text().splitlines() if LIBRARY_ARGUMENTS.exists() else []:
+        mod, addr, _name, count, words = line.split()
+        out[(mod, int(addr, 16))] = (int(count), int(words))
+    return out
+
+
 def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     """Every function of every module with the letter runtime/native_run.c reads: N, C, R, H
     or -. With `clean`, every function with a Clean version is N."""
@@ -580,6 +600,7 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     params: dict[tuple[str, int], int] = {}
     arg_words: dict[tuple[str, int], int] = {}
     helpers: dict[tuple[str, int], str] = {}
+    library: dict[tuple[str, int], tuple[str, int, int]] = {}
     # (what each source says, kept by its text and by the code that reads it: an unchanged
     # source is not parsed again)
     memo_path = OUT / "source-facts.json"
@@ -611,11 +632,16 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
         module, address, name, count, words = fact[1]
         params[(module, address)] = count
         arg_words[(module, address)] = words
+        if C.LIBS in path.parents:
+            library[(module, address)] = (name, count, words)
         if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES):
             helpers[(module, address)] = name
     OUT.mkdir(parents=True, exist_ok=True)
     memo_path.write_text(json.dumps({"readers": readers, "facts": facts}), newline="\n")
     helpers = compiler_helpers(helpers)
+    for key, (count, words) in library_arguments(library).items():
+        params.setdefault(key, count)
+        arg_words.setdefault(key, words)
     wanted: set[str] | None = None
     if policy not in ("all", "leaf", "none"):
         wanted = {w.split()[0] for w in pathlib.Path(policy).read_text().splitlines()
