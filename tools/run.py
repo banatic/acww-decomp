@@ -816,8 +816,10 @@ def native_main(args, manifest, table, budget, env) -> int:
             print(f"reference run: the results of an identical one ({key[:12]})", flush=True)
             return summary((out / "reference.log").read_text(encoding="utf-8", errors="replace"))
         print("reference run" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
-        _, text = run_once(exe, manifest, table, budget, ref_env, out / "reference.log")
-        if key:
+        status, text = run_once(exe, manifest, table, budget, ref_env, out / "reference.log")
+        # only a run that ended as it should is kept: one cut short (a full disk, a crash)
+        # would otherwise be reused as if it were the Reference
+        if key and status == 0 and summary(text)["sequence"] is not None:
             keep_reference(key, out, ram_dir, trace)
         return summary(text)
 
