@@ -146,6 +146,8 @@ scene("phone-settings", "seed", 5000, [1400, 2300, 3200, 4300, 4999], frames(130
       "in the continue menu's room, phone the settings centre: set the clock, the sound, hang up")
 scene("shop-buy-letter", "rich", 9200, [2600, 3800, 4800, 5500, 7200, 8200, 9199], frames(3800, 9200, 50),
       "in Nook's shop, buy seeds and a bottle letter's paper, write a letter on the paper")
+scene("post-office", "seed", 7950, [2600, 4300, 5100, 6400, 7100, 7949], frames(3900, 7950, 50),
+      "at the town hall's post office window, store a letter, then deposit 50 bells")
 scene("menus", "seed", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
       "open the pockets, visit its tabs (designs, fish list, chat, map, friends), close")
 
