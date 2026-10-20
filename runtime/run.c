@@ -46,6 +46,7 @@ typedef struct Symbol {
 static Symbol *symbols;
 static int symbol_count, symbol_capacity;
 static uint64_t *symbol_hits; /* branch targets per symbol: where the time goes */
+static void symbol_blocks_build(void);
 
 /* RUN_CALLS: a comma-separated list of function names whose calls are printed with their
  * first four arguments and the frame, to follow a flow (scene requests, overlay loads). */
@@ -83,6 +84,7 @@ static void load_symbols(const char *path)
     fclose(f);
     qsort(symbols, (size_t) symbol_count, sizeof(Symbol), compare_symbol);
     symbol_hits = calloc((size_t) symbol_count + 1, sizeof(uint64_t));
+    symbol_blocks_build();
     const char *calls = getenv("RUN_CALLS");
     if (calls != NULL) {
         char *copy = strdup(calls);
@@ -109,8 +111,43 @@ static int hook_trace_call(ArmCpu *c, void *user)
     return 0;
 }
 
-/* The index of the symbol containing `address`, or -1. */
+/* For every 64-byte block from the first symbol to the last: the last symbol starting at or
+ * before the block (-1 for none). hook_at looks a symbol up at every branch, so the lookup
+ * starts there and steps forward over the few symbols inside the block. */
+#define SYMBOL_BLOCK_SHIFT 6
+static int *symbol_block;
+static uint32_t symbol_block_base, symbol_block_count;
+
+static int symbol_index_search(uint32_t address);
+
+static void symbol_blocks_build(void)
+{
+    if (symbol_count == 0) {
+        return;
+    }
+    symbol_block_base = symbols[0].address & ~((1u << SYMBOL_BLOCK_SHIFT) - 1);
+    symbol_block_count = ((symbols[symbol_count - 1].address - symbol_block_base) >> SYMBOL_BLOCK_SHIFT) + 1;
+    symbol_block = malloc(symbol_block_count * sizeof(int));
+    for (uint32_t b = 0; b < symbol_block_count; b++) {
+        symbol_block[b] = symbol_index_search(symbol_block_base + (b << SYMBOL_BLOCK_SHIFT));
+    }
+}
+
+/* The index of the symbol containing `address`, or -1: the last one starting at or before it. */
 static int symbol_index(uint32_t address)
+{
+    uint32_t b = (address - symbol_block_base) >> SYMBOL_BLOCK_SHIFT;
+    if (symbol_block == NULL || address < symbol_block_base || b >= symbol_block_count) {
+        return symbol_index_search(address);
+    }
+    int i = symbol_block[b];
+    while (i + 1 < symbol_count && symbols[i + 1].address <= address) {
+        i++;
+    }
+    return i;
+}
+
+static int symbol_index_search(uint32_t address)
 {
     int lo = 0, hi = symbol_count - 1, best = -1;
     while (lo <= hi) {
