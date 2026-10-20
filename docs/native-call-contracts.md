@@ -227,7 +227,8 @@ source's SHA-256 and justified by ROM addresses in the table:
   takes, which the source leaves out of sprintf).
 - `EDITS`: exact replacements where the matching source relies on what the ROM's code does
   beyond C: three-byte local arrays that func_0209df64 fills with four bytes (the ROM's frame
-  has the fourth; the PC's may not), char parameters that the ROM's code uses as the whole
+  has the fourth; the PC's may not), a two-word array func_ov003_02216520 hands to
+  func_0204f794, which writes three (tree-chop: the third overwrote a saved register), char parameters that the ROM's code uses as the whole
   register and a caller passes a pointer to (func_0205f120, func_ov123_0229ab18), and a
   shift by a register count of 32 or more (func_020ad0c0).
 

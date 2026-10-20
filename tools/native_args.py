@@ -146,6 +146,11 @@ EDITS = {
     # 02088a7e: sp of an 8-byte frame
     "main/func_02088a78.c": ("20b42081d4d42bb8de762acc9cd6d3e682e6239adc867a17ec06486eae7e559c",
                              "unsigned char local[3];", "unsigned char local[4];"),
+    # func_0204f794 stores a three-word point (x, y, z); func_ov003_02216520 passes it res, an
+    # array of two words at sp+0x14 of a 0x20-byte frame (02216570), which has room for the
+    # third. The PC's frame keeps a saved register there.
+    "ov003/func_ov003_02216520.c": ("8ae485966c75451a492838c3dfcce4cb52336d10fa5388bb180485534a895f4f",
+                                    "    int res[2];", "    int res[3];"),
     # A char parameter the ROM's code uses as the whole register (mwccarm trusts the caller to
     # have extended it), where a ROM caller passes a wider value. 0205f126 stores r2 as a word
     # (str r2, [r1, r0]); func_0205ec50 passes a pointer there.
