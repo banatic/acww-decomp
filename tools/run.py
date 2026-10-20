@@ -127,7 +127,7 @@ def generate() -> tuple[pathlib.Path, pathlib.Path]:
     manifest.write_text(
         "".join(f"{m} {info['base']:08x} {C.ROM_DIR / (m + '.bin')}\n" for m, info in mods.items()),
         newline="\n")
-    syms = C.SymbolTable(mods)
+    syms = C.symbol_table(mods)
     rows = []
     for mod in C.RESIDENT:
         for s in syms.by_module.get(mod, []):
@@ -142,10 +142,48 @@ def generate() -> tuple[pathlib.Path, pathlib.Path]:
 def compile_asm(src: pathlib.Path, obj: pathlib.Path) -> pathlib.Path:
     target = (["C:/Program Files/LLVM/bin/clang.exe", "--target=i686-pc-windows-gnu"] if WINDOWS
               else ["gcc", "-m32"])
-    p = subprocess.run([*target, "-c", str(src), "-o", str(obj)], capture_output=True, text=True)
+    cmd = [*target, "-c", str(src), "-o", str(obj)]
+    key = hashlib.sha1(" ".join(cmd).encode() + src.read_bytes()).hexdigest()
+    if built_before(obj, key):
+        return obj
+    p = subprocess.run(cmd, capture_output=True, text=True)
     if p.returncode != 0:
         raise SystemExit(p.stdout + p.stderr)
+    obj.with_name(obj.name + ".key").write_text(key)
     return obj
+
+
+def built_before(out: pathlib.Path, key: str) -> bool:
+    """Whether `out` was last built from exactly what `key` names (its .key stamp says so)."""
+    stamp = out.with_name(out.name + ".key")
+    try:
+        return out.exists() and stamp.read_text() == key
+    except OSError:
+        return False
+
+
+def link_key(cmd: list[str]) -> str:
+    """What a link of `cmd` is made of: the command, the runtime's sources and headers, the
+    Native objects by the one key tools/native.py writes for them (objects.txt.key: reading
+    25,000 objects would cost more than the link), and every other object and source it names,
+    directly or through a response file, by its content."""
+    h = hashlib.sha1(" ".join(cmd).encode())
+    native_list = (NATIVE / "objects.txt").resolve()
+    native_key = NATIVE / "objects.txt.key"
+    h.update(native_key.read_bytes() if native_key.exists() else os.urandom(16))  # none: always link
+    for path in sorted(RUNTIME.glob("*.[chS]")):
+        h.update(path.name.encode() + path.read_bytes())
+    for arg in cmd:
+        listed = pathlib.Path(arg[1:]) if arg.startswith("@") else None
+        if listed is not None and listed.resolve() == native_list:
+            continue
+        names = listed.read_text().split() if listed is not None else [arg]
+        h.update("\n".join(names).encode())
+        for name in names:
+            path = pathlib.Path(name)
+            if path.suffix in (".c", ".o", ".obj") and path.is_file():
+                h.update(path.read_bytes())
+    return h.hexdigest()
 
 
 def address_of(text: str) -> int:
@@ -180,7 +218,7 @@ def clean_registrations(only: str | None = None) -> list[tuple[str, str, str, in
     """Every Clean function registered with CLEAN_AS (clean/clean.h): (symbol, function, module,
     DS address with the Thumb bit, size); with `only` ("all" or a file listing game symbols,
     Clean function names or addresses), those it lists."""
-    syms = C.SymbolTable(C.modules())
+    syms = C.symbol_table(C.modules())
     out = []
     for path in sorted((C.ROOT / "clean").rglob("*.c")):
         for plain, quoted, function in CLEAN_AS.findall(path.read_text(encoding="utf-8")):
@@ -202,7 +240,7 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
     check's run_clean with r0-r3 and the stack words in diff_stack. Empty without `clean`."""
     names = {m: int(i) for i, m in
              re.findall(r"native_module_name_(\d+):\s*\.asciz \"(\w+)\"", (NATIVE / "natives.s").read_text())}
-    syms = C.SymbolTable(C.modules())
+    syms = C.symbol_table(C.modules())
     prefix = "_" if WINDOWS else ""
     text = (NATIVE / "natives.s").read_text()
     count_match = re.search(r"\bnative_function_count:\s*\.long (\d+)", text.replace("_native_function_count:", "native_function_count:"))
@@ -287,10 +325,18 @@ def direct_includes(path: str) -> tuple[str, ...]:
     for name in names:
         for base in (os.path.dirname(path), str(C.ROOT / "clean"), str(C.INCLUDE), str(C.INCLUDE / "msl")):
             cand = os.path.normpath(os.path.join(base, name.decode()))
-            if os.path.isfile(cand):
+            if cand in header_files():
                 out.append(cand)
                 break
     return tuple(out)
+
+
+@functools.cache
+def header_files() -> frozenset[str]:
+    """Every file under clean/ and include/, listed once (testing each candidate path on
+    Windows costs more than the listing)."""
+    return frozenset(os.path.normpath(os.path.join(d, f)) for top in (C.ROOT / "clean", C.INCLUDE)
+                     for d, _, files in os.walk(top) for f in files)
 
 
 def build_clean(flags: list[str]) -> list[str]:
@@ -299,7 +345,7 @@ def build_clean(flags: list[str]) -> list[str]:
     objects are (tools/objrewrite.py): a call to a game function that has a Native version goes
     to it, as a Native caller's does, so it runs where the run's policy says (Native, Clean, or
     the ROM's code through the patched entry) with the same crossings as the Reference records."""
-    syms = C.SymbolTable(C.modules())
+    syms = C.symbol_table(C.modules())
     known = set(syms.by_name)
     native = {name for name, _ in natives_table().values()}
     prefix = "_" if WINDOWS else ""
@@ -344,7 +390,6 @@ def build_clean(flags: list[str]) -> list[str]:
         key = key.hexdigest()
         stamp = obj.with_suffix(".key")
         if obj.exists() and stamp.exists() and stamp.read_text() == key:
-            C.cache_put("clean", key, obj)
             return obj, None
         if C.cache_get("clean", key, obj):
             stamp.write_text(key)
@@ -420,10 +465,15 @@ def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.
         srcs.append(str(RUNTIME / "native_none.c"))
         if not WINDOWS:
             link = ["-Wl,-z,noexecstack"]
-    p = subprocess.run([*diffcheck.compiler(), *flags, *srcs, *extra, *link, "-o", str(exe)], capture_output=True,
-                       text=True)
+    cmd = [*diffcheck.compiler(), *flags, *srcs, *extra, *link, "-o", str(exe)]
+    key = link_key(cmd)  # an unchanged program is not linked again
+    if built_before(exe, key):
+        return exe
+    exe.with_name(exe.name + ".key").unlink(missing_ok=True)
+    p = subprocess.run(cmd, capture_output=True, text=True)
     if p.returncode != 0:
         raise SystemExit((p.stdout + p.stderr)[-6000:])
+    exe.with_name(exe.name + ".key").write_text(key)
     if p.stderr.strip() and not native:  # the Native link warns of every duplicate it drops
         print(p.stderr[-4000:], file=sys.stderr)
     return exe
@@ -510,7 +560,7 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     or -. With `clean`, every function with a Clean version is N."""
     mods = C.modules()
     contracts = native_contract.audited(C.ROOT, mods, C.module_image)
-    syms = C.SymbolTable(mods)
+    syms = C.symbol_table(mods)
     table = natives_table()
     image = C.module_image('main')
     for address, size, _sha in native_publish.ROM_SITES:
@@ -542,7 +592,8 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     facts = {}
     for path in C.all_sources():
         rel = path.relative_to(C.ROOT).as_posix()
-        digest = hashlib.sha1(path.read_bytes()).hexdigest()
+        st = path.stat()
+        digest = f"{st.st_size} {st.st_mtime_ns}"  # (a changed source has a new time)
         fact = memo.get(rel)
         if fact is None or fact[0] != digest:
             src = C.parse_source(path)

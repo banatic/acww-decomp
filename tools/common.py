@@ -66,10 +66,8 @@ def cache_put(kind: str, key: str, src: pathlib.Path) -> None:
     """Keep a copy of `src` in the shared cache under `key` (written whole, then renamed)."""
     entry = CACHE_DIR / kind / key[:2] / key
     if entry.exists():
-        try:
-            os.utime(entry)
-        except OSError:
-            pass
+        # (not marked as used: on Windows that costs milliseconds a file, and an object kept
+        # here as well as in a checkout's own cache loses nothing if the cache prunes it)
         return
     try:
         entry.parent.mkdir(parents=True, exist_ok=True)
@@ -181,6 +179,17 @@ def _read_symbols(path: pathlib.Path, module: str, recovered: bool) -> list[Symb
         out.append(Symbol(m.group("name"), module, m.group("kind"), int(m.group("addr"), 16),
                           int(sm.group(1), 16) if sm else 0, "thumb" in attrs, recovered))
     return out
+
+
+_TABLES: dict[tuple[str, ...], "SymbolTable"] = {}
+
+
+def symbol_table(mods: dict[str, dict]) -> "SymbolTable":
+    """The modules' SymbolTable, read once per process (for callers that only read it)."""
+    key = tuple(sorted(mods))
+    if key not in _TABLES:
+        _TABLES[key] = SymbolTable(mods)
+    return _TABLES[key]
 
 
 class SymbolTable:
@@ -379,7 +388,6 @@ def compile_source(src: Source, wrapper: str | None = None,
     obj = OBJ_DIR / rel.with_suffix(".o")
     stamp = obj.with_suffix(".key")
     if not force and obj.exists() and stamp.exists() and stamp.read_text() == key:
-        cache_put("mwcc", shared, obj)
         return obj.read_bytes(), ""
     obj.parent.mkdir(parents=True, exist_ok=True)
     if not force and cache_get("mwcc", shared, obj):

@@ -112,17 +112,21 @@ def tool_output(obj: pathlib.Path, cmd: list[str]) -> str:
     key = hashlib.sha1(" ".join(cmd).encode() + b"\0" + obj.read_bytes()).hexdigest()
     kept = OUT / "tool-output" / key[:2] / key
     kept.parent.mkdir(parents=True, exist_ok=True)
-    if kept.exists() or C.cache_get("tool-output", key, kept):
-        return kept.read_text()
+    try:
+        if kept.exists() or C.cache_get("tool-output", key, kept):
+            return kept.read_text()
+    except OSError:
+        pass  # another run (a scene alongside) is putting the same output there: run the tool
     out = subprocess.run([*cmd, str(obj)], capture_output=True, text=True).stdout
+    if kept.exists():
+        return out
     tmp = kept.with_name(f"{key}.{os.getpid()}-{id(out)}")
     tmp.write_text(out)
     try:
         os.replace(tmp, kept)
-    except OSError:  # another run (a scene alongside) kept the same output first; Windows
-        tmp.unlink(missing_ok=True)  # refuses to replace a file that one is reading
-        if not kept.exists():
-            raise
+    except OSError:  # another run kept the same output first; Windows refuses to replace a
+        tmp.unlink(missing_ok=True)  # file that one is reading
+        return out
     C.cache_put("tool-output", key, kept)
     return out
 
@@ -289,7 +293,6 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     shared = hashlib.sha1(C.tree_free(head.decode("latin-1")).encode("latin-1") + b"".join(parts)).hexdigest()
     stamp = obj.with_suffix(".key")
     if obj.exists() and stamp.exists() and stamp.read_text() == key:
-        C.cache_put("native", shared, obj)
         return path, obj, ""
     obj.parent.mkdir(parents=True, exist_ok=True)
     if C.cache_get("native", shared, obj):
@@ -305,6 +308,10 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     return path, obj, ""
 
 
+# each linked object -> the key of what it was rewritten from
+REWRITTEN: dict[pathlib.Path, str] = {}
+
+
 def rewrite_one(obj: pathlib.Path, known: set[str], native: set[str], names_key: str,
                 pmf: set[str] = frozenset()) -> tuple[pathlib.Path, set[str]]:
     """The object with its references pointed at the game's memory, and the names it now
@@ -315,9 +322,8 @@ def rewrite_one(obj: pathlib.Path, known: set[str], native: set[str], names_key:
     out = OUT / "linked" / obj.relative_to(OUT / "obj")
     stamp = out.with_suffix(".names")
     key = hashlib.sha1(data + names_key.encode() + (b"pmf" if pmf else b"")).hexdigest()
+    REWRITTEN[out] = key  # what the object is, for the linked program's key (objects.txt.key)
     if out.exists() and stamp.exists() and stamp.read_text().startswith(key):
-        C.cache_put("rewritten", key, out)
-        C.cache_put("rewritten", key + ".names", stamp)
         return out, set(stamp.read_text().split()[1:])
     out.parent.mkdir(parents=True, exist_ok=True)
     if C.cache_get("rewritten", key + ".names", stamp) and C.cache_get("rewritten", key, out):
@@ -884,6 +890,10 @@ def main() -> None:
                         "compiler makes directly)\n")
     (OUT / "keep-reference.txt").write_text("".join(keep), newline="\n")
     (OUT / "objects.txt").write_text("".join(f"{o.as_posix()}\n" for _, o in objects), newline="\n")
+    # the objects as one key, so a program linked from them can tell it is up to date without
+    # reading 25,000 files (tools/run.py, link_key)
+    (OUT / "objects.txt.key").write_text(hashlib.sha1("".join(
+        f"{o.as_posix()} {REWRITTEN.get(o, '')}\n" for _, o in objects).encode()).hexdigest())
     (OUT / "left-out.txt").write_text(
         "".join(f"{p.relative_to(C.ROOT).as_posix()}: {why}\n" for p, why in left_out)
         + "".join(f"(no address) {h}: {n} candidates\n" for h, n in unknown), newline="\n")

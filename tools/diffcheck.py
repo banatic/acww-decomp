@@ -48,7 +48,7 @@ def generate() -> list[pathlib.Path]:
     (OUT / "modules.txt").write_text(
         "".join(f"{m} {info['base']:08x} {C.ROM_DIR / (m + '.bin')}\n" for m, info in mods.items()),
         newline="\n")
-    syms = C.SymbolTable(mods)
+    syms = C.symbol_table(mods)
     rows = []
     for path in sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         for m in TEST.finditer(path.read_text()):
@@ -94,7 +94,7 @@ def game_names(objects: list[pathlib.Path]) -> pathlib.Path | None:
                 undefined.add(parts[1])
             elif len(parts) == 3 and parts[1] in "TDBRC":
                 defined.add(parts[2])
-    syms = C.SymbolTable(C.modules())
+    syms = C.symbol_table(C.modules())
     rows = []
     for host in sorted(undefined - defined):
         name = host[len(prefix):] if host.startswith(prefix) else host
