@@ -3,7 +3,7 @@
 Some matching sources declare separate locals even though the ROM passes a
 pointer that covers more than one of them. The ARM stack gives those locals a
 specific order. Independent host locals have no such ordering guarantee.
-tools/native_layout.py groups only the seven audited layouts below in PC source
+tools/native_layout.py groups only the 29 audited layouts below in PC source
 copies. Values and calls are unchanged. Source digests and exact declarations
 reject an unaudited source change, and each copy asserts the observed offset.
 
@@ -28,7 +28,7 @@ the first pixel difference to 3490; the caller's local layout must be preserved.
 
 ## Validation
 
-tools/test_native_layout.py compiles all seven exact copied game functions, the
+tools/test_native_layout.py compiles all 29 exact copied game functions, the
 real vector consumer and three real request payload writers. Its fixture checks
 the coordinates, tags, item identifiers and signed header arguments received by
 the request consumer, returned values, and rejection of changed source digests.
@@ -63,3 +63,38 @@ sp+0x30 to func_0204f818 as its two outputs, and at 02013614 it passes sp+0x2c t
 func_020137ec as a two-word point; the source declares s2c and s30. The PC copies group each
 pair with the second word at 4. The layout fixture checks both: the second word read through
 the first local's address is the second local.
+
+## Other request builders
+
+Twenty-two more request builders keep the header and the payload in separate locals. In
+each ROM body the header's stack offset goes to func_0200e894 and the payload, 12 bytes
+further, to the function that fills it (an `add rN, sp, #x` before each call):
+
+| Function | Header | Payload writer |
+|---|---|---|
+| func_02009a44 | sp+4 | func_02009a9c |
+| func_0200a6a0 | sp+8 | func_0200a6f0 |
+| func_0200acd4 | sp+12 | func_0200ad78 |
+| func_0200ad24 | sp+8 | func_0200ad78 |
+| func_0200b7e8 | sp+16 | func_0200b894 |
+| func_0200c3b0 | sp | func_0200c3f0 |
+| func_0200cc00 | sp | func_0200cc40 |
+| func_0200dbb4 | sp | func_0200dc00 |
+| func_ov003_0220fb30 | sp+8 | func_ov003_0220fb80 |
+| func_ov003_0220fda0 | sp | func_ov003_0220fdf4 |
+| func_ov003_02212830 | sp+8 | func_ov003_02212878 |
+| func_ov003_02212c10 | sp+4 | func_ov003_02212d04 |
+| func_ov003_02215624 | sp | func_ov003_02215664 |
+| func_ov003_02216410 | sp+8 | func_ov003_02216460 |
+| func_ov003_02216698 | sp+12 | func_ov003_022166e8 |
+| func_ov003_02216ab8 | sp+12 | func_ov003_02216b08 |
+| func_ov003_022171ec | sp+4 | func_ov003_022172bc |
+| func_ov003_02217838 | sp+12 | func_ov003_02217894 |
+| func_ov003_022186cc | sp+8 | func_ov003_0221871c |
+| func_ov003_022188d0 | sp+4 | func_ov003_02218918 |
+| func_ov004_02228628 | sp+8 | func_ov004_02228678 |
+| func_ov004_0222ac24 | sp+8 | func_ov004_0222ac74 |
+
+tests/native/request_layout.c runs the 22 copies with payload writers that mark their
+payload and a submission that must find the mark 12 bytes after the header it receives.
+Built from the original sources instead, 10 of them fail on Windows.
