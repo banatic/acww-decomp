@@ -36,8 +36,8 @@ def pc_copy(relative: str, specs: dict | None = None) -> str:
 class StaticsCopy(unittest.TestCase):
     def test_every_copy_names_the_rom_storage(self):
         specs = statics.specifications()
-        self.assertEqual(len(specs), 8)
-        self.assertEqual(sum(len(e['statics']) for e in specs.values()), 8)
+        self.assertEqual(len(specs), 165)
+        self.assertEqual(sum(len(e['statics']) for e in specs.values()), 168)
         for relative, spec in specs.items():
             text = pc_copy(relative)
             for name, item in spec['statics'].items():
@@ -69,7 +69,8 @@ class StaticsCopy(unittest.TestCase):
             self.assertIsNone(boundary.METHOD.search(text), relative)
 
     def test_rom_checks(self):
-        cases = ['ov003/func_ov003_0221a244.cpp', 'ov126/func_ov126_022a1b4c.cpp', 'ov146/func_ov146_0229b004.cpp']
+        cases = ['ov003/func_ov003_0221a244.cpp', 'ov145/func_ov145_022999c4.c', 'ov070/func_ov070_02279820.c',
+                 'ov068/func_ov068_02274358.cpp', 'ov107/func_ov107_0229dea4.cpp', 'ov004/func_ov004_02211824.cpp']
         specs = statics.specifications()
         for relative in cases:
             for name, item in specs[relative]['statics'].items():
@@ -253,18 +254,14 @@ def fixture(relatives: list[str], baseline: bool = False) -> list[str]:
 
 
 def coverage() -> None:
-    """The pinned entries are what the ROM and the mwccarm objects give; the block-scope statics
-    of the other Native sources are still in PC storage."""
+    """Every block-scope static of every Native source: placed here, or by the member boundary."""
     derived, members = statics.derive_all()
-    pinned = statics.specifications()
-    assert all(derived.get(k) == v for k, v in pinned.items()), 'runtime/native-rom-statics.json is not what the ROM gives'
-    pending = sorted(derived.keys() - pinned.keys())
-    assert len(pending) == 157 and len(members) == 81, (len(pending), len(members))
+    assert not members, 'member sources outside the boundary: ' + ', '.join(members)
+    assert derived == statics.specifications(), 'runtime/native-rom-statics.json is not what the ROM gives'
     specs = boundary.specifications()
     placed_by_boundary = sum(len(e.get(kind, {})) for e in specs.values() for kind in statics.BOUNDARY_KINDS)
-    derived = pinned
     print(f'{len(derived)} sources with {sum(len(e["statics"]) for e in derived.values())} statics placed here, '
-          f'{placed_by_boundary} by the member boundary; {len(pending)} sources keep them in PC storage')
+          f'{placed_by_boundary} by the member boundary; none left in PC storage')
 
 
 if __name__ == '__main__':

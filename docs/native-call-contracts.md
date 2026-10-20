@@ -63,8 +63,8 @@ argument cleanup also require the corresponding ABI adapter and body tests.
 
 ## Remaining member-pointer copies
 
-`native_pmf_boundary.checked_copy` validates 345 unchanged sources, their header
-closures, their original ROM bodies, and 1,015 method constants pinned in
+`native_pmf_boundary.checked_copy` validates 426 unchanged sources, their header
+closures, their original ROM bodies, and 1,385 method constants pinned in
 `runtime/native-member-boundary.json`. Each constant was independently resolved
 by both host compilers and compared with a literal referenced by its ROM owner.
 The declarations cover multiple member types, named parameters, inline parameters,
@@ -159,38 +159,45 @@ their constants derived from the mwccarm objects: each constant `@N` is relocate
 method and named by an owner literal, whose ROM words are the constant's (ov102's inline
 `m0`-`m15` and ov003's `func_ov068_*` names included). `DISCARD_HANDLER` may cast to any
 typedef of the source's member type (`PMF`, `Pmf`, `StateHandler`), and a member array may be
-declared `C::*const name[N]`. Their tables are placed by `tools/native_statics.py` (below).
+declared `C::*const name[N]`. 81 more sources that build tables of `&Class::method` joined
+the boundary the same way (ov004 70, main 6, ov068 3, ov123 1, ov141 1). Their tables, and
+every other block-scope static, are placed by `tools/native_statics.py` (below).
 
 ## Block-scope statics at the ROM's addresses
 
 mwccarm keeps a function's block-scope statics in its module's .bss or .data, a dynamically
 initialized one behind a guard word of its own (bit 0: done). A PC copy compiled as it is
 keeps them, and the PC's guard, in PC storage. Then the ROM's copy is never written (memory
-differs from the Reference's, and the ROM's owner or a twin overlay's finds zero), and loading
-the overlay again clears the ROM's .bss but not the PC's guard.
+differs from the Reference's, and the ROM's owner or a twin overlay's finds zero), loading the
+overlay again clears the ROM's .bss but not the PC's guard (an owner that stores pointers into
+its object, ov145 `022999c4`, kept the old object's), and a pointer into the static that an
+owner returns (ov098 `022a2cd8`) is a PC address.
 
-`runtime/native-rom-statics.json` pins, per static, its DS address, size, element count and
-section, the literals of the owner's ROM body that name it (with the offset into it a literal
-adds), its guard word and the literals naming that, and for .data the SHA-256 of the image's
-bytes there. `native_statics.translate`, applied by `native.py` to whichever copy a source
-compiles from, checks the source, the owner's ROM body and every literal and range, then
-replaces the declaration with a macro for the DS object (an lvalue of the declared type; arrays
-keep their array type) until the enclosing block ends. A guarded static's initializer runs
-under the ROM's guard word as mwccarm's code runs it: read the word, and when bit 0 is clear,
-build the initial value, copy it to the DS object and store the word with bit 0 set. A plain
-static takes its value from the DS image, which the derivation compared with the mwccarm
-object's bytes; one in .bss must be zero-initialized. The manifest holds the eight owners'
-tables so far; statics the boundary places (`shared_storage`, `retained_storage`,
-`rom_statics`) are left to it.
+`runtime/native-rom-statics.json` pins 168 statics of 165 sources: per static its DS address,
+size, element count and section, the literals of the owner's ROM body that name it (with the
+offset into it a literal adds), its guard word and the literals naming that, and for .data the
+SHA-256 of the image's bytes there. `native_statics.translate`, applied by `native.py` to
+whichever copy a source compiles from, checks the source, the owner's ROM body and every
+literal and range, then replaces the declaration with a macro for the DS object (an lvalue of
+the declared type; arrays keep their array type) until the enclosing block ends. A guarded
+static's initializer runs under the ROM's guard word as mwccarm's code runs it: read the word,
+and when bit 0 is clear, build the initial value, copy it to the DS object and store the word
+with bit 0 set. A plain static takes its value from the DS image, which the derivation
+compared with the mwccarm object's bytes; one in .bss must be zero-initialized. 147 are
+guarded .bss tables, 14 guarded .data tables (keyed rows), 5 plain .bss statics and 2 plain
+.data ones. Statics the boundary already places (`shared_storage`, `retained_storage`,
+`rom_statics`) are left to it; no PC object refers to `__cxa_guard_acquire` any more.
 
-`python tools/native_statics.py` derives the entries from the mwccarm objects (MWCC_ROOT): the
-`name$N` and `_ZGVname$N` symbols, the owner's relocations naming them and the ROM's words at
-those literals. `python tools/test_native_statics.py` checks that the pinned entries are what
-the ROM and the objects give, that a changed source, body, literal, address, size, count or
-image rejects the copy, and runs each ROM owner and its PC copy from the same memory
-(tests/native/rom_statics.c): a load, two runs, a reload with high guard bits, a reload, and the
-PC copy after the ROM's own run, comparing the statics, their guards and the calls. The former
-private copies fail it.
+`python tools/native_statics.py` derives the manifest from the mwccarm objects (MWCC_ROOT):
+the `name$N` and `_ZGVname$N` symbols, the owner's relocations naming them and the ROM's
+words at those literals. `python tools/test_native_statics.py` checks that the manifest is
+what the ROM and the objects give (so a new block-scope static anywhere fails it), that a
+changed source, body, literal, address, size, count or image rejects the copy, and runs each
+ROM owner and its PC copy from the same memory (tests/native/rom_statics.c): a load, two runs,
+a reload with high guard bits, a reload, and the PC copy after the ROM's own run, comparing
+the statics, their guards and the calls. The former private copies fail it, apart from five it
+cannot tell apart: three return before their tables from its state, and the plain .data
+statics of ov070 `02279820` and ov073 `02278f4c` are read-only and equal to the image.
 
 ## Clean entry visibility
 

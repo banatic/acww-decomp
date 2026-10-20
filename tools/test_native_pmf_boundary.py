@@ -143,7 +143,7 @@ class BoundaryCopy(unittest.TestCase):
 
     def test_all_audited_inputs_and_copies(self):
         specs = boundary.specifications()
-        self.assertEqual(len(specs), 345)
+        self.assertEqual(len(specs), 426)
         headers = 0
         for relative in specs:
             original = (C.SRC / relative).read_bytes().decode()
