@@ -20,8 +20,10 @@ which hold C functions as well as members. Elsewhere gcc -m32.
 
 from __future__ import annotations
 
+import atexit
 import collections
 import concurrent.futures as cf
+import functools
 import hashlib
 import json
 import os
@@ -109,7 +111,10 @@ def flags_for(path: pathlib.Path) -> list[str]:
 def tool_output(obj: pathlib.Path, cmd: list[str]) -> str:
     """What `cmd` (a tool reading the object, named last) prints for `obj`, kept by the
     object's bytes: unchanged objects are not read again, here or in another checkout."""
-    key = hashlib.sha1(" ".join(cmd).encode() + b"\0" + obj.read_bytes()).hexdigest()
+    # an object compile_one made is named by its compile key (its .key stamp); others by bytes
+    stamp = obj.with_suffix(".key")
+    made = stamp.read_bytes() if stamp.exists() and obj.is_relative_to(OUT / "obj") else None
+    key = hashlib.sha1(" ".join(cmd).encode() + b"\0" + (b"key:" + made if made else obj.read_bytes())).hexdigest()
     kept = OUT / "tool-output" / key[:2] / key
     kept.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -180,10 +185,22 @@ def probe_virtuals(path: pathlib.Path, methods: list[str]) -> dict[str, tuple[in
     probe.parent.mkdir(parents=True, exist_ok=True)
     probe.write_text("\n".join(lines) + "\n")
     asm = probe.with_suffix(".s")
-    p = subprocess.run([*compiler(), "-S", *flags_for(path), str(probe), "-o", str(asm)], capture_output=True,
+    cmd = [*compiler(), "-S", *flags_for(path), str(probe), "-o", str(asm)]
+    key = hashlib.sha1(" ".join(cmd).encode() + probe.read_bytes() + path.read_bytes()
+                       + b"".join(h.read_bytes() for h in C.included_files(path))).hexdigest()
+    stamp = asm.with_suffix(".key")
+    if asm.exists() and stamp.exists() and stamp.read_text() == key:
+        out = {}
+        for i, ptr, adjust in VPROBE.findall(asm.read_text()):
+            if re.fullmatch(r"-?\d+", ptr) and int(ptr) & 1 and re.fullmatch(r"-?\d+", adjust):
+                out[methods[int(i)]] = (int(ptr) - 1, int(adjust))
+        return out
+    stamp.unlink(missing_ok=True)
+    p = subprocess.run(cmd, capture_output=True,
                        text=True)
     if p.returncode != 0:
         return {}
+    stamp.write_text(key)
     out = {}
     for i, ptr, adjust in VPROBE.findall(asm.read_text()):
         if re.fullmatch(r"-?\d+", ptr) and int(ptr) & 1 and re.fullmatch(r"-?\d+", adjust):
@@ -336,12 +353,44 @@ def rewrite_one(obj: pathlib.Path, known: set[str], native: set[str], names_key:
     return out, names
 
 
+# signature()'s answers, by the source's path, size and time and the name (kept across runs)
+SIGNATURES_FILE = OUT / "signatures.json"
+_signatures: dict[str, list] | None = None
+_signatures_reader = None
+
+
 def signature(path: pathlib.Path, name: str) -> tuple[int, int, bool, int]:
     """(return kind, parameter count, called as a C++ member, floating-point result) of the
     function defined in `path` under the source name `name`. RET_SKIP when the check cannot
     compare the result: a floating-point value, a structure returned by value, or a definition
     it cannot find. The last is 1 for a float result, 2 for a double (the PC returns those in
-    st(0), the DS in r0 or r0:r1), else 0."""
+    st(0), the DS in r0 or r0:r1), else 0. Read once per source version (signatures.json)."""
+    global _signatures, _signatures_reader
+    if _signatures is None:
+        # (the answers hold while this file's reading of them does)
+        _signatures_reader = hashlib.sha1(pathlib.Path(__file__).read_bytes()).hexdigest()
+        try:
+            kept = json.loads(SIGNATURES_FILE.read_text())
+            _signatures = kept["answers"] if kept.get("reader") == _signatures_reader else {}
+        except (OSError, ValueError, KeyError):
+            _signatures = {}
+        atexit.register(save_signatures)
+    st = path.stat()
+    key = f"{path.as_posix()}|{name}|{st.st_size}|{st.st_mtime_ns}"
+    if key not in _signatures:
+        _signatures[key] = list(signature_read(path, name))
+    return tuple(_signatures[key])
+
+
+def save_signatures() -> None:
+    if _signatures is not None:
+        SIGNATURES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        tmp = SIGNATURES_FILE.with_name(f"signatures.{os.getpid()}.json")
+        tmp.write_text(json.dumps({"reader": _signatures_reader, "answers": _signatures}))
+        os.replace(tmp, SIGNATURES_FILE)
+
+
+def signature_read(path: pathlib.Path, name: str) -> tuple[int, int, bool, int]:
     text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace")).replace('extern "C"', " ")
     pattern = (r"(?:^|[;}])\s*((?:[\w<>]+[\s\*&]+)+?)((?:\w+::)?)" + re.escape(name)
                + r"\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)\s*(?:const\s*)?\{")
@@ -398,8 +447,14 @@ def pmf_names(path: pathlib.Path, text: str) -> list[str]:
     text names: a source that calls through a table of them has no `::*` of its own."""
     names = set()
     for header in C.included_files(path):
-        names |= set(PMF_TYPEDEF.findall(COMMENT.sub(" ", header.read_text(encoding="utf-8", errors="replace"))))
+        names |= header_pmf_typedefs(header)
     return sorted(n for n in names if re.search(r"\b" + re.escape(n) + r"\b", text))
+
+
+@functools.cache
+def header_pmf_typedefs(header: pathlib.Path) -> frozenset[str]:
+    """The member-function pointer typedefs one header declares (read once per run)."""
+    return frozenset(PMF_TYPEDEF.findall(COMMENT.sub(" ", header.read_text(encoding="utf-8", errors="replace"))))
 
 
 # what a table of member-function pointers that only Native code builds may hold
