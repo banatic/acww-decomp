@@ -78,21 +78,26 @@ def cache_put(kind: str, key: str, src: pathlib.Path) -> None:
         pass
 
 
-def prune_cache() -> None:
-    """Keep the shared cache under ACWW_CACHE_LIMIT_GB (default 20): what was used longest ago
+def prune_cache(kinds: tuple[str, ...] | None = None) -> None:
+    """Keep the shared cache under ACWW_CACHE_LIMIT_GB (default 10): what was used longest ago
     goes first, a directory entry (a Reference run's results) as a whole. Nothing used in the
-    last ten minutes is removed, and the cache is looked over at most once an hour."""
+    last ten minutes is removed. The whole cache is looked over at most once an hour; with
+    `kinds`, only those, every time, against their own limit (ACWW_CACHE_REFERENCE_GB, default
+    6, for "reference": one entry is up to 700 MB, and a gate stores dozens)."""
     stamp = CACHE_DIR / ".pruned"
     now = time.time()
-    try:
-        if now - stamp.stat().st_mtime < 3600:
-            return
-    except OSError:
-        pass
-    limit = float(os.environ.get("ACWW_CACHE_LIMIT_GB", "20")) * (1 << 30)
+    if kinds is None:
+        try:
+            if now - stamp.stat().st_mtime < 3600:
+                return
+        except OSError:
+            pass
+        limit = float(os.environ.get("ACWW_CACHE_LIMIT_GB", "10")) * (1 << 30)
+    else:
+        limit = float(os.environ.get("ACWW_CACHE_REFERENCE_GB", "6")) * (1 << 30)
     entries = []  # (last used, size, path)
     for kind in (CACHE_DIR.iterdir() if CACHE_DIR.is_dir() else ()):
-        if not kind.is_dir():
+        if not kind.is_dir() or (kinds is not None and kind.name not in kinds):
             continue
         for group in kind.iterdir():
             for entry in (group.iterdir() if group.is_dir() else ()):
@@ -115,11 +120,12 @@ def prune_cache() -> None:
             total -= size
         except OSError:
             pass
-    try:
-        stamp.parent.mkdir(parents=True, exist_ok=True)
-        stamp.touch()
-    except OSError:
-        pass
+    if kinds is None:
+        try:
+            stamp.parent.mkdir(parents=True, exist_ok=True)
+            stamp.touch()
+        except OSError:
+            pass
 
 
 # mwccarm is proprietary and never committed. INSTALL.md says where to put it.

@@ -265,6 +265,11 @@ def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str 
         for log in ("reference.log", "native.log", "reference-hashes.txt"):
             if (run_dir / log).exists():
                 (work / log).write_bytes((run_dir / log).read_bytes())
+        # the run's crossings record and memory images (half a gigabyte a scene) are not kept:
+        # the next run makes them again, or takes them from the Reference cache
+        (run_dir / "crossings.bin").unlink(missing_ok=True)
+        for image in (run_dir / "ram").glob("ram-*.bin"):
+            image.unlink(missing_ok=True)
         ref, nat = (frame_hashes(work / n) for n in ("reference-hashes.txt", "hashes.txt"))
         result["first"] = next((f for f in sorted(ref) if ref[f] != nat.get(f)), None)
     return result

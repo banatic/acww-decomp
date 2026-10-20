@@ -787,7 +787,7 @@ def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pa
         os.replace(tmp, entry)
     except OSError:
         shutil.rmtree(tmp, ignore_errors=True)
-    C.prune_cache()
+    C.prune_cache(("reference",))
 
 
 def native_main(args, manifest, table, budget, env) -> int:
