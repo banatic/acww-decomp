@@ -1899,6 +1899,29 @@ ArmHook native_hook_at(uint32_t address, void **hook_user)
 
 /* Native -> Reference ----------------------------------------------------------------------- */
 
+/* The compiler's floating-point helpers (status H) that return a float (1) or a double (2):
+ * the ROM's code hands the result back in r0 or r0:r1, and a PC caller that declares them so
+ * takes it from st(0) (native_tramp.S). */
+static uint32_t helper_floating(const Fn *f)
+{
+    static const char *const doubles[] = {"_dadd", "_dsub", "_dmul", "_ddiv", "_dflt", "_dfltu", "_f2d"};
+    static const char *const floats[] = {"_fadd", "_fsub", "_fmul", "_fdiv", "_fflt", "_d2f"};
+    if (f == NULL || f->status != 'H' || f->name == NULL) {
+        return 0;
+    }
+    for (size_t i = 0; i < sizeof(doubles) / sizeof(doubles[0]); i++) {
+        if (strcmp(f->name, doubles[i]) == 0) {
+            return 2;
+        }
+    }
+    for (size_t i = 0; i < sizeof(floats) / sizeof(floats[0]); i++) {
+        if (strcmp(f->name, floats[i]) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 uint32_t native_pop_bytes;
 uint32_t native_return_floating;
 
@@ -1994,7 +2017,7 @@ uint64_t native_call_reference(uint32_t target, const uint32_t *args, uint32_t s
     memcpy(cpu->r, saved, sizeof(saved));
     cpu->cpsr = (cpu->cpsr & ~ARM_CPSR_T) | (saved_cpsr & ARM_CPSR_T);
     native_pop_bytes = 0;
-    native_return_floating = f != NULL && f->native != NULL ? (uint32_t) native_floating(f->native) : 0;
+    native_return_floating = f != NULL && f->native != NULL ? (uint32_t) native_floating(f->native) : helper_floating(f);
     if (native_aggregate_kind(aggregate_kind)) {
         v = native_aggregate_finish(aggregate_kind, &aggregate, v, &native_pop_bytes);
     }

@@ -54,6 +54,7 @@ func_020babb4 touches the hardware at 05000400
 func_01ffcd50 touches the hardware at 04000006
 func_020bab74 touches the hardware at 05000400
 func_020653fc touches the hardware at 04000440
+func_020fc8c4 touches the hardware at 040004a4
 func_0201b744 calls func_0201bf24 with 2 of its 4 arguments: func_0201bf24 spills r0-r3 and hands &param2 to a callback (data_020cd2f4) that reads past it into the r2 and r3 slots, which the ROM's code leaves as earlier calls set them (scene able-sisters)
 func_0201b910 calls func_0201bf24 with 2 of its 4 arguments: func_0201bf24 spills r0-r3 and hands &param2 to a callback (data_020cd2f4) that reads past it into the r2 and r3 slots, which the ROM's code leaves as earlier calls set them (scene able-sisters)
 func_0201bcec calls func_0201bf24 with 2 of its 4 arguments: func_0201bf24 spills r0-r3 and hands &param2 to a callback (data_020cd2f4) that reads past it into the r2 and r3 slots, which the ROM's code leaves as earlier calls set them (scene able-sisters)
