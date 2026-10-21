@@ -84,6 +84,34 @@ static int map_main(void)
     return 0;
 }
 
+#ifndef _WIN32
+int memory_unshare(void)
+{
+    /* main RAM and its mirror are one shared mapping, which a fork keeps shared: give this
+       process a mapping of its own with the same contents */
+    uint32_t offset = MEM_MIRROR_BASE - MEM_MAIN_MIRROR_STEP;
+    uint8_t *copy = malloc(MEM_MAIN_SIZE);
+    int fd = memfd_create("ds-main-ram", 0);
+    if (copy == NULL || fd < 0 || ftruncate(fd, MEM_MAIN_SIZE) != 0) {
+        free(copy);
+        return -1;
+    }
+    memcpy(copy, (void *) (uintptr_t) MEM_MAIN_BASE, MEM_MAIN_SIZE);
+    void *main =
+        mmap((void *) (uintptr_t) MEM_MAIN_BASE, MEM_MAIN_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, fd, 0);
+    void *mirror = mmap((void *) (uintptr_t) MEM_MIRROR_BASE, MEM_MIRROR_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED,
+                        fd, offset - MEM_MAIN_BASE);
+    close(fd);
+    if (main != (void *) (uintptr_t) MEM_MAIN_BASE || mirror != (void *) (uintptr_t) MEM_MIRROR_BASE) {
+        free(copy);
+        return -1;
+    }
+    memcpy((void *) (uintptr_t) MEM_MAIN_BASE, copy, MEM_MAIN_SIZE);
+    free(copy);
+    return 0;
+}
+#endif
+
 int memory_init(void)
 {
     static int done;

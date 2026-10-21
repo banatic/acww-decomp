@@ -35,6 +35,10 @@ static inline uint8_t *memory_host(uint32_t address, uint32_t size)
     return NULL;
 }
 
+/* (POSIX) After a fork: main RAM, mapped shared so that its mirror follows it, mapped again for
+ * this process alone; 0 on success. */
+int memory_unshare(void);
+
 /* A copy of every region, and putting one back. */
 typedef struct MemorySnapshot MemorySnapshot;
 MemorySnapshot *memory_snapshot(void);

@@ -20,6 +20,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #define DRIVE_SNAP 1
+#define BACK_TO_PARENT 42
 #endif
 
 void run_finish(const char *reason, int status);
@@ -166,17 +167,26 @@ static int snapshot(void)
     if (pid > 0) {
         return (int) pid; /* the run */
     }
+    if (memory_unshare() != 0) {
+        _exit(1);
+    }
     signal(SIGHUP, SIG_IGN); /* kept when the run that made it ends */
+    int again = 0;
     for (;;) {
-        raise(SIGSTOP);
+        if (!again) {
+            raise(SIGSTOP);
+        }
         pid_t live = fork();
         if (live == 0) {
-            return 0; /* the run again, from here */
+            return memory_unshare() == 0 ? 0 : (_exit(1), 0); /* the run again, from here */
         }
+        int st = 0;
         if (live > 0) {
-            int st;
             waitpid(live, &st, 0); /* one run at a time from this copy */
         }
+        /* a run of this copy that goes back to it ends with BACK_TO_PARENT: no signal reaches
+           a copy that is waiting for its run */
+        again = live > 0 && WIFEXITED(st) && WEXITSTATUS(st) == BACK_TO_PARENT;
     }
 }
 #endif
@@ -279,7 +289,11 @@ void drive_frame(uint32_t frame)
             }
         } else if (strcmp(cmd, "back") == 0 && n >= 2) {
             fflush(stdout);
-            if (kill((pid_t) atoi(a), SIGCONT) != 0) {
+            pid_t copy = (pid_t) atoi(a);
+            if (copy == getppid()) {
+                _exit(BACK_TO_PARENT);
+            }
+            if (kill(copy, SIGCONT) != 0) {
                 answer("@err no copy %s", a);
                 continue;
             }

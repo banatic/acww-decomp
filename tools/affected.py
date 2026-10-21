@@ -9,7 +9,9 @@ a change to it can only change the scenes whose list names it. A change is mappe
 - a header in include/: every source in src/ that includes it;
 - a Clean source: the functions it registers (CLEAN_AS); a Clean header: those of every Clean
   source that includes it;
-- a scene's recording or expected frames: that scene.
+- a scene's recording or expected frames: that scene;
+- tools/scenes.py, when only its tables changed (scene() entries, SAVES, and constants no
+  function reads): the scenes whose entry or save changed.
 
 Anything else that runs (config/, runtime/, tools/, libs/) can change every scene, and so do
 the Native policy lists: then every scene is chosen. Text that does not run (docs, README) and
@@ -17,6 +19,7 @@ the two recordings' files change none. A scene that has no list yet is always ch
 """
 from __future__ import annotations
 
+import ast
 import pathlib
 import re
 import subprocess
@@ -57,7 +60,43 @@ def _clean_functions(path: pathlib.Path) -> set[tuple[str, int]]:
     return out
 
 
-def functions_of(paths: list[str]) -> tuple[set[tuple[str, int]] | None, set[str]]:
+def _scene_tables(text: str) -> tuple[str, dict, dict]:
+    """tools/scenes.py's code without its tables (as an AST dump), and its SCENES and SAVES."""
+    tree = ast.parse(text)
+    read = {n.id for f in ast.walk(tree) if isinstance(f, ast.FunctionDef)
+            for n in ast.walk(f) if isinstance(n, ast.Name)}
+
+    def table(node: ast.stmt) -> bool:
+        if (isinstance(node, ast.Expr) and isinstance(node.value, ast.Call)
+                and getattr(node.value.func, "id", None) == "scene"):
+            return True
+        targets = (node.targets if isinstance(node, ast.Assign) else
+                   [node.target] if isinstance(node, ast.AnnAssign) else [])
+        names = [n.id for n in targets if isinstance(n, ast.Name)]
+        return bool(names) and all(n == "SAVES" or (n.isupper() and n not in read) for n in names)
+
+    code = ast.dump(ast.Module(body=[n for n in tree.body if not table(n)], type_ignores=[]))
+    space: dict = {"__name__": "scenes_tables", "__file__": str(C.ROOT / "tools" / "scenes.py")}
+    exec(compile(text, "scenes.py", "exec"), space)  # noqa: S102 (the repository's own file)
+    return code, space["SCENES"], space["SAVES"]
+
+
+def scene_table_changes(base: str) -> set[str] | None:
+    """The scenes whose entry or save differs in tools/scenes.py since `base`, or None when
+    more than its tables changed."""
+    old = subprocess.run(["git", "show", f"{base}:tools/scenes.py"], cwd=C.ROOT, capture_output=True,
+                         text=True)
+    if old.returncode != 0:
+        return None
+    code0, scenes0, saves0 = _scene_tables(old.stdout)
+    code1, scenes1, saves1 = _scene_tables((C.ROOT / "tools" / "scenes.py").read_text(encoding="utf-8"))
+    if code0 != code1:
+        return None
+    return {name for name, sc in scenes1.items()
+            if scenes0.get(name) != sc or saves0.get(sc["save"]) != saves1.get(sc["save"])}
+
+
+def functions_of(paths: list[str], base: str = "main") -> tuple[set[tuple[str, int]] | None, set[str]]:
     """(the functions the change touches, or EVERYTHING; the scenes whose own files changed)."""
     funcs: set[tuple[str, int]] = set()
     scenes: set[str] = set()
@@ -70,6 +109,12 @@ def functions_of(paths: list[str]) -> tuple[set[tuple[str, int]] | None, set[str
             scenes.add(pathlib.PurePosixPath(rel).stem)
             continue
         if rel.startswith("runtime/recordings/"):
+            continue
+        if rel == "tools/scenes.py":
+            changed = scene_table_changes(base)
+            if changed is None:
+                return EVERYTHING, scenes
+            scenes |= changed
             continue
         if rel.startswith("src/") and rel.endswith((".c", ".cpp")):
             f = _source_function(path)
@@ -112,7 +157,7 @@ def seen_functions(listing: pathlib.Path) -> set[tuple[str, int]] | None:
 
 def select(names: list[str], base: str, scene_dir: pathlib.Path) -> list[str]:
     """The scenes of `names` a change since `base` can affect, saying why for each."""
-    funcs, own = functions_of(changed_paths(base))
+    funcs, own = functions_of(changed_paths(base), base)
     if funcs is EVERYTHING:
         print(f"affected: every scene (a change since {base} outside src/, include/ and clean/)")
         return names
