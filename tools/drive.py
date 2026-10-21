@@ -11,6 +11,7 @@ there between commands:
     python tools/drive.py town run 8 - 120,80          # touch the lower screen at 120,80
     python tools/drive.py town press A                 # A for 2 frames, then 20 frames released
     python tools/drive.py town png look.png            # the screens now
+    python tools/drive.py town gx3d frame.gx3d         # the last 3D frame and its input (runtime/gpu3d.h)
     python tools/drive.py town peek 021f3a10 16
     python tools/drive.py town snap                    # keep this moment; prints its id
     python tools/drive.py town back ID                 # return to it (as often as wanted)
@@ -290,7 +291,7 @@ def main() -> None:
         print(send(name, f"run {hold} {cmd[1]} -"))
         print(send(name, f"run {wait} - -"))
         return
-    if cmd[0] in ("png", "log", "seen") and len(cmd) > 1:
+    if cmd[0] in ("png", "log", "seen", "redraw", "video", "gx3d") and len(cmd) > 1:
         cmd[1] = str(pathlib.Path(cmd[1]).resolve())
     print(send(name, " ".join(cmd)))
 

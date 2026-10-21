@@ -39,6 +39,7 @@
 #define REG_SQRT_RESULT 0x2b4
 #define REG_SQRT_PARAM 0x2b8
 #define REG_DISP3DCNT 0x060
+#define REG_DISP_1DOT_DEPTH 0x610
 #define REG_GXFIFO 0x400
 #define REG_GXSTAT 0x600
 #define REG_RAM_COUNT 0x604
@@ -1147,6 +1148,10 @@ static void reg_write32(uint32_t offset, uint32_t value, uint32_t mask)
             st32(offset, (old & ~0x8000u & ~(mask & 0xc0000000u)) | (merged & 0xc0000000u));
             gpu3d_gxstat_write(value & mask); /* bit 15: acknowledge the matrix stack error */
             io_gx_fifo_irq_update();
+            return;
+        case REG_DISP_1DOT_DEPTH:
+            st32(offset, merged);
+            gpu3d_dot_depth_write(merged & 0xffff);
             return;
         case REG_DISP3DCNT:
             /* bits 12 (colour buffer underflow) and 13 (polygon/vertex RAM overflow) are

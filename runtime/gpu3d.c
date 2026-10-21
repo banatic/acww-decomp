@@ -1,9 +1,10 @@
 /* The DS 3D hardware; see gpu3d.h. Arithmetic follows GBATEK's "DS 3D" chapters: matrices
  * are 1.19.12 fixed point multiplied in 64 bits and truncated with an arithmetic shift,
  * vertices 1.3.12, normals and light vectors 1.0.9, texture coordinates 1.11.4, colours
- * 5 bits per component expanded to 6 for blending. Where GBATEK does not say how the hardware
- * rounds (clipping, the rasteriser's edge and span interpolation), this file uses one
- * documented rule throughout so that the same command stream always gives the same frame. */
+ * 5 bits per component. Where GBATEK is silent (lighting, clipping, the viewport division,
+ * the rasteriser's edges, interpolation and fill rules, anti-aliasing coverage), this file
+ * follows what hardware tests have shown, as melonDS's notes describe them: the steps keep
+ * the hardware's precision, so products wrap at 32 bits where the hardware's multipliers do. */
 #include "gpu3d.h"
 
 #include <stdlib.h>
@@ -22,38 +23,58 @@
 #define FIFO_SIZE 65536      /* entries the model can hold while SWAP_BUFFERS stalls the engine */
 #define FIFO_HW 256          /* the hardware FIFO's depth, as GXSTAT reports it */
 
-/* A CPU vertex in clip space, carrying the attributes the rasteriser interpolates. */
-typedef struct ClipVertex {
-    int32_t x, y, z, w; /* 1.19.12 clip coordinates */
-    int32_t r, g, b;    /* 5-bit vertex colour */
-    int32_t s, t;       /* 1.11.4 texture coordinates, after the transformation mode */
-} ClipVertex;
+/* 32-bit arithmetic that wraps, as the hardware's does. */
+static int32_t mul32(int32_t a, int32_t b)
+{
+    return (int32_t) ((uint32_t) a * (uint32_t) b);
+}
 
-/* A vertex of the rendering engine's list: clip coordinates kept for the depth value, screen
- * position after the viewport transformation. */
-typedef struct Vertex {
-    int32_t x, y, z, w;
-    int32_t sx, sy;  /* integer screen pixel */
-    int32_t r, g, b; /* 6-bit colour (GBATEK's 5-to-6 expansion) */
-    int32_t s, t;
-    int32_t depth; /* 24-bit z (Z-buffering) or w (W-buffering) */
-    uint32_t w16;  /* w reduced to 16 bits for perspective interpolation */
-} Vertex;
+static int32_t add32(int32_t a, int32_t b)
+{
+    return (int32_t) ((uint32_t) a + (uint32_t) b);
+}
+
+static int32_t sub32(int32_t a, int32_t b)
+{
+    return (int32_t) ((uint32_t) a - (uint32_t) b);
+}
+
+/* The low `bits` bits of v as a signed number. */
+static int32_t sext(uint32_t v, int bits)
+{
+    return (int32_t) (v << (32 - bits)) >> (32 - bits);
+}
+
+/* A vertex of the geometry engine: clip coordinates, the colour with 12 fractional bits (it
+ * keeps them through clipping), the texture coordinates; once it is part of a polygon, its
+ * screen position and its 9-bit colour. */
+typedef struct GVertex {
+    int32_t pos[4];
+    int32_t col[3];
+    int16_t tex[2];
+    uint8_t clipped; /* made by clipping */
+    int32_t sx, sy;
+    int32_t rgb[3];
+} GVertex;
 
 typedef struct Polygon {
     int count;
-    Vertex v[MAX_POLY_VERTICES];
+    GVertex v[MAX_POLY_VERTICES];
+    int32_t z[MAX_POLY_VERTICES]; /* the depth value: z/w scaled, or w */
+    int32_t w[MAX_POLY_VERTICES]; /* w normalised to 16 bits for the interpolators */
     uint32_t attr, texparam, pltt;
-    int translucent; /* alpha 1-30 or an A3I5 / A5I3 texture: rendered in the second pass */
-    int ytop, ybot;  /* screen rows, ybot exclusive (ytop == ybot: a one-line polygon) */
-    int order;       /* submission index, to keep the sort stable */
+    uint8_t wbuffer, facing, translucent, shadow_mask, shadow, degenerate;
+    int vtop, vbot, ytop, ybot; /* the top and bottom vertices and lines */
+    uint32_t key;               /* the rendering order: translucent, bottom line, top line */
+    int order;
+    uint32_t command; /* the list's command that completed it (for the check) */
 } Polygon;
 
 /* The two polygon lists: the geometry engine fills one while the other is rendered. */
 typedef struct PolygonList {
     Polygon *poly;
     int polygons, vertices; /* the RAM_COUNT values */
-    int wbuffer, manual_sort;
+    int manual_sort;
 } PolygonList;
 
 /* Geometry engine state --------------------------------------------------------------------- */
@@ -75,26 +96,35 @@ static struct {
     int proj_sp, pos_sp, tex_sp;
     int stack_error;
 
-    int32_t vx, vy, vz;   /* the current vertex, 16-bit components */
-    int32_t cr, cg, cb;   /* the current vertex colour, 5 bits each */
-    int32_t raw_s, raw_t; /* the last TEXCOORD */
-    int32_t s, t;         /* texture coordinates after transformation */
-    int32_t normal[3];
-    uint32_t polyattr, polyattr_next, texparam, pltt;
-    int32_t light_dir[4][3], light_color[4][3];
-    int32_t dif[3], amb[3], spe[3], emi[3];
+    int16_t vtx[3];     /* the current vertex */
+    uint8_t color[3];   /* the current vertex colour, 5 bits each */
+    int16_t raw_st[2];  /* the last TEXCOORD */
+    int16_t st[2];      /* texture coordinates after the transformation */
+    uint32_t polyattr;  /* the attributes of the polygons being given (latched by BEGIN_VTXS) */
+    uint32_t polyattr_next, texparam, pltt;
+    int16_t light_dir[4][3]; /* negated, through the vector matrix, 11 bits */
+    int32_t spec_recip[4];   /* the reciprocal the specular level is scaled by */
+    uint8_t light_color[4][3];
+    uint8_t dif[3], amb[3], spe[3], emi[3];
     int use_shininess;
     uint8_t shininess[128];
     uint32_t viewport;
+    int32_t vp_x, vp_top, vp_w, vp_h;
+    uint32_t light_param[4];   /* the last LIGHT_VECTOR parameters, and the vector matrix */
+    int32_t light_vecm[4][16]; /* they went through (for the check's capture) */
+    uint32_t dot_limit;        /* DISP_1DOT_DEPTH as a w */
 
-    int in_vtxs, primitive, strip_count;
-    ClipVertex strip[4]; /* the vertices of the polygon being assembled */
+    int primitive;        /* of the last BEGIN_VTXS */
+    GVertex in[4];        /* the vertices of the polygon being given */
+    int in_count;         /* how many of them are given */
+    uint32_t consecutive; /* polygons of the strip so far */
+    int last_strip;       /* the strip's previous polygon in the list, or -1 */
 
     int swap_pending;
-    uint32_t swap_param, swap_param_next;
+    uint32_t flush_attr; /* the parameter of the last SWAP_BUFFERS */
     int box_result;
     int32_t pos_result[4];
-    int32_t vec_result[3];
+    int16_t vec_result[3];
 } ge;
 
 static PolygonList lists[2];
@@ -104,11 +134,6 @@ static int geometry_list; /* the list the geometry engine writes; the other is r
 static uint64_t count_commands, count_polygons, count_dropped, count_swaps, count_frames, count_fifo_lost;
 static double render_seconds;
 static int trace_gx; /* RUN_TRACE contains "gx": a line per rendered list on stderr */
-
-static int sign_extend(uint32_t v, int bits)
-{
-    return (int) (v << (32 - bits)) >> (32 - bits);
-}
 
 /* Matrices ---------------------------------------------------------------------------------- */
 
@@ -141,7 +166,7 @@ static void matrix_translate(int32_t *c, const int32_t *t)
 {
     for (int col = 0; col < 4; col++) {
         int64_t sum = (int64_t) t[0] * c[0 * 4 + col] + (int64_t) t[1] * c[1 * 4 + col] + (int64_t) t[2] * c[2 * 4 + col];
-        c[3 * 4 + col] += (int32_t) (sum >> 12);
+        c[3 * 4 + col] = add32(c[3 * 4 + col], (int32_t) (sum >> 12));
     }
 }
 
@@ -243,7 +268,7 @@ static void matrix_pop(uint32_t param)
         }
         memcpy(ge.tex, ge.tex_stack, sizeof(ge.tex));
     } else {
-        ge.pos_sp = (ge.pos_sp - sign_extend(param, 6)) & 63;
+        ge.pos_sp = (ge.pos_sp - sext(param, 6)) & 63;
         if (ge.pos_sp > 30) {
             ge.stack_error = 1;
         }
@@ -289,105 +314,218 @@ static void matrix_restore(uint32_t param)
 
 /* Lighting ---------------------------------------------------------------------------------- */
 
-/* A 1.0.9 vector (three 10-bit fields) through the 3x3 part of the vector matrix: the result
- * keeps 9 fractional bits, so a unit vector stays near 512. */
-static void transform_vector(uint32_t param, int32_t *out)
+/* The three 10-bit fields of a 1.0.9 vector. */
+static void unpack_vector(uint32_t param, int32_t *v)
 {
-    int32_t v[3] = {sign_extend(param & 0x3ff, 10), sign_extend((param >> 10) & 0x3ff, 10),
-                    sign_extend((param >> 20) & 0x3ff, 10)};
-    for (int col = 0; col < 3; col++) {
-        int64_t sum =
-            (int64_t) v[0] * ge.vec[0 * 4 + col] + (int64_t) v[1] * ge.vec[1 * 4 + col] + (int64_t) v[2] * ge.vec[2 * 4 + col];
-        out[col] = (int32_t) (sum >> 12);
-    }
+    v[0] = sext(param & 0x3ff, 10);
+    v[1] = sext((param >> 10) & 0x3ff, 10);
+    v[2] = sext((param >> 20) & 0x3ff, 10);
 }
 
+/* Column `col` of v times the 3x3 part of the vector matrix, as the hardware's 32-bit sum. */
+static int32_t vector_dot(const int32_t *v, int col)
+{
+    return add32(add32(mul32(v[0], ge.vec[col]), mul32(v[1], ge.vec[4 + col])), mul32(v[2], ge.vec[8 + col]));
+}
+
+/* LIGHT_VECTOR: the direction through the vector matrix, negated and kept to 11 bits, and the
+ * reciprocal that scales the specular level, from the direction's z with 10 fractional bits. */
 static void set_light_vector(uint32_t param)
 {
-    transform_vector(param, ge.light_dir[param >> 30]);
+    int l = (int) (param >> 30);
+    int32_t d[3];
+    ge.light_param[l] = param;
+    memcpy(ge.light_vecm[l], ge.vec, sizeof(ge.vec));
+    unpack_vector(param, d);
+    for (int c = 0; c < 3; c++) {
+        ge.light_dir[l][c] = (int16_t) sext((uint32_t) - (vector_dot(d, c) >> 12), 11);
+    }
+    int32_t den = 0x200 - sext((uint32_t) vector_dot(d, 2) >> 12, 11);
+    ge.spec_recip[l] = den ? (1 << 18) / den : 0;
 }
 
-/* NORMAL: the vertex colour from the four lights (GBATEK, "DS 3D Polygon Light Parameters").
- * Levels are 0..255 fractions; the products of 5-bit colours are reduced back to 5 bits. */
+/* NORMAL: the vertex colour from the four lights. The normal goes through the vector matrix
+ * to 11 bits; per light, the products with the light direction lose 9 bits before they are
+ * summed; a positive sum gives the diffuse level (11 bits, its products with the colours kept
+ * to 20 bits) and, with the normal's z added, the specular level: its square in 10 bits times
+ * the light's reciprocal, less one, clamped to 9 bits (or through the shininess table). The
+ * colour is the sum with 14 fractional bits, saturated at 31. */
 static void set_normal(uint32_t param)
 {
     int32_t n[3];
+    unpack_vector(param, n);
     if ((ge.texparam >> 30) == 2) {
         /* normal-source texture coordinates: the untransformed normal through the texture
-           matrix; the 9+12 fractional bits are dropped entirely, the SDK scales the matrix
-           by 16 so the result lands in 1.11.4 */
-        int32_t raw[3] = {sign_extend(param & 0x3ff, 10), sign_extend((param >> 10) & 0x3ff, 10),
-                          sign_extend((param >> 20) & 0x3ff, 10)};
-        int64_t s = (int64_t) raw[0] * ge.tex[0] + (int64_t) raw[1] * ge.tex[4] + (int64_t) raw[2] * ge.tex[8];
-        int64_t t = (int64_t) raw[0] * ge.tex[1] + (int64_t) raw[1] * ge.tex[5] + (int64_t) raw[2] * ge.tex[9];
-        ge.s = (int16_t) (ge.raw_s + (int32_t) (s >> 21));
-        ge.t = (int16_t) (ge.raw_t + (int32_t) (t >> 21));
+           matrix, 9 + 12 fractional bits dropped (the SDK scales the matrix by 16) */
+        int64_t s = (int64_t) n[0] * ge.tex[0] + (int64_t) n[1] * ge.tex[4] + (int64_t) n[2] * ge.tex[8];
+        int64_t t = (int64_t) n[0] * ge.tex[1] + (int64_t) n[1] * ge.tex[5] + (int64_t) n[2] * ge.tex[9];
+        ge.st[0] = (int16_t) (ge.raw_st[0] + (int32_t) (s >> 21));
+        ge.st[1] = (int16_t) (ge.raw_st[1] + (int32_t) (t >> 21));
     }
-    transform_vector(param, n);
-    memcpy(ge.normal, n, sizeof(n));
-    int32_t color[3] = {ge.emi[0], ge.emi[1], ge.emi[2]};
+    int32_t nt[3];
+    for (int c = 0; c < 3; c++) {
+        nt[c] = sext((uint32_t) vector_dot(n, c) >> 12, 11);
+    }
+    uint32_t acc[3] = {(uint32_t) ge.emi[0] << 14, (uint32_t) ge.emi[1] << 14, (uint32_t) ge.emi[2] << 14};
     for (int i = 0; i < 4; i++) {
         if ((ge.polyattr & (1u << i)) == 0) {
             continue;
         }
-        const int32_t *l = ge.light_dir[i];
-        int32_t diffuse = (int32_t) (-((int64_t) l[0] * n[0] + (int64_t) l[1] * n[1] + (int64_t) l[2] * n[2]) >> 10);
-        if (diffuse < 0) {
-            diffuse = 0;
-        } else if (diffuse > 255) {
-            diffuse = 255;
-        }
-        /* the half vector between the light and the line of sight (0,0,-1), unnormalised */
-        int32_t shine = -(
-            int32_t) (((int64_t) (l[0] >> 1) * n[0] + (int64_t) (l[1] >> 1) * n[1] + (int64_t) ((l[2] - 0x200) >> 1) * n[2]) >>
-                      10);
-        if (shine < 0) {
-            shine = 0;
-        } else if (shine > 255) {
-            shine = (0x100 - shine) & 0xff; /* the hardware keeps 8 bits of an overflow */
-        }
-        shine = ((shine * shine) >> 7) - 0x100; /* the hardware's 2cos^2-1 approximation */
-        if (shine < 0) {
-            shine = 0;
-        }
-        if (ge.use_shininess) {
-            shine = ge.shininess[shine >> 1];
-        }
-        for (int c = 0; c < 3; c++) {
-            int32_t lc = ge.light_color[i][c];
-            color[c] += (ge.spe[c] * lc * shine) >> 13;
-            color[c] += (ge.dif[c] * lc * diffuse) >> 13;
-            color[c] += (ge.amb[c] * lc) >> 5;
-            if (color[c] > 31) {
-                color[c] = 31;
+        const int16_t *l = ge.light_dir[i];
+        const uint8_t *lc = ge.light_color[i];
+        int32_t dot = add32(add32(mul32(l[0], nt[0]) >> 9, mul32(l[1], nt[1]) >> 9), mul32(l[2], nt[2]) >> 9);
+        int32_t shine = 0;
+        if (dot > 0) {
+            int32_t diffuse = sext((uint32_t) dot, 11);
+            for (int c = 0; c < 3; c++) {
+                acc[c] += (uint32_t) mul32(ge.dif[c] * lc[c], diffuse) & 0xfffff;
+            }
+            int32_t h = sext((uint32_t) add32(dot, nt[2]), 11);
+            h = (mul32(h, h) >> 10) & 0x3ff;
+            shine = (mul32(h, ge.spec_recip[i]) >> 8) - 0x200;
+            if (shine < 0) {
+                shine = 0;
+            } else {
+                shine = sext((uint32_t) shine, 14);
+                shine = shine < 0 ? 0 : shine > 0x1ff ? 0x1ff : shine;
             }
         }
+        if (ge.use_shininess) {
+            shine = ge.shininess[shine >> 2] << 1;
+        }
+        for (int c = 0; c < 3; c++) {
+            acc[c] += (uint32_t) ((ge.spe[c] * shine + (ge.amb[c] << 9)) * lc[c]);
+        }
     }
-    ge.cr = color[0];
-    ge.cg = color[1];
-    ge.cb = color[2];
+    for (int c = 0; c < 3; c++) {
+        ge.color[c] = (uint8_t) ((acc[c] >> 14) > 31 ? 31 : acc[c] >> 14);
+    }
 }
 
 /* Texture coordinates ----------------------------------------------------------------------- */
 
 static void set_texcoord(uint32_t param)
 {
-    ge.raw_s = (int16_t) (param & 0xffff);
-    ge.raw_t = (int16_t) (param >> 16);
+    ge.raw_st[0] = (int16_t) (param & 0xffff);
+    ge.raw_st[1] = (int16_t) (param >> 16);
     if ((ge.texparam >> 30) == 1) {
-        /* texcoord source: (s t 1/16 1/16) through the first two columns, 4+12 fractional
-           bits back to 4; the 1/16 constants make m[8] and m[12] plain additions */
-        int64_t s = (int64_t) ge.raw_s * ge.tex[0] + (int64_t) ge.raw_t * ge.tex[4] + ge.tex[8] + ge.tex[12];
-        int64_t t = (int64_t) ge.raw_s * ge.tex[1] + (int64_t) ge.raw_t * ge.tex[5] + ge.tex[9] + ge.tex[13];
-        ge.s = (int16_t) (s >> 12);
-        ge.t = (int16_t) (t >> 12);
+        /* texcoord source: (s t 1/16 1/16) through the first two columns, in the hardware's
+           32-bit sum; the 1/16 constants make m[8] and m[12] plain additions */
+        for (int c = 0; c < 2; c++) {
+            int32_t sum = add32(add32(mul32(ge.raw_st[0], ge.tex[c]), mul32(ge.raw_st[1], ge.tex[4 + c])),
+                                add32(ge.tex[8 + c], ge.tex[12 + c]));
+            ge.st[c] = (int16_t) (sum >> 12);
+        }
     } else {
-        ge.s = ge.raw_s;
-        ge.t = ge.raw_t;
+        ge.st[0] = ge.raw_st[0];
+        ge.st[1] = ge.raw_st[1];
     }
 }
 
-/* Vertices, clipping and the polygon list --------------------------------------------------- */
+/* Clipping ---------------------------------------------------------------------------------- */
+
+/* The point where the edge from `out` (outside plane `side` * axis `c`) to `in` (inside)
+ * crosses the plane; the distances are the hardware's 32-bit ones and each attribute moves by
+ * its difference times the outer distance over the difference of the distances. */
+static void clip_edge(GVertex *r, const GVertex *out, const GVertex *in, int c, int side, int attribs)
+{
+    int64_t num = sub32(out->pos[3], mul32(side, out->pos[c]));
+    int32_t den = (int32_t) (num - sub32(in->pos[3], mul32(side, in->pos[c])));
+    *r = *out;
+    if (den == 0) {
+        den = 1; /* cannot happen: one end is inside, the other not */
+    }
+#define CLIP_LERP(f) (out->f + ((int64_t) sub32(in->f, out->f) * num) / den)
+    for (int k = 0; k < 4; k++) {
+        if (k != c) {
+            r->pos[k] = (int32_t) CLIP_LERP(pos[k]);
+        }
+    }
+    r->pos[c] = mul32(side, r->pos[3]);
+    if (attribs) {
+        for (int k = 0; k < 3; k++) {
+            r->col[k] = (int32_t) CLIP_LERP(col[k]);
+        }
+        for (int k = 0; k < 2; k++) {
+            r->tex[k] = (int16_t) (out->tex[k] + ((int64_t) (in->tex[k] - out->tex[k]) * num) / den);
+        }
+    }
+#undef CLIP_LERP
+    r->clipped = 1;
+}
+
+/* Both planes of axis `c`, the far one (+) first: each vertex outside is replaced by the
+ * crossings of its edges to its inside neighbours. The first `start` vertices (shared with the
+ * previous polygon of a strip) are not tested. Returns the new count, 0 when the polygon is
+ * rejected: one that crosses the far plane without attribute bit 12. */
+static int clip_axis(GVertex *v, int n, int start, int c, uint32_t attr, int attribs)
+{
+    GVertex tmp[16];
+    int m = start;
+    for (int i = 0; i < start; i++) {
+        tmp[i] = v[i];
+    }
+    for (int i = start; i < n; i++) {
+        int prev = i ? i - 1 : n - 1, next = i + 1 < n ? i + 1 : 0;
+        if (v[i].pos[c] > v[i].pos[3]) {
+            if (c == 2 && (attr & (1u << 12)) == 0) {
+                return 0;
+            }
+            if (v[prev].pos[c] <= v[prev].pos[3]) {
+                clip_edge(&tmp[m++], &v[i], &v[prev], c, 1, attribs);
+            }
+            if (v[next].pos[c] <= v[next].pos[3]) {
+                clip_edge(&tmp[m++], &v[i], &v[next], c, 1, attribs);
+            }
+        } else {
+            tmp[m++] = v[i];
+        }
+        if (m > 14) {
+            return 0;
+        }
+    }
+    n = m;
+    m = start;
+    for (int i = start; i < n; i++) {
+        int prev = i ? i - 1 : n - 1, next = i + 1 < n ? i + 1 : 0;
+        if (tmp[i].pos[c] < -tmp[i].pos[3]) {
+            if (tmp[prev].pos[c] >= -tmp[prev].pos[3]) {
+                clip_edge(&v[m++], &tmp[i], &tmp[prev], c, -1, attribs);
+            }
+            if (tmp[next].pos[c] >= -tmp[next].pos[3]) {
+                clip_edge(&v[m++], &tmp[i], &tmp[next], c, -1, attribs);
+            }
+        } else {
+            v[m++] = tmp[i];
+        }
+        if (m > MAX_POLY_VERTICES) {
+            return 0;
+        }
+    }
+    /* the colours' fractional bits are set again after each axis */
+    for (int i = 0; i < m; i++) {
+        for (int k = 0; k < 3; k++) {
+            v[i].col[k] = (v[i].col[k] & ~0xfff) + 0xfff;
+        }
+    }
+    return m;
+}
+
+/* Z, then Y, then X. */
+static int clip_polygon(GVertex *v, int n, int start, uint32_t attr, int attribs)
+{
+    for (int c = 2; c >= 0 && n > 0; c--) {
+        n = clip_axis(v, n, start, c, attr, attribs);
+    }
+    return n;
+}
+
+/* Vertices and the polygon list ------------------------------------------------------------- */
+
+/* The check's capture (below): the commands of the current list so far. */
+static struct {
+    uint32_t commands;
+} capture_count;
 
 static void box_or_polygon_overflow(void)
 {
@@ -396,268 +534,276 @@ static void box_or_polygon_overflow(void)
     io_reg_store(0x060, io_reg(0x04000060) | (1u << 13));
 }
 
-/* The intersection of edge a-b with a clip plane, where `da` (>= 0) and `db` (< 0) are the
- * signed distances of the ends from the plane in clip units. Attributes follow linearly. */
-static ClipVertex clip_intersect(const ClipVertex *a, const ClipVertex *b, int64_t da, int64_t db)
+static int fits32(int64_t v)
 {
-    ClipVertex r;
-    int64_t den = da - db;
-#define LERP(f) r.f = (int32_t) (a->f + ((int64_t) (b->f - a->f) * da) / den)
-    LERP(x);
-    LERP(y);
-    LERP(z);
-    LERP(w);
-    LERP(r);
-    LERP(g);
-    LERP(b);
-    LERP(s);
-    LERP(t);
-#undef LERP
-    return r;
+    return ((v >> 31) ^ (v >> 63)) == 0;
 }
 
-/* Sutherland-Hodgman against one plane: component `axis` (0 x, 1 y, 2 z) must satisfy
- * c <= w (`side` +1) or c >= -w (`side` -1). Returns the new vertex count. */
-static int clip_plane(ClipVertex *in, int n, int axis, int side, ClipVertex *out)
-{
-    int m = 0;
-    for (int i = 0; i < n; i++) {
-        const ClipVertex *a = &in[i], *b = &in[(i + 1) % n];
-        int32_t ca = axis == 0 ? a->x : axis == 1 ? a->y : a->z;
-        int32_t cb = axis == 0 ? b->x : axis == 1 ? b->y : b->z;
-        int64_t da = side > 0 ? (int64_t) a->w - ca : (int64_t) a->w + ca;
-        int64_t db = side > 0 ? (int64_t) b->w - cb : (int64_t) b->w + cb;
-        if (da >= 0) {
-            out[m++] = *a;
-        }
-        if ((da >= 0) != (db >= 0)) {
-            /* the edge crosses the plane: the intersection joins the output */
-            if (da >= 0) {
-                out[m++] = clip_intersect(a, b, da, db);
-            } else {
-                out[m++] = clip_intersect(b, a, db, da);
-            }
-        }
-    }
-    return m;
-}
-
-static int32_t clamp_i32(int64_t v, int32_t lo, int32_t hi)
-{
-    return v < lo ? lo : v > hi ? hi : (int32_t) v;
-}
-
-static int32_t expand6(int32_t c5)
-{
-    return c5 ? c5 * 2 + 1 : 0;
-}
-
-/* The highest set bit position + 1 of an unsigned value. */
-static int bit_width(uint32_t v)
-{
-    int n = 0;
-    while (v) {
-        n++;
-        v >>= 1;
-    }
-    return n;
-}
-
-/* A complete polygon in clip space: culling, clipping, the viewport transformation, then the
+/* A complete polygon of the vertices given: culling, clipping, the viewport, then the
  * polygon and vertex RAM of the geometry engine's list. */
-static void submit_polygon(ClipVertex *cv, int n)
+static void submit_polygon(void)
 {
     PolygonList *list = &lists[geometry_list];
     uint32_t attr = ge.polyattr;
+    int n = (ge.primitive & 1) ? 4 : 3;
+    const GVertex *in = ge.in;
     count_polygons++;
 
-    /* Facing: the sign of the (x, y, w) triple product of the first three vertices, which is
-       the screen winding without a division. A zero (a line segment) is always rendered. */
-    int64_t ax = (int64_t) cv[1].x - cv[0].x, ay = (int64_t) cv[1].y - cv[0].y, aw = (int64_t) cv[1].w - cv[0].w;
-    int64_t bx = (int64_t) cv[2].x - cv[0].x, by = (int64_t) cv[2].y - cv[0].y, bw = (int64_t) cv[2].w - cv[0].w;
+    /* Facing: the normal of the first three vertices in (x, y, w), reduced by 4 bits at a
+       time until it fits 32 bits, against the second vertex. Negative faces the viewer. */
+    int64_t ax = sub32(in[0].pos[0], in[1].pos[0]), ay = sub32(in[0].pos[1], in[1].pos[1]),
+            aw = sub32(in[0].pos[3], in[1].pos[3]);
+    int64_t bx = sub32(in[2].pos[0], in[1].pos[0]), by = sub32(in[2].pos[1], in[1].pos[1]),
+            bw = sub32(in[2].pos[3], in[1].pos[3]);
     int64_t nx = ay * bw - aw * by, ny = aw * bx - ax * bw, nz = ax * by - ay * bx;
-    while ((nx != (int32_t) nx) || (ny != (int32_t) ny) || (nz != (int32_t) nz)) {
+    while (!fits32(nx) || !fits32(ny) || !fits32(nz)) {
         nx >>= 4;
         ny >>= 4;
         nz >>= 4;
     }
-    int64_t dot = nx * cv[0].x + ny * cv[0].y + nz * cv[0].w;
-    if (dot > 0 && (attr & (1u << 7)) == 0) {
-        return; /* a front face, hidden */
-    }
-    if (dot < 0 && (attr & (1u << 6)) == 0) {
-        return; /* a back face, hidden */
+    int64_t dot = (int64_t) ((uint64_t) ((int64_t) in[1].pos[0] * nx) + (uint64_t) ((int64_t) in[1].pos[1] * ny) +
+                             (uint64_t) ((int64_t) in[1].pos[3] * nz));
+    if ((dot < 0 && (attr & (1u << 7)) == 0) || (dot > 0 && (attr & (1u << 6)) == 0)) {
+        ge.last_strip = -1; /* a hidden front or back face; a line (0) is always drawn */
+        return;
     }
 
-    /* Far-plane intersecting polygons are dropped unless attribute bit 12 allows clipping. */
-    int outside = 0;
-    for (int i = 0; i < n; i++) {
-        if (cv[i].z > cv[i].w && (attr & (1u << 12)) == 0) {
-            return;
+    /* A strip's polygon shares two vertices with the previous one when that one kept its
+       vertex count through clipping and those two vertices are its own, not made by
+       clipping: they are taken as they are, neither clipped nor counted again. */
+    GVertex cv[16];
+    int start = 0, last_n = 0, id0 = 0, id1 = 0;
+    const Polygon *last = NULL;
+    if (ge.primitive >= 2 && ge.last_strip >= 0) {
+        if (ge.primitive == 2) {
+            id0 = (ge.consecutive & 1) ? 2 : 0;
+            id1 = (ge.consecutive & 1) ? 1 : 2;
+            last_n = 3;
+        } else {
+            id0 = 3;
+            id1 = 2;
+            last_n = 4;
         }
-        if (cv[i].x < -cv[i].w || cv[i].x > cv[i].w || cv[i].y < -cv[i].w || cv[i].y > cv[i].w || cv[i].z < -cv[i].w ||
-            cv[i].z > cv[i].w) {
-            outside = 1;
+        const Polygon *lp = &list->poly[ge.last_strip];
+        if (lp->count == last_n && !lp->v[id0].clipped && !lp->v[id1].clipped) {
+            cv[0] = lp->v[id0];
+            cv[1] = lp->v[id1];
+            start = 2;
+            last = lp;
         }
     }
-    ClipVertex a[MAX_POLY_VERTICES], b[MAX_POLY_VERTICES];
-    memcpy(a, cv, (size_t) n * sizeof(ClipVertex));
-    if (outside) {
-        n = clip_plane(a, n, 2, +1, b);
-        n = clip_plane(b, n, 2, -1, a);
-        n = clip_plane(a, n, 1, +1, b);
-        n = clip_plane(b, n, 1, -1, a);
-        n = clip_plane(a, n, 0, +1, b);
-        n = clip_plane(b, n, 0, -1, a);
-        if (n < 3) {
-            return; /* nothing of it is in the view volume */
-        }
+    for (int i = start; i < n; i++) {
+        cv[i] = in[i];
+    }
+    n = clip_polygon(cv, n, start, attr, 1);
+    if (n == 0) {
+        ge.last_strip = -1;
+        return;
     }
     if (list->polygons >= POLYGON_RAM || list->vertices + n > VERTEX_RAM) {
         box_or_polygon_overflow();
         count_dropped++;
+        ge.last_strip = -1;
         return;
     }
 
-    Polygon *p = &list->poly[list->polygons];
-    memset(p, 0, sizeof(*p));
+    /* The viewport: w kept to 24 bits, the division done by a 32-bit divider (a w above
+       16 bits loses one bit), the screen position in 9 and 8 bits. */
+    for (int i = start; i < n; i++) {
+        GVertex *v = &cv[i];
+        v->pos[3] &= 0xffffff;
+        uint32_t w = (uint32_t) v->pos[3], px = 0, py = 0;
+        if (w != 0) {
+            px = (uint32_t) v->pos[0] + w;
+            py = w - (uint32_t) v->pos[1];
+            uint32_t den = w;
+            if (w > 0xffff) {
+                px >>= 1;
+                py >>= 1;
+                den >>= 1;
+            }
+            den <<= 1;
+            px = (px * (uint32_t) ge.vp_w) / den + (uint32_t) ge.vp_x;
+            py = (py * (uint32_t) ge.vp_h) / den + (uint32_t) ge.vp_top;
+        }
+        v->sx = (int32_t) (px & 0x1ff);
+        v->sy = (int32_t) (py & 0xff);
+    }
+
+    /* A polygon on one dot is dropped when all its vertices are farther than DISP_1DOT_DEPTH,
+       unless attribute bit 13 asks to draw it. */
+    if ((attr & (1u << 13)) == 0) {
+        int one_dot = 1, behind = 1;
+        for (int i = 0; i < n; i++) {
+            if (cv[i].sx != cv[0].sx || cv[i].sy != cv[0].sy) {
+                one_dot = 0;
+                break;
+            }
+            if ((uint32_t) cv[i].pos[3] <= ge.dot_limit) {
+                behind = 0;
+                break;
+            }
+        }
+        if (one_dot && behind) {
+            ge.last_strip = -1;
+            return;
+        }
+    }
+
+    int index = list->polygons++;
+    Polygon *p = &list->poly[index];
     p->count = n;
     p->attr = attr;
     p->texparam = ge.texparam;
     p->pltt = ge.pltt;
-    p->order = list->polygons;
+    p->order = index;
+    p->command = capture_count.commands;
+    p->facing = dot <= 0;
     uint32_t alpha = (attr >> 16) & 31, format = (ge.texparam >> 26) & 7;
     p->translucent = (alpha > 0 && alpha < 31) || format == 1 || format == 6;
+    p->shadow_mask = (attr & 0x3f000030u) == 0x30;
+    p->shadow = (attr & 0x30) == 0x30 && !p->shadow_mask;
+    p->degenerate = 0;
+    if (last != NULL && n != last_n) {
+        list->vertices += 2; /* the shared vertices are copied into this polygon's */
+    }
+    list->vertices += n - start;
+    for (int i = 0; i < n; i++) {
+        GVertex *v = &p->v[i];
+        if (i < start) {
+            *v = last->v[i == 0 ? id0 : id1]; /* as the previous polygon has it */
+            continue;
+        }
+        *v = cv[i];
+        for (int k = 0; k < 3; k++) {
+            int32_t c5 = v->col[k] >> 12;
+            v->rgb[k] = c5 ? (c5 << 4) + 0xf : 0; /* 9 bits */
+        }
+    }
 
-    /* The viewport: X1,Y1 are the lower-left corner in 3D terms, Y2 the top. */
-    int32_t vx1 = ge.viewport & 0xff, vy1 = (ge.viewport >> 8) & 0xff, vx2 = (ge.viewport >> 16) & 0xff,
-            vy2 = ge.viewport >> 24;
-    int32_t vw = vx2 - vx1 + 1, vh = vy2 - vy1 + 1, vtop = 191 - vy2;
-    uint32_t wmax = 0;
-    p->ytop = SCREEN_H;
-    p->ybot = 0;
+    /* The top vertex (the first on the top line) and the bottom one (the rightmost on the
+       bottom line); w is normalised to 16 bits in steps of 4 bits, up or down. */
+    int ytop = SCREEN_H, ybot = 0, xbot = 0, wsize = 0;
+    p->vtop = p->vbot = 0;
     for (int i = 0; i < n; i++) {
-        Vertex *v = &p->v[i];
-        v->x = a[i].x;
-        v->y = a[i].y;
-        v->z = a[i].z;
-        v->w = a[i].w;
-        v->r = expand6(clamp_i32(a[i].r, 0, 31));
-        v->g = expand6(clamp_i32(a[i].g, 0, 31));
-        v->b = expand6(clamp_i32(a[i].b, 0, 31));
-        v->s = a[i].s;
-        v->t = a[i].t;
-        int64_t w = v->w;
-        if (w <= 0) {
-            /* only a degenerate polygon reaches here (every clipped vertex has w >= |z|) */
-            v->sx = vx1;
-            v->sy = vtop;
-            v->depth = 0;
-            v->w = 1;
+        const GVertex *v = &p->v[i];
+        if (v->sy < ytop) {
+            ytop = v->sy;
+            p->vtop = i;
+        }
+        if (v->sy > ybot || (v->sy == ybot && v->sx > xbot)) {
+            xbot = v->sx;
+            ybot = v->sy;
+            p->vbot = i;
+        }
+        uint32_t w = (uint32_t) v->pos[3];
+        if (w == 0) {
+            p->degenerate = 1;
+        }
+        while (wsize < 32 && (w >> wsize) != 0) {
+            wsize += 4;
+        }
+    }
+    p->ytop = ytop;
+    p->ybot = ybot;
+    if (ybot > SCREEN_H) {
+        p->degenerate = 1;
+    }
+    p->key = ((uint32_t) ybot << 8) | (uint32_t) ytop | (p->translucent ? 0x10000u : 0);
+    p->wbuffer = (ge.flush_attr >> 1) & 1;
+    for (int i = 0; i < n; i++) {
+        uint32_t w = (uint32_t) p->v[i].pos[3], wn, wback;
+        if (wsize < 16) {
+            wn = w << (16 - wsize);
+            wback = wn >> (16 - wsize);
         } else {
-            /* x == w maps to vx2 + 1 and y == -w to 192: the right and bottom edges of a
-               polygon are not drawn, so a full-screen polygon covers exactly 256 x 192 */
-            v->sx = clamp_i32(((int64_t) (v->x + w) * vw) / (w * 2) + vx1, 0, SCREEN_W);
-            v->sy = clamp_i32(((int64_t) (-v->y + w) * vh) / (w * 2) + vtop, 0, SCREEN_H);
-            if (list->wbuffer) {
-                v->depth = (int32_t) (w & 0xffffff);
-            } else {
-                /* GBATEK: Z = ((Z * 0x4000 / W) + 0x3FFF) * 0x200, within 24 bits */
-                v->depth = clamp_i32((((int64_t) v->z * 0x4000) / w + 0x3fff) * 0x200, 0, 0xffffff);
-            }
+            wn = w >> (wsize - 16);
+            wback = wn << (wsize - 16);
         }
-        if ((uint32_t) v->w > wmax) {
-            wmax = (uint32_t) v->w;
+        int32_t z;
+        if (p->wbuffer) {
+            z = (int32_t) wback;
+        } else if (w != 0) {
+            /* GBATEK: ((z * 0x4000 / w) + 0x3fff) * 0x200, truncated to 32 bits */
+            z = (int32_t) ((((int64_t) p->v[i].pos[2] * 0x4000) / (int32_t) w + 0x3fff) * 0x200);
+        } else {
+            z = 0x7ffe00;
         }
-        if (v->sy < p->ytop) {
-            p->ytop = v->sy;
-        }
-        if (v->sy > p->ybot) {
-            p->ybot = v->sy;
-        }
+        p->z[i] = z < 0 ? 0 : z > 0xffffff ? 0xffffff : z;
+        p->w[i] = (int32_t) wn;
     }
-    /* w reduced to 16 bits for the interpolators, the same shift for every vertex */
-    int shift = bit_width(wmax) - 16;
-    if (shift < 0) {
-        shift = 0;
-    }
-    for (int i = 0; i < n; i++) {
-        p->v[i].w16 = ((uint32_t) p->v[i].w >> shift);
-        if (p->v[i].w16 == 0) {
-            p->v[i].w16 = 1;
-        }
-    }
-    list->polygons++;
-    list->vertices += n;
+    ge.last_strip = ge.primitive >= 2 ? index : -1;
 }
 
-/* The current vertex through the clip matrix, with the current attributes. */
+/* The current vertex through the clip matrix, with the current attributes; a polygon is
+ * complete with its third (fourth) vertex, a strip's next one with each further vertex
+ * (two for quads). Vertices count whether or not a BEGIN_VTXS is open: END_VTXS does
+ * nothing (GBATEK). */
 static void submit_vertex(void)
 {
-    if (!ge.in_vtxs) {
-        return;
-    }
-    ClipVertex v;
-    int64_t x = ge.vx, y = ge.vy, z = ge.vz;
+    GVertex *v = &ge.in[ge.in_count];
+    int64_t x = ge.vtx[0], y = ge.vtx[1], z = ge.vtx[2];
     const int32_t *m = ge.clip;
-    v.x = (int32_t) ((x * m[0] + y * m[4] + z * m[8] + (int64_t) 0x1000 * m[12]) >> 12);
-    v.y = (int32_t) ((x * m[1] + y * m[5] + z * m[9] + (int64_t) 0x1000 * m[13]) >> 12);
-    v.z = (int32_t) ((x * m[2] + y * m[6] + z * m[10] + (int64_t) 0x1000 * m[14]) >> 12);
-    v.w = (int32_t) ((x * m[3] + y * m[7] + z * m[11] + (int64_t) 0x1000 * m[15]) >> 12);
-    v.r = ge.cr;
-    v.g = ge.cg;
-    v.b = ge.cb;
-    if ((ge.texparam >> 30) == 3) {
-        /* vertex-source texture coordinates: the 12+12 fractional bits are dropped, the
-           matrix again carries the factor 16 */
-        int64_t s = x * ge.tex[0] + y * ge.tex[4] + z * ge.tex[8];
-        int64_t t = x * ge.tex[1] + y * ge.tex[5] + z * ge.tex[9];
-        v.s = (int16_t) (ge.raw_s + (int32_t) (s >> 24));
-        v.t = (int16_t) (ge.raw_t + (int32_t) (t >> 24));
-    } else {
-        v.s = ge.s;
-        v.t = ge.t;
+    memset(v, 0, sizeof(*v));
+    for (int c = 0; c < 4; c++) {
+        v->pos[c] = (int32_t) ((x * m[c] + y * m[4 + c] + z * m[8 + c] + (int64_t) 0x1000 * m[12 + c]) >> 12);
     }
-
+    for (int c = 0; c < 3; c++) {
+        v->col[c] = (ge.color[c] << 12) + 0xfff;
+    }
+    if ((ge.texparam >> 30) == 3) {
+        /* vertex-source texture coordinates: the 12 + 12 fractional bits are dropped, the
+           matrix again carries the factor 16 */
+        for (int c = 0; c < 2; c++) {
+            int64_t s = x * ge.tex[c] + y * ge.tex[4 + c] + z * ge.tex[8 + c];
+            v->tex[c] = (int16_t) (ge.raw_st[c] + (int32_t) (s >> 24));
+        }
+    } else {
+        v->tex[0] = ge.st[0];
+        v->tex[1] = ge.st[1];
+    }
+    ge.in_count++;
+    GVertex t;
     switch (ge.primitive) {
         case 0: /* separate triangles */
-            ge.strip[ge.strip_count++] = v;
-            if (ge.strip_count == 3) {
-                submit_polygon(ge.strip, 3);
-                ge.strip_count = 0;
-            }
-            break;
         case 1: /* separate quads */
-            ge.strip[ge.strip_count++] = v;
-            if (ge.strip_count == 4) {
-                submit_polygon(ge.strip, 4);
-                ge.strip_count = 0;
+            if (ge.in_count == (ge.primitive ? 4 : 3)) {
+                ge.in_count = 0;
+                submit_polygon();
+                ge.consecutive++;
             }
             break;
-        case 2: /* triangle strips: strip[0..2] hold the last three vertices; every second
-                   triangle has its first two swapped so that the winding stays consistent */
-            if (ge.strip_count < 3) {
-                ge.strip[ge.strip_count] = v;
-            } else {
-                ge.strip[0] = ge.strip[1];
-                ge.strip[1] = ge.strip[2];
-                ge.strip[2] = v;
+        case 2: /* triangle strips: every second triangle has its first two swapped, so that
+                   the winding stays the same; the last two go on */
+            if (ge.in_count < 3) {
+                break;
             }
-            ge.strip_count++;
-            if (ge.strip_count >= 3) {
-                int odd = (ge.strip_count - 3) & 1;
-                ClipVertex tri[3] = {ge.strip[odd ? 1 : 0], ge.strip[odd ? 0 : 1], ge.strip[2]};
-                submit_polygon(tri, 3);
+            if (ge.consecutive & 1) {
+                t = ge.in[0];
+                ge.in[0] = ge.in[1];
+                ge.in[1] = t;
+                ge.in_count = 2;
+                submit_polygon();
+                ge.consecutive++;
+                ge.in[1] = ge.in[2];
+            } else {
+                ge.in_count = 2;
+                submit_polygon();
+                ge.consecutive++;
+                ge.in[0] = ge.in[1];
+                ge.in[1] = ge.in[2];
             }
             break;
         default: /* quad strips: v0 v1 v3 v2, then each new pair with the previous pair */
-            ge.strip[ge.strip_count++] = v;
-            if (ge.strip_count == 4) {
-                ClipVertex quad[4] = {ge.strip[0], ge.strip[1], ge.strip[3], ge.strip[2]};
-                submit_polygon(quad, 4);
-                ge.strip[0] = ge.strip[2];
-                ge.strip[1] = ge.strip[3];
-                ge.strip_count = 2;
+            if (ge.in_count == 4) {
+                t = ge.in[3];
+                ge.in[3] = ge.in[2];
+                ge.in[2] = t;
+                ge.in_count = 2;
+                submit_polygon();
+                ge.consecutive++;
+                ge.in[0] = ge.in[3];
+                ge.in[1] = ge.in[2];
             }
             break;
     }
@@ -675,59 +821,239 @@ static void transform_point(int32_t x, int32_t y, int32_t z, int32_t *out)
     }
 }
 
+/* BOX_TEST: whether any face of the box keeps a vertex through the clipping of polygons (with
+ * its far-plane rule for the current attributes). */
 static void box_test(const uint32_t *p)
 {
-    int32_t x0 = (int16_t) (p[0] & 0xffff), y0 = (int16_t) (p[0] >> 16), z0 = (int16_t) (p[1] & 0xffff);
-    int32_t x1 = (int16_t) (x0 + (int16_t) (p[1] >> 16)), y1 = (int16_t) (y0 + (int16_t) (p[2] & 0xffff)),
+    int16_t x0 = (int16_t) (p[0] & 0xffff), y0 = (int16_t) (p[0] >> 16), z0 = (int16_t) (p[1] & 0xffff);
+    int16_t x1 = (int16_t) (x0 + (int16_t) (p[1] >> 16)), y1 = (int16_t) (y0 + (int16_t) (p[2] & 0xffff)),
             z1 = (int16_t) (z0 + (int16_t) (p[2] >> 16));
-    ClipVertex corner[8];
+    static const int16_t corner_sel[8][3] = {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0},
+                                             {0, 1, 1}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}};
+    GVertex corner[8];
     for (int i = 0; i < 8; i++) {
-        int32_t c[4];
-        transform_point((i & 1) ? x1 : x0, (i & 2) ? y1 : y0, (i & 4) ? z1 : z0, c);
         memset(&corner[i], 0, sizeof(corner[i]));
-        corner[i].x = c[0];
-        corner[i].y = c[1];
-        corner[i].z = c[2];
-        corner[i].w = c[3];
+        transform_point(corner_sel[i][0] ? x1 : x0, corner_sel[i][1] ? y1 : y0, corner_sel[i][2] ? z1 : z0, corner[i].pos);
     }
-    static const int faces[6][4] = {{0, 1, 3, 2}, {4, 5, 7, 6}, {0, 1, 5, 4}, {2, 3, 7, 6}, {0, 2, 6, 4}, {1, 3, 7, 5}};
+    /* front, back, left, right, bottom, top */
+    static const int faces[6][4] = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 3, 4, 5}, {1, 2, 7, 6}, {0, 1, 6, 5}, {2, 3, 4, 7}};
     ge.box_result = 0;
     for (int f = 0; f < 6 && !ge.box_result; f++) {
-        ClipVertex a[MAX_POLY_VERTICES], b[MAX_POLY_VERTICES];
+        GVertex face[16];
         for (int i = 0; i < 4; i++) {
-            a[i] = corner[faces[f][i]];
+            face[i] = corner[faces[f][i]];
         }
-        int n = 4;
-        n = clip_plane(a, n, 2, +1, b);
-        n = clip_plane(b, n, 2, -1, a);
-        n = clip_plane(a, n, 1, +1, b);
-        n = clip_plane(b, n, 1, -1, a);
-        n = clip_plane(a, n, 0, +1, b);
-        n = clip_plane(b, n, 0, -1, a);
-        if (n > 0) {
-            ge.box_result = 1;
-        }
+        ge.box_result = clip_polygon(face, 4, 0, ge.polyattr, 0) > 0;
     }
 }
 
 static void pos_test(const uint32_t *p)
 {
     /* POS_TEST replaces the current vertex, as on the hardware */
-    ge.vx = (int16_t) (p[0] & 0xffff);
-    ge.vy = (int16_t) (p[0] >> 16);
-    ge.vz = (int16_t) (p[1] & 0xffff);
-    transform_point(ge.vx, ge.vy, ge.vz, ge.pos_result);
+    ge.vtx[0] = (int16_t) (p[0] & 0xffff);
+    ge.vtx[1] = (int16_t) (p[0] >> 16);
+    ge.vtx[2] = (int16_t) (p[1] & 0xffff);
+    transform_point(ge.vtx[0], ge.vtx[1], ge.vtx[2], ge.pos_result);
 }
 
+/* VEC_TEST: the vector through the vector matrix to 12 fractional bits, in 16 bits whose
+ * top four copy bit 12 when it is set. */
 static void vec_test(uint32_t param)
 {
-    int32_t v[3] = {sign_extend(param & 0x3ff, 10), sign_extend((param >> 10) & 0x3ff, 10),
-                    sign_extend((param >> 20) & 0x3ff, 10)};
-    for (int col = 0; col < 3; col++) {
-        int64_t sum = (int64_t) v[0] * ge.vec[col] + (int64_t) v[1] * ge.vec[4 + col] + (int64_t) v[2] * ge.vec[8 + col];
-        /* 9+12 fractional bits to 12; 13 significant bits, the top one the sign */
-        ge.vec_result[col] = sign_extend((uint32_t) (sum >> 9) & 0x1fff, 13);
+    int32_t v[3];
+    unpack_vector(param, v);
+    for (int c = 0; c < 3; c++) {
+        uint16_t r = (uint16_t) (vector_dot(v, c) >> 9);
+        if (r & 0x1000) {
+            r |= 0xf000;
+        }
+        ge.vec_result[c] = (int16_t) r;
     }
+}
+
+/* The check's capture ---------------------------------------------------------------------- */
+
+/* With the capture on (gpu3d_capture_start), each list keeps what it was made from: the
+ * engine's state at its start (after the swap before it, as the commands that waited for that
+ * swap begin), every command executed until its SWAP_BUFFERS, with the test results, and,
+ * once it is rendered, the video state it was rendered from and its polygons. The layout is
+ * gpu3d.h's (gpu3d_capture_write). */
+typedef struct Words {
+    uint32_t *w;
+    size_t n, cap;
+} Words;
+
+static struct {
+    int on;
+    int cur_valid, last_valid; /* the list has been followed from its start */
+    Words cur_state, cur_log, last_state, last_log, last_polys;
+    uint8_t *regs, *mem;
+} cap;
+
+static void put(Words *b, uint32_t v)
+{
+    if (b->n == b->cap) {
+        b->cap = b->cap ? b->cap * 2 : 4096;
+        b->w = realloc(b->w, b->cap * sizeof(uint32_t));
+    }
+    b->w[b->n++] = v;
+}
+
+static void put_n(Words *b, const int32_t *v, size_t words)
+{
+    for (size_t i = 0; i < words; i++) {
+        put(b, (uint32_t) v[i]);
+    }
+}
+
+static void put_bytes(Words *b, const uint8_t *v, size_t n)
+{
+    for (size_t i = 0; i < n; i++) {
+        put(b, v[i]);
+    }
+}
+
+static void capture_state(Words *b)
+{
+    put(b, (uint32_t) ge.mode);
+    put_n(b, ge.proj, 16);
+    put_n(b, ge.pos, 16);
+    put_n(b, ge.vec, 16);
+    put_n(b, ge.tex, 16);
+    put_n(b, ge.proj_stack, 16);
+    put_n(b, &ge.pos_stack[0][0], 32 * 16);
+    put_n(b, &ge.vec_stack[0][0], 32 * 16);
+    put_n(b, ge.tex_stack, 16);
+    put(b, (uint32_t) ge.proj_sp);
+    put(b, (uint32_t) ge.pos_sp);
+    put(b, (uint32_t) ge.tex_sp);
+    put(b, (uint32_t) ge.stack_error);
+    for (int i = 0; i < 3; i++) {
+        put(b, (uint32_t) ge.vtx[i]);
+    }
+    put_bytes(b, ge.color, 3);
+    put(b, (uint32_t) ge.raw_st[0]);
+    put(b, (uint32_t) ge.raw_st[1]);
+    put(b, (uint32_t) ge.st[0]);
+    put(b, (uint32_t) ge.st[1]);
+    put(b, ge.polyattr);
+    put(b, ge.polyattr_next);
+    put(b, ge.texparam);
+    put(b, ge.pltt);
+    for (int i = 0; i < 4; i++) {
+        put(b, ge.light_param[i]);
+    }
+    put_n(b, &ge.light_vecm[0][0], 4 * 16);
+    put_bytes(b, &ge.light_color[0][0], 4 * 3);
+    put_bytes(b, ge.dif, 3);
+    put_bytes(b, ge.amb, 3);
+    put_bytes(b, ge.spe, 3);
+    put_bytes(b, ge.emi, 3);
+    put(b, (uint32_t) ge.use_shininess);
+    put_bytes(b, ge.shininess, 128);
+    put(b, ge.viewport);
+    put(b, (uint32_t) ge.primitive);
+    put(b, (uint32_t) ge.in_count | (ge.last_strip >= 0 ? 0x100u : 0)); /* a polygon or strip going on */
+    put(b, ge.flush_attr);
+    put(b, ge.dot_limit);
+    put(b, ge.consecutive);
+    for (int i = 0; i < 4; i++) {
+        put_n(b, ge.in[i].pos, 4);
+        put_n(b, ge.in[i].col, 3);
+        put(b, (uint32_t) ge.in[i].tex[0]);
+        put(b, (uint32_t) ge.in[i].tex[1]);
+        put(b, ge.in[i].clipped);
+    }
+}
+
+/* Per polygon, as the rendering engine receives it: count, attributes, TEXIMAGE_PARAM,
+ * PLTT_BASE, flags (W-buffer, facing the viewer, translucent, not drawn), top and bottom
+ * line, top and bottom vertex, the number of the log's command that completed it (from 1),
+ * then ten vertices of x, y, depth, normalised w, the 9-bit
+ * colour and the texture coordinates. */
+#define CAPTURE_POLYGON_WORDS (10 + MAX_POLY_VERTICES * 9)
+
+static void capture_polygons(Words *b, const PolygonList *list)
+{
+    put(b, (uint32_t) list->polygons);
+    put(b, CAPTURE_POLYGON_WORDS);
+    for (int i = 0; i < list->polygons; i++) {
+        const Polygon *p = &list->poly[i];
+        put(b, (uint32_t) p->count);
+        put(b, p->attr);
+        put(b, p->texparam);
+        put(b, p->pltt);
+        put(b, (uint32_t) (p->wbuffer | p->facing << 1 | p->translucent << 2 | p->degenerate << 3));
+        put(b, (uint32_t) p->ytop);
+        put(b, (uint32_t) p->ybot);
+        put(b, (uint32_t) p->vtop);
+        put(b, (uint32_t) p->vbot);
+        put(b, p->command);
+        for (int j = 0; j < MAX_POLY_VERTICES; j++) {
+            const GVertex *v = &p->v[j];
+            int used = j < p->count;
+            put(b, used ? (uint32_t) v->sx : 0);
+            put(b, used ? (uint32_t) v->sy : 0);
+            put(b, used ? (uint32_t) p->z[j] : 0);
+            put(b, used ? (uint32_t) p->w[j] : 0);
+            for (int k = 0; k < 3; k++) {
+                put(b, used ? (uint32_t) v->rgb[k] : 0);
+            }
+            put(b, used ? (uint32_t) v->tex[0] : 0);
+            put(b, used ? (uint32_t) v->tex[1] : 0);
+        }
+    }
+}
+
+static void capture_list_start(void)
+{
+    cap.cur_state.n = 0;
+    cap.cur_log.n = 0;
+    capture_count.commands = 0;
+    capture_state(&cap.cur_state);
+    cap.cur_valid = 1;
+}
+
+/* A command of the list, before it executes. */
+static void capture_command(uint32_t cmd, const uint32_t *p, int params, int results)
+{
+    if (!cap.on || !cap.cur_valid) {
+        return;
+    }
+    capture_count.commands++;
+    put(&cap.cur_log, cmd | ((uint32_t) params << 8) | ((uint32_t) results << 16));
+    for (int i = 0; i < params; i++) {
+        put(&cap.cur_log, p[i]);
+    }
+}
+
+/* The list is complete and about to be rendered: it becomes the last one. */
+static void capture_list_end(const PolygonList *list)
+{
+    if (!cap.on) {
+        return;
+    }
+    Words t = cap.last_state;
+    cap.last_state = cap.cur_state;
+    cap.cur_state = t;
+    t = cap.last_log;
+    cap.last_log = cap.cur_log;
+    cap.cur_log = t;
+    cap.last_valid = cap.cur_valid;
+    cap.last_polys.n = 0;
+    capture_polygons(&cap.last_polys, list);
+    const IoVideo *v = io_video_live();
+    if (cap.regs == NULL) {
+        cap.regs = malloc(IO_REG_SIZE);
+        cap.mem = malloc(IO_VIDEO_SIZE);
+    }
+    memcpy(cap.regs, v->regs, IO_REG_SIZE);
+    memcpy(cap.mem, v->mem, IO_VIDEO_SIZE);
+}
+
+void gpu3d_capture_start(void)
+{
+    cap.on = 1;
 }
 
 /* Command execution ------------------------------------------------------------------------- */
@@ -743,6 +1069,18 @@ static int command_valid(uint32_t cmd)
 {
     return (cmd >= 0x10 && cmd <= 0x1c) || (cmd >= 0x20 && cmd <= 0x2b) || (cmd >= 0x30 && cmd <= 0x34) || cmd == 0x40 ||
            cmd == 0x41 || cmd == 0x50 || cmd == 0x60 || (cmd >= 0x70 && cmd <= 0x72);
+}
+
+static void set_viewport(uint32_t p)
+{
+    /* X1,Y1 are the lower-left corner in 3D terms, Y2 the top; the sizes wrap */
+    ge.viewport = p;
+    int32_t x1 = (int32_t) (p & 0xff), x2 = (int32_t) ((p >> 16) & 0xff);
+    int32_t bottom = (191 - (int32_t) ((p >> 8) & 0xff)) & 0xff, top = (191 - (int32_t) (p >> 24)) & 0xff;
+    ge.vp_x = x1;
+    ge.vp_top = top;
+    ge.vp_w = (x2 - x1 + 1) & 0x1ff;
+    ge.vp_h = (bottom - top + 1) & 0xff;
 }
 
 static void execute(uint32_t cmd, const uint32_t *p)
@@ -793,9 +1131,9 @@ static void execute(uint32_t cmd, const uint32_t *p)
             for_current(matrix_translate, (const int32_t *) p, 0);
             break;
         case 0x20:
-            ge.cr = p[0] & 31;
-            ge.cg = (p[0] >> 5) & 31;
-            ge.cb = (p[0] >> 10) & 31;
+            ge.color[0] = (uint8_t) (p[0] & 31);
+            ge.color[1] = (uint8_t) ((p[0] >> 5) & 31);
+            ge.color[2] = (uint8_t) ((p[0] >> 10) & 31);
             break;
         case 0x21:
             set_normal(p[0]);
@@ -804,36 +1142,36 @@ static void execute(uint32_t cmd, const uint32_t *p)
             set_texcoord(p[0]);
             break;
         case 0x23:
-            ge.vx = (int16_t) (p[0] & 0xffff);
-            ge.vy = (int16_t) (p[0] >> 16);
-            ge.vz = (int16_t) (p[1] & 0xffff);
+            ge.vtx[0] = (int16_t) (p[0] & 0xffff);
+            ge.vtx[1] = (int16_t) (p[0] >> 16);
+            ge.vtx[2] = (int16_t) (p[1] & 0xffff);
             submit_vertex();
             break;
         case 0x24:
-            ge.vx = sign_extend(p[0] & 0x3ff, 10) << 6;
-            ge.vy = sign_extend((p[0] >> 10) & 0x3ff, 10) << 6;
-            ge.vz = sign_extend((p[0] >> 20) & 0x3ff, 10) << 6;
+            ge.vtx[0] = (int16_t) (sext(p[0] & 0x3ff, 10) * 64);
+            ge.vtx[1] = (int16_t) (sext((p[0] >> 10) & 0x3ff, 10) * 64);
+            ge.vtx[2] = (int16_t) (sext((p[0] >> 20) & 0x3ff, 10) * 64);
             submit_vertex();
             break;
         case 0x25:
-            ge.vx = (int16_t) (p[0] & 0xffff);
-            ge.vy = (int16_t) (p[0] >> 16);
+            ge.vtx[0] = (int16_t) (p[0] & 0xffff);
+            ge.vtx[1] = (int16_t) (p[0] >> 16);
             submit_vertex();
             break;
         case 0x26:
-            ge.vx = (int16_t) (p[0] & 0xffff);
-            ge.vz = (int16_t) (p[0] >> 16);
+            ge.vtx[0] = (int16_t) (p[0] & 0xffff);
+            ge.vtx[2] = (int16_t) (p[0] >> 16);
             submit_vertex();
             break;
         case 0x27:
-            ge.vy = (int16_t) (p[0] & 0xffff);
-            ge.vz = (int16_t) (p[0] >> 16);
+            ge.vtx[1] = (int16_t) (p[0] & 0xffff);
+            ge.vtx[2] = (int16_t) (p[0] >> 16);
             submit_vertex();
             break;
         case 0x28: /* 1.0.9 differences, as twelfths: the 10-bit value is the delta itself */
-            ge.vx = (int16_t) (ge.vx + sign_extend(p[0] & 0x3ff, 10));
-            ge.vy = (int16_t) (ge.vy + sign_extend((p[0] >> 10) & 0x3ff, 10));
-            ge.vz = (int16_t) (ge.vz + sign_extend((p[0] >> 20) & 0x3ff, 10));
+            ge.vtx[0] = (int16_t) (ge.vtx[0] + sext(p[0] & 0x3ff, 10));
+            ge.vtx[1] = (int16_t) (ge.vtx[1] + sext((p[0] >> 10) & 0x3ff, 10));
+            ge.vtx[2] = (int16_t) (ge.vtx[2] + sext((p[0] >> 20) & 0x3ff, 10));
             submit_vertex();
             break;
         case 0x29:
@@ -847,19 +1185,17 @@ static void execute(uint32_t cmd, const uint32_t *p)
             break;
         case 0x30:
             for (int c = 0; c < 3; c++) {
-                ge.dif[c] = (p[0] >> (5 * c)) & 31;
-                ge.amb[c] = (p[0] >> (16 + 5 * c)) & 31;
+                ge.dif[c] = (uint8_t) ((p[0] >> (5 * c)) & 31);
+                ge.amb[c] = (uint8_t) ((p[0] >> (16 + 5 * c)) & 31);
             }
             if (p[0] & 0x8000) {
-                ge.cr = ge.dif[0];
-                ge.cg = ge.dif[1];
-                ge.cb = ge.dif[2];
+                memcpy(ge.color, ge.dif, 3);
             }
             break;
         case 0x31:
             for (int c = 0; c < 3; c++) {
-                ge.spe[c] = (p[0] >> (5 * c)) & 31;
-                ge.emi[c] = (p[0] >> (16 + 5 * c)) & 31;
+                ge.spe[c] = (uint8_t) ((p[0] >> (5 * c)) & 31);
+                ge.emi[c] = (uint8_t) ((p[0] >> (16 + 5 * c)) & 31);
             }
             ge.use_shininess = (p[0] >> 15) & 1;
             break;
@@ -868,7 +1204,7 @@ static void execute(uint32_t cmd, const uint32_t *p)
             break;
         case 0x33:
             for (int c = 0; c < 3; c++) {
-                ge.light_color[p[0] >> 30][c] = (p[0] >> (5 * c)) & 31;
+                ge.light_color[p[0] >> 30][c] = (uint8_t) ((p[0] >> (5 * c)) & 31);
             }
             break;
         case 0x34:
@@ -881,18 +1217,18 @@ static void execute(uint32_t cmd, const uint32_t *p)
         case 0x40:
             ge.polyattr = ge.polyattr_next;
             ge.primitive = (int) (p[0] & 3);
-            ge.in_vtxs = 1;
-            ge.strip_count = 0;
+            ge.in_count = 0;
+            ge.consecutive = 0;
+            ge.last_strip = -1;
             break;
-        case 0x41:
-            ge.in_vtxs = 0;
+        case 0x41: /* END_VTXS has no effect */
             break;
         case 0x50:
             ge.swap_pending = 1;
-            ge.swap_param_next = p[0] & 3;
+            ge.flush_attr = p[0] & 3;
             break;
         case 0x60:
-            ge.viewport = p[0];
+            set_viewport(p[0]);
             break;
         case 0x70:
             box_test(p);
@@ -934,7 +1270,20 @@ static void drain_fifo(void)
         if (is_test(cmd)) {
             ge.fifo_tests--;
         }
+        int results = cmd == 0x70 ? 1 : cmd == 0x71 ? 4 : cmd == 0x72 ? 3 : 0;
+        capture_command(cmd, params, need, results);
         execute(cmd, params);
+        if (results && cap.on && cap.cur_valid) {
+            if (cmd == 0x70) {
+                put(&cap.cur_log, (uint32_t) ge.box_result);
+            } else if (cmd == 0x71) {
+                put_n(&cap.cur_log, ge.pos_result, 4);
+            } else {
+                for (int i = 0; i < 3; i++) {
+                    put(&cap.cur_log, (uint32_t) (int32_t) ge.vec_result[i]);
+                }
+            }
+        }
     }
 }
 
@@ -1013,6 +1362,12 @@ void gpu3d_write(uint32_t offset, uint32_t value)
     }
 }
 
+void gpu3d_dot_depth_write(uint32_t value)
+{
+    capture_command(0x81, &value, 1, 0); /* not a command: the register write, in order */
+    ge.dot_limit = (value & 0x7fff) * 0x200 + 0x1ff;
+}
+
 uint32_t gpu3d_read(uint32_t offset)
 {
     switch (offset) {
@@ -1051,8 +1406,8 @@ uint32_t gpu3d_read(uint32_t offset)
     }
     if (offset >= 0x630 && offset < 0x638) {
         uint32_t i = (offset - 0x630) / 4;
-        uint32_t lo = (uint32_t) ge.vec_result[i * 2] & 0xffff;
-        uint32_t hi = i == 0 ? (uint32_t) ge.vec_result[1] & 0xffff : 0;
+        uint32_t lo = (uint16_t) ge.vec_result[i * 2];
+        uint32_t hi = i == 0 ? (uint16_t) ge.vec_result[1] : 0;
         return lo | (hi << 16);
     }
     if (offset >= 0x640 && offset < 0x680) {
@@ -1068,6 +1423,8 @@ uint32_t gpu3d_read(uint32_t offset)
 void gpu3d_gxstat_write(uint32_t value)
 {
     if (value & 0x8000) {
+        uint32_t ack = 0x8000;
+        capture_command(0x80, &ack, 1, 0); /* not a command: the acknowledgement, in order */
         ge.stack_error = 0;
         ge.proj_sp = 0;
         ge.tex_sp = 0;
@@ -1076,45 +1433,52 @@ void gpu3d_gxstat_write(uint32_t value)
 
 /* The rendering engine ---------------------------------------------------------------------- */
 
-/* The frame buffer the rendering engine fills: 6-bit colour, 5-bit alpha, 24-bit depth, and
- * the attribute buffer (opaque and translucent polygon IDs, fog, edge and stencil flags). */
-typedef struct Pixel {
-    uint8_t r, g, b, a;
-    uint32_t depth;
-    uint8_t opaque_id, trans_id, flags;
-} Pixel;
-#define PF_FOG 1
-#define PF_EDGE 2
-#define PF_STENCIL 4
-#define PF_TRANSLUCENT 8 /* a translucent pixel sits here: its ID blocks same-ID blending */
+/* The frame buffers: two layers of colour (6 bits each and 5-bit alpha), depth and attributes,
+ * the top one what the screen shows, the bottom one what an anti-aliased edge covers. A
+ * border of one pixel around the screen holds the rear plane's depth and ID for edge marking.
+ * Attribute bits: 0-3 the polygon edge the pixel is on (left, right, top, bottom), 4 a back
+ * face, 8-12 the anti-aliasing coverage, 15 fog, 16-21 the translucent polygon ID, 22 a
+ * translucent pixel, 24-29 the opaque polygon ID. */
+#define BUF_W (SCREEN_W + 2)
+#define BUF_H (SCREEN_H + 2)
+#define BUF_SIZE (BUF_W * BUF_H)
+#define PIXEL(x, y) (BUF_W + 1 + (y) * BUF_W + (x))
+#define COLOR(r, g, b, a) ((uint32_t) (r) | ((uint32_t) (g) << 8) | ((uint32_t) (b) << 16) | ((uint32_t) (a) << 24))
+#define A_EDGES 0xfu
+#define A_BACK 0x10u
+#define A_FOG 0x8000u
+#define A_TRANSLUCENT 0x400000u
 
-static Pixel frame[SCREEN_H][SCREEN_W];
+static uint32_t color_buf[2 * BUF_SIZE], depth_buf[2 * BUF_SIZE], attr_buf[2 * BUF_SIZE];
+static uint8_t stencil[2][SCREEN_W]; /* shadow masks, by line parity: bit 0 top, bit 1 bottom */
+static int prev_shadow_mask;
 static uint16_t out_color[SCREEN_H][SCREEN_W];
-static uint8_t out_alpha[SCREEN_H][SCREEN_W];
+static uint32_t out_full[SCREEN_H][SCREEN_W];
 
 /* The rendering registers, captured when a frame starts. */
 static struct {
-    uint32_t disp3dcnt, clear_color, clear_depth, clrimage_offset, fog_color, fog_offset, alpha_ref, dot_depth;
-    uint8_t fog_table[32];
+    uint32_t disp3dcnt, alpha_ref, clear1, clear2, fog_color, fog_offset, fog_shift;
+    uint8_t fog_table[34]; /* the 32 entries with the first and last repeated at the ends */
     uint16_t toon[32], edge[8];
 } rr;
 
 static void capture_registers(void)
 {
     rr.disp3dcnt = io_view_reg(0x060) & 0xffff;
-    rr.alpha_ref = io_view_reg(0x340) & 31;
-    rr.clear_color = io_view_reg(0x350);
-    rr.clear_depth = io_view_reg(0x354) & 0x7fff;
-    rr.clrimage_offset = (io_view_reg(0x354) >> 16) & 0xffff;
+    rr.alpha_ref = (rr.disp3dcnt & 4) ? io_view_reg(0x340) & 31 : 0; /* alpha 0 is never drawn */
+    rr.clear1 = io_view_reg(0x350);
+    rr.clear2 = io_view_reg(0x354);
     rr.fog_color = io_view_reg(0x358);
-    rr.fog_offset = io_view_reg(0x35c) & 0x7fff;
-    rr.dot_depth = io_view_reg(0x610) & 0x7fff;
+    rr.fog_offset = (io_view_reg(0x35c) & 0x7fff) * 0x200;
+    rr.fog_shift = (rr.disp3dcnt >> 8) & 15;
     for (int i = 0; i < 8; i++) {
         uint32_t w = io_view_reg(0x360 + 4 * i);
         for (int j = 0; j < 4; j++) {
-            rr.fog_table[i * 4 + j] = (uint8_t) ((w >> (8 * j)) & 0x7f);
+            rr.fog_table[1 + i * 4 + j] = (uint8_t) ((w >> (8 * j)) & 0x7f);
         }
     }
+    rr.fog_table[0] = rr.fog_table[1];
+    rr.fog_table[33] = rr.fog_table[32];
     for (int i = 0; i < 16; i++) {
         uint32_t w = io_view_reg(0x380 + 4 * i);
         rr.toon[i * 2] = (uint16_t) w;
@@ -1127,8 +1491,19 @@ static void capture_registers(void)
     }
 }
 
+/* A 5-bit component to 6 bits: zero stays zero, others gain a low bit. */
+static uint32_t c6(uint32_t c5)
+{
+    return c5 ? c5 * 2 + 1 : 0;
+}
+
+static uint32_t rgb555_to_6(uint32_t c)
+{
+    return COLOR(c6(c & 31), c6((c >> 5) & 31), c6((c >> 10) & 31), 0);
+}
+
 /* Texture memory: the 512 KiB image space and the 128 KiB palette space, by bank slot. A
- * read where no bank is mapped gives zero, as the hardware's open bus does roughly. */
+ * read where no bank is mapped gives zero. */
 static uint8_t tex_read8(uint32_t address)
 {
     const uint8_t *slot = io_vram_texture((int) ((address >> 17) & 3));
@@ -1145,11 +1520,6 @@ static uint16_t tex_read16(uint32_t address)
     return (uint16_t) (slot[address] | (slot[address + 1] << 8));
 }
 
-static uint32_t tex_read32(uint32_t address)
-{
-    return (uint32_t) tex_read16(address) | ((uint32_t) tex_read16(address + 2) << 16);
-}
-
 static uint16_t pal_read16(uint32_t address)
 {
     const uint8_t *slot = io_vram_texture_palette((int) ((address >> 14) & 7));
@@ -1160,624 +1530,934 @@ static uint16_t pal_read16(uint32_t address)
     return (uint16_t) (slot[address] | (slot[address + 1] << 8));
 }
 
-/* One texel at (s, t) in 1.11.4, after repeat/flip/clamp: colour expanded to 6 bits, alpha
- * 5 bits (0 = transparent). Returns 0 for the transparent texel. */
-static int sample_texture(const Polygon *p, int32_t s, int32_t t, int32_t *r, int32_t *g, int32_t *b, int32_t *a)
+/* (c0 * a + c1 * b) / 8 per component, for 4x4 compressed textures' mixed colours. */
+static uint32_t mix555(uint32_t c0, uint32_t c1, uint32_t a, uint32_t b, uint32_t shift)
 {
-    uint32_t param = p->texparam;
-    int sshift = 3 + (int) ((param >> 20) & 7), tshift = 3 + (int) ((param >> 23) & 7);
-    int32_t width = 1 << sshift, height = 1 << tshift;
+    uint32_t r = (((c0 & 0x1f) * a + (c1 & 0x1f) * b) >> shift) & 0x1f;
+    uint32_t g = (((c0 & 0x3e0) * a + (c1 & 0x3e0) * b) >> shift) & 0x3e0;
+    uint32_t bl = (((c0 & 0x7c00) * a + (c1 & 0x7c00) * b) >> shift) & 0x7c00;
+    return r | g | bl;
+}
+
+/* One texel at (s, t) in 1.11.4 after repeat, flip or clamp: the RGB555 colour and a 5-bit
+ * alpha (0 transparent). */
+static void sample_texture(uint32_t param, uint32_t pltt, int32_t s, int32_t t, uint32_t *color, uint32_t *alpha)
+{
+    int32_t width = 8 << ((param >> 20) & 7), height = 8 << ((param >> 23) & 7);
     s >>= 4;
     t >>= 4;
     if (param & (1u << 16)) {
-        int odd = (s >> sshift) & 1;
-        s &= width - 1;
-        if (odd && (param & (1u << 18))) {
-            s = width - 1 - s;
-        }
+        s = ((param & (1u << 18)) && (s & width)) ? (width - 1) - (s & (width - 1)) : s & (width - 1);
     } else {
         s = s < 0 ? 0 : s >= width ? width - 1 : s;
     }
     if (param & (1u << 17)) {
-        int odd = (t >> tshift) & 1;
-        t &= height - 1;
-        if (odd && (param & (1u << 19))) {
-            t = height - 1 - t;
-        }
+        t = ((param & (1u << 19)) && (t & height)) ? (height - 1) - (t & (height - 1)) : t & (height - 1);
     } else {
         t = t < 0 ? 0 : t >= height ? height - 1 : t;
     }
-    uint32_t base = (param & 0xffff) << 3, pltt = p->pltt << 4;
-    uint32_t index, color = 0, alpha = 31;
+    uint32_t base = (param & 0xffff) << 3, texel = (uint32_t) (t * width + s);
+    uint32_t alpha0 = (param & (1u << 29)) ? 0 : 31; /* colour 0 transparent */
+    uint32_t v, pal = pltt << 4;
     switch ((param >> 26) & 7) {
-        case 1: { /* A3I5 */
-            uint8_t v = tex_read8(base + (uint32_t) (t * width + s));
-            index = v & 31;
-            alpha = (uint32_t) ((v >> 5) * 4 + (v >> 6));
-            color = pal_read16(pltt + index * 2);
-            break;
-        }
-        case 2: { /* 4 colours, palette base in 8-byte steps */
-            uint8_t v = tex_read8(base + (uint32_t) (t * width + s) / 4);
-            index = (v >> ((s & 3) * 2)) & 3;
-            if (index == 0 && (param & (1u << 29))) {
-                return 0;
-            }
-            color = pal_read16((p->pltt << 3) + index * 2);
-            break;
-        }
-        case 3: { /* 16 colours */
-            uint8_t v = tex_read8(base + (uint32_t) (t * width + s) / 2);
-            index = (s & 1) ? v >> 4 : v & 15;
-            if (index == 0 && (param & (1u << 29))) {
-                return 0;
-            }
-            color = pal_read16(pltt + index * 2);
-            break;
-        }
-        case 4: { /* 256 colours */
-            index = tex_read8(base + (uint32_t) (t * width + s));
-            if (index == 0 && (param & (1u << 29))) {
-                return 0;
-            }
-            color = pal_read16(pltt + index * 2);
-            break;
-        }
-        case 5: { /* 4x4 compressed: blocks in slot 0 or 2, their palette words in slot 1 */
-            uint32_t block = base + (uint32_t) ((t / 4) * (width / 4) + s / 4) * 4;
-            uint32_t texels = tex_read32(block);
-            uint32_t info_addr = 0x20000 + ((block & 0x1ffff) >> 1) + ((block & 0x40000) ? 0x10000 : 0);
-            uint16_t info = tex_read16(info_addr);
-            uint32_t pal = pltt + (uint32_t) (info & 0x3fff) * 4;
-            uint32_t mode = info >> 14;
-            index = (texels >> (((t & 3) * 4 + (s & 3)) * 2)) & 3;
-            uint16_t c0 = pal_read16(pal), c1 = pal_read16(pal + 2);
-            switch (index) {
+        case 1: /* A3I5 */
+            v = tex_read8(base + texel);
+            *color = pal_read16(pal + (v & 31) * 2);
+            *alpha = ((v >> 3) & 0x1c) + (v >> 6);
+            return;
+        case 2: /* 4 colours, the palette base in 8-byte steps */
+            v = (uint32_t) (tex_read8(base + texel / 4) >> ((s & 3) * 2)) & 3;
+            *color = pal_read16((pltt << 3) + v * 2);
+            *alpha = v ? 31 : alpha0;
+            return;
+        case 3: /* 16 colours */
+            v = tex_read8(base + texel / 2);
+            v = (s & 1) ? v >> 4 : v & 15;
+            *color = pal_read16(pal + v * 2);
+            *alpha = v ? 31 : alpha0;
+            return;
+        case 4: /* 256 colours */
+            v = tex_read8(base + texel);
+            *color = pal_read16(pal + v * 2);
+            *alpha = v ? 31 : alpha0;
+            return;
+        case 5: { /* 4x4 blocks of 2-bit texels in slot 0 or 2, a palette word per block in slot 1;
+                     the address wraps at the end of slot 3, and texels in slot 1 read as zero */
+            uint32_t addr = (base + (uint32_t) ((t & 0x3fc) * (width >> 2)) + (uint32_t) (s & 0x3fc) + (uint32_t) (t & 3)) &
+                            0x7ffff;
+            uint32_t info_addr = 0x20000 + ((addr & 0x1fffc) >> 1) + (addr >= 0x40000 ? 0x10000 : 0);
+            v = (addr >= 0x20000 && addr < 0x40000) ? 0 : (uint32_t) (tex_read8(addr) >> (2 * (s & 3))) & 3;
+            uint32_t info = tex_read16(info_addr), mode = info >> 14;
+            uint32_t pbase = pal + ((info & 0x3fff) << 2);
+            *alpha = 31;
+            switch (v) {
                 case 0:
-                    color = c0;
+                    *color = pal_read16(pbase);
                     break;
                 case 1:
-                    color = c1;
+                    *color = pal_read16(pbase + 2);
                     break;
                 case 2:
-                    if (mode == 1) { /* (c0 + c1) / 2 per component */
-                        color =
-                            (uint32_t) ((((c0 & 31) + (c1 & 31)) >> 1) | (((((c0 >> 5) & 31) + ((c1 >> 5) & 31)) >> 1) << 5) |
-                                        (((((c0 >> 10) & 31) + ((c1 >> 10) & 31)) >> 1) << 10));
-                    } else if (mode == 3) { /* (c0*5 + c1*3) / 8 */
-                        color = (uint32_t) ((((c0 & 31) * 5 + (c1 & 31) * 3) >> 3) |
-                                            (((((c0 >> 5) & 31) * 5 + ((c1 >> 5) & 31) * 3) >> 3) << 5) |
-                                            (((((c0 >> 10) & 31) * 5 + ((c1 >> 10) & 31) * 3) >> 3) << 10));
+                    if (mode == 1) {
+                        *color = mix555(pal_read16(pbase), pal_read16(pbase + 2), 1, 1, 1);
+                    } else if (mode == 3) {
+                        *color = mix555(pal_read16(pbase), pal_read16(pbase + 2), 5, 3, 3);
                     } else {
-                        color = pal_read16(pal + 4);
+                        *color = pal_read16(pbase + 4);
                     }
                     break;
                 default:
                     if (mode == 2) {
-                        color = pal_read16(pal + 6);
-                    } else if (mode == 3) { /* (c0*3 + c1*5) / 8 */
-                        color = (uint32_t) ((((c0 & 31) * 3 + (c1 & 31) * 5) >> 3) |
-                                            (((((c0 >> 5) & 31) * 3 + ((c1 >> 5) & 31) * 5) >> 3) << 5) |
-                                            (((((c0 >> 10) & 31) * 3 + ((c1 >> 10) & 31) * 5) >> 3) << 10));
+                        *color = pal_read16(pbase + 6);
+                    } else if (mode == 3) {
+                        *color = mix555(pal_read16(pbase), pal_read16(pbase + 2), 3, 5, 3);
                     } else {
-                        return 0;
+                        *color = 0;
+                        *alpha = 0;
                     }
                     break;
             }
-            break;
+            return;
         }
-        case 6: { /* A5I3 */
-            uint8_t v = tex_read8(base + (uint32_t) (t * width + s));
-            index = v & 7;
-            alpha = v >> 3;
-            color = pal_read16(pltt + index * 2);
-            break;
-        }
-        case 7: { /* direct colour, bit 15 the alpha */
-            uint16_t v = tex_read16(base + (uint32_t) (t * width + s) * 2);
-            color = v;
-            alpha = (v & 0x8000) ? 31 : 0;
-            break;
-        }
+        case 6: /* A5I3 */
+            v = tex_read8(base + texel);
+            *color = pal_read16(pal + (v & 7) * 2);
+            *alpha = v >> 3;
+            return;
+        case 7: /* direct colour, bit 15 the alpha */
+            *color = tex_read16(base + texel * 2);
+            *alpha = (*color & 0x8000) ? 31 : 0;
+            return;
         default:
-            return 0;
+            *color = 0;
+            *alpha = 31;
+            return;
     }
-    if (alpha == 0) {
-        return 0;
-    }
-    *r = expand6((int32_t) (color & 31));
-    *g = expand6((int32_t) ((color >> 5) & 31));
-    *b = expand6((int32_t) ((color >> 10) & 31));
-    *a = (int32_t) alpha;
-    return 1;
 }
 
-/* Perspective-correct interpolation: the position of `pos` in 0..len between two ends with
- * reduced w's, as a 16-bit fraction. Equal w's (and a zero span) give the linear factor. */
-static int32_t interp_factor(int32_t pos, int32_t len, uint32_t w0, uint32_t w1)
+/* A pixel's colour from its 6-bit vertex colour and texture coordinates, by the polygon's
+ * mode (GBATEK, "DS 3D Texture Blending"): modulation, decal, toon or highlight (the toon
+ * table indexed by the vertex red), shadow (as modulation). */
+static uint32_t shade(const Polygon *p, uint32_t vr, uint32_t vg, uint32_t vb, int16_t s, int16_t t)
 {
-    if (len <= 0) {
-        return 0;
-    }
-    if (pos >= len) {
-        return 0x10000;
-    }
-    if (w0 == w1) {
-        return (int32_t) (((int64_t) pos << 16) / len);
-    }
-    /* 1/w is linear on the screen: f = (pos/w1) / ((len-pos)/w0 + pos/w1) */
-    int64_t num = (int64_t) w0 * pos, den = (int64_t) w0 * pos + (int64_t) w1 * (len - pos);
-    if (den == 0) {
-        return 0;
-    }
-    return (int32_t) ((num << 16) / den);
-}
-
-static int32_t lerp(int32_t a, int32_t b, int32_t f)
-{
-    return a + (int32_t) (((int64_t) (b - a) * f) >> 16);
-}
-
-/* Attributes at a point of an edge or a span. */
-typedef struct Sample {
-    int32_t r, g, b, s, t, depth;
-    uint32_t w16;
-} Sample;
-
-static void sample_from_vertex(Sample *o, const Vertex *v)
-{
-    o->r = v->r;
-    o->g = v->g;
-    o->b = v->b;
-    o->s = v->s;
-    o->t = v->t;
-    o->depth = v->depth;
-    o->w16 = v->w16;
-}
-
-/* Between two samples: colour and texture coordinates perspective-correct, depth linear in
- * screen space for Z-buffering (z/w is affine) and perspective-correct for W-buffering. */
-static void sample_between(Sample *o, const Sample *a, const Sample *b, int32_t pos, int32_t len, int wbuffer)
-{
-    int32_t f = interp_factor(pos, len, a->w16, b->w16);
-    int32_t fl = len > 0 ? (int32_t) (((int64_t) pos << 16) / len) : 0;
-    o->r = lerp(a->r, b->r, f);
-    o->g = lerp(a->g, b->g, f);
-    o->b = lerp(a->b, b->b, f);
-    o->s = lerp(a->s, b->s, f);
-    o->t = lerp(a->t, b->t, f);
-    o->depth = lerp(a->depth, b->depth, wbuffer ? f : fl);
-    o->w16 = (uint32_t) lerp((int32_t) a->w16, (int32_t) b->w16, f);
-}
-
-/* An edge of the polygon on one scanline: the pixels it covers and its attributes there. */
-typedef struct EdgeSpan {
-    int32_t xs, xe; /* inclusive pixel range on this line */
-    Sample at;
-} EdgeSpan;
-
-/* The pixels an edge from (x0, y0) to (x1, y1), y0 < y1, covers on line y (y0 <= y < y1):
- * an x-major edge covers from its position at y to the one at y + 1 (exclusive), a y-major
- * edge the nearest pixel to its position at y. */
-static void edge_at(const Vertex *v0, const Vertex *v1, int y, int wbuffer, EdgeSpan *out)
-{
-    int32_t dy = v1->sy - v0->sy, dx = v1->sx - v0->sx;
-    int32_t rel = y - v0->sy;
-    int32_t adx = dx < 0 ? -dx : dx;
-    if (adx > dy) {
-        int64_t a = ((int64_t) adx * rel) / dy, b = ((int64_t) adx * (rel + 1)) / dy;
-        if (dx >= 0) {
-            out->xs = v0->sx + (int32_t) a;
-            out->xe = v0->sx + (int32_t) b - 1;
-        } else {
-            out->xs = v0->sx - (int32_t) b + 1;
-            out->xe = v0->sx - (int32_t) a;
-        }
-        if (out->xe < out->xs) {
-            out->xe = out->xs;
-        }
-    } else {
-        int64_t x = ((int64_t) adx * rel * 2 + dy) / (2 * dy); /* nearest */
-        out->xs = out->xe = v0->sx + (int32_t) (dx >= 0 ? x : -x);
-    }
-    Sample s0, s1;
-    sample_from_vertex(&s0, v0);
-    sample_from_vertex(&s1, v1);
-    sample_between(&out->at, &s0, &s1, rel, dy, wbuffer);
-}
-
-/* Texture blending per the polygon mode on 6-bit colours (GBATEK, "DS 3D Texture
- * Blending"); returns the pixel alpha, 0 for a transparent texel. */
-static int32_t shade(const Polygon *p, const Sample *smp, int32_t *r, int32_t *g, int32_t *b)
-{
-    uint32_t mode = (p->attr >> 4) & 3;
+    uint32_t mode = (p->attr >> 4) & 3, polyalpha = (p->attr >> 16) & 31;
+    uint32_t r, g, b, a;
     int highlight = mode == 2 && (rr.disp3dcnt & 2);
-    int32_t alpha = (int32_t) ((p->attr >> 16) & 31);
-    if (alpha == 0) {
-        alpha = 31; /* wire-frame edges are solid */
-    }
-    int32_t vr = smp->r > 63 ? 63 : smp->r, vg = smp->g > 63 ? 63 : smp->g, vb = smp->b > 63 ? 63 : smp->b;
-    int32_t hr = 0, hg = 0, hb = 0;
     if (mode == 2) {
-        /* the vertex red indexes the toon table. Toon: the entry replaces the vertex colour.
-           Highlight: the vertex colour becomes grey (red in all three) and the entry is
-           added after the modulation. */
-        uint16_t c = rr.toon[vr >> 1];
         if (highlight) {
-            hr = expand6(c & 31);
-            hg = expand6((c >> 5) & 31);
-            hb = expand6((c >> 10) & 31);
-            vg = vb = vr;
+            vg = vb = vr; /* the colour is computed from grey; the toon colour is added after */
         } else {
-            vr = expand6(c & 31);
-            vg = expand6((c >> 5) & 31);
-            vb = expand6((c >> 10) & 31);
+            uint32_t toon = rgb555_to_6(rr.toon[vr >> 1]);
+            vr = toon & 0x3f;
+            vg = (toon >> 8) & 0x3f;
+            vb = (toon >> 16) & 0x3f;
         }
     }
-    int32_t tr, tg, tb, ta;
-    int textured = ((p->texparam >> 26) & 7) != 0 && (rr.disp3dcnt & 1);
-    if (!textured) {
-        /* the formulas below with a white opaque texel reduce to the vertex colour */
-        tr = tg = tb = 63;
-        ta = 31;
-    } else if (!sample_texture(p, smp->s, smp->t, &tr, &tg, &tb, &ta)) {
-        if (mode != 1) {
-            return 0;
-        }
-        ta = 0; /* decal shows the vertex colour through a transparent texel */
-        tr = tg = tb = 0;
-    }
-    if (mode == 1) {
-        if (ta == 0) {
-            *r = vr;
-            *g = vg;
-            *b = vb;
-        } else if (ta == 31) {
-            *r = tr;
-            *g = tg;
-            *b = tb;
+    if ((rr.disp3dcnt & 1) && ((p->texparam >> 26) & 7) != 0) {
+        uint32_t tc, ta;
+        sample_texture(p->texparam, p->pltt, s, t, &tc, &ta);
+        uint32_t tx = rgb555_to_6(tc), tr = tx & 0x3f, tg = (tx >> 8) & 0x3f, tb = (tx >> 16) & 0x3f;
+        if (mode & 1) { /* decal (and shadow) */
+            if (ta == 0) {
+                r = vr, g = vg, b = vb;
+            } else if (ta == 31) {
+                r = tr, g = tg, b = tb;
+            } else {
+                r = (tr * ta + vr * (31 - ta)) >> 5;
+                g = (tg * ta + vg * (31 - ta)) >> 5;
+                b = (tb * ta + vb * (31 - ta)) >> 5;
+            }
+            a = polyalpha;
         } else {
-            *r = (tr * ta + vr * (31 - ta)) >> 5;
-            *g = (tg * ta + vg * (31 - ta)) >> 5;
-            *b = (tb * ta + vb * (31 - ta)) >> 5;
+            r = ((tr + 1) * (vr + 1) - 1) >> 6;
+            g = ((tg + 1) * (vg + 1) - 1) >> 6;
+            b = ((tb + 1) * (vb + 1) - 1) >> 6;
+            a = ((ta + 1) * (polyalpha + 1) - 1) >> 5;
         }
-        return alpha;
+    } else {
+        r = vr, g = vg, b = vb;
+        a = polyalpha;
     }
-    /* modulation, toon, highlight, shadow */
-    *r = ((tr + 1) * (vr + 1) - 1) >> 6;
-    *g = ((tg + 1) * (vg + 1) - 1) >> 6;
-    *b = ((tb + 1) * (vb + 1) - 1) >> 6;
     if (highlight) {
-        *r = *r + hr > 63 ? 63 : *r + hr;
-        *g = *g + hg > 63 ? 63 : *g + hg;
-        *b = *b + hb > 63 ? 63 : *b + hb;
+        uint32_t toon = rgb555_to_6(rr.toon[vr >> 1]);
+        r += toon & 0x3f;
+        g += (toon >> 8) & 0x3f;
+        b += (toon >> 16) & 0x3f;
+        r = r > 63 ? 63 : r;
+        g = g > 63 ? 63 : g;
+        b = b > 63 ? 63 : b;
     }
-    return ((ta + 1) * (alpha + 1) - 1) >> 5;
+    if (polyalpha == 0) {
+        a = 31; /* wire frames are solid */
+    }
+    return COLOR(r & 0xff, g & 0xff, b & 0xff, a & 0xff);
 }
 
-/* One pixel of a polygon through the depth test, alpha test, stencil and blending. */
-static void draw_pixel(const Polygon *p, int x, int y, const Sample *smp, int edge)
-{
-    Pixel *px = &frame[y][x];
-    uint32_t attr = p->attr;
-    uint32_t id = (attr >> 24) & 63;
-    uint32_t mode = (attr >> 4) & 3;
-    uint32_t depth = (uint32_t) smp->depth & 0xffffff;
+/* Interpolation along an edge (by line) or a span (by pixel). The hardware finds a
+ * perspective-correct factor from the two w's, 9 bits along an edge and 8 along a span, and
+ * moves each attribute linearly by it; with equal w's whose low bits are clear (bits 0-6
+ * along a span, 1-6 along an edge) it interpolates linearly. Z-buffer depth is always linear,
+ * with the hardware's reciprocal of the length. */
+typedef struct Interp {
+    int32_t x0, xdiff, x;
+    int shift, linear, wbuffer, along_y;
+    int32_t zrecip, w0n, w0d, w1d;
+    uint32_t f;
+} Interp;
 
-    int pass;
-    if (attr & (1u << 14)) {
-        int64_t d = (int64_t) depth - (int64_t) px->depth;
-        pass = d >= -0x200 && d <= 0x200;
+static void interp_setup(Interp *ip, int32_t x0, int32_t x1, int32_t w0, int32_t w1, int wbuffer, int along_y)
+{
+    ip->x0 = x0;
+    ip->xdiff = x1 - x0;
+    ip->x = 0;
+    ip->f = 0;
+    ip->wbuffer = wbuffer;
+    ip->along_y = along_y;
+    ip->zrecip = ip->xdiff != 0 ? (1 << 22) / ip->xdiff : 0;
+    int32_t mask = along_y ? 0x7e : 0x7f;
+    ip->linear = w0 == w1 && !(w0 & mask);
+    if (along_y) {
+        ip->w0n = w0 >> 1;
+        ip->w0d = (w0 + ((w0 & ~w1) & 1)) >> 1;
+        ip->w1d = w1 >> 1;
+        ip->shift = 9;
     } else {
-        pass = depth < px->depth;
-    }
-    if (mode == 3 && id == 0) {
-        /* the shadow mask: marks the pixels its back faces fail the depth test on */
-        if (!pass) {
-            px->flags |= PF_STENCIL;
-        }
-        return;
-    }
-    if (!pass) {
-        return;
-    }
-    if (mode == 3) {
-        if ((px->flags & PF_STENCIL) == 0) {
-            return;
-        }
-        px->flags &= (uint8_t) ~PF_STENCIL;
-        if (px->opaque_id == id) {
-            return;
-        }
-    }
-    int32_t r, g, b;
-    int32_t alpha = shade(p, smp, &r, &g, &b);
-    if (alpha == 0) {
-        return;
-    }
-    if (rr.disp3dcnt & 4) {
-        if (alpha <= (int32_t) rr.alpha_ref) {
-            return;
-        }
-    }
-    if (alpha == 31) {
-        px->r = (uint8_t) r;
-        px->g = (uint8_t) g;
-        px->b = (uint8_t) b;
-        px->a = 31;
-        px->depth = depth;
-        px->opaque_id = (uint8_t) id;
-        px->flags = (uint8_t) ((px->flags & PF_STENCIL) | ((attr & (1u << 15)) ? PF_FOG : 0) | (edge ? PF_EDGE : 0));
-        return;
-    }
-    /* translucent: never over a translucent pixel of the same ID, blended when enabled and
-       the destination has any alpha, the depth written only when attribute bit 11 asks */
-    if ((px->flags & PF_TRANSLUCENT) && px->trans_id == id) {
-        return;
-    }
-    if ((rr.disp3dcnt & 8) && px->a != 0) {
-        px->r = (uint8_t) ((r * (alpha + 1) + px->r * (31 - alpha)) / 32);
-        px->g = (uint8_t) ((g * (alpha + 1) + px->g * (31 - alpha)) / 32);
-        px->b = (uint8_t) ((b * (alpha + 1) + px->b * (31 - alpha)) / 32);
-        px->a = (uint8_t) (alpha > px->a ? alpha : px->a);
-    } else {
-        px->r = (uint8_t) r;
-        px->g = (uint8_t) g;
-        px->b = (uint8_t) b;
-        px->a = (uint8_t) alpha;
-    }
-    if (attr & (1u << 11)) {
-        px->depth = depth;
-    }
-    px->trans_id = (uint8_t) id;
-    px->flags |= PF_TRANSLUCENT;
-    if ((attr & (1u << 15)) == 0) {
-        px->flags &= (uint8_t) ~PF_FOG;
+        ip->w0n = w0;
+        ip->w0d = w0;
+        ip->w1d = w1;
+        ip->shift = 8;
     }
 }
 
-static void draw_polygon(const Polygon *p, int wbuffer)
+static void interp_at(Interp *ip, int32_t x)
 {
-    int n = p->count;
-    int wireframe = ((p->attr >> 16) & 31) == 0;
+    x -= ip->x0;
+    ip->x = x;
+    if (ip->xdiff != 0 && (!ip->linear || ip->wbuffer)) {
+        uint32_t num = ((uint32_t) x * (uint32_t) ip->w0n) << ip->shift;
+        uint32_t den = (uint32_t) x * (uint32_t) ip->w0d + (uint32_t) (ip->xdiff - x) * (uint32_t) ip->w1d;
+        ip->f = den ? num / den : 0;
+    }
+}
 
+static int32_t interp_value(const Interp *ip, int32_t a, int32_t b)
+{
+    if (ip->xdiff == 0 || a == b) {
+        return a;
+    }
+    if (!ip->linear) {
+        if (a < b) {
+            return (int32_t) ((uint32_t) a + (((uint32_t) (b - a) * ip->f) >> ip->shift));
+        }
+        return (int32_t) ((uint32_t) b + (((uint32_t) (a - b) * ((1u << ip->shift) - ip->f)) >> ip->shift));
+    }
+    if (a < b) {
+        return (int32_t) (a + (int64_t) (b - a) * ip->x / ip->xdiff);
+    }
+    return (int32_t) (b + (int64_t) (a - b) * (ip->xdiff - ip->x) / ip->xdiff);
+}
+
+static int32_t interp_depth(const Interp *ip, int32_t a, int32_t b)
+{
+    if (ip->xdiff == 0 || a == b) {
+        return a;
+    }
+    if (ip->wbuffer) {
+        if (a < b) {
+            return (int32_t) (a + (((int64_t) (b - a) * ip->f) >> ip->shift));
+        }
+        return (int32_t) (b + (((int64_t) (a - b) * (int64_t) (uint32_t) ((1u << ip->shift) - ip->f)) >> ip->shift));
+    }
+    int32_t base = a < b ? a : b, disp = a < b ? b - a : a - b, factor = a < b ? ip->x : ip->xdiff - ip->x;
+    if (ip->along_y) {
+        int shift = 0;
+        while (disp > 0x3ff) {
+            disp >>= 1;
+            shift++;
+        }
+        return (int32_t) (base + ((((int64_t) disp * factor * ip->zrecip) >> 22) << shift));
+    }
+    disp >>= 9;
+    return (int32_t) (base + (((int64_t) disp * factor * ip->zrecip) >> 13));
+}
+
+/* A polygon edge from one vertex to the next, stepped by line: x in 18 fractional bits from
+ * the reciprocal of the height (1/y times x, as the hardware computes it), the start offset by
+ * half a pixel on x-major edges; the pixels an x-major edge covers on a line, and its
+ * anti-aliasing coverage. */
+typedef struct Edge {
+    int32_t x0, xmin, xmax, xlen, ylen, dx, y, inc, xcov_incr;
+    int negative, xmajor, right;
+    Interp ip;
+} Edge;
+
+static int32_t edge_x(const Edge *e)
+{
+    int32_t x = e->negative ? e->x0 - (e->dx >> 18) : e->x0 + (e->dx >> 18);
+    return x < e->xmin ? e->xmin : x > e->xmax ? e->xmax : x;
+}
+
+static int32_t edge_setup(Edge *e, int right, int32_t x0, int32_t x1, int32_t y0, int32_t y1, int32_t w0, int32_t w1,
+                          int32_t y, int wbuffer)
+{
+    e->right = right;
+    e->x0 = x0;
+    e->y = y;
+    if (x1 > x0) {
+        e->xmin = x0;
+        e->xmax = x1 - 1;
+        e->negative = 0;
+    } else if (x1 < x0) {
+        e->xmin = x1;
+        e->xmax = x0 - 1;
+        e->negative = 1;
+    } else {
+        e->xmin = e->xmax = x0;
+        e->negative = 0;
+    }
+    e->xlen = e->xmax + 1 - e->xmin;
+    e->ylen = y1 - y0;
+    if (e->ylen == 0) {
+        e->inc = 0;
+    } else if (e->ylen == e->xlen && e->xlen != 1) {
+        e->inc = 0x40000;
+    } else {
+        e->inc = (x1 - x0) * ((1 << 18) / e->ylen);
+        if (e->inc < 0) {
+            e->inc = -e->inc;
+        }
+    }
+    e->xmajor = e->inc > 0x40000;
+    if (e->xmajor) {
+        e->dx = right ? (e->negative ? 0x60000 : e->inc - 0x20000) : (e->negative ? e->inc - 0x20000 + 0x40000 : 0x20000);
+    } else {
+        e->dx = (e->inc != 0 && e->negative) ? 0x40000 : 0;
+    }
+    e->dx += (y - y0) * e->inc;
+    int32_t offset = (e->inc >= 0x40000) && (right ^ e->negative);
+    interp_setup(&e->ip, y0 - offset, y1 - offset, w0, w1, wbuffer, 1);
+    interp_at(&e->ip, y);
+    e->xcov_incr = e->xmajor ? (e->ylen << 10) / e->xlen : 0;
+    return edge_x(e);
+}
+
+/* The edges of a polygon on one line: both at x. */
+static int32_t edge_point(Edge *e, int right, int32_t x0, int wbuffer)
+{
+    memset(e, 0, sizeof(*e));
+    e->right = right;
+    e->x0 = e->xmin = e->xmax = x0;
+    interp_setup(&e->ip, 0, 0, 0, 0, wbuffer, 1);
+    interp_at(&e->ip, 0);
+    return x0;
+}
+
+static int32_t edge_step(Edge *e)
+{
+    e->dx += e->inc;
+    e->y++;
+    interp_at(&e->ip, e->y);
+    return edge_x(e);
+}
+
+/* The pixels the edge covers on this line (`length`) and its coverage: for an x-major edge
+ * bit 31 set, the first pixel's coverage in bits 12-21 and the step per pixel in bits 0-9;
+ * for a y-major edge the 5-bit coverage itself. With the polygon's left and right edges
+ * swapped on this line, the length is one pixel and y-major coverages turn over. */
+static void edge_params(const Edge *e, int swapped, int32_t *length, uint32_t *coverage)
+{
+    *length = 1;
+    if (e->xmajor) {
+        if (e->right ^ e->negative) {
+            *length = (e->dx >> 18) - ((e->dx - e->inc) >> 18);
+        } else {
+            *length = ((e->dx + e->inc) >> 18) - (e->dx >> 18);
+        }
+        int32_t startx = e->dx >> 18;
+        if (e->negative) {
+            startx = e->xlen - startx;
+        }
+        if (e->right) {
+            startx = startx - *length + 1;
+        }
+        int32_t startcov = (int32_t) (((int64_t) ((startx << 10) + 0x1ff) * e->ylen) / e->xlen);
+        *coverage = 0x80000000u | (((uint32_t) startcov & 0x3ff) << 12) | ((uint32_t) e->xcov_incr & 0x3ff);
+        if (swapped) {
+            *length = 1;
+        }
+        return;
+    }
+    if (e->inc == 0) {
+        *coverage = swapped ? 0 : 31; /* vertical */
+        return;
+    }
+    int32_t cov = ((e->dx >> 9) + (e->inc >> 10)) >> 4;
+    if ((cov >> 5) != (e->dx >> 18)) {
+        cov = 31;
+    }
+    cov &= 31;
+    if (swapped ? (e->right ^ e->negative) : !(e->right ^ e->negative)) {
+        cov = 31 - cov;
+    }
+    *coverage = (uint32_t) cov;
+}
+
+/* A polygon being rasterised: its left and right edges and their vertices (current and next;
+ * the left side walks the vertices forward for a front face, the right side backward). */
+typedef struct Raster {
+    const Polygon *p;
+    Edge l, r;
+    int32_t xl, xr;
+    int cl, nl, cr, nr;
+} Raster;
+
+static Raster raster[POLYGON_RAM];
+
+static int next_vertex(const Polygon *p, int i, int forward)
+{
+    if (forward) {
+        return i + 1 >= p->count ? 0 : i + 1;
+    }
+    return i - 1 < 0 ? p->count - 1 : i - 1;
+}
+
+static void left_edge(Raster *rp, int32_t y)
+{
+    const Polygon *p = rp->p;
+    while (y >= p->v[rp->nl].sy && rp->cl != p->vbot) {
+        rp->cl = rp->nl;
+        rp->nl = next_vertex(p, rp->cl, p->facing);
+    }
+    rp->xl = edge_setup(&rp->l, 0, p->v[rp->cl].sx, p->v[rp->nl].sx, p->v[rp->cl].sy, p->v[rp->nl].sy, p->w[rp->cl],
+                        p->w[rp->nl], y, p->wbuffer);
+}
+
+static void right_edge(Raster *rp, int32_t y)
+{
+    const Polygon *p = rp->p;
+    while (y >= p->v[rp->nr].sy && rp->cr != p->vbot) {
+        rp->cr = rp->nr;
+        rp->nr = next_vertex(p, rp->cr, !p->facing);
+    }
+    rp->xr = edge_setup(&rp->r, 1, p->v[rp->cr].sx, p->v[rp->nr].sx, p->v[rp->cr].sy, p->v[rp->nr].sy, p->w[rp->cr],
+                        p->w[rp->nr], y, p->wbuffer);
+}
+
+static void raster_setup(Raster *rp, const Polygon *p)
+{
+    rp->p = p;
+    rp->cl = rp->cr = p->vtop;
+    rp->nl = next_vertex(p, p->vtop, p->facing);
+    rp->nr = next_vertex(p, p->vtop, !p->facing);
     if (p->ytop == p->ybot) {
-        /* a polygon on one line: the span between its leftmost and rightmost vertices */
-        int y = p->ytop;
-        if (y < 0 || y >= SCREEN_H) {
-            return;
-        }
-        const Vertex *l = &p->v[0], *r = &p->v[0];
-        for (int i = 1; i < n; i++) {
-            if (p->v[i].sx < l->sx) {
-                l = &p->v[i];
+        /* a polygon on one line spans from its leftmost to its rightmost vertex, of the
+           first, second and last */
+        int lo = 0, hi = 0;
+        int cand[2] = {1, p->count - 1};
+        for (int k = 0; k < 2; k++) {
+            int i = cand[k];
+            if (p->v[i].sx < p->v[lo].sx) {
+                lo = i;
             }
-            if (p->v[i].sx > r->sx) {
-                r = &p->v[i];
-            }
-        }
-        if (l->sx == r->sx) {
-            /* a 0x0 polygon: the 1-dot depth rule, on w with three fractional bits */
-            if ((p->attr & (1u << 13)) == 0) {
-                int visible = 0;
-                for (int i = 0; i < n; i++) {
-                    if (((uint32_t) p->v[i].w >> 9) <= rr.dot_depth) {
-                        visible = 1;
-                    }
-                }
-                if (!visible) {
-                    return;
-                }
+            if (p->v[i].sx > p->v[hi].sx) {
+                hi = i;
             }
         }
-        Sample a, b, s;
-        sample_from_vertex(&a, l);
-        sample_from_vertex(&b, r);
-        for (int x = l->sx; x <= r->sx && x < SCREEN_W; x++) {
-            sample_between(&s, &a, &b, x - l->sx, r->sx - l->sx, wbuffer);
-            draw_pixel(p, x, y, &s, 1);
-        }
+        rp->cl = rp->nl = lo;
+        rp->cr = rp->nr = hi;
+        rp->xl = edge_point(&rp->l, 0, p->v[lo].sx, p->wbuffer);
+        rp->xr = edge_point(&rp->r, 1, p->v[hi].sx, p->wbuffer);
         return;
     }
+    left_edge(rp, p->ytop);
+    right_edge(rp, p->ytop);
+}
 
-    for (int y = p->ytop; y < p->ybot && y < SCREEN_H; y++) {
-        EdgeSpan left, right;
-        int have_left = 0, have_right = 0;
-        for (int i = 0; i < n; i++) {
-            const Vertex *v0 = &p->v[i], *v1 = &p->v[(i + 1) % n];
-            if (v0->sy == v1->sy) {
-                continue;
-            }
-            if (v0->sy > v1->sy) {
-                const Vertex *t = v0;
-                v0 = v1;
-                v1 = t;
-            }
-            if (y < v0->sy || y >= v1->sy) {
-                continue;
-            }
-            EdgeSpan e;
-            edge_at(v0, v1, y, wbuffer, &e);
-            if (!have_left || e.xs < left.xs || (e.xs == left.xs && e.xe < left.xe)) {
-                left = e;
-                have_left = 1;
-            }
-            if (!have_right || e.xe > right.xe || (e.xe == right.xe && e.xs > right.xs)) {
-                right = e;
-                have_right = 1;
+/* What a line of a polygon covers: the span and its ends' depth and w, which edges are drawn
+ * and how far, the vertices and interpolators of the span's left and right end. */
+typedef struct Span {
+    int32_t xstart, xend, wl, wr, zl, zr;
+    int32_t l_len, r_len;
+    uint32_t l_cov, r_cov;
+    int l_fill, r_fill;
+    const GVertex *lcur, *lnext, *rcur, *rnext;
+    const Interp *ileft, *iright;
+    int yedge;
+} Span;
+
+static void span_setup(Raster *rp, int32_t y, Span *sp)
+{
+    const Polygon *p = rp->p;
+    if (p->ytop != p->ybot) {
+        if (y >= p->v[rp->nl].sy && rp->cl != p->vbot) {
+            left_edge(rp, y);
+        }
+        if (y >= p->v[rp->nr].sy && rp->cr != p->vbot) {
+            right_edge(rp, y);
+        }
+    }
+    sp->xstart = rp->xl;
+    sp->xend = rp->xr;
+    sp->wl = interp_value(&rp->l.ip, p->w[rp->cl], p->w[rp->nl]);
+    sp->wr = interp_value(&rp->r.ip, p->w[rp->cr], p->w[rp->nr]);
+    sp->zl = interp_depth(&rp->l.ip, p->z[rp->cl], p->z[rp->nl]);
+    sp->zr = interp_depth(&rp->r.ip, p->z[rp->cr], p->z[rp->nr]);
+    /* a vertical right edge is drawn one pixel to the left, unless the span is a single
+       pixel under a vertical left edge or at the screen's left border */
+    if (rp->r.inc == 0 && (rp->l.inc != 0 || sp->xstart != sp->xend) && sp->xend != 0) {
+        sp->xend--;
+    }
+    uint32_t alpha = (p->attr >> 16) & 31;
+    int all = (rr.disp3dcnt & 0x30) || (alpha < 31 && (rr.disp3dcnt & 8)) || alpha == 0;
+    int bottom = y == p->ybot - 1;
+    if (sp->xstart > sp->xend) {
+        /* the edges cross on this line: drawn from the right edge to the left one */
+        sp->lcur = &p->v[rp->cr];
+        sp->lnext = &p->v[rp->nr];
+        sp->rcur = &p->v[rp->cl];
+        sp->rnext = &p->v[rp->nl];
+        sp->ileft = &rp->r.ip;
+        sp->iright = &rp->l.ip;
+        edge_params(&rp->r, 1, &sp->l_len, &sp->l_cov);
+        edge_params(&rp->l, 1, &sp->r_len, &sp->r_cov);
+        int32_t t = sp->xstart;
+        sp->xstart = sp->xend;
+        sp->xend = t;
+        t = sp->wl, sp->wl = sp->wr, sp->wr = t;
+        t = sp->zl, sp->zl = sp->zr, sp->zr = t;
+        int differ = sp->lnext->sx != sp->rnext->sx;
+        sp->l_fill = all || rp->r.negative || !rp->r.xmajor || (bottom && rp->r.xmajor && differ);
+        sp->r_fill = all || (!rp->l.negative && rp->l.xmajor) || (!(rp->l.negative && rp->l.xmajor) && rp->r.inc == 0) ||
+                     (bottom && rp->l.xmajor && differ);
+    } else {
+        sp->lcur = &p->v[rp->cl];
+        sp->lnext = &p->v[rp->nl];
+        sp->rcur = &p->v[rp->cr];
+        sp->rnext = &p->v[rp->nr];
+        sp->ileft = &rp->l.ip;
+        sp->iright = &rp->r.ip;
+        edge_params(&rp->l, 0, &sp->l_len, &sp->l_cov);
+        edge_params(&rp->r, 0, &sp->r_len, &sp->r_cov);
+        /* filled: left edges of slope up to 1, right edges steeper than that or vertical,
+           the bottom pixels of x-major edges next to a flat bottom, and the left edge of a
+           span both edges of which cover whole */
+        int differ = sp->lnext->sx != sp->rnext->sx;
+        sp->l_fill = all || rp->l.negative || !rp->l.xmajor || (bottom && rp->l.xmajor && differ) ||
+                     (rp->l.inc == rp->r.inc && sp->xstart + sp->l_len == sp->xend + 1);
+        sp->r_fill = all || (!rp->r.negative && rp->r.xmajor) || rp->r.inc == 0 || (bottom && rp->r.xmajor && differ);
+    }
+    sp->yedge = y == p->ytop ? 4 : y == p->ybot - 1 ? 8 : 0;
+}
+
+/* The depth test: less, or less or equal over an opaque back face for a front face; within
+ * 0x200 (Z) or 0xff (W) with attribute bit 14. */
+static int depth_pass(const Polygon *p, uint32_t dst, int32_t z, uint32_t dstattr)
+{
+    if (p->attr & (1u << 14)) {
+        int32_t d = (int32_t) dst - z;
+        return p->wbuffer ? (uint32_t) (d + 0xff) <= 0x1fe : (uint32_t) (d + 0x200) <= 0x400;
+    }
+    if (p->facing && (dstattr & (A_TRANSLUCENT | A_BACK)) == A_BACK) {
+        return z <= (int32_t) dst;
+    }
+    return z < (int32_t) dst;
+}
+
+/* A translucent pixel: not over a translucent pixel of the same ID (a shadow: not over the
+ * pixel of its own ID, opaque or translucent), blended when enabled over a pixel with alpha,
+ * alpha the greater of the two, fog only where both ask for it. */
+static void plot_translucent(int addr, uint32_t color, int32_t z, int write_depth, uint32_t polyattr, int shadow)
+{
+    uint32_t dst = attr_buf[addr];
+    uint32_t attr = (polyattr & 0xe0f0) | ((polyattr >> 8) & 0xff0000) | A_TRANSLUCENT | (dst & 0xff001f0fu);
+    if (shadow && !(dst & A_TRANSLUCENT)) {
+        if ((dst & 0x3f000000u) == (polyattr & 0x3f000000u)) {
+            return;
+        }
+    } else if ((dst & 0x7f0000) == (attr & 0x7f0000)) {
+        return;
+    }
+    if (!(dst & A_FOG)) {
+        attr &= ~A_FOG;
+    }
+    uint32_t below = color_buf[addr], alpha = color >> 24, dst_alpha = below >> 24;
+    if (dst_alpha != 0) {
+        uint32_t r = color & 0x3f, g = (color >> 8) & 0x3f, b = (color >> 16) & 0x3f;
+        if (rr.disp3dcnt & 8) {
+            uint32_t k = alpha + 1;
+            r = (r * k + (below & 0x3f) * (32 - k)) >> 5;
+            g = (g * k + ((below >> 8) & 0x3f) * (32 - k)) >> 5;
+            b = (b * k + ((below >> 16) & 0x3f) * (32 - k)) >> 5;
+        }
+        color = COLOR(r, g, b, alpha > dst_alpha ? alpha : dst_alpha);
+    }
+    if (write_depth) {
+        depth_buf[addr] = (uint32_t) z;
+    }
+    color_buf[addr] = color;
+    attr_buf[addr] = attr;
+}
+
+/* The three parts of a span: the left edge, the inside, the right edge. */
+enum { PART_LEFT, PART_INSIDE, PART_RIGHT };
+
+static void draw_line(Raster *rp, int32_t y)
+{
+    const Polygon *p = rp->p;
+    uint32_t polyattr = (p->attr & 0x3f008000u) | (p->facing ? 0 : A_BACK);
+    int wireframe = ((p->attr >> 16) & 31) == 0;
+    prev_shadow_mask = 0;
+    Span sp;
+    span_setup(rp, y, &sp);
+    /* the attributes at the span's ends */
+    int32_t cl[3], cr[3], sl, tl, sr, tr;
+    for (int k = 0; k < 3; k++) {
+        cl[k] = interp_value(sp.ileft, sp.lcur->rgb[k], sp.lnext->rgb[k]);
+        cr[k] = interp_value(sp.iright, sp.rcur->rgb[k], sp.rnext->rgb[k]);
+    }
+    sl = interp_value(sp.ileft, sp.lcur->tex[0], sp.lnext->tex[0]);
+    tl = interp_value(sp.ileft, sp.lcur->tex[1], sp.lnext->tex[1]);
+    sr = interp_value(sp.iright, sp.rcur->tex[0], sp.rnext->tex[0]);
+    tr = interp_value(sp.iright, sp.rcur->tex[1], sp.rnext->tex[1]);
+    Interp ix;
+    interp_setup(&ix, sp.xstart, sp.xend + 1, sp.wl, sp.wr, p->wbuffer, 0);
+    int32_t x = sp.xstart < 0 ? 0 : sp.xstart, xcov = 0;
+    int aa = (rr.disp3dcnt & 0x10) != 0;
+    for (int part = PART_LEFT; part <= PART_RIGHT; part++) {
+        int32_t limit;
+        uint32_t edge = (uint32_t) sp.yedge, cov_param = 0;
+        if (part == PART_LEFT) {
+            limit = sp.xstart + sp.l_len;
+            edge |= 1;
+            cov_param = sp.l_cov;
+        } else if (part == PART_INSIDE) {
+            limit = sp.xend - sp.r_len + 1;
+        } else {
+            limit = sp.xend + 1;
+            edge |= 2;
+            cov_param = sp.r_cov;
+        }
+        if (limit > sp.xend + 1) {
+            limit = sp.xend + 1;
+        }
+        if (limit > SCREEN_W) {
+            limit = SCREEN_W;
+        }
+        if (cov_param & 0x80000000u) {
+            xcov = (int32_t) ((cov_param >> 12) & 0x3ff);
+            if (xcov == 0x3ff) {
+                xcov = 0;
             }
         }
-        if (!have_left || !have_right) {
+        if ((part == PART_LEFT && !sp.l_fill) || (part == PART_INSIDE && wireframe && !sp.yedge)) {
+            if (x < limit) {
+                x = limit;
+            }
             continue;
         }
-        int xl = left.xs, xr = right.xe;
-        if (xr < xl) {
-            xr = xl;
+        if (part == PART_RIGHT && !sp.r_fill) {
+            continue;
         }
-        /* a vertical right edge is not drawn (GBATEK, "Polygon Size"), unless it is all
-           there is of the line */
-        int right_vertical = right.xs == right.xe;
-        int xend = xr;
-        if (right_vertical && xr > xl) {
-            xend = xr - 1;
-        }
-        int border = y == p->ytop || y == p->ybot - 1;
-        for (int x = xl; x <= xend; x++) {
-            if (x < 0 || x >= SCREEN_W) {
+        for (; x < limit; x++) {
+            int addr = PIXEL(x, y);
+            uint32_t dstattr = attr_buf[addr];
+            if (p->shadow) {
+                uint8_t st = stencil[y & 1][x];
+                if (!st) {
+                    continue;
+                }
+                if (!(st & 1)) {
+                    addr += BUF_SIZE;
+                }
+                if (!(st & 2)) {
+                    dstattr &= ~A_EDGES; /* not under an anti-aliased edge */
+                }
+            }
+            interp_at(&ix, x);
+            int32_t z = interp_depth(&ix, sp.zl, sp.zr);
+            /* failing against the top pixel, an edge pixel's lower one is tried */
+            if (!depth_pass(p, depth_buf[addr], z, dstattr)) {
+                if (!(dstattr & A_EDGES) || addr >= BUF_SIZE) {
+                    continue;
+                }
+                addr += BUF_SIZE;
+                dstattr = attr_buf[addr];
+                if (!depth_pass(p, depth_buf[addr], z, dstattr)) {
+                    continue;
+                }
+            }
+            uint32_t vr = (uint32_t) interp_value(&ix, cl[0], cr[0]), vg = (uint32_t) interp_value(&ix, cl[1], cr[1]),
+                     vb = (uint32_t) interp_value(&ix, cl[2], cr[2]);
+            int16_t s = (int16_t) interp_value(&ix, sl, sr), t = (int16_t) interp_value(&ix, tl, tr);
+            uint32_t color = shade(p, (vr >> 3) & 0xff, (vg >> 3) & 0xff, (vb >> 3) & 0xff, s, t);
+            uint32_t alpha = color >> 24;
+            if (alpha <= rr.alpha_ref) {
                 continue;
             }
-            int edge = border || x <= left.xe || x >= right.xs;
-            if (wireframe && !edge) {
-                continue;
+            if (alpha == 31) {
+                uint32_t attr = polyattr | edge;
+                if (aa && (part != PART_INSIDE || (attr & A_EDGES))) {
+                    uint32_t cov = 31;
+                    if (part != PART_INSIDE) {
+                        cov = cov_param;
+                        if (cov & 0x80000000u) {
+                            int32_t c = part == PART_LEFT ? xcov >> 5 : 31 - (xcov >> 5);
+                            cov = (uint32_t) (c < 0 ? 0 : c > 31 ? 31 : c);
+                            xcov += (int32_t) (cov_param & 0x3ff);
+                        }
+                    }
+                    attr |= cov << 8;
+                    if (addr < BUF_SIZE) { /* the pixel under the edge is kept below */
+                        color_buf[addr + BUF_SIZE] = color_buf[addr];
+                        depth_buf[addr + BUF_SIZE] = depth_buf[addr];
+                        attr_buf[addr + BUF_SIZE] = attr_buf[addr];
+                    }
+                }
+                depth_buf[addr] = (uint32_t) z;
+                color_buf[addr] = color;
+                attr_buf[addr] = attr;
+            } else {
+                int write_depth = (p->attr & (1u << 11)) != 0;
+                plot_translucent(addr, color, z, write_depth, polyattr, p->shadow);
+                if ((dstattr & A_EDGES) && addr < BUF_SIZE) {
+                    plot_translucent(addr + BUF_SIZE, color, z, write_depth, polyattr, p->shadow);
+                }
             }
-            Sample s;
-            sample_between(&s, &left.at, &right.at, x - xl, xr - xl, wbuffer);
-            draw_pixel(p, x, y, &s, edge);
         }
     }
+    rp->xl = edge_step(&rp->l);
+    rp->xr = edge_step(&rp->r);
 }
 
-/* The rear plane: one colour/depth/ID for the screen, or the two bitmaps in texture slots 2
- * and 3 scrolled by CLRIMAGE_OFFSET (DISP3DCNT bit 14). */
+/* A shadow mask's line: where it fails the depth test it marks the stencil (bit 1 for the
+ * lower pixel under an edge); it draws nothing. The stencil is cleared when a mask follows
+ * another polygon. */
+static void mask_line(Raster *rp, int32_t y)
+{
+    const Polygon *p = rp->p;
+    uint32_t alpha = (p->attr >> 16) & 31;
+    int wireframe = alpha == 0;
+    if (!prev_shadow_mask) {
+        memset(stencil[y & 1], 0, SCREEN_W);
+    }
+    prev_shadow_mask = 1;
+    Span sp;
+    span_setup(rp, y, &sp);
+    if (wireframe) {
+        alpha = 31;
+    }
+    if (alpha > rr.alpha_ref) {
+        Interp ix;
+        interp_setup(&ix, sp.xstart, sp.xend + 1, sp.wl, sp.wr, p->wbuffer, 0);
+        int32_t x = sp.xstart < 0 ? 0 : sp.xstart;
+        for (int part = PART_LEFT; part <= PART_RIGHT; part++) {
+            int32_t limit = part == PART_LEFT ? sp.xstart + sp.l_len : part == PART_INSIDE ? sp.xend - sp.r_len + 1 : sp.xend + 1;
+            if (limit > sp.xend + 1) {
+                limit = sp.xend + 1;
+            }
+            if (limit > SCREEN_W) {
+                limit = SCREEN_W;
+            }
+            if ((part == PART_LEFT && !sp.l_fill) || (part == PART_INSIDE && wireframe && !sp.yedge)) {
+                if (x < limit) {
+                    x = limit;
+                }
+                continue;
+            }
+            if (part == PART_RIGHT && !sp.r_fill) {
+                continue;
+            }
+            for (; x < limit; x++) {
+                int addr = PIXEL(x, y);
+                interp_at(&ix, x);
+                int32_t z = interp_depth(&ix, sp.zl, sp.zr);
+                uint32_t dstattr = attr_buf[addr];
+                if (!depth_pass(p, depth_buf[addr], z, dstattr)) {
+                    stencil[y & 1][x] = 1;
+                }
+                if (dstattr & A_EDGES) {
+                    if (!depth_pass(p, depth_buf[addr + BUF_SIZE], z, attr_buf[addr + BUF_SIZE])) {
+                        stencil[y & 1][x] |= 2;
+                    }
+                }
+            }
+        }
+    }
+    rp->xl = edge_step(&rp->l);
+    rp->xr = edge_step(&rp->r);
+}
+
+/* The rear plane: one colour, depth, ID and fog flag for the screen, or the two bitmaps in
+ * texture slots 2 and 3 scrolled by CLRIMAGE_OFFSET (DISP3DCNT bit 14); the depth gains 0x1ff
+ * below its 15 bits. The border holds the depth and ID; the lower layer starts empty. */
 static void clear_frame(void)
 {
-    uint32_t cc = rr.clear_color;
-    uint32_t id = (cc >> 24) & 63;
-    uint32_t depth15 = rr.clear_depth;
-    uint32_t depth = depth15 * 0x200 + ((depth15 + 1) / 0x8000) * 0x1ff;
-    Pixel base;
-    base.r = (uint8_t) expand6((int32_t) (cc & 31));
-    base.g = (uint8_t) expand6((int32_t) ((cc >> 5) & 31));
-    base.b = (uint8_t) expand6((int32_t) ((cc >> 10) & 31));
-    base.a = (uint8_t) ((cc >> 16) & 31);
-    base.depth = depth;
-    base.opaque_id = (uint8_t) id;
-    base.trans_id = 0;
-    base.flags = (uint8_t) ((cc & 0x8000) ? PF_FOG : 0);
-    if ((rr.disp3dcnt & (1u << 14)) == 0) {
+    uint32_t depth = (rr.clear2 & 0x7fff) * 0x200 + 0x1ff, id = rr.clear1 & 0x3f000000u;
+    memset(color_buf + BUF_SIZE, 0, BUF_SIZE * sizeof(uint32_t));
+    memset(depth_buf + BUF_SIZE, 0, BUF_SIZE * sizeof(uint32_t));
+    memset(attr_buf + BUF_SIZE, 0, BUF_SIZE * sizeof(uint32_t));
+    for (int i = 0; i < BUF_SIZE; i++) {
+        color_buf[i] = 0;
+        depth_buf[i] = depth;
+        attr_buf[i] = id;
+    }
+    if (rr.disp3dcnt & (1u << 14)) {
+        uint32_t xofs = (rr.clear2 >> 16) & 0xff, yofs = (rr.clear2 >> 24) & 0xff;
         for (int y = 0; y < SCREEN_H; y++) {
             for (int x = 0; x < SCREEN_W; x++) {
-                frame[y][x] = base;
+                uint32_t at = (((yofs + (uint32_t) y) & 0xff) << 9) + (((xofs + (uint32_t) x) & 0xff) << 1);
+                uint16_t c = tex_read16(0x40000 + at), d = tex_read16(0x60000 + at);
+                int addr = PIXEL(x, y);
+                color_buf[addr] = rgb555_to_6(c) | ((c & 0x8000) ? 0x1f000000u : 0);
+                depth_buf[addr] = (d & 0x7fffu) * 0x200 + 0x1ff;
+                attr_buf[addr] = id | (d & 0x8000u);
             }
         }
         return;
     }
-    uint32_t xofs = rr.clrimage_offset & 0xff, yofs = (rr.clrimage_offset >> 8) & 0xff;
+    uint32_t color = rgb555_to_6(rr.clear1) | (((rr.clear1 >> 16) & 31) << 24);
     for (int y = 0; y < SCREEN_H; y++) {
         for (int x = 0; x < SCREEN_W; x++) {
-            uint32_t sx = (x + xofs) & 0xff, sy = (y + yofs) & 0xff;
-            uint16_t c = tex_read16(0x40000 + (sy * 256 + sx) * 2);
-            uint16_t d = tex_read16(0x60000 + (sy * 256 + sx) * 2);
-            Pixel *px = &frame[y][x];
-            *px = base;
-            px->r = (uint8_t) expand6(c & 31);
-            px->g = (uint8_t) expand6((c >> 5) & 31);
-            px->b = (uint8_t) expand6((c >> 10) & 31);
-            px->a = (c & 0x8000) ? 31 : 0;
-            uint32_t d15 = d & 0x7fff;
-            px->depth = d15 * 0x200 + ((d15 + 1) / 0x8000) * 0x1ff;
-            px->flags = (uint8_t) ((d & 0x8000) ? PF_FOG : 0);
+            int addr = PIXEL(x, y);
+            color_buf[addr] = color;
+            attr_buf[addr] = id | (rr.clear1 & 0x8000u);
         }
     }
 }
 
-/* Edge marking: an edge pixel whose opaque ID differs from a neighbour's, and that is nearer
- * than that neighbour, takes the edge colour of its ID group. Outside the screen the rear
- * plane's ID counts. */
+/* Edge marking: a top pixel on a polygon edge whose opaque ID differs from a neighbour's,
+ * and that is nearer than it, takes the edge colour of its ID group (the alpha stays) and
+ * half coverage. */
 static void edge_marking(void)
 {
-    static uint8_t mark[SCREEN_H][SCREEN_W];
-    uint32_t clear_id = (rr.clear_color >> 24) & 63;
     for (int y = 0; y < SCREEN_H; y++) {
         for (int x = 0; x < SCREEN_W; x++) {
-            const Pixel *px = &frame[y][x];
-            mark[y][x] = 0;
-            if ((px->flags & PF_EDGE) == 0) {
+            int addr = PIXEL(x, y);
+            uint32_t attr = attr_buf[addr];
+            if (!(attr & A_EDGES)) {
                 continue;
             }
-            static const int dx[4] = {-1, 1, 0, 0}, dy[4] = {0, 0, -1, 1};
-            for (int k = 0; k < 4; k++) {
-                int nx = x + dx[k], ny = y + dy[k];
-                uint32_t nid;
-                uint32_t ndepth;
-                if (nx < 0 || nx >= SCREEN_W || ny < 0 || ny >= SCREEN_H) {
-                    nid = clear_id;
-                    ndepth = 0xffffffffu;
-                } else {
-                    nid = frame[ny][nx].opaque_id;
-                    ndepth = frame[ny][nx].depth;
-                }
-                if (nid != px->opaque_id && px->depth < ndepth) {
-                    mark[y][x] = 1;
-                    break;
-                }
+            uint32_t id = attr >> 24, z = depth_buf[addr];
+            static const int step[4] = {-1, 1, -BUF_W, BUF_W};
+            int mark = 0;
+            for (int k = 0; k < 4 && !mark; k++) {
+                mark = id != (attr_buf[addr + step[k]] >> 24) && z < depth_buf[addr + step[k]];
             }
-        }
-    }
-    for (int y = 0; y < SCREEN_H; y++) {
-        for (int x = 0; x < SCREEN_W; x++) {
-            if (mark[y][x]) {
-                uint16_t c = rr.edge[frame[y][x].opaque_id >> 3];
-                frame[y][x].r = (uint8_t) expand6(c & 31);
-                frame[y][x].g = (uint8_t) expand6((c >> 5) & 31);
-                frame[y][x].b = (uint8_t) expand6((c >> 10) & 31);
+            if (mark) {
+                color_buf[addr] = rgb555_to_6(rr.edge[id >> 3]) | (color_buf[addr] & 0xff000000u);
+                attr_buf[addr] = (attr & ~0x1f00u) | 0x1000u;
             }
         }
     }
 }
 
-/* Fog: the density from the 32-entry table at the pixel's depth (depth >> 9 against the
- * 15-bit boundaries), blended over colour and alpha, or alpha only (DISP3DCNT bit 6). */
+/* The fog density at a depth: the table entry by (depth - offset) / 4 shifted by the fog
+ * shift, 17 bits of it the fraction towards the next entry; 127 counts as 128. */
+static uint32_t fog_density(uint32_t z)
+{
+    uint32_t id = 0, frac = 0;
+    if (z >= rr.fog_offset) {
+        z = ((z - rr.fog_offset) >> 2) << rr.fog_shift;
+        id = z >> 17;
+        frac = z & 0x1ffff;
+        if (id >= 32) {
+            id = 32;
+            frac = 0;
+        }
+    }
+    uint32_t d = (rr.fog_table[id] * (0x20000 - frac) + rr.fog_table[id + 1] * frac) >> 17;
+    return d >= 127 ? 128 : d;
+}
+
+static void fog_pixel(int addr, int color_too)
+{
+    uint32_t d = fog_density(depth_buf[addr]), c = color_buf[addr], f = rgb555_to_6(rr.fog_color);
+    uint32_t r = c & 0x3f, g = (c >> 8) & 0x3f, b = (c >> 16) & 0x3f, a = (c >> 24) & 0x1f;
+    if (color_too) {
+        r = ((f & 0x3f) * d + r * (128 - d)) >> 7;
+        g = (((f >> 8) & 0x3f) * d + g * (128 - d)) >> 7;
+        b = (((f >> 16) & 0x3f) * d + b * (128 - d)) >> 7;
+    }
+    a = (((rr.fog_color >> 16) & 31) * d + a * (128 - d)) >> 7;
+    color_buf[addr] = COLOR(r, g, b, a);
+}
+
+/* Fog over colour and alpha, or alpha only (DISP3DCNT bit 6), on the top pixels and on the
+ * lower ones of edges. */
 static void apply_fog(void)
 {
-    uint32_t shift = (rr.disp3dcnt >> 8) & 15;
-    int32_t step = (int32_t) (0x400u >> shift);
-    int32_t offset = (int32_t) rr.fog_offset;
-    int32_t fr = expand6((int32_t) (rr.fog_color & 31)), fg = expand6((int32_t) ((rr.fog_color >> 5) & 31)),
-            fb = expand6((int32_t) ((rr.fog_color >> 10) & 31)), fa = (int32_t) ((rr.fog_color >> 16) & 31);
-    int alpha_only = (rr.disp3dcnt >> 6) & 1;
+    int color_too = !(rr.disp3dcnt & (1u << 6));
     for (int y = 0; y < SCREEN_H; y++) {
         for (int x = 0; x < SCREEN_W; x++) {
-            Pixel *px = &frame[y][x];
-            if ((px->flags & PF_FOG) == 0) {
-                continue;
+            int addr = PIXEL(x, y);
+            uint32_t attr = attr_buf[addr];
+            if (attr & A_FOG) {
+                fog_pixel(addr, color_too);
             }
-            int32_t d = (int32_t) (px->depth >> 9);
-            int32_t density;
-            if (step == 0 || d < offset + step) {
-                density = rr.fog_table[0];
-            } else if (d >= offset + step * 32) {
-                density = rr.fog_table[31];
-            } else {
-                int32_t n = (d - offset) / step - 1; /* boundary n = offset + step * (n + 1) */
-                int32_t frac = (d - offset) % step;
-                density = rr.fog_table[n] + ((rr.fog_table[n + 1] - rr.fog_table[n]) * frac) / step;
+            if ((attr & A_EDGES) && (attr_buf[addr + BUF_SIZE] & A_FOG)) {
+                fog_pixel(addr + BUF_SIZE, color_too);
             }
-            if (density == 127) {
-                density = 128;
-            }
-            if (!alpha_only) {
-                px->r = (uint8_t) ((fr * density + px->r * (128 - density)) / 128);
-                px->g = (uint8_t) ((fg * density + px->g * (128 - density)) / 128);
-                px->b = (uint8_t) ((fb * density + px->b * (128 - density)) / 128);
-            }
-            px->a = (uint8_t) ((fa * density + px->a * (128 - density)) / 128);
         }
     }
 }
 
-/* The rendering order within each pass: by the bottom line, then the top line, then the
- * order of submission (GBATEK, "DS 3D Polygon Definitions by Vertices"). */
-static int compare_y(const void *x, const void *y)
+/* Anti-aliasing: an edge pixel is mixed with the one below by its coverage; the colour only
+ * when the lower pixel has alpha. */
+static void anti_alias(void)
+{
+    for (int y = 0; y < SCREEN_H; y++) {
+        for (int x = 0; x < SCREEN_W; x++) {
+            int addr = PIXEL(x, y);
+            uint32_t attr = attr_buf[addr];
+            if (!(attr & A_EDGES)) {
+                continue;
+            }
+            uint32_t cov = (attr >> 8) & 31;
+            if (cov == 31) {
+                continue;
+            }
+            uint32_t below = color_buf[addr + BUF_SIZE];
+            if (cov == 0) {
+                color_buf[addr] = below;
+                continue;
+            }
+            uint32_t top = color_buf[addr], k = cov + 1;
+            uint32_t r = top & 0x3f, g = (top >> 8) & 0x3f, b = (top >> 16) & 0x3f, a = (top >> 24) & 0x1f;
+            uint32_t ba = (below >> 24) & 0x1f;
+            if (ba > 0) {
+                r = (r * k + (below & 0x3f) * (32 - k)) >> 5;
+                g = (g * k + ((below >> 8) & 0x3f) * (32 - k)) >> 5;
+                b = (b * k + ((below >> 16) & 0x3f) * (32 - k)) >> 5;
+            }
+            a = (a * k + ba * (32 - k)) >> 5;
+            color_buf[addr] = COLOR(r, g, b, a);
+        }
+    }
+}
+
+/* The rendering order: opaque polygons first, then translucent ones, each by bottom line,
+ * then top line, then submission; translucent ones in submission order when sorted manually
+ * (the last SWAP_BUFFERS bit 0). */
+static int compare_polygons(const void *x, const void *y)
 {
     const Polygon *const *a = x, *const *b = y;
-    if ((*a)->ybot != (*b)->ybot) {
-        return (*a)->ybot < (*b)->ybot ? -1 : 1;
+    if ((*a)->key != (*b)->key) {
+        return (*a)->key < (*b)->key ? -1 : 1;
     }
-    if ((*a)->ytop != (*b)->ytop) {
-        return (*a)->ytop < (*b)->ytop ? -1 : 1;
+    return (*a)->order < (*b)->order ? -1 : (*a)->order > (*b)->order;
+}
+
+static int compare_order(const void *x, const void *y)
+{
+    const Polygon *const *a = x, *const *b = y;
+    int ta = (*a)->translucent, tb = (*b)->translucent;
+    if (ta != tb) {
+        return ta - tb;
     }
-    return (*a)->order<(*b)->order ? -1 : (*a)->order>(*b)->order ? 1 : 0;
+    if (!ta) {
+        return compare_polygons(x, y);
+    }
+    return (*a)->order < (*b)->order ? -1 : (*a)->order > (*b)->order;
 }
 
 static void render_list(PolygonList *list)
@@ -1786,25 +2466,32 @@ static void render_list(PolygonList *list)
     capture_registers();
     clear_frame();
 
-    /* opaque polygons in order, then translucent ones, by top line unless sorted manually */
-    static Polygon *order[POLYGON_RAM];
-    int opaque = 0, translucent = 0;
+    static const Polygon *order[POLYGON_RAM];
     for (int i = 0; i < list->polygons; i++) {
-        if (!list->poly[i].translucent) {
-            order[opaque++] = &list->poly[i];
+        order[i] = &list->poly[i];
+    }
+    qsort(order, (size_t) list->polygons, sizeof(order[0]), list->manual_sort ? compare_order : compare_polygons);
+    int count = 0;
+    for (int i = 0; i < list->polygons; i++) {
+        if (!order[i]->degenerate) {
+            raster_setup(&raster[count++], order[i]);
         }
     }
-    for (int i = 0; i < list->polygons; i++) {
-        if (list->poly[i].translucent) {
-            order[opaque + translucent++] = &list->poly[i];
+    /* line by line, each polygon on the line in order */
+    prev_shadow_mask = 0;
+    for (int y = 0; y < SCREEN_H; y++) {
+        for (int i = 0; i < count; i++) {
+            Raster *rp = &raster[i];
+            const Polygon *p = rp->p;
+            if (y < p->ytop || (y >= p->ybot && !(y == p->ytop && p->ybot == p->ytop))) {
+                continue;
+            }
+            if (p->shadow_mask) {
+                mask_line(rp, y);
+            } else {
+                draw_line(rp, y);
+            }
         }
-    }
-    qsort(order, (size_t) opaque, sizeof(order[0]), compare_y);
-    if (!list->manual_sort) {
-        qsort(order + opaque, (size_t) translucent, sizeof(order[0]), compare_y);
-    }
-    for (int i = 0; i < opaque + translucent; i++) {
-        draw_polygon(order[i], list->wbuffer);
     }
     if (rr.disp3dcnt & (1u << 5)) {
         edge_marking();
@@ -1812,11 +2499,15 @@ static void render_list(PolygonList *list)
     if (rr.disp3dcnt & (1u << 7)) {
         apply_fog();
     }
+    if (rr.disp3dcnt & (1u << 4)) {
+        anti_alias();
+    }
     for (int y = 0; y < SCREEN_H; y++) {
         for (int x = 0; x < SCREEN_W; x++) {
-            const Pixel *px = &frame[y][x];
-            out_color[y][x] = (uint16_t) ((px->r >> 1) | ((px->g >> 1) << 5) | ((px->b >> 1) << 10) | (px->a ? 0x8000 : 0));
-            out_alpha[y][x] = px->a;
+            uint32_t c = color_buf[PIXEL(x, y)] & 0x1f3f3f3fu, a = c >> 24;
+            out_full[y][x] = c;
+            out_color[y][x] =
+                (uint16_t) (((c & 0x3f) >> 1) | (((c >> 8) & 0x3f) >> 1) << 5 | (((c >> 16) & 0x3f) >> 1) << 10 | (a ? 0x8000 : 0));
         }
     }
     render_seconds += (double) (clock() - start) / CLOCKS_PER_SEC;
@@ -1886,16 +2577,16 @@ void gpu3d_vblank(void)
     ge.swap_pending = 0;
     count_swaps++;
     PolygonList *done = &lists[geometry_list];
-    /* the parameters of the swap apply to the list built after it */
-    done->wbuffer = (int) (ge.swap_param >> 1) & 1;
-    done->manual_sort = (int) ge.swap_param & 1;
-    ge.swap_param = ge.swap_param_next;
+    done->manual_sort = (int) ge.flush_attr & 1;
+    capture_list_end(done);
     render_3d(geometry_list); /* gpu3d_render, here or on the drawing thread */
     geometry_list ^= 1;
     lists[geometry_list].polygons = 0;
     lists[geometry_list].vertices = 0;
-    lists[geometry_list].wbuffer = (int) (ge.swap_param >> 1) & 1;
-    lists[geometry_list].manual_sort = (int) ge.swap_param & 1;
+    ge.last_strip = -1; /* the polygon RAM is the other list's now */
+    if (cap.on) {
+        capture_list_start();
+    }
     drain_fifo(); /* the engine resumes with the commands that waited for the swap */
 }
 
@@ -1911,7 +2602,7 @@ void gpu3d_render(int list)
             }
         }
         fprintf(stderr, "gx: frame %u swap %u: %d polygons %d vertices, DISP3DCNT %04x clear %08x, %d pixels drawn\n",
-                io_frame(), ge.swap_param, done->polygons, done->vertices, rr.disp3dcnt, rr.clear_color, drawn);
+                io_frame(), ge.flush_attr, done->polygons, done->vertices, rr.disp3dcnt, rr.clear1, drawn);
     }
     maybe_dump();
 }
@@ -1921,9 +2612,9 @@ const uint16_t *gpu3d_line(int y)
     return out_color[y < 0 ? 0 : y >= SCREEN_H ? SCREEN_H - 1 : y];
 }
 
-const uint8_t *gpu3d_line_alpha(int y)
+const uint32_t *gpu3d_line_rgb6(int y)
 {
-    return out_alpha[y < 0 ? 0 : y >= SCREEN_H ? SCREEN_H - 1 : y];
+    return out_full[y < 0 ? 0 : y >= SCREEN_H ? SCREEN_H - 1 : y];
 }
 
 void gpu3d_report(FILE *out)
@@ -1934,6 +2625,29 @@ void gpu3d_report(FILE *out)
             (unsigned long long) count_commands, (unsigned long long) count_fifo_lost, (unsigned long long) count_polygons,
             (unsigned long long) count_dropped, (unsigned long long) count_swaps, (unsigned long long) count_frames,
             render_seconds * 1000.0, count_frames ? render_seconds * 1000.0 / (double) count_frames : 0.0);
+}
+
+int gpu3d_capture_write(const char *path)
+{
+    if (!cap.last_valid) {
+        return 1;
+    }
+    FILE *f = fopen(path, "wb");
+    if (f == NULL) {
+        return -1;
+    }
+    uint32_t head[4] = {0x44335847u, 1, (uint32_t) cap.last_state.n, (uint32_t) cap.last_log.n};
+    int ok = fwrite(head, 4, 4, f) == 4;
+    ok &= fwrite(cap.last_state.w, 4, cap.last_state.n, f) == cap.last_state.n;
+    ok &= fwrite(cap.last_log.w, 4, cap.last_log.n, f) == cap.last_log.n;
+    uint32_t np = (uint32_t) cap.last_polys.n;
+    ok &= fwrite(&np, 4, 1, f) == 1;
+    ok &= fwrite(cap.last_polys.w, 4, cap.last_polys.n, f) == cap.last_polys.n;
+    ok &= fwrite(cap.regs, 1, IO_REG_SIZE, f) == IO_REG_SIZE;
+    ok &= fwrite(cap.mem, 1, IO_VIDEO_SIZE, f) == IO_VIDEO_SIZE;
+    ok &= fwrite(out_full, 4, SCREEN_W * SCREEN_H, f) == SCREEN_W * SCREEN_H;
+    ok &= fclose(f) == 0;
+    return ok ? 0 : -1;
 }
 
 void gpu3d_init(void)
@@ -1948,7 +2662,9 @@ void gpu3d_init(void)
     memcpy(ge.vec, identity, sizeof(identity));
     memcpy(ge.tex, identity, sizeof(identity));
     update_clip_matrix();
-    ge.viewport = 0xbfff0000u; /* the full screen */
+    set_viewport(0xbfff0000u); /* the full screen */
+    ge.dot_limit = 0xffffff;   /* until DISP_1DOT_DEPTH is written, no dot is too far */
+    ge.last_strip = -1;
     for (int i = 0; i < 2; i++) {
         if (lists[i].poly == NULL) {
             lists[i].poly = calloc(POLYGON_RAM, sizeof(Polygon));
@@ -1957,7 +2673,7 @@ void gpu3d_init(void)
     }
     geometry_list = 0;
     memset(out_color, 0, sizeof(out_color));
-    memset(out_alpha, 0, sizeof(out_alpha));
+    memset(out_full, 0, sizeof(out_full));
 
     /* RUN_DUMP3D=<dir>[:<list>], the list as n, a-b or a-b/step, comma-separated; without
        one RUN_PNG_FRAMES (tools/run.py --frames) is used, and without that every frame. The

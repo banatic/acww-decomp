@@ -8,9 +8,11 @@
 
 #include "frame.h"
 #include "gpu2d.h"
+#include "gpu3d.h"
 #include "input.h"
 #include "io.h"
 #include "memory.h"
+#include "render.h"
 
 #if !defined(_WIN32)
 #include <signal.h>
@@ -134,6 +136,7 @@ int drive_enabled(void)
         enabled = v != NULL && *v && strcmp(v, "0") != 0;
         if (enabled) {
             starts_load();
+            gpu3d_capture_start();
         }
     }
     return enabled;
@@ -251,6 +254,14 @@ void drive_frame(uint32_t frame)
                 ok &= fclose(f) == 0;
             }
             answer(ok ? "@ok" : "@err cannot write %s", a);
+        } else if (strcmp(cmd, "gx3d") == 0 && n >= 2) {
+            render_finish(); /* the last list drawn */
+            int r = gpu3d_capture_write(a);
+            if (r == 0) {
+                answer("@ok");
+            } else {
+                answer(r > 0 ? "@err no list followed from its start yet" : "@err cannot write %s", a);
+            }
         } else if (strcmp(cmd, "seen") == 0 && n >= 2) {
             answer(seen_write(a) == 0 ? "@ok %u" : "@err cannot write", seen_count);
         } else if (strcmp(cmd, "log") == 0 && n >= 2) {

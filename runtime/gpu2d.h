@@ -44,6 +44,7 @@ void gpu2d_register_written(uint32_t offset, uint32_t value);
 uint32_t gpu2d_frames(void);
 const uint32_t *gpu2d_screen(int top);
 
-/* BG0's 3D layer is read from gpu3d_line and gpu3d_line_alpha (runtime/gpu3d.h). */
+/* BG0's 3D layer is read from gpu3d_line_rgb6, the display capture's from gpu3d_line
+ * (runtime/gpu3d.h). */
 
 #endif

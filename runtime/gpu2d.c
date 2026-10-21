@@ -161,16 +161,15 @@ static enum BgKind bg_kind(const Engine *e, int bg, uint32_t dispcnt)
 
 static void draw_3d(Engine *e, uint32_t y)
 {
-    const uint16_t *line = gpu3d_line((int) y);
-    const uint8_t *alpha = gpu3d_line_alpha((int) y);
+    const uint32_t *line = gpu3d_line_rgb6((int) y);
     /* BG0HOFS scrolls the 3D layer horizontally; the image is 256 wide in a 512-wide space
-       and the rest is transparent (the 3D layer does not wrap). */
+       and the rest is transparent (the 3D layer does not wrap). Its colours keep the 3D
+       engine's 6 bits per component. */
     uint32_t hofs = reg16(e, R_BG0HOFS) & 0x1ffu;
     for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
-        uint32_t sx = (x + hofs) & 0x1ffu;
-        int drawn = line != NULL && sx < 256 && (line[sx] & 0x8000u);
-        e->bg[0][x] = drawn ? rgb15(line[sx]) : NONE;
-        e->alpha3d[x] = (uint8_t) (drawn ? (alpha != NULL ? alpha[sx] & 31u : 31u) : 0u);
+        uint32_t sx = (x + hofs) & 0x1ffu, c = sx < 256 ? line[sx] : 0, a = (c >> 24) & 31u;
+        e->bg[0][x] = a ? (c & 0x3fu) | ((c >> 8) & 0x3fu) << 6 | ((c >> 16) & 0x3fu) << 12 : NONE;
+        e->alpha3d[x] = (uint8_t) a;
     }
 }
 

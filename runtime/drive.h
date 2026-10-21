@@ -15,6 +15,10 @@
  *                           the 3D layer with no3d), as a PNG
  *     video PATH            the I/O registers as stored, then video memory (VRAM's banks in
  *                           LCDC order, palette RAM, OAM): what the screens are drawn from
+ *     gx3d PATH             the last 3D frame rendered with what it was made from: the
+ *                           geometry engine's state at the start of its list, the commands
+ *                           of the list, the video state and the result (gpu3d.h,
+ *                           gpu3d_capture_write)
  *     log PATH              the input so far as a recording (runtime/input.h): played again
  *                           with RUN_INPUT, it gives the same run
  *     snap                  (POSIX) keep a copy of the run as it is now; answers its id
