@@ -176,3 +176,49 @@ unknown groups say what to find first.
 | other paths of shared code the scenes already run | 1234 (392 / 842) | autoload_2/sound_scene 84, main/scene_command 36, main/scene_motion 35, autoload_2/heap 31, autoload_2/sound_object_kinds 28, main/activity_fields 28, main/slot_pool 28, main/music_264 27, 200 more files (937) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
 | overlay static initialisers | 24 (5 / 19) | ov007/ov007_static_init 1, ov008/ov008_static_init 1, ov010/ov010_static_init 1, ov012/ov012_static_init 1, ov013/ov013_static_init 1, ov014/ov014_static_init 1, ov016/ov016_static_init 1, ov022/ov022_static_init 1, 16 more files (16) | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
+
+## Findings on the triggers (2026-10-22)
+
+What reading the Clean code found about the groups above; counts are of functions no scene enters.
+### ov099 / ov103 / ov108 openers
+- Dispatcher clean/ov092/menu_dispatch.c:52-63: mode 0x1c -> ov099, 0x24 -> ov103, 0x28 -> ov108.
+- ov108 letter pick (~106): VillagerTalkPart_AskPocketsByType type 19 (clean/main/villager_talk_part.c:959) = delivery errand: villager A gives a letter (state 7/8) addressed to B; talk to B; screen opens. Path: touch letter, keys over 10 places, A on dimmed (error), cancel row, pick; second take press button 9.
+- ov099 pockets view, ov103 carried letters (~222): no writer of modes 0x1c/0x24 anywhere; ov099 setup plants fixed items (test fixture). Reclassify as unreachable/debug.
+
+### sunday-joan (Native-only diff)
+- First unique signal frame 1601/1603: call func_02051c90 (free-slot search u16 arr) r2 differs (arg2 unused in C: maybe dead).
+- DIVERGED frame 1680 in collision mover: Reference moves an ov003 actor (func_ov003_0221b414 / 0221ac70 -> func_02031288, a5=0, kind 0xb, registers SNW0/SNW1) that Native did not spawn; Native is at func_0201100c's move (a5=0xfd7).
+- Likely a spawn decision on the rainy Sunday new day (ov003 actor; func_ov003_0221a8c4, func_020b03f8 slot table, func_02051c90). Next: RAM dumps at 1600/1679, bisect the spawner path (keep Reference).
+
+### museum-halls (Native-only collision diff from frame 6400)
+- 0x021c3c38 = wall-segment list entry 2 +0x2c height (func_02030ebc fills, func_0203394c/func_020338f8 copy); 0x021c4038 = triangle container entry 0 v[0].y (func_02033a24).
+- Built in stack temporaries: func_02031ecc (int w60[13]), func_02033614 (buf[48]), func_02033a5c (v[17]), func_020328dc (Vec vv[7]).
+- First suspect: func_02030640 may not write element +0x10 (feeds func_02032fc0's min height). Also func_0202f9d0 out-param, func_02034270/func_020341c8.
+- Check runtime/library-arguments.txt / libs present for the museum run (house diverged like this without).
+- Fix: audited guest-stack effect (docs/native-guest-stack.md) for func_02031ecc, func_02033614, func_02032fc0/02032d48, func_02033118, func_02033a5c; or keep them Reference with a native-reference.txt reason. Confirm with RUN_NATIVE_CALL_TRACE=02031ecc,02033614,02032fc0 near frame 6400.
+
+### pitfall: func_0200467c (SoundSys_PlaySe) r2/r3 audit
+- 250 callers / 325 call sites, all pass one argument. Table: build/notes/callers_467c.txt.
+- Group A (source can name r2/r3, check ROM bytes): main/func_020abd68 (flag), main/func_020ac11c (param2), ov002/func_ov002_0220a05c (b,c), ov002/func_ov002_0220a08c (a2,a3), ov123/func_ov123_022999b0 (param2?). 20 sites after another call (callee leftovers), 303 with <3 params (unknowable from C).
+- func_020f1fb4's source never reads a 3rd/4th argument: forwarding helps only if its ROM code reads them; otherwise simplest fix = keep func_0200467c (and/or func_020f1fb4) Reference so the trampoline carries the ROM registers. Proposed EDITS entry for tools/native_args.py drafted (widen to 4 args) if the ROM reads them.
+
+### Barber / Resetti / second player (save recipes, bank-1 offsets = StateBlock offsets)
+- Barber (ov053, scene 0x1f upstairs in Nookington's 0x1d): NookStore at 0x171b4: spent u32 +0 (>=240000), bits u16 +0x5a (=0x1720e) level in bits 9-10 = 3, upgrade {d,m,y,pending} +0x56 (pending 0x1720d=0); and rewrite the store tile on the town map (codes 0x500d-0x5010 -> 0x5010; town_layout.h at 0xd304). Alt: level 2 + spent>=240000 + state flag 7 (0x173f4 bit 7) + upgrade due today pending=1 -> game swaps tile itself. Rich save >= 3000 bells, 8:00-22:59. Barber talks: record flag 0xb (met), daily bit 0x13, hat topics 3/9.
+- Resetti (ov077): record 0 flags u32 at 0x240c (flag 2 bit 2 = played-not-saved) set, 0x2410 bit 3 (flag 0x23) clear, count_0d at 0x2437 = N (0,2,3,4,5 cover every lecture). Continue, go outside, stand 3 south / diagonal of the house door; he rises.
+- Second player: title menu "new player" (message 0x27), Kapp'n questions, arrival, Nook's welcome. No save edit.
+
+### Field actor states / effect kinds -> actions
+- 148 of the unentered actor functions are remote-console paths (*State<N>Message, *EndState<N>Remote): move to unreachable (second DS). main 34, ov003 71, room_states 29, room_states2 8, place_states 6.
+- Best one-player scenes: pick up an item outdoors (tile action 0x15/0x16 -> state 0x18->0x1a->0x1b) and indoors (RoomStates2_RequestTakeItem) ~34; shovel on rock/buried/pitfall/bury (0x5a/0x5b/0x5c/0x5f/0x66/0x67/0x90) ~50; axe on a rock / breaking (0x47/0x49/0x4b/0x4c) ~36; performed emotes (ov111 chat_scene: states 0x13/0x14) ~15; insect lands/stings (0x79/0x78/0x6d) ~16; finds held up (0x76); fishing line taken but lost (0x52), 0x71; villager-driven (0x11, 0x89 show item from pockets, 0x3b/0x3e, head look 0x8f).
+- Indoors ~207 (43 remote): sit/turn on spots, furniture turn/hold/push/pull, telephone (pick up/on phone/hang up), haircut states (barber), room fades, chest states.
+- Hardware only: low battery 0x84, lid closed 0x83 (word 0x027fffa8 bit 15: an emulator could set it), 0x91/0x92 no caller.
+- Effect kinds: 0x37/0x38/0x39 snow/rain (date group), 0x40 scene_motion; many kinds reached via tables (unknown).
+
+### Talk engine (463 unentered)
+- Slider window talk (tag 5/5, knob answer): ~112 (mes_slider_window 45, talk_slider 30, talk_windows 16, mes_bg 16, ...). Biggest single win; message-data driven, find the villager line with tag 5/5 in the ap_* BMG files.
+- Note tags 11/x and spans (option flag 0x01): ~55, trigger unknown.
+- Villager gossip/opinion tags 4/11-4/13, 4/30, 4/33-34, 6/2, 6/13: ~20 (needs fondness, several days).
+- Villager invents a nickname (st_nickn): ~19.
+- Date/time tags 4/4-4/10: ~21; state branch tags 6/x (rain/snow, house size, hour, players, weekday): 11.
+- Second player taxi (slot 0x1c) + other player named: 9. Literal * & % { / ( ) in texts (letters/bulletin board): 16. Wireless icons: 13 (unreachable). Centred lines with tags: ~22. Resetti shakes: 3. Second-speaker focus: 4. Touching an answer row: 2.
+- ~95 effectively dead (destructors of static objects, base vtable stubs, empty tags): reclassify as not reachable by play.
