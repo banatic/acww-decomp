@@ -27,6 +27,7 @@
 #include "memory.h"
 #include "native_run.h"
 #include "render.h"
+#include "run.h"
 
 #define SLICE 512
 #define DMA_SLICE 32 /* while a DMA waits to run: its completion and interrupt come soon */
@@ -456,13 +457,19 @@ static int window_slices;
 static uint64_t irqs_at_window_start;
 static char reason_buf[256];
 
-/* Tells the Native side when a frame has begun (memory hashes are taken after one). */
+void (*run_frame_hook)(uint32_t frame);
+
+/* Tells the Native side when a frame has begun (memory hashes are taken after one), and the
+ * front end, if there is one. */
 static void frame_check(void)
 {
     static uint32_t seen;
     if (io_frame() != seen) {
         seen = io_frame();
         native_frame_ended(seen);
+        if (run_frame_hook != NULL) {
+            run_frame_hook(seen);
+        }
     }
 }
 
@@ -673,7 +680,7 @@ void run_finish(const char *reason, int status)
     exit(status);
 }
 
-int main(int argc, char **argv)
+int run_main(int argc, char **argv)
 {
     if (argc < 4) {
         fprintf(stderr, "usage: run <rom.nds> <modules.txt> <symbols.txt> [max_instructions] [max_frames]\n");
@@ -735,3 +742,10 @@ int main(int argc, char **argv)
     native_start(run_forever);
     return 0;
 }
+
+#ifndef RUN_FRONT_END
+int main(int argc, char **argv)
+{
+    return run_main(argc, argv);
+}
+#endif

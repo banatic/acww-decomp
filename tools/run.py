@@ -439,13 +439,15 @@ def build_clean(flags: list[str]) -> list[str]:
     return [f"@{listed}"]
 
 
-def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.Path:
+def build(native: bool, clean: str | None = None, ran: bool = False, play: str | None = None) -> pathlib.Path:
     """The runtime; with `native`, linked with every Native object as tools/diffcheck.py
     --native links them (runtime/native_table.h), else with an empty table; with `clean`, also
     with the Clean code (write_clean_table); with `ran`, also with runtime/clean_ran.c, which
     lists the Clean functions that run (--clean-ran), as a program of its own. The Clean code is
-    the same: what each function computes and leaves in registers must not change."""
-    exe = OUT / (("run-native" if native else "run") + ("-ran" if ran else "") + (".exe" if WINDOWS else ""))
+    the same: what each function computes and leaves in registers must not change. With `play`
+    (a program name), the same run with runtime/play.c's window in front (tools/play.py)."""
+    name = play or (("run-native" if native else "run") + ("-ran" if ran else ""))
+    exe = OUT / (name + (".exe" if WINDOWS else ""))
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
              "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
     if not WINDOWS:
@@ -488,6 +490,13 @@ def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.
         srcs.append(str(RUNTIME / "native_none.c"))
         if not WINDOWS:
             link = ["-no-pie", "-Wl,-z,noexecstack"]
+    if play:
+        # run.c without its main, the front end's in its place (runtime/run.h). The window's
+        # libraries load once the DS's memory is mapped: loaded with the program, they take
+        # address space the DS's main RAM needs.
+        srcs.append(str(RUNTIME / "play.c"))
+        flags = [*flags, "-DRUN_FRONT_END"]
+        link = [*link, "-luser32", "-lgdi32", "-ldelayimp", "-Wl,/DELAYLOAD:user32.dll", "-Wl,/DELAYLOAD:gdi32.dll"]
     cmd = [*diffcheck.compiler(), *flags, *srcs, *extra, *link, "-o", str(exe)]
     key = link_key(cmd)  # an unchanged program is not linked again
     if built_before(exe, key):

@@ -414,11 +414,16 @@ int frame_last_png(const char *path)
     return png_write(path, both, 256, 384);
 }
 
+void (*frame_output_hook)(uint32_t frame, const uint32_t *upper, const uint32_t *lower);
+
 void frame_output(uint32_t frame, const uint32_t *upper, const uint32_t *lower)
 {
     frames_output++;
     last_upper = upper;
     last_lower = lower;
+    if (frame_output_hook != NULL) {
+        frame_output_hook(frame, upper, lower);
+    }
     if (png_dir != NULL && *png_dir && png_wanted(frame)) {
         static uint32_t both[256 * 384];
         memcpy(both, upper, 256 * 192 * sizeof(uint32_t));

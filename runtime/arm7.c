@@ -63,7 +63,7 @@ static struct {
     uint8_t *backup;
     uint64_t backup_reads, backup_writes;
 } arm7;
-#define BACKUP_SIZE 0x40000u
+#define BACKUP_SIZE ARM7_BACKUP_SIZE
 
 static uint32_t rd32(uint32_t a)
 {
@@ -555,6 +555,12 @@ void arm7_step(void)
             arm7.unanswered[word & 0x1f]++;
         }
     }
+}
+
+const uint8_t *arm7_backup(uint64_t *writes)
+{
+    *writes = arm7.backup_writes;
+    return arm7.backup;
 }
 
 void arm7_report(FILE *out)

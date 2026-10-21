@@ -30,6 +30,11 @@ void frame_output(uint32_t frame, const uint32_t *upper, const uint32_t *lower);
 /* The last frame output as a PNG (upper screen above the lower one); 0 on success. */
 int frame_last_png(const char *path);
 
+/* A front end's view of each frame as it is output (runtime/play.c shows it in a window),
+ * called with the same pixels as the PNGs and hashes; on the drawing thread when there is
+ * one. NULL in the headless runs. */
+extern void (*frame_output_hook)(uint32_t frame, const uint32_t *upper, const uint32_t *lower);
+
 /* One line for the run report: frames output, PNGs written, and a SHA-1 over every frame's
  * pair of hashes in order, so two runs compare with one line. */
 void frame_report(FILE *out);

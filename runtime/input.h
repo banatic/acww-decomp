@@ -39,4 +39,11 @@ int input_touch(int *x, int *y);
 int input_drive_set(uint32_t frame, const char *keys, const char *touch);
 int input_write_log(const char *path);
 
+/* Live input from a front end (runtime/play.c), held on top of the recording: `keys` in the
+ * recording's bits (0-9 as KEYINPUT, 10-11 X and Y) are added to the recording's, and a pen
+ * down here (`touch` nonzero, x,y on the lower screen) takes the place of the recording's.
+ * The front end sets it at the start of a frame, so what the game reads still depends only on
+ * the emulated time. Without a call nothing is added. */
+void input_live(uint32_t keys, int touch, int x, int y);
+
 #endif

@@ -17,6 +17,7 @@ typedef struct InputEvent {
 static InputEvent *events;
 static int event_count, event_capacity, next_event;
 static InputEvent state;
+static InputEvent live; /* from a front end (input_live) */
 /* With a driver (drive.h): the states applied so far, for its log */
 static InputEvent *applied;
 static int applied_count, applied_capacity;
@@ -183,19 +184,28 @@ int input_write_log(const char *path)
 uint32_t input_keys(void)
 {
     input_frame(io_frame());
-    return state.keys & 0x3ffu;
+    return (state.keys | live.keys) & 0x3ffu;
 }
 
 uint32_t input_keys_xy(void)
 {
     input_frame(io_frame());
-    return (state.keys >> 10) & 3u;
+    return ((state.keys | live.keys) >> 10) & 3u;
 }
 
 int input_touch(int *x, int *y)
 {
     input_frame(io_frame());
-    *x = state.x;
-    *y = state.y;
-    return state.touch;
+    const InputEvent *pen = live.touch ? &live : &state;
+    *x = pen->x;
+    *y = pen->y;
+    return pen->touch;
+}
+
+void input_live(uint32_t keys, int touch, int x, int y)
+{
+    live.keys = keys & 0xfffu;
+    live.touch = touch != 0;
+    live.x = x < 0 ? 0 : x > 255 ? 255 : x;
+    live.y = y < 0 ? 0 : y > 191 ? 191 : y;
 }

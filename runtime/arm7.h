@@ -18,4 +18,10 @@ void arm7_step(void);
 /* The PXI traffic seen so far: every tag, what was sent on it and what was answered. */
 void arm7_report(FILE *out);
 
+/* The save chip's image (ARM7_BACKUP_SIZE bytes, as RUN_SAVE loads it) and, in *writes, how
+ * many writes the game has made to it so far: a front end (runtime/play.c) writes the image
+ * back to its save file when the count moves. */
+#define ARM7_BACKUP_SIZE 0x40000u
+const uint8_t *arm7_backup(uint64_t *writes);
+
 #endif
