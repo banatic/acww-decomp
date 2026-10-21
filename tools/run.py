@@ -357,10 +357,17 @@ def build_clean(flags: list[str]) -> list[str]:
     # uninitialized locals filled as the Native objects' are (tools/native.py), so the memory
     # comparison tells the bytes a structure filled in part passes on from the game's values
     flags += ["-ftrivial-auto-var-init=pattern"]
+    # indirect calls through natives.s's thunks, as Native code's (tools/native.py, flags_for)
+    flags += native_build.indirect_flags(diffcheck.compiler())
     tree = OUT / "clean"
     profiles = {r[1] for r in clean_registrations("all")}
+    # A direct call to a function without a Native goes through its native_call_ stub, as
+    # Native code's does (tools/native.py, call_targets): the ones natives.s does not have
+    # are in clean-calls.s. The PC's own C library functions (memcpy, ...) stay the PC's.
+    calls = native_build.call_targets(syms, known - native - native_build.HOST_NAMES)
     # what the rewrite of every object depends on besides the object
-    rewritten = hashlib.sha1("\n".join([*sorted(known), "", *sorted(native), "", prefix, *sorted(profiles)]).encode())
+    rewritten = hashlib.sha1("\n".join([*sorted(known), "", *sorted(native), "", prefix, *sorted(profiles), "",
+                                        *sorted(calls)]).encode())
     for tool in ("objrewrite.py", "native_clean_profile.py"):
         rewritten.update((C.ROOT / "tools" / tool).read_bytes())
     compiler = [*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}"]
@@ -405,14 +412,25 @@ def build_clean(flags: list[str]) -> list[str]:
     with cf.ThreadPoolExecutor(max(1, (os.cpu_count() or 4) - 2)) as pool:
         built = list(pool.map(one, sources))
     # the compiles run side by side; the rewrite (module state in tools/objrewrite.py) one by one
-    for obj, key in built:
-        if key:
-            data, _ = native_clean_profile.rewrite(obj.read_bytes(), known, native, prefix, profiles)
-            obj.write_bytes(data)
-            obj.with_suffix(".key").write_text(key)
-            C.cache_put("clean", key, obj)
+    saved_calls = objrewrite.CALLS
+    try:
+        objrewrite.CALLS = calls
+        for obj, key in built:
+            if key:
+                data, _ = native_clean_profile.rewrite(obj.read_bytes(), known, native, prefix, profiles)
+                obj.write_bytes(data)
+                obj.with_suffix(".key").write_text(key)
+                C.cache_put("clean", key, obj)
+    finally:
+        objrewrite.CALLS = saved_calls
     objects = [obj for obj, _ in built]
     objects.append(compile_asm(OUT / "clean-profile.s", OUT / "clean-profile.o"))
+    stubbed = set(re.findall(rf"^{prefix}{objrewrite.CALL}(\w+):", (NATIVE / "natives.s").read_text(), re.M))
+    stubs = native_build.call_stubs(syms, calls - stubbed)
+    if not WINDOWS:
+        stubs += ['\t.section .note.GNU-stack,"",@progbits']
+    (OUT / "clean-calls.s").write_text("\n".join(["\t.text", *stubs]) + "\n", newline="\n")
+    objects.append(compile_asm(OUT / "clean-calls.s", OUT / "clean-calls.o"))
     names = diffcheck.game_names(objects)
     # Through a response file, as the Native objects are: the paths would pass Windows's limit
     # on a command line.
