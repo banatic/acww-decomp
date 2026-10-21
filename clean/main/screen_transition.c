@@ -37,7 +37,6 @@ static_assert(sizeof(ScreenTransitionFunctions) == 0x10, "ScreenTransitionFuncti
 
 #define PLANE_BG2 0x04
 #define PLANE_OBJ 0x10
-#define WINDOW_0 0x01
 #define WINDOW_0_PLANES 0x1b /* BG0, BG1, BG3 and OBJ inside the circle */
 #define BRIGHTNESS_BLACK (-16)
 #define BRIGHTNESS_WHITE 16

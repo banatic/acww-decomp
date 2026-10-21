@@ -199,6 +199,9 @@ scene("museum", "museum", 15700, [2600, 4600, 6900, 8700, 11000, 12400, 13800, 1
       frames(4300, 15700, 100), "walk to the museum, give Blathers a fish, an insect, a fossil and a "
       "painting, visit the insect and painting rooms and talk to Brewster in the cafe")
 
+scene("villager-home", "seed", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
+      "walk into a villager's house and talk to it there")
+
 
 # ------------------------------------------------------------------------------ saves
 

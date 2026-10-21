@@ -52,7 +52,7 @@ static_assert(sizeof(RoomVillager) == 0x8dc, "the size func_ov004_0221ee98 alloc
 #define ROOM_VILLAGER_MOTION 0x564       /* SceneMotion */
 #define ROOM_VILLAGER_ACTION 0x618       /* SceneAction */
 #define ROOM_VILLAGER_CLOTHES 0x64c      /* VillagerClothes */
-#define ROOM_VILLAGER_TALK 0x680         /* VillagerTalk: its talk scene */
+#define ROOM_VILLAGER_TALK_SCENE 0x680   /* VillagerTalk: its talk scene */
 #define ROOM_VILLAGER_RECORD 0x830       /* u8 *: its town record */
 #define ROOM_VILLAGER_MOOD 0x83c         /* VillagerMood */
 
@@ -140,7 +140,7 @@ static SceneAction *rv_action_of(RoomVillager *villager)
 
 static VillagerTalk *rv_talk_of(RoomVillager *villager)
 {
-    return (VillagerTalk *) (void *) rv_part(villager, ROOM_VILLAGER_TALK);
+    return (VillagerTalk *) (void *) rv_part(villager, ROOM_VILLAGER_TALK_SCENE);
 }
 
 static s16 rv_yaw_of(RoomVillager *villager)

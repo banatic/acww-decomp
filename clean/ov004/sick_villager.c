@@ -83,7 +83,7 @@ static_assert(sizeof(SickVillager) == 0xa94, "the size func_ov004_02222a88 alloc
 /* State 1: its frames, the frame its act 7 starts at, and the act ending it. */
 #define SICK_VILLAGER_ACT_FRAMES 0x46
 #define SICK_VILLAGER_ACT_START_FRAME 0x45
-#define SICK_VILLAGER_ACT 7
+#define SICK_VILLAGER_ACT_SHOWN 7
 #define SICK_VILLAGER_ACT_NONE 0
 /* The wait after state 1: 20 frames and up to 19 more. */
 #define SICK_VILLAGER_ACT_WAIT_BASE 0x14
@@ -375,7 +375,7 @@ void SickVillager_UpdateAct(SickVillager *villager)
 {
     switch (villager->act_wait) {
         case SICK_VILLAGER_ACT_START_FRAME:
-            SceneMotion_RequestAct(sk_motion_of(villager), 1, SICK_VILLAGER_ACT, data_020c80f8);
+            SceneMotion_RequestAct(sk_motion_of(villager), 1, SICK_VILLAGER_ACT_SHOWN, data_020c80f8);
             break;
         case 1:
             SceneMotion_RequestAct(sk_motion_of(villager), 1, SICK_VILLAGER_ACT_NONE, data_020c80f8);

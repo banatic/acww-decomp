@@ -34,6 +34,52 @@ def tracked_or_present() -> list[pathlib.Path]:
         return [p for p in C.ROOT.rglob("*") if p.is_file() and ".git" not in p.parts]
 
 
+def macro_shadows() -> list[str]:
+    """A Clean file's #define named like an enumerator of a header it includes replaces that
+    constant everywhere after it without a warning: room_villager.c's offset of the talk scene,
+    ROOM_VILLAGER_TALK (0x680), stood in for the state ROOM_VILLAGER_TALK (1)."""
+    include = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
+    enum = re.compile(r"\benum\b[^{;]*\{(.*?)\}", re.S)
+    define = re.compile(r"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)\b", re.M)
+    cache: dict[pathlib.Path, tuple[list[pathlib.Path], set[str]]] = {}
+
+    def parse(path: pathlib.Path) -> tuple[list[pathlib.Path], set[str]]:
+        if path not in cache:
+            text = path.read_text(encoding="utf-8", errors="replace")
+            found = []
+            for name in include.findall(text):
+                for base in (path.parent, C.ROOT / "clean", C.INCLUDE):
+                    if (base / name).is_file():
+                        found.append((base / name).resolve())
+                        break
+            names = set()
+            for m in enum.finditer(text):
+                body = re.sub(r"/\*.*?\*/|//[^\n]*", "", m.group(1), flags=re.S)
+                names.update(re.findall(r"(?:^|,)\s*([A-Za-z_]\w*)\s*(?==|,|$)", body.strip()))
+            cache[path] = (found, names)
+        return cache[path]
+
+    errors = []
+    for p in sorted((C.ROOT / "clean").rglob("*.c")):
+        seen, todo, enumerators = set(), list(parse(p.resolve())[0]), {}
+        while todo:
+            header = todo.pop()
+            if header in seen:
+                continue
+            seen.add(header)
+            found, names = parse(header)
+            todo += found
+            for name in names:
+                enumerators.setdefault(name, header)
+        text = p.read_text(encoding="utf-8", errors="replace")
+        for m in define.finditer(text):
+            if m.group(1) in enumerators:
+                line = text.count("\n", 0, m.start()) + 1
+                errors.append(f"{p.relative_to(C.ROOT).as_posix()}:{line}: #define {m.group(1)} replaces the "
+                              f"enumerator of {enumerators[m.group(1)].relative_to(C.ROOT).as_posix()}")
+    return errors
+
+
 def main() -> None:
     errors: list[str] = []
     mods = sorted(p.name for p in (C.CONFIG / "overlays").iterdir()) + list(C.RESIDENT)
@@ -92,6 +138,8 @@ def main() -> None:
             if m.group(1) in defined and defined[m.group(1)] != rel:
                 errors.append(f"{rel}: {m.group(1)} is also defined in {defined[m.group(1)]}")
             defined.setdefault(m.group(1), rel)
+
+    errors += macro_shadows()
 
     for e in errors[:50]:
         print(e)

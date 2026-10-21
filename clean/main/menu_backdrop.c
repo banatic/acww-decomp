@@ -64,8 +64,6 @@ extern void func_0206f38c(void);
 #define LAYER_MAIN LAYER_MAIN_BG2
 #define LAYER_SUB LAYER_SUB_BG2
 
-#define WINDOW_0 0x01
-#define WINDOW_1 0x02
 #define PLANE_BG1 0x02
 #define PLANE_BG2 0x04
 #define PLANE_BG3 0x08
