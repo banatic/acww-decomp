@@ -129,7 +129,9 @@ pattern, `-ftrivial-auto-var-init=pattern`); CI runs it on Linux. The same holds
 frames of `runtime/recordings/new-game.txt` (power-on to walking in the town). A division by zero
 in Native code gives the ROM's helpers' result (the dividend), not a trap (`runtime/native_os.c`).
 `runtime/native_run.c` dispatches between the two: Reference code calling a Native function, a
-Native function calling the ROM's code through the interpreter (`native_tramp.S`), and a trace of
+Native function calling the ROM's code through the interpreter (`native_tramp.S`: a call to a
+DS address would fault and the handler send it there; direct and indirect calls go through stubs
+and thunks that do what that fault does without taking it, `tools/native.py`), and a trace of
 the Reference run's crossings that gives Native code the Reference's timing. Overlays loaded
 at one address can share most of their code (the pockets' fish and insect lists, ov115 and
 ov116, differ in three functions); a call to such an address runs the function of the overlay

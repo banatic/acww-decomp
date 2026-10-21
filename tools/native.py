@@ -85,7 +85,7 @@ def compiler() -> list[str]:
     return ["gcc", "-m32"]
 
 
-def flags_for(path: pathlib.Path) -> list[str]:
+def flags_for(path: pathlib.Path, indirect: bool = False) -> list[str]:
     lang = ["-x", "c++", "-std=c++11", "-fno-rtti"] if path.suffix == ".cpp" else ["-x", "c", "-std=gnu11"]
     # no position-independent code: references must be plain relocations tools/objrewrite.py
     # can point at the game's memory
@@ -105,8 +105,24 @@ def flags_for(path: pathlib.Path) -> list[str]:
     # on every run, and the memory comparison (runtime/native_run.c, compare_with_reference)
     # counts a word whose differing bytes are all the pattern's apart from the game's values.
     uninit = ["-ftrivial-auto-var-init=pattern"]
-    return [*lang, *pic, *layout, "-O2", "-w", *relax, *uninit, "-fwrapv", "-fno-strict-aliasing", "-fno-exceptions",
+    # With `indirect` (the objects linked into the run, compile_one; not the test fixtures,
+    # which link no natives.s), every indirect call and jump goes through
+    # __x86_indirect_thunk_<register> (INDIRECT, in natives.s): Native code calls through the
+    # ROM's vtables and function pointers, which hold DS addresses, and the thunk hands such a
+    # target to the runtime as the fault a call there takes would, without the fault. No jump
+    # tables (gcc would send their jumps through the thunk too; clang leaves them out with the
+    # thunks): every indirect branch left is a call or a tail call, where the flags the thunk
+    # changes are dead.
+    branches = indirect_flags(compiler()) if indirect else []
+    return [*lang, *pic, *layout, "-O2", "-w", *relax, *uninit, *branches, "-fwrapv", "-fno-strict-aliasing", "-fno-exceptions",
             "-include", str(C.ROOT / "runtime" / "native.h"), f"-I{C.INCLUDE}", f"-I{C.INCLUDE / 'msl'}"]
+
+
+def indirect_flags(cc: list[str]) -> list[str]:
+    """The flags that send indirect branches through the thunks (flags_for, indirect_thunks)."""
+    if "clang" in " ".join(cc):
+        return ["-mretpoline-external-thunk"]
+    return ["-mindirect-branch=thunk-extern", "-mindirect-branch-register", "-fno-jump-tables", "-fcf-protection=none"]
 
 
 def call_targets(syms, names: set[str]) -> set[str]:
@@ -125,6 +141,30 @@ def call_stubs(syms, names) -> list[str]:
         address = next(e.address | (1 if e.thumb else 0) for e in syms.by_name[name])
         lines += [f"\t.globl {PREFIX}{objrewrite.CALL}{name}", f"{PREFIX}{objrewrite.CALL}{name}:",
                   f"\tpushl $0x{address:08x}", f"\tjmp {PREFIX}native_call_stub"]
+    return lines
+
+
+# the registers the compilers' indirect-branch thunks take the target in (flags_for)
+INDIRECT = ("eax", "ecx", "edx", "ebx", "esi", "edi", "ebp")
+HOST_NAMES |= {f"__x86_indirect_thunk_{reg}" for reg in INDIRECT}  # natives.s has them
+
+
+def indirect_thunks() -> list[str]:
+    """__x86_indirect_thunk_<register>: an indirect call or jump of Native code (flags_for). A
+    target in the DS's memory map (runtime/native_run.c, native_fault_is_ds) goes to the
+    runtime through native_call_stub (runtime/native_tramp.S), as a call to it would through
+    the fault it takes; any other is the PC's code, jumped to."""
+    lines = []
+    for reg in INDIRECT:
+        name = f"{PREFIX}__x86_indirect_thunk_{reg}"
+        lines += ["\t.p2align 4", f"\t.globl {name}", f"{name}:",
+                  f"\tcmpl $0x01000000, %{reg}", "\tjb 1f",
+                  f"\tcmpl $0x10000000, %{reg}", "\tjb 2f",
+                  f"\tcmpl $0xffff0000, %{reg}", "\tjae 2f",
+                  f"\tjmp *%{reg}",
+                  "1:", f"\tcmpl $0x00010000, %{reg}", "\tjb 2f",
+                  f"\tjmp *%{reg}",
+                  "2:", f"\tpushl %{reg}", f"\tjmp {PREFIX}native_call_stub"]
     return lines
 
 
@@ -275,7 +315,7 @@ PMF_TRANSLATED: set[pathlib.Path] = set()
 
 
 def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, str]:
-    flags = flags_for(path)
+    flags = flags_for(path, indirect=True)
     obj = OUT / "obj" / path.relative_to(C.SRC).with_suffix(".o")
     source, text = path, path.read_bytes()
     relative = path.relative_to(C.SRC).as_posix()
@@ -895,6 +935,7 @@ def main() -> None:
         lines += ["\t.p2align 4", f"\t.globl {PREFIX}{thunk}", f"{PREFIX}{thunk}:", f"\tjmp {target}"]
     for name, index in sorted(profile_ids.items()):
         lines += native_profile.wrapper(name, index, PREFIX, widen.get(name))
+    lines += indirect_thunks()
     # the direct calls to the ROM's code (objrewrite.CALLS)
     lines += call_stubs(syms, called)
     lines += ["\t.data"]
