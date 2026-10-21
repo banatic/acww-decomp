@@ -14,11 +14,20 @@ reports, for the game's Clean functions:
     python tools/coverage.py --lists DIR           # DIR/*.txt or DIR/*/functions-seen.txt
     python tools/coverage.py --file ov003/field_actor   # one Clean file's functions, by state
     python tools/coverage.py --json FILE           # also write the rows as JSON
+    python tools/coverage.py --plan docs/scene-plan-groups.txt > docs/scene-plan.md
+                                                   # every function no run enters, in the plan's groups
+
+A plan file (docs/scene-plan-groups.txt) is blocks of `key: value` lines separated by blank
+lines: `area`, `group`, `scene` (what to play), `reach` (how: save, date, steps), `needs`
+(seed, date, unreachable or unknown) and `match` (patterns of `file` or `file:Name`, fnmatch
+style, file relative to clean/ without .c). Each function no run enters goes to the first group
+with a matching pattern; --plan stops with the functions no group takes.
 """
 from __future__ import annotations
 
 import argparse
 import collections
+import fnmatch
 import json
 import pathlib
 import re
@@ -79,12 +88,91 @@ def callers(syms) -> dict[Key, set[Key]]:
     return out
 
 
+PLAN_NEEDS = ("seed", "date", "unknown", "unreachable")
+
+
+def read_plan(path: pathlib.Path) -> list[dict]:
+    """The groups of a plan file, in order."""
+    groups = []
+    for block in re.split(r"\n\s*\n", path.read_text(encoding="utf-8")):
+        lines = [ln for ln in block.splitlines() if ln.strip() and not ln.startswith("#")]
+        if not lines:
+            continue
+        g: dict = {}
+        key = None
+        for ln in lines:
+            m = re.match(r"(\w+):\s*(.*)", ln)
+            if m and m.group(1) in ("area", "group", "scene", "reach", "needs", "match"):
+                key = m.group(1)
+                g[key] = m.group(2).strip()
+            elif key:
+                g[key] += " " + ln.strip()
+        missing = [k for k in ("area", "group", "scene", "reach", "needs", "match") if k not in g]
+        if missing or g["needs"] not in PLAN_NEEDS:
+            raise SystemExit(f"{path}: group {g.get('group')}: missing {missing} or bad needs {g.get('needs')}")
+        g["patterns"] = g["match"].split()
+        groups.append(g)
+    return groups
+
+
+def write_plan(groups: list[dict], clean: dict, state, counts: dict, lists: int) -> None:
+    """Every function no run enters, by group, as Markdown on stdout."""
+    left = []
+    for g in groups:
+        g["functions"] = []
+    for k in sorted(clean, key=lambda k: (clean[k][0], k)):
+        if state(k) == "run":
+            continue
+        f, name = clean[k]
+        for g in groups:
+            if any(fnmatch.fnmatchcase(f, p) if ":" not in p else fnmatch.fnmatchcase(f"{f}:{name}", p)
+                   for p in g["patterns"]):
+                g["functions"].append((k, state(k)))
+                break
+        else:
+            left.append(f"{f}:{name}")
+    if left:
+        raise SystemExit(f"{len(left)} functions no group takes, e.g. " + ", ".join(left[:20]))
+    out = []
+    total = sum(len(g["functions"]) for g in groups)
+    out.append(f"From {lists} scene lists: {len(clean):,} Clean game functions, run {counts['run']:,}, "
+               f"function check only {counts['function']:,}, read only {counts['read']:,}; "
+               f"the groups below hold {total:,} (function check only + read only).\n")
+    by_needs = collections.Counter()
+    for g in groups:
+        by_needs[g["needs"]] += len(g["functions"])
+    out.append("| needs | functions |\n|---|---|")
+    for n in PLAN_NEEDS:
+        out.append(f"| {n} | {by_needs[n]:,} |")
+    out.append(f"| total | {total:,} |\n")
+    areas = list(dict.fromkeys(g["area"] for g in groups))
+    for area in areas:
+        rows = sorted((g for g in groups if g["area"] == area and g["functions"]), key=lambda g: -len(g["functions"]))
+        if not rows:
+            continue
+        n = sum(len(g["functions"]) for g in rows)
+        out.append(f"## {area} ({n:,})\n")
+        out.append("| group | functions (check only / read only) | Clean files | scene | how to reach it | needs |")
+        out.append("|---|---|---|---|---|---|")
+        for g in rows:
+            files = collections.Counter(clean[k][0] for k, _ in g["functions"])
+            fc = sum(1 for _, s in g["functions"] if s == "function")
+            listed = ", ".join(f"{f} {c}" for f, c in files.most_common(8))
+            if len(files) > 8:
+                listed += f", {len(files) - 8} more files ({sum(c for _, c in files.most_common()[8:])})"
+            out.append(f"| {g['group']} | {len(g['functions'])} ({fc} / {len(g['functions']) - fc}) | {listed} | "
+                       f"{g['scene']} | {g['reach']} | {g['needs']} |")
+        out.append("")
+    sys.stdout.write("\n".join(out) + "\n")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--lists", type=pathlib.Path, default=C.BUILD / "scenes")
     ap.add_argument("--file", help="one Clean file (relative to clean/, no .c)")
     ap.add_argument("--top", type=int, default=40)
     ap.add_argument("--json", type=pathlib.Path)
+    ap.add_argument("--plan", type=pathlib.Path, help="a plan file: print every function no run enters by its group")
     args = ap.parse_args()
 
     syms = C.symbol_table(C.modules())
@@ -106,6 +194,11 @@ def main() -> None:
 
     names = {(s.module, s.address & ~1): s.name for s in syms.functions() if s.size} \
         if hasattr(syms, "functions") else {}
+
+    if args.plan:
+        counts = collections.Counter(state(k) for k in clean)
+        write_plan(read_plan(args.plan), clean, state, counts, len(lists))
+        return
 
     if args.file:
         rows = sorted((k for k, (f, _) in clean.items() if f == args.file), key=lambda k: k[1])
