@@ -6,11 +6,11 @@
  *     acww-play [options] [SAVE]
  *
  * The run itself is the headless one (run.c, configured by the environment as tools/run.py
- * configures it); this file only sets the environment, then watches the run through three
- * hooks that are NULL in the headless program: run_frame_hook (run.h) on the emulation's
+ * configures it); this file only sets the environment, then watches the run through two
+ * hooks that are NULL in the headless program, run_frame_hook (run.h) on the emulation's
  * thread once per frame, where the pacer waits and the input for the frame is handed over
- * (input_live), frame_output_hook (frame.h) on the drawing thread with each finished frame,
- * and arm7_backup (arm7.h), the save chip's image and its write count.
+ * (input_live), and frame_output_hook (frame.h) on the drawing thread with each finished
+ * frame; arm7_backup (arm7.h) gives it the save chip's image and its write count.
  *
  * Windows only for now (Win32: a window of its own thread, StretchDIBits, a high-resolution
  * waitable timer). There is no sound: the ARM7 is simulated at its protocol (arm7.c), which
@@ -695,7 +695,7 @@ int main(int argc, char **argv)
     _putenv_s("RUN_INPUT", opt.input ? opt.input : "");
     const char *cleared[] = {"RUN_HASH",          "RUN_PNG",      "RUN_DUMP3D",   "RUN_NATIVE_RECORD",
                              "RUN_NATIVE_REPLAY", "RUN_RAM_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_LEARN",
-                             "RUN_CLEAN_RAN",     "RUN_TRACE",    "RUN_CALLS"};
+                             "RUN_CLEAN_RAN",     "RUN_TRACE",    "RUN_CALLS",    "RUN_DRIVE"};
     for (size_t i = 0; i < sizeof(cleared) / sizeof(cleared[0]); i++) {
         _putenv_s(cleared[i], "");
     }
