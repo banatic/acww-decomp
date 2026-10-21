@@ -147,10 +147,13 @@ jobs:
 
       # The maps are drawn from this run's results and kept on their own branch (one commit,
       # replaced each time), so main holds no generated files; README.md shows them from there.
-      # The Clean map's "checked in a run" is what ran in the two recordings above (--clean-ran).
+      # The Clean map's "checked in a run" is what ran in the two recordings above (--clean-ran),
+      # and what the scenes enter: they need a town save CI does not have, so their list is
+      # recorded locally (tools/coverage.py --record) when scenes are added.
       - name: Progress maps
         run: |
-          python3 tools/progress_map.py --merge-ran build/adm-kr/clean-ran-title.json build/adm-kr/clean-ran-new-game.json
+          python3 tools/progress_map.py --merge-ran build/adm-kr/clean-ran-title.json build/adm-kr/clean-ran-new-game.json \
+            runtime/recordings/scenes/clean-entered.txt
           python3 tools/progress_map.py
 
       - name: Publish the progress maps

@@ -14,6 +14,11 @@ reports, for the game's Clean functions:
     python tools/coverage.py --lists DIR           # DIR/*.txt or DIR/*/functions-seen.txt
     python tools/coverage.py --file ov003/field_actor   # one Clean file's functions, by state
     python tools/coverage.py --json FILE           # also write the rows as JSON
+    python tools/coverage.py --record              # runtime/recordings/scenes/clean-entered.txt
+
+--record writes the Clean functions the scenes of tools/scenes.py enter (from their lists, which a
+run of every scene leaves) as "module address" lines; CI's progress map counts them as checked in
+a run, since a scene is only committed when it agrees both ways. Refresh it after adding scenes.
     python tools/coverage.py --plan docs/scene-plan-groups.txt > docs/scene-plan.md
                                                    # every function no run enters, in the plan's groups
 
@@ -172,6 +177,8 @@ def main() -> None:
     ap.add_argument("--file", help="one Clean file (relative to clean/, no .c)")
     ap.add_argument("--top", type=int, default=40)
     ap.add_argument("--json", type=pathlib.Path)
+    ap.add_argument("--record", action="store_true",
+                    help="write runtime/recordings/scenes/clean-entered.txt (the scenes' Clean functions)")
     ap.add_argument("--plan", type=pathlib.Path, help="a plan file: print every function no run enters by its group")
     args = ap.parse_args()
 
@@ -194,6 +201,18 @@ def main() -> None:
 
     names = {(s.module, s.address & ~1): s.name for s in syms.functions() if s.size} \
         if hasattr(syms, "functions") else {}
+
+    if args.record:
+        import scenes  # noqa: PLC0415
+        missing = sorted(set(scenes.SCENES) - set(lists))
+        if missing:
+            raise SystemExit(f"no list for {', '.join(missing)} (run them with tools/scenes.py first)")
+        entered = sorted({k for name in scenes.SCENES for k in lists[name] if k in clean})
+        out = scenes.RECORDINGS / "clean-entered.txt"
+        out.write_text("# The Clean functions the scenes of tools/scenes.py enter (tools/coverage.py --record)\n"
+                       + "".join(f"{m} {a:08x}\n" for m, a in entered), newline="\n")
+        print(f"{out}: {len(entered):,} Clean functions from {len(scenes.SCENES)} scenes")
+        return
 
     if args.plan:
         counts = collections.Counter(state(k) for k in clean)

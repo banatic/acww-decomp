@@ -22,6 +22,8 @@ Each function counts at the highest level it reached.
 
     python tools/verify.py && python tools/progress_map.py
     python tools/progress_map.py --merge-ran title.json new-game.json   # build/adm-kr/clean-ran.json
+    python tools/progress_map.py --merge-ran title.json runtime/recordings/scenes/clean-entered.txt
+                                 # (one command) with the scenes' list (tools/coverage.py --record)
 """
 
 from __future__ import annotations
@@ -282,7 +284,13 @@ def merge_ran(paths: list[str]) -> None:
         if not path.exists():
             print(f"{path}: missing, left out")
             continue
-        for row in json.loads(path.read_text()):
+        if path.suffix == ".txt":  # "module address" lines: functions that ran
+            rows = [{"module": m, "address": a} for m, a in
+                    (line.split()[:2] for line in path.read_text().splitlines()
+                     if line.strip() and not line.startswith("#"))]
+        else:
+            rows = json.loads(path.read_text())
+        for row in rows:
             key = (row["module"], row["address"])
             ran[key] = ran.get(key, False) or bool(row.get("ran", True))
     rows = [{"module": m, "address": a, "ran": r} for (m, a), r in sorted(ran.items())]
