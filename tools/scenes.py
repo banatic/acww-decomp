@@ -80,6 +80,8 @@ SAVES = {
     # the shovel; pockets 0 and 1: the furniture and a fruit (0x1518, the first of the five,
     # town_record.h: planted, a fruit becomes a tree)
     "shovel-fruit": [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x3508), (POCKETS + 2, "<H", 0x1518)],
+    # the bug net, and the furniture of "furni" in every pocket
+    "full-net": [(HELD, "<H", 0x1376)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)],
     "bare": [(HELD, "<H", 0xFFF1)],  # nothing held (0xfff1, the code of an empty slot)
     # pockets 0-3: a fish (0x12e8, the first), an insect (0x12b0), a fossil (0x450c) and a
     # painting (0x3894), the first item of each of the museum's four collections
@@ -185,6 +187,12 @@ scene("shop-turnip", "rich", 5200, [2600, 3800, 4500, 4800, 5199], frames(4200, 
       "in Nook's shop, ask him today's turnip price, then end the talk")
 scene("able-talk", "rod", 9000, [2600, 4700, 5600, 6800, 7600, 8400, 8999], frames(4700, 9000, 100),
       "in the Able Sisters' shop, ask Mabel what the shop is (Sable joins in), then end the talk")
+scene("town-hall-move", "seed", 8360, [2600, 4300, 6400, 7400, 8300, 8359], frames(4250, 8350, 50),
+      "ask Pelly about the town's looks, then to get ready to move: the search for a town begins")
+scene("insect-swap", "full-net", 4400, [2600, 3420, 3900, 4100, 4399], frames(3300, 4400, 25),
+      "catch the mantis with the pockets full and swap it for a pocket's furniture")
+scene("post-send", "seed", 6000, [2600, 4300, 5100, 5500, 5999], frames(4300, 6000, 50),
+      "at the post office window, open the letter posting page, post nothing and decline")
 scene("tree-shake", "bare", 3400, [2600, 3050, 3399], frames(2950, 3400, 25),
       "walk up to a tree with nothing held and shake it three times")
 scene("museum", "museum", 15700, [2600, 4600, 6900, 8700, 11000, 12400, 13800, 15000, 15699],
