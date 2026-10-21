@@ -96,11 +96,11 @@ static struct {
     int proj_sp, pos_sp, tex_sp;
     int stack_error;
 
-    int16_t vtx[3];     /* the current vertex */
-    uint8_t color[3];   /* the current vertex colour, 5 bits each */
-    int16_t raw_st[2];  /* the last TEXCOORD */
-    int16_t st[2];      /* texture coordinates after the transformation */
-    uint32_t polyattr;  /* the attributes of the polygons being given (latched by BEGIN_VTXS) */
+    int16_t vtx[3];    /* the current vertex */
+    uint8_t color[3];  /* the current vertex colour, 5 bits each */
+    int16_t raw_st[2]; /* the last TEXCOORD */
+    int16_t st[2];     /* texture coordinates after the transformation */
+    uint32_t polyattr; /* the attributes of the polygons being given (latched by BEGIN_VTXS) */
     uint32_t polyattr_next, texparam, pltt;
     int16_t light_dir[4][3]; /* negated, through the vector matrix, 11 bits */
     int32_t spec_recip[4];   /* the reciprocal the specular level is scaled by */
@@ -338,7 +338,7 @@ static void set_light_vector(uint32_t param)
     memcpy(ge.light_vecm[l], ge.vec, sizeof(ge.vec));
     unpack_vector(param, d);
     for (int c = 0; c < 3; c++) {
-        ge.light_dir[l][c] = (int16_t) sext((uint32_t) - (vector_dot(d, c) >> 12), 11);
+        ge.light_dir[l][c] = (int16_t) sext((uint32_t) -(vector_dot(d, c) >> 12), 11);
     }
     int32_t den = 0x200 - sext((uint32_t) vector_dot(d, 2) >> 12, 11);
     ge.spec_recip[l] = den ? (1 << 18) / den : 0;
@@ -1583,8 +1583,8 @@ static void sample_texture(uint32_t param, uint32_t pltt, int32_t s, int32_t t, 
             return;
         case 5: { /* 4x4 blocks of 2-bit texels in slot 0 or 2, a palette word per block in slot 1;
                      the address wraps at the end of slot 3, and texels in slot 1 read as zero */
-            uint32_t addr = (base + (uint32_t) ((t & 0x3fc) * (width >> 2)) + (uint32_t) (s & 0x3fc) + (uint32_t) (t & 3)) &
-                            0x7ffff;
+            uint32_t addr =
+                (base + (uint32_t) ((t & 0x3fc) * (width >> 2)) + (uint32_t) (s & 0x3fc) + (uint32_t) (t & 3)) & 0x7ffff;
             uint32_t info_addr = 0x20000 + ((addr & 0x1fffc) >> 1) + (addr >= 0x40000 ? 0x10000 : 0);
             v = (addr >= 0x20000 && addr < 0x40000) ? 0 : (uint32_t) (tex_read8(addr) >> (2 * (s & 3))) & 3;
             uint32_t info = tex_read16(info_addr), mode = info >> 14;
@@ -2251,7 +2251,9 @@ static void mask_line(Raster *rp, int32_t y)
         interp_setup(&ix, sp.xstart, sp.xend + 1, sp.wl, sp.wr, p->wbuffer, 0);
         int32_t x = sp.xstart < 0 ? 0 : sp.xstart;
         for (int part = PART_LEFT; part <= PART_RIGHT; part++) {
-            int32_t limit = part == PART_LEFT ? sp.xstart + sp.l_len : part == PART_INSIDE ? sp.xend - sp.r_len + 1 : sp.xend + 1;
+            int32_t limit = part == PART_LEFT     ? sp.xstart + sp.l_len
+                            : part == PART_INSIDE ? sp.xend - sp.r_len + 1
+                                                  : sp.xend + 1;
             if (limit > sp.xend + 1) {
                 limit = sp.xend + 1;
             }
@@ -2444,7 +2446,7 @@ static int compare_polygons(const void *x, const void *y)
     if ((*a)->key != (*b)->key) {
         return (*a)->key < (*b)->key ? -1 : 1;
     }
-    return (*a)->order < (*b)->order ? -1 : (*a)->order > (*b)->order;
+    return (*a)->order<(*b)->order ? -1 : (*a)->order>(*b)->order;
 }
 
 static int compare_order(const void *x, const void *y)
@@ -2457,7 +2459,7 @@ static int compare_order(const void *x, const void *y)
     if (!ta) {
         return compare_polygons(x, y);
     }
-    return (*a)->order < (*b)->order ? -1 : (*a)->order > (*b)->order;
+    return (*a)->order<(*b)->order ? -1 : (*a)->order>(*b)->order;
 }
 
 static void render_list(PolygonList *list)
@@ -2506,8 +2508,8 @@ static void render_list(PolygonList *list)
         for (int x = 0; x < SCREEN_W; x++) {
             uint32_t c = color_buf[PIXEL(x, y)] & 0x1f3f3f3fu, a = c >> 24;
             out_full[y][x] = c;
-            out_color[y][x] =
-                (uint16_t) (((c & 0x3f) >> 1) | (((c >> 8) & 0x3f) >> 1) << 5 | (((c >> 16) & 0x3f) >> 1) << 10 | (a ? 0x8000 : 0));
+            out_color[y][x] = (uint16_t) (((c & 0x3f) >> 1) | (((c >> 8) & 0x3f) >> 1) << 5 | (((c >> 16) & 0x3f) >> 1) << 10 |
+                                          (a ? 0x8000 : 0));
         }
     }
     render_seconds += (double) (clock() - start) / CLOCKS_PER_SEC;
