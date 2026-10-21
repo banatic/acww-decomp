@@ -46,6 +46,22 @@ file per function, and the data sections still come from the ROM; regrouping the
 their original source files is in progress. [docs/verification.md](docs/verification.md)
 describes what is checked and what is not yet.
 
+## Quick start: your own ROM
+
+You need your own dump of the Korean cartridge, Python 3.11+ and a 32-bit C compiler (on
+Windows: LLVM's clang and the Visual Studio Build Tools; [INSTALL.md](INSTALL.md)). Then:
+
+```sh
+python tools/setup.py path/to/your-game.nds          # check the ROM, build, self-test
+python tools/play.py                                 # play (Windows)
+```
+
+`setup.py` checks the dump (header, region, SHA-1; a trimmed dump is padded back), extracts it
+under `extract/` and `build/`, builds the PC program, and plays two recordings with the ROM's
+code, the matching sources and the Clean rewrites to show this machine gives the project's
+frames bit for bit. The ROM is only read; nothing taken from it leaves your machine. Matching
+the original compiler's output (`--matching`) also needs mwccarm (INSTALL.md).
+
 ## Running the game from its sources
 
 The game also runs on a PC from this repository, with each function as the ROM's code in an

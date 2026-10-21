@@ -12,6 +12,20 @@
 - [ds-decomp](https://github.com/AetiasHax/ds-decomp) `dsd` v0.12.1 for the whole-program
   link: put the release binary at `build/tools/dsd` (`dsd.exe` on Windows) or set `DSD`.
 
+## Setting up from your ROM
+
+```sh
+python tools/setup.py path/to/game.nds     # ROM check, extract, PC build, self-test
+python tools/setup.py --check              # the self-test again
+python tools/setup.py game.nds --matching  # also tools/verify.py and tools/link.py (mwccarm)
+```
+
+The self-test plays `runtime/recordings/title-start.txt` and `new-game.txt` in the interpreter,
+with every matching source compiled for the PC and with every Clean rewrite, and compares the
+frames with the expected ones (`--quick`: the title recording only). Only the matching check
+needs mwccarm and dsd. A wrong file is named for what it is: not a DS ROM, a damaged header,
+another region (ADME, ADMJ, ADMP, ...), another revision, or a bad dump of this one.
+
 ## Building
 
 ```sh
