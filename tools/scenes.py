@@ -267,6 +267,15 @@ scene("house-looks", "house-looks", 5100, [2600, 3400, 4300, 4600, 5099], frames
 scene("letter-keys", "rich", 9500, [2600, 5500, 8090, 8500, 9000, 9499], frames(8000, 9500, 25),
       "write a letter on the bottle paper by the pen and the keys: mark, copy, paste, scroll, the footer; "
       "decide and keep it")
+scene("map-list", "seed", 4600, [2600, 3900, 4200, 4400, 4599], frames(3900, 4600, 25),
+      "on the pockets' town map, pick residents and buildings from its lists by the pen and the keys")
+scene("designs-keys", "seed", 4300, [2600, 3300, 3600, 3900, 4299], frames(3300, 4300, 25),
+      "in the pockets' designs by the keys: wear one as a hat, lay one on the ground, then the insect "
+      "catalog by the keys")
+scene("friend-keys", "seed", 4700, [2600, 4100, 4300, 4500, 4699], frames(4100, 4700, 25),
+      "in the pockets' friend roster, move through its page buttons by the keys")
+scene("music-keys", "songs", 4800, [2600, 3900, 4200, 4500, 4799], frames(3900, 4800, 25),
+      "at the house's stereo, the song pockets and the music list by the keys: store songs, play them")
 scene("clock-keys", "seed", 3200, [1400, 2300, 2600, 2900, 3199], frames(2300, 3200, 25),
       "on the telephone of the continue menu's room, the clock screen by the keys: each list opened and "
       "picked, the same time set again")
