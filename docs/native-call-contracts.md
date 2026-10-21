@@ -292,8 +292,9 @@ source's SHA-256 and justified by ROM addresses in the table:
   has the fourth; the PC's may not), a two-word array func_ov003_02216520 hands to
   func_0204f794, which writes three (tree-chop: the third overwrote a saved register), char
   parameters that the ROM's code uses as the whole register and a caller passes a pointer to
-  (func_0205f120, func_ov123_0229ab18, func_ov094_0229a898), and a shift by a register count
-  of 32 or more (func_020ad0c0).
+  (func_0205f120, func_ov123_0229ab18, func_ov094_0229a898), a shift by a register count
+  of 32 or more (func_020ad0c0), and a fade that neither func_020f161c nor its caller
+  func_020f1c00 names but the ROM's code hands through in r1 to NNS_SndPlayerStopSeq.
 
 `python tools/test_native_args.py` checks that every copy applies, that a changed source is
 rejected, and the passed arguments.

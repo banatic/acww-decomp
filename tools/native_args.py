@@ -193,6 +193,20 @@ EDITS = {
     "ov147/func_ov147_02299d58.cpp": ("99b54e29c62c273777f6b2b31ed526cbbe5f4f5df48ec2e724cf22c9048a1755",
                                       "        obj->sub.v2();\n",
                                       "        ((void (*)(void *))(*(void ***) &obj->sub)[2])(&obj->sub);\n"),
+    # A fade the source leaves out: func_020f161c (020f161c-020f1624: add r0, r0, #0x3c; bx to
+    # NNS_SndPlayerStopSeq) keeps r1 as it came in, and NNS_SndPlayerStopSeq (0210b8c4: ldr r0,
+    # [r0]; bx) hands it on to the stop as its fade. The one caller, func_020f1c00, calls it at
+    # 020f1c44 with r1 still its own second parameter, `arg`. The PC copies take and pass the
+    # fade; the PC's call otherwise left a stale word in r1 (house-music: the heap differed
+    # after the stereo's song was stopped).
+    "autoload_2/func_020f161c.c": ("9d7a22f80418bed36ce9bb331d51ce26c9cf29cf3003de17c0c7287d60c54ca5", (
+        ("extern void *NNS_SndPlayerStopSeq(void *);", "extern void *NNS_SndPlayerStopSeq(void *, int);"),
+        ("void *func_020f161c(void *self)\n{\n    return NNS_SndPlayerStopSeq((void *) ((char *) self + 0x3c));",
+         "void *func_020f161c(void *self, int fade)\n{\n"
+         "    return NNS_SndPlayerStopSeq((void *) ((char *) self + 0x3c), fade);"))),
+    "autoload_2/func_020f1c00.cpp": ("91694f815d4818a1174494ca9e4f284f8034bfd9666e110943232a53818d55e7", (
+        ('extern "C" void *func_020f161c(void *self);', 'extern "C" void *func_020f161c(void *self, int fade);'),
+        ("        func_020f161c(self);\n", "        func_020f161c(self, arg);\n"))),
     # A shift by a register: 020ad0f4 asrs r0, r4 shifts by r4's low byte, and a count of 32 or
     # more gives the sign; x86 masks the count to five bits.
     "main/func_020ad0c0.c": ("15b7cf92775c065f2fe439d1af6076ad8e0d15117392c543bffdfb769e337ca8",
