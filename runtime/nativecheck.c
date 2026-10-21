@@ -29,6 +29,17 @@
 #define RANDOM_BYTES 0x1000u
 #define MAX_ARGS 16
 
+/* Where the Native objects' direct calls to the ROM's code go (runtime/native_tramp.S in the
+ * Native run). The functions checked here call nothing; one that did would fault at the DS
+ * address as before. */
+void native_call_stub(void);
+
+void native_call_stub(void)
+{
+    fprintf(stderr, "nativecheck: a checked function called the ROM's code\n");
+    abort();
+}
+
 typedef struct Effects {
     uint64_t ret;
     int count;

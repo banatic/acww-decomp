@@ -58,8 +58,10 @@ void *native_os_code_alloc(size_t size);
 uint32_t native_os_reserve(uint32_t base, uint32_t size);
 
 /* The entry of the trampoline (native_tramp.S), the bytes the callee it stands for pops, and
- * whether its result is a float (1) or a double (2). */
+ * whether its result is a float (1) or a double (2); and where Native code's direct calls to
+ * the ROM's code go (native_tramp.S, native_call_stub). */
 void native_trampoline(void);
+void native_call_stub(void);
 extern uint32_t native_pop_bytes;
 extern uint32_t native_return_floating;
 

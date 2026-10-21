@@ -109,6 +109,25 @@ def flags_for(path: pathlib.Path) -> list[str]:
             "-include", str(C.ROOT / "runtime" / "native.h"), f"-I{C.INCLUDE}", f"-I{C.INCLUDE / 'msl'}"]
 
 
+def call_targets(syms, names: set[str]) -> set[str]:
+    """The names among `names` that are one function of the symbol table, at one address: a
+    direct call to one goes through a native_call_ stub (call_stubs)."""
+    return {n for n in names
+            if (entries := syms.by_name.get(n)) and all(e.kind == "function" for e in entries)
+            and len({e.address | (1 if e.thumb else 0) for e in entries}) == 1}
+
+
+def call_stubs(syms, names) -> list[str]:
+    """native_call_<name> for each of `names` (call_targets): the DS address, as the fault
+    handler would have it, and on to the runtime (runtime/native_tramp.S, native_call_stub)."""
+    lines = []
+    for name in sorted(names):
+        address = next(e.address | (1 if e.thumb else 0) for e in syms.by_name[name])
+        lines += [f"\t.globl {PREFIX}{objrewrite.CALL}{name}", f"{PREFIX}{objrewrite.CALL}{name}:",
+                  f"\tpushl $0x{address:08x}", f"\tjmp {PREFIX}native_call_stub"]
+    return lines
+
+
 def tool_output(obj: pathlib.Path, cmd: list[str]) -> str:
     """What `cmd` (a tool reading the object, named last) prints for `obj`, kept by the
     object's bytes: unchanged objects are not read again, here or in another checkout."""
@@ -772,7 +791,14 @@ def main() -> None:
             widen[src.object_symbol] = WIDEN[kind]
     profile_names = {C.parse_source(path).object_symbol for path, _ in objects} & native
     objrewrite.BODY = profile_names
-    names_key = hashlib.sha1(" ".join(sorted(native) + ["|"] + sorted(known) + ["|"] + sorted(profile_names)).encode()
+    # A direct call to a function without a Native (the ROM's code runs it) goes to a stub,
+    # native_call_<name>, that enters the runtime as the fault a call to its DS address takes
+    # would (runtime/native_tramp.S, native_call_stub), for a fraction of the cost. Only a name
+    # with one address that is a function's; references that are not branches (a function
+    # pointer stored or compared) keep the DS address.
+    objrewrite.CALLS = calls = call_targets(syms, known - native - set(vtables))
+    names_key = hashlib.sha1(" ".join(sorted(native) + ["|"] + sorted(known) + ["|"] + sorted(profile_names)
+                                      + ["|"] + sorted(calls)).encode()
                              + pathlib.Path(objrewrite.__file__).read_bytes()).hexdigest()
     # Sources whose member-function pointers only Native code builds and reads (pmf_unsafe):
     # their tables refer to the methods through native_pmf_ jumps at even addresses.
@@ -793,7 +819,8 @@ def main() -> None:
             to_ds |= names
     objects = rewritten
     thunks = sorted(n for n in to_ds if n.startswith(objrewrite.PMF))
-    to_ds -= set(thunks)
+    called = sorted(n[len(objrewrite.CALL):] for n in to_ds if n.startswith(objrewrite.CALL))
+    to_ds -= set(thunks) | {objrewrite.CALL + n for n in called}
     to_ds |= {n[len(objrewrite.PMF):] for n in thunks if n[len(objrewrite.PMF):] not in native}
     undefined |= {PREFIX + n for n in to_ds}
     defined = {PREFIX + objrewrite.NATIVE + d[strip:] if d[strip:] in known else d for d in defined}
@@ -868,6 +895,8 @@ def main() -> None:
         lines += ["\t.p2align 4", f"\t.globl {PREFIX}{thunk}", f"{PREFIX}{thunk}:", f"\tjmp {target}"]
     for name, index in sorted(profile_ids.items()):
         lines += native_profile.wrapper(name, index, PREFIX, widen.get(name))
+    # the direct calls to the ROM's code (objrewrite.CALLS)
+    lines += call_stubs(syms, called)
     lines += ["\t.data"]
     # each body with its wrapper, so the runtime can name the function a fault in a body is in
     lines += [f"\t.globl {PREFIX}native_bodies", f"{PREFIX}native_bodies:"]

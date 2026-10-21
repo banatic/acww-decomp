@@ -65,6 +65,36 @@ SYM(native_trampoline):
 	addl	%ecx, %esp
 	ret
 
+/* native_call_stub: a direct call of Native code to the ROM's code (tools/objrewrite.py,
+ * CALLS). The call went to native_call_<name>, which pushed the DS address and jumped here;
+ * otherwise the stack is as the caller set it up for the callee. What follows is what the
+ * fault a call to the DS address takes does (native_os.c, on_fault): native_fault_execute
+ * says where execution goes on, a Native function or native_trampoline with eax = the DS
+ * address; every other register, and the stack from the return address up, are as the caller
+ * left them. Only the words below the caller's stack pointer differ, as they do after a
+ * fault (the handler runs there). */
+	.globl	SYM(native_call_stub)
+SYM(native_call_stub):
+	pushl	%ebp
+	movl	%esp, %ebp	/* the DS address at 4(%ebp), the return address at 8(%ebp) */
+	pushl	%eax		/* -4(%ebp): eax, which native_fault_execute may set */
+	pushl	%ecx
+	pushl	%edx
+	andl	$-16, %esp
+	subl	$4, %esp
+	pushl	%ecx		/* ecx */
+	leal	-4(%ebp), %eax
+	pushl	%eax		/* &eax */
+	pushl	4(%ebp)		/* the DS address */
+	call	SYM(native_fault_execute)
+	movl	%eax, 4(%ebp)	/* where to go on, in place of the DS address */
+	movl	-12(%ebp), %edx
+	movl	-8(%ebp), %ecx
+	movl	-4(%ebp), %eax
+	movl	%ebp, %esp
+	popl	%ebp
+	ret			/* there, with the return address at (%esp) */
+
 #ifndef _WIN32
 	.section .note.GNU-stack,"",@progbits
 #endif

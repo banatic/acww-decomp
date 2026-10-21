@@ -1762,6 +1762,24 @@ static int call_native(ArmCpu *c, void *user)
  * interpreter goes to that function's DS address instead, as the ROM's code does, and the
  * function then runs Native or not like any other. */
 
+/* A native_call_ stub (tools/native.py): `push $address; jmp native_call_stub`. Its DS
+ * address, or 0 when `host` is not one. */
+static uint32_t called_through_stub(uint32_t host)
+{
+    if (host - HOST_CODE_LOW >= HOST_CODE_HIGH - HOST_CODE_LOW - 16 || !native_os_accessible(host, 10, 0)) {
+        return 0;
+    }
+    const uint8_t *code = (const uint8_t *) (uintptr_t) host;
+    int32_t rel;
+    uint32_t address;
+    memcpy(&rel, code + 6, 4);
+    if (code[0] != 0x68 || code[5] != 0xe9 || host + 10u + (uint32_t) rel != (uint32_t) (uintptr_t) native_call_stub) {
+        return 0;
+    }
+    memcpy(&address, code + 1, 4);
+    return address;
+}
+
 static uint32_t wrapped_function(uint32_t host)
 {
     static uint32_t cache_host[64], cache_ds[64];
@@ -1786,8 +1804,11 @@ static uint32_t wrapped_function(uint32_t host)
         int32_t rel;
         memcpy(&rel, code + i + 1, 4);
         uint32_t target = host + (uint32_t) i + 5u + (uint32_t) rel;
+        uint32_t stubbed = called_through_stub(target);
         if (native_fault_is_ds(target) && target >= 0x01000000u) {
             ds = target; /* a function kept out of the Native set: its DS address */
+        } else if (stubbed != 0) {
+            ds = stubbed; /* the same, called through its native_call_ stub */
         } else if (target - HOST_CODE_LOW < HOST_CODE_HIGH - HOST_CODE_LOW) {
             const NativeFunction *n = native_by_host(target);
             if (n != NULL && (uintptr_t) n->host == target) {

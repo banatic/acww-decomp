@@ -11,6 +11,10 @@ So every reference is rewritten by its kind:
   goes to that definition, renamed `native_<name>`;
 - every other reference to a name the symbol table has (an address loaded, stored or used to
   call through) goes to the plain name, which absolute.s places at its DS address;
+- a branch to a function `CALLS` names (one without a Native, which runs as the ROM's code)
+  goes to `native_call_<name>`, a stub tools/native.py writes that enters the runtime as a
+  call to the DS address would through the fault it takes (runtime/native_tramp.S,
+  native_call_stub), without the fault;
 - a definition of such a name in the object is renamed to `native_<name>`, so the plain name
   always means the DS's;
 - with `pmf`, an absolute reference to a method `pmf` names (an entry of a table of
@@ -31,6 +35,9 @@ NATIVE = "native_"
 # Functions whose definition is renamed `native_body_<name>`: tools/native.py puts a wrapper
 # under `native_<name>` that observes calls and widens narrow results.
 BODY: set[str] = set()
+# Functions a branch reaches through `native_call_<name>` (tools/native.py sets them).
+CALLS: set[str] = set()
+CALL = NATIVE + "call_"
 
 # relocation types meaning "relative branch target"
 COFF_REL32 = 0x14
@@ -64,7 +71,7 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
     a Native definition anywhere; `pmf`: the methods whose absolute references go through
     `native_pmf_<name>`. Names in the object carry `prefix` ("_" on i386). Returns the new
     object and the known names it now refers to by their DS address, and the `native_pmf_`
-    names it uses."""
+    and `native_call_` names it uses."""
     machine, nsec, stamp, symptr, nsym, opt, chars = struct.unpack_from("<HHIIIHH", data, 0)
     if machine != 0x14C:
         raise ValueError("not an i386 COFF object")
@@ -144,6 +151,8 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
                 continue
             if rtype == COFF_REL32 and p in native:
                 target = symidx if symidx in renamed and p not in BODY else symbol_for(prefix + NATIVE + p)
+            elif rtype == COFF_REL32 and p in CALLS:
+                target = symbol_for(prefix + CALL + p)
             elif rtype == COFF_DIR32 and p in pmf:
                 target = symbol_for(prefix + PMF + p)
             else:
@@ -154,7 +163,8 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
     struct.pack_into("<I", out, 8, len(out))  # PointerToSymbolTable
     struct.pack_into("<I", out, 12, len(symbols))  # NumberOfSymbols
     table = bytes(strings.data)
-    to_ds = {n[len(prefix):] for n in extra if not n.startswith(prefix + NATIVE) or n.startswith(prefix + PMF)}
+    to_ds = {n[len(prefix):] for n in extra
+             if not n.startswith(prefix + NATIVE) or n.startswith(prefix + PMF) or n.startswith(prefix + CALL)}
     return bytes(out) + body + struct.pack("<I", len(table) + 4) + table, to_ds
 
 
@@ -216,6 +226,8 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str], pmf: set[str] = 
                 continue
             if rtype in (ELF_R_386_PC32, ELF_R_386_PLT32) and name in native:
                 target = symidx if symidx in renamed and name not in BODY else symbol_for(NATIVE + name)
+            elif rtype in (ELF_R_386_PC32, ELF_R_386_PLT32) and name in CALLS:
+                target = symbol_for(CALL + name)
             elif rtype == ELF_R_386_32 and name in pmf:
                 target = symbol_for(PMF + name)
             else:
@@ -235,7 +247,7 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str], pmf: set[str] = 
     body = b"".join(bytes(raw) for raw in symbols)
     symtab[4], symtab[5] = place(body), len(body)
     struct.pack_into("<I", out, 0x20, place(b"".join(struct.pack("<10I", *s) for s in sections)))
-    return bytes(out), {n for n in extra if not n.startswith(NATIVE) or n.startswith(PMF)}
+    return bytes(out), {n for n in extra if not n.startswith(NATIVE) or n.startswith(PMF) or n.startswith(CALL)}
 
 
 def rewrite(data: bytes, known: set[str], native: set[str], prefix: str,
