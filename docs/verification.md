@@ -22,14 +22,14 @@ file, and data, with their neighbours.
 A file passes when both checks pass. A match that needs a construct no one would write on
 purpose (a redundant mask, a dead branch) carries a `FAKEMATCH` comment explaining it.
 
-## Status (2026-10-19)
+## Status (2026-10-21)
 
 | | Game code (`src/`) | With the libraries |
 |---|---:|---:|
-| Functions | 25,247 | 29,330 |
-| BYTES | 25,247 | 29,330 |
-| LINK | 25,247 | 29,330 |
-| Linked with mwldarm, modules match the ROM | 25,247 | |
+| Functions | 25,251 | 29,334 |
+| BYTES | 25,251 | 29,334 |
+| LINK | 25,251 | 29,334 |
+| Linked with mwldarm, modules match the ROM | 25,251 | |
 | `FAKEMATCH` | 17 | |
 
 Not covered yet: regrouping functions into their original source files, the data sections

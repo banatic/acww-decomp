@@ -168,17 +168,20 @@ RAM selectors sampled by HBlank need their publication time preserved too. The N
 copies use audited store events for the line-shift slot and completed gradient buffer. See
 [the publication boundary](native-publications.md) for the source guards and clock ordering.
 
-**M5: Clean, one subsystem at a time.** Done: every one of the 25,247 game functions has a Clean
+**M5: Clean, one subsystem at a time.** Done: every one of the 25,251 game functions has a Clean
 version in `clean/`. With all of them in place of their Native ones (`tools/run.py --clean`), the
-M4 recordings give the Reference's frames and RAM on Windows and on Linux in CI. So do eight
-scenes started from a town save (`tools/scenes.py`: fish-cast, fish-night, house-exit, tool-axe,
-tool-shovel, pockets, pockets-furni, able-sisters); the save is not part of the repository. The
-6,482 Clean functions that call nothing also pass the function-level check. Clean code that no
-recording reaches, most of the menu screens (overlays 90-147) among it, has been checked only by
-reading it against its matching source. The other five scenes (tool-net, villager-talk,
-fish-carry, shop-talk, house) agree too, with Native alone and with every Clean function; in
-house the Clean house collider reads its centres' heights from the guest stack slot the Native
-one uses ([guest stack](native-guest-stack.md)). The
+M4 recordings give the Reference's frames and RAM on Windows and on Linux in CI. So do the 46
+scenes started from a town save (`tools/scenes.py --list`: tools, fishing, insects, digging,
+pockets, letters, shops, the museum, the observatory, villagers, the town hall and the gate,
+among others), with Native alone and with every Clean function; the save is not part of the
+repository. A run of all of them enters 12,697 of the 25,251 Clean functions. The 6,482 Clean
+functions that call nothing also pass the function-level check. Clean code that no recording
+reaches has been checked only by reading it against its matching source: local wireless and
+Wi-Fi (they need a second DS or a server), visitors, and the events of other days and weather
+(a boot on another day than the save's differs between Reference and Native: the day's notice
+packs bits from the ROM's stack into the town record). In house the Clean house collider reads
+its centres' heights from the guest stack slot the Native one uses
+([guest stack](native-guest-stack.md)). The
 first recording run found what random entry
 states had not: callers that ask the calendar about month 0 or 13, which the game's tables
 answer from their neighbouring bytes (`clean/main/calendar.c`), and a fifth argument that a
