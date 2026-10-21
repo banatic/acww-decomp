@@ -12,9 +12,7 @@ to build it.
 
 ![The game running on a PC from this repository](https://raw.githubusercontent.com/banatic/acww-decomp/media/screens.webp)
 
-*The runtime playing the game's own code from recorded input (`tools/run.py`): the title, the
-taxi, the name keyboard, arriving in town, fishing, shaking a tree, catching an insect, digging,
-K.K. on a Saturday night and the observatory.*
+*The runtime playing the game's own code from recorded input (`tools/run.py`).*
 
 > [!IMPORTANT]
 > **This repository contains the game's own code only.** The libraries the game links
