@@ -67,6 +67,9 @@ CHECKSUM = 0x173F8
 HELD = 0x241A          # the player's held item
 MONEY = 0x1C24         # the player's wallet
 POCKETS = 0x14 + 0x1BF2  # the player's pockets, 15 halfwords
+# the top byte of the house record's word at 0x15a0 (the record at 0xf52c in the state block,
+# main/house_record.h): the house's cockroach count, 10 in the seed
+ROACHES = 0xF52C + 0x15A0 + 3
 SAVES = {
     "seed": [],
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
@@ -87,6 +90,27 @@ SAVES = {
     # painting (0x3894), the first item of each of the museum's four collections
     "museum": [(POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0), (POCKETS + 4, "<H", 0x450C),
                (POCKETS + 6, "<H", 0x3894)],
+    # the watering can held (0x1378, tool 5 of field_actor_support.c's FieldActor_HeldTool);
+    # pockets 0-4: the slingshot (0x137a, tool 6), the items 0x137c (tool 7) and 0x137d (tool
+    # 8), the umbrellas 0x1380 and 0x13a0 (tool 10)
+    "toys": [(HELD, "<H", 0x1378)] + [(POCKETS + 2 * i, "<H", item) for i, item in
+                                      enumerate((0x137A, 0x137C, 0x137D, 0x1380, 0x13A0))],
+    # the two items of tool 9, 0x137e held and 0x137f in pocket 0
+    "burn": [(HELD, "<H", 0x137E), (POCKETS, "<H", 0x137F)],
+    # the rod held (as for "house") and no cockroaches in the house (their collider reads
+    # stack words the PC code reproduces on the audited paths only, docs/native-guest-stack.md:
+    # next to the stereo or new furniture the walls' and floors' heights differed); pockets 0
+    # and 1: the first two song items (0x1323 and 0x1324, main/house_record.h)
+    "songs": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (POCKETS, "<H", 0x1323), (POCKETS + 2, "<H", 0x1324)],
+    # the rod held, no cockroaches (as for "songs"); furniture in pockets 0-3 and 6 (item
+    # 0x3000 + 4 * number, number n being record n of the ROM's ftr_info/dma.bin, whose byte
+    # 0x18 is the room object's kind, RoomObject.unk_780): the Asian chair (number 4, kind 8),
+    # the Asian bed (0, kind 0xa), the Asian chest of drawers (1, kind 0xb, a chest:
+    # ov004/chest.h), the robot TV (0x75, kind 0x14) and a country chair (0xf, kind 0x26,
+    # ov004/room_object_02252cd4.h)
+    "house-furni": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
+                   [(POCKETS + 2 * slot, "<H", 0x3000 + 4 * number)
+                    for slot, number in ((0, 4), (1, 0), (2, 1), (3, 0x75), (6, 0xF))],
 }
 
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
@@ -198,6 +222,18 @@ scene("tree-shake", "bare", 3400, [2600, 3050, 3399], frames(2950, 3400, 25),
 scene("museum", "museum", 15700, [2600, 4600, 6900, 8700, 11000, 12400, 13800, 15000, 15699],
       frames(4300, 15700, 100), "walk to the museum, give Blathers a fish, an insect, a fossil and a "
       "painting, visit the insect and painting rooms and talk to Brewster in the cafe")
+scene("toys", "toys", 7600, [2600, 3700, 4700, 5600, 6500, 7599], frames(2700, 7600, 50),
+      "water the ground, then take each pocket item in hand and use it: the slingshot, two "
+      "items used up, two umbrellas")
+scene("house-furni", "house-furni", 5550, [2600, 3500, 4200, 4600, 5300, 5549], frames(3500, 5550, 50),
+      "in the house, put a chest of drawers down and keep two items in it, then put a chair down and sit on it")
+scene("house-music", "songs", 5000, [2600, 3500, 3900, 4300, 4600, 4999], frames(3500, 5000, 25),
+      "at the house's stereo, store a song in the music list, play it, take it out again")
+scene("post-keys", "seed", 8800, [2600, 4700, 5300, 6000, 6900, 7700, 8400, 8799], frames(4700, 8800, 50),
+      "at the post office window, the letter storage and the posting page by the keys alone: read, "
+      "store and move the letter, turn the pages, close; open the posting page and cancel")
+scene("toys-burn", "burn", 5150, [2600, 3300, 3700, 4500, 5149], frames(2700, 5150, 50),
+      "light the held item that burns, then take the other one from the pockets and light it")
 
 scene("villager-home", "seed", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
       "walk into a villager's house and talk to it there")

@@ -1,0 +1,85 @@
+# toys-burn (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: burn (the item 0x137e held, 0x137f in pocket 0: the two of FieldActor_HeldTool's tool
+# 9). South from 2760; A at 2890 lights the held item (state 0x81), which burns down by about
+# 3450 and leaves the hand empty. A pen tap on the pockets button at 3698 opens the pockets, the
+# pen drags 0x137f onto the player, Y twice closes the page and A at 4432 lights it (its own
+# effect and sound); it is burnt down by about 5000.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 DOWN -
+2860 - -
+2890 A -
+2898 - -
+3698 - 244,10
+3704 - -
+3804 - 20,123
+3834 - 30,117
+3838 - 41,112
+3842 - 52,107
+3846 - 63,102
+3850 - 74,96
+3854 - 85,91
+3858 - 95,86
+3862 - 106,81
+3866 - 117,75
+3870 - 128,70
+3874 - 139,65
+3878 - 150,60
+3892 - -
+4192 Y -
+4200 - -
+4312 Y -
+4320 - -
+4432 A -
+4440 - -

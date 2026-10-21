@@ -152,7 +152,7 @@ def serve(args) -> None:
     prefix = None
     if args.prefix:
         rec = pathlib.Path(args.prefix)
-        if not rec.exists():
+        if not rec.is_file():
             rec = C.ROOT / "runtime" / "recordings" / "scenes" / f"{args.prefix}.txt"
         lines = [ln for ln in rec.read_text().splitlines()
                  if ln.strip() and (ln.startswith("#") or not args.until or int(ln.split()[0]) < args.until)]
