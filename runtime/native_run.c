@@ -1927,7 +1927,10 @@ uint64_t native_call_reference(uint32_t target, const uint32_t *args, uint32_t s
     out_caller = caller;
     /* A compiler helper (status H) the source calls by name: the Reference counts its time as
        the calling Native function's (it has no crossing there), so none is made here either;
-       the next crossing's step count takes up its time. */
+       the next crossing's step count takes up its time. It runs outside time: a slice ending
+       inside it moved the clock on before the Native function's next crossing (in scene
+       save-quit, a division before G2x_SetBlendAlpha_ in the title's blend had BLDALPHA
+       written later than in the Reference). */
     int quiet = f != NULL && f->status == 'H';
     if (!quiet) {
         crossing(CROSS_CALL_OUT, target, 0, target);
@@ -1936,7 +1939,11 @@ uint64_t native_call_reference(uint32_t target, const uint32_t *args, uint32_t s
     if (f != NULL) {
         f->calls_out++;
     }
-    run_until_return();
+    if (quiet) {
+        run_helper_until_return();
+    } else {
+        run_until_return();
+    }
     uint64_t v = ((uint64_t) cpu->r[1] << 32) | cpu->r[0];
     out_caller = caller;
     if (!quiet) {

@@ -201,6 +201,8 @@ scene("museum", "museum", 15700, [2600, 4600, 6900, 8700, 11000, 12400, 13800, 1
 
 scene("villager-home", "seed", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
       "walk into a villager's house and talk to it there")
+scene("save-quit", "seed", 4500, [2600, 3400, 4000, 4499], frames(2700, 4500, 50),
+      "save and quit from the START menu: the game saves and goes back to the title screen")
 
 
 # ------------------------------------------------------------------------------ saves

@@ -99,6 +99,11 @@ void native_report(FILE *out);
  * branches to ARM_RETURN_ADDRESS. */
 void run_until_return(void);
 
+/* Provided by run.c: runs a compiler helper Native code called (status H) to its return outside
+ * time: its steps are the calling Native function's, which the Native run takes at that
+ * function's next crossing, so the clock does not advance and they are taken back. */
+void run_helper_until_return(void);
+
 /* Commit an already completed shared slice before a Native publication store.
  * Preserve a partial slice, its deadline, and unaccounted instruction time.
  * Return 0 if hardware time is already ahead of the CPU's requested step. */

@@ -11,6 +11,7 @@
  *
  * RUN_TRACE (card, pxi, irq), RUN_CALLS (function names) and RUN_BRANCHES (a count) in the
  * environment add traces to stderr and size the final branch list; see tools/run.py. */
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -647,6 +648,21 @@ uint64_t run_rewind(uint64_t steps)
 void run_until_return(void)
 {
     execute(0);
+}
+
+void run_helper_until_return(void)
+{
+    /* No slice ends inside the helper (the clock would run on, and an interrupt could be taken
+       there), and with I set none is taken at its first instruction either; a pending one is
+       taken after it, at the next interpreted instruction, as it would have been. */
+    uint64_t steps = cpu.steps, end = slice_end;
+    uint32_t irq_masked = cpu.cpsr & ARM_CPSR_I;
+    slice_end = UINT64_MAX;
+    cpu.cpsr |= ARM_CPSR_I;
+    execute(0);
+    cpu.cpsr = (cpu.cpsr & ~ARM_CPSR_I) | irq_masked;
+    slice_end = end;
+    cpu.steps = steps;
 }
 
 void run_forever(void)
