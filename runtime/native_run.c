@@ -26,6 +26,17 @@
 /* The stacks the crt0 puts in DTCM below the BIOS words (IRQ, SVC; bios.h). */
 #define DTCM_STACKS_HIGH 0x027e3fc0u
 
+/* The game's worker thread (main's worker_thread.h): the OSThread at the start of the job that
+ * the word at 0x20 of the town's object (data_021c779c) points to, NULL without a job. It runs
+ * the town's change to another day (TownDay_Pass) at a low priority, preempted by the main
+ * thread wherever an interrupt falls, and the two share the town's state (the current
+ * collision map among it) without a lock: what the main thread reads depends on how far the
+ * worker got, to the instruction. Native code runs a stretch at once, at the end of the
+ * Reference's time for it (call_native), so on this thread it would be ahead of or behind the
+ * Reference's at any moment the main thread looks; its code is always interpreted, in both
+ * runs, and makes no crossings. */
+#define WORKER_JOB 0x021c77bcu
+
 /* The stream of crossings of interrupt handlers; a thread's is its OSThread address. */
 #define STREAM_IRQ 1u
 
@@ -105,6 +116,12 @@ static uint32_t ds_word(uint32_t address)
     uint32_t v = 0;
     bus_read(address, 4, &v);
     return v;
+}
+
+static int on_worker_thread(void)
+{
+    uint32_t job = ds_word(WORKER_JOB);
+    return job != 0 && (cpu->cpsr & ARM_MODE_MASK) != ARM_MODE_IRQ && ds_word(THREAD_INFO_CURRENT) == job;
 }
 
 static int fn_compare(const void *a, const void *b)
@@ -869,22 +886,35 @@ static int load_replay(const char *path)
         return -1;
     }
     uint32_t n = (uint32_t) (size / (4 * RECORD_WORDS));
-    uint32_t *raw = malloc((size_t) n * 4 * RECORD_WORDS + 4);
-    if (raw == NULL || fread(raw, 4 * RECORD_WORDS, n, f) != n) {
+    /* read a block of records at a time: a long scene's trace does not fit in the 32-bit
+     * process twice */
+    enum { LOAD_BLOCK = 1 << 16 };
+    uint32_t *raw = malloc((size_t) LOAD_BLOCK * 4 * RECORD_WORDS);
+    records = malloc((size_t) n * sizeof(Record) + 1);
+    if (raw == NULL || records == NULL) {
+        free(raw);
+        free(records);
+        records = NULL;
         fclose(f);
         return -1;
     }
+    for (uint32_t at = 0; at < n;) {
+        uint32_t count = n - at < LOAD_BLOCK ? n - at : LOAD_BLOCK;
+        if (fread(raw, 4 * RECORD_WORDS, count, f) != count) {
+            free(raw);
+            free(records);
+            records = NULL;
+            fclose(f);
+            return -1;
+        }
+        for (uint32_t i = 0; i < count; i++) {
+            Record *r = &records[at + i];
+            memcpy(r, raw + RECORD_WORDS * i, 4 * RECORD_WORDS);
+            r->next = 0;
+        }
+        at += count;
+    }
     fclose(f);
-    records = malloc((size_t) n * sizeof(Record) + 1);
-    if (records == NULL) {
-        free(raw);
-        return -1;
-    }
-    for (uint32_t i = 0; i < n; i++) {
-        Record *r = &records[i];
-        memcpy(r, raw + RECORD_WORDS * i, 4 * RECORD_WORDS);
-        r->next = 0;
-    }
     /* Argument records must immediately follow their exact physical parent.
      * An IRQ/thread event cannot fill a hole, and all unused payload is zero. */
     for (uint32_t i = 0; i < n; i++) {
@@ -1502,7 +1532,7 @@ static void record_branch(uint32_t address)
     f = loaded_at(address);
     struct Frame frame = {cpu->r[14], cpu->r[13], address & ~1u, 0, f};
     if (!inside) {
-        if (!native_for_interpreter(f)) {
+        if (!native_for_interpreter(f) || on_worker_thread()) {
             return;
         }
         if (snapshot_due()) {
@@ -1649,6 +1679,9 @@ static void publish_word(uint32_t pc, uint32_t *pointer, uint32_t value)
 static int call_native(ArmCpu *c, void *user)
 {
     Fn *f = user;
+    if (on_worker_thread()) {
+        return 0; /* interpreted, as in the Reference's record (record_branch) */
+    }
     int mode = (c->cpsr & ARM_MODE_MASK) == ARM_MODE_IRQ;
     uint32_t entry = f->address & ~1u;
     if (deferred_pc[mode] == entry && c->stall_branch[mode]) {

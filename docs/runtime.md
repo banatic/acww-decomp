@@ -171,6 +171,12 @@ audited guest frame extents and an incoming-argument spill, with wrappers tracki
 and Clean entries. See [the audited guest-stack boundary](native-guest-stack.md) for its proof
 guards, supported effects and tests.
 
+The game's worker thread, which moves the town on to another day (TownDay_Pass) while the
+main thread runs, shares the town's state with it without a lock, so what the main thread sees
+depends on how far the worker got to the instruction; Native code runs a stretch at once, so
+on that thread it is always interpreted, in both runs (`on_worker_thread` in
+`runtime/native_run.c`).
+
 RAM selectors sampled by HBlank need their publication time preserved too. The Native sky
 copies use audited store events for the line-shift slot and completed gradient buffer. See
 [the publication boundary](native-publications.md) for the source guards and clock ordering.
