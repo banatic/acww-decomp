@@ -1,0 +1,92 @@
+# clock-keys (format: runtime/input.h), played from a town save by tools/scenes.py (the save
+# is not in this repository). As phone-settings.txt up to 1700: in the continue menu's room,
+# the settings centre on the telephone.
+# Save: the seed town. A from 1700 reads the greeting; the DOWN presses (1820, 1880) come
+# before the menu, whose first entry A takes: the clock screen (about 2380). From 2420 the keys
+# alone (ov138/date_screen.c, ov135/phone_clock.c): B, RIGHT to the month and A opens its list,
+# DOWN and A pick, the day's list the same way, the hour's and the minute's (2672-2840) back to
+# the values they had; B, then DOWN, DOWN, LEFT and A on Decide (2980): the clock is set again
+# to the same time and the settings centre asks what else (about 3000).
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1450 - 140,30
+1456 - -
+1700 A -
+1704 - -
+1760 A -
+1764 - -
+1820 DOWN -
+1824 - -
+1880 DOWN -
+1884 - -
+1940 A -
+1944 - -
+2000 A -
+2004 - -
+2060 A -
+2064 - -
+2120 A -
+2124 - -
+2180 A -
+2184 - -
+2240 A -
+2244 - -
+2300 A -
+2304 - -
+2360 A -
+2364 - -
+2420 B -
+2424 - -
+2448 RIGHT -
+2452 - -
+2476 A -
+2480 - -
+2504 DOWN -
+2508 - -
+2532 A -
+2536 - -
+2560 DOWN -
+2564 - -
+2588 A -
+2592 - -
+2616 UP -
+2620 - -
+2644 A -
+2648 - -
+2672 RIGHT -
+2676 - -
+2700 DOWN -
+2704 - -
+2728 A -
+2732 - -
+2756 DOWN -
+2760 - -
+2784 A -
+2788 - -
+2812 LEFT -
+2816 - -
+2840 A -
+2844 - -
+2868 B -
+2872 - -
+2896 DOWN -
+2900 - -
+2924 DOWN -
+2928 - -
+2952 LEFT -
+2956 - -
+2980 A -
+2984 - -

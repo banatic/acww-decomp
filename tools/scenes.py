@@ -247,6 +247,14 @@ scene("pitfall", "pitfall", 5650, [2600, 3700, 4100, 4400, 4950, 5300, 5649], fr
 scene("pickup", "pickup", 5500, [2600, 3300, 4000, 4600, 5300, 5499], frames(2800, 5500, 50),
       "drop an item and pick it up by the pen (held up the first time), then drop an apple in the "
       "house and pick it up again")
+scene("chat-send", "seed", 4800, [2600, 3700, 4100, 4500, 4799], frames(3700, 4800, 25),
+      "type on the chat keyboard by the pen and the keys, copy and paste, send lines over the player's head")
+scene("clock-keys", "seed", 3200, [1400, 2300, 2600, 2900, 3199], frames(2300, 3200, 25),
+      "on the telephone of the continue menu's room, the clock screen by the keys: each list opened and "
+      "picked, the same time set again")
+scene("new-player", "seed", 9400, [1300, 2300, 2800, 5200, 7000, 8500, 9399], frames(1000, 9400, 100),
+      "from the title, a new resident: the taxi ride and its questions, the name typed, the arrival and "
+      "the registration in the town hall, out into the town")
 
 scene("villager-home", "seed", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
       "walk into a villager's house and talk to it there")
