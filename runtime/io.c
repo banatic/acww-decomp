@@ -9,6 +9,7 @@
 #include "gpu3d.h"
 #include "input.h"
 #include "memory.h"
+#include "render.h"
 
 /* Register addresses used below (offsets from 0x04000000). */
 #define REG_DISPSTAT 0x004
@@ -45,7 +46,7 @@
 #define REG_VECMTX_RESULT_END 0x6a4
 
 #define IO_BASE 0x04000000u
-#define IO_SIZE 0x2000u
+#define IO_SIZE IO_REG_SIZE
 #define IPC_RECV 0x04100000u
 #define CARD_DATA 0x04100010u
 
@@ -229,18 +230,67 @@ void io_raise_irq(uint32_t bits)
  * no bank covers reads zero and drops writes (and is counted). Bank modes that map a bank to
  * the 3D engine, the ARM7 or the extended palettes have no CPU address; they are kept in the
  * bank's storage only. (GBATEK, "DS Video Memory".) */
-#define VRAM_TOTAL 0xa4000u
+#define VRAM_TOTAL IO_VRAM_SIZE
 #define VRAM_PAGE 0x4000u
 #define VRAM_PAGES (0x1000000u / VRAM_PAGE)
-static uint8_t vram[VRAM_TOTAL];
-static uint8_t *vram_page[VRAM_PAGES];
+/* VRAM's banks, then palette RAM and OAM (2 KiB each, repeated through their regions) */
+static uint8_t video_mem[IO_VIDEO_SIZE];
+static uint8_t *const palette = video_mem + VRAM_TOTAL;
+static uint8_t *const oam = video_mem + VRAM_TOTAL + 0x800;
 static uint64_t vram_unmapped_reads, vram_unmapped_writes;
 
-/* The views the renderers take of banks that have no CPU address: the extended palette
- * slots per engine (BG: four 8 KiB slots, OBJ: one), the texture image slots (four of
- * 128 KiB) and the texture palette slots (six of 16 KiB), each the bank storage mapped there
- * or NULL (GBATEK, "DS Video Memory", the mode tables). */
-static const uint8_t *bg_ext_palette[2][4], *obj_ext_palette[2], *texture_slot[4], *texture_palette_slot[6];
+/* The live state. Its views (IoVideo): the CPU's page table of VRAM, and those of banks that
+ * have no CPU address: the extended palette slots per engine (BG: four 8 KiB slots, OBJ:
+ * one), the texture image slots (four of 128 KiB) and the texture palette slots (six of
+ * 16 KiB), each the bank storage mapped there or NULL (GBATEK, "DS Video Memory", the mode
+ * tables). */
+static IoVideo live = {.regs = regs, .mem = video_mem};
+const IoVideo *io_view = &live;
+
+/* The pieces of video memory written since io_video_take_dirty last took them. */
+static uint8_t dirty_bit[IO_VIDEO_SIZE / IO_VIDEO_CHUNK];
+static uint32_t dirty_list[IO_VIDEO_SIZE / IO_VIDEO_CHUNK];
+static uint32_t dirty_count;
+
+static void video_dirty(uint32_t offset, uint32_t size)
+{
+    for (uint32_t c = offset / IO_VIDEO_CHUNK; c <= (offset + size - 1) / IO_VIDEO_CHUNK; c++) {
+        if (!dirty_bit[c]) {
+            dirty_bit[c] = 1;
+            dirty_list[dirty_count++] = c;
+        }
+    }
+}
+
+uint32_t io_video_take_dirty(uint32_t *chunks)
+{
+    uint32_t n = dirty_count;
+    for (uint32_t i = 0; i < n; i++) {
+        chunks[i] = dirty_list[i];
+        dirty_bit[dirty_list[i]] = 0;
+    }
+    dirty_count = 0;
+    return n;
+}
+
+void io_video_written(const uint8_t *p, uint32_t size)
+{
+    if (p >= video_mem && p + size <= video_mem + IO_VIDEO_SIZE) {
+        video_dirty((uint32_t) (p - video_mem), size);
+    }
+}
+
+const IoVideo *io_video_live(void)
+{
+    return &live;
+}
+
+uint32_t io_view_reg(uint32_t offset)
+{
+    uint32_t v;
+    memcpy(&v, io_view->regs + (offset & (IO_SIZE - 4)), 4);
+    return v;
+}
 
 static const struct {
     uint32_t offset, size, lcdc;
@@ -252,7 +302,8 @@ static const struct {
 
 /* Maps `size` bytes of bank storage at `address`, repeated every `mirror` bytes within a
  * region of `region_size` bytes starting at `region`. */
-static void map_bank(uint8_t *storage, uint32_t size, uint32_t address, uint32_t region, uint32_t region_size, uint32_t mirror)
+static void map_bank(IoVideo *v, uint8_t *storage, uint32_t size, uint32_t address, uint32_t region, uint32_t region_size,
+                     uint32_t mirror)
 {
     for (uint32_t base = address; base < region + region_size; base += mirror) {
         for (uint32_t off = 0; off < size; off += VRAM_PAGE) {
@@ -260,28 +311,28 @@ static void map_bank(uint8_t *storage, uint32_t size, uint32_t address, uint32_t
             if (a >= region + region_size) {
                 break;
             }
-            vram_page[(a - 0x06000000u) / VRAM_PAGE] = storage + off;
+            v->page[(a - 0x06000000u) / VRAM_PAGE] = storage + off;
         }
     }
 }
 
-static void rebuild_vram(void)
+void io_video_map(IoVideo *v)
 {
-    memset(vram_page, 0, sizeof(vram_page));
-    memset(bg_ext_palette, 0, sizeof(bg_ext_palette));
-    memset(obj_ext_palette, 0, sizeof(obj_ext_palette));
-    memset(texture_slot, 0, sizeof(texture_slot));
-    memset(texture_palette_slot, 0, sizeof(texture_palette_slot));
+    memset(v->page, 0, sizeof(v->page));
+    memset(v->bg_ext_palette, 0, sizeof(v->bg_ext_palette));
+    memset(v->obj_ext_palette, 0, sizeof(v->obj_ext_palette));
+    memset(v->texture_slot, 0, sizeof(v->texture_slot));
+    memset(v->texture_palette_slot, 0, sizeof(v->texture_palette_slot));
     for (int bank = 0; bank < 9; bank++) {
-        uint32_t cnt = regs[REG_VRAMCNT_A + bank + (bank >= 7 ? 1 : 0)]; /* 0x247 is WRAMCNT */
+        uint32_t cnt = v->regs[REG_VRAMCNT_A + bank + (bank >= 7 ? 1 : 0)]; /* 0x247 is WRAMCNT */
         if ((cnt & 0x80) == 0) {
             continue;
         }
         uint32_t mst = cnt & 7, ofs = (cnt >> 3) & 3;
-        uint8_t *s = vram + vram_bank[bank].offset;
+        uint8_t *s = v->mem + vram_bank[bank].offset;
         uint32_t size = vram_bank[bank].size;
         if (mst == 0) {
-            map_bank(s, size, vram_bank[bank].lcdc, 0x06800000u, 0x100000u, 0x100000u);
+            map_bank(v, s, size, vram_bank[bank].lcdc, 0x06800000u, 0x100000u, 0x100000u);
             continue;
         }
         switch (bank) {
@@ -290,29 +341,29 @@ static void rebuild_vram(void)
             case 2:
             case 3: /* A-D: BG-A by OFS, OBJ-A (A, B), ARM7 (C, D), BG-B (C), OBJ-B (D) */
                 if (mst == 1) {
-                    map_bank(s, size, 0x06000000u + 0x20000u * ofs, 0x06000000u, 0x200000u, 0x80000u);
+                    map_bank(v, s, size, 0x06000000u + 0x20000u * ofs, 0x06000000u, 0x200000u, 0x80000u);
                 } else if (mst == 2 && bank < 2) {
-                    map_bank(s, size, 0x06400000u + 0x20000u * (ofs & 1), 0x06400000u, 0x200000u, 0x40000u);
+                    map_bank(v, s, size, 0x06400000u + 0x20000u * (ofs & 1), 0x06400000u, 0x200000u, 0x40000u);
                 } else if (mst == 4 && bank == 2) {
-                    map_bank(s, size, 0x06200000u, 0x06200000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06200000u, 0x06200000u, 0x200000u, 0x20000u);
                 } else if (mst == 4 && bank == 3) {
-                    map_bank(s, size, 0x06600000u, 0x06600000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06600000u, 0x06600000u, 0x200000u, 0x20000u);
                 } else if (mst == 3) {
-                    texture_slot[ofs] = s;
+                    v->texture_slot[ofs] = s;
                 }
                 break;
             case 4: /* E: BG-A, OBJ-A at the region start; 3, 4 are palettes */
                 if (mst == 1) {
-                    map_bank(s, size, 0x06000000u, 0x06000000u, 0x200000u, 0x80000u);
+                    map_bank(v, s, size, 0x06000000u, 0x06000000u, 0x200000u, 0x80000u);
                 } else if (mst == 2) {
-                    map_bank(s, size, 0x06400000u, 0x06400000u, 0x200000u, 0x40000u);
+                    map_bank(v, s, size, 0x06400000u, 0x06400000u, 0x200000u, 0x40000u);
                 } else if (mst == 3) {
                     for (int i = 0; i < 4; i++) {
-                        texture_palette_slot[i] = s + 0x4000 * i;
+                        v->texture_palette_slot[i] = s + 0x4000 * i;
                     }
                 } else if (mst == 4) {
                     for (int i = 0; i < 4; i++) {
-                        bg_ext_palette[0][i] = s + 0x2000 * i; /* the first 32 KiB of E */
+                        v->bg_ext_palette[0][i] = s + 0x2000 * i; /* the first 32 KiB of E */
                     }
                 }
                 break;
@@ -320,37 +371,37 @@ static void rebuild_vram(void)
             case 6: { /* F, G: 16 KiB slots by OFS */
                 uint32_t slot = 0x4000u * (ofs & 1) + 0x10000u * (ofs >> 1);
                 if (mst == 1) {
-                    map_bank(s, size, 0x06000000u + slot, 0x06000000u, 0x200000u, 0x80000u);
+                    map_bank(v, s, size, 0x06000000u + slot, 0x06000000u, 0x200000u, 0x80000u);
                 } else if (mst == 2) {
-                    map_bank(s, size, 0x06400000u + slot, 0x06400000u, 0x200000u, 0x40000u);
+                    map_bank(v, s, size, 0x06400000u + slot, 0x06400000u, 0x200000u, 0x40000u);
                 } else if (mst == 3) {
                     /* texture palette slot 0, 1, 4 or 5 by OFS */
-                    texture_palette_slot[(ofs & 1) + 4 * (ofs >> 1)] = s;
+                    v->texture_palette_slot[(ofs & 1) + 4 * (ofs >> 1)] = s;
                 } else if (mst == 4) {
                     /* BG extended palette slots 0-1 (OFS bit 0 clear) or 2-3 (set) */
-                    bg_ext_palette[0][2 * (ofs & 1)] = s;
-                    bg_ext_palette[0][2 * (ofs & 1) + 1] = s + 0x2000;
+                    v->bg_ext_palette[0][2 * (ofs & 1)] = s;
+                    v->bg_ext_palette[0][2 * (ofs & 1) + 1] = s + 0x2000;
                 } else if (mst == 5) {
-                    obj_ext_palette[0] = s; /* the first 8 KiB */
+                    v->obj_ext_palette[0] = s; /* the first 8 KiB */
                 }
                 break;
             }
             case 7: /* H: BG-B */
                 if (mst == 1) {
-                    map_bank(s, size, 0x06200000u, 0x06200000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06200000u, 0x06200000u, 0x200000u, 0x20000u);
                 } else if (mst == 2) {
                     for (int i = 0; i < 4; i++) {
-                        bg_ext_palette[1][i] = s + 0x2000 * i;
+                        v->bg_ext_palette[1][i] = s + 0x2000 * i;
                     }
                 }
                 break;
             case 8: /* I: BG-B upper half, OBJ-B */
                 if (mst == 1) {
-                    map_bank(s, size, 0x06208000u, 0x06200000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06208000u, 0x06200000u, 0x200000u, 0x20000u);
                 } else if (mst == 2) {
-                    map_bank(s, size, 0x06600000u, 0x06600000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06600000u, 0x06600000u, 0x200000u, 0x20000u);
                 } else if (mst == 3) {
-                    obj_ext_palette[1] = s; /* the first 8 KiB */
+                    v->obj_ext_palette[1] = s; /* the first 8 KiB */
                 }
                 break;
             default:
@@ -362,58 +413,55 @@ static void rebuild_vram(void)
 static uint8_t *vram_host(uint32_t address, int size)
 {
     uint32_t page = (address - 0x06000000u) / VRAM_PAGE;
-    if (page >= VRAM_PAGES || vram_page[page] == NULL) {
+    if (page >= VRAM_PAGES || live.page[page] == NULL) {
         return NULL;
     }
     if ((address & (VRAM_PAGE - 1)) + (uint32_t) size > VRAM_PAGE) {
         return NULL; /* an access straddling pages: not something aligned code does */
     }
-    return vram_page[page] + (address & (VRAM_PAGE - 1));
+    return live.page[page] + (address & (VRAM_PAGE - 1));
 }
 
-/* Palettes and OAM: 2 KiB each, repeated through their regions. */
-static uint8_t palette[0x800], oam[0x800];
-
-/* The renderers' views (io.h). */
+/* The renderers' views (io.h), of io_view. */
 const uint8_t *io_vram_page(uint32_t address)
 {
     uint32_t page = (address - 0x06000000u) / VRAM_PAGE;
-    return page < VRAM_PAGES ? vram_page[page] : NULL;
+    return page < VRAM_PAGES ? io_view->page[page] : NULL;
 }
 
 uint8_t *io_vram_bank(int bank)
 {
-    return vram + vram_bank[bank & 3].offset; /* A-D: the banks a display or capture names */
+    return io_view->mem + vram_bank[bank & 3].offset; /* A-D: the banks a display or capture names */
 }
 
 const uint8_t *io_vram_bg_ext_palette(int engine, int slot)
 {
-    return bg_ext_palette[engine & 1][slot & 3];
+    return io_view->bg_ext_palette[engine & 1][slot & 3];
 }
 
 const uint8_t *io_vram_obj_ext_palette(int engine)
 {
-    return obj_ext_palette[engine & 1];
+    return io_view->obj_ext_palette[engine & 1];
 }
 
 const uint8_t *io_vram_texture(int slot)
 {
-    return texture_slot[slot & 3];
+    return io_view->texture_slot[slot & 3];
 }
 
 const uint8_t *io_vram_texture_palette(int slot)
 {
-    return slot >= 0 && slot < 6 ? texture_palette_slot[slot] : NULL;
+    return slot >= 0 && slot < 6 ? io_view->texture_palette_slot[slot] : NULL;
 }
 
 const uint8_t *io_palette_ram(void)
 {
-    return palette;
+    return io_view->mem + VRAM_TOTAL;
 }
 
 const uint8_t *io_oam_ram(void)
 {
-    return oam;
+    return io_view->mem + VRAM_TOTAL + 0x800;
 }
 
 void io_reg_store(uint32_t offset, uint32_t value)
@@ -748,7 +796,7 @@ static void display_advance(uint32_t cycles)
                 /* the line is drawn from the registers as they were while it was displayed,
                    before the HBlank interrupt handler and HBlank DMAs change them for the
                    next line */
-                gpu2d_line(vcount);
+                render_line(vcount);
             }
             if (stat & (1u << 4)) {
                 io_raise_irq(IRQ_HBLANK);
@@ -765,7 +813,7 @@ static void display_advance(uint32_t cycles)
                 frame_count++;
             }
             if (vcount == 192) {
-                gpu2d_frame_end();
+                render_frame_end(frame_count);
                 /* a pending SWAP_BUFFERS takes effect: the list it closed is rendered and
                    shown from the next frame on, and the stalled geometry commands run */
                 gpu3d_vblank();
@@ -1101,7 +1149,7 @@ static void reg_write32(uint32_t offset, uint32_t value, uint32_t mask)
             /* bits 12 (colour buffer underflow) and 13 (polygon/vertex RAM overflow) are
                status, acknowledged by writing 1; the rest is storage */
             st32(offset, (merged & ~0x3000u) | (old & 0x3000u & ~(value & mask)));
-            gpu2d_register_written(offset, rd32(offset));
+            render_register_written(offset, rd32(offset));
             return;
         default:
             break;
@@ -1122,7 +1170,7 @@ static void reg_write32(uint32_t offset, uint32_t value, uint32_t mask)
     }
     if (offset >= REG_VRAMCNT_A && offset <= REG_VRAMCNT_I + 2) {
         st32(offset, merged);
-        rebuild_vram();
+        io_video_map(&live);
         return;
     }
     if (offset >= REG_GXFIFO && offset < REG_GXSTAT) {
@@ -1133,7 +1181,7 @@ static void reg_write32(uint32_t offset, uint32_t value, uint32_t mask)
     }
     st32(offset, merged);
     if (offset < 0x70 || (offset >= 0x1000 && offset < 0x1070)) {
-        gpu2d_register_written(offset, merged); /* display registers with write side effects */
+        render_register_written(offset, merged); /* display registers with write side effects */
     }
 }
 
@@ -1176,6 +1224,7 @@ static int io_access_inner(uint32_t address, int size, uint32_t *value, int writ
         }
         if (write) {
             memcpy(p, value, (size_t) size);
+            video_dirty((uint32_t) (p - video_mem), (uint32_t) size);
         } else {
             *value = 0;
             memcpy(value, p, (size_t) size);
@@ -1186,6 +1235,7 @@ static int io_access_inner(uint32_t address, int size, uint32_t *value, int writ
         uint8_t *p = ((address >> 24) == 0x05 ? palette : oam) + (address & 0x7ffu);
         if (write) {
             memcpy(p, value, (size_t) size);
+            video_dirty((uint32_t) (p - video_mem), (uint32_t) size);
         } else {
             *value = 0;
             memcpy(value, p, (size_t) size);
@@ -1295,7 +1345,7 @@ int io_init(const char *rom_path, ArmCpu *cpu)
     rom_size = (uint32_t) size;
     memset(regs, 0, sizeof(regs));
     st32(REG_GXSTAT, 0); /* every other register starts at zero, as after a reset */
-    rebuild_vram();
+    io_video_map(&live);
     gpu3d_init();
     return 0;
 }

@@ -40,6 +40,10 @@ void gpu3d_gxstat_write(uint32_t value);
  * list it hands over is rendered into the output buffer. */
 void gpu3d_vblank(void);
 
+/* Draws list `list` (0 or 1), which a swap handed over, into the output buffer (render.c
+ * calls it, on the drawing thread or at once, from gpu3d_vblank). */
+void gpu3d_render(int list);
+
 /* The last rendered frame, as the 2D engine's BG0 sees it: 256 pixels of RGB555 with bit 15
  * set where the pixel has any alpha (an opaque polygon, a translucent one or the rear plane),
  * and the 5-bit alpha of each pixel for the 2D blender. */

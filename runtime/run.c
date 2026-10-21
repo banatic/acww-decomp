@@ -25,6 +25,7 @@
 #include "io.h"
 #include "memory.h"
 #include "native_run.h"
+#include "render.h"
 
 #define SLICE 512
 #define DMA_SLICE 32 /* while a DMA waits to run: its completion and interrupt come soon */
@@ -645,6 +646,7 @@ void run_forever(void)
  * report, then the process exits. */
 void run_finish(const char *reason, int status)
 {
+    render_finish(); /* the frames still being drawn */
     report_cpu(reason);
     printf("interrupts taken %llu, thread switches %llu (%llu in interrupt handlers), modules verified: %s\n",
            (unsigned long long) cpu.irq_taken, (unsigned long long) thread_switches,
@@ -656,6 +658,7 @@ void run_finish(const char *reason, int status)
     bios_report(&cpu, stdout);
     arm7_report(stdout);
     frame_report(stdout);
+    render_report(stdout);
     report_display();
     report_registers();
     report_hot(40);
@@ -701,6 +704,7 @@ int main(int argc, char **argv)
        recording (RUN_INPUT), before the ARM7 publishes its first button and touch state */
     gpu2d_init();
     frame_output_init();
+    render_init();
     const char *recording = getenv("RUN_INPUT");
     if (recording != NULL && *recording && input_load(recording) != 0) {
         fprintf(stderr, "cannot read the input recording %s\n", recording);

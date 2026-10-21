@@ -21,13 +21,15 @@
 
 void gpu2d_init(void);
 
-/* Draws line `y` (0..191) of both engines; called by io.c when HBlank starts. */
+/* Draws line `y` (0..191) of both engines; asked for by io.c when HBlank starts (render.c). */
 void gpu2d_line(uint32_t y);
 
-/* VCOUNT reached 192: the frame is complete. Converts the screens, applies the display swap
- * (POWCNT1 bit 15), ends a display capture and hands the screens to the frame output
- * (frame.h), which saves and hashes the frames the run asked for. */
-void gpu2d_frame_end(void);
+/* VCOUNT reached 192 in frame `frame`: the frame is complete. gpu2d_frame_output converts the
+ * screens, applies the display swap (POWCNT1 bit 15) and hands the screens to the frame
+ * output (frame.h), which saves and hashes the frames the run asked for; gpu2d_capture_end
+ * ends a display capture (render.c calls both). */
+void gpu2d_frame_output(uint32_t frame);
+void gpu2d_capture_end(void);
 
 /* io.c reports a write to a display register at `offset` (0x04000000 + offset): the affine
  * reference points (BGxX, BGxY) reload on a write, the display FIFO takes words. */

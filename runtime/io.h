@@ -72,6 +72,32 @@ uint64_t io_clock(void);
 int io_dma_pending(void);
 uint32_t io_frame(void);
 
+/* The video state the renderers read: the register file (IO_REG_SIZE bytes from
+ * 0x04000000), video memory (VRAM's banks, then palette RAM and OAM) and the views of it the
+ * banks' mapping gives (below). io_view is the live state, or a copy render.c keeps for its
+ * thread; the accessors below read io_view. io_video_map computes a state's views from its
+ * VRAMCNT. Writes to video memory are tracked by 256-byte piece: io_video_take_dirty hands
+ * over the pieces written since it was last called (their indexes into `mem`), and
+ * io_video_written adds a renderer's own write (a capture). */
+#define IO_REG_SIZE 0x2000u
+#define IO_VRAM_SIZE 0xa4000u
+#define IO_VIDEO_SIZE (IO_VRAM_SIZE + 0x1000u)
+#define IO_VIDEO_CHUNK 256u
+#define IO_VIDEO_PAGES 1024u
+typedef struct IoVideo {
+    uint8_t *regs;
+    uint8_t *mem;
+    uint8_t *page[IO_VIDEO_PAGES];
+    const uint8_t *bg_ext_palette[2][4], *obj_ext_palette[2], *texture_slot[4], *texture_palette_slot[6];
+} IoVideo;
+extern const IoVideo *io_view;
+const IoVideo *io_video_live(void);
+void io_video_map(IoVideo *v);
+uint32_t io_video_take_dirty(uint32_t *chunks);
+void io_video_written(const uint8_t *p, uint32_t size);
+/* A 32-bit register of io_view at `offset` from 0x04000000. */
+uint32_t io_view_reg(uint32_t offset);
+
 /* The renderers' views of video memory (GBATEK, "DS Video Memory"). The 2D engines read
  * their BG and OBJ regions through the CPU's page table, so a bank shows wherever VRAMCNT
  * maps it: io_vram_page gives the 16 KiB page behind `address` (0x06000000-0x06ffffff) or

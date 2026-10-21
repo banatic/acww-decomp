@@ -86,13 +86,13 @@ static uint32_t fifo_head, fifo_count;
 
 static uint32_t reg16(const Engine *e, uint32_t offset)
 {
-    uint32_t v = io_reg(0x04000000u + e->reg + offset);
+    uint32_t v = io_view_reg(e->reg + offset);
     return (v >> ((offset & 2) * 8)) & 0xffffu;
 }
 
 static uint32_t reg32(const Engine *e, uint32_t offset)
 {
-    return io_reg(0x04000000u + e->reg + offset);
+    return io_view_reg(e->reg + offset);
 }
 
 /* VRAM and palettes ------------------------------------------------------------------------ */
@@ -782,6 +782,7 @@ static void capture_line(Engine *e, uint32_t y, uint32_t dispcnt, const uint16_t
         uint32_t o = (write + (y * cw + x) * 2) & 0x1fffeu;
         dst[o] = (uint8_t) v;
         dst[o + 1] = (uint8_t) (v >> 8);
+        io_video_written(dst + o, 2);
     }
 }
 
@@ -866,10 +867,10 @@ void gpu2d_line(uint32_t y)
     }
 }
 
-void gpu2d_frame_end(void)
+void gpu2d_frame_output(uint32_t frame)
 {
     /* POWCNT1 bit 15: engine A on the upper LCD when set, else on the lower one. */
-    int a_on_top = (io_reg(0x04000000u + R_POWCNT1) & 0x8000u) != 0;
+    int a_on_top = (io_view_reg(R_POWCNT1) & 0x8000u) != 0;
     for (int i = 0; i < 2; i++) {
         uint32_t *dst = screens[(i == 0) == a_on_top ? 1 : 0];
         const uint32_t *src = engines[i].frame;
@@ -879,13 +880,17 @@ void gpu2d_frame_end(void)
             dst[k] = (((r << 2) | (r >> 4)) << 16) | (((g << 2) | (g >> 4)) << 8) | ((b << 2) | (b >> 4));
         }
     }
+    frames_done++;
+    frame_output(frame, screens[1], screens[0]);
+}
+
+void gpu2d_capture_end(void)
+{
     /* a display capture runs for one frame: the enable bit clears itself when it ends */
     if (engines[0].capturing) {
         engines[0].capturing = 0;
         io_reg_store(R_DISPCAPCNT, io_reg(0x04000000u + R_DISPCAPCNT) & ~(1u << 31));
     }
-    frames_done++;
-    frame_output(io_frame(), screens[1], screens[0]);
 }
 
 void gpu2d_register_written(uint32_t offset, uint32_t value)

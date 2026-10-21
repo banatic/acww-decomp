@@ -12,6 +12,7 @@
 
 #include "frame.h"
 #include "io.h"
+#include "render.h"
 
 #define SCREEN_W 256
 #define SCREEN_H 192
@@ -1100,27 +1101,27 @@ static struct {
 
 static void capture_registers(void)
 {
-    rr.disp3dcnt = io_reg(0x04000060) & 0xffff;
-    rr.alpha_ref = io_reg(0x04000340) & 31;
-    rr.clear_color = io_reg(0x04000350);
-    rr.clear_depth = io_reg(0x04000354) & 0x7fff;
-    rr.clrimage_offset = (io_reg(0x04000354) >> 16) & 0xffff;
-    rr.fog_color = io_reg(0x04000358);
-    rr.fog_offset = io_reg(0x0400035c) & 0x7fff;
-    rr.dot_depth = io_reg(0x04000610) & 0x7fff;
+    rr.disp3dcnt = io_view_reg(0x060) & 0xffff;
+    rr.alpha_ref = io_view_reg(0x340) & 31;
+    rr.clear_color = io_view_reg(0x350);
+    rr.clear_depth = io_view_reg(0x354) & 0x7fff;
+    rr.clrimage_offset = (io_view_reg(0x354) >> 16) & 0xffff;
+    rr.fog_color = io_view_reg(0x358);
+    rr.fog_offset = io_view_reg(0x35c) & 0x7fff;
+    rr.dot_depth = io_view_reg(0x610) & 0x7fff;
     for (int i = 0; i < 8; i++) {
-        uint32_t w = io_reg(0x04000360 + 4 * i);
+        uint32_t w = io_view_reg(0x360 + 4 * i);
         for (int j = 0; j < 4; j++) {
             rr.fog_table[i * 4 + j] = (uint8_t) ((w >> (8 * j)) & 0x7f);
         }
     }
     for (int i = 0; i < 16; i++) {
-        uint32_t w = io_reg(0x04000380 + 4 * i);
+        uint32_t w = io_view_reg(0x380 + 4 * i);
         rr.toon[i * 2] = (uint16_t) w;
         rr.toon[i * 2 + 1] = (uint16_t) (w >> 16);
     }
     for (int i = 0; i < 4; i++) {
-        uint32_t w = io_reg(0x04000330 + 4 * i);
+        uint32_t w = io_view_reg(0x330 + 4 * i);
         rr.edge[i * 2] = (uint16_t) w;
         rr.edge[i * 2 + 1] = (uint16_t) (w >> 16);
     }
@@ -1889,6 +1890,18 @@ void gpu3d_vblank(void)
     done->wbuffer = (int) (ge.swap_param >> 1) & 1;
     done->manual_sort = (int) ge.swap_param & 1;
     ge.swap_param = ge.swap_param_next;
+    render_3d(geometry_list); /* gpu3d_render, here or on the drawing thread */
+    geometry_list ^= 1;
+    lists[geometry_list].polygons = 0;
+    lists[geometry_list].vertices = 0;
+    lists[geometry_list].wbuffer = (int) (ge.swap_param >> 1) & 1;
+    lists[geometry_list].manual_sort = (int) ge.swap_param & 1;
+    drain_fifo(); /* the engine resumes with the commands that waited for the swap */
+}
+
+void gpu3d_render(int list)
+{
+    PolygonList *done = &lists[list];
     render_list(done);
     if (trace_gx) {
         int drawn = 0;
@@ -1901,12 +1914,6 @@ void gpu3d_vblank(void)
                 io_frame(), ge.swap_param, done->polygons, done->vertices, rr.disp3dcnt, rr.clear_color, drawn);
     }
     maybe_dump();
-    geometry_list ^= 1;
-    lists[geometry_list].polygons = 0;
-    lists[geometry_list].vertices = 0;
-    lists[geometry_list].wbuffer = (int) (ge.swap_param >> 1) & 1;
-    lists[geometry_list].manual_sort = (int) ge.swap_param & 1;
-    drain_fifo(); /* the engine resumes with the commands that waited for the swap */
 }
 
 const uint16_t *gpu3d_line(int y)

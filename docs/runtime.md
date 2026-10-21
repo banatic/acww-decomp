@@ -80,7 +80,9 @@ written down as `REQUIRES:`. Clean is never bent just to pass a test.
 - **CPU**: an ARMv5TE interpreter for ARM and Thumb code, used for the Reference and for any
   function without another implementation.
 - **Hardware**: the DS's 2D and 3D graphics at their native resolution, sound, input, the clock
-  and save memory, written to behave like the hardware.
+  and save memory, written to behave like the hardware. The graphics are drawn on a second
+  thread from a copy of the state each line reads, kept up to date line by line, so the
+  frames are those of drawing in place (`runtime/render.h`).
 - **Checks**: function-level differential checks, and scene-level checks that run the same input
   recording with different implementation choices and compare frames and memory.
 
