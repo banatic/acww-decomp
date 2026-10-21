@@ -1,0 +1,94 @@
+# fish-catch (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: the golden rod held (fish bite at it from further than at the rod). South, west and
+# south (B held to run) to the beach west of the river's mouth, then east to its bank (about
+# 3450, a fish's shadow swims in the mouth). A every 50 or 150 frames from 3600 to 4400 casts
+# and reels in (the float flies out at about 3610, 3960 and 4360); after the third cast the fish
+# comes up to the float (about 4480), nibbles (from about 4690) and bites (5040, the float pulled
+# under): A at 5044 hooks it and the player pulls out a rainbow trout (about 5250); A
+# from 5300 reads the words on it (to about 5500).
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 DOWN -
+2830 B+LEFT -
+2980 B+DOWN -
+3280 - -
+3300 RIGHT -
+3550 - -
+3600 A -
+3606 - -
+3750 A -
+3756 - -
+3800 A -
+3806 - -
+3950 A -
+3956 - -
+4000 A -
+4006 - -
+4150 A -
+4156 - -
+4200 A -
+4206 - -
+4350 A -
+4356 - -
+4400 A -
+4406 - -
+5044 A -
+5050 - -
+5300 A -
+5306 - -
+5360 A -
+5366 - -
+5420 A -
+5426 - -
+5480 A -
+5486 - -

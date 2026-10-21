@@ -1,0 +1,94 @@
+# dig-bury (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: the shovel held, a piece of furniture and a fruit in pockets 0 and 1. South 7 tiles from
+# 2760; A at 2920 digs a hole south of the player. Y at 3060 opens the pockets; a pen tap at 3250
+# (the page takes no touch before a first one), the furniture at 3400 (its menu) and Bury at
+# 3550: the furniture goes into the hole (about 3600). B at 3800 and 3860 close the pockets; A at
+# 4000 digs it up again (the player holds it up at about 4200, A at 4150 and 4300 read on). Y at
+# 4900 opens the pockets again; a tap at 5050, the fruit at 5200 and Bury at 5350 plant it in
+# the hole (a sapling from about 5500); B at 5600 and 5660 close the pockets.
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 DOWN -
+2890 - -
+2920 A -
+2928 - -
+3060 Y -
+3068 - -
+3250 - 30,10
+3256 - -
+3400 - 20,118
+3406 - -
+3550 - 37,60
+3556 - -
+3800 B -
+3806 - -
+3860 B -
+3866 - -
+4000 A -
+4006 - -
+4150 A -
+4156 - -
+4300 A -
+4306 - -
+4900 Y -
+4908 - -
+5050 - 30,10
+5056 - -
+5200 - 52,118
+5206 - -
+5350 - 37,60
+5356 - -
+5600 B -
+5606 - -
+5660 B -
+5666 - -

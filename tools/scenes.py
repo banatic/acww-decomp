@@ -76,6 +76,15 @@ SAVES = {
     "shovel": [(HELD, "<H", 0x1369)],
     # pockets 0 and 1: a piece of furniture (0x3508) and a hat (0x4000)
     "furni": [(POCKETS, "<H", 0x3508), (POCKETS + 2, "<H", 0x4000)],
+    "golden-rod": [(HELD, "<H", 0x1375)],  # the golden rod: fish bite at it from further (fish_shadow.c)
+    # the shovel; pockets 0 and 1: the furniture and a fruit (0x1518, the first of the five,
+    # town_record.h: planted, a fruit becomes a tree)
+    "shovel-fruit": [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x3508), (POCKETS + 2, "<H", 0x1518)],
+    "bare": [(HELD, "<H", 0xFFF1)],  # nothing held (0xfff1, the code of an empty slot)
+    # pockets 0-3: a fish (0x12e8, the first), an insect (0x12b0), a fossil (0x450c) and a
+    # painting (0x3894), the first item of each of the museum's four collections
+    "museum": [(POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0), (POCKETS + 4, "<H", 0x450C),
+               (POCKETS + 6, "<H", 0x3894)],
 }
 
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
@@ -155,6 +164,32 @@ scene("insect-list", "seed", 4600, [2600, 3600, 3800, 4050, 4250, 4599], frames(
       "open the pockets' fish list, then the insect list, page it, the fish list again, close")
 scene("house-pull", "rod", 4300, [2600, 3400, 3850, 4299], frames(3500, 4300, 25),
       "walk into the player's house and pull the table by the back wall twice")
+scene("fish-catch", "golden-rod", 5700, [2600, 3700, 4700, 5100, 5699], frames(3450, 5700, 50),
+      "walk to the river's mouth, cast until a fish bites, hook it and pull it out")
+scene("insect-catch", "net", 3800, [2600, 3250, 3420, 3799], frames(3200, 3800, 25),
+      "run east to the river bend, walk up to a mantis and catch it with the net")
+scene("dig-bury", "shovel-fruit", 6000, [2600, 3700, 4400, 5500, 5999], frames(2900, 6000, 50),
+      "dig a hole, bury a piece of furniture in it and dig it up, then plant a fruit in the hole")
+scene("villager-chat", "museum", 8000, [2600, 4500, 5300, 6400, 7300, 7999], frames(4100, 8000, 50),
+      "talk to a villager again and again: a second talk takes up a catching contest, a third asks of it")
+scene("observatory", "museum", 11200, [2600, 4000, 6300, 7600, 8900, 9900, 11199], frames(5600, 11200, 100),
+      "at night, go up to Celeste's observatory, make and name a constellation and view it",
+      rtc="2026-09-11 20:30:00")
+scene("gate-lost", "seed", 8400, [2600, 4700, 5900, 6600, 7200, 7600, 8399], frames(5750, 8400, 50),
+      "at the gate, ask the gatekeeper for news, then take an item from his lost and found")
+scene("museum-list", "museum", 14500, [2600, 6900, 11000, 12400, 13100, 13650, 14499], frames(12300, 14500, 50),
+      "give Blathers the four items, then look through the list of the museum's donations")
+scene("friend-code", "seed", 5400, [2600, 3700, 4400, 4900, 5399], frames(3300, 5400, 50),
+      "in the pockets' friend roster, type a friend code on its keypad: it is refused; cancel, close")
+scene("shop-turnip", "rich", 5200, [2600, 3800, 4500, 4800, 5199], frames(4200, 5200, 50),
+      "in Nook's shop, ask him today's turnip price, then end the talk")
+scene("able-talk", "rod", 9000, [2600, 4700, 5600, 6800, 7600, 8400, 8999], frames(4700, 9000, 100),
+      "in the Able Sisters' shop, ask Mabel what the shop is (Sable joins in), then end the talk")
+scene("tree-shake", "bare", 3400, [2600, 3050, 3399], frames(2950, 3400, 25),
+      "walk up to a tree with nothing held and shake it three times")
+scene("museum", "museum", 15700, [2600, 4600, 6900, 8700, 11000, 12400, 13800, 15000, 15699],
+      frames(4300, 15700, 100), "walk to the museum, give Blathers a fish, an insect, a fossil and a "
+      "painting, visit the insect and painting rooms and talk to Brewster in the cafe")
 
 
 # ------------------------------------------------------------------------------ saves

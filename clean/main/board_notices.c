@@ -221,11 +221,19 @@ void BoardNotices_PostEvents(int unused, const EventCalendarEvent *events, const
 }
 CLEAN_AS(func_02042798, BoardNotices_PostEvents)
 
+/* The flags BoardNotices_PostDrawn packs: whole bytes of the most messages and one more flag
+ * (for BoardNotices_PostUnused's REQUIRES). */
+#define BOARD_NOTICES_DRAWN_FLAGS ((BOARD_NOTICES_SLOGAN_MESSAGES + 1 + 7) / 8 * 8)
+
 /* The notice of `archive` drawn among those not used yet (the bits at `bits`, `count`
- * messages); all are free again when none is left. */
+ * messages); all are free again when none is left.
+ * BUG: the bits are packed back in whole bytes, so their last byte also takes the 4 flags after
+ * `count`, which the ROM reads from past its buffer of `count` flags: its stack there (for the
+ * pelican notices, the low bits of the caller's saved r4). Clean packs zeros there (BUGFIX: pack
+ * the `count` flags only and keep the byte's other bits). */
 static void BoardNotices_PostDrawn(void *unused, u8 *bits, int count, const char *archive, const DateTime *when)
 {
-    u8 used[BOARD_NOTICES_SLOGAN_MESSAGES + 1]; /* one more for BoardNotices_PostUnused's REQUIRES */
+    u8 used[BOARD_NOTICES_DRAWN_FLAGS] = {0};
     DateTime copy;
     int left = BoardNotices_UnpackBits((int) (uintptr_t) unused, used, bits, count);
     if (left == 0) {
