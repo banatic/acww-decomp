@@ -244,14 +244,14 @@ void *ReactionNpcTalk_Construct(void *talk)
 }
 CLEAN_AS(func_ov088_02278d10, ReactionNpcTalk_Construct)
 
-/* func_ov088_02278d28 (step 4, each frame): once the owner's countdown has run out, step 0;
- * the scene's next line asked for (each frame of the step). */
+/* func_ov088_02278d28 (step 4, each frame): once the owner's countdown has run out, step 0 and
+ * the scene's next line asked for. */
 void ReactionNpcTalk_StepPause(ReactionNpcTalk *talk)
 {
     if (Countdown_Tick8(&talk->owner->countdown) == 0) {
         ReactionNpcTalk_SetStep(talk, REACTION_NPC_STEP_NONE);
+        SceneCommand_RequestNextLine((SceneCommandScene *) (void *) talk);
     }
-    SceneCommand_RequestNextLine((SceneCommandScene *) (void *) talk);
 }
 CLEAN_AS(func_ov088_02278d28, ReactionNpcTalk_StepPause)
 
