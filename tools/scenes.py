@@ -105,6 +105,11 @@ SAVES = {
     # and an apple (0x1518); no cockroaches in the house (as for "songs")
     "pickup": [(HELD, "<H", 0xFFF1), (POCKETS, "<H", 0x136A), (POCKETS + 2, "<H", 0x137B),
                (POCKETS + 4, "<H", 0x3508), (POCKETS + 6, "<H", 0x1518), (ROACHES, "<B", 0)],
+    # the rod held and 30,000 bells (as for "rich"); pockets 0-4: a piece of furniture
+    # (0x3508), two apples (0x1518), and two bags of bells (0x1492 and 0x14b0, of the range
+    # 0x1492-0x14fd the pockets screen adds to the wallet)
+    "pockets-keys": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)] +
+                    [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x1518, 0x1518, 0x1492, 0x14B0))],
     # the rod held (as for "house") and no cockroaches in the house (their collider reads
     # stack words the PC code reproduces on the audited paths only, docs/native-guest-stack.md:
     # next to the stereo or new furniture the walls' and floors' heights differed); pockets 0
@@ -119,6 +124,9 @@ SAVES = {
     "house-furni": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
                    [(POCKETS + 2 * slot, "<H", 0x3000 + 4 * number)
                     for slot, number in ((0, 4), (1, 0), (2, 1), (3, 0x75), (6, 0xF))],
+    # the rod held and no cockroaches (as for "songs"); pockets 0 and 1: a wallpaper (0x1100)
+    # and a carpet (0x1144, main/item_group.c)
+    "house-looks": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (POCKETS, "<H", 0x1100), (POCKETS + 2, "<H", 0x1144)],
 }
 
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
@@ -249,6 +257,16 @@ scene("pickup", "pickup", 5500, [2600, 3300, 4000, 4600, 5300, 5499], frames(280
       "house and pick it up again")
 scene("chat-send", "seed", 4800, [2600, 3700, 4100, 4500, 4799], frames(3700, 4800, 25),
       "type on the chat keyboard by the pen and the keys, copy and paste, send lines over the player's head")
+scene("pockets-keys", "pockets-keys", 4500, [2600, 3100, 3500, 3900, 4499], frames(2800, 4500, 25),
+      "in the pockets by the keys alone: drop, swap and eat items, take bells out of the wallet as bags")
+scene("house-turn", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 25),
+      "in the house, turn, pull and push the chest of drawers, put the TV down and switch it on and off, "
+      "turn the room's camera")
+scene("house-looks", "house-looks", 5100, [2600, 3400, 4300, 4600, 5099], frames(4200, 5100, 25),
+      "in the house, put up a wallpaper and lay a carpet from the pockets")
+scene("letter-keys", "rich", 9500, [2600, 5500, 8090, 8500, 9000, 9499], frames(8000, 9500, 25),
+      "write a letter on the bottle paper by the pen and the keys: mark, copy, paste, scroll, the footer; "
+      "decide and keep it")
 scene("clock-keys", "seed", 3200, [1400, 2300, 2600, 2900, 3199], frames(2300, 3200, 25),
       "on the telephone of the continue menu's room, the clock screen by the keys: each list opened and "
       "picked, the same time set again")
