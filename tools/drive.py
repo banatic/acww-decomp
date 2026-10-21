@@ -21,7 +21,9 @@ there between commands:
 
 `new` compares with the lists of tools/coverage.py (build/adm-kr/scenes/*/functions-seen.txt, or
 --lists DIR at start). On Windows `snap` keeps the input so far and `back` plays it again
-from the start; on Linux the run is forked and `back` is immediate. A recording from `log` is a
+from the start (seconds); on Linux the run is forked and `back` is immediate, so on Windows it
+pays to drive from WSL (`wsl -e bash -c 'cd /mnt/c/...; python3 tools/drive.py ...'`, with the
+Linux compiler set up as for the Linux build). A recording from `log` is a
 scene's recording as is: add it with its frame count to tools/scenes.py and run it there, which
 checks Native and Clean against the Reference.
 """
