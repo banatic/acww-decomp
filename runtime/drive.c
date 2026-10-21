@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "frame.h"
+#include "gpu2d.h"
 #include "input.h"
 #include "io.h"
 #include "memory.h"
@@ -235,6 +236,21 @@ void drive_frame(uint32_t frame)
                 printf("%02x", p[i]);
             }
             answer("%s", "");
+        } else if (strcmp(cmd, "redraw") == 0 && n >= 2) {
+            static uint32_t both[256 * 384];
+            gpu2d_redraw(both, both + 256 * 192, n >= 3 && strcmp(b, "no3d") == 0);
+            answer(png_write(a, both, 256, 384) == 0 ? "@ok" : "@err cannot write %s", a);
+        } else if (strcmp(cmd, "video") == 0 && n >= 2) {
+            /* the I/O registers as stored, then video memory (VRAM's banks in LCDC order, palette
+               RAM, OAM), as the screens are drawn from them */
+            const IoVideo *v = io_video_live();
+            FILE *f = fopen(a, "wb");
+            int ok = f != NULL && fwrite(v->regs, 1, IO_REG_SIZE, f) == IO_REG_SIZE &&
+                     fwrite(v->mem, 1, IO_VIDEO_SIZE, f) == IO_VIDEO_SIZE;
+            if (f != NULL) {
+                ok &= fclose(f) == 0;
+            }
+            answer(ok ? "@ok" : "@err cannot write %s", a);
         } else if (strcmp(cmd, "seen") == 0 && n >= 2) {
             answer(seen_write(a) == 0 ? "@ok %u" : "@err cannot write", seen_count);
         } else if (strcmp(cmd, "log") == 0 && n >= 2) {

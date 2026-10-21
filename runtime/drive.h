@@ -11,6 +11,10 @@
  *                           the lower one
  *     peek ADDR LEN         LEN bytes (up to 64 KiB) in hex: main RAM, ITCM and DTCM (up to
  *                           16 KiB), the I/O registers as stored, palette RAM, VRAM and OAM
+ *     redraw PATH [no3d]    the 2D engines draw the frame again from the state now (without
+ *                           the 3D layer with no3d), as a PNG
+ *     video PATH            the I/O registers as stored, then video memory (VRAM's banks in
+ *                           LCDC order, palette RAM, OAM): what the screens are drawn from
  *     log PATH              the input so far as a recording (runtime/input.h): played again
  *                           with RUN_INPUT, it gives the same run
  *     snap                  (POSIX) keep a copy of the run as it is now; answers its id

@@ -29,6 +29,10 @@ void gpu2d_line(uint32_t y);
  * output (frame.h), which saves and hashes the frames the run asked for; gpu2d_capture_end
  * ends a display capture (render.c calls both). */
 void gpu2d_frame_output(uint32_t frame);
+
+/* For tools/drive.py (drive.h): the frame drawn again from the state now, as 0x00RRGGBB, without
+ * the 3D layer when `no_3d`; with the render thread off. */
+void gpu2d_redraw(uint32_t *upper, uint32_t *lower, int no_3d);
 void gpu2d_capture_end(void);
 
 /* io.c reports a write to a display register at `offset` (0x04000000 + offset): the affine
