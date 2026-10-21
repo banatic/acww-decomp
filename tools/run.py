@@ -450,6 +450,9 @@ def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.
              "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
     if not WINDOWS:
         flags.append("-D_DEFAULT_SOURCE")  # strdup and the POSIX calls, which -std=c11 leaves out
+        # The program is linked at a fixed address (-no-pie below): position-independent code
+        # would only cost a register and a call per function (the interpreter's among them).
+        flags.append("-fno-pie")
     srcs = [str(RUNTIME / n) for n in SOURCES]
     extra: list[str] = []
     link: list[str] = []
@@ -484,7 +487,7 @@ def build(native: bool, clean: str | None = None, ran: bool = False) -> pathlib.
     else:
         srcs.append(str(RUNTIME / "native_none.c"))
         if not WINDOWS:
-            link = ["-Wl,-z,noexecstack"]
+            link = ["-no-pie", "-Wl,-z,noexecstack"]
     cmd = [*diffcheck.compiler(), *flags, *srcs, *extra, *link, "-o", str(exe)]
     key = link_key(cmd)  # an unchanged program is not linked again
     if built_before(exe, key):
