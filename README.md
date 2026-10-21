@@ -10,6 +10,12 @@ A decompilation of the ARM9 code of *Animal Crossing: Wild World*, Korean releas
 It does not contain any game assets, code or disassembly; you need your own copy of the game
 to build it.
 
+![The game running on a PC from this repository](https://raw.githubusercontent.com/banatic/acww-decomp/media/screens.webp)
+
+*The runtime playing the game's own code from recorded input (`tools/run.py`): the title, the
+taxi, the name keyboard, arriving in town, fishing, shaking a tree, catching an insect, digging,
+K.K. on a Saturday night and the observatory.*
+
 > [!IMPORTANT]
 > **This repository contains the game's own code only.** The libraries the game links
 > against (NitroSDK, NitroSystem, NitroDWC, NitroWiFi, the GameSpy SDK, the Metrowerks C
