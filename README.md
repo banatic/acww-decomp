@@ -51,7 +51,8 @@ describes what is checked and what is not yet.
 The game also runs on a PC from this repository, with each function as the ROM's code in an
 interpreter (Reference), as its matching source compiled for the PC (Native), or as its Clean
 version. Runs are compared with the Reference frame by frame. See
-[docs/runtime.md](docs/runtime.md).
+[docs/runtime.md](docs/runtime.md). `python tools/play.py` builds it with a window, live input and
+the save written back, to play (Windows; [docs/play.md](docs/play.md)).
 
 The target ROM:
 

@@ -90,6 +90,8 @@ written down as `REQUIRES:`. Clean is never bent just to pass a test.
   the interpreter a few frames at a time from the command line (input, screens, memory, the
   functions entered that no scene enters, going back to a kept moment), and writes the input
   as a recording that `tools/scenes.py` plays and checks as a scene (`runtime/drive.h`).
+- **Playing**: the same run with a window, live input and the save written back
+  ([docs/play.md](play.md), `tools/play.py`).
 
 ## Milestones
 
