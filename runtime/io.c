@@ -368,12 +368,14 @@ void io_video_map(IoVideo *v)
                 }
                 break;
             case 5:
-            case 6: { /* F, G: 16 KiB slots by OFS */
+            case 6: { /* F, G: 16 KiB slots by OFS, each also 32 KiB further on */
                 uint32_t slot = 0x4000u * (ofs & 1) + 0x10000u * (ofs >> 1);
                 if (mst == 1) {
                     map_bank(v, s, size, 0x06000000u + slot, 0x06000000u, 0x200000u, 0x80000u);
+                    map_bank(v, s, size, 0x06008000u + slot, 0x06000000u, 0x200000u, 0x80000u);
                 } else if (mst == 2) {
                     map_bank(v, s, size, 0x06400000u + slot, 0x06400000u, 0x200000u, 0x40000u);
+                    map_bank(v, s, size, 0x06408000u + slot, 0x06400000u, 0x200000u, 0x40000u);
                 } else if (mst == 3) {
                     /* texture palette slot 0, 1, 4 or 5 by OFS */
                     v->texture_palette_slot[(ofs & 1) + 4 * (ofs >> 1)] = s;
@@ -386,20 +388,21 @@ void io_video_map(IoVideo *v)
                 }
                 break;
             }
-            case 7: /* H: BG-B */
+            case 7: /* H: BG-B, repeated every 64 KiB */
                 if (mst == 1) {
-                    map_bank(v, s, size, 0x06200000u, 0x06200000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06200000u, 0x06200000u, 0x200000u, 0x10000u);
                 } else if (mst == 2) {
                     for (int i = 0; i < 4; i++) {
                         v->bg_ext_palette[1][i] = s + 0x2000 * i;
                     }
                 }
                 break;
-            case 8: /* I: BG-B upper half, OBJ-B */
+            case 8: /* I: BG-B, twice after H's 32 KiB in every 64 KiB; OBJ-B, all through */
                 if (mst == 1) {
-                    map_bank(v, s, size, 0x06208000u, 0x06200000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06208000u, 0x06200000u, 0x200000u, 0x10000u);
+                    map_bank(v, s, size, 0x0620c000u, 0x06200000u, 0x200000u, 0x10000u);
                 } else if (mst == 2) {
-                    map_bank(v, s, size, 0x06600000u, 0x06600000u, 0x200000u, 0x20000u);
+                    map_bank(v, s, size, 0x06600000u, 0x06600000u, 0x200000u, 0x4000u);
                 } else if (mst == 3) {
                     v->obj_ext_palette[1] = s; /* the first 8 KiB */
                 }

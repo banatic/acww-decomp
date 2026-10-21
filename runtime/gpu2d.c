@@ -507,7 +507,7 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
                 } else {
                     address = ((tile + (uy >> 3) * 32 + (ux >> 3)) & 0x3ffu) * 32;
                 }
-                uint32_t b = vram8(e->obj_base, e->obj_mask, address + (uy & 7) * 4 + (ux >> 1));
+                uint32_t b = vram8(e->obj_base, e->obj_mask, address + (uy & 7) * 4 + ((ux & 7) >> 1));
                 uint32_t index = (ux & 1) ? b >> 4 : b & 15;
                 if (index == 0) {
                     continue;
@@ -589,12 +589,14 @@ static void build_window(Engine *e, uint32_t y, uint32_t dispcnt)
 
 /* Composition and colour effects ----------------------------------------------------------- */
 
+/* The hardware rounds a blend to the nearest step and biases fades (as melonDS measures them):
+ * blends add half a step, a BLDY fade up adds 8/16 and down 7/16, master brightness down 15/16. */
 static uint32_t blend(uint32_t a, uint32_t b, uint32_t eva, uint32_t evb, uint32_t shift)
 {
     uint32_t r = 0;
     for (int ch = 0; ch < 3; ch++) {
         uint32_t ca = (a >> (6 * ch)) & 63, cb = (b >> (6 * ch)) & 63;
-        uint32_t c = (ca * eva + cb * evb) >> shift;
+        uint32_t c = (ca * eva + cb * evb + (1u << (shift - 1))) >> shift;
         if (c > 63) {
             c = 63;
         }
@@ -603,12 +605,12 @@ static uint32_t blend(uint32_t a, uint32_t b, uint32_t eva, uint32_t evb, uint32
     return r;
 }
 
-static uint32_t brightness(uint32_t a, uint32_t evy, int up)
+static uint32_t brightness(uint32_t a, uint32_t evy, int up, uint32_t bias)
 {
     uint32_t r = 0;
     for (int ch = 0; ch < 3; ch++) {
         uint32_t c = (a >> (6 * ch)) & 63;
-        c = up ? c + (((63 - c) * evy) >> 4) : c - ((c * evy) >> 4);
+        c = up ? c + (((63 - c) * evy + bias) >> 4) : c - ((c * evy + bias) >> 4);
         r |= c << (6 * ch);
     }
     return r;
@@ -677,7 +679,7 @@ static void compose(Engine *e, uint32_t y, uint32_t dispcnt)
                 if (matched) {
                     c = blend(top, second, eva, evb, 4);
                 } else if (first && effect >= 2) {
-                    c = brightness(top, evy, effect == 2);
+                    c = brightness(top, evy, effect == 2, effect == 2 ? 8 : 7);
                 }
             } else if (flags & OBJ_BITMAP) {
                 /* a bitmap OBJ blends by its own alpha (OAM attribute 2): EVA = alpha + 1 in
@@ -685,7 +687,7 @@ static void compose(Engine *e, uint32_t y, uint32_t dispcnt)
                 if (matched) {
                     c = blend(top, second, (uint32_t) e->obj_alpha[x] + 1, 15u - e->obj_alpha[x], 4);
                 } else if (first && effect >= 2) {
-                    c = brightness(top, evy, effect == 2);
+                    c = brightness(top, evy, effect == 2, effect == 2 ? 8 : 7);
                 }
             } else if (top_layer == 0 && bg0_3d && matched) {
                 /* the 3D layer over a second target blends by its own alpha, in 32nds
@@ -699,7 +701,7 @@ static void compose(Engine *e, uint32_t y, uint32_t dispcnt)
             } else if (effect == 1 && first && matched) {
                 c = blend(top, second, eva, evb, 4);
             } else if (effect >= 2 && first) {
-                c = brightness(top, evy, effect == 2);
+                c = brightness(top, evy, effect == 2, effect == 2 ? 8 : 7);
             }
         }
         e->out[x] = c;
@@ -830,7 +832,7 @@ static void finish_line(Engine *e, uint32_t y, uint32_t dispcnt)
     factor = factor > 16 ? 16 : factor;
     if ((mode == 1 || mode == 2) && factor > 0) {
         for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
-            row[x] = brightness(row[x], factor, mode == 1);
+            row[x] = brightness(row[x], factor, mode == 1, mode == 1 ? 0 : 15);
         }
     }
 }
@@ -864,6 +866,33 @@ void gpu2d_line(uint32_t y)
             capture_line(e, y, dispcnt, (dispcnt & 8) ? gpu3d_line((int) y) : NULL);
         }
         finish_line(e, y, dispcnt);
+    }
+}
+
+void gpu2d_redraw(uint32_t *upper, uint32_t *lower, int no_3d)
+{
+    /* the live state's registers, for a moment: no 3D layer on request, and no display capture
+       (it would write VRAM) */
+    uint8_t *regs = io_video_live()->regs;
+    uint32_t dispcnt, cap;
+    memcpy(&dispcnt, regs + R_DISPCNT, 4);
+    memcpy(&cap, regs + R_DISPCAPCNT, 4);
+    uint32_t d = no_3d ? dispcnt & ~8u : dispcnt, c = cap & ~(1u << 31);
+    memcpy(regs + R_DISPCNT, &d, 4);
+    memcpy(regs + R_DISPCAPCNT, &c, 4);
+    for (uint32_t y = 0; y < GPU2D_HEIGHT; y++) {
+        gpu2d_line(y);
+    }
+    memcpy(regs + R_DISPCNT, &dispcnt, 4);
+    memcpy(regs + R_DISPCAPCNT, &cap, 4);
+    int a_on_top = (io_view_reg(R_POWCNT1) & 0x8000u) != 0;
+    for (int i = 0; i < 2; i++) {
+        uint32_t *dst = (i == 0) == a_on_top ? upper : lower;
+        const uint32_t *src = engines[i].frame;
+        for (uint32_t k = 0; k < GPU2D_HEIGHT * GPU2D_WIDTH; k++) {
+            uint32_t c6 = src[k], r = c6 & 63, g = (c6 >> 6) & 63, bl = (c6 >> 12) & 63;
+            dst[k] = (((r << 2) | (r >> 4)) << 16) | (((g << 2) | (g >> 4)) << 8) | ((bl << 2) | (bl >> 4));
+        }
     }
 }
 
