@@ -74,6 +74,7 @@ SAVES = {
     "seed": [],
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
     "rich": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)],  # ... and 30,000 bells
+    "wallet": [(MONEY, "<I", 30000)],  # 30,000 bells, the seed's held item kept
     "axe": [(HELD, "<H", 0x136B)],
     "net": [(HELD, "<H", 0x1376)],
     "shovel": [(HELD, "<H", 0x1369)],
@@ -294,6 +295,27 @@ scene("save-quit", "seed", 4500, [2600, 3400, 4000, 4499], frames(2700, 4500, 50
 scene("kk-request", "museum", 8500, [2800, 3900, 5640, 6600, 7580, 8499], frames(5600, 8500, 100),
       "on a Saturday night (another day than the save's: the day's notices are posted), ask K.K. "
       "in the museum's cafe for a song by name", rtc="2026-09-12 20:30:00")
+scene("fox-tent", "wallet", 12950, [2600, 4400, 5500, 7300, 9900, 11000, 12949], frames(3300, 12950, 100),
+      "on the fox's day of the week, give the password at his tent, join his club, buy a painting "
+      "from him and leave")
+scene("insurance", "wallet", 11800, [2800, 3900, 6600, 8600, 10100, 11100, 11799], frames(4200, 11800, 100),
+      "on a Saturday morning, the insurance seller comes up to the player: answer his survey and "
+      "buy his insurance", rtc="2026-09-12 10:00:00")
+scene("bug-off", "net", 8340, [4100, 4900, 7100, 7950, 8339], frames(4600, 8340, 100),
+      "on the day of the bug-off, hear the turtle's rules and offer him what the pockets hold",
+      rtc="2026-09-20 13:00:00")
+scene("gracie", "wallet", 14900, [4000, 4400, 7400, 9200, 13200, 14300, 14899], frames(4300, 14900, 100),
+      "on the giraffe's day of the week, let her score the player's clothes, answer her questions "
+      "and pay her to dress the player", rtc="2026-09-14 14:00:00")
+scene("acorn-festival", "wallet", 8540, [4100, 4600, 6400, 7400, 8539], frames(4500, 8540, 100),
+      "in the week of the acorn festival, hear its character tell of it and read the player's fortune",
+      rtc="2026-10-06 10:00:00")
+scene("pascal", "wallet", 6510, [4000, 4900, 5600, 6200, 6509], frames(4800, 6510, 50),
+      "on the otter's day of the week, find him on the beach and take what he gives",
+      rtc="2026-09-28 10:00:00")
+scene("fortune-tent", "wallet", 7450, [4150, 4900, 5600, 6400, 7300, 7449], frames(4500, 7450, 50),
+      "on the fortune teller's day of the week, go into her tent and pay her for the day's reading",
+      rtc="2026-10-12 10:00:00")
 
 
 # ------------------------------------------------------------------------------ saves
