@@ -19,6 +19,7 @@
 #include "arm7.h"
 #include "bios.h"
 #include "boot.h"
+#include "drive.h"
 #include "frame.h"
 #include "gpu2d.h"
 #include "input.h"
@@ -211,11 +212,15 @@ static int verified = -1;
  * The ones seen in IRQ mode are OS_IrqHandler_ThreadSwitch's; the rest are the scheduler's
  * (OS_SaveContext / OS_LoadContext from OS_RescheduleThread). */
 static uint32_t last_thread;
+static int driving; /* RUN_DRIVE (drive.h) */
 static uint64_t thread_switches, thread_switches_in_irq;
 
 static ArmHook hook_at(void *user, uint32_t address, void **hook_user)
 {
     ring[ring_count++ % RING] = address;
+    if (driving) {
+        drive_branch(address);
+    }
     int index = symbol_index(address);
     if (index >= 0) {
         symbol_hits[index]++;
@@ -705,6 +710,7 @@ int main(int argc, char **argv)
     gpu2d_init();
     frame_output_init();
     render_init();
+    driving = drive_enabled();
     const char *recording = getenv("RUN_INPUT");
     if (recording != NULL && *recording && input_load(recording) != 0) {
         fprintf(stderr, "cannot read the input recording %s\n", recording);

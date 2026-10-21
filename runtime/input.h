@@ -33,4 +33,10 @@ uint32_t input_keys_xy(void);
 /* The pen: nonzero when touching, with the screen position. */
 int input_touch(int *x, int *y);
 
+/* For tools/drive.py (drive.h): hold `keys` and `touch` (as in a recording) from `frame` on,
+ * dropping what the recording still had to play; 0 on success. And the input applied so far,
+ * as a recording; 0 on success. */
+int input_drive_set(uint32_t frame, const char *keys, const char *touch);
+int input_write_log(const char *path);
+
 #endif

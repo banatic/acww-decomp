@@ -109,7 +109,7 @@ CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", 
 # DIFF_CHECK(symbol, "module", address, bits, ... (runtime/diffcheck.h)
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
-           "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c")
+           "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c", "drive.c")
 
 # The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
 # the libs/Runtime package, and the C library functions the PC's own versions replace

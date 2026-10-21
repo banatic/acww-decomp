@@ -402,9 +402,23 @@ static void screen_hash(const uint32_t *pixels, char hex[41])
     sha1_hex(rgb, sizeof(rgb), hex);
 }
 
+static const uint32_t *last_upper, *last_lower;
+
+int frame_last_png(const char *path)
+{
+    static uint32_t both[256 * 384];
+    if (last_upper != NULL) {
+        memcpy(both, last_upper, 256 * 192 * sizeof(uint32_t));
+        memcpy(both + 256 * 192, last_lower, 256 * 192 * sizeof(uint32_t));
+    }
+    return png_write(path, both, 256, 384);
+}
+
 void frame_output(uint32_t frame, const uint32_t *upper, const uint32_t *lower)
 {
     frames_output++;
+    last_upper = upper;
+    last_lower = lower;
     if (png_dir != NULL && *png_dir && png_wanted(frame)) {
         static uint32_t both[256 * 384];
         memcpy(both, upper, 256 * 192 * sizeof(uint32_t));

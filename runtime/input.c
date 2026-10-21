@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "drive.h"
 #include "io.h"
 
 typedef struct InputEvent {
@@ -16,6 +17,22 @@ typedef struct InputEvent {
 static InputEvent *events;
 static int event_count, event_capacity, next_event;
 static InputEvent state;
+/* With a driver (drive.h): the states applied so far, for its log */
+static InputEvent *applied;
+static int applied_count, applied_capacity;
+static uint32_t last_frame = UINT32_MAX;
+
+static void apply(const InputEvent *e)
+{
+    state = *e;
+    if (drive_enabled()) {
+        if (applied_count == applied_capacity) {
+            applied_capacity = applied_capacity ? applied_capacity * 2 : 64;
+            applied = realloc(applied, (size_t) applied_capacity * sizeof(InputEvent));
+        }
+        applied[applied_count++] = *e;
+    }
+}
 
 static const struct {
     const char *name;
@@ -106,9 +123,61 @@ int input_load(const char *path)
 
 void input_frame(uint32_t frame)
 {
-    while (next_event < event_count && events[next_event].frame <= frame) {
-        state = events[next_event++];
+    if (frame != last_frame && drive_enabled()) {
+        last_frame = frame;
+        while (next_event < event_count && events[next_event].frame <= frame) {
+            apply(&events[next_event++]);
+        }
+        drive_frame(frame);
     }
+    while (next_event < event_count && events[next_event].frame <= frame) {
+        apply(&events[next_event++]);
+    }
+}
+
+int input_drive_set(uint32_t frame, const char *keys, const char *touch)
+{
+    InputEvent e;
+    memset(&e, 0, sizeof(e));
+    e.frame = frame;
+    if (parse_keys(keys, &e.keys) != 0) {
+        return -1;
+    }
+    if (strcmp(touch, "-") != 0) {
+        if (sscanf(touch, "%d,%d", &e.x, &e.y) != 2 || e.x < 0 || e.x > 255 || e.y < 0 || e.y > 191) {
+            return -1;
+        }
+        e.touch = 1;
+    }
+    next_event = event_count; /* the recording has been left */
+    apply(&e);
+    return 0;
+}
+
+int input_write_log(const char *path)
+{
+    FILE *f = fopen(path, "w");
+    if (f == NULL) {
+        return -1;
+    }
+    for (int i = 0; i < applied_count; i++) {
+        const InputEvent *e = &applied[i];
+        char keys[128] = "";
+        for (size_t k = 0; k < sizeof(key_names) / sizeof(key_names[0]); k++) {
+            if (e->keys & key_names[k].bit) {
+                if (*keys) {
+                    strcat(keys, "+");
+                }
+                strcat(keys, key_names[k].name);
+            }
+        }
+        if (e->touch) {
+            fprintf(f, "%u %s %d,%d\n", e->frame, *keys ? keys : "-", e->x, e->y);
+        } else {
+            fprintf(f, "%u %s -\n", e->frame, *keys ? keys : "-");
+        }
+    }
+    return fclose(f);
 }
 
 uint32_t input_keys(void)

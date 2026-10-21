@@ -27,6 +27,9 @@ void sha1_hex(const void *data, size_t size, char hex[41]);
 void frame_output_init(void);
 void frame_output(uint32_t frame, const uint32_t *upper, const uint32_t *lower);
 
+/* The last frame output as a PNG (upper screen above the lower one); 0 on success. */
+int frame_last_png(const char *path);
+
 /* One line for the run report: frames output, PNGs written, and a SHA-1 over every frame's
  * pair of hashes in order, so two runs compare with one line. */
 void frame_report(FILE *out);

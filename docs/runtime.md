@@ -85,6 +85,11 @@ written down as `REQUIRES:`. Clean is never bent just to pass a test.
   frames are those of drawing in place (`runtime/render.h`).
 - **Checks**: function-level differential checks, and scene-level checks that run the same input
   recording with different implementation choices and compare frames and memory.
+- **New scenes**: `tools/coverage.py` lists the Clean functions no scene enters, by file, and
+  the ones a function some scene runs calls, with that scene. `tools/drive.py` plays the game in
+  the interpreter a few frames at a time from the command line (input, screens, memory, the
+  functions entered that no scene enters, going back to a kept moment), and writes the input
+  as a recording that `tools/scenes.py` plays and checks as a scene (`runtime/drive.h`).
 
 ## Milestones
 
