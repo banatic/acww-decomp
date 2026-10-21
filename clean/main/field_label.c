@@ -38,12 +38,15 @@ static_assert(offsetof(FieldLabel, notice_renewed) == 0x10d, "FieldLabel");
 #define FIELD_LABEL_SECOND_TEXT_2 0x94
 #define FIELD_LABEL_NOTICE_FRAMES 60
 
-/* A message part (func_020a8228, 0x5c bytes) and an item's name (func_02062f90, 0x28 bytes). */
+/* A message part (func_020a8228, 0x5c bytes) and an item's name (func_02062f90, 0x28 bytes).
+ * The window's line takes 44 bytes from the name's characters at 0x12, 22 more than the name
+ * holds (FieldLabel_ShowItemName), so the name keeps that much room after it. */
 typedef struct FieldLabelText {
     u32 words[0x5c / 4];
 } FieldLabelText;
 typedef struct FieldLabelItemName {
     u32 words[0x28 / 4];
+    u32 frame[0x18 / 4]; /* the ROM's frame after the name: never written here */
 } FieldLabelItemName;
 
 extern const u8 data_020d226c[];  /* per notice: its text in the menu messages */
@@ -278,7 +281,11 @@ void FieldLabel_ShowNoticeText(FieldLabel *label)
 }
 CLEAN_AS(func_020b89cc, FieldLabel_ShowNoticeText)
 
-/* func_020b8a10: puts the item's name in the window. */
+/* func_020b8a10: puts the item's name in the window.
+ * BUG: the line is copied by its own capacity (TextString_SetBytes), past the end of the name
+ * into the ROM's frame (this function's and its callers' saved registers), whose bytes stay in
+ * the line after the name's terminator. Here the line gets the bytes of `name.frame`, which
+ * nothing writes. */
 void FieldLabel_ShowItemName(FieldLabel *label)
 {
     FieldLabelItemName name;

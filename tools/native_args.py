@@ -146,6 +146,13 @@ EDITS = {
     # 02088a7e: sp of an 8-byte frame
     "main/func_02088a78.c": ("20b42081d4d42bb8de762acc9cd6d3e682e6239adc867a17ec06486eae7e559c",
                              "unsigned char local[3];", "unsigned char local[4];"),
+    # A local buffer a callee reads past: func_0208aa48 copies the field label's line (44
+    # bytes, func_02051a94) from the item name's characters at buffer+0x12, 22 bytes past the
+    # 40-byte name. The ROM's frame there holds this function's and its callers' saved
+    # registers, which go into the line after the name's end; the PC copy reads its own
+    # uninitialized bytes there, as for any local the game copies part of (scene pickup).
+    "main/func_020b8a10.c": ("3fca14879cc9b89e34bcf5e7212acd8c8842026db133b55ab7f896bce2a37f7a",
+                             "    unsigned char buffer[40];", "    unsigned char buffer[0x40];"),
     # func_0204f794 stores a three-word point (x, y, z); func_ov003_02216520 passes it res, an
     # array of two words at sp+0x14 of a 0x20-byte frame (02216570), which has room for the
     # third. The PC's frame keeps a saved register there.

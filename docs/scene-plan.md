@@ -27,17 +27,10 @@ them, tools/diffcheck.py) and "read only" (checked by reading alone).
 
 ## Scenes found but not yet added
 
-Three more scenes were recorded; they enter 517 more functions together but differ between the
-Reference and Native code alone (`--clean none`), so they wait in build/scenes-pending of the tree they were made in,
-with their logs:
+Two more scenes were recorded; they differ between the Reference and Native code alone
+(`--clean none`), so they wait in build/scenes-pending of the tree they were made in, with their
+logs:
 
-- **pitfall** (5,650 frames, shovel and pitfall seed): fall into a buried pitfall and climb out,
-  drop an apple, pick it up and eat it. One word at 0x021f6bb4 differs from frame 4950 (0 against
-  0x1f). Bisected to the Native `func_0200467c` (SoundSys_PlaySe): its ROM code moves r0 to r1,
-  loads the sound system and branches to func_020f1fb4 with r2 and r3 as the caller left them;
-  the PC's call passes two arguments, and func_020f1fb4 reads more on some sound numbers (the
-  pitfall's). The fix is a PC copy that passes the caller's r2 on, once the callers are audited
-  (tools/native_args.py PASSED).
 - **museum-halls** (8,900 frames, every fish, insect and fossil given): the insect room and the
   aquarium. From frame 6400 eight words of the collision world (0x021c3c38, 0x021c4038 ...)
   differ, 0x02120a0c against 0x5fff: an uninitialized stack word reaches the collision lists, the
@@ -197,10 +190,14 @@ What reading the Clean code found about the groups above; counts are of function
 - Check runtime/library-arguments.txt / libs present for the museum run (house diverged like this without).
 - Fix: audited guest-stack effect (docs/native-guest-stack.md) for func_02031ecc, func_02033614, func_02032fc0/02032d48, func_02033118, func_02033a5c; or keep them Reference with a native-reference.txt reason. Confirm with RUN_NATIVE_CALL_TRACE=02031ecc,02033614,02032fc0 near frame 6400.
 
-### pitfall: func_0200467c (SoundSys_PlaySe) r2/r3 audit
-- 250 callers / 325 call sites, all pass one argument. Table: build/notes/callers_467c.txt.
-- Group A (source can name r2/r3, check ROM bytes): main/func_020abd68 (flag), main/func_020ac11c (param2), ov002/func_ov002_0220a05c (b,c), ov002/func_ov002_0220a08c (a2,a3), ov123/func_ov123_022999b0 (param2?). 20 sites after another call (callee leftovers), 303 with <3 params (unknowable from C).
-- func_020f1fb4's source never reads a 3rd/4th argument: forwarding helps only if its ROM code reads them; otherwise simplest fix = keep func_0200467c (and/or func_020f1fb4) Reference so the trampoline carries the ROM registers. Proposed EDITS entry for tools/native_args.py drafted (widen to 4 args) if the ROM reads them.
+### pitfall and pickup: the field label's line
+- Added as scenes. The word at 0x021f6bb4 that differed is in the field label's window line
+  (data_021f6b20 + 0x94): func_020b8a10 copies the line's 44 bytes from the item name's
+  characters, 22 bytes past its 40-byte local, so the line keeps what the ROM's frame holds
+  there (saved registers of func_020b8a10, its caller and func_020b8b88). The PC copy and Clean
+  now give the name room after it that nothing writes (tools/native_args.py EDITS,
+  clean/main/field_label.c). The earlier bisect to func_0200467c was wrong: keeping it Reference
+  changes nothing.
 
 ### Barber / Resetti / second player (save recipes, bank-1 offsets = StateBlock offsets)
 - Barber (ov053, scene 0x1f upstairs in Nookington's 0x1d): NookStore at 0x171b4: spent u32 +0 (>=240000), bits u16 +0x5a (=0x1720e) level in bits 9-10 = 3, upgrade {d,m,y,pending} +0x56 (pending 0x1720d=0); and rewrite the store tile on the town map (codes 0x500d-0x5010 -> 0x5010; town_layout.h at 0xd304). Alt: level 2 + spent>=240000 + state flag 7 (0x173f4 bit 7) + upgrade due today pending=1 -> game swaps tile itself. Rich save >= 3000 bells, 8:00-22:59. Barber talks: record flag 0xb (met), daily bit 0x13, hat topics 3/9.

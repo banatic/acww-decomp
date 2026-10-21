@@ -1,0 +1,128 @@
+# pickup (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: pickup (nothing held; in the pockets the items 0x136a and 0x137b, a piece of furniture
+# and an apple; no cockroaches). Y at 2700 opens the pockets; a pen tap on the empty bar at 2862,
+# item 0x136a at 2898 and "put it down" at 2944 drop it south of the player; Y twice closes the
+# page. The pen held on the item at 3222 shows its name (main/field_label.c); two taps at 3312
+# and 3324 walk the player to it and pick it up (state 0x18 of main/field_actor_states.c, then
+# 0x1a for the first pick-up of this item: held up with a message, A every 54 frames from 3510
+# reads it; state 0x1b puts it away at about 4040). UP from 4046 into the house (the room from
+# about 4500); the pockets from 4680: the apple at 4880 and "put it in the room" at 4926 drop it
+# north of the player; Y twice closes the page and B at 5204 picks it up again
+# (ov004/field_actor_rooms.c). UP and LEFT from 5328 to the table.
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2700 Y -
+2702 - -
+2762 - -
+2862 - 30,10
+2868 - -
+2898 - 20,118
+2904 - -
+2944 - 37,60
+2950 - -
+3050 Y -
+3056 - -
+3136 Y -
+3142 - -
+3222 - 125,146
+3252 - -
+3312 - 125,146
+3318 - -
+3324 - 125,146
+3330 - -
+3410 - -
+3510 A -
+3514 - -
+3574 A -
+3578 - -
+3638 A -
+3642 - -
+3722 A -
+3726 - -
+3776 A -
+3780 - -
+3830 A -
+3834 - -
+3884 A -
+3888 - -
+3938 A -
+3942 - -
+3992 A -
+3996 - -
+4046 UP -
+4296 UP -
+4356 A+UP -
+4360 UP -
+4420 - -
+4620 UP -
+4660 - -
+4680 Y -
+4684 - -
+4844 - 30,10
+4850 - -
+4880 - 116,118
+4886 - -
+4926 - 133,60
+4932 - -
+5032 Y -
+5038 - -
+5118 Y -
+5124 - -
+5204 B -
+5208 - -
+5328 UP -
+5378 LEFT -
+5408 - -
+5418 UP -
+5421 - -
+5431 - -

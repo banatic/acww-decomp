@@ -97,6 +97,14 @@ SAVES = {
                                       enumerate((0x137A, 0x137C, 0x137D, 0x1380, 0x13A0))],
     # the two items of tool 9, 0x137e held and 0x137f in pocket 0
     "burn": [(HELD, "<H", 0x137E), (POCKETS, "<H", 0x137F)],
+    # the shovel held; pockets 0 and 1: a pitfall seed (0x1566) and an apple (0x1518; the item
+    # names are the ROM's item_info/dma.bin, record n being item 0x1000 + n)
+    "pitfall": [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x1566), (POCKETS + 2, "<H", 0x1518)],
+    # nothing held; pockets 0-3: the items 0x136a and 0x137b (the first pick-up of each is held
+    # up with a message, main/field_actor_states.c state 0x1a), a piece of furniture (0x3508)
+    # and an apple (0x1518); no cockroaches in the house (as for "songs")
+    "pickup": [(HELD, "<H", 0xFFF1), (POCKETS, "<H", 0x136A), (POCKETS + 2, "<H", 0x137B),
+               (POCKETS + 4, "<H", 0x3508), (POCKETS + 6, "<H", 0x1518), (ROACHES, "<B", 0)],
     # the rod held (as for "house") and no cockroaches in the house (their collider reads
     # stack words the PC code reproduces on the audited paths only, docs/native-guest-stack.md:
     # next to the stereo or new furniture the walls' and floors' heights differed); pockets 0
@@ -234,6 +242,11 @@ scene("post-keys", "seed", 8800, [2600, 4700, 5300, 6000, 6900, 7700, 8400, 8799
       "store and move the letter, turn the pages, close; open the posting page and cancel")
 scene("toys-burn", "burn", 5150, [2600, 3300, 3700, 4500, 5149], frames(2700, 5150, 50),
       "light the held item that burns, then take the other one from the pockets and light it")
+scene("pitfall", "pitfall", 5650, [2600, 3700, 4100, 4400, 4950, 5300, 5649], frames(3900, 5650, 25),
+      "bury a pitfall seed, fall into the pitfall and climb out; drop an apple, pick it up and eat it")
+scene("pickup", "pickup", 5500, [2600, 3300, 4000, 4600, 5300, 5499], frames(2800, 5500, 50),
+      "drop an item and pick it up by the pen (held up the first time), then drop an apple in the "
+      "house and pick it up again")
 
 scene("villager-home", "seed", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
       "walk into a villager's house and talk to it there")
