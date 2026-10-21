@@ -228,29 +228,44 @@ CLEAN_AS(func_02042798, BoardNotices_PostEvents)
 /* The notice of `archive` drawn among those not used yet (the bits at `bits`, `count`
  * messages); all are free again when none is left.
  * BUG: the bits are packed back in whole bytes, so their last byte also takes the 4 flags after
- * `count`, which the ROM reads from past its buffer of `count` flags: its stack there (for the
- * pelican notices, the low bits of the caller's saved r4). Clean packs zeros there (BUGFIX: pack
- * the `count` flags only and keep the byte's other bits). */
-static void BoardNotices_PostDrawn(void *unused, u8 *bits, int count, const char *archive, const DateTime *when)
+ * `count` (BoardNotices_PackBits shifts each whole byte in), which the ROM reads from past its
+ * buffer of `count` flags: its stack there holds the caller's saved r4, the address
+ * BoardNotices_PostDays (the only caller) keeps of the pelican day, `residue` here. Clean puts
+ * that word's bytes there too, so the town record gets the ROM's bits (BUGFIX: pack the `count`
+ * flags only and keep the byte's other bits).
+ * REQUIRES: called from BoardNotices_PostDays, as the ROM's code is. */
+static void BoardNotices_PostDrawn(void *unused, u8 *bits, int count, const char *archive, const DateTime *when, u32 residue)
 {
     u8 used[BOARD_NOTICES_DRAWN_FLAGS] = {0};
     DateTime copy;
+    int bytes = (count + 7) / 8;
     int left = BoardNotices_UnpackBits((int) (uintptr_t) unused, used, bits, count);
     if (left == 0) {
         left = count;
         MI_CpuFill8(used, 0, (u32) count);
     }
+    for (int i = count; i < bytes * 8; i++) {
+        used[i] = (u8) (residue >> (8 * ((i - count) & 3)));
+    }
     int pick = (int) MainRandom_Below(left);
     MI_CpuCopy8(when, &copy, sizeof(DateTime));
     BoardNotices_PostUnused((int) (uintptr_t) unused, pick, archive, used, count, &copy);
-    BoardNotices_PackBits(unused, bits, used, (count + 7) / 8);
+#ifdef BUGFIX
+    u8 kept = bits[bytes - 1];
+    BoardNotices_PackBits(unused, bits, used, bytes);
+    u8 mask = (u8) ((1u << (count - (bytes - 1) * 8)) - 1);
+    bits[bytes - 1] = (u8) ((bits[bytes - 1] & mask) | (kept & ~mask));
+#else
+    BoardNotices_PackBits(unused, bits, used, bytes);
+#endif
 }
 
 /* func_0204287c: the pelican notice of the day. */
 void BoardNotices_PostPelican(void *unused, StateBlock *block, const DateTime *when)
 {
     BoardNoticesState *state = BoardNotices_State(block);
-    BoardNotices_PostDrawn(unused, state->pelican_used, BOARD_NOTICES_PELICAN_MESSAGES, data_020db870, when);
+    BoardNotices_PostDrawn(unused, state->pelican_used, BOARD_NOTICES_PELICAN_MESSAGES, data_020db870, when,
+                           (u32) (uintptr_t) &state->pelican_day);
 }
 CLEAN_AS(func_0204287c, BoardNotices_PostPelican)
 
@@ -258,7 +273,8 @@ CLEAN_AS(func_0204287c, BoardNotices_PostPelican)
 void BoardNotices_PostSlogan(void *unused, StateBlock *block, const DateTime *when)
 {
     BoardNoticesState *state = BoardNotices_State(block);
-    BoardNotices_PostDrawn(unused, state->slogan_used, BOARD_NOTICES_SLOGAN_MESSAGES, data_020db87c, when);
+    BoardNotices_PostDrawn(unused, state->slogan_used, BOARD_NOTICES_SLOGAN_MESSAGES, data_020db87c, when,
+                           (u32) (uintptr_t) &state->pelican_day);
 }
 CLEAN_AS(func_020428e8, BoardNotices_PostSlogan)
 

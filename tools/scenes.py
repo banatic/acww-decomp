@@ -203,6 +203,9 @@ scene("villager-home", "seed", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600
       "walk into a villager's house and talk to it there")
 scene("save-quit", "seed", 4500, [2600, 3400, 4000, 4499], frames(2700, 4500, 50),
       "save and quit from the START menu: the game saves and goes back to the title screen")
+scene("kk-request", "museum", 8500, [2800, 3900, 5640, 6600, 7580, 8499], frames(5600, 8500, 100),
+      "on a Saturday night (another day than the save's: the day's notices are posted), ask K.K. "
+      "in the museum's cafe for a song by name", rtc="2026-09-12 20:30:00")
 
 
 # ------------------------------------------------------------------------------ saves

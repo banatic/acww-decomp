@@ -177,16 +177,19 @@ copies use audited store events for the line-shift slot and completed gradient b
 
 **M5: Clean, one subsystem at a time.** Done: every one of the 25,251 game functions has a Clean
 version in `clean/`. With all of them in place of their Native ones (`tools/run.py --clean`), the
-M4 recordings give the Reference's frames and RAM on Windows and on Linux in CI. So do the 46
+M4 recordings give the Reference's frames and RAM on Windows and on Linux in CI. So do the 49
 scenes started from a town save (`tools/scenes.py --list`: tools, fishing, insects, digging,
 pockets, letters, shops, the museum, the observatory, villagers, the town hall and the gate,
 among others), with Native alone and with every Clean function; the save is not part of the
 repository. A run of all of them enters 12,697 of the 25,251 Clean functions. The 6,482 Clean
 functions that call nothing also pass the function-level check. Clean code that no recording
 reaches has been checked only by reading it against its matching source: local wireless and
-Wi-Fi (they need a second DS or a server), visitors, and the events of other days and weather
-(a boot on another day than the save's differs between Reference and Native: the day's notice
-packs bits from the ROM's stack into the town record). In house the Clean house collider reads
+Wi-Fi (they need a second DS or a server), visitors, and most events of other days and weather.
+One scene boots on another day than the save's (kk-request, a Saturday night): the day's
+pelican notice packs four flags from past its buffer, the ROM's stack there holding its
+caller's saved r4, into the town record; the three notice functions stay Reference
+(`runtime/native-reference.txt`) and Clean packs that word's bits as the ROM does
+(`clean/main/board_notices.c`). In house the Clean house collider reads
 its centres' heights from the guest stack slot the Native one uses
 ([guest stack](native-guest-stack.md)). The
 first recording run found what random entry
