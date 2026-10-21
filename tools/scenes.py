@@ -67,6 +67,7 @@ CHECKSUM = 0x173F8
 HELD = 0x241A          # the player's held item
 MONEY = 0x1C24         # the player's wallet
 POCKETS = 0x14 + 0x1BF2  # the player's pockets, 15 halfwords
+SCHEDULE_TODAY = 0x17218 + 0x14 + 4 * 6 + 2  # the event of the schedule's Friday (the seed's day)
 # the top byte of the house record's word at 0x15a0 (the record at 0xf52c in the state block,
 # main/house_record.h): the house's cockroach count, 10 in the seed
 ROACHES = 0xF52C + 0x15A0 + 3
@@ -75,6 +76,16 @@ SAVES = {
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
     "rich": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)],  # ... and 30,000 bells
     "wallet": [(MONEY, "<I", 30000)],  # 30,000 bells, the seed's held item kept
+    # the player played last time without saving: record 0's flag 2 (flags at 0x23f8 of the
+    # record, player_record.c), the mole's first lecture (the record's count at 0x2423 at 0)
+    "resetti": [(0x14 + 0x23F8, "<I", 0x660C), (0x14 + 0x2423, "<B", 0)],
+    # the weekly schedule's day for the save's own date (Friday, the fifth day: main's
+    # event_schedule.h, EventSchedule.days[4] at 0x17218 + 0x14 + 4 * 6) given another visitor's
+    # event than the fox's, not yet marked, and today's event (0x17218 + 0x12) with it: 0x43 the
+    # reaction teacher
+    **{f"visitor-{e:02x}": [(MONEY, "<I", 30000), (SCHEDULE_TODAY, "<B", e), (SCHEDULE_TODAY + 2, "<B", 0),
+                            (0x17218 + 0x12, "<B", e)]
+       for e in (0x43,)},
     "axe": [(HELD, "<H", 0x136B)],
     "net": [(HELD, "<H", 0x1376)],
     "shovel": [(HELD, "<H", 0x1369)],
@@ -316,6 +327,30 @@ scene("pascal", "wallet", 6510, [4000, 4900, 5600, 6200, 6509], frames(4800, 651
 scene("fortune-tent", "wallet", 7450, [4150, 4900, 5600, 6400, 7300, 7449], frames(4500, 7450, 50),
       "on the fortune teller's day of the week, go into her tent and pay her for the day's reading",
       rtc="2026-10-12 10:00:00")
+scene("resetti", "resetti", 9010, [2600, 2800, 5000, 7600, 9009], frames(2700, 9010, 100),
+      "after a play that was not saved, the mole comes up before the house and gives his first lecture")
+scene("gate-night", "seed", 9300, [2600, 5200, 7000, 8100, 9299], frames(5100, 9300, 100),
+      "at night, talk to both keepers in the gatehouse and leave their menus",
+      rtc="2026-09-11 22:30:00")
+scene("fishing-tourney", "rod", 8890, [4100, 4800, 6700, 8300, 8889], frames(4700, 8890, 100),
+      "on the day of the fishing tourney, hear the turtle's rules and offer him what the pockets hold",
+      rtc="2026-10-25 13:00:00")
+scene("new-year", "seed", 6280, [4100, 4800, 5300, 5800, 6279], frames(4400, 6280, 50),
+      "on New Year's Eve in the snow, walk to the countdown's clock and talk to the turtle there",
+      rtc="2026-12-31 23:40:00")
+scene("fireworks", "seed", 7060, [4400, 5400, 6000, 6600, 7059], frames(5300, 7060, 50),
+      "on a Saturday night of August, the fireworks; talk to the turtle by the town hall",
+      rtc="2027-08-07 20:00:00")
+scene("snow-festival", "seed", 7060, [4400, 5400, 6000, 6600, 7059], frames(5300, 7060, 50),
+      "in the snow festival's week, talk to the turtle by the town hall", rtc="2027-02-08 10:00:00")
+scene("gardens", "seed", 6010, [4400, 5300, 6009], frames(5300, 6010, 50),
+      "in the gardening event's days, walk to the turtle by the town hall", rtc="2027-04-08 10:00:00")
+scene("turnip-buy", "wallet", 9320, [2800, 3900, 5900, 7600, 8800, 9319], frames(5900, 9320, 100),
+      "on a Sunday morning, find the turnip seller in the trees, buy a hundred turnips from her",
+      rtc="2026-09-13 09:00:00")
+scene("reaction-teacher", "visitor-43", 13100, [2600, 3500, 7300, 9100, 11900, 12900, 13099],
+      frames(3400, 13100, 100), "on a day the schedule gives the reaction teacher, find him in the west, "
+      "become his pupil and learn a reaction")
 
 
 # ------------------------------------------------------------------------------ saves
