@@ -76,6 +76,15 @@ MUSEUM_A, MUSEUM_B, MUSEUM_C, MUSEUM_D = 0x17150, 0x17150 + 0x1B, 0x17150 + 0x1B
 # the top byte of the house record's word at 0x15a0 (the record at 0xf52c in the state block,
 # main/house_record.h): the house's cockroach count, 10 in the seed
 ROACHES = 0xF52C + 0x15A0 + 3
+NOOK_STORE = 0x171B4  # Nook's store (main/nook_store.h)
+HANDOVER = 0x14 + 0x1E40 + 0xA4  # the player's villager part's handed-over record
+
+
+def raw(offset: int, data: bytes) -> list[tuple[int, str, int]]:
+    """SAVES entries writing `data` at `offset` byte by byte."""
+    return [(offset + i, "<B", b) for i, b in enumerate(data)]
+
+
 SAVES = {
     "seed": [],
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
@@ -84,13 +93,34 @@ SAVES = {
     # the player played last time without saving: record 0's flag 2 (flags at 0x23f8 of the
     # record, player_record.c), the mole's first lecture (the record's count at 0x2423 at 0)
     "resetti": [(0x14 + 0x23F8, "<I", 0x660C), (0x14 + 0x2423, "<B", 0)],
+    # ... and the count at 2 to 5: the lectures that follow (the game raises the count at the
+    # load, StateBlock_StartMode2, and the count less one picks the lecture, ov077/mole_talk.c
+    # MoleTalk_FirstLine: count 2 gives the third)
+    **{f"resetti-{n}": [(0x14 + 0x23F8, "<I", 0x660C), (0x14 + 0x2423, "<B", n)] for n in (2, 3, 4, 5)},
     # the weekly schedule's day for the save's own date (Friday, the fifth day: main's
     # event_schedule.h, EventSchedule.days[4] at 0x17218 + 0x14 + 4 * 6) given another visitor's
-    # event than the fox's, not yet marked, and today's event (0x17218 + 0x12) with it: 0x43 the
-    # reaction teacher
+    # event than the fox's, not yet marked, and today's event (0x17218 + 0x12) with it: 0x3e the
+    # camel, 0x41 the walrus, 0x43 the reaction teacher
     **{f"visitor-{e:02x}": [(MONEY, "<I", 30000), (SCHEDULE_TODAY, "<B", e), (SCHEDULE_TODAY + 2, "<B", 0),
                             (0x17218 + 0x12, "<B", e)]
-       for e in (0x43,)},
+       for e in (0x3E, 0x41, 0x43)},
+    # Nook's store at its last level (main/nook_store.h, NookStore at 0x171b4: what was spent,
+    # the level in bits 9-10 of the word at 0x5a, the stock's date marked for a restock at 0x51)
+    # and its building on the town map (the seed's 0x500d at 0xe3b4 made 0x5010, 0x500d + level),
+    # with 30,000 bells: the barber's room (scene 0x1f) opens off the ground floor
+    "barber": [(MONEY, "<I", 30000), (NOOK_STORE, "<I", 240000), (NOOK_STORE + 0x5A, "<H", 3 << 9),
+               (NOOK_STORE + 0x51, "<B", 1), (0xE3B4, "<H", 0x5010)],
+    # a visit to the player's house agreed with villager 1 for 11:30 on the seed's day: the
+    # handed-over record of the player's villager part (main/villager_part_handover.h, at 0xa4
+    # of the part at 0x1e40 of the player's record) holds the villager's NpcId (copied from its
+    # town record, villager_town.h: eight of 0x7ec bytes at 0x9284, the NpcId at 0x7a0), an
+    # object of type 21 not yet started (low bits 0, ov068/house_visitor.h) and the time; the
+    # rod held and no cockroaches (as for "songs")
+    "house-visitor": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
+                     raw(HANDOVER, bytes.fromhex("6ec64331433143314331433143310310")) +  # the NpcId
+                     raw(HANDOVER + 0x10, bytes((0, 0, 11, 11, 9, 26, 0, 0))) +  # the object's date, 11:00
+                     [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
+                     raw(HANDOVER + 0x1C, bytes((0, 30, 11, 11, 9, 26, 0, 0))),  # the time agreed, 11:30
     "axe": [(HELD, "<H", 0x136B)],
     "net": [(HELD, "<H", 0x1376)],
     "shovel": [(HELD, "<H", 0x1369)],
@@ -362,6 +392,19 @@ scene("turnip-buy", "wallet", 9320, [2800, 3900, 5900, 7600, 8800, 9319], frames
 scene("reaction-teacher", "visitor-43", 13100, [2600, 3500, 7300, 9100, 11900, 12900, 13099],
       frames(3400, 13100, 100), "on a day the schedule gives the reaction teacher, find him in the west, "
       "become his pupil and learn a reaction")
+scene("saharah", "visitor-3e", 7000, [2600, 3500, 4800, 6400, 6999], frames(3400, 7000, 100),
+      "on a day the schedule gives the camel, find her in the west and take the wallpaper she asks "
+      "the player to deliver")
+scene("wendell", "visitor-41", 5600, [2600, 3500, 4500, 5599], frames(3400, 5600, 100),
+      "on a day the schedule gives the walrus, find him in the west and give him what he asks for")
+scene("house-visitor", "house-visitor", 13060, [2600, 3700, 6000, 9500, 12000, 12900, 13059], frames(3400, 13060, 100),
+      "in the house at the time a villager said it would come: it rings, comes in, talks of the "
+      "room again and again, walks about it and leaves")
+scene("resetti-2", "resetti-2", 12360, [2600, 4600, 8200, 10000, 11400, 12359], frames(4000, 12360, 100),
+      "after a play that was not saved, the mole's third lecture: a question, the order to kneel, a wait")
+scene("barber", "barber", 10500, [3900, 4400, 5700, 7100, 9000, 9800, 10499], frames(4200, 10500, 100),
+      "in Nook's store at its last level, go into the barber's room, pay for a haircut, sit in her "
+      "chair, answer her questions and have the hair cut")
 
 
 # ------------------------------------------------------------------------------ saves

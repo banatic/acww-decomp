@@ -27,13 +27,28 @@ them, tools/diffcheck.py) and "read only" (checked by reading alone).
 
 ## Scenes found but not yet added
 
-One more scene was recorded; it differs between the Reference and Native code alone
-(`--clean none`), so it waits in build/scenes-pending of the tree it was made in, with its log
-(museum-halls, recorded with it, is now a scene):
+Three more scenes were recorded; they differ between the Reference and Native code alone
+(`--clean none`), so they wait in build/scenes-pending of the tree they were made in, with their
+logs (museum-halls, recorded with them, is now a scene):
 
 - **sunday-joan** (10,750 frames, rtc 2026-09-13 09:00, rich save): a rainy Sunday, find Joan
   and buy turnips; it enters 433 functions no other scene does (the new-day code, the turnip
   prices, Joan). The Native run's frames differ and it stops; not bisected yet.
+- **villager-birthday** (9,860 frames, rtc 2026-09-25 14:00, wallet save) and **sick-villager**
+  (8,070 frames, rtc 2026-09-24 14:00; the save puts villager 1 of the seed town in the town's
+  villager move record, main/villager_move.h, with the medicine 0x155e, and the medicine in
+  pocket 0): both go into a villager's house (the birthday party, the sick villager, which
+  enters 39 functions of ov004/sick_villager.c), and both differ from the frame the room's
+  music cue first updates (6103 and 5884). The cue's sound handle has no player yet, so
+  NNS_SndPlayerReadVariable returns without writing, and func_020f9d00 (sp+4: the cue's byte
+  0x0b) and func_020f9948 (sp+0, sp+2) go on with what their ROM frames hold: in the
+  Reference, the registers that MTX_Concat43 saved there when the room's drawing called it
+  (r4 and r5 of its caller, func_020e98xx, at 027e2e64 and 027e2e68). With those callers
+  Native, the interpreter's registers at the call are not the caller's, so the words differ
+  (a store watch on the Reference run showed the writers). Clean has the same `REQUIRES:`.
+  Keeping func_020f9948 and func_020f9d00 Reference is not enough; the fix needs the callers'
+  saved registers on the guest stack. func_020f9948's own unset r4 and r5 (the caller's cue
+  and -0x1000) are given in its PC copy (tools/native_args.py).
 
 ## Current numbers
 
@@ -202,6 +217,18 @@ What reading the Clean code found about the groups above; counts are of function
 - Barber (ov053, scene 0x1f upstairs in Nookington's 0x1d): NookStore at 0x171b4: spent u32 +0 (>=240000), bits u16 +0x5a (=0x1720e) level in bits 9-10 = 3, upgrade {d,m,y,pending} +0x56 (pending 0x1720d=0); and rewrite the store tile on the town map (codes 0x500d-0x5010 -> 0x5010; town_layout.h at 0xd304). Alt: level 2 + spent>=240000 + state flag 7 (0x173f4 bit 7) + upgrade due today pending=1 -> game swaps tile itself. Rich save >= 3000 bells, 8:00-22:59. Barber talks: record flag 0xb (met), daily bit 0x13, hat topics 3/9.
 - Resetti (ov077): record 0 flags u32 at 0x240c (flag 2 bit 2 = played-not-saved) set, 0x2410 bit 3 (flag 0x23) clear, count_0d at 0x2437 = N (0,2,3,4,5 cover every lecture). Continue, go outside, stand 3 south / diagonal of the house door; he rises.
 - Second player: title menu "new player" (message 0x27), Kapp'n questions, arrival, Nook's welcome. No save edit.
+- Done (scenes barber, resetti-2, house-visitor): the barber with the first recipe (level 3,
+  240000 spent, the stock marked for a restock, the tile at 0xe3b4 0x500d -> 0x5010); her room
+  opens off the ground floor (scene 0x1d -> 0x1f by the glass door left of the counter), the
+  chair is sat in from the west (tile 5, 11). Resetti: the game raises count_0d by one at the
+  load (StateBlock_StartMode2), so a save's count N gives lecture N + 1 (index N); the save's
+  count 3 (the fourth lecture) asks for a phrase typed on the keyboard (line 0x17) and repeats
+  until it is right (pen taps on the hangul keys work, but neither START nor the OK button
+  closed the screen after the phrase in drive.py: not finished); counts 4 and 5 not tried. A house visit: the handed-over record at 0xa4 of the player's villager part
+  (main/villager_part_handover.h) with the villager's NpcId, type 21 low bits 0 and the time.
+- The letter errand (type 19): the day's group-1 types not reserved by data_020cd454 are 7, 10,
+  19 and 21 (VillagerKind_Deal), dealt at random at the load; on the seed's day the villagers
+  got 7, 10 and 21 (state table data_021d13e4, entries of 0x2c, the object's type at +0x0e).
 
 ### Field actor states / effect kinds -> actions
 - 148 of the unentered actor functions are remote-console paths (*State<N>Message, *EndState<N>Remote): move to unreachable (second DS). main 34, ov003 71, room_states 29, room_states2 8, place_states 6.
