@@ -27,7 +27,7 @@ them, tools/diffcheck.py) and "read only" (checked by reading alone).
 
 ## Scenes found but not yet added
 
-Three more scenes were recorded; they differ between the Reference and Native code alone
+Four more scenes were recorded; they differ between the Reference and Native code alone
 (`--clean none`), so they wait in build/scenes-pending of the tree they were made in, with their
 logs (museum-halls, recorded with them, is now a scene):
 
@@ -46,8 +46,16 @@ logs (museum-halls, recorded with them, is now a scene):
   (r4 and r5 of its caller, func_020e98xx, at 027e2e64 and 027e2e68). With those callers
   Native, the interpreter's registers at the call are not the caller's, so the words differ
   (a store watch on the Reference run showed the writers). Clean has the same `REQUIRES:`.
-  Keeping func_020f9948 and func_020f9d00 Reference is not enough; the fix needs the callers'
-  saved registers on the guest stack. func_020f9948's own unset r4 and r5 (the caller's cue
+  The words are r4 and r5 of func_020e9744/func_020e9868 at their MTX_Concat43 call: the
+  matrix (021fbe48) and func_ov004_0220fc98's room object. With those callers Native, the
+  bridge hands MTX_Concat43 other r4 and r5, which it saves there. Keeping func_020f9948,
+  func_020f9d00, func_020e9744, func_020e9868, func_ov004_0220fb90 and func_ov004_0220fc98
+  Reference moves sick-villager's first difference from 5884 to 5888 (the room object's
+  animation, func_ov004_02214c50); the fix needs the ROM callers' saved registers on the guest
+  stack, not a longer Reference list. A third recording, **letter-errand** (18,450 frames, rtc
+  2026-09-14 11:00, wallet save: villager 4's talk in her house gives the letter for villager
+  1, delivered on the beach through the letter pick, ov108, 63 functions), waits for the same
+  fix (it first differs at 5165, in her house). func_020f9948's own unset r4 and r5 (the caller's cue
   and -0x1000) are given in its PC copy (tools/native_args.py).
 
 ## Current numbers
