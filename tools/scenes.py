@@ -86,6 +86,8 @@ def raw(offset: int, data: bytes) -> list[tuple[int, str, int]]:
     return [(offset + i, "<B", b) for i, b in enumerate(data)]
 
 
+# a footer of the game's letters from the shop (its five characters, at 0xd8 of a letter)
+LETTER_FOOTER_SHOP = [(0xD8 + 2 * i, "<H", c) for i, c in enumerate((0xB108, 0xAD74, 0x0020, 0xC0C1, 0xC810))]
 SAVES = {
     "seed": [],
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
@@ -143,6 +145,11 @@ SAVES = {
     "shovel-fruit": [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x3508), (POCKETS + 2, "<H", 0x1518)],
     # the bug net, and the furniture of "furni" in every pocket
     "full-net": [(HELD, "<H", 0x1376)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)],
+    # pockets 0-4: two pieces of furniture (0x3508, 0x3510), an apple (0x1518), a hat (0x4000) and
+    # a shirt (0x2400), to move through a box's page
+    "box-items": [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x3510, 0x1518, 0x4000, 0x2400))],
+    # the golden rod, and the furniture of "furni" in every pocket
+    "full-rod": [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)],
     "bare": [(HELD, "<H", 0xFFF1)],  # nothing held (0xfff1, the code of an empty slot)
     # pockets 0-3: a fish (0x12e8, the first), an insect (0x12b0), a fossil (0x450c) and a
     # painting (0x3894), the first item of each of the museum's four collections
@@ -189,7 +196,41 @@ SAVES = {
     # the rod held and no cockroaches (as for "songs"); pockets 0 and 1: a wallpaper (0x1100)
     # and a carpet (0x1144, main/item_group.c)
     "house-looks": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (POCKETS, "<H", 0x1100), (POCKETS + 2, "<H", 0x1144)],
+    # the rod held; pockets 0-4: an insect (0x12b0) and a fish (0x12e8), which the pockets in the
+    # town can show and let go (ov098/pockets_town.c), an item worn on the head (0x1408) and two
+    # more of the items its "tile or drop" row is for (0x14fe and 0x1567)
+    # letters 1-9 of the player's ten carried ones (0x11a8 of the record, main/player_pockets.h)
+    # and 1-5 of the mailbox's (0x13144 of the state block, main/mail.h) made blank received
+    # letters (state 2 in byte 0xfa, no item at 0xfc), to a player (the addressee's kind at 0x22)
+    # from a special character (the sender's at 0x42, main/letter.h) whose footer (at 0xd8) names
+    # the shop, on paper 0x1f (0xf9) and with the tag 2 of its writer (0xfb; a special letter of
+    # tag 0 is not one the game makes: its popup would name the sender from an unset text), as
+    # the seed's letters are: with the carried letters full the mailbox keeps its own
+    # (ov106/mailbox_scene.c)
+    "mail-full": [(base + 0x100 * i + off, fmt, value) for base, slots in ((0x14 + 0x11A8, range(1, 10)),
+                                                                          (0x13144, range(1, 6)))
+                  for i in slots for off, fmt, value in ((0xFA, "<B", 2), (0xFC, "<H", 0xFFF1), (0x22, "<B", 2),
+                                                         (0x42, "<B", 4), (0xF9, "<B", 0x1F), (0xFB, "<B", 2),
+                                                         *LETTER_FOOTER_SHOP)],
+    # the letters of "mail-post" and three more (below), pockets 0-2 a piece of furniture
+    # (0x3508), an apple (0x1518) and a bag of bells (0x1492), and 30,000 bells
+    "mail-items": [],
+    # carried letters 1-3 made blank letters the player wrote (state 1, no item; the sender's
+    # kind at 0x42 the player themself) to the player themself, a villager and a player (the
+    # addressee's kind at 0x22, main/letter.h)
+    "mail-post": [(0x14 + 0x11A8 + 0x100 * i + off, fmt, value) for i, kind in ((1, 1), (2, 3), (3, 2))
+                  for off, fmt, value in ((0xFA, "<B", 1), (0xFC, "<H", 0xFFF1), (0x22, "<B", kind),
+                                          (0x42, "<B", 1))],
+    "pockets-town": [(HELD, "<H", 0x1374)] + [(POCKETS + 2 * i, "<H", item) for i, item in
+                                              enumerate((0x12B0, 0x12E8, 0x1408, 0x14FE, 0x1567))],
 }
+
+SAVES["mail-items"] = SAVES["mail-post"] + [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x1518, 0x1492))] + [
+    (MONEY, "<I", 30000),
+    # carried letter 4 a bottle's letter the player wrote (state 4), 5 a received one carrying the
+    # furniture (state 2, item 0x3508), 6 one between villagers (state 7)
+    *[(0x14 + 0x11A8 + 0x100 * i + off, fmt, value) for i, state, item in ((4, 4, 0xFFF1), (5, 2, 0x3508), (6, 7, 0xFFF1))
+      for off, fmt, value in ((0xFA, "<B", state), (0xFC, "<H", item), (0x22, "<B", 2), (0x42, "<B", 1))]]
 
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
@@ -425,6 +466,67 @@ scene("sick-villager", "sick", 8070, [2600, 5365, 5900, 6650, 8069], frames(5300
 scene("letter-errand", "wallet", 18450, [2600, 5300, 9000, 11400, 15450, 17200, 18449], frames(5200, 18450, 100),
       "in a villager's house, agree to take her letter to another villager and give it from the "
       "letter pick on the beach", rtc="2026-09-14 11:00:00")
+scene("villager-talks", "pockets-keys", 10950, [2600, 4900, 6500, 8000, 9500, 10949], frames(4900, 10950, 100),
+      "talk to a villager again and again for a long time: it picks a new topic each time, and a second "
+      "villager walks up and talks too")
+scene("pockets-town", "pockets-town", 6250, [2600, 3300, 4000, 4700, 5400, 6249], frames(2800, 6250, 50),
+      "in the pockets, show an insect and let it go, fail to plant on the path; at the river, show a fish "
+      "and let it go, plant two items and put one down")
+scene("mailbox-keys", "mail-full", 6260, [2600, 3700, 4600, 5200, 5800, 6259], frames(3200, 6260, 50),
+      "open a full mailbox: leave the letters, read, take and put letters down by the keys, then by "
+      "the pen; close and open it again, throw away, close")
+scene("fish-swap", "full-rod", 6620, [2600, 3700, 5100, 5900, 6300, 6619], frames(5300, 6620, 25),
+      "catch a fish with the pockets full: on the swap page, a choice by the pen and the keys cancelled, "
+      "then a pocket swapped for it")
+scene("storage-touch", "mail-full", 8250, [2600, 4700, 5300, 6000, 6800, 7600, 8249], frames(4800, 8250, 50),
+      "at the post office window, the letter storage with the carried letters full: letters dragged, "
+      "read and cancelled by the pen, swapped and sent back by the keys, the close asked and answered")
+scene("letter-text", "rich", 9900, [2600, 5500, 8200, 8700, 9200, 9600, 9899], frames(8200, 9900, 25),
+      "write a letter by the keys with the pointer on the text: move, mark, copy, paste, header and "
+      "footer, the decide asked and refused, the keyboard's pages; decide and keep it")
+scene("pockets-letters", "mail-items", 4860, [2600, 3000, 3500, 4000, 4500, 4859], frames(2700, 4860, 25),
+      "in the pockets by the pen: bells out of the wallet onto a letter, a present taken, a letter peeked "
+      "at, rewritten, readdressed and thrown away")
+scene("board-keys", "seed", 6730, [2600, 4300, 4900, 5400, 6000, 6729], frames(4300, 6730, 25),
+      "write on the bulletin board by the keys (repeat, delete, mark, copy, paste, scroll) and the pen "
+      "(mark, knob, bar); refuse to decide, refuse to quit, decide")
+scene("chat-keys", "seed", 5130, [2600, 3800, 4100, 4400, 4800, 5129], frames(3800, 5130, 25),
+      "on the chat keyboard by the keys with the pointer on the line: mark, copy, paste; a mark by the "
+      "pen, a key held until the line is full, send it")
+scene("catalog-keys", "seed", 4510, [2600, 3500, 3800, 4100, 4509], frames(3500, 4510, 25),
+      "the fish catalog by the keys (held keys, the scroll knob held with A) and by the pen (the knob "
+      "dragged, the arrows)")
+scene("designs-room", "rod", 6420, [2600, 3500, 4300, 5000, 5700, 6419], frames(3500, 6420, 25),
+      "in the player's room, my designs as the carpet (turned) and the wallpaper, swapped, and put down "
+      "as design displays")
+scene("tune-erase", "seed", 11310, [2600, 4800, 5500, 6300, 8000, 10000, 11309], frames(4800, 11310, 100),
+      "in Pelly's town tune editor: the erase refused by the keys and the pen, the tune played, erased, "
+      "two notes set and kept; her menu left")
+scene("box-keys", "box-items", 5890, [2600, 4400, 4800, 5200, 5889], frames(4450, 5890, 25),
+      "at the town hall's recycle box by the keys: items put in, swapped and sent across with Y, one "
+      "carried back; closed by the pen")
+scene("chest-keys", "house-furni", 6230, [2600, 4200, 4700, 5200, 5700, 6229], frames(4200, 6230, 25),
+      "the chest of drawers' storage by the keys and the pen: items in, swapped, out; the tabs; closed "
+      "with B")
+scene("bottle-throw", "mail-items", 5560, [2600, 3460, 4100, 4700, 5100, 5559], frames(3460, 5560, 25),
+      "on the beach facing the sea, rewrite a bottle's letter and throw the bottle into the sea")
+scene("sell-keys", "box-items", 8720, [2600, 5000, 5800, 6500, 7500, 8719], frames(5000, 8720, 50),
+      "at Nook's sell window by the keys: items moved, swapped, sold and the offer declined; the window "
+      "cancelled with B")
+scene("shovel-beach", "shovel", 4650, [2600, 3460, 3800, 4200, 4649], frames(3460, 4650, 25),
+      "on the beach, dig and fill a hole in the sand, the shovel against the edges and the river, then on "
+      "the grass and a tree")
+scene("house-bed", "house-furni", 5550, [2600, 3700, 4100, 4600, 5100, 5549], frames(3600, 5550, 25),
+      "in the house, put the bed down, lie in it, turn over, get up and lie down again")
+scene("name-keys", "rod", 9630, [2600, 6000, 8000, 8500, 9100, 9629], frames(8000, 9630, 25),
+      "the design's name typed by the keys (repeat, delete, mark, copy, paste) and the pen (a drag), "
+      "emptied and refused, then decided")
+scene("editor-keys", "rod", 9410, [2600, 6100, 6800, 7500, 8400, 9409], frames(6100, 9410, 50),
+      "Mabel's design editor by the keys: tools, colours, drawing, picking, a shape, quit refused; undo "
+      "by the pen, decide, name it and pay")
+scene("post-letters", "mail-post", 13150, [2600, 5000, 6500, 8000, 9500, 11000, 12500, 13149],
+      frames(5000, 13150, 100), "at the post office window, put letters on the posting page by the keys and "
+      "the pen, set a delivery date by the keys and the pen, cancel; post again, refused, never mind")
 
 
 # ------------------------------------------------------------------------------ saves

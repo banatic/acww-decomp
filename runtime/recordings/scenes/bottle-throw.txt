@@ -1,0 +1,101 @@
+# bottle-throw (format: runtime/input.h), played from a town save by tools/scenes.py (the save
+# is not in this repository). As fish-catch.txt up to 3460: on the beach west of the river's
+# mouth.
+# Save: mail-items (among the carried letters a bottle's letter the player wrote). The pockets
+# from 3460: the bottle's letter's choice has no "send" row facing the beach; Y twice closes
+# them, DOWN at 3756 faces the sea. The pockets again: the letter's choice offers sending it;
+# "rewrite" at 4064 opens the keyboard (a letter typed, decided, yes); "send" at 4734: the
+# player throws the bottle (state 0x89 of ov003/field_actor.c, ov003/thrown_bottle.c) and it
+# drifts off; Y twice closes the page.
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 DOWN -
+2830 B+LEFT -
+2980 B+DOWN -
+3280 - -
+3300 RIGHT -
+3460 - 244,10
+3466 - -
+3566 - 212,114
+3570 - -
+3610 - 212,114
+3614 - -
+3654 Y -
+3660 - -
+3690 Y -
+3696 - -
+3756 DOWN -
+3816 - -
+3826 - 244,10
+3832 - -
+3932 - 212,114
+3936 - -
+3976 - 212,114
+3980 - -
+4020 - 212,114
+4024 - -
+4064 - 205,52
+4068 - -
+4368 - 40,112
+4372 - -
+4402 - 222,180
+4406 - -
+4486 - 80,172
+4490 - -
+4690 - 212,114
+4694 - -
+4734 - 210,33
+4738 - -
+5138 - -
+5438 Y -
+5444 - -
+5474 Y -
+5480 - -

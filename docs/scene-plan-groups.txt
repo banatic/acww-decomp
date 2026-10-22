@@ -27,6 +27,13 @@ needs: unreachable
 match: ov146/* main/wfc_* main/wifi_friends
 
 area: Unreachable for one player
+group: screens no code opens
+scene: none: the pockets view (ov099, group 9's mode 0x1c) and the carried letters screen (ov103, mode 0x24)
+reach: no code sets these modes: the talks' SceneCommand_SetScreenMode calls, GroupParams_Open* callers, the menu tabs (modes 0x18-0x1b, 13, 14) and the dispatcher's reopenings (2, 0x23, 0x35, 0x36, 0x40) never give 0x1c or 0x24; ov099's setup fills fixed items, as a test screen would
+needs: unreachable
+match: ov099/* ov103/*
+
+area: Unreachable for one player
 group: hardware and failure paths
 scene: none: the debug screen after an exception, a halt, a pulled card, the lid closed, a low battery, a failed card access
 reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults
@@ -129,11 +136,11 @@ match: ov095/* ov104/* ov105/* ov106/* ov122/* ov091/* main/letter* main/mail* m
   main/villager_letter main/waiting_letter main/villager_post
 
 area: Pockets, menus and letters (the seed's day)
-group: screens opened by scene commands
-scene: the carried letters screen (ov103), the letter pick (ov108), the pockets view (ov099): opened by scene commands of talks (main/scene_command.h, SceneCommand_OpenScreen with the mode)
-reach: which talk gives the command is not identified (a villager asking for a letter to deliver, a trade): find the GroupParams modes 0x24, 0x28 and ov099's in the talks' command lists
-needs: unknown
-match: ov099/* ov103/* ov108/*
+group: the letter pick of a delivery errand
+scene: the letter pick (ov108, group 9's mode 0x28): a villager gives a letter for another (VillagerTalkPart_AskPocketsByType type 19); talking to that one opens it
+reach: the villager's errand of a letter to deliver (villager talks); then touch the letter, the keys over its ten places, A on a dimmed one, the cancel row
+needs: seed
+match: ov108/*
 
 area: Pockets, menus and letters (the seed's day)
 group: item pick, swap and boxes
