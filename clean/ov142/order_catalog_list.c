@@ -219,12 +219,12 @@ void OrderCatalog_HoldUpArrow(OrderCatalog *self)
 }
 CLEAN_AS(func_ov142_02299928, OrderCatalog_HoldUpArrow)
 
-/* func_ov142_02299938 (back from the confirmation): the list scrolled to put the picked row at
- * the top, as far as it goes, the thumb moved to it, the bar shown or hidden by whether the
- * list scrolls, and the list no longer dimmed. */
+/* func_ov142_02299938 (back from the confirmation): the list scrolled back to the row at its top
+ * (OrderCatalog_ShowPickedPage moved it, unclamped), now kept within the list, the thumb moved to
+ * it, the bar shown or hidden by whether the list scrolls, and the list no longer dimmed. */
 void OrderCatalog_ScrollToPickedRow(OrderCatalog *self)
 {
-    int row = self->picked_row;
+    int row = self->top_row;
     int last = OrderCatalog_Count(self) - 8;
     if (last < 0) {
         last = 0;

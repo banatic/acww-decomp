@@ -34,6 +34,15 @@ needs: unreachable
 match: ov099/* ov103/*
 
 area: Unreachable for one player
+group: the town map's list by the keys and the pen
+scene: none: Pelly's town map (ov120, mode 0x2f) always opens with the cursor on the map, where A, B, X or a touch closes it
+reach: TOWN_MAP_FLAG_ON_MAP is never cleared (ov120/town_map.h, QUIRK), so sub states 0-8 (the list's keys, touches, scroll knob) and what only they call never run
+needs: unreachable
+match: ov120/town_map:TownMap_Sub* ov120/town_map:TownMap_Pick ov120/town_map:TownMap_MoveCursor
+  ov120/town_map:TownMap_EnterTouch ov120/town_map:TownMap_GlideToCursor ov120/town_map:TownMap_PressPointer
+  ov120/town_map:TownMap_ReleasePointer ov120/town_map_list:*
+
+area: Unreachable for one player
 group: hardware and failure paths
 scene: none: the debug screen after an exception, a halt, a pulled card, the lid closed, a low battery, a failed card access
 reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults

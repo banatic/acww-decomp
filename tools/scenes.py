@@ -148,6 +148,20 @@ SAVES = {
     # pockets 0-4: two pieces of furniture (0x3508, 0x3510), an apple (0x1518), a hat (0x4000) and
     # a shirt (0x2400), to move through a box's page
     "box-items": [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x3510, 0x1518, 0x4000, 0x2400))],
+    # the rod held, 30,000 bells and every item with variants had (the catalog's bits at 0x1c18 of
+    # the record, main/item_record.h, the first 0x100 bytes): long lists in Nook's catalog
+    "catalog-full": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)] + [(0x14 + 0x1C18 + i, "<B", 0xFF) for i in range(0x100)],
+    # as "songs" with the first song item twice (pockets 0 and 1): the second one stored is a song
+    # the house has already (ov109/song_pockets.c, its error)
+    "songs-twice": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (POCKETS, "<H", 0x1323), (POCKETS + 2, "<H", 0x1323)],
+    # nothing held, the bug net (0x1376) in pocket 0
+    "bare-net": [(HELD, "<H", 0xFFF1), (POCKETS, "<H", 0x1376)],
+    # as "house-furni" with other room-object kinds in pockets 0-5 (item 0x3000 + 4 * number,
+    # ftr_info/dma.bin byte 0x18 the kind): numbers 0xb5 (kind 2), 0xc5 (3), 0x1a9 (4), 0xda (5),
+    # 0x103 (6) and 0xd9 (7)
+    "house-kinds": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
+                   [(POCKETS + 2 * slot, "<H", 0x3000 + 4 * number)
+                    for slot, number in enumerate((0xB5, 0xC5, 0x1A9, 0xDA, 0x103, 0xD9))],
     # the golden rod, and the furniture of "furni" in every pocket
     "full-rod": [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)],
     "bare": [(HELD, "<H", 0xFFF1)],  # nothing held (0xfff1, the code of an empty slot)
@@ -524,6 +538,16 @@ scene("name-keys", "rod", 9630, [2600, 6000, 8000, 8500, 9100, 9629], frames(800
 scene("editor-keys", "rod", 9410, [2600, 6100, 6800, 7500, 8400, 9409], frames(6100, 9410, 50),
       "Mabel's design editor by the keys: tools, colours, drawing, picking, a shape, quit refused; undo "
       "by the pen, decide, name it and pay")
+scene("catalog-bar", "catalog-full", 7300, [2600, 4800, 5300, 5900, 6600, 7299], frames(4800, 7300, 50),
+      "Nook's order catalog with every furniture had: its scroll bar by the pen and the keys, entries "
+      "checked, the order refused, quit")
+scene("song-twice", "songs-twice", 5680, [2600, 3900, 4300, 4800, 5300, 5679], frames(3900, 5680, 25),
+      "at the house's stereo, store a song, then the same song again (refused), the song pockets by the "
+      "keys, close")
+scene("bee-sting", "bare-net", 4270, [2600, 3050, 3400, 3800, 4269], frames(3000, 4270, 25),
+      "shake the tree with a beehive: the hive falls, the bees chase and sting the player")
+scene("house-kinds", "house-kinds", 8280, [2600, 3700, 4600, 5600, 6600, 7600, 8279], frames(3600, 8280, 50),
+      "in the house, put down pieces of six more room-object kinds and walk into them or use them")
 scene("post-letters", "mail-post", 13150, [2600, 5000, 6500, 8000, 9500, 11000, 12500, 13149],
       frames(5000, 13150, 100), "at the post office window, put letters on the posting page by the keys and "
       "the pen, set a delivery date by the keys and the pen, cancel; post again, refused, never mind")
