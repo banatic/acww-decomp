@@ -1514,10 +1514,12 @@ static void record_branch(uint32_t address)
         /* No function starts here. From Native code, a call to such an address (a veneer
            the linker put between two functions, which goes on to its target) is a call out
            as the Native run makes it; the branches inside Native code and inside the helpers
-           it calls are not. */
+           it calls are not. Nor is the scheduler's return into a thread it interrupted inside
+           Native code (OS_LoadContext, in supervisor mode, with the thread's resume address in
+           lr): the Native run takes interrupts only while it idles, outside Native code. */
         Fn *c = containing(address);
         if (!inside || (c != NULL && (native_for_native(c) || c->status == 'H')) || !inside_native(cpu->r[14]) ||
-            (cpu->r[14] & ~1u) - (address & ~1u) < 8u) {
+            (cpu->r[14] & ~1u) - (address & ~1u) < 8u || (cpu->cpsr & ARM_MODE_MASK) == ARM_MODE_SVC) {
             return;
         }
         write_record(key, CROSS_CALL_OUT, address & ~1u, cpu->steps, cpu->r[13]);

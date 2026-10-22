@@ -177,6 +177,13 @@ depends on how far the worker got to the instruction; Native code runs a stretch
 on that thread it is always interpreted, in both runs (`on_worker_thread` in
 `runtime/native_run.c`).
 
+An interrupt that wakes a thread of higher priority while the main thread is inside Native
+code makes the Reference switch threads there; when the scheduler switches back
+(OS_LoadContext, in supervisor mode), its jump into the interrupted Native code is not a call
+out of it, and the record leaves it out: the Native run takes the interrupt while it idles
+before its next crossing (scenes saharah and wendell, on the visitors' day, diverged at the
+continue menu's 3D drawing).
+
 RAM selectors sampled by HBlank need their publication time preserved too. The Native sky
 copies use audited store events for the line-shift slot and completed gradient buffer. See
 [the publication boundary](native-publications.md) for the source guards and clock ordering.
