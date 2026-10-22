@@ -289,6 +289,11 @@ static int offer_set_line(VillagerTalk *talk, VillagerTalkLine *line)
 /* func_020288bc: the reply to a choice: the talk's line functions set from the table the choice
  * runs (or cleared when it runs none), then the line, when it has a text, said while the talk is
  * on its message.
+ * BUG: a line function that gives no line (the letter errand's, func_02027cc8) leaves it as the
+ * ROM's stack held it: the fields at 0x24 and 0x28 of the text walker TalkObject_RunAnswerText
+ * had there for the answer picked just before (the talk object and 0), so the talk object's first
+ * bytes are copied as the message's text. Clean starts from 0 (no line); the mixed Native/Clean build's copy reads
+ * the ROM's words (docs/native-guest-stack.md).
  * REQUIRES: `choice` is 0-4. */
 void VillagerTalkOffer_Reply(VillagerTalk *talk, int unused, int choice)
 {

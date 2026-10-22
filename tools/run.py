@@ -713,17 +713,19 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
             if (mod, s.address) in cleaned and s.name not in kept:
                 status = "C" if native and (native[1] & 15) == RET_SKIP else "N"
             counts[status] = counts.get(status, 0) + 1
-            frame, spill_arg, spill_offset = -1, -1, -1
+            frame, spill_arg, spill_offset, saves = -1, -1, -1, 0
             if (mod, s.address) in native_stack.FRAMES:
                 if mod not in images:
                     images[mod] = C.module_image(mod)
                 start = s.address - mods[mod]["base"]
                 frame = native_stack.frame_extent(mod, s.address, images[mod][start:start + s.size])
                 spill_arg, spill_offset = native_stack.SPILLS.get((mod, s.address), (-1, -1))
+                if (mod, s.address) in native_stack.SAVES:
+                    saves = 0x10000 | native_stack.SAVES[(mod, s.address)]  # bit 16: an audited push
             contract = contracts.get((mod, s.address), 0)
             words = contract & 0xff if contract else arg_words.get((mod, s.address), -1)
             rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)} "
-                        f"{words} {frame} {spill_arg} {spill_offset} {contract:x}\n")
+                        f"{words} {frame} {spill_arg} {spill_offset} {contract:x} {saves:x}\n")
     path = OUT / "native-policy.txt"
     path.write_text("".join(rows), newline="\n")
     print(f"native policy {policy}{' with Clean' if clean else ''}: {counts.get('N', 0)} Native, {counts.get('C', 0)} Native for Native callers "

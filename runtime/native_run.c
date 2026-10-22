@@ -76,6 +76,7 @@ typedef struct Fn {
     uint32_t argument_contract;              /* audited word count (low byte), pointer roles (next16 bits); zero: legacy */
     int guest_frame;                         /* audited constant ROM call extent; -1 when unproved */
     int guest_spill_arg, guest_spill_offset; /* audited entry spill; -1 when absent */
+    int guest_saves;                         /* audited registers its entry push saves (bit n: rn); -1 unproved */
     uint64_t calls_in;                       /* from the interpreter, run as Native */
     uint64_t calls_out;                      /* from Native code, run by the interpreter */
 } Fn;
@@ -191,11 +192,11 @@ static int load_policy(const char *path)
     unsigned address, size;
     while (fgets(line, sizeof(line), f) != NULL) {
         int params = -1, arg_words = -1, guest_frame = -1, spill_arg = -1, spill_offset = -1;
-        unsigned contract = 0;
+        unsigned contract = 0, saves = 0;
         int end = 0;
-        if (sscanf(line, "%x %31s %x %3s %399s%n %d%n %d%n %d%n %d%n %d%n %x%n", &address, module, &size, status, name, &end,
-                   &params, &end, &arg_words, &end, &guest_frame, &end, &spill_arg, &end, &spill_offset, &end, &contract,
-                   &end) < 5) {
+        if (sscanf(line, "%x %31s %x %3s %399s%n %d%n %d%n %d%n %d%n %d%n %x%n %x%n", &address, module, &size, status, name,
+                   &end, &params, &end, &arg_words, &end, &guest_frame, &end, &spill_arg, &end, &spill_offset, &end, &contract,
+                   &end, &saves, &end) < 5) {
             continue;
         }
         if (line[end + strspn(line + end, " \t\r\n")] != '\0') {
@@ -229,6 +230,8 @@ static int load_policy(const char *path)
         fn->guest_frame = guest_frame;
         fn->guest_spill_arg = spill_arg;
         fn->guest_spill_offset = spill_offset;
+        /* bit 16 marks an audited push (which may save no register) */
+        fn->guest_saves = saves & 0x10000u ? (int) (saves & 0xffffu) : -1;
     }
     fclose(f);
     qsort(fns, (size_t) fn_count, sizeof(Fn), fn_compare);
@@ -500,6 +503,11 @@ typedef struct GuestFrame {
     uintptr_t caller;
     uint32_t sp;
     int valid;
+    /* r4-r11 as the ROM's code holds them in this function, where audited (bit n: r(4 + n)):
+       set by the PC copy where the ROM's code sets them, or kept from the caller when the
+       function's entry push does not save them (so its code does not change them). */
+    uint32_t regs[8];
+    unsigned known;
 } GuestFrame;
 
 typedef struct GuestContext {
@@ -606,6 +614,19 @@ static uint32_t guest_stack_slot(uint32_t owner, uint32_t offset, uint32_t size)
     return frame->sp + offset;
 }
 
+static uint32_t guest_stack_slot_if(uint32_t owner, uint32_t offset, uint32_t size)
+{
+    GuestContext *g = guest_current();
+    if (g->depth <= g->anchor_depth) {
+        guest_stack_failure(g, "no active owner");
+    }
+    GuestFrame *frame = &g->frames[g->depth - 1];
+    if ((guest_functions[frame->index]->address & ~1u) != (owner & ~1u)) {
+        guest_stack_failure(g, "slot outside its owner");
+    }
+    return frame->valid ? guest_stack_slot(owner, offset, size) : 0;
+}
+
 static void guest_enter(uint32_t index, uintptr_t caller, const uint32_t *args)
 {
     GuestContext *g = guest_current();
@@ -633,7 +654,27 @@ static void guest_enter(uint32_t index, uintptr_t caller, const uint32_t *args)
     if (valid) {
         sp -= (uint32_t) f->guest_frame;
     }
-    g->frames[g->depth++] = (GuestFrame){index, caller, sp, valid};
+    GuestFrame *frame = &g->frames[g->depth++];
+    *frame = (GuestFrame){index, caller, sp, valid, {0}, 0};
+    if (f->guest_saves >= 0 && g->depth - 1 > g->anchor_depth) {
+        const GuestFrame *parent = &g->frames[g->depth - 2];
+        unsigned saved = ((unsigned) f->guest_saves >> 4) & 0xffu;
+        memcpy(frame->regs, parent->regs, sizeof(frame->regs));
+        frame->known = parent->known & ~saved;
+        /* The entry push stores the caller's registers below the entry SP, lowest first. */
+        if (valid && (parent->known & saved) != 0) {
+            uint32_t at = sp + (uint32_t) f->guest_frame - 4u * (uint32_t) __builtin_popcount((unsigned) f->guest_saves);
+            for (unsigned r = 0; r < 16; ++r) {
+                if (((unsigned) f->guest_saves >> r & 1u) == 0) {
+                    continue;
+                }
+                if (r >= 4 && r < 12 && (parent->known >> (r - 4) & 1u) != 0) {
+                    bus_write(at, 4, parent->regs[r - 4]);
+                }
+                at += 4;
+            }
+        }
+    }
     guest_trace(g, args);
     if (f->guest_spill_arg >= 0) {
         if (f->guest_spill_arg >= ARG_WORDS || f->guest_spill_offset < 0) {
@@ -642,6 +683,22 @@ static void guest_enter(uint32_t index, uintptr_t caller, const uint32_t *args)
         uint32_t slot = guest_stack_slot(f->address, (uint32_t) f->guest_spill_offset, 4);
         bus_write(slot, 4, args[f->guest_spill_arg]);
     }
+}
+
+/* The PC copy's owner sets rN (4-11) to what the ROM's code puts there at this point. */
+static void guest_register(uint32_t owner, uint32_t reg, uint32_t value)
+{
+    GuestContext *g = guest_current();
+    if (g->depth <= g->anchor_depth) {
+        guest_stack_failure(g, "no active owner");
+    }
+    GuestFrame *frame = &g->frames[g->depth - 1];
+    Fn *f = guest_functions[frame->index];
+    if ((f->address & ~1u) != (owner & ~1u) || reg < 4 || reg > 11) {
+        guest_stack_failure(g, "register outside its owner");
+    }
+    frame->regs[reg - 4] = value;
+    frame->known |= 1u << (reg - 4);
 }
 
 __attribute__((target("general-regs-only"))) static uintptr_t guest_return(uint32_t index)
@@ -1966,6 +2023,18 @@ uint64_t native_call_reference(uint32_t target, const uint32_t *args, uint32_t s
         bus_write(sp + 4u * i, 4, words[4 + i]);
     }
     memcpy(cpu->r, words, 16);
+    /* The ROM's callee finds r4-r11 as its caller left them; where the guest frames know them
+       (an audited caller), it gets those, not the interpreter's (its entry push stores them on
+       the ROM's stack, where later code can read them). */
+    GuestContext *guest = guest_current();
+    if (guest->depth > guest->anchor_depth) {
+        const GuestFrame *top = &guest->frames[guest->depth - 1];
+        for (unsigned r = 0; r < 8; ++r) {
+            if (top->known >> r & 1u) {
+                cpu->r[4 + r] = top->regs[r];
+            }
+        }
+    }
     cpu->r[13] = sp;
     cpu->r[14] = ARM_RETURN_ADDRESS;
     cpu->r[15] = target & ~1u;
@@ -2655,6 +2724,8 @@ int native_init(ArmCpu *c, const char *manifest)
         }
         native_guest_return_hook = guest_return;
         native_guest_slot_hook = guest_stack_slot;
+        native_guest_register_hook = guest_register;
+        native_guest_slot_if_hook = guest_stack_slot_if;
         native_guest_enter_hook = guest_enter;
         native_publish_hook = publish_word;
         io_unmapped = host_access;

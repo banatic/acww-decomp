@@ -10,6 +10,8 @@ void (*native_publish_hook)(uint32_t pc, uint32_t *address, uint32_t value);
 void (*native_guest_enter_hook)(uint32_t index, uintptr_t caller, const uint32_t *args);
 uintptr_t (*native_guest_return_hook)(uint32_t index);
 uint32_t (*native_guest_slot_hook)(uint32_t owner, uint32_t offset, uint32_t size);
+void (*native_guest_register_hook)(uint32_t owner, uint32_t reg, uint32_t value);
+uint32_t (*native_guest_slot_if_hook)(uint32_t owner, uint32_t offset, uint32_t size);
 
 const NativeFunction native_functions[1];
 const uint32_t native_function_count = 0;

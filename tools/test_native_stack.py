@@ -12,7 +12,7 @@ class NativeStackTests(unittest.TestCase):
         modules = C.modules()
         syms = C.SymbolTable(modules)
         images = {}
-        self.assertEqual(len(native_stack.FRAMES), 60)
+        self.assertEqual(len(native_stack.FRAMES), 84)
         for (module, address), spec in native_stack.FRAMES.items():
             with self.subTest(module=module, address=hex(address)):
                 fn = syms.function(module, address)
@@ -83,6 +83,56 @@ class NativeStackTests(unittest.TestCase):
         self.assertIn('INSECT_CASE_HEIGHT, &centres[i], 0, NULL);', copy)
         with self.assertRaises(ValueError):
             native_stack.clean_copy(text + '\n', native_stack.CLEAN_INSECT_ROOM)
+
+    def test_saves_are_the_entry_pushes(self):
+        modules = C.modules()
+        syms = C.SymbolTable(modules)
+        for (module, address), saves in native_stack.SAVES.items():
+            with self.subTest(module=module, address=hex(address)):
+                self.assertIn((module, address), native_stack.FRAMES)
+                fn = syms.function(module, address)
+                offset = address - modules[module]['base']
+                code = C.module_image(module)[offset:offset + 4]
+                if fn.thumb:  # push {rlist[, lr]}
+                    half = int.from_bytes(code[:2], 'little')
+                    self.assertEqual(half & 0xfe00, 0xb400)
+                    pushed = (half & 0xff) | ((half >> 8 & 1) << 14)
+                else:  # stmdb sp!, {rlist}
+                    word = int.from_bytes(code, 'little')
+                    self.assertEqual(word & 0xffff0000, 0xe92d0000)
+                    pushed = word & 0xffff
+                self.assertEqual(pushed, saves)
+
+    def test_effect_copies(self):
+        for relative, edits in native_stack.CUE_EDITS.items():
+            with self.subTest(relative=relative):
+                text = (C.SRC / relative).read_bytes().decode()
+                copy = native_stack.translate(relative, text)
+                self.assertTrue(copy.startswith('#include "native_guest.h"\n'))
+                for _before, after in edits:
+                    self.assertIn(after, copy)
+                with self.assertRaises(ValueError):
+                    native_stack.translate(relative, text + '\n')
+        for relative in native_stack.CLEAN_CUE_SHA:
+            with self.subTest(relative=relative):
+                text = (C.ROOT / relative).read_bytes().decode()
+                copy = native_stack.clean_copy(text, relative)
+                for _before, after in native_stack.CLEAN_CUE_EDITS[relative]:
+                    self.assertIn(after, copy)
+                with self.assertRaises(ValueError):
+                    native_stack.clean_copy(text + '\n', relative)
+
+    def test_cue_copy_order(self):
+        relative = 'autoload_2/func_020f9d00.c'
+        copy = native_stack.translate(relative, (C.SRC / relative).read_bytes().decode())
+        slot = copy.index('native_guest_stack_slot(0x020f9d00u, 0, 6 * sizeof(*vars))')
+        self.assertLess(slot, copy.index('func_020f9c0c(self);'))
+        self.assertNotIn('signed short vars[6];', copy)
+        relative = 'ov004/func_ov004_0220fc98.c'
+        copy = native_stack.translate(relative, (C.SRC / relative).read_bytes().decode())
+        self.assertLess(copy.index('native_guest_register(0x0220fc98u, 5,'), copy.index('func_ov004_0220d4c8(self'))
+        self.assertLess(copy.index('func_ov004_0223ce84();'), copy.index('native_guest_register(0x0220fc98u, 7,'))
+        self.assertLess(copy.index('native_guest_register(0x0220fc98u, 7,'), copy.index('func_ov004_0220d4c0(self'))
 
 
 if __name__ == '__main__':

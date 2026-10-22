@@ -91,8 +91,12 @@ static int beats_since(int start)
  * BUG: a span other than 1, 2, 4 and 0x63, or a beat variable 6 other than 0 and 1, leaves the
  * span or the beat's division unset. In the ROM they keep what the only caller, MusicCue_Update,
  * left in those registers: -0x1000 and the cue's address; Clean uses the same.
- * REQUIRES: the cue's variables 7 and 12 can be read in layouts other than 1 and 3 (the ROM
- * uses stale stack values otherwise). */
+ * BUG: in layouts other than 1 and 3, a cue whose handle has no player yet (its first update
+ * in a villager's house) leaves variables 7 and 12 unread, and the ROM goes on with what its
+ * stack holds there: the two halves of the address of SoundCue_UpdateAt's copy of the
+ * position, which SoundPosition_Distance's entry saved there for MusicCue_ApplyPosition. Clean
+ * reads 0; the mixed Native/Clean build's copy reads the ROM's words
+ * (docs/native-guest-stack.md). */
 int MusicCue_Progress(MusicCue *cue)
 {
     const MusicBeat *beat;
@@ -246,7 +250,11 @@ CLEAN_AS(func_020f9c0c, MusicCue_ReadMarks)
 
 /* func_020f9d00: the marks read while the layout is 0 or less; the beat (global variables 2
  * and 1, the second halved for MUSIC_HALF_TEMPO) and the cue's variables 8, 7, 12 and 6.
- * REQUIRES: the cue's variables can be read (the ROM uses stale stack values otherwise). */
+ * BUG: a cue whose handle has no player yet (its first update in a villager's house) leaves
+ * the four variables unread, and the ROM keeps what its stack holds there: the halves of the
+ * room object and of the turn (or its mount's z) of RoomObject_BuildMatrix, which
+ * MTX_Concat43's entry saved there just before, building the object's matrix. Clean keeps 0;
+ * the mixed Native/Clean build's copy reads the ROM's words (docs/native-guest-stack.md). */
 void MusicCue_ReadVariables(MusicCue *cue)
 {
     s16 beat_no = 0;

@@ -214,14 +214,8 @@ EDITS = {
     "autoload_2/func_020f1c00.cpp": ("91694f815d4818a1174494ca9e4f284f8034bfd9666e110943232a53818d55e7", (
         ('extern "C" void *func_020f161c(void *self);', 'extern "C" void *func_020f161c(void *self, int fade);'),
         ("        func_020f161c(self);\n", "        func_020f161c(self, arg);\n"))),
-    # Locals left unset on some paths: in the layouts other than 1 and 3, a span (self->unk_0A)
-    # other than 1, 2, 4 and 0x63 leaves r5 as it came (020f9a3c-020f9a74), and a beat
-    # variable 6 other than 0 and 1 leaves r4 (020f9a94-020f9acc). The one caller,
-    # func_020f9ea4, calls it at 020f9ef8 with r4 = the cue (020f9eac) and r5 = -0x1000
-    # (020f9ec0, its default result); the PC's registers there hold something else.
-    "autoload_2/func_020f9948.c": ("bb7691589316d5ff734817e02d2a7432768ecf6e5d1127e0b38c1b8ee583b9f1",
-                                   "    int d, r5, r4, t;",
-                                   "    int d, r5 = -0x1000, r4 = (int) self, t;"),
+    # (func_020f9948's unset r4 and r5 are given in its copy in tools/native_stack.py, with
+    # the stack words it reads.)
     # A shift by a register: 020ad0f4 asrs r0, r4 shifts by r4's low byte, and a count of 32 or
     # more gives the sign; x86 masks the count to five bits.
     "main/func_020ad0c0.c": ("15b7cf92775c065f2fe439d1af6076ad8e0d15117392c543bffdfb769e337ca8",

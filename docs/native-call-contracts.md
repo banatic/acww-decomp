@@ -11,7 +11,8 @@ ROM bodies before adding a contract to the generated runtime policy.
 | `0202dbf0` | object pointer, Pair.first, Pair.second |
 | `0207fc7c` | hidden output pointer, unused unsigned argument, category |
 
-The last optional policy column contains a word count in bits 0 through 7 and
+The contract column (the optional one before the audited entry push of
+[the guest stack](native-guest-stack.md)) contains a word count in bits 0 through 7 and
 pointer roles in bits 8 through 23. Zero preserves the existing untyped policy.
 The count must agree with the bridge's argument-word count and cannot exceed
 16. Pointer bits outside that count, malformed optional fields, ambiguous

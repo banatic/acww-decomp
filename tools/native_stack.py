@@ -1,5 +1,6 @@
-"""Audited ROM frames and the collision boxes' observable stack storage (the house's
-cockroach and the museum's insect room).
+"""Audited ROM frames and the observable stack storage of the collision boxes (the house's
+cockroach and the museum's insect room), of the room music cue and of a talk's reply (a villager's
+house).
 
 Only complete, constant call-site extents are accepted here. Unknown frames
 remain unknown; the runtime must not guess through them to supply a slot.
@@ -154,12 +155,99 @@ FRAMES: dict[tuple[str, int], Frame] = {
     # It is reached through 020ee934, 020ee9a0, 020ee834, 01ffd14c and 01ffd44c, audited above.
     ('ov004', 0x0223f218): Frame(0x228, 0x180,
         '2c62b38831f3358aafc8e2eb42494207c91cb7bb7b6cb213157b70d015145f65'),
+    # The room music cue of a villager's house (scenes villager-birthday, sick-villager,
+    # letter-errand): a room object's update (02210abc, through 01ffd44c, audited above) calls
+    # 02215374 by its vtable, which calls 022150b8, which calls 02214c50 or 02214d34 through its
+    # state table, each of which calls 02215298, then 020040bc, then the cue's update 020f9ea4.
+    # Each saves registers with one push and reserves its frame with one sub at entry (02215374,
+    # 022150b8 and 020f9b50 push only); its only other SP changes are the matching adds before
+    # its pops, conditional ones (ARM addeq/popeq/bxeq) included; no computed branch; every call
+    # at entry SP - extent.
+    ('ov004', 0x02210abc): Frame(0x18, 0xd8,
+        'dfa69a011e1311919bebefc431b6c68e199fe74e726bf50dda614d5ee7267fce'),
+    ('ov004', 0x02215374): Frame(0x8, 0x20,
+        '5a9b708cef4438944185e2ea02b0eee4af8ca57bc2450d83f75057016f6ba6c5'),
+    ('ov004', 0x022150b8): Frame(0x10, 0x7c,
+        '32820c06c82373786870adee11a96cb97bb8ab49e0b263e6e6439c3b3d52a5ad'),
+    ('ov004', 0x02214c50): Frame(0x18, 0x88,
+        'a56255c65ac0299bb03226831e2fa0f8681163c8a7c5ce7c2bca96c7321cd0ce'),
+    ('ov004', 0x02214d34): Frame(0x18, 0xc4,
+        '3035a4bc2cd2247e02a638ba271910b1cab491ba7b4ff207241af5ddaf350890'),
+    ('ov004', 0x02215298): Frame(0x10, 0x38,
+        'b6fc3143ddd15db31aed22fe4bdb6856ced9838de28edef094b0b26d1ff0b9fd'),
+    ('main', 0x020040bc): Frame(0x18, 0x4c,
+        '2389c80ac354f1aaddc5af4820f542ac7be3ee2ef46fe1b538cb75ab366bc1ac'),
+    ('autoload_2', 0x020f9ea4): Frame(0x18, 0xa4,
+        'ab74e3e41d13d121418ee4953c8b44a6e14d28359f0e84e96eba738e72a5dcda'),
+    ('autoload_2', 0x020f9d00): Frame(0x18, 0x100,
+        'e5da395294eea1c1157b5c34159d1edc556bbedb71e3d76f42bbfb5a9516ef53'),
+    ('autoload_2', 0x020f9948): Frame(0x18, 0x208,
+        '474c03d2dcfbc98c63eb1cd588251dfcc8a3e9cc2dfa9b98bd86b4615d3a292b'),
+    ('autoload_2', 0x020f9b50): Frame(0x10, 0xbc,
+        '9b0ad61ce0f94066054dc87bc7972914818b2f625d8ef7067a4366d6008d164e'),
+    # push {r4, r5, lr}; sub sp, #4; four returns, each add sp, #4 before its pop
+    ('autoload_2', 0x020f5e50): Frame(0x10, 0x158,
+        '0b23d10c3d809b492f225c282f7bde29f2c54fa251b760f4f83ab4d3980880be'),
+    # The matrix helpers the room object's matrix is built with: push {r4, lr}; sub sp, #0x30;
+    # mov r4, r0; two calls; add sp, #0x30 before the one pop.
+    ('autoload_2', 0x020e9744): Frame(0x38, 0x30,
+        'f5cb33697b36f15ae5fb0728202d4125e691c811cbab34ffa5ec24b4f7025ade'),
+    ('autoload_2', 0x020e9868): Frame(0x38, 0x30,
+        '42811ed129b793d336f4723e585b05e690aa58d3703057495be41ad8a905ea60'),
+    # The room object's matrix: push {r4-r7, lr}; sub sp, #0xc; add sp, #0xc before the one pop.
+    ('ov004', 0x0220fc98): Frame(0x20, 0xf4,
+        '56fe8d858dd701bb69a45294fc7f712f03b0bc1202cec1c7df4bf1397e7ff233'),
+    # A talk's reply (scene letter-errand): the talk update (020a9ba0, from 01ffd44c, audited
+    # above) through 0206823c, 02068144 (by its state table), 02066dc4 and 020671b0, which calls
+    # 020673e0 (the picked answer's text walker, at body SP + 0) and then 02067504, which calls
+    # 0201ce68 by its vtable, which calls 020288bc by a member pointer. One push and one sub at
+    # entry each (0206823c, 02068144, 02067504 and 0201ce68 push only), the matching add before
+    # the one pop; no computed branch; every call at entry SP - extent.
+    ('main', 0x020a9ba0): Frame(0x8, 0x18,
+        '4f8c79e69b2739ee7fb5acef092426ce7f46dfb5ae0df8dc2f9a65ab3a84d0f0'),
+    ('main', 0x0206823c): Frame(0x10, 0x30,
+        'd1f4895939d87f75b74e2b2d5785230bb7ff82a2661767ce7eab90759d0bbd52'),
+    ('main', 0x02068144): Frame(0x10, 0xc8,
+        'dbf9450e3abb1060d1a7a29d99d621698222e8f314905fd5e4523a34dbda98cc'),
+    ('main', 0x02066dc4): Frame(0x18, 0x15c,
+        '53531b4562c1127d5d5258e4b42b9af387151eca0d6fa2d2c2a711c77991b4bf'),
+    ('main', 0x020671b0): Frame(0x10, 0x4c,
+        '19ca9cf8b5c1922ffe258dd8264515015db88a78fa8e83f330c8c1c513891f0f'),
+    ('main', 0x020673e0): Frame(0x50, 0x3c,
+        '391a2896b38f6bcee2a124f42324e2e4423b3c16a35719d0bdd92a1c3bd69881'),
+    ('main', 0x02067504): Frame(0x8, 0x3c,
+        '3cf4c44c94ebe216077dc38629f7c25deebeeb490a512241f2cbe680f1249e04'),
+    ('main', 0x0201ce68): Frame(0x10, 0x60,
+        '6e8f74574a257f16125899e8cfea718e709a436497016f269b52874c901323af'),
+    ('main', 0x020288bc): Frame(0x18, 0x68,
+        '591019f2c2a1da40f78a5d577d5ab483aaeb5dec4e358e507d09e5b12e9e5135'),
+}
+
+# The registers a function's entry push saves (bit n: rn), for audited frames above. Its
+# code changes no other register of r4-r11, so its callees find those as its caller left
+# them; and the push stores the caller's values of these below the entry SP, lowest first.
+# The runtime knows a register's value where a PC copy says what the ROM's code puts there
+# (native_guest_register): its callees' pushes then store it on the ROM's stack, and a call
+# from Native code into the ROM's code hands it in that register.
+SAVES: dict[tuple[str, int], int] = {
+    ('autoload_2', 0x020e9744): (1 << 4) | (1 << 14),
+    ('autoload_2', 0x020e9868): (1 << 4) | (1 << 14),
+    ('autoload_2', 0x020f5e50): (1 << 4) | (1 << 5) | (1 << 14),
 }
 
 SOURCES = {
     'ov004/func_ov004_0223df88.cpp': 'f83678a3e49cb33c093f9187915bc3630a7241ac452719b8cd7aa5aa592a432d',
     'ov004/func_ov004_0220dd80.cpp': '2f88fa901fa5fd612e351526a20dc5960b608c3ca7dc45bfdc6b7a8df14f9da2',
     'ov004/func_ov004_0223f218.c': '1cc7f0ec2ec6ac9bc48d217a7ec4563a201af55c4f820ea666432981efe7b08b',
+    'ov004/func_ov004_0220fc98.c': 'f47d4d5a656fce404914d68fabd46902e4ccec9157e1005a9651aaf0095d2df3',
+    'main/func_020040bc.c': '96751c4d7cb3c180e22a6c66cc24776c71c015e57e7934b0a24e47c380d391ee',
+    'autoload_2/func_020f9d00.c': 'ba4aca4075e533e87827e8cfd6ec8fe68dd4b47232c717498530b7ccbf243815',
+    'autoload_2/func_020f9948.c': 'bb7691589316d5ff734817e02d2a7432768ecf6e5d1127e0b38c1b8ee583b9f1',
+    'autoload_2/func_020f9b50.c': '8ee9d17fa55087735aa61ca4167de0d86317cc2b59e0196261b966626ad2bbe8',
+    'autoload_2/func_020e9744.c': '695a45d63baf6a0380f74f3c00242cffbd0fe9fa6de1b029dfea1b13f98745c5',
+    'autoload_2/func_020e9868.c': 'f984fae7452a68938700f472c97aa46ae0706bdfd2036713a493c6b18d17cfc7',
+    'main/func_020673e0.cpp': 'cd577805cab4c936f30abf96ffc8073c98375c13d2a2c74a821386c54b5bc542',
+    'main/func_020288bc.cpp': '73a4105a8d434eff733a727ec79a3c01263d4c3b60050947c8c5de18125ca8ce',
 }
 CONSUMER = 'ov004/func_ov004_0223df88.cpp'
 # The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
@@ -180,12 +268,221 @@ CLEAN_SHA = '8f67dcec77f544092fa1997e53c1d0ef1ce4384d3bf9d8b9ddd002e7ef8da5b6'
 # copy keeps the centres at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
 CLEAN_INSECT_ROOM_SHA = '45e08a82912b7318462828f88a8bb2b2b4433cf6448fef92c250b8d45d508ef3'
-CLEAN_SOURCES = (CLEAN_SOURCE, CLEAN_INSECT_ROOM)
+# The Clean versions of the cue's functions and of the room object's matrix (CUE_EDITS): the
+# Clean sources keep 0 where the ROM reads its stack (their BUG: notes); the mixed Native/Clean
+# build compiles copies with the Native ones' guest slots and registers.
+CLEAN_CUE_SHA = {
+    'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
+    'clean/main/sound.c': 'a3586d017d1904fff5767fccdfa204d284d592d3d1d01561bb1d63012235f1e3',
+    'clean/ov004/room_object_body.c': 'a81d9c712679eaee62c0fcb2753f87672e39372fd1d63528c74ca141e8da2f5b',
+    'clean/main/talk_object.c': '37cfd8f848a074074c8b6042f162dda826f4a00098f969c8c9eda449a5517d9d',
+    'clean/main/villager_talk_offers.c': '432ba2c273a6b6d71b482ec0d814d1e527956447099b3845a7a1cf4aa87b85df',
+    'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
+}
+CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
+    'clean/autoload_2/music_cue.c': (
+        ('    int position;\n\n    if (cue->layout == 1 || cue->layout == 3) {\n'
+         '        progress = shl(beats_since((s16) cue->start), 14);\n',
+         '    int position;\n'
+         '    s16 *stack = (s16 *) (uintptr_t) native_guest_stack_slot(0x020f9948u, 0, 2 * sizeof(s16));\n\n'
+         '    if (cue->layout == 1 || cue->layout == 3) {\n'
+         '        stack[0] = (s16) cue->start;\n'
+         '        progress = shl(beats_since(stack[0]), 14);\n'),
+        ('    s16 start = 0;\n    s16 unused = 0;\n    NNS_SndPlayerReadVariable(&cue->handle, 7, &start);\n'
+         '    NNS_SndPlayerReadVariable(&cue->handle, 12, &unused);\n    beats = beats_since(start);\n',
+         '    NNS_SndPlayerReadVariable(&cue->handle, 7, &stack[0]);\n'
+         '    NNS_SndPlayerReadVariable(&cue->handle, 12, &stack[1]);\n    beats = beats_since(stack[0]);\n'),
+        ('    int ratio;\n\n    if (pos == NULL) {\n',
+         '    int ratio;\n\n'
+         '    native_guest_register(0x020f9b50u, 5, (uint32_t) (uintptr_t) pos);\n'
+         '    native_guest_register(0x020f9b50u, 4, (uint32_t) (uintptr_t) cue);\n'
+         '    if (pos == NULL) {\n'),
+        ('    volume = SoundPosition_VolumeAt(SoundPosition_Distance(pos, 0));\n    pan = SoundPosition_Pan(pos, 0);\n',
+         '    volume = SoundPosition_VolumeAt(SoundPosition_Distance(pos, 0));\n'
+         '    native_guest_register(0x020f9b50u, 6, (uint32_t) volume);\n'
+         '    pan = SoundPosition_Pan(pos, 0);\n'
+         '    native_guest_register(0x020f9b50u, 5, (uint32_t) pan);\n'),
+        ('    s16 beat_no = 0;\n    s16 position = 0;\n    s16 target = 0;\n    s16 start = 0;\n    s16 next = 0;\n'
+         '    s16 length = 0;\n\n    if (cue->layout <= 0) {\n        MusicCue_ReadMarks(cue);\n    }\n'
+         '    NNS_SndPlayerReadGlobalVariable(2, &beat_no);\n    NNS_SndPlayerReadGlobalVariable(1, &position);\n'
+         '    NNS_SndPlayerReadVariable(&cue->handle, 8, &target);\n    NNS_SndPlayerReadVariable(&cue->handle, 7, &start);\n'
+         '    NNS_SndPlayerReadVariable(&cue->handle, 12, &next);\n    NNS_SndPlayerReadVariable(&cue->handle, 6, &length);\n\n'
+         '    data_021fd26c = beat_no;\n    data_021fd270 = position;\n    cue->target = (s8) target;\n'
+         '    cue->start = (s8) start;\n    cue->next = (s8) next;\n    cue->length = (s8) length;\n',
+         '    s16 *vars = (s16 *) (uintptr_t) native_guest_stack_slot(0x020f9d00u, 0, 6 * sizeof(s16));\n\n'
+         '    if (cue->layout <= 0) {\n        MusicCue_ReadMarks(cue);\n    }\n'
+         '    NNS_SndPlayerReadGlobalVariable(2, &vars[0]);\n    NNS_SndPlayerReadGlobalVariable(1, &vars[1]);\n'
+         '    NNS_SndPlayerReadVariable(&cue->handle, 8, &vars[2]);\n    NNS_SndPlayerReadVariable(&cue->handle, 7, &vars[3]);\n'
+         '    NNS_SndPlayerReadVariable(&cue->handle, 12, &vars[4]);\n    NNS_SndPlayerReadVariable(&cue->handle, 6, &vars[5]);\n\n'
+         '    data_021fd26c = vars[0];\n    data_021fd270 = vars[1];\n    cue->target = (s8) vars[2];\n'
+         '    cue->start = (s8) vars[3];\n    cue->next = (s8) vars[4];\n    cue->length = (s8) vars[5];\n')),
+    'clean/main/sound.c': (
+        ('    Vec3 rel = relative(pos);\n    return MusicCue_Update(cue, &rel);\n',
+         '    Vec3 *rel = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x020040bcu, 0, sizeof(Vec3));\n'
+         '    *rel = relative(pos);\n    return MusicCue_Update(cue, rel);\n'),),
+    'clean/ov004/room_object_body.c': (
+        ('void RoomObject_BuildMatrix(RoomObject *object, Vec3 *offset, int turn)\n{\n',
+         'void RoomObject_BuildMatrix(RoomObject *object, Vec3 *offset, int turn)\n{\n'
+         '    native_guest_register(0x0220fc98u, 5, (uint32_t) (uintptr_t) object);\n'
+         '    native_guest_register(0x0220fc98u, 4, (uint32_t) (uintptr_t) offset);\n'
+         '    native_guest_register(0x0220fc98u, 6, (uint32_t) turn);\n'),
+        ('        void *objects = RoomObjects_Table();\n        RoomObject *below',
+         '        void *objects = RoomObjects_Table();\n'
+         '        native_guest_register(0x0220fc98u, 7, (uint32_t) (uintptr_t) objects);\n        RoomObject *below'),
+        ('        fx32 z = Mount_Offset(&object->mount)->z;\n',
+         '        fx32 z = Mount_Offset(&object->mount)->z;\n        native_guest_register(0x0220fc98u, 6, (uint32_t) z);\n'),
+        ('        fx32 y = Mount_Offset(&object->mount)->y;\n',
+         '        fx32 y = Mount_Offset(&object->mount)->y;\n        native_guest_register(0x0220fc98u, 4, (uint32_t) y);\n'),
+        ('        s16 angle = (s16) (object->angle + turn);\n',
+         '        s16 angle = (s16) (object->angle + turn);\n'
+         '        native_guest_register(0x0220fc98u, 4, (uint32_t) (int) angle);\n')),
+    'clean/autoload_2/matrix.c': (
+        ('void Mtx43_RotateY(Mtx43 *mtx, int angle)\n{\n',
+         'void Mtx43_RotateY(Mtx43 *mtx, int angle)\n{\n'
+         '    native_guest_register(0x020e9744u, 4, (uint32_t) (uintptr_t) mtx);\n'),
+        ('void Mtx43_Translate(Mtx43 *mtx, fx32 x, fx32 y, fx32 z)\n{\n',
+         'void Mtx43_Translate(Mtx43 *mtx, fx32 x, fx32 y, fx32 z)\n{\n'
+         '    native_guest_register(0x020e9868u, 4, (uint32_t) (uintptr_t) mtx);\n')),
+    'clean/main/talk_object.c': (
+        ('    u32 walker[TALK_OBJECT_ANSWER_WALKER_SIZE / sizeof(u32)];\n',
+         '    u32 host_walker[TALK_OBJECT_ANSWER_WALKER_SIZE / sizeof(u32)];\n'
+         '    u32 *walker = (u32 *) (uintptr_t) native_guest_stack_slot_if(0x020673e0u, 0, sizeof(host_walker));\n'
+         '    if (walker == NULL) {\n        walker = host_walker;\n    }\n'),),
+    'clean/main/villager_talk_offers.c': (
+        ('    VillagerTalkLine line = {0};\n    if (offer_set_line(talk, &line) && line.text != 0) {\n'
+         '        u8 message = line.message;\n'
+         '        TalkObject_SetMessageIfNone((TalkObject *) (void *) offer_talk(talk), &message,\n'
+         '                                    (const char *) (uintptr_t) ((int) line.text));\n',
+         '    _Static_assert(sizeof(VillagerTalkLine) == 8, "the line");\n'
+         '    u8 *message = (u8 *) (uintptr_t) native_guest_stack_slot(0x020288bcu, 0, 4 + sizeof(VillagerTalkLine));\n'
+         '    VillagerTalkLine *line = (VillagerTalkLine *) (void *) (message + 4);\n'
+         '    if (offer_set_line(talk, line) && line->text != 0) {\n'
+         '        *message = line->message;\n'
+         '        TalkObject_SetMessageIfNone((TalkObject *) (void *) offer_talk(talk), message,\n'
+         '                                    (const char *) (uintptr_t) ((int) line->text));\n'),),
+}
+CLEAN_SOURCES = (CLEAN_SOURCE, CLEAN_INSECT_ROOM, *CLEAN_CUE_SHA)
+
+
+# The room music cue (docs/native-guest-stack.md). Its first update in a villager's house finds
+# the cue's handle without a player, so NNS_SndPlayerReadVariable leaves its out-parameters
+# alone. func_020f9d00 then keeps in the cue (bytes 0xb-0xe) what its frame (body SP + 4 to
+# + 0xb) held: r5 and r6 of the room object's matrix code (func_ov004_0220fc98: the object
+# and its turn, or its mount's z), which MTX_Concat43's entry push stored there when
+# func_020e9744 and func_020e9868 called it just before, at the same depth. func_020f9948 goes
+# on from body SP + 0 and + 2: r5 of func_020f9b50 (its `pos`, the address of
+# func_020040bc's local copy of the position), stored there by func_020f5e50's entry push.
+# The PC copies keep those locals in the ROM's frames and say what the ROM's code holds in
+# the registers those pushes store.
+CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
+    # 0220fc9c-0220fca0: r5 = the object, r4 = `p1`, r6 = `p2`; mounted: r7 = the objects'
+    # table (0220fcb2), r6 = the mount's z (0220fcf0), r4 its y (0220fcfa); else r4 = the angle
+    # (0220fd44).
+    'ov004/func_ov004_0220fc98.c': (
+        ('    short h;\n\n',
+         '    short h;\n\n'
+         '    native_guest_register(0x0220fc98u, 5, (uint32_t) (uintptr_t) self);\n'
+         '    native_guest_register(0x0220fc98u, 4, (uint32_t) (uintptr_t) p1);\n'
+         '    native_guest_register(0x0220fc98u, 6, (uint32_t) p2);\n'),
+        ('        o = func_ov004_0223cd58(func_ov004_0223ce84(), func_ov004_0220d4c0(self + 0x17c));\n',
+         '        int *table = func_ov004_0223ce84();\n'
+         '        native_guest_register(0x0220fc98u, 7, (uint32_t) (uintptr_t) table);\n'
+         '        o = func_ov004_0223cd58(table, func_ov004_0220d4c0(self + 0x17c));\n'),
+        ('        pz = func_ov004_0220d4bc(self + 0x17c)->z;\n',
+         '        pz = func_ov004_0220d4bc(self + 0x17c)->z;\n'
+         '        native_guest_register(0x0220fc98u, 6, (uint32_t) pz);\n'),
+        ('        py = func_ov004_0220d4bc(self + 0x17c)->y;\n',
+         '        py = func_ov004_0220d4bc(self + 0x17c)->y;\n'
+         '        native_guest_register(0x0220fc98u, 4, (uint32_t) py);\n'),
+        ('        h = (short) (*(short *) (self + 0x8e) + p2);\n',
+         '        h = (short) (*(short *) (self + 0x8e) + p2);\n'
+         '        native_guest_register(0x0220fc98u, 4, (uint32_t) (int) h);\n')),
+    # 020e974c / 020e9870: r4 = the matrix
+    'autoload_2/func_020e9744.c': (
+        ('{\n    char local[0x30];\n',
+         '{\n    char local[0x30];\n    native_guest_register(0x020e9744u, 4, (uint32_t) param);\n'),),
+    'autoload_2/func_020e9868.c': (
+        ('{\n    char buf[0x30];\n',
+         '{\n    char buf[0x30];\n    native_guest_register(0x020e9868u, 4, (uint32_t) (uintptr_t) arg);\n'),),
+    # 020f9b54-020f9b58: r5 = `b`, r4 = `a`; r6 = the volume (020f9b74), r5 = the pan (020f9b84)
+    'autoload_2/func_020f9b50.c': (
+        ('    unsigned int flag;\n\n',
+         '    unsigned int flag;\n\n'
+         '    native_guest_register(0x020f9b50u, 5, (uint32_t) (uintptr_t) b);\n'
+         '    native_guest_register(0x020f9b50u, 4, (uint32_t) (uintptr_t) a);\n'),
+        ('    r6 = func_020f5e24(func_020f5e50(b, 0));\n    r5 = func_020f5c64(b, 0);\n',
+         '    r6 = func_020f5e24(func_020f5e50(b, 0));\n'
+         '    native_guest_register(0x020f9b50u, 6, (uint32_t) r6);\n'
+         '    r5 = func_020f5c64(b, 0);\n'
+         '    native_guest_register(0x020f9b50u, 5, (uint32_t) r5);\n')),
+    # the position relative to the camera at body SP + 0 (020040da-020040ea)
+    'main/func_020040bc.c': (
+        ('    UnkStruct_020040bc t;\n', '    UnkStruct_020040bc *t;\n'),
+        ('        t.x = v->x - data_021c67b8.x;\n',
+         '        t = (UnkStruct_020040bc *) (uintptr_t) native_guest_stack_slot(0x020040bcu, 0, sizeof(*t));\n'
+         '        t->x = v->x - data_021c67b8.x;\n'),
+        ('        t.y = v->y - data_021c67b8.y;\n', '        t->y = v->y - data_021c67b8.y;\n'),
+        ('        t.z = v->z - data_021c67b8.z;\n', '        t->z = v->z - data_021c67b8.z;\n'),
+        ('        return func_020f9ea4(self, &t);\n', '        return func_020f9ea4(self, t);\n')),
+    # the six variables at body SP + 0 to + 0xb (020f9d1c-020f9d6c)
+    'autoload_2/func_020f9d00.c': (
+        ('    signed short vars[6];\n', '    signed short *vars;\n'),
+        ('    if (((signed char *) self)[9] <= 0) {\n',
+         '    vars = (signed short *) (uintptr_t) native_guest_stack_slot(0x020f9d00u, 0, 6 * sizeof(*vars));\n'
+         '    if (((signed char *) self)[9] <= 0) {\n')),
+    # v0 and v1 at body SP + 0 and + 2 (020f9970, 020f9a08, 020f9a14). Unset on some paths: in
+    # the layouts other than 1 and 3, a span (self->unk_0A) other than 1, 2, 4 and 0x63 leaves
+    # r5 as it came (020f9a3c-020f9a74), and a beat variable 6 other than 0 and 1 leaves r4
+    # (020f9a94-020f9acc). The one caller, func_020f9ea4, calls it at 020f9ef8 with r4 = the
+    # cue (020f9eac) and r5 = -0x1000 (020f9ec0, its default result).
+    'autoload_2/func_020f9948.c': (
+        ('    short v0, v1;\n    int d, r5, r4, t;\n',
+         '    short *v = (short *) (uintptr_t) native_guest_stack_slot(0x020f9948u, 0, 2 * sizeof(short));\n'
+         '    int d, r5 = -0x1000, r4 = (int) self, t;\n'),
+        ('        v0 = self->unk_0C;\n        d = data_021fd26c - v0;\n',
+         '        v[0] = self->unk_0C;\n        d = data_021fd26c - v[0];\n'),
+        ('        NNS_SndPlayerReadVariable(self, 7, &v0);\n        NNS_SndPlayerReadVariable(self, 0xc, &v1);\n'
+         '        d = data_021fd26c - v0;\n',
+         '        NNS_SndPlayerReadVariable(self, 7, &v[0]);\n        NNS_SndPlayerReadVariable(self, 0xc, &v[1]);\n'
+         '        d = data_021fd26c - v[0];\n')),
+    # A talk's reply (func_020288bc) takes the line its line function gives (out, at body SP + 4,
+    # and the message byte at + 0); the letter's (func_02027cc8) gives none, and the ROM goes on
+    # with what that stack held: the text walker that func_020673e0 had at its body SP + 0 for
+    # the answer picked just before, its fields at + 0x24 and + 0x28 (the talk object, 0). The
+    # walker lives in the ROM's frame where its path is audited (else the PC's stack, as before:
+    # it is used on many paths); the reply's locals always (a reply off the audited path stops).
+    'main/func_020673e0.cpp': (
+        ('{\n    char buf[0x44];\n',
+         '{\n    char host_buf[0x44];\n'
+         '    char *buf = (char *) (uintptr_t) native_guest_stack_slot_if(0x020673e0u, 0, sizeof(host_buf));\n'
+         '    if (buf == 0) {\n        buf = host_buf;\n    }\n'),),
+    'main/func_020288bc.cpp': (
+        ('    unsigned char arg;\n    UnkStruct_020288bc out;\n',
+         '    static_assert(sizeof(UnkStruct_020288bc) == 8, "the line");\n'
+         '    unsigned char *arg = (unsigned char *) (uintptr_t) native_guest_stack_slot(0x020288bcu, 0, 0xc);\n'
+         '    UnkStruct_020288bc *out = (UnkStruct_020288bc *) (arg + 4);\n'),
+        ('        (self->*(self->pmf))(&out);\n        if (out.n) {\n            arg = out.b;\n'
+         '            func_02068484(self->unk_40, &arg, out.n);\n',
+         '        (self->*(self->pmf))(out);\n        if (out->n) {\n            *arg = out->b;\n'
+         '            func_02068484(self->unk_40, arg, out->n);\n')),
+}
+
+
+def edit(text: str, edits: tuple[tuple[str, str], ...], relative: str) -> str:
+    for before, after in edits:
+        if text.count(before) != 1:
+            raise ValueError(f'Stack effect edit no longer applies; repeat the stack effect audit: {relative}')
+        text = text.replace(before, after)
+    return text
 
 
 def clean_copy(text: str, relative: str = CLEAN_SOURCE) -> str:
     if relative == CLEAN_INSECT_ROOM:
         return clean_insect_room_copy(text)
+    if relative in CLEAN_CUE_SHA:
+        if hashlib.sha256(text.encode()).hexdigest() != CLEAN_CUE_SHA[relative]:
+            raise ValueError(f'Clean stack source changed; repeat the stack effect audit: {relative}')
+        return '\n'.join(['#include "native_guest.h"', edit(text, CLEAN_CUE_EDITS[relative], relative)])
     if hashlib.sha256(text.encode()).hexdigest() != CLEAN_SHA:
         raise ValueError(f'Clean stack source changed; repeat the stack effect audit: {CLEAN_SOURCE}')
     declaration = '    Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};'
@@ -233,10 +530,16 @@ def validate_source(relative: str, text: str) -> None:
 
 
 def paths() -> set[str]:
-    return {CONSUMER, INSECT_ROOM}
+    return {CONSUMER, INSECT_ROOM, *CUE_EDITS}
 
 
-def translate(relative: str, text: str) -> str | None:
+def translate(relative: str, text: str, base: str | None = None) -> str | None:
+    """The PC copy of `text`; `base`, when given, is another transform's copy of it (a member
+    pointer's, tools/native_pmf.py) that the stack effect edits instead."""
+    if relative in CUE_EDITS:
+        validate_source(relative, text)
+        text = text if base is None else base
+        return '#include "native_guest.h"\n' + edit(text, CUE_EDITS[relative], relative)
     if relative == INSECT_ROOM:
         validate_source(relative, text)
         declaration = '    Vec centers[3];\n'

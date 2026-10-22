@@ -55,13 +55,21 @@ were checked across its reachable paths.
 
 | Module | Function | Extent |
 | --- | --- | --- |
+| autoload_2 | 020e9744 | 0x038 |
+| autoload_2 | 020e9868 | 0x038 |
 | autoload_2 | 020ee834 | 0x010 |
 | autoload_2 | 020ee934 | 0x008 |
 | autoload_2 | 020ee964 | 0x008 |
 | autoload_2 | 020ee9a0 | 0x008 |
 | autoload_2 | 020eea4c | 0x010 |
+| autoload_2 | 020f5e50 | 0x010 |
+| autoload_2 | 020f9948 | 0x018 |
+| autoload_2 | 020f9b50 | 0x010 |
+| autoload_2 | 020f9d00 | 0x018 |
+| autoload_2 | 020f9ea4 | 0x018 |
 | itcm | 01ffd14c | 0x018 |
 | itcm | 01ffd44c | 0x020 |
+| main | 020040bc | 0x018 |
 | main | 02004c0c | 0x008 |
 | main | 020058e4 | 0x028 |
 | main | 02008304 | 0x008 |
@@ -74,10 +82,19 @@ were checked across its reachable paths.
 | main | 0200cc44 | 0x010 |
 | main | 0200d1e4 | 0x010 |
 | main | 0201100c | 0x050 |
+| main | 0201ce68 | 0x010 |
+| main | 020288bc | 0x018 |
 | main | 02030ebc | 0x060 |
 | main | 02031288 | 0x0d0 |
 | main | 02032aa8 | 0x010 |
 | main | 02033678 | 0x098 |
+| main | 02066dc4 | 0x018 |
+| main | 020671b0 | 0x010 |
+| main | 020673e0 | 0x050 |
+| main | 02067504 | 0x008 |
+| main | 02068144 | 0x010 |
+| main | 0206823c | 0x010 |
+| main | 020a9ba0 | 0x008 |
 | ov003 | 0220d2a4 | 0x008 |
 | ov003 | 0220d6d4 | 0x008 |
 | ov003 | 0220d8f4 | 0x008 |
@@ -101,6 +118,13 @@ were checked across its reachable paths.
 | ov003 | 022172c4 | 0x008 |
 | ov003 | 02218ff0 | 0x080 |
 | ov004 | 0220dd80 | 0x0a0 |
+| ov004 | 0220fc98 | 0x020 |
+| ov004 | 02210abc | 0x018 |
+| ov004 | 02214c50 | 0x018 |
+| ov004 | 02214d34 | 0x018 |
+| ov004 | 022150b8 | 0x010 |
+| ov004 | 02215298 | 0x010 |
+| ov004 | 02215374 | 0x008 |
 | ov004 | 022297d8 | 0x008 |
 | ov004 | 02229860 | 0x018 |
 | ov004 | 02229a7c | 0x008 |
@@ -145,6 +169,69 @@ Native/Clean build compiles a copy of `clean/ov004/museum_insects.c` whose `Inse
 the body is at 0x027e2cdc and the y words at 0x027e2cf8, 0x027e2d04 and 0x027e2d10; the
 ROM's leftover there made a case 0x0211aa0c high (its top 0x02120a0c), where the PC's stack
 gave -1 and the Clean code 0.
+
+## Saved registers
+
+A function's entry push stores its caller's r4-r11 on the ROM's stack, where later code can
+read them as leftovers; the ROM's code also hands them on unchanged to whatever it calls. Native
+code has no such registers, and a call from Native code into the ROM's code (the bridge) used to
+hand the callee the interpreter's registers at the last crossing. The guest frames now carry
+r4-r11 where they are known:
+
+- a PC copy says what the ROM's code puts in a register at the point it does so
+  (`native_guest_register(owner, reg, value)`, checked against the active frame's owner);
+- a function whose entry push is audited (`native_stack.SAVES`, the push's register list, which
+  `test_native_stack.py` reads from the ROM's first instruction) keeps its caller's known
+  registers that it does not save, since its code cannot change them; its frame, when proved,
+  gets the caller's known values of those it saves at the push's addresses below its entry SP;
+  any other function starts with none known;
+- the bridge hands the ROM's callee the known registers of the calling frame, the others as
+  before.
+
+The policy's last column carries the push (bit 16 set, bits 0-15 the register list).
+
+## The room music cue
+
+A room object with music in a villager's house (scenes villager-birthday, sick-villager,
+letter-errand) updates its cue from its update: 02210abc calls 02215374 by its vtable, then
+022150b8, then 02214c50 or 02214d34 by its state table, then 02215298, 020040bc and the cue's
+update 020f9ea4, which calls 020f9d00, 020f9b50 (which calls 020f5e50) and 020f9948. The first
+update finds the cue's handle without a player, so NNS_SndPlayerReadVariable writes nothing:
+
+- 020f9d00 stores into the cue (bytes 0xb-0xe) its frame's words at body SP + 4 to + 0xb. In
+  the ROM these are r5 and r6 of the object's matrix code, func_ov004_0220fc98 (the object, and
+  its turn or its mount's z), which MTX_Concat43's entry push saved there when 020e9744 and
+  020e9868 called it just before, from the same depth.
+- 020f9948 goes on from body SP + 0 and + 2 (layouts other than 1 and 3): r5 of 020f9b50, its
+  `pos`, which is the address of 020040bc's copy of the position at that function's body SP;
+  020f5e50's entry push saved it there.
+
+The PC copies (`native_stack.CUE_EDITS`) keep 020040bc's position, 020f9d00's six variables and
+020f9948's two at their ROM slots, and say where 0220fc98 (r4-r7), 020e9744 and 020e9868 (r4)
+and 020f9b50 (r4-r6) set their registers. MTX_Concat43 then gets the ROM's r4-r7 from the bridge,
+and 020f5e50's audited push stores 020f9b50's r4 and r5. From anchor SP 0x027e2f5c the position
+is at 0x027e2e94 and both cue functions' bodies at 0x027e2e64. The Clean versions
+(`MusicCue_ReadVariables`, `MusicCue_Progress`, their `BUG:` notes, which read 0) are compiled in
+the mixed build from copies (`native_stack.CLEAN_CUE_EDITS`) with the same slots and registers,
+as are `SoundCue_UpdateAt`, `MusicCue_ApplyPosition`, `RoomObject_BuildMatrix`, `Mtx43_RotateY`
+and `Mtx43_Translate`.
+
+## A talk's reply
+
+A talk's reply, 020288bc (reached from the talk update 020a9ba0 through 0206823c, 02068144,
+02066dc4, 020671b0, 02067504 by its vtable and 0201ce68 by a member pointer), calls the line
+function of the choice with the address of its line (body SP + 4) and says the line when it has a
+text, its message byte at body SP + 0. The letter errand's line function (02027cc8, scene
+letter-errand) writes no line, and the ROM reads what its stack held: the text walker that
+020673e0, called by 020671b0 just before, had at its body SP + 0, at 0x24 and 0x28 (the talk
+object and 0). The ROM then copies 25 bytes from the talk object's start as the message's text;
+the PC's stack gave -1 and the PC copy faulted in strncpy. The copy of 020288bc keeps its locals
+at their slot. 020673e0 runs on many paths, so its copy asks for its slot with
+`native_guest_stack_slot_if`, which gives 0 where the frame is not proved, and keeps the walker
+on the PC's stack there. `VillagerTalkOffer_Reply` (its `BUG:` note: a line of 0) and
+`TalkObject_RunAnswerText` are compiled from copies with the same slots.
+
+## Argument words
 
 `native_abi.py` additionally proves word counts for scalar/pointer arguments
 of supported free-function definitions. The Native-to-Reference bridge writes

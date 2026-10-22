@@ -63,7 +63,7 @@ RELAX = ["-Wno-error=implicit-int", "-Wno-error=implicit-function-declaration",
 # has its own memcpy and so on in the ROM, with the same behaviour, but the host's must win.
 HOST_NAMES = {"memcmp", "memcpy", "memmove", "memset", "strcat", "strchr", "strcmp", "strcpy", "strlen",
               "strncmp", "strncpy", "__udivdi3", "__umoddi3", "__divdi3", "__moddi3", "_alloca",
-              "native_guest_stack_slot", "native_publish_word"}
+              "native_guest_stack_slot", "native_guest_register", "native_guest_stack_slot_if", "native_publish_word"}
 
 # How a function returns its value, as runtime/native_table.h numbers them.
 RET_VOID, RET_U8, RET_S8, RET_U16, RET_S16, RET_32, RET_64, RET_SKIP = range(8)
@@ -330,12 +330,14 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
             destination.write_text(content, newline='\n')
         flags = ['-I' + str(header_root), *flags]
     virtual = native_virtual.translate(relative, text.decode("utf-8")) if relative in native_virtual.paths() else None
-    stack = native_stack.translate(relative, text.decode("utf-8")) if relative in native_stack.paths() else None
+    # a stack effect on a member-pointer source edits that source's member copy
+    stack = native_stack.translate(relative, text.decode("utf-8"), member) if relative in native_stack.paths() else None
     publish = native_publish.translate(relative, text.decode("utf-8")) if relative in native_publish.paths() else None
     aggregate = native_aggregate.caller_copy(relative, text.decode("utf-8"))
     # audited copies for arguments and locals the ROM's code has beyond C (tools/native_args.py)
     args = native_args.translate(relative, text.decode("utf-8")) if relative in native_args.paths() else None
-    copies = [copy for copy in (layout, member, virtual, stack, publish, aggregate, args) if copy is not None]
+    copies = [copy for copy in (layout, member if stack is None else None, virtual, stack, publish, aggregate, args)
+              if copy is not None]
     if len(copies) > 1:
         raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
     # block-scope statics at the ROM's addresses (tools/native_statics.py), in whichever copy

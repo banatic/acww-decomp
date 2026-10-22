@@ -204,7 +204,10 @@ caller's saved r4, into the town record; the three notice functions stay Referen
 (`runtime/native-reference.txt`) and Clean packs that word's bits as the ROM does
 (`clean/main/board_notices.c`). In house the Clean house collider reads
 its centres' heights from the guest stack slot the Native one uses
-([guest stack](native-guest-stack.md)), and so does the museum's insect room for its cases. The
+([guest stack](native-guest-stack.md)), and so does the museum's insect room for its cases; in a
+villager's house the room music cue's first update and a talk's reply read words that the ROM's
+register saves and an earlier call's locals left on its stack, which the guest frames reproduce
+(with the registers the ROM's code holds where an audited copy says so). The
 first recording run found what random entry
 states had not: callers that ask the calendar about month 0 or 13, which the game's tables
 answer from their neighbouring bytes (`clean/main/calendar.c`), and a fifth argument that a
