@@ -336,7 +336,7 @@ match: main/sky* ov003/snowman ov003/snowball_* ov068/snowball main/snowmen main
 area: Other dates, times and visitors (for the boot on another day)
 group: insects and fish of other months and hours
 scene: walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given
-reach: boot in other months and hours; catch with the net and the rod; the pending museum-halls (every kind given) covers most museum kinds of the seed's day
+reach: boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day
 needs: date
 match: ov003/town_insect* ov068/insect_paths ov003/fish_shadow* ov003/player_fish ov004/museum_insect*
   ov004/aquarium_* ov004/museum_aquarium

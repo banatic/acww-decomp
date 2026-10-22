@@ -68,6 +68,11 @@ HELD = 0x241A          # the player's held item
 MONEY = 0x1C24         # the player's wallet
 POCKETS = 0x14 + 0x1BF2  # the player's pockets, 15 halfwords
 SCHEDULE_TODAY = 0x17218 + 0x14 + 4 * 6 + 2  # the event of the schedule's Friday (the seed's day)
+# the museum's record (at 0x17150 of the state block, main/state_block.h; main/museum_record.h):
+# four bits an item, 1 for given by player 0, two items a byte, in four groups: A (52 fossils
+# from 0x450c, 4 codes apart), B (56 fish from 0x12e8), C (56 insects from 0x12b0), D (20
+# paintings from 0x3894, 4 codes apart)
+MUSEUM_A, MUSEUM_B, MUSEUM_C, MUSEUM_D = 0x17150, 0x17150 + 0x1B, 0x17150 + 0x1B + 0x1D, 0x17150 + 0x1B + 0x1D * 2
 # the top byte of the house record's word at 0x15a0 (the record at 0xf52c in the state block,
 # main/house_record.h): the house's cockroach count, 10 in the seed
 ROACHES = 0xF52C + 0x15A0 + 3
@@ -102,6 +107,10 @@ SAVES = {
     # painting (0x3894), the first item of each of the museum's four collections
     "museum": [(POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0), (POCKETS + 4, "<H", 0x450C),
                (POCKETS + 6, "<H", 0x3894)],
+    # every fossil, fish and insect given by player 0, and the paintings but the last (the
+    # record is not complete, so nothing is due for completing it)
+    "museum-full": [(group + i, "<B", 0x11) for group, items in ((MUSEUM_A, 52), (MUSEUM_B, 56), (MUSEUM_C, 56))
+                    for i in range(items // 2)] + [(MUSEUM_D + i, "<B", 0x01 if i == 9 else 0x11) for i in range(10)],
     # the watering can held (0x1378, tool 5 of field_actor_support.c's FieldActor_HeldTool);
     # pockets 0-4: the slingshot (0x137a, tool 6), the items 0x137c (tool 7) and 0x137d (tool
     # 8), the umbrellas 0x1380 and 0x13a0 (tool 10)
@@ -260,6 +269,8 @@ scene("house-music", "songs", 5000, [2600, 3500, 3900, 4300, 4600, 4999], frames
 scene("post-keys", "seed", 8800, [2600, 4700, 5300, 6000, 6900, 7700, 8400, 8799], frames(4700, 8800, 50),
       "at the post office window, the letter storage and the posting page by the keys alone: read, "
       "store and move the letter, turn the pages, close; open the posting page and cancel")
+scene("museum-halls", "museum-full", 8900, [2600, 4500, 5600, 6400, 7200, 8100, 8899], frames(4400, 8900, 100),
+      "with every fish and insect given, walk round the museum's insect room and its aquarium")
 scene("toys-burn", "burn", 5150, [2600, 3300, 3700, 4500, 5149], frames(2700, 5150, 50),
       "light the held item that burns, then take the other one from the pockets and light it")
 scene("pitfall", "pitfall", 5650, [2600, 3700, 4100, 4400, 4950, 5300, 5649], frames(3900, 5650, 25),

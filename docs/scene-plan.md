@@ -27,15 +27,10 @@ them, tools/diffcheck.py) and "read only" (checked by reading alone).
 
 ## Scenes found but not yet added
 
-Two more scenes were recorded; they differ between the Reference and Native code alone
-(`--clean none`), so they wait in build/scenes-pending of the tree they were made in, with their
-logs:
+One more scene was recorded; it differs between the Reference and Native code alone
+(`--clean none`), so it waits in build/scenes-pending of the tree it was made in, with its log
+(museum-halls, recorded with it, is now a scene):
 
-- **museum-halls** (8,900 frames, every fish, insect and fossil given): the insect room and the
-  aquarium. From frame 6400 eight words of the collision world (0x021c3c38, 0x021c4038 ...)
-  differ, 0x02120a0c against 0x5fff: an uninitialized stack word reaches the collision lists, the
-  kind of guest stack reuse of docs/native-guest-stack.md; the bisect stopped between Native
-  functions 1967 and 2361 of the policy order (main 0202f27c-02036488, the collision code).
 - **sunday-joan** (10,750 frames, rtc 2026-09-13 09:00, rich save): a rainy Sunday, find Joan
   and buy turnips; it enters 433 functions no other scene does (the new-day code, the turnip
   prices, Joan). The Native run's frames differ and it stops; not bisected yet.
@@ -145,7 +140,7 @@ unknown groups say what to find first.
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| insects and fish of other months and hours | 564 (100 / 464) | ov004/museum_insect_motions 93, ov004/museum_insect_kinds 81, ov004/aquarium_objects 57, ov003/town_insect_moves 42, ov004/aquarium_fish 38, ov004/aquarium_fish_classes 34, ov004/aquarium_fish_kinds 33, ov004/aquarium_swim 26, 10 more files (160) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the pending museum-halls (every kind given) covers most museum kinds of the seed's day | date |
+| insects and fish of other months and hours | 564 (100 / 464) | ov004/museum_insect_motions 93, ov004/museum_insect_kinds 81, ov004/aquarium_objects 57, ov003/town_insect_moves 42, ov004/aquarium_fish 38, ov004/aquarium_fish_classes 34, ov004/aquarium_fish_kinds 33, ov004/aquarium_swim 26, 10 more files (160) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
 | Tortimer's events and holidays | 370 (89 / 281) | ov003/countdown 34, main/sky_show 30, main/event_winner 25, main/event_schedule 19, ov080/turtle 17, ov083/turtle_gardens 17, ov081/turtle_fishing 16, ov082/turtle_insects 16, 29 more files (196) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net | date |
 | seasons, weather, the sky and the new day | 346 (110 / 236) | ov003/snowman 56, ov068/snowball 28, main/town_generator 26, main/sky_shots 21, main/sky_object_kinds 19, main/snowmen 18, main/town_day 17, main/mom_letters 16, 27 more files (145) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
 | villagers' birthdays, sickness and visits | 231 (63 / 168) | ov004/birthday_villager 68, ov068/house_visitor 55, ov004/sick_villager 46, ov004/birthday_guest 43, ov068/cafe_guest 14, ov068/cafe_room 5 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
@@ -183,12 +178,16 @@ What reading the Clean code found about the groups above; counts are of function
 - DIVERGED frame 1680 in collision mover: Reference moves an ov003 actor (func_ov003_0221b414 / 0221ac70 -> func_02031288, a5=0, kind 0xb, registers SNW0/SNW1) that Native did not spawn; Native is at func_0201100c's move (a5=0xfd7).
 - Likely a spawn decision on the rainy Sunday new day (ov003 actor; func_ov003_0221a8c4, func_020b03f8 slot table, func_02051c90). Next: RAM dumps at 1600/1679, bisect the spawner path (keep Reference).
 
-### museum-halls (Native-only collision diff from frame 6400)
-- 0x021c3c38 = wall-segment list entry 2 +0x2c height (func_02030ebc fills, func_0203394c/func_020338f8 copy); 0x021c4038 = triangle container entry 0 v[0].y (func_02033a24).
-- Built in stack temporaries: func_02031ecc (int w60[13]), func_02033614 (buf[48]), func_02033a5c (v[17]), func_020328dc (Vec vv[7]).
-- First suspect: func_02030640 may not write element +0x10 (feeds func_02032fc0's min height). Also func_0202f9d0 out-param, func_02034270/func_020341c8.
-- Check runtime/library-arguments.txt / libs present for the museum run (house diverged like this without).
-- Fix: audited guest-stack effect (docs/native-guest-stack.md) for func_02031ecc, func_02033614, func_02032fc0/02032d48, func_02033118, func_02033a5c; or keep them Reference with a native-reference.txt reason. Confirm with RUN_NATIVE_CALL_TRACE=02031ecc,02033614,02032fc0 near frame 6400.
+### museum-halls: the insect room's cases
+- Added as a scene. The words that differed (0x021c3c38, a wall of the segment list at
+  0x021c3bac, and 0x021c4038 on, two top triangles of the list at 0x021c4030) are the height
+  of a case of the insect room: func_ov004_0223f218 adds its cases as collision boxes on its
+  stack, with centres whose y it never sets (the house cockroach's pattern). The ROM's stack
+  held 0x0211aa0c there (the top at 0x02120a0c, 0x6000 above), the PC's -1 (top 0x5fff) and
+  Clean 0 (top 0x6000).
+  The PC copy and the mixed build's Clean copy now take the centres from the ROM frame's slot
+  (tools/native_stack.py, docs/native-guest-stack.md). The earlier suspects in the collision
+  code (func_02030640, func_02031ecc and the other builders) only copy that height.
 
 ### pitfall and pickup: the field label's line
 - Added as scenes. The word at 0x021f6bb4 that differed is in the field label's window line

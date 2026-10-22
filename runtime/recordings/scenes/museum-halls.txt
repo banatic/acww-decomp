@@ -1,0 +1,87 @@
+# museum-halls (format: runtime/input.h), played from a town save by tools/scenes.py (the save
+# is not in this repository). Boot: as in tools.txt; the player stands in front of the house
+# from about 2550.
+# Save: museum-full (every fossil, fish and insect given, the paintings but one). As
+# museum.txt into the museum (inside at about 4400) and north towards Blathers; RIGHT from 4530
+# to the hall's east wall, LEFT and UP from 4931 through the top door into the insect room
+# (about 5200), UP, RIGHT and DOWN round its paths (5351-6251), LEFT and DOWN back onto the
+# door's mat and into the hall (about 6450); DOWN from 6591 and RIGHT from 6711 through the
+# bottom door into the aquarium (about 6950), RIGHT, UP and LEFT round its tanks (7161-8861).
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 B+RIGHT -
+3060 B+UP -
+3480 B+RIGHT -
+3800 B+UP -
+4100 LEFT -
+4140 UP -
+4440 - -
+4460 UP -
+4500 UP -
+4530 RIGHT -
+4780 RIGHT -
+4930 - -
+4931 LEFT -
+4951 UP -
+5151 - -
+5351 UP -
+5651 RIGHT -
+5951 DOWN -
+6251 LEFT -
+6291 DOWN -
+6391 - -
+6591 DOWN -
+6711 RIGHT -
+6961 - -
+7161 RIGHT -
+7761 UP -
+8361 LEFT -
+8861 - -
