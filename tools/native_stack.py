@@ -1,4 +1,5 @@
-"""Audited ROM frames and the house collider's observable stack storage.
+"""Audited ROM frames and the collision boxes' observable stack storage (the house's
+cockroach and the museum's insect room).
 
 Only complete, constant call-site extents are accepted here. Unknown frames
 remain unknown; the runtime must not guess through them to supply a slot.
@@ -148,13 +149,23 @@ FRAMES: dict[tuple[str, int], Frame] = {
         'b3f0a518910820c672e4df600e3a4dfa4e69e7ea8f6041b106bc3c119535575e'),
     ('ov004', 0x0223e1f0): Frame(0x18, 0x100,
         'b3c9a7e34464ec85bbcd9a13cc90946ee750f4381597dc24d2bf36a5b3f165c2'),
+    # The museum's insect room (scene museum-halls): push {r4-r7, lr}; sub sp, #0x1fc; sub sp,
+    # #0x18 at entry, the matching adds before its one pop; every call at entry SP - 0x228.
+    # It is reached through 020ee934, 020ee9a0, 020ee834, 01ffd14c and 01ffd44c, audited above.
+    ('ov004', 0x0223f218): Frame(0x228, 0x180,
+        '2c62b38831f3358aafc8e2eb42494207c91cb7bb7b6cb213157b70d015145f65'),
 }
 
 SOURCES = {
     'ov004/func_ov004_0223df88.cpp': 'f83678a3e49cb33c093f9187915bc3630a7241ac452719b8cd7aa5aa592a432d',
     'ov004/func_ov004_0220dd80.cpp': '2f88fa901fa5fd612e351526a20dc5960b608c3ca7dc45bfdc6b7a8df14f9da2',
+    'ov004/func_ov004_0223f218.c': '1cc7f0ec2ec6ac9bc48d217a7ec4563a201af55c4f820ea666432981efe7b08b',
 }
 CONSUMER = 'ov004/func_ov004_0223df88.cpp'
+# The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
+# sets x and z of and leaves y as the ROM's stack held it, at body SP + 0x18 (0x18-0x3c, below
+# the first box at + 0x3c): the same uninitialized-centre reuse as the house's consumer.
+INSECT_ROOM = 'ov004/func_ov004_0223f218.c'
 # 0220dd8a stores incoming r3 at SP+0x14 before the first call. Apply the
 # same spill to Native and Clean entries; its value comes from their input.
 SPILLS = {('ov004', 0x0220dd80): (3, 0x14)}
@@ -165,9 +176,16 @@ SPILLS = {('ov004', 0x0220dd80): (3, 0x14)}
 # centres at the same guest slot as the Native consumer, so they read the same residue.
 CLEAN_SOURCE = 'clean/ov004/house_roach.c'
 CLEAN_SHA = '8f67dcec77f544092fa1997e53c1d0ef1ce4384d3bf9d8b9ddd002e7ef8da5b6'
+# The Clean insect room (InsectRoom_Update) sets the cases' centres' y to 0 (its BUG: note); the
+# copy keeps the centres at the Native one's guest slot instead.
+CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
+CLEAN_INSECT_ROOM_SHA = '45e08a82912b7318462828f88a8bb2b2b4433cf6448fef92c250b8d45d508ef3'
+CLEAN_SOURCES = (CLEAN_SOURCE, CLEAN_INSECT_ROOM)
 
 
-def clean_copy(text: str) -> str:
+def clean_copy(text: str, relative: str = CLEAN_SOURCE) -> str:
+    if relative == CLEAN_INSECT_ROOM:
+        return clean_insect_room_copy(text)
     if hashlib.sha256(text.encode()).hexdigest() != CLEAN_SHA:
         raise ValueError(f'Clean stack source changed; repeat the stack effect audit: {CLEAN_SOURCE}')
     declaration = '    Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};'
@@ -181,6 +199,22 @@ def clean_copy(text: str) -> str:
         '    centres = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x0223df88u, 0x28u, sizeof(Vec3) * 4);',
         '    Vec3 *position'])
     text = text.replace(use, use.replace('    Vec3 *position', slot))
+    return '\n'.join(['#include "native_guest.h"', text])
+
+
+def clean_insect_room_copy(text: str) -> str:
+    if hashlib.sha256(text.encode()).hexdigest() != CLEAN_INSECT_ROOM_SHA:
+        raise ValueError(f'Clean stack source changed; repeat the stack effect audit: {CLEAN_INSECT_ROOM}')
+    # after the three box constructors, before any centre is set (as in the Native consumer)
+    use = '    CollisionBox_Construct(&boxes[2]);\n'
+    centre = '        Vec3 centre = {cases[i].x, 0, cases[i].z};\n'
+    call = 'INSECT_CASE_HEIGHT, &centre, 0, NULL);'
+    assert text.count(use) == text.count(centre) == text.count(call) == 1
+    text = text.replace(use, use + '\n'.join([
+        '    _Static_assert(sizeof(Vec3) == 12, "insect room centre storage");',
+        '    Vec3 *centres = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x0223f218u, 0x18u, sizeof(Vec3) * 3);', '']))
+    text = text.replace(centre, '        centres[i].x = cases[i].x;\n        centres[i].z = cases[i].z;\n')
+    text = text.replace(call, 'INSECT_CASE_HEIGHT, &centres[i], 0, NULL);')
     return '\n'.join(['#include "native_guest.h"', text])
 
 
@@ -199,10 +233,19 @@ def validate_source(relative: str, text: str) -> None:
 
 
 def paths() -> set[str]:
-    return {CONSUMER}
+    return {CONSUMER, INSECT_ROOM}
 
 
 def translate(relative: str, text: str) -> str | None:
+    if relative == INSECT_ROOM:
+        validate_source(relative, text)
+        declaration = '    Vec centers[3];\n'
+        use = '    func_020324fc(&collision[2]);\n'
+        assert text.count(declaration) == text.count(use) == 1
+        text = text.replace(declaration, '    Vec *centers;\n')
+        text = text.replace(use, use + '    centers = (Vec *) (uintptr_t) native_guest_stack_slot(0x0223f218u, 0x18u, '
+                            'sizeof(Vec) * 3);\n')
+        return '#include "native_guest.h"\n' + text
     if relative != CONSUMER:
         return None
     validate_source(relative, text)

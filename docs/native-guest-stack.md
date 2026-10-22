@@ -114,6 +114,7 @@ were checked across its reachable paths.
 | ov004 | 0223df48 | 0x018 |
 | ov004 | 0223df88 | 0x2e0 |
 | ov004 | 0223e1f0 | 0x018 |
+| ov004 | 0223f218 | 0x228 |
 
 The producer entry hook reproduces its r3 spill at +0x14 for both Native and
 its Clean replacement, `PushBox_OnSideHit`. A source-hash-guarded PC copy of
@@ -131,6 +132,19 @@ For example, consumer entry from root SP 0x027e2f04 through extents
 0x027e2bf8, 0x027e2c04, 0x027e2c10 and 0x027e2c1c. A producer path through
 0200cc44 or 0200d1e4 has body SP 0x027e2bfc and spills at 0x027e2c10.
 These are examples derived from an anchor, not hardcoded runtime addresses.
+
+The museum's insect room, `ov004:0223f218` (scene museum-halls), does the same with the
+three cases of its room: it adds three collision boxes whose `Vec` centres, at body SP + 0x18,
+get x and z and keep the stack's y, which becomes the height of the cases' walls and tops in
+the collision lists (0x021c3bac, 0x021c4030). It saves five registers and reserves 0x214
+bytes at entry, so every call is at entry SP - 0x228, and it is reached from the scheduler
+through 020ee934, 020ee9a0, 020ee834, 01ffd14c and 01ffd44c. A source-hash-guarded PC copy
+takes the centres from that guest slot after its three box constructors, and the mixed
+Native/Clean build compiles a copy of `clean/ov004/museum_insects.c` whose `InsectRoom_Update`
+(which sets the y words to 0, its `BUG:` note) uses the same slot. From anchor SP 0x027e2f5c
+the body is at 0x027e2cdc and the y words at 0x027e2cf8, 0x027e2d04 and 0x027e2d10; the
+ROM's leftover there made a case 0x0211aa0c high (its top 0x02120a0c), where the PC's stack
+gave -1 and the Clean code 0.
 
 `native_abi.py` additionally proves word counts for scalar/pointer arguments
 of supported free-function definitions. The Native-to-Reference bridge writes
