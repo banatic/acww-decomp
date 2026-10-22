@@ -279,6 +279,10 @@ scene("music-keys", "songs", 4800, [2600, 3900, 4200, 4500, 4799], frames(3900, 
 scene("clock-keys", "seed", 3200, [1400, 2300, 2600, 2900, 3199], frames(2300, 3200, 25),
       "on the telephone of the continue menu's room, the clock screen by the keys: each list opened and "
       "picked, the same time set again")
+scene("savings-keys", "rich", 9300, [2600, 6700, 7400, 8200, 8800, 9299], frames(6700, 9300, 50),
+      "at the post office window, the savings by the keys: deposit a few bells, open the withdrawal pad")
+scene("insect-release", "full-net", 4400, [2600, 3420, 3900, 4100, 4399], frames(3800, 4400, 25),
+      "catch the mantis with the pockets full, move over the swap page by the keys and cancel: it is let go")
 scene("new-player", "seed", 9400, [1300, 2300, 2800, 5200, 7000, 8500, 9399], frames(1000, 9400, 100),
       "from the title, a new resident: the taxi ride and its questions, the name typed, the arrival and "
       "the registration in the town hall, out into the town")
