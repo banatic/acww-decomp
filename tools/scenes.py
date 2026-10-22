@@ -78,6 +78,7 @@ MUSEUM_A, MUSEUM_B, MUSEUM_C, MUSEUM_D = 0x17150, 0x17150 + 0x1B, 0x17150 + 0x1B
 ROACHES = 0xF52C + 0x15A0 + 3
 NOOK_STORE = 0x171B4  # Nook's store (main/nook_store.h)
 HANDOVER = 0x14 + 0x1E40 + 0xA4  # the player's villager part's handed-over record
+VILLAGER_MOVE = 0x9284 + 0x3F90  # the town's villager move record (main/villager_move.h)
 
 
 def raw(offset: int, data: bytes) -> list[tuple[int, str, int]]:
@@ -121,6 +122,16 @@ SAVES = {
                      raw(HANDOVER + 0x10, bytes((0, 0, 11, 11, 9, 26, 0, 0))) +  # the object's date, 11:00
                      [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
                      raw(HANDOVER + 0x1C, bytes((0, 30, 11, 11, 9, 26, 0, 0))),  # the time agreed, 11:30
+    # villager 1 sick in its house: the town's villager move record (main/villager_move.h, at
+    # 0x3f90 of the villagers at 0x9284) given its object, dated 14:00 on 23 September, with the
+    # medicine (item 0x155e, object type 9), the villager's NpcId (as for "house-visitor"), the
+    # plan started on the 23rd and stepped on the 24th to stage 1; the medicine in pocket 0 and
+    # 30,000 bells
+    "sick": [(POCKETS, "<H", 0x155E), (MONEY, "<I", 30000)] +
+            raw(VILLAGER_MOVE, bytes((0, 0, 14, 23, 9, 26, 0, 0))) +
+            [(VILLAGER_MOVE + 8, "<H", 0x155E), (VILLAGER_MOVE + 0xA, "<B", 9)] +
+            raw(VILLAGER_MOVE + 0xC, bytes.fromhex("6ec64331433143314331433143310310")) +
+            raw(VILLAGER_MOVE + 0xB2, bytes((23, 9, 26, 1, 24, 9, 26, 0))) + [(VILLAGER_MOVE + 0xBA, "<B", 1)],
     "axe": [(HELD, "<H", 0x136B)],
     "net": [(HELD, "<H", 0x1376)],
     "shovel": [(HELD, "<H", 0x1369)],
@@ -405,6 +416,15 @@ scene("resetti-2", "resetti-2", 12360, [2600, 4600, 8200, 10000, 11400, 12359], 
 scene("barber", "barber", 10500, [3900, 4400, 5700, 7100, 9000, 9800, 10499], frames(4200, 10500, 100),
       "in Nook's store at its last level, go into the barber's room, pay for a haircut, sit in her "
       "chair, answer her questions and have the hair cut")
+scene("villager-birthday", "wallet", 9860, [2600, 4100, 6100, 8250, 9859], frames(4100, 9860, 100),
+      "on a villager's birthday, go into its house: it comes with a guest, asks for a present, takes "
+      "the work clothes from the pockets and gives one back", rtc="2026-09-25 14:00:00")
+scene("sick-villager", "sick", 8070, [2600, 5365, 5900, 6650, 8069], frames(5300, 8070, 100),
+      "in the rain, go into the house of a villager that is ill and give it the medicine from the "
+      "pockets", rtc="2026-09-24 14:00:00")
+scene("letter-errand", "wallet", 18450, [2600, 5300, 9000, 11400, 15450, 17200, 18449], frames(5200, 18450, 100),
+      "in a villager's house, agree to take her letter to another villager and give it from the "
+      "letter pick on the beach", rtc="2026-09-14 11:00:00")
 
 
 # ------------------------------------------------------------------------------ saves

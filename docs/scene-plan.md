@@ -27,36 +27,14 @@ them, tools/diffcheck.py) and "read only" (checked by reading alone).
 
 ## Scenes found but not yet added
 
-Four more scenes were recorded; they differ between the Reference and Native code alone
-(`--clean none`), so they wait in build/scenes-pending of the tree they were made in, with their
-logs (museum-halls, recorded with them, is now a scene):
+One more scene was recorded; it differs between the Reference and Native code alone
+(`--clean none`), so it waits in build/scenes-pending of the tree it was made in, with its log
+(villager-birthday, sick-villager and letter-errand, recorded with it, are now scenes: the room
+music cue and a talk's reply read the ROM's stack there, docs/native-guest-stack.md):
 
 - **sunday-joan** (10,750 frames, rtc 2026-09-13 09:00, rich save): a rainy Sunday, find Joan
   and buy turnips; it enters 433 functions no other scene does (the new-day code, the turnip
   prices, Joan). The Native run's frames differ and it stops; not bisected yet.
-- **villager-birthday** (9,860 frames, rtc 2026-09-25 14:00, wallet save) and **sick-villager**
-  (8,070 frames, rtc 2026-09-24 14:00; the save puts villager 1 of the seed town in the town's
-  villager move record, main/villager_move.h, with the medicine 0x155e, and the medicine in
-  pocket 0): both go into a villager's house (the birthday party, the sick villager, which
-  enters 39 functions of ov004/sick_villager.c), and both differ from the frame the room's
-  music cue first updates (6103 and 5884). The cue's sound handle has no player yet, so
-  NNS_SndPlayerReadVariable returns without writing, and func_020f9d00 (sp+4: the cue's byte
-  0x0b) and func_020f9948 (sp+0, sp+2) go on with what their ROM frames hold: in the
-  Reference, the registers that MTX_Concat43 saved there when the room's drawing called it
-  (r4 and r5 of its caller, func_020e98xx, at 027e2e64 and 027e2e68). With those callers
-  Native, the interpreter's registers at the call are not the caller's, so the words differ
-  (a store watch on the Reference run showed the writers). Clean has the same `REQUIRES:`.
-  The words are r4 and r5 of func_020e9744/func_020e9868 at their MTX_Concat43 call: the
-  matrix (021fbe48) and func_ov004_0220fc98's room object. With those callers Native, the
-  bridge hands MTX_Concat43 other r4 and r5, which it saves there. Keeping func_020f9948,
-  func_020f9d00, func_020e9744, func_020e9868, func_ov004_0220fb90 and func_ov004_0220fc98
-  Reference moves sick-villager's first difference from 5884 to 5888 (the room object's
-  animation, func_ov004_02214c50); the fix needs the ROM callers' saved registers on the guest
-  stack, not a longer Reference list. A third recording, **letter-errand** (18,450 frames, rtc
-  2026-09-14 11:00, wallet save: villager 4's talk in her house gives the letter for villager
-  1, delivered on the beach through the letter pick, ov108, 63 functions), waits for the same
-  fix (it first differs at 5165, in her house). func_020f9948's own unset r4 and r5 (the caller's cue
-  and -0x1000) are given in its PC copy (tools/native_args.py).
 
 ## Current numbers
 
