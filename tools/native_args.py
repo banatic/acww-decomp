@@ -221,6 +221,14 @@ EDITS = {
     "main/func_020ad0c0.c": ("15b7cf92775c065f2fe439d1af6076ad8e0d15117392c543bffdfb769e337ca8",
                              "    if ((t >> v3) == 0) {",
                              "    if (((v3 & 0xff) < 32 ? t >> (v3 & 0xff) : t >> 31) == 0) {"),
+    # Two locals a callee reads as one tile: func_0207f318 takes the tile (x, then z) at its
+    # second argument; 0221f118 passes sp+0xc, where x is, and y follows at sp+0x10 (0221f0e2).
+    # The PC's frame need not keep y after x (scene flea-market: the TV not for sale): the copy
+    # passes the two in one array.
+    "ov004/func_ov004_0221ef90.cpp": ("7e43755582e2efc3b6c313b3e54355dd07a780f1a451164d3723ce2792a9390f", (
+        ("    int x, y;\n", "    int x, y;\n    int tile[2];\n"),
+        ("    x = tx;\n    y = ty;\n", "    x = tx;\n    y = ty;\n    tile[0] = x;\n    tile[1] = y;\n"),
+        ("->v25(), &x, *(void **)", "->v25(), tile, *(void **)"))),
 }
 
 
