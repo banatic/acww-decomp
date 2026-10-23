@@ -304,6 +304,23 @@ SAVES["job-0d"] = [e for e in SAVES["job-0c"] if e[0] != VILLAGER_PART + 0x0A] +
 # as "visitor-3f" with a fish (0x12e8, of class 14, item_info/always.bin byte 4) in pocket 0: the
 # class villager 3's mode 1 asks for (main/villager_talk_approach.c, data_020c8f38[1])
 SAVES["visitor-3f-fish"] = SAVES["visitor-3f"] + [(POCKETS, "<H", 0x12E8)]
+# as "job-0d" with no birthday told yet (the record's day and month at 0x2414 both 0, as a new
+# resident's are, PlayerRecord_ClearBirthday): Tom Nook's line for this errand then sends the
+# player to tell a villager (ov050/nook_clerk_talk.c NookClerkTalk_JobLine0D, line 0x15)
+SAVES["job-0d-nobirthday"] = SAVES["job-0d"] + [(0x14 + 0x2414, "<H", 0)]
+SAVES["job-0c-nobirthday"] = SAVES["job-0c"] + [(0x14 + 0x2414, "<H", 0)]
+# a player as new to the villagers as a new resident is: no birthday told (as above) and the
+# count of the first talks (0x2451 of the record, PlayerRecord_RaiseCount: 0, then 2 to 10) at 0
+# (the seed's is 10): the talks' topic VillagerTalkTopics_SayPlayerTalks says the messages of
+# ev_arbeit by the count, the first asking for the birthday (its end event 7,
+# VillagerTalk_AskBirthday)
+SAVES["first-talks"] = [(0x14 + 0x2414, "<H", 0), (0x14 + 0x2451, "<B", 0)]
+# pockets 0-4: the bug net (0x1376, the item a villager reacts to being swung at,
+# ov068/outdoor_villager_object.c OutdoorVillagerObject_OnItemSwung), an insect (0x12b0) and a
+# fish (0x12e8) to show (ov098/pockets_town.c), a pitfall seed (0x1566) and the shovel (0x1369)
+# 30,000 bells; pockets 0-4: acorns of each kind (items 0x1542-0x1546, VillagerTalk_AskPocket1542)
+SAVES["acorns"] = [(MONEY, "<I", 30000)] + [(POCKETS + 2 * i, "<H", 0x1542 + i) for i in range(5)]
+SAVES["pester"] = [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x1376, 0x12B0, 0x12E8, 0x1566, 0x1369))]
 # the later errands of the part-time job, each as a run of job-deliver and the errands after it
 # left the player's villager part (all 0xcc bytes, read from that run's RAM right after Tom
 # Nook gave the errand) and pockets: job-0f a letter to write to the second villager picked
@@ -789,6 +806,49 @@ scene("villager-habit-retype", "visitor-3f", 14980, [2600, 7200, 10400, 11670, 1
       frames(13700, 14980, 50),
       "as villager-habit, but the player asks to type the catchphrase again and types another",
       rtc="2026-09-11 11:30:34")
+scene("visit-time", "seed", 16300, [3000, 6300, 12900, 13500, 14300, 15100, 16299], frames(12900, 16300, 100),
+      "a villager asks to visit the player's house: the time screen by the keys, the pen and the clock's hands, "
+      "a time too soon asked again, then one agreed and talked of again", rtc="2026-09-15 11:30:03")
+scene("villager-errand", "seed", 16150, [3000, 6600, 9100, 11100, 13400, 14900, 16149], frames(6500, 16150, 100),
+      "a villager gives the player a shirt to take to another villager: it is handed over and worn, and the "
+      "first villager thanks the player", rtc="2026-09-15 11:30:05")
+scene("birthday-ask", "first-talks", 7250, [2600, 4300, 5250, 5600, 6000, 7249], frames(4200, 7250, 50),
+      "a villager asks a new player's birthday: the birthday screen by the keys and the pen, then the date "
+      "said back")
+scene("villager-push", "seed", 4960, [2600, 4090, 4400, 4700, 4959], frames(4000, 4960, 25),
+      "walk into a villager for a long time: it complains of being pushed, then talks")
+scene("snowball-burst", "seed", 4680, [2700, 4000, 4300, 4500, 4679], frames(4000, 4680, 25),
+      "in the snow, push a loose snowball into a tree: it bursts", rtc="2027-01-12 11:30:05")
+scene("snowball-float", "seed", 6050, [2700, 4000, 5000, 5400, 5700, 6049], frames(5200, 6050, 25),
+      "in the snow, push a loose snowball over the river's bank: it falls in, floats and drifts",
+      rtc="2027-01-12 11:30:05")
+scene("villager-pitfall", "pitfall", 11520, [2600, 4100, 5300, 8000, 10600, 11000, 11519], frames(10400, 11520, 50),
+      "bury a pitfall seed on a villager's way: it falls in and climbs out, and another villager talks of it with it")
+scene("job-end", "job-12", 9650, [2600, 3500, 4800, 6300, 7100, 8600, 9649], frames(3400, 9650, 100),
+      "at work for Tom Nook: post a message on the bulletin board, then report to him: the loan is paid down "
+      "and the job ends")
+scene("museum-placard", "museum-full", 8030, [2600, 4500, 7200, 7400, 7650, 8029], frames(7200, 8030, 50),
+      "in the museum's aquarium, read a tank's sign: its fish and who gave them, one after another")
+scene("acorn-ask", "acorns", 9700, [2800, 4200, 6000, 8100, 8500, 9000, 9699], frames(8000, 9700, 50),
+      "in the acorn festival's week, a villager asks for an acorn and takes one from the pockets",
+      rtc="2026-10-06 10:00:00")
+scene("snow-talks", "wallet", 10060, [2800, 4200, 5600, 7000, 8100, 9400, 10059], frames(5000, 10060, 100),
+      "in the snow festival's week, talk to a villager again and again: the festival's talks and a question "
+      "on the slider window", rtc="2027-02-08 10:00:00")
+scene("gardens-talks", "wallet", 7720, [2800, 4200, 5000, 5900, 6800, 7719], frames(4900, 7720, 100),
+      "in the gardening event's days, talk to a villager again and again: the event's talks",
+      rtc="2027-04-08 10:00:00")
+scene("new-year-talks", "wallet", 9710, [2800, 4200, 5000, 6000, 7800, 9709], frames(4200, 9710, 100),
+      "on New Year's Day, a villager comes up to wish a happy new year; talks with another, its gift",
+      rtc="2027-01-01 13:00:00")
+scene("winter-talks", "wallet", 12400, [2800, 4200, 6000, 8000, 10000, 12399], frames(4200, 12400, 200),
+      "on 24 December, talk to a villager again and again: what it holds and the catches it tells of",
+      rtc="2026-12-24 13:00:00")
+scene("villager-three", "bare-net", 6920, [2600, 3600, 4300, 5500, 6200, 6919], frames(5400, 6920, 50),
+      "a talk with a villager that a second villager joins: a talk of three")
+scene("villager-furniture", "box-items", 8030, [2600, 4100, 5500, 6500, 7300, 7800, 8029], frames(5500, 8030, 50),
+      "a villager tells of the furniture it likes, then asks for a piece and is offered one from the pockets",
+      rtc="2026-09-15 11:30:08")
 
 
 # ------------------------------------------------------------------------------ saves

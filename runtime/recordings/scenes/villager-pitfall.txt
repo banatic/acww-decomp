@@ -1,0 +1,92 @@
+# villager-pitfall (format: runtime/input.h), played from a town save by tools/scenes.py (the
+# save is not in this repository). As villager-talk.txt to 4089.
+# Save: pitfall (the shovel held, a pitfall seed and an apple in pockets 0 and 1). North-east to
+# tile (54.4, 51.5), RIGHT and A dig a hole east of the player; the pockets by the pen (as
+# pitfall.txt) bury the pitfall seed in it (about 4800, the item 0x1566 marked on the tile).
+# South to (54.4, 56) to wait: villager 3 walks about and steps onto the tile (about 10560;
+# OutdoorVillagerWalks_OnMarkedTile, TileRequests_AskMarked1566): it falls in and climbs out
+# (behaviours 17 and 18, OutdoorVillagerActs_Start17, the held item's link), and another
+# villager walks up and the two talk of it (behaviour 9, OutdoorVillagerChat, their bonds), to
+# 11516.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+3700 RIGHT -
+3942 - -
+3950 UP -
+4014 - -
+4040 UP -
+4055 - -
+4058 RIGHT -
+4088 - -
+4089 RIGHT+UP -
+4113 UP -
+4149 - -
+4151 RIGHT+UP -
+4163 - -
+4165 RIGHT -
+4168 - -
+4174 A -
+4180 - -
+4310 Y -
+4318 - -
+4498 - 30,10
+4504 - -
+4654 - 20,118
+4660 - -
+4810 - 37,60
+4816 - -
+5066 B -
+5072 - -
+5132 B -
+5138 - -
+5238 DOWN -
+5364 - -
