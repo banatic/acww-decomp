@@ -77,7 +77,8 @@ MUSEUM_A, MUSEUM_B, MUSEUM_C, MUSEUM_D = 0x17150, 0x17150 + 0x1B, 0x17150 + 0x1B
 # main/house_record.h): the house's cockroach count, 10 in the seed
 ROACHES = 0xF52C + 0x15A0 + 3
 NOOK_STORE = 0x171B4  # Nook's store (main/nook_store.h)
-HANDOVER = 0x14 + 0x1E40 + 0xA4  # the player's villager part's handed-over record
+VILLAGER_PART = 0x14 + 0x1E40  # the player's villager part (main/villager_part.h)
+HANDOVER = VILLAGER_PART + 0xA4  # its handed-over record
 VILLAGER_MOVE = 0x9284 + 0x3F90  # the town's villager move record (main/villager_move.h)
 
 
@@ -235,10 +236,51 @@ SAVES = {
     "mail-post": [(0x14 + 0x11A8 + 0x100 * i + off, fmt, value) for i, kind in ((1, 1), (2, 3), (3, 2))
                   for off, fmt, value in ((0xFA, "<B", 1), (0xFC, "<H", 0xFFF1), (0x22, "<B", kind),
                                           (0x42, "<B", 1))],
+    # the player at work for Tom Nook (ov050/nook_clerk_talk.h), as the new resident of nook-job
+    # is once the job's items are given (its record then: flag 1 of the flags at 0x23f8, the
+    # uniform 0x11a8 worn, the villager part's flag at 0x90 and block 0's object of type 0xc,
+    # main/villager_part.h): the seed's uniform (pocket 11) worn and its shirt (0x11ac) put in
+    # that pocket; the job's items planted already (none in the pockets)
+    "job-0c": [(0x14 + 0x23F8, "<I", 0x660A), (0x14 + 0x2408, "<H", 0x11A8), (POCKETS + 2 * 11, "<H", 0x11AC),
+               (VILLAGER_PART + 0x90, "<B", 1), (VILLAGER_PART + 0x0A, "<B", 0x0C)],
+    # as "job-0c" with the job's next errand, greeting every villager (block 0's type 0xd), done:
+    # villager 4, who moved in on the seed's day, met (her memory 0 as the game writes it at a
+    # first talk, read from a run of job-0c on 14 September: the seed's memory of villager 3 but
+    # for the time met, 11:02:55 on the seed's day at 0x54, and its byte 0x6d, 0x26)
+    "job-0d": [],
     "pockets-town": [(HELD, "<H", 0x1374)] + [(POCKETS + 2 * i, "<H", item) for i, item in
                                               enumerate((0x12B0, 0x12E8, 0x1408, 0x14FE, 0x1567))],
 }
 
+SAVES["job-0d"] = [e for e in SAVES["job-0c"] if e[0] != VILLAGER_PART + 0x0A] + [(VILLAGER_PART + 0x0A, "<B", 0x0D)] + raw(
+    0x9284 + 4 * 0x7EC, bytes.fromhex(
+        "6ec643314331433143314331433185d1433143314331433100000000000043314331433143310000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000037020b0b091a00006ec6433143314331433143314331f1ff0126000000000000ca7a76b9fafde3fe04000000"))
+# as "visitor-3f" with a fish (0x12e8, of class 14, item_info/always.bin byte 4) in pocket 0: the
+# class villager 3's mode 1 asks for (main/villager_talk_approach.c, data_020c8f38[1])
+SAVES["visitor-3f-fish"] = SAVES["visitor-3f"] + [(POCKETS, "<H", 0x12E8)]
+# the later errands of the part-time job, each as a run of job-deliver and the errands after it
+# left the player's villager part (all 0xcc bytes, read from that run's RAM right after Tom
+# Nook gave the errand) and pockets: job-0f a letter to write to the second villager picked
+# (villager 3; the paper 0x1020 in pocket 1, villager 0's gift 0x3230 in pocket 0), job-10 the
+# item 0x1561 for the third (villager 1), job-11 the item 0x1564 for the second again (with
+# villager 1's gift 0x116e), job-12 a message on the bulletin board
+def job_stage(part: str, pockets: tuple[int, ...]) -> list[tuple[int, str, int]]:
+    return ([e for e in SAVES["job-0d"] if not VILLAGER_PART <= e[0] < VILLAGER_PART + 0xCC] + raw(VILLAGER_PART, bytes.fromhex(part)) +
+            [(POCKETS + 2 * i, "<H", item) for i, item in enumerate(pockets)])
+
+
+SAVES["job-0f"] = job_stage(
+    "0000000000000000f1ff0f00000000000000000000000000000006ff6ec6433143314331433143314331002f000000000000000000000000f1ff1600000000000000000000000000000006ff000000000000000000000000000006ff000000006ec6433143314331433143314331024d6ec6433143314331433143314331002f6ec6433143314331433143314331057f010000000000000000000000f1ff160005000000000000000000000000000000000006ff0000000000000000f1ff1600000000000000000000000000",
+    (0x3230, 0x1020))
+SAVES["job-10"] = job_stage(
+    "000000000000000061151000000000000000000000000000000006ff6ec64331433143314331433143310310000000000000000000000000f1ff1600000000000000000000000000000006ff000000000000000000000000000006ff000000006ec6433143314331433143314331024d6ec6433143314331433143314331002f6ec64331433143314331433143310310010000000000000000000000f1ff160005000000000000000000000000000000000006ff0000000000000000f1ff1600000000000000000000000000",
+    (0x3230, 0x1561))
+SAVES["job-11"] = job_stage(
+    "000000000000000064151100000000000000000000000000000006ff6ec6433143314331433143314331002f000000000000000000000000f1ff1600000000000000000000000000000006ff000000000000000000000000000006ff000000006ec6433143314331433143314331024d6ec6433143314331433143314331002f6ec64331433143314331433143310310010000000000000000000000f1ff160005000000000000000000000000000000000006ff0000000000000000f1ff1600000000000000000000000000",
+    (0x3230, 0x116E, 0x1564))
+SAVES["job-12"] = job_stage(
+    "0000000000000000f1ff1200000000000000000000000000000006ff6ec6433143314331433143314331002f000000000000000000000000f1ff1600000000000000000000000000000006ff000000000000000000000000000006ff000000006ec6433143314331433143314331024d6ec6433143314331433143314331002f6ec64331433143314331433143310310010000000000000000000000f1ff160005000000000000000000000000000000000006ff0000000000000000f1ff1600000000000000000000000000",
+    (0x3230, 0x116E))
 SAVES["mail-items"] = SAVES["mail-post"] + [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x1518, 0x1492))] + [
     (MONEY, "<I", 30000),
     # carried letter 4 a bottle's letter the player wrote (state 4), 5 a received one carrying the
@@ -504,6 +546,25 @@ scene("villager-mail", "visitor-3f", 12730, [2600, 7200, 10400, 11100, 12000, 12
       "as villager-approach, a little later: the villager that calls the player over shows the letter it holds")
 scene("villager-picture", "visitor-3f", 12750, [2600, 7200, 10400, 11100, 12000, 12749], frames(10400, 12750, 50),
       "as villager-approach, a little later: the villager that calls the player over talks of its picture")
+scene("villager-across", "seed", 16200, [2600, 3756, 6200, 9000, 12200, 16199], frames(3700, 16200, 200),
+      "over the bridge by the river's mouth to the villager on the far bank, and talk to it again and again")
+scene("job-deliver", "job-0d", 15400, [2600, 4300, 6400, 8700, 11900, 15399], frames(4300, 15400, 100),
+      "at work for Tom Nook: take the item he gives to a villager's house, hand it over from the pockets, "
+      "and come back for the next errand")
+scene("villager-present1", "visitor-3f", 13600, [2600, 7200, 10400, 11670, 12300, 13599], frames(11600, 13600, 50),
+      "as villager-approach at another second of the clock: the villager across the river calls the player "
+      "over and gives one of its own items", rtc="2026-09-11 11:30:34")
+scene("villager-habit", "visitor-3f", 14450, [2600, 7200, 10400, 11670, 13433, 13800, 14449], frames(11600, 14450, 50),
+      "as villager-present1, a little later: the villager asks the player for a new catchphrase, typed on "
+      "the keyboard", rtc="2026-09-11 11:30:34")
+scene("villager-buy", "visitor-3f-fish", 13150, [2600, 7200, 10400, 11100, 12000, 13149], frames(10700, 13150, 50),
+      "as villager-sell with a fish in the pockets: the villager whose mode asks for a fish offers to buy it")
+scene("job-letter", "job-0f", 11650, [2600, 3700, 5700, 6600, 9100, 11649], frames(2600, 11650, 100),
+      "at work for Tom Nook: write the letter of the errand in the pockets, post it at the town hall and "
+      "come back for the next errand")
+scene("job-gift", "job-10", 12100, [2600, 4300, 5300, 7700, 10400, 12099], frames(2600, 12100, 100),
+      "at work for Tom Nook: take the item he gives over the bridge to the villager on the far bank and "
+      "come back for the next errand")
 scene("pockets-town", "pockets-town", 6250, [2600, 3300, 4000, 4700, 5400, 6249], frames(2800, 6250, 50),
       "in the pockets, show an insect and let it go, fail to plant on the path; at the river, show a fish "
       "and let it go, plant two items and put one down")

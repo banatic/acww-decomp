@@ -38,7 +38,7 @@ music cue and a talk's reply read the ROM's stack there, docs/native-guest-stack
 
 ## Current numbers
 
-From 127 scene lists: 25,251 Clean game functions, run 17,433, function check only 1,814, read only 6,004; the groups below hold 7,818 (function check only + read only).
+From 134 scene lists: 25,251 Clean game functions, run 17,531, function check only 1,801, read only 5,919 (the group tables below are still those of the 127 scenes before the talks and job scenes of 2026-10-23).
 
 | needs | functions |
 |---|---|
@@ -323,3 +323,33 @@ What reading the Clean code found about the groups above; counts are of function
   mode asks for (a save with such items in the pockets would let them, and buy is ta/ap/buy_'s
   slider for a ta villager, villager 2 here). Villager 4 (ge) has no memory of the seed's
   player, so its byte stays 0.
+
+### Talks and the part-time job (2026-10-23, scenes/talks2)
+- Villager 1 (fu) is reached over the bridge by the river's mouth (tile 40, 71-74): south past
+  the house's east side, over the bridge, east along the beach and north onto the south-east
+  bank (scene villager-across, 24 talks there).
+- Byte 0x1e of the state entries is drawn at the load from the main random state, so the
+  clock's second moves it: at 11:30:34 villagers 1, 2 and 3 are all full (32) after the fortune
+  teller's good luck (a sweep of the 60 seconds: at 18, 34 and 43 three or more are full).
+  Besides the load (VillagerEntry_SetByte1E), only the 900-frame raise while off screen or at
+  home, good luck (doubled) and bad luck or a talk (lowered) change it; there is no save field
+  to set: it is RAM only. Scenes villager-present1 (ap_present1 of villager 1) and
+  villager-habit (ap_habit: the catchphrase typed and kept), by the wait before walking up.
+- ap_buy and ap_trade need an item of the class the villager's mode asks for
+  (data_020c8f38[mode]: modes 0-4 ask for classes 13 insects, 14 fish, 57, 5 clothes, 56;
+  item_info/always.bin byte 4). Villager 3 is in mode 1 (fish): save visitor-3f-fish, scene
+  villager-buy. Trade was not drawn in 160 wait frames and 380 single presses (the draws
+  give buy, habit and sell there).
+- Answering "type it again" to the catchphrase gives a reply (func_020288bc) whose line
+  function (VillagerTalkNickname_AskHabitTextLine) sets no line, so the reply's unset line on
+  the ROM's stack is used as the message file's name (TalkObject_SetMessage): Native and Clean
+  copy other bytes there (0x02397944, 12 bytes, at the keyboard's second decide). Left out:
+  villager-habit accepts the first text.
+- The part-time job's errands (ov050 Job lines): derived saves job-0c, job-0d (villager 4's
+  memory of the player as the game writes it), job-0f, job-10, job-11, job-12 (the villager
+  part read from a run's RAM). Scenes job-deliver (the item 0x1563 to a villager's house),
+  job-letter (the letter written and posted), job-gift (the item 0x1561 over the bridge).
+  job-deliver found a Clean difference: SoundSystem_StopMusic stopped the music at once where
+  the ROM passes the caller's fade on in r1 (as the Native copy already did); fixed.
+- ge/tsu/shome_ message 2 (SayByTown in villager 4's house on 14 September): 60 more talks
+  (letter-errand's save and day) did not draw it.

@@ -64,7 +64,7 @@ void SoundSystem_SetVolumes(SoundSystem *sys, int volume_a, int volume_b);
 void SoundSystem_ApplyPan(SoundSystem *sys, int some_effects);
 void SoundSystem_UpdateVolumes(SoundSystem *sys);
 void SoundSystem_UpdateCrossFade(SoundSystem *sys);
-void *SoundSystem_StopMusic(SoundSystem *sys);
+void *SoundSystem_StopMusic(SoundSystem *sys, int fade);
 void SoundSystem_PlayMusic(SoundSystem *sys, int number, int volume);
 void SoundSystem_SetArrangement(SoundSystem *sys, int arrangement);
 void SoundSystem_FadeInTracks(SoundSystem *sys, unsigned int set);

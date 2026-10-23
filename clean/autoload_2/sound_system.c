@@ -425,15 +425,14 @@ void SoundSystem_UpdateCrossFade(SoundSystem *sys)
 }
 CLEAN_AS(func_020f1520, SoundSystem_UpdateCrossFade)
 
-/* func_020f161c: the music's sequence stopped.
- * BUG: the original never sets the fade, so the SDK gets whatever the caller left in its
- * second argument register (SoundSystem_EndMusic, the one caller, leaves its own
- * `fade_frames` there). Clean stops at once. REQUIRES: the caller asked for no fade, or the
- * fade does not matter.
- * QUIRK: the result is the SDK's, which returns nothing. */
-void *SoundSystem_StopMusic(SoundSystem *sys)
+/* func_020f161c: the music's sequence stopped over `fade` frames.
+ * QUIRK: the original never sets the fade: the SDK gets the second argument register as it
+ * came in, which SoundSystem_EndMusic, the one caller, leaves holding its own `fade_frames`
+ * (tools/native_args.py, the same for the PC copy). The result is the SDK's, which returns
+ * nothing. */
+void *SoundSystem_StopMusic(SoundSystem *sys, int fade)
 {
-    return (void *) (intptr_t) NNS_SndPlayerStopSeq(&sys->music, 0);
+    return (void *) (intptr_t) NNS_SndPlayerStopSeq(&sys->music, fade);
 }
 CLEAN_AS(func_020f161c, SoundSystem_StopMusic)
 
@@ -647,7 +646,7 @@ void SoundSystem_MoveMusicVolume(SoundSystem *sys, int volume, int frames)
 CLEAN_AS(func_020f1ba4, SoundSystem_MoveMusicVolume)
 
 /* func_020f1c00: the music ended: the stream stopped over `fade_frames` (one more in a scene of
- * kind 51), or else the music's sequence stopped (SoundSystem_StopMusic, which drops the fade)
+ * kind 51), or else the music's sequence stopped over `fade_frames` (SoundSystem_StopMusic)
  * and the scene told. REQUIRES: there is a scene. */
 void SoundSystem_EndMusic(SoundSystem *sys, int fade_frames)
 {
@@ -658,7 +657,7 @@ void SoundSystem_EndMusic(SoundSystem *sys, int fade_frames)
         func_0210fc50(&sys->stream, fade_frames);
         return;
     }
-    SoundSystem_StopMusic(sys);
+    SoundSystem_StopMusic(sys, fade_frames);
     sys->scene->vtable->on_music(sys->scene, 1, 9999);
 }
 CLEAN_AS(func_020f1c00, SoundSystem_EndMusic)
