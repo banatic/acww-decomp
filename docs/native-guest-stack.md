@@ -83,9 +83,13 @@ were checked across its reachable paths.
 | main | 0200d1e4 | 0x010 |
 | main | 0201100c | 0x050 |
 | main | 0201ce68 | 0x010 |
+| main | 0202f3e4 | 0x020 |
+| main | 0202f464 | 0x070 |
 | main | 020288bc | 0x018 |
 | main | 02030ebc | 0x060 |
+| main | 02031078 | 0x028 |
 | main | 02031288 | 0x0d0 |
+| main | 02031bb8 | 0x058 |
 | main | 02032aa8 | 0x010 |
 | main | 02033678 | 0x098 |
 | main | 02066dc4 | 0x018 |
@@ -95,6 +99,7 @@ were checked across its reachable paths.
 | main | 02068144 | 0x010 |
 | main | 0206823c | 0x010 |
 | main | 020a9ba0 | 0x008 |
+| main | 020b39bc | 0x030 |
 | ov003 | 0220d2a4 | 0x008 |
 | ov003 | 0220d6d4 | 0x008 |
 | ov003 | 0220d8f4 | 0x008 |
@@ -170,6 +175,32 @@ the body is at 0x027e2cdc and the y words at 0x027e2cf8, 0x027e2d04 and 0x027e2d
 ROM's leftover there made a case 0x0211aa0c high (its top 0x02120a0c), where the PC's stack
 gave -1 and the Clean code 0.
 
+The insect room's other two y words come from the field actor's move of the same frame, which
+reaches its walls (02033678) and the ground under it (02031bb8) from 0201100c through 02031288
+(scene museum-insects; both at the depth of the room's frame). 02033678 keeps three points at
+body SP + 0x24 to + 0x3b and, for each wall it tests, stores the position and the pushed point
+in one of three pairs of `Vec`s at + 0x3c to + 0x83 that nothing reads (`volatile` in the
+matching source): their z words are the y words of the room's first two cases. 02031bb8 calls
+02031078 with the addresses of its three out-values (body SP + 4 to + 0xc); 02031078 holds the
+second's address in r4 and calls the ground's height function, 020b39bc, by its vtable, and
+that function's entry push (r4-r7, lr) stores it where the third case's y word is. The PC copies
+keep 02033678's locals and 02031bb8's out-values at their ROM slots where the frame is proved
+(`native_guest_stack_slot_if`: both run on many paths), 02031078 says what it holds in r4-r6,
+and 020b39bc's push is audited (SAVES). The Clean versions (`CollisionWalls_PushOut`, which
+does not store the pairs, `CollisionQuery_IsRaisedOrPost` and `CollisionQuery_PostAt`) are
+compiled in the mixed build from copies with the same slots and registers. From anchor SP
+0x027e2f5c the walls' body is at 0x027e2c9c and the ground's at 0x027e2d4c; the ROM's run made
+the cases 0x027e2d54 + 0x6000 and 0x0001b029 + 0x6000 high, where the PC's stack gave other
+stack addresses and 0.
+
+The house's cockroach (0223df88, above) reads the same frames when a villager walks in the
+player's house (scene flea-buyer): the y word of a keep-out box's centre at 0x027e2c10 is the z
+of the second direction of a wall's span test, 0202f464 (called by the near-wall push 0202f3e4
+from the field actor's walls), which keeps its two directions, two points and two square
+segments at body SP + 0 to + 0x63. Its PC copy and the copy of `CollisionSegment_SpansPoint` keep
+them at those slots where the frame is proved; the ROM's -0x1000 made the box's top 0x9000,
+where the PC's stack gave 0 and 0xa000.
+
 ## Saved registers
 
 A function's entry push stores its caller's r4-r11 on the ROM's stack, where later code can
@@ -231,6 +262,10 @@ at their slot. 020673e0 runs on many paths, so its copy asks for its slot with
 on the PC's stack there. `VillagerTalkOffer_Reply` (its `BUG:` note: a line of 0) and
 `TalkObject_RunAnswerText` are compiled from copies with the same slots.
 
+The catchphrase's "type it again" (scene villager-habit-retype) goes the same way: its line
+function, `VillagerTalkNickname_AskHabitTextLine` (0202adc8), opens the keyboard and writes no
+line, and the ROM names the message file after the talk object's first bytes.
+
 ## Argument words
 
 `native_abi.py` additionally proves word counts for scalar/pointer arguments
@@ -245,6 +280,14 @@ Native call into library code (`FX_MulFunc` among them) copied the whole host
 extent onto the ROM's stack, and in the house scene those words became the
 collider centres' y components: a checkout without `libs/` (CI's Linux one)
 diverged at frame 3422 where one with them agreed.
+
+Assembly definitions have no proven count, so a Native call into one copied the whole extent
+too. `native_abi.STACKLESS_ASM` lists the assembly library functions with at most four
+parameters whose ROM code never names the stack pointer, calls nothing and branches only inside
+itself (`test_native_abi.py` derives the list from the ROM with capstone): they read nothing
+from the stack, and the bridge writes no stack words for them. In scene villager-habit-retype a
+Native call into `MI_CpuFill8` from 0202aea0 had covered the reply's unset line (below) with
+host words, among them the line's own address.
 
 ## Verification and limits
 

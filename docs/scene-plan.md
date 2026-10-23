@@ -27,34 +27,14 @@ them, tools/diffcheck.py) and "read only" (checked by reading alone).
 
 ## Scenes found but not yet added
 
-Four scenes were recorded that differ between the Reference and the runtime (Native code
-alone, `--clean none`, and for flea-buyer also with Clean code), so they wait in
-build/scenes-pending of the tree each was made in, with their logs
-(villager-birthday, sick-villager and letter-errand, recorded with it, are now scenes: the room
-music cue and a talk's reply read the ROM's stack there, docs/native-guest-stack.md):
-
-- **sunday-joan** (10,750 frames, rtc 2026-09-13 09:00, rich save): a rainy Sunday, find Joan
-  and buy turnips; it enters 433 functions no other scene does (the new-day code, the turnip
-  prices, Joan). The Native run's frames differ and it stops; not bisected yet.
-- **museum-insects** (9,294 frames, museum-full; recorded on scenes/rest): the museum's second
-  insect room, entered through the first room's west side. With Native code alone the memory
-  differs in 6 to 8 words of the collision floors list (0x021c4038-0x021c40a4, the tops of the
-  insect room's cases): the y words of the cases' centres (func_ov004_0223f218, body SP + 0x18,
-  docs/native-guest-stack.md) hold 0x027e8d54 in the ROM's run and 0x027e8d38 in the Native run
-  while the player walks the first room's west path (frames 6300 and 7000), and later tops of
-  0x21029 against 0x6000 (frame 8600); the frames agree. Not bisected.
-- **flea-market** (7,330 frames, wallet save, rtc 2026-10-03 10:00; recorded on scenes/rest):
-  buy Ben's retro TV at the flea market. Passes with every Clean function in place; with Native
-  code alone the run diverges at frame 6718, as the talk about the TV opens: the Reference
-  returns from FS_OpenFile where the Native run calls Heap_SwitchThreads (func_020ea5c4). A
-  bisect over the scene's Native functions is not conclusive: with func_02095904 alone Native,
-  one word of the player actor's request queue (0x0235cc0c) differs (the Reference's 02095937,
-  a return address left on the ROM's stack and copied by FieldActor_RequestState10's unset
-  request bytes, against the bridge's fffffff0), a different symptom.
-- **flea-buyer** (10,300 frames, wallet save, same date): a villager buys the candle in the
-  player's house. With Clean code and with Native code alone, 10 words of the collision floor
-  lists (0x021c3bd8-0x021c4084) differ after the sale (frame 10000): 0x9000 in the Reference,
-  0xa000 in the runtime (and ffff7000 against ffff6000). Not bisected.
+None now. The last recordings that waited in build/scenes-pending are scenes (with
+villager-habit-retype, catchphrase's "type it again"): sunday-joan agreed once the worker
+thread's code always ran interpreted; museum-insects (the other two cases' heights come from the
+field actor's walls and the ground's height function, docs/native-guest-stack.md), flea-buyer
+(the cockroach's box height from a wall's span test), villager-habit-retype (the bridge wrote
+host words over the reply's unset line when it called `MI_CpuFill8`) and flea-market (the TV
+was "not for sale" because the PC's frame did not keep a tile's z after its x, a callee reading
+the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
@@ -363,8 +343,9 @@ What reading the Clean code found about the groups above; counts are of function
 - Answering "type it again" to the catchphrase gives a reply (func_020288bc) whose line
   function (VillagerTalkNickname_AskHabitTextLine) sets no line, so the reply's unset line on
   the ROM's stack is used as the message file's name (TalkObject_SetMessage): Native and Clean
-  copy other bytes there (0x02397944, 12 bytes, at the keyboard's second decide). Left out:
-  villager-habit accepts the first text.
+  copied other bytes there (0x02397944, 12 bytes, at the keyboard's second decide), as the
+  bridge's call into MI_CpuFill8 had written host words over the line; scene
+  villager-habit-retype.
 - The part-time job's errands (ov050 Job lines): derived saves job-0c, job-0d (villager 4's
   memory of the player as the game writes it), job-0f, job-10, job-11, job-12 (the villager
   part read from a run's RAM). Scenes job-deliver (the item 0x1563 to a villager's house),

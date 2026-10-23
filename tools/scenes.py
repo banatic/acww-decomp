@@ -774,6 +774,21 @@ scene("gulliver", "sky-ship", 22064, [2600, 7300, 8500, 9500, 12000, 16000, 1950
       "scatter his parts and hand him one")
 scene("axe-rock", "axe", 3700, [2600, 3000, 3380, 3500, 3699], frames(3300, 3700, 20),
       "strike a rock with the axe three times")
+scene("sunday-joan", "rich", 10750, [2600, 3900, 5000, 7000, 8800, 9900, 10749], frames(3900, 10750, 100),
+      "on a rainy Sunday morning (two days after the save's), find Joan in the town and buy ten turnips",
+      rtc="2026-09-13 09:00:00")
+scene("museum-insects", "museum-full", 9294, [2600, 4500, 6300, 7000, 7800, 8600, 9293], frames(6200, 9294, 100),
+      "with every insect given, walk through the museum's first insect room into the second and back out")
+scene("flea-market", "wallet", 7330, [4100, 5500, 6400, 6900, 7329], frames(5400, 7330, 50),
+      "on the day of the flea market, buy the retro TV from the villager selling in its house",
+      rtc="2026-10-03 10:00:00")
+scene("flea-buyer", "wallet", 10300, [4100, 5500, 7000, 8500, 10000, 10299], frames(5400, 10300, 100),
+      "on the day of the flea market, a villager comes to the player's house and buys the candle",
+      rtc="2026-10-03 10:00:00")
+scene("villager-habit-retype", "visitor-3f", 14980, [2600, 7200, 10400, 11670, 13433, 13800, 14247, 14979],
+      frames(13700, 14980, 50),
+      "as villager-habit, but the player asks to type the catchphrase again and types another",
+      rtc="2026-09-11 11:30:34")
 
 
 # ------------------------------------------------------------------------------ saves
