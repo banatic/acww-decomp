@@ -221,6 +221,26 @@ FRAMES: dict[tuple[str, int], Frame] = {
         '6e8f74574a257f16125899e8cfea718e709a436497016f269b52874c901323af'),
     ('main', 0x020288bc): Frame(0x18, 0x68,
         '591019f2c2a1da40f78a5d577d5ab483aaeb5dec4e358e507d09e5b12e9e5135'),
+    # The museum's insect room (scene museum-insects): the field actor's move (02031288, from
+    # 0201100c, audited above) calls 02031bb8, which calls 02031078 with the addresses of its
+    # three locals (body SP + 4 to + 0xc), which calls the ground's height function 020b39bc by
+    # its vtable. 020b39bc's entry push stores 02031078's r4, the second of those addresses, at
+    # what is later the y word of the insect room's third case (docs/native-guest-stack.md).
+    # Each: one push and one sub at entry, the matching add before its one pop; no computed
+    # branch; every call at entry SP - extent.
+    ('main', 0x02031bb8): Frame(0x58, 0x5a,
+        '636aa6379873f3927c7d4cb13ba0ecbc7492950e49eab5c1aaeaca6eecd9bfe8'),
+    ('main', 0x02031078): Frame(0x28, 0x50,
+        '31aa32df520e6fddd2c51fc674d369ee6c2756abf2a557ad55709d555a8a2dc5'),
+    ('main', 0x020b39bc): Frame(0x30, 0x108,
+        'd19f2733e593f3f3975d6f85e93061e0359ebe58c30d0ef1e58ee873f5ec6c3c'),
+    # A wall's span test (scene flea-buyer): the field actor's walls (02033678, above) call the
+    # near-wall push 0202f3e4, which calls the span test 0202f464 twice. Each: one push and one
+    # sub at entry, the matching add before its one pop; no computed branch.
+    ('main', 0x0202f3e4): Frame(0x20, 0x80,
+        '517a539dd94b90297e1cb84591da5d99270f8578450fa636c6e0fc3d9bc4d590'),
+    ('main', 0x0202f464): Frame(0x70, 0xbc,
+        'c862adef2a7530b3a75c81f29a029623dedc2ab5c47c3ac0058dfcacb3eb6cb3'),
 }
 
 # The registers a function's entry push saves (bit n: rn), for audited frames above. Its
@@ -233,6 +253,7 @@ SAVES: dict[tuple[str, int], int] = {
     ('autoload_2', 0x020e9744): (1 << 4) | (1 << 14),
     ('autoload_2', 0x020e9868): (1 << 4) | (1 << 14),
     ('autoload_2', 0x020f5e50): (1 << 4) | (1 << 5) | (1 << 14),
+    ('main', 0x020b39bc): (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 14),
 }
 
 SOURCES = {
@@ -248,6 +269,10 @@ SOURCES = {
     'autoload_2/func_020e9868.c': 'f984fae7452a68938700f472c97aa46ae0706bdfd2036713a493c6b18d17cfc7',
     'main/func_020673e0.cpp': 'cd577805cab4c936f30abf96ffc8073c98375c13d2a2c74a821386c54b5bc542',
     'main/func_020288bc.cpp': '73a4105a8d434eff733a727ec79a3c01263d4c3b60050947c8c5de18125ca8ce',
+    'main/func_02031bb8.c': 'c737a23865bc72c7e282cc06f9597061305bad977c2e60bf9084d96942805311',
+    'main/func_02031078.cpp': 'a8b4f8fc74d91a63c43fe6e9f9435a8997ed6f53b107c1d768f9454b017ade1a',
+    'main/func_02033678.cpp': '5ae67b9e3888b3e0f6e65a87cd4b9b02f1b35eb6c4e13dcc79d912a3a7d67338',
+    'main/func_0202f464.c': 'd4338665a2d2b24be6a7ce9e31cdc45830187427690a06849d2840168b2eaa31',
 }
 CONSUMER = 'ov004/func_ov004_0223df88.cpp'
 # The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
@@ -278,6 +303,9 @@ CLEAN_CUE_SHA = {
     'clean/main/talk_object.c': '37cfd8f848a074074c8b6042f162dda826f4a00098f969c8c9eda449a5517d9d',
     'clean/main/villager_talk_offers.c': '432ba2c273a6b6d71b482ec0d814d1e527956447099b3845a7a1cf4aa87b85df',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
+    'clean/main/field_collision.c': '55d958e6a9bddd45451ede27c07df805222887622bb83e1b24cfe30aa1545f1f',
+    'clean/main/collision_query.c': '64b4370e713ddc57343b34d5e4aca0b4c2ef0dcd7384f66a554d2a3df3fe7a6a',
+    'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     'clean/autoload_2/music_cue.c': (
@@ -348,6 +376,87 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '    u32 host_walker[TALK_OBJECT_ANSWER_WALKER_SIZE / sizeof(u32)];\n'
          '    u32 *walker = (u32 *) (uintptr_t) native_guest_stack_slot_if(0x020673e0u, 0, sizeof(host_walker));\n'
          '    if (walker == NULL) {\n        walker = host_walker;\n    }\n'),),
+    # A wall's span test (func_0202f464; its Native copy in CUE_EDITS): the directions, points
+    # and segments at the ROM's slots, in the order its frame has them.
+    'clean/main/collision_segment.c': (
+        ('    CollisionPoint outward_start;\n',
+         '    struct {\n        CollisionPoint outward_start, outward_end, start_side, end_side;\n'
+         '        CollisionSegment at_start, at_end;\n        u32 pad;\n'
+         '    } host_locals, *locals;\n'
+         '    _Static_assert(sizeof(host_locals) == 0x64, "the span test\'s locals");\n'
+         '    locals = (void *) (uintptr_t) native_guest_stack_slot_if(0x0202f464u, 0, sizeof(host_locals));\n'
+         '    if (locals == NULL) {\n        locals = &host_locals;\n    }\n'
+         '#define outward_start (locals->outward_start)\n#define outward_end (locals->outward_end)\n'
+         '#define start_side (locals->start_side)\n#define end_side (locals->end_side)\n'
+         '#define at_start (locals->at_start)\n#define at_end (locals->at_end)\n'),
+        ('    CollisionPoint outward_end;\n', ''),
+        ('    CollisionPoint start_side;\n', ''),
+        ('    CollisionSegment at_start;\n', ''),
+        ('    CollisionPoint end_side;\n', ''),
+        ('    CollisionSegment at_end;\n', ''),
+        ('    return result;\n}\nCLEAN_AS(func_0202f464, CollisionSegment_SpansPoint)\n',
+         '    return result;\n}\n#undef outward_start\n#undef outward_end\n#undef start_side\n#undef end_side\n'
+         '#undef at_start\n#undef at_end\nCLEAN_AS(func_0202f464, CollisionSegment_SpansPoint)\n')),
+    # The field actor's walls (func_02033678; its Native copy in CUE_EDITS): the points and the
+    # stores of the position and the pushed point for each wall tested at the ROM's slots.
+    'clean/main/field_collision.c': (
+        ('                                CollisionContacts *contacts, void *owner)\n{\n    int pushed = 0;\n',
+         '                                CollisionContacts *contacts, void *owner, volatile fx32 *seen)\n{\n'
+         '    int pushed = 0;\n'),
+        ('        CollisionWall *wall = (CollisionWall *) (uintptr_t) at;\n'
+         '        if (wall->top - COLLISION_WALL_CLEARANCE > position->y && test(wall, moved, from, radius) != 0) {\n',
+         '        CollisionWall *wall = (CollisionWall *) (uintptr_t) at;\n'
+         '        seen[0] = position->x;\n        seen[1] = position->y;\n        seen[2] = position->z;\n'
+         '        if (wall->top - COLLISION_WALL_CLEARANCE > position->y && test(wall, moved, from, radius) != 0) {\n'
+         '            seen[3] = moved->x;\n            seen[4] = position->y;\n            seen[5] = moved->z;\n'),
+        ('    CollisionPoint moved;\n    CollisionPoint from;\n    CollisionPoint step;\n    int pushed = 0;\n\n'
+         '    CollisionPoint_Set(&moved, position->x, position->z);\n'
+         '    CollisionPoint_Set(&from, previous->x, previous->z);\n'
+         '    CollisionPoint_Set(&step, position->x - previous->x, position->z - previous->z);\n'
+         '    if (CollisionPoint_DistanceSquared(&step, &data_021c30b8) >= (s64) FX_MulFunc(radius, radius)) {\n'
+         '        pushed |= collision_walls_pass(walls, func_0202f288, position, &moved, &from, radius, contacts, owner);\n'
+         '    }\n'
+         '    pushed |= collision_walls_pass(walls, func_0202f3e4, position, &moved, &from, radius, contacts, owner);\n'
+         '    pushed |= collision_walls_pass(walls, func_0202f2f4, position, &moved, &from, radius, contacts, owner);\n'
+         '    position->x = moved.x;\n    position->z = moved.z;\n',
+         '    struct {\n        CollisionPoint moved, from, step;\n        volatile fx32 seen[3][6];\n'
+         '    } host_locals, *locals;\n'
+         '    _Static_assert(sizeof(host_locals) == 0x60, "the walls\' locals");\n'
+         '    int pushed = 0;\n\n'
+         '    locals = (void *) (uintptr_t) native_guest_stack_slot_if(0x02033678u, 0x24, sizeof(host_locals));\n'
+         '    if (locals == NULL) {\n        locals = &host_locals;\n    }\n'
+         '    CollisionPoint_Set(&locals->moved, position->x, position->z);\n'
+         '    CollisionPoint_Set(&locals->from, previous->x, previous->z);\n'
+         '    CollisionPoint_Set(&locals->step, position->x - previous->x, position->z - previous->z);\n'
+         '    if (CollisionPoint_DistanceSquared(&locals->step, &data_021c30b8) >= (s64) FX_MulFunc(radius, radius)) {\n'
+         '        pushed |= collision_walls_pass(walls, func_0202f288, position, &locals->moved, &locals->from, radius, contacts,\n'
+         '                                       owner, locals->seen[0]);\n'
+         '    }\n'
+         '    pushed |= collision_walls_pass(walls, func_0202f3e4, position, &locals->moved, &locals->from, radius, contacts, owner,\n'
+         '                                   locals->seen[1]);\n'
+         '    pushed |= collision_walls_pass(walls, func_0202f2f4, position, &locals->moved, &locals->from, radius, contacts, owner,\n'
+         '                                   locals->seen[2]);\n'
+         '    position->x = locals->moved.x;\n    position->z = locals->moved.z;\n')),
+    # The ground's height under the field actor (func_02031bb8, func_02031078; their Native
+    # copies in CUE_EDITS).
+    'clean/main/collision_query.c': (
+        ('    fx32 r;\n    fx32 h;\n    int k;\n\n    if (source != NULL && source->vtable->post_at(',
+         '    fx32 r;\n    fx32 h;\n    int k;\n\n'
+         '    native_guest_register(0x02031078u, 5, (uint32_t) (uintptr_t) radius);\n'
+         '    native_guest_register(0x02031078u, 4, (uint32_t) (uintptr_t) height);\n'
+         '    if (source != NULL) {\n'
+         '        native_guest_register(0x02031078u, 6, (uint32_t) (uintptr_t) source->vtable->post_at);\n    }\n'
+         '    if (source != NULL && source->vtable->post_at('),
+        ('    CollisionGround ground;\n    fx32 radius;\n    fx32 height;\n    int kind;\n    int result;\n\n'
+         '    CollisionGround_Init(&ground, position, 0, 0);\n',
+         '    CollisionGround ground;\n    struct {\n        fx32 radius;\n        fx32 height;\n        int kind;\n'
+         '    } host_out, *out;\n    int result;\n\n'
+         '    out = (void *) (uintptr_t) native_guest_stack_slot_if(0x02031bb8u, 4, sizeof(host_out));\n'
+         '    if (out == NULL) {\n        out = &host_out;\n    }\n'
+         '    CollisionGround_Init(&ground, position, 0, 0);\n'),
+        ('COLLISION_UNIT_SHIFT, &radius,\n                                       &height, &kind) != 0;\n',
+         'COLLISION_UNIT_SHIFT, &out->radius,\n'
+         '                                       &out->height, &out->kind) != 0;\n')),
     'clean/main/villager_talk_offers.c': (
         ('    VillagerTalkLine line = {0};\n    if (offer_set_line(talk, &line) && line.text != 0) {\n'
          '        u8 message = line.message;\n'
@@ -465,6 +574,56 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '            func_02068484(self->unk_40, &arg, out.n);\n',
          '        (self->*(self->pmf))(out);\n        if (out->n) {\n            *arg = out->b;\n'
          '            func_02068484(self->unk_40, arg, out->n);\n')),
+    # The ground's height under the field actor (scene museum-insects): 02031bb8 keeps its three
+    # out-values at body SP + 4 to + 0xc (02031be0-02031bee) where its path is audited (else the
+    # PC's stack: it runs on many paths), and 02031078 holds the second's address in r4, the
+    # first's in r5 (0203107c-0203107e) and the height function in r6 (0203109a), which that
+    # function's entry push stores on the ROM's stack.
+    'main/func_02031bb8.c': (
+        ('    int v1, v2, v3;\n',
+         '    int host_v[3];\n'
+         '    int *v = (int *) (uintptr_t) native_guest_stack_slot_if(0x02031bb8u, 4, sizeof(host_v));\n'),
+        ('    func_02034270((int) obj, p, 0, 0);\n',
+         '    if (v == 0) {\n        v = host_v;\n    }\n    func_02034270((int) obj, p, 0, 0);\n'),
+        ('&v1, &v2, &v3)', '&v[0], &v[1], &v[2])')),
+    'main/func_02031078.cpp': (
+        ('    int a, b, c;\n    if (obj != 0) {\n',
+         '    int a, b, c;\n'
+         '    native_guest_register(0x02031078u, 5, (uint32_t) (uintptr_t) out1);\n'
+         '    native_guest_register(0x02031078u, 4, (uint32_t) (uintptr_t) out2);\n'
+         '    if (obj != 0) {\n'
+         '        native_guest_register(0x02031078u, 6, (*(uint32_t **) obj)[2]);\n'),),
+    # A wall's span test (0202f464, from 0202f3e4, from the field actor's walls 02033678):
+    # its two directions, two points and two square segments at body SP + 0 to + 0x63 stay on
+    # the ROM's stack, where the house's cockroach later takes the second direction's z as a
+    # keep-out box's height (scene flea-buyer).
+    'main/func_0202f464.c': (
+        ('    Vec2 v1;\n    Vec2 v2;\n    Vec2 v3;\n    Vec2 v4;\n    u32 m1[8];\n    u32 m2[9];\n    int sa, sb;\n\n',
+         '    struct Locals {\n        Vec2 v1, v2, v3, v4;\n        u32 m1[8];\n        u32 m2[9];\n'
+         '    } host_locals, *locals;\n    int sa, sb;\n\n'
+         '    _Static_assert(sizeof(struct Locals) == 0x64, "the span test\'s locals");\n'
+         '    locals = (struct Locals *) (uintptr_t) native_guest_stack_slot_if(0x0202f464u, 0, sizeof(host_locals));\n'
+         '    if (locals == 0) {\n        locals = &host_locals;\n    }\n'
+         '#define v1 (locals->v1)\n#define v2 (locals->v2)\n#define v3 (locals->v3)\n#define v4 (locals->v4)\n'
+         '#define m1 (locals->m1)\n#define m2 (locals->m2)\n'),),
+    # The field actor's walls (02033678, reached from 0201100c through 02031288, 02030ebc and
+    # 02032aa8, audited above): its three points at body SP + 0x24 to + 0x3b and the three
+    # copies of the position and the pushed point it stores for each wall it tests (+ 0x3c to
+    # + 0x83, 020336d8-02033708, 0203375a-0203378a, 020337dc-0203380c) stay on the ROM's stack,
+    # where the museum's insect room later takes one as a case's height (scene museum-insects).
+    'main/func_02033678.cpp': (
+        ('    UnkStruct_02033678 v24;\n    UnkStruct_02033678 v2c;\n    UnkStruct_02033678 v34;\n'
+         '    struct {\n        VV3 p;\n        VV3 q;\n    } volatile w1, w2, w3;\n',
+         '    struct Locals {\n        UnkStruct_02033678 v24, v2c, v34;\n'
+         '        struct {\n            VV3 p;\n            VV3 q;\n        } volatile w1, w2, w3;\n'
+         '    } host_locals, *locals;\n'
+         '    static_assert(sizeof(struct Locals) == 0x60, "the walls\' locals");\n'),
+        ('    ret = 0;\n',
+         '    locals = (struct Locals *) (uintptr_t) native_guest_stack_slot_if(0x02033678u, 0x24, sizeof(host_locals));\n'
+         '    if (locals == 0) {\n        locals = &host_locals;\n    }\n'
+         '#define v24 (locals->v24)\n#define v2c (locals->v2c)\n#define v34 (locals->v34)\n'
+         '#define w1 (locals->w1)\n#define w2 (locals->w2)\n#define w3 (locals->w3)\n'
+         '    ret = 0;\n')),
 }
 
 
