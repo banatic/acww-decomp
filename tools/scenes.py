@@ -496,6 +496,14 @@ scene("villager-talks", "pockets-keys", 10950, [2600, 4900, 6500, 8000, 9500, 10
 scene("villager-approach", "visitor-3f", 13560, [2600, 4000, 7200, 9100, 10400, 11400, 12400, 13559],
       frames(3900, 13560, 100), "the fortune teller's good luck fills a villager's wish to talk: it calls the "
       "player over, walks up and offers a gift")
+scene("villager-nickname", "visitor-3f", 12720, [2600, 7200, 10400, 11100, 12000, 12719], frames(10400, 12720, 50),
+      "as villager-approach, a little later: the villager that calls the player over gives it a nickname")
+scene("villager-sell", "visitor-3f", 12750, [2600, 7200, 10400, 11100, 12000, 12749], frames(10400, 12750, 50),
+      "as villager-approach, a little later: the villager that calls the player over sells it one of its items")
+scene("villager-mail", "visitor-3f", 12730, [2600, 7200, 10400, 11100, 12000, 12729], frames(10400, 12730, 50),
+      "as villager-approach, a little later: the villager that calls the player over shows the letter it holds")
+scene("villager-picture", "visitor-3f", 12750, [2600, 7200, 10400, 11100, 12000, 12749], frames(10400, 12750, 50),
+      "as villager-approach, a little later: the villager that calls the player over talks of its picture")
 scene("pockets-town", "pockets-town", 6250, [2600, 3300, 4000, 4700, 5400, 6249], frames(2800, 6250, 50),
       "in the pockets, show an insect and let it go, fail to plant on the path; at the river, show a fish "
       "and let it go, plant two items and put one down")
