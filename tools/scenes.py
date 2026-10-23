@@ -114,6 +114,11 @@ SAVES = {
     # with 30,000 bells: the barber's room (scene 0x1f) opens off the ground floor
     "barber": [(MONEY, "<I", 30000), (NOOK_STORE, "<I", 240000), (NOOK_STORE + 0x5A, "<H", 3 << 9),
                (NOOK_STORE + 0x51, "<B", 1), (0xE3B4, "<H", 0x5010)],
+    # Nook's store at level 2 (as for "barber": the level in bits 9-10 of NookStore's word at 0x5a,
+    # the stock marked for a restock, the building 0x500d + level at 0xe3b4), the rod held and
+    # 30,000 bells
+    "store-2": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STORE + 0x5A, "<H", 2 << 9),
+                (NOOK_STORE + 0x51, "<B", 1), (0xE3B4, "<H", 0x500F)],
     # a visit to the player's house agreed with villager 1 for 11:30 on the seed's day: the
     # handed-over record of the player's villager part (main/villager_part_handover.h, at 0xa4
     # of the part at 0x1e40 of the player's record) holds the villager's NpcId (copied from its
@@ -163,6 +168,47 @@ SAVES = {
     "house-kinds": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
                    [(POCKETS + 2 * slot, "<H", 0x3000 + 4 * number)
                     for slot, number in enumerate((0xB5, 0xC5, 0x1A9, 0xDA, 0x103, 0xD9))],
+    # as "house-kinds" with more room-object kinds in the pockets (dma.bin byte 0x18; the class
+    # of a kind is that of its actor profile, ov004's table data_ov004_02247f54): numbers 0x103
+    # (kind 6), 0xd9 (7), 0x156 (0x22), 0x21a (0x2f), 0x6e3 (0x1a), 0x1ef (0x28), 0x1c0 (0x21, it
+    # takes a bell), 0x19b (0x15), 0xcc (0x16), 0xc8 (0x19), 0xd5 (0x2a), 0x4b5 (0x2e), 0xe1
+    # (0x1e), 0x261 (0x1b) and 0x200 (0x2d, the fortune telephone, which house-kinds3 uses)
+    "house-kinds2": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
+                    [(POCKETS + 2 * slot, "<H", 0x3000 + 4 * number)
+                     for slot, number in enumerate((0x103, 0xD9, 0x156, 0x21A, 0x6E3, 0x1EF, 0x1C0, 0x19B, 0xCC,
+                                                    0xC8, 0xD5, 0x4B5, 0xE1, 0x261, 0x200))],
+    # as "house-kinds2" with the kinds left: numbers 0x4f (kind 0x10), 0x1d (0x11), 0x62 (0x2b), 0x1cb
+    # (0x13), 0x74 (0x29), 0x145 (0x20), 0x3e9 (0x27), 0x5f6 (0x1f), 0x381 (0x1d), 0x361 (0x1c),
+    # 0x577 (0x18), 0xd6 (0x2c), 0x1f4 (0xe), 0x16 (0xc) and 0x200 (0x2d, the fortune telephone)
+    "house-kinds3": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
+                    [(POCKETS + 2 * slot, "<H", 0x3000 + 4 * number)
+                     for slot, number in enumerate((0x4F, 0x1D, 0x62, 0x1CB, 0x74, 0x145, 0x3E9, 0x5F6, 0x381,
+                                                    0x361, 0x577, 0xD6, 0x1F4, 0x16, 0x200))],
+    # as "museum-full" (the last painting, number 19, not given), 30,000 bells; pockets 0-3: two
+    # fossils not assessed (0x1549), a fish given already (0x12e8) and that last painting (0x38e0)
+    "museum-more": [(group + i, "<B", 0x11) for group, items in ((MUSEUM_A, 52), (MUSEUM_B, 56), (MUSEUM_C, 56))
+                    for i in range(items // 2)] + [(MUSEUM_D + i, "<B", 0x01 if i == 9 else 0x11) for i in range(10)] +
+                   [(MONEY, "<I", 30000)] +
+                   [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x1549, 0x1549, 0x12E8, 0x38E0))],
+    # the rod held, no cockroaches (as for "songs") and the house at its last size: the size in
+    # bits 0-2 of the house record's word at 0x15a0 (main/house_record.h) 6, and its building on
+    # the town map (the seed's 0x5014 at 0xe5da) 0x501a, the code of that size
+    "house-big": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (0xF52C + 0x15A0, "<B", 0x06), (0xE5DA, "<H", 0x501A)],
+    # the rod held, 30,000 bells and the house loan paid off (the house record's loan at 0x1590,
+    # main/house_record.h, 0)
+    "loan-paid": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (0xF52C + 0x1590, "<I", 0)],
+    # nothing held; pockets 0-5: items worn on the head of each model group (main/item_group.h:
+    # 0x13a8, 0x13c8 and 0x1408) and of part C (0x1431, 0x1471; main/glasses_look.h), and 0x13c3
+    "wear": [(HELD, "<H", 0xFFF1)] + [(POCKETS + 2 * i, "<H", item) for i, item in
+                                       enumerate((0x13A8, 0x13C8, 0x1408, 0x1431, 0x1471, 0x13C3))],
+    # the wallet full (99,999 bells) and the savings account at its most (999,999,999 bells, the
+    # account at 0x23e0 of the player's record, main/savings.h): the bank machine refuses both
+    # a deposit and a withdrawal (ov132/bank_menu.h)
+    "bank-full": [(MONEY, "<I", 99999), (0x14 + 0x23E0, "<I", 999999999)],
+    # the rod held, 30,000 bells; pockets 0-2: two shirts (0x11a8, 0x11b0) and a hat (0x13a8), for
+    # the Able Sisters to buy
+    "able-shop": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)] +
+                 [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x11A8, 0x11B0, 0x13A8))],
     # the golden rod, and the furniture of "furni" in every pocket
     "full-rod": [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)],
     "bare": [(HELD, "<H", 0xFFF1)],  # nothing held (0xfff1, the code of an empty slot)
@@ -287,6 +333,34 @@ SAVES["mail-items"] = SAVES["mail-post"] + [(POCKETS + 2 * i, "<H", item) for i,
     # furniture (state 2, item 0x3508), 6 one between villagers (state 7)
     *[(0x14 + 0x11A8 + 0x100 * i + off, fmt, value) for i, state, item in ((4, 4, 0xFFF1), (5, 2, 0x3508), (6, 7, 0xFFF1))
       for off, fmt, value in ((0xFA, "<B", state), (0xFC, "<H", item), (0x22, "<B", 2), (0x42, "<B", 1))]]
+
+# a letter waiting at the post office for the next delivery hour (MailPostOffice at 0x15954 of the
+# state block, main/mail.h): the player's to villager 1 (its NpcId, as for "house-visitor", kind 3;
+# written, state 1), its sender the player (the town's and the player's ids, as the seed's own
+# letters name the player)
+POST_OFFICE = 0x15954
+SAVES["mail-due"] = [
+    *raw(POST_OFFICE + 4, bytes.fromhex("6ec64331433143314331433143310310")), (POST_OFFICE + 0x22, "<B", 3),
+    *raw(POST_OFFICE + 0x24, bytes.fromhex("6ec643314331433143314331433185d1433143314331433100000000")),
+    (POST_OFFICE + 0x42, "<B", 1), (POST_OFFICE + 0xF9, "<B", 0x1F), (POST_OFFICE + 0xFA, "<B", 1),
+    (POST_OFFICE + 0xFC, "<H", 0xFFF1),
+]
+
+# as "house-kinds" with switched pieces of several room-object classes in pockets 0-7 (item 0x3000 +
+# 4 * number): the robot TV (0x75, kind 0x14), 0xda (kind 5), 0xc5 (3), 0x1a9 (4), 0xc8 (0x19),
+# 0x3e9 (0x27), 0x261 (0x1b) and the compass (0xe1, 0x1e)
+SAVES["house-switches"] = [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] + [
+    (POCKETS + 2 * slot, "<H", 0x3000 + 4 * number)
+    for slot, number in enumerate((0x75, 0xDA, 0xC5, 0x1A9, 0xC8, 0x3E9, 0x261, 0xE1))]
+
+# the schedule's day for the save's date given event 0x45 (as for "visitor-3e") and the slingshot
+# (0x137a, tool 6) held
+SAVES["sky-visitor"] = [(HELD, "<H", 0x137A), (MONEY, "<I", 30000), (SCHEDULE_TODAY, "<B", 0x45),
+                        (SCHEDULE_TODAY + 2, "<B", 0), (0x17218 + 0x12, "<B", 0x45)]
+
+# as "sky-visitor" with event 0x44: Gulliver's spaceship (the sky's visitor of kind 6) crosses
+SAVES["sky-ship"] = [(HELD, "<H", 0x137A), (MONEY, "<I", 30000), (SCHEDULE_TODAY, "<B", 0x44),
+                     (SCHEDULE_TODAY + 2, "<B", 0), (0x17218 + 0x12, "<B", 0x44)]
 
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
@@ -633,6 +707,73 @@ scene("house-kinds", "house-kinds", 8280, [2600, 3700, 4600, 5600, 6600, 7600, 8
 scene("post-letters", "mail-post", 13150, [2600, 5000, 6500, 8000, 9500, 11000, 12500, 13149],
       frames(5000, 13150, 100), "at the post office window, put letters on the posting page by the keys and "
       "the pen, set a delivery date by the keys and the pen, cancel; post again, refused, never mind")
+scene("shop-points", "rich", 12750, [2600, 7300, 8500, 9600, 11000, 12100, 12749], frames(7300, 12750, 50),
+      "in Nook's store, read the point machine's points and help, then have a carpet and a wallpaper shown "
+      "in the room and buy them")
+scene("museum-assess", "museum-more", 21818, [2600, 6000, 9000, 12000, 15000, 18000, 21817], frames(4600, 21818, 100),
+      "with almost every item given, have Blathers assess fossils, offer items given already and the last "
+      "painting, look through the full donation list and ask for an assessment with no fossil")
+scene("cafe-coffee", "museum", 19198, [2600, 15700, 16300, 17000, 17800, 18600, 19197], frames(15700, 19198, 50),
+      "in the museum's cafe, talk to Brewster, sit on a stool at his counter and drink the coffee he makes")
+scene("money-rock", "shovel", 4800, [2600, 3800, 4000, 4300, 4600, 4799], frames(3800, 4800, 25),
+      "hit the day's money rock with the shovel twice, then pick up one of the bags of bells it drops")
+scene("nook-loan", "loan-paid", 7301, [2600, 3950, 4800, 5600, 6400, 7300], frames(3950, 7301, 50),
+      "with the house loan paid off, have Nook make the house bigger and pick the roof's colour from his "
+      "last page of colours")
+scene("post-loan", "wallet", 5879, [2600, 4340, 4800, 5200, 5600, 5878], frames(4340, 5879, 50),
+      "at the post office window, pay the house loan off on Pelly's amount pad")
+scene("house-rooms", "house-big", 6462, [2600, 4200, 4700, 5300, 5800, 6461], frames(4200, 6462, 50),
+      "in a house at its last size, go up to the second floor and down again, into the west room and the "
+      "east room and back")
+scene("hour-chime", "rod", 6200, [2600, 4000, 4800, 5200, 5800, 6199], frames(4600, 6200, 50),
+      "stand in the town as the clock strikes six: the chime plays the town tune and the new day's "
+      "schedule begins", rtc="2026-09-11 05:58:40")
+scene("wear", "wear", 5002, [2600, 3200, 3700, 4200, 4600, 5001], frames(2900, 5002, 50),
+      "in the pockets, wear hats of each kind and two pairs of glasses, a hat refused while glasses are "
+      "worn, then worn once they are off")
+scene("bank-full", "bank-full", 5480, [2600, 4340, 4700, 5000, 5300, 5479], frames(4340, 5480, 25),
+      "at the post office window with the savings at their most, the bank's menu refuses a deposit; quit")
+scene("observatory-more", "museum", 18578, [2600, 11200, 12500, 14000, 15500, 17000, 18577], frames(11200, 18578, 100),
+      "at night in the observatory, change the constellation in the star designer, rename it, quit a new "
+      "one, erase the constellation", rtc="2026-09-11 20:30:00")
+scene("reaction-use", "visitor-43", 14243, [2600, 7300, 11900, 13200, 13700, 14242], frames(13100, 14243, 50),
+      "learn the reaction teacher's reaction, then act it out from the chat keyboard by the pen and the keys")
+scene("store-upstairs", "barber", 7628, [2600, 3950, 4600, 5400, 6300, 7100, 7627], frames(4100, 7628, 50),
+      "in Nook's store at its last level, go up to the second floor, talk to the twins there and come down")
+scene("store-2", "store-2", 4600, [2600, 3950, 4300, 4599], frames(3950, 4600, 50),
+      "walk into Nook's store at its second level (its own music) and open the sell window", "shop-talk")
+scene("able-designs", "able-shop", 13896, [2600, 4700, 6300, 8100, 10000, 12000, 13895], frames(4700, 13896, 100),
+      "in the Able Sisters' shop, buy an umbrella from the stand, show a design in place of one of the shop's, "
+      "buy one of theirs and swap one")
+scene("able-sell", "able-shop", 6963, [2600, 4700, 5300, 5900, 6500, 6962], frames(4700, 6963, 50),
+      "sell two shirts to Mabel by the pen, open the sell window again and cancel it")
+scene("kk-show", "museum", 12973, [2600, 8500, 9500, 10900, 11500, 12972], frames(8500, 12973, 50),
+      "on a Saturday night in the cafe, sit down before K.K.'s stage: his show and the staff roll begin",
+      rtc="2026-09-12 20:30:00")
+scene("mail-due", "mail-due", 8288, [2600, 5000, 7300, 7700, 8100, 8287], frames(7200, 8288, 50),
+      "past 17:00 the post office delivers the letters waiting there: the player's to a villager, read "
+      "and graded", rtc="2026-09-11 16:58:00")
+scene("pockets-bags", "pockets-keys", 3558, [2600, 2900, 3100, 3400, 3557], frames(2800, 3558, 25),
+      "in the pockets, drag two bags of bells onto the wallet by the pen")
+scene("house-switches", "house-switches", 12810, [2600, 4600, 6800, 9000, 11200, 12809], frames(3500, 12810, 100),
+      "in the house, put down eight switched pieces one at a time, switch each on and off twice, turn it and "
+      "take it back")
+scene("title-other", "seed", 4961, [1100, 2200, 3000, 3480, 4960], frames(1100, 4961, 50),
+      "from the continue menu, ask for a new town and to erase the resident, refuse both, then continue")
+scene("sky-visitor", "sky-visitor", 10438, [2600, 3600, 6100, 6800, 8000, 9500, 10437], frames(6000, 10438, 100),
+      "on the day of event 0x45, shoot the pelican down with the slingshot as he crosses the sky at 9:00 and "
+      "talk to him where he lands", rtc="2026-09-11 08:58:40")
+scene("house-kinds2", "house-kinds2", 14394, [2600, 4500, 6800, 9100, 11400, 13700, 14393], frames(3500, 14394, 100),
+      "in the house, put down pieces of fourteen more room-object kinds one at a time, use each twice and "
+      "take it back")
+scene("house-kinds3", "house-kinds3", 11316, [2600, 4300, 5900, 7500, 9000, 10500, 11315], frames(3500, 11316, 100),
+      "in the house, put down clocks, a record player, a melody piece, a switched piece, a photo and the "
+      "fortune telephone, use each and take it back")
+scene("gulliver", "sky-ship", 22064, [2600, 7300, 8500, 9500, 12000, 16000, 19500, 22063], frames(8400, 22064, 200),
+      "on the day of event 0x44, shoot the spaceship down with the slingshot, wake Gulliver by it, hear him "
+      "scatter his parts and hand him one")
+scene("axe-rock", "axe", 3700, [2600, 3000, 3380, 3500, 3699], frames(3300, 3700, 20),
+      "strike a rock with the axe three times")
 
 
 # ------------------------------------------------------------------------------ saves
