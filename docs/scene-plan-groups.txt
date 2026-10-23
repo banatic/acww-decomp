@@ -232,9 +232,9 @@ match: ov147/* ov051/* ov068/sequence4 ov068/town_nook ov068/taxi ov068/field_ac
 
 area: New player and title (the seed's save)
 group: Mr. Resetti
-scene: the mole's lecture after a quit without saving
-reach: the game sees the save's mark of a run that did not end with a save; a derived save with that mark (its offset is not identified) or a reboot, which one recording cannot make
-needs: unknown
+scene: the mole's lectures after a quit without saving (scenes resetti, resetti-2, resetti-3, resetti-4: the first, third, fourth and fifth)
+reach: saves resetti and resetti-2..5 (record 0's flag 2 set, the lecture count at 0x2423 of the record); the count less one after the load's raise picks the lecture, and count 5 draws one of the earlier ones again
+needs: seed
 match: ov077/*
 
 # ================================================================== other dates (boot on another day)

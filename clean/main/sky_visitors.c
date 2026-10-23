@@ -37,7 +37,8 @@ static_assert(sizeof(SkyVisitorVars) == 12, "the words at 0x60");
 #define SKY_KIND6_HIT_SOUND 0x7fc
 #define SKY_KIND6_EVENT 0x44
 #define SKY_KIND6_STATE_FLAG 9
-#define SKY_KIND5_SWAY 1000
+#define SKY_KIND5_SWAY 0x5000
+#define SKY_KIND5_START_SWAY 1000 /* what its set-up hands its path (not the sway of its run) */
 #define SKY_KIND5_STEP 0x1ec
 #define SKY_KIND5_PHASE_STEP 0x3e8
 #define SKY_KIND5_ANIMATION 1
@@ -371,7 +372,7 @@ void SkyKind5_SetUp(SkyObject *object, int param)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     SkyVisitorVars *vars = sky_visitor_vars(object);
-    SkyObjectKinds_StartPath(object, MainRandom_Below(2) == 0 ? 1 : 0, SKY_KIND5_SWAY);
+    SkyObjectKinds_StartPath(object, MainRandom_Below(2) == 0 ? 1 : 0, SKY_KIND5_START_SWAY);
     body->animation = SKY_KIND5_ANIMATION;
     body->priority = SKY_VISITOR_PRIORITY;
     vars->state = SKY_VISITOR_CROSSING;

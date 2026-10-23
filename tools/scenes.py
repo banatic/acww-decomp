@@ -103,10 +103,10 @@ SAVES = {
     # the weekly schedule's day for the save's own date (Friday, the fifth day: main's
     # event_schedule.h, EventSchedule.days[4] at 0x17218 + 0x14 + 4 * 6) given another visitor's
     # event than the fox's, not yet marked, and today's event (0x17218 + 0x12) with it: 0x3e the
-    # camel, 0x41 the walrus, 0x43 the reaction teacher
+    # camel, 0x3f the fortune teller, 0x41 the walrus, 0x43 the reaction teacher
     **{f"visitor-{e:02x}": [(MONEY, "<I", 30000), (SCHEDULE_TODAY, "<B", e), (SCHEDULE_TODAY + 2, "<B", 0),
                             (0x17218 + 0x12, "<B", e)]
-       for e in (0x3E, 0x41, 0x43)},
+       for e in (0x3E, 0x3F, 0x41, 0x43)},
     # Nook's store at its last level (main/nook_store.h, NookStore at 0x171b4: what was spent,
     # the level in bits 9-10 of the word at 0x5a, the stock's date marked for a restock at 0x51)
     # and its building on the town map (the seed's 0x500d at 0xe3b4 made 0x5010, 0x500d + level),
@@ -406,6 +406,10 @@ scene("new-player", "seed", 9400, [1300, 2300, 2800, 5200, 7000, 8500, 9399], fr
       "from the title, a new resident: the taxi ride and its questions, the name typed, the arrival and "
       "the registration in the town hall, out into the town")
 
+scene("nook-job", "seed", 21920, [1300, 5200, 9400, 11300, 15300, 16800, 19500, 21919], frames(9400, 21920, 100),
+      "a new resident comes out of the house: Tom Nook meets the player, talks of the loan, and at his store "
+      "gives the uniform (worn from the pockets) and the first errand of the part-time job")
+
 scene("villager-home", "seed", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
       "walk into a villager's house and talk to it there")
 scene("save-quit", "seed", 4500, [2600, 3400, 4000, 4499], frames(2700, 4500, 50),
@@ -468,6 +472,12 @@ scene("house-visitor", "house-visitor", 13060, [2600, 3700, 6000, 9500, 12000, 1
       "room again and again, walks about it and leaves")
 scene("resetti-2", "resetti-2", 12360, [2600, 4600, 8200, 10000, 11400, 12359], frames(4000, 12360, 100),
       "after a play that was not saved, the mole's third lecture: a question, the order to kneel, a wait")
+scene("resetti-3", "resetti-3", 9360, [2600, 4600, 7500, 8040, 8600, 9359], frames(4400, 9360, 100),
+      "after a play that was not saved, the mole's fourth lecture: the phrase he asks for typed on the "
+      "keyboard and decided")
+scene("resetti-4", "resetti-4", 13730, [2600, 5000, 8100, 8470, 11100, 13729], frames(4400, 13730, 100),
+      "after a play that was not saved, the mole's fifth lecture: how sorry the player is, on the slider "
+      "window by the keys and the pen")
 scene("barber", "barber", 10500, [3900, 4400, 5700, 7100, 9000, 9800, 10499], frames(4200, 10500, 100),
       "in Nook's store at its last level, go into the barber's room, pay for a haircut, sit in her "
       "chair, answer her questions and have the hair cut")
@@ -483,6 +493,9 @@ scene("letter-errand", "wallet", 18450, [2600, 5300, 9000, 11400, 15450, 17200, 
 scene("villager-talks", "pockets-keys", 10950, [2600, 4900, 6500, 8000, 9500, 10949], frames(4900, 10950, 100),
       "talk to a villager again and again for a long time: it picks a new topic each time, and a second "
       "villager walks up and talks too")
+scene("villager-approach", "visitor-3f", 13560, [2600, 4000, 7200, 9100, 10400, 11400, 12400, 13559],
+      frames(3900, 13560, 100), "the fortune teller's good luck fills a villager's wish to talk: it calls the "
+      "player over, walks up and offers a gift")
 scene("pockets-town", "pockets-town", 6250, [2600, 3300, 4000, 4700, 5400, 6249], frames(2800, 6250, 50),
       "in the pockets, show an insect and let it go, fail to plant on the path; at the river, show a fish "
       "and let it go, plant two items and put one down")
