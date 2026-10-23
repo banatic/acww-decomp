@@ -1,7 +1,10 @@
 """Check bridge extents, especially signatures where parameter counts are unsafe."""
 from pathlib import Path
+import re
 import unittest
 
+import common as C
+import native_abi
 from native_abi import word_arguments
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,6 +63,61 @@ class WordArguments(unittest.TestCase):
             kept[name] = int(words)
         for name, count in MATH:
             self.assertEqual(kept.get(name), count)
+
+
+CONDITIONS = '(eq|ne|cs|hs|cc|lo|mi|pl|vs|vc|hi|ls|ge|lt|gt|le|al)?'
+
+
+def stays_off_the_stack(code: bytes, address: int, thumb: bool) -> bool:
+    """Whether ROM code never names the stack pointer, calls nothing and branches only inside itself."""
+    import capstone  # noqa: PLC0415 (only the audit needs it)
+    md = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB if thumb else capstone.CS_MODE_ARM)
+    size = 0
+    for ins in md.disasm(code, address):
+        size += ins.size
+        mnemonic = ins.mnemonic.split('.')[0]
+        if re.search(r'\b(sp|r13)\b', ins.op_str) or re.fullmatch('blx?' + CONDITIONS, mnemonic):
+            return False
+        if re.fullmatch('b' + CONDITIONS, mnemonic) and not address <= int(ins.op_str.lstrip('#'), 16) < address + len(code):
+            return False
+    return size == len(code)
+
+
+class StacklessAssembly(unittest.TestCase):
+    def test_audited_code(self):
+        mods = C.modules()
+        syms = C.symbol_table(mods)
+        for (module, address), (name, size, _sha) in native_abi.STACKLESS_ASM.items():
+            with self.subTest(name=name):
+                sym = syms.lookup(name, module)
+                self.assertIsNotNone(sym)
+                self.assertEqual((sym.address, sym.size), (address, size))
+                start = address - mods[module]['base']
+                code = C.module_image(module)[start:start + size]
+                self.assertTrue(native_abi.stackless_asm(module, address, code))
+                self.assertTrue(stays_off_the_stack(code, address, sym.thumb))
+                with self.assertRaises(ValueError):
+                    native_abi.stackless_asm(module, address, code[:-1] + bytes([code[-1] ^ 1]))
+
+    @unittest.skipUnless((ROOT / 'libs/NitroSDK').is_dir(), 'no library sources (libs/README.md)')
+    def test_every_stackless_assembly_function(self):
+        mods = C.modules()
+        syms = C.symbol_table(mods)
+        found = set()
+        for line in (ROOT / 'runtime/library-arguments.txt').read_text().splitlines():
+            module, address, name, count, words = line.split()
+            if words != '-1' or int(count) > 4:
+                continue
+            sources = list((ROOT / 'libs').rglob(name + '.c'))
+            if len(sources) != 1 or not re.search(r'\basm\b', sources[0].read_text(errors='replace')):
+                continue
+            sym = syms.lookup(name, module)
+            if sym is None:
+                continue
+            start = sym.address - mods[module]['base']
+            if stays_off_the_stack(C.module_image(module)[start:start + sym.size], sym.address, sym.thumb):
+                found.add((module, sym.address))
+        self.assertEqual(found, set(native_abi.STACKLESS_ASM))
 
 
 if __name__ == '__main__':

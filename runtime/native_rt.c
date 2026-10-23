@@ -30,12 +30,13 @@ uint32_t native_guest_stack_slot_if(uint32_t owner, uint32_t offset, uint32_t si
     return native_guest_slot_if_hook(owner, offset, size);
 }
 
+/* Without the hook (the function-level check runs a function alone, with no ROM frames around
+ * it) no callee's push can store the register: nothing to note. */
 void native_guest_register(uint32_t owner, uint32_t reg, uint32_t value)
 {
-    if (native_guest_register_hook == NULL) {
-        abort();
+    if (native_guest_register_hook != NULL) {
+        native_guest_register_hook(owner, reg, value);
     }
-    native_guest_register_hook(owner, reg, value);
 }
 
 uint32_t native_guest_stack_slot(uint32_t owner, uint32_t offset, uint32_t size)

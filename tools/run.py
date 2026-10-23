@@ -672,6 +672,12 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     for key, (count, words) in library_arguments(library).items():
         params.setdefault(key, count)
         arg_words.setdefault(key, words)
+    # assembly that never reads the stack takes nothing there, whatever its declaration says
+    for (module, address), (_name, size, _sha) in native_abi.STACKLESS_ASM.items():
+        if arg_words.get((module, address), -1) < 0 and 0 <= params.get((module, address), -1) <= 4:
+            start = address - mods[module]["base"]
+            if native_abi.stackless_asm(module, address, C.module_image(module)[start:start + size]):
+                arg_words[(module, address)] = params[(module, address)]
     wanted: set[str] | None = None
     if policy not in ("all", "leaf", "none"):
         wanted = {w.split()[0] for w in pathlib.Path(policy).read_text().splitlines()
