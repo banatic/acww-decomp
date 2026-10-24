@@ -34,6 +34,128 @@ needs: unreachable
 match: ov099/* ov103/*
 
 area: Unreachable for one player
+group: the item and letter picks' hold and swap code
+scene: none: the pockets pick (ov101) and the letter pick (ov108) keep the mailbox's code to hold, drag, put down and swap an item or letter
+reach: no function of the overlays sets the sub states of that code (ov101/pockets_pick.h: 5, 7, 0x0c, 0x0d, 0x16; ov108/letter_pick.h: 4, 7, 0x0c-0x12, 0x16): a choice offers no action that picks one up and a touch only opens the choice; scenes letter-pick and sick-pick play every other path
+needs: unreachable
+match: ov101/pockets_pick:PocketsPick_StartSwap ov101/pockets_pick:PocketsPick_StartPutDown
+  ov101/pockets_pick:PocketsPick_SwapHeldWith ov101/pockets_pick:PocketsPick_PutHeldAt ov101/pockets_pick:PocketsPick_PickUp*
+  ov101/pockets_pick:PocketsPick_FollowGlide ov101/pockets_pick:PocketsPick_FollowTouch ov101/pockets_pick:PocketsPick_*Marks
+  ov101/pockets_pick:PocketsPick_MarkPlace ov101/pockets_pick:PocketsPick_PlaceItem* ov101/pockets_pick:PocketsPick_SetSlotItem
+  ov101/pockets_pick:PocketsPick_DropHeldAt ov101/pockets_pick:PocketsPick_GlideHeldTo ov101/pockets_pick:PocketsPick_WaitError
+  ov101/pockets_pick:PocketsPick_StepHeldGlide ov101/pockets_pick:PocketsPick_FinishSwap ov101/pockets_pick:PocketsPick_Swap
+  ov101/pockets_pick:PocketsPick_PutDownWithCursor ov101/pockets_pick:PocketsPick_FinishPickUp
+  ov101/pockets_pick:PocketsPick_WaitCursorAnim ov101/pockets_pick:PocketsPick_MoveHeldByKeys ov101/pockets_pick:PocketsPick_DragHeld
+  ov108/letter_pick:LetterPick_BeginSwap ov108/letter_pick:LetterPick_BeginPutDown ov108/letter_pick:LetterPick_SwapHeldWith
+  ov108/letter_pick:LetterPick_PutHeldAt ov108/letter_pick:LetterPick_PickUp* ov108/letter_pick:LetterPick_FollowGlide
+  ov108/letter_pick:LetterPick_FollowTouch ov108/letter_pick:LetterPick_*Highlight* ov108/letter_pick:LetterPick_PutLetterAt
+  ov108/letter_pick:LetterPick_PutHeldLetterAt ov108/letter_pick:LetterPick_GlideHeldTo ov108/letter_pick:LetterPick_WaitError
+  ov108/letter_pick:LetterPick_StepHeldGlide ov108/letter_pick:LetterPick_FinishSwap ov108/letter_pick:LetterPick_Swap
+  ov108/letter_pick:LetterPick_PutDown ov108/letter_pick:LetterPick_FinishPickUp ov108/letter_pick:LetterPick_FinishPlacePress
+  ov108/letter_pick:LetterPick_MoveHeldByKeys ov108/letter_pick:LetterPick_DragHeld
+
+area: Unreachable for one player
+group: the keyboard entry's question
+scene: none: the question the name and text keyboard (ov126) can ask before it takes the input, yes or no
+reach: nothing sets KEYBOARD_ENTRY_STATE_ASK (ov126/keyboard_entry.h); the question's states and KEYBOARD_ENTRY_STATE_BACK, set only from its "no", follow from it alone
+needs: unreachable
+match: ov126/keyboard_entry_scene:KeyboardEntry_StartAsk ov126/keyboard_entry_scene:KeyboardEntry_Ask*
+  ov126/keyboard_entry_scene:KeyboardEntry_StartBack ov126/keyboard_entry_scene:KeyboardEntry_Back*
+  ov126/keyboard_entry_states:KeyboardEntry_BeginAsk* ov126/keyboard_entry_states:KeyboardEntry_Ask*
+
+area: Unreachable for one player
+group: the boxes' choice and error message
+scene: none: the choice and the error message the pockets box (ov100, Nook's and the Able Sisters' sell window) and the public box (ov110, the lost and found and the recycle box) keep from the mailbox's code
+reach: neither overlay calls PagedChoice_ShowEntries, _RequestOpen, _ShowPage or _Draw, nor opens its ErrorMessage, so their choice is never shown (its waits and keys need PagedChoice_IsShown) and no error waits; the items move by holding and Y alone (box-keys, sell-keys)
+needs: unreachable
+match: ov110/public_box:PublicBox_CancelChoice ov110/public_box:PublicBox_RunAction ov110/public_box:PublicBox_PointAt*Row
+  ov110/public_box:PublicBox_GlideToRow ov110/public_box:PublicBox_PlaceCursorSprite ov110/public_box_states:PublicBox_WaitError
+  ov110/public_box_states:PublicBox_RunActionWhenIdle ov110/public_box_states:PublicBox_CloseChoice
+  ov110/public_box_states:PublicBox_WaitChoiceShown ov110/public_box_states:PublicBox_PickChoiceRow
+  ov110/public_box_states:PublicBox_ChooseByKeys ov110/public_box_states:PublicBox_WatchChoiceTouch
+  ov100/pockets_box:PocketsBox_CancelChoice ov100/pockets_box:PocketsBox_RunAction ov100/pockets_box:PocketsBox_PointAt*Row
+  ov100/pockets_box:PocketsBox_GlideToRow ov100/pockets_box:PocketsBox_PlaceCursorSprite ov100/pockets_box_scene:PocketsBox_WaitError
+  ov100/pockets_box_scene:PocketsBox_WaitChoiceClosed ov100/pockets_box_scene:PocketsBox_CloseChoice
+  ov100/pockets_box_scene:PocketsBox_WaitChoiceShown ov100/pockets_box_scene:PocketsBox_PickChoiceRow
+  ov100/pockets_box_scene:PocketsBox_ChoiceKeys ov100/pockets_box_scene:PocketsBox_ChoiceTouch
+
+area: Unreachable for one player
+group: the menu screens' error messages no code opens
+scene: none: the wait for the error message of the storage (ov102), the letter send and storage (ov104, ov105), the chat (ov111), the board's writing (ov112), the letter writing (ov122) and the keyboard entry (ov126)
+reach: each overlay constructs an ErrorMessage (ov002/error_message.h) but never opens it (no ErrorMessage_Open or _StartTalk) and no function sets its error sub state, so only the wait that would follow it is left
+needs: unreachable
+match: ov102/storage_scene:StorageScene_WaitError ov104/letter_send:LetterSend_WaitError
+  ov105/letter_storage:LetterStorage_WaitError ov111/chat_scene:ChatScene_UpdateError
+  ov112/bbs_write_input:BbsWrite_RunError ov122/letter_write_scene:LetterWrite_RunError
+  ov126/keyboard_entry_states:KeyboardEntry_Error
+
+area: Unreachable for one player
+group: the menu scenes' phases 3 and 4
+scene: none: the functions of vtable slots 0x54 and 0x58 of each menu scene of overlays 90-146 (ov002/menu_scene.h), each one that does nothing
+reach: MenuScene_Update runs the slot of the scene's phase, and the game sets phases 0, 1, 2 and 5 only: every MenuScene_SetPhase call names one of those, and nothing else writes the phase (ov002/menu_scene.c)
+needs: unreachable
+match: ov090/menu_tabs:MenuTabs_Phase4 ov090/menu_tabs:MenuTabs_Phase3 ov091/letter_reader:LetterReader_Phase4
+  ov091/letter_reader:LetterReader_Phase3 ov092/menu_dispatch:MenuDispatch_Phase4
+  ov092/menu_dispatch:MenuDispatch_Phase3 ov096/pockets_screen:PocketsScreen_Phase1Idle
+  ov096/pockets_screen:PocketsScreen_Phase0Idle ov099/pockets_view:PocketsView_Phase1Idle
+  ov099/pockets_view:PocketsView_Phase0Idle ov100/pockets_box_scene:PocketsBox_Phase4Idle
+  ov100/pockets_box_scene:PocketsBox_Phase3Idle ov101/pockets_pick:PocketsPick_Phase4Idle
+  ov101/pockets_pick:PocketsPick_Phase3Idle ov102/storage_scene:StorageScene_Phase4Idle
+  ov102/storage_scene:StorageScene_Phase3Idle ov103/carried_letters:CarriedLetters_Phase4Idle
+  ov103/carried_letters:CarriedLetters_Phase3Idle ov104/letter_send:LetterSend_Phase1Idle
+  ov104/letter_send:LetterSend_Phase0Idle ov105/letter_storage:LetterStorage_Phase1Idle
+  ov105/letter_storage:LetterStorage_Phase0Idle ov106/mailbox_scene:MailboxScene_Phase1Idle
+  ov106/mailbox_scene:MailboxScene_Phase0Idle ov107/pockets_swap:PocketsSwap_Phase1Idle
+  ov107/pockets_swap:PocketsSwap_Phase0Idle ov108/letter_pick:LetterPick_Phase4Idle
+  ov108/letter_pick:LetterPick_Phase3Idle ov109/song_pockets:SongPockets_Phase4Idle
+  ov109/song_pockets:SongPockets_Phase3Idle ov110/public_box_states:PublicBox_Phase4Idle
+  ov110/public_box_states:PublicBox_Phase3Idle ov111/chat_scene:ChatScene_Phase4 ov111/chat_scene:ChatScene_Phase3
+  ov112/bbs_write_scene:BbsWrite_Phase4Idle ov112/bbs_write_scene:BbsWrite_Phase3Idle ov113/bbs_board:BbsBoard_Phase4
+  ov113/bbs_board:BbsBoard_Phase3 ov115/fish_catalog:FishCatalog_Phase4 ov115/fish_catalog:FishCatalog_Phase3
+  ov116/insect_catalog:InsectCatalog_Phase4 ov116/insect_catalog:InsectCatalog_Phase3
+  ov118/map_menu_scene:MapMenu_Phase4 ov118/map_menu_scene:MapMenu_Phase3 ov119/friend_roster:FriendRoster_Phase4Idle
+  ov119/friend_roster:FriendRoster_Phase3Idle ov120/town_map:TownMap_Phase4 ov120/town_map:TownMap_Phase3
+  ov121/my_designs:MyDesigns_Phase4 ov121/my_designs:MyDesigns_Phase3 ov122/letter_write_scene:LetterWrite_Phase1Idle
+  ov122/letter_write_scene:LetterWrite_Phase0Idle ov123/design_editor:DesignEditor_Phase4Idle
+  ov123/design_editor:DesignEditor_Phase3Idle ov125/design_picker:DesignPicker_Phase4Idle
+  ov125/design_picker:DesignPicker_Phase3Idle ov126/keyboard_entry_scene:KeyboardEntry_Slot58
+  ov126/keyboard_entry_scene:KeyboardEntry_Slot54 ov128/star_view:StarView_Phase4 ov128/star_view:StarView_Phase3
+  ov129/star_designer:StarDesigner_Phase4 ov129/star_designer:StarDesigner_Phase3 ov131/bank_amount:BankAmount_Slot58
+  ov131/bank_amount:BankAmount_Slot54 ov132/bank_menu:BankMenu_Phase4Idle ov132/bank_menu:BankMenu_Phase3Idle
+  ov133/friend_code_entry_scene:FriendCodeEntry_Phase4Idle ov133/friend_code_entry_scene:FriendCodeEntry_Phase3Idle
+  ov135/phone_clock:PhoneClock_Phase4Idle ov135/phone_clock:PhoneClock_Phase3Idle
+  ov136/time_screen:TimeScreen_Phase4Idle ov136/time_screen:TimeScreen_Phase3Idle
+  ov137/birthday_screen:BirthdayScreen_Phase4Idle ov137/birthday_screen:BirthdayScreen_Phase3Idle
+  ov138/date_screen:DateScreen_Phase4Idle ov138/date_screen:DateScreen_Phase3Idle
+  ov140/host_picker:HostPicker_Phase4Idle ov140/host_picker:HostPicker_Phase3Idle
+  ov141/town_list_states:TownList_Phase4Idle ov141/town_list_states:TownList_Phase3Idle
+  ov142/order_catalog_scene:OrderCatalog_Phase4Idle ov142/order_catalog_scene:OrderCatalog_Phase3Idle
+  ov143/tune_editor_states:TuneEditor_Phase4Idle ov143/tune_editor_states:TuneEditor_Phase3Idle
+  ov144/music_list_scene:MusicList_Phase4Idle ov144/music_list_scene:MusicList_Phase3Idle
+  ov145/donation_list_states:DonationList_Phase4Idle ov145/donation_list_states:DonationList_Phase3Idle
+  ov146/wfc_host_list:WfcHostList_Phase4Idle ov146/wfc_host_list:WfcHostList_Phase3Idle
+
+area: Unreachable for one player
+group: the menu scenes' destructors of vtable slot 16
+scene: none: the destructor without the free (vtable slot 0x40) of the menu scenes of overlays 90-146 that say so
+reach: a process is deleted through vtable slot 17 (Process_DestructFree's, autoload_2/process.c), whose scenes' versions destroy the members and the base directly; slot 16 is empty in the process base, nothing calls it, and no slot-16 destructor of any class runs in the scenes
+needs: unreachable
+match: ov090/menu_tabs:MenuTabs_Destroy ov091/letter_reader:LetterReader_Destroy
+  ov092/menu_dispatch:MenuDispatch_Destroy ov101/pockets_pick:PocketsPick_Destroy
+  ov102/storage_scene:StorageScene_Destroy ov103/carried_letters:CarriedLetters_Destroy
+  ov107/pockets_swap:PocketsSwap_Destroy ov108/letter_pick:LetterPick_Destroy ov109/song_pockets:SongPockets_Destroy
+  ov110/public_box:PublicBox_Destroy ov111/chat_scene:ChatScene_Destroy ov112/bbs_write_text:BbsWrite_Destroy
+  ov113/bbs_board:BbsBoard_Destroy ov115/fish_catalog:FishCatalog_Destroy ov116/insect_catalog:InsectCatalog_Destroy
+  ov119/friend_roster:FriendRoster_Destroy ov120/town_map:TownMap_Destroy ov123/design_editor:DesignEditor_Destroy
+  ov125/design_picker:DesignPicker_Destroy ov128/star_view:StarView_Destroy ov129/star_designer:StarDesigner_Destroy
+  ov132/bank_menu:BankMenu_Destroy ov133/friend_code_entry:FriendCodeEntry_Destroy
+  ov135/phone_clock:PhoneClock_Destroy ov136/time_screen:TimeScreen_Destroy
+  ov137/birthday_screen:BirthdayScreen_Destroy ov138/date_screen:DateScreen_Destroy
+  ov140/host_picker:HostPicker_Destroy ov141/town_list:TownList_Destroy ov142/order_catalog_scene:OrderCatalog_Destroy
+  ov143/tune_editor:TuneEditor_Destroy ov144/music_list_scene:MusicList_Destroy
+  ov146/wfc_host_list:WfcHostList_Destroy
+
+area: Unreachable for one player
 group: the town map's list by the keys and the pen
 scene: none: Pelly's town map (ov120, mode 0x2f) always opens with the cursor on the map, where A, B, X or a touch closes it
 reach: TOWN_MAP_FLAG_ON_MAP is never cleared (ov120/town_map.h, QUIRK), so sub states 0-8 (the list's keys, touches, scroll knob) and what only they call never run
@@ -119,9 +241,9 @@ match: ov004/field_actor_room_states* ov004/field_actor_place_states ov004/field
 
 area: The house and its furniture (the seed's day)
 group: the clock and calendar screens
-scene: phone-settings with every answer and both inputs: the time (ov136), the date (ov138), the birthday (ov137), the clock (ov135) by keys and by the pen
-reach: the phone in the continue menu's room; a villager asking the time opens ov136
-needs: seed
+scene: what clock-pen, birthday-ask and visit-time leave: the clock dragged past a bound (ov135 in the date screen's mode 0x33), the visit's times in a villager's sleeping hours and before 6:00 (lines 0x021c304c and 0x021c3034 of VillagerTalkSteps_SayByKeptTime)
+reach: the visit's time screen (ov136) is bounded by now and twelve hours later and the villagers' night windows start at 1:00-4:30 (data_020cd4ac), so those two answers need the offer late in the evening (a boot at night on a day the deal gives a villager type 21)
+needs: date
 match: ov134/* ov135/* ov136/* ov137/* ov138/* main/global_021cfc98
 
 # ================================================================== the seed's day: menus

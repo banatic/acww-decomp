@@ -379,6 +379,15 @@ SAVES["sky-visitor"] = [(HELD, "<H", 0x137A), (MONEY, "<I", 30000), (SCHEDULE_TO
 SAVES["sky-ship"] = [(HELD, "<H", 0x137A), (MONEY, "<I", 30000), (SCHEDULE_TODAY, "<B", 0x44),
                      (SCHEDULE_TODAY + 2, "<B", 0), (0x17218 + 0x12, "<B", 0x44)]
 
+# the paper 0x1020 (the one Tom Nook's job gives for a letter, "job-0f") in pocket 0: written from
+# the pockets, a letter with a header whose addressee the letter screen's choice picks
+SAVES["paper"] = [(POCKETS, "<H", 0x1020)]
+
+# as "songs" with every song kept in the house: the 70 bits of the house record's songs (at 0x1594
+# of the record, main/house_record.h; HouseRecord_SetSongBit sets one for each song item stored),
+# so the stereo's music list is long enough for its scroll bar
+SAVES["songs-all"] = SAVES["songs"] + raw(0xF52C + 0x1594, bytes([0xFF] * 8 + [0x3F]))
+
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
 SCENES: dict[str, dict] = {}
@@ -849,6 +858,49 @@ scene("villager-three", "bare-net", 6920, [2600, 3600, 4300, 5500, 6200, 6919], 
 scene("villager-furniture", "box-items", 8030, [2600, 4100, 5500, 6500, 7300, 7800, 8029], frames(5500, 8030, 50),
       "a villager tells of the furniture it likes, then asks for a piece and is offered one from the pockets",
       rtc="2026-09-15 11:30:08")
+scene("clock-pen", "seed", 3950, [1400, 2420, 2700, 3100, 3500, 3949], frames(2400, 3950, 50),
+      "on the telephone's clock screen, the hands dragged by the pen, the lists by the pen (thumb, bar, "
+      "a tap outside) and the bar by the keys, then cancelled by the pen")
+scene("letter-pick", "wallet", 20700, [2600, 9000, 15450, 16800, 17200, 18660, 19610, 20699],
+      frames(16800, 20700, 100),
+      "on letter-errand's day, the villager's letter pick by the pen and the keys: its choice opened and "
+      "cancelled each way, the pick closed twice without the letter, then the letter given",
+      rtc="2026-09-14 11:00:00")
+scene("sick-pick", "sick", 9000, [2600, 5900, 6700, 7160, 7950, 8999], frames(6700, 9000, 50),
+      "the sick villager's pockets pick by the keys and the pen: the choice moved over and cancelled, "
+      "the pick closed without the medicine, then the medicine given by the pen",
+      rtc="2026-09-24 14:00:00")
+scene("friend-add", "seed", 6250, [2600, 3800, 4250, 4700, 5100, 5830, 6249], frames(3700, 6250, 50),
+      "in the friend roster, register a friend by a valid friend code, name it, change its code, then "
+      "its choice by the keys and delete it")
+scene("letter-address", "paper", 6150, [2600, 3420, 3830, 4250, 5030, 5750, 6149], frames(2900, 6150, 50),
+      "write a letter from a paper in the pockets: the addressee picked, changed by the pen and the keys, "
+      "a key held, the footer touched, the letter decided")
+scene("letters-move", "mail-full", 4420, [2600, 3050, 3650, 4040, 4419], frames(2900, 4420, 25),
+      "in the pockets, carried letters dragged and swapped by the pen and the keys, a letter's choice "
+      "cancelled each way, the tabs by the keys")
+scene("erase-player", "seed", 6100, [1300, 2400, 3270, 4400, 5560, 6099], frames(3200, 6100, 100),
+      "from the continue menu, erase the town's only resident: the warnings, the erasing and the save, "
+      "then the title of a town without a player and back")
+scene("tune-keys", "seed", 5540, [2600, 4790, 4880, 5040, 5539], frames(4790, 5540, 25),
+      "in Pelly's town tune editor by the keys: a step's note moved with A held, the tune kept by Decide")
+scene("music-all", "songs-all", 4780, [2600, 3912, 4020, 4220, 4510, 4779], frames(3900, 4780, 25),
+      "at the stereo with every song kept: the music list's scroll bar by the pen and the keys, a song played")
+scene("friend-code-keys", "seed", 5110, [2600, 3800, 4200, 4600, 4860, 5109], frames(3800, 5110, 25),
+      "the friend code keypad by the keys and the pen: keys held, digits marked and deleted, cancelled")
+scene("editor-tools", "rod", 9000, [2600, 6100, 6450, 7000, 8450, 8999], frames(6100, 9000, 50),
+      "in Mabel's design editor, the stamps, the pattern, the clear and the fill by the pen; the design paid for")
+scene("picker-keys", "rod", 7100, [2600, 5880, 6160, 6550, 7099], frames(5800, 7100, 50),
+      "Mabel's design picker by the keys: over the designs, a design's choice moved over and cancelled each "
+      "way, then the editor left at once")
+scene("mailbox-throw", "mail-items", 4300, [2600, 3250, 3700, 4000, 4299], frames(3200, 4300, 25),
+      "at the mailbox by the keys: a letter the player wrote thrown away, two carried letters swapped")
+scene("chat-english", "seed", 5300, [2600, 3750, 4100, 4470, 5030, 5299], frames(3700, 5300, 25),
+      "on the chat keyboard, the English and symbol pages by the pen and the keys, the line marked by a drag "
+      "and sent")
+scene("post-throw", "mail-items", 6420, [2600, 5000, 5340, 5900, 6419], frames(5000, 6420, 50),
+      "on the posting page by the keys: a letter's choice cancelled each way, a letter the player wrote "
+      "thrown away, letters moved")
 
 
 # ------------------------------------------------------------------------------ saves
