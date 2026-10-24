@@ -533,3 +533,47 @@ What reading the Clean code found about the groups above; counts are of function
   which nothing sets (QUIRK in ov128/star_view.h); its d-pad nudges and holds run.
 - The music list's scroll bar needs more than nine songs: save songs-all (every song bit of the
   house record) and scene music-all.
+
+### Catches, the store's first level, the gate's visits, Sable and impressions (2026-10-24, scenes/field)
+- A villager's challenge to catch a fish or an insect (its villager object of type 1 or 0,
+  main/villager_object.h; villager 3 is dealt type 1 from its mode, VillagerKind_Deal) names the
+  item at 0x2c of the object (villager-chat: the crayfish 0x12f2). With it in the pockets the
+  next talk's first choice says so and the pockets open on fish
+  (VillagerTalkOffer_ChoicesByPredicate, VillagerTalkObject_SayOrAskCatch): save
+  museum-crayfish, scene villager-catch (the gift for it, VillagerTalkObject_GiveReward).
+- Sound class 31 is Nook's store at its first level (scene 0x1b): save store-1 (as store-2 with
+  level 1 and the building 0x500e), scene store-1, which also walks out (its destructor). Class
+  46 is the museum's insect room (scene 0x28) outside 8:00-16:59: museum-insects-night (the
+  museum-insects recording at 20:30, with the night insects' motions and the lone sign).
+- The second gatekeeper's visit question: Wi-Fi is refused without a registered friend
+  (GatekeeperTalk_HasFriends); DS wireless starts the search for a town, and in the runtime the
+  wireless library's set-up fails at once into GameHalt and the debug screen (about 50 frames
+  after the search's line), so gate-visit stops before it. The Wi-Fi path with a friend would
+  need the friend roster in a save and fails the same way without a network.
+- Sable answers A only from the east of her machine (tile 5.2, 9.6, facing west; a grid of
+  standing points found no other). With 7 days of talks (byte 8 of the record's object at 0x2416)
+  she turns to the player and Mabel joins in: save sable-7, scene sable-talk, which also leaves
+  the shop (no earlier scene left it: both sisters' destructors). At 14 days the fifteenth talk
+  added nothing more.
+- A villager's impression of the player is chosen at the last message of each talk
+  (VillagerTalk_OnEvent14, VillagerImpression_Choose): the first rule of data_020cd5c4 whose test
+  passes. In the seed's town nearly every tile has weeds (codes 0x21-0x24: 1,033 of the inner
+  acres' tiles), so rule 1 (three weeds about the player) ends it, and at 11:30 the morning's
+  rule does; save weeded (the weeds of the inner acres 9 and 10 pulled, 5,000 bells) at 14:30:
+  every rule up to autumn's is tried, scene villager-impression. Summer's and the last rule
+  (Always) need a spring date, the head-kind rules other looks.
+- VillagerTalkTopics_SayOtherPlayer picks from the villager's memories of players other than the
+  current one, which the seed's villagers do not have (one memory each). A derived save with a
+  memory of another town's player (villagers 0-3, memory 1) played with villager-talks.txt drew
+  the topic: PickWithValues, PickRandom and the town tune's sound command (SceneCommand_RunSound,
+  TownTune_Play) ran; not added yet (the save would need a scene of its own; the other pickers want
+  a held letter, a text at 0x2a, an item or other fondness).
+- Tried and not added: the net swung at a villager (behaviour 19) needs the swing's object met
+  (FieldActor_CheckOther: has_other at 0x200 of the actor, kind 2 or 3) to be the villager; from
+  touching it on every side and with every push, A neither talked nor reached
+  OutdoorVillagerObject_OnItemSwung. Talks on the insurance seller's day (2026-09-12, town event
+  1, the talk lines of table 3) add only VillagerTalkReplies_LineFirstOfDay. The planting errand
+  is the part-time job's type 0xc (the four flower bags and three saplings of nook-job); planting
+  is pockets-town's, so a scene of it adds little. A villager moves away only from a town of 7
+  villagers or more (main/villager_move.h; the seed has 5); one moving in already runs on the
+  boots on other days (VillagerResidents_MoveInNew).

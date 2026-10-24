@@ -388,6 +388,29 @@ SAVES["paper"] = [(POCKETS, "<H", 0x1020)]
 # so the stereo's music list is long enough for its scroll bar
 SAVES["songs-all"] = SAVES["songs"] + raw(0xF52C + 0x1594, bytes([0xFF] * 8 + [0x3F]))
 
+# as "museum" with the crayfish (0x12f2) in pocket 4: the fish villager 3 challenges the player
+# to catch in villager-chat (the villager object's item, main/villager_object.h)
+SAVES["museum-crayfish"] = SAVES["museum"] + [(POCKETS + 8, "<H", 0x12F2)]
+
+# Nook's store at its first level (as "store-2", level 1 and the building 0x500e): scene 0x1b
+SAVES["store-1"] = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STORE + 0x5A, "<H", 1 << 9),
+                    (NOOK_STORE + 0x51, "<B", 1), (0xE3B4, "<H", 0x500E)]
+
+# the rod held and 7 days the player has talked with Sable (byte 8 of the record's object at
+# 0x2416, main/player_field_2416.h; ov004/tailor_sister.h): from 6 she turns to the player
+SAVES["sable-7"] = [(HELD, "<H", 0x1374), (0x14 + 0x2416 + 8, "<B", 7)]
+
+# 5,000 bells in the wallet (between the amounts of the impression tests, main/villager_impression.c)
+# and the weeds (item codes 0x21-0x24) of the inner acres 9 and 10 (tiles 32-63, 48-63: the house's
+# acre and the one east of it) pulled: a talk ending there is past the impression test of weeds
+# about the player (VillagerImpression_NearCodes21To24). The bits (lowest first) mark the acre's
+# tiles that hold a weed in the seed (main/town_layout.h, the items at 0x24 of the layout at 0xd304).
+TOWN_ITEMS = 0xD304 + 0x24
+WEEDS_PULLED = {9: 0x022E06189E094015A002200BA00BA01100002009800B88889040200082402956,
+                10: 0x8800A00688010801C0010001000100190040000B01644D430066CD522B1BAE42}
+SAVES["weeded"] = [(MONEY, "<I", 5000)] + [(TOWN_ITEMS + 2 * (0x100 * acre + i), "<H", 0xFFF1)
+                                           for acre, bits in WEEDS_PULLED.items() for i in range(0x100) if bits >> i & 1]
+
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
 SCENES: dict[str, dict] = {}
@@ -901,6 +924,22 @@ scene("chat-english", "seed", 5300, [2600, 3750, 4100, 4470, 5030, 5299], frames
 scene("post-throw", "mail-items", 6420, [2600, 5000, 5340, 5900, 6419], frames(5000, 6420, 50),
       "on the posting page by the keys: a letter's choice cancelled each way, a letter the player wrote "
       "thrown away, letters moved")
+scene("villager-catch", "museum-crayfish", 10960, [2600, 5300, 7300, 7990, 8100, 9300, 10959], frames(7900, 10960, 50),
+      "a villager's challenge to catch a crayfish taken, then the crayfish shown from the pockets: it is given "
+      "and rewarded")
+scene("store-1", "store-1", 6448, [2600, 3950, 4600, 5400, 6300, 6447], frames(3950, 6448, 50),
+      "walk into Nook's store at its first level (its own music), open the sell window, close it and walk out")
+scene("museum-insects-night", "museum-full", 9294, [2600, 4500, 6300, 7000, 7800, 8600, 9293], frames(6200, 9294, 100),
+      "museum-insects at night: the insect room's night music and the night insects", "museum-insects",
+      "2026-09-11 20:30:00")
+scene("gate-visit", "seed", 9592, [2600, 5900, 6900, 7900, 8600, 9300, 9591], frames(6500, 9592, 50),
+      "ask the second gatekeeper about a visit: Wi-Fi refused without friends, then the search for a town by DS "
+      "wireless started")
+scene("sable-talk", "sable-7", 8441, [2600, 4700, 5300, 6300, 7500, 8100, 8440], frames(5200, 8441, 50),
+      "talk to Sable at her sewing machine: she turns to the player and Mabel joins in; then leave the shop")
+scene("villager-impression", "weeded", 4299, [2600, 3000, 3600, 4000, 4298], frames(2900, 4299, 50),
+      "an afternoon talk with a villager away from weeds: its impression of the player is tried rule by rule "
+      "up to the season's", rtc="2026-09-11 14:30:00")
 
 
 # ------------------------------------------------------------------------------ saves
