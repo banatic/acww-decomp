@@ -38,18 +38,18 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 260 scene lists: 25,251 Clean game functions, run 19,898, function check only 1,312, read only 4,041; the groups below hold 5,353 (function check only + read only).
+From 262 scene lists: 25,251 Clean game functions, run 19,911, function check only 1,308, read only 4,032; the groups below hold 5,340 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 1,422 |
+| seed | 1,410 |
 | date | 383 |
-| unknown | 848 |
+| unknown | 847 |
 | unreachable | 2,700 |
-| total | 5,353 |
+| total | 5,340 |
 
 
-(The lists are those of the 260 scenes of tools/scenes.py. The two recordings, title-start and
+(The lists are those of the 262 scenes of tools/scenes.py. The two recordings, title-start and
 new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
 
 ## Next scenes for one player, by functions gained
@@ -147,19 +147,19 @@ unknown groups say what to find first.
 | outdoor actions of the field actor | 136 (29 / 107) | ov003/field_actor 68, ov003/tile_event 14, main/field_actor_states 11, main/touch_pick 11, main/field_actor_support 6, main/tile_effects 6, main/tile_requests 6, main/field_actor 3, 6 more files (11) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
 | effects by kind | 59 (1 / 58) | main/effect_kinds 55, main/effect_system 4 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers | unknown |
 
-## Villagers (the seed's day) (533)
+## Villagers (the seed's day) (523)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| villager talks: topics, favours and trades | 225 (21 / 204) | main/villager_talk_object 37, main/villager_talk_lines 29, main/villager_talk_steps 22, main/villager_talk_replies 21, main/villager_talk_part 20, main/villager_talk 17, main/villager_object 14, main/villager_talk_subjects 11, 16 more files (54) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night | seed |
+| villager talks: topics, favours and trades | 223 (21 / 202) | main/villager_talk_object 37, main/villager_talk_lines 29, main/villager_talk_replies 21, main/villager_talk_steps 21, main/villager_talk_part 20, main/villager_talk 16, main/villager_object 14, main/villager_talk_subjects 11, 16 more files (54) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night | seed |
 | the talk engine: tags, pages, windows, sliders | 173 (46 / 127) | main/talk_tags 25, main/talk_receiver 21, main/a_mes_obj 10, main/talk_page 10, main/talk_span 10, main/message_cursor 8, main/message_decoder 6, main/message_texts 6, 30 more files (77) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
-| villagers out in the town | 135 (31 / 104) | ov068/outdoor_villager_acts 20, main/villager_memories 14, ov068/outdoor_villager_moves 12, main/villager_house_items 7, main/villager_memory_entry 7, main/villager_memory_text 6, main/villager_events 5, main/villager_residents 5, 26 more files (59) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
+| villagers out in the town | 127 (28 / 99) | main/villager_memories 14, ov068/outdoor_villager_acts 13, ov068/outdoor_villager_moves 12, main/villager_house_items 7, main/villager_memory_entry 7, main/villager_memory_text 6, main/villager_events 5, main/villager_residents 5, 25 more files (58) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 
-## New player and title (the seed's save) (93)
+## New player and title (the seed's save) (91)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| a second player and the title screen | 87 (33 / 54) | ov093/staff_roll 21, main/player_field_2416 10, main/player_record 9, ov147/title_scene 9, main/player_options 6, ov051/taxi_driver_talk 5, ov068/sequence4 4, main/town_name 3, 12 more files (20) | from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices, the staff roll after the music show | the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day | seed |
+| a second player and the title screen | 85 (32 / 53) | ov093/staff_roll 21, main/player_field_2416 10, main/player_record 9, ov147/title_scene 9, main/player_options 6, ov068/sequence4 4, main/town_name 3, ov004/music_show_overlay 3, 12 more files (20) | from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices, the staff roll after the music show | the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day | seed |
 | Mr. Resetti | 6 (4 / 2) | ov077/mole 5, ov077/mole_talk 1 | the mole's lectures after a quit without saving (scenes resetti, resetti-2, resetti-3, resetti-4: the first, third, fourth and fifth) | saves resetti and resetti-2..5 (record 0's flag 2 set, the lecture count at 0x2423 of the record); the count less one after the load's raise picks the lecture, and count 5 draws one of the earlier ones again | seed |
 
 ## Other dates, times and visitors (for the boot on another day) (395)
@@ -183,11 +183,11 @@ unknown groups say what to find first.
 | the night pelican | 4 (1 / 3) | ov075/town_pelican 2, ov075/town_pelican_talk 2 | the mail pelican met on the town's paths at night | the nights the calendar has him | date |
 | Gracie | 2 (1 / 1) | ov070/giraffe 1, ov070/giraffe_talk 1 | the giraffe's fashion check in the town | a weekday the schedule gives her | date |
 
-## Not attributed to one scene (550)
+## Not attributed to one scene (549)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| other paths of shared code the scenes already run | 538 (152 / 386) | main/music_queue 23, main/scene_motion 20, autoload_2/sound_object_kinds 19, main/activity_jobs 18, main/music_264 17, autoload_2/heap 15, main/scene_command 12, main/layered_model 10, 140 more files (404) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
+| other paths of shared code the scenes already run | 537 (152 / 385) | main/music_queue 23, main/scene_motion 20, autoload_2/sound_object_kinds 19, main/activity_jobs 18, main/music_264 17, autoload_2/heap 15, main/scene_command 12, main/layered_model 10, 139 more files (403) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
 | overlay static initialisers | 12 (5 / 7) | ov007/ov007_static_init 1, ov008/ov008_static_init 1, ov010/ov010_static_init 1, ov012/ov012_static_init 1, ov016/ov016_static_init 1, ov025/ov025_static_init 1, ov030/ov030_static_init 1, ov035/ov035_static_init 1, 4 more files (4) | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
 ## Findings on the triggers (2026-10-22)
@@ -1005,3 +1005,22 @@ What reading the Clean code found about the groups above; counts are of function
   no reference in code but its requesters' (its words in data are the state table's); a seed's
   references are those its reason names (a tag's handler is called by its group's dispatcher by
   kind, the lid and battery requests by FieldActor_CheckBatteryAndLid), which the script prints.
+- The taxi driver guesses the new resident's kind from the name's answer: new-player's ride with
+  the second answer about the rain (DOWN at 1910) and "cute?" for the name (3037) makes him
+  guess a girl (line 0x0b, TaxiDriverTalk_OnAnswer0b), and the second answer there (3397) "who
+  says I am a girl" (line 0x0d, _End0d): new-player-girl. The second answers to the later
+  questions (moving, money) add nothing; lines 0x2b-0x2e and 0x30 were not reached.
+- A villager struck by the bug net (0x1376 or 0x1377: OutdoorVillagerObject_OnItemSwung, when it
+  remembers the player) reacts (behaviour 19), and the third strike while it still minds makes it
+  turn and complain (behaviour 20): villager-net. The net's reach is beyond the talk's: A beside
+  the villager talks, so the swings are made from 1.3 to 2.3 tiles along one axis, following it
+  as it walks (w15/chase2.py).
+- Tried and not added: kk-show played 9,000 frames longer: K.K. plays on and the staff roll
+  (ov093, 21 functions) never scrolls past its start (StaffRoll_Update runs, _Advance does not):
+  it follows the music's progress, which the ARM7 at its protocol does not give. A proof for the
+  deleting destructors (vtable slot 1, the "Delete" and "DestructDelete" functions only a vtable
+  names: 294 outside the unreachable groups) is the next one worth making: the module images call
+  through offset 4 at 52 places, most of them library code, the global destructor chain or
+  objects whose slot 1 is a method (collision visitors and triangles, layer tasks, the display
+  hooks), and SceneSound_Delete, SoundSource_Release and SoundObject_Release delete through it;
+  each vtable's class must then be told apart from those, by its destructors' calls.

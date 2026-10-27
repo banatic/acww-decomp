@@ -1336,6 +1336,10 @@ scene("house-take", "house-furni", 3726, [2600, 3500, 3600, 3725], frames(3500, 
       "in the house, take the candle off the table")
 scene("villager-chest", "villager-chests", 4906, [2600, 3700, 4160, 4500, 4905], frames(4100, 4906, 25),
       "in a villager's house full of chests, touch one: it talks instead of opening")
+scene("new-player-girl", "seed", 4400, [1300, 2300, 3100, 3500, 4399], frames(3000, 4400, 50),
+      "new-player's taxi ride with the second answers: the driver guesses a girl, told he is wrong")
+scene("villager-net", "net", 8531, [2600, 4100, 6300, 7400, 8000, 8530], frames(6200, 8531, 50),
+      "follow a walking villager and strike it with the bug net: it reacts, then turns and complains")
 
 
 # ------------------------------------------------------------------------------ saves
