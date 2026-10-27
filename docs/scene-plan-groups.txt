@@ -397,6 +397,79 @@ match: main/ab_all_obj:AbAllObj_Destruct main/screen_icon:ScreenIcon_DestructFre
   main/field_label_window:FieldLabelWindow_Destroy main/sky:Sky_Destruct
   main/sky_objects:SkyObjects_Destruct main/sky_weather_day:SkyWeatherDay_Destruct
 
+area: Unreachable for one player
+group: code only unreachable code calls
+scene: none: functions whose every caller is in an unreachable group (the local wireless session and its activity jobs and packets, the Wi-Fi Connection, the gatekeepers' visits, the lost child's walk, the debug screen, the lid and the game's stop): the activity's fields, the jobs those sessions ask for, the field label's session messages, the caution window's planes, the town objects' session messages
+reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3)
+needs: unreachable
+match: autoload_2/heap:Heap_Report autoload_2/process:Process_PhaseName
+  autoload_2/sound_system:SoundSystem_MasterVolumeFull main/activity:Activity_AllPeersReported
+  main/activity:Activity_StepRequestMode1 main/activity:Activity_StepSendReport
+  main/activity:Activity_TalkGatekeeper main/activity:Activity_TalkSequence2
+  main/activity_fields:Activity_BlockSource main/activity_fields:Activity_Byte102
+  main/activity_fields:Activity_ClearAnswers main/activity_fields:Activity_Current
+  main/activity_fields:Activity_CurrentByteD6 main/activity_fields:Activity_CurrentPackBuffer
+  main/activity_fields:Activity_CurrentPackThread main/activity_fields:Activity_CurrentSlot100
+  main/activity_fields:Activity_DateTime main/activity_fields:Activity_SetBlockSource
+  main/activity_fields:Activity_SetByteD7 main/activity_fields:Activity_SetCurrentFlagF3
+  main/activity_fields:Activity_SetCurrentSlot100 main/activity_fields:Activity_SetFlag101
+  main/activity_fields:Activity_SetFlagD9 main/activity_fields:Activity_SetFlagDA
+  main/activity_fields:Activity_SetFlagE4 main/activity_fields:Activity_SetFlagE5
+  main/activity_fields:Activity_SetFlagE6 main/activity_fields:Activity_SetSlot107
+  main/activity_fields:Activity_SetSlotAck main/activity_fields:Activity_SetSlotAnswer
+  main/activity_fields:Activity_SetSlotE7 main/activity_fields:Activity_SetSlotEB
+  main/activity_fields:Activity_SetSlotFC main/activity_fields:Activity_SetSlotMask
+  main/activity_fields:Activity_SetSlotReported main/activity_fields:Activity_Slot107
+  main/activity_job:ActivityJob_Ask14 main/activity_job:ActivityJob_Ask15
+  main/activity_job:ActivityJob_Ask16 main/activity_job:ActivityJob_Ask17
+  main/activity_job:ActivityJob_Ask18 main/activity_job:ActivityJob_Ask19
+  main/activity_job:ActivityJob_Ask1B main/activity_talk:ActivityTalk_QueueMessage11
+  main/activity_vars:ActivityVars_ReceivedBlock main/activity_vars:ActivityVars_SetFlag3C08
+  main/activity_vars:ActivityVars_SetSlot3C1C main/block_021d27ac_parts:Block021d27acPart20_SetKind
+  main/block_021d27ac_parts:Block021d27acPart20_SetValue main/c_library:CLib_BytesDiffer
+  main/camera_control:CameraControl_KeepView main/camera_control:CameraControl_SetMode19
+  main/display_shadow:DisplayShadow_GetSubPlanes main/display_shadow:DisplayShadow_GetSubWindows
+  main/field_label:FieldLabel_ChooseMessage main/field_label:FieldLabel_RaiseEndFailure
+  main/field_label:FieldLabel_ShowMessage9 main/field_label:FieldLabel_ShowTableMessage
+  main/fish_disp:FishDisp_HandleMessage main/group_params:GroupParams_C88
+  main/group_params:GroupParams_ClearC80C88 main/library_overlay:LibraryOverlay_Require65
+  main/library_overlay:LibraryOverlay_Require67 main/main_loop:MainLoop_WaitVBlank
+  main/middle_spot:MiddleSpot_Clear main/music_264:Music264_Reset main/music_264:MusicClock_Reset
+  main/music_queue:Music_Reset main/music_volume:MusicVolume_Reset
+  main/scene_exit:SceneExit_SetChangeArg main/scene_heaps:SceneHeaps_DestroyNetwork
+  main/sound:SoundSys_MasterVolumeFull main/state_flags:StateFlags_AskMenuClose
+  main/state_flags:StateFlags_Test100 main/system_command:SystemCommand_BuildList
+  main/system_command:SystemCommand_RunList main/town_objects:TownObjects_OnLeftMessage
+  main/town_objects:TownObjects_OnModeMessage main/town_objects:TownObjects_OnVisitMessage
+  main/town_tile_put:TownTilePut_OnScene main/label_box:LabelBox_TextWidth
+  main/talk_object:TalkObject_LoadImpression main/talk_tags:TalkTags_NoteNothing
+  main/talk_tags:TalkTags_NotePart main/text_draw:TextDraw_ReleaseBoxes
+  main/text_string:TextString_BytesToWide main/villager_copy:VillagerCopy_Destruct
+  main/villager_impression:VillagerImpression_LoadText main/villager_state:VillagerState_Clear
+  main/villager_state:VillagerState_ClearTable main/player_record:PlayerRecord_MailMark
+  main/player_record:PlayerRecord_SetMailMark main/player_records:PlayerRecords_Exists
+  main/shop_answers:ShopAnswers_Count main/shops:Shops_ApplyMessage main/shops:Shops_CountAnswer
+  main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice main/design:Design_Receive
+  main/fox_shop:FoxPassword_ClearVisitor
+
+area: Unreachable for one player
+group: the scene sound classes' slot 0 and base slots
+scene: none: the destructor of vtable slot 0 of each scene sound class (autoload_2/sound_scene.h) and the base class's slots 1-3
+reach: SceneSound_Delete (main/scene_sound.c) deletes a scene's sound object through slot 1, and no code calls slot 0 or slot 2 (SceneSoundVtable.destruct and unk_08, SoundSceneVtable.slots: only on_music, start, update, stop, unload, the keyboard mode and slots 8 and 9 are called); no BL or word in code names them, only their vtables; the base class is never made alone (SceneSound_Create makes a derived class for every scene), so its slots 1 and 3 never run on a base object
+needs: unreachable
+match: autoload_2/sound_scene:SoundScene*_Destruct autoload_2/sound_scene:SoundSceneBase_*
+
+area: Unreachable for one player
+group: the heaps' slots no code calls
+scene: none: the frame and expanded heaps' vtable slots 4 (try lock), 9, 12 (a block's size), 16 (the total free), 17 and 18 (group ids)
+reach: the only calls through a heap's vtable are those of autoload_2/heap.c (destruct, lock, unlock, destroy, alloc, free, free all, report, resize, free size, largest block, allocatable, adjust); no code calls these six slots, and only the vtables name their functions
+needs: unreachable
+match: autoload_2/heap:ExpHeap_TryLock autoload_2/heap:Heap_TryLockNothing autoload_2/heap:FrameHeap_Unk24
+  autoload_2/heap:ExpHeap_Unk24 autoload_2/heap:FrameHeap_BlockSize autoload_2/heap:ExpHeap_BlockSize
+  autoload_2/heap:FrameHeap_TotalFree autoload_2/heap:ExpHeap_TotalFree
+  autoload_2/heap:FrameHeap_SetGroupId autoload_2/heap:ExpHeap_SetGroupId
+  autoload_2/heap:FrameHeap_GroupId autoload_2/heap:ExpHeap_GroupId
+
 # ================================================================== the seed's day: buildings
 
 area: Shops and buildings (the seed's day)

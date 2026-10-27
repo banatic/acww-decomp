@@ -843,6 +843,9 @@ scene("pascal", "wallet", 6510, [4000, 4900, 5600, 6200, 6509], frames(4800, 651
 scene("fortune-tent", "wallet", 7450, [4150, 4900, 5600, 6400, 7300, 7449], frames(4500, 7450, 50),
       "on the fortune teller's day of the week, go into her tent and pay her for the day's reading",
       rtc="2026-10-12 10:00:00")
+scene("fortune-match", "wallet", 11560, [4150, 7450, 9200, 9950, 10700, 11559], frames(9000, 11560, 100),
+      "fortune-tent, then the second reading: a name typed on the keyboard, taken and read for its match",
+      rtc="2026-10-12 10:00:00")
 scene("resetti", "resetti", 9010, [2600, 2800, 5000, 7600, 9009], frames(2700, 9010, 100),
       "after a play that was not saved, the mole comes up before the house and gives his first lecture")
 scene("gate-night", "seed", 9300, [2600, 5200, 7000, 8100, 9299], frames(5100, 9300, 100),
@@ -1120,6 +1123,9 @@ scene("villager-three", "bare-net", 6920, [2600, 3600, 4300, 5500, 6200, 6919], 
       "a talk with a villager that a second villager joins: a talk of three")
 scene("villager-furniture", "box-items", 8030, [2600, 4100, 5500, 6500, 7300, 7800, 8029], frames(5500, 8030, 50),
       "a villager tells of the furniture it likes, then asks for a piece and is offered one from the pockets",
+      rtc="2026-09-15 11:30:08")
+scene("villager-furniture-judge", "box-items", 9230, [2600, 5500, 8029, 8300, 8700, 9229], frames(8000, 9230, 50),
+      "villager-furniture, then the pockets closed and the villager talked to again: it judges the piece offered",
       rtc="2026-09-15 11:30:08")
 scene("clock-pen", "seed", 3950, [1400, 2420, 2700, 3100, 3500, 3949], frames(2400, 3950, 50),
       "on the telephone's clock screen, the hands dragged by the pen, the lists by the pen (thumb, bar, "
