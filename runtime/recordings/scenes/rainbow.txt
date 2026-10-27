@@ -1,0 +1,59 @@
+# rainbow (format: runtime/input.h), played from a town save by tools/scenes.py (the save is not
+# in this repository). Boot: as in tools.txt, at 15:42:50 on the seed's day; the player stands
+# in front of the house from about 2550.
+# Save: pattern-13: the day's weather pattern 0x13, in whose hour 15:00 (data_020d22b5) the sky
+# shows its object of kind 10 for 45 minutes with the clouds blended over it (main/sky_events.h
+# SkyEvents_UpdateKind10). The player stands still: it shows to 15:43:59 and is taken down as
+# its blending reaches 0 (about 4200), to 4500.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2600 - -

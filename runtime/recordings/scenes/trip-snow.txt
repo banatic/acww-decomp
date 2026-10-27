@@ -1,0 +1,93 @@
+# trip-snow (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt, at 11:30:05 on Friday 15 January 2027 (snow
+# falling); the new day's start keeps the player in the house's start room longer, so the DOWN
+# and RIGHT+DOWN at 2600-2720 do nothing and the player stands in front of the house from about
+# 3200.
+# Save: trip-snow: the day's weather pattern 15 for that date (snow all morning) and the pharaoh
+# mask (0x13c3) on the head, with which running at full speed may end in a trip (field actor
+# state 0x71). B held with LEFT and RIGHT in turns of 110 frames from 2720 runs back and forth
+# across the square in front of the house; the trip comes at about 4850 (the draw follows the
+# boot clock's second), the player falls, gets up and runs on (effects 0x39 and 0x37 of the
+# fall, the snow's footprints) to 5800.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2600 DOWN -
+2660 RIGHT+DOWN -
+2720 B+LEFT -
+2830 B+RIGHT -
+2940 B+LEFT -
+3050 B+RIGHT -
+3160 B+LEFT -
+3270 B+RIGHT -
+3380 B+LEFT -
+3490 B+RIGHT -
+3600 B+LEFT -
+3710 B+RIGHT -
+3820 B+LEFT -
+3930 B+RIGHT -
+4040 B+LEFT -
+4150 B+RIGHT -
+4260 B+LEFT -
+4370 B+RIGHT -
+4480 B+LEFT -
+4590 B+RIGHT -
+4700 B+LEFT -
+4810 B+RIGHT -
+4920 B+LEFT -
+5030 B+RIGHT -
+5140 B+LEFT -
+5250 B+RIGHT -
+5360 B+LEFT -
+5470 B+RIGHT -
+5580 B+LEFT -
+5690 B+RIGHT -
+5800 - -

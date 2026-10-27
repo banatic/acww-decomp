@@ -411,6 +411,53 @@ WEEDS_PULLED = {9: 0x022E06189E094015A002200BA00BA01100002009800B888890402000824
 SAVES["weeded"] = [(MONEY, "<I", 5000)] + [(TOWN_ITEMS + 2 * (0x100 * acre + i), "<H", 0xFFF1)
                                            for acre, bits in WEEDS_PULLED.items() for i in range(0x100) if bits >> i & 1]
 
+# the day's weather (SkyWeatherDay at 0x1737e of the state block, main/sky.h) for 15 January 2027,
+# so that the boot on that day keeps it: its date, then today's pattern 15 (data_020d28ac),
+# level 4 from 6:00 to 19:59, level 3 to 22:59; in the coldest period of the year those levels
+# bring snow (Sky_FallingKindOf). And the item 0x13c3 (the pharaoh mask) on the player's head
+# (the record's head item at 0x240a): running at full speed outdoors the player may then trip
+# (field actor state 0x71, a draw of 1 in 0x17a a frame, main/field_actor_states.c
+# FieldActor_RunState3), as on a day of bad luck
+WEATHER_DAY = 0x1737E
+SAVES["trip-snow"] = raw(WEATHER_DAY, bytes((15, 1, 27))) + [(WEATHER_DAY + 4, "<B", 15), (0x14 + 0x240A, "<H", 0x13C3)]
+
+# the seed's day given the weather pattern 15 (as for "trip-snow", its date the seed's own):
+# rain at level 4 to 19:59, level 3 from 20:00
+SAVES["rain"] = [(WEATHER_DAY + 4, "<B", 15)]
+
+# the seed's day given the weather pattern 0 (as for "rain"; no rain), on whose nights a falling
+# star comes at the half minute 1 time in 4 (main/sky_events.h)
+SAVES["clear"] = [(WEATHER_DAY + 4, "<B", 0)]
+# the seed's day given the weather pattern 0x13: in its hour 15:00 (data_020d22b5) the sky's
+# object of kind 10 shows for 45 minutes, the clouds blended (main/sky_events.h)
+SAVES["pattern-13"] = [(WEATHER_DAY + 4, "<B", 0x13)]
+
+# flag 6 of the player's record set (the flags at 0x23f8, the seed's 0x6608), which qualifies
+# the player for the dated events of kind 0 (main/day_events.h)
+SAVES["flag-6"] = [(0x14 + 0x23F8, "<I", 0x6648)]
+
+# as "sable-7" with 15 days of talks with Sable: the value that qualifies the player for the dated
+# events of kind 2 (main/day_events.h)
+SAVES["sable-15"] = [(HELD, "<H", 0x1374), (0x14 + 0x2416 + 8, "<B", 15)]
+
+# every fossil, fish, insect and painting given by player 0: the museum's record complete
+# (MuseumRecord_Complete), which qualifies the player for the dated events of kind 1
+# (main/day_events.h)
+SAVES["museum-complete"] = [(group + i, "<B", 0x11) for group, items in ((MUSEUM_A, 52), (MUSEUM_B, 56), (MUSEUM_C, 56),
+                                                                         (MUSEUM_D, 20)) for i in range(items // 2)]
+
+# Nook's store with its first level's cap spent (25,000, main/nook_store.h) and the upgrade
+# planned (NookStore.upgrade, at 0x56: day, month, year from 2000, pending 1) for the seed's
+# day: the store stays closed on it until a new day's start upgrades it ("store-due"); and for
+# Monday 14 September ("store-upgrade"), booted on that day; the rod held and 30,000 bells
+SAVES["store-due"] = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STORE, "<I", 25000)] + raw(
+    NOOK_STORE + 0x56, bytes((11, 9, 26, 1)))
+SAVES["store-upgrade"] = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STORE, "<I", 25000)] + raw(
+    NOOK_STORE + 0x56, bytes((14, 9, 26, 1)))
+
+# the flash erased (every byte 0xff, as a new card's): the game finds no town and starts a new one
+SAVES["erased"] = None
+
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
 SCENES: dict[str, dict] = {}
@@ -940,6 +987,41 @@ scene("sable-talk", "sable-7", 8441, [2600, 4700, 5300, 6300, 7500, 8100, 8440],
 scene("villager-impression", "weeded", 4299, [2600, 3000, 3600, 4000, 4298], frames(2900, 4299, 50),
       "an afternoon talk with a villager away from weeds: its impression of the player is tried rule by rule "
       "up to the season's", rtc="2026-09-11 14:30:00")
+scene("sable-drama", "sable-15", 12270, [2600, 4440, 7600, 9230, 10400, 11300, 12269], frames(9200, 12270, 50),
+      "on the first day of Sable's dated event, in the Able Sisters' shop: Mabel acts, Sable tells of the event",
+      rtc="2026-10-15 11:30:00")
+scene("nook-drama", "barber", 7228, [2600, 4580, 5400, 5990, 6600, 7227], frames(5300, 7228, 50),
+      "on the first day of Nook's dated event, in his store at its last level: he acts, then tells of the event",
+      rtc="2026-09-19 11:30:00")
+scene("museum-drama", "museum-complete", 8400, [2600, 4000, 5300, 5860, 7000, 8399], frames(5800, 8400, 50),
+      "on the first day of the museum's dated event, with the museum complete: Blathers tells of the event",
+      rtc="2026-10-02 11:30:00")
+scene("store-closed", "store-due", 4260, [2600, 3400, 3700, 4000, 4259], frames(3400, 4260, 40),
+      "walk to Nook's store on the day of its upgrade before the day's start has made it: the door shut, its sign read")
+scene("store-upgrade", "store-upgrade", 4150, [2600, 2900, 3500, 3800, 4149], frames(3400, 4150, 40),
+      "boot on the day of the store's upgrade: the new store put on the map, walk in and hear Nook's greeting",
+      rtc="2026-09-14 11:30:00")
+scene("weather-change", "rain", 7700, [2600, 4000, 5500, 7000, 7699], frames(2700, 7700, 100),
+      "in the rain as the evening's hour turns: the sky changes level in view", rtc="2026-09-11 19:59:20")
+scene("star-wish", "clear", 9260, [2600, 5000, 9000, 9100, 9259], frames(8900, 9260, 20),
+      "on a clear night, wait for a falling star and wish on it", rtc="2026-09-11 21:00:00")
+scene("post-drama", "flag-6", 6080, [2600, 3600, 4400, 4900, 5500, 6079], frames(4500, 6080, 40),
+      "on the first day of the post office's dated event: Pelly acts, then tells of the event",
+      rtc="2026-11-26 11:30:00")
+scene("rainbow", "pattern-13", 4500, [2600, 3500, 4100, 4300, 4499], frames(2700, 4500, 50),
+      "on a day of weather pattern 0x13, the sky's object of its hour shown and taken down",
+      rtc="2026-09-11 15:42:50")
+scene("new-year-midnight", "seed", 11700, [4100, 5200, 6279, 9000, 10900, 11699], frames(6280, 11700, 100),
+      "new-year three minutes before midnight: by the countdown's clock as the new year comes",
+      rtc="2026-12-31 23:57:00")
+scene("fireworks-late", "seed", 19060, [4400, 7059, 10000, 13000, 16000, 19059], frames(7060, 19060, 200),
+      "the fireworks scene, then the show watched on to its later programs", rtc="2027-08-07 20:00:00")
+scene("trip-snow", "trip-snow", 5840, [2600, 3300, 4300, 4900, 5400, 5839], frames(3200, 5840, 40),
+      "in the snow with the pharaoh mask on, run back and forth until the player trips, falls and gets up",
+      rtc="2027-01-15 11:30:05")
+scene("new-town", "erased", 14256, [1300, 2300, 5500, 8000, 9500, 11300, 13200, 14255], frames(1300, 14256, 200),
+      "a new town from an erased card: the taxi driver's questions each given its other answer (the clock "
+      "screen quit, both names typed again, the museum chosen), the town made, Pelly, out into the town")
 
 
 # ------------------------------------------------------------------------------ saves
@@ -953,7 +1035,9 @@ def derive_save(seed: pathlib.Path, name: str) -> pathlib.Path:
     data = bytearray(seed.read_bytes())
     if hashlib.sha256(data).hexdigest() != SEED_SHA256:
         raise SystemExit(f"{seed}: not the seed save (SHA-256 {SEED_SHA256})")
-    for offset, fmt, value in SAVES[name]:
+    if SAVES[name] is None:  # the card as it comes erased, no town on it
+        data = bytearray(b"\xff" * len(data))
+    for offset, fmt, value in SAVES[name] or []:
         struct.pack_into(fmt, data, offset, value)
     if SAVES[name]:
         struct.pack_into("<H", data, CHECKSUM, bank_checksum(bytes(data[:BANK_SIZE])))

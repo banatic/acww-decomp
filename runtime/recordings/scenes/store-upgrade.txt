@@ -1,0 +1,82 @@
+# store-upgrade (format: runtime/input.h), played from a town save by tools/scenes.py (the save
+# is not in this repository). Boot: as in tools.txt, on Monday 14 September 2026; the player
+# stands in front of the house from about 2700 (short DOWN presses there from 2870 test that it
+# walks).
+# Save: store-upgrade: the store's first level's cap spent and its upgrade planned for that day:
+# the day's start puts the new building on the town map, sets the level and posts Tom Nook's
+# notice of the new store (NookStore_UpgradeIfDue). South, west and north to the store (from
+# about 2930) and UP in at its door (about 3510): the store at level 1 (building 0x500e, as in
+# store-1), Nook's greeting of the new store (to 4150).
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2870 DOWN -
+2878 - -
+2912 DOWN -
+2920 - -
+2954 DOWN -
+2962 - -
+2996 DOWN -
+3004 - -
+3038 DOWN -
+3046 - -
+3080 DOWN -
+3088 - -
+3092 DOWN -
+3140 - -
+3142 LEFT -
+3502 - -
+3504 UP -
+3510 RIGHT+UP -
+3516 UP -
+3558 - -
+3560 UP -
+3650 - -

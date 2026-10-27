@@ -156,6 +156,70 @@ match: ov090/menu_tabs:MenuTabs_Destroy ov091/letter_reader:LetterReader_Destroy
   ov146/wfc_host_list:WfcHostList_Destroy
 
 area: Unreachable for one player
+group: the other classes' destructors of vtable slot 16
+scene: none: the destructor without the free (vtable slot 0x40) of the scene objects, room objects, special characters and processes of main and the overlays outside 90-146 whose Clean comments say so
+reach: as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes
+needs: unreachable
+match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:MissingNpc1_Destruct
+  main/missing_npc2:MissingNpc2_Destruct main/process_020dabc0:Process020dabc0_Destruct
+  main/scene_object_base:SceneObjectBase_Destruct
+  main/special_scene_object:SpecialSceneObject_Destruct
+  main/villager_scene_slots:VillagerSceneObject_Destruct ov003/checkpoint:Checkpoint_Destroy
+  ov003/countdown:CountdownDigit_Destroy ov003/countdown:CountdownBoard_Destroy
+  ov003/mailbox:Mailbox_Destroy ov003/outdoor_clock:OutdoorClock_Destroy
+  ov003/panther:Panther_Destroy ov003/player_house:PlayerHouse_Destroy
+  ov003/sign_board:SignBoard_Destroy ov003/spawn_spot:SpawnSpot_Destroy
+  ov003/store_front:StoreFront_Destroy ov003/villager_house:VillagerHouse_Destroy
+  ov004/barber_machine:BarberMachine_Destruct ov004/birthday_guest:BirthdayGuest_Destroy
+  ov004/birthday_villager:BirthdayVillager_Destroy ov004/bromide:Bromide_Destroy
+  ov004/cafe_master:CafeMaster_Destroy ov004/check_in_gate:CheckInGate_Destruct
+  ov004/chest:Chest_Destroy ov004/clock:Clock_Destroy ov004/compass:Compass_Destroy
+  ov004/etc_museum:EtcMuseum_Destroy ov004/flea_market_buyer:FleaMarketBuyer_Destroy
+  ov004/flea_market_villager:FleaMarketVillager_Destroy ov004/gatekeeper2:Gatekeeper2_Destroy
+  ov004/icon_models:IconModels_Destruct ov004/indoor_countdown:IndoorCountdown_Destruct
+  ov004/music_player:MusicPlayer_Destroy ov004/rmo_object_base:RmoObjectBase_Destruct
+  ov004/rmo_telephone:RmoTelephone_Destruct ov004/room_object_02250c04:RoomObject02250c04_Destroy
+  ov004/room_object_02250d30:RoomObject02250d30_Destroy
+  ov004/room_object_02250e5c:RoomObject02250e5c_Destroy
+  ov004/room_object_022510b4:RoomObject022510b4_Destroy
+  ov004/room_object_022511e0:RoomObject022511e0_Destroy
+  ov004/room_object_0225130c:RoomObject0225130c_Destroy
+  ov004/room_object_02251564:RoomObject02251564_Destroy
+  ov004/room_object_02251690:RoomObject02251690_Destroy
+  ov004/room_object_022518e8:RoomObject022518e8_Destroy
+  ov004/room_object_02251a14:RoomObject02251a14_Destroy
+  ov004/room_object_02252248:RoomObject02252248_Destroy
+  ov004/room_object_02252374:RoomObject02252374_Destroy
+  ov004/room_object_022524a0:RoomObject022524a0_Destroy
+  ov004/room_object_022525cc:RoomObject022525cc_Destroy
+  ov004/room_object_02252824:RoomObject02252824_Destroy
+  ov004/room_object_02252ba8:RoomObject02252ba8_Destroy
+  ov004/room_object_02252cd4:RoomObject02252cd4_Destroy
+  ov004/room_object_02252e00:RoomObject02252e00_Destroy
+  ov004/room_object_02252f2c:RoomObject02252f2c_Destroy
+  ov004/room_object_02253058:RoomObject02253058_Destroy
+  ov004/room_object_animated:AnimatedRoomObject_Destroy
+  ov004/room_object_glowing:GlowingRoomObject_Destroy ov004/room_object_life:RoomObject_Destroy
+  ov004/room_object_periodic:PeriodicRoomObject_Destroy
+  ov004/room_object_player_design:PlayerDesignObject_Destroy
+  ov004/room_object_shop_design:ShopDesignObject_Destroy
+  ov004/room_object_switch_shown:SwitchShown_Destroy
+  ov004/room_player_items:RoomPlayerItems_Destruct ov004/room_shell:RoomShell_Destruct
+  ov004/room_villager:RoomVillager_Destroy ov004/shop3_villager:Shop3Villager_Destroy
+  ov004/sick_villager:SickVillager_Destroy ov004/tailor_object:TailorObject_Destruct
+  ov004/tailor_sister:TailorSister_Destroy ov004/tarot_object:TarotObject_Destruct
+  ov004/telephone:Telephone_Destroy ov004/trash_box:TrashBox_Destruct ov004/tti_npc:TtiNpc_Destroy
+  ov004/tv:TvAnimated_Destroy ov004/tv:Tv_Destroy ov009/scene_actor_life:SceneActor_DestructComplete
+  ov045/fortune_teller:FortuneTeller_Destroy ov047/owl:Owl_Destruct
+  ov048/gatekeeper:Gatekeeper_Destruct ov049/mabel:Mabel_Destruct
+  ov051/taxi_driver:TaxiDriver_Destroy ov052/fox_tent:FoxTent_Destruct
+  ov054/post_clerk:PostClerk_Destruct ov068/cafe_guest:CafeGuest_Destruct
+  ov068/cafe_room:CafeRoom_Destruct ov068/house_visitor:HouseVisitor_Destroy
+  ov068/sequence4:Sequence4_Destroy ov068/town_nook:TownNook_Destruct ov070/giraffe:Giraffe_Destroy
+  ov071/insurer:Insurer_Destroy ov080/turtle:Turtle_Destruct ov084/turtle4:Turtle4_Destroy
+  ov085/turtle5:Turtle5_Destroy ov086/turtle6:Turtle6_Destroy ov087/acorn_npc:AcornNpc_Destroy
+
+area: Unreachable for one player
 group: the town map's list by the keys and the pen
 scene: none: Pelly's town map (ov120, mode 0x2f) always opens with the cursor on the map, where A, B, X or a touch closes it
 reach: TOWN_MAP_FLAG_ON_MAP is never cleared (ov120/town_map.h, QUIRK), so sub states 0-8 (the list's keys, touches, scroll knob) and what only they call never run
