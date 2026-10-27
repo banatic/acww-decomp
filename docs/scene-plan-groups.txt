@@ -523,6 +523,63 @@ match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
   ov004/room_camera:RoomCamera_SetModeLookAt
 
 area: Unreachable for one player
+group: tags no shown message holds, by the whole archives
+scene: none: the handlers of tags that no message outside the test message holds: the talk's 0/8, 1/14, 1/15, 3/4 and group 8 (TalkTags_PutLeftBrace, _Receiver1cWith3 and 4, _TellReceiver30, _DispatchGroup8 and its three kinds), the message reader's 0/2-0/5, 0/9, 0/10, 11/0 and 11/3 (the nickname source's characters, two fixed texts, the attributes and the converted character, with what only those call), the letters' 11/1-11/5 and 11/5-11/15 (MailTextDecoder_SetForm1, 2, _ConvertNext, _OnForm4, _OnFormPart), and the centred lines' measurer for 4/17, which no centred message holds
+reach: a scan of every message of the KOR .bmg files read whole (findings 2026-10-28, town4: a compressed archive is a table of 0x1000-byte chunks, each LZ10 or stored, which the earlier scans read only the first chunk of), and of every other file of the ROM and the module images for the tags' bytes; no code writes a tag into a text, the test message is shown by no reachable code (group "message tags no shown message holds") and the letters' decoder reads only letters (mail archives and letters typed)
+needs: unreachable
+match: main/mail_text:MailTextDecoder_ConvertNext main/mail_text:MailTextDecoder_OnForm4
+  main/mail_text:MailTextDecoder_OnFormPart main/mail_text:MailTextDecoder_SetForm1
+  main/mail_text:MailTextDecoder_SetForm2 main/message_decoder:MessageDecoder_CanInsert
+  main/message_decoder:MessageDecoder_ConvertNext main/message_decoder:MessageDecoder_InsertSourceEnd
+  main/message_decoder:MessageDecoder_InsertSourceFirst
+  main/message_decoder:MessageDecoder_InsertSourceSecond
+  main/message_decoder:MessageDecoder_InsertSourceThird main/message_decoder:MessageDecoder_InsertText10
+  main/message_decoder:MessageDecoder_InsertText9 main/message_decoder:MessageDecoder_SetAttributes
+  main/message_query:MessageQuery_CharacterFromEnd main/message_query:MessageQuery_Length
+  main/talk_page:TalkPageMeasurer_PutPart2 main/talk_tags:TalkTags_DispatchGroup8
+  main/talk_tags:TalkTags_Nothing8_0 main/talk_tags:TalkTags_Nothing8_1
+  main/talk_tags:TalkTags_Nothing8_2 main/talk_tags:TalkTags_PutLeftBrace
+  main/talk_tags:TalkTags_Receiver1cWith3 main/talk_tags:TalkTags_Receiver1cWith4
+  main/talk_tags:TalkTags_TellReceiver30
+
+area: Unreachable for one player
+group: the field actor's states no code asks for
+scene: none: states 0x91 and 0x92 of the field actor (main/field_actor_states.c)
+reach: every state change of the field actor is a request made by StateRequest_Set or a file's request helper (request_state, begin_request, open_request, fars_request and the like) with the state as a constant, then queued and entered (FieldActor_EnterState); no call in clean/ passes 0x91 or 0x92 (the scratchpad's fastates.py lists the states asked for and by which functions)
+needs: unreachable
+match: main/field_actor_states:FieldActor_EnterState91 main/field_actor_states:FieldActor_EnterState92
+  main/field_actor_states:FieldActor_ExitState91 main/field_actor_states:FieldActor_UpdateState91
+  main/field_actor_states:FieldActor_UpdateState92
+
+area: Unreachable for one player
+group: the field actor's closed lid and low battery
+scene: none: states 0x83 (the lid closed) and 0x84 (a low battery) of the field actor, and their requests
+reach: FieldActor_CheckBatteryAndLid asks for them on BatteryWarning_IsLow and on bit 15 of the ARM7's word at 0x027fffa8 (the lid), which a recording cannot make; the states' messages ask for them for another console's actor
+needs: unreachable
+match: main/field_actor_states:FieldActor_EndState83 main/field_actor_states:FieldActor_EnterState83
+  main/field_actor_states:FieldActor_EnterState84 main/field_actor_states:FieldActor_RequestState83
+  main/field_actor_states:FieldActor_RequestState84 main/field_actor_states:FieldActor_RunState83
+  main/field_actor_states:FieldActor_RunState84 main/field_actor_states:FieldActor_UpdateState83
+  main/field_actor_states:FieldActor_UpdateState84
+
+area: Unreachable for one player
+group: camera modes only unreachable code sets
+scene: none: the main camera's mode 19 and the room camera's modes 15 and 20 (their start and frame functions)
+reach: a camera mode is entered only by CameraControl_SetMode (main/camera_view.c), and every call in clean/ passes a constant but the return to camera->previous_mode, which holds a mode entered before; 15, 19 and 20 are passed only by RoomCamera_SetMode15 (the gatekeeper's visit walk), CameraControl_SetMode19 (the lost child's walk home) and RoomCamera_SetModeLookAt (the exchange of ov055), which are unreachable
+needs: unreachable
+match: main/camera_modes:CameraControl_Mode19Frame main/camera_modes:CameraControl_Mode19Start
+  ov004/room_camera:RoomCamera_LookAtFrame ov004/room_camera:RoomCamera_LookAtStart
+  ov004/room_camera:RoomCamera_Mode15Frame ov004/room_camera:RoomCamera_Mode15Start
+
+area: Unreachable for one player
+group: vtable slots no code calls: heaps and triangles
+scene: none: slot 1 of the heaps' vtables (destruct and free: Heap_, ExpHeap_ and FrameHeap_DestructFree) and slot 3 of the collision triangle's (CollisionTriangle_PushOut)
+reach: as for the heaps' other slots and the scene sounds: a heap is destroyed by Heap_Destroy through slots 5 and 0 and its block freed to the parent, and no code reads HeapVtable.destruct_free; a triangle's vtable is called only by CollisionTriangle_PushOut's three tests (vtable_of, slots 0-2), and the areas' vtable (CollisionAreaVtable) calls only its slot 4; no BL or word in code names these functions, only the vtables
+needs: unreachable
+match: autoload_2/heap:ExpHeap_DestructFree autoload_2/heap:FrameHeap_DestructFree
+  autoload_2/heap:Heap_DestructFree main/collision_triangle:CollisionTriangle_PushOut
+
+area: Unreachable for one player
 group: the scene sound classes' slot 0 and base slots
 scene: none: the destructor of vtable slot 0 of each scene sound class (autoload_2/sound_scene.h) and the base class's slots 1-3
 reach: SceneSound_Delete (main/scene_sound.c) deletes a scene's sound object through slot 1, and no code calls slot 0 or slot 2 (SceneSoundVtable.destruct and unk_08, SoundSceneVtable.slots: only on_music, start, update, stop, unload, the keyboard mode and slots 8 and 9 are called); no BL or word in code names them, only their vtables; the base class is never made alone (SceneSound_Create makes a derived class for every scene), so its slots 1 and 3 never run on a base object
