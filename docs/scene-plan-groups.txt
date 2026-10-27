@@ -391,6 +391,47 @@ needs: seed
 match: main/villager_talk* main/villager_part* main/villager_object main/villager_items main/villager_offers
   main/item_object main/villager_catchphrase main/villager_names main/villager_furniture main/villager_clothes
 
+area: Unreachable for one player
+group: message tags no shown message holds
+scene: none: the tag handlers of tags that only the test message Other/test_ 9 holds (4/30, 4/32, 11/3-5, 11/15) or no message at all (11/1, 11/2, 11/6-14, 11/16-19), and the centred lines' measurer (main/talk_page.h) for the tags no centred message holds
+reach: a scan of the KOR .bmg files (the LZ77 archives unpacked; a message is centred when its INF1 entry's kind has data_020d1d0c set): test_ is shown only through NpcPlcTalk_Line0, which asks for message 0 of the archive "test"; the measurer runs only for centred messages, and outside mail (letters are not drawn by the talk page) and test_ those hold the tags 0/0, 0/1, 1/0, 1/1, 1/16, 2/4, 4/3, 4/15-17, 4/26-28, 6/0, 6/1, 7/0, 11/20 and 0xff/0 alone
+needs: unreachable
+match: main/talk_tags:TalkTags_PutImpression main/talk_tags:TalkTags_Nothing4_32
+  main/talk_tags:TalkTags_ConvertNext main/talk_tags:TalkTags_Nothing11_4
+  main/talk_tags:TalkTags_SetE0One main/talk_tags:TalkTags_SetE0Two main/talk_tags:TalkTags_NotePart0
+  main/talk_tags:TalkTags_NotePart1 main/talk_tags:TalkTags_NotePart2
+  main/talk_tags:TalkTags_NotePart3 main/talk_tags:TalkTags_NotePart4
+  main/talk_tags:TalkTags_NotePart5 main/talk_tags:TalkTags_NotePart6
+  main/talk_tags:TalkTags_NotePart7 main/talk_tags:TalkTags_NotePart8
+  main/talk_tags:TalkTags_NotePart9 main/talk_tags:TalkTags_NotePart10
+  main/talk_tags:TalkTags_NoteValue0 main/talk_tags:TalkTags_NoteValue1
+  main/talk_tags:TalkTags_NoteValue2 main/talk_tags:TalkTags_NoteValue3
+  main/talk_page:TalkPageMeasurer_Name3 main/talk_page:TalkPageMeasurer_Nothing11_4
+  main/talk_page:TalkPageMeasurer_Set50One main/talk_page:TalkPageMeasurer_Set50Two
+  main/talk_page:TalkPageMeasurer_PutBoom main/talk_page:TalkPageMeasurer_PutPraise
+  main/talk_page:TalkPageMeasurer_PutNickname main/talk_page:TalkPageMeasurer_PutImpression
+  main/talk_page:TalkPageMeasurer_PutName3 main/talk_page:TalkPageMeasurer_Part0
+  main/talk_page:TalkPageMeasurer_Part1 main/talk_page:TalkPageMeasurer_Part2
+  main/talk_page:TalkPageMeasurer_Part3 main/talk_page:TalkPageMeasurer_Part4
+  main/talk_page:TalkPageMeasurer_Part5 main/talk_page:TalkPageMeasurer_Part6
+  main/talk_page:TalkPageMeasurer_Part7 main/talk_page:TalkPageMeasurer_Part8
+  main/talk_page:TalkPageMeasurer_Part9 main/talk_page:TalkPageMeasurer_Part10
+  main/talk_page:TalkPageMeasurer_PutPart3 main/talk_page:TalkPageMeasurer_PutPart4
+  main/talk_page:TalkPageMeasurer_PutPart5 main/talk_page:TalkPageMeasurer_PutPart6
+  main/talk_page:TalkPageMeasurer_PutPart7 main/talk_page:TalkPageMeasurer_PutPart8
+  main/talk_page:TalkPageMeasurer_PutPart9 main/talk_page:TalkPageMeasurer_PutPart10
+  main/talk_page:TalkPageMeasurer_PutOtherPlayer main/talk_page:TalkPageMeasurer_PutRandomNpc
+  main/talk_page:TalkPageMeasurer_PutDislikedNpc main/talk_page:TalkPageMeasurer_PutLikedNpc
+  main/talk_page:TalkPageMeasurer_PutSecond main/talk_page:TalkPageMeasurer_PutMinute
+  main/talk_page:TalkPageMeasurer_PutHour12 main/talk_page:TalkPageMeasurer_PutWeekday
+  main/talk_page:TalkPageMeasurer_PutDay main/talk_page:TalkPageMeasurer_PutMonth
+  main/talk_page:TalkPageMeasurer_PutYear main/talk_page:TalkPageMeasurer_PutCatchphrase
+  main/talk_page:TalkPageMeasurer_PutReceiverName main/talk_page:TalkPageMeasurer_PutPlayerName
+  main/talk_page:TalkPageMeasurer_RememberedEnd main/talk_page:TalkPageMeasurer_RememberedText
+  main/talk_page:TalkPageMeasurer_PutLeftBrace main/talk_page:TalkPageMeasurer_PutPercent
+  main/talk_page:TalkPageMeasurer_PutAmpersand main/talk_page:TalkPageMeasurer_AltText
+  main/talk_page:TalkPageMeasurer_Ignore
+
 area: Villagers (the seed's day)
 group: the talk engine: tags, pages, windows, sliders
 scene: none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers)

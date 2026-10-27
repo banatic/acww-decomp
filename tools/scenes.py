@@ -458,6 +458,90 @@ SAVES["store-upgrade"] = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STOR
 # the flash erased (every byte 0xff, as a new card's): the game finds no town and starts a new one
 SAVES["erased"] = None
 
+# as "weeded" with glasses worn (part C of the record, 0x240c, an item of 0x1431-0x1470,
+# main/villager_impression.c) and the face of head kind 5 (bits 4-7 of the record's byte 0x243c;
+# the seed's is 1): the impression rules of part C with the head kinds are tried
+SAVES["weeded-glasses"] = SAVES["weeded"] + [(0x14 + 0x240C, "<H", 0x1431), (0x14 + 0x243C, "<B", 0x54)]
+
+# Villagers' memories of other players (main/villager_memories.h: eight of 0x80 bytes at the start
+# of each town villager, eight of 0x7ec bytes at 0x9284). A memory holds the player (a design's
+# creator, main/design.h: the town's id and 6 characters, the player's id and 6 characters), the
+# name the villager calls the player (at first the player's name, VillagerMemoryEntry_Take), the
+# praise word typed at a villager's asking (0x2a, flag bit 1; VillagerTalk_StoreText), the time
+# met (0x54, second to year), the player's town (0x5c), the last item the player gave (0x6a,
+# VillagerMemoryEntry_SetItem), the fondness (0x6c), the impression (0x6d) and the flags (0x7c,
+# main/villager_memory_entry.h: bit 0 a letter of the player held, bit 2 the 8 values at 0x74,
+# copied from data_021f3b68 when the player is met: the seed's memories hold those below).
+TOWN_VILLAGERS = 0x9284
+SEED_TOWN = bytes.fromhex("6ec6433143314331433143314331")  # the seed town's id and name
+OTHER_TOWN = bytes.fromhex("2b1d433143314331000000000000")  # another town: its id and 3 characters
+SEED_VALUES = bytes.fromhex("ca7a76b9fafde3fe")
+
+
+def player_id(town: bytes, number: int, name_chars: int) -> bytes:
+    """A player of `town` (DesignCreator): its number and a name of `name_chars` characters."""
+    return town + struct.pack("<H", number) + bytes.fromhex("4331") * name_chars + bytes(2 * (6 - name_chars) + 2)
+
+
+def villager_memory(villager: int, index: int, player: bytes, town: bytes, when: tuple[int, ...], fondness: int,
+                    impression: int, flags: int, item: int = 0xFFF1, text_2a: bytes = b"") -> list[tuple[int, str, int]]:
+    memory = bytearray(0x80)
+    memory[0:0x1E] = player
+    memory[0x1E:0x2A] = player[0x10:0x1C]
+    memory[0x2A:0x2A + len(text_2a)] = text_2a
+    memory[0x54:0x5A] = bytes(when)
+    memory[0x5C:0x6A] = town
+    struct.pack_into("<HbB", memory, 0x6A, item, fondness, impression)
+    if flags & 4:
+        memory[0x74:0x7C] = SEED_VALUES
+    struct.pack_into("<H", memory, 0x7C, flags)
+    return raw(TOWN_VILLAGERS + 0x7EC * villager + 0x80 * index, bytes(memory))
+
+
+def villager_letter(villager: int, sender: bytes, town: bytes) -> list[tuple[int, str, int]]:
+    """A letter a player wrote held by a villager (0x634 of the town villager, main/villager_mail.h;
+    main/letter.h), as the seed's villager 1 holds one: to the villager (its NpcId, kind 3) from the
+    player (kind 2), its header and footer of the same shape, paper 8, written; and the town it came
+    from (0x7dc)."""
+    base = TOWN_VILLAGERS + 0x7EC * villager
+    letter = bytearray(0x100)
+    letter[0x04:0x24] = SEED_NPC[villager] + bytes(14) + b"\x03\x00"
+    letter[0x24:0x44] = sender + b"\x02\x00"
+    letter[0x44:0x4A] = bytes.fromhex("d8b2d0c58cac")
+    name = sender[0x10:0x1C].rstrip(b"\x00")
+    letter[0xD8:0xD8 + len(name) + 6] = name + bytes.fromhex("0030dcb4bcb9")
+    letter[0xF8:0x100] = bytes.fromhex("00080100f1ff0000")
+    return raw(base + 0x634, bytes(letter)) + raw(base + 0x7DC, town)
+
+
+SEED_NPC = [bytes.fromhex(h) for h in ("6ec6433143314331433143314331024d", "6ec64331433143314331433143310310",
+                                       "6ec6433143314331433143314331057f", "6ec6433143314331433143314331002f",
+                                       "6ec64331433143314331433143310405")]
+# two players of another town, and a former resident of the seed's town
+OTHER_PLAYER_A = player_id(OTHER_TOWN, 0x7A19, 2)
+OTHER_PLAYER_B = player_id(OTHER_TOWN, 0x5E07, 3)
+FORMER_RESIDENT = player_id(SEED_TOWN, 0x92B4, 3)
+PRAISE = bytes.fromhex("4331433143314331")  # a praise word of 4 characters
+SAVES["memories"] = (
+    villager_memory(2, 1, OTHER_PLAYER_A, OTHER_TOWN, (10, 20, 15, 4, 9, 26), 20, 4, 0x0006, text_2a=PRAISE) +
+    villager_memory(2, 2, OTHER_PLAYER_B, OTHER_TOWN, (40, 5, 17, 6, 9, 26), -10, 2, 0x0001) +
+    villager_letter(2, OTHER_PLAYER_B, OTHER_TOWN) +
+    villager_memory(3, 1, FORMER_RESIDENT, SEED_TOWN, (0, 30, 9, 20, 8, 26), 30, 3, 0x0002, 0x3508, PRAISE) +
+    [e for v in (0, 1) for e in villager_memory(v, 1, OTHER_PLAYER_A, OTHER_TOWN, (10, 20, 15, 4, 9, 26), 5, 4, 0x0004)] +
+    SAVES["pockets-keys"])
+# as "pockets-keys" with villagers 0-3 each remembering a player of another town they dislike and
+# holding a letter of that player
+SAVES["memories-unfond"] = [e for v in range(4) for e in villager_memory(v, 1, OTHER_PLAYER_B, OTHER_TOWN, (40, 5, 17, 6, 9, 26),
+                                                                         -10, 2, 0x0001) + villager_letter(v, OTHER_PLAYER_B, OTHER_TOWN)] +     SAVES["pockets-keys"]
+# as "pockets-keys" with villagers 0-3 each remembering a former resident of the seed's town who
+# gave them a piece of furniture (the memory's item)
+SAVES["memories-resident"] = [e for v in range(4) for e in villager_memory(v, 1, FORMER_RESIDENT, SEED_TOWN, (0, 30, 9, 20, 8, 26),
+                                                                           30, 3, 0x0000, 0x3508)] + SAVES["pockets-keys"]
+# as "visitor-3f" (the fortune teller's good luck) with villager 3 holding a letter of a player of
+# another town (OTHER_PLAYER_B: its memory, flag bit 0, and the letter at 0x634)
+SAVES["letter-held-3f"] = SAVES["visitor-3f"] + villager_memory(3, 1, OTHER_PLAYER_B, OTHER_TOWN, (40, 5, 17, 6, 9, 26), 10, 2,
+                                                                0x0001) + villager_letter(3, OTHER_PLAYER_B, OTHER_TOWN)
+
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
 SCENES: dict[str, dict] = {}
@@ -1022,6 +1106,53 @@ scene("trip-snow", "trip-snow", 5840, [2600, 3300, 4300, 4900, 5400, 5839], fram
 scene("new-town", "erased", 14256, [1300, 2300, 5500, 8000, 9500, 11300, 13200, 14255], frames(1300, 14256, 200),
       "a new town from an erased card: the taxi driver's questions each given its other answer (the clock "
       "screen quit, both names typed again, the museum chosen), the town made, Pelly, out into the town")
+scene("villager-glasses", "weeded-glasses", 5000, [2600, 3000, 4299, 4600, 4999], frames(2900, 5000, 50),
+      "villager-impression wearing glasses, with another face: the villager offers a thing by the slider window, "
+      "and its impression of the player tries the rules of glasses with each face", rtc="2026-09-11 14:30:00")
+scene("villager-spring", "weeded", 6030, [2800, 4100, 4500, 5300, 6029], frames(4400, 6030, 50),
+      "an afternoon talk on a spring day: no season's rule of the villager's impression passes, the last "
+      "rule gives it", rtc="2027-04-21 14:30:00")
+scene("villager-sleep", "seed", 13700, [2800, 4100, 9000, 12800, 13699], frames(12000, 13700, 50),
+      "a night: a villager walks home at its hour of sleep and goes in", rtc="2026-09-12 01:28:00")
+scene("villager-wake", "seed", 5600, [2800, 4100, 4600, 5000, 5599], frames(4400, 5600, 50),
+      "a morning: a villager's hour of sleep ends, it comes out of its house", rtc="2026-09-12 09:58:40")
+scene("villager-newcomer", "seed", 6000, [2600, 3400, 4600, 5300, 5999], frames(4500, 6000, 50),
+      "into the house of the villager that moved in on the save's day: it talks as one not yet settled")
+scene("villager-memories", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-talks with villagers remembering players of another town and a former resident: the "
+      "villager that walks up talks of a player of another town and plays its town's tune",
+      "villager-talks", "2026-09-11 11:30:52")
+scene("villager-memories-fond", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-memories at another second of the clock: the villager talks of a player of another town it "
+      "likes and the days since they met", "villager-talks", "2026-09-11 11:30:02")
+scene("villager-memories-dislike", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-memories at another second of the clock: the villager names the one it gets on worst with",
+      "villager-talks", "2026-09-11 11:30:06")
+scene("villager-memories-design", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-memories at another second of the clock: two villagers chatting, one takes a new design",
+      "villager-talks", "2026-09-11 11:30:03")
+scene("villager-memories-design2", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-memories at another second of the clock: two villagers chatting, one passes its design on",
+      "villager-talks", "2026-09-11 11:30:48")
+scene("villager-memories-praise", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-memories at another second of the clock: the villager repeats the word of praise another "
+      "player gave it", "villager-talks", "2026-09-11 11:30:27")
+scene("villager-memories-letter", "memories-unfond", 10950, [2600, 4900, 8000, 10300, 10700, 10949],
+      frames(9900, 10950, 100), "villager-talks with each villager remembering a player of another town it "
+      "dislikes and holding that player's letter: it talks of the letter's town", "villager-talks",
+      "2026-09-11 11:30:52")
+scene("villager-memories-unfond", "memories-unfond", 10950, [2600, 4900, 8000, 10300, 10700, 10949],
+      frames(9900, 10950, 100), "villager-memories-letter at another second of the clock: the villager talks "
+      "of the player it dislikes and the days since they met", "villager-talks", "2026-09-11 11:30:27")
+scene("villager-memories-gift", "memories-resident", 10950, [2600, 4900, 8000, 10300, 10700, 10949],
+      frames(9900, 10950, 100), "villager-talks with each villager remembering a former resident of the town "
+      "and the furniture that player gave it: it talks of the gift", "villager-talks", "2026-09-11 11:30:52")
+scene("villager-memories-resident", "memories-resident", 10950, [2600, 4900, 8000, 10300, 10700, 10949],
+      frames(9900, 10950, 100), "villager-memories-gift at another second of the clock: the villager talks of "
+      "the former resident", "villager-talks", "2026-09-11 11:30:27")
+scene("villager-mail-held", "letter-held-3f", 12730, [2600, 7200, 10400, 11100, 12000, 12729], frames(10400, 12730, 50),
+      "villager-mail with the villager holding a letter of a player of another town: it shows that letter",
+      "villager-mail")
 
 
 # ------------------------------------------------------------------------------ saves

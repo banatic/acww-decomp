@@ -88,7 +88,7 @@ extern const MemberPointer data_ov068_02277120, data_ov068_02277150, data_ov068_
 #define HOME_ANIM_MODE 1
 #define HOME_ANIM_OUT_WORD 1
 #define HOME_DRAW_STEP 0x400 /* how far a frame it is drawn to the tile's centre going in */
-#define HOME_RAISED 0x1000   /* how high above the tile it starts coming out */
+#define HOME_OUT_STEP 0x1000 /* how far south of the tile's centre it starts coming out */
 #define HOME_COLLIDER 0xd00
 #define HOME_NO_ITEM 0xfff1
 #define HOME_ITEM_DELAY 300 /* frames added to the held item's check when it comes out with one */
@@ -279,7 +279,7 @@ void OutdoorVillagerHome_Open4(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226b1d0, OutdoorVillagerHome_Open4)
 
 /* func_ov068_0226b260: behaviour 4's start: a running act's effects reset, the watch held on
- * nothing, the villager put 0x1000 above the centre of the tile in front of its house, facing
+ * nothing, the villager put 0x1000 south of the centre of the tile in front of its house, facing
  * and walking at angle 0 (its mover too), its last position the same; the byte at 0x838 set,
  * held, the raise timer off (-1), the held item not shown, its mood's sounds off. */
 int OutdoorVillagerHome_Start4(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -292,7 +292,7 @@ int OutdoorVillagerHome_Start4(OutdoorVillagerBehaviour *self, u8 *villager)
     *(s16 *) (void *) home_at(villager, HOME_WALK_ANGLE) = 0;
     SceneMover_SetAngle((SceneMover *) (void *) home_at(villager, HOME_MOVER), 0);
     Vec3 *position = home_position(villager);
-    position->y = (fx32) ((u32) position->y + HOME_RAISED);
+    position->z = (fx32) ((u32) position->z + HOME_OUT_STEP);
     home_settle(villager);
     VillagerSceneObject_SetByte838(villager);
     *home_flags(villager) |= HOME_FLAG_HELD;
