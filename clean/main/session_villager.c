@@ -47,7 +47,7 @@ static int should_send(u8 *villager, int *index)
 }
 
 /* Sends `size` bytes of `payload` to handler `handler`. */
-static void send(const void *payload, int size, u32 handler)
+static void send_message(const void *payload, int size, u32 handler)
 {
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
@@ -78,7 +78,7 @@ void SessionVillager_SendItemsByIndex(int index, const u16 *items)
     }
     u8 payload[12];
     SessionVillager_PackItems(payload, (char) index, items);
-    send(payload, ITEMS_SIZE, HANDLER_VILLAGER_ITEMS_7B0);
+    send_message(payload, ITEMS_SIZE, HANDLER_VILLAGER_ITEMS_7B0);
 }
 CLEAN_AS(func_02078310, SessionVillager_SendItemsByIndex)
 
@@ -125,7 +125,7 @@ void SessionVillager_SendItem7D2ByIndex(int index, const u16 *item)
     }
     u8 payload[4];
     SessionVillager_PackItem(payload, (u8) index, item);
-    send(payload, ITEM_SIZE, HANDLER_VILLAGER_ITEM_7D2);
+    send_message(payload, ITEM_SIZE, HANDLER_VILLAGER_ITEM_7D2);
 }
 CLEAN_AS(func_020783e0, SessionVillager_SendItem7D2ByIndex)
 
@@ -169,7 +169,7 @@ void SessionVillager_SendObjectItemByIndex(u32 index, const u16 *item)
     }
     u8 payload[4];
     SessionVillager_PackItem(payload, (u8) index, item);
-    send(payload, ITEM_SIZE, HANDLER_VILLAGER_OBJECT_ITEM);
+    send_message(payload, ITEM_SIZE, HANDLER_VILLAGER_OBJECT_ITEM);
 }
 CLEAN_AS(func_020784b0, SessionVillager_SendObjectItemByIndex)
 
@@ -194,7 +194,7 @@ void SessionVillager_SendObjectByIndex(int index, int kind, const u16 *item, int
     }
     u8 payload[OBJECT_SIZE];
     SessionVillager_PackObject(payload, (u32) index, (u8) kind, item, (u32) slot, flag != 0);
-    send(payload, OBJECT_SIZE, HANDLER_VILLAGER_OBJECT);
+    send_message(payload, OBJECT_SIZE, HANDLER_VILLAGER_OBJECT);
 }
 CLEAN_AS(func_02078540, SessionVillager_SendObjectByIndex)
 
@@ -283,7 +283,7 @@ void SessionVillager_SendObjectChangeByIndex(int index, int value, int operation
     }
     u8 payload[CHANGE_SIZE];
     SessionVillager_PackObjectChange(payload, (char) index, (char) operation, (char) value);
-    send(payload, CHANGE_SIZE, HANDLER_OBJECT_CHANGE);
+    send_message(payload, CHANGE_SIZE, HANDLER_OBJECT_CHANGE);
 }
 CLEAN_AS(func_0207868c, SessionVillager_SendObjectChangeByIndex)
 
@@ -326,7 +326,7 @@ void SessionVillager_SendEntryItemByIndex(int index, int entry, const u16 *item)
     }
     u8 payload[ENTRY_ITEM_SIZE];
     SessionVillager_PackEntryItem(payload, index, entry, item);
-    send(payload, ENTRY_ITEM_SIZE, HANDLER_ENTRY_ITEM);
+    send_message(payload, ENTRY_ITEM_SIZE, HANDLER_ENTRY_ITEM);
 }
 CLEAN_AS(func_02078748, SessionVillager_SendEntryItemByIndex)
 
@@ -407,7 +407,7 @@ static void send_entry(int index, int entry, u32 handler)
 {
     u8 byte;
     SessionVillager_PackEntry(&byte, index, entry);
-    send(&byte, 1, handler);
+    send_message(&byte, 1, handler);
 }
 
 /* func_020788f4: the villager's entry `entry` is to be filled with this system's name. */

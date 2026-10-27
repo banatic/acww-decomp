@@ -417,7 +417,10 @@ def build_clean(flags: list[str]) -> list[str]:
         objrewrite.CALLS = calls
         for obj, key in built:
             if key:
-                data, _ = native_clean_profile.rewrite(obj.read_bytes(), known, native, prefix, profiles)
+                try:
+                    data, _ = native_clean_profile.rewrite(obj.read_bytes(), known, native, prefix, profiles)
+                except ValueError as e:
+                    raise SystemExit(f"{obj.relative_to(tree).with_suffix('.c').as_posix()}: {e}") from None
                 obj.write_bytes(data)
                 obj.with_suffix(".key").write_text(key)
                 C.cache_put("clean", key, obj)

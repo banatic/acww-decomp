@@ -11,6 +11,27 @@ import objrewrite
 from test_native_profile import signal_returns
 
 
+def check_captures(folder) -> None:
+    """A definition named like a game symbol is refused, static or not: the rewrite would bind
+    its uses to the game's (a static send became overlay 65's socket send)."""
+    source = folder / 'capture.c'
+    source.write_text('static int send(int x)\n{\n    return x + 1;\n}\n\n'
+                      'int probe_capture(int x)\n{\n    return send(x);\n}\n', newline='\n')
+    obj = folder / 'capture.o'
+    subprocess.run([*diffcheck.compiler(), '-O0', '-c', str(source), '-o', str(obj)], check=True)
+    data = obj.read_bytes()
+    assert profile.captured(data, {'send'}, native.PREFIX, {'probe_capture'}) == ['send']
+    assert profile.captured(data, set(), native.PREFIX, {'send'}) == ['send']
+    assert profile.captured(data, {'probe_capture'}, native.PREFIX, set()) == ['probe_capture']
+    assert profile.captured(data, {'recv'}, native.PREFIX, {'probe_capture'}) == []
+    try:
+        profile.rewrite(data, {'send'}, set(), native.PREFIX, {'probe_capture'})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('a static send was not refused')
+
+
 def main() -> None:
     names = ['probe_' + name for name in ['args', 'wide', 'void', 'signed', 'unsigned',
                                          'double', 'struct', 'recurse', 'tail', 'tail_target']]
@@ -22,6 +43,7 @@ def main() -> None:
     fixture = C.ROOT / 'tests/native/clean_profile_calls.c'
     flags = ['-std=c11', '-ffunction-sections', '-fno-inline', '-fno-optimize-sibling-calls',
              '-I', str(C.ROOT / 'runtime')]
+    check_captures(folder)
     original, rewritten = folder / 'original.o', folder / 'rewritten.o'
     subprocess.run([*diffcheck.compiler(), *flags, '-O0', '-DPROFILE_BODIES', '-c', str(fixture),
                     '-o', str(original)], check=True)

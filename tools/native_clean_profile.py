@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
+import struct
 
 import native_profile
 import objrewrite
@@ -43,13 +44,61 @@ class Entry:
     alias: bool = True
 
 
+def definitions(data: bytes, prefix: str) -> list[tuple[str, bool]]:
+    """The symbols an i386 COFF or ELF object defines, static ones included, as (plain name,
+    external); COFF names without `prefix` (sections, labels) are left out."""
+    found = []
+    if data[:4] == b'\x7fELF':
+        shoff, = struct.unpack_from('<I', data, 0x20)
+        shentsize, shnum = struct.unpack_from('<HH', data, 0x2E)
+        sections = [struct.unpack_from('<10I', data, shoff + i * shentsize) for i in range(shnum)]
+        symtab = next(s for s in sections if s[1] == 2)
+        strtab = sections[symtab[6]][4]
+        for at in range(symtab[4], symtab[4] + symtab[5], 16):
+            name, _, _, info, _, shndx = struct.unpack_from('<IIIBBH', data, at)
+            if shndx not in (0, 0xFFF1) and info & 15 in (0, 1, 2):  # not a section or file symbol
+                end = data.index(b'\0', strtab + name)
+                found.append((data[strtab + name:end].decode('latin-1'), info >> 4 != 0))
+        return found
+    _, _, _, symptr, count, _, _ = struct.unpack_from('<HHIIIHH', data, 0)
+    strings = symptr + 18 * count
+    i = 0
+    while i < count:
+        raw = data[symptr + 18 * i:symptr + 18 * (i + 1)]
+        if raw[:4] == b'\0\0\0\0':
+            at = strings + struct.unpack_from('<I', raw, 4)[0]
+            name = data[at:data.index(b'\0', at)].decode('latin-1')
+        else:
+            name = raw[:8].rstrip(b'\0').decode('latin-1')
+        section, = struct.unpack_from('<h', raw, 12)
+        if section > 0 and raw[16] in (2, 3) and name.startswith(prefix):  # external or static
+            found.append((name[len(prefix):], raw[16] == 2))
+        i += 1 + raw[17]
+    return found
+
+
+def captured(data: bytes, known: set[str], prefix: str, functions: set[str]) -> list[str]:
+    """The names an object defines that the rewrite would bind to something else: it sends
+    every reference to a symbol-table name or a registered Clean function to that (objrewrite),
+    whether the object's own symbol is static or not, so clean/main/villager_letter.c's static
+    `send` became overlay 65's socket send. A registered function's own definition is the one
+    exception: it becomes that function's body."""
+    return sorted({name for name, external in definitions(data, prefix)
+                   if name in known - functions or (name in functions and not external)})
+
+
 def rewrite(data: bytes, known: set[str], native: set[str], prefix: str,
             functions: set[str]) -> tuple[bytes, set[str]]:
     """Absolute Clean pointers retain their name, an alias to the public wrapper.
 
     Game references still follow the usual DS/Native rules. Restore BODY so
     other users of objrewrite in this process cannot inherit Clean renaming.
+    An object that defines a name the rewrite would capture (captured) is refused.
     """
+    taken = captured(data, known, prefix, functions)
+    if taken:
+        raise ValueError('defines ' + ', '.join(taken) + ', named like a game symbol or a Clean function: '
+                         'the rewrite would bind its uses to that one instead; rename it')
     saved = objrewrite.BODY
     try:
         objrewrite.BODY = functions
