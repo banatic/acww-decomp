@@ -255,6 +255,36 @@ match: main/debug_screen main/debug_text main/game_halt main/game_stop main/card
   main/battery_warning main/backup_card main/activity_card main/card_save main/save_stamp
 
 area: Unreachable for one player
+group: the gatekeeper's visits and connections
+scene: none: the gatekeepers' talk states, lines and states of a visit by DS wireless or over the Wi-Fi Connection: the search for a town or a friend, the link's statuses and errors, the downloads, the guests passing the gate and arriving, the linked scene changes
+reach: each follows GatekeeperTalk_StartSession, _StartWfc, _StartFindParent or _StartJoinParent (a session of network mode 2 or 4) or a gatekeeper state those talks set (5-0xd, 0xf, 0x11); without a second DS or the server none goes on (gate-visit: the wireless library's set-up halts the game about 50 frames after the search's line), and the Wi-Fi choice is refused without a registered friend
+needs: unreachable
+match: ov048/gatekeeper_talk:GatekeeperTalk_PutErrorCode ov048/gatekeeper_talk:GatekeeperTalk_Line80Or63
+  ov048/gatekeeper_talk:GatekeeperTalk_Line82Or65 ov048/gatekeeper_talk:GatekeeperTalk_Line21Or22
+  ov048/gatekeeper_talk:GatekeeperTalk_LineOfSession ov048/gatekeeper_talk:GatekeeperTalk_*Status*
+  ov048/gatekeeper_talk:GatekeeperTalk_WaitConnected ov048/gatekeeper_talk:GatekeeperTalk_JoinParent
+  ov048/gatekeeper_talk:GatekeeperTalk_EndWithLine ov048/gatekeeper_talk:GatekeeperTalk_TimeOut*
+  ov048/gatekeeper_talk:GatekeeperTalk_CheckError ov048/gatekeeper_talk:GatekeeperTalk_EndWfc
+  ov048/gatekeeper_talk:GatekeeperTalk_GroupCheck ov048/gatekeeper_talk:GatekeeperTalk_TakeFriend
+  ov048/gatekeeper_talk:GatekeeperTalk_FindParent ov048/gatekeeper_talk:GatekeeperTalk_AfterDownloads
+  ov048/gatekeeper_talk:GatekeeperTalk_IsServerError ov048/gatekeeper_talk:GatekeeperTalk_*Get
+  ov048/gatekeeper_talk:GatekeeperTalk_*StatsUpload ov048/gatekeeper_talk:GatekeeperTalk_WaitFriends
+  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer5f ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo62
+  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo59 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer51
+  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerSession ov048/gatekeeper_talk_lines:GatekeeperTalk_OnAnswer57
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_OnAnswer74 ov048/gatekeeper_talk_lines:GatekeeperTalk_StartSendStatus1
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22 ov048/gatekeeper_talk_lines:GatekeeperTalk_JoinFriend
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartJoinParent ov048/gatekeeper_talk_lines:GatekeeperTalk_StartFindParent
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartWfc ov048/gatekeeper_talk_lines:GatekeeperTalk_EndConnection
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartSession ov048/gatekeeper_talk_lines:GatekeeperTalk_EndSession
+  ov048/gatekeeper_states:Gatekeeper_*State[5-9] ov048/gatekeeper_states:Gatekeeper_*State[ABCDF]
+  ov048/gatekeeper_states:Gatekeeper_*State11 ov048/gatekeeper_states:Gatekeeper_State9*
+  ov048/gatekeeper_states:Gatekeeper_StateB* ov048/gatekeeper_states:Gatekeeper_Pass*
+  ov048/gatekeeper:Gatekeeper_CheckPairedTown ov004/gatekeeper2:Gatekeeper2_UpdateOther
+  ov004/gatekeeper2:Gatekeeper2_EnterOther ov004/gatekeeper2:Gatekeeper2_UpdateAwait
+  ov004/gatekeeper2:Gatekeeper2_EnterAwait ov004/gatekeeper2:Gatekeeper2Talk_SwapDesign
+
+area: Unreachable for one player
 group: a player moving to another town
 scene: none: Pelly's farewell to a player who moves out to another console's town, and the walk out of the town (ov068/sequence4.h states 10-16, field actor state 0x88)
 reach: the second sequence starts with Block020b220c_Flag4b1c, set only by PostClerk_UpdateLeave (her state 8, ov054/post_clerk.c) after line 0x3c, which follows activity job 0x1f of line 0x3b; line 0x3b comes after a linked game found (lines 0x38 and 0x39), so only in the local wireless session her "move" topic starts (scene town-hall-move); field actor state 0x88 is asked for only by state 14 (FieldActor_PlayerRequestState88)

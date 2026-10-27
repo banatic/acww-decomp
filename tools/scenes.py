@@ -233,6 +233,11 @@ SAVES = {
     # villager, 0x50; the seed's is 1): on the player's birthday (1 January in the seed) and on new
     # year's day each writes its letter (main/villager_mail.c, from a fondness of 0x40)
     "fond": [(0x9284 + 0x7EC * v + 0x6C, "<b", 0x50) for v in range(4)],
+    # the rod held, 50 bells and two bags of bells in pockets 0 and 1 (0x1492 and 0x14b0): a purchase
+    # dearer than the wallet is paid from the bags, the smallest first (main/player_pockets.c)
+    "bag-pay": [(HELD, "<H", 0x1374), (MONEY, "<I", 50), (POCKETS, "<H", 0x1492), (POCKETS + 2, "<H", 0x14B0)],
+    # as "furni" with the wallet full (99,999 bells): a sale's bells go into a bag in a free pocket
+    "bag-sell": [(POCKETS, "<H", 0x3508), (POCKETS + 2, "<H", 0x4000), (MONEY, "<I", 99999)],
     # as "museum" with the item 0x3530 in pocket 4: the one K.K. takes in a trade for 0x4a34 when the
     # player carries it at 19:00-19:59 on his night (ov068/cafe_guest.c, his message 0xe)
     "kk-trade": [(POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0), (POCKETS + 4, "<H", 0x450C),
@@ -1255,6 +1260,11 @@ scene("kk-trade", "kk-trade", 7460, [2600, 5640, 6600, 7000, 7459], frames(6500,
       "kk-trade", "2026-09-12 19:35:00")
 scene("nook-package", "nook-package", 5910, [2600, 3800, 4500, 5000, 5909], frames(3900, 5910, 50),
       "into Nook's store with the item he asks for: given to him for another")
+scene("bag-pay", "bag-pay", 9200, [2600, 3800, 4800, 5500, 7000, 9199], frames(4300, 9200, 100),
+      "shop-buy-letter with 50 bells and two bags of bells: the purchases are paid from the bags",
+      "shop-buy-letter")
+scene("bag-sell", "bag-sell", 6200, [2600, 3800, 4700, 5600, 6199], frames(4000, 6200, 100),
+      "shop-sell with the wallet full: the sale's bells go into a bag", "shop-sell")
 scene("timer", "timer", 3576, [2600, 2950, 3100, 3300, 3575], frames(2700, 3576, 25),
       "the pockets' timer: a three-minute countdown started, then stopped")
 scene("new-year-fond", "fond", 9710, [2800, 4200, 5000, 6000, 7800, 9709], frames(4200, 9710, 100),
