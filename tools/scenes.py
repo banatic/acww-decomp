@@ -100,6 +100,9 @@ SAVES = {
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
     "rich": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)],  # ... and 30,000 bells
     "wallet": [(MONEY, "<I", 30000)],  # 30,000 bells, the seed's held item kept
+    # as "rich" with the item 0x36fc in pocket 0: Tom Nook takes it for 0x4a30 when the player brings
+    # it to his counter (ov050/nook_clerk_talk.c, line 0x35, NookClerkTalk_OnAnswerPackage)
+    "nook-package": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (POCKETS, "<H", 0x36FC)],
     # the player played last time without saving: record 0's flag 2 (flags at 0x23f8 of the
     # record, player_record.c), the mole's first lecture (the record's count at 0x2423 at 0)
     "resetti": [(0x14 + 0x23F8, "<I", 0x660C), (0x14 + 0x2423, "<B", 0)],
@@ -222,6 +225,18 @@ SAVES = {
     # painting (0x3894), the first item of each of the museum's four collections
     "museum": [(POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0), (POCKETS + 4, "<H", 0x450C),
                (POCKETS + 6, "<H", 0x3894)],
+    # the rod held and the item 0x156c in pocket 0: a timer, whose row in the pockets starts a
+    # countdown of 3, 5, 10 or 15 minutes on the second screen panel or stops it
+    # (ov096/pockets_screen.c, main/catch_panel.h)
+    "timer": [(HELD, "<H", 0x1374), (POCKETS, "<H", 0x156C)],
+    # villagers 0-3 fond of the seed's player (the fondness of their memory 0, at 0x6c of the town
+    # villager, 0x50; the seed's is 1): on the player's birthday (1 January in the seed) and on new
+    # year's day each writes its letter (main/villager_mail.c, from a fondness of 0x40)
+    "fond": [(0x9284 + 0x7EC * v + 0x6C, "<b", 0x50) for v in range(4)],
+    # as "museum" with the item 0x3530 in pocket 4: the one K.K. takes in a trade for 0x4a34 when the
+    # player carries it at 19:00-19:59 on his night (ov068/cafe_guest.c, his message 0xe)
+    "kk-trade": [(POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0), (POCKETS + 4, "<H", 0x450C),
+                 (POCKETS + 6, "<H", 0x3894), (POCKETS + 8, "<H", 0x3530)],
     # every fossil, fish and insect given by player 0, and the paintings but the last (the
     # record is not complete, so nothing is due for completing it)
     "museum-full": [(group + i, "<B", 0x11) for group, items in ((MUSEUM_A, 52), (MUSEUM_B, 56), (MUSEUM_C, 56))
@@ -1223,6 +1238,28 @@ scene("lost-child", "lost-child", 8000, [2600, 3800, 4500, 5200, 6000, 7000, 799
 scene("lost-mother", "lost-mother", 6500, [2600, 3800, 4500, 5100, 5800, 6499], frames(3700, 6500, 100),
       "a week after a visit, the lost child's mother by the gate: her talks, then into the house",
       rtc="2026-09-14 11:30:00")
+scene("birthday-party", "wallet", 15862, [2600, 6100, 9859, 11400, 12400, 14600, 15200, 15861], frames(9800, 15862, 100),
+      "on a villager's birthday, after the present: its guest and it act together, the guest is talked to "
+      "twice and the villager again, and the player leaves the house", rtc="2026-09-25 14:00:00")
+scene("sick-leave", "sick", 9974, [2600, 5900, 8069, 9000, 9600, 9973], frames(8000, 9974, 100),
+      "after the sick villager's medicine, wait while it acts in bed, then leave its house",
+      rtc="2026-09-24 14:00:00")
+scene("title-idle", "seed", 16500, [1300, 8000, 14900, 15600, 16499], frames(14000, 16500, 100),
+      "from power-on with no key pressed: the title waits and starts itself again")
+scene("observatory-leave", "museum", 19176, [2600, 12500, 18577, 18800, 19175], frames(18500, 19176, 25),
+      "observatory-more, then down the stairs out of the observatory", rtc="2026-09-11 20:30:00")
+scene("museum-insects-leave", "museum-full", 9892, [2600, 6300, 9293, 9500, 9891], frames(9200, 9892, 25),
+      "museum-insects-night, then B and DOWN toward the night insects' cases", rtc="2026-09-11 20:30:00")
+scene("kk-trade", "kk-trade", 7460, [2600, 5640, 6600, 7000, 7459], frames(6500, 7460, 50),
+      "on a Saturday before K.K.'s show, in the cafe with the item he wants: his trade agreed",
+      "kk-trade", "2026-09-12 19:35:00")
+scene("nook-package", "nook-package", 5910, [2600, 3800, 4500, 5000, 5909], frames(3900, 5910, 50),
+      "into Nook's store with the item he asks for: given to him for another")
+scene("timer", "timer", 3576, [2600, 2950, 3100, 3300, 3575], frames(2700, 3576, 25),
+      "the pockets' timer: a three-minute countdown started, then stopped")
+scene("new-year-fond", "fond", 9710, [2800, 4200, 5000, 6000, 7800, 9709], frames(4200, 9710, 100),
+      "new-year-talks with the villagers fond of the player: on New Year's Day, the player's birthday, "
+      "they write their letters and talk of it", "new-year-talks", "2027-01-01 13:00:00")
 
 
 # ------------------------------------------------------------------------------ saves

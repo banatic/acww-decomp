@@ -1,0 +1,81 @@
+# timer (format: runtime/input.h), played from a town save by tools/scenes.py (the save is not
+# in this repository). Boot: as pockets-town.txt; the player stands in front of the house from
+# about 2550. Save: the rod held and the item 0x156c (a timer) in pocket 0. The pockets by the pen
+# from 2700: the timer (2806) and its first row, the time (2854), the shortest of the four
+# (2902, three minutes: ov096/pockets_screen.c PocketsScreen_ActionMessageMenu, then
+# PlayerMessages_ApplyMode): the countdown panel appears (main/catch_panel.h) with the field
+# label's notice. Y twice closes the page; the pockets again from 3102, the timer's first row
+# now stops it (3256). Y twice closes the page and the panel hides.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2700 - 244,10
+2706 - -
+2806 - 20,123
+2814 - -
+2854 - 35,42
+2862 - -
+2902 - 25,32
+2910 - -
+2950 Y -
+2956 - -
+2996 Y -
+3002 - -
+3102 - 244,10
+3108 - -
+3208 - 20,123
+3216 - -
+3256 - 35,42
+3264 - -
+3324 Y -
+3330 - -
+3370 Y -
+3376 - -

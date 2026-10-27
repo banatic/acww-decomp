@@ -1,0 +1,21 @@
+# title-idle (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). No input from power-on: the title waits, and after about 15,000
+# frames without a key it starts itself again (ov147/title_scene.c TitleScene_EnterIdleRestart,
+# TitleScene_RestartTitle).
+0 - -
+1000 - -
+2000 - -
+3000 - -
+4000 - -
+5000 - -
+6000 - -
+7000 - -
+8000 - -
+9000 - -
+10000 - -
+11000 - -
+12000 - -
+13000 - -
+14000 - -
+15000 - -
+16000 - -

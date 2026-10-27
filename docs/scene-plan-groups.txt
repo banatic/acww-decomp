@@ -254,6 +254,112 @@ needs: unreachable
 match: main/debug_screen main/debug_text main/game_halt main/game_stop main/card_pulled main/lid_sleep
   main/battery_warning main/backup_card main/activity_card main/card_save main/save_stamp
 
+area: Unreachable for one player
+group: a player moving to another town
+scene: none: Pelly's farewell to a player who moves out to another console's town, and the walk out of the town (ov068/sequence4.h states 10-16, field actor state 0x88)
+reach: the second sequence starts with Block020b220c_Flag4b1c, set only by PostClerk_UpdateLeave (her state 8, ov054/post_clerk.c) after line 0x3c, which follows activity job 0x1f of line 0x3b; line 0x3b comes after a linked game found (lines 0x38 and 0x39), so only in the local wireless session her "move" topic starts (scene town-hall-move); field actor state 0x88 is asked for only by state 14 (FieldActor_PlayerRequestState88)
+needs: unreachable
+match: ov068/sequence4:Sequence4_UpdateState1[0-6] ov068/sequence4:Sequence4_EnterState1[0-6]
+  ov068/field_actor_states87:FieldActor_*State88 ov068/field_actor_states87:FieldActor_State88Message
+
+area: Unreachable for one player
+group: the destructors of main's static objects
+scene: none: the destructors of the objects main's static initialisers construct (the state block, the sky, the slot pools, the collision world, the text font and about seventy more)
+reach: main's, the autoloads' and the TCMs' static initialisers register these destructors with __register_global_object (0x02138bb0); its chain is walked by FS_EndOverlay only for the objects inside the overlay it ends, and in full only by __destroy_global_chain (func_02138910), whose one caller func_02128f54 belongs to the C library's exit and terminate path (func_02128fa8, func_0212d424, the terminate handler func_02138bf4), which the game never takes. Listed: each registered destructor that nothing else calls or points to, each class whose constructors only main's static initialisers call (its vtable's destructors), and what only those call (tools: a call and pointer scan of the module images)
+needs: unreachable
+match: main/ab_all_obj:AbAllObj_Destruct main/screen_icon:ScreenIcon_DestructFree
+  main/screen_icon:ScreenIcon_Destruct main/wireless_icon:WirelessIcon_Destruct
+  main/global_021cfc98:Global021cfc98_Destruct main/trivial_object:TrivialObject_DestructByte
+  main/a_mes_obj:AMesObj_Destruct main/collision_box:CollisionBox_ListDestruct
+  main/collision_area:CollisionArea_ListDestruct main/field_collision:CollisionPosts_Destroy
+  main/field_collision:CollisionWalls_Destroy main/field_collision:CollisionFloors_Destroy
+  main/field_collision:CollisionWorld_Destroy main/block_02034858:Block021c5160_Destroy
+  main/room_interior:RoomInterior_DestroySceneCarpets
+  main/room_interior:RoomInterior_DestroySceneWallpapers main/bg_models:BgModels_Destruct
+  main/caution_window:CautionWindow_DestructDelete main/caution_window:CautionWindow_Destruct
+  main/caution_window:CautionWindowLine_DestructDelete main/caution_window:CautionWindowLine_Destruct
+  main/caution_window:CautionWindowUnit_DestructDelete main/caution_window:CautionWindowUnit_Destruct
+  main/caution_window:CautionWindowMessage_DestructDelete
+  main/caution_window:CautionWindowMessage_Destruct main/town_item_lists:TownItemLists_DestructListB
+  main/town_item_lists:TownItemLists_DestructListA main/view_frustum:ViewFrustum_Destruct
+  main/view_frustum:ViewFrustum_DestructDelete main/player_options:PlayerOptions_Empty2B4
+  main/player_options:PlayerOptions_Nothing384 main/mail_text:MailText_Destruct
+  main/globe:Globe_DestructView main/event_calendar:EventCalendar_DateDestruct
+  main/event_schedule:EventSchedule_Destruct main/town_acre_count:TownAcreCount_DestroyWorst
+  main/town_acre_count:TownAcreCount_DestroyAcres main/town_acre_count:TownAcreCount_DestroyTown
+  main/town_record:TownRecord_Destruct main/town_layout:TownLayout_Destruct
+  main/text_font:TextFont_Destruct main/place_claim:PlaceClaim_DestructAll
+  main/room_cells:RoomCells_DestructNookRecords main/room_cells:RoomCells_Destruct17To24Records
+  main/furniture_info:FurnitureFiles_Destruct main/room_score_state:RoomScoreState_DestructJudgeDate
+  main/room_score_state:RoomScoreState_DestructCategories
+  main/room_score_state:RoomScoreState_DestructMarks main/room_score_state:RoomScoreState_DestructBest
+  main/anim_slots:AnimSlots_Destruct main/body_look:BodyLook_DestructTable
+  main/cloth_slots:ClothSlots_Destruct main/face_anim_slots:FaceAnimSlots_Destruct
+  main/face_anim_heaps:FaceAnimHeaps_Destruct main/face_texture:FaceTexture_Destruct
+  main/glasses_look:GlassesLook_DestructTable main/head_look:HeadLook_DestructTable
+  main/held_item_pool:HeldItemPool_Destruct main/body_anim_heaps:BodyAnimHeaps_Destruct
+  main/actor_palettes:ActorPalettes_Destruct main/fishing_float:FishingFloatPool_Destruct
+  main/house_record:HouseRecord_DestructSongs main/house_record:HouseRecord_Destruct
+  main/main_random:MainRandom_Destruct main/item_info:ItemInfoFiles_Destruct
+  main/item_group_order:ItemGroupOrder_DestructAll main/museum_record:MuseumRecord_Destruct
+  main/design_assets:DesignArchive_Destruct main/design_assets:DesignTextures_Destruct
+  main/design_assets:DesignPalettes_Destruct main/design_sets:DesignManager_Destruct
+  main/design_sets:DesignSample_Destruct main/design_sets:DesignHolder_Destruct
+  main/design_sets:ShopDesigns_Destruct main/session_link:Session_Destroy main/bbs:Bbs_Destruct
+  main/resource_pools:ResourcePools_Heap4Destruct main/resource_pools:ResourcePools_Heap8Destruct
+  main/resource_pools:ResourcePools_BlockDestruct main/villager_bonds:VillagerBond_Destruct
+  main/villager_outdoors:VillagerOutdoors_Destruct main/villager_plots:VillagerPlot_DestroyList
+  main/villager_roster:VillagerRoster_Destruct main/villager_state:VillagerState_DestructTable
+  main/actor_entries:ActorEntries_DestructTable main/slot_pool:SlotPool_ItemsDestructDelete
+  main/slot_pool:SlotPool_ItemsDestruct main/slot_pool:SlotPool_PartsDestructDelete
+  main/slot_pool:SlotPool_PartsDestruct main/slot_pool:SlotPool_AnimSetsDestructDelete
+  main/slot_pool:SlotPool_AnimSetsDestruct main/slot_pool:SlotPool_BlocksDestructDelete
+  main/slot_pool:SlotPool_BlocksDestruct main/slot_pool:SlotPool_ClothesDestructDelete
+  main/slot_pool:SlotPool_ClothesDestruct main/slot_pool:SlotPool_Heap4DestructDelete
+  main/slot_pool:SlotPool_Heap4Destruct main/slot_pool:SlotPool_Heap8DestructDelete
+  main/slot_pool:SlotPool_Heap8Destruct main/slot_pool:SlotPool_SpeakersDestructDelete
+  main/slot_pool:SlotPool_SpeakersDestruct main/slot_pool:SlotPool_BaseDestruct
+  main/slot_pool:SlotPool_BaseDestructDelete main/slot_pool:SlotPool_BaseDestructVirtual
+  main/spawner:Spawner_RequestDestruct main/block_021d27ac:Block021d27ac_Destruct
+  main/event_winner:EventWinner_Destruct main/day_plan:DayPlan_Destruct
+  main/item_1568_count:Item1568Count_Destruct main/last_sale:LastSale_Destruct
+  main/turnip_prices:TurnipPrices_Destruct main/town_spot:TownSpot_Destruct
+  main/beside_spot:BesideSpot_Destruct main/near_spot:NearSpot_Destruct
+  main/block_021d27ac_parts:Block021d27acPart20_Destruct
+  main/block_021d27ac_parts:Block021d27acPart30_Destruct
+  main/block_021d27ac_parts:Block021d27acPart18_Destruct main/middle_spot:MiddleSpot_Destruct
+  main/screen_panels:ScreenPanels_Delete main/screen_panels:ScreenPanels_Destruct
+  main/bells_panel:BellsPanel_Delete main/bells_panel:BellsPanel_Destruct main/menu_tab:MenuTab_Delete
+  main/menu_tab:MenuTab_Destruct main/camera_grid:CameraGrid_Delete
+  main/camera_grid:CameraGrid_Destruct main/catch_panel:CatchPanel_Delete
+  main/catch_panel:CatchPanel_Destruct main/clock_panel:ClockPanel_Delete
+  main/clock_panel:ClockPanel_Destruct main/catch_panel:CatchPanelText_Delete
+  main/catch_panel:CatchPanelText_Destruct main/screen_mark:ScreenMark_Delete
+  main/screen_mark:ScreenMark_Destruct main/transition_mark:TransitionMark_Delete
+  main/transition_mark:TransitionMark_Destruct main/control_mode_icon:ControlModeIcon_Delete
+  main/control_mode_icon:ControlModeIcon_Destruct main/exchange_block:ExchangeBlock_DestructVisitors
+  main/session_players:SessionPlayers_Destruct main/bottle_mail:BottleMail_DestructState
+  main/mail:MailPostOffice_Destruct main/player_records:PlayerRecords_DestructGuests
+  main/player_records:PlayerRecords_DestructTown main/villager_move_record:VillagerMoveRecord_Destruct
+  main/global_021dc5b0:Global021dc5b0_Destruct main/scene_claim:SceneClaimExit_Destruct
+  main/scene_claim:SceneClaimMasks_Destruct main/state_block:StateBlock_Destruct
+  main/town_start_day:TownStartDay_Destruct main/link_state:LinkState_Destruct
+  main/message_query:MessageQuery_Delete main/message_query:MessageQuery_Destruct
+  main/text_walker:TextCopier_Delete main/text_walker:TextCopier_Destruct
+  main/text_walker:BoxWalker_Delete main/text_walker:BoxWalker_Destruct
+  main/select_bmg:SelectBmg_Delete main/select_bmg:SelectBmg_Destruct main/shadow:ObjShadow_Destruct
+  main/fox_shop:FoxShop_Destruct main/fox_shop:FoxPassword_Destruct
+  main/shop_list_a:ShopListA_Destruct main/nook_store:NookStore_Destruct
+  main/shop_answers:ShopAnswers_Destruct main/snowmen:Snowmen_DestructRecords
+  main/snowmen:Snowmen_DestructLooseBalls main/constellations:Constellations_DestructList
+  main/house_looks:HouseLooks_Destruct main/house_looks:HouseLooks_DestructDesign
+  main/house_looks:HouseLooks_DestructLooks main/message_reader:MessageReader_Destruct
+  main/scene_place:ScenePlace_Destruct main/touch_pick_shapes:TouchPick_DestructBase
+  main/touch_pick_shapes:TouchPick_Destruct main/field_label:FieldLabel_Delete
+  main/field_label:FieldLabel_Destroy main/field_label_window:FieldLabelWindow_Delete
+  main/field_label_window:FieldLabelWindow_Destroy main/sky:Sky_Destruct
+  main/sky_objects:SkyObjects_Destruct main/sky_weather_day:SkyWeatherDay_Destruct
+
 # ================================================================== the seed's day: buildings
 
 area: Shops and buildings (the seed's day)
