@@ -89,6 +89,12 @@ def raw(offset: int, data: bytes) -> list[tuple[int, str, int]]:
 
 # a footer of the game's letters from the shop (its five characters, at 0xd8 of a letter)
 LETTER_FOOTER_SHOP = [(0xD8 + 2 * i, "<H", c) for i, c in enumerate((0xB108, 0xAD74, 0x0020, 0xC0C1, 0xC810))]
+# the town's game statistics record (main/wfc_stats.h) in the state block
+WFC_STATS = 0x16AD0
+# a town paired with the player's (main/paired_town.h): its id 0x1234 and the seed's name
+PAIRED_TOWN = bytes.fromhex("3412" + "4331" * 6)
+# the rod held, 30,000 bells and every item with variants had (the "catalog-full" save)
+CATALOG_FULL = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)] + [(0x14 + 0x1C18 + i, "<B", 0xFF) for i in range(0x100)]
 SAVES = {
     "seed": [],
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
@@ -296,6 +302,45 @@ SAVES = {
     "job-0d": [],
     "pockets-town": [(HELD, "<H", 0x1374)] + [(POCKETS + 2 * i, "<H", item) for i, item in
                                               enumerate((0x12B0, 0x12E8, 0x1408, 0x14FE, 0x1567))],
+
+    # the axe at its last wear (0x1372, the eighth of the axes 0x136b-0x1372; 0x1373 is the golden
+    # one) held: a swing that wears it (flag 0x14 of the field actor, drawn 1 in 8 at each swing,
+    # ov003/field_actor.c FieldActor_EnterState46) breaks it instead (states 0x4b and 0x4c)
+    "axe-worn": [(HELD, "<H", 0x1372)],
+
+    # an umbrella (0x1380, tool 10) held: the actions that end by taking the held item out again
+    # (FieldActor_RequestState3D) take out an umbrella by state 0x3e instead
+    "umbrella": [(HELD, "<H", 0x1380)],
+
+    # the town's game statistics record (main/wfc_stats.h, 0x238 bytes at 0x16ad0 of the state
+    # block; the seed's is a blank design, all bytes 0xff, and zeros) in use (status 2 at 0x236), as
+    # a Wi-Fi Connection session leaves it once the date moves on, with its checksum at 0x234 made
+    # good: the spawner then makes the faceless cat of overlay 74 (main/spawner.c Spawner_CheckD020In);
+    # no cockroaches in the house (as for "songs")
+    "blanca": [(WFC_STATS + 0x234, "<H", 0x00FE), (WFC_STATS + 0x236, "<B", 2), (ROACHES, "<B", 0)],
+
+    # as "catalog-full" (its first bytes mark every fish and insect had, ItemRecord_HasAllFish and
+    # _HasAllInsects) with item 0x37e0 in pocket 0: the turtle of overlay 80 comes (flag 8 of
+    # main/block_021d27ac.c, Block021d27ac_NoteCollections, on a day without event 8), asks for that
+    # item and gives the golden rod and net (ov080/turtle_talk.h)
+    "turtle": CATALOG_FULL + [(POCKETS, "<H", 0x37E0)],
+
+    # the player paired with another town's player 7 days ago, as a visit between two towns leaves it
+    # (main/paired_town.h: the pairing at 0x242c of the player's record and its copy at 0x173e2 of the
+    # state block, a town of id 0x1234 named as the seed's, then the days left in bits 0-3 of the
+    # state byte): without the pairing's flag 4 the spawner makes the lost child of
+    # main/missing_npc1.c (Spawner_CheckD022In), with it the one of missing_npc2.c (_CheckD023In); no
+    # cockroaches in the house (as for "songs")
+    "lost-child": (raw(0x14 + 0x242C, PAIRED_TOWN + bytes((7, 0))) + raw(0x173E2, PAIRED_TOWN + bytes((7, 0))) +
+                   [(ROACHES, "<B", 0)]),
+    "lost-mother": (raw(0x14 + 0x242C, PAIRED_TOWN + bytes((0x17, 0))) + raw(0x173E2, PAIRED_TOWN + bytes((0x17, 0))) +
+                    [(ROACHES, "<B", 0)]),
+
+    # as "catalog-full" with every wallpaper and carpet had too (bytes 0x100-0x111 of the item
+    # record, main/item_record.h: 68 bits each): Nook's order catalog lists them, and a wallpaper or a
+    # carpet picked there is shown in the room (ov004/room_preview.h, the wall and floor objects)
+    "catalog-all": CATALOG_FULL + [(0x14 + 0x1C18 + 0x100 + part + i, "<B", 0x0F if i == 8 else 0xFF)
+                                   for part in (0, 9) for i in range(9)],
 }
 
 SAVES["job-0d"] = [e for e in SAVES["job-0c"] if e[0] != VILLAGER_PART + 0x0A] + [(VILLAGER_PART + 0x0A, "<B", 0x0D)] + raw(
@@ -1153,6 +1198,31 @@ scene("villager-memories-resident", "memories-resident", 10950, [2600, 4900, 800
 scene("villager-mail-held", "letter-held-3f", 12730, [2600, 7200, 10400, 11100, 12000, 12729], frames(10400, 12730, 50),
       "villager-mail with the villager holding a letter of a player of another town: it shows that letter",
       "villager-mail")
+
+scene("axe-break", "axe-worn", 3700, [2600, 3000, 3100, 3300, 3500, 3699], frames(2950, 3700, 25),
+      "swing the last worn axe at a tree until a swing that would wear it breaks it")
+scene("umbrella-talk", "umbrella", 5000, [2600, 4100, 4500, 4800, 4999], frames(4000, 5000, 50),
+      "villager-talk with an umbrella held: the umbrella is opened again when the talk ends")
+scene("blanca", "blanca", 11900, [2600, 4200, 6000, 6700, 7300, 8700, 10900, 11899], frames(4100, 11900, 200),
+      "the faceless cat: her talk's other answers, her face drawn in the design editor and its theme typed, "
+      "her later talks, then into the house", rtc="2026-09-16 11:30:00")
+scene("turtle", "turtle", 8875, [2600, 3300, 4500, 5600, 6300, 7500, 8874], frames(3200, 8875, 100),
+      "the turtle by the house of a player with every fish and insect: an item traded, then the golden rod and "
+      "net given", rtc="2026-09-14 11:30:00")
+scene("house-sit", "house-furni", 5700, [2600, 4600, 5330, 5450, 5550, 5699], frames(5300, 5700, 10),
+      "house-furni's chair left to the side, sat on again from the side, its blocked side tried")
+scene("gardens-judge", "seed", 11630, [4400, 6000, 8500, 9500, 10500, 11629], frames(8400, 11630, 100),
+      "on the gardening event's judging day, talk to the turtle judging the gardens",
+      rtc="2027-04-10 10:00:00")
+scene("catalog-preview", "catalog-all", 6700, [2600, 4800, 5100, 5600, 5900, 6200, 6699], frames(4800, 6700, 50),
+      "Nook's order catalog with every wallpaper and carpet had: furniture, wallpapers, carpets and letter "
+      "papers checked and shown in the room")
+scene("lost-child", "lost-child", 8000, [2600, 3800, 4500, 5200, 6000, 7000, 7999], frames(3700, 8000, 100),
+      "a week after a visit, the lost child by the gate: its talks' answers, followed, lost and found, then into "
+      "the house", rtc="2026-09-14 11:30:00")
+scene("lost-mother", "lost-mother", 6500, [2600, 3800, 4500, 5100, 5800, 6499], frames(3700, 6500, 100),
+      "a week after a visit, the lost child's mother by the gate: her talks, then into the house",
+      rtc="2026-09-14 11:30:00")
 
 
 # ------------------------------------------------------------------------------ saves

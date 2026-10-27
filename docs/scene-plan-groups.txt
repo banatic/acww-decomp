@@ -27,6 +27,24 @@ needs: unreachable
 match: ov146/* main/wfc_* main/wifi_friends
 
 area: Unreachable for one player
+group: the other console's field actor: its states' messages
+scene: none: the message handlers of the field actor's states and the updates of another player's actor (FieldActor_State<N>Message, *Remote), which ask for a state as a linked console reported it
+reach: only a state message of another console's actor (a second DS in the session) runs them; this console's actor asks for its states directly (findings 2026-10-22, field actor states)
+needs: unreachable
+match: ov003/field_actor:*Message ov003/field_actor:*Remote* main/field_actor_states:*Message
+  main/field_actor_states:*Remote* ov004/field_actor_room_states*:*Message ov004/field_actor_room_states*:*Remote*
+  ov004/field_actor_place_states:*Message ov004/field_actor_place_states:*Remote*
+
+area: Unreachable for one player
+group: the lost child's walk home, and the test character
+scene: none: the walk of scene 0x2f in which the lost child of main/missing_npc1.c finds its mother of main/missing_npc2.c (their states SCENE_2F, the mother's turn, her second speaker and talk end), and npc_plc (the special character whose one line is message 0 of the archive "test")
+reach: the child and the mother are made in the two towns of a pairing (Spawner_CheckD022In and _CheckD023In: scenes lost-child and lost-mother), so they meet only in the other player's town; npc_plc's profile 0x7c (data_020e82f8) is not in the spawner's table (data_020e1d8c) and no code makes it
+needs: unreachable
+match: main/missing_npc1:*Scene2F* main/missing_npc2:*Scene2F* main/missing_npc2:*Speaker* main/missing_npc2:MissingNpc2_*Turn
+  main/missing_npc2:MissingNpc2_OnTalkEnd main/missing_npc2:MissingNpc2_UpdateTalked main/missing_npc2:MissingNpc2Talk_OnAnswer
+  main/npc_plc
+
+area: Unreachable for one player
 group: screens no code opens
 scene: none: the pockets view (ov099, group 9's mode 0x1c) and the carried letters screen (ov103, mode 0x24)
 reach: no code sets these modes: the talks' SceneCommand_SetScreenMode calls, GroupParams_Open* callers, the menu tabs (modes 0x18-0x1b, 13, 14) and the dispatcher's reopenings (2, 0x23, 0x35, 0x36, 0x40) never give 0x1c or 0x24; ov099's setup fills fixed items, as a test screen would
@@ -503,9 +521,9 @@ match: ov072/*
 
 area: Other dates, times and visitors (for the boot on another day)
 group: Blanca
-scene: the faceless cat: draw her face
-reach: April 1st (event calendar)
-needs: date
+scene: the faceless cat: her talks, her face drawn and its theme typed (scene blanca); left: her steering round what blocks her walk (MysteryCat_SidePoint) and the state after a talk
+reach: the town's Wi-Fi statistics record in use (save blanca, main/wfc_stats.h, Spawner_CheckD020In) on a day without the events 0x3b-0x44 (not the seed's Friday)
+needs: seed
 match: ov074/*
 
 area: Other dates, times and visitors (for the boot on another day)
@@ -537,10 +555,10 @@ needs: date
 match: ov087/* ov088/*
 
 area: Other dates, times and visitors (for the boot on another day)
-group: the lost child and the mother, the plc character
-scene: the missing characters' search (sp_npc_missing1 and 2) and npc_plc
-reach: the days of their events
-needs: date
+group: the lost child and the mother
+scene: what lost-child and lost-mother leave: the child's pause and its state facing the player, the mother's steering
+reach: a pairing with another town in its last week (saves lost-child and lost-mother, main/paired_town.h)
+needs: seed
 match: main/missing_npc1 main/missing_npc2 main/npc_plc
 
 area: Other dates, times and visitors (for the boot on another day)
@@ -553,7 +571,7 @@ match: ov004/flea_market* ov073/* main/sky_visitors
 area: Other dates, times and visitors (for the boot on another day)
 group: Tortimer's events and holidays
 scene: one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown
-reach: boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net
+reach: boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle)
 needs: date
 match: ov080/* ov081/* ov082/* ov083/* ov084/* ov085/* ov086/* main/event_* main/sky_show* main/sky_events
   main/event_winner main/day_events main/board_notices main/item_1568_count ov003/countdown ov004/indoor_countdown

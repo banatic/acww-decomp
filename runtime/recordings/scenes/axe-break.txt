@@ -1,0 +1,75 @@
+# axe-break (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). As tree-chop.txt to 2960: the player stands east of a tree, facing it.
+# Save: axe-worn: the axe at its last wear (0x1372) held. A at 2960 and 3060: each swing draws
+# whether it wears the axe (flag 0x14 of the field actor, 1 in 8, FieldActor_EnterState46), and
+# the second does: the last axe breaks instead of wearing (states 0x4b and 0x4c, the message
+# under the name "obj_etc_player"). A three times from 3400 closes the message; DOWN walks on.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 DOWN -
+2890 - -
+2920 LEFT -
+2924 - -
+2960 A -
+2966 - -
+3060 A -
+3066 - -
+3160 A -
+3166 - -
+3400 A -
+3406 - -
+3440 A -
+3446 - -
+3480 A -
+3486 - -
+3580 DOWN -
+3620 - -
