@@ -453,6 +453,76 @@ match: autoload_2/heap:Heap_Report autoload_2/process:Process_PhaseName
   main/fox_shop:FoxPassword_ClearVisitor
 
 area: Unreachable for one player
+group: what only the other console's field actor's messages call
+scene: none: the getters of the arguments a state's message carries (FieldActor_GetSaved<N>, State<N>Saved_Get, the room and place states' Get*Saved, the packed points, tiles and items) and the requests only those messages make (FieldActor_RequestState19, 1A, 3B, 46Saved, 59, 5F, the room states' RequestSpotEnter*)
+reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by FieldActor_State<N>Message, the *Remote updates and the room and place states' messages (group "the other console's field actor"), or by functions found so (findings 2026-10-28, town4)
+needs: unreachable
+match: main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:FieldActor_GetSaved18
+  main/field_actor_states:FieldActor_GetSaved19 main/field_actor_states:FieldActor_GetSaved1A
+  main/field_actor_states:FieldActor_GetSaved1B main/field_actor_states:FieldActor_GetSaved7
+  main/field_actor_states:FieldActor_GetSaved76 main/field_actor_states:FieldActor_GetSavedItem3F
+  main/field_actor_states:FieldActor_GetSavedYaw77 main/field_actor_states:FieldActor_RequestState19
+  main/field_actor_states:FieldActor_RequestState1A main/field_actor_states:PackedItem_Get
+  ov003/field_actor:FieldActor_GetState16Saved ov003/field_actor:FieldActor_GetState38Saved
+  ov003/field_actor:FieldActor_GetState39Saved ov003/field_actor:FieldActor_GetState3BSaved
+  ov003/field_actor:FieldActor_GetState3DSaved ov003/field_actor:FieldActor_GetState46Saved
+  ov003/field_actor:FieldActor_GetState49Saved ov003/field_actor:FieldActor_GetState4DSaved
+  ov003/field_actor:FieldActor_GetState6SavedItem ov003/field_actor:FieldActor_HitState56
+  ov003/field_actor:FieldActor_RequestState3B ov003/field_actor:FieldActor_RequestState46Saved
+  ov003/field_actor:FieldActor_RequestState59 ov003/field_actor:FieldActor_RequestState5F
+  ov003/field_actor:LookArgs_Get ov003/field_actor:PackedPoint_Get ov003/field_actor:PackedXZ_Get
+  ov003/field_actor:SavedFlag_Get ov003/field_actor:SavedItemTile_Get ov003/field_actor:State51Saved_Get
+  ov003/field_actor:State54Saved_Get ov003/field_actor:State57Saved_Get
+  ov003/field_actor:State58Saved_Get ov003/field_actor:State59Saved_Get
+  ov003/field_actor:State5ASaved_Get ov003/field_actor:State5DSaved_Get ov003/field_actor:TileArgs_Get
+  ov003/field_actor:TileArgs_GetInts ov003/field_actor:TileStepArgs_Get
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetClaimSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetRefusedSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetStepSaved
+  ov004/field_actor_room_states2:FieldActorRoomStates2_GetFurnitureHoldSaved
+  ov004/field_actor_room_states2:FieldActorRoomStates2_GetFurnitureReachSaved
+  ov004/field_actor_room_states2:FieldActorRoomStates2_GetTakePlaceSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetAtChestSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetChestApproachSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetChestCloseSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotApproachSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterMinusSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterStraightSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnter
+  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterMinus
+  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterStraight
+
+area: Unreachable for one player
+group: what only the linked session and the visits call
+scene: none: the receivers of the session's messages (the room's furniture, lights and items put or taken, a place claimed, a tile's request granted, a town insect startled or hidden, the player actor's worn item and tan), what the activity's link jobs and session records ask for (the bells panel frozen, the sky reseeded, constellations drafted, the start menu left, event kind 13), the gatekeepers' visit walks (the room camera's modes 14 and 15, the check-in gate closed), the card's cleared marks, a snowball's shake and the state block's destructor's waiting letter
+reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, CardSave_WriteClearedMarks, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4)
+needs: unreachable
+match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
+  main/constellations:Constellations_DraftRandom main/event_queue:EventQueue_FinishKind13
+  main/event_queue:EventQueue_StartKind13 main/house_record:HouseRecord_StopSong
+  main/letter_store:LetterStore_MarkBlock1C main/mail:MailBox_Mark main/mail:MailBox_SetMark
+  main/place_claim:PlaceClaim_ReceiveAnswer main/place_claim:PlaceClaim_ReceiveRelease
+  main/place_claim:PlaceClaim_ReceiveRequest main/player_actor_ops:PlayerActorOps_SetFlag0
+  main/player_actor_ops:PlayerActorOps_SetSunLevel main/player_actor_ops:PlayerActorOps_SetWorn
+  main/player_actor_ops:PlayerActorOps_SwitchFlag10 main/room_interior:RoomInterior_ReceiveChange
+  main/room_interior:RoomInterior_Set main/room_object_state:RoomObjectState_Receive
+  main/room_sync:RoomSync_ApplyState main/room_sync:RoomSync_ReceiveLit
+  main/room_sync:RoomSync_ReceivePutFurniture main/room_sync:RoomSync_ReceivePutItem
+  main/room_sync:RoomSync_ReceiveState main/room_sync:RoomSync_ReceiveTakeFurniture
+  main/room_sync:RoomSync_ReceiveToggle main/screen_panels:ScreenPanels_FourthPanel
+  main/sky:Sky_ReseedForLink main/start_menu:StartMenu_LeaveChoice main/tile_changes:TileChanges_Replace
+  main/tile_request_grant:TileRequestGrant_Apply main/tile_request_grant:TileRequestGrant_LetGo
+  main/tile_request_grant:TileRequestGrant_NoOtherNearFor
+  main/tile_request_grant:TileRequestGrant_PutOnScene
+  main/tile_request_grant:TileRequestGrant_ReceiveAnswer main/waiting_letter:WaitingLetter_Destruct
+  ov003/snowman:Snowman_ClearTile ov003/town_insect:TownInsect_Hide
+  ov003/town_insect:TownInsect_KindFlees ov003/town_insect:TownInsect_Startle
+  ov003/town_insect_tables:TownInsectTables_WriteRecord ov004/check_in_gate:CheckInGate_Close
+  ov004/room_camera:RoomCamera_SetMode14 ov004/room_camera:RoomCamera_SetMode15
+  ov004/room_camera:RoomCamera_SetModeLookAt
+
+area: Unreachable for one player
 group: the scene sound classes' slot 0 and base slots
 scene: none: the destructor of vtable slot 0 of each scene sound class (autoload_2/sound_scene.h) and the base class's slots 1-3
 reach: SceneSound_Delete (main/scene_sound.c) deletes a scene's sound object through slot 1, and no code calls slot 0 or slot 2 (SceneSoundVtable.destruct and unk_08, SoundSceneVtable.slots: only on_music, start, update, stop, unload, the keyboard mode and slots 8 and 9 are called); no BL or word in code names them, only their vtables; the base class is never made alone (SceneSound_Create makes a derived class for every scene), so its slots 1 and 3 never run on a base object
