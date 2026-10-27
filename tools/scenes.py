@@ -95,6 +95,18 @@ WFC_STATS = 0x16AD0
 PAIRED_TOWN = bytes.fromhex("3412" + "4331" * 6)
 # the rod held, 30,000 bells and every item with variants had (the "catalog-full" save)
 CATALOG_FULL = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)] + [(0x14 + 0x1C18 + i, "<B", 0xFF) for i in range(0x100)]
+# the letters waiting at the post office (MailPostOffice at 0x15954 of the state block, main/mail.h)
+POST_OFFICE = 0x15954
+# the letter waiting for the current player (main/waiting_letter.h, part_1704c of the state block)
+WAITING_LETTER = 0x1704C
+# the town's three snowmen (main/snowmen.h, data_021f3b56: 0x173ae of the state block)
+SNOWMEN = 0x173AE
+# the town's items: 4 x 4 inner acres (acre (x // 16 - 1) + 4 * (z // 16 - 1)) of 16 x 16 halfwords
+# (tile (x % 16) + 16 * (z % 16)), at 0xd328 of the state block
+TOWN_ITEMS = 0xD328
+
+# a letter's sender as the seed's own letters name the player (main/letter.h: 0x24, kind 1 at 0x42)
+LETTER_FROM_PLAYER = bytes.fromhex("6ec643314331433143314331433185d1433143314331433100000000")
 SAVES = {
     "seed": [],
     "rod": [(HELD, "<H", 0x1374)],                         # the fishing rod
@@ -361,6 +373,39 @@ SAVES = {
     # carpet picked there is shown in the room (ov004/room_preview.h, the wall and floor objects)
     "catalog-all": CATALOG_FULL + [(0x14 + 0x1C18 + 0x100 + part + i, "<B", 0x0F if i == 8 else 0xFF)
                                    for part in (0, 9) for i in range(9)],
+
+    # two letters waiting at the post office, as "mail-due"'s: to villager 1 with an apple and a
+    # body of three keywords of "st_mailcheck" (main/letter_grade.c; their first two characters,
+    # one ideographic space between them), which grades it good: the reply with a present; to
+    # villager 2 with a body of two words of no keyword, graded bad; and a letter waiting for the
+    # player (main/waiting_letter.h), which the mail task puts in the mailbox
+    "mail-graded": [e for at, villager, body, item in (
+        (POST_OFFICE, "6ec64331433143314331433143310310", (0xAC00, 0xAD6C, 0x3000, 0xAC00, 0xAE4C, 0x3000, 0xAC00, 0xAE5D), 0x1518),
+        (POST_OFFICE + 0x100, "6ec6433143314331433143314331057f", (0xFF21, 0xFF22, 0x3000, 0xFF23, 0xFF24, 0x3000, 0xFF25), 0xFFF1),
+        (WAITING_LETTER, "6ec64331433143314331433143310310", (0xFF21, 0xFF22, 0x3000, 0xFF23, 0xFF24, 0x3000, 0xFF25), 0xFFF1))
+        for e in raw(at + 4, bytes.fromhex(villager)) + raw(at + 0x24, LETTER_FROM_PLAYER) +
+        [(at + 0x22, "<B", 3), (at + 0x42, "<B", 1), (at + 0xF9, "<B", 0x1F), (at + 0xFA, "<B", 1), (at + 0xFC, "<H", item)] +
+        [(at + 0x58 + 2 * i, "<H", c) for i, c in enumerate(body)]],
+
+    # as "bag-sell" with a pear (0x1519, not the town's fruit) in place of the furniture: a fruit's
+    # price is the town's fruit's or another's (main/item_traits.c ItemTraits_Price)
+    "sell-fruit": [(POCKETS, "<H", 0x1519), (POCKETS + 2, "<H", 0x4000), (MONEY, "<I", 99999)],
+
+    # the golden shovel (0x136a) held, the biggest bag of bells (0x14fd) and an apple in pockets 0
+    # and 1: a bag buried with it may grow into a money tree, once a day
+    # (main/tile_requests.c TileRequests_BagCodes)
+    "bag-bury": [(HELD, "<H", 0x136A), (POCKETS, "<H", 0x14FD), (POCKETS + 2, "<H", 0x1518)],
+
+    # every item place of villagers 0-4 (0x78c of each town villager, main/villager_house_items.h)
+    # given the Asian chest of drawers (furniture number 1, kind 0xb: ov004/chest.h)
+    "villager-chests": [(0x9284 + 0x7EC * villager + 0x78C + 2 * place, "<H", 0x3004)
+                        for villager in range(5) for place in range(10)],
+
+    # a snowman built on the boot's day (12 January 2027; head 0x800, body 0xa00, face 0, standing:
+    # main/snowmen.h) with its map object 0xb001 at tile (45, 57), east of the house's path (the
+    # snowman stands at 44.5, 56.5)
+    "snowman": [(SNOWMEN, "<H", 27 | 1 << 7 | 12 << 11), (SNOWMEN + 2, "<H", 0x800 // 0x80 | (0xA00 // 0x80) << 7),
+                (SNOWMEN + 4, "<B", 0), (SNOWMEN + 5, "<B", 1), (TOWN_ITEMS + ((2 * 4 + 1) * 256 + 9 * 16 + 13) * 2, "<H", 0xB001)],
 }
 
 SAVES["job-0d"] = [e for e in SAVES["job-0c"] if e[0] != VILLAGER_PART + 0x0A] + [(VILLAGER_PART + 0x0A, "<B", 0x0D)] + raw(
@@ -420,7 +465,6 @@ SAVES["mail-items"] = SAVES["mail-post"] + [(POCKETS + 2 * i, "<H", item) for i,
 # state block, main/mail.h): the player's to villager 1 (its NpcId, as for "house-visitor", kind 3;
 # written, state 1), its sender the player (the town's and the player's ids, as the seed's own
 # letters name the player)
-POST_OFFICE = 0x15954
 SAVES["mail-due"] = [
     *raw(POST_OFFICE + 4, bytes.fromhex("6ec64331433143314331433143310310")), (POST_OFFICE + 0x22, "<B", 3),
     *raw(POST_OFFICE + 0x24, bytes.fromhex("6ec643314331433143314331433185d1433143314331433100000000")),
@@ -1270,6 +1314,22 @@ scene("timer", "timer", 3576, [2600, 2950, 3100, 3300, 3575], frames(2700, 3576,
 scene("new-year-fond", "fond", 9710, [2800, 4200, 5000, 6000, 7800, 9709], frames(4200, 9710, 100),
       "new-year-talks with the villagers fond of the player: on New Year's Day, the player's birthday, "
       "they write their letters and talk of it", "new-year-talks", "2027-01-01 13:00:00")
+scene("mail-graded", "mail-graded", 8288, [2600, 5000, 7300, 7700, 8100, 8287], frames(7200, 8288, 50),
+      "mail-due with a good letter carrying an item, a bad one and a letter waiting for the player: the "
+      "villagers grade them and plan their replies, the waiting letter goes to the mailbox", "mail-due",
+      "2026-09-11 16:58:00")
+scene("sell-fruit", "sell-fruit", 6200, [2600, 3800, 4800, 5450, 6199], frames(4650, 6200, 50),
+      "bag-sell with a pear: its price as a fruit not of the town, the bells into a bag", "shop-sell")
+scene("bag-bury", "bag-bury", 6000, [2600, 3700, 4400, 5500, 5999], frames(2900, 6000, 50),
+      "dig-bury with the golden shovel and a bag of bells: the bag buried becomes a money tree", "dig-bury")
+scene("snowman-talk", "snowman", 6070, [2600, 4000, 5000, 5500, 6069], frames(4000, 6070, 25),
+      "in the snow, a snowman built today stands by the house: talk to it twice", rtc="2027-01-12 11:30:05")
+scene("tree-bag", "bare-net", 3058, [2600, 2750, 2900, 3057], frames(2700, 3058, 10),
+      "shake a tree that drops a bag of bells and pick the bag up")
+scene("house-take", "house-furni", 3726, [2600, 3500, 3600, 3725], frames(3500, 3726, 10),
+      "in the house, take the candle off the table")
+scene("villager-chest", "villager-chests", 4906, [2600, 3700, 4160, 4500, 4905], frames(4100, 4906, 25),
+      "in a villager's house full of chests, touch one: it talks instead of opening")
 
 
 # ------------------------------------------------------------------------------ saves

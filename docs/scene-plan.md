@@ -38,17 +38,17 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 251 scene lists: 25,251 Clean game functions, run 19,809, function check only 1,342, read only 4,100; the groups below hold 5,442 (function check only + read only).
+From 258 scene lists: 25,251 Clean game functions, run 19,881, function check only 1,319, read only 4,051; the groups below hold 5,370 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 1,597 |
-| date | 432 |
-| unknown | 1,014 |
-| unreachable | 2,399 |
-| total | 5,442 |
+| seed | 1,557 |
+| date | 403 |
+| unknown | 1,007 |
+| unreachable | 2,403 |
+| total | 5,370 |
 
-(The lists are those of the 251 scenes of tools/scenes.py. The two recordings, title-start and
+(The lists are those of the 258 scenes of tools/scenes.py. The two recordings, title-start and
 new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
 
 ## Next scenes for one player, by functions gained
@@ -75,7 +75,7 @@ The date groups are for the boot on another day (wt5): the visitors one scene ea
 events, birthdays and visits, the seasons and weather, other months' insects and fish. The
 unknown groups say what to find first.
 
-## Unreachable for one player (2,399)
+## Unreachable for one player (2,403)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
@@ -97,6 +97,7 @@ unknown groups say what to find first.
 | a player moving to another town | 22 (3 / 19) | ov068/sequence4 14, ov068/field_actor_states87 8 | none: Pelly's farewell to a player who moves out to another console's town, and the walk out of the town (ov068/sequence4.h states 10-16, field actor state 0x88) | the second sequence starts with Block020b220c_Flag4b1c, set only by PostClerk_UpdateLeave (her state 8, ov054/post_clerk.c) after line 0x3c, which follows activity job 0x1f of line 0x3b; line 0x3b comes after a linked game found (lines 0x38 and 0x39), so only in the local wireless session her "move" topic starts (scene town-hall-move); field actor state 0x88 is asked for only by state 14 (FieldActor_PlayerRequestState88) | unreachable |
 | the keyboard entry's question | 11 (0 / 11) | ov126/keyboard_entry_scene 6, ov126/keyboard_entry_states 5 | none: the question the name and text keyboard (ov126) can ask before it takes the input, yes or no | nothing sets KEYBOARD_ENTRY_STATE_ASK (ov126/keyboard_entry.h); the question's states and KEYBOARD_ENTRY_STATE_BACK, set only from its "no", follow from it alone | unreachable |
 | the menu screens' error messages no code opens | 7 (0 / 7) | ov102/storage_scene 1, ov104/letter_send 1, ov105/letter_storage 1, ov111/chat_scene 1, ov112/bbs_write_input 1, ov122/letter_write_scene 1, ov126/keyboard_entry_states 1 | none: the wait for the error message of the storage (ov102), the letter send and storage (ov104, ov105), the chat (ov111), the board's writing (ov112), the letter writing (ov122) and the keyboard entry (ov126) | each overlay constructs an ErrorMessage (ov002/error_message.h) but never opens it (no ErrorMessage_Open or _StartTalk) and no function sets its error sub state, so only the wait that would follow it is left | unreachable |
+| a snowman's balls shaking and bursting | 4 (1 / 3) | ov068/snowball 4 | none: states 12 and 13 of a snowball (ov068/snowball.h: a body whose map object was taken away and a head, shaking and bursting) | no code enters them: Snowman_SetState (ov003/snowman.c) is called with 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and 0xb only (ov003/snowman.c, ov068/snowball.c and the ROM's callers in src/), and nothing else writes the state | unreachable |
 
 ## Shops and buildings (the seed's day) (276)
 
@@ -108,39 +109,39 @@ unknown groups say what to find first.
 | the gatekeeper: every topic | 39 (12 / 27) | ov048/gatekeeper_talk_lines 14, ov048/gatekeeper_talk 8, ov004/gatekeeper2 6, ov048/gatekeeper_states 6, ov048/gatekeeper 3, ov133/friend_code_entry_scene 2 | each line of his menu with each answer: the place, news, the lost and found by keys, the flag, a visit (refused alone), the friend code entry (ov133) | the gate-flag walk; the visit topics refuse without a link but run their talks | seed |
 | the post office: both clerks, savings and the ATM | 26 (8 / 18) | ov054/post_clerk_talk 8, ov054/post_clerk 7, ov004/atm 4, ov130/bank_pad 3, main/savings 2, ov131/bank_amount 1, ov132/bank_menu 1 | Pelly and Phyllis (night) with every topic, withdraw and deposit at the pad and the ATM (ov130-ov132), the letters kept for later | the post-office walk, at day and at night | seed |
 
-## The house and its furniture (the seed's day) (368)
+## The house and its furniture (the seed's day) (349)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| furniture of each room-object class | 232 (64 / 168) | ov004/room_object_02253058 36, ov004/chest 15, main/room_sync 11, main/room_cells 10, ov004/room_object_02252ba8 10, ov004/music_player 9, ov004/room_objects 8, ov004/room_object_02252374 7, 44 more files (126) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches | seed |
-| indoor actions of the field actor | 68 (15 / 53) | ov004/field_actor_room_states 25, ov004/field_actor_place_states 11, ov004/field_actor_room_states2 10, ov004/field_actor_rooms 8, ov004/room_player_actor 5, main/place_claim 4, ov004/room_placement 3, ov004/furniture_model 1, 1 more files (1) | sit on chairs and sofas, lie on the bed, pick furniture up and turn it (R and L), push and pull every kind, step off a spot | the house-furni save; each room-object class asks for its own states | seed |
+| furniture of each room-object class | 220 (60 / 160) | ov004/room_object_02253058 36, main/room_sync 11, main/room_cells 10, ov004/room_object_02252ba8 10, ov004/music_player 9, ov004/room_objects 8, ov004/room_object_02252374 7, ov004/room_object_life 7, 44 more files (122) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches | seed |
 | the house: rooms, camera, telephone, roaches | 67 (19 / 48) | ov004/rmo_telephone 28, ov004/room_camera 13, ov004/room_etc_board 10, main/house_record 7, ov004/telephone 5, ov003/player_house 2, ov004/house_roach 1, ov004/house_roaches 1 | the other rooms (upstairs and basement of a bigger house), the room camera's turns, the telephone's other settings, cockroaches running and stamped on, the wallpaper and carpet changed | a derived save with a bigger house (main/house_record.h, the size word at 0x15a0) and wallpaper/carpet items; the seed's 10 cockroaches (their collider is Native-sensitive, docs/native-guest-stack.md) | seed |
+| indoor actions of the field actor | 61 (13 / 48) | ov004/field_actor_room_states 25, ov004/field_actor_place_states 11, ov004/field_actor_rooms 8, ov004/room_player_actor 5, main/place_claim 4, ov004/field_actor_room_states2 3, ov004/room_placement 3, ov004/furniture_model 1, 1 more files (1) | sit on chairs and sofas, lie on the bed, pick furniture up and turn it (R and L), push and pull every kind, step off a spot | the house-furni save; each room-object class asks for its own states | seed |
 | the clock and calendar screens | 1 (0 / 1) | ov135/phone_clock 1 | what clock-pen, birthday-ask and visit-time leave: the clock dragged past a bound (ov135 in the date screen's mode 0x33), the visit's times in a villager's sleeping hours and before 6:00 (lines 0x021c304c and 0x021c3034 of VillagerTalkSteps_SayByKeptTime) | the visit's time screen (ov136) is bounded by now and twelve hours later and the villagers' night windows start at 1:00-4:30 (data_020cd4ac), so those two answers need the offer late in the evening (a boot at night on a day the deal gives a villager type 21) | date |
 
-## Pockets, menus and letters (the seed's day) (333)
+## Pockets, menus and letters (the seed's day) (320)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| letters: write, post, keep, receive | 96 (18 / 78) | ov104/letter_send 14, main/mail_text 10, ov106/mailbox_scene 10, ov105/letter_storage 9, ov122/letter_write_scene 7, main/letter 6, main/letter_grade 6, main/mail 6, 11 more files (28) | buy paper, write a letter to a villager (ov122 with the soft keyboard ov095), post it (ov104), the reply the next day; the mailbox (ov106) and the letter storage (ov105) by the keys | rich save for the paper (shop-buy-letter's start); the reply needs the next day (date) | seed |
+| letters: write, post, keep, receive | 85 (14 / 71) | ov104/letter_send 14, main/mail_text 10, ov106/mailbox_scene 10, ov105/letter_storage 9, ov122/letter_write_scene 7, main/letter_view 5, main/mail 5, main/villager_mail 4, 10 more files (21) | buy paper, write a letter to a villager (ov122 with the soft keyboard ov095), post it (ov104), the reply the next day; the mailbox (ov106) and the letter storage (ov105) by the keys | rich save for the paper (shop-buy-letter's start); the reply needs the next day (date) | seed |
 | catalogs, map, friends, tunes, songs, storage | 84 (10 / 74) | ov118/map_menu_input 9, ov102/storage_scene 8, ov002/menu_scene 7, ov119/friend_roster_input 7, ov002/glide 5, ov109/song_pockets 5, ov114/catalog_list 5, ov002/label_button 4, 19 more files (34) | the fish and insect catalogs paged, the town map's lists and marks (ov117, ov118, ov120), the friend roster's pages, the town tune edited and played (ov143), the music list and song pockets with several songs, the chest's storage by keys | the menus tab; Pelly for the tune; the house stereo and a chest | seed |
-| the pockets screen | 57 (22 / 35) | main/item_group 14, main/start_menu 9, ov096/pockets_screen 9, main/item_traits 5, main/item_attributes 3, main/item_info 3, main/bells_panel 2, main/camera_grid 2, 10 more files (10) | sort, swap, drop, bury items; the bag of bells into the wallet and out; letters moved, read, thrown away; the keys-only cursor; give an item to a villager | saves with full pockets, bells bags (0x1492-0x14fd) and letters | seed |
+| the pockets screen | 55 (21 / 34) | main/item_group 14, main/start_menu 9, ov096/pockets_screen 9, main/item_attributes 3, main/item_info 3, main/item_traits 3, main/bells_panel 2, main/camera_grid 2, 10 more files (10) | sort, swap, drop, bury items; the bag of bells into the wallet and out; letters moved, read, thrown away; the keys-only cursor; give an item to a villager | saves with full pockets, bells bags (0x1492-0x14fd) and letters | seed |
 | item pick, swap and boxes | 35 (2 / 33) | ov107/pockets_swap 17, ov110/public_box 9, ov100/pockets_box 5, ov110/public_box_states 3, ov100/pockets_box_scene 1 | a villager or the sick villager asking for an item (ov101), the pockets full when catching (ov107, all its paths), the recycle box and the lost and found by keys (ov110), selling by the box (ov100) | villager requests (talks), full-net save, the town hall's recycle box, Nook's sell box | seed |
 | designs | 32 (5 / 27) | ov121/my_designs 10, main/design 8, main/design_sets 6, main/design_assets 4, ov123/design_editor 2, ov121/my_designs_use 1, ov125/design_picker 1 | my designs: use as clothes, umbrella, floor, copy, erase; the design editor's tools (fill, colour, palette, preview); the design picker everywhere it opens | the menus tab, Mabel's design editor (design-draw's start) | seed |
 | chat, board, keyboard entry and name screens | 29 (3 / 26) | ov111/chat_scene 8, ov113/bbs_board 6, main/bbs 5, ov112/bbs_write_input 3, ov112/bbs_write_scene 2, ov126/keyboard_entry_input 2, ov126/keyboard_entry 1, ov126/keyboard_entry_scene 1, 1 more files (1) | type and send a chat message, write and read the bulletin board by keys, the keyboard entry's other modes (names, friend codes, catchphrases), the han panel's messages | the menus tab; the town hall board; a villager asking for a nickname or catchphrase opens the keyboard | seed |
 
-## Player actions (the seed's day) (268)
+## Player actions (the seed's day) (260)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| outdoor actions of the field actor | 209 (52 / 157) | ov003/field_actor 97, main/field_actor_states 37, ov003/tile_event 20, main/touch_pick 11, main/tile_request_grant 10, main/field_actor_support 6, main/player_actor_ops 6, main/tile_effects 6, 6 more files (16) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
+| outdoor actions of the field actor | 201 (51 / 150) | ov003/field_actor 97, main/field_actor_states 37, ov003/tile_event 14, main/touch_pick 11, main/tile_request_grant 8, main/field_actor_support 6, main/player_actor_ops 6, main/tile_effects 6, 6 more files (16) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
 | effects by kind | 59 (1 / 58) | main/effect_kinds 55, main/effect_system 4 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers | unknown |
 
-## Villagers (the seed's day) (570)
+## Villagers (the seed's day) (569)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | villager talks: topics, favours and trades | 228 (21 / 207) | main/villager_talk_object 40, main/villager_talk_lines 29, main/villager_talk_steps 22, main/villager_talk_replies 21, main/villager_talk_part 20, main/villager_talk 17, main/villager_object 14, main/villager_talk_subjects 11, 16 more files (54) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night | seed |
-| the talk engine: tags, pages, windows, sliders | 200 (55 / 145) | main/talk_tags 35, main/talk_receiver 22, main/message_decoder 15, main/talk_page 11, main/a_mes_obj 10, main/talk_span 10, main/message_cursor 8, main/talk_object 7, 31 more files (82) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
+| the talk engine: tags, pages, windows, sliders | 199 (54 / 145) | main/talk_tags 35, main/talk_receiver 21, main/message_decoder 15, main/talk_page 11, main/a_mes_obj 10, main/talk_span 10, main/message_cursor 8, main/talk_object 7, 31 more files (82) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 | villagers out in the town | 142 (33 / 109) | ov068/outdoor_villager_acts 20, main/villager_memories 14, ov068/outdoor_villager_moves 12, main/villager_house_items 7, main/villager_memory_entry 7, main/villager_memory_text 6, main/villager_events 5, main/villager_residents 5, 27 more files (66) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 
 ## New player and title (the seed's save) (96)
@@ -150,12 +151,12 @@ unknown groups say what to find first.
 | a second player and the title screen | 90 (33 / 57) | ov093/staff_roll 21, main/player_record 11, main/player_field_2416 10, ov147/title_scene 9, main/player_options 6, ov051/taxi_driver_talk 5, ov068/sequence4 4, main/town_name 3, 12 more files (21) | from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices, the staff roll after the music show | the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day | seed |
 | Mr. Resetti | 6 (4 / 2) | ov077/mole 5, ov077/mole_talk 1 | the mole's lectures after a quit without saving (scenes resetti, resetti-2, resetti-3, resetti-4: the first, third, fourth and fifth) | saves resetti and resetti-2..5 (record 0's flag 2 set, the lecture count at 0x2423 of the record); the count less one after the load's raise picks the lecture, and count 5 draws one of the earlier ones again | seed |
 
-## Other dates, times and visitors (for the boot on another day) (444)
+## Other dates, times and visitors (for the boot on another day) (415)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | insects and fish of other months and hours | 146 (26 / 120) | ov004/aquarium_objects 35, ov003/town_insect_moves 24, ov003/town_insect_kinds 15, ov003/fish_shadow 12, ov003/town_insect 12, ov068/insect_paths 11, ov003/player_fish 8, ov004/aquarium_fish_kinds 6, 7 more files (23) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
-| seasons, weather, the sky and the new day | 95 (35 / 60) | ov003/snowman 28, ov068/snowball 17, main/snowmen 12, main/town_record 6, main/sky_shots 5, main/day_plan 4, main/town_day 4, main/creature_draw 3, 10 more files (16) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
+| seasons, weather, the sky and the new day | 66 (25 / 41) | ov068/snowball 13, ov003/snowman 11, main/snowmen 8, main/sky_shots 5, main/day_plan 4, main/town_day 4, main/creature_draw 3, main/insect_draw 3, 10 more files (15) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
 | Tortimer's events and holidays | 61 (15 / 46) | ov003/etc_board 9, main/sky_show 7, main/event_queue 5, ov003/countdown 4, ov081/turtle_fishing_talk 4, ov082/turtle_insects_talk 4, main/event_winner 3, main/event_buildings 2, 17 more files (23) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
 | the flea market and Joan | 23 (3 / 20) | ov004/flea_market_buyer 9, ov004/flea_market_villager 8, ov073/boar 4, ov073/boar_talk 2 | the villagers' flea market in the town hall; Joan's turnips on Sunday mornings (pending scene sunday-joan) | the flea market's dates; any Sunday 6:00-12:00 | date |
 | Katrina, the fortune teller | 20 (7 / 13) | ov045/fortune_teller_talk 14, ov003/panther 3, ov045/fortune_teller 3 | her tent in the town square: a fortune told, the tarot cards | a weekday the schedule (main/event_schedule.h) gives her | date |
@@ -171,11 +172,11 @@ unknown groups say what to find first.
 | the night pelican | 4 (1 / 3) | ov075/town_pelican 2, ov075/town_pelican_talk 2 | the mail pelican met on the town's paths at night | the nights the calendar has him | date |
 | Gracie | 2 (1 / 1) | ov070/giraffe 1, ov070/giraffe_talk 1 | the giraffe's fashion check in the town | a weekday the schedule gives her | date |
 
-## Not attributed to one scene (688)
+## Not attributed to one scene (682)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| other paths of shared code the scenes already run | 676 (211 / 465) | autoload_2/sound_scene 38, autoload_2/heap 31, main/activity_fields 28, main/music_queue 24, main/scene_motion 20, autoload_2/sound_object_kinds 19, main/music_264 19, main/activity_jobs 18, 148 more files (479) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
+| other paths of shared code the scenes already run | 670 (210 / 460) | autoload_2/sound_scene 38, autoload_2/heap 31, main/activity_fields 28, main/music_queue 24, main/scene_motion 20, autoload_2/sound_object_kinds 19, main/music_264 19, main/activity_jobs 18, 146 more files (473) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
 | overlay static initialisers | 12 (5 / 7) | ov007/ov007_static_init 1, ov008/ov008_static_init 1, ov010/ov010_static_init 1, ov012/ov012_static_init 1, ov016/ov016_static_init 1, ov025/ov025_static_init 1, ov030/ov030_static_init 1, ov035/ov035_static_init 1, 4 more files (4) | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
 ## Findings on the triggers (2026-10-22)
@@ -845,3 +846,59 @@ What reading the Clean code found about the groups above; counts are of function
   Wait7 and Turn7; villager-approach at 11380, LEFT for 30 to 120 frames): it comes and talks
   anyway. A scan for slots that only a base class's own vtable holds (its constructors
   called only by derived constructors) found two functions: most vtables have no symbol.
+### Letters graded, a fruit's price, a money tree, a snowman, a tree's bag, chests (2026-10-28, scenes/rest4)
+- A villager grades a player's letter (main/letter_grade.c) by its words: a word starts after
+  one of the seven separators (data_020ccf5c: 0x3000, 0x000a, 0, 0xff01, 0xff1f, 0xff0c,
+  0xff0e; not the space 0x20), and counts as a keyword when its first characters are those of a
+  line of "st_mailcheck" (763 keywords, two characters each and a 0); three words of which a
+  quarter are keywords make a good letter (the reply with a present when it carried an item),
+  two words a bad one. The letter waiting for the current player (part_1704c of the state block,
+  main/waiting_letter.h; its checksum byte is not checked at the load) goes to the mailbox at
+  the mail task: save mail-graded, scene mail-graded (mail-due's recording).
+- mail-graded found a Native disagreement: VillagerLetter_PostDrawn's static helper `send` was
+  taken by the Native call-outs for overlay 65's `send` (0x022802f0, the socket library), so the
+  Clean run diverged at the reply; the helper is now post_letter (main/villager_letter.c).
+  main/session_villager.c keeps a static `send` of its own (local wireless, never run here).
+- A fruit's price is the town's fruit's (TownRecord_OwnFruit) or another's (ItemTraits_Price):
+  bag-sell with a pear in place of the furniture (sell-fruit). A bag buried while holding the
+  golden shovel (0x136a) becomes code 0x26, or once a day the money tree's 0x57 at odds of the
+  bag's bells / 1000 + RoomScore_HouseLowX / 25 in 100 (main/tile_requests.c
+  TileRequests_BagCodes); the biggest bag drew it at once (bag-bury).
+- A snowman can be written in a save: the town's record of three (main/snowmen.h, 0x173ae of
+  the state block: the day built, the year from 2000 in bits 0-6, the month in bits 7-10, the day
+  in bits 11-15; the sizes in steps of 0x80; the age; on the map) and its map object 0xb001-0xb003
+  among the town's items. A record built yesterday is taken off at the boot (Snowmen_Melt), and
+  one on a tile it cannot stand on (the stone path at 41, 58) at the first change of scene
+  (Snowman_Leave, Snowmen_TakeOffMap); with a body of 0x1000 the player stops beyond the talk's
+  reach (1.25 tiles, SnowmanTalk_CanTalkTo), so the save's body is 0xa00: snowman-talk. With the
+  snowman recorded no loose ball was placed. States 12 and 13 of a snowball (a snowman's balls
+  shaking and bursting) are entered by no code (group added).
+- A tree of codes 0x66-0x68 or 0x6a-0x6c shaken with nothing held drops a bag of bells beside it
+  (GrowthModel_DropOne, the tile event of kind 5); B picks an item up from the ground (A does
+  not): tree-bag (the seed's tree-shake shakes a tree that drops nothing).
+- In the room, B at a table takes the item on it (the room's second layer, main/house_record.h)
+  into the pockets (ov004/field_actor_room_states2.c, the take-item state): house-take. Outside the
+  player's house a chest talks instead of opening its menu (ov004/chest.h): with every item place
+  of the villagers given a chest of drawers (main/villager_house_items.h, 0x78c of each town
+  villager), villager-chest touches one in villager-home's house.
+- The room object of kind 0x37 (ov004/room_object_02253058.h, 33 functions left) is the bed of
+  the continue menu's room (scene 6), one per player's quarter of the room; it is a bed class
+  (unk_780 0xa). It leaves PUSHED only in scenes 6-8 (SceneKinds_CurrentIn6To8), and in scene 6
+  the session's players are placed with this system's player as player 4 (scene_process.c): the
+  player does not move there (no key moved it during the preparing message) and walks out by
+  itself after the greeting, so its push (the save sequence) and its talk (the bed swapped from
+  the pockets) need scene 7, a session's second scene. The telephone's states 0-6 are the same
+  room's.
+- Tried and not added: the barber with a hat worn takes it off (RoomPlayerActor_SwitchHeadwear,
+  one function); with 100 bells nothing new. A balloon (the sky's kind 5, at minutes ending in 4
+  from 10:00 to 15:59) did not come at 11:34 after a boot at 11:33:10 with the slingshot. A rainy
+  seed's day booted on 13 September did not run TownDay_ChangeFamilyB. The fruit tree of code 0x53
+  at (35, 50) and the tree of code 0x67 at (29, 59) shaken gave nothing new. A painting in pocket 0
+  before a pear is sold instead of it (no ItemGroup_IsRoom3894 or fruit price). Stereos in every
+  item place of the villagers kept the walk of villager-home out of the house. At the Able
+  Sisters' clothes, A reopened Mabel's menu; the try-on (MabelTalk_OnAnswerItem's second
+  answer for clothes, hats and accessories, then MabelTalk_WatchTryOn and _EndTryOn) was not
+  reached. On 20 June 2027 at 21:00 only kind 0x33 was among the town insects.
+- drive.py's `seen` takes a function of another overlay at the same address with the same first
+  eight bytes as entered: the overlay static initialisers of ov007-ov012 and some destructors
+  (Astro_, Barber_, Gatekeeper_DestructDelete) show as new there and are not in the scene lists.

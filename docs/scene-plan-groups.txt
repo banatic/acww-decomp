@@ -247,6 +247,13 @@ match: ov120/town_map:TownMap_Sub* ov120/town_map:TownMap_Pick ov120/town_map:To
   ov120/town_map:TownMap_ReleasePointer ov120/town_map_list:*
 
 area: Unreachable for one player
+group: a snowman's balls shaking and bursting
+scene: none: states 12 and 13 of a snowball (ov068/snowball.h: a body whose map object was taken away and a head, shaking and bursting)
+reach: no code enters them: Snowman_SetState (ov003/snowman.c) is called with 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and 0xb only (ov003/snowman.c, ov068/snowball.c and the ROM's callers in src/), and nothing else writes the state
+needs: unreachable
+match: ov068/snowball:Snowball_*Shake*
+
+area: Unreachable for one player
 group: hardware and failure paths
 scene: none: the debug screen after an exception, a halt, a pulled card, the lid closed, a low battery, a failed card access
 reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults

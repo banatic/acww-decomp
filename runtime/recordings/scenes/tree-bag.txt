@@ -1,0 +1,70 @@
+# tree-bag (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: bare-net (nothing held). West and south to stand north of the tree of code 0x68 at tile
+# (36, 59), facing it (about 2740); A at 2748 shakes it (ov003/growth_model.c GrowthModel_Drop:
+# codes 0x66-0x68 and 0x6a-0x6c drop one item, GrowthModel_DropOne): a bag of 100 bells falls on
+# a free tile beside it (main/tile_request_grant.c, the tile event of kind 5). East and south
+# onto the bag (about 2950); B at 2952 picks it up, to 3058.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2600 LEFT+DOWN -
+2680 LEFT -
+2728 DOWN -
+2738 - -
+2748 A -
+2754 - -
+2904 RIGHT -
+2936 DOWN -
+2942 - -
+2952 B -
+2958 - -

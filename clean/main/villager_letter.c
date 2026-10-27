@@ -18,7 +18,7 @@ extern char data_021d1358[VILLAGER_LETTER_NAME_SIZE];
 
 /* The item put on the letter, when there is one, and the letter held at the post office; it is
  * destroyed after. Whether it was held. */
-static int send(Letter *letter, const u16 *item)
+static int post_letter(Letter *letter, const u16 *item)
 {
     if (item != NULL && *item != VILLAGER_LETTER_NO_ITEM) {
         Letter_SetItem(letter, *item, 1);
@@ -42,7 +42,7 @@ int VillagerLetter_Post(const char *name, int text, const void *player, const Np
     NpcId_FormatResourceName(npc, data_021d1380, VILLAGER_LETTER_NAME_SIZE, name);
     u8 message = (u8) text;
     Letter_WriteVillagerToPlayer(&letter, &message, data_021d1380, &paper, npc, player, VILLAGER_LETTER_FROM_VILLAGER);
-    return send(&letter, item);
+    return post_letter(&letter, item);
 }
 CLEAN_AS(func_0207d33c, VillagerLetter_Post)
 
@@ -62,6 +62,6 @@ int VillagerLetter_PostDrawn(const char *name, int first, int choices, const voi
     NpcId_FormatResourceName(npc, data_021d1358, VILLAGER_LETTER_NAME_SIZE, name);
     Letter_WriteVillagerToPlayerZ(&letter, &parts[0], &parts[1], &parts[2], &parts[3], data_021d1358, &paper, npc, player,
                                   VILLAGER_LETTER_FROM_VILLAGER);
-    return send(&letter, item);
+    return post_letter(&letter, item);
 }
 CLEAN_AS(func_0207d3dc, VillagerLetter_PostDrawn)
