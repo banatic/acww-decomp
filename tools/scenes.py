@@ -1383,6 +1383,13 @@ scene("villager-talks-catchphrase", "fond", 10950, [2600, 4900, 6500, 8000, 9500
       "villager-talks-fond at another second of the clock: two villagers chatting, one takes the other's "
       "catchphrase", "villager-talks", "2026-09-11 11:30:43")
 
+scene("insects-june", "weeded", 9612, [2800, 5000, 7100, 9100, 9611], frames(6400, 9612, 100),
+      "on a June night, walk by a firefly and up to a moth by the lights of a building",
+      rtc="2027-06-20 21:00:00")
+scene("insects-january", "weeded", 5962, [2800, 4200, 5000, 5600, 5961], frames(4800, 5962, 50),
+      "on a January morning, walk up to the insect of kind 0x1e", rtc="2027-01-20 05:30:00")
+scene("able-tryon", "able-shop", 7772, [2600, 4700, 5600, 6500, 7200, 7771], frames(5000, 7772, 50),
+      "at the Able Sisters' wall, try on a hat and buy it, then try on a shirt and give it back")
 
 # ------------------------------------------------------------------------------ saves
 
