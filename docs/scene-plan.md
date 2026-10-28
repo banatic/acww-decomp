@@ -38,18 +38,18 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 298 scene lists: 25,251 Clean game functions, run 20,153, function check only 1,255, read only 3,843; the groups below hold 5,098 (function check only + read only).
+From 305 scene lists: 25,251 Clean game functions, run 20,162, function check only 1,253, read only 3,836; the groups below hold 5,089 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 1,156 |
+| seed | 1,148 |
 | date | 269 |
 | unknown | 619 |
-| unreachable | 3,054 |
-| total | 5,098 |
+| unreachable | 3,053 |
+| total | 5,089 |
 
 
-(The lists are those of the 298 scenes of tools/scenes.py. The two recordings, title-start and
+(The lists are those of the 305 scenes of tools/scenes.py. The two recordings, title-start and
 new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
 
 ## Next scenes for one player, by functions gained
@@ -76,7 +76,7 @@ The date groups are for the boot on another day (wt5): the visitors one scene ea
 events, birthdays and visits, the seasons and weather, other months' insects and fish. The
 unknown groups say what to find first.
 
-## Unreachable for one player (3,054)
+## Unreachable for one player (3,053)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
@@ -89,7 +89,7 @@ unknown groups say what to find first.
 | the destructors of vtable slot 0 of those classes | 102 (7 / 95) | main/layered_model 4, main/animated_model 3, main/mail_text 2, main/message_cursor 2, main/message_walker 2, main/model_object 2, main/text_base 2, ov003/countdown 2, 82 more files (83) | none: the destructor without the free (vtable slot 0) of the same classes (and their bases' and receivers'), which only the deleting destructors above call | through slot 0 the images call a destructor only in Heap_Destroy (the heaps) and in LabelBox_Free and TextDraw_FreeBoxes (the boxes of the list data_021c81bc, which only LabelBox_New and _NewInVram fill, each with LabelBox's vtable); the other calls through offset 0 run a method (start, init, run, position, posts) or a member-function pointer; each of these is named only by such a slot 0 and called only by the group above or by functions found so (findings 2026-10-28, town5) | unreachable |
 | code only unreachable code calls | 99 (55 / 44) | main/activity_fields 28, main/activity_job 7, main/activity 5, main/field_label 4, main/activity_vars 3, main/town_objects 3, main/bbs 2, main/block_021d27ac_parts 2, 35 more files (45) | none: functions whose every caller is in an unreachable group (the local wireless session and its activity jobs and packets, the Wi-Fi Connection, the gatekeepers' visits, the lost child's walk, the debug screen, the lid and the game's stop): the activity's fields, the jobs those sessions ask for, the field label's session messages, the caution window's planes, the town objects' session messages | a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3) | unreachable |
 | the other classes' destructors of vtable slot 16 | 96 (0 / 96) | ov003/countdown 2, ov004/tv 2, main/event_announce 1, main/missing_npc1 1, main/missing_npc2 1, main/process_020dabc0 1, main/scene_object_base 1, main/special_scene_object 1, 86 more files (86) | none: the destructor without the free (vtable slot 0x40) of the scene objects, room objects, special characters and processes of main and the overlays outside 90-146 whose Clean comments say so | as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes | unreachable |
-| the gatekeeper's visits and connections | 83 (16 / 67) | ov048/gatekeeper_states 36, ov048/gatekeeper_talk 32, ov048/gatekeeper_talk_lines 9, ov004/gatekeeper2 5, ov048/gatekeeper 1 | none: the gatekeepers' talk states, lines and states of a visit by DS wireless or over the Wi-Fi Connection: the search for a town or a friend, the link's statuses and errors, the downloads, the guests passing the gate and arriving, the linked scene changes | each follows GatekeeperTalk_StartSession, _StartWfc, _StartFindParent or _StartJoinParent (a session of network mode 2 or 4) or a gatekeeper state those talks set (5-0xd, 0xf, 0x11); without a second DS or the server none goes on (gate-visit: the wireless library's set-up halts the game about 50 frames after the search's line), and the Wi-Fi choice is refused without a registered friend | unreachable |
+| the gatekeeper's visits and connections | 82 (16 / 66) | ov048/gatekeeper_states 36, ov048/gatekeeper_talk 31, ov048/gatekeeper_talk_lines 9, ov004/gatekeeper2 5, ov048/gatekeeper 1 | none: the gatekeepers' talk states, lines and states of a visit by DS wireless or over the Wi-Fi Connection: the search for a town or a friend, the link's statuses and errors, the downloads, the guests passing the gate and arriving, the linked scene changes | each follows GatekeeperTalk_StartSession, _StartWfc, _StartFindParent or _StartJoinParent (a session of network mode 2 or 4) or a gatekeeper state those talks set (5-0xd, 0xf, 0x11); without a second DS or the server none goes on (gate-visit: the wireless library's set-up halts the game about 50 frames after the search's line), and the Wi-Fi choice is refused without a registered friend | unreachable |
 | the menu scenes' phases 3 and 4 | 80 (80 / 0) | ov090/menu_tabs 2, ov091/letter_reader 2, ov092/menu_dispatch 2, ov096/pockets_screen 2, ov100/pockets_box_scene 2, ov101/pockets_pick 2, ov102/storage_scene 2, ov104/letter_send 2, 32 more files (64) | none: the functions of vtable slots 0x54 and 0x58 of each menu scene of overlays 90-146 (ov002/menu_scene.h), each one that does nothing | MenuScene_Update runs the slot of the scene's phase, and the game sets phases 0, 1, 2 and 5 only: every MenuScene_SetPhase call names one of those, and nothing else writes the phase (ov002/menu_scene.c) | unreachable |
 | message tags no shown message holds | 70 (8 / 62) | main/talk_page 49, main/talk_tags 21 | none: the tag handlers of tags that only the test message Other/test_ 9 holds (4/30, 4/32, 11/3-5, 11/15) or no message at all (11/1, 11/2, 11/6-14, 11/16-19), and the centred lines' measurer (main/talk_page.h) for the tags no centred message holds | a scan of the KOR .bmg files (the LZ77 archives unpacked; a message is centred when its INF1 entry's kind has data_020d1d0c set): test_ is shown only through NpcPlcTalk_Line0, which asks for message 0 of the archive "test"; the measurer runs only for centred messages, and outside mail (letters are not drawn by the talk page) and test_ those hold the tags 0/0, 0/1, 1/0, 1/1, 1/16, 2/4, 4/3, 4/15-17, 4/26-28, 6/0, 6/1, 7/0, 11/20 and 0xff/0 alone | unreachable |
 | what only the other console's field actor's messages call | 57 (23 / 34) | ov003/field_actor 29, main/field_actor_states 12, ov004/field_actor_room_states 10, ov004/field_actor_place_states 3, ov004/field_actor_room_states2 3 | none: the getters of the arguments a state's message carries (FieldActor_GetSaved<N>, State<N>Saved_Get, the room and place states' Get*Saved, the packed points, tiles and items) and the requests only those messages make (FieldActor_RequestState19, 1A, 3B, 46Saved, 59, 5F, the room states' RequestSpotEnter*) | the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by FieldActor_State<N>Message, the *Remote updates and the room and place states' messages (group "the other console's field actor"), or by functions found so (findings 2026-10-28, town4) | unreachable |
@@ -116,14 +116,14 @@ unknown groups say what to find first.
 | camera modes only unreachable code sets | 4 (0 / 4) | main/camera_modes 2, ov004/room_camera 2 | none: the main camera's mode 19 and the room camera's modes 15 and 20 (their start and frame functions) | a camera mode is entered only by CameraControl_SetMode (main/camera_view.c), and every call in clean/ passes a constant but the return to camera->previous_mode, which holds a mode entered before; 15, 19 and 20 are passed only by RoomCamera_SetMode15 (the gatekeeper's visit walk), CameraControl_SetMode19 (the lost child's walk home) and RoomCamera_SetModeLookAt (the exchange of ov055), which are unreachable | unreachable |
 | vtable slots no code calls: heaps and triangles | 4 (0 / 4) | autoload_2/heap 3, main/collision_triangle 1 | none: slot 1 of the heaps' vtables (destruct and free: Heap_, ExpHeap_ and FrameHeap_DestructFree) and slot 3 of the collision triangle's (CollisionTriangle_PushOut) | as for the heaps' other slots and the scene sounds: a heap is destroyed by Heap_Destroy through slots 5 and 0 and its block freed to the parent, and no code reads HeapVtable.destruct_free; a triangle's vtable is called only by CollisionTriangle_PushOut's three tests (vtable_of, slots 0-2), and the areas' vtable (CollisionAreaVtable) calls only its slot 4; no BL or word in code names these functions, only the vtables | unreachable |
 
-## Shops and buildings (the seed's day) (207)
+## Shops and buildings (the seed's day) (202)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | the museum: Blathers, the cafe and the observatory | 72 (14 / 58) | ov128/star_view_input 10, ov004/cafe_master 9, ov046/astro_talk 7, ov047/owl 7, ov047/owl_donation 7, ov004/cafe_props 6, ov046/astro 5, ov129/star_designer_input 4, 9 more files (17) | Blathers' every topic (each collection's talk, the donation list paged), Brewster's coffee with each answer, Celeste's constellations viewed and erased | museum save; the cafe in the basement; the observatory at night (rtc 20:30) | seed |
 | the Able Sisters and the barber | 45 (9 / 36) | ov004/check_in_gate 11, ov049/mabel 10, ov053/barber 8, ov004/tailor_sister 5, ov049/mabel_talk 4, ov004/barber_machine 3, ov004/shop_display 2, ov004/b_pole 1, 1 more files (1) | Mabel's other topics and the design display, the barber's haircut (Harriet: the hairdresser's chair, the new face) | rod save for the tailor; the barber is upstairs in the store once it is upgraded (main/nook_store.h): a derived save with the store's size, or unknown | unknown |
-| the gatekeeper: every topic | 36 (11 / 25) | ov048/gatekeeper_talk_lines 12, ov048/gatekeeper_talk 8, ov048/gatekeeper_states 6, ov004/gatekeeper2 5, ov048/gatekeeper 3, ov133/friend_code_entry_scene 2 | each line of his menu with each answer: the place, news, the lost and found by keys, the flag, a visit (refused alone), the friend code entry (ov133) | the gate-flag walk; the visit topics refuse without a link but run their talks | seed |
-| Nook's store: every topic | 33 (7 / 26) | ov050/nook_clerk 14, ov050/nook_clerk_talk 12, main/nook_store 2, main/shop_points 2, main/shop_answers 1, main/shops 1, ov142/order_catalog_cursor 1 | buy several items, sell all at once, the catalog by pages and by keys, order, the house loan and its extension, the turnip and the store's points | rich save; the store's counter (shop-talk's walk) | seed |
+| the gatekeeper: every topic | 34 (10 / 24) | ov048/gatekeeper_talk_lines 10, ov048/gatekeeper_talk 8, ov048/gatekeeper_states 6, ov004/gatekeeper2 5, ov048/gatekeeper 3, ov133/friend_code_entry_scene 2 | each line of his menu with each answer: the place, news, the lost and found by keys, the flag, a visit (refused alone), the friend code entry (ov133) | the gate-flag walk; the visit topics refuse without a link but run their talks | seed |
+| Nook's store: every topic | 30 (7 / 23) | ov050/nook_clerk 14, ov050/nook_clerk_talk 11, main/shop_points 2, main/shop_answers 1, main/shops 1, ov142/order_catalog_cursor 1 | buy several items, sell all at once, the catalog by pages and by keys, order, the house loan and its extension, the turnip and the store's points | rich save; the store's counter (shop-talk's walk) | seed |
 | the post office: both clerks, savings and the ATM | 21 (7 / 14) | ov054/post_clerk 7, ov054/post_clerk_talk 5, ov130/bank_pad 3, main/savings 2, ov004/atm 2, ov131/bank_amount 1, ov132/bank_menu 1 | Pelly and Phyllis (night) with every topic, withdraw and deposit at the pad and the ATM (ov130-ov132), the letters kept for later | the post-office walk, at day and at night | seed |
 
 ## The house and its furniture (the seed's day) (212)
@@ -153,12 +153,12 @@ unknown groups say what to find first.
 | outdoor actions of the field actor | 131 (28 / 103) | ov003/field_actor 65, ov003/tile_event 14, main/field_actor_states 11, main/touch_pick 11, main/field_actor_support 6, main/tile_effects 6, main/tile_requests 6, main/tile_changes 3, 6 more files (9) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
 | effects by kind | 59 (1 / 58) | main/effect_kinds 55, main/effect_system 4 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers | unknown |
 
-## Villagers (the seed's day) (411)
+## Villagers (the seed's day) (408)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| villager talks: topics, favours and trades | 207 (21 / 186) | main/villager_talk_object 37, main/villager_talk_lines 23, main/villager_talk_replies 21, main/villager_talk_steps 21, main/villager_talk_part 20, main/villager_talk 16, main/villager_object 14, main/villager_talk_subjects 11, 14 more files (44) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night | seed |
-| villagers out in the town | 108 (28 / 80) | ov068/outdoor_villager_acts 13, ov068/outdoor_villager_moves 12, main/villager_memories 8, main/villager_house_items 7, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (49) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
+| villager talks: topics, favours and trades | 206 (21 / 185) | main/villager_talk_object 37, main/villager_talk_lines 23, main/villager_talk_replies 21, main/villager_talk_steps 21, main/villager_talk_part 20, main/villager_talk 16, main/villager_object 14, main/villager_talk_offers 10, 14 more files (44) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night | seed |
+| villagers out in the town | 106 (27 / 79) | ov068/outdoor_villager_acts 13, ov068/outdoor_villager_moves 12, main/villager_memories 8, main/villager_house_items 7, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (47) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 | the talk engine: tags, pages, windows, sliders | 96 (43 / 53) | main/talk_receiver 19, main/talk_tags 15, main/talk_page 9, main/talk_span 9, main/text_codes 6, main/text_draw 6, main/a_mes_obj 5, main/mes_slider_window 4, 12 more files (23) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 
 ## New player and title (the seed's save) (63)
@@ -1323,3 +1323,38 @@ What reading the Clean code found about the groups above; counts are of function
   none of a former resident, then the least fond of another town's
   (VillagerMemory_FormerPlayerIndex, _OtherTownIndex, _PickToReplace and their tests):
   villager-memories-full.
+
+### The gatekeeper's other Wi-Fi choices, a villager received, the store's upgrade and a worthless sale (2026-10-29, scenes/talk1, fourth batch)
+- The second gatekeeper's menu (message 15: visit, invite, friend code, what is this place,
+  nothing) opens its choices only after a second A; its "invite" asks how (message 0x3d,
+  several pages) and Wi-Fi, with a friend registered, connects for the invitation
+  (GatekeeperTalk_OnAnswer3d, _LineOfSession): gate-wfc-invite. Its "friend code" without a code
+  of the player's own offers to connect to get one (GatekeeperTalk_OnAnswerChoice0) and starts
+  the same Wi-Fi Connection set-up as gate-wfc, with no friend registered: gate-wfc-code. Its
+  "invite" by DS wireless halts as the visit does (Local_Setup, LocalWireless_Fail, GameHalt).
+- The passing exchange's received block holds, besides the bottle and the constellation of the
+  second batch, a villager moving between towns (0x14c) and a paired town (0x93a). A whole
+  villager of another town written there (the seed's villager 0 with another town's NpcId and
+  last town, save villager-came; tools/scenes.py HELD_VILLAGER keeps its bytes that are not 0)
+  moves into the first free place at the load (VillagerResidents_Exchange:
+  VillagerHome_LastTown, VillagerRoster_FindNumber): villager-came. The block's paired town is
+  read only by the linked session's PairedTown_TakeOwn; a received letter
+  (XctExchange_TakeReceived's other kind) becomes the waiting letter, whose delivery mail-graded
+  already runs.
+- Nook's store 10 bells short of its level's cap (save store-near-cap): shop-buy-letter's
+  purchase plans the upgrade and posts its notice (NookStore_PostUpgradeNotice):
+  shop-upgrade-planned. With the upgrade planned for 13 September (save store-closing, as that
+  purchase leaves it) Tom Nook's greeting on the seed's day tells of the day the store is
+  closed (NookStore_ClosedDay): shop-closing-tomorrow. Planned for the 12th, the store is already
+  closed on the 11th (its sign, obj_etc_closed).
+- An item worth nothing (item_info/always.bin price 0: the job's parcel 0x1561 here) offered
+  for sale makes Nook offer nothing (line 0x0a), and its answer leaves the listed items
+  unconverted (NookClerkTalk_OnAnswerConvert): shop-sell-worthless.
+- A roof paint (0x1521-0x1530) put on the store's shelf in the save is sold by the paint row of
+  the host or a lone player (line 0x1e, then NookClerkTalk_PaintBought); line 0x2e and its
+  answer NookClerkTalk_OnAnswerPaint belong to the row of a guest of a linked session
+  (ov050/nook_clerk.c, TalkChecks_IsHostOrAlone), so they need a second system.
+- Event line tables: on Saturday 19 September at 19:30 (event index 2) villager 0's talks drew
+  the subject of the item it holds in the evening (VillagerTalkSubjects_SayHolding1378):
+  villager-saturday-night; its table's VillagerTalk_LineByCalendar was not drawn there. On 10
+  and 25 October the walk from villager-talk's start met the event board or was held.

@@ -741,6 +741,48 @@ SAVES["memories-full"] = [e for i in range(8) for e in villager_memory(3, i, pla
 # as "visitor-3f" with villager 3's memory of the player at fondness 0x50 (byte 0x6c of memory 0):
 # a fond villager lets the player choose the nickname (VillagerTalkNickname_OfferIfFond)
 SAVES["visitor-3f-fond"] = SAVES["visitor-3f"] + [(TOWN_VILLAGERS + 0x7EC * 3 + 0x6C, "<b", 0x50)]
+# the town's exchange block holding a villager of another town (0x14c, a whole town villager: the
+# seed's villager 0 as it is, with its NpcId and the town it last lived in those of OTHER_TOWN and
+# its number 0x30), as the passing exchange leaves it; the runs of its bytes that are not 0
+HELD_VILLAGER = (
+    (0x000, "6ec643314331433143314331433185d14331433143314331"),
+    (0x01E, "4331433143314331"),
+    (0x054, "1f1d0a0f060500006ec6433143314331433143314331f1ff0104"),
+    (0x074, "ca7a76b9fafde3fe04"),
+    (0x09C, "02"),
+    (0x0EA, "f1ff"),
+    (0x11C, "02"),
+    (0x16A, "f1ff"),
+    (0x19C, "02"),
+    (0x1EA, "f1ff"),
+    (0x21C, "02"),
+    (0x26A, "f1ff"),
+    (0x29C, "02"),
+    (0x2EA, "f1ff"),
+    (0x31C, "02"),
+    (0x36A, "f1ff"),
+    (0x39C, "02"),
+    (0x3EA, "f1ff"),
+    (0x730, "f1ff"),
+    (0x735, "1e0b0b091a"),
+    (0x73D, "1e0b0b091a000008ffffffffffffffff"),
+    (0x760, "f1ff16"),
+    (0x780, "02000700f1ff0018"),
+    (0x78C, "f1ff9c3524303430683038303c310c382c37a8352b1d433143314331"),
+    (0x7AE, "0230f1fff1fff1fff1ff2b1d433143314331"),
+    (0x7C6, "f8adecb7c8b90000333cd6003812233200000e001a"),
+)
+SAVES["villager-came"] = [e for at, data in HELD_VILLAGER for e in raw(EXCHANGE + 0x14C + at, bytes.fromhex(data))] + [
+    (EXCHANGE + 0x94A, "<H", 0xC4F4)]
+# as "rich" with Nook's store 10 bells short of its first level's cap (25,000 spent,
+# main/nook_store.h): a purchase plans the upgrade and posts its notice
+SAVES["store-near-cap"] = SAVES["rich"] + [(NOOK_STORE, "<I", 24990)]
+# as "rich" with the store's first level's cap spent and the upgrade planned for 13 September, as a
+# purchase on the seed's day plans it: the store closes the day before, the day after the seed's
+SAVES["store-closing"] = SAVES["rich"] + [(NOOK_STORE, "<I", 25000)] + raw(NOOK_STORE + 0x56, bytes((13, 9, 26, 1)))
+# as "furni" with the part-time job's parcel 0x1561 (worth nothing, item_info/always.bin) in place of
+# the furniture in pocket 0: Nook offers nothing for it (line 0x0a)
+SAVES["sell-worthless"] = [(POCKETS, "<H", 0x1561), (POCKETS + 2, "<H", 0x4000)]
 SAVES["bottle-came"] = SAVES["bottle-sent"][:-1] + [(EXCHANGE + 0x938, "<H", 0x0101), (EXCHANGE + 0x94A, "<H", 0xCDCD)]
 SAVES["events-ended"] = [(TOWN_EVENTS, "<H", 0x11), (TOWN_EVENTS + 2, "<B", 25),
                          (TOWN_EVENTS + 12, "<H", 0x62), (TOWN_EVENTS + 14, "<B", 25)]
@@ -1523,6 +1565,24 @@ scene("villager-nickname-own", "visitor-3f-fond", 14019, [2600, 7200, 10400, 111
 scene("villager-admire", "seed", 11204, [2600, 4200, 6200, 8000, 9100, 10000, 11203], frames(6100, 11204, 50),
       "on the fourth Sunday's town event, a villager praises the player and asks for a word of praise back",
       rtc="2026-09-27 11:30:00")
+scene("villager-came", "villager-came", 3000, [1300, 2000, 2600, 2999], frames(2400, 3000, 50),
+      "with a villager of another town received, the load moves it into a free place (villager-talk's start)",
+      "villager-talk")
+scene("gate-wfc-invite", "friend", 10870, [2600, 6540, 7500, 8600, 9600, 10869], frames(7400, 10870, 50),
+      "with a friend registered, the gatekeeper's invitation over Nintendo Wi-Fi Connection: started, connecting")
+scene("shop-upgrade-planned", "store-near-cap", 9200, [2600, 3800, 4800, 5500, 7200, 8200, 9199],
+      frames(3800, 9200, 50), "shop-buy-letter with the store near its cap: the purchase plans the upgrade and posts the notice",
+      "shop-buy-letter")
+scene("villager-saturday-night", "seed", 6557, [2600, 3100, 4500, 5500, 6556], frames(4000, 6557, 50),
+      "a villager talked to on a Saturday at 19:30: a topic of the item it holds in the evening",
+      rtc="2026-09-19 19:30:00")
+scene("shop-closing-tomorrow", "store-closing", 5100, [2600, 3800, 4500, 5099], frames(2900, 5100, 100),
+      "shop-talk the day before the store closes for its upgrade: Tom Nook tells of the day it is closed",
+      "shop-talk")
+scene("shop-sell-worthless", "sell-worthless", 6200, [2600, 3800, 4700, 5600, 6199], frames(4600, 6200, 50),
+      "shop-sell with a parcel worth nothing: Nook offers nothing, and the answer leaves it unconverted", "shop-sell")
+scene("gate-wfc-code", "seed", 10118, [2600, 6540, 7500, 8600, 9600, 10117], frames(7400, 10118, 50),
+      "the gatekeeper's friend code without one: the Wi-Fi Connection started for it, connecting")
 scene("title-wfc-settings", "seed", 2140, [1100, 1500, 1800, 2100, 2139], frames(1700, 2140, 20),
       "the continue menu's Nintendo Wi-Fi Connection settings: the title leaves for the settings program")
 
