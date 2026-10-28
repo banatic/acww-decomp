@@ -26,7 +26,10 @@ A plan file (docs/scene-plan-groups.txt) is blocks of `key: value` lines separat
 lines: `area`, `group`, `scene` (what to play), `reach` (how: save, date, steps), `needs`
 (seed, date, unreachable or unknown) and `match` (patterns of `file` or `file:Name`, fnmatch
 style, file relative to clean/ without .c). Each function no run enters goes to the first group
-with a matching pattern; --plan stops with the functions no group takes.
+with a matching pattern; --plan stops with the functions no group takes, and warns (on stderr)
+about each group marked unreachable whose patterns take a function some scene ran (the first
+group matching it): such a group claims more than it proves. tools/lint.py fails on such a group
+by the committed runtime/recordings/scenes/clean-entered.txt (unreachable_ran below).
 """
 from __future__ import annotations
 
@@ -120,22 +123,52 @@ def read_plan(path: pathlib.Path) -> list[dict]:
     return groups
 
 
+def group_of(groups: list[dict], f: str, name: str) -> dict | None:
+    """The first group whose patterns match a Clean function (file f, Clean name)."""
+    for g in groups:
+        if any(fnmatch.fnmatchcase(f, p) if ":" not in p else fnmatch.fnmatchcase(f"{f}:{name}", p)
+               for p in g["patterns"]):
+            return g
+    return None
+
+
+def unreachable_ran(syms, plan: pathlib.Path = C.ROOT / "docs" / "scene-plan-groups.txt") -> list[str]:
+    """The plan's unreachable groups that take a function a committed scene enters (by
+    runtime/recordings/scenes/clean-entered.txt, which needs no scene run), one line a group."""
+    entered = set()
+    for line in (C.ROOT / "runtime" / "recordings" / "scenes" / "clean-entered.txt").read_text().splitlines():
+        parts = line.split()
+        if len(parts) == 2 and not line.startswith("#"):
+            entered.add((parts[0], int(parts[1], 16)))
+    groups = read_plan(plan)
+    out = collections.defaultdict(list)
+    for k, (f, name) in sorted(clean_functions(syms).items()):
+        g = group_of(groups, f, name) if k in entered else None
+        if g is not None and g["needs"] == "unreachable":
+            out[g["group"]].append(f"{f}:{name}")
+    return [f"{plan.relative_to(C.ROOT).as_posix()}: group \"{group}\" is unreachable but takes {len(names)} "
+            f"functions a scene enters, e.g. {', '.join(names[:5])}" for group, names in out.items()]
+
+
 def write_plan(groups: list[dict], clean: dict, state, counts: dict, lists: int) -> None:
     """Every function no run enters, by group, as Markdown on stdout."""
     left = []
+    contradicted = collections.defaultdict(list)  # unreachable group -> functions a scene ran
     for g in groups:
         g["functions"] = []
     for k in sorted(clean, key=lambda k: (clean[k][0], k)):
-        if state(k) == "run":
-            continue
         f, name = clean[k]
-        for g in groups:
-            if any(fnmatch.fnmatchcase(f, p) if ":" not in p else fnmatch.fnmatchcase(f"{f}:{name}", p)
-                   for p in g["patterns"]):
-                g["functions"].append((k, state(k)))
-                break
-        else:
-            left.append(f"{f}:{name}")
+        g = group_of(groups, f, name)
+        if g is None:
+            if state(k) != "run":
+                left.append(f"{f}:{name}")
+        elif state(k) != "run":
+            g["functions"].append((k, state(k)))
+        elif g["needs"] == "unreachable":
+            contradicted[g["group"]].append(f"{f}:{name}")
+    for group, names in contradicted.items():
+        print(f"warning: group \"{group}\" is unreachable but takes {len(names)} functions a scene ran, "
+              f"e.g. {', '.join(names[:5])}", file=sys.stderr)
     if left:
         raise SystemExit(f"{len(left)} functions no group takes, e.g. " + ", ".join(left[:20]))
     out = []

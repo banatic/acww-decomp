@@ -3,8 +3,9 @@
     python tools/lint.py
 
 Checks the source headers and paths against config/, duplicate addresses, files that must
-not be committed, and that every text file is English only (game text is written as byte
-escapes, e.g. "\xb0\xa1").
+not be committed, that every text file is English only (game text is written as byte
+escapes, e.g. "\xb0\xa1"), and that no unreachable group of docs/scene-plan-groups.txt takes a
+Clean function the committed scenes enter (runtime/recordings/scenes/clean-entered.txt).
 """
 
 from __future__ import annotations
@@ -140,6 +141,10 @@ def main() -> None:
             defined.setdefault(m.group(1), rel)
 
     errors += macro_shadows()
+
+    # An unreachable group of the scene plan must not take a function a committed scene enters.
+    import coverage  # noqa: PLC0415
+    errors += coverage.unreachable_ran(syms)
 
     for e in errors[:50]:
         print(e)
