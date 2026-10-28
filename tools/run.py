@@ -54,6 +54,10 @@ Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
                      JSON to FILE: [{"module", "address", "ran"}]. The program is the usual one
                      with runtime/clean_ran.c linked in, which marks each Clean function's entry
                      with a breakpoint until it first runs; the Clean code is the usual build's
+    --reuse-build TOKEN  with --native: the program and the policy that an earlier run with the
+                     same TOKEN and options made in this directory, as they are (tools/scenes.py
+                     gives one TOKEN to the scenes of one invocation, which the tree does not change
+                     under)
 
 Prints how far the boot gets: where it stopped, the registers the game touched, the BIOS
 calls, the PXI traffic, the functions branched to most and the last branch targets with their
@@ -580,8 +584,9 @@ def compiler_helpers(found: dict[tuple[str, int], str]) -> set[tuple[str, int]]:
     """The compiler helpers' (module, address): those `found` in the library sources, which are
     not distributed (libs/README.md), kept in HELPERS for a checkout without them."""
     if found:
-        HELPERS.write_text("".join(f"{mod} {addr:08x} {name}\n" for (mod, addr), name in sorted(found.items())),
-                           newline="\n")
+        text = "".join(f"{mod} {addr:08x} {name}\n" for (mod, addr), name in sorted(found.items()))
+        if not HELPERS.exists() or HELPERS.read_text() != text:  # (runs side by side read runtime/)
+            HELPERS.write_text(text, newline="\n")
         return set(found)
     out = set()
     for line in HELPERS.read_text().splitlines() if HELPERS.exists() else []:
@@ -860,14 +865,39 @@ def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pa
     C.prune_cache(("reference",))
 
 
-def native_main(args, manifest, table, budget, env) -> int:
+def prepared(args) -> tuple[pathlib.Path, pathlib.Path]:
+    """The program and the policy file of this run. With --reuse-build TOKEN, those an earlier run
+    with the same TOKEN and the same choices left in OUT are used as they are (tools/scenes.py
+    passes one TOKEN to every scene a runtime directory of its own runs, in one invocation of it:
+    building and writing the policy are the same for all of them and cost about 14 s a run)."""
+    natives = [NATIVE / n for n in ("natives.s", "objects.txt.key")]
+    signature = " ".join([args.reuse_build or "", args.native, args.clean or "-", str(bool(args.clean_ran)),
+                          *(f"{p.stat().st_size}:{p.stat().st_mtime_ns}" if p.exists() else "-" for p in natives)])
+    stamp = OUT / "prepared.txt"
+    exe = OUT / ("run-native" + ("-ran" if args.clean_ran else "") + (".exe" if WINDOWS else ""))
+    policy = OUT / "native-policy.txt"
+    try:
+        if args.reuse_build and exe.exists() and policy.exists() and stamp.read_text() == signature:
+            print(f"native policy and program: as an earlier run made them ({args.reuse_build})", flush=True)
+            return exe, policy
+    except OSError:
+        pass
+    stamp.unlink(missing_ok=True)
     exe = build(native=True, clean=args.clean, ran=bool(args.clean_ran))
+    policy = write_policy(args.native, args.clean)
+    if args.reuse_build:
+        stamp.write_text(signature)
+    return exe, policy
+
+
+def native_main(args, manifest, table, budget, env) -> int:
+    exe, policy = prepared(args)
     env = dict(env)
     env.pop("RUN_CLEAN_RAN", None)
     hash_file = env.pop("RUN_HASH", None)
     out = OUT / "native-run"
     out.mkdir(parents=True, exist_ok=True)
-    env["RUN_NATIVE_POLICY"] = str(write_policy(args.native, args.clean))
+    env["RUN_NATIVE_POLICY"] = str(policy)
     if args.ram_hash:
         env["RUN_RAM_HASH"] = args.ram_hash
     # the Reference pass leaves its memory images there; the Native pass compares with them
@@ -920,6 +950,7 @@ def native_main(args, manifest, table, budget, env) -> int:
             f.write("".join(line + "\n" for line in added))
         print("kept Reference from now on: " + "; ".join(added), flush=True)
         # the record depends on which functions are Native: make it again
+        (OUT / "prepared.txt").unlink(missing_ok=True)
         env["RUN_NATIVE_POLICY"] = nat_env["RUN_NATIVE_POLICY"] = str(write_policy(args.native, args.clean))
         ref = reference()
     nat = summary(nat_text)
@@ -988,6 +1019,8 @@ def main() -> None:
     ap.add_argument("--clean", nargs="?", const="all", metavar="FILE",
                     help="with --native: Clean functions (all, or those FILE lists) in place of their Native ones")
     ap.add_argument("--clean-ran", metavar="FILE", help="with --clean: which Clean functions ran, as JSON to FILE")
+    ap.add_argument("--reuse-build", metavar="TOKEN", help="with --native: use the program and policy an earlier "
+                    "run with this TOKEN and the same options made in this directory (tools/scenes.py)")
     args = ap.parse_args()
     if args.clean_ran and not args.clean:
         raise SystemExit("--clean-ran needs --clean")

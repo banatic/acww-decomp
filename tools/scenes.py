@@ -27,6 +27,13 @@ scene's checkpoints. A scene passes when tools/run.py says "Native and Reference
 a <scene>.sha1 file beside the recordings, when the frames are the expected ones: SHA-1s of
 frames only, no bytes of the save).
 
+Each scene runs in a runtime directory (OUT/.runtime-<i>, or .runtime-native-<i> for Native
+alone) that this run holds locked, so runs side by side (the gate's two passes, or another tree's
+sharing OUT through ACWW_RUNTIME_OUT) never share one; the first scene in a directory builds the
+program and writes the Native policy, and the others use them again (tools/run.py
+--reuse-build). A scene's logs are kept in OUT/<scene>, and with `--clean none` in
+OUT/.native-only/<scene>.
+
 The recordings were converted from the port project's pad scripts (`--convert`): rows
 `<frame> <mask> <frames>` hold a button mask (A=1 B=2 SELECT=4 START=8 RIGHT=16 LEFT=32 UP=64
 DOWN=128 R=256 L=512 X=0x400 Y=0x800) for some frames, `<frame> T <x> <y> <frames>` the pen;
@@ -46,6 +53,7 @@ import re
 import struct
 import subprocess
 import sys
+import threading
 import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -1466,7 +1474,18 @@ def derive_save(seed: pathlib.Path, name: str) -> pathlib.Path:
     out = OUT / "saves" / f"{name}.sav"
     out.parent.mkdir(parents=True, exist_ok=True)
     if not out.exists() or out.read_bytes() != data:
-        out.write_bytes(bytes(data))
+        # whole or not at all: the other pass may be reading it (os.replace fails on Windows while
+        # a run has it open)
+        tmp = out.with_name(f"{out.name}.{os.getpid()}.{threading.get_ident()}")
+        tmp.write_bytes(bytes(data))
+        for attempt in range(60):
+            try:
+                os.replace(tmp, out)
+                break
+            except PermissionError:
+                if attempt == 59:
+                    raise
+                time.sleep(0.5)
     return out
 
 
@@ -1513,16 +1532,70 @@ def convert(text: str, moves: list[tuple[int, int]]) -> str:
 
 # ------------------------------------------------------------------------------ runs
 
+def lock(path: pathlib.Path, wait: bool):
+    """An open file holding the OS's lock on `path` (released when it is closed or the process
+    ends, however it ends), or None when another process holds it and `wait` is false."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    f = open(path, "a+b")
+    while True:
+        try:
+            if os.name == "nt":
+                import msvcrt  # noqa: PLC0415
+                f.seek(0)
+                msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl  # noqa: PLC0415
+                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return f
+        except OSError:
+            if not wait:
+                f.close()
+                return None
+            time.sleep(1)
+
+
+def take_runtimes(count: int, clean: str | None) -> list[tuple[pathlib.Path, object]]:
+    """`count` runtime directories (OUT/.runtime-<i>, OUT/.runtime-native-<i> for Native alone,
+    whose program is another) no other process is using, each with its lock: two runs of this
+    tool (the gate's two passes, or another tree's run sharing OUT through ACWW_RUNTIME_OUT) never
+    build or run in the same one."""
+    out, i = [], 0
+    while len(out) < count:
+        path = OUT / (f".runtime-{i}" if clean else f".runtime-native-{i}")
+        held = lock(path / "lock", wait=False)
+        if held:
+            out.append((path, held))
+        i += 1
+    return out
+
+
+def work_dir(name: str, look: bool, clean: str | None) -> pathlib.Path:
+    """Where a scene's logs and lists are kept: OUT/<name> (tools/coverage.py reads the lists
+    there), and for Native alone (--clean none) OUT/.native-only/<name>, so that the two passes
+    can run at the same time."""
+    return OUT / name if look or clean else OUT / ".native-only" / name
+
+
 def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str | None,
-        runtime: pathlib.Path | None = None, ran: pathlib.Path | None = None) -> dict:
-    """One scene's run; with `runtime`, tools/run.py builds and runs there (ACWW_RUNTIME_OUT), so
-    scenes can run side by side: each one's runs write their programs and logs in one place. With
-    `ran` (and `clean`), the Clean functions the scene entered go to ran/<name>.json."""
+        runtime: pathlib.Path, ran: pathlib.Path | None = None, token: str | None = None) -> dict:
+    """One scene's run: tools/run.py builds and runs in `runtime` (ACWW_RUNTIME_OUT, a directory
+    from take_runtimes), so scenes can run side by side: each one's runs write their programs and
+    logs in one place. With `ran` (and `clean`), the Clean functions the scene entered go to
+    ran/<name>.json. With `token`, the program and policy the first scene in `runtime` made are
+    used again (tools/run.py --reuse-build)."""
     sc = SCENES[name]
+    work = work_dir(name, look, clean)
+    held = lock(work / "lock", wait=True)  # one run of a scene's pass at a time
+    try:
+        return run_in(name, sc, seed, work, look, only_native, clean, runtime, ran, token)
+    finally:
+        held.close()
+
+
+def run_in(name: str, sc: dict, seed: pathlib.Path, work: pathlib.Path, look: bool, only_native: str,
+           clean: str | None, runtime: pathlib.Path, ran: pathlib.Path | None, token: str | None) -> dict:
     recording = RECORDINGS / f"{sc['recording']}.txt"
     save = derive_save(seed, sc["save"])
-    work = OUT / name
-    work.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(C.ROOT / "tools" / "run.py"), "0", str(sc["frames"]), "--input", str(recording),
            "--rtc", sc["rtc"], "--save", str(save)]
     if look:
@@ -1536,12 +1609,17 @@ def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str 
         expect = RECORDINGS / f"{name}.sha1"
         if expect.exists():
             cmd += ["--expect", str(expect)]
+        if token:
+            cmd += ["--reuse-build", token]
     started = time.monotonic()
-    env = dict(os.environ, ACWW_RUNTIME_OUT=str(runtime)) if runtime else None
+    env = dict(os.environ, ACWW_RUNTIME_OUT=str(runtime))
     p = subprocess.run(cmd, cwd=C.ROOT, capture_output=True, text=True, errors="replace", env=env)
     text = p.stdout + p.stderr
     (work / ("look.log" if look else "run.log")).write_text(text, encoding="utf-8")
-    result = dict(name=name, status=p.returncode, seconds=round(time.monotonic() - started), log=text)
+    # (only the lines printed later are kept: a scene's output is about 14 MB)
+    result = dict(name=name, status=p.returncode, seconds=round(time.monotonic() - started), work=work,
+                  log=[line for line in text.splitlines()
+                       if "DIVERGED" in line or "DIFFERENT" in line or line.startswith("native run: stop")])
     m = re.search(r"native: (\d+) Clean functions in place of their Native ones, (\d+) entered from the interpreter",
                   text)
     result["clean"] = (int(m.group(1)), int(m.group(2))) if m else None
@@ -1552,7 +1630,7 @@ def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str 
     if not look:
         # tools/run.py leaves both runs' logs and frame hashes in one place for every run: keep
         # this scene's, and name the first frame the two runs show differently
-        run_dir = (runtime or OUT.parent) / "native-run"
+        run_dir = runtime / "native-run"
         for log in ("reference.log", "native.log", "reference-hashes.txt", "functions-seen.txt"):
             if (run_dir / log).exists():
                 (work / log).write_bytes((run_dir / log).read_bytes())
@@ -1588,11 +1666,12 @@ def bisect(name: str, seed: pathlib.Path, native: str, skip: set[str]) -> None:
         if names:
             files[path.relative_to(C.ROOT).as_posix()] = names
     listed = OUT / "bisect.txt"
+    runtime, _held = take_runtimes(1, "bisect")[0]
 
     def agrees(names: list[str]) -> bool:
         listed.parent.mkdir(parents=True, exist_ok=True)
         listed.write_text("".join(f"{n}\n" for n in names) or "nothing\n")
-        r = run(name, seed, False, native, str(listed))
+        r = run(name, seed, False, native, str(listed), runtime)
         print(f"  {len(names)} Clean functions: {'agree' if r['agree'] else 'DIFFER'}", flush=True)
         return r["agree"]
 
@@ -1632,7 +1711,7 @@ def main() -> int:
                     "since BASE (default main) can affect: those whose last run ran a changed function "
                     "(tools/affected.py)")
     ap.add_argument("-j", "--jobs", type=int, default=1, help="scenes run at a time (each in a runtime "
-                    "directory of its own under the scenes', built the first time)")
+                    "directory of its own under the scenes', locked, built by its first scene)")
     ap.add_argument("--convert", metavar="PAD", help="print a pad script as a recording")
     ap.add_argument("--at", default="", help="with --convert: FROM:TO[,FROM:TO...] moves rows")
     args = ap.parse_args()
@@ -1663,41 +1742,50 @@ def main() -> int:
         return 0
     clean = None if args.clean == "none" else args.clean
     ran = pathlib.Path(args.clean_ran).resolve() if args.clean_ran else None
-    if args.jobs > 1:
-        for sc in dict.fromkeys(SCENES[n]["save"] for n in names):  # written once, before the runs read them
-            derive_save(seed, sc)
-        slots = queue.Queue()
-        for i in range(args.jobs):
-            slots.put(OUT / f".runtime-{i}")
+    if not OUT.resolve().is_relative_to(C.ROOT.resolve()):
+        print(f"scenes: running in {OUT.as_posix()}, outside this tree (ACWW_RUNTIME_OUT)", file=sys.stderr)
+    for sc in dict.fromkeys(SCENES[n]["save"] for n in names):  # written once, before the runs read them
+        derive_save(seed, sc)
+    # Each job runs in a runtime directory of its own, locked against other processes; the first
+    # scene a directory runs builds the program and writes the policy, the others use them again
+    # (the tree does not change during a run).
+    held_slots = take_runtimes(max(1, args.jobs), clean)
+    slots = queue.Queue()
+    for runtime, _held in held_slots:
+        slots.put(runtime)
+    token = f"{os.getpid()}-{time.time_ns()}"
 
-        def one(name: str) -> dict:
-            runtime = slots.get()
-            try:
-                return run(name, seed, args.look, args.native, clean, runtime, ran)
-            finally:
-                slots.put(runtime)
-        pool = cf.ThreadPoolExecutor(args.jobs)
-        pending = [pool.submit(one, n) for n in names]
+    def one(name: str) -> dict:
+        runtime = slots.get()
+        try:
+            return run(name, seed, args.look, args.native, clean, runtime, ran, token)
+        finally:
+            slots.put(runtime)
+    pool = cf.ThreadPoolExecutor(max(1, args.jobs))
+    # the longest first, so that the last ones to finish are short (printed in the given order)
+    pending = {n: pool.submit(one, n) for n in sorted(names, key=lambda n: -SCENES[n]["frames"])}
     results = []
-    for i, name in enumerate(names):
+    for name in names:
         print(f"{name}...", flush=True)
-        r = pending[i].result() if args.jobs > 1 else run(name, seed, args.look, args.native, clean, ran=ran)
+        r = pending[name].result()
         results.append(r)
         if args.look:
-            print(f"  {r['status']=} pngs in {(OUT / name / 'png').as_posix()} ({r['seconds']} s)")
+            print(f"  {r['status']=} pngs in {(r['work'] / 'png').as_posix()} ({r['seconds']} s)")
             continue
         entered = f", {r['clean'][1]} of {r['clean'][0]} Clean functions entered from the interpreter" if r["clean"] else ""
         print(f"  {'PASS' if r['agree'] and r['status'] == 0 else 'FAIL'}: frames {r['frames']}{entered} "
-              f"({r['seconds']} s; log {(OUT / name / 'run.log').as_posix()})", flush=True)
+              f"({r['seconds']} s; log {(r['work'] / 'run.log').as_posix()})", flush=True)
         expect = RECORDINGS / f"{name}.sha1"
         if args.write_expect and r["agree"] and r["status"] == 0 and r["frames"] and not expect.exists():
             expect.write_text(r["frames"] + "\n", newline="\n")
             print(f"    wrote {expect.relative_to(C.ROOT).as_posix()}")
         if r["first"] is not None:
             print(f"    the frames first differ at frame {r['first']}")
-        for line in r["log"].splitlines():
-            if "DIVERGED" in line or "DIFFERENT" in line or line.startswith("native run: stop"):
-                print(f"    {line}")
+        for line in r["log"]:
+            print(f"    {line}")
+    pool.shutdown()
+    for _runtime, held in held_slots:
+        held.close()
     if args.look:
         return 0
     failed = [r["name"] for r in results if not (r["agree"] and r["status"] == 0)]
