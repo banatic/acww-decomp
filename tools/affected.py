@@ -10,8 +10,9 @@ a change to it can only change the scenes whose list names it. A change is mappe
 - a Clean source: the functions it registers (CLEAN_AS); a Clean header: those of every Clean
   source that includes it;
 - a scene's recording or expected frames: that scene;
-- tools/scenes.py, when only its tables changed (scene() entries, SAVES, and constants no
-  function reads): the scenes whose entry or save changed.
+- tools/scenes.py, when only its tables changed (scene() entries, SAVES and its entries, loops
+  that only add to them, constants no function reads, and helpers only those use): the scenes
+  whose entry or save changed.
 
 Anything else that runs (config/, runtime/, tools/, libs/) can change every scene, and so do
 the Native policy lists: then every scene is chosen. Text that does not run (docs, README) and
@@ -63,19 +64,56 @@ def _clean_functions(path: pathlib.Path) -> set[tuple[str, int]]:
 def _scene_tables(text: str) -> tuple[str, dict, dict]:
     """tools/scenes.py's code without its tables (as an AST dump), and its SCENES and SAVES."""
     tree = ast.parse(text)
-    read = {n.id for f in ast.walk(tree) if isinstance(f, ast.FunctionDef)
-            for n in ast.walk(f) if isinstance(n, ast.Name)}
+    functions = {n.name: n for n in tree.body if isinstance(n, ast.FunctionDef)}
 
-    def table(node: ast.stmt) -> bool:
+    def names_in(node: ast.AST) -> set[str]:
+        return {n.id for n in ast.walk(node) if isinstance(n, ast.Name)}
+
+    def saves_entry(node: ast.expr) -> bool:
+        return isinstance(node, ast.Subscript) and getattr(node.value, "id", None) == "SAVES"
+
+    def table(node: ast.stmt, helpers: set[str], read: set[str]) -> bool:
+        """A statement that only adds to SCENES or SAVES, sets a constant no code reads, or
+        defines a helper only such statements use."""
         if (isinstance(node, ast.Expr) and isinstance(node.value, ast.Call)
                 and getattr(node.value.func, "id", None) == "scene"):
             return True
+        if isinstance(node, ast.FunctionDef):
+            return node.name in helpers
+        if isinstance(node, ast.For):
+            return not node.orelse and all(table(n, helpers, read) for n in node.body)
         targets = (node.targets if isinstance(node, ast.Assign) else
                    [node.target] if isinstance(node, ast.AnnAssign) else [])
+        if targets and all(saves_entry(t) for t in targets):
+            return True
         names = [n.id for n in targets if isinstance(n, ast.Name)]
-        return bool(names) and all(n == "SAVES" or (n.isupper() and n not in read) for n in names)
+        return bool(names) and len(names) == len(targets) and all(
+            n == "SAVES" or (n.isupper() and n not in read) for n in names)
 
-    code = ast.dump(ast.Module(body=[n for n in tree.body if not table(n)], type_ignores=[]))
+    # A helper is a function that only the tables (and other helpers) use: what it makes ends up
+    # in SCENES or SAVES, which are compared by value below. Start from every function and drop
+    # those that the rest of the code names, until nothing changes.
+    helpers = set(functions) - {"scene"}
+    while True:
+        rest = [f for name, f in functions.items() if name not in helpers]
+        read = set().union(*map(names_in, rest)) if rest else set()
+        others = [n for n in tree.body if not isinstance(n, ast.FunctionDef) and not table(n, helpers, read)]
+        used = read.union(*map(names_in, others)) if others else read
+        # ... and that the tables do use: a function nothing in the file names may be called
+        # from another tool (scenes.derive_save), so it stays code.
+        tables = [n for n in tree.body if not isinstance(n, ast.FunctionDef) and n not in others]
+        named = set().union(*map(names_in, tables)) if tables else set()
+        while True:
+            more = named.union(*(names_in(functions[h]) for h in named & helpers))
+            if more == named:
+                break
+            named = more
+        keep = (helpers - used) & named
+        if keep == helpers:
+            break
+        helpers = keep
+
+    code = ast.dump(ast.Module(body=[n for n in tree.body if not table(n, helpers, read)], type_ignores=[]))
     space: dict = {"__name__": "scenes_tables", "__file__": str(C.ROOT / "tools" / "scenes.py")}
     exec(compile(text, "scenes.py", "exec"), space)  # noqa: S102 (the repository's own file)
     return code, space["SCENES"], space["SAVES"]

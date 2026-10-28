@@ -24,6 +24,8 @@ jobs:
         run: python tools/lint.py
       - name: The setup's ROM checks (made-up headers, no ROM)
         run: python tools/test_setup.py
+      - name: The gate's reading of scenes.py (made-up files)
+        run: python tools/test_affected.py
       - name: Formatting
         run: |
           pip install clang-format==22.1.8
