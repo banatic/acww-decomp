@@ -1,0 +1,72 @@
+# title-wfc-settings (format: runtime/input.h), played from a town save by tools/scenes.py (the
+# save is not in this repository). As title-move-in.txt to 1700: the continue menu's "something
+# else" (DOWN three times, A at 1541) and its menu up again.
+# Save: the seed town. Its fourth choice (DOWN three times, A at 1796), the Nintendo Wi-Fi
+# Connection settings: A every 32 frames from 1850 reads the lines (message 0 of
+# sp_etc_sequence1) and answers yes; the talk ends and the title leaves for the settings program
+# (TitleScene_EnterExitRequest, TitleScene_ExitByRequest: process class 2 asked for), to 2139,
+# before the system resets into it.
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1064 - -
+1100 DOWN -
+1104 - -
+1119 DOWN -
+1123 - -
+1138 A -
+1142 - -
+1262 A -
+1266 - -
+1336 A -
+1340 - -
+1410 A -
+1414 - -
+1484 DOWN -
+1488 - -
+1503 DOWN -
+1507 - -
+1522 DOWN -
+1526 - -
+1541 A -
+1545 - -
+1665 A -
+1669 - -
+1739 DOWN -
+1743 - -
+1758 DOWN -
+1762 - -
+1777 DOWN -
+1781 - -
+1796 A -
+1800 - -
+1850 A -
+1852 - -
+1882 A -
+1884 - -
+1914 A -
+1916 - -
+1946 A -
+1948 - -
+1978 A -
+1980 - -
+2010 A -
+2012 - -
+2042 A -
+2044 - -
+2074 A -
+2076 - -
+2106 A -
+2108 - -
+2138 A -
+2140 - -
+2170 A -
+2172 - -
+2202 A -
+2204 - -
+2234 A -
+2236 - -
+2266 A -
+2268 - -

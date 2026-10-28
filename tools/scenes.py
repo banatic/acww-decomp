@@ -715,9 +715,26 @@ SAVES["met-august"] = raw(TOWN_VILLAGERS + 3 * 0x7EC + 0x54, bytes((14, 31, 11, 
 SAVES["met-elsewhere"] = raw(TOWN_VILLAGERS + 3 * 0x7EC + 0x5C, OTHER_TOWN)
 # as "loan-paid" with the next extension ordered (the house record's word at 0x15a0 as nook-loan
 # leaves it: size 0, size 1 ordered), built on the next new day
-SAVES["house-ordered"] = SAVES["loan-paid"] + [(0xF52C + 0x15A0, "<I", 0x0A040008)]
+# flag 0x12 of the state block (its flags at 0x173f4) set, as the linked session's move-in sets it
+# (main/activity_link_jobs.c): the title starts player 0 anew
+SAVES["flag-12"] = [(0x173F4, "<I", 0x101 | 1 << 0x12)]
+SAVES["house-ordered"] =SAVES["loan-paid"] + [(0xF52C + 0x15A0, "<I", 0x0A040008)]
 SAVES["bottle-sent"] = [(EXCHANGE + 0x22, "<B", 2), (EXCHANGE + 0x42, "<B", 1), (EXCHANGE + 0x58, "<H", 0x3148),
                         (EXCHANGE + 0xFA, "<B", 4), (EXCHANGE + 0x94A, "<H", 0xCECE)]
+# the same block as the passing exchange leaves it on the system that received it
+# (XctExchange_TakeReceived): drifted once (0x938) and set to arrive at once (0x939 bit 0)
+# the friend friend-add registers (code 541178224974) in the player's friend roster (0x1f5c of the
+# record, its bytes from that run's RAM), with the roster's checksum (0x480, its halfword sum 0, as
+# CardSave_WriteFriendRoster writes it)
+SAVES["friend"] = raw(0x14 + 0x1F5C, bytes.fromhex("001000004e61bc007e000000bcbc08b1000000000000000000c8000000000000")) + [
+    (0x14 + 0x1F5C + 0x480, "<H", 0x57B4)]
+# the town's exchange block as the passing exchange leaves it with another system's constellation
+# draft (0x100: made by OTHER_PLAYER_A, four characters, pieces 0-2), drifted once and set to
+# arrive at once, its checksum made good: the load keeps the draft (Constellations_FileDraft)
+SAVES["star-came"] = raw(EXCHANGE + 0x100, OTHER_PLAYER_A + bytes.fromhex("4331433143314331") + bytes(4) +
+                         struct.pack("<16H", 0, 1, 2, *[0xFFFF] * 13) + bytes(2)) + [
+    (EXCHANGE + 0x938, "<H", 0x0101), (EXCHANGE + 0x94A, "<H", 0xAC79)]
+SAVES["bottle-came"] = SAVES["bottle-sent"][:-1] + [(EXCHANGE + 0x938, "<H", 0x0101), (EXCHANGE + 0x94A, "<H", 0xCDCD)]
 SAVES["events-ended"] = [(TOWN_EVENTS, "<H", 0x11), (TOWN_EVENTS + 2, "<B", 25),
                          (TOWN_EVENTS + 12, "<H", 0x62), (TOWN_EVENTS + 14, "<B", 25)]
 
@@ -1483,6 +1500,17 @@ scene("villager-elsewhere", "met-elsewhere", 5500, [2600, 4100, 4600, 5100, 5499
 scene("nook-grown", "house-ordered", 7160, [2600, 4400, 5000, 5600, 6400, 7159], frames(4900, 7160, 50),
       "the day after an extension was ordered, into Nook's store: he tells of the house grown and its new loan",
       rtc="2026-09-14 11:30:00")
+scene("title-moved-in", "flag-12", 13997, [1100, 1500, 3400, 7900, 10000, 12000, 13996], frames(1000, 13997, 100),
+      "with the state block's flag of a move-in set, the title starts player 0 anew: the taxi ride, the town name, Pelly")
+scene("bottle-came", "bottle-came", 6700, [2600, 3700, 5000, 5400, 6000, 6699], frames(5200, 6700, 50),
+      "with another system's bottle received, it washes up on the beach: picked up and opened")
+scene("gate-wfc", "friend", 10311, [2600, 6540, 7900, 8600, 9400, 10310], frames(7800, 10311, 50),
+      "with a friend registered, the gatekeeper's Nintendo Wi-Fi Connection: started, connecting for ever")
+scene("star-came", "star-came", 3000, [1300, 2000, 2600, 2999], frames(2400, 3000, 50),
+      "with another system's constellation received, the load keeps it among the town's (villager-talk's start)",
+      "villager-talk")
+scene("title-wfc-settings", "seed", 2140, [1100, 1500, 1800, 2100, 2139], frames(1700, 2140, 20),
+      "the continue menu's Nintendo Wi-Fi Connection settings: the title leaves for the settings program")
 
 # ------------------------------------------------------------------------------ saves
 
