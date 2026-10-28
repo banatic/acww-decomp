@@ -24,6 +24,7 @@
 #include "input.h"
 #include "io.h"
 #include "memory.h"
+#include "sequencer.h"
 
 #define SHARED_FIFO_READY_ARM7 0x027fff8cu /* PXI_IsCallbackReady(tag, PXI_PROC_ARM7) */
 #define SHARED_LOCK_INIT 0x027ffff0u       /* OSLockWord: flag, u16 owner, u16 extension */
@@ -56,6 +57,7 @@ static struct {
     /* tag 7: the shared work the sound driver reports in, and lists finished */
     uint32_t snd_shared_work;
     uint32_t snd_finished;
+    int sequencer; /* the sequencer runs the lists' commands (RUN_SEQUENCER) */
     /* tag 0xb: the ARM9's command block, the backup chip, and whether the next word is
        the block's address (it follows command 0) */
     uint32_t card_command;
@@ -298,6 +300,7 @@ void arm7_init(void)
     arm7.backup = malloc(BACKUP_SIZE);
     memset(arm7.backup, 0xff, BACKUP_SIZE);
     backup_load(getenv("RUN_SAVE"));
+    arm7.sequencer = sequencer_init();
 }
 
 static void reply(uint32_t tag, uint32_t data, int err)
@@ -428,16 +431,25 @@ static void nvram_request(void)
 /* Tag 7, the sound driver: a command list (24-byte commands: next, id, args) is executed
  * by the ARM7, which then counts it in the shared work (SND_RecvCommandReply reads word 0
  * of it, SNDi_GetFinishedCommandTag). Command 0x1d tells the driver where the shared work
- * is (SND_CommandInit). Nothing is played here. */
+ * is (SND_CommandInit). Nothing is played here; with the sequencer on (sequencer.h) the
+ * commands run the sequences, and the sound thread's pass follows the list. */
 static void sound_list(uint32_t list)
 {
     for (uint32_t cmd = list; cmd != 0 && (cmd >> 24) == 0x02; cmd = rd32(cmd)) {
-        if (rd32(cmd + 4) == 0x1d) {
+        uint32_t id = rd32(cmd + 4);
+        if (id == 0x1d) {
             arm7.snd_shared_work = rd32(cmd + 8);
+        }
+        if (arm7.sequencer) {
+            uint32_t args[4] = {rd32(cmd + 8), rd32(cmd + 12), rd32(cmd + 16), rd32(cmd + 20)};
+            sequencer_command(id, args, arm7.snd_shared_work);
         }
     }
     if (arm7.snd_shared_work != 0) {
         wr32(arm7.snd_shared_work, ++arm7.snd_finished);
+    }
+    if (arm7.sequencer) {
+        sequencer_after_list(arm7.snd_shared_work);
     }
 }
 
@@ -555,6 +567,9 @@ void arm7_step(void)
             arm7.unanswered[word & 0x1f]++;
         }
     }
+    if (arm7.sequencer) {
+        sequencer_advance(arm7.snd_shared_work);
+    }
 }
 
 const uint8_t *arm7_backup(uint64_t *writes)
@@ -578,4 +593,5 @@ void arm7_report(FILE *out)
                     (unsigned long long) arm7.answered[tag], (unsigned long long) arm7.unanswered[tag]);
         }
     }
+    sequencer_report(out);
 }

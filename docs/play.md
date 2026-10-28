@@ -69,9 +69,12 @@ The clock is the PC's (`--rtc "YYYY-MM-DD HH:MM:SS"` starts it at a fixed moment
 ## Not there yet
 
 - **Sound.** The ARM7 is simulated at its protocol (`runtime/arm7.c`): the sound driver's
-  command lists (PXI tag 7) are acknowledged, and nothing runs the ARM7's sound code or the
-  sound hardware it drives, so there is nothing to play. Sound needs the ARM7's program run (the
-  sequence player is ARM7 code in the ROM) and the DS's sixteen sound channels emulated.
+  command lists (PXI tag 7) are acknowledged, and nothing runs the sound hardware the ARM7
+  drives, so there is nothing to play. With `RUN_SEQUENCER=1` (`tools/run.py --sequencer`,
+  `runtime/sequencer.h`) the ARM7's sequence player runs the sequences' commands, tempo and
+  variables, which some of the game waits on (the end of K.K.'s show, the town tune editor's
+  playback), but takes no channel for a note. Sound needs the notes played on the DS's sixteen
+  sound channels, from the banks' instruments and wave archives.
 - **Linux.** The window is Win32 (`runtime/play.c`).
 - Wireless play (local and Wi-Fi) is not emulated, as in the headless runs.
 

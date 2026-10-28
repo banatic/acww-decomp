@@ -1910,7 +1910,7 @@ match: ov068/outdoor_villager* ov003/villager_house main/villager_* main/npc_id 
 
 area: New player and title (the seed's save)
 group: a second player and the title screen
-scene: from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices, the staff roll after the music show
+scene: from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices
 reach: the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day
 needs: seed
 match: ov147/* ov051/* ov068/sequence4 ov068/town_nook ov068/taxi ov068/field_actor_states87 ov068/field_camera_modes

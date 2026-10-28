@@ -122,7 +122,8 @@ unaligned loads, indexes past a table, which random states produce and the game 
 
 **M3: The game starts, as Reference.** Done: `tools/run.py` boots the ROM's own code (the
 interpreter with banked registers and exceptions, `runtime/io.c` for the hardware, the 2D and 3D
-engines in `gpu2d.c` and `gpu3d.c`, the ARM7 side at its protocol in `arm7.c`) to the title;
+engines in `gpu2d.c` and `gpu3d.c`, the ARM7 side at its protocol in `arm7.c`, and on request
+its sound sequencer in `sequencer.c`) to the title;
 `runtime/recordings/title-start.txt` gives the same 1,300 frames on every run and host, which
 CI checks against `title-start.sha1`.
 - The hardware layer (interrupts, timers, DMA, the file system from the ROM, 2D and 3D graphics

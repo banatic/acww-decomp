@@ -24,6 +24,9 @@ Options for the screens (docs/runtime.md, M3):
                      emulated time, so runs are identical (default: the host's clock)
     --save FILE      start with this image in the save chip (a 256 KB flash image, as emulators
                      write .sav files); the file is only read (default: an erased chip)
+    --sequencer      run the ARM7's sound sequences (runtime/sequencer.h): the shared work
+                     reports the players' state and variables as the ARM7 does (default: off,
+                     the sound command lists are only counted)
 
 Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
     --native=all|leaf|none|FILE
@@ -113,7 +116,8 @@ CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", 
 # DIFF_CHECK(symbol, "module", address, bits, ... (runtime/diffcheck.h)
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
-           "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c", "drive.c")
+           "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c", "drive.c",
+           "sequencer.c")
 
 # The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
 # the libs/Runtime package, and the C library functions the PC's own versions replace
@@ -1010,6 +1014,7 @@ def main() -> None:
     ap.add_argument("--input", metavar="FILE", help="input recording")
     ap.add_argument("--rtc", metavar="TIME", help='pin the clock: "YYYY-MM-DD HH:MM:SS"')
     ap.add_argument("--save", metavar="FILE", help="the save chip's image at power-on")
+    ap.add_argument("--sequencer", action="store_true", help="run the ARM7's sound sequences")
     ap.add_argument("--native", metavar="POLICY", help="all, leaf, none, or a file of functions (see above)")
     ap.add_argument("--ram-hash", metavar="FRAMES", help="hash memory after these frames (comma-separated)")
     ap.add_argument("--ram-dump", metavar="DIR", help="write the hashed memory images to DIR")
@@ -1047,6 +1052,9 @@ def main() -> None:
     if args.rtc:
         env["RUN_RTC"] = args.rtc
     env.pop("RUN_SAVE", None)
+    env.pop("RUN_SEQUENCER", None)
+    if args.sequencer:
+        env["RUN_SEQUENCER"] = "1"
     if args.save:
         if not pathlib.Path(args.save).is_file():
             raise SystemExit(f"no save at {args.save}")

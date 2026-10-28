@@ -793,9 +793,11 @@ SCENES: dict[str, dict] = {}
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
-          recording: str | None = None, rtc: str = RTC) -> None:
+          recording: str | None = None, rtc: str = RTC, sequencer: bool = False) -> None:
+    """`sequencer`: the ARM7's sound sequences run (tools/run.py --sequencer), for a scene that
+    waits on what they report (a melody's steps, the music's variables)."""
     SCENES[name] = dict(save=save, recording=recording or name, frames=frames, ram=ram, look=look,
-                        intent=intent, rtc=rtc)
+                        intent=intent, rtc=rtc, sequencer=sequencer)
 
 
 def frames(a: int, b: int, step: int) -> list[int]:
@@ -1178,6 +1180,9 @@ scene("able-sell", "able-shop", 6963, [2600, 4700, 5300, 5900, 6500, 6962], fram
 scene("kk-show", "museum", 12973, [2600, 8500, 9500, 10900, 11500, 12972], frames(8500, 12973, 50),
       "on a Saturday night in the cafe, sit down before K.K.'s stage: his show and the staff roll begin",
       rtc="2026-09-12 20:30:00")
+scene("kk-show-end", "museum", 21100, [2600, 11500, 16000, 19700, 20700, 21099], frames(11000, 21100, 200),
+      "kk-show with the ARM7's sequences to the show's end: the staff roll scrolls, the logo, K.K.'s "
+      "last words, the player stands and walks", rtc="2026-09-12 20:30:00", sequencer=True)
 scene("mail-due", "mail-due", 8288, [2600, 5000, 7300, 7700, 8100, 8287], frames(7200, 8288, 50),
       "past 17:00 the post office delivers the letters waiting there: the player's to a villager, read "
       "and graded", rtc="2026-09-11 16:58:00")
@@ -1197,6 +1202,9 @@ scene("house-kinds2", "house-kinds2", 14394, [2600, 4500, 6800, 9100, 11400, 137
 scene("house-kinds3", "house-kinds3", 11316, [2600, 4300, 5900, 7500, 9000, 10500, 11315], frames(3500, 11316, 100),
       "in the house, put down clocks, a record player, a melody piece, a switched piece, a photo and the "
       "fortune telephone, use each and take it back")
+scene("melody-piece", "house-kinds3", 7600, [2600, 5900, 7000, 7599], frames(6800, 7600, 50),
+      "house-kinds3 with the ARM7's sequences, to the melody piece: put down and used, it plays the town "
+      "tune on the music's beat", "house-kinds3", sequencer=True)
 scene("gulliver", "sky-ship", 22064, [2600, 7300, 8500, 9500, 12000, 16000, 19500, 22063], frames(8400, 22064, 200),
       "on the day of event 0x44, shoot the spaceship down with the slingshot, wake Gulliver by it, hear him "
       "scatter his parts and hand him one")
@@ -1530,6 +1538,8 @@ scene("house-forecast", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800
       "house-turn", "2026-09-11 11:44:30")
 scene("tune-play", "seed", 5309, [2600, 4700, 5000, 5308], frames(4900, 5309, 25),
       "in Pelly's town tune editor, press play: the editor follows the playback")
+scene("tune-played", "seed", 5800, [2600, 4700, 5100, 5799], frames(4900, 5800, 25),
+      "tune-play with the ARM7's sequences: the tune plays to its end", sequencer=True)
 scene("events-ended", "events-ended", 4900, [2600, 4100, 4500, 4899], frames(4000, 4900, 50),
       "villager-talk the day after the seed's, with two dated events of last year in the town record: "
       "the town's day ends them, codes 0x6d back to 0x61 and building 0x501e taken away",
@@ -1733,7 +1743,7 @@ def run_in(name: str, sc: dict, seed: pathlib.Path, work: pathlib.Path, look: bo
     recording = RECORDINGS / f"{sc['recording']}.txt"
     save = derive_save(seed, sc["save"])
     cmd = [sys.executable, str(C.ROOT / "tools" / "run.py"), "0", str(sc["frames"]), "--input", str(recording),
-           "--rtc", sc["rtc"], "--save", str(save)]
+           "--rtc", sc["rtc"], "--save", str(save), *(["--sequencer"] if sc["sequencer"] else [])]
     if look:
         cmd += ["--png", str(work / "png"), "--frames", ",".join(map(str, sc["look"]))]
     else:
