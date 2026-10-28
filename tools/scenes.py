@@ -702,6 +702,22 @@ SAVES["bugoff-insect"] = [(HELD, "<H", 0x1376), (POCKETS, "<H", 0x12B0)] + event
 # the town record's dated events (main/town_day.h, TownDayEvent at 0x17278 of the state block, four
 # of 12 bytes, id 99 for none) holding events 0x11 and 0x62 of last year: the town's day ends them
 TOWN_EVENTS = 0x17278
+# the town's exchange block (main/exchange_block.h, part_11c70 of the state block) holding the
+# letter in a bottle bottle-throw threw (its bytes from that run's RAM: the letter's parties' kinds,
+# two characters, state 4), not drifted yet, with the block's checksum (its halfword sum 0, as
+# CardSave_WriteExchangeBlock writes it)
+EXCHANGE = 0x11C70
+# villager 3's memory of the player (memory 0) last talked to on 2 August 2026, 40 days before the
+# seed's day (the time at 0x54: second, minute, hour, day, month, year from 2000)
+SAVES["met-august"] = raw(TOWN_VILLAGERS + 3 * 0x7EC + 0x54, bytes((14, 31, 11, 2, 8, 26)))
+# villager 3's memory of the player kept with another town (the town at 0x5c), as a villager that
+# met the player in another town keeps it
+SAVES["met-elsewhere"] = raw(TOWN_VILLAGERS + 3 * 0x7EC + 0x5C, OTHER_TOWN)
+# as "loan-paid" with the next extension ordered (the house record's word at 0x15a0 as nook-loan
+# leaves it: size 0, size 1 ordered), built on the next new day
+SAVES["house-ordered"] = SAVES["loan-paid"] + [(0xF52C + 0x15A0, "<I", 0x0A040008)]
+SAVES["bottle-sent"] = [(EXCHANGE + 0x22, "<B", 2), (EXCHANGE + 0x42, "<B", 1), (EXCHANGE + 0x58, "<H", 0x3148),
+                        (EXCHANGE + 0xFA, "<B", 4), (EXCHANGE + 0x94A, "<H", 0xCECE)]
 SAVES["events-ended"] = [(TOWN_EVENTS, "<H", 0x11), (TOWN_EVENTS + 2, "<B", 25),
                          (TOWN_EVENTS + 12, "<H", 0x62), (TOWN_EVENTS + 14, "<B", 25)]
 
@@ -1452,6 +1468,21 @@ scene("events-ended", "events-ended", 4900, [2600, 4100, 4500, 4899], frames(400
       "villager-talk the day after the seed's, with two dated events of last year in the town record: "
       "the town's day ends them, codes 0x6d back to 0x61 and building 0x501e taken away",
       "villager-talk", "2026-09-12 11:30:00")
+scene("villager-talk-second", "seed", 5900, [2600, 4100, 4900, 5400, 5899], frames(4000, 5900, 50),
+      "villager-talk two frames later: the villager's topic puts the second the talk began at into its line")
+scene("villager-home-talks", "seed", 7342, [2600, 4100, 4800, 5600, 6500, 7341], frames(4100, 7342, 50),
+      "villager-home's owner talked to three times: lines branch on the insects caught and on its fondness")
+scene("villager-weekday", "seed", 7780, [2600, 3900, 5600, 6600, 7200, 7779], frames(5500, 7780, 50),
+      "villager 1 across the river talked to, one press held back: a line branches on the weekday")
+scene("title-bottle", "bottle-sent", 2400, [1100, 1300, 1600, 2000, 2399], frames(1100, 2400, 50),
+      "with a letter in a bottle sent, the continue menu's passing exchange: the title leaves for it and it waits")
+scene("villager-month", "met-august", 5500, [2600, 4100, 4600, 5100, 5499], frames(4000, 5500, 50),
+      "villager-talk with villager 3 not talked to for 40 days: its greeting names another villager")
+scene("villager-elsewhere", "met-elsewhere", 5500, [2600, 4100, 4600, 5100, 5499], frames(4000, 5500, 50),
+      "villager-talk with villager 3 remembering the player from another town: the greeting names that town")
+scene("nook-grown", "house-ordered", 7160, [2600, 4400, 5000, 5600, 6400, 7159], frames(4900, 7160, 50),
+      "the day after an extension was ordered, into Nook's store: he tells of the house grown and its new loan",
+      rtc="2026-09-14 11:30:00")
 
 # ------------------------------------------------------------------------------ saves
 

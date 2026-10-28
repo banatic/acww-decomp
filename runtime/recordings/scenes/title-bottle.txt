@@ -1,0 +1,63 @@
+# title-bottle (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). As title-move-in.txt to 1142: the continue menu's third choice (DOWN
+# twice, A at 1138), the passing exchange.
+# Save: bottle-sent (the town's exchange block holding the letter in a bottle bottle-throw threw,
+# not drifted yet). The title asks whether to send the bottle (ov147/title_menu.c
+# TitleMenu_CheckBottleLetter, message 0x35); A every 60 frames from 1200 answers yes: the title
+# leaves for scene 0x30 (TitleScene_ExitToScene30), the exchange block is written to both copies
+# of the save (CardSave_WriteExchangeBlock) and the passing exchange of overlay 55 starts
+# (XctExchange_*, the room camera looking at its frame, a constellation drafted for the block),
+# then waits for another system with its line up (message 0x38), to 2399.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1064 - -
+1100 DOWN -
+1104 - -
+1119 DOWN -
+1123 - -
+1138 A -
+1142 - -
+1200 A -
+1202 - -
+1260 A -
+1262 - -
+1320 A -
+1322 - -
+1380 A -
+1382 - -
+1440 A -
+1442 - -
+1500 A -
+1502 - -
+1560 A -
+1562 - -
+1620 A -
+1622 - -
+1680 A -
+1682 - -
+1740 A -
+1742 - -
+1800 A -
+1802 - -
+1860 A -
+1862 - -
+1920 A -
+1922 - -
+1980 A -
+1982 - -
+2040 A -
+2042 - -
+2100 A -
+2102 - -
+2160 A -
+2162 - -
+2220 A -
+2222 - -
+2280 A -
+2282 - -
+2340 A -
+2342 - -
