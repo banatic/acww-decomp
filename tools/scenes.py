@@ -666,6 +666,37 @@ SAVES["memories-resident"] = [e for v in range(4) for e in villager_memory(v, 1,
 SAVES["letter-held-3f"] = SAVES["visitor-3f"] + villager_memory(3, 1, OTHER_PLAYER_B, OTHER_TOWN, (40, 5, 17, 6, 9, 26), 10, 2,
                                                                 0x0001) + villager_letter(3, OTHER_PLAYER_B, OTHER_TOWN)
 
+# Saharah's errand as she hands it over (saharah): the item 0x1560 in pocket 0 in slot state 2 (the
+# word after the wallet) and the entry at 0x94 of the player's villager part (main/villager_part_entry.h)
+# in use with that item, naming index n of data_020d1a54 (0 Tom Nook, 1 Mabel, 2 and 3 the post
+# office's clerks, 4 Blathers), its other choices left
+ERRAND = VILLAGER_PART + 0x94
+for n in range(5):
+    SAVES[f"errand-{n}"] = [(MONEY, "<I", 30000), (POCKETS, "<H", 0x1560), (MONEY + 4, "<I", 2)] + raw(
+        ERRAND, bytes(8) + bytes.fromhex("60151400") + bytes((n, 0x1F & ~(1 << n), 0, 0)))
+
+# the record of the day's contest (main/event_winner.h, data_021f3aa4: 0x172fc of the state block)
+# held by villager 0 with a creature of `size` (0x1000: longer than the one caught), dated
+# `day` (day, month, year from 2000) with its kind in the date's last byte (1 the fishing tourney,
+# 2 the bug-off), and a creature in pocket 0 with the tool held: the turtle weighs it against the
+# record
+EVENT_RECORD = 0x172FC
+
+
+def event_record(item: int, day: tuple[int, int, int], kind: int, size: int = 0x1000) -> list[tuple[int, str, int]]:
+    return (raw(EVENT_RECORD + 0x1E, SEED_NPC[0]) + [(EVENT_RECORD + 0x3E, "<H", item), (EVENT_RECORD + 0x40, "<I", size)] +
+            raw(EVENT_RECORD + 0x44, bytes((*day, kind))))
+
+
+SAVES["tourney-fish"] = [(HELD, "<H", 0x1374), (POCKETS, "<H", 0x12E8)] + event_record(0x12F2, (25, 10, 26), 1)
+SAVES["bugoff-insect"] = [(HELD, "<H", 0x1376), (POCKETS, "<H", 0x12B0)] + event_record(0x12B4, (20, 9, 26), 2)
+
+# the town record's dated events (main/town_day.h, TownDayEvent at 0x17278 of the state block, four
+# of 12 bytes, id 99 for none) holding events 0x11 and 0x62 of last year: the town's day ends them
+TOWN_EVENTS = 0x17278
+SAVES["events-ended"] = [(TOWN_EVENTS, "<H", 0x11), (TOWN_EVENTS + 2, "<B", 25),
+                         (TOWN_EVENTS + 12, "<H", 0x62), (TOWN_EVENTS + 14, "<B", 25)]
+
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
 SCENES: dict[str, dict] = {}
@@ -1390,6 +1421,29 @@ scene("insects-january", "weeded", 5962, [2800, 4200, 5000, 5600, 5961], frames(
       "on a January morning, walk up to the insect of kind 0x1e", rtc="2027-01-20 05:30:00")
 scene("able-tryon", "able-shop", 7772, [2600, 4700, 5600, 6500, 7200, 7771], frames(5000, 7772, 50),
       "at the Able Sisters' wall, try on a hat and buy it, then try on a shirt and give it back")
+scene("errand-mabel", "errand-1", 5690, [2600, 4000, 4700, 5100, 5689], frames(4600, 5690, 50),
+      "with Saharah's errand for Mabel, talk to her: she takes the wallpaper from the pockets")
+scene("errand-nook", "errand-0", 5450, [2600, 3800, 4300, 4900, 5449], frames(3800, 5450, 50),
+      "with Saharah's errand for Tom Nook, talk to him: he takes the wallpaper from the pockets")
+scene("errand-owl", "errand-4", 6090, [2600, 4400, 4900, 5500, 6089], frames(4500, 6090, 50),
+      "with Saharah's errand for Blathers, talk to him: he takes the wallpaper from the pockets")
+scene("errand-post", "errand-2", 5510, [2600, 3900, 4400, 4900, 5509], frames(4000, 5510, 50),
+      "with Saharah's errand for Pelly, talk to her: she takes the wallpaper from the pockets")
+scene("tourney-fish", "tourney-fish", 9580, [2600, 4800, 8300, 8700, 9200, 9579], frames(8300, 9580, 25),
+      "on the fishing tourney's day, give the turtle a fish: weighed, shorter than a villager's record",
+      rtc="2026-10-25 13:00:00")
+scene("bugoff-insect", "bugoff-insect", 9370, [2600, 4800, 7900, 8500, 9000, 9369], frames(7900, 9370, 25),
+      "on the bug-off's day, give the turtle an insect: weighed against a villager's record",
+      rtc="2026-09-20 13:00:00")
+scene("house-forecast", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at a quarter to twelve: the TV between programmes shows the weather forecast",
+      "house-turn", "2026-09-11 11:44:30")
+scene("tune-play", "seed", 5309, [2600, 4700, 5000, 5308], frames(4900, 5309, 25),
+      "in Pelly's town tune editor, press play: the editor follows the playback")
+scene("events-ended", "events-ended", 4900, [2600, 4100, 4500, 4899], frames(4000, 4900, 50),
+      "villager-talk the day after the seed's, with two dated events of last year in the town record: "
+      "the town's day ends them, codes 0x6d back to 0x61 and building 0x501e taken away",
+      "villager-talk", "2026-09-12 11:30:00")
 
 # ------------------------------------------------------------------------------ saves
 

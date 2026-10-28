@@ -860,6 +860,38 @@ match: main/activity_jobs:ActivityJobs_Start07 main/activity_jobs:ActivityJobs_S
   main/activity_jobs:ActivityJobs_Start11 main/activity_jobs:ActivityJobs_Step11
   main/start_kind:StartKind_SetUnchanged
 
+area: Unreachable for one player
+group: the aquarium fish's destructors
+scene: none: the destructor (vtable slot 2) and the destructor that frees (slot 3) of each class of the museum aquarium's fish, and the base classes' destructors only those call (ov004/aquarium_objects.h)
+reach: a fish's vtable is called only by the aquarium's AquariumFish_call, with slots 0 (set up) and 1 (its frame); of ov004's calls through offset 8 or 0xc of an object's vtable (w16/icalls.py) none is on a fish (the special characters' talks and events, the telephone, the player pick), main's code never holds one, and the fish go with their model pool entries' heaps when the aquarium ends; only the slot words of the fish's 16 vtables name these functions, and the derived ones call the DestructBase pair (w18/proof.py --deadw w18/deadw.json; findings 2026-10-28, rest6). Calibration: museum-halls makes every fish class and runs the aquarium's own destructor on leaving, and none of these
+needs: unreachable
+match: ov004/aquarium_objects:AquariumFish_Delete ov004/aquarium_objects:AquariumFish_Destruct
+  ov004/aquarium_objects:AquariumFish_DestructBase ov004/aquarium_objects:AquariumHomeFish_Delete
+  ov004/aquarium_objects:AquariumHomeFish_Destruct ov004/aquarium_objects:AquariumKind10_Delete
+  ov004/aquarium_objects:AquariumKind10_Destruct ov004/aquarium_objects:AquariumKind11_Delete
+  ov004/aquarium_objects:AquariumKind11_Destruct ov004/aquarium_objects:AquariumKind15_Delete
+  ov004/aquarium_objects:AquariumKind15_Destruct ov004/aquarium_objects:AquariumKind30_Delete
+  ov004/aquarium_objects:AquariumKind30_Destruct ov004/aquarium_objects:AquariumKind35_Delete
+  ov004/aquarium_objects:AquariumKind35_Destruct ov004/aquarium_objects:AquariumKind36_Delete
+  ov004/aquarium_objects:AquariumKind36_Destruct ov004/aquarium_objects:AquariumKind37_Delete
+  ov004/aquarium_objects:AquariumKind37_Destruct ov004/aquarium_objects:AquariumKind40_Delete
+  ov004/aquarium_objects:AquariumKind40_Destruct ov004/aquarium_objects:AquariumKind47_Delete
+  ov004/aquarium_objects:AquariumKind47_Destruct ov004/aquarium_objects:AquariumKind48_Delete
+  ov004/aquarium_objects:AquariumKind48_Destruct ov004/aquarium_objects:AquariumLaneFish_Delete
+  ov004/aquarium_objects:AquariumLaneFish_Destruct ov004/aquarium_objects:AquariumNonstopFish_Delete
+  ov004/aquarium_objects:AquariumNonstopFish_Destruct
+  ov004/aquarium_objects:AquariumRisingFish_Delete
+  ov004/aquarium_objects:AquariumRisingFish_Destruct ov004/aquarium_objects:AquariumSwimmer_Delete
+  ov004/aquarium_objects:AquariumSwimmer_Destruct
+  ov004/aquarium_objects:AquariumSwimmer_DestructBase
+
+area: Unreachable for one player
+group: Shop3Villager, profile 0x88, which nothing makes
+scene: none: the villager of "ai_shop3" in scene 0x21 (ov004/shop3_villager.h), made by Shop3Villager_New for profile 0x88 of main's table data_020e3134
+reach: no code makes profile 0x88: no scene setup lists it (the kind 0 points and kind 2 objects of every overlay's setup steps: scene 0x21's, ov020's, makes 0x64 and 0x63), the spawner's table (data_020e1d8c) and the room objects' table (data_ov004_02247f54) do not hold it, the spawner's villagers are 0x80-0x87, every other Actor_Spawn and GameProcess_SpawnChild caller passes a constant or a table entry other than it, and no function of the module images moves 0x88 into the register of a spawn's class (w18/steps.py, w18/imm.py; findings 2026-10-28, rest6)
+needs: unreachable
+match: ov004/shop3_villager
+
 # ================================================================== the seed's day: buildings
 
 area: Shops and buildings (the seed's day)
