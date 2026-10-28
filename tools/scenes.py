@@ -1583,6 +1583,9 @@ scene("shop-sell-worthless", "sell-worthless", 6200, [2600, 3800, 4700, 5600, 61
       "shop-sell with a parcel worth nothing: Nook offers nothing, and the answer leaves it unconverted", "shop-sell")
 scene("gate-wfc-code", "seed", 10118, [2600, 6540, 7500, 8600, 9600, 10117], frames(7400, 10118, 50),
       "the gatekeeper's friend code without one: the Wi-Fi Connection started for it, connecting")
+scene("villager-karaoke", "seed", 15000, [2600, 6000, 9000, 12900, 14000, 14999], frames(13800, 15000, 50),
+      "on the second Saturday, after the insurance seller's survey, a villager's first talk: it sings and asks",
+      rtc="2026-11-14 11:30:00")
 scene("title-wfc-settings", "seed", 2140, [1100, 1500, 1800, 2100, 2139], frames(1700, 2140, 20),
       "the continue menu's Nintendo Wi-Fi Connection settings: the title leaves for the settings program")
 

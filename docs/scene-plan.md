@@ -38,18 +38,18 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 305 scene lists: 25,251 Clean game functions, run 20,162, function check only 1,253, read only 3,836; the groups below hold 5,089 (function check only + read only).
+From 306 scene lists: 25,251 Clean game functions, run 20,167, function check only 1,252, read only 3,832; the groups below hold 5,084 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 1,148 |
+| seed | 1,143 |
 | date | 269 |
 | unknown | 619 |
 | unreachable | 3,053 |
-| total | 5,089 |
+| total | 5,084 |
 
 
-(The lists are those of the 305 scenes of tools/scenes.py. The two recordings, title-start and
+(The lists are those of the 306 scenes of tools/scenes.py. The two recordings, title-start and
 new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
 
 ## Next scenes for one player, by functions gained
@@ -153,12 +153,12 @@ unknown groups say what to find first.
 | outdoor actions of the field actor | 131 (28 / 103) | ov003/field_actor 65, ov003/tile_event 14, main/field_actor_states 11, main/touch_pick 11, main/field_actor_support 6, main/tile_effects 6, main/tile_requests 6, main/tile_changes 3, 6 more files (9) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
 | effects by kind | 59 (1 / 58) | main/effect_kinds 55, main/effect_system 4 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers | unknown |
 
-## Villagers (the seed's day) (408)
+## Villagers (the seed's day) (403)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| villager talks: topics, favours and trades | 206 (21 / 185) | main/villager_talk_object 37, main/villager_talk_lines 23, main/villager_talk_replies 21, main/villager_talk_steps 21, main/villager_talk_part 20, main/villager_talk 16, main/villager_object 14, main/villager_talk_offers 10, 14 more files (44) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night | seed |
-| villagers out in the town | 106 (27 / 79) | ov068/outdoor_villager_acts 13, ov068/outdoor_villager_moves 12, main/villager_memories 8, main/villager_house_items 7, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (47) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
+| villager talks: topics, favours and trades | 202 (21 / 181) | main/villager_talk_object 37, main/villager_talk_lines 23, main/villager_talk_steps 21, main/villager_talk_part 20, main/villager_talk_replies 17, main/villager_talk 16, main/villager_object 14, main/villager_talk_offers 10, 14 more files (44) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night | seed |
+| villagers out in the town | 105 (26 / 79) | ov068/outdoor_villager_acts 13, ov068/outdoor_villager_moves 12, main/villager_memories 8, main/villager_house_items 7, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (46) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 | the talk engine: tags, pages, windows, sliders | 96 (43 / 53) | main/talk_receiver 19, main/talk_tags 15, main/talk_page 9, main/talk_span 9, main/text_codes 6, main/text_draw 6, main/a_mes_obj 5, main/mes_slider_window 4, 12 more files (23) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 
 ## New player and title (the seed's save) (63)
@@ -1358,3 +1358,20 @@ What reading the Clean code found about the groups above; counts are of function
   the subject of the item it holds in the evening (VillagerTalkSubjects_SayHolding1378):
   villager-saturday-night; its table's VillagerTalk_LineByCalendar was not drawn there. On 10
   and 25 October the walk from villager-talk's start met the event board or was held.
+
+### The second Saturday's first talk, a song that is not repeatable (2026-10-29, scenes/talk1, fifth batch)
+- Calendar event 0x0c (the second Saturday, town event index 1) is the insurance seller's survey
+  day: he holds the player for a dozen questions, whose choices take A held 4 frames (2-frame
+  presses do not pick there, nor open the gatekeeper's menus). After it a villager's first talk
+  of the day is line table 3 (VillagerTalkReplies_LineFirstOfDay, _LineAb0Group3, _Group20,
+  _OfferChoicesC4), here ev_karaoke: villager-karaoke (14 November 2026, villager 0 at 43.4,
+  49.7).
+- Its song (from about 15100: VillagerTalkReplies_RequestSound, _TalkMode3, _Say2484,
+  SceneCommand_RequestSound, TownTune_PlayRandomPreset, MelodySet_PlayRandomPreset,
+  SoundSet_Load) is left out of the scene: two Reference runs of the same recording gave
+  different memory after frame 15500 (289f5ca0 and 3ea09820), and the Native run's frames
+  differed from 15134, so the scene stops at 14999. What in the Reference run varies was not
+  found; the tune's playback is the ARM7 sequence player's (out of scope for these scenes).
+- Tried and not added: on the third Sunday of November (15th, 13:00) the walk met the event
+  board, on 16 August (14:00) it did not reach the town, and a Saturday at 21:00 (26 September)
+  drew no event table's line.
