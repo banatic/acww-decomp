@@ -10,23 +10,30 @@
 area: Unreachable for one player
 group: local wireless (DS to DS)
 scene: none: a visit to another town, a guest in this one, the wireless exchange of the town's block
-reach: needs a second DS running the game (WM library, parent and child search, MP exchange, the linked scene changes). Listed by whole file only where no scene runs a function of the file (findings 2026-10-28, town6); besides, the link jobs 0x1d (the search a player moving in starts: title-move-in reaches its start, where the runtime, which has no wireless, halts in the WM set-up) and 0x1e (started by ActivityReceiver_OnMessage on message 38 of sp_etc_sequence1, which only job 0x1d's step gives, once a system packet names a second slot), the post clerk's step 14 (job 0x1f asked for, after step 13 awaited the connection) and Session_Start, which only job 0x1d's start, the gatekeeper's session talk and the post clerk's line 0x36 call, each after LibraryOverlay_Switch65 or _Switch66 (town-hall-move and title-move-in end at _Switch66: the runtime, which has no wireless, halts in the WM set-up); besides (findings 2026-10-29, proofs1), the host picker (ov140): overlay 140 is only in overlay group 0x21, which no code asks for: OverlayGroups_Request and _RequestForOwner get ov090's constants (1-8, 0xf, 0x24, 0x2b), GroupParams' 9 and 12, an event's step (0-8) and ov092's group of GroupParams' mode (below 0x43; no entry is 0x21), and the scenes' and modes' tables, the scene infos and the other loaders name overlays 3-56, 93, 127 and the libraries' only (w22/classify.py, gate overlay); the town list (ov141) and its rows (ov139): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); and what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); besides (findings 2026-10-29, town7), in the files one player also runs, what only the receive callback, the local wireless library or the menu overlays 139-141 reach (w24/classify.py, gates recv, wireless and overlay)
+reach: needs a second DS running the game (WM library, parent and child search, MP exchange, the linked scene changes). Listed by whole file only where no scene runs a function of the file (findings 2026-10-28, town6); besides, the link jobs 0x1d (the search a player moving in starts: title-move-in reaches its start, where the runtime, which has no wireless, halts in the WM set-up) and 0x1e (started by ActivityReceiver_OnMessage on message 38 of sp_etc_sequence1, which only job 0x1d's step gives, once a system packet names a second slot), the post clerk's step 14 (job 0x1f asked for, after step 13 awaited the connection) and Session_Start, which only job 0x1d's start, the gatekeeper's session talk and the post clerk's line 0x36 call, each after LibraryOverlay_Switch65 or _Switch66 (town-hall-move and title-move-in end at _Switch66: the runtime, which has no wireless, halts in the WM set-up); besides (findings 2026-10-29, proofs1), the host picker (ov140): overlay 140 is only in overlay group 0x21, which no code asks for: OverlayGroups_Request and _RequestForOwner get ov090's constants (1-8, 0xf, 0x24, 0x2b), GroupParams' 9 and 12, an event's step (0-8) and ov092's group of GroupParams' mode (below 0x43; no entry is 0x21), and the scenes' and modes' tables, the scene infos and the other loaders name overlays 3-56, 93, 127 and the libraries' only (w22/classify.py, gate overlay); the town list (ov141) and its rows (ov139): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); and what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); besides (findings 2026-10-29, town7), in the files one player also runs, what only the receive callback, the local wireless library or the menu overlays 139-141 reach (w24/classify.py, gates recv, wireless and overlay); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
 needs: unreachable
-match: autoload_2/network:Local_OnEvent autoload_2/network:Local_Setup
-  autoload_2/network:Net_DispatchReceived main/activity_save:ActivitySave_GuestSteps
-  main/activity_save:ActivitySave_HostSteps main/activity_save:ActivitySave_LeaveSession
-  main/exchange_blocks:ExchangeBlocks_Rotate main/exchange_blocks:ExchangeBlocks_SendToGuests
-  main/exchange_blocks:ExchangeBlocks_SwapWithRandom main/link_bundle:LinkBundle_ReadClaim
-  main/link_bundle:LinkBundle_ReadEntered main/link_bundle:LinkBundle_ReadEnteredNothing
-  main/link_bundle:LinkBundle_ReadLeft main/link_bundle:LinkBundle_ReadLeftNothing
-  main/link_bundle:LinkBundle_SendEntered main/link_bundle:LinkBundle_SendLeft
-  main/link_bundle:LinkBundle_WriteClaim main/link_bundle:LinkBundle_WriteEntered
-  main/link_bundle:LinkBundle_WriteEnteredNothing main/link_bundle:LinkBundle_WriteLeft
-  main/link_bundle:LinkBundle_WriteLeftNothing main/recent_slots:RecentSlots_Clear
-  main/recent_slots:RecentSlots_Forget main/recent_slots:RecentSlots_Newest
-  main/recent_slots:RecentSlots_Push main/session:Session_AddCredits
-  main/session:Session_GetRecvWriteEntry main/session:Session_PushRecvEntry
-  main/session_link:Session_OnReceived main/session_message:SessionMessage_AddLinkPair
+match: autoload_2/network:Local_EntryData autoload_2/network:Local_EntryDataSize
+  autoload_2/network:Local_ListEntries autoload_2/network:Local_OnEvent
+  autoload_2/network:Local_SelectEntry autoload_2/network:Local_Setup
+  autoload_2/network:Net_CountJoinable autoload_2/network:Net_DispatchReceived
+  autoload_2/network:Net_SetReceiveBuffer autoload_2/network:Wfc_CountFriends
+  main/activity_job:ActivityJob_Is1FAtStep15Or20 main/activity_job:ActivityJob_IsIdleForOv054
+  main/activity_link_jobs:ActivityLinkJobs_Start1E main/activity_link_jobs:ActivityLinkJobs_Step1D
+  main/activity_link_jobs:ActivityLinkJobs_Step1E main/activity_save:ActivitySave_EndSteps
+  main/activity_save:ActivitySave_GuestSteps main/activity_save:ActivitySave_HostSteps
+  main/activity_save:ActivitySave_LeaveSession main/exchange_blocks:ExchangeBlocks_Rotate
+  main/exchange_blocks:ExchangeBlocks_SendToGuests main/exchange_blocks:ExchangeBlocks_SwapWithRandom
+  main/link_bundle:LinkBundle_ReadClaim main/link_bundle:LinkBundle_ReadEntered
+  main/link_bundle:LinkBundle_ReadEnteredNothing main/link_bundle:LinkBundle_ReadLeft
+  main/link_bundle:LinkBundle_ReadLeftNothing main/link_bundle:LinkBundle_SendEntered
+  main/link_bundle:LinkBundle_SendLeft main/link_bundle:LinkBundle_WriteClaim
+  main/link_bundle:LinkBundle_WriteEntered main/link_bundle:LinkBundle_WriteEnteredNothing
+  main/link_bundle:LinkBundle_WriteLeft main/link_bundle:LinkBundle_WriteLeftNothing
+  main/recent_slots:RecentSlots_Clear main/recent_slots:RecentSlots_Forget
+  main/recent_slots:RecentSlots_Newest main/recent_slots:RecentSlots_Push
+  main/session:Session_AddCredits main/session:Session_GetRecvWriteEntry
+  main/session:Session_PushRecvEntry main/session_link:Session_OnReceived
+  main/session_message:SessionMessage_AddLinkPair
   main/session_message:SessionMessage_ChangeVillagerObject
   main/session_message:SessionMessage_Dispatch main/session_message:SessionMessage_FillVillagerEntry
   main/session_message:SessionMessage_Handle20 main/session_message:SessionMessage_Handle23
@@ -75,17 +82,22 @@ match: autoload_2/network:Local_OnEvent autoload_2/network:Local_Setup
   main/system_command:SystemCommand_ReadEntries main/system_command:SystemCommand_ReadNothing
   main/system_packet:SystemPacket_Dispatch main/system_packet:SystemPacket_RequestMode
   main/system_packet:SystemPacket_RunCommands main/system_packet:SystemPacket_SendActivityBuffer
+  main/system_packet:SystemPacket_SendActivityFlag101
   main/system_packet:SystemPacket_SendActivityFlagD9
   main/system_packet:SystemPacket_SendActivityFlagE4
   main/system_packet:SystemPacket_SendActivityFlagE5
   main/system_packet:SystemPacket_SendActivityMembers
+  main/system_packet:SystemPacket_SendActivityPlayer100
+  main/system_packet:SystemPacket_SendActivityPlayerEF
+  main/system_packet:SystemPacket_SendActivityPlayerF4
   main/system_packet:SystemPacket_SendActivityPlayerF8
   main/system_packet:SystemPacket_SendActivityPlayerFC main/system_packet:SystemPacket_SendDateTime
-  main/system_packet:SystemPacket_SendLinkEntries main/system_packet:SystemPacket_SendLinkFlagC4
-  main/system_packet:SystemPacket_SendModeRequest main/system_packet:SystemPacket_SendOwnBlock
-  main/system_packet:SystemPacket_SendSenderBlock main/system_packet:SystemPacket_SendShareData
-  main/system_packet:SystemPacket_SendSharedRecords main/system_packet:SystemPacket_SendSlotBlocks
-  main/system_packet:SystemPacket_SetActivityDataDC
+  main/system_packet:SystemPacket_SendInChunks main/system_packet:SystemPacket_SendLinkEntries
+  main/system_packet:SystemPacket_SendLinkFlagC4 main/system_packet:SystemPacket_SendModeRequest
+  main/system_packet:SystemPacket_SendOwnBlock main/system_packet:SystemPacket_SendOwnRecord
+  main/system_packet:SystemPacket_SendRecordBlock main/system_packet:SystemPacket_SendSenderBlock
+  main/system_packet:SystemPacket_SendShareData main/system_packet:SystemPacket_SendSharedRecords
+  main/system_packet:SystemPacket_SendSlotBlocks main/system_packet:SystemPacket_SetActivityDataDC
   main/system_packet:SystemPacket_SetActivityFlag101
   main/system_packet:SystemPacket_SetActivityFlagD9 main/system_packet:SystemPacket_SetActivityFlagE4
   main/system_packet:SystemPacket_SetActivityFlagE5
@@ -102,7 +114,9 @@ match: autoload_2/network:Local_OnEvent autoload_2/network:Local_Setup
   main/system_packet:SystemPacket_WriteSharedRecords main/system_packet:SystemPacket_WriteSlotBlock
   main/town_pack:TownPack_IsDone main/town_pack:TownPack_Pack main/town_pack:TownPack_PackedSize
   main/town_pack:TownPack_StartThread main/town_pack:TownPack_ThreadMain
-  main/town_pack:TownPack_Unpack ov066/local_channel:LocalChannel_Choose
+  main/town_pack:TownPack_Unpack ov054/post_clerk_talk:PostClerkTalk_AskJob1f
+  ov054/post_clerk_talk:PostClerkTalk_AwaitConnection ov054/post_clerk_talk:PostClerkTalk_AwaitJob1f
+  ov054/post_clerk_talk:PostClerkTalk_SearchGame ov066/local_channel:LocalChannel_Choose
   ov066/local_channel:LocalChannel_Measure ov066/local_channel:LocalChannel_MeasureFrom
   ov066/local_channel:LocalChannel_MeasureOne ov066/local_channel:LocalChannel_OnMeasure
   ov066/local_host:LocalHost_End ov066/local_host:LocalHost_FillParentParam
@@ -263,30 +277,31 @@ match: autoload_2/network:Local_OnEvent autoload_2/network:Local_Setup
 area: Unreachable for one player
 group: Nintendo Wi-Fi Connection
 scene: none: a Wi-Fi visit, the friend list online
-reach: needs the Wi-Fi Connection server (NitroDWC); the runtime has no network. By whole file only ov146 and main/wfc_session, where no scene runs a function; of main/wfc_setup the three functions nothing calls or names (the library's overlay run and its allocator); the rest of main/wfc_*, main/wifi_friends and the network library is in "the link's code in files one player also runs" (findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the Wi-Fi host list (ov146): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay)
+reach: needs the Wi-Fi Connection server (NitroDWC); the runtime has no network. By whole file only ov146 and main/wfc_session, where no scene runs a function; of main/wfc_setup the three functions nothing calls or names (the library's overlay run and its allocator); the rest of main/wfc_*, main/wifi_friends and the network library is in "the link's code in files one player also runs" (findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the Wi-Fi host list (ov146): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
 needs: unreachable
-match: main/wfc_session:WfcSession_FinishLetterGet main/wfc_session:WfcSession_FinishNoticeGet
-  main/wfc_session:WfcSession_FinishStatsGet main/wfc_session:WfcSession_FinishStatsUpload
-  main/wfc_session:WfcSession_StartLetterGet main/wfc_session:WfcSession_StartNoticeGet
-  main/wfc_session:WfcSession_StartStatsGet main/wfc_session:WfcSession_StartStatsUpload
-  ov146/wfc_host_list:WfcHostList_BeginFrame ov146/wfc_host_list:WfcHostList_BeginInteractiveFrame
-  ov146/wfc_host_list:WfcHostList_ClearFlags ov146/wfc_host_list:WfcHostList_Close
-  ov146/wfc_host_list:WfcHostList_Delete ov146/wfc_host_list:WfcHostList_Destroy
-  ov146/wfc_host_list:WfcHostList_Draw ov146/wfc_host_list:WfcHostList_End
-  ov146/wfc_host_list:WfcHostList_EndFrame ov146/wfc_host_list:WfcHostList_EndLayerTasks
-  ov146/wfc_host_list:WfcHostList_LoadObjFiles ov146/wfc_host_list:WfcHostList_LoadScreens
-  ov146/wfc_host_list:WfcHostList_New ov146/wfc_host_list:WfcHostList_Phase3Idle
-  ov146/wfc_host_list:WfcHostList_Phase4Idle ov146/wfc_host_list:WfcHostList_PlaceSprites
-  ov146/wfc_host_list:WfcHostList_QueueLayers ov146/wfc_host_list:WfcHostList_Release
-  ov146/wfc_host_list:WfcHostList_RunInteractive ov146/wfc_host_list:WfcHostList_RunState
-  ov146/wfc_host_list:WfcHostList_RunSubState ov146/wfc_host_list:WfcHostList_SetFlags
-  ov146/wfc_host_list:WfcHostList_SetLayers ov146/wfc_host_list:WfcHostList_Setup
-  ov146/wfc_host_list:WfcHostList_Start ov146/wfc_host_list:WfcHostList_StartWipeIn
-  ov146/wfc_host_list:WfcHostList_StartWipeOut ov146/wfc_host_list:WfcHostList_TestFlags
-  ov146/wfc_host_list:WfcHostList_UpdateList ov146/wfc_host_list:WfcHostList_WipeIn
-  ov146/wfc_host_list:WfcHostList_WipeOut ov146/wfc_host_list_input:WfcHostList_Activate
-  ov146/wfc_host_list_input:WfcHostList_BeginInput ov146/wfc_host_list_input:WfcHostList_BeginKeys
-  ov146/wfc_host_list_input:WfcHostList_BeginTouch ov146/wfc_host_list_input:WfcHostList_Choose
+match: main/wfc_session:WfcSession_End main/wfc_session:WfcSession_FinishLetterGet
+  main/wfc_session:WfcSession_FinishNoticeGet main/wfc_session:WfcSession_FinishStatsGet
+  main/wfc_session:WfcSession_FinishStatsUpload main/wfc_session:WfcSession_StartLetterGet
+  main/wfc_session:WfcSession_StartNoticeGet main/wfc_session:WfcSession_StartStatsGet
+  main/wfc_session:WfcSession_StartStatsUpload ov146/wfc_host_list:WfcHostList_BeginFrame
+  ov146/wfc_host_list:WfcHostList_BeginInteractiveFrame ov146/wfc_host_list:WfcHostList_ClearFlags
+  ov146/wfc_host_list:WfcHostList_Close ov146/wfc_host_list:WfcHostList_Delete
+  ov146/wfc_host_list:WfcHostList_Destroy ov146/wfc_host_list:WfcHostList_Draw
+  ov146/wfc_host_list:WfcHostList_End ov146/wfc_host_list:WfcHostList_EndFrame
+  ov146/wfc_host_list:WfcHostList_EndLayerTasks ov146/wfc_host_list:WfcHostList_LoadObjFiles
+  ov146/wfc_host_list:WfcHostList_LoadScreens ov146/wfc_host_list:WfcHostList_New
+  ov146/wfc_host_list:WfcHostList_Phase3Idle ov146/wfc_host_list:WfcHostList_Phase4Idle
+  ov146/wfc_host_list:WfcHostList_PlaceSprites ov146/wfc_host_list:WfcHostList_QueueLayers
+  ov146/wfc_host_list:WfcHostList_Release ov146/wfc_host_list:WfcHostList_RunInteractive
+  ov146/wfc_host_list:WfcHostList_RunState ov146/wfc_host_list:WfcHostList_RunSubState
+  ov146/wfc_host_list:WfcHostList_SetFlags ov146/wfc_host_list:WfcHostList_SetLayers
+  ov146/wfc_host_list:WfcHostList_Setup ov146/wfc_host_list:WfcHostList_Start
+  ov146/wfc_host_list:WfcHostList_StartWipeIn ov146/wfc_host_list:WfcHostList_StartWipeOut
+  ov146/wfc_host_list:WfcHostList_TestFlags ov146/wfc_host_list:WfcHostList_UpdateList
+  ov146/wfc_host_list:WfcHostList_WipeIn ov146/wfc_host_list:WfcHostList_WipeOut
+  ov146/wfc_host_list_input:WfcHostList_Activate ov146/wfc_host_list_input:WfcHostList_BeginInput
+  ov146/wfc_host_list_input:WfcHostList_BeginKeys ov146/wfc_host_list_input:WfcHostList_BeginTouch
+  ov146/wfc_host_list_input:WfcHostList_Choose
   ov146/wfc_host_list_input:WfcHostList_CursorFromPointer
   ov146/wfc_host_list_input:WfcHostList_CursorToLastRow
   ov146/wfc_host_list_input:WfcHostList_GlidePointerTo
@@ -945,14 +960,14 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
 area: Unreachable for one player
 group: code only unreachable code calls
 scene: none: functions whose every caller is in an unreachable group (the local wireless session and its activity jobs and packets, the Wi-Fi Connection, the gatekeepers' visits, the lost child's walk, the debug screen, the lid and the game's stop): the activity's fields, the jobs those sessions ask for, the field label's session messages, the caution window's planes, the town objects' session messages
-reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7), functions reached only through the functions of unreachable groups proved by the values their reasons close (w24/classify.py, gate value)
+reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7), functions reached only through the functions of unreachable groups proved by the values their reasons close (w24/classify.py, gate value); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
 needs: unreachable
-match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
-  autoload_2/network:Wfc_FinishGet autoload_2/network:Wfc_FinishPost
-  autoload_2/network:Wfc_FriendIndexOf autoload_2/network:Wfc_Get autoload_2/network:Wfc_GetSigned
-  autoload_2/network:Wfc_HostGame autoload_2/network:Wfc_JoinFriendGame
-  autoload_2/network:Wfc_OnClientJoined autoload_2/network:Wfc_OnClosed
-  autoload_2/network:Wfc_OnGetReply autoload_2/network:Wfc_OnJoined
+match: autoload_2/heap:Heap_Report autoload_2/network:Local_Call02269638
+  autoload_2/network:Wfc_Call022784a0 autoload_2/network:Wfc_FinishGet
+  autoload_2/network:Wfc_FinishPost autoload_2/network:Wfc_FriendIndexOf autoload_2/network:Wfc_Get
+  autoload_2/network:Wfc_GetSigned autoload_2/network:Wfc_HostGame
+  autoload_2/network:Wfc_JoinFriendGame autoload_2/network:Wfc_OnClientJoined
+  autoload_2/network:Wfc_OnClosed autoload_2/network:Wfc_OnGetReply autoload_2/network:Wfc_OnJoined
   autoload_2/network:Wfc_OnNewClient autoload_2/network:Wfc_OnPosted
   autoload_2/network:Wfc_OnReceived autoload_2/network:Wfc_OnSent
   autoload_2/network:Wfc_OnSignedGetChallenge autoload_2/network:Wfc_OnSignedGetReply
@@ -966,24 +981,27 @@ match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
   main/activity_fields:Activity_Byte102 main/activity_fields:Activity_ClearAnswers
   main/activity_fields:Activity_Current main/activity_fields:Activity_CurrentByteD6
   main/activity_fields:Activity_CurrentPackBuffer main/activity_fields:Activity_CurrentPackThread
-  main/activity_fields:Activity_DateTime main/activity_fields:Activity_SetBlockSource
-  main/activity_fields:Activity_SetByteD7 main/activity_fields:Activity_SetCurrentFlagF3
-  main/activity_fields:Activity_SetCurrentSlot100 main/activity_fields:Activity_SetFlag101
-  main/activity_fields:Activity_SetFlagD9 main/activity_fields:Activity_SetFlagDA
-  main/activity_fields:Activity_SetFlagE4 main/activity_fields:Activity_SetFlagE5
-  main/activity_fields:Activity_SetFlagE6 main/activity_fields:Activity_SetSlot107
-  main/activity_fields:Activity_SetSlotAck main/activity_fields:Activity_SetSlotAnswer
-  main/activity_fields:Activity_SetSlotE7 main/activity_fields:Activity_SetSlotEB
-  main/activity_fields:Activity_SetSlotFC main/activity_fields:Activity_SetSlotMask
-  main/activity_fields:Activity_SetSlotReported main/activity_fields:Activity_Slot107
-  main/activity_job:ActivityJob_Ask14 main/activity_job:ActivityJob_Ask15
-  main/activity_job:ActivityJob_Ask16 main/activity_job:ActivityJob_Ask17
-  main/activity_job:ActivityJob_Ask18 main/activity_job:ActivityJob_Ask19
-  main/activity_job:ActivityJob_Ask1B main/activity_link_jobs:ActivityLinkJobs_Start14
-  main/activity_link_jobs:ActivityLinkJobs_Start17 main/activity_link_jobs:ActivityLinkJobs_Step14
-  main/activity_link_jobs:ActivityLinkJobs_Step17 main/activity_vars:ActivityVars_ReceivedBlock
-  main/activity_vars:ActivityVars_SetFlag3C08 main/activity_vars:ActivityVars_SetSlot3C1C
-  main/battery_warning:BatteryWarning_Disable main/block_021d27ac_parts:Block021d27acPart20_SetKind
+  main/activity_fields:Activity_CurrentSlot100 main/activity_fields:Activity_DateTime
+  main/activity_fields:Activity_SetBlockSource main/activity_fields:Activity_SetByteD7
+  main/activity_fields:Activity_SetCurrentFlagF3 main/activity_fields:Activity_SetCurrentSlot100
+  main/activity_fields:Activity_SetFlag101 main/activity_fields:Activity_SetFlagD9
+  main/activity_fields:Activity_SetFlagDA main/activity_fields:Activity_SetFlagE4
+  main/activity_fields:Activity_SetFlagE5 main/activity_fields:Activity_SetFlagE6
+  main/activity_fields:Activity_SetSlot107 main/activity_fields:Activity_SetSlotAck
+  main/activity_fields:Activity_SetSlotAnswer main/activity_fields:Activity_SetSlotE7
+  main/activity_fields:Activity_SetSlotEB main/activity_fields:Activity_SetSlotFC
+  main/activity_fields:Activity_SetSlotMask main/activity_fields:Activity_SetSlotReported
+  main/activity_fields:Activity_Slot107 main/activity_job:ActivityJob_Ask14
+  main/activity_job:ActivityJob_Ask15 main/activity_job:ActivityJob_Ask16
+  main/activity_job:ActivityJob_Ask17 main/activity_job:ActivityJob_Ask18
+  main/activity_job:ActivityJob_Ask19 main/activity_job:ActivityJob_Ask1B
+  main/activity_job:ActivityJob_Ask1F main/activity_link_jobs:ActivityLinkJobs_Start14
+  main/activity_link_jobs:ActivityLinkJobs_Start17 main/activity_link_jobs:ActivityLinkJobs_Start1F
+  main/activity_link_jobs:ActivityLinkJobs_Step14 main/activity_link_jobs:ActivityLinkJobs_Step17
+  main/activity_link_jobs:ActivityLinkJobs_Step1F main/activity_talk:ActivityTalk_QueueMessage11
+  main/activity_vars:ActivityVars_ReceivedBlock main/activity_vars:ActivityVars_SetFlag3C08
+  main/activity_vars:ActivityVars_SetSlot3C1C main/battery_warning:BatteryWarning_Disable
+  main/block_021d27ac_parts:Block021d27acPart20_SetKind
   main/block_021d27ac_parts:Block021d27acPart20_SetValue main/camera_control:CameraControl_KeepView
   main/camera_control:CameraControl_SetMode19 main/card_save:CardSave_WriteAccount
   main/design:Design_Receive main/field_label:FieldLabel_ChooseMessage
@@ -1003,14 +1021,16 @@ match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
   main/paired_town:PairedTown_SetFlag5 main/paired_town:PairedTown_TakeOwn
   main/player_messages:PlayerMessages_Dispatch main/player_records:PlayerRecords_Exists
   main/quick_message:QuickMessage_ViewDestructDelete
-  main/quick_message:QuickMessage_WideDestructDelete main/scene_claim:SceneClaim_ReceiveAnswer
+  main/quick_message:QuickMessage_WideDestructDelete main/save_stamp:SaveStamp_MarkWriting
+  main/save_stamp:SaveStamp_MarkWritten main/scene_claim:SceneClaim_ReceiveAnswer
   main/scene_claim:SceneClaim_ReceiveRelease main/scene_claim:SceneClaim_ReceiveRequest
   main/scene_command:SceneCommand_SetScreenArgs main/scene_exit:SceneExit_SetChangeArg
   main/scene_share_table:SceneShareTable_ClaimScenePersons main/session:Session_AppendBundle15
   main/session:Session_AppendShareData main/session:Session_GetBundle15Length
-  main/session:Session_GetReadCursor main/session:Session_ReadMessage
-  main/session:Session_SetReadCursor main/session_link:Session_Host
-  main/session_players:SessionPlayers_ReadItemOperation
+  main/session:Session_GetPeerRecvBlock main/session:Session_GetReadCursor
+  main/session:Session_ReadMessage main/session:Session_SetReadCursor main/session_link:Session_Host
+  main/session_link:Session_SetHostReceiveBuffers main/session_link:Session_SetReceiveBuffers
+  main/session_link:Session_StopTransfer main/session_players:SessionPlayers_ReadItemOperation
   main/session_players:SessionPlayers_SplitLowHigh main/session_villager:SessionVillager_UnpackEntry
   main/session_villager:SessionVillager_UnpackEntryItem
   main/session_villager:SessionVillager_UnpackItem main/session_villager:SessionVillager_UnpackItems
@@ -1030,9 +1050,10 @@ match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
 area: Unreachable for one player
 group: what only the linked session and the visits call
 scene: none: the receivers of the session's messages (the room's furniture, lights and items put or taken, a place claimed, a tile's request granted, a town insect startled or hidden, the player actor's worn item and tan), what the activity's link jobs and session records ask for (the bells panel frozen, the sky reseeded, constellations drafted, the start menu left, event kind 13), the gatekeepers' visit walks (the room camera's modes 14 and 15, the check-in gate closed), a snowball's shake and the state block's destructor's waiting letter
-reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py)
+reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
 needs: unreachable
-match: main/event_queue:EventQueue_FinishKind13 main/event_queue:EventQueue_StartKind13
+match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
+  main/event_queue:EventQueue_FinishKind13 main/event_queue:EventQueue_StartKind13
   main/house_record:HouseRecord_StopSong main/place_claim:PlaceClaim_ReceiveAnswer
   main/place_claim:PlaceClaim_ReceiveRelease main/place_claim:PlaceClaim_ReceiveRequest
   main/player_actor_ops:PlayerActorOps_SetFlag0 main/player_actor_ops:PlayerActorOps_SetSunLevel
@@ -1042,9 +1063,9 @@ match: main/event_queue:EventQueue_FinishKind13 main/event_queue:EventQueue_Star
   main/room_sync:RoomSync_ReceiveLit main/room_sync:RoomSync_ReceivePutFurniture
   main/room_sync:RoomSync_ReceivePutItem main/room_sync:RoomSync_ReceiveState
   main/room_sync:RoomSync_ReceiveTakeFurniture main/room_sync:RoomSync_ReceiveToggle
-  main/sky:Sky_ReseedForLink main/start_menu:StartMenu_LeaveChoice
-  main/tile_changes:TileChanges_Replace main/tile_request_grant:TileRequestGrant_Apply
-  main/tile_request_grant:TileRequestGrant_LetGo
+  main/screen_panels:ScreenPanels_FourthPanel main/sky:Sky_ReseedForLink
+  main/start_menu:StartMenu_LeaveChoice main/tile_changes:TileChanges_Replace
+  main/tile_request_grant:TileRequestGrant_Apply main/tile_request_grant:TileRequestGrant_LetGo
   main/tile_request_grant:TileRequestGrant_NoOtherNearFor
   main/tile_request_grant:TileRequestGrant_PutOnScene
   main/tile_request_grant:TileRequestGrant_ReceiveAnswer ov003/snowman:Snowman_ClearTile
@@ -1397,15 +1418,17 @@ match: ov003/field_actor:FieldActor_GetState3ESaved ov003/field_actor:FieldActor
 area: Unreachable for one player
 group: the activity's jobs no reachable code starts
 scene: none: jobs 7 and 0xf (the card checked and both copies written, then the town entered in front of building 0x5000), 9 and 0xb (scene 13 entered at data_020d1bfc, scene 0x2f entered), and 8, 0xa, 0xe and 0x11, which only the linked session's jobs start (an entry record's exits, scenes 14 and 0x2d), with what only job 0xe calls
-reach: the activity's job is set only by ActivityProcess_StartJob with a constant (or, in StepJob1, the job an ActivityJob_Ask<N> asked for, each a constant): no function starts or asks for 7, 9 or 0xb, only job 7's step starts 0xf, and only ActivityLinkJobs_Step17, 18, 19, 1A, 1B and 1E (group "local wireless") start 8, 0xa, 0xe and 0x11; the jobs' start and step are named only by the job table's member pointers (the scratchpad's w16/jobs.py lists every start and ask by function; w16/proof.py --rules jobrules.json; findings 2026-10-28, town5)
+reach: the activity's job is set only by ActivityProcess_StartJob with a constant (or, in StepJob1, the job an ActivityJob_Ask<N> asked for, each a constant): no function starts or asks for 7, 9 or 0xb, only job 7's step starts 0xf, and only ActivityLinkJobs_Step17, 18, 19, 1A, 1B and 1E (group "local wireless") start 8, 0xa, 0xe and 0x11; the jobs' start and step are named only by the job table's member pointers (the scratchpad's w16/jobs.py lists every start and ask by function; w16/proof.py --rules jobrules.json; findings 2026-10-28, town5); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
 needs: unreachable
 match: main/activity_jobs:ActivityJobs_Start07 main/activity_jobs:ActivityJobs_Start08
   main/activity_jobs:ActivityJobs_Start09 main/activity_jobs:ActivityJobs_Start0A
-  main/activity_jobs:ActivityJobs_Start0B main/activity_jobs:ActivityJobs_Start0F
-  main/activity_jobs:ActivityJobs_Start11 main/activity_jobs:ActivityJobs_Step07
-  main/activity_jobs:ActivityJobs_Step08 main/activity_jobs:ActivityJobs_Step09
-  main/activity_jobs:ActivityJobs_Step0A main/activity_jobs:ActivityJobs_Step0B
+  main/activity_jobs:ActivityJobs_Start0B main/activity_jobs:ActivityJobs_Start0E
+  main/activity_jobs:ActivityJobs_Start0F main/activity_jobs:ActivityJobs_Start11
+  main/activity_jobs:ActivityJobs_Step07 main/activity_jobs:ActivityJobs_Step08
+  main/activity_jobs:ActivityJobs_Step09 main/activity_jobs:ActivityJobs_Step0A
+  main/activity_jobs:ActivityJobs_Step0B main/activity_jobs:ActivityJobs_Step0E
   main/activity_jobs:ActivityJobs_Step0F main/activity_jobs:ActivityJobs_Step11
+  main/start_kind:StartKind_SetUnchanged
 
 area: Unreachable for one player
 group: the aquarium fish's destructors
@@ -1619,11 +1642,16 @@ match: ov117/town_map_image:TownMapImage_DestructBlock
 area: Unreachable for one player
 group: what only a taken session slot reaches (the link guard)
 scene: none: the branches of shared code that run only while this system has a slot in a session or the session is linked: the linked post, the friend roster's players, the shops' and villagers' shared answers, the remote fish and insects, the tile grants, the session's sending and receiving, the network library's local wireless branches, and what only those call
-reach: a session slot is taken only by Session_Host and the link jobs 0x14, 0x15 and 0x16 (Session_SetSlotTaken with 1; nothing else writes NetSession.slot_taken), all unreachable, and the network mode (data_021fbef8) is set to a local wireless mode only by Local_Setup, which Session_Start calls for modes 1 and 2 only, after LibraryOverlay_Switch66 (where the runtime halts), so network.c's is_local and comparisons with MODE_LOCAL_PARENT and _CHILD are false; so Session_IsSlotTaken is 0 for every slot, Session_IsLinked (a taken slot and two players) is 0 and so are the Clean helpers that return them; a call is not counted when the caller's Clean body (with its static helpers) names the callee only in the then-part of `if (taken)` or after `if (!taken) return/continue`; each listed function has a reference and every counted one is from an unreachable group or listed (the scratchpad's w17/guard.py and proof2.py; findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); besides (findings 2026-10-29, town7), the guard's predicates are also the Clean functions whose every live return gives 0 once the guard's dead branches are taken out (the session villager's should_send, Design_FindSessionPlayer, Gatekeeper_CallPlayer, TownInsectTables_ReadRecord and 10 more: w24/guard2.py --ret), so the then-parts of `if` on those are dead too; with them the guard closes, in the files one player also runs, what only the session's sends and the linked branches reach (w24/classify.py, gate link)
+reach: a session slot is taken only by Session_Host and the link jobs 0x14, 0x15 and 0x16 (Session_SetSlotTaken with 1; nothing else writes NetSession.slot_taken), all unreachable, and the network mode (data_021fbef8) is set to a local wireless mode only by Local_Setup, which Session_Start calls for modes 1 and 2 only, after LibraryOverlay_Switch66 (where the runtime halts), so network.c's is_local and comparisons with MODE_LOCAL_PARENT and _CHILD are false; so Session_IsSlotTaken is 0 for every slot, Session_IsLinked (a taken slot and two players) is 0 and so are the Clean helpers that return them; a call is not counted when the caller's Clean body (with its static helpers) names the callee only in the then-part of `if (taken)` or after `if (!taken) return/continue`; each listed function has a reference and every counted one is from an unreachable group or listed (the scratchpad's w17/guard.py and proof2.py; findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); besides (findings 2026-10-29, town7), the guard's predicates are also the Clean functions whose every live return gives 0 once the guard's dead branches are taken out (the session villager's should_send, Design_FindSessionPlayer, Gatekeeper_CallPlayer, TownInsectTables_ReadRecord and 10 more: w24/guard2.py --ret), so the then-parts of `if` on those are dead too; with them the guard closes, in the files one player also runs, what only the session's sends and the linked branches reach (w24/classify.py, gate link); besides (findings 2026-10-29, town7, second batch), the start menu's states 4 and 5 (START_MENU_WAIT_2, _3) are set only for an answer to its message 4: StartMenu_UpdateOpen gives message 4 of sp_etc_sequence4 in a new town or to a new player, which holds no choice tag, and of sp_etc_sequence2 (choices) only when Session_IsLinked; StartMenuReceiver_SetUpChoices adds choices only to message 0 (w24/classify.py, gate link); and what only the halted searches reach: Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
 needs: unreachable
 match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   autoload_2/network:Local_GetError autoload_2/network:Local_GetLinkLevel
   autoload_2/network:Local_IsConnected autoload_2/network:Local_QueueSend
+  autoload_2/network:Net_CanSend autoload_2/network:Net_ClearSendQueue
+  autoload_2/network:Net_CountPlayers autoload_2/network:Net_Enqueue autoload_2/network:Net_GetMyAid
+  autoload_2/network:Net_IsSendQueueIdle autoload_2/network:Net_OnBlockSent
+  autoload_2/network:Net_QueueSend autoload_2/network:Net_SendBlocks autoload_2/network:Net_SendNext
+  autoload_2/network:Wfc_CanSendToAll autoload_2/network:Wfc_QueueSend
   main/activity_card:Activity_SystemExchangeBlockToActivity main/activity_job:ActivityJob_Ask1A
   main/activity_link_jobs:ActivityLinkJobs_Start15 main/activity_link_jobs:ActivityLinkJobs_Start16
   main/activity_link_jobs:ActivityLinkJobs_Start18 main/activity_link_jobs:ActivityLinkJobs_Start19
@@ -1636,11 +1664,13 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   main/fish_disp:FishDisp_OnMessage2 main/fish_disp:FishDisp_PlayerKind
   main/fish_disp:FishDisp_PlayerPoint main/fish_disp:FishDisp_SetPlayerState
   main/link_global:LinkGlobal_AddPlaceChange main/link_global:LinkGlobal_AskMove
-  main/link_global:LinkGlobal_IsMoving main/link_global:LinkGlobal_MessageTarget
-  main/link_global:LinkGlobal_PlaceHolder main/link_global:LinkGlobal_PlaceMoving
-  main/link_global:LinkGlobal_PlaceScene main/link_global:LinkGlobal_QueueMove
-  main/link_global:LinkGlobal_SceneOwner main/link_global:LinkGlobal_SetArrived
-  main/link_global:LinkGlobal_SetPlace main/link_global:LinkGlobal_Zero744C
+  main/link_global:LinkGlobal_IsMoving main/link_global:LinkGlobal_Kind
+  main/link_global:LinkGlobal_MessageTarget main/link_global:LinkGlobal_PlaceHolder
+  main/link_global:LinkGlobal_PlaceMoving main/link_global:LinkGlobal_PlaceScene
+  main/link_global:LinkGlobal_QueueMove main/link_global:LinkGlobal_SceneOwner
+  main/link_global:LinkGlobal_SetAnswer main/link_global:LinkGlobal_SetArrived
+  main/link_global:LinkGlobal_SetPlace main/link_global:LinkGlobal_SetStatus
+  main/link_global:LinkGlobal_Status main/link_global:LinkGlobal_Zero744C
   main/link_global:LinkGlobal_Zero7450 main/link_parts:LinkPart_AddChange
   main/link_parts:LinkPart_EndByte main/link_parts:LinkPart_EndEntry
   main/link_parts:LinkPart_EndEntryB main/link_parts:LinkPart_EndEntryBytes
@@ -1667,9 +1697,11 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   main/link_state:LinkState_ForgetSlot main/link_state:LinkState_GlobalByteC4
   main/link_state:LinkState_GlobalForgetSlot main/link_state:LinkState_GlobalSetByteC4
   main/link_state:LinkState_HoldFrames main/link_state:LinkState_HostPhase
-  main/link_state:LinkState_HostStep main/link_state:LinkState_RefuseRequest
-  main/link_state:LinkState_ResetAnswer main/link_state:LinkState_SetChosen
+  main/link_state:LinkState_HostStep main/link_state:LinkState_Kind
+  main/link_state:LinkState_RefuseRequest main/link_state:LinkState_ResetAnswer
+  main/link_state:LinkState_SetAnswer main/link_state:LinkState_SetChosen
   main/link_state:LinkState_SetHostPhase main/link_state:LinkState_SetKind
+  main/link_state:LinkState_SetStatus main/link_state:LinkState_Status
   main/link_state:LinkState_SystemStep main/link_state:LinkState_WaitFrames
   main/object_claim:ObjectClaim_Clear main/object_claim:ObjectClaim_HandleAnswer
   main/object_claim:ObjectClaim_HandleClaim main/object_claim:ObjectClaim_HandleObjectMessage
@@ -1698,29 +1730,37 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   main/session:Session_CountFrame main/session:Session_DeliverLocalQueue
   main/session:Session_DeliverSceneQueue main/session:Session_GetCredits
   main/session:Session_GetFrameSequence main/session:Session_GetHeldQueueLength
-  main/session:Session_GetLocalQueueLength main/session:Session_GetModeRequest
-  main/session:Session_GetOutboxLength main/session:Session_GetOwedCredits
-  main/session:Session_GetPeerSilence main/session:Session_GetPendingSequence
-  main/session:Session_GetRecordFlag main/session:Session_GetRecvLength
-  main/session:Session_GetRecvReadEntry main/session:Session_GetSceneQueueLength
-  main/session:Session_GetSendLength main/session:Session_GetShareLength
-  main/session:Session_OweCredit main/session:Session_PopRecvEntry
-  main/session:Session_ProcessReceived main/session:Session_QueueOutgoing
-  main/session:Session_ResetCredit main/session:Session_ResetPeerSilence
-  main/session:Session_RouteHeldMessages main/session:Session_SetOwedCredits
+  main/session:Session_GetLocalQueueLength main/session:Session_GetMode
+  main/session:Session_GetModeRequest main/session:Session_GetOutboxLength
+  main/session:Session_GetOwedCredits main/session:Session_GetPeerSilence
+  main/session:Session_GetPendingSequence main/session:Session_GetRecordFlag
+  main/session:Session_GetRecvLength main/session:Session_GetRecvReadEntry
+  main/session:Session_GetSceneQueueLength main/session:Session_GetSendLength
+  main/session:Session_GetSendWait main/session:Session_GetSendWaitLimit
+  main/session:Session_GetShareLength main/session:Session_IsSendReady main/session:Session_OweCredit
+  main/session:Session_PopRecvEntry main/session:Session_ProcessReceived
+  main/session:Session_QueueOutgoing main/session:Session_ResetCredit
+  main/session:Session_ResetPeerSilence main/session:Session_RouteHeldMessages
+  main/session:Session_SendBlocks main/session:Session_SetOwedCredits
   main/session:Session_SetPendingSequence main/session:Session_SetRecvLength
   main/session:Session_SetSequence main/session:Session_SetShareLength
   main/session:Session_SetSlotMask main/session:Session_SpendCredits
-  main/session_link:Session_CollectMessages main/session_link:Session_GetMemberMask
+  main/session_link:Session_CollectMessages main/session_link:Session_DisableInterrupts
+  main/session_link:Session_EnableInterrupts main/session_link:Session_FinishLocalStatus
+  main/session_link:Session_GetLocalStatus main/session_link:Session_GetMemberMask
+  main/session_link:Session_GetPeerMask main/session_link:Session_IsLinkLost
   main/session_link:Session_IsStatusPending main/session_link:Session_OnPlayersChanged
-  main/session_link:Session_RemovePlayer main/session_link:Session_WriteOwedCredits
-  main/session_link:Session_WriteRecords main/session_link:Session_WriteStatusPacket
-  main/session_net:SessionNet_AllPeersHaveCredit main/session_net:SessionNet_GetCredits
-  main/session_net:SessionNet_PeerIndex main/session_net:SessionNet_WriteDataHeader
-  main/session_players:SessionPlayers_ClearSaved main/session_players:SessionPlayers_JoinLowHigh
-  main/session_players:SessionPlayers_SavedPosition main/session_players:SessionPlayers_SavedScene
-  main/session_players:SessionPlayers_SavedState main/session_players:SessionPlayers_SavedYaw
-  main/session_players:SessionPlayers_WriteItemKind
+  main/session_link:Session_RaiseSendTimeout main/session_link:Session_RemovePlayer
+  main/session_link:Session_SendLocalStatus main/session_link:Session_SendNothing
+  main/session_link:Session_WriteOwedCredits main/session_link:Session_WriteRecords
+  main/session_link:Session_WriteStatusPacket main/session_net:SessionNet_AllPeersHaveCredit
+  main/session_net:SessionNet_GetCredits main/session_net:SessionNet_IsSystemPacket
+  main/session_net:SessionNet_IsWifiGame main/session_net:SessionNet_PeerIndex
+  main/session_net:SessionNet_PeersHaveCredit main/session_net:SessionNet_WriteDataHeader
+  main/session_net:SessionNet_WriteSystemHeader main/session_players:SessionPlayers_ClearSaved
+  main/session_players:SessionPlayers_JoinLowHigh main/session_players:SessionPlayers_SavedPosition
+  main/session_players:SessionPlayers_SavedScene main/session_players:SessionPlayers_SavedState
+  main/session_players:SessionPlayers_SavedYaw main/session_players:SessionPlayers_WriteItemKind
   main/session_players:SessionPlayers_WriteStateRecord main/session_record:SessionRecord_PackPoint
   main/session_record:SessionRecord_PackValue main/session_record:SessionRecord_Update
   main/session_record:SessionRecord_Write0 main/session_record:SessionRecord_Write1
@@ -1772,15 +1812,17 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   main/session_villager:SessionVillager_SendObjectByIndex
   main/session_villager:SessionVillager_SendObjectChangeByIndex
   main/session_villager:SessionVillager_SendObjectItemByIndex main/shop_answers:ShopAnswers_AllCame
-  main/text_string:TextString_BytesToWide main/tile_changes:TileChanges_LetGoAt
-  main/tile_request_grant:TileRequestGrant_Answer main/tile_requests:TileRequests_ReceiveAction
-  main/town_beach:TownBeach_UpdateLinked main/villager_clothes:VillagerClothes_ItemOf
-  ov002/paged_choice:PagedChoice_AddTextEntry ov003/player_fish:PlayerFish_OnRemoteState0
-  ov003/player_fish:PlayerFish_OnRemoteState1 ov003/player_fish:PlayerFish_OnRemoteState2
-  ov003/player_fish:PlayerFish_StartRemote ov003/player_fish:PlayerFish_Sync
-  ov003/tile_event:TileEvent_EndAt ov003/town_insect:TownInsect_CheckTarget
-  ov003/town_insect:TownInsect_OnItsTile ov003/town_insect_moves:TownInsectMove_AlarmTurn
-  ov003/town_insect_moves:TownInsectMove_SensePlayer
+  main/start_menu:StartMenu_EnterWait2 main/start_menu:StartMenu_EnterWait3
+  main/start_menu:StartMenu_SetLeaveChoice main/start_menu:StartMenu_UpdateWait2
+  main/start_menu:StartMenu_UpdateWait3 main/text_string:TextString_BytesToWide
+  main/tile_changes:TileChanges_LetGoAt main/tile_request_grant:TileRequestGrant_Answer
+  main/tile_requests:TileRequests_ReceiveAction main/town_beach:TownBeach_UpdateLinked
+  main/villager_clothes:VillagerClothes_ItemOf ov002/paged_choice:PagedChoice_AddTextEntry
+  ov003/player_fish:PlayerFish_OnRemoteState0 ov003/player_fish:PlayerFish_OnRemoteState1
+  ov003/player_fish:PlayerFish_OnRemoteState2 ov003/player_fish:PlayerFish_StartRemote
+  ov003/player_fish:PlayerFish_Sync ov003/tile_event:TileEvent_EndAt
+  ov003/town_insect:TownInsect_CheckTarget ov003/town_insect:TownInsect_OnItsTile
+  ov003/town_insect_moves:TownInsectMove_AlarmTurn ov003/town_insect_moves:TownInsectMove_SensePlayer
   ov003/town_insect_moves:TownInsectMove_WalkLinked
   ov003/town_insect_tables:TownInsectTables_PublishRecord
   ov003/town_insect_tables:TownInsectTables_ReadRecord
@@ -1789,20 +1831,12 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
 
 area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
-scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: code only unreachable code calls 28, local wireless (DS to DS) 18, what only a taken session slot reaches (the link guard) 10, the town map's list by the keys and the pen 9, Nintendo Wi-Fi Connection 8, the other console's field actor: its states' messages 7, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, what only the linked session and the visits call 5, hardware and failure paths 3, the activity's jobs no reachable code starts 3, the destructors of main's static objects 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
+scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: code only unreachable code calls 16, the town map's list by the keys and the pen 9, Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 3, the destructors of main's static objects 2, what only the linked session and the visits call 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
 reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene
 needs: unknown
-match: autoload_2/heap:Heap_TryLockNothing autoload_2/network:Local_Call02269638
-  autoload_2/network:Net_CountPlayers main/activity_fields:Activity_CurrentSlot100
-  main/activity_job:ActivityJob_Ask1F main/activity_jobs:ActivityJobs_Start0E
-  main/activity_jobs:ActivityJobs_Step0E main/activity_link_jobs:ActivityLinkJobs_Start1D
-  main/activity_link_jobs:ActivityLinkJobs_Start1E main/activity_link_jobs:ActivityLinkJobs_Start1F
-  main/activity_link_jobs:ActivityLinkJobs_Step1D main/activity_link_jobs:ActivityLinkJobs_Step1E
-  main/activity_link_jobs:ActivityLinkJobs_Step1F main/activity_save:ActivitySave_EndSteps
-  main/activity_talk:ActivityTalk_QueueMessage11 main/bbs:Bbs_GetLastNotice
-  main/bbs:Bbs_SetLastNotice main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
-  main/body_look:BodyLook_DestructTable main/c_library:CLib_BytesDiffer
-  main/game_stop:GameStop_Release main/lid_sleep:LidSleep_SetFlags
+match: autoload_2/heap:Heap_TryLockNothing main/activity_link_jobs:ActivityLinkJobs_Start1D
+  main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice main/body_look:BodyLook_DestructTable
+  main/c_library:CLib_BytesDiffer main/game_stop:GameStop_Release main/lid_sleep:LidSleep_SetFlags
   main/linked_map_items:LinkedMapItems_Place main/linked_map_items:LinkedMapItems_PlaceAndShare
   main/linked_map_items:LinkedMapItems_Set main/mail:MailBox_Mark main/mail:MailBox_SetMark
   main/mail_text:MailTextDecoder_ConvertNext main/mail_text:MailTextDecoder_OnForm4
@@ -1810,28 +1844,14 @@ match: autoload_2/heap:Heap_TryLockNothing autoload_2/network:Local_Call02269638
   main/mail_text:MailTextDecoder_SetForm2 main/music_264:Music264_Reset
   main/music_264:MusicClock_Reset main/music_queue:Music_Reset main/music_volume:MusicVolume_Reset
   main/player_record:PlayerRecord_MailMark main/player_record:PlayerRecord_SetMailMark
-  main/quick_message:QuickMessage_ResetCurrent main/save_stamp:SaveStamp_MarkWriting
-  main/save_stamp:SaveStamp_MarkWritten main/save_stamp:SaveStamp_SetLostFlag
-  main/screen_panels:ScreenPanels_FourthPanel main/session:Session_GetPeerRecvBlock
-  main/session:Session_GetSendWait main/session:Session_GetSendWaitLimit
-  main/session:Session_IsSendReady main/session_link:Session_DisableInterrupts
-  main/session_link:Session_EnableInterrupts main/session_link:Session_GetPeerMask
-  main/session_link:Session_IsLinkLost main/session_link:Session_RaiseSendTimeout
-  main/session_link:Session_SetHostReceiveBuffers main/session_link:Session_SetReceiveBuffers
-  main/session_link:Session_StopTransfer main/session_net:SessionNet_PeersHaveCredit
-  main/start_kind:StartKind_SetUnchanged main/system_packet:SystemPacket_SendActivityFlag101
-  main/system_packet:SystemPacket_SendActivityPlayer100
-  main/system_packet:SystemPacket_SendActivityPlayerEF
-  main/system_packet:SystemPacket_SendActivityPlayerF4 main/system_packet:SystemPacket_SendInChunks
-  main/system_packet:SystemPacket_SendOwnRecord main/system_packet:SystemPacket_SendRecordBlock
+  main/quick_message:QuickMessage_ResetCurrent main/save_stamp:SaveStamp_SetLostFlag
   main/text_draw:TextDraw_ReleaseBoxes main/town_pack:TownPack_InitThread
   main/town_pack:TownPack_KillThread main/villager_plots:VillagerPlot_DestroyList
   main/wfc_delivery:WfcDelivery_DeliverLetter main/wfc_delivery:WfcDelivery_LetterHmac
   main/wfc_delivery:WfcDelivery_NoticeHmac main/wfc_delivery:WfcDelivery_PostNotice
   main/wfc_session:WfcSession_ApplyLetter main/wfc_session:WfcSession_ApplyNotice
-  main/wfc_session:WfcSession_ApplyStats main/wfc_session:WfcSession_End
-  main/wfc_session:WfcSession_KeepFriendData main/wfc_setup:WfcSetup_Alloc
-  main/wfc_setup:WfcSetup_Free main/wfc_setup:WfcSetup_RunOverlay1
+  main/wfc_session:WfcSession_ApplyStats main/wfc_session:WfcSession_KeepFriendData
+  main/wfc_setup:WfcSetup_Alloc main/wfc_setup:WfcSetup_Free main/wfc_setup:WfcSetup_RunOverlay1
   main/wfc_stats:WfcStats_SetChecksum ov003/field_actor:FieldActor_EndState46Remote
   ov003/field_actor:FieldActor_EndState55Remote ov003/field_actor:FieldActor_EndState59Remote
   ov003/field_actor:FieldActor_EndState63Remote ov003/field_actor:FieldActor_EndState67Remote
@@ -1842,8 +1862,7 @@ match: autoload_2/heap:Heap_TryLockNothing autoload_2/network:Local_Call02269638
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerSession
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo59 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo62
   ov048/gatekeeper_talk_lines:GatekeeperTalk_EndSession
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22
-  ov054/post_clerk_talk:PostClerkTalk_AskJob1f ov120/town_map_list:TownMap_MarkOfTarget
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22 ov120/town_map_list:TownMap_MarkOfTarget
   ov120/town_map_list:TownMap_RowOfTarget ov120/town_map_list:TownMap_ScrollToPickedRow
   ov120/town_map_list:TownMap_ScrollToSwitchedRow ov120/town_map_list:TownMap_SetScroll
   ov120/town_map_list:TownMap_SetScrollTarget ov120/town_map_list:TownMap_ShowPlaces
