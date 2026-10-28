@@ -281,7 +281,7 @@ static void backup_load(const char *path)
     fprintf(stderr, "arm7: save %s, %zu bytes\n", path, n);
 }
 
-void arm7_init(void)
+void arm7_init(const char *rom)
 {
     memset(&arm7, 0, sizeof(arm7));
     arm7.sync_value = 8;
@@ -300,7 +300,7 @@ void arm7_init(void)
     arm7.backup = malloc(BACKUP_SIZE);
     memset(arm7.backup, 0xff, BACKUP_SIZE);
     backup_load(getenv("RUN_SAVE"));
-    arm7.sequencer = sequencer_init();
+    arm7.sequencer = sequencer_init(rom);
 }
 
 static void reply(uint32_t tag, uint32_t data, int err)
@@ -435,6 +435,9 @@ static void nvram_request(void)
  * commands run the sequences, and the sound thread's pass follows the list. */
 static void sound_list(uint32_t list)
 {
+    if (arm7.sequencer) {
+        sequencer_before_list();
+    }
     for (uint32_t cmd = list; cmd != 0 && (cmd >> 24) == 0x02; cmd = rd32(cmd)) {
         uint32_t id = rd32(cmd + 4);
         if (id == 0x1d) {

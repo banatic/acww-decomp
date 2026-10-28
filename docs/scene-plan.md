@@ -1965,3 +1965,31 @@ What reading the Clean code found about the groups above; counts are of function
   Clean wrote message 0. The guest frames now give both the ROM's words
   (docs/native-guest-stack.md), and villager-karaoke goes on through the song to 16763 (7:
   VillagerTalkReplies_RequestSound, _TalkMode3 and _Say2484 among them).
+
+### The sequencer's channels: K.K.'s show with the guest's faces, the tune and the melody piece again (2026-10-29, runtime/channels)
+- runtime/sequencer.c gives each note a channel as the ARM7's driver does (0x60c4, 0x4d68,
+  0x728c): the instrument from the player's bank (SBNK: one note's data, a drum set by key, a
+  key split), the channels its kind may use (samples 0-15, square waves 8-13, noise 14 and 15)
+  less those the ARM9 locked, the lowest priority in the driver's order and of equal ones the
+  quieter; the note that had the channel loses it. A channel ends as the driver ends it (0x50b0):
+  its sample, played once, has played out (its length at its timer's rate, the pitch with the
+  sweep and modulation), or its envelope, released when the note's length runs out, at a tie, or
+  when its track closes or is muted, is down to -72.3 dB with the track's and player's volumes.
+  Each pass first writes what the last one decided (0x53bc), so a channel plays from the pass
+  after its note. The driver's copy shows each track's channels and the channels' control
+  registers, the shared work the channels playing, and a note of length 0 in note-wait mode
+  waits for its channel's end. The volume table is the ARM9's copy of the BIOS's (VolumeTable);
+  the BIOS's pitch table has no copy in the ROM and is computed.
+- Only with RUN_SEQUENCER, as before: the scenes without it do not change. The three with it do
+  (their .sha1 rewritten, both ways, and on Linux for tune-played and kk-show-end): tune-played
+  from frame 656 (the title's demo), melody-piece and kk-show-end, which still reach the tune's
+  end, the melody piece's steps and the show's end.
+- K.K.'s show (kk-show-end): MusicBeatShow_FindTrack now finds a sounding track, so the guest's
+  face follows the music (CafeGuestScene_FollowShow maps m.1 to m.5 and back to m.0, from about
+  frame 18300). No Clean function is entered that no scene entered: the faces are the same
+  functions with other names. With the sequencer, sick-villager, hour-chime, music-all,
+  house-music, villager-birthday, birthday-party, kk-request and villager-memories agree and
+  enter nothing new either.
+- Left out: the channels the ARM9 sets up itself (the commands for a channel, its timer, capture
+  and alarms, which the game's streams and capture would use), the master pan and the output
+  effect (they change only the registers' pan and volume bytes), and the mixing.

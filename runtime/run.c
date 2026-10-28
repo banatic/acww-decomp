@@ -739,7 +739,7 @@ int run_main(int argc, char **argv)
         fprintf(stderr, "cannot read the input recording %s\n", recording);
         return 1;
     }
-    arm7_init();
+    arm7_init(rom);
     cpu.io_read = bios_io_read;
     cpu.io_write = io_write;
     cpu.hook_at = hook_at;

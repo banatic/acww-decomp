@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-void arm7_init(void);
+void arm7_init(const char *rom);
 
 /* Runs the ARM7 for a moment: the IPCSYNC handshake, the lock-word initialisation, and one
  * answer per FIFO word the ARM9 sent. Called between slices of ARM9 execution. */
