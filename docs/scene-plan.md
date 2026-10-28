@@ -1820,5 +1820,13 @@ What reading the Clean code found about the groups above; counts are of function
   (3, from TileEffects_StartFor and TileRequests_ChangeCodesAround) and the town pack's thread
   (2: TownPack_InitThread and _KillThread, on branches of ActivityProcess_Create and _Delete the
   scenes do not take).
+- Gained little: a sweep for every BSS global of main and the autoloads that Clean's code only
+  tests or stores 0 into (w24/zerovars.py: 168 with no store under their names) found two dead
+  spans, and with them the calibration cut off PlayerRecords_GuestIndex, which scenes run: a
+  store outside the names exists (a base register, a block copy), so only the four globals above,
+  with every relocation naming them checked, are used. The title's demo driven 12,000 frames
+  enters nothing new (its actors are not this system's, but they never swing a net or a rod, so
+  the remote branches of states 0x46-0x68 stay unknown). The effect kinds' starters (w24/effkinds.py)
+  are all field actor states the gates leave reached; the kinds no scene starts need their actions.
 - The plan before: unknown 787, unreachable 2,932; after: seed 1,058, date 248, unknown 761,
   unreachable 2,958.
