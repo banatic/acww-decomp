@@ -83,6 +83,9 @@ were checked across its reachable paths.
 | main | 0200d1e4 | 0x010 |
 | main | 0201100c | 0x050 |
 | main | 0201ce68 | 0x010 |
+| main | 0201cfe4 | 0x010 |
+| main | 0201d198 | 0x020 |
+| main | 02020764 | 0x018 |
 | main | 0202f3e4 | 0x020 |
 | main | 0202f464 | 0x070 |
 | main | 020288bc | 0x018 |
@@ -92,10 +95,12 @@ were checked across its reachable paths.
 | main | 02031bb8 | 0x058 |
 | main | 02032aa8 | 0x010 |
 | main | 02033678 | 0x098 |
+| main | 02066cd4 | 0x018 |
 | main | 02066dc4 | 0x018 |
 | main | 020671b0 | 0x010 |
 | main | 020673e0 | 0x050 |
 | main | 02067504 | 0x008 |
+| main | 02067540 | 0x008 |
 | main | 02068144 | 0x010 |
 | main | 0206823c | 0x010 |
 | main | 020a9ba0 | 0x008 |
@@ -265,6 +270,18 @@ on the PC's stack there. `VillagerTalkOffer_Reply` (its `BUG:` note: a line of 0
 The catchphrase's "type it again" (scene villager-habit-retype) goes the same way: its line
 function, `VillagerTalkNickname_AskHabitTextLine` (0202adc8), opens the keyboard and writes no
 line, and the ROM names the message file after the talk object's first bytes.
+
+A villager's song (scene villager-karaoke) reaches another line of the same shape: 02020764
+(`VillagerTalkReplies_Say2484`, from the talk update through 02066cd4, 02067540 and 0201cfe4 by
+a member pointer) gives the line function the address of its line (body SP + 4) and says it, its
+message byte at body SP + 0. The song's line function, `VillagerTalkReplies_RequestSound`
+(02020728), writes none, and the ROM reads what its frame held: just before, at the same depth,
+0201cfe4 called 0201d198, whose entry push stored 0201cfe4's r4 (the event, 0: no text) at
+body SP + 4 and its r5 (the talk) at + 8, whose low byte becomes the message. The copies of
+0201cfe4 (Native, and `VillagerTalk_OnEvent14`) say what r4 and r5 hold, 0201d198's audited
+push stores them, and the copies of 02020764 (Native, and `VillagerTalkReplies_Say2484`) keep the
+line at its slot where the frame is proved. Before, the PC copy faulted in strncpy on its unset
+line and Clean said message 0.
 
 ## Argument words
 

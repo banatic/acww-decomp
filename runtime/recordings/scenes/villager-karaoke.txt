@@ -6,9 +6,9 @@
 # north to villager 0 (personality ko) at 43.4, 49.7, a tile west of it and facing it.
 # Save: the seed town. A held 4 frames every 40 frames: on this event a villager's first talk of
 # the day is the line table 3 (VillagerTalkReplies_LineFirstOfDay), here ev_karaoke: it offers
-# to sing (VillagerTalkReplies_OfferChoicesC4), to 14999. The song itself (from about 15100,
-# VillagerTalkReplies_RequestSound, TownTune_PlayRandomPreset) is left out: two Reference runs
-# of it gave different memory at 15500 (docs/scene-plan.md, findings of 2026-10-29).
+# to sing (VillagerTalkReplies_OfferChoicesC4) and sings (from about 15100,
+# VillagerTalkReplies_RequestSound, TownTune_PlayRandomPreset), to 16763. The song's line says
+# what the ROM's stack held (docs/native-guest-stack.md).
 0 - -
 900 START -
 906 - -

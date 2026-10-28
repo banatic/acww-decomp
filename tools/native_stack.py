@@ -221,6 +221,21 @@ FRAMES: dict[tuple[str, int], Frame] = {
         '6e8f74574a257f16125899e8cfea718e709a436497016f269b52874c901323af'),
     ('main', 0x020288bc): Frame(0x18, 0x68,
         '591019f2c2a1da40f78a5d577d5ab483aaeb5dec4e358e507d09e5b12e9e5135'),
+    # A villager's song asked for (scene villager-karaoke): the talk update (020a9ba0, above)
+    # through 0206823c and 02068144 (above), 02066cd4 (by 02068144's state table) and 02067540,
+    # which calls 0201cfe4 by its vtable; 0201cfe4 calls 0201d198 and then, by a member pointer,
+    # 02020764, at the same depth. One push and one sub at entry each (02067540 pushes only),
+    # the matching add before the one pop; no computed branch; every call at entry SP - extent.
+    ('main', 0x02066cd4): Frame(0x18, 0xdc,
+        'a46b652f2cf4cbf0be21aa5d9bb4bac1a887a04fb0f3bbe7f569d6b5dc4b9e07'),
+    ('main', 0x02067540): Frame(0x8, 0x48,
+        '21a60abf91ca199f6d0ea304e24c32a24f47eedbd39781cd919a8d723ce3fe10'),
+    ('main', 0x0201cfe4): Frame(0x10, 0x15c,
+        '049cf6c8caad269fff2232a10533befc8f69fd9c9edcdfe1075ac27ec947377f'),
+    ('main', 0x0201d198): Frame(0x20, 0xfc,
+        '5066226f286024812b1615a4bbcba1628a38b6775ab499a4eb6dd864720c684b'),
+    ('main', 0x02020764): Frame(0x18, 0x54,
+        '1cf6c7156ddb1ae2b7723e3386d68642372a852e4e726a7f07172e7584fe9ba5'),
     # The museum's insect room (scene museum-insects): the field actor's move (02031288, from
     # 0201100c, audited above) calls 02031bb8, which calls 02031078 with the addresses of its
     # three locals (body SP + 4 to + 0xc), which calls the ground's height function 020b39bc by
@@ -254,6 +269,7 @@ SAVES: dict[tuple[str, int], int] = {
     ('autoload_2', 0x020e9868): (1 << 4) | (1 << 14),
     ('autoload_2', 0x020f5e50): (1 << 4) | (1 << 5) | (1 << 14),
     ('main', 0x020b39bc): (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 14),
+    ('main', 0x0201d198): (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 14),
 }
 
 SOURCES = {
@@ -273,6 +289,8 @@ SOURCES = {
     'main/func_02031078.cpp': 'a8b4f8fc74d91a63c43fe6e9f9435a8997ed6f53b107c1d768f9454b017ade1a',
     'main/func_02033678.cpp': '5ae67b9e3888b3e0f6e65a87cd4b9b02f1b35eb6c4e13dcc79d912a3a7d67338',
     'main/func_0202f464.c': 'd4338665a2d2b24be6a7ce9e31cdc45830187427690a06849d2840168b2eaa31',
+    'main/func_0201cfe4.cpp': 'dd736357200171c19e4b42adedeb6c9475050542a8b2b574551a0187785cefde',
+    'main/func_02020764.cpp': 'c9ead5b2732dd66902a94e270c4ab55b9f4dd1ad57349d16d86eb7b6544757e9',
 }
 CONSUMER = 'ov004/func_ov004_0223df88.cpp'
 # The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
@@ -306,6 +324,8 @@ CLEAN_CUE_SHA = {
     'clean/main/field_collision.c': '55d958e6a9bddd45451ede27c07df805222887622bb83e1b24cfe30aa1545f1f',
     'clean/main/collision_query.c': '64b4370e713ddc57343b34d5e4aca0b4c2ef0dcd7384f66a554d2a3df3fe7a6a',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
+    'clean/main/villager_talk.c': '9c5578f69547303dea24f484c0d06278a1343661f3cc3e75e89f82c351275099',
+    'clean/main/villager_talk_replies.c': 'd217d5d841404fce37b4cd149cc6b9b5177bd7815cbe411a5e642ea9f13bea7c',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     'clean/autoload_2/music_cue.c': (
@@ -457,6 +477,26 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
         ('COLLISION_UNIT_SHIFT, &radius,\n                                       &height, &kind) != 0;\n',
          'COLLISION_UNIT_SHIFT, &out->radius,\n'
          '                                       &out->height, &out->kind) != 0;\n')),
+    # A villager's song asked for (func_0201cfe4, func_02020764; their Native copies in
+    # CUE_EDITS).
+    'clean/main/villager_talk.c': (
+        ('    u8 message = villager_talk_talk(talk)[VILLAGER_TALK_TALK_MESSAGE];\n\n',
+         '    u8 message = villager_talk_talk(talk)[VILLAGER_TALK_TALK_MESSAGE];\n\n'
+         '    native_guest_register(0x0201cfe4u, 5, (uint32_t) (uintptr_t) talk);\n'
+         '    native_guest_register(0x0201cfe4u, 4, (uint32_t) event);\n'),),
+    'clean/main/villager_talk_replies.c': (
+        ('void VillagerTalkReplies_Say2484(VillagerTalk *talk, int event)\n{\n    (void) event;\n'
+         '    replies_say(talk, data_021c2484);\n}\n',
+         'void VillagerTalkReplies_Say2484(VillagerTalk *talk, int event)\n{\n    (void) event;\n'
+         '    _Static_assert(sizeof(VillagerTalkLine) == 8, "the line");\n'
+         '    u8 *message = (u8 *) (uintptr_t) native_guest_stack_slot_if(0x02020764u, 0, 4 + sizeof(VillagerTalkLine));\n'
+         '    if (message == NULL) {\n        replies_say(talk, data_021c2484);\n        return;\n    }\n'
+         '    VillagerTalkLine *line = (VillagerTalkLine *) (void *) (message + 4);\n'
+         '    VillagerTalkScene_SetLines(talk, data_021c2484);\n'
+         '    if (talk->line.function != 0) {\n        replies_call(&talk->line, talk, line);\n    }\n'
+         '    *message = line->message;\n'
+         '    TalkObject_SetMessage((TalkObject *) (void *) replies_talk(talk), message,\n'
+         '                          (const char *) (uintptr_t) ((int) line->text));\n}\n'),),
     'clean/main/villager_talk_offers.c': (
         ('    VillagerTalkLine line = {0};\n    if (offer_set_line(talk, &line) && line.text != 0) {\n'
          '        u8 message = line.message;\n'
@@ -574,6 +614,27 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '            func_02068484(self->unk_40, &arg, out.n);\n',
          '        (self->*(self->pmf))(out);\n        if (out->n) {\n            *arg = out->b;\n'
          '            func_02068484(self->unk_40, arg, out->n);\n')),
+    # A villager's song asked for (scene villager-karaoke): 02020764 says the line its line
+    # function gives (out, at body SP + 4, the message byte at + 0); the song's (02020728) gives
+    # none, and the ROM goes on with what the stack held there: 0201d198's entry push, called by
+    # 0201cfe4 just before at the same depth, stored 0201cfe4's r4 (the event: the line's text)
+    # and r5 (the talk, whose low byte becomes the message). 0201cfe4 holds them from 0201cfe8
+    # on. The line lives in the ROM's frame where its path is audited (else the PC's stack, as
+    # before).
+    'main/func_0201cfe4.cpp': (
+        ('    unsigned char id_slot;\n',
+         '    unsigned char id_slot;\n'
+         '    native_guest_register(0x0201cfe4u, 5, (uint32_t) (uintptr_t) self);\n'
+         '    native_guest_register(0x0201cfe4u, 4, (uint32_t) event);\n'),),
+    'main/func_02020764.cpp': (
+        ('    unsigned char arg;\n    UnkStruct_02020764 out;\n',
+         '    static_assert(sizeof(UnkStruct_02020764) == 8, "the line");\n'
+         '    unsigned char host_arg[0xc];\n'
+         '    unsigned char *arg = (unsigned char *) (uintptr_t) native_guest_stack_slot_if(0x02020764u, 0, 0xc);\n'
+         '    if (arg == 0) {\n        arg = host_arg;\n    }\n'
+         '    UnkStruct_02020764 *out = (UnkStruct_02020764 *) (arg + 4);\n'),
+        ('        (self->*(self->pmf))(&out);\n    }\n    arg = out.b;\n    func_0206844c(self->unk_40, &arg, out.n);\n',
+         '        (self->*(self->pmf))(out);\n    }\n    *arg = out->b;\n    func_0206844c(self->unk_40, arg, out->n);\n')),
     # The ground's height under the field actor (scene museum-insects): 02031bb8 keeps its three
     # out-values at body SP + 4 to + 0xc (02031be0-02031bee) where its path is audited (else the
     # PC's stack: it runs on many paths), and 02031078 holds the second's address in r4, the

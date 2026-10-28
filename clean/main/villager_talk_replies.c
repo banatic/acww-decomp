@@ -235,7 +235,10 @@ void VillagerTalkReplies_TalkMode3(VillagerTalk *talk, void *unused)
 }
 CLEAN_AS(func_02020744, VillagerTalkReplies_TalkMode3)
 
-/* func_02020764: the line of the table at data_021c2484 said. */
+/* func_02020764: the line of the table at data_021c2484 said.
+ * BUG: the song's line function (VillagerTalkReplies_RequestSound) writes no line, and the
+ * original says what its stack held there (the event as the text, the talk's address's low
+ * byte as the message); here the line is 0 (docs/native-guest-stack.md). */
 void VillagerTalkReplies_Say2484(VillagerTalk *talk, int event)
 {
     (void) event;
