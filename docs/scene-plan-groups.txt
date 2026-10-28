@@ -10,100 +10,376 @@
 area: Unreachable for one player
 group: local wireless (DS to DS)
 scene: none: a visit to another town, a guest in this one, the wireless exchange of the town's block
-reach: needs a second DS running the game (WM library, parent and child search, MP exchange, the linked scene changes)
+reach: needs a second DS running the game (WM library, parent and child search, MP exchange, the linked scene changes). Listed by whole file only where no scene runs a function of the file (findings 2026-10-28, town6); besides, the link jobs 0x1d (the search a player moving in starts: title-move-in reaches its start, where the runtime, which has no wireless, halts in the WM set-up) and 0x1e (started by ActivityReceiver_OnMessage on message 38 of sp_etc_sequence1, which only job 0x1d's step gives, once a system packet names a second slot), the post clerk's step 14 (job 0x1f asked for, after step 13 awaited the connection) and Session_Start, which only job 0x1d's start, the gatekeeper's session talk and the post clerk's line 0x36 call, each after LibraryOverlay_Switch65 or _Switch66 (town-hall-move and title-move-in end at _Switch66: the runtime, which has no wireless, halts in the WM set-up)
 needs: unreachable
-match: ov066/* ov139/* ov140/* ov141/* ov055/* main/session* main/link_* main/quick_message
-  main/system_packet main/player_messages main/object_claim main/packed_bytes main/scene_share*
-  main/player_processes main/caution_window main/exchange_block* main/activity_link_jobs
-  main/linked_map_items main/recent_slots main/player_actors main/activity_save main/paired_town
-  main/town_pack main/scene_claim main/wireless_icon main/obj_020dd33c* autoload_2/network
-  main/place_claim:PlaceClaim_Answer* main/place_claim:PlaceClaim_Request*
+match: main/activity_save:ActivitySave_GuestSteps main/activity_save:ActivitySave_HostSteps
+  main/activity_save:ActivitySave_LeaveSession main/exchange_blocks:ExchangeBlocks_Rotate
+  main/exchange_blocks:ExchangeBlocks_SendToGuests main/exchange_blocks:ExchangeBlocks_SwapWithRandom
+  main/link_bundle:LinkBundle_ReadClaim main/link_bundle:LinkBundle_ReadEntered
+  main/link_bundle:LinkBundle_ReadEnteredNothing main/link_bundle:LinkBundle_ReadLeft
+  main/link_bundle:LinkBundle_ReadLeftNothing main/link_bundle:LinkBundle_SendEntered
+  main/link_bundle:LinkBundle_SendLeft main/link_bundle:LinkBundle_WriteClaim
+  main/link_bundle:LinkBundle_WriteEntered main/link_bundle:LinkBundle_WriteEnteredNothing
+  main/link_bundle:LinkBundle_WriteLeft main/link_bundle:LinkBundle_WriteLeftNothing
+  main/recent_slots:RecentSlots_Clear main/recent_slots:RecentSlots_Forget
+  main/recent_slots:RecentSlots_Newest main/recent_slots:RecentSlots_Push
+  main/session_message:SessionMessage_AddLinkPair
+  main/session_message:SessionMessage_ChangeVillagerObject
+  main/session_message:SessionMessage_Dispatch main/session_message:SessionMessage_FillVillagerEntry
+  main/session_message:SessionMessage_Handle20 main/session_message:SessionMessage_Handle23
+  main/session_message:SessionMessage_Handle24 main/session_message:SessionMessage_Handle25
+  main/session_message:SessionMessage_Handle26 main/session_message:SessionMessage_Handle27
+  main/session_message:SessionMessage_Handle28 main/session_message:SessionMessage_Handle29
+  main/session_message:SessionMessage_Handle30 main/session_message:SessionMessage_Handle31
+  main/session_message:SessionMessage_Handle32 main/session_message:SessionMessage_Handle33
+  main/session_message:SessionMessage_Handle34 main/session_message:SessionMessage_Handle35
+  main/session_message:SessionMessage_Handle36 main/session_message:SessionMessage_Handle37
+  main/session_message:SessionMessage_Handle38 main/session_message:SessionMessage_Handle39
+  main/session_message:SessionMessage_Handle40 main/session_message:SessionMessage_Handle41
+  main/session_message:SessionMessage_Handle42 main/session_message:SessionMessage_Handle43
+  main/session_message:SessionMessage_Handle44 main/session_message:SessionMessage_Handle45
+  main/session_message:SessionMessage_Handle46 main/session_message:SessionMessage_Handle47
+  main/session_message:SessionMessage_Handle48 main/session_message:SessionMessage_Handle49
+  main/session_message:SessionMessage_Handle50 main/session_message:SessionMessage_Handle51
+  main/session_message:SessionMessage_PlaceTownItems
+  main/session_message:SessionMessage_ReceiveAnswer
+  main/session_message:SessionMessage_ReceiveBundle15
+  main/session_message:SessionMessage_ReceiveBundle16
+  main/session_message:SessionMessage_ReceiveDesign
+  main/session_message:SessionMessage_ReceivePlayerMessage
+  main/session_message:SessionMessage_ReceiveRequest
+  main/session_message:SessionMessage_RelayTownItems main/session_message:SessionMessage_RemovePlayer
+  main/session_message:SessionMessage_SetActivityFlagE6
+  main/session_message:SessionMessage_SetActivityFlagF3
+  main/session_message:SessionMessage_SetActivityPlayerE7
+  main/session_message:SessionMessage_SetActivityPlayerEB
+  main/session_message:SessionMessage_SetActivityPlayerF4
+  main/session_message:SessionMessage_SetLinkEntry main/session_message:SessionMessage_SetLinkEntry3C
+  main/session_message:SessionMessage_SetLinkFlag7C
+  main/session_message:SessionMessage_SetLinkSlotFlag68
+  main/session_message:SessionMessage_SetLinkStatusBits
+  main/session_message:SessionMessage_SetLinkWord2C main/session_message:SessionMessage_SetLinkWord74
+  main/session_message:SessionMessage_SetOwnStatus
+  main/session_message:SessionMessage_SetSenderStatus
+  main/session_message:SessionMessage_SetVillagerEntryByte6C
+  main/session_message:SessionMessage_SetVillagerEntryByte6D
+  main/session_message:SessionMessage_SetVillagerEntryItem
+  main/session_message:SessionMessage_SetVillagerEntrySender
+  main/session_message:SessionMessage_SetVillagerItem7D2
+  main/session_message:SessionMessage_SetVillagerItems7B0
+  main/session_message:SessionMessage_SetVillagerObject
+  main/session_message:SessionMessage_SetVillagerObjectItem
+  main/system_packet:SystemPacket_SendActivityBuffer
+  main/system_packet:SystemPacket_SendActivityFlagD9
+  main/system_packet:SystemPacket_SendActivityFlagE4
+  main/system_packet:SystemPacket_SendActivityFlagE5
+  main/system_packet:SystemPacket_SendActivityMembers
+  main/system_packet:SystemPacket_SendActivityPlayerF8
+  main/system_packet:SystemPacket_SendActivityPlayerFC main/system_packet:SystemPacket_SendDateTime
+  main/system_packet:SystemPacket_SendLinkEntries main/system_packet:SystemPacket_SendLinkFlagC4
+  main/system_packet:SystemPacket_SendModeRequest main/system_packet:SystemPacket_SendOwnBlock
+  main/system_packet:SystemPacket_SendSenderBlock main/system_packet:SystemPacket_SendShareData
+  main/system_packet:SystemPacket_SendSharedRecords main/system_packet:SystemPacket_SendSlotBlocks
+  main/town_pack:TownPack_IsDone ov066/local_channel:LocalChannel_Choose
+  ov066/local_channel:LocalChannel_Measure ov066/local_channel:LocalChannel_MeasureFrom
+  ov066/local_channel:LocalChannel_MeasureOne ov066/local_channel:LocalChannel_OnMeasure
+  ov066/local_host:LocalHost_End ov066/local_host:LocalHost_FillParentParam
+  ov066/local_host:LocalHost_OnBeaconSent ov066/local_host:LocalHost_OnChildJoined
+  ov066/local_host:LocalHost_OnChildLeft ov066/local_host:LocalHost_OnEnd
+  ov066/local_host:LocalHost_OnParent ov066/local_host:LocalHost_OnSetEntry
+  ov066/local_host:LocalHost_OnSetGameInfo ov066/local_host:LocalHost_OnSetParentParam
+  ov066/local_host:LocalHost_SetEntry ov066/local_host:LocalHost_SetGameData
+  ov066/local_host:LocalHost_SetGameInfo ov066/local_host:LocalHost_SetParentParam
+  ov066/local_host:LocalHost_Start ov066/local_host:LocalHost_StartNow
+  ov066/local_host:LocalHost_StartParent ov066/local_host:LocalHost_UpdateGameInfo
+  ov066/local_join:LocalJoin_CompareMac ov066/local_join:LocalJoin_Connect
+  ov066/local_join:LocalJoin_ConnectChosen ov066/local_join:LocalJoin_ConnectToBest
+  ov066/local_join:LocalJoin_Disconnect ov066/local_join:LocalJoin_NextTurn
+  ov066/local_join:LocalJoin_OnBeaconLost ov066/local_join:LocalJoin_OnConnect
+  ov066/local_join:LocalJoin_OnConnected ov066/local_join:LocalJoin_OnDisconnect
+  ov066/local_join:LocalJoin_OnDisconnected ov066/local_join:LocalJoin_OnRetryReset
+  ov066/local_join:LocalJoin_Select ov066/local_join:LocalJoin_Start
+  ov066/local_join:LocalJoin_StepAuto ov066/local_mp:LocalMp_AskEnd ov066/local_mp:LocalMp_CanSend
+  ov066/local_mp:LocalMp_ClearMembers ov066/local_mp:LocalMp_ConnectedAids
+  ov066/local_mp:LocalMp_CountMembers ov066/local_mp:LocalMp_End ov066/local_mp:LocalMp_EndIfAsked
+  ov066/local_mp:LocalMp_GetAid ov066/local_mp:LocalMp_NextRandom ov066/local_mp:LocalMp_OnEnd
+  ov066/local_mp:LocalMp_OnHello ov066/local_mp:LocalMp_OnMembers
+  ov066/local_mp:LocalMp_OnMembersSent ov066/local_mp:LocalMp_OnMp ov066/local_mp:LocalMp_OnReceive
+  ov066/local_mp:LocalMp_PlayerCount ov066/local_mp:LocalMp_ReadBigEndian32
+  ov066/local_mp:LocalMp_ReceiveAsChild ov066/local_mp:LocalMp_ReceiveAsParent
+  ov066/local_mp:LocalMp_Send ov066/local_mp:LocalMp_SendHello ov066/local_mp:LocalMp_SendMembers
+  ov066/local_mp:LocalMp_SetMember ov066/local_mp:LocalMp_Start ov066/local_mp:LocalMp_TellPeerLeft
+  ov066/local_mp:LocalMp_UpdateMembers ov066/local_relay:LocalRelay_AddOwnFragment
+  ov066/local_relay:LocalRelay_CanSend ov066/local_relay:LocalRelay_ClearRing
+  ov066/local_relay:LocalRelay_Collect ov066/local_relay:LocalRelay_Configure
+  ov066/local_relay:LocalRelay_CreateRing ov066/local_relay:LocalRelay_Deliver
+  ov066/local_relay:LocalRelay_FindPacket ov066/local_relay:LocalRelay_FinishBlock
+  ov066/local_relay:LocalRelay_ForgetPeer ov066/local_relay:LocalRelay_NextFragment
+  ov066/local_relay:LocalRelay_OnChildPacket ov066/local_relay:LocalRelay_OnChildPacketSent
+  ov066/local_relay:LocalRelay_OnData ov066/local_relay:LocalRelay_OnIndication
+  ov066/local_relay:LocalRelay_OnMpAck ov066/local_relay:LocalRelay_OnMpEnd
+  ov066/local_relay:LocalRelay_OnPeerDisconnected ov066/local_relay:LocalRelay_OnPortReceive
+  ov066/local_relay:LocalRelay_OnPortSent ov066/local_relay:LocalRelay_OnRelaySent
+  ov066/local_relay:LocalRelay_ReceiveFragment ov066/local_relay:LocalRelay_Reset
+  ov066/local_relay:LocalRelay_SendBlock ov066/local_relay:LocalRelay_SendFromChild
+  ov066/local_relay:LocalRelay_SendMessage ov066/local_relay:LocalRelay_SendToPort
+  ov066/local_relay:LocalRelay_SetReceiveBuffer ov066/local_relay:LocalRelay_Shutdown
+  ov066/local_relay:LocalRelay_Start ov066/local_search:LocalSearch_AcceptParent
+  ov066/local_search:LocalSearch_Begin ov066/local_search:LocalSearch_CancelExpiry
+  ov066/local_search:LocalSearch_ChannelAt ov066/local_search:LocalSearch_ClearList
+  ov066/local_search:LocalSearch_CountParents ov066/local_search:LocalSearch_Create
+  ov066/local_search:LocalSearch_Destroy ov066/local_search:LocalSearch_EndScan
+  ov066/local_search:LocalSearch_FreeList ov066/local_search:LocalSearch_InitList
+  ov066/local_search:LocalSearch_ListCount ov066/local_search:LocalSearch_ListParent
+  ov066/local_search:LocalSearch_ListParentAt ov066/local_search:LocalSearch_OnEndScan
+  ov066/local_search:LocalSearch_OnParentExpired ov066/local_search:LocalSearch_OnParentFound
+  ov066/local_search:LocalSearch_OnScan ov066/local_search:LocalSearch_OnStopAlarm
+  ov066/local_search:LocalSearch_OnTimeout ov066/local_search:LocalSearch_ParentAt
+  ov066/local_search:LocalSearch_ParentData ov066/local_search:LocalSearch_ParentDataSize
+  ov066/local_search:LocalSearch_ParentState ov066/local_search:LocalSearch_RenewExpiry
+  ov066/local_search:LocalSearch_ScanNextChannel ov066/local_search:LocalSearch_SetFilter
+  ov066/local_search:LocalSearch_SetScanParam ov066/local_search:LocalSearch_Start
+  ov066/local_search:LocalSearch_StartScan ov066/local_search:LocalSearch_Stop
+  ov066/local_search:LocalSearch_StopNow ov066/local_session:LocalSession_AllocBuffers
+  ov066/local_session:LocalSession_Create ov066/local_session:LocalSession_Destroy
+  ov066/local_session:LocalSession_Disconnected ov066/local_session:LocalSession_NextAllowedChannel
+  ov066/local_session:LocalSession_OnRadioOn ov066/local_session:LocalSession_ReadAllowedChannels
+  ov066/local_wireless:LocalWireless_Alloc ov066/local_wireless:LocalWireless_CallWm
+  ov066/local_wireless:LocalWireless_CheckReset ov066/local_wireless:LocalWireless_ClearResetting
+  ov066/local_wireless:LocalWireless_Continue ov066/local_wireless:LocalWireless_DispatchEvent
+  ov066/local_wireless:LocalWireless_Fail ov066/local_wireless:LocalWireless_Free
+  ov066/local_wireless:LocalWireless_GetLinkLevel ov066/local_wireless:LocalWireless_GetState
+  ov066/local_wireless:LocalWireless_Init ov066/local_wireless:LocalWireless_IsMacSet
+  ov066/local_wireless:LocalWireless_IsRequestDone ov066/local_wireless:LocalWireless_OnDisable
+  ov066/local_wireless:LocalWireless_OnEnable ov066/local_wireless:LocalWireless_OnPowerOff
+  ov066/local_wireless:LocalWireless_OnPowerOn ov066/local_wireless:LocalWireless_OnReset
+  ov066/local_wireless:LocalWireless_OnWmCall ov066/local_wireless:LocalWireless_PostEvent
+  ov066/local_wireless:LocalWireless_Request ov066/local_wireless:LocalWireless_ResetControl
+  ov066/local_wireless:LocalWireless_ResetIfPowered
+  ov066/local_wireless:LocalWireless_SetEventHandler
+  ov066/local_wireless:LocalWireless_SetReceiveHandler ov066/local_wireless:LocalWireless_Shutdown
+  ov066/local_wireless:LocalWireless_StartReset ov066/local_wireless:LocalWireless_Step
+  ov066/local_wireless:LocalWireless_StepChild ov066/local_wireless:LocalWireless_StepConnecting
+  ov066/local_wireless:LocalWireless_StepIdle ov066/local_wireless:LocalWireless_StepMeasuring
+  ov066/local_wireless:LocalWireless_StepParent ov066/local_wireless:LocalWireless_StepParentStarting
+  ov066/local_wireless:LocalWireless_StepReady ov066/local_wireless:LocalWireless_StepReset
+  ov066/local_wireless:LocalWireless_StepSearching ov066/local_wireless:LocalWireless_StepStop
 
 area: Unreachable for one player
 group: Nintendo Wi-Fi Connection
 scene: none: a Wi-Fi visit, the friend list online
-reach: needs the Wi-Fi Connection server (NitroDWC); the runtime has no network
+reach: needs the Wi-Fi Connection server (NitroDWC); the runtime has no network. By whole file only ov146 and main/wfc_session, where no scene runs a function; of main/wfc_setup the three functions nothing calls or names (the library's overlay run and its allocator); the rest of main/wfc_*, main/wifi_friends and the network library is in "the link's code in files one player also runs" (findings 2026-10-28, town6)
 needs: unreachable
-match: ov146/* main/wfc_* main/wifi_friends
-
-area: Unreachable for one player
-group: the other console's field actor: its states' messages
-scene: none: the message handlers of the field actor's states and the updates of another player's actor (FieldActor_State<N>Message, *Remote), which ask for a state as a linked console reported it
-reach: only a state message of another console's actor (a second DS in the session) runs them; this console's actor asks for its states directly (findings 2026-10-22, field actor states)
-needs: unreachable
-match: ov003/field_actor:*Message ov003/field_actor:*Remote* main/field_actor_states:*Message
-  main/field_actor_states:*Remote* ov004/field_actor_room_states*:*Message ov004/field_actor_room_states*:*Remote*
-  ov004/field_actor_place_states:*Message ov004/field_actor_place_states:*Remote*
+match: main/wfc_session:WfcSession_FinishLetterGet main/wfc_session:WfcSession_FinishNoticeGet
+  main/wfc_session:WfcSession_FinishStatsGet main/wfc_session:WfcSession_FinishStatsUpload
+  main/wfc_session:WfcSession_StartLetterGet main/wfc_session:WfcSession_StartNoticeGet
+  main/wfc_session:WfcSession_StartStatsGet main/wfc_session:WfcSession_StartStatsUpload
 
 area: Unreachable for one player
 group: the lost child's walk home, and the test character
 scene: none: the walk of scene 0x2f in which the lost child of main/missing_npc1.c finds its mother of main/missing_npc2.c (their states SCENE_2F, the mother's turn, her second speaker and talk end), and npc_plc (the special character whose one line is message 0 of the archive "test")
 reach: the child and the mother are made in the two towns of a pairing (Spawner_CheckD022In and _CheckD023In: scenes lost-child and lost-mother), so they meet only in the other player's town; npc_plc's profile 0x7c (data_020e82f8) is not in the spawner's table (data_020e1d8c) and no code makes it
 needs: unreachable
-match: main/missing_npc1:*Scene2F* main/missing_npc2:*Scene2F* main/missing_npc2:*Speaker* main/missing_npc2:MissingNpc2_*Turn
-  main/missing_npc2:MissingNpc2_OnTalkEnd main/missing_npc2:MissingNpc2_UpdateTalked main/missing_npc2:MissingNpc2Talk_OnAnswer
-  main/npc_plc
+match: main/missing_npc1:MissingNpc1_EnterScene2F main/missing_npc1:MissingNpc1_UpdateScene2F
+  main/missing_npc2:MissingNpc2Talk_OnAnswer main/missing_npc2:MissingNpc2_EnterScene2FExit
+  main/missing_npc2:MissingNpc2_EnterScene2FWalk main/missing_npc2:MissingNpc2_EnterSpeaker
+  main/missing_npc2:MissingNpc2_EnterTurn main/missing_npc2:MissingNpc2_OnSpeakerJoined
+  main/missing_npc2:MissingNpc2_OnTalkEnd main/missing_npc2:MissingNpc2_StartScene2FExit
+  main/missing_npc2:MissingNpc2_StartScene2FWalk main/missing_npc2:MissingNpc2_UpdateScene2FExit
+  main/missing_npc2:MissingNpc2_UpdateScene2FWalk main/missing_npc2:MissingNpc2_UpdateSpeaker
+  main/missing_npc2:MissingNpc2_UpdateTalked main/missing_npc2:MissingNpc2_UpdateTurn
+  main/npc_plc:NpcPlcTalk_Construct main/npc_plc:NpcPlcTalk_Destruct
+  main/npc_plc:NpcPlcTalk_DestructDelete main/npc_plc:NpcPlcTalk_Line main/npc_plc:NpcPlcTalk_Line0
+  main/npc_plc:NpcPlcTalk_LineBySet main/npc_plc:NpcPlcTalk_OnMessage
+  main/npc_plc:NpcPlcTalk_OnMessage0 main/npc_plc:NpcPlcTalk_SetLines
+  main/npc_plc:NpcPlcTalk_SetOwner main/npc_plc:NpcPlc_Create main/npc_plc:NpcPlc_Destruct
+  main/npc_plc:NpcPlc_DestructDelete main/npc_plc:NpcPlc_EnterIdle main/npc_plc:NpcPlc_EnterTalk
+  main/npc_plc:NpcPlc_EnterTurnBack main/npc_plc:NpcPlc_Init main/npc_plc:NpcPlc_Leave
+  main/npc_plc:NpcPlc_MayAct main/npc_plc:NpcPlc_ModelName main/npc_plc:NpcPlc_OnEvent
+  main/npc_plc:NpcPlc_SetState main/npc_plc:NpcPlc_Start main/npc_plc:NpcPlc_TextureName
+  main/npc_plc:NpcPlc_Update main/npc_plc:NpcPlc_UpdateIdle main/npc_plc:NpcPlc_UpdateTalk
+  main/npc_plc:NpcPlc_UpdateTalked main/npc_plc:NpcPlc_UpdateTurnBack
 
 area: Unreachable for one player
 group: screens no code opens
 scene: none: the pockets view (ov099, group 9's mode 0x1c) and the carried letters screen (ov103, mode 0x24)
 reach: no code sets these modes: the talks' SceneCommand_SetScreenMode calls, GroupParams_Open* callers, the menu tabs (modes 0x18-0x1b, 13, 14) and the dispatcher's reopenings (2, 0x23, 0x35, 0x36, 0x40) never give 0x1c or 0x24; ov099's setup fills fixed items, as a test screen would
 needs: unreachable
-match: ov099/* ov103/*
+match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
+  ov099/pockets_view:PocketsView_ActionChoiceByTouch ov099/pockets_view:PocketsView_AddEntries
+  ov099/pockets_view:PocketsView_BeginFrame ov099/pockets_view:PocketsView_BeginInteractiveFrame
+  ov099/pockets_view:PocketsView_BeginSubState10 ov099/pockets_view:PocketsView_Byte6c30AtLeast
+  ov099/pockets_view:PocketsView_CancelChoice ov099/pockets_view:PocketsView_ClearFlags
+  ov099/pockets_view:PocketsView_ClearHighlights ov099/pockets_view:PocketsView_ClearSelection
+  ov099/pockets_view:PocketsView_Close ov099/pockets_view:PocketsView_CloseChoice
+  ov099/pockets_view:PocketsView_CursorSpriteX ov099/pockets_view:PocketsView_CursorSpriteY
+  ov099/pockets_view:PocketsView_Delete ov099/pockets_view:PocketsView_Destroy
+  ov099/pockets_view:PocketsView_DragHeldItem ov099/pockets_view:PocketsView_Draw
+  ov099/pockets_view:PocketsView_DrawHeld ov099/pockets_view:PocketsView_DropHeldAt
+  ov099/pockets_view:PocketsView_EndAction ov099/pockets_view:PocketsView_EndActionAtCursor
+  ov099/pockets_view:PocketsView_EndActionHidden ov099/pockets_view:PocketsView_EndFrame
+  ov099/pockets_view:PocketsView_EndInteractiveFrame ov099/pockets_view:PocketsView_FinishPickUp
+  ov099/pockets_view:PocketsView_FinishSwapWithCursor
+  ov099/pockets_view:PocketsView_FollowCursorSprite ov099/pockets_view:PocketsView_FollowGlide
+  ov099/pockets_view:PocketsView_FollowTouch ov099/pockets_view:PocketsView_GlideHeldTo
+  ov099/pockets_view:PocketsView_GlideToCursor ov099/pockets_view:PocketsView_GlideToRow
+  ov099/pockets_view:PocketsView_GridIndex ov099/pockets_view:PocketsView_GridPlaceAtTouch
+  ov099/pockets_view:PocketsView_HideCursorSprite ov099/pockets_view:PocketsView_HighlightPlace
+  ov099/pockets_view:PocketsView_HoldTouchOnPlace ov099/pockets_view:PocketsView_IdleByKeys
+  ov099/pockets_view:PocketsView_IdleByTouch ov099/pockets_view:PocketsView_IsGridPlace
+  ov099/pockets_view:PocketsView_IsLetterPlace ov099/pockets_view:PocketsView_LetterIndex
+  ov099/pockets_view:PocketsView_LetterPlace ov099/pockets_view:PocketsView_LetterPlaceAtTouch
+  ov099/pockets_view:PocketsView_MoveCursor ov099/pockets_view:PocketsView_MoveCursorInGrid
+  ov099/pockets_view:PocketsView_MoveHeldItemByKeys ov099/pockets_view:PocketsView_New
+  ov099/pockets_view:PocketsView_OpenChoice ov099/pockets_view:PocketsView_Phase0Idle
+  ov099/pockets_view:PocketsView_Phase1Idle ov099/pockets_view:PocketsView_PickActionRow
+  ov099/pockets_view:PocketsView_PickUpItem ov099/pockets_view:PocketsView_PickUpOnTurn
+  ov099/pockets_view:PocketsView_PickUpWithCursor ov099/pockets_view:PocketsView_PickUpWithTouch
+  ov099/pockets_view:PocketsView_PlaceCursorSprite ov099/pockets_view:PocketsView_PlaceIsEmpty
+  ov099/pockets_view:PocketsView_PlaceIsTaken ov099/pockets_view:PocketsView_PlaceItem
+  ov099/pockets_view:PocketsView_PlaceItemState ov099/pockets_view:PocketsView_PlacePopup
+  ov099/pockets_view:PocketsView_PlaceX ov099/pockets_view:PocketsView_PlaceY
+  ov099/pockets_view:PocketsView_PointAtFirstRow ov099/pockets_view:PocketsView_PrepareWallet
+  ov099/pockets_view:PocketsView_PutDownWithCursor ov099/pockets_view:PocketsView_PutHeldAt
+  ov099/pockets_view:PocketsView_RequestDelete ov099/pockets_view:PocketsView_RunAction
+  ov099/pockets_view:PocketsView_RunActionWhenIdle ov099/pockets_view:PocketsView_RunInteractive
+  ov099/pockets_view:PocketsView_RunState ov099/pockets_view:PocketsView_SelectPlace
+  ov099/pockets_view:PocketsView_SetFlags ov099/pockets_view:PocketsView_SetSlotItem
+  ov099/pockets_view:PocketsView_SetUpLayer6 ov099/pockets_view:PocketsView_Setup
+  ov099/pockets_view:PocketsView_ShowChoice ov099/pockets_view:PocketsView_ShowCursorFirstOfSet
+  ov099/pockets_view:PocketsView_ShowCursorSprite ov099/pockets_view:PocketsView_Start
+  ov099/pockets_view:PocketsView_StartPickUp ov099/pockets_view:PocketsView_StartPutDown
+  ov099/pockets_view:PocketsView_StartSetup ov099/pockets_view:PocketsView_StartSwap
+  ov099/pockets_view:PocketsView_StartWipeIn ov099/pockets_view:PocketsView_StartWipeOut
+  ov099/pockets_view:PocketsView_StepHeldGlide ov099/pockets_view:PocketsView_StepWalletSetup
+  ov099/pockets_view:PocketsView_SwapHeldWith ov099/pockets_view:PocketsView_SwapWithCursor
+  ov099/pockets_view:PocketsView_Teardown ov099/pockets_view:PocketsView_TestFlags
+  ov099/pockets_view:PocketsView_TouchMoved ov099/pockets_view:PocketsView_TouchPlace
+  ov099/pockets_view:PocketsView_UpdateObject94 ov099/pockets_view:PocketsView_UpdatePopup
+  ov099/pockets_view:PocketsView_WaitAnimToSubState10
+  ov099/pockets_view:PocketsView_WaitChoiceToPoint ov099/pockets_view:PocketsView_WaitCursorAnim
+  ov099/pockets_view:PocketsView_WaitCursorGlide ov099/pockets_view:PocketsView_WaitError
+  ov099/pockets_view:PocketsView_WipeIn ov099/pockets_view:PocketsView_WipeOut
+  ov103/carried_letters:CarriedLetters_BeginFrame
+  ov103/carried_letters:CarriedLetters_BeginInteractiveFrame
+  ov103/carried_letters:CarriedLetters_BeginPressEnd
+  ov103/carried_letters:CarriedLetters_BeginPutDown ov103/carried_letters:CarriedLetters_BeginSwap
+  ov103/carried_letters:CarriedLetters_BrowseByKeys ov103/carried_letters:CarriedLetters_CancelChoice
+  ov103/carried_letters:CarriedLetters_ChooseByKeys
+  ov103/carried_letters:CarriedLetters_ChooseByTouch ov103/carried_letters:CarriedLetters_ClearFlags
+  ov103/carried_letters:CarriedLetters_ClearHighlights
+  ov103/carried_letters:CarriedLetters_ClearSelection ov103/carried_letters:CarriedLetters_Close
+  ov103/carried_letters:CarriedLetters_CloseChoice ov103/carried_letters:CarriedLetters_CursorSpriteX
+  ov103/carried_letters:CarriedLetters_CursorSpriteY ov103/carried_letters:CarriedLetters_Delete
+  ov103/carried_letters:CarriedLetters_Destroy ov103/carried_letters:CarriedLetters_DimGrid
+  ov103/carried_letters:CarriedLetters_DragHeld ov103/carried_letters:CarriedLetters_Draw
+  ov103/carried_letters:CarriedLetters_DrawHeld ov103/carried_letters:CarriedLetters_End
+  ov103/carried_letters:CarriedLetters_EndAction
+  ov103/carried_letters:CarriedLetters_EndActionAtCursor
+  ov103/carried_letters:CarriedLetters_EndActionHidden ov103/carried_letters:CarriedLetters_EndFrame
+  ov103/carried_letters:CarriedLetters_EndInteractiveFrame
+  ov103/carried_letters:CarriedLetters_EndLayerTask ov103/carried_letters:CarriedLetters_FinishPickUp
+  ov103/carried_letters:CarriedLetters_FinishPlacePress
+  ov103/carried_letters:CarriedLetters_FinishSwap ov103/carried_letters:CarriedLetters_FollowGlide
+  ov103/carried_letters:CarriedLetters_FollowLabelPress
+  ov103/carried_letters:CarriedLetters_FollowTouch ov103/carried_letters:CarriedLetters_GlideHeldTo
+  ov103/carried_letters:CarriedLetters_GlideToCursor ov103/carried_letters:CarriedLetters_GlideToRow
+  ov103/carried_letters:CarriedLetters_HideCursorSprite
+  ov103/carried_letters:CarriedLetters_HighlightPlace
+  ov103/carried_letters:CarriedLetters_HoldTouchOnPlace
+  ov103/carried_letters:CarriedLetters_IdleByTouch ov103/carried_letters:CarriedLetters_LabelByKeys
+  ov103/carried_letters:CarriedLetters_LabelByTouch ov103/carried_letters:CarriedLetters_LetterPlace
+  ov103/carried_letters:CarriedLetters_LetterPlaceAtTouch
+  ov103/carried_letters:CarriedLetters_LetterWipeIn
+  ov103/carried_letters:CarriedLetters_LetterWipeOut
+  ov103/carried_letters:CarriedLetters_LoadWalletObjFiles
+  ov103/carried_letters:CarriedLetters_MoveCursor
+  ov103/carried_letters:CarriedLetters_MoveCursorInLetters
+  ov103/carried_letters:CarriedLetters_MoveHeldByKeys ov103/carried_letters:CarriedLetters_New
+  ov103/carried_letters:CarriedLetters_OpenLetterMenu ov103/carried_letters:CarriedLetters_PenHeldFor
+  ov103/carried_letters:CarriedLetters_Phase3Idle ov103/carried_letters:CarriedLetters_Phase4Idle
+  ov103/carried_letters:CarriedLetters_PickChoiceRow
+  ov103/carried_letters:CarriedLetters_PickUpAtCursor
+  ov103/carried_letters:CarriedLetters_PickUpWithTouch
+  ov103/carried_letters:CarriedLetters_PlaceCursorSprite
+  ov103/carried_letters:CarriedLetters_PlaceIsDimmed
+  ov103/carried_letters:CarriedLetters_PlaceIsEmpty ov103/carried_letters:CarriedLetters_PlaceLetter
+  ov103/carried_letters:CarriedLetters_PlacePopup ov103/carried_letters:CarriedLetters_PlaceX
+  ov103/carried_letters:CarriedLetters_PlaceY ov103/carried_letters:CarriedLetters_PointAtFirstRow
+  ov103/carried_letters:CarriedLetters_PrepareWallet
+  ov103/carried_letters:CarriedLetters_PressLabelButton
+  ov103/carried_letters:CarriedLetters_PressPlace ov103/carried_letters:CarriedLetters_PutDown
+  ov103/carried_letters:CarriedLetters_PutHeldAt ov103/carried_letters:CarriedLetters_PutHeldLetterAt
+  ov103/carried_letters:CarriedLetters_PutLetterAt ov103/carried_letters:CarriedLetters_RunAction
+  ov103/carried_letters:CarriedLetters_RunActionHold
+  ov103/carried_letters:CarriedLetters_RunActionRead
+  ov103/carried_letters:CarriedLetters_RunActionWhenIdle
+  ov103/carried_letters:CarriedLetters_RunInteractive ov103/carried_letters:CarriedLetters_RunState
+  ov103/carried_letters:CarriedLetters_RunSubState ov103/carried_letters:CarriedLetters_SceneWipeIn
+  ov103/carried_letters:CarriedLetters_SceneWipeOut ov103/carried_letters:CarriedLetters_SelectPlace
+  ov103/carried_letters:CarriedLetters_SetFlags ov103/carried_letters:CarriedLetters_SetUpLayer
+  ov103/carried_letters:CarriedLetters_Setup ov103/carried_letters:CarriedLetters_ShowChoice
+  ov103/carried_letters:CarriedLetters_ShowCursorAtCursor
+  ov103/carried_letters:CarriedLetters_ShowCursorFirstOfSet
+  ov103/carried_letters:CarriedLetters_ShowLetter ov103/carried_letters:CarriedLetters_Start
+  ov103/carried_letters:CarriedLetters_StartLetterWipeOut
+  ov103/carried_letters:CarriedLetters_StartSetup ov103/carried_letters:CarriedLetters_StartWipeIn
+  ov103/carried_letters:CarriedLetters_StartWipeOut
+  ov103/carried_letters:CarriedLetters_StepHeldGlide ov103/carried_letters:CarriedLetters_Swap
+  ov103/carried_letters:CarriedLetters_SwapHeldWith ov103/carried_letters:CarriedLetters_Teardown
+  ov103/carried_letters:CarriedLetters_TestFlags ov103/carried_letters:CarriedLetters_TouchMoved
+  ov103/carried_letters:CarriedLetters_TouchPlace ov103/carried_letters:CarriedLetters_UpdatePopup
+  ov103/carried_letters:CarriedLetters_WaitChoiceShown
+  ov103/carried_letters:CarriedLetters_WaitCursorSprite
+  ov103/carried_letters:CarriedLetters_WaitError ov103/carried_letters:CarriedLetters_WaitLabelPress
 
 area: Unreachable for one player
 group: the item and letter picks' hold and swap code
 scene: none: the pockets pick (ov101) and the letter pick (ov108) keep the mailbox's code to hold, drag, put down and swap an item or letter
 reach: no function of the overlays sets the sub states of that code (ov101/pockets_pick.h: 5, 7, 0x0c, 0x0d, 0x16; ov108/letter_pick.h: 4, 7, 0x0c-0x12, 0x16): a choice offers no action that picks one up and a touch only opens the choice; scenes letter-pick and sick-pick play every other path
 needs: unreachable
-match: ov101/pockets_pick:PocketsPick_StartSwap ov101/pockets_pick:PocketsPick_StartPutDown
-  ov101/pockets_pick:PocketsPick_SwapHeldWith ov101/pockets_pick:PocketsPick_PutHeldAt ov101/pockets_pick:PocketsPick_PickUp*
-  ov101/pockets_pick:PocketsPick_FollowGlide ov101/pockets_pick:PocketsPick_FollowTouch ov101/pockets_pick:PocketsPick_*Marks
-  ov101/pockets_pick:PocketsPick_MarkPlace ov101/pockets_pick:PocketsPick_PlaceItem* ov101/pockets_pick:PocketsPick_SetSlotItem
-  ov101/pockets_pick:PocketsPick_DropHeldAt ov101/pockets_pick:PocketsPick_GlideHeldTo ov101/pockets_pick:PocketsPick_WaitError
-  ov101/pockets_pick:PocketsPick_StepHeldGlide ov101/pockets_pick:PocketsPick_FinishSwap ov101/pockets_pick:PocketsPick_Swap
-  ov101/pockets_pick:PocketsPick_PutDownWithCursor ov101/pockets_pick:PocketsPick_FinishPickUp
-  ov101/pockets_pick:PocketsPick_WaitCursorAnim ov101/pockets_pick:PocketsPick_MoveHeldByKeys ov101/pockets_pick:PocketsPick_DragHeld
-  ov108/letter_pick:LetterPick_BeginSwap ov108/letter_pick:LetterPick_BeginPutDown ov108/letter_pick:LetterPick_SwapHeldWith
-  ov108/letter_pick:LetterPick_PutHeldAt ov108/letter_pick:LetterPick_PickUp* ov108/letter_pick:LetterPick_FollowGlide
-  ov108/letter_pick:LetterPick_FollowTouch ov108/letter_pick:LetterPick_*Highlight* ov108/letter_pick:LetterPick_PutLetterAt
-  ov108/letter_pick:LetterPick_PutHeldLetterAt ov108/letter_pick:LetterPick_GlideHeldTo ov108/letter_pick:LetterPick_WaitError
-  ov108/letter_pick:LetterPick_StepHeldGlide ov108/letter_pick:LetterPick_FinishSwap ov108/letter_pick:LetterPick_Swap
-  ov108/letter_pick:LetterPick_PutDown ov108/letter_pick:LetterPick_FinishPickUp ov108/letter_pick:LetterPick_FinishPlacePress
-  ov108/letter_pick:LetterPick_MoveHeldByKeys ov108/letter_pick:LetterPick_DragHeld
+match: ov108/letter_pick:LetterPick_BeginPutDown ov108/letter_pick:LetterPick_BeginSwap
+  ov108/letter_pick:LetterPick_ClearHighlights ov108/letter_pick:LetterPick_DragHeld
+  ov108/letter_pick:LetterPick_FinishPickUp ov108/letter_pick:LetterPick_FinishPlacePress
+  ov108/letter_pick:LetterPick_FinishSwap ov108/letter_pick:LetterPick_FollowGlide
+  ov108/letter_pick:LetterPick_FollowTouch ov108/letter_pick:LetterPick_GlideHeldTo
+  ov108/letter_pick:LetterPick_HighlightPlace ov108/letter_pick:LetterPick_MoveHeldByKeys
+  ov108/letter_pick:LetterPick_PickUpAtCursor ov108/letter_pick:LetterPick_PickUpLetter
+  ov108/letter_pick:LetterPick_PickUpWithCursor ov108/letter_pick:LetterPick_PutDown
+  ov108/letter_pick:LetterPick_PutHeldAt ov108/letter_pick:LetterPick_PutHeldLetterAt
+  ov108/letter_pick:LetterPick_PutLetterAt ov108/letter_pick:LetterPick_StepHeldGlide
+  ov108/letter_pick:LetterPick_Swap ov108/letter_pick:LetterPick_SwapHeldWith
+  ov108/letter_pick:LetterPick_WaitError
 
 area: Unreachable for one player
 group: the keyboard entry's question
 scene: none: the question the name and text keyboard (ov126) can ask before it takes the input, yes or no
 reach: nothing sets KEYBOARD_ENTRY_STATE_ASK (ov126/keyboard_entry.h); the question's states and KEYBOARD_ENTRY_STATE_BACK, set only from its "no", follow from it alone
 needs: unreachable
-match: ov126/keyboard_entry_scene:KeyboardEntry_StartAsk ov126/keyboard_entry_scene:KeyboardEntry_Ask*
-  ov126/keyboard_entry_scene:KeyboardEntry_StartBack ov126/keyboard_entry_scene:KeyboardEntry_Back*
-  ov126/keyboard_entry_states:KeyboardEntry_BeginAsk* ov126/keyboard_entry_states:KeyboardEntry_Ask*
+match: ov126/keyboard_entry_scene:KeyboardEntry_AskWipeIn
+  ov126/keyboard_entry_scene:KeyboardEntry_AskWipeOut
+  ov126/keyboard_entry_scene:KeyboardEntry_BackWipeIn
+  ov126/keyboard_entry_scene:KeyboardEntry_BackWipeOut
+  ov126/keyboard_entry_scene:KeyboardEntry_StartAsk
+  ov126/keyboard_entry_scene:KeyboardEntry_StartBack
+  ov126/keyboard_entry_states:KeyboardEntry_BeginAsk
 
 area: Unreachable for one player
 group: the boxes' choice and error message
 scene: none: the choice and the error message the pockets box (ov100, Nook's and the Able Sisters' sell window) and the public box (ov110, the lost and found and the recycle box) keep from the mailbox's code
 reach: neither overlay calls PagedChoice_ShowEntries, _RequestOpen, _ShowPage or _Draw, nor opens its ErrorMessage, so their choice is never shown (its waits and keys need PagedChoice_IsShown) and no error waits; the items move by holding and Y alone (box-keys, sell-keys)
 needs: unreachable
-match: ov110/public_box:PublicBox_CancelChoice ov110/public_box:PublicBox_RunAction ov110/public_box:PublicBox_PointAt*Row
-  ov110/public_box:PublicBox_GlideToRow ov110/public_box:PublicBox_PlaceCursorSprite ov110/public_box_states:PublicBox_WaitError
-  ov110/public_box_states:PublicBox_RunActionWhenIdle ov110/public_box_states:PublicBox_CloseChoice
-  ov110/public_box_states:PublicBox_WaitChoiceShown ov110/public_box_states:PublicBox_PickChoiceRow
-  ov110/public_box_states:PublicBox_ChooseByKeys ov110/public_box_states:PublicBox_WatchChoiceTouch
-  ov100/pockets_box:PocketsBox_CancelChoice ov100/pockets_box:PocketsBox_RunAction ov100/pockets_box:PocketsBox_PointAt*Row
-  ov100/pockets_box:PocketsBox_GlideToRow ov100/pockets_box:PocketsBox_PlaceCursorSprite ov100/pockets_box_scene:PocketsBox_WaitError
-  ov100/pockets_box_scene:PocketsBox_WaitChoiceClosed ov100/pockets_box_scene:PocketsBox_CloseChoice
-  ov100/pockets_box_scene:PocketsBox_WaitChoiceShown ov100/pockets_box_scene:PocketsBox_PickChoiceRow
-  ov100/pockets_box_scene:PocketsBox_ChoiceKeys ov100/pockets_box_scene:PocketsBox_ChoiceTouch
+match: ov100/pockets_box:PocketsBox_GlideToRow ov100/pockets_box:PocketsBox_PointAtLastRow
+  ov100/pockets_box_scene:PocketsBox_ChoiceKeys ov100/pockets_box_scene:PocketsBox_PickChoiceRow
+  ov110/public_box:PublicBox_GlideToRow ov110/public_box:PublicBox_PointAtLastRow
+  ov110/public_box_states:PublicBox_ChooseByKeys ov110/public_box_states:PublicBox_PickChoiceRow
 
 area: Unreachable for one player
 group: the menu screens' error messages no code opens
 scene: none: the wait for the error message of the storage (ov102), the letter send and storage (ov104, ov105), the chat (ov111), the board's writing (ov112), the letter writing (ov122) and the keyboard entry (ov126)
 reach: each overlay constructs an ErrorMessage (ov002/error_message.h) but never opens it (no ErrorMessage_Open or _StartTalk) and no function sets its error sub state, so only the wait that would follow it is left
 needs: unreachable
-match: ov102/storage_scene:StorageScene_WaitError ov104/letter_send:LetterSend_WaitError
-  ov105/letter_storage:LetterStorage_WaitError ov111/chat_scene:ChatScene_UpdateError
+match: ov102/storage_scene:StorageScene_WaitError ov111/chat_scene:ChatScene_UpdateError
   ov112/bbs_write_input:BbsWrite_RunError ov122/letter_write_scene:LetterWrite_RunError
   ov126/keyboard_entry_states:KeyboardEntry_Error
 
@@ -112,46 +388,46 @@ group: the menu scenes' phases 3 and 4
 scene: none: the functions of vtable slots 0x54 and 0x58 of each menu scene of overlays 90-146 (ov002/menu_scene.h), each one that does nothing
 reach: MenuScene_Update runs the slot of the scene's phase, and the game sets phases 0, 1, 2 and 5 only: every MenuScene_SetPhase call names one of those, and nothing else writes the phase (ov002/menu_scene.c)
 needs: unreachable
-match: ov090/menu_tabs:MenuTabs_Phase4 ov090/menu_tabs:MenuTabs_Phase3 ov091/letter_reader:LetterReader_Phase4
-  ov091/letter_reader:LetterReader_Phase3 ov092/menu_dispatch:MenuDispatch_Phase4
-  ov092/menu_dispatch:MenuDispatch_Phase3 ov096/pockets_screen:PocketsScreen_Phase1Idle
-  ov096/pockets_screen:PocketsScreen_Phase0Idle ov099/pockets_view:PocketsView_Phase1Idle
-  ov099/pockets_view:PocketsView_Phase0Idle ov100/pockets_box_scene:PocketsBox_Phase4Idle
-  ov100/pockets_box_scene:PocketsBox_Phase3Idle ov101/pockets_pick:PocketsPick_Phase4Idle
-  ov101/pockets_pick:PocketsPick_Phase3Idle ov102/storage_scene:StorageScene_Phase4Idle
-  ov102/storage_scene:StorageScene_Phase3Idle ov103/carried_letters:CarriedLetters_Phase4Idle
-  ov103/carried_letters:CarriedLetters_Phase3Idle ov104/letter_send:LetterSend_Phase1Idle
-  ov104/letter_send:LetterSend_Phase0Idle ov105/letter_storage:LetterStorage_Phase1Idle
-  ov105/letter_storage:LetterStorage_Phase0Idle ov106/mailbox_scene:MailboxScene_Phase1Idle
-  ov106/mailbox_scene:MailboxScene_Phase0Idle ov107/pockets_swap:PocketsSwap_Phase1Idle
-  ov107/pockets_swap:PocketsSwap_Phase0Idle ov108/letter_pick:LetterPick_Phase4Idle
-  ov108/letter_pick:LetterPick_Phase3Idle ov109/song_pockets:SongPockets_Phase4Idle
-  ov109/song_pockets:SongPockets_Phase3Idle ov110/public_box_states:PublicBox_Phase4Idle
-  ov110/public_box_states:PublicBox_Phase3Idle ov111/chat_scene:ChatScene_Phase4 ov111/chat_scene:ChatScene_Phase3
-  ov112/bbs_write_scene:BbsWrite_Phase4Idle ov112/bbs_write_scene:BbsWrite_Phase3Idle ov113/bbs_board:BbsBoard_Phase4
-  ov113/bbs_board:BbsBoard_Phase3 ov115/fish_catalog:FishCatalog_Phase4 ov115/fish_catalog:FishCatalog_Phase3
-  ov116/insect_catalog:InsectCatalog_Phase4 ov116/insect_catalog:InsectCatalog_Phase3
-  ov118/map_menu_scene:MapMenu_Phase4 ov118/map_menu_scene:MapMenu_Phase3 ov119/friend_roster:FriendRoster_Phase4Idle
-  ov119/friend_roster:FriendRoster_Phase3Idle ov120/town_map:TownMap_Phase4 ov120/town_map:TownMap_Phase3
-  ov121/my_designs:MyDesigns_Phase4 ov121/my_designs:MyDesigns_Phase3 ov122/letter_write_scene:LetterWrite_Phase1Idle
-  ov122/letter_write_scene:LetterWrite_Phase0Idle ov123/design_editor:DesignEditor_Phase4Idle
-  ov123/design_editor:DesignEditor_Phase3Idle ov125/design_picker:DesignPicker_Phase4Idle
-  ov125/design_picker:DesignPicker_Phase3Idle ov126/keyboard_entry_scene:KeyboardEntry_Slot58
-  ov126/keyboard_entry_scene:KeyboardEntry_Slot54 ov128/star_view:StarView_Phase4 ov128/star_view:StarView_Phase3
-  ov129/star_designer:StarDesigner_Phase4 ov129/star_designer:StarDesigner_Phase3 ov131/bank_amount:BankAmount_Slot58
-  ov131/bank_amount:BankAmount_Slot54 ov132/bank_menu:BankMenu_Phase4Idle ov132/bank_menu:BankMenu_Phase3Idle
-  ov133/friend_code_entry_scene:FriendCodeEntry_Phase4Idle ov133/friend_code_entry_scene:FriendCodeEntry_Phase3Idle
-  ov135/phone_clock:PhoneClock_Phase4Idle ov135/phone_clock:PhoneClock_Phase3Idle
-  ov136/time_screen:TimeScreen_Phase4Idle ov136/time_screen:TimeScreen_Phase3Idle
-  ov137/birthday_screen:BirthdayScreen_Phase4Idle ov137/birthday_screen:BirthdayScreen_Phase3Idle
-  ov138/date_screen:DateScreen_Phase4Idle ov138/date_screen:DateScreen_Phase3Idle
-  ov140/host_picker:HostPicker_Phase4Idle ov140/host_picker:HostPicker_Phase3Idle
-  ov141/town_list_states:TownList_Phase4Idle ov141/town_list_states:TownList_Phase3Idle
-  ov142/order_catalog_scene:OrderCatalog_Phase4Idle ov142/order_catalog_scene:OrderCatalog_Phase3Idle
-  ov143/tune_editor_states:TuneEditor_Phase4Idle ov143/tune_editor_states:TuneEditor_Phase3Idle
-  ov144/music_list_scene:MusicList_Phase4Idle ov144/music_list_scene:MusicList_Phase3Idle
-  ov145/donation_list_states:DonationList_Phase4Idle ov145/donation_list_states:DonationList_Phase3Idle
-  ov146/wfc_host_list:WfcHostList_Phase4Idle ov146/wfc_host_list:WfcHostList_Phase3Idle
+match: ov090/menu_tabs:MenuTabs_Phase3 ov090/menu_tabs:MenuTabs_Phase4
+  ov091/letter_reader:LetterReader_Phase3 ov091/letter_reader:LetterReader_Phase4
+  ov092/menu_dispatch:MenuDispatch_Phase3 ov092/menu_dispatch:MenuDispatch_Phase4
+  ov096/pockets_screen:PocketsScreen_Phase0Idle ov096/pockets_screen:PocketsScreen_Phase1Idle
+  ov100/pockets_box_scene:PocketsBox_Phase3Idle ov100/pockets_box_scene:PocketsBox_Phase4Idle
+  ov101/pockets_pick:PocketsPick_Phase3Idle ov101/pockets_pick:PocketsPick_Phase4Idle
+  ov102/storage_scene:StorageScene_Phase3Idle ov102/storage_scene:StorageScene_Phase4Idle
+  ov104/letter_send:LetterSend_Phase0Idle ov104/letter_send:LetterSend_Phase1Idle
+  ov105/letter_storage:LetterStorage_Phase0Idle ov105/letter_storage:LetterStorage_Phase1Idle
+  ov106/mailbox_scene:MailboxScene_Phase0Idle ov106/mailbox_scene:MailboxScene_Phase1Idle
+  ov107/pockets_swap:PocketsSwap_Phase0Idle ov107/pockets_swap:PocketsSwap_Phase1Idle
+  ov108/letter_pick:LetterPick_Phase3Idle ov108/letter_pick:LetterPick_Phase4Idle
+  ov109/song_pockets:SongPockets_Phase3Idle ov109/song_pockets:SongPockets_Phase4Idle
+  ov110/public_box_states:PublicBox_Phase3Idle ov110/public_box_states:PublicBox_Phase4Idle
+  ov111/chat_scene:ChatScene_Phase3 ov111/chat_scene:ChatScene_Phase4
+  ov112/bbs_write_scene:BbsWrite_Phase3Idle ov112/bbs_write_scene:BbsWrite_Phase4Idle
+  ov113/bbs_board:BbsBoard_Phase3 ov113/bbs_board:BbsBoard_Phase4
+  ov115/fish_catalog:FishCatalog_Phase3 ov115/fish_catalog:FishCatalog_Phase4
+  ov116/insect_catalog:InsectCatalog_Phase3 ov116/insect_catalog:InsectCatalog_Phase4
+  ov118/map_menu_scene:MapMenu_Phase3 ov118/map_menu_scene:MapMenu_Phase4
+  ov119/friend_roster:FriendRoster_Phase3Idle ov119/friend_roster:FriendRoster_Phase4Idle
+  ov120/town_map:TownMap_Phase3 ov120/town_map:TownMap_Phase4 ov121/my_designs:MyDesigns_Phase3
+  ov121/my_designs:MyDesigns_Phase4 ov122/letter_write_scene:LetterWrite_Phase0Idle
+  ov122/letter_write_scene:LetterWrite_Phase1Idle ov123/design_editor:DesignEditor_Phase3Idle
+  ov123/design_editor:DesignEditor_Phase4Idle ov125/design_picker:DesignPicker_Phase3Idle
+  ov125/design_picker:DesignPicker_Phase4Idle ov126/keyboard_entry_scene:KeyboardEntry_Slot54
+  ov126/keyboard_entry_scene:KeyboardEntry_Slot58 ov128/star_view:StarView_Phase3
+  ov129/star_designer:StarDesigner_Phase3 ov129/star_designer:StarDesigner_Phase4
+  ov131/bank_amount:BankAmount_Slot54 ov131/bank_amount:BankAmount_Slot58
+  ov132/bank_menu:BankMenu_Phase3Idle ov132/bank_menu:BankMenu_Phase4Idle
+  ov133/friend_code_entry_scene:FriendCodeEntry_Phase3Idle
+  ov133/friend_code_entry_scene:FriendCodeEntry_Phase4Idle ov135/phone_clock:PhoneClock_Phase3Idle
+  ov136/time_screen:TimeScreen_Phase3Idle ov136/time_screen:TimeScreen_Phase4Idle
+  ov137/birthday_screen:BirthdayScreen_Phase3Idle ov137/birthday_screen:BirthdayScreen_Phase4Idle
+  ov138/date_screen:DateScreen_Phase3Idle ov138/date_screen:DateScreen_Phase4Idle
+  ov142/order_catalog_scene:OrderCatalog_Phase3Idle ov142/order_catalog_scene:OrderCatalog_Phase4Idle
+  ov143/tune_editor_states:TuneEditor_Phase3Idle ov143/tune_editor_states:TuneEditor_Phase4Idle
+  ov144/music_list_scene:MusicList_Phase3Idle ov144/music_list_scene:MusicList_Phase4Idle
+  ov145/donation_list_states:DonationList_Phase3Idle
+  ov145/donation_list_states:DonationList_Phase4Idle
 
 area: Unreachable for one player
 group: the menu scenes' destructors of vtable slot 16
@@ -160,18 +436,16 @@ reach: a process is deleted through vtable slot 17 (Process_DestructFree's, auto
 needs: unreachable
 match: ov090/menu_tabs:MenuTabs_Destroy ov091/letter_reader:LetterReader_Destroy
   ov092/menu_dispatch:MenuDispatch_Destroy ov101/pockets_pick:PocketsPick_Destroy
-  ov102/storage_scene:StorageScene_Destroy ov103/carried_letters:CarriedLetters_Destroy
-  ov107/pockets_swap:PocketsSwap_Destroy ov108/letter_pick:LetterPick_Destroy ov109/song_pockets:SongPockets_Destroy
-  ov110/public_box:PublicBox_Destroy ov111/chat_scene:ChatScene_Destroy ov112/bbs_write_text:BbsWrite_Destroy
-  ov113/bbs_board:BbsBoard_Destroy ov115/fish_catalog:FishCatalog_Destroy ov116/insect_catalog:InsectCatalog_Destroy
-  ov119/friend_roster:FriendRoster_Destroy ov120/town_map:TownMap_Destroy ov123/design_editor:DesignEditor_Destroy
-  ov125/design_picker:DesignPicker_Destroy ov128/star_view:StarView_Destroy ov129/star_designer:StarDesigner_Destroy
+  ov102/storage_scene:StorageScene_Destroy ov107/pockets_swap:PocketsSwap_Destroy
+  ov108/letter_pick:LetterPick_Destroy ov109/song_pockets:SongPockets_Destroy
+  ov110/public_box:PublicBox_Destroy ov111/chat_scene:ChatScene_Destroy
+  ov112/bbs_write_text:BbsWrite_Destroy ov115/fish_catalog:FishCatalog_Destroy
+  ov116/insect_catalog:InsectCatalog_Destroy ov119/friend_roster:FriendRoster_Destroy
+  ov120/town_map:TownMap_Destroy ov125/design_picker:DesignPicker_Destroy
+  ov128/star_view:StarView_Destroy ov129/star_designer:StarDesigner_Destroy
   ov132/bank_menu:BankMenu_Destroy ov133/friend_code_entry:FriendCodeEntry_Destroy
   ov135/phone_clock:PhoneClock_Destroy ov136/time_screen:TimeScreen_Destroy
   ov137/birthday_screen:BirthdayScreen_Destroy ov138/date_screen:DateScreen_Destroy
-  ov140/host_picker:HostPicker_Destroy ov141/town_list:TownList_Destroy ov142/order_catalog_scene:OrderCatalog_Destroy
-  ov143/tune_editor:TuneEditor_Destroy ov144/music_list_scene:MusicList_Destroy
-  ov146/wfc_host_list:WfcHostList_Destroy
 
 area: Unreachable for one player
 group: the other classes' destructors of vtable slot 16
@@ -183,7 +457,7 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   main/scene_object_base:SceneObjectBase_Destruct
   main/special_scene_object:SpecialSceneObject_Destruct
   main/villager_scene_slots:VillagerSceneObject_Destruct ov003/checkpoint:Checkpoint_Destroy
-  ov003/countdown:CountdownDigit_Destroy ov003/countdown:CountdownBoard_Destroy
+  ov003/countdown:CountdownBoard_Destroy ov003/countdown:CountdownDigit_Destroy
   ov003/mailbox:Mailbox_Destroy ov003/outdoor_clock:OutdoorClock_Destroy
   ov003/panther:Panther_Destroy ov003/player_house:PlayerHouse_Destroy
   ov003/sign_board:SignBoard_Destroy ov003/spawn_spot:SpawnSpot_Destroy
@@ -199,7 +473,6 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov004/rmo_telephone:RmoTelephone_Destruct ov004/room_object_02250c04:RoomObject02250c04_Destroy
   ov004/room_object_02250d30:RoomObject02250d30_Destroy
   ov004/room_object_02250e5c:RoomObject02250e5c_Destroy
-  ov004/room_object_022510b4:RoomObject022510b4_Destroy
   ov004/room_object_022511e0:RoomObject022511e0_Destroy
   ov004/room_object_0225130c:RoomObject0225130c_Destroy
   ov004/room_object_02251564:RoomObject02251564_Destroy
@@ -221,13 +494,13 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov004/room_object_periodic:PeriodicRoomObject_Destroy
   ov004/room_object_player_design:PlayerDesignObject_Destroy
   ov004/room_object_shop_design:ShopDesignObject_Destroy
-  ov004/room_object_switch_shown:SwitchShown_Destroy
-  ov004/room_player_items:RoomPlayerItems_Destruct ov004/room_shell:RoomShell_Destruct
-  ov004/room_villager:RoomVillager_Destroy ov004/shop3_villager:Shop3Villager_Destroy
-  ov004/sick_villager:SickVillager_Destroy ov004/tailor_object:TailorObject_Destruct
-  ov004/tailor_sister:TailorSister_Destroy ov004/tarot_object:TarotObject_Destruct
-  ov004/telephone:Telephone_Destroy ov004/trash_box:TrashBox_Destruct ov004/tti_npc:TtiNpc_Destroy
-  ov004/tv:TvAnimated_Destroy ov004/tv:Tv_Destroy ov009/scene_actor_life:SceneActor_DestructComplete
+  ov004/room_object_switch_shown:SwitchShown_Destroy ov004/room_player_items:RoomPlayerItems_Destruct
+  ov004/room_shell:RoomShell_Destruct ov004/room_villager:RoomVillager_Destroy
+  ov004/shop3_villager:Shop3Villager_Destroy ov004/sick_villager:SickVillager_Destroy
+  ov004/tailor_object:TailorObject_Destruct ov004/tailor_sister:TailorSister_Destroy
+  ov004/tarot_object:TarotObject_Destruct ov004/telephone:Telephone_Destroy
+  ov004/trash_box:TrashBox_Destruct ov004/tti_npc:TtiNpc_Destroy ov004/tv:TvAnimated_Destroy
+  ov004/tv:Tv_Destroy ov009/scene_actor_life:SceneActor_DestructComplete
   ov045/fortune_teller:FortuneTeller_Destroy ov047/owl:Owl_Destruct
   ov048/gatekeeper:Gatekeeper_Destruct ov049/mabel:Mabel_Destruct
   ov051/taxi_driver:TaxiDriver_Destroy ov052/fox_tent:FoxTent_Destruct
@@ -240,335 +513,351 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
 area: Unreachable for one player
 group: the town map's list by the keys and the pen
 scene: none: Pelly's town map (ov120, mode 0x2f) always opens with the cursor on the map, where A, B, X or a touch closes it
-reach: TOWN_MAP_FLAG_ON_MAP is never cleared (ov120/town_map.h, QUIRK), so sub states 0-8 (the list's keys, touches, scroll knob) and what only they call never run
+reach: TOWN_MAP_FLAG_ON_MAP is never cleared (ov120/town_map.h, QUIRK), so sub states 0-8 (the list's keys, touches, scroll knob) and what only they call never run: the list is built and drawn (new-player, nook-job), but TownMap_Select is given a target only by TownMap_Pick, _TouchMap and _TouchList, the scroll target is set only from those states and a row cursor, and every other call passes TOWN_MAP_TARGET_NONE (findings 2026-10-28, town6)
 needs: unreachable
-match: ov120/town_map:TownMap_Sub* ov120/town_map:TownMap_Pick ov120/town_map:TownMap_MoveCursor
-  ov120/town_map:TownMap_EnterTouch ov120/town_map:TownMap_GlideToCursor ov120/town_map:TownMap_PressPointer
-  ov120/town_map:TownMap_ReleasePointer ov120/town_map_list:*
+match: ov120/town_map:TownMap_EnterTouch ov120/town_map:TownMap_GlideToCursor
+  ov120/town_map:TownMap_MoveCursor ov120/town_map:TownMap_Pick ov120/town_map:TownMap_PressPointer
+  ov120/town_map:TownMap_ReleasePointer ov120/town_map:TownMap_SubDrag
+  ov120/town_map:TownMap_SubGlide ov120/town_map:TownMap_SubKeys ov120/town_map:TownMap_SubKnobHold
+  ov120/town_map:TownMap_SubKnobPress ov120/town_map:TownMap_SubKnobRelease
+  ov120/town_map:TownMap_SubPress ov120/town_map:TownMap_SubRelease ov120/town_map:TownMap_SubTouch
+  ov120/town_map_list:TownMap_FindMarkAt ov120/town_map_list:TownMap_MapCursorFromRow
+  ov120/town_map_list:TownMap_ScrollByDrag ov120/town_map_list:TownMap_ScrollByKeys
+  ov120/town_map_list:TownMap_TouchKnob ov120/town_map_list:TownMap_TouchList
+  ov120/town_map_list:TownMap_TouchMap ov120/town_map_list:TownMap_TouchTabs
 
 area: Unreachable for one player
 group: a snowman's balls shaking and bursting
 scene: none: states 12 and 13 of a snowball (ov068/snowball.h: a body whose map object was taken away and a head, shaking and bursting)
 reach: no code enters them: Snowman_SetState (ov003/snowman.c) is called with 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and 0xb only (ov003/snowman.c, ov068/snowball.c and the ROM's callers in src/), and nothing else writes the state
 needs: unreachable
-match: ov068/snowball:Snowball_*Shake*
+match: ov068/snowball:Snowball_EnterShakeBody ov068/snowball:Snowball_EnterShakeHead
+  ov068/snowball:Snowball_UpdateShakeBody ov068/snowball:Snowball_UpdateShakeHead
 
 area: Unreachable for one player
 group: hardware and failure paths
 scene: none: the debug screen after an exception, a halt, a pulled card, the lid closed, a low battery, a failed card access
-reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults
+reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults. By whole file only the debug screen, its text and the halt; of the other files only: the lid's flags, wake and backlights (LidSleep_Update on the lid's bit), the pulled card's callback, GameStop_Release (the stop latch rises on data_021fbe38, which only Pad_Update writes, with 0) and SaveStamp_SetLostFlag (both card copies bad although this run's stamp says a write began, which needs the card to fail); the card's checks, reads and writes, the save stamp and the backup card run in every scene (findings 2026-10-28, town6)
 needs: unreachable
-match: main/debug_screen main/debug_text main/game_halt main/game_stop main/card_pulled main/lid_sleep
-  main/battery_warning main/backup_card main/activity_card main/card_save main/save_stamp
+match: main/card_pulled:CardPulled_OnPulledOut main/debug_screen:DebugScreen_ClearScreens
+  main/debug_screen:DebugScreen_DrawStack main/debug_screen:DebugScreen_DrawStatus
+  main/debug_screen:DebugScreen_DumpWords main/debug_screen:DebugScreen_FillWords
+  main/debug_screen:DebugScreen_Frame main/debug_screen:DebugScreen_InitDisplay
+  main/debug_screen:DebugScreen_IsReadable main/debug_screen:DebugScreen_Nothing
+  main/debug_screen:DebugScreen_Run main/debug_screen:DebugScreen_WaitVBlank
+  main/debug_screen:Fatal_Printf main/debug_screen:Fatal_Report main/debug_text:DebugText_Print
+  main/debug_text:DebugText_Printf main/debug_text:DebugText_PutChar
+  main/debug_text:DebugText_PutString main/debug_text:DebugText_VPrintf main/game_halt:GameHalt_Halt
+  main/game_halt:GameHalt_SaveContextAndHalt main/game_halt:GameHalt_SendToArm7
+  main/game_halt:GameHalt_ShowDebugScreen main/game_halt:GameHalt_Terminate
+  main/lid_sleep:LidSleep_BacklightsOff main/lid_sleep:LidSleep_ClearFlags
+  main/lid_sleep:LidSleep_HasFlags main/lid_sleep:LidSleep_RestoreBacklights
+  main/lid_sleep:LidSleep_Wake
 
 area: Unreachable for one player
 group: the gatekeeper's visits and connections
 scene: none: the gatekeepers' talk states, lines and states of a visit by DS wireless or over the Wi-Fi Connection: the search for a town or a friend, the link's statuses and errors, the downloads, the guests passing the gate and arriving, the linked scene changes
-reach: each follows GatekeeperTalk_StartSession, _StartWfc, _StartFindParent or _StartJoinParent (a session of network mode 2 or 4) or a gatekeeper state those talks set (5-0xd, 0xf, 0x11); without a second DS or the server none goes on (gate-visit: the wireless library's set-up halts the game about 50 frames after the search's line), and the Wi-Fi choice is refused without a registered friend
+reach: each follows GatekeeperTalk_StartSession, _StartWfc, _StartFindParent or _StartJoinParent (a session of network mode 2 or 4) or a gatekeeper state those talks set (5-0xd, 0xf, 0x11); without a second DS or the server none goes on (gate-visit: the wireless library's set-up halts the game about 50 frames after the search's line), and the Wi-Fi choice, offered once a friend is registered, starts the Wi-Fi session and goes no further than the time-out and its error code, as the runtime reaches no server (gate-wfc runs StartWfc, StartSession, WaitFriends, TimeOutOrError, PutErrorCode and EndWfc; findings 2026-10-28, town6)
 needs: unreachable
-match: ov048/gatekeeper_talk:GatekeeperTalk_PutErrorCode ov048/gatekeeper_talk:GatekeeperTalk_Line80Or63
-  ov048/gatekeeper_talk:GatekeeperTalk_Line82Or65 ov048/gatekeeper_talk:GatekeeperTalk_Line21Or22
-  ov048/gatekeeper_talk:GatekeeperTalk_LineOfSession ov048/gatekeeper_talk:GatekeeperTalk_*Status*
-  ov048/gatekeeper_talk:GatekeeperTalk_WaitConnected ov048/gatekeeper_talk:GatekeeperTalk_JoinParent
-  ov048/gatekeeper_talk:GatekeeperTalk_EndWithLine ov048/gatekeeper_talk:GatekeeperTalk_TimeOut*
-  ov048/gatekeeper_talk:GatekeeperTalk_CheckError ov048/gatekeeper_talk:GatekeeperTalk_EndWfc
-  ov048/gatekeeper_talk:GatekeeperTalk_GroupCheck ov048/gatekeeper_talk:GatekeeperTalk_TakeFriend
-  ov048/gatekeeper_talk:GatekeeperTalk_FindParent ov048/gatekeeper_talk:GatekeeperTalk_AfterDownloads
-  ov048/gatekeeper_talk:GatekeeperTalk_IsServerError ov048/gatekeeper_talk:GatekeeperTalk_*Get
-  ov048/gatekeeper_talk:GatekeeperTalk_*StatsUpload ov048/gatekeeper_talk:GatekeeperTalk_WaitFriends
-  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer5f ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo62
-  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo59 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer51
-  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerSession ov048/gatekeeper_talk_lines:GatekeeperTalk_OnAnswer57
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_OnAnswer74 ov048/gatekeeper_talk_lines:GatekeeperTalk_StartSendStatus1
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22 ov048/gatekeeper_talk_lines:GatekeeperTalk_JoinFriend
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartJoinParent ov048/gatekeeper_talk_lines:GatekeeperTalk_StartFindParent
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartWfc ov048/gatekeeper_talk_lines:GatekeeperTalk_EndConnection
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartSession ov048/gatekeeper_talk_lines:GatekeeperTalk_EndSession
-  ov048/gatekeeper_states:Gatekeeper_*State[5-9] ov048/gatekeeper_states:Gatekeeper_*State[ABCDF]
-  ov048/gatekeeper_states:Gatekeeper_*State11 ov048/gatekeeper_states:Gatekeeper_State9*
-  ov048/gatekeeper_states:Gatekeeper_StateB* ov048/gatekeeper_states:Gatekeeper_Pass*
-  ov048/gatekeeper:Gatekeeper_CheckPairedTown ov004/gatekeeper2:Gatekeeper2_UpdateOther
+match: ov004/gatekeeper2:Gatekeeper2Talk_SwapDesign ov004/gatekeeper2:Gatekeeper2_EnterAwait
   ov004/gatekeeper2:Gatekeeper2_EnterOther ov004/gatekeeper2:Gatekeeper2_UpdateAwait
-  ov004/gatekeeper2:Gatekeeper2_EnterAwait ov004/gatekeeper2:Gatekeeper2Talk_SwapDesign
+  ov004/gatekeeper2:Gatekeeper2_UpdateOther ov048/gatekeeper:Gatekeeper_CheckPairedTown
+  ov048/gatekeeper_states:Gatekeeper_EnterState11 ov048/gatekeeper_states:Gatekeeper_EnterState5
+  ov048/gatekeeper_states:Gatekeeper_EnterState6 ov048/gatekeeper_states:Gatekeeper_EnterState7
+  ov048/gatekeeper_states:Gatekeeper_EnterState8 ov048/gatekeeper_states:Gatekeeper_EnterState9
+  ov048/gatekeeper_states:Gatekeeper_EnterStateA ov048/gatekeeper_states:Gatekeeper_EnterStateB
+  ov048/gatekeeper_states:Gatekeeper_EnterStateC ov048/gatekeeper_states:Gatekeeper_EnterStateD
+  ov048/gatekeeper_states:Gatekeeper_EnterStateF ov048/gatekeeper_states:Gatekeeper_PassAnimate
+  ov048/gatekeeper_states:Gatekeeper_PassLeave ov048/gatekeeper_states:Gatekeeper_PassOtherTurns
+  ov048/gatekeeper_states:Gatekeeper_PassTurn ov048/gatekeeper_states:Gatekeeper_PassWalkThrough
+  ov048/gatekeeper_states:Gatekeeper_PassWalkToGate ov048/gatekeeper_states:Gatekeeper_RunState11
+  ov048/gatekeeper_states:Gatekeeper_RunState5 ov048/gatekeeper_states:Gatekeeper_RunState6
+  ov048/gatekeeper_states:Gatekeeper_RunState7 ov048/gatekeeper_states:Gatekeeper_RunState8
+  ov048/gatekeeper_states:Gatekeeper_RunState9 ov048/gatekeeper_states:Gatekeeper_RunStateA
+  ov048/gatekeeper_states:Gatekeeper_RunStateB ov048/gatekeeper_states:Gatekeeper_RunStateC
+  ov048/gatekeeper_states:Gatekeeper_RunStateD ov048/gatekeeper_states:Gatekeeper_RunStateF
+  ov048/gatekeeper_states:Gatekeeper_State9CloseTalk ov048/gatekeeper_states:Gatekeeper_State9SayName
+  ov048/gatekeeper_states:Gatekeeper_State9TakeExit ov048/gatekeeper_states:Gatekeeper_State9WalkIn
+  ov048/gatekeeper_states:Gatekeeper_StateBClearRecord
+  ov048/gatekeeper_states:Gatekeeper_StateBMovePlayer
+  ov048/gatekeeper_states:Gatekeeper_StateBSayName ov048/gatekeeper_states:Gatekeeper_StateBTakeExit
+  ov048/gatekeeper_talk:GatekeeperTalk_AfterDownloads ov048/gatekeeper_talk:GatekeeperTalk_CheckError
+  ov048/gatekeeper_talk:GatekeeperTalk_FindParent
+  ov048/gatekeeper_talk:GatekeeperTalk_FinishLetterGet
+  ov048/gatekeeper_talk:GatekeeperTalk_FinishNoticeGet
+  ov048/gatekeeper_talk:GatekeeperTalk_FinishStatsGet
+  ov048/gatekeeper_talk:GatekeeperTalk_FinishStatsUpload
+  ov048/gatekeeper_talk:GatekeeperTalk_GroupCheck ov048/gatekeeper_talk:GatekeeperTalk_IsServerError
+  ov048/gatekeeper_talk:GatekeeperTalk_JoinParent ov048/gatekeeper_talk:GatekeeperTalk_Line80Or63
+  ov048/gatekeeper_talk:GatekeeperTalk_Line82Or65 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer5f
+  ov048/gatekeeper_talk:GatekeeperTalk_SendStatus0 ov048/gatekeeper_talk:GatekeeperTalk_SendStatus1
+  ov048/gatekeeper_talk:GatekeeperTalk_StartLetterGet
+  ov048/gatekeeper_talk:GatekeeperTalk_StartNoticeGet
+  ov048/gatekeeper_talk:GatekeeperTalk_StartStatsGet
+  ov048/gatekeeper_talk:GatekeeperTalk_StartStatsUpload
+  ov048/gatekeeper_talk:GatekeeperTalk_TakeFriend ov048/gatekeeper_talk:GatekeeperTalk_TimeOut56
+  ov048/gatekeeper_talk:GatekeeperTalk_TimeOut65 ov048/gatekeeper_talk:GatekeeperTalk_TimeOutByMode
+  ov048/gatekeeper_talk:GatekeeperTalk_WaitConnected ov048/gatekeeper_talk:GatekeeperTalk_WaitStatus0
+  ov048/gatekeeper_talk:GatekeeperTalk_WaitStatus1
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_EndConnection
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartSendStatus1
 
 area: Unreachable for one player
 group: a player moving to another town
 scene: none: Pelly's farewell to a player who moves out to another console's town, and the walk out of the town (ov068/sequence4.h states 10-16, field actor state 0x88)
 reach: the second sequence starts with Block020b220c_Flag4b1c, set only by PostClerk_UpdateLeave (her state 8, ov054/post_clerk.c) after line 0x3c, which follows activity job 0x1f of line 0x3b; line 0x3b comes after a linked game found (lines 0x38 and 0x39), so only in the local wireless session her "move" topic starts (scene town-hall-move); field actor state 0x88 is asked for only by state 14 (FieldActor_PlayerRequestState88)
 needs: unreachable
-match: ov068/sequence4:Sequence4_UpdateState1[0-6] ov068/sequence4:Sequence4_EnterState1[0-6]
-  ov068/field_actor_states87:FieldActor_*State88 ov068/field_actor_states87:FieldActor_State88Message
+match: ov068/field_actor_states87:FieldActor_EndState88
+  ov068/field_actor_states87:FieldActor_EnterState88
+  ov068/field_actor_states87:FieldActor_ExitState88
+  ov068/field_actor_states87:FieldActor_PlayerRequestState88
+  ov068/field_actor_states87:FieldActor_RequestState88
+  ov068/field_actor_states87:FieldActor_State88Message
+  ov068/field_actor_states87:FieldActor_StepState88
+  ov068/field_actor_states87:FieldActor_UpdateState88 ov068/sequence4:Sequence4_EnterState10
+  ov068/sequence4:Sequence4_EnterState11 ov068/sequence4:Sequence4_EnterState12
+  ov068/sequence4:Sequence4_EnterState13 ov068/sequence4:Sequence4_EnterState14
+  ov068/sequence4:Sequence4_EnterState15 ov068/sequence4:Sequence4_EnterState16
+  ov068/sequence4:Sequence4_UpdateState10 ov068/sequence4:Sequence4_UpdateState11
+  ov068/sequence4:Sequence4_UpdateState12 ov068/sequence4:Sequence4_UpdateState13
+  ov068/sequence4:Sequence4_UpdateState14 ov068/sequence4:Sequence4_UpdateState15
+  ov068/sequence4:Sequence4_UpdateState16
 
 area: Unreachable for one player
 group: the destructors of main's static objects
 scene: none: the destructors of the objects main's static initialisers construct (the state block, the sky, the slot pools, the collision world, the text font and about seventy more)
 reach: main's, the autoloads' and the TCMs' static initialisers register these destructors with __register_global_object (0x02138bb0); its chain is walked by FS_EndOverlay only for the objects inside the overlay it ends, and in full only by __destroy_global_chain (func_02138910), whose one caller func_02128f54 belongs to the C library's exit and terminate path (func_02128fa8, func_0212d424, the terminate handler func_02138bf4), which the game never takes. Listed: each registered destructor that nothing else calls or points to, each class whose constructors only main's static initialisers call (its vtable's destructors), and what only those call (tools: a call and pointer scan of the module images)
 needs: unreachable
-match: main/ab_all_obj:AbAllObj_Destruct main/screen_icon:ScreenIcon_DestructFree
-  main/screen_icon:ScreenIcon_Destruct main/wireless_icon:WirelessIcon_Destruct
-  main/global_021cfc98:Global021cfc98_Destruct main/trivial_object:TrivialObject_DestructByte
-  main/a_mes_obj:AMesObj_Destruct main/collision_box:CollisionBox_ListDestruct
-  main/collision_area:CollisionArea_ListDestruct main/field_collision:CollisionPosts_Destroy
-  main/field_collision:CollisionWalls_Destroy main/field_collision:CollisionFloors_Destroy
-  main/field_collision:CollisionWorld_Destroy main/block_02034858:Block021c5160_Destroy
-  main/room_interior:RoomInterior_DestroySceneCarpets
-  main/room_interior:RoomInterior_DestroySceneWallpapers main/bg_models:BgModels_Destruct
-  main/caution_window:CautionWindow_DestructDelete main/caution_window:CautionWindow_Destruct
-  main/caution_window:CautionWindowLine_DestructDelete main/caution_window:CautionWindowLine_Destruct
-  main/caution_window:CautionWindowUnit_DestructDelete main/caution_window:CautionWindowUnit_Destruct
-  main/caution_window:CautionWindowMessage_DestructDelete
-  main/caution_window:CautionWindowMessage_Destruct main/town_item_lists:TownItemLists_DestructListB
-  main/town_item_lists:TownItemLists_DestructListA main/view_frustum:ViewFrustum_Destruct
-  main/view_frustum:ViewFrustum_DestructDelete main/player_options:PlayerOptions_Empty2B4
-  main/player_options:PlayerOptions_Nothing384 main/mail_text:MailText_Destruct
-  main/globe:Globe_DestructView main/event_calendar:EventCalendar_DateDestruct
-  main/event_schedule:EventSchedule_Destruct main/town_acre_count:TownAcreCount_DestroyWorst
-  main/town_acre_count:TownAcreCount_DestroyAcres main/town_acre_count:TownAcreCount_DestroyTown
-  main/town_record:TownRecord_Destruct main/town_layout:TownLayout_Destruct
-  main/text_font:TextFont_Destruct main/place_claim:PlaceClaim_DestructAll
-  main/room_cells:RoomCells_DestructNookRecords main/room_cells:RoomCells_Destruct17To24Records
-  main/furniture_info:FurnitureFiles_Destruct main/room_score_state:RoomScoreState_DestructJudgeDate
-  main/room_score_state:RoomScoreState_DestructCategories
-  main/room_score_state:RoomScoreState_DestructMarks main/room_score_state:RoomScoreState_DestructBest
-  main/anim_slots:AnimSlots_Destruct main/body_look:BodyLook_DestructTable
-  main/cloth_slots:ClothSlots_Destruct main/face_anim_slots:FaceAnimSlots_Destruct
-  main/face_anim_heaps:FaceAnimHeaps_Destruct main/face_texture:FaceTexture_Destruct
-  main/glasses_look:GlassesLook_DestructTable main/head_look:HeadLook_DestructTable
-  main/held_item_pool:HeldItemPool_Destruct main/body_anim_heaps:BodyAnimHeaps_Destruct
-  main/actor_palettes:ActorPalettes_Destruct main/fishing_float:FishingFloatPool_Destruct
-  main/house_record:HouseRecord_DestructSongs main/house_record:HouseRecord_Destruct
-  main/main_random:MainRandom_Destruct main/item_info:ItemInfoFiles_Destruct
-  main/item_group_order:ItemGroupOrder_DestructAll main/museum_record:MuseumRecord_Destruct
-  main/design_assets:DesignArchive_Destruct main/design_assets:DesignTextures_Destruct
-  main/design_assets:DesignPalettes_Destruct main/design_sets:DesignManager_Destruct
-  main/design_sets:DesignSample_Destruct main/design_sets:DesignHolder_Destruct
-  main/design_sets:ShopDesigns_Destruct main/session_link:Session_Destroy main/bbs:Bbs_Destruct
-  main/resource_pools:ResourcePools_Heap4Destruct main/resource_pools:ResourcePools_Heap8Destruct
-  main/resource_pools:ResourcePools_BlockDestruct main/villager_bonds:VillagerBond_Destruct
-  main/villager_outdoors:VillagerOutdoors_Destruct main/villager_plots:VillagerPlot_DestroyList
-  main/villager_roster:VillagerRoster_Destruct main/villager_state:VillagerState_DestructTable
-  main/actor_entries:ActorEntries_DestructTable main/slot_pool:SlotPool_ItemsDestructDelete
-  main/slot_pool:SlotPool_ItemsDestruct main/slot_pool:SlotPool_PartsDestructDelete
-  main/slot_pool:SlotPool_PartsDestruct main/slot_pool:SlotPool_AnimSetsDestructDelete
-  main/slot_pool:SlotPool_AnimSetsDestruct main/slot_pool:SlotPool_BlocksDestructDelete
-  main/slot_pool:SlotPool_BlocksDestruct main/slot_pool:SlotPool_ClothesDestructDelete
-  main/slot_pool:SlotPool_ClothesDestruct main/slot_pool:SlotPool_Heap4DestructDelete
-  main/slot_pool:SlotPool_Heap4Destruct main/slot_pool:SlotPool_Heap8DestructDelete
-  main/slot_pool:SlotPool_Heap8Destruct main/slot_pool:SlotPool_SpeakersDestructDelete
-  main/slot_pool:SlotPool_SpeakersDestruct main/slot_pool:SlotPool_BaseDestruct
-  main/slot_pool:SlotPool_BaseDestructDelete main/slot_pool:SlotPool_BaseDestructVirtual
-  main/spawner:Spawner_RequestDestruct main/block_021d27ac:Block021d27ac_Destruct
-  main/event_winner:EventWinner_Destruct main/day_plan:DayPlan_Destruct
-  main/item_1568_count:Item1568Count_Destruct main/last_sale:LastSale_Destruct
-  main/turnip_prices:TurnipPrices_Destruct main/town_spot:TownSpot_Destruct
-  main/beside_spot:BesideSpot_Destruct main/near_spot:NearSpot_Destruct
+match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
+  main/actor_entries:ActorEntries_DestructTable main/actor_palettes:ActorPalettes_Destruct
+  main/anim_slots:AnimSlots_Destruct main/bbs:Bbs_Destruct main/bells_panel:BellsPanel_Delete
+  main/bells_panel:BellsPanel_Destruct main/beside_spot:BesideSpot_Destruct
+  main/bg_models:BgModels_Destruct main/block_02034858:Block021c5160_Destroy
+  main/block_021d27ac:Block021d27ac_Destruct main/block_021d27ac_parts:Block021d27acPart18_Destruct
   main/block_021d27ac_parts:Block021d27acPart20_Destruct
-  main/block_021d27ac_parts:Block021d27acPart30_Destruct
-  main/block_021d27ac_parts:Block021d27acPart18_Destruct main/middle_spot:MiddleSpot_Destruct
-  main/screen_panels:ScreenPanels_Delete main/screen_panels:ScreenPanels_Destruct
-  main/bells_panel:BellsPanel_Delete main/bells_panel:BellsPanel_Destruct main/menu_tab:MenuTab_Delete
-  main/menu_tab:MenuTab_Destruct main/camera_grid:CameraGrid_Delete
-  main/camera_grid:CameraGrid_Destruct main/catch_panel:CatchPanel_Delete
-  main/catch_panel:CatchPanel_Destruct main/clock_panel:ClockPanel_Delete
-  main/clock_panel:ClockPanel_Destruct main/catch_panel:CatchPanelText_Delete
-  main/catch_panel:CatchPanelText_Destruct main/screen_mark:ScreenMark_Delete
-  main/screen_mark:ScreenMark_Destruct main/transition_mark:TransitionMark_Delete
-  main/transition_mark:TransitionMark_Destruct main/control_mode_icon:ControlModeIcon_Delete
-  main/control_mode_icon:ControlModeIcon_Destruct main/exchange_block:ExchangeBlock_DestructVisitors
-  main/session_players:SessionPlayers_Destruct main/bottle_mail:BottleMail_DestructState
-  main/mail:MailPostOffice_Destruct main/player_records:PlayerRecords_DestructGuests
-  main/player_records:PlayerRecords_DestructTown main/villager_move_record:VillagerMoveRecord_Destruct
-  main/global_021dc5b0:Global021dc5b0_Destruct main/scene_claim:SceneClaimExit_Destruct
-  main/scene_claim:SceneClaimMasks_Destruct main/state_block:StateBlock_Destruct
-  main/town_start_day:TownStartDay_Destruct main/link_state:LinkState_Destruct
-  main/message_query:MessageQuery_Delete main/message_query:MessageQuery_Destruct
-  main/text_walker:TextCopier_Delete main/text_walker:TextCopier_Destruct
-  main/text_walker:BoxWalker_Delete main/text_walker:BoxWalker_Destruct
-  main/select_bmg:SelectBmg_Delete main/select_bmg:SelectBmg_Destruct main/shadow:ObjShadow_Destruct
-  main/fox_shop:FoxShop_Destruct main/fox_shop:FoxPassword_Destruct
-  main/shop_list_a:ShopListA_Destruct main/nook_store:NookStore_Destruct
-  main/shop_answers:ShopAnswers_Destruct main/snowmen:Snowmen_DestructRecords
-  main/snowmen:Snowmen_DestructLooseBalls main/constellations:Constellations_DestructList
-  main/house_looks:HouseLooks_Destruct main/house_looks:HouseLooks_DestructDesign
-  main/house_looks:HouseLooks_DestructLooks main/message_reader:MessageReader_Destruct
-  main/scene_place:ScenePlace_Destruct main/touch_pick_shapes:TouchPick_DestructBase
-  main/touch_pick_shapes:TouchPick_Destruct main/field_label:FieldLabel_Delete
+  main/block_021d27ac_parts:Block021d27acPart30_Destruct main/body_anim_heaps:BodyAnimHeaps_Destruct
+  main/bottle_mail:BottleMail_DestructState main/camera_grid:CameraGrid_Delete
+  main/camera_grid:CameraGrid_Destruct main/catch_panel:CatchPanelText_Delete
+  main/catch_panel:CatchPanelText_Destruct main/catch_panel:CatchPanel_Delete
+  main/catch_panel:CatchPanel_Destruct main/caution_window:CautionWindowLine_Destruct
+  main/caution_window:CautionWindowLine_DestructDelete
+  main/caution_window:CautionWindowMessage_Destruct
+  main/caution_window:CautionWindowMessage_DestructDelete
+  main/caution_window:CautionWindowUnit_Destruct main/caution_window:CautionWindowUnit_DestructDelete
+  main/caution_window:CautionWindow_Destruct main/caution_window:CautionWindow_DestructDelete
+  main/clock_panel:ClockPanel_Delete main/clock_panel:ClockPanel_Destruct
+  main/cloth_slots:ClothSlots_Destruct main/collision_area:CollisionArea_ListDestruct
+  main/collision_box:CollisionBox_ListDestruct main/constellations:Constellations_DestructList
+  main/control_mode_icon:ControlModeIcon_Delete main/control_mode_icon:ControlModeIcon_Destruct
+  main/day_plan:DayPlan_Destruct main/design_assets:DesignArchive_Destruct
+  main/design_assets:DesignPalettes_Destruct main/design_assets:DesignTextures_Destruct
+  main/design_sets:DesignHolder_Destruct main/design_sets:DesignManager_Destruct
+  main/design_sets:DesignSample_Destruct main/design_sets:ShopDesigns_Destruct
+  main/event_calendar:EventCalendar_DateDestruct main/event_schedule:EventSchedule_Destruct
+  main/event_winner:EventWinner_Destruct main/exchange_block:ExchangeBlock_DestructVisitors
+  main/face_anim_heaps:FaceAnimHeaps_Destruct main/face_anim_slots:FaceAnimSlots_Destruct
+  main/face_texture:FaceTexture_Destruct main/field_collision:CollisionFloors_Destroy
+  main/field_collision:CollisionPosts_Destroy main/field_collision:CollisionWalls_Destroy
+  main/field_collision:CollisionWorld_Destroy main/field_label:FieldLabel_Delete
   main/field_label:FieldLabel_Destroy main/field_label_window:FieldLabelWindow_Delete
-  main/field_label_window:FieldLabelWindow_Destroy main/sky:Sky_Destruct
-  main/sky_objects:SkyObjects_Destruct main/sky_weather_day:SkyWeatherDay_Destruct
+  main/field_label_window:FieldLabelWindow_Destroy main/fishing_float:FishingFloatPool_Destruct
+  main/fox_shop:FoxPassword_Destruct main/fox_shop:FoxShop_Destruct
+  main/furniture_info:FurnitureFiles_Destruct main/glasses_look:GlassesLook_DestructTable
+  main/global_021cfc98:Global021cfc98_Destruct main/global_021dc5b0:Global021dc5b0_Destruct
+  main/globe:Globe_DestructView main/head_look:HeadLook_DestructTable
+  main/held_item_pool:HeldItemPool_Destruct main/house_looks:HouseLooks_Destruct
+  main/house_looks:HouseLooks_DestructDesign main/house_looks:HouseLooks_DestructLooks
+  main/house_record:HouseRecord_Destruct main/house_record:HouseRecord_DestructSongs
+  main/item_1568_count:Item1568Count_Destruct main/item_group_order:ItemGroupOrder_DestructAll
+  main/item_info:ItemInfoFiles_Destruct main/last_sale:LastSale_Destruct
+  main/link_state:LinkState_Destruct main/mail:MailPostOffice_Destruct
+  main/mail_text:MailText_Destruct main/main_random:MainRandom_Destruct main/menu_tab:MenuTab_Delete
+  main/menu_tab:MenuTab_Destruct main/message_query:MessageQuery_Delete
+  main/message_query:MessageQuery_Destruct main/message_reader:MessageReader_Destruct
+  main/middle_spot:MiddleSpot_Destruct main/museum_record:MuseumRecord_Destruct
+  main/near_spot:NearSpot_Destruct main/nook_store:NookStore_Destruct
+  main/place_claim:PlaceClaim_DestructAll main/player_options:PlayerOptions_Empty2B4
+  main/player_options:PlayerOptions_Nothing384 main/player_records:PlayerRecords_DestructGuests
+  main/player_records:PlayerRecords_DestructTown main/resource_pools:ResourcePools_BlockDestruct
+  main/resource_pools:ResourcePools_Heap4Destruct main/resource_pools:ResourcePools_Heap8Destruct
+  main/room_cells:RoomCells_Destruct17To24Records main/room_cells:RoomCells_DestructNookRecords
+  main/room_interior:RoomInterior_DestroySceneCarpets
+  main/room_interior:RoomInterior_DestroySceneWallpapers
+  main/room_score_state:RoomScoreState_DestructBest
+  main/room_score_state:RoomScoreState_DestructCategories
+  main/room_score_state:RoomScoreState_DestructJudgeDate
+  main/room_score_state:RoomScoreState_DestructMarks main/scene_claim:SceneClaimExit_Destruct
+  main/scene_claim:SceneClaimMasks_Destruct main/scene_place:ScenePlace_Destruct
+  main/screen_icon:ScreenIcon_Destruct main/screen_icon:ScreenIcon_DestructFree
+  main/screen_mark:ScreenMark_Delete main/screen_mark:ScreenMark_Destruct
+  main/screen_panels:ScreenPanels_Delete main/screen_panels:ScreenPanels_Destruct
+  main/select_bmg:SelectBmg_Delete main/select_bmg:SelectBmg_Destruct
+  main/session_link:Session_Destroy main/session_players:SessionPlayers_Destruct
+  main/shadow:ObjShadow_Destruct main/shop_answers:ShopAnswers_Destruct
+  main/shop_list_a:ShopListA_Destruct main/sky:Sky_Destruct main/sky_objects:SkyObjects_Destruct
+  main/sky_weather_day:SkyWeatherDay_Destruct main/slot_pool:SlotPool_AnimSetsDestruct
+  main/slot_pool:SlotPool_AnimSetsDestructDelete main/slot_pool:SlotPool_BaseDestruct
+  main/slot_pool:SlotPool_BaseDestructDelete main/slot_pool:SlotPool_BaseDestructVirtual
+  main/slot_pool:SlotPool_BlocksDestruct main/slot_pool:SlotPool_BlocksDestructDelete
+  main/slot_pool:SlotPool_ClothesDestruct main/slot_pool:SlotPool_ClothesDestructDelete
+  main/slot_pool:SlotPool_Heap4Destruct main/slot_pool:SlotPool_Heap4DestructDelete
+  main/slot_pool:SlotPool_Heap8Destruct main/slot_pool:SlotPool_Heap8DestructDelete
+  main/slot_pool:SlotPool_ItemsDestruct main/slot_pool:SlotPool_ItemsDestructDelete
+  main/slot_pool:SlotPool_PartsDestruct main/slot_pool:SlotPool_PartsDestructDelete
+  main/slot_pool:SlotPool_SpeakersDestruct main/slot_pool:SlotPool_SpeakersDestructDelete
+  main/snowmen:Snowmen_DestructLooseBalls main/snowmen:Snowmen_DestructRecords
+  main/spawner:Spawner_RequestDestruct main/state_block:StateBlock_Destruct
+  main/text_font:TextFont_Destruct main/text_walker:BoxWalker_Delete
+  main/text_walker:BoxWalker_Destruct main/text_walker:TextCopier_Delete
+  main/text_walker:TextCopier_Destruct main/touch_pick_shapes:TouchPick_Destruct
+  main/touch_pick_shapes:TouchPick_DestructBase main/town_acre_count:TownAcreCount_DestroyAcres
+  main/town_acre_count:TownAcreCount_DestroyTown main/town_acre_count:TownAcreCount_DestroyWorst
+  main/town_item_lists:TownItemLists_DestructListA main/town_item_lists:TownItemLists_DestructListB
+  main/town_layout:TownLayout_Destruct main/town_record:TownRecord_Destruct
+  main/town_spot:TownSpot_Destruct main/town_start_day:TownStartDay_Destruct
+  main/transition_mark:TransitionMark_Delete main/transition_mark:TransitionMark_Destruct
+  main/trivial_object:TrivialObject_DestructByte main/turnip_prices:TurnipPrices_Destruct
+  main/view_frustum:ViewFrustum_Destruct main/view_frustum:ViewFrustum_DestructDelete
+  main/villager_bonds:VillagerBond_Destruct main/villager_move_record:VillagerMoveRecord_Destruct
+  main/villager_outdoors:VillagerOutdoors_Destruct main/villager_roster:VillagerRoster_Destruct
+  main/villager_state:VillagerState_DestructTable main/wireless_icon:WirelessIcon_Destruct
 
 area: Unreachable for one player
 group: code only unreachable code calls
 scene: none: functions whose every caller is in an unreachable group (the local wireless session and its activity jobs and packets, the Wi-Fi Connection, the gatekeepers' visits, the lost child's walk, the debug screen, the lid and the game's stop): the activity's fields, the jobs those sessions ask for, the field label's session messages, the caution window's planes, the town objects' session messages
 reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3)
 needs: unreachable
-match: autoload_2/heap:Heap_Report autoload_2/process:Process_PhaseName
+match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
+  autoload_2/network:Wfc_FinishGet autoload_2/network:Wfc_FinishPost
+  autoload_2/network:Wfc_FriendIndexOf autoload_2/network:Wfc_Get autoload_2/network:Wfc_GetSigned
+  autoload_2/network:Wfc_HostGame autoload_2/network:Wfc_JoinFriendGame
+  autoload_2/network:Wfc_OnClientJoined autoload_2/network:Wfc_OnClosed
+  autoload_2/network:Wfc_OnGetReply autoload_2/network:Wfc_OnJoined
+  autoload_2/network:Wfc_OnNewClient autoload_2/network:Wfc_OnPosted
+  autoload_2/network:Wfc_OnReceived autoload_2/network:Wfc_OnSent
+  autoload_2/network:Wfc_OnSignedGetChallenge autoload_2/network:Wfc_OnSignedGetReply
+  autoload_2/network:Wfc_PostSigned autoload_2/network:Wfc_ProfileIdAt
+  autoload_2/network:Wfc_TakeDirty autoload_2/process:Process_PhaseName
   autoload_2/sound_system:SoundSystem_MasterVolumeFull main/activity:Activity_AllPeersReported
   main/activity:Activity_StepRequestMode1 main/activity:Activity_StepSendReport
   main/activity:Activity_TalkGatekeeper main/activity:Activity_TalkSequence2
-  main/activity_fields:Activity_BlockSource main/activity_fields:Activity_Byte102
-  main/activity_fields:Activity_ClearAnswers main/activity_fields:Activity_Current
-  main/activity_fields:Activity_CurrentByteD6 main/activity_fields:Activity_CurrentPackBuffer
-  main/activity_fields:Activity_CurrentPackThread main/activity_fields:Activity_CurrentSlot100
-  main/activity_fields:Activity_DateTime main/activity_fields:Activity_SetBlockSource
-  main/activity_fields:Activity_SetByteD7 main/activity_fields:Activity_SetCurrentFlagF3
-  main/activity_fields:Activity_SetCurrentSlot100 main/activity_fields:Activity_SetFlag101
-  main/activity_fields:Activity_SetFlagD9 main/activity_fields:Activity_SetFlagDA
-  main/activity_fields:Activity_SetFlagE4 main/activity_fields:Activity_SetFlagE5
-  main/activity_fields:Activity_SetFlagE6 main/activity_fields:Activity_SetSlot107
-  main/activity_fields:Activity_SetSlotAck main/activity_fields:Activity_SetSlotAnswer
-  main/activity_fields:Activity_SetSlotE7 main/activity_fields:Activity_SetSlotEB
-  main/activity_fields:Activity_SetSlotFC main/activity_fields:Activity_SetSlotMask
-  main/activity_fields:Activity_SetSlotReported main/activity_fields:Activity_Slot107
+  main/activity_card:ActivityCard_StepReadPart main/activity_card:Activity_CurrentRecordToGuest
+  main/activity_card:Activity_ExchangeBlockToSystem main/activity_fields:Activity_BlockSource
+  main/activity_fields:Activity_ClearAnswers main/activity_fields:Activity_CurrentByteD6
+  main/activity_fields:Activity_SetBlockSource main/activity_fields:Activity_SetCurrentFlagF3
+  main/activity_fields:Activity_SetFlagE6 main/activity_fields:Activity_SetSlotE7
+  main/activity_fields:Activity_SetSlotEB main/activity_fields:Activity_Slot107
   main/activity_job:ActivityJob_Ask14 main/activity_job:ActivityJob_Ask15
   main/activity_job:ActivityJob_Ask16 main/activity_job:ActivityJob_Ask17
   main/activity_job:ActivityJob_Ask18 main/activity_job:ActivityJob_Ask19
-  main/activity_job:ActivityJob_Ask1B main/activity_talk:ActivityTalk_QueueMessage11
-  main/activity_vars:ActivityVars_ReceivedBlock main/activity_vars:ActivityVars_SetFlag3C08
-  main/activity_vars:ActivityVars_SetSlot3C1C main/block_021d27ac_parts:Block021d27acPart20_SetKind
-  main/block_021d27ac_parts:Block021d27acPart20_SetValue main/c_library:CLib_BytesDiffer
-  main/camera_control:CameraControl_KeepView main/camera_control:CameraControl_SetMode19
-  main/display_shadow:DisplayShadow_GetSubPlanes main/display_shadow:DisplayShadow_GetSubWindows
-  main/field_label:FieldLabel_ChooseMessage main/field_label:FieldLabel_RaiseEndFailure
+  main/activity_job:ActivityJob_Ask1B main/activity_link_jobs:ActivityLinkJobs_Start14
+  main/activity_link_jobs:ActivityLinkJobs_Start17 main/activity_link_jobs:ActivityLinkJobs_Step14
+  main/activity_link_jobs:ActivityLinkJobs_Step17 main/activity_vars:ActivityVars_SetFlag3C08
+  main/activity_vars:ActivityVars_SetSlot3C1C main/battery_warning:BatteryWarning_Disable
+  main/block_021d27ac_parts:Block021d27acPart20_SetKind
+  main/block_021d27ac_parts:Block021d27acPart20_SetValue main/camera_control:CameraControl_KeepView
+  main/camera_control:CameraControl_SetMode19 main/card_save:CardSave_WriteAccount
+  main/design:Design_Receive main/field_label:FieldLabel_ChooseMessage
   main/field_label:FieldLabel_ShowMessage9 main/field_label:FieldLabel_ShowTableMessage
-  main/fish_disp:FishDisp_HandleMessage main/group_params:GroupParams_C88
-  main/group_params:GroupParams_ClearC80C88 main/library_overlay:LibraryOverlay_Require65
-  main/library_overlay:LibraryOverlay_Require67 main/main_loop:MainLoop_WaitVBlank
-  main/middle_spot:MiddleSpot_Clear main/music_264:Music264_Reset main/music_264:MusicClock_Reset
-  main/music_queue:Music_Reset main/music_volume:MusicVolume_Reset
-  main/scene_exit:SceneExit_SetChangeArg main/scene_heaps:SceneHeaps_DestroyNetwork
-  main/sound:SoundSys_MasterVolumeFull main/state_flags:StateFlags_AskMenuClose
-  main/state_flags:StateFlags_Test100 main/system_command:SystemCommand_BuildList
-  main/system_command:SystemCommand_RunList main/town_objects:TownObjects_OnLeftMessage
-  main/town_objects:TownObjects_OnModeMessage main/town_objects:TownObjects_OnVisitMessage
-  main/town_tile_put:TownTilePut_OnScene main/label_box:LabelBox_TextWidth
-  main/talk_object:TalkObject_LoadImpression main/talk_tags:TalkTags_NoteNothing
-  main/talk_tags:TalkTags_NotePart main/text_draw:TextDraw_ReleaseBoxes
-  main/text_string:TextString_BytesToWide main/villager_copy:VillagerCopy_Destruct
+  main/fish_disp:FishDisp_HandleMessage main/fox_shop:FoxPassword_ClearVisitor
+  main/link_global:LinkGlobal_MemberMask main/link_global:LinkGlobal_SetChosen
+  main/link_global:LinkGlobal_SetKind main/link_parts:LinkPart_CopyByte
+  main/link_parts:LinkPart_ReadEntry main/link_parts:LinkPart_UnpackStatusByte
+  main/link_scene:LinkScene_Empty6C8C main/link_scene:LinkScene_GlobalSetAcked
+  main/link_scene:LinkScene_GlobalSetReleased main/link_scene:LinkScene_GlobalSetStateAsker
+  main/link_scene:LinkScene_TakeLeftState main/link_state:LinkState_Half98
+  main/middle_spot:MiddleSpot_Clear main/object_claim:ObjectClaim_Dispatch
+  main/paired_town:PairedTown_ClearFlag5 main/paired_town:PairedTown_SaveCurrent
+  main/paired_town:PairedTown_SetFlag5 main/paired_town:PairedTown_TakeOwn
+  main/player_messages:PlayerMessages_Dispatch main/player_records:PlayerRecords_Exists
+  main/quick_message:QuickMessage_ViewDestructDelete
+  main/quick_message:QuickMessage_WideDestructDelete main/scene_claim:SceneClaim_ReceiveAnswer
+  main/scene_claim:SceneClaim_ReceiveRelease main/scene_claim:SceneClaim_ReceiveRequest
+  main/scene_exit:SceneExit_SetChangeArg main/scene_share_table:SceneShareTable_ClaimScenePersons
+  main/session:Session_AppendBundle15 main/session:Session_GetBundle15Length
+  main/session:Session_GetReadCursor main/session:Session_ReadMessage
+  main/session:Session_SetReadCursor main/session_link:Session_Host
+  main/session_players:SessionPlayers_ReadItemOperation
+  main/session_players:SessionPlayers_SplitLowHigh main/session_villager:SessionVillager_UnpackEntry
+  main/session_villager:SessionVillager_UnpackEntryItem
+  main/session_villager:SessionVillager_UnpackItem main/session_villager:SessionVillager_UnpackItems
+  main/session_villager:SessionVillager_UnpackObject
+  main/session_villager:SessionVillager_UnpackObjectChange main/shop_answers:ShopAnswers_Count
+  main/shops:Shops_ApplyMessage main/shops:Shops_CountAnswer main/sound:SoundSys_MasterVolumeFull
+  main/state_flags:StateFlags_AskMenuClose main/state_flags:StateFlags_Test100
+  main/system_command:SystemCommand_BuildList main/talk_object:TalkObject_LoadImpression
+  main/talk_tags:TalkTags_NoteNothing main/talk_tags:TalkTags_NotePart
+  main/town_objects:TownObjects_OnLeftMessage main/town_objects:TownObjects_OnModeMessage
+  main/town_objects:TownObjects_OnVisitMessage main/town_tile_put:TownTilePut_OnScene
   main/villager_impression:VillagerImpression_LoadText main/villager_state:VillagerState_Clear
-  main/villager_state:VillagerState_ClearTable main/player_record:PlayerRecord_MailMark
-  main/player_record:PlayerRecord_SetMailMark main/player_records:PlayerRecords_Exists
-  main/shop_answers:ShopAnswers_Count main/shops:Shops_ApplyMessage main/shops:Shops_CountAnswer
-  main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice main/design:Design_Receive
-  main/fox_shop:FoxPassword_ClearVisitor
-
-area: Unreachable for one player
-group: what only the other console's field actor's messages call
-scene: none: the getters of the arguments a state's message carries (FieldActor_GetSaved<N>, State<N>Saved_Get, the room and place states' Get*Saved, the packed points, tiles and items) and the requests only those messages make (FieldActor_RequestState19, 1A, 3B, 46Saved, 59, 5F, the room states' RequestSpotEnter*)
-reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by FieldActor_State<N>Message, the *Remote updates and the room and place states' messages (group "the other console's field actor"), or by functions found so (findings 2026-10-28, town4)
-needs: unreachable
-match: main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:FieldActor_GetSaved18
-  main/field_actor_states:FieldActor_GetSaved19 main/field_actor_states:FieldActor_GetSaved1A
-  main/field_actor_states:FieldActor_GetSaved1B main/field_actor_states:FieldActor_GetSaved7
-  main/field_actor_states:FieldActor_GetSaved76 main/field_actor_states:FieldActor_GetSavedItem3F
-  main/field_actor_states:FieldActor_GetSavedYaw77 main/field_actor_states:FieldActor_RequestState19
-  main/field_actor_states:FieldActor_RequestState1A main/field_actor_states:PackedItem_Get
-  ov003/field_actor:FieldActor_GetState16Saved ov003/field_actor:FieldActor_GetState38Saved
-  ov003/field_actor:FieldActor_GetState39Saved ov003/field_actor:FieldActor_GetState3BSaved
-  ov003/field_actor:FieldActor_GetState3DSaved ov003/field_actor:FieldActor_GetState46Saved
-  ov003/field_actor:FieldActor_GetState49Saved ov003/field_actor:FieldActor_GetState4DSaved
-  ov003/field_actor:FieldActor_GetState6SavedItem ov003/field_actor:FieldActor_HitState56
-  ov003/field_actor:FieldActor_RequestState3B ov003/field_actor:FieldActor_RequestState46Saved
-  ov003/field_actor:FieldActor_RequestState59 ov003/field_actor:FieldActor_RequestState5F
-  ov003/field_actor:LookArgs_Get ov003/field_actor:PackedPoint_Get ov003/field_actor:PackedXZ_Get
-  ov003/field_actor:SavedFlag_Get ov003/field_actor:SavedItemTile_Get ov003/field_actor:State51Saved_Get
-  ov003/field_actor:State54Saved_Get ov003/field_actor:State57Saved_Get
-  ov003/field_actor:State58Saved_Get ov003/field_actor:State59Saved_Get
-  ov003/field_actor:State5ASaved_Get ov003/field_actor:State5DSaved_Get ov003/field_actor:TileArgs_Get
-  ov003/field_actor:TileArgs_GetInts ov003/field_actor:TileStepArgs_Get
-  ov004/field_actor_place_states:FieldActorPlaceStates_GetClaimSaved
-  ov004/field_actor_place_states:FieldActorPlaceStates_GetRefusedSaved
-  ov004/field_actor_place_states:FieldActorPlaceStates_GetStepSaved
-  ov004/field_actor_room_states2:FieldActorRoomStates2_GetFurnitureHoldSaved
-  ov004/field_actor_room_states2:FieldActorRoomStates2_GetFurnitureReachSaved
-  ov004/field_actor_room_states2:FieldActorRoomStates2_GetTakePlaceSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_GetAtChestSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_GetChestApproachSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_GetChestCloseSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotApproachSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterMinusSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterStraightSaved
-  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnter
-  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterMinus
-  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterStraight
+  main/villager_state:VillagerState_ClearTable main/wfc_stats:WfcStats_Checksum
 
 area: Unreachable for one player
 group: what only the linked session and the visits call
 scene: none: the receivers of the session's messages (the room's furniture, lights and items put or taken, a place claimed, a tile's request granted, a town insect startled or hidden, the player actor's worn item and tan), what the activity's link jobs and session records ask for (the bells panel frozen, the sky reseeded, constellations drafted, the start menu left, event kind 13), the gatekeepers' visit walks (the room camera's modes 14 and 15, the check-in gate closed), a snowball's shake and the state block's destructor's waiting letter
 reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4)
 needs: unreachable
-match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
-  main/constellations:Constellations_DraftRandom main/event_queue:EventQueue_FinishKind13
-  main/event_queue:EventQueue_StartKind13 main/house_record:HouseRecord_StopSong
-  main/letter_store:LetterStore_MarkBlock1C main/mail:MailBox_Mark main/mail:MailBox_SetMark
-  main/place_claim:PlaceClaim_ReceiveAnswer main/place_claim:PlaceClaim_ReceiveRelease
-  main/place_claim:PlaceClaim_ReceiveRequest main/player_actor_ops:PlayerActorOps_SetFlag0
-  main/player_actor_ops:PlayerActorOps_SetSunLevel main/player_actor_ops:PlayerActorOps_SetWorn
-  main/player_actor_ops:PlayerActorOps_SwitchFlag10 main/room_interior:RoomInterior_ReceiveChange
-  main/room_interior:RoomInterior_Set main/room_object_state:RoomObjectState_Receive
-  main/room_sync:RoomSync_ApplyState main/room_sync:RoomSync_ReceiveLit
-  main/room_sync:RoomSync_ReceivePutFurniture main/room_sync:RoomSync_ReceivePutItem
-  main/room_sync:RoomSync_ReceiveState main/room_sync:RoomSync_ReceiveTakeFurniture
-  main/room_sync:RoomSync_ReceiveToggle main/screen_panels:ScreenPanels_FourthPanel
-  main/sky:Sky_ReseedForLink main/start_menu:StartMenu_LeaveChoice main/tile_changes:TileChanges_Replace
-  main/tile_request_grant:TileRequestGrant_Apply main/tile_request_grant:TileRequestGrant_LetGo
+match: main/event_queue:EventQueue_FinishKind13 main/event_queue:EventQueue_StartKind13
+  main/house_record:HouseRecord_StopSong main/place_claim:PlaceClaim_ReceiveAnswer
+  main/place_claim:PlaceClaim_ReceiveRelease main/place_claim:PlaceClaim_ReceiveRequest
+  main/player_actor_ops:PlayerActorOps_SetFlag0 main/player_actor_ops:PlayerActorOps_SetSunLevel
+  main/player_actor_ops:PlayerActorOps_SetWorn main/player_actor_ops:PlayerActorOps_SwitchFlag10
+  main/room_interior:RoomInterior_ReceiveChange main/room_interior:RoomInterior_Set
+  main/room_object_state:RoomObjectState_Receive main/room_sync:RoomSync_ApplyState
+  main/room_sync:RoomSync_ReceiveLit main/room_sync:RoomSync_ReceivePutFurniture
+  main/room_sync:RoomSync_ReceivePutItem main/room_sync:RoomSync_ReceiveState
+  main/room_sync:RoomSync_ReceiveTakeFurniture main/room_sync:RoomSync_ReceiveToggle
+  main/sky:Sky_ReseedForLink main/start_menu:StartMenu_LeaveChoice
+  main/tile_changes:TileChanges_Replace main/tile_request_grant:TileRequestGrant_Apply
+  main/tile_request_grant:TileRequestGrant_LetGo
   main/tile_request_grant:TileRequestGrant_NoOtherNearFor
   main/tile_request_grant:TileRequestGrant_PutOnScene
-  main/tile_request_grant:TileRequestGrant_ReceiveAnswer main/waiting_letter:WaitingLetter_Destruct
-  ov003/snowman:Snowman_ClearTile ov003/town_insect:TownInsect_Hide
-  ov003/town_insect:TownInsect_KindFlees ov003/town_insect:TownInsect_Startle
-  ov003/town_insect_tables:TownInsectTables_WriteRecord ov004/check_in_gate:CheckInGate_Close
-  ov004/room_camera:RoomCamera_SetMode14 ov004/room_camera:RoomCamera_SetMode15
-  ov004/room_camera:RoomCamera_SetModeLookAt
+  main/tile_request_grant:TileRequestGrant_ReceiveAnswer ov003/snowman:Snowman_ClearTile
+  ov003/town_insect:TownInsect_Hide ov003/town_insect:TownInsect_KindFlees
+  ov003/town_insect:TownInsect_Startle ov004/room_camera:RoomCamera_SetMode14
+  ov004/room_camera:RoomCamera_SetMode15
 
 area: Unreachable for one player
 group: tags no shown message holds, by the whole archives
 scene: none: the handlers of tags that no message outside the test message holds: the talk's 0/8, 1/14, 1/15, 3/4 and group 8 (TalkTags_PutLeftBrace, _Receiver1cWith3 and 4, _TellReceiver30, _DispatchGroup8 and its three kinds), the message reader's 0/2-0/5, 0/9, 0/10, 11/0 and 11/3 (the nickname source's characters, two fixed texts, the attributes and the converted character, with what only those call), the letters' 11/1-11/5 and 11/5-11/15 (MailTextDecoder_SetForm1, 2, _ConvertNext, _OnForm4, _OnFormPart), and the centred lines' measurer for 4/17, which no centred message holds
 reach: a scan of every message of the KOR .bmg files read whole (findings 2026-10-28, town4: a compressed archive is a table of 0x1000-byte chunks, each LZ10 or stored, which the earlier scans read only the first chunk of), and of every other file of the ROM and the module images for the tags' bytes; no code writes a tag into a text, the test message is shown by no reachable code (group "message tags no shown message holds") and the letters' decoder reads only letters (mail archives and letters typed)
 needs: unreachable
-match: main/mail_text:MailTextDecoder_ConvertNext main/mail_text:MailTextDecoder_OnForm4
-  main/mail_text:MailTextDecoder_OnFormPart main/mail_text:MailTextDecoder_SetForm1
-  main/mail_text:MailTextDecoder_SetForm2 main/message_decoder:MessageDecoder_CanInsert
-  main/message_decoder:MessageDecoder_ConvertNext main/message_decoder:MessageDecoder_InsertSourceEnd
+match: main/message_decoder:MessageDecoder_CanInsert main/message_decoder:MessageDecoder_ConvertNext
+  main/message_decoder:MessageDecoder_InsertSourceEnd
   main/message_decoder:MessageDecoder_InsertSourceFirst
   main/message_decoder:MessageDecoder_InsertSourceSecond
-  main/message_decoder:MessageDecoder_InsertSourceThird main/message_decoder:MessageDecoder_InsertText10
-  main/message_decoder:MessageDecoder_InsertText9 main/message_decoder:MessageDecoder_SetAttributes
-  main/message_query:MessageQuery_CharacterFromEnd main/message_query:MessageQuery_Length
-  main/talk_page:TalkPageMeasurer_PutPart2 main/talk_tags:TalkTags_DispatchGroup8
-  main/talk_tags:TalkTags_Nothing8_0 main/talk_tags:TalkTags_Nothing8_1
-  main/talk_tags:TalkTags_Nothing8_2 main/talk_tags:TalkTags_PutLeftBrace
-  main/talk_tags:TalkTags_Receiver1cWith3 main/talk_tags:TalkTags_Receiver1cWith4
-  main/talk_tags:TalkTags_TellReceiver30
+  main/message_decoder:MessageDecoder_InsertSourceThird
+  main/message_decoder:MessageDecoder_InsertText10 main/message_decoder:MessageDecoder_InsertText9
+  main/message_decoder:MessageDecoder_SetAttributes main/message_query:MessageQuery_CharacterFromEnd
+  main/message_query:MessageQuery_Length main/talk_page:TalkPageMeasurer_PutPart2
+  main/talk_tags:TalkTags_DispatchGroup8 main/talk_tags:TalkTags_Nothing8_0
+  main/talk_tags:TalkTags_Nothing8_1 main/talk_tags:TalkTags_Nothing8_2
+  main/talk_tags:TalkTags_PutLeftBrace main/talk_tags:TalkTags_Receiver1cWith3
+  main/talk_tags:TalkTags_Receiver1cWith4 main/talk_tags:TalkTags_TellReceiver30
 
 area: Unreachable for one player
 group: the field actor's states no code asks for
 scene: none: states 0x91 and 0x92 of the field actor (main/field_actor_states.c)
 reach: every state change of the field actor is a request made by StateRequest_Set or a file's request helper (request_state, begin_request, open_request, fars_request and the like) with the state as a constant, then queued and entered (FieldActor_EnterState); no call in clean/ passes 0x91 or 0x92 (the scratchpad's fastates.py lists the states asked for and by which functions)
 needs: unreachable
-match: main/field_actor_states:FieldActor_EnterState91 main/field_actor_states:FieldActor_EnterState92
-  main/field_actor_states:FieldActor_ExitState91 main/field_actor_states:FieldActor_UpdateState91
-  main/field_actor_states:FieldActor_UpdateState92
+match: main/field_actor_states:FieldActor_UpdateState92
 
 area: Unreachable for one player
 group: the field actor's closed lid and low battery
 scene: none: states 0x83 (the lid closed) and 0x84 (a low battery) of the field actor, and their requests
 reach: FieldActor_CheckBatteryAndLid asks for them on BatteryWarning_IsLow and on bit 15 of the ARM7's word at 0x027fffa8 (the lid), which a recording cannot make; the states' messages ask for them for another console's actor
 needs: unreachable
-match: main/field_actor_states:FieldActor_EndState83 main/field_actor_states:FieldActor_EnterState83
-  main/field_actor_states:FieldActor_EnterState84 main/field_actor_states:FieldActor_RequestState83
-  main/field_actor_states:FieldActor_RequestState84 main/field_actor_states:FieldActor_RunState83
-  main/field_actor_states:FieldActor_RunState84 main/field_actor_states:FieldActor_UpdateState83
-  main/field_actor_states:FieldActor_UpdateState84
+match: main/field_actor_states:FieldActor_EndState83
+  main/field_actor_states:FieldActor_RequestState83 main/field_actor_states:FieldActor_RequestState84
+  main/field_actor_states:FieldActor_RunState83 main/field_actor_states:FieldActor_RunState84
+  main/field_actor_states:FieldActor_UpdateState83 main/field_actor_states:FieldActor_UpdateState84
 
 area: Unreachable for one player
 group: camera modes only unreachable code sets
-scene: none: the main camera's mode 19 and the room camera's modes 15 and 20 (their start and frame functions)
-reach: a camera mode is entered only by CameraControl_SetMode (main/camera_view.c), and every call in clean/ passes a constant but the return to camera->previous_mode, which holds a mode entered before; 15, 19 and 20 are passed only by RoomCamera_SetMode15 (the gatekeeper's visit walk), CameraControl_SetMode19 (the lost child's walk home) and RoomCamera_SetModeLookAt (the exchange of ov055), which are unreachable
+scene: none: the main camera's mode 19 and the room camera's mode 15 (their start and frame functions)
+reach: a camera mode is entered only by CameraControl_SetMode (main/camera_view.c), and every call in clean/ passes a constant but the return to camera->previous_mode, which holds a mode entered before; 15 and 19 are passed only by RoomCamera_SetMode15 (the gatekeeper's visit walk) and CameraControl_SetMode19 (the lost child's walk home), which are unreachable. Mode 20 (RoomCamera_SetModeLookAt, the exchange of ov055) was in this group: title-bottle enters it with one system (findings 2026-10-28, town6)
 needs: unreachable
 match: main/camera_modes:CameraControl_Mode19Frame main/camera_modes:CameraControl_Mode19Start
-  ov004/room_camera:RoomCamera_LookAtFrame ov004/room_camera:RoomCamera_LookAtStart
   ov004/room_camera:RoomCamera_Mode15Frame ov004/room_camera:RoomCamera_Mode15Start
 
 area: Unreachable for one player
@@ -577,25 +866,41 @@ scene: none: slot 1 of the heaps' vtables (destruct and free: Heap_, ExpHeap_ an
 reach: as for the heaps' other slots and the scene sounds: a heap is destroyed by Heap_Destroy through slots 5 and 0 and its block freed to the parent, and no code reads HeapVtable.destruct_free; a triangle's vtable is called only by CollisionTriangle_PushOut's three tests (vtable_of, slots 0-2), and the areas' vtable (CollisionAreaVtable) calls only its slot 4; no BL or word in code names these functions, only the vtables
 needs: unreachable
 match: autoload_2/heap:ExpHeap_DestructFree autoload_2/heap:FrameHeap_DestructFree
-  autoload_2/heap:Heap_DestructFree main/collision_triangle:CollisionTriangle_PushOut
+  autoload_2/heap:Heap_DestructFree
 
 area: Unreachable for one player
 group: the scene sound classes' slot 0 and base slots
 scene: none: the destructor of vtable slot 0 of each scene sound class (autoload_2/sound_scene.h) and the base class's slots 1-3
-reach: SceneSound_Delete (main/scene_sound.c) deletes a scene's sound object through slot 1, and no code calls slot 0 or slot 2 (SceneSoundVtable.destruct and unk_08, SoundSceneVtable.slots: only on_music, start, update, stop, unload, the keyboard mode and slots 8 and 9 are called); no BL or word in code names them, only their vtables; the base class is never made alone (SceneSound_Create makes a derived class for every scene), so its slots 1 and 3 never run on a base object
+reach: SceneSound_Delete (main/scene_sound.c) deletes a scene's sound object through slot 1, and no code calls slot 0 or slot 2 (SceneSoundVtable.destruct and unk_08, SoundSceneVtable.slots: only on_music, start, update, stop, unload, the keyboard mode and slots 8 and 9 are called); no BL or word in code names them, only their vtables; the base class is never made alone (SceneSound_Create makes a derived class for every scene), so its slots 0-3 never run on a base object (its other slots run, called by the derived classes' own)
 needs: unreachable
-match: autoload_2/sound_scene:SoundScene*_Destruct autoload_2/sound_scene:SoundSceneBase_*
+match: autoload_2/sound_scene:SoundScene10_Destruct autoload_2/sound_scene:SoundScene19_Destruct
+  autoload_2/sound_scene:SoundScene1_Destruct autoload_2/sound_scene:SoundScene20_Destruct
+  autoload_2/sound_scene:SoundScene21_Destruct autoload_2/sound_scene:SoundScene22_Destruct
+  autoload_2/sound_scene:SoundScene23_Destruct autoload_2/sound_scene:SoundScene24_Destruct
+  autoload_2/sound_scene:SoundScene2_Destruct autoload_2/sound_scene:SoundScene30_Destruct
+  autoload_2/sound_scene:SoundScene31_Destruct autoload_2/sound_scene:SoundScene32_Destruct
+  autoload_2/sound_scene:SoundScene33_Destruct autoload_2/sound_scene:SoundScene34_Destruct
+  autoload_2/sound_scene:SoundScene35_Destruct autoload_2/sound_scene:SoundScene3_Destruct
+  autoload_2/sound_scene:SoundScene40_Destruct autoload_2/sound_scene:SoundScene41_Destruct
+  autoload_2/sound_scene:SoundScene42_Destruct autoload_2/sound_scene:SoundScene43_Destruct
+  autoload_2/sound_scene:SoundScene44_Destruct autoload_2/sound_scene:SoundScene45_Destruct
+  autoload_2/sound_scene:SoundScene46_Destruct autoload_2/sound_scene:SoundScene47_Destruct
+  autoload_2/sound_scene:SoundScene48_Destruct autoload_2/sound_scene:SoundScene50_Destruct
+  autoload_2/sound_scene:SoundScene51_Destruct autoload_2/sound_scene:SoundScene52_Destruct
+  autoload_2/sound_scene:SoundScene60_Destruct autoload_2/sound_scene:SoundScene99_Destruct
+  autoload_2/sound_scene:SoundSceneBase_Destruct autoload_2/sound_scene:SoundSceneBase_DestructDelete
+  autoload_2/sound_scene:SoundSceneBase_Start
 
 area: Unreachable for one player
 group: the heaps' slots no code calls
 scene: none: the frame and expanded heaps' vtable slots 4 (try lock), 9, 12 (a block's size), 16 (the total free), 17 and 18 (group ids)
 reach: the only calls through a heap's vtable are those of autoload_2/heap.c (destruct, lock, unlock, destroy, alloc, free, free all, report, resize, free size, largest block, allocatable, adjust); no code calls these six slots, and only the vtables name their functions
 needs: unreachable
-match: autoload_2/heap:ExpHeap_TryLock autoload_2/heap:Heap_TryLockNothing autoload_2/heap:FrameHeap_Unk24
-  autoload_2/heap:ExpHeap_Unk24 autoload_2/heap:FrameHeap_BlockSize autoload_2/heap:ExpHeap_BlockSize
-  autoload_2/heap:FrameHeap_TotalFree autoload_2/heap:ExpHeap_TotalFree
-  autoload_2/heap:FrameHeap_SetGroupId autoload_2/heap:ExpHeap_SetGroupId
-  autoload_2/heap:FrameHeap_GroupId autoload_2/heap:ExpHeap_GroupId
+match: autoload_2/heap:ExpHeap_BlockSize autoload_2/heap:ExpHeap_GroupId
+  autoload_2/heap:ExpHeap_SetGroupId autoload_2/heap:ExpHeap_TotalFree
+  autoload_2/heap:ExpHeap_TryLock autoload_2/heap:ExpHeap_Unk24 autoload_2/heap:FrameHeap_BlockSize
+  autoload_2/heap:FrameHeap_GroupId autoload_2/heap:FrameHeap_SetGroupId
+  autoload_2/heap:FrameHeap_TotalFree autoload_2/heap:FrameHeap_Unk24
 
 area: Unreachable for one player
 group: the deleting destructors of vtable slot 1
@@ -604,8 +909,7 @@ reach: an object is deleted through slot 1 only by SceneSound_Delete (main/scene
 needs: unreachable
 match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   autoload_2/sound_emitter_class:SoundEmitterClass_Destruct99Delete
-  autoload_2/sound_emitter_class:SoundEmitterClass_DestructBaseDelete
-  main/activity_talk:ActivityReceiver_DestructFree main/animated_model:AnimatedModel_DeleteBlended
+  main/activity_talk:ActivityReceiver_DestructFree
   main/animated_model:AnimatedModel_DeleteBlendedFromFrames
   main/animated_model:AnimatedModel_DeleteBlendedFromRamp
   main/animated_model:AnimatedModel_DeleteFromFrames main/bbs:BbsLabel_DestructDelete
@@ -615,8 +919,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/constellations:ConstellationsLabel_DestructDelete
   main/constellations:ConstellationsWideName_DestructDelete
   main/dual_cell_sprite:DualCellSprite_Delete main/field_actor:FieldActorReceiver_DestructDelete
-  main/fox_shop:FoxShopText_DestructFree main/frame_ctrl:FrameCtrl_Delete
-  main/joint_blend:JointBlend_Delete main/label_box:LabelBox_Delete
+  main/fox_shop:FoxShopText_DestructFree main/label_box:LabelBox_Delete
   main/label_sprite:LabelSprite_Delete main/label_sprite:LabelSprite_TextDelete
   main/layered_model:LayeredModel_DeleteAFromFrames main/layered_model:LayeredModel_DeleteAFromRamp
   main/layered_model:LayeredModel_DeleteB main/layered_model:LayeredModel_DeleteBFromFrames
@@ -639,12 +942,12 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/message_walker:MessageWalker_Delete main/missing_npc1:MissingNpc1Talk_DestructDelete
   main/missing_npc2:MissingNpc2Talk_DestructDelete main/model_anim:ModelAnim_Delete
   main/model_loader:ModelLoader_Delete main/model_object:ModelObject_BaseDelete
-  main/model_object:ModelObject_Delete main/model_object:ModelObject_RootDelete
-  main/model_object:ModelSet_Delete main/music_264:EventMusic_DestructDelete
-  main/music_264:HourMusic_DestructDelete main/music_264:Music264_DestructDelete
-  main/music_264:Music27c_DestructDelete main/music_queue:Music2d0_DestructDelete
-  main/music_queue:Music2e4_DestructDelete main/music_queue:Music2f0_DestructDelete
-  main/name_tag:NameTag_Delete main/name_texts:NameText_Delete main/name_texts:NameWideText_Delete
+  main/model_object:ModelObject_RootDelete main/model_object:ModelSet_Delete
+  main/music_264:EventMusic_DestructDelete main/music_264:HourMusic_DestructDelete
+  main/music_264:Music264_DestructDelete main/music_264:Music27c_DestructDelete
+  main/music_queue:Music2d0_DestructDelete main/music_queue:Music2e4_DestructDelete
+  main/music_queue:Music2f0_DestructDelete main/name_tag:NameTag_Delete
+  main/name_texts:NameText_Delete main/name_texts:NameWideText_Delete
   main/obj_020d9ff8:Obj020d9ff8_DestructDelete main/player_id:PlayerIdText_Delete
   main/player_id:PlayerIdWideText_Delete main/pool_link:PoolLink_AnimSetDestructDelete
   main/pool_link:PoolLink_BaseDestructDelete main/pool_link:PoolLink_BlockDestructDelete
@@ -659,8 +962,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/sound_emitter:SoundEmitter_DestructDelete main/start_menu:StartMenuReceiver_DestructFree
   main/talk_message_file:TalkMessageFile_Delete main/talk_page:TalkPageMeasurer_Delete
   main/talk_pick_scan:TalkPickScan_Delete main/talk_receiver:TalkReceiverName_DestructDelete
-  main/talk_receiver:TalkReceiver_DestructDelete main/talk_span:TalkSpan_Delete
-  main/talk_spinner:TalkSpinner_Delete main/talk_tags:TalkTags_Delete
+  main/talk_span:TalkSpan_Delete main/talk_spinner:TalkSpinner_Delete main/talk_tags:TalkTags_Delete
   main/talk_voice:TalkVoice_DestructDelete main/talk_windows:TalkChoiceWindow_Delete
   main/talk_windows:TalkSliderWindow_Delete main/talk_windows:TalkWindow_Delete
   main/tex_pattern_anim:TexPatternAnim_Delete main/tex_slot_anim:TexSlotAnim_Delete
@@ -668,8 +970,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/text_box:TextBoxBase_DestructDelete main/text_label:TextLabel_DestructDelete
   main/text_label:WideText_DestructDelete main/text_walker:TextWalker_Delete
   main/town_name:TownNameText_Delete main/town_name:TownNameWideText_Delete
-  main/town_posts:TownPosts_DeleteSource
-  main/villager_memory_text:VillagerMemoryLabel_DestructDelete
+  main/town_posts:TownPosts_DeleteSource main/villager_memory_text:VillagerMemoryLabel_DestructDelete
   main/villager_memory_text:VillagerMemoryWide_DestructDelete
   main/villager_talk_scene:VillagerTalkScene_DestructDelete main/vram_region:VramRegion_Delete
   ov002/button_panel:ButtonPanel_Delete ov002/glide:Glide_Delete ov002/glide:Glider0_Delete
@@ -689,8 +990,8 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov003/screen_object:ScreenObject_ReceiverDestroyAndFree
   ov003/sign_board:SignBoard_ReceiverDestroyAndFree ov003/snowman:Snowman_ReceiverDestroyAndFree
   ov003/spawn_spot:SpawnSpot_ReceiverDestroyAndFree
-  ov003/store_front:StoreFront_ReceiverDestroyAndFree
-  ov003/town_insect:TownInsectAnim_DestructDelete ov003/town_post_source:TownPostSource_Delete
+  ov003/store_front:StoreFront_ReceiverDestroyAndFree ov003/town_insect:TownInsectAnim_DestructDelete
+  ov003/town_post_source:TownPostSource_Delete
   ov003/villager_house:VillagerHouse_ReceiverDestroyAndFree
   ov003/warp_object:WarpObject_ReceiverDestroyAndFree ov004/atm:AtmReceiver_Delete
   ov004/barber_machine:BarberMachineReceiver_Delete ov004/birthday_guest:BirthdayGuestTalk_Delete
@@ -729,11 +1030,11 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov004/room_object_player_design:PlayerDesignObjectReceiver_Delete
   ov004/room_object_shop_design:ShopDesignObjectReceiver_Delete
   ov004/room_object_switch_shown:SwitchShownReceiver_Delete
-  ov004/room_shell_members:RoomShellMaterialAnim_Delete
-  ov004/shop3_villager:Shop3VillagerTalk_Delete ov004/sick_villager:SickVillagerTalk_Delete
-  ov004/tailor_sister:TailorSisterTalk_Delete ov004/telephone:TelephoneReceiver_Delete
-  ov004/trash_box:TrashBoxReceiver_Delete ov004/tv:TvAnimatedReceiver_Delete
-  ov004/tv:TvReceiver_Delete ov009/scene_actor_life:SceneActor_ReceiverDestructDelete
+  ov004/room_shell_members:RoomShellMaterialAnim_Delete ov004/shop3_villager:Shop3VillagerTalk_Delete
+  ov004/sick_villager:SickVillagerTalk_Delete ov004/tailor_sister:TailorSisterTalk_Delete
+  ov004/telephone:TelephoneReceiver_Delete ov004/trash_box:TrashBoxReceiver_Delete
+  ov004/tv:TvAnimatedReceiver_Delete ov004/tv:TvReceiver_Delete
+  ov009/scene_actor_life:SceneActor_ReceiverDestructDelete
   ov045/fortune_teller_talk:FortuneTellerTalk_Delete ov045/fortune_teller_talk:FortuneText_Delete
   ov045/fortune_teller_talk:FortuneWideText_Delete ov046/astro_talk:AstroTalk_DestructDelete
   ov047/owl_talk:OwlTalk_DestructDelete ov048/gatekeeper_talk_lines:GatekeeperTalk_DestructDelete
@@ -754,10 +1055,9 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov085/turtle5_talk:Turtle5Talk_Delete ov086/turtle6_talk:Turtle6Talk_Delete
   ov087/acorn_npc_talk:AcornNpcTalk_Delete ov088/reaction_npc_talk:ReactionNpcTalk_Delete
   ov093/staff_roll:StaffRollText_Delete ov094/pockets_grid:PocketsGrid_DestructDelete
-  ov094/pockets_icons:PocketsIcons_DestructDelete
-  ov094/pockets_letters:PocketsLetters_DestructDelete ov111/chat_scene:ChatLine_Delete
-  ov114/catalog_list:CatalogText_DestructDelete ov147/title_menu:TitleReceiver_Delete
-  ov147/title_mes:TitleMes_Delete
+  ov094/pockets_icons:PocketsIcons_DestructDelete ov094/pockets_letters:PocketsLetters_DestructDelete
+  ov111/chat_scene:ChatLine_Delete ov114/catalog_list:CatalogText_DestructDelete
+  ov147/title_menu:TitleReceiver_Delete ov147/title_mes:TitleMes_Delete
 
 area: Unreachable for one player
 group: the destructors of vtable slot 0 of those classes
@@ -795,12 +1095,11 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov003/spawn_spot:SpawnSpot_ReceiverDestroy ov003/store_front:StoreFront_ReceiverDestroy
   ov003/villager_house:VillagerHouse_ReceiverDestroy ov003/warp_object:WarpObject_ReceiverDestroy
   ov004/atm:AtmReceiver_Destroy ov004/barber_machine:BarberMachineReceiver_Destruct
-  ov004/birthday_guest:BirthdayGuestTalk_Destroy
-  ov004/birthday_villager:BirthdayVillagerTalk_Destroy ov004/bromide:BromideReceiver_Destroy
-  ov004/chest:ChestReceiver_Destroy ov004/clock:ClockReceiver_Destroy
-  ov004/compass:CompassReceiver_Destroy ov004/etc_museum:EtcMuseumReceiver_Destroy
-  ov004/music_player:MusicPlayerReceiver_Destroy ov004/rmo_telephone:RmoTelephoneReceiver_Destruct
-  ov004/room_etc_board:RoomEtcBoardReceiver_Destroy
+  ov004/birthday_guest:BirthdayGuestTalk_Destroy ov004/birthday_villager:BirthdayVillagerTalk_Destroy
+  ov004/bromide:BromideReceiver_Destroy ov004/chest:ChestReceiver_Destroy
+  ov004/clock:ClockReceiver_Destroy ov004/compass:CompassReceiver_Destroy
+  ov004/etc_museum:EtcMuseumReceiver_Destroy ov004/music_player:MusicPlayerReceiver_Destroy
+  ov004/rmo_telephone:RmoTelephoneReceiver_Destruct ov004/room_etc_board:RoomEtcBoardReceiver_Destroy
   ov004/room_object_02250c04:RoomObject02250c04Receiver_Destroy
   ov004/room_object_02250d30:RoomObject02250d30Receiver_Destroy
   ov004/room_object_02250e5c:RoomObject02250e5cReceiver_Destroy
@@ -839,26 +1138,20 @@ group: code only unreachable code calls, overlays told apart
 scene: none: two getters of a remote state's saved arguments, two of the room's place states', a town insect hidden by its id (a session message) and a scene actor's mode test only the moving player's sequence asks for
 reach: the fixed point of "code only unreachable code calls", with a call or word of an overlay not counted for a function of another overlay loaded over it (the two are never in memory together): each of these was called or named also from such an overlay (findings 2026-10-28, town5)
 needs: unreachable
-match: ov003/field_actor:FieldActor_GetState3ESaved ov003/field_actor:FieldActor_GetState4BSaved
-  ov003/town_insect:TownInsect_HideById
-  ov004/field_actor_place_states:FieldActorPlaceStates_GetApproachSaved
-  ov004/field_actor_place_states:FieldActorPlaceStates_GetOffSaved
-  ov009/scene_actor:SceneActor_IsInMode0
+match: ov003/town_insect:TownInsect_HideById ov009/scene_actor:SceneActor_IsInMode0
 
 area: Unreachable for one player
 group: the activity's jobs no reachable code starts
 scene: none: jobs 7 and 0xf (the card checked and both copies written, then the town entered in front of building 0x5000), 9 and 0xb (scene 13 entered at data_020d1bfc, scene 0x2f entered), and 8, 0xa, 0xe and 0x11, which only the linked session's jobs start (an entry record's exits, scenes 14 and 0x2d), with what only job 0xe calls
 reach: the activity's job is set only by ActivityProcess_StartJob with a constant (or, in StepJob1, the job an ActivityJob_Ask<N> asked for, each a constant): no function starts or asks for 7, 9 or 0xb, only job 7's step starts 0xf, and only ActivityLinkJobs_Step17, 18, 19, 1A, 1B and 1E (group "local wireless") start 8, 0xa, 0xe and 0x11; the jobs' start and step are named only by the job table's member pointers (the scratchpad's w16/jobs.py lists every start and ask by function; w16/proof.py --rules jobrules.json; findings 2026-10-28, town5)
 needs: unreachable
-match: main/activity_jobs:ActivityJobs_Start07 main/activity_jobs:ActivityJobs_Step07
-  main/activity_jobs:ActivityJobs_Start08 main/activity_jobs:ActivityJobs_Step08
-  main/activity_jobs:ActivityJobs_Start09 main/activity_jobs:ActivityJobs_Step09
-  main/activity_jobs:ActivityJobs_Start0A main/activity_jobs:ActivityJobs_Step0A
-  main/activity_jobs:ActivityJobs_Start0B main/activity_jobs:ActivityJobs_Step0B
-  main/activity_jobs:ActivityJobs_Start0E main/activity_jobs:ActivityJobs_Step0E
-  main/activity_jobs:ActivityJobs_Start0F main/activity_jobs:ActivityJobs_Step0F
-  main/activity_jobs:ActivityJobs_Start11 main/activity_jobs:ActivityJobs_Step11
-  main/start_kind:StartKind_SetUnchanged
+match: main/activity_jobs:ActivityJobs_Start07 main/activity_jobs:ActivityJobs_Start08
+  main/activity_jobs:ActivityJobs_Start09 main/activity_jobs:ActivityJobs_Start0A
+  main/activity_jobs:ActivityJobs_Start0B main/activity_jobs:ActivityJobs_Start0F
+  main/activity_jobs:ActivityJobs_Start11 main/activity_jobs:ActivityJobs_Step07
+  main/activity_jobs:ActivityJobs_Step08 main/activity_jobs:ActivityJobs_Step09
+  main/activity_jobs:ActivityJobs_Step0A main/activity_jobs:ActivityJobs_Step0B
+  main/activity_jobs:ActivityJobs_Step0F main/activity_jobs:ActivityJobs_Step11
 
 area: Unreachable for one player
 group: the aquarium fish's destructors
@@ -880,9 +1173,8 @@ match: ov004/aquarium_objects:AquariumFish_Delete ov004/aquarium_objects:Aquariu
   ov004/aquarium_objects:AquariumKind48_Destruct ov004/aquarium_objects:AquariumLaneFish_Delete
   ov004/aquarium_objects:AquariumLaneFish_Destruct ov004/aquarium_objects:AquariumNonstopFish_Delete
   ov004/aquarium_objects:AquariumNonstopFish_Destruct
-  ov004/aquarium_objects:AquariumRisingFish_Delete
-  ov004/aquarium_objects:AquariumRisingFish_Destruct ov004/aquarium_objects:AquariumSwimmer_Delete
-  ov004/aquarium_objects:AquariumSwimmer_Destruct
+  ov004/aquarium_objects:AquariumRisingFish_Delete ov004/aquarium_objects:AquariumRisingFish_Destruct
+  ov004/aquarium_objects:AquariumSwimmer_Delete ov004/aquarium_objects:AquariumSwimmer_Destruct
   ov004/aquarium_objects:AquariumSwimmer_DestructBase
 
 area: Unreachable for one player
@@ -890,9 +1182,521 @@ group: Shop3Villager, profile 0x88, which nothing makes
 scene: none: the villager of "ai_shop3" in scene 0x21 (ov004/shop3_villager.h), made by Shop3Villager_New for profile 0x88 of main's table data_020e3134
 reach: no code makes profile 0x88: no scene setup lists it (the kind 0 points and kind 2 objects of every overlay's setup steps: scene 0x21's, ov020's, makes 0x64 and 0x63), the spawner's table (data_020e1d8c) and the room objects' table (data_ov004_02247f54) do not hold it, the spawner's villagers are 0x80-0x87, every other Actor_Spawn and GameProcess_SpawnChild caller passes a constant or a table entry other than it, and no function of the module images moves 0x88 into the register of a spawn's class (w18/steps.py, w18/imm.py; findings 2026-10-28, rest6)
 needs: unreachable
-match: ov004/shop3_villager
+match: ov004/shop3_villager:Shop3VillagerTalk_Construct
+  ov004/shop3_villager:Shop3VillagerTalk_Destroy ov004/shop3_villager:Shop3VillagerTalk_Line
+  ov004/shop3_villager:Shop3VillagerTalk_OnAnswer
+  ov004/shop3_villager:Shop3VillagerTalk_OnMessageEnded ov004/shop3_villager:Shop3VillagerTalk_Start
+  ov004/shop3_villager:Shop3Villager_Delete ov004/shop3_villager:Shop3Villager_EnterStand
+  ov004/shop3_villager:Shop3Villager_EnterTalk ov004/shop3_villager:Shop3Villager_Init
+  ov004/shop3_villager:Shop3Villager_MayAct ov004/shop3_villager:Shop3Villager_New
+  ov004/shop3_villager:Shop3Villager_OnEvent ov004/shop3_villager:Shop3Villager_RunState
+  ov004/shop3_villager:Shop3Villager_SetState ov004/shop3_villager:Shop3Villager_Start
+  ov004/shop3_villager:Shop3Villager_UpdateIdle ov004/shop3_villager:Shop3Villager_UpdateStand
+  ov004/shop3_villager:Shop3Villager_UpdateTalk
 
 # ================================================================== the seed's day: buildings
+
+area: Unreachable for one player
+group: what only a taken session slot reaches (the link guard)
+scene: none: the branches of shared code that run only while this system has a slot in a session or the session is linked: the linked post, the friend roster's players, the shops' and villagers' shared answers, the remote fish and insects, the tile grants, the session's sending and receiving, the network library's local wireless branches, and what only those call
+reach: a session slot is taken only by Session_Host and the link jobs 0x14, 0x15 and 0x16 (Session_SetSlotTaken with 1; nothing else writes NetSession.slot_taken), all unreachable, and the network mode (data_021fbef8) is set to a local wireless mode only by Local_Setup, which Session_Start calls for modes 1 and 2 only, after LibraryOverlay_Switch66 (where the runtime halts), so network.c's is_local and comparisons with MODE_LOCAL_PARENT and _CHILD are false; so Session_IsSlotTaken is 0 for every slot, Session_IsLinked (a taken slot and two players) is 0 and so are the Clean helpers that return them; a call is not counted when the caller's Clean body (with its static helpers) names the callee only in the then-part of `if (taken)` or after `if (!taken) return/continue`; each listed function has a reference and every counted one is from an unreachable group or listed (the scratchpad's w17/guard.py and proof2.py; findings 2026-10-28, town6)
+needs: unreachable
+match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
+  autoload_2/network:Local_GetError autoload_2/network:Local_GetLinkLevel
+  autoload_2/network:Local_IsConnected autoload_2/network:Local_QueueSend
+  main/activity_card:Activity_SystemExchangeBlockToActivity main/activity_job:ActivityJob_Ask1A
+  main/activity_link_jobs:ActivityLinkJobs_Start15 main/activity_link_jobs:ActivityLinkJobs_Start16
+  main/activity_link_jobs:ActivityLinkJobs_Start18 main/activity_link_jobs:ActivityLinkJobs_Start19
+  main/activity_link_jobs:ActivityLinkJobs_Start1A main/activity_link_jobs:ActivityLinkJobs_Start1B
+  main/activity_link_jobs:ActivityLinkJobs_Step15 main/activity_link_jobs:ActivityLinkJobs_Step16
+  main/activity_link_jobs:ActivityLinkJobs_Step18 main/activity_link_jobs:ActivityLinkJobs_Step19
+  main/activity_link_jobs:ActivityLinkJobs_Step1A main/activity_link_jobs:ActivityLinkJobs_Step1B
+  main/caution_window:CautionWindow_IsShuttingDown main/exchange_block:ExchangeBlock_PairedTown
+  main/fish_disp:FishDisp_PlayerKind main/fish_disp:FishDisp_PlayerPoint
+  main/link_global:LinkGlobal_AddPlaceChange main/link_global:LinkGlobal_AskMove
+  main/link_global:LinkGlobal_IsMoving main/link_global:LinkGlobal_MessageTarget
+  main/link_global:LinkGlobal_PlaceHolder main/link_global:LinkGlobal_PlaceMoving
+  main/link_global:LinkGlobal_PlaceScene main/link_global:LinkGlobal_QueueMove
+  main/link_global:LinkGlobal_SceneOwner main/link_global:LinkGlobal_SetArrived
+  main/link_global:LinkGlobal_Zero744C main/link_global:LinkGlobal_Zero7450
+  main/link_parts:LinkPart_AddChange main/link_parts:LinkPart_EndByte
+  main/link_parts:LinkPart_EndEntry main/link_parts:LinkPart_EndStatusByte
+  main/link_parts:LinkPart_GetArrived main/link_parts:LinkPart_GetChange
+  main/link_parts:LinkPart_GetMove main/link_parts:LinkPart_MakeByte
+  main/link_parts:LinkPart_MakeEntry main/link_parts:LinkPart_MakeStatusByte
+  main/link_parts:LinkPart_PackEntry main/link_parts:LinkPart_PackStatusByte
+  main/link_parts:LinkPart_SetArrived main/link_parts:LinkPart_SetByte
+  main/link_parts:LinkPart_SetMove main/link_parts:LinkPart_WriteEntry
+  main/link_parts:LinkPart_WriteEntryChange main/link_scene:LinkScene_AckLeavingHolder
+  main/link_scene:LinkScene_Acked main/link_scene:LinkScene_CheckStateSent
+  main/link_scene:LinkScene_GlobalPlace main/link_scene:LinkScene_HostStep
+  main/link_scene:LinkScene_LeavingGuest main/link_scene:LinkScene_LeavingHolder
+  main/link_scene:LinkScene_LetNextMove main/link_scene:LinkScene_NextHolder
+  main/link_scene:LinkScene_NextMover main/link_scene:LinkScene_PopMove
+  main/link_scene:LinkScene_ReleaseLeavingGuest main/link_scene:LinkScene_Released
+  main/link_scene:LinkScene_ReportArrival main/link_scene:LinkScene_SendChanges
+  main/link_scene:LinkScene_SetAcked main/link_scene:LinkScene_SettleArrival
+  main/link_scene:LinkScene_StateAsker main/link_scene:LinkScene_StateSentTo
+  main/link_scene:LinkScene_Step main/link_scene:LinkScene_Successor main/link_state:LinkState_Answer
+  main/link_state:LinkState_ByteC4 main/link_state:LinkState_Chosen
+  main/link_state:LinkState_ForgetSlot main/link_state:LinkState_GlobalByteC4
+  main/link_state:LinkState_GlobalForgetSlot main/link_state:LinkState_HoldFrames
+  main/link_state:LinkState_HostPhase main/link_state:LinkState_HostStep
+  main/link_state:LinkState_RefuseRequest main/link_state:LinkState_ResetAnswer
+  main/link_state:LinkState_SetChosen main/link_state:LinkState_SetHostPhase
+  main/link_state:LinkState_SetKind main/link_state:LinkState_SystemStep
+  main/link_state:LinkState_WaitFrames main/packed_bytes:PackedBytes_ReadU16
+  main/packed_bytes:PackedBytes_WriteU16 main/paired_town:PairedTown_AreFriends
+  main/paired_town:PairedTown_Note main/paired_town:PairedTown_Pair
+  main/paired_town:PairedTown_PairAll main/paired_town:PairedTown_PairOwn
+  main/paired_town:PairedTown_SetFlag4 main/paired_town:PairedTown_SetTown
+  main/player_actors:PlayerActors_ClearItemOnState75 main/player_messages:PlayerMessages_ClearReply
+  main/quick_message:QuickMessage_PostDefault main/quick_message:QuickMessage_TakeRecord
+  main/session:Session_AgePeerSilence main/session:Session_AnyPeerSilent
+  main/session:Session_ClearRecvLength main/session:Session_ClearShareLength
+  main/session:Session_CountFrame main/session:Session_DeliverLocalQueue
+  main/session:Session_DeliverSceneQueue main/session:Session_GetCredits
+  main/session:Session_GetFrameSequence main/session:Session_GetHeldQueueLength
+  main/session:Session_GetLocalQueueLength main/session:Session_GetOutboxLength
+  main/session:Session_GetOwedCredits main/session:Session_GetPeerSilence
+  main/session:Session_GetPendingSequence main/session:Session_GetRecordFlag
+  main/session:Session_GetRecvLength main/session:Session_GetRecvReadEntry
+  main/session:Session_GetSceneQueueLength main/session:Session_GetSendLength
+  main/session:Session_GetShareLength main/session:Session_OweCredit
+  main/session:Session_PopRecvEntry main/session:Session_ProcessReceived
+  main/session:Session_QueueOutgoing main/session:Session_ResetCredit
+  main/session:Session_SetOwedCredits main/session:Session_SetPendingSequence
+  main/session:Session_SetSequence main/session:Session_SetShareLength
+  main/session:Session_SetSlotMask main/session:Session_SpendCredits
+  main/session_link:Session_CollectMessages main/session_link:Session_GetMemberMask
+  main/session_link:Session_IsStatusPending main/session_link:Session_OnPlayersChanged
+  main/session_link:Session_RemovePlayer main/session_link:Session_WriteOwedCredits
+  main/session_link:Session_WriteRecords main/session_link:Session_WriteStatusPacket
+  main/session_net:SessionNet_AllPeersHaveCredit main/session_net:SessionNet_WriteDataHeader
+  main/session_players:SessionPlayers_ClearSaved main/session_players:SessionPlayers_JoinLowHigh
+  main/session_players:SessionPlayers_SavedPosition main/session_players:SessionPlayers_SavedScene
+  main/session_players:SessionPlayers_SavedState main/session_players:SessionPlayers_SavedYaw
+  main/session_players:SessionPlayers_WriteItemKind main/session_record:SessionRecord_Update
+  main/session_villager:SessionVillager_PackEntry main/session_villager:SessionVillager_PackEntryItem
+  main/session_villager:SessionVillager_PackItem main/session_villager:SessionVillager_PackItems
+  main/session_villager:SessionVillager_PackObject
+  main/session_villager:SessionVillager_PackObjectChange main/shop_answers:ShopAnswers_AllCame
+  main/tile_changes:TileChanges_LetGoAt main/tile_request_grant:TileRequestGrant_Answer
+  main/tile_requests:TileRequests_ReceiveAction main/town_beach:TownBeach_UpdateLinked
+  main/villager_clothes:VillagerClothes_ItemOf ov002/paged_choice:PagedChoice_AddTextEntry
+  ov003/player_fish:PlayerFish_OnRemoteState0 ov003/player_fish:PlayerFish_OnRemoteState1
+  ov003/player_fish:PlayerFish_OnRemoteState2 ov003/player_fish:PlayerFish_StartRemote
+  ov003/player_fish:PlayerFish_Sync ov003/tile_event:TileEvent_EndAt
+  ov003/town_insect_moves:TownInsectMove_AlarmTurn ov003/town_insect_moves:TownInsectMove_SensePlayer
+  ov003/town_insect_moves:TownInsectMove_WalkLinked
+  ov003/town_insect_tables:TownInsectTables_PublishRecord
+  ov003/town_insect_tables:TownInsectTables_ReadRecord ov104/letter_send:LetterSend_BeginLinkedPost
+  ov104/letter_send:LetterSend_HasLetterToSelf
+
+area: Not attributed to one scene
+group: claimed unreachable, not proved by the forward pass
+scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: local wireless (DS to DS) 200, the other console's field actor: its states' messages 148, Nintendo Wi-Fi Connection 91, code only unreachable code calls 65, what only the other console's field actor's messages call 57, the item and letter picks' hold and swap code 25, what only a taken session slot reaches (the link guard) 19, the boxes' choice and error message 18, the gatekeeper's visits and connections 12, the town map's list by the keys and the pen 9, the deleting destructors of vtable slot 1 6, what only the linked session and the visits call 6, screens no code opens 6, tags no shown message holds, by the whole archives 5, the menu scenes' destructors of vtable slot 16 5, the field actor's states no code asks for 4, code only unreachable code calls, overlays told apart 4, the keyboard entry's question 4, the activity's jobs no reachable code starts 3, hardware and failure paths 3, the destructors of main's static objects 2, the field actor's closed lid and low battery 2, the menu screens' error messages no code opens 2, the menu scenes' phases 3 and 4 2, the heaps' slots no code calls 1, the scene sound classes' slot 0 and base slots 1, vtable slots no code calls: heaps and triangles 1, the other classes' destructors of vtable slot 16 1)
+reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py finds no named condition closing every path to them (findings 2026-10-28, town6); each needs its group's reason shown at the edge that reaches it, or a scene
+needs: unknown
+match: autoload_2/heap:Heap_TryLockNothing autoload_2/network:Local_Call02269638
+  autoload_2/network:Net_CountPlayers
+  autoload_2/sound_emitter_class:SoundEmitterClass_DestructBaseDelete
+  autoload_2/sound_scene:SoundSceneBase_Vfunc08 main/activity_fields:Activity_Byte102
+  main/activity_fields:Activity_Current main/activity_fields:Activity_CurrentPackBuffer
+  main/activity_fields:Activity_CurrentPackThread main/activity_fields:Activity_CurrentSlot100
+  main/activity_fields:Activity_DateTime main/activity_fields:Activity_SetByteD7
+  main/activity_fields:Activity_SetCurrentSlot100 main/activity_fields:Activity_SetFlag101
+  main/activity_fields:Activity_SetFlagD9 main/activity_fields:Activity_SetFlagDA
+  main/activity_fields:Activity_SetFlagE4 main/activity_fields:Activity_SetFlagE5
+  main/activity_fields:Activity_SetSlot107 main/activity_fields:Activity_SetSlotAck
+  main/activity_fields:Activity_SetSlotAnswer main/activity_fields:Activity_SetSlotFC
+  main/activity_fields:Activity_SetSlotMask main/activity_fields:Activity_SetSlotReported
+  main/activity_job:ActivityJob_Ask1F main/activity_jobs:ActivityJobs_Start0E
+  main/activity_jobs:ActivityJobs_Step0E main/activity_link_jobs:ActivityLinkJobs_Start1D
+  main/activity_link_jobs:ActivityLinkJobs_Start1E main/activity_link_jobs:ActivityLinkJobs_Start1F
+  main/activity_link_jobs:ActivityLinkJobs_Step1D main/activity_link_jobs:ActivityLinkJobs_Step1E
+  main/activity_link_jobs:ActivityLinkJobs_Step1F main/activity_save:ActivitySave_EndSteps
+  main/activity_talk:ActivityTalk_QueueMessage11 main/activity_vars:ActivityVars_ReceivedBlock
+  main/animated_model:AnimatedModel_DeleteBlended main/bbs:Bbs_GetLastNotice
+  main/bbs:Bbs_SetLastNotice main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
+  main/body_look:BodyLook_DestructTable main/c_library:CLib_BytesDiffer
+  main/collision_triangle:CollisionTriangle_PushOut main/field_actor_states:FieldActor_EnterState83
+  main/field_actor_states:FieldActor_EnterState84 main/field_actor_states:FieldActor_EnterState91
+  main/field_actor_states:FieldActor_EnterState92 main/field_actor_states:FieldActor_ExitState91
+  main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:FieldActor_GetSaved18
+  main/field_actor_states:FieldActor_GetSaved19 main/field_actor_states:FieldActor_GetSaved1A
+  main/field_actor_states:FieldActor_GetSaved1B main/field_actor_states:FieldActor_GetSaved7
+  main/field_actor_states:FieldActor_GetSaved76 main/field_actor_states:FieldActor_GetSavedItem3F
+  main/field_actor_states:FieldActor_GetSavedYaw77 main/field_actor_states:FieldActor_RequestState19
+  main/field_actor_states:FieldActor_RequestState1A main/field_actor_states:FieldActor_State0Message
+  main/field_actor_states:FieldActor_State10Message main/field_actor_states:FieldActor_State13Message
+  main/field_actor_states:FieldActor_State14Message main/field_actor_states:FieldActor_State15Message
+  main/field_actor_states:FieldActor_State18Message main/field_actor_states:FieldActor_State19Message
+  main/field_actor_states:FieldActor_State1AMessage main/field_actor_states:FieldActor_State1BMessage
+  main/field_actor_states:FieldActor_State1Message main/field_actor_states:FieldActor_State2Message
+  main/field_actor_states:FieldActor_State30Message main/field_actor_states:FieldActor_State31Message
+  main/field_actor_states:FieldActor_State32Message main/field_actor_states:FieldActor_State33Message
+  main/field_actor_states:FieldActor_State34Message main/field_actor_states:FieldActor_State35Message
+  main/field_actor_states:FieldActor_State3FMessage main/field_actor_states:FieldActor_State3Message
+  main/field_actor_states:FieldActor_State4Message main/field_actor_states:FieldActor_State5Message
+  main/field_actor_states:FieldActor_State6FMessage main/field_actor_states:FieldActor_State70Message
+  main/field_actor_states:FieldActor_State76Message main/field_actor_states:FieldActor_State77Message
+  main/field_actor_states:FieldActor_State79Message main/field_actor_states:FieldActor_State7Message
+  main/field_actor_states:FieldActor_State83Message main/field_actor_states:FieldActor_State84Message
+  main/field_actor_states:FieldActor_State85Message main/field_actor_states:FieldActor_State86Message
+  main/field_actor_states:FieldActor_State90Message main/field_actor_states:FieldActor_State91Message
+  main/field_actor_states:FieldActor_State92Message main/field_actor_states:FieldActor_UpdateState91
+  main/field_actor_states:PackedItem_Get main/frame_ctrl:FrameCtrl_Delete
+  main/game_stop:GameStop_Release main/group_params:GroupParams_C88
+  main/group_params:GroupParams_ClearC80C88 main/joint_blend:JointBlend_Delete
+  main/lid_sleep:LidSleep_SetFlags main/link_global:LinkGlobal_SetMemberMask
+  main/link_global:LinkGlobal_SetPlace main/link_parts:LinkPart_EndEntryB
+  main/link_parts:LinkPart_EndEntryBytes main/link_parts:LinkPart_MakeEntryB
+  main/link_parts:LinkPart_MakeEntryBytes main/link_parts:LinkPart_ReadEntryChange
+  main/link_parts:LinkPart_SetPlace main/link_parts:LinkPart_UnpackEntry
+  main/link_state:LinkState_GlobalSetByteC4 main/link_state:LinkState_SetHalf98
+  main/linked_map_items:LinkedMapItems_Place main/linked_map_items:LinkedMapItems_PlaceAndShare
+  main/linked_map_items:LinkedMapItems_Set main/mail:MailBox_Mark main/mail:MailBox_SetMark
+  main/mail_text:MailTextDecoder_ConvertNext main/mail_text:MailTextDecoder_OnForm4
+  main/mail_text:MailTextDecoder_OnFormPart main/mail_text:MailTextDecoder_SetForm1
+  main/mail_text:MailTextDecoder_SetForm2 main/model_object:ModelObject_Delete
+  main/music_264:Music264_Reset main/music_264:MusicClock_Reset main/music_queue:Music_Reset
+  main/music_volume:MusicVolume_Reset main/player_record:PlayerRecord_MailMark
+  main/player_record:PlayerRecord_SetMailMark main/quick_message:QuickMessage_BalloonDestructDelete
+  main/quick_message:QuickMessage_BoardDestructDelete
+  main/quick_message:QuickMessage_NameBaseDestruct
+  main/quick_message:QuickMessage_NameBaseDestructDelete
+  main/quick_message:QuickMessage_NameDestructDelete
+  main/quick_message:QuickMessage_ReceiverDestructDelete main/quick_message:QuickMessage_ResetCurrent
+  main/quick_message:QuickMessage_SenderDestructDelete
+  main/quick_message:QuickMessage_TextDestructDelete main/quick_message:QuickMessage_ViewBaseDestruct
+  main/quick_message:QuickMessage_ViewBaseDestructDelete main/save_stamp:SaveStamp_MarkWriting
+  main/save_stamp:SaveStamp_MarkWritten main/save_stamp:SaveStamp_SetLostFlag
+  main/screen_panels:ScreenPanels_FourthPanel main/session:Session_GetModeRequest
+  main/session:Session_GetPeerRecvBlock main/session:Session_GetSendWait
+  main/session:Session_GetSendWaitLimit main/session:Session_IsSendReady
+  main/session:Session_RouteHeldMessages main/session_link:Session_DisableInterrupts
+  main/session_link:Session_EnableInterrupts main/session_link:Session_GetPeerMask
+  main/session_link:Session_IsLinkLost main/session_link:Session_RaiseSendTimeout
+  main/session_link:Session_SetHostReceiveBuffers main/session_link:Session_SetReceiveBuffers
+  main/session_link:Session_StopTransfer main/session_net:SessionNet_PeersHaveCredit
+  main/start_kind:StartKind_SetUnchanged main/system_command:SystemCommand_RunList
+  main/system_packet:SystemPacket_Dispatch main/system_packet:SystemPacket_RequestMode
+  main/system_packet:SystemPacket_RunCommands main/system_packet:SystemPacket_SendActivityFlag101
+  main/system_packet:SystemPacket_SendActivityPlayer100
+  main/system_packet:SystemPacket_SendActivityPlayerEF
+  main/system_packet:SystemPacket_SendActivityPlayerF4 main/system_packet:SystemPacket_SendInChunks
+  main/system_packet:SystemPacket_SendOwnRecord main/system_packet:SystemPacket_SendRecordBlock
+  main/system_packet:SystemPacket_SetActivityDataDC
+  main/system_packet:SystemPacket_SetActivityFlag101
+  main/system_packet:SystemPacket_SetActivityFlagD9 main/system_packet:SystemPacket_SetActivityFlagE4
+  main/system_packet:SystemPacket_SetActivityFlagE5
+  main/system_packet:SystemPacket_SetActivityMembers
+  main/system_packet:SystemPacket_SetActivityPlayer100
+  main/system_packet:SystemPacket_SetActivityPlayerEF
+  main/system_packet:SystemPacket_SetActivityPlayerF4
+  main/system_packet:SystemPacket_SetActivityPlayerF8
+  main/system_packet:SystemPacket_SetActivityPlayerFC main/system_packet:SystemPacket_SetLinkEntries
+  main/system_packet:SystemPacket_SetLinkFlagC4 main/system_packet:SystemPacket_SetOwnBlock
+  main/system_packet:SystemPacket_SetOwnStatus main/system_packet:SystemPacket_SetSenderStatus
+  main/system_packet:SystemPacket_WriteActivityBuffer main/system_packet:SystemPacket_WriteOwnRecord
+  main/system_packet:SystemPacket_WriteRecordBlock main/system_packet:SystemPacket_WriteSenderBlock
+  main/system_packet:SystemPacket_WriteSharedRecords main/system_packet:SystemPacket_WriteSlotBlock
+  main/talk_receiver:TalkReceiver_DestructDelete main/text_draw:TextDraw_ReleaseBoxes
+  main/town_pack:TownPack_InitThread main/town_pack:TownPack_KillThread main/town_pack:TownPack_Pack
+  main/town_pack:TownPack_PackedSize main/town_pack:TownPack_StartThread
+  main/town_pack:TownPack_ThreadMain main/town_pack:TownPack_Unpack
+  main/villager_plots:VillagerPlot_DestroyList main/wfc_delivery:WfcDelivery_DeliverLetter
+  main/wfc_delivery:WfcDelivery_LetterHmac main/wfc_delivery:WfcDelivery_NoticeHmac
+  main/wfc_delivery:WfcDelivery_PostNotice main/wfc_session:WfcSession_ApplyLetter
+  main/wfc_session:WfcSession_ApplyNotice main/wfc_session:WfcSession_ApplyStats
+  main/wfc_session:WfcSession_End main/wfc_session:WfcSession_KeepFriendData
+  main/wfc_setup:WfcSetup_Alloc main/wfc_setup:WfcSetup_Free main/wfc_setup:WfcSetup_RunOverlay1
+  main/wfc_stats:WfcStats_SetChecksum ov003/field_actor:FieldActor_EndState46Remote
+  ov003/field_actor:FieldActor_EndState55Remote ov003/field_actor:FieldActor_EndState59Remote
+  ov003/field_actor:FieldActor_EndState63Remote ov003/field_actor:FieldActor_EndState67Remote
+  ov003/field_actor:FieldActor_EndState68Remote ov003/field_actor:FieldActor_GetState16Saved
+  ov003/field_actor:FieldActor_GetState38Saved ov003/field_actor:FieldActor_GetState39Saved
+  ov003/field_actor:FieldActor_GetState3BSaved ov003/field_actor:FieldActor_GetState3DSaved
+  ov003/field_actor:FieldActor_GetState3ESaved ov003/field_actor:FieldActor_GetState46Saved
+  ov003/field_actor:FieldActor_GetState49Saved ov003/field_actor:FieldActor_GetState4BSaved
+  ov003/field_actor:FieldActor_GetState4DSaved ov003/field_actor:FieldActor_GetState6SavedItem
+  ov003/field_actor:FieldActor_HitState56 ov003/field_actor:FieldActor_LookMessage
+  ov003/field_actor:FieldActor_RequestState3B ov003/field_actor:FieldActor_RequestState46Saved
+  ov003/field_actor:FieldActor_RequestState59 ov003/field_actor:FieldActor_RequestState5F
+  ov003/field_actor:FieldActor_State11Message ov003/field_actor:FieldActor_State16Message
+  ov003/field_actor:FieldActor_State17Message ov003/field_actor:FieldActor_State38Message
+  ov003/field_actor:FieldActor_State39Message ov003/field_actor:FieldActor_State3AMessage
+  ov003/field_actor:FieldActor_State3BMessage ov003/field_actor:FieldActor_State3CMessage
+  ov003/field_actor:FieldActor_State3DMessage ov003/field_actor:FieldActor_State3EMessage
+  ov003/field_actor:FieldActor_State45Message ov003/field_actor:FieldActor_State46Message
+  ov003/field_actor:FieldActor_State47Message ov003/field_actor:FieldActor_State48Message
+  ov003/field_actor:FieldActor_State49Message ov003/field_actor:FieldActor_State4AMessage
+  ov003/field_actor:FieldActor_State4BMessage ov003/field_actor:FieldActor_State4CMessage
+  ov003/field_actor:FieldActor_State4DMessage ov003/field_actor:FieldActor_State4EMessage
+  ov003/field_actor:FieldActor_State4FMessage ov003/field_actor:FieldActor_State50Message
+  ov003/field_actor:FieldActor_State51Message ov003/field_actor:FieldActor_State52Message
+  ov003/field_actor:FieldActor_State53Message ov003/field_actor:FieldActor_State54Message
+  ov003/field_actor:FieldActor_State55Message ov003/field_actor:FieldActor_State56Message
+  ov003/field_actor:FieldActor_State57Message ov003/field_actor:FieldActor_State58Message
+  ov003/field_actor:FieldActor_State59Message ov003/field_actor:FieldActor_State5AMessage
+  ov003/field_actor:FieldActor_State5BMessage ov003/field_actor:FieldActor_State5CMessage
+  ov003/field_actor:FieldActor_State5DMessage ov003/field_actor:FieldActor_State5EMessage
+  ov003/field_actor:FieldActor_State5FMessage ov003/field_actor:FieldActor_State60Message
+  ov003/field_actor:FieldActor_State61Message ov003/field_actor:FieldActor_State62Message
+  ov003/field_actor:FieldActor_State63Message ov003/field_actor:FieldActor_State64Message
+  ov003/field_actor:FieldActor_State65Message ov003/field_actor:FieldActor_State66Message
+  ov003/field_actor:FieldActor_State67Message ov003/field_actor:FieldActor_State68Message
+  ov003/field_actor:FieldActor_State69Message ov003/field_actor:FieldActor_State6AMessage
+  ov003/field_actor:FieldActor_State6BMessage ov003/field_actor:FieldActor_State6CMessage
+  ov003/field_actor:FieldActor_State6DMessage ov003/field_actor:FieldActor_State6EMessage
+  ov003/field_actor:FieldActor_State6Message ov003/field_actor:FieldActor_State71Message
+  ov003/field_actor:FieldActor_State72Message ov003/field_actor:FieldActor_State73Message
+  ov003/field_actor:FieldActor_State74Message ov003/field_actor:FieldActor_State75Message
+  ov003/field_actor:FieldActor_State78Message ov003/field_actor:FieldActor_State80Message
+  ov003/field_actor:FieldActor_State81Message ov003/field_actor:FieldActor_State82Message
+  ov003/field_actor:FieldActor_State89Message ov003/field_actor:FieldActor_SweepState56Remote
+  ov003/field_actor:LookArgs_Get ov003/field_actor:PackedPoint_Get ov003/field_actor:PackedXZ_Get
+  ov003/field_actor:SavedFlag_Get ov003/field_actor:SavedItemTile_Get
+  ov003/field_actor:State51Saved_Get ov003/field_actor:State54Saved_Get
+  ov003/field_actor:State57Saved_Get ov003/field_actor:State58Saved_Get
+  ov003/field_actor:State59Saved_Get ov003/field_actor:State5ASaved_Get
+  ov003/field_actor:State5DSaved_Get ov003/field_actor:TileArgs_Get
+  ov003/field_actor:TileArgs_GetInts ov003/field_actor:TileStepArgs_Get
+  ov004/check_in_gate:CheckInGate_Close
+  ov004/field_actor_place_states:FieldActorPlaceStates_ClaimMessage
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetApproachSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetClaimSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetOffSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetRefusedSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetStepSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_OffMessage
+  ov004/field_actor_place_states:FieldActorPlaceStates_ProbeMessage
+  ov004/field_actor_place_states:FieldActorPlaceStates_RefusedMessage
+  ov004/field_actor_place_states:FieldActorPlaceStates_StayMessage
+  ov004/field_actor_place_states:FieldActorPlaceStates_StepMessage
+  ov004/field_actor_room_states2:FieldActorRoomStates2_ClaimPlaceMessage
+  ov004/field_actor_room_states2:FieldActorRoomStates2_FixedPointMessage
+  ov004/field_actor_room_states2:FieldActorRoomStates2_FurnitureHoldMessage
+  ov004/field_actor_room_states2:FieldActorRoomStates2_FurnitureReachMessage
+  ov004/field_actor_room_states2:FieldActorRoomStates2_FurnitureTurnMessage
+  ov004/field_actor_room_states2:FieldActorRoomStates2_GetFurnitureHoldSaved
+  ov004/field_actor_room_states2:FieldActorRoomStates2_GetFurnitureReachSaved
+  ov004/field_actor_room_states2:FieldActorRoomStates2_GetTakePlaceSaved
+  ov004/field_actor_room_states2:FieldActorRoomStates2_State20Message
+  ov004/field_actor_room_states2:FieldActorRoomStates2_TakeItemMessage
+  ov004/field_actor_room_states2:FieldActorRoomStates2_TakePlaceMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_AtChestMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_ChestApproachMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_ChestCloseMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_ExitRiseMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_ExitSinkMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_ExitWalkMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_FadeIn43Message
+  ov004/field_actor_room_states:FieldActorRoomStates_FadeInMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_GetAtChestSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetChestApproachSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetChestCloseSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotApproachSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterMinusSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_GetSpotEnterStraightSaved
+  ov004/field_actor_room_states:FieldActorRoomStates_HairOffMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_HairOnMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_HairWaitMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_HangUpMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_ItemBackMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_ItemOutMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_OnPhoneMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_PickUpMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_PullMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_PullStepMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_PushStepMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnter
+  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterMinus
+  ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterStraight
+  ov004/field_actor_room_states:FieldActorRoomStates_Sequence8AMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotApproachMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotClaimMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotEnterMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotEnterMinusMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotEnterStraightMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotStayMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotStepOffMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotTurnMinusMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_SpotTurnPlusMessage
+  ov004/room_object_022510b4:RoomObject022510b4_Destroy
+  ov048/gatekeeper_talk:GatekeeperTalk_Line21Or22 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer51
+  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerSession
+  ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo59 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo62
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_EndSession
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_JoinFriend
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_OnAnswer57
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_OnAnswer74
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartFindParent
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_StartJoinParent
+  ov054/post_clerk_talk:PostClerkTalk_AskJob1f ov055/xct_exchange_talk:XctExchangeTalk_DestructDelete
+  ov099/pockets_view:PocketsView_GridPlace ov100/pockets_box:PocketsBox_CancelChoice
+  ov100/pockets_box:PocketsBox_PlaceCursorSprite ov100/pockets_box:PocketsBox_PointAtFirstRow
+  ov100/pockets_box:PocketsBox_RunAction ov100/pockets_box_scene:PocketsBox_ChoiceTouch
+  ov100/pockets_box_scene:PocketsBox_CloseChoice ov100/pockets_box_scene:PocketsBox_WaitChoiceClosed
+  ov100/pockets_box_scene:PocketsBox_WaitChoiceShown ov100/pockets_box_scene:PocketsBox_WaitError
+  ov101/pockets_pick:PocketsPick_ClearMarks ov101/pockets_pick:PocketsPick_DragHeld
+  ov101/pockets_pick:PocketsPick_DropHeldAt ov101/pockets_pick:PocketsPick_FinishPickUp
+  ov101/pockets_pick:PocketsPick_FinishSwap ov101/pockets_pick:PocketsPick_FollowGlide
+  ov101/pockets_pick:PocketsPick_FollowTouch ov101/pockets_pick:PocketsPick_GlideHeldTo
+  ov101/pockets_pick:PocketsPick_MarkPlace ov101/pockets_pick:PocketsPick_MoveHeldByKeys
+  ov101/pockets_pick:PocketsPick_PickUpItem ov101/pockets_pick:PocketsPick_PickUpOnTurn
+  ov101/pockets_pick:PocketsPick_PickUpWithCursor ov101/pockets_pick:PocketsPick_PlaceItem
+  ov101/pockets_pick:PocketsPick_PlaceItemState ov101/pockets_pick:PocketsPick_PutDownWithCursor
+  ov101/pockets_pick:PocketsPick_PutHeldAt ov101/pockets_pick:PocketsPick_SetSlotItem
+  ov101/pockets_pick:PocketsPick_StartPutDown ov101/pockets_pick:PocketsPick_StartSwap
+  ov101/pockets_pick:PocketsPick_StepHeldGlide ov101/pockets_pick:PocketsPick_Swap
+  ov101/pockets_pick:PocketsPick_SwapHeldWith ov101/pockets_pick:PocketsPick_WaitCursorAnim
+  ov101/pockets_pick:PocketsPick_WaitError ov103/carried_letters:CarriedLetters_FollowCursorSprite
+  ov103/carried_letters:CarriedLetters_IsLetterPlace ov103/carried_letters:CarriedLetters_LetterIndex
+  ov103/carried_letters:CarriedLetters_PickUpLetter
+  ov103/carried_letters:CarriedLetters_PickUpWithCursor ov104/letter_send:LetterSend_WaitError
+  ov105/letter_storage:LetterStorage_WaitError ov110/public_box:PublicBox_CancelChoice
+  ov110/public_box:PublicBox_PlaceCursorSprite ov110/public_box:PublicBox_PointAtFirstRow
+  ov110/public_box:PublicBox_RunAction ov110/public_box_states:PublicBox_CloseChoice
+  ov110/public_box_states:PublicBox_RunActionWhenIdle
+  ov110/public_box_states:PublicBox_WaitChoiceShown ov110/public_box_states:PublicBox_WaitError
+  ov110/public_box_states:PublicBox_WatchChoiceTouch ov113/bbs_board:BbsBoard_Destroy
+  ov120/town_map_list:TownMap_MarkOfTarget ov120/town_map_list:TownMap_RowOfTarget
+  ov120/town_map_list:TownMap_ScrollToPickedRow ov120/town_map_list:TownMap_ScrollToSwitchedRow
+  ov120/town_map_list:TownMap_SetScroll ov120/town_map_list:TownMap_SetScrollTarget
+  ov120/town_map_list:TownMap_ShowPlaces ov120/town_map_list:TownMap_StartBlink
+  ov120/town_map_list:TownMap_StepScroll ov123/design_editor:DesignEditor_Destroy
+  ov126/keyboard_entry_states:KeyboardEntry_AskKeys
+  ov126/keyboard_entry_states:KeyboardEntry_AskTouch
+  ov126/keyboard_entry_states:KeyboardEntry_BeginAskKeys
+  ov126/keyboard_entry_states:KeyboardEntry_BeginAskTouch ov128/star_view:StarView_Phase4
+  ov135/phone_clock:PhoneClock_Phase4Idle ov139/res_rows:ResRows_Cells
+  ov139/res_rows:ResRows_ClearFlags ov139/res_rows:ResRows_ClearRow ov139/res_rows:ResRows_ClearRows
+  ov139/res_rows:ResRows_Construct ov139/res_rows:ResRows_Destroy ov139/res_rows:ResRows_DrawAt
+  ov139/res_rows:ResRows_End ov139/res_rows:ResRows_FadeRow ov139/res_rows:ResRows_LoadBg
+  ov139/res_rows:ResRows_LoadObjFiles ov139/res_rows:ResRows_MakeHeadings ov139/res_rows:ResRows_Open
+  ov139/res_rows:ResRows_QueuePalette ov139/res_rows:ResRows_ReleaseLabels
+  ov139/res_rows:ResRows_SetFirstColumn ov139/res_rows:ResRows_SetFlags ov139/res_rows:ResRows_SetRow
+  ov139/res_rows:ResRows_SetSecondColumn ov139/res_rows:ResRows_TakeLabel
+  ov139/res_rows:ResRows_Teardown ov139/res_rows:ResRows_TestFlags
+  ov140/host_picker:HostPicker_ActOnPress ov140/host_picker:HostPicker_BeginFrame
+  ov140/host_picker:HostPicker_BeginInteractiveFrame ov140/host_picker:HostPicker_BrowseByKeys
+  ov140/host_picker:HostPicker_BrowseByTouch ov140/host_picker:HostPicker_Cancel
+  ov140/host_picker:HostPicker_ClearFlags ov140/host_picker:HostPicker_Close
+  ov140/host_picker:HostPicker_CloseLabels ov140/host_picker:HostPicker_Confirm
+  ov140/host_picker:HostPicker_CountHosts ov140/host_picker:HostPicker_CursorSpriteX
+  ov140/host_picker:HostPicker_CursorSpriteY ov140/host_picker:HostPicker_Delete
+  ov140/host_picker:HostPicker_Destroy ov140/host_picker:HostPicker_Draw
+  ov140/host_picker:HostPicker_End ov140/host_picker:HostPicker_EndFrame
+  ov140/host_picker:HostPicker_EndInteractiveFrame ov140/host_picker:HostPicker_FadeRows
+  ov140/host_picker:HostPicker_FadeRowsIn ov140/host_picker:HostPicker_FadeRowsOut
+  ov140/host_picker:HostPicker_FillRows ov140/host_picker:HostPicker_FriendList
+  ov140/host_picker:HostPicker_GlideTo ov140/host_picker:HostPicker_GlideToCursor
+  ov140/host_picker:HostPicker_HideCursorSprite ov140/host_picker:HostPicker_InitList
+  ov140/host_picker:HostPicker_IsHosting ov140/host_picker:HostPicker_LoadBackground
+  ov140/host_picker:HostPicker_LoadObjFiles ov140/host_picker:HostPicker_MarkRows
+  ov140/host_picker:HostPicker_MoveCursor ov140/host_picker:HostPicker_New
+  ov140/host_picker:HostPicker_NextPage ov140/host_picker:HostPicker_Phase3Idle
+  ov140/host_picker:HostPicker_Phase4Idle ov140/host_picker:HostPicker_PlaceSpriteAtCursor
+  ov140/host_picker:HostPicker_PressAndReturn ov140/host_picker:HostPicker_PressToAct
+  ov140/host_picker:HostPicker_QueueScreen ov140/host_picker:HostPicker_RefreshEntries
+  ov140/host_picker:HostPicker_RefreshHosts ov140/host_picker:HostPicker_Resume
+  ov140/host_picker:HostPicker_ResumeByKeys ov140/host_picker:HostPicker_ResumeByTouch
+  ov140/host_picker:HostPicker_RunInteractive ov140/host_picker:HostPicker_RunState
+  ov140/host_picker:HostPicker_RunSubState ov140/host_picker:HostPicker_ScrollWithWipe
+  ov140/host_picker:HostPicker_Select ov140/host_picker:HostPicker_SetFlags
+  ov140/host_picker:HostPicker_SetUpLayers ov140/host_picker:HostPicker_Setup
+  ov140/host_picker:HostPicker_ShowCursorSprite ov140/host_picker:HostPicker_ShowHostCount
+  ov140/host_picker:HostPicker_ShowLastPage ov140/host_picker:HostPicker_ShowPage
+  ov140/host_picker:HostPicker_Start ov140/host_picker:HostPicker_StartSetup
+  ov140/host_picker:HostPicker_StartWipeIn ov140/host_picker:HostPicker_StartWipeOut
+  ov140/host_picker:HostPicker_TakeLabel ov140/host_picker:HostPicker_Teardown
+  ov140/host_picker:HostPicker_TestFlags ov140/host_picker:HostPicker_WaitCursorSprite
+  ov140/host_picker:HostPicker_WaitPressRelease ov140/host_picker:HostPicker_WaitToClose
+  ov140/host_picker:HostPicker_WipeIn ov140/host_picker:HostPicker_WipeOut
+  ov141/town_list:TownList_ActOnPress ov141/town_list:TownList_AfterWipeIn
+  ov141/town_list:TownList_BeforeWipeOut ov141/town_list:TownList_BrowseByKeys
+  ov141/town_list:TownList_BrowseByTouch ov141/town_list:TownList_ClearFlags
+  ov141/town_list:TownList_Confirm ov141/town_list:TownList_CountDownToClose
+  ov141/town_list:TownList_CursorSpriteX ov141/town_list:TownList_CursorSpriteY
+  ov141/town_list:TownList_Delete ov141/town_list:TownList_Destroy ov141/town_list:TownList_EaseTo
+  ov141/town_list:TownList_FindParent ov141/town_list:TownList_FreeRow
+  ov141/town_list:TownList_GlideToCursor ov141/town_list:TownList_HideCursorSprite
+  ov141/town_list:TownList_MoveCursor ov141/town_list:TownList_PressA
+  ov141/town_list:TownList_PressCursor ov141/town_list:TownList_QueueScreen
+  ov141/town_list:TownList_Quit ov141/town_list:TownList_Resume ov141/town_list:TownList_ResumeByKeys
+  ov141/town_list:TownList_ResumeByTouch ov141/town_list:TownList_Scan
+  ov141/town_list:TownList_SetFlags ov141/town_list:TownList_SetPicked
+  ov141/town_list:TownList_ShowCursorAtCursor ov141/town_list:TownList_ShowCursorSprite
+  ov141/town_list:TownList_StepFades ov141/town_list:TownList_StoreParent
+  ov141/town_list:TownList_TestFlags ov141/town_list:TownList_WaitCursorSprite
+  ov141/town_list:TownList_WaitPress ov141/town_list_states:TownList_BeginFrame
+  ov141/town_list_states:TownList_BeginInteractiveFrame ov141/town_list_states:TownList_Close
+  ov141/town_list_states:TownList_Draw ov141/town_list_states:TownList_End
+  ov141/town_list_states:TownList_EndFrame ov141/town_list_states:TownList_EndInteractiveFrame
+  ov141/town_list_states:TownList_LoadGraphics ov141/town_list_states:TownList_LoadPanelGraphics
+  ov141/town_list_states:TownList_New ov141/town_list_states:TownList_Phase3Idle
+  ov141/town_list_states:TownList_Phase4Idle ov141/town_list_states:TownList_RunInteractive
+  ov141/town_list_states:TownList_RunState ov141/town_list_states:TownList_RunSubState
+  ov141/town_list_states:TownList_ScrollWithWipe ov141/town_list_states:TownList_SetUpLayers
+  ov141/town_list_states:TownList_Setup ov141/town_list_states:TownList_Start
+  ov141/town_list_states:TownList_StartSetup ov141/town_list_states:TownList_StartWipeIn
+  ov141/town_list_states:TownList_StartWipeOut ov141/town_list_states:TownList_Teardown
+  ov141/town_list_states:TownList_WipeIn ov141/town_list_states:TownList_WipeOut
+  ov142/order_catalog_scene:OrderCatalog_Destroy ov143/tune_editor:TuneEditor_Destroy
+  ov144/music_list_scene:MusicList_Destroy ov146/wfc_host_list:WfcHostList_BeginFrame
+  ov146/wfc_host_list:WfcHostList_BeginInteractiveFrame ov146/wfc_host_list:WfcHostList_ClearFlags
+  ov146/wfc_host_list:WfcHostList_Close ov146/wfc_host_list:WfcHostList_Delete
+  ov146/wfc_host_list:WfcHostList_Destroy ov146/wfc_host_list:WfcHostList_Draw
+  ov146/wfc_host_list:WfcHostList_End ov146/wfc_host_list:WfcHostList_EndFrame
+  ov146/wfc_host_list:WfcHostList_EndLayerTasks ov146/wfc_host_list:WfcHostList_LoadObjFiles
+  ov146/wfc_host_list:WfcHostList_LoadScreens ov146/wfc_host_list:WfcHostList_New
+  ov146/wfc_host_list:WfcHostList_Phase3Idle ov146/wfc_host_list:WfcHostList_Phase4Idle
+  ov146/wfc_host_list:WfcHostList_PlaceSprites ov146/wfc_host_list:WfcHostList_QueueLayers
+  ov146/wfc_host_list:WfcHostList_Release ov146/wfc_host_list:WfcHostList_RunInteractive
+  ov146/wfc_host_list:WfcHostList_RunState ov146/wfc_host_list:WfcHostList_RunSubState
+  ov146/wfc_host_list:WfcHostList_SetFlags ov146/wfc_host_list:WfcHostList_SetLayers
+  ov146/wfc_host_list:WfcHostList_Setup ov146/wfc_host_list:WfcHostList_Start
+  ov146/wfc_host_list:WfcHostList_StartWipeIn ov146/wfc_host_list:WfcHostList_StartWipeOut
+  ov146/wfc_host_list:WfcHostList_TestFlags ov146/wfc_host_list:WfcHostList_UpdateList
+  ov146/wfc_host_list:WfcHostList_WipeIn ov146/wfc_host_list:WfcHostList_WipeOut
+  ov146/wfc_host_list_input:WfcHostList_Activate ov146/wfc_host_list_input:WfcHostList_BeginInput
+  ov146/wfc_host_list_input:WfcHostList_BeginKeys ov146/wfc_host_list_input:WfcHostList_BeginTouch
+  ov146/wfc_host_list_input:WfcHostList_Choose
+  ov146/wfc_host_list_input:WfcHostList_CursorFromPointer
+  ov146/wfc_host_list_input:WfcHostList_CursorToLastRow
+  ov146/wfc_host_list_input:WfcHostList_GlidePointerTo
+  ov146/wfc_host_list_input:WfcHostList_HidePointer ov146/wfc_host_list_input:WfcHostList_MoveCursor
+  ov146/wfc_host_list_input:WfcHostList_MoveCursorByKeys
+  ov146/wfc_host_list_input:WfcHostList_PlacePointer ov146/wfc_host_list_input:WfcHostList_PointerX
+  ov146/wfc_host_list_input:WfcHostList_PointerY ov146/wfc_host_list_input:WfcHostList_PressA
+  ov146/wfc_host_list_input:WfcHostList_PressPointer ov146/wfc_host_list_input:WfcHostList_Quit
+  ov146/wfc_host_list_input:WfcHostList_RunActivate ov146/wfc_host_list_input:WfcHostList_RunBarTouch
+  ov146/wfc_host_list_input:WfcHostList_RunCloseDelay ov146/wfc_host_list_input:WfcHostList_RunKeys
+  ov146/wfc_host_list_input:WfcHostList_RunKnobDrag ov146/wfc_host_list_input:WfcHostList_RunKnobKeys
+  ov146/wfc_host_list_input:WfcHostList_RunKnobRelease
+  ov146/wfc_host_list_input:WfcHostList_RunPointerGlide
+  ov146/wfc_host_list_input:WfcHostList_RunPointerPress
+  ov146/wfc_host_list_input:WfcHostList_RunTouch
+  ov146/wfc_host_list_input:WfcHostList_ShowPointerFirst
+  ov146/wfc_host_list_rows:WfcHostList_BuildRowsScreen
+  ov146/wfc_host_list_rows:WfcHostList_CloseLabels ov146/wfc_host_list_rows:WfcHostList_CopyHosts
+  ov146/wfc_host_list_rows:WfcHostList_DragKnob ov146/wfc_host_list_rows:WfcHostList_FriendList
+  ov146/wfc_host_list_rows:WfcHostList_GrabKnob ov146/wfc_host_list_rows:WfcHostList_IsHosting
+  ov146/wfc_host_list_rows:WfcHostList_IsJoinable ov146/wfc_host_list_rows:WfcHostList_KnobByKeys
+  ov146/wfc_host_list_rows:WfcHostList_KnobFromScroll
+  ov146/wfc_host_list_rows:WfcHostList_KnobReleased ov146/wfc_host_list_rows:WfcHostList_PlaceKnob
+  ov146/wfc_host_list_rows:WfcHostList_RefreshList
+  ov146/wfc_host_list_rows:WfcHostList_RefreshRowLabels
+  ov146/wfc_host_list_rows:WfcHostList_ReleaseKnob
+  ov146/wfc_host_list_rows:WfcHostList_ScrollFromKnob ov146/wfc_host_list_rows:WfcHostList_SetScroll
+  ov146/wfc_host_list_rows:WfcHostList_ShadeRow ov146/wfc_host_list_rows:WfcHostList_ShadeRows
+  ov146/wfc_host_list_rows:WfcHostList_ShowTitles ov146/wfc_host_list_rows:WfcHostList_ShowTitlesOnce
+  ov146/wfc_host_list_rows:WfcHostList_StepScroll ov146/wfc_host_list_rows:WfcHostList_TakeLabel
+  ov146/wfc_host_list_rows:WfcHostList_UpdateHosts
 
 area: Shops and buildings (the seed's day)
 group: Nook's store: every topic
@@ -1052,41 +1856,41 @@ group: message tags no shown message holds
 scene: none: the tag handlers of tags that only the test message Other/test_ 9 holds (4/30, 4/32, 11/3-5, 11/15) or no message at all (11/1, 11/2, 11/6-14, 11/16-19), and the centred lines' measurer (main/talk_page.h) for the tags no centred message holds
 reach: a scan of the KOR .bmg files (the LZ77 archives unpacked; a message is centred when its INF1 entry's kind has data_020d1d0c set): test_ is shown only through NpcPlcTalk_Line0, which asks for message 0 of the archive "test"; the measurer runs only for centred messages, and outside mail (letters are not drawn by the talk page) and test_ those hold the tags 0/0, 0/1, 1/0, 1/1, 1/16, 2/4, 4/3, 4/15-17, 4/26-28, 6/0, 6/1, 7/0, 11/20 and 0xff/0 alone
 needs: unreachable
-match: main/talk_tags:TalkTags_PutImpression main/talk_tags:TalkTags_Nothing4_32
-  main/talk_tags:TalkTags_ConvertNext main/talk_tags:TalkTags_Nothing11_4
-  main/talk_tags:TalkTags_SetE0One main/talk_tags:TalkTags_SetE0Two main/talk_tags:TalkTags_NotePart0
-  main/talk_tags:TalkTags_NotePart1 main/talk_tags:TalkTags_NotePart2
-  main/talk_tags:TalkTags_NotePart3 main/talk_tags:TalkTags_NotePart4
-  main/talk_tags:TalkTags_NotePart5 main/talk_tags:TalkTags_NotePart6
-  main/talk_tags:TalkTags_NotePart7 main/talk_tags:TalkTags_NotePart8
-  main/talk_tags:TalkTags_NotePart9 main/talk_tags:TalkTags_NotePart10
-  main/talk_tags:TalkTags_NoteValue0 main/talk_tags:TalkTags_NoteValue1
-  main/talk_tags:TalkTags_NoteValue2 main/talk_tags:TalkTags_NoteValue3
+match: main/talk_page:TalkPageMeasurer_AltText main/talk_page:TalkPageMeasurer_Ignore
   main/talk_page:TalkPageMeasurer_Name3 main/talk_page:TalkPageMeasurer_Nothing11_4
-  main/talk_page:TalkPageMeasurer_Set50One main/talk_page:TalkPageMeasurer_Set50Two
-  main/talk_page:TalkPageMeasurer_PutBoom main/talk_page:TalkPageMeasurer_PutPraise
-  main/talk_page:TalkPageMeasurer_PutNickname main/talk_page:TalkPageMeasurer_PutImpression
-  main/talk_page:TalkPageMeasurer_PutName3 main/talk_page:TalkPageMeasurer_Part0
-  main/talk_page:TalkPageMeasurer_Part1 main/talk_page:TalkPageMeasurer_Part2
+  main/talk_page:TalkPageMeasurer_Part0 main/talk_page:TalkPageMeasurer_Part1
+  main/talk_page:TalkPageMeasurer_Part10 main/talk_page:TalkPageMeasurer_Part2
   main/talk_page:TalkPageMeasurer_Part3 main/talk_page:TalkPageMeasurer_Part4
   main/talk_page:TalkPageMeasurer_Part5 main/talk_page:TalkPageMeasurer_Part6
   main/talk_page:TalkPageMeasurer_Part7 main/talk_page:TalkPageMeasurer_Part8
-  main/talk_page:TalkPageMeasurer_Part9 main/talk_page:TalkPageMeasurer_Part10
+  main/talk_page:TalkPageMeasurer_Part9 main/talk_page:TalkPageMeasurer_PutAmpersand
+  main/talk_page:TalkPageMeasurer_PutBoom main/talk_page:TalkPageMeasurer_PutCatchphrase
+  main/talk_page:TalkPageMeasurer_PutDay main/talk_page:TalkPageMeasurer_PutDislikedNpc
+  main/talk_page:TalkPageMeasurer_PutHour12 main/talk_page:TalkPageMeasurer_PutImpression
+  main/talk_page:TalkPageMeasurer_PutLeftBrace main/talk_page:TalkPageMeasurer_PutLikedNpc
+  main/talk_page:TalkPageMeasurer_PutMinute main/talk_page:TalkPageMeasurer_PutMonth
+  main/talk_page:TalkPageMeasurer_PutName3 main/talk_page:TalkPageMeasurer_PutNickname
+  main/talk_page:TalkPageMeasurer_PutOtherPlayer main/talk_page:TalkPageMeasurer_PutPart10
   main/talk_page:TalkPageMeasurer_PutPart3 main/talk_page:TalkPageMeasurer_PutPart4
   main/talk_page:TalkPageMeasurer_PutPart5 main/talk_page:TalkPageMeasurer_PutPart6
   main/talk_page:TalkPageMeasurer_PutPart7 main/talk_page:TalkPageMeasurer_PutPart8
-  main/talk_page:TalkPageMeasurer_PutPart9 main/talk_page:TalkPageMeasurer_PutPart10
-  main/talk_page:TalkPageMeasurer_PutOtherPlayer main/talk_page:TalkPageMeasurer_PutRandomNpc
-  main/talk_page:TalkPageMeasurer_PutDislikedNpc main/talk_page:TalkPageMeasurer_PutLikedNpc
-  main/talk_page:TalkPageMeasurer_PutSecond main/talk_page:TalkPageMeasurer_PutMinute
-  main/talk_page:TalkPageMeasurer_PutHour12 main/talk_page:TalkPageMeasurer_PutWeekday
-  main/talk_page:TalkPageMeasurer_PutDay main/talk_page:TalkPageMeasurer_PutMonth
-  main/talk_page:TalkPageMeasurer_PutYear main/talk_page:TalkPageMeasurer_PutCatchphrase
-  main/talk_page:TalkPageMeasurer_PutReceiverName main/talk_page:TalkPageMeasurer_PutPlayerName
-  main/talk_page:TalkPageMeasurer_RememberedEnd main/talk_page:TalkPageMeasurer_RememberedText
-  main/talk_page:TalkPageMeasurer_PutLeftBrace main/talk_page:TalkPageMeasurer_PutPercent
-  main/talk_page:TalkPageMeasurer_PutAmpersand main/talk_page:TalkPageMeasurer_AltText
-  main/talk_page:TalkPageMeasurer_Ignore
+  main/talk_page:TalkPageMeasurer_PutPart9 main/talk_page:TalkPageMeasurer_PutPercent
+  main/talk_page:TalkPageMeasurer_PutPlayerName main/talk_page:TalkPageMeasurer_PutPraise
+  main/talk_page:TalkPageMeasurer_PutRandomNpc main/talk_page:TalkPageMeasurer_PutReceiverName
+  main/talk_page:TalkPageMeasurer_PutSecond main/talk_page:TalkPageMeasurer_PutWeekday
+  main/talk_page:TalkPageMeasurer_PutYear main/talk_page:TalkPageMeasurer_RememberedEnd
+  main/talk_page:TalkPageMeasurer_RememberedText main/talk_page:TalkPageMeasurer_Set50One
+  main/talk_page:TalkPageMeasurer_Set50Two main/talk_tags:TalkTags_ConvertNext
+  main/talk_tags:TalkTags_NotePart0 main/talk_tags:TalkTags_NotePart1
+  main/talk_tags:TalkTags_NotePart10 main/talk_tags:TalkTags_NotePart2
+  main/talk_tags:TalkTags_NotePart3 main/talk_tags:TalkTags_NotePart4
+  main/talk_tags:TalkTags_NotePart5 main/talk_tags:TalkTags_NotePart6
+  main/talk_tags:TalkTags_NotePart7 main/talk_tags:TalkTags_NotePart8
+  main/talk_tags:TalkTags_NotePart9 main/talk_tags:TalkTags_NoteValue0
+  main/talk_tags:TalkTags_NoteValue1 main/talk_tags:TalkTags_NoteValue2
+  main/talk_tags:TalkTags_NoteValue3 main/talk_tags:TalkTags_Nothing11_4
+  main/talk_tags:TalkTags_Nothing4_32 main/talk_tags:TalkTags_PutImpression
+  main/talk_tags:TalkTags_SetE0One main/talk_tags:TalkTags_SetE0Two
 
 area: Villagers (the seed's day)
 group: the talk engine: tags, pages, windows, sliders
@@ -1242,6 +2046,26 @@ match: ov003/town_insect* ov068/insect_paths ov003/fish_shadow* ov003/player_fis
 
 # ================================================================== the rest
 
+area: Pockets, menus and letters (the seed's day)
+group: the friend roster with a friend registered
+scene: the friend roster (ov119) with a friend in the list: a friend deleted before the last (the list closed up), and a friend code typed that is already registered
+reach: WifiFriendList_Compact (friend-add) copies the entries after a deleted one; FriendCodeEntry_IsOtherFriendsCode (friend-code) compares the typed code with each registered friend's: both need a save with friends registered
+needs: seed
+match: main/wifi_friends:WifiFriend_Copy main/wifi_friends:WifiFriendData_Matches
+
+area: Not attributed to one scene
+group: the link's code in files one player also runs
+scene: none known: the functions of the session, link, quick message, caution window, network and Wi-Fi files that the fixed point and the link guard do not prove (most are the link's: the session records, the network library's dispatch to the local and Wi-Fi libraries by the network mode, the caution window's states, the scene objects' shared modes)
+reach: unknown: these files were in "local wireless" and "Nintendo Wi-Fi Connection" as whole files, but scenes run some of their functions (findings 2026-10-28, town6); the rest still needs a proof (the network mode data_021fbef8 and the session mode are set only by the link's code: a proof by the values stored, as for the field actor's states and the activity's jobs) or a scene
+needs: unknown
+match: main/session main/session_link main/session_players main/session_record main/session_villager
+  main/link_global main/link_parts main/link_scene main/link_state main/quick_message
+  main/player_messages main/object_claim main/packed_bytes main/scene_share main/scene_share_table
+  main/player_processes main/caution_window main/exchange_block main/activity_link_jobs
+  main/player_actors main/paired_town main/scene_claim main/wireless_icon main/obj_020dd33c
+  main/obj_020dd33c_modes autoload_2/network main/place_claim main/wfc_delivery main/wfc_setup
+  main/wfc_stats main/wifi_friends ov055/xct_exchange ov055/xct_exchange_talk
+
 area: Not attributed to one scene
 group: overlay static initialisers
 scene: the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads)
@@ -1254,4 +2078,4 @@ group: other paths of shared code the scenes already run
 scene: none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions)
 reach: unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them
 needs: unknown
-match: autoload_2/* main/* ov003/* ov004/* ov009/* ov056/* ov068/*
+match: autoload_2/* main/* ov003/* ov004/* ov009/* ov056/* ov068/* ov055/*
