@@ -707,7 +707,7 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
 area: Unreachable for one player
 group: the town map's list by the keys and the pen
 scene: none: Pelly's town map (ov120, mode 0x2f) always opens with the cursor on the map, where A, B, X or a touch closes it
-reach: TOWN_MAP_FLAG_ON_MAP is never cleared (ov120/town_map.h, QUIRK), so sub states 0-8 (the list's keys, touches, scroll knob) and what only they call never run: the list is built and drawn (new-player, nook-job), but TownMap_Select is given a target only by TownMap_Pick, _TouchMap and _TouchList, the scroll target is set only from those states and a row cursor, and every other call passes TOWN_MAP_TARGET_NONE (findings 2026-10-28, town6)
+reach: TOWN_MAP_FLAG_ON_MAP is never cleared (ov120/town_map.h, QUIRK), so sub states 0-8 (the list's keys, touches, scroll knob) and what only they call never run: the list is built and drawn (new-player, nook-job), but TownMap_Select is given a target only by TownMap_Pick, _TouchMap and _TouchList, the scroll target is set only from those states and a row cursor, and every other call passes TOWN_MAP_TARGET_NONE (findings 2026-10-28, town6); besides (findings 2026-10-29, town7, third batch), TownMap_Select returns at once for TOWN_MAP_TARGET_NONE, and every call with another target is in TownMap_Pick, _TouchMap and _TouchList, the list's sub states' code (checked unreached), so what its body names only past that return never runs (w24/classify.py, gate value)
 needs: unreachable
 match: ov120/town_map:TownMap_EnterTouch ov120/town_map:TownMap_GlideToCursor
   ov120/town_map:TownMap_MoveCursor ov120/town_map:TownMap_Pick ov120/town_map:TownMap_PressPointer
@@ -716,9 +716,13 @@ match: ov120/town_map:TownMap_EnterTouch ov120/town_map:TownMap_GlideToCursor
   ov120/town_map:TownMap_SubKnobPress ov120/town_map:TownMap_SubKnobRelease
   ov120/town_map:TownMap_SubPress ov120/town_map:TownMap_SubRelease ov120/town_map:TownMap_SubTouch
   ov120/town_map_list:TownMap_FindMarkAt ov120/town_map_list:TownMap_MapCursorFromRow
+  ov120/town_map_list:TownMap_MarkOfTarget ov120/town_map_list:TownMap_RowOfTarget
   ov120/town_map_list:TownMap_ScrollByDrag ov120/town_map_list:TownMap_ScrollByKeys
-  ov120/town_map_list:TownMap_TouchKnob ov120/town_map_list:TownMap_TouchList
-  ov120/town_map_list:TownMap_TouchMap ov120/town_map_list:TownMap_TouchTabs
+  ov120/town_map_list:TownMap_ScrollToPickedRow ov120/town_map_list:TownMap_ScrollToSwitchedRow
+  ov120/town_map_list:TownMap_SetScroll ov120/town_map_list:TownMap_ShowPlaces
+  ov120/town_map_list:TownMap_StartBlink ov120/town_map_list:TownMap_TouchKnob
+  ov120/town_map_list:TownMap_TouchList ov120/town_map_list:TownMap_TouchMap
+  ov120/town_map_list:TownMap_TouchTabs
 
 area: Unreachable for one player
 group: a snowman's balls shaking and bursting
@@ -731,7 +735,7 @@ match: ov068/snowball:Snowball_EnterShakeBody ov068/snowball:Snowball_EnterShake
 area: Unreachable for one player
 group: hardware and failure paths
 scene: none: the debug screen after an exception, a halt, a pulled card, the lid closed, a low battery, a failed card access
-reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults. By whole file only the debug screen, its text and the halt; of the other files only: the lid's flags, wake and backlights (LidSleep_Update on the lid's bit), the pulled card's callback, GameStop_Release (the stop latch rises on data_021fbe38, which only Pad_Update writes, with 0) and SaveStamp_SetLostFlag (both card copies bad although this run's stamp says a write began, which needs the card to fail); the card's checks, reads and writes, the save stamp and the backup card run in every scene (findings 2026-10-28, town6)
+reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults. By whole file only the debug screen, its text and the halt; of the other files only: the lid's flags, wake and backlights (LidSleep_Update on the lid's bit), the pulled card's callback, GameStop_Release (the stop latch rises on data_021fbe38, which only Pad_Update writes, with 0) and SaveStamp_SetLostFlag (both card copies bad although this run's stamp says a write began, which needs the card to fail); the card's checks, reads and writes, the save stamp and the backup card run in every scene (findings 2026-10-28, town6); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and statistics flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishStatsGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyStats return at once (w24/guard2.py --zero; w24/classify.py, gate latch)
 needs: unreachable
 match: main/card_pulled:CardPulled_OnPulledOut main/debug_screen:DebugScreen_ClearScreens
   main/debug_screen:DebugScreen_DrawStack main/debug_screen:DebugScreen_DrawStatus
@@ -744,9 +748,9 @@ match: main/card_pulled:CardPulled_OnPulledOut main/debug_screen:DebugScreen_Cle
   main/debug_text:DebugText_PutString main/debug_text:DebugText_VPrintf main/game_halt:GameHalt_Halt
   main/game_halt:GameHalt_SaveContextAndHalt main/game_halt:GameHalt_SendToArm7
   main/game_halt:GameHalt_ShowDebugScreen main/game_halt:GameHalt_Terminate
-  main/lid_sleep:LidSleep_BacklightsOff main/lid_sleep:LidSleep_ClearFlags
-  main/lid_sleep:LidSleep_HasFlags main/lid_sleep:LidSleep_RestoreBacklights
-  main/lid_sleep:LidSleep_Wake
+  main/game_stop:GameStop_Release main/lid_sleep:LidSleep_BacklightsOff
+  main/lid_sleep:LidSleep_ClearFlags main/lid_sleep:LidSleep_HasFlags
+  main/lid_sleep:LidSleep_RestoreBacklights main/lid_sleep:LidSleep_Wake
 
 area: Unreachable for one player
 group: the gatekeeper's visits and connections
@@ -960,7 +964,7 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
 area: Unreachable for one player
 group: code only unreachable code calls
 scene: none: functions whose every caller is in an unreachable group (the local wireless session and its activity jobs and packets, the Wi-Fi Connection, the gatekeepers' visits, the lost child's walk, the debug screen, the lid and the game's stop): the activity's fields, the jobs those sessions ask for, the field label's session messages, the caution window's planes, the town objects' session messages
-reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7), functions reached only through the functions of unreachable groups proved by the values their reasons close (w24/classify.py, gate value); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
+reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7), functions reached only through the functions of unreachable groups proved by the values their reasons close (w24/classify.py, gate value); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and statistics flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishStatsGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyStats return at once (w24/guard2.py --zero; w24/classify.py, gate latch)
 needs: unreachable
 match: autoload_2/heap:Heap_Report autoload_2/network:Local_Call02269638
   autoload_2/network:Wfc_Call022784a0 autoload_2/network:Wfc_FinishGet
@@ -1001,25 +1005,29 @@ match: autoload_2/heap:Heap_Report autoload_2/network:Local_Call02269638
   main/activity_link_jobs:ActivityLinkJobs_Step1F main/activity_talk:ActivityTalk_QueueMessage11
   main/activity_vars:ActivityVars_ReceivedBlock main/activity_vars:ActivityVars_SetFlag3C08
   main/activity_vars:ActivityVars_SetSlot3C1C main/battery_warning:BatteryWarning_Disable
+  main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice
   main/block_021d27ac_parts:Block021d27acPart20_SetKind
-  main/block_021d27ac_parts:Block021d27acPart20_SetValue main/camera_control:CameraControl_KeepView
-  main/camera_control:CameraControl_SetMode19 main/card_save:CardSave_WriteAccount
-  main/design:Design_Receive main/field_label:FieldLabel_ChooseMessage
-  main/field_label:FieldLabel_ShowMessage9 main/field_label:FieldLabel_ShowTableMessage
-  main/fish_disp:FishDisp_HandleMessage main/fox_shop:FoxPassword_ClearVisitor
-  main/group_params:GroupParams_C88 main/group_params:GroupParams_ClearC80C88
-  main/link_global:LinkGlobal_MemberMask main/link_global:LinkGlobal_SetChosen
-  main/link_global:LinkGlobal_SetKind main/link_global:LinkGlobal_SetMemberMask
-  main/link_parts:LinkPart_CopyByte main/link_parts:LinkPart_ReadEntry
-  main/link_parts:LinkPart_ReadEntryChange main/link_parts:LinkPart_UnpackEntry
-  main/link_parts:LinkPart_UnpackStatusByte main/link_scene:LinkScene_Empty6C8C
-  main/link_scene:LinkScene_GlobalSetAcked main/link_scene:LinkScene_GlobalSetReleased
-  main/link_scene:LinkScene_GlobalSetStateAsker main/link_scene:LinkScene_TakeLeftState
-  main/link_state:LinkState_Half98 main/link_state:LinkState_SetHalf98
-  main/middle_spot:MiddleSpot_Clear main/object_claim:ObjectClaim_Dispatch
-  main/paired_town:PairedTown_ClearFlag5 main/paired_town:PairedTown_SaveCurrent
-  main/paired_town:PairedTown_SetFlag5 main/paired_town:PairedTown_TakeOwn
-  main/player_messages:PlayerMessages_Dispatch main/player_records:PlayerRecords_Exists
+  main/block_021d27ac_parts:Block021d27acPart20_SetValue main/c_library:CLib_BytesDiffer
+  main/camera_control:CameraControl_KeepView main/camera_control:CameraControl_SetMode19
+  main/card_save:CardSave_WriteAccount main/design:Design_Receive
+  main/field_label:FieldLabel_ChooseMessage main/field_label:FieldLabel_ShowMessage9
+  main/field_label:FieldLabel_ShowTableMessage main/fish_disp:FishDisp_HandleMessage
+  main/fox_shop:FoxPassword_ClearVisitor main/group_params:GroupParams_C88
+  main/group_params:GroupParams_ClearC80C88 main/link_global:LinkGlobal_MemberMask
+  main/link_global:LinkGlobal_SetChosen main/link_global:LinkGlobal_SetKind
+  main/link_global:LinkGlobal_SetMemberMask main/link_parts:LinkPart_CopyByte
+  main/link_parts:LinkPart_ReadEntry main/link_parts:LinkPart_ReadEntryChange
+  main/link_parts:LinkPart_UnpackEntry main/link_parts:LinkPart_UnpackStatusByte
+  main/link_scene:LinkScene_Empty6C8C main/link_scene:LinkScene_GlobalSetAcked
+  main/link_scene:LinkScene_GlobalSetReleased main/link_scene:LinkScene_GlobalSetStateAsker
+  main/link_scene:LinkScene_TakeLeftState main/link_state:LinkState_Half98
+  main/link_state:LinkState_SetHalf98 main/middle_spot:MiddleSpot_Clear main/music_264:Music264_Reset
+  main/music_264:MusicClock_Reset main/music_queue:Music_Reset main/music_volume:MusicVolume_Reset
+  main/object_claim:ObjectClaim_Dispatch main/paired_town:PairedTown_ClearFlag5
+  main/paired_town:PairedTown_SaveCurrent main/paired_town:PairedTown_SetFlag5
+  main/paired_town:PairedTown_TakeOwn main/player_messages:PlayerMessages_Dispatch
+  main/player_record:PlayerRecord_MailMark main/player_record:PlayerRecord_SetMailMark
+  main/player_records:PlayerRecords_Exists main/quick_message:QuickMessage_ResetCurrent
   main/quick_message:QuickMessage_ViewDestructDelete
   main/quick_message:QuickMessage_WideDestructDelete main/save_stamp:SaveStamp_MarkWriting
   main/save_stamp:SaveStamp_MarkWritten main/scene_claim:SceneClaim_ReceiveAnswer
@@ -1041,31 +1049,35 @@ match: autoload_2/heap:Heap_Report autoload_2/network:Local_Call02269638
   main/system_command:SystemCommand_BuildList main/system_command:SystemCommand_RunList
   main/system_command:SystemCommand_WriteEntries main/system_command:SystemCommand_WriteNothing
   main/talk_object:TalkObject_LoadImpression main/talk_tags:TalkTags_NoteNothing
-  main/talk_tags:TalkTags_NotePart main/town_objects:TownObjects_OnLeftMessage
-  main/town_objects:TownObjects_OnModeMessage main/town_objects:TownObjects_OnVisitMessage
-  main/town_tile_put:TownTilePut_OnScene main/villager_impression:VillagerImpression_LoadText
-  main/villager_state:VillagerState_Clear main/villager_state:VillagerState_ClearTable
-  main/wfc_stats:WfcStats_Checksum
+  main/talk_tags:TalkTags_NotePart main/text_draw:TextDraw_ReleaseBoxes
+  main/town_objects:TownObjects_OnLeftMessage main/town_objects:TownObjects_OnModeMessage
+  main/town_objects:TownObjects_OnVisitMessage main/town_tile_put:TownTilePut_OnScene
+  main/villager_impression:VillagerImpression_LoadText main/villager_state:VillagerState_Clear
+  main/villager_state:VillagerState_ClearTable main/wfc_delivery:WfcDelivery_DeliverLetter
+  main/wfc_delivery:WfcDelivery_LetterHmac main/wfc_delivery:WfcDelivery_NoticeHmac
+  main/wfc_delivery:WfcDelivery_PostNotice main/wfc_stats:WfcStats_Checksum
+  main/wfc_stats:WfcStats_SetChecksum
 
 area: Unreachable for one player
 group: what only the linked session and the visits call
 scene: none: the receivers of the session's messages (the room's furniture, lights and items put or taken, a place claimed, a tile's request granted, a town insect startled or hidden, the player actor's worn item and tan), what the activity's link jobs and session records ask for (the bells panel frozen, the sky reseeded, constellations drafted, the start menu left, event kind 13), the gatekeepers' visit walks (the room camera's modes 14 and 15, the check-in gate closed), a snowball's shake and the state block's destructor's waiting letter
-reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
+reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and statistics flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishStatsGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyStats return at once (w24/guard2.py --zero; w24/classify.py, gate latch)
 needs: unreachable
 match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
   main/event_queue:EventQueue_FinishKind13 main/event_queue:EventQueue_StartKind13
-  main/house_record:HouseRecord_StopSong main/place_claim:PlaceClaim_ReceiveAnswer
-  main/place_claim:PlaceClaim_ReceiveRelease main/place_claim:PlaceClaim_ReceiveRequest
-  main/player_actor_ops:PlayerActorOps_SetFlag0 main/player_actor_ops:PlayerActorOps_SetSunLevel
-  main/player_actor_ops:PlayerActorOps_SetWorn main/player_actor_ops:PlayerActorOps_SwitchFlag10
-  main/room_interior:RoomInterior_ReceiveChange main/room_interior:RoomInterior_Set
-  main/room_object_state:RoomObjectState_Receive main/room_sync:RoomSync_ApplyState
-  main/room_sync:RoomSync_ReceiveLit main/room_sync:RoomSync_ReceivePutFurniture
-  main/room_sync:RoomSync_ReceivePutItem main/room_sync:RoomSync_ReceiveState
-  main/room_sync:RoomSync_ReceiveTakeFurniture main/room_sync:RoomSync_ReceiveToggle
-  main/screen_panels:ScreenPanels_FourthPanel main/sky:Sky_ReseedForLink
-  main/start_menu:StartMenu_LeaveChoice main/tile_changes:TileChanges_Replace
-  main/tile_request_grant:TileRequestGrant_Apply main/tile_request_grant:TileRequestGrant_LetGo
+  main/house_record:HouseRecord_StopSong main/mail:MailBox_Mark main/mail:MailBox_SetMark
+  main/place_claim:PlaceClaim_ReceiveAnswer main/place_claim:PlaceClaim_ReceiveRelease
+  main/place_claim:PlaceClaim_ReceiveRequest main/player_actor_ops:PlayerActorOps_SetFlag0
+  main/player_actor_ops:PlayerActorOps_SetSunLevel main/player_actor_ops:PlayerActorOps_SetWorn
+  main/player_actor_ops:PlayerActorOps_SwitchFlag10 main/room_interior:RoomInterior_ReceiveChange
+  main/room_interior:RoomInterior_Set main/room_object_state:RoomObjectState_Receive
+  main/room_sync:RoomSync_ApplyState main/room_sync:RoomSync_ReceiveLit
+  main/room_sync:RoomSync_ReceivePutFurniture main/room_sync:RoomSync_ReceivePutItem
+  main/room_sync:RoomSync_ReceiveState main/room_sync:RoomSync_ReceiveTakeFurniture
+  main/room_sync:RoomSync_ReceiveToggle main/screen_panels:ScreenPanels_FourthPanel
+  main/sky:Sky_ReseedForLink main/start_menu:StartMenu_LeaveChoice
+  main/tile_changes:TileChanges_Replace main/tile_request_grant:TileRequestGrant_Apply
+  main/tile_request_grant:TileRequestGrant_LetGo
   main/tile_request_grant:TileRequestGrant_NoOtherNearFor
   main/tile_request_grant:TileRequestGrant_PutOnScene
   main/tile_request_grant:TileRequestGrant_ReceiveAnswer ov003/snowman:Snowman_ClearTile
@@ -1831,42 +1843,31 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
 
 area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
-scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: code only unreachable code calls 16, the town map's list by the keys and the pen 9, Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 3, the destructors of main's static objects 2, what only the linked session and the visits call 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
+scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
 reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene
 needs: unknown
 match: autoload_2/heap:Heap_TryLockNothing main/activity_link_jobs:ActivityLinkJobs_Start1D
-  main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice main/body_look:BodyLook_DestructTable
-  main/c_library:CLib_BytesDiffer main/game_stop:GameStop_Release main/lid_sleep:LidSleep_SetFlags
+  main/body_look:BodyLook_DestructTable main/lid_sleep:LidSleep_SetFlags
   main/linked_map_items:LinkedMapItems_Place main/linked_map_items:LinkedMapItems_PlaceAndShare
-  main/linked_map_items:LinkedMapItems_Set main/mail:MailBox_Mark main/mail:MailBox_SetMark
-  main/mail_text:MailTextDecoder_ConvertNext main/mail_text:MailTextDecoder_OnForm4
-  main/mail_text:MailTextDecoder_OnFormPart main/mail_text:MailTextDecoder_SetForm1
-  main/mail_text:MailTextDecoder_SetForm2 main/music_264:Music264_Reset
-  main/music_264:MusicClock_Reset main/music_queue:Music_Reset main/music_volume:MusicVolume_Reset
-  main/player_record:PlayerRecord_MailMark main/player_record:PlayerRecord_SetMailMark
-  main/quick_message:QuickMessage_ResetCurrent main/save_stamp:SaveStamp_SetLostFlag
-  main/text_draw:TextDraw_ReleaseBoxes main/town_pack:TownPack_InitThread
+  main/linked_map_items:LinkedMapItems_Set main/mail_text:MailTextDecoder_ConvertNext
+  main/mail_text:MailTextDecoder_OnForm4 main/mail_text:MailTextDecoder_OnFormPart
+  main/mail_text:MailTextDecoder_SetForm1 main/mail_text:MailTextDecoder_SetForm2
+  main/save_stamp:SaveStamp_SetLostFlag main/town_pack:TownPack_InitThread
   main/town_pack:TownPack_KillThread main/villager_plots:VillagerPlot_DestroyList
-  main/wfc_delivery:WfcDelivery_DeliverLetter main/wfc_delivery:WfcDelivery_LetterHmac
-  main/wfc_delivery:WfcDelivery_NoticeHmac main/wfc_delivery:WfcDelivery_PostNotice
   main/wfc_session:WfcSession_ApplyLetter main/wfc_session:WfcSession_ApplyNotice
   main/wfc_session:WfcSession_ApplyStats main/wfc_session:WfcSession_KeepFriendData
   main/wfc_setup:WfcSetup_Alloc main/wfc_setup:WfcSetup_Free main/wfc_setup:WfcSetup_RunOverlay1
-  main/wfc_stats:WfcStats_SetChecksum ov003/field_actor:FieldActor_EndState46Remote
-  ov003/field_actor:FieldActor_EndState55Remote ov003/field_actor:FieldActor_EndState59Remote
-  ov003/field_actor:FieldActor_EndState63Remote ov003/field_actor:FieldActor_EndState67Remote
-  ov003/field_actor:FieldActor_EndState68Remote ov003/field_actor:FieldActor_HitState56
-  ov003/field_actor:FieldActor_SweepState56Remote ov003/field_actor:SavedFlag_Get
-  ov004/room_object_022510b4:RoomObject022510b4_Destroy
+  ov003/field_actor:FieldActor_EndState46Remote ov003/field_actor:FieldActor_EndState55Remote
+  ov003/field_actor:FieldActor_EndState59Remote ov003/field_actor:FieldActor_EndState63Remote
+  ov003/field_actor:FieldActor_EndState67Remote ov003/field_actor:FieldActor_EndState68Remote
+  ov003/field_actor:FieldActor_HitState56 ov003/field_actor:FieldActor_SweepState56Remote
+  ov003/field_actor:SavedFlag_Get ov004/room_object_022510b4:RoomObject022510b4_Destroy
   ov048/gatekeeper_talk:GatekeeperTalk_Line21Or22
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerSession
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo59 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo62
   ov048/gatekeeper_talk_lines:GatekeeperTalk_EndSession
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22 ov120/town_map_list:TownMap_MarkOfTarget
-  ov120/town_map_list:TownMap_RowOfTarget ov120/town_map_list:TownMap_ScrollToPickedRow
-  ov120/town_map_list:TownMap_ScrollToSwitchedRow ov120/town_map_list:TownMap_SetScroll
-  ov120/town_map_list:TownMap_SetScrollTarget ov120/town_map_list:TownMap_ShowPlaces
-  ov120/town_map_list:TownMap_StartBlink ov120/town_map_list:TownMap_StepScroll
+  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22
+  ov120/town_map_list:TownMap_SetScrollTarget ov120/town_map_list:TownMap_StepScroll
 
 area: Shops and buildings (the seed's day)
 group: Nook's store: every topic
