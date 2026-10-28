@@ -1,0 +1,70 @@
+# erase-town (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). As title-other.txt to 1836: in the continue menu's room, "something
+# else" and its first choice, a new town, the warnings read with A every 64 frames.
+# Save: the seed town. At the last question (about 1836) DOWN and A answer "make it anyway": the
+# title's exit for the activity's job 5 (ov147/title_scene.c TitleScene_ExitForJob5), the save's
+# marks cleared and its three parts erased (main/activity_process.c ActivityProcess_StepJob5);
+# then the title of an erased card, its camera touring the town (about 3000 on).
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1064 - -
+1100 DOWN -
+1104 - -
+1119 DOWN -
+1123 - -
+1138 DOWN -
+1142 - -
+1157 A -
+1161 - -
+1281 A -
+1285 - -
+1325 A -
+1329 - -
+1389 A -
+1393 - -
+1453 A -
+1457 - -
+1517 A -
+1521 - -
+1581 A -
+1585 - -
+1645 A -
+1649 - -
+1709 A -
+1713 - -
+1773 A -
+1777 - -
+1836 DOWN -
+1840 - -
+1855 A -
+1859 - -
+1919 A -
+1923 - -
+1983 A -
+1987 - -
+2047 A -
+2051 - -
+2111 A -
+2115 - -
+2175 A -
+2179 - -
+2239 A -
+2243 - -
+2303 A -
+2307 - -
+2367 A -
+2371 - -
+2431 A -
+2435 - -
+2495 A -
+2499 - -
+2559 A -
+2563 - -
+2623 A -
+2627 - -
+2687 - -
+2987 - -
+3387 - -

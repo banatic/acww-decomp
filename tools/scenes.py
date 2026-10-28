@@ -406,6 +406,21 @@ SAVES = {
     # snowman stands at 44.5, 56.5)
     "snowman": [(SNOWMEN, "<H", 27 | 1 << 7 | 12 << 11), (SNOWMEN + 2, "<H", 0x800 // 0x80 | (0xA00 // 0x80) << 7),
                 (SNOWMEN + 4, "<B", 0), (SNOWMEN + 5, "<B", 1), (TOWN_ITEMS + ((2 * 4 + 1) * 256 + 9 * 16 + 13) * 2, "<H", 0xB001)],
+
+    # villager 3's plan to move away (VillagerMove at 0x3f90 of the town's villagers, 0x9284 of the
+    # state block, main/villager_move.h): its object in use (type 0, low bits 1), the villager's
+    # NpcId, the player's id in the first stage's slot, started on 8 September 2026 and last
+    # stepped on the 10th, at stage 1: the boot on the 11th takes the day's step (VillagerMove_Step)
+    "move-plan": raw(0x9284 + 0x3F90, bytes.fromhex("0000000000000000f1ff0001" "6ec6433143314331433143314331002f"
+                                                     "6ec643314331433143314331433185d14331433143314331000000000000")) +
+                 raw(0x9284 + 0x3F90 + 0xB2, bytes.fromhex("08091a000a091a00")) +
+                 [(0x9284 + 0x3F90 + 0xBA, "<B", 1), (0x9284 + 0x4076, "<b", 3)],
+    # as "move-plan" ended (stage 5) the day before the boot's, its first steps marked taken: kept
+    # for three days from its last step (VillagerMoveRecord_IsRecentlyDone)
+    "move-done": raw(0x9284 + 0x3F90, bytes.fromhex("0000000000000000f1ff0001" "6ec6433143314331433143314331002f"
+                                                     "6ec643314331433143314331433185d14331433143314331000000000000")) +
+                 raw(0x9284 + 0x3F90 + 0xB2, bytes.fromhex("05091a010a091a00")) +
+                 [(0x9284 + 0x3F90 + 0xBA, "<B", 5), (0x9284 + 0x4076, "<b", 3)],
 }
 
 SAVES["job-0d"] = [e for e in SAVES["job-0c"] if e[0] != VILLAGER_PART + 0x0A] + [(VILLAGER_PART + 0x0A, "<B", 0x0D)] + raw(
@@ -1340,6 +1355,33 @@ scene("new-player-girl", "seed", 4400, [1300, 2300, 3100, 3500, 4399], frames(30
       "new-player's taxi ride with the second answers: the driver guesses a girl, told he is wrong")
 scene("villager-net", "net", 8531, [2600, 4100, 6300, 7400, 8000, 8530], frames(6200, 8531, 50),
       "follow a walking villager and strike it with the bug net: it reacts, then turns and complains")
+scene("erase-town", "seed", 3390, [1300, 1840, 2700, 3000, 3389], frames(1800, 3390, 50),
+      "from the continue menu, ask for a new town and answer the last question yes: the save is erased, "
+      "then the title of an erased card")
+scene("villager-talks-fish", "pockets-keys", 10950, [2600, 4900, 6500, 8000, 9500, 10949], frames(4900, 10950, 100),
+      "villager-talks in the afternoon: a villager's line branches on the fish the player has caught",
+      "villager-talks", "2026-09-11 14:20:55")
+scene("villager-three-bee", "bare-net", 6920, [2600, 3600, 4300, 5500, 6200, 6919], frames(5400, 6920, 50),
+      "villager-three at another second of the clock: a villager greets the player stung by bees",
+      "villager-three", "2026-09-11 11:30:11")
+scene("title-move-in", "seed", 2330, [1100, 1500, 1800, 2100, 2329], frames(1400, 2330, 50),
+      "from the continue menu, the passing exchange refused, then a player moving in from another town: "
+      "the DS wireless link set up and its search started")
+scene("villager-move-plan", "move-plan", 4900, [2600, 4100, 4500, 4899], frames(4000, 4900, 50),
+      "villager-talk with villager 3 planning to move away: the boot takes the plan's step of the day",
+      "villager-talk")
+scene("villager-move-done", "move-done", 4900, [2600, 4100, 4500, 4899], frames(4000, 4900, 50),
+      "villager-talk the day after villager 3's plan to move away ended: the boot keeps it, recently done",
+      "villager-talk")
+scene("villager-chat-players", "fond", 8000, [2600, 4500, 5300, 6400, 7300, 7999], frames(4100, 8000, 50),
+      "villager-chat in the afternoon with the villagers fond of the player: a line branches on the "
+      "town's number of players", "villager-chat", "2026-09-11 15:10:23")
+scene("villager-talks-fond", "fond", 10950, [2600, 4900, 6500, 8000, 9500, 10949], frames(4900, 10950, 100),
+      "villager-talks with the villagers fond of the player: a line branches on the part of the day",
+      "villager-talks", "2026-09-11 11:30:28")
+scene("villager-talks-catchphrase", "fond", 10950, [2600, 4900, 6500, 8000, 9500, 10949], frames(4900, 10950, 100),
+      "villager-talks-fond at another second of the clock: two villagers chatting, one takes the other's "
+      "catchphrase", "villager-talks", "2026-09-11 11:30:43")
 
 
 # ------------------------------------------------------------------------------ saves

@@ -1,0 +1,53 @@
+# title-move-in (format: runtime/input.h), played from a town save by tools/scenes.py (the save
+# is not in this repository). As title-other.txt to 1100: the continue menu's room, its menu up.
+# Save: the seed town. Its third choice (DOWN twice, A at 1138), the passing exchange, is refused
+# until a message in a bottle is sent (ov147/title_menu.c TitleMenu_CheckBottleLetter); A reads
+# the answer and the menu is up again (about 1480). "Something else" (DOWN three times, A) and
+# its third choice (DOWN twice, A at 1777), a player moving in from another town: A reads the
+# lines and starts the DS wireless link (at 2075): the title's exit for the activity's job 0x1c
+# (TitleScene_ExitForJob1c), the local wireless session set up and its search shown. The scene
+# ends at 2330: with no second DS the runtime's wireless fails at about 2338 into GameHalt
+# (main/game_halt.c), as in gate-visit.
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1064 - -
+1100 DOWN -
+1104 - -
+1119 DOWN -
+1123 - -
+1138 A -
+1142 - -
+1262 A -
+1266 - -
+1336 A -
+1340 - -
+1410 A -
+1414 - -
+1484 DOWN -
+1488 - -
+1503 DOWN -
+1507 - -
+1522 DOWN -
+1526 - -
+1541 A -
+1545 - -
+1665 A -
+1669 - -
+1739 DOWN -
+1743 - -
+1758 DOWN -
+1762 - -
+1777 A -
+1781 - -
+1871 A -
+1875 - -
+1939 A -
+1943 - -
+2007 A -
+2011 - -
+2075 A -
+2079 - -
+2143 - -

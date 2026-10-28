@@ -495,8 +495,8 @@ match: main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:Fie
 
 area: Unreachable for one player
 group: what only the linked session and the visits call
-scene: none: the receivers of the session's messages (the room's furniture, lights and items put or taken, a place claimed, a tile's request granted, a town insect startled or hidden, the player actor's worn item and tan), what the activity's link jobs and session records ask for (the bells panel frozen, the sky reseeded, constellations drafted, the start menu left, event kind 13), the gatekeepers' visit walks (the room camera's modes 14 and 15, the check-in gate closed), the card's cleared marks, a snowball's shake and the state block's destructor's waiting letter
-reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, CardSave_WriteClearedMarks, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4)
+scene: none: the receivers of the session's messages (the room's furniture, lights and items put or taken, a place claimed, a tile's request granted, a town insect startled or hidden, the player actor's worn item and tan), what the activity's link jobs and session records ask for (the bells panel frozen, the sky reseeded, constellations drafted, the start menu left, event kind 13), the gatekeepers' visit walks (the room camera's modes 14 and 15, the check-in gate closed), a snowball's shake and the state block's destructor's waiting letter
+reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4)
 needs: unreachable
 match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
   main/constellations:Constellations_DraftRandom main/event_queue:EventQueue_FinishKind13
@@ -844,6 +844,21 @@ match: ov003/field_actor:FieldActor_GetState3ESaved ov003/field_actor:FieldActor
   ov004/field_actor_place_states:FieldActorPlaceStates_GetApproachSaved
   ov004/field_actor_place_states:FieldActorPlaceStates_GetOffSaved
   ov009/scene_actor:SceneActor_IsInMode0
+
+area: Unreachable for one player
+group: the activity's jobs no reachable code starts
+scene: none: jobs 7 and 0xf (the card checked and both copies written, then the town entered in front of building 0x5000), 9 and 0xb (scene 13 entered at data_020d1bfc, scene 0x2f entered), and 8, 0xa, 0xe and 0x11, which only the linked session's jobs start (an entry record's exits, scenes 14 and 0x2d), with what only job 0xe calls
+reach: the activity's job is set only by ActivityProcess_StartJob with a constant (or, in StepJob1, the job an ActivityJob_Ask<N> asked for, each a constant): no function starts or asks for 7, 9 or 0xb, only job 7's step starts 0xf, and only ActivityLinkJobs_Step17, 18, 19, 1A, 1B and 1E (group "local wireless") start 8, 0xa, 0xe and 0x11; the jobs' start and step are named only by the job table's member pointers (the scratchpad's w16/jobs.py lists every start and ask by function; w16/proof.py --rules jobrules.json; findings 2026-10-28, town5)
+needs: unreachable
+match: main/activity_jobs:ActivityJobs_Start07 main/activity_jobs:ActivityJobs_Step07
+  main/activity_jobs:ActivityJobs_Start08 main/activity_jobs:ActivityJobs_Step08
+  main/activity_jobs:ActivityJobs_Start09 main/activity_jobs:ActivityJobs_Step09
+  main/activity_jobs:ActivityJobs_Start0A main/activity_jobs:ActivityJobs_Step0A
+  main/activity_jobs:ActivityJobs_Start0B main/activity_jobs:ActivityJobs_Step0B
+  main/activity_jobs:ActivityJobs_Start0E main/activity_jobs:ActivityJobs_Step0E
+  main/activity_jobs:ActivityJobs_Start0F main/activity_jobs:ActivityJobs_Step0F
+  main/activity_jobs:ActivityJobs_Start11 main/activity_jobs:ActivityJobs_Step11
+  main/start_kind:StartKind_SetUnchanged
 
 # ================================================================== the seed's day: buildings
 
