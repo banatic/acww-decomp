@@ -597,6 +597,254 @@ match: autoload_2/heap:ExpHeap_TryLock autoload_2/heap:Heap_TryLockNothing autol
   autoload_2/heap:FrameHeap_SetGroupId autoload_2/heap:ExpHeap_SetGroupId
   autoload_2/heap:FrameHeap_GroupId autoload_2/heap:ExpHeap_GroupId
 
+area: Unreachable for one player
+group: the deleting destructors of vtable slot 1
+scene: none: the destructor that frees (vtable slot 1) of each class whose destructor is its first virtual function, but the scene sounds: the talk engine's texts, windows, walkers and receivers, the room objects' and outdoor objects' message receivers, the special characters' talks, the models, sprites and pool links, the menus' buttons, gliders and windows, the sound emitters
+reach: an object is deleted through slot 1 only by SceneSound_Delete (main/scene_sound.c, the scene sounds of SceneSound_Create): the module images call through offset 4 of an object's vtable at 34 places (each BLX and MOV LR,PC with BX or MOV PC traced back with capstone: the target loaded from [vtable, #4], the vtable from the object), and at the 33 others the class's slot 1 is a method (FieldBody identity, LayerTask reset, CollisionVisitor floors, CollisionTriangle push-through, DisplayFrameHooks end_draw, DateRandom month, RoomScoreSource wallpaper, SoundObject and SoundSource release, AquariumFish frame, the library's fonts, locale, global destructor chain and WXC), which a destructor cannot override; register-offset calls are member-function pointers (none can name a destructor) and indexed tables, and no load from a literal table reaches a vtable; no BL, branch or word in code names these functions, only the vtables their classes' constructors store (findings 2026-10-28, town5)
+needs: unreachable
+match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
+  autoload_2/sound_emitter_class:SoundEmitterClass_Destruct99Delete
+  autoload_2/sound_emitter_class:SoundEmitterClass_DestructBaseDelete
+  main/activity_talk:ActivityReceiver_DestructFree main/animated_model:AnimatedModel_DeleteBlended
+  main/animated_model:AnimatedModel_DeleteBlendedFromFrames
+  main/animated_model:AnimatedModel_DeleteBlendedFromRamp
+  main/animated_model:AnimatedModel_DeleteFromFrames main/bbs:BbsLabel_DestructDelete
+  main/bbs:BbsWideText_DestructDelete main/bmg_file:BmgFile_Delete
+  main/cell_layer_sprite:CellLayerSprite_Delete main/cell_pair_sprite:CellPairSprite_Delete
+  main/collision_post_source:CollisionPostSource_Delete
+  main/constellations:ConstellationsLabel_DestructDelete
+  main/constellations:ConstellationsWideName_DestructDelete
+  main/dual_cell_sprite:DualCellSprite_Delete main/field_actor:FieldActorReceiver_DestructDelete
+  main/fox_shop:FoxShopText_DestructFree main/frame_ctrl:FrameCtrl_Delete
+  main/joint_blend:JointBlend_Delete main/label_box:LabelBox_Delete
+  main/label_sprite:LabelSprite_Delete main/label_sprite:LabelSprite_TextDelete
+  main/layered_model:LayeredModel_DeleteAFromFrames main/layered_model:LayeredModel_DeleteAFromRamp
+  main/layered_model:LayeredModel_DeleteB main/layered_model:LayeredModel_DeleteBFromFrames
+  main/layered_model:LayeredModel_DeleteBFromRamp main/letter:LetterBodyText_DestructDelete
+  main/letter:Letter_DestructDelete main/letter_grade:LetterGradeMessage_Delete
+  main/letter_grade:LetterGradeWide_Delete main/letter_view:LetterLine_DestructDelete
+  main/letter_view:LetterWideText_Delete main/mail_part_texts:MailMsgText_Delete
+  main/mail_part_texts:MailPsText_Delete main/mail_part_texts:MailSuperText_Delete
+  main/mail_particles:MailParticles_Delete main/mail_text:MailTextDecoder_Delete
+  main/mail_text:MailTextFile_Delete main/mail_text:MailTextRequest_Delete
+  main/mes_bg:MesBgMarker_DestructDelete main/mes_bg:MesBgSlider_DestructDelete
+  main/mes_bg:MesBg_DestructDelete main/mes_choice_window:MesChoiceWindow_DestructDelete
+  main/mes_slider_window:MesSliderWindow_DestructDelete
+  main/message_attributes:MessageAttributes_Delete main/message_cursor:MessageCursor_Delete
+  main/message_cursor:MessageLineWalker_Delete main/message_decoder:MessageDecoder_Delete
+  main/message_reader:MessageRequest_Delete main/message_receiver:MessagePart_Delete
+  main/message_receiver:MessageReceiver_Delete main/message_texts:MessageFile_Delete
+  main/message_texts:MessageText10_Delete main/message_texts:MessageText256_Delete
+  main/message_texts:MessageText46_Delete main/message_walker:MessageWalker_BaseDelete
+  main/message_walker:MessageWalker_Delete main/missing_npc1:MissingNpc1Talk_DestructDelete
+  main/missing_npc2:MissingNpc2Talk_DestructDelete main/model_anim:ModelAnim_Delete
+  main/model_loader:ModelLoader_Delete main/model_object:ModelObject_BaseDelete
+  main/model_object:ModelObject_Delete main/model_object:ModelObject_RootDelete
+  main/model_object:ModelSet_Delete main/music_264:EventMusic_DestructDelete
+  main/music_264:HourMusic_DestructDelete main/music_264:Music264_DestructDelete
+  main/music_264:Music27c_DestructDelete main/music_queue:Music2d0_DestructDelete
+  main/music_queue:Music2e4_DestructDelete main/music_queue:Music2f0_DestructDelete
+  main/name_tag:NameTag_Delete main/name_texts:NameText_Delete main/name_texts:NameWideText_Delete
+  main/obj_020d9ff8:Obj020d9ff8_DestructDelete main/player_id:PlayerIdText_Delete
+  main/player_id:PlayerIdWideText_Delete main/pool_link:PoolLink_AnimSetDestructDelete
+  main/pool_link:PoolLink_BaseDestructDelete main/pool_link:PoolLink_BlockDestructDelete
+  main/pool_link:PoolLink_Heap4DestructDelete main/pool_link:PoolLink_Heap8DestructDelete
+  main/pool_link:PoolLink_ItemDestructDelete main/pool_link:PoolLink_PartDestructDelete
+  main/pool_link:PoolLink_Pool1E20DestructDelete main/pool_link:PoolLink_Pool1E48DestructDelete
+  main/scene_base:SceneBase_DestructDelete main/scene_music:SceneMusic_DestructDelete
+  main/screen_sprite:ScreenSprite_Delete main/select_bmg:SelectBmgText_Delete
+  main/sliding_window:SlidingWindowText_Delete main/sliding_window:SlidingWindow_Delete
+  main/small_texts:CatchphraseWide_DestructDelete main/small_texts:Label10Text_DestructDelete
+  main/small_texts:Label22Text_DestructDelete main/small_texts:Wide10Text_DestructDelete
+  main/sound_emitter:SoundEmitter_DestructDelete main/start_menu:StartMenuReceiver_DestructFree
+  main/talk_message_file:TalkMessageFile_Delete main/talk_page:TalkPageMeasurer_Delete
+  main/talk_pick_scan:TalkPickScan_Delete main/talk_receiver:TalkReceiverName_DestructDelete
+  main/talk_receiver:TalkReceiver_DestructDelete main/talk_span:TalkSpan_Delete
+  main/talk_spinner:TalkSpinner_Delete main/talk_tags:TalkTags_Delete
+  main/talk_voice:TalkVoice_DestructDelete main/talk_windows:TalkChoiceWindow_Delete
+  main/talk_windows:TalkSliderWindow_Delete main/talk_windows:TalkWindow_Delete
+  main/tex_pattern_anim:TexPatternAnim_Delete main/tex_slot_anim:TexSlotAnim_Delete
+  main/text_base:TextBase_Delete main/text_base:TextBase_WideDelete
+  main/text_box:TextBoxBase_DestructDelete main/text_label:TextLabel_DestructDelete
+  main/text_label:WideText_DestructDelete main/text_walker:TextWalker_Delete
+  main/town_name:TownNameText_Delete main/town_name:TownNameWideText_Delete
+  main/town_posts:TownPosts_DeleteSource
+  main/villager_memory_text:VillagerMemoryLabel_DestructDelete
+  main/villager_memory_text:VillagerMemoryWide_DestructDelete
+  main/villager_talk_scene:VillagerTalkScene_DestructDelete main/vram_region:VramRegion_Delete
+  ov002/button_panel:ButtonPanel_Delete ov002/glide:Glide_Delete ov002/glide:Glider0_Delete
+  ov002/glide:Glider1_Delete ov002/glide:Glider_Delete ov002/key_repeat:KeyRepeat_Delete
+  ov002/label_button:LabelButton0_Delete ov002/label_button:LabelButton1_Delete
+  ov002/label_button:LabelButtonBase_Delete ov002/message_window:MessageWindow_Delete
+  ov002/paged_choice:ChoiceRow_Delete ov002/paged_choice:PagedChoice_Delete
+  ov002/panel_sprite:PanelSprite_Delete ov002/popup:Popup_Delete ov002/push_button:PushButton_Delete
+  ov002/wipe:Progress_Delete ov002/wipe:Wipe_Delete
+  ov003/checkpoint:Checkpoint_ReceiverDestroyAndFree
+  ov003/countdown:CountdownBoard_ReceiverDestroyAndFree
+  ov003/countdown:CountdownDigit_ReceiverDestroyAndFree
+  ov003/etc_board:EtcBoard_ReceiverDestroyAndFree ov003/fish_shadow:FishFinAnim_DestructDelete
+  ov003/fox:Fox_ReceiverDestroyAndFree ov003/mailbox:Mailbox_ReceiverDestroyAndFree
+  ov003/outdoor_clock:OutdoorClock_ReceiverDestroyAndFree
+  ov003/panther:Panther_ReceiverDestroyAndFree ov003/player_house:PlayerHouse_ReceiverDestroyAndFree
+  ov003/screen_object:ScreenObject_ReceiverDestroyAndFree
+  ov003/sign_board:SignBoard_ReceiverDestroyAndFree ov003/snowman:Snowman_ReceiverDestroyAndFree
+  ov003/spawn_spot:SpawnSpot_ReceiverDestroyAndFree
+  ov003/store_front:StoreFront_ReceiverDestroyAndFree
+  ov003/town_insect:TownInsectAnim_DestructDelete ov003/town_post_source:TownPostSource_Delete
+  ov003/villager_house:VillagerHouse_ReceiverDestroyAndFree
+  ov003/warp_object:WarpObject_ReceiverDestroyAndFree ov004/atm:AtmReceiver_Delete
+  ov004/barber_machine:BarberMachineReceiver_Delete ov004/birthday_guest:BirthdayGuestTalk_Delete
+  ov004/birthday_villager:BirthdayVillagerTalk_Delete ov004/bromide:BromideReceiver_Delete
+  ov004/cafe_master:CafeMasterTalk_Delete ov004/chest:ChestReceiver_Delete
+  ov004/clock:ClockReceiver_Delete ov004/compass:CompassReceiver_Delete
+  ov004/etc_museum:EtcMuseumReceiver_Delete ov004/flea_market_buyer:FleaMarketBuyerTalk_Delete
+  ov004/flea_market_villager:FleaMarketTalk_Delete ov004/furniture_model:FurnitureAnim_Delete
+  ov004/gatekeeper2:Gatekeeper2Talk_Delete ov004/museum_insects:InsectAnim_Delete
+  ov004/music_player:MusicPlayerReceiver_Delete ov004/rmo_telephone:RmoTelephoneReceiver_Delete
+  ov004/room_etc_board:RoomEtcBoardReceiver_Delete
+  ov004/room_object_02250c04:RoomObject02250c04Receiver_Delete
+  ov004/room_object_02250d30:RoomObject02250d30Receiver_Delete
+  ov004/room_object_02250e5c:RoomObject02250e5cReceiver_Delete
+  ov004/room_object_022510b4:RoomObject022510b4Receiver_Delete
+  ov004/room_object_022511e0:RoomObject022511e0Receiver_Delete
+  ov004/room_object_0225130c:RoomObject0225130cReceiver_Delete
+  ov004/room_object_02251564:RoomObject02251564Receiver_Delete
+  ov004/room_object_02251690:RoomObject02251690Receiver_Delete
+  ov004/room_object_022518e8:RoomObject022518e8Receiver_Delete
+  ov004/room_object_02251a14:RoomObject02251a14Receiver_Delete
+  ov004/room_object_02252248:RoomObject02252248Receiver_Delete
+  ov004/room_object_02252374:RoomObject02252374Receiver_Delete
+  ov004/room_object_022524a0:RoomObject022524a0Receiver_Delete
+  ov004/room_object_022525cc:RoomObject022525ccReceiver_Delete
+  ov004/room_object_02252824:RoomObject02252824Receiver_Delete
+  ov004/room_object_02252ba8:RoomObject02252ba8Receiver_Delete
+  ov004/room_object_02252cd4:RoomObject02252cd4Receiver_Delete
+  ov004/room_object_02252e00:RoomObject02252e00Receiver_Delete
+  ov004/room_object_02252f2c:RoomObject02252f2cReceiver_Delete
+  ov004/room_object_02253058:RoomObject02253058Receiver_Delete
+  ov004/room_object_animated:AnimatedRoomObjectReceiver_Delete
+  ov004/room_object_glowing:GlowingRoomObjectReceiver_Delete
+  ov004/room_object_life:RoomObjectReceiver_Delete
+  ov004/room_object_periodic:PeriodicRoomObjectReceiver_Delete
+  ov004/room_object_player_design:PlayerDesignObjectReceiver_Delete
+  ov004/room_object_shop_design:ShopDesignObjectReceiver_Delete
+  ov004/room_object_switch_shown:SwitchShownReceiver_Delete
+  ov004/room_shell_members:RoomShellMaterialAnim_Delete
+  ov004/shop3_villager:Shop3VillagerTalk_Delete ov004/sick_villager:SickVillagerTalk_Delete
+  ov004/tailor_sister:TailorSisterTalk_Delete ov004/telephone:TelephoneReceiver_Delete
+  ov004/trash_box:TrashBoxReceiver_Delete ov004/tv:TvAnimatedReceiver_Delete
+  ov004/tv:TvReceiver_Delete ov009/scene_actor_life:SceneActor_ReceiverDestructDelete
+  ov045/fortune_teller_talk:FortuneTellerTalk_Delete ov045/fortune_teller_talk:FortuneText_Delete
+  ov045/fortune_teller_talk:FortuneWideText_Delete ov046/astro_talk:AstroTalk_DestructDelete
+  ov047/owl_talk:OwlTalk_DestructDelete ov048/gatekeeper_talk_lines:GatekeeperTalk_DestructDelete
+  ov049/mabel_talk:MabelTalk_DestructDelete ov050/nook_clerk_talk:NookClerkTalk_DestructDelete
+  ov051/taxi_driver_talk:TaxiDriverTalk_Delete ov052/fox_tent_talk:FoxTentTalk_DestructDelete
+  ov053/barber_talk:BarberTalk_DestructDelete ov054/post_clerk_talk:PostClerkTalk_DestructDelete
+  ov068/cafe_guest:CafeGuestScene_DestructDelete ov068/house_visitor:HouseVisitorTalk_Delete
+  ov068/sequence4:Sequence4_ReceiverDestroyAndFree ov068/town_nook:TownNookScene_DestructDelete
+  ov070/giraffe_talk:GiraffeTalk_Delete ov071/insurer_talk:InsurerTalk_Delete
+  ov072/gull_talk:GullTalk_DestructDelete ov073/boar_talk:BoarTalk_DestructDelete
+  ov074/mystery_cat_talk:MysteryCatTalk_Delete ov075/town_pelican_talk:TownPelicanTalk_Delete
+  ov076/otter_talk:OtterTalk_DestructDelete ov077/mole_talk:MoleTalk_DestructDelete
+  ov078/camel_talk:CamelTalk_DestructDelete ov079/walrus_talk:WalrusTalk_DestructDelete
+  ov080/turtle_talk:TurtleTalk_DestructDelete
+  ov081/turtle_fishing_talk:TurtleFishingTalk_DestructDelete
+  ov082/turtle_insects_talk:TurtleInsectsTalk_DestructDelete
+  ov083/turtle_gardens_talk:TurtleGardensTalk_DestructDelete ov084/turtle4_talk:Turtle4Talk_Delete
+  ov085/turtle5_talk:Turtle5Talk_Delete ov086/turtle6_talk:Turtle6Talk_Delete
+  ov087/acorn_npc_talk:AcornNpcTalk_Delete ov088/reaction_npc_talk:ReactionNpcTalk_Delete
+  ov093/staff_roll:StaffRollText_Delete ov094/pockets_grid:PocketsGrid_DestructDelete
+  ov094/pockets_icons:PocketsIcons_DestructDelete
+  ov094/pockets_letters:PocketsLetters_DestructDelete ov111/chat_scene:ChatLine_Delete
+  ov114/catalog_list:CatalogText_DestructDelete ov147/title_menu:TitleReceiver_Delete
+  ov147/title_mes:TitleMes_Delete
+
+area: Unreachable for one player
+group: the destructors of vtable slot 0 of those classes
+scene: none: the destructor without the free (vtable slot 0) of the same classes (and their bases' and receivers'), which only the deleting destructors above call
+reach: through slot 0 the images call a destructor only in Heap_Destroy (the heaps) and in LabelBox_Free and TextDraw_FreeBoxes (the boxes of the list data_021c81bc, which only LabelBox_New and _NewInVram fill, each with LabelBox's vtable); the other calls through offset 0 run a method (start, init, run, position, posts) or a member-function pointer; each of these is named only by such a slot 0 and called only by the group above or by functions found so (findings 2026-10-28, town5)
+needs: unreachable
+match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
+  main/animated_model:AnimatedModel_DestructBlendedFromFrames
+  main/animated_model:AnimatedModel_DestructBlendedFromRamp
+  main/animated_model:AnimatedModel_DestructCompleteFromFrames main/bmg_file:BmgFile_DestructSlot
+  main/field_actor:FieldActorReceiver_Destruct main/layered_model:LayeredModel_DestructAFromFrames
+  main/layered_model:LayeredModel_DestructAFromRamp
+  main/layered_model:LayeredModel_DestructBFromFrames
+  main/layered_model:LayeredModel_DestructBFromRamp main/letter_view:LetterWideText_Destruct
+  main/mail_text:MailTextDecoder_Destruct main/mail_text:MailTextFile_Destruct
+  main/mes_bg:MesBg_Destruct main/message_cursor:MessageCursor_Destruct
+  main/message_cursor:MessageLineWalker_Destruct main/message_decoder:MessageDecoder_Destruct
+  main/message_receiver:MessageReceiver_Destruct main/message_texts:MessageFile_Destruct
+  main/message_walker:MessageWalker_BaseDestructSlot main/message_walker:MessageWalker_Destruct
+  main/model_object:ModelObject_BaseDestructComplete
+  main/model_object:ModelObject_RootDestructComplete main/obj_020d9ff8:Obj020d9ff8_Destruct
+  main/pool_link:PoolLink_BaseDestructVirtual main/scene_base:SceneBase_Destruct
+  main/screen_sprite:ScreenSprite_Destruct main/sliding_window:SlidingWindow_Destruct
+  main/sound_emitter:SoundEmitter_Destruct main/talk_windows:TalkWindow_Destruct
+  main/text_base:TextBase_DestructSlot main/text_base:TextBase_WideDestructSlot
+  main/text_box:TextBoxBase_DestructSlot main/text_walker:TextWalker_DestructSlot
+  ov002/glide:Glider_DestroyVirtual ov002/label_button:LabelButtonBase_Destroy
+  ov002/wipe:Progress_DestroyBase ov003/checkpoint:Checkpoint_ReceiverDestroy
+  ov003/countdown:CountdownBoard_ReceiverDestroy ov003/countdown:CountdownDigit_ReceiverDestroy
+  ov003/etc_board:EtcBoard_ReceiverDestroy ov003/fish_shadow:FishFinAnim_Destruct
+  ov003/fox:Fox_ReceiverDestroy ov003/mailbox:Mailbox_ReceiverDestroy
+  ov003/outdoor_clock:OutdoorClock_ReceiverDestroy ov003/panther:Panther_ReceiverDestroy
+  ov003/player_house:PlayerHouse_ReceiverDestroy ov003/screen_object:ScreenObject_ReceiverDestroy
+  ov003/sign_board:SignBoard_ReceiverDestroy ov003/snowman:Snowman_ReceiverDestroy
+  ov003/spawn_spot:SpawnSpot_ReceiverDestroy ov003/store_front:StoreFront_ReceiverDestroy
+  ov003/villager_house:VillagerHouse_ReceiverDestroy ov003/warp_object:WarpObject_ReceiverDestroy
+  ov004/atm:AtmReceiver_Destroy ov004/barber_machine:BarberMachineReceiver_Destruct
+  ov004/birthday_guest:BirthdayGuestTalk_Destroy
+  ov004/birthday_villager:BirthdayVillagerTalk_Destroy ov004/bromide:BromideReceiver_Destroy
+  ov004/chest:ChestReceiver_Destroy ov004/clock:ClockReceiver_Destroy
+  ov004/compass:CompassReceiver_Destroy ov004/etc_museum:EtcMuseumReceiver_Destroy
+  ov004/music_player:MusicPlayerReceiver_Destroy ov004/rmo_telephone:RmoTelephoneReceiver_Destruct
+  ov004/room_etc_board:RoomEtcBoardReceiver_Destroy
+  ov004/room_object_02250c04:RoomObject02250c04Receiver_Destroy
+  ov004/room_object_02250d30:RoomObject02250d30Receiver_Destroy
+  ov004/room_object_02250e5c:RoomObject02250e5cReceiver_Destroy
+  ov004/room_object_022510b4:RoomObject022510b4Receiver_Destroy
+  ov004/room_object_022511e0:RoomObject022511e0Receiver_Destroy
+  ov004/room_object_0225130c:RoomObject0225130cReceiver_Destroy
+  ov004/room_object_02251564:RoomObject02251564Receiver_Destroy
+  ov004/room_object_02251690:RoomObject02251690Receiver_Destroy
+  ov004/room_object_022518e8:RoomObject022518e8Receiver_Destroy
+  ov004/room_object_02251a14:RoomObject02251a14Receiver_Destroy
+  ov004/room_object_02252248:RoomObject02252248Receiver_Destroy
+  ov004/room_object_02252374:RoomObject02252374Receiver_Destroy
+  ov004/room_object_022524a0:RoomObject022524a0Receiver_Destroy
+  ov004/room_object_022525cc:RoomObject022525ccReceiver_Destroy
+  ov004/room_object_02252824:RoomObject02252824Receiver_Destroy
+  ov004/room_object_02252ba8:RoomObject02252ba8Receiver_Destroy
+  ov004/room_object_02252cd4:RoomObject02252cd4Receiver_Destroy
+  ov004/room_object_02252e00:RoomObject02252e00Receiver_Destroy
+  ov004/room_object_02252f2c:RoomObject02252f2cReceiver_Destroy
+  ov004/room_object_02253058:RoomObject02253058Receiver_Destroy
+  ov004/room_object_animated:AnimatedRoomObjectReceiver_Destroy
+  ov004/room_object_glowing:GlowingRoomObjectReceiver_Destroy
+  ov004/room_object_life:RoomObjectReceiver_Destroy
+  ov004/room_object_periodic:PeriodicRoomObjectReceiver_Destroy
+  ov004/room_object_player_design:PlayerDesignObjectReceiver_Destroy
+  ov004/room_object_shop_design:ShopDesignObjectReceiver_Destroy
+  ov004/room_object_switch_shown:SwitchShownReceiver_Destroy
+  ov004/sick_villager:SickVillagerTalk_Destroy ov004/telephone:TelephoneReceiver_Destroy
+  ov004/trash_box:TrashBoxReceiver_Destruct ov004/tv:TvAnimatedReceiver_Destroy
+  ov004/tv:TvReceiver_Destroy ov009/scene_actor_life:SceneActor_ReceiverDestructComplete
+  ov068/house_visitor:HouseVisitorTalk_Destroy ov068/sequence4:Sequence4_ReceiverDestroy
+  ov111/chat_scene:ChatLine_Destruct
+
+area: Unreachable for one player
+group: code only unreachable code calls, overlays told apart
+scene: none: two getters of a remote state's saved arguments, two of the room's place states', a town insect hidden by its id (a session message) and a scene actor's mode test only the moving player's sequence asks for
+reach: the fixed point of "code only unreachable code calls", with a call or word of an overlay not counted for a function of another overlay loaded over it (the two are never in memory together): each of these was called or named also from such an overlay (findings 2026-10-28, town5)
+needs: unreachable
+match: ov003/field_actor:FieldActor_GetState3ESaved ov003/field_actor:FieldActor_GetState4BSaved
+  ov003/town_insect:TownInsect_HideById
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetApproachSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetOffSaved
+  ov009/scene_actor:SceneActor_IsInMode0
+
 # ================================================================== the seed's day: buildings
 
 area: Shops and buildings (the seed's day)
