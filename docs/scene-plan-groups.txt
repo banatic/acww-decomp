@@ -10,20 +10,23 @@
 area: Unreachable for one player
 group: local wireless (DS to DS)
 scene: none: a visit to another town, a guest in this one, the wireless exchange of the town's block
-reach: needs a second DS running the game (WM library, parent and child search, MP exchange, the linked scene changes). Listed by whole file only where no scene runs a function of the file (findings 2026-10-28, town6); besides, the link jobs 0x1d (the search a player moving in starts: title-move-in reaches its start, where the runtime, which has no wireless, halts in the WM set-up) and 0x1e (started by ActivityReceiver_OnMessage on message 38 of sp_etc_sequence1, which only job 0x1d's step gives, once a system packet names a second slot), the post clerk's step 14 (job 0x1f asked for, after step 13 awaited the connection) and Session_Start, which only job 0x1d's start, the gatekeeper's session talk and the post clerk's line 0x36 call, each after LibraryOverlay_Switch65 or _Switch66 (town-hall-move and title-move-in end at _Switch66: the runtime, which has no wireless, halts in the WM set-up); besides (findings 2026-10-29, proofs1), the host picker (ov140): overlay 140 is only in overlay group 0x21, which no code asks for: OverlayGroups_Request and _RequestForOwner get ov090's constants (1-8, 0xf, 0x24, 0x2b), GroupParams' 9 and 12, an event's step (0-8) and ov092's group of GroupParams' mode (below 0x43; no entry is 0x21), and the scenes' and modes' tables, the scene infos and the other loaders name overlays 3-56, 93, 127 and the libraries' only (w22/classify.py, gate overlay); the town list (ov141) and its rows (ov139): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); and what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv)
+reach: needs a second DS running the game (WM library, parent and child search, MP exchange, the linked scene changes). Listed by whole file only where no scene runs a function of the file (findings 2026-10-28, town6); besides, the link jobs 0x1d (the search a player moving in starts: title-move-in reaches its start, where the runtime, which has no wireless, halts in the WM set-up) and 0x1e (started by ActivityReceiver_OnMessage on message 38 of sp_etc_sequence1, which only job 0x1d's step gives, once a system packet names a second slot), the post clerk's step 14 (job 0x1f asked for, after step 13 awaited the connection) and Session_Start, which only job 0x1d's start, the gatekeeper's session talk and the post clerk's line 0x36 call, each after LibraryOverlay_Switch65 or _Switch66 (town-hall-move and title-move-in end at _Switch66: the runtime, which has no wireless, halts in the WM set-up); besides (findings 2026-10-29, proofs1), the host picker (ov140): overlay 140 is only in overlay group 0x21, which no code asks for: OverlayGroups_Request and _RequestForOwner get ov090's constants (1-8, 0xf, 0x24, 0x2b), GroupParams' 9 and 12, an event's step (0-8) and ov092's group of GroupParams' mode (below 0x43; no entry is 0x21), and the scenes' and modes' tables, the scene infos and the other loaders name overlays 3-56, 93, 127 and the libraries' only (w22/classify.py, gate overlay); the town list (ov141) and its rows (ov139): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); and what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); besides (findings 2026-10-29, town7), in the files one player also runs, what only the receive callback, the local wireless library or the menu overlays 139-141 reach (w24/classify.py, gates recv, wireless and overlay)
 needs: unreachable
-match: main/activity_save:ActivitySave_GuestSteps main/activity_save:ActivitySave_HostSteps
-  main/activity_save:ActivitySave_LeaveSession main/exchange_blocks:ExchangeBlocks_Rotate
-  main/exchange_blocks:ExchangeBlocks_SendToGuests main/exchange_blocks:ExchangeBlocks_SwapWithRandom
-  main/link_bundle:LinkBundle_ReadClaim main/link_bundle:LinkBundle_ReadEntered
-  main/link_bundle:LinkBundle_ReadEnteredNothing main/link_bundle:LinkBundle_ReadLeft
-  main/link_bundle:LinkBundle_ReadLeftNothing main/link_bundle:LinkBundle_SendEntered
-  main/link_bundle:LinkBundle_SendLeft main/link_bundle:LinkBundle_WriteClaim
-  main/link_bundle:LinkBundle_WriteEntered main/link_bundle:LinkBundle_WriteEnteredNothing
-  main/link_bundle:LinkBundle_WriteLeft main/link_bundle:LinkBundle_WriteLeftNothing
-  main/recent_slots:RecentSlots_Clear main/recent_slots:RecentSlots_Forget
-  main/recent_slots:RecentSlots_Newest main/recent_slots:RecentSlots_Push
-  main/session_message:SessionMessage_AddLinkPair
+match: autoload_2/network:Local_OnEvent autoload_2/network:Local_Setup
+  autoload_2/network:Net_DispatchReceived main/activity_save:ActivitySave_GuestSteps
+  main/activity_save:ActivitySave_HostSteps main/activity_save:ActivitySave_LeaveSession
+  main/exchange_blocks:ExchangeBlocks_Rotate main/exchange_blocks:ExchangeBlocks_SendToGuests
+  main/exchange_blocks:ExchangeBlocks_SwapWithRandom main/link_bundle:LinkBundle_ReadClaim
+  main/link_bundle:LinkBundle_ReadEntered main/link_bundle:LinkBundle_ReadEnteredNothing
+  main/link_bundle:LinkBundle_ReadLeft main/link_bundle:LinkBundle_ReadLeftNothing
+  main/link_bundle:LinkBundle_SendEntered main/link_bundle:LinkBundle_SendLeft
+  main/link_bundle:LinkBundle_WriteClaim main/link_bundle:LinkBundle_WriteEntered
+  main/link_bundle:LinkBundle_WriteEnteredNothing main/link_bundle:LinkBundle_WriteLeft
+  main/link_bundle:LinkBundle_WriteLeftNothing main/recent_slots:RecentSlots_Clear
+  main/recent_slots:RecentSlots_Forget main/recent_slots:RecentSlots_Newest
+  main/recent_slots:RecentSlots_Push main/session:Session_AddCredits
+  main/session:Session_GetRecvWriteEntry main/session:Session_PushRecvEntry
+  main/session_link:Session_OnReceived main/session_message:SessionMessage_AddLinkPair
   main/session_message:SessionMessage_ChangeVillagerObject
   main/session_message:SessionMessage_Dispatch main/session_message:SessionMessage_FillVillagerEntry
   main/session_message:SessionMessage_Handle20 main/session_message:SessionMessage_Handle23
@@ -68,9 +71,10 @@ match: main/activity_save:ActivitySave_GuestSteps main/activity_save:ActivitySav
   main/session_message:SessionMessage_SetVillagerItem7D2
   main/session_message:SessionMessage_SetVillagerItems7B0
   main/session_message:SessionMessage_SetVillagerObject
-  main/session_message:SessionMessage_SetVillagerObjectItem main/system_packet:SystemPacket_Dispatch
-  main/system_packet:SystemPacket_RequestMode main/system_packet:SystemPacket_RunCommands
-  main/system_packet:SystemPacket_SendActivityBuffer
+  main/session_message:SessionMessage_SetVillagerObjectItem main/session_net:SessionNet_GetSystemKind
+  main/system_command:SystemCommand_ReadEntries main/system_command:SystemCommand_ReadNothing
+  main/system_packet:SystemPacket_Dispatch main/system_packet:SystemPacket_RequestMode
+  main/system_packet:SystemPacket_RunCommands main/system_packet:SystemPacket_SendActivityBuffer
   main/system_packet:SystemPacket_SendActivityFlagD9
   main/system_packet:SystemPacket_SendActivityFlagE4
   main/system_packet:SystemPacket_SendActivityFlagE5
@@ -343,7 +347,7 @@ match: main/missing_npc1:MissingNpc1_EnterScene2F main/missing_npc1:MissingNpc1_
 area: Unreachable for one player
 group: screens no code opens
 scene: none: the pockets view (ov099, group 9's mode 0x1c) and the carried letters screen (ov103, mode 0x24)
-reach: no code sets these modes: the talks' SceneCommand_SetScreenMode calls, GroupParams_Open* callers, the menu tabs (modes 0x18-0x1b, 13, 14) and the dispatcher's reopenings (2, 0x23, 0x35, 0x36, 0x40) never give 0x1c or 0x24; ov099's setup fills fixed items, as a test screen would
+reach: no code sets these modes: the talks' SceneCommand_SetScreenMode calls, GroupParams_Open* callers, the menu tabs (modes 0x18-0x1b, 13, 14) and the dispatcher's reopenings (2, 0x23, 0x35, 0x36, 0x40) never give 0x1c or 0x24; ov099's setup fills fixed items, as a test screen would; besides (findings 2026-10-29, town7), a call that no relocation names, from an overlay of 90-146 into an address several overlays hold, is now taken to the overlay of the caller's overlay groups that holds it (the groups' overlays are loaded and released together, data_020df5ec), not to every overlay there (w24/forward.py)
 needs: unreachable
 match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
   ov099/pockets_view:PocketsView_ActionChoiceByTouch ov099/pockets_view:PocketsView_AddEntries
@@ -363,40 +367,40 @@ match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
   ov099/pockets_view:PocketsView_FollowCursorSprite ov099/pockets_view:PocketsView_FollowGlide
   ov099/pockets_view:PocketsView_FollowTouch ov099/pockets_view:PocketsView_GlideHeldTo
   ov099/pockets_view:PocketsView_GlideToCursor ov099/pockets_view:PocketsView_GlideToRow
-  ov099/pockets_view:PocketsView_GridIndex ov099/pockets_view:PocketsView_GridPlaceAtTouch
-  ov099/pockets_view:PocketsView_HideCursorSprite ov099/pockets_view:PocketsView_HighlightPlace
-  ov099/pockets_view:PocketsView_HoldTouchOnPlace ov099/pockets_view:PocketsView_IdleByKeys
-  ov099/pockets_view:PocketsView_IdleByTouch ov099/pockets_view:PocketsView_IsGridPlace
-  ov099/pockets_view:PocketsView_IsLetterPlace ov099/pockets_view:PocketsView_LetterIndex
-  ov099/pockets_view:PocketsView_LetterPlace ov099/pockets_view:PocketsView_LetterPlaceAtTouch
-  ov099/pockets_view:PocketsView_MoveCursor ov099/pockets_view:PocketsView_MoveCursorInGrid
-  ov099/pockets_view:PocketsView_MoveHeldItemByKeys ov099/pockets_view:PocketsView_New
-  ov099/pockets_view:PocketsView_OpenChoice ov099/pockets_view:PocketsView_Phase0Idle
-  ov099/pockets_view:PocketsView_Phase1Idle ov099/pockets_view:PocketsView_PickActionRow
-  ov099/pockets_view:PocketsView_PickUpItem ov099/pockets_view:PocketsView_PickUpOnTurn
-  ov099/pockets_view:PocketsView_PickUpWithCursor ov099/pockets_view:PocketsView_PickUpWithTouch
-  ov099/pockets_view:PocketsView_PlaceCursorSprite ov099/pockets_view:PocketsView_PlaceIsEmpty
-  ov099/pockets_view:PocketsView_PlaceIsTaken ov099/pockets_view:PocketsView_PlaceItem
-  ov099/pockets_view:PocketsView_PlaceItemState ov099/pockets_view:PocketsView_PlacePopup
-  ov099/pockets_view:PocketsView_PlaceX ov099/pockets_view:PocketsView_PlaceY
-  ov099/pockets_view:PocketsView_PointAtFirstRow ov099/pockets_view:PocketsView_PrepareWallet
-  ov099/pockets_view:PocketsView_PutDownWithCursor ov099/pockets_view:PocketsView_PutHeldAt
-  ov099/pockets_view:PocketsView_RequestDelete ov099/pockets_view:PocketsView_RunAction
-  ov099/pockets_view:PocketsView_RunActionWhenIdle ov099/pockets_view:PocketsView_RunInteractive
-  ov099/pockets_view:PocketsView_RunState ov099/pockets_view:PocketsView_SelectPlace
-  ov099/pockets_view:PocketsView_SetFlags ov099/pockets_view:PocketsView_SetSlotItem
-  ov099/pockets_view:PocketsView_SetUpLayer6 ov099/pockets_view:PocketsView_Setup
-  ov099/pockets_view:PocketsView_ShowChoice ov099/pockets_view:PocketsView_ShowCursorFirstOfSet
-  ov099/pockets_view:PocketsView_ShowCursorSprite ov099/pockets_view:PocketsView_Start
-  ov099/pockets_view:PocketsView_StartPickUp ov099/pockets_view:PocketsView_StartPutDown
-  ov099/pockets_view:PocketsView_StartSetup ov099/pockets_view:PocketsView_StartSwap
-  ov099/pockets_view:PocketsView_StartWipeIn ov099/pockets_view:PocketsView_StartWipeOut
-  ov099/pockets_view:PocketsView_StepHeldGlide ov099/pockets_view:PocketsView_StepWalletSetup
-  ov099/pockets_view:PocketsView_SwapHeldWith ov099/pockets_view:PocketsView_SwapWithCursor
-  ov099/pockets_view:PocketsView_Teardown ov099/pockets_view:PocketsView_TestFlags
-  ov099/pockets_view:PocketsView_TouchMoved ov099/pockets_view:PocketsView_TouchPlace
-  ov099/pockets_view:PocketsView_UpdateObject94 ov099/pockets_view:PocketsView_UpdatePopup
-  ov099/pockets_view:PocketsView_WaitAnimToSubState10
+  ov099/pockets_view:PocketsView_GridIndex ov099/pockets_view:PocketsView_GridPlace
+  ov099/pockets_view:PocketsView_GridPlaceAtTouch ov099/pockets_view:PocketsView_HideCursorSprite
+  ov099/pockets_view:PocketsView_HighlightPlace ov099/pockets_view:PocketsView_HoldTouchOnPlace
+  ov099/pockets_view:PocketsView_IdleByKeys ov099/pockets_view:PocketsView_IdleByTouch
+  ov099/pockets_view:PocketsView_IsGridPlace ov099/pockets_view:PocketsView_IsLetterPlace
+  ov099/pockets_view:PocketsView_LetterIndex ov099/pockets_view:PocketsView_LetterPlace
+  ov099/pockets_view:PocketsView_LetterPlaceAtTouch ov099/pockets_view:PocketsView_MoveCursor
+  ov099/pockets_view:PocketsView_MoveCursorInGrid ov099/pockets_view:PocketsView_MoveHeldItemByKeys
+  ov099/pockets_view:PocketsView_New ov099/pockets_view:PocketsView_OpenChoice
+  ov099/pockets_view:PocketsView_Phase0Idle ov099/pockets_view:PocketsView_Phase1Idle
+  ov099/pockets_view:PocketsView_PickActionRow ov099/pockets_view:PocketsView_PickUpItem
+  ov099/pockets_view:PocketsView_PickUpOnTurn ov099/pockets_view:PocketsView_PickUpWithCursor
+  ov099/pockets_view:PocketsView_PickUpWithTouch ov099/pockets_view:PocketsView_PlaceCursorSprite
+  ov099/pockets_view:PocketsView_PlaceIsEmpty ov099/pockets_view:PocketsView_PlaceIsTaken
+  ov099/pockets_view:PocketsView_PlaceItem ov099/pockets_view:PocketsView_PlaceItemState
+  ov099/pockets_view:PocketsView_PlacePopup ov099/pockets_view:PocketsView_PlaceX
+  ov099/pockets_view:PocketsView_PlaceY ov099/pockets_view:PocketsView_PointAtFirstRow
+  ov099/pockets_view:PocketsView_PrepareWallet ov099/pockets_view:PocketsView_PutDownWithCursor
+  ov099/pockets_view:PocketsView_PutHeldAt ov099/pockets_view:PocketsView_RequestDelete
+  ov099/pockets_view:PocketsView_RunAction ov099/pockets_view:PocketsView_RunActionWhenIdle
+  ov099/pockets_view:PocketsView_RunInteractive ov099/pockets_view:PocketsView_RunState
+  ov099/pockets_view:PocketsView_SelectPlace ov099/pockets_view:PocketsView_SetFlags
+  ov099/pockets_view:PocketsView_SetSlotItem ov099/pockets_view:PocketsView_SetUpLayer6
+  ov099/pockets_view:PocketsView_Setup ov099/pockets_view:PocketsView_ShowChoice
+  ov099/pockets_view:PocketsView_ShowCursorFirstOfSet ov099/pockets_view:PocketsView_ShowCursorSprite
+  ov099/pockets_view:PocketsView_Start ov099/pockets_view:PocketsView_StartPickUp
+  ov099/pockets_view:PocketsView_StartPutDown ov099/pockets_view:PocketsView_StartSetup
+  ov099/pockets_view:PocketsView_StartSwap ov099/pockets_view:PocketsView_StartWipeIn
+  ov099/pockets_view:PocketsView_StartWipeOut ov099/pockets_view:PocketsView_StepHeldGlide
+  ov099/pockets_view:PocketsView_StepWalletSetup ov099/pockets_view:PocketsView_SwapHeldWith
+  ov099/pockets_view:PocketsView_SwapWithCursor ov099/pockets_view:PocketsView_Teardown
+  ov099/pockets_view:PocketsView_TestFlags ov099/pockets_view:PocketsView_TouchMoved
+  ov099/pockets_view:PocketsView_TouchPlace ov099/pockets_view:PocketsView_UpdateObject94
+  ov099/pockets_view:PocketsView_UpdatePopup ov099/pockets_view:PocketsView_WaitAnimToSubState10
   ov099/pockets_view:PocketsView_WaitChoiceToPoint ov099/pockets_view:PocketsView_WaitCursorAnim
   ov099/pockets_view:PocketsView_WaitCursorGlide ov099/pockets_view:PocketsView_WaitError
   ov099/pockets_view:PocketsView_WipeIn ov099/pockets_view:PocketsView_WipeOut
@@ -420,15 +424,18 @@ match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
   ov103/carried_letters:CarriedLetters_EndInteractiveFrame
   ov103/carried_letters:CarriedLetters_EndLayerTask ov103/carried_letters:CarriedLetters_FinishPickUp
   ov103/carried_letters:CarriedLetters_FinishPlacePress
-  ov103/carried_letters:CarriedLetters_FinishSwap ov103/carried_letters:CarriedLetters_FollowGlide
+  ov103/carried_letters:CarriedLetters_FinishSwap
+  ov103/carried_letters:CarriedLetters_FollowCursorSprite
+  ov103/carried_letters:CarriedLetters_FollowGlide
   ov103/carried_letters:CarriedLetters_FollowLabelPress
   ov103/carried_letters:CarriedLetters_FollowTouch ov103/carried_letters:CarriedLetters_GlideHeldTo
   ov103/carried_letters:CarriedLetters_GlideToCursor ov103/carried_letters:CarriedLetters_GlideToRow
   ov103/carried_letters:CarriedLetters_HideCursorSprite
   ov103/carried_letters:CarriedLetters_HighlightPlace
   ov103/carried_letters:CarriedLetters_HoldTouchOnPlace
-  ov103/carried_letters:CarriedLetters_IdleByTouch ov103/carried_letters:CarriedLetters_LabelByKeys
-  ov103/carried_letters:CarriedLetters_LabelByTouch ov103/carried_letters:CarriedLetters_LetterPlace
+  ov103/carried_letters:CarriedLetters_IdleByTouch ov103/carried_letters:CarriedLetters_IsLetterPlace
+  ov103/carried_letters:CarriedLetters_LabelByKeys ov103/carried_letters:CarriedLetters_LabelByTouch
+  ov103/carried_letters:CarriedLetters_LetterIndex ov103/carried_letters:CarriedLetters_LetterPlace
   ov103/carried_letters:CarriedLetters_LetterPlaceAtTouch
   ov103/carried_letters:CarriedLetters_LetterWipeIn
   ov103/carried_letters:CarriedLetters_LetterWipeOut
@@ -440,6 +447,8 @@ match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
   ov103/carried_letters:CarriedLetters_Phase3Idle ov103/carried_letters:CarriedLetters_Phase4Idle
   ov103/carried_letters:CarriedLetters_PickChoiceRow
   ov103/carried_letters:CarriedLetters_PickUpAtCursor
+  ov103/carried_letters:CarriedLetters_PickUpLetter
+  ov103/carried_letters:CarriedLetters_PickUpWithCursor
   ov103/carried_letters:CarriedLetters_PickUpWithTouch
   ov103/carried_letters:CarriedLetters_PlaceCursorSprite
   ov103/carried_letters:CarriedLetters_PlaceIsDimmed
@@ -476,7 +485,7 @@ match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
 area: Unreachable for one player
 group: the item and letter picks' hold and swap code
 scene: none: the pockets pick (ov101) and the letter pick (ov108) keep the mailbox's code to hold, drag, put down and swap an item or letter
-reach: no function of the overlays sets the sub states of that code (ov101/pockets_pick.h: 5, 7, 0x0c, 0x0d, 0x16; ov108/letter_pick.h: 4, 7, 0x0c-0x12, 0x16): a choice offers no action that picks one up and a touch only opens the choice; scenes letter-pick and sick-pick play every other path; besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py)
+reach: no function of the overlays sets the sub states of that code (ov101/pockets_pick.h: 5, 7, 0x0c, 0x0d, 0x16; ov108/letter_pick.h: 4, 7, 0x0c-0x12, 0x16): a choice offers no action that picks one up and a touch only opens the choice; scenes letter-pick and sick-pick play every other path; besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, town7), a call that no relocation names, from an overlay of 90-146 into an address several overlays hold, is now taken to the overlay of the caller's overlay groups that holds it (the groups' overlays are loaded and released together, data_020df5ec), not to every overlay there (w24/forward.py)
 needs: unreachable
 match: ov101/pockets_pick:PocketsPick_ClearMarks ov101/pockets_pick:PocketsPick_DragHeld
   ov101/pockets_pick:PocketsPick_DropHeldAt ov101/pockets_pick:PocketsPick_FinishPickUp
@@ -485,23 +494,23 @@ match: ov101/pockets_pick:PocketsPick_ClearMarks ov101/pockets_pick:PocketsPick_
   ov101/pockets_pick:PocketsPick_MarkPlace ov101/pockets_pick:PocketsPick_MoveHeldByKeys
   ov101/pockets_pick:PocketsPick_PickUpItem ov101/pockets_pick:PocketsPick_PickUpOnTurn
   ov101/pockets_pick:PocketsPick_PickUpWithCursor ov101/pockets_pick:PocketsPick_PlaceItem
-  ov101/pockets_pick:PocketsPick_PutDownWithCursor ov101/pockets_pick:PocketsPick_PutHeldAt
-  ov101/pockets_pick:PocketsPick_SetSlotItem ov101/pockets_pick:PocketsPick_StartPutDown
-  ov101/pockets_pick:PocketsPick_StartSwap ov101/pockets_pick:PocketsPick_StepHeldGlide
-  ov101/pockets_pick:PocketsPick_Swap ov101/pockets_pick:PocketsPick_SwapHeldWith
-  ov101/pockets_pick:PocketsPick_WaitCursorAnim ov101/pockets_pick:PocketsPick_WaitError
-  ov108/letter_pick:LetterPick_BeginPutDown ov108/letter_pick:LetterPick_BeginSwap
-  ov108/letter_pick:LetterPick_ClearHighlights ov108/letter_pick:LetterPick_DragHeld
-  ov108/letter_pick:LetterPick_FinishPickUp ov108/letter_pick:LetterPick_FinishPlacePress
-  ov108/letter_pick:LetterPick_FinishSwap ov108/letter_pick:LetterPick_FollowGlide
-  ov108/letter_pick:LetterPick_FollowTouch ov108/letter_pick:LetterPick_GlideHeldTo
-  ov108/letter_pick:LetterPick_HighlightPlace ov108/letter_pick:LetterPick_MoveHeldByKeys
-  ov108/letter_pick:LetterPick_PickUpAtCursor ov108/letter_pick:LetterPick_PickUpLetter
-  ov108/letter_pick:LetterPick_PickUpWithCursor ov108/letter_pick:LetterPick_PutDown
-  ov108/letter_pick:LetterPick_PutHeldAt ov108/letter_pick:LetterPick_PutHeldLetterAt
-  ov108/letter_pick:LetterPick_PutLetterAt ov108/letter_pick:LetterPick_StepHeldGlide
-  ov108/letter_pick:LetterPick_Swap ov108/letter_pick:LetterPick_SwapHeldWith
-  ov108/letter_pick:LetterPick_WaitError
+  ov101/pockets_pick:PocketsPick_PlaceItemState ov101/pockets_pick:PocketsPick_PutDownWithCursor
+  ov101/pockets_pick:PocketsPick_PutHeldAt ov101/pockets_pick:PocketsPick_SetSlotItem
+  ov101/pockets_pick:PocketsPick_StartPutDown ov101/pockets_pick:PocketsPick_StartSwap
+  ov101/pockets_pick:PocketsPick_StepHeldGlide ov101/pockets_pick:PocketsPick_Swap
+  ov101/pockets_pick:PocketsPick_SwapHeldWith ov101/pockets_pick:PocketsPick_WaitCursorAnim
+  ov101/pockets_pick:PocketsPick_WaitError ov108/letter_pick:LetterPick_BeginPutDown
+  ov108/letter_pick:LetterPick_BeginSwap ov108/letter_pick:LetterPick_ClearHighlights
+  ov108/letter_pick:LetterPick_DragHeld ov108/letter_pick:LetterPick_FinishPickUp
+  ov108/letter_pick:LetterPick_FinishPlacePress ov108/letter_pick:LetterPick_FinishSwap
+  ov108/letter_pick:LetterPick_FollowGlide ov108/letter_pick:LetterPick_FollowTouch
+  ov108/letter_pick:LetterPick_GlideHeldTo ov108/letter_pick:LetterPick_HighlightPlace
+  ov108/letter_pick:LetterPick_MoveHeldByKeys ov108/letter_pick:LetterPick_PickUpAtCursor
+  ov108/letter_pick:LetterPick_PickUpLetter ov108/letter_pick:LetterPick_PickUpWithCursor
+  ov108/letter_pick:LetterPick_PutDown ov108/letter_pick:LetterPick_PutHeldAt
+  ov108/letter_pick:LetterPick_PutHeldLetterAt ov108/letter_pick:LetterPick_PutLetterAt
+  ov108/letter_pick:LetterPick_StepHeldGlide ov108/letter_pick:LetterPick_Swap
+  ov108/letter_pick:LetterPick_SwapHeldWith ov108/letter_pick:LetterPick_WaitError
 
 area: Unreachable for one player
 group: the keyboard entry's question
@@ -553,7 +562,7 @@ match: ov102/storage_scene:StorageScene_WaitError ov104/letter_send:LetterSend_W
 area: Unreachable for one player
 group: the menu scenes' phases 3 and 4
 scene: none: the functions of vtable slots 0x54 and 0x58 of each menu scene of overlays 90-146 (ov002/menu_scene.h), each one that does nothing
-reach: MenuScene_Update runs the slot of the scene's phase, and the game sets phases 0, 1, 2 and 5 only: every MenuScene_SetPhase call names one of those, and nothing else writes the phase (ov002/menu_scene.c)
+reach: MenuScene_Update runs the slot of the scene's phase, and the game sets phases 0, 1, 2 and 5 only: every MenuScene_SetPhase call names one of those, and nothing else writes the phase (ov002/menu_scene.c); besides (findings 2026-10-29, town7), a call that no relocation names, from an overlay of 90-146 into an address several overlays hold, is now taken to the overlay of the caller's overlay groups that holds it (the groups' overlays are loaded and released together, data_020df5ec), not to every overlay there (w24/forward.py)
 needs: unreachable
 match: ov090/menu_tabs:MenuTabs_Phase3 ov090/menu_tabs:MenuTabs_Phase4
   ov091/letter_reader:LetterReader_Phase3 ov091/letter_reader:LetterReader_Phase4
@@ -582,18 +591,18 @@ match: ov090/menu_tabs:MenuTabs_Phase3 ov090/menu_tabs:MenuTabs_Phase4
   ov123/design_editor:DesignEditor_Phase4Idle ov125/design_picker:DesignPicker_Phase3Idle
   ov125/design_picker:DesignPicker_Phase4Idle ov126/keyboard_entry_scene:KeyboardEntry_Slot54
   ov126/keyboard_entry_scene:KeyboardEntry_Slot58 ov128/star_view:StarView_Phase3
-  ov129/star_designer:StarDesigner_Phase3 ov129/star_designer:StarDesigner_Phase4
-  ov131/bank_amount:BankAmount_Slot54 ov131/bank_amount:BankAmount_Slot58
-  ov132/bank_menu:BankMenu_Phase3Idle ov132/bank_menu:BankMenu_Phase4Idle
-  ov133/friend_code_entry_scene:FriendCodeEntry_Phase3Idle
+  ov128/star_view:StarView_Phase4 ov129/star_designer:StarDesigner_Phase3
+  ov129/star_designer:StarDesigner_Phase4 ov131/bank_amount:BankAmount_Slot54
+  ov131/bank_amount:BankAmount_Slot58 ov132/bank_menu:BankMenu_Phase3Idle
+  ov132/bank_menu:BankMenu_Phase4Idle ov133/friend_code_entry_scene:FriendCodeEntry_Phase3Idle
   ov133/friend_code_entry_scene:FriendCodeEntry_Phase4Idle ov135/phone_clock:PhoneClock_Phase3Idle
-  ov136/time_screen:TimeScreen_Phase3Idle ov136/time_screen:TimeScreen_Phase4Idle
-  ov137/birthday_screen:BirthdayScreen_Phase3Idle ov137/birthday_screen:BirthdayScreen_Phase4Idle
-  ov138/date_screen:DateScreen_Phase3Idle ov138/date_screen:DateScreen_Phase4Idle
-  ov142/order_catalog_scene:OrderCatalog_Phase3Idle ov142/order_catalog_scene:OrderCatalog_Phase4Idle
-  ov143/tune_editor_states:TuneEditor_Phase3Idle ov143/tune_editor_states:TuneEditor_Phase4Idle
-  ov144/music_list_scene:MusicList_Phase3Idle ov144/music_list_scene:MusicList_Phase4Idle
-  ov145/donation_list_states:DonationList_Phase3Idle
+  ov135/phone_clock:PhoneClock_Phase4Idle ov136/time_screen:TimeScreen_Phase3Idle
+  ov136/time_screen:TimeScreen_Phase4Idle ov137/birthday_screen:BirthdayScreen_Phase3Idle
+  ov137/birthday_screen:BirthdayScreen_Phase4Idle ov138/date_screen:DateScreen_Phase3Idle
+  ov138/date_screen:DateScreen_Phase4Idle ov142/order_catalog_scene:OrderCatalog_Phase3Idle
+  ov142/order_catalog_scene:OrderCatalog_Phase4Idle ov143/tune_editor_states:TuneEditor_Phase3Idle
+  ov143/tune_editor_states:TuneEditor_Phase4Idle ov144/music_list_scene:MusicList_Phase3Idle
+  ov144/music_list_scene:MusicList_Phase4Idle ov145/donation_list_states:DonationList_Phase3Idle
   ov145/donation_list_states:DonationList_Phase4Idle
 
 area: Unreachable for one player
@@ -805,11 +814,13 @@ match: ov068/field_actor_states87:FieldActor_EndState88
 area: Unreachable for one player
 group: the destructors of main's static objects
 scene: none: the destructors of the objects main's static initialisers construct (the state block, the sky, the slot pools, the collision world, the text font and about seventy more)
-reach: main's, the autoloads' and the TCMs' static initialisers register these destructors with __register_global_object (0x02138bb0); its chain is walked by FS_EndOverlay only for the objects inside the overlay it ends, and in full only by __destroy_global_chain (func_02138910), whose one caller func_02128f54 belongs to the C library's exit and terminate path (func_02128fa8, func_0212d424, the terminate handler func_02138bf4), which the game never takes. Listed: each registered destructor that nothing else calls or points to, each class whose constructors only main's static initialisers call (its vtable's destructors), and what only those call (tools: a call and pointer scan of the module images)
+reach: main's, the autoloads' and the TCMs' static initialisers register these destructors with __register_global_object (0x02138bb0); its chain is walked by FS_EndOverlay only for the objects inside the overlay it ends, and in full only by __destroy_global_chain (func_02138910), whose one caller func_02128f54 belongs to the C library's exit and terminate path (func_02128fa8, func_0212d424, the terminate handler func_02138bf4), which the game never takes. Listed: each registered destructor that nothing else calls or points to, each class whose constructors only main's static initialisers call (its vtable's destructors), and what only those call (tools: a call and pointer scan of the module images); besides (findings 2026-10-29, town7), the destructors of the parts and the array elements of main's static objects (the state block's player records and their pockets, villagers, letters, rooms, snowmen, sky objects, the scene claims): a destructor registered (__register_global_object) for an object of main, the autoloads or the TCMs runs only from the C library's exit (func_02138910): FS_EndOverlay (0x0211b708) destroys only the objects of the overlay it unloads; and an element's destructor that __cxa_vec_ctor (0x02138d6c) is given runs only in its landing pad, after a constructor threw, and no code throws (the unwinder func_021375c0 is entered only from func_02137174, which only the array helpers' landing pads call). w24/atexit.py lists the registrations, w24/vecdtor.py the array constructors' destructors (w24/classify.py, gates exit and nothrow)
 needs: unreachable
 match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
-  main/actor_entries:ActorEntries_DestructTable main/actor_palettes:ActorPalettes_Destruct
-  main/anim_slots:AnimSlots_Destruct main/bbs:Bbs_Destruct main/bells_panel:BellsPanel_Delete
+  main/acre_bits:AcreBits_Destruct main/actor_entries:ActorEntries_DestructD
+  main/actor_entries:ActorEntries_DestructE main/actor_entries:ActorEntries_DestructTable
+  main/actor_palettes:ActorPalettes_Destruct main/anim_slots:AnimSlots_Destruct
+  main/bbs:BbsPost_Destruct main/bbs:Bbs_Destruct main/bells_panel:BellsPanel_Delete
   main/bells_panel:BellsPanel_Destruct main/beside_spot:BesideSpot_Destruct
   main/bg_models:BgModels_Destruct main/block_02034858:Block021c5160_Destroy
   main/block_021d27ac:Block021d27ac_Destruct main/block_021d27ac_parts:Block021d27acPart18_Destruct
@@ -826,16 +837,21 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/caution_window:CautionWindow_Destruct main/caution_window:CautionWindow_DestructDelete
   main/clock_panel:ClockPanel_Delete main/clock_panel:ClockPanel_Destruct
   main/cloth_slots:ClothSlots_Destruct main/collision_area:CollisionArea_ListDestruct
-  main/collision_box:CollisionBox_ListDestruct main/constellations:Constellations_DestructList
-  main/control_mode_icon:ControlModeIcon_Delete main/control_mode_icon:ControlModeIcon_Destruct
-  main/day_plan:DayPlan_Destruct main/design_assets:DesignArchive_Destruct
-  main/design_assets:DesignPalettes_Destruct main/design_assets:DesignTextures_Destruct
-  main/design_sets:DesignHolder_Destruct main/design_sets:DesignManager_Destruct
-  main/design_sets:DesignSample_Destruct main/design_sets:ShopDesigns_Destruct
+  main/collision_box:CollisionBox_ListDestruct main/collision_query:CollisionQuery_DestructCell
+  main/constellations:Constellations_DestructList main/control_mode_icon:ControlModeIcon_Delete
+  main/control_mode_icon:ControlModeIcon_Destruct main/daily_bits:DailyBits_Destruct
+  main/day_events:DayEvents_MarkDestruct main/day_plan:DayPlan_Destruct
+  main/design_assets:DesignArchive_Destruct main/design_assets:DesignPalettes_Destruct
+  main/design_assets:DesignTextures_Destruct main/design_sets:DesignHolder_Destruct
+  main/design_sets:DesignManager_Destruct main/design_sets:DesignOrder_Destruct
+  main/design_sets:DesignSample_Destruct main/design_sets:PlayerDesigns_Destruct
+  main/design_sets:ShopDesigns_Destruct main/event_announce:EventAnnounce_Nothing13f4
   main/event_calendar:EventCalendar_DateDestruct main/event_schedule:EventSchedule_Destruct
   main/event_winner:EventWinner_Destruct main/exchange_block:ExchangeBlock_DestructVisitors
   main/face_anim_heaps:FaceAnimHeaps_Destruct main/face_anim_slots:FaceAnimSlots_Destruct
-  main/face_texture:FaceTexture_Destruct main/field_collision:CollisionFloors_Destroy
+  main/face_texture:FaceTexture_Destruct main/field_collision:CollisionBlockMap_Destroy
+  main/field_collision:CollisionBlock_Destroy main/field_collision:CollisionFloor_Destroy
+  main/field_collision:CollisionFloors_Destroy main/field_collision:CollisionPost_Destroy
   main/field_collision:CollisionPosts_Destroy main/field_collision:CollisionWalls_Destroy
   main/field_collision:CollisionWorld_Destroy main/field_label:FieldLabel_Delete
   main/field_label:FieldLabel_Destroy main/field_label_window:FieldLabelWindow_Delete
@@ -846,26 +862,38 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/globe:Globe_DestructView main/head_look:HeadLook_DestructTable
   main/held_item_pool:HeldItemPool_Destruct main/house_looks:HouseLooks_Destruct
   main/house_looks:HouseLooks_DestructDesign main/house_looks:HouseLooks_DestructLooks
-  main/house_record:HouseRecord_Destruct main/house_record:HouseRecord_DestructSongs
-  main/item_1568_count:Item1568Count_Destruct main/item_group_order:ItemGroupOrder_DestructAll
-  main/item_info:ItemInfoFiles_Destruct main/last_sale:LastSale_Destruct
-  main/link_state:LinkState_Destruct main/mail:MailPostOffice_Destruct
-  main/mail_text:MailText_Destruct main/main_random:MainRandom_Destruct main/menu_tab:MenuTab_Delete
-  main/menu_tab:MenuTab_Destruct main/message_query:MessageQuery_Delete
-  main/message_query:MessageQuery_Destruct main/message_reader:MessageReader_Destruct
-  main/middle_spot:MiddleSpot_Destruct main/museum_record:MuseumRecord_Destruct
+  main/house_record:HouseRecord_Destruct main/house_record:HouseRecord_DestructLayer
+  main/house_record:HouseRecord_DestructSongs main/house_record:HouseRecord_RoomDestruct
+  main/item_1568_count:Item1568Count_Destruct main/item_group_order:ItemGroupOrder_Destruct
+  main/item_group_order:ItemGroupOrder_DestructAll main/item_info:ItemInfoFiles_Destruct
+  main/item_record:ItemRecord_Destruct main/last_sale:LastSale_Destruct
+  main/library_overlay:LibraryOverlay_Destroy main/link_parts:LinkPart_EndArrived
+  main/link_parts:LinkPart_EndChange main/link_parts:LinkPart_EndMove
+  main/link_parts:LinkPart_EndPlace main/link_state:LinkState_Destruct main/mail:MailBox_Destruct
+  main/mail:MailDated_Destruct main/mail:MailPostOffice_Destruct main/mail_text:MailText_Destruct
+  main/main_random:MainRandom_Destruct main/menu_tab:MenuTab_Delete main/menu_tab:MenuTab_Destruct
+  main/message_query:MessageQuery_Delete main/message_query:MessageQuery_Destruct
+  main/message_reader:MessageReader_Destruct main/middle_spot:MiddleSpot_Destruct
+  main/mom_letters:MomLetterState_Destruct main/museum_record:MuseumRecord_Destruct
   main/near_spot:NearSpot_Destruct main/nook_store:NookStore_Destruct
-  main/place_claim:PlaceClaim_DestructAll main/player_options:PlayerOptions_Empty2B4
-  main/player_options:PlayerOptions_Nothing384 main/player_records:PlayerRecords_DestructGuests
-  main/player_records:PlayerRecords_DestructTown main/resource_pools:ResourcePools_BlockDestruct
-  main/resource_pools:ResourcePools_Heap4Destruct main/resource_pools:ResourcePools_Heap8Destruct
-  main/room_cells:RoomCells_Destruct17To24Records main/room_cells:RoomCells_DestructNookRecords
+  main/place_claim:PlaceClaim_Destruct main/place_claim:PlaceClaim_DestructAll
+  main/player_field_2416:PlayerField2416_Destruct main/player_options:PlayerOptions_Destruct
+  main/player_options:PlayerOptions_Empty2B4 main/player_options:PlayerOptions_Nothing384
+  main/player_record:PlayerRecordVillager_Destruct main/player_record:PlayerRecord_Destruct
+  main/player_records:PlayerRecords_DestructGuests main/player_records:PlayerRecords_DestructTown
+  main/player_storage:PlayerStorage_Destruct main/resource_pools:ResourcePools_BlockDestruct
+  main/resource_pools:ResourcePools_BlockSlotDestruct main/resource_pools:ResourcePools_Heap4Destruct
+  main/resource_pools:ResourcePools_Heap4SlotDestruct main/resource_pools:ResourcePools_Heap8Destruct
+  main/resource_pools:ResourcePools_Heap8SlotDestruct main/room_cells:RoomCellSteps_Destruct
+  main/room_cells:RoomCells_Destruct main/room_cells:RoomCells_Destruct17To24Records
+  main/room_cells:RoomCells_DestructNookRecords main/room_cells:RoomSwitchGrid_Destruct
   main/room_interior:RoomInterior_DestroySceneCarpets
   main/room_interior:RoomInterior_DestroySceneWallpapers
   main/room_score_state:RoomScoreState_DestructBest
   main/room_score_state:RoomScoreState_DestructCategories
   main/room_score_state:RoomScoreState_DestructJudgeDate
-  main/room_score_state:RoomScoreState_DestructMarks main/scene_claim:SceneClaimExit_Destruct
+  main/room_score_state:RoomScoreState_DestructMarks main/savings:Savings_DestructAccount
+  main/scene_claim:SceneClaimExit_Destruct main/scene_claim:SceneClaimMask_Destruct
   main/scene_claim:SceneClaimMasks_Destruct main/scene_place:ScenePlace_Destruct
   main/screen_icon:ScreenIcon_Destruct main/screen_icon:ScreenIcon_DestructFree
   main/screen_mark:ScreenMark_Delete main/screen_mark:ScreenMark_Destruct
@@ -873,38 +901,51 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/select_bmg:SelectBmg_Delete main/select_bmg:SelectBmg_Destruct
   main/session_link:Session_Destroy main/session_players:SessionPlayers_Destruct
   main/shadow:ObjShadow_Destruct main/shop_answers:ShopAnswers_Destruct
-  main/shop_list_a:ShopListA_Destruct main/sky:Sky_Destruct main/sky_objects:SkyObjects_Destruct
-  main/sky_weather_day:SkyWeatherDay_Destruct main/slot_pool:SlotPool_AnimSetsDestruct
-  main/slot_pool:SlotPool_AnimSetsDestructDelete main/slot_pool:SlotPool_BaseDestruct
-  main/slot_pool:SlotPool_BaseDestructDelete main/slot_pool:SlotPool_BaseDestructVirtual
-  main/slot_pool:SlotPool_BlocksDestruct main/slot_pool:SlotPool_BlocksDestructDelete
+  main/shop_list_a:ShopListA_Destruct main/shop_points:ShopPoints_Destruct
+  main/shop_points:ShopPoints_DoNothing main/sky:Sky_Destruct main/sky_objects:SkyObject_Destruct
+  main/sky_objects:SkyObjects_Destruct main/sky_shots:SkyShots_DestructRequest
+  main/sky_weather_day:SkyWeatherDay_Destruct main/slot_pool:SlotPool_AnimSetEntryDestruct
+  main/slot_pool:SlotPool_AnimSetsDestruct main/slot_pool:SlotPool_AnimSetsDestructDelete
+  main/slot_pool:SlotPool_BaseDestruct main/slot_pool:SlotPool_BaseDestructDelete
+  main/slot_pool:SlotPool_BaseDestructVirtual main/slot_pool:SlotPool_BaseEntryDestruct
+  main/slot_pool:SlotPool_BlockEntryDestruct main/slot_pool:SlotPool_BlocksDestruct
+  main/slot_pool:SlotPool_BlocksDestructDelete main/slot_pool:SlotPool_ClothEntryDestruct
   main/slot_pool:SlotPool_ClothesDestruct main/slot_pool:SlotPool_ClothesDestructDelete
   main/slot_pool:SlotPool_Heap4Destruct main/slot_pool:SlotPool_Heap4DestructDelete
-  main/slot_pool:SlotPool_Heap8Destruct main/slot_pool:SlotPool_Heap8DestructDelete
-  main/slot_pool:SlotPool_ItemsDestruct main/slot_pool:SlotPool_ItemsDestructDelete
+  main/slot_pool:SlotPool_Heap4EntryDestruct main/slot_pool:SlotPool_Heap8Destruct
+  main/slot_pool:SlotPool_Heap8DestructDelete main/slot_pool:SlotPool_Heap8EntryDestruct
+  main/slot_pool:SlotPool_ItemEntryDestruct main/slot_pool:SlotPool_ItemsDestruct
+  main/slot_pool:SlotPool_ItemsDestructDelete main/slot_pool:SlotPool_PartEntryDestruct
   main/slot_pool:SlotPool_PartsDestruct main/slot_pool:SlotPool_PartsDestructDelete
-  main/slot_pool:SlotPool_SpeakersDestruct main/slot_pool:SlotPool_SpeakersDestructDelete
-  main/snowmen:Snowmen_DestructLooseBalls main/snowmen:Snowmen_DestructRecords
-  main/spawner:Spawner_RequestDestruct main/state_block:StateBlock_Destruct
-  main/text_font:TextFont_Destruct main/text_walker:BoxWalker_Delete
-  main/text_walker:BoxWalker_Destruct main/text_walker:TextCopier_Delete
-  main/text_walker:TextCopier_Destruct main/touch_pick_shapes:TouchPick_Destruct
-  main/touch_pick_shapes:TouchPick_DestructBase main/town_acre_count:TownAcreCount_DestroyAcres
-  main/town_acre_count:TownAcreCount_DestroyTown main/town_acre_count:TownAcreCount_DestroyWorst
-  main/town_item_lists:TownItemLists_DestructListA main/town_item_lists:TownItemLists_DestructListB
-  main/town_layout:TownLayout_Destruct main/town_record:TownRecord_Destruct
+  main/slot_pool:SlotPool_SpeakerEntryDestruct main/slot_pool:SlotPool_SpeakersDestruct
+  main/slot_pool:SlotPool_SpeakersDestructDelete main/snowmen:Snowmen_DestructLooseBall
+  main/snowmen:Snowmen_DestructLooseBalls main/snowmen:Snowmen_DestructRecord
+  main/snowmen:Snowmen_DestructRecords main/spawner:Spawner_RequestDestruct
+  main/state_block:StateBlock_Destruct main/text_font:TextFont_Destruct
+  main/text_walker:BoxWalker_Delete main/text_walker:BoxWalker_Destruct
+  main/text_walker:TextCopier_Delete main/text_walker:TextCopier_Destruct
+  main/touch_pick_shapes:TouchPick_Destruct main/touch_pick_shapes:TouchPick_DestructBase
+  main/town_acre_count:TownAcreCount_DestroyAcres main/town_acre_count:TownAcreCount_DestroyTown
+  main/town_acre_count:TownAcreCount_DestroyWorst main/town_item_lists:TownItemLists_DestructListA
+  main/town_item_lists:TownItemLists_DestructListB main/town_layout:TownLayout_Destruct
+  main/town_layout:TownLayout_DestructBlock main/town_record:TownRecord_Destruct
   main/town_spot:TownSpot_Destruct main/town_start_day:TownStartDay_Destruct
   main/transition_mark:TransitionMark_Delete main/transition_mark:TransitionMark_Destruct
   main/trivial_object:TrivialObject_DestructByte main/turnip_prices:TurnipPrices_Destruct
   main/view_frustum:ViewFrustum_Destruct main/view_frustum:ViewFrustum_DestructDelete
   main/villager_bonds:VillagerBond_Destruct main/villager_move_record:VillagerMoveRecord_Destruct
-  main/villager_outdoors:VillagerOutdoors_Destruct main/villager_roster:VillagerRoster_Destruct
-  main/villager_state:VillagerState_DestructTable main/wireless_icon:WirelessIcon_Destruct
+  main/villager_outdoors:VillagerOutdoors_Destruct
+  main/villager_part_block:VillagerPartBlock_Destruct main/villager_part_block:VillagerPart_Destruct
+  main/villager_part_handover:VillagerPartHandover_Destruct
+  main/villager_roster:VillagerRoster_Destruct main/villager_state:VillagerState_Destruct
+  main/villager_state:VillagerState_DestructTable main/villager_state:VillagerTally_Destruct
+  main/wifi_friends:WifiAccount_Destruct main/wifi_friends:WifiFriendList_Destruct
+  main/wifi_friends:WifiFriend_Destruct main/wireless_icon:WirelessIcon_Destruct
 
 area: Unreachable for one player
 group: code only unreachable code calls
 scene: none: functions whose every caller is in an unreachable group (the local wireless session and its activity jobs and packets, the Wi-Fi Connection, the gatekeepers' visits, the lost child's walk, the debug screen, the lid and the game's stop): the activity's fields, the jobs those sessions ask for, the field label's session messages, the caution window's planes, the town objects' session messages
-reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay)
+reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7), functions reached only through the functions of unreachable groups proved by the values their reasons close (w24/classify.py, gate value)
 needs: unreachable
 match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
   autoload_2/network:Wfc_FinishGet autoload_2/network:Wfc_FinishPost
@@ -964,8 +1005,9 @@ match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
   main/quick_message:QuickMessage_ViewDestructDelete
   main/quick_message:QuickMessage_WideDestructDelete main/scene_claim:SceneClaim_ReceiveAnswer
   main/scene_claim:SceneClaim_ReceiveRelease main/scene_claim:SceneClaim_ReceiveRequest
-  main/scene_exit:SceneExit_SetChangeArg main/scene_share_table:SceneShareTable_ClaimScenePersons
-  main/session:Session_AppendBundle15 main/session:Session_GetBundle15Length
+  main/scene_command:SceneCommand_SetScreenArgs main/scene_exit:SceneExit_SetChangeArg
+  main/scene_share_table:SceneShareTable_ClaimScenePersons main/session:Session_AppendBundle15
+  main/session:Session_AppendShareData main/session:Session_GetBundle15Length
   main/session:Session_GetReadCursor main/session:Session_ReadMessage
   main/session:Session_SetReadCursor main/session_link:Session_Host
   main/session_players:SessionPlayers_ReadItemOperation
@@ -977,6 +1019,7 @@ match: autoload_2/heap:Heap_Report autoload_2/network:Wfc_Call022784a0
   main/shops:Shops_ApplyMessage main/shops:Shops_CountAnswer main/sound:SoundSys_MasterVolumeFull
   main/state_flags:StateFlags_AskMenuClose main/state_flags:StateFlags_Test100
   main/system_command:SystemCommand_BuildList main/system_command:SystemCommand_RunList
+  main/system_command:SystemCommand_WriteEntries main/system_command:SystemCommand_WriteNothing
   main/talk_object:TalkObject_LoadImpression main/talk_tags:TalkTags_NoteNothing
   main/talk_tags:TalkTags_NotePart main/town_objects:TownObjects_OnLeftMessage
   main/town_objects:TownObjects_OnModeMessage main/town_objects:TownObjects_OnVisitMessage
@@ -1408,7 +1451,7 @@ match: ov004/shop3_villager:Shop3VillagerTalk_Construct
 area: Unreachable for one player
 group: the other console's field actor: its states' messages
 scene: none: the message handlers of the field actor's states (FieldActor_State<N>Message and the room and place states' *Message), which ask for a state as another console reported it
-reach: FieldActor_FollowRemoteState, which nearly every scene runs for the title demo's actors (in scene 0x2c the session has no local player), calls a state's message handler only once SessionPlayers_State reports a state for a player not this system's, from that player's state record (records 8-11): SessionRecord_Init zeroes it, no filler fills it (data_020cd1dc 8-11 are 0), and only SessionRecord_Update, Session_ProcessReceived and SystemPacket_WriteSharedRecords write it, none reached past the link guard and the receive callback's cut; the handlers' member pointer constants are named by FollowRemoteState alone (w22/classify.py, gate remote); the *Remote branches of the state updates, which the updates call for an actor not this system's, stay in "claimed unreachable, not proved by the forward pass" (findings 2026-10-29, proofs1)
+reach: FieldActor_FollowRemoteState, which nearly every scene runs for the title demo's actors (in scene 0x2c the session has no local player), calls a state's message handler only once SessionPlayers_State reports a state for a player not this system's, from that player's state record (records 8-11): SessionRecord_Init zeroes it, no filler fills it (data_020cd1dc 8-11 are 0), and only SessionRecord_Update, Session_ProcessReceived and SystemPacket_WriteSharedRecords write it, none reached past the link guard and the receive callback's cut; the handlers' member pointer constants are named by FollowRemoteState alone (w22/classify.py, gate remote); the *Remote branches of the state updates, which the updates call for an actor not this system's, stay in "claimed unreachable, not proved by the forward pass" (findings 2026-10-29, proofs1); besides (findings 2026-10-29, town7), the room states' messages (FieldActorRooms_*Message) and State87Message, named only through FieldActor_FollowRemoteState's member pointer constants (w24/classify.py, gate remote)
 needs: unreachable
 match: main/field_actor_states:FieldActor_State0Message
   main/field_actor_states:FieldActor_State10Message main/field_actor_states:FieldActor_State13Message
@@ -1503,11 +1546,16 @@ match: main/field_actor_states:FieldActor_State0Message
   ov004/field_actor_room_states:FieldActorRoomStates_SpotStepOffMessage
   ov004/field_actor_room_states:FieldActorRoomStates_SpotTurnMinusMessage
   ov004/field_actor_room_states:FieldActorRoomStates_SpotTurnPlusMessage
+  ov004/field_actor_rooms:FieldActorRooms_ArriveMessage
+  ov004/field_actor_rooms:FieldActorRooms_ExitMessage
+  ov004/field_actor_rooms:FieldActorRooms_StepOffMessage
+  ov004/field_actor_rooms:FieldActorRooms_WalkInMessage
+  ov068/field_actor_states87:FieldActor_State87Message
 
 area: Unreachable for one player
 group: what only the other console's field actor's messages call
 scene: none: the getters of the arguments a state's message carries (FieldActor_GetSaved<N>, State<N>Saved_Get, the room and place states' Get*Saved, the packed points, tiles and items) and the requests only those messages make
-reach: called or named only by the state messages of "the other console's field actor" or by functions found so; reached past no gate but that group's (w22/classify.py, gate remote; findings 2026-10-29, proofs1)
+reach: called or named only by the state messages of "the other console's field actor" or by functions found so; reached past no gate but that group's (w22/classify.py, gate remote; findings 2026-10-29, proofs1); besides (findings 2026-10-29, town7), the unpackers of the room states' messages' points (w24/classify.py, gate remote)
 needs: unreachable
 match: main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:FieldActor_GetSaved18
   main/field_actor_states:FieldActor_GetSaved19 main/field_actor_states:FieldActor_GetSaved1A
@@ -1545,6 +1593,10 @@ match: main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:Fie
   ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnter
   ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterMinus
   ov004/field_actor_room_states:FieldActorRoomStates_RequestSpotEnterStraight
+  ov004/field_actor_rooms:FieldActorRooms_UnpackArrivePoint
+  ov004/field_actor_rooms:FieldActorRooms_UnpackExitPoint
+  ov004/field_actor_rooms:FieldActorRooms_UnpackStepOffPoint
+  ov004/field_actor_rooms:FieldActorRooms_UnpackWalkInPoint
 
 area: Unreachable for one player
 group: the special characters' wait for the linked session
@@ -1555,12 +1607,19 @@ match: ov049/mabel:Mabel_EnterAwait ov049/mabel:Mabel_UpdateAwait ov050/nook_cle
   ov050/nook_clerk:NookClerk_UpdateAwait ov047/owl:Owl_EnterAwait ov047/owl:Owl_UpdateAwait
   ov004/tailor_sister:TailorSister_EnterAwait ov004/tailor_sister:TailorSister_UpdateAwait
 
+area: Unreachable for one player
+group: destructors only a thrown exception calls
+scene: none: the destructors of the elements of arrays built by __cxa_vec_ctor, named nowhere else
+reach: __cxa_vec_ctor (0x02138d6c) calls its destructor argument only in its landing pad (0x02138dd8: __cxa_vec_cleanup, then the rethrow func_02137174), which runs only after a constructor threw; no code throws: the unwinder func_021375c0 is entered only from func_02137174, which only the three array helpers' landing pads call. A destructor named only as that argument, and what only it calls, never runs (w24/vecdtor.py; w24/classify.py, gate nothrow; findings 2026-10-29, town7)
+needs: unreachable
+match: ov117/town_map_image:TownMapImage_DestructBlock
+
 # ================================================================== the seed's day: buildings
 
 area: Unreachable for one player
 group: what only a taken session slot reaches (the link guard)
 scene: none: the branches of shared code that run only while this system has a slot in a session or the session is linked: the linked post, the friend roster's players, the shops' and villagers' shared answers, the remote fish and insects, the tile grants, the session's sending and receiving, the network library's local wireless branches, and what only those call
-reach: a session slot is taken only by Session_Host and the link jobs 0x14, 0x15 and 0x16 (Session_SetSlotTaken with 1; nothing else writes NetSession.slot_taken), all unreachable, and the network mode (data_021fbef8) is set to a local wireless mode only by Local_Setup, which Session_Start calls for modes 1 and 2 only, after LibraryOverlay_Switch66 (where the runtime halts), so network.c's is_local and comparisons with MODE_LOCAL_PARENT and _CHILD are false; so Session_IsSlotTaken is 0 for every slot, Session_IsLinked (a taken slot and two players) is 0 and so are the Clean helpers that return them; a call is not counted when the caller's Clean body (with its static helpers) names the callee only in the then-part of `if (taken)` or after `if (!taken) return/continue`; each listed function has a reference and every counted one is from an unreachable group or listed (the scratchpad's w17/guard.py and proof2.py; findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv)
+reach: a session slot is taken only by Session_Host and the link jobs 0x14, 0x15 and 0x16 (Session_SetSlotTaken with 1; nothing else writes NetSession.slot_taken), all unreachable, and the network mode (data_021fbef8) is set to a local wireless mode only by Local_Setup, which Session_Start calls for modes 1 and 2 only, after LibraryOverlay_Switch66 (where the runtime halts), so network.c's is_local and comparisons with MODE_LOCAL_PARENT and _CHILD are false; so Session_IsSlotTaken is 0 for every slot, Session_IsLinked (a taken slot and two players) is 0 and so are the Clean helpers that return them; a call is not counted when the caller's Clean body (with its static helpers) names the callee only in the then-part of `if (taken)` or after `if (!taken) return/continue`; each listed function has a reference and every counted one is from an unreachable group or listed (the scratchpad's w17/guard.py and proof2.py; findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); besides (findings 2026-10-29, town7), the guard's predicates are also the Clean functions whose every live return gives 0 once the guard's dead branches are taken out (the session villager's should_send, Design_FindSessionPlayer, Gatekeeper_CallPlayer, TownInsectTables_ReadRecord and 10 more: w24/guard2.py --ret), so the then-parts of `if` on those are dead too; with them the guard closes, in the files one player also runs, what only the session's sends and the linked branches reach (w24/classify.py, gate link)
 needs: unreachable
 match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   autoload_2/network:Local_GetError autoload_2/network:Local_GetLinkLevel
@@ -1573,7 +1632,9 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   main/activity_link_jobs:ActivityLinkJobs_Step18 main/activity_link_jobs:ActivityLinkJobs_Step19
   main/activity_link_jobs:ActivityLinkJobs_Step1A main/activity_link_jobs:ActivityLinkJobs_Step1B
   main/caution_window:CautionWindow_IsShuttingDown main/exchange_block:ExchangeBlock_PairedTown
-  main/fish_disp:FishDisp_PlayerKind main/fish_disp:FishDisp_PlayerPoint
+  main/fish_disp:FishDisp_OnMessage0 main/fish_disp:FishDisp_OnMessage1
+  main/fish_disp:FishDisp_OnMessage2 main/fish_disp:FishDisp_PlayerKind
+  main/fish_disp:FishDisp_PlayerPoint main/fish_disp:FishDisp_SetPlayerState
   main/link_global:LinkGlobal_AddPlaceChange main/link_global:LinkGlobal_AskMove
   main/link_global:LinkGlobal_IsMoving main/link_global:LinkGlobal_MessageTarget
   main/link_global:LinkGlobal_PlaceHolder main/link_global:LinkGlobal_PlaceMoving
@@ -1610,58 +1671,126 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   main/link_state:LinkState_ResetAnswer main/link_state:LinkState_SetChosen
   main/link_state:LinkState_SetHostPhase main/link_state:LinkState_SetKind
   main/link_state:LinkState_SystemStep main/link_state:LinkState_WaitFrames
-  main/packed_bytes:PackedBytes_ReadU16 main/packed_bytes:PackedBytes_WriteU16
+  main/object_claim:ObjectClaim_Clear main/object_claim:ObjectClaim_HandleAnswer
+  main/object_claim:ObjectClaim_HandleClaim main/object_claim:ObjectClaim_HandleObjectMessage
+  main/object_claim:ObjectClaim_HandleRelease main/object_claim:ObjectClaim_IsFree
+  main/object_claim:ObjectClaim_SendAnswer main/packed_bytes:PackedBytes_ReadU16
+  main/packed_bytes:PackedBytes_WriteHalf main/packed_bytes:PackedBytes_WriteU16
   main/paired_town:PairedTown_AreFriends main/paired_town:PairedTown_Note
   main/paired_town:PairedTown_Pair main/paired_town:PairedTown_PairAll
   main/paired_town:PairedTown_PairOwn main/paired_town:PairedTown_SetFlag4
   main/paired_town:PairedTown_SetTown main/player_actors:PlayerActors_ClearItemOnState75
-  main/player_messages:PlayerMessages_ClearReply main/quick_message:QuickMessage_PostDefault
-  main/quick_message:QuickMessage_TakeRecord main/session:Session_AgePeerSilence
-  main/session:Session_AnyPeerSilent main/session:Session_ClearRecvLength
-  main/session:Session_ClearShareLength main/session:Session_CountFrame
-  main/session:Session_DeliverLocalQueue main/session:Session_DeliverSceneQueue
-  main/session:Session_GetCredits main/session:Session_GetFrameSequence
-  main/session:Session_GetHeldQueueLength main/session:Session_GetLocalQueueLength
-  main/session:Session_GetModeRequest main/session:Session_GetOutboxLength
-  main/session:Session_GetOwedCredits main/session:Session_GetPeerSilence
-  main/session:Session_GetPendingSequence main/session:Session_GetRecordFlag
-  main/session:Session_GetRecvLength main/session:Session_GetRecvReadEntry
-  main/session:Session_GetSceneQueueLength main/session:Session_GetSendLength
-  main/session:Session_GetShareLength main/session:Session_OweCredit
-  main/session:Session_PopRecvEntry main/session:Session_ProcessReceived
-  main/session:Session_QueueOutgoing main/session:Session_ResetCredit
+  main/player_messages:PlayerMessages_Bytes main/player_messages:PlayerMessages_ClearRecord
+  main/player_messages:PlayerMessages_ClearReply main/player_messages:PlayerMessages_Key
+  main/player_messages:PlayerMessages_LogEntry main/player_messages:PlayerMessages_ModeSet
+  main/player_messages:PlayerMessages_Nibbles main/player_messages:PlayerMessages_Place
+  main/player_messages:PlayerMessages_Record main/player_messages:PlayerMessages_Send
+  main/player_messages:PlayerMessages_SetMode main/player_messages:PlayerMessages_StoreRecord
+  main/player_messages:PlayerMessages_StoreReply main/player_messages:PlayerMessages_Turn
+  main/quick_message:QuickMessage_PostDefault main/quick_message:QuickMessage_TakeRecord
+  main/quick_message:QuickMessage_ViewBuffer main/quick_message:QuickMessage_ViewCapacity
+  main/quick_message:QuickMessage_ViewConstruct main/quick_message:QuickMessage_ViewDestruct
+  main/quick_message:QuickMessage_WideBuffer main/quick_message:QuickMessage_WideCapacity
+  main/quick_message:QuickMessage_WideConstruct main/quick_message:QuickMessage_WideDestruct
+  main/quick_message:QuickMessage_WriteRecordOf main/scene_share_table:SceneShareTable_WriteRecordD
+  main/session:Session_AgePeerSilence main/session:Session_AnyPeerSilent
+  main/session:Session_ClearRecvLength main/session:Session_ClearShareLength
+  main/session:Session_CountFrame main/session:Session_DeliverLocalQueue
+  main/session:Session_DeliverSceneQueue main/session:Session_GetCredits
+  main/session:Session_GetFrameSequence main/session:Session_GetHeldQueueLength
+  main/session:Session_GetLocalQueueLength main/session:Session_GetModeRequest
+  main/session:Session_GetOutboxLength main/session:Session_GetOwedCredits
+  main/session:Session_GetPeerSilence main/session:Session_GetPendingSequence
+  main/session:Session_GetRecordFlag main/session:Session_GetRecvLength
+  main/session:Session_GetRecvReadEntry main/session:Session_GetSceneQueueLength
+  main/session:Session_GetSendLength main/session:Session_GetShareLength
+  main/session:Session_OweCredit main/session:Session_PopRecvEntry
+  main/session:Session_ProcessReceived main/session:Session_QueueOutgoing
+  main/session:Session_ResetCredit main/session:Session_ResetPeerSilence
   main/session:Session_RouteHeldMessages main/session:Session_SetOwedCredits
-  main/session:Session_SetPendingSequence main/session:Session_SetSequence
-  main/session:Session_SetShareLength main/session:Session_SetSlotMask
-  main/session:Session_SpendCredits main/session_link:Session_CollectMessages
-  main/session_link:Session_GetMemberMask main/session_link:Session_IsStatusPending
-  main/session_link:Session_OnPlayersChanged main/session_link:Session_RemovePlayer
-  main/session_link:Session_WriteOwedCredits main/session_link:Session_WriteRecords
-  main/session_link:Session_WriteStatusPacket main/session_net:SessionNet_AllPeersHaveCredit
-  main/session_net:SessionNet_WriteDataHeader main/session_players:SessionPlayers_ClearSaved
-  main/session_players:SessionPlayers_JoinLowHigh main/session_players:SessionPlayers_SavedPosition
-  main/session_players:SessionPlayers_SavedScene main/session_players:SessionPlayers_SavedState
-  main/session_players:SessionPlayers_SavedYaw main/session_players:SessionPlayers_WriteItemKind
-  main/session_record:SessionRecord_Update main/session_villager:SessionVillager_PackEntry
-  main/session_villager:SessionVillager_PackEntryItem main/session_villager:SessionVillager_PackItem
-  main/session_villager:SessionVillager_PackItems main/session_villager:SessionVillager_PackObject
-  main/session_villager:SessionVillager_PackObjectChange main/shop_answers:ShopAnswers_AllCame
-  main/tile_changes:TileChanges_LetGoAt main/tile_request_grant:TileRequestGrant_Answer
-  main/tile_requests:TileRequests_ReceiveAction main/town_beach:TownBeach_UpdateLinked
-  main/villager_clothes:VillagerClothes_ItemOf ov002/paged_choice:PagedChoice_AddTextEntry
-  ov003/player_fish:PlayerFish_OnRemoteState0 ov003/player_fish:PlayerFish_OnRemoteState1
-  ov003/player_fish:PlayerFish_OnRemoteState2 ov003/player_fish:PlayerFish_StartRemote
-  ov003/player_fish:PlayerFish_Sync ov003/tile_event:TileEvent_EndAt
-  ov003/town_insect_moves:TownInsectMove_AlarmTurn ov003/town_insect_moves:TownInsectMove_SensePlayer
+  main/session:Session_SetPendingSequence main/session:Session_SetRecvLength
+  main/session:Session_SetSequence main/session:Session_SetShareLength
+  main/session:Session_SetSlotMask main/session:Session_SpendCredits
+  main/session_link:Session_CollectMessages main/session_link:Session_GetMemberMask
+  main/session_link:Session_IsStatusPending main/session_link:Session_OnPlayersChanged
+  main/session_link:Session_RemovePlayer main/session_link:Session_WriteOwedCredits
+  main/session_link:Session_WriteRecords main/session_link:Session_WriteStatusPacket
+  main/session_net:SessionNet_AllPeersHaveCredit main/session_net:SessionNet_GetCredits
+  main/session_net:SessionNet_PeerIndex main/session_net:SessionNet_WriteDataHeader
+  main/session_players:SessionPlayers_ClearSaved main/session_players:SessionPlayers_JoinLowHigh
+  main/session_players:SessionPlayers_SavedPosition main/session_players:SessionPlayers_SavedScene
+  main/session_players:SessionPlayers_SavedState main/session_players:SessionPlayers_SavedYaw
+  main/session_players:SessionPlayers_WriteItemKind
+  main/session_players:SessionPlayers_WriteStateRecord main/session_record:SessionRecord_PackPoint
+  main/session_record:SessionRecord_PackValue main/session_record:SessionRecord_Update
+  main/session_record:SessionRecord_Write0 main/session_record:SessionRecord_Write1
+  main/session_record:SessionRecord_Write10 main/session_record:SessionRecord_Write11
+  main/session_record:SessionRecord_Write12 main/session_record:SessionRecord_Write13
+  main/session_record:SessionRecord_Write14 main/session_record:SessionRecord_Write15
+  main/session_record:SessionRecord_Write16 main/session_record:SessionRecord_Write17
+  main/session_record:SessionRecord_Write18 main/session_record:SessionRecord_Write19
+  main/session_record:SessionRecord_Write2 main/session_record:SessionRecord_Write20
+  main/session_record:SessionRecord_Write21 main/session_record:SessionRecord_Write22
+  main/session_record:SessionRecord_Write23 main/session_record:SessionRecord_Write24
+  main/session_record:SessionRecord_Write25 main/session_record:SessionRecord_Write26
+  main/session_record:SessionRecord_Write27 main/session_record:SessionRecord_Write28
+  main/session_record:SessionRecord_Write29 main/session_record:SessionRecord_Write3
+  main/session_record:SessionRecord_Write30 main/session_record:SessionRecord_Write31
+  main/session_record:SessionRecord_Write32 main/session_record:SessionRecord_Write33
+  main/session_record:SessionRecord_Write34 main/session_record:SessionRecord_Write35
+  main/session_record:SessionRecord_Write36 main/session_record:SessionRecord_Write37
+  main/session_record:SessionRecord_Write38 main/session_record:SessionRecord_Write39
+  main/session_record:SessionRecord_Write4 main/session_record:SessionRecord_Write40
+  main/session_record:SessionRecord_Write41 main/session_record:SessionRecord_Write42
+  main/session_record:SessionRecord_Write43 main/session_record:SessionRecord_Write44
+  main/session_record:SessionRecord_Write45 main/session_record:SessionRecord_Write46
+  main/session_record:SessionRecord_Write47 main/session_record:SessionRecord_Write48
+  main/session_record:SessionRecord_Write49 main/session_record:SessionRecord_Write5
+  main/session_record:SessionRecord_Write50 main/session_record:SessionRecord_Write51
+  main/session_record:SessionRecord_Write52 main/session_record:SessionRecord_Write53
+  main/session_record:SessionRecord_Write54 main/session_record:SessionRecord_Write55
+  main/session_record:SessionRecord_Write56 main/session_record:SessionRecord_Write57
+  main/session_record:SessionRecord_Write58 main/session_record:SessionRecord_Write59
+  main/session_record:SessionRecord_Write6 main/session_record:SessionRecord_Write60
+  main/session_record:SessionRecord_Write61 main/session_record:SessionRecord_Write62
+  main/session_record:SessionRecord_Write63 main/session_record:SessionRecord_Write64
+  main/session_record:SessionRecord_Write65 main/session_record:SessionRecord_Write66
+  main/session_record:SessionRecord_Write67 main/session_record:SessionRecord_Write68
+  main/session_record:SessionRecord_Write69 main/session_record:SessionRecord_Write7
+  main/session_record:SessionRecord_Write8 main/session_record:SessionRecord_Write9
+  main/session_villager:SessionVillager_PackEntry main/session_villager:SessionVillager_PackEntryItem
+  main/session_villager:SessionVillager_PackItem main/session_villager:SessionVillager_PackItems
+  main/session_villager:SessionVillager_PackObject
+  main/session_villager:SessionVillager_PackObjectChange
+  main/session_villager:SessionVillager_SendEntryByte6CByIndex
+  main/session_villager:SessionVillager_SendEntryByte6DByIndex
+  main/session_villager:SessionVillager_SendEntryFillByIndex
+  main/session_villager:SessionVillager_SendEntryItemByIndex
+  main/session_villager:SessionVillager_SendEntrySenderByIndex
+  main/session_villager:SessionVillager_SendItem7D2ByIndex
+  main/session_villager:SessionVillager_SendItemsByIndex
+  main/session_villager:SessionVillager_SendObjectByIndex
+  main/session_villager:SessionVillager_SendObjectChangeByIndex
+  main/session_villager:SessionVillager_SendObjectItemByIndex main/shop_answers:ShopAnswers_AllCame
+  main/text_string:TextString_BytesToWide main/tile_changes:TileChanges_LetGoAt
+  main/tile_request_grant:TileRequestGrant_Answer main/tile_requests:TileRequests_ReceiveAction
+  main/town_beach:TownBeach_UpdateLinked main/villager_clothes:VillagerClothes_ItemOf
+  ov002/paged_choice:PagedChoice_AddTextEntry ov003/player_fish:PlayerFish_OnRemoteState0
+  ov003/player_fish:PlayerFish_OnRemoteState1 ov003/player_fish:PlayerFish_OnRemoteState2
+  ov003/player_fish:PlayerFish_StartRemote ov003/player_fish:PlayerFish_Sync
+  ov003/tile_event:TileEvent_EndAt ov003/town_insect:TownInsect_CheckTarget
+  ov003/town_insect:TownInsect_OnItsTile ov003/town_insect_moves:TownInsectMove_AlarmTurn
+  ov003/town_insect_moves:TownInsectMove_SensePlayer
   ov003/town_insect_moves:TownInsectMove_WalkLinked
   ov003/town_insect_tables:TownInsectTables_PublishRecord
-  ov003/town_insect_tables:TownInsectTables_ReadRecord ov104/letter_send:LetterSend_BeginLinkedPost
+  ov003/town_insect_tables:TownInsectTables_ReadRecord
+  ov003/town_insect_tables:TownInsectTables_WriteRecord ov104/letter_send:LetterSend_BeginLinkedPost
   ov104/letter_send:LetterSend_HasLetterToSelf
 
 area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
-scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: code only unreachable code calls 28, local wireless (DS to DS) 18, what only a taken session slot reaches (the link guard) 10, the town map's list by the keys and the pen 9, Nintendo Wi-Fi Connection 8, the other console's field actor: its states' messages 7, the gatekeeper's visits and connections 6, screens no code opens 6, what only the linked session and the visits call 5, tags no shown message holds, by the whole archives 5, the activity's jobs no reachable code starts 3, hardware and failure paths 3, the destructors of main's static objects 2, what only the other console's field actor's messages call 2, the menu scenes' phases 3 and 4 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1, the item and letter picks' hold and swap code 1)
-reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py and w22/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1); each needs its group's reason shown at the edge that reaches it, or a scene
+scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: code only unreachable code calls 28, local wireless (DS to DS) 18, what only a taken session slot reaches (the link guard) 10, the town map's list by the keys and the pen 9, Nintendo Wi-Fi Connection 8, the other console's field actor: its states' messages 7, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, what only the linked session and the visits call 5, hardware and failure paths 3, the activity's jobs no reachable code starts 3, the destructors of main's static objects 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
+reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene
 needs: unknown
 match: autoload_2/heap:Heap_TryLockNothing autoload_2/network:Local_Call02269638
   autoload_2/network:Net_CountPlayers main/activity_fields:Activity_CurrentSlot100
@@ -1714,17 +1843,11 @@ match: autoload_2/heap:Heap_TryLockNothing autoload_2/network:Local_Call02269638
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo59 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo62
   ov048/gatekeeper_talk_lines:GatekeeperTalk_EndSession
   ov048/gatekeeper_talk_lines:GatekeeperTalk_SayLine21Or22
-  ov054/post_clerk_talk:PostClerkTalk_AskJob1f ov099/pockets_view:PocketsView_GridPlace
-  ov101/pockets_pick:PocketsPick_PlaceItemState
-  ov103/carried_letters:CarriedLetters_FollowCursorSprite
-  ov103/carried_letters:CarriedLetters_IsLetterPlace ov103/carried_letters:CarriedLetters_LetterIndex
-  ov103/carried_letters:CarriedLetters_PickUpLetter
-  ov103/carried_letters:CarriedLetters_PickUpWithCursor ov120/town_map_list:TownMap_MarkOfTarget
+  ov054/post_clerk_talk:PostClerkTalk_AskJob1f ov120/town_map_list:TownMap_MarkOfTarget
   ov120/town_map_list:TownMap_RowOfTarget ov120/town_map_list:TownMap_ScrollToPickedRow
   ov120/town_map_list:TownMap_ScrollToSwitchedRow ov120/town_map_list:TownMap_SetScroll
   ov120/town_map_list:TownMap_SetScrollTarget ov120/town_map_list:TownMap_ShowPlaces
   ov120/town_map_list:TownMap_StartBlink ov120/town_map_list:TownMap_StepScroll
-  ov128/star_view:StarView_Phase4 ov135/phone_clock:PhoneClock_Phase4Idle
 
 area: Shops and buildings (the seed's day)
 group: Nook's store: every topic

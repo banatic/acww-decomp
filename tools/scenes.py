@@ -1552,6 +1552,8 @@ scene("villager-weekday", "seed", 7780, [2600, 3900, 5600, 6600, 7200, 7779], fr
       "villager 1 across the river talked to, one press held back: a line branches on the weekday")
 scene("title-bottle", "bottle-sent", 2400, [1100, 1300, 1600, 2000, 2399], frames(1100, 2400, 50),
       "with a letter in a bottle sent, the continue menu's passing exchange: the title leaves for it and it waits")
+scene("title-bottle-stop", "bottle-sent", 3500, [1300, 2400, 2800, 3200, 3499], frames(2400, 3500, 50),
+      "title-bottle's passing exchange started with one system, then stopped with A: it waits for the library to stop")
 scene("villager-month", "met-august", 5500, [2600, 4100, 4600, 5100, 5499], frames(4000, 5500, 50),
       "villager-talk with villager 3 not talked to for 40 days: its greeting names another villager")
 scene("villager-elsewhere", "met-elsewhere", 5500, [2600, 4100, 4600, 5100, 5499], frames(4000, 5500, 50),
