@@ -734,6 +734,13 @@ SAVES["friend"] = raw(0x14 + 0x1F5C, bytes.fromhex("001000004e61bc007e000000bcbc
 SAVES["star-came"] = raw(EXCHANGE + 0x100, OTHER_PLAYER_A + bytes.fromhex("4331433143314331") + bytes(4) +
                          struct.pack("<16H", 0, 1, 2, *[0xFFFF] * 13) + bytes(2)) + [
     (EXCHANGE + 0x938, "<H", 0x0101), (EXCHANGE + 0x94A, "<H", 0xAC79)]
+# villager 3's eight memories all of players of another town (dates 1-8 September, fondness 5-12),
+# none of the seed's player
+SAVES["memories-full"] = [e for i in range(8) for e in villager_memory(3, i, player_id(OTHER_TOWN, 0x1100 + i, 3), OTHER_TOWN,
+                                                                    (0, 0, 10, 1 + i, 9, 26), 5 + i, 2, 0x0000)]
+# as "visitor-3f" with villager 3's memory of the player at fondness 0x50 (byte 0x6c of memory 0):
+# a fond villager lets the player choose the nickname (VillagerTalkNickname_OfferIfFond)
+SAVES["visitor-3f-fond"] = SAVES["visitor-3f"] + [(TOWN_VILLAGERS + 0x7EC * 3 + 0x6C, "<b", 0x50)]
 SAVES["bottle-came"] = SAVES["bottle-sent"][:-1] + [(EXCHANGE + 0x938, "<H", 0x0101), (EXCHANGE + 0x94A, "<H", 0xCDCD)]
 SAVES["events-ended"] = [(TOWN_EVENTS, "<H", 0x11), (TOWN_EVENTS + 2, "<B", 25),
                          (TOWN_EVENTS + 12, "<H", 0x62), (TOWN_EVENTS + 14, "<B", 25)]
@@ -1509,6 +1516,13 @@ scene("gate-wfc", "friend", 10311, [2600, 6540, 7900, 8600, 9400, 10310], frames
 scene("star-came", "star-came", 3000, [1300, 2000, 2600, 2999], frames(2400, 3000, 50),
       "with another system's constellation received, the load keeps it among the town's (villager-talk's start)",
       "villager-talk")
+scene("villager-memories-full", "memories-full", 7080, [2600, 4100, 4300, 5500, 6500, 7079], frames(4000, 7080, 50),
+      "villager-talk with villager 3's memories full of other towns' players: it takes over the least fond")
+scene("villager-nickname-own", "visitor-3f-fond", 14019, [2600, 7200, 10400, 11100, 12000, 12400, 14018],
+      frames(11000, 14019, 50), "villager-nickname with villager 3 fond of the player: the player types the nickname")
+scene("villager-admire", "seed", 11204, [2600, 4200, 6200, 8000, 9100, 10000, 11203], frames(6100, 11204, 50),
+      "on the fourth Sunday's town event, a villager praises the player and asks for a word of praise back",
+      rtc="2026-09-27 11:30:00")
 scene("title-wfc-settings", "seed", 2140, [1100, 1500, 1800, 2100, 2139], frames(1700, 2140, 20),
       "the continue menu's Nintendo Wi-Fi Connection settings: the title leaves for the settings program")
 
