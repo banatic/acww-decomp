@@ -38,18 +38,18 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 327 scene lists: 25,251 Clean game functions, run 20,301, function check only 1,232, read only 3,718; the groups below hold 4,950 (function check only + read only).
+From 328 scene lists: 25,251 Clean game functions, run 20,302, function check only 1,232, read only 3,717; the groups below hold 4,949 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 967 |
+| seed | 966 |
 | date | 246 |
 | unknown | 746 |
 | unreachable | 2,991 |
-| total | 4,950 |
+| total | 4,949 |
 
 
-(The lists are those of the 327 scenes of tools/scenes.py. The two recordings, title-start and
+(The lists are those of the 328 scenes of tools/scenes.py. The two recordings, title-start and
 new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
 
 ## Next scenes for one player, by functions gained
@@ -149,14 +149,14 @@ unknown groups say what to find first.
 | indoor actions of the field actor | 29 (4 / 25) | ov004/field_actor_room_states 15, ov004/field_actor_place_states 6, ov004/room_player_actor 4, ov004/room_placement 3, ov004/furniture_mover 1 | sit on chairs and sofas, lie on the bed, pick furniture up and turn it (R and L), push and pull every kind, step off a spot | the house-furni save; each room-object class asks for its own states | seed |
 | the clock and calendar screens | 1 (0 / 1) | ov135/phone_clock 1 | what clock-pen, birthday-ask and visit-time leave: the clock dragged past a bound (ov135 in the date screen's mode 0x33), the visit's times in a villager's sleeping hours and before 6:00 (lines 0x021c304c and 0x021c3034 of VillagerTalkSteps_SayByKeptTime) | the visit's time screen (ov136) is bounded by now and twelve hours later and the villagers' night windows start at 1:00-4:30 (data_020cd4ac), so those two answers need the offer late in the evening (a boot at night on a day the deal gives a villager type 21) | date |
 
-## Pockets, menus and letters (the seed's day) (156)
+## Pockets, menus and letters (the seed's day) (155)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | the pockets screen | 38 (15 / 23) | main/item_group 14, ov096/pockets_screen 6, main/item_attributes 3, main/item_info 3, main/item_traits 3, main/camera_grid 2, main/start_menu 2, main/control_mode_icon 1, 4 more files (4) | sort, swap, drop, bury items; the bag of bells into the wallet and out; letters moved, read, thrown away; the keys-only cursor; give an item to a villager | saves with full pockets, bells bags (0x1492-0x14fd) and letters | seed |
 | letters: write, post, keep, receive | 33 (5 / 28) | ov104/letter_send 5, ov106/mailbox_scene 5, main/villager_mail 4, ov095/soft_keyboard_cursor 4, ov095/soft_keyboard_text 4, ov122/letter_write_scene 4, main/letter_view 2, main/letter 1, 4 more files (4) | buy paper, write a letter to a villager (ov122 with the soft keyboard ov095), post it (ov104), the reply the next day; the mailbox (ov106) and the letter storage (ov105) by the keys | rich save for the paper (shop-buy-letter's start); the reply needs the next day (date) | seed |
 | catalogs, map, friends, tunes, songs, storage | 33 (0 / 33) | ov118/map_menu_input 7, ov119/friend_roster_input 7, ov109/song_pockets 5, main/town_tune 3, ov116/insect_catalog 3, ov118/map_menu_list 2, ov119/friend_roster 2, ov144/music_list_input 2, 2 more files (2) | the fish and insect catalogs paged, the town map's lists and marks (ov117, ov118, ov120), the friend roster's pages, the town tune edited and played (ov143), the music list and song pockets with several songs, the chest's storage by keys | the menus tab; Pelly for the tune; the house stereo and a chest | seed |
-| designs | 22 (3 / 19) | main/design 7, main/design_assets 4, ov121/my_designs 4, main/design_sets 3, ov123/design_editor 2, ov121/my_designs_use 1, ov125/design_picker 1 | my designs: use as clothes, umbrella, floor, copy, erase; the design editor's tools (fill, colour, palette, preview); the design picker everywhere it opens | the menus tab, Mabel's design editor (design-draw's start) | seed |
+| designs | 21 (3 / 18) | main/design 7, main/design_assets 4, main/design_sets 3, ov121/my_designs 3, ov123/design_editor 2, ov121/my_designs_use 1, ov125/design_picker 1 | my designs: use as clothes, umbrella, floor, copy, erase; the design editor's tools (fill, colour, palette, preview); the design picker everywhere it opens | the menus tab, Mabel's design editor (design-draw's start) | seed |
 | chat, board, keyboard entry and name screens | 15 (0 / 15) | ov111/chat_scene 6, ov112/bbs_write_input 3, ov112/bbs_write_scene 2, ov126/keyboard_entry_input 2, ov126/keyboard_entry_scene 1, ov126/keyboard_entry_states 1 | type and send a chat message, write and read the bulletin board by keys, the keyboard entry's other modes (names, friend codes, catchphrases), the han panel's messages | the menus tab; the town hall board; a villager asking for a nickname or catchphrase opens the keyboard | seed |
 | item pick, swap and boxes | 13 (0 / 13) | ov107/pockets_swap 7, ov100/pockets_box 2, ov110/public_box 2, ov100/pockets_box_scene 1, ov110/public_box_states 1 | a villager or the sick villager asking for an item (ov101), the pockets full when catching (ov107, all its paths), the recycle box and the lost and found by keys (ov110), selling by the box (ov100) | villager requests (talks), full-net save, the town hall's recycle box, Nook's sell box | seed |
 | the friend roster with a friend registered | 2 (0 / 2) | main/wifi_friends 2 | the friend roster (ov119) with a friend in the list: a friend deleted before the last (the list closed up), and a friend code typed that is already registered | WifiFriendList_Compact (friend-add) copies the entries after a deleted one; FriendCodeEntry_IsOtherFriendsCode (friend-code) compares the typed code with each registered friend's: both need a save with friends registered | seed |
@@ -1941,3 +1941,10 @@ What reading the Clean code found about the groups above; counts are of function
   (PocketsBox_FreePocketPlace, _MoveCursorAtButtons).
 - The plan before: seed 970, date 246, unknown 749, unreachable 2,987; after (327 lists): seed 967,
   date 246, unknown 746, unreachable 2,991.
+- New scene designs-cancel: designs-room's carpet choice cancelled by B (MyDesigns_CancelChoice);
+  seed 966 after it (328 lists).
+- Gained little: the name keyboard's text by the pen (KeyboardEntry_TouchText's field at y
+  0x28-0x38: drags at y 44-56 over Mabel's design name entered nothing), the song pockets'
+  button and choice (music-keys' list stays the stereo's music list, ov144, up to 4140), Celeste's
+  greeting of a received constellation, and the menu backdrop button of my designs (the drags
+  outdoors and in the room hit the design display instead).

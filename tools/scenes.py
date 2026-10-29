@@ -1653,6 +1653,8 @@ scene("pockets-tab", "pockets-keys", 3110, [2600, 2864, 2950, 3030, 3109], frame
 scene("sell-send", "box-items", 5400, [2600, 5000, 5150, 5280, 5399], frames(5000, 5400, 25),
       "at Nook's sell window by the keys: an item sent to the counter and back by Y, the end places moved "
       "between and left; cancelled")
+scene("designs-cancel", "rod", 4328, [2600, 3500, 4100, 4200, 4327], frames(3500, 4328, 25),
+      "designs-room's carpet choice cancelled by B, then the page closed")
 
 # ------------------------------------------------------------------------------ saves
 
