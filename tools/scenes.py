@@ -1880,6 +1880,12 @@ for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4)):
     scene(f"villager-pick-{_kind}-{_step}", f"errand-pick-{_kind}-{_step}", 5748, [2600, 4138, 5000, 5747],
           frames(4200, 5748, 50), f"the owner's errand of {('an insect', 'a fish')[_kind]} at step {_step}, nothing "
           "asked for yet: the creature asked for is drawn by the step's picker", "villager-errand-pick")
+# villager 3 in a pastime, talked to after a wait that makes the topic drawn the pastime's own
+for _mode, _frames, _what in ((3, 5589, "the clothes it wears, by its state kind"),
+                              (4, 5589, "what it holds, by its state kind"),
+                              (5, 5440, "its pastime's hint"), (6, 5586, "the acre it stands on, by its state kind")):
+    scene(f"villager-topic-{_mode}", f"mode-{_mode}", _frames, [2600, 4088, 4600, _frames - 1],
+          frames(4000, _frames, 50), f"villager 3 in pastime {_mode} talked to: a topic of {_what}")
 
 # ------------------------------------------------------------------------------ saves
 
