@@ -2006,6 +2006,29 @@ needs: unreachable
 match:
   main/field_label:FieldLabel_StartMessage main/field_label:FieldLabel_ShowMessage10
 
+area: Unreachable for one player
+group: the keyboards' conversions: no key gives the codes 0x103-0x105
+scene: none: the keyboards' conversions of the character before the cursor (the chat's, the board writer's, the letter writer's and the keyboard entry's), which only the codes 0x103-0x105 ask for, and the soft keyboard's three conversions they call
+reach: the code runners ChatScene_RunCode, BbsWrite_Command, LetterWrite_Command and KeyboardEntry_RunCode convert only for the codes 0x103-0x105 (the Japanese marks; the Korean conversions give none); their callers pass a constant (0x100, 0x118, 0x119) or SoftKeyboard_KeyCode's code, which for a key around the pages is the key plus 0xf (0x106-0x11e), for a page key its layout's table entry (Hangul data_ov095_0229e7b8, symbols _0229e774, English _0229e874 and _0229e8e0: none is 0x103-0x105) and for another layout the space (findings 2026-10-29, town11; w30/classify.py, gate convert)
+needs: unreachable
+match:
+  ov095/soft_keyboard_text:SoftKeyboard_Convert3 ov095/soft_keyboard_text:SoftKeyboard_Convert2
+  ov095/soft_keyboard_text:SoftKeyboard_Convert1
+  ov095/soft_keyboard_text:SoftKeyboard_ReplaceBefore ov111/chat_scene:ChatScene_Convert3
+  ov111/chat_scene:ChatScene_TryConvert3 ov111/chat_scene:ChatScene_Convert2
+  ov111/chat_scene:ChatScene_TryConvert2 ov111/chat_scene:ChatScene_Convert1
+  ov111/chat_scene:ChatScene_TryConvert1 ov112/bbs_write_input:BbsWrite_ConvertChar
+  ov122/letter_write_scene:LetterWrite_ConvertChar
+  ov126/keyboard_entry_input:KeyboardEntry_Convert
+
+area: Unreachable for one player
+group: the scene object bases' slot 0x68 every class replaces
+scene: none: the scene objects' slot 0x68 (called first in each frame) of the bases, SceneObject_Vfunc68, which every class's own vtable replaces
+reach: SceneObject_Vfunc68 is named only by the words at +0x68 of the intermediate vtables 0x020d8c64, 0x020d9e88 and 0x020da088, which an object holds only while it is built or torn down (each constructor storing one stores its own class's vtable after it, findings town8), and none of the 28 call sites through +0x68 (w28/vsite.py) is in those constructors or destructors (findings 2026-10-29, town11; w30/basevt3.py, w30/classify.py)
+needs: unreachable
+match:
+  main/scene_object:SceneObject_Vfunc68
+
 area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
 scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)

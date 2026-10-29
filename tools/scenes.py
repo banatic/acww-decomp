@@ -766,6 +766,11 @@ SAVES["bottle-sent"] = [(EXCHANGE + 0x22, "<B", 2), (EXCHANGE + 0x42, "<B", 1), 
 # CardSave_WriteFriendRoster writes it)
 SAVES["friend"] = raw(0x14 + 0x1F5C, bytes.fromhex("001000004e61bc007e000000bcbc08b1000000000000000000c8000000000000")) + [
     (0x14 + 0x1F5C + 0x480, "<H", 0x57B4)]
+# that friend in all 32 places of the roster (0x24 bytes each), the checksum made good again: the
+# roster is full
+SAVES["friends-full"] = [e for i in range(32) for e in raw(
+    0x14 + 0x1F5C + 0x24 * i, bytes.fromhex("001000004e61bc007e000000bcbc08b1000000000000000000c8000000000000"))] + [
+    (0x14 + 0x1F5C + 0x480, "<H", 0xF680)]
 # the town's exchange block as the passing exchange leaves it with another system's constellation
 # draft (0x100: made by OTHER_PLAYER_A, four characters, pieces 0-2), drifted once and set to
 # arrive at once, its checksum made good: the load keeps the draft (Constellations_FileDraft)
@@ -957,6 +962,10 @@ scene("pickup", "pickup", 5500, [2600, 3300, 4000, 4600, 5300, 5499], frames(280
       "house and pick it up again")
 scene("chat-send", "seed", 4800, [2600, 3700, 4100, 4500, 4799], frames(3700, 4800, 25),
       "type on the chat keyboard by the pen and the keys, copy and paste, send lines over the player's head")
+scene("chat-hold", "seed", 8340, [2600, 4700, 6190, 6900, 7440, 8339], frames(4700, 8340, 100),
+      "chat-send's balloon held until it leaves, a new line sent, a second sent while it is shown")
+scene("friends-full", "friends-full", 4530, [2600, 3400, 3700, 4110, 4450, 4529], frames(3300, 4530, 25),
+      "the friend roster full: Register refused, a friend deleted by the keys and the rest moved up")
 scene("pockets-keys", "pockets-keys", 4500, [2600, 3100, 3500, 3900, 4499], frames(2800, 4500, 25),
       "in the pockets by the keys alone: drop, swap and eat items, take bells out of the wallet as bags")
 scene("house-turn", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 25),
