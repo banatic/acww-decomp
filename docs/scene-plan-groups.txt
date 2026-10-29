@@ -656,13 +656,15 @@ match: ov002/menu_scene:MenuScene_Phase1 ov002/menu_scene:MenuScene_Phase2 ov002
   ov002/menu_scene:MenuScene_Phase4 ov002/menu_scene:MenuScene_Phase5 ov002/menu_scene:MenuScene_Delete
 
 area: Unreachable for one player
-group: the process bases' own destructors every class replaces
-scene: none: the destructors in slots 0x40 and 0x44 of the vtables of the process (autoload_2/process.c, 0x0213e7b4), the game's process (main/game_process.c, 0x020da13c), the actor (main/actor.c, 0x020d7244) and the scene object (main/scene_object_base.c, 0x020dab34)
-reach: (findings 2026-10-29, town8) the only relocations naming these functions are their words in the base's own vtable, which no other vtable repeats; each base's vtable is an object's only inside its constructor (every constructor that stores one stores its class's own after it: Process_Construct's 52 callers, the 51 constructors storing 0x020da13c, Actor_Construct's 2 and SceneObjectBase_Construct's 49 callers) and in the destructors, which call the base's destructor directly before the free; a process is deleted through slot 0x44 of a whole object (autoload_2/process.c), so these slots are dispatched through the final class's vtable only
+group: the base classes' own destructors every class replaces
+scene: none: the destructors in slots 0x40 and 0x44 of the vtables of the process (autoload_2/process.c, 0x0213e7b4), the game's process (main/game_process.c, 0x020da13c), the actor (main/actor.c, 0x020d7244), the scene object (main/scene_object_base.c, 0x020dab34), the special characters' and villagers' scene objects (0x020d8c64, 0x020da088, 0x020d9e88)
+reach: (findings 2026-10-29, town8) the only relocations naming these functions are their words in the base's own vtable, which no other vtable repeats; each base's vtable is an object's only inside its constructor (every constructor that stores one stores its class's own after it: Process_Construct's 52 callers, the 51 constructors storing 0x020da13c, Actor_Construct's 2 and SceneObjectBase_Construct's 49 callers; the 40 and 39 constructors storing 0x020d8c64 and 0x020da088, VillagerSceneObject_Construct's 9 callers for 0x020d9e88, findings 2026-10-29, town8, fourth batch) and in the destructors, which call the base's destructor directly before the free; a process is deleted through slot 0x44 of a whole object (autoload_2/process.c), so these slots are dispatched through the final class's vtable only
 needs: unreachable
 match: autoload_2/process:Process_DestructFree main/game_process:GameProcess_Destruct
   main/game_process:GameProcess_DestructDelete main/actor:Actor_Destruct main/actor:Actor_DestructDelete
   main/scene_object_base:SceneObjectBase_DestructFree
+  main/special_scene_object:SpecialSceneObject_DestructDelete main/obj_020d8c64:Obj020d8c64_Destruct
+  main/obj_020d8c64:Obj020d8c64_DestructDelete main/villager_scene_slots:VillagerSceneObject_DestructDelete
 
 area: Unreachable for one player
 group: the other classes' destructors of vtable slot 16

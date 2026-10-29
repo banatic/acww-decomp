@@ -1650,6 +1650,9 @@ scene("star-view-keys", "museum", 10524, [2600, 6300, 9900, 10100, 10300, 10523]
       "pushed past the edges", rtc="2026-09-11 20:30:00")
 scene("pockets-tab", "pockets-keys", 3110, [2600, 2864, 2950, 3030, 3109], frames(2800, 3110, 25),
       "the pockets by the keys: the cursor up to the tab bar and A on the pockets' own tab")
+scene("sell-send", "box-items", 5400, [2600, 5000, 5150, 5280, 5399], frames(5000, 5400, 25),
+      "at Nook's sell window by the keys: an item sent to the counter and back by Y, the end places moved "
+      "between and left; cancelled")
 
 # ------------------------------------------------------------------------------ saves
 
