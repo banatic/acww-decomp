@@ -830,6 +830,55 @@ SAVES["bottle-came"] = SAVES["bottle-sent"][:-1] + [(EXCHANGE + 0x938, "<H", 0x0
 SAVES["events-ended"] = [(TOWN_EVENTS, "<H", 0x11), (TOWN_EVENTS + 2, "<B", 25),
                          (TOWN_EVENTS + 12, "<H", 0x62), (TOWN_EVENTS + 14, "<B", 25)]
 
+
+def villager_mode(villager: int, mode: int) -> list[tuple[int, str, int]]:
+    """A town villager's mode (its pastime, the byte 0x10 of the mode record at 0x734,
+    main/villager_mode.h) set to `mode` with the scores of the eight kinds below their most and the
+    mode's own the highest, so the boot keeps it (VillagerModeRecord_KeepKind); dated the seed's
+    day. The talks' topics of the mode (VillagerTalkSubjects_SayByMode, _SayByStateKind) and, for
+    modes 0-4, the errand of its type (VillagerKind_Deal) follow it."""
+    base = TOWN_VILLAGERS + 0x7EC * villager + 0x734
+    scores = bytes(0x30 if kind == mode else 0x10 for kind in range(8))
+    return raw(base, bytes((0, 30, 11, 11, 9, 26, 0, 0)) * 2 + bytes((mode,)) + scores + bytes(8))
+
+
+# villager 3 in pastime 2 (items of a kind) with six fossils in pockets 0-5, and in pastime 3
+# (clothes) with six shirts
+SAVES["mode-2-fossils"] = villager_mode(3, 2) + [(POCKETS + 2 * i, "<H", 0x450C + 4 * i) for i in range(6)]
+SAVES["mode-3-clothes"] = villager_mode(3, 3) + [(POCKETS + 2 * i, "<H", 0x11A8 + 8 * i) for i in range(6)]
+
+
+def villager_errand(villager: int, kind: int, step: int, low: int = 0, player: bool = False, item: int = 0xFFF1,
+                    count: int = 0) -> list[tuple[int, str, int]]:
+    """A town villager's object (at 0x758: the record at 0x734 and its object at 0x24,
+    main/villager_object.h) holding an errand of type `kind` (0 an insect, 1 a fish, 2 an item of a
+    kind, 3 clothes, 4 an item with variants) at step `step`, its low bits `low` (1 a rematch asked,
+    2 done), naming the seed's player when `player`, the item `item` asked for (at 8 and 0x2c), dated
+    the seed's day. The load keeps it, but clears a player named with low bits 0 (the first talk
+    then takes the errand up and names the player)."""
+    base = TOWN_VILLAGERS + 0x7EC * villager + 0x758
+    entries = raw(base, bytes((0, 30, 11, 11, 9, 26, 0, 0))) + [(base + 8, "<H", item), (base + 0x0A, "<B", kind),
+                                                                (base + 0x0B, "<B", low), (base + 0x2A, "<B", step),
+                                                                (base + 0x2C, "<H", item), (base + 0x2E, "<B", count)]
+    if player:
+        entries += raw(base + 0x0C, LETTER_FROM_PLAYER[:0x1C] + bytes(2))
+    return entries
+
+
+# villager 0 (at home at 11:30) with an insect errand at step 2 asking for 0x12b0 (360 bells), and in
+# the pockets an insect worth as much (0x12b0-0x12b2), first one worth more (0x12b2, 640) or one
+# worth less (0x12b8, 240): the insect shown is priced against the one asked for
+SAVES["errand-insect-due"] = villager_errand(0, 0, 2, player=True, item=0x12B0) + [(POCKETS + 2 * i, "<H", 0x12B0 + i)
+                                                                                 for i in range(3)]
+SAVES["errand-insect-three"] = villager_errand(0, 0, 2, player=True, item=0x12B0) + [
+    (POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x12B2, 0x12B8, 0x12B0))]
+SAVES["errand-insect-less"] = villager_errand(0, 0, 2, player=True, item=0x12B0) + [(POCKETS, "<H", 0x12B8)]
+# villager 0's errands done (low bits 2): an insect at step 0, an item of a kind at step 1 and an
+# item with variants at step 0
+SAVES["errand-low2"] = villager_errand(0, 0, 0, low=2, player=True, item=0x12B0)
+SAVES["errand-done-2-1"] = villager_errand(0, 2, 1, low=2, player=True)
+SAVES["errand-done-4-0"] = villager_errand(0, 4, 0, low=2, player=True)
+
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
 SCENES: dict[str, dict] = {}
@@ -1765,6 +1814,22 @@ scene("snow-insect", "unweeded-jan", 4950, [2600, 3800, 4400, 4752, 4949], frame
 scene("star-designer-keys", "museum", 7980, [2600, 6300, 7150, 7540, 7774, 7979], frames(7500, 7980, 20),
       "in the star designer, drawn pieces taken off by the pen, then an arrow held by the keys and let go",
       rtc="2026-09-11 20:30:00")
+scene("villager-errand-fossil", "mode-2-fossils", 9510, [2600, 4100, 5500, 7000, 8500, 9509], frames(5500, 9510, 50),
+      "a villager in pastime 2 asks for an item of a kind; the fossils of the pockets offered, one given and judged")
+scene("villager-errand-clothes", "mode-3-clothes", 9165, [2600, 4134, 5500, 7000, 8500, 9164], frames(5500, 9165, 50),
+      "a villager in pastime 3 asks for clothes; a shirt of the pockets given, it changes into it and gives its own")
+scene("villager-catch-draw", "errand-insect-due", 8148, [2600, 4138, 5500, 6500, 7500, 8147], frames(5000, 8148, 50),
+      "villager-home-talks' owner with an insect errand due: the insect shown is worth as much as the one asked for")
+scene("villager-catch-win", "errand-insect-three", 9748, [2600, 4138, 5500, 7000, 8500, 9747], frames(5000, 9748, 50),
+      "as villager-catch-draw with a dearer insect shown: the player wins, is rewarded and is asked for a rematch")
+scene("villager-catch-lose", "errand-insect-less", 7148, [2600, 4138, 5500, 6500, 7147], frames(5000, 7148, 50),
+      "as villager-catch-draw with a cheaper insect shown: the player loses")
+scene("villager-errand-done", "errand-low2", 7148, [2600, 4138, 5000, 6000, 7147], frames(4200, 7148, 50),
+      "villager-home-talks' owner with its insect errand done: the next step, and the insect of step 1 asked for")
+scene("villager-kind-done", "errand-done-2-1", 6548, [2600, 4138, 5000, 6000, 6547], frames(4200, 6548, 50),
+      "the owner's errand of an item of a kind done at step 1: at step 2 it picks a kind its house misses")
+scene("villager-variant-done", "errand-done-4-0", 6548, [2600, 4138, 5000, 6000, 6547], frames(4200, 6548, 50),
+      "the owner's errand of an item with variants done: its count against the step's figure, then asked again")
 
 # ------------------------------------------------------------------------------ saves
 

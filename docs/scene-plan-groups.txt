@@ -1254,6 +1254,14 @@ match: ov004/chest:Chest_LidStateIsOn ov004/music_player:MusicPlayer_StateIsOn
   ov004/room_object_body:RoomObject_Vfunc74
 
 area: Unreachable for one player
+group: ev_arbeit's messages for the player record's count 1, which no store makes (the talk spans)
+scene: none: the talk spans of tag 0xff/2 (TalkTags_StartSpans, _StepSpans, TalkSpan_StartCounted, _StartRange, _Step), a text of the tag's own beside the characters after it, which only ev_arbeit's messages 1, 0x14 and 0x15 (bo: 1, 0x17, 0x18) and test_ 3-5 hold
+reach: ev_arbeit is said by VillagerTalkTopics_SayPlayerTalks with the player record's count byte 0x2451 as the message; its other users (VillagerTalkSteps_LineByObjectType: 11, 13, 14) and message 0's chain (0x10-0x13) reach none of those messages by a next byte or a branch tag (w34/gkmsg.py), and test_ is shown only as message 0. The count byte is stored only by PlayerRecord_RaiseCount (0 to 2, then up to 10), PlayerRecord_Zero (0) and copies of whole records: the only literals of 0x2440-0x2451 in any image are the record's own accessors (w34/countscan.py). So count 1 never occurs (talks-1, a save with it, showed message 1; not a scene), and the spans start only there (w34/classify.py, gate count1: the tag table's word for StartSpans and TalkTags_Pace's calls of StepSpans cut; calibrated)
+needs: unreachable
+match: main/talk_tags:TalkTags_StartSpans main/talk_tags:TalkTags_StepSpans main/talk_span:TalkSpan_StartCounted
+  main/talk_span:TalkSpan_StartRange main/talk_span:TalkSpan_Step
+
+area: Unreachable for one player
 group: the star view's free pointer, whose flag nothing sets
 scene: none: sub states 3 (the free pointer), 7 (its glide), 8 (its press) and 9 (its release) of the observatory's star view (ov128/star_view_input.c) and their helpers
 reach: sub state 3 is set only by StarView_SubPress (sub state 8) while STAR_VIEW_FLAG_FREE is set, which no code sets (ov128/star_view.h); 8 only by StarView_PressPointer, 9 only by StarView_ReleasePointer and 7 only by StarView_GlideTo, whose only callers are StarView_SubFree, StarView_SubPress and StarView_GlideToCursor (called only by StarView_SubFree); the return sub states of 7 and 9 are saved only by those; each sub state's function is named only by its member pointer constant in the sub state table (w31/classify.py, gate value)
@@ -2260,9 +2268,7 @@ match: main/villager_talk* main/villager_part* main/villager_object main/village
   main/talk_tags:TalkTags_PutName3 main/talk_tags:TalkTags_BranchByFalling
   main/talk_tags:TalkTags_BranchByResident main/talk_tags:TalkTags_LookAtFirst
   main/talk_tags:TalkTags_LookAtPlayer main/talk_tags:TalkTags_PutOtherPlayer
-  main/talk_object:TalkObject_LoadOtherPlayer main/talk_tags:TalkTags_StartSpans
-  main/talk_tags:TalkTags_StepSpans main/talk_span:TalkSpan_StartCounted
-  main/talk_span:TalkSpan_StartRange main/talk_span:TalkSpan_Step
+  main/talk_object:TalkObject_LoadOtherPlayer
   main/scene_command:SceneCommand_RequestMotion15 main/scene_command:SceneCommand_StartMotion15
   main/scene_command:SceneCommand_RunMotion15 main/scene_command:SceneCommand_WaitMotion15
   main/scene_motion:SceneMotion_StartKind15 main/scene_motion:SceneMotion_Kind15After
