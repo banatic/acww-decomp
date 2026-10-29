@@ -173,6 +173,16 @@ FRAMES: dict[tuple[str, int], Frame] = {
         'a56255c65ac0299bb03226831e2fa0f8681163c8a7c5ce7c2bca96c7321cd0ce'),
     ('ov004', 0x02214d34): Frame(0x18, 0xc4,
         '3035a4bc2cd2247e02a638ba271910b1cab491ba7b4ff207241af5ddaf350890'),
+    # A gyroid switched off (scene house-placed): 022150b8's state table calls 02214fc8 (push
+    # {r4, r5, lr}; sub sp, #4; the matching add before its one pop sequence; every call at entry
+    # SP - 0x10), which calls 02215298 as the two states above do.
+    ('ov004', 0x02214fc8): Frame(0x10, 0x58,
+        'd5b03a53b5ce61459c04da3fa012799409d971c9d49abb49b227502a415e65dc'),
+    # A gyroid appearing (scene house-placed): 02210abc calls 02215360 by its vtable (push {lr};
+    # sub sp, #4; the matching add before its one pop; its one call, to 02215374 through the
+    # vtable's slot 0x80, at entry SP - 8).
+    ('ov004', 0x02215360): Frame(0x8, 0x14,
+        '545900f4043ef04096b5ffbe73e13e16de42000d340ba1cd5ca15cd26029f904'),
     ('ov004', 0x02215298): Frame(0x10, 0x38,
         'b6fc3143ddd15db31aed22fe4bdb6856ced9838de28edef094b0b26d1ff0b9fd'),
     ('main', 0x020040bc): Frame(0x18, 0x4c,

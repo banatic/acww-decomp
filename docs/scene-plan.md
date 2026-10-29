@@ -1,80 +1,12 @@
-# The scenes still needed
-
-The scenes of `tools/scenes.py` check Native and Clean code against the Reference only where a
-recording runs it (docs/runtime.md, M5). This plan puts every Clean function that no scene or
-recording enters yet into the scene, or the game situation, that would enter it, so that each
-new scene can be chosen by what it gains.
-
-The tables are made by `python tools/coverage.py --plan docs/scene-plan-groups.txt` from the
-lists of the last scenes run (build/adm-kr/scenes/*/functions-seen.txt): each function goes to
-the first group of docs/scene-plan-groups.txt whose patterns match its Clean file (or file and
-name), so every function is in exactly one group, and the tool stops if one is in none. The
-groups are by Clean file; a file whose functions belong to several situations is in the group
-of most of them, and `tools/coverage.py --file FILE` lists its functions one by one when a
-scene is planned. Function counts are "function check only" (the function-level check passes
-them, tools/diffcheck.py) and "read only" (checked by reading alone).
-
-`needs` says what a scene for the group needs:
-
-- **seed**: the seed save on its day (RTC 2026-09-11, any hour), with derived saves
-  (tools/scenes.py SAVES) where items, money or fields are needed;
-- **date**: another date, hour or weather, or a visitor: scenes that boot on another day. The
-  boot on another day now agrees (main 18eb2682); the dates and visitors are the other
-  worktree's (wt5) part;
-- **unknown**: the trigger is not identified yet (each group says what to look for);
-- **unreachable**: a second DS, the Wi-Fi Connection server or a hardware event (the card
-  pulled, the lid closed, a low battery, a fault) that one recording cannot make.
-
-## Scenes found but not yet added
-
-None now. The last recordings that waited in build/scenes-pending are scenes (with
-villager-habit-retype, catchphrase's "type it again"): sunday-joan agreed once the worker
-thread's code always ran interpreted; museum-insects (the other two cases' heights come from the
-field actor's walls and the ground's height function, docs/native-guest-stack.md), flea-buyer
-(the cockroach's box height from a wall's span test), villager-habit-retype (the bridge wrote
-host words over the reply's unset line when it called `MI_CpuFill8`) and flea-market (the TV
-was "not for sale" because the PC's frame did not keep a tile's z after its x, a callee reading
-the two as one: tools/native_args.py) needed the fixes named.
-
-## Current numbers
-
-From 384 scene lists: 25,251 Clean game functions, run 20,609, function check only 1,165, read only 3,477; the groups below hold 4,642 (function check only + read only).
+From 386 scene lists: 25,251 Clean game functions, run 20,636, function check only 1,160, read only 3,455; the groups below hold 4,615 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 706 |
+| seed | 683 |
 | date | 216 |
-| unknown | 478 |
+| unknown | 474 |
 | unreachable | 3,242 |
-| total | 4,642 |
-
-
-(The lists are those of the 384 scenes of tools/scenes.py. The two recordings, title-start and
-new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
-
-## Next scenes for one player, by functions gained
-
-The seed groups as single scenes or short series, largest first (a group's count is an upper
-bound for one scene: some of its functions take more than one visit):
-
-1. villager talks (384) and villagers out in the town (286): many short talks with each villager
-   at several hours, and long walks near them;
-2. outdoor actions of the field actor (374): the pitfall scene once Native agrees, the beehive,
-   the stump, items picked up, dropped and thrown; many are remote-console message paths;
-3. furniture of each room-object class (307): what house-kinds, house-kinds2 and house-kinds3
-   left: the classes' other states (turned, pushed, carried) and the telephone of the continue
-   menu's room (ov004/rmo_telephone.c states 0-6, which the pen and the keys there skip);
-4. the gatekeeper (170): the visit and invitation topics; "what is this place" adds nothing;
-5. the clock and calendar screens (164): the time, date and birthday screens (ov136-ov138) a
-   villager's talk opens;
-6. letters (163), catalogs, map, friends, tunes, songs, storage (149), the pockets screen (125)
-   and item pick, swap and boxes (105): the menus' controls one by one;
-7. a second player and the title screen (149): a new player's start in the seed's town;
-8. indoor actions (126), the museum's characters (126) and the house (83).
-
-The date groups are for the boot on another day (wt5): the visitors one scene each, Tortimer's
-events, birthdays and visits, the seasons and weather, other months' insects and fish. The
-unknown groups say what to find first.
+| total | 4,615 |
 
 ## Unreachable for one player (3,242)
 
@@ -133,11 +65,11 @@ unknown groups say what to find first.
 | destructors only a thrown exception calls | 1 (1 / 0) | ov117/town_map_image 1 | none: the destructors of the elements of arrays built by __cxa_vec_ctor, named nowhere else | __cxa_vec_ctor (0x02138d6c) calls its destructor argument only in its landing pad (0x02138dd8: __cxa_vec_cleanup, then the rethrow func_02137174), which runs only after a constructor threw; no code throws: the unwinder func_021375c0 is entered only from func_02137174, which only the three array helpers' landing pads call. A destructor named only as that argument, and what only it calls, never runs (w24/vecdtor.py; w24/classify.py, gate nothrow; findings 2026-10-29, town7) | unreachable |
 | the scene object bases' slot 0x68 every class replaces | 1 (1 / 0) | main/scene_object 1 | none: the scene objects' slot 0x68 (called first in each frame) of the bases, SceneObject_Vfunc68, which every class's own vtable replaces | SceneObject_Vfunc68 is named only by the words at +0x68 of the intermediate vtables 0x020d8c64, 0x020d9e88 and 0x020da088, which an object holds only while it is built or torn down (each constructor storing one stores its own class's vtable after it, findings town8), and none of the 28 call sites through +0x68 (w28/vsite.py) is in those constructors or destructors (findings 2026-10-29, town11; w30/basevt3.py, w30/classify.py) | unreachable |
 
-## Not attributed to one scene (347)
+## Not attributed to one scene (343)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| other paths of shared code the scenes already run | 224 (84 / 140) | autoload_2/heap 15, main/scene_motion 14, main/scene_action 10, main/town_lines 9, main/scene_motion_kinds 8, main/field_label 7, main/acre_map 6, main/music_queue 6, 85 more files (149) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
+| other paths of shared code the scenes already run | 220 (82 / 138) | autoload_2/heap 15, main/scene_motion 14, main/scene_action 10, main/town_lines 9, main/scene_motion_kinds 8, main/field_label 7, main/acre_map 6, main/music_queue 6, 84 more files (145) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
 | the link's code in files one player also runs | 78 (36 / 42) | ov055/xct_exchange 11, main/obj_020dd33c_modes 10, autoload_2/network 9, main/session 8, main/link_scene 4, main/packed_bytes 4, ov055/xct_exchange_talk 4, main/exchange_block 3, 11 more files (25) | none known: the functions of the session, link, quick message, caution window, network and Wi-Fi files that the fixed point and the link guard do not prove (most are the link's: the session records, the network library's dispatch to the local and Wi-Fi libraries by the network mode, the caution window's states, the scene objects' shared modes) | unknown: these files were in "local wireless" and "Nintendo Wi-Fi Connection" as whole files, but scenes run some of their functions (findings 2026-10-28, town6); the rest still needs a proof (the network mode data_021fbef8 and the session mode are set only by the link's code: a proof by the values stored, as for the field actor's states and the activity's jobs) or a scene | unknown |
 | claimed unreachable, not proved by the forward pass | 40 (13 / 27) | ov003/field_actor 9, main/mail_text 5, main/wfc_session 4, ov048/gatekeeper_talk 4, main/linked_map_items 3, main/wfc_setup 3, main/town_pack 2, ov048/gatekeeper_talk_lines 2, 7 more files (8) | none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1) | unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene | unknown |
 | overlay static initialisers | 5 (1 / 4) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov018/ov018_static_init 1, ov025/ov025_static_init 1, ov035/ov035_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
@@ -152,12 +84,12 @@ unknown groups say what to find first.
 | the gatekeeper: every topic | 24 (10 / 14) | ov048/gatekeeper_talk 7, ov048/gatekeeper_states 6, ov048/gatekeeper_talk_lines 6, ov004/gatekeeper2 2, ov133/friend_code_entry_scene 2, ov048/gatekeeper 1 | each line of his menu with each answer: the place, news, the lost and found by keys, the flag, a visit (refused alone), the friend code entry (ov133) | the gate-flag walk; the visit topics refuse without a link but run their talks | seed |
 | the post office: both clerks, savings and the ATM | 15 (6 / 9) | ov054/post_clerk 7, ov130/bank_pad 3, ov004/atm 2, main/savings 1, ov054/post_clerk_talk 1, ov132/bank_menu 1 | Pelly and Phyllis (night) with every topic, withdraw and deposit at the pad and the ATM (ov130-ov132), the letters kept for later | the post-office walk, at day and at night | seed |
 
-## The house and its furniture (the seed's day) (120)
+## The house and its furniture (the seed's day) (97)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| furniture of each room-object class | 96 (35 / 61) | ov004/room_object_02253058 34, main/room_cells 7, ov004/room_object_02252ba8 7, ov004/room_object 6, ov004/room_villager 6, ov004/room_object_life 5, main/room_sync 4, ov004/carried_items 4, 15 more files (23) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches; besides (findings 2026-10-29, unknown2), the TV's sound objects (autoload_2/sound_object_kinds): SoundObject_New, whose only caller is TvBroadcast_Show, makes the kind of the channel shown, and the schedule (data_ov004_02247cf4, by weekday from Sunday) gives the seed's Friday channels 8 at 0:00 and 12:00, 6 at 1:00, 8:30 and 15:00, 1 at 3:00 and 5:00, 0 at 4:00, 2 at 6:00, 3 at 8:00, 7 at 10:00, 10 at 19:00, 5 at 23:00 and the forecast at 6:45, 7:45, 11:45, 18:45 and 22:45 (its other sound after seven rounds); kind 4 only on Wednesday 1:00 and 20:00 and Saturday 0:00, kind 9 only on Sunday 21:00, Tuesday 1:00 and Saturday 1:00 and 21:00 (another weekday); the TV heard (data_ov004_022595b8) in a room with a TV on | seed |
-| indoor actions of the field actor | 14 (3 / 11) | ov004/field_actor_place_states 6, ov004/room_placement 3, ov004/field_actor_room_states 2, ov004/room_player_actor 2, ov004/furniture_mover 1 | sit on chairs and sofas, lie on the bed, pick furniture up and turn it (R and L), push and pull every kind, step off a spot | the house-furni save; each room-object class asks for its own states | seed |
+| furniture of each room-object class | 74 (33 / 41) | ov004/room_object_02253058 34, ov004/room_object 6, ov004/room_villager 6, ov004/room_object_life 5, ov004/carried_items 4, ov004/room_objects 4, main/room_cells 2, ov004/room_object_022510b4 2, 10 more files (11) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches; besides (findings 2026-10-29, unknown2), the TV's sound objects (autoload_2/sound_object_kinds): SoundObject_New, whose only caller is TvBroadcast_Show, makes the kind of the channel shown, and the schedule (data_ov004_02247cf4, by weekday from Sunday) gives the seed's Friday channels 8 at 0:00 and 12:00, 6 at 1:00, 8:30 and 15:00, 1 at 3:00 and 5:00, 0 at 4:00, 2 at 6:00, 3 at 8:00, 7 at 10:00, 10 at 19:00, 5 at 23:00 and the forecast at 6:45, 7:45, 11:45, 18:45 and 22:45 (its other sound after seven rounds); kind 4 only on Wednesday 1:00 and 20:00 and Saturday 0:00, kind 9 only on Sunday 21:00, Tuesday 1:00 and Saturday 1:00 and 21:00 (another weekday); the TV heard (data_ov004_022595b8) in a room with a TV on | seed |
+| indoor actions of the field actor | 13 (2 / 11) | ov004/field_actor_place_states 6, ov004/room_placement 3, ov004/field_actor_room_states 2, ov004/room_player_actor 2 | sit on chairs and sofas, lie on the bed, pick furniture up and turn it (R and L), push and pull every kind, step off a spot | the house-furni save; each room-object class asks for its own states | seed |
 | the house: rooms, camera, telephone, roaches | 9 (4 / 5) | ov004/rmo_telephone 4, main/house_record 2, ov004/room_camera 2, ov004/room_etc_board 1 | the other rooms (upstairs and basement of a bigger house), the room camera's turns, the telephone's other settings, cockroaches running and stamped on, the wallpaper and carpet changed | a derived save with a bigger house (main/house_record.h, the size word at 0x15a0) and wallpaper/carpet items; the seed's 10 cockroaches (their collider is Native-sensitive, docs/native-guest-stack.md) | seed |
 | the clock and calendar screens | 1 (0 / 1) | ov135/phone_clock 1 | what clock-pen, birthday-ask and visit-time leave: the clock dragged past a bound (ov135 in the date screen's mode 0x33), the visit's times in a villager's sleeping hours and before 6:00 (lines 0x021c304c and 0x021c3034 of VillagerTalkSteps_SayByKeptTime) | the visit's time screen (ov136) is bounded by now and twelve hours later and the villagers' night windows start at 1:00-4:30 (data_020cd4ac), so those two answers need the offer late in the evening (a boot at night on a day the deal gives a villager type 21) | date |
 
@@ -2753,3 +2685,26 @@ What reading the Clean code found about the groups above; counts are of function
   call was lost too.
 - The plan before (380 lists): seed 710, date 216, unknown 478, unreachable 3,242; after (384):
   seed 706, date 216, unknown 478, unreachable 3,242. Checked in a run: 20,605 before, 20,609 after.
+
+### Furniture put in a room by its record: gyroids, a switched piece, a pull, the deletes (2026-10-29, furniture)
+- A room's pieces can be put in by the house record instead of the pockets
+  (tools/scenes.py room_item, room_switch_off): the 16 x 16 floor layer of item codes
+  (0x3000 + 4 * number + side) at 0 of the room's record, and its switch bits (a halfword per
+  row, a bit per column, at 0x400; all set when reset) for a piece that loads switched off. The
+  seed's house (size 0) has a room of 4 x 4 cells (x 6-9, y 10-13); house-big's main room is
+  8 x 8 (x 4-11, y 6-13). The furniture kinds (ftr_info/dma.bin byte 0x18) map to the classes by
+  ov004's profile table data_ov004_02247f54 and main's profiles data_020e3134 (w37/rom.py):
+  0x18, the 127 gyroids (0x577-0x5f5), is RoomObject02252ba8.
+- New save house-placed and scene house-placed: two gyroids, the second switched off (at the
+  room's load the cue waits for the step its cell keeps: RoomCells_GetStep; switched off it
+  clears the cell's step: RoomObject02252ba8_EnterOff, RoomCells_ClearStep, RoomCellSteps_Clear),
+  a gyroid put down from the pockets (slot 0x84 while it appears), the one switched off switched
+  on by A (RoomSync_ToggleSwitchAtPoint, _ToggleSwitchAt, _ToggleAt), a piece of kind 7 loaded
+  switched off and switched on (RoomObject022510b4's SWITCHING_ON), a piece of kind 0x16 pulled
+  (RoomObject02250c04_OnMoveStart), a player's design as the wallpaper and the carpet
+  (RoomWallpaper_SetCode, RoomCarpet_SetCode: the under-design surfaces) and the house left with
+  pieces of kinds 2 and 0x1c in the room (their slot 0x0c and deleting destructors). The gyroid's
+  cue reads the sequencer's variables (scene option sequencer, as tv-channel-4). Native needed two
+  more audited frames on the room music cue's path (tools/native_stack.py,
+  docs/native-guest-stack.md): the gyroid's OFF update 02214fc8 (0x10) and its slot 0x84
+  02215360 (0x8), each of which the guard stopped at ("unproved guest stack").

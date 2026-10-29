@@ -132,8 +132,10 @@ were checked across its reachable paths.
 | ov004 | 02210abc | 0x018 |
 | ov004 | 02214c50 | 0x018 |
 | ov004 | 02214d34 | 0x018 |
+| ov004 | 02214fc8 | 0x010 |
 | ov004 | 022150b8 | 0x010 |
 | ov004 | 02215298 | 0x010 |
+| ov004 | 02215360 | 0x008 |
 | ov004 | 02215374 | 0x008 |
 | ov004 | 022297d8 | 0x008 |
 | ov004 | 02229860 | 0x018 |
@@ -229,9 +231,10 @@ The policy's last column carries the push (bit 16 set, bits 0-15 the register li
 ## The room music cue
 
 A room object with music in a villager's house (scenes villager-birthday, sick-villager,
-letter-errand) updates its cue from its update: 02210abc calls 02215374 by its vtable, then
-022150b8, then 02214c50 or 02214d34 by its state table, then 02215298, 020040bc and the cue's
-update 020f9ea4, which calls 020f9d00, 020f9b50 (which calls 020f5e50) and 020f9948. The first
+letter-errand) updates its cue from its update: 02210abc calls 02215374 by its vtable (through
+02215360 while a gyroid appears, scene house-placed), then
+022150b8, then 02214c50, 02214d34 or (a gyroid switched off, scene house-placed) 02214fc8 by
+its state table, then 02215298, 020040bc and the cue's update 020f9ea4, which calls 020f9d00, 020f9b50 (which calls 020f5e50) and 020f9948. The first
 update finds the cue's handle without a player, so NNS_SndPlayerReadVariable writes nothing:
 
 - 020f9d00 stores into the cue (bytes 0xb-0xe) its frame's words at body SP + 4 to + 0xb. In

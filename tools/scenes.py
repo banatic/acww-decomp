@@ -535,6 +535,9 @@ SAVES["songs-all"] = SAVES["songs"] + raw(0xF52C + 0x1594, bytes([0xFF] * 8 + [0
 # as "museum" with the crayfish (0x12f2) in pocket 4: the fish villager 3 challenges the player
 # to catch in villager-chat (the villager object's item, main/villager_object.h)
 SAVES["museum-crayfish"] = SAVES["museum"] + [(POCKETS + 8, "<H", 0x12F2)]
+# two fossils not assessed (0x1549) in pockets 0 and 1, the seed's museum (without them): Blathers
+# assesses one and asks for it (ov047/owl_donation.c, line 0x1d with the museum lacking it)
+SAVES["museum-fossils"] = [(POCKETS, "<H", 0x1549), (POCKETS + 2, "<H", 0x1549)]
 
 # Nook's store at its first level (as "store-2", level 1 and the building 0x500e): scene 0x1b
 SAVES["store-1"] = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STORE + 0x5A, "<H", 1 << 9),
@@ -902,6 +905,31 @@ SAVES["pluck"] = [town_item(41, 56, 0x1F), town_item(41, 58, 0x70), (HELD, "<H",
 # the shovel held and the axe in pocket 0: a hole dug, the axe taken from the pockets, then B
 # facing the hole (FieldActor_TryTargetMode2: the shovel's tool value 2 asks for no hole)
 SAVES["hole-axe"] = [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x136B)]
+
+
+def room_item(x: int, y: int, number: int, room: int = 0, side: int = 0) -> tuple[int, str, int]:
+    """A SAVES entry putting furniture `number` (record `number` of ftr_info/dma.bin) on cell
+    (x, y) of the floor layer of house room `room` (main/house_record.h), facing `side`."""
+    return (0xF52C + 0x450 * room + 2 * (x + 16 * y), "<H", 0x3000 + 4 * number + side)
+
+
+def room_switch_off(x: int, y: int, room: int = 0) -> tuple[int, str, int]:
+    """A SAVES entry clearing the floor layer's switch bit of cell (x, y) of house room `room`
+    (main/room_cells.h: a halfword per row, a bit per column; a reset record has them all set),
+    so the piece there starts switched off."""
+    return (0xF52C + 0x450 * room + 0x400 + 2 * y, "<H", 0xFFFF & ~(1 << x))
+
+
+# as "house-big"; pieces put in the main room (8 x 8 cells, x 4-11 and y 6-13) by its record, so
+# the room makes them as it is entered: two gyroids (number 0x577, kind 0x18) at (4, 8) and
+# (11, 8), the second switched off, a switched piece of kind 7 (0xd9) switched off at (4, 11), a
+# piece of kind 2 (0xb5) at (10, 12), the player's design object (0x361, kind 0x1c) at (4, 13) and
+# a piece of kind 0x16 (0xcc) at (4, 6); the player's designs 0x1188 and 0x1189 as the room's
+# wallpaper and carpet (main/house_record.h, 0x448 and 0x44a of the room); a gyroid in pocket 0
+SAVES["house-placed"] = SAVES["house-big"] + [
+    room_item(4, 8, 0x577), room_item(11, 8, 0x577), room_switch_off(11, 8), room_item(4, 11, 0xD9),
+    room_switch_off(4, 11), room_item(10, 12, 0xB5), room_item(4, 13, 0x361), room_item(4, 6, 0xCC),
+    (0xF52C + 0x448, "<H", 0x1188), (0xF52C + 0x44A, "<H", 0x1189), (POCKETS, "<H", 0x3000 + 4 * 0x577)]
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -1886,6 +1914,10 @@ for _mode, _frames, _what in ((3, 5589, "the clothes it wears, by its state kind
                               (5, 5440, "its pastime's hint"), (6, 5586, "the acre it stands on, by its state kind")):
     scene(f"villager-topic-{_mode}", f"mode-{_mode}", _frames, [2600, 4088, 4600, _frames - 1],
           frames(4000, _frames, 50), f"villager 3 in pastime {_mode} talked to: a topic of {_what}")
+scene("house-placed", "house-placed", 5847, [2600, 4200, 4800, 5300, 5600, 5846], frames(4200, 5847, 50),
+      "in the big house with pieces put in the main room by its record: pull one, put a gyroid down from "
+      "the pockets, switch on a gyroid and a switched piece that load switched off, then out of the house",
+      sequencer=True)
 
 # ------------------------------------------------------------------------------ saves
 
