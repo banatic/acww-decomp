@@ -2257,3 +2257,31 @@ What reading the Clean code found about the groups above; counts are of function
   FrameHeap_* through heap.c's wrappers on every heap) and the effect kinds were not separated.
 - The plan before: seed 980, date 239, unknown 541, unreachable 3,177; after: seed 987, date
   239, unknown 527, unreachable 3,184.
+
+### The house's telephone, the first ring, a villager's music player, the doors' picks (2026-10-29, scenes/town10)
+- The telephone of ov004/rmo_telephone.c stands in the continue menu's room (scene 6), where
+  RmoTelephone_Start enters state 7 (the pen on it calls the settings centre) or, before the
+  state block's flag 0 is set, state 8 (it rings). Started in another scene it enters state 0,
+  where the pen on this system's player standing within 0x2333 of its point and facing it asks
+  for an event: house-forecast's run (house-turn at 11:44:30) leaves it so in the house, on the
+  back wall. New scene house-phone: from there UP to the wall and the pen on the player picks it
+  up (states 1-6: RoomPlayerActor_RequestPickUp, the room states PickUp, OnPhone and HangUp and
+  their animations of the receiver), the centre's menu outside scene 6 (the sound, the downloads
+  received, "my mistake") twice, hung up; then on the door's mat the pen on the bed. New save
+  phone-unrung (flag 0 clear) and scene phone-ring: the first ring and its talk (states 8 and 9).
+- A music player outside the player's house tells the song it plays when touched (the talk steps
+  TALK_NEXT, TALK, TALK_END of ov004/music_player.c): new save villager-stereos (every item
+  place of villagers 0-4 given furniture number 0x1cb, kind 0x13; number 0x74, kind 0x29, keeps
+  the villager's door shut) and scene villager-stereo, as villager-chest.
+- A door's scene actor (ov009/scene_actor_mode.c, mode 0) asks TouchPick_ObjectOnPenDown, and so
+  the pick kinds' lookups of main/touch_pick.c, for what the pen comes down on while the player
+  stands at the door. New scenes hall-box (the town hall's recycle box, kind 12), door-sign (a
+  villager house's sign, kind 9: EtcBoard_Get) and aquarium-sign (a tank's sign, kind 14:
+  EtcMuseum_Get); house-phone's bed gives kind 8. The town hall's counter, Pelly's window and
+  the ATM were not hit from the hall's mat.
+- Not reached: RoomObject02253058 (furniture kinds 0xa and 0x2a, profile 0x37) leaves its watch
+  for the push, the sequence and the item swap only in the quarter of the room that matches this
+  console's player number (0: the left and front quarter) with its push entry moved; no scene's
+  piece of those kinds was there.
+- The plan before (329 lists): seed 961, date 242, unknown 743, unreachable 2,991; after (335):
+  seed 913, date 241, unknown 742, unreachable 2,991.

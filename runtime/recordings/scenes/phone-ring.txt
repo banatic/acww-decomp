@@ -1,0 +1,49 @@
+# phone-ring (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot as phone-settings.txt: START at 900, A every 60 frames from 1000
+# to 1300.
+# Save: phone-unrung (the state block's flag 0 clear). The telephone of the continue menu's room
+# rings as the room comes up (ov004/rmo_telephone.c, states 8 and 9) and its talk explains the
+# room; A every 46 frames from 1406 reads it to its end, the game goes on into the town (about
+# 2800) and DOWN at 2858 walks a step.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1406 A -
+1412 - -
+1452 A -
+1458 - -
+1498 A -
+1504 - -
+1544 A -
+1550 - -
+1590 A -
+1596 - -
+1636 A -
+1642 - -
+1682 A -
+1688 - -
+1728 A -
+1734 - -
+1774 A -
+1780 - -
+1820 A -
+1826 - -
+1866 A -
+1872 - -
+1912 A -
+1918 - -
+1958 - -
+2858 DOWN -
+2898 - -

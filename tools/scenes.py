@@ -413,6 +413,9 @@ SAVES = {
     # given the Asian chest of drawers (furniture number 1, kind 0xb: ov004/chest.h)
     "villager-chests": [(0x9284 + 0x7EC * villager + 0x78C + 2 * place, "<H", 0x3004)
                         for villager in range(5) for place in range(10)],
+    # as "villager-chests" with furniture number 0x1cb (kind 0x13, a music player: ov004/music_player.h)
+    "villager-stereos": [(0x9284 + 0x7EC * villager + 0x78C + 2 * place, "<H", 0x3000 + 4 * 0x1CB)
+                         for villager in range(5) for place in range(10)],
 
     # a snowman built on the boot's day (12 January 2027; head 0x800, body 0xa00, face 0, standing:
     # main/snowmen.h) with its map object 0xb001 at tile (45, 57), east of the house's path (the
@@ -746,6 +749,9 @@ SAVES["met-elsewhere"] = raw(TOWN_VILLAGERS + 3 * 0x7EC + 0x5C, OTHER_TOWN)
 # flag 0x12 of the state block (its flags at 0x173f4) set, as the linked session's move-in sets it
 # (main/activity_link_jobs.c): the title starts player 0 anew
 SAVES["flag-12"] = [(0x173F4, "<I", 0x101 | 1 << 0x12)]
+# flag 0 of the state block clear: the telephone of the continue menu's room has not rung yet
+# (ov004/rmo_telephone.c, RmoTelephone_Start)
+SAVES["phone-unrung"] = [(0x173F4, "<I", 0x100)]
 SAVES["house-ordered"] =SAVES["loan-paid"] + [(0xF52C + 0x15A0, "<I", 0x0A040008)]
 SAVES["bottle-sent"] = [(EXCHANGE + 0x22, "<B", 2), (EXCHANGE + 0x42, "<B", 1), (EXCHANGE + 0x58, "<H", 0x3148),
                         (EXCHANGE + 0xFA, "<B", 4), (EXCHANGE + 0x94A, "<H", 0xCECE)]
@@ -1682,6 +1688,19 @@ scene("designs-cancel", "rod", 4328, [2600, 3500, 4100, 4200, 4327], frames(3500
 scene("mole-cricket", "unweeded-jan-shovel", 5970, [2600, 4400, 5000, 5500, 5969], frames(4400, 5970, 50),
       "in January with the shovel, dig the tile of the insect of kind 0x31 hidden in the ground: it hops out "
       "and walks off, and stops as the player follows it", rtc="2027-01-12 11:30:06")
+scene("house-phone", "house-furni", 11110, [2600, 7299, 7650, 8500, 9500, 10300, 11109], frames(7300, 11110, 50),
+      "house-forecast, then the house's telephone picked up by the pen: the settings centre's sound "
+      "and downloads, hung up twice", rtc="2026-09-11 11:44:30")
+scene("phone-ring", "phone-unrung", 2930, [1300, 1500, 1900, 2600, 2929], frames(1300, 2930, 25),
+      "the telephone of the continue menu's room rings the first time and explains the room")
+scene("villager-stereo", "villager-stereos", 4740, [2600, 3700, 4155, 4400, 4739], frames(4100, 4740, 25),
+      "in a villager's house full of music players, touch one: it tells the song it plays")
+scene("hall-box", "seed", 3830, [2600, 3700, 3760, 3829], frames(3600, 3830, 10),
+      "just inside the town hall, on the door's mat, the pen on the recycle box")
+scene("door-sign", "seed", 3390, [2600, 3290, 3320, 3389], frames(3200, 3390, 10),
+      "at a villager's door, the pen on the house's sign")
+scene("aquarium-sign", "museum-full", 7090, [2600, 4500, 6400, 7000, 7089], frames(6900, 7090, 10),
+      "on the mat of the museum's aquarium, the pen on a tank's sign")
 
 # ------------------------------------------------------------------------------ saves
 
