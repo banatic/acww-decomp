@@ -1918,6 +1918,24 @@ scene("house-placed", "house-placed", 5847, [2600, 4200, 4800, 5300, 5600, 5846]
       "in the big house with pieces put in the main room by its record: pull one, put a gyroid down from "
       "the pockets, switch on a gyroid and a switched piece that load switched off, then out of the house",
       sequencer=True)
+scene("villager-sign-wave", "seed", 4846, [2600, 3800, 4300, 4500, 4845], frames(3700, 4846, 25),
+      "read the sign in front of a villager's house, then tap a villager three tiles off on the lower "
+      "screen: it makes a gesture at the player from where it stands")
+scene("villager-admire-day", "seed", 11906, [2600, 4600, 6450, 8000, 9500, 11000, 11905], frames(4600, 11906, 100),
+      "on the day of praise a villager asks for words of praise typed on the keyboard; talked to again and "
+      "again, each of its later lines and both answers to its question", rtc="2026-09-27 13:00:00")
+scene("villager-new-year", "seed", 5874, [2600, 4600, 5000, 5400, 5873], frames(4600, 5874, 50),
+      "on New Year's Day at 00:30 a villager talked to: the new year's line of the night, under the fireworks",
+      rtc="2027-01-01 00:30:00")
+# villager 3 in a pastime, the press after its connect choices made after a wait that draws the
+# pastime's own topic (VillagerTalkSubjects_SayByMode), or for pastime 2 what it holds
+for _name, _mode, _frames, _what in (("villager-pastime-2", 2, 4979, "its pastime's hint"),
+                                     ("villager-topic-2", 2, 4939, "the shovel it holds, by its state kind"),
+                                     ("villager-pastime-3", 3, 5404, "its pastime's hint"),
+                                     ("villager-pastime-4", 4, 5404, "its pastime's hint"),
+                                     ("villager-pastime-6", 6, 5326, "its pastime's hint")):
+    scene(_name, f"mode-{_mode}", _frames, [2600, 4088, 4600, _frames - 1], frames(4000, _frames, 50),
+          f"villager 3 in pastime {_mode} talked to, the topic picked by the wait at its first choices: {_what}")
 
 # ------------------------------------------------------------------------------ saves
 
