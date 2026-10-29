@@ -38,18 +38,18 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 355 scene lists: 25,251 Clean game functions, run 20,477, function check only 1,187, read only 3,587; the groups below hold 4,774 (function check only + read only).
+From 356 scene lists: 25,251 Clean game functions, run 20,481, function check only 1,186, read only 3,584; the groups below hold 4,770 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 833 |
+| seed | 829 |
 | date | 217 |
 | unknown | 500 |
 | unreachable | 3,224 |
-| total | 4,774 |
+| total | 4,770 |
 
 
-(The lists are those of the 355 scenes of tools/scenes.py. The two recordings, title-start and
+(The lists are those of the 356 scenes of tools/scenes.py. The two recordings, title-start and
 new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
 
 ## Next scenes for one player, by functions gained
@@ -139,11 +139,11 @@ unknown groups say what to find first.
 | claimed unreachable, not proved by the forward pass | 40 (13 / 27) | ov003/field_actor 9, main/mail_text 5, main/wfc_session 4, ov048/gatekeeper_talk 4, main/linked_map_items 3, main/wfc_setup 3, main/town_pack 2, ov048/gatekeeper_talk_lines 2, 7 more files (8) | none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1) | unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene | unknown |
 | overlay static initialisers | 8 (1 / 7) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov025/ov025_static_init 1, ov035/ov035_static_init 1, ov037/ov037_static_init 1, ov039/ov039_static_init 1, ov040/ov040_static_init 1, ov043/ov043_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
-## Shops and buildings (the seed's day) (139)
+## Shops and buildings (the seed's day) (135)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| the museum: Blathers, the cafe and the observatory | 46 (13 / 33) | ov046/astro_talk 7, ov047/owl_donation 7, ov004/cafe_master 6, ov047/owl 5, ov046/astro 4, ov129/star_designer_input 4, main/constellations 3, ov047/owl_talk 3, 5 more files (7) | Blathers' every topic (each collection's talk, the donation list paged), Brewster's coffee with each answer, Celeste's constellations viewed and erased | museum save; the cafe in the basement; the observatory at night (rtc 20:30) | seed |
+| the museum: Blathers, the cafe and the observatory | 42 (12 / 30) | ov046/astro_talk 7, ov047/owl_donation 7, ov004/cafe_master 6, ov047/owl 5, ov046/astro 4, main/constellations 3, ov047/owl_talk 3, ov004/cafe_props 2, 4 more files (5) | Blathers' every topic (each collection's talk, the donation list paged), Brewster's coffee with each answer, Celeste's constellations viewed and erased | museum save; the cafe in the basement; the observatory at night (rtc 20:30) | seed |
 | the Able Sisters and the barber | 29 (7 / 22) | ov004/check_in_gate 8, ov049/mabel 8, ov053/barber 5, ov049/mabel_talk 4, ov004/tailor_sister 3, ov004/shop_display 1 | Mabel's other topics and the design display, the barber's haircut (Harriet: the hairdresser's chair, the new face) | rod save for the tailor; the barber is upstairs in the store once it is upgraded (main/nook_store.h): a derived save with the store's size, or unknown | unknown |
 | Nook's store: every topic | 25 (4 / 21) | ov050/nook_clerk 11, ov050/nook_clerk_talk 11, main/shops 1, main/talk_tags 1, ov142/order_catalog_cursor 1 | buy several items, sell all at once, the catalog by pages and by keys, order, the house loan and its extension, the turnip and the store's points | rich save; the store's counter (shop-talk's walk); besides (findings 2026-10-29, unknown2), the talk tag 0/6 "&" (TalkTags_PutAmpersand): Nook's lines raccoon_ 66-71, 85 and 86 (also barber_ 9-11 and 56, turtle3_ 13 and 40-42; w28/tagwhere.py) | seed |
 | the gatekeeper: every topic | 24 (10 / 14) | ov048/gatekeeper_talk 7, ov048/gatekeeper_states 6, ov048/gatekeeper_talk_lines 6, ov004/gatekeeper2 2, ov133/friend_code_entry_scene 2, ov048/gatekeeper 1 | each line of his menu with each answer: the place, news, the lost and found by keys, the flag, a visit (refused alone), the friend code entry (ov133) | the gate-flag walk; the visit topics refuse without a link but run their talks | seed |
@@ -2453,3 +2453,15 @@ What reading the Clean code found about the groups above; counts are of function
   0x54).
 - The plan before (352 lists, main 8f80f3d9): seed 874, date 238, unknown 505, unreachable 3,198; after (355):
   seed 833, date 217, unknown 500, unreachable 3,224.
+
+### The star designer's pieces taken off and its arrows by the keys (2026-10-29, scenes/town12, second batch)
+- New scene star-designer-keys: observatory to 7540 (the pen's four pieces drawn), the pen on
+  three drawn pieces (StarDesigner_TakeOffPiece and _PieceSlot), then RIGHT (the keys, the free
+  pointer), Y (the key cursor), UP to an arrow and A held: StarDesigner_SubArrowKey and
+  _SubNudgeKey. Left: the error of a first star every piece of which reaches another
+  constellation's (StarDesigner_ShowError, _SubError).
+- Not reached: kind 0x0a on 15 April 2027 10:30 (seed): every slot held kind 0x33 (the town
+  day's spot, TownInsect_SpecialKind); the sea's fins (FishFin_Load): the water south of the
+  house at z 69 is the river's.
+- The plan before (355 lists): seed 833, date 217, unknown 500, unreachable 3,224; after (356):
+  seed 829, date 217, unknown 500, unreachable 3,224.

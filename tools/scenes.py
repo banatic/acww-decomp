@@ -1760,6 +1760,9 @@ scene("snowball-sink", "unweeded-jan-shovel", 5570, [2600, 3700, 4412, 5020, 529
 scene("snow-insect", "unweeded-jan", 4950, [2600, 3800, 4400, 4752, 4949], frames(4400, 4950, 25),
       "on a January night the insect of kind 0x23 beside a snowball: the player walks up to it as it "
       "circles the ball", rtc="2027-01-12 21:00:06")
+scene("star-designer-keys", "museum", 7980, [2600, 6300, 7150, 7540, 7774, 7979], frames(7500, 7980, 20),
+      "in the star designer, drawn pieces taken off by the pen, then an arrow held by the keys and let go",
+      rtc="2026-09-11 20:30:00")
 
 # ------------------------------------------------------------------------------ saves
 
