@@ -547,6 +547,29 @@ WEEDS_PULLED = {9: 0x022E06189E094015A002200BA00BA01100002009800B888890402000824
                 10: 0x8800A00688010801C0010001000100190040000B01644D430066CD522B1BAE42}
 SAVES["weeded"] = [(MONEY, "<I", 5000)] + [(TOWN_ITEMS + 2 * (0x100 * acre + i), "<H", 0xFFF1)
                                            for acre, bits in WEEDS_PULLED.items() for i in range(0x100) if bits >> i & 1]
+# every weed of the town's 16 inner acres pulled (the bits as WEEDS_PULLED's): a loose snowball
+# stops against a weed, so in the snow it rolls over the open ground and grows
+WEEDS_ALL = {0: 0x24620A6C0008014A4E604B20C168204000001E049A10161023609040403C0000,
+             1: 0xCD384478102A513A81380412800002020A902BE969CC103CBB92500008140000,
+             2: 0xA017681520043404B606B602C403D8031000E005E005A000A002A001C0050000,
+             3: 0x0030176614130404100450053004180000006008144B25112602372745750000,
+             4: 0xC06C8634800C8178240C8C5E2508321600000E34830097202A20B5009D202640,
+             5: 0x997EE80CA00DA00C0003C003C00140020000E002E002A003200B300B300BAA7A,
+             6: 0xAA108008AA832B01E50105030181013D0000007700178015000780018005A011,
+             7: 0x4814601460352060203720044010400000006000600060034000437D42374336,
+             8: 0x4C0A4E003A006E005302011C803080020000C004E000210CE1001E08B9008858,
+             11: 0x5D2F772E333B2000240320002000200000006000400040034000601348174814,
+             12: 0x000000000000000000008002C066C09800005F7EDF6ED16A5048176A1D085D7A,
+             13: 0x0000000000000C080C08F80F800F000F0000003D006F005E0B5EDB185A6BCE6A,
+             14: 0x00000000000000000078C0FFE1FFFE00000082008000800080008002A011A002,
+             15: 0x000000000000000000002019402A1F7007C040020B740E5604570345157C050A, **WEEDS_PULLED}
+SAVES["unweeded"] = [(TOWN_ITEMS + 2 * (0x100 * acre + i), "<H", 0xFFF1)
+                     for acre, bits in WEEDS_ALL.items() for i in range(0x100) if bits >> i & 1]
+# the town's last day (TownDayStamp at 0x17254 of the state block: day, month, year) the day
+# before 12 January 2027, so that few weeds grow back by the boot on that day
+TOWN_DAY_STAMP = 0x17254
+SAVES["unweeded-jan"] = SAVES["unweeded"] + raw(TOWN_DAY_STAMP, bytes((11, 1, 27)))
+SAVES["unweeded-jan-shovel"] = SAVES["unweeded-jan"] + [(HELD, "<H", 0x1369)]
 
 # the day's weather (SkyWeatherDay at 0x1737e of the state block, main/sky.h) for 15 January 2027,
 # so that the boot on that day keeps it: its date, then today's pattern 15 (data_020d28ac),
@@ -1656,6 +1679,9 @@ scene("sell-send", "box-items", 5400, [2600, 5000, 5150, 5280, 5399], frames(500
       "between and left; cancelled")
 scene("designs-cancel", "rod", 4328, [2600, 3500, 4100, 4200, 4327], frames(3500, 4328, 25),
       "designs-room's carpet choice cancelled by B, then the page closed")
+scene("mole-cricket", "unweeded-jan-shovel", 5970, [2600, 4400, 5000, 5500, 5969], frames(4400, 5970, 50),
+      "in January with the shovel, dig the tile of the insect of kind 0x31 hidden in the ground: it hops out "
+      "and walks off, and stops as the player follows it", rtc="2027-01-12 11:30:06")
 
 # ------------------------------------------------------------------------------ saves
 

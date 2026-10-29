@@ -38,18 +38,18 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 328 scene lists: 25,251 Clean game functions, run 20,309, function check only 1,232, read only 3,710; the groups below hold 4,942 (function check only + read only).
+From 329 scene lists: 25,251 Clean game functions, run 20,314, function check only 1,232, read only 3,705; the groups below hold 4,937 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 962 |
-| date | 246 |
+| seed | 961 |
+| date | 242 |
 | unknown | 743 |
 | unreachable | 2,991 |
-| total | 4,942 |
+| total | 4,937 |
 
 
-(The lists are those of the 328 scenes of tools/scenes.py. The two recordings, title-start and
+(The lists are those of the 329 scenes of tools/scenes.py. The two recordings, title-start and
 new-game, are not in the lists; the new player's group below counts what new-game may already enter.)
 
 ## Next scenes for one player, by functions gained
@@ -161,11 +161,11 @@ unknown groups say what to find first.
 | item pick, swap and boxes | 13 (0 / 13) | ov107/pockets_swap 7, ov100/pockets_box 2, ov110/public_box 2, ov100/pockets_box_scene 1, ov110/public_box_states 1 | a villager or the sick villager asking for an item (ov101), the pockets full when catching (ov107, all its paths), the recycle box and the lost and found by keys (ov110), selling by the box (ov100) | villager requests (talks), full-net save, the town hall's recycle box, Nook's sell box | seed |
 | the friend roster with a friend registered | 2 (0 / 2) | main/wifi_friends 2 | the friend roster (ov119) with a friend in the list: a friend deleted before the last (the list closed up), and a friend code typed that is already registered | WifiFriendList_Compact (friend-add) copies the entries after a deleted one; FriendCodeEntry_IsOtherFriendsCode (friend-code) compares the typed code with each registered friend's: both need a save with friends registered | seed |
 
-## Player actions (the seed's day) (184)
+## Player actions (the seed's day) (183)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| outdoor actions of the field actor | 127 (27 / 100) | ov003/field_actor 65, ov003/tile_event 13, main/field_actor_states 11, main/touch_pick 11, main/field_actor_support 6, main/tile_effects 6, main/tile_requests 5, main/player_actor_ops 2, 6 more files (8) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
+| outdoor actions of the field actor | 126 (27 / 99) | ov003/field_actor 64, ov003/tile_event 13, main/field_actor_states 11, main/touch_pick 11, main/field_actor_support 6, main/tile_effects 6, main/tile_requests 5, main/player_actor_ops 2, 6 more files (8) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
 | effects by kind | 57 (1 / 56) | main/effect_kinds 53, main/effect_system 4 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers | unknown |
 
 ## Villagers (the seed's day) (395)
@@ -183,11 +183,11 @@ unknown groups say what to find first.
 | a second player and the title screen | 30 (16 / 14) | main/player_field_2416 9, main/player_record 6, main/player_options 5, ov068/sequence4 2, ov068/town_nook 2, main/boot_screen 1, main/player_records 1, ov051/taxi_driver_talk 1, 3 more files (3) | from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices | the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day | seed |
 | Mr. Resetti | 5 (4 / 1) | ov077/mole 5 | the mole's lectures after a quit without saving (scenes resetti, resetti-2, resetti-3, resetti-4: the first, third, fourth and fifth) | saves resetti and resetti-2..5 (record 0's flag 2 set, the lecture count at 0x2423 of the record); the count less one after the load's raise picks the lecture, and count 5 draws one of the earlier ones again | seed |
 
-## Other dates, times and visitors (for the boot on another day) (253)
+## Other dates, times and visitors (for the boot on another day) (249)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| insects and fish of other months and hours | 75 (19 / 56) | ov003/town_insect_moves 14, ov003/fish_shadow 10, ov003/town_insect_kinds 10, ov068/insect_paths 8, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov003/town_insect 5, ov004/aquarium_fish 5, 6 more files (12) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
+| insects and fish of other months and hours | 71 (19 / 52) | ov003/fish_shadow 10, ov003/town_insect_kinds 10, ov003/town_insect_moves 10, ov068/insect_paths 8, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov003/town_insect 5, ov004/aquarium_fish 5, 6 more files (12) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
 | seasons, weather, the sky and the new day | 52 (19 / 33) | ov068/snowball 13, ov003/snowman 8, main/snowmen 6, main/day_plan 4, main/sky_shots 4, main/creature_draw 3, main/insect_draw 3, main/sky 2, 7 more files (9) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
 | Tortimer's events and holidays | 37 (13 / 24) | main/sky_show 7, ov003/etc_board 7, main/event_queue 3, main/event_winner 3, main/event_kinds 2, ov081/turtle_fishing 2, ov082/turtle_insects 2, ov083/turtle_gardens 2, 9 more files (9) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
 | the flea market and Joan | 17 (3 / 14) | ov004/flea_market_buyer 8, ov004/flea_market_villager 7, ov073/boar 2 | the villagers' flea market in the town hall; Joan's turnips on Sunday mornings (pending scene sunday-joan) | the flea market's dates; any Sunday 6:00-12:00 | date |
@@ -1993,3 +1993,40 @@ What reading the Clean code found about the groups above; counts are of function
 - Left out: the channels the ARM9 sets up itself (the commands for a channel, its timer, capture
   and alarms, which the game's streams and capture would use), the master pan and the output
   effect (they change only the registers' pan and volume bytes), and the mixing.
+
+### Insects dug out of the ground, the snowballs' growth, the boot's spawns by the second (2026-10-29, scenes/town9)
+- The town insects' month lists (data_020dded8: per month six time slots of (kind, running
+  weight) pairs, InsectTables_TimeSlot) read from RAM: kind 0x0a in March to August at 8:00-16:59,
+  0x1e in January to May, November and December, 0x23 only in December to February, 0x30 in
+  March to November, 0x31 all year, 0x36 in June to August and 0x37 in July to September (both
+  at 19:00-3:59, weight 1 of 100 each), 0x18 and 0x38 in no list (they are started otherwise).
+- Kinds 0x1e and 0x31 wait hidden in a tile (action 0x13) and come out only when a player's
+  actor acts on that tile (FieldActor_PlayerFramesToActOnTile: states 0x49 and 0x5d, a dig with
+  the shovel): standing by or walking over them does nothing. New saves unweeded (every weed,
+  item codes 0x21-0x24, of the 16 inner acres pulled), unweeded-jan (the town's last day,
+  TownDayStamp at 0x17254 of the state block, set to 11 January 2027 so that few weeds grow back
+  by a boot on the 12th; booted months after the seed's day the town regrows most of them) and
+  unweeded-jan-shovel (the shovel held). New scene mole-cricket (5): booted 12 January 2027
+  11:30:06 a kind 0x31 hides at (33, 44); dug from the east it hops out (TownInsectMove_Hop) and
+  walks off (TownInsectMove_Walk, _Walk31, FieldActor_SameTile), and stops as the player follows
+  it (TownInsectMove_Wait31). A dig facing a tile that only borders the insect's makes a hole
+  (item 0xfc) instead.
+- The town's insects at the boot (8 slots at 0x022617bc) are drawn from the main random state,
+  so the clock's second changes them: unweeded-jan-shovel at the even seconds of 11:30 on 12
+  January has kind 0x1e at (76.5, 69.5), (79.5, 37.5), (71.5, 44.5) and (65.5, 21.5) only, all east
+  of the river; the held item changes the draw (unweeded-jan at :21 had two 0x1e, one at (50.5,
+  55.5), which the shovel save does not). Weeded on 20 July 2027 21:00:01-40 (40 boots) gave no
+  kind 0x36 or 0x37.
+- Not reached: a snowman. A loose ball is built into one only when both it and the other are at
+  least 0xa00 (SNOWBALL_SIZE_PUSHABLE; the boot's balls are 0x800) and a ball grows only on
+  ground of kind 3 (Snowman_Roll, about 1.8% a tile): each ball needs about 13 tiles rolled on
+  snow, and weeds stop a ball (snowball-burst's balls stop at the first weed). With the weeds
+  pulled the boot's ball pairs (sweeps of the seconds, w26/sweep.py) lie across the river from
+  each other or between trees; the push controller (w26/roll2.py: pure pursuit behind the ball)
+  moves a ball 11 tiles in 400 frames on open ground. A ball pushed into a hole sinks
+  (Snowball_UpdateLoose, items 0xfc and 0xfd); not recorded. Villager 3 put in mode 3 (byte 0x744
+  of its town record, clothes) with a shirt in pocket 0 for villager-buy's recording: the
+  villager no longer calls the player over (its mode moves it elsewhere), so the clothes motion
+  (SceneCommand_RequestMotion15) was not reached.
+- The plan before (328 lists): seed 962, date 246, unknown 743, unreachable 2,991; after (329):
+  seed 961, date 242, unknown 743, unreachable 2,991.
