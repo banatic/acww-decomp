@@ -1,0 +1,62 @@
+# phone-keys (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). As phone-settings.txt to 1400: the player's room of the continue menu
+# with the telephone. Save: the seed town. UP at 1400 moves the player pick's choice from the
+# player to the telephone (ov004/player_pick.c) and A at 1444 calls the settings centre by the
+# keys (RmoTelephone_EnterState10Current); A from 1568 to its menu, DOWN twice and A (1696-1744)
+# pick the downloads, whose talk A goes through; the menu again, A picks setting the clock, whose
+# screen opens (about 2700).
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1400 UP -
+1404 - -
+1444 A -
+1448 - -
+1568 A -
+1572 - -
+1632 A -
+1636 - -
+1696 DOWN -
+1700 - -
+1720 DOWN -
+1724 - -
+1744 A -
+1748 - -
+1808 A -
+1812 - -
+1872 A -
+1876 - -
+1936 A -
+1940 - -
+2000 A -
+2004 - -
+2064 A -
+2068 - -
+2128 A -
+2132 - -
+2192 A -
+2196 - -
+2256 A -
+2260 - -
+2320 A -
+2324 - -
+2384 A -
+2388 - -
+2448 A -
+2452 - -
+2512 A -
+2516 - -
+2576 A -
+2580 - -

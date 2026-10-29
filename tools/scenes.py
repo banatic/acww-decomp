@@ -538,6 +538,10 @@ SAVES["museum-crayfish"] = SAVES["museum"] + [(POCKETS + 8, "<H", 0x12F2)]
 # two fossils not assessed (0x1549) in pockets 0 and 1, the seed's museum (without them): Blathers
 # assesses one and asks for it (ov047/owl_donation.c, line 0x1d with the museum lacking it)
 SAVES["museum-fossils"] = [(POCKETS, "<H", 0x1549), (POCKETS + 2, "<H", 0x1549)]
+# as "wallet" with the player's design 0x1188 worn as the shirt (the player record's clothes at
+# 0x2408): no kind of the item lists (main/item_lists.h) accepts a design, so the giraffe's
+# ItemLists_GroupOf on the clothes tries every kind's test
+SAVES["design-worn"] = [(MONEY, "<I", 30000), (0x14 + 0x2408, "<H", 0x1188)]
 
 # Nook's store at its first level (as "store-2", level 1 and the building 0x500e): scene 0x1b
 SAVES["store-1"] = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STORE + 0x5A, "<H", 1 << 9),
@@ -930,6 +934,13 @@ SAVES["house-placed"] = SAVES["house-big"] + [
     room_item(4, 8, 0x577), room_item(11, 8, 0x577), room_switch_off(11, 8), room_item(4, 11, 0xD9),
     room_switch_off(4, 11), room_item(10, 12, 0xB5), room_item(4, 13, 0x361), room_item(4, 6, 0xCC),
     (0xF52C + 0x448, "<H", 0x1188), (0xF52C + 0x44A, "<H", 0x1189), (POCKETS, "<H", 0x3000 + 4 * 0x577)]
+# as "house-placed" with the shirt 0x11a8 on the second layer (items on top, 0x200 of the room's
+# record) of the cell of the piece of kind 0x16 at (4, 6): pulled, the piece carries it
+# (ov004/carried_items.h)
+# as "house-big" with only the switched piece of kind 7 (0xd9, switched off) at (4, 11) and the
+# piece of kind 0x16 at (4, 6) of "house-placed": no gyroid, so no cue waits on the sequencer
+SAVES["house-kind7"] = SAVES["house-big"] + [room_item(4, 11, 0xD9), room_switch_off(4, 11), room_item(4, 6, 0xCC)]
+SAVES["house-carry"] = SAVES["house-placed"] + [(0xF52C + 0x200 + 2 * (4 + 16 * 6), "<H", 0x11A8)]
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -1091,6 +1102,9 @@ scene("clock-keys", "seed", 3200, [1400, 2300, 2600, 2900, 3199], frames(2300, 3
       "picked, the same time set again")
 scene("savings-keys", "rich", 9300, [2600, 6700, 7400, 8200, 8800, 9299], frames(6700, 9300, 50),
       "at the post office window, the savings by the keys: deposit a few bells, open the withdrawal pad")
+scene("phone-keys", "seed", 2820, [1400, 1800, 2300, 2819], frames(1300, 2820, 25),
+      "in the continue menu's room, the telephone picked by the keys instead of the player: the settings "
+      "centre's downloads talk, then the clock screen")
 scene("insect-release", "full-net", 4400, [2600, 3420, 3900, 4100, 4399], frames(3800, 4400, 25),
       "catch the mantis with the pockets full, move over the swap page by the keys and cancel: it is let go")
 scene("new-player", "seed", 9400, [1300, 2300, 2800, 5200, 7000, 8500, 9399], frames(1000, 9400, 100),
@@ -1120,6 +1134,10 @@ scene("bug-off", "net", 8340, [4100, 4900, 7100, 7950, 8339], frames(4600, 8340,
 scene("gracie", "wallet", 14900, [4000, 4400, 7400, 9200, 13200, 14300, 14899], frames(4300, 14900, 100),
       "on the giraffe's day of the week, let her score the player's clothes, answer her questions "
       "and pay her to dress the player", rtc="2026-09-14 14:00:00")
+scene("gracie-design", "design-worn", 15200, [4000, 4400, 7400, 9200, 13200, 14300, 15199], frames(4300, 15200, 100),
+      "gracie with one of the player's designs worn as the shirt: her greeting asks every item kind "
+      "for the shirt's group, and she stands once the talk has ended", recording="gracie",
+      rtc="2026-09-14 14:00:00")
 scene("acorn-festival", "wallet", 8540, [4100, 4600, 6400, 7400, 8539], frames(4500, 8540, 100),
       "in the week of the acorn festival, hear its character tell of it and read the player's fortune",
       rtc="2026-10-06 10:00:00")
@@ -1249,6 +1267,12 @@ scene("catalog-keys", "seed", 4510, [2600, 3500, 3800, 4100, 4509], frames(3500,
 scene("designs-room", "rod", 6420, [2600, 3500, 4300, 5000, 5700, 6419], frames(3500, 6420, 25),
       "in the player's room, my designs as the carpet (turned) and the wallpaper, swapped, and put down "
       "as design displays")
+scene("designs-pieces", "rod", 4790, [2600, 3500, 4200, 4400, 4600, 4789], frames(4000, 4790, 25),
+      "in the player's room, my designs dropped on the head, clothes and held item buttons and put in the "
+      "room as pieces of furniture")
+scene("fireworks-third", "seed", 19060, [4400, 7059, 10000, 13000, 16000, 19059], frames(7060, 19060, 200),
+      "fireworks-late booted two seconds later: the show draws the large launches' program of the "
+      "delay 100", recording="fireworks-late", rtc="2027-08-07 20:00:02")
 scene("tune-erase", "seed", 11310, [2600, 4800, 5500, 6300, 8000, 10000, 11309], frames(4800, 11310, 100),
       "in Pelly's town tune editor: the erase refused by the keys and the pen, the tune played, erased, "
       "two notes set and kept; her menu left")
@@ -1290,9 +1314,14 @@ scene("post-letters", "mail-post", 13150, [2600, 5000, 6500, 8000, 9500, 11000, 
 scene("shop-points", "rich", 12750, [2600, 7300, 8500, 9600, 11000, 12100, 12749], frames(7300, 12750, 50),
       "in Nook's store, read the point machine's points and help, then have a carpet and a wallpaper shown "
       "in the room and buy them")
+scene("shop-points-pen", "rich", 7788, [2600, 7300, 7400, 7600, 7787], frames(7300, 7788, 25),
+      "in Nook's store, the point machine tapped with the pen instead of A: it reads the player's points")
 scene("museum-assess", "museum-more", 21818, [2600, 6000, 9000, 12000, 15000, 18000, 21817], frames(4600, 21818, 100),
       "with almost every item given, have Blathers assess fossils, offer items given already and the last "
       "painting, look through the full donation list and ask for an assessment with no fossil")
+scene("museum-fossil-menu", "museum-fossils", 12094, [2600, 4600, 6600, 8000, 9600, 11000, 12093], frames(4600, 12094, 100),
+      "with two fossils not assessed, ask Blathers for the fossil assessment: the first assessed and kept, "
+      "the second assessed and given, then asked again with none left")
 scene("cafe-coffee", "museum", 19198, [2600, 15700, 16300, 17000, 17800, 18600, 19197], frames(15700, 19198, 50),
       "in the museum's cafe, talk to Brewster, sit on a stool at his counter and drink the coffee he makes")
 scene("money-rock", "shovel", 4800, [2600, 3800, 4000, 4300, 4600, 4799], frames(3800, 4800, 25),
@@ -1439,6 +1468,9 @@ scene("friend-add", "seed", 6250, [2600, 3800, 4250, 4700, 5100, 5830, 6249], fr
 scene("letter-address", "paper", 6150, [2600, 3420, 3830, 4250, 5030, 5750, 6149], frames(2900, 6150, 50),
       "write a letter from a paper in the pockets: the addressee picked, changed by the pen and the keys, "
       "a key held, the footer touched, the letter decided")
+scene("letter-marks", "paper", 6052, [2600, 3420, 4250, 5680, 5800, 6051], frames(5600, 6052, 25),
+      "on the letter screen of letter-address, characters marked by A held with the d-pad in the footer and "
+      "in the header after the addressee's name")
 scene("letters-move", "mail-full", 4420, [2600, 3050, 3650, 4040, 4419], frames(2900, 4420, 25),
       "in the pockets, carried letters dragged and swapped by the pen and the keys, a letter's choice "
       "cancelled each way, the tabs by the keys")
@@ -1509,6 +1541,9 @@ scene("new-year-midnight", "seed", 11700, [4100, 5200, 6279, 9000, 10900, 11699]
       rtc="2026-12-31 23:57:00")
 scene("fireworks-late", "seed", 19060, [4400, 7059, 10000, 13000, 16000, 19059], frames(7060, 19060, 200),
       "the fireworks scene, then the show watched on to its later programs", rtc="2027-08-07 20:00:00")
+scene("fireworks-other", "seed", 19060, [4400, 7059, 10000, 13000, 16000, 19059], frames(7060, 19060, 200),
+      "fireworks-late booted a second later: the show draws other programs (the large ones' and the "
+      "pairs' delays)", recording="fireworks-late", rtc="2027-08-07 20:00:01")
 scene("trip-snow", "trip-snow", 5840, [2600, 3300, 4300, 4900, 5400, 5839], frames(3200, 5840, 40),
       "in the snow with the pharaoh mask on, run back and forth until the player trips, falls and gets up",
       rtc="2027-01-15 11:30:05")
@@ -1918,6 +1953,14 @@ scene("house-placed", "house-placed", 5847, [2600, 4200, 4800, 5300, 5600, 5846]
       "in the big house with pieces put in the main room by its record: pull one, put a gyroid down from "
       "the pockets, switch on a gyroid and a switched piece that load switched off, then out of the house",
       sequencer=True)
+scene("house-carry", "house-carry", 5847, [2600, 4200, 4800, 5300, 5600, 5846], frames(4200, 5847, 50),
+      "house-placed with a shirt lying on the piece that is pulled: the piece carries it as it moves and "
+      "puts it down where it stops", recording="house-placed", sequencer=True)
+scene("house-kind7", "house-kind7", 5847, [2600, 4200, 4800, 5300, 5600, 5846], frames(4200, 5847, 50),
+      "house-placed's walk with only the switched piece of kind 7 and the pulled one in the room: A "
+      "switches the piece of kind 7 on", recording="house-placed")
+scene("house-switch", "house-kind7", 5400, [2600, 4200, 4800, 5200, 5300, 5399], frames(4200, 5400, 25),
+      "in the big house, walk up against the switched piece of kind 7 loaded switched off and switch it on")
 scene("villager-sign-wave", "seed", 4846, [2600, 3800, 4300, 4500, 4845], frames(3700, 4846, 25),
       "read the sign in front of a villager's house, then tap a villager three tiles off on the lower "
       "screen: it makes a gesture at the player from where it stands")
