@@ -1639,6 +1639,15 @@ scene("friend-tabs", "seed", 4524, [2600, 4100, 4300, 4400, 4523], frames(4100, 
 scene("board-latest", "seed", 3794, [2600, 3420, 3540, 3640, 3793], frames(3400, 3794, 25),
       "the bulletin board by the keys: the cursor moved to Latest and pressed while the latest message is "
       "shown; B quits")
+scene("catalog-caught", "catalog-full", 4898, [2600, 3500, 3800, 4200, 4600, 4897], frames(3500, 4898, 25),
+      "catalog-keys with every fish caught: entries picked, the description's pages turned back and on, the "
+      "list scrolled by A held")
+scene("letter-scroll", "rich", 8396, [2600, 5500, 8090, 8200, 8300, 8395], frames(8000, 8396, 25),
+      "on the bottle paper's keyboard by the keys: delete with nothing before the cursor, the letter "
+      "scrolled with the knob held")
+scene("star-view-keys", "museum", 10524, [2600, 6300, 9900, 10100, 10300, 10523], frames(9900, 10524, 25),
+      "observatory's star view by the keys: an arrow held, the free pointer on the constellation and "
+      "pushed past the edges", rtc="2026-09-11 20:30:00")
 
 # ------------------------------------------------------------------------------ saves
 
