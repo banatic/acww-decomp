@@ -658,13 +658,14 @@ match: ov002/menu_scene:MenuScene_Phase1 ov002/menu_scene:MenuScene_Phase2 ov002
 area: Unreachable for one player
 group: the base classes' own destructors every class replaces
 scene: none: the destructors in slots 0x40 and 0x44 of the vtables of the process (autoload_2/process.c, 0x0213e7b4), the game's process (main/game_process.c, 0x020da13c), the actor (main/actor.c, 0x020d7244), the scene object (main/scene_object_base.c, 0x020dab34), the special characters' and villagers' scene objects (0x020d8c64, 0x020da088, 0x020d9e88)
-reach: (findings 2026-10-29, town8) the only relocations naming these functions are their words in the base's own vtable, which no other vtable repeats; each base's vtable is an object's only inside its constructor (every constructor that stores one stores its class's own after it: Process_Construct's 52 callers, the 51 constructors storing 0x020da13c, Actor_Construct's 2 and SceneObjectBase_Construct's 49 callers; the 40 and 39 constructors storing 0x020d8c64 and 0x020da088, VillagerSceneObject_Construct's 9 callers for 0x020d9e88, findings 2026-10-29, town8, fourth batch) and in the destructors, which call the base's destructor directly before the free; a process is deleted through slot 0x44 of a whole object (autoload_2/process.c), so these slots are dispatched through the final class's vtable only
+reach: (findings 2026-10-29, town8) the only relocations naming these functions are their words in the base's own vtable, which no other vtable repeats; each base's vtable is an object's only inside its constructor (every constructor that stores one stores its class's own after it: Process_Construct's 52 callers, the 51 constructors storing 0x020da13c, Actor_Construct's 2 and SceneObjectBase_Construct's 49 callers; the 40 and 39 constructors storing 0x020d8c64 and 0x020da088, VillagerSceneObject_Construct's 9 callers for 0x020d9e88, findings 2026-10-29, town8, fourth batch) and in the destructors, which call the base's destructor directly before the free; a process is deleted through slot 0x44 of a whole object (autoload_2/process.c), so these slots are dispatched through the final class's vtable only; besides (findings 2026-10-29, unknown2), SoundObjectBase_Play, named only by the sound objects' base vtable data_0213f190, which only SoundObject_New names, storing it and then the kind's own vtable into the same word (every kind's vtable names its own Play)
 needs: unreachable
 match: autoload_2/process:Process_DestructFree main/game_process:GameProcess_Destruct
   main/game_process:GameProcess_DestructDelete main/actor:Actor_Destruct main/actor:Actor_DestructDelete
   main/scene_object_base:SceneObjectBase_DestructFree
   main/special_scene_object:SpecialSceneObject_DestructDelete main/obj_020d8c64:Obj020d8c64_Destruct
   main/obj_020d8c64:Obj020d8c64_DestructDelete main/villager_scene_slots:VillagerSceneObject_DestructDelete
+  autoload_2/sound_object_kinds:SoundObjectBase_Play
 
 area: Unreachable for one player
 group: the other classes' destructors of vtable slot 16
@@ -762,6 +763,36 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov078/camel:Camel_Destruct ov079/walrus:Walrus_Destruct
   ov081/turtle_fishing:TurtleFishing_Destruct ov082/turtle_insects:TurtleInsects_Destruct
   ov088/reaction_npc:ReactionNpc_Destroy ov147/title_scene:TitleScene_Destruct
+
+area: Unreachable for one player
+group: the resident processes' deletion
+scene: none: the deletion (vtable slots 3 and 17) of the seven processes the boot spawns under the resident root, the music process's (its queue, volume, clock, scene and event music deleted and destroyed), the text draw process's (the boxes, the font), the quick message's, the transition mark's, Process020daae4's and the player spawn and report processes', and what only those call (findings 2026-10-29, unknown2)
+reach: ResidentProcess_SpawnAll (from Startup_InitGame, once) spawns the root (class 0) and under it classes 0xd7, 0xce, 0xcf, 0xcb, 8, 0xa and 0xcc; no other spawn names those seven: Process_Spawn is reached only through Process_SpawnRoot and _SpawnChild, from GameProcess_SpawnRoot (ResidentProcess_SpawnAll) and GameProcess_SpawnChild, whose callers give the asked scene (SceneProcessBase_Request's 2, 5, 6, 0xd4 and SceneProcessBase_ResetRequest's 1), the overlay groups' classes (data_020df590: 143-187), constants (9, 0xb, 0xc, 0xf, 0x10, 0x17-0x19, 0x24, 0x26, 0x66, 0x7a, 0x80-0x87, 0xbd, 0xc0), the spawner's table (data_020e1d8c: 84-127), the town objects' records (data_020d1f24: 26-41), the room objects' profiles (data_ov004_02247f54: 47-80) and the scenes' setups (data_020e55bc's 51 infos in every overlay that holds a data object at the address, with overlays 3's and 4's shared lists of 14 and 17 entries: 7-22, 42-45, 81-142, 188-214 and, from overlay 3's bss in scenes 0x2a and 0x2b, class 0; w28/scenesetup.py); none deletes them: every Process_RequestDelete caller deletes itself, an object it made, a player's field actor (SessionPlayers' actor table, stored only by FieldActor_Init), the scene (SceneProcessBase_CheckChange's data_021f42f4, stored only by the scene classes' CanCreate and AfterDelete), a child of a deleted process (Process_Connect: their parent, the boot's root, is deleted by none of these), or itself on OUTCOME_PENDING (GameProcess_AfterCreate: their Create functions return 1) or a failed heap (Process_CreateHeap and _CreateFittedHeap, which no code calls); so the words at +0xc and +0x44 of their vtables are cut (w28/classify.py, gate resident: 0 ran functions cut off)
+needs: unreachable
+match: main/music_264:EventMusic_Delete main/music_264:EventMusic_Reset
+  main/music_264:HourMusic_Delete main/music_264:HourMusic_Reset main/music_264:Music264_Delete
+  main/music_264:Music27c_Delete main/music_264:Music27c_Reset main/music_264:MusicClock_Delete
+  main/music_264:MusicClock_Destruct main/music_commands:MusicCommands_Destruct
+  main/music_queue:Music2d0_Delete main/music_queue:Music2d0_Reset
+  main/music_queue:Music2e4_Delete main/music_queue:Music2e4_Release
+  main/music_queue:Obj021c526c_Delete main/music_queue:Obj021c526c_Destruct
+  main/music_queue:Process020da334_Delete main/music_queue:Process020da334_DestructDelete
+  main/music_volume:MusicVolume_Delete main/music_volume:MusicVolume_Destruct
+  main/music_volume:MusicVolume_DestructSlot main/player_processes:PlayerReportProcess_Delete
+  main/player_processes:PlayerReportProcess_DestructFree
+  main/player_processes:PlayerSpawnProcess_Delete
+  main/player_processes:PlayerSpawnProcess_DestructFree
+  main/process_020daae4:Process020daae4_Delete main/process_020daae4:Process020daae4_DestructFree
+  main/quick_message:QuickMessage_BalloonReset main/quick_message:QuickMessage_BoardDelete
+  main/quick_message:QuickMessage_Delete main/quick_message:QuickMessage_DestructFree
+  main/quick_message:QuickMessage_ReceiverDelete main/quick_message:QuickMessage_ResetBoard
+  main/quick_message:QuickMessage_SenderDelete main/scene_music:SceneMusic_Delete
+  main/scene_music:SceneMusic_Reset main/text_draw:TextDraw_FreeBoxes
+  main/text_draw:TextDraw_ProcessDelete main/text_draw:TextDraw_ProcessDestructFree
+  main/text_draw:TextDraw_Shutdown main/text_font:TextFont_Close
+  main/transition_mark:TransitionMarkProcess_Delete
+  main/transition_mark:TransitionMarkProcess_DestructFree
+  main/transition_mark:TransitionMark_Rewind main/transition_mark:TransitionMark_RewindInstance
 
 area: Unreachable for one player
 group: the town map's list by the keys and the pen
@@ -1194,10 +1225,12 @@ match: main/camera_modes:CameraControl_Mode19Frame main/camera_modes:CameraContr
 area: Unreachable for one player
 group: vtable slots no code calls: heaps and triangles
 scene: none: slot 1 of the heaps' vtables (destruct and free: Heap_, ExpHeap_ and FrameHeap_DestructFree) and slot 3 of the collision triangle's (CollisionTriangle_PushOut)
-reach: as for the heaps' other slots and the scene sounds: a heap is destroyed by Heap_Destroy through slots 5 and 0 and its block freed to the parent, and no code reads HeapVtable.destruct_free; a triangle's vtable is called only by CollisionTriangle_PushOut's three tests (vtable_of, slots 0-2), and the areas' vtable (CollisionAreaVtable) calls only its slot 4; no BL or word in code names these functions, only the vtables; besides (findings 2026-10-29, proofs1), CollisionTriangle_PushOut is named by slot 3 of five triangle vtables, each counted as the group's slot (w22/classify.py, gate value)
+reach: as for the heaps' other slots and the scene sounds: a heap is destroyed by Heap_Destroy through slots 5 and 0 and its block freed to the parent, and no code reads HeapVtable.destruct_free; a triangle's vtable is called only by CollisionTriangle_PushOut's three tests (vtable_of, slots 0-2), and the areas' vtable (CollisionAreaVtable) calls only its slot 4; no BL or word in code names these functions, only the vtables; besides (findings 2026-10-29, proofs1), CollisionTriangle_PushOut is named by slot 3 of five triangle vtables, each counted as the group's slot (w22/classify.py, gate value); besides (findings 2026-10-29, unknown2), the processes' heap slots: Process_CreateHeap and _CreateFittedHeap are named only by the words at +0x38 and +0x34 of the process vtables (215 and 217, and the same three consecutive words of nine overlay vtables whose data symbols start inside them; w28/rel.py) and Process_FillHeapDefault, which only they call through +0x3c, by the words at +0x3c; the images' indirect calls through offset 0x34 are the talk tags' branches (the talk receiver), Heap_GetFreeSize (the heap's vtable) and the 3D, capture and alarm callbacks of C structures, through 0x38 the scene commands' and the scene base's talk style (a talk scene), TalkTags_SpeakerTalkStyle (the receiver), FortuneTeller_Update (her talk scene), Heap_GetLargestBlock, the thread context and C structures (w28/vsite.py over w15/vcalls.py), and through 0x3c only those two, the receiver, the heap and C structures
 needs: unreachable
 match: autoload_2/heap:ExpHeap_DestructFree autoload_2/heap:FrameHeap_DestructFree
   autoload_2/heap:Heap_DestructFree main/collision_triangle:CollisionTriangle_PushOut
+  autoload_2/process:Process_CreateHeap autoload_2/process:Process_CreateFittedHeap
+  autoload_2/process:Process_FillHeapDefault
 
 area: Unreachable for one player
 group: the scene sound classes' slot 0 and base slots
@@ -1972,12 +2005,28 @@ match: ov049/* ov053/* ov004/tailor_* ov004/barber_machine ov004/b_pole ov004/br
 area: The house and its furniture (the seed's day)
 group: furniture of each room-object class
 scene: put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables
-reach: the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches
+reach: the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches; besides (findings 2026-10-29, unknown2), the TV's sound objects (autoload_2/sound_object_kinds): SoundObject_New, whose only caller is TvBroadcast_Show, makes the kind of the channel shown, and the schedule (data_ov004_02247cf4, by weekday from Sunday) gives the seed's Friday channels 8 at 0:00 and 12:00, 6 at 1:00, 8:30 and 15:00, 1 at 3:00 and 5:00, 0 at 4:00, 2 at 6:00, 3 at 8:00, 7 at 10:00, 10 at 19:00, 5 at 23:00 and the forecast at 6:45, 7:45, 11:45, 18:45 and 22:45 (its other sound after seven rounds); kind 4 only on Wednesday 1:00 and 20:00 and Saturday 0:00, kind 9 only on Sunday 21:00, Tuesday 1:00 and Saturday 1:00 and 21:00 (another weekday); the TV heard (data_ov004_022595b8) in a room with a TV on
 needs: seed
 match: ov004/room_object* ov004/tv* ov004/clock ov004/compass ov004/chest ov004/music_player ov004/trash_box
   ov004/room_objects ov004/room_manager ov004/room_shell* ov004/room_surface ov004/room_preview ov004/icon_models
   ov004/carried_items ov004/room_villager ov004/rmo_object* ov004/player_pick ov004/room_player_items
   ov004/room_sound main/room_cells main/room_interior main/room_sync main/room_object_state main/furniture_info
+  autoload_2/sound_object_kinds:SoundObject0_Play
+  autoload_2/sound_object_kinds:SoundObject10_Play
+  autoload_2/sound_object_kinds:SoundObject10_Start
+  autoload_2/sound_object_kinds:SoundObject10_Update
+  autoload_2/sound_object_kinds:SoundObject1_Play
+  autoload_2/sound_object_kinds:SoundObject255_PlayOther
+  autoload_2/sound_object_kinds:SoundObject4_Play
+  autoload_2/sound_object_kinds:SoundObject4_ReadChange
+  autoload_2/sound_object_kinds:SoundObject4_Update
+  autoload_2/sound_object_kinds:SoundObject5_Play
+  autoload_2/sound_object_kinds:SoundObject5_Update
+  autoload_2/sound_object_kinds:SoundObject6_Play
+  autoload_2/sound_object_kinds:SoundObject6_Update
+  autoload_2/sound_object_kinds:SoundObject9_Play
+  autoload_2/sound_object_kinds:SoundObject9_Update
+  autoload_2/sound_object_kinds:SoundObjectBase_Update
 
 area: The house and its furniture (the seed's day)
 group: the house: rooms, camera, telephone, roaches
