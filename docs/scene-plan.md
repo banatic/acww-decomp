@@ -38,15 +38,15 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 365 scene lists: 25,251 Clean game functions, run 20,551, function check only 1,172, read only 3,528; the groups below hold 4,700 (function check only + read only).
+From 367 scene lists: 25,251 Clean game functions, run 20,580, function check only 1,167, read only 3,504; the groups below hold 4,671 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 756 |
+| seed | 734 |
 | date | 217 |
-| unknown | 485 |
+| unknown | 478 |
 | unreachable | 3,242 |
-| total | 4,700 |
+| total | 4,671 |
 
 
 (The lists are those of the 365 scenes of tools/scenes.py. The two recordings, title-start and
@@ -173,12 +173,12 @@ unknown groups say what to find first.
 | chat, board, keyboard entry and name screens | 7 (0 / 7) | ov112/bbs_write_input 2, ov112/bbs_write_scene 2, ov126/keyboard_entry_input 1, ov126/keyboard_entry_scene 1, ov126/keyboard_entry_states 1 | type and send a chat message, write and read the bulletin board by keys, the keyboard entry's other modes (names, friend codes, catchphrases), the han panel's messages | the menus tab; the town hall board; a villager asking for a nickname or catchphrase opens the keyboard; besides (findings 2026-10-29, unknown3), the chat's own quick message balloon, which chat-send places (ChatScene_PostMessage, QuickMessage_Post) and holds: it holds 600 frames before it leaves (QuickMessage_BalloonStartLeaving, _Leaving, _FreeNameBox, _FreeTextBox, _Stop), and a second line sent while it is shown releases it (QuickMessage_PlaceBalloon's QuickMessage_BalloonRelease): send a line, wait over 600 frames, send two lines in a row | seed |
 | the friend roster with a friend registered | 1 (0 / 1) | main/wifi_friends 1 | the friend roster (ov119) with a friend in the list: a friend deleted before the last (the list closed up), and a friend code typed that is already registered | WifiFriendList_Compact (friend-add) copies the entries after a deleted one; FriendCodeEntry_IsOtherFriendsCode (friend-code) compares the typed code with each registered friend's: both need a save with friends registered | seed |
 
-## Player actions (the seed's day) (159)
+## Player actions (the seed's day) (130)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| outdoor actions of the field actor | 104 (20 / 84) | ov003/field_actor 52, ov003/tile_event 12, main/field_actor_states 11, main/field_actor_support 6, main/tile_requests 5, main/touch_pick 5, main/tile_effects 3, main/player_actor_ops 2, 6 more files (8) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86 | seed |
-| effects by kind | 55 (1 / 54) | main/effect_kinds 52, main/effect_system 3 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers | unknown |
+| outdoor actions of the field actor | 82 (15 / 67) | ov003/field_actor 35, main/field_actor_states 11, ov003/tile_event 9, main/field_actor_support 6, main/tile_requests 5, main/touch_pick 5, main/player_actor_ops 2, main/tile_changes 2, 6 more files (7) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86; besides (findings 2026-10-29, actions), B asks for the tile ahead (FieldActor_TryTarget, a point 0.4-0.5 ahead: stand within 0.3 of the tile's edge, facing it): a dug hole (0xfc, 0xfd) held with any tool but the shovel gives states 0x66 and 0x67 (hole-step), codes 0x1f and the flowers 0x6e-0xa5 states 0x16 and 0x17 (field-pluck), the clover 0x20 state 0x18; states 0x5a and 0x47 (verdict 0) need a target held as the shovel or axe acts, which only an unanswered request leaves (linked), 0x5c (verdict 7) a refused dig: another actor near the tile (TileRequestGrant_NoOneNear) or four requests open; state 0x52 a float without a fish in state 0x50 | seed |
+| effects by kind | 48 (1 / 47) | main/effect_kinds 45, main/effect_system 3 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers; besides (findings 2026-10-29, actions), the starters by kind: 0x2e (code 0x1f) and set 0x54 (codes 0x1f-0x24, flowers) by state 0x17 (field-pluck), 0x2f by state 0x17 for code 0x20 only on another console's action (locally the clover is taken by state 0x18), 0x23 by state 0x67 (hole-step), 0x2a, 0x2b and 0x2c (the marks of the shovel's, net's and axe's slides) only on sand (ground 0x13) or snow, 0x32 by state 0x71 (the trip), 0x25 by state 0x57, 0x0b by state 0x56's swing meeting nothing, 0x40 by scene motions (main/scene_motion.c), 0x3a by an insect (ov003/town_insect.c), 0x14 by insect moves (ov003/town_insect_moves.c); kinds 0x17 and 0x19 are kind 0x0b's larger sets | unknown |
 
 ## Villagers (the seed's day) (318)
 
@@ -2667,3 +2667,34 @@ What reading the Clean code found about the groups above; counts are of function
   shown by the activity's receiver), so they need per-message reach; not done.
 - The plan before (365 lists, main 6e329dff, with the first commit): seed 756, date 216, unknown
   499, unreachable 3,229; after: seed 756, date 217, unknown 485, unreachable 3,242.
+
+### The tile ahead taken by B: a weed, a flower, a dug hole (2026-10-29, actions)
+- B (FieldActor_ReadControl's "aimed") sends FieldActor_TryTargetInScene the held tool:
+  FieldActor_TryTargetMode2 first (a code 0xfc or 0xfd, a dug hole, at the point ahead, asked by
+  TileRequests_AskFcFd unless the tool's value in data_020c7640 is 2: the shovel's), then
+  TileRequests_AskInTown at the point 0.8 ahead in the buttons' aim mode, else the aim point 0.4 to
+  0.5 ahead within the tool's reach. The earlier finding that codes 0x1f and the flowers never
+  reached FieldActor_TryTarget came from where the player stood: it must stand within about 0.3 of
+  the tile's edge, facing it, and stopped (state 2); a press while walking (state 3) does nothing.
+- field-pluck: B on a weed of code 0x1f (ask kind 5, states 0x16 and 0x17: effect 0x2e and set
+  0x54) and on a flower of family B (TileEffects_StartTurned). Save pluck: the two codes put south
+  of the house's door (town_item in tools/scenes.py).
+- hole-step: the hole tools.txt digs at 3000, the axe taken from the pockets (the save hole-axe
+  holds it in pocket 0), B facing the hole: kind 0x14, states 0x66 and 0x67 (the player steps into
+  the hole), effect 0x23 and tile event 10. A hole put into the save does not stay: the boot
+  clears codes 0xfc and 0xfd.
+- B on the four-leaf clover (code 0x20, ask kind 0x15) takes it by state 0x18 and holds it up
+  (state 0x1a, "found a four-leaf clover"): nothing new. Effect 0x2f, which state 0x17 starts for
+  code 0x20, follows only another console's action of type 5 (FieldActor_TakeRemoteAction).
+- Not reached: states 0x5a (verdict 0 of FieldActor_ActAt: the shovel's slide with a target held)
+  and 0x47 (the axe's, FieldActor_ActAhead): FieldActor_FindMapTarget gives 1 only with a target
+  held or a request not yet answered, and not linked TileRequestGrant_Submit answers at once;
+  pressing A as state 0x17 resumes (frame 14) gave state 0x59 and then 0x5e, the target already
+  released. State 0x5c (verdict 7) needs a refused dig: TileRequestGrant_TileFree finds another
+  actor near the tile (TileRequestGrant_NoOneNear) or the four request slots in use. The marks of
+  the slides (effects 0x2a, 0x2b, 0x2c, set up by SetUpMark2a/2b/2c) start only on ground 0x13
+  (sand) or snow: the slides on the beach west of the river's mouth stopped on the dirt.
+- The per-function map of the three groups (the outdoor actions, the effects and the furniture
+  classes): the scratchpad's w36/action-map.md.
+- The plan before (365 lists): seed 756, date 217, unknown 485, unreachable 3,242; after (367):
+  seed 734, date 217, unknown 478, unreachable 3,242.

@@ -884,6 +884,19 @@ SAVES["errand-done-4-0"] = villager_errand(0, 4, 0, low=2, player=True)
 SCENES: dict[str, dict] = {}
 
 
+def town_item(x: int, z: int, code: int) -> tuple[int, str, int]:
+    """A SAVES entry putting map code `code` on the town's tile (x, z) (an inner acre's)."""
+    return (TOWN_ITEMS + 2 * (0x100 * ((x // 16 - 1) + 4 * (z // 16 - 1)) + x % 16 + 16 * (z % 16)), "<H", code)
+
+
+# a code 0x1f weed two tiles south of the house's door and a flower of family B (0x70) two
+# further on, the shovel held: B facing each takes it by state 0x16 and 0x17 of the field actor
+SAVES["pluck"] = [town_item(41, 56, 0x1F), town_item(41, 58, 0x70), (HELD, "<H", 0x1369)]
+# the shovel held and the axe in pocket 0: a hole dug, the axe taken from the pockets, then B
+# facing the hole (FieldActor_TryTargetMode2: the shovel's tool value 2 asks for no hole)
+SAVES["hole-axe"] = [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x136B)]
+
+
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
           recording: str | None = None, rtc: str = RTC, sequencer: bool = False) -> None:
     """`sequencer`: the ARM7's sound sequences run (tools/run.py --sequencer), for a scene that
@@ -1830,6 +1843,12 @@ scene("villager-kind-done", "errand-done-2-1", 6548, [2600, 4138, 5000, 6000, 65
       "the owner's errand of an item of a kind done at step 1: at step 2 it picks a kind its house misses")
 scene("villager-variant-done", "errand-done-4-0", 6548, [2600, 4138, 5000, 6000, 6547], frames(4200, 6548, 50),
       "the owner's errand of an item with variants done: its count against the step's figure, then asked again")
+scene("field-pluck", "pluck", 3048, [2600, 2800, 2950, 3047], frames(2700, 3048, 25),
+      "B facing the weed of code 0x1f and then the flower south of the house's door: effects 0x2e and 0x54, "
+      "the flower's tile effect")
+scene("hole-step", "hole-axe", 4056, [2600, 3060, 3600, 3900, 4055], frames(3000, 4056, 25),
+      "dig a hole south of the house, take the axe from the pockets, B facing the hole: field actor states "
+      "0x66 and 0x67, effect 0x23, tile event 10")
 
 # ------------------------------------------------------------------------------ saves
 
