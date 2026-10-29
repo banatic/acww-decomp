@@ -2329,6 +2329,35 @@ reach: a weekday the schedule gives her (group Gracie)
 needs: date
 match: main/talk_tags:TalkTags_DispatchGroup10 main/talk_tags:TalkTags_Nothing10_0
 
+area: Unreachable for one player
+group: the talk receivers' scene moves no plain receiver's message asks for
+scene: none: the empty slots 0x3c-0x60 of the talk receiver (TalkReceiver_Nothing3c-60), which the talk calls for the tags 9/0-9/9 (the focus, looks and turns of a talk of three, and the passing of the turn)
+reach: each is named only at its own offset of 64 receiver vtables (the field actor's, the plain receiver's, the start menu's, the activity's, the title's, the outdoor and room objects', the scene actors' and the sequence 4 actor's receivers; w32/recvt.py); the talk calls slot 0x3c+4k only for tag 9/k (TalkTags_FocusPlayer to _PassTurn), and the other call sites through those offsets are on heaps, files, library structures, scene objects' own vtables or a SceneBase itself (w28/vsite.py). Tags of group 9 are held only by the villagers' three-party texts (*/3p/*), sp_npc_osister, sp_npc_ysister and sp_npc_missing1 (w32/tagfiles.py, every chunk, outside mail and the test message), whose names only VillagerTalkGreeting_LineThree (VillagerTalk, vtable 0x020d9df8), TailorSisterTalk_Line (0x022543cc), the MabelTalk functions (0x022634b4) and the MissingNpc1Talk ones (0x020e7bd0) give their own receivers, whose slots 0x3c-0x60 are SceneBase's (w32/names.py, w32/slotsof.py; findings 2026-10-29, twins, second commit; w32/classify.py, gate talk9)
+needs: unreachable
+match:
+  main/talk_receiver:TalkReceiver_Nothing3c main/talk_receiver:TalkReceiver_Nothing40
+  main/talk_receiver:TalkReceiver_Nothing44 main/talk_receiver:TalkReceiver_Nothing48
+  main/talk_receiver:TalkReceiver_Nothing4c main/talk_receiver:TalkReceiver_Nothing50
+  main/talk_receiver:TalkReceiver_Nothing54 main/talk_receiver:TalkReceiver_Nothing58
+  main/talk_receiver:TalkReceiver_Nothing5c main/talk_receiver:TalkReceiver_Nothing60
+
+area: Unreachable for one player
+group: the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps
+scene: none: SceneObjectBase_Ask58, SceneObjectBase_Slot5c and SceneObject_VfuncA4, the base entries of those slots
+reach: slot 0xa4 (SceneObject_VfuncA4, kept by the special characters' scene objects): its call sites are the villager talks' focus speaker (a villager, VillagerSceneObject_AskMood), the scene actors' own slot (SceneActor_Init: SceneActor_ArchivePath), the Nook clerk talk's own slot and the network libraries; slot 0x5c (SceneObjectBase_Slot5c, kept by the field and room objects, 68 vtables): its call sites ask a holder for its hold point (the player's field actor or a villager: Obj020dd33c_HoldPoint, FishingFloat_SetState, PlayerFish_HoldPoint, ThrownBottle_Throw, FieldActor_AnimateState89), the talk's receiver (tag 9/8) or ov065's; slot 0x58 (SceneObjectBase_Ask58, kept by 106 vtables): called on a scene object only by EventKind_ClaimPerson with a session linked and by ObjectClaim_HandleObjectMessage, a session message (code 23) the link guard and the receive gate cut off (w28/vsite.py, w32/keepers.py; findings 2026-10-29, twins, second commit; w32/classify.py)
+needs: unreachable
+match:
+  main/scene_object:SceneObject_VfuncA4 main/scene_object_base:SceneObjectBase_Slot5c
+  main/scene_object_base:SceneObjectBase_Ask58
+
+area: Other dates, times and visitors (for the boot on another day)
+group: the outdoor fox's talking motions
+scene: Redd outdoors on his day, talked to again (his lines 0x31, 0x32 or 0x34)
+reach: TalkReceiver_Nothing38, the talk receiver's slot 0x38, which the talk calls for every tag of group 7 (TalkTags_SpeakerTalkStyle): the outdoor fox of overlay 3 (ov003/fox.c) keeps it in its receiver's vtable 0x022386f4, and its lines 0x31 (second visit), 0x32 (again) and 0x34 (before six) of sp_npc_fox hold tags 7/17, 7/4, 7/0 and 7/20; line 0, which the scenes play, holds none (w32/msgtags.py; findings 2026-10-29, twins, second commit)
+needs: date
+match:
+  main/talk_receiver:TalkReceiver_Nothing38
+
 area: Villagers (the seed's day)
 group: the talk engine: tags, pages, windows, sliders
 scene: none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers)
