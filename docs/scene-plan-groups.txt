@@ -1978,6 +1978,23 @@ match:
   main/lid_sleep:LidSleep_KeepSoundOff main/link_state:LinkState_GlobalReset
   main/session_link:Session_Close main/session_link:Session_ResetLinkStatus
 
+area: Unreachable for one player
+group: the resident root's deletion: scenes 0x2a and 0x2b, which nothing enters
+scene: none: scenes 0x2a and 0x2b (overlays 7 and 8, outdoors) and the deletion of the resident root (ResidentProcess_Delete and _DestructFree: the town's acre maps, kinds and building shapes freed, the item, furniture, design and record files closed, the network heap destroyed)
+reach: no exit leads to scene 0x2a or 0x2b: the current scene (data_020e54ac, stored only by SceneProcess_Enter) is the entry record's (data_021f69d0), set by SceneExit_SetTo, _SetToScene, _SetToSceneOnly and _Take, whose callers give 0, 6, 0xc, 0xd, 13, 14, 0x2c-0x31, the exit tables of the overlays' static initialisers (the town's 0x01, 0x09-0x0b and 0x0f-0x20, the rooms' 0x01-0x05, 0x07, 0x1d-0x29, 0x2f and the two places), a place (the saved and marked places hold the current scene, 0 or the gatekeeper's 0xc) or a session's scene 7 as 8; overlays 7 and 8 are loaded only for those two scenes (data_020e5688; the scene infos' extra overlays are others: w29/ovload.py), so their static initialisers never run, and the class-0 object their setups would make from overlay 3's bss (findings 2026-10-29, unknown2) is never made: the resident root is made only by ResidentProcess_SpawnAll and deleted by nothing (findings 2026-10-29, unknown3; w29/classify.py, gate scene2a)
+needs: unreachable
+match:
+  autoload_2/network:Net_Empty020ecf1c main/acre_kind:AcreKind_Free
+  main/acre_map:AcreMap_ReleaseTownSlot main/acre_map:AcreMap_FreeTownAcres
+  main/acre_map:AcreMap_FreeTown main/building_shapes:BuildingShapes_Free
+  main/design_assets:DesignArchive_Close main/furniture_info:FurnitureFiles_Close
+  main/furniture_info:FurnitureInfo_Close main/item_info:ItemInfo_Close
+  main/item_info:ItemInfoFiles_Close main/link_scene:LinkScene_Empty6C90
+  main/record_files:RecordFiles_Close main/resident_process:ResidentProcess_DestructFree
+  main/resident_process:ResidentProcess_Delete main/scene_heaps:SceneHeaps_DestroyAcreTown
+  main/scene_heaps:SceneHeaps_DestroyNetwork main/session_link:Session_FreeHeap
+  ov007/ov007_static_init:Ov007Init_SceneTables ov008/ov008_static_init:Ov008Init_SceneTables
+
 area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
 scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
