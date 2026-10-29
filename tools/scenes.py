@@ -240,6 +240,11 @@ SAVES = {
                  [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x11A8, 0x11B0, 0x13A8))],
     # the golden rod, and the furniture of "furni" in every pocket
     "full-rod": [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)],
+    # "full-rod" and "full-net" with a fish (0x12e8) and an insect (0x12b0) in pockets 0 and 1
+    "full-rod-catches": [(HELD, "<H", 0x1375), (POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0)]
+    + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(2, 15)],
+    "full-net-catches": [(HELD, "<H", 0x1376), (POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0)]
+    + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(2, 15)],
     "bare": [(HELD, "<H", 0xFFF1)],  # nothing held (0xfff1, the code of an empty slot)
     # pockets 0-3: a fish (0x12e8, the first), an insect (0x12b0), a fossil (0x450c) and a
     # painting (0x3894), the first item of each of the museum's four collections
@@ -1600,6 +1605,40 @@ scene("villager-karaoke", "seed", 15000, [2600, 6000, 9000, 12900, 14000, 14999]
       rtc="2026-11-14 11:30:00")
 scene("title-wfc-settings", "seed", 2140, [1100, 1500, 1800, 2100, 2139], frames(1700, 2140, 20),
       "the continue menu's Nintendo Wi-Fi Connection settings: the title leaves for the settings program")
+scene("chest-swap", "house-furni", 4954, [2600, 4200, 4400, 4600, 4800, 4953], frames(4200, 4954, 25),
+      "the chest of drawers' storage: two pockets' items swapped by the keys, the shown page's tab pressed "
+      "holding one, items let go off any place by the pen")
+scene("mailbox-cancel", "mail-full", 4424, [2600, 3300, 3600, 3800, 4200, 4423], frames(3250, 4424, 25),
+      "the mailbox with the carried letters full: a letter's choice cancelled by the pen, the place below the "
+      "letters pressed, then \"leave them\" by B")
+scene("post-storage-keys", "mail-post", 6560, [2600, 4700, 5000, 5300, 5800, 6559], frames(4700, 6560, 50),
+      "the post office's letter storage by the keys: a letter the player wrote thrown away, one sent to the "
+      "page and back by Y, the shown page's tab pressed; closed")
+scene("post-swap", "mail-items", 7058, [2600, 5000, 5300, 5700, 6200, 6700, 7057], frames(5000, 7058, 50),
+      "on the posting page: two carried letters swapped by the keys, one dragged to the letters to post, "
+      "another read by the pen; posted to the player themself")
+scene("insect-release-pocket", "full-net-catches", 4638, [2600, 3420, 3900, 4100, 4300, 4637],
+      frames(3900, 4638, 25), "insect-swap with an insect in the pockets: a choice cancelled by the pen, then "
+      "the pocket's insect let go for the mantis")
+scene("fish-release-pocket", "full-rod-catches", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
+      "fish-swap with a fish in the pockets: by the river the pocket's fish is put back into the water for "
+      "the catch")
+scene("fish-let-go", "full-rod-catches", 6350, [2600, 3700, 5100, 5900, 6100, 6349], frames(5800, 6350, 25),
+      "fish-swap's page by the keys: the place below the pockets pressed, the catch let go")
+scene("box-send", "box-items", 4904, [2600, 4400, 4500, 4650, 4750, 4903], frames(4450, 4904, 25),
+      "at the town hall's recycle box by the keys: an item sent into the box and back by Y, the end place "
+      "left and pressed")
+scene("designs-putback", "seed", 3766, [2600, 3300, 3460, 3600, 3765], frames(3300, 3766, 25),
+      "my designs by the keys: the page's own tab pressed, down from it to its design, the design taken and "
+      "put back with B")
+scene("map-pointer", "seed", 4606, [2600, 3900, 4262, 4400, 4605], frames(4200, 4606, 25),
+      "the town map by the keys: the free pointer on the map, out at its top to the bar and at its right "
+      "to the list")
+scene("friend-tabs", "seed", 4524, [2600, 4100, 4300, 4400, 4523], frames(4100, 4524, 25),
+      "the friend roster's key tab (this user's town and name) and the tab of the players here, by the pen")
+scene("board-latest", "seed", 3794, [2600, 3420, 3540, 3640, 3793], frames(3400, 3794, 25),
+      "the bulletin board by the keys: the cursor moved to Latest and pressed while the latest message is "
+      "shown; B quits")
 
 # ------------------------------------------------------------------------------ saves
 
