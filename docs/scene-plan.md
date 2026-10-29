@@ -2283,5 +2283,30 @@ What reading the Clean code found about the groups above; counts are of function
   for the push, the sequence and the item swap only in the quarter of the room that matches this
   console's player number (0: the left and front quarter) with its push entry moved; no scene's
   piece of those kinds was there.
-- The plan before (329 lists): seed 961, date 242, unknown 743, unreachable 2,991; after (335):
-  seed 913, date 241, unknown 742, unreachable 2,991.
+- The plan before (329 lists, with the groups of the unknown2 batches): seed 981, date 239,
+  unknown 603, unreachable 3,114; after both batches below the second.
+
+### The TV's channels by the hour, the museum's sign stand, the fortune telephone deleted (2026-10-29, scenes/town10, second batch)
+- The TV's sound objects (autoload_2/sound_object_kinds.c) are made for the channel the schedule
+  (data_ov004_02247cf4) shows at the hour. house-turn's input, which puts the robot TV down and
+  switches it on, played at other hours as house-forecast is: tv-channel-6 (Friday 1:30),
+  tv-channel-1 (3:30), tv-channel-0 (4:30), tv-channel-10 (19:30), tv-channel-5 (23:30), and on
+  the Saturday after, tv-channel-4 (0:30) and tv-channel-9 (1:30). Channel 4's sound waits on the
+  variable its sequence sets (SoundObject4_ReadChange, NNS_SndPlayerReadVariable), which without
+  the ARM7's sequencer changes at a time that depends on the run's timing: Native alone diverged
+  at frame 3586 (a volume set where the Reference started a sequence), and with
+  RUN_SEQUENCER (scene option sequencer) both ways agree. Left: the forecast's other piece
+  (SoundObject255_PlayOther, every seventh phase of kind 255): 4,000 frames of the forecast on
+  did not enter it.
+- museum-stand (the pen on the cafe's sign stand from the museum's door mat: kind 16,
+  RoomEtcBoard_Get) and museum-board (the stand read by A: RoomEtcBoard_IsFacedBy, its event and
+  states waiting and open; the stand is faced from its south side, within 0x1300 of its angle).
+- house-kinds3-exit: the fortune telephone (ov004/telephone.c) deleted as the house is left
+  (Telephone_Vfunc0C, Telephone_Delete).
+- Not reached: the bed class (RoomObject02253058, kinds 0xa and 0x2a) watches only in scenes 6-8
+  (RoomObject02253058_Start), the continue menu's room, where player 0's bed is in quarter 0; the
+  player lies in it, the pen on the telephone or A (which gets up and starts the town at once)
+  are the only inputs, so no push against its side is recorded and its sequence and item swap
+  do not start.
+- The plan before (329 lists): seed 981, date 239, unknown 603, unreachable 3,114; after both
+  batches (345): seed 908, date 238, unknown 602, unreachable 3,114.

@@ -223,6 +223,10 @@ SAVES = {
     # bits 0-2 of the house record's word at 0x15a0 (main/house_record.h) 6, and its building on
     # the town map (the seed's 0x5014 at 0xe5da) 0x501a, the code of that size
     "house-big": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (0xF52C + 0x15A0, "<B", 0x06), (0xE5DA, "<H", 0x501A)],
+    # as "house-big" with the Asian bed (furniture number 0, kind 0xa: ov004/room_object_02253058.h)
+    # in pocket 2
+    "house-big-bed": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (0xF52C + 0x15A0, "<B", 0x06), (0xE5DA, "<H", 0x501A),
+                      (POCKETS + 4, "<H", 0x3000)],
     # the rod held, 30,000 bells and the house loan paid off (the house record's loan at 0x1590,
     # main/house_record.h, 0)
     "loan-paid": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (0xF52C + 0x1590, "<I", 0)],
@@ -1701,6 +1705,33 @@ scene("door-sign", "seed", 3390, [2600, 3290, 3320, 3389], frames(3200, 3390, 10
       "at a villager's door, the pen on the house's sign")
 scene("aquarium-sign", "museum-full", 7090, [2600, 4500, 6400, 7000, 7089], frames(6900, 7090, 10),
       "on the mat of the museum's aquarium, the pen on a tank's sign")
+scene("museum-stand", "museum-full", 4510, [2600, 4420, 4440, 4509], frames(4400, 4510, 10),
+      "just inside the museum, on the door's mat, the pen on the cafe's sign stand")
+scene("museum-board", "museum-full", 4880, [2600, 4520, 4650, 4780, 4879], frames(4500, 4880, 20),
+      "in the museum, the cafe's sign stand read by A")
+scene("house-kinds3-exit", "house-kinds3", 12630, [2600, 9000, 11315, 11800, 12300, 12629],
+      frames(11300, 12630, 50), "house-kinds3's fortune telephone read to the end, then out of the house")
+scene("tv-channel-6", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at 01:30 on the seed's Friday: the TV's programme plays channel 6's sound "
+      "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-11 01:30:00")
+scene("tv-channel-1", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at 03:30 on the seed's Friday: the TV's programme plays channel 1's sound "
+      "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-11 03:30:00")
+scene("tv-channel-0", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at 04:30 on the seed's Friday: the TV's programme plays channel 0's sound "
+      "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-11 04:30:00")
+scene("tv-channel-10", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at 19:30 on the seed's Friday: the TV's programme plays channel 10's sound "
+      "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-11 19:30:00")
+scene("tv-channel-5", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at 23:30 on the seed's Friday: the TV's programme plays channel 5's sound "
+      "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-11 23:30:00")
+scene("tv-channel-4", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at 00:30 on the Saturday after: the TV's programme plays channel 4's sound "
+      "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-12 00:30:00", sequencer=True)
+scene("tv-channel-9", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
+      "house-turn at 01:30 on the Saturday after: the TV's programme plays channel 9's sound "
+      "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-12 01:30:00")
 
 # ------------------------------------------------------------------------------ saves
 
