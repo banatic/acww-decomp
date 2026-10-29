@@ -669,7 +669,7 @@ match: autoload_2/process:Process_DestructFree main/game_process:GameProcess_Des
 area: Unreachable for one player
 group: the other classes' destructors of vtable slot 16
 scene: none: the destructor without the free (vtable slot 0x40) of the scene objects, room objects, special characters and processes of main and the overlays outside 90-146 whose Clean comments say so
-reach: as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes; besides (findings 2026-10-29, town8), SceneMap_Destroy, TownGround_Destroy, ObjectActors_Destroy, MysteryCat_Destroy and TownPelican_Destroy, whose only relocations are their vtables' words at 0x40, before the slot-17 destructor the scenes run
+reach: as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes; besides (findings 2026-10-29, town8), SceneMap_Destroy, TownGround_Destroy, ObjectActors_Destroy, MysteryCat_Destroy and TownPelican_Destroy, whose only relocations are their vtables' words at 0x40, before the slot-17 destructor the scenes run; besides (findings 2026-10-29, unknown2), gate slot16: the module images make seven indirect calls through a word loaded from offset 0x40 (w15/vcalls.py's census of every BLX and MOV LR,PC with BX or MOV PC): TalkTags_FocusFirst through the talk's receiver (TalkObject's receiver, stored only by TalkObject_AttachReceiver, whose ten callers pass talk receivers, and NULL), and NNSi_G3dFuncSbc_PRJMAP (three), CARDi_TaskThread, func_02129100 and ghiCallCompletedCallback through a callback field of the C structure itself, not a vtable; register-offset calls are member-function pointers, which cannot name a destructor; so a destructor named only by vtable words at 0x40 never runs: the music process's, the camera's, the fish display's, the lights', the spawner's, the screen indicators', the transition mark's, the resident and scene processes', the activity's, the quick message's and text draw's processes, the player spawn and report processes, the special characters' and visitors' (Astro, NookClerk, Barber, Gull, Boar, Otter, Camel, Walrus, Taxi, the turtle's, ReactionNpc), the museum's, aquarium's, shop's and room manager's, the title scene's and others (62, w28/s16.py, each relocation checked to be a load at +0x40 of a data object whose word at +0x44 is the class's deleting destructor)
 needs: unreachable
 match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:MissingNpc1_Destruct
   main/scene_map:SceneMap_Destroy ov003/town_ground:TownGround_Destroy
@@ -731,6 +731,37 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov068/sequence4:Sequence4_Destroy ov068/town_nook:TownNook_Destruct ov070/giraffe:Giraffe_Destroy
   ov071/insurer:Insurer_Destroy ov080/turtle:Turtle_Destruct ov084/turtle4:Turtle4_Destroy
   ov085/turtle5:Turtle5_Destroy ov086/turtle6:Turtle6_Destroy ov087/acorn_npc:AcornNpc_Destroy
+  main/music_queue:Process020da334_Destruct main/quick_message:QuickMessage_Destruct
+  main/camera_control:CameraControl_Destruct main/process_020daae4:Process020daae4_Destruct
+  main/fish_disp:FishDisp_Destruct main/text_draw:TextDraw_ProcessDestruct
+  main/obj_020dd33c:Obj020dd33c_Destruct main/scene_lights:SceneLights_Destruct
+  main/overlay_task:OverlayTask_Destruct main/spawner:Spawner_Destruct
+  main/screen_indicators:ScreenIndicators_Destruct
+  main/transition_mark:TransitionMarkProcess_Destruct main/effect_system:EffectSystem_Destruct
+  main/player_processes:PlayerSpawnProcess_Destruct
+  main/player_processes:PlayerReportProcess_Destruct main/mail:MailTask_Destruct
+  main/resident_process:ResidentProcess_Destruct main/start_menu:StartMenu_Destruct
+  main/activity:Activity_Destruct main/scene_process_base:SceneProcessBase_Destruct
+  main/talk_process:TalkProcess_Destruct main/boot_screen:BootScreen_Destruct
+  main/scene_change:SceneChange_Destruct main/scene_change:SceneClass4_Destruct
+  main/scene_change:SceneClass6_Destruct main/scene_process:SceneClass3_Destruct
+  main/plain_process:PlainProcess_Destroy main/view_process:ViewProcess_Destroy
+  main/block_020ba298:Block020ba298_Destruct ov003/tile_event:TileEvent_DestroyProcess
+  ov003/fish_shadow:FishShadow_Destruct ov003/town_insect:TownInsect_ProcessDestruct
+  ov003/snowball_spawner:SnowballSpawner_Destruct ov004/cafe_props:CafeProps_Destruct
+  ov004/museum_display:MuseumDisplay_Destruct ov004/b_pole:BPole_Destruct
+  ov004/aquarium_objects:Aquarium_Destruct ov004/room_manager:RoomManager_Destruct
+  ov004/house_roach:HouseRoach_Destruct ov004/house_roaches:HouseRoaches_Destruct
+  ov004/museum_insects:InsectRoom_Destruct ov004/museum_room_setup:MuseumSetupPlain_Destruct
+  ov004/museum_room_setup:MuseumSetupGroupA_Destruct ov004/museum_room_setup:MuseumSetup_Destruct
+  ov004/player_pick:PlayerPick_Destruct ov004/shop_display:ShopDisplay_Destruct
+  ov046/astro:Astro_Destruct ov050/nook_clerk:NookClerk_Destruct ov053/barber:Barber_Destruct
+  ov055/xct_exchange:XctExchange_Destruct ov056/ov056_process:Ov056Process_Destroy
+  ov068/outdoor_villager:OutdoorVillager_Destruct ov068/taxi:Taxi_Destruct
+  ov072/gull:Gull_Destruct ov073/boar:Boar_Destruct ov076/otter:Otter_Destruct
+  ov078/camel:Camel_Destruct ov079/walrus:Walrus_Destruct
+  ov081/turtle_fishing:TurtleFishing_Destruct ov082/turtle_insects:TurtleInsects_Destruct
+  ov088/reaction_npc:ReactionNpc_Destroy ov147/title_scene:TitleScene_Destruct
 
 area: Unreachable for one player
 group: the town map's list by the keys and the pen
@@ -1116,7 +1147,7 @@ match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
 area: Unreachable for one player
 group: tags no shown message holds, by the whole archives
 scene: none: the handlers of tags that no message outside the test message holds: the talk's 0/8, 1/14, 1/15, 3/4 and group 8 (TalkTags_PutLeftBrace, _Receiver1cWith3 and 4, _TellReceiver30, _DispatchGroup8 and its three kinds), the message reader's 0/2-0/5, 0/9, 0/10, 11/0 and 11/3 (the nickname source's characters, two fixed texts, the attributes and the converted character, with what only those call), the letters' 11/1-11/5 and 11/5-11/15 (MailTextDecoder_SetForm1, 2, _ConvertNext, _OnForm4, _OnFormPart), and the centred lines' measurer for 4/17, which no centred message holds
-reach: a scan of every message of the KOR .bmg files read whole (findings 2026-10-28, town4: a compressed archive is a table of 0x1000-byte chunks, each LZ10 or stored, which the earlier scans read only the first chunk of), and of every other file of the ROM and the module images for the tags' bytes; no code writes a tag into a text, the test message is shown by no reachable code (group "message tags no shown message holds") and the letters' decoder reads only letters (mail archives and letters typed)
+reach: a scan of every message of the KOR .bmg files read whole (findings 2026-10-28, town4: a compressed archive is a table of 0x1000-byte chunks, each LZ10 or stored, which the earlier scans read only the first chunk of), and of every other file of the ROM and the module images for the tags' bytes; no code writes a tag into a text, the test message is shown by no reachable code (group "message tags no shown message holds") and the letters' decoder reads only letters (mail archives and letters typed); besides (findings 2026-10-29, unknown2), TalkTags_Nothing, the talk's handler of tags 0/2, 0/3, 0/5, 0/10 and 11/0 (the member pointer constants of TalkTags_DispatchGroup0's kinds 2, 3, 5 and 10 and of _DispatchGroup11's kind 0 are its only relocations, and only those tables name the constants): no message of any archive holds those tags, and the messages outside mail and the test message hold only 0/0, 0/1, 0/6, 0/7 of group 0 and 11/20 of group 11, all within the tables (w28/tagall.py; the dispatch indexes the table by the tag's kind unchecked)
 needs: unreachable
 match: main/message_decoder:MessageDecoder_CanInsert main/message_decoder:MessageDecoder_ConvertNext
   main/message_decoder:MessageDecoder_InsertSourceEnd
@@ -1130,6 +1161,7 @@ match: main/message_decoder:MessageDecoder_CanInsert main/message_decoder:Messag
   main/talk_tags:TalkTags_Nothing8_1 main/talk_tags:TalkTags_Nothing8_2
   main/talk_tags:TalkTags_PutLeftBrace main/talk_tags:TalkTags_Receiver1cWith3
   main/talk_tags:TalkTags_Receiver1cWith4 main/talk_tags:TalkTags_TellReceiver30
+  main/talk_tags:TalkTags_Nothing
 
 area: Unreachable for one player
 group: the field actor's states no code asks for
@@ -1900,9 +1932,10 @@ match: autoload_2/heap:Heap_TryLockNothing main/activity_link_jobs:ActivityLinkJ
 area: Shops and buildings (the seed's day)
 group: Nook's store: every topic
 scene: buy several items, sell all at once, the catalog by pages and by keys, order, the house loan and its extension, the turnip and the store's points
-reach: rich save; the store's counter (shop-talk's walk)
+reach: rich save; the store's counter (shop-talk's walk); besides (findings 2026-10-29, unknown2), the talk tag 0/6 "&" (TalkTags_PutAmpersand): Nook's lines raccoon_ 66-71, 85 and 86 (also barber_ 9-11 and 56, turtle3_ 13 and 40-42; w28/tagwhere.py)
 needs: seed
 match: ov050/* ov142/* main/shops main/shop_* main/nook_store:NookStore_[!US]* ov003/store_front main/last_sale
+  main/talk_tags:TalkTags_PutAmpersand
 
 area: Shops and buildings (the seed's day)
 group: the gatekeeper: every topic
@@ -2045,10 +2078,17 @@ match: main/effect_*
 area: Villagers (the seed's day)
 group: villager talks: topics, favours and trades
 scene: talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items
-reach: the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night
+reach: the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night; besides (findings 2026-10-29, unknown2), the talk tags only villagers' lines hold (w28/tagwhere.py, outside mail and the test message): 0/7 "%" (TalkTags_PutPercent: ta/tsu/always_ 68-71), 0/0 "*" (_PutAsterisk: ta/ap/item_ 10, obj/etc/player_ 30), 4/29 name 3 (_PutName3: the games' results q01 and q02 pdraw_, plose_, pwin_ of every kind), 6/9 by the falling weather (_BranchByFalling: ko/tsu/always_ 0 and 62, fo_act_ 1, se_act_ 2, ta/tsu/no_act_ 0, ta/3p/fu_ 6, the cafe's cf1-cf6), 6/12 by residence (_BranchByResident: bo/tsu/fu_act_ 4, ge/tsu/always_ 19, ko/tsu/always_ 18 and fo_act_ 2), 9/3 and 9/5 (_LookAtPlayer, _LookAtFirst: the three-party talks */3p/*, missing1_ 13-18), 4/14 another resident's player name (_PutOtherPlayer, TalkObject_LoadOtherPlayer: 13 lines, a town with a second resident) and 0xff/2 (_StartSpans, then _StepSpans and the span's start and step: the part-time job's lines arbeit_ 1 and 20-24 of bo, fu, ko and ta)
 needs: seed
 match: main/villager_talk* main/villager_part* main/villager_object main/villager_items main/villager_offers
   main/item_object main/villager_catchphrase main/villager_names main/villager_furniture main/villager_clothes
+  main/talk_tags:TalkTags_PutPercent main/talk_tags:TalkTags_PutAsterisk
+  main/talk_tags:TalkTags_PutName3 main/talk_tags:TalkTags_BranchByFalling
+  main/talk_tags:TalkTags_BranchByResident main/talk_tags:TalkTags_LookAtFirst
+  main/talk_tags:TalkTags_LookAtPlayer main/talk_tags:TalkTags_PutOtherPlayer
+  main/talk_object:TalkObject_LoadOtherPlayer main/talk_tags:TalkTags_StartSpans
+  main/talk_tags:TalkTags_StepSpans main/talk_span:TalkSpan_StartCounted
+  main/talk_span:TalkSpan_StartRange main/talk_span:TalkSpan_Step
 
 area: Unreachable for one player
 group: message tags no shown message holds
@@ -2090,6 +2130,13 @@ match: main/talk_page:TalkPageMeasurer_AltText main/talk_page:TalkPageMeasurer_I
   main/talk_tags:TalkTags_NoteValue3 main/talk_tags:TalkTags_Nothing11_4
   main/talk_tags:TalkTags_Nothing4_32 main/talk_tags:TalkTags_PutImpression
   main/talk_tags:TalkTags_SetE0One main/talk_tags:TalkTags_SetE0Two
+
+area: Other dates, times and visitors (for the boot on another day)
+group: the talk tag of Gracie's lines
+scene: Gracie's fashion check: her lines giraffe_ 15-34 hold tag 10/0, which only they hold (findings 2026-10-29, unknown2, w28/tagwhere.py)
+reach: a weekday the schedule gives her (group Gracie)
+needs: date
+match: main/talk_tags:TalkTags_DispatchGroup10 main/talk_tags:TalkTags_Nothing10_0
 
 area: Villagers (the seed's day)
 group: the talk engine: tags, pages, windows, sliders
