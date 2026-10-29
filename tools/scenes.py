@@ -1099,6 +1099,8 @@ scene("villager-sell", "visitor-3f", 12750, [2600, 7200, 10400, 11100, 12000, 12
       "as villager-approach, a little later: the villager that calls the player over sells it one of its items")
 scene("villager-mail", "visitor-3f", 12730, [2600, 7200, 10400, 11100, 12000, 12729], frames(10400, 12730, 50),
       "as villager-approach, a little later: the villager that calls the player over shows the letter it holds")
+scene("reader-touch", "visitor-3f", 12679, [2600, 7200, 10400, 11100, 11600, 12678], frames(11400, 12679, 50),
+      "villager-mail with the letter reader switched to the pen: the letter touched, the quit button pressed")
 scene("villager-picture", "visitor-3f", 12750, [2600, 7200, 10400, 11100, 12000, 12749], frames(10400, 12750, 50),
       "as villager-approach, a little later: the villager that calls the player over talks of its picture")
 scene("villager-across", "seed", 16200, [2600, 3756, 6200, 9000, 12200, 16199], frames(3700, 16200, 200),
