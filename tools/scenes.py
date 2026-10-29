@@ -1648,6 +1648,8 @@ scene("letter-scroll", "rich", 8396, [2600, 5500, 8090, 8200, 8300, 8395], frame
 scene("star-view-keys", "museum", 10524, [2600, 6300, 9900, 10100, 10300, 10523], frames(9900, 10524, 25),
       "observatory's star view by the keys: an arrow held, the free pointer on the constellation and "
       "pushed past the edges", rtc="2026-09-11 20:30:00")
+scene("pockets-tab", "pockets-keys", 3110, [2600, 2864, 2950, 3030, 3109], frames(2800, 3110, 25),
+      "the pockets by the keys: the cursor up to the tab bar and A on the pockets' own tab")
 
 # ------------------------------------------------------------------------------ saves
 

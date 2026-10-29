@@ -623,7 +623,7 @@ match: ov090/menu_tabs:MenuTabs_Phase3 ov090/menu_tabs:MenuTabs_Phase4
 area: Unreachable for one player
 group: the menu scenes' destructors of vtable slot 16
 scene: none: the destructor without the free (vtable slot 0x40) of the menu scenes of overlays 90-146 that say so
-reach: a process is deleted through vtable slot 17 (Process_DestructFree's, autoload_2/process.c), whose scenes' versions destroy the members and the base directly; slot 16 is empty in the process base, nothing calls it, and no slot-16 destructor of any class runs in the scenes; besides (findings 2026-10-29, proofs1), Constellations_Add calls the address 0x022995a0, which the relocation leaves to overlays 113, 123, 127, 134, 139 and 142-146, between Constellations_LoadJudge and _ReleaseJudge (overlay 127 loaded and released): it is ov127's StarScope_StarsAreFree there, and no call of the menu scenes' destructors (w22/forward.py)
+reach: a process is deleted through vtable slot 17 (Process_DestructFree's, autoload_2/process.c), whose scenes' versions destroy the members and the base directly; slot 16 is empty in the process base, nothing calls it, and no slot-16 destructor of any class runs in the scenes; besides (findings 2026-10-29, proofs1), Constellations_Add calls the address 0x022995a0, which the relocation leaves to overlays 113, 123, 127, 134, 139 and 142-146, between Constellations_LoadJudge and _ReleaseJudge (overlay 127 loaded and released): it is ov127's StarScope_StarsAreFree there, and no call of the menu scenes' destructors (w22/forward.py); besides (findings 2026-10-29, town8), the slot-16 words of the vtables of ov096, ov100, ov104, ov105, ov106, ov118, ov121, ov122, ov126, ov131 and ov145 (each at 0x40 of its class's vtable, before the deleting destructor the scenes run) and of the menu scenes' base (MenuScene_Destroy, at 0x40 of 0x0220bb24): no other relocation names them but calls from ov118 (to 0x022999a0) and ov125 and ov126 (to 0x0229eea0) that the overlay groups give to ov117 and ov124, and Constellations_Add's call of 0x022995a0 above
 needs: unreachable
 match: ov090/menu_tabs:MenuTabs_Destroy ov091/letter_reader:LetterReader_Destroy
   ov092/menu_dispatch:MenuDispatch_Destroy ov101/pockets_pick:PocketsPick_Destroy
@@ -638,15 +638,41 @@ match: ov090/menu_tabs:MenuTabs_Destroy ov091/letter_reader:LetterReader_Destroy
   ov132/bank_menu:BankMenu_Destroy ov133/friend_code_entry:FriendCodeEntry_Destroy
   ov135/phone_clock:PhoneClock_Destroy ov136/time_screen:TimeScreen_Destroy
   ov137/birthday_screen:BirthdayScreen_Destroy ov138/date_screen:DateScreen_Destroy
+  ov096/pockets_screen:PocketsScreen_Destroy ov100/pockets_box:PocketsBox_Destroy
+  ov104/letter_send:LetterSend_Destroy ov105/letter_storage:LetterStorage_Destroy
+  ov106/mailbox_scene:MailboxScene_Destroy ov118/map_menu_scene:MapMenu_Destroy
+  ov121/my_designs:MyDesigns_Destroy ov122/letter_write_scene:LetterWrite_Destroy
+  ov126/keyboard_entry:KeyboardEntry_Destroy ov002/menu_scene:MenuScene_Destroy
+  ov131/bank_amount:BankAmount_Destroy ov145/donation_list:DonationList_Destroy
   ov142/order_catalog_scene:OrderCatalog_Destroy ov143/tune_editor:TuneEditor_Destroy
   ov144/music_list_scene:MusicList_Destroy
 
 area: Unreachable for one player
+group: the menu scenes' base virtual functions every class overrides
+scene: none: the menu scenes' base (ov002/menu_scene.c, vtable 0x0220bb24): its phases 1-5 (slots 0x4c-0x5c) and its deleting destructor (slot 0x44)
+reach: (findings 2026-10-29, town8) the only relocations naming these functions are their words in the base's vtable; every class's vtable has its own there (only MenuScene_Wait, slot 0x48, is shared). The base's vtable is an object's only inside MenuScene_Construct, which each of the 45 classes' constructors calls before storing its own vtable, and from MenuScene_DestroyBase on, which the classes' destructors call last before the free; MenuScene_Update (the phases' only caller, through the member pointers of data_ov002_0220bec4) and the process's deletion (slot 0x44) run on whole objects only
+needs: unreachable
+match: ov002/menu_scene:MenuScene_Phase1 ov002/menu_scene:MenuScene_Phase2 ov002/menu_scene:MenuScene_Phase3
+  ov002/menu_scene:MenuScene_Phase4 ov002/menu_scene:MenuScene_Phase5 ov002/menu_scene:MenuScene_Delete
+
+area: Unreachable for one player
+group: the process bases' own destructors every class replaces
+scene: none: the destructors in slots 0x40 and 0x44 of the vtables of the process (autoload_2/process.c, 0x0213e7b4), the game's process (main/game_process.c, 0x020da13c), the actor (main/actor.c, 0x020d7244) and the scene object (main/scene_object_base.c, 0x020dab34)
+reach: (findings 2026-10-29, town8) the only relocations naming these functions are their words in the base's own vtable, which no other vtable repeats; each base's vtable is an object's only inside its constructor (every constructor that stores one stores its class's own after it: Process_Construct's 52 callers, the 51 constructors storing 0x020da13c, Actor_Construct's 2 and SceneObjectBase_Construct's 49 callers) and in the destructors, which call the base's destructor directly before the free; a process is deleted through slot 0x44 of a whole object (autoload_2/process.c), so these slots are dispatched through the final class's vtable only
+needs: unreachable
+match: autoload_2/process:Process_DestructFree main/game_process:GameProcess_Destruct
+  main/game_process:GameProcess_DestructDelete main/actor:Actor_Destruct main/actor:Actor_DestructDelete
+  main/scene_object_base:SceneObjectBase_DestructFree
+
+area: Unreachable for one player
 group: the other classes' destructors of vtable slot 16
 scene: none: the destructor without the free (vtable slot 0x40) of the scene objects, room objects, special characters and processes of main and the overlays outside 90-146 whose Clean comments say so
-reach: as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes
+reach: as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes; besides (findings 2026-10-29, town8), SceneMap_Destroy, TownGround_Destroy, ObjectActors_Destroy, MysteryCat_Destroy and TownPelican_Destroy, whose only relocations are their vtables' words at 0x40, before the slot-17 destructor the scenes run
 needs: unreachable
 match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:MissingNpc1_Destruct
+  main/scene_map:SceneMap_Destroy ov003/town_ground:TownGround_Destroy
+  ov003/object_actors:ObjectActors_Destroy ov074/mystery_cat:MysteryCat_Destroy
+  ov075/town_pelican:TownPelican_Destroy
   main/missing_npc2:MissingNpc2_Destruct main/process_020dabc0:Process020dabc0_Destruct
   main/scene_object_base:SceneObjectBase_Destruct
   main/special_scene_object:SpecialSceneObject_Destruct
