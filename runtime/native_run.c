@@ -88,6 +88,7 @@ typedef struct Module {
     int resident;
     struct Fn **code; /* its functions, for telling overlays apart whose code is mostly the same */
     int code_count;
+    int twin; /* the next overlay of a ring whose code is the same as this one's (itself when none) */
 } Module;
 
 #define MAX_MODULES 160
@@ -181,6 +182,47 @@ static int load_manifest(const char *path)
     return 0;
 }
 
+/* Whether two overlays have the same functions with the same bytes (their data may differ). */
+static int same_code(const Module *a, const Module *b)
+{
+    if (a->resident || b->resident || a->image == NULL || b->image == NULL || a->code_count != b->code_count ||
+        a->code_count == 0) {
+        return 0;
+    }
+    for (int i = 0; i < a->code_count; i++) {
+        const Fn *f = a->code[i], *g = b->code[i];
+        uint32_t at = f->address & ~1u;
+        if (at != (g->address & ~1u) || f->size != g->size || at < a->base || at - a->base + f->size > a->size ||
+            at < b->base || at - b->base + g->size > b->size ||
+            memcmp(a->image + (at - a->base), b->image + (at - b->base), f->size) != 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* The overlays whose code is the same put in rings (the scene data overlays 17 and 43, 18 and
+ * 37, 38-40: one static initialiser each, with other scene data). */
+static void link_twins(void)
+{
+    for (int i = 0; i < module_count; i++) {
+        modules[i].twin = i;
+    }
+    for (int i = 0; i < module_count; i++) {
+        if (modules[i].twin != i) {
+            continue;
+        }
+        int last = i;
+        for (int j = i + 1; j < module_count; j++) {
+            if (modules[j].twin == j && same_code(&modules[i], &modules[j])) {
+                modules[j].twin = modules[last].twin;
+                modules[last].twin = j;
+                last = j;
+            }
+        }
+    }
+}
+
 static int load_policy(const char *path)
 {
     FILE *f = fopen(path, "r");
@@ -263,6 +305,7 @@ static int load_policy(const char *path)
         Module *m = &modules[fns[i].module];
         m->code[m->code_count++] = &fns[i];
     }
+    link_twins();
     return 0;
 }
 
@@ -313,12 +356,51 @@ static int module_code_loaded(const Module *m)
     return 1;
 }
 
+/* How many bytes of an overlay's image are in memory as they are in the image. */
+static uint32_t image_bytes_in_memory(const Module *m)
+{
+    const uint8_t *p = memory_host(m->base, m->size);
+    uint32_t same = 0;
+    if (p == NULL || m->image == NULL) {
+        return 0;
+    }
+    for (uint32_t i = 0; i < m->size; i++) {
+        same += p[i] == m->image[i];
+    }
+    return same;
+}
+
+/* Of the overlays whose code is `f`'s overlay's (a ring of twins), the one whose image is most in
+ * memory: its data tells the overlay loaded apart. Its function at `f`'s address. */
+static Fn *loaded_twin(Fn *f)
+{
+    int best = f->module;
+    uint32_t best_same = image_bytes_in_memory(&modules[best]);
+    for (int m = modules[best].twin; m != f->module; m = modules[m].twin) {
+        uint32_t same = image_bytes_in_memory(&modules[m]);
+        if (same > best_same) {
+            best = m;
+            best_same = same;
+        }
+    }
+    if (best == f->module) {
+        return f;
+    }
+    for (int i = 0; i < modules[best].code_count; i++) {
+        if ((modules[best].code[i]->address & ~1u) == (f->address & ~1u)) {
+            return modules[best].code[i];
+        }
+    }
+    return f;
+}
+
 /* The function whose code is at `address` now, or NULL. Overlays loaded at one address can
  * share most of their code (the pockets' fish and insect lists, ov115 and ov116, differ in
  * three functions): where more than one has its bytes at `address`, the one whose other
  * functions are in memory too is the loaded one. The Native code of a function calls its
  * module's functions directly, so taking the other overlay's would run that overlay's code
- * where its bytes differ. */
+ * where its bytes differ. Twins, whose code is all the same, are told apart by their data
+ * (loaded_twin). */
 static Fn *loaded_at(uint32_t address)
 {
     Fn *f = first_at(address);
@@ -338,7 +420,7 @@ static Fn *loaded_at(uint32_t address)
         } else {
             /* (checked only when two overlays both match here) */
             if (module_code_loaded(&modules[found->module])) {
-                return found;
+                return modules[found->module].twin != found->module ? loaded_twin(found) : found;
             }
             if (module_code_loaded(&modules[f->module])) {
                 return f;

@@ -38,15 +38,15 @@ the two as one: tools/native_args.py) needed the fixes named.
 
 ## Current numbers
 
-From 365 scene lists: 25,251 Clean game functions, run 20,548, function check only 1,172, read only 3,531; the groups below hold 4,703 (function check only + read only).
+From 365 scene lists: 25,251 Clean game functions, run 20,551, function check only 1,172, read only 3,528; the groups below hold 4,700 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 759 |
+| seed | 756 |
 | date | 216 |
 | unknown | 499 |
 | unreachable | 3,229 |
-| total | 4,703 |
+| total | 4,700 |
 
 
 (The lists are those of the 365 scenes of tools/scenes.py. The two recordings, title-start and
@@ -131,14 +131,14 @@ unknown groups say what to find first.
 | destructors only a thrown exception calls | 1 (1 / 0) | ov117/town_map_image 1 | none: the destructors of the elements of arrays built by __cxa_vec_ctor, named nowhere else | __cxa_vec_ctor (0x02138d6c) calls its destructor argument only in its landing pad (0x02138dd8: __cxa_vec_cleanup, then the rethrow func_02137174), which runs only after a constructor threw; no code throws: the unwinder func_021375c0 is entered only from func_02137174, which only the three array helpers' landing pads call. A destructor named only as that argument, and what only it calls, never runs (w24/vecdtor.py; w24/classify.py, gate nothrow; findings 2026-10-29, town7) | unreachable |
 | the scene object bases' slot 0x68 every class replaces | 1 (1 / 0) | main/scene_object 1 | none: the scene objects' slot 0x68 (called first in each frame) of the bases, SceneObject_Vfunc68, which every class's own vtable replaces | SceneObject_Vfunc68 is named only by the words at +0x68 of the intermediate vtables 0x020d8c64, 0x020d9e88 and 0x020da088, which an object holds only while it is built or torn down (each constructor storing one stores its own class's vtable after it, findings town8), and none of the 28 call sites through +0x68 (w28/vsite.py) is in those constructors or destructors (findings 2026-10-29, town11; w30/basevt3.py, w30/classify.py) | unreachable |
 
-## Not attributed to one scene (353)
+## Not attributed to one scene (350)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | other paths of shared code the scenes already run | 227 (87 / 140) | autoload_2/heap 15, main/scene_motion 14, main/scene_action 10, main/town_lines 9, main/scene_motion_kinds 8, main/field_label 7, main/acre_map 6, main/music_queue 6, 86 more files (152) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
 | the link's code in files one player also runs | 78 (36 / 42) | ov055/xct_exchange 11, main/obj_020dd33c_modes 10, autoload_2/network 9, main/session 8, main/link_scene 4, main/packed_bytes 4, ov055/xct_exchange_talk 4, main/exchange_block 3, 11 more files (25) | none known: the functions of the session, link, quick message, caution window, network and Wi-Fi files that the fixed point and the link guard do not prove (most are the link's: the session records, the network library's dispatch to the local and Wi-Fi libraries by the network mode, the caution window's states, the scene objects' shared modes) | unknown: these files were in "local wireless" and "Nintendo Wi-Fi Connection" as whole files, but scenes run some of their functions (findings 2026-10-28, town6); the rest still needs a proof (the network mode data_021fbef8 and the session mode are set only by the link's code: a proof by the values stored, as for the field actor's states and the activity's jobs) or a scene | unknown |
 | claimed unreachable, not proved by the forward pass | 40 (13 / 27) | ov003/field_actor 9, main/mail_text 5, main/wfc_session 4, ov048/gatekeeper_talk 4, main/linked_map_items 3, main/wfc_setup 3, main/town_pack 2, ov048/gatekeeper_talk_lines 2, 7 more files (8) | none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1) | unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene | unknown |
-| overlay static initialisers | 8 (1 / 7) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov025/ov025_static_init 1, ov035/ov035_static_init 1, ov037/ov037_static_init 1, ov039/ov039_static_init 1, ov040/ov040_static_init 1, ov043/ov043_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
+| overlay static initialisers | 5 (1 / 4) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov018/ov018_static_init 1, ov025/ov025_static_init 1, ov035/ov035_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
 ## Shops and buildings (the seed's day) (135)
 
@@ -2593,3 +2593,26 @@ What reading the Clean code found about the groups above; counts are of function
   (an errand done at the step before); not made.
 - The plan before (357 lists, main 87dffd13): seed 828, date 217, unknown 500, unreachable 3,224;
   after (365): seed 759, date 216, unknown 499, unreachable 3,229.
+
+### The twin overlays told apart by their data (2026-10-29, twins)
+- Overlays 18 and 37 (the data of scenes 0x32 and 0x2e), 17 and 43 (0x10 and 0x0a) and 38, 39 and
+  40 (0x1a-0x1c) each hold one static initialiser at 0x02260020 whose bytes are the same; only
+  their .data differs (the scene's setup steps and exits). loaded_at in runtime/native_run.c took
+  the first overlay whose code bytes were in memory, so a run of ov037 was listed, and ran its
+  Clean code, as ov018's. The overlays whose functions are all the same are now linked in rings
+  when the policy is read, and where two of them match at an address the one with the most bytes
+  of its whole image in memory is taken; only addresses where two overlays both match pay for it
+  (images of 0x100-0x120 bytes). The Clean initialisers of each pair are the same code reading
+  their data by symbol at the shared addresses, so none needed a change.
+- The scenes' lists, run again (all 352 both ways, and the 13 scenes added since on main): ov018
+  became ov037 in erase-player, erase-town, save-quit and title-move-in (erase-player enters scene
+  0x2e at about frame 3800); ov017 became ov043 in the 13 scenes in the Able sisters' shop (able-*,
+  sable-*, design-draw, editor-keys, editor-tools, errand-mabel, name-keys, picker-keys); ov038
+  became ov039 in store-1 and store-upgrade and ov040 in store-2. Still under their own names:
+  ov017 in the fortune tent and the villagers' houses (14 scenes), ov038 in Nook's first store (28
+  scenes); no scene lists ov018 now (scene 0x32 is not entered). On Linux (gcc -m32, -Werror)
+  erase-player, able-talk, store-1 and store-2 agree both ways and name the same overlays.
+- Checked in a run: 20,436 before on 8f80f3d9 (20,439 after); on main 6e329dff 20,548 before,
+  20,551 after (ov037, ov039, ov040 and ov043's initialisers in, ov018's out).
+- The plan before (365 lists, main 6e329dff): seed 759, date 216, unknown 499, unreachable 3,229;
+  after: seed 756, date 216, unknown 499, unreachable 3,229.
