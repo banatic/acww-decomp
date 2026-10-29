@@ -1711,6 +1711,12 @@ scene("museum-board", "museum-full", 4880, [2600, 4520, 4650, 4780, 4879], frame
       "in the museum, the cafe's sign stand read by A")
 scene("house-kinds3-exit", "house-kinds3", 12630, [2600, 9000, 11315, 11800, 12300, 12629],
       frames(11300, 12630, 50), "house-kinds3's fortune telephone read to the end, then out of the house")
+scene("gate-leave", "seed", 10050, [2600, 5200, 8100, 9299, 9700, 10049], frames(9200, 10050, 50),
+      "gate-night, then out of the gatehouse into the town", rtc="2026-09-11 22:30:00")
+scene("barber-leave", "barber", 11630, [3900, 7100, 10499, 10900, 11300, 11629], frames(10400, 11630, 50),
+      "barber, then out of the barber's room: she sends the player off")
+scene("cafe-leave", "museum", 20290, [2600, 15700, 17800, 19197, 19500, 20000, 20289], frames(19100, 20290, 50),
+      "cafe-coffee, then up into the museum's hall and out of the museum")
 scene("tv-channel-6", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
       "house-turn at 01:30 on the seed's Friday: the TV's programme plays channel 6's sound "
       "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-11 01:30:00")
