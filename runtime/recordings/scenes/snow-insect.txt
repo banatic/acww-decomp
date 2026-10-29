@@ -1,0 +1,65 @@
+# snow-insect (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot as villager-talk.
+# Save: unweeded-jan, booted 12 January 2027 21:00:06: by 4400 the town insects hold a kind 0x23,
+# placed beside the loose snowball at (35.5, 62.5) (TownInsect_Place: Snowman_Find, a ball farther
+# than 12.0 from the player). The player walks from the house to it (4400-4940): it circles the
+# ball (InsectPath_CircleSnowball) and moves off as the player comes near.
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+4400 LEFT+DOWN -
+4440 DOWN -
+4480 LEFT+DOWN -
+4536 DOWN -
+4552 - -
+4752 LEFT+DOWN -
+4784 LEFT -
+4792 - -

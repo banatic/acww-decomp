@@ -1239,6 +1239,31 @@ match: main/camera_modes:CameraControl_Mode19Frame main/camera_modes:CameraContr
   ov004/room_camera:RoomCamera_Mode15Frame ov004/room_camera:RoomCamera_Mode15Start
 
 area: Unreachable for one player
+group: the room objects' switch state for the linked session (vtable slot 0x74)
+scene: none: slot 0x74 of the room objects' vtables (whether a state shows the object on: the TVs, the music players, the chest, the telephones, the lamps and the switched classes, and the base's)
+reach: the images' indirect calls through offset 0x74 (w31/vsite.py over w15/vcalls.py) are RoomSync_SendState's, only inside `if (Session_IsLinked(...))` (the link guard), SceneAction_OpenTalk's and SceneTalk_PassTurn's (the name of a scene action's owner and of a scene's speaker, which no room object is: no room object's code calls SceneAction_, SceneTalk or SceneBase_ functions, and the room objects' talks the scenes run, villager-stereo's music player, house-kinds3's fortune telephone and house-phone's telephone, entered none of these), TalkFlow_SameWindow's (a talk receiver's vtable), SceneActor_CanRun's (its own, ov009) and three in the Wi-Fi library ov065 (C structures); every word naming these functions is the +0x74 word of a room object's vtable (w31/classify.py, gate slot74, checked)
+needs: unreachable
+match: ov004/chest:Chest_LidStateIsOn ov004/music_player:MusicPlayer_StateIsOn
+  ov004/room_object_022510b4:RoomObject022510b4_StateIsOn ov004/room_object_0225130c:RoomObject0225130c_StateIsOn
+  ov004/room_object_022518e8:RoomObject022518e8_StateIsOn ov004/room_object_02251a14:RoomObject02251a14_StateIsOn
+  ov004/room_object_02252248:RoomObject02252248_StateIsOn ov004/room_object_02252374:RoomObject02252374_StateIsOn
+  ov004/room_object_022525cc:RoomObject022525cc_StateIsOn ov004/room_object_02252824:RoomObject02252824_StateIsOn
+  ov004/room_object_02252ba8:RoomObject02252ba8_StateIsOn ov004/room_object_02252f2c:RoomObject02252f2c_StateIsOn
+  ov004/room_object_glowing:GlowingRoomObject_StateIsOn ov004/room_object_switch_shown:SwitchShown_StateIsOn
+  ov004/telephone:Telephone_SwitchStateIsOn ov004/tv:TvAnimated_StateIsOn ov004/tv:Tv_StateIsOn
+  ov004/room_object_body:RoomObject_Vfunc74
+
+area: Unreachable for one player
+group: the star view's free pointer, whose flag nothing sets
+scene: none: sub states 3 (the free pointer), 7 (its glide), 8 (its press) and 9 (its release) of the observatory's star view (ov128/star_view_input.c) and their helpers
+reach: sub state 3 is set only by StarView_SubPress (sub state 8) while STAR_VIEW_FLAG_FREE is set, which no code sets (ov128/star_view.h); 8 only by StarView_PressPointer, 9 only by StarView_ReleasePointer and 7 only by StarView_GlideTo, whose only callers are StarView_SubFree, StarView_SubPress and StarView_GlideToCursor (called only by StarView_SubFree); the return sub states of 7 and 9 are saved only by those; each sub state's function is named only by its member pointer constant in the sub state table (w31/classify.py, gate value)
+needs: unreachable
+match: ov128/star_view_input:StarView_SubFree ov128/star_view_input:StarView_SubPress
+  ov128/star_view_input:StarView_SubRelease ov128/star_view_input:StarView_SubGlide
+  ov128/star_view_input:StarView_PressPointer ov128/star_view_input:StarView_ReleasePointer
+  ov128/star_view_input:StarView_GlideTo ov128/star_view_input:StarView_GlideToCursor
+
+area: Unreachable for one player
 group: vtable slots no code calls: heaps and triangles
 scene: none: slot 1 of the heaps' vtables (destruct and free: Heap_, ExpHeap_ and FrameHeap_DestructFree) and slot 3 of the collision triangle's (CollisionTriangle_PushOut)
 reach: as for the heaps' other slots and the scene sounds: a heap is destroyed by Heap_Destroy through slots 5 and 0 and its block freed to the parent, and no code reads HeapVtable.destruct_free; a triangle's vtable is called only by CollisionTriangle_PushOut's three tests (vtable_of, slots 0-2), and the areas' vtable (CollisionAreaVtable) calls only its slot 4; no BL or word in code names these functions, only the vtables; besides (findings 2026-10-29, proofs1), CollisionTriangle_PushOut is named by slot 3 of five triangle vtables, each counted as the group's slot (w22/classify.py, gate value); besides (findings 2026-10-29, unknown2), the processes' heap slots: Process_CreateHeap and _CreateFittedHeap are named only by the words at +0x38 and +0x34 of the process vtables (215 and 217, and the same three consecutive words of nine overlay vtables whose data symbols start inside them; w28/rel.py) and Process_FillHeapDefault, which only they call through +0x3c, by the words at +0x3c; the images' indirect calls through offset 0x34 are the talk tags' branches (the talk receiver), Heap_GetFreeSize (the heap's vtable) and the 3D, capture and alarm callbacks of C structures, through 0x38 the scene commands' and the scene base's talk style (a talk scene), TalkTags_SpeakerTalkStyle (the receiver), FortuneTeller_Update (her talk scene), Heap_GetLargestBlock, the thread context and C structures (w28/vsite.py over w15/vcalls.py), and through 0x3c only those two, the receiver, the heap and C structures

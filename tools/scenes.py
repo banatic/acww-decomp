@@ -1751,6 +1751,15 @@ scene("tv-channel-4", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 
 scene("tv-channel-9", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 50),
       "house-turn at 01:30 on the Saturday after: the TV's programme plays channel 9's sound "
       "(ov004/tv_broadcast.c, autoload_2/sound_object_kinds.c)", "house-turn", "2026-09-12 01:30:00")
+scene("scorpion", "pester", 7610, [2600, 4700, 6080, 6700, 6950, 7300, 7609], frames(6800, 7610, 50),
+      "on a July night a scorpion behind the museum, the net taken from the pockets: it comes for the "
+      "player and stings, the player faints and wakes at the house", rtc="2027-07-20 23:00:07")
+scene("snowball-sink", "unweeded-jan-shovel", 5570, [2600, 3700, 4412, 5020, 5296, 5569], frames(5000, 5570, 25),
+      "in January a hole dug in a snowball's way, the ball pushed into it: it sinks",
+      rtc="2027-01-12 11:30:00")
+scene("snow-insect", "unweeded-jan", 4950, [2600, 3800, 4400, 4752, 4949], frames(4400, 4950, 25),
+      "on a January night the insect of kind 0x23 beside a snowball: the player walks up to it as it "
+      "circles the ball", rtc="2027-01-12 21:00:06")
 
 # ------------------------------------------------------------------------------ saves
 
