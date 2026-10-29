@@ -966,6 +966,10 @@ scene("chat-hold", "seed", 8340, [2600, 4700, 6190, 6900, 7440, 8339], frames(47
       "chat-send's balloon held until it leaves, a new line sent, a second sent while it is shown")
 scene("friends-full", "friends-full", 4530, [2600, 3400, 3700, 4110, 4450, 4529], frames(3300, 4530, 25),
       "the friend roster full: Register refused, a friend deleted by the keys and the rest moved up")
+scene("pockets-backdrop", "seed", 3300, [2600, 3000, 3150, 3299], frames(2900, 3300, 25),
+      "in the pockets, drop the work clothes on the backdrop's place: they become the page's backdrop")
+scene("designs-full", "full-rod", 4000, [2600, 3400, 3700, 3850, 3999], frames(3300, 4000, 25),
+      "in the pockets with every pocket taken, wear a design as a shirt: refused, the error closed")
 scene("pockets-keys", "pockets-keys", 4500, [2600, 3100, 3500, 3900, 4499], frames(2800, 4500, 25),
       "in the pockets by the keys alone: drop, swap and eat items, take bells out of the wallet as bags")
 scene("house-turn", "house-furni", 7300, [2600, 4600, 5549, 5800, 6400, 6800, 7299], frames(5500, 7300, 25),
