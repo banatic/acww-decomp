@@ -277,7 +277,7 @@ match: autoload_2/network:Local_EntryData autoload_2/network:Local_EntryDataSize
 area: Unreachable for one player
 group: Nintendo Wi-Fi Connection
 scene: none: a Wi-Fi visit, the friend list online
-reach: needs the Wi-Fi Connection server (NitroDWC); the runtime has no network. By whole file only ov146 and main/wfc_session, where no scene runs a function; of main/wfc_setup the three functions nothing calls or names (the library's overlay run and its allocator); the rest of main/wfc_*, main/wifi_friends and the network library is in "the link's code in files one player also runs" (findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the Wi-Fi host list (ov146): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt)
+reach: needs the Wi-Fi Connection server (NitroDWC); the runtime has no network. By whole file only ov146 and main/wfc_session, where no scene runs a function; of main/wfc_setup the three functions nothing calls or names (the library's overlay run and its allocator); the rest of main/wfc_*, main/wifi_friends and the network library is in "the link's code in files one player also runs" (findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the Wi-Fi host list (ov146): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, unknown3), the stages past the Internet connection: Wfc_UpdateConnection leaves STAGE_CONNECTING only when DWC_GetInetStatus says the Internet is connected, which needs an access point (the runtime has none: gate-wfc's line 0x5b, connecting for ever), and stages 2-5 are stored only by its later cases, so the login callback (Wfc_OnLoggedIn), the ping callback (Wfc_OnPing), Wfc_BlockNewClients and Net_GetConnectedMask never run, and Wfc_SetFriend and _DeleteFriend return FALSE before their requests (can_change_friends asks for STAGE_READY), so the friend list's callbacks (Wfc_OnFriendDeleted, _OnFriendStatus, _OnFriendsUpdated) never run either (w29/classify.py, gate inet)
 needs: unreachable
 match: main/wfc_session:WfcSession_End main/wfc_session:WfcSession_FinishLetterGet
   main/wfc_session:WfcSession_FinishNoticeGet main/wfc_session:WfcSession_FinishStatsGet
@@ -333,6 +333,10 @@ match: main/wfc_session:WfcSession_End main/wfc_session:WfcSession_FinishLetterG
   ov146/wfc_host_list_rows:WfcHostList_ShowTitles ov146/wfc_host_list_rows:WfcHostList_ShowTitlesOnce
   ov146/wfc_host_list_rows:WfcHostList_StepScroll ov146/wfc_host_list_rows:WfcHostList_TakeLabel
   ov146/wfc_host_list_rows:WfcHostList_UpdateHosts
+  autoload_2/network:Net_GetConnectedMask autoload_2/network:Wfc_BlockNewClients
+  autoload_2/network:Wfc_OnPing autoload_2/network:Wfc_OnLoggedIn
+  autoload_2/network:Wfc_OnFriendDeleted autoload_2/network:Wfc_OnFriendStatus
+  autoload_2/network:Wfc_OnFriendsUpdated
 
 area: Unreachable for one player
 group: the lost child's walk home, and the test character
@@ -1449,7 +1453,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
 area: Unreachable for one player
 group: the destructors of vtable slot 0 of those classes
 scene: none: the destructor without the free (vtable slot 0) of the same classes (and their bases' and receivers'), which only the deleting destructors above call
-reach: through slot 0 the images call a destructor only in Heap_Destroy (the heaps) and in LabelBox_Free and TextDraw_FreeBoxes (the boxes of the list data_021c81bc, which only LabelBox_New and _NewInVram fill, each with LabelBox's vtable); the other calls through offset 0 run a method (start, init, run, position, posts) or a member-function pointer; each of these is named only by such a slot 0 and called only by the group above or by functions found so (findings 2026-10-28, town5); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides, the quick message's classes and the exchange talk's, which were in "code only unreachable code calls" and are named only by their vtables (findings 2026-10-29, proofs1)
+reach: through slot 0 the images call a destructor only in Heap_Destroy (the heaps) and in LabelBox_Free and TextDraw_FreeBoxes (the boxes of the list data_021c81bc, which only LabelBox_New and _NewInVram fill, each with LabelBox's vtable); the other calls through offset 0 run a method (start, init, run, position, posts) or a member-function pointer; each of these is named only by such a slot 0 and called only by the group above or by functions found so (findings 2026-10-28, town5); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides, the quick message's classes and the exchange talk's, which were in "code only unreachable code calls" and are named only by their vtables (findings 2026-10-29, proofs1); besides (findings 2026-10-29, unknown3), the quick message's board, receiver, sender, name and balloon (QuickMessage_BoardDestruct, _ReceiverDestruct, _SenderDestruct, _NameDestruct, _BalloonDestruct): the quick message is a resident process never deleted (QuickMessage_Destruct and _DestructFree are proved), the receiver's QuickMessage_ReadRecords constructs a name only past Session_IsLinked (the link guard), and the board constructs its balloons by __cxa_vec_ctor (gate nothrow); what is left are the words at slot 0 of their vtables
 needs: unreachable
 match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   main/animated_model:AnimatedModel_DestructBlendedFromFrames
@@ -1520,6 +1524,9 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov004/tv:TvReceiver_Destroy ov009/scene_actor_life:SceneActor_ReceiverDestructComplete
   ov068/house_visitor:HouseVisitorTalk_Destroy ov068/sequence4:Sequence4_ReceiverDestroy
   ov111/chat_scene:ChatLine_Destruct
+  main/quick_message:QuickMessage_BoardDestruct main/quick_message:QuickMessage_ReceiverDestruct
+  main/quick_message:QuickMessage_SenderDestruct main/quick_message:QuickMessage_NameDestruct
+  main/quick_message:QuickMessage_BalloonDestruct
 
 area: Unreachable for one player
 group: code only unreachable code calls, overlays told apart
@@ -1946,6 +1953,31 @@ match: autoload_2/network:Local_CountParents autoload_2/network:Local_End
   ov003/town_insect_tables:TownInsectTables_WriteRecord ov104/letter_send:LetterSend_BeginLinkedPost
   ov104/letter_send:LetterSend_HasLetterToSelf
 
+area: Unreachable for one player
+group: the caution window's states: the session's error flags stay 0
+scene: none: the caution window's states 2-7 (delay, open, countdown, shutdown, last message, end) and what only they call: the window's line, seconds and error code drawn, the sound stopped, the planes hidden, the card and the session shut down
+reach: the main loop hands CautionWindow_UpdateGlobal trouble only when the session's shown error flags are not 0, and they are its error flags (NetSession.error_flags, +0x120 of the global session data_021d0a44, named only by data_020ccf94 and its static initialiser; no other store at +0x120 is the session's and no block copy writes it), which only Session_SetErrorFlags writes: Session_ResetPlayer 0, Session_Update past Session_IsSlotTaken (the link guard), Session_RaiseSendTimeout and LinkState_SystemStep (the link jobs and the linked session), CautionWindow_RaiseEndFailure only when Net_End fails (the local library, or no library while the session is active, which Session_Start's Wfc_Setup and Session_StartExchange's Exchange_Init never leave), and CautionWindow_CheckNetError only in network modes 1-4 with connect mode 0 or 1 (mode 5, the exchange, gives error 0): modes 1 and 2 are the local wireless library's (Local_Setup), 3 and 4 are set by Wfc_Setup, whose only reached Session_Start is GatekeeperTalk_StartWfc's with connect mode 2, and by Wfc_HostGame and _JoinFriendGame; connect mode 0 or 1 is set by Session_Reset only at boot and after Net_End's MODE_ENDED, and otherwise only by the gatekeeper's visits and the link jobs. So CautionWindow_IdleUpdate never leaves state 1, and states 2-7 are set only by their Enter functions (findings 2026-10-29, unknown3; the scratchpad's w29/classify.py, gate caution)
+needs: unreachable
+match:
+  main/lid_sleep:LidSleep_SetFlags main/backup_card:BackupCard_Shutdown
+  main/caution_window:CautionWindow_EndUpdate main/caution_window:CautionWindow_EnterEnd
+  main/caution_window:CautionWindow_LastMessageUpdate
+  main/caution_window:CautionWindow_EnterLastMessage
+  main/caution_window:CautionWindow_ShutdownUpdate
+  main/caution_window:CautionWindow_EnterShutdown
+  main/caution_window:CautionWindow_CountdownUpdate
+  main/caution_window:CautionWindow_EnterCountdown main/caution_window:CautionWindow_OpenUpdate
+  main/caution_window:CautionWindow_EnterOpen main/caution_window:CautionWindow_DelayUpdate
+  main/caution_window:CautionWindow_EnterDelay main/caution_window:CautionWindow_StopSound
+  main/caution_window:CautionWindow_HidePlanes main/caution_window:CautionWindow_ComposeLine
+  main/caution_window:CautionWindow_DrawSeconds main/caution_window:CautionWindow_DrawLine
+  main/caution_window:CautionWindow_ClearTexture main/caution_window:CautionWindow_UploadLine
+  main/caution_window:CautionWindow_ErrorCodeText main/caution_window:CautionWindow_WidenText
+  main/caution_window:CautionWindow_RecordNetError main/display_shadow:DisplayShadow_GetSubPlanes
+  main/display_shadow:DisplayShadow_GetSubWindows main/label_box:LabelBox_TextWidth
+  main/lid_sleep:LidSleep_KeepSoundOff main/link_state:LinkState_GlobalReset
+  main/session_link:Session_Close main/session_link:Session_ResetLinkStatus
+
 area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
 scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
@@ -2107,9 +2139,14 @@ match: ov121/* ov123/* ov125/* main/design*
 area: Pockets, menus and letters (the seed's day)
 group: chat, board, keyboard entry and name screens
 scene: type and send a chat message, write and read the bulletin board by keys, the keyboard entry's other modes (names, friend codes, catchphrases), the han panel's messages
-reach: the menus tab; the town hall board; a villager asking for a nickname or catchphrase opens the keyboard
+reach: the menus tab; the town hall board; a villager asking for a nickname or catchphrase opens the keyboard; besides (findings 2026-10-29, unknown3), the chat's own quick message balloon, which chat-send places (ChatScene_PostMessage, QuickMessage_Post) and holds: it holds 600 frames before it leaves (QuickMessage_BalloonStartLeaving, _Leaving, _FreeNameBox, _FreeTextBox, _Stop), and a second line sent while it is shown releases it (QuickMessage_PlaceBalloon's QuickMessage_BalloonRelease): send a line, wait over 600 frames, send two lines in a row
 needs: seed
 match: ov111/* ov112/* ov113/* ov124/* ov126/* main/bbs
+  main/quick_message:QuickMessage_BalloonStartLeaving
+  main/quick_message:QuickMessage_BalloonLeaving
+  main/quick_message:QuickMessage_BalloonFreeNameBox
+  main/quick_message:QuickMessage_BalloonFreeTextBox main/quick_message:QuickMessage_BalloonStop
+  main/quick_message:QuickMessage_BalloonRelease
 
 area: Pockets, menus and letters (the seed's day)
 group: catalogs, map, friends, tunes, songs, storage
