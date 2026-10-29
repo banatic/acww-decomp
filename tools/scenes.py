@@ -920,6 +920,9 @@ SAVES["gift-full"] = [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) f
 # "able-shop" with 99,990 bells: what Mabel pays for clothes sold does not fit in the wallet and
 # goes into bags (ov049/mabel_talk.c, line 0x1e)
 SAVES["able-shop-rich"] = SAVES["able-shop"] + [(MONEY, "<I", 99990)]
+# "visitor-41" with a fish (0x12e8) in pocket 11, where the seed keeps the work clothes: the walrus
+# eats it and gives a design for it (ov079/walrus_talk.c)
+SAVES["visitor-fish"] = SAVES["visitor-41"] + [(POCKETS + 22, "<H", 0x12E8)]
 # "wallet" with the player insured and covered (the player record's flags 0x17 and 0x18 set in
 # its first flag word at 0x23f8, on a day before) and the item 0x3934, one the insurance seller
 # takes as a claim (ov071/insurer_talk.h), in pocket 0
@@ -1179,6 +1182,9 @@ scene("fortune-tent", "wallet", 7450, [4150, 4900, 5600, 6400, 7300, 7449], fram
 scene("fortune-match", "wallet", 11560, [4150, 7450, 9200, 9950, 10700, 11559], frames(9000, 11560, 100),
       "fortune-tent, then the second reading: a name typed on the keyboard, taken and read for its match",
       rtc="2026-10-12 10:00:00")
+scene("fortune-closed", "visitor-3f", 5688, [2600, 4150, 4900, 5300, 5687], frames(4500, 5688, 25),
+      "on the fortune teller's day before 6:00, A at her tent's door: it is closed", recording="fortune-closed",
+      rtc="2026-09-12 05:00:00")
 scene("resetti", "resetti", 9010, [2600, 2800, 5000, 7600, 9009], frames(2700, 9010, 100),
       "after a play that was not saved, the mole comes up before the house and gives his first lecture")
 scene("gate-night", "seed", 9300, [2600, 5200, 7000, 8100, 9299], frames(5100, 9300, 100),
@@ -1208,6 +1214,8 @@ scene("saharah", "visitor-3e", 7000, [2600, 3500, 4800, 6400, 6999], frames(3400
       "the player to deliver")
 scene("wendell", "visitor-41", 5600, [2600, 3500, 4500, 5599], frames(3400, 5600, 100),
       "on a day the schedule gives the walrus, find him in the west and give him what he asks for")
+scene("wendell-fish", "visitor-fish", 7226, [2600, 3500, 4500, 5300, 6200, 7225], frames(4400, 7226, 50),
+      "on the walrus's day, give him a fish: thrilled, he gives a design of it, put in the first design slot")
 scene("house-visitor", "house-visitor", 13060, [2600, 3700, 6000, 9500, 12000, 12900, 13059], frames(3400, 13060, 100),
       "in the house at the time a villager said it would come: it rings, comes in, talks of the "
       "room again and again, walks about it and leaves")
