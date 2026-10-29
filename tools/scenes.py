@@ -909,6 +909,23 @@ SAVES["pluck"] = [town_item(41, 56, 0x1F), town_item(41, 58, 0x70), (HELD, "<H",
 # the shovel held and the axe in pocket 0: a hole dug, the axe taken from the pockets, then B
 # facing the hole (FieldActor_TryTargetMode2: the shovel's tool value 2 asks for no hole)
 SAVES["hole-axe"] = [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x136B)]
+# the face item 0x1483 worn (the player record's part C at 0x240c): one of 0x1471-0x1491 whose
+# pair's head item counts (its always.bin flags bit 1), so the actor's look reads its number
+# among those pairs (FieldActor_ApplyPartC, ItemTraits_PairFaceNumber)
+SAVES["face-pair"] = [(0x14 + 0x240C, "<H", 0x1483)]
+# "full-rod" with the present 0x156b on the tile two south of the house's door: taken up with the
+# pockets full, it is swapped in as an item drawn for it (main/current_pockets.c)
+SAVES["gift-full"] = [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)] + [
+    town_item(41, 56, 0x156B)]
+# "able-shop" with 99,990 bells: what Mabel pays for clothes sold does not fit in the wallet and
+# goes into bags (ov049/mabel_talk.c, line 0x1e)
+SAVES["able-shop-rich"] = SAVES["able-shop"] + [(MONEY, "<I", 99990)]
+# "wallet" with the player insured and covered (the player record's flags 0x17 and 0x18 set in
+# its first flag word at 0x23f8, on a day before) and the item 0x3934, one the insurance seller
+# takes as a claim (ov071/insurer_talk.h), in pocket 0
+SAVES["insured"] = [(MONEY, "<I", 30000), (0x14 + 0x23F8, "<I", 0x1806608), (POCKETS, "<H", 0x3934)]
+# "wallet" with the scallop 0x1559 the otter asks for in pocket 0 (ov076/otter_talk.h)
+SAVES["scallop"] = [(MONEY, "<I", 30000), (POCKETS, "<H", 0x1559)]
 
 
 def room_item(x: int, y: int, number: int, room: int = 0, side: int = 0) -> tuple[int, str, int]:
@@ -1128,6 +1145,9 @@ scene("fox-tent", "wallet", 12950, [2600, 4400, 5500, 7300, 9900, 11000, 12949],
 scene("insurance", "wallet", 11800, [2800, 3900, 6600, 8600, 10100, 11100, 11799], frames(4200, 11800, 100),
       "on a Saturday morning, the insurance seller comes up to the player: answer his survey and "
       "buy his insurance", rtc="2026-09-12 10:00:00")
+scene("insurance-claim", "insured", 9700, [2800, 4240, 6000, 7500, 9000, 9699], frames(4200, 9700, 100),
+      "on a Saturday morning, insured and covered, the insurance seller comes up to the player: he takes "
+      "the claimed item from the pockets", rtc="2026-09-12 10:00:00")
 scene("bug-off", "net", 8340, [4100, 4900, 7100, 7950, 8339], frames(4600, 8340, 100),
       "on the day of the bug-off, hear the turtle's rules and offer him what the pockets hold",
       rtc="2026-09-20 13:00:00")
@@ -1138,6 +1158,15 @@ scene("gracie-design", "design-worn", 15200, [4000, 4400, 7400, 9200, 13200, 143
       "gracie with one of the player's designs worn as the shirt: her greeting asks every item kind "
       "for the shirt's group, and she stands once the talk has ended", recording="gracie",
       rtc="2026-09-14 14:00:00")
+scene("pascal-scallop", "scallop", 9328, [4000, 4900, 5600, 6400, 7200, 8200, 9327], frames(4800, 9328, 50),
+      "on the otter's day with the scallop he asks for: give it to him from the pockets, then pick the gold "
+      "axe at his question", rtc="2026-09-28 10:00:00")
+scene("face-pair", "face-pair", 2700, [1300, 2300, 2600, 2699], frames(2300, 2700, 25),
+      "boot into the town wearing a face item of a pair whose head item counts: the look reads its number",
+      recording="tools")
+scene("gift-swap", "gift-full", 3360, [2600, 2700, 2900, 3150, 3359], frames(2600, 3360, 20),
+      "with the pockets full, take up a present lying in front of the house and swap it in for a pocket's "
+      "item: the present becomes an item drawn for it")
 scene("acorn-festival", "wallet", 8540, [4100, 4600, 6400, 7400, 8539], frames(4500, 8540, 100),
       "in the week of the acorn festival, hear its character tell of it and read the player's fortune",
       rtc="2026-10-06 10:00:00")
@@ -1356,6 +1385,8 @@ scene("able-designs", "able-shop", 13896, [2600, 4700, 6300, 8100, 10000, 12000,
       "buy one of theirs and swap one")
 scene("able-sell", "able-shop", 6963, [2600, 4700, 5300, 5900, 6500, 6962], frames(4700, 6963, 50),
       "sell two shirts to Mabel by the pen, open the sell window again and cancel it")
+scene("able-sell-bags", "able-shop-rich", 6963, [2600, 4700, 5300, 5900, 6500, 6962], frames(4700, 6963, 50),
+      "able-sell with a full wallet: Mabel pays for the shirts in bags", recording="able-sell")
 scene("kk-show", "museum", 12973, [2600, 8500, 9500, 10900, 11500, 12972], frames(8500, 12973, 50),
       "on a Saturday night in the cafe, sit down before K.K.'s stage: his show and the staff roll begin",
       rtc="2026-09-12 20:30:00")
