@@ -846,6 +846,9 @@ def villager_mode(villager: int, mode: int) -> list[tuple[int, str, int]]:
 # (clothes) with six shirts
 SAVES["mode-2-fossils"] = villager_mode(3, 2) + [(POCKETS + 2 * i, "<H", 0x450C + 4 * i) for i in range(6)]
 SAVES["mode-3-clothes"] = villager_mode(3, 3) + [(POCKETS + 2 * i, "<H", 0x11A8 + 8 * i) for i in range(6)]
+# villager 3 in each pastime, nothing else changed: the pastime's topics
+for _mode in range(8):
+    SAVES[f"mode-{_mode}"] = villager_mode(3, _mode)
 
 
 def villager_errand(villager: int, kind: int, step: int, low: int = 0, player: bool = False, item: int = 0xFFF1,
@@ -878,6 +881,10 @@ SAVES["errand-insect-less"] = villager_errand(0, 0, 2, player=True, item=0x12B0)
 SAVES["errand-low2"] = villager_errand(0, 0, 0, low=2, player=True, item=0x12B0)
 SAVES["errand-done-2-1"] = villager_errand(0, 2, 1, low=2, player=True)
 SAVES["errand-done-4-0"] = villager_errand(0, 4, 0, low=2, player=True)
+# villager 0's errand of an insect (type 0) or a fish (type 1) at a step, nothing asked for yet and no
+# player named: the first talk draws the creature by the step's picker (VillagerTalkPick_*)
+for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4)):
+    SAVES[f"errand-pick-{_kind}-{_step}"] = villager_errand(0, _kind, _step)
 
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
 # checkpoints, the frames that show the scene's intent (--look), and what that is.
@@ -1849,6 +1856,30 @@ scene("field-pluck", "pluck", 3048, [2600, 2800, 2950, 3047], frames(2700, 3048,
 scene("hole-step", "hole-axe", 4056, [2600, 3060, 3600, 3900, 4055], frames(3000, 4056, 25),
       "dig a hole south of the house, take the axe from the pockets, B facing the hole: field actor states "
       "0x66 and 0x67, effect 0x23, tile event 10")
+scene("villager-pit-talk", "pitfall", 11777, [2600, 4100, 8000, 10300, 10577, 11200, 11776], frames(10300, 11777, 50),
+      "villager-pitfall with the player walking up to villager 3 in the pitfall and talking to it there: the "
+      "pitfall's line table, then it climbs out")
+scene("villager-event-4", "seed", 6620, [2600, 3900, 4600, 5110, 6000, 6619], frames(4600, 6620, 50),
+      "on the third Sunday of September at 13:00 the event's announcement read on, a villager talked to: the "
+      "event's line table, its line by the hour", rtc="2026-09-20 13:00:00")
+scene("villager-event-3", "seed", 6436, [2600, 3900, 4600, 5300, 6000, 6435], frames(4600, 6436, 50),
+      "on the third Sunday of November at 13:00 the event's announcement read on, a villager talked to: the "
+      "event's line table, its line by the hour", rtc="2026-11-15 13:00:00")
+scene("villager-event-8", "seed", 6448, [2600, 3900, 4600, 5300, 6000, 6447], frames(4600, 6448, 50),
+      "on 31 December at 11:30 the event's announcement read on, a villager talked to: the day window's line "
+      "table, a line by the time of day and a random choice", rtc="2026-12-31 11:30:00")
+scene("villager-event-8-night", "seed", 6392, [2600, 3900, 4600, 5300, 6000, 6391], frames(4600, 6392, 50),
+      "villager-event-8 at 23:30: the countdown's line of the year's last hour", rtc="2026-12-31 23:30:00")
+scene("acorn-refuse", "acorns", 9404, [2800, 4200, 6000, 8100, 8194, 8800, 9403], frames(8000, 9404, 50),
+      "acorn-ask with the pockets closed and no acorn given: the villager's line for nothing given",
+      rtc="2026-10-06 10:00:00")
+scene("acorn-thanks", "acorns", 9701, [2800, 4200, 6000, 8100, 8500, 9000, 9700], frames(8000, 9701, 50),
+      "acorn-ask one frame later from the pockets: the acorn given, the villager thanks the player with an item",
+      rtc="2026-10-06 10:00:00")
+for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4)):
+    scene(f"villager-pick-{_kind}-{_step}", f"errand-pick-{_kind}-{_step}", 5748, [2600, 4138, 5000, 5747],
+          frames(4200, 5748, 50), f"the owner's errand of {('an insect', 'a fish')[_kind]} at step {_step}, nothing "
+          "asked for yet: the creature asked for is drawn by the step's picker", "villager-errand-pick")
 
 # ------------------------------------------------------------------------------ saves
 
