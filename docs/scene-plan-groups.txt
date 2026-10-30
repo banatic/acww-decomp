@@ -1196,6 +1196,13 @@ needs: unreachable
 match: ov004/room_object_02253058:RoomObject02253058_EnterPushed
 
 area: Unreachable for one player
+group: the fox's tent's state 4, which no code asks for
+scene: none: state 4 of the fox in his tent (ov052/fox_tent.c, FOX_TENT_FOLLOW_4), its entry and update
+reach: (findings 2026-10-30, rows12) FoxTent_EnterFollow4 and _UpdateFollow4 are named only by the table of his states (data_ov052_02262000, which ov052's static initialiser fills), read by FoxTent_SetState and FoxTent_Update with the state he is in. His state is written only by FoxTent_SetState, which only ov052's code calls (FoxTent_TalkAtExit, _OnEvent, _UpdateCome, _UpdateTalkThenOut, _UpdateTalk, _UpdateTurn, _UpdateStand, _Start and the follow of states 3 and 4), each with a constant: 0-3 and 5-10, never 4 (w52-wt5/cls/classify.py, gate value)
+needs: unreachable
+match: ov052/fox_tent:FoxTent_EnterFollow4 ov052/fox_tent:FoxTent_UpdateFollow4
+
+area: Unreachable for one player
 group: the field actor's closed lid and low battery
 scene: none: states 0x83 (the lid closed) and 0x84 (a low battery) of the field actor, and their requests
 reach: FieldActor_CheckBatteryAndLid asks for them on BatteryWarning_IsLow and on bit 15 of the ARM7's word at 0x027fffa8 (the lid), which a recording cannot make; the states' messages ask for them for another console's actor; besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py)

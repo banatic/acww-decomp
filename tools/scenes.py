@@ -531,6 +531,13 @@ SAVES["sky-visitor"] = [(HELD, "<H", 0x137A), (MONEY, "<I", 30000), (SCHEDULE_TO
 # as "sky-visitor" with event 0x44: Gulliver's spaceship (the sky's visitor of kind 6) crosses
 SAVES["sky-ship"] = [(HELD, "<H", 0x137A), (MONEY, "<I", 30000), (SCHEDULE_TODAY, "<B", 0x44),
                      (SCHEDULE_TODAY + 2, "<B", 0), (0x17218 + 0x12, "<B", 0x44)]
+# the seed with the crashed spaceship's building 0x5020 at tile 19, 20 (acre 0, tile 67 of the town's
+# layer 0), where gulliver's crash puts it in place of a building 0x500a
+SAVES["ship-crashed"] = [(0xD3AE, "<H", 0x5020)]
+# barber's save with the hat 0x4000 worn (the player record's head item, 0x240a)
+SAVES["barber-hat"] = SAVES["barber"] + [(0x14 + 0x240A, "<H", 0x4000)]
+# the seed with the item 0x37e0 in pocket 14, which the turtles of overlays 84 and 86 ask for
+SAVES["turtle-37e0"] = [(POCKETS + 28, "<H", 0x37E0)]
 
 # the paper 0x1020 (the one Tom Nook's job gives for a letter, "job-0f") in pocket 0: written from
 # the pockets, a letter with a header whose addressee the letter screen's choice picks
@@ -2309,6 +2316,23 @@ scene("reaction-leave", "visitor-43", 16288, [2600, 11900, 14243, 15000, 15900, 
 scene("fox-again", "wallet", 13907, [2600, 5500, 12949, 13300, 13600, 13906], frames(12900, 13907, 25),
       "fox-tent, then A at the tent's door again: the fox outside talks of a second visit and takes the "
       "player in again")
+scene("fortune-midnight", "visitor-3f", 6731, [2600, 4880, 5500, 5900, 6300, 6730], frames(4800, 6731, 50),
+      "on the fortune teller's day, into her tent just before midnight and wait: after 0:00 she tells the "
+      "player she must leave early and puts the player out", recording="fortune-midnight",
+      rtc="2026-09-11 23:58:30")
+scene("barber-hat", "barber-hat", 11701, [3900, 5700, 9000, 10499, 11000, 11700], frames(10400, 11701, 50),
+      "barber with a hat worn: she takes it off before the cut, puts it back after and walks back to her place")
+scene("ship-reverted", "ship-crashed", 2701, [1300, 2300, 2600, 2700], frames(2300, 2701, 25),
+      "boot with the crashed spaceship's building in the town on a day without event 0x44: the day's start "
+      "takes it away and clears Gulliver's parts")
+scene("insurance-claim-wait", "insured", 10301, [2800, 6000, 9000, 9699, 10000, 10300], frames(9600, 10301, 25),
+      "insurance-claim, then a wait: the claim's next line is asked for", rtc="2026-09-12 10:00:00")
+scene("fireworks-chair", "turtle-37e0", 6905, [4400, 5400, 5800, 6300, 6904], frames(5300, 6905, 50),
+      "fireworks with the massage chair in the pockets: the turtle asks for it and the first answer gives "
+      "it", rtc="2027-08-07 20:00:00")
+scene("new-year-chair", "turtle-37e0", 7081, [4100, 5300, 6280, 6700, 7080], frames(6200, 7081, 50),
+      "new-year with the massage chair in the pockets: the turtle asks for it and the first answer gives it",
+      rtc="2026-12-31 23:40:00")
 
 # ------------------------------------------------------------------------------ saves
 
