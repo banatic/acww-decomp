@@ -1,12 +1,12 @@
-From 418 scene lists: 25,251 Clean game functions, run 20,788, function check only 1,114, read only 3,349; the groups below hold 4,463 (function check only + read only).
+From 423 scene lists: 25,251 Clean game functions, run 20,798, function check only 1,111, read only 3,342; the groups below hold 4,453 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 601 |
-| date | 168 |
+| seed | 599 |
+| date | 160 |
 | unknown | 452 |
 | unreachable | 3,242 |
-| total | 4,463 |
+| total | 4,453 |
 
 ## Unreachable for one player (3,242)
 
@@ -120,19 +120,19 @@ From 418 scene lists: 25,251 Clean game functions, run 20,788, function check on
 | villagers out in the town | 94 (23 / 71) | ov068/outdoor_villager_acts 11, ov068/outdoor_villager_moves 9, main/villager_memories 8, main/villager_house_items 6, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (41) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 | the talk engine: tags, pages, windows, sliders | 58 (28 / 30) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 8 more files (12) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 
-## Other dates, times and visitors (for the boot on another day) (175)
+## Other dates, times and visitors (for the boot on another day) (167)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| insects and fish of other months and hours | 55 (18 / 37) | ov003/fish_shadow 9, ov003/town_insect_moves 7, ov003/town_insect_kinds 6, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov004/aquarium_fish 5, ov003/fish_shadow_swim 4, ov003/town_insect 4, 4 more files (9) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
+| insects and fish of other months and hours | 53 (18 / 35) | ov003/fish_shadow 8, ov003/town_insect_moves 7, ov003/town_insect_kinds 6, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov004/aquarium_fish 5, ov003/town_insect 4, ov003/fish_shadow_swim 3, 4 more files (9) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
 | seasons, weather, the sky and the new day | 35 (8 / 27) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/creature_draw 2, main/insect_draw 2, main/sky 2, main/town_growth 2, main/town_spawn 2, 4 more files (4) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
-| Tortimer's events and holidays | 21 (10 / 11) | main/event_winner 3, main/event_kinds 2, main/event_queue 2, ov083/turtle_gardens 2, main/event_buildings 1, main/event_schedule 1, main/sky_events 1, ov003/etc_board 1, 8 more files (8) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
+| Tortimer's events and holidays | 20 (10 / 10) | main/event_kinds 2, main/event_queue 2, main/event_winner 2, ov083/turtle_gardens 2, main/event_buildings 1, main/event_schedule 1, main/sky_events 1, ov003/etc_board 1, 8 more files (8) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
 | Redd and his tent | 10 (2 / 8) | ov003/fox 4, ov052/fox_tent 4, main/fox_shop 2 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
-| the acorn collector and Dr. Shrunk | 10 (3 / 7) | ov088/reaction_npc_talk 6, ov088/reaction_npc 3, ov087/acorn_npc 1 | acorns traded (items 0x1542-0x1546), a reaction taught | autumn days for the acorns; the days of Dr. Shrunk | date |
 | villagers' birthdays, sickness and visits | 8 (4 / 4) | ov068/cafe_room 4, ov004/birthday_guest 1, ov004/birthday_villager 1, ov068/cafe_guest 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
 | the lost child and the mother | 6 (3 / 3) | main/missing_npc1 5, main/missing_npc2 1 | what lost-child and lost-mother leave: the child's pause and its state facing the player, the mother's steering | a pairing with another town in its last week (saves lost-child and lost-mother, main/paired_town.h) | seed |
 | Pascal | 5 (1 / 4) | ov076/otter 4, ov076/otter_talk 1 | the otter: his gift for an item | the days the calendar has him | date |
 | Saharah and Wendell | 5 (2 / 3) | ov079/walrus 3, ov078/camel 1, ov079/walrus_talk 1 | the camel's carpet trade, the walrus's wallpaper for a fish | the weekdays the schedule gives them; besides (findings 2026-10-29, unknown2), the scene motion of kind 19 and its scene command (SceneCommand_RequestMotion19, its start, run and wait, SceneMotion_StartKind19, _RunKind19 and its step, _Kind19After): only WalrusTalk_Slot10 asks for it, when Wendell's line shown is WALRUS_TALK_LINE_MOTION_19 (0x0f) | date |
+| the acorn collector and Dr. Shrunk | 5 (2 / 3) | ov088/reaction_npc 3, ov087/acorn_npc 1, ov088/reaction_npc_talk 1 | acorns traded (items 0x1542-0x1546), a reaction taught | autumn days for the acorns; the days of Dr. Shrunk | date |
 | the flea market and Joan | 4 (1 / 3) | ov004/flea_market_buyer 2, ov004/flea_market_villager 1, ov073/boar 1 | the villagers' flea market in the town hall; Joan's turnips on Sunday mornings (pending scene sunday-joan) | the flea market's dates; any Sunday 6:00-12:00 | date |
 | Katrina, the fortune teller | 3 (2 / 1) | ov045/fortune_teller 3 | her tent in the town square: a fortune told, the tarot cards | a weekday the schedule (main/event_schedule.h) gives her | date |
 | the insurance seller | 3 (2 / 1) | ov071/insurer 2, ov071/insurer_talk 1 | the otter of sp_npc_insurance: the policy and its letters | the days the calendar has him | date |
@@ -143,11 +143,11 @@ From 418 scene lists: 25,251 Clean game functions, run 20,788, function check on
 | the outdoor fox's talking motions | 1 (1 / 0) | main/talk_receiver 1 | Redd outdoors on his day, talked to again (his lines 0x31, 0x32 or 0x34) | TalkReceiver_Nothing38, the talk receiver's slot 0x38, which the talk calls for every tag of group 7 (TalkTags_SpeakerTalkStyle): the outdoor fox of overlay 3 (ov003/fox.c) keeps it in its receiver's vtable 0x022386f4, and its lines 0x31 (second visit), 0x32 (again) and 0x34 (before six) of sp_npc_fox hold tags 7/17, 7/4, 7/0 and 7/20; line 0, which the scenes play, holds none (w32/msgtags.py; findings 2026-10-29, twins, second commit) | date |
 | Gracie | 1 (1 / 0) | ov070/giraffe 1 | the giraffe's fashion check in the town | a weekday the schedule gives her | date |
 
-## New player and title (the seed's save) (28)
+## New player and title (the seed's save) (26)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| a second player and the title screen | 23 (12 / 11) | main/player_field_2416 6, main/player_options 5, main/player_record 5, ov068/sequence4 2, ov068/town_nook 2, main/player_records 1, ov051/taxi_driver_talk 1, ov147/title_logo 1 | from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices | the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day | seed |
+| a second player and the title screen | 21 (10 / 11) | main/player_options 5, main/player_record 5, main/player_field_2416 4, ov068/sequence4 2, ov068/town_nook 2, main/player_records 1, ov051/taxi_driver_talk 1, ov147/title_logo 1 | from the title: start a new player in the seed's town (the taxi ride, Kapp'n's questions, Nook's welcome, the house), the title menu's other choices | the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day | seed |
 | Mr. Resetti | 5 (4 / 1) | ov077/mole 5 | the mole's lectures after a quit without saving (scenes resetti, resetti-2, resetti-3, resetti-4: the first, third, fourth and fifth) | saves resetti and resetti-2..5 (record 0's flag 2 set, the lecture count at 0x2423 of the record); the count less one after the load's raise picks the lecture, and count 5 draws one of the earlier ones again | seed |
 
 ## Findings on the triggers (2026-10-22)
@@ -2881,3 +2881,27 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (412 lists, main 631f21ff): seed 603, date 185, unknown 453, unreachable 3,242;
   after (418): seed 601, date 168, unknown 452, unreachable 3,242. Checked in a run: 20,769
   before, 20,789 after.
+
+### The reaction teacher's second lesson, a fish let go or scared off, the contests' notices (2026-10-30, dates3, second batch)
+- The reaction teacher with a player he taught on an earlier day (save pupil: the player
+  record's flag 0x10, reaction 0x17 in motion slot 0) asks about the player's training (line
+  0x13 or 0x14); "in a slump" makes him offer reactions not known yet (ReactionNpcTalk_SetAnswers
+  way 0, _PickUnknown, _CountUnknown, _StepOffer) and watch for the one picked (_StepWatch):
+  scene reaction-pupil. "Of course" gets only his "?" and the question again.
+- The fish of fish-catch's third cast reeled in while it comes up to the float lets go of the line
+  (FishShadow_DropLine: fish-drop, A at 4560), and while it nibbles takes fright
+  (FishShadowHook_StepFlee: fish-scare, A at 4750).
+- A contest's record (event_record) with a winner and the notice flag (0x0f of the state block)
+  is acted on by the next day's start (TownDay_Pass, EventWinner_SendLetters): the entrants are
+  asked for (PlayerField2416_Fishing or _Insects) and the notice posted
+  (EventWinner_PostNotice). Saves contest-won and bugoff-won (museum, the record of the seed's
+  day won by villager 0), booted on 12 September: scenes contest-notice and bugoff-notice
+  (kk-request's boot). With the player as the winner and entered, nothing more ran.
+- Not reached: a snowman. Booted 12 January 2027 11:30:04 (unweeded-jan) the two loose balls lie
+  at (64.5, 64.5) and (73.5, 66.5), south of the river's eastern arm (the player stops at
+  (64.2, 53.5) on its north bank past the bridge at z 44), so neither can be rolled 13 tiles of
+  snow towards the other. The frog (fish kind 0xb, the only shadow with FishShadowSense) was not in
+  the river's mouth in June or July 2027 (fish-catch's walk).
+- The plan before (418 lists): seed 601, date 168, unknown 452, unreachable 3,242; after (423):
+  seed 599, date 160, unknown 452, unreachable 3,242. Checked in a run: 20,789 before, 20,799
+  after.

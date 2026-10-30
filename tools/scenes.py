@@ -740,6 +740,12 @@ def event_record(item: int, day: tuple[int, int, int], kind: int, size: int = 0x
 
 SAVES["tourney-fish"] = [(HELD, "<H", 0x1374), (POCKETS, "<H", 0x12E8)] + event_record(0x12F2, (25, 10, 26), 1)
 SAVES["bugoff-insect"] = [(HELD, "<H", 0x1376), (POCKETS, "<H", 0x12B0)] + event_record(0x12B4, (20, 9, 26), 2)
+# as "museum" with a fishing tourney won by villager 0 on the seed's day and its notice due (flag
+# 0x0f of the state block's flags at 0x173f4, the seed's 0x101): the next day's start sends the
+# entrants' letters and posts the notice (main/event_winner.c, EventWinner_SendLetters)
+SAVES["contest-won"] = SAVES["museum"] + event_record(0x12F2, (11, 9, 26), 1) + [(0x173F4, "<I", 0x8101)]
+# the same for a bug-off (kind 2)
+SAVES["bugoff-won"] = SAVES["museum"] + event_record(0x12B4, (11, 9, 26), 2) + [(0x173F4, "<I", 0x8101)]
 
 # the town record's dated events (main/town_day.h, TownDayEvent at 0x17278 of the state block, four
 # of 12 bytes, id 99 for none) holding events 0x11 and 0x62 of last year: the town's day ends them
@@ -967,6 +973,11 @@ SAVES["house-carry"] = SAVES["house-placed"] + [(0xF52C + 0x200 + 2 * (4 + 16 * 
 # (ov068/cafe_guest.c, CafeGuest_Init); booted on the seed's day, the plan is not drawn again
 DAY_PLAN = 0xF52B
 SAVES["cafe-plan"] = SAVES["museum"] + [(DAY_PLAN, "<B", 0xC7)]
+# as "visitor-43" taught by the reaction teacher on an earlier day: the player record's flag 0x10
+# (bit 16 of the flags at 0x23f8, the seed's 0x6608) and reaction 0x17 in motion slot 0 (the
+# record's four slots at 0x23e8, the seed's all 0xff), as his first lesson leaves them
+# (ov088/reaction_npc_talk.c)
+SAVES["pupil"] = SAVES["visitor-43"] + [(0x14 + 0x23F8, "<I", 0x16608), (0x14 + 0x23E8, "<B", 0x17)]
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -2031,6 +2042,17 @@ scene("flea-market-bye", "wallet", 9266, [4100, 5500, 7330, 8500, 8900, 9265], f
 scene("flea-buyer-bye", "wallet", 12110, [4100, 5500, 8500, 10300, 10700, 11400, 12109], frames(10300, 12110, 50),
       "flea-buyer, then to the house's door: the buyer says goodbye and leaves with the player",
       rtc="2026-10-03 10:00:00")
+scene("fish-drop", "golden-rod", 4960, [2600, 3700, 4500, 4600, 4959], frames(4400, 4960, 25),
+      "fish-catch's third cast, reeled in while the fish comes up to the float: it lets go of the line")
+scene("fish-scare", "golden-rod", 5150, [2600, 3700, 4500, 4800, 5149], frames(4400, 5150, 25),
+      "fish-catch's third cast, reeled in while the fish nibbles: it takes fright and flees")
+scene("reaction-pupil", "pupil", 8612, [2600, 3500, 4400, 5400, 6946, 7600, 8611], frames(4400, 8612, 100),
+      "taught on an earlier day, the reaction teacher talked to again: in a slump, he offers new "
+      "reactions and shows the one picked")
+for _name, _save, _what in (("contest-notice", "contest-won", "fishing tourney"), ("bugoff-notice", "bugoff-won", "bug-off")):
+    scene(_name, _save, 4200, [2800, 3500, 3900, 4199], frames(3800, 4200, 25),
+          f"the day after a {_what} a villager won: the new day posts its notice, the player out of the house",
+          recording="kk-request", rtc="2026-09-12 20:30:00")
 # villager 3 in a pastime, the press after its connect choices made after a wait that draws the
 # pastime's own topic (VillagerTalkSubjects_SayByMode), or for pastime 2 what it holds
 for _name, _mode, _frames, _what in (("villager-pastime-2", 2, 4979, "its pastime's hint"),
