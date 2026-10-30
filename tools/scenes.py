@@ -455,6 +455,9 @@ SAVES["visitor-3f-fish"] = SAVES["visitor-3f"] + [(POCKETS, "<H", 0x12E8)]
 # need a free pocket, and the trade of an item for the fish (_Trade) can be drawn
 SAVES["visitor-3f-trade"] = [e for e in SAVES["visitor-3f"] if e[0] != MONEY] + [(MONEY, "<I", 100)] + [
     (POCKETS + 2 * i, "<H", 0x12E8) for i in range(15)]
+# as "visitor-3f-trade" with pocket 14 free: the approaches that give a gift (VillagerTalkApproach_Present1,
+# _Present2) can be drawn too
+SAVES["visitor-3f-present"] = [e for e in SAVES["visitor-3f-trade"] if e[0] != POCKETS + 28]
 # as "job-0d" with no birthday told yet (the record's day and month at 0x2414 both 0, as a new
 # resident's are, PlayerRecord_ClearBirthday): Tom Nook's line for this errand then sends the
 # player to tell a villager (ov050/nook_clerk_talk.c NookClerkTalk_JobLine0D, line 0x15)
@@ -1330,6 +1333,9 @@ scene("villager-buy", "visitor-3f-fish", 13150, [2600, 7200, 10400, 11100, 12000
 scene("villager-trade", "visitor-3f-trade", 12740, [2600, 7200, 10400, 11100, 11600, 12200, 12739],
       frames(11000, 12740, 50), "as villager-buy with no bells left and the pockets full of the fish: the villager "
       "that calls the player over trades one of its items for a fish")
+scene("villager-nickname-no", "visitor-3f-present", 12230, [2600, 7200, 10400, 11100, 11700, 12229],
+      frames(11000, 12230, 50), "as villager-trade with a pocket free and the walk 20 frames later: the villager "
+      "that calls the player over asks to give it a nickname, and the player says no")
 scene("job-letter", "job-0f", 11650, [2600, 3700, 5700, 6600, 9100, 11649], frames(2600, 11650, 100),
       "at work for Tom Nook: write the letter of the errand in the pockets, post it at the town hall and "
       "come back for the next errand")
@@ -2364,8 +2370,9 @@ def frame_hashes(path: pathlib.Path) -> dict[int, str]:
 
 def bisect(name: str, seed: pathlib.Path, native: str, skip: set[str]) -> None:
     """Halve the Clean functions (by source file, then one by one) until one is left whose Clean
-    version makes the scene differ; assumes one such function (the others agree without it). The
-    functions in `skip` (ones already found) stay Native throughout."""
+    version makes the scene differ; assumes one such function (the others agree without it), and
+    stops when neither half makes the scene differ (two functions together, or a run that differed
+    once and does not again). The functions in `skip` (ones already found) stay Native throughout."""
     files = {}
     for path in sorted((C.ROOT / "clean").rglob("*.c")):
         names = [plain or quoted for plain, quoted in
@@ -2385,8 +2392,15 @@ def bisect(name: str, seed: pathlib.Path, native: str, skip: set[str]) -> None:
 
     def search(items: list, expand) -> object:
         while len(items) > 1:
-            half = items[:len(items) // 2]
-            items = half if not agrees([n for i in half for n in expand(i)]) else items[len(items) // 2:]
+            half, rest = items[:len(items) // 2], items[len(items) // 2:]
+            if not agrees([n for i in half for n in expand(i)]):
+                items = half
+            elif not agrees([n for i in rest for n in expand(i)]):
+                items = rest
+            else:
+                # neither half alone makes it differ: two functions in different halves together,
+                # or a run that does not differ again
+                return None
         return items[0]
 
     if agrees([n for names in files.values() for n in names]):
@@ -2396,9 +2410,16 @@ def bisect(name: str, seed: pathlib.Path, native: str, skip: set[str]) -> None:
         print(f"{name}: differs with Native code alone (no Clean function): not a Clean function's doing")
         return
     path = search(list(files), lambda f: files[f])
+    if path is None:
+        print(f"{name}: both halves agree: not one Clean function's doing, or it does not differ again")
+        return
     print(f"{name}: {path}", flush=True)
     function = search(files[path], lambda n: [n])
+    if function is None:
+        print(f"{name}: both halves of {path} agree: not one Clean function's doing, or it does not differ again")
+        return
     print(f"{name}: {function} ({path})")
+
 
 
 def main() -> int:
