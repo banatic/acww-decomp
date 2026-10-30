@@ -715,6 +715,14 @@ def delivery(kind: int, when: tuple[int, ...], item: int, giver: int, receiver: 
 # villager 1's item (0x3230) for villager 0 (at home, where villager-home goes), due on the 10th at
 # 12:00, the day before the boot's
 SAVES["deliver-late"] = delivery(10, (0, 0, 12, 10, 9, 26), 0x3230, 1, 0)
+# a letter (type 19) villager 0 gave the player for villager 1, due on the 10th at 12:00: villager 0,
+# its giver, says it is late and asks for it back (VillagerTalkGreeting_SayByKnownObject)
+SAVES["giver-late-letter"] = delivery(19, (0, 0, 12, 10, 9, 26), 0x3230, 0, 1)
+# villager 0's visit to the player's house (the handed-over record, as for "house-visitor") agreed
+# for 11:30 on the 10th, the day before the boot: its greeting says the visit was missed
+SAVES["visit-missed"] = (raw(HANDOVER, SEED_NPC[0]) + raw(HANDOVER + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
+                         [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
+                         raw(HANDOVER + 0x1C, bytes((0, 30, 11, 10, 9, 26, 0, 0))))
 PRAISE = bytes.fromhex("4331433143314331")  # a praise word of 4 characters
 SAVES["memories"] = (
     villager_memory(2, 1, OTHER_PLAYER_A, OTHER_TOWN, (10, 20, 15, 4, 9, 26), 20, 4, 0x0006, text_2a=PRAISE) +
@@ -882,6 +890,9 @@ SAVES["mode-3-clothes"] = villager_mode(3, 3) + [(POCKETS + 2 * i, "<H", 0x11A8 
 # villager 3 in each pastime, nothing else changed: the pastime's topics
 for _mode in range(8):
     SAVES[f"mode-{_mode}"] = villager_mode(3, _mode)
+# villager 4 (the seed's newcomer, mode 10 arrived) in mode 11 instead: not settled (VillagerStatus_Stay
+# not 3) nor arrived, it talks in its room by the newcomer's rows of line table 12
+SAVES["newcomer-11"] = villager_mode(4, 11)
 
 
 def villager_errand(villager: int, kind: int, step: int, low: int = 0, player: bool = False, item: int = 0xFFF1,
@@ -1505,6 +1516,12 @@ scene("visit-time", "seed", 16300, [3000, 6300, 12900, 13500, 14300, 15100, 1629
 scene("villager-errand", "seed", 16150, [3000, 6600, 9100, 11100, 13400, 14900, 16149], frames(6500, 16150, 100),
       "a villager gives the player a shirt to take to another villager: it is handed over and worn, and the "
       "first villager thanks the player", rtc="2026-09-15 11:30:05")
+scene("villager-errand-decline", "seed", 9241, [3000, 6600, 8100, 8700, 9240], frames(8100, 9241, 50),
+      "as villager-errand, the villager's request to take an item declined", rtc="2026-09-15 11:30:05")
+for _name, _frames, _what in (("villager-errand-normal", 16381, "second"), ("villager-errand-bad", 16401, "third")):
+    scene(_name, "seed", _frames, [3000, 6600, 9100, 11100, 13400, 14900, 15400, _frames - 1],
+          frames(14900, _frames, 50), f"as villager-errand, the {_what} answer to the giver's question: its "
+          "reward line", rtc="2026-09-15 11:30:05")
 scene("birthday-ask", "first-talks", 7250, [2600, 4300, 5250, 5600, 6000, 7249], frames(4200, 7250, 50),
       "a villager asks a new player's birthday: the birthday screen by the keys and the pen, then the date "
       "said back")
@@ -1657,6 +1674,8 @@ scene("villager-wake", "seed", 5600, [2800, 4100, 4600, 5000, 5599], frames(4400
       "a morning: a villager's hour of sleep ends, it comes out of its house", rtc="2026-09-12 09:58:40")
 scene("villager-newcomer", "seed", 6000, [2600, 3400, 4600, 5300, 5999], frames(4500, 6000, 50),
       "into the house of the villager that moved in on the save's day: it talks as one not yet settled")
+scene("villager-mode11", "newcomer-11", 6241, [2600, 3400, 4600, 5300, 6000, 6240], frames(4500, 6241, 50),
+      "villager-newcomer with the villager in mode 11, not arrived: the lines of a villager not settled in")
 scene("villager-memories", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
       "villager-talks with villagers remembering players of another town and a former resident: the "
       "villager that walks up talks of a player of another town and plays its town's tune",
@@ -1833,6 +1852,10 @@ scene("villager-talk-second", "seed", 5900, [2600, 4100, 4900, 5400, 5899], fram
       "villager-talk two frames later: the villager's topic puts the second the talk began at into its line")
 scene("villager-deliver-late", "deliver-late", 5672, [2600, 3400, 4300, 4900, 5671], frames(4250, 5672, 50),
       "a delivery the player agreed to, due the day before: its receiver at home says it is too late")
+scene("villager-giver-late", "giver-late-letter", 5822, [2600, 3400, 4300, 4900, 5400, 5821], frames(4300, 5822, 50),
+      "a letter the player agreed to take, due the day before: its giver at home says it is late and asks for it")
+scene("visit-missed", "visit-missed", 5332, [2600, 3400, 4300, 4900, 5331], frames(4300, 5332, 50),
+      "a visit to the player's house agreed for the day before: the villager at home says it was missed")
 scene("villager-home-talks", "seed", 7342, [2600, 4100, 4800, 5600, 6500, 7341], frames(4100, 7342, 50),
       "villager-home's owner talked to three times: lines branch on the insects caught and on its fondness")
 scene("villager-weekday", "seed", 7780, [2600, 3900, 5600, 6600, 7200, 7779], frames(5500, 7780, 50),
@@ -2051,6 +2074,8 @@ for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4), (3, 2), (3,
     scene(f"villager-pick-{_kind}-{_step}", f"errand-pick-{_kind}-{_step}", 5748, [2600, 4138, 5000, 5747],
           frames(4200, 5748, 50), f"the owner's errand of {('an insect', 'a fish', '', 'clothes')[_kind]} at step "
           f"{_step}, nothing asked for yet: what it asks for is drawn by the step's picker", "villager-errand-pick")
+scene("villager-errand-no", "errand-pick-0-0", 5801, [2600, 4138, 5000, 5500, 5800], frames(4200, 5801, 50),
+      "villager-pick-0-0 with the errand it offers declined", "villager-errand-no")
 # villager 3 in a pastime, talked to after a wait that makes the topic drawn the pastime's own
 for _mode, _frames, _what in ((3, 5589, "the clothes it wears, by its state kind"),
                               (4, 5589, "what it holds, by its state kind"),
