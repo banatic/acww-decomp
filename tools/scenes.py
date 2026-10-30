@@ -776,6 +776,12 @@ POCKET_STATES = 0x14 + 0x11A8 + 0xA6C
 # the only state VillagerTalkScene_PocketOfItem takes
 SAVES["deliver-due-held"] = (delivery(10, (0, 0, 12, 12, 9, 26), 0x3230, 1, 0) + [(POCKETS, "<H", 0x3230)] +
                              [(POCKET_STATES, "<I", 2)])
+# as "deliver-due-held" with a cloth for the item: 0x11fe, whose style (ItemTraits_ClothStyle 4) is
+# villager 0's first style byte ("deliver-cloth"), or 0x11e5, of its second (8, "deliver-cloth-style1")
+SAVES["deliver-cloth"] = (delivery(10, (0, 0, 12, 12, 9, 26), 0x11FE, 1, 0) + [(POCKETS, "<H", 0x11FE)] +
+                          [(POCKET_STATES, "<I", 2)])
+SAVES["deliver-cloth-style1"] = (delivery(10, (0, 0, 12, 12, 9, 26), 0x11E5, 1, 0) + [(POCKETS, "<H", 0x11E5)] +
+                                 [(POCKET_STATES, "<I", 2)])
 # villager 0's visit to the player's house (the handed-over record, as for "house-visitor") agreed
 # for 11:30 on the 10th, the day before the boot: its greeting says the visit was missed
 SAVES["visit-missed"] = (raw(HANDOVER, SEED_NPC[0]) + raw(HANDOVER + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
@@ -1442,6 +1448,9 @@ scene("villager-habit", "visitor-3f", 14450, [2600, 7200, 10400, 11670, 13433, 1
 scene("villager-sell-no", "visitor-3f", 13712, [2600, 7200, 10400, 11670, 12450, 13232, 13711], frames(11600, 13712, 50),
       "as villager-present1, a little later: the villager offers one of its items for sale, the player needs "
       "none, and the villager names another resident", rtc="2026-09-11 11:30:34")
+scene("villager-sell-gift", "visitor-3f", 13569, [2600, 7200, 10400, 11670, 12450, 12930, 13568],
+      frames(11600, 13569, 50), "villager-sell-no 9 frames later: the villager's sale asks how much the player "
+      "wants the item, the slider at the top; the line drawn after it gives the item", rtc="2026-09-11 11:30:34")
 scene("villager-buy", "visitor-3f-fish", 13150, [2600, 7200, 10400, 11100, 12000, 13149], frames(10700, 13150, 50),
       "as villager-sell with a fish in the pockets: the villager whose mode asks for a fish offers to buy it")
 scene("villager-trade", "visitor-3f-trade", 12740, [2600, 7200, 10400, 11100, 11600, 12200, 12739],
@@ -1987,6 +1996,11 @@ scene("villager-letter-shown", "letter-due-7-fond", 6696, [2600, 3400, 4300, 490
       "a letter for villager 0 handed over before its time, villager 0 fond of the player: it reads it out")
 scene("villager-deliver-pick", "deliver-due-held", 5372, [2600, 3400, 4300, 4900, 5371], frames(4300, 5372, 50),
       "an item for villager 0 held in the pockets before its time: the offer's first answer opens the item pick")
+scene("villager-deliver-cloth", "deliver-cloth", 6131, [2600, 3400, 4300, 4900, 5600, 6130], frames(4300, 6131, 50),
+      "a cloth for villager 0 given through the pick before its time: of its first style, it is kept")
+scene("villager-deliver-cloth-style1", "deliver-cloth-style1", 6131, [2600, 3400, 4300, 4900, 5600, 6130],
+      frames(4300, 6131, 50), "villager-deliver-cloth with a cloth of the villager's second style: it is kept, the "
+      "delivery's step 1", "villager-deliver-cloth")
 scene("villager-giver-late", "giver-late-letter", 5822, [2600, 3400, 4300, 4900, 5400, 5821], frames(4300, 5822, 50),
       "a letter the player agreed to take, due the day before: its giver at home says it is late and asks for it")
 scene("visit-missed", "visit-missed", 5332, [2600, 3400, 4300, 4900, 5331], frames(4300, 5332, 50),
