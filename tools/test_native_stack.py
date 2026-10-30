@@ -12,7 +12,7 @@ class NativeStackTests(unittest.TestCase):
         modules = C.modules()
         syms = C.SymbolTable(modules)
         images = {}
-        self.assertEqual(len(native_stack.FRAMES), 107)
+        self.assertEqual(len(native_stack.FRAMES), 109)
         for (module, address), spec in native_stack.FRAMES.items():
             with self.subTest(module=module, address=hex(address)):
                 fn = syms.function(module, address)

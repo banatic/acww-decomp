@@ -1,6 +1,7 @@
 """Audited ROM frames and the observable stack storage of the collision boxes (the house's
-cockroach and the museum's insect room), of the room music cue, of a talk's reply (a villager's
-house) and of the pockets popup's villager name.
+cockroach and the museum's insect room, with the field actor's push-out visitor and its posts'
+landing), of the room music cue, of a talk's reply (a villager's house) and of the pockets popup's
+villager name.
 
 Only complete, constant call-site extents are accepted here. Unknown frames
 remain unknown; the runtime must not guess through them to supply a slot.
@@ -300,6 +301,15 @@ FRAMES: dict[tuple[str, int], Frame] = {
         '7eae65fc4544b020be8a17a419c89c5ac4e9633eaffb4c15778df776d5252b82'),
     ('main', 0x02085278): Frame(0x20, 0x6c,
         '52286ff52d792568256572ae4e56526bbf0b54461acd88e882c25db33ad01c17'),
+    # The posts under the field actor (scene museum-insect-alone): the gathering (02030ebc, from
+    # 02031288, audited above) calls the push-out visitor's method for the posts 020329ec (push
+    # {r4, r5, lr}; sub sp, #0xc) by its vtable, which calls the posts' landing 02032eb8 (push
+    # {r4-r7, lr}; sub sp, #0x14). Each: the matching add before its one pop sequence; no computed
+    # branch; every call at entry SP - extent.
+    ('main', 0x020329ec): Frame(0x18, 0x66,
+        '213bfbf68287c53e44a11e1b34e908bd5db76b35a46af3dbbdf2f145a3fff6f9'),
+    ('main', 0x02032eb8): Frame(0x28, 0x54,
+        '53bfd4672cf68e7ea2040649d09e41ff112a78d65111a4e55caf5fd450038f33'),
 }
 
 # The registers a function's entry push saves (bit n: rn), for audited frames above. Its
@@ -336,6 +346,8 @@ SOURCES = {
     'main/func_0201cfe4.cpp': 'dd736357200171c19e4b42adedeb6c9475050542a8b2b574551a0187785cefde',
     'main/func_02020764.cpp': 'c9ead5b2732dd66902a94e270c4ab55b9f4dd1ad57349d16d86eb7b6544757e9',
     'ov094/func_ov094_0229abf8.c': 'b90fc592d2a31cd5f30a3f0312a3ae03121b4c4155e9e7044cb8ad75627593fe',
+    'main/func_02031288.c': '0236bb01213d0104748385758fd6aac3d072a2d0f701eac6009240d63d20007f',
+    'main/func_02032eb8.c': '5c39ed340affe9abd11bca801e0742f6d1f9970f562a80be28cf4aa0b3393af4',
 }
 CONSUMER = 'ov004/func_ov004_0223df88.cpp'
 # The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
@@ -475,6 +487,24 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # The field actor's walls (func_02033678; its Native copy in CUE_EDITS): the points and the
     # stores of the position and the pushed point for each wall tested at the ROM's slots.
     'clean/main/field_collision.c': (
+        # The posts' landing (func_02032eb8; its Native copy in CUE_EDITS): the previous
+        # position's address, the first post and the copies of the position at the ROM's slots.
+        ('    u32 at;\n\n    (void) unused_mode;\n    (void) unused;\n    for (at = collision_first(posts->posts);'
+         ' at < collision_end(posts->posts, posts->count, sizeof(CollisionPost));\n'
+         '         at += sizeof(CollisionPost)) {\n        CollisionPost *post = (CollisionPost *) (uintptr_t) at;\n'
+         '        if (post->kind == COLLISION_KIND_1 &&\n            CollisionCylinder_LandOnTop(',
+         '    u32 at;\n    struct {\n        u32 previous, first;\n        volatile fx32 seen[3];\n    } host_locals, *locals;\n\n'
+         '    _Static_assert(sizeof(host_locals) == 0x14, "the landing\'s locals");\n'
+         '    (void) unused_mode;\n    (void) unused;\n'
+         '    locals = (void *) (uintptr_t) native_guest_stack_slot_if(0x02032eb8u, 0, sizeof(host_locals));\n'
+         '    if (locals == NULL) {\n        locals = &host_locals;\n    }\n'
+         '    locals->previous = (u32) (uintptr_t) previous;\n    locals->first = collision_first(posts->posts);\n'
+         '    for (at = collision_first(posts->posts);'
+         ' at < collision_end(posts->posts, posts->count, sizeof(CollisionPost));\n'
+         '         at += sizeof(CollisionPost)) {\n        CollisionPost *post = (CollisionPost *) (uintptr_t) at;\n'
+         '        locals->seen[0] = position->x;\n        locals->seen[1] = position->y;\n'
+         '        locals->seen[2] = position->z;\n'
+         '        if (post->kind == COLLISION_KIND_1 &&\n            CollisionCylinder_LandOnTop('),
         ('                                CollisionContacts *contacts, void *owner)\n{\n    int pushed = 0;\n',
          '                                CollisionContacts *contacts, void *owner, volatile fx32 *seen)\n{\n'
          '    int pushed = 0;\n'),
@@ -513,8 +543,20 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '                                   locals->seen[2]);\n'
          '    position->x = locals->moved.x;\n    position->z = locals->moved.z;\n')),
     # The ground's height under the field actor (func_02031bb8, func_02031078; their Native
-    # copies in CUE_EDITS).
+    # copies in CUE_EDITS), and the field actor's move's push-out visitor at its ROM slot
+    # (func_02031288, its Native copy in CUE_EDITS).
     'clean/main/collision_query.c': (
+        ('    CollisionPushOut push;\n    CollisionVisitor_Construct((CollisionVisitor *) &push);\n',
+         '    CollisionPushOut host_push, *push_at;\n'
+         '    _Static_assert(sizeof(CollisionPushOut) == 0x28 && offsetof(CollisionPushOut, previous) == 0xc,\n'
+         '                   "the push-out visitor");\n'
+         '    push_at = (CollisionPushOut *) (uintptr_t) native_guest_stack_slot_if(0x02031288u, 0x48, sizeof(host_push));\n'
+         '    if (push_at == NULL) {\n        push_at = &host_push;\n    }\n'
+         '#define push (*push_at)\n'
+         '    CollisionVisitor_Construct((CollisionVisitor *) &push);\n'),
+        ('    CollisionVisitor_Destruct((CollisionVisitor *) &push);\n}\nCLEAN_AS(func_02031288, CollisionQuery_Move)\n',
+         '    CollisionVisitor_Destruct((CollisionVisitor *) &push);\n#undef push\n}\n'
+         'CLEAN_AS(func_02031288, CollisionQuery_Move)\n'),
         ('    fx32 r;\n    fx32 h;\n    int k;\n\n    if (source != NULL && source->vtable->post_at(',
          '    fx32 r;\n    fx32 h;\n    int k;\n\n'
          '    native_guest_register(0x02031078u, 5, (uint32_t) (uintptr_t) radius);\n'
@@ -786,6 +828,31 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '#define v24 (locals->v24)\n#define v2c (locals->v2c)\n#define v34 (locals->v34)\n'
          '#define w1 (locals->w1)\n#define w2 (locals->w2)\n#define w3 (locals->w3)\n'
          '    ret = 0;\n')),
+    # The field actor's move (02031288, scene museum-insect-alone): its push-out visitor stays at
+    # body SP + 0x48 where its path is audited (else the PC's stack: it runs on many paths). The
+    # posts' landing (02032eb8, from the visitor's method for the posts 020329ec) keeps the
+    # address of the visitor's previous position (its third argument) at body SP + 0, the first
+    # post at + 4 and its copies of the position at + 8 to + 0x13; the museum's insect room later
+    # takes the address as the height of the second insect room's second case.
+    'main/func_02031288.c': (
+        ('    Obj48 ob;\n', '    Obj48 host_ob, *ob_at;\n'),
+        ('    int f3;\n\n',
+         '    int f3;\n\n'
+         '    _Static_assert(sizeof(Obj48) == 0x28, "the push-out visitor");\n'
+         '    ob_at = (Obj48 *) (uintptr_t) native_guest_stack_slot_if(0x02031288u, 0x48, sizeof(host_ob));\n'
+         '    if (ob_at == 0) {\n        ob_at = &host_ob;\n    }\n'
+         '#define ob (*ob_at)\n'),
+        ('    func_02031e68(&ob);\n}\n', '    func_02031e68(&ob);\n#undef ob\n}\n')),
+    'main/func_02032eb8.c': (
+        ('    volatile int a, b, c;\n',
+         '    struct Locals {\n        int extra;\n        Node *start;\n        volatile int a, b, c;\n'
+         '    } host_locals, *locals;\n\n'
+         '    _Static_assert(sizeof(struct Locals) == 0x14, "the landing\'s locals");\n'
+         '    locals = (struct Locals *) (uintptr_t) native_guest_stack_slot_if(0x02032eb8u, 0, sizeof(host_locals));\n'
+         '    if (locals == 0) {\n        locals = &host_locals;\n    }\n'
+         '    locals->extra = extra;\n    locals->start = start;\n'),
+        ('        a = src->a;\n        b = src->b;\n        c = src->c;\n',
+         '        locals->a = src->a;\n        locals->b = src->b;\n        locals->c = src->c;\n')),
 }
 
 

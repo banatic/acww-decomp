@@ -94,7 +94,9 @@ were checked across its reachable paths.
 | main | 02031078 | 0x028 |
 | main | 02031288 | 0x0d0 |
 | main | 02031bb8 | 0x058 |
+| main | 020329ec | 0x018 |
 | main | 02032aa8 | 0x010 |
+| main | 02032eb8 | 0x028 |
 | main | 02033678 | 0x098 |
 | main | 02066cd4 | 0x018 |
 | main | 02066dc4 | 0x018 |
@@ -227,6 +229,20 @@ is proved on every path, as its entry spill requires). Before, the guest word ke
 earlier direction z (0xc000 or 0xf000) where the ROM had the angle (0x4000 or 0xffffc000), and the
 matrix the cockroach builds from that centre (data_021fbe48, its translation y at 0x021fbe70)
 differed.
+
+In the second insect room, with the player standing still (scene museum-insect-alone, from frame
+7063), the y word of its second case's centre, 0x027e2d04, is what the posts' landing (02032eb8)
+left at its body SP + 0: the address of the push-out visitor's previous position, its third
+argument, which it keeps there through its loop (02032ec0). The field actor's move (02031288)
+builds that visitor at body SP + 0x48 and hands it to the gathering (02030ebc), which calls the
+visitor's method for the posts (020329ec) by its vtable; that method passes `&visitor->previous`
+on. From anchor SP 0x027e2f5c through 0200cc44 or 0200d1e4 the move's body is at 0x027e2da4, the
+visitor at 0x027e2dec and the landing's body at 0x027e2d04, so the case was 0x027e2df8 + 0x6000
+high. The PC copies keep the visitor (02031288) and the landing's address, first post and position
+copies at body SP + 0 to + 0x13 (02032eb8) at their ROM slots where the frame is proved (both run
+on many paths); the Clean versions (`CollisionQuery_Move`, `CollisionPosts_Land`) are compiled in
+the mixed build from copies with the same slots. Before, the PC's visitor was on its own stack,
+the guest word kept an older stack address (0x027e2d40) and six words of the floors list differed.
 
 ## Saved registers
 
