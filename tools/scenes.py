@@ -733,6 +733,20 @@ SAVES["deliver-late"] = delivery(10, (0, 0, 12, 10, 9, 26), 0x3230, 1, 0)
 # a letter (type 19) villager 0 gave the player for villager 1, due on the 10th at 12:00: villager 0,
 # its giver, says it is late and asks for it back (VillagerTalkGreeting_SayByKnownObject)
 SAVES["giver-late-letter"] = delivery(19, (0, 0, 12, 10, 9, 26), 0x3230, 0, 1)
+# the player's carried letter 0 (0x11a8 of the record, its state in the low six bits of byte 0xfa;
+# the seed's is 2) given the state 7 or 8 (a letter between villagers, main/letter.h), the letter
+# VillagerTalkScene_LetterToSend finds
+CARRIED_LETTER_STATE = 0x14 + 0x11A8 + 0xFA
+# as "giver-late-letter" with that letter in state 7 ("giver-late-letter7") or 8: the giver takes it
+# back (VillagerTalkPart_SayByLetter, the table data_021c2a7c for state 7, data_021c2a94 for 8)
+SAVES["giver-late-letter7"] = SAVES["giver-late-letter"] + [(CARRIED_LETTER_STATE, "<B", 0x47)]
+SAVES["giver-late-letter8"] = SAVES["giver-late-letter"] + [(CARRIED_LETTER_STATE, "<B", 0x48)]
+# a letter (type 19) villager 1 gave the player for villager 0, due on the 12th at 12:00 (a day after
+# the boot), the carried letter in state 8 ("letter-due-8"), or in state 7 with villager 0's memory
+# of the player at fondness 0x50 ("letter-due-7-fond")
+SAVES["letter-due-8"] = delivery(19, (0, 0, 12, 12, 9, 26), 0x3230, 1, 0) + [(CARRIED_LETTER_STATE, "<B", 0x48)]
+SAVES["letter-due-7-fond"] = (delivery(19, (0, 0, 12, 12, 9, 26), 0x3230, 1, 0) + [(CARRIED_LETTER_STATE, "<B", 0x47)] +
+                              [(TOWN_VILLAGERS + 0x6C, "<b", 0x50)])
 # villager 0's visit to the player's house (the handed-over record, as for "house-visitor") agreed
 # for 11:30 on the 10th, the day before the boot: its greeting says the visit was missed
 SAVES["visit-missed"] = (raw(HANDOVER, SEED_NPC[0]) + raw(HANDOVER + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
@@ -1877,6 +1891,14 @@ scene("villager-talk-second", "seed", 5900, [2600, 4100, 4900, 5400, 5899], fram
       "villager-talk two frames later: the villager's topic puts the second the talk began at into its line")
 scene("villager-deliver-late", "deliver-late", 5672, [2600, 3400, 4300, 4900, 5671], frames(4250, 5672, 50),
       "a delivery the player agreed to, due the day before: its receiver at home says it is too late")
+scene("villager-giver-letter7", "giver-late-letter7", 5496, [2600, 3400, 4300, 4900, 5495], frames(4300, 5496, 50),
+      "villager-giver-late with the letter carried (state 7): the giver takes it back")
+scene("villager-giver-letter8", "giver-late-letter8", 5496, [2600, 3400, 4300, 4900, 5495], frames(4300, 5496, 50),
+      "villager-giver-late with the letter carried in state 8: the giver takes it back, cross")
+scene("villager-letter-opened", "letter-due-8", 6696, [2600, 3400, 4300, 4900, 5800, 6695], frames(4300, 6696, 50),
+      "a letter for villager 0 handed over before its time, in state 8: it was opened, the villager is cross")
+scene("villager-letter-shown", "letter-due-7-fond", 6696, [2600, 3400, 4300, 4900, 5800, 6695], frames(4300, 6696, 50),
+      "a letter for villager 0 handed over before its time, villager 0 fond of the player: it reads it out")
 scene("villager-giver-late", "giver-late-letter", 5822, [2600, 3400, 4300, 4900, 5400, 5821], frames(4300, 5822, 50),
       "a letter the player agreed to take, due the day before: its giver at home says it is late and asks for it")
 scene("visit-missed", "visit-missed", 5332, [2600, 3400, 4300, 4900, 5331], frames(4300, 5332, 50),
