@@ -1203,6 +1203,15 @@ needs: unreachable
 match: ov052/fox_tent:FoxTent_EnterFollow4 ov052/fox_tent:FoxTent_UpdateFollow4
 
 area: Unreachable for one player
+group: the states and state entries no code asks for: the fish shadows, the lost child's pause, Mr. Resetti's state 0
+scene: none: the entries of the fish shadows' states 0, 2, 3 and 4 (ov003/fish_shadow.c, fish_shadow_state.c), each of which does nothing; the lost child's state 4 (main/missing_npc1.c, MISSING_NPC1_PAUSE), its entry and update; the entry of Mr. Resetti's state 0 (ov077/mole.c)
+reach: (findings 2026-10-30, rows13) Each is named only by its class's table of states, whose entry members only the class's state setter calls, for the state it is given, and the setter is called only with constants that are never the state. FishShadow_EnterNone, _EnterAppearing, _EnterShown and _EnterAway: the table data_ov003_0225f1d0 (filled by ov003's static initialiser from its words at 0x0223bdd0-0x0223be90); FishShadow_SetState is called only by func_ov003_02228a20 (src/ov003/func_ov003_02228a20.c), twice, with 1 (FISH_SHADOW_PLACED); the shadows take the other states by stores to their state field (FishShadow_Reset, _SetState2, the updates of fish_shadow_state.c), which call no entry. MissingNpc1_EnterPause and _UpdatePause: the table data_021fbbfc; the child's state is written only by MissingNpc1_SetState, whose 18 calls (main's relocations to 0x020c26b4: func_020c1874, _189c, _1fc8, _2104, _2300, _234c, _2718, _2898) pass 0, 1, 2, 3, 5, 6, 7 and 8, never 4. Mole_EnterState0: the table data_ov077_022799a0, read only by Mole_SetState (0x02279394), Mole_Update (0x022793e4) and ov077's static initialiser; Mole_SetState's five calls pass 1-5, never 0 (w53-wt5/cls/classify.py, gate value)
+needs: unreachable
+match: ov003/fish_shadow:FishShadow_EnterNone ov003/fish_shadow_state:FishShadow_EnterAppearing
+  ov003/fish_shadow_state:FishShadow_EnterShown ov003/fish_shadow_state:FishShadow_EnterAway
+  main/missing_npc1:MissingNpc1_EnterPause main/missing_npc1:MissingNpc1_UpdatePause ov077/mole:Mole_EnterState0
+
+area: Unreachable for one player
 group: the field actor's closed lid and low battery
 scene: none: states 0x83 (the lid closed) and 0x84 (a low battery) of the field actor, and their requests
 reach: FieldActor_CheckBatteryAndLid asks for them on BatteryWarning_IsLow and on bit 15 of the ARM7's word at 0x027fffa8 (the lid), which a recording cannot make; the states' messages ask for them for another console's actor; besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py)
