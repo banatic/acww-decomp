@@ -963,6 +963,24 @@ HELD_VILLAGER = (
 )
 SAVES["villager-came"] = [e for at, data in HELD_VILLAGER for e in raw(EXCHANGE + 0x14C + at, bytes.fromhex(data))] + [
     (EXCHANGE + 0x94A, "<H", 0xC4F4)]
+# the held villager made one of this town (its NpcId at 0x7a0 that of the seed's villager 0, the
+# town it last lived in at 0x7b8 the seed's), the block's checksum made good again, and villager 0
+# about to leave (mode 9, byte 0x10 of its mode record at 0x734, since 8 September, three days
+# before the boot's): the load's exchange (VillagerResidents_Exchange) finds the town has the held
+# villager's number, ranks the two by every test to the last (VillagerMemory_RanksAbove: they tie)
+# and moves the leaver out into the hold, with its farewells to the player
+SAVES["leave-held"] = [e for at, data in HELD_VILLAGER for e in raw(EXCHANGE + 0x14C + at, bytes.fromhex(data))] + raw(
+    EXCHANGE + 0x14C + 0x7A0, SEED_NPC[0]) + raw(EXCHANGE + 0x14C + 0x7B8, SEED_TOWN) + [(EXCHANGE + 0x94A, "<H", 0x2DDC)] + raw(
+    TOWN_VILLAGERS + 0x734, bytes((0, 0, 12, 8, 9, 26, 0, 0))) + [(TOWN_VILLAGERS + 0x744, "<B", 9)]
+# eight villagers: places 5-7 (empty in the seed) given HELD_VILLAGER's villager with the numbers
+# 0x30-0x32 of this town, and the latest time the villagers saw (0x4050 of the block) four days
+# before the boot's: the load picks a villager to leave (VillagerResidents_IsLeaveDue, _PickLeaver,
+# VillagerMode_SetLeaving) and, the town being full, one to plan a move (VillagerMove_PickVillager)
+SAVES["town-full"] = [e for place, number in ((5, 0x30), (6, 0x31), (7, 0x32))
+                      for e in [f for at, data in HELD_VILLAGER
+                                for f in raw(TOWN_VILLAGERS + 0x7EC * place + at, bytes.fromhex(data))] +
+                      raw(TOWN_VILLAGERS + 0x7EC * place + 0x7A0, SEED_TOWN + bytes((2, number)))] + raw(
+    TOWN_VILLAGERS + 0x4050, bytes((0, 30, 11, 7, 9, 26, 0, 0)))
 # as "rich" with Nook's store 10 bells short of its first level's cap (25,000 spent,
 # main/nook_store.h): a purchase plans the upgrade and posts its notice
 SAVES["store-near-cap"] = SAVES["rich"] + [(NOOK_STORE, "<I", 24990)]
@@ -1043,6 +1061,14 @@ SAVES["errand-variant-due"] = villager_errand(0, 4, 2, player=True, item=0x3508)
 SAVES["errand-low2"] = villager_errand(0, 0, 0, low=2, player=True, item=0x12B0)
 SAVES["errand-done-2-1"] = villager_errand(0, 2, 1, low=2, player=True)
 SAVES["errand-done-4-0"] = villager_errand(0, 4, 0, low=2, player=True)
+# villagers 0 and 1 each holding four items (0x7b0 of the town villager, main/villager_items.h):
+# furniture (0x3230, the fossil 0x450c, 0x3234, 0x3238) and four group A fossils (0x4510, 0x4530,
+# 0x4560, 0x4590), and villager 2's errand of an item with variants done (low bits 3): the load
+# puts the items into their houses (VillagerHouseItems_MakeRoom, _StoreGroupA) and ends the errand
+# (VillagerMode_FinishObject, VillagerMode_StepCounter7D7)
+SAVES["villager-items"] = [(TOWN_VILLAGERS + 0x7EC * villager + 0x7B0 + 2 * i, "<H", item)
+                           for villager, items in ((0, (0x3230, 0x450C, 0x3234, 0x3238)), (1, (0x4510, 0x4530, 0x4560, 0x4590)))
+                           for i, item in enumerate(items)] + villager_errand(2, 4, 0, low=3, player=True)
 # villager 0's errand of an insect (type 0), a fish (type 1) or clothes (type 3) at a step, nothing asked
 # for yet and no player named: the first talk draws what it asks for by the step's picker
 # (VillagerTalkPick_*; for clothes the table data_020c8f7c: steps 2-3 VillagerTalkPick_ClothesNotStyle1,
@@ -1151,6 +1177,10 @@ SAVES["pupil"] = SAVES["visitor-43"] + [(0x14 + 0x23F8, "<I", 0x16608), (0x14 + 
 # of her own file
 for _rank in (0x19, 0x1C, 0x1D, 0x1F):
     SAVES[f"rank-{_rank:02x}"] = [(0x14 + 0x23E4, "<B", _rank)]
+# the town-wide savings amount (Savings_Total, 0x40 of data_021ef8a8) 50 bells short of rank 1's
+# start (10,000, data_ov054_02262a18): town-hall's donation of 100 bells reaches it, and the clerk
+# sets the account's rank (Savings_SetRank) before she tells it
+SAVES["fund-9950"] = [(0x13140, "<I", 9950)]
 
 # as "songs-all" with the pockets full (the dummy item 0x3508 of "full-net" in all 15): the music
 # list's take out button finds no free pocket (MusicList_TakeOut's error)
@@ -2518,6 +2548,19 @@ scene("fish-release-class7", "rod-fish-0f", 6484, [2600, 3700, 5100, 5900, 6100,
 scene("tree-grown", "tree-grown", 3058, [2600, 2750, 2900, 3057], frames(2700, 3058, 10),
       "tree-bag's shake at a tree at the last stage of a growth line: it drops three items",
       recording="tree-bag")
+scene("villager-leave-held", "leave-held", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
+      "menus with a villager about to leave and a villager of this town held: the load moves it out "
+      "into the hold, its farewells sent", recording="menus")
+scene("town-full", "town-full", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
+      "menus in a town of eight villagers: the load picks one to leave and one to plan a move away",
+      recording="menus", rtc="2026-09-11 11:31:00")
+scene("villager-items-stored", "villager-items", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
+      "villager-home with villagers 0 and 1 holding four pieces of furniture each (group A fossils for "
+      "villager 1) and villager 2's errand of an item with variants done: the load puts them into "
+      "the houses", recording="villager-home")
+scene("savings-rank-1", "fund-9950", 8500, [2600, 4900, 7600, 8300, 8499], frames(7600, 8500, 50),
+      "town-hall's donation reaching the first savings rank: the account takes the rank and the clerk "
+      "tells it", recording="savings-gift")
 
 # ------------------------------------------------------------------------------ saves
 
