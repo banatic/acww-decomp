@@ -1,12 +1,12 @@
-From 425 scene lists: 25,251 Clean game functions, run 20,800, function check only 1,110, read only 3,341; the groups below hold 4,451 (function check only + read only).
+From 444 scene lists: 25,251 Clean game functions, run 20,818, function check only 1,109, read only 3,324; the groups below hold 4,433 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 599 |
-| date | 158 |
+| seed | 583 |
+| date | 156 |
 | unknown | 452 |
 | unreachable | 3,242 |
-| total | 4,451 |
+| total | 4,433 |
 
 ## Unreachable for one player (3,242)
 
@@ -112,20 +112,20 @@ From 425 scene lists: 25,251 Clean game functions, run 20,800, function check on
 | outdoor actions of the field actor | 73 (13 / 60) | ov003/field_actor 29, main/field_actor_states 11, ov003/tile_event 9, main/field_actor_support 6, main/tile_requests 4, main/touch_pick 3, main/player_actor_ops 2, main/tile_changes 2, 6 more files (7) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86; besides (findings 2026-10-29, actions), B asks for the tile ahead (FieldActor_TryTarget, a point 0.4-0.5 ahead: stand within 0.3 of the tile's edge, facing it): a dug hole (0xfc, 0xfd) held with any tool but the shovel gives states 0x66 and 0x67 (hole-step), codes 0x1f and the flowers 0x6e-0xa5 states 0x16 and 0x17 (field-pluck), the clover 0x20 state 0x18; states 0x5a and 0x47 (verdict 0) need a target held as the shovel or axe acts, which only an unanswered request leaves (linked), 0x5c (verdict 7) a refused dig: another actor near the tile (TileRequestGrant_NoOneNear) or four requests open; state 0x52 a float without a fish in state 0x50 | seed |
 | effects by kind | 45 (1 / 44) | main/effect_kinds 42, main/effect_system 3 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers; besides (findings 2026-10-29, actions), the starters by kind: 0x2e (code 0x1f) and set 0x54 (codes 0x1f-0x24, flowers) by state 0x17 (field-pluck), 0x2f by state 0x17 for code 0x20 only on another console's action (locally the clover is taken by state 0x18), 0x23 by state 0x67 (hole-step), 0x2a, 0x2b and 0x2c (the marks of the shovel's, net's and axe's slides) only on sand (ground 0x13) or snow, 0x32 by state 0x71 (the trip), 0x25 by state 0x57, 0x0b by state 0x56's swing meeting nothing, 0x40 by scene motions (main/scene_motion.c), 0x3a by an insect (ov003/town_insect.c), 0x14 by insect moves (ov003/town_insect_moves.c); kinds 0x17 and 0x19 are kind 0x0b's larger sets | unknown |
 
-## Villagers (the seed's day) (268)
+## Villagers (the seed's day) (252)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| villager talks: topics, favours and trades | 116 (8 / 108) | main/villager_talk_part 20, main/villager_talk_steps 20, main/villager_talk_replies 14, main/villager_talk_object 10, main/villager_talk 8, main/talk_tags 7, main/villager_object 6, main/villager_talk_request 6, 14 more files (25) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night; besides (findings 2026-10-29, unknown2), the talk tags only villagers' lines hold (w28/tagwhere.py, outside mail and the test message): 0/7 "%" (TalkTags_PutPercent: ta/tsu/always_ 68-71), 0/0 "*" (_PutAsterisk: ta/ap/item_ 10, obj/etc/player_ 30), 4/29 name 3 (_PutName3: the games' results q01 and q02 pdraw_, plose_, pwin_ of every kind), 6/9 by the falling weather (_BranchByFalling: ko/tsu/always_ 0 and 62, fo_act_ 1, se_act_ 2, ta/tsu/no_act_ 0, ta/3p/fu_ 6, the cafe's cf1-cf6), 6/12 by residence (_BranchByResident: bo/tsu/fu_act_ 4, ge/tsu/always_ 19, ko/tsu/always_ 18 and fo_act_ 2), 9/3 and 9/5 (_LookAtPlayer, _LookAtFirst: the three-party talks */3p/*, missing1_ 13-18), 4/14 another resident's player name (_PutOtherPlayer, TalkObject_LoadOtherPlayer: 13 lines, a town with a second resident) and 0xff/2 (_StartSpans, then _StepSpans and the span's start and step: the part-time job's lines arbeit_ 1 and 20-24 of bo, fu, ko and ta); besides (findings 2026-10-29, unknown2), the scene motion of kind 15, a villager changing clothes (SceneCommand_RequestMotion15, its start, run and wait, SceneMotion_StartKind15, _Kind15After and SceneMotionNote_PackItem, which only it calls): asked for only by VillagerTalkObject_EmptyPocketAndMotion and VillagerTalkPart_RaiseBondClothes, a villager given clothes it puts on (findings town9: villager 3 in mode 3 with a shirt did not call the player over); besides (findings 2026-10-29, unknown3), the session villager's Send wrappers, which one player's villager code calls and which return at once (should_send): SendObjectItem when a villager's errand catch is an insect or fish of the errand's kind (VillagerErrandCatch_Insect, _Fish), SendObjectByte2E when a villager is given furniture with variants (VillagerTalkObject_CountItem), SendObjectBit30 (VillagerTalkObject_SayJudgeItem), SendObjectClear (VillagerTalkObject_LineClearItem, _Motion17ClearItem), SendObjectByte2F (VillagerTalkObject_KindItem), SendObjectOp2 (VillagerTalkSteps_NextStep) and SendItem7D2 when a villager puts on clothes it is given (VillagerSceneObject_TakeClothes) | seed |
-| villagers out in the town | 94 (23 / 71) | ov068/outdoor_villager_acts 11, ov068/outdoor_villager_moves 9, main/villager_memories 8, main/villager_house_items 6, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (41) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
+| villager talks: topics, favours and trades | 101 (8 / 93) | main/villager_talk_steps 20, main/villager_talk_part 19, main/villager_talk_replies 11, main/villager_talk_object 8, main/talk_tags 7, main/villager_object 6, main/villager_talk 6, main/villager_talk_request 6, 10 more files (18) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night; besides (findings 2026-10-29, unknown2), the talk tags only villagers' lines hold (w28/tagwhere.py, outside mail and the test message): 0/7 "%" (TalkTags_PutPercent: ta/tsu/always_ 68-71), 0/0 "*" (_PutAsterisk: ta/ap/item_ 10, obj/etc/player_ 30), 4/29 name 3 (_PutName3: the games' results q01 and q02 pdraw_, plose_, pwin_ of every kind), 6/9 by the falling weather (_BranchByFalling: ko/tsu/always_ 0 and 62, fo_act_ 1, se_act_ 2, ta/tsu/no_act_ 0, ta/3p/fu_ 6, the cafe's cf1-cf6), 6/12 by residence (_BranchByResident: bo/tsu/fu_act_ 4, ge/tsu/always_ 19, ko/tsu/always_ 18 and fo_act_ 2), 9/3 and 9/5 (_LookAtPlayer, _LookAtFirst: the three-party talks */3p/*, missing1_ 13-18), 4/14 another resident's player name (_PutOtherPlayer, TalkObject_LoadOtherPlayer: 13 lines, a town with a second resident) and 0xff/2 (_StartSpans, then _StepSpans and the span's start and step: the part-time job's lines arbeit_ 1 and 20-24 of bo, fu, ko and ta); besides (findings 2026-10-29, unknown2), the scene motion of kind 15, a villager changing clothes (SceneCommand_RequestMotion15, its start, run and wait, SceneMotion_StartKind15, _Kind15After and SceneMotionNote_PackItem, which only it calls): asked for only by VillagerTalkObject_EmptyPocketAndMotion and VillagerTalkPart_RaiseBondClothes, a villager given clothes it puts on (findings town9: villager 3 in mode 3 with a shirt did not call the player over); besides (findings 2026-10-29, unknown3), the session villager's Send wrappers, which one player's villager code calls and which return at once (should_send): SendObjectItem when a villager's errand catch is an insect or fish of the errand's kind (VillagerErrandCatch_Insect, _Fish), SendObjectByte2E when a villager is given furniture with variants (VillagerTalkObject_CountItem), SendObjectBit30 (VillagerTalkObject_SayJudgeItem), SendObjectClear (VillagerTalkObject_LineClearItem, _Motion17ClearItem), SendObjectByte2F (VillagerTalkObject_KindItem), SendObjectOp2 (VillagerTalkSteps_NextStep) and SendItem7D2 when a villager puts on clothes it is given (VillagerSceneObject_TakeClothes) | seed |
+| villagers out in the town | 93 (23 / 70) | ov068/outdoor_villager_acts 11, ov068/outdoor_villager_moves 9, main/villager_memories 8, main/villager_house_items 6, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 22 more files (40) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 | the talk engine: tags, pages, windows, sliders | 58 (28 / 30) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 8 more files (12) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 
-## Other dates, times and visitors (for the boot on another day) (165)
+## Other dates, times and visitors (for the boot on another day) (163)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | insects and fish of other months and hours | 52 (18 / 34) | ov003/fish_shadow 8, ov003/town_insect_moves 7, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov003/town_insect_kinds 5, ov004/aquarium_fish 5, ov003/town_insect 4, ov003/fish_shadow_swim 3, 4 more files (9) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
-| seasons, weather, the sky and the new day | 35 (8 / 27) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/creature_draw 2, main/insect_draw 2, main/sky 2, main/town_growth 2, main/town_spawn 2, 4 more files (4) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
+| seasons, weather, the sky and the new day | 33 (7 / 26) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/sky 2, main/town_growth 2, main/town_spawn 2, main/creature_draw 1, main/insect_draw 1, 4 more files (4) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
 | Tortimer's events and holidays | 19 (9 / 10) | main/event_kinds 2, main/event_queue 2, main/event_winner 2, ov083/turtle_gardens 2, main/event_buildings 1, main/event_schedule 1, ov003/etc_board 1, ov080/turtle 1, 7 more files (7) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
 | Redd and his tent | 10 (2 / 8) | ov003/fox 4, ov052/fox_tent 4, main/fox_shop 2 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
 | villagers' birthdays, sickness and visits | 8 (4 / 4) | ov068/cafe_room 4, ov004/birthday_guest 1, ov004/birthday_villager 1, ov068/cafe_guest 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
@@ -2920,3 +2920,65 @@ What reading the Clean code found about the groups above; counts are of function
   after a talk ended ("talked", "done"), the session's and the snowman's.
 - The plan before (423 lists): seed 599, date 160, unknown 452, unreachable 3,242; after (425):
   seed 599, date 158, unknown 452, unreachable 3,242. Checked in a run: 20,799 before, 20,801 after.
+
+### The shut house at night, a villager's trade, clothes errands by step, a delivery too late, the fireworks' and karaoke's later talks, a talk about the villager the turtle was told of (2026-10-30, town15)
+- house-closed (02:00, a sleeping villager's door, "obj_etc_closed", VillagerHouse_PrepareTalk):
+  dropped in town14 because all-Clean disagreed from frame 2600. Its recording (re-made from the
+  earlier run's input log) agrees both ways in five runs on main 35d053f8 and in the gate on 87e6ad83, alone and
+  with the other town14 scenes at -j 4, and with tools/native_stack.py as before ef874ca5; the
+  failure did not come back. The bisect's answer (__sinit_ov147_0229a700) was no finding: after
+  the first run every half agreed, and `tools/scenes.py --bisect` takes the second half whenever
+  the first agrees, without running it, so it names the last function of the last file.
+- The approach's trade (VillagerTalkApproach_Line draws among nine by the weights 10, 10, 10, 10,
+  14, 14, 8, 10, 14 until one applies; Catchphrase and Mail always do): with 100 bells (all the
+  fortune teller's reading takes) and the pockets full of the fish of villager 3's mode, Buy and
+  Sell ask for more bells than are left and Present1, Present2 and Sell need a free pocket. The
+  bells change the villagers' walks before 10746, so villager-buy's walk does not meet the call;
+  standing at about (51.0, 48.5), out of the house sign's reach, villager 3 calls (behaviour 7,
+  its state byte 0x1e full) and its approach is the trade: villager-trade (VillagerTalk_TradeItem,
+  _TakeItem). The call holds the player still (a walk away while it comes moves 0.07 tiles), so
+  Turn7 and Wait7 were not reached.
+- A delivery the player agreed to, in block 1 of the player's villager part
+  (tools/scenes.py delivery: the object's due time, item, type 10 or 19, the giver's and receiver's
+  NpcIds): due the day before, the receiver's offer (VillagerTalkOffer_PartBlock) says it is too
+  late, for an item and a letter alike (VillagerTalkPart_Line8978, ko_q_timeover):
+  villager-deliver-late, villager 0 at home. Any change to the player's record moves the walk of
+  villager-home past the house's door (the sign is read instead), so the scene goes round the
+  fence by its own inputs. A letter not yet due opens the letter pick, where none of the seed's
+  letters is the one asked for and A does nothing (quit gives ko_q_icancel, entered before); an
+  item not yet due with the item in pocket 0 was not offered.
+- Line table 4 (town event 2, calendar 0x0f, the fireworks' evening of the first Saturday of
+  August): booted at 20:00 on 7 August 2027 the player is in the house through the day's
+  processing and reads the announcement at the town hall (to about 5000), then meets villager 0:
+  villager-fireworks (VillagerTalk_LineByCalendar, _NoteMemoryOnEvent).
+- Line table 3's later talks (the second Saturday, after the first talk of the day): while the
+  villager is not marked in the town each talk draws data_021c2454 (ev_karaoke 3-5 and the offer to
+  sing), data_021c24fc (group 14) or data_021c2514 (group 17 and a topic) by the frame it starts.
+  Pressing A held 4 every 40 frames from 14005 ends villager-karaoke's first talk before the song;
+  waits of 3 and 18 frames then draw groups 14 and 17 (villager-karaoke-talks, with villager 0's
+  mode 0 topic VillagerTalkSubjects_SayCatchB, the insect hunted), and a wait of 9 the offer,
+  whose second answer runs data_021c24e4 (group 12, villager-karaoke-decline). The song's own
+  branch (data_021c249c: groups 6, 8 and 10, OfferChoices44, Say249cNextLine) follows the song,
+  which the drive runs without the ARM7's sequencer, so the talk never ends there.
+- Line table 10 (calendar 0x11, the snow festival): VillagerTalk_Line8d60AboutNpc needs the
+  person at 0x2e of the event winner record (main/event_winner.h), which only the turtle sets when
+  told of a villager (ov085/turtle5_talk.c, lines 7-8 and 0x14-0x15) and clears at the next day's
+  first talk with him; written into the save it is gone by the boot. snow-festival's answers name
+  villager 0; villager 3's second talk, 12 frames after the first, draws data_021c205c:
+  snow-named.
+- The clothes errand (type 3) draws what it asks for by the step's picker (data_020c8f7c): steps
+  2-3 VillagerTalkPick_ClothesNotStyle1 (with _ClothesOfStyleMask), 4-5
+  VillagerTalkObject_DrawClothesAnyPlayer, 6 _DrawClothes; saves errand-pick-3-2, -3-4 and -3-6 on
+  the walk of villager-errand-pick: villager-pick-3-2, -3-4 and -3-6.
+- Gained little: behaviour 23 (a caught insect shown off from the pockets, "show", with a villager
+  that has just talked looking at the player, look kind 1, within 3 tiles) did not start in three
+  tries: the villager walked off before the show (the pockets take about 150 frames to open after
+  a talk). The moving villager's thanks (VillagerTalkOffer_AfterMove's rows data_021c2f2c-2fd4):
+  the plan's villager is neither out walking nor at home on the boot after its plan ended, so no
+  talk reaches it. The event-0x11 winner written into the save is cleared at the boot. The
+  scorpion's night (July, 23:00) had no villager within reach of it for the poisonous greeting.
+- The local lists of 63 scenes with ov017, ov018 or ov038's initialiser and 37 older ones were
+  made again (Native alone) before --record; ov018 02260020 is kept from main's list.
+- The plan before (425 lists, main 87e6ad83): seed 599, date 158, unknown 452, unreachable 3,242;
+  after (444): seed 583, date 156, unknown 452, unreachable 3,242. Checked in a run: 20,801 before,
+  20,819 after.

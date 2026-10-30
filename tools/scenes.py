@@ -449,6 +449,12 @@ SAVES["job-0d"] = [e for e in SAVES["job-0c"] if e[0] != VILLAGER_PART + 0x0A] +
 # as "visitor-3f" with a fish (0x12e8, of class 14, item_info/always.bin byte 4) in pocket 0: the
 # class villager 3's mode 1 asks for (main/villager_talk_approach.c, data_020c8f38[1])
 SAVES["visitor-3f-fish"] = SAVES["visitor-3f"] + [(POCKETS, "<H", 0x12E8)]
+# as "visitor-3f-fish" with only the 100 bells the fortune teller's reading takes and the pockets
+# full of the fish: the approaches that buy the fish (VillagerTalkApproach_Buy) or sell a gift
+# (_Sell) ask for more bells than are left, those that give one (_Present1, _Present2, _Sell)
+# need a free pocket, and the trade of an item for the fish (_Trade) can be drawn
+SAVES["visitor-3f-trade"] = [e for e in SAVES["visitor-3f"] if e[0] != MONEY] + [(MONEY, "<I", 100)] + [
+    (POCKETS + 2 * i, "<H", 0x12E8) for i in range(15)]
 # as "job-0d" with no birthday told yet (the record's day and month at 0x2414 both 0, as a new
 # resident's are, PlayerRecord_ClearBirthday): Tom Nook's line for this errand then sends the
 # player to tell a villager (ov050/nook_clerk_talk.c NookClerkTalk_JobLine0D, line 0x15)
@@ -695,6 +701,20 @@ SEED_NPC = [bytes.fromhex(h) for h in ("6ec6433143314331433143314331024d", "6ec6
 OTHER_PLAYER_A = player_id(OTHER_TOWN, 0x7A19, 2)
 OTHER_PLAYER_B = player_id(OTHER_TOWN, 0x5E07, 3)
 FORMER_RESIDENT = player_id(SEED_TOWN, 0x92B4, 3)
+
+
+def delivery(kind: int, when: tuple[int, ...], item: int, giver: int, receiver: int) -> list[tuple[int, str, int]]:
+    """Block 1 of the player's villager part (main/villager_part.h) holding a delivery the player
+    agreed to: its object (the date and time it is due, sec min hour day month year, the item, type
+    10 an item or 19 a letter, low bits 0) and the giver's and the receiver's NpcIds. The receiver's
+    talk offers it (VillagerTalkOffer_PartBlock): past its date, or not yet."""
+    block = VILLAGER_PART + 0x30
+    return raw(block, bytes(when) + bytes(8 - len(when)) + struct.pack("<HBB", item, kind, 0) + SEED_NPC[giver] + SEED_NPC[receiver])
+
+
+# villager 1's item (0x3230) for villager 0 (at home, where villager-home goes), due on the 10th at
+# 12:00, the day before the boot's
+SAVES["deliver-late"] = delivery(10, (0, 0, 12, 10, 9, 26), 0x3230, 1, 0)
 PRAISE = bytes.fromhex("4331433143314331")  # a praise word of 4 characters
 SAVES["memories"] = (
     villager_memory(2, 1, OTHER_PLAYER_A, OTHER_TOWN, (10, 20, 15, 4, 9, 26), 20, 4, 0x0006, text_2a=PRAISE) +
@@ -894,9 +914,11 @@ SAVES["errand-insect-less"] = villager_errand(0, 0, 2, player=True, item=0x12B0)
 SAVES["errand-low2"] = villager_errand(0, 0, 0, low=2, player=True, item=0x12B0)
 SAVES["errand-done-2-1"] = villager_errand(0, 2, 1, low=2, player=True)
 SAVES["errand-done-4-0"] = villager_errand(0, 4, 0, low=2, player=True)
-# villager 0's errand of an insect (type 0) or a fish (type 1) at a step, nothing asked for yet and no
-# player named: the first talk draws the creature by the step's picker (VillagerTalkPick_*)
-for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4)):
+# villager 0's errand of an insect (type 0), a fish (type 1) or clothes (type 3) at a step, nothing asked
+# for yet and no player named: the first talk draws what it asks for by the step's picker
+# (VillagerTalkPick_*; for clothes the table data_020c8f7c: steps 2-3 VillagerTalkPick_ClothesNotStyle1,
+# 4-5 VillagerTalkObject_DrawClothesAnyPlayer, 6 VillagerTalkObject_DrawClothes)
+for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4), (3, 2), (3, 4), (3, 6)):
     SAVES[f"errand-pick-{_kind}-{_step}"] = villager_errand(0, _kind, _step)
 
 # name -> save, recording (runtime/recordings/scenes/<name>.txt), frames to run, memory
@@ -1218,6 +1240,9 @@ scene("fireworks", "seed", 7060, [4400, 5400, 6000, 6600, 7059], frames(5300, 70
       rtc="2027-08-07 20:00:00")
 scene("snow-festival", "seed", 7060, [4400, 5400, 6000, 6600, 7059], frames(5300, 7060, 50),
       "in the snow festival's week, talk to the turtle by the town hall", rtc="2027-02-08 10:00:00")
+scene("snow-named", "seed", 9441, [4400, 6000, 7060, 8040, 8558, 9000, 9440], frames(7000, 9441, 50),
+      "snow-festival, then a villager talked to twice: its later talk is about the villager the turtle "
+      "was told of", rtc="2027-02-08 10:00:00")
 scene("gardens", "seed", 6010, [4400, 5300, 6009], frames(5300, 6010, 50),
       "in the gardening event's days, walk to the turtle by the town hall", rtc="2027-04-08 10:00:00")
 scene("turnip-buy", "wallet", 9320, [2800, 3900, 5900, 7600, 8800, 9319], frames(5900, 9320, 100),
@@ -1285,6 +1310,9 @@ scene("villager-habit", "visitor-3f", 14450, [2600, 7200, 10400, 11670, 13433, 1
       "the keyboard", rtc="2026-09-11 11:30:34")
 scene("villager-buy", "visitor-3f-fish", 13150, [2600, 7200, 10400, 11100, 12000, 13149], frames(10700, 13150, 50),
       "as villager-sell with a fish in the pockets: the villager whose mode asks for a fish offers to buy it")
+scene("villager-trade", "visitor-3f-trade", 12740, [2600, 7200, 10400, 11100, 11600, 12200, 12739],
+      frames(11000, 12740, 50), "as villager-buy with no bells left and the pockets full of the fish: the villager "
+      "that calls the player over trades one of its items for a fish")
 scene("job-letter", "job-0f", 11650, [2600, 3700, 5700, 6600, 9100, 11649], frames(2600, 11650, 100),
       "at work for Tom Nook: write the letter of the errand in the pockets, post it at the town hall and "
       "come back for the next errand")
@@ -1792,6 +1820,8 @@ scene("events-ended", "events-ended", 4900, [2600, 4100, 4500, 4899], frames(400
       "villager-talk", "2026-09-12 11:30:00")
 scene("villager-talk-second", "seed", 5900, [2600, 4100, 4900, 5400, 5899], frames(4000, 5900, 50),
       "villager-talk two frames later: the villager's topic puts the second the talk began at into its line")
+scene("villager-deliver-late", "deliver-late", 5672, [2600, 3400, 4300, 4900, 5671], frames(4250, 5672, 50),
+      "a delivery the player agreed to, due the day before: its receiver at home says it is too late")
 scene("villager-home-talks", "seed", 7342, [2600, 4100, 4800, 5600, 6500, 7341], frames(4100, 7342, 50),
       "villager-home's owner talked to three times: lines branch on the insects caught and on its fondness")
 scene("villager-weekday", "seed", 7780, [2600, 3900, 5600, 6600, 7200, 7779], frames(5500, 7780, 50),
@@ -1841,6 +1871,12 @@ scene("shop-sell-worthless", "sell-worthless", 6200, [2600, 3800, 4700, 5600, 61
       "shop-sell with a parcel worth nothing: Nook offers nothing, and the answer leaves it unconverted", "shop-sell")
 scene("gate-wfc-code", "seed", 10118, [2600, 6540, 7500, 8600, 9600, 10117], frames(7400, 10118, 50),
       "the gatekeeper's friend code without one: the Wi-Fi Connection started for it, connecting")
+scene("villager-karaoke-talks", "seed", 16452, [2600, 9000, 12900, 14000, 14560, 15523, 16451],
+      frames(14000, 16452, 50), "as villager-karaoke, the first talk left before the song: the day's later talks "
+      "by the event and a pastime's topic", rtc="2026-11-14 11:30:00")
+scene("villager-karaoke-decline", "seed", 15154, [2600, 9000, 12900, 14000, 14560, 14849, 15153],
+      frames(14000, 15154, 50), "as villager-karaoke-talks, the next talk's offer to sing declined",
+      rtc="2026-11-14 11:30:00")
 scene("villager-karaoke", "seed", 16764, [2600, 6000, 9000, 12900, 14000, 15200, 16000, 16763],
       frames(13800, 16764, 50),
       "on the second Saturday, after the insurance seller's survey, a villager's first talk: it sings and asks",
@@ -2000,10 +2036,10 @@ scene("acorn-refuse", "acorns", 9404, [2800, 4200, 6000, 8100, 8194, 8800, 9403]
 scene("acorn-thanks", "acorns", 9701, [2800, 4200, 6000, 8100, 8500, 9000, 9700], frames(8000, 9701, 50),
       "acorn-ask one frame later from the pockets: the acorn given, the villager thanks the player with an item",
       rtc="2026-10-06 10:00:00")
-for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4)):
+for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4), (3, 2), (3, 4), (3, 6)):
     scene(f"villager-pick-{_kind}-{_step}", f"errand-pick-{_kind}-{_step}", 5748, [2600, 4138, 5000, 5747],
-          frames(4200, 5748, 50), f"the owner's errand of {('an insect', 'a fish')[_kind]} at step {_step}, nothing "
-          "asked for yet: the creature asked for is drawn by the step's picker", "villager-errand-pick")
+          frames(4200, 5748, 50), f"the owner's errand of {('an insect', 'a fish', '', 'clothes')[_kind]} at step "
+          f"{_step}, nothing asked for yet: what it asks for is drawn by the step's picker", "villager-errand-pick")
 # villager 3 in a pastime, talked to after a wait that makes the topic drawn the pastime's own
 for _mode, _frames, _what in ((3, 5589, "the clothes it wears, by its state kind"),
                               (4, 5589, "what it holds, by its state kind"),
@@ -2058,6 +2094,12 @@ for _name, _save, _what in (("contest-notice", "contest-won", "fishing tourney")
     scene(_name, _save, 4200, [2800, 3500, 3900, 4199], frames(3800, 4200, 25),
           f"the day after a {_what} a villager won: the new day posts its notice, the player out of the house",
           recording="kk-request", rtc="2026-09-12 20:30:00")
+scene("villager-fireworks", "seed", 7371, [2600, 4200, 5000, 5540, 6400, 7370], frames(5000, 7371, 50),
+      "on the fireworks' evening, after the announcement at the town hall, a villager talked to: the lines "
+      "of the evening's event", rtc="2027-08-07 20:00:00")
+scene("house-closed", "seed", 5658, [2600, 4000, 5100, 5400, 5657], frames(5000, 5658, 25),
+      "at 02:00, while its villager sleeps, walk into a house's door and press A: the house is shut",
+      rtc="2026-09-11 02:00:00")
 # villager 3 in a pastime, the press after its connect choices made after a wait that draws the
 # pastime's own topic (VillagerTalkSubjects_SayByMode), or for pastime 2 what it holds
 for _name, _mode, _frames, _what in (("villager-pastime-2", 2, 4979, "its pastime's hint"),
