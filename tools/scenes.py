@@ -575,6 +575,9 @@ SAVES["songs-all"] = SAVES["songs"] + raw(0xF52C + 0x1594, bytes([0xFF] * 8 + [0
 # as "museum" with the crayfish (0x12f2) in pocket 4: the fish villager 3 challenges the player
 # to catch in villager-chat (the villager object's item, main/villager_object.h)
 SAVES["museum-crayfish"] = SAVES["museum"] + [(POCKETS + 8, "<H", 0x12F2)]
+# as "museum-full" with insect kind 54 (item 0x12e6, the low four bits of byte 27 of group C) not
+# given: kind 55, the other of the pair, is shown alone (ov004/museum_insect_kinds.c)
+SAVES["museum-insect-alone"] = SAVES["museum-full"] + [(MUSEUM_C + 27, "<B", 0x10)]
 # two fossils not assessed (0x1549) in pockets 0 and 1, the seed's museum (without them): Blathers
 # assesses one and asks for it (ov047/owl_donation.c, line 0x1d with the museum lacking it)
 SAVES["museum-fossils"] = [(POCKETS, "<H", 0x1549), (POCKETS + 2, "<H", 0x1549)]
@@ -1756,6 +1759,9 @@ scene("sunday-joan", "rich", 10750, [2600, 3900, 5000, 7000, 8800, 9900, 10749],
       rtc="2026-09-13 09:00:00")
 scene("museum-insects", "museum-full", 9294, [2600, 4500, 6300, 7000, 7800, 8600, 9293], frames(6200, 9294, 100),
       "with every insect given, walk through the museum's first insect room into the second and back out")
+scene("museum-insect-alone", "museum-insect-alone", 8400, [2600, 4500, 6300, 7000, 7800, 8399],
+      frames(6200, 8400, 100), "museum-insects with one of the pair of insects not given: the other faces the "
+      "player passing it, then walks alone while the player stands", "museum-insect-alone")
 scene("flea-market", "wallet", 7330, [4100, 5500, 6400, 6900, 7329], frames(5400, 7330, 50),
       "on the day of the flea market, buy the retro TV from the villager selling in its house",
       rtc="2026-10-03 10:00:00")

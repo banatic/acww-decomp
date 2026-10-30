@@ -1,12 +1,12 @@
-From 538 scene lists: 25,251 Clean game functions, run 21,178, function check only 1,050, read only 3,023; the groups below hold 4,073 (function check only + read only).
+From 537 scene lists: 25,251 Clean game functions, run 21,180, function check only 1,050, read only 3,021; the groups below hold 4,071 (function check only + read only).
 
 | needs | functions |
 |---|---|
 | seed | 349 |
-| date | 93 |
+| date | 91 |
 | unknown | 355 |
 | unreachable | 3,276 |
-| total | 4,073 |
+| total | 4,071 |
 
 ## Unreachable for one player (3,276)
 
@@ -138,11 +138,11 @@ From 538 scene lists: 25,251 Clean game functions, run 21,178, function check on
 | the talk engine: tags, pages, windows, sliders | 54 (27 / 27) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 7 more files (8) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 | villager talks: topics, favours and trades | 25 (2 / 23) | main/talk_tags 6, main/villager_talk_object 4, main/villager_talk_steps 3, main/villager_object 2, main/villager_talk 2, main/villager_talk_request 2, main/item_object 1, main/session_villager 1, 4 more files (4) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night; besides (findings 2026-10-29, unknown2), the talk tags only villagers' lines hold (w28/tagwhere.py, outside mail and the test message): 0/7 "%" (TalkTags_PutPercent: ta/tsu/always_ 68-71), 0/0 "*" (_PutAsterisk: ta/ap/item_ 10, obj/etc/player_ 30), 4/29 name 3 (_PutName3: the games' results q01 and q02 pdraw_, plose_, pwin_ of every kind), 6/9 by the falling weather (_BranchByFalling: ko/tsu/always_ 0 and 62, fo_act_ 1, se_act_ 2, ta/tsu/no_act_ 0, ta/3p/fu_ 6, the cafe's cf1-cf6), 6/12 by residence (_BranchByResident: bo/tsu/fu_act_ 4, ge/tsu/always_ 19, ko/tsu/always_ 18 and fo_act_ 2), 9/3 and 9/5 (_LookAtPlayer, _LookAtFirst: the three-party talks */3p/*, missing1_ 13-18), 4/14 another resident's player name (_PutOtherPlayer, TalkObject_LoadOtherPlayer: 13 lines, a town with a second resident) and 0xff/2 (_StartSpans, then _StepSpans and the span's start and step: the part-time job's lines arbeit_ 1 and 20-24 of bo, fu, ko and ta); besides (findings 2026-10-29, unknown2), the scene motion of kind 15, a villager changing clothes (SceneCommand_RequestMotion15, its start, run and wait, SceneMotion_StartKind15, _Kind15After and SceneMotionNote_PackItem, which only it calls): asked for only by VillagerTalkObject_EmptyPocketAndMotion and VillagerTalkPart_RaiseBondClothes, a villager given clothes it puts on (findings town9: villager 3 in mode 3 with a shirt did not call the player over); besides (findings 2026-10-29, unknown3), the session villager's Send wrappers, which one player's villager code calls and which return at once (should_send): SendObjectItem when a villager's errand catch is an insect or fish of the errand's kind (VillagerErrandCatch_Insect, _Fish), SendObjectByte2E when a villager is given furniture with variants (VillagerTalkObject_CountItem), SendObjectBit30 (VillagerTalkObject_SayJudgeItem), SendObjectClear (VillagerTalkObject_LineClearItem, _Motion17ClearItem), SendObjectByte2F (VillagerTalkObject_KindItem), SendObjectOp2 (VillagerTalkSteps_NextStep) and SendItem7D2 when a villager puts on clothes it is given (VillagerSceneObject_TakeClothes) | seed |
 
-## Other dates, times and visitors (for the boot on another day) (97)
+## Other dates, times and visitors (for the boot on another day) (95)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| insects and fish of other months and hours | 37 (11 / 26) | ov003/fish_shadow 7, ov003/town_insect_moves 6, ov004/aquarium_fish 5, ov003/town_insect_kinds 4, ov003/fish_shadow_swim 3, ov004/museum_insect_motions 3, ov003/fish_shadow_state 2, ov003/player_fish 2, 3 more files (5) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
+| insects and fish of other months and hours | 35 (11 / 24) | ov003/fish_shadow 7, ov003/town_insect_moves 6, ov004/aquarium_fish 5, ov003/town_insect_kinds 4, ov003/fish_shadow_swim 3, ov003/fish_shadow_state 2, ov003/player_fish 2, ov003/town_insect 2, 3 more files (4) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
 | seasons, weather, the sky and the new day | 26 (2 / 24) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/town_spawn 2, main/npc_letters 1, main/town_day 1, ov003/snowman 1 | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
 | Redd and his tent | 8 (2 / 6) | ov003/fox 4, main/fox_shop 2, ov052/fox_tent 2 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
 | Tortimer's events and holidays | 7 (2 / 5) | main/event_kinds 2, main/event_queue 2, main/event_winner 1, ov003/etc_board 1, ov083/turtle_gardens 1 | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
@@ -4262,3 +4262,16 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (984f756c): seed 350, date 93, unknown 356, unreachable 3,276; after (538 scene
   lists with main's clean-entered.txt): seed 349, date 93, unknown 355, unreachable 3,276.
   Checked in a run: 21,178.
+
+### The insect of the museum's pair shown alone (2026-10-31, stack11)
+- museum-insect-alone (save museum-insect-alone: museum-full with insect kind 54 not given, group
+  C's byte 27 0x10): as museum-insects to 7000, in the second insect room; kind 55, alone, faces
+  the player passing it (InsectMotion_FacePlayer) and, the player standing still, walks alone
+  (InsectMotion_PairWalk) by 8300. Its divergence with Native alone (the note above) was the
+  second case's height: the posts' landing (func_02032eb8) keeps the address of the field actor's
+  push-out visitor's previous position at its body SP + 0, where the insect room's second case
+  later finds its centre's y (docs/native-guest-stack.md). The visitor and the landing's locals
+  now stay on the ROM's stack; the scene agrees both ways.
+- The plan before (main bced7f07): seed 349, date 93, unknown 355, unreachable 3,276; after (537
+  scene lists with main's clean-entered.txt): seed 349, date 91, unknown 355, unreachable 3,276.
+  Checked in a run: 21,180.
