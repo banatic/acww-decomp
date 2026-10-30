@@ -2279,6 +2279,15 @@ for _kind, _step in ((0, 0), (0, 3), (0, 4), (1, 1), (1, 3), (1, 4), (3, 2), (3,
           f"{_step}, nothing asked for yet: what it asks for is drawn by the step's picker", "villager-errand-pick")
 scene("villager-errand-no", "errand-pick-0-0", 5801, [2600, 4138, 5000, 5500, 5800], frames(4200, 5801, 50),
       "villager-pick-0-0 with the errand it offers declined", "villager-errand-no")
+scene("villager-errand-catch-fish", "errand-pick-1-4", 7417, [2600, 4138, 5830, 6294, 7000, 7416],
+      frames(6700, 7417, 50), "villager-pick-1-4, then out of the villager's house and in again: its start in "
+      "the room draws its fish errand's catch, the fish of the hour tried")
+scene("villager-errand-catch-insect", "errand-pick-0-4", 8020, [2600, 4138, 5830, 6914, 7600, 8019],
+      frames(7300, 8020, 50), "villager-pick-0-4, then out of the villager's house and in again: its start in "
+      "the room draws its insect errand's catch, the insect of the hour tried")
+scene("villager-night-stars", "memories", 5702, [2600, 2700, 4192, 4800, 5701], frames(4200, 5702, 50),
+      "at night, a villager walking in the town talked to twice: the second topic is the constellation "
+      "nearest in the sky, which reads the stars' scroll", rtc="2026-09-11 19:00:00")
 # villager 3 in a pastime, talked to after a wait that makes the topic drawn the pastime's own
 for _mode, _frames, _what in ((3, 5589, "the clothes it wears, by its state kind"),
                               (4, 5589, "what it holds, by its state kind"),
