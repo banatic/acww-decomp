@@ -578,6 +578,9 @@ SAVES["museum-crayfish"] = SAVES["museum"] + [(POCKETS + 8, "<H", 0x12F2)]
 # two fossils not assessed (0x1549) in pockets 0 and 1, the seed's museum (without them): Blathers
 # assesses one and asks for it (ov047/owl_donation.c, line 0x1d with the museum lacking it)
 SAVES["museum-fossils"] = [(POCKETS, "<H", 0x1549), (POCKETS + 2, "<H", 0x1549)]
+# as "museum-fossils" with every fossil of group A given (museum record A, as "museum-full"): the
+# fossil room's displays stand complete and their signs list their exhibits
+SAVES["museum-fossils-a"] = SAVES["museum-fossils"] + [(MUSEUM_A + i, "<B", 0x11) for i in range(26)]
 # the room item 0x38e4 and 0x3934, its replacement (a fake painting), in pockets 0 and 1: Blathers
 # swaps the first for the second and refuses both (ov047/owl_donation.c, lines 0x42 and 0x43)
 SAVES["museum-room"] = [(POCKETS, "<H", 0x38E4), (POCKETS + 2, "<H", 0x3934)]
@@ -2625,6 +2628,10 @@ scene("fish-junk", "golden-rod", 7712, [2600, 3450, 6056, 7108, 7400, 7711], fra
 scene("shop-field-date", "field-date", 5100, [2600, 3800, 4500, 5099], frames(2900, 5100, 100),
       "shop-talk with the player record's flag 3 cleared: Tom Nook's greeting tells of the date of "
       "its field", recording="shop-talk")
+scene("museum-fossil-sign", "museum-fossils-a", 8140, [2600, 4600, 6200, 6800, 7600, 8139], frames(6800, 8140, 50),
+      "museum-fossil-refused with every fossil given, into the fossil room: read the triceratops' sign")
+scene("sign-board", "seed", 3982, [2600, 3200, 3818, 3981], frames(3700, 3982, 25),
+      "walk to a sign board in the town and read it")
 
 # ------------------------------------------------------------------------------ saves
 
