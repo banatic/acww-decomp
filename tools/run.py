@@ -738,6 +738,8 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
                 start = s.address - mods[mod]["base"]
                 frame = native_stack.frame_extent(mod, s.address, images[mod][start:start + s.size])
                 spill_arg, spill_offset = native_stack.SPILLS.get((mod, s.address), (-1, -1))
+                if (mod, s.address) in native_stack.ARG_PUSHES:  # -2: r0-r3 pushed at entry, where proved
+                    spill_arg, spill_offset = -2, native_stack.ARG_PUSHES[(mod, s.address)]
                 if (mod, s.address) in native_stack.SAVES:
                     saves = 0x10000 | native_stack.SAVES[(mod, s.address)]  # bit 16: an audited push
             contract = contracts.get((mod, s.address), 0)

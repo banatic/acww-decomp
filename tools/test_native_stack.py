@@ -12,7 +12,7 @@ class NativeStackTests(unittest.TestCase):
         modules = C.modules()
         syms = C.SymbolTable(modules)
         images = {}
-        self.assertEqual(len(native_stack.FRAMES), 96)
+        self.assertEqual(len(native_stack.FRAMES), 107)
         for (module, address), spec in native_stack.FRAMES.items():
             with self.subTest(module=module, address=hex(address)):
                 fn = syms.function(module, address)
@@ -102,6 +102,20 @@ class NativeStackTests(unittest.TestCase):
                     self.assertEqual(word & 0xffff0000, 0xe92d0000)
                     pushed = word & 0xffff
                 self.assertEqual(pushed, saves)
+
+    def test_argument_pushes_are_the_first_push(self):
+        modules = C.modules()
+        syms = C.SymbolTable(modules)
+        for (module, address), offset in native_stack.ARG_PUSHES.items():
+            with self.subTest(module=module, address=hex(address)):
+                spec = native_stack.FRAMES[module, address]
+                self.assertNotIn((module, address), native_stack.SPILLS)
+                fn = syms.function(module, address)
+                self.assertTrue(fn.thumb)
+                start = address - modules[module]['base']
+                half = int.from_bytes(C.module_image(module)[start:start + 2], 'little')
+                self.assertEqual(half, 0xb40f)  # push {r0-r3}, the function's first instruction
+                self.assertEqual(offset, spec.extent - 0x10)
 
     def test_effect_copies(self):
         for relative, edits in native_stack.CUE_EDITS.items():

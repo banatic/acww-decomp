@@ -64,6 +64,9 @@ static int is_member(const NativeFunction *n)
  *   H  a compiler helper of the ROM's code (division, ...): no Native, and its time belongs
  *      to the code that calls it, since Native code does the same work inline
  *   -  no Native */
+/* Fn.guest_spill_arg: the audited entry push of r0-r3 (spilled where the frame is proved) */
+#define GUEST_SPILL_ARGUMENTS (-2)
+
 typedef struct Fn {
     uint32_t address; /* bit 0 set for Thumb */
     uint32_t size;
@@ -758,7 +761,19 @@ static void guest_enter(uint32_t index, uintptr_t caller, const uint32_t *args)
         }
     }
     guest_trace(g, args);
-    if (f->guest_spill_arg >= 0) {
+    if (f->guest_spill_arg == GUEST_SPILL_ARGUMENTS) {
+        /* The entry push of r0-r3: the call's four argument words, where the frame is proved
+           (the function also runs on paths whose frames are not). */
+        if (f->guest_spill_offset < 0 || native_params(guest_entry(index)) < 4) {
+            guest_stack_failure(g, "invalid entry push of the arguments");
+        }
+        if (frame->valid) {
+            uint32_t slot = guest_stack_slot(f->address, (uint32_t) f->guest_spill_offset, 16);
+            for (unsigned i = 0; i < 4; ++i) {
+                bus_write(slot + 4 * i, 4, args[i]);
+            }
+        }
+    } else if (f->guest_spill_arg >= 0) {
         if (f->guest_spill_arg >= ARG_WORDS || f->guest_spill_offset < 0) {
             guest_stack_failure(g, "invalid entry spill");
         }

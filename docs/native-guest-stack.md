@@ -82,13 +82,14 @@ were checked across its reachable paths.
 | main | 0200cc44 | 0x010 |
 | main | 0200d1e4 | 0x010 |
 | main | 0201100c | 0x050 |
+| main | 0201bf24 | 0x020 |
 | main | 0201ce68 | 0x010 |
 | main | 0201cfe4 | 0x010 |
 | main | 0201d198 | 0x020 |
 | main | 02020764 | 0x018 |
+| main | 020288bc | 0x018 |
 | main | 0202f3e4 | 0x020 |
 | main | 0202f464 | 0x070 |
-| main | 020288bc | 0x018 |
 | main | 02030ebc | 0x060 |
 | main | 02031078 | 0x028 |
 | main | 02031288 | 0x0d0 |
@@ -103,8 +104,11 @@ were checked across its reachable paths.
 | main | 02067540 | 0x008 |
 | main | 02068144 | 0x010 |
 | main | 0206823c | 0x010 |
+| main | 020851a0 | 0x018 |
+| main | 020853b0 | 0x020 |
 | main | 020a9ba0 | 0x008 |
 | main | 020b39bc | 0x030 |
+| ov002 | 022080a8 | 0x010 |
 | ov003 | 0220d2a4 | 0x008 |
 | ov003 | 0220d6d4 | 0x008 |
 | ov003 | 0220d8f4 | 0x008 |
@@ -151,6 +155,12 @@ were checked across its reachable paths.
 | ov004 | 0223df88 | 0x2e0 |
 | ov004 | 0223e1f0 | 0x018 |
 | ov004 | 0223f218 | 0x228 |
+| ov094 | 0229abb8 | 0x018 |
+| ov094 | 0229abf8 | 0x0f8 |
+| ov101 | 0229caac | 0x010 |
+| ov101 | 0229d8a8 | 0x008 |
+| ov101 | 0229d91c | 0x000 |
+| ov101 | 0229db94 | 0x008 |
 
 The producer entry hook reproduces its r3 spill at +0x14 for both Native and
 its Clean replacement, `PushBox_OnSideHit`. A source-hash-guarded PC copy of
@@ -207,6 +217,16 @@ from the field actor's walls), which keeps its two directions, two points and tw
 segments at body SP + 0 to + 0x63. Its PC copy and the copy of `CollisionSegment_SpansPoint` keep
 them at those slots where the frame is proved; the ROM's -0x1000 made the box's top 0x9000,
 where the PC's stack gave 0 and 0xa000.
+
+In the rain (scene house-thunder, frame 4200) and after the designs page in the player's room is
+closed (scene designs-pieces), the fourth keep-out box's centre y word, 0x027e2c1c, is what the
+box's side hit (0220dd80) last left there: it keeps the side's angle and the way into it at body
+SP + 0x20 and + 0x24 (0220ddbe, 0220ddc4), and from the field actor's walls (02033678) its body is
+at 0x027e2bfc. The PC copy and the copy of `PushBox_OnSideHit` store both at those slots (its frame
+is proved on every path, as its entry spill requires). Before, the guest word kept the span test's
+earlier direction z (0xc000 or 0xf000) where the ROM had the angle (0x4000 or 0xffffc000), and the
+matrix the cockroach builds from that centre (data_021fbe48, its translation y at 0x021fbe70)
+differed.
 
 ## Saved registers
 
@@ -285,6 +305,35 @@ body SP + 4 and its r5 (the talk) at + 8, whose low byte becomes the message. Th
 push stores them, and the copies of 02020764 (Native, and `VillagerTalkReplies_Say2484`) keep the
 line at its slot where the frame is proved. Before, the PC copy faulted in strncpy on its unset
 line and Clean said message 0.
+
+## A popup's villager name
+
+The pockets' pick (scene villager-deliver-pick) gives an item held in the pockets' state 2 a popup
+with menu message 0x40, whose part 0 is a villager's name (0229abf8, `PocketsGrid_SetPopupText`).
+For an item no delivery of block 0 names, `VillagerPart_NameFor` writes no name, and the
+constructor sets only the text's length, so the message takes the characters (body SP + 0x6a, up
+to the first 0) the ROM's stack held. The pick's update reaches it from the scheduler through
+022080a8 (the menu scene's update, which calls its state by a member pointer), 0229db94, the
+literal tail trampoline 0229d91c (no SP change), 0229d8a8, 0229caac and 0229abb8; from anchor SP
+0x027e2f5c its body is at 0x027e2dc4 and the characters at 0x027e2e2e.
+
+Earlier in the frame a scene share's publish (0201bf24, called from the ROM's code by the kept
+0201b910) calls 020851a0, which calls 020853b0 or 02085278 (scenes errand-nook and museum: the
+place of a villager 0xd<n>). Each takes the address of its fourth argument, so its first
+instruction pushes r0-r3: its r2 and r3 (a place's address and its third
+argument) land where the name's characters are later read. `native_stack.ARG_PUSHES` lists such a
+push and its body offset; the policy marks it with spill argument -2, and the entry hook stores the
+call's four argument words there, for the Native function and its Clean replacement, where the
+frame is proved (020853b0 also runs on paths whose frames are not, where nothing is stored). For
+slot state 2, the only one that names a villager, the PC copy of 0229abf8 and the copy of
+`PocketsGrid_SetPopupText` keep their four texts at the ROM's slot where the frame is proved (else
+the PC's stack, as before). The other states stay on the PC's stack: they copy the line past the
+item's name (the Clean function's `BUG:` note) and so also read the villager text's first
+characters, which in scene bed-attic are what 0203c4e4's entry push stored of its caller's r4, on
+frames that are not audited. The ROM's characters were the bytes
+2b 02 e5 1b; the PC's stack gave 14 bytes of 0xff and the next object's vtable, and the popup's
+text was drawn with other glyphs (Native called FS_SeekFile for a glyph where the Reference had
+finished the text, frame 5056).
 
 ## Argument words
 

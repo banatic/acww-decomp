@@ -1,6 +1,6 @@
 """Audited ROM frames and the observable stack storage of the collision boxes (the house's
-cockroach and the museum's insect room), of the room music cue and of a talk's reply (a villager's
-house).
+cockroach and the museum's insect room), of the room music cue, of a talk's reply (a villager's
+house) and of the pockets popup's villager name.
 
 Only complete, constant call-site extents are accepted here. Unknown frames
 remain unknown; the runtime must not guess through them to supply a slot.
@@ -266,6 +266,40 @@ FRAMES: dict[tuple[str, int], Frame] = {
         '517a539dd94b90297e1cb84591da5d99270f8578450fa636c6e0fc3d9bc4d590'),
     ('main', 0x0202f464): Frame(0x70, 0xbc,
         'c862adef2a7530b3a75c81f29a029623dedc2ab5c47c3ac0058dfcacb3eb6cb3'),
+    # An item's popup in the pockets' pick (scene villager-deliver-pick): the menu scene's update
+    # (022080a8, from 01ffd44c, audited above; push {r4-r6, lr}, its one computed call, a member
+    # pointer by blx, at entry SP - 0x10) calls the pick's update 0229db94, which calls the
+    # literal tail trampoline 0229d91c (ldr r3, =0229d8a9; bx r3: no SP change), whose target
+    # 0229d8a8 calls 0229caac, which calls the grid's 0229abb8, which calls the popup's text
+    # 0229abf8 (push {r4-r6, lr}; sub sp, #0xe8). Each: one push and at most one sub at entry, the
+    # matching add before its one pop; no other computed branch; every call at entry SP - extent.
+    ('ov002', 0x022080a8): Frame(0x10, 0xac,
+        '4d1b245d16cfa7c612a085f7bb42e203f0adac56c421aaf1416a3afd17cd640d'),
+    ('ov101', 0x0229db94): Frame(0x8, 0x1c,
+        '062bec1d1c66a023469953526c88587d361ae174dbc163410c3f1551a6eb9e5d'),
+    ('ov101', 0x0229d91c): Frame(0x0, 0x8,
+        'b02303776a2d154ecee77bc5f285661011d5f93f1e436d42f1f51f171836c40c'),
+    ('ov101', 0x0229d8a8): Frame(0x8, 0x38,
+        'e195f5e1273331682f11698c3f511b2a7934c1a7f4a07ee0865b4ae2f59ac1a9'),
+    ('ov101', 0x0229caac): Frame(0x10, 0x6c,
+        '78cd41ab77a6571fe5c5ccf2b533a9feaf16c639dbf0213b3e4bb653798b4e70'),
+    ('ov094', 0x0229abb8): Frame(0x18, 0x40,
+        'b39328f51ab51147e185601a292624cb8fa4ecb136cd66140d54b1a895dd2f51'),
+    ('ov094', 0x0229abf8): Frame(0xf8, 0xb8,
+        '7005465dda09d7d67b09f96f7f78dede2ecb309e84e8b8243da61aaf279df40b'),
+    # Its words' producer: a scene share's publish (0201bf24, called from the ROM's code by the
+    # kept 0201b744, 0201b910 and 0201bcec; push {r0-r3}; push {r4, lr}; sub sp, #8) calls
+    # 020851a0 (push {r4, r5, lr}; sub sp, #0xc), which calls 020853b0 or 02085278 (each push
+    # {r0-r3}; push {r4, r5, lr}; sub sp, #4). Each: the matching add before its one pop sequence (and add sp, #0x10 after
+    # it for the r0-r3 push); no computed branch; every call at entry SP - extent.
+    ('main', 0x0201bf24): Frame(0x20, 0x98,
+        '247ed6b0dcc325abd21b1ef5b33672c1980d45d7cb226c1cbe3ba29f2d47cb19'),
+    ('main', 0x020851a0): Frame(0x18, 0x40,
+        'bb3d1923f01d8eabafa066d1ba99598de943d21c2a81e176eb75ae02fb6cc9d2'),
+    ('main', 0x020853b0): Frame(0x20, 0x6c,
+        '7eae65fc4544b020be8a17a419c89c5ac4e9633eaffb4c15778df776d5252b82'),
+    ('main', 0x02085278): Frame(0x20, 0x6c,
+        '52286ff52d792568256572ae4e56526bbf0b54461acd88e882c25db33ad01c17'),
 }
 
 # The registers a function's entry push saves (bit n: rn), for audited frames above. Its
@@ -301,6 +335,7 @@ SOURCES = {
     'main/func_0202f464.c': 'd4338665a2d2b24be6a7ce9e31cdc45830187427690a06849d2840168b2eaa31',
     'main/func_0201cfe4.cpp': 'dd736357200171c19e4b42adedeb6c9475050542a8b2b574551a0187785cefde',
     'main/func_02020764.cpp': 'c9ead5b2732dd66902a94e270c4ab55b9f4dd1ad57349d16d86eb7b6544757e9',
+    'ov094/func_ov094_0229abf8.c': 'b90fc592d2a31cd5f30a3f0312a3ae03121b4c4155e9e7044cb8ad75627593fe',
 }
 CONSUMER = 'ov004/func_ov004_0223df88.cpp'
 # The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
@@ -310,6 +345,14 @@ INSECT_ROOM = 'ov004/func_ov004_0223f218.c'
 # 0220dd8a stores incoming r3 at SP+0x14 before the first call. Apply the
 # same spill to Native and Clean entries; its value comes from their input.
 SPILLS = {('ov004', 0x0220dd80): (3, 0x14)}
+# A function that takes the address of an argument pushes r0-r3 at entry (push {r0-r3}, first,
+# before its other push), at body SP + the offset given here. 020853b0 and 02085278 (a scene
+# share's place of a villager 0xe<n> or 0xd<n>) take &a3: the push leaves the call's r2 and r3
+# (the place and its third argument) where the pockets' popup text (0229abf8) later has its
+# villager name's characters, which it does not set when the item has no villager (scenes
+# villager-deliver-pick, errand-nook, museum). The entry hook stores the call's four argument
+# words there where the frame is proved (the function runs on many paths), for Native and Clean.
+ARG_PUSHES = {('main', 0x020853b0): 0x10, ('main', 0x02085278): 0x10}
 
 
 # The Clean consumer (HouseRoach_Move) zero-fills the centres; the ROM leaves their Y words
@@ -336,6 +379,8 @@ CLEAN_CUE_SHA = {
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
     'clean/main/villager_talk.c': '9c5578f69547303dea24f484c0d06278a1343661f3cc3e75e89f82c351275099',
     'clean/main/villager_talk_replies.c': 'd217d5d841404fce37b4cd149cc6b9b5177bd7815cbe411a5e642ea9f13bea7c',
+    'clean/ov094/pockets_grid.c': '87926d988fdd840217cda1a73ea8d9bdcc3aa7d7ddb93d2a0c2f87420ee98a53',
+    'clean/ov004/push_box.c': '7a3464385bff4588f7aad11452e78ed5283edd2ff6d409d3e7a3188a519b8d52',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     'clean/autoload_2/music_cue.c': (
@@ -519,6 +564,27 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '        *message = line->message;\n'
          '        TalkObject_SetMessageIfNone((TalkObject *) (void *) offer_talk(talk), message,\n'
          '                                    (const char *) (uintptr_t) ((int) line->text));\n'),),
+    # A box's side hit (0220dd80; its Native copy in CUE_EDITS): the side's angle and the way into
+    # it at the ROM's slots.
+    'clean/ov004/push_box.c': (
+        ('    int facing = angle + HALF_TURN; /* the way into the side */\n',
+         '    int facing = angle + HALF_TURN; /* the way into the side */\n'
+         '    int *angles = (int *) (uintptr_t) native_guest_stack_slot(0x0220dd80u, 0x20u, 2 * sizeof(int));\n'
+         '    angles[0] = angle;\n    angles[1] = facing;\n'),),
+    # The pockets' popup text (0229abf8; its Native copy in CUE_EDITS): the four texts in the
+    # ROM's frame for slot state 2 where its path is proved.
+    'clean/ov094/pockets_grid.c': (
+        ('    } texts;\n    static_assert(offsetof(struct PopupTexts, name) == 0x30 && offsetof(struct PopupTexts, villager) == 0x58,\n'
+         '                  "the ROM\'s frame");\n',
+         '    } host_texts, *texts_at;\n    static_assert(offsetof(struct PopupTexts, name) == 0x30 && offsetof(struct PopupTexts, villager) == 0x58,\n'
+         '                  "the ROM\'s frame");\n'
+         '    static_assert(sizeof(struct PopupTexts) <= 0xe8, "the ROM\'s frame");\n'
+         '    texts_at = state == 2 ? (struct PopupTexts *) (uintptr_t) native_guest_stack_slot_if(0x0229abf8u, 0, sizeof(host_texts))\n'
+         '                          : NULL;\n'
+         '    if (texts_at == NULL) {\n        texts_at = &host_texts;\n    }\n'
+         '#define texts (*texts_at)\n'),
+        ('    TextLabel_Destruct(&texts.label);\n}\n',
+         '    TextLabel_Destruct(&texts.label);\n#undef texts\n}\n')),
 }
 CLEAN_SOURCES = (CLEAN_SOURCE, CLEAN_INSECT_ROOM, *CLEAN_CUE_SHA)
 
@@ -534,6 +600,31 @@ CLEAN_SOURCES = (CLEAN_SOURCE, CLEAN_INSECT_ROOM, *CLEAN_CUE_SHA)
 # The PC copies keep those locals in the ROM's frames and say what the ROM's code holds in
 # the registers those pushes store.
 CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
+    # A box's side hit (0220dd80, scene house-thunder): it keeps the side's angle and the way
+    # into it at body SP + 0x20 and + 0x24 (0220ddbe, 0220ddc4), and the house's cockroach
+    # (0223df88) later takes the angle as its fourth keep-out box's height. Its frame is proved
+    # on every path (its entry spill, SPILLS, stops on any other).
+    'ov004/func_ov004_0220dd80.cpp': (
+        ('    opposite = angle + 0x8000;\n',
+         '    opposite = angle + 0x8000;\n'
+         '    {\n        int *slot = (int *) (uintptr_t) native_guest_stack_slot(0x0220dd80u, 0x20u, 2 * sizeof(int));\n'
+         '        slot[0] = angle;\n        slot[1] = opposite;\n    }\n'),),
+    # The pockets' popup text (0229abf8, scene villager-deliver-pick): the villager's name it gives
+    # message 0x40 as part 0 is not set when the item has no villager, and the ROM reads its
+    # characters (body SP + 0x6a, to the first 0) as its stack held them: the r2 and r3 that
+    # 020853b0's or 02085278's entry push stored (ARG_PUSHES). For slot state 2 (the only one
+    # that names a villager) its texts stay in the ROM's frame where its path is proved; else, and
+    # for the other states, on the PC's stack as before. The other states copy the line past the
+    # item's name (the BUG of PocketsGrid_SetPopupText) and so read the villager text's first
+    # characters too: in bed-attic they are 0203c4e4's entry push of its caller's r4, whose
+    # frames are not audited.
+    'ov094/func_ov094_0229abf8.c': (
+        ('    } buf;\n',
+         '    } host_buf, *locals;\n\n'
+         '    _Static_assert(sizeof(host_buf) == 0xe8, "the popup\'s texts");\n'
+         '    locals = mode == 2 ? (void *) (uintptr_t) native_guest_stack_slot_if(0x0229abf8u, 0, sizeof(host_buf)) : 0;\n'
+         '    if (locals == 0) {\n        locals = &host_buf;\n    }\n'
+         '#define buf (*locals)\n'),),
     # 0220fc9c-0220fca0: r5 = the object, r4 = `p1`, r6 = `p2`; mounted: r7 = the objects'
     # table (0220fcb2), r6 = the mount's z (0220fcf0), r4 its y (0220fcfa); else r4 = the angle
     # (0220fd44).
