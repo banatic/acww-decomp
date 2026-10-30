@@ -3929,5 +3929,12 @@ What reading the Clean code found about the groups above; counts are of function
   vtable's slot 0x68, which SceneObject_Update (the execute phase's slot 0x18) calls, and a
   process is executed only once its creation (slot 0, Mole_Start) answered done. That no other
   code calls a scene object's slot 0x68 before its creation is done is not shown.
+- Not committed: museum-insects to 7000 with insect kind 54 not given (group C's byte 27 0x10):
+  kind 55, alone, faces the player (InsectMotion_FacePlayer) and, the player standing still from
+  7000, walks alone by about 8300 (InsectMotion_PairWalk). The run diverges with Native alone
+  at 7800: six words of the floors list (0x021c4038, 4044, 4050, 4078, 4084, 4090) hold the
+  stack address 0x027e8df8 in the Reference and 0x027e8d40 in Native, the insect room's cases'
+  y words taking another frame's stack (docs/native-guest-stack.md, the museum's insect room)
+  while the player stands; the producer of that frame is not found.
 - The plan after (500 scenes): seed 442, date 99, unknown 419, unreachable 3,244. Checked in a
   run: 21,047.
