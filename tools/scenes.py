@@ -617,6 +617,9 @@ SAVES["snow-137c"] = SAVES["trip-snow"] + [(HELD, "<H", 0x137C)]
 SAVES["rain"] = [(WEATHER_DAY + 4, "<B", 15)]
 # ... and the pharaoh mask on the head, as in "trip-snow": the trip in the rain
 SAVES["trip-rain"] = SAVES["rain"] + [(0x14 + 0x240A, "<H", 0x13C3)]
+# ... and the umbrella 0x1380 held, which state 0x45 opens and spins: in the rain only, effect
+# 0x33 follows its tip (EffectKinds_StartKind33)
+SAVES["rain-umbrella"] = SAVES["rain"] + [(HELD, "<H", 0x1380)]
 
 # the seed's day given the weather pattern 0 (as for "rain"; no rain), on whose nights a falling
 # star comes at the half minute 1 time in 4 (main/sky_events.h)
@@ -974,6 +977,11 @@ def town_item(x: int, z: int, code: int) -> tuple[int, str, int]:
 # a code 0x1f weed two tiles south of the house's door and a flower of family B (0x70) two
 # further on, the shovel held: B facing each takes it by state 0x16 and 0x17 of the field actor
 SAVES["pluck"] = [town_item(41, 56, 0x1F), town_item(41, 58, 0x70), (HELD, "<H", 0x1369)]
+# "clear" (nothing falls) with the bug net held and a code 0x1b, the town's spot
+# (main/town_acre_count.h), on an empty tile 14 south of the house's door: the town day's summary
+# keeps it (TownDay_SpotPosition), so the insects placed every 40th frame are flies, kind 0x33 of
+# place 8 (TownInsect_SpecialKind), on empty tiles of its acre at least 8 tiles from the player
+SAVES["fly-spot"] = SAVES["clear"] + [(HELD, "<H", 0x1376), town_item(40, 69, 0x1B)]
 # the shovel held and the axe in pocket 0: a hole dug, the axe taken from the pockets, then B
 # facing the hole (FieldActor_TryTargetMode2: the shovel's tool value 2 asks for no hole)
 SAVES["hole-axe"] = [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x136B)]
@@ -1358,6 +1366,9 @@ scene("villager-present1", "visitor-3f", 13600, [2600, 7200, 10400, 11670, 12300
 scene("villager-habit", "visitor-3f", 14450, [2600, 7200, 10400, 11670, 13433, 13800, 14449], frames(11600, 14450, 50),
       "as villager-present1, a little later: the villager asks the player for a new catchphrase, typed on "
       "the keyboard", rtc="2026-09-11 11:30:34")
+scene("villager-sell-no", "visitor-3f", 13712, [2600, 7200, 10400, 11670, 12450, 13232, 13711], frames(11600, 13712, 50),
+      "as villager-present1, a little later: the villager offers one of its items for sale, the player needs "
+      "none, and the villager names another resident", rtc="2026-09-11 11:30:34")
 scene("villager-buy", "visitor-3f-fish", 13150, [2600, 7200, 10400, 11100, 12000, 13149], frames(10700, 13150, 50),
       "as villager-sell with a fish in the pockets: the villager whose mode asks for a fish offers to buy it")
 scene("villager-trade", "visitor-3f-trade", 12740, [2600, 7200, 10400, 11100, 11600, 12200, 12739],
@@ -2238,6 +2249,11 @@ scene("june-firefly", "june-net", 7112, [2800, 5000, 6000, 6600, 7111], frames(5
 scene("trip-137c", "snow-137c", 5840, [2600, 3300, 4300, 4900, 5400, 5839], frames(3200, 5840, 40),
       "trip-snow with the item 0x137c held: the trip's fall throws it (effect 0x32)", "trip-snow",
       "2027-01-15 11:30:05")
+scene("fly-catch", "fly-spot", 5000, [2600, 2700, 3700, 4220, 4600, 4999], frames(4100, 5000, 50),
+      "with a spot in the town (code 0x1b) the insects are flies: catch one with the net, and effect 0x25 "
+      "follows it while it is held up")
+scene("rain-umbrella", "rain-umbrella", 3000, [2600, 2700, 2760, 2900, 2999], frames(2700, 3000, 20),
+      "in the rain, open and spin an umbrella: effect 0x33 follows its tip")
 
 # ------------------------------------------------------------------------------ saves
 
