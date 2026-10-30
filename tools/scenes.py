@@ -562,6 +562,9 @@ SAVES["museum-crayfish"] = SAVES["museum"] + [(POCKETS + 8, "<H", 0x12F2)]
 # two fossils not assessed (0x1549) in pockets 0 and 1, the seed's museum (without them): Blathers
 # assesses one and asks for it (ov047/owl_donation.c, line 0x1d with the museum lacking it)
 SAVES["museum-fossils"] = [(POCKETS, "<H", 0x1549), (POCKETS + 2, "<H", 0x1549)]
+# the room item 0x38e4 and 0x3934, its replacement (a fake painting), in pockets 0 and 1: Blathers
+# swaps the first for the second and refuses both (ov047/owl_donation.c, lines 0x42 and 0x43)
+SAVES["museum-room"] = [(POCKETS, "<H", 0x38E4), (POCKETS + 2, "<H", 0x3934)]
 # as "wallet" with the player's design 0x1188 worn as the shirt (the player record's clothes at
 # 0x2408): no kind of the item lists (main/item_lists.h) accepts a design, so the giraffe's
 # ItemLists_GroupOf on the clothes tries every kind's test
@@ -608,6 +611,12 @@ SAVES["unweeded"] = [(TOWN_ITEMS + 2 * (0x100 * acre + i), "<H", 0xFFF1)
 TOWN_DAY_STAMP = 0x17254
 SAVES["unweeded-jan"] = SAVES["unweeded"] + raw(TOWN_DAY_STAMP, bytes((11, 1, 27)))
 SAVES["unweeded-jan-shovel"] = SAVES["unweeded-jan"] + [(HELD, "<H", 0x1369)]
+# eight weeds of the inner acres 1, 9 and 13 replaced by the first codes (stage 0) of the growth
+# lines 0x26, 0x2f, 0x37, 0x5d and 0xc8 (main/map_item.c), and the town's last day 10 September
+# 2026, the day before the boot's: its day of growth checks each code's ground (main/town_lines.c)
+SAVES["stage0"] = [(TOWN_ITEMS + 2 * (0x100 * acre + i), "<H", code) for acre, i, code in
+                   ((9, 1, 0x26), (9, 2, 0x5D), (9, 4, 0xC8), (9, 6, 0x2F), (1, 18, 0x5D), (1, 20, 0x26),
+                    (13, 1, 0xC8), (13, 3, 0x37))] + raw(TOWN_DAY_STAMP, bytes((10, 9, 26)))
 
 # the day's weather (SkyWeatherDay at 0x1737e of the state block, main/sky.h) for 15 January 2027,
 # so that the boot on that day keeps it: its date, then today's pattern 15 (data_020d28ac),
@@ -1590,6 +1599,9 @@ scene("museum-fossil-menu", "museum-fossils", 12094, [2600, 4600, 6600, 8000, 96
 scene("museum-fossil-refused", "museum-fossils", 7570, [2600, 4600, 5600, 6200, 6700, 7300, 7569],
       frames(5100, 7570, 50), "give Blathers a fossil not assessed and decline his assessment, then walk "
       "through the fossil room into the second fossil room")
+scene("museum-room-items", "museum-room", 9252, [2600, 4600, 5600, 6700, 7400, 8400, 9251],
+      frames(5400, 9252, 50), "offer Blathers a room item he swaps for a fake painting in its pocket, "
+      "then the fake painting, both refused")
 scene("cafe-coffee", "museum", 19198, [2600, 15700, 16300, 17000, 17800, 18600, 19197], frames(15700, 19198, 50),
       "in the museum's cafe, talk to Brewster, sit on a stool at his counter and drink the coffee he makes")
 scene("money-rock", "shovel", 4800, [2600, 3800, 4000, 4300, 4600, 4799], frames(3800, 4800, 25),
@@ -2171,6 +2183,9 @@ scene("sell-send", "box-items", 5400, [2600, 5000, 5150, 5280, 5399], frames(500
       "between and left; cancelled")
 scene("designs-cancel", "rod", 4328, [2600, 3500, 4100, 4200, 4327], frames(3500, 4328, 25),
       "designs-room's carpet choice cancelled by B, then the page closed")
+scene("town-stage0", "stage0", 3000, [2000, 2600, 2999], frames(2400, 3000, 50),
+      "boot a day after the town's last day with codes of the growth lines' first stage on the map: "
+      "the day's growth checks their ground and puts some back")
 scene("mole-cricket", "unweeded-jan-shovel", 5970, [2600, 4400, 5000, 5500, 5969], frames(4400, 5970, 50),
       "in January with the shovel, dig the tile of the insect of kind 0x31 hidden in the ground: it hops out "
       "and walks off, and stops as the player follows it", rtc="2027-01-12 11:30:06")
