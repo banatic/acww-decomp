@@ -1212,6 +1212,14 @@ needs: unreachable
 match: ov052/fox_tent:FoxTent_EnterFollow4 ov052/fox_tent:FoxTent_UpdateFollow4
 
 area: Unreachable for one player
+group: the number formats no caller asks for: commas and spaces
+scene: none: NumberText_Format's formats 1-5 and 7 (main/number_text.h: commas, and padding with spaces after or before the digits), with NumberText_InsertCommas, _PadSpacesBefore, _PadSpacesAfter and NumberText_MoveUp, which only those two call
+reach: (findings 2026-10-31, rows14) NumberText_Format is called by 31 functions and named by no data (SceneBase_PutValue by 39, _PutCount by 2, TextLabel_Compose by 3); the format is its fourth argument, and every call passes 0 or 6 (NUMBER_TEXT_ZEROS) as a constant, or passes on its caller's: SceneBase_PutValue's and _PutCount's fifth (`a`, 0 in every call but VillagerTalkOffer_PutTime's 6), TextLabel_Compose's fourth (0 in its three calls) and the clock panel's (NUMBER_TEXT_PLAIN or _ZEROS); so only 0 and 6 reach it, and the padding and comma steps never run (w54/ntcall.py; w54-wt5/cls/classify.py, gate value)
+needs: unreachable
+match: main/number_text:NumberText_InsertCommas main/number_text:NumberText_PadSpacesBefore
+  main/number_text:NumberText_PadSpacesAfter main/number_text:NumberText_MoveUp
+
+area: Unreachable for one player
 group: the states and state entries no code asks for: the fish shadows, the lost child's pause, Mr. Resetti's state 0
 scene: none: the entries of the fish shadows' states 0, 2, 3 and 4 (ov003/fish_shadow.c, fish_shadow_state.c), each of which does nothing; the lost child's state 4 (main/missing_npc1.c, MISSING_NPC1_PAUSE), its entry and update; the entry of Mr. Resetti's state 0 (ov077/mole.c)
 reach: (findings 2026-10-30, rows13) Each is named only by its class's table of states, whose entry members only the class's state setter calls, for the state it is given, and the setter is called only with constants that are never the state. FishShadow_EnterNone, _EnterAppearing, _EnterShown and _EnterAway: the table data_ov003_0225f1d0 (filled by ov003's static initialiser from its words at 0x0223bdd0-0x0223be90); FishShadow_SetState is called only by func_ov003_02228a20 (src/ov003/func_ov003_02228a20.c), twice, with 1 (FISH_SHADOW_PLACED); the shadows take the other states by stores to their state field (FishShadow_Reset, _SetState2, the updates of fish_shadow_state.c), which call no entry. MissingNpc1_EnterPause and _UpdatePause: the table data_021fbbfc; the child's state is written only by MissingNpc1_SetState, whose 18 calls (main's relocations to 0x020c26b4: func_020c1874, _189c, _1fc8, _2104, _2300, _234c, _2718, _2898) pass 0, 1, 2, 3, 5, 6, 7 and 8, never 4. Mole_EnterState0: the table data_ov077_022799a0, read only by Mole_SetState (0x02279394), Mole_Update (0x022793e4) and ov077's static initialiser; Mole_SetState's five calls pass 1-5, never 0 (w53-wt5/cls/classify.py, gate value)
