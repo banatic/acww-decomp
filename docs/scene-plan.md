@@ -3145,6 +3145,23 @@ What reading the Clean code found about the groups above; counts are of function
   Other and Await states and the destructors; line 0x36 (steps 12 and 13) calls Session_Start(2,
   ...) first, which halts in the WM set-up, and of the line ends' callees only
   TownRecord_Summary4Long was not entered before (savings-gift). No other line opens more.
+- Not proved: Mabel's and Nook's LinkedStand (the refused-event branch once SceneShare_IsHeld
+  and SceneShare_IsOurs). SceneShare_IsHeld reads the session's record table
+  (SceneShareTable_SharedRecord, Session_GetRecord), not the local entries the
+  SceneShare_SetSlots* calls write (data_021d213c, data_021d232c): the table is set only by
+  SessionRecord_Init, which only Session_Start calls, and freed by Session_End. Session_Start
+  runs in gate-wfc's Wi-Fi session (mode 3 or 4, after LibraryOverlay_Switch65), where
+  SessionRecord_Fill copies the local entries in (in use); the local entries' holders are
+  written with this system's slot (4 unlinked), SCENE_SHARE_NO_SLOT, an event's participant (4)
+  or the special characters' own owner and holder, and SceneShareTable_PlaceVillagersAtHome
+  zero-fills the villagers' entries (holder 0). So the census closes only if no special
+  character's scene runs while a Wi-Fi session is open (the gatekeeper's talk ends it through
+  GatekeeperTalk_EndSession); that was not shown.
+- Not proved: the bed class (RoomObject02253058, 33 functions in "furniture of each room-object
+  class"): it leaves PUSHED only in scenes 6-8 (RoomObject02253058_Start), and its WATCH needs a
+  push record of the room (RoomPushes_FindObject) in the current player's quarter; in scene 6 the
+  player lies in the bed and only the telephone or A (up and out) follow. Scene 7 is named by
+  the rooms' exit tables (the resident root's group); which exit gives it was not traced.
 - The plan before (439 lists here, main c48ba301): seed 567, date 138, unknown 471, unreachable
   3,257; after: seed 585, date 137, unknown 472, unreachable 3,209. Checked in a run: 20,819
   before, 20,849 after.
