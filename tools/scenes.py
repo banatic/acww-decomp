@@ -538,6 +538,14 @@ SAVES["ship-crashed"] = [(0xD3AE, "<H", 0x5020)]
 SAVES["barber-hat"] = SAVES["barber"] + [(0x14 + 0x240A, "<H", 0x4000)]
 # the seed with the item 0x37e0 in pocket 14, which the turtles of overlays 84 and 86 ask for
 SAVES["turtle-37e0"] = [(POCKETS + 28, "<H", 0x37E0)]
+# as "sky-ship" with the crashed spaceship's building 0x5020 already in place (as for
+# "ship-crashed") and the count of Gulliver's parts at 5 with its mark (0x0d at 0xf52a, the state
+# block's data_021ebcd2, main/item_1568_count.h): Gulliver stands by it at the boot, all counted
+SAVES["gull-wait"] = SAVES["sky-ship"] + [(0xD3AE, "<H", 0x5020), (0xF52A, "<B", 0x0D)]
+# the seed with a spoiled turnip (item 0x154a, main/town_spoil.h) on four empty tiles south-east
+# of the player's house (the town's items at 0xd328: 512 bytes an inner acre, 2 a tile)
+SAVES["turnips-spoiled"] = [(0xD328 + 512 * (x // 16 - 1 + (z // 16 - 1) * 4) + 2 * (z % 16 * 16 + x % 16),
+                             "<H", 0x154A) for x, z in ((43, 58), (44, 59), (42, 60), (46, 58))]
 
 # the paper 0x1020 (the one Tom Nook's job gives for a letter, "job-0f") in pocket 0: written from
 # the pockets, a letter with a header whose addressee the letter screen's choice picks
@@ -751,6 +759,11 @@ CARRIED_LETTER_STATE = 0x14 + 0x11A8 + 0xFA
 # back (VillagerTalkPart_SayByLetter, the table data_021c2a7c for state 7, data_021c2a94 for 8)
 SAVES["giver-late-letter7"] = SAVES["giver-late-letter"] + [(CARRIED_LETTER_STATE, "<B", 0x47)]
 SAVES["giver-late-letter8"] = SAVES["giver-late-letter"] + [(CARRIED_LETTER_STATE, "<B", 0x48)]
+# block 0 of the player's villager part (the block of type 10) holding villager 0's item (0x3230) for
+# villager 1, due on the 12th at 12:00 (a day after the boot), and the item not in the pockets: its
+# giver at home asks after it (VillagerTalkGreeting_SayByKnownObject, the table data_021c2aac)
+SAVES["giver-item-gone"] = raw(VILLAGER_PART, bytes((0, 0, 12, 12, 9, 26, 0, 0)) + struct.pack("<HBB", 0x3230, 10, 0) +
+                               SEED_NPC[0] + SEED_NPC[1])
 # a letter (type 19) villager 1 gave the player for villager 0, due on the 12th at 12:00 (a day after
 # the boot), the carried letter in state 8 ("letter-due-8"), or in state 7 with villager 0's memory
 # of the player at fondness 0x50 ("letter-due-7-fond")
@@ -2341,6 +2354,19 @@ scene("fireworks-chair", "turtle-37e0", 6905, [4400, 5400, 5800, 6300, 6904], fr
 scene("new-year-chair", "turtle-37e0", 7081, [4100, 5300, 6280, 6700, 7080], frames(6200, 7081, 50),
       "new-year with the massage chair in the pockets: the turtle asks for it and the first answer gives it",
       rtc="2026-12-31 23:40:00")
+scene("visit-night", "seed", 9546, [2600, 3800, 5800, 7000, 8300, 9545], frames(8200, 9546, 50),
+      "after midnight, a villager asks to visit the player's house: a time before 6:00 and one in her night "
+      "window, each asked again", rtc="2026-09-15 00:05:03")
+scene("letter-full", "mail-full", 8796, [2600, 6600, 7300, 8300, 8795], frames(8200, 8796, 50),
+      "a villager's request to take a letter accepted with the carried letters full", rtc="2026-09-15 11:30:01")
+scene("gull-wait", "gull-wait", 3201, [2600, 3000, 3200], frames(2700, 3201, 50),
+      "on the day of event 0x44 with the spaceship crashed and all of Gulliver's parts counted: he stands by it "
+      "and counts down to his first act")
+scene("turnip-insect", "turnips-spoiled", 7899, [2600, 4000, 6600, 7200, 7898], frames(6900, 7899, 50),
+      "spoiled turnips on the ground: walk away from them and wait until the event insect sits on one")
+scene("villager-giver-gone", "giver-item-gone", 5822, [2600, 3400, 4300, 4900, 5400, 5821], frames(4300, 5822, 50),
+      "an item the player agreed to take, not yet due and no longer in the pockets: its giver at home asks after "
+      "it and is cross", recording="villager-giver-late")
 
 # ------------------------------------------------------------------------------ saves
 
