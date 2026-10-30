@@ -2452,6 +2452,9 @@ scene("post-office-full", "post-full", 6854, [2600, 5000, 5500, 5600, 6200, 6853
 scene("title-move-in-halt", "seed", 2360, [1100, 1500, 1800, 2100, 2329], frames(1400, 2360, 10),
       "title-move-in run on: job 0x1d's start sets up the DS wireless session, which halts in the WM set-up",
       recording="title-move-in")
+scene("gate-visit-halt", "seed", 9640, [2600, 5900, 6900, 7900, 8600, 9300, 9591], frames(9500, 9640, 10),
+      "gate-visit run on: the gatekeeper starts the search for a town to visit, which halts in the WM set-up",
+      recording="gate-visit")
 
 # ------------------------------------------------------------------------------ saves
 
