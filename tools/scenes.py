@@ -1000,6 +1000,12 @@ SAVES["cafe-plan"] = SAVES["museum"] + [(DAY_PLAN, "<B", 0xC7)]
 # record's four slots at 0x23e8, the seed's all 0xff), as his first lesson leaves them
 # (ov088/reaction_npc_talk.c)
 SAVES["pupil"] = SAVES["visitor-43"] + [(0x14 + 0x23F8, "<I", 0x16608), (0x14 + 0x23E8, "<B", 0x17)]
+# the current player's savings rank (the byte at 0x23e4 of the record, SavingsAccount.rank of
+# main/savings.h, the seed's 0): below 10,000 bells town-wide (the seed's total is 0) the post
+# clerk's line after a donation is 0x1f plus that byte (PostClerkTalk_TellSavingsRank), any line
+# of her own file
+for _rank in (0x19, 0x1C, 0x1D, 0x1F):
+    SAVES[f"rank-{_rank:02x}"] = [(0x14 + 0x23E4, "<B", _rank)]
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -2109,6 +2115,18 @@ for _name, _mode, _frames, _what in (("villager-pastime-2", 2, 4979, "its pastim
                                      ("villager-pastime-6", 6, 5326, "its pastime's hint")):
     scene(_name, f"mode-{_mode}", _frames, [2600, 4088, 4600, _frames - 1], frames(4000, _frames, 50),
           f"villager 3 in pastime {_mode} talked to, the topic picked by the wait at its first choices: {_what}")
+# town-hall's donation of 100 bells with the savings rank set: the line after her thanks
+scene("savings-leave", "rank-1d", 10320, [2600, 4900, 7600, 8700, 9300, 10319], frames(7600, 10320, 50),
+      "town-hall's donation with rank 0x1d: her line 0x3c, she leaves and the player moves out of the "
+      "town (the car, the walk out, the title)")
+scene("savings-move-no", "rank-19", 9192, [2600, 4900, 7600, 8300, 8900, 9191], frames(7600, 9192, 50),
+      "town-hall's donation with rank 0x19: line 0x38 asks about a move, the second answer ends the "
+      "linked game; her menu again, nothing")
+scene("savings-move", "rank-1c", 8276, [2600, 4900, 7600, 8240, 8275], frames(7600, 8276, 25),
+      "town-hall's donation with rank 0x1c: line 0x3b, whose end asks for activity job 0x1f (cut "
+      "before the job's start, which halts in the WM set-up)")
+scene("savings-gift", "rank-1f", 8500, [2600, 4900, 7600, 8300, 8499], frames(7600, 8500, 50),
+      "town-hall's donation with rank 0x1f: line 0x3e, the town's summary asked for the gift")
 
 # ------------------------------------------------------------------------------ saves
 
