@@ -1648,7 +1648,7 @@ match: ov004/shop3_villager:Shop3VillagerTalk_Construct
 area: Unreachable for one player
 group: the other console's field actor: its states' messages
 scene: none: the message handlers of the field actor's states (FieldActor_State<N>Message and the room and place states' *Message), which ask for a state as another console reported it
-reach: FieldActor_FollowRemoteState, which nearly every scene runs for the title demo's actors (in scene 0x2c the session has no local player), calls a state's message handler only once SessionPlayers_State reports a state for a player not this system's, from that player's state record (records 8-11): SessionRecord_Init zeroes it, no filler fills it (data_020cd1dc 8-11 are 0), and only SessionRecord_Update, Session_ProcessReceived and SystemPacket_WriteSharedRecords write it, none reached past the link guard and the receive callback's cut; the handlers' member pointer constants are named by FollowRemoteState alone (w22/classify.py, gate remote); the *Remote branches of the state updates, which the updates call for an actor not this system's, stay in "claimed unreachable, not proved by the forward pass" (findings 2026-10-29, proofs1); besides (findings 2026-10-29, town7), the room states' messages (FieldActorRooms_*Message) and State87Message, named only through FieldActor_FollowRemoteState's member pointer constants (w24/classify.py, gate remote); besides (findings 2026-10-30, clerk6), State88Message of the former group "a player moving to another town", whose other functions savings-leave runs (w45-wt5/cls/classify.py: cut off by the gates)
+reach: FieldActor_FollowRemoteState, which nearly every scene runs for the title demo's actors (in scene 0x2c the session has no local player), calls a state's message handler only once SessionPlayers_State reports a state for a player not this system's, from that player's state record (records 8-11): SessionRecord_Init zeroes it, no filler fills it (data_020cd1dc 8-11 are 0), and only SessionRecord_Update, Session_ProcessReceived and SystemPacket_WriteSharedRecords write it, none reached past the link guard and the receive callback's cut; the handlers' member pointer constants are named by FollowRemoteState alone (w22/classify.py, gate remote); the *Remote branches of the state updates, which the updates call for an actor not this system's, stay in "claimed unreachable, not proved by the forward pass" (findings 2026-10-29, proofs1); besides (findings 2026-10-29, town7), the room states' messages (FieldActorRooms_*Message) and State87Message, named only through FieldActor_FollowRemoteState's member pointer constants (w24/classify.py, gate remote); besides (findings 2026-10-30, clerk6), State88Message of the former group "a player moving to another town", whose other functions savings-leave runs (w45-wt5/cls/classify.py: cut off by the gates); besides (findings 2026-10-31, rows15), the state updates' *Remote branches, which run for an actor not this system's in states 0x46, 0x55, 0x56, 0x59, 0x63, 0x67 and 0x68: such an actor (the title demo's, in scene 0x2c with no local player) takes those states only by a request, and the requests come only from the state messages (above), FieldActor_TakeRemoteAction (it acts only on an action of data_021c7788, whose kinds only TileRequests_ReceiveAction sets: called by the message 50 handler and by TileRequestGrant_Answer when TileRequests_MayAsk is 0, which needs Session_IsLinked, behind the link guard), the local actor's own steps (FieldActor_UseTool, called through TryTool, TryToolInScene and TryAct only from the local branches of UpdateState2 and 3 and from ResumeMoving, which EndState17, 45, 4A, 72 and 82 call only for this system's actor and EndState63Local and 67Local are; ActOnTarget through TryTarget and TryTargetMode2 from TryTool; RunState54, UpdateState54's local branch), EndState63Remote (already in 0x63) and EndState66, which asks for 0x67 for another actor only after EnterState66 took it from a request of the same kinds; the updates' calls of the *Remote branches are cut (w55-wt5/cls/classify.py, gate local, the callers asserted from the relocations; calibrated with EXTRA='*', 0 functions that ran cut off)
 needs: unreachable
 match: main/field_actor_states:FieldActor_State0Message
   main/field_actor_states:FieldActor_State10Message main/field_actor_states:FieldActor_State13Message
@@ -1749,11 +1749,14 @@ match: main/field_actor_states:FieldActor_State0Message
   ov004/field_actor_rooms:FieldActorRooms_WalkInMessage
   ov068/field_actor_states87:FieldActor_State87Message
   ov068/field_actor_states87:FieldActor_State88Message
+  ov003/field_actor:FieldActor_EndState46Remote ov003/field_actor:FieldActor_EndState55Remote ov003/field_actor:FieldActor_EndState59Remote
+  ov003/field_actor:FieldActor_EndState63Remote ov003/field_actor:FieldActor_EndState67Remote ov003/field_actor:FieldActor_EndState68Remote
+  ov003/field_actor:FieldActor_SweepState56Remote
 
 area: Unreachable for one player
 group: what only the other console's field actor's messages call
 scene: none: the getters of the arguments a state's message carries (FieldActor_GetSaved<N>, State<N>Saved_Get, the room and place states' Get*Saved, the packed points, tiles and items) and the requests only those messages make
-reach: called or named only by the state messages of "the other console's field actor" or by functions found so; reached past no gate but that group's (w22/classify.py, gate remote; findings 2026-10-29, proofs1); besides (findings 2026-10-29, town7), the unpackers of the room states' messages' points (w24/classify.py, gate remote)
+reach: called or named only by the state messages of "the other console's field actor" or by functions found so; reached past no gate but that group's (w22/classify.py, gate remote; findings 2026-10-29, proofs1); besides (findings 2026-10-29, town7), the unpackers of the room states' messages' points (w24/classify.py, gate remote); besides (findings 2026-10-31, rows15), FieldActor_HitState56 and SavedFlag_Get, called only by FieldActor_SweepState56Remote and _EndState63Remote (group "the other console's field actor: its states' messages"; w55-wt5/cls/classify.py, gate local)
 needs: unreachable
 match: main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:FieldActor_GetSaved18
   main/field_actor_states:FieldActor_GetSaved19 main/field_actor_states:FieldActor_GetSaved1A
@@ -1795,6 +1798,7 @@ match: main/field_actor_states:FieldActor_GetSaved14 main/field_actor_states:Fie
   ov004/field_actor_rooms:FieldActorRooms_UnpackExitPoint
   ov004/field_actor_rooms:FieldActorRooms_UnpackStepOffPoint
   ov004/field_actor_rooms:FieldActorRooms_UnpackWalkInPoint
+  ov003/field_actor:FieldActor_HitState56 ov003/field_actor:SavedFlag_Get
 
 area: Unreachable for one player
 group: the special characters' wait for the linked session
@@ -2095,6 +2099,15 @@ needs: unreachable
 match:
   main/scene_object:SceneObject_Vfunc68
 
+area: Unreachable for one player
+group: the menus' close on main's request
+scene: none: what a menu screen does when main asks it to close (StateFlags_MenuCloseAsked): the board writer's, the letter writer's and the mailbox's close, the friend roster's and my designs' choice cancelled, the pockets' letter reader left
+reach: StateFlags_MenuCloseAsked answers flag 0x80 of the state flags (data_021cfc6c), which only StateFlags_AskMenuClose sets (the other callers of StateFlags_Set pass 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x100 and 0x200; the word's other writers are StateFlags_Clear, _Reset and OverlayTask's 0); AskMenuClose is called only by EventQueue_StartKind13, which only LinkState_SystemStep calls (behind the link guard); each function here is called only where MenuCloseAsked answered nonzero, or (LetterWrite_ExitMenu from LetterWrite_RunChoiceClosing) under LETTER_WRITE_FLAG_CLOSE_ASKED, which only those branches of LetterWrite_RunChoiceKeys and _RunChoiceTouch set (findings 2026-10-31, rows15; w55-wt5/cls/classify.py, gate menuclose; calibrated with EXTRA='*', 0 functions that ran cut off)
+needs: unreachable
+match: ov112/bbs_write_input:BbsWrite_CloseOnRequest ov119/friend_roster_input:FriendRoster_CancelChoiceOnClose
+  ov122/letter_write_scene:LetterWrite_ExitMenu ov106/mailbox_scene:MailboxScene_CloseOnRequest
+  ov121/my_designs:MyDesigns_CloseChoiceOnRequest ov096/pockets_screen:PocketsScreen_ExitToParent
+
 area: Not attributed to one scene
 group: the special characters' states after a talk ended
 scene: none known: the "talked" or "done" state each character takes when its talk ends through EventQueue_FinishObjectEvent (its update does nothing), and Mr. Resetti's, which he takes on the event's end in the frame he is deleted
@@ -2114,16 +2127,12 @@ match: ov004/tailor_sister:TailorSister_UpdateTalked ov004/cafe_master:CafeMaste
 area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
 scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the other classes' destructors of vtable slot 16 1)
-reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene; besides (findings 2026-10-31, rows14), 18 moved to the groups whose reasons cover them, each shown at the edge that reaches it, and LinkedMapItems_Set, _PlaceAndShare and _Place run (field-trample); left: the field actor's *Remote branches (the title demo's actors are not this system's: which states they take is not traced), RoomObject022510b4_Destroy (FieldActor_ActOnTarget's call of FieldActor_RequestState16 at 0x0200fda0 lands there when overlay 4 is in memory: whether a target of kind 5 is met indoors is not traced), the gatekeeper's session lines, SaveStamp_SetLostFlag and ActivityLinkJobs_Start1D
+reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene; besides (findings 2026-10-31, rows14), 18 moved to the groups whose reasons cover them, each shown at the edge that reaches it, and LinkedMapItems_Set, _PlaceAndShare and _Place run (field-trample); left: RoomObject022510b4_Destroy (FieldActor_ActOnTarget's call of FieldActor_RequestState16 at 0x0200fda0 lands there when overlay 4 is in memory: whether a target of kind 5 is met indoors is not traced), the gatekeeper's session lines, SaveStamp_SetLostFlag and ActivityLinkJobs_Start1D; besides (findings 2026-10-31, rows15), the field actor's seven *Remote branches with FieldActor_HitState56 and SavedFlag_Get moved to "the other console's field actor: its states' messages" and "what only the other console's field actor's messages call" (gate local); SaveStamp_SetLostFlag: the boot screen reads both copies into its own buffers, so with both bad the state block's stamp is the one it held before the boot screen (0 after a power-on: a save of two bad copies, as the drive played it, gives no call); the boot screen (class 1) is asked for only by the scene request's first value and SceneProcessBase_ResetRequest (ResidentProcess_SpawnAll, at start-up), the scene requests naming 2, 5, 6 and 0xd4; not shown: that no other spawner names class 1; the gatekeeper's lines 0x63, 0x65, 0x7d, 0x7e, 0x80 and 0x82 are said only by the session waits (TimeOut65, TimeOutByMode, CheckError, GatekeeperTalk_Line80Or63's caller), none run; not shown: that no message's next byte names them
 needs: unknown
 match: main/activity_link_jobs:ActivityLinkJobs_Start1D main/lid_sleep:LidSleep_SetFlags
   main/linked_map_items:LinkedMapItems_Place main/linked_map_items:LinkedMapItems_PlaceAndShare
   main/linked_map_items:LinkedMapItems_Set main/save_stamp:SaveStamp_SetLostFlag
-  ov003/field_actor:FieldActor_EndState46Remote ov003/field_actor:FieldActor_EndState55Remote
-  ov003/field_actor:FieldActor_EndState59Remote ov003/field_actor:FieldActor_EndState63Remote
-  ov003/field_actor:FieldActor_EndState67Remote ov003/field_actor:FieldActor_EndState68Remote
-  ov003/field_actor:FieldActor_HitState56 ov003/field_actor:FieldActor_SweepState56Remote
-  ov003/field_actor:SavedFlag_Get ov004/room_object_022510b4:RoomObject022510b4_Destroy
+  ov004/room_object_022510b4:RoomObject022510b4_Destroy
   ov048/gatekeeper_talk:GatekeeperTalk_Line21Or22
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerSession
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswerTo59
