@@ -1,12 +1,12 @@
-From 423 scene lists: 25,251 Clean game functions, run 20,798, function check only 1,111, read only 3,342; the groups below hold 4,453 (function check only + read only).
+From 425 scene lists: 25,251 Clean game functions, run 20,800, function check only 1,110, read only 3,341; the groups below hold 4,451 (function check only + read only).
 
 | needs | functions |
 |---|---|
 | seed | 599 |
-| date | 160 |
+| date | 158 |
 | unknown | 452 |
 | unreachable | 3,242 |
-| total | 4,453 |
+| total | 4,451 |
 
 ## Unreachable for one player (3,242)
 
@@ -120,13 +120,13 @@ From 423 scene lists: 25,251 Clean game functions, run 20,798, function check on
 | villagers out in the town | 94 (23 / 71) | ov068/outdoor_villager_acts 11, ov068/outdoor_villager_moves 9, main/villager_memories 8, main/villager_house_items 6, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (41) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 | the talk engine: tags, pages, windows, sliders | 58 (28 / 30) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 8 more files (12) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 
-## Other dates, times and visitors (for the boot on another day) (167)
+## Other dates, times and visitors (for the boot on another day) (165)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| insects and fish of other months and hours | 53 (18 / 35) | ov003/fish_shadow 8, ov003/town_insect_moves 7, ov003/town_insect_kinds 6, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov004/aquarium_fish 5, ov003/town_insect 4, ov003/fish_shadow_swim 3, 4 more files (9) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
+| insects and fish of other months and hours | 52 (18 / 34) | ov003/fish_shadow 8, ov003/town_insect_moves 7, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov003/town_insect_kinds 5, ov004/aquarium_fish 5, ov003/town_insect 4, ov003/fish_shadow_swim 3, 4 more files (9) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
 | seasons, weather, the sky and the new day | 35 (8 / 27) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/creature_draw 2, main/insect_draw 2, main/sky 2, main/town_growth 2, main/town_spawn 2, 4 more files (4) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
-| Tortimer's events and holidays | 20 (10 / 10) | main/event_kinds 2, main/event_queue 2, main/event_winner 2, ov083/turtle_gardens 2, main/event_buildings 1, main/event_schedule 1, main/sky_events 1, ov003/etc_board 1, 8 more files (8) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
+| Tortimer's events and holidays | 19 (9 / 10) | main/event_kinds 2, main/event_queue 2, main/event_winner 2, ov083/turtle_gardens 2, main/event_buildings 1, main/event_schedule 1, ov003/etc_board 1, ov080/turtle 1, 7 more files (7) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
 | Redd and his tent | 10 (2 / 8) | ov003/fox 4, ov052/fox_tent 4, main/fox_shop 2 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
 | villagers' birthdays, sickness and visits | 8 (4 / 4) | ov068/cafe_room 4, ov004/birthday_guest 1, ov004/birthday_villager 1, ov068/cafe_guest 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
 | the lost child and the mother | 6 (3 / 3) | main/missing_npc1 5, main/missing_npc2 1 | what lost-child and lost-mother leave: the child's pause and its state facing the player, the mother's steering | a pairing with another town in its last week (saves lost-child and lost-mother, main/paired_town.h) | seed |
@@ -2905,3 +2905,18 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (418 lists): seed 601, date 168, unknown 452, unreachable 3,242; after (423):
   seed 599, date 160, unknown 452, unreachable 3,242. Checked in a run: 20,789 before, 20,799
   after.
+
+### The thunder heard indoors, the insect of kind 0x0a in May (2026-10-30, dates3, third batch)
+- The thunder (SkyEvents_Thunder) runs while heavy rain falls (weather level 4, rain) only in a
+  scene whose sound kind is not 0 or 3 (SkyObjects_RunEvents): outdoors it is never heard. Save
+  rain (pattern 15, level 4 to 19:59) with house's walk into the player's house: scene
+  house-thunder. With every Clean function in place one word of the scratch matrix data_021fbe48
+  (0x021fbe70) differs at frame 4200 (Reference 0x4000, Native 0xc000) and agrees again by 4499,
+  as designs-pieces' did; the scene's checkpoint is at 4300. Not yet traced.
+- Booted 20 May 2027 15:00:00-05 (weeded, fish-carry's boot to 4700) the insects of :01 and :04
+  held kind 0x0a, at :04 at (46.1, 64.3) south of the house; walked up beside it, it is updated
+  (TownInsectKind_Update0A): scene insects-may.
+- Gained little: these two give one function each; the date groups left are mostly the states
+  after a talk ended ("talked", "done"), the session's and the snowman's.
+- The plan before (423 lists): seed 599, date 160, unknown 452, unreachable 3,242; after (425):
+  seed 599, date 158, unknown 452, unreachable 3,242. Checked in a run: 20,799 before, 20,801 after.

@@ -1756,6 +1756,11 @@ scene("villager-talks-catchphrase", "fond", 10950, [2600, 4900, 6500, 8000, 9500
 scene("insects-june", "weeded", 9612, [2800, 5000, 7100, 9100, 9611], frames(6400, 9612, 100),
       "on a June night, walk by a firefly and up to a moth by the lights of a building",
       rtc="2027-06-20 21:00:00")
+scene("insects-may", "weeded", 5040, [2800, 4200, 4700, 4900, 5039], frames(4600, 5040, 25),
+      "on a May afternoon, walk up to the insect of kind 0x0a south of the house", rtc="2027-05-20 15:00:04")
+scene("house-thunder", "rain", 4500, [2600, 3400, 4300, 4499], frames(3800, 4500, 50),
+      "in the heavy rain of the seed's day, walk into the player's house: the thunder is heard inside",
+      recording="house")
 scene("insects-january", "weeded", 5962, [2800, 4200, 5000, 5600, 5961], frames(4800, 5962, 50),
       "on a January morning, walk up to the insect of kind 0x1e", rtc="2027-01-20 05:30:00")
 scene("able-tryon", "able-shop", 7772, [2600, 4700, 5600, 6500, 7200, 7771], frames(5000, 7772, 50),
