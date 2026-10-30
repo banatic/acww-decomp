@@ -1025,6 +1025,10 @@ SAVES["errand-kind-due"] = villager_errand(0, 2, 2, player=True, item=0x450C) + 
 # the pockets screen opens on the fish (VillagerTalkOffer_IsFishFree)
 SAVES["errand-fish-due"] = villager_errand(0, 1, 2, player=True, item=0x12E8) + [(POCKETS + 2 * i, "<H", 0x12E8 + i)
                                                                                 for i in range(3)]
+# villager 0's errand of an item with variants at step 2 asking for the furniture 0x3508, the player named,
+# with six pieces of furniture (0x3508-0x351c) in pockets 0-5: the piece given is liked into its count
+SAVES["errand-variant-due"] = villager_errand(0, 4, 2, player=True, item=0x3508) + [
+    (POCKETS + 2 * i, "<H", 0x3508 + 4 * i) for i in range(6)]
 # villager 0's errands done (low bits 2): an insect at step 0, an item of a kind at step 1 and an
 # item with variants at step 0
 SAVES["errand-low2"] = villager_errand(0, 0, 0, low=2, player=True, item=0x12B0)
@@ -2238,6 +2242,9 @@ scene("villager-kind-shown", "errand-kind-due", 8148, [2600, 4138, 5500, 6500, 7
 scene("villager-fish-due", "errand-fish-due", 8148, [2600, 4138, 5500, 6500, 7500, 8147], frames(5000, 8148, 50),
       "villager-catch-draw's walk with a fish errand at step 2: the pockets screen opened on the fish",
       "villager-catch-draw")
+scene("villager-errand-variant", "errand-variant-due", 9481, [2600, 4138, 6500, 8147, 8800, 9480],
+      frames(8100, 9481, 50), "villager-catch-draw's walk with an errand of an item with variants at step 2: "
+      "a piece of furniture given, the villager's liking of it added to the errand's count")
 scene("villager-errand-done", "errand-low2", 7148, [2600, 4138, 5000, 6000, 7147], frames(4200, 7148, 50),
       "villager-home-talks' owner with its insect errand done: the next step, and the insect of step 1 asked for")
 scene("villager-kind-done", "errand-done-2-1", 6548, [2600, 4138, 5000, 6000, 6547], frames(4200, 6548, 50),
