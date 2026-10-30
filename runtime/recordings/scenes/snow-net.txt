@@ -1,0 +1,73 @@
+# snow-net (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). As trip-snow.txt up to 4000 (11:30:05 on Friday 15 January 2027,
+# snow falling; the player runs back and forth across the square in front of the house).
+# Save: snow-net: as trip-snow with the bug net (0x1376) held. B+RIGHT from 4000 runs east onto the snow;
+# A at 4040 swings the net while running (field actor state 0x56): the swing slows the player to a
+# stop on the snow, where effect 0x2b leaves its two marks (EffectKinds_SetUpMark2bFirst, _Second).
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2600 DOWN -
+2660 RIGHT+DOWN -
+2720 B+LEFT -
+2830 B+RIGHT -
+2940 B+LEFT -
+3050 B+RIGHT -
+3160 B+LEFT -
+3270 B+RIGHT -
+3380 B+LEFT -
+3490 B+RIGHT -
+3600 B+LEFT -
+3710 B+RIGHT -
+3820 B+LEFT -
+3930 B+RIGHT -
+4000 B+RIGHT -
+4040 A+B+RIGHT -

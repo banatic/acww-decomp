@@ -603,10 +603,18 @@ SAVES["unweeded-jan-shovel"] = SAVES["unweeded-jan"] + [(HELD, "<H", 0x1369)]
 # FieldActor_RunState3), as on a day of bad luck
 WEATHER_DAY = 0x1737E
 SAVES["trip-snow"] = raw(WEATHER_DAY, bytes((15, 1, 27))) + [(WEATHER_DAY + 4, "<B", 15), (0x14 + 0x240A, "<H", 0x13C3)]
+# as "trip-snow" with a tool held: a swing or a dig while running slides the player to a stop,
+# which marks the snow (effects 0x2a-0x2c, main/effect_kinds.c, on the ground's attribute 3 in the
+# snow season)
+SAVES["snow-net"] = SAVES["trip-snow"] + [(HELD, "<H", 0x1376)]
+SAVES["snow-axe"] = SAVES["trip-snow"] + [(HELD, "<H", 0x136B)]
+SAVES["snow-shovel"] = SAVES["trip-snow"] + [(HELD, "<H", 0x1369)]
 
 # the seed's day given the weather pattern 15 (as for "trip-snow", its date the seed's own):
 # rain at level 4 to 19:59, level 3 from 20:00
 SAVES["rain"] = [(WEATHER_DAY + 4, "<B", 15)]
+# ... and the pharaoh mask on the head, as in "trip-snow": the trip in the rain
+SAVES["trip-rain"] = SAVES["rain"] + [(0x14 + 0x240A, "<H", 0x13C3)]
 
 # the seed's day given the weather pattern 0 (as for "rain"; no rain), on whose nights a falling
 # star comes at the half minute 1 time in 4 (main/sky_events.h)
@@ -1003,6 +1011,10 @@ SAVES["house-placed"] = SAVES["house-big"] + [
 # piece of kind 0x16 at (4, 6) of "house-placed": no gyroid, so no cue waits on the sequencer
 SAVES["house-kind7"] = SAVES["house-big"] + [room_item(4, 11, 0xD9), room_switch_off(4, 11), room_item(4, 6, 0xCC)]
 SAVES["house-carry"] = SAVES["house-placed"] + [(0xF52C + 0x200 + 2 * (4 + 16 * 6), "<H", 0x11A8)]
+# as "house-big" with two Asian beds (furniture number 0, kind 0x37 of the room objects) in the
+# main room, at (6, 9) and (6, 7), both facing south: head to foot, a cell of each next to one of
+# the other's
+SAVES["house-beds"] = SAVES["house-big"] + [room_item(6, 9, 0), room_item(6, 7, 0)]
 # as "museum" with the day's plan (main/day_plan.h, the byte at 0xf52b of the state block; the
 # seed's 0x10) giving the cafe a guest at every hour it may have one: the morning bit, noon 3
 # (the guest that shows part 8 of the counter), afternoon 4 and the night bit
@@ -2166,6 +2178,23 @@ scene("halt-debug-screen", "rank-1c", 8300, [2600, 4900, 7600, 8275], frames(825
       "chords of its key sequence (cut before the screen shows the registers and the stack)")
 scene("savings-gift", "rank-1f", 8500, [2600, 4900, 7600, 8300, 8499], frames(7600, 8500, 50),
       "town-hall's donation with rank 0x1f: line 0x3e, the town's summary asked for the gift")
+scene("snow-net", "snow-net", 4160, [2600, 3300, 4000, 4159], frames(3900, 4160, 20),
+      "trip-snow's run with the bug net held: a swing while running stops the player on the snow, which "
+      "takes the two marks of the stop", rtc="2027-01-15 11:30:05")
+scene("snow-axe", "snow-axe", 4160, [2600, 3300, 4000, 4159], frames(3900, 4160, 20),
+      "trip-snow's run with the axe held: a swing while running slides the player to a stop that marks "
+      "the snow", rtc="2027-01-15 11:30:05")
+scene("snow-shovel", "snow-shovel", 4190, [2600, 3300, 4000, 4189], frames(3900, 4190, 20),
+      "trip-snow's run with the shovel held: a dig while running slides the player to a stop that marks "
+      "the snow", rtc="2027-01-15 11:30:05")
+scene("trip-snow-16", "trip-snow", 5840, [2600, 3300, 4300, 4900, 5400, 5839], frames(3200, 5840, 40),
+      "trip-snow booted at another second: the player trips on the snow, whose fall throws up snow "
+      "(effects 0x39 and 0x37 on that ground)", "trip-snow", "2027-01-15 11:30:16")
+scene("trip-rain", "trip-rain", 5840, [2600, 3300, 4300, 4900, 5400, 5839], frames(3200, 5840, 40),
+      "trip-snow's run on the seed's day in the rain: the player trips on the wet ground", "trip-snow",
+      "2026-09-11 11:30:05")
+scene("beds-roll", "house-beds", 4600, [2600, 4200, 4390, 4599], frames(4200, 4600, 20),
+      "in the big house's main room with two beds head to foot: lie in one and roll over into the other")
 
 # ------------------------------------------------------------------------------ saves
 

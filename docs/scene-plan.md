@@ -1,12 +1,12 @@
-From 460 scene lists: 25,251 Clean game functions, run 20,916, function check only 1,080, read only 3,255; the groups below hold 4,335 (function check only + read only).
+From 456 scene lists: 25,251 Clean game functions, run 20,929, function check only 1,079, read only 3,243; the groups below hold 4,322 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 517 |
+| seed | 514 |
 | date | 137 |
-| unknown | 472 |
+| unknown | 462 |
 | unreachable | 3,209 |
-| total | 4,335 |
+| total | 4,322 |
 
 ## Unreachable for one player (3,209)
 
@@ -88,11 +88,11 @@ From 460 scene lists: 25,251 Clean game functions, run 20,916, function check on
 | the post office: both clerks, savings and the ATM | 6 (1 / 5) | ov130/bank_pad 3, main/savings 1, ov004/atm 1, ov132/bank_menu 1 | Pelly and Phyllis (night) with every topic, withdraw and deposit at the pad and the ATM (ov130-ov132), the letters kept for later | the post-office walk, at day and at night | seed |
 | the post clerk's step 15 after job 0x1f is asked for | 3 (2 / 1) | main/activity_job 2, ov054/post_clerk_talk 1 | none: PostClerkTalk_AwaitJob1f (step 15) and the two tests of the job it makes | (findings 2026-10-30, clerk6) step 15 is set only by PostClerkTalk_AskJob1f, right after ActivityJob_Ask1F; the activity process starts job 0x1f in the same frame, after the talk's step, and the start halts ("job 0x1f's start and the halt it ends in"), so the next frame's step never comes (seen in the drive at 8277; the frame order is not proved from the code); besides (findings 2026-10-30, halt7), the asked job (data_021f3c38) is read only by ActivityProcess_StepJob0, job 0's step, which in scene 9 starts job 0x1f once the screen is shown (data_021c75b8 2), and by ActivityProcess_Create (jobs 0x14 and 0x15 only); the job's start halts ("job 0x1f's step: its start halts"); so with the activity's step and the talk's step run once each a frame, in either order, step 15 runs only if at the ask the current activity is not at job 0, the screen is not shown or the activity process is not executed; that none of these holds whenever the clerk is ready (PostClerk_ReadyForJob: her face's animation 0xba, TtiNpc_IsIdle, her talk waiting) is not shown | unknown |
 
-## The house and its furniture (the seed's day) (45)
+## The house and its furniture (the seed's day) (42)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| furniture of each room-object class | 26 (12 / 14) | ov004/room_object_life 5, ov004/room_object_02253058 4, ov004/room_objects 4, main/room_cells 2, ov004/trash_box 2, autoload_2/sound_object_kinds 1, ov004/icon_models 1, ov004/rmo_object_base 1, 6 more files (6) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches; besides (findings 2026-10-29, unknown2), the TV's sound objects (autoload_2/sound_object_kinds): SoundObject_New, whose only caller is TvBroadcast_Show, makes the kind of the channel shown, and the schedule (data_ov004_02247cf4, by weekday from Sunday) gives the seed's Friday channels 8 at 0:00 and 12:00, 6 at 1:00, 8:30 and 15:00, 1 at 3:00 and 5:00, 0 at 4:00, 2 at 6:00, 3 at 8:00, 7 at 10:00, 10 at 19:00, 5 at 23:00 and the forecast at 6:45, 7:45, 11:45, 18:45 and 22:45 (its other sound after seven rounds); kind 4 only on Wednesday 1:00 and 20:00 and Saturday 0:00, kind 9 only on Sunday 21:00, Tuesday 1:00 and Saturday 1:00 and 21:00 (another weekday); the TV heard (data_ov004_022595b8) in a room with a TV on | seed |
+| furniture of each room-object class | 23 (12 / 11) | ov004/room_object_life 5, ov004/room_objects 4, main/room_cells 2, ov004/trash_box 2, autoload_2/sound_object_kinds 1, ov004/icon_models 1, ov004/rmo_object_base 1, ov004/rmo_object_slots 1, 6 more files (6) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches; besides (findings 2026-10-29, unknown2), the TV's sound objects (autoload_2/sound_object_kinds): SoundObject_New, whose only caller is TvBroadcast_Show, makes the kind of the channel shown, and the schedule (data_ov004_02247cf4, by weekday from Sunday) gives the seed's Friday channels 8 at 0:00 and 12:00, 6 at 1:00, 8:30 and 15:00, 1 at 3:00 and 5:00, 0 at 4:00, 2 at 6:00, 3 at 8:00, 7 at 10:00, 10 at 19:00, 5 at 23:00 and the forecast at 6:45, 7:45, 11:45, 18:45 and 22:45 (its other sound after seven rounds); kind 4 only on Wednesday 1:00 and 20:00 and Saturday 0:00, kind 9 only on Sunday 21:00, Tuesday 1:00 and Saturday 1:00 and 21:00 (another weekday); the TV heard (data_ov004_022595b8) in a room with a TV on | seed |
 | indoor actions of the field actor | 10 (2 / 8) | ov004/field_actor_place_states 6, ov004/field_actor_room_states 2, ov004/room_player_actor 2 | sit on chairs and sofas, lie on the bed, pick furniture up and turn it (R and L), push and pull every kind, step off a spot | the house-furni save; each room-object class asks for its own states | seed |
 | the house: rooms, camera, telephone, roaches | 8 (3 / 5) | ov004/rmo_telephone 3, main/house_record 2, ov004/room_camera 2, ov004/room_etc_board 1 | the other rooms (upstairs and basement of a bigger house), the room camera's turns, the telephone's other settings, cockroaches running and stamped on, the wallpaper and carpet changed | a derived save with a bigger house (main/house_record.h, the size word at 0x15a0) and wallpaper/carpet items; the seed's 10 cockroaches (their collider is Native-sensitive, docs/native-guest-stack.md) | seed |
 | the clock and calendar screens | 1 (0 / 1) | ov135/phone_clock 1 | what clock-pen, birthday-ask and visit-time leave: the clock dragged past a bound (ov135 in the date screen's mode 0x33), the visit's times in a villager's sleeping hours and before 6:00 (lines 0x021c304c and 0x021c3034 of VillagerTalkSteps_SayByKeptTime) | the visit's time screen (ov136) is bounded by now and twelve hours later and the villagers' night windows start at 1:00-4:30 (data_020cd4ac), so those two answers need the offer late in the evening (a boot at night on a day the deal gives a villager type 21) | date |
@@ -109,12 +109,12 @@ From 460 scene lists: 25,251 Clean game functions, run 20,916, function check on
 | chat, board, keyboard entry and name screens | 7 (0 / 7) | ov112/bbs_write_input 2, ov112/bbs_write_scene 2, ov126/keyboard_entry_input 1, ov126/keyboard_entry_scene 1, ov126/keyboard_entry_states 1 | type and send a chat message, write and read the bulletin board by keys, the keyboard entry's other modes (names, friend codes, catchphrases), the han panel's messages | the menus tab; the town hall board; a villager asking for a nickname or catchphrase opens the keyboard; besides (findings 2026-10-29, unknown3), the chat's own quick message balloon, which chat-send places (ChatScene_PostMessage, QuickMessage_Post) and holds: it holds 600 frames before it leaves (QuickMessage_BalloonStartLeaving, _Leaving, _FreeNameBox, _FreeTextBox, _Stop), and a second line sent while it is shown releases it (QuickMessage_PlaceBalloon's QuickMessage_BalloonRelease): send a line, wait over 600 frames, send two lines in a row | seed |
 | the friend roster with a friend registered | 1 (0 / 1) | main/wifi_friends 1 | the friend roster (ov119) with a friend in the list: a friend deleted before the last (the list closed up), and a friend code typed that is already registered | WifiFriendList_Compact (friend-add) copies the entries after a deleted one; FriendCodeEntry_IsOtherFriendsCode (friend-code) compares the typed code with each registered friend's: both need a save with friends registered | seed |
 
-## Player actions (the seed's day) (118)
+## Player actions (the seed's day) (108)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | outdoor actions of the field actor | 73 (13 / 60) | ov003/field_actor 29, main/field_actor_states 11, ov003/tile_event 9, main/field_actor_support 6, main/tile_requests 4, main/touch_pick 3, main/player_actor_ops 2, main/tile_changes 2, 6 more files (7) | fall into a pitfall and climb out, pick items up, eat fruit, shake a tree with a beehive (stung, the swollen face), sit on a stump, push into objects, the tools on every target (rocks, signs, villagers, buried items, the beehive), drop and throw items, fall asleep standing | saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86; besides (findings 2026-10-29, actions), B asks for the tile ahead (FieldActor_TryTarget, a point 0.4-0.5 ahead: stand within 0.3 of the tile's edge, facing it): a dug hole (0xfc, 0xfd) held with any tool but the shovel gives states 0x66 and 0x67 (hole-step), codes 0x1f and the flowers 0x6e-0xa5 states 0x16 and 0x17 (field-pluck), the clover 0x20 state 0x18; states 0x5a and 0x47 (verdict 0) need a target held as the shovel or axe acts, which only an unanswered request leaves (linked), 0x5c (verdict 7) a refused dig: another actor near the tile (TileRequestGrant_NoOneNear) or four requests open; state 0x52 a float without a fish in state 0x50 | seed |
-| effects by kind | 45 (1 / 44) | main/effect_kinds 42, main/effect_system 3 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers; besides (findings 2026-10-29, actions), the starters by kind: 0x2e (code 0x1f) and set 0x54 (codes 0x1f-0x24, flowers) by state 0x17 (field-pluck), 0x2f by state 0x17 for code 0x20 only on another console's action (locally the clover is taken by state 0x18), 0x23 by state 0x67 (hole-step), 0x2a, 0x2b and 0x2c (the marks of the shovel's, net's and axe's slides) only on sand (ground 0x13) or snow, 0x32 by state 0x71 (the trip), 0x25 by state 0x57, 0x0b by state 0x56's swing meeting nothing, 0x40 by scene motions (main/scene_motion.c), 0x3a by an insect (ov003/town_insect.c), 0x14 by insect moves (ov003/town_insect_moves.c); kinds 0x17 and 0x19 are kind 0x0b's larger sets | unknown |
+| effects by kind | 35 (0 / 35) | main/effect_kinds 32, main/effect_system 3 | none of its own: each of the 102 effect kinds is started by one action or event (dust, splashes, notes, sparkles, smoke); the action and event scenes above start most | unknown per kind: read EffectKinds_StartKindN's callers; besides (findings 2026-10-29, actions), the starters by kind: 0x2e (code 0x1f) and set 0x54 (codes 0x1f-0x24, flowers) by state 0x17 (field-pluck), 0x2f by state 0x17 for code 0x20 only on another console's action (locally the clover is taken by state 0x18), 0x23 by state 0x67 (hole-step), 0x2a, 0x2b and 0x2c (the marks of the shovel's, net's and axe's slides) only on sand (ground 0x13) or snow, 0x32 by state 0x71 (the trip), 0x25 by state 0x57, 0x0b by state 0x56's swing meeting nothing, 0x40 by scene motions (main/scene_motion.c), 0x3a by an insect (ov003/town_insect.c), 0x14 by insect moves (ov003/town_insect_moves.c); kinds 0x17 and 0x19 are kind 0x0b's larger sets; besides (findings 2026-10-30, seed8), the marks of 0x2a, 0x2b and 0x2c are made where a dig or a swing while running stops the player on the snow (snow-shovel, snow-net, snow-axe), and the fall of the trip throws up kind 0x39's snow or wet set and kind 0x37's by the ground (trip-snow-16, trip-rain); 0x32 needs the item 0x137c held at the trip | unknown |
 
 ## Villagers (the seed's day) (236)
 
@@ -3291,25 +3291,38 @@ What reading the Clean code found about the groups above; counts are of function
   before the behaviour's update runs (OutdoorVillagerActs_Turn21, _Wait21). A drive run with the
   ARM7's sequencer (RUN_SEQUENCER=1) plays a recording made without it differently from the boot,
   so the karaoke song's branch (line table 3) needs a recording of its own.
-- The plan before (442 lists, main cb79a4a1): seed 533, date 137, unknown 472, unreachable 3,209;
-  after (459): seed 518, date 137, unknown 472, unreachable 3,209. Checked in a run: 20,901 before,
-  20,916 after.
 
-### A nickname refused, the bisect's halves, the snowman not built (2026-10-30, town16, second batch)
-- The approach's draw by the frame the call starts (villager-trade's walk after a wait of K
-  frames, the save visitor-3f-present: a pocket free): K 3 the trade, 0 the habit, 5 and 6 the
-  mail, 4, 7 and 11-19 Present2, 20-25 the nickname (ap_nickn). The nickname's second answer
-  says no: VillagerTalkNickname_Line1, villager-nickname-no. Present1 (the gift from the
-  villager's items, VillagerTalk_GiveGift, VillagerItems_Remove) was not drawn for K 0-27.
-- `tools/scenes.py --bisect` now runs both halves: when the first agrees it runs the second
-  too, and stops (naming no function) when both agree, so a scene that differed once and not
-  again, or two functions in different halves, are not reported as the last function of the
-  last file.
-- Gained little: a snowman (ov068/snowball.c ball_build_snowman, Snowmen_Add, _MailGift and the
-  snowball's jump-on and settle states) needs a loose body ball of size 0xa00; the loose balls
-  start at 0x800 (SnowballSpot_Pick by the clock's second: one of them at x 79.5 in 13 of 14
-  seconds tried) and a ball rolled 7 tiles grew to about 0x868, then shrank. The New Year's
-  countdown talks' second answer (VillagerTalk_OfferChoices32, row 6 of data_021c222c) was not
-  met by DOWN at any of eight waits after its message 16.
-- The plan before (459 lists): seed 518, date 137, unknown 472, unreachable 3,209; after (460):
-  seed 517, date 137, unknown 472, unreachable 3,209. Checked in a run: 20,916 before, 20,917 after.
+### The snow's marks of a stop, the trip's fall on snow and in the rain, two beds head to foot (2026-10-30, seed8)
+- Kinds 0x2a-0x2c (EffectKinds_StartOnMarkGround) leave marks only where the ground's attribute
+  is 0x13, or 3 in the snow season (SceneQuery_IsSnowSeason): the brown ground of the seed's
+  beach is neither (a net swing there runs EffectKinds_StartKind2b and no mark), and only
+  trip-snow had set up a mark (the footprints of kind 0x29). snow-net, snow-axe and snow-shovel
+  play trip-snow to 4000 with the tool held and then run east onto the white snow: a swing (state
+  0x56, FieldActor_SlowState56), a swing of the axe (state 0x46) or a dig (state 0x59) while
+  running slows the player to a stop there, which starts kind 0x2b, 0x2c or 0x2a: their marks'
+  set-ups (5). The run's length was found by trying lengths from the same moment (w47-wt5/sweep.py).
+- The trip's fall (FieldActor_AnimateState71) starts kinds 0x39 and 0x37 at points ahead, whose
+  sets go by the ground: trip-snow booted at 11:30:16 (the draw of the trip follows the boot's
+  second; 06, 08, 13, 19 and 22 did not trip on the snow, 11 gave kind 0x37's only) falls on the
+  snow (EffectKinds_FollowKind39Snow, _PlaceKind39, _SetUpKind37, _TurnFirstParticleKind37), and
+  trip-rain (trip-snow's recording on the seed's day with the weather pattern 15's rain and the
+  pharaoh mask) on wet ground (EffectKinds_FollowKind39Wet). Kind 0x32 needs the item 0x137c held
+  at the trip: with it held in the rain the run did not trip.
+- beds-roll (save house-beds): lying in a bed (state 8) the side checks point along the bed
+  (yaw 0x4000 for a bed facing south: RoomObjects_CheckStepXPlus at the head, _XMinus at the
+  foot, half a cell ahead of the player), so a second bed beside it is never asked about; with
+  two beds head to foot, the player in the south one rolls to its head (UP) and UP again asks the
+  cell ahead, which holds the other bed at the same angle with a cell next to this one's:
+  RoomObject02253058_ListCells, _CellsConstruct and _CellsDestruct (joined), and the player rolls
+  into it. Left of the bed class: RoomObject02253058_EnterPushed (named only by the entries'
+  table of _EnterState, vtable slot 0x70; the state the constructor leaves): the calls through
+  that slot were not counted.
+- Gained nothing: a second player in the save (record 1 from new-player's run, from 0x1196: the
+  designs left out) boots as the seed does (the continue menu's room shows both beds and A takes
+  player 0), but villager-talks, villager-talk and villager-memories-resident's recordings (the
+  latter with the former resident as that player) showed no line of another resident
+  (TalkTags_PutOtherPlayer: 13 lines, of tsu/drama_, ai/today1_, tsu/always_ and others); which
+  topic picks those lines was not read.
+- The plan before (main 0bbea532): seed 517, date 137, unknown 472, unreachable 3,209; after:
+  seed 514, date 137, unknown 462, unreachable 3,209. Checked in a run: 20,917 before, 20,930
+  after.
