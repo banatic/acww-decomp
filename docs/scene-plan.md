@@ -1,12 +1,12 @@
-From 476 scene lists: 25,251 Clean game functions, run 20,988, function check only 1,078, read only 3,185; the groups below hold 4,263 (function check only + read only).
+From 480 scene lists: 25,251 Clean game functions, run 20,999, function check only 1,077, read only 3,175; the groups below hold 4,252 (function check only + read only).
 
 | needs | functions |
 |---|---|
 | seed | 466 |
-| date | 137 |
+| date | 126 |
 | unknown | 448 |
 | unreachable | 3,212 |
-| total | 4,263 |
+| total | 4,252 |
 
 ## Unreachable for one player (3,212)
 
@@ -125,7 +125,7 @@ From 476 scene lists: 25,251 Clean game functions, run 20,988, function check on
 | the talk engine: tags, pages, windows, sliders | 58 (28 / 30) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 8 more files (12) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 | villager talks: topics, favours and trades | 48 (7 / 41) | main/talk_tags 6, main/villager_object 6, main/villager_talk_object 6, main/villager_talk_part 6, main/villager_talk_steps 5, main/villager_talk 4, main/session_villager 3, main/villager_talk_request 3, 7 more files (9) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night; besides (findings 2026-10-29, unknown2), the talk tags only villagers' lines hold (w28/tagwhere.py, outside mail and the test message): 0/7 "%" (TalkTags_PutPercent: ta/tsu/always_ 68-71), 0/0 "*" (_PutAsterisk: ta/ap/item_ 10, obj/etc/player_ 30), 4/29 name 3 (_PutName3: the games' results q01 and q02 pdraw_, plose_, pwin_ of every kind), 6/9 by the falling weather (_BranchByFalling: ko/tsu/always_ 0 and 62, fo_act_ 1, se_act_ 2, ta/tsu/no_act_ 0, ta/3p/fu_ 6, the cafe's cf1-cf6), 6/12 by residence (_BranchByResident: bo/tsu/fu_act_ 4, ge/tsu/always_ 19, ko/tsu/always_ 18 and fo_act_ 2), 9/3 and 9/5 (_LookAtPlayer, _LookAtFirst: the three-party talks */3p/*, missing1_ 13-18), 4/14 another resident's player name (_PutOtherPlayer, TalkObject_LoadOtherPlayer: 13 lines, a town with a second resident) and 0xff/2 (_StartSpans, then _StepSpans and the span's start and step: the part-time job's lines arbeit_ 1 and 20-24 of bo, fu, ko and ta); besides (findings 2026-10-29, unknown2), the scene motion of kind 15, a villager changing clothes (SceneCommand_RequestMotion15, its start, run and wait, SceneMotion_StartKind15, _Kind15After and SceneMotionNote_PackItem, which only it calls): asked for only by VillagerTalkObject_EmptyPocketAndMotion and VillagerTalkPart_RaiseBondClothes, a villager given clothes it puts on (findings town9: villager 3 in mode 3 with a shirt did not call the player over); besides (findings 2026-10-29, unknown3), the session villager's Send wrappers, which one player's villager code calls and which return at once (should_send): SendObjectItem when a villager's errand catch is an insect or fish of the errand's kind (VillagerErrandCatch_Insect, _Fish), SendObjectByte2E when a villager is given furniture with variants (VillagerTalkObject_CountItem), SendObjectBit30 (VillagerTalkObject_SayJudgeItem), SendObjectClear (VillagerTalkObject_LineClearItem, _Motion17ClearItem), SendObjectByte2F (VillagerTalkObject_KindItem), SendObjectOp2 (VillagerTalkSteps_NextStep) and SendItem7D2 when a villager puts on clothes it is given (VillagerSceneObject_TakeClothes) | seed |
 
-## Other dates, times and visitors (for the boot on another day) (143)
+## Other dates, times and visitors (for the boot on another day) (132)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
@@ -135,14 +135,10 @@ From 476 scene lists: 25,251 Clean game functions, run 20,988, function check on
 | Redd and his tent | 10 (2 / 8) | ov003/fox 4, ov052/fox_tent 4, main/fox_shop 2 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
 | villagers' birthdays, sickness and visits | 7 (3 / 4) | ov068/cafe_room 4, ov004/birthday_guest 1, ov004/birthday_villager 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
 | the lost child and the mother | 6 (3 / 3) | main/missing_npc1 5, main/missing_npc2 1 | what lost-child and lost-mother leave: the child's pause and its state facing the player, the mother's steering | a pairing with another town in its last week (saves lost-child and lost-mother, main/paired_town.h) | seed |
-| Pascal | 4 (0 / 4) | ov076/otter 3, ov076/otter_talk 1 | the otter: his gift for an item | the days the calendar has him | date |
 | Katrina, the fortune teller | 3 (2 / 1) | ov045/fortune_teller 3 | her tent in the town square: a fortune told, the tarot cards | a weekday the schedule (main/event_schedule.h) gives her | date |
-| Saharah and Wendell | 3 (0 / 3) | ov079/walrus 2, ov079/walrus_talk 1 | the camel's carpet trade, the walrus's wallpaper for a fish | the weekdays the schedule gives them; besides (findings 2026-10-29, unknown2), the scene motion of kind 19 and its scene command (SceneCommand_RequestMotion19, its start, run and wait, SceneMotion_StartKind19, _RunKind19 and its step, _Kind19After): only WalrusTalk_Slot10 asks for it, when Wendell's line shown is WALRUS_TALK_LINE_MOTION_19 (0x0f) | date |
-| the acorn collector and Dr. Shrunk | 3 (0 / 3) | ov088/reaction_npc 2, ov088/reaction_npc_talk 1 | acorns traded (items 0x1542-0x1546), a reaction taught | autumn days for the acorns; the days of Dr. Shrunk | date |
 | the flea market and Joan | 3 (0 / 3) | ov004/flea_market_buyer 2, ov004/flea_market_villager 1 | the villagers' flea market in the town hall; Joan's turnips on Sunday mornings (pending scene sunday-joan) | the flea market's dates; any Sunday 6:00-12:00 | date |
 | the talk tag of Gracie's lines | 2 (1 / 1) | main/talk_tags 2 | Gracie's fashion check: her lines giraffe_ 15-34 hold tag 10/0, which only they hold (findings 2026-10-29, unknown2, w28/tagwhere.py) | a weekday the schedule gives her (group Gracie) | date |
 | the insurance seller | 2 (1 / 1) | ov071/insurer 1, ov071/insurer_talk 1 | the otter of sp_npc_insurance: the policy and its letters | the days the calendar has him | date |
-| the outdoor fox's talking motions | 1 (1 / 0) | main/talk_receiver 1 | Redd outdoors on his day, talked to again (his lines 0x31, 0x32 or 0x34) | TalkReceiver_Nothing38, the talk receiver's slot 0x38, which the talk calls for every tag of group 7 (TalkTags_SpeakerTalkStyle): the outdoor fox of overlay 3 (ov003/fox.c) keeps it in its receiver's vtable 0x022386f4, and its lines 0x31 (second visit), 0x32 (again) and 0x34 (before six) of sp_npc_fox hold tags 7/17, 7/4, 7/0 and 7/20; line 0, which the scenes play, holds none (w32/msgtags.py; findings 2026-10-29, twins, second commit) | date |
 | Gulliver | 1 (1 / 0) | ov072/gull 1 | the gull washed up on the beach: wake him, the spaceship parts | a day after a storm; his parts (item 0x1568) on the inner acres | date |
 | Blanca | 1 (0 / 1) | ov074/mystery_cat 1 | the faceless cat: her talks, her face drawn and its theme typed (scene blanca); left: her steering round what blocks her walk (MysteryCat_SidePoint) and the state after a talk | the town's Wi-Fi statistics record in use (save blanca, main/wfc_stats.h, Spawner_CheckD020In) on a day without the events 0x3b-0x44 (not the seed's Friday) | seed |
 | the night pelican | 1 (0 / 1) | ov075/town_pelican_talk 1 | the mail pelican met on the town's paths at night | the nights the calendar has him | date |
@@ -3580,3 +3576,23 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (with the second batch): seed 469, date 137, unknown 448, unreachable 3,212;
   after (475 scenes): seed 466, date 137, unknown 448, unreachable 3,212. Checked in a run: 20,985
   before, 20,988 after.
+
+### The visitors left behind by a scene change, the fox asked again (2026-10-30, rows12)
+- A special character still in the town when the player goes into a building is told to leave
+  (its vtable slot 0x0c) and deleted (slot 0x44), as Saharah is on sick-villager's walk. Three of
+  them had no scene that went indoors after meeting them: wendell-leave (wendell, then south to
+  the store's door, tile 22.4, 54.5: Walrus_Leave, _DestructDelete, WalrusTalk_Destruct),
+  reaction-leave (reaction-use, the chat keyboard closed by the page's arrow, then the store:
+  ReactionNpc_Leave, _Delete, ReactionNpcTalk_Destroy) and pascal-turn (below: Otter_DestructDelete,
+  OtterTalk_Destruct, by the player's house, tile 41.5, 55; villager 0's house is shut while its
+  villager is out).
+- The otter turns back to the angle he started with only when his talk ends without his giving
+  anything (Otter_OnEvent, OTTER_TURN): pascal-scallop to 5130, then the first answer ("yes?")
+  to his question in place of "give it": Otter_EnterTurn, _UpdateTurn.
+- fox-tent's walk out of the tent, then A at its door again: the fox outside talks of a second
+  visit, a line holding a tag of group 7 (TalkReceiver_Nothing38, the outdoor fox's receiver slot
+  0x38), and takes the player in again: scene fox-again.
+- All four agree both ways (all Clean and `--clean none`).
+- The plan before (476 scene lists): seed 466, date 137, unknown 448, unreachable 3,212; after
+  (480): seed 466, date 126, unknown 448, unreachable 3,212. Checked in a run: 20,988 before,
+  20,999 after.

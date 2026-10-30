@@ -2298,6 +2298,17 @@ scene("fly-catch", "fly-spot", 5000, [2600, 2700, 3700, 4220, 4600, 4999], frame
       "follows it while it is held up")
 scene("rain-umbrella", "rain-umbrella", 3000, [2600, 2700, 2760, 2900, 2999], frames(2700, 3000, 20),
       "in the rain, open and spin an umbrella: effect 0x33 follows its tip")
+scene("wendell-leave", "visitor-41", 7682, [2600, 4500, 5599, 6800, 7300, 7681], frames(5600, 7682, 50),
+      "wendell, then into the store with the walrus still in the town: he leaves and is deleted")
+scene("pascal-turn", "scallop", 9739, [4000, 4900, 5136, 6000, 8000, 9500, 9738], frames(5100, 9739, 50),
+      "pascal-scallop with the first answer to his question: he takes nothing and turns back, then the "
+      "player goes into the house and the otter is deleted", rtc="2026-09-28 10:00:00")
+scene("reaction-leave", "visitor-43", 16288, [2600, 11900, 14243, 15000, 15900, 16287], frames(14200, 16288, 50),
+      "reaction-use, then into the store with the reaction teacher still in the town: he leaves and is "
+      "deleted")
+scene("fox-again", "wallet", 13907, [2600, 5500, 12949, 13300, 13600, 13906], frames(12900, 13907, 25),
+      "fox-tent, then A at the tent's door again: the fox outside talks of a second visit and takes the "
+      "player in again")
 
 # ------------------------------------------------------------------------------ saves
 
