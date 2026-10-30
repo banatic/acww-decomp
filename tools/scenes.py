@@ -507,6 +507,13 @@ SAVES["job-11-step1"] = SAVES["job-11"] + [(VILLAGER_PART + 0x0B, "<B", 1)]
 # as "job-0f" with the shirt 0x11ac worn and the uniform in pocket 11: at work out of uniform, Tom
 # Nook's line is 0xe (NookClerkTalk_JobNotInUniform), whose end clears the villager part's flag
 SAVES["job-0f-shirt"] = SAVES["job-0f"] + [(0x14 + 0x2408, "<H", 0x11AC), (POCKETS + 2 * 11, "<H", 0x11A8)]
+# as "job-0f" with Nook's store at its last level ("barber"): at its stairs (tile 7, 3) the player's
+# start point is past (13.0, 8.0) of the store and Tom Nook stops the player at work (line 0xc)
+SAVES["job-0f-store3"] = SAVES["job-0f"] + SAVES["barber"]
+# the player record's flag 3 cleared (bit 3 of its flags at 0x23f8, set in the seed): Tom Nook's
+# greeting reads the second date of the record's field at 0x2416 (PlayerField2416_Date04, the 15th
+# of June 2005 in the seed), not today, and says line 0x3b
+SAVES["field-date"] = [(0x14 + 0x23F8, "<B", 0x00)]
 SAVES["mail-items"] = SAVES["mail-post"] + [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x1518, 0x1492))] + [
     (MONEY, "<I", 30000),
     # carried letter 4 a bottle's letter the player wrote (state 4), 5 a received one carrying the
@@ -830,6 +837,12 @@ SAVES["move-ended-unmarked-full"] = move_ended(0, [SEED_PLAYER] * 5) + _FULL_POC
 SAVES["move-ended-names"] = move_ended(0, [SEED_PLAYER, OTHER_PLAYER_A, OTHER_PLAYER_A, bytes(30), bytes(30)])
 SAVES["move-ended-other"] = move_ended(0, [OTHER_PLAYER_A] * 5)
 PRAISE = bytes.fromhex("4331433143314331")  # a praise word of 4 characters
+# the player of another town: the town part of the player's id (0x247e of its record) and of the
+# villagers' records of the player (villager 0-3's first memories and villager 1's word at 0x658)
+# given OTHER_TOWN's; a villager's talk ends by noting the visitor on the player's record
+# (VillagerEntry_NoteVisitor)
+SAVES["visitor"] = [e for offset in (0x14 + 0x247E, TOWN_VILLAGERS, TOWN_VILLAGERS + 0x7EC, TOWN_VILLAGERS + 0x7EC + 0x658,
+                                     TOWN_VILLAGERS + 2 * 0x7EC, TOWN_VILLAGERS + 3 * 0x7EC) for e in raw(offset, OTHER_TOWN)]
 SAVES["memories"] = (
     villager_memory(2, 1, OTHER_PLAYER_A, OTHER_TOWN, (10, 20, 15, 4, 9, 26), 20, 4, 0x0006, text_2a=PRAISE) +
     villager_memory(2, 2, OTHER_PLAYER_B, OTHER_TOWN, (40, 5, 17, 6, 9, 26), -10, 2, 0x0001) +
@@ -1085,6 +1098,10 @@ SAVES["villager-items"] = [(TOWN_VILLAGERS + 0x7EC * villager + 0x7B0 + 2 * i, "
 SAVES["q10-reply"] = raw(VILLAGER_PART + 0xA4, SEED_NPC[0]) + raw(VILLAGER_PART + 0xB4, bytes((0, 0, 12, 10, 9, 26, 0, 0))) + [
     (VILLAGER_PART + 0xBE, "<B", 0x15), (VILLAGER_PART + 0xBF, "<B", 1)] + raw(
     VILLAGER_PART + 0xC0, bytes((0, 0, 12, 10, 9, 26, 0, 0))) + [(VILLAGER_PART + 0xC8, "<B", 5)]
+# as "q10-reply" with every item, wallpaper and carpet had ("catalog-all"): the present's draw for
+# the player's record finds no item of its kind not had, and the item is drawn again from the
+# group that draw gave back (ItemLists_DrawPlain)
+SAVES["q10-reply-catalog"] = SAVES["q10-reply"] + SAVES["catalog-all"]
 # villager 0's errand of an insect (type 0), a fish (type 1) or clothes (type 3) at a step, nothing asked
 # for yet and no player named: the first talk draws what it asks for by the step's picker
 # (VillagerTalkPick_*; for clothes the table data_020c8f7c: steps 2-3 VillagerTalkPick_ClothesNotStyle1,
@@ -2594,6 +2611,20 @@ scene("villager-q10-reply", "q10-reply", 4800, [2600, 3700, 4400, 4799], frames(
 scene("nook-package-no", "nook-package", 5910, [2600, 3800, 4500, 5000, 5909], frames(3900, 5910, 50),
       "nook-package with the second answer to his asking for the item: he does not take it and stops "
       "looking for it")
+scene("job-lead", "job-0f-store3", 5950, [2600, 3950, 4400, 5200, 5949], frames(4100, 5950, 50),
+      "at work in Nook's store at its last level, to the stairs: Tom Nook stops the player and leads "
+      "the player back")
+scene("villager-visitor", "visitor", 5260, [2600, 4100, 4900, 5259], frames(4000, 5260, 50),
+      "villager-talk as a player of another town: the talk's end notes the visitor on the player's record")
+scene("villager-q10-catalog", "q10-reply-catalog", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
+      "villager-q10-reply with every item had: the present is drawn again from the group the first "
+      "draw gave", recording="menus")
+scene("fish-junk", "golden-rod", 7712, [2600, 3450, 6056, 7108, 7400, 7711], frames(6000, 7712, 50),
+      "booted a few seconds later, the boot places an empty can's shadow in the sea: cast at it from the "
+      "beach east of the river's mouth and pull the can out", rtc="2026-09-11 11:30:06")
+scene("shop-field-date", "field-date", 5100, [2600, 3800, 4500, 5099], frames(2900, 5100, 100),
+      "shop-talk with the player record's flag 3 cleared: Tom Nook's greeting tells of the date of "
+      "its field", recording="shop-talk")
 
 # ------------------------------------------------------------------------------ saves
 
