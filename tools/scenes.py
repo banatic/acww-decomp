@@ -1422,6 +1422,9 @@ scene("post-loan", "wallet", 5879, [2600, 4340, 4800, 5200, 5600, 5878], frames(
 scene("house-rooms", "house-big", 6462, [2600, 4200, 4700, 5300, 5800, 6461], frames(4200, 6462, 50),
       "in a house at its last size, go up to the second floor and down again, into the west room and the "
       "east room and back")
+scene("bed-attic", "house-big-bed", 8700, [2600, 4200, 5100, 5800, 6500, 7200, 8000, 8699], frames(4200, 8700, 100),
+      "house-rooms' house down to the basement and up into the attic: push against the bed (play on), "
+      "its talk (leave it, then swap it for the bed in the pockets), the new bed pushed: save and quit")
 scene("hour-chime", "rod", 6200, [2600, 4000, 4800, 5200, 5800, 6199], frames(4600, 6200, 50),
       "stand in the town as the clock strikes six: the chime plays the town tune and the new day's "
       "schedule begins", rtc="2026-09-11 05:58:40")

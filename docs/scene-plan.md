@@ -1,12 +1,12 @@
-From 440 scene lists: 25,251 Clean game functions, run 20,862, function check only 1,098, read only 3,291; the groups below hold 4,389 (function check only + read only).
+From 441 scene lists: 25,251 Clean game functions, run 20,897, function check only 1,082, read only 3,272; the groups below hold 4,354 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 571 |
+| seed | 536 |
 | date | 137 |
 | unknown | 472 |
 | unreachable | 3,209 |
-| total | 4,389 |
+| total | 4,354 |
 
 ## Unreachable for one player (3,209)
 
@@ -66,7 +66,7 @@ From 440 scene lists: 25,251 Clean game functions, run 20,862, function check on
 | destructors only a thrown exception calls | 1 (1 / 0) | ov117/town_map_image 1 | none: the destructors of the elements of arrays built by __cxa_vec_ctor, named nowhere else | __cxa_vec_ctor (0x02138d6c) calls its destructor argument only in its landing pad (0x02138dd8: __cxa_vec_cleanup, then the rethrow func_02137174), which runs only after a constructor threw; no code throws: the unwinder func_021375c0 is entered only from func_02137174, which only the three array helpers' landing pads call. A destructor named only as that argument, and what only it calls, never runs (w24/vecdtor.py; w24/classify.py, gate nothrow; findings 2026-10-29, town7) | unreachable |
 | the scene object bases' slot 0x68 every class replaces | 1 (1 / 0) | main/scene_object 1 | none: the scene objects' slot 0x68 (called first in each frame) of the bases, SceneObject_Vfunc68, which every class's own vtable replaces | SceneObject_Vfunc68 is named only by the words at +0x68 of the intermediate vtables 0x020d8c64, 0x020d9e88 and 0x020da088, which an object holds only while it is built or torn down (each constructor storing one stores its own class's vtable after it, findings town8), and none of the 28 call sites through +0x68 (w28/vsite.py) is in those constructors or destructors (findings 2026-10-29, town11; w30/basevt3.py, w30/classify.py) | unreachable |
 
-## Not attributed to one scene (348)
+## Not attributed to one scene (347)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
@@ -74,7 +74,7 @@ From 440 scene lists: 25,251 Clean game functions, run 20,862, function check on
 | the link's code in files one player also runs | 73 (32 / 41) | ov055/xct_exchange 11, autoload_2/network 9, main/session 8, main/obj_020dd33c_modes 6, main/link_scene 4, main/packed_bytes 4, ov055/xct_exchange_talk 4, main/exchange_block 3, 11 more files (24) | none known: the functions of the session, link, quick message, caution window, network and Wi-Fi files that the fixed point and the link guard do not prove (most are the link's: the session records, the network library's dispatch to the local and Wi-Fi libraries by the network mode, the caution window's states, the scene objects' shared modes) | unknown: these files were in "local wireless" and "Nintendo Wi-Fi Connection" as whole files, but scenes run some of their functions (findings 2026-10-28, town6); the rest still needs a proof (the network mode data_021fbef8 and the session mode are set only by the link's code: a proof by the values stored, as for the field actor's states and the activity's jobs) or a scene | unknown |
 | claimed unreachable, not proved by the forward pass | 39 (12 / 27) | ov003/field_actor 9, main/mail_text 5, main/wfc_session 4, ov048/gatekeeper_talk 4, main/linked_map_items 3, main/wfc_setup 3, main/town_pack 2, ov048/gatekeeper_talk_lines 2, 6 more files (7) | none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the other classes' destructors of vtable slot 16 1) | unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene | unknown |
 | the special characters' states after a talk ended | 25 (25 / 0) | ov004/cafe_master 1, ov004/gatekeeper2 1, ov004/tailor_sister 1, ov046/astro 1, ov047/owl 1, ov068/cafe_guest 1, ov070/giraffe 1, ov071/insurer 1, 17 more files (17) | none known: the "talked" or "done" state each character takes when its talk ends through EventQueue_FinishObjectEvent (its update does nothing), and Mr. Resetti's, which he takes on the event's end in the frame he is deleted | unknown (findings 2026-10-30, talked4): the event is finished in the character's update and ended by the event process in the same frame (Process020daae4_Execute steps the running event, then the ending one), and EventKind_EndObjectEvent tells the character ENDED, which takes it out of the state, unless PlayerActorOps_FinishState answers 0; that answer is the request queue's (FieldActor_QueueRequest), which refuses only with 30 requests queued since the player's last FieldActor_TakeRequests, or no field actor for this console; the drive saw at most 3 queued (gracie, acorn-festival). AcornNpc_UpdateStand is state 2's update by the state table data_ov087_022795c0 (the names of 0227900c and 02279074 are swapped in Clean) | unknown |
-| overlay static initialisers | 5 (1 / 4) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov018/ov018_static_init 1, ov025/ov025_static_init 1, ov035/ov035_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
+| overlay static initialisers | 4 (1 / 3) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov018/ov018_static_init 1, ov025/ov025_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
 ## Shops and buildings (the seed's day) (117)
 
@@ -88,11 +88,11 @@ From 440 scene lists: 25,251 Clean game functions, run 20,862, function check on
 | the post office: both clerks, savings and the ATM | 6 (1 / 5) | ov130/bank_pad 3, main/savings 1, ov004/atm 1, ov132/bank_menu 1 | Pelly and Phyllis (night) with every topic, withdraw and deposit at the pad and the ATM (ov130-ov132), the letters kept for later | the post-office walk, at day and at night | seed |
 | the post clerk's step 15 after job 0x1f is asked for | 3 (2 / 1) | main/activity_job 2, ov054/post_clerk_talk 1 | none: PostClerkTalk_AwaitJob1f (step 15) and the two tests of the job it makes | (findings 2026-10-30, clerk6) step 15 is set only by PostClerkTalk_AskJob1f, right after ActivityJob_Ask1F; the activity process starts job 0x1f in the same frame, after the talk's step, and the start halts ("job 0x1f's start and the halt it ends in"), so the next frame's step never comes (seen in the drive at 8277; the frame order is not proved from the code) | unknown |
 
-## The house and its furniture (the seed's day) (79)
+## The house and its furniture (the seed's day) (45)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| furniture of each room-object class | 60 (28 / 32) | ov004/room_object_02253058 34, ov004/room_object_life 5, ov004/room_object 4, ov004/room_objects 4, main/room_cells 2, ov004/trash_box 2, autoload_2/sound_object_kinds 1, main/furniture_info 1, 7 more files (7) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches; besides (findings 2026-10-29, unknown2), the TV's sound objects (autoload_2/sound_object_kinds): SoundObject_New, whose only caller is TvBroadcast_Show, makes the kind of the channel shown, and the schedule (data_ov004_02247cf4, by weekday from Sunday) gives the seed's Friday channels 8 at 0:00 and 12:00, 6 at 1:00, 8:30 and 15:00, 1 at 3:00 and 5:00, 0 at 4:00, 2 at 6:00, 3 at 8:00, 7 at 10:00, 10 at 19:00, 5 at 23:00 and the forecast at 6:45, 7:45, 11:45, 18:45 and 22:45 (its other sound after seven rounds); kind 4 only on Wednesday 1:00 and 20:00 and Saturday 0:00, kind 9 only on Sunday 21:00, Tuesday 1:00 and Saturday 1:00 and 21:00 (another weekday); the TV heard (data_ov004_022595b8) in a room with a TV on | seed |
+| furniture of each room-object class | 26 (12 / 14) | ov004/room_object_life 5, ov004/room_object_02253058 4, ov004/room_objects 4, main/room_cells 2, ov004/trash_box 2, autoload_2/sound_object_kinds 1, ov004/icon_models 1, ov004/rmo_object_base 1, 6 more files (6) | put one piece of each furniture class down and touch it, A it, turn it: TVs, clocks, the compass, lamps (glowing), music boxes, animated, periodic and switched pieces, the player's and shops' designs, the items on tables | the house-furni save with one item per class of ov004/room_object_*.h (ftr_info/dma.bin byte 0x18 is the room object's kind); no cockroaches; besides (findings 2026-10-29, unknown2), the TV's sound objects (autoload_2/sound_object_kinds): SoundObject_New, whose only caller is TvBroadcast_Show, makes the kind of the channel shown, and the schedule (data_ov004_02247cf4, by weekday from Sunday) gives the seed's Friday channels 8 at 0:00 and 12:00, 6 at 1:00, 8:30 and 15:00, 1 at 3:00 and 5:00, 0 at 4:00, 2 at 6:00, 3 at 8:00, 7 at 10:00, 10 at 19:00, 5 at 23:00 and the forecast at 6:45, 7:45, 11:45, 18:45 and 22:45 (its other sound after seven rounds); kind 4 only on Wednesday 1:00 and 20:00 and Saturday 0:00, kind 9 only on Sunday 21:00, Tuesday 1:00 and Saturday 1:00 and 21:00 (another weekday); the TV heard (data_ov004_022595b8) in a room with a TV on | seed |
 | indoor actions of the field actor | 10 (2 / 8) | ov004/field_actor_place_states 6, ov004/field_actor_room_states 2, ov004/room_player_actor 2 | sit on chairs and sofas, lie on the bed, pick furniture up and turn it (R and L), push and pull every kind, step off a spot | the house-furni save; each room-object class asks for its own states | seed |
 | the house: rooms, camera, telephone, roaches | 8 (3 / 5) | ov004/rmo_telephone 3, main/house_record 2, ov004/room_camera 2, ov004/room_etc_board 1 | the other rooms (upstairs and basement of a bigger house), the room camera's turns, the telephone's other settings, cockroaches running and stamped on, the wallpaper and carpet changed | a derived save with a bigger house (main/house_record.h, the size word at 0x15a0) and wallpaper/carpet items; the seed's 10 cockroaches (their collider is Native-sensitive, docs/native-guest-stack.md) | seed |
 | the clock and calendar screens | 1 (0 / 1) | ov135/phone_clock 1 | what clock-pen, birthday-ask and visit-time leave: the clock dragged past a bound (ov135 in the date screen's mode 0x33), the visit's times in a villager's sleeping hours and before 6:00 (lines 0x021c304c and 0x021c3034 of VillagerTalkSteps_SayByKeptTime) | the visit's time screen (ov136) is bounded by now and twelve hours later and the villagers' night windows start at 1:00-4:30 (data_020cd4ac), so those two answers need the offer late in the evening (a boot at night on a day the deal gives a villager type 21) | date |
@@ -3203,3 +3203,33 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (439 lists here, main bedfd7c9): seed 585, date 137, unknown 472, unreachable
   3,209; after (440): seed 571, date 137, unknown 472, unreachable 3,209. Checked in a run: 20,849
   before, 20,862 after.
+
+### The attic: the bed class's push, save and swap (2026-10-30, halt7, second batch)
+- Scene 7 is the attic, the continue menu's room (scene 6) entered from the house: the rooms'
+  exit tables (each room overlay's static initialiser, SceneExit_Init) give the main room (scene
+  1, ov032) exit 1 to scene 7 and exit 2 to scene 5, the basement (ov035), whose exits are 0 to
+  scene 7 and 1 to scene 1; ov012 (scene 7's data) makes no exits of its own. An exit is taken where the floor's unit type is 0x68 + its number
+  (CollisionMap_UnclaimedObjectAt, FieldActor_NoteObjectUnderfoot): in house-big's main room
+  (map 0x501a) unit (6, 14) is 0x6a, the basement stairs beside the front door's passage (7-8,
+  14), and no unit is 0x69; in the basement unit (9, 14) is 0x68, its stairs up. So the attic is
+  walked to from a house at its last size through the basement (no unit of the main room names
+  exit 1).
+- bed-attic (save house-big-bed): house-rooms to 4200, the basement (about 5170), the attic
+  (about 5590). The bed (player 0's, quarter 0) watches there; pushed from its west side it
+  sends the player to its point (MOVE_PLAYER, WAIT) and asks sp_etc_sequence2's question:
+  "play a little more" ends the sequence (SEQUENCE_END). Pushed against its foot (the entry on
+  side 1 or 3) it is marked for the talk: A gives obj_etc_player's question (TALK_NEXT, TALK);
+  "leave it" (TALK_END), then again "swap": the pockets (CHOOSE_ITEM, CanTakeItem), the Asian bed
+  of pocket 2 picked (SWAP), the old bed shrunk away (PLACE, RoomObject_EnterShrink, _Shrink,
+  _UpdateShrink) and the new one placed (VANISH). The new bed pushed from its east side: "save and
+  quit" (SEQUENCE_DONE, event 0x2e): the save is written, scene 0x2e's farewell and the title
+  (scene 0x2c). Both ways agree. 35 functions: 28 of the bed class, the shrink, the basement's
+  static initialiser (Ov035Init_SceneTables), FurnitureInfo_ItemCategory and the pockets'
+  choosing (PocketsView_Delete, CarriedLetters_*).
+- Left of the bed class (4): RoomObject02253058_EnterPushed (no code switches to PUSHED, the
+  state the constructor leaves), and _CellsConstruct, _CellsDestruct and _ListCells, which
+  CheckStep runs only when the cell one step ahead holds another kind-0x37 object at the same
+  angle (two beds side by side, pushed in a room outside scenes 6-8).
+- The plan before (440 lists, with the first batch): seed 571, date 137, unknown 472,
+  unreachable 3,209; after (441): seed 536, date 137, unknown 472, unreachable 3,209. Checked in
+  a run: 20,862 before, 20,897 after.
