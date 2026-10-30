@@ -1254,6 +1254,9 @@ scene("post-keys", "seed", 8800, [2600, 4700, 5300, 6000, 6900, 7700, 8400, 8799
       "store and move the letter, turn the pages, close; open the posting page and cancel")
 scene("museum-halls", "museum-full", 8900, [2600, 4500, 5600, 6400, 7200, 8100, 8899], frames(4400, 8900, 100),
       "with every fish and insect given, walk round the museum's insect room and its aquarium")
+scene("aquarium-follow", "museum-full", 7840, [2600, 4500, 5600, 6400, 7200, 7600, 7839], frames(7100, 7840, 50),
+      "museum-halls to the aquarium's river room: the fish of kind 30 follows the player along its "
+      "tank's glass, bobs while the player stands, and snaps at the player")
 scene("toys-burn", "burn", 5150, [2600, 3300, 3700, 4500, 5149], frames(2700, 5150, 50),
       "light the held item that burns, then take the other one from the pockets and light it")
 scene("pitfall", "pitfall", 5650, [2600, 3700, 4100, 4400, 4950, 5300, 5649], frames(3900, 5650, 25),
