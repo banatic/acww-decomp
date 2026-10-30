@@ -498,6 +498,15 @@ SAVES["job-11"] = job_stage(
 SAVES["job-12"] = job_stage(
     "0000000000000000f1ff1200000000000000000000000000000006ff6ec6433143314331433143314331002f000000000000000000000000f1ff1600000000000000000000000000000006ff000000000000000000000000000006ff000000006ec6433143314331433143314331024d6ec6433143314331433143314331002f6ec64331433143314331433143310310010000000000000000000000f1ff160005000000000000000000000000000000000006ff0000000000000000f1ff1600000000000000000000000000",
     (0x3230, 0x116E))
+# the errand's object of "job-0f" and "job-11" at step 1 (its low bits, byte 0x0b of block 0): Tom
+# Nook's line for it is 0x27 (NookClerkTalk_JobLine0F) and 0x31 (_JobLine11), whose ends set the
+# object back to step 0 (NookClerkTalk_JobStep0) and to step 2 with the block's type 18
+# (NookClerkTalk_JobErrand18)
+SAVES["job-0f-step1"] = SAVES["job-0f"] + [(VILLAGER_PART + 0x0B, "<B", 1)]
+SAVES["job-11-step1"] = SAVES["job-11"] + [(VILLAGER_PART + 0x0B, "<B", 1)]
+# as "job-0f" with the shirt 0x11ac worn and the uniform in pocket 11: at work out of uniform, Tom
+# Nook's line is 0xe (NookClerkTalk_JobNotInUniform), whose end clears the villager part's flag
+SAVES["job-0f-shirt"] = SAVES["job-0f"] + [(0x14 + 0x2408, "<H", 0x11AC), (POCKETS + 2 * 11, "<H", 0x11A8)]
 SAVES["mail-items"] = SAVES["mail-post"] + [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x1518, 0x1492))] + [
     (MONEY, "<I", 30000),
     # carried letter 4 a bottle's letter the player wrote (state 4), 5 a received one carrying the
@@ -2561,6 +2570,17 @@ scene("villager-items-stored", "villager-items", 6300, [2600, 3700, 4100, 5200, 
 scene("savings-rank-1", "fund-9950", 8500, [2600, 4900, 7600, 8300, 8499], frames(7600, 8500, 50),
       "town-hall's donation reaching the first savings rank: the account takes the rank and the clerk "
       "tells it", recording="savings-gift")
+scene("job-ask-again", "job-0f", 5224, [2600, 3800, 4600, 5223], frames(3800, 5224, 50),
+      "at work with a letter to write, Tom Nook asked again: his line asks whether to take the paper "
+      "again, the first answer with a free pocket")
+scene("job-step-again", "job-0f-step1", 5224, [2600, 3800, 4600, 5223], frames(3800, 5224, 50),
+      "job-ask-again with the letter's errand at step 1: Tom Nook names the villager and sets the "
+      "errand back to step 0", recording="job-ask-again")
+scene("job-errand-18", "job-11-step1", 5224, [2600, 3800, 4600, 5223], frames(3800, 5224, 50),
+      "job-ask-again at the errand of the item 0x1564 at step 1: Tom Nook's line ends it at step 2, "
+      "the block's type 18", recording="job-ask-again")
+scene("job-no-uniform", "job-0f-shirt", 5224, [2600, 3800, 4600, 5223], frames(3800, 5224, 50),
+      "job-ask-again out of uniform: Tom Nook's line for it clears the job's flag", recording="job-ask-again")
 
 # ------------------------------------------------------------------------------ saves
 
