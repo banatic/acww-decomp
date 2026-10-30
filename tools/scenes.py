@@ -808,6 +808,12 @@ ERRAND = VILLAGER_PART + 0x94
 for n in range(5):
     SAVES[f"errand-{n}"] = [(MONEY, "<I", 30000), (POCKETS, "<H", 0x1560), (MONEY + 4, "<I", 2)] + raw(
         ERRAND, bytes(8) + bytes.fromhex("60151400") + bytes((n, 0x1F & ~(1 << n), 0, 0)))
+# as "visitor-3e" with Saharah's errand done (the entry's low bits 1, index 0, choices 1-4 open) and
+# the day's first talk with her had (the player's daily bits at 0x23ec of the record, dated the seed's
+# day, bit 0x0b): her first line moves the errand on to another choice drawn
+# (VillagerPartEntry_Advance)
+SAVES["camel-next"] = SAVES["visitor-3e"] + raw(ERRAND, bytes(8) + bytes.fromhex("60151401") + bytes((0, 0x1E, 0, 0))) + (
+    raw(0x14 + 0x23EC, bytes((11, 9, 26, 0))) + [(0x14 + 0x23EC + 4, "<I", 1 << 11)])
 
 # the record of the day's contest (main/event_winner.h, data_021f3aa4: 0x172fc of the state block)
 # held by villager 0 with a creature of `size` (0x1000: longer than the one caught), dated
@@ -1336,6 +1342,9 @@ scene("reaction-teacher", "visitor-43", 13100, [2600, 3500, 7300, 9100, 11900, 1
 scene("saharah", "visitor-3e", 7000, [2600, 3500, 4800, 6400, 6999], frames(3400, 7000, 100),
       "on a day the schedule gives the camel, find her in the west and take the wallpaper she asks "
       "the player to deliver")
+scene("saharah-next", "camel-next", 7000, [2600, 3500, 4800, 6400, 6999], frames(3400, 7000, 100),
+      "saharah's walk with her errand done and the day's first talk had: the errand moves on to another "
+      "villager", "saharah")
 scene("wendell", "visitor-41", 5600, [2600, 3500, 4500, 5599], frames(3400, 5600, 100),
       "on a day the schedule gives the walrus, find him in the west and give him what he asks for")
 scene("wendell-fish", "visitor-fish", 7226, [2600, 3500, 4500, 5300, 6200, 7225], frames(4400, 7226, 50),
@@ -1750,6 +1759,8 @@ scene("villager-newcomer", "seed", 6000, [2600, 3400, 4600, 5300, 5999], frames(
       "into the house of the villager that moved in on the save's day: it talks as one not yet settled")
 scene("villager-mode11", "newcomer-11", 6241, [2600, 3400, 4600, 5300, 6000, 6240], frames(4500, 6241, 50),
       "villager-newcomer with the villager in mode 11, not arrived: the lines of a villager not settled in")
+scene("villager-mode11-other", "newcomer-11", 6540, [2600, 3400, 4600, 5300, 6000, 6539], frames(4500, 6540, 50),
+      "villager-mode11 with the second answer to the newcomer's question: row 3 of line table 12")
 scene("villager-memories", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
       "villager-talks with villagers remembering players of another town and a former resident: the "
       "villager that walks up talks of a player of another town and plays its town's tune",
