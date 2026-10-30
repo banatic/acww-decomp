@@ -1078,6 +1078,13 @@ SAVES["errand-done-4-0"] = villager_errand(0, 4, 0, low=2, player=True)
 SAVES["villager-items"] = [(TOWN_VILLAGERS + 0x7EC * villager + 0x7B0 + 2 * i, "<H", item)
                            for villager, items in ((0, (0x3230, 0x450C, 0x3234, 0x3238)), (1, (0x4510, 0x4530, 0x4560, 0x4590)))
                            for i, item in enumerate(items)] + villager_errand(2, 4, 0, low=3, player=True)
+# block 1 of the player's villager part (0xa4: the seed's villager 0's NpcId, its object at 0xb4 of
+# type 0x15, low bits 1, dated the 10th, the date at 0xc0 the 10th and the present kind 5 in the
+# low bits of 0xc8): the load's VillagerTown_ExpirePlayerObjects marks it done and, its date not
+# today's, sends the villager's "re_q10" letter with a present (VillagerPost_SendQ10Reply)
+SAVES["q10-reply"] = raw(VILLAGER_PART + 0xA4, SEED_NPC[0]) + raw(VILLAGER_PART + 0xB4, bytes((0, 0, 12, 10, 9, 26, 0, 0))) + [
+    (VILLAGER_PART + 0xBE, "<B", 0x15), (VILLAGER_PART + 0xBF, "<B", 1)] + raw(
+    VILLAGER_PART + 0xC0, bytes((0, 0, 12, 10, 9, 26, 0, 0))) + [(VILLAGER_PART + 0xC8, "<B", 5)]
 # villager 0's errand of an insect (type 0), a fish (type 1) or clothes (type 3) at a step, nothing asked
 # for yet and no player named: the first talk draws what it asks for by the step's picker
 # (VillagerTalkPick_*; for clothes the table data_020c8f7c: steps 2-3 VillagerTalkPick_ClothesNotStyle1,
@@ -2581,6 +2588,12 @@ scene("job-errand-18", "job-11-step1", 5224, [2600, 3800, 4600, 5223], frames(38
       "the block's type 18", recording="job-ask-again")
 scene("job-no-uniform", "job-0f-shirt", 5224, [2600, 3800, 4600, 5223], frames(3800, 5224, 50),
       "job-ask-again out of uniform: Tom Nook's line for it clears the job's flag", recording="job-ask-again")
+scene("villager-q10-reply", "q10-reply", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
+      "menus with a villager's handover of kind 0x15 dated the day before: the load sends its reply "
+      "letter with a present", recording="menus")
+scene("nook-package-no", "nook-package", 5910, [2600, 3800, 4500, 5000, 5909], frames(3900, 5910, 50),
+      "nook-package with the second answer to his asking for the item: he does not take it and stops "
+      "looking for it")
 
 # ------------------------------------------------------------------------------ saves
 
