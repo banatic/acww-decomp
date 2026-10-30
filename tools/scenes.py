@@ -1528,6 +1528,9 @@ scene("flea-market", "wallet", 7330, [4100, 5500, 6400, 6900, 7329], frames(5400
 scene("flea-buyer", "wallet", 10300, [4100, 5500, 7000, 8500, 10000, 10299], frames(5400, 10300, 100),
       "on the day of the flea market, a villager comes to the player's house and buys the candle",
       rtc="2026-10-03 10:00:00")
+scene("villager-habit-no", "visitor-3f", 13281, [2600, 7200, 10400, 11670, 12400, 12800, 13280],
+      frames(12200, 13281, 50), "as villager-habit, the catchphrase's offer refused: the old one is kept",
+      rtc="2026-09-11 11:30:34")
 scene("villager-habit-retype", "visitor-3f", 14980, [2600, 7200, 10400, 11670, 13433, 13800, 14247, 14979],
       frames(13700, 14980, 50),
       "as villager-habit, but the player asks to type the catchphrase again and types another",
@@ -1906,6 +1909,8 @@ scene("villager-memories-full", "memories-full", 7080, [2600, 4100, 4300, 5500, 
       "villager-talk with villager 3's memories full of other towns' players: it takes over the least fond")
 scene("villager-nickname-own", "visitor-3f-fond", 14019, [2600, 7200, 10400, 11100, 12000, 12400, 14018],
       frames(11000, 14019, 50), "villager-nickname with villager 3 fond of the player: the player types the nickname")
+scene("villager-nickname-retype", "visitor-3f-fond", 12823, [2600, 7200, 10400, 11100, 12000, 12400, 12822],
+      frames(12300, 12823, 25), "villager-nickname-own, then asked to type the nickname again: the text screen again")
 scene("villager-admire", "seed", 11204, [2600, 4200, 6200, 8000, 9100, 10000, 11203], frames(6100, 11204, 50),
       "on the fourth Sunday's town event, a villager praises the player and asks for a word of praise back",
       rtc="2026-09-27 11:30:00")
@@ -1933,6 +1938,12 @@ scene("villager-karaoke-talks", "seed", 16452, [2600, 9000, 12900, 14000, 14560,
 scene("villager-karaoke-decline", "seed", 15154, [2600, 9000, 12900, 14000, 14560, 14849, 15153],
       frames(14000, 15154, 50), "as villager-karaoke-talks, the next talk's offer to sing declined",
       rtc="2026-11-14 11:30:00")
+scene("karaoke-song", "seed", 12668, [2600, 5400, 8800, 10900, 11500, 12067, 12667], frames(10800, 12668, 50),
+      "with the ARM7's sequences on the second Saturday, a villager's third talk offers to sing: the song plays "
+      "to its end and the talk asks again, the first answer marks the villager", rtc="2026-11-14 11:30:00",
+      sequencer=True)
+scene("karaoke-song-no", "seed", 12708, [2600, 5400, 8800, 10900, 11500, 12067, 12707], frames(10800, 12708, 50),
+      "karaoke-song, the second answer after the song", rtc="2026-11-14 11:30:00", sequencer=True)
 scene("villager-karaoke", "seed", 16764, [2600, 6000, 9000, 12900, 14000, 15200, 16000, 16763],
       frames(13800, 16764, 50),
       "on the second Saturday, after the insurance seller's survey, a villager's first talk: it sings and asks",
