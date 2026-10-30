@@ -64,3 +64,6 @@ func_0204287c packs 80 flags from its 76-flag buffer: the ROM's stack past it is
 func_020428e8 packs 88 flags from its 84-flag buffer: the ROM's stack past it is the caller's saved r4 (func_020425a8's pointer to the town's pelican day), whose bits go into the town record
 func_020425a8 holds in r4 the pointer that func_0204287c and func_020428e8 read from its saved copy on the ROM's stack (scene kk-request)
 _ZN18Obj_ov003_0223863019func_ov003_0221bbacEv hands func_ov003_02219a64 the stand point's z as its int[2] b, the word past the int[2] a that func_ov009_0226321c fills with a Vec3: on the ROM's stack that word is b[0], the PC's locals are laid out otherwise (scene fox-tent)
+func_020012ec touches the hardware at 04000208
+func_02001324 touches the hardware at 04000130
+func_0200149c touches the hardware at 04000006

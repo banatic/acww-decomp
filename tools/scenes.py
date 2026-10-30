@@ -2125,6 +2125,9 @@ scene("savings-move-no", "rank-19", 9192, [2600, 4900, 7600, 8300, 8900, 9191], 
 scene("savings-move", "rank-1c", 8276, [2600, 4900, 7600, 8240, 8275], frames(7600, 8276, 25),
       "town-hall's donation with rank 0x1c: line 0x3b, whose end asks for activity job 0x1f (cut "
       "before the job's start, which halts in the WM set-up)")
+scene("halt-debug-screen", "rank-1c", 8300, [2600, 4900, 7600, 8275], frames(8250, 8300, 10),
+      "savings-move run on: job 0x1f's start halts and the debug screen runs its frames; the first two "
+      "chords of its key sequence (cut before the screen shows the registers and the stack)")
 scene("savings-gift", "rank-1f", 8500, [2600, 4900, 7600, 8300, 8499], frames(7600, 8500, 50),
       "town-hall's donation with rank 0x1f: line 0x3e, the town's summary asked for the gift")
 
