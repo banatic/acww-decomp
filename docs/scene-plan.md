@@ -1,12 +1,12 @@
-From 486 scene lists: 25,251 Clean game functions, run 21,010, function check only 1,075, read only 3,166; the groups below hold 4,241 (function check only + read only).
+From 488 scene lists: 25,251 Clean game functions, run 21,012, function check only 1,075, read only 3,164; the groups below hold 4,239 (function check only + read only).
 
 | needs | functions |
 |---|---|
 | seed | 465 |
-| date | 117 |
+| date | 115 |
 | unknown | 445 |
 | unreachable | 3,214 |
-| total | 4,241 |
+| total | 4,239 |
 
 ## Unreachable for one player (3,214)
 
@@ -126,14 +126,14 @@ From 486 scene lists: 25,251 Clean game functions, run 21,010, function check on
 | the talk engine: tags, pages, windows, sliders | 58 (28 / 30) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 8 more files (12) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 | villager talks: topics, favours and trades | 48 (7 / 41) | main/talk_tags 6, main/villager_object 6, main/villager_talk_object 6, main/villager_talk_part 6, main/villager_talk_steps 5, main/villager_talk 4, main/session_villager 3, main/villager_talk_request 3, 7 more files (9) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night; besides (findings 2026-10-29, unknown2), the talk tags only villagers' lines hold (w28/tagwhere.py, outside mail and the test message): 0/7 "%" (TalkTags_PutPercent: ta/tsu/always_ 68-71), 0/0 "*" (_PutAsterisk: ta/ap/item_ 10, obj/etc/player_ 30), 4/29 name 3 (_PutName3: the games' results q01 and q02 pdraw_, plose_, pwin_ of every kind), 6/9 by the falling weather (_BranchByFalling: ko/tsu/always_ 0 and 62, fo_act_ 1, se_act_ 2, ta/tsu/no_act_ 0, ta/3p/fu_ 6, the cafe's cf1-cf6), 6/12 by residence (_BranchByResident: bo/tsu/fu_act_ 4, ge/tsu/always_ 19, ko/tsu/always_ 18 and fo_act_ 2), 9/3 and 9/5 (_LookAtPlayer, _LookAtFirst: the three-party talks */3p/*, missing1_ 13-18), 4/14 another resident's player name (_PutOtherPlayer, TalkObject_LoadOtherPlayer: 13 lines, a town with a second resident) and 0xff/2 (_StartSpans, then _StepSpans and the span's start and step: the part-time job's lines arbeit_ 1 and 20-24 of bo, fu, ko and ta); besides (findings 2026-10-29, unknown2), the scene motion of kind 15, a villager changing clothes (SceneCommand_RequestMotion15, its start, run and wait, SceneMotion_StartKind15, _Kind15After and SceneMotionNote_PackItem, which only it calls): asked for only by VillagerTalkObject_EmptyPocketAndMotion and VillagerTalkPart_RaiseBondClothes, a villager given clothes it puts on (findings town9: villager 3 in mode 3 with a shirt did not call the player over); besides (findings 2026-10-29, unknown3), the session villager's Send wrappers, which one player's villager code calls and which return at once (should_send): SendObjectItem when a villager's errand catch is an insect or fish of the errand's kind (VillagerErrandCatch_Insect, _Fish), SendObjectByte2E when a villager is given furniture with variants (VillagerTalkObject_CountItem), SendObjectBit30 (VillagerTalkObject_SayJudgeItem), SendObjectClear (VillagerTalkObject_LineClearItem, _Motion17ClearItem), SendObjectByte2F (VillagerTalkObject_KindItem), SendObjectOp2 (VillagerTalkSteps_NextStep) and SendItem7D2 when a villager puts on clothes it is given (VillagerSceneObject_TakeClothes) | seed |
 
-## Other dates, times and visitors (for the boot on another day) (123)
+## Other dates, times and visitors (for the boot on another day) (121)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | insects and fish of other months and hours | 52 (18 / 34) | ov003/fish_shadow 8, ov003/town_insect_moves 7, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov003/town_insect_kinds 5, ov004/aquarium_fish 5, ov003/town_insect 4, ov003/fish_shadow_swim 3, 4 more files (9) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
 | seasons, weather, the sky and the new day | 32 (6 / 26) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/sky 2, main/town_growth 2, main/town_spawn 2, main/creature_draw 1, main/insect_draw 1, 3 more files (3) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
-| Tortimer's events and holidays | 9 (2 / 7) | main/event_kinds 2, main/event_queue 2, main/event_winner 2, main/event_schedule 1, ov003/etc_board 1, ov083/turtle_gardens 1 | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
 | Redd and his tent | 8 (2 / 6) | ov003/fox 4, main/fox_shop 2, ov052/fox_tent 2 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
+| Tortimer's events and holidays | 7 (2 / 5) | main/event_kinds 2, main/event_queue 2, main/event_winner 1, ov003/etc_board 1, ov083/turtle_gardens 1 | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
 | villagers' birthdays, sickness and visits | 7 (3 / 4) | ov068/cafe_room 4, ov004/birthday_guest 1, ov004/birthday_villager 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
 | the lost child and the mother | 6 (3 / 3) | main/missing_npc1 5, main/missing_npc2 1 | what lost-child and lost-mother leave: the child's pause and its state facing the player, the mother's steering | a pairing with another town in its last week (saves lost-child and lost-mother, main/paired_town.h) | seed |
 | the flea market and Joan | 3 (0 / 3) | ov004/flea_market_buyer 2, ov004/flea_market_villager 1 | the villagers' flea market in the town hall; Joan's turnips on Sunday mornings (pending scene sunday-joan) | the flea market's dates; any Sunday 6:00-12:00 | date |
@@ -3637,3 +3637,21 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (480 scene lists): seed 466, date 126, unknown 448, unreachable 3,212; after
   (486): seed 465, date 117, unknown 445, unreachable 3,214. Checked in a run: 20,999 before,
   21,010 after.
+
+### The insurance seller barred for a week, the tourney's record beaten (2026-10-30, rows12, third batch)
+- The insurance seller's question about himself (line 0x0c of sp_npc_insurance) has five answers;
+  the last, that he should keep away, bars his event 0x3c for the week from the Sunday after
+  (InsurerTalk_OnAnswer, EventSchedule_Bar3c: EventSchedule_WeekEdge): insurance's survey with
+  that answer, scene insurance-bar.
+- The day's record of the fishing tourney is drawn again at the day's start (a villager with the
+  fish 0x1318, size 0x44304 on 25 October), whatever the save holds, so a save's smaller size does
+  not let the player beat it; a bigger fish does: save tourney-beat (the fish 0x131f in pocket 0),
+  weighed longer (line 0x10), the record beaten (0x12) and taken by the player (0x13:
+  EventWinner_SetPlayer), the prize given (0x15): scene tourney-beat.
+- Both agree both ways.
+- Gained little: these give one function each; the date groups left are mostly creatures of
+  other months and their motions, the snowman, the states after a talk ended and the classes'
+  destructors.
+- The plan before (486 scene lists): seed 465, date 117, unknown 445, unreachable 3,214; after
+  (488): seed 465, date 115, unknown 445, unreachable 3,214. Checked in a run: 21,010 before,
+  21,012 after.

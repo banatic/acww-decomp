@@ -3375,6 +3375,7 @@ main 02040a48
 main 02040a90
 main 02040adc
 main 02040b20
+main 02040b6c
 main 02040ba0
 main 02040bcc
 main 02040bfc
@@ -7053,6 +7054,7 @@ main 02086794
 main 020867a0
 main 020867a4
 main 020867e0
+main 020867e4
 main 02086834
 main 0208683c
 main 02086874

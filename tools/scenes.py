@@ -837,6 +837,8 @@ def event_record(item: int, day: tuple[int, int, int], kind: int, size: int = 0x
 
 SAVES["tourney-fish"] = [(HELD, "<H", 0x1374), (POCKETS, "<H", 0x12E8)] + event_record(0x12F2, (25, 10, 26), 1)
 SAVES["bugoff-insect"] = [(HELD, "<H", 0x1376), (POCKETS, "<H", 0x12B0)] + event_record(0x12B4, (20, 9, 26), 2)
+# as "tourney-fish" with the fish 0x131f, longer than the record the day's villager draws
+SAVES["tourney-beat"] = [(HELD, "<H", 0x1374), (POCKETS, "<H", 0x131F)] + event_record(0x12F2, (25, 10, 26), 1)
 # as "museum" with a fishing tourney won by villager 0 on the seed's day and its notice due (flag
 # 0x0f of the state block's flags at 0x173f4, the seed's 0x101): the next day's start sends the
 # entrants' letters and posts the notice (main/event_winner.c, EventWinner_SendLetters)
@@ -2325,6 +2327,12 @@ scene("barber-hat", "barber-hat", 11701, [3900, 5700, 9000, 10499, 11000, 11700]
 scene("ship-reverted", "ship-crashed", 2701, [1300, 2300, 2600, 2700], frames(2300, 2701, 25),
       "boot with the crashed spaceship's building in the town on a day without event 0x44: the day's start "
       "takes it away and clears Gulliver's parts")
+scene("insurance-bar", "wallet", 7915, [2800, 4200, 6600, 7400, 7914], frames(7300, 7915, 25),
+      "insurance's survey to his question about himself: the last answer bars his visits for a week",
+      rtc="2026-09-12 10:00:00")
+scene("tourney-beat", "tourney-beat", 10101, [2600, 4800, 8300, 8700, 9400, 10100], frames(8300, 10101, 50),
+      "tourney-fish with a fish longer than the villager's record: the player holds the record now and "
+      "takes the prize", rtc="2026-10-25 13:00:00")
 scene("insurance-claim-wait", "insured", 10301, [2800, 6000, 9000, 9699, 10000, 10300], frames(9600, 10301, 25),
       "insurance-claim, then a wait: the claim's next line is asked for", rtc="2026-09-12 10:00:00")
 scene("fireworks-chair", "turtle-37e0", 6905, [4400, 5400, 5800, 6300, 6904], frames(5300, 6905, 50),
