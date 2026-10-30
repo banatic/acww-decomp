@@ -3939,3 +3939,35 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan after (500 scenes): seed 442, date 99, unknown 419, unreachable 3,244; with rows15's
   groups (main 19eca82f): seed 436, date 99, unknown 410, unreachable 3,259. Checked in a run:
   21,047.
+
+### The song pockets' choice, the music list's stop and error, the town map's scroll, the full post office (2026-10-31, rows17)
+- song-cancel (save songs): in the song pockets (ov109) a song's choice opened by the pen and
+  cancelled by a button (SongPockets_ChooseByTouch's MenuScene_TakeButtons: CancelChoice), the
+  choice moved through by the keys (GlideToRow) and the close button pressed by the keys
+  (PressButtonPlace, PressButtonAfterAnim); the music list's play button while a song plays stops
+  it (MusicList_StopSong). The drive drops the recording's input from the first command that gives
+  keys or a touch, so a prefix's later touches must be given again (music-keys' 3786 and 3912).
+- music-pockets-full (save songs-all-full, the pockets full): the take out button refuses
+  (MusicList_ShowError, MusicList_ErrorWait).
+- map-scroll (save second-player: record 1 given an id of the seed's town, PlayerRecord_HasPlayer):
+  the residents' list then has seven rows (the town's other players come before the villagers,
+  MapMenu_BuildLists), so the knob is shown: dragged, its track touched, held with A and the keys,
+  the rows scrolled by the keys, and a building touched while the residents are shown
+  (MapMenu_JumpToRow). The boot's A presses pick the first player at the continue menu, so the
+  boot recording is unchanged.
+- post-office-full (save post-full: the post office's ten places hold the player's letters to
+  themself, the mailbox is full, carried letter 1 is to villager 1): posting it finds no room
+  (LetterSend_HoldAtPostOffice, which no earlier scene ran: no posted letter had an addressee),
+  Mail_DeliverHeld cannot empty the post office, LetterSend_RetryHold finds none and
+  LetterSend_DeliverDirectly gives the letter to the villager.
+- Left: SongPockets_WaitCursorAnim (sub state 0x0a, which no code sets: only the sub states'
+  table names it); the mailbox's MailboxScene_BeginSubState0f and _FinishPlacePress (sub state
+  0x0e goes to 0x0f only when the cursor is not on the place below the letters, and only that
+  place sets 0x0e); MailboxScene_LabelByTouch (a letter read by the keys, then a touch: the
+  drive's keys on the seed's mailbox picked the letter up instead of opening its choice).
+- Linux (WSL, gcc): villager-deliver-pick, house-thunder, designs-pieces, museum, bed-attic and
+  errand-post agree both ways (main 19eca82f). With -j 3 in a fresh tree, museum and bed-attic
+  first failed to link their Clean program (undefined data_ov142_* and data_ov145_* symbols);
+  each passed run alone, so the failure is the parallel run's, not the code's (not looked into).
+- The plan before (main 19eca82f): seed 443, date 105, unknown 410, unreachable 3,258; after (502
+  scene lists): seed 424, date 105, unknown 410, unreachable 3,258. Checked in a run: 21,054.

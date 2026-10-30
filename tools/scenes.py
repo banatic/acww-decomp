@@ -1135,6 +1135,31 @@ SAVES["pupil"] = SAVES["visitor-43"] + [(0x14 + 0x23F8, "<I", 0x16608), (0x14 + 
 for _rank in (0x19, 0x1C, 0x1D, 0x1F):
     SAVES[f"rank-{_rank:02x}"] = [(0x14 + 0x23E4, "<B", _rank)]
 
+# as "songs-all" with the pockets full (the dummy item 0x3508 of "full-net" in all 15): the music
+# list's take out button finds no free pocket (MusicList_TakeOut's error)
+SAVES["songs-all-full"] = SAVES["songs-all"] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)]
+# a second player in the town: record 1 (the seed's empty one) given an id of the seed's town
+# (PlayerRecord_HasPlayer); the town map's residents' list then has seven rows and scrolls
+SAVES["second-player"] = raw(0x14 + 0x249C + 0x247E, player_id(SEED_TOWN, 0x1234, 3))
+# the post office full: its ten places hold letters the player wrote to themself (written, state 1;
+# the addressee's kind 2 and the sender's 1 at 0x22 and 0x42), the player's mailbox full (letters 1-9
+# made blank received ones, as "mail-full"'s), and carried letter 1 a letter the player wrote to
+# villager 1 (as "mail-due"'s): posted, it finds no room, the held letters cannot be delivered, and
+# it is given to the villager directly (LetterSend_DeliverDirectly)
+_LETTER = ((0xF9, "<B", 0x1F), (0xFA, "<B", 1), (0xFC, "<H", 0xFFF1))
+SAVES["post-full"] = (
+    [(0x13144 + 0x100 * i + off, fmt, value) for i in range(1, 10)
+     for off, fmt, value in ((0xFA, "<B", 2), (0xFC, "<H", 0xFFF1), (0x22, "<B", 2), (0x42, "<B", 4),
+                             (0xF9, "<B", 0x1F), (0xFB, "<B", 2), *LETTER_FOOTER_SHOP)] +
+    [e for i in range(10) for e in raw(POST_OFFICE + 0x100 * i + 4, LETTER_FROM_PLAYER) +
+     raw(POST_OFFICE + 0x100 * i + 0x24, LETTER_FROM_PLAYER) +
+     [(POST_OFFICE + 0x100 * i + 0x22, "<B", 2), (POST_OFFICE + 0x100 * i + 0x42, "<B", 1)] +
+     [(POST_OFFICE + 0x100 * i + off, fmt, value) for off, fmt, value in _LETTER]] +
+    raw(0x14 + 0x11A8 + 0x100 + 4, bytes.fromhex("6ec64331433143314331433143310310")) +
+    raw(0x14 + 0x11A8 + 0x100 + 0x24, LETTER_FROM_PLAYER) +
+    [(0x14 + 0x11A8 + 0x100 + 0x22, "<B", 3), (0x14 + 0x11A8 + 0x100 + 0x42, "<B", 1)] +
+    [(0x14 + 0x11A8 + 0x100 + off, fmt, value) for off, fmt, value in _LETTER])
+
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
           recording: str | None = None, rtc: str = RTC, sequencer: bool = False) -> None:
@@ -2413,6 +2438,17 @@ scene("turnip-insect", "turnips-spoiled", 7899, [2600, 4000, 6600, 7200, 7898], 
 scene("villager-giver-gone", "giver-item-gone", 5822, [2600, 3400, 4300, 4900, 5400, 5821], frames(4300, 5822, 50),
       "an item the player agreed to take, not yet due and no longer in the pockets: its giver at home asks after "
       "it and is cross", recording="villager-giver-late")
+scene("song-cancel", "songs", 5664, [2600, 3900, 4300, 4700, 5200, 5663], frames(3900, 5664, 25),
+      "at the house's stereo, the song pockets' choice cancelled by a button and moved through by the "
+      "keys, the pockets closed by their close button; a song stored, played and stopped from the list")
+scene("music-pockets-full", "songs-all-full", 4120, [2600, 3800, 3900, 4119], frames(3780, 4120, 20),
+      "at the stereo with every song kept and the pockets full: a song taken out is refused")
+scene("map-scroll", "second-player", 4650, [2600, 4000, 4200, 4400, 4649], frames(4000, 4650, 25),
+      "with a second player, the town map's residents' list scrolls: its knob dragged, its track "
+      "touched, the knob held with A, the list scrolled by the rows, a building touched")
+scene("post-office-full", "post-full", 6854, [2600, 5000, 5500, 5600, 6200, 6853], frames(5000, 6854, 50),
+      "at the post office window with the post office and the mailbox full: a letter to a villager "
+      "posted finds no room and is given to the villager directly")
 
 # ------------------------------------------------------------------------------ saves
 
