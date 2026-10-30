@@ -1063,6 +1063,10 @@ def town_item(x: int, z: int, code: int) -> tuple[int, str, int]:
 # a code 0x1f weed two tiles south of the house's door and a flower of family B (0x70) two
 # further on, the shovel held: B facing each takes it by state 0x16 and 0x17 of the field actor
 SAVES["pluck"] = [town_item(41, 56, 0x1F), town_item(41, 58, 0x70), (HELD, "<H", 0x1369)]
+# as "bare-net" with tree-bag's tree (36, 59) made code 0xcc, the last stage of the growth line
+# 0xc8-0xcf (MapItem_IsGrown): shaken, it drops three of its items (ov003/growth_model.c
+# GrowthModel_DropThree, main/tile_request_grant.c TileRequestGrant_DropMany)
+SAVES["tree-grown"] = SAVES["bare-net"] + [town_item(36, 59, 0xCC)]
 # flowers of code 0x70 (family B) on the tiles 38-44 x 57-66 south of the house's door: running
 # over them tramples some (TileEffects_Brush's mode 0: LinkedMapItems_Set with no item)
 SAVES["trample"] = [town_item(x, z, 0x70) for x in range(38, 45) for z in range(57, 67)]
@@ -2511,6 +2515,9 @@ scene("fish-release-class6", "rod-fish-34", 6484, [2600, 3700, 5100, 5900, 6100,
 scene("fish-release-class7", "rod-fish-0f", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
       "fish-release-pocket with a fish of size class 7 in the pockets: put back into the water, its splash "
       "and wake are those of its size", recording="fish-release-pocket")
+scene("tree-grown", "tree-grown", 3058, [2600, 2750, 2900, 3057], frames(2700, 3058, 10),
+      "tree-bag's shake at a tree at the last stage of a growth line: it drops three items",
+      recording="tree-bag")
 
 # ------------------------------------------------------------------------------ saves
 
