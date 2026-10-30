@@ -1029,6 +1029,9 @@ def town_item(x: int, z: int, code: int) -> tuple[int, str, int]:
 # a code 0x1f weed two tiles south of the house's door and a flower of family B (0x70) two
 # further on, the shovel held: B facing each takes it by state 0x16 and 0x17 of the field actor
 SAVES["pluck"] = [town_item(41, 56, 0x1F), town_item(41, 58, 0x70), (HELD, "<H", 0x1369)]
+# flowers of code 0x70 (family B) on the tiles 38-44 x 57-66 south of the house's door: running
+# over them tramples some (TileEffects_Brush's mode 0: LinkedMapItems_Set with no item)
+SAVES["trample"] = [town_item(x, z, 0x70) for x in range(38, 45) for z in range(57, 67)]
 # "clear" (nothing falls) with the bug net held and a code 0x1b, the town's spot
 # (main/town_acre_count.h), on an empty tile 14 south of the house's door: the town day's summary
 # keeps it (TownDay_SpotPosition), so the insects placed every 40th frame are flies, kind 0x33 of
@@ -2179,6 +2182,9 @@ scene("villager-variant-done", "errand-done-4-0", 6548, [2600, 4138, 5000, 6000,
 scene("field-pluck", "pluck", 3048, [2600, 2800, 2950, 3047], frames(2700, 3048, 25),
       "B facing the weed of code 0x1f and then the flower south of the house's door: effects 0x2e and 0x54, "
       "the flower's tile effect")
+scene("field-trample", "trample", 3010, [2600, 2800, 2900, 3009], frames(2700, 3010, 25),
+      "running back and forth over a bed of flowers south of the house's door: some are trampled and taken "
+      "off the map (LinkedMapItems_Set, here with the scene held)")
 scene("hole-step", "hole-axe", 4056, [2600, 3060, 3600, 3900, 4055], frames(3000, 4056, 25),
       "dig a hole south of the house, take the axe from the pockets, B facing the hole: field actor states "
       "0x66 and 0x67, effect 0x23, tile event 10")
