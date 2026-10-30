@@ -2,13 +2,13 @@ From 501 scene lists: 25,251 Clean game functions, run 21,047, function check on
 
 | needs | functions |
 |---|---|
-| seed | 443 |
-| date | 105 |
+| seed | 436 |
+| date | 99 |
 | unknown | 410 |
-| unreachable | 3,258 |
-| total | 4,216 |
+| unreachable | 3,259 |
+| total | 4,204 |
 
-## Unreachable for one player (3,258)
+## Unreachable for one player (3,259)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
@@ -71,7 +71,7 @@ From 501 scene lists: 25,251 Clean game functions, run 21,047, function check on
 | destructors only a thrown exception calls | 1 (1 / 0) | ov117/town_map_image 1 | none: the destructors of the elements of arrays built by __cxa_vec_ctor, named nowhere else | __cxa_vec_ctor (0x02138d6c) calls its destructor argument only in its landing pad (0x02138dd8: __cxa_vec_cleanup, then the rethrow func_02137174), which runs only after a constructor threw; no code throws: the unwinder func_021375c0 is entered only from func_02137174, which only the three array helpers' landing pads call. A destructor named only as that argument, and what only it calls, never runs (w24/vecdtor.py; w24/classify.py, gate nothrow; findings 2026-10-29, town7) | unreachable |
 | the scene object bases' slot 0x68 every class replaces | 1 (1 / 0) | main/scene_object 1 | none: the scene objects' slot 0x68 (called first in each frame) of the bases, SceneObject_Vfunc68, which every class's own vtable replaces | SceneObject_Vfunc68 is named only by the words at +0x68 of the intermediate vtables 0x020d8c64, 0x020d9e88 and 0x020da088, which an object holds only while it is built or torn down (each constructor storing one stores its own class's vtable after it, findings town8), and none of the 28 call sites through +0x68 (w28/vsite.py) is in those constructors or destructors (findings 2026-10-29, town11; w30/basevt3.py, w30/classify.py) | unreachable |
 
-## Not attributed to one scene (311)
+## Not attributed to one scene (312)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
@@ -79,7 +79,7 @@ From 501 scene lists: 25,251 Clean game functions, run 21,047, function check on
 | the link's code in files one player also runs | 72 (32 / 40) | ov055/xct_exchange 11, autoload_2/network 9, main/session 8, main/obj_020dd33c_modes 6, main/link_scene 4, ov055/xct_exchange_talk 4, main/exchange_block 3, main/link_global 3, 11 more files (24) | none known: the functions of the session, link, quick message, caution window, network and Wi-Fi files that the fixed point and the link guard do not prove (most are the link's: the session records, the network library's dispatch to the local and Wi-Fi libraries by the network mode, the caution window's states, the scene objects' shared modes) | unknown: these files were in "local wireless" and "Nintendo Wi-Fi Connection" as whole files, but scenes run some of their functions (findings 2026-10-28, town6); the rest still needs a proof (the network mode data_021fbef8 and the session mode are set only by the link's code: a proof by the values stored, as for the field actor's states and the activity's jobs) or a scene | unknown |
 | the special characters' states after a talk ended | 25 (25 / 0) | ov004/cafe_master 1, ov004/gatekeeper2 1, ov004/tailor_sister 1, ov046/astro 1, ov047/owl 1, ov068/cafe_guest 1, ov070/giraffe 1, ov071/insurer 1, 17 more files (17) | none known: the "talked" or "done" state each character takes when its talk ends through EventQueue_FinishObjectEvent (its update does nothing), and Mr. Resetti's, which he takes on the event's end in the frame he is deleted | unknown (findings 2026-10-30, talked4): the event is finished in the character's update and ended by the event process in the same frame (Process020daae4_Execute steps the running event, then the ending one), and EventKind_EndObjectEvent tells the character ENDED, which takes it out of the state, unless PlayerActorOps_FinishState answers 0; that answer is the request queue's (FieldActor_QueueRequest), which refuses only with 30 requests queued since the player's last FieldActor_TakeRequests, or no field actor for this console; the drive saw at most 3 queued (gracie, acorn-festival). AcornNpc_UpdateStand is state 2's update by the state table data_ov087_022795c0 (the names of 0227900c and 02279074 are swapped in Clean) | unknown |
 | claimed unreachable, not proved by the forward pass | 9 (3 / 6) | ov048/gatekeeper_talk 4, ov048/gatekeeper_talk_lines 2, main/activity_link_jobs 1, main/save_stamp 1, ov004/room_object_022510b4 1 | none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the other classes' destructors of vtable slot 16 1) | unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene; besides (findings 2026-10-31, rows14), 18 moved to the groups whose reasons cover them, each shown at the edge that reaches it, and LinkedMapItems_Set, _PlaceAndShare and _Place run (field-trample); left: RoomObject022510b4_Destroy (FieldActor_ActOnTarget's call of FieldActor_RequestState16 at 0x0200fda0 lands there when overlay 4 is in memory: whether a target of kind 5 is met indoors is not traced), the gatekeeper's session lines, SaveStamp_SetLostFlag and ActivityLinkJobs_Start1D; besides (findings 2026-10-31, rows15), the field actor's seven *Remote branches with FieldActor_HitState56 and SavedFlag_Get moved to "the other console's field actor: its states' messages" and "what only the other console's field actor's messages call" (gate local); SaveStamp_SetLostFlag: the boot screen reads both copies into its own buffers, so with both bad the state block's stamp is the one it held before the boot screen (0 after a power-on: a save of two bad copies, as the drive played it, gives no call); the boot screen (class 1) is asked for only by the scene request's first value and SceneProcessBase_ResetRequest (ResidentProcess_SpawnAll, at start-up), the scene requests naming 2, 5, 6 and 0xd4; not shown: that no other spawner names class 1; the gatekeeper's lines 0x63, 0x65, 0x7d, 0x7e, 0x80 and 0x82 are said only by the session waits (TimeOut65, TimeOutByMode, CheckError, GatekeeperTalk_Line80Or63's caller), none run; not shown: that no message's next byte names them | unknown |
-| overlay static initialisers | 3 (1 / 2) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov025/ov025_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
+| overlay static initialisers | 4 (1 / 3) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov018/ov018_static_init 1, ov025/ov025_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
 ## Shops and buildings (the seed's day) (115)
 
@@ -3936,5 +3936,6 @@ What reading the Clean code found about the groups above; counts are of function
   stack address 0x027e8df8 in the Reference and 0x027e8d40 in Native, the insect room's cases'
   y words taking another frame's stack (docs/native-guest-stack.md, the museum's insect room)
   while the player stands; the producer of that frame is not found.
-- The plan after (500 scenes): seed 442, date 99, unknown 419, unreachable 3,244. Checked in a
-  run: 21,047.
+- The plan after (500 scenes): seed 442, date 99, unknown 419, unreachable 3,244; with rows15's
+  groups (main 19eca82f): seed 436, date 99, unknown 410, unreachable 3,259. Checked in a run:
+  21,047.
