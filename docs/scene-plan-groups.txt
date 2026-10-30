@@ -1189,6 +1189,13 @@ match: main/field_actor_states:FieldActor_EnterState91
   main/field_actor_states:FieldActor_UpdateState91 main/field_actor_states:FieldActor_UpdateState92
 
 area: Unreachable for one player
+group: the room objects' state entries no code asks for
+scene: none: the entry of state 0 (PUSHED) of the room objects of profile 0x37 (ov004/room_object_02253058.c)
+reach: (findings 2026-10-30, resident9) RoomObject02253058_EnterPushed is named only by the entries' table of RoomObject02253058_EnterState (vtable slot 0x70), and state 0 is the one the constructor leaves without entering it. The class's own changes (switch_to) ask only for states 1-13. Every other call through slot 0x70 in clean/ is a class's own on itself, or RoomSync_SetStateAt's and RoomSync_ApplyState's on the object at a cell. RoomSync_SetStateAt is reached from RoomSync_RequestStateAt and RoomSync_SetState, which each class asks for on itself, except RoomObjects_SyncKind3AOn (objects of profile 0x3a) and RoomSync_ToggleAt's other lamp (RoomObject_TestUnk780Is18: furniture kind 0x18). RoomSync_ToggleAt toggles the object at the cell of a point that RoomSync_ToggleSwitchAtPoint gets, from RoomObjects_Spawn (a kind 0x18 lamp's point) and RoomObject02252ba8 (its own point), or of a message 29. RoomSync_ApplyState is called only by RoomSync_ReceiveState (message 24). Both messages come only through the session's receive callback (gate recv). Furniture kinds 10 and 0x2a are the only ones with profile 0x37 (data_ov004_02247f54), so these objects are neither of profile 0x3a nor of kind 0x18 (w49-wt5/cls/classify.py, gate value)
+needs: unreachable
+match: ov004/room_object_02253058:RoomObject02253058_EnterPushed
+
+area: Unreachable for one player
 group: the field actor's closed lid and low battery
 scene: none: states 0x83 (the lid closed) and 0x84 (a low battery) of the field actor, and their requests
 reach: FieldActor_CheckBatteryAndLid asks for them on BatteryWarning_IsLow and on bit 15 of the ARM7's word at 0x027fffa8 (the lid), which a recording cannot make; the states' messages ask for them for another console's actor; besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py)
