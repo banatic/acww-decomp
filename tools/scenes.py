@@ -770,6 +770,12 @@ SAVES["giver-item-gone"] = raw(VILLAGER_PART, bytes((0, 0, 12, 12, 9, 26, 0, 0))
 SAVES["letter-due-8"] = delivery(19, (0, 0, 12, 12, 9, 26), 0x3230, 1, 0) + [(CARRIED_LETTER_STATE, "<B", 0x48)]
 SAVES["letter-due-7-fond"] = (delivery(19, (0, 0, 12, 12, 9, 26), 0x3230, 1, 0) + [(CARRIED_LETTER_STATE, "<B", 0x47)] +
                               [(TOWN_VILLAGERS + 0x6C, "<b", 0x50)])
+# the pockets' states, two bits a slot (0xa6c of the pockets' record, the seed's 0)
+POCKET_STATES = 0x14 + 0x11A8 + 0xA6C
+# villager 1's item (0x3230) for villager 0, due the day after the boot, held in pocket 0 in state 2,
+# the only state VillagerTalkScene_PocketOfItem takes
+SAVES["deliver-due-held"] = (delivery(10, (0, 0, 12, 12, 9, 26), 0x3230, 1, 0) + [(POCKETS, "<H", 0x3230)] +
+                             [(POCKET_STATES, "<I", 2)])
 # villager 0's visit to the player's house (the handed-over record, as for "house-visitor") agreed
 # for 11:30 on the 10th, the day before the boot: its greeting says the visit was missed
 SAVES["visit-missed"] = (raw(HANDOVER, SEED_NPC[0]) + raw(HANDOVER + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
@@ -1004,6 +1010,15 @@ SAVES["errand-insect-due"] = villager_errand(0, 0, 2, player=True, item=0x12B0) 
 SAVES["errand-insect-three"] = villager_errand(0, 0, 2, player=True, item=0x12B0) + [
     (POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x12B2, 0x12B8, 0x12B0))]
 SAVES["errand-insect-less"] = villager_errand(0, 0, 2, player=True, item=0x12B0) + [(POCKETS, "<H", 0x12B8)]
+# villager 0's errand of an item of a kind at step 2 asking for the fossil 0x450c, the player named, with
+# six fossils in pockets 0-5 (as "mode-2-fossils"): the item shown is judged, and in steps 2-4 its
+# place in its kind set as a flag of the villager object (VillagerTalkObject_ItemPart)
+SAVES["errand-kind-due"] = villager_errand(0, 2, 2, player=True, item=0x450C) + [(POCKETS + 2 * i, "<H", 0x450C + 4 * i)
+                                                                                for i in range(6)]
+# villager 0's fish errand at step 2 asking for 0x12e8, the player named, with three fish in the pockets:
+# the pockets screen opens on the fish (VillagerTalkOffer_IsFishFree)
+SAVES["errand-fish-due"] = villager_errand(0, 1, 2, player=True, item=0x12E8) + [(POCKETS + 2 * i, "<H", 0x12E8 + i)
+                                                                                for i in range(3)]
 # villager 0's errands done (low bits 2): an insect at step 0, an item of a kind at step 1 and an
 # item with variants at step 0
 SAVES["errand-low2"] = villager_errand(0, 0, 0, low=2, player=True, item=0x12B0)
@@ -1473,9 +1488,9 @@ scene("insect-keys", "seed", 4730, [2600, 3700, 4020, 4320, 4729], frames(3700, 
 scene("designs-room", "rod", 6420, [2600, 3500, 4300, 5000, 5700, 6419], frames(3500, 6420, 25),
       "in the player's room, my designs as the carpet (turned) and the wallpaper, swapped, and put down "
       "as design displays")
-scene("designs-pieces", "rod", 4790, [2600, 3500, 4200, 4400, 4600, 4789], frames(4000, 4790, 25),
+scene("designs-pieces", "rod", 4990, [2600, 3500, 4200, 4400, 4600, 4789, 4860, 4989], frames(4000, 4990, 25),
       "in the player's room, my designs dropped on the head, clothes and held item buttons and put in the "
-      "room as pieces of furniture")
+      "room as pieces of furniture, the page closed with B")
 scene("fireworks-third", "seed", 19060, [4400, 7059, 10000, 13000, 16000, 19059], frames(7060, 19060, 200),
       "fireworks-late booted two seconds later: the show draws the large launches' program of the "
       "delay 100", recording="fireworks-late", rtc="2027-08-07 20:00:02")
@@ -1926,7 +1941,7 @@ scene("insects-june", "weeded", 9612, [2800, 5000, 7100, 9100, 9611], frames(640
       rtc="2027-06-20 21:00:00")
 scene("insects-may", "weeded", 5040, [2800, 4200, 4700, 4900, 5039], frames(4600, 5040, 25),
       "on a May afternoon, walk up to the insect of kind 0x0a south of the house", rtc="2027-05-20 15:00:04")
-scene("house-thunder", "rain", 4500, [2600, 3400, 4300, 4499], frames(3800, 4500, 50),
+scene("house-thunder", "rain", 4500, [2600, 3400, 4200, 4499], frames(3800, 4500, 50),
       "in the heavy rain of the seed's day, walk into the player's house: the thunder is heard inside",
       recording="house")
 scene("insects-january", "weeded", 5962, [2800, 4200, 5000, 5600, 5961], frames(4800, 5962, 50),
@@ -1970,6 +1985,8 @@ scene("villager-letter-opened", "letter-due-8", 6696, [2600, 3400, 4300, 4900, 5
       "a letter for villager 0 handed over before its time, in state 8: it was opened, the villager is cross")
 scene("villager-letter-shown", "letter-due-7-fond", 6696, [2600, 3400, 4300, 4900, 5800, 6695], frames(4300, 6696, 50),
       "a letter for villager 0 handed over before its time, villager 0 fond of the player: it reads it out")
+scene("villager-deliver-pick", "deliver-due-held", 5372, [2600, 3400, 4300, 4900, 5371], frames(4300, 5372, 50),
+      "an item for villager 0 held in the pockets before its time: the offer's first answer opens the item pick")
 scene("villager-giver-late", "giver-late-letter", 5822, [2600, 3400, 4300, 4900, 5400, 5821], frames(4300, 5822, 50),
       "a letter the player agreed to take, due the day before: its giver at home says it is late and asks for it")
 scene("visit-missed", "visit-missed", 5332, [2600, 3400, 4300, 4900, 5331], frames(4300, 5332, 50),
@@ -2173,6 +2190,12 @@ scene("villager-catch-win", "errand-insect-three", 9748, [2600, 4138, 5500, 7000
       "as villager-catch-draw with a dearer insect shown: the player wins, is rewarded and is asked for a rematch")
 scene("villager-catch-lose", "errand-insect-less", 7148, [2600, 4138, 5500, 6500, 7147], frames(5000, 7148, 50),
       "as villager-catch-draw with a cheaper insect shown: the player loses")
+scene("villager-kind-shown", "errand-kind-due", 8148, [2600, 4138, 5500, 6500, 7500, 8147], frames(5000, 8148, 50),
+      "villager-catch-draw's walk with an errand of an item of a kind at step 2: a fossil shown, judged and "
+      "its place in its kind kept", "villager-catch-draw")
+scene("villager-fish-due", "errand-fish-due", 8148, [2600, 4138, 5500, 6500, 7500, 8147], frames(5000, 8148, 50),
+      "villager-catch-draw's walk with a fish errand at step 2: the pockets screen opened on the fish",
+      "villager-catch-draw")
 scene("villager-errand-done", "errand-low2", 7148, [2600, 4138, 5000, 6000, 7147], frames(4200, 7148, 50),
       "villager-home-talks' owner with its insect errand done: the next step, and the insect of step 1 asked for")
 scene("villager-kind-done", "errand-done-2-1", 6548, [2600, 4138, 5000, 6000, 6547], frames(4200, 6548, 50),

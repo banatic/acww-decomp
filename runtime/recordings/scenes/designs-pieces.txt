@@ -5,7 +5,8 @@
 # (about 4140): a hat of the design stands in the room (RoomPlacement_PlaceSeries4224); the second
 # onto the clothes button and "put" (about 4330): clothes of the design (_PlaceSeries3D84); the
 # first again onto the held item's button (about 4700), which in the player's own room makes an
-# umbrella of it at once (_PlaceSeries3EA4).
+# umbrella of it at once (_PlaceSeries3EA4). B twice (4776, 4836) closes the page; the room again
+# by 4900 (to 4989).
 0 - -
 900 START -
 906 - -
@@ -233,4 +234,6 @@
 4716 - -
 4776 B -
 4782 - -
-4790 - -
+4836 B -
+4842 - -
+4990 - -
