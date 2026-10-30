@@ -1172,6 +1172,13 @@ SAVES["post-full"] = (
     raw(0x14 + 0x11A8 + 0x100 + 0x24, LETTER_FROM_PLAYER) +
     [(0x14 + 0x11A8 + 0x100 + 0x22, "<B", 3), (0x14 + 0x11A8 + 0x100 + 0x42, "<B", 1)] +
     [(0x14 + 0x11A8 + 0x100 + off, fmt, value) for off, fmt, value in _LETTER])
+# as "full-rod-catches" with a larger fish in pocket 0 (0x12e8 + its kind): put back into the
+# water, it lands at its size class (data_020cb784's first byte, ov003/player_fish.c
+# PlayerFish_Splash), whose splash and wake are effect kinds of their own: kind 0x19 class 4
+# (wake 0x1e), 0x1b class 5 (0x17, 0x1f), 0x34 class 6 (0x19, 0x21), 0x0f class 7 (0x18, 0x20)
+for _kind in (0x19, 0x1B, 0x34, 0x0F):
+    SAVES[f"rod-fish-{_kind:02x}"] = [e if e[0] != POCKETS else (POCKETS, "<H", 0x12E8 + _kind)
+                                      for e in SAVES["full-rod-catches"]]
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -2492,6 +2499,18 @@ scene("title-move-in-halt", "seed", 2360, [1100, 1500, 1800, 2100, 2329], frames
 scene("gate-visit-halt", "seed", 9640, [2600, 5900, 6900, 7900, 8600, 9300, 9591], frames(9500, 9640, 10),
       "gate-visit run on: the gatekeeper starts the search for a town to visit, which halts in the WM set-up",
       recording="gate-visit")
+scene("fish-release-class4", "rod-fish-19", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
+      "fish-release-pocket with a fish of size class 4 in the pockets: put back into the water, its splash "
+      "and wake are those of its size", recording="fish-release-pocket")
+scene("fish-release-class5", "rod-fish-1b", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
+      "fish-release-pocket with a fish of size class 5 in the pockets: put back into the water, its splash "
+      "and wake are those of its size", recording="fish-release-pocket")
+scene("fish-release-class6", "rod-fish-34", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
+      "fish-release-pocket with a fish of size class 6 in the pockets: put back into the water, its splash "
+      "and wake are those of its size", recording="fish-release-pocket")
+scene("fish-release-class7", "rod-fish-0f", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
+      "fish-release-pocket with a fish of size class 7 in the pockets: put back into the water, its splash "
+      "and wake are those of its size", recording="fish-release-pocket")
 
 # ------------------------------------------------------------------------------ saves
 
