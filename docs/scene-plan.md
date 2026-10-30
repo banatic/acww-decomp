@@ -3971,3 +3971,23 @@ What reading the Clean code found about the groups above; counts are of function
   each passed run alone, so the failure is the parallel run's, not the code's (not looked into).
 - The plan before (main 19eca82f): seed 443, date 105, unknown 410, unreachable 3,258; after (502
   scene lists): seed 424, date 105, unknown 410, unreachable 3,258. Checked in a run: 21,054.
+
+### Job 0x1d's start run into the halt (2026-10-31, rows17, second batch)
+- title-move-in-halt plays title-move-in on to 2360: Step1C's job 0x1d starts
+  (ActivityLinkJobs_Start1D), Session_Start(1, 2, 0) switches the library slot to overlay 66
+  (LibraryOverlay_Require66, _Switch66) and calls Local_Setup, whose WM set-up runs its first
+  steps (LocalWireless_Init, _Alloc, _SetEventHandler, LocalSession_Create, _AllocBuffers,
+  LocalSearch_Create, _InitList, LocalRelay_Start, _Configure) before the runtime's missing
+  wireless fails (LocalWireless_Fail, _Free) into the game's halt, about 2338. The frames after
+  it agree both ways, as halt-debug-screen's do; the memory checkpoints stay before it (2329).
+  Those twelve left "local wireless (DS to DS)" and Start1D "claimed unreachable"; the rest of
+  Start1D after Session_Start stays cut (gate halt). Driving town-hall-move on past its end
+  enters nothing more.
+- Not moved: RoomObject022510b4_Destroy. Indoors FieldActorRooms_TryTarget calls
+  FieldActor_FindTarget in mode 0, whose request is made by TileRequests_AskPile outside scene 0
+  (kind 3 only; kind 5 only from TileRequests_AskInTown, in the town); but FindTarget asks only
+  when no target is held, and FieldActor_FindMapTarget keeps a pending TileRequests_AskOpFor
+  target, whose kinds are not traced.
+- The plan before (main 19eca82f + the first batch): seed 424, date 105, unknown 410,
+  unreachable 3,258; after (503 scene lists): seed 424, date 105, unknown 407, unreachable 3,246.
+  Checked in a run: 21,069.

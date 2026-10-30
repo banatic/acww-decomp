@@ -2449,6 +2449,9 @@ scene("map-scroll", "second-player", 4650, [2600, 4000, 4200, 4400, 4649], frame
 scene("post-office-full", "post-full", 6854, [2600, 5000, 5500, 5600, 6200, 6853], frames(5000, 6854, 50),
       "at the post office window with the post office and the mailbox full: a letter to a villager "
       "posted finds no room and is given to the villager directly")
+scene("title-move-in-halt", "seed", 2360, [1100, 1500, 1800, 2100, 2329], frames(1400, 2360, 10),
+      "title-move-in run on: job 0x1d's start sets up the DS wireless session, which halts in the WM set-up",
+      recording="title-move-in")
 
 # ------------------------------------------------------------------------------ saves
 
