@@ -1352,6 +1352,8 @@ scene("chat-keys", "seed", 5130, [2600, 3800, 4100, 4400, 4800, 5129], frames(38
 scene("catalog-keys", "seed", 4510, [2600, 3500, 3800, 4100, 4509], frames(3500, 4510, 25),
       "the fish catalog by the keys (held keys, the scroll knob held with A) and by the pen (the knob "
       "dragged, the arrows)")
+scene("insect-keys", "seed", 4730, [2600, 3700, 4020, 4320, 4729], frames(3700, 4730, 25),
+      "the insect catalog by catalog-keys' keys and pen: the scroll knob held with A by the keys")
 scene("designs-room", "rod", 6420, [2600, 3500, 4300, 5000, 5700, 6419], frames(3500, 6420, 25),
       "in the player's room, my designs as the carpet (turned) and the wallpaper, swapped, and put down "
       "as design displays")

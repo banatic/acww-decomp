@@ -1,12 +1,12 @@
-From 441 scene lists: 25,251 Clean game functions, run 20,897, function check only 1,082, read only 3,272; the groups below hold 4,354 (function check only + read only).
+From 442 scene lists: 25,251 Clean game functions, run 20,900, function check only 1,082, read only 3,269; the groups below hold 4,351 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 536 |
+| seed | 533 |
 | date | 137 |
 | unknown | 472 |
 | unreachable | 3,209 |
-| total | 4,354 |
+| total | 4,351 |
 
 ## Unreachable for one player (3,209)
 
@@ -86,7 +86,7 @@ From 441 scene lists: 25,251 Clean game functions, run 20,897, function check on
 | the Able Sisters and the barber | 23 (5 / 18) | ov004/check_in_gate 8, ov049/mabel 6, ov053/barber 5, ov049/mabel_talk 3, ov004/shop_display 1 | Mabel's other topics and the design display, the barber's haircut (Harriet: the hairdresser's chair, the new face) | rod save for the tailor; the barber is upstairs in the store once it is upgraded (main/nook_store.h): a derived save with the store's size, or unknown | unknown |
 | the debug screen shown after job 0x1f's halt | 15 (3 / 12) | main/debug_screen 8, main/debug_text 5, autoload_2/heap 1, autoload_2/process 1 | none: halt-debug-screen run on through its SELECT+START: the screen drawn and its text, and Select+A's heap report | (findings 2026-10-30, clerk6) PostClerkTalk_AskJob1f (step 14, savings-move) asks for the job (ActivityJob_Ask1F) once the clerk is ready, and the activity process starts it in the same frame (8277): ActivityLinkJobs_Start1F's Session_StopTransfer(Net_GetMyAid()) calls Session_SetReceiveBuffers(0), whose LibraryOverlay_RequireAny for AID 3 halts (GameHalt_Terminate) unless overlay 65, 66 or 67 is in the library slot (the town has 68 there); the halt shows the debug screen, which follows its key sequence; besides (findings 2026-10-30, halt7), halt-debug-screen enters the job's start, the halt and the debug screen's frames (DebugScreen_Run, _Frame and _WaitVBlank, kept Reference: they write IME and read KEYINPUT and VCOUNT) up to the second chord of the key sequence (L+R+LEFT+A, release, DOWN+B, release); the drive went on with SELECT+START (the screen drawn from 8303) and Select+A with Left, Right and Up (Heap_Report of the three heaps) and Select+B, and entered these, but no scene through them agrees: the screen prints the exception context (the registers that GameHalt_SaveContextAndHalt saves, which its Clean code leaves 0, as C cannot read them) and 88 words of the ARM9 stack, which Native code leaves otherwise than the ROM's code; with the context's saving, DebugScreen_InitDisplay and DebugText_PutChar kept Reference too, memory agrees after the halt but the frames first differ at 8304, the first frame drawn | seed |
 | the post office: both clerks, savings and the ATM | 6 (1 / 5) | ov130/bank_pad 3, main/savings 1, ov004/atm 1, ov132/bank_menu 1 | Pelly and Phyllis (night) with every topic, withdraw and deposit at the pad and the ATM (ov130-ov132), the letters kept for later | the post-office walk, at day and at night | seed |
-| the post clerk's step 15 after job 0x1f is asked for | 3 (2 / 1) | main/activity_job 2, ov054/post_clerk_talk 1 | none: PostClerkTalk_AwaitJob1f (step 15) and the two tests of the job it makes | (findings 2026-10-30, clerk6) step 15 is set only by PostClerkTalk_AskJob1f, right after ActivityJob_Ask1F; the activity process starts job 0x1f in the same frame, after the talk's step, and the start halts ("job 0x1f's start and the halt it ends in"), so the next frame's step never comes (seen in the drive at 8277; the frame order is not proved from the code) | unknown |
+| the post clerk's step 15 after job 0x1f is asked for | 3 (2 / 1) | main/activity_job 2, ov054/post_clerk_talk 1 | none: PostClerkTalk_AwaitJob1f (step 15) and the two tests of the job it makes | (findings 2026-10-30, clerk6) step 15 is set only by PostClerkTalk_AskJob1f, right after ActivityJob_Ask1F; the activity process starts job 0x1f in the same frame, after the talk's step, and the start halts ("job 0x1f's start and the halt it ends in"), so the next frame's step never comes (seen in the drive at 8277; the frame order is not proved from the code); besides (findings 2026-10-30, halt7), the asked job (data_021f3c38) is read only by ActivityProcess_StepJob0, job 0's step, which in scene 9 starts job 0x1f once the screen is shown (data_021c75b8 2), and by ActivityProcess_Create (jobs 0x14 and 0x15 only); the job's start halts ("job 0x1f's step: its start halts"); so with the activity's step and the talk's step run once each a frame, in either order, step 15 runs only if at the ask the current activity is not at job 0, the screen is not shown or the activity process is not executed; that none of these holds whenever the clerk is ready (PostClerk_ReadyForJob: her face's animation 0xba, TtiNpc_IsIdle, her talk waiting) is not shown | unknown |
 
 ## The house and its furniture (the seed's day) (45)
 
@@ -97,11 +97,11 @@ From 441 scene lists: 25,251 Clean game functions, run 20,897, function check on
 | the house: rooms, camera, telephone, roaches | 8 (3 / 5) | ov004/rmo_telephone 3, main/house_record 2, ov004/room_camera 2, ov004/room_etc_board 1 | the other rooms (upstairs and basement of a bigger house), the room camera's turns, the telephone's other settings, cockroaches running and stamped on, the wallpaper and carpet changed | a derived save with a bigger house (main/house_record.h, the size word at 0x15a0) and wallpaper/carpet items; the seed's 10 cockroaches (their collider is Native-sensitive, docs/native-guest-stack.md) | seed |
 | the clock and calendar screens | 1 (0 / 1) | ov135/phone_clock 1 | what clock-pen, birthday-ask and visit-time leave: the clock dragged past a bound (ov135 in the date screen's mode 0x33), the visit's times in a villager's sleeping hours and before 6:00 (lines 0x021c304c and 0x021c3034 of VillagerTalkSteps_SayByKeptTime) | the visit's time screen (ov136) is bounded by now and twelve hours later and the villagers' night windows start at 1:00-4:30 (data_020cd4ac), so those two answers need the offer late in the evening (a boot at night on a day the deal gives a villager type 21) | date |
 
-## Pockets, menus and letters (the seed's day) (98)
+## Pockets, menus and letters (the seed's day) (95)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| catalogs, map, friends, tunes, songs, storage | 30 (0 / 30) | ov118/map_menu_input 7, ov109/song_pockets 5, ov119/friend_roster_input 5, ov116/insect_catalog 3, main/town_tune 2, ov118/map_menu_list 2, ov119/friend_roster 2, ov144/music_list_input 2, 2 more files (2) | the fish and insect catalogs paged, the town map's lists and marks (ov117, ov118, ov120), the friend roster's pages, the town tune edited and played (ov143), the music list and song pockets with several songs, the chest's storage by keys | the menus tab; Pelly for the tune; the house stereo and a chest | seed |
+| catalogs, map, friends, tunes, songs, storage | 27 (0 / 27) | ov118/map_menu_input 7, ov109/song_pockets 5, ov119/friend_roster_input 5, main/town_tune 2, ov118/map_menu_list 2, ov119/friend_roster 2, ov144/music_list_input 2, ov114/catalog_list 1, 1 more files (1) | the fish and insect catalogs paged, the town map's lists and marks (ov117, ov118, ov120), the friend roster's pages, the town tune edited and played (ov143), the music list and song pockets with several songs, the chest's storage by keys | the menus tab; Pelly for the tune; the house stereo and a chest | seed |
 | letters: write, post, keep, receive | 24 (2 / 22) | ov104/letter_send 5, ov106/mailbox_scene 5, main/villager_mail 4, ov095/soft_keyboard_cursor 4, ov122/letter_write_scene 3, main/letter 1, main/villager_post 1, main/waiting_letter 1 | buy paper, write a letter to a villager (ov122 with the soft keyboard ov095), post it (ov104), the reply the next day; the mailbox (ov106) and the letter storage (ov105) by the keys | rich save for the paper (shop-buy-letter's start); the reply needs the next day (date) | seed |
 | item pick, swap and boxes | 13 (0 / 13) | ov107/pockets_swap 7, ov100/pockets_box 2, ov110/public_box 2, ov100/pockets_box_scene 1, ov110/public_box_states 1 | a villager or the sick villager asking for an item (ov101), the pockets full when catching (ov107, all its paths), the recycle box and the lost and found by keys (ov110), selling by the box (ov100) | villager requests (talks), full-net save, the town hall's recycle box, Nook's sell box | seed |
 | the pockets screen | 12 (6 / 6) | ov096/pockets_screen 4, main/camera_grid 2, main/item_group 2, main/control_mode_icon 1, main/pockets 1, main/start_menu 1, ov090/menu_tabs 1 | sort, swap, drop, bury items; the bag of bells into the wallet and out; letters moved, read, thrown away; the keys-only cursor; give an item to a villager | saves with full pockets, bells bags (0x1492-0x14fd) and letters | seed |
@@ -3233,3 +3233,27 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (440 lists, with the first batch): seed 571, date 137, unknown 472,
   unreachable 3,209; after (441): seed 536, date 137, unknown 472, unreachable 3,209. Checked in
   a run: 20,862 before, 20,897 after.
+
+### The insect catalog by the keys; the post clerk's step 15 not proved (2026-10-30, halt7, third batch)
+- insect-keys (seed): insect-list's input to its insect tab (3640), then catalog-keys' input from
+  its 3500 on, 220 frames later: A held with a direction on the scroll knob scrolls the insect
+  catalog by the keys (InsectCatalog_StartScrollByKeys, _ScrollWhileHeld, _EndScrollByKeys).
+  Both ways agree.
+- Not proved: the post clerk's step 15 (PostClerkTalk_AwaitJob1f, ActivityJob_Is1FAtStep15Or20,
+  _IsIdleForOv054; unknown). The asked job (data_021f3c38, set to 0x1f by ActivityJob_Ask1F just
+  before step 15 is set) is read only by ActivityProcess_StepJob0, job 0's step, which in scene
+  9 starts the asked job 0x1f once the screen is shown (data_021c75b8 2), and by
+  ActivityProcess_Create (jobs 0x14 and 0x15 only); job 0x1f's start halts. With the activity's
+  step and the talk's step run once each a frame the order does not matter: step 15 runs only if
+  at the ask the current activity is not at job 0, the screen is not shown, or the activity
+  process is not executed. That none of these holds whenever PostClerk_ReadyForJob is true (her
+  face's animation 0xba, TtiNpc_IsIdle, her talk waiting) was not shown: the screen
+  transition's writers, the jobs that chain into others and the process stop flags were not
+  counted. The group keeps needs unknown, its reason now with this.
+- Gained little: the song pockets by the keys (ov109, 5 functions of "catalogs, map, friends,
+  tunes, songs, storage"): from house-music's pockets (4060) A switches to the key cursor and A
+  again stores the song at once, without the choice row whose cancel (SongPockets_CancelChoice)
+  and button presses are left; B closed the pockets.
+- The plan before (441 lists, with the second batch): seed 536, date 137, unknown 472,
+  unreachable 3,209; after (442): seed 533, date 137, unknown 472, unreachable 3,209. Checked in
+  a run: 20,897 before, 20,900 after.
