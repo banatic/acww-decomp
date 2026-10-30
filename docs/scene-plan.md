@@ -1,12 +1,12 @@
-From 412 scene lists: 25,251 Clean game functions, run 20,768, function check only 1,123, read only 3,360; the groups below hold 4,483 (function check only + read only).
+From 418 scene lists: 25,251 Clean game functions, run 20,788, function check only 1,114, read only 3,349; the groups below hold 4,463 (function check only + read only).
 
 | needs | functions |
 |---|---|
-| seed | 603 |
-| date | 185 |
-| unknown | 453 |
+| seed | 601 |
+| date | 168 |
+| unknown | 452 |
 | unreachable | 3,242 |
-| total | 4,483 |
+| total | 4,463 |
 
 ## Unreachable for one player (3,242)
 
@@ -65,20 +65,20 @@ From 412 scene lists: 25,251 Clean game functions, run 20,768, function check on
 | destructors only a thrown exception calls | 1 (1 / 0) | ov117/town_map_image 1 | none: the destructors of the elements of arrays built by __cxa_vec_ctor, named nowhere else | __cxa_vec_ctor (0x02138d6c) calls its destructor argument only in its landing pad (0x02138dd8: __cxa_vec_cleanup, then the rethrow func_02137174), which runs only after a constructor threw; no code throws: the unwinder func_021375c0 is entered only from func_02137174, which only the three array helpers' landing pads call. A destructor named only as that argument, and what only it calls, never runs (w24/vecdtor.py; w24/classify.py, gate nothrow; findings 2026-10-29, town7) | unreachable |
 | the scene object bases' slot 0x68 every class replaces | 1 (1 / 0) | main/scene_object 1 | none: the scene objects' slot 0x68 (called first in each frame) of the bases, SceneObject_Vfunc68, which every class's own vtable replaces | SceneObject_Vfunc68 is named only by the words at +0x68 of the intermediate vtables 0x020d8c64, 0x020d9e88 and 0x020da088, which an object holds only while it is built or torn down (each constructor storing one stores its own class's vtable after it, findings town8), and none of the 28 call sites through +0x68 (w28/vsite.py) is in those constructors or destructors (findings 2026-10-29, town11; w30/basevt3.py, w30/classify.py) | unreachable |
 
-## Not attributed to one scene (327)
+## Not attributed to one scene (326)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| other paths of shared code the scenes already run | 208 (78 / 130) | autoload_2/heap 15, main/scene_motion 14, main/town_lines 9, main/field_label 7, main/acre_map 6, main/music_queue 6, main/scene_action 6, main/scene_motion_core 6, 82 more files (139) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
+| other paths of shared code the scenes already run | 207 (78 / 129) | autoload_2/heap 15, main/scene_motion 14, main/town_lines 9, main/field_label 7, main/acre_map 6, main/music_queue 6, main/scene_action 6, main/scene_motion_core 6, 81 more files (138) | none in particular: destructors and error paths, other cases and sizes the played scenes do not meet (heaps, processes, sound and music, models, collision, acre maps, the activity process, the scene objects' motions) | unknown: each is found by reading its callers (tools/coverage.py --file) as the scenes above are added; most will fall into one of them | unknown |
 | the link's code in files one player also runs | 74 (33 / 41) | ov055/xct_exchange 11, autoload_2/network 9, main/session 8, main/obj_020dd33c_modes 6, main/link_scene 4, main/packed_bytes 4, ov055/xct_exchange_talk 4, main/exchange_block 3, 11 more files (25) | none known: the functions of the session, link, quick message, caution window, network and Wi-Fi files that the fixed point and the link guard do not prove (most are the link's: the session records, the network library's dispatch to the local and Wi-Fi libraries by the network mode, the caution window's states, the scene objects' shared modes) | unknown: these files were in "local wireless" and "Nintendo Wi-Fi Connection" as whole files, but scenes run some of their functions (findings 2026-10-28, town6); the rest still needs a proof (the network mode data_021fbef8 and the session mode are set only by the link's code: a proof by the values stored, as for the field actor's states and the activity's jobs) or a scene | unknown |
 | claimed unreachable, not proved by the forward pass | 40 (13 / 27) | ov003/field_actor 9, main/mail_text 5, main/wfc_session 4, ov048/gatekeeper_talk 4, main/linked_map_items 3, main/wfc_setup 3, main/town_pack 2, ov048/gatekeeper_talk_lines 2, 7 more files (8) | none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1) | unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene | unknown |
 | overlay static initialisers | 5 (1 / 4) | ov010/ov010_static_init 1, ov016/ov016_static_init 1, ov018/ov018_static_init 1, ov025/ov025_static_init 1, ov035/ov035_static_init 1 | the scenes whose overlays no scene loads yet (ov007-ov044 hold scene data; a static initialiser runs when its overlay loads) | enter each building or area of the town once | seed |
 
-## Shops and buildings (the seed's day) (126)
+## Shops and buildings (the seed's day) (124)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| the museum: Blathers, the cafe and the observatory | 35 (10 / 25) | ov046/astro_talk 7, ov004/cafe_master 6, ov047/owl 5, ov046/astro 4, main/constellations 3, ov004/cafe_props 2, ov047/owl_donation 2, ov129/star_designer_input 2, 4 more files (4) | Blathers' every topic (each collection's talk, the donation list paged), Brewster's coffee with each answer, Celeste's constellations viewed and erased | museum save; the cafe in the basement; the observatory at night (rtc 20:30) | seed |
+| the museum: Blathers, the cafe and the observatory | 33 (8 / 25) | ov046/astro_talk 7, ov004/cafe_master 6, ov047/owl 5, ov046/astro 4, main/constellations 3, ov047/owl_donation 2, ov129/star_designer_input 2, main/museum_record 1, 3 more files (3) | Blathers' every topic (each collection's talk, the donation list paged), Brewster's coffee with each answer, Celeste's constellations viewed and erased | museum save; the cafe in the basement; the observatory at night (rtc 20:30) | seed |
 | the Able Sisters and the barber | 28 (7 / 21) | ov004/check_in_gate 8, ov049/mabel 8, ov053/barber 5, ov004/tailor_sister 3, ov049/mabel_talk 3, ov004/shop_display 1 | Mabel's other topics and the design display, the barber's haircut (Harriet: the hairdresser's chair, the new face) | rod save for the tailor; the barber is upstairs in the store once it is upgraded (main/nook_store.h): a derived save with the store's size, or unknown | unknown |
 | Nook's store: every topic | 25 (4 / 21) | ov050/nook_clerk 11, ov050/nook_clerk_talk 11, main/shops 1, main/talk_tags 1, ov142/order_catalog_cursor 1 | buy several items, sell all at once, the catalog by pages and by keys, order, the house loan and its extension, the turnip and the store's points | rich save; the store's counter (shop-talk's walk); besides (findings 2026-10-29, unknown2), the talk tag 0/6 "&" (TalkTags_PutAmpersand): Nook's lines raccoon_ 66-71, 85 and 86 (also barber_ 9-11 and 56, turtle3_ 13 and 40-42; w28/tagwhere.py) | seed |
 | the gatekeeper: every topic | 24 (10 / 14) | ov048/gatekeeper_talk 7, ov048/gatekeeper_states 6, ov048/gatekeeper_talk_lines 6, ov004/gatekeeper2 2, ov133/friend_code_entry_scene 2, ov048/gatekeeper 1 | each line of his menu with each answer: the place, news, the lost and found by keys, the flag, a visit (refused alone), the friend code entry (ov133) | the gate-flag walk; the visit topics refuse without a link but run their talks | seed |
@@ -120,20 +120,20 @@ From 412 scene lists: 25,251 Clean game functions, run 20,768, function check on
 | villagers out in the town | 94 (23 / 71) | ov068/outdoor_villager_acts 11, ov068/outdoor_villager_moves 9, main/villager_memories 8, main/villager_house_items 6, main/villager_events 5, main/villager_memory_entry 5, main/villager_residents 5, main/path_walker 4, 23 more files (41) | watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing | long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates | seed |
 | the talk engine: tags, pages, windows, sliders | 58 (28 / 30) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 8 more files (12) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 
-## Other dates, times and visitors (for the boot on another day) (192)
+## Other dates, times and visitors (for the boot on another day) (175)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
 | insects and fish of other months and hours | 55 (18 / 37) | ov003/fish_shadow 9, ov003/town_insect_moves 7, ov003/town_insect_kinds 6, ov004/aquarium_fish_kinds 6, ov003/fish_shadow_state 5, ov004/aquarium_fish 5, ov003/fish_shadow_swim 4, ov003/town_insect 4, 4 more files (9) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
-| seasons, weather, the sky and the new day | 39 (12 / 27) | ov068/snowball 11, main/snowmen 6, main/day_plan 4, main/sky_shots 4, main/creature_draw 2, main/insect_draw 2, main/sky 2, main/town_growth 2, 5 more files (6) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
+| seasons, weather, the sky and the new day | 35 (8 / 27) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/creature_draw 2, main/insect_draw 2, main/sky 2, main/town_growth 2, main/town_spawn 2, 4 more files (4) | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
 | Tortimer's events and holidays | 21 (10 / 11) | main/event_winner 3, main/event_kinds 2, main/event_queue 2, ov083/turtle_gardens 2, main/event_buildings 1, main/event_schedule 1, main/sky_events 1, ov003/etc_board 1, 8 more files (8) | one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown | boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle) | date |
-| the flea market and Joan | 16 (3 / 13) | ov004/flea_market_buyer 8, ov004/flea_market_villager 7, ov073/boar 1 | the villagers' flea market in the town hall; Joan's turnips on Sunday mornings (pending scene sunday-joan) | the flea market's dates; any Sunday 6:00-12:00 | date |
 | Redd and his tent | 10 (2 / 8) | ov003/fox 4, ov052/fox_tent 4, main/fox_shop 2 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
 | the acorn collector and Dr. Shrunk | 10 (3 / 7) | ov088/reaction_npc_talk 6, ov088/reaction_npc 3, ov087/acorn_npc 1 | acorns traded (items 0x1542-0x1546), a reaction taught | autumn days for the acorns; the days of Dr. Shrunk | date |
-| villagers' birthdays, sickness and visits | 9 (5 / 4) | ov068/cafe_room 4, ov068/cafe_guest 2, ov004/birthday_guest 1, ov004/birthday_villager 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
+| villagers' birthdays, sickness and visits | 8 (4 / 4) | ov068/cafe_room 4, ov004/birthday_guest 1, ov004/birthday_villager 1, ov068/cafe_guest 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
 | the lost child and the mother | 6 (3 / 3) | main/missing_npc1 5, main/missing_npc2 1 | what lost-child and lost-mother leave: the child's pause and its state facing the player, the mother's steering | a pairing with another town in its last week (saves lost-child and lost-mother, main/paired_town.h) | seed |
 | Pascal | 5 (1 / 4) | ov076/otter 4, ov076/otter_talk 1 | the otter: his gift for an item | the days the calendar has him | date |
 | Saharah and Wendell | 5 (2 / 3) | ov079/walrus 3, ov078/camel 1, ov079/walrus_talk 1 | the camel's carpet trade, the walrus's wallpaper for a fish | the weekdays the schedule gives them; besides (findings 2026-10-29, unknown2), the scene motion of kind 19 and its scene command (SceneCommand_RequestMotion19, its start, run and wait, SceneMotion_StartKind19, _RunKind19 and its step, _Kind19After): only WalrusTalk_Slot10 asks for it, when Wendell's line shown is WALRUS_TALK_LINE_MOTION_19 (0x0f) | date |
+| the flea market and Joan | 4 (1 / 3) | ov004/flea_market_buyer 2, ov004/flea_market_villager 1, ov073/boar 1 | the villagers' flea market in the town hall; Joan's turnips on Sunday mornings (pending scene sunday-joan) | the flea market's dates; any Sunday 6:00-12:00 | date |
 | Katrina, the fortune teller | 3 (2 / 1) | ov045/fortune_teller 3 | her tent in the town square: a fortune told, the tarot cards | a weekday the schedule (main/event_schedule.h) gives her | date |
 | the insurance seller | 3 (2 / 1) | ov071/insurer 2, ov071/insurer_talk 1 | the otter of sp_npc_insurance: the policy and its letters | the days the calendar has him | date |
 | the talk tag of Gracie's lines | 2 (1 / 1) | main/talk_tags 2 | Gracie's fashion check: her lines giraffe_ 15-34 hold tag 10/0, which only they hold (findings 2026-10-29, unknown2, w28/tagwhere.py) | a weekday the schedule gives her (group Gracie) | date |
@@ -2855,3 +2855,29 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (410 lists): seed 611, date 196, unknown 460, unreachable 3,242; after (412):
   seed 603, date 185, unknown 453, unreachable 3,242. Checked in a run: 20,743 before, 20,769
   after.
+
+### The cafe's guests by the day's plan, the flea market's goodbyes (2026-10-30, dates3)
+- The cafe's guest (ov068/cafe_guest.c, CafeGuest_Init) is picked when the cafe is entered:
+  6:00-6:54 by the day's plan's morning bit, 12:00-13:29 by its noon value, 14:30-15:59 by its
+  afternoon value, and at 23:00 on a weekday the night bit is asked for (main/day_plan.h: the
+  byte at 0xf52b of the state block, the seed's 0x10, noon 0 and afternoon 1; booted on the
+  seed's day it is not drawn again). The earlier tries played cafe-coffee at those hours, but
+  its recording leaves the museum's way when booted at another hour (at 14:28 the player was
+  still in the hall at its end), so the cafe was not reached. New recording cafe-noon: museum's
+  walk into the museum, kk-request's from the hall down to the cafe 1240 frames earlier, then up
+  to Brewster's counter and A. Save cafe-plan (museum, plan 0xc7): scenes cafe-noon (12:00, the
+  guest of value 3 shows the counter's part 8, CafeProps_ShowPart8), cafe-afternoon (14:30),
+  cafe-morning (6:00) and cafe-late (23:00): DayPlan_Noon, _Afternoon, _Morning, _Night, and
+  Brewster asking whether the guest is the musician (CafeGuest_Kind). The guest's own talk
+  (Kapp'n at 14:30 with the seed's plan, his song) did not reach CafeGuest_UpdateDone.
+- The flea market's seller and buyer say goodbye when the player stands at the room's start
+  point (FleaMarketVillager_RequestIfStartClaimed, FleaMarketBuyer_CheckLeave): after
+  flea-market's sale, B ends Ben's talk and the walk to his door makes him say goodbye; the exit
+  deletes him (scene flea-market-bye: _EnterBye, _UpdateBye, _UpdateWait, _Leave, _Delete and
+  the talk's destructor). After flea-buyer's sale the walk to the player's door makes the buyer
+  leave with the player (flea-buyer-bye: the buyer's same six).
+- Gained little: kind 0x0a (in March to August at 8:00-16:59) by four boots of weeded on 20 May
+  2027 10:00:00-03 standing before the house: none came near.
+- The plan before (412 lists, main 631f21ff): seed 603, date 185, unknown 453, unreachable 3,242;
+  after (418): seed 601, date 168, unknown 452, unreachable 3,242. Checked in a run: 20,769
+  before, 20,789 after.

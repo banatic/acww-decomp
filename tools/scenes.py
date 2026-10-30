@@ -961,6 +961,12 @@ SAVES["house-placed"] = SAVES["house-big"] + [
 # piece of kind 0x16 at (4, 6) of "house-placed": no gyroid, so no cue waits on the sequencer
 SAVES["house-kind7"] = SAVES["house-big"] + [room_item(4, 11, 0xD9), room_switch_off(4, 11), room_item(4, 6, 0xCC)]
 SAVES["house-carry"] = SAVES["house-placed"] + [(0xF52C + 0x200 + 2 * (4 + 16 * 6), "<H", 0x11A8)]
+# as "museum" with the day's plan (main/day_plan.h, the byte at 0xf52b of the state block; the
+# seed's 0x10) giving the cafe a guest at every hour it may have one: the morning bit, noon 3
+# (the guest that shows part 8 of the counter), afternoon 4 and the night bit
+# (ov068/cafe_guest.c, CafeGuest_Init); booted on the seed's day, the plan is not drawn again
+DAY_PLAN = 0xF52B
+SAVES["cafe-plan"] = SAVES["museum"] + [(DAY_PLAN, "<B", 0xC7)]
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -2009,6 +2015,22 @@ scene("villager-admire-day", "seed", 11906, [2600, 4600, 6450, 8000, 9500, 11000
 scene("villager-new-year", "seed", 5874, [2600, 4600, 5000, 5400, 5873], frames(4600, 5874, 50),
       "on New Year's Day at 00:30 a villager talked to: the new year's line of the night, under the fireworks",
       rtc="2027-01-01 00:30:00")
+# the cafe at the hours of its guests by the day's plan: the walk of museum and kk-request down to
+# the cafe, then Brewster talked to from in front of his counter (he asks whether the guest in is
+# the one who plays music)
+for _name, _time, _what in (("cafe-noon", "12:00:00", "at noon, the guest of the plan's noon value 3"),
+                            ("cafe-afternoon", "14:30:00", "in the afternoon, the guest of its value 4"),
+                            ("cafe-morning", "06:00:00", "in the morning, the guest of its morning bit"),
+                            ("cafe-late", "23:00:00", "at 23:00, the plan's night bit asked for")):
+    scene(_name, "cafe-plan", 6640, [2600, 4400, 5450, 5700, 6639], frames(5300, 6640, 50),
+          f"down to the museum's cafe {_what}, and Brewster talked to", recording="cafe-noon",
+          rtc=f"2026-09-11 {_time}")
+scene("flea-market-bye", "wallet", 9266, [4100, 5500, 7330, 8500, 8900, 9265], frames(7300, 9266, 50),
+      "flea-market, then to the door of the seller's house: he says goodbye and the player leaves",
+      rtc="2026-10-03 10:00:00")
+scene("flea-buyer-bye", "wallet", 12110, [4100, 5500, 8500, 10300, 10700, 11400, 12109], frames(10300, 12110, 50),
+      "flea-buyer, then to the house's door: the buyer says goodbye and leaves with the player",
+      rtc="2026-10-03 10:00:00")
 # villager 3 in a pastime, the press after its connect choices made after a wait that draws the
 # pastime's own topic (VillagerTalkSubjects_SayByMode), or for pastime 2 what it holds
 for _name, _mode, _frames, _what in (("villager-pastime-2", 2, 4979, "its pastime's hint"),
