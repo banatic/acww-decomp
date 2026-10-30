@@ -755,6 +755,30 @@ SAVES["letter-due-7-fond"] = (delivery(19, (0, 0, 12, 12, 9, 26), 0x3230, 1, 0) 
 SAVES["visit-missed"] = (raw(HANDOVER, SEED_NPC[0]) + raw(HANDOVER + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
                          [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
                          raw(HANDOVER + 0x1C, bytes((0, 30, 11, 10, 9, 26, 0, 0))))
+# villager 0's plan to move away (the town's villager move record, as for "sick") ended the day
+# before the boot and so kept for three days (VillagerMoveRecord_IsRecentlyDone): stage 5, the object
+# of type 9 still in use with its low bits `low`, the plan started on the 1st and last stepped on
+# the 10th, each stage naming `players` (player ids of 30 bytes). The villager stays out of the ones
+# drawn to walk outside, so it is at home, and its talk's offer is VillagerTalkOffer_AfterMove.
+SEED_PLAYER = LETTER_FROM_PLAYER[:0x1C] + bytes(2)  # the seed's player (its id in the record at 0x247e)
+
+
+def move_ended(low: int, players: list[bytes]) -> list[tuple[int, str, int]]:
+    return (raw(VILLAGER_MOVE, bytes((0, 0, 12, 1, 9, 26, 0, 0))) +
+            [(VILLAGER_MOVE + 8, "<H", 0x155E), (VILLAGER_MOVE + 0xA, "<B", 9), (VILLAGER_MOVE + 0xB, "<B", low)] +
+            raw(VILLAGER_MOVE + 0xC, SEED_NPC[0]) + raw(VILLAGER_MOVE + 0x1C, b"".join(players)) +
+            raw(VILLAGER_MOVE + 0xB2, bytes((1, 9, 26, 1, 10, 9, 26, 0))) + [(VILLAGER_MOVE + 0xBA, "<B", 5)])
+
+
+# every stage names the seed's player, low bits 1 ("move-ended") or 0 ("move-ended-unmarked"), with the
+# pockets full of furniture ("-full"); the first stage names the seed's player and the next two a
+# player of another town ("move-ended-names"), or every stage that player ("move-ended-other")
+_FULL_POCKETS = [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)]
+SAVES["move-ended"] = move_ended(1, [SEED_PLAYER] * 5)
+SAVES["move-ended-full"] = move_ended(1, [SEED_PLAYER] * 5) + _FULL_POCKETS
+SAVES["move-ended-unmarked-full"] = move_ended(0, [SEED_PLAYER] * 5) + _FULL_POCKETS
+SAVES["move-ended-names"] = move_ended(0, [SEED_PLAYER, OTHER_PLAYER_A, OTHER_PLAYER_A, bytes(30), bytes(30)])
+SAVES["move-ended-other"] = move_ended(0, [OTHER_PLAYER_A] * 5)
 PRAISE = bytes.fromhex("4331433143314331")  # a praise word of 4 characters
 SAVES["memories"] = (
     villager_memory(2, 1, OTHER_PLAYER_A, OTHER_TOWN, (10, 20, 15, 4, 9, 26), 20, 4, 0x0006, text_2a=PRAISE) +
@@ -1914,6 +1938,15 @@ scene("villager-giver-late", "giver-late-letter", 5822, [2600, 3400, 4300, 4900,
       "a letter the player agreed to take, due the day before: its giver at home says it is late and asks for it")
 scene("visit-missed", "visit-missed", 5332, [2600, 3400, 4300, 4900, 5331], frames(4300, 5332, 50),
       "a visit to the player's house agreed for the day before: the villager at home says it was missed")
+for _name, _what in (("move-ended", "the player it names most is this one: a gift put in a free pocket, the record cleared"),
+                     ("move-ended-full", "as move-ended with the pockets full: no gift"),
+                     ("move-ended-unmarked-full", "the player it names most, the record's low bits 0, the pockets full: "
+                                                 "the record marked"),
+                     ("move-ended-names", "another player named most, this one by the first stage"),
+                     ("move-ended-other", "another player named by every stage")):
+    scene(f"villager-{_name}", _name, 5672, [2600, 3400, 4300, 4900, 5671], frames(4250, 5672, 50),
+          f"villager-deliver-late's walk with villager 0's plan to move away ended the day before: {_what}",
+          "villager-deliver-late")
 scene("villager-home-talks", "seed", 7342, [2600, 4100, 4800, 5600, 6500, 7341], frames(4100, 7342, 50),
       "villager-home's owner talked to three times: lines branch on the insects caught and on its fondness")
 scene("villager-weekday", "seed", 7780, [2600, 3900, 5600, 6600, 7200, 7779], frames(5500, 7780, 50),
