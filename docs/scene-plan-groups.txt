@@ -2063,6 +2063,22 @@ match:
   main/scene_object:SceneObject_Vfunc68
 
 area: Not attributed to one scene
+group: the special characters' states after a talk ended
+scene: none known: the "talked" or "done" state each character takes when its talk ends through EventQueue_FinishObjectEvent (its update does nothing), and Mr. Resetti's, which he takes on the event's end in the frame he is deleted
+reach: unknown (findings 2026-10-30, talked4): the event is finished in the character's update and ended by the event process in the same frame (Process020daae4_Execute steps the running event, then the ending one), and EventKind_EndObjectEvent tells the character ENDED, which takes it out of the state, unless PlayerActorOps_FinishState answers 0; that answer is the request queue's (FieldActor_QueueRequest), which refuses only with 30 requests queued since the player's last FieldActor_TakeRequests, or no field actor for this console; the drive saw at most 3 queued (gracie, acorn-festival). AcornNpc_UpdateStand is state 2's update by the state table data_ov087_022795c0 (the names of 0227900c and 02279074 are swapped in Clean)
+needs: unknown
+match: ov004/tailor_sister:TailorSister_UpdateTalked ov004/cafe_master:CafeMaster_UpdateTalked
+  ov004/gatekeeper2:Gatekeeper2_UpdateTalked ov046/astro:Astro_UpdateTalked ov047/owl:Owl_UpdateTalked
+  ov068/cafe_guest:CafeGuest_UpdateDone ov070/giraffe:Giraffe_UpdateTalked ov071/insurer:Insurer_UpdateTalked
+  ov072/gull:Gull_UpdateTalked ov073/boar:Boar_UpdateDone ov074/mystery_cat:MysteryCat_UpdateTalked
+  ov075/town_pelican:TownPelican_UpdateTalked ov076/otter:Otter_UpdateTalked ov077/mole:Mole_UpdateTalked
+  ov078/camel:Camel_UpdateDone ov079/walrus:Walrus_UpdateDone ov080/turtle:Turtle_UpdateTalked
+  ov081/turtle_fishing:TurtleFishing_UpdateTalked ov082/turtle_insects:TurtleInsects_UpdateTalked
+  ov083/turtle_gardens:TurtleGardens_UpdateTalked ov084/turtle4:Turtle4_UpdateTalked
+  ov085/turtle5:Turtle5_UpdateTalked ov086/turtle6:Turtle6_UpdateTalked ov087/acorn_npc:AcornNpc_UpdateStand
+  ov088/reaction_npc:ReactionNpc_UpdateTalked
+
+area: Not attributed to one scene
 group: claimed unreachable, not proved by the forward pass
 scene: none known: the functions the unreachable groups held that a forward reachability pass over the module images reaches past every gate (from: Nintendo Wi-Fi Connection 7, the other console's field actor: its states' messages 7, local wireless (DS to DS) 6, the gatekeeper's visits and connections 6, tags no shown message holds, by the whole archives 5, hardware and failure paths 2, the destructors of main's static objects 2, the town map's list by the keys and the pen 2, what only the other console's field actor's messages call 2, the heaps' slots no code calls 1, the other classes' destructors of vtable slot 16 1)
 reach: unknown: the scratchpad's w17/forward.py reaches them from the ARM9's roots and w17/classify.py, w22/classify.py and w24/classify.py find no named condition closing every path to them (findings 2026-10-28, town6, and 2026-10-29, proofs1 and town7); each needs its group's reason shown at the edge that reaches it, or a scene
