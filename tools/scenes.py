@@ -1503,6 +1503,9 @@ scene("pockets-town", "pockets-town", 6250, [2600, 3300, 4000, 4700, 5400, 6249]
 scene("mailbox-keys", "mail-full", 6260, [2600, 3700, 4600, 5200, 5800, 6259], frames(3200, 6260, 50),
       "open a full mailbox: leave the letters, read, take and put letters down by the keys, then by "
       "the pen; close and open it again, throw away, close")
+scene("mailbox-touch-read", "mail-full", 5390, [2600, 3700, 4600, 4960, 5150, 5389], frames(4900, 5390, 10),
+      "as mailbox-keys to a mailbox letter's choice opened by the pen: read by the pen, its label "
+      "button pressed by the pen, the mailbox closed by the pen")
 scene("fish-swap", "full-rod", 6620, [2600, 3700, 5100, 5900, 6300, 6619], frames(5300, 6620, 25),
       "catch a fish with the pockets full: on the swap page, a choice by the pen and the keys cancelled, "
       "then a pocket swapped for it")
@@ -1584,6 +1587,9 @@ scene("museum-assess", "museum-more", 21818, [2600, 6000, 9000, 12000, 15000, 18
 scene("museum-fossil-menu", "museum-fossils", 12094, [2600, 4600, 6600, 8000, 9600, 11000, 12093], frames(4600, 12094, 100),
       "with two fossils not assessed, ask Blathers for the fossil assessment: the first assessed and kept, "
       "the second assessed and given, then asked again with none left")
+scene("museum-fossil-refused", "museum-fossils", 7570, [2600, 4600, 5600, 6200, 6700, 7300, 7569],
+      frames(5100, 7570, 50), "give Blathers a fossil not assessed and decline his assessment, then walk "
+      "through the fossil room into the second fossil room")
 scene("cafe-coffee", "museum", 19198, [2600, 15700, 16300, 17000, 17800, 18600, 19197], frames(15700, 19198, 50),
       "in the museum's cafe, talk to Brewster, sit on a stool at his counter and drink the coffee he makes")
 scene("money-rock", "shovel", 4800, [2600, 3800, 4000, 4300, 4600, 4799], frames(3800, 4800, 25),

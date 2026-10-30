@@ -2106,6 +2106,29 @@ match: ov112/bbs_write_input:BbsWrite_CloseOnRequest ov119/friend_roster_input:F
   ov122/letter_write_scene:LetterWrite_ExitMenu ov106/mailbox_scene:MailboxScene_CloseOnRequest
   ov121/my_designs:MyDesigns_CloseChoiceOnRequest ov096/pockets_screen:PocketsScreen_ExitToParent
 
+area: Unreachable for one player
+group: the mailbox's press of a place other than the one below the letters
+scene: none: sub state 0x0f of the mailbox (ov106), which a place's press would go to when the cursor were not on the place below the letters (MailboxScene_BeginSubState0f and its update MailboxScene_FinishPlacePress)
+reach: sub state 0x0e (MailboxScene_PressPlace) is set only by MailboxScene_BeginSubState0e, which only MailboxScene_BrowseByKeys calls, when A is pressed with the cursor (+0xb8) on the place below the letters (MAILBOX_SCENE_BELOW, 0x1f), or by a return to the kept sub state (+0xbb), which holds the sub state its setters (BeginSubState13, GlideToRow, EaseCursorSpriteTo, GlideToCursor) ran in, and none runs in 0x0e; the cursor is stored only by MailboxScene_MoveCursor's parts (called only by BrowseByKeys and MoveHeldByKeys) and MailboxScene_TakeNextLetter (0x1f). So in 0x0e the cursor is 0x1f and PressPlace presses panel button 9 (sub state 0x23); BeginSubState0f, the only setter of 0x0f, never runs (findings 2026-10-31, rows19, w59-wt5/cls/classify.py, gate cursor)
+needs: unreachable
+match: ov106/mailbox_scene:MailboxScene_BeginSubState0f ov106/mailbox_scene:MailboxScene_FinishPlacePress
+
+area: Unreachable for one player
+group: the menu scenes' sub states no code sets
+scene: none: sub state 0x0f of the letters to post (LetterSend_FinishPlacePress), 0x19 of the mailbox (MailboxScene_WaitError), 0x0a of the pockets' swap (PocketsSwap_WaitSpriteAnim) and of the song pockets (SongPockets_WaitCursorAnim), 0x04 of the bank's menu (BankMenu_ShowSpriteWhenDone)
+reach: a menu scene runs each frame the entry of its sub state (MenuScene's byte +0x8d) in its *_RunSubState table of member pointer constants, and the byte is stored only by MenuScene_SetSubState (func_ov002_02208098), which each overlay's code calls with a constant or with the sub state it kept to go back to; that kept byte holds only copies of +0x8d or the overlay's hold constant (src/ census: ov104 0xbb, 8; ov106 0xbb, 8; ov107 0xbb, the current sub state only, every PocketsSwap_ShowMessage passing 0xff; ov109 0xd6, none; ov132 0x1503, none). No call of these overlays passes these sub states, so their entries never run (findings 2026-10-31, rows19, w59-wt5/cls/classify.py, gate substate, which also covers 19 functions of the unreachable groups proved by value)
+needs: unreachable
+match: ov104/letter_send:LetterSend_FinishPlacePress ov106/mailbox_scene:MailboxScene_WaitError
+  ov107/pockets_swap:PocketsSwap_WaitSpriteAnim ov109/song_pockets:SongPockets_WaitCursorAnim
+  ov132/bank_menu:BankMenu_ShowSpriteWhenDone
+
+area: Unreachable for one player
+group: scene 0x08, entered only in a session
+scene: none: overlay 10, the data of scene 0x08, and its static initialiser (Ov010Init_SceneTables)
+reach: the entry record is set to the scenes 0, 6, 0xc, 0xd, 13, 14, 0x2c-0x31, the exit tables' scenes (the town's 0x01, 0x09-0x0b and 0x0f-0x20, the rooms' 0x01-0x05, 0x07, 0x1d-0x29, 0x2f and the two places) or a place (which holds the current scene), none of them 8 (group "the resident root's deletion: scenes 0x2a and 0x2b, which nothing enters"); SceneExit_Resolve turns an exit to scene 7 into 8 only when Session_IsSlotTaken answers for this system's slot, which the link guard closes (no session slot is ever taken); overlay 10 is loaded only for scene 8 (data_020e5688; no scene info names it as an extra overlay, w29/ovload.py), so its static initialiser never runs (findings 2026-10-31, rows19, w59-wt5/cls/classify.py, gate scene08)
+needs: unreachable
+match: ov010/ov010_static_init
+
 area: Not attributed to one scene
 group: the special characters' states after a talk ended
 scene: none known: the "talked" or "done" state each character takes when its talk ends through EventQueue_FinishObjectEvent (its update does nothing), and Mr. Resetti's, which he takes on the event's end in the frame he is deleted
