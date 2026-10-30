@@ -609,6 +609,8 @@ SAVES["trip-snow"] = raw(WEATHER_DAY, bytes((15, 1, 27))) + [(WEATHER_DAY + 4, "
 SAVES["snow-net"] = SAVES["trip-snow"] + [(HELD, "<H", 0x1376)]
 SAVES["snow-axe"] = SAVES["trip-snow"] + [(HELD, "<H", 0x136B)]
 SAVES["snow-shovel"] = SAVES["trip-snow"] + [(HELD, "<H", 0x1369)]
+# ... and the item 0x137c held, which the trip's fall throws (effect 0x32, FieldActor_AnimateState71)
+SAVES["snow-137c"] = SAVES["trip-snow"] + [(HELD, "<H", 0x137C)]
 
 # the seed's day given the weather pattern 15 (as for "trip-snow", its date the seed's own):
 # rain at level 4 to 19:59, level 3 from 20:00
@@ -653,6 +655,8 @@ SAVES["erased"] = None
 # main/villager_impression.c) and the face of head kind 5 (bits 4-7 of the record's byte 0x243c;
 # the seed's is 1): the impression rules of part C with the head kinds are tried
 SAVES["weeded-glasses"] = SAVES["weeded"] + [(0x14 + 0x240C, "<H", 0x1431), (0x14 + 0x243C, "<B", 0x54)]
+# as "weeded" with the bug net held
+SAVES["june-net"] = SAVES["weeded"] + [(HELD, "<H", 0x1376)]
 
 # Villagers' memories of other players (main/villager_memories.h: eight of 0x80 bytes at the start
 # of each town villager, eight of 0x7ec bytes at 0x9284). A memory holds the player (a design's
@@ -2195,6 +2199,12 @@ scene("trip-rain", "trip-rain", 5840, [2600, 3300, 4300, 4900, 5400, 5839], fram
       "2026-09-11 11:30:05")
 scene("beds-roll", "house-beds", 4600, [2600, 4200, 4390, 4599], frames(4200, 4600, 20),
       "in the big house's main room with two beds head to foot: lie in one and roll over into the other")
+scene("june-firefly", "june-net", 7112, [2800, 5000, 6000, 6600, 7111], frames(5000, 7112, 50),
+      "on a June night, walk down the river's bank to a firefly and catch it with the net: held up, it "
+      "glows", rtc="2027-06-20 21:00:00")
+scene("trip-137c", "snow-137c", 5840, [2600, 3300, 4300, 4900, 5400, 5839], frames(3200, 5840, 40),
+      "trip-snow with the item 0x137c held: the trip's fall throws it (effect 0x32)", "trip-snow",
+      "2027-01-15 11:30:05")
 
 # ------------------------------------------------------------------------------ saves
 
