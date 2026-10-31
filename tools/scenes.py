@@ -1159,6 +1159,9 @@ SAVES["gift-full"] = [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) f
 # "able-shop" with 99,990 bells: what Mabel pays for clothes sold does not fit in the wallet and
 # goes into bags (ov049/mabel_talk.c, line 0x1e)
 SAVES["able-shop-rich"] = SAVES["able-shop"] + [(MONEY, "<I", 99990)]
+# "able-shop" with the second shirt the item 0x11a8 too, whose price (item_info/always.bin) is 0: the
+# two shirts sold are worth nothing, so Mabel offers nothing (line 0x17, MabelTalk_PriceSale)
+SAVES["able-sell-free"] = SAVES["able-shop"] + [(POCKETS + 2, "<H", 0x11A8)]
 # "visitor-41" with a fish (0x12e8) in pocket 11, where the seed keeps the work clothes: the walrus
 # eats it and gives a design for it (ov079/walrus_talk.c)
 SAVES["visitor-fish"] = SAVES["visitor-41"] + [(POCKETS + 22, "<H", 0x12E8)]
@@ -2648,6 +2651,11 @@ scene("paint-buy", "barber", 7798, [2600, 4352, 5813, 6058, 7000, 7797], frames(
 scene("stereo-silent", "stereo-on", 3600, [2600, 3500, 3599], frames(3300, 3600, 25),
       "house-music with the stereo switched on: entered, the room plays no song and its song is set "
       "to none", recording="house-music")
+scene("barber-paid-leave", "barber", 7500, [2600, 5600, 6800, 7060, 7300, 7499], frames(6800, 7500, 25),
+      "barber to her payment, then walk to the door instead of the chair: she calls the player back "
+      "and walks the player back into the room")
+scene("able-sell-free", "able-sell-free", 6963, [2600, 4700, 5300, 5900, 6500, 6962], frames(4700, 6963, 50),
+      "able-sell with two shirts worth nothing: Mabel offers nothing for them", recording="able-sell")
 
 # ------------------------------------------------------------------------------ saves
 
