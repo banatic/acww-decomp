@@ -1,12 +1,12 @@
-From 541 scene lists: 25,251 Clean game functions, run 21,186, function check only 1,046, read only 3,019; the groups below hold 4,065 (function check only + read only).
+From 542 scene lists: 25,251 Clean game functions, run 21,187, function check only 1,046, read only 3,018; the groups below hold 4,064 (function check only + read only).
 
 | needs | functions |
 |---|---|
 | seed | 335 |
-| date | 79 |
+| date | 78 |
 | unknown | 349 |
 | unreachable | 3,302 |
-| total | 4,065 |
+| total | 4,064 |
 
 ## Unreachable for one player (3,302)
 
@@ -142,11 +142,11 @@ From 541 scene lists: 25,251 Clean game functions, run 21,186, function check on
 | the talk engine: tags, pages, windows, sliders | 54 (27 / 27) | main/talk_page 9, main/talk_receiver 8, main/talk_span 6, main/text_codes 6, main/a_mes_obj 5, main/mes_slider_window 4, main/message_cursor 4, main/message_decoder 4, 7 more files (8) | none of its own: the message tags, the slider and choice windows and the talk page's paths that the talks above and the characters' talks meet (names in texts, colours, item names, numbers) | follows from the talk groups; the more topics and characters, the more tags | unknown |
 | villager talks: topics, favours and trades | 24 (2 / 22) | main/talk_tags 6, main/villager_talk_object 4, main/villager_talk_steps 3, main/villager_object 2, main/villager_talk 2, main/villager_talk_request 2, main/item_object 1, main/session_villager 1, 3 more files (3) | talk to every villager several times a day and at several hours: favours (fetch an item, deliver a letter or present, catch a fish or insect for it), trades and offers, nicknames and catchphrases, gossip about others, asking to move, its house's items | the seed's villagers; each talk picks its topic by the villager's state and memory, so many short talks per villager (the villager-chat way), on the seed's day and at night; besides (findings 2026-10-29, unknown2), the talk tags only villagers' lines hold (w28/tagwhere.py, outside mail and the test message): 0/7 "%" (TalkTags_PutPercent: ta/tsu/always_ 68-71), 0/0 "*" (_PutAsterisk: ta/ap/item_ 10, obj/etc/player_ 30), 4/29 name 3 (_PutName3: the games' results q01 and q02 pdraw_, plose_, pwin_ of every kind), 6/9 by the falling weather (_BranchByFalling: ko/tsu/always_ 0 and 62, fo_act_ 1, se_act_ 2, ta/tsu/no_act_ 0, ta/3p/fu_ 6, the cafe's cf1-cf6), 6/12 by residence (_BranchByResident: bo/tsu/fu_act_ 4, ge/tsu/always_ 19, ko/tsu/always_ 18 and fo_act_ 2), 9/3 and 9/5 (_LookAtPlayer, _LookAtFirst: the three-party talks */3p/*, missing1_ 13-18), 4/14 another resident's player name (_PutOtherPlayer, TalkObject_LoadOtherPlayer: 13 lines, a town with a second resident) and 0xff/2 (_StartSpans, then _StepSpans and the span's start and step: the part-time job's lines arbeit_ 1 and 20-24 of bo, fu, ko and ta); besides (findings 2026-10-29, unknown2), the scene motion of kind 15, a villager changing clothes (SceneCommand_RequestMotion15, its start, run and wait, SceneMotion_StartKind15, _Kind15After and SceneMotionNote_PackItem, which only it calls): asked for only by VillagerTalkObject_EmptyPocketAndMotion and VillagerTalkPart_RaiseBondClothes, a villager given clothes it puts on (findings town9: villager 3 in mode 3 with a shirt did not call the player over); besides (findings 2026-10-29, unknown3), the session villager's Send wrappers, which one player's villager code calls and which return at once (should_send): SendObjectItem when a villager's errand catch is an insect or fish of the errand's kind (VillagerErrandCatch_Insect, _Fish), SendObjectByte2E when a villager is given furniture with variants (VillagerTalkObject_CountItem), SendObjectBit30 (VillagerTalkObject_SayJudgeItem), SendObjectClear (VillagerTalkObject_LineClearItem, _Motion17ClearItem), SendObjectByte2F (VillagerTalkObject_KindItem), SendObjectOp2 (VillagerTalkSteps_NextStep) and SendItem7D2 when a villager puts on clothes it is given (VillagerSceneObject_TakeClothes) | seed |
 
-## Other dates, times and visitors (for the boot on another day) (83)
+## Other dates, times and visitors (for the boot on another day) (82)
 
 | group | functions (check only / read only) | Clean files | scene | how to reach it | needs |
 |---|---|---|---|---|---|
-| insects and fish of other months and hours | 31 (11 / 20) | ov003/fish_shadow 7, ov003/town_insect_moves 6, ov004/aquarium_fish 5, ov003/fish_shadow_swim 3, ov003/fish_shadow_state 2, ov003/town_insect 2, ov003/town_insect_kinds 2, ov068/insect_paths 2, 2 more files (2) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
+| insects and fish of other months and hours | 30 (11 / 19) | ov003/fish_shadow 7, ov003/town_insect_moves 6, ov004/aquarium_fish 5, ov003/fish_shadow_swim 3, ov003/fish_shadow_state 2, ov003/town_insect 2, ov003/town_insect_kinds 2, ov068/insect_paths 2, 1 more files (1) | walk the town and fish at other months and hours; the museum's insect room and aquarium with every kind given | boot in other months and hours; catch with the net and the rod; the museum-halls scene (every kind given) covers most museum kinds of the seed's day | date |
 | seasons, weather, the sky and the new day | 25 (2 / 23) | ov068/snowball 11, main/snowmen 6, main/sky_shots 4, main/town_spawn 2, main/npc_letters 1, main/town_day 1 | rain, snow, a storm, the seasons' grounds and trees, snowmen and snowballs in winter, falling stars and the slingshot's balloons, the summer tan, the new day's town changes (growth, spawns, letters from mother, the bottle on the beach, Nook's store upgrade) | boot in winter (snow), on rainy days, at night for falling stars (main/sky*.h); the new-day code runs on every boot on another day | date |
 | Redd and his tent | 6 (2 / 4) | ov003/fox 3, main/fox_shop 2, ov052/fox_tent 1 | the fox outdoors and his tent's sale by password (main/fox_shop.h) | a weekday of the schedule's fox day (EVENT_CALENDAR_FOX) | date |
 | villagers' birthdays, sickness and visits | 6 (3 / 3) | ov068/cafe_room 4, ov004/birthday_guest 1, ov068/house_visitor 1 | a villager's birthday party in its house (give a present), a sick villager asking for medicine, a villager visiting the player's house at the hour it named, the cafe's guests at their hours | boot on a villager's birthday (its record), on a day a villager is sick, at the hour a villager said it would come (asked in a talk the day before) | date |
@@ -4368,3 +4368,20 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (main 6c64ff84): seed 339, date 91, unknown 352, unreachable 3,283; after (541
   scene lists with main's clean-entered.txt): seed 335, date 79, unknown 349, unreachable 3,302.
   Checked in a run: 21,186.
+
+### The museum's pair of insects backing off (2026-10-31, rows26, second batch)
+- museum-insect-pair (save museum-full): museum-insect-alone's recording, both insects of the pair
+  given, the player standing in the second insect room from 7000. At each rest kind 54 draws what
+  the pair does next (InsectMotion_PairChoose); by about 9650 it draws mode 23 and the two back
+  off from each other (InsectMotion_PairBackOff), to 9900.
+- Looked at and left: the second villager of villager-three's pair (60.9, 45.4), talked to again
+  and again, and the player standing on while the clock runs, gives OutdoorVillagerBonds_TalkOfBond
+  (two villagers talking of their bond, by frame 31700) and TownInsectMove_FadeByAlarm (an insect
+  of kind 0x1f, by 35700), but a scene of 36000 frames records about 60 million crossings, and the
+  Native run then finds no crossings trace: the scene is not added. Its talks gave ta_tsu_always
+  8, 14, 17 and 76, not 68-71 (tag 0/7). FishShadowHook_LetGo runs from FieldActor_RunState4F only
+  with the actor's flag 0xb set, which an event's start sets (PlayerActorOps_SwitchOwnFlag0b): a
+  fish at the float while an event (a talk, a scene exit) starts during the cast; not played.
+- The plan before (c1d5ebb4): seed 335, date 79, unknown 349, unreachable 3,302; after (542 scene
+  lists with main's clean-entered.txt): seed 335, date 78, unknown 349, unreachable 3,302.
+  Checked in a run: 21,187.

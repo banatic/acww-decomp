@@ -1770,6 +1770,9 @@ scene("museum-insects", "museum-full", 9294, [2600, 4500, 6300, 7000, 7800, 8600
 scene("museum-insect-alone", "museum-insect-alone", 8400, [2600, 4500, 6300, 7000, 7800, 8399],
       frames(6200, 8400, 100), "museum-insects with one of the pair of insects not given: the other faces the "
       "player passing it, then walks alone while the player stands", "museum-insect-alone")
+scene("museum-insect-pair", "museum-full", 9900, [2600, 4500, 6300, 7000, 8400, 9700, 9899],
+      frames(6200, 9900, 100), "museum-insect-alone with both insects of the pair given, the player standing "
+      "in the second insect room until the pair backs off from each other", "museum-insect-alone")
 scene("flea-market", "wallet", 7330, [4100, 5500, 6400, 6900, 7329], frames(5400, 7330, 50),
       "on the day of the flea market, buy the retro TV from the villager selling in its house",
       rtc="2026-10-03 10:00:00")
