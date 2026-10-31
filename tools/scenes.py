@@ -2659,6 +2659,12 @@ scene("barber-paid-leave", "barber", 7500, [2600, 5600, 6800, 7060, 7300, 7499],
       "and walks the player back into the room")
 scene("able-sell-free", "able-sell-free", 6963, [2600, 4700, 5300, 5900, 6500, 6962], frames(4700, 6963, 50),
       "able-sell with two shirts worth nothing: Mabel offers nothing for them", recording="able-sell")
+scene("mabel-menu", "sable-7", 8919, [2600, 4700, 7500, 7990, 8300, 8918], frames(7800, 8919, 25),
+      "sable-talk with START pressed as the player steps on the shop's way out: Mabel's call waits while "
+      "the START menu's event runs, then she calls the player; then leave the shop")
+scene("fox-menu", "wallet", 13098, [2600, 5500, 11000, 12300, 12588, 13097], frames(12200, 13098, 25),
+      "fox-tent with START pressed as the player steps on the tent's way out: the fox's call waits while "
+      "the START menu's event runs, then he calls the player; then leave the tent")
 
 # ------------------------------------------------------------------------------ saves
 
