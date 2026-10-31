@@ -571,6 +571,11 @@ SAVES["paper"] = [(POCKETS, "<H", 0x1020)]
 # of the record, main/house_record.h; HouseRecord_SetSongBit sets one for each song item stored),
 # so the stereo's music list is long enough for its scroll bar
 SAVES["songs-all"] = SAVES["songs"] + raw(0xF52C + 0x1594, bytes([0xFF] * 8 + [0x3F]))
+# as "songs" with the stereo of the house's main room (furniture 0x1d3 at (9, 10), switched off in the
+# seed) switched on: row 10 of the floor layer's switch bits all set (main/room_cells.h). The room
+# plays no song, so the stereo's start finds no song item and the room's song is set to none
+# (MusicPlayer_Start, HouseRecord_StopCurrentSong)
+SAVES["stereo-on"] = SAVES["songs"] + [(0xF52C + 0x400 + 2 * 10, "<H", 0xFFFF)]
 
 # as "museum" with the crayfish (0x12f2) in pocket 4: the fish villager 3 challenges the player
 # to catch in villager-chat (the villager object's item, main/villager_object.h)
@@ -2638,6 +2643,11 @@ scene("museum-fossil-sign", "museum-fossils-a", 8140, [2600, 4600, 6200, 6800, 7
       "museum-fossil-refused with every fossil given, into the fossil room: read the triceratops' sign")
 scene("sign-board", "seed", 3982, [2600, 3200, 3818, 3981], frames(3700, 3982, 25),
       "walk to a sign board in the town and read it")
+scene("paint-buy", "barber", 7798, [2600, 4352, 5813, 6058, 7000, 7797], frames(5800, 7798, 50),
+      "store-upstairs to the shelf of the second floor: ask the twin about the roof paint and buy it")
+scene("stereo-silent", "stereo-on", 3600, [2600, 3500, 3599], frames(3300, 3600, 25),
+      "house-music with the stereo switched on: entered, the room plays no song and its song is set "
+      "to none", recording="house-music")
 
 # ------------------------------------------------------------------------------ saves
 
