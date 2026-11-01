@@ -875,7 +875,7 @@ CLEAN_AS(func_ov048_022632f0, Gatekeeper_EnterState7)
 /* The parent's data of a local session sent: this town's name and the current player's. */
 static void gatekeeper_states_host_local(Gatekeeper *self)
 {
-    u8 data[GATEKEEPER_STATES_PARENT_BUFFER] = {0};
+    u8 data[GATEKEEPER_STATES_PARENT_BUFFER]; /* byte 0x19 is sent unset, as the ROM's (see below) */
     u8 *record;
 
     GatekeeperTalk_StartSession(&self->talk, GATEKEEPER_STATES_SESSION_PARENT, 0);
@@ -898,7 +898,8 @@ static void gatekeeper_states_host_local(Gatekeeper *self)
  * in and the session hosted, and the event ends. While it waits, a host over the Wi-Fi
  * Connection keeps the connection updated. Agrees always.
  * BUG: of the 0x1a bytes of the parent's data, byte 0x19 is never set (the ROM sends whatever
- * its stack held there); this sends 0. */
+ * its stack held there); so does this, an uninitialized byte (seen in gate-visit-link, where the
+ * other console receives it). */
 int Gatekeeper_RunState6(Gatekeeper *self)
 {
     switch (self->setup_step) {

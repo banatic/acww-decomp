@@ -727,8 +727,9 @@ CLEAN_AS(func_ov066_0226bb7c, LocalRelay_ClearRing)
 
 /* func_ov066_0226bbb4: a ring of `count` nodes allocated in one zeroed block (aligned to the
  * cache's 32 bytes), each large enough for its header and a relay packet of the parent's
- * maximum size, rounded up to 32 bytes; the nodes numbered 0 on (header.seq) and linked both
- * ways. Returns the first.
+ * maximum size, rounded up to 32 bytes, and linked both ways. Returns the first.
+ * BUG: the node's number (header.seq) is taken once, before the loop: every node but the last
+ * is numbered 0, the last count - 1 (seen in a scene of two consoles, gate-visit-link).
  * REQUIRES: the allocation succeeds and count is at least 1. */
 LocalRelayNode *LocalRelay_CreateRing(int count)
 {
@@ -739,7 +740,11 @@ LocalRelayNode *LocalRelay_CreateRing(int count)
     LocalRelayNode *node = first;
     int last = count - 1;
     for (u16 i = 0; i < last; i++) {
+#ifdef BUGFIX
         node->header.seq = (u8) i;
+#else
+        node->header.seq = 0;
+#endif
         node->next = (LocalRelayNode *) ((u8 *) node + stride);
         LocalRelayNode *previous = node;
         node = node->next;
