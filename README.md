@@ -20,35 +20,45 @@ to build it.
 > library and runtime: 4,083 functions, about 590 KB) are not included. Library versions are
 > listed in [libs/README.md](libs/README.md).
 
-## Status
+## Part I: Decompilation (100% matching and linked)
 
 ![Decompilation progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-decomp.svg)
 
 *Decompilation: blue is Matching, green is Linked.*
 
-![Clean code progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-clean.svg)
-
-*Clean code: gold is checked by function, purple is checked in a run, grey is read only.*
-
-CI draws both maps from each build of `main` (`tools/progress_map.py`). Each function counts at
-the highest level it has reached:
+**All 25,251 game functions are matched and linked.** Every function has a C or C++ source that
+compiles with the original compiler, and the whole program, linked with the original linker,
+reproduces every module of the ROM byte for byte.
 
 - **Matching**: a C or C++ source that compiles with the original compiler (mwccarm) to the
   ROM's exact bytes, and whose calls and pointers resolve to the ROM's targets.
 - **Linked**: Matching, and the whole program, linked with the original linker, also reproduces
   the module byte for byte.
-- **Checked by function**: the Clean version (a readable rewrite) agrees with the ROM's code on
-  generated inputs; this covers the functions that call nothing.
+
+The sources are still one file per function, and the data sections still come from the ROM;
+regrouping the functions into their original source files is in progress.
+
+## Part II: Clean code and the Windows port
+
+![Clean code progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-clean.svg)
+
+*Clean code: gold is checked by function, purple is checked in a run, grey is read only.*
+
+Each of the 25,251 functions also has a Clean version: a readable rewrite, built for the PC
+with the runtime that plays the game on Windows. The Clean versions are checked against the
+ROM's code, not by matching bytes, and each function counts at the highest level it has
+reached:
+
+- **Checked by function**: the Clean version agrees with the ROM's code on generated inputs;
+  this covers the functions that call nothing.
 - **Checked in a run**: the Clean version ran in a recorded play run whose frames and memory
   match the ROM's code.
 - **Read only**: the Clean version has been checked only by reading it against its matching
-  source.
+  source. Most of these cannot run with one console (wireless, Wi-Fi Connection, another
+  console's states); [docs/scene-plan.md](docs/scene-plan.md) lists them with the reason.
 
-All 25,251 game functions have a matching source and a Clean version, and the whole program,
-linked with the original linker, reproduces every module of the ROM. The sources are still one
-file per function, and the data sections still come from the ROM; regrouping the functions into
-their original source files is in progress. [docs/verification.md](docs/verification.md)
-describes what is checked and what is not yet.
+CI draws both maps from each build of `main` (`tools/progress_map.py`).
+[docs/verification.md](docs/verification.md) describes what is checked and what is not yet.
 
 ## Quick start: your own ROM
 
@@ -66,7 +76,7 @@ code, the matching sources and the Clean rewrites to show this machine gives the
 frames bit for bit. The ROM is only read; nothing taken from it leaves your machine. Matching
 the original compiler's output (`--matching`) also needs mwccarm (INSTALL.md).
 
-## Running the game from its sources
+## Running the game on Windows
 
 The game also runs on a PC from this repository, with each function as the ROM's code in an
 interpreter (Reference), as its matching source compiled for the PC (Native), or as its Clean
