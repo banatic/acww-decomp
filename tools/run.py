@@ -27,6 +27,15 @@ Options for the screens (docs/runtime.md, M3):
     --sequencer      run the ARM7's sound sequences (runtime/sequencer.h): the shared work
                      reports the players' state and variables as the ARM7 does (default: off,
                      the sound command lists are only counted)
+    --wireless       the console has its wireless: a MAC address, the channels of local play,
+                     and the ARM7's wireless manager answers WM's commands (runtime/wm.h;
+                     default: off, as a console whose wireless never answers)
+    --peer-save FILE, --peer-input FILE [--peer-rtc TIME]
+                     a second console, with its own save, input recording (and clock), its
+                     wireless linked to the first's (docs/multi-console.md): both run at once,
+                     with --native both in each pass; console 1's logs and frames are in a
+                     directory `peer` beside console 0's, and the frame sequence printed (and
+                     --expect) is the two consoles' together
 
 Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
     --native=all|leaf|none|FILE
@@ -70,7 +79,10 @@ against memory after the crt0 has unpacked the program. Same compiler as tools/d
 Environment variables, for following a run on stderr:
     RUN_TRACE=card,pxi,irq print cartridge commands, PXI words, interrupt requests and DMAs
     RUN_TRACE=gx           print a line per rendered 3D frame (polygons, vertices, pixels drawn)
-    RUN_CALLS=f1,f2,...    print each call of the named functions with r0-r3 and the frame
+    RUN_CALLS=f1,f2,...    print each call of the named functions with r0-r3 and the frame (a name of a
+                           resident module, or 0xADDRESS, for an overlay's)
+    RUN_PEEK=ADDR,LEN      with RUN_CALLS, LEN bytes at ADDR at each call (*ADDR: at the address there)
+    RUN_TRACE=wm           print the wireless manager's commands and scans (runtime/wm.h)
     RUN_BRANCHES=N         how many of the last branch targets the report lists (300)
 """
 
@@ -117,7 +129,7 @@ CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", 
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
            "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c", "drive.c",
-           "sequencer.c")
+           "sequencer.c", "wm.c")
 
 # The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
 # the libs/Runtime package, and the C library functions the PC's own versions replace
@@ -988,6 +1000,167 @@ def native_main(args, manifest, table, budget, env) -> int:
     return 0 if same else 1
 
 
+# --------------------------------------------------------------------------- two consoles
+
+def run_linked(exe: pathlib.Path, manifest: pathlib.Path, table: pathlib.Path, budget: list[str], envs: list[dict],
+               logs: list[pathlib.Path]) -> list[tuple[int, str]]:
+    """Two consoles at once, each a process of its own, their radios joined by two pipes
+    (runtime/wm.c: RUN_LINK; docs/multi-console.md). Console 0 writes to console 1 through one
+    and reads the other; each process inherits the two ends it uses and no others."""
+    r01, w01 = os.pipe()  # console 0 to console 1
+    r10, w10 = os.pipe()  # console 1 to console 0
+    ends = [(r10, w01), (r01, w10)]
+    procs, files = [], []
+    try:
+        for i, (env, log) in enumerate(zip(envs, logs)):
+            fin, fout = ends[i]
+            out = open(log, "w", encoding="utf-8", errors="replace")
+            files.append(out)
+            kwargs: dict = {}
+            if WINDOWS:
+                import msvcrt  # noqa: PLC0415
+                hin, hout = msvcrt.get_osfhandle(fin), msvcrt.get_osfhandle(fout)
+                for h in (hin, hout):
+                    os.set_handle_inheritable(h, True)
+                info = subprocess.STARTUPINFO()
+                info.lpAttributeList = {"handle_list": [hin, hout]}
+                kwargs["startupinfo"] = info
+                link = f"{i},2,{hin},{hout}"
+            else:
+                kwargs["pass_fds"] = (fin, fout)
+                link = f"{i},2,{fin},{fout}"
+            procs.append(subprocess.Popen([str(exe), str(ROM), str(manifest), str(table), *budget], cwd=C.ROOT,
+                                          env=dict(env, RUN_LINK=link, RUN_WIRELESS="1"), stdout=out,
+                                          stderr=subprocess.STDOUT, **kwargs))
+    finally:
+        for fd in (r01, w01, r10, w10):  # each process holds its own ends: one that ends closes them
+            os.close(fd)
+    statuses = [p.wait() for p in procs]
+    for f in files:
+        f.close()
+    return [(s, log.read_text(encoding="utf-8", errors="replace")) for s, log in zip(statuses, logs)]
+
+
+def merge_lines(paths: list[pathlib.Path], out: pathlib.Path) -> None:
+    """The union of the lines of `paths` (those that exist), sorted, as `out`."""
+    lines: set[str] = set()
+    for p in paths:
+        if p.exists():
+            lines |= {line for line in p.read_text().splitlines() if line.strip()}
+    out.write_text("".join(f"{line}\n" for line in sorted(lines)), newline="\n")
+
+
+def combined(sequences: list[str | None]) -> str | None:
+    """The frame sequence SHA-1 of several consoles: a SHA-1 over theirs, in order."""
+    if any(s is None for s in sequences):
+        return None
+    return hashlib.sha1("".join(s for s in sequences if s).encode()).hexdigest()
+
+
+def peer_env(env: dict, args) -> dict:
+    """Console 1's environment: its own save, input recording and clock."""
+    peer = dict(env, RUN_SAVE=str(pathlib.Path(args.peer_save).resolve()),
+                RUN_INPUT=str(pathlib.Path(args.peer_input).resolve()))
+    if args.peer_rtc or args.rtc:
+        peer["RUN_RTC"] = args.peer_rtc or args.rtc
+    return peer
+
+
+def linked_main(args, manifest, table, budget, env) -> int:
+    """A run of two consoles (--peer-save, --peer-input): as native_main, with both consoles at
+    once in each pass, the Reference's pair, then the Native one's. Console 0's results are where
+    a run of one console leaves them, console 1's in `peer` beside them; the frame sequence is
+    the two consoles' together (combined), and both consoles must agree."""
+    env = dict(env)
+    if not args.native:
+        exe = build(native=False)
+        envs = [env, peer_env(env, args)]
+        for key in ("RUN_PNG", "RUN_DUMP3D"):
+            if key in env:
+                (pathlib.Path(env[key]) / "peer").mkdir(parents=True, exist_ok=True)
+                envs[1][key] = str(pathlib.Path(env[key]) / "peer")
+        if "RUN_HASH" in env and env["RUN_HASH"] != "-":
+            envs[1]["RUN_HASH"] = str(pathlib.Path(env["RUN_HASH"]).with_suffix(".peer.txt"))
+        logs = [OUT / "console-0.log", OUT / "console-1.log"]
+        results = run_linked(exe, manifest, table, budget, envs, logs)
+        for i, (status, text) in enumerate(results):
+            print(f"console {i}: status {status}, {summary(text)['stop']} (log {logs[i].as_posix()})")
+            sys.stdout.write("".join(f"console {i}: {line}\n" for line in text.splitlines()
+                                     if line.startswith(("wm:", "frames:"))))
+        return max(s for s, _ in results)
+    exe, policy = prepared(args)
+    env.pop("RUN_CLEAN_RAN", None)
+    hash_file = env.pop("RUN_HASH", None)
+    env["RUN_NATIVE_POLICY"] = str(policy)
+    if args.ram_hash:
+        env["RUN_RAM_HASH"] = args.ram_hash
+    out0 = OUT / "native-run"
+    outs = [out0, out0 / "peer"]
+    envs = [env, peer_env(env, args)]
+    traces = []
+    for i, out in enumerate(outs):
+        out.mkdir(parents=True, exist_ok=True)
+        ram_dir = (pathlib.Path(args.ram_dump) / str(i)) if args.ram_dump else out / "ram"
+        ram_dir.mkdir(parents=True, exist_ok=True)
+        envs[i]["RUN_RAM_DUMP"] = str(ram_dir.resolve())
+        traces.append(out / "crossings.bin")
+    ref_envs = []
+    for i, out in enumerate(outs):
+        e = dict(envs[i], RUN_HASH=str(out / "reference-hashes.txt"))
+        if not args.no_timing:
+            e["RUN_NATIVE_RECORD"] = str(traces[i])
+            e["RUN_FUNCTIONS_SEEN"] = str(out / "functions-seen.txt")
+        ref_envs.append(e)
+    # (no Reference cache: a console's run depends on the other's)
+    print("reference run of two consoles" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
+    refs = [summary(t) for _, t in run_linked(exe, manifest, table, budget, ref_envs, [o / "reference.log" for o in outs])]
+    nat_envs = []
+    for i, out in enumerate(outs):
+        e = dict(envs[i], RUN_NATIVE="1", RUN_HASH=(hash_file if i == 0 and hash_file else str(out / "native-hashes.txt")))
+        if not args.no_timing:
+            e["RUN_NATIVE_REPLAY"] = str(traces[i])
+        if args.clean_ran:
+            (out / "clean-ran.txt").unlink(missing_ok=True)
+            e["RUN_CLEAN_RAN"] = str(out / "clean-ran.txt")
+        nat_envs.append(e)
+    print("native run of two consoles...", flush=True)
+    nats = [summary(t) for _, t in run_linked(exe, manifest, table, budget, nat_envs, [o / "native.log" for o in outs])]
+    if not args.no_timing:
+        # the functions either console ran, where a run of one console leaves its own
+        seen = out0 / "functions-seen.txt"
+        (out0 / "functions-seen-0.txt").write_bytes(seen.read_bytes() if seen.exists() else b"")
+        merge_lines([out0 / "functions-seen-0.txt", outs[1] / "functions-seen.txt"], seen)
+    if args.clean_ran:
+        merge_lines([o / "clean-ran.txt" for o in outs], out0 / "clean-ran-both.txt")
+        write_ran(out0 / "clean-ran-both.txt", pathlib.Path(args.clean_ran))
+    same = True
+    wanted = [int(f) for f in args.ram_hash.split(",")] if args.ram_hash else []
+    for i in range(2):
+        ref, nat = refs[i], nats[i]
+        print(f"console {i}: logs {(outs[i] / 'reference.log').as_posix()}, {(outs[i] / 'native.log').as_posix()}")
+        for line in nat["native"]:
+            print(f"console {i}: {line}")
+        if nat["stop"]:
+            print(f"console {i}: native run: {nat['stop']}")
+        print(f"console {i}: frames: reference {ref['sequence']}, native {nat['sequence']}")
+        same = same and ref["sequence"] is not None and ref["sequence"] == nat["sequence"]
+        for frame in sorted(set(ref["ram"]) | set(nat["ram"]) | {f for f in wanted if budget and f < int(budget[-1])}):
+            a, b = ref["ram"].get(frame), nat["ram"].get(frame)
+            differ = nat["ram_differ"].get(frame)
+            verdict = "same" if a == b else "same apart from words holding PC addresses"
+            verdict = verdict if differ == 0 else "DIFFERENT" if differ is None else f"DIFFERENT in {differ} words"
+            print(f"console {i}: ram after frame {frame}: reference {a}, native {b}: {verdict}")
+            same = same and differ == 0
+    ref_seq, nat_seq = combined([r["sequence"] for r in refs]), combined([n["sequence"] for n in nats])
+    print(f"frames: reference {ref_seq}, native {nat_seq}")
+    if args.expect:
+        expected = pathlib.Path(args.expect).read_text().split()[0]
+        print(f"frames expected ({args.expect}): {expected}")
+        same = same and nat_seq == expected
+    print("Native and Reference agree" if same else "Native and Reference DIFFER")
+    return 0 if same else 1
+
+
 def write_ran(raw: pathlib.Path, out: pathlib.Path) -> None:
     """The Native run's list (runtime/clean_ran.c: "address module 0|1" for each Clean function)
     as JSON, one entry per function."""
@@ -1017,6 +1190,10 @@ def main() -> None:
     ap.add_argument("--rtc", metavar="TIME", help='pin the clock: "YYYY-MM-DD HH:MM:SS"')
     ap.add_argument("--save", metavar="FILE", help="the save chip's image at power-on")
     ap.add_argument("--sequencer", action="store_true", help="run the ARM7's sound sequences")
+    ap.add_argument("--wireless", action="store_true", help="the ARM7's wireless manager answers (runtime/wm.h)")
+    ap.add_argument("--peer-save", metavar="FILE", help="a second console linked to the first: its save")
+    ap.add_argument("--peer-input", metavar="FILE", help="the second console's input recording")
+    ap.add_argument("--peer-rtc", metavar="TIME", help="the second console's clock (default: --rtc)")
     ap.add_argument("--native", metavar="POLICY", help="all, leaf, none, or a file of functions (see above)")
     ap.add_argument("--ram-hash", metavar="FRAMES", help="hash memory after these frames (comma-separated)")
     ap.add_argument("--ram-dump", metavar="DIR", help="write the hashed memory images to DIR")
@@ -1057,11 +1234,19 @@ def main() -> None:
     env.pop("RUN_SEQUENCER", None)
     if args.sequencer:
         env["RUN_SEQUENCER"] = "1"
+    env.pop("RUN_WIRELESS", None)
+    env.pop("RUN_LINK", None)
+    if args.wireless:
+        env["RUN_WIRELESS"] = "1"
     if args.save:
         if not pathlib.Path(args.save).is_file():
             raise SystemExit(f"no save at {args.save}")
         env["RUN_SAVE"] = str(pathlib.Path(args.save).resolve())
     budget = [a for a in (args.max_instructions, args.max_frames) if a is not None]
+    if args.peer_save or args.peer_input:
+        if not (args.peer_save and args.peer_input):
+            raise SystemExit("a second console needs --peer-save and --peer-input")
+        sys.exit(linked_main(args, manifest, table, budget, env))
     if args.native:
         sys.exit(native_main(args, manifest, table, budget, env))
     if args.ram_hash:

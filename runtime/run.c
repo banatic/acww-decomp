@@ -93,6 +93,10 @@ static void load_symbols(const char *path)
     if (calls != NULL) {
         char *copy = strdup(calls);
         for (char *tok = strtok(copy, ","); tok != NULL && traced_count < TRACED_MAX; tok = strtok(NULL, ",")) {
+            if (tok[0] == '0' && tok[1] == 'x') { /* an address: overlay functions have no name here */
+                traced[traced_count++] = (uint32_t) strtoul(tok, NULL, 16) & ~1u;
+                continue;
+            }
             for (int i = 0; i < symbol_count; i++) {
                 if (strcmp(symbols[i].name, tok) == 0) {
                     traced[traced_count++] = symbols[i].address;
@@ -112,6 +116,26 @@ static int hook_trace_call(ArmCpu *c, void *user)
     (void) user;
     fprintf(stderr, "call: frame %u step %llu %s(%08x, %08x, %08x, %08x) from %s\n", io_frame(), (unsigned long long) c->steps,
             symbolize(c->r[15]), c->r[0], c->r[1], c->r[2], c->r[3], symbolize(c->r[14] & ~1u));
+    /* RUN_PEEK=ADDR,LEN (ADDR prefixed by * to read the address there): those bytes at each call */
+    const char *peek = getenv("RUN_PEEK");
+    if (peek != NULL && *peek) {
+        int deref = peek[0] == '*';
+        unsigned address = 0, length = 0;
+        if (sscanf(peek + deref, "%x,%x", &address, &length) == 2) {
+            uint32_t v = 0;
+            if (deref) {
+                bus_read(address, 4, &v);
+                address = v;
+            }
+            fprintf(stderr, "  peek %08x:", address);
+            for (unsigned i = 0; i < length && i < 256; i++) {
+                v = 0;
+                bus_read(address + i, 1, &v);
+                fprintf(stderr, "%s%02x", i % 16 ? " " : "\n   ", v);
+            }
+            fprintf(stderr, "\n");
+        }
+    }
     return 0;
 }
 

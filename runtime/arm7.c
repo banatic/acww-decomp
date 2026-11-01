@@ -25,6 +25,7 @@
 #include "io.h"
 #include "memory.h"
 #include "sequencer.h"
+#include "wm.h"
 
 #define SHARED_FIFO_READY_ARM7 0x027fff8cu /* PXI_IsCallbackReady(tag, PXI_PROC_ARM7) */
 #define SHARED_LOCK_INIT 0x027ffff0u       /* OSLockWord: flag, u16 owner, u16 extension */
@@ -58,6 +59,7 @@ static struct {
     uint32_t snd_shared_work;
     uint32_t snd_finished;
     int sequencer; /* the sequencer runs the lists' commands (RUN_SEQUENCER) */
+    int wireless;  /* the wireless manager answers (RUN_WIRELESS, wm.h) */
     /* tag 0xb: the ARM9's command block, the backup chip, and whether the next word is
        the block's address (it follows command 0) */
     uint32_t card_command;
@@ -295,6 +297,7 @@ void arm7_init(const char *rom)
     rtc_pin();
     rtc_update();
     nvram_init();
+    arm7.wireless = wm_init(arm7.nvram);
     /* the save chip, a 2 Mbit flash as this game has: erased, or holding the image RUN_SAVE
        names (a save file as emulators write it). Writes stay in memory; the file is only read. */
     arm7.backup = malloc(BACKUP_SIZE);
@@ -528,6 +531,12 @@ static int handle(uint32_t word)
                 card_request(data);
             }
             return 1;
+        case 0xa: /* the wireless manager: a command buffer's address (wm.h); unanswered when off */
+            if (!arm7.wireless) {
+                return 0;
+            }
+            wm_command(data);
+            return 1;
         case 0xd: /* GBA cartridge: command 1 (module info) acknowledged by its number */
             reply(0xd, data & 0x3f, 0);
             return 1;
@@ -573,6 +582,9 @@ void arm7_step(void)
     if (arm7.sequencer) {
         sequencer_advance(arm7.snd_shared_work);
     }
+    if (arm7.wireless) {
+        wm_step();
+    }
 }
 
 const uint8_t *arm7_backup(uint64_t *writes)
@@ -597,4 +609,5 @@ void arm7_report(FILE *out)
         }
     }
     sequencer_report(out);
+    wm_report(out);
 }
