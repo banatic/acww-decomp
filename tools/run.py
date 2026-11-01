@@ -1142,7 +1142,7 @@ def linked_main(args, manifest, table, budget, env) -> int:
             print(f"console {i}: {line}")
         if nat["stop"]:
             print(f"console {i}: native run: {nat['stop']}")
-        print(f"console {i}: frames: reference {ref['sequence']}, native {nat['sequence']}")
+        print(f"console {i}: its frame sequence: reference {ref['sequence']}, native {nat['sequence']}")
         same = same and ref["sequence"] is not None and ref["sequence"] == nat["sequence"]
         for frame in sorted(set(ref["ram"]) | set(nat["ram"]) | {f for f in wanted if budget and f < int(budget[-1])}):
             a, b = ref["ram"].get(frame), nat["ram"].get(frame)
