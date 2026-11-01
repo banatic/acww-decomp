@@ -29,6 +29,7 @@
 #include "native_run.h"
 #include "render.h"
 #include "run.h"
+#include "wifi.h"
 
 #define SLICE 512
 #define DMA_SLICE 32 /* while a DMA waits to run: its completion and interrupt come soon */
@@ -276,6 +277,10 @@ static ArmHook hook_at(void *user, uint32_t address, void **hook_user)
     if (address == SDK_AUTOLOAD_DONE && verified < 0) {
         verified = boot_verify(manifest_path, stdout);
         native_resident_ready();
+    }
+    ArmHook shim = wifi_hook_at(address, hook_user);
+    if (shim != NULL) {
+        return shim;
     }
     ArmHook native = native_hook_at(address, hook_user);
     if (native != NULL) {

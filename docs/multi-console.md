@@ -5,7 +5,8 @@ another town, the gatekeeper's DS-wireless visit, the session and link jobs, the
 console's field actors) needs a second one. This document describes how two (and later more)
 simulated consoles run together, how the ARM7's wireless manager is simulated, and how a
 scene of several consoles is checked. Phase 1 (this document's "done" parts) is local wireless
-between two consoles; Nintendo Wi-Fi Connection through a simulated server is a later phase.
+between two consoles; phase 2 is Nintendo Wi-Fi Connection through a simulated access point,
+network and servers, all inside the process ("Wi-Fi Connection" below).
 
 ## One process per console
 
@@ -115,6 +116,55 @@ other console may differ too; the first console to differ is the one to look at.
 its wireless, which is how the recordings of a scene's consoles are made one at a time and then
 played together.
 
+## Wi-Fi Connection
+
+`tools/run.py --wifi[=MODE]` (`RUN_WIFI`, which implies the wireless) lets the game's own Nintendo
+Wi-Fi Connection code run offline: an access point, the network behind it and the servers the
+library asks for are simulated in `runtime/wifi.c`. Nothing touches a real network; there are
+no sockets and no wall clock. It is opt-in, so every scene without it plays as before.
+
+The access point. The firmware image gets its first connection setting (the SSID
+`acww-offline`, DHCP, no user ID) on the four pages below the user settings, each with its
+CRC-16, so the game finds a configured connection. WM's `StartScanEx` finds the access point
+(MAC 02:00:41:43:57:01, channel 1) when the request's channels, BSSID and SSID match; a connect
+to that MAC associates after 20 ms (AID 1). `StartDCF`, `SetDCFData` and `EndDCF` carry the data
+frames: what the ARM9 sends goes to `wifi_send`, and a frame for the console is written into the
+DCF receive buffer and announced with DCF_IND, one at a time, once the ARM9 has taken the one
+before.
+
+The network. The frames' bodies are LLC/SNAP and an IPv4 packet (or ARP). The router at
+192.168.11.1 answers ARP, DHCP (the console gets 192.168.11.2/24), DNS (every name gets an
+address 10.0.0.n, numbered in the order names are first asked) and ping. TCP is a small fixed
+stack: the initial sequence numbers come from a counter, the segments respect the console's
+window and an MSS of 1024, and a server closes after its answer. Each answer leaves 1 ms of
+emulated time after the request, so a run is the same on every host and in every mode.
+
+The servers. HTTP on ports 80 and 443 by the `Host` header: the connection test answers 200
+with a page; the account server (NAS) answers acctcreate, login and svcloc in its encoding
+(the library's Base64 variant), with a fixed challenge, token and date; any other host answers
+404. UDP 27900 answers GameSpy's availability check (servers up). The presence server (gpcm, TCP
+29900) greets with a challenge, answers the login with the proof the library checks (MD5 over
+the NAS challenge's hash, the token and both challenges), and answers getprofile and updatepro
+so the library's first registration of its name completes. Other UDP (the QR2 master server) is
+not answered.
+
+The SSL shim. HTTPS is plain HTTP here: no certificate is checked and nothing is encrypted. The
+library's SSL entries in NitroWiFi's CPS (library code in ov065; no game function) are replaced
+by the plain TCP functions they would call underneath: connect, read, write, consume, shutdown
+and the pending length. Each is an interpreter hook at the entry's address, taken only when the
+CRC-32 of the bytes there is the entry's (the overlay's addresses are shared). Library
+functions are interpreted in every mode, so the shim applies the same in Reference, Native and
+Clean.
+
+The modes. `--wifi` (1) answers everything; `noap` finds no access point; `nodns` answers every
+name with NXDOMAIN; `conntest` answers the connection test with 503; `nas` answers the NAS login
+with an error code. `RUN_TRACE=wifi` traces the frames, connections and requests.
+
+The memory comparison also clears the context and stack of a thread that has ended (its
+OSThread still marked terminated, with the same stack): the library starts a thread for each
+HTTP request, and an ended thread's stack holds what its frames left, which Native code leaves
+differently (its frames are on the host's stacks).
+
 ## Status
 
 Done (phase 1): the WM simulation for one console and for two; `--wireless` and the linked run
@@ -122,6 +172,12 @@ in `tools/run.py`; the scenes `title-move-in-alone` and `gate-visit-alone` (one 
 search finds nobody) and `gate-visit-link` (the seed town opens its gate, another town's player
 finds it, connects, receives the town over MP and walks through the gate into it).
 
+Done (phase 2): the access point, the network and the servers above; the scenes
+`gate-wfc-online` (the gatekeeper's Wi-Fi visit: connect, NAS and GameSpy logins, up to the
+list of towns to visit, empty as no friend is online), `gate-wfc-no-ap`, `gate-wfc-no-dns`,
+`gate-wfc-conntest` and `gate-wfc-nas-error` (the error paths).
+
 Later: more than two consoles (the star above); the beacon lost when a parent stops beaconing
-without a disconnection; the MP frequency (one turn a frame here); DCF and Wi-Fi Connection
-through a simulated access point and server (phase 2).
+without a disconnection; the MP frequency (one turn a frame here); for Wi-Fi Connection, the QR2
+master server and the matchmaking that would show a friend's town, and two consoles meeting
+through it.

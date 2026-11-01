@@ -23,6 +23,8 @@
 #define THREAD_CONTEXT_SIZE 0x64u
 #define THREAD_STACK_LOW 0x90u
 #define THREAD_STACK_HIGH 0x94u
+#define THREAD_STATE 0x64u
+#define THREAD_TERMINATED 2u
 /* The stacks the crt0 puts in DTCM below the BIOS words (IRQ, SVC; bios.h). */
 #define DTCM_STACKS_HIGH 0x027e3fc0u
 
@@ -1132,6 +1134,34 @@ static const char *dump_dir;
  * and the static data of functions that run Native (the PC's copy of it is the one in use). */
 static uint8_t *snapshot;
 
+/* The threads that ran, as seen at a switch to them, with their stacks' ends. One that has
+ * ended stays in memory (its OSThread and its stack, in a structure of its owner's) with what
+ * its code left there, and Native code leaves other values there than the ROM's code does (its
+ * frames are on the host's stacks): the library of Nintendo Wi-Fi Connection starts and ends a
+ * thread for each HTTP request. */
+#define THREADS_SEEN 128
+static struct {
+    uint32_t thread, low, high;
+} threads_seen[THREADS_SEEN];
+static int threads_seen_count, threads_seen_next;
+
+static void thread_seen(uint32_t t)
+{
+    if (t == 0) {
+        return;
+    }
+    uint32_t lo = ds_word(t + THREAD_STACK_LOW), hi = ds_word(t + THREAD_STACK_HIGH);
+    for (int i = 0; i < threads_seen_count; i++) {
+        if (threads_seen[i].thread == t && threads_seen[i].low == lo && threads_seen[i].high == hi) {
+            return;
+        }
+    }
+    int i = threads_seen_count < THREADS_SEEN ? threads_seen_count++ : threads_seen_next++ % THREADS_SEEN;
+    threads_seen[i].thread = t;
+    threads_seen[i].low = lo;
+    threads_seen[i].high = hi;
+}
+
 static void hash_memory(uint32_t frame, char hex[41])
 {
     uint8_t *buf = snapshot;
@@ -1170,6 +1200,19 @@ static void hash_memory(uint32_t frame, char hex[41])
             }
         }
         t = ds_word(t + THREAD_NEXT);
+    }
+    /* the threads that ended, while their OSThread still says so and names the same stack, or
+       has been wiped by its owner (no stack named): the stack is then memory its owner freed */
+    for (int i = 0; i < threads_seen_count; i++) {
+        uint32_t d = threads_seen[i].thread, lo = threads_seen[i].low, hi = threads_seen[i].high;
+        uint32_t now_lo = ds_word(d + THREAD_STACK_LOW), now_hi = ds_word(d + THREAD_STACK_HIGH);
+        int ended = ds_word(d + THREAD_STATE) == THREAD_TERMINATED && now_lo == lo && now_hi == hi;
+        if (ended) {
+            CLEAR(d, d + THREAD_CONTEXT_SIZE);
+        }
+        if ((ended || (now_lo == 0 && now_hi == 0)) && lo < hi && hi - lo < 0x100000u) {
+            CLEAR(lo, hi);
+        }
     }
     /* the IRQ and SVC stacks above the launcher thread's */
     CLEAR(lowest < MEM_DTCM_BASE ? MEM_DTCM_BASE : lowest, DTCM_STACKS_HIGH);
@@ -2437,6 +2480,7 @@ static int move_to_thread(ArmCpu *c, void *user)
 
 ArmHook native_thread_changed(uint32_t previous, uint32_t thread)
 {
+    thread_seen(thread);
     if (!running) {
         return NULL;
     }

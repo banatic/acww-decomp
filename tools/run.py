@@ -30,6 +30,10 @@ Options for the screens (docs/runtime.md, M3):
     --wireless       the console has its wireless: a MAC address, the channels of local play,
                      and the ARM7's wireless manager answers WM's commands (runtime/wm.h;
                      default: off, as a console whose wireless never answers)
+    --wifi[=MODE]    Nintendo Wi-Fi Connection offline (runtime/wifi.h; implies --wireless): a
+                     simulated access point, network and servers inside the runtime, HTTPS as
+                     plain HTTP; MODE 1 (the default), noap, nodns, conntest or nas for the
+                     error paths (default: off)
     --peer-save FILE, --peer-input FILE [--peer-rtc TIME]
                      a second console, with its own save, input recording (and clock), its
                      wireless linked to the first's (docs/multi-console.md): both run at once,
@@ -83,6 +87,7 @@ Environment variables, for following a run on stderr:
                            resident module, or 0xADDRESS, for an overlay's)
     RUN_PEEK=ADDR,LEN      with RUN_CALLS, LEN bytes at ADDR at each call (*ADDR: at the address there)
     RUN_TRACE=wm           print the wireless manager's commands and scans (runtime/wm.h)
+    RUN_TRACE=wifi         print the simulated network's packets and requests (runtime/wifi.h)
     RUN_BRANCHES=N         how many of the last branch targets the report lists (300)
 """
 
@@ -129,7 +134,7 @@ CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", 
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
            "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c", "drive.c",
-           "sequencer.c", "wm.c")
+           "sequencer.c", "wm.c", "wifi.c")
 
 # The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
 # the libs/Runtime package, and the C library functions the PC's own versions replace
@@ -1191,6 +1196,9 @@ def main() -> None:
     ap.add_argument("--save", metavar="FILE", help="the save chip's image at power-on")
     ap.add_argument("--sequencer", action="store_true", help="run the ARM7's sound sequences")
     ap.add_argument("--wireless", action="store_true", help="the ARM7's wireless manager answers (runtime/wm.h)")
+    ap.add_argument("--wifi", nargs="?", const="1", metavar="MODE",
+                    choices=("1", "noap", "nodns", "conntest", "nas"),
+                    help="Nintendo Wi-Fi Connection offline (runtime/wifi.h); implies --wireless")
     ap.add_argument("--peer-save", metavar="FILE", help="a second console linked to the first: its save")
     ap.add_argument("--peer-input", metavar="FILE", help="the second console's input recording")
     ap.add_argument("--peer-rtc", metavar="TIME", help="the second console's clock (default: --rtc)")
@@ -1236,8 +1244,11 @@ def main() -> None:
         env["RUN_SEQUENCER"] = "1"
     env.pop("RUN_WIRELESS", None)
     env.pop("RUN_LINK", None)
-    if args.wireless:
+    env.pop("RUN_WIFI", None)
+    if args.wireless or args.wifi:
         env["RUN_WIRELESS"] = "1"
+    if args.wifi:
+        env["RUN_WIFI"] = args.wifi
     if args.save:
         if not pathlib.Path(args.save).is_file():
             raise SystemExit(f"no save at {args.save}")

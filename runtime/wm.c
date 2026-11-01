@@ -23,6 +23,7 @@
 
 #include "io.h"
 #include "memory.h"
+#include "wifi.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -45,6 +46,7 @@
 #define ST_BUSY_APIID 0x002
 #define ST_API_BUSY 0x004
 #define ST_SCAN_CONTINUE 0x008
+#define ST_DCF_FLAG 0x010
 #define ST_MP_FLAG 0x00c
 #define ST_MP_FREQ 0x034
 #define ST_MP_RECV_BUF_SEL 0x044
@@ -119,6 +121,9 @@ enum {
     API_START_MP = 14,
     API_SET_MP_DATA = 15,
     API_END_MP = 16,
+    API_START_DCF = 17,
+    API_SET_DCF_DATA = 18,
+    API_END_DCF = 19,
     API_SET_GAMEINFO = 24,
     API_SET_BEACON_IND = 25,
     API_SET_LIFETIME = 29,
@@ -144,6 +149,8 @@ enum {
     CODE_MPEND_IND = 11,
     CODE_MP_IND = 12,
     CODE_MPACK_IND = 13,
+    CODE_DCF_START = 14,
+    CODE_DCF_IND = 15,
     CODE_PORT_SEND = 20,
     CODE_PORT_RECV = 21,
 };
@@ -263,6 +270,15 @@ static struct {
     uint32_t connect_req;
     uint8_t parent_mac[6];
     uint16_t aid;
+    int infra; /* connected (or connecting) to the access point of runtime/wifi.c */
+    uint64_t connected_at;
+    /* a scan of WM_StartScanEx */
+    uint32_t scan_ex_req;
+    uint64_t scan_ex_end;
+    /* DCF (the access point's data frames) */
+    int dcf;
+    uint32_t dcf_buf, dcf_size;
+    uint64_t dcf_sent, dcf_received;
     /* MP */
     int mp;
     uint32_t mp_req, recv_buf, recv_size, send_buf, send_size;
@@ -709,12 +725,133 @@ static void scan_done(void)
     wm.scan_req = 0;
 }
 
+/* WM_StartScanEx's request in the command buffer: the channels 2, the buffer 4 and its size 8,
+ * the time per channel 0xa, the BSSID 0xc, the scan type 0x12, the SSID's length 0x14, the SSID
+ * 0x16 and the length to match 0x36 (for scan types 2 and 3). The result comes when the
+ * channels' time is over: the access point (runtime/wifi.c) when it is on one of them and
+ * matches, else nobody. */
+static void start_scan_ex(uint32_t buffer)
+{
+    uint32_t channels = rd16(buffer + 2), n = 0;
+    for (uint32_t c = channels; c; c &= c - 1) {
+        n++;
+    }
+    uint32_t ms = rd16(buffer + 0xa);
+    wm.scan_ex_req = buffer;
+    wm.scan_ex_end = io_cycles() + (uint64_t) (ms ? ms : 1) * (n ? n : 1) * CYCLES_PER_MS;
+    set_state(STATE_SCAN);
+}
+
+/* WMStartScanExCallback: state 8, the channels scanned 0xa, the count 0xe, the descriptions'
+ * addresses 0x10 (16 of them) and their link levels 0x50. */
+static void scan_ex_done(void)
+{
+    uint32_t buffer = wm.scan_ex_req;
+    uint32_t channels = rd16(buffer + 2), scan_buf = rd32(buffer + 4), size = rd16(buffer + 8);
+    uint8_t bssid[6], ssid[32];
+    for (int i = 0; i < 6; i++) {
+        bssid[i] = (uint8_t) rd8(buffer + 0xc + (uint32_t) i);
+    }
+    uint32_t type = rd16(buffer + 0x12), ssid_length = rd16(buffer + 0x14), match = rd16(buffer + 0x36);
+    for (int i = 0; i < 32; i++) {
+        ssid[i] = (uint8_t) rd8(buffer + 0x16 + (uint32_t) i);
+    }
+    if (ssid_length > 32) {
+        ssid_length = 32;
+    }
+    if (type < 2 || match > ssid_length) {
+        match = ssid_length;
+    }
+    uint8_t d[WIFI_BSS_SIZE];
+    int found = size >= WIFI_BSS_SIZE && wifi_scan(channels, bssid, ssid, ssid_length, match, d);
+    uint8_t cb[0x70] = {0};
+    put16(cb, API_START_SCAN_EX);
+    put16(cb + 8, found ? CODE_PARENT_FOUND : CODE_PARENT_NOT_FOUND);
+    put16(cb + 0xa, channels);
+    if (found) {
+        for (uint32_t i = 0; i < WIFI_BSS_SIZE; i++) {
+            wr8(scan_buf + i, d[i]);
+        }
+        put16(cb + 0xe, 1);
+        put32(cb + 0x10, scan_buf);
+        put16(cb + 0x50, LINK_LEVEL);
+    }
+    if (wm.trace) {
+        fprintf(stderr, "wm: frame %u scan of channels %04x: %s\n", io_frame(), channels,
+                found ? "the access point" : "nobody");
+    }
+    reply(buffer, cb, sizeof(cb));
+    wm.scan_ex_req = 0; /* the state stays SCAN until WM_EndScan */
+}
+
+/* ---- DCF: the access point's data frames ---- */
+
+static void dcf_stop(void)
+{
+    wm.dcf = 0;
+    if (wm.status) {
+        wr32(wm.status + ST_DCF_FLAG, 0);
+    }
+}
+
+/* WMStartDCFCallback: state 4, the receive buffer 8. */
+static void dcf_event(uint32_t target, uint32_t code)
+{
+    uint8_t cb[0xc] = {0};
+    put16(cb, API_START_DCF);
+    put16(cb + 4, code);
+    put32(cb + 8, wm.dcf_buf);
+    if (target) {
+        reply(target, cb, sizeof(cb));
+    } else {
+        notify(cb, sizeof(cb));
+    }
+}
+
+/* A frame the access point sends, once the ARM9 has taken everything before it: written into
+ * the DCF receive buffer (WMDcfRecvBuf: the length 6, the rate and RSSI 0xe, the destination
+ * 0x18, the source 0x1e, the frame's body 0x2c) and handed over with DCF_IND. */
+static void dcf_receive(void)
+{
+    static uint8_t frame[WIFI_FRAME_MAX];
+    uint8_t src[6], dst[6];
+    if (!wm.dcf || wm.queue_count > 0 || (rd16(SHARED_WM_CALLBACK_CONTROL) & 1)) {
+        return;
+    }
+    uint32_t room = wm.dcf_size > 0x2c ? wm.dcf_size - 0x2c : 0;
+    uint32_t length = wifi_receive(io_cycles(), src, dst, frame, room < sizeof(frame) ? room : sizeof(frame));
+    if (length == 0) {
+        return;
+    }
+    for (uint32_t i = 0; i < 0x2c; i += 4) {
+        wr32(wm.dcf_buf + i, 0);
+    }
+    wr16(wm.dcf_buf + 6, length);
+    wr16(wm.dcf_buf + 0xe, 0xd0u << 8 | 0x14); /* RSSI 0xd0, 2 Mbps */
+    for (int i = 0; i < 6; i++) {
+        wr8(wm.dcf_buf + 0x18 + (uint32_t) i, dst[i]);
+        wr8(wm.dcf_buf + 0x1e + (uint32_t) i, src[i]);
+    }
+    for (uint32_t i = 0; i < length; i++) {
+        wr8(wm.dcf_buf + 0x2c + i, frame[i]);
+    }
+    wm.dcf_received++;
+    dcf_event(0, CODE_DCF_IND);
+    deliver();
+}
+
 static void reset(void)
 {
     mp_stop(ERR_FAILED);
     end_parent();
     end_child();
+    dcf_stop();
+    if (wm.infra) {
+        wifi_disconnect();
+    }
+    wm.infra = 0;
     wm.scan_req = 0;
+    wm.scan_ex_req = 0;
     wm.aid = 0;
     if (wm.status) {
         wr16(wm.status + ST_AID, 0);
@@ -807,6 +944,11 @@ void wm_command(uint32_t data)
             wm.connecting = 1;
             set_state(STATE_CONNECT);
             connect_event(buffer, ERR_SUCCESS, CODE_CONNECT_START, 0);
+            if (wifi_is_ap(wm.parent_mac)) { /* the access point: associated after a while */
+                wm.infra = 1;
+                wm.connected_at = io_cycles() + (uint64_t) WIFI_ASSOCIATE_MS * CYCLES_PER_MS;
+                return;
+            }
             uint8_t m[12];
             memcpy(m, wm.mac, 6);
             memcpy(m + 6, wm.parent_mac, 6);
@@ -820,6 +962,16 @@ void wm_command(uint32_t data)
         }
         case API_DISCONNECT: {
             uint32_t bitmap = arg[0];
+            if (wm.infra) {
+                dcf_stop();
+                wifi_disconnect();
+                wm.infra = wm.connected = wm.connecting = 0;
+                wm.aid = 0;
+                wr16(wm.status + ST_AID, 0);
+                set_state(STATE_IDLE);
+                reply_simple(buffer, api, ERR_SUCCESS);
+                return;
+            }
             if (wm.parent) {
                 for (uint32_t aid = 1; aid <= MAX_CHILDREN; aid++) {
                     if ((bitmap & (1u << aid)) && (wm.child_bitmap & (1u << aid))) {
@@ -898,14 +1050,57 @@ void wm_command(uint32_t data)
             post_at(buffer, cb, sizeof(cb), io_cycles() + (uint64_t) rd16(buffer + 8) * CYCLES_PER_MS);
             return;
         }
+        case API_START_SCAN_EX:
+            if (!wifi_on()) {
+                break; /* without the access point: taken, as before */
+            }
+            start_scan_ex(buffer);
+            return;
+        case API_START_DCF: /* the receive buffer and its size */
+            wm.dcf = 1;
+            wm.dcf_buf = arg[0];
+            wm.dcf_size = arg[1];
+            wr32(wm.status + ST_DCF_FLAG, 1);
+            set_state(STATE_DCF_CHILD);
+            dcf_event(buffer, CODE_DCF_START);
+            return;
+        case API_SET_DCF_DATA: { /* the destination's MAC in two words, the data and its size */
+            static uint8_t frame[WIFI_FRAME_MAX];
+            uint8_t dst[6];
+            uint32_t size = arg[3] & 0xffff;
+            put32(dst, arg[0]);
+            put16(dst + 4, arg[1]);
+            if (size > sizeof(frame)) {
+                size = sizeof(frame);
+            }
+            for (uint32_t i = 0; i < size; i++) {
+                frame[i] = (uint8_t) rd8(arg[2] + i);
+            }
+            if (wm.dcf && size > 0) {
+                wm.dcf_sent++;
+                wifi_send(io_cycles(), wm.mac, dst, frame, size);
+            }
+            /* the reply also covers the request's words, whose second's upper half the ARM9
+             * leaves as its stack had it (a value Native code does not leave the same) */
+            uint8_t cb[0x10] = {0};
+            put16(cb, api);
+            put16(cb + 2, wm.dcf ? ERR_SUCCESS : ERR_ILLEGAL_STATE);
+            reply(buffer, cb, sizeof(cb));
+            return;
+        }
+        case API_END_DCF:
+            dcf_stop();
+            set_state(STATE_CHILD);
+            reply_simple(buffer, api, ERR_SUCCESS);
+            return;
         case API_SET_BEACON_IND:
             wr16(wm.status + ST_BEACON_INDICATE, arg[0]);
             reply_simple(buffer, api, ERR_SUCCESS);
             return;
         default: /* the lifetimes and the rest: taken */
-            reply_simple(buffer, api, ERR_SUCCESS);
-            return;
+            break;
     }
+    reply_simple(buffer, api, ERR_SUCCESS);
 }
 
 /* ---- the radio ---- */
@@ -1235,11 +1430,28 @@ void wm_step(void)
     if (wm.scan_req && io_cycles() >= wm.scan_end) {
         scan_done();
     }
+    if (wm.scan_ex_req && io_cycles() >= wm.scan_ex_end) {
+        scan_ex_done();
+    }
+    if (wm.infra && wm.connecting && io_cycles() >= wm.connected_at) {
+        wm.connecting = 0;
+        wm.connected = 1;
+        wm.aid = 1;
+        wr16(wm.status + ST_AID, 1);
+        for (int i = 0; i < 6; i++) {
+            wr8(wm.status + ST_PARENT_MAC + (uint32_t) i, wm.parent_mac[i]);
+        }
+        wr16(wm.status + ST_LINK_LEVEL, LINK_LEVEL);
+        set_state(STATE_CHILD);
+        wifi_connect(io_cycles());
+        connect_event(0, ERR_SUCCESS, CODE_CONNECTED, 1);
+    }
     if (wm.parent && io_cycles() >= wm.next_beacon) {
         parent_event(CODE_BEACON_SENT, NULL, 0);
         wm.next_beacon += (uint64_t) (wm.beacon.period ? wm.beacon.period : 200) * CYCLES_PER_MS;
     }
     deliver();
+    dcf_receive();
 }
 
 void wm_report(FILE *out)
@@ -1256,4 +1468,9 @@ void wm_report(FILE *out)
         }
     }
     fprintf(out, "\n");
+    if (wm.dcf_sent || wm.dcf_received) {
+        fprintf(out, "wm: DCF %llu frames sent, %llu received\n", (unsigned long long) wm.dcf_sent,
+                (unsigned long long) wm.dcf_received);
+    }
+    wifi_report(out);
 }

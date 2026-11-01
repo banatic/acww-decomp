@@ -25,6 +25,7 @@
 #include "io.h"
 #include "memory.h"
 #include "sequencer.h"
+#include "wifi.h"
 #include "wm.h"
 
 #define SHARED_FIFO_READY_ARM7 0x027fff8cu /* PXI_IsCallbackReady(tag, PXI_PROC_ARM7) */
@@ -298,6 +299,9 @@ void arm7_init(const char *rom)
     rtc_update();
     nvram_init();
     arm7.wireless = wm_init(arm7.nvram);
+    if (arm7.wireless) {
+        wifi_init(arm7.nvram);
+    }
     /* the save chip, a 2 Mbit flash as this game has: erased, or holding the image RUN_SAVE
        names (a save file as emulators write it). Writes stay in memory; the file is only read. */
     arm7.backup = malloc(BACKUP_SIZE);
