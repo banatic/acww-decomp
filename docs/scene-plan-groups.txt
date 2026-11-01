@@ -176,70 +176,32 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
 area: Unreachable for one player
 group: Nintendo Wi-Fi Connection
 scene: none: a Wi-Fi visit, the friend list online
-reach: needs the Wi-Fi Connection server (NitroDWC); the runtime has no network. By whole file only ov146 and main/wfc_session, where no scene runs a function; of main/wfc_setup the three functions nothing calls or names (the library's overlay run and its allocator); the rest of main/wfc_*, main/wifi_friends and the network library is in "the link's code in files one player also runs" (findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the Wi-Fi host list (ov146): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, unknown3), the stages past the Internet connection: Wfc_UpdateConnection leaves STAGE_CONNECTING only when DWC_GetInetStatus says the Internet is connected, which needs an access point (the runtime has none: gate-wfc's line 0x5b, connecting for ever), and stages 2-5 are stored only by its later cases, so the login callback (Wfc_OnLoggedIn), the ping callback (Wfc_OnPing), Wfc_BlockNewClients and Net_GetConnectedMask never run, and Wfc_SetFriend and _DeleteFriend return FALSE before their requests (can_change_friends asks for STAGE_READY), so the friend list's callbacks (Wfc_OnFriendDeleted, _OnFriendStatus, _OnFriendsUpdated) never run either (w29/classify.py, gate inet); besides (findings 2026-10-31, rows14), the Wi-Fi Connection settings (WfcSetup_RunOverlay1 and the allocator it hands overlay 65): main runs them only when the reset parameter (0x027ffc20) is 1, which only OS_ResetSystem(1) leaves for the next boot, and the runtime has no system reset (title-wfc-settings driven 600 frames on: the parameter is 1, the screens black, main not entered again; gate reset); and what GatekeeperTalk_EndWfc calls once the library has ended (the downloads applied, WfcSession_KeepFriendData): Wfc_EndStep stays at END_WAIT_LIBRARY (data_021fbf00 is 5) because the library's func_ov065_0227f22c never reports done (gate-wfc driven 3,600 frames on: still 5, the connecting line shown; gate wfcend); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 2 of this group's functions (Net_GetConnectedMask, WfcSession_End), which left it
+reach: needs a second console online through the Wi-Fi Connection's matchmaking server (NitroDWC), which the runtime does not simulate (it simulates the access point, the account server and GameSpy's login: findings 2026-11-02, wifi1, below). By whole file only ov146 and main/wfc_session, where no scene runs a function; of main/wfc_setup the three functions nothing calls or names (the library's overlay run and its allocator); the rest of main/wfc_*, main/wifi_friends and the network library is in "the link's code in files one player also runs" (findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the Wi-Fi host list (ov146): overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, unknown3), the stages past the Internet connection: Wfc_UpdateConnection leaves STAGE_CONNECTING only when DWC_GetInetStatus says the Internet is connected, which needs an access point (the runtime has none: gate-wfc's line 0x5b, connecting for ever), and stages 2-5 are stored only by its later cases, so the login callback (Wfc_OnLoggedIn), the ping callback (Wfc_OnPing), Wfc_BlockNewClients and Net_GetConnectedMask never run, and Wfc_SetFriend and _DeleteFriend return FALSE before their requests (can_change_friends asks for STAGE_READY), so the friend list's callbacks (Wfc_OnFriendDeleted, _OnFriendStatus, _OnFriendsUpdated) never run either (w29/classify.py, gate inet); besides (findings 2026-10-31, rows14), the Wi-Fi Connection settings (WfcSetup_RunOverlay1 and the allocator it hands overlay 65): main runs them only when the reset parameter (0x027ffc20) is 1, which only OS_ResetSystem(1) leaves for the next boot, and the runtime has no system reset (title-wfc-settings driven 600 frames on: the parameter is 1, the screens black, main not entered again; gate reset); and what GatekeeperTalk_EndWfc calls once the library has ended (the downloads applied, WfcSession_KeepFriendData): Wfc_EndStep stays at END_WAIT_LIBRARY (data_021fbf00 is 5) because the library's func_ov065_0227f22c never reports done (gate-wfc driven 3,600 frames on: still 5, the connecting line shown; gate wfcend); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 2 of this group's functions (Net_GetConnectedMask, WfcSession_End), which left it; besides (findings 2026-11-02, wifi1), Wi-Fi Connection now runs offline (runtime/wifi.c, docs/multi-console.md: a simulated access point, network and servers, the SSL layer replaced by plain TCP), which corrects the claims above that the runtime has no access point (gate-wfc's line 0x5b connecting for ever) and that overlay 146's screen is never shown: gate-wfc-online connects, logs in to the account server and GameSpy, the library ends (func_ov065_0227f22c reports done, the downloads answered 404) and the gatekeeper opens the list of far towns (ov146), empty since no friend is online; the error scenes gate-wfc-no-ap, -no-dns, -conntest and -nas-error show the library's errors. They run 64 of this group's functions (WfcSession_FinishLetterGet, WfcSession_FinishNoticeGet, WfcSession_FinishStatsGet, WfcSession_StartLetterGet, WfcSession_StartNoticeGet, WfcSession_StartStatsGet, ...), which left it. What is left needs a second console online through the matchmaking (QR2) server, which is not simulated: a friend's status and town, the host and join callbacks, the uploads
 needs: unreachable
-match: main/wfc_session:WfcSession_FinishLetterGet main/wfc_session:WfcSession_FinishNoticeGet
-  main/wfc_session:WfcSession_FinishStatsGet main/wfc_session:WfcSession_FinishStatsUpload
-  main/wfc_session:WfcSession_StartLetterGet main/wfc_session:WfcSession_StartNoticeGet
-  main/wfc_session:WfcSession_StartStatsGet main/wfc_session:WfcSession_StartStatsUpload
-  ov146/wfc_host_list:WfcHostList_BeginFrame ov146/wfc_host_list:WfcHostList_BeginInteractiveFrame
-  ov146/wfc_host_list:WfcHostList_ClearFlags ov146/wfc_host_list:WfcHostList_Close
+match: main/wfc_session:WfcSession_FinishStatsUpload ov146/wfc_host_list:WfcHostList_Close
   ov146/wfc_host_list:WfcHostList_Delete ov146/wfc_host_list:WfcHostList_Destroy
-  ov146/wfc_host_list:WfcHostList_Draw ov146/wfc_host_list:WfcHostList_End
-  ov146/wfc_host_list:WfcHostList_EndFrame ov146/wfc_host_list:WfcHostList_EndLayerTasks
-  ov146/wfc_host_list:WfcHostList_LoadObjFiles ov146/wfc_host_list:WfcHostList_LoadScreens
-  ov146/wfc_host_list:WfcHostList_New ov146/wfc_host_list:WfcHostList_Phase3Idle
-  ov146/wfc_host_list:WfcHostList_Phase4Idle ov146/wfc_host_list:WfcHostList_PlaceSprites
-  ov146/wfc_host_list:WfcHostList_QueueLayers ov146/wfc_host_list:WfcHostList_Release
-  ov146/wfc_host_list:WfcHostList_RunInteractive ov146/wfc_host_list:WfcHostList_RunState
-  ov146/wfc_host_list:WfcHostList_RunSubState ov146/wfc_host_list:WfcHostList_SetFlags
-  ov146/wfc_host_list:WfcHostList_SetLayers ov146/wfc_host_list:WfcHostList_Setup
-  ov146/wfc_host_list:WfcHostList_Start ov146/wfc_host_list:WfcHostList_StartWipeIn
-  ov146/wfc_host_list:WfcHostList_StartWipeOut ov146/wfc_host_list:WfcHostList_TestFlags
-  ov146/wfc_host_list:WfcHostList_UpdateList ov146/wfc_host_list:WfcHostList_WipeIn
-  ov146/wfc_host_list:WfcHostList_WipeOut ov146/wfc_host_list_input:WfcHostList_Activate
-  ov146/wfc_host_list_input:WfcHostList_BeginInput ov146/wfc_host_list_input:WfcHostList_BeginKeys
+  ov146/wfc_host_list:WfcHostList_End ov146/wfc_host_list:WfcHostList_Phase3Idle
+  ov146/wfc_host_list:WfcHostList_Phase4Idle ov146/wfc_host_list:WfcHostList_Release
+  ov146/wfc_host_list:WfcHostList_StartWipeOut ov146/wfc_host_list:WfcHostList_WipeOut
   ov146/wfc_host_list_input:WfcHostList_BeginTouch ov146/wfc_host_list_input:WfcHostList_Choose
   ov146/wfc_host_list_input:WfcHostList_CursorFromPointer
   ov146/wfc_host_list_input:WfcHostList_CursorToLastRow
   ov146/wfc_host_list_input:WfcHostList_GlidePointerTo
   ov146/wfc_host_list_input:WfcHostList_HidePointer ov146/wfc_host_list_input:WfcHostList_MoveCursor
-  ov146/wfc_host_list_input:WfcHostList_MoveCursorByKeys
-  ov146/wfc_host_list_input:WfcHostList_PlacePointer ov146/wfc_host_list_input:WfcHostList_PointerX
-  ov146/wfc_host_list_input:WfcHostList_PointerY ov146/wfc_host_list_input:WfcHostList_PressA
-  ov146/wfc_host_list_input:WfcHostList_PressPointer ov146/wfc_host_list_input:WfcHostList_Quit
-  ov146/wfc_host_list_input:WfcHostList_RunActivate
-  ov146/wfc_host_list_input:WfcHostList_RunBarTouch
-  ov146/wfc_host_list_input:WfcHostList_RunCloseDelay ov146/wfc_host_list_input:WfcHostList_RunKeys
+  ov146/wfc_host_list_input:WfcHostList_Quit ov146/wfc_host_list_input:WfcHostList_RunBarTouch
+  ov146/wfc_host_list_input:WfcHostList_RunCloseDelay
   ov146/wfc_host_list_input:WfcHostList_RunKnobDrag
   ov146/wfc_host_list_input:WfcHostList_RunKnobKeys
   ov146/wfc_host_list_input:WfcHostList_RunKnobRelease
   ov146/wfc_host_list_input:WfcHostList_RunPointerGlide
-  ov146/wfc_host_list_input:WfcHostList_RunPointerPress
-  ov146/wfc_host_list_input:WfcHostList_RunTouch
-  ov146/wfc_host_list_input:WfcHostList_ShowPointerFirst
-  ov146/wfc_host_list_rows:WfcHostList_BuildRowsScreen
-  ov146/wfc_host_list_rows:WfcHostList_CloseLabels ov146/wfc_host_list_rows:WfcHostList_CopyHosts
-  ov146/wfc_host_list_rows:WfcHostList_DragKnob ov146/wfc_host_list_rows:WfcHostList_FriendList
-  ov146/wfc_host_list_rows:WfcHostList_GrabKnob ov146/wfc_host_list_rows:WfcHostList_IsHosting
-  ov146/wfc_host_list_rows:WfcHostList_IsJoinable ov146/wfc_host_list_rows:WfcHostList_KnobByKeys
+  ov146/wfc_host_list_input:WfcHostList_RunTouch ov146/wfc_host_list_rows:WfcHostList_DragKnob
+  ov146/wfc_host_list_rows:WfcHostList_GrabKnob ov146/wfc_host_list_rows:WfcHostList_KnobByKeys
   ov146/wfc_host_list_rows:WfcHostList_KnobFromScroll
-  ov146/wfc_host_list_rows:WfcHostList_KnobReleased ov146/wfc_host_list_rows:WfcHostList_PlaceKnob
-  ov146/wfc_host_list_rows:WfcHostList_RefreshList
-  ov146/wfc_host_list_rows:WfcHostList_RefreshRowLabels
-  ov146/wfc_host_list_rows:WfcHostList_ReleaseKnob
-  ov146/wfc_host_list_rows:WfcHostList_ScrollFromKnob ov146/wfc_host_list_rows:WfcHostList_SetScroll
-  ov146/wfc_host_list_rows:WfcHostList_ShadeRow ov146/wfc_host_list_rows:WfcHostList_ShadeRows
-  ov146/wfc_host_list_rows:WfcHostList_ShowTitles
-  ov146/wfc_host_list_rows:WfcHostList_ShowTitlesOnce
-  ov146/wfc_host_list_rows:WfcHostList_StepScroll ov146/wfc_host_list_rows:WfcHostList_TakeLabel
-  ov146/wfc_host_list_rows:WfcHostList_UpdateHosts autoload_2/network:Wfc_BlockNewClients
-  autoload_2/network:Wfc_OnPing autoload_2/network:Wfc_OnLoggedIn
+  ov146/wfc_host_list_rows:WfcHostList_KnobReleased ov146/wfc_host_list_rows:WfcHostList_ReleaseKnob
+  ov146/wfc_host_list_rows:WfcHostList_ScrollFromKnob ov146/wfc_host_list_rows:WfcHostList_ShadeRow
+  autoload_2/network:Wfc_BlockNewClients autoload_2/network:Wfc_OnPing
   autoload_2/network:Wfc_OnFriendDeleted autoload_2/network:Wfc_OnFriendStatus
-  autoload_2/network:Wfc_OnFriendsUpdated main/wfc_setup:WfcSetup_RunOverlay1
-  main/wfc_setup:WfcSetup_Alloc main/wfc_setup:WfcSetup_Free main/wfc_session:WfcSession_ApplyStats
-  main/wfc_session:WfcSession_ApplyLetter main/wfc_session:WfcSession_ApplyNotice
-  main/wfc_session:WfcSession_KeepFriendData
+  main/wfc_setup:WfcSetup_RunOverlay1 main/wfc_setup:WfcSetup_Alloc main/wfc_setup:WfcSetup_Free
 
 area: Unreachable for one player
 group: the lost child's walk home, and the test character
@@ -759,7 +721,7 @@ match: main/card_pulled:CardPulled_OnPulledOut
 area: Unreachable for one player
 group: the gatekeeper's visits and connections
 scene: none: the gatekeepers' talk states, lines and states of a visit by DS wireless or over the Wi-Fi Connection: the search for a town or a friend, the link's statuses and errors, the downloads, the guests passing the gate and arriving, the linked scene changes
-reach: each follows GatekeeperTalk_StartSession, _StartWfc, _StartFindParent or _StartJoinParent (a session of network mode 2 or 4) or a gatekeeper state those talks set (5-0xd, 0xf, 0x11); without a second DS or the server none goes on (gate-visit: the wireless library's set-up halts the game about 50 frames after the search's line), and the Wi-Fi choice, offered once a friend is registered, starts the Wi-Fi session and goes no further than the time-out and its error code, as the runtime reaches no server (gate-wfc runs StartWfc, StartSession, WaitFriends, TimeOutOrError, PutErrorCode and EndWfc; findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, proofs1), the end handlers of lines 0x55, 0x5d, 0x6d and 0x75 (GatekeeperTalk_OpenScreen4, _OpenFriendScreen, _SayCodeOrChoice) and GatekeeperTalk_LineOfChoice: in sp_npc_gatekeeper those lines, with 0x57 and 0x6b, are named only by each other (no message's next byte, and only the choices of 0x57 and 0x6b; w22/gkmsg.py), and of them the code says 0x57 only in _FindParent, 0x75 only in _AfterDownloads, 0x5d and 0x6b only in _LineOfChoice, which only _AfterDownloads and _SayCodeOrChoice call (the start lines by topic and the computed lines are others); besides (findings 2026-10-31, rows17), GatekeeperTalk_StartFindParent runs (gate-visit-halt: the visit's search by DS wireless, which halts in the WM set-up); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 30 of this group's functions (Gatekeeper_CheckPairedTown, Gatekeeper_EnterState6, Gatekeeper_EnterState8, Gatekeeper_EnterState9, Gatekeeper_EnterStateC, Gatekeeper_PassAnimate, ...), which left it
+reach: each follows GatekeeperTalk_StartSession, _StartWfc, _StartFindParent or _StartJoinParent (a session of network mode 2 or 4) or a gatekeeper state those talks set (5-0xd, 0xf, 0x11); without a second DS or the server none goes on (gate-visit: the wireless library's set-up halts the game about 50 frames after the search's line), and the Wi-Fi choice, offered once a friend is registered, starts the Wi-Fi session and goes no further than the time-out and its error code, as the runtime reaches no server (gate-wfc runs StartWfc, StartSession, WaitFriends, TimeOutOrError, PutErrorCode and EndWfc; findings 2026-10-28, town6); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, proofs1), the end handlers of lines 0x55, 0x5d, 0x6d and 0x75 (GatekeeperTalk_OpenScreen4, _OpenFriendScreen, _SayCodeOrChoice) and GatekeeperTalk_LineOfChoice: in sp_npc_gatekeeper those lines, with 0x57 and 0x6b, are named only by each other (no message's next byte, and only the choices of 0x57 and 0x6b; w22/gkmsg.py), and of them the code says 0x57 only in _FindParent, 0x75 only in _AfterDownloads, 0x5d and 0x6b only in _LineOfChoice, which only _AfterDownloads and _SayCodeOrChoice call (the start lines by topic and the computed lines are others); besides (findings 2026-10-31, rows17), GatekeeperTalk_StartFindParent runs (gate-visit-halt: the visit's search by DS wireless, which halts in the WM set-up); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 30 of this group's functions (Gatekeeper_CheckPairedTown, Gatekeeper_EnterState6, Gatekeeper_EnterState8, Gatekeeper_EnterState9, Gatekeeper_EnterStateC, Gatekeeper_PassAnimate, ...), which left it; besides (findings 2026-11-02, wifi1), Wi-Fi Connection now runs offline (runtime/wifi.c, docs/multi-console.md): gate-wfc-online and the error scenes gate-wfc-no-ap, -no-dns, -conntest and -nas-error run 12 of this group's functions (GatekeeperTalk_AfterDownloads, GatekeeperTalk_FinishLetterGet, GatekeeperTalk_FinishNoticeGet, GatekeeperTalk_FinishStatsGet, GatekeeperTalk_IsServerError, GatekeeperTalk_LineOfChoice, ...), which left it; GatekeeperTalk_OpenFriendScreen runs after the downloads, so the line that opens the friend screen is shown once the connection succeeds
 needs: unreachable
 match: ov004/gatekeeper2:Gatekeeper2Talk_SwapDesign ov004/gatekeeper2:Gatekeeper2_EnterAwait
   ov004/gatekeeper2:Gatekeeper2_EnterOther ov004/gatekeeper2:Gatekeeper2_UpdateAwait
@@ -773,26 +735,15 @@ match: ov004/gatekeeper2:Gatekeeper2Talk_SwapDesign ov004/gatekeeper2:Gatekeeper
   ov048/gatekeeper_states:Gatekeeper_RunStateF ov048/gatekeeper_states:Gatekeeper_StateBClearRecord
   ov048/gatekeeper_states:Gatekeeper_StateBMovePlayer
   ov048/gatekeeper_states:Gatekeeper_StateBSayName ov048/gatekeeper_states:Gatekeeper_StateBTakeExit
-  ov048/gatekeeper_talk:GatekeeperTalk_AfterDownloads
-  ov048/gatekeeper_talk:GatekeeperTalk_FinishLetterGet
-  ov048/gatekeeper_talk:GatekeeperTalk_FinishNoticeGet
-  ov048/gatekeeper_talk:GatekeeperTalk_FinishStatsGet
   ov048/gatekeeper_talk:GatekeeperTalk_FinishStatsUpload
-  ov048/gatekeeper_talk:GatekeeperTalk_GroupCheck ov048/gatekeeper_talk:GatekeeperTalk_IsServerError
-  ov048/gatekeeper_talk:GatekeeperTalk_Line80Or63 ov048/gatekeeper_talk:GatekeeperTalk_Line82Or65
-  ov048/gatekeeper_talk:GatekeeperTalk_LineOfChoice ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer51
+  ov048/gatekeeper_talk:GatekeeperTalk_GroupCheck ov048/gatekeeper_talk:GatekeeperTalk_Line80Or63
+  ov048/gatekeeper_talk:GatekeeperTalk_Line82Or65 ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer51
   ov048/gatekeeper_talk:GatekeeperTalk_OnAnswer5f ov048/gatekeeper_talk:GatekeeperTalk_SendStatus1
-  ov048/gatekeeper_talk:GatekeeperTalk_StartLetterGet
-  ov048/gatekeeper_talk:GatekeeperTalk_StartNoticeGet
-  ov048/gatekeeper_talk:GatekeeperTalk_StartStatsGet
-  ov048/gatekeeper_talk:GatekeeperTalk_StartStatsUpload
   ov048/gatekeeper_talk:GatekeeperTalk_TakeFriend ov048/gatekeeper_talk:GatekeeperTalk_WaitStatus1
   ov048/gatekeeper_talk_lines:GatekeeperTalk_EndConnection
   ov048/gatekeeper_talk_lines:GatekeeperTalk_JoinFriend
   ov048/gatekeeper_talk_lines:GatekeeperTalk_OnAnswer74
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_OpenFriendScreen
   ov048/gatekeeper_talk_lines:GatekeeperTalk_OpenScreen4
-  ov048/gatekeeper_talk_lines:GatekeeperTalk_SayCodeOrChoice
   ov048/gatekeeper_talk_lines:GatekeeperTalk_StartSendStatus1
 
 area: Unreachable for one player
@@ -930,18 +881,15 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
 area: Unreachable for one player
 group: code only unreachable code calls
 scene: none: functions whose every caller is in an unreachable group (the local wireless session and its activity jobs and packets, the Wi-Fi Connection, the gatekeepers' visits, the lost child's walk, the debug screen, the lid and the game's stop): the activity's fields, the jobs those sessions ask for, the field label's session messages, the caution window's planes, the town objects' session messages
-reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7), functions reached only through the functions of unreachable groups proved by the values their reasons close (w24/classify.py, gate value); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and statistics flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishStatsGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyStats return at once (w24/guard2.py --zero; w24/classify.py, gate latch); besides (findings 2026-10-30, clerk6), Session_StopTransfer, Session_SetReceiveBuffers and Session_GetPeerRecvBlock (job 0x1f's start), Heap_Report and Process_PhaseName (the debug screen's Select+A) moved to "job 0x1f's start and the halt it ends in" (now "the debug screen shown after job 0x1f's halt", halt7); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 53 of this group's functions (Local_Call02269638, Activity_StepRequestMode1, Activity_TalkGatekeeper, Activity_Current, Activity_CurrentByteD6, Activity_CurrentPackBuffer, ...), which left it
+reach: a fixed point over the module images (BL, BLX and branches to another function, Thumb by the symbols' flag, and words naming the function inside another function's code): a function is listed when it has a reference, no word in data names it and every function that calls or names it is in an unreachable group or listed (findings 2026-10-28, town3); besides (findings 2026-10-29, proofs1), what only the receive callback reaches: the session's receive callback (Session_OnReceived), which Session_Start hands to the network library, runs only on a packet another system sends: with one system and no game on the Wi-Fi Connection server (gate-wfc times out at the login) none arrives (w22/classify.py, gate recv); and what only the town list and the Wi-Fi host list call: overlays 139 and 141 are only in group 0x22 and overlay 146 only in 0x2d, which only ov092 asks for, for GroupParams' modes 0x3d (0x22), 0x3c and 0x42 (0x2d): no code stores 0x42, 0x3c is stored only by GatekeeperTalk_OpenFriendScreen and 0x3d only by GroupParams_OpenWithC80C88 for the scene commands' screen 4, which only GatekeeperTalk_OpenScreen4 asks for, and those two run only at the end of the gatekeeper's lines 0x55, 0x5d and 0x6d, which are never shown (group "the gatekeeper's visits and connections"; w22/classify.py, gate overlay); besides (findings 2026-10-29, town7), functions reached only through the functions of unreachable groups proved by the values their reasons close (w24/classify.py, gate value); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and statistics flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishStatsGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyStats return at once (w24/guard2.py --zero; w24/classify.py, gate latch); besides (findings 2026-10-30, clerk6), Session_StopTransfer, Session_SetReceiveBuffers and Session_GetPeerRecvBlock (job 0x1f's start), Heap_Report and Process_PhaseName (the debug screen's Select+A) moved to "job 0x1f's start and the halt it ends in" (now "the debug screen shown after job 0x1f's halt", halt7); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 53 of this group's functions (Local_Call02269638, Activity_StepRequestMode1, Activity_TalkGatekeeper, Activity_Current, Activity_CurrentByteD6, Activity_CurrentPackBuffer, ...), which left it; besides (findings 2026-11-02, wifi1), Wi-Fi Connection now runs offline (runtime/wifi.c, docs/multi-console.md): gate-wfc-online runs 8 of this group's functions (Wfc_Call022784a0, Wfc_FinishGet, Wfc_Get, Wfc_GetSigned, Wfc_OnGetReply, Wfc_OnSignedGetChallenge, ...), the library's downloads, which left it
 needs: unreachable
-match: autoload_2/network:Wfc_Call022784a0 autoload_2/network:Wfc_FinishGet
-  autoload_2/network:Wfc_FinishPost autoload_2/network:Wfc_FriendIndexOf autoload_2/network:Wfc_Get
-  autoload_2/network:Wfc_GetSigned autoload_2/network:Wfc_HostGame
-  autoload_2/network:Wfc_JoinFriendGame autoload_2/network:Wfc_OnClientJoined
-  autoload_2/network:Wfc_OnClosed autoload_2/network:Wfc_OnGetReply autoload_2/network:Wfc_OnJoined
-  autoload_2/network:Wfc_OnNewClient autoload_2/network:Wfc_OnPosted
+match: autoload_2/network:Wfc_FinishPost autoload_2/network:Wfc_FriendIndexOf
+  autoload_2/network:Wfc_HostGame autoload_2/network:Wfc_JoinFriendGame
+  autoload_2/network:Wfc_OnClientJoined autoload_2/network:Wfc_OnClosed
+  autoload_2/network:Wfc_OnJoined autoload_2/network:Wfc_OnNewClient autoload_2/network:Wfc_OnPosted
   autoload_2/network:Wfc_OnReceived autoload_2/network:Wfc_OnSent
-  autoload_2/network:Wfc_OnSignedGetChallenge autoload_2/network:Wfc_OnSignedGetReply
-  autoload_2/network:Wfc_PostSigned autoload_2/network:Wfc_ProfileIdAt
-  autoload_2/network:Wfc_TakeDirty autoload_2/sound_system:SoundSystem_MasterVolumeFull
+  autoload_2/network:Wfc_OnSignedGetReply autoload_2/network:Wfc_PostSigned
+  autoload_2/network:Wfc_ProfileIdAt autoload_2/sound_system:SoundSystem_MasterVolumeFull
   main/activity:Activity_AllPeersReported main/activity:Activity_StepSendReport
   main/activity:Activity_TalkSequence2 main/activity_card:ActivityCard_StepReadPart
   main/activity_card:Activity_CurrentRecordToGuest main/activity_card:Activity_ExchangeBlockToSystem
@@ -958,20 +906,20 @@ match: autoload_2/network:Wfc_Call022784a0 autoload_2/network:Wfc_FinishGet
   main/activity_job:ActivityJob_Ask1B main/activity_link_jobs:ActivityLinkJobs_Start17
   main/activity_link_jobs:ActivityLinkJobs_Step17 main/activity_talk:ActivityTalk_QueueMessage11
   main/battery_warning:BatteryWarning_Disable main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice
-  main/camera_control:CameraControl_SetMode19 main/card_save:CardSave_WriteAccount
-  main/design:Design_Receive main/field_label:FieldLabel_ChooseMessage
-  main/field_label:FieldLabel_ShowMessage9 main/fish_disp:FishDisp_HandleMessage
-  main/fox_shop:FoxPassword_ClearVisitor main/group_params:GroupParams_C88
-  main/group_params:GroupParams_ClearC80C88 main/link_global:LinkGlobal_SetChosen
-  main/link_parts:LinkPart_UnpackStatusByte main/link_scene:LinkScene_GlobalSetAcked
-  main/link_scene:LinkScene_GlobalSetReleased main/link_scene:LinkScene_GlobalSetStateAsker
-  main/link_scene:LinkScene_TakeLeftState main/middle_spot:MiddleSpot_Clear
-  main/music_264:Music264_Reset main/music_264:MusicClock_Reset main/music_queue:Music_Reset
-  main/music_volume:MusicVolume_Reset main/paired_town:PairedTown_ClearFlag5
-  main/paired_town:PairedTown_SaveCurrent main/paired_town:PairedTown_SetFlag5
-  main/paired_town:PairedTown_TakeOwn main/player_messages:PlayerMessages_Dispatch
-  main/player_record:PlayerRecord_MailMark main/player_record:PlayerRecord_SetMailMark
-  main/quick_message:QuickMessage_ResetCurrent main/quick_message:QuickMessage_ViewDestructDelete
+  main/camera_control:CameraControl_SetMode19 main/design:Design_Receive
+  main/field_label:FieldLabel_ChooseMessage main/field_label:FieldLabel_ShowMessage9
+  main/fish_disp:FishDisp_HandleMessage main/fox_shop:FoxPassword_ClearVisitor
+  main/group_params:GroupParams_C88 main/group_params:GroupParams_ClearC80C88
+  main/link_global:LinkGlobal_SetChosen main/link_parts:LinkPart_UnpackStatusByte
+  main/link_scene:LinkScene_GlobalSetAcked main/link_scene:LinkScene_GlobalSetReleased
+  main/link_scene:LinkScene_GlobalSetStateAsker main/link_scene:LinkScene_TakeLeftState
+  main/middle_spot:MiddleSpot_Clear main/music_264:Music264_Reset main/music_264:MusicClock_Reset
+  main/music_queue:Music_Reset main/music_volume:MusicVolume_Reset
+  main/paired_town:PairedTown_ClearFlag5 main/paired_town:PairedTown_SaveCurrent
+  main/paired_town:PairedTown_SetFlag5 main/paired_town:PairedTown_TakeOwn
+  main/player_messages:PlayerMessages_Dispatch main/player_record:PlayerRecord_MailMark
+  main/player_record:PlayerRecord_SetMailMark main/quick_message:QuickMessage_ResetCurrent
+  main/quick_message:QuickMessage_ViewDestructDelete
   main/quick_message:QuickMessage_WideDestructDelete main/save_stamp:SaveStamp_MarkWriting
   main/save_stamp:SaveStamp_MarkWritten main/scene_claim:SceneClaim_ReceiveAnswer
   main/scene_claim:SceneClaim_ReceiveRelease main/scene_claim:SceneClaim_ReceiveRequest

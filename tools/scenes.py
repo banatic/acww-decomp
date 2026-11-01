@@ -1280,14 +1280,17 @@ SAVES["other-town"] = []
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
           recording: str | None = None, rtc: str = RTC, sequencer: bool = False, wireless: bool = False,
-          peer: tuple[str, str] | None = None) -> None:
+          peer: tuple[str, str] | None = None, wifi: str | None = None) -> None:
     """`sequencer`: the ARM7's sound sequences run (tools/run.py --sequencer), for a scene that
     waits on what they report (a melody's steps, the music's variables). `wireless`: the console
     has its wireless (tools/run.py --wireless). `peer`: a second console linked to the first, its
     save and recording (tools/run.py --peer-save, --peer-input; docs/multi-console.md), with the
-    first's frame count, checkpoints and clock; it implies `wireless`."""
+    first's frame count, checkpoints and clock; it implies `wireless`. `wifi`: Nintendo Wi-Fi
+    Connection offline in that mode (tools/run.py --wifi=MODE, runtime/wifi.h); it implies
+    `wireless`."""
     SCENES[name] = dict(save=save, recording=recording or name, frames=frames, ram=ram, look=look,
-                        intent=intent, rtc=rtc, sequencer=sequencer, wireless=wireless or peer is not None, peer=peer)
+                        intent=intent, rtc=rtc, sequencer=sequencer,
+                        wireless=wireless or peer is not None or wifi is not None, peer=peer, wifi=wifi)
 
 
 def frames(a: int, b: int, step: int) -> list[int]:
@@ -2614,6 +2617,24 @@ scene("title-move-in-alone", "seed", 4400, [1100, 2329, 2800, 3500, 4399], frame
 scene("gate-visit-alone", "seed", 10400, [2600, 7900, 9300, 9591, 10000, 10399], frames(9500, 10400, 50),
       "gate-visit with the wireless on and no other console: the search for a town to visit scans the "
       "channels and finds none, which the gatekeeper says", recording="gate-visit", wireless=True)
+# Nintendo Wi-Fi Connection offline (runtime/wifi.h): gate-wfc's recording with the simulated
+# access point, network and servers, and with each of their failures
+scene("gate-wfc-online", "friend", 10311, [2600, 8600, 8900, 9200, 9600, 10310], frames(8800, 10311, 50),
+      "gate-wfc with Wi-Fi Connection offline: the access point found, DHCP, the connection test, the "
+      "account created and the login, GameSpy's presence login and the friend asked for, the downloads "
+      "refused; the gatekeeper's list of far towns opens with none", recording="gate-wfc", wifi="1")
+scene("gate-wfc-no-ap", "friend", 10311, [2600, 8600, 9600, 10000, 10310], frames(8800, 10311, 50),
+      "gate-wfc with Wi-Fi Connection offline and no access point: the search finds none, error 50099 "
+      "shown, the gatekeeper asks again", recording="gate-wfc", wifi="noap")
+scene("gate-wfc-no-dns", "friend", 10311, [2600, 8600, 9600, 10000, 10310], frames(8800, 10311, 50),
+      "gate-wfc with Wi-Fi Connection offline and every name unknown: the connection test fails, the "
+      "gatekeeper offers the Wi-Fi settings", recording="gate-wfc", wifi="nodns")
+scene("gate-wfc-conntest", "friend", 10311, [2600, 8600, 9600, 10000, 10310], frames(8800, 10311, 50),
+      "gate-wfc with Wi-Fi Connection offline and the connection test's page answering 503: the "
+      "gatekeeper offers the Wi-Fi settings", recording="gate-wfc", wifi="conntest")
+scene("gate-wfc-nas-error", "friend", 10700, [2600, 8600, 9600, 10300, 10699], frames(8800, 10700, 50),
+      "gate-wfc with Wi-Fi Connection offline and the account server refusing the login (109): the "
+      "library tries again, then the gatekeeper shows the error", recording="gate-wfc", wifi="nas")
 # two consoles (docs/multi-console.md): console 0 the seed town, console 1 another town (other-town)
 scene("gate-visit-link", "seed", 12500, [2600, 7900, 9600, 10400, 11200], frames(9400, 12500, 100),
       "two consoles: the seed town's gate opened to a visitor by DS wireless (gate-visit-host) while the "
@@ -2847,7 +2868,7 @@ def run_in(name: str, sc: dict, seed: pathlib.Path, work: pathlib.Path, look: bo
     save = derive_save(seed, sc["save"])
     cmd = [sys.executable, str(C.ROOT / "tools" / "run.py"), "0", str(sc["frames"]), "--input", str(recording),
            "--rtc", sc["rtc"], "--save", str(save), *(["--sequencer"] if sc["sequencer"] else []),
-           *(["--wireless"] if sc["wireless"] else [])]
+           *(["--wireless"] if sc["wireless"] else []), *([f"--wifi={sc['wifi']}"] if sc["wifi"] else [])]
     if sc["peer"]:
         peer_save, peer_recording = sc["peer"]
         cmd += ["--peer-save", str(derive_save(seed, peer_save)),
