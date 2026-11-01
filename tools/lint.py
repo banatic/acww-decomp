@@ -109,6 +109,12 @@ def main() -> None:
             errors.append(f"{rel}: same address as {seen[key].relative_to(C.ROOT).as_posix()}")
         seen[key] = path
 
+    # runtime/native-private.txt (tools/link.py) must follow a source that moves or goes
+    present = {p.relative_to(C.ROOT).as_posix() for p in sources}
+    for rel in sorted(set(C.read_native_private()) - present):
+        errors.append(f"{C.NATIVE_PRIVATE.relative_to(C.ROOT).as_posix()}: {rel} is not a source; "
+                      "run tools/link.py")
+
     for p in tracked_or_present():
         rel = p.relative_to(C.ROOT).as_posix()
         if p.suffix.lower() in FORBIDDEN_SUFFIXES or "mwccarm" in p.parts:

@@ -947,15 +947,15 @@ def main() -> None:
               for name in sorted(profile_ids)] or ["\t.long 0, 0"]
     lines += [f"\t.globl {PREFIX}native_body_count", f"{PREFIX}native_body_count:", f"\t.long {len(profile_ids)}"]
 
-    # Each function's own static data in the ROM (from tools/link.py's placement). The PC
-    # version keeps its statics in its own memory, so writes there are not compared.
-    placement_file = C.BUILD / "placement.json"
-    placement = json.loads(placement_file.read_text()) if placement_file.exists() else {}
+    # Each function's own static data in the ROM (runtime/native-private.txt, from
+    # tools/link.py). The PC version keeps its statics in its own memory, so writes there are
+    # not compared.
+    placement = C.read_native_private()
     lines += [f"\t.globl {PREFIX}native_private", f"{PREFIX}native_private:"]
     private = 0
     for path, _ in objects:
         src = C.parse_source(path)
-        for _name, _mod, _romsec, start, end in placement.get(path.relative_to(C.ROOT).as_posix(), []):
+        for _name, start, end in placement.get(path.relative_to(C.ROOT).as_posix(), []):
             lines.append(f"\t.long 0x{src.address:08x}, 0x{start:08x}, 0x{end:08x}")
             private += 1
     lines += [f"\t.globl {PREFIX}native_private_count", f"{PREFIX}native_private_count:", f"\t.long {private}", ""]

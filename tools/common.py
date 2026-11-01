@@ -27,6 +27,31 @@ BUILD = ROOT / "build" / "adm-kr"
 ROM_DIR = BUILD / "rom"
 OBJ_DIR = BUILD / "obj"
 WORK_DIR = BUILD / "mwcc-cwd"
+# Where each source's own data (its sections other than .text and .init) lands in the ROM:
+# tools/link.py writes it, tools/native.py reads it. It is kept in the tree because only the
+# link (mwccarm) can tell, and the PC build must not need mwccarm.
+NATIVE_PRIVATE = ROOT / "runtime" / "native-private.txt"
+
+
+def write_native_private(placement: dict[str, list[tuple[str, int, int]]]) -> None:
+    """NATIVE_PRIVATE from {source: [(section, start, end), ...]}, in source and address order."""
+    lines = ["# Each source's own data in the ROM, outside its function: source, section, start and",
+             "# end (written by tools/link.py; while the source's function runs on the PC the words",
+             "# there are not compared with the Reference's, as the PC's copy of the data is its own)"]
+    for path in sorted(placement):
+        for name, start, end in sorted(placement[path], key=lambda s: (s[1], s[2], s[0])):
+            lines.append(f"{path} {name} {start:08x} {end:08x}")
+    NATIVE_PRIVATE.write_text("\n".join(lines) + "\n", newline="\n")
+
+
+def read_native_private() -> dict[str, list[tuple[str, int, int]]]:
+    """NATIVE_PRIVATE as write_native_private takes it."""
+    placement: dict[str, list[tuple[str, int, int]]] = {}
+    for line in NATIVE_PRIVATE.read_text().splitlines():
+        if line.strip() and not line.startswith("#"):
+            path, name, start, end = line.split()
+            placement.setdefault(path, []).append((name, int(start, 16), int(end, 16)))
+    return placement
 
 
 def main_checkout() -> pathlib.Path:

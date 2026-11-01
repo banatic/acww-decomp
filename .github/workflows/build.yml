@@ -59,6 +59,11 @@ jobs:
         env:
           LD_WRAPPER: wine
 
+      # The link rewrites where each source's own data lands (runtime/native-private.txt),
+      # which the PC build reads: the committed copy must be the one the link writes.
+      - name: Data placement is current
+        run: git -c safe.directory="$PWD" diff --exit-code -- runtime/native-private.txt
+
       - name: Differential check
         run: |
           apt-get update -qq && apt-get install -y -qq --no-install-recommends gcc-multilib >/dev/null
