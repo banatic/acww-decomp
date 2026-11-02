@@ -41,11 +41,12 @@
 #include "arm.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "memory.h"
 
-enum { CONTINUE = -1 };
+enum { CONTINUE = -1, FETCH_FAULT = -2 /* step_decoded: no instruction at r15 */ };
 
 /* Modes and banks --------------------------------------------------------------------------- */
 
@@ -213,7 +214,42 @@ static void restore_cpsr(ArmCpu *cpu)
 /* Memory --------------------------------------------------------------------------------- */
 
 /* Each access helper returns nonzero on success. The DS address is the host address (see
- * memory.h); what memory_host does not map goes to the I/O callbacks. */
+ * memory.h); what memory_host does not map goes to the I/O callbacks.
+ *
+ * While a block runs (see "Blocks" below), an access that goes to the callbacks, and a store
+ * into the block's own code, end the block after the instruction: a callback may change the
+ * interrupt line, and the next instructions may be new ones. */
+
+/* The code of the block running, [block_lo, block_lo + block_len). */
+static uint32_t block_lo, block_len;
+/* ARM_EXEC_CHECK: stores are logged, and callbacks and hooks counted, while a block runs
+ * (check_logging); the decoding interpreter runs the same instructions again with neither
+ * (check_shadow). */
+static int check_logging, check_shadow;
+static unsigned check_callouts, check_shadow_io;
+static void check_log_store(uint32_t address, uint32_t size, const uint8_t *p, uint32_t value);
+
+static inline void ram_store(ArmCpu *cpu, uint32_t address, uint32_t size, uint8_t *p, uint32_t value)
+{
+    if (address - block_lo + size - 1 < block_len + size - 1) {
+        cpu->block_exit = 1;
+    }
+    if (check_logging | check_shadow) {
+        check_log_store(address, size, p, value);
+    }
+}
+
+/* An access the callbacks serve: the block ends after it; the check's second run has none. */
+static inline int callout(ArmCpu *cpu)
+{
+    cpu->block_exit = 1;
+    check_callouts++;
+    if (check_shadow) {
+        check_shadow_io++;
+        return 0;
+    }
+    return 1;
+}
 
 static int read_word(ArmCpu *cpu, uint32_t address, uint32_t *value)
 {
@@ -223,7 +259,7 @@ static int read_word(ArmCpu *cpu, uint32_t address, uint32_t *value)
         memcpy(value, p, 4);
         return 1;
     }
-    if (cpu->io_read && cpu->io_read(cpu->io_user, address, 4, value)) {
+    if (callout(cpu) && cpu->io_read && cpu->io_read(cpu->io_user, address, 4, value)) {
         return 1;
     }
     cpu->fault_address = address;
@@ -238,7 +274,7 @@ static int read_half(ArmCpu *cpu, uint32_t address, uint32_t *value)
         *value = (uint32_t) p[0] | ((uint32_t) p[1] << 8);
         return 1;
     }
-    if (cpu->io_read && cpu->io_read(cpu->io_user, address, 2, value)) {
+    if (callout(cpu) && cpu->io_read && cpu->io_read(cpu->io_user, address, 2, value)) {
         *value &= 0xffffu;
         return 1;
     }
@@ -253,7 +289,7 @@ static int read_byte(ArmCpu *cpu, uint32_t address, uint32_t *value)
         *value = *p;
         return 1;
     }
-    if (cpu->io_read && cpu->io_read(cpu->io_user, address, 1, value)) {
+    if (callout(cpu) && cpu->io_read && cpu->io_read(cpu->io_user, address, 1, value)) {
         *value &= 0xffu;
         return 1;
     }
@@ -279,13 +315,14 @@ static int write_word(ArmCpu *cpu, uint32_t address, uint32_t value)
     address &= ~3u;
     uint8_t *p = memory_host(address, 4);
     if (p) {
+        ram_store(cpu, address, 4, p, value);
         memcpy(p, &value, 4);
-        if (cpu->observe_word_store != NULL) {
+        if (cpu->observe_word_store != NULL && !check_shadow) {
             cpu->observe_word_store(cpu, address, value);
         }
         return 1;
     }
-    if (cpu->io_write && cpu->io_write(cpu->io_user, address, 4, value)) {
+    if (callout(cpu) && cpu->io_write && cpu->io_write(cpu->io_user, address, 4, value)) {
         return 1;
     }
     cpu->fault_address = address;
@@ -297,11 +334,12 @@ static int write_half(ArmCpu *cpu, uint32_t address, uint32_t value)
     address &= ~1u;
     uint8_t *p = memory_host(address, 2);
     if (p) {
+        ram_store(cpu, address, 2, p, value & 0xffffu);
         p[0] = (uint8_t) value;
         p[1] = (uint8_t) (value >> 8);
         return 1;
     }
-    if (cpu->io_write && cpu->io_write(cpu->io_user, address, 2, value & 0xffffu)) {
+    if (callout(cpu) && cpu->io_write && cpu->io_write(cpu->io_user, address, 2, value & 0xffffu)) {
         return 1;
     }
     cpu->fault_address = address;
@@ -312,10 +350,11 @@ static int write_byte(ArmCpu *cpu, uint32_t address, uint32_t value)
 {
     uint8_t *p = memory_host(address, 1);
     if (p) {
+        ram_store(cpu, address, 1, p, value & 0xffu);
         *p = (uint8_t) value;
         return 1;
     }
-    if (cpu->io_write && cpu->io_write(cpu->io_user, address, 1, value & 0xffu)) {
+    if (callout(cpu) && cpu->io_write && cpu->io_write(cpu->io_user, address, 1, value & 0xffu)) {
         return 1;
     }
     cpu->fault_address = address;
@@ -566,6 +605,7 @@ static uint32_t count_bits(uint32_t value)
  * checked in turn so a redirect to the return address, or to another hooked function, works. */
 static int jump(ArmCpu *cpu, uint32_t target)
 {
+    cpu->block_exit = 1;
     for (;;) {
         target &= ~1u;
         cpu->r[15] = target;
@@ -573,7 +613,7 @@ static int jump(ArmCpu *cpu, uint32_t target)
             cpu->stop_pc = target;
             return ARM_RETURNED;
         }
-        if (!cpu->hook_at) {
+        if (!cpu->hook_at || check_shadow) {
             return CONTINUE;
         }
         void *user = NULL;
@@ -581,6 +621,7 @@ static int jump(ArmCpu *cpu, uint32_t target)
         if (!hook) {
             return CONTINUE;
         }
+        check_callouts++;
         int asked = hook(cpu, user);
         if (asked == 1) {
             cpu->stop_pc = target;
@@ -616,33 +657,11 @@ static int jump_in_state(ArmCpu *cpu, uint32_t target)
 /* An operand read of r15 sees the instruction address + 8. */
 #define ARM_REG(n) ((n) == 15 ? pc + 8 : cpu->r[n])
 
-static int arm_data_processing(ArmCpu *cpu, uint32_t pc, uint32_t instr)
+/* The data-processing operation `opcode` on a (Rn) and the shifter's operand and carry-out,
+ * with the result to Rd and the flags when S is set. */
+static inline __attribute__((always_inline)) int data_processing_apply(ArmCpu *cpu, uint32_t opcode, uint32_t s, uint32_t rd,
+                                                                       uint32_t a, uint32_t operand, uint32_t carry)
 {
-    uint32_t opcode = (instr >> 21) & 15;
-    uint32_t s = (instr >> 20) & 1;
-    uint32_t rn = (instr >> 16) & 15;
-    uint32_t rd = (instr >> 12) & 15;
-    uint32_t carry = (cpu->cpsr >> 29) & 1;
-    uint32_t operand;
-
-    if (instr & (1u << 25)) {
-        uint32_t rotate = (instr >> 7) & 0x1e;
-        operand = rotate_right(instr & 0xff, rotate);
-        if (rotate) {
-            carry = operand >> 31;
-        }
-    } else {
-        uint32_t type = (instr >> 5) & 3;
-        uint32_t rm = instr & 15;
-        if (instr & (1u << 4)) {
-            uint32_t amount = cpu->r[(instr >> 8) & 15] & 0xff;
-            operand = shift_register(type, ARM_REG(rm), amount, &carry);
-        } else {
-            operand = shift_immediate(type, ARM_REG(rm), (instr >> 7) & 31, &carry);
-        }
-    }
-
-    uint32_t a = ARM_REG(rn);
     uint32_t result;
     int writes_rd = 1;
 
@@ -724,6 +743,35 @@ static int arm_data_processing(ArmCpu *cpu, uint32_t pc, uint32_t instr)
     }
     cpu->r[rd] = result;
     return CONTINUE;
+}
+
+static int arm_data_processing(ArmCpu *cpu, uint32_t pc, uint32_t instr)
+{
+    uint32_t opcode = (instr >> 21) & 15;
+    uint32_t s = (instr >> 20) & 1;
+    uint32_t rn = (instr >> 16) & 15;
+    uint32_t rd = (instr >> 12) & 15;
+    uint32_t carry = (cpu->cpsr >> 29) & 1;
+    uint32_t operand;
+
+    if (instr & (1u << 25)) {
+        uint32_t rotate = (instr >> 7) & 0x1e;
+        operand = rotate_right(instr & 0xff, rotate);
+        if (rotate) {
+            carry = operand >> 31;
+        }
+    } else {
+        uint32_t type = (instr >> 5) & 3;
+        uint32_t rm = instr & 15;
+        if (instr & (1u << 4)) {
+            uint32_t amount = cpu->r[(instr >> 8) & 15] & 0xff;
+            operand = shift_register(type, ARM_REG(rm), amount, &carry);
+        } else {
+            operand = shift_immediate(type, ARM_REG(rm), (instr >> 7) & 31, &carry);
+        }
+    }
+
+    return data_processing_apply(cpu, opcode, s, rd, ARM_REG(rn), operand, carry);
 }
 
 static int arm_multiply(ArmCpu *cpu, uint32_t pc, uint32_t instr)
@@ -1623,6 +1671,955 @@ static int thumb_execute(ArmCpu *cpu, uint32_t pc, uint32_t instr)
     }
 }
 
+/* Blocks ---------------------------------------------------------------------------------- */
+
+/* A block is a run of instructions from one address in one state, decoded once: each keeps its
+ * handler, and the block keeps the bytes it was decoded from, so that it is never used once its
+ * code has changed (an overlay loaded over it, a DMA, a store by the game or by Native code):
+ * the code there is then decoded again. A block ends after an instruction that always branches
+ * (what follows may be data), after one that may change the mode or the interrupt mask (an
+ * interrupt may be taken before the next instruction), and after BLOCK_MAX_OPS instructions.
+ *
+ * The run loop takes a block where it would fetch an instruction, after the checks it makes
+ * before every instruction (the return address, the step limit, an interrupt, a stall). Inside
+ * a block those can only change through a callback or a hook, which end the block (block_exit,
+ * set by jump() and the memory helpers), so the loop makes them once a block: the block runs
+ * no further than the step limit, and stops before an instruction at the return address or at
+ * a stall's address. Each instruction sets r15 and counts its step as the loop does, so a
+ * callback or a hook sees the moment it would see; a taken branch (r15 not the next
+ * instruction) ends the block too. */
+
+#define BLOCK_MAX_OPS 64
+
+typedef struct BlockOp BlockOp;
+typedef int (*BlockFn)(ArmCpu *cpu, const BlockOp *op);
+struct BlockOp {
+    BlockFn fn;
+    uint32_t pc;
+    uint32_t instr;
+    uint32_t imm; /* the handler's decoded fields */
+    uint8_t rd, rn, rm, rs, cond;
+};
+
+typedef struct Block {
+    uint32_t start, bytes, count, thumb;
+    int active;    /* runs inside it: a hook in it can start another run, or switch host stacks */
+    int dead;      /* replaced while a run was inside: freed when the last one leaves */
+    BlockOp ops[]; /* then the bytes of the code */
+} Block;
+
+static Block **main_blocks, **itcm_blocks;
+static uint64_t blocks_built;
+
+/* Where the block starting at `pc` is kept, or NULL where blocks are not used (code outside
+ * main RAM and the ITCM, as the BIOS's, is fetched and decoded as it runs). `end` is the end of
+ * the region: a block does not cross it. */
+static Block **block_slot(uint32_t pc, uint32_t *end)
+{
+    if (pc - MEM_MAIN_BASE < MEM_MAIN_SIZE) {
+        if (main_blocks == NULL) {
+            main_blocks = calloc(MEM_MAIN_SIZE / 2, sizeof(*main_blocks));
+        }
+        *end = MEM_MAIN_BASE + MEM_MAIN_SIZE;
+        return main_blocks != NULL ? main_blocks + ((pc - MEM_MAIN_BASE) >> 1) : NULL;
+    }
+    if (pc - MEM_ITCM_BASE < MEM_ITCM_SIZE) {
+        if (itcm_blocks == NULL) {
+            itcm_blocks = calloc(MEM_ITCM_SIZE / 2, sizeof(*itcm_blocks));
+        }
+        *end = MEM_ITCM_BASE + MEM_ITCM_SIZE;
+        return itcm_blocks != NULL ? itcm_blocks + ((pc - MEM_ITCM_BASE) >> 1) : NULL;
+    }
+    return NULL;
+}
+
+static int op_arm(ArmCpu *cpu, const BlockOp *op)
+{
+    return arm_execute(cpu, op->pc, op->instr);
+}
+
+static int op_thumb(ArmCpu *cpu, const BlockOp *op)
+{
+    return thumb_execute(cpu, op->pc, op->instr);
+}
+
+/* The handlers of the common instructions, with their fields decoded when the block is: each
+ * does what arm_execute or thumb_execute does with that instruction (the helpers they call are
+ * the same), only without decoding it again. */
+
+/* Bit f of pass[cond]: whether the condition passes with N Z C V = f (ARM ARM A3.2). */
+static uint16_t condition_pass[16];
+
+static void condition_table(void)
+{
+    for (uint32_t cond = 0; cond < 16; cond++) {
+        for (uint32_t f = 0; f < 16; f++) {
+            if (condition_passed(f << 28, cond)) {
+                condition_pass[cond] |= (uint16_t) (1u << f);
+            }
+        }
+    }
+}
+
+#define PASSES(cpu, op) ((condition_pass[(op)->cond] >> ((cpu)->cpsr >> 28)) & 1)
+
+/* ARM: the condition, then the instruction class's own handler. */
+static int op_arm_dp(ArmCpu *cpu, const BlockOp *op)
+{
+    return PASSES(cpu, op) ? arm_data_processing(cpu, op->pc, op->instr) : CONTINUE;
+}
+
+static int op_arm_ls(ArmCpu *cpu, const BlockOp *op)
+{
+    return PASSES(cpu, op) ? arm_load_store(cpu, op->pc, op->instr) : CONTINUE;
+}
+
+static int op_arm_lsx(ArmCpu *cpu, const BlockOp *op)
+{
+    return PASSES(cpu, op) ? arm_load_store_extra(cpu, op->pc, op->instr) : CONTINUE;
+}
+
+static int op_arm_ldm(ArmCpu *cpu, const BlockOp *op)
+{
+    return PASSES(cpu, op) ? arm_block_transfer(cpu, op->pc, op->instr) : CONTINUE;
+}
+
+static int op_arm_mul(ArmCpu *cpu, const BlockOp *op)
+{
+    return PASSES(cpu, op) ? arm_multiply(cpu, op->pc, op->instr) : CONTINUE;
+}
+
+static int op_arm_misc(ArmCpu *cpu, const BlockOp *op)
+{
+    return PASSES(cpu, op) ? arm_miscellaneous(cpu, op->pc, op->instr) : CONTINUE;
+}
+
+/* B, BL: imm is the target. */
+static int op_arm_b(ArmCpu *cpu, const BlockOp *op)
+{
+    if (!PASSES(cpu, op)) {
+        return CONTINUE;
+    }
+    if (op->instr & (1u << 24)) {
+        cpu->r[14] = op->pc + 4;
+    }
+    return jump(cpu, op->imm);
+}
+
+/* Data processing with Rd and Rn not r15: imm the rotated immediate (with rm 1 when its rotation
+ * gives the carry-out), or Rm shifted by an immediate amount (rs the type, imm the amount). */
+static int op_arm_dp_imm(ArmCpu *cpu, const BlockOp *op)
+{
+    if (!PASSES(cpu, op)) {
+        return CONTINUE;
+    }
+    uint32_t carry = op->rm ? op->imm >> 31 : (cpu->cpsr >> 29) & 1;
+    return data_processing_apply(cpu, op->rs, op->instr & (1u << 20), op->rd, cpu->r[op->rn], op->imm, carry);
+}
+
+static int op_arm_dp_reg(ArmCpu *cpu, const BlockOp *op)
+{
+    if (!PASSES(cpu, op)) {
+        return CONTINUE;
+    }
+    uint32_t carry = (cpu->cpsr >> 29) & 1;
+    uint32_t operand = shift_immediate((op->instr >> 5) & 3, cpu->r[op->rm], op->imm, &carry);
+    return data_processing_apply(cpu, op->rs, op->instr & (1u << 20), op->rd, cpu->r[op->rn], operand, carry);
+}
+
+/* LDR, STR, LDRB, STRB [Rn, #+-imm] without writeback, Rd not r15; imm is the signed offset,
+ * and Rn r15 reads as the instruction's address + 8. */
+static int op_arm_ldr_imm(ArmCpu *cpu, const BlockOp *op)
+{
+    if (!PASSES(cpu, op)) {
+        return CONTINUE;
+    }
+    uint32_t base = op->rn == 15 ? op->pc + 8 : cpu->r[op->rn];
+    uint32_t value;
+    if (!load_word(cpu, base + op->imm, &value)) {
+        return ARM_BAD_ADDRESS;
+    }
+    cpu->r[op->rd] = value;
+    return CONTINUE;
+}
+
+static int op_arm_ldrb_imm(ArmCpu *cpu, const BlockOp *op)
+{
+    if (!PASSES(cpu, op)) {
+        return CONTINUE;
+    }
+    uint32_t base = op->rn == 15 ? op->pc + 8 : cpu->r[op->rn];
+    uint32_t value;
+    if (!read_byte(cpu, base + op->imm, &value)) {
+        return ARM_BAD_ADDRESS;
+    }
+    cpu->r[op->rd] = value;
+    return CONTINUE;
+}
+
+static int op_arm_str_imm(ArmCpu *cpu, const BlockOp *op)
+{
+    if (!PASSES(cpu, op)) {
+        return CONTINUE;
+    }
+    uint32_t base = op->rn == 15 ? op->pc + 8 : cpu->r[op->rn];
+    return write_word(cpu, base + op->imm, cpu->r[op->rd]) ? CONTINUE : ARM_BAD_ADDRESS;
+}
+
+static int op_arm_strb_imm(ArmCpu *cpu, const BlockOp *op)
+{
+    if (!PASSES(cpu, op)) {
+        return CONTINUE;
+    }
+    uint32_t base = op->rn == 15 ? op->pc + 8 : cpu->r[op->rn];
+    return write_byte(cpu, base + op->imm, cpu->r[op->rd]) ? CONTINUE : ARM_BAD_ADDRESS;
+}
+
+/* Thumb ------------------------------------------------------------------------------------ */
+
+/* LSL, LSR, ASR Rd, Rs, #imm (rs the type) */
+static int op_thumb_shift(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t carry = (cpu->cpsr >> 29) & 1;
+    uint32_t result = shift_immediate(op->rs, cpu->r[op->rn], op->imm, &carry);
+    cpu->r[op->rd] = result;
+    set_nzc(cpu, result, carry);
+    return CONTINUE;
+}
+
+/* ADD, SUB Rd, Rn, Rm or #imm3 (rm 8 for the immediate in imm) */
+static int op_thumb_add3(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t b = op->rm == 8 ? op->imm : cpu->r[op->rm];
+    cpu->r[op->rd] = add_with_flags(cpu, cpu->r[op->rn], b, 0);
+    return CONTINUE;
+}
+
+static int op_thumb_sub3(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t b = op->rm == 8 ? op->imm : cpu->r[op->rm];
+    cpu->r[op->rd] = sub_with_flags(cpu, cpu->r[op->rn], b, 1);
+    return CONTINUE;
+}
+
+static int op_thumb_mov8(ArmCpu *cpu, const BlockOp *op)
+{
+    cpu->r[op->rd] = op->imm;
+    set_nz(cpu, op->imm);
+    return CONTINUE;
+}
+
+static int op_thumb_cmp8(ArmCpu *cpu, const BlockOp *op)
+{
+    sub_with_flags(cpu, cpu->r[op->rd], op->imm, 1);
+    return CONTINUE;
+}
+
+static int op_thumb_add8(ArmCpu *cpu, const BlockOp *op)
+{
+    cpu->r[op->rd] = add_with_flags(cpu, cpu->r[op->rd], op->imm, 0);
+    return CONTINUE;
+}
+
+static int op_thumb_sub8(ArmCpu *cpu, const BlockOp *op)
+{
+    cpu->r[op->rd] = sub_with_flags(cpu, cpu->r[op->rd], op->imm, 1);
+    return CONTINUE;
+}
+
+static int op_thumb_alu(ArmCpu *cpu, const BlockOp *op)
+{
+    return thumb_alu(cpu, op->instr);
+}
+
+/* LDR Rd, [pc, #imm]: imm is the address */
+static int op_thumb_ldr_pc(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t value;
+    if (!load_word(cpu, op->imm, &value)) {
+        return ARM_BAD_ADDRESS;
+    }
+    cpu->r[op->rd] = value;
+    return CONTINUE;
+}
+
+/* The immediate-offset loads and stores, Rd, [Rn, #imm] with imm scaled */
+static int op_thumb_ldr(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t value;
+    if (!load_word(cpu, cpu->r[op->rn] + op->imm, &value)) {
+        return ARM_BAD_ADDRESS;
+    }
+    cpu->r[op->rd] = value;
+    return CONTINUE;
+}
+
+static int op_thumb_str(ArmCpu *cpu, const BlockOp *op)
+{
+    return write_word(cpu, cpu->r[op->rn] + op->imm, cpu->r[op->rd]) ? CONTINUE : ARM_BAD_ADDRESS;
+}
+
+static int op_thumb_ldrb(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t value;
+    if (!read_byte(cpu, cpu->r[op->rn] + op->imm, &value)) {
+        return ARM_BAD_ADDRESS;
+    }
+    cpu->r[op->rd] = value;
+    return CONTINUE;
+}
+
+static int op_thumb_strb(ArmCpu *cpu, const BlockOp *op)
+{
+    return write_byte(cpu, cpu->r[op->rn] + op->imm, cpu->r[op->rd]) ? CONTINUE : ARM_BAD_ADDRESS;
+}
+
+static int op_thumb_ldrh(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t value;
+    if (!read_half(cpu, cpu->r[op->rn] + op->imm, &value)) {
+        return ARM_BAD_ADDRESS;
+    }
+    cpu->r[op->rd] = value;
+    return CONTINUE;
+}
+
+static int op_thumb_strh(ArmCpu *cpu, const BlockOp *op)
+{
+    return write_half(cpu, cpu->r[op->rn] + op->imm, cpu->r[op->rd]) ? CONTINUE : ARM_BAD_ADDRESS;
+}
+
+/* ADD Rd, sp, #imm; ADD Rd, pc, #imm (imm then the whole value); ADD/SUB sp, #imm (signed) */
+static int op_thumb_add_sp(ArmCpu *cpu, const BlockOp *op)
+{
+    cpu->r[op->rd] = cpu->r[13] + op->imm;
+    return CONTINUE;
+}
+
+static int op_thumb_add_pc(ArmCpu *cpu, const BlockOp *op)
+{
+    cpu->r[op->rd] = op->imm;
+    return CONTINUE;
+}
+
+static int op_thumb_sp(ArmCpu *cpu, const BlockOp *op)
+{
+    cpu->r[13] += op->imm;
+    return CONTINUE;
+}
+
+/* PUSH, POP, LDMIA, STMIA: imm is the equivalent ARM instruction */
+static int op_thumb_ldm(ArmCpu *cpu, const BlockOp *op)
+{
+    return arm_block_transfer(cpu, op->pc, op->imm);
+}
+
+/* B, Bcc: imm is the target */
+static int op_thumb_bcc(ArmCpu *cpu, const BlockOp *op)
+{
+    return PASSES(cpu, op) ? jump(cpu, op->imm) : CONTINUE;
+}
+
+/* The BL prefix: imm is lr's value */
+static int op_thumb_bl_high(ArmCpu *cpu, const BlockOp *op)
+{
+    cpu->r[14] = op->imm;
+    return CONTINUE;
+}
+
+static int op_thumb_bl_low(ArmCpu *cpu, const BlockOp *op)
+{
+    uint32_t target = cpu->r[14] + op->imm;
+    cpu->r[14] = (op->pc + 2) | 1;
+    return jump(cpu, target & ~1u);
+}
+
+/* Fills in op's handler and fields for the ARM instruction `instr` at `pc`. */
+static void arm_decode_op(BlockOp *op, uint32_t pc, uint32_t instr)
+{
+    uint32_t cond = instr >> 28, rd = (instr >> 12) & 15, rn = (instr >> 16) & 15;
+    op->fn = op_arm;
+    op->cond = (uint8_t) cond;
+    op->rd = (uint8_t) rd;
+    op->rn = (uint8_t) rn;
+    op->rm = (uint8_t) (instr & 15);
+    op->rs = 0;
+    op->imm = 0;
+    if (cond == 0xf) {
+        return;
+    }
+    switch ((instr >> 25) & 7) {
+        case 0:
+        case 1:
+            if ((instr & 0x02000090u) == 0x00000090u) {
+                if (instr & 0x60u) {
+                    op->fn = op_arm_lsx;
+                } else if (!(instr & (1u << 24))) {
+                    op->fn = op_arm_mul;
+                }
+                return;
+            }
+            if ((instr & 0x01900000u) == 0x01000000u) {
+                op->fn = op_arm_misc;
+                return;
+            }
+            op->fn = op_arm_dp;
+            if (rd == 15 || rn == 15) {
+                return;
+            }
+            op->rs = (uint8_t) ((instr >> 21) & 15);
+            if (instr & (1u << 25)) {
+                uint32_t rotate = (instr >> 7) & 0x1e;
+                op->imm = rotate_right(instr & 0xff, rotate);
+                op->rm = rotate != 0;
+                op->fn = op_arm_dp_imm;
+            } else if (!(instr & (1u << 4)) && (instr & 15) != 15) {
+                op->imm = (instr >> 7) & 31;
+                op->fn = op_arm_dp_reg;
+            }
+            return;
+        case 2:
+            op->fn = op_arm_ls;
+            if ((instr & (1u << 24)) && !(instr & (1u << 21)) && rd != 15) {
+                /* offset addressing, no writeback */
+                uint32_t offset = instr & 0xfff;
+                op->imm = (instr & (1u << 23)) ? offset : 0u - offset;
+                if (instr & (1u << 20)) {
+                    op->fn = (instr & (1u << 22)) ? op_arm_ldrb_imm : op_arm_ldr_imm;
+                } else {
+                    op->fn = (instr & (1u << 22)) ? op_arm_strb_imm : op_arm_str_imm;
+                }
+            }
+            return;
+        case 3:
+            if (!(instr & (1u << 4))) {
+                op->fn = op_arm_ls;
+            }
+            return;
+        case 4:
+            op->fn = op_arm_ldm;
+            return;
+        case 5:
+            op->imm = pc + 8 + (uint32_t) ((int32_t) (instr << 8) >> 6);
+            op->fn = op_arm_b;
+            return;
+        default:
+            return;
+    }
+}
+
+/* The same for the Thumb instruction `instr`. */
+static void thumb_decode_op(BlockOp *op, uint32_t pc, uint32_t instr)
+{
+    op->fn = op_thumb;
+    op->cond = 0xe;
+    op->rd = (uint8_t) (instr & 7);
+    op->rn = (uint8_t) ((instr >> 3) & 7);
+    op->rm = (uint8_t) ((instr >> 6) & 7);
+    op->rs = 0;
+    op->imm = 0;
+    switch (instr >> 11) {
+        case 0x00:
+        case 0x01:
+        case 0x02:
+            op->rs = (uint8_t) ((instr >> 11) & 3);
+            op->imm = (instr >> 6) & 31;
+            op->fn = op_thumb_shift;
+            return;
+        case 0x03:
+            if (instr & (1u << 10)) {
+                op->imm = (instr >> 6) & 7;
+                op->rm = 8;
+            }
+            op->fn = (instr & (1u << 9)) ? op_thumb_sub3 : op_thumb_add3;
+            return;
+        case 0x04:
+        case 0x05:
+        case 0x06:
+        case 0x07:
+            op->rd = (uint8_t) ((instr >> 8) & 7);
+            op->imm = instr & 0xff;
+            op->fn = (instr >> 11) == 0x04   ? op_thumb_mov8
+                     : (instr >> 11) == 0x05 ? op_thumb_cmp8
+                     : (instr >> 11) == 0x06 ? op_thumb_add8
+                                             : op_thumb_sub8;
+            return;
+        case 0x08:
+            if (!(instr & (1u << 10))) {
+                op->fn = op_thumb_alu;
+            }
+            return;
+        case 0x09:
+            op->rd = (uint8_t) ((instr >> 8) & 7);
+            op->imm = ((pc + 4) & ~3u) + (instr & 0xff) * 4;
+            op->fn = op_thumb_ldr_pc;
+            return;
+        case 0x0c:
+            op->imm = ((instr >> 6) & 31) * 4;
+            op->fn = op_thumb_str;
+            return;
+        case 0x0d:
+            op->imm = ((instr >> 6) & 31) * 4;
+            op->fn = op_thumb_ldr;
+            return;
+        case 0x0e:
+            op->imm = (instr >> 6) & 31;
+            op->fn = op_thumb_strb;
+            return;
+        case 0x0f:
+            op->imm = (instr >> 6) & 31;
+            op->fn = op_thumb_ldrb;
+            return;
+        case 0x10:
+            op->imm = ((instr >> 6) & 31) * 2;
+            op->fn = op_thumb_strh;
+            return;
+        case 0x11:
+            op->imm = ((instr >> 6) & 31) * 2;
+            op->fn = op_thumb_ldrh;
+            return;
+        case 0x12:
+        case 0x13:
+            op->rd = (uint8_t) ((instr >> 8) & 7);
+            op->rn = 13;
+            op->imm = (instr & 0xff) * 4;
+            op->fn = (instr & (1u << 11)) ? op_thumb_ldr : op_thumb_str;
+            return;
+        case 0x14:
+            op->rd = (uint8_t) ((instr >> 8) & 7);
+            op->imm = ((pc + 4) & ~3u) + (instr & 0xff) * 4;
+            op->fn = op_thumb_add_pc;
+            return;
+        case 0x15:
+            op->rd = (uint8_t) ((instr >> 8) & 7);
+            op->imm = (instr & 0xff) * 4;
+            op->fn = op_thumb_add_sp;
+            return;
+        case 0x16:
+        case 0x17:
+            switch ((instr >> 8) & 15) {
+                case 0x0:
+                    op->imm = (instr & (1u << 7)) ? 0u - (instr & 0x7f) * 4 : (instr & 0x7f) * 4;
+                    op->fn = op_thumb_sp;
+                    return;
+                case 0x4:
+                case 0x5:
+                    op->imm = 0xe92d0000u | (instr & 0xff) | ((instr & (1u << 8)) ? 1u << 14 : 0);
+                    op->fn = op_thumb_ldm;
+                    return;
+                case 0xc:
+                case 0xd:
+                    op->imm = 0xe8bd0000u | (instr & 0xff) | ((instr & (1u << 8)) ? 1u << 15 : 0);
+                    op->fn = op_thumb_ldm;
+                    return;
+                default:
+                    return;
+            }
+        case 0x18:
+        case 0x19:
+            op->imm = ((instr & (1u << 11)) ? 0xe8b00000u : 0xe8a00000u) | (((instr >> 8) & 7) << 16) | (instr & 0xff);
+            op->fn = op_thumb_ldm;
+            return;
+        case 0x1a:
+        case 0x1b:
+            if (((instr >> 8) & 15) < 0xe) {
+                op->cond = (uint8_t) ((instr >> 8) & 15);
+                op->imm = pc + 4 + (uint32_t) ((int32_t) (int8_t) (instr & 0xff) * 2);
+                op->fn = op_thumb_bcc;
+            }
+            return;
+        case 0x1c:
+            op->imm = pc + 4 + (uint32_t) ((int32_t) (instr << 21) >> 20);
+            op->fn = op_thumb_bcc;
+            return;
+        case 0x1e:
+            op->imm = pc + 4 + (uint32_t) ((int32_t) (instr << 21) >> 9);
+            op->fn = op_thumb_bl_high;
+            return;
+        case 0x1f:
+            op->imm = (instr & 0x7ff) << 1;
+            op->fn = op_thumb_bl_low;
+            return;
+        default:
+            return;
+    }
+}
+
+/* Whether a block ends after this ARM instruction. Conditional branches do not end one, nor do
+ * other instructions that write r15 only when their condition passes: the run leaves the block
+ * when they do. */
+static int arm_ends_block(uint32_t instr)
+{
+    uint32_t cond = instr >> 28;
+    int always = cond == 0xe;
+    if (cond == 0xf) {
+        return (instr & 0x0d70f000u) != 0x0550f000u; /* all but PLD */
+    }
+    switch ((instr >> 25) & 7) {
+        case 0:
+        case 1:
+            if ((instr & 0x01900000u) == 0x01000000u && ((instr >> 25) & 1 || (instr & 0x90u) != 0x90u)) {
+                /* the miscellaneous space: MSR always (the mode, the interrupt mask), BX and
+                   BLX unless conditional, BKPT and the undefined ones; MRS, CLZ, the
+                   saturating adds and the signed multiplies go on */
+                uint32_t op = (instr >> 21) & 3;
+                if (instr & (1u << 25)) {
+                    return 1;
+                }
+                switch ((instr >> 4) & 15) {
+                    case 0x0:
+                        return op & 1;
+                    case 0x1:
+                        return op == 1 ? always : op != 3;
+                    case 0x3:
+                        return op == 1 ? always : 1;
+                    case 0x5:
+                    case 0x8:
+                    case 0xa:
+                    case 0xc:
+                    case 0xe:
+                        return 0;
+                    default:
+                        return 1;
+                }
+            }
+            if ((instr & (1u << 25)) == 0 && (instr & 0x90u) == 0x90u) {
+                /* multiplies, swaps, the extra loads and stores: a load into r15 */
+                return always && (instr & 0x60u) && (instr & (1u << 20)) && ((instr >> 12) & 15) == 15;
+            }
+            if (((instr >> 12) & 15) == 15) {
+                uint32_t opcode = (instr >> 21) & 15;
+                if (opcode >= 0x8 && opcode <= 0xb) {
+                    return 0; /* TST, TEQ, CMP, CMN write no register */
+                }
+                return always || (instr & (1u << 20)); /* with S: the CPSR from the SPSR */
+            }
+            return 0;
+        case 2:
+            return always && (instr & (1u << 20)) && ((instr >> 12) & 15) == 15;
+        case 3:
+            return (instr & (1u << 4)) || (always && (instr & (1u << 20)) && ((instr >> 12) & 15) == 15);
+        case 4:
+            if (instr & (1u << 22)) {
+                return (instr & (1u << 20)) && (instr & (1u << 15)); /* LDM ^ with r15: the CPSR */
+            }
+            return always && (instr & (1u << 20)) && (instr & (1u << 15));
+        case 5:
+            return always;
+        default:
+            return 1; /* coprocessors, SWI, undefined */
+    }
+}
+
+/* The same for a Thumb instruction. */
+static int thumb_ends_block(uint32_t instr)
+{
+    switch (instr >> 12) {
+        case 0x4:
+            if ((instr & 0xfc00u) == 0x4400u) {
+                uint32_t op = (instr >> 8) & 3;
+                uint32_t rd = (instr & 7) | ((instr >> 4) & 8);
+                return op == 3 || (op != 1 && rd == 15);
+            }
+            return 0;
+        case 0xb:
+            switch ((instr >> 8) & 15) {
+                case 0x0:
+                case 0x4:
+                case 0x5:
+                case 0xc:
+                    return 0;
+                default:
+                    return 1; /* POP with r15, BKPT, undefined */
+            }
+        case 0xd:
+            return ((instr >> 8) & 15) >= 0xe; /* SWI, undefined; Bcc goes on */
+        case 0xe:
+            return 1; /* B, the BLX suffix */
+        case 0xf:
+            return (instr >> 11) & 1; /* the BL suffix; the prefix goes on */
+        default:
+            return 0;
+    }
+}
+
+static Block *block_build(uint32_t pc, uint32_t thumb, uint32_t region_end)
+{
+    BlockOp ops[BLOCK_MAX_OPS];
+    uint32_t size = thumb ? 2 : 4, count = 0, address = pc;
+    if (condition_pass[0xe] == 0) {
+        condition_table();
+    }
+    while (count < BLOCK_MAX_OPS && address + size <= region_end) {
+        uint32_t instr;
+        if (thumb) {
+            uint16_t h;
+            memcpy(&h, (const void *) (uintptr_t) address, 2);
+            instr = h;
+        } else {
+            memcpy(&instr, (const void *) (uintptr_t) address, 4);
+        }
+        if (thumb) {
+            thumb_decode_op(&ops[count], address, instr);
+        } else {
+            arm_decode_op(&ops[count], address, instr);
+        }
+        ops[count].pc = address;
+        ops[count].instr = instr;
+        count++;
+        address += size;
+        if (thumb ? thumb_ends_block(instr) : arm_ends_block(instr)) {
+            break;
+        }
+    }
+    uint32_t bytes = count * size;
+    Block *b = malloc(sizeof(Block) + count * sizeof(BlockOp) + bytes);
+    if (b == NULL) {
+        return NULL;
+    }
+    b->start = pc;
+    b->bytes = bytes;
+    b->count = count;
+    b->thumb = thumb;
+    b->active = 0;
+    b->dead = 0;
+    memcpy(b->ops, ops, count * sizeof(BlockOp));
+    memcpy(b->ops + count, (const void *) (uintptr_t) pc, bytes);
+    blocks_built++;
+    return b;
+}
+
+/* Whether the code is still the code the block was decoded from. */
+static inline int block_unchanged(const Block *b)
+{
+    const uint8_t *was = (const uint8_t *) (b->ops + b->count);
+    const uint8_t *now = (const uint8_t *) (uintptr_t) b->start;
+    uint32_t i = 0, differ = 0;
+    for (; i + 4 <= b->bytes; i += 4) {
+        uint32_t x, y;
+        memcpy(&x, was + i, 4);
+        memcpy(&y, now + i, 4);
+        differ |= x ^ y;
+    }
+    if (i < b->bytes) {
+        uint16_t x, y;
+        memcpy(&x, was + i, 2);
+        memcpy(&y, now + i, 2);
+        differ |= (uint32_t) (x ^ y);
+    }
+    return differ == 0;
+}
+
+/* The block at `pc` in the current state, decoded now if there is none or its code changed;
+ * NULL where blocks are not used. */
+static Block *block_at(uint32_t pc, uint32_t thumb)
+{
+    uint32_t end;
+    Block **slot = block_slot(pc, &end);
+    if (slot == NULL || (!thumb && (pc & 3))) {
+        return NULL; /* (ARM code at an address that is not a word's: it fetches the word below) */
+    }
+    Block *b = *slot;
+    if (b != NULL && b->thumb == thumb && block_unchanged(b)) {
+        return b;
+    }
+    Block *fresh = block_build(pc, thumb, end);
+    if (fresh == NULL) {
+        return NULL;
+    }
+    if (b != NULL) {
+        if (b->active) {
+            b->dead = 1;
+        } else {
+            free(b);
+        }
+    }
+    *slot = fresh;
+    return fresh;
+}
+
+/* Runs block `b` from its first instruction, which the run loop has checked as it checks
+ * every instruction; `mode` is the loop's stall index. Returns CONTINUE or a stop, with *at
+ * the address of the last instruction executed. */
+static int block_run(ArmCpu *cpu, Block *b, uint32_t until, uint64_t limit, int mode, uint32_t *at)
+{
+    uint32_t n = b->count;
+    if (limit - cpu->steps < n) {
+        n = (uint32_t) (limit - cpu->steps);
+    }
+    uint32_t stall_pc = cpu->stall_pc[mode];
+    int stall = cpu->steps < cpu->stall_until[mode] || cpu->stall_branch[mode];
+    if (until - b->start < b->bytes || (stall && stall_pc - b->start < b->bytes)) {
+        for (uint32_t i = 1; i < n; i++) {
+            if (b->ops[i].pc == until || (stall && b->ops[i].pc == stall_pc)) {
+                n = i;
+                break;
+            }
+        }
+    }
+    uint32_t size = b->thumb ? 2 : 4;
+    const BlockOp *op = b->ops;
+    int result;
+    b->active++;
+    block_lo = b->start;
+    block_len = b->bytes;
+    cpu->block_exit = 0;
+    for (;;) {
+        uint32_t next = op->pc + size;
+        cpu->r[15] = next;
+        result = op->fn(cpu, op);
+        cpu->steps++;
+        if (result != CONTINUE || cpu->block_exit || cpu->r[15] != next || --n == 0) {
+            break;
+        }
+        op++;
+    }
+    block_lo = block_len = 0;
+    *at = op->pc;
+    if (--b->active == 0 && b->dead) {
+        free(b);
+    }
+    return result;
+}
+
+/* One instruction at `pc`, fetched and decoded: the run loop's own way. */
+static int step_decoded(ArmCpu *cpu, uint32_t pc)
+{
+    uint32_t instr;
+    if (cpu->cpsr & ARM_CPSR_T) {
+        if (!read_half(cpu, pc, &instr)) {
+            return FETCH_FAULT;
+        }
+        cpu->r[15] = pc + 2;
+        return thumb_execute(cpu, pc, instr);
+    }
+    if (!read_word(cpu, pc, &instr)) {
+        return FETCH_FAULT;
+    }
+    cpu->r[15] = pc + 4;
+    return arm_execute(cpu, pc, instr);
+}
+
+/* The check (ARM_EXEC_CHECK) ---------------------------------------------------------------- */
+
+/* A block runs with its stores logged, with the bytes they replaced. When it called no
+ * callback and ran no hook (those cannot run twice), its stores are undone, the CPU is put
+ * back, and the decoding interpreter runs as many instructions from there, making the run
+ * loop's checks before each; both must end in the same state with the same stores. */
+
+#define CHECK_LOG 4096
+
+typedef struct {
+    uint32_t address, size, value;
+    uint8_t old[4];
+} LoggedStore;
+
+static LoggedStore check_log[2][CHECK_LOG];
+static uint32_t check_logged[2];
+static int check_overflow;
+static uint64_t checked_blocks, unchecked_blocks;
+
+static void check_log_store(uint32_t address, uint32_t size, const uint8_t *p, uint32_t value)
+{
+    int which = check_shadow;
+    if (check_logged[which] == CHECK_LOG) {
+        check_overflow = 1;
+        return;
+    }
+    LoggedStore *s = &check_log[which][check_logged[which]++];
+    s->address = address;
+    s->size = size;
+    s->value = value;
+    memcpy(s->old, p, size);
+}
+
+static void check_failed(const char *what, const ArmCpu *before, const ArmCpu *blocks, const ArmCpu *decoded)
+{
+    fprintf(stderr, "arm: block check FAILED at step %llu, pc %08x (%s): %s\n", (unsigned long long) before->steps,
+            before->r[15], (before->cpsr & ARM_CPSR_T) ? "thumb" : "arm", what);
+    for (int i = 0; i < 16; i++) {
+        if (blocks->r[i] != decoded->r[i]) {
+            fprintf(stderr, "  r%d: blocks %08x, decoded %08x\n", i, blocks->r[i], decoded->r[i]);
+        }
+    }
+    fprintf(stderr, "  cpsr: blocks %08x, decoded %08x; steps: blocks %llu, decoded %llu\n", blocks->cpsr, decoded->cpsr,
+            (unsigned long long) blocks->steps, (unsigned long long) decoded->steps);
+    fflush(stderr);
+    abort();
+}
+
+static int block_checked(ArmCpu *cpu, Block *b, uint32_t until, uint64_t limit, int mode, uint32_t *at)
+{
+    static ArmCpu before, after;
+    before = *cpu;
+    unsigned callouts = check_callouts;
+    check_logged[0] = check_logged[1] = 0;
+    check_overflow = 0;
+    check_logging = 1;
+    int result = block_run(cpu, b, until, limit, mode, at);
+    check_logging = 0;
+    if (check_callouts != callouts || check_overflow) {
+        unchecked_blocks++;
+        return result;
+    }
+    after = *cpu;
+    for (uint32_t i = check_logged[0]; i-- > 0;) {
+        memcpy((void *) (uintptr_t) check_log[0][i].address, check_log[0][i].old, check_log[0][i].size);
+    }
+    *cpu = before;
+    check_shadow = 1;
+    check_shadow_io = 0;
+    uint64_t n = after.steps - before.steps;
+    int decoded = CONTINUE;
+    uint32_t pc = 0;
+    for (uint64_t k = 0; k < n; k++) {
+        pc = cpu->r[15];
+        int irq_mode = (cpu->cpsr & ARM_MODE_MASK) == ARM_MODE_IRQ;
+        int stalls = pc == cpu->stall_pc[irq_mode] && (cpu->steps < cpu->stall_until[irq_mode] || cpu->stall_branch[irq_mode]);
+        if (k > 0 && (pc == until || cpu->steps >= limit || (cpu->irq_line && !(cpu->cpsr & ARM_CPSR_I)) || stalls)) {
+            check_shadow = 0;
+            check_failed("the run loop stops or turns before this instruction", &before, &after, cpu);
+        }
+        decoded = step_decoded(cpu, pc);
+        cpu->steps++;
+        if (decoded != CONTINUE) {
+            break;
+        }
+    }
+    check_shadow = 0;
+    cpu->block_exit = after.block_exit;
+    if (check_shadow_io || check_overflow) {
+        check_failed("the decoding interpreter called a callback", &before, &after, cpu);
+    }
+    if (decoded != result || pc != *at) {
+        check_failed("a different stop", &before, &after, cpu);
+    }
+    if (memcmp(cpu, &after, sizeof(after)) != 0) {
+        check_failed("a different state", &before, &after, cpu);
+    }
+    if (check_logged[0] != check_logged[1]) {
+        check_failed("a different number of stores", &before, &after, cpu);
+    }
+    for (uint32_t i = 0; i < check_logged[0]; i++) {
+        const LoggedStore *x = &check_log[0][i], *y = &check_log[1][i];
+        if (x->address != y->address || x->size != y->size || x->value != y->value || memcmp(x->old, y->old, x->size)) {
+            check_failed("a different store", &before, &after, cpu);
+        }
+    }
+    checked_blocks++;
+    return result;
+}
+
+void arm_exec_report(const ArmCpu *cpu, FILE *out)
+{
+    if (cpu->exec == ARM_EXEC_CHECK) {
+        fprintf(out,
+                "arm: %llu blocks decoded; %llu block runs checked against the decoding interpreter, %llu not "
+                "(a callback or a hook ran)\n",
+                (unsigned long long) blocks_built, (unsigned long long) checked_blocks, (unsigned long long) unchecked_blocks);
+    }
+}
+
 /* The run loop ---------------------------------------------------------------------------- */
 
 static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
@@ -1686,24 +2683,18 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
                     (unsigned long long) cpu->steps, pc, (cpu->cpsr & ARM_CPSR_T) ? 't' : 'a', cpu->cpsr, cpu->r[0], cpu->r[1],
                     cpu->r[2], cpu->r[3], cpu->r[4], cpu->r[5], cpu->r[6], cpu->r[7], cpu->r[13], cpu->r[14]);
         }
-        if (cpu->cpsr & ARM_CPSR_T) {
-            uint32_t instr;
-            if (!read_half(cpu, pc, &instr)) {
-                cpu->stop_pc = pc;
-                return ARM_BAD_ADDRESS;
-            }
-            cpu->r[15] = pc + 2;
-            result = thumb_execute(cpu, pc, instr);
+        Block *b = cpu->exec != ARM_EXEC_DECODE && cpu->trace_count == 0 ? block_at(pc, cpu->cpsr & ARM_CPSR_T) : NULL;
+        if (b != NULL) {
+            result = cpu->exec == ARM_EXEC_CHECK ? block_checked(cpu, b, until, limit, mode, &pc)
+                                                 : block_run(cpu, b, until, limit, mode, &pc);
         } else {
-            uint32_t instr;
-            if (!read_word(cpu, pc, &instr)) {
+            result = step_decoded(cpu, pc);
+            if (result == FETCH_FAULT) {
                 cpu->stop_pc = pc;
                 return ARM_BAD_ADDRESS;
             }
-            cpu->r[15] = pc + 4;
-            result = arm_execute(cpu, pc, instr);
+            cpu->steps++;
         }
-        cpu->steps++;
         if (result == CONTINUE) {
             continue;
         }

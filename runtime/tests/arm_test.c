@@ -26,6 +26,7 @@
 static ArmCpu cpu;
 static int checks, failures;
 static const char *current;
+static int exec_mode; /* the tests run with each way of executing (ArmCpu.exec) */
 
 static void check(int ok, const char *what)
 {
@@ -67,6 +68,7 @@ static void begin(const char *name)
 {
     current = name;
     arm_init(&cpu);
+    cpu.exec = exec_mode;
     cpu.r[13] = STACK_TOP;
     memset(memory_host(DATA, 0x100), 0, 0x100);
 }
@@ -2144,6 +2146,224 @@ static void test_rom(const char *dir)
     CHECK_EQ(cpu.r[0], 0x1234);
 }
 
+/* Code that changes ------------------------------------------------------------------------ */
+
+/* A store into the instructions that follow it (the block running holds them), and code
+ * changed between two runs (the block decoded from it must not be used again). */
+static void test_code_changes(void)
+{
+    for (int run = 0; run < 3; run++) {
+        begin("a store into the next instructions");
+        cpu.r[0] = CODE + 8;
+        cpu.r[1] = 0xe3a02007u; /* mov r2, #7 */
+        CHECK_EQ(ARM(0xe5801000u /* str r1, [r0] */, 0xe3a02001u /* mov r2, #1 */, 0xe3a02005u /* mov r2, #5 */),
+                 ARM_RETURNED);
+        CHECK_EQ(cpu.r[2], 7);
+
+        begin("a Thumb store into the next instructions");
+        cpu.r[0] = CODE + 4;
+        cpu.r[1] = 0x2207u; /* movs r2, #7 */
+        CHECK_EQ(THUMB(0x8001u /* strh r1, [r0] */, 0x2201u /* movs r2, #1 */, 0x2205u /* movs r2, #5 */), ARM_RETURNED);
+        CHECK_EQ(cpu.r[2], 7);
+
+        begin("a byte store into the next instructions");
+        cpu.r[0] = CODE + 8;
+        cpu.r[1] = 9;
+        CHECK_EQ(ARM(0xe5c01000u /* strb r1, [r0] */, 0xe3a02001u /* mov r2, #1 */, 0xe3a02005u /* mov r2, #5 */),
+                 ARM_RETURNED);
+        CHECK_EQ(cpu.r[2], 9);
+
+        begin("code changed between runs");
+        CHECK_EQ(ARM(0xe3a02003u /* mov r2, #3 */), ARM_RETURNED);
+        CHECK_EQ(cpu.r[2], 3);
+        CHECK_EQ(ARM(0xe3a02004u /* mov r2, #4 */), ARM_RETURNED);
+        CHECK_EQ(cpu.r[2], 4);
+        CHECK_EQ(THUMB(0x2203u /* movs r2, #3 */), ARM_RETURNED);
+        CHECK_EQ(cpu.r[2], 3);
+        CHECK_EQ(THUMB(0x2204u /* movs r2, #4 */), ARM_RETURNED);
+        CHECK_EQ(cpu.r[2], 4);
+    }
+}
+
+/* Random code, decoded as it runs and from blocks ------------------------------------------- */
+
+/* Random instructions in RAM (with the registers pointing into a data area, so most loads and
+ * stores land there), run for a few hundred steps by the decoding interpreter and again, from
+ * the same state, from blocks and from checked blocks: the registers, the steps, the memory,
+ * the hooks consulted and the I/O accesses must all be the same. A store to RANDOM_IRQ sets
+ * the interrupt line from its bit 0 (the handler, served by the I/O callbacks at the low
+ * vector, returns at once, so the line stays up and interrupts are taken whenever CPSR I is
+ * clear); a store to RANDOM_IRQ + 4 writes its value over the next instruction. */
+#define RANDOM_IRQ 0x04000208u
+#ifndef RANDOM_TRIALS
+#define RANDOM_TRIALS 600
+#endif
+static uint64_t random_state = 0x9e3779b97f4a7c15ull;
+static uint32_t random_trace;
+
+static uint32_t random_word(void)
+{
+    random_state ^= random_state << 13;
+    random_state ^= random_state >> 7;
+    random_state ^= random_state << 17;
+    return (uint32_t) (random_state >> 16);
+}
+
+static void random_mix(uint32_t value)
+{
+    random_trace = (random_trace ^ value) * 16777619u;
+}
+
+static ArmHook random_hook_at(void *user, uint32_t address, void **hook_user)
+{
+    (void) user;
+    (void) hook_user;
+    random_mix(address);
+    random_mix((uint32_t) cpu.steps);
+    return NULL;
+}
+
+static int random_read(void *user, uint32_t address, int size, uint32_t *value)
+{
+    (void) user;
+    random_mix(address);
+    random_mix((uint32_t) size);
+    random_mix((uint32_t) cpu.steps);
+    random_mix(cpu.r[15]);
+    if (address == 0x00000018u) {
+        *value = 0xe25ef004u; /* subs pc, lr, #4 */
+        return 1;
+    }
+    *value = address * 2654435761u;
+    return address >= 0x04000000u && address < 0x05000000u;
+}
+
+static int random_write(void *user, uint32_t address, int size, uint32_t value)
+{
+    (void) user;
+    random_mix(address);
+    random_mix((uint32_t) size);
+    random_mix(value);
+    random_mix((uint32_t) cpu.steps);
+    random_mix(cpu.r[15]);
+    if (address == RANDOM_IRQ) {
+        cpu.irq_line = value & 1;
+    }
+    if (address == RANDOM_IRQ + 4 && cpu.r[15] - CODE < 0x100) {
+        memcpy(memory_host(cpu.r[15], 2), &value, 2); /* the block running may hold it */
+    }
+    return address >= 0x04000000u && address < 0x05000000u;
+}
+
+static void word_store_seen(ArmCpu *c, uint32_t address, uint32_t value)
+{
+    random_mix(address);
+    random_mix(value);
+    random_mix((uint32_t) c->steps);
+    random_mix(c->r[15]);
+}
+
+static uint32_t random_ram_hash(void)
+{
+    uint32_t h = 2166136261u;
+    for (uint32_t a = MEM_MAIN_BASE; a < MEM_MAIN_BASE + MEM_MAIN_SIZE; a += 4) {
+        uint32_t w;
+        memcpy(&w, (const void *) (uintptr_t) a, 4);
+        h = (h ^ w) * 16777619u;
+    }
+    return h;
+}
+
+typedef struct {
+    ArmCpu cpu;
+    enum ArmStop stop;
+    uint32_t trace, ram;
+} RandomEnd;
+
+/* From `first`, with memory as in `start`: three steps of at most 100 instructions, a pending
+ * interrupt between them. */
+
+static void random_run(int mode, const ArmCpu *first, const MemorySnapshot *start, RandomEnd *end)
+{
+    memory_restore(start);
+    cpu = *first;
+    cpu.exec = mode;
+    random_trace = 0;
+    for (int i = 0; i < 3; i++) {
+        end->stop = arm_run(&cpu, ARM_RETURN_ADDRESS, 100);
+        random_mix(end->stop);
+        if (end->stop != ARM_STEP_LIMIT && end->stop != ARM_SWI) {
+            break;
+        }
+    }
+    end->cpu = cpu;
+    end->cpu.exec = 0;
+    end->cpu.block_exit = 0;
+    end->trace = random_trace;
+    end->ram = random_ram_hash();
+}
+
+static void test_random_blocks(void)
+{
+    MemorySnapshot *clean = memory_snapshot();
+    char name[64];
+    for (int trial = 0; trial < RANDOM_TRIALS; trial++) {
+        int thumb = trial & 1;
+        snprintf(name, sizeof(name), "random %s code %d", thumb ? "thumb" : "arm", trial);
+        begin(name);
+        cpu.cp15[1][0][0] &= ~ARM_CP15_CONTROL_HIGH_VECTORS;
+        cpu.hook_at = random_hook_at;
+        cpu.io_read = random_read;
+        cpu.io_write = random_write;
+        cpu.observe_word_store = (trial & 2) ? word_store_seen : NULL;
+        for (uint32_t a = CODE; a < CODE + 0x100; a += 4) {
+            uint32_t w = random_word();
+            if (!thumb && (w >> 28) == 0xf && (random_word() & 3)) {
+                w &= 0xefffffffu; /* mostly not the unconditional space */
+            }
+            *word(a) = w;
+        }
+        for (uint32_t a = DATA; a < DATA + 0x100; a += 4) {
+            *word(a) = random_word();
+        }
+        for (int i = 0; i < 13; i++) {
+            uint32_t pick = random_word() & 15;
+            cpu.r[i] = pick == 0   ? RANDOM_IRQ + (random_word() & 4)
+                       : pick == 1 ? CODE + (random_word() & 0xfc)
+                       : pick == 2 ? random_word()
+                                   : DATA + (random_word() & 0xfc);
+        }
+        cpu.r[14] = (CODE + (random_word() & 0xfc)) | (uint32_t) thumb;
+        cpu.r[15] = CODE + (random_word() & 0x7c);
+        cpu.cpsr = (random_word() & 0xf0000000u) | ((trial & 4) ? ARM_MODE_SVC : ARM_MODE_SYSTEM) | (thumb ? ARM_CPSR_T : 0);
+        cpu.irq_line = (trial & 8) != 0;
+        if (trial & 16) {
+            /* a stall on one of the instructions */
+            cpu.stall_pc[0] = CODE + (random_word() & 0x7e);
+            cpu.stall_until[0] = 40;
+            cpu.stall_branch[0] = (trial & 32) != 0;
+        }
+        MemorySnapshot *start = memory_snapshot();
+        ArmCpu first = cpu;
+        RandomEnd decoded, blocks, checked;
+        random_run(ARM_EXEC_DECODE, &first, start, &decoded);
+        random_run(ARM_EXEC_BLOCKS, &first, start, &blocks);
+        random_run(ARM_EXEC_CHECK, &first, start, &checked);
+        memory_snapshot_free(start);
+        CHECK_EQ(blocks.stop, decoded.stop);
+        CHECK_EQ(blocks.cpu.steps, decoded.cpu.steps);
+        CHECK_EQ(blocks.cpu.r[15], decoded.cpu.r[15]);
+        CHECK_EQ(blocks.trace, decoded.trace);
+        CHECK_EQ(blocks.ram, decoded.ram);
+        CHECK(memcmp(&blocks.cpu, &decoded.cpu, sizeof(ArmCpu)) == 0);
+        CHECK_EQ(checked.trace, decoded.trace);
+        CHECK_EQ(checked.ram, decoded.ram);
+        CHECK(memcmp(&checked.cpu, &decoded.cpu, sizeof(ArmCpu)) == 0);
+        memory_restore(clean);
+    }
+    memory_snapshot_free(clean);
+}
+
 int main(int argc, char **argv)
 {
     const char *rom_dir = argc > 1 ? argv[1] : "build/adm-kr/rom";
@@ -2152,26 +2372,30 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    test_arm_immediates();
-    test_arm_shifter();
-    test_arm_arithmetic_flags();
-    test_arm_conditions();
-    test_arm_multiply();
-    test_arm_dsp();
-    test_arm_load_store();
-    test_arm_block_transfer();
-    test_arm_branches();
-    test_arm_system();
-    test_io();
-    test_thumb_alu();
-    test_thumb_memory();
-    test_thumb_branches();
-    test_hooks();
-    test_modes();
-    test_exceptions();
-    test_interrupts();
-    test_cp15();
-    test_rom(rom_dir);
+    test_random_blocks();
+    for (exec_mode = ARM_EXEC_DECODE; exec_mode <= ARM_EXEC_CHECK; exec_mode++) {
+        test_arm_immediates();
+        test_arm_shifter();
+        test_arm_arithmetic_flags();
+        test_arm_conditions();
+        test_arm_multiply();
+        test_arm_dsp();
+        test_arm_load_store();
+        test_arm_block_transfer();
+        test_arm_branches();
+        test_arm_system();
+        test_io();
+        test_thumb_alu();
+        test_thumb_memory();
+        test_thumb_branches();
+        test_hooks();
+        test_modes();
+        test_exceptions();
+        test_interrupts();
+        test_cp15();
+        test_rom(rom_dir);
+        test_code_changes();
+    }
 
     printf("%d checks, %d failures\n", checks, failures);
     return failures ? 1 : 0;

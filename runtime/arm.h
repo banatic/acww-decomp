@@ -12,6 +12,7 @@
 #define RUNTIME_ARM_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 enum ArmStop {
     ARM_RETURNED = 0, /* reached the return address given to arm_call */
@@ -116,7 +117,21 @@ struct ArmCpu {
     /* Debugging: the instructions whose step count is in [trace_from, trace_from +
      * trace_count) are printed to stderr as they execute (run.c sets these from RUN_STEPS). */
     uint64_t trace_from, trace_count;
+
+    /* How instructions are executed: ARM_EXEC_DECODE fetches and decodes each one as it
+     * runs; ARM_EXEC_BLOCKS runs straight-line blocks decoded once (arm.c, "Blocks"), with
+     * the same result to the instruction: registers, memory, steps, and callbacks and hooks
+     * at the same moments; ARM_EXEC_CHECK runs blocks and checks each one against the
+     * decoding interpreter, ending the program at the first difference. */
+    int exec;
+    /* Set while a block runs when it has to end after the current instruction (a branch, an
+     * I/O access, a store into its own code). */
+    int block_exit;
 };
+
+#define ARM_EXEC_DECODE 0
+#define ARM_EXEC_BLOCKS 1
+#define ARM_EXEC_CHECK 2
 
 #define ARM_CPSR_N (1u << 31)
 #define ARM_CPSR_Z (1u << 30)
@@ -200,5 +215,8 @@ enum ArmStop arm_call(ArmCpu *cpu, uint32_t address, uint64_t max_steps);
  * which stops with ARM_RETURNED, or something else stops it. A branch to ARM_RETURN_ADDRESS
  * stops with ARM_RETURNED as well. */
 enum ArmStop arm_run(ArmCpu *cpu, uint32_t until, uint64_t max_steps);
+
+/* With ARM_EXEC_CHECK, how many blocks were checked, to `out`; nothing otherwise. */
+void arm_exec_report(const ArmCpu *cpu, FILE *out);
 
 #endif

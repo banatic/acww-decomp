@@ -705,6 +705,7 @@ void run_finish(const char *reason, int status)
 {
     render_finish(); /* the frames still being drawn */
     report_cpu(reason);
+    arm_exec_report(&cpu, stderr);
     printf("interrupts taken %llu, thread switches %llu (%llu in interrupt handlers), modules verified: %s\n",
            (unsigned long long) cpu.irq_taken, (unsigned long long) thread_switches,
            (unsigned long long) thread_switches_in_irq,
@@ -772,6 +773,12 @@ int run_main(int argc, char **argv)
     cpu.io_read = bios_io_read;
     cpu.io_write = io_write;
     cpu.hook_at = hook_at;
+    /* RUN_JIT: 1 runs decoded blocks; "check" also checks each block run against the decoding
+       interpreter (runtime/arm.h, ArmCpu.exec). Unset or 0: the decoding interpreter. */
+    const char *exec = getenv("RUN_JIT");
+    cpu.exec = exec == NULL || !*exec || !strcmp(exec, "0") ? ARM_EXEC_DECODE
+               : !strcmp(exec, "check")                     ? ARM_EXEC_CHECK
+                                                            : ARM_EXEC_BLOCKS;
     if (getenv("RUN_STEPS") != NULL) {
         /* RUN_STEPS=<from>,<count>: print those instructions as they execute */
         unsigned long long from = 0, count = 0;
