@@ -62,7 +62,7 @@ static void refuse(PocketsScreen *self, int message, unsigned int flag)
  * when data_020e54a8 is set). An item that converts (func_02061b1c) to one func_0204bcdc
  * accepts is asked of overlay 4: answers 0 and 2 refuse with error 3, 1 with error 5 (flag 1);
  * any other hands its value to func_ov004_0223c660 and answers 1. Any other item is asked for
- * by a use request (kept at `unk_c4`): 2 when one was made, else a refusal with error 3.
+ * by a use request (kept at `tile_request`): 2 when one was made, else a refusal with error 3.
  * Refusals answer 0. */
 int PocketsRoom_CheckUseItem(PocketsScreen *self, u16 item)
 {
@@ -84,8 +84,8 @@ int PocketsRoom_CheckUseItem(PocketsScreen *self, u16 item)
                 return 1;
         }
     }
-    self->unk_c4 = TileRequests_AskDrop(data_020ccf94->local_slot, item);
-    if (self->unk_c4 == -1) {
+    self->tile_request = TileRequests_AskDrop(data_020ccf94->local_slot, item);
+    if (self->tile_request == -1) {
         refuse(self, ERROR_3, 0);
         return 0;
     }

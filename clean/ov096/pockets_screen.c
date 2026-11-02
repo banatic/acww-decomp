@@ -46,7 +46,7 @@
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(PocketsScreen, flags) == 0x94, "flags");
 static_assert(offsetof(PocketsScreen, menu_x) == 0xa4 && offsetof(PocketsScreen, item) == 0xac, "place");
 static_assert(offsetof(PocketsScreen, cursor) == 0xb5 && offsetof(PocketsScreen, action) == 0xbb, "cursor");
-static_assert(offsetof(PocketsScreen, choice_code) == 0xbe && offsetof(PocketsScreen, unk_c4) == 0xc4, "choice");
+static_assert(offsetof(PocketsScreen, choice_code) == 0xbe && offsetof(PocketsScreen, tile_request) == 0xc4, "choice");
 static_assert(offsetof(PocketsScreen, grid) == 0x358 && offsetof(PocketsScreen, letters) == 0xdb8, "ov094 objects");
 static_assert(offsetof(PocketsScreen, popup) == 0x2418 && offsetof(PocketsScreen, glide) == 0x24e8, "popup");
 static_assert(offsetof(PocketsScreen, cursor_sprite) == 0x2500 && offsetof(PocketsScreen, choice) == 0x2564, "sprite");
@@ -55,7 +55,7 @@ static_assert(sizeof(ErrorMessage) == 0x11c && offsetof(PocketsScreen, unk_2a74)
 static_assert(offsetof(PocketsScreen, blink) == 0xc1 && offsetof(PocketsScreen, unk_2e8) == 0x2e8, "blink");
 static_assert(offsetof(PocketsScreen, unk_2a74) == 0x2a74 && offsetof(PocketsScreen, button) == 0x2d9c, "button");
 static_assert(offsetof(PocketsScreen, held_letter) == 0x2e28 && offsetof(PocketsScreen, unk_2f28) == 0x2f28, "tail");
-static_assert(offsetof(PocketsScreen, unk_2e20) == 0x2e20 && sizeof(PocketsScreen) == 0x3028, "size");
+static_assert(offsetof(PocketsScreen, tile_x) == 0x2e20 && sizeof(PocketsScreen) == 0x3028, "size");
 static_assert(offsetof(PocketsScreen, wipe_y) == 0x98 && offsetof(PocketsScreen, open_delay) == 0xc2, "wipe");
 
 /* The item codes some actions test (main/item_code.h). What the ranges hold is not known. */
@@ -1190,8 +1190,8 @@ CLEAN_AS(func_ov096_0229d9f0, PocketsScreen_ActionUseItem)
 int PocketsScreen_CheckUseItem(PocketsScreen *self, int item)
 {
     if (data_020e54a8 == 0) {
-        self->unk_c4 = TileRequests_AskDrop(data_020ccf94->local_slot, item);
-        if (self->unk_c4 == -1) {
+        self->tile_request = TileRequests_AskDrop(data_020ccf94->local_slot, item);
+        if (self->tile_request == -1) {
             PocketsScreen_EndAction(self);
             PocketsScreen_ShowError(self, 3, 0xff, 0);
             SoundSys_PlaySe(0x73);
@@ -2908,13 +2908,13 @@ void PocketsScreen_EndActionHidden(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229fbf0, PocketsScreen_EndActionHidden)
 
-/* The answers of a use request (`unk_c4`, PocketsScreen_CheckUseItem). */
+/* The answers of a use request (`tile_request`, PocketsScreen_CheckUseItem). */
 enum PocketsUseResult { POCKETS_USE_PENDING = 0, POCKETS_USE_DONE = 1, POCKETS_USE_FAILED = 2 };
 
 /* What sub states 0x28 and 0x29 do once their request answered `result`: done, the item used
  * from a slot (flag 0x1000) is handed to the grid's object, one used from the hand is let go;
  * failed, one from the hand goes back, and error `message` with command 0x73. Either way the
- * action ends and the request is freed (`unk_c4` -1). Nothing while it is pending. */
+ * action ends and the request is freed (`tile_request` -1). Nothing while it is pending. */
 static void finish_use_request(PocketsScreen *self, int result, int message)
 {
     switch (result) {
@@ -2937,15 +2937,15 @@ static void finish_use_request(PocketsScreen *self, int result, int message)
         default:
             return;
     }
-    TileRequests_Release(self->unk_c4);
-    self->unk_c4 = -1;
+    TileRequests_Release(self->tile_request);
+    self->tile_request = -1;
 }
 
 /* func_ov096_0229fc0c (sub state 0x29): waits for the use request by func_020436a8; error 8
  * when it fails. */
 void PocketsScreen_WaitUseRequest29(PocketsScreen *self)
 {
-    finish_use_request(self, TileRequests_Answer((unsigned int) self->unk_c4), 8);
+    finish_use_request(self, TileRequests_Answer((unsigned int) self->tile_request), 8);
 }
 CLEAN_AS(func_ov096_0229fc0c, PocketsScreen_WaitUseRequest29)
 
@@ -2953,7 +2953,7 @@ CLEAN_AS(func_ov096_0229fc0c, PocketsScreen_WaitUseRequest29)
  * when it fails. */
 void PocketsScreen_WaitUseRequest28(PocketsScreen *self)
 {
-    finish_use_request(self, TileRequests_Carry(self->unk_c4), 3);
+    finish_use_request(self, TileRequests_Carry(self->tile_request), 3);
 }
 CLEAN_AS(func_ov096_0229fca8, PocketsScreen_WaitUseRequest28)
 
@@ -4664,8 +4664,8 @@ PocketsScreen *PocketsScreen_New(void)
     ErrorMessage_Construct(&self->error);
     LetterView_Construct((LetterView *) (void *) self->unk_2a74);
     LabelButton0_Construct(&self->button);
-    self->unk_2e20 = 0;
-    self->unk_2e24 = 0;
+    self->tile_x = 0;
+    self->tile_z = 0;
     Letter_Construct(&self->held_letter);
     Letter_Construct(&self->unk_2f28);
     return self;

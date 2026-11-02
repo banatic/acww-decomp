@@ -129,7 +129,7 @@ typedef struct PocketsScreen {
     u8 blink;        /* 0xc1: frames left of PocketsScreen_BlinkSlot */
     u8 open_delay;   /* 0xc2: frames before a touched place's choice opens (2) */
     u8 pad_c3;
-    s32 unk_c4;             /* 0xc4: func_020435fc's result */
+    s32 tile_request;       /* 0xc4: a request of TileRequests_Ask*, -1 for none */
     u8 unk_c8[0x20];        /* 0xc8 */
     u8 unk_e8[0x200];       /* 0xe8 */
     u8 unk_2e8[0x38];       /* 0x2e8: an object of main's class (PocketsScreen_UpdateObjects2e8) */
@@ -148,8 +148,8 @@ typedef struct PocketsScreen {
                             * func_0206e35c): shows a letter on layers 3 and 4 */
     LabelButton button;     /* 0x2d9c: a LabelButton0 */
     u8 pad_2e14[0xc];       /* 0x2e14 */
-    u32 unk_2e20;           /* 0x2e20: cleared by PocketsScreen_New */
-    u32 unk_2e24;           /* 0x2e24 */
+    u32 tile_x;             /* 0x2e20: the tile ahead (PocketsTown_FindTileAhead), cleared by PocketsScreen_New */
+    u32 tile_z;             /* 0x2e24 */
     Letter held_letter;     /* 0x2e28: the held letter's copy */
     Letter unk_2f28;        /* 0x2f28: a second letter copy (Letter_Assign) */
 } PocketsScreen;

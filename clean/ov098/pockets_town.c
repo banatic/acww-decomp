@@ -33,7 +33,7 @@
 
 /* The pockets scene's words at 0x2e14-0x2e27: a point in the town (written by
  * func_0203162c, PocketsTown_FindPointAhead) and a tile (PocketsTown_FindTileAhead). */
-static_assert(offsetof(PocketsScreen, pad_2e14) == 0x2e14 && offsetof(PocketsScreen, unk_2e20) == 0x2e20, "point");
+static_assert(offsetof(PocketsScreen, pad_2e14) == 0x2e14 && offsetof(PocketsScreen, tile_x) == 0x2e20, "the tile ahead");
 
 static Vec3 *point_of(PocketsScreen *self)
 {
@@ -255,12 +255,13 @@ void PocketsTown_ActionPlaceLetter(PocketsScreen *self)
 }
 CLEAN_AS(func_ov098_022a29d0, PocketsTown_ActionPlaceLetter)
 
-/* The request at the tile ahead (PocketsTown_FindTileAhead's) for `item`, kept at `unk_c4`. */
+/* The request at the tile ahead (PocketsTown_FindTileAhead's) for `item`, kept at `tile_request`. */
 static int request_tile(PocketsScreen *self, u16 item)
 {
-    s32 tile[2] = {(s32) self->unk_2e20, (s32) self->unk_2e24};
-    self->unk_c4 = TileRequests_AskOp(data_020ccf94->local_slot, (const TileRequestTile *) tile, TILE_OPERATION, 0, item);
-    return self->unk_c4;
+    s32 tile[2] = {(s32) self->tile_x, (s32) self->tile_z};
+    self->tile_request =
+        TileRequests_AskOp(data_020ccf94->local_slot, (const TileRequestTile *) tile, TILE_OPERATION, 0, item);
+    return self->tile_request;
 }
 
 /* func_ov098_022a2a0c (action 23): with a tile ahead, its request for the picked item, waited
@@ -274,8 +275,8 @@ void PocketsTown_ActionTileOrDrop(PocketsScreen *self)
         MenuScene_SetSubState(scene_of(self), SUB_TILE_REQUEST);
         return;
     }
-    self->unk_c4 = TileRequests_AskPut(data_020ccf94->local_slot, DROP_KIND, item);
-    if (self->unk_c4 == -1) {
+    self->tile_request = TileRequests_AskPut(data_020ccf94->local_slot, DROP_KIND, item);
+    if (self->tile_request == -1) {
         PocketsScreen_EndAction(self);
         PocketsScreen_ShowError(self, ERROR_8, 0xff, 0);
         SoundSys_PlaySe(SOUND_ERROR);
@@ -291,7 +292,7 @@ CLEAN_AS(func_ov098_022a2a0c, PocketsTown_ActionTileOrDrop)
 void PocketsTown_StartTileState61(PocketsScreen *self)
 {
     Vec3 point;
-    AcreTile_TileCentre(&point, (int) self->unk_2e20, (int) self->unk_2e24);
+    AcreTile_TileCentre(&point, (int) self->tile_x, (int) self->tile_z);
     u16 item = PocketsScreen_PlaceItem(self, self->slot);
     if (FieldActor_PlayerRequestState61(&point, &item) != 0) {
         PocketsScreen_EmptyPlace(self, self->slot);
@@ -301,11 +302,11 @@ void PocketsTown_StartTileState61(PocketsScreen *self)
 CLEAN_AS(func_ov098_022a2ac8, PocketsTown_StartTileState61)
 
 /* func_ov098_022a2b1c (sub state 0x2d): the tile request done goes on to sub state 0x2e at
- * once; failed, the action ends with error 3 (flag 1). Either way it is freed (`unk_c4` -1);
+ * once; failed, the action ends with error 3 (flag 1). Either way it is freed (`tile_request` -1);
  * nothing while it is pending. */
 void PocketsTown_WaitTileRequest(PocketsScreen *self)
 {
-    switch (TileRequests_Answer(self->unk_c4)) {
+    switch (TileRequests_Answer(self->tile_request)) {
         case 1:
             MenuScene_SetSubState(scene_of(self), SUB_TILE_STATE);
             PocketsTown_StartTileState61(self);
@@ -317,8 +318,8 @@ void PocketsTown_WaitTileRequest(PocketsScreen *self)
         default:
             return;
     }
-    TileRequests_Release(self->unk_c4);
-    self->unk_c4 = -1;
+    TileRequests_Release(self->tile_request);
+    self->tile_request = -1;
 }
 CLEAN_AS(func_ov098_022a2b1c, PocketsTown_WaitTileRequest)
 
@@ -362,8 +363,8 @@ int PocketsTown_FindTileAhead(PocketsScreen *self)
         /* The tile's acre and its place in it: x >> 4 rounds down, x & 15 is the rest. */
         u16 *object = AcreTile_ItemInAcre(map, tile_x >> 4, tile_z >> 4, tile_x & 15, tile_z & 15, 0);
         if (object != NULL && *object >= 0xfc && *object <= 0xfd) {
-            self->unk_2e20 = (u32) tile_x;
-            self->unk_2e24 = (u32) tile_z;
+            self->tile_x = (u32) tile_x;
+            self->tile_z = (u32) tile_z;
             return 1;
         }
     }
