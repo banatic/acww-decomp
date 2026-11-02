@@ -89,8 +89,8 @@ typedef struct CameraControl {
     s32 initial_mode;  /* 0x200: the mode it was created in; switching to it keeps the saved view */
     Vec3 fixed_target; /* 0x204: the point looked at and the eye, kept when mode 1 starts */
     Vec3 fixed_eye;    /* 0x210 */
-    u32 unk_21c;       /* 0x21c: set with mode 17; ov068 counts frames in its low half */
-    u16 unk_220;       /* 0x220: ov068's length for its stage */
+    u32 mode_data; /* 0x21c: the mode's data begins here (to 0x233): set with mode 17; ov068 counts frames in its low half */
+    u16 unk_220;   /* 0x220: ov068's length for its stage */
     u8 unk_222[2];
     u8 unk_224; /* 0x224: ov068's stage, 0-3 */
     u8 unk_225[0xf];

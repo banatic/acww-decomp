@@ -15,7 +15,7 @@
  *      keeps the rise after it (CameraControl_StillFrame);
  *   13 follow this console's player (the origin without one) with preset 0x1a.
  *
- * The modes keep their data in the camera's last 0x18 bytes (0x21c, CameraControl.unk_21c). */
+ * The modes keep their data in the camera's last 0x18 bytes (0x21c, CameraControl.mode_data). */
 #ifndef CLEAN_OV068_FIELD_CAMERA_MODES_H
 #define CLEAN_OV068_FIELD_CAMERA_MODES_H
 

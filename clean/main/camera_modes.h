@@ -33,7 +33,7 @@ enum CameraControlModeMore {
     CAMERA_MODE_14 = 0xe
 };
 
-/* The 8 bytes at 0x21c (CameraControl.unk_21c) belong to the mode. */
+/* The 8 bytes at 0x21c (CameraControl.mode_data) belong to the mode. */
 typedef union CameraControlModeData {
     struct {
         int amplitude;  /* eased to 0 (fx32) */

@@ -79,7 +79,7 @@ extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
 
 static RoomCameraShow *RoomCamera_show(CameraControl *camera)
 {
-    return (RoomCameraShow *) (void *) ((u8 *) camera + offsetof(CameraControl, unk_21c));
+    return (RoomCameraShow *) (void *) ((u8 *) camera + offsetof(CameraControl, mode_data));
 }
 
 /* The current view eased towards the goal and the camera placed at it around the point looked

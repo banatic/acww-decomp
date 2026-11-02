@@ -653,7 +653,7 @@ int CameraControl_Create(CameraControl *camera)
         case SCENE_ACTOR_FOLLOWED: {
             void *actor = followed_actor();
             if (actor != NULL) {
-                ((CameraControlModeData *) &camera->unk_21c)->actor = actor;
+                ((CameraControlModeData *) &camera->mode_data)->actor = actor;
                 CameraControl_SetMode(camera, CAMERA_MODE_7);
             } else {
                 data_020da714 = FOLLOWED_SLOTS;

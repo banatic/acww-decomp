@@ -16,7 +16,7 @@
 #include "scene_query.h"
 
 static_assert(sizeof(CameraControlModeData) == 8, "the mode's data");
-static_assert(offsetof(CameraControl, unk_21c) == 0x21c, "the mode's data");
+static_assert(offsetof(CameraControl, mode_data) == 0x21c, "the mode's data");
 
 /* The camera, NULL when there is none. */
 extern CameraControl *data_021c67a4;
@@ -268,7 +268,7 @@ CLEAN_AS(func_0203b1b4, CameraControl_Mode19Start)
  * amplitude times the sine of the phase (taken before the amplitude died down). */
 void CameraControl_ShakeFrame(CameraControl *camera)
 {
-    CameraControlModeData *data = (CameraControlModeData *) &camera->unk_21c;
+    CameraControlModeData *data = (CameraControlModeData *) &camera->mode_data;
     data->shake.phase = (s16) (data->shake.phase + data->shake.phase_step);
     Approach_S16(&data->shake.phase_step, SHAKE_STEP_GOAL, SHAKE_STEP_RATE);
     fx32 lift = FX_MulFunc(FX_SinCosTable_[((u16) data->shake.phase >> 4) * 2], data->shake.amplitude);
@@ -287,7 +287,7 @@ CLEAN_AS(func_0203b1d4, CameraControl_ShakeFrame)
  * at 0 turning by 0x2000, the move ended. */
 int CameraControl_ShakeStart(CameraControl *camera)
 {
-    CameraControlModeData *data = (CameraControlModeData *) &camera->unk_21c;
+    CameraControlModeData *data = (CameraControlModeData *) &camera->mode_data;
     data->shake.phase = 0;
     data->shake.phase_step = SHAKE_STEP;
     CameraControl_EndMove();

@@ -24,7 +24,7 @@ static_assert(offsetof(CameraControl, look_at) == 0x1cc, "the point looked at");
 static_assert(offsetof(CameraControl, share) == 0x1e8, "the share");
 static_assert(offsetof(CameraControl, view_saved) == 0x1f4, "the saved flag");
 static_assert(offsetof(CameraControl, mode) == 0x1f8, "the mode");
-static_assert(offsetof(CameraControl, unk_21c) == 0x21c, "0x21c");
+static_assert(offsetof(CameraControl, mode_data) == 0x21c, "0x21c");
 static_assert(sizeof(CameraControl) == 0x234, "the camera");
 
 /* The camera, NULL when there is none. */
@@ -332,10 +332,10 @@ void CameraControl_SetMode19(void)
 }
 CLEAN_AS(func_0203aed8, CameraControl_SetMode19)
 
-/* func_0203aeec: mode 17, with `value` at 0x21c. */
+/* func_0203aeec: mode 17, with `value` as its mode data. */
 void CameraControl_SetMode17(u32 value)
 {
-    data_021c67a4->unk_21c = value;
+    data_021c67a4->mode_data = value;
     CameraControl_SetMode(data_021c67a4, CAMERA_MODE_17);
 }
 CLEAN_AS(func_0203aeec, CameraControl_SetMode17)

@@ -46,7 +46,7 @@ typedef struct RoomCameraSpot {
     u8 unk_22[2];
 } RoomCameraSpot;
 
-/* Mode 18's data, at 0x21c of the camera (CameraControl.unk_21c on). */
+/* Mode 18's data, at 0x21c of the camera (CameraControl.mode_data on). */
 typedef struct RoomCameraShow {
     s16 turn;        /* 0x21c: turned about the spot so far */
     s16 spot;        /* 0x21e: the spot, -1 before the first */
