@@ -393,12 +393,12 @@ void Obj021c526c_SendRequestValue(Obj021c526c *self)
     if (index > 0) {
         MusicRequest *ahead = MusicQueue_FirstNotDone(self->queue.requests, index);
         if (ahead != NULL) {
-            MusicCommands_SetValue((MusicCommands *) (void *) self->music_commands, ahead->unk_08);
+            MusicCommands_SetValue((MusicCommands *) (void *) self->music_commands, ahead->value);
             return;
         }
     }
     if (current->done != 0) {
-        MusicCommands_SetValue((MusicCommands *) (void *) self->music_commands, current->unk_08);
+        MusicCommands_SetValue((MusicCommands *) (void *) self->music_commands, current->value);
     }
 }
 CLEAN_AS(func_020350a4, Obj021c526c_SendRequestValue)
@@ -654,7 +654,7 @@ void Music_AddHeadOnly(int priority, int music)
 }
 CLEAN_AS(func_0203564c, Music_AddHeadOnly)
 
-/* func_02035684: a request without music at `priority` with `value` as its word 0x08, running
+/* func_02035684: a request without music at `priority` with `value` as its value, running
  * out after `frames` frames when that is above 0. */
 void Music_AddValue(int priority, int value, int frames)
 {

@@ -25,7 +25,7 @@ void MusicRequest_Copy(MusicRequest *to, const MusicRequest *from)
     MusicRequest_Clear(to);
     to->priority = from->priority;
     to->music = from->music;
-    to->unk_08 = from->unk_08;
+    to->value = from->value;
     to->unk_0c = from->unk_0c;
     to->unk_10 = from->unk_10;
     to->head_only = from->head_only;
@@ -42,7 +42,7 @@ void MusicRequest_Clear(MusicRequest *request)
 {
     request->priority = MUSIC_REQUEST_CLEARED_PRIORITY;
     request->music = MUSIC_NONE;
-    request->unk_08 = 0;
+    request->value = 0;
     request->unk_0c = 0;
     request->unk_10 = 0;
     request->head_only = 0;
@@ -60,15 +60,15 @@ void MusicRequest_Destruct(MusicRequest *request)
 }
 CLEAN_AS(func_020374cc, MusicRequest_Destruct)
 
-/* func_020374d0: a request made of a priority, a music, the words 0x0c and 0x08 and the byte
+/* func_020374d0: a request made of a priority, a music, the word 0x0c, the value and the byte
  * 0x10, the rest cleared. */
-MusicRequest *MusicRequest_Make(MusicRequest *request, int priority, int music, int unk_0c, int unk_08, int unk_10)
+MusicRequest *MusicRequest_Make(MusicRequest *request, int priority, int music, int unk_0c, int value, int unk_10)
 {
     MusicRequest_Clear(request);
     request->priority = priority;
     request->music = (u16) music;
     request->unk_0c = unk_0c;
-    request->unk_08 = unk_08;
+    request->value = value;
     request->unk_10 = (u8) unk_10;
     return request;
 }

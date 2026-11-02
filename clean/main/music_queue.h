@@ -20,7 +20,7 @@ typedef struct MusicRequest {
     s32 priority; /* lower first; 0x25 when cleared */
     u16 music;    /* 0x04: MUSIC_NONE: none */
     u8 unk_06[2];
-    s32 unk_08; /* 0x08: handed to the object at 0x2b4 by func_020350a4 */
+    s32 value; /* 0x08: the music commands' value (MusicCommands_SetValue) while it is current */
     s32 unk_0c;
     u8 unk_10;
     u8 head_only;     /* 0x11: done once it is not at the head */
