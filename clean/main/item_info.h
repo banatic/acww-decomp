@@ -38,9 +38,9 @@ typedef struct ItemInfoAlways {
 
 /* A record of indoor.bin. */
 typedef struct ItemInfoIndoor {
-    u8 unk_00;    /* 0x00 */
-    u8 unk_01;    /* 0x01: a ground sound attribute (ground_sound.c) */
-    u8 unk_02[2]; /* 0x02 */
+    u8 unk_00;       /* 0x00 */
+    u8 ground_sound; /* 0x01: a ground sound attribute (ground_sound.c) */
+    u8 unk_02[2];    /* 0x02 */
 } ItemInfoIndoor;
 
 /* A record of dma.bin. */

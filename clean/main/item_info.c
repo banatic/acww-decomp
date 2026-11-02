@@ -238,11 +238,11 @@ u8 ItemInfo_IndoorUnk00(const u16 *item)
 }
 CLEAN_AS(func_020622c4, ItemInfo_IndoorUnk00)
 
-/* func_02062300: ItemInfoIndoor.unk_01. */
+/* func_02062300: ItemInfoIndoor.ground_sound. */
 u8 ItemInfo_IndoorUnk01(const u16 *item)
 {
     const ItemInfoIndoor *record = item_info_indoor(item_info_number(*item));
-    return record != NULL ? record->unk_01 : 0;
+    return record != NULL ? record->ground_sound : 0;
 }
 CLEAN_AS(func_02062300, ItemInfo_IndoorUnk01)
 
