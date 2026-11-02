@@ -1096,21 +1096,21 @@ int InsectMotion_PairChoose(MuseumInsect *insect)
         }
         if (choice < 20) {
             insect->timer = (InsectMotion_random(8) + 2) * 20;
-            insect->mode = 20;
+            insect->mode = INSECT_MOTION_PAIR_JOSTLE;
         } else if (choice < 35) {
             insect->timer = (InsectMotion_random(4) + 1) * 20;
-            insect->mode = 21;
+            insect->mode = INSECT_MOTION_PAIR_CIRCLED;
             InsectMotion_keep_place(other, insect);
         } else if (choice < 50) {
             insect->timer = (InsectMotion_random(4) + 1) * 20;
-            insect->mode = 22;
+            insect->mode = INSECT_MOTION_PAIR_CIRCLE;
             InsectMotion_keep_place(insect, insect);
         } else if (choice < 70) {
             insect->timer = (InsectMotion_random(4) + 1) * 20;
-            insect->mode = 23;
+            insect->mode = INSECT_MOTION_PAIR_BACK_OFF;
         } else {
             insect->timer = (InsectMotion_random(8) + 1) * 20;
-            insect->mode = 24;
+            insect->mode = INSECT_MOTION_PAIR_PAUSE;
             other->model.frames.speed = 0;
         }
         insect->unk_4c = 0;
@@ -1177,19 +1177,19 @@ void InsectMotion_UpdatePair(MuseumInsect *insect)
         }
     }
     switch (insect->mode) {
-        case 20:
+        case INSECT_MOTION_PAIR_JOSTLE:
             InsectMotion_PairJostle(insect);
             break;
-        case 21:
+        case INSECT_MOTION_PAIR_CIRCLED:
             InsectMotion_PairCircledBy(insect);
             break;
-        case 22:
+        case INSECT_MOTION_PAIR_CIRCLE:
             InsectMotion_PairCircleOther(insect);
             break;
-        case 23:
+        case INSECT_MOTION_PAIR_BACK_OFF:
             InsectMotion_PairBackOff(insect);
             break;
-        case 24:
+        case INSECT_MOTION_PAIR_PAUSE:
             InsectMotion_PairPause(insect);
             break;
         case INSECT_MOTION_MOVE:
@@ -1275,11 +1275,11 @@ CLEAN_AS(func_ov004_02242c64, InsectMotion_Hover)
  * once awake, and asleep plays animation 8 now and then (every 40th frame, one time in five). */
 void InsectMotion_UpdateHovering(MuseumInsect *insect)
 {
-    if (insect->mode == 0) {
+    if (insect->mode == INSECT_MOTION_FLY) {
         InsectMotion_Hover(insect);
     } else if (insect->awake) {
         insect->startled = 0;
-        insect->mode = 0;
+        insect->mode = INSECT_MOTION_FLY;
         insect->unk_168 = 0;
     } else if ((int) data_ov004_02259a24 % 40 == 0) {
         if (InsectMotion_random(100) > 80) {
@@ -1660,25 +1660,25 @@ CLEAN_AS(func_ov004_022435e0, InsectMotion_Fly)
 void InsectMotion_UpdateFlier(MuseumInsect *insect)
 {
     switch (insect->mode) {
-        case 0:
+        case INSECT_MOTION_FLY:
             InsectMotion_PlaySound(insect, 0);
             InsectMotion_Fly(insect);
             break;
-        case 6:
+        case INSECT_MOTION_PERCH:
             if (insect->kind == 10) {
                 InsectMotion_Drift(insect);
             }
             InsectMotion_Perched(insect);
             break;
-        case 7:
-            insect->mode = 0;
+        case INSECT_MOTION_STARTLED:
+            insect->mode = INSECT_MOTION_FLY;
             if (insect->startled != 0) {
                 insect->yaw = (s16) (insect->yaw + insect->target_yaw);
             }
             break;
         default:
             insect->startled = 0;
-            insect->mode = 0;
+            insect->mode = INSECT_MOTION_FLY;
             if (insect->kind == 51) {
                 Vec3 *anchor = &insect->anchor;
                 if (InsectMotion_random(100) > 50) {
@@ -1711,12 +1711,12 @@ void InsectMotion_UpdateFlutterer(MuseumInsect *insect)
 {
     if (!insect->awake) {
         InsectMotion_UpdateHoverer(insect);
-    } else if (insect->mode == 0) {
+    } else if (insect->mode == INSECT_MOTION_FLY) {
         InsectMotion_Flutter(insect);
         InsectMotion_ClampToBounds(insect, &insect->position);
     } else {
         insect->startled = 0;
-        insect->mode = 0;
+        insect->mode = INSECT_MOTION_FLY;
     }
 }
 CLEAN_AS(func_ov004_0224379c, InsectMotion_UpdateFlutterer)
@@ -1749,7 +1749,7 @@ void InsectMotion_FollowPlayer(MuseumInsect *insect, short *phase)
             insect->alarm = (u8) circled;
         } else if (insect->unk_4c == 0 && distance < 0x1000 && PlayerActorOps_RequestState79()) {
             insect->startled = 0;
-            insect->mode = 0;
+            insect->mode = INSECT_MOTION_FLY;
             insect->unk_4c = 1;
             *phase = 0;
         }
@@ -1781,10 +1781,10 @@ void InsectMotion_UpdateFollower(MuseumInsect *insect)
 {
     InsectMotion_FlipFrame(insect);
     InsectMotion_PlaySound(insect, 0);
-    if (insect->mode == 0) {
+    if (insect->mode == INSECT_MOTION_FLY) {
         InsectMotion_FollowPlayer(insect, &insect->unk_168);
     } else {
-        insect->mode = 0;
+        insect->mode = INSECT_MOTION_FLY;
     }
 }
 CLEAN_AS(func_ov004_02243948, InsectMotion_UpdateFollower)

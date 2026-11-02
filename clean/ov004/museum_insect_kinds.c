@@ -802,7 +802,7 @@ void InsectKind_StartAtHeight(MuseumInsect *insect, int a, int b, int height, in
     insect->height = level;
     insect->level = level;
     if (!insect->awake) {
-        insect->mode = 6;
+        insect->mode = INSECT_MOTION_PERCH;
         if (insect->kind != 10 && insect->kind != 51) {
             FrameCtrl_Init(&insect->model.frames, 17, FRAME_CTRL_ONCE, 0x1000, 9);
         } else {

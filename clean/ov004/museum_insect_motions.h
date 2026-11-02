@@ -38,8 +38,8 @@ typedef struct InsectSighting {
 #define INSECT_MOTION_MOVE 4       /* walking, flying, hopping */
 #define INSECT_MOTION_TURN_AWAY 15 /* from a wall, to target_yaw */
 
-/* More of MuseumInsect.mode: the flappers' (kinds 0-7) and the darters' (kinds 21-23). */
-#define INSECT_MOTION_FLY 0              /* flapping */
+/* More of MuseumInsect.mode: the flappers' (kinds 0-7), the fliers' and the darters' (kinds 21-23). */
+#define INSECT_MOTION_FLY 0              /* flapping, flying (kinds 8, 10, 37, 50, 51) */
 #define INSECT_MOTION_SETTLE 5           /* to the rest point */
 #define INSECT_MOTION_PERCH 6            /* on the anchor */
 #define INSECT_MOTION_STARTLED 7         /* alarmed: off along target_yaw */
@@ -48,6 +48,13 @@ typedef struct InsectSighting {
 #define INSECT_MOTION_HOVER_BLOCKED_2 13 /* the same */
 #define INSECT_MOTION_HOVER_TO_REST 14   /* before the rest point */
 #define INSECT_MOTION_TURN_TO_REST 19    /* to the rest point */
+
+/* More of MuseumInsect.mode: the pair's, kinds 54 and 55 together (InsectMotion_PairChoose). */
+#define INSECT_MOTION_PAIR_JOSTLE 20   /* InsectMotion_PairJostle */
+#define INSECT_MOTION_PAIR_CIRCLED 21  /* InsectMotion_PairCircledBy */
+#define INSECT_MOTION_PAIR_CIRCLE 22   /* InsectMotion_PairCircleOther */
+#define INSECT_MOTION_PAIR_BACK_OFF 23 /* InsectMotion_PairBackOff */
+#define INSECT_MOTION_PAIR_PAUSE 24    /* InsectMotion_PairPause */
 
 int InsectMotion_Start(MuseumInsect *insect, short threshold, int sight, short pitch, short yaw, int height, int speed);
 void InsectMotion_BoundAroundPosition(MuseumInsect *insect);
