@@ -100,7 +100,6 @@ typedef struct PocketsTownPlayer {
     s16 angle; /* 0x8e */
 } PocketsTownPlayer;
 static_assert(offsetof(PocketsTownPlayer, angle) == 0x8e, "angle");
-#define THIS_PLAYER 4
 
 extern int data_021c80bc; /* the town map, for AcreTile_AcreFlags */
 
@@ -349,7 +348,7 @@ int PocketsTown_FindTileAhead(PocketsScreen *self)
     if (held != ITEM_TOOL_1369 && held != ITEM_TOOL_136A) {
         return 0;
     }
-    PocketsTownPlayer *player = SessionPlayers_ActorOf(THIS_PLAYER);
+    PocketsTownPlayer *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     int x = 0;
     int z = 0;
     void *map = (void *) (uintptr_t) AcreMap_Town();
@@ -425,7 +424,7 @@ int PocketsTown_LetInsectGo(PocketsScreen *self)
     int kind = item >= ITEM_INSECT_FIRST && item <= ITEM_INSECT_LAST ? item - ITEM_INSECT_FIRST : NO_KIND;
     int turn = (u8) MainRandom_Below(60);
     s16 angle = (s16) (0xb6 * (turn - 30));
-    angle = (s16) (angle + ((PocketsTownPlayer *) SessionPlayers_ActorOf(THIS_PLAYER))->angle);
+    angle = (s16) (angle + ((PocketsTownPlayer *) SessionPlayers_ActorOf(SESSION_PLAYERS_OWN))->angle);
     TownInsect_TakeHeld((u8) kind, player);
     TownInsect_LetGo(player, angle);
     FieldActor_PlayerLook(0);
@@ -502,7 +501,7 @@ CLEAN_AS(func_ov098_022a2fa8, PocketsTown_ActionFish)
  * letter is not looked for without them. */
 int PocketsTown_FindPointAhead(PocketsScreen *self, int for_letter)
 {
-    PocketsTownPlayer *player = SessionPlayers_ActorOf(THIS_PLAYER);
+    PocketsTownPlayer *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     int bits = (int) (uintptr_t) AcreTile_AcreFlags((AcreMap *) (uintptr_t) data_021c80bc, player->position.x >> 17,
                                                     player->position.z >> 17);
     int marked = (bits & 0x7f000) != 0 || (bits & 8) != 0;

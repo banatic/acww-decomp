@@ -9,6 +9,7 @@
 #include "main/camera_view.h"
 #include "main/main_random.h"
 #include "main/player_actor_ops.h"
+#include "main/session_players.h"
 
 static_assert(sizeof(FieldCameraSwayStage) == 0xc, "sway stage");
 static_assert(offsetof(FieldCameraSway, rise_stage) == 0x08, "sway stage byte");
@@ -61,8 +62,6 @@ extern const fx32 data_ov068_02277288;
 #define TOUR_HOUSE_LAST 0x5008
 #define TOUR_ROUND_FIRST 0x500d
 #define TOUR_ROUND_LAST 0x5010
-
-#define PLAYER 4
 
 static FieldCameraSway *sway_of(CameraControl *camera)
 {
@@ -204,7 +203,7 @@ CLEAN_AS(func_ov068_0226dd34, FieldCameraModes_SwayStart)
 void FieldCameraModes_PlayerFrame(CameraControl *camera)
 {
     Vec3 point = data_021fbee8;
-    Vec3 *player = PlayerActorOps_StartPosition(PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player != NULL) {
         point = *player;
     }

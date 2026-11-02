@@ -19,9 +19,6 @@
 #include "room_object_map.h"
 #include "room_objects.h"
 
-/* The player's actor (SessionPlayers_ActorOf). */
-#define ROOM_PLACEMENT_PLAYER 4
-
 /* The placement's mode for a piece found a place by the search. */
 #define PLACEMENT_MODE_SEARCHED 1
 
@@ -107,7 +104,7 @@ CLEAN_AS(func_ov004_0223b518, RoomPlacement_PlayerIndex)
  * faces; ROOM_PLACEMENT_NOT_FURNITURE without it. */
 int RoomPlacement_FindNearPlayer(u32 *out, ItemCode *item, int mode)
 {
-    MapActor *player = SessionPlayers_ActorOf(ROOM_PLACEMENT_PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return ROOM_PLACEMENT_NOT_FURNITURE;
     }

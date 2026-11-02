@@ -167,7 +167,7 @@ int TileEvent_StartKindC(int variant, int x)
     Vec3 point = {0, 0, 0};
     int tile[2] = {0, 0};
 
-    Actor *actor = SessionPlayers_ActorOf(4);
+    Actor *actor = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (actor != NULL) {
         point = actor->position;
         point.x = actor->position.x + ((int) ((u32) x << 12) >> 4);
@@ -194,7 +194,7 @@ void TileEvent_StartKindB(int player, int id, const TileChangesTile *tile)
     int angle = 0;
 
     AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    Actor *actor = SessionPlayers_ActorOf(4);
+    Actor *actor = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (actor != NULL) {
         /* The sector's three low bits as the top of a 16-bit angle, sign-extended. */
         angle = (s16) (u16) ((AngleSector_Eight(actor->angle[1]) & 7) << 13);

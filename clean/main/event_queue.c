@@ -31,7 +31,7 @@ static_assert(offsetof(EventQueueEntry, unk_19) == 0x19, "EventQueueEntry layout
 /* The id of this console's player. */
 static u32 player_id(void)
 {
-    return SceneObjectBase_Id(SessionPlayers_ActorOf(4));
+    return SceneObjectBase_Id(SessionPlayers_ActorOf(SESSION_PLAYERS_OWN));
 }
 
 /* Whether the current event is of kind 2, 6 or 7, asked in that order. */
@@ -84,7 +84,7 @@ int EventQueue_StartKind13(void)
 {
     EventQueueEntry *event;
 
-    if (SessionPlayers_ActorOf(4) == NULL) {
+    if (SessionPlayers_ActorOf(SESSION_PLAYERS_OWN) == NULL) {
         return 0;
     }
     if (EventQueue_HasCurrent()) {
@@ -464,7 +464,7 @@ int EventQueue_RequestKind11(void)
     if (EventQueue_TestFlag8() || EventQueue_TestFlag20()) {
         return 0;
     }
-    player = SessionPlayers_ActorOf(4);
+    player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return 0;
     }
@@ -477,7 +477,7 @@ CLEAN_AS(func_0203e37c, EventQueue_RequestKind11)
  * (priority 2) about it, starting at `step`. */
 int EventQueue_RequestKind1(int step)
 {
-    void *player = SessionPlayers_ActorOf(4);
+    void *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
 
     if (player == NULL) {
         return 0;

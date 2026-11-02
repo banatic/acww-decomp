@@ -478,7 +478,7 @@ CLEAN_AS(func_ov004_0224193c, InsectMotion_Swing)
 /* func_ov004_022419c4: there is a player within 0x4800 of the insect in x and z. */
 int InsectMotion_PlayerWithin(MuseumInsect *insect)
 {
-    Actor *player = SessionPlayers_ActorOf(4);
+    Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     return player != NULL && Vec_DistanceXZ(&player->position, &insect->position) < 0x4800;
 }
 CLEAN_AS(func_ov004_022419c4, InsectMotion_PlayerWithin)
@@ -1589,7 +1589,7 @@ void InsectMotion_HopToKept(MuseumInsect *insect)
         fx32 t = InsectMotion_fx(insect->countdown);
         position->y = FX_MulFunc(0x99a - FX_MulFunc(123, t), t);
         if (position->y < 0) {
-            Actor *player = SessionPlayers_ActorOf(4);
+            Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
             int spread = 20;
             if (player != NULL && Vec_DistanceXZ(&player->position, position) > 0x6000) {
                 spread = 0;
@@ -1612,7 +1612,7 @@ void InsectMotion_UpdateJumper(MuseumInsect *insect)
     if (insect->mode == INSECT_MOTION_MOVE) {
         InsectMotion_HopToKept(insect);
     } else if (InsectMotion_TimerDone(insect)) {
-        Actor *player = SessionPlayers_ActorOf(4);
+        Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
         if (player != NULL) {
             u8 length = (u8) (InsectMotion_random(33) + 16);
             Vec3 *position = &insect->position;
@@ -1729,7 +1729,7 @@ CLEAN_AS(func_ov004_0224379c, InsectMotion_UpdateFlutterer)
  * the phase, stepped 0xaaa a frame. */
 void InsectMotion_FollowPlayer(MuseumInsect *insect, short *phase)
 {
-    Actor *player = SessionPlayers_ActorOf(4);
+    Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return;
     }
@@ -2014,9 +2014,6 @@ void InsectMotion_UpdateGlider(MuseumInsect *insect)
     insect->unk_20 = 0;
 }
 CLEAN_AS(func_ov004_02243e04, InsectMotion_UpdateGlider)
-
-/* The player watched (InsectMotion_WatchPlayer) is this system's own. */
-#define INSECT_MOTION_OWN_PLAYER 4
 
 /* The ROM's signed remainder (_s32_div_f): 0 for a divisor of 0 or -1. */
 static int InsectMotion_rom_mod(int numerator, int divisor)
@@ -2378,7 +2375,7 @@ int InsectMotion_WatchPlayer(MuseumInsect *insect, InsectSighting *sighting)
     short before = insect->alarm;
     short threshold = insect->alarm_threshold;
     short alarm = before;
-    Actor *player = SessionPlayers_ActorOf(INSECT_MOTION_OWN_PLAYER);
+    Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         sighting->seen = 0;
         return INSECT_MOTION_ALARM_NO_PLAYER;

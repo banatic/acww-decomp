@@ -68,9 +68,6 @@ extern void func_ov004_0223653c(G3dRenderState *state);
 #define PLAYER_NEAR 0x10000
 #define PLAYER_CLOSE 0x4000
 
-/* This system's player. */
-#define OWN_PLAYER 4
-
 static int Kinds_mul(int a, int b)
 {
     return (int) ((u32) a * (u32) b);
@@ -763,7 +760,7 @@ CLEAN_AS(func_ov004_02237870, AquariumKind30_Bob)
 void AquariumKind30_Snap(AquariumKind30 *fish)
 {
     AquariumFish *base = &fish->base;
-    Vec3 *player = PlayerActorOps_StartPosition(OWN_PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         fish->own.state = AQUARIUM_KIND30_WANDER;
         return;
@@ -806,7 +803,7 @@ CLEAN_AS(func_ov004_022378ec, AquariumKind30_Snap)
 void AquariumKind30_Follow(AquariumKind30 *fish)
 {
     AquariumFish *base = &fish->base;
-    Actor *player = SessionPlayers_ActorOf(OWN_PLAYER);
+    Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         fish->own.state = AQUARIUM_KIND30_WANDER;
         return;
@@ -862,7 +859,7 @@ void AquariumKind30_Wander(AquariumKind30 *fish)
         AquariumFish_Turn(base);
     }
     AquariumFish_SetAnimSpeed(base, 0x666);
-    Actor *player = SessionPlayers_ActorOf(OWN_PLAYER);
+    Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return;
     }

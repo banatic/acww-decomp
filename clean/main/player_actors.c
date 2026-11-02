@@ -20,9 +20,6 @@
 #define PLAYER_ACTORS_ALIGNMENT 4
 #define PLAYER_ACTORS_SIZE 0xca0
 
-/* func_02096718's player for this console's player. */
-#define PLAYER_ACTORS_OWN 4
-
 /* The reported state whose start or end clears an item (state 0x75 ends state 0x74 with a
  * splash, ov003/field_actor.c), the item put in its place and the scene it is put in. */
 #define PLAYER_ACTORS_STATE_75 0x75
@@ -63,7 +60,7 @@ CLEAN_AS(func_020952e4, PlayerActors_FieldActorSize)
  * REQUIRES: the actor exists (it is not checked for NULL). */
 int PlayerActors_OwnPlayer(void)
 {
-    return ((PlayerActorsFieldActor *) (void *) SessionPlayers_FieldActor(PLAYER_ACTORS_OWN))->player;
+    return ((PlayerActorsFieldActor *) (void *) SessionPlayers_FieldActor(SESSION_PLAYERS_OWN))->player;
 }
 CLEAN_AS(func_020952ec, PlayerActors_OwnPlayer)
 
@@ -98,7 +95,7 @@ CLEAN_AS(func_02095304, PlayerActors_ClearItemOnState75)
  * else the sound's answer. */
 int PlayerActors_OwnPlaySound(int number)
 {
-    PlayerActorsFieldActor *actor = (PlayerActorsFieldActor *) SessionPlayers_FieldActor(PLAYER_ACTORS_OWN);
+    PlayerActorsFieldActor *actor = (PlayerActorsFieldActor *) SessionPlayers_FieldActor(SESSION_PLAYERS_OWN);
     if (actor == NULL) {
         return 0;
     }

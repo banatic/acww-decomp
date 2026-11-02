@@ -328,7 +328,6 @@ typedef struct SnowmanContact {
 } SnowmanContact;
 #define SNOWMAN_KNOCK_LIMIT 0x666
 
-#define SNOWMAN_PLAYER 4 /* the actor func_020961a8 is asked for */
 #define SNOWMAN_SIZE_MIN 0x800
 #define SNOWMAN_SIZE_PUSHABLE 0xa00 /* smaller balls are not pushed and make sound 0x81c */
 #define SNOWMAN_SIZE_MAX 0x1400
@@ -607,7 +606,7 @@ int Snowman_CanStandAt(Vec3 *position)
         return 0;
     }
     int player_x = -1, player_z = -1;
-    SnowmanVisitor *player = SessionPlayers_ActorOf(SNOWMAN_PLAYER);
+    SnowmanVisitor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player != NULL) {
         Position_Tile(&player_x, &player_z, (const Position *) &player->position);
     }
@@ -736,7 +735,7 @@ static int push_refused(Snowman *snowman, fx32 velocity_x, fx32 velocity_z)
  * (0x8000) counts as negative and never refuses the push. */
 int Snowman_Push(Snowman *snowman, Vec3 *behind, s16 *angle, int *speed, int force, int direction)
 {
-    SnowmanVisitor *player = SessionPlayers_ActorOf(SNOWMAN_PLAYER);
+    SnowmanVisitor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (SceneQuery_CurrentIs0() == 0 || player == NULL) {
         return 0;
     }

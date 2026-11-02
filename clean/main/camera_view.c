@@ -21,6 +21,7 @@
 #include "player_actor_ops.h"
 #include "scene_kinds.h"
 #include "scene_query.h"
+#include "session_players.h"
 #include "view_process.h"
 
 static_assert(sizeof(CameraPreset) == 0x14, "a preset");
@@ -116,8 +117,6 @@ typedef struct CameraViewScene {
 } CameraViewScene;
 extern CameraViewScene *data_021f6948;
 
-/* The player whose position the camera follows. */
-#define PLAYER 4
 /* How far the point followed stays from a room's walls (5.0), and from its front wall in z
  * (2.0). */
 #define ROOM_MARGIN 0x5000
@@ -641,7 +640,7 @@ int CameraControl_Create(CameraControl *camera)
     camera->previous_mode = CAMERA_MODE_FOLLOW;
     camera->mode = camera->previous_mode;
     if (CameraControl_SetMode(camera, CAMERA_MODE_FOLLOW)) {
-        Vec3 *player = PlayerActorOps_StartPosition(PLAYER);
+        Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
         if (player != NULL) {
             camera->goal.second_offset = *player;
         }

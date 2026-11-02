@@ -34,7 +34,6 @@ extern NetSession *data_020ccf94; /* the link with other players */
 #define HOUSE_ROACH_FLOOR_GROUP 0x1f
 #define HOUSE_ROACH_GONE 0xffff
 #define HOUSE_ROACH_HEIGHT 0x200 /* above the floor cell's centre */
-#define HOUSE_ROACHES_PLAYER 4   /* the own player's actor */
 #define HOUSE_ROACHES_MAX_ROWS 33
 #define HOUSE_ROACHES_FAR 0x0fffffff
 
@@ -231,7 +230,7 @@ int HouseRoaches_Update(Process *self)
     if (asking == 0xff || asking == 0) {
         return 1;
     }
-    Actor *player = SessionPlayers_ActorOf(HOUSE_ROACHES_PLAYER);
+    Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     fx32 nearest = HOUSE_ROACHES_FAR;
     if (player != NULL) {
         for (int j = 0; j < HOUSE_ROACHES_MAX; j++) {

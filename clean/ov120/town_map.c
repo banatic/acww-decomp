@@ -21,6 +21,7 @@
 #include "main/scene_place.h"
 #include "main/scene_tables.h"
 #include "main/screen_map.h"
+#include "main/session_players.h"
 #include "main/text_base.h"
 #include "main/text_label.h"
 #include "main/town_name.h"
@@ -776,7 +777,7 @@ CLEAN_AS(func_ov120_0229bc54, TownMap_Teardown)
 
 /* func_ov120_0229bc74: the scene's values set up: the list at its top, nothing picked, the
  * map cursor at the map's centre, the lists built, the player's mark at the player's place
- * (outdoors the place of PlayerActorOps_StartPosition(4); in a room the marked place's), the
+ * (outdoors the place of PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN); in a room the marked place's), the
  * knob at rest. The mark is 8 pixels left of and 13 below the place's whole x and z. */
 void TownMap_Setup(TownMap *self)
 {
@@ -796,7 +797,7 @@ void TownMap_Setup(TownMap *self)
     TownMap_Select(self, TOWN_MAP_TARGET_NONE);
     TownMap_BuildLists(self);
     if (data_020e54a8 == 0) {
-        at = *PlayerActorOps_StartPosition(4);
+        at = *PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     } else {
         SceneTables_EntryRecord();
         at = *(const Vec3 *) ScenePlace_Position(&data_021f69b8);

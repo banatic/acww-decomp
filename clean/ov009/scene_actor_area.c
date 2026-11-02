@@ -31,8 +31,6 @@ static_assert(offsetof(Actor, profile) == 0x0c && offsetof(Actor, angle) == 0x8c
 
 /* The class of the player's actor (Actor.profile). */
 #define SCENE_ACTOR_PLAYER_PROFILE 9
-/* This console's player. */
-#define SCENE_ACTOR_AREA_PLAYER 4
 /* SceneActorDoor_IsEntered: how far past the actor's radius the triangle may be (0.4), how far
  * the player's direction may be from the stand point's, and how far ahead the line it casts
  * reaches (2.0). */
@@ -74,7 +72,7 @@ int SceneActorDoor_IsEntered(SceneActorArea *area, const Vec3 *position, fx32 ra
     if (actor == NULL || area->owner == NULL) {
         return 0;
     }
-    if (actor->profile != SCENE_ACTOR_PLAYER_PROFILE || SessionPlayers_ActorOf(SCENE_ACTOR_AREA_PLAYER) != other) {
+    if (actor->profile != SCENE_ACTOR_PLAYER_PROFILE || SessionPlayers_ActorOf(SESSION_PLAYERS_OWN) != other) {
         return 0;
     }
     fx32 distance = CollisionTriangle_Distance(&door_collision(area)->triangle, position);

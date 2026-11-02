@@ -9,7 +9,6 @@
 
 static_assert(sizeof(SkyFallingVars) == 0x14, "the words at 0x60");
 
-#define SKY_FALLING_PLAYER 4 /* the actor func_020961a8 is asked for: this system's player */
 #define SKY_FALLING_PRIORITY 2
 #define SKY_FALLING_START_Y (-0x14000) /* y -20 */
 #define SKY_FALLING_LEFT (-0x14000)    /* wrapped past x -20 */
@@ -70,7 +69,7 @@ void SkySnow_Run(SkyObject *object)
     SkyFallingVars *vars = sky_falling_vars(object);
     Vec3 *position = &body->position;
     VEC_Add(position, &body->velocity, position);
-    const Actor *player = SessionPlayers_ActorOf(SKY_FALLING_PLAYER);
+    const Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player != NULL) {
         vars->base_x = sky_falling_shift(player, data_020d2308[vars->layer]) + vars->base_x;
     }
@@ -132,7 +131,7 @@ void SkyRain_Run(SkyObject *object)
     SkyFallingVars *vars = sky_falling_vars(object);
     fx32 *x = &body->position.x;
     VEC_Add(&body->position, &body->velocity, &body->position);
-    const Actor *player = SessionPlayers_ActorOf(SKY_FALLING_PLAYER);
+    const Actor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player != NULL) {
         *x += sky_falling_shift(player, data_020d22e4[vars->layer]);
     }

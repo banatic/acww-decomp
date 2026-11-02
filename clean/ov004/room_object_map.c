@@ -45,7 +45,6 @@ static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 static_assert(offsetof(PushBox, base.active) == 0x98, "push box active");
 static_assert(offsetof(FurnitureAnim, base.ctrl.frame) == 0x08, "anim frame");
 
-#define PLAYER 4            /* the actor SessionPlayers_ActorOf is asked for: the one played here */
 #define OTHER_PLAYERS 4     /* actors 0 to 3 */
 #define LAYER_FLOOR 0       /* RoomObject.unk_288: on the floor */
 #define LAYER_ON_TOP 1      /* standing on another object */
@@ -131,7 +130,7 @@ int RoomObject_CanMoveOrTurn(RoomObject *object, Vec3 *offset, int turn)
         return 0;
     }
     void *map = data_021c80bc;
-    MapActor *player = SessionPlayers_ActorOf(PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (object->unk_288 == LAYER_ON_TOP) {
         return 0;
     }
@@ -479,7 +478,7 @@ CLEAN_AS(func_ov004_0220fdec, RoomObject_MountParent)
  * Actors_Slot (with `npc_reach` and `npc_radius`). Not without the player. */
 int Actors_NoneNear(Vec3 *point, fx32 player_reach, fx32 npc_reach, fx32 player_radius, fx32 npc_radius)
 {
-    MapActor *player = SessionPlayers_ActorOf(PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return 0;
     }

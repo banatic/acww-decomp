@@ -1440,7 +1440,7 @@ int FieldActor_NoteObjectUnderfoot(int player)
             return result;
         }
     }
-    const Vec3 *position = PlayerActorOps_StartPosition(4);
+    const Vec3 *position = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (position == NULL) {
         return 0;
     }
@@ -1461,6 +1461,6 @@ int FieldActor_NoteObjectUnderfoot(int player)
         }
         return EventQueue_RequestKind8();
     }
-    return EventQueue_RequestUnderfoot((void *) (uintptr_t) SessionPlayers_ActorHandle(4), object);
+    return EventQueue_RequestUnderfoot((void *) (uintptr_t) SessionPlayers_ActorHandle(SESSION_PLAYERS_OWN), object);
 }
 CLEAN_AS(func_02011520, FieldActor_NoteObjectUnderfoot)

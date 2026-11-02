@@ -705,9 +705,6 @@ int EtcMuseum_Execute(EtcMuseum *museum)
 }
 CLEAN_AS(_ZN18Obj_ov004_022533e019func_ov004_0221bce0Ev, EtcMuseum_Execute)
 
-/* The field actor of this console's player (SessionPlayers_ActorHandle). */
-#define ETC_MUSEUM_PLAYER_ACTOR 4
-
 /* The sines and cosines of 4096 angles (NitroSDK's FX_SinCosTable_). */
 extern const fx16 FX_SinCosTable_[];
 /* The session, whose slot of this system goes into the object's id. */
@@ -730,7 +727,7 @@ int EtcMuseum_OnCreate(EtcMuseum *museum)
         return 0;
     }
     if (EtcMuseum_IsLone(museum)) {
-        int handle = SessionPlayers_ActorHandle(ETC_MUSEUM_PLAYER_ACTOR);
+        int handle = SessionPlayers_ActorHandle(SESSION_PLAYERS_OWN);
         if (handle != 0) {
             const SceneObjectBase *player = (const SceneObjectBase *) (uintptr_t) handle;
             unsigned int angle = (u16) player->yaw >> 4;

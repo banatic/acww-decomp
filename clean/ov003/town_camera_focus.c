@@ -6,11 +6,10 @@
 #include "main/camera_modes.h"
 #include "main/camera_view.h"
 #include "main/player_actor_ops.h"
+#include "main/session_players.h"
 
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
-/* The player at this console (main's player number). */
-#define TOWN_CAMERA_FOCUS_PLAYER 4
 /* The span the blend runs over: up to 4.5 the focus preset, from 11.0 the follow preset. */
 #define TOWN_CAMERA_FOCUS_NEAR 0x4800
 #define TOWN_CAMERA_FOCUS_FAR 0xb000
@@ -25,7 +24,7 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
  * share_goal is set to 1 - t. */
 void TownCameraFocus_SetGoal(CameraControl *camera)
 {
-    Vec3 *player = PlayerActorOps_StartPosition(TOWN_CAMERA_FOCUS_PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     fx32 half_depth;
     int span;
     if (camera->look_both != 0) {

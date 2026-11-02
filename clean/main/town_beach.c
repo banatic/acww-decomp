@@ -24,7 +24,6 @@ typedef struct TownBeachActor {
     int z; /* 0x64 */
 } TownBeachActor;
 
-#define TOWN_BEACH_THIS_PLAYER 4
 #define TOWN_BEACH_PLAYERS 4
 #define TOWN_BEACH_ACRE_SHIFT 17 /* a position's acre (in the map) */
 
@@ -137,7 +136,7 @@ void TownBeach_UpdateAlone(int town)
     if (!TownBeach_IsWashTime(now)) {
         return;
     }
-    const TownBeachActor *actor = SessionPlayers_ActorOf(TOWN_BEACH_THIS_PLAYER);
+    const TownBeachActor *actor = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (actor != NULL) {
         AcreMap *map = TownBeach_Map();
         int acre_x = (int) MainRandom_Below(TOWN_BEACH_ACRE_ROW);

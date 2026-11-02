@@ -36,9 +36,6 @@ static_assert(offsetof(RoomObject, unk_78C) == 0x78c, "unk_78C");
 static_assert(offsetof(RoomObject, top_height) == 0x790, "top height");
 static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 
-/* The player's actor (SessionPlayers_ActorOf). */
-#define ROOM_OBJECTS_PLAYER 4
-
 /* The kinds of RoomObject.unk_780 that RoomObjects_RequestOn and RoomObjects_RequestOff
  * switch, and the one RoomObjects_IsFreeAt270 and RoomObjects_IsFreeAt90 accept below the
  * point. */
@@ -302,7 +299,7 @@ CLEAN_AS(func_ov004_0223bb88, RoomObjects_Unk288Of)
 /* func_ov004_0223bbc0: RoomObjects_FindAhead for the player's actor (actor 4), -1 without it. */
 int RoomObjects_FindAheadOfPlayer(int *x, int *z, ItemCode *item, ItemCode *item_copy)
 {
-    MapActor *player = SessionPlayers_ActorOf(ROOM_OBJECTS_PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return ROOM_OBJECTS_AHEAD_NONE;
     }

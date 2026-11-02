@@ -65,7 +65,6 @@ static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size RoomObject02253058_
 #define RECEIVER_OFFSET 0xec
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 #define ONE 0x1000         /* normal speed, 20.12 fixed point */
-#define PLAYER 4           /* the actor SessionPlayers_ActorOf is asked for: this console's player */
 #define PLAYER_COUNT 4     /* the actors RoomPlayerActor_PointAtPlace is asked for */
 #define PUSH_FRAMES 7      /* frames of pushing before it counts */
 #define MOVED_ENOUGH 0x200 /* how far the entry must have moved (RoomPushes_Moved) */
@@ -597,7 +596,7 @@ void RoomObject02253058_UpdatePushed(RoomObject02253058 *object)
 {
     int counted = 0;
     void *entry = entry_of(object);
-    MapActor *player = SessionPlayers_ActorOf(PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (entry != NULL && player != NULL && RoomPushes_Allowed() != 0 && entry_ready(entry)) {
         Cell cells[2];
         RoomObject02253058_PairConstruct(cells);

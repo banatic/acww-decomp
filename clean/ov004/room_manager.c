@@ -62,9 +62,6 @@ CLEAN_AS(func_ov004_0223b274, RoomManager_SetBroadcastChanged)
 static_assert(offsetof(RoomManager, unk_2a8) == 0x2a8, "TV sound state");
 static_assert(offsetof(RoomObject, sound.position) == 0x7b8, "object's sound point");
 
-/* The player's actor (SessionPlayers_ActorOf). */
-#define ROOM_MANAGER_PLAYER 4
-
 /* Set by the room's start in a house's room or a scene of kind 11: the TV is heard. */
 extern u8 data_ov004_022595b8;
 /* The room's shared frame counter, counted 0 to 0x27 by the room's update. */
@@ -199,7 +196,7 @@ void RoomManager_UpdateTvSound(RoomManager *room)
     RoomTvSoundState *state = (RoomTvSoundState *) (void *) room->unk_2a8;
     int silent = 1;
     Vec3 at = data_021fbee8;
-    MapActor *player = SessionPlayers_ActorOf(ROOM_MANAGER_PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player != NULL) {
         Vec3 from = player->position;
         unsigned int nearest = nearest_object(&from, NEAREST_TV_ON);
@@ -243,7 +240,7 @@ CLEAN_AS(func_ov004_0223bdac, RoomManager_UpdateTvSound)
 void RoomManager_MarkNearestClock(RoomManager *room)
 {
     (void) room;
-    MapActor *player = SessionPlayers_ActorOf(ROOM_MANAGER_PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return;
     }
@@ -263,7 +260,7 @@ CLEAN_AS(func_ov004_0223bf40, RoomManager_MarkNearestClock)
 void RoomManager_MarkNearestStriker(RoomManager *room)
 {
     (void) room;
-    MapActor *player = SessionPlayers_ActorOf(ROOM_MANAGER_PLAYER);
+    MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return;
     }

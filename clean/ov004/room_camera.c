@@ -2,6 +2,7 @@
 #include "room_camera.h"
 
 #include "clean.h"
+#include "main/session_players.h"
 #include "itcm/camera.h"           /* Camera_GetTarget */
 #include "itcm/vector.h"           /* Vec_Add */
 #include "main/actor.h"            /* Vec_YawTo */
@@ -44,8 +45,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
 
-/* The player at this console. */
-#define ROOM_CAMERA_PLAYER 4
 /* The presets and timings the modes start with. */
 #define ROOM_CAMERA_PRESET_10 0x11
 #define ROOM_CAMERA_PRESET_15 0x1d
@@ -346,7 +345,7 @@ CLEAN_AS(func_ov004_0224708c, RoomCamera_Mode14Start)
  * REQUIRES: the player has an actor. */
 void RoomCamera_BetweenFrame(CameraControl *camera)
 {
-    Vec3 *player = PlayerActorOps_StartPosition(ROOM_CAMERA_PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     Vec3 sum;
     Vec_Add(&sum, player, &camera->look_at);
     Vec3 middle;
@@ -366,7 +365,7 @@ CLEAN_AS(func_ov004_022470cc, RoomCamera_BetweenFrame)
  * QUIRK: the player's position is asked for and not used. */
 int RoomCamera_BetweenStart(CameraControl *camera)
 {
-    PlayerActorOps_StartPosition(ROOM_CAMERA_PLAYER);
+    PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     CameraControl_LoadPreset(camera, ROOM_CAMERA_PRESET_16, NULL);
     CameraControl_SelectTiming(camera, ROOM_CAMERA_TIMING_0);
     CameraControl_RestartMove();
@@ -480,7 +479,7 @@ int RoomCamera_ResetGoal(CameraControl *camera)
 {
     CameraControl_LoadPreset(camera, data_020ca158[1][1], NULL);
     CameraControl_SelectTiming(camera, ROOM_CAMERA_TIMING_0);
-    camera->goal.second_offset = *PlayerActorOps_StartPosition(ROOM_CAMERA_PLAYER);
+    camera->goal.second_offset = *PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     CameraControl_RestartMove();
     return 1;
 }
@@ -514,7 +513,7 @@ void RoomCamera_FocusGoal(CameraControl *camera, CameraView *view)
     if (view == NULL) {
         view = &camera->goal;
     }
-    Vec3 *player = PlayerActorOps_StartPosition(ROOM_CAMERA_PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     fx32 depth;
     int span = CameraControl_SpanOfTwo(player, &camera->look_at, &camera->goal.second_offset, &depth);
     if (span < ROOM_CAMERA_FOCUS_NEAR) {

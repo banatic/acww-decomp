@@ -476,7 +476,7 @@ int EventKind_ClaimPerson(EventQueueEntry *event)
                 if (SceneObjectBase_IsPerson(person) && event->step_17 == EVENT_KIND_ACT_KIND_6_7) {
                     SceneObjectBaseAsk *ask =
                         (SceneObjectBaseAsk *) SceneObjectBase_Slot(person, SCENE_OBJECT_BASE_SLOT_ASK_58);
-                    if (!ask(person, SessionPlayers_ActorOf(4))) {
+                    if (!ask(person, SessionPlayers_ActorOf(SESSION_PLAYERS_OWN))) {
                         return 0;
                     }
                 }

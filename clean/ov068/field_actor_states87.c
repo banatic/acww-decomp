@@ -14,7 +14,6 @@ static_assert(offsetof(FieldActor, anim) == 0x2d0, "anim");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
 static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next_state");
 
-#define FIELD_ACTOR_87_PLAYER 4 /* this console's player */
 #define FIELD_ACTOR_87_STATE_87 0x87
 #define FIELD_ACTOR_87_STATE_88 0x88
 #define FIELD_ACTOR_87_ANIMATION_87 0x82
@@ -199,7 +198,7 @@ CLEAN_AS(func_ov068_0227200c, FieldActor_RequestState87)
  * asks for state 0x88 (priority 6); whether it was queued, 0 without an actor. */
 int FieldActor_PlayerRequestState88(void)
 {
-    FieldActor *actor = SessionPlayers_FieldActor(FIELD_ACTOR_87_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(SESSION_PLAYERS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -211,7 +210,7 @@ CLEAN_AS(func_ov068_02272044, FieldActor_PlayerRequestState88)
 /* func_ov068_0227207c: the same for state 0x87. */
 void *FieldActor_PlayerRequestState87(void)
 {
-    FieldActor *actor = SessionPlayers_FieldActor(FIELD_ACTOR_87_PLAYER);
+    FieldActor *actor = SessionPlayers_FieldActor(SESSION_PLAYERS_OWN);
     if (actor == NULL) {
         return NULL;
     }

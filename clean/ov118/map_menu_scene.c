@@ -20,6 +20,7 @@
 #include "main/scene_place.h"
 #include "main/scene_tables.h"
 #include "main/screen_map.h"
+#include "main/session_players.h"
 #include "main/state_flags.h"
 #include "main/town_name.h"
 #include "ov004/member_pointer.h"
@@ -88,9 +89,6 @@ extern void func_02070c08(void *label); /* TextLabel_Construct */
 extern void func_02070be8(void *label); /* TextLabel_Destruct */
 extern void func_ov118_0229a43c(void *mark);
 extern void func_ov118_0229a438(void *mark);
-
-/* The player's actor whose place the map shows outdoors. */
-#define MAP_MENU_PLAYER_ACTOR 4
 
 /* The layers (main/display_layers.h): the map and the list, on the sub screen, and the sub
  * screen's OBJs. */
@@ -320,7 +318,7 @@ void MapMenu_Setup(MapMenu *self)
     MapMenu_Select(self, MAP_MENU_SELECT_NONE);
     MapMenu_BuildLists(self);
     if (data_020e54a8 == 0) {
-        position = *PlayerActorOps_StartPosition(MAP_MENU_PLAYER_ACTOR);
+        position = *PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     } else {
         SceneTables_EntryRecord();
         position = *(const Vec3 *) ScenePlace_Position(&data_021f69b8);

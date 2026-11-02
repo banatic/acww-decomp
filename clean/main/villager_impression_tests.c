@@ -7,6 +7,7 @@
 #include "clean.h"
 #include "player_pockets.h"
 #include "player_record.h"
+#include "session_players.h"
 #include "villager_roster.h"
 #include "villager_town.h"
 #include "actor_table.h"
@@ -14,8 +15,6 @@
 #include "player_actor_ops.h"
 #include "sky.h"
 
-/* The actor whose position func_02095794 gives for the player. */
-#define VILLAGER_IMPRESSION_PLAYER_ACTOR 4
 /* An acre is 16 x 16 tiles. */
 #define VILLAGER_IMPRESSION_ACRE_TILES 16
 
@@ -277,7 +276,7 @@ static int VillagerImpression_IsCode21To24(u16 code)
  * the town (data_020e54a8), without the player's actor or without a map. */
 static int VillagerImpression_CountNear(int (*wanted)(u16 code), int needed)
 {
-    const int *position = (const int *) PlayerActorOps_StartPosition(VILLAGER_IMPRESSION_PLAYER_ACTOR);
+    const int *position = (const int *) PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (data_020e54a8 != 0 || position == NULL) {
         return 0;
     }

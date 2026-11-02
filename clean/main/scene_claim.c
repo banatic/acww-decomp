@@ -25,7 +25,6 @@ static_assert(sizeof(SceneClaimRoom) == 2, "SceneClaimRoom is 2 bytes");
 #define MASK_SLOTS 4
 
 #define NO_EXIT (-1)
-#define THIS_PLAYER 4    /* what func_020961a8 takes for this console's player */
 #define TILE_SIZE 0x2000 /* fx32: one tile */
 
 extern NetSession *data_020ccf94; /* the session */
@@ -143,7 +142,7 @@ CLEAN_AS(func_0209d5e8, SceneClaim_Exit)
  * missing, else 1. */
 int SceneClaim_TakeExit(int exit)
 {
-    SceneClaimPlayer *player = SessionPlayers_ActorOf(THIS_PLAYER);
+    SceneClaimPlayer *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     u8 scene;
     u8 unk_14;
     u8 unk_15;

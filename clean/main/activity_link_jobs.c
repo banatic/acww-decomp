@@ -262,11 +262,12 @@ void ActivityLinkJobs_Step14(Activity *activity)
             if (link_lost(AIDS_HOST) || !ActivityVars_Flag3C08()) {
                 return;
             }
-            Process_RequestDelete(SessionPlayers_ActorOf(4));
+            Process_RequestDelete(SessionPlayers_ActorOf(SESSION_PLAYERS_OWN));
             activity->state = 5;
             return;
         case 5:
-            if (link_lost(AIDS_HOST) || SessionPlayers_ActorOf(4) != NULL || !SystemPacket_SendActivityFlagD9()) {
+            if (link_lost(AIDS_HOST) || SessionPlayers_ActorOf(SESSION_PLAYERS_OWN) != NULL ||
+                !SystemPacket_SendActivityFlagD9()) {
                 return;
             }
             activity->state = 6;

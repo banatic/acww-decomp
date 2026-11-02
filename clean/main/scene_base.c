@@ -75,7 +75,6 @@ extern const u8 data_020d8bd4[];
 /* The scene in which the player's field actor is numbered by data_021f3c1c, and the field
  * actor of the player (func_02096718(4), as in pockets_screen.c). */
 #define SCENE_BASE_SCENE_2F 0x2f
-#define SCENE_BASE_PLAYER_ACTOR 4
 /* The player's field actor's angle func_02095518's turn of the head is relative to. */
 #define SCENE_BASE_PLAYER_ANGLE 0x8e
 
@@ -273,7 +272,7 @@ int SceneBase_PlayerLooksAt(SceneBase *scene, u8 *speaker)
         return 0;
     }
     int angle = Vec_YawTo((const Vec3 *) (uintptr_t) position, (const Vec3 *) (speaker + SCENE_BASE_SPEAKER_POSITION));
-    const u8 *player = (const u8 *) (uintptr_t) SessionPlayers_ActorHandle(SCENE_BASE_PLAYER_ACTOR);
+    const u8 *player = (const u8 *) (uintptr_t) SessionPlayers_ActorHandle(SESSION_PLAYERS_OWN);
     s16 own = *(const s16 *) (player + SCENE_BASE_PLAYER_ANGLE);
     return PlayerActorOps_SetLook(0, (s16) (angle - own), actor);
 }

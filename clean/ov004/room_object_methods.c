@@ -7,6 +7,7 @@
 #include "cells.h"
 #include "clean.h"
 #include "main/item_code.h"
+#include "main/session_players.h"
 #include "room_object_body.h"
 #include "furniture_sounds.h"
 #include "house_roaches.h"
@@ -21,7 +22,6 @@
 #include "room_object_map.h"
 #include "room_objects.h"
 
-#define PLAYER 4             /* the actor PlayerActorOps_StartPosition is asked for */
 #define KIND_NO_ITEM 0x1c    /* unk_780 of an object that is no item of the map */
 #define EFFECT_3D 0x3d       /* what RoomObject_Effect3dAt gives EffectSystem_StartOneShotSetNumber */
 #define BLOCK_CELLS 16       /* cells along a block of the town's map */
@@ -152,7 +152,7 @@ CLEAN_AS(func_ov004_0220e61c, RoomObject_Effect3dAt)
  * the player; 0 without a player. */
 int RoomObject_EffectTowardsPlayer(RoomObject *object)
 {
-    Vec3 *player = PlayerActorOps_StartPosition(PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return 0;
     }
@@ -168,7 +168,7 @@ CLEAN_AS(func_ov004_0220e640, RoomObject_EffectTowardsPlayer)
  * strict comparisons: on equal distances the first cell wins. */
 void RoomObject_EffectAtCellTowardsPlayer(RoomObject *object, int farthest)
 {
-    Vec3 *player = PlayerActorOps_StartPosition(PLAYER);
+    Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return;
     }

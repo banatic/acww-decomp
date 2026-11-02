@@ -49,7 +49,6 @@
 #define SNOWBALL_DROP_SLOW_FRAMES 0xc
 #define SNOWBALL_FALL_SPEED_MIN 0x2b8 /* the speed a ball falls off the edge with at least */
 #define SNOWBALL_SLIDE_END 0x3000     /* how far it slides before it drifts */
-#define SNOWBALL_PLAYER 4
 #define SNOWBALL_SIZE_FORGOTTEN 0x800 /* the size a forgotten ball is kept with */
 #define SNOWBALL_SIZE_PUSHABLE 0xa00  /* smaller balls are not pushed (snowman.c) */
 #define SNOWBALL_SINK_ITEM_FIRST 0xfc
@@ -616,7 +615,7 @@ int Snowball_EnterFall(Snowman *ball)
     fx32 speed = Vec_LengthXZ(&velocity);
     if (speed < SNOWBALL_FALL_SPEED_MIN) {
         if (speed == 0) {
-            const SnowmanVisitor *player = SessionPlayers_ActorOf(SNOWBALL_PLAYER);
+            const SnowmanVisitor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
             if (player != NULL) {
                 int yaw = (u16) player->yaw;
                 ball->body.rolling.velocity_x = FX_MulFunc(SNOWBALL_FALL_SPEED_MIN, sine(yaw));

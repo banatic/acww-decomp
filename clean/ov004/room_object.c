@@ -394,7 +394,7 @@ void RoomObject_UpdateAppear(RoomObject *object)
 CLEAN_AS(func_ov004_0220c9fc, RoomObject_UpdateAppear)
 
 /* func_ov004_0220cb68 (entry of ROOM_OBJECT_APPEAR): scale 0, the wobble's start, and when
- * SessionPlayers_ActorOf(4) says so, whatever DroppedItems_DropFromLocalPlayer does at 0x800 above the object's
+ * SessionPlayers_ActorOf(SESSION_PLAYERS_OWN) says so, whatever DroppedItems_DropFromLocalPlayer does at 0x800 above the object's
  * centre (on the floor when unk_288 is 0, else at the height RoomObjects_HeightAtPoint gives) with
  * the value ItemCode_MakeVariant makes of unk_284; its result decides. */
 int RoomObject_EnterAppear(RoomObject *object)
@@ -408,7 +408,7 @@ int RoomObject_EnterAppear(RoomObject *object)
     object->wobble_speed = 0x2710;
     object->wobble_amplitude = 0x800;
 
-    if (SessionPlayers_ActorOf(4)) {
+    if (SessionPlayers_ActorOf(SESSION_PLAYERS_OWN)) {
         Vec3 centre;
         RoomObject_Centre(object, &centre);
         if (object->unk_288 == 0) {

@@ -62,8 +62,7 @@ extern int CurrentPockets_FreeSlot(void);
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
-#define TILE_REQUESTS_PLAYER_ACTOR 4 /* func_020961a8's number for this system's player */
-#define TILE_REQUESTS_BOTTLE 0x1520  /* the bottle with a letter: it needs a letter's place */
+#define TILE_REQUESTS_BOTTLE 0x1520 /* the bottle with a letter: it needs a letter's place */
 #define TILE_REQUESTS_ITEM_1379 0x1379
 #define TILE_REQUESTS_MARKED_ITEM 0x1566
 #define TILE_REQUESTS_ROCK_HITS 8
@@ -456,7 +455,7 @@ CLEAN_AS(func_02042fd4, TileRequests_ClearSpawnTile)
 void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
-    TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
+    TileRequestsActor *self = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (town == NULL || self == NULL) {
         return;
     }
@@ -512,7 +511,7 @@ int TileRequests_Carry(int index)
     }
     switch (request->state) {
         case TILE_REQUEST_GRANTED: {
-            TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
+            TileRequestsActor *self = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
             if (self == NULL) {
                 return 0;
             }
@@ -548,7 +547,7 @@ CLEAN_AS(func_020431c8, TileRequests_Carry)
 int TileRequests_FindDropTile(int kind, TileRequestTile *tile, u8 *place)
 {
     AcreMap *map = data_021c80bc;
-    TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
+    TileRequestsActor *self = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (map == NULL || self == NULL) {
         return 0;
     }
@@ -725,7 +724,7 @@ int TileRequests_Answer(u32 index)
             switch (request->kind) {
                 case TILE_REQUEST_KIND_13:
                     if (request->item != ITEM_CODE_NONE) {
-                        TileRequestsActor *self = SessionPlayers_ActorOf(TILE_REQUESTS_PLAYER_ACTOR);
+                        TileRequestsActor *self = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
                         if (self != NULL) {
                             int shown = request->tile_item;
                             u16 item = request->item;

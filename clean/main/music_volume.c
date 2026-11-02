@@ -6,6 +6,7 @@
 #include "clean.h"
 #include "music_commands.h"
 #include "ov004/member_pointer.h"
+#include "session_players.h"
 #include "sound.h"
 #include "field_collision.h"
 #include "player_actor_ops.h"
@@ -21,8 +22,6 @@ static_assert(offsetof(MusicRequest, music_started) == 0x14, "request music star
 
 /* The head slot's state while the queue is not empty. */
 #define MUSIC_VOLUME_HEAD_STATE 0x12
-/* The player's field actor (func_02095794(4)). */
-#define MUSIC_VOLUME_PLAYER 4
 
 /* MusicVolume_ClearStarted as a member function pointer. */
 extern const MemberFn data_020da284;
@@ -179,7 +178,7 @@ void MusicVolume_UpdateGroundSlot(MusicVolume *self, MusicVolumeSlot *slot)
 {
     int state = slot->state;
     int lowered = 0;
-    const Vec3 *player = PlayerActorOps_StartPosition(MUSIC_VOLUME_PLAYER);
+    const Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
 
     (void) self;
     if (player != NULL) {

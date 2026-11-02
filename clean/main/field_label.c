@@ -21,6 +21,7 @@
 #include "name_texts.h"
 #include "ov004/member_pointer.h"
 #include "player_actor_ops.h"
+#include "session_players.h"
 #include "sliding_window.h"
 #include "state_flags.h"
 #include "talk_object.h"
@@ -317,7 +318,7 @@ void FieldLabel_PlaceOverPlayer(FieldLabel *label)
 {
     data_021fbe48 = *CameraControl_ViewMatrix();
 
-    const Vec3 *player = PlayerActorOps_StartPosition(4);
+    const Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player != NULL) {
         Vec3 head = *player;
         Vec3 drawn;

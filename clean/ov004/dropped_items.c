@@ -327,7 +327,7 @@ CLEAN_AS(func_ov004_02233ad4, DroppedItems_PutOnMap)
 int DroppedItems_DropFromLocalPlayer(const u16 *item, const Vec3 *to)
 {
     AcreMap *map = data_021c80bc;
-    Actor *actor = SessionPlayers_ActorOf(4);
+    Actor *actor = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (map == NULL || actor == NULL) {
         return 0;
     }
