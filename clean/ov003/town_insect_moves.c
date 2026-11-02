@@ -1101,7 +1101,7 @@ void TownInsectMove_Update36(TownInsect *insect)
         insect->unk_247 = FieldActor_PlayerHolds1376() != 0 ? 1 : 0;
     }
     if (insect->unk_24c == 0 && action != TOWN_INSECT_ACTION_LET_GO && action != 9) {
-        heard = InsectPath_WatchPlayer(insect, &insect->unk_236);
+        heard = InsectPath_WatchPlayer(insect, &insect->out_of_view);
         if (insect->action != 5) {
             if (heard == 1) {
                 return;

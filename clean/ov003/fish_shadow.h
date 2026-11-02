@@ -121,7 +121,7 @@ typedef struct FishShadow {
     int state;                   /* 0x080: FISH_SHADOW_* */
     ModelObject unk_84;          /* 0x084 */
     Vec3 position;               /* 0x120 */
-    Vec3 unk_12c;                /* 0x12c: set with the position when it is placed */
+    Vec3 placed_at;              /* 0x12c: set with the position when it is placed */
     s16 yaw;                     /* 0x138 */
     u8 pad_13a[2];               /* 0x13a */
     int unk_13c;                 /* 0x13c */

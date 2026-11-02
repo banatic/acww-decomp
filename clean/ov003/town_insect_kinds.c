@@ -574,7 +574,7 @@ void TownInsectKind_Begin(TownInsect *insect, short unk_244, u8 reached, int rea
     insect->scale.y = 0x1000;
     insect->scale.z = 0x1000;
     insect->unk_220 = insect->unk_228;
-    insect->unk_236 = 0;
+    insect->out_of_view = 0;
     insect->unk_24e = 0;
     CollisionGround_Destroy(&ground);
 }

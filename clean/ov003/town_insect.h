@@ -122,8 +122,8 @@ typedef struct TownInsect {
     int effect;         /* 0x22c: the handle of effect 0x3a, -1 for none */
     u16 slot;           /* 0x230: its entry of a model pool */
     s16 timer;          /* 0x232 */
-    s16 unk_234;        /* 0x234: a town insect's frames left out of view before it leaves */
-    s16 unk_236;        /* 0x236: kinds 0x36 and 0x37: counted down out of view (TownInsect_CountDown) */
+    s16 leave_frames;   /* 0x234: a town insect's frames left out of view before it leaves */
+    s16 out_of_view;    /* 0x236: kinds 0x36 and 0x37: counted down out of view (TownInsect_CountDown) */
     s16 angle_x;        /* 0x238 */
     s16 angle_y;        /* 0x23a */
     s16 angle_z;        /* 0x23c */

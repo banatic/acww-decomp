@@ -673,7 +673,7 @@ int TownInsect_Weather(int kind, int falling)
 CLEAN_AS(func_ov003_0222d248, TownInsect_Weather)
 
 /* func_ov003_0222d300: every 121st frame, the town records kept after a failed placing freed,
- * and the town insects that are active, out of view and with unk_234 clear sent away. */
+ * and the town insects that are active, out of view and with leave_frames clear sent away. */
 void TownInsect_ClearFailed(void)
 {
     data_ov003_02260554++;
@@ -686,7 +686,7 @@ void TownInsect_ClearFailed(void)
         if (insect->kind == TOWN_INSECT_KIND_FAILED) {
             insect->kind = TOWN_INSECT_NO_KIND;
             insect->used = 0;
-        } else if (insect->in_view == 0 && insect->unk_234 == 0 && insect->state == TOWN_INSECT_STATE_ACTIVE) {
+        } else if (insect->in_view == 0 && insect->leave_frames == 0 && insect->state == TOWN_INSECT_STATE_ACTIVE) {
             insect->state = TOWN_INSECT_STATE_LEAVING;
             insect->action = TOWN_INSECT_ACTION_END;
         }
@@ -2318,10 +2318,10 @@ void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, i
     }
     if (mode == TOWN_INSECT_MODE_TOWN && (linked == 0 || LinkGlobal_HoldsScene() != 0)) {
         if (in_view != 0) {
-            insect->unk_234 = 1200;
-        } else if (insect->unk_234 > 0) {
-            insect->unk_234--;
-            if (insect->unk_234 == 0) {
+            insect->leave_frames = 1200;
+        } else if (insect->leave_frames > 0) {
+            insect->leave_frames--;
+            if (insect->leave_frames == 0) {
                 insect->state = TOWN_INSECT_STATE_LEAVING;
                 return;
             }
@@ -2423,9 +2423,9 @@ void TownInsect_CountDown(int unused, TownInsect *insect)
             break;
         case 0x36:
         case 0x37:
-            if (insect->unk_236 > 0 && insect->unk_236 <= 300) {
-                if (insect->unk_236 > 0x1f) {
-                    insect->unk_236--;
+            if (insect->out_of_view > 0 && insect->out_of_view <= 300) {
+                if (insect->out_of_view > 0x1f) {
+                    insect->out_of_view--;
                 } else {
                     TownInsectMove_Leave(insect);
                 }
@@ -2601,7 +2601,7 @@ void TownInsect_Remove(TownInsectProcess *process, TownInsect *insect, int mode)
     insect->anim.model = NULL;
     insect->unk_254 = 0;
     insect->unk_24a = 0;
-    insect->unk_236 = 0;
+    insect->out_of_view = 0;
     int which = mode == TOWN_INSECT_MODE_TOWN ? 0 : mode == TOWN_INSECT_MODE_EVENT ? 1 : 2;
     ModelPool_Release(&process->pools[which], &insect->slot);
     insect->unk_170 = 0;

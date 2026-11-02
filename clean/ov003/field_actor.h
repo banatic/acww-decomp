@@ -571,7 +571,7 @@ typedef struct FieldActor {
     u8 unk_5DC[0x600 - 0x5dc];
     u8 unk_600; /* nonzero: state 0x4f plays sound 0x84b once the held item's animation is over */
     u8 unk_601[0x62c - 0x601];
-    Vec3 unk_62C; /* the last row of a matrix at 0x608: the tip of what the actor holds */
+    Vec3 held_tip; /* the last row of a matrix at 0x608: the tip of what the actor holds */
     u8 unk_638[0x668 - 0x638];
     union {
         Mtx43 unk_668; /* state 0x4b places its effects by it */
@@ -601,9 +601,9 @@ typedef struct FieldActor {
     int unk_810; /* func_02043554's answer in states 0x55 and 0x54, -1 for none */
     int unk_814;
     int unk_818;
-    int unk_81C; /* a progress states 0x60, 0x5f and 0x58 wait on (5, 6, 0xf and up) */
-    u16 item;    /* the item states 0x61, 0x60 and 0x5f act with (ITEM_NONE 0xfff1 for none) */
-    u16 unk_822; /* state 0x5f writes the item here and copies it to `item` */
+    int progress; /* a progress states 0x60, 0x5f and 0x58 wait on (5, 6, 0xf and up) */
+    u16 item;     /* the item states 0x61, 0x60 and 0x5f act with (ITEM_NONE 0xfff1 for none) */
+    u16 unk_822;  /* state 0x5f writes the item here and copies it to `item` */
     Vec3 unk_824;
     fx32 unk_830[3]; /* three equal factors (state 0x89; states 0x60 and 0x5f pass the value to func_0200f650) */
     u8 unk_83C[0x8c4 - 0x83c];

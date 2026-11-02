@@ -129,7 +129,7 @@ typedef struct Process {
     u8 activate_pending; /* created during the EXECUTE phase: made active in the CONNECT phase */
     u8 create_pending;   /* its creation was left pending during the CREATE phase: listed in the
                           * CONNECT phase */
-    u8 unk_12;           /* the spawn's last argument, kept */
+    u8 spawn_arg;        /* the spawn's last argument, kept */
     u8 flags;            /* ProcessFlags */
     ProcessNode node;
     ProcessLink link;      /* in the create, execute or delete list */

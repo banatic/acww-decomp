@@ -52,7 +52,7 @@
 static_assert(offsetof(FieldActor, flags) == 0x6ec, "flags");
 static_assert(offsetof(FieldActor, player) == 0x800, "player");
 static_assert(offsetof(FieldActor, target) == 0x80c, "target");
-static_assert(offsetof(FieldActor, unk_81C) == 0x81c, "talk progress");
+static_assert(offsetof(FieldActor, progress) == 0x81c, "talk progress");
 static_assert(offsetof(FieldActor, unk_824) == 0x824, "eased point");
 static_assert(offsetof(StateRequest, arg) == 8, "request arg");
 
@@ -89,7 +89,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* No target held (FieldActor.target, unk_810). */
 #define NO_TARGET (-1)
 
-/* FieldActor.unk_81C, the progress of a talk the actor opened: 15 and up is over. */
+/* FieldActor.progress, the progress of a talk the actor opened: 15 and up is over. */
 #define TALK_OVER 15
 
 /* The word at 0x7d4 (the start of FieldActor.work) as a halfword. */
@@ -233,7 +233,7 @@ u8 FieldActor_StateGroup(FieldActor *actor, int state)
 }
 CLEAN_AS(func_0200ea0c, FieldActor_StateGroup)
 
-/* ---- The message receiver's hooks, by the progress of the talk (FieldActor.unk_81C) */
+/* ---- The message receiver's hooks, by the progress of the talk (FieldActor.progress) */
 
 /* func_0200ea18 (the receiver's slot 0x70): ends the talk (progress 15) with func_02035638 and
  * func_02035684, by its progress:
@@ -250,7 +250,7 @@ CLEAN_AS(func_0200ea0c, FieldActor_StateGroup)
  * Other progresses are left alone. */
 void FieldActor_TalkClosing(FieldActor *actor)
 {
-    int progress = actor->unk_81C;
+    int progress = actor->progress;
     int start = 6;
 
     if (progress >= TALK_OVER) {
@@ -263,7 +263,7 @@ void FieldActor_TalkClosing(FieldActor *actor)
         case 10:
             Music_DropMusic(0x39);
             Music_AddValue(0xc, start, start + 5);
-            actor->unk_81C = TALK_OVER;
+            actor->progress = TALK_OVER;
             break;
         case 7: {
             u16 value = field_actor_support_work_halfword(actor);
@@ -278,7 +278,7 @@ void FieldActor_TalkClosing(FieldActor *actor)
             } else {
                 Music_AddValue(0xc, start, start + 5);
             }
-            actor->unk_81C = TALK_OVER;
+            actor->progress = TALK_OVER;
             break;
         }
         case 5:
@@ -302,8 +302,8 @@ void FieldActor_TalkClosing(FieldActor *actor)
             }
             Music_DropMusic(value);
             Music_AddValue(kind, 0x14, 0x19);
-            if (actor->unk_81C != 5) {
-                actor->unk_81C = TALK_OVER;
+            if (actor->progress != 5) {
+                actor->progress = TALK_OVER;
             }
             break;
         }
@@ -317,13 +317,13 @@ void FieldActor_TalkClosing(FieldActor *actor)
             }
             Music_DropMusic(value);
             Music_AddValue(0xc, start, start + 5);
-            actor->unk_81C = TALK_OVER;
+            actor->progress = TALK_OVER;
             break;
         }
         case 12:
             Music_DropMusic(0x42);
             Music_AddValue(0xc, start, 0xb);
-            actor->unk_81C = TALK_OVER;
+            actor->progress = TALK_OVER;
             break;
         default:
             break;
@@ -336,7 +336,7 @@ CLEAN_AS(func_0200ea18, FieldActor_TalkClosing)
  * 0xb from 2 and 15 from 3. */
 void FieldActor_TalkChoice(FieldActor *actor)
 {
-    int progress = actor->unk_81C;
+    int progress = actor->progress;
 
     if (progress != 0 && progress != 2 && progress != 3 && progress != 4) {
         return;
@@ -346,19 +346,19 @@ void FieldActor_TalkChoice(FieldActor *actor)
     TalkObject_SetMessage((TalkObject *) actor->link, &message, NULL);
 
     if (choice == 0) {
-        actor->unk_81C = 5;
+        actor->progress = 5;
         return;
     }
-    switch (actor->unk_81C) {
+    switch (actor->progress) {
         case 0:
         case 4:
-            actor->unk_81C = 9;
+            actor->progress = 9;
             break;
         case 2:
-            actor->unk_81C = 0xb;
+            actor->progress = 0xb;
             break;
         default:
-            actor->unk_81C = TALK_OVER;
+            actor->progress = TALK_OVER;
             break;
     }
 }
@@ -386,7 +386,7 @@ static void field_actor_support_name_item(FieldActor *actor, u16 item)
  * progress 8 (for 14 set before the item is named). */
 void FieldActor_TalkMessage(FieldActor *actor)
 {
-    switch (actor->unk_81C) {
+    switch (actor->progress) {
         case 0:
             field_actor_support_show(actor, 0x3d);
             break;
@@ -398,7 +398,7 @@ void FieldActor_TalkMessage(FieldActor *actor)
             break;
         case 1:
             field_actor_support_show(actor, 0x3c);
-            actor->unk_81C = 9;
+            actor->progress = 9;
             break;
         case 5:
         case 6:
@@ -407,11 +407,11 @@ void FieldActor_TalkMessage(FieldActor *actor)
         case 13:
             field_actor_support_show(actor, 0x3f);
             field_actor_support_name_item(actor, (u16) (actor->work.s57.kind + 0x12b0));
-            actor->unk_81C = 8;
+            actor->progress = 8;
             break;
         case 14:
             field_actor_support_show(actor, 0x3f);
-            actor->unk_81C = 8;
+            actor->progress = 8;
             field_actor_support_name_item(actor, (u16) (actor->work.s54.kind + 0x12e8));
             break;
         default:

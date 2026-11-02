@@ -835,14 +835,14 @@ void FishShadowSwim_Update(FishShadow *fish)
 }
 CLEAN_AS(func_ov003_0222bb0c, FishShadowSwim_Update)
 
-/* func_ov003_0222bd40 (the placing step of a free shadow): from where it was placed (unk_12c),
+/* func_ov003_0222bd40 (the placing step of a free shadow): from where it was placed (placed_at),
  * the step of its swimming state and the check of where it went: blocked, it turns (by 60
  * degrees in group 0; a random yaw within 15 degrees either way in group 1) and
  * its count of clear steps (unk_201) starts again; else that count goes up. Its frames go up by
  * 2. */
 void FishShadowSwim_Settle(FishShadow *fish)
 {
-    fish->position = fish->unk_12c;
+    fish->position = fish->placed_at;
     MemberPointer_CallVoid(fish_swim_member(data_ov003_0225f160, fish->behaviour), fish);
     int blocked = FishShadow_CheckMove(fish);
     if (blocked != 0 && blocked != 5) {

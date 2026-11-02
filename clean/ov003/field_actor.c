@@ -91,7 +91,7 @@ static_assert(offsetof(FieldActor, anim) == 0x2d0, "animation");
 static_assert(offsetof(FieldActor, anim.frame) == 0x2d8, "animation frame");
 static_assert(offsetof(FieldActor, head_pitch) == 0x45c, "head");
 static_assert(offsetof(FieldActor, held) == 0x5a0, "held");
-static_assert(offsetof(FieldActor, unk_62C) == 0x62c, "0x62c");
+static_assert(offsetof(FieldActor, held_tip) == 0x62c, "0x62c");
 static_assert(offsetof(FieldActor, unk_68C) == 0x68c, "0x68c");
 static_assert(offsetof(FieldActor, flags) == 0x6ec, "flags");
 static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start position");
@@ -1287,7 +1287,7 @@ CLEAN_AS(func_ov003_0220d914, FieldActor_EndState81)
 void FieldActor_AnimateState81(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    Vec3 at = actor->unk_62C;
+    Vec3 at = actor->held_tip;
     Globe_Unbend(&at, &at);
 
     if (actor->work.effect.effect != -1) {
@@ -3261,7 +3261,7 @@ static_assert(offsetof(FieldActor, unk_0C4) == 0xc4, "0xc4");
 static_assert(offsetof(FieldActor, unk_0D0) == 0xd0, "0xd0");
 static_assert(offsetof(FieldActor, unk_298) == 0x298, "0x298");
 static_assert(offsetof(FieldActor, unk_698) == 0x698, "0x698");
-static_assert(offsetof(FieldActor, unk_81C) == 0x81c, "0x81c");
+static_assert(offsetof(FieldActor, progress) == 0x81c, "0x81c");
 static_assert(offsetof(FieldActor, item) == 0x820, "item");
 static_assert(offsetof(FieldActor, unk_824) == 0x824, "0x824");
 static_assert(offsetof(FieldActor, work.s62.point) == 0x7d8, "state 0x62 point");
@@ -3544,7 +3544,7 @@ void FieldActor_RunState63(FieldActor *actor)
     if (frame < 5 || frame > 0x23) {
         return;
     }
-    Vec3 at = actor->unk_62C;
+    Vec3 at = actor->held_tip;
     Globe_Unbend(&at, &at);
     if (STATE63_EFFECT(actor) == -1) {
         STATE63_EFFECT(actor) = EffectSystem_StartKind(0x26, &at, &actor->yaw, 0);
@@ -3952,17 +3952,17 @@ void FieldActor_RunState60(FieldActor *actor)
                 FieldActor_ClearFlag(actor, 0xd);
                 break;
             }
-            if (actor->unk_81C == 5) {
+            if (actor->progress == 5) {
                 if (GroupParams_OpenWithItem2a(actor->item)) {
-                    actor->unk_81C = 6;
+                    actor->progress = 6;
                 }
                 break;
             }
-            if (actor->unk_81C == 6) {
+            if (actor->progress == 6) {
                 if (!GroupParams_CanOpen()) {
                     break;
                 }
-                actor->unk_81C = 0xf;
+                actor->progress = 0xf;
                 if (GroupParams_C4CIs1()) {
                     FieldActor_ClearFlag(actor, 0xd);
                     release_receiver(actor);
@@ -3970,7 +3970,7 @@ void FieldActor_RunState60(FieldActor *actor)
                     move_on(actor);
                     break;
                 }
-            } else if (actor->unk_81C < 0xf) {
+            } else if (actor->progress < 0xf) {
                 break;
             }
             release_receiver(actor);
@@ -4178,7 +4178,7 @@ void FieldActor_RunState5F(FieldActor *actor)
             Music_DropPriority(0x12);
             Music_AddValue(0xc, 0, 1);
             Music_Add(0xd, 0x39, 0x7f, 1);
-            actor->unk_81C = 10;
+            actor->progress = 10;
             break;
         }
         case 1:
@@ -4189,7 +4189,7 @@ void FieldActor_RunState5F(FieldActor *actor)
         case 2:
             if (CurrentPockets_FreeSlot() == -1) {
                 work->step = 3;
-                actor->unk_81C = 2;
+                actor->progress = 2;
                 break;
             }
             if (actor->link == NULL || actor->link->open != 0) {
@@ -4202,7 +4202,7 @@ void FieldActor_RunState5F(FieldActor *actor)
             CameraControl_ResetMode();
             break;
         case 3:
-            if (actor->unk_81C >= 0xf) {
+            if (actor->progress >= 0xf) {
                 work->step = 4;
                 break;
             }
@@ -4293,7 +4293,7 @@ void FieldActor_AnimateState5F(FieldActor *actor)
         actor->unk_298 = kept_298;
         actor->unk_698 = kept_698;
     } else {
-        actor->unk_824 = actor->unk_62C;
+        actor->unk_824 = actor->held_tip;
         Globe_Unbend(&actor->unk_824, &actor->unk_824);
     }
 }
@@ -4364,7 +4364,7 @@ void FieldActor_EnterState5F(FieldActor *actor, const StateRequest *request, int
     } else {
         FieldActor_PlayAnimationOnce(actor, 0x49, 3, 0);
     }
-    actor->unk_824 = actor->unk_62C;
+    actor->unk_824 = actor->held_tip;
     Globe_Unbend(&actor->unk_824, &actor->unk_824);
     actor->unk_830[0] = 0x1000;
     actor->unk_830[1] = 0x1000;
@@ -4396,7 +4396,7 @@ void FieldActor_EnterState5F(FieldActor *actor, const StateRequest *request, int
             VillagerEvent_Item1549(&actor->position);
         }
     }
-    actor->unk_81C = 7;
+    actor->progress = 7;
     FieldActor_SetFlag(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02211604, FieldActor_EnterState5F)
@@ -5508,24 +5508,24 @@ void FieldActor_RunState58(FieldActor *actor)
             block.words[10] = (u32) beside.y;
             block.words[11] = (u32) beside.z;
             if (is_local_player(actor)) {
-                if (actor->unk_81C == 5) {
+                if (actor->progress == 5) {
                     if (GroupParams_OpenWithItem2b(item)) {
-                        actor->unk_81C = 6;
+                        actor->progress = 6;
                     }
                     break;
                 }
-                if (actor->unk_81C == 6) {
+                if (actor->progress == 6) {
                     if (!GroupParams_CanOpen()) {
                         break;
                     }
-                    actor->unk_81C = 0xf;
+                    actor->progress = 0xf;
                     if (GroupParams_C4CIs1()) {
                         release_receiver(actor);
                         EventQueue_FinishKind9();
                         leave_state58(actor);
                         return;
                     }
-                } else if (actor->unk_81C < 0xf) {
+                } else if (actor->progress < 0xf) {
                     break;
                 }
                 int drawn = (s16) sub32(MainRandom_Below(0x2aaa), 0x1555);
@@ -5963,10 +5963,10 @@ void FieldActor_RunState57(FieldActor *actor)
             }
             if (ItemRecord_HasAllInsects() && work->unk_0A == 0) {
                 work->step = 8;
-                actor->unk_81C = 0xd;
+                actor->progress = 0xd;
             } else {
                 work->step = 3;
-                actor->unk_81C = 8;
+                actor->progress = 8;
             }
             break;
         case 3:
@@ -5974,10 +5974,10 @@ void FieldActor_RunState57(FieldActor *actor)
                 int point[2] = {0, 0};
                 if (TileRequests_FindDropTile(0x10, (TileRequestTile *) point, NULL)) {
                     work->step = 4;
-                    actor->unk_81C = 0;
+                    actor->progress = 0;
                 } else {
                     work->step = 5;
-                    actor->unk_81C = 1;
+                    actor->progress = 1;
                 }
                 return;
             }
@@ -5990,7 +5990,7 @@ void FieldActor_RunState57(FieldActor *actor)
             CameraControl_ResetMode();
             break;
         case 4:
-            if (actor->unk_81C >= 0xf) {
+            if (actor->progress >= 0xf) {
                 work->step = 5;
                 break;
             }
@@ -6142,7 +6142,7 @@ void FieldActor_EnterState57(FieldActor *actor, const StateRequest *request, int
     } else if (mode == 3) {
         work->step = 3;
         work->unk_04 = 0x3b;
-        actor->unk_81C = 8;
+        actor->progress = 8;
     } else {
         if (actor->animation == 0x6c) {
             work->mode = 2;
@@ -6245,7 +6245,7 @@ void FieldActor_UpdateState56(FieldActor *actor)
     FieldActor_EndState56(actor);
     FieldActor_TurnState56(actor);
 
-    Vec3 tip = actor->unk_62C;
+    Vec3 tip = actor->held_tip;
     Vec3 out;
     Globe_Unbend(&out, &tip);
     actor->work.s56.tip = out;
@@ -6529,7 +6529,7 @@ void FieldActor_State56Points(FieldActor *actor, Vec3 *sweep, Vec3 *base, Vec3 *
         default:
             break;
     }
-    Vec3 at = actor->unk_62C;
+    Vec3 at = actor->held_tip;
     Globe_Unbend(&at, &at);
     copy_point(tip, &at);
 }
@@ -6797,17 +6797,17 @@ void FieldActor_RunState55(FieldActor *actor)
                 HeldItem_Act(actor->held, 0x13, 6, 0);
             }
             if (is_local_player(actor)) {
-                if (actor->unk_81C == 5) {
+                if (actor->progress == 5) {
                     if (GroupParams_OpenWithItemAndObject(item, fish)) {
-                        actor->unk_81C = 6;
+                        actor->progress = 6;
                     }
                     break;
                 }
-                if (actor->unk_81C == 6) {
+                if (actor->progress == 6) {
                     if (!GroupParams_CanOpen()) {
                         break;
                     }
-                    actor->unk_81C = 0xf;
+                    actor->progress = 0xf;
                     if (GroupParams_C4CIs1()) {
                         FishingFloat_SetFish(held_line(actor), 0);
                         release_receiver(actor);
@@ -6822,7 +6822,7 @@ void FieldActor_RunState55(FieldActor *actor)
                         *step = 2;
                         break;
                     }
-                } else if (actor->unk_81C < 0xf) {
+                } else if (actor->progress < 0xf) {
                     break;
                 }
                 if (is_item_1320(item)) {
@@ -7024,22 +7024,22 @@ void FieldActor_RunState54(FieldActor *actor)
             }
             if (ItemRecord_HasAllFish() && work->unk_05 == 0) {
                 work->step = 5;
-                actor->unk_81C = 0xe;
+                actor->progress = 0xe;
                 break;
             }
             work->step = 2;
-            actor->unk_81C = 8;
+            actor->progress = 8;
             break;
         case 2:
             if (CurrentPockets_FreeSlot() == -1) {
                 int point[2] = {0, 0};
                 if (TileRequests_FindDropTile(0x10, (TileRequestTile *) point, NULL)) {
                     work->step = 3;
-                    actor->unk_81C = is_item_1320(actor->item) ? 4 : 0;
+                    actor->progress = is_item_1320(actor->item) ? 4 : 0;
                     break;
                 }
                 work->step = 4;
-                actor->unk_81C = 1;
+                actor->progress = 1;
                 break;
             }
             if (!link_closed(actor)) {
@@ -7051,7 +7051,7 @@ void FieldActor_RunState54(FieldActor *actor)
             CameraControl_ResetMode();
             break;
         case 3:
-            if (actor->unk_81C >= 0xf) {
+            if (actor->progress >= 0xf) {
                 if (!is_item_1320(actor->item)) {
                     work->step = 4;
                     break;
@@ -7147,7 +7147,7 @@ void FieldActor_EnterState54(FieldActor *actor, const StateRequest *request, int
     } else {
         work->step = 2;
         work->unk_00 = 0x3a;
-        actor->unk_81C = 8;
+        actor->progress = 8;
     }
     State54Saved_Set(&actor->saved.mode54, mode);
 }
@@ -7883,7 +7883,7 @@ void FieldActor_RunState4C(FieldActor *actor)
         case 0:
             if (actor->link != NULL && actor->link->open != 0) {
                 actor->work.step = 1;
-                actor->unk_81C = 0xc;
+                actor->progress = 0xc;
             }
             break;
         case 1:
@@ -8925,7 +8925,7 @@ void FieldActor_RunState45(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     int *effect = &actor->work.s45.effect;
-    Vec3 at = actor->unk_62C;
+    Vec3 at = actor->held_tip;
     Globe_Unbend(&at, &at);
     if (*effect == -1) {
         *effect = EffectSystem_StartKind(0x33, &at, &actor->yaw, 0);

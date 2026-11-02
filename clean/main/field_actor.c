@@ -437,7 +437,7 @@ int FieldActor_Init(struct FieldActor *actor)
     FIELD_ACTOR_FIELD(actor, int, 0x808) = 0;
     actor->unk_814 = 0;
     actor->unk_818 = 0;
-    actor->unk_81C = 0xf;
+    actor->progress = 0xf;
     FIELD_ACTOR_BODY_ARG(actor) = 0x1f;
     actor->unk_8E8 = 0;
     actor->other = NULL;

@@ -100,7 +100,7 @@ enum {
 static void finish_start(void)
 {
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
-    data_021fd1bc.unk_62 = 0;
+    data_021fd1bc.keep_heaps = 0;
 }
 
 /* func_020f2500: slot 3: group 29 of the archive loaded, with 0x2a824 bytes for player 0. */
@@ -150,7 +150,7 @@ void SoundScene60_Start(SoundScene *scene)
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
-    data_021fd1bc.unk_62 = 0;
+    data_021fd1bc.keep_heaps = 0;
 }
 CLEAN_AS(func_020f25bc, SoundScene60_Start)
 
@@ -1256,7 +1256,7 @@ void SoundScene10_Start(SoundScene10 *scene)
     SoundScene_CreatePlayer12Heaps(&scene->base);
     NNS_SndHeapSaveState(heap);
     scene->stage = 1;
-    data_021fd1bc.unk_62 = 0;
+    data_021fd1bc.keep_heaps = 0;
 
     MusicBeat_Reset(&scene->part, 1);
     NNS_SndPlayerSetPlayerVolume(18, 63);
@@ -1307,7 +1307,7 @@ void SoundScene3_Start(SoundScene *scene)
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
-    data_021fd1bc.unk_62 = 0;
+    data_021fd1bc.keep_heaps = 0;
 }
 CLEAN_AS(func_020f3c24, SoundScene3_Start)
 
@@ -1356,7 +1356,7 @@ void SoundScene2_Start(SoundScene *scene)
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
-    data_021fd1bc.unk_62 = 0;
+    data_021fd1bc.keep_heaps = 0;
 }
 CLEAN_AS(func_020f3d1c, SoundScene2_Start)
 
@@ -1433,7 +1433,7 @@ void SoundScene1_Start(SoundScene *scene)
     SoundScene_CreatePlayer12Heaps(scene);
     NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
-    data_021fd1bc.unk_62 = 0;
+    data_021fd1bc.keep_heaps = 0;
 }
 CLEAN_AS(func_020f3eb4, SoundScene1_Start)
 
@@ -1612,7 +1612,7 @@ void SoundScene_LoadGroup(SoundScene *scene, int player_heap, unsigned char grou
     SoundGroupKey key;
 
     (void) scene;
-    if (data_021fd1bc.unk_62 == 0) {
+    if (data_021fd1bc.keep_heaps == 0) {
         SoundSystem_StartOutputEffect(&data_021fd1bc);
         NNS_SndPlayerCreateHeap(0, heap, player_heap);
         NNS_SndHeapSaveState(heap);
@@ -1687,7 +1687,7 @@ void SoundSceneBase_Unload(SoundScene *scene)
     SoundPosition_ClearHooks();
     heap = (void *) (uintptr_t) Sound_GetHeap();
     SoundGroup_Close(&data_021fd054, 1);
-    if (data_021fd1bc.unk_62 != 0) {
+    if (data_021fd1bc.keep_heaps != 0) {
         return;
     }
     NNS_SndHeapLoadState(heap, 1);

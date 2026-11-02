@@ -148,7 +148,7 @@ typedef struct SoundSystem {
     u32 random_add;    /* 0x5c */
     u8 lowered;        /* 0x60: both groups of players are turned down */
     u8 b_lowered;      /* 0x61: the second group is turned down */
-    u8 unk_62;         /* 0x62: while set, starting a scene keeps the players' heaps */
+    u8 keep_heaps;     /* 0x62: while set, starting a scene keeps the players' heaps */
     u8 pad_63;
     u16 tracks_in; /* 0x64: the music's tracks faded in, or the tracks a set leaves on */
     u8 pad_66[2];

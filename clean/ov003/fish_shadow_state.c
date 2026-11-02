@@ -590,7 +590,7 @@ int FishShadow_Place(FishShadowProcess *self, FishShadow *fish, int group)
     fish->ground = (u8) ground;
     fish->size = data_020cb784[kind].offset_class;
     fish->yaw = -0x8000;
-    fish->unk_12c = at;
+    fish->placed_at = at;
     fish->group_state = (u8) group;
     fish->state = FISH_SHADOW_PLACED;
     fish->behaviour = 0;
@@ -1096,7 +1096,7 @@ void FishShadow_UpdatePlaced(FishShadowProcess *self, FishShadow *fish, int inde
         return;
     }
     Vec3 camera = data_021c67d0;
-    if (FishShadow_InBox(&fish->unk_12c, &camera, FISH_STATE_VIEW_X, FISH_STATE_VIEW_AHEAD, FISH_STATE_VIEW_BEHIND)) {
+    if (FishShadow_InBox(&fish->placed_at, &camera, FISH_STATE_VIEW_X, FISH_STATE_VIEW_AHEAD, FISH_STATE_VIEW_BEHIND)) {
         FishShadow_SetState2(self, index);
         if (fish->has_fin) {
             FishShadow_TakeFin(self);

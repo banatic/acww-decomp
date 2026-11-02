@@ -932,7 +932,7 @@ SoundSystem *SoundSystem_Construct(SoundSystem *sys)
     sys->random_add = 0x269ec3;
     sys->muted = 0;
     sys->lowered = 0;
-    sys->unk_62 = 0;
+    sys->keep_heaps = 0;
     return sys;
 }
 CLEAN_AS(func_020f24bc, SoundSystem_Construct)

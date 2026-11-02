@@ -572,7 +572,7 @@ Process *Process_Construct(Process *self)
     self->id = data_0213e778++;
     self->param = data_021fcff0;
     self->class_id = data_021fcfe0;
-    self->unk_12 = data_021fcfd8;
+    self->spawn_arg = data_021fcfd8;
     Tree_Attach(&data_021fcff8.tree, &self->node.tree, data_021fcfe4);
 
     const Profile *profile = data_021fd044[self->class_id];

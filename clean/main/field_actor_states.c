@@ -353,7 +353,7 @@ void FieldActor_RunFrame(FieldActor *actor)
         FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_POINT_JOINT_7) = FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_POINT_JOINT_4);
         Globe_BendFar(&flat, &flat);
         FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_MATRIX_HELD_ALT + 0x24) = flat;
-        actor->unk_62C = flat;
+        actor->held_tip = flat;
         FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_MATRIX_JOINT_B + 0x24) = flat;
         actor->unk_68C = flat;
     }
@@ -1865,12 +1865,12 @@ void FieldActor_EnterState76(FieldActor *actor, const StateRequest *request, int
                 channel = 6;
                 Music_DropPriority(0x12);
                 Music_AddValue(5, 0, 1);
-                actor->unk_81C = 7;
+                actor->progress = 7;
                 break;
             default:
                 channel = 0xd;
                 Music_AddValue(0xc, 0, 1);
-                actor->unk_81C = 7;
+                actor->progress = 7;
                 break;
         }
         work->jingle = data_020c75f0[mode];
@@ -3198,7 +3198,7 @@ void FieldActor_RunState1A(FieldActor *actor)
             Music_DropPriority(0x12);
             Music_AddValue(0xc, 0, 0x10);
             Music_Add(0xd, 0x39, 0x7f, 1);
-            actor->unk_81C = 10;
+            actor->progress = 10;
             break;
         case 1:
             if (actor->link != NULL && actor->link->open != 0) {
@@ -3533,11 +3533,11 @@ void FieldActor_RunState19(FieldActor *actor, u8 *step, int flag)
         case 1:
             if (actor->link != NULL && actor->link->open != 0) {
                 *step = 2;
-                actor->unk_81C = 3;
+                actor->progress = 3;
             }
             break;
         case 2: {
-            int progress = actor->unk_81C;
+            int progress = actor->progress;
             if (progress >= 0xf) {
                 *step = 3;
             } else {
@@ -3546,14 +3546,14 @@ void FieldActor_RunState19(FieldActor *actor, u8 *step, int flag)
                 }
                 if (progress == 5) {
                     if (GroupParams_OpenWithItem29(actor->item)) {
-                        actor->unk_81C = 6;
+                        actor->progress = 6;
                     }
                     break;
                 }
                 if (progress != 6 || !GroupParams_CanOpen()) {
                     break;
                 }
-                actor->unk_81C = 0xf;
+                actor->progress = 0xf;
                 actor->anim.speed = FX32_ONE;
                 if (GroupParams_C4CIs1()) {
                     *step = 6;
@@ -3588,7 +3588,7 @@ void FieldActor_RunState19(FieldActor *actor, u8 *step, int flag)
             drop_priority(actor);
             FieldActor_RequestState2(actor, 3, 1, -1);
             FieldActor_ClearFlag(actor, 0xd);
-            actor->unk_81C = 0xf;
+            actor->progress = 0xf;
             break;
         case 7:
             if (actor->link != NULL && actor->link->open != 0) {

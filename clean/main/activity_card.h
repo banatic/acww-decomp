@@ -60,9 +60,9 @@ enum ActivityCardCheckStep {
 
 /* The activity's fields for the card, from Activity.unk_a0 (the step) on. */
 typedef struct ActivityCard {
-    u8 write_step; /* 0xa0: ActivityCardWriteStep or ActivityCardCheckStep */
-    u8 unk_a1;     /* 0xa1: Activity.state */
-    u8 block;      /* 0xa2: the next block to compare */
+    u8 write_step;     /* 0xa0: ActivityCardWriteStep or ActivityCardCheckStep */
+    u8 activity_state; /* 0xa1: Activity.state */
+    u8 block;          /* 0xa2: the next block to compare */
     u8 unk_a3;
     s16 run_start; /* 0xa4: the first block of the run of differing blocks, -1 for none */
     u8 unk_a6[2];

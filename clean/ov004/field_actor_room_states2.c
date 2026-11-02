@@ -46,7 +46,7 @@ static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next state");
 static_assert(offsetof(FieldActor, player) == 0x800, "player");
 static_assert(offsetof(FieldActor, unk_810) == 0x810, "tile request");
 static_assert(offsetof(FieldActor, unk_818) == 0x818, "verdict");
-static_assert(offsetof(FieldActor, unk_81C) == 0x81c, "progress");
+static_assert(offsetof(FieldActor, progress) == 0x81c, "progress");
 static_assert(offsetof(FieldActor, item) == 0x820, "item");
 static_assert(offsetof(FieldActor, unk_824) == 0x824, "point 0x824");
 static_assert(offsetof(FieldActor, unk_830) == 0x830, "factors");
@@ -593,21 +593,21 @@ void FieldActorRoomStates2_RunTakeItem(FieldActor *actor)
         case FARS2_TAKE_FULL_UP:
             if (fars2_talk_open(actor)) {
                 work->step = FARS2_TAKE_FULL_TALK;
-                actor->unk_81C = FARS2_PROGRESS_TALK;
+                actor->progress = FARS2_PROGRESS_TALK;
             }
             break;
         case FARS2_TAKE_FULL_TALK:
-            if (actor->unk_81C >= FARS2_PROGRESS_DONE) {
+            if (actor->progress >= FARS2_PROGRESS_DONE) {
                 work->step = FARS2_TAKE_ASK_TILE;
                 fars2_take_item_ask_tile(actor);
             } else if (fars2_talk_closed(actor)) {
-                if (actor->unk_81C == FARS2_PROGRESS_ASK_GROUP) {
+                if (actor->progress == FARS2_PROGRESS_ASK_GROUP) {
                     if (GroupParams_OpenWithItem29(actor->item)) {
-                        actor->unk_81C = FARS2_PROGRESS_OPEN_GROUP;
+                        actor->progress = FARS2_PROGRESS_OPEN_GROUP;
                     }
-                } else if (actor->unk_81C == FARS2_PROGRESS_OPEN_GROUP) {
+                } else if (actor->progress == FARS2_PROGRESS_OPEN_GROUP) {
                     if (GroupParams_CanOpen()) {
-                        actor->unk_81C = FARS2_PROGRESS_DONE;
+                        actor->progress = FARS2_PROGRESS_DONE;
                         actor->anim.speed = FARS2_ANIM_SPEED;
                         if (GroupParams_C4CIs1()) {
                             work->step = FARS2_TAKE_DONE;
@@ -633,7 +633,7 @@ void FieldActorRoomStates2_RunTakeItem(FieldActor *actor)
         case FARS2_TAKE_DONE:
             fars2_end(actor);
             FieldActor_ClearFlag(actor, FARS2_FLAG_TAKING);
-            actor->unk_81C = FARS2_PROGRESS_DONE;
+            actor->progress = FARS2_PROGRESS_DONE;
             break;
         case FARS2_TAKE_OPEN_PLAYER:
             if (EventQueue_RequestKind9()) {
