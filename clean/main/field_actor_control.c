@@ -77,7 +77,7 @@ extern int FX_Div(int numerator, int denominator);
 extern int FX_Sqrt(int value);
 
 static_assert(offsetof(FieldActor, unk_140) == 0x140, "0x140");
-static_assert(offsetof(FieldActor, unk_14C) == 0x14c, "0x14c");
+static_assert(offsetof(FieldActor, pick_point) == 0x14c, "0x14c");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
 static_assert(offsetof(FieldActor, aim_mode) == 0x170, "aim mode");
 static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start position");
@@ -179,7 +179,7 @@ void FieldActor_ReadControl(FieldActor *actor)
 
     FieldActor_PointAhead(&aim, actor, position_of(actor), yaw_of(actor), data_020d7310);
     actor->unk_140 = 0;
-    actor->unk_144 = 0;
+    actor->pick_kind = 0;
     FIELD_ACTOR_PICK_EXTRA(actor) = 0xff;
     if (data_021c75b8 != 2) {
         return;
@@ -191,7 +191,7 @@ void FieldActor_ReadControl(FieldActor *actor)
         FIELD_ACTOR_ACT(actor) = 0;
         FIELD_ACTOR_ACT_VALUE(actor) = 0;
         FIELD_ACTOR_HOLD(actor) = 0;
-        actor->unk_148 = 0;
+        actor->aimed = 0;
         actor->aim_point = aim;
         if (!FieldActor_TestFlag(actor, 0x1b) || SceneTables_NoPlayerInClosedScene() != 1 ||
             FieldActor_AnyPlayerUnreported(actor) != 0) {
@@ -241,7 +241,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                     break;
                 case 5:
                     if (pen_came_down()) {
-                        actor->unk_144 = 1;
+                        actor->pick_kind = 1;
                         Vec3 target = pick;
                         if (FieldActor_HeldTool(actor) == 1) {
                             u16 *tile_item = AcreTile_ItemAt(data_021c80bc, &pick, 0);
@@ -254,15 +254,15 @@ void FieldActor_ReadControl(FieldActor *actor)
                                 }
                             }
                         }
-                        actor->unk_14C = target;
-                        aim = actor->unk_14C;
+                        actor->pick_point = target;
+                        aim = actor->pick_point;
                     }
                     break;
                 case 4:
                     if (pen_came_down()) {
-                        actor->unk_144 = 2;
-                        actor->unk_14C = pick;
-                        aim = actor->unk_14C;
+                        actor->pick_kind = 2;
+                        actor->pick_point = pick;
+                        aim = actor->pick_point;
                     }
                     break;
                 case 8:
@@ -373,7 +373,7 @@ void FieldActor_ReadControl(FieldActor *actor)
     FIELD_ACTOR_ACT(actor) = (u8) act;
     FIELD_ACTOR_ACT_VALUE(actor) = act_value;
     FIELD_ACTOR_HOLD(actor) = hold;
-    actor->unk_148 = (u8) aimed;
+    actor->aimed = (u8) aimed;
     actor->aim_point = aim;
     actor->aim_mode = mode;
 }

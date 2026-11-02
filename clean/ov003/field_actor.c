@@ -79,8 +79,8 @@ static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
 static_assert(offsetof(FieldActor, unk_098) == 0x98, "0x98");
 static_assert(offsetof(FieldActor, unk_140) == 0x140, "0x140");
-static_assert(offsetof(FieldActor, unk_144) == 0x144, "0x144");
-static_assert(offsetof(FieldActor, unk_148) == 0x148, "0x148");
+static_assert(offsetof(FieldActor, pick_kind) == 0x144, "0x144");
+static_assert(offsetof(FieldActor, aimed) == 0x148, "0x148");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
 static_assert(offsetof(FieldActor, other) == 0x168, "other");
 static_assert(offsetof(FieldActor, other_result) == 0x16c, "other result");
@@ -403,18 +403,18 @@ int FieldActor_TryTool(FieldActor *actor)
     }
 
     if (!FieldActor_InToolReach(actor, &actor->aim_point, tool)) {
-        if ((actor->unk_144 == 1 || actor->unk_148 != 0) && FieldActor_TryTargetInScene(actor, tool)) {
+        if ((actor->pick_kind == 1 || actor->aimed != 0) && FieldActor_TryTargetInScene(actor, tool)) {
             return 1;
         }
         goto last;
     }
 
-    switch (actor->unk_144) {
+    switch (actor->pick_kind) {
         case 1:
             if (FieldActor_TryTargetMode2(actor, &tool)) {
                 return 1;
             }
-            if ((tool == 2 || tool == 1 || tool == 10 || tool == 0) && actor->unk_144 != 0) {
+            if ((tool == 2 || tool == 1 || tool == 10 || tool == 0) && actor->pick_kind != 0) {
                 point = actor->aim_point;
                 if (FieldActor_UseTool(actor, tool == 10 ? 0 : tool, &point)) {
                     return 1;
@@ -446,7 +446,7 @@ int FieldActor_TryTool(FieldActor *actor)
         }
     }
 
-    if (actor->unk_148 != 0 && FieldActor_TryTargetInScene(actor, tool)) {
+    if (actor->aimed != 0 && FieldActor_TryTargetInScene(actor, tool)) {
         return 1;
     }
     if (actor->aim_mode != 2) {
@@ -4651,7 +4651,7 @@ CLEAN_AS(func_ov003_02211da0, State5EArgs_Set)
 
 /* ---- State 0x5d: animation 0x4c at a tile, with what was met there */
 
-static_assert(offsetof(FieldActor, unk_14C) == 0x14c, "0x14c");
+static_assert(offsetof(FieldActor, pick_point) == 0x14c, "0x14c");
 static_assert(offsetof(FieldActor, unk_1C4) == 0x1c4, "0x1c4");
 static_assert(offsetof(FieldActor, work.s59.yaw) == 0x7e0, "state 0x59 yaw");
 static_assert(offsetof(FieldActor, work.s59.fixed) == 0x7e2, "state 0x59 fixed");
@@ -5384,8 +5384,8 @@ int FieldActor_RequestState59(FieldActor *actor, const u8 *x, const u8 *z, const
 CLEAN_AS(func_ov003_02212c10, FieldActor_RequestState59)
 
 /* func_ov003_02212c58: asks for state 0x59 at the tile of the point the actor aims at:
- * aim_point with the flag when unk_148 is set, else the point at 0x14c with the flag when
- * unk_144 is nonzero (both at height 0). Whether it was queued. */
+ * aim_point with the flag when aimed is set, else pick_point with the flag when
+ * pick_kind is nonzero (both at height 0). Whether it was queued. */
 int FieldActor_RequestState59AtAim(FieldActor *actor, int priority, int arg)
 {
     StateRequest request;
@@ -5393,16 +5393,16 @@ int FieldActor_RequestState59AtAim(FieldActor *actor, int priority, int arg)
     int fixed;
 
     open_request(&request, 0x59, priority, arg);
-    if (actor->unk_148 != 0) {
+    if (actor->aimed != 0) {
         point.x = actor->aim_point.x;
         point.y = 0;
         point.z = actor->aim_point.z;
         fixed = 1;
     } else {
-        point.x = actor->unk_14C.x;
+        point.x = actor->pick_point.x;
         point.y = 0;
-        point.z = actor->unk_14C.z;
-        fixed = actor->unk_144 != 0;
+        point.z = actor->pick_point.z;
+        fixed = actor->pick_kind != 0;
     }
     int x = 0;
     int z = 0;
@@ -5680,7 +5680,7 @@ static_assert(offsetof(FieldActor, unk_5D0) == 0x5d0, "0x5d0");
 static_assert(offsetof(FieldActor, unk_810) == 0x810, "0x810");
 static_assert(offsetof(FieldActor, unk_8C4) == 0x8c4, "0x8c4");
 static_assert(offsetof(FieldActor, unk_1C4) == 0x1c4, "0x1c4");
-static_assert(offsetof(FieldActor, unk_14C) == 0x14c, "0x14c");
+static_assert(offsetof(FieldActor, pick_point) == 0x14c, "0x14c");
 static_assert(offsetof(FieldActor, work.s57.unk_04) == 0x7d8, "state 0x57 0x04");
 static_assert(offsetof(FieldActor, work.s57.step) == 0x7dd, "state 0x57 step");
 static_assert(offsetof(FieldActor, work.s57.unk_0A) == 0x7de, "state 0x57 0x0a");
@@ -6671,16 +6671,17 @@ void FieldActor_EnterState56(FieldActor *actor, const StateRequest *request, int
 }
 CLEAN_AS(func_ov003_02214604, FieldActor_EnterState56)
 
-/* func_ov003_02214644: asks for state 0x56 with a yaw: towards unk_14C from where the frame
- * began when unk_144 is 2, else the actor's own; whether it was queued. */
+/* func_ov003_02214644: asks for state 0x56 with a yaw: towards pick_point from where the frame
+ * began when pick_kind is 2, else the actor's own; whether it was queued. */
 int FieldActor_RequestState56(FieldActor *actor, int priority, int arg)
 {
     StateRequest request;
     s16 yaw;
 
     open_request(&request, 0x56, priority, arg);
-    if (actor->unk_144 == 2) {
-        yaw = Math_Atan2(sub32(actor->unk_14C.x, actor->start_position.x), sub32(actor->unk_14C.z, actor->start_position.z));
+    if (actor->pick_kind == 2) {
+        yaw = Math_Atan2(sub32(actor->pick_point.x, actor->start_position.x),
+                         sub32(actor->pick_point.z, actor->start_position.z));
     } else {
         yaw = actor->yaw;
     }
@@ -8860,7 +8861,7 @@ int FieldActor_RequestState46Saved(FieldActor *actor, const fx32 *x, const fx32 
 CLEAN_AS(func_ov003_022171ec, FieldActor_RequestState46Saved)
 
 /* func_ov003_02217234: asks for state 0x46 (tool 2 of FieldActor_UseTool): towards aim_point
- * when unk_148 is set, else towards unk_14C with at_point when unk_144 is set; whether it was
+ * when aimed is set, else towards pick_point with at_point when pick_kind is set; whether it was
  * queued. */
 int FieldActor_RequestState46(FieldActor *actor, int priority, int arg)
 {
@@ -8868,10 +8869,10 @@ int FieldActor_RequestState46(FieldActor *actor, int priority, int arg)
 
     open_request(&request, 0x46, priority, arg);
     State46Args *args = (State46Args *) (void *) request.payload;
-    if (actor->unk_148 != 0) {
+    if (actor->aimed != 0) {
         FieldActor_SetState46Args(args, actor->aim_point.x, actor->aim_point.z, 1);
     } else {
-        FieldActor_SetState46Args(args, actor->unk_14C.x, actor->unk_14C.z, actor->unk_144 != 0);
+        FieldActor_SetState46Args(args, actor->pick_point.x, actor->pick_point.z, actor->pick_kind != 0);
     }
     return send_request(actor, &request);
 }

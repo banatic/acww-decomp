@@ -31,7 +31,7 @@
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
 static_assert(offsetof(FieldActor, unk_098) == 0x98, "speed");
-static_assert(offsetof(FieldActor, unk_148) == 0x148, "0x148");
+static_assert(offsetof(FieldActor, aimed) == 0x148, "0x148");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
 static_assert(offsetof(FieldActor, aim_mode) == 0x170, "aim mode");
 static_assert(offsetof(FieldActor, anim.speed) == 0x2e0, "animation speed");
@@ -198,7 +198,7 @@ int FieldActorRooms_TryTool(FieldActor *actor)
         return FieldActorRoomStates2_RequestFurnitureReach(actor, x, z, RoomPushes_Facing(entry),
                                                            FIELD_ACTOR_ROOMS_ENTRY_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
     }
-    if (actor->unk_148 != 0) {
+    if (actor->aimed != 0) {
         return FieldActor_TryTargetInScene(actor, FieldActor_HeldTool(actor));
     }
     return 0;

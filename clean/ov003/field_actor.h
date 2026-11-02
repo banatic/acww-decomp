@@ -537,11 +537,11 @@ typedef struct FieldActor {
     u8 unk_130[0x140 - 0x130];
     u8 unk_140;
     u8 unk_141[3];
-    int unk_144;
-    u8 unk_148;
+    int pick_kind; /* the pen's pick this frame: 1 one of kind 5, 2 one of kind 4 (TouchPick_GetPick), else 0 */
+    u8 aimed;      /* a point was aimed at this frame (the pen, or B): aim_point */
     u8 unk_149[3];
-    Vec3 unk_14C;   /* the point a request for state 0x59 aims at when unk_148 is 0 */
-    Vec3 aim_point; /* the point tools act on when aim_mode is not 1 */
+    Vec3 pick_point; /* the point picked (pick_kind); a request for state 0x59 aims at it when aimed is 0 */
+    Vec3 aim_point;  /* the point tools act on when aim_mode is not 1 */
     u8 unk_164[4];
     void *other;     /* the object FieldActor_CheckOther found */
     u8 other_result; /* FieldActor_CheckOther's verdict: 0-4 */
