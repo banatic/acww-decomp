@@ -524,7 +524,7 @@ void RoomCamera_FocusGoal(CameraControl *camera, CameraView *view)
     }
     fx32 far_share = FX_Div(span - ROOM_CAMERA_FOCUS_NEAR, ROOM_CAMERA_FOCUS_FAR - ROOM_CAMERA_FOCUS_NEAR);
     fx32 near_share = 0x1000 - far_share;
-    camera->unk_1e4 = near_share;
+    camera->share_goal = near_share;
     CameraControl_BlendPresets(camera, ROOM_CAMERA_PRESET_FOCUS, data_020ca158[camera->preset_row][camera->preset_column],
                                far_share);
 

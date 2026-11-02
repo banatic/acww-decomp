@@ -43,7 +43,7 @@ static_assert(offsetof(CameraControl, half_fov_sin) == 0x1bc, "the sine");
 static_assert(offsetof(CameraControl, fov) == 0x1c8, "the field of view");
 static_assert(offsetof(CameraControl, look_both) == 0x1ca, "both points");
 static_assert(offsetof(CameraControl, look_at2) == 0x1d8, "the second point");
-static_assert(offsetof(CameraControl, unk_1e4) == 0x1e4, "0x1e4");
+static_assert(offsetof(CameraControl, share_goal) == 0x1e4, "the share goal");
 static_assert(offsetof(CameraControl, initial_mode) == 0x200, "the first mode");
 static_assert(offsetof(CameraControl, fixed_target) == 0x204, "the kept target");
 static_assert(offsetof(CameraControl, fixed_eye) == 0x210, "the kept eye");
@@ -233,7 +233,7 @@ void CameraControl_Ease(CameraControl *camera)
         camera->current.pitch = (s16) (camera->current.pitch + FX_MulFunc(camera->goal.pitch - camera->current.pitch, share));
         camera->current.yaw = (s16) (camera->current.yaw + FX_MulFunc(camera->goal.yaw - camera->current.yaw, share));
         camera->current.distance += FX_MulFunc(camera->goal.distance - camera->current.distance, share);
-        camera->unk_1e8 += FX_MulFunc(camera->unk_1e4 - camera->unk_1e8, share);
+        camera->share += FX_MulFunc(camera->share_goal - camera->share, share);
         camera->move_time += 0x1000;
     } else {
         camera->current.second_offset = camera->goal.second_offset;
@@ -241,7 +241,7 @@ void CameraControl_Ease(CameraControl *camera)
         camera->current.pitch = camera->goal.pitch;
         camera->current.yaw = camera->goal.yaw;
         camera->current.distance = camera->goal.distance;
-        camera->unk_1e8 = camera->unk_1e4;
+        camera->share = camera->share_goal;
     }
 }
 CLEAN_AS(func_0203be6c, CameraControl_Ease)
@@ -456,10 +456,10 @@ int CameraControl_MoveLength(CameraControl *camera)
     int delay = CameraControl_Delay(camera);
     int ease_in = CameraControl_EaseIn(camera);
     int least = ease_out + (delay + ease_in);
-    if (camera->unk_bc < least) {
-        camera->unk_bc = least;
+    if (camera->length < least) {
+        camera->length = least;
     }
-    int length = camera->unk_bc + camera->extra_length;
+    int length = camera->length + camera->extra_length;
     return length < least ? least : length;
 }
 CLEAN_AS(func_0203c4e4, CameraControl_MoveLength)
@@ -467,7 +467,7 @@ CLEAN_AS(func_0203c4e4, CameraControl_MoveLength)
 /* func_0203c528: the move's delay with its adjustment, at least 0. */
 int CameraControl_Delay(CameraControl *camera)
 {
-    int delay = camera->unk_b8 + camera->extra_delay;
+    int delay = camera->delay + camera->extra_delay;
     return delay < 0 ? 0 : delay;
 }
 CLEAN_AS(func_0203c528, CameraControl_Delay)
@@ -636,8 +636,8 @@ int CameraControl_Create(CameraControl *camera)
     camera->preset_column = 1;
     camera->preset_row = 1;
     camera->fov = 0x1555;
-    camera->unk_1e4 = 0;
-    camera->unk_1e8 = 0;
+    camera->share_goal = 0;
+    camera->share = 0;
     camera->previous_mode = CAMERA_MODE_FOLLOW;
     camera->mode = camera->previous_mode;
     if (CameraControl_SetMode(camera, CAMERA_MODE_FOLLOW)) {
@@ -698,8 +698,8 @@ CLEAN_AS(func_0203c794, CameraControl_Create)
 /* func_0203c97c */
 void CameraControl_SetTiming(CameraControl *camera, const CameraTiming *timing)
 {
-    camera->unk_b8 = timing->delay;
-    camera->unk_bc = timing->length;
+    camera->delay = timing->delay;
+    camera->length = timing->length;
     camera->ease_in = timing->ease_in;
     camera->ease_out = timing->ease_out;
 }

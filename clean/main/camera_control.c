@@ -13,7 +13,7 @@
 
 static_assert(sizeof(CameraView) == 0x20, "a view");
 static_assert(offsetof(CameraControl, view_matrix) == 0x50, "the view matrix");
-static_assert(offsetof(CameraControl, unk_b8) == 0xb8, "0xb8");
+static_assert(offsetof(CameraControl, delay) == 0xb8, "the delay");
 static_assert(offsetof(CameraControl, move_time) == 0xc8, "the move's time");
 static_assert(offsetof(CameraControl, goal) == 0xfc, "the goal view");
 static_assert(offsetof(CameraControl, saved) == 0x11c, "the saved view");
@@ -21,7 +21,7 @@ static_assert(offsetof(CameraControl, current) == 0x148, "the current view");
 static_assert(offsetof(CameraControl, point) == 0x168, "the point");
 static_assert(offsetof(CameraControl, projection) == 0x1c4, "the projection");
 static_assert(offsetof(CameraControl, look_at) == 0x1cc, "the point looked at");
-static_assert(offsetof(CameraControl, unk_1e8) == 0x1e8, "0x1e8");
+static_assert(offsetof(CameraControl, share) == 0x1e8, "the share");
 static_assert(offsetof(CameraControl, view_saved) == 0x1f4, "the saved flag");
 static_assert(offsetof(CameraControl, mode) == 0x1f8, "the mode");
 static_assert(offsetof(CameraControl, unk_21c) == 0x21c, "0x21c");
@@ -253,10 +253,10 @@ int CameraControl_IsMoving(void)
 }
 CLEAN_AS(func_0203ad88, CameraControl_IsMoving)
 
-/* func_0203adb0 */
+/* func_0203adb0: the camera's eased blend share (CameraControl.share). */
 u32 CameraControl_Value1E8(void)
 {
-    return (u32) data_021c67a4->unk_1e8;
+    return (u32) data_021c67a4->share;
 }
 CLEAN_AS(func_0203adb0, CameraControl_Value1E8)
 
@@ -286,8 +286,8 @@ int CameraControl_LookAt(const Vec3 *at)
 {
     if (data_021c67a4->mode == CAMERA_MODE_19) {
         data_021c67a4->move_time = 0;
-        data_021c67a4->unk_b8 = 0;
-        data_021c67a4->unk_bc = MODE_19_LENGTH;
+        data_021c67a4->delay = 0;
+        data_021c67a4->length = MODE_19_LENGTH;
         return 1;
     }
     data_021c67a4->look_at = *at;

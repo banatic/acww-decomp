@@ -361,7 +361,7 @@ int CameraControl_Mode4Start(CameraControl *camera)
     CameraControl_LoadPreset(camera, scene()->outdoors == 0 ? PRESET_4_INDOORS : PRESET_4_OUTDOORS, NULL);
     CameraControl_SelectTiming(camera, TIMING_0);
     CameraControl_RestartMove();
-    camera->unk_1e4 = 0x1000;
+    camera->share_goal = 0x1000;
     return 1;
 }
 CLEAN_AS(func_0203b4b4, CameraControl_Mode4Start)
@@ -549,11 +549,11 @@ int CameraControl_FollowStart(CameraControl *camera)
         case 0x10:
         case 0x12:
             CameraControl_RestartMove();
-            camera->unk_1e4 = 0;
+            camera->share_goal = 0;
             break;
         default:
-            camera->unk_1e4 = 0;
-            camera->unk_1e8 = 0;
+            camera->share_goal = 0;
+            camera->share = 0;
             CameraControl_EndMove();
             break;
     }

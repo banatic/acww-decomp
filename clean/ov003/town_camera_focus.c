@@ -21,8 +21,8 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 /* func_ov003_02236564: the goal's second offset set to the middle of the player and the
  * focused point (or both points), moved on in z by half their depth; their span, kept between
- * 4.5 and 11.0, gives the blend t from preset 10 (t = 0) to preset 0 (t = 1), and unk_1e4 is
- * set to 1 - t. */
+ * 4.5 and 11.0, gives the blend t from preset 10 (t = 0) to preset 0 (t = 1), and the camera's
+ * share_goal is set to 1 - t. */
 void TownCameraFocus_SetGoal(CameraControl *camera)
 {
     Vec3 *player = PlayerActorOps_StartPosition(TOWN_CAMERA_FOCUS_PLAYER);
@@ -41,7 +41,7 @@ void TownCameraFocus_SetGoal(CameraControl *camera)
         span = TOWN_CAMERA_FOCUS_FAR;
     }
     fx32 t = FX_Div(span - TOWN_CAMERA_FOCUS_NEAR, TOWN_CAMERA_FOCUS_FAR - TOWN_CAMERA_FOCUS_NEAR);
-    camera->unk_1e4 = TOWN_CAMERA_FOCUS_ONE - t;
+    camera->share_goal = TOWN_CAMERA_FOCUS_ONE - t;
     CameraControl_BlendPresets(camera, TOWN_CAMERA_FOCUS_PRESET_FOCUS, TOWN_CAMERA_FOCUS_PRESET_FOLLOW, t);
 }
 CLEAN_AS(func_ov003_02236564, TownCameraFocus_SetGoal)

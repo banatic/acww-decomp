@@ -43,8 +43,8 @@ typedef struct CameraControl {
     fx32 extra_length;   /* 0xac */
     fx32 extra_ease_in;  /* 0xb0 */
     fx32 extra_ease_out; /* 0xb4 */
-    fx32 unk_b8;         /* 0xb8: the move's delay, 20.12 frames (CameraTiming) */
-    fx32 unk_bc;         /* 0xbc: func_0203c4e4 keeps the largest length here */
+    fx32 delay;          /* 0xb8: the move's delay, 20.12 frames (CameraTiming) */
+    fx32 length;         /* 0xbc: the move's length, raised by CameraControl_MoveLength to its least */
     fx32 ease_in;        /* 0xc0 */
     fx32 ease_out;       /* 0xc4 */
     fx32 move_time;      /* 0xc8: frames of the move so far, 20.12 */
@@ -76,8 +76,8 @@ typedef struct CameraControl {
     u8 unk_1cb;
     Vec3 look_at;      /* 0x1cc */
     Vec3 look_at2;     /* 0x1d8 */
-    fx32 unk_1e4;      /* 0x1e4: what unk_1e8 is eased towards */
-    fx32 unk_1e8;      /* 0x1e8: eased towards the value at 0x1e4 (func_0203be6c) */
+    fx32 share_goal;   /* 0x1e4: what `share` is eased towards */
+    fx32 share;        /* 0x1e8: a share (0 to 1.0) the focus modes set, eased with the view (CameraControl_Ease) */
     s32 preset_column; /* 0x1ec: of the table of presets data_020ca158 */
     s32 preset_row;    /* 0x1f0 */
     u8 view_saved;     /* 0x1f4 */
