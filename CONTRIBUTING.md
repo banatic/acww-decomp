@@ -38,8 +38,11 @@ so this is the order the original file had (docs/verification.md).
 
 A C++ function's line ends with the name it emits (`, emits _ZN...`). All of a unit's functions
 take the same compiler and options. `python tools/regroup.py <module> <unit> FILE...` joins files
-into a unit and lists what they declare differently; settle those (one type, a cast at a call),
-then `tools/verify.py`, `tools/link.py` and `tools/lint.py` must pass as for any change.
+into a unit and lists what they declare differently; settle those (one type, a cast at a call).
+A function called above its definition (a call to a lower address) needs a prototype above
+the call: gcc 14 and later refuse an implicit declaration even with `-w`. regroup.py adds
+it, and tools/lint.py checks it. Then `tools/verify.py`, `tools/link.py` and `tools/lint.py`
+must pass as for any change.
 
 - Format with clang-format 22.1.8 (`pip install clang-format==22.1.8`) and the repository's
   `.clang-format`; CI checks it. `pre-commit install` runs it on every commit.

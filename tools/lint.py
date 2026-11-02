@@ -121,8 +121,9 @@ def main() -> None:
             body = path.read_text(encoding="utf-8", errors="replace")
             body = body[C.header_end(body):]
             # each definition: at the start of a line, its name, its parameters and the brace
-            at = [re.search(r"^[^\n;{}()]*\b" + re.escape(s.name.split("::")[-1])
-                            + r"\s*\([^;{]*\)\s*(?:const\s*)?\{", body, re.M) for s in srcs]
+            at = [C.unit_definition(body, s.name) for s in srcs]
+            for name in C.undeclared_uses(body, [s.name for s in srcs]):
+                errors.append(f"{rel}: {name} is used before it is declared; give it a prototype above")
             for s, m in zip(srcs, at):
                 if m is None:
                     errors.append(f"{rel}: {s.name} is listed but not defined")

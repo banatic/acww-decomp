@@ -2,8 +2,10 @@
 
     python tools/test_units.py
 
-Reads a unit's header and a one-function header, and checks that tools/lint.py's rules for
-units hold for every unit in src/ (its functions last address first, one ISA, one module).
+Reads a unit's header and a one-function header, checks that tools/lint.py's rules for units
+hold for every unit in src/ (its functions last address first, one ISA, one module, each declared
+before it is used), and that tools/regroup.py adds the prototype a call to a function defined
+further down needs.
 """
 from __future__ import annotations
 
@@ -12,6 +14,7 @@ import tempfile
 import unittest
 
 import common as C
+import regroup
 
 UNIT = """/* sample_unit: 2 functions, module ov097
  * mwccarm 1.2/base -O4,s
@@ -49,6 +52,42 @@ class Units(unittest.TestCase):
             self.assertEqual([s.address for s in srcs], sorted((s.address for s in srcs), reverse=True), p)
             self.assertEqual(len({s.thumb for s in srcs}), 1, p)
             self.assertEqual({s.module for s in srcs}, {p.parent.name}, p)
+            text = p.read_text(encoding="utf-8")
+            self.assertEqual(C.undeclared_uses(text[C.header_end(text):], [s.name for s in srcs]), [], p)
+
+    def test_used_before_declared(self):
+        body = "\nvoid f2(void)\n{\n    g1(0);\n}\n\nint g1(int a)\n{\n    return a;\n}\n"
+        self.assertEqual(C.undeclared_uses(body, ["f2", "g1"]), ["g1"])
+        self.assertEqual(C.undeclared_uses("\nint g1(int a);\n" + body, ["f2", "g1"]), [])
+        self.assertEqual(C.undeclared_uses("\nextern int g1(int a);\n" + body, ["f2", "g1"]), [])
+
+    def test_regroup_adds_the_prototype(self):
+        # the caller is at the higher address, so it comes first and calls a function below it
+        files = {
+            "func_ov097_022a2954.c": ("/* func_ov097_022a2954 @ 0x022a2954, 0x90 bytes, Thumb, module ov097\n"
+                                      " * mwccarm 1.2/base -O4,s\n */\n\nvoid func_ov097_022a2954(void *self)\n"
+                                      "{\n    func_ov097_022a27c0(self);\n}\n"),
+            "func_ov097_022a27c0.c": ("/* func_ov097_022a27c0 @ 0x022a27c0, 0x3c bytes, Thumb, module ov097\n"
+                                      " * mwccarm 1.2/base -O4,s\n */\n\nint func_ov097_022a27c0(void *self)\n"
+                                      "{\n    return self != 0;\n}\n"),
+        }
+        with tempfile.TemporaryDirectory() as d:
+            (pathlib.Path(d) / "ov097").mkdir()
+            paths = []
+            for name, text in files.items():
+                paths.append(pathlib.Path(d) / "ov097" / name)
+                paths[-1].write_text(text, newline="\n")
+            old, C.SRC = C.SRC, pathlib.Path(d)
+            try:
+                dest, problems = regroup.regroup("ov097", "sample_unit", paths)
+            finally:
+                C.SRC = old
+            text = dest.read_text()
+            names = ["func_ov097_022a2954", "func_ov097_022a27c0"]
+            self.assertEqual(problems, [])
+            self.assertIn("\nint func_ov097_022a27c0(void *self);\n", text)
+            self.assertLess(text.index("int func_ov097_022a27c0(void *self);"), text.index("void func_ov097_022a2954"))
+            self.assertEqual(C.undeclared_uses(text[C.header_end(text):], names), [])
 
 
 if __name__ == "__main__":

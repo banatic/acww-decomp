@@ -6,8 +6,10 @@ source file held them (common.UNIT_HEADER).
 The functions go in the original file's order, the last address first (mwccarm writes a file's
 functions into its object last first, and the linker keeps the object's order). Each file's
 `#include` lines move to the top, and an `extern` declaration that several files share is kept
-once, at the top; whatever else a file declares stays before its function. The files are
-removed. Two files that declare one name differently, or define the same type or helper, do not
+once, at the top; whatever else a file declares stays before its function. A unit function
+named above its definition (a call to a lower address) gets a prototype, copied from the
+definition, above all the bodies: gcc 14 and later refuse an implicit declaration even with -w,
+and tools/lint.py checks for it. The files are removed. Two files that declare one name differently, or define the same type or helper, do not
 compile together: those are listed, and are for the person regrouping to settle (one type for
 both, a cast at a call) before tools/verify.py, tools/link.py and tools/lint.py pass.
 
@@ -67,12 +69,30 @@ def regroup(module: str, unit: str, paths: list[pathlib.Path]) -> tuple[pathlib.
         out += "\n" + "".join(includes)
     if shared:
         out += "\n" + "".join(sorted(shared, key=lambda d: (declared_name(d) or "", d)))
+    joined = ""
     for body in bodies:
         for d in shared:
             body = body.replace(d, "")
-        out += "\n" + re.sub(r"\n{3,}", "\n\n", body).strip("\n") + "\n"
-    # what cannot compile together: one name declared two ways, a type or helper defined twice
+        joined += "\n" + re.sub(r"\n{3,}", "\n\n", body).strip("\n") + "\n"
+    # a function the unit defines below a use of it (the order is last address first) gets a
+    # prototype above all the bodies, copied from its definition: C99 has no implicit
+    # declarations, and gcc 14 and later refuse them even with -w
     problems = []
+    protos = []
+    typedefs = set(re.findall(r"^typedef\b[^;]*?\b(\w+)\s*;", joined, re.M | re.S))
+    for name in C.undeclared_uses(joined, [s.name for s in srcs]):
+        m = C.unit_definition(joined, name)
+        if m is None:
+            problems.append(f"{name} is used before it is declared and has no definition to copy")
+            continue
+        proto = " ".join(m.group(0).rstrip("{").split()) + ";"
+        protos.append(proto + "\n")
+        problems += [f"the prototype of {name} uses {t}, defined further down: move the type up"
+                     for t in sorted(typedefs & set(re.findall(r"\w+", proto)))]
+    if protos:
+        out += "\n" + "".join(protos)
+    out += joined
+    # what cannot compile together: one name declared two ways, a type or helper defined twice
     seen: dict[str, set[str]] = collections.defaultdict(set)
     for d in externs:
         name = declared_name(d)

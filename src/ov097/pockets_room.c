@@ -41,6 +41,8 @@ extern void func_ov096_0229c414(UnkStruct_022a27fc *self);
 extern void func_ov096_0229f5e0(UnkStruct_022a27fc *self, int idx, int v, int z);
 extern void func_ov096_0229f5ac(UnkStruct_022a27fc *self, int idx);
 
+int func_ov097_022a27c0(void *self);
+
 static __inline u16 Get(const u16 *p)
 {
     return *p;

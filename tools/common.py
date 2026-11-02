@@ -370,6 +370,33 @@ def header_end(text: str) -> int:
     return text.index("*/", m.end() - 3) + 2 if m else 0
 
 
+def unit_definition(body: str, name: str) -> re.Match | None:
+    """Where a unit (UNIT_HEADER) defines `name`: at the start of a line, its parameters and
+    the brace. `body` is the text after the header."""
+    return re.search(r"^[^\n;{}()]*\b" + re.escape(name.split("::")[-1])
+                     + r"\s*\([^;{]*\)\s*(?:const\s*)?\{", body, re.M)
+
+
+def undeclared_uses(body: str, names: list[str]) -> list[str]:
+    """The unit functions `body` names before declaring them. A unit lists its functions last
+    address first, so a function often calls one defined below it: that needs a prototype above
+    the call (gcc 14 and later refuse an implicit declaration even with -w). A prototype is a
+    declaration at the start of a line ending in `;`; a definition counts from where it starts.
+    C++ member functions are declared by their class and are not looked at."""
+    out = []
+    for name in names:
+        if "::" in name:
+            continue
+        defined = unit_definition(body, name)
+        proto = re.search(r"^(?!return\b)[A-Za-z_][\w \t\*]*[ \t\*]" + re.escape(name)
+                          + r"\s*\([^;{]*\)\s*;", body, re.M)
+        declared = min([m.start() for m in (defined, proto) if m] or [len(body)])
+        used = re.search(r"\b" + re.escape(name) + r"\b", body)
+        if used and used.start() < declared:
+            out.append(name)
+    return out
+
+
 def all_sources() -> list[pathlib.Path]:
     return sorted(p for root in SOURCE_ROOTS if root.is_dir()
                   for p in root.rglob("*") if p.suffix in (".c", ".cpp"))
