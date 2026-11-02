@@ -26,7 +26,7 @@ import native_statics as statics
 
 def pc_copy(relative: str, specs: dict | None = None) -> str:
     """The PC copy native.py compiles: the member boundary's (when the source has one), then the statics."""
-    source = (C.SRC / relative).read_bytes().decode()
+    source = (C.key_path(relative)).read_bytes().decode()
     text = source
     if relative in boundary.specifications():
         text = boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image)[0]
@@ -53,14 +53,14 @@ class StaticsCopy(unittest.TestCase):
     def test_the_eight_former_private_tables(self):
         specs = statics.specifications()
         for relative, address, guard in [
-                ('ov003/func_ov003_0221a244.cpp', '0223c6c4', '0223c614'),
-                ('ov090/func_ov090_02299470.cpp', '02299984', '02299968'),
-                ('ov102/func_ov102_0229e5b8.cpp', '0229ec18', '0229ebc4'),
-                ('ov116/func_ov116_0229e5e8.cpp', '0229e948', '0229e920'),
-                ('ov121/func_ov121_0229bdc0.cpp', '0229c4c8', '0229c4a0'),
-                ('ov126/func_ov126_022a1b4c.cpp', '022a2208', '022a21a0'),
-                ('ov133/func_ov133_0229c58c.cpp', '0229c9a8', '0229c9a0'),
-                ('ov146/func_ov146_0229b004.cpp', '0229b7c4', '0229b784')]:
+                ('ov003/func_ov003_0221a244', '0223c6c4', '0223c614'),
+                ('ov090/func_ov090_02299470', '02299984', '02299968'),
+                ('ov102/func_ov102_0229e5b8', '0229ec18', '0229ebc4'),
+                ('ov116/func_ov116_0229e5e8', '0229e948', '0229e920'),
+                ('ov121/func_ov121_0229bdc0', '0229c4c8', '0229c4a0'),
+                ('ov126/func_ov126_022a1b4c', '022a2208', '022a21a0'),
+                ('ov133/func_ov133_0229c58c', '0229c9a8', '0229c9a0'),
+                ('ov146/func_ov146_0229b004', '0229b7c4', '0229b784')]:
             (item,) = specs[relative]['statics'].values()
             self.assertEqual((item['address'], item['guard']), (address, guard), relative)
             text = pc_copy(relative)
@@ -69,8 +69,8 @@ class StaticsCopy(unittest.TestCase):
             self.assertIsNone(boundary.METHOD.search(text), relative)
 
     def test_rom_checks(self):
-        cases = ['ov003/func_ov003_0221a244.cpp', 'ov145/func_ov145_022999c4.c', 'ov070/func_ov070_02279820.c',
-                 'ov068/func_ov068_02274358.cpp', 'ov107/func_ov107_0229dea4.cpp', 'ov004/func_ov004_02211824.cpp']
+        cases = ['ov003/func_ov003_0221a244', 'ov145/func_ov145_022999c4', 'ov070/func_ov070_02279820',
+                 'ov068/func_ov068_02274358', 'ov107/func_ov107_0229dea4', 'ov004/func_ov004_02211824']
         specs = statics.specifications()
         for relative in cases:
             for name, item in specs[relative]['statics'].items():
@@ -103,9 +103,9 @@ class StaticsCopy(unittest.TestCase):
             changed[relative]['rom_sha256'] = '0' * 64
             with self.assertRaisesRegex(ValueError, 'owner body changed'):
                 pc_copy(relative, changed)
-            source = (C.SRC / relative).read_bytes().decode()
+            source = (C.key_path(relative)).read_bytes().decode()
             with self.assertRaisesRegex(ValueError, 'source changed'):
-                statics.translate(relative, source + '\n', source)
+                statics.translate(relative, C.function_changed(source, relative.partition('/')[2]), source)
 
     def test_declarations(self):
         text = 'void f() {\n    static int a[] = {1, 2, 3};\n    { static struct { int x; } b = {f()}; g(b.x); }\n' \
@@ -132,18 +132,18 @@ class StaticsCopy(unittest.TestCase):
 # Arguments after the object (r1-r3, then the stack), default 0: a pointer where an owner writes,
 # and a direction that reaches the table.
 SCRATCH = 0x023d0000
-ARGUMENTS = {'ov082/func_ov082_022791b0.c': (SCRATCH, 0, 0, 0),
-             'ov004/func_ov004_0223b958.cpp': (SCRATCH, 0, 0x5000, 1)}
+ARGUMENTS = {'ov082/func_ov082_022791b0': (SCRATCH, 0, 0, 0),
+             'ov004/func_ov004_0223b958': (SCRATCH, 0, 0x5000, 1)}
 # Former private copies the fixture cannot tell from the ROM's owner, and why.
 BASELINE_SAME = {
-    'ov004/func_ov004_0223b574.cpp': 'returns before its table from the fixture state',
-    'ov047/func_ov047_022610cc.cpp': 'returns at its name check, before its table',
-    'ov077/func_ov077_022790c4.cpp': 'returns before its tables from the fixture state',
-    'ov070/func_ov070_02279820.c': 'its static is read-only data equal to the image',
-    'ov073/func_ov073_02278f4c.c': 'its static is read-only data equal to the image',
+    'ov004/func_ov004_0223b574': 'returns before its table from the fixture state',
+    'ov047/func_ov047_022610cc': 'returns at its name check, before its table',
+    'ov077/func_ov077_022790c4': 'returns before its tables from the fixture state',
+    'ov070/func_ov070_02279820': 'its static is read-only data equal to the image',
+    'ov073/func_ov073_02278f4c': 'its static is read-only data equal to the image',
 }
 # Guard words a source declares extern (in the overlay's .bss too), cleared with its statics.
-EXTERN_GUARDS = {'ov103/func_ov103_0229df14.cpp': ['0229e340']}
+EXTERN_GUARDS = {'ov103/func_ov103_0229df14': ['0229e340']}
 
 
 def fixture(relatives: list[str], baseline: bool = False) -> list[str]:
@@ -178,7 +178,7 @@ def fixture(relatives: list[str], baseline: bool = False) -> list[str]:
     modules = C.modules()
     symbols = C.SymbolTable(modules)
     for relative in relatives:
-        path = C.SRC / relative
+        path = C.key_path(relative)
         parsed = C.parse_source(path)
         spec = statics.specifications()[relative]
         work = folder / relative.replace('/', '_').rsplit('.', 1)[0]

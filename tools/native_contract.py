@@ -9,6 +9,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import common as C  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -16,8 +20,8 @@ class Contract:
     module: str
     address: int
     size: int
-    source: str
-    source_sha256: str
+    source: str  # the function's key (common.function_key)
+    source_sha256: str  # its text's (common.function_sha256)
     rom_sha256: str
     roles: tuple[str, ...]
 
@@ -29,28 +33,28 @@ class Contract:
 
 
 CONTRACTS = (
-    Contract('itcm', 0x01ffd44c, 0xc0, 'itcm/func_01ffd44c.cpp',
-             '5496584b555608c38dbfa20773f6cc16d91fd94bef8cce6115f02ca548facbd3',
+    Contract('itcm', 0x01ffd44c, 0xc0, 'itcm/func_01ffd44c',
+             '805bc8c903f917a98768f71805061e60b23af7416f1e03f92e5a935949c514e0',
              '97be9e9481e520004c748417f3408881cf9e8cffe7d0df642eda1d75c3469269',
              ('object_pointer', 'a_function', 'a_adjustment', 'b_function',
               'b_adjustment', 'c_function', 'c_adjustment')),
-    Contract('main', 0x02034e28, 0x50, 'main/func_02034e28.cpp',
-             'fa0007464683225f8b51dc817ddc764490e8f67e1f42e2c7bc15186d071860da',
+    Contract('main', 0x02034e28, 0x50, 'main/func_02034e28',
+             'a6d4c91228476fa40a621d9e2e79976bceb3d9d7539a9a3c3bd63132807f4bee',
              '28b07fefedbd4186d1606348bceeb40e677c327f2a7a06721a23e0f3edf2e2ca',
              ('object_pointer', 'function', 'adjustment')),
-    Contract('main', 0x0202dbf0, 0x14, 'main/func_0202dbf0.c',
-             '187890dfd518c0ef87cd9399a90b1bee60d87af5dcae368edea74ae793f5daeb',
+    Contract('main', 0x0202dbf0, 0x14, 'main/func_0202dbf0',
+             'afcc88a28acb80a0f11ba8235676716d2d8b01f15696f11704e9be014a2d1526',
              '7219f29b7a87413b7b19d26c5e0b1cee9a290953f4dd90a8824624da049146a6',
              ('object_pointer', 'pair_first', 'pair_second')),
-    Contract('main', 0x0207fc7c, 0x4c, 'main/func_0207fc7c.c',
-             '1a8d5b9025351de2c263105fae0a7618ff611d30e4cb76dc0631c2f413661b39',
+    Contract('main', 0x0207fc7c, 0x4c, 'main/func_0207fc7c',
+             'b988120e6c4aae4dedd1dd7b79d0e4b89f8b44a6b571ffe43bb5b4539947fbe3',
              '3c0e3bc974cec8a19644e077343ffc2b3483c95dc794b295ba289a668a2c7942',
              ('output_pointer', 'unused', 'category')),
 )
 
 
 def validate(contract: Contract, source: bytes, code: bytes) -> None:
-    if hashlib.sha256(source).hexdigest() != contract.source_sha256:
+    if C.pinned_sha256(contract.source, source.decode()) != contract.source_sha256:
         raise ValueError(f'Native call-contract source changed: {contract.source}')
     if len(code) != contract.size or hashlib.sha256(code).hexdigest() != contract.rom_sha256:
         raise ValueError(f'Native call-contract ROM changed: {contract.module}:{contract.address:08x}')
@@ -65,6 +69,9 @@ def audited(root: Path, modules: dict, image) -> dict[tuple[str, int], int]:
             images[contract.module] = image(contract.module)
         offset = contract.address - modules[contract.module]['base']
         code = images[contract.module][offset:offset + contract.size]
-        validate(contract, (root / 'src' / contract.source).read_bytes(), code)
+        defined = C.function_source(contract.source)
+        if defined is None:
+            raise ValueError(f'Native call-contract source missing: {contract.source}')
+        validate(contract, (root / defined.path.relative_to(C.ROOT)).read_bytes(), code)
         result[(contract.module, contract.address)] = contract.encoding
     return result

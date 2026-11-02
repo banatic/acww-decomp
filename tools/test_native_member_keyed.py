@@ -15,13 +15,13 @@ import native_pmf_boundary as boundary
 host = 'windows' if os.name == 'nt' else 'linux'
 base = C.BUILD/'native-member-keyed-check'
 base.mkdir(exist_ok=True)
-paths = {'ov049/func_ov049_02261848.cpp': ('table',11,'func_ov049_02261848(static_cast<UnkStruct_02261848 *>(p))'),
-         'ov051/func_ov051_022604a8.cpp': ('table',14,'func_ov051_022604a8(static_cast<UnkStruct_022604a8 *>(p))'),
-         'ov068/func_ov068_02274358.cpp': ('tbl',3,'static_cast<Obj_ov068_02277dc0 *>(p)->func_ov068_02274358(nullptr)')}
+paths = {'ov049/func_ov049_02261848': ('table',11,'func_ov049_02261848(static_cast<UnkStruct_02261848 *>(p))'),
+         'ov051/func_ov051_022604a8': ('table',14,'func_ov051_022604a8(static_cast<UnkStruct_022604a8 *>(p))'),
+         'ov068/func_ov068_02274358': ('tbl',3,'static_cast<Obj_ov068_02277dc0 *>(p)->func_ov068_02274358(nullptr)')}
 specs = {}
 reports = []
 for relative, (name,count,call) in paths.items():
-    path = C.SRC/relative
+    path = C.key_path(relative)
     parsed = C.parse_source(path)
     source = path.read_bytes().decode()
     case = int(parsed.module[2:])
@@ -46,7 +46,7 @@ for relative, (name,count,call) in paths.items():
             text = re.sub(r'\{(0x[0-9a-f]+|\d+), (data_ov\d{3}_[0-9a-f]{8})\}', r'{0, \2}', source)
             assert text != source
             chosen[relative].pop('keyed_tables')
-            chosen[relative]['source_sha256'] = hashlib.sha256(text.encode()).hexdigest()
+            chosen[relative]['function_sha256'] = C.pinned_sha256(relative, text)
         copy, headers = boundary.checked_copy(relative,text,C.ROOT,C.modules(),C.module_image,specs=chosen)
         assert not headers
         copy+='\nextern "C" void keyed_invoke(void *p) { '+call+'; }\n'

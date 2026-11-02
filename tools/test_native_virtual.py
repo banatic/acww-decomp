@@ -10,13 +10,13 @@ import native_virtual
 
 
 def main() -> None:
-    relative = "ov100/func_ov100_0229e3b0.cpp"
-    source = C.SRC / relative
+    relative = "ov100/func_ov100_0229e3b0"
+    source = C.key_path(relative)
     text = source.read_bytes().decode()
     assert native_virtual.translate(relative, text) is not None
     assert native_virtual.translate("unknown.cpp", text) is None
     try:
-        native_virtual.translate(relative, text + "\n")
+        native_virtual.translate(relative, C.function_changed(text, relative.partition("/")[2]))
     except ValueError:
         pass
     else:

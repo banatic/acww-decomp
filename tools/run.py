@@ -658,7 +658,7 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
         offset = address - mods['main']['base']
         native_publish.validate_rom(image[offset:offset + size], address)
     for relative in native_stack.SOURCES:
-        native_stack.validate_source(relative, (C.SRC / relative).read_bytes().decode())
+        native_stack.validate_source(relative, C.key_path(relative).read_bytes().decode())
     kept = kept_reference()
     # what tools/native.py finds Native code cannot do (keep-reference.txt)
     found = NATIVE / "keep-reference.txt"

@@ -34,23 +34,31 @@ NATIVE_PRIVATE = ROOT / "runtime" / "native-private.txt"
 
 
 def write_native_private(placement: dict[str, list[tuple[str, int, int]]]) -> None:
-    """NATIVE_PRIVATE from {source: [(section, start, end), ...]}, in source and address order."""
-    lines = ["# Each source's own data in the ROM, outside its function: source, section, start and",
-             "# end (written by tools/link.py; while the source's function runs on the PC the words",
-             "# there are not compared with the Reference's, as the PC's copy of the data is its own)"]
-    for path in sorted(placement):
-        for name, start, end in sorted(placement[path], key=lambda s: (s[1], s[2], s[0])):
-            lines.append(f"{path} {name} {start:08x} {end:08x}")
+    """NATIVE_PRIVATE from {source (from the root): [(section, start, end), ...]}, by function key
+    (function_key; a unit's data under its first function, as tools/native.py gives all of a
+    unit's data to each of its functions), in key and address order."""
+    lines = ["# Each source's own data in the ROM, outside its functions: function key, section, start",
+             "# and end (written by tools/link.py; a unit's under its first function). While a function",
+             "# of the source runs on the PC the words there are not compared with the Reference's, as",
+             "# the PC's copy of the data is its own."]
+    keyed: dict[str, list[tuple[str, int, int]]] = {}
+    for path, sections in placement.items():
+        src = parse_source(ROOT / path)
+        if src is not None and sections:
+            keyed.setdefault(function_key(src), []).extend(sections)
+    for key in sorted(keyed):
+        for name, start, end in sorted(keyed[key], key=lambda s: (s[1], s[2], s[0])):
+            lines.append(f"{key} {name} {start:08x} {end:08x}")
     NATIVE_PRIVATE.write_text("\n".join(lines) + "\n", newline="\n")
 
 
 def read_native_private() -> dict[str, list[tuple[str, int, int]]]:
-    """NATIVE_PRIVATE as write_native_private takes it."""
+    """NATIVE_PRIVATE: {function key: [(section, start, end), ...]}."""
     placement: dict[str, list[tuple[str, int, int]]] = {}
     for line in NATIVE_PRIVATE.read_text().splitlines():
         if line.strip() and not line.startswith("#"):
-            path, name, start, end = line.split()
-            placement.setdefault(path, []).append((name, int(start, 16), int(end, 16)))
+            key, name, start, end = line.split()
+            placement.setdefault(key, []).append((name, int(start, 16), int(end, 16)))
     return placement
 
 
@@ -375,6 +383,126 @@ def unit_definition(body: str, name: str) -> re.Match | None:
     the brace. `body` is the text after the header."""
     return re.search(r"^[^\n;{}()]*\b" + re.escape(name.split("::")[-1])
                      + r"\s*\([^;{]*\)\s*(?:const\s*)?\{", body, re.M)
+
+
+def masked(text: str) -> str:
+    """`text` with comments, string and character literals blanked (same length, same lines)."""
+    out, i, n = list(text), 0, len(text)
+    while i < n:
+        if text.startswith('//', i):
+            j = text.find('\n', i)
+            j = n if j < 0 else j
+        elif text.startswith('/*', i):
+            j = text.find('*/', i + 2)
+            j = n if j < 0 else j + 2
+        elif text[i] in '"\'':
+            j = i + 1
+            while j < n and text[j] != text[i]:
+                j += 2 if text[j] == '\\' else 1
+            j += 1
+        else:
+            i += 1
+            continue
+        for k in range(i, min(j, n)):
+            if out[k] != '\n':
+                out[k] = ' '
+        i = j
+    return ''.join(out)
+
+
+DEFINITION = r"^[^\n;{{}}()#]*\b{name}\s*\([^;{{]*\)\s*(?:const\s*)?(?::[^;{{]*)?\{{"
+
+
+def function_span(text: str, name: str) -> tuple[int, int] | None:
+    """Where the source `text` defines the function `name` (a header's name): from the start of
+    the definition's first line to just after its closing brace, or None when it has none the
+    tools can find (a static initializer the compiler writes, a definition made by a macro).
+    A function defined twice (the `asm` version for mwccarm and the C one for the PC, under
+    #ifdef __MWERKS__) spans both."""
+    plain = masked(text)
+    pattern = re.compile(DEFINITION.format(name=re.escape(name.split("::")[-1])), re.M)
+    start = end = None
+    for m in pattern.finditer(plain):
+        if end is not None and m.start() < end:
+            continue
+        depth, i = 0, m.end() - 1
+        for i in range(m.end() - 1, len(plain)):
+            depth += (plain[i] == "{") - (plain[i] == "}")
+            if depth == 0:
+                break
+        if depth:
+            return None
+        start = m.start() if start is None else start
+        end = i + 1
+    return None if start is None else (start, end)
+
+
+def function_text(text: str, name: str) -> str:
+    """The text of one function of a source: its definition (function_span), or, where the
+    source has no definition the tools find, everything after its header. This text is the same
+    in a file of one function and in a unit (tools/regroup.py moves only what is outside the
+    definitions), so a table that pins a function by it (runtime/native-*.json, tools/native_*)
+    holds across regrouping."""
+    span = function_span(text, name)
+    return text[span[0]:span[1]] if span else text[header_end(text):]
+
+
+def function_sha256(text: str, name: str) -> str:
+    """The SHA-256 of function_text: what the Native tables pin a function's source by."""
+    return hashlib.sha256(function_text(text, name).encode()).hexdigest()
+
+
+def function_changed(text: str, name: str) -> str:
+    """`text` with the definition of `name` changed (a blank line after its opening brace), for
+    the tests of the tables that pin it (pinned_sha256)."""
+    span = function_span(text, name)
+    start, end = span if span else (header_end(text), len(text))
+    brace = text.find("{", start, end)
+    brace = start if brace < 0 else brace + 1
+    return text[:brace] + "\n" + text[brace:]
+
+
+def pinned_sha256(key: str, text: str) -> str:
+    """What a Native table pins `text` by: for a function of src/ (`key` is its function_key)
+    its function_sha256, for any other file (a Clean source, by its path) the whole text's."""
+    if "." in key.rpartition("/")[2]:
+        return hashlib.sha256(text.encode()).hexdigest()
+    return function_sha256(text, key.partition("/")[2])
+
+
+def function_key(src: Source) -> str:
+    """`<module>/<name>`: how the Native tables name a function, whichever file defines it."""
+    return f"{src.module}/{src.name}"
+
+
+_FUNCTION_SOURCES: dict[str, Source] = {}
+_SCANNED: set[str] = set()
+
+
+def function_source(key: str) -> Source | None:
+    """The source under src/ that defines the function `key` (function_key): the file of that
+    name, or the unit that lists it."""
+    module, _, name = key.partition("/")
+    for suffix in (".c", ".cpp"):
+        path = SRC / module / f"{name}{suffix}"
+        if path.is_file():
+            found = [s for s in parse_sources(path) if s.name == name]
+            if found:
+                return found[0]
+    if module not in _SCANNED:
+        _SCANNED.add(module)
+        for path in sorted((SRC / module).glob("*.c*")):
+            for s in parse_sources(path):
+                _FUNCTION_SOURCES.setdefault(function_key(s), s)
+    return _FUNCTION_SOURCES.get(key)
+
+
+def key_path(key: str) -> pathlib.Path:
+    """The file that defines the function `key` (function_source)."""
+    found = function_source(key)
+    if found is None:
+        raise FileNotFoundError(f"no source defines {key}")
+    return found.path
 
 
 def undeclared_uses(body: str, names: list[str]) -> list[str]:

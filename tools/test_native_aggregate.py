@@ -12,12 +12,12 @@ import run
 def caller_guards():
     """Each audited caller copy applies, and a changed source is rejected."""
     for relative, (_digest, callees, changes) in native_aggregate.CALLERS.items():
-        text = (C.SRC / relative).read_bytes().decode()
+        text = (C.key_path(relative)).read_bytes().decode()
         copy = native_aggregate.caller_copy(relative, text)
         assert callees and native_aggregate.handled(relative) == set(callees), relative
         assert (copy is None) == (not changes), relative
         try:
-            native_aggregate.caller_copy(relative, text + '\n')
+            native_aggregate.caller_copy(relative, C.function_changed(text, relative.partition('/')[2]))
         except ValueError:
             pass
         else:
@@ -31,7 +31,7 @@ def caller_guards():
             pass
         else:
             raise AssertionError('changed Clean source accepted: ' + relative)
-    assert native_aggregate.returns_word('main/func_020401b8.c')
+    assert native_aggregate.returns_word('main/func_020401b8')
     print(f'{len(native_aggregate.CALLERS)} audited aggregate caller copies and '
           f'{len(native_aggregate.CLEAN_CALLERS)} Clean ones apply and reject changed sources')
 
@@ -45,7 +45,7 @@ def main():
     image = C.module_image('main')
     base = C.modules()['main']['base']
     for index, (relative, spec) in enumerate(native_aggregate.SPECS.items()):
-        path = C.SRC / relative
+        path = C.key_path(relative)
         assert native_aggregate.return_kind(path) == spec['kind'] == index + 8
         source = C.parse_source(path)
         body = image[source.address-base:source.address-base+source.size]
@@ -62,7 +62,7 @@ def main():
     subprocess.run([*native.compiler(), *native.flags_for(caller), '-I'+str(runtime),
                     '-c', str(caller), '-o', str(obj)], check=True)
     objects.append(obj)
-    scalar_source = C.SRC / native_aggregate.SCALAR_CALLER
+    scalar_source = C.key_path(native_aggregate.SCALAR_CALLER)
     scalar_copy = folder/'scalar-caller.cpp'
     scalar_copy.write_text(native_aggregate.caller_copy(native_aggregate.SCALAR_CALLER,
                                                        scalar_source.read_bytes().decode()), newline='\n')

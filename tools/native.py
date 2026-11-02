@@ -329,9 +329,16 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     obj = OUT / "obj" / path.relative_to(C.SRC).with_suffix(".o")
     source, text = path, path.read_bytes()
     relative = path.relative_to(C.SRC).as_posix()
-    layout = native_layout.translate(relative, text.decode("utf-8")) if relative in native_layout.paths() else None
+    original = text.decode("utf-8")
+    # The tables name functions by their keys (common.function_key) and pin each by its own
+    # text (common.function_sha256), which a unit holds as a file of one function did: each of
+    # a unit's functions gets its own copy's edits, checked against the original and made to the
+    # copy so far. A member-pointer copy is the whole source's (it translates every member
+    # declaration in the text): one for all of a unit's functions in the member boundary.
+    keys = [C.function_key(src) for src in C.parse_sources(path)]
     member_headers = {}
-    member = native_pmf.translate(relative, text.decode("utf-8"), member_headers) if relative in native_pmf.paths() else None
+    member_keys = [key for key in keys if key in native_pmf.paths()]
+    member = native_pmf.translate(member_keys, original, member_headers) if member_keys else None
     if member_headers:
         header_root = OUT / 'member-headers' / pathlib.Path(relative).with_suffix('')
         for name, content in member_headers.items():
@@ -339,26 +346,32 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_text(content, newline='\n')
         flags = ['-I' + str(header_root), *flags]
-    virtual = native_virtual.translate(relative, text.decode("utf-8")) if relative in native_virtual.paths() else None
-    # a stack effect on a member-pointer source edits that source's member copy
-    stack = native_stack.translate(relative, text.decode("utf-8"), member) if relative in native_stack.paths() else None
-    publish = native_publish.translate(relative, text.decode("utf-8")) if relative in native_publish.paths() else None
-    aggregate = native_aggregate.caller_copy(relative, text.decode("utf-8"))
-    # audited copies for arguments and locals the ROM's code has beyond C (tools/native_args.py)
-    args = native_args.translate(relative, text.decode("utf-8")) if relative in native_args.paths() else None
-    copies = [copy for copy in (layout, member if stack is None else None, virtual, stack, publish, aggregate, args)
-              if copy is not None]
-    if len(copies) > 1:
-        raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
-    # block-scope statics at the ROM's addresses (tools/native_statics.py), in whichever copy
-    statics = relative in native_statics.paths()
-    if NARROWED.get(path) or copies or statics:
-        wide = copies[0] if copies else text.decode("utf-8")
-        if statics:
-            wide = native_statics.translate(relative, text.decode("utf-8"), wide)
+    wide = member if member is not None else original
+    copied = member is not None
+    guest = published = statics = False
+    for key in keys:
+        layout = native_layout.translate(key, original, wide) if key in native_layout.paths() else None
+        virtual = native_virtual.translate(key, original, wide) if key in native_virtual.paths() else None
+        # a stack effect on a member-pointer source edits that source's member copy
+        stack = native_stack.translate(key, original, wide) if key in native_stack.paths() else None
+        publish = native_publish.translate(key, original, wide) if key in native_publish.paths() else None
+        aggregate = native_aggregate.caller_copy(key, original, wide)
+        # audited copies for arguments and locals the ROM's code has beyond C (tools/native_args.py)
+        args = native_args.translate(key, original, wide) if key in native_args.paths() else None
+        copies = [copy for copy in (layout, virtual, stack, publish, aggregate, args) if copy is not None]
+        if len(copies) + (key in member_keys and stack is None) > 1:
+            raise ValueError(f"Overlapping Native source-copy transforms: {key}")
+        if copies:
+            wide, copied = copies[0], True
+        guest |= stack is not None
+        published |= publish is not None
+        # block-scope statics at the ROM's addresses (tools/native_statics.py), in whichever copy
+        if key in native_statics.paths():
+            wide, statics = native_statics.translate(key, original, wide), True
+    if NARROWED.get(path) or copied or statics:
         if member is not None:
             PMF_TRANSLATED.add(path)
-        if member is not None or stack is not None or publish is not None:
+        if member is not None or guest or published:
             flags = [*flags, "-I" + str(C.ROOT / "runtime")]
         if NARROWED.get(path):
             wide, done = protos.widen_declarations(wide, NARROWED[path])
@@ -375,9 +388,9 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
         parts.append((C.ROOT / "runtime" / "native_member.h").read_bytes())
         for name, content in sorted(member_headers.items()):
             parts += [name.encode(), content.encode()]
-    if stack is not None:
+    if guest:
         parts.append((C.ROOT / "runtime" / "native_guest.h").read_bytes())
-    if publish is not None:
+    if published:
         parts.append((C.ROOT / "runtime" / "native_publish.h").read_bytes())
     parts += [inc.read_bytes() for inc in C.included_files(path)]
     key = hashlib.sha1(head + b"".join(parts)).hexdigest()
@@ -503,9 +516,9 @@ def signature_read(path: pathlib.Path, name: str) -> tuple[int, int, bool, int]:
         kind = RET_SKIP
     else:
         kind = RET_32
-    if kind == RET_SKIP and path.is_relative_to(C.SRC) and native_aggregate.returns_word(path.relative_to(C.SRC).as_posix()):
+    if kind == RET_SKIP and path.is_relative_to(C.SRC) and native_aggregate.returns_word(f"{path.parent.name}/{name}"):
         kind = RET_32  # the PC copy returns the structure's word, as the ROM's code does in r0
-    aggregate_kind = native_aggregate.return_kind(path)
+    aggregate_kind = native_aggregate.return_kind(path, name)
     if aggregate_kind is not None:
         if kind != RET_SKIP or member or floating:
             raise ValueError(f"Aggregate return signature changed: {path}")
@@ -965,8 +978,11 @@ def main() -> None:
     private = 0
     for path, _ in objects:
         # a unit's data is all of its functions' (any of them may use any of it)
-        for src in C.parse_sources(path):
-            for _name, start, end in placement.get(path.relative_to(C.ROOT).as_posix(), []):
+        srcs = C.parse_sources(path)
+        ranges = sorted({r for src in srcs for r in placement.get(C.function_key(src), [])},
+                        key=lambda r: (r[1], r[2], r[0]))
+        for src in srcs:
+            for _name, start, end in ranges:
                 lines.append(f"\t.long 0x{src.address:08x}, 0x{start:08x}, 0x{end:08x}")
                 private += 1
     lines += [f"\t.globl {PREFIX}native_private_count", f"{PREFIX}native_private_count:", f"\t.long {private}", ""]
@@ -987,8 +1003,10 @@ def main() -> None:
     # (tools/native_args.py).
     short: dict[str, list[str]] = collections.defaultdict(list)
     for rel, callee, n, dn, ret, dret, drel in protos.disagreements():
-        relative = rel.removeprefix('src/')
-        if C.SRC / relative in PMF_TRANSLATED and callee in native_pmf_boundary.REGISTER_CALLS.get(relative, set()):
+        caller_path = C.ROOT / rel
+        registers = {n for src in (C.parse_sources(caller_path) if caller_path in PMF_TRANSLATED else ())
+                     for n in native_pmf_boundary.REGISTER_CALLS.get(C.function_key(src), set())}
+        if callee in registers:
             continue  # the guarded PC copy explicitly passes the audited ARM register
         if (n is not None and dn is not None and n < dn) or (ret and not dret):
             caller = C.parse_source(C.ROOT / rel)
@@ -1007,14 +1025,16 @@ def main() -> None:
         vts = sorted({n[strip:] for n in names if n[strip:].startswith("_ZTV") and n[strip:] not in vtables})
         zero = sorted(n[strip:] for n in code_references(_) & nowhere) if names & nowhere else []
         text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
-        by_value = [n for n in struct_results(text) if n not in native_aggregate.handled(path.relative_to(C.SRC).as_posix())]
+        keys = [C.function_key(src) for src in C.parse_sources(path)]
+        handled = {n for key in keys for n in native_aggregate.handled(key)}
+        by_value = [n for n in struct_results(text) if n not in handled]
         if "__MWERKS__" in text and ASM_FUNCTION.search(text):
             keep.append(f"{name} matches as assembly (`asm`, under #ifdef __MWERKS__); its C version for the PC "
                         "is a rewrite, and passes registers on differently" + chr(10))
             keep += [other.object_symbol + keep[-1][len(name):] for other in C.parse_sources(path)[1:]]
             continue
         inner = sorted(n for n in set(re.findall(r"\b(\w+_unk)\s*\(", text)) - {name}
-                       if not native_args.entry_call_ok(path.relative_to(C.SRC).as_posix(), text, n))
+                       if not any(native_args.entry_call_ok(key, text, n) for key in keys))
         narrow = sorted(NARROWED.get(path, set()) - WIDENED.get(path, set()))
         if inner:
             keep.append(f"{name} calls {' '.join(inner)}, an entry into the middle of other code: the ROM's code "

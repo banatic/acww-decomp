@@ -10,7 +10,12 @@ The ROM digests cover whole functions, including both audited jump tables.
 from __future__ import annotations
 
 import hashlib
+import pathlib
+import sys
 from typing import NamedTuple
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import common as C  # noqa: E402
 
 
 class Frame(NamedTuple):
@@ -327,33 +332,33 @@ SAVES: dict[tuple[str, int], int] = {
 }
 
 SOURCES = {
-    'ov004/func_ov004_0223df88.cpp': 'f83678a3e49cb33c093f9187915bc3630a7241ac452719b8cd7aa5aa592a432d',
-    'ov004/func_ov004_0220dd80.cpp': '2f88fa901fa5fd612e351526a20dc5960b608c3ca7dc45bfdc6b7a8df14f9da2',
-    'ov004/func_ov004_0223f218.c': '1cc7f0ec2ec6ac9bc48d217a7ec4563a201af55c4f820ea666432981efe7b08b',
-    'ov004/func_ov004_0220fc98.c': 'f47d4d5a656fce404914d68fabd46902e4ccec9157e1005a9651aaf0095d2df3',
-    'main/func_020040bc.c': '96751c4d7cb3c180e22a6c66cc24776c71c015e57e7934b0a24e47c380d391ee',
-    'autoload_2/func_020f9d00.c': 'ba4aca4075e533e87827e8cfd6ec8fe68dd4b47232c717498530b7ccbf243815',
-    'autoload_2/func_020f9948.c': 'bb7691589316d5ff734817e02d2a7432768ecf6e5d1127e0b38c1b8ee583b9f1',
-    'autoload_2/func_020f9b50.c': '8ee9d17fa55087735aa61ca4167de0d86317cc2b59e0196261b966626ad2bbe8',
-    'autoload_2/func_020e9744.c': '695a45d63baf6a0380f74f3c00242cffbd0fe9fa6de1b029dfea1b13f98745c5',
-    'autoload_2/func_020e9868.c': 'f984fae7452a68938700f472c97aa46ae0706bdfd2036713a493c6b18d17cfc7',
-    'main/func_020673e0.cpp': 'cd577805cab4c936f30abf96ffc8073c98375c13d2a2c74a821386c54b5bc542',
-    'main/func_020288bc.cpp': '73a4105a8d434eff733a727ec79a3c01263d4c3b60050947c8c5de18125ca8ce',
-    'main/func_02031bb8.c': 'c737a23865bc72c7e282cc06f9597061305bad977c2e60bf9084d96942805311',
-    'main/func_02031078.cpp': 'a8b4f8fc74d91a63c43fe6e9f9435a8997ed6f53b107c1d768f9454b017ade1a',
-    'main/func_02033678.cpp': '5ae67b9e3888b3e0f6e65a87cd4b9b02f1b35eb6c4e13dcc79d912a3a7d67338',
-    'main/func_0202f464.c': 'd4338665a2d2b24be6a7ce9e31cdc45830187427690a06849d2840168b2eaa31',
-    'main/func_0201cfe4.cpp': 'dd736357200171c19e4b42adedeb6c9475050542a8b2b574551a0187785cefde',
-    'main/func_02020764.cpp': 'c9ead5b2732dd66902a94e270c4ab55b9f4dd1ad57349d16d86eb7b6544757e9',
-    'ov094/func_ov094_0229abf8.c': 'b90fc592d2a31cd5f30a3f0312a3ae03121b4c4155e9e7044cb8ad75627593fe',
-    'main/func_02031288.c': '0236bb01213d0104748385758fd6aac3d072a2d0f701eac6009240d63d20007f',
-    'main/func_02032eb8.c': '5c39ed340affe9abd11bca801e0742f6d1f9970f562a80be28cf4aa0b3393af4',
+    'ov004/func_ov004_0223df88': '93bcd1e10ec86d8ac50598613fb37f9d6eed8a25b3bde62a9ff77e23683359a5',
+    'ov004/func_ov004_0220dd80': '0e3b8756e399fd4f7e9700a32634da1935b7ad518ecaf04e1f103d7318fd3d03',
+    'ov004/func_ov004_0223f218': 'a7440e38fa364fad40a4436cf7f3b2472609b05fa658424f445f5d8d7e233e16',
+    'ov004/func_ov004_0220fc98': '9b44e69da8b279b2be007ac955bd76bf0a1ebe09144b153044a88d937e2cc1e6',
+    'main/func_020040bc': 'd7e06d4453ab11774ea1789ca4c5c99ddfb7d0e655d7607a233b97b0b901d94f',
+    'autoload_2/func_020f9d00': '130f1cfd7d17d1e9a42d2b30e71d727eecf8a6662370c36c51e12df7dd91e1f3',
+    'autoload_2/func_020f9948': 'abb49a7d26339c68cee23b747998fbbe9e214c3b72e759ea5babd753302ac6c7',
+    'autoload_2/func_020f9b50': 'f3d67c43a3481f091121c1569fb2c4c99a551e1e1ee4accf73f298ce6b71fc66',
+    'autoload_2/func_020e9744': 'b21d593f41a6f1f0afde18edbc888601a4a9446284b68021865972811a65cefb',
+    'autoload_2/func_020e9868': 'c79015be518e74575b67468dcf1cd6895fb8bc52e9f38619b10d88c12e52021c',
+    'main/func_020673e0': 'f0f95ed83e680d9a2f54bccc4de4c64d5b7813b75ad70ae8e6afc23b9e3d5991',
+    'main/func_020288bc': '566ff02a8c550e396648ed88cbff35867078f05073975213428ab03767f5a0ec',
+    'main/func_02031bb8': '23706d51a3ec260db3c1ffbfb48e4c713bb7139f33af9d9e319e79daacb4f00a',
+    'main/func_02031078': 'ccdcdef86f0b437a419bd7a6529e226926e37f5e6d217a862b3ffa533b5a2019',
+    'main/func_02033678': 'dd6cfa98a9f1aa3645d4b6e12a2d81e520f5ad45644a3242aed0f033e60f2270',
+    'main/func_0202f464': '3dfbeee69701fe44760c9ac9feba8b4ebb9005d30818d5bc402716930e1a3853',
+    'main/func_0201cfe4': '271c3eb241b1d550f72925c5ddd0507473de38b5b97d7a27e1c2b7baf6d02801',
+    'main/func_02020764': 'd53b6b8dbde493c15c0bb882a8a69f4a16d145eb856a08e92665536a73b3490b',
+    'ov094/func_ov094_0229abf8': '84b84c04b59cd0ed806c6cbcf3665839aa1690465a7f66ce53ac6b335efae59d',
+    'main/func_02031288': '1b9b28a9e10df68c54b3ed2ec6671ce71499f675d21aadbfd326bba90dc3b065',
+    'main/func_02032eb8': 'b09ec08556e42ed5f2e51d7080a9b6df27e0411aaa3660162d1df47000c8a5e5',
 }
-CONSUMER = 'ov004/func_ov004_0223df88.cpp'
+CONSUMER = 'ov004/func_ov004_0223df88'
 # The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
 # sets x and z of and leaves y as the ROM's stack held it, at body SP + 0x18 (0x18-0x3c, below
 # the first box at + 0x3c): the same uninitialized-centre reuse as the house's consumer.
-INSECT_ROOM = 'ov004/func_ov004_0223f218.c'
+INSECT_ROOM = 'ov004/func_ov004_0223f218'
 # 0220dd8a stores incoming r3 at SP+0x14 before the first call. Apply the
 # same spill to Native and Clean entries; its value comes from their input.
 SPILLS = {('ov004', 0x0220dd80): (3, 0x14)}
@@ -646,7 +651,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # into it at body SP + 0x20 and + 0x24 (0220ddbe, 0220ddc4), and the house's cockroach
     # (0223df88) later takes the angle as its fourth keep-out box's height. Its frame is proved
     # on every path (its entry spill, SPILLS, stops on any other).
-    'ov004/func_ov004_0220dd80.cpp': (
+    'ov004/func_ov004_0220dd80': (
         ('    opposite = angle + 0x8000;\n',
          '    opposite = angle + 0x8000;\n'
          '    {\n        int *slot = (int *) (uintptr_t) native_guest_stack_slot(0x0220dd80u, 0x20u, 2 * sizeof(int));\n'
@@ -660,7 +665,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # item's name (the BUG of PocketsGrid_SetPopupText) and so read the villager text's first
     # characters too: in bed-attic they are 0203c4e4's entry push of its caller's r4, whose
     # frames are not audited.
-    'ov094/func_ov094_0229abf8.c': (
+    'ov094/func_ov094_0229abf8': (
         ('    } buf;\n',
          '    } host_buf, *locals;\n\n'
          '    _Static_assert(sizeof(host_buf) == 0xe8, "the popup\'s texts");\n'
@@ -670,7 +675,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # 0220fc9c-0220fca0: r5 = the object, r4 = `p1`, r6 = `p2`; mounted: r7 = the objects'
     # table (0220fcb2), r6 = the mount's z (0220fcf0), r4 its y (0220fcfa); else r4 = the angle
     # (0220fd44).
-    'ov004/func_ov004_0220fc98.c': (
+    'ov004/func_ov004_0220fc98': (
         ('    short h;\n\n',
          '    short h;\n\n'
          '    native_guest_register(0x0220fc98u, 5, (uint32_t) (uintptr_t) self);\n'
@@ -690,14 +695,14 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '        h = (short) (*(short *) (self + 0x8e) + p2);\n'
          '        native_guest_register(0x0220fc98u, 4, (uint32_t) (int) h);\n')),
     # 020e974c / 020e9870: r4 = the matrix
-    'autoload_2/func_020e9744.c': (
+    'autoload_2/func_020e9744': (
         ('{\n    char local[0x30];\n',
          '{\n    char local[0x30];\n    native_guest_register(0x020e9744u, 4, (uint32_t) param);\n'),),
-    'autoload_2/func_020e9868.c': (
+    'autoload_2/func_020e9868': (
         ('{\n    char buf[0x30];\n',
          '{\n    char buf[0x30];\n    native_guest_register(0x020e9868u, 4, (uint32_t) (uintptr_t) arg);\n'),),
     # 020f9b54-020f9b58: r5 = `b`, r4 = `a`; r6 = the volume (020f9b74), r5 = the pan (020f9b84)
-    'autoload_2/func_020f9b50.c': (
+    'autoload_2/func_020f9b50': (
         ('    unsigned int flag;\n\n',
          '    unsigned int flag;\n\n'
          '    native_guest_register(0x020f9b50u, 5, (uint32_t) (uintptr_t) b);\n'
@@ -708,7 +713,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '    r5 = func_020f5c64(b, 0);\n'
          '    native_guest_register(0x020f9b50u, 5, (uint32_t) r5);\n')),
     # the position relative to the camera at body SP + 0 (020040da-020040ea)
-    'main/func_020040bc.c': (
+    'main/func_020040bc': (
         ('    UnkStruct_020040bc t;\n', '    UnkStruct_020040bc *t;\n'),
         ('        t.x = v->x - data_021c67b8.x;\n',
          '        t = (UnkStruct_020040bc *) (uintptr_t) native_guest_stack_slot(0x020040bcu, 0, sizeof(*t));\n'
@@ -717,7 +722,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
         ('        t.z = v->z - data_021c67b8.z;\n', '        t->z = v->z - data_021c67b8.z;\n'),
         ('        return func_020f9ea4(self, &t);\n', '        return func_020f9ea4(self, t);\n')),
     # the six variables at body SP + 0 to + 0xb (020f9d1c-020f9d6c)
-    'autoload_2/func_020f9d00.c': (
+    'autoload_2/func_020f9d00': (
         ('    signed short vars[6];\n', '    signed short *vars;\n'),
         ('    if (((signed char *) self)[9] <= 0) {\n',
          '    vars = (signed short *) (uintptr_t) native_guest_stack_slot(0x020f9d00u, 0, 6 * sizeof(*vars));\n'
@@ -727,7 +732,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # r5 as it came (020f9a3c-020f9a74), and a beat variable 6 other than 0 and 1 leaves r4
     # (020f9a94-020f9acc). The one caller, func_020f9ea4, calls it at 020f9ef8 with r4 = the
     # cue (020f9eac) and r5 = -0x1000 (020f9ec0, its default result).
-    'autoload_2/func_020f9948.c': (
+    'autoload_2/func_020f9948': (
         ('    short v0, v1;\n    int d, r5, r4, t;\n',
          '    short *v = (short *) (uintptr_t) native_guest_stack_slot(0x020f9948u, 0, 2 * sizeof(short));\n'
          '    int d, r5 = -0x1000, r4 = (int) self, t;\n'),
@@ -743,12 +748,12 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # the answer picked just before, its fields at + 0x24 and + 0x28 (the talk object, 0). The
     # walker lives in the ROM's frame where its path is audited (else the PC's stack, as before:
     # it is used on many paths); the reply's locals always (a reply off the audited path stops).
-    'main/func_020673e0.cpp': (
+    'main/func_020673e0': (
         ('{\n    char buf[0x44];\n',
          '{\n    char host_buf[0x44];\n'
          '    char *buf = (char *) (uintptr_t) native_guest_stack_slot_if(0x020673e0u, 0, sizeof(host_buf));\n'
          '    if (buf == 0) {\n        buf = host_buf;\n    }\n'),),
-    'main/func_020288bc.cpp': (
+    'main/func_020288bc': (
         ('    unsigned char arg;\n    UnkStruct_020288bc out;\n',
          '    static_assert(sizeof(UnkStruct_020288bc) == 8, "the line");\n'
          '    unsigned char *arg = (unsigned char *) (uintptr_t) native_guest_stack_slot(0x020288bcu, 0, 0xc);\n'
@@ -764,12 +769,12 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # and r5 (the talk, whose low byte becomes the message). 0201cfe4 holds them from 0201cfe8
     # on. The line lives in the ROM's frame where its path is audited (else the PC's stack, as
     # before).
-    'main/func_0201cfe4.cpp': (
+    'main/func_0201cfe4': (
         ('    unsigned char id_slot;\n',
          '    unsigned char id_slot;\n'
          '    native_guest_register(0x0201cfe4u, 5, (uint32_t) (uintptr_t) self);\n'
          '    native_guest_register(0x0201cfe4u, 4, (uint32_t) event);\n'),),
-    'main/func_02020764.cpp': (
+    'main/func_02020764': (
         ('    unsigned char arg;\n    UnkStruct_02020764 out;\n',
          '    static_assert(sizeof(UnkStruct_02020764) == 8, "the line");\n'
          '    unsigned char host_arg[0xc];\n'
@@ -783,14 +788,14 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # PC's stack: it runs on many paths), and 02031078 holds the second's address in r4, the
     # first's in r5 (0203107c-0203107e) and the height function in r6 (0203109a), which that
     # function's entry push stores on the ROM's stack.
-    'main/func_02031bb8.c': (
+    'main/func_02031bb8': (
         ('    int v1, v2, v3;\n',
          '    int host_v[3];\n'
          '    int *v = (int *) (uintptr_t) native_guest_stack_slot_if(0x02031bb8u, 4, sizeof(host_v));\n'),
         ('    func_02034270((int) obj, p, 0, 0);\n',
          '    if (v == 0) {\n        v = host_v;\n    }\n    func_02034270((int) obj, p, 0, 0);\n'),
         ('&v1, &v2, &v3)', '&v[0], &v[1], &v[2])')),
-    'main/func_02031078.cpp': (
+    'main/func_02031078': (
         ('    int a, b, c;\n    if (obj != 0) {\n',
          '    int a, b, c;\n'
          '    native_guest_register(0x02031078u, 5, (uint32_t) (uintptr_t) out1);\n'
@@ -801,7 +806,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # its two directions, two points and two square segments at body SP + 0 to + 0x63 stay on
     # the ROM's stack, where the house's cockroach later takes the second direction's z as a
     # keep-out box's height (scene flea-buyer).
-    'main/func_0202f464.c': (
+    'main/func_0202f464': (
         ('    Vec2 v1;\n    Vec2 v2;\n    Vec2 v3;\n    Vec2 v4;\n    u32 m1[8];\n    u32 m2[9];\n    int sa, sb;\n\n',
          '    struct Locals {\n        Vec2 v1, v2, v3, v4;\n        u32 m1[8];\n        u32 m2[9];\n'
          '    } host_locals, *locals;\n    int sa, sb;\n\n'
@@ -815,7 +820,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # copies of the position and the pushed point it stores for each wall it tests (+ 0x3c to
     # + 0x83, 020336d8-02033708, 0203375a-0203378a, 020337dc-0203380c) stay on the ROM's stack,
     # where the museum's insect room later takes one as a case's height (scene museum-insects).
-    'main/func_02033678.cpp': (
+    'main/func_02033678': (
         ('    UnkStruct_02033678 v24;\n    UnkStruct_02033678 v2c;\n    UnkStruct_02033678 v34;\n'
          '    struct {\n        VV3 p;\n        VV3 q;\n    } volatile w1, w2, w3;\n',
          '    struct Locals {\n        UnkStruct_02033678 v24, v2c, v34;\n'
@@ -834,7 +839,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     # address of the visitor's previous position (its third argument) at body SP + 0, the first
     # post at + 4 and its copies of the position at + 8 to + 0x13; the museum's insect room later
     # takes the address as the height of the second insect room's second case.
-    'main/func_02031288.c': (
+    'main/func_02031288': (
         ('    Obj48 ob;\n', '    Obj48 host_ob, *ob_at;\n'),
         ('    int f3;\n\n',
          '    int f3;\n\n'
@@ -843,7 +848,7 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '    if (ob_at == 0) {\n        ob_at = &host_ob;\n    }\n'
          '#define ob (*ob_at)\n'),
         ('    func_02031e68(&ob);\n}\n', '    func_02031e68(&ob);\n#undef ob\n}\n')),
-    'main/func_02032eb8.c': (
+    'main/func_02032eb8': (
         ('    volatile int a, b, c;\n',
          '    struct Locals {\n        int extra;\n        Node *start;\n        volatile int a, b, c;\n'
          '    } host_locals, *locals;\n\n'
@@ -913,7 +918,7 @@ def frame_extent(module: str, address: int, code: bytes) -> int | None:
 
 
 def validate_source(relative: str, text: str) -> None:
-    if relative in SOURCES and hashlib.sha256(text.encode()).hexdigest() != SOURCES[relative]:
+    if relative in SOURCES and C.pinned_sha256(relative, text) != SOURCES[relative]:
         raise ValueError(f'Native stack source changed; repeat the stack effect audit: {relative}')
 
 
@@ -930,6 +935,7 @@ def translate(relative: str, text: str, base: str | None = None) -> str | None:
         return '#include "native_guest.h"\n' + edit(text, CUE_EDITS[relative], relative)
     if relative == INSECT_ROOM:
         validate_source(relative, text)
+        text = text if base is None else base
         declaration = '    Vec centers[3];\n'
         use = '    func_020324fc(&collision[2]);\n'
         assert text.count(declaration) == text.count(use) == 1
@@ -940,6 +946,7 @@ def translate(relative: str, text: str, base: str | None = None) -> str | None:
     if relative != CONSUMER:
         return None
     validate_source(relative, text)
+    text = text if base is None else base
     declaration = '    Vec centers[4];'
     use = '    position = (Vec *) (self + 0x5c);'
     assert text.count(declaration) == text.count(use) == 1

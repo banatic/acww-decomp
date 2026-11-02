@@ -66,30 +66,30 @@ def harmless(syms: C.SymbolTable, module: str, callee: str, declared: int | None
 # ------------------------------------------------------------------------------ PC copies
 
 # Sources that call a function with fewer arguments than it reads, where the ROM's call leaves
-# a value the source names in the missing argument registers: source (under src/) ->
-# (SHA-256 of the source, the callee, what the ROM's call has in the next argument registers,
+# a value the source names in the missing argument registers: function key
+# (common.function_key) -> (SHA-256 of the function's text (common.function_sha256), the callee, what the ROM's call has in the next argument registers,
 # as names in the source). The PC copy declares the callee with those arguments too and
 # passes them, so the PC's callee gets what the ROM's gets. A name that is a parameter must not
 # be assigned in the source (the ROM's register still holds the incoming value).
 PASSED = {
     # ROM 0200c8c2-0200c8c8: r0 and r1 reach the bl to func_020778b0 (MI_CpuCopy8(&b, a, 2))
     # as they came in; only r2 and r3 are saved first
-    "main/func_0200c8c0.c": ("e10b62af5d672fa487cb16708bd3ca12541cd08a8ae8ff5835d67c48b595a677",
+    "main/func_0200c8c0": ("e4c2d4028e96cb388f8c69743e5812d3e0eec55a6c87445a0ce104acd6444a6e",
                              "func_020778b0", ("r0", "r1")),
     # ROM 02096488-0209648c: the same, with r0 and r2 saved
-    "main/func_02096484.c": ("8642224bab294c63cf0a76cbbda620b5e3ef5c10f90bd33190610f6cd27ccddd",
+    "main/func_02096484": ("108f886dc9761842412fc969ecfc8b4ef791b39fbc5064a2664382161283a66e",
                              "func_020778b0", ("r0", "r1")),
     # ROM 0229b050-0229b054: sprintf(buf, "menu/icon/pre%d.bch") with r2 as it came in, the
     # third parameter
-    "ov094/func_ov094_0229b048.c": ("4c9ec2027721e1e0c95666d46fa6992ac1303ea386ca94640d1601fb91d16123",
+    "ov094/func_ov094_0229b048": ("09d3fcb467b3a98667e64b4232cde2142c36504ac8446c4b094ea38b6f14111b",
                                     "func_02064328", ("unused",)),
     # ROM 0229b090 computes bank (param >> 4) in r2, which the compare and the strb at 0229b09c
     # leave for sprintf(buf, "menu/icon/icon%02d.bch") at 0229b0a2
-    "ov094/func_ov094_0229b088.c": ("f47362f2eff378318b4cb63405dbcbb646bb83d94fd7037c13ee2b1bf5fd4787",
+    "ov094/func_ov094_0229b088": ("c58de245a407e03146e8db27d15816047768ee060392204306c62dfb65e1cce3",
                                     "func_02064328", ("bank",)),
     # ROM 020b47d4-020b47d6: r1 reaches the bl to func_020b4950_unk (ENTRIES), which reads it as
     # the buffer's length, as it came in: the second parameter, size
-    "main/func_020b47d0.c": ("e7451d7ea7f5fb0adb0412b6008f9ffe3e7756430ce4b370f565b54dadc766ce",
+    "main/func_020b47d0": ("8dc616b5248b6ff673905d2d7db5652d8843bdabdddd9ad7d3fe0e65103e8abd",
                              "func_020b4950_unk", ("size",)),
 }
 
@@ -115,7 +115,7 @@ ENTRIES = {
 
 
 def entry_call_ok(relative: str, text: str, name: str) -> bool:
-    """Whether the source `relative` (under src/), with text `text`, calls `name` (an
+    """Whether the function `relative` (its key), in a source of text `text`, calls `name` (an
     ENTRIES entry) passing the argument registers its code reads (counting what a PASSED copy
     adds)."""
     if name not in ENTRIES:
@@ -131,49 +131,49 @@ def entry_call_ok(relative: str, text: str, name: str) -> bool:
     return count >= ENTRIES[name][4]
 
 # Audited exact edits to a source's PC copy, where the matching source relies on what the
-# ROM's code does beyond C: source (under src/) -> (SHA-256 of the source, the text as
+# ROM's code does beyond C: function key -> (SHA-256 of the function's text, the text as
 # written, the text of the PC copy), or (SHA-256, ((as written, PC copy), ...)) for several.
 EDITS = {
     # Local buffers a callee writes past: func_0209df64 stores four bytes (0209df74: strb r1,
     # [r0, #3]) into three-byte arrays. Each ROM frame has room for the fourth byte (the array
     # has a word of its own); the PC's frame may keep something live there.
     # 02077f1c: the array is sp+4 of a 12-byte frame whose word at sp is the fifth argument
-    "main/func_02077f14.c": ("d4a1056abd968089e8725f7aef4d4d16f14dd3cf7b7c20d75cf0affe4567ce08",
+    "main/func_02077f14": ("db2e4775ef879cb7375f6570c0203f5027a903b39c78012a5e7be31a48c7fd93",
                              "unsigned char buffer[3];", "unsigned char buffer[4];"),
     # 020866c0: sp+4 of a 12-byte frame
-    "main/func_020866b8.c": ("b8511f08845728a2f9cf254597bc1bb01fcb8320c6699550a8343fb00c339627",
+    "main/func_020866b8": ("6c847985fec230e8e60671f2b627d4ae7d9a2818d956504ec95ab5a3c6dec153",
                              "unsigned char arr[3];", "unsigned char arr[4];"),
     # 02088a7e: sp of an 8-byte frame
-    "main/func_02088a78.c": ("20b42081d4d42bb8de762acc9cd6d3e682e6239adc867a17ec06486eae7e559c",
+    "main/func_02088a78": ("d52c09b9c0e14e593a5da1ec890050555d9d110f9c3d131a1f7db64024fb059d",
                              "unsigned char local[3];", "unsigned char local[4];"),
     # A local buffer a callee reads past: func_0208aa48 copies the field label's line (44
     # bytes, func_02051a94) from the item name's characters at buffer+0x12, 22 bytes past the
     # 40-byte name. The ROM's frame there holds this function's and its callers' saved
     # registers, which go into the line after the name's end; the PC copy reads its own
     # uninitialized bytes there, as for any local the game copies part of (scene pickup).
-    "main/func_020b8a10.c": ("3fca14879cc9b89e34bcf5e7212acd8c8842026db133b55ab7f896bce2a37f7a",
+    "main/func_020b8a10": ("436c7b799a44eefa6c91d0417c53ee778b74fda8c5dd39f9905daedce5966c14",
                              "    unsigned char buffer[40];", "    unsigned char buffer[0x40];"),
     # func_0204f794 stores a three-word point (x, y, z); func_ov003_02216520 passes it res, an
     # array of two words at sp+0x14 of a 0x20-byte frame (02216570), which has room for the
     # third. The PC's frame keeps a saved register there.
-    "ov003/func_ov003_02216520.c": ("8ae485966c75451a492838c3dfcce4cb52336d10fa5388bb180485534a895f4f",
+    "ov003/func_ov003_02216520": ("1f825fa3fcbcb981a585f7d7d401ade595c07ff1d8496779daad7be924f8a0fb",
                                     "    int res[2];", "    int res[3];"),
     # A char parameter the ROM's code uses as the whole register (mwccarm trusts the caller to
     # have extended it), where a ROM caller passes a wider value. 0205f126 stores r2 as a word
     # (str r2, [r1, r0]); func_0205ec50 passes a pointer there.
-    "main/func_0205f120.c": ("11b431aedf6752d60856e658d2b668b056d4776153732f0208ea9c02f9c67dba",
+    "main/func_0205f120": ("f17273303deeb6aec168b28c0622d2c4889ac8f081ca539ebc77a548b122e6f1",
                              "void func_0205f120(unsigned char *r0, int r1, unsigned char r2)",
                              "void func_0205f120(unsigned char *r0, int r1, unsigned int r2)"),
     # 0229ab1c keeps r0 whole in r7 and passes it on to func_ov123_0229adc8 (0229ab2e, 0229ab3a,
     # 0229ab54, 0229ab60); func_ov123_0229a364 passes the editor pointer there. b and c are used
     # whole too, but that caller passes them from bytes.
-    "ov123/func_ov123_0229ab18.c": ("a102da53d76aba8babb402a40937c6d2a102ef5cc6ef67e3878ef836a5fbf33f",
+    "ov123/func_ov123_0229ab18": ("d5a0b302cfc7d1a841aaa1287369031c031fe36c4ab4de3ad36f1e4828292d0c",
                                     "void func_ov123_0229ab18(unsigned char a,",
                                     "void func_ov123_0229ab18(unsigned int a,"),
     # 0229a89a keeps r0 whole in r6 and passes it on to func_ov094_0229a888 (0229a8a2), which
     # adds 0xa48 and goes on to func_ov094_0229a36c; func_ov104_0229d830, func_ov105_0229d49c,
     # func_ov106_0229d104, func_ov108_0229cbbc and func_ov103_0229cc70 pass a pointer there.
-    "ov094/func_ov094_0229a898.c": ("6fa02d9ba9fa620b0a77eaccb9d0a0738c06ce98d8bfa9246dd0e106031496f7", (
+    "ov094/func_ov094_0229a898": ("0d1eddf19abc564c3a309aa58eb874488d88df66e0a9b238f5ebb43bb692ff49", (
         ("extern void func_ov094_0229a888(unsigned char, unsigned char);",
          "extern void func_ov094_0229a888(unsigned int, unsigned char);"),
         ("void func_ov094_0229a898(unsigned char r0,", "void func_ov094_0229a898(unsigned int r0,"),
@@ -184,12 +184,12 @@ EDITS = {
     # copy would install the PC's vtable (_ZTV10RoomObject; the ROM's are 0224fe6c and
     # 0224ff18, laid out with mwccarm's one destructor slot): the copies define the thunks as
     # the ROM has them.
-    "ov004/func_ov004_02211574.cpp": ("b295aae01ffb100857da6ed573eee000340334afe1abb277c1841f9d385b8f86",
+    "ov004/func_ov004_02211574": ("c02cf5ea76afaede3123fe9e42233488122260f5ed5d387c0c6beb9f24a53223",
                                       '#include "cpp/ov004/RoomObject.h"\n\nRoomObject::~RoomObject() {}\n',
                                       'extern "C" void *func_ov004_02210de8(char *self);\n\n'
                                       'extern "C" void *_ZThn236_N10RoomObjectD0Ev(char *self)\n{\n'
                                       '    return func_ov004_02210de8(self - 236);\n}\n'),
-    "ov004/func_ov004_02211590.cpp": ("96e56729c0ab89344476d4da9a7697440e9189b76b2ea9fc279eaddf42460726",
+    "ov004/func_ov004_02211590": ("c02cf5ea76afaede3123fe9e42233488122260f5ed5d387c0c6beb9f24a53223",
                                       '#include "cpp/ov004/RoomObject.h"\n\nRoomObject::~RoomObject() {}\n',
                                       'extern "C" void *func_ov004_02210ee4(char *self);\n\n'
                                       'extern "C" void *_ZThn236_N10RoomObjectD1Ev(char *self)\n{\n'
@@ -197,7 +197,7 @@ EDITS = {
     # A virtual call on a member object, which the PC's compiler makes directly to
     # UnkStruct_02299d58::v2, a method with no address of its own: the ROM's code calls slot 2
     # of the object's vtable (02299d74-02299d78: ldr r1, [r0]; ldr r1, [r1, #8]; blx r1).
-    "ov147/func_ov147_02299d58.cpp": ("99b54e29c62c273777f6b2b31ed526cbbe5f4f5df48ec2e724cf22c9048a1755",
+    "ov147/func_ov147_02299d58": ("67ef863de7cebe6838fbec4377f7b43e17268986343b44d484572485a3b6aa92",
                                       "        obj->sub.v2();\n",
                                       "        ((void (*)(void *))(*(void ***) &obj->sub)[2])(&obj->sub);\n"),
     # A fade the source leaves out: func_020f161c (020f161c-020f1624: add r0, r0, #0x3c; bx to
@@ -206,26 +206,26 @@ EDITS = {
     # 020f1c44 with r1 still its own second parameter, `arg`. The PC copies take and pass the
     # fade; the PC's call otherwise left a stale word in r1 (house-music: the heap differed
     # after the stereo's song was stopped).
-    "autoload_2/func_020f161c.c": ("9d7a22f80418bed36ce9bb331d51ce26c9cf29cf3003de17c0c7287d60c54ca5", (
+    "autoload_2/func_020f161c": ("dbecf2cf2a1028452e37998d45427157baec610be2b5255c45a62f1d8d4c4648", (
         ("extern void *NNS_SndPlayerStopSeq(void *);", "extern void *NNS_SndPlayerStopSeq(void *, int);"),
         ("void *func_020f161c(void *self)\n{\n    return NNS_SndPlayerStopSeq((void *) ((char *) self + 0x3c));",
          "void *func_020f161c(void *self, int fade)\n{\n"
          "    return NNS_SndPlayerStopSeq((void *) ((char *) self + 0x3c), fade);"))),
-    "autoload_2/func_020f1c00.cpp": ("91694f815d4818a1174494ca9e4f284f8034bfd9666e110943232a53818d55e7", (
+    "autoload_2/func_020f1c00": ("391f39210c0c0c91a811f5745aca2071c2f07d0e0b51222302db36fa5f2921fe", (
         ('extern "C" void *func_020f161c(void *self);', 'extern "C" void *func_020f161c(void *self, int fade);'),
         ("        func_020f161c(self);\n", "        func_020f161c(self, arg);\n"))),
     # (func_020f9948's unset r4 and r5 are given in its copy in tools/native_stack.py, with
     # the stack words it reads.)
     # A shift by a register: 020ad0f4 asrs r0, r4 shifts by r4's low byte, and a count of 32 or
     # more gives the sign; x86 masks the count to five bits.
-    "main/func_020ad0c0.c": ("15b7cf92775c065f2fe439d1af6076ad8e0d15117392c543bffdfb769e337ca8",
+    "main/func_020ad0c0": ("4e9c3c1e32a8547ef9bebdceeccc2a491605e75fd75bb8bde4b60e316b20dac9",
                              "    if ((t >> v3) == 0) {",
                              "    if (((v3 & 0xff) < 32 ? t >> (v3 & 0xff) : t >> 31) == 0) {"),
     # Two locals a callee reads as one tile: func_0207f318 takes the tile (x, then z) at its
     # second argument; 0221f118 passes sp+0xc, where x is, and y follows at sp+0x10 (0221f0e2).
     # The PC's frame need not keep y after x (scene flea-market: the TV not for sale): the copy
     # passes the two in one array.
-    "ov004/func_ov004_0221ef90.cpp": ("7e43755582e2efc3b6c313b3e54355dd07a780f1a451164d3723ce2792a9390f", (
+    "ov004/func_ov004_0221ef90": ("374d4ebc8ffa1b44c958d4784c9397636170b1c711cb0f8ce91d34de07bd9f1f", (
         ("    int x, y;\n", "    int x, y;\n    int tile[2];\n"),
         ("    x = tx;\n    y = ty;\n", "    x = tx;\n    y = ty;\n    tile[0] = x;\n    tile[1] = y;\n"),
         ("->v25(), &x, *(void **)", "->v25(), tile, *(void **)"))),
@@ -238,9 +238,10 @@ def replacements(relative: str) -> tuple[tuple[str, str], ...]:
     return spec[1] if len(spec) == 2 else (spec[1:],)
 
 
-def edited(relative: str, text: str) -> str:
-    if hashlib.sha256(text.encode()).hexdigest() != EDITS[relative][0]:
+def edited(relative: str, text: str, base: str | None = None) -> str:
+    if C.pinned_sha256(relative, text) != EDITS[relative][0]:
         raise ValueError(f"Native audited edit no longer applies; repeat the ROM audit: {relative}")
+    text = text if base is None else base
     for before, after in replacements(relative):
         if text.count(before) != 1:
             raise ValueError(f"Native audited edit no longer applies; repeat the ROM audit: {relative}")
@@ -263,19 +264,22 @@ def _parameter_names(text: str, name: str) -> list[str]:
     return out
 
 
-def translate(relative: str, text: str) -> str | None:
-    """The PC copy of a source in PASSED or EDITS, or None for any other source."""
+def translate(relative: str, text: str, base: str | None = None) -> str | None:
+    """The PC copy of a function in PASSED or EDITS (by its key) whose source is `text`, or None
+    for any other function; `base`, when given, is the copy so far that the edits apply to (the
+    unit's other functions' copies, tools/native.py)."""
     if relative in EDITS:
-        return edited(relative, text)
+        return edited(relative, text, base)
     spec = PASSED.get(relative)
     if spec is None:
         return None
     digest, callee, names = spec
-    if hashlib.sha256(text.encode()).hexdigest() != digest:
+    if C.pinned_sha256(relative, text) != digest:
         raise ValueError(f"Native passed-on arguments changed; repeat the ROM audit: {relative}")
-    src = C.parse_source(C.SRC / relative)
-    parameters = _parameter_names(text, src.name)
-    body = text[text.index("{", text.index(src.name + "(")):]
+    name = relative.partition("/")[2]
+    text = text if base is None else base
+    parameters = _parameter_names(text, name)
+    body = text[text.index("{", text.index(name + "(")):]
     for name in names:
         if name in parameters and re.search(r"(?:\+\+|--|&)\s*" + name + r"\b|\b" + name
                                             + r"\s*(?:[-+*/%&|^]|<<|>>)?=(?!=)|\b" + name + r"\s*(?:\+\+|--)", body):
@@ -289,8 +293,12 @@ def translate(relative: str, text: str) -> str | None:
         return m.group(1) + ", ".join(params + ["unsigned int"] * len(names)) + m.group(3)
 
     text = decl.sub(widen, text)
+    # the calls of this function only (a unit's others call the callee as they did)
+    start, end = C.function_span(text, name) or (0, len(text))
     out, pos = [], 0
     for m in re.finditer(r"\b" + re.escape(callee) + r"\s*\(", text):
+        if not start <= m.start() < end:
+            continue
         if re.search(r"\bextern\b[^;]*$", text[:m.start()]):
             continue  # the declaration
         depth, i = 1, m.end()

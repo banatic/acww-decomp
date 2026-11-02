@@ -71,16 +71,16 @@ class Copies(unittest.TestCase):
     def test_copies_apply_and_guard(self):
         for relative in sorted(native_args.paths()):
             with self.subTest(source=relative):
-                text = (C.SRC / relative).read_bytes().decode("utf-8")
+                text = (C.key_path(relative)).read_bytes().decode("utf-8")
                 copy = native_args.translate(relative, text)
                 self.assertNotEqual(copy, text)
                 with self.assertRaises(ValueError):
-                    native_args.translate(relative, text + "\n")
+                    native_args.translate(relative, C.function_changed(text, relative.partition("/")[2]))
 
     def test_passed_arguments(self):
         for relative, (_digest, callee, names) in native_args.PASSED.items():
             with self.subTest(source=relative):
-                copy = native_args.translate(relative, (C.SRC / relative).read_bytes().decode("utf-8"))
+                copy = native_args.translate(relative, (C.key_path(relative)).read_bytes().decode("utf-8"))
                 extra = ", ".join(f"(unsigned int) ({n})" for n in names)
                 self.assertIn(extra + ")", copy)
                 self.assertRegex(copy, r"extern [^;]*" + callee + r"\([^;]*unsigned int\);")
@@ -100,12 +100,12 @@ class Copies(unittest.TestCase):
         self.assertFalse(native_args.entry_call_ok("main/x.c", "extern int func_020b4950_unk(const char *s);",
                                                    "func_020b4950_unk"))
         # the PASSED copy passes the length
-        text = (C.SRC / "main/func_020b47d0.c").read_bytes().decode("utf-8")
-        self.assertTrue(native_args.entry_call_ok("main/func_020b47d0.c", text, "func_020b4950_unk"))
+        text = (C.key_path("main/func_020b47d0")).read_bytes().decode("utf-8")
+        self.assertTrue(native_args.entry_call_ok("main/func_020b47d0", text, "func_020b4950_unk"))
         self.assertFalse(native_args.entry_call_ok("main/x.c", "extern int func_02050be0(int);", "func_02050be0"))
 
     def test_others_unchanged(self):
-        self.assertIsNone(native_args.translate("main/func_02008748.c", "int x;"))
+        self.assertIsNone(native_args.translate("main/func_02008748", "int x;"))
 
 
 if __name__ == "__main__":

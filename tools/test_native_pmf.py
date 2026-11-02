@@ -22,7 +22,7 @@ def check_rom_subset() -> None:
     modules = C.modules()
     images = {}
     for relative in sorted(native_pmf.READ_ONLY):
-        source = C.parse_source(C.SRC / relative)
+        source = C.parse_source(C.key_path(relative))
         assert source is not None and source.size <= 0x80, relative
         if source.module not in images:
             images[source.module] = C.module_image(source.module)
@@ -44,14 +44,14 @@ def check_rom_subset() -> None:
 def main() -> None:
     check_rom_subset()
     for relative in native_pmf.paths():
-        source = (C.SRC / relative).read_text()
+        source = (C.key_path(relative)).read_text()
         result = native_pmf.translate(relative, source, {})
         assert result is not None
         if relative in native_pmf.VERIFIED:
             _, before, after, _ = native_pmf.VERIFIED[relative]
             assert before not in result and after in result
         try:
-            native_pmf.translate(relative, source + "\n", {})
+            native_pmf.translate(relative, C.function_changed(source, relative.partition('/')[2]), {})
         except ValueError:
             pass
         else:
@@ -70,7 +70,7 @@ def main() -> None:
     for relative in sorted(native_pmf.paths()):
         # Compile the exact audited game copy independently of the game's object
         # cache, so this check can run while an existing scene gate is active.
-        source = C.SRC / relative
+        source = C.key_path(relative)
         copied = folder / source.name
         headers = {}
         copied.write_text(native_pmf.translate(relative, source.read_text(), headers), newline='\n')

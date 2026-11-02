@@ -8,7 +8,11 @@ from __future__ import annotations
 import re
 import hashlib
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import common as C  # noqa: E402
 
 
 # A declaration, an inline parameter, an array, or a pointer-to-member type-id.
@@ -20,7 +24,7 @@ MEMBER = re.compile(
     r'(?P<name>\w+)?\s*(?P<array>\[[^\[\]]*\])?\s*\)\s*'
     r'\((?P<args>[^()]*)\)')
 METHOD = re.compile(r'&\s*(?P<class>\w+)\s*::\s*(?P<name>\w+)')
-REGISTER_CALLS = {'main/func_0201f40c.cpp': {'func_020819bc'}}
+REGISTER_CALLS = {'main/func_0201f40c': {'func_020819bc'}}
 # Headers whose member-pointer declarations are translated in PC copies (each pinned by
 # digest in every manifest entry that includes it).
 MEMBER_HEADERS = {'include/cpp/main/Base_02027460.h', 'include/cpp/main/Base_02038828.h'}
@@ -306,15 +310,47 @@ def rom_constants(text: str, constants: dict, modules: dict, image, module: str)
             raise ValueError('ROM member constant outside its module: ' + name)
 
 
-def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, specs=None) -> tuple[str, dict[str, str]]:
+def checked_copy(relative, text: str, root: Path, modules: dict, image, *, specs=None) -> tuple[str, dict[str, str]]:
     """Check the complete original input closure before producing PC copies.
+
+    `relative` is the key of a function (common.function_key) or a list of the keys of a
+    unit's functions in the manifest: each is checked on its own, and the unit's text is
+    translated once with all of their constants and storage (copy translates every member
+    declaration and constant in the text).
 
     Returns the body plus include-relative header copies. The build caller must
     put the returned headers before the original include directory and include
     their contents in its cache key. This function does not select a policy.
     """
-    spec = (specifications() if specs is None else specs)[relative]
-    if hashlib.sha256(text.encode()).hexdigest() != spec['source_sha256']:
+    keys = [relative] if isinstance(relative, str) else list(relative)
+    specs = specifications() if specs is None else specs
+    parts = [_checked(key, text, root, modules, image, specs[key]) for key in keys]
+    headers: dict[str, str] = {}
+    for part in parts:
+        headers.update(part['headers'])
+    if any(part['header_only'] for part in parts):
+        if len(parts) != 1:
+            raise ValueError('Header-only member boundary in a unit: ' + ', '.join(keys))
+        return text, headers
+    merged = {}
+    for kind in ('constants', 'storage', 'keyed', 'statics'):
+        merged[kind] = {}
+        for part in parts:
+            for name, value in part[kind].items():
+                if merged[kind].get(name, value) != value:
+                    raise ValueError(f'Two functions of one unit disagree on {name}: ' + ', '.join(keys))
+                merged[kind][name] = value
+    translated = copy(text, merged['constants'], pair_result='main/func_02013948' in keys,
+                      array_receiver='main/func_02034e28' in keys,
+                      register_argument='main/func_0201f40c' in keys, header_types=bool(headers))
+    return statics_copy(keyed_copy(shared_copy(translated, merged['storage']), merged['keyed']),
+                        merged['statics']), headers
+
+
+def _checked(relative: str, text: str, root: Path, modules: dict, image, spec: dict) -> dict:
+    """One function's manifest entry checked against its text, the headers and the ROM: its
+    header copies, constants and storage, for checked_copy."""
+    if C.pinned_sha256(relative, text) != spec['function_sha256']:
         raise ValueError('Member boundary source changed: ' + relative)
     data = image(spec['module'])
     base = modules[spec['module']]['base']
@@ -344,10 +380,10 @@ def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, 
             if offset < 0 or data[offset:offset + 8] != expected:
                 raise ValueError('Member boundary ROM constant changed: ' + name)
         constants[name] = (function, adjustment)
-    if relative == 'main/func_020274e0.cpp':
+    if relative == 'main/func_020274e0':
         if not headers or constants or '::*' in text:
             raise ValueError('Header-only member boundary changed')
-        return text, headers
+        return {'header_only': True, 'headers': headers}
     shared = spec.get('shared_storage', {})
     retained = spec.get('retained_storage', {})
     if shared.keys() & retained.keys():
@@ -404,10 +440,8 @@ def checked_copy(relative: str, text: str, root: Path, modules: dict, image, *, 
                 or literal % 4 or not base + begin <= literal <= base + begin + len(body) - 4
                 or data[literal-base:literal-base+4] != address.to_bytes(4, 'little')):
             raise ValueError('ROM static changed: ' + name)
-    translated = copy(text, constants, pair_result=relative == 'main/func_02013948.cpp',
-                      array_receiver=relative == 'main/func_02034e28.cpp',
-                      register_argument=relative == 'main/func_0201f40c.cpp', header_types=bool(headers))
-    return statics_copy(keyed_copy(shared_copy(translated, storage), keyed), statics), headers
+    return {'header_only': False, 'headers': headers, 'constants': constants, 'storage': storage,
+            'keyed': keyed, 'statics': statics}
 
 
 def statics_copy(text: str, statics: dict) -> str:

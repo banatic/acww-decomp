@@ -12,7 +12,8 @@ own guard, in PC storage instead, which differs from the ROM in three ways:
   the static again; a PC copy keeps its old guard and values (stale pointers into an old object);
 - a pointer into the static that the owner hands out is a PC address, not the DS one.
 
-`runtime/native-rom-statics.json` pins, per source, each such static: its DS address and the
+`runtime/native-rom-statics.json` pins, per function (by its key, common.function_key, and its
+text, common.function_sha256), each such static: its DS address and the
 literals of the owner's ROM body that name it (and its guard), its size and, for .data, the
 bytes the ROM's image holds there. `translate` checks all of them against the ROM and makes
 the PC copy name that storage: the declaration becomes a macro for the DS object (an lvalue of
@@ -232,8 +233,8 @@ def _word(data: bytes, base: int, at: int) -> int:
 
 
 def check(relative: str, original: str, spec: dict, modules: dict, image) -> None:
-    """The pinned source, the owner's ROM body, and every literal and DS range it names."""
-    if hashlib.sha256(original.encode()).hexdigest() != spec['source_sha256']:
+    """The pinned function, the owner's ROM body, and every literal and DS range it names."""
+    if C.pinned_sha256(relative, original) != spec['function_sha256']:
         raise ValueError('ROM statics source changed: ' + relative)
     module = modules[spec['module']]
     data, base = image(spec['module']), module['base']
@@ -274,22 +275,28 @@ def check(relative: str, original: str, spec: dict, modules: dict, image) -> Non
 
 
 def translate(relative: str, original: str, text: str, *, specs: dict | None = None,
-              modules: dict | None = None, image=None) -> str:
-    """`text` (the PC copy of `relative`, whose source is `original`) with its pinned statics
-    at their DS addresses."""
+              modules: dict | None = None, image=None, cpp: bool | None = None) -> str:
+    """`text` (the PC copy of the source of the function `relative`, by its key, whose source is
+    `original`) with the function's pinned statics at their DS addresses. Only the function's
+    own definition (common.function_span) changes: in a unit, another function may have a
+    static of the same name."""
     spec = (SPECS if specs is None else specs)[relative]
     check(relative, original, spec, C.modules() if modules is None else modules,
           C.module_image if image is None else image)
-    cpp = relative.endswith('.cpp')
+    cpp = C.key_path(relative).suffix == '.cpp' if cpp is None else cpp
+    start, end = C.function_span(text, relative.partition('/')[2]) or (0, len(text))
+    own = text[start:end]
     for name, item in spec['statics'].items():
-        text = placed(text, name, item, cpp)
-    return text
+        own = placed(own, name, item, cpp)
+    return text[:start] + own + text[end:]
 
 
 # ------------------------------------------------------------------------------ derivation
 
-def _object(path: Path):
-    src = C.parse_source(path)
+def _object(path: Path, src=None):
+    """(the function, the source's mwccarm object, the function's symbol in it): `src` is one of
+    the functions the source defines, the first by default."""
+    src = C.parse_source(path) if src is None else src
     data, log = C.compile_source(src)
     if data is None:
         raise ValueError(f'mwccarm failed on {path}: {log[-300:]}')
@@ -298,6 +305,15 @@ def _object(path: Path):
     if len(owner) != 1:
         raise ValueError('Owner symbol not found: ' + str(path))
     return src, elf, owner[0]
+
+
+def _own_text(text: str, src) -> str:
+    """The text a function's statics are declared in: its definition in a unit (another of
+    its functions may have a static of the same name), the whole source otherwise."""
+    if len(C.parse_sources(src.path)) == 1:
+        return text
+    span = C.function_span(text, src.name)
+    return text[span[0]:span[1]] if span else text
 
 
 def _literals(src, elf, owner, data: bytes, base: int) -> dict[str, list[tuple[int, int, int]]]:
@@ -314,32 +330,31 @@ def _literals(src, elf, owner, data: bytes, base: int) -> dict[str, list[tuple[i
     return out
 
 
-def derive(path: Path, skip: set[str] = frozenset()) -> dict | None:
-    """The manifest entry of one source (None when it has no block-scope static to place)."""
-    src, elf, owner = _object(path)
+def derive(path: Path, skip: set[str] = frozenset(), src=None) -> dict | None:
+    """The manifest entry of one function of a source, `src` (the first by default), or None
+    when it has no block-scope static to place. A unit's function owns the statics its own
+    code names (its relocations)."""
+    src, elf, owner = _object(path, src)
+    unit = len(C.parse_sources(path)) > 1
     modules = C.modules()
     data, base = C.module_image(src.module), modules[src.module]['base']
     literals = _literals(src, elf, owner, data, base)
     text = path.read_bytes().decode()
-    declared = text
-    if re.search(r'::\s*\*', masked(text)):
+    declared = _own_text(text, src)
+    if re.search(r'::\s*\*', masked(declared)):
         import native_pmf_boundary as boundary
         try:
-            declared = boundary.declarations(text)[0]  # inline member declarators as their PC type
+            declared = boundary.declarations(declared)[0]  # inline member declarators as their PC type
         except ValueError:
             pass
-    if len(C.parse_sources(path)) > 1 and any(LOCAL.fullmatch(s.name) and s.type == 1 and s.bind == 0
-                                              for s in elf.symbols):
-        # (the literals read here are the first function's: a unit's others are not looked at)
-        raise ValueError(f'{path}: statics in a unit of several functions are not placed yet')
     statics = {}
     for symbol in elf.symbols:
         m = LOCAL.fullmatch(symbol.name)
         if not m or m['guard'] or symbol.type != 1 or symbol.bind != 0:
             continue
         name = m['name']
-        if name in skip:
-            continue
+        if name in skip or unit and symbol.name not in literals and '_ZGV' + symbol.name not in literals:
+            continue  # (in a unit: another function's)
         if not m['block']:
             raise ValueError(f'File-scope static {name} in {path}: not placed by the member boundary')
         if name in statics:
@@ -383,7 +398,7 @@ def derive(path: Path, skip: set[str] = frozenset()) -> dict | None:
     if not statics:
         return None
     begin = src.address - base
-    return {'source_sha256': hashlib.sha256(text.encode()).hexdigest(), 'module': src.module,
+    return {'function_sha256': C.function_sha256(text, src.name), 'module': src.module,
             'address': f'{src.address:08x}', 'size': src.size,
             'rom_sha256': hashlib.sha256(data[begin:begin + src.size]).hexdigest(), 'statics': statics}
 
@@ -406,19 +421,19 @@ def _method_name(mangled: str) -> str | None:
     return names[-1] if names and i < len(mangled) and mangled[i] == 'E' else None
 
 
-def member_entry(path: Path) -> dict:
+def member_entry(path: Path, src=None) -> dict:
     """A member-boundary entry for a source whose tables hold `&Class::method` constants.
 
     Each constant's two words are the ROM's, at the literal of the owner that names the
     mwccarm constant (`@N`) whose first word is relocated to that method.
     """
     import native_pmf_boundary as boundary
-    src, elf, owner = _object(path)
+    src, elf, owner = _object(path, src)
     modules = C.modules()
     data, base = C.module_image(src.module), modules[src.module]['base']
     literals = _literals(src, elf, owner, data, base)
     text = path.read_bytes().decode()
-    spelled = boundary.methods(boundary.discard_handlers(text))
+    spelled = boundary.methods(boundary.discard_handlers(_own_text(text, src)))
     by_method: dict[str, list[tuple[int, int, int]]] = {}
     for symbol in elf.symbols:
         if not re.fullmatch(r'@\d+', symbol.name) or symbol.type != 1 or symbol.size != 8:
@@ -450,7 +465,7 @@ def member_entry(path: Path) -> dict:
         if C.INCLUDE in header.parents:
             headers[header.relative_to(C.ROOT).as_posix()] = hashlib.sha256(header.read_bytes()).hexdigest()
     begin = src.address - base
-    return {'source_sha256': hashlib.sha256(text.encode()).hexdigest(), 'module': src.module,
+    return {'function_sha256': C.function_sha256(text, src.name), 'module': src.module,
             'address': f'{src.address:08x}', 'size': src.size,
             'rom_sha256': hashlib.sha256(data[begin:begin + src.size]).hexdigest(),
             'headers': headers, 'constants': constants}
@@ -467,15 +482,17 @@ def derive_all() -> tuple[dict, dict]:
     boundary = json.loads(BOUNDARY.read_text())['sources']
     statics, members = {}, {}
     for path in candidates():
-        relative = path.relative_to(C.SRC).as_posix()
-        known = boundary.get(relative, {})
-        skip = {name for kind in BOUNDARY_KINDS for name in known.get(kind, {})}
-        entry = derive(path, skip)
-        if entry is None:
-            continue
-        statics[relative] = entry
-        if relative not in boundary and re.search(r'::\s*\*', masked(path.read_bytes().decode())):
-            members[relative] = member_entry(path)
+        for src in C.parse_sources(path):
+            relative = C.function_key(src)
+            known = boundary.get(relative, {})
+            skip = {name for kind in BOUNDARY_KINDS for name in known.get(kind, {})}
+            entry = derive(path, skip, src)
+            if entry is None:
+                continue
+            statics[relative] = entry
+            own = _own_text(path.read_bytes().decode(), src)
+            if relative not in boundary and re.search(r'::\s*\*', masked(own)):
+                members[relative] = member_entry(path, src)
     return statics, members
 
 
@@ -489,13 +506,13 @@ def main() -> None:
     if only_check:
         if changed:
             raise SystemExit('runtime/native-rom-statics.json or the member boundary is not what the ROM gives')
-        print(f'{len(statics)} sources, {sum(len(e["statics"]) for e in statics.values())} statics agree')
+        print(f'{len(statics)} functions, {sum(len(e["statics"]) for e in statics.values())} statics agree')
         return
     MANIFEST.write_text(json.dumps(manifest, indent=2) + '\n', newline='\n')
     if members:
         boundary['sources'] = dict(sorted({**boundary['sources'], **members}.items()))
         BOUNDARY.write_text(json.dumps(boundary, indent=2) + '\n', newline='\n')
-    print(f'{len(statics)} sources, {sum(len(e["statics"]) for e in statics.values())} statics; '
+    print(f'{len(statics)} functions, {sum(len(e["statics"]) for e in statics.values())} statics; '
           f'{len(members)} new member-boundary sources')
 
 

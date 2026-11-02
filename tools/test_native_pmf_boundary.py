@@ -16,8 +16,8 @@ import native_pmf_boundary as boundary
 
 class BoundaryCopy(unittest.TestCase):
     def test_retained_storage_requires_original_owner_literals(self):
-        relative = 'ov147/func_ov147_0229a634.cpp'
-        source = (C.SRC/relative).read_bytes().decode()
+        relative = 'ov147/func_ov147_0229a634'
+        source = (C.key_path(relative)).read_bytes().decode()
         specs = boundary.specifications()
         for key in ('address', 'guard_address', 'table_literal', 'guard_literal'):
             changed = copy.deepcopy(specs)
@@ -35,8 +35,8 @@ class BoundaryCopy(unittest.TestCase):
             boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
 
     def test_rom_statics_are_the_rom_literals_and_declarations(self):
-        relative = 'ov109/func_ov109_0229d7b4.cpp'
-        source = (C.SRC/relative).read_bytes().decode()
+        relative = 'ov109/func_ov109_0229d7b4'
+        source = (C.key_path(relative)).read_bytes().decode()
         specs = boundary.specifications()
         translated, _ = boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=specs)
         self.assertIn('int &flag = *reinterpret_cast<int *>(0x0229dc44u);', translated)
@@ -55,8 +55,8 @@ class BoundaryCopy(unittest.TestCase):
             boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=changed)
 
     def test_keyed_tables_require_rom_data_and_exact_layout(self):
-        relative = 'ov051/func_ov051_022604a8.cpp'
-        source = (C.SRC/relative).read_bytes().decode()
+        relative = 'ov051/func_ov051_022604a8'
+        source = (C.key_path(relative)).read_bytes().decode()
         specs = boundary.specifications()
         for key, value, error in [('address', '02261890', 'table literal changed'),
                                   ('count', 13, 'Invalid keyed member table'),
@@ -76,8 +76,8 @@ class BoundaryCopy(unittest.TestCase):
             boundary.checked_copy(relative, source, C.ROOT, C.modules(), lambda module: bytes(data), specs=specs)
 
     def test_shared_storage_requires_rom_aliases_and_exact_declarations(self):
-        relative = 'ov147/func_ov147_0229942c.cpp'
-        source = (C.SRC/relative).read_bytes().decode()
+        relative = 'ov147/func_ov147_0229942c'
+        source = (C.key_path(relative)).read_bytes().decode()
         specs = boundary.specifications()
         for key in ('address', 'guard_address'):
             changed = copy.deepcopy(specs)
@@ -96,8 +96,8 @@ class BoundaryCopy(unittest.TestCase):
             boundary.checked_copy(relative, source, C.ROOT, C.modules(), lambda module: bytes(data), specs=specs)
 
     def test_rom_tables_and_constants_require_rom_literals_and_data(self):
-        relative = 'main/func_02005338.cpp'
-        source = (C.SRC/relative).read_bytes().decode()
+        relative = 'main/func_02005338'
+        source = (C.key_path(relative)).read_bytes().decode()
         specs = boundary.specifications()
         boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image, specs=specs)
         for key, value, error in [('table_literal', '02005440', 'table literal changed'),
@@ -122,12 +122,12 @@ class BoundaryCopy(unittest.TestCase):
             boundary.checked_copy(relative, source, C.ROOT, C.modules(), lambda module: bytes(data), specs=specs)
 
     def test_written_keys_must_equal_rom_keys(self):
-        relative = 'ov049/func_ov049_02261848.cpp'
-        source = (C.SRC/relative).read_bytes().decode()
+        relative = 'ov049/func_ov049_02261848'
+        source = (C.key_path(relative)).read_bytes().decode()
         changed = source.replace('{0x04, data_ov049_022631d0}', '{0x05, data_ov049_022631d0}')
         self.assertNotEqual(changed, source)
         specs = copy.deepcopy(boundary.specifications())
-        specs[relative]['source_sha256'] = hashlib.sha256(changed.encode()).hexdigest()
+        specs[relative]['function_sha256'] = C.pinned_sha256(relative, changed)
         with self.assertRaisesRegex(ValueError, 'initializer rows changed'):
             boundary.checked_copy(relative, changed, C.ROOT, C.modules(), C.module_image, specs=specs)
 
@@ -146,7 +146,7 @@ class BoundaryCopy(unittest.TestCase):
         self.assertEqual(len(specs), 426)
         headers = 0
         for relative in specs:
-            original = (C.SRC / relative).read_bytes().decode()
+            original = (C.key_path(relative)).read_bytes().decode()
             translated, copies = boundary.checked_copy(relative, original, C.ROOT, C.modules(),
                                                        C.module_image, specs=specs)
             self.assertNotIn('::*', translated)
@@ -154,14 +154,14 @@ class BoundaryCopy(unittest.TestCase):
                 self.assertNotEqual(original, translated)
             headers += bool(copies)
             with self.assertRaisesRegex(ValueError, 'source changed'):
-                boundary.checked_copy(relative, original + '\n', C.ROOT, C.modules(), C.module_image, specs=specs)
+                boundary.checked_copy(relative, C.function_changed(original, relative.partition('/')[2]), C.ROOT, C.modules(), C.module_image, specs=specs)
         self.assertEqual(headers, 3)
 
     def test_body_header_and_literal_changes_are_rejected(self):
         specs = boundary.specifications()
-        relative = 'main/func_02027460.cpp'
+        relative = 'main/func_02027460'
         spec = specs[relative]
-        original = (C.SRC/relative).read_bytes().decode()
+        original = (C.key_path(relative)).read_bytes().decode()
         data = bytearray(C.module_image('main'))
         offset = int(spec['address'], 16) - C.modules()['main']['base']
         data[offset] ^= 1
@@ -217,9 +217,9 @@ class BoundaryCopy(unittest.TestCase):
 def pair_fixture():
     folder = C.BUILD / 'native-member-pair-check'
     folder.mkdir(parents=True, exist_ok=True)
-    source = C.SRC / 'main/func_02013948.cpp'
+    source = C.key_path('main/func_02013948')
     raw = source.read_bytes()
-    assert hashlib.sha256(raw).hexdigest() == 'd9d32c706f7f0db217bdc8630e8802fc9f047735cc94e3f9a18a57d236a98183'
+    assert C.pinned_sha256('main/func_02013948', raw.decode()) == 'b09902dbf83126a91553a6f05d539e0988fa745c3cd4392d1b9a84ecf0b324ed'
     parsed = C.parse_source(source)
     image = C.module_image('main')
     base = C.modules()['main']['base']
@@ -227,8 +227,8 @@ def pair_fixture():
     assert hashlib.sha256(rom).hexdigest() == '7a90b3cade5073b7da2a8cd35322cdf9df5fc489283705294ae4f010c9ea363f'
     # The consumer's literal is the RAM table, not a ROM table to read directly.
     assert int.from_bytes(rom[-4:], 'little') == 0x021c1914
-    initializer_raw = (C.SRC / 'main/__sinit_020c4270.c').read_bytes()
-    assert hashlib.sha256(initializer_raw).hexdigest() == 'a3628a170cb7d415762be90123859de8262b3f98e0d31404e26f4ee5357f7e55'
+    initializer_raw = (C.key_path('main/__sinit_020c4270')).read_bytes()
+    assert C.pinned_sha256('main/__sinit_020c4270', initializer_raw.decode()) == '979823a79b13ec6311e3b17d1531b37e9f3b32cabe9f6c38f15b71e03b5e706e'
     initializer = initializer_raw.decode()
     assignments = {}
     for match in re.finditer(r'data_([0-9a-f]{8})\[(\d+)\] = data_([0-9a-f]{8});', initializer):
@@ -243,7 +243,7 @@ def pair_fixture():
                       'static const unsigned int member_pair_targets[] = {' +
                       ','.join(hex(t) for t in targets) + '};\n', newline='\n')
     copy = folder / 'caller.cpp'
-    translated, headers = boundary.checked_copy('main/func_02013948.cpp', raw.decode(), C.ROOT,
+    translated, headers = boundary.checked_copy('main/func_02013948', raw.decode(), C.ROOT,
                                                C.modules(), C.module_image)
     assert not headers
     copy.write_text(translated +
@@ -277,8 +277,8 @@ def pair_fixture():
 def register_fixture():
     folder = C.BUILD / 'native-member-register-check'
     folder.mkdir(parents=True, exist_ok=True)
-    relative = 'main/func_0201f40c.cpp'
-    source = C.SRC / relative
+    relative = 'main/func_0201f40c'
+    source = C.key_path(relative)
     translated, headers = boundary.checked_copy(relative, source.read_bytes().decode(), C.ROOT,
                                                C.modules(), C.module_image)
     assert not headers
@@ -286,8 +286,8 @@ def register_fixture():
     copy.write_text(translated + '\nstatic_assert(sizeof(UnkStruct_0201f40c)==0x130,"ROM object size");\n',
                     newline='\n')
     objects = []
-    for path, original, extra in [(copy, source, []), (C.SRC/'main/func_020819bc.c',
-                                   C.SRC/'main/func_020819bc.c', ['-Dfunc_020819bc=native_flag_body'])]:
+    for path, original, extra in [(copy, source, []), (C.key_path('main/func_020819bc'),
+                                   C.key_path('main/func_020819bc'), ['-Dfunc_020819bc=native_flag_body'])]:
         obj = folder / (path.stem + '.o')
         subprocess.run([*native.compiler(), *native.flags_for(original), '-I'+str(C.ROOT/'runtime'),
                         *extra, '-c', str(path), '-o', str(obj)], check=True)
@@ -295,7 +295,7 @@ def register_fixture():
     image = C.module_image('main')
     base = C.modules()['main']['base']
     arrays = []
-    for path, name in [(source, 'member_register_rom'), (C.SRC/'main/func_020819bc.c', 'member_flag_rom')]:
+    for path, name in [(source, 'member_register_rom'), (C.key_path('main/func_020819bc'), 'member_flag_rom')]:
         parsed = C.parse_source(path)
         body = image[parsed.address-base:parsed.address-base+parsed.size]
         arrays.append(f'static const unsigned char {name}[] = {{' + ','.join(hex(b) for b in body) + '};')

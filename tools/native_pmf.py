@@ -11,20 +11,20 @@ import pathlib
 import re
 import common as C
 import native_pmf_boundary
-
+# Function key -> (SHA-256 of its text (common.function_sha256), original declaration, PC declaration,
 
 # Source-relative path -> (source SHA-256, original declaration, PC declaration,
 # layout assertions). ROM evidence is recorded in docs/native-member-pointers.md.
 VERIFIED: dict[str, tuple[str, str, str, str]] = {
-    "main/func_02013518.cpp": (
-        "a326d42f30f9b1fdf7211ccd05a5e322aa00b97c7fce7c3829c7fe0ae67072ac",
+    "main/func_02013518": (
+        "e10b46b93b4485fe926d2c0e423ab2fdf820569fa87f7c9fbae07b8fd9fcdb56",
         "typedef void *(UnkStruct_02013518::*PMF)(int);",
         "typedef NativeMember<UnkStruct_02013518, void *, int> PMF;",
         'static_assert(sizeof(PMF) == 8, "ROM member-pointer size");\n'
         'static_assert(__builtin_offsetof(UnkStruct_02013518, unk_28) == 0x28, "ROM field");',
     ),
-    "main/func_0201cfe4.cpp": (
-        "dd736357200171c19e4b42adedeb6c9475050542a8b2b574551a0187785cefde",
+    "main/func_0201cfe4": (
+        "271c3eb241b1d550f72925c5ddd0507473de38b5b97d7a27e1c2b7baf6d02801",
         "typedef void (UnkStruct_0201cfe4::*PMF)(int);",
         "typedef NativeMember<UnkStruct_0201cfe4, void, int> PMF;",
         'static_assert(sizeof(PMF) == 8, "ROM member-pointer size");\n'
@@ -33,8 +33,8 @@ VERIFIED: dict[str, tuple[str, str, str, str]] = {
         'static_assert(__builtin_offsetof(UnkStruct_0201cfe4, flag) == 0x15a, "ROM trailing field");\n'
         'static_assert(__is_trivially_copyable(PMF), "ROM null assignment copies two words");',
     ),
-    "ov049/func_ov049_02262a94.cpp": (
-        "88390edea0ecc9ba5eee477f7b5fff704922c3138a556d2a901026aa0505d705",
+    "ov049/func_ov049_02262a94": (
+        "03f1508cfc3d43896d3f7ba7e48f3de4900a2d9d5164a13977ed4f69efea463b",
         "int (UnkStruct_02262a94::*pmf)();",
         "NativeMember<UnkStruct_02262a94, int> pmf;",
         'static_assert(sizeof(PMFEntry) == 16, "ROM table stride");\n'
@@ -90,23 +90,34 @@ def read_only_copy(text: str) -> str:
     return '#include "native_member.h"\n' + result + assertions
 
 
-def translate(relative: str, text: str, headers: dict[str, str] | None = None) -> str | None:
-    if relative in BOUNDARY:
+def translate(relative, text: str, headers: dict[str, str] | None = None) -> str | None:
+    """The PC copy of a source whose member-pointer functions are `relative`: one function key,
+    or the keys (in paths()) of a unit's functions. A unit's functions all in the member boundary
+    are translated together (native_pmf_boundary.checked_copy); any other mix in one unit is
+    not audited and is refused."""
+    keys = [relative] if isinstance(relative, str) else list(relative)
+    if len(keys) > 1:
+        if not all(key in BOUNDARY for key in keys):
+            raise ValueError('Member-pointer functions of one unit outside the boundary: ' + ', '.join(keys))
+        relative = keys
+    else:
+        relative = keys[0]
+    if isinstance(relative, list) or relative in BOUNDARY:
         body, copies = native_pmf_boundary.checked_copy(relative, text, C.ROOT, C.modules(),
                                                        C.module_image, specs=BOUNDARY)
         if copies and headers is None:
-            raise ValueError('Member source requires its translated header copies: ' + relative)
+            raise ValueError(f'Member source requires its translated header copies: {relative}')
         if headers is not None:
             headers.update(copies)
         return body
     spec = VERIFIED.get(relative)
     if spec is None:
         if relative in READ_ONLY:
-            if hashlib.sha256(text.encode()).hexdigest() != READ_ONLY[relative]:
+            if C.pinned_sha256(relative, text) != READ_ONLY[relative]:
                 raise ValueError(f"Native member-pointer source changed; repeat the ROM audit: {relative}")
             return read_only_copy(text)
         return None
     digest, before, after, assertions = spec
-    if hashlib.sha256(text.encode()).hexdigest() != digest or text.count(before) != 1:
+    if C.pinned_sha256(relative, text) != digest or text.count(before) != 1:
         raise ValueError(f"Native member-pointer source changed; repeat the ROM audit: {relative}")
     return '#include "native_member.h"\n' + text.replace(before, after) + '\n' + assertions + '\n'

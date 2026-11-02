@@ -13,11 +13,12 @@ class ContractGuards(unittest.TestCase):
     def test_original_bodies_and_mutations(self):
         self.assertEqual(len(native_contract.audited(C.ROOT, C.modules(), C.module_image)), 4)
         for contract in native_contract.CONTRACTS:
-            source = (C.SRC / contract.source).read_bytes()
+            defined = C.function_source(contract.source)
+            source = defined.path.read_bytes()
             offset = contract.address - C.modules()[contract.module]['base']
             code = C.module_image(contract.module)[offset:offset + contract.size]
             with self.assertRaises(ValueError):
-                native_contract.validate(contract, source + b'\n', code)
+                native_contract.validate(contract, C.function_changed(source.decode(), defined.name).encode(), code)
             with self.assertRaises(ValueError):
                 native_contract.validate(contract, source, bytes([code[0] ^ 1]) + code[1:])
             self.assertEqual(contract.encoding >> 8, 1)

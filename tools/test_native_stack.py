@@ -34,14 +34,14 @@ class NativeStackTests(unittest.TestCase):
 
     def test_guarded_effect_sources(self):
         for relative in native_stack.SOURCES:
-            text = (C.SRC / relative).read_bytes().decode()
+            text = (C.key_path(relative)).read_bytes().decode()
             native_stack.validate_source(relative, text)
             with self.assertRaises(ValueError):
-                native_stack.validate_source(relative, text + '\n')
+                native_stack.validate_source(relative, C.function_changed(text, relative.partition('/')[2]))
         self.assertEqual(native_stack.SPILLS['ov004', 0x0220dd80], (3, 0x14))
 
     def test_consumer_copy(self):
-        text = (C.SRC / native_stack.CONSUMER).read_bytes().decode()
+        text = (C.key_path(native_stack.CONSUMER)).read_bytes().decode()
         copy = native_stack.translate(native_stack.CONSUMER, text)
         self.assertIsNotNone(copy)
         self.assertIn('Vec centers[4];', text)
@@ -62,7 +62,7 @@ class NativeStackTests(unittest.TestCase):
             native_stack.clean_copy(text + '\n')
 
     def test_insect_room_copy(self):
-        text = (C.SRC / native_stack.INSECT_ROOM).read_bytes().decode()
+        text = (C.key_path(native_stack.INSECT_ROOM)).read_bytes().decode()
         copy = native_stack.translate(native_stack.INSECT_ROOM, text)
         self.assertIn('Vec centers[3];', text)
         self.assertIn('Vec *centers;', copy)
@@ -71,7 +71,7 @@ class NativeStackTests(unittest.TestCase):
         self.assertLess(slot, copy.index('centers[0].x'))
         self.assertEqual(native_stack.FRAMES['ov004', 0x0223f218].extent, 0x228)
         with self.assertRaises(ValueError):
-            native_stack.translate(native_stack.INSECT_ROOM, text + '\n')
+            native_stack.translate(native_stack.INSECT_ROOM, C.function_changed(text, native_stack.INSECT_ROOM.partition('/')[2]))
 
     def test_clean_insect_room_copy(self):
         text = (C.ROOT / native_stack.CLEAN_INSECT_ROOM).read_bytes().decode()
@@ -120,13 +120,13 @@ class NativeStackTests(unittest.TestCase):
     def test_effect_copies(self):
         for relative, edits in native_stack.CUE_EDITS.items():
             with self.subTest(relative=relative):
-                text = (C.SRC / relative).read_bytes().decode()
+                text = (C.key_path(relative)).read_bytes().decode()
                 copy = native_stack.translate(relative, text)
                 self.assertTrue(copy.startswith('#include "native_guest.h"\n'))
                 for _before, after in edits:
                     self.assertIn(after, copy)
                 with self.assertRaises(ValueError):
-                    native_stack.translate(relative, text + '\n')
+                    native_stack.translate(relative, C.function_changed(text, relative.partition('/')[2]))
         for relative in native_stack.CLEAN_CUE_SHA:
             with self.subTest(relative=relative):
                 text = (C.ROOT / relative).read_bytes().decode()
@@ -137,13 +137,13 @@ class NativeStackTests(unittest.TestCase):
                     native_stack.clean_copy(text + '\n', relative)
 
     def test_cue_copy_order(self):
-        relative = 'autoload_2/func_020f9d00.c'
-        copy = native_stack.translate(relative, (C.SRC / relative).read_bytes().decode())
+        relative = 'autoload_2/func_020f9d00'
+        copy = native_stack.translate(relative, (C.key_path(relative)).read_bytes().decode())
         slot = copy.index('native_guest_stack_slot(0x020f9d00u, 0, 6 * sizeof(*vars))')
         self.assertLess(slot, copy.index('func_020f9c0c(self);'))
         self.assertNotIn('signed short vars[6];', copy)
-        relative = 'ov004/func_ov004_0220fc98.c'
-        copy = native_stack.translate(relative, (C.SRC / relative).read_bytes().decode())
+        relative = 'ov004/func_ov004_0220fc98'
+        copy = native_stack.translate(relative, (C.key_path(relative)).read_bytes().decode())
         self.assertLess(copy.index('native_guest_register(0x0220fc98u, 5,'), copy.index('func_ov004_0220d4c8(self'))
         self.assertLess(copy.index('func_ov004_0223ce84();'), copy.index('native_guest_register(0x0220fc98u, 7,'))
         self.assertLess(copy.index('native_guest_register(0x0220fc98u, 7,'), copy.index('func_ov004_0220d4c0(self'))

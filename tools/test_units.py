@@ -88,6 +88,30 @@ class Units(unittest.TestCase):
             self.assertIn("\nint func_ov097_022a27c0(void *self);\n", text)
             self.assertLess(text.index("int func_ov097_022a27c0(void *self);"), text.index("void func_ov097_022a2954"))
             self.assertEqual(C.undeclared_uses(text[C.header_end(text):], names), [])
+            # the Native tables pin each function by its own text, which regrouping keeps
+            for name in names:
+                self.assertEqual(C.function_sha256(text, name), C.function_sha256(files[name + ".c"], name))
+            changed = C.function_changed(text, names[1])
+            self.assertNotEqual(C.function_sha256(changed, names[1]), C.function_sha256(text, names[1]))
+            self.assertEqual(C.function_sha256(changed, names[0]), C.function_sha256(text, names[0]))
+
+    def test_function_span(self):
+        text = ("/* f @ 0x02000000, 0x4 bytes, Thumb, module main\n * mwccarm 1.2/base -O4,s\n */\n\n"
+                "int g(int);\n/* f(x) { in a comment */\nint f(int a)\n{\n    if (g(a)) {\n"
+                "        return \"}\"[0];\n    }\n    return 0;\n}\n")
+        start, end = C.function_span(text, "f")
+        self.assertTrue(text[start:].startswith("int f(int a)\n{"))
+        self.assertTrue(text[:end].endswith("    return 0;\n}"))
+        self.assertIsNone(C.function_span(text, "h"))
+
+    def test_tables_name_functions(self):
+        # every Native table entry is a function of a source, pinned by its current text
+        import native_tables
+        for table, key, digest in native_tables.pinned():
+            src = C.function_source(key)
+            self.assertIsNotNone(src, (table, key))
+            if digest is not None:
+                self.assertEqual(C.pinned_sha256(key, src.path.read_text(encoding="utf-8")), digest, (table, key))
 
 
 if __name__ == "__main__":

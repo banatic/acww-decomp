@@ -166,7 +166,13 @@ so an overlay loaded again finds them cleared as the ROM's code does (`tools/nat
 [call contracts](native-call-contracts.md)). A Clean rewrite need not keep such data at all
 (a switch in place of a table of member pointers): while a function runs on the PC, the RAM
 comparison leaves out its source's own data, at the places `runtime/native-private.txt` lists
-(written by `tools/link.py`, kept in the tree for builds without mwccarm). Functions still
+(written by `tools/link.py`, kept in the tree for builds without mwccarm). These tables (and
+`runtime/native-*.json`, `runtime/native-member-sources.txt` and those in `tools/native_*.py`)
+name a function by its key, `<module>/<name>`, and pin it by the SHA-256 of its own definition
+(`common.function_sha256`), not by a file: a unit of several functions holds each function's
+text as its file of one function did, so regrouping (`tools/regroup.py`) leaves every entry
+valid, and `tools/lint.py` reports an entry whose function changed or went
+(`tools/native_tables.py`). Functions still
 kept Reference are those `tools/native.py` finds by reading the sources (unsupported shared member-pointer
 forms, calls into the middle of other code that `tools/native_args.py` does not know), and
 those listed with a

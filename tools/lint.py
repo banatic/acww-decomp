@@ -138,11 +138,20 @@ def main() -> None:
                 errors.append(f"{rel}: same address as {seen[key].relative_to(C.ROOT).as_posix()}")
             seen[key] = path
 
-    # runtime/native-private.txt (tools/link.py) must follow a source that moves or goes
-    present = {p.relative_to(C.ROOT).as_posix() for p in sources}
+    # runtime/native-private.txt (tools/link.py) and the Native tables name functions by their
+    # keys (common.function_key): each must still be a function of a source
+    present = {C.function_key(s) for p in sources for s in C.parse_sources(p)}
     for rel in sorted(set(C.read_native_private()) - present):
-        errors.append(f"{C.NATIVE_PRIVATE.relative_to(C.ROOT).as_posix()}: {rel} is not a source; "
+        errors.append(f"{C.NATIVE_PRIVATE.relative_to(C.ROOT).as_posix()}: {rel} is not a function of a source; "
                       "run tools/link.py")
+    # (each pinned by the digest of its own text: a change to the function needs a new audit)
+    import native_tables
+    for table, key, digest in native_tables.pinned():
+        defined = C.function_source(key) if key in present else None
+        if defined is None:
+            errors.append(f"{table}: {key} is not a function of a source")
+        elif digest is not None and C.pinned_sha256(key, defined.path.read_text(encoding="utf-8")) != digest:
+            errors.append(f"{table}: {key} changed since its audit (tools/native_tables.py)")
 
     for p in tracked_or_present():
         rel = p.relative_to(C.ROOT).as_posix()

@@ -21,15 +21,15 @@ class PublicationGuards(unittest.TestCase):
                 publish.validate_rom(bytes([code[0] ^ 1]) + code[1:], address)
 
     def test_both_source_copies(self):
-        for relative, path in [(publish.SOURCE, C.SRC / publish.SOURCE),
-                               (publish.SHIFT_SOURCE, C.SRC / publish.SHIFT_SOURCE),
-                               (publish.CLOUD_SOURCE, C.SRC / publish.CLOUD_SOURCE),
+        for relative, path in [(publish.SOURCE, C.key_path(publish.SOURCE)),
+                               (publish.SHIFT_SOURCE, C.key_path(publish.SHIFT_SOURCE)),
+                               (publish.CLOUD_SOURCE, C.key_path(publish.CLOUD_SOURCE)),
                                (publish.CLEAN_SOURCE, C.ROOT / publish.CLEAN_SOURCE)]:
             text = path.read_bytes().decode()
             copy = publish.translate(relative, text)
             self.assertEqual(copy.count('native_publish_word('), 3 if relative == publish.CLEAN_SOURCE else 1)
             with self.assertRaises(ValueError):
-                publish.translate(relative, text + '\n')
+                publish.translate(relative, (text + '\n' if relative.startswith('clean/') else C.function_changed(text, relative.partition('/')[2])))
         self.assertIsNone(publish.translate('unknown.c', ''))
 
 
@@ -51,9 +51,9 @@ def fixture():
     objects = []
     for name, relative in [('gradient', publish.SOURCE), ('shift', publish.SHIFT_SOURCE)]:
         source = folder / f'{name}.c'
-        source.write_text(publish.translate(relative, (C.SRC / relative).read_bytes().decode()), newline='\n')
+        source.write_text(publish.translate(relative, (C.key_path(relative)).read_bytes().decode()), newline='\n')
         obj = folder / f'{name}.o'
-        subprocess.run([*native.compiler(), *native.flags_for(C.SRC / relative),
+        subprocess.run([*native.compiler(), *native.flags_for(C.key_path(relative)),
                         '-I', str(C.ROOT / 'runtime'), '-c', str(source), '-o', str(obj)], check=True)
         objects.append(str(obj))
     prefix = '_' if os.name == 'nt' else ''
