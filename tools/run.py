@@ -827,6 +827,7 @@ REFERENCE_PATHS = ("RUN_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_RECORD", "RUN_FUNCTIO
 # What a cache entry holds and how: changed whenever an entry's contents, their encoding, or
 # the way this file runs the Reference pass changes (the rest of this file is not in the key)
 REFERENCE_FORMAT = "2"
+REFERENCE_KIND = "reference2"  # the cache's directory for them (tools/common.py, prune_cache)
 # Runtime sources the program enters only when a variable is set (runtime/arm7.c, env_on, and
 # run.c through arm7_wifi): without it a Reference run does not depend on them, and the key
 # leaves them out. tools/test_run_reference.py holds the places they are entered from.
@@ -988,7 +989,7 @@ def file_sha1(path: pathlib.Path) -> str:
 
 
 def reference_entry(key: str) -> pathlib.Path:
-    return C.CACHE_DIR / "reference" / key[:2] / key
+    return C.CACHE_DIR / REFERENCE_KIND / key[:2] / key
 
 
 def reference_cached(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> bool:
@@ -1046,7 +1047,7 @@ def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pa
         os.replace(tmp, entry)
     except (OSError, ValueError):
         shutil.rmtree(tmp, ignore_errors=True)
-    C.prune_cache(("reference",))
+    C.prune_cache((REFERENCE_KIND,))
 
 
 def log_facts(text: str) -> list[str]:
