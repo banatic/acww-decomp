@@ -45,7 +45,7 @@ typedef struct StartMenuReceiver {
     StartMenuTalk *talk;     /* 0x40: the talk showing it */
     u8 unk_44[4];            /* 0x44 */
     struct StartMenu *owner; /* 0x48: StartMenuReceiver_SetOwner */
-    u16 unk_4c;              /* 0x4c: set to 200 when a local status is sent */
+    u16 status_timer;        /* 0x4c: set to 200 when a local status is sent */
     u8 unk_4e[2];
 } StartMenuReceiver;
 

@@ -7,7 +7,7 @@
 #include "main/vram_copy_task.h"
 #include "room_preview.h"
 
-static_assert(offsetof(RoomObject02250e5c, unk_846) == 0x846, "unk_846");
+static_assert(offsetof(RoomObject02250e5c, shown_frames) == 0x846, "shown_frames");
 static_assert(offsetof(RoomObject02250e5c, material_texture) == 0x848, "material texture");
 static_assert(sizeof(RoomObject02250e5c) == 0x870, "the size RoomObject02250e5c_Create allocates");
 
@@ -23,10 +23,10 @@ extern const u8 data_ov004_02250f08[];
 /* "m_dummy_floor", the material the carpet goes on. */
 extern const char data_ov004_02253190[];
 
-/* func_ov004_02212764 (vtable slot 0x88): drawn once unk_846 is 2 or more. */
+/* func_ov004_02212764 (vtable slot 0x88): drawn once shown_frames is 2 or more. */
 int RoomObject02250e5c_CanDraw(RoomObject02250e5c *object)
 {
-    return object->unk_846 >= FLOOR_DRAWN_FRAMES;
+    return object->shown_frames >= FLOOR_DRAWN_FRAMES;
 }
 CLEAN_AS(func_ov004_02212764, RoomObject02250e5c_CanDraw)
 
@@ -41,8 +41,8 @@ CLEAN_AS(func_ov004_02212778, RoomObject02250e5c_Vfunc0C)
  * counts the frames since the carpet was put on, up to 2. */
 int RoomObject02250e5c_Update(RoomObject02250e5c *object)
 {
-    if (object->unk_846 < FLOOR_DRAWN_FRAMES) {
-        object->unk_846++;
+    if (object->shown_frames < FLOOR_DRAWN_FRAMES) {
+        object->shown_frames++;
     }
     return 1;
 }
@@ -53,9 +53,9 @@ CLEAN_AS(func_ov004_0221277c, RoomObject02250e5c_Update)
  * "m_dummy_floor"; done when the material took it. */
 int RoomObject02250e5c_Start(RoomObject02250e5c *object)
 {
-    object->unk_844 = (u16) RoomPreview_Number(RoomPreview_Get());
-    object->unk_846 = 0;
-    u16 item = object->unk_844 < CARPET_COUNT ? (u16) (object->unk_844 + CARPET_FIRST) : CARPET_FIRST;
+    object->carpet = (u16) RoomPreview_Number(RoomPreview_Get());
+    object->shown_frames = 0;
+    u16 item = object->carpet < CARPET_COUNT ? (u16) (object->carpet + CARPET_FIRST) : CARPET_FIRST;
     CarpetTexture_Load(RoomPreview_CarpetFile(RoomPreview_Get()), &item);
     G3dModel *model = object->base.model_resource;
     void *texture = CarpetTexture_Textures(RoomPreview_CarpetFile(RoomPreview_Get()));

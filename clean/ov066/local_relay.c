@@ -782,9 +782,9 @@ void LocalRelay_Configure(LocalRelayParams *params)
     data_ov066_0226bdec->max_children = (u8) (params->players - 1);
     data_ov066_0226bdec->max_players = params->players;
     data_ov066_0226bdec->parents_per_list = params->parents_per_list;
-    data_ov066_0226bdec->unk_18 = slice;
+    data_ov066_0226bdec->slice_size = slice;
     data_ov066_0226bdec->parent_max_size = packet;
-    data_ov066_0226bdec->unk_1c = packet;
+    data_ov066_0226bdec->packet_size = packet;
     data_ov066_0226bdec->child_max_size = slice;
     data_ov066_0226bdec->scan_time = 30;
     data_ov066_0226bdec->search_time = 90;

@@ -7,7 +7,7 @@
 #include "main/wallpaper_file.h"
 #include "room_preview.h"
 
-static_assert(offsetof(RoomObject022511e0, unk_846) == 0x846, "unk_846");
+static_assert(offsetof(RoomObject022511e0, shown_frames) == 0x846, "shown_frames");
 static_assert(offsetof(RoomObject022511e0, material_texture) == 0x848, "material texture");
 static_assert(sizeof(RoomObject022511e0) == 0x870, "the size RoomObject022511e0_Create allocates");
 
@@ -23,10 +23,10 @@ extern const u8 data_ov004_0225128c[];
 /* "m_dummy_wall", the material the wallpaper goes on. */
 extern const char data_ov004_022531a0[];
 
-/* func_ov004_022128bc (vtable slot 0x88): drawn once unk_846 is 2 or more. */
+/* func_ov004_022128bc (vtable slot 0x88): drawn once shown_frames is 2 or more. */
 int RoomObject022511e0_CanDraw(RoomObject022511e0 *object)
 {
-    return object->unk_846 >= WALL_DRAWN_FRAMES;
+    return object->shown_frames >= WALL_DRAWN_FRAMES;
 }
 CLEAN_AS(func_ov004_022128bc, RoomObject022511e0_CanDraw)
 
@@ -41,8 +41,8 @@ CLEAN_AS(func_ov004_022128d0, RoomObject022511e0_Vfunc0C)
  * counts the frames since the wallpaper was put on, up to 2. */
 int RoomObject022511e0_Update(RoomObject022511e0 *object)
 {
-    if (object->unk_846 < WALL_DRAWN_FRAMES) {
-        object->unk_846++;
+    if (object->shown_frames < WALL_DRAWN_FRAMES) {
+        object->shown_frames++;
     }
     return 1;
 }
@@ -53,9 +53,9 @@ CLEAN_AS(func_ov004_022128d4, RoomObject022511e0_Update)
  * "m_dummy_wall"; done when the material took it. */
 int RoomObject022511e0_Start(RoomObject022511e0 *object)
 {
-    object->unk_844 = (u16) RoomPreview_Number(RoomPreview_Get());
-    object->unk_846 = 0;
-    u16 item = object->unk_844 < WALLPAPER_COUNT ? (u16) (object->unk_844 + WALLPAPER_FIRST) : WALLPAPER_FIRST;
+    object->wallpaper = (u16) RoomPreview_Number(RoomPreview_Get());
+    object->shown_frames = 0;
+    u16 item = object->wallpaper < WALLPAPER_COUNT ? (u16) (object->wallpaper + WALLPAPER_FIRST) : WALLPAPER_FIRST;
     WallpaperFile_Load(RoomPreview_WallpaperFile(RoomPreview_Get()), &item);
     G3dModel *model = object->base.model_resource;
     void *texture = (void *) (uintptr_t) WallpaperFile_Texture(RoomPreview_WallpaperFile(RoomPreview_Get()));

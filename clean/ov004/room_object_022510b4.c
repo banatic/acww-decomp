@@ -14,7 +14,7 @@
 #include "room_objects.h"
 
 static_assert(offsetof(RoomObject, light_switch) == 0x740, "switch");
-static_assert(offsetof(RoomObject022510b4, unk_844) == 0x844, "unk_844");
+static_assert(offsetof(RoomObject022510b4, unbound) == 0x844, "unbound");
 static_assert(offsetof(RoomObject022510b4, state) == 0x845, "state");
 static_assert(sizeof(RoomObject022510b4) == 0x848, "the size RoomObject022510b4_Create allocates");
 
@@ -209,7 +209,7 @@ CLEAN_AS(_ZN18Obj_ov004_022510b419func_ov004_02218e2cEv, RoomObject022510b4_Upda
  * else OFF; done at once. */
 int RoomObject022510b4_Start(RoomObject022510b4 *object)
 {
-    object->unk_844 = 0;
+    object->unbound = 0;
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
     if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject022510b4_switch_to(object, ROOM_OBJECT_022510B4_ON);

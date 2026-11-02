@@ -19,9 +19,9 @@ static_assert(offsetof(LocalSession, allowed_channel_count) == 0x92, "allowed ch
 static_assert(offsetof(LocalSession, turn) == 0x94, "turn");
 static_assert(offsetof(LocalControl, parent_channel) == 0x08, "parent channel");
 static_assert(offsetof(LocalControl, max_children) == 0x0a, "children");
-static_assert(offsetof(LocalControl, unk_18) == 0x18, "unk_18");
+static_assert(offsetof(LocalControl, slice_size) == 0x18, "slice_size");
 static_assert(offsetof(LocalControl, parent_max_size) == 0x1a, "parent max size");
-static_assert(offsetof(LocalControl, unk_1c) == 0x1c, "unk_1c");
+static_assert(offsetof(LocalControl, packet_size) == 0x1c, "packet_size");
 static_assert(offsetof(LocalControl, child_max_size) == 0x1e, "child max size");
 
 extern LocalControl *data_ov066_0226bdec;
@@ -116,8 +116,8 @@ CLEAN_AS(func_ov066_02269b88, LocalSession_Create)
  * library's message buffer. Then the search is created, the MAC address read and the random
  * numbers seeded from its last four bytes, the state is LOCAL_STATE_WM_READY (and so is the
  * request), and the session starts without a connection.
- * The MP buffer sizes follow the control block: the parent's receive buffer from unk_18 and the
- * children, the child's from unk_1c, rounded to 32 bytes and doubled; the send buffers from
+ * The MP buffer sizes follow the control block: the parent's receive buffer from slice_size and the
+ * children, the child's from packet_size, rounded to 32 bytes and doubled; the send buffers from
  * the parent's and the child's maximum sizes, rounded to 32 bytes.
  * QUIRK: each size is cut to 16 bits before the larger is taken.
  * REQUIRES: the allocations succeed. */
@@ -130,8 +130,8 @@ void LocalSession_AllocBuffers(void)
     data_ov066_0226bdf4->game_info_length = 8;
 
     control = data_ov066_0226bdec;
-    u16 parent_receive = (u16) ((((control->unk_18 + 0xe) * control->max_children + 0x29) & ~0x1f) * 2);
-    u16 child_receive = (u16) (((control->unk_1c + 0x55) & ~0x1f) * 2);
+    u16 parent_receive = (u16) ((((control->slice_size + 0xe) * control->max_children + 0x29) & ~0x1f) * 2);
+    u16 child_receive = (u16) (((control->packet_size + 0x55) & ~0x1f) * 2);
     data_ov066_0226bdf4->mp_receive_size = parent_receive > child_receive ? parent_receive : child_receive;
     data_ov066_0226bdf4->mp_receive_buffer = LocalWireless_Alloc(data_ov066_0226bdf4->mp_receive_size, 0x20);
 

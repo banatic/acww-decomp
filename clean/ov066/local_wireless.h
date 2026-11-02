@@ -98,9 +98,9 @@ typedef struct LocalControl {
     u8 reset_retries;    /* WM_Reset failures in a row */
     u8 reset_requested;  /* 1: a WM reset is due (LocalWireless_CheckReset) */
     u8 mp_frequency;     /* WM_StartMPEx's mpFreq */
-    u16 unk_18;          /* sizes the parent's MP receive buffer */
+    u16 slice_size;      /* sizes the parent's MP receive buffer */
     u16 parent_max_size; /* WMParentParam.parentMaxSize */
-    u16 unk_1c;          /* sizes the child's MP receive buffer */
+    u16 packet_size;     /* sizes the child's MP receive buffer */
     u16 child_max_size;  /* WMParentParam.childMaxSize */
     u16 search_time;     /* the milliseconds each search of the automatic pairing lasts */
     u16 scan_time;       /* the time spent on each channel (WMScanParam.maxChannelTime) */

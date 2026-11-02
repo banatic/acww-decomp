@@ -54,7 +54,7 @@ typedef struct SlidingWindow {
     u8 close_request;   /* 0x55 */
     u8 on_main;         /* 0x56: drawn on the main screen, else on the sub screen */
     u8 keep_on_screen;  /* 0x57 */
-    u8 unk_58;          /* 0x58: the cells are drawn a second time as OBJ windows */
+    u8 obj_windows;     /* 0x58: the cells are drawn a second time as OBJ windows */
     u8 instant;         /* 0x59: opens and closes without sliding */
     u8 slide_y_flipped; /* 0x5a: the slide goes the other way in y */
     u8 show_extra;      /* 0x5b: `extra` is drawn */

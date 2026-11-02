@@ -129,7 +129,7 @@ int Obj020dd33c_IsNear(const Actor *actor)
     if (Vec_DistanceXZ(&actor->position, &obj->point) <= obj->reach) {
         return 1;
     }
-    return Obj020dd33c_ModeAllowsAway(obj) != 0 && data_021c9350->unk_d5 == 0;
+    return Obj020dd33c_ModeAllowsAway(obj) != 0 && data_021c9350->away_wait == 0;
 }
 CLEAN_AS(func_02057c68, Obj020dd33c_IsNear)
 
@@ -371,7 +371,7 @@ void Obj020dd33c_SetActorModeOf(Obj020dd33c *obj, u8 mode)
 {
     obj->actor_mode = mode;
     if (mode == 1 || mode == 7) {
-        obj->unk_d5 = data_020cbae8;
+        obj->away_wait = data_020cbae8;
     }
 }
 CLEAN_AS(func_02059904, Obj020dd33c_SetActorModeOf)
@@ -529,7 +529,7 @@ int Obj020dd33c_ExecuteStep(Obj020dd33c *obj)
         }
     }
     if (Obj020dd33c_ModeAllowsAway(obj) != 0) {
-        Countdown_Tick8(&obj->unk_d5);
+        Countdown_Tick8(&obj->away_wait);
     }
     return 1;
 }

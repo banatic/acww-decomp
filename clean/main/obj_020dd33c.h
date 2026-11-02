@@ -52,7 +52,7 @@ typedef struct Obj020dd33c {
     u8 pad_c9[3];
     Actor *actors[2]; /* 0xcc: the first is the one that started it */
     u8 phase;         /* 0xd4: the step within a mode's handler */
-    u8 unk_d5;        /* 0xd5: a countdown set when actor_mode becomes 1 or 7 */
+    u8 away_wait;     /* 0xd5: a countdown set when actor_mode becomes 1 or 7; away only at 0 */
     u16 frames;       /* 0xd6: frames counted in the mode */
     u8 shown;         /* 0xd8: 1 when the item is drawn */
     u8 unk_d9;        /* 0xd9: 1 while the mode's movement runs, 0 once it is over */

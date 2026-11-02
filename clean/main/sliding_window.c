@@ -190,7 +190,7 @@ void SlidingWindow_Reset(SlidingWindow *window)
     window->open_request = 0;
     window->close_request = 0;
     window->keep_on_screen = 0;
-    window->unk_58 = 0;
+    window->obj_windows = 0;
     window->instant = 0;
     window->slide_y_flipped = 0;
     window->show_extra = 0;
@@ -484,14 +484,14 @@ CLEAN_AS(func_0208aa88, SlidingWindow_SetInstant)
 /* func_0208aa90 */
 void SlidingWindow_ClearObjWindow(SlidingWindow *window)
 {
-    window->unk_58 = 0;
+    window->obj_windows = 0;
 }
 CLEAN_AS(func_0208aa90, SlidingWindow_ClearObjWindow)
 
 /* func_0208aa98 */
 void SlidingWindow_SetObjWindow(SlidingWindow *window)
 {
-    window->unk_58 = 1;
+    window->obj_windows = 1;
 }
 CLEAN_AS(func_0208aa98, SlidingWindow_SetObjWindow)
 
@@ -531,7 +531,7 @@ static void draw_cells(SlidingWindow *window, int screen, int obj_mode, const Oa
 }
 
 /* func_0208ab3c (vtable slot 2): unless closed, the cells drawn on the window's screen at its
- * drawn place, and again as OBJ windows when `unk_58` is set. */
+ * drawn place, and again as OBJ windows when `obj_windows` is set. */
 void SlidingWindow_Draw(SlidingWindow *window)
 {
     if (window->state == SLIDING_WINDOW_CLOSED) {
@@ -548,7 +548,7 @@ void SlidingWindow_Draw(SlidingWindow *window)
     int screen = window->on_main != 0 ? OAM_BUFFER_SCREEN_MAIN : OAM_BUFFER_SCREEN_SUB;
 
     draw_cells(window, screen, WINDOW_OBJ_MODE_OWN, body_cell, extra_cell, body_x, body_y, extra_x, extra_y);
-    if (window->unk_58 != 0) {
+    if (window->obj_windows != 0) {
         draw_cells(window, screen, WINDOW_OBJ_MODE_WINDOW, body_cell, extra_cell, body_x, body_y, extra_x, extra_y);
     }
 }
@@ -612,7 +612,7 @@ SlidingWindow *SlidingWindow_Construct(SlidingWindow *window, int on_main)
     window->close_request = 0;
     window->on_main = (u8) on_main;
     window->keep_on_screen = 0;
-    window->unk_58 = 0;
+    window->obj_windows = 0;
     window->instant = 0;
     window->slide_y_flipped = 0;
     window->show_extra = 0;

@@ -24,7 +24,7 @@
 
 typedef struct RoomObject0225130c {
     RoomObject base;
-    u8 unk_844;      /* cleared once its model is bound */
+    u8 unbound;      /* cleared once its model is bound */
     u8 ticks;        /* times frame 0x14 of the joint animation was reached: odd sets 2 */
     u8 settle_reset; /* set when settling starts, until the sound's variable is set to 1 */
     u8 state;        /* RoomObject0225130cState */

@@ -15,8 +15,8 @@
 
 typedef struct RoomObject02250e5c {
     RoomObject base;
-    u16 unk_844; /* func_ov004_0223d2ac of data_ov004_022596b0: the carpet's number */
-    u8 unk_846;  /* frames since the carpet was put on, up to 2; drawn from 2 on */
+    u16 carpet;      /* func_ov004_0223d2ac of data_ov004_022596b0: the carpet's number */
+    u8 shown_frames; /* frames since the carpet was put on, up to 2; drawn from 2 on */
     u8 unk_847;
     /* Puts a texture on a material of the model (built by VramCopyMaterial_Construct, filled by
      * VramCopyMaterial_Queue). */

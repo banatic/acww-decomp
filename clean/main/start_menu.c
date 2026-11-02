@@ -26,7 +26,7 @@
 #include "talk_receiver.h"
 
 static_assert(sizeof(StartMenuReceiver) == 0x50 && offsetof(StartMenuReceiver, talk) == 0x40, "receiver");
-static_assert(offsetof(StartMenuReceiver, owner) == 0x48 && offsetof(StartMenuReceiver, unk_4c) == 0x4c, "receiver");
+static_assert(offsetof(StartMenuReceiver, owner) == 0x48 && offsetof(StartMenuReceiver, status_timer) == 0x4c, "receiver");
 static_assert(offsetof(StartMenu, state) == 0x50 && offsetof(StartMenu, receiver) == 0x54, "start menu");
 static_assert(sizeof(StartMenu) == 0xa4 && sizeof(StartMenuStateFns) == 16, "start menu");
 
@@ -53,7 +53,7 @@ extern const s32 data_020d1b98[];
 #define SCENE_45 45 /* a scene in which START does nothing */
 #define START_MENU_EVENT 46
 #define START_MENU_TALK_INDEX 0
-#define START_MENU_STATUS_TIMER 200 /* StartMenuReceiver.unk_4c when a status is sent */
+#define START_MENU_STATUS_TIMER 200 /* StartMenuReceiver.status_timer when a status is sent */
 
 /* The messages of the talk. */
 enum StartMenuMessage {
@@ -232,7 +232,7 @@ CLEAN_AS(func_0209f550, StartMenu_UpdateWait3)
 /* func_0209f5cc (entry of START_MENU_WAIT_3) */
 void StartMenu_EnterWait3(StartMenu *menu)
 {
-    menu->receiver.unk_4c = START_MENU_STATUS_TIMER;
+    menu->receiver.status_timer = START_MENU_STATUS_TIMER;
     Session_SendLocalStatus(3);
 }
 CLEAN_AS(func_0209f5cc, StartMenu_EnterWait3)
@@ -247,7 +247,7 @@ CLEAN_AS(func_0209f5dc, StartMenu_UpdateWait2)
 /* func_0209f658 (entry of START_MENU_WAIT_2) */
 void StartMenu_EnterWait2(StartMenu *menu)
 {
-    menu->receiver.unk_4c = START_MENU_STATUS_TIMER;
+    menu->receiver.status_timer = START_MENU_STATUS_TIMER;
     Session_SendLocalStatus(2);
 }
 CLEAN_AS(func_0209f658, StartMenu_EnterWait2)

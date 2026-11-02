@@ -23,7 +23,7 @@
 
 typedef struct RoomObject022510b4 {
     RoomObject base;
-    u8 unk_844; /* cleared once its model is bound */
+    u8 unbound; /* cleared once its model is bound */
     u8 state;   /* RoomObject022510b4State */
     u8 unk_846[2];
 } RoomObject022510b4;

@@ -277,7 +277,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225130c19func_ov004_02212f0cEv, RoomObject0225130c_Upda
  * no, else off; done at once. */
 int RoomObject0225130c_Start(RoomObject0225130c *object)
 {
-    object->unk_844 = 0;
+    object->unbound = 0;
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
     if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
