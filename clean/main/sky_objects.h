@@ -65,28 +65,28 @@ typedef struct SkyObjects {
     SkyObject entries[SKY_OBJECT_COUNT]; /* 0x0000 */
     SkyObjectSlot slots[5];              /* 0x1b30 */
     u8 files[0x2eb8 - 0x1b6c];           /* 0x1b6c */
-    u8 unk_2eb8[0x2f00 - 0x2eb8];        /* 0x2eb8 */
-    s32 unk_2f00;                        /* 0x2f00 */
-    s32 unk_2f04;                        /* 0x2f04 */
-    s32 unk_2f08;                        /* 0x2f08: of the rain or snow */
-    s32 unk_2f0c;                        /* 0x2f0c: of the rain or snow */
+    u8 palettes[0x2f00 - 0x2eb8];        /* 0x2eb8: SkyPalettes (sky_resources.h) */
+    s32 fall_interval;                   /* 0x2f00: the rain's or snow's: what fall_sum adds up to for a drop or flake */
+    s32 fall_sum;                        /* 0x2f04: fall_rate added up each frame */
+    s32 fall_rate;                       /* 0x2f08: of the rain or snow, in 1/256 */
+    s32 fall_intervals;                  /* 0x2f0c: of the rain or snow: the intervals counted (to 50) */
     s32 thunder_timer;                   /* 0x2f10: func_020bda88 */
     s32 count;                           /* 0x2f14: the entries in use */
     Time time;                           /* 0x2f18: the clock at this frame */
     Time last_time;                      /* 0x2f1a: and at the one before */
-    u32 unk_2f1c;                        /* 0x2f1c */
-    u32 unk_2f20;                        /* 0x2f20 */
-    u8 unk_2f24[8];                      /* 0x2f24 */
+    u32 second;                          /* 0x2f1c: the clock's second at this frame */
+    u32 last_second;                     /* 0x2f20: and at the one before */
+    u8 events[8];                        /* 0x2f24: SkyObjectsEventByte */
     s32 program;                         /* 0x2f2c: the show's program, 0: none (sky_show.h) */
     s32 program_timer;                   /* 0x2f30 */
     s32 countdown;                       /* 0x2f34 */
     s32 launch_timers[4];                /* 0x2f38: per launch place */
     s32 launch_delay;                    /* 0x2f48 */
-    s32 unk_2f4c;                        /* 0x2f4c */
-    u8 unk_2f50;                         /* 0x2f50 */
+    s32 kind3_delay;                     /* 0x2f4c: frames until a kind-3 object is added, 0: none due */
+    u8 kind3_seen;                       /* 0x2f50: the kind-3 object is on the screen (sky_kind3.h) */
     u8 blend_alpha;                      /* 0x2f51: the clouds' blending (SkyObjects_SetBlend) */
     u8 unk_2f52[2];                      /* 0x2f52 */
-    s32 unk_2f54;                        /* 0x2f54 */
+    s32 wind;                            /* 0x2f54: the drops' spread of angles, 1.0 in heavy rain, else 0.5 (sky_falling.h) */
     u8 unk_2f58[0x2fa8 - 0x2f58];        /* 0x2f58: four of 0x14 bytes */
     u8 unk_2fa8[0x2fcc - 0x2fa8];        /* 0x2fa8 */
     u8 unk_2fcc[4];                      /* 0x2fcc */
@@ -145,7 +145,7 @@ enum SkyObjectKindAdded {
 #define SKY_SLOTS 5
 #define SKY_SLOT_BUSY 5 /* SkyObjects_SlotFor: the resource cannot be shown now */
 
-/* SkyObjects.unk_2f24: bytes of the events that add objects (sky_events.h). */
+/* SkyObjects.events: bytes of the events that add objects (sky_events.h). */
 enum SkyObjectsEventByte {
     SKY_EVENT_ODDS_5 = 0,      /* 0x2f24: SkyEvents_AddKind5's odds, 0: not drawn yet */
     SKY_EVENT_ODDS_6 = 1,      /* 0x2f25: SkyEvents_AddKind6's */

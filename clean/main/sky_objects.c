@@ -22,7 +22,7 @@ static_assert(offsetof(SkyObject, scale_x) == 0x4c, "the scale");
 static_assert(offsetof(SkyObject, radius) == 0x5c, "the radius");
 static_assert(offsetof(SkyObject, param) == 0x60, "the parameter");
 static_assert(offsetof(SkyObjects, slots) == 0x1b30, "the slots");
-static_assert(offsetof(SkyObjects, unk_2eb8) == 0x2eb8, "0x2eb8");
+static_assert(offsetof(SkyObjects, palettes) == 0x2eb8, "0x2eb8");
 static_assert(offsetof(SkyObjects, thunder_timer) == 0x2f10, "the thunder");
 static_assert(offsetof(SkyObjects, time) == 0x2f18, "the time");
 static_assert(offsetof(SkyObjects, program) == 0x2f2c, "the program");
@@ -166,8 +166,8 @@ void SkyObjects_RunWeather(SkyObjects *objects)
             SkyEvents_Snow(objects);
             break;
         default:
-            objects->unk_2f08 = 0;
-            objects->unk_2f0c = 0;
+            objects->fall_rate = 0;
+            objects->fall_intervals = 0;
             break;
     }
     SkyEvents_AddKind12(objects);
@@ -243,12 +243,12 @@ CLEAN_AS(func_020bc548, SkyObjects_SetBlend)
 static_assert(sizeof(SkyObjectSlot) == 12, "a slot");
 static_assert(sizeof(SkyResource) == 16, "a resource");
 static_assert(offsetof(SkyObjects, files) == 0x1b6c, "the files");
-static_assert(offsetof(SkyObjects, unk_2f24) == 0x2f24, "the events' bytes");
-static_assert(offsetof(SkyObjects, unk_2f50) == 0x2f50, "0x2f50");
-static_assert(offsetof(SkyObjects, unk_2f54) == 0x2f54, "0x2f54");
+static_assert(offsetof(SkyObjects, events) == 0x2f24, "the events' bytes");
+static_assert(offsetof(SkyObjects, kind3_seen) == 0x2f50, "0x2f50");
+static_assert(offsetof(SkyObjects, wind) == 0x2f54, "0x2f54");
 static_assert(offsetof(SkyObjects, unk_2f58) == 0x2f58, "the shots' requests");
 
-#define SKY_OBJECTS_EVENT_BYTES 6 /* unk_2f24 to 0x2f29, cleared by the constructor */
+#define SKY_OBJECTS_EVENT_BYTES 6 /* events[0] to [5], cleared by the constructor */
 #define SKY_OBJECTS_NOON 12
 #define SKY_OBJECTS_MOON_FIRST 3      /* the moon's first resource, of 28 */
 #define SKY_OBJECTS_MOON_LAST 27      /* its last, from the first */
@@ -324,7 +324,7 @@ SkyObject *SkyObjects_Add(SkyObjects *objects, int kind, int entry, const Vec3 *
         return NULL;
     }
     if (slot != SKY_OBJECT_NO_SLOT) {
-        SkySlot_Use(sky_objects_slot_at(objects, slot), resource, (SkyPalettes *) (void *) objects->unk_2eb8);
+        SkySlot_Use(sky_objects_slot_at(objects, slot), resource, (SkyPalettes *) (void *) objects->palettes);
         SkyObjects_ReleaseOverlapping(objects, slot);
     }
     SkyObject *object = sky_objects_entry_at(objects, index);
@@ -411,9 +411,9 @@ CLEAN_AS(func_020bdd9c, SkyObjects_MoonResource)
 void SkyObjects_TakeTime(SkyObjects *objects)
 {
     objects->last_time = objects->time;
-    objects->unk_2f20 = objects->unk_2f1c;
+    objects->last_second = objects->second;
     Calendar_Now(&objects->time);
-    objects->unk_2f1c = (u32) Clock_Second();
+    objects->second = (u32) Clock_Second();
 }
 CLEAN_AS(func_020bde24, SkyObjects_TakeTime)
 
@@ -421,9 +421,9 @@ CLEAN_AS(func_020bde24, SkyObjects_TakeTime)
 void SkyObjects_ResetTime(SkyObjects *objects)
 {
     Calendar_Now(&objects->time);
-    objects->unk_2f1c = (u32) Clock_Second();
+    objects->second = (u32) Clock_Second();
     objects->last_time = objects->time;
-    objects->unk_2f20 = objects->unk_2f1c;
+    objects->last_second = objects->second;
 }
 CLEAN_AS(func_020bde5c, SkyObjects_ResetTime)
 
@@ -442,7 +442,7 @@ void SkyObjects_StartObjects(SkyObjects *objects)
     SkyEvents_StartFalling(objects);
     SkyEvents_UpdateMoon(objects);
     SkyEvents_UpdateKind10(objects);
-    objects->unk_2f24[SKY_EVENT_ODDS_5] = 0;
+    objects->events[SKY_EVENT_ODDS_5] = 0;
 }
 CLEAN_AS(func_020be0a8, SkyObjects_StartObjects)
 
@@ -562,7 +562,7 @@ static void sky_objects_show_slot(SkyObjects *objects, SkyObjectSlot *slot, int 
 {
     int resource = slot->kind;
     int loaded = slot->loaded;
-    int palette_loaded = SkyPalettes_IsLoaded((SkyPalettes *) (void *) objects->unk_2eb8, resource);
+    int palette_loaded = SkyPalettes_IsLoaded((SkyPalettes *) (void *) objects->palettes, resource);
     if (!loaded) {
         if (read_files) {
             SkyFiles_ReadCells((SkyFiles *) (void *) objects->files, resource);
@@ -574,7 +574,7 @@ static void sky_objects_show_slot(SkyObjects *objects, SkyObjectSlot *slot, int 
         }
     }
     if (!palette_loaded) {
-        SkyPalettes_Load((SkyPalettes *) (void *) objects->unk_2eb8, (SkyFiles *) (void *) objects->files, resource);
+        SkyPalettes_Load((SkyPalettes *) (void *) objects->palettes, (SkyFiles *) (void *) objects->files, resource);
     }
 }
 
@@ -633,19 +633,19 @@ SkyObjects *SkyObjects_Construct(SkyObjects *objects)
     for (SkyObjectSlot *slot = objects->slots; slot != objects->slots + SKY_SLOTS; slot++) {
         SkySlot_Construct(slot);
     }
-    SkyPalettes_Construct((SkyPalettes *) (void *) objects->unk_2eb8);
+    SkyPalettes_Construct((SkyPalettes *) (void *) objects->palettes);
     __cxa_vec_ctor(objects->unk_2f58, 4, 0x14, func_020bec04, func_020be550);
     SkyShots_ConstructHit((SkyShotsHit *) (void *) objects->unk_2fa8);
     SkyObjectSounds_Construct((SkyObjectSounds *) (void *) objects->unk_2fcc);
 
-    objects->unk_2f00 = 0;
-    objects->unk_2f04 = 0;
-    objects->unk_2f08 = 0;
-    objects->unk_2f0c = 0;
+    objects->fall_interval = 0;
+    objects->fall_sum = 0;
+    objects->fall_rate = 0;
+    objects->fall_intervals = 0;
     objects->thunder_timer = 0;
     objects->count = 0;
     for (int i = 0; i < SKY_OBJECTS_EVENT_BYTES; i++) {
-        objects->unk_2f24[i] = 0;
+        objects->events[i] = 0;
     }
     objects->program = 0;
     objects->program_timer = 0;
@@ -654,10 +654,10 @@ SkyObjects *SkyObjects_Construct(SkyObjects *objects)
         objects->launch_timers[i] = 0;
     }
     objects->launch_delay = 0;
-    objects->unk_2f4c = 0;
-    objects->unk_2f50 = 0;
+    objects->kind3_delay = 0;
+    objects->kind3_seen = 0;
     objects->blend_alpha = 0;
-    objects->unk_2f54 = 0;
+    objects->wind = 0;
 
     SkyFiles_Init((SkyFiles *) (void *) objects->files);
     return objects;

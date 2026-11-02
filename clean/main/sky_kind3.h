@@ -3,7 +3,7 @@
  * Kind 3 starts off the screen's right or top edge and crosses fast (7.5 pixels a frame)
  * towards a point on the left edge at y 128 to 150, turned along its way. While it is on the
  * screen and not marked (its parameter 0) the byte at 0x2f50 of the objects is set
- * (SkyObjects.unk_2f50); SkyObjects_Add2Mark3 marks it and adds a kind-2 object that follows
+ * (SkyObjects.kind3_seen); SkyObjects_Add2Mark3 marks it and adds a kind-2 object that follows
  * it.
  *
  * Kind 2 does one of three things by the low four bits of its parameter: 0, a short-lived

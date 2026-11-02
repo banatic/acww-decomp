@@ -161,7 +161,7 @@ void SkyRain_SetUp(SkyObject *object, int start)
     body->position.x = x;
     body->position.y = y;
     body->position.z = 0;
-    s32 wind = data_021f8b48.unk_2f54;
+    s32 wind = data_021f8b48.wind;
     int spread = (int) MainRandom_Below(0xaac) - 0x556;
     int turn = (spread + (s16) data_021f75b0.unk_1538) * wind;
     u16 angle = (u16) ((u32) turn >> 12);

@@ -22,9 +22,9 @@
 #include "scene_lights.h"
 #include "sky_resources.h"
 
-#define SKY_EVENTS_FALL_MAX 0x6400 /* the rain's or snow's rate (SkyObjects.unk_2f08) at most */
+#define SKY_EVENTS_FALL_MAX 0x6400 /* the rain's or snow's rate (SkyObjects.fall_rate) at most */
 #define SKY_EVENTS_FALL_STEP 2
-#define SKY_EVENTS_FALL_GROWN 50 /* SkyObjects.unk_2f0c: the snow's intervals counted, at most */
+#define SKY_EVENTS_FALL_GROWN 50 /* SkyObjects.fall_intervals: the snow's intervals counted, at most */
 #define SKY_EVENTS_RAIN_MIN_INTERVAL 0x23
 #define SKY_EVENTS_THUNDER_START 50
 #define SKY_EVENTS_THUNDER_SPREAD 200
@@ -85,10 +85,10 @@ static int sky_events_not_after(int compared)
  * to 2) when nothing falls, from March 16 to September 15 and from 6:00 to 8:59. */
 void SkyEvents_AddKind12(SkyObjects *objects)
 {
-    if (objects->unk_2f24[SKY_EVENT_KIND_12_DUE] == 0) {
+    if (objects->events[SKY_EVENT_KIND_12_DUE] == 0) {
         return;
     }
-    objects->unk_2f24[SKY_EVENT_KIND_12_DUE] = 0;
+    objects->events[SKY_EVENT_KIND_12_DUE] = 0;
     int dry = Sky_Falling() == 0;
     DateTime first = {0};
     DateTime last = {0};
@@ -162,13 +162,13 @@ CLEAN_AS(func_020bd054, SkyEvents_UpdateKind10)
  * was served or entry 45 holds kind 7. */
 void SkyEvents_AddKind7(SkyObjects *objects)
 {
-    if (objects->unk_2f24[SKY_EVENT_45] != 0) {
+    if (objects->events[SKY_EVENT_45] != 0) {
         u8 *actor = Actors_GetDByIndex(SKY_EVENTS_ACTOR_D_KIND_7);
         if (actor != NULL && SceneObject_IsEnabled(actor)) {
-            objects->unk_2f24[SKY_EVENT_45] = 0;
+            objects->events[SKY_EVENT_45] = 0;
         }
     }
-    if (objects->unk_2f24[SKY_EVENT_45] == 0 || sky_events_in_session()) {
+    if (objects->events[SKY_EVENT_45] == 0 || sky_events_in_session()) {
         return;
     }
     int falling = Sky_Falling();
@@ -210,20 +210,20 @@ static int sky_events_try_odds(u8 *odds)
  * entry 45 holds kind 6, an object of kind 6 in entry 45 at growing odds. */
 void SkyEvents_AddKind6(SkyObjects *objects)
 {
-    if (objects->unk_2f24[SKY_EVENT_44] != 0) {
+    if (objects->events[SKY_EVENT_44] != 0) {
         if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, SKY_EVENTS_STATE_FLAG_9)) {
-            objects->unk_2f24[SKY_EVENT_44] = 0;
+            objects->events[SKY_EVENT_44] = 0;
         } else {
             DateTime now = {0};
             DateTime when;
             DateTime_Now(&now);
             MI_CpuCopy8(&now, &when, sizeof(DateTime));
             if (EventCalendar_State(EVENT_CALENDAR_EVENT_44, &when, 0) == EVENT_CALENDAR_OFF) {
-                objects->unk_2f24[SKY_EVENT_44] = 0;
+                objects->events[SKY_EVENT_44] = 0;
             }
         }
     }
-    if (objects->unk_2f24[SKY_EVENT_44] == 0 || sky_events_in_session()) {
+    if (objects->events[SKY_EVENT_44] == 0 || sky_events_in_session()) {
         return;
     }
     int minute = objects->time.minute;
@@ -235,9 +235,9 @@ void SkyEvents_AddKind6(SkyObjects *objects)
         objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_KIND_6) {
         return;
     }
-    if (sky_events_try_odds(&objects->unk_2f24[SKY_EVENT_ODDS_6])) {
+    if (sky_events_try_odds(&objects->events[SKY_EVENT_ODDS_6])) {
         SkyObjects_Add(objects, SKY_OBJECT_KIND_6, SKY_ENTRY_VISITOR, NULL, 0);
-        objects->unk_2f24[SKY_EVENT_ODDS_6] = 1;
+        objects->events[SKY_EVENT_ODDS_6] = 1;
     }
 }
 CLEAN_AS(func_020bd1c4, SkyEvents_AddKind6)
@@ -258,7 +258,7 @@ void SkyEvents_AddKind5(SkyObjects *objects)
         objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_KIND_5) {
         return;
     }
-    if (!sky_events_try_odds(&objects->unk_2f24[SKY_EVENT_ODDS_5])) {
+    if (!sky_events_try_odds(&objects->events[SKY_EVENT_ODDS_5])) {
         return;
     }
     if (!PlayerRecord_TestFlag(PlayerRecords_Current(), SKY_EVENTS_FLAG_30) && SkyShots_HitCountFull() &&
@@ -266,9 +266,9 @@ void SkyEvents_AddKind5(SkyObjects *objects)
         SkyObjects_Add(objects, SKY_OBJECT_KIND_5, SKY_ENTRY_VISITOR, NULL, 1);
     } else {
         SkyObjects_Add(objects, SKY_OBJECT_KIND_5, SKY_ENTRY_VISITOR, NULL, 0);
-        SkyPalettes_PickVariant((SkyPalettes *) (void *) objects->unk_2eb8);
+        SkyPalettes_PickVariant((SkyPalettes *) (void *) objects->palettes);
     }
-    objects->unk_2f24[SKY_EVENT_ODDS_5] = 1;
+    objects->events[SKY_EVENT_ODDS_5] = 1;
 }
 CLEAN_AS(func_020bd2d0, SkyEvents_AddKind5)
 
@@ -299,17 +299,17 @@ void SkyEvents_AddKind3(SkyObjects *objects)
     int clear = weather != SKY_WEATHER_RAIN && weather != SKY_WEATHER_HEAVY_RAIN;
     int idle = objects->program == 0 && SkyObjects_FindKind(objects, SKY_OBJECT_SHOW) == SKY_OBJECT_COUNT;
     if (!(night && clear && idle)) {
-        objects->unk_2f4c = 0;
+        objects->kind3_delay = 0;
         return;
     }
-    if (objects->unk_2f4c > 0) {
-        objects->unk_2f4c--;
-        if (objects->unk_2f4c == 0) {
+    if (objects->kind3_delay > 0) {
+        objects->kind3_delay--;
+        if (objects->kind3_delay == 0) {
             SkyObjects_Add(objects, SKY_OBJECT_KIND_3, SKY_ENTRY_KIND_3, NULL, 0);
         }
-    } else if (objects->unk_2f1c == SKY_EVENTS_KIND_3_SECOND && objects->unk_2f1c != objects->unk_2f20) {
+    } else if (objects->second == SKY_EVENTS_KIND_3_SECOND && objects->second != objects->last_second) {
         if (MainRandom_Below(sky_events_pattern() == 0 ? 4 : 0x100) == 0) {
-            objects->unk_2f4c = (s32) MainRandom_Below(SKY_EVENTS_KIND_3_DELAY);
+            objects->kind3_delay = (s32) MainRandom_Below(SKY_EVENTS_KIND_3_DELAY);
         }
     }
 }
@@ -329,28 +329,28 @@ static int sky_events_fall_level(s32 weather, s32 next)
     return next == SKY_WEATHER_RAIN ? 1 : next > SKY_WEATHER_RAIN ? 3 : 0;
 }
 
-/* The rate (SkyObjects.unk_2f08) moved by 2 towards its most while the weather changes to a
+/* The rate (SkyObjects.fall_rate) moved by 2 towards its most while the weather changes to a
  * level that falls, else towards 0. */
 static void sky_events_step_rate(SkyObjects *objects, s32 next)
 {
     if (next >= SKY_WEATHER_RAIN) {
-        objects->unk_2f08 += SKY_EVENTS_FALL_STEP;
-        if (objects->unk_2f08 > SKY_EVENTS_FALL_MAX) {
-            objects->unk_2f08 = SKY_EVENTS_FALL_MAX;
+        objects->fall_rate += SKY_EVENTS_FALL_STEP;
+        if (objects->fall_rate > SKY_EVENTS_FALL_MAX) {
+            objects->fall_rate = SKY_EVENTS_FALL_MAX;
         }
     } else {
-        objects->unk_2f08 -= SKY_EVENTS_FALL_STEP;
-        if (objects->unk_2f08 < 0) {
-            objects->unk_2f08 = 0;
+        objects->fall_rate -= SKY_EVENTS_FALL_STEP;
+        if (objects->fall_rate < 0) {
+            objects->fall_rate = 0;
         }
     }
 }
 
-/* func_020bd7a4: snowflakes added: the rate (unk_2f08, at once at its most while the first two
- * intervals pass and the weather changes to a level that falls) adds up (unk_2f04) towards an
- * interval (unk_2f00, 1000 to start); each one reached adds a flake. The first interval after
+/* func_020bd7a4: snowflakes added: the rate (fall_rate, at once at its most while the first two
+ * intervals pass and the weather changes to a level that falls) adds up (fall_sum) towards an
+ * interval (fall_interval, 1000 to start); each one reached adds a flake. The first interval after
  * is 11000, the second 9000, later ones random by the level (data_020d2424) with the count
- * started at 75 until 50 intervals were counted (unk_2f0c). Without snow the interval and the
+ * started at 75 until 50 intervals were counted (fall_intervals). Without snow the interval and the
  * count are cleared. */
 void SkyEvents_Snow(SkyObjects *objects)
 {
@@ -358,44 +358,44 @@ void SkyEvents_Snow(SkyObjects *objects)
     s32 next = data_021f75b0.next_weather;
     int level = sky_events_fall_level(weather, next);
     if (level == 0) {
-        objects->unk_2f00 = 0;
-        objects->unk_2f0c = 0;
+        objects->fall_interval = 0;
+        objects->fall_intervals = 0;
         return;
     }
     const s32 *range = &data_020d2424[(level - 1) * 2];
-    if (objects->unk_2f00 == 0) {
-        objects->unk_2f00 = 1000;
+    if (objects->fall_interval == 0) {
+        objects->fall_interval = 1000;
     }
-    if (objects->unk_2f0c <= 2 && next >= SKY_WEATHER_RAIN) {
-        objects->unk_2f08 = SKY_EVENTS_FALL_MAX;
+    if (objects->fall_intervals <= 2 && next >= SKY_WEATHER_RAIN) {
+        objects->fall_rate = SKY_EVENTS_FALL_MAX;
     } else {
         sky_events_step_rate(objects, next);
     }
-    objects->unk_2f04 += objects->unk_2f08 >> 8;
+    objects->fall_sum += objects->fall_rate >> 8;
 
-    while (objects->unk_2f04 >= objects->unk_2f00) {
+    while (objects->fall_sum >= objects->fall_interval) {
         SkyObjects_Add(objects, SKY_OBJECT_SNOW, SKY_ENTRY_ANY, NULL, 0);
-        objects->unk_2f04 -= objects->unk_2f00;
-        if (objects->unk_2f04 > objects->unk_2f00) {
+        objects->fall_sum -= objects->fall_interval;
+        if (objects->fall_sum > objects->fall_interval) {
             continue;
         }
-        switch (objects->unk_2f0c) {
+        switch (objects->fall_intervals) {
             case 0:
-                objects->unk_2f00 = 11000;
-                objects->unk_2f04 = 0;
+                objects->fall_interval = 11000;
+                objects->fall_sum = 0;
                 break;
             case 1:
-                objects->unk_2f00 = 9000;
-                objects->unk_2f04 = 0;
+                objects->fall_interval = 9000;
+                objects->fall_sum = 0;
                 break;
             default:
-                objects->unk_2f00 = range[0] + (s32) MainRandom_Below(range[1]);
-                objects->unk_2f04 = objects->unk_2f0c < SKY_EVENTS_FALL_GROWN ? 75 : 0;
+                objects->fall_interval = range[0] + (s32) MainRandom_Below(range[1]);
+                objects->fall_sum = objects->fall_intervals < SKY_EVENTS_FALL_GROWN ? 75 : 0;
                 break;
         }
-        objects->unk_2f0c++;
-        if (objects->unk_2f0c > SKY_EVENTS_FALL_GROWN) {
-            objects->unk_2f0c = SKY_EVENTS_FALL_GROWN;
+        objects->fall_intervals++;
+        if (objects->fall_intervals > SKY_EVENTS_FALL_GROWN) {
+            objects->fall_intervals = SKY_EVENTS_FALL_GROWN;
         }
         break;
     }
@@ -412,32 +412,32 @@ void SkyEvents_Rain(SkyObjects *objects)
     s32 next = data_021f75b0.next_weather;
     int level = sky_events_fall_level(weather, next);
     if (level == 0) {
-        objects->unk_2f08 = 0;
+        objects->fall_rate = 0;
     } else {
         const s32 *range = &data_020d2404[(level - 1) * 2];
-        if (objects->unk_2f00 == 0) {
-            objects->unk_2f00 = range[0] + (s32) MainRandom_Below(range[1]);
+        if (objects->fall_interval == 0) {
+            objects->fall_interval = range[0] + (s32) MainRandom_Below(range[1]);
         }
         sky_events_step_rate(objects, next);
-        objects->unk_2f04 += objects->unk_2f08 >> 8;
-        while (objects->unk_2f04 >= objects->unk_2f00) {
+        objects->fall_sum += objects->fall_rate >> 8;
+        while (objects->fall_sum >= objects->fall_interval) {
             SkyObjects_Add(objects, SKY_OBJECT_RAIN, SKY_ENTRY_ANY, NULL, 0);
-            objects->unk_2f04 -= objects->unk_2f00;
-            if (objects->unk_2f04 > objects->unk_2f00) {
+            objects->fall_sum -= objects->fall_interval;
+            if (objects->fall_sum > objects->fall_interval) {
                 continue;
             }
-            objects->unk_2f00 = range[0] + (s32) MainRandom_Below(range[1]);
-            if (objects->unk_2f00 < SKY_EVENTS_RAIN_MIN_INTERVAL) {
-                objects->unk_2f00 = SKY_EVENTS_RAIN_MIN_INTERVAL;
+            objects->fall_interval = range[0] + (s32) MainRandom_Below(range[1]);
+            if (objects->fall_interval < SKY_EVENTS_RAIN_MIN_INTERVAL) {
+                objects->fall_interval = SKY_EVENTS_RAIN_MIN_INTERVAL;
             }
-            objects->unk_2f04 = 0;
+            objects->fall_sum = 0;
             break;
         }
     }
     if (level == 4) {
         SkyEvents_HeavyThunder(objects);
     }
-    Approach_S32((int *) (void *) &objects->unk_2f54, next == SKY_WEATHER_HEAVY_RAIN ? 0x1000 : 0x800, 2);
+    Approach_S32((int *) (void *) &objects->wind, next == SKY_WEATHER_HEAVY_RAIN ? 0x1000 : 0x800, 2);
 }
 CLEAN_AS(func_020bd938, SkyEvents_Rain)
 
@@ -485,9 +485,9 @@ void SkyEvents_StartFalling(SkyObjects *objects)
     int moderate = data_021f75b0.weather == SKY_WEATHER_RAIN;
     int heavy = data_021f75b0.weather == SKY_WEATHER_HEAVY_RAIN;
     if (!moderate && !heavy) {
-        objects->unk_2f08 = 0;
-        objects->unk_2f0c = 0;
-        objects->unk_2f54 = 0;
+        objects->fall_rate = 0;
+        objects->fall_intervals = 0;
+        objects->wind = 0;
         return;
     }
     int kind = SKY_OBJECT_UNDRAWN; /* none */
@@ -496,15 +496,15 @@ void SkyEvents_StartFalling(SkyObjects *objects)
     } else if (data_021f75b0.precipitation == SKY_FALLING_SNOW) {
         kind = SKY_OBJECT_SNOW;
     }
-    objects->unk_2f08 = SKY_EVENTS_FALL_MAX;
-    objects->unk_2f0c = SKY_EVENTS_FALL_GROWN;
+    objects->fall_rate = SKY_EVENTS_FALL_MAX;
+    objects->fall_intervals = SKY_EVENTS_FALL_GROWN;
     if (kind != SKY_OBJECT_UNDRAWN) {
         int count = moderate ? 15 : 20;
         for (int i = 0; i < count; i++) {
             SkyObjects_Add(objects, kind, SKY_ENTRY_ANY, NULL, 1);
         }
     }
-    objects->unk_2f54 = moderate ? 0x800 : 0x1000;
+    objects->wind = moderate ? 0x800 : 0x1000;
 }
 CLEAN_AS(func_020bdb24, SkyEvents_StartFalling)
 
@@ -559,9 +559,9 @@ CLEAN_AS(func_020bdfd8, SkyEvents_Refresh)
  * (SKY_EVENT_45), 0x13 or 0xf (SKY_EVENT_SHOW). */
 void SkyEvents_ReadCalendar(SkyObjects *objects)
 {
-    objects->unk_2f24[SKY_EVENT_44] = 0;
-    objects->unk_2f24[SKY_EVENT_45] = 0;
-    objects->unk_2f24[SKY_EVENT_SHOW] = 0;
+    objects->events[SKY_EVENT_44] = 0;
+    objects->events[SKY_EVENT_45] = 0;
+    objects->events[SKY_EVENT_SHOW] = 0;
     DateTime now = {0};
     DateTime when;
     EventCalendarEvent events[EVENT_CALENDAR_DAY_EVENTS];
@@ -575,11 +575,11 @@ void SkyEvents_ReadCalendar(SkyObjects *objects)
             continue;
         }
         if (id == EVENT_CALENDAR_EVENT_44) {
-            objects->unk_2f24[SKY_EVENT_44] = 1;
+            objects->events[SKY_EVENT_44] = 1;
         } else if (id == EVENT_CALENDAR_EVENT_45) {
-            objects->unk_2f24[SKY_EVENT_45] = 1;
+            objects->events[SKY_EVENT_45] = 1;
         } else if (id == 0x13 || id == 0xf) {
-            objects->unk_2f24[SKY_EVENT_SHOW] = 1;
+            objects->events[SKY_EVENT_SHOW] = 1;
         }
     }
 }

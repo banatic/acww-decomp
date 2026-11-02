@@ -38,13 +38,13 @@ static SkyKind2Vars *sky_kind2_vars(SkyObject *object)
 /* func_020c0f04: kind 3 taken down: the byte that says it is seen cleared. */
 void SkyKind3_TakeDown(SkyObject *object)
 {
-    data_021f8b48.unk_2f50 = 0;
+    data_021f8b48.kind3_seen = 0;
     SkyObjectKinds_Remove(object);
 }
 CLEAN_AS(func_020c0f04, SkyKind3_TakeDown)
 
 /* func_020c0f18: a frame of kind 3: moved; done once more than 35 pixels off the screen's
- * left, top or right or below line 202; seen (SkyObjects.unk_2f50) while unmarked and inside
+ * left, top or right or below line 202; seen (SkyObjects.kind3_seen) while unmarked and inside
  * the screen. */
 void SkyKind3_Run(SkyObject *object)
 {
@@ -54,7 +54,7 @@ void SkyKind3_Run(SkyObject *object)
     int y = body->position.y >> 12;
     int gone = y < -35 || y > 202 || x < -35 || x > 291;
     int seen = sky_kind2_vars(object)->param == 0 && !gone && y > 0 && y < 192 && x > 0 && x < 256;
-    data_021f8b48.unk_2f50 = (u8) seen;
+    data_021f8b48.kind3_seen = (u8) seen;
     if (gone) {
         body->state = SKY_OBJECT_DONE;
     }
@@ -94,7 +94,7 @@ void SkyKind3_SetUp(SkyObject *object)
     body->rotation = (u16) (angle - 0x4000);
     body->animation = SKY_KIND3_ANIMATION;
     body->priority = SKY_KIND3_PRIORITY;
-    data_021f8b48.unk_2f50 = 0;
+    data_021f8b48.kind3_seen = 0;
     SkyObjectKinds_PlayHeldAt(object, SKY_KIND3_SOUND_SOURCE, SKY_KIND3_SOUND);
 }
 CLEAN_AS(func_020c0f8c, SkyKind3_SetUp)

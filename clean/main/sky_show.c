@@ -454,7 +454,7 @@ static int sky_show_is_on(SkyObjects *objects, int *midnight)
         if (hour >= SKY_SHOW_UNTIL_HOUR) {
             return 0;
         }
-        *midnight = hour == 0 && objects->time.minute == 0 && objects->unk_2f1c == 0;
+        *midnight = hour == 0 && objects->time.minute == 0 && objects->second == 0;
         return 1;
     }
     if (event == SKY_SHOW_EVENT_F) {

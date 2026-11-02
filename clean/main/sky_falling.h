@@ -7,7 +7,7 @@
  * factor of their layer, and wrapped around from one side to the other past x -20 or x 276.
  *
  * - A drop falls in a straight line, 0x24 a frame along an angle from the objects' wind
- *   (SkyObjects.unk_2f54) and Sky.unk_1538, turned to match, one of three looks; it is done
+ *   (SkyObjects.wind) and Sky.unk_1538, turned to match, one of three looks; it is done
  *   once it has fallen to its own line, 256 to 447 pixels down by its look.
  * - A flake falls at its layer's speed, swaying sideways by a sine, and is done below y 468. */
 #ifndef CLEAN_MAIN_SKY_FALLING_H
