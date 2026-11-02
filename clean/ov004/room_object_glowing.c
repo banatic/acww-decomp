@@ -16,7 +16,6 @@ static_assert(offsetof(GlowingRoomObject, state) == 0x89c, "state");
 static_assert(sizeof(GlowingRoomObject) == 0x8a0, "the size GlowingRoomObject_Create allocates");
 
 #define GLOWING_ROOM_OBJECT_SIZE 0x8a0
-#define ONE 0x1000       /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0 /* RoomObject_PlayAnimsFrom: start again at the end */
 #define ANIM_MODE_ONCE 1
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
@@ -57,7 +56,7 @@ int GlowingRoomObject_EnterOn(GlowingRoomObject *object)
 {
     RoomObject_PlaySound1(&object->base);
     Switch_Set(&object->base.light_switch, 1, 0);
-    RoomObject_PlayAnimsFrom(&object->base, 1, ANIM_MODE_LOOP, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 1, ANIM_MODE_LOOP, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022120b0, GlowingRoomObject_EnterOn)
@@ -81,7 +80,7 @@ int GlowingRoomObject_EnterOff(GlowingRoomObject *object)
 {
     RoomObject_PlaySound2(&object->base);
     Switch_Set(&object->base.light_switch, 0, 0);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02212124, GlowingRoomObject_EnterOff)
@@ -155,7 +154,7 @@ CLEAN_AS(_ZN18Obj_ov004_022509ac19func_ov004_02212264Ev, GlowingRoomObject_Updat
 int GlowingRoomObject_Start(GlowingRoomObject *object)
 {
     RoomObject *base = &object->base;
-    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
     if (base->unk_76C == 1) {
         RoomSync_SetState(&object->base, GLOWING_OFF, SLOT_70_VALUE, 1);

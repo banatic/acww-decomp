@@ -35,13 +35,11 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 /* A place's destructor, handed to the C++ runtime: the game's. */
 extern void func_ov004_02233ff4(void *drop);
 
-#define ONE 0x1000
-
 /* The arc: frames to the ground (or to a height), the speed up it starts with, the pull down
  * each frame, and the bounce. */
 #define FLIGHT_FRAMES 9
 #define FLIGHT_FRAMES_HIGH 12
-#define FLIGHT_RISE ONE
+#define FLIGHT_RISE FX32_ONE
 #define FLIGHT_RISE_HIGH 0x1800
 #define GRAVITY 0x400
 #define BOUNCE_RISE 0x600
@@ -144,7 +142,7 @@ void DroppedItems_Draw(DroppedItem *items)
             case 3:
             case 4: {
                 Vec3 position = drop->position;
-                Vec3 scale = {ONE, ONE, ONE};
+                Vec3 scale = {FX32_ONE, FX32_ONE, FX32_ONE};
                 IconModels_DrawItem(data_ov004_02258ae4, item, &position, &scale, 0, 0, 0);
                 break;
             }
@@ -193,8 +191,8 @@ CLEAN_AS(func_ov004_0223380c, DroppedItems_Reset)
 void DroppedItem_Fly(DroppedItem *drop)
 {
     drop->scale.x += GROWTH;
-    if (drop->scale.x >= ONE) {
-        drop->scale.x = ONE;
+    if (drop->scale.x >= FX32_ONE) {
+        drop->scale.x = FX32_ONE;
     }
     drop->scale.z = drop->scale.x;
     drop->velocity.y -= GRAVITY;
@@ -246,7 +244,7 @@ void DroppedItem_Launch(DroppedItem *drop, const TileChangesTile *tile, const Ve
     drop->item_0a = item;
     drop->position = *from;
     drop->scale.x = 0;
-    drop->scale.y = ONE;
+    drop->scale.y = FX32_ONE;
     drop->scale.z = 0;
     switch (ITEM_KIND(item)) {
         case 3:

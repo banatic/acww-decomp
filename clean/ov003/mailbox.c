@@ -48,7 +48,6 @@ static_assert(offsetof(MailboxAnim, target) == 0x18, "anim target");
 static_assert(sizeof(MailboxAnim) == 0x20, "anim");
 static_assert(offsetof(MailboxAnimFile, frames) == 0x04, "anim file frames");
 
-#define MAILBOX_ONE 0x1000 /* normal speed, 20.12 fixed point */
 /* The modes of the joint animations: from the first frame on, or from the last frame back. */
 #define MAILBOX_PLAY_FORWARD 1
 #define MAILBOX_PLAY_BACKWARD 3
@@ -90,7 +89,7 @@ static void mailbox_play_from_end(Mailbox *mailbox, unsigned int slot, int mode)
 {
     const MailboxAnimFile *counted = mailbox_anim_file(mailbox, slot);
     const MailboxAnimFile *file = mailbox_anim_file(mailbox, slot);
-    AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) file, mode, MAILBOX_ONE,
+    AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) file, mode, FX32_ONE,
                         (u16) (counted->frames - 1), 0);
 }
 
@@ -191,7 +190,7 @@ CLEAN_AS(func_ov003_0221e038, Mailbox_RunOpening)
 int Mailbox_EnterOpening(Mailbox *mailbox)
 {
     AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_B),
-                        MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0, 0);
+                        MAILBOX_PLAY_FORWARD, FX32_ONE, 0, 0);
     SceneActorSound_Play((SceneActorSound *) mailbox->sound, MAILBOX_SE_OPEN);
     return 1;
 }
@@ -212,7 +211,7 @@ int Mailbox_EnterFull(Mailbox *mailbox)
     mailbox_play_from_end(mailbox, MAILBOX_SLOT_ANIM_A, MAILBOX_PLAY_FORWARD);
     void *render_object = ModelObject_RenderObject((ModelObject *) mailbox->model_object);
     void *file = (void *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) mailbox, 0);
-    ModelAnim_Restart((ModelAnim *) &mailbox->pattern, render_object, file, MAILBOX_PATTERN_FULL, MAILBOX_ONE, 0);
+    ModelAnim_Restart((ModelAnim *) &mailbox->pattern, render_object, file, MAILBOX_PATTERN_FULL, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov003_0221e0fc, Mailbox_EnterFull)
@@ -233,7 +232,7 @@ CLEAN_AS(func_ov003_0221e16c, Mailbox_RunArriving)
 int Mailbox_EnterArriving(Mailbox *mailbox)
 {
     AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_A),
-                        MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0, 0);
+                        MAILBOX_PLAY_FORWARD, FX32_ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov003_0221e1a4, Mailbox_EnterArriving)
@@ -253,10 +252,10 @@ CLEAN_AS(func_ov003_0221e1d8, Mailbox_RunEmpty)
 int Mailbox_EnterEmpty(Mailbox *mailbox)
 {
     AnimatedModel_Start((AnimatedModel *) mailbox->model_object, (const u8 *) mailbox_anim_file(mailbox, MAILBOX_SLOT_ANIM_A),
-                        MAILBOX_PLAY_FORWARD, MAILBOX_ONE, 0, 0);
+                        MAILBOX_PLAY_FORWARD, FX32_ONE, 0, 0);
     void *render_object = ModelObject_RenderObject((ModelObject *) mailbox->model_object);
     void *file = (void *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) mailbox, 0);
-    ModelAnim_Restart((ModelAnim *) &mailbox->pattern, render_object, file, MAILBOX_PATTERN_EMPTY, MAILBOX_ONE, 0);
+    ModelAnim_Restart((ModelAnim *) &mailbox->pattern, render_object, file, MAILBOX_PATTERN_EMPTY, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov003_0221e1f4, Mailbox_EnterEmpty)
@@ -671,7 +670,7 @@ int Mailbox_SetUp(Mailbox *mailbox)
     if (SceneActor_SrtAnim((SceneActor *) mailbox, 0) != 0 &&
         ModelAnim_AllocMaterialAnim(pattern, actor->model, data_021c9b1c) != 0) {
         ModelAnim_Start(pattern, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) mailbox, 0),
-                        MAILBOX_PATTERN_SETUP_FLAGS, MAILBOX_ONE, 0);
+                        MAILBOX_PATTERN_SETUP_FLAGS, FX32_ONE, 0);
         ModelAnim_Attach(pattern, ModelObject_RenderObject((ModelObject *) (void *) mailbox->model_object));
     }
 

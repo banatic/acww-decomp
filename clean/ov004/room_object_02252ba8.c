@@ -31,7 +31,6 @@ static_assert(offsetof(RoomObject02252ba8, state) == 0x862, "state");
 static_assert(sizeof(RoomObject02252ba8) == 0x864, "the size RoomObject02252ba8_Create allocates");
 
 #define ROOM_OBJECT_02252BA8_SIZE 0x864
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0   /* start again at the end */
 #define ANIM_MODE_ONCE 1   /* stop at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
@@ -102,7 +101,7 @@ CLEAN_AS(func_ov004_02214c50, RoomObject02252ba8_UpdatePlaying)
 int RoomObject02252ba8_EnterPlaying(RoomObject02252ba8 *object)
 {
     Switch_Set(&object->base.light_switch, 1, 0);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_LOOP, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     AnimatedModel_Start(&object->base.model, (const u8 *) RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP, 0, 0, 0);
     return 1;
 }
@@ -435,7 +434,7 @@ int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
     object->frames = 0;
     base->unk_77C = NO_STEP;
     RoomObject02252ba8_InitCue(object, (u16) FurnitureSounds_Sound3(RoomObject_Number(base)));
-    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     ModelObject_AllocJointResults(
         &base->model.object, (Heap *) (uintptr_t) ModelPoolEntry_Heap((void *) (uintptr_t) (u32) RoomObject_PoolEntry(base)));
     if (base->unk_76C == 1) {

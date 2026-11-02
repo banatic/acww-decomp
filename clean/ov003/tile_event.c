@@ -400,8 +400,6 @@ extern void func_ov003_02221c9c(void *transform);
 #define TILE_EVENT_VOLUME 0x7f
 /* What an entry ends as. */
 #define TILE_EVENT_KIND_ENDED 15
-/* 1.0 in 20.12 fixed point. */
-#define TILE_EVENT_ONE 0x1000
 
 static SoundEmitter *tile_event_sound(TileEventEntry *entry)
 {
@@ -619,9 +617,9 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
         case 3:
         case 4:
             draw->item_point = draw->point;
-            draw->item_scale.x = TILE_EVENT_ONE;
-            draw->item_scale.y = TILE_EVENT_ONE;
-            draw->item_scale.z = TILE_EVENT_ONE;
+            draw->item_scale.x = FX32_ONE;
+            draw->item_scale.y = FX32_ONE;
+            draw->item_scale.z = FX32_ONE;
             TownItemModels_DrawItem(data_ov003_0223cf70, entry->id, &draw->item_point, entry->countdown, &draw->item_scale, 0,
                                     0, 0);
             return;
@@ -751,7 +749,7 @@ void TileEvent_InitKind14(TileEventEntry *entry, const TileChangesTile *tile, st
 {
     tile_event_centre(&entry->position, tile);
     entry->id = AcreTile_UnitByte09(map, tile->x, tile->z) == 0 ? TILE_EVENT_ID_UNIT_0 : TILE_EVENT_ID_UNIT_SET;
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     tile_event_stop(entry);
     TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
     TileChangesTile at = entry->tile;
@@ -812,7 +810,7 @@ void TileEvent_StepKind12(TileEventEntry *entry)
             tile_event_centre(&centre, &entry->tile);
             fx32 dz = (centre.z - entry->position.z) / 8;
             entry->velocity.x = (centre.x - entry->position.x) / 8;
-            entry->velocity.y = TILE_EVENT_ONE;
+            entry->velocity.y = FX32_ONE;
             entry->velocity.z = dz;
             entry->state = 1;
             Block020ba298_SetByte7Or8(0);
@@ -881,7 +879,7 @@ CLEAN_AS(func_ov003_02221cb4, TileEvent_StepKind11)
 /* func_ov003_02221d3c: kind 0xb's start: scale 1.0; the tile emptied on the map. */
 void TileEvent_InitKind11(TileEventEntry *entry, const TileChangesTile *tile)
 {
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
 }
 CLEAN_AS(func_ov003_02221d3c, TileEvent_InitKind11)
@@ -907,7 +905,7 @@ CLEAN_AS(func_ov003_02221d64, TileEvent_StepKind10)
 void TileEvent_InitKind10(TileEventEntry *entry, const TileChangesTile *tile)
 {
     tile_event_centre(&entry->position, tile);
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     tile_event_stop(entry);
     TileEvent_LetGoChange(entry);
 }
@@ -927,8 +925,8 @@ static int tile_event_fall(TileEventEntry *entry)
 void TileEvent_StepKind9(TileEventEntry *entry)
 {
     entry->scale.x += 0x19a;
-    if (entry->scale.x >= TILE_EVENT_ONE) {
-        entry->scale.x = TILE_EVENT_ONE;
+    if (entry->scale.x >= FX32_ONE) {
+        entry->scale.x = FX32_ONE;
     }
     entry->scale.z = entry->scale.x;
     if (tile_event_fall(entry)) {
@@ -952,10 +950,10 @@ void TileEvent_InitKind9(TileEventEntry *entry, const TileChangesTile *tile, con
     tile_event_centre(&centre, tile);
     fx32 dz = (centre.z - from->z) / 8;
     entry->velocity.x = (centre.x - from->x) / 8;
-    entry->velocity.y = TILE_EVENT_ONE;
+    entry->velocity.y = FX32_ONE;
     entry->velocity.z = dz;
     tile_event_place(entry, from);
-    tile_event_set_scale(entry, 0, TILE_EVENT_ONE, 0);
+    tile_event_set_scale(entry, 0, FX32_ONE, 0);
     entry->finish_change = 0;
     SoundEmitter_PlayB(tile_event_sound(entry), tile_event_is_14xx(id) ? 0x74 : 0x75, TILE_EVENT_VOLUME, 0);
 }
@@ -980,9 +978,9 @@ void TileEvent_InitKind8(TileEventEntry *entry, const TileChangesTile *tile, int
 {
     tile_event_centre(&entry->position, tile);
     entry->velocity.x = (tile_event_sin((u16) angle) * 0x400) >> 12;
-    entry->velocity.y = TILE_EVENT_ONE;
+    entry->velocity.y = FX32_ONE;
     entry->velocity.z = (tile_event_cos((u16) angle) * 0x400) >> 12;
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     entry->finish_change = 0;
     TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
 }
@@ -999,7 +997,7 @@ void TileEvent_StepKind7(TileEventEntry *entry)
             if (tile_event_fall(entry)) {
                 entry->position.y = 0;
                 entry->velocity.x = 0;
-                entry->velocity.y = TILE_EVENT_ONE;
+                entry->velocity.y = FX32_ONE;
                 entry->velocity.z = 0;
                 entry->state = 1;
             }
@@ -1046,7 +1044,7 @@ void TileEvent_InitKind7(TileEventEntry *entry, const TileChangesTile *tile, con
     entry->velocity.y = 0x800;
     entry->velocity.z = 0x300;
     tile_event_place(entry, from);
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     SoundEmitter_PlayB(tile_event_sound(entry), 0x7d6, TILE_EVENT_VOLUME, 0);
     TileEvent_LetGoChange(entry);
     TileRequests_ForbidItemDrop();
@@ -1081,7 +1079,7 @@ void TileEvent_InitKind6(TileEventEntry *entry, const TileChangesTile *tile, con
     entry->velocity.y = dy;
     entry->velocity.z = dz;
     tile_event_place(entry, from);
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     if (entry->angle != 0) {
         TileEvent_LetGoChange(entry);
     }
@@ -1102,7 +1100,7 @@ void TileEvent_StepKind5(TileEventEntry *entry)
         tile_event_centre(&centre, &entry->tile);
         fx32 dz = (centre.z - entry->position.z) / 8;
         entry->velocity.x = (centre.x - entry->position.x) / 8;
-        entry->velocity.y = TILE_EVENT_ONE;
+        entry->velocity.y = FX32_ONE;
         entry->velocity.z = dz;
         entry->state = 1;
         if (tile_event_is_14xx(entry->id)) {
@@ -1126,7 +1124,7 @@ void TileEvent_InitKind5(TileEventEntry *entry, const TileChangesTile *tile, con
     entry->velocity.y = 0x800;
     entry->velocity.z = 0x300;
     tile_event_place(entry, from);
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     if (entry->angle != 0) {
         entry->finish_change = 0;
     }
@@ -1200,7 +1198,7 @@ void TileEvent_InitKind3(TileEventEntry *entry, const TileChangesTile *tile, str
 {
     tile_event_centre(&entry->position, tile);
     entry->id = AcreTile_UnitByte09(map, tile->x, tile->z) == 0 ? TILE_EVENT_ID_UNIT_0 : TILE_EVENT_ID_UNIT_SET;
-    tile_event_set_scale(entry, TILE_EVENT_ONE, TILE_EVENT_ONE, TILE_EVENT_ONE);
+    tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     tile_event_stop(entry);
     TileEvent_SetTownItem(tile->x, tile->z, TILE_EVENT_EMPTY, 0);
 }
@@ -1211,7 +1209,7 @@ CLEAN_AS(func_ov003_0222250c, TileEvent_InitKind3)
 void TileEvent_InitKind2(TileEventEntry *entry, const TileChangesTile *tile)
 {
     tile_event_centre(&entry->position, tile);
-    tile_event_set_scale(entry, 0, TILE_EVENT_ONE, 0);
+    tile_event_set_scale(entry, 0, FX32_ONE, 0);
     tile_event_stop(entry);
     entry->finish_change = 0;
     entry->release_change = 1;
@@ -1223,8 +1221,8 @@ CLEAN_AS(func_ov003_02222560, TileEvent_InitKind2)
 void TileEvent_StepKind1(TileEventEntry *entry)
 {
     entry->scale.x += 0x571;
-    if (entry->scale.x >= TILE_EVENT_ONE) {
-        entry->scale.x = TILE_EVENT_ONE;
+    if (entry->scale.x >= FX32_ONE) {
+        entry->scale.x = FX32_ONE;
         TileEvent_End(entry);
     }
     entry->scale.z = entry->scale.x;
@@ -1239,7 +1237,7 @@ CLEAN_AS(func_ov003_02222598, TileEvent_StepKind1)
 void TileEvent_InitKind1(TileEventEntry *entry, const TileChangesTile *tile, struct AcreMap *map, int extra)
 {
     tile_event_centre(&entry->position, tile);
-    tile_event_set_scale(entry, 0, TILE_EVENT_ONE, 0);
+    tile_event_set_scale(entry, 0, FX32_ONE, 0);
     tile_event_stop(entry);
 
     u16 *item = tile_event_item(map, tile->x, tile->z);
@@ -1275,8 +1273,8 @@ CLEAN_AS(func_ov003_022225c4, TileEvent_InitKind1)
 void TileEvent_StepKind0(TileEventEntry *entry)
 {
     entry->scale.x += 0x19a;
-    if (entry->scale.x >= TILE_EVENT_ONE) {
-        entry->scale.x = TILE_EVENT_ONE;
+    if (entry->scale.x >= FX32_ONE) {
+        entry->scale.x = FX32_ONE;
     }
     entry->scale.z = entry->scale.x;
     if (!tile_event_fall(entry)) {
@@ -1308,10 +1306,10 @@ void TileEvent_InitKind0(TileEventEntry *entry, const TileChangesTile *tile, con
     tile_event_centre(&centre, tile);
     fx32 dz = (centre.z - from->z) / 9;
     entry->velocity.x = (centre.x - from->x) / 9;
-    entry->velocity.y = TILE_EVENT_ONE;
+    entry->velocity.y = FX32_ONE;
     entry->velocity.z = dz;
     tile_event_place(entry, from);
-    tile_event_set_scale(entry, 0, TILE_EVENT_ONE, 0);
+    tile_event_set_scale(entry, 0, FX32_ONE, 0);
 
     int sound = -1;
     if (!tile_event_is_14xx(entry->id)) {

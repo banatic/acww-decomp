@@ -46,8 +46,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 /* The model hook handed to the game (aquarium_fish.c). */
 extern void func_ov004_0223653c(G3dRenderState *state);
 
-#define ONE 0x1000
-
 /* The kinds with classes of two kinds. */
 #define KIND_FISH_12 12
 #define KIND_FISH_30 30
@@ -318,7 +316,7 @@ void AquariumKind10_StartDart(AquariumKind10 *fish)
     fish->own.speed = AquariumSwim_RandomUnits(2, 4) / 100;
     fish->base.timer = 0;
     fish->base.position.y = 0x700;
-    fish->own.anim_speed = ONE;
+    fish->own.anim_speed = FX32_ONE;
     fish->base.model.frames.speed = fish->own.anim_speed;
     fish->own.state = AQUARIUM_KIND10_DART;
 }
@@ -458,7 +456,7 @@ void AquariumHomeFish_SwimKind12(AquariumHomeFish *fish)
     }
     Kinds_run_mode(base);
     AquariumFish_Turn(base);
-    if (AquariumSwim_TurnTowards(&base->yaw, &base->position, &fish->own.home, ONE)) {
+    if (AquariumSwim_TurnTowards(&base->yaw, &base->position, &fish->own.home, FX32_ONE)) {
         AquariumSwim_WatchGlass(base);
     } else if (base->glass_turning) {
         base->mode = AQUARIUM_MODE_NEW_COURSE;
@@ -478,7 +476,7 @@ CLEAN_AS(func_ov004_02237134, AquariumHomeFish_SwimKind12)
 void AquariumHomeFish_SwimKind38(AquariumHomeFish *fish)
 {
     AquariumFish *base = &fish->base;
-    fish->own.at_home = Vec_Distance(&base->position, &fish->own.home) <= ONE;
+    fish->own.at_home = Vec_Distance(&base->position, &fish->own.home) <= FX32_ONE;
     if (fish->own.homing != AQUARIUM_HOMING_OFF) {
         AquariumHomeFish_RunHoming(fish);
         AquariumHomeFish_CheckTapped(fish);
@@ -490,7 +488,7 @@ void AquariumHomeFish_SwimKind38(AquariumHomeFish *fish)
     }
     Kinds_run_mode(base);
     AquariumFish_Turn(base);
-    if (AquariumSwim_TurnTowards(&base->yaw, &base->position, &fish->own.home, ONE)) {
+    if (AquariumSwim_TurnTowards(&base->yaw, &base->position, &fish->own.home, FX32_ONE)) {
         if (fish->own.since_rest >= fish->own.rest_interval) {
             fish->own.since_rest = 0;
             fish->own.homing = AQUARIUM_HOMING_GO;
@@ -541,10 +539,10 @@ void AquariumHomeFish_SetUp(AquariumHomeFish *fish)
     fish->base.focus = (u8) fish->base.index;
     fish->base.yield_to = (u8) fish->base.index;
     if (fish->base.index == KIND_FISH_38) {
-        AquariumHomeFish_set(&fish->own.home, 0x9e00, ONE, 0x14700);
+        AquariumHomeFish_set(&fish->own.home, 0x9e00, FX32_ONE, 0x14700);
         AquariumHomeFish_set(&fish->own.rest_point, 0xa100, 0xb00, 0x14a00);
     } else if (fish->base.index == KIND_FISH_12) {
-        AquariumHomeFish_set(&fish->own.home, 0x15900, ONE, 0x13900);
+        AquariumHomeFish_set(&fish->own.home, 0x15900, FX32_ONE, 0x13900);
     }
     AquariumFish_SetSwim(&fish->base);
 }
@@ -791,7 +789,7 @@ void AquariumKind30_Snap(AquariumKind30 *fish)
         fish->own.state = AQUARIUM_KIND30_FOLLOW;
         base->timer = 0;
     }
-    base->model.frames.speed = ONE;
+    base->model.frames.speed = FX32_ONE;
 }
 CLEAN_AS(func_ov004_022378ec, AquariumKind30_Snap)
 
@@ -840,7 +838,7 @@ void AquariumKind30_Follow(AquariumKind30 *fish)
         fish->own.state = AQUARIUM_KIND30_WANDER;
         base->timer = 0;
     }
-    base->model.frames.speed = ONE;
+    base->model.frames.speed = FX32_ONE;
 }
 CLEAN_AS(func_ov004_022379ec, AquariumKind30_Follow)
 
@@ -918,7 +916,7 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
     AquariumFish_TurnFromGlass(base);
     Kinds_run_mode(base);
     u16 last = Kinds_last_frame(base, 1);
-    if (base->model.frames.speed > ONE) {
+    if (base->model.frames.speed > FX32_ONE) {
         last = Kinds_last_frame(base, 2);
     }
     switch (fish->own.phase) {

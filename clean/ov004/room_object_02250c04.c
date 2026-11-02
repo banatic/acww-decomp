@@ -14,7 +14,6 @@
 static_assert(sizeof(RoomObject02250c04) == 0x844, "the size RoomObject02250c04_Create allocates");
 
 #define ROOM_OBJECT_02250C04_SIZE 0x844
-#define ONE 0x1000       /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0 /* start again at the end */
 #define ANIM_MODE_ONCE 1 /* stop at the end */
 #define ANIM_MODE_3 3    /* the animations' mode 3 */
@@ -34,9 +33,9 @@ static void RoomObject02250c04_play(RoomObject02250c04 *object, int forward, con
         *played = 1;
     }
     if (forward) {
-        RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+        RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     } else {
-        RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, ONE, (u16) (joints->frames - 1));
+        RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, FX32_ONE, (u16) (joints->frames - 1));
     }
 }
 

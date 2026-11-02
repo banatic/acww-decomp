@@ -47,7 +47,6 @@ extern void GXS_LoadOBJPltt(const void *src, u32 offset, u32 size);
 #define LABEL_SPRITE_BOX_LAYER_OBJECTS 4
 #define LABEL_SPRITE_BOX_BACKGROUND 0
 
-#define LABEL_SPRITE_FX_ONE 0x1000
 #define LABEL_SPRITE_CURRENT_FRAME (-1)
 #define LABEL_SPRITE_OBJ_MODE_WINDOW 2
 
@@ -242,8 +241,7 @@ CLEAN_AS(func_0208f268, LabelSprite_Update)
 static void label_sprite_draw_cell(LabelSprite *sprite, const OamEntry *cell, u32 x, u32 y, int palette, int obj_mode)
 {
     int screen = sprite->on_main != 0 ? OAM_BUFFER_SCREEN_MAIN : OAM_BUFFER_SCREEN_SUB;
-    OamBuffer_DrawCell(screen, cell, (int) x, (int) y, palette, -1, LABEL_SPRITE_FX_ONE, LABEL_SPRITE_FX_ONE, 0, obj_mode, 0,
-                       0);
+    OamBuffer_DrawCell(screen, cell, (int) x, (int) y, palette, -1, FX32_ONE, FX32_ONE, 0, obj_mode, 0, 0);
 }
 
 /* func_0208f288 (vtable slot 2): unless hidden, both cells drawn at the place plus the offset

@@ -46,7 +46,6 @@ static_assert(offsetof(CountdownBoard, digits) == 0x2d8, "board digits");
 static_assert(sizeof(CountdownBoard) == 0x2f0, "the size CountdownBoard_New allocates");
 
 #define COUNTDOWN_RECEIVER_OFFSET 0xec
-#define COUNTDOWN_ONE 0x1000       /* normal speed, 20.12 fixed point */
 #define COUNTDOWN_ANIM_ONCE 1      /* the digits' animation mode */
 #define COUNTDOWN_ANIM_BOARD 0     /* the board's animation mode */
 #define COUNTDOWN_NEW_YEAR_MONTH 1 /* January: the countdown is over */
@@ -196,7 +195,7 @@ int CountdownDigit_Update(CountdownDigit *digit)
     CountdownDigit_Tick(digit);
     void *render_object = ModelObject_RenderObject((ModelObject *) digit->model_object);
     void *file = (void *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) digit, 0);
-    ModelAnim_Restart((ModelAnim *) &digit->anim, render_object, file, COUNTDOWN_ANIM_ONCE, COUNTDOWN_ONE, digit->value);
+    ModelAnim_Restart((ModelAnim *) &digit->anim, render_object, file, COUNTDOWN_ANIM_ONCE, FX32_ONE, digit->value);
     return 1;
 }
 CLEAN_AS(func_ov003_0221c8ac, CountdownDigit_Update)
@@ -213,7 +212,7 @@ int CountdownDigit_Init(CountdownDigit *digit)
     SceneObjectBase_SetId((SceneObjectBase *) digit, digit->place);
     if (ModelAnim_AllocMaterialAnim((ModelAnim *) &digit->anim, digit->model, data_021c9b1c) != 0) {
         ModelAnim_Start((ModelAnim *) &digit->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) digit, 0),
-                        COUNTDOWN_ANIM_ONCE, COUNTDOWN_ONE, 0);
+                        COUNTDOWN_ANIM_ONCE, FX32_ONE, 0);
         ModelAnim_Attach((ModelAnim *) &digit->anim, ModelObject_RenderObject((ModelObject *) digit->model_object));
     }
     digit->running = 1;
@@ -322,7 +321,7 @@ CLEAN_AS(func_ov003_0221cb60, CountdownBoard_RunOver)
 int CountdownBoard_EnterOver(CountdownBoard *board)
 {
     ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) board, 1),
-                    COUNTDOWN_ANIM_BOARD, COUNTDOWN_ONE, 0);
+                    COUNTDOWN_ANIM_BOARD, FX32_ONE, 0);
     board->alpha = COUNTDOWN_ALPHA_FADED;
     return 1;
 }
@@ -348,7 +347,7 @@ CLEAN_AS(_ZN18Obj_ov003_02238c5419func_ov003_0221cbc0Ev, CountdownBoard_RunCount
 int CountdownBoard_EnterCounting(CountdownBoard *board)
 {
     ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) board, 0),
-                    COUNTDOWN_ANIM_BOARD, COUNTDOWN_ONE, 0);
+                    COUNTDOWN_ANIM_BOARD, FX32_ONE, 0);
     board->alpha = COUNTDOWN_ALPHA_OPAQUE;
     return 1;
 }
@@ -491,7 +490,7 @@ int CountdownBoard_Init(CountdownBoard *board)
     board->material = (s8) G3dRes_MaterialIndex(board->model, data_ov003_02238d90);
     if (ModelAnim_AllocMaterialAnim((ModelAnim *) &board->anim, board->model, data_021c9b1c) != 0) {
         ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) board, 0),
-                        COUNTDOWN_ANIM_BOARD, COUNTDOWN_ONE, 0);
+                        COUNTDOWN_ANIM_BOARD, FX32_ONE, 0);
         ModelAnim_Attach((ModelAnim *) &board->anim, ModelObject_RenderObject((ModelObject *) board->model_object));
     }
 

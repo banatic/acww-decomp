@@ -21,7 +21,6 @@ static_assert(offsetof(FurnitureMover, model.frames) == 0xc8, "the model's frame
 #define FILE_ALIGN 4
 #define MOVER_ITEM 0x3984 /* the furniture whose model the mover animates */
 #define ANIM_MODE_ONCE 1  /* stop at the end */
-#define ONE 0x1000        /* normal speed, 20.12 fixed point */
 #define ROOT_NODE 0
 
 /* NitroSystem's archive (NNSFndArchive), mounted on the stack while the files are taken out. */
@@ -142,7 +141,7 @@ int FurnitureMover_LoadModel(FurnitureMover *mover)
     if (ModelObject_SetModelTexture(&mover->model.object, mover->model_resource, NULL) != 0 &&
         AnimatedModel_LoadAnim(&mover->model, mover->heap) != 0) {
         const u8 *anim = (const u8 *) (uintptr_t) FurnitureMover_PushAnim(mover);
-        AnimatedModel_Start(&mover->model, anim, ANIM_MODE_ONCE, ONE, 0, 0);
+        AnimatedModel_Start(&mover->model, anim, ANIM_MODE_ONCE, FX32_ONE, 0, 0);
         AnimatedModel_Attach(&mover->model);
         ModelObject_SetInitHook(&mover->model.object, (void *) func_ov004_0223b1b8, mover);
         loaded = 1;
@@ -273,7 +272,7 @@ int FurnitureMover_Start(FurnitureMover *mover, const u8 *anim, FurnitureMoveFla
     if (flag->moving != 0 || mover->moving != 0 || anim == NULL) {
         return 0;
     }
-    AnimatedModel_Start(&mover->model, anim, ANIM_MODE_ONCE, ONE, 0, 0);
+    AnimatedModel_Start(&mover->model, anim, ANIM_MODE_ONCE, FX32_ONE, 0, 0);
     mover->moving = 1;
     flag->moving = mover->moving;
     mover->position.x = position->x;

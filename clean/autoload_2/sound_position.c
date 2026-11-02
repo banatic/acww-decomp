@@ -34,17 +34,16 @@ extern u32 func_020f5e3c(SoundParams *params);
 extern u32 func_020f5e14(SoundParams *params);
 extern u32 func_020f5c50(SoundParams *params);
 
-#define FX_ONE 0x1000
 #define VOLUME_MAX 0x7f
 #define PAN_MIN (-128)
 #define PAN_MAX 127
 /* The tracks SoundPosition_ApplyToHandle sets: 0-3. */
 #define POSITION_TRACKS 0x000f
 /* The listener sits 12 units behind the camera's origin in Z (modes 0 and 1). */
-#define LISTENER_Z (12 * FX_ONE)
+#define LISTENER_Z (12 * FX32_ONE)
 /* Mode 2 measures from (128, 80), with X counted in eighths and Y in quarters. */
-#define FLAT_CENTRE_X (128 * FX_ONE)
-#define FLAT_CENTRE_Y (80 * FX_ONE)
+#define FLAT_CENTRE_X (128 * FX32_ONE)
+#define FLAT_CENTRE_Y (80 * FX32_ONE)
 
 static fx32 add32(fx32 a, fx32 b)
 {
@@ -148,14 +147,14 @@ void SoundPosition_SetKnee(SoundDistanceCurve *curve, fx32 knee)
         return;
     }
     curve->knee = knee;
-    x = sub32(curve->knee, 11 * FX_ONE);
+    x = sub32(curve->knee, 11 * FX32_ONE);
 
-    curve->near_volume = sub32(127 * FX_ONE, fx_mul(x, 3 * FX_ONE));
-    curve->knee_volume = sub32(104 * FX_ONE, fx_mul(x, 4 * FX_ONE));
-    ratio = FX_Div(2 * FX_ONE, 3 * FX_ONE);
-    curve->near = add32(fx_mul(ratio, x), 4 * FX_ONE);
-    ratio = FX_Div(4 * FX_ONE, 3 * FX_ONE);
-    curve->far = add32(fx_mul(ratio, x), 17 * FX_ONE);
+    curve->near_volume = sub32(127 * FX32_ONE, fx_mul(x, 3 * FX32_ONE));
+    curve->knee_volume = sub32(104 * FX32_ONE, fx_mul(x, 4 * FX32_ONE));
+    ratio = FX_Div(2 * FX32_ONE, 3 * FX32_ONE);
+    curve->near = add32(fx_mul(ratio, x), 4 * FX32_ONE);
+    ratio = FX_Div(4 * FX32_ONE, 3 * FX32_ONE);
+    curve->far = add32(fx_mul(ratio, x), 17 * FX32_ONE);
     curve->slope_near = FX_Div(sub32(curve->near_volume, curve->knee_volume), sub32(curve->near, curve->knee));
     curve->slope_far = FX_Div(curve->knee_volume, sub32(curve->knee, curve->far));
 }
@@ -231,10 +230,10 @@ void SoundPosition_SplitVolumes(int z, int *volume_a, int *volume_b)
         a = 0;
     } else if (z <= 0x99a) {
         a = fx_mul(data_021fd23c, z) >> 12;
-    } else if (z > FX_ONE) {
+    } else if (z > FX32_ONE) {
         a = 0;
     } else {
-        a = sub32(127 * FX_ONE, fx_mul(data_021fd244, z - 0x99a)) >> 12;
+        a = sub32(127 * FX32_ONE, fx_mul(data_021fd244, z - 0x99a)) >> 12;
     }
 
     if (z <= 0x99a) {

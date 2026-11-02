@@ -94,7 +94,6 @@ static_assert(sizeof(SceneActor) == 0x2b4, "size");
 
 /* What SceneActor_GetStandPoint gives: a point 1.0 ahead of the first area, at height 0x200
  * and 0x200 back along z. */
-#define SCENE_ACTOR_ONE 0x1000
 #define SCENE_ACTOR_STAND_HEIGHT 0x200
 #define SCENE_ACTOR_STAND_BACK 0x200
 
@@ -476,8 +475,8 @@ int SceneActor_GetStandPoint(SceneActor *actor, Vec3 *point, s16 *angle)
     SceneActorArea *area = actor->areas;
     s16 facing = Math_Atan2(area->facing_x, area->facing_z);
     Vec3 ahead;
-    ahead.z = FX_MulFunc(SCENE_ACTOR_ONE, area->facing_z);
-    ahead.x = FX_MulFunc(SCENE_ACTOR_ONE, area->facing_x);
+    ahead.z = FX_MulFunc(FX32_ONE, area->facing_z);
+    ahead.x = FX_MulFunc(FX32_ONE, area->facing_x);
     ahead.y = 0;
     if (angle != NULL) {
         *angle = (s16) (facing + 0x8000);

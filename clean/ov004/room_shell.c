@@ -468,9 +468,6 @@ extern void func_020051b0(void *item);
 #define ROOM_SHELL_WALLPAPER_UNDER_DESIGN 0x1124
 #define ROOM_SHELL_CARPET_UNDER_DESIGN 0x1182
 
-/* The animations' speed, 1.0. */
-#define ROOM_SHELL_SPEED_ONE 0x1000
-
 /* The sound played on a change in Nook's shop. */
 #define ROOM_SHELL_SE_CHANGE 0x50
 /* The clock's tick, at frames 9 and 0x1d of the shared counter. */
@@ -611,12 +608,12 @@ void RoomShell_LoadModel(RoomShell *self)
     struct AnimatedModel *animated = RoomShell_animated(self);
     ModelObject_SetModelTexture(&self->model.object, layout->model, layout->texture);
     if (layout->animation != NULL && AnimatedModel_LoadAnim(animated, data_021c9b24)) {
-        AnimatedModel_Start(animated, layout->animation, 0, ROOM_SHELL_SPEED_ONE, 0, 0);
+        AnimatedModel_Start(animated, layout->animation, 0, FX32_ONE, 0, 0);
         AnimatedModel_Attach(animated);
     }
     if (layout->material_anim != NULL &&
         ModelAnim_AllocMaterialAnim(RoomShell_material_anim(self), self->model.object.model, data_021c9b24)) {
-        ModelAnim_Start(RoomShell_material_anim(self), layout->material_anim, 0, ROOM_SHELL_SPEED_ONE, 0);
+        ModelAnim_Start(RoomShell_material_anim(self), layout->material_anim, 0, FX32_ONE, 0);
         ModelAnim_Attach(RoomShell_material_anim(self), ModelObject_RenderObject(&self->model.object));
     }
 }

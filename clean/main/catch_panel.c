@@ -57,8 +57,6 @@ extern u64 OS_GetTick(void);
 #define CATCH_PANEL_SHIFT_SPEED_MAX 0x5000
 #define CATCH_PANEL_SHIFT_WAIT 10
 
-#define CATCH_PANEL_FX_ONE 0x1000
-
 /* The frames the panel stays once the countdown ended. */
 #define CATCH_PANEL_LINGER 600
 /* The seconds that beep, and the most milliseconds since the second before for a beep. */
@@ -387,7 +385,7 @@ u8 CatchPanel_ShouldShow(CatchPanel *panel)
     if (event != 0 && owner != 0) {
         int flag = StateFlags_Test4();
         fx32 value = StateFlags_ValueOrOne();
-        covered = flag == 0 || value < CATCH_PANEL_FX_ONE;
+        covered = flag == 0 || value < FX32_ONE;
     }
     if (no_owner || covered) {
         if (no_owner) {
@@ -640,9 +638,9 @@ void CatchPanel_Draw(CatchPanel *panel)
     int frame_x = CellAnim_FrameX(&panel->anim, -1);
     int frame_y = CellAnim_FrameY(&panel->anim, -1);
     int x = ScreenSprite_X(&panel->base) + frame_x;
-    int shift = (panel->shift + CATCH_PANEL_FX_ONE / 2) >> 12;
+    int shift = (panel->shift + FX32_ONE / 2) >> 12;
     int y = ScreenSprite_Y(&panel->base) + shift + frame_y;
-    OamBuffer_DrawCell(0, cell, x, y, -1, -1, CATCH_PANEL_FX_ONE, CATCH_PANEL_FX_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(0, cell, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208d20c, CatchPanel_Draw)
 

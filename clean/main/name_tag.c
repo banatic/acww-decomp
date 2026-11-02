@@ -62,7 +62,6 @@ extern void GX_LoadOBJPltt(const void *src, u32 offset, u32 size);
 #define NAME_TAG_HIDE_DROP 0xb
 
 #define NAME_TAG_ASKED 2
-#define NAME_TAG_FX_ONE 0x1000
 
 /* func_0208e044: the text box freed, if there is one. */
 void NameTag_FreeBox(NameTag *tag)
@@ -321,7 +320,7 @@ void NameTag_Draw(NameTag *tag)
     x += (u32) tag->shift_x + (u32) CellAnim_FrameX(&tag->anim, -1);
     u32 y = (u32) tag->y + (u32) ScreenSprite_Y(&tag->base);
     y += (u32) tag->bounce + (u32) CellAnim_FrameY(&tag->anim, -1);
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, (int) x, (int) y, -1, -1, NAME_TAG_FX_ONE, NAME_TAG_FX_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, (int) x, (int) y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208e354, NameTag_Draw)
 

@@ -27,8 +27,6 @@ static_assert(offsetof(ObjShadow, lengths) == 0x1c, "ObjShadow layout");
 static_assert(offsetof(ObjShadow, texture) == 0x30, "ObjShadow layout");
 static_assert(sizeof(ObjShadow) == 0x34, "ObjShadow layout");
 
-#define FX_ONE 0x1000
-
 /* The holder of a loaded model (func_020555c8 loads, func_02055454 frees, func_02055e7c draws
  * it with a scale). */
 typedef struct ShadowModel {
@@ -151,7 +149,7 @@ void CharaShadow_DrawUnder(const Vec3 *pos, int size)
 {
     Vec3 at = *pos;
     at.y -= CollisionQuery_FloorHeight(0) + 0x800;
-    CharaShadow_Draw(&at, size, 0xe00, FX_ONE);
+    CharaShadow_Draw(&at, size, 0xe00, FX32_ONE);
 }
 CLEAN_AS(func_020acbc8, CharaShadow_DrawUnder)
 
@@ -191,17 +189,17 @@ void CharaShadow_Draw(const Vec3 *pos, int size, fx32 fade_height, fx32 scale)
         int per_unit = FX_Div(0x1f000, fade_height);
         alpha -= FX_MulFunc(distance, per_unit) >> 12;
     }
-    if (scale != FX_ONE) {
+    if (scale != FX32_ONE) {
         alpha = (s32) ((u32) alpha * (u32) scale) >> 12;
     }
     if (alpha <= 1) {
         return;
     }
     if (height != 0) {
-        int shrink = FX_Div(-FX_ONE, fade_height);
-        int factor = FX_MulFunc(shrink, distance) + FX_ONE;
+        int shrink = FX_Div(-FX32_ONE, fade_height);
+        int factor = FX_MulFunc(shrink, distance) + FX32_ONE;
         if (factor >= 0xf33) {
-            factor = FX_ONE;
+            factor = FX32_ONE;
         }
         size = FX_MulFunc(size, factor);
     }
@@ -217,7 +215,7 @@ void CharaShadow_Draw(const Vec3 *pos, int size, fx32 fade_height, fx32 scale)
     Mtx43_RotateX(&data_021fbe48, slope);
     data_021f4790 = data_021fbe48;
 
-    Vec3 model_scale = {size, FX_ONE, size};
+    Vec3 model_scale = {size, FX32_ONE, size};
     ShadowMaterial *material = data_021f471c;
     if (material != NULL) {
         material->polygon_attr &= ~POLYGON_ATTR_ALPHA_MASK;
@@ -242,7 +240,7 @@ void CharaShadow_DrawLevel(const Vec3 *pos, int size, fx32 fade_height, int leve
     if (level == 0) {
         level = 1;
     }
-    fx32 scale = FX_ONE;
+    fx32 scale = FX32_ONE;
     if (level != 31) {
         scale = FX_Div((int) ((u32) (level - 1) << 12), 0x1e000);
     }
@@ -449,7 +447,7 @@ int ObjShadow_Init(ObjShadow *shadow, const Vec3 *origin, fx32 width, fx32 lengt
     fx32 *lengths = shadow->lengths;
     fx32 *row_t = shadow->row_t;
     for (u32 i = 0; i < shadow->rows; i++) {
-        row_t[i] = FX_MulFunc(FX_ONE - FX_Div(lengths[i], length), shadow->texture->height << 12);
+        row_t[i] = FX_MulFunc(FX32_ONE - FX_Div(lengths[i], length), shadow->texture->height << 12);
     }
     return 1;
 }
@@ -599,7 +597,7 @@ void ShadowLight_Update(void)
     Time now;
     Calendar_Now(&now);
     int minutes = now.minute + 60 * ((now.hour + 6) % 12);
-    data_021f47d0 = FX_MulFunc((int) ((u32) (FX_Div(minutes << 12, 720 << 12) - 0x800) << 1), FX_ONE);
+    data_021f47d0 = FX_MulFunc((int) ((u32) (FX_Div(minutes << 12, 720 << 12) - 0x800) << 1), FX32_ONE);
 
     Mtx43_Translation(&data_021fbe48, 0, 0, 0);
     Mtx43_Scale(&data_021fbe48, 32 << 12, 32 << 12, 32 << 12);
@@ -678,7 +676,7 @@ void ObjShadow_LoadAll(int load)
     if ((data_021f47d8 & 1) == 0) {
         data_021f47e8.x = 0;
         data_021f47e8.y = 0;
-        data_021f47e8.z = FX_ONE;
+        data_021f47e8.z = FX32_ONE;
         __register_global_object(&data_021f47e8, func_020012dc, data_021f4800);
         data_021f47d8 |= 1;
     }

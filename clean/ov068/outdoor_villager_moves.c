@@ -105,7 +105,6 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_PRIORITY_HIGH 2
 
 #define MOVES_SOUND_VOLUME 0x7f
-#define MOVES_SCALE_ONE 0x1000
 #define MOVES_SCALE_STEP 0x249
 #define MOVES_FRAMES_200 200
 #define MOVES_GIVE_UP_FRAMES 1200 /* the word at 0xf4 when behaviour 7 gives up */
@@ -332,16 +331,16 @@ int OutdoorVillagerMoves_Start16(OutdoorVillagerBehaviour *self, u8 *villager)
             u8 *frames = (u8 *) (uintptr_t) (u32) record + MOVES_ITEM_FRAMES;
             u32 end = (u32) ((FrameCtrl *) (void *) frames)->end;
             u32 whole = (end << 4) >> 16;
-            FrameCtrl_Init((FrameCtrl *) (void *) frames, whole, MOVES_FRAMES_BACKWARDS, MOVES_SCALE_ONE, (u16) (whole - 1));
+            FrameCtrl_Init((FrameCtrl *) (void *) frames, whole, MOVES_FRAMES_BACKWARDS, FX32_ONE, (u16) (whole - 1));
         }
-        HeldItemLink_SetScale(moves_link(villager), MOVES_SCALE_ONE);
+        HeldItemLink_SetScale(moves_link(villager), FX32_ONE);
         SoundEmitter_Play(moves_emitter(villager), MOVES_SOUND_CLOSE, MOVES_SOUND_VOLUME, 0);
         self->step = 1;
     } else {
         u16 word = data_020c80f8;
         SceneMotion_RequestAnimation(moves_motion(villager), MOVES_PRIORITY, MOVES_ANIM_NO_ITEM, 1, word, 0);
         HeldItemLink_Take(moves_link(villager), villager, &item, (void *) (uintptr_t) MOVES_ANIM_NO_ITEM, word);
-        HeldItemLink_SetScale(moves_link(villager), MOVES_SCALE_ONE);
+        HeldItemLink_SetScale(moves_link(villager), FX32_ONE);
         *moves_at(villager, MOVES_ITEM_SHOWN) = 1;
         self->step = 0;
     }
@@ -408,10 +407,10 @@ void OutdoorVillagerMoves_Grow15(OutdoorVillagerBehaviour *self, u8 *villager)
     if (moves_frame(villager) == MOVES_FRAME_OPEN) {
         SpeakerAnim_PlayItemPose(moves_anim(villager), villager, &moves_link(villager)->item, 0, MOVES_POSE_ITEM);
     }
-    if (scale != MOVES_SCALE_ONE) {
+    if (scale != FX32_ONE) {
         scale += MOVES_SCALE_STEP;
-        if (scale > MOVES_SCALE_ONE) {
-            scale = MOVES_SCALE_ONE;
+        if (scale > FX32_ONE) {
+            scale = FX32_ONE;
         }
     }
     HeldItemLink_SetScale(moves_link(villager), scale);
@@ -435,7 +434,7 @@ int OutdoorVillagerMoves_Start15(OutdoorVillagerBehaviour *self, u8 *villager)
         SceneMotion_RequestAnimation(moves_motion(villager), MOVES_PRIORITY, MOVES_ANIM_ITEM, 1, word, 0);
         HeldItemLink_Take(moves_link(villager), villager, &item, (void *) (uintptr_t) MOVES_ANIM_ITEM, word);
         HeldItemLink_Act(moves_link(villager), MOVES_ITEM_ACTION, word, 1);
-        HeldItemLink_SetScale(moves_link(villager), MOVES_SCALE_ONE);
+        HeldItemLink_SetScale(moves_link(villager), FX32_ONE);
         *moves_at(villager, MOVES_ITEM_SHOWN) = 0;
         self->step = 1;
     } else {

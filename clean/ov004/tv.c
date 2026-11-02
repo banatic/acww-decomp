@@ -25,7 +25,6 @@ static_assert(sizeof(Tv) == 0x868, "the size Tv_Create allocates");
 static_assert(sizeof(TvAnimated) == 0x868, "the size TvAnimated_Create allocates");
 
 #define TV_SIZE 0x868
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_ONCE 1   /* stop at the end */
 #define ANIM_MODE_3 3      /* the animations' mode 3 */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
@@ -105,7 +104,7 @@ CLEAN_AS(func_ov004_02215758, TvAnimated_UpdateTurningOff)
 int TvAnimated_EnterTurningOff(TvAnimated *tv)
 {
     TvAnimated_show(tv, 0);
-    RoomObject_PlayAnimsFromEnd(&tv->base.base, 0, ANIM_MODE_3, ONE);
+    RoomObject_PlayAnimsFromEnd(&tv->base.base, 0, ANIM_MODE_3, FX32_ONE);
     RoomObject_PlaySound2(&tv->base.base);
     return 1;
 }
@@ -127,7 +126,7 @@ CLEAN_AS(func_ov004_022157d4, TvAnimated_UpdateOn)
 int TvAnimated_EnterOn(TvAnimated *tv)
 {
     TvAnimated_show(tv, 1);
-    RoomObject_PlayAnimsFromEnd(&tv->base.base, 0, ANIM_MODE_ONCE, ONE);
+    RoomObject_PlayAnimsFromEnd(&tv->base.base, 0, ANIM_MODE_ONCE, FX32_ONE);
     return 1;
 }
 CLEAN_AS(func_ov004_022157fc, TvAnimated_EnterOn)
@@ -148,7 +147,7 @@ CLEAN_AS(func_ov004_02215844, TvAnimated_UpdateTurningOn)
 int TvAnimated_EnterTurningOn(TvAnimated *tv)
 {
     TvAnimated_show(tv, 1);
-    RoomObject_PlayAnimsFrom(&tv->base.base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&tv->base.base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound1(&tv->base.base);
     return 1;
 }
@@ -169,7 +168,7 @@ CLEAN_AS(func_ov004_022158c8, TvAnimated_UpdateOff)
 int TvAnimated_EnterOff(TvAnimated *tv)
 {
     TvAnimated_show(tv, 0);
-    RoomObject_PlayAnimsFrom(&tv->base.base, 0, ANIM_MODE_3, ONE, 0);
+    RoomObject_PlayAnimsFrom(&tv->base.base, 0, ANIM_MODE_3, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022158f0, TvAnimated_EnterOff)
@@ -246,7 +245,7 @@ CLEAN_AS(_ZN18Obj_ov004_02250f8819func_ov004_02215a80Ev, TvAnimated_Update)
  * RoomObjects_InNookOrScene0AOr0F says no, else TV_ANIMATED_OFF; done at once. */
 int TvAnimated_Start(TvAnimated *tv)
 {
-    RoomObject_LoadAnims(&tv->base.base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_LoadAnims(&tv->base.base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     Tv_bind_and_enter(&tv->base, TV_ANIMATED_ON, TV_ANIMATED_OFF);
     return 1;
 }

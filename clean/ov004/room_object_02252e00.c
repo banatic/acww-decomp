@@ -15,7 +15,6 @@ static_assert(offsetof(RoomObject02252e00, state) == 0x844, "state");
 static_assert(sizeof(RoomObject02252e00) == 0x848, "the size RoomObject02252e00_Create allocates");
 
 #define ROOM_OBJECT_02252E00_SIZE 0x848
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_ONCE 1   /* the animations stop at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 
@@ -77,7 +76,7 @@ CLEAN_AS(func_ov004_02219e54, RoomObject02252e00_UpdatePlaying)
  * the sound at 2. */
 int RoomObject02252e00_EnterPlaying(RoomObject02252e00 *object)
 {
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound1(&object->base);
     return 1;
 }
@@ -97,7 +96,7 @@ CLEAN_AS(func_ov004_02219f00, RoomObject02252e00_UpdateStill)
  * the sound at 4 except for furniture 0x207. */
 int RoomObject02252e00_EnterStill(RoomObject02252e00 *object)
 {
-    RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_ONCE, ONE);
+    RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE);
     if (RoomObject_Number(&object->base) != FURNITURE_0207) {
         RoomObject_PlaySound2(&object->base);
     }
@@ -162,8 +161,8 @@ int RoomObject02252e00_Start(RoomObject02252e00 *object)
 {
     RoomObject *base = &object->base;
     Switch_Set(&base->light_switch, 0, 0);
-    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
-    RoomObject_PlayAnimsFromEnd(base, 0, ANIM_MODE_ONCE, ONE);
+    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
+    RoomObject_PlayAnimsFromEnd(base, 0, ANIM_MODE_ONCE, FX32_ONE);
     base->vtable->vfunc_70(base, ROOM_OBJECT_02252E00_STILL, SLOT_70_VALUE);
     return 1;
 }

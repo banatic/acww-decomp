@@ -24,7 +24,6 @@ static_assert(sizeof(CarriedItems) == 0x44, "carried items");
 
 #define SLOTS 4
 #define BLOCK_CELLS 16 /* cells along a block of the town's map */
-#define ONE 0x1000     /* 1 in 20.12 fixed point */
 
 /* The town's map (AcreTile_ItemInAcre finds the item on a cell of it). */
 extern void *data_021c80bc;
@@ -230,7 +229,7 @@ void CarriedItem_Draw(CarriedItem *slot, RoomObject *object)
         Vec3 origin = {0, 0, 0};
         Vec3 position;
         MTX_MultVec43(&origin, &data_021fbe48, &position);
-        Vec3 scale = {ONE, ONE, ONE};
+        Vec3 scale = {FX32_ONE, FX32_ONE, FX32_ONE};
         IconModels_DrawItemAt(*CarriedItem_Item(slot), &position, &scale, 0, 0, 0);
     }
 }

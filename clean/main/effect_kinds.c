@@ -120,7 +120,6 @@ extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 #define EFFECT_KINDS_GROUND_16 0x16
 
 #define EFFECT_KINDS_NOT_STARTED 3
-#define EFFECT_KINDS_ONE 0x1000
 #define EFFECT_KINDS_LIGHT_COLOR 3 /* the sky's light colour of kind 0x32's emitters */
 
 /* The ARM's 32-bit sum. */
@@ -230,7 +229,7 @@ CLEAN_AS(func_02092ff8, EffectKinds_StartKind31)
 /* func_02093020: kind 0x31's emitter moved with its place, its axis forward. */
 void EffectKinds_FollowKind31(EffectKindsInstance *instance)
 {
-    Vec3 forward = {0, 0, EFFECT_KINDS_ONE};
+    Vec3 forward = {0, 0, FX32_ONE};
 
     EffectPlaces_Follow(instance, NULL, &forward);
 }
@@ -519,7 +518,7 @@ int EffectKinds_FollowKind26(EffectKindsInstance *instance)
     int lasts = 0;
 
     if (place->handle != -1 && place->frames != 0) {
-        Vec3 axis = {0, 0, EFFECT_KINDS_ONE};
+        Vec3 axis = {0, 0, FX32_ONE};
 
         effect_kinds_put(instance->emitter, &place->position);
         Vec_RotateY(&axis, place->angle);
@@ -602,9 +601,9 @@ void EffectKinds_SetModelTransformTurned(EffectKindsModelTransform *transform)
     transform->position.x = place->position.x;
     transform->position.y = place->position.y;
     transform->position.z = place->position.z;
-    transform->scale.x = EFFECT_KINDS_ONE;
-    transform->scale.y = EFFECT_KINDS_ONE;
-    transform->scale.z = EFFECT_KINDS_ONE;
+    transform->scale.x = FX32_ONE;
+    transform->scale.y = FX32_ONE;
+    transform->scale.z = FX32_ONE;
     transform->rotation[0] = 0;
     transform->rotation[1] = place->angle;
     transform->rotation[2] = 0;
@@ -1337,7 +1336,7 @@ CLEAN_AS(func_02094228, EffectKinds_FollowSet45)
 /* func_02094250: kind 0x0b's model at the place being started, at its size. */
 void EffectKinds_SetModelTransformKind0b(EffectKindsModelTransform *transform)
 {
-    EffectKinds_SetModelTransformScaled(transform, EFFECT_KINDS_ONE);
+    EffectKinds_SetModelTransformScaled(transform, FX32_ONE);
 }
 CLEAN_AS(func_02094250, EffectKinds_SetModelTransformKind0b)
 
@@ -1480,7 +1479,7 @@ void EffectKinds_SetUpKind02(ParticleEmitter *emitter)
 {
     const EffectKindsPlace *place = &data_021d5658;
     int behind = (s16) (u16) ((u32) (u16) place->angle + 0x8000);
-    Vec3 axis = {0, 0, EFFECT_KINDS_ONE};
+    Vec3 axis = {0, 0, FX32_ONE};
 
     effect_kinds_put(emitter, &place->position);
     emitter->collision_y = effect_kinds_add(place->position.y, 0x333);
@@ -1631,7 +1630,7 @@ CLEAN_AS(func_02094840, EffectKinds_StartModel)
 /* func_02094884: a model at the place being started, at its size and not turned. */
 void EffectKinds_SetModelTransform(EffectKindsModelTransform *transform)
 {
-    effect_kinds_set_model_transform(transform, EFFECT_KINDS_ONE);
+    effect_kinds_set_model_transform(transform, FX32_ONE);
 }
 CLEAN_AS(func_02094884, EffectKinds_SetModelTransform)
 

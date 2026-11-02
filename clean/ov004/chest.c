@@ -38,7 +38,6 @@ static_assert(sizeof(Chest) == 0x868, "the size Chest_Create allocates");
 
 #define RECEIVER_OFFSET 0xec
 #define CHEST_SIZE 0x868
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_ONCE 1   /* stop at the end */
 #define ANIM_MODE_3 3      /* the animations' mode 3 */
 #define SLOT_70_VALUE 0xff /* the second argument given with a lid state (vtable slot 0x70) */
@@ -499,9 +498,9 @@ int Chest_EnterLidClosing(Chest *chest)
     Switch_Set(&base->light_switch, 1, 0);
     RoomObject_PlaySound2(base);
     if (base->unk_780 == KIND_0F) {
-        RoomObject_PlayAnimsFrom(base, 1, ANIM_MODE_ONCE, ONE, 0);
+        RoomObject_PlayAnimsFrom(base, 1, ANIM_MODE_ONCE, FX32_ONE, 0);
     } else {
-        RoomObject_PlayAnimsFromEnd(base, 0, ANIM_MODE_3, ONE);
+        RoomObject_PlayAnimsFromEnd(base, 0, ANIM_MODE_3, FX32_ONE);
     }
     return 1;
 }
@@ -528,7 +527,7 @@ int Chest_EnterLidOpen(Chest *chest)
     if (base->unk_780 == KIND_0F) {
         AnimSet_Anim00(FurnitureModel_Anims(&base->model_files), 0);
     }
-    RoomObject_PlayAnimsFromEnd(base, 0, ANIM_MODE_ONCE, ONE);
+    RoomObject_PlayAnimsFromEnd(base, 0, ANIM_MODE_ONCE, FX32_ONE);
     return 1;
 }
 CLEAN_AS(func_ov004_02217360, Chest_EnterLidOpen)
@@ -551,7 +550,7 @@ int Chest_EnterLidOpening(Chest *chest)
     RoomObject *base = &chest->base;
     Switch_Set(&base->light_switch, 0, 0);
     RoomObject_PlaySound1(base);
-    RoomObject_PlayAnimsFrom(base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022173e8, Chest_EnterLidOpening)
@@ -610,9 +609,9 @@ int Chest_EnterLidClosed(Chest *chest)
     RoomObject *base = &chest->base;
     Switch_Set(&base->light_switch, 1, 0);
     if (base->unk_780 == KIND_0F) {
-        RoomObject_PlayAnimsFromEnd(base, 1, ANIM_MODE_ONCE, ONE);
+        RoomObject_PlayAnimsFromEnd(base, 1, ANIM_MODE_ONCE, FX32_ONE);
     } else {
-        RoomObject_PlayAnimsFrom(base, 0, ANIM_MODE_3, ONE, 0);
+        RoomObject_PlayAnimsFrom(base, 0, ANIM_MODE_3, FX32_ONE, 0);
     }
     return 1;
 }
@@ -703,9 +702,9 @@ int Chest_Start(Chest *chest)
         Switch_Set(&base->light_switch, 1, 0);
     }
     if (base->unk_780 == KIND_0F) {
-        RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     } else {
-        RoomObject_LoadAnims(base, 0, ANIM_MODE_3, ONE, 0);
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_3, FX32_ONE, 0);
     }
     if (Switch_Value(&base->light_switch) != 0 || RoomObjects_InNookOrScene0AOr0F() != 0) {
         Chest_switch_to(chest, CHEST_LID_CLOSED);

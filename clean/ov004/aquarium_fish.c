@@ -34,8 +34,6 @@ extern AquariumFish *data_ov004_022594d4[AQUARIUM_FISH_KINDS];
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
-#define ONE 0x1000
-
 /* A body index from this one on is a rock's. */
 #define FIRST_ROCK_INDEX AQUARIUM_FISH_KINDS
 /* What a fish notes on touching a rock. */
@@ -95,8 +93,8 @@ void AquariumFish_SetSwim(AquariumFish *fish)
     fish->swim_204[3] = swim[6];
     fish->swim_230 = swim[7];
     fish->swim_224 = swim[8] << 2;
-    fish->level = ((fx32) swim[9] << 7) - ONE;
-    fish->swim_228 = ((fx32) swim[10] << 6) - ONE;
+    fish->level = ((fx32) swim[9] << 7) - FX32_ONE;
+    fish->swim_228 = ((fx32) swim[10] << 6) - FX32_ONE;
 }
 CLEAN_AS(func_ov004_022354e0, AquariumFish_SetSwim)
 

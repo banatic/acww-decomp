@@ -69,8 +69,6 @@ extern u8 *func_02107b44(void *set, u32 index);
 extern int func_0205c8c4(int size, int unused);
 extern void func_0205c8a8(void);
 
-#define ONE 0x1000
-
 /* The process's sound, played while it lives. */
 #define AQUARIUM_SOUND 0x4da
 
@@ -242,7 +240,7 @@ static int Aquarium_given(int kind)
 static void Aquarium_finish_place(MuseumAquarium *self, AquariumFish *fish, int kind)
 {
     const AquariumFishInfo *info = &data_ov004_02247924[kind];
-    fish->position.y = ((fx32) info->depth << 6) - ONE;
+    fish->position.y = ((fx32) info->depth << 6) - FX32_ONE;
     fish->previous = fish->position;
     fish->size = info->size;
     Aquarium_ActivateFish(self, kind);
@@ -341,7 +339,7 @@ int Aquarium_Draw(MuseumAquarium *self)
         if (fish == NULL || fish->state != AQUARIUM_FISH_SHOWN) {
             continue;
         }
-        Vec3 scale = {ONE, ONE, ONE};
+        Vec3 scale = {FX32_ONE, FX32_ONE, FX32_ONE};
         if (fish->index == KIND_FISH_11) {
             Aquarium_SetFishMatrix(self, slot);
         } else if (fish->index == KIND_FISH_36 && data_ov004_022593b4 != NULL) {
@@ -395,7 +393,7 @@ int Aquarium_LoadFish(MuseumAquarium *self, AquariumFish **slot, int kind)
     if (!AnimatedModel_LoadAnim(model, heap)) {
         return 0;
     }
-    AnimatedModel_Start(model, track, FISH_ANIM_FLAGS, ONE, FISH_ANIM_START, FISH_ANIM_FRAMES);
+    AnimatedModel_Start(model, track, FISH_ANIM_FLAGS, FX32_ONE, FISH_ANIM_START, FISH_ANIM_FRAMES);
     AnimatedModel_Attach(model);
     ModelObject_AllocJointResults(&model->object, Aquarium_entry_heap(entry));
     fish->state = AQUARIUM_FISH_SHOWN;
@@ -412,13 +410,13 @@ void Aquarium_EnterRocks(MuseumAquarium *self, int count)
     for (int i = 0; i < count; i++) {
         AquariumRock *rock = &self->rocks[i];
         FieldPointBody_Set(&rock->body, &rock->point, rock->radius, rock->height, ROCK_FLAGS, ROCK_TOUCHES, 0, ROCK_INDEX,
-                           ONE);
+                           FX32_ONE);
         FieldBody_Enter(&rock->body.body);
     }
     if (data_ov004_022593a0 == AQUARIUM_SEA_ROOM) {
         AquariumRock *rock = &self->rocks[AQUARIUM_EXTRA_ROCK];
         FieldPointBody_Set(&rock->body, &rock->point, rock->radius, rock->height, EXTRA_ROCK_FLAGS, ROCK_TOUCHES, 0,
-                           ROCK_INDEX, ONE);
+                           ROCK_INDEX, FX32_ONE);
         FieldBody_Enter(&rock->body.body);
     }
 }

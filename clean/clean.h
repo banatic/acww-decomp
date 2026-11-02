@@ -19,6 +19,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/* 1.0 in the game's 20.12 fixed point (fx32). */
+#define FX32_ONE 0x1000
+
 #define CLEAN_AS(symbol, function)                                                                                            \
     static const void *const clean_as_##symbol __attribute__((unused)) = (const void *) (function);
 

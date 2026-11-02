@@ -21,7 +21,6 @@ static_assert(offsetof(RoomObject0225130c, state) == 0x847, "state");
 static_assert(sizeof(RoomObject0225130c) == 0x848, "the size RoomObject0225130c_Create allocates");
 
 #define ROOM_OBJECT_0225130C_SIZE 0x848
-#define ONE 0x1000       /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0 /* RoomObject_PlayAnimsFrom: start again at the end */
 #define ANIM_MODE_ONCE 1
 #define ANIM_MODE_3 3       /* the animations' mode 3 */
@@ -99,7 +98,7 @@ CLEAN_AS(func_ov004_02212a14, RoomObject0225130c_UpdateSettling)
 int RoomObject0225130c_EnterSettling(RoomObject0225130c *object)
 {
     Switch_Set(&object->base.light_switch, 0, 0);
-    RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_3, ONE);
+    RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_3, FX32_ONE);
     object->settle_reset = 1;
     return 1;
 }
@@ -124,7 +123,7 @@ int RoomObject0225130c_EnterStopping(RoomObject0225130c *object)
 {
     Switch_Set(&object->base.light_switch, 0, 0);
     RoomObject_PlaySound2(&object->base);
-    RoomObject_PlayAnimsFrom(&object->base, 1, ANIM_MODE_ONCE, ONE, KEEP_FRAME);
+    RoomObject_PlayAnimsFrom(&object->base, 1, ANIM_MODE_ONCE, FX32_ONE, KEEP_FRAME);
     return 1;
 }
 CLEAN_AS(func_ov004_02212b70, RoomObject0225130c_EnterStopping)
@@ -147,7 +146,7 @@ CLEAN_AS(func_ov004_02212bb0, RoomObject0225130c_UpdateRunning)
 int RoomObject0225130c_EnterRunning(RoomObject0225130c *object)
 {
     Switch_Set(&object->base.light_switch, 1, 0);
-    RoomObject_PlayAnimsFromEnd(&object->base, 1, ANIM_MODE_LOOP, ONE);
+    RoomObject_PlayAnimsFromEnd(&object->base, 1, ANIM_MODE_LOOP, FX32_ONE);
     return 1;
 }
 CLEAN_AS(func_ov004_02212c64, RoomObject0225130c_EnterRunning)
@@ -169,7 +168,7 @@ CLEAN_AS(func_ov004_02212c90, RoomObject0225130c_UpdateStarting)
 int RoomObject0225130c_EnterStarting(RoomObject0225130c *object)
 {
     Switch_Set(&object->base.light_switch, 1, 0);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound1(&object->base);
     return 1;
 }
@@ -189,7 +188,7 @@ CLEAN_AS(func_ov004_02212d1c, RoomObject0225130c_UpdateOff)
 int RoomObject0225130c_EnterOff(RoomObject0225130c *object)
 {
     Switch_Set(&object->base.light_switch, 0, 0);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02212d44, RoomObject0225130c_EnterOff)
@@ -278,7 +277,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225130c19func_ov004_02212f0cEv, RoomObject0225130c_Upda
 int RoomObject0225130c_Start(RoomObject0225130c *object)
 {
     object->unbound = 0;
-    RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
     } else {

@@ -19,7 +19,6 @@ extern const CellAnimData data_020d6fcc[];
 extern const u32 data_020d0b64[];
 extern const u32 data_020d0b54[];
 
-#define DUAL_CELL_SPRITE_FX_ONE 0x1000
 #define DUAL_CELL_SPRITE_CURRENT_FRAME (-1)
 
 /* func_0208e930: whether both animations have ended. */
@@ -131,10 +130,10 @@ void DualCellSprite_Draw(DualCellSprite *sprite)
     u32 y = (u32) sprite->offset_y + (u32) ScreenSprite_Y(&sprite->base);
 
     int screen = sprite->on_main != 0 ? OAM_BUFFER_SCREEN_MAIN : OAM_BUFFER_SCREEN_SUB;
-    OamBuffer_DrawCell(screen, cell, (int) (x + (u32) frame_x), (int) (y + (u32) frame_y), -1, sprite->priority,
-                       DUAL_CELL_SPRITE_FX_ONE, DUAL_CELL_SPRITE_FX_ONE, 0, -1, 0, 0);
-    OamBuffer_DrawCell(screen, cell2, (int) (x + (u32) frame2_x), (int) (y + (u32) frame2_y), -1, sprite->priority,
-                       DUAL_CELL_SPRITE_FX_ONE, DUAL_CELL_SPRITE_FX_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(screen, cell, (int) (x + (u32) frame_x), (int) (y + (u32) frame_y), -1, sprite->priority, FX32_ONE,
+                       FX32_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(screen, cell2, (int) (x + (u32) frame2_x), (int) (y + (u32) frame2_y), -1, sprite->priority, FX32_ONE,
+                       FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208ea98, DualCellSprite_Draw)
 

@@ -348,8 +348,7 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* The snowmen's day starts at 6:00: before it, it is still the day before. */
 #define SNOWMEN_DAY_START_HOUR 6
-/* One in 20.12 fixed point: a snowman's sizes are kept in steps of 0x80 of it. */
-#define SNOWMEN_FX_ONE 0x1000
+/* A snowman's sizes are kept in steps of 0x80 of 1.0. */
 #define SNOWMEN_SIZE_STEP 0x80
 
 /* Today's date and time for the snowmen, the day starting at 6:00. */
@@ -368,16 +367,16 @@ static fx32 snowmen_melted_size(u32 steps, u8 age)
 {
     fx32 size = (fx32) (steps * SNOWMEN_SIZE_STEP);
     if (size == 0) {
-        size = SNOWMEN_FX_ONE;
+        size = FX32_ONE;
     }
-    fx32 scale = SNOWMEN_FX_ONE;
+    fx32 scale = FX32_ONE;
     if (age == 1) {
-        scale = FX_Div(3 * SNOWMEN_FX_ONE, 4 * SNOWMEN_FX_ONE);
+        scale = FX_Div(3 * FX32_ONE, 4 * FX32_ONE);
     } else if (age == 2) {
-        scale = FX_Div(SNOWMEN_FX_ONE, 2 * SNOWMEN_FX_ONE);
+        scale = FX_Div(FX32_ONE, 2 * FX32_ONE);
     }
-    if (scale > SNOWMEN_FX_ONE) {
-        scale = SNOWMEN_FX_ONE;
+    if (scale > FX32_ONE) {
+        scale = FX32_ONE;
     }
     return FX_MulFunc(size, scale);
 }

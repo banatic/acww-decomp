@@ -26,7 +26,6 @@ static_assert(sizeof(Clock) == 0x84c, "the size Clock_Create allocates");
 static_assert(offsetof(RoomObject, model_files) == 0x6cc, "the model files");
 
 #define CLOCK_SIZE 0x84c
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0   /* start again at the end */
 #define ANIM_MODE_ONCE 1   /* stop at the end */
 #define KIND_STRIKING 0x10 /* RoomObject.unk_780 of the clocks that strike the hours */
@@ -51,7 +50,7 @@ static const AnimFile *Clock_joint_file(Clock *clock)
 /* One strike: the joint animation played once from the start. */
 static void Clock_play_strike(Clock *clock)
 {
-    AnimatedModel_Start(&clock->base.model, (const u8 *) Clock_joint_file(clock), ANIM_MODE_ONCE, ONE, 0, 0);
+    AnimatedModel_Start(&clock->base.model, (const u8 *) Clock_joint_file(clock), ANIM_MODE_ONCE, FX32_ONE, 0, 0);
 }
 
 /* func_ov004_022168d8: marks the clock as the nearest striking clock to the player, for this
@@ -165,7 +164,7 @@ static void Clock_bind_joints(Clock *clock, int entry, int mode)
 {
     AnimatedModel *model = &clock->base.model;
     if (AnimatedModel_LoadAnim(model, (Heap *) (uintptr_t) ModelPoolEntry_Heap((void *) (uintptr_t) (u32) entry)) != 0) {
-        AnimatedModel_Start(model, (const u8 *) Clock_joint_file(clock), mode, ONE, 0, 0);
+        AnimatedModel_Start(model, (const u8 *) Clock_joint_file(clock), mode, FX32_ONE, 0, 0);
         AnimatedModel_Attach(model);
     }
 }
@@ -185,7 +184,7 @@ int Clock_Start(Clock *clock)
     } else if (base->unk_780 == KIND_SHARED) {
         Clock_bind_joints(clock, entry, ANIM_MODE_LOOP);
     } else if (base->unk_780 == KIND_ANIMATED) {
-        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
     return 1;
 }

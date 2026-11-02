@@ -499,8 +499,6 @@ void DisplayShadow_ResetWindow(WindowShadow *window)
 }
 CLEAN_AS(func_02001e94, DisplayShadow_ResetWindow)
 
-#define FX32_ONE 0x1000
-
 /* func_02001ea8: the identity matrix, centre and position 0. */
 void DisplayShadow_ResetAffine(BgAffineShadow *affine)
 {

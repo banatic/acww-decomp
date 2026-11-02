@@ -79,8 +79,7 @@ static_assert(offsetof(RmoObject, body.object.model) == 0x148, "body model resou
 static_assert(sizeof(DatedRandom) == 0x0c, "DatedRandom size");
 static_assert(sizeof(ItemList) == 0x08, "ItemList size");
 
-#define TAILOR_OBJECT_ONE 0x1000 /* normal speed, 20.12 fixed point */
-#define TAILOR_OBJECT_LOOP 0     /* FrameCtrlFlags: the animations start over at their end */
+#define TAILOR_OBJECT_LOOP 0 /* FrameCtrlFlags: the animations start over at their end */
 
 /* The vtable slot that enters a state (TailorObject_SetState for this class). */
 #define TAILOR_OBJECT_SLOT_SET_STATE 0x60
@@ -193,11 +192,11 @@ CLEAN_AS(func_ov004_0222fdb8, TailorObject_RunCurrent)
  * their speed is 0. */
 void TailorObject_UpdateStopping(TailorObject *self)
 {
-    fx32 speed = TAILOR_OBJECT_ONE - EaseCurve_Share(self->stop_time, 0, TAILOR_OBJECT_STOP_FRAMES, TAILOR_OBJECT_STOP_EASE,
-                                                     TAILOR_OBJECT_STOP_EASE);
+    fx32 speed = FX32_ONE - EaseCurve_Share(self->stop_time, 0, TAILOR_OBJECT_STOP_FRAMES, TAILOR_OBJECT_STOP_EASE,
+                                            TAILOR_OBJECT_STOP_EASE);
     self->base.body.frames.speed = speed;
     self->body_anim.ctrl.speed = speed;
-    self->stop_time += TAILOR_OBJECT_ONE;
+    self->stop_time += FX32_ONE;
     if (speed == 0) {
         TailorObject_call_set_state(self, TAILOR_OBJECT_IDLE);
     }
@@ -240,8 +239,8 @@ CLEAN_AS(func_ov004_0222fea8, TailorObject_EnterRunning)
  * speed, then running (through vtable slot 0x60). */
 void TailorObject_UpdateStarting(TailorObject *self)
 {
-    self->base.body.frames.speed = TAILOR_OBJECT_ONE;
-    self->body_anim.ctrl.speed = TAILOR_OBJECT_ONE;
+    self->base.body.frames.speed = FX32_ONE;
+    self->body_anim.ctrl.speed = FX32_ONE;
     TailorObject_call_set_state(self, TAILOR_OBJECT_RUNNING);
 }
 CLEAN_AS(func_ov004_0222feac, TailorObject_UpdateStarting)
@@ -249,7 +248,7 @@ CLEAN_AS(func_ov004_0222feac, TailorObject_UpdateStarting)
 /* func_ov004_0222fed4 (entry of TAILOR_OBJECT_STARTING): the part at normal speed. */
 int TailorObject_EnterStarting(TailorObject *self)
 {
-    self->part.frames.speed = TAILOR_OBJECT_ONE;
+    self->part.frames.speed = FX32_ONE;
     self->stop_time = 0;
     return 1;
 }
@@ -373,20 +372,19 @@ int TailorObject_Start(TailorObject *self)
     if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
         AnimatedModel_LoadAnim(TailorObject_body(self), data_021c9b24) != 0) {
         AnimatedModel_Start(TailorObject_body(self), RmoModel_JointAnim(&self->base.body_model, 0), TAILOR_OBJECT_LOOP,
-                            TAILOR_OBJECT_ONE, 0, 0);
+                            FX32_ONE, 0, 0);
         AnimatedModel_Attach(TailorObject_body(self));
         self->base.body.frames.speed = 0;
     }
     if (ModelAnim_AllocMaterialAnim(&self->body_anim, self->base.body.object.model, data_021c9b24) != 0) {
-        ModelAnim_Start(&self->body_anim, RmoModel_TextureAnim(&self->base.body_model, 0), TAILOR_OBJECT_LOOP,
-                        TAILOR_OBJECT_ONE, 0);
+        ModelAnim_Start(&self->body_anim, RmoModel_TextureAnim(&self->base.body_model, 0), TAILOR_OBJECT_LOOP, FX32_ONE, 0);
         ModelAnim_Attach(&self->body_anim, ModelObject_RenderObject(&self->base.body.object));
         self->body_anim.ctrl.speed = 0;
     }
     if (RmoModel_JointAnim(&self->part_model, 0) != NULL &&
         AnimatedModel_LoadAnim(TailorObject_part(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(TailorObject_part(self), RmoModel_JointAnim(&self->part_model, 0), TAILOR_OBJECT_LOOP,
-                            TAILOR_OBJECT_ONE, 0, 0);
+        AnimatedModel_Start(TailorObject_part(self), RmoModel_JointAnim(&self->part_model, 0), TAILOR_OBJECT_LOOP, FX32_ONE, 0,
+                            0);
         AnimatedModel_Attach(TailorObject_part(self));
         self->part.frames.speed = 0;
     }

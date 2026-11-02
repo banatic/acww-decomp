@@ -119,8 +119,6 @@ void ScreenMark_ResetInstance(void)
 }
 CLEAN_AS(func_0208ee14, ScreenMark_ResetInstance)
 
-#define SCREEN_MARK_FX_ONE 0x1000
-
 /* The member function table of ScreenMark_Update (a function-local static of the game): its
  * guard, the table, and the constants it is filled from. */
 extern u32 data_021d35c8;
@@ -155,8 +153,7 @@ void ScreenMark_Draw(ScreenMark *mark)
     x += (u32) CellAnim_FrameX(&mark->anim, -1);
     u32 y = (u32) ScreenSprite_Y(&mark->base);
     y += (u32) CellAnim_FrameY(&mark->anim, -1);
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, (int) x, (int) y, -1, -1, SCREEN_MARK_FX_ONE, SCREEN_MARK_FX_ONE, 0, -1,
-                       0, 0);
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, (int) x, (int) y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208eea0, ScreenMark_Draw)
 

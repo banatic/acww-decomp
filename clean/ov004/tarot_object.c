@@ -29,7 +29,6 @@ static_assert(sizeof(TarotObject) == 0x6dc, "the size TarotObject_Create allocat
 static_assert(offsetof(TarotObject, parts[1].object.model) == 0x3a4, "part 1 model resource");
 static_assert(offsetof(TarotObject, parts[2].frames) == 0x49c, "part 2 frames");
 
-#define TAROT_OBJECT_ONE 0x1000           /* normal speed, 20.12 fixed point */
 #define TAROT_OBJECT_ONCE FRAME_CTRL_ONCE /* the animations stop at their end */
 #define TAROT_OBJECT_FRAME_SHIFT 12
 
@@ -196,8 +195,8 @@ int TarotObject_EnterState3(TarotObject *self)
     self->part_shown[1] = 1;
     self->part_shown[2] = 1;
     AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 1), TAROT_OBJECT_ONCE,
-                        TAROT_OBJECT_ONE, 0, 0);
-    ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 1), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0);
+                        FX32_ONE, 0, 0);
+    ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 1), TAROT_OBJECT_ONCE, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022305a0, TarotObject_EnterState3)
@@ -258,8 +257,8 @@ int TarotObject_EnterState1(TarotObject *self)
     self->part_shown[1] = 1;
     self->part_shown[2] = 0;
     AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0), TAROT_OBJECT_ONCE,
-                        TAROT_OBJECT_ONE, 0, 0);
-    ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 0), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0);
+                        FX32_ONE, 0, 0);
+    ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 0), TAROT_OBJECT_ONCE, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022306d0, TarotObject_EnterState1)
@@ -392,13 +391,12 @@ int TarotObject_Start(TarotObject *self)
     if (RmoModel_JointAnim(&self->part_models[2], 0) != NULL &&
         AnimatedModel_LoadAnim(TarotObject_animated(&self->parts[2]), data_021c9b24) != 0) {
         AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0),
-                            TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0, 0);
+                            TAROT_OBJECT_ONCE, FX32_ONE, 0, 0);
         AnimatedModel_Attach(TarotObject_animated(&self->parts[2]));
         self->parts[2].frames.speed = 0;
     }
     if (ModelAnim_AllocMaterialAnim(&self->part1_anim, self->parts[1].object.model, data_021c9b24) != 0) {
-        ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 0), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE,
-                        0);
+        ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 0), TAROT_OBJECT_ONCE, FX32_ONE, 0);
         ModelAnim_Attach(&self->part1_anim, ModelObject_RenderObject(&self->parts[1].object));
         self->part1_anim.ctrl.speed = 0;
     }

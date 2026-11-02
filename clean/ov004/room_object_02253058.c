@@ -64,7 +64,6 @@ static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size RoomObject02253058_
 
 #define RECEIVER_OFFSET 0xec
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define PLAYER_COUNT 4     /* the actors RoomPlayerActor_PointAtPlace is asked for */
 #define PUSH_FRAMES 7      /* frames of pushing before it counts */
 #define MOVED_ENOUGH 0x200 /* how far the entry must have moved (RoomPushes_Moved) */
@@ -940,7 +939,7 @@ int RoomObject02253058_Start(RoomObject02253058 *object)
     RoomObject *base = &object->base;
     ByteSet_SetValue(&base->node_set, 0);
     if (base->unk_780 == KIND_2A) {
-        RoomObject_LoadAnims(base, 0, 0, ONE, 0);
+        RoomObject_LoadAnims(base, 0, 0, FX32_ONE, 0);
         GlowSet_Bind(&object->glows, base->model_resource, 1);
     }
     if (SceneKinds_CurrentIn6To8() != 0) {

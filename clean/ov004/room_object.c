@@ -56,7 +56,6 @@ static_assert(offsetof(RoomObject, push_box) == 0x62c, "push box");
 static_assert(offsetof(RoomObject, model_files) == 0x6cc, "model files");
 static_assert(offsetof(RoomObject, unk_784) == 0x784, "unk_784");
 
-#define ONE 0x1000         /* 1 in 20.12 fixed point */
 #define STEP 0x2000        /* one move */
 #define HALF_TURN 0x8000   /* an angle (fx_math.h) */
 #define TURN_SPEED 0x700   /* per frame */
@@ -123,7 +122,7 @@ void RoomObject_UpdateSpin(RoomObject *object)
     if (object->unk_780 != 0x23 && object->unk_780 != 0x24 && object->unk_780 != 0x25) {
         object->angle = (s16) (object->angle + SPIN_SPEED);
     }
-    set_scale(object, shift_right(FX_Div(FurnitureInfo_Scale(RoomObject_Number(object)), 100 * ONE), 2));
+    set_scale(object, shift_right(FX_Div(FurnitureInfo_Scale(RoomObject_Number(object)), 100 * FX32_ONE), 2));
 }
 CLEAN_AS(func_ov004_0220c560, RoomObject_UpdateSpin)
 
@@ -342,7 +341,7 @@ CLEAN_AS(func_ov004_0220c9f8, RoomObject_EnterIdle)
  * RoomObject_EffectNearCorner with 0 and 2 in its first frame and with 1 and 3 in its third. */
 void RoomObject_UpdateAppear(RoomObject *object)
 {
-    Approach_S32Again(&object->unk_15C, ONE, 0x88);
+    Approach_S32Again(&object->unk_15C, FX32_ONE, 0x88);
 
     if (object->timer < 15) {
         object->timer++;
@@ -367,15 +366,15 @@ void RoomObject_UpdateAppear(RoomObject *object)
     u16 phase = object->wobble_phase;
 
     fx32 swing = FX_MulFunc(object->wobble_amplitude, sine(phase));
-    object->scale_y = swing + ONE;
-    object->scale_x = ONE - swing;
+    object->scale_y = swing + FX32_ONE;
+    object->scale_x = FX32_ONE - swing;
     object->scale_z = object->scale_x;
 
     if (FX_MulFunc(sine(previous_phase), sine(phase)) < 0) {
         object->wobble_amplitude = FX_MulFunc(object->wobble_amplitude, 0x4cd);
         object->wobble_speed = (s16) (object->wobble_speed + 0x960);
     }
-    if (object->unk_15C == ONE && magnitude(object->wobble_amplitude) < 0x52) {
+    if (object->unk_15C == FX32_ONE && magnitude(object->wobble_amplitude) < 0x52) {
         RoomObject_EnterState(object, ROOM_OBJECT_IDLE);
     }
 

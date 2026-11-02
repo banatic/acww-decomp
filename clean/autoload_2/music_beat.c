@@ -64,7 +64,6 @@ extern int func_0210b500(int index, int value);
 #define TEMPO_DEFAULT 120
 /* 600 in 20.12: frames a beat lasts are 600 / tempo (60 frames a second, 60 seconds). */
 #define BEAT_FRAMES_NUMERATOR 0x258000
-#define FX_ONE 0x1000
 
 /* `value` shifted left as the ARM does, kept to 32 bits. */
 static int shl(int value, int shift)
@@ -116,7 +115,7 @@ void MusicBeatShow_UpdateFrames(MusicBeatShow *part)
     fx32 divisor;
     fx32 frame;
 
-    show->frame_a = FX_Div(shl(show->count, 12), 3 * FX_ONE);
+    show->frame_a = FX_Div(shl(show->count, 12), 3 * FX32_ONE);
 
     count = show->count;
     if (show->type == 3) {
@@ -125,9 +124,9 @@ void MusicBeatShow_UpdateFrames(MusicBeatShow *part)
         count = (s16) (count % cycle.length);
         divisor = cycle.divisor_c;
     }
-    frame = FX_Div(shl(count, 12), divisor) + 12 * FX_ONE;
-    if (frame >= 32 * FX_ONE) {
-        frame -= 32 * FX_ONE;
+    frame = FX_Div(shl(count, 12), divisor) + 12 * FX32_ONE;
+    if (frame >= 32 * FX32_ONE) {
+        frame -= 32 * FX32_ONE;
     }
     show->frame_c = frame;
 
@@ -149,9 +148,9 @@ void MusicBeatShow_UpdateFrames(MusicBeatShow *part)
         count = (s16) (count % cycle.length);
         divisor = cycle.divisor_b;
     }
-    frame = FX_Div(shl(count, 12), divisor) + 4 * FX_ONE;
-    if (frame >= 20 * FX_ONE) {
-        frame -= 20 * FX_ONE;
+    frame = FX_Div(shl(count, 12), divisor) + 4 * FX32_ONE;
+    if (frame >= 20 * FX32_ONE) {
+        frame -= 20 * FX32_ONE;
     }
     show->frame_b = frame;
 }

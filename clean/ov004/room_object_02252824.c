@@ -22,7 +22,6 @@ static_assert(offsetof(RoomObject02252824, state) == 0x844, "state");
 static_assert(sizeof(RoomObject02252824) == 0x848, "the size RoomObject02252824_Create allocates");
 
 #define ROOM_OBJECT_02252824_SIZE 0x848
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0   /* start again at the end */
 #define ANIM_MODE_ONCE 1   /* stop at the end */
 #define ANIM_MODE_3 3      /* the animations' mode 3 */
@@ -106,7 +105,7 @@ int RoomObject02252824_EnterTurningOff(RoomObject02252824 *object)
         FurnitureAnim *anim = RoomObject02252824_material(object);
         if (FurnitureAnim_Target(anim) != NULL) {
             ModelAnim_Restart(&anim->base, ModelObject_RenderObject(&object->base.model.object), (const u8 *) file,
-                              ANIM_MODE_3, ONE, (u16) (file->frames - 1));
+                              ANIM_MODE_3, FX32_ONE, (u16) (file->frames - 1));
         }
     }
     RoomObject_PlaySound2(&object->base);
@@ -136,7 +135,7 @@ int RoomObject02252824_EnterOn(RoomObject02252824 *object)
     if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
         const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
         ModelAnim_Restart(&RoomObject02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
-                          (const u8 *) file, ANIM_MODE_ONCE, ONE, (u16) (file->frames - 1));
+                          (const u8 *) file, ANIM_MODE_ONCE, FX32_ONE, (u16) (file->frames - 1));
     }
     return 1;
 }
@@ -162,7 +161,7 @@ int RoomObject02252824_EnterTurningOn(RoomObject02252824 *object)
         FurnitureAnim *anim = RoomObject02252824_material(object);
         if (FurnitureAnim_Target(anim) != NULL) {
             ModelAnim_Restart(&anim->base, ModelObject_RenderObject(&object->base.model.object), (const u8 *) file,
-                              ANIM_MODE_ONCE, ONE, 0);
+                              ANIM_MODE_ONCE, FX32_ONE, 0);
         }
     }
     RoomObject_PlaySound1(&object->base);
@@ -188,7 +187,7 @@ int RoomObject02252824_EnterOff(RoomObject02252824 *object)
     if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
         const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
         ModelAnim_Restart(&RoomObject02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
-                          (const u8 *) file, ANIM_MODE_3, ONE, 0);
+                          (const u8 *) file, ANIM_MODE_3, FX32_ONE, 0);
     }
     return 1;
 }
@@ -287,7 +286,7 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
         if (ModelAnim_AllocJointAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             ModelAnim_Start(&anim->base,
                             (const u8 *) RoomObject02252824_file(AnimSet_Anim10(RoomObject02252824_anims(object), 0)),
-                            ANIM_MODE_LOOP, ONE, 0);
+                            ANIM_MODE_LOOP, FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
@@ -297,7 +296,7 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
         if (ModelAnim_AllocMaterialAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             ModelAnim_Start(&anim->base,
                             (const u8 *) RoomObject02252824_file(AnimSet_Anim18(RoomObject02252824_anims(object), 0)),
-                            ANIM_MODE_LOOP, ONE, 0);
+                            ANIM_MODE_LOOP, FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
@@ -305,7 +304,7 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
         if (AnimatedModel_LoadAnim(&base->model, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             AnimatedModel_Start(&base->model,
                                 (const u8 *) RoomObject02252824_file(AnimSet_Anim00(RoomObject02252824_anims(object), 0)),
-                                ANIM_MODE_LOOP, ONE, 0, 0);
+                                ANIM_MODE_LOOP, FX32_ONE, 0, 0);
             AnimatedModel_Attach(&base->model);
         }
     }
@@ -315,7 +314,7 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
         if (ModelAnim_AllocMaterialAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             const AnimFile *file = RoomObject02252824_file(AnimSet_Anim20(RoomObject02252824_anims(object), 0));
             ModelAnim_StartTextured(&anim->base, (const u8 *) file, FurnitureModel_Texture(&base->model_files), ANIM_MODE_LOOP,
-                                    ONE, 0);
+                                    FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
@@ -325,7 +324,7 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
         if (ModelAnim_AllocMaterialAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             ModelAnim_Start(&anim->base,
                             (const u8 *) RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0)),
-                            ANIM_MODE_3, ONE, 0);
+                            ANIM_MODE_3, FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }

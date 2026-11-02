@@ -40,7 +40,6 @@
 #define HELD_ITEM_ALIGN 4
 /* The texture SRT animation's start: looping, at speed 1.0 from frame 0. */
 #define HELD_ITEM_TEXTURE_ANIM_FLAGS 1
-#define HELD_ITEM_SPEED_ONE 0x1000
 /* The animation action that starts texture SRT animation 1, and the line states the action
  * gives (HeldItem_Act). */
 #define HELD_ITEM_ACTION_TEXTURE_ANIM 0x28
@@ -297,7 +296,7 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
                     ModelAnim_AllocMaterialAnim(
                         anim, resource,
                         (Heap *) (uintptr_t) HeldItemPool_TextureAnimHeap((HeldItemPool *) (void *) pool, index));
-                    ModelAnim_Start(anim, texture_anim, HELD_ITEM_TEXTURE_ANIM_FLAGS, HELD_ITEM_SPEED_ONE, 0);
+                    ModelAnim_Start(anim, texture_anim, HELD_ITEM_TEXTURE_ANIM_FLAGS, FX32_ONE, 0);
                     ModelAnim_Attach(anim, ModelObject_RenderObject(&model->object));
                 }
                 Heap *heap = (Heap *) (uintptr_t) (HeldItemPool_Heap((HeldItemPool *) (void *) pool, index));
@@ -380,7 +379,7 @@ HeldItemObject *HeldItem_Construct(HeldItemObject *held)
     HeldItemAnim_Construct(&held->anim);
     FishingFloat_Construct((FishingFloat *) &held->line);
     held->index = HELD_ITEM_NONE;
-    held->scale = HELD_ITEM_SPEED_ONE;
+    held->scale = FX32_ONE;
     return held;
 }
 CLEAN_AS(func_0205efac, HeldItem_Construct)

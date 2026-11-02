@@ -31,7 +31,6 @@
 
 #define CLEAR_DEPTH_MAX 0x7fff
 #define POLYGON_ID_OPAQUE 0x3f
-#define FX32_ONE 0x1000
 
 #define GX_VRAM_TEX_BC 6       /* VRAM banks B and C for textures */
 #define GX_VRAM_TEXPLTT_F 0x10 /* bank F for texture palettes */

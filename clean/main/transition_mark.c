@@ -50,7 +50,6 @@ extern u64 OS_GetTick(void);
 #define TRANSITION_MARK_PLANE_OBJ 0x10
 #define TRANSITION_MARK_WINDOW_OBJ 0x04
 
-#define TRANSITION_MARK_FX_ONE 0x1000
 #define TRANSITION_MARK_OBJ_MODE_WINDOW 2
 
 /* The mark's vtable slots: draw and update. */
@@ -390,10 +389,9 @@ void TransitionMark_Draw(TransitionMark *mark)
     int x = ScreenSprite_X(&mark->base);
     int y = ScreenSprite_Y(&mark->base);
     const OamEntry *cell = CellAnim_Cell(&mark->anim);
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x, y, -1, -1, TRANSITION_MARK_FX_ONE, TRANSITION_MARK_FX_ONE, 0, -1, 0,
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, TRANSITION_MARK_OBJ_MODE_WINDOW, 0,
                        0);
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x, y, -1, -1, TRANSITION_MARK_FX_ONE, TRANSITION_MARK_FX_ONE, 0,
-                       TRANSITION_MARK_OBJ_MODE_WINDOW, 0, 0);
 }
 CLEAN_AS(func_0208fa1c, TransitionMark_Draw)
 

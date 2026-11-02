@@ -18,7 +18,6 @@ static_assert(offsetof(PeriodicRoomObject, frames) == 0x84c, "frames");
 static_assert(sizeof(PeriodicRoomObject) == 0x850, "the size PeriodicRoomObject_Create allocates");
 
 #define PERIODIC_ROOM_OBJECT_SIZE 0x850
-#define ONE 0x1000       /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_ONCE 1 /* RoomObject_LoadAnims: stop at the end */
 #define SOUND_SHORT_WAIT 0x3fc
 #define SOUND_TICK 0x3ff /* played again at joint frame 20 */
@@ -73,7 +72,7 @@ static int advance(PeriodicRoomObject *object)
     int finished = 0;
     int ended = RoomObject_AdvanceAnims(&object->base);
     if (object->ended && ended) {
-        RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+        RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
         object->count++;
         finished = object->count >= object->repeats;
     }
@@ -148,7 +147,7 @@ CLEAN_AS(func_ov004_02211c84, PeriodicRoomObject_Update)
 int PeriodicRoomObject_Start(PeriodicRoomObject *object)
 {
     RoomObject *base = &object->base;
-    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     int sound = FurnitureSounds_Sound0(RoomObject_Number(base));
     switch (sound) {
         case 0x3f9:

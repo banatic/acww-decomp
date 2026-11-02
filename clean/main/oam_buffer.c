@@ -5,7 +5,6 @@
 
 static_assert(sizeof(OamEntry) == 8, "OamEntry");
 
-#define FX32_ONE 0x1000
 #define FX32_HALF 0x800
 #define SCREEN_WIDTH 0x100
 #define SCREEN_HEIGHT 0xc0

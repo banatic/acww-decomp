@@ -38,7 +38,6 @@ static_assert(sizeof(MusicPlayer) == 0x8a8, "the size MusicPlayer_Create allocat
 
 #define MUSIC_PLAYER_RECEIVER_OFFSET 0xec
 #define MUSIC_PLAYER_SIZE 0x8a8
-#define ONE 0x1000           /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0     /* start again at the end */
 #define ANIM_MODE_ONCE 1     /* stop at the end */
 #define KIND_ANIMATED 0x29   /* RoomObject.unk_780 of the players that animate */
@@ -138,7 +137,7 @@ int MusicPlayer_EnterPlaying(MusicPlayer *player)
     player->song = player->base.unk_77C;
     MusicPlayer_PlaySong(player, player->base.unk_77C);
     if (player->base.unk_780 == KIND_ANIMATED) {
-        RoomObject_PlayAnimsFrom(&player->base, 1, ANIM_MODE_LOOP, ONE, 0);
+        RoomObject_PlayAnimsFrom(&player->base, 1, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
     return 1;
 }
@@ -169,7 +168,7 @@ int MusicPlayer_EnterStopped(MusicPlayer *player)
         MusicPlayer_StopSong(player, player->song, 1);
     }
     if (player->base.unk_780 == KIND_ANIMATED) {
-        RoomObject_PlayAnimsFrom(&player->base, 0, ANIM_MODE_ONCE, ONE, 0);
+        RoomObject_PlayAnimsFrom(&player->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     }
     return 1;
 }
@@ -506,7 +505,7 @@ int MusicPlayer_Start(MusicPlayer *player)
 {
     RoomObject *base = &player->base;
     if (base->unk_780 == KIND_ANIMATED || base->unk_780 == KIND_13) {
-        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
     GlowSet_Bind(&player->glows, base->model_resource, Switch_Value(&base->light_switch));
     if (base->unk_76C == 1) {

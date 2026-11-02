@@ -23,7 +23,6 @@ static_assert(offsetof(RoomObject, anims) == 0x7c4, "animations");
 static_assert(offsetof(FurnitureAnim, base.ctrl.speed) == 0x10, "animation speed");
 
 #define ROOM_OBJECT_022525CC_SIZE 0x8a4
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define STOP_STEP 0xcc     /* what the speed falls by each frame of STOPPING */
 #define ANIM_MODE_LOOP 0   /* the animations start again at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
@@ -94,7 +93,7 @@ CLEAN_AS(func_ov004_022197b0, RoomObject022525cc_UpdateOn)
  * at 2 and the glows towards on (fading). */
 int RoomObject022525cc_EnterOn(RoomObject022525cc *object)
 {
-    object->speed = ONE;
+    object->speed = FX32_ONE;
     Switch_Set(&object->base.light_switch, 1, 0);
     RoomObject_PlaySound1(&object->base);
     GlowSet_Switch(&object->glows, 1, 1, 0);
@@ -201,7 +200,7 @@ CLEAN_AS(_ZN18Obj_ov004_022525cc19func_ov004_022199a8Ev, RoomObject022525cc_Upda
 int RoomObject022525cc_Start(RoomObject022525cc *object)
 {
     RoomObject *base = &object->base;
-    RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
+    RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
     if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         RoomObject022525cc_switch_to(object, ROOM_OBJECT_022525CC_ON);

@@ -55,7 +55,6 @@ static_assert(sizeof(VillagerHouseAnim) == 0x20, "anim");
 #define VILLAGER_HOUSE_LOOK_MASK 0x1f        /* the bits of the look byte that count */
 #define VILLAGER_HOUSE_KIND_SHIFT 2          /* the look's kind is above its variant */
 #define VILLAGER_HOUSE_VARIANT_MASK 3
-#define VILLAGER_HOUSE_ONE 0x1000 /* normal speed, 20.12 fixed point */
 
 #define VILLAGER_HOUSE_FIRST_CODE 0x5001
 #define VILLAGER_HOUSE_LAST_CODE 0x5008
@@ -404,7 +403,7 @@ int VillagerHouse_Init(VillagerHouse *house)
     if (ModelAnim_AllocMaterialAnim((ModelAnim *) &house->x_anim, house->x_model.resource, data_021c9b1c)) {
         void *deco = (void *) (uintptr_t) HouseXFiles_Deco(HouseFiles_XFiles());
         void *texture = (void *) (uintptr_t) HouseXFiles_Texture(HouseFiles_XFiles());
-        ModelAnim_StartTextured((ModelAnim *) &house->x_anim, deco, texture, 0, VILLAGER_HOUSE_ONE, 0);
+        ModelAnim_StartTextured((ModelAnim *) &house->x_anim, deco, texture, 0, FX32_ONE, 0);
         ModelAnim_Attach((ModelAnim *) &house->x_anim, ModelObject_RenderObject((ModelObject *) &house->x_model));
         house->x_model.matrix = house->matrix;
     }

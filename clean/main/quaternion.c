@@ -3,9 +3,6 @@
 
 #include "clean.h"
 
-/* One in 20.12 fixed point. */
-#define QUAT_ONE 0x1000
-
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_InvSqrt(fx32 value);
 
@@ -91,15 +88,15 @@ void Quat_ToMtx33(const Quat *q, Mtx33 *mtx)
     fx32 wy = FX_MulFunc(q->w, q->y);
     fx32 wz = FX_MulFunc(q->w, q->z);
 
-    mtx->m[0][0] = quat_sub(QUAT_ONE, quat_twice(quat_add(yy, zz)));
+    mtx->m[0][0] = quat_sub(FX32_ONE, quat_twice(quat_add(yy, zz)));
     mtx->m[0][1] = quat_twice(quat_add(xy, wz));
     mtx->m[0][2] = quat_twice(quat_sub(xz, wy));
     mtx->m[1][0] = quat_twice(quat_sub(xy, wz));
-    mtx->m[1][1] = quat_sub(QUAT_ONE, quat_twice(quat_add(xx, zz)));
+    mtx->m[1][1] = quat_sub(FX32_ONE, quat_twice(quat_add(xx, zz)));
     mtx->m[1][2] = quat_twice(quat_add(zy, wx));
     mtx->m[2][0] = quat_twice(quat_add(wy, xz));
     mtx->m[2][1] = quat_twice(quat_sub(zy, wx));
-    mtx->m[2][2] = quat_sub(QUAT_ONE, quat_twice(quat_add(xx, yy)));
+    mtx->m[2][2] = quat_sub(FX32_ONE, quat_twice(quat_add(xx, yy)));
 }
 CLEAN_AS(func_0209a304, Quat_ToMtx33)
 

@@ -44,7 +44,6 @@ static_assert(sizeof(RmoTelephone) == 0x644, "the size its class allocates");
 static_assert(offsetof(RmoObject, body.frames.end) == 0x18c, "body frame count");
 static_assert(offsetof(TalkObject, next_state) == 0x08, "talk next state");
 
-#define RMO_TELEPHONE_ONE 0x1000 /* normal speed, 20.12 fixed point */
 #define RMO_TELEPHONE_FRAME_SHIFT 12
 
 /* The states these functions enter (rmo_telephone.h). */
@@ -88,8 +87,7 @@ static TalkReceiver *RmoTelephone_receiver(RmoTelephone *self)
 /* The body's first joint animation started played once with `flags` from whole frame `start`. */
 static void RmoTelephone_play(RmoTelephone *self, int flags, u16 start)
 {
-    AnimatedModel_Start(RmoTelephone_body(self), RmoModel_JointAnim(&self->base.body_model, 0), flags, RMO_TELEPHONE_ONE,
-                        start, 0);
+    AnimatedModel_Start(RmoTelephone_body(self), RmoModel_JointAnim(&self->base.body_model, 0), flags, FX32_ONE, start, 0);
 }
 
 /* The body's frame count as whole frames: the frame its animation ends at. QUIRK: cut to 16

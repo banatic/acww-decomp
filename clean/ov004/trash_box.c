@@ -29,7 +29,6 @@ static_assert(offsetof(TrashBox, state) == 0x61c, "state");
 static_assert(sizeof(TrashBox) == 0x620, "the size TrashBox_Create allocates");
 static_assert(offsetof(Actor, angle) == 0x8c, "angle");
 
-#define TRASH_BOX_ONE 0x1000 /* normal speed, 20.12 fixed point */
 #define TRASH_BOX_PLAY_ONCE FRAME_CTRL_ONCE
 
 /* The joint animations: the lid opening (its first frame: closed) and closing (its first
@@ -350,7 +349,7 @@ CLEAN_AS(func_ov004_0222f7a0, TrashBox_UpdateClosing)
 int TrashBox_EnterClosing(TrashBox *self)
 {
     AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_CLOSING),
-                        TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
+                        TRASH_BOX_PLAY_ONCE, FX32_ONE, 0, 0);
     RmoSound_Play(TrashBox_sound_source(self), TRASH_BOX_SOUND_CLOSING);
     return 1;
 }
@@ -368,7 +367,7 @@ CLEAN_AS(func_ov004_0222f818, TrashBox_UpdateOpen)
 int TrashBox_EnterOpen(TrashBox *self)
 {
     AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_CLOSING),
-                        TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
+                        TRASH_BOX_PLAY_ONCE, FX32_ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f81c, TrashBox_EnterOpen)
@@ -390,7 +389,7 @@ CLEAN_AS(func_ov004_0222f854, TrashBox_UpdateOpening)
 int TrashBox_EnterOpening(TrashBox *self)
 {
     AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
-                        TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
+                        TRASH_BOX_PLAY_ONCE, FX32_ONE, 0, 0);
     RmoSound_Play(TrashBox_sound_source(self), TRASH_BOX_SOUND_OPENING);
     return 1;
 }
@@ -408,7 +407,7 @@ CLEAN_AS(func_ov004_0222f8cc, TrashBox_UpdateClosed)
 int TrashBox_EnterClosed(TrashBox *self)
 {
     AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
-                        TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
+                        TRASH_BOX_PLAY_ONCE, FX32_ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f8d0, TrashBox_EnterClosed)
@@ -524,7 +523,7 @@ int TrashBox_Start(TrashBox *self)
     if (RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING) != NULL &&
         AnimatedModel_LoadAnim(TrashBox_body(self), data_021c9b24) != 0) {
         AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
-                            TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
+                            TRASH_BOX_PLAY_ONCE, FX32_ONE, 0, 0);
         AnimatedModel_Attach(TrashBox_body(self));
     }
     TrashBox_EnterState(self, TRASH_BOX_IDLE);

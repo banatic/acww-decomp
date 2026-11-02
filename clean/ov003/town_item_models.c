@@ -56,7 +56,6 @@ extern void func_02107524(u8 *model, u16 colour);
 #define TOWN_ITEM_MODELS_PER_LINE 10
 /* The alpha of an item drawn whole, and 1.0. */
 #define TOWN_ITEM_MODELS_OPAQUE 0x1f
-#define TOWN_ITEM_MODELS_ONE 0x1000
 /* The tiles drawn at most a frame. */
 #define TOWN_ITEM_MODELS_MAX_DRAWN 0xfc
 /* A tile, in world units. */
@@ -519,7 +518,7 @@ static void town_item_draw_items(TileEventProcess *process, int item, const Vec3
 {
     for (int i = 0; i < count; i++) {
         Vec3 at = {point->x + offsets[i].x, point->y + offsets[i].y, point->z + offsets[i].z};
-        Vec3 scale = {TOWN_ITEM_MODELS_ONE, TOWN_ITEM_MODELS_ONE, TOWN_ITEM_MODELS_ONE};
+        Vec3 scale = {FX32_ONE, FX32_ONE, FX32_ONE};
         TownItemModels_DrawItem(process, item, &at, TOWN_ITEM_MODELS_OPAQUE, &scale, 0, 0, 0);
     }
 }

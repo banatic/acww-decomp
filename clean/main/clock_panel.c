@@ -70,8 +70,6 @@ extern const MemberPointer data_020e213c, data_020e212c, data_020e215c, data_020
 #define CLOCK_PANEL_SHIFT_SPEED_MAX 0x5000
 #define CLOCK_PANEL_SHIFT_WAIT 10
 
-#define CLOCK_PANEL_FX_ONE 0x1000
-
 /* The waits before appearing: after an event with no owner or no owner away from session
  * state 2, after an event with an owner that covers the panel, and while not asked to show. */
 #define CLOCK_PANEL_WAIT_AWAY 30
@@ -497,7 +495,7 @@ int ClockPanel_ShouldShow(ClockPanel *panel)
     if (event != 0 && owner != 0) {
         int flag = StateFlags_Test4();
         fx32 value = StateFlags_ValueOrOne();
-        covered = flag == 0 || value < CLOCK_PANEL_FX_ONE;
+        covered = flag == 0 || value < FX32_ONE;
     }
     if (event_no_owner || away || covered) {
         panel->wait = (event_no_owner || away) ? CLOCK_PANEL_WAIT_AWAY : CLOCK_PANEL_WAIT_COVERED;
@@ -673,10 +671,10 @@ void ClockPanel_Draw(ClockPanel *panel)
     int frame_x = CellAnim_FrameX(&panel->anim, -1);
     int frame_y = CellAnim_FrameY(&panel->anim, -1);
     int x = ScreenSprite_X(&panel->base) + frame_x;
-    int shift = (panel->shift + CLOCK_PANEL_FX_ONE / 2) >> 12;
+    int shift = (panel->shift + FX32_ONE / 2) >> 12;
     int y = ScreenSprite_Y(&panel->base) + shift + frame_y;
     int palette = panel->weekday == CLOCK_PANEL_SUNDAY ? CLOCK_PANEL_PALETTE_SUNDAY : CLOCK_PANEL_PALETTE;
-    OamBuffer_DrawCell(0, cell, x, y, palette, -1, CLOCK_PANEL_FX_ONE, CLOCK_PANEL_FX_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(0, cell, x, y, palette, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208de10, ClockPanel_Draw)
 

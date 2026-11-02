@@ -33,8 +33,6 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define SQRT_MODE_64BIT 1
 #define UNIT_BUSY 0x8000
 
-#define ONE 0x1000 /* 1.0 in 20.12 */
-
 /* The nodes whose translation is blended too: the first two, the model's root ones. */
 #define JOINT_BLEND_LAST_MOVED_NODE 1
 
@@ -61,7 +59,7 @@ static fx32 mix(fx32 to, fx32 from, fx32 weight, fx32 rest)
 /* 1.0 - weight, wrapping at 32 bits. */
 static fx32 rest_of(fx32 weight)
 {
-    return (fx32) ((u32) ONE - (u32) weight);
+    return (fx32) ((u32) FX32_ONE - (u32) weight);
 }
 
 /* func_02056aa0: the pose of the node being placed recorded from the joint result the render

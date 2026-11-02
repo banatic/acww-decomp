@@ -10,8 +10,7 @@
 
 static_assert(sizeof(BPole) == 0x290, "the size BPole_Create allocates");
 
-#define B_POLE_ONE 0x1000 /* normal speed, 20.12 fixed point */
-#define B_POLE_LOOP 0     /* FrameCtrlFlags: the animation starts over at its end */
+#define B_POLE_LOOP 0 /* FrameCtrlFlags: the animation starts over at its end */
 
 /* The class's vtable. */
 extern const u8 data_ov004_02255290[];
@@ -59,7 +58,7 @@ int BPole_Start(BPole *self)
     RmoObjectSlots_LoadNamed(&self->base, data_ov004_022552f8);
     if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
         AnimatedModel_LoadAnim(BPole_body(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(BPole_body(self), RmoModel_JointAnim(&self->base.body_model, 0), B_POLE_LOOP, B_POLE_ONE, 0, 0);
+        AnimatedModel_Start(BPole_body(self), RmoModel_JointAnim(&self->base.body_model, 0), B_POLE_LOOP, FX32_ONE, 0, 0);
         AnimatedModel_Attach(BPole_body(self));
     }
     return 1;

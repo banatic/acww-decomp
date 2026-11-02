@@ -19,7 +19,6 @@ static_assert(offsetof(RoomObject022510b4, state) == 0x845, "state");
 static_assert(sizeof(RoomObject022510b4) == 0x848, "the size RoomObject022510b4_Create allocates");
 
 #define ROOM_OBJECT_022510B4_SIZE 0x848
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0   /* the animations start again at the end */
 #define ANIM_MODE_ONCE 1   /* the animations stop at the end */
 #define ANIM_MODE_3 3      /* the animations' mode 3 */
@@ -74,7 +73,7 @@ int RoomObject022510b4_EnterSwitchingOff(RoomObject022510b4 *object)
 {
     Switch_Set(&object->base.light_switch, 0, 0);
     RoomObject_PlaySound2(&object->base);
-    RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_3, ONE);
+    RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_3, FX32_ONE);
     return 1;
 }
 CLEAN_AS(func_ov004_02218b5c, RoomObject022510b4_EnterSwitchingOff)
@@ -95,7 +94,7 @@ CLEAN_AS(func_ov004_02218b90, RoomObject022510b4_UpdateOn)
 int RoomObject022510b4_EnterOn(RoomObject022510b4 *object)
 {
     Switch_Set(&object->base.light_switch, 1, 0);
-    RoomObject_PlayAnimsFromEnd(&object->base, 1, ANIM_MODE_LOOP, ONE);
+    RoomObject_PlayAnimsFromEnd(&object->base, 1, ANIM_MODE_LOOP, FX32_ONE);
     return 1;
 }
 CLEAN_AS(func_ov004_02218be0, RoomObject022510b4_EnterOn)
@@ -117,7 +116,7 @@ int RoomObject022510b4_EnterSwitchingOn(RoomObject022510b4 *object)
 {
     Switch_Set(&object->base.light_switch, 1, 0);
     RoomObject_PlaySound1(&object->base);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02218c3c, RoomObject022510b4_EnterSwitchingOn)
@@ -134,7 +133,7 @@ CLEAN_AS(func_ov004_02218c74, RoomObject022510b4_UpdateOff)
 int RoomObject022510b4_EnterOff(RoomObject022510b4 *object)
 {
     Switch_Set(&object->base.light_switch, 0, 0);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02218cb4, RoomObject022510b4_EnterOff)
@@ -210,7 +209,7 @@ CLEAN_AS(_ZN18Obj_ov004_022510b419func_ov004_02218e2cEv, RoomObject022510b4_Upda
 int RoomObject022510b4_Start(RoomObject022510b4 *object)
 {
     object->unbound = 0;
-    RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject022510b4_switch_to(object, ROOM_OBJECT_022510B4_ON);
     } else {

@@ -25,8 +25,6 @@
 #define HELD_ITEM_POOL_TEXTURE_4X4_SIZE 0
 #define HELD_ITEM_POOL_PALETTE_SIZE 80
 #define HELD_ITEM_POOL_ALIGN 4
-/* An animation's speed of 1.0. */
-#define HELD_ITEM_POOL_SPEED_ONE 0x1000
 /* What the item tables give for an item outside them: no model (the model kind), the
  * holder's animation for none, and model 0x32. */
 #define HELD_ITEM_POOL_KIND_NONE 0x2b
@@ -173,7 +171,7 @@ void HeldItemPool_StartTextureAnim(HeldItemPool *pool, int index, int number, in
     u8 *anim_file = func_02107bbc(NNS_G3dGetTexSRTAnmSet(file), 0);
     ModelAnim *anim = (ModelAnim *) (uintptr_t) HeldItemPool_MaterialAnim(pool, index);
     AnimatedModel *model = (AnimatedModel *) (uintptr_t) HeldItemPool_Model(pool, index);
-    ModelAnim_Restart(anim, ModelObject_RenderObject(&model->object), anim_file, flags, HELD_ITEM_POOL_SPEED_ONE, 0);
+    ModelAnim_Restart(anim, ModelObject_RenderObject(&model->object), anim_file, flags, FX32_ONE, 0);
 }
 CLEAN_AS(func_0205f15c, HeldItemPool_StartTextureAnim)
 
@@ -189,7 +187,7 @@ void HeldItemPool_PlayJointAnim(HeldItemPool *pool, int index, int action, int b
     u8 *file = (u8 *) (uintptr_t) HeldItemPool_JointAnim(&data_021ca16c, index);
     u8 *anim_file = func_02107b44(NNS_G3dGetJntAnmSet(file), 0);
     AnimatedModel *model = (AnimatedModel *) (uintptr_t) HeldItemPool_Model(&data_021ca16c, index);
-    AnimatedModel_Play(model, anim_file, blend, flags, HELD_ITEM_POOL_SPEED_ONE, 0, 0);
+    AnimatedModel_Play(model, anim_file, blend, flags, FX32_ONE, 0, 0);
 }
 CLEAN_AS(func_0205f1bc, HeldItemPool_PlayJointAnim)
 

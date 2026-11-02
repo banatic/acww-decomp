@@ -19,7 +19,6 @@ static_assert(offsetof(RoomObject02252f2c, glows) == 0x848, "glows");
 static_assert(sizeof(RoomObject02252f2c) == 0x8a0, "the size of the class");
 static_assert(offsetof(RoomObject, sound) == 0x798, "sound");
 
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0   /* the animations start again at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 
@@ -210,7 +209,7 @@ int RoomObject02252f2c_Start(RoomObject02252f2c *object)
         } else {
             start = MainRandom_Below(frames);
         }
-        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, (u16) start);
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, (u16) start);
         GlowSet_Bind(&object->glows, base->model_resource, 1);
     }
     if (Switch_Value(&base->light_switch) != 0) {

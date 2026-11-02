@@ -50,7 +50,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 #define SHIFT_WAIT 5
 /* The lift at state flag 4's value 0 (192 pixels, 20.12). */
 #define LIFT_AT_ZERO 0x000c0000
-#define FX_ONE 0x1000
 
 /* The number: 7 digits, not padded, no unit, half-width characters. */
 #define BELLS_DIGITS 7
@@ -129,7 +128,7 @@ void BellsPanel_UpdateLift(BellsPanel *panel)
 {
     fx32 value = StateFlags_ValueOrOne();
     fx32 at_one = FX_MulFunc(0, value);
-    fx32 at_zero = FX_MulFunc(LIFT_AT_ZERO, FX_ONE - value);
+    fx32 at_zero = FX_MulFunc(LIFT_AT_ZERO, FX32_ONE - value);
     panel->lift = (at_one + at_zero) >> 12;
 }
 CLEAN_AS(func_0208b6ec, BellsPanel_UpdateLift)
@@ -428,7 +427,7 @@ void BellsPanel_Draw(BellsPanel *panel)
     int y = ScreenSprite_Y(&panel->base);
     y += CellAnim_FrameY(&panel->anim, -1);
     y += panel->lift + shift;
-    OamBuffer_DrawCell(0, cell, x, y, -1, -1, FX_ONE, FX_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(0, cell, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208bad4, BellsPanel_Draw)
 

@@ -26,7 +26,6 @@ extern const u8 data_020d0ae0[];
 /* The sound player's byte is set from the sprite's x on the screen, 0 to 255. */
 #define CELL_LAYER_SPRITE_X_MAX 0xff
 
-#define CELL_LAYER_SPRITE_FX_ONE 0x1000
 #define CELL_LAYER_SPRITE_OBJ_WINDOW 2
 
 /* func_0208e484: whether the animation has ended, and the second layer's too when it is shown. */
@@ -133,11 +132,9 @@ CLEAN_AS(func_0208e5d4, CellLayerSprite_Update)
 static void cell_layer_sprite_draw_pass(CellLayerSprite *sprite, int screen, int obj_mode, const OamEntry *cell, int x, int y,
                                         const OamEntry *cell2, int x2, int y2)
 {
-    OamBuffer_DrawCell(screen, cell, x, y, -1, sprite->priority, CELL_LAYER_SPRITE_FX_ONE, CELL_LAYER_SPRITE_FX_ONE, 0,
-                       obj_mode, 0, 0);
+    OamBuffer_DrawCell(screen, cell, x, y, -1, sprite->priority, FX32_ONE, FX32_ONE, 0, obj_mode, 0, 0);
     if (cell2 != NULL) {
-        OamBuffer_DrawCell(screen, cell2, x2, y2, -1, sprite->priority, CELL_LAYER_SPRITE_FX_ONE, CELL_LAYER_SPRITE_FX_ONE, 0,
-                           obj_mode, 0, 0);
+        OamBuffer_DrawCell(screen, cell2, x2, y2, -1, sprite->priority, FX32_ONE, FX32_ONE, 0, obj_mode, 0, 0);
     }
 }
 

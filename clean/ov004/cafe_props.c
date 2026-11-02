@@ -39,7 +39,6 @@ static_assert(offsetof(CafeProps, effect) == 0xf38, "effect");
 static_assert(offsetof(CafeProps, part_effects) == 0xf3c, "part effects");
 static_assert(sizeof(CafeProps) == 0xf44, "the size CafeProps_Create allocates");
 
-#define ONE 0x1000        /* normal speed, 20.12 fixed point */
 #define NO_EFFECT (-1)    /* CafeProps.effect and part_effects when none runs */
 #define EFFECT_SET 0x6b   /* the effect set of all three effects */
 #define EFFECT_FRAME 0x3b /* the master's frame at which state 5 starts its effect */
@@ -303,7 +302,7 @@ CLEAN_AS(func_ov004_0222dd3c, CafeProps_EnterState0)
 static void start_first_anim(RmoAnimatedModel *model, RmoModel *source)
 {
     if (RmoModel_JointAnim(source, 0) != NULL && AnimatedModel_LoadAnim(animated(model), data_021c9b24) != 0) {
-        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, 0), PLAY_ONCE, ONE, 0, 0);
+        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, 0), PLAY_ONCE, FX32_ONE, 0, 0);
         AnimatedModel_Attach(animated(model));
         model->frames.speed = 0;
     }
@@ -354,15 +353,15 @@ CLEAN_AS(func_ov004_0222de98, CafeProps_DrawCurrent)
 /* Parts 1 and 2 play `anim1` and `anim2` once from the start. */
 static void play_parts_1_2(CafeProps *self, int anim1, int anim2, u8 flags, u16 start)
 {
-    CafeProps_PlayAnim(self, anim1, &self->parts[1], &self->part_models[1], flags, ONE, start, 0);
-    CafeProps_PlayAnim(self, anim2, &self->parts[2], &self->part_models[2], flags, ONE, start, 0);
+    CafeProps_PlayAnim(self, anim1, &self->parts[1], &self->part_models[1], flags, FX32_ONE, start, 0);
+    CafeProps_PlayAnim(self, anim2, &self->parts[2], &self->part_models[2], flags, FX32_ONE, start, 0);
 }
 
 /* The counter and part 0 play `anim`, looping. */
 static void play_body_part_0(CafeProps *self, int anim)
 {
-    CafeProps_PlayAnim(self, anim, &self->base.body, &self->base.body_model, PLAY_LOOP, ONE, 0, 0);
-    CafeProps_PlayAnim(self, anim, &self->parts[0], &self->part_models[0], PLAY_LOOP, ONE, 0, 0);
+    CafeProps_PlayAnim(self, anim, &self->base.body, &self->base.body_model, PLAY_LOOP, FX32_ONE, 0, 0);
+    CafeProps_PlayAnim(self, anim, &self->parts[0], &self->part_models[0], PLAY_LOOP, FX32_ONE, 0, 0);
 }
 
 /* func_ov004_0222deb4 */
@@ -459,7 +458,7 @@ CLEAN_AS(func_ov004_0222e1b8, CafeProps_UpdateState4)
 /* func_ov004_0222e220: part 3 plays its first animation once from the start. */
 int CafeProps_OnEnterState4(CafeProps *self)
 {
-    AnimatedModel_Start(animated(&self->parts[3]), RmoModel_JointAnim(&self->part_models[3], 0), PLAY_ONCE, ONE, 0, 0);
+    AnimatedModel_Start(animated(&self->parts[3]), RmoModel_JointAnim(&self->part_models[3], 0), PLAY_ONCE, FX32_ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_0222e220, CafeProps_OnEnterState4)
@@ -481,8 +480,8 @@ void CafeProps_UpdateState3(CafeProps *self)
         self->part_shown[1] = late;
         self->part_shown[2] = late;
         play_body_part_0(self, 2);
-        CafeProps_PlayAnim(self, 2, &self->parts[1], &self->part_models[1], PLAY_LOOP, ONE, 0, 0);
-        CafeProps_PlayAnim(self, 2, &self->parts[2], &self->part_models[2], PLAY_LOOP, ONE, 0, 0);
+        CafeProps_PlayAnim(self, 2, &self->parts[1], &self->part_models[1], PLAY_LOOP, FX32_ONE, 0, 0);
+        CafeProps_PlayAnim(self, 2, &self->parts[2], &self->part_models[2], PLAY_LOOP, FX32_ONE, 0, 0);
     } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F3) {
         play_parts_1_2(self, 0, 0, PLAY_LOOP, 0);
     } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F5) {
@@ -790,8 +789,8 @@ int CafeProps_Start(CafeProps *self)
     CafeProps_SetState(self, 0);
     self->part_shown[3] = 1;
     for (int i = 4; i < 8; i += 2) {
-        CafeProps_PlayAnim(self, 8, &self->parts[i], &self->part_models[i], PLAY_LOOP, ONE, 0, 0);
-        CafeProps_PlayAnim(self, 6, &self->parts[i + 1], &self->part_models[i + 1], PLAY_LOOP, ONE, 0, 0);
+        CafeProps_PlayAnim(self, 8, &self->parts[i], &self->part_models[i], PLAY_LOOP, FX32_ONE, 0, 0);
+        CafeProps_PlayAnim(self, 6, &self->parts[i + 1], &self->part_models[i + 1], PLAY_LOOP, FX32_ONE, 0, 0);
     }
     self->part_effect_points[0] = data_ov004_02258318;
     self->part_effect_points[1] = data_ov004_02258330;

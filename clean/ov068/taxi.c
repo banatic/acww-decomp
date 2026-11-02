@@ -33,8 +33,7 @@ static_assert(offsetof(Taxi, alpha) == 0x59a, "alpha");
 static_assert(offsetof(Taxi, materials) == 0x59c, "materials");
 static_assert(sizeof(Taxi) == 0x5a4, "the size func_ov068_02273904 allocates");
 
-#define TAXI_ONE 0x1000 /* normal speed, 20.12 fixed point */
-#define TAXI_LOOP 0     /* FrameCtrlFlags: the animation starts over at its end */
+#define TAXI_LOOP 0 /* FrameCtrlFlags: the animation starts over at its end */
 #define TAXI_ONCE FRAME_CTRL_ONCE
 #define TAXI_RAIN_ALPHA 31 /* the rain materials' alpha in state 0 */
 #define TAXI_RAIN_STEP 3   /* state 1: frames per step of the alpha */
@@ -110,7 +109,7 @@ int Taxi_StartFigure(void)
         return 0;
     }
     self->figure_plays = 1;
-    AnimatedModel_Start(animated(&self->figure), RmoModel_JointAnim(&self->figure_model, 0), TAXI_ONCE, TAXI_ONE, 0, 0);
+    AnimatedModel_Start(animated(&self->figure), RmoModel_JointAnim(&self->figure_model, 0), TAXI_ONCE, FX32_ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov068_02273030, Taxi_StartFigure)
@@ -227,10 +226,10 @@ void Taxi_RestartCar(Taxi *self, int flags)
 {
     AnimatedModel *body = animated(&self->base.body);
     const u8 *joints = RmoModel_JointAnim(&self->base.body_model, 0);
-    AnimatedModel_Start(body, joints, flags, TAXI_ONE, (u16) ((u32) self->base.body.frames.frame >> 12), 0);
+    AnimatedModel_Start(body, joints, flags, FX32_ONE, (u16) ((u32) self->base.body.frames.frame >> 12), 0);
     G3dRenderObject *render = ModelObject_RenderObject(&body->object);
     const u8 *materials = RmoModel_MaterialAnim(&self->base.body_model, 0);
-    ModelAnim_Restart(&self->material_anim, render, materials, flags, TAXI_ONE,
+    ModelAnim_Restart(&self->material_anim, render, materials, flags, FX32_ONE,
                       (u16) ((u32) self->material_anim.ctrl.frame >> 12));
 }
 CLEAN_AS(func_ov068_022732bc, Taxi_RestartCar)
@@ -239,7 +238,7 @@ CLEAN_AS(func_ov068_022732bc, Taxi_RestartCar)
 static void start_part(RmoAnimatedModel *model, RmoModel *source, int flags)
 {
     if (RmoModel_JointAnim(source, 0) != NULL && AnimatedModel_LoadAnim(animated(model), data_021c9b24) != 0) {
-        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, 0), flags, TAXI_ONE, 0, 0);
+        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, 0), flags, FX32_ONE, 0, 0);
         AnimatedModel_Attach(animated(model));
     }
 }
@@ -250,7 +249,7 @@ static void start_material_anim(Taxi *self, ModelAnim *anim, const u8 *(*get)(Rm
 {
     if (get(&self->base.body_model, 0) != NULL &&
         ModelAnim_AllocMaterialAnim(anim, self->base.body.object.model, data_021c9b24) != 0) {
-        ModelAnim_Start(anim, get(&self->base.body_model, 0), TAXI_LOOP, TAXI_ONE, 0);
+        ModelAnim_Start(anim, get(&self->base.body_model, 0), TAXI_LOOP, FX32_ONE, 0);
         ModelAnim_Attach(anim, ModelObject_RenderObject(&self->base.body.object));
     }
 }
@@ -333,7 +332,7 @@ int Taxi_Update(Taxi *self)
     int speaker_anim = TaxiDriver_CurrentAnim();
     /* QUIRK: the speaker's frame is asked for and not used */
     (void) TaxiDriver_CurrentFrame();
-    Taxi_PlayPartAnim(self, handle_anim(speaker_anim), &self->handle, &self->handle_model, TAXI_LOOP, TAXI_ONE, 0, 0);
+    Taxi_PlayPartAnim(self, handle_anim(speaker_anim), &self->handle, &self->handle_model, TAXI_LOOP, FX32_ONE, 0, 0);
     AnimatedModel_StepFrames(animated(&self->handle));
     u8 *model = self->base.body.object.model;
     NNS_G3dMdlSetMdlAlpha(model, self->materials[0], (u8) self->alpha);

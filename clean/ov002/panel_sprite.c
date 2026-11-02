@@ -25,7 +25,6 @@ extern void func_02088df8(int a0, const PanelCell *cell, int x, int y, int palet
 #define SHADOW_OFFSET 3
 /* The style of the text box. */
 #define TEXT_STYLE 8
-#define SCALE_ONE 0x1000
 
 static TextLabel *label_of(PanelSprite *sprite)
 {
@@ -95,16 +94,16 @@ void PanelSprite_Draw(PanelSprite *sprite, int x, int y, int priority)
     int button_y = y + CENTER_Y + depth;
     int button_x = x + CENTER_X + depth;
 
-    OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, palette, priority, SCALE_ONE,
-                       SCALE_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, palette, priority, FX32_ONE, FX32_ONE,
+                       0, -1, 0, 0);
     if (PanelSprite_HasFlags(sprite, PANEL_SPRITE_FLAG2)) {
-        OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, -1, priority, SCALE_ONE,
-                           SCALE_ONE, 0, 2, 0, 0);
+        OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, -1, priority, FX32_ONE, FX32_ONE,
+                           0, 2, 0, 0);
     }
     if (!PanelSprite_HasFlags(sprite, PANEL_SPRITE_NO_SHADOW) && sprite->press_step + 1 != PANEL_PRESS_STEPS) {
         const PanelCell *shadow = &sprite->cells[sprite->shadow_cell];
         OamBuffer_DrawCell(1, (const OamEntry *) (void *) shadow, x + CENTER_X + SHADOW_OFFSET, y + CENTER_Y + SHADOW_OFFSET,
-                           1, priority, SCALE_ONE, SCALE_ONE, 0, -1, 0, 0);
+                           1, priority, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
     }
 }
 CLEAN_AS(func_ov002_0220b1a4, PanelSprite_Draw)

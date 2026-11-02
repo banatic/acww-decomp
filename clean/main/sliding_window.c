@@ -411,7 +411,6 @@ static_assert(sizeof(SlidingWindowText) == 0x30, "SlidingWindowText");
 
 #define WINDOW_OBJ_MODE_OWN (-1) /* the cells' own OBJ mode */
 #define WINDOW_OBJ_MODE_WINDOW 2 /* OBJ window */
-#define WINDOW_SCALE_ONE 0x1000
 
 extern const u32 data_020e20ac[];      /* the window's vtable */
 extern const TextVtable data_020e2094; /* a line's vtable */
@@ -522,11 +521,9 @@ CLEAN_AS(func_0208aaa0, SlidingWindow_Update)
 static void draw_cells(SlidingWindow *window, int screen, int obj_mode, const OamEntry *body_cell, const OamEntry *extra_cell,
                        int body_x, int body_y, int extra_x, int extra_y)
 {
-    OamBuffer_DrawCell(screen, body_cell, body_x, body_y, -1, window->priority, WINDOW_SCALE_ONE, WINDOW_SCALE_ONE, 0,
-                       obj_mode, 0, 0);
+    OamBuffer_DrawCell(screen, body_cell, body_x, body_y, -1, window->priority, FX32_ONE, FX32_ONE, 0, obj_mode, 0, 0);
     if (window->show_extra != 0) {
-        OamBuffer_DrawCell(screen, extra_cell, extra_x, extra_y, -1, window->priority, WINDOW_SCALE_ONE, WINDOW_SCALE_ONE, 0,
-                           obj_mode, 0, 0);
+        OamBuffer_DrawCell(screen, extra_cell, extra_x, extra_y, -1, window->priority, FX32_ONE, FX32_ONE, 0, obj_mode, 0, 0);
     }
 }
 

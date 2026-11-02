@@ -8,7 +8,6 @@ static_assert(offsetof(FieldBody, next) == 0x38 && sizeof(FieldBody) == 0x40, "F
 static_assert(sizeof(FieldOwnedBody) == 0x44 && sizeof(FieldOwnedPointBody) == 0x50, "FieldOwnedBody");
 static_assert(sizeof(FieldPointBody) == 0x4c, "FieldPointBody");
 
-#define FX32_ONE 0x1000
 #define NO_TOUCH_INDEX 0xff
 
 extern FieldBody *data_021d3120; /* the bodies entered this frame */

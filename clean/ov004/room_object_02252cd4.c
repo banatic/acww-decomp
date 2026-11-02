@@ -21,7 +21,6 @@ static_assert(offsetof(RoomObject02252cd4, push_frames) == 0x844, "push frames")
 static_assert(sizeof(RoomObject02252cd4) == 0x848, "the size RoomObject02252cd4_Create allocates");
 
 #define ROOM_OBJECT_02252CD4_SIZE 0x848
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0   /* RoomObject_LoadAnims: start again at the end */
 #define KIND_9 9           /* RoomObject.unk_780 of the kind animated every frame */
 #define KIND_26 0x26       /* RoomObject.unk_780 of the kind with three entry states */
@@ -165,7 +164,7 @@ int RoomObject02252cd4_Start(RoomObject02252cd4 *object)
     RoomObject *base = &object->base;
     ByteSet_SetValue(&base->node_set, 0);
     if (base->unk_780 == KIND_9 || base->unk_780 == KIND_2C) {
-        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
     return 1;
 }

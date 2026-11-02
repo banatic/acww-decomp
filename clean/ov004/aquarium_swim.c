@@ -33,8 +33,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void *NNS_G3dGetJntAnmSet(u8 *file);
 extern u8 *func_02107b44(void *set, u32 index);
 
-#define ONE 0x1000
-
 /* An angle of one degree. */
 #define DEGREE 0xb6
 
@@ -56,7 +54,7 @@ extern u8 *func_02107b44(void *set, u32 index);
  * it may come to it: once turning from the glass, and before. */
 #define GLASS_INNER_WIDTH 0xfc00
 #define GLASS_INNER_DEPTH 0x3c00
-#define GLASS_NEAR_TURNING ONE
+#define GLASS_NEAR_TURNING FX32_ONE
 #define GLASS_NEAR 0x400
 
 /* The ground's height under the tanks, as AquariumSwim_EdgeNearerAlongX takes it. */
@@ -285,7 +283,7 @@ CLEAN_AS(func_ov004_02239804, AquariumSwim_Straighten)
 void AquariumSwim_PlayAnim(AquariumFish *fish, int anim)
 {
     u8 *track = func_02107b44(NNS_G3dGetJntAnmSet(fish->anims[anim]), 0);
-    AnimatedModel_Play(&fish->model, track, 2, 0, ONE, 0, 0);
+    AnimatedModel_Play(&fish->model, track, 2, 0, FX32_ONE, 0, 0);
 }
 CLEAN_AS(func_ov004_02239820, AquariumSwim_PlayAnim)
 
@@ -462,12 +460,12 @@ int AquariumSwim_EdgeNearerAlongX(const Vec3 *point, int yaw)
     int z_step = size > 0x4000 ? -2 : 2;
     for (int i = 0; i < 50; i++) {
         Vec3 at = *point;
-        at.x = AquariumSwim_add(point->x, x_step * i * ONE / 10);
+        at.x = AquariumSwim_add(point->x, x_step * i * FX32_ONE / 10);
         if (!AquariumSwim_GroundIsHalf(&at)) {
             return 1;
         }
         at.x = point->x;
-        at.z = AquariumSwim_add(point->z, z_step * i * ONE / 10);
+        at.z = AquariumSwim_add(point->z, z_step * i * FX32_ONE / 10);
         if (!AquariumSwim_GroundIsHalf(&at)) {
             return 0;
         }

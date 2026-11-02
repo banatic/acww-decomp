@@ -71,7 +71,6 @@ extern void func_0206f38c(void);
 #define PLANES_BUT_BG2 0x1b /* BG0, BG1, BG3 and OBJ */
 #define SUB_PLANES_BG 0x0f  /* BG0 to BG3 */
 
-#define EASE_ONE 0x1000
 #define EASE_STEP 0x200
 #define SCROLL_MASK 0x1ff
 
@@ -230,7 +229,7 @@ int MenuBackdrop_StepClose(void)
         DisplayShadow_HideMainPlanes(PLANE_BG3);
     }
     data_021cfc20 = MENU_BACKDROP_EASE_OUT;
-    data_021cfc28 = EASE_ONE;
+    data_021cfc28 = FX32_ONE;
     data_021cfc24 = EASE_STEP;
     MenuBackdrop_Hold(MENU_BACKDROP_HOLD_CLOSE);
     return 1;
@@ -263,7 +262,7 @@ int MenuBackdrop_StepEaseIn(void)
         return 1;
     }
     ease_count_down();
-    StateFlags_SetValue((u32) (EASE_ONE - FX_MulFunc(data_021cfc28, data_021cfc28)));
+    StateFlags_SetValue((u32) (FX32_ONE - FX_MulFunc(data_021cfc28, data_021cfc28)));
     return 1;
 }
 CLEAN_AS(func_0206ed2c, MenuBackdrop_StepEaseIn)
@@ -298,7 +297,7 @@ int MenuBackdrop_StepStill(void)
     if (CameraControl_SetModeStill()) {
         StateFlags_Set4();
         StateFlags_SetValue(0);
-        data_021cfc28 = EASE_ONE;
+        data_021cfc28 = FX32_ONE;
         data_021cfc24 = EASE_STEP;
         data_021cfc20 = MENU_BACKDROP_LOAD_SUB;
     }

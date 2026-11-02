@@ -16,7 +16,6 @@ static_assert(offsetof(RoomObject02251a14, glows) == 0x848, "glows");
 static_assert(sizeof(RoomObject02251a14) == 0x8a0, "the size RoomObject02251a14_Create allocates");
 
 #define ROOM_OBJECT_02251A14_SIZE 0x8a0
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0   /* the animations start again at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 
@@ -159,7 +158,7 @@ CLEAN_AS(_ZN18Obj_ov004_02251a1419func_ov004_02219d08Ev, RoomObject02251a14_Upda
 int RoomObject02251a14_Start(RoomObject02251a14 *object)
 {
     RoomObject *base = &object->base;
-    RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
+    RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
     if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         RoomObject02251a14_switch_to(object, ROOM_OBJECT_02251A14_ON);

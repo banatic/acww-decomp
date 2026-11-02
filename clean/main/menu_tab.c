@@ -308,7 +308,6 @@ extern const MemberPointer data_020e21a4, data_020e216c, data_020e2194, data_020
 /* The palettes of the tab: while its window opens, is open or closes; else. */
 #define MENU_TAB_PALETTE_OPEN 6
 #define MENU_TAB_PALETTE 5
-#define MENU_TAB_FX_ONE 0x1000
 
 #define MENU_TAB_SLOT_STEP 3
 
@@ -382,8 +381,7 @@ void MenuTab_Draw(MenuTab *tab)
     int y = ScreenSprite_Y(&tab->base);
     int with_window = tab->state >= MENU_TAB_OPENING && tab->state <= MENU_TAB_CLOSING;
     int palette = with_window ? MENU_TAB_PALETTE_OPEN : MENU_TAB_PALETTE;
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x + dx, y + dy, palette, -1, MENU_TAB_FX_ONE, MENU_TAB_FX_ONE, 0, -1, 0,
-                       0);
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x + dx, y + dy, palette, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208c0f8, MenuTab_Draw)
 

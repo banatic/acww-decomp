@@ -25,7 +25,6 @@ static_assert(offsetof(MesBgSlider, indicator) == 0x10, "MesBgSlider layout");
 static_assert(sizeof(MesBgSlider) == 0x58, "MesBgSlider layout");
 
 #define FS_READ_FAILED (-1)
-#define SCALE_ONE 0x1000
 
 /* The classes' vtables. */
 extern const u8 data_020e3fb4[];
@@ -253,7 +252,7 @@ void MesBgSlider_Draw(MesBgSlider *slider)
     const void *cell = data_020d5b3c[0];
     int y = ScreenSprite_Y((ScreenSprite *) slider);
     int x = ScreenSprite_X((ScreenSprite *) slider);
-    OamBuffer_DrawCell(0, cell, x, y, -1, 0, SCALE_ONE, SCALE_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(0, cell, x, y, -1, 0, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_020acae8, MesBgSlider_Draw)
 

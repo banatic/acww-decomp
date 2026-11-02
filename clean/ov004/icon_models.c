@@ -63,7 +63,6 @@ extern Mtx43 data_021fbe48;      /* the matrix being built */
 
 extern void NNS_G3dMdlSetMdlEmi(u8 *model, int material, unsigned short colour);
 
-#define ICON_MODELS_ONE 0x1000
 #define ICON_MODELS_TILE 0x2000
 /* The tiles drawn round the focus: 8 each way. */
 #define ICON_MODELS_REACH 8
@@ -128,7 +127,7 @@ static void IconModels_draw_tile_item(IconModels *self, AcreMap *map, const Vec3
     position.y = at->y + RoomObjects_HeightAtPoint(at);
     position.x = at->x;
     position.z = at->z;
-    Vec3 scale = {ICON_MODELS_ONE, ICON_MODELS_ONE, ICON_MODELS_ONE};
+    Vec3 scale = {FX32_ONE, FX32_ONE, FX32_ONE};
     IconModels_DrawItem(self, *code, &position, &scale, 0, 0, 0);
 }
 

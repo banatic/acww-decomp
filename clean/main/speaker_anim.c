@@ -51,9 +51,6 @@ static_assert(offsetof(SpeakerAnim, keep_speed) == 0x18, "SpeakerAnim layout");
 /* The joint ranges of an animation are listed in a table of four sets (func_0205cebc). */
 #define SPEAKER_ANIM_JOINT_SETS 4
 
-/* fx32 1.0 */
-#define SPEAKER_ANIM_ONE 0x1000
-
 extern s32 FX_MulFunc(s32 a, s32 b);
 
 static s32 speaker_anim_word(const u8 *object, u32 offset)
@@ -164,9 +161,9 @@ void SpeakerAnim_UpdateSpeed(SpeakerAnim *anim, u8 *object)
 {
     s32 speed = speaker_anim_word(object, SPEAKER_ANIM_OBJECT_SPEED);
     if (speed == 0) {
-        anim->speed = SPEAKER_ANIM_ONE;
+        anim->speed = FX32_ONE;
     } else if (*(const s32 *) SceneMover_Pace((SceneMover *) (void *) (object + SPEAKER_ANIM_OBJECT_GROUND)) == 0) {
-        anim->speed = SPEAKER_ANIM_ONE;
+        anim->speed = FX32_ONE;
     } else {
         anim->speed = FX_MulFunc(speed, anim->speed_scale);
     }
@@ -232,8 +229,8 @@ void SpeakerAnim_StartTalk(SpeakerAnim *anim, u8 *object, int first, int last)
         SpeakerAnim_StopTalk(anim, object);
         return;
     }
-    LayeredModel_PlayB((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, 0, 1, SPEAKER_ANIM_ONE,
-                       (u16) first, (u16) last, 0);
+    LayeredModel_PlayB((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, 0, 1, FX32_ONE, (u16) first,
+                       (u16) last, 0);
     int set = AnimTables_HeldJointGroup(SPEAKER_ANIM_TALK);
     if (set >= SPEAKER_ANIM_JOINT_SETS) {
         SpeakerAnim_StopTalk(anim, object);
@@ -336,8 +333,7 @@ void SpeakerAnim_PlayItemPose(SpeakerAnim *anim, u8 *object, u16 *item, int pose
         if (animation == 0) {
             return;
         }
-        LayeredModel_PlayA((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, arg, 0, SPEAKER_ANIM_ONE, 0,
-                           0, 0);
+        LayeredModel_PlayA((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, arg, 0, FX32_ONE, 0, 0, 0);
         LayeredModel_MoveNodesToA((LayeredModel *) (void *) model, SPEAKER_ANIM_OWN_POSE_FIRST_JOINT,
                                   SPEAKER_ANIM_OWN_POSE_LAST_JOINT);
         return;
@@ -352,8 +348,7 @@ void SpeakerAnim_PlayItemPose(SpeakerAnim *anim, u8 *object, u16 *item, int pose
     if (animation == 0) {
         return;
     }
-    LayeredModel_PlayA((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, arg, 0, SPEAKER_ANIM_ONE, 0, 0,
-                       0);
+    LayeredModel_PlayA((LayeredModel *) (void *) model, (const void *) (uintptr_t) animation, arg, 0, FX32_ONE, 0, 0, 0);
     int set = AnimTables_HeldJointGroup(number);
     if (set >= SPEAKER_ANIM_JOINT_SETS) {
         LayeredModel_StartAFromBase((LayeredModel *) (void *) model, 0, 0);
@@ -470,7 +465,7 @@ int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale)
     if (PoolLink_Take((PoolLink *) anim) == 0) {
         return 0;
     }
-    SpeakerAnim_Play(anim, object, 0, 0, 0, SPEAKER_ANIM_ONE, 0, SPEAKER_ANIM_SLOT_BODY);
+    SpeakerAnim_Play(anim, object, 0, 0, 0, FX32_ONE, 0, SPEAKER_ANIM_SLOT_BODY);
     AnimatedModel_Attach((AnimatedModel *) (void *) model);
     ModelObject_SetNodeCallback((ModelObject *) (void *) model, (void *) (uintptr_t) func_0201c6a8, 6, 1, object, 0);
     anim->variant = 2;

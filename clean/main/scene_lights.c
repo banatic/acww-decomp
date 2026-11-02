@@ -56,7 +56,6 @@ extern void NNS_G3dGlbLightColor(int light, u16 colour);
 #define REG_MTX_IDENTITY 0x04000454u
 #define MTX_MODE_POSITION_VECTOR 2
 
-#define SCENE_LIGHTS_ONE 0x1000          /* 1.0 */
 #define SCENE_LIGHTS_DIRECTION_MAX 0xff0 /* a direction is kept just under 1.0 */
 #define SCENE_LIGHTS_SET_SPEED 0x800     /* a lamp switched at once, or flashing */
 #define SCENE_LIGHTS_SPECIAL_SCENE 0x21
@@ -225,7 +224,7 @@ void SceneLight_Run(SceneLight *light)
             switch (sw->mode) {
                 case SCENE_LIGHT_FADE:
                 case SCENE_LIGHT_FADE_B:
-                    Fader_Switch(&sw->fader, 1, 1, 0, div_s32(SCENE_LIGHTS_ONE, sw->duration));
+                    Fader_Switch(&sw->fader, 1, 1, 0, div_s32(FX32_ONE, sw->duration));
                     break;
                 case SCENE_LIGHT_FLASH:
                     Fader_Switch(&sw->fader, 1, 1, 1, SCENE_LIGHTS_SET_SPEED);
@@ -238,7 +237,7 @@ void SceneLight_Run(SceneLight *light)
             switch (sw->mode) {
                 case SCENE_LIGHT_FADE:
                 case SCENE_LIGHT_FADE_B:
-                    Fader_Switch(&sw->fader, 0, 1, 0, div_s32(SCENE_LIGHTS_ONE, sw->duration));
+                    Fader_Switch(&sw->fader, 0, 1, 0, div_s32(FX32_ONE, sw->duration));
                     break;
                 default:
                     Fader_Switch(&sw->fader, 0, 0, 0, SCENE_LIGHTS_SET_SPEED);
@@ -261,19 +260,19 @@ void SceneLight_Update(SceneLight *light)
     switch (light->kind) {
         case SCENE_LIGHT_SWITCHED_LAMP:
             SceneLight_SwitchedLampColour(light);
-            set_vec(&direction, 0, -SCENE_LIGHTS_ONE, 0);
+            set_vec(&direction, 0, -FX32_ONE, 0);
             break;
         case SCENE_LIGHT_LAMP:
             SceneLight_LampColour(light);
-            set_vec(&direction, 0, -SCENE_LIGHTS_ONE, 0);
+            set_vec(&direction, 0, -FX32_ONE, 0);
             break;
         case SCENE_LIGHT_GLOW:
             SceneLight_GlowColour(light);
-            set_vec(&direction, 0, -SCENE_LIGHTS_ONE, 0);
+            set_vec(&direction, 0, -FX32_ONE, 0);
             break;
         default:
             light->colour = (u16) Sky_LightColor(light->colour_index);
-            set_vec(&direction, 0, 0, -SCENE_LIGHTS_ONE);
+            set_vec(&direction, 0, 0, -FX32_ONE);
             break;
     }
     SceneLight_Rotate(light, &direction);
@@ -328,7 +327,7 @@ void SceneLight_FollowCamera(SceneLight *light)
 {
     Vec3 direction;
 
-    set_vec(&direction, 0, 0, -SCENE_LIGHTS_ONE);
+    set_vec(&direction, 0, 0, -FX32_ONE);
     SceneLight_Rotate(light, &direction);
     if (data_021c67a4 != NULL) {
         Vec_RotateX(&direction, CameraControl_GroundAngle(data_021c67a4));
@@ -448,11 +447,11 @@ CLEAN_AS(func_02065268, SceneLights_StartFlash)
  * whatever the kind. */
 void SceneFlash_RunFirework(SceneFlash *flash)
 {
-    set_vec(&flash->direction, 0, -SCENE_LIGHTS_ONE, 0);
+    set_vec(&flash->direction, 0, -FX32_ONE, 0);
     flash->level += flash->step;
     if (flash->phase == 0) {
-        if (flash->level >= SCENE_LIGHTS_ONE) {
-            flash->level = SCENE_LIGHTS_ONE;
+        if (flash->level >= FX32_ONE) {
+            flash->level = FX32_ONE;
             flash->step = SCENE_FLASH_FIREWORK_FALL;
             flash->phase = 1;
         }
@@ -498,11 +497,11 @@ CLEAN_AS(func_02065334, SceneFlash_Firework)
  * (the step is cleared at the end) and grey, up to 9 in each channel. */
 void SceneFlash_RunThunder(SceneFlash *flash)
 {
-    set_vec(&flash->direction, 0, -SCENE_LIGHTS_ONE, 0);
+    set_vec(&flash->direction, 0, -FX32_ONE, 0);
     flash->level += flash->step;
     if (flash->phase == 0) {
-        if (flash->level >= SCENE_LIGHTS_ONE) {
-            flash->level = SCENE_LIGHTS_ONE;
+        if (flash->level >= FX32_ONE) {
+            flash->level = FX32_ONE;
             flash->step = SCENE_FLASH_THUNDER_FALL;
             flash->phase = 1;
         }

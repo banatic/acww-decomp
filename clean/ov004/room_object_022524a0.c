@@ -18,7 +18,6 @@ static_assert(offsetof(RoomObject022524a0, state) == 0x844, "state");
 static_assert(sizeof(RoomObject022524a0) == 0x848, "the size of one");
 
 #define ROOM_OBJECT_022524A0_SIZE 0x848
-#define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_ONCE 1   /* RoomObject_PlayAnimsFrom: stop at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 
@@ -64,7 +63,7 @@ CLEAN_AS(func_ov004_0221412c, RoomObject022524a0_UpdatePlaying)
 int RoomObject022524a0_EnterPlaying(RoomObject022524a0 *object)
 {
     ByteSet_SetValue(&object->base.node_set, 1);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound1(&object->base);
     return 1;
 }
@@ -85,7 +84,7 @@ CLEAN_AS(func_ov004_02214198, RoomObject022524a0_UpdateIdle)
 int RoomObject022524a0_EnterIdle(RoomObject022524a0 *object)
 {
     ByteSet_SetValue(&object->base.node_set, 0);
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022141c0, RoomObject022524a0_EnterIdle)
@@ -150,7 +149,7 @@ CLEAN_AS(func_ov004_022142e0, RoomObject022524a0_NodeGroundHook)
  * 0 once from the start. */
 void RoomObject022524a0_OnVanish(RoomObject022524a0 *object)
 {
-    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
 }
 CLEAN_AS(func_ov004_02214370, RoomObject022524a0_OnVanish)
 
@@ -175,7 +174,7 @@ CLEAN_AS(_ZN18Obj_ov004_022524a019func_ov004_022143a8Ev, RoomObject022524a0_Upda
  * variant 0, to play once from the start, and enters IDLE; done at once. */
 int RoomObject022524a0_Start(RoomObject022524a0 *object)
 {
-    RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     object->base.vtable->vfunc_70(&object->base, ROOM_OBJECT_022524A0_IDLE, SLOT_70_VALUE);
     return 1;
 }

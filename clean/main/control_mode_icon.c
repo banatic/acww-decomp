@@ -22,8 +22,6 @@ extern const CellAnimData data_020d6fcc[];
 /* The last frame, as CellAnim_FrameX and CellAnim_FrameY take it. */
 #define CONTROL_MODE_ICON_LAST_FRAME (-1)
 
-#define CONTROL_MODE_ICON_FX_ONE 0x1000
-
 /* func_0208fdc8: the icon of the mode set, held on its last frame, from its start: buttons for
  * mode 1, touch for any other but 0; nothing shown for mode 0. */
 void ControlModeIcon_SetAnim(ControlModeIcon *icon)
@@ -125,8 +123,7 @@ void ControlModeIcon_Draw(ControlModeIcon *icon)
     x += CellAnim_FrameX(&icon->anim, CONTROL_MODE_ICON_LAST_FRAME);
     int y = ScreenSprite_Y(&icon->base);
     y += CellAnim_FrameY(&icon->anim, CONTROL_MODE_ICON_LAST_FRAME);
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_OTHER, cell, x, y, -1, -1, CONTROL_MODE_ICON_FX_ONE, CONTROL_MODE_ICON_FX_ONE, 0, -1,
-                       0, 0);
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_OTHER, cell, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208fedc, ControlModeIcon_Draw)
 

@@ -33,7 +33,6 @@ static_assert(offsetof(CheckInGate, door_on) == 0x490, "door on");
 static_assert(offsetof(CheckInGate, door_offset) == 0x494, "door offset");
 static_assert(sizeof(CheckInGate) == 0x498, "the size CheckInGate_Create allocates");
 
-#define CHECK_IN_GATE_ONE 0x1000 /* normal speed, and 1.0, in 20.12 fixed point */
 #define CHECK_IN_GATE_LOOP 0
 #define CHECK_IN_GATE_PLAY_ONCE FRAME_CTRL_ONCE
 
@@ -179,11 +178,10 @@ static int CheckInGate_call_set_state(CheckInGate *self, unsigned int state)
 /* Joint and material animation `index` from their start, with the same flags. */
 static void CheckInGate_play(CheckInGate *self, int index, int flags)
 {
-    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, index), flags, CHECK_IN_GATE_ONE, 0,
-                        0);
+    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, index), flags, FX32_ONE, 0, 0);
     G3dRenderObject *render = ModelObject_RenderObject(&self->base.body.object);
     const u8 *material_anim = RmoModel_MaterialAnim(&self->base.body_model, index);
-    ModelAnim_Restart(&self->material_anim, render, material_anim, flags, CHECK_IN_GATE_ONE, 0);
+    ModelAnim_Restart(&self->material_anim, render, material_anim, flags, FX32_ONE, 0);
 }
 
 /* Both animations step, and the material animation's object shows its frame.
@@ -360,7 +358,7 @@ CLEAN_AS(func_ov004_0222d320, CheckInGate_ClearDoor)
  * QUIRK: the products and the sum wrap at 32 bits, as the ROM's multiplications do. */
 static s32 CheckInGate_blend(s32 from, s32 to, fx32 t)
 {
-    u32 sum = ((u32) CHECK_IN_GATE_ONE - (u32) t) * (u32) from + (u32) t * (u32) to;
+    u32 sum = ((u32) FX32_ONE - (u32) t) * (u32) from + (u32) t * (u32) to;
     return (s32) sum >> 12;
 }
 
@@ -447,8 +445,7 @@ int CheckInGate_StartMaterialAnim(CheckInGate *self)
         ModelAnim_AllocMaterialAnim(&self->material_anim, self->base.body.object.model, data_021c9b24) == 0) {
         return 0;
     }
-    ModelAnim_Start(&self->material_anim, RmoModel_MaterialAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP,
-                    CHECK_IN_GATE_ONE, 0);
+    ModelAnim_Start(&self->material_anim, RmoModel_MaterialAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP, FX32_ONE, 0);
     ModelAnim_Attach(&self->material_anim, ModelObject_RenderObject(&self->base.body.object));
     return 1;
 }
@@ -462,8 +459,8 @@ int CheckInGate_StartJointAnim(CheckInGate *self)
         AnimatedModel_LoadAnim(CheckInGate_body(self), data_021c9b24) == 0) {
         return 0;
     }
-    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP,
-                        CHECK_IN_GATE_ONE, 0, 0);
+    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP, FX32_ONE, 0,
+                        0);
     AnimatedModel_Attach(CheckInGate_body(self));
     return 1;
 }

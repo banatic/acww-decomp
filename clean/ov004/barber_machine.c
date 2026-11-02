@@ -19,7 +19,6 @@ static_assert(offsetof(BarberMachine, box) == 0x2d8, "box");
 static_assert(offsetof(BarberMachine, shared_run) == 0x374, "shared run");
 static_assert(sizeof(BarberMachine) == 0x378, "the size BarberMachine_Create allocates");
 
-#define BARBER_MACHINE_ONE 0x1000 /* normal speed, 20.12 fixed point */
 #define BARBER_MACHINE_PLAY_ONCE FRAME_CTRL_ONCE
 
 /* The joint animation of each part of a run. */
@@ -89,7 +88,7 @@ static int BarberMachine_call_set_state(BarberMachine *self, unsigned int state)
 static void BarberMachine_play(BarberMachine *self, int index)
 {
     AnimatedModel_Start(BarberMachine_body(self), RmoModel_JointAnim(&self->base.body_model, index), BARBER_MACHINE_PLAY_ONCE,
-                        BARBER_MACHINE_ONE, 0, 0);
+                        FX32_ONE, 0, 0);
 }
 
 /* Once the animation has run out, `next`: directly, or through the shared values while the run

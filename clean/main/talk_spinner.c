@@ -33,7 +33,6 @@ extern const CellAnimData data_020d71cc[];
 #define TALK_SPINNER_PLANE_OBJ 0x10
 #define TALK_SPINNER_WINDOW_OBJ 0x04
 
-#define TALK_SPINNER_FX_ONE 0x1000
 #define TALK_SPINNER_OBJ_MODE_WINDOW 2
 
 /* The spinner's vtable slots: draw and update. */
@@ -172,14 +171,13 @@ void TalkSpinner_Draw(TalkSpinner *spinner)
     int y = spinner->offset_y + ScreenSprite_Y(&spinner->base);
     const OamEntry *wheel = data_020d71cc[TALK_SPINNER_ANIM_WHEEL].frames[0].cell;
     const OamEntry *hub = data_020d71cc[TALK_SPINNER_ANIM_HUB].frames[0].cell;
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, wheel, x, y, -1, -1, TALK_SPINNER_FX_ONE, TALK_SPINNER_FX_ONE, spinner->angle,
-                       -1, 0, 0);
-    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, hub, x, y, -1, -1, TALK_SPINNER_FX_ONE, TALK_SPINNER_FX_ONE, 0, -1, 0, 0);
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, wheel, x, y, -1, -1, FX32_ONE, FX32_ONE, spinner->angle, -1, 0, 0);
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, hub, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
     if (spinner->window != 0) {
-        OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, wheel, x, y, -1, -1, TALK_SPINNER_FX_ONE, TALK_SPINNER_FX_ONE,
-                           spinner->angle, TALK_SPINNER_OBJ_MODE_WINDOW, 0, 0);
-        OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, hub, x, y, -1, -1, TALK_SPINNER_FX_ONE, TALK_SPINNER_FX_ONE, 0,
+        OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, wheel, x, y, -1, -1, FX32_ONE, FX32_ONE, spinner->angle,
                            TALK_SPINNER_OBJ_MODE_WINDOW, 0, 0);
+        OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, hub, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, TALK_SPINNER_OBJ_MODE_WINDOW, 0,
+                           0);
     }
 }
 CLEAN_AS(func_0208fc7c, TalkSpinner_Draw)

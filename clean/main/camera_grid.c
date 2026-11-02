@@ -77,8 +77,6 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 #define CAMERA_GRID_PALETTE_CHOSEN 6
 #define CAMERA_GRID_PALETTE 5
 
-#define CAMERA_GRID_FX_ONE 0x1000
-
 /* vtable slots */
 #define CAMERA_GRID_SLOT_DRAW 2
 #define CAMERA_GRID_SLOT_UPDATE 3
@@ -401,8 +399,7 @@ void CameraGrid_Draw(CameraGrid *grid)
         int dx = CellAnim_FrameX(anim, -1);
         int dy = CellAnim_FrameY(anim, -1);
         int palette = (u32) i == grid->chosen ? CAMERA_GRID_PALETTE_CHOSEN : CAMERA_GRID_PALETTE;
-        OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x + dx, y + dy, palette, -1, CAMERA_GRID_FX_ONE, CAMERA_GRID_FX_ONE,
-                           0, -1, 0, 0);
+        OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x + dx, y + dy, palette, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
     }
 }
 CLEAN_AS(func_0208c734, CameraGrid_Draw)

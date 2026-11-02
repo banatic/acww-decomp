@@ -116,9 +116,6 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 #define FIELD_ACTOR_HEAD_HAIR_COLOR(actor) FIELD_ACTOR_FIELD(actor, u8, 0xc9b)
 #define FIELD_ACTOR_HEAD_WITH_FACE(actor) FIELD_ACTOR_FIELD(actor, u8, 0xc9c)
 
-/* 1.0 in 20.12 fixed point. */
-#define FX32_ONE 0x1000
-
 /* Unnamed words. */
 #define FIELD_ACTOR_MARK(actor) FIELD_ACTOR_FIELD(actor, int, 0x6f0) /* handed with joint 1's point to func_020acbc8 */
 #define FIELD_ACTOR_SOUND_POINT(actor)                                                                                        \

@@ -27,8 +27,7 @@ static_assert(offsetof(SkyObjectBody, shot_flags) == 0x68, "a shot's flags");
 static_assert(sizeof(SkyAnimation) == 12, "an animation");
 
 #define SKY_OBJECT_KINDS_FREE_SLOT SKY_SLOTS /* SkyObjectBody.slot of a free entry: none of the five */
-#define SKY_OBJECT_KINDS_SCALE_ONE 0x1000
-#define SKY_OBJECT_KINDS_SOUND_SOURCE 0 /* the sound source of an object's sounds */
+#define SKY_OBJECT_KINDS_SOUND_SOURCE 0      /* the sound source of an object's sounds */
 #define SKY_KIND12_ANIMATION 0x2c
 #define SKY_KIND12_PRIORITY 2
 #define SKY_KIND12_DELAY 20 /* frames before it moves, plus data_020d22c4's */
@@ -304,8 +303,8 @@ void SkyObjectKinds_Free(SkyObject *object)
     body->resource = SKY_OBJECT_NO_RESOURCE;
     body->animation = SKY_ANIMATION_NONE;
     body->slot = SKY_OBJECT_KINDS_FREE_SLOT;
-    body->scale_x = SKY_OBJECT_KINDS_SCALE_ONE;
-    body->scale_y = SKY_OBJECT_KINDS_SCALE_ONE;
+    body->scale_x = FX32_ONE;
+    body->scale_y = FX32_ONE;
     body->rotation = 0;
 }
 CLEAN_AS(func_020bf924, SkyObjectKinds_Free)
@@ -315,8 +314,8 @@ CLEAN_AS(func_020bf924, SkyObjectKinds_Free)
 void SkyObjectKinds_Reset(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
-    body->scale_x = SKY_OBJECT_KINDS_SCALE_ONE;
-    body->scale_y = SKY_OBJECT_KINDS_SCALE_ONE;
+    body->scale_x = FX32_ONE;
+    body->scale_y = FX32_ONE;
     body->position.x = 0;
     body->position.y = 0;
     body->position.z = 0;

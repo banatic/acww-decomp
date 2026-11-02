@@ -163,7 +163,6 @@ CLEAN_AS(func_ov094_0229b274, PocketsLetters_SetTenAt23)
 #define POCKETS_LETTERS_OWN_PALETTE (-1)
 #define POCKETS_LETTERS_DIMMED_PALETTE 0xe
 #define POCKETS_LETTERS_LIFT_START 2
-#define POCKETS_LETTERS_SCALE_ONE 0x1000
 #define POCKETS_LETTERS_TILE_MASK 0x3ffu /* in attr2 */
 #define POCKETS_LETTERS_PALETTE_SHIFT 12 /* in attr2 */
 /* The touch finds a place whose position is within (x - 20, x + 4) and (y - 20, y + 4). */
@@ -413,7 +412,7 @@ void PocketsLetters_DrawHeld(PocketsLetters *letters, int x, int y, const Letter
         return;
     }
     scale = PocketsGrid_SizeScale(letters->held_size);
-    if (scale == POCKETS_LETTERS_SCALE_ONE) {
+    if (scale == FX32_ONE) {
         PocketsLetters_DrawLetter(letters, x, y, PocketsLetters_PaletteOf(letters, letter), letter, NULL);
         PocketsLetters_DrawSurround(letters, x, y, PocketsLetters_PaletteOf(letters, letter), NULL);
         PocketsLetters_DrawLowered(letters, x, y, NULL);
