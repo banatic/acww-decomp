@@ -12,6 +12,7 @@
 #include "main/cell_layer_sprite.h"
 #include "main/display_layers.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/sliding_window.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
@@ -96,8 +97,7 @@ extern const MemberPointer data_ov101_0229df80, data_ov101_0229df88, data_ov101_
 #define PICK_ANIM_ROW 7
 #define PICK_ANIM_LAST_ROW 8
 
-/* The answers for a place outside the grid. */
-#define PICK_NO_ITEM 0xfff1
+/* The state answered for a place outside the grid (the item: ITEM_CODE_NONE). */
 #define PICK_NO_ITEM_STATE 0xf1
 #define PICK_CLOSE_X 0xbc
 #define PICK_CLOSE_Y 0xb6
@@ -713,7 +713,7 @@ int PocketsPick_PlaceItem(PocketsPick *self, int place)
     if (PocketsPick_IsGridPlace(self, (unsigned int) place) != 0) {
         return PocketsGrid_Item(&self->grid, PocketsPick_GridIndex(self, place));
     }
-    return PICK_NO_ITEM;
+    return ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov101_0229cbec, PocketsPick_PlaceItem)
 
@@ -802,7 +802,7 @@ int PocketsPick_DropHeldAt(PocketsPick *self, int place)
         return 0;
     }
     int item = PocketsPick_PlaceItem(self, place);
-    if (item != PICK_NO_ITEM) {
+    if (item != ITEM_CODE_NONE) {
         int state = PocketsPick_PlaceItemState(self, place);
         PocketsPick_SetSlotItem(self, self->held_place, item, state);
     }

@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "furniture_info.h"
 #include "item_attributes.h"
+#include "item_code.h"
 #include "item_object.h"
 #include "date_time.h"
 #include "player_id.h"
@@ -216,7 +217,6 @@ CLEAN_AS(func_0209b91c, VillagerObject_Base)
 #define VILLAGER_OBJECT_KIND_TYPE 2
 #define VILLAGER_OBJECT_KIND_STEP 2
 #define VILLAGER_OBJECT_STEP_CLEARED 7
-#define VILLAGER_OBJECT_NO_ITEM 0xfff1
 
 /* The object at the start of the villager's object, as an ItemObject. */
 static ItemObject *villager_object_held(VillagerObject *object)
@@ -293,10 +293,10 @@ CLEAN_AS(func_0209b9cc, VillagerObject_Set)
 void VillagerObject_ClearItem(VillagerObject *object)
 {
     ItemObject_SetLow5(villager_object_held(object), 0);
-    u16 none = VILLAGER_OBJECT_NO_ITEM;
+    u16 none = ITEM_CODE_NONE;
     ItemObject_SetItem(villager_object_held(object), &none);
     PlayerId_Clear(VillagerObject_Player(object));
-    *VillagerObject_Item(object) = VILLAGER_OBJECT_NO_ITEM;
+    *VillagerObject_Item(object) = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_0209ba7c, VillagerObject_ClearItem)
 
@@ -324,7 +324,7 @@ void VillagerObject_Clear(VillagerObject *object)
     ItemObject_Clear(villager_object_held(object));
     PlayerId_Clear(&object->player);
     object->step = VILLAGER_OBJECT_STEP_CLEARED;
-    object->item = VILLAGER_OBJECT_NO_ITEM;
+    object->item = ITEM_CODE_NONE;
     object->count = 0;
     object->kind = VILLAGER_OBJECT_KIND_NONE;
     object->flags = 0;
@@ -346,7 +346,7 @@ VillagerObject *VillagerObject_Construct(VillagerObject *object)
 {
     ItemObject_Construct(villager_object_held(object));
     PlayerId_Construct(&object->player);
-    object->item = VILLAGER_OBJECT_NO_ITEM;
+    object->item = ITEM_CODE_NONE;
     return object;
 }
 CLEAN_AS(func_0209bb48, VillagerObject_Construct)

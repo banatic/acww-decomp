@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "held_item.h"
+#include "item_code.h"
 #include "model_object.h"
 #include "pool_link.h"
 #include "speaker_anim.h"
@@ -11,8 +12,6 @@ static_assert(offsetof(HeldItem, scale) == 0x04, "HeldItem layout");
 static_assert(offsetof(HeldItemLink, link) == 0x04, "HeldItemLink layout");
 static_assert(offsetof(HeldItemLink, hand) == 0x0c, "HeldItemLink layout");
 static_assert(offsetof(HeldItemLink, follows_hand) == 0x3c, "HeldItemLink layout");
-
-#define HELD_ITEM_LINK_NONE 0xfff1
 
 /* The joint of the owner's model whose matrix the item follows. */
 #define HELD_ITEM_LINK_HAND_JOINT 14
@@ -133,7 +132,7 @@ CLEAN_AS(func_020122ac, HeldItemLink_Action18ByItem)
 /* func_0201228c: action 18 for the link's own item, unless it has none. */
 void HeldItemLink_Action18(HeldItemLink *link, int a, int b)
 {
-    if (link->item != HELD_ITEM_LINK_NONE) {
+    if (link->item != ITEM_CODE_NONE) {
         HeldItemLink_Action18ByItem(link, &link->item, a, b);
     }
 }
@@ -151,7 +150,7 @@ CLEAN_AS(func_02012304, HeldItemLink_Action17ByItem)
 /* func_020122e4 */
 void HeldItemLink_Action17(HeldItemLink *link, int a, int b)
 {
-    if (link->item != HELD_ITEM_LINK_NONE) {
+    if (link->item != ITEM_CODE_NONE) {
         HeldItemLink_Action17ByItem(link, &link->item, a, b);
     }
 }
@@ -169,7 +168,7 @@ CLEAN_AS(func_0201235c, HeldItemLink_Action16ByItem)
 /* func_0201233c */
 void HeldItemLink_Action16(HeldItemLink *link, int a, int b)
 {
-    if (link->item != HELD_ITEM_LINK_NONE) {
+    if (link->item != ITEM_CODE_NONE) {
         HeldItemLink_Action16ByItem(link, &link->item, a, b);
     }
 }
@@ -187,7 +186,7 @@ CLEAN_AS(func_020123b4, HeldItemLink_Action15ByItem)
 /* func_02012394 */
 void HeldItemLink_Action15(HeldItemLink *link, int a, int b)
 {
-    if (link->item != HELD_ITEM_LINK_NONE) {
+    if (link->item != ITEM_CODE_NONE) {
         HeldItemLink_Action15ByItem(link, &link->item, a, b);
     }
 }
@@ -205,7 +204,7 @@ CLEAN_AS(func_0201240c, HeldItemLink_Action1ByItem)
 /* func_020123ec */
 void HeldItemLink_Action1(HeldItemLink *link, int a, int b)
 {
-    if (link->item != HELD_ITEM_LINK_NONE) {
+    if (link->item != ITEM_CODE_NONE) {
         HeldItemLink_Action1ByItem(link, &link->item, a, b);
     }
 }
@@ -229,7 +228,7 @@ CLEAN_AS(func_02012464, HeldItemLink_Action0ByItem)
 /* func_02012444 */
 void HeldItemLink_Action0(HeldItemLink *link, int a, int b)
 {
-    if (link->item != HELD_ITEM_LINK_NONE) {
+    if (link->item != ITEM_CODE_NONE) {
         HeldItemLink_Action0ByItem(link, &link->item, a, b);
     }
 }
@@ -273,7 +272,7 @@ int HeldItemLink_Open(HeldItemLink *link, void *arg)
     if (!PoolLink_ItemOpen((PoolLink *) (void *) link->link, (int) (uintptr_t) arg)) {
         return 0;
     }
-    link->item = HELD_ITEM_LINK_NONE;
+    link->item = ITEM_CODE_NONE;
     return 1;
 }
 CLEAN_AS(func_02012550, HeldItemLink_Open)
@@ -289,9 +288,9 @@ CLEAN_AS(func_02012588, HeldItemLink_Destruct)
 /* func_0201259c: the constructor: no item code, and the link object built with no entry. */
 HeldItemLink *HeldItemLink_Construct(HeldItemLink *link)
 {
-    link->item = HELD_ITEM_LINK_NONE;
+    link->item = ITEM_CODE_NONE;
     PoolLink_ItemConstruct((PoolLink *) (void *) link->link);
-    link->item = HELD_ITEM_LINK_NONE;
+    link->item = ITEM_CODE_NONE;
     return link;
 }
 CLEAN_AS(func_0201259c, HeldItemLink_Construct)

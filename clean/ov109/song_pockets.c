@@ -8,6 +8,7 @@
 #include "main/display_layers.h"
 #include "main/group_params.h"
 #include "main/house_record.h"
+#include "main/item_code.h"
 #include "main/sliding_window.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
@@ -26,8 +27,8 @@ extern u8 data_021f6c54; /* y */
 /* What the grid's object answers for no slot under the touch. */
 #define GRID_NO_INDEX POCKETS_GRID_NO_PLACE
 
-/* The answers for a place outside the grid (SongPockets_PlaceItem, SongPockets_PlaceItemState). */
-#define NO_ITEM 0xfff1
+/* What SongPockets_PlaceItemState answers for a place outside the grid (SongPockets_PlaceItem:
+ * ITEM_CODE_NONE). */
 #define NO_ITEM_STATE 0xf1
 
 /* Where SONG_POCKETS_BUTTON is (SongPockets_PlaceX, SongPockets_PlaceY). */
@@ -297,7 +298,7 @@ void SongPockets_RunAction(SongPockets *self)
             SongPockets_ShowError(self, ERROR_HAS_SONG);
         } else {
             HouseRecord_AddSong((unsigned int) item);
-            SongPockets_SetSlotItem(self, self->slot, NO_ITEM, 0);
+            SongPockets_SetSlotItem(self, self->slot, ITEM_CODE_NONE, 0);
             SongPockets_CloseWithSong(self);
         }
     } else {
@@ -516,7 +517,7 @@ int SongPockets_PlaceItem(SongPockets *self, int place)
     if (SongPockets_IsGridPlace(self, (unsigned int) place)) {
         return PocketsGrid_Item(&self->grid, SongPockets_GridIndex(self, place));
     }
-    return NO_ITEM;
+    return ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov109_0229ca7c, SongPockets_PlaceItem)
 

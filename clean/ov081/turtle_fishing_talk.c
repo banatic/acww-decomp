@@ -13,6 +13,7 @@
 #include "main/design.h"
 #include "main/event_winner.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/item_lists.h"
 #include "main/message_receiver.h"
 #include "main/npc_id.h"
@@ -64,7 +65,6 @@ extern u16 func_ov081_02279124(u16 *item, int state);
 extern EventWinner data_021f3aa4;
 extern u32 data_021dc7a8[];
 
-#define TURTLE_FISHING_TALK_NO_ITEM 0xfff1
 #define TURTLE_FISHING_TALK_NO_LINE 0xff
 
 /* The vtable slot of the scene that resets it (the scene base's reset). */
@@ -210,7 +210,7 @@ TurtleFishingTalk *TurtleFishingTalk_Construct(TurtleFishingTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->base.vtable = data_ov081_0227972c;
-    talk->item = TURTLE_FISHING_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     return talk;
 }
 CLEAN_AS(func_ov081_0227903c, TurtleFishingTalk_Construct)
@@ -527,7 +527,7 @@ void TurtleFishingTalk_AfterPockets(TurtleFishingTalk *talk)
     TalkObject *object = turtle_fishing_talk_object(talk);
     u8 line = TURTLE_FISHING_TALK_LINE_NO_FISH;
 
-    talk->item = TURTLE_FISHING_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     talk->owner->size = 0;
     if (GroupParams_C4CIs1()) {
         int slot = GroupParams_Arg();

@@ -10,6 +10,7 @@
 #include "date_time.h"
 #include "design.h"
 #include "design_info.h"
+#include "item_code.h"
 #include "npc_id.h"
 #include "player_record.h"
 #include "player_records.h"
@@ -32,7 +33,6 @@
 #define VILLAGER_TALK_SUBJECTS_OBJECT_RECORD 0x830
 #define VILLAGER_TALK_SUBJECTS_OBJECT_POSITION 0x5c
 
-#define VILLAGER_TALK_SUBJECTS_NO_ITEM 0xfff1
 /* The members of the two tables of eight (by a kind of the villager's). */
 #define VILLAGER_TALK_SUBJECTS_KINDS 8
 /* The talk's slots VillagerTalkSubjects_SayLast fills. */
@@ -204,7 +204,7 @@ static u16 subjects_held(VillagerTalk *talk)
 /* Whether the villager holds nothing or one of the items 0x1380-0x139f. */
 static int subjects_holds_none_or_1380(u16 item)
 {
-    return item == VILLAGER_TALK_SUBJECTS_NO_ITEM ||
+    return item == ITEM_CODE_NONE ||
            (item >= VILLAGER_TALK_SUBJECTS_ITEM_1380_FIRST && item <= VILLAGER_TALK_SUBJECTS_ITEM_1380_LAST);
 }
 
@@ -441,7 +441,7 @@ static int subjects_say_drawn(VillagerTalk *talk, u16 tool, int mode, int other,
         return 0;
     }
     int group = subjects_mode(subjects_record(talk)) != mode ? other : 0;
-    drawn.item = VILLAGER_TALK_SUBJECTS_NO_ITEM;
+    drawn.item = ITEM_CODE_NONE;
     draw(&drawn.item);
     if (drawn.item < first || drawn.item > last) {
         return 0;
@@ -551,7 +551,7 @@ int VillagerTalkSubjects_SayCatchA(VillagerTalk *talk)
 {
     VillagerTalkSubjectsCatchA catch_ = {0};
     catch_.choice = VILLAGER_TALK_SUBJECTS_CHOICES;
-    catch_.item = VILLAGER_TALK_SUBJECTS_NO_ITEM;
+    catch_.item = ITEM_CODE_NONE;
     DateTime_Now(&catch_.when);
     u8 month = catch_.when.month;
     void *lists = CreatureTable_Lists(month, (unsigned int) CreatureTable_IsSecondHalf(catch_.when.day));
@@ -637,7 +637,7 @@ int VillagerTalkSubjects_SayCatchB(VillagerTalk *talk)
 {
     VillagerTalkSubjectsCatch catch_ = {0};
     catch_.choice = VILLAGER_TALK_SUBJECTS_CHOICES;
-    catch_.item = VILLAGER_TALK_SUBJECTS_NO_ITEM;
+    catch_.item = ITEM_CODE_NONE;
     DateTime_Now(&catch_.when);
     if (InsectDraw_ByWeights(&catch_.item, (int *) &catch_.choice, (int *) &catch_.kind, (int *) &catch_.value,
                              &catch_.when) != 1) {

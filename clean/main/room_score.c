@@ -21,7 +21,6 @@ static_assert(sizeof(RoomScoreRoom) == 0x14, "RoomScoreRoom size");
 
 #define ROOM_SCORE_TILES 16 /* a room's acre is 16 x 16 tiles */
 #define ROOM_SCORE_LAYERS 2
-#define ROOM_SCORE_NO_ITEM 0xfff1
 /* The distinct pieces RoomScore_FlagBitsBonus and RoomScore_ColorBonus keep apart. */
 #define ROOM_SCORE_DISTINCT 0x18
 #define ROOM_SCORE_NO_PIECE 0xffff
@@ -1072,8 +1071,8 @@ CLEAN_AS(func_0205ba60, RoomScore_DestructRoom)
 /* func_0205ba64: the room without a wallpaper or a carpet (the rest is left). */
 void RoomScore_InitRoom(RoomScoreRoom *room)
 {
-    room->wallpaper = ROOM_SCORE_NO_ITEM;
-    room->carpet = ROOM_SCORE_NO_ITEM;
+    room->wallpaper = ITEM_CODE_NONE;
+    room->carpet = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_0205ba64, RoomScore_InitRoom)
 

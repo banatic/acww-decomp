@@ -48,8 +48,6 @@
 /* The scene (func_020b65c4) the activity handlers act in. */
 #define SCENE_2E 46
 
-#define NO_ITEM 0xfff1 /* an empty item */
-
 /* The item ids SessionMessage_SetVillagerItem7D2 and SessionMessage_SetVillagerObjectItem take. */
 #define VILLAGER_ITEM_FIRST 0x11a8
 #define VILLAGER_ITEM_LAST 0x12a7
@@ -492,7 +490,7 @@ void SessionMessage_SetVillagerItem7D2(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    u16 item = NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     u8 bytes[3];
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 3);
@@ -512,7 +510,7 @@ void SessionMessage_SetVillagerItems7B0(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    u16 items[4] = {NO_ITEM, NO_ITEM, NO_ITEM, NO_ITEM};
+    u16 items[4] = {ITEM_CODE_NONE, ITEM_CODE_NONE, ITEM_CODE_NONE, ITEM_CODE_NONE};
     u8 bytes[9];
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 9);
@@ -598,7 +596,7 @@ void SessionMessage_SetVillagerObject(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     (void) slot;
     u8 object_kind = 0x16;
-    u16 item = NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     int player_slot = 4;
     u8 flag = 0;
     u8 bytes[4];
@@ -631,7 +629,7 @@ void SessionMessage_SetVillagerEntryItem(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    u16 item = NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     u8 bytes[3];
     u32 index;
     u32 entry_index;
@@ -657,7 +655,7 @@ void SessionMessage_SetVillagerObjectItem(int size, int kind, u8 scene, u32 slot
     (void) kind;
     (void) scene;
     (void) slot;
-    u16 item = NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     u8 bytes[4];
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 4);

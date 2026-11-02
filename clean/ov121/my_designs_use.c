@@ -10,6 +10,7 @@
 #include "main/camera_control.h"
 #include "main/current_pockets.h"
 #include "main/design_sets.h"
+#include "main/item_code.h"
 #include "main/menu_backdrop.h"
 #include "main/player_actor_ops.h"
 #include "main/player_record.h"
@@ -33,9 +34,6 @@ extern const u8 data_ov121_0229c258[][sizeof(ChoiceEntries)];
 extern const u16 data_ov121_0229c2b8[];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-/* An item code of no item. */
-#define MY_DESIGNS_NO_ITEM 0xfff1
 
 /* The design items: a design worn as clothes, head item or held item is the item of its place
  * (the first of each kind for a place past 7). The game's other clothes, the shirts, are
@@ -130,7 +128,7 @@ CLEAN_AS(func_ov121_02299ad8, MyDesigns_RequestChange)
 
 /* func_ov121_02299b20: `item` put on as the current player's clothes or head item, and what was
  * worn before given back for the pockets: clothes only when they were a shirt, a head item
- * unless it was a design's (0x1429-0x1430); MY_DESIGNS_NO_ITEM for nothing.
+ * unless it was a design's (0x1429-0x1430); ITEM_CODE_NONE for nothing.
  * QUIRK: for the held item nothing is set; the one held is answered unless it was a design's
  * (0x13a0-0x13a7). For an unknown kind the answer is MyDesigns_WornItem's. */
 unsigned short MyDesigns_SwapWornItem(MyDesigns *self, int kind, unsigned short item)
@@ -142,18 +140,18 @@ unsigned short MyDesigns_SwapWornItem(MyDesigns *self, int kind, unsigned short 
         case MY_DESIGNS_WEAR_CLOTHES:
             PlayerRecord_SetClothes(record, &code);
             if (!in_range(worn, MY_DESIGNS_SHIRT_FIRST, MY_DESIGNS_SHIRT_LAST)) {
-                worn = MY_DESIGNS_NO_ITEM;
+                worn = ITEM_CODE_NONE;
             }
             break;
         case MY_DESIGNS_WEAR_HEAD:
             PlayerRecord_SetHeadItem(record, &code);
             if (in_range(worn, MY_DESIGNS_HEAD_ITEM, MY_DESIGNS_HEAD_ITEM + MY_DESIGNS_COUNT - 1)) {
-                worn = MY_DESIGNS_NO_ITEM;
+                worn = ITEM_CODE_NONE;
             }
             break;
         case MY_DESIGNS_WEAR_HELD:
             if (in_range(worn, MY_DESIGNS_HELD_ITEM, MY_DESIGNS_HELD_ITEM + MY_DESIGNS_COUNT - 1)) {
-                worn = MY_DESIGNS_NO_ITEM;
+                worn = ITEM_CODE_NONE;
             }
             break;
         default:
@@ -164,7 +162,7 @@ unsigned short MyDesigns_SwapWornItem(MyDesigns *self, int kind, unsigned short 
 CLEAN_AS(func_ov121_02299b20, MyDesigns_SwapWornItem)
 
 /* func_ov121_02299bd4: the current player's clothes, head item or held item;
- * MY_DESIGNS_NO_ITEM for another kind. */
+ * ITEM_CODE_NONE for another kind. */
 unsigned short MyDesigns_WornItem(MyDesigns *self, int kind)
 {
     (void) self;
@@ -177,7 +175,7 @@ unsigned short MyDesigns_WornItem(MyDesigns *self, int kind)
         case MY_DESIGNS_WEAR_HELD:
             return *PlayerRecord_HeldItem(record);
         default:
-            return MY_DESIGNS_NO_ITEM;
+            return ITEM_CODE_NONE;
     }
 }
 CLEAN_AS(func_ov121_02299bd4, MyDesigns_WornItem)
@@ -334,23 +332,23 @@ void MyDesigns_WearPicked(MyDesigns *self, u8 kind)
     switch (self->wear_kind) {
         case MY_DESIGNS_WEAR_CLOTHES:
             if (in_range(worn, MY_DESIGNS_CLOTHES_ITEM, MY_DESIGNS_CLOTHES_ITEM + MY_DESIGNS_COUNT - 1)) {
-                worn = MY_DESIGNS_NO_ITEM;
+                worn = ITEM_CODE_NONE;
             }
             break;
         case MY_DESIGNS_WEAR_HEAD:
             if (in_range(worn, MY_DESIGNS_HEAD_ITEM, MY_DESIGNS_HEAD_ITEM + MY_DESIGNS_COUNT - 1)) {
-                worn = MY_DESIGNS_NO_ITEM;
+                worn = ITEM_CODE_NONE;
             }
             break;
         case MY_DESIGNS_WEAR_HELD:
             if (in_range(worn, MY_DESIGNS_HELD_ITEM, MY_DESIGNS_HELD_ITEM + MY_DESIGNS_COUNT - 1)) {
-                worn = MY_DESIGNS_NO_ITEM;
+                worn = ITEM_CODE_NONE;
             }
             break;
         default:
             break;
     }
-    if (worn != MY_DESIGNS_NO_ITEM) {
+    if (worn != ITEM_CODE_NONE) {
         if (CurrentPockets_FreeSlot() == -1) {
             MyDesigns_ShowError(self, MY_DESIGNS_ERROR_POCKETS_FULL, 1);
             return;

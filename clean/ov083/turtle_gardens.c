@@ -14,6 +14,7 @@
 #include "main/field_body.h"
 #include "main/field_collision.h"
 #include "main/footsteps.h"
+#include "main/item_code.h"
 #include "main/layered_model.h"
 #include "main/pool_link.h"
 #include "main/scene_action.h"
@@ -59,7 +60,6 @@ static_assert(sizeof(TurtleGardensStep) == 0x10, "a state's functions");
 #define TURTLE_GARDENS_ACTION 0x618         /* SceneAction */
 #define TURTLE_GARDENS_HEAP 0x640           /* PoolLink */
 
-#define TURTLE_GARDENS_NO_ITEM 0xfff1
 #define TURTLE_GARDENS_HELD 2
 
 /* The field actor of this console's player. */
@@ -263,7 +263,7 @@ void *TurtleGardens_Create(void)
     u8 *object = turtle->base;
     SceneObjectBase_Construct((SceneObjectBase *) (void *) object);
     *(const u8 **) (void *) object = data_020d8c64;
-    *(u16 *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_PERSON) = TURTLE_GARDENS_NO_ITEM;
+    *(u16 *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_PERSON) = ITEM_CODE_NONE;
     LayeredModel_ConstructB((LayeredModel *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_FACE));

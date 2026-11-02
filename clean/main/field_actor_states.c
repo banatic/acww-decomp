@@ -1272,9 +1272,6 @@ extern const char data_020d83b4[];
 extern const char data_020d83c4[];
 extern const char data_020d83d8[];
 
-/* The item code for nothing. */
-#define NO_ITEM 0xfff1
-
 /* The byte of the receiver's link at 0x1e77 (the message the conversation reads). */
 #define LINK_MESSAGE 0x1e77
 
@@ -1614,15 +1611,15 @@ void FieldActor_UpdateState76(FieldActor *actor)
 CLEAN_AS(func_02008dfc, FieldActor_UpdateState76)
 
 /* Whether an item code is nothing: for a code func_0204bcdc accepts, by comparing func_0204bc64
- * of it and of NO_ITEM; otherwise by the code itself. */
+ * of it and of ITEM_CODE_NONE; otherwise by the code itself. */
 static BOOL item_is_nothing(u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        u16 none = NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         int code = ItemCode_VariantItem(item);
         return code == ItemCode_VariantItem(&none);
     }
-    return *item == NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 
 /* What follows state 0x76 in modes 2 to 7: outdoors, with an item in hand and no
@@ -2374,7 +2371,7 @@ void FieldActor_EnterState3F(FieldActor *actor, const StateRequest *request, int
         u16 held;
         FieldActor_RecordHeldItem(&held, actor);
         void *record = FieldActor_Record(actor);
-        u16 none = NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         PlayerRecord_SetHeldItem(record, &none);
         FieldActor_PlayAnimationOnce(actor, 0x13, 5, 5);
         PlayerRecord_SetHeldItem(record, &held);
@@ -2383,7 +2380,7 @@ void FieldActor_EnterState3F(FieldActor *actor, const StateRequest *request, int
     work->unk_00 = FX32_ONE;
     work->item = requested;
     work->from_10 = previous == 0x10;
-    FieldActor_PlaySound(actor, work->item != NO_ITEM ? 0x31 : 0x78);
+    FieldActor_PlaySound(actor, work->item != ITEM_CODE_NONE ? 0x31 : 0x78);
     FieldActor_SetSavedItem3F(actor->saved.packed, requested);
 }
 CLEAN_AS(func_02009c74, FieldActor_EnterState3F)
@@ -3375,7 +3372,7 @@ int FieldActor_RequestState1AFromMap(FieldActor *actor, const int *tile, int fla
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0x1a, priority, arg);
     u32 copy[2] = {(u32) tile[0], (u32) tile[1]};
-    FieldActor_SetArgs1A((State1AArgs *) request.payload, copy, NO_ITEM, (u8) flag);
+    FieldActor_SetArgs1A((State1AArgs *) request.payload, copy, ITEM_CODE_NONE, (u8) flag);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
@@ -3831,7 +3828,7 @@ int FieldActor_RequestState19(FieldActor *actor, const int *tile, int item, int 
 CLEAN_AS(func_0200b7e8, FieldActor_RequestState19)
 
 /* func_0200b83c: asks for state 0x19 with a tile, a number and a flag, without an item
- * (NO_ITEM); whether it was queued. Another console's actions 3 and 4 and state 0x18 ask for it
+ * (ITEM_CODE_NONE); whether it was queued. Another console's actions 3 and 4 and state 0x18 ask for it
  * this way.
  * BUG: as in request_state, the request's unset bytes are the stack's. */
 int FieldActor_RequestState19Numbered(FieldActor *actor, const int *tile, int number, int flag, int priority, s16 arg)
@@ -3843,7 +3840,7 @@ int FieldActor_RequestState19Numbered(FieldActor *actor, const int *tile, int nu
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0x19, priority, arg);
     u32 copy[2] = {(u32) tile[0], (u32) tile[1]};
-    FieldActor_SetArgs19((State19Args *) request.payload, copy, (u32) number, NO_ITEM, (u8) flag);
+    FieldActor_SetArgs19((State19Args *) request.payload, copy, (u32) number, ITEM_CODE_NONE, (u8) flag);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;

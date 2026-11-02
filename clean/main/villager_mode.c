@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "date_time.h"
+#include "item_code.h"
 #include "lookups.h"
 #include "npc_id.h"
 #include "villager_state.h"
@@ -35,8 +36,6 @@ static_assert(offsetof(VillagerModeRecord, flags) == 0x21, "flags");
 #define VILLAGER_MODE_OBJECT_GROUP 0
 #define VILLAGER_MODE_OBJECT_DONE 3
 #define VILLAGER_MODE_OBJECT_TYPE_4 4
-/* The item an object of a group 0 type is set up with: none. */
-#define VILLAGER_MODE_NO_ITEM 0xfff1
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -156,7 +155,7 @@ int VillagerMode_UpdateDaily(u8 *villager, const DateTime *now)
     u8 *object = VillagerState_Object(VillagerStatus_StateEntry(villager));
     ItemObject_Clear((ItemObject *) (void *) object);
     if (VillagerModeRecord_GroupOfMode((u32) result) == 0) {
-        u16 item = VILLAGER_MODE_NO_ITEM;
+        u16 item = ITEM_CODE_NONE;
         ItemObject_Set((ItemObject *) (void *) object, (u8) result, &item, 0);
     }
     if (VillagerModeRecord_IsKindMode((u32) result)) {

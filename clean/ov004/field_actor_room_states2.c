@@ -110,8 +110,6 @@ static_assert(sizeof(FieldActorFurnitureReachWork) <= sizeof(((StateRequest *) 0
 #define FARS2_PUSH_MOVE 0x333
 #define FARS2_PUSH_TURN_DONE 0x19a
 
-/* The item for none. */
-#define FARS2_ITEM_NONE 0xfff1
 /* The progress word at 0x81c: the pockets' talk has gone on, and its end. */
 #define FARS2_PROGRESS_TALK 3
 #define FARS2_PROGRESS_ASK_GROUP 5
@@ -209,11 +207,11 @@ static BOOL fars2_talk_closed(const FieldActor *actor)
 static int fars2_is_no_item(const ItemCode *item)
 {
     if (ItemCode_HasVariant(item)) {
-        ItemCode none = FARS2_ITEM_NONE;
+        ItemCode none = ITEM_CODE_NONE;
         int variant = ItemCode_VariantItem(item);
         return variant == ItemCode_VariantItem(&none);
     }
-    return *item == FARS2_ITEM_NONE;
+    return *item == ITEM_CODE_NONE;
 }
 
 /* ---- State 0x0e, waiting for a place */
@@ -783,7 +781,7 @@ void FieldActorRoomStates2_EnterTakeItem(FieldActor *actor, const StateRequest *
     if (CurrentPockets_FreeSlot() == -1 && SceneKinds_CurrentIsHouseRoom() != 0 && !fars2_is_no_item(&actor->item)) {
         FieldActor_PlayAnimationLoop(actor, FARS2_ANIM_STAND, FARS2_BLEND, 0);
         work->step = FARS2_TAKE_OPEN_PLAYER;
-        actor->unk_822 = FARS2_ITEM_NONE;
+        actor->unk_822 = ITEM_CODE_NONE;
         actor->item = actor->unk_822;
         return;
     }

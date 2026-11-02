@@ -45,7 +45,6 @@
 /* The talk's villager object (villager_object.h). */
 #define VILLAGER_TALK_OBJECT_VILLAGER_OBJECT 0x164
 
-#define VILLAGER_TALK_OBJECT_NO_ITEM 0xfff1
 #define VILLAGER_TALK_OBJECT_NO_MEMORY (-1)
 
 /* The object types of group 0 (the villager's modes, villager_house_items.h). */
@@ -417,8 +416,7 @@ CLEAN_AS(func_0202445c, VillagerTalkObject_ShowGift91a8)
  * the session, when the talk has the memory and its place. */
 static void object_note_item(VillagerTalk *talk, u8 *record)
 {
-    if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM && talk->memory != NULL &&
-        talk->memory_index != VILLAGER_TALK_OBJECT_NO_MEMORY) {
+    if (talk->item != ITEM_CODE_NONE && talk->memory != NULL && talk->memory_index != VILLAGER_TALK_OBJECT_NO_MEMORY) {
         VillagerMemoryEntry_SetItem((VillagerMemory *) (void *) talk->memory, &talk->item);
         SessionVillager_SendEntryItem(record, talk->memory_index, &talk->item);
     }
@@ -434,10 +432,10 @@ void VillagerTalkObject_LineTakeItemType3(VillagerTalk *talk, VillagerTalkLine *
     u16 kept = talk->item;
     if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_CLOTHES) {
         kept = talk->gift;
-        talk->gift = VILLAGER_TALK_OBJECT_NO_ITEM;
+        talk->gift = ITEM_CODE_NONE;
     }
     VillagerTalkObject_GiveReward(talk);
-    if (kept != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (kept != ITEM_CODE_NONE) {
         VillagerItems_Add(record, &kept);
     }
     object_note_item(talk, record);
@@ -469,7 +467,7 @@ static void object_items_gift(VillagerTalk *talk, u8 *record, int random, int fr
         VillagerItems_MostValuable(&item, record);
     }
     talk->gift = item;
-    if (talk->gift != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (talk->gift != ITEM_CODE_NONE) {
         VillagerItems_Remove(record, &talk->gift);
     } else {
         if (fresh_chance) {
@@ -536,7 +534,7 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
                     object_drawn_gift(talk, 0, (int) (uintptr_t) player);
                     break;
             }
-            if (talk->gift == VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->gift == ITEM_CODE_NONE) {
                 object_drawn_gift(talk, 0, 0);
             }
             break;
@@ -555,7 +553,7 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
                     object_drawn_gift(talk, 1, (int) (uintptr_t) player);
                     break;
             }
-            if (talk->gift == VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->gift == ITEM_CODE_NONE) {
                 object_drawn_gift(talk, 1, 0);
             }
             break;
@@ -576,7 +574,7 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
                     object_drawn_gift(talk, 0, (int) (uintptr_t) player);
                     break;
             }
-            if (talk->gift == VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->gift == ITEM_CODE_NONE) {
                 object_drawn_gift(talk, 0, 0);
             }
             break;
@@ -587,7 +585,7 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
     u16 gift = talk->gift;
     if (gift >= VILLAGER_TALK_OBJECT_BAG_FIRST && gift <= VILLAGER_TALK_OBJECT_BAG_LAST) {
         PlayerPockets_AddBells(pockets, talk->bells, 1);
-    } else if (gift != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    } else if (gift != ITEM_CODE_NONE) {
         int slot = PlayerPockets_FreeSlot(pockets);
         if (slot != -1) {
             PlayerPockets_SetSlot(pockets, &talk->gift, slot, 0);
@@ -597,7 +595,7 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
     gift = talk->gift;
     if (gift >= VILLAGER_TALK_OBJECT_BAG_FIRST && gift <= VILLAGER_TALK_OBJECT_BAG_LAST) {
         SceneBase_PutCount(object_base(talk), talk->bells, 1, 4, 1, 0, 0);
-    } else if (gift != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    } else if (gift != ITEM_CODE_NONE) {
         SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->gift, 1, 7);
     }
 }
@@ -637,7 +635,7 @@ CLEAN_AS(func_02024a30, VillagerTalkObject_SayByType2e6c)
 static void object_empty_pocket(void)
 {
     int slot = GroupParams_Arg();
-    u16 none = VILLAGER_TALK_OBJECT_NO_ITEM;
+    u16 none = ITEM_CODE_NONE;
     CurrentPockets_Set(&none, 0, slot);
 }
 
@@ -753,7 +751,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
     switch (object_type(talk)) {
         case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM:
             VillagerTalkScene_SetLines(talk, data_021c2e3c);
-            if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->item != ITEM_CODE_NONE) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
             }
             if (VillagerObject_Step(object_villager_object(talk)) < 2) {
@@ -782,7 +780,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
                     VillagerTalkScene_SetLines(talk, data_021c2e0c);
                 }
             }
-            if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->item != ITEM_CODE_NONE) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 2, 7);
             }
             break;
@@ -802,7 +800,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
             } else {
                 VillagerTalkScene_SetLines(talk, data_021c2e0c);
             }
-            if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->item != ITEM_CODE_NONE) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
             }
             break;
@@ -828,7 +826,7 @@ static void object_take_pocket(VillagerTalk *talk, MemberPointer next, int empty
     int slot = GroupParams_Arg();
     talk->item = *PlayerPockets_Slot(PlayerRecord_Pockets(PlayerRecords_Current()), slot);
     if (empty) {
-        u16 none = VILLAGER_TALK_OBJECT_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         CurrentPockets_Set(&none, 0, slot);
     }
     SceneCommand_RequestMotion14(&talk->scene, &talk->item, 0, 4, 0);
@@ -959,7 +957,7 @@ static void object_reward_and_keep(VillagerTalk *talk)
 {
     u8 *record = object_record(talk);
     VillagerTalkObject_GiveReward(talk);
-    if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (talk->item != ITEM_CODE_NONE) {
         VillagerItems_Add(record, &talk->item);
         object_note_item(talk, record);
     }
@@ -1141,11 +1139,11 @@ void VillagerTalkObject_SayByPrice(VillagerTalk *talk)
     int value = 0;
     int object_value = 0;
     DateTime_Now(&now);
-    if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (talk->item != ITEM_CODE_NONE) {
         value = ItemTraits_Price(&talk->item);
     }
     u16 object_item = *VillagerObject_Item(object_villager_object(talk));
-    if (object_item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (object_item != ITEM_CODE_NONE) {
         object_value = ItemTraits_Price(&object_item);
     }
     if (value == object_value) {
@@ -1155,10 +1153,10 @@ void VillagerTalkObject_SayByPrice(VillagerTalk *talk)
     } else {
         VillagerTalkScene_SetLines(talk, data_021c2d4c);
     }
-    if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (talk->item != ITEM_CODE_NONE) {
         SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 2, 7);
     }
-    if (object_item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (object_item != ITEM_CODE_NONE) {
         SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &object_item, 3, 7);
     }
     object_next_line(talk);
@@ -1339,12 +1337,12 @@ void VillagerTalkObject_PutItemNames(VillagerTalk *talk)
     switch (object_type(talk)) {
         case VILLAGER_TALK_OBJECT_TYPE_INSECT:
         case VILLAGER_TALK_OBJECT_TYPE_FISH:
-            if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->item != ITEM_CODE_NONE) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
             }
             break;
         case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM: {
-            if (talk->item == VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->item == ITEM_CODE_NONE) {
                 u16 picked;
                 VillagerTalkObject_PickByStep(&picked, talk, (unsigned int) step);
                 talk->item = picked;
@@ -1367,12 +1365,12 @@ void VillagerTalkObject_PutItemNames(VillagerTalk *talk)
             break;
         }
         case VILLAGER_TALK_OBJECT_TYPE_CLOTHES:
-            if (talk->item == VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->item == ITEM_CODE_NONE) {
                 u16 picked;
                 VillagerTalkObject_PickClothesByStep(&picked, talk, (unsigned int) step);
                 talk->item = picked;
             }
-            if (talk->item != VILLAGER_TALK_OBJECT_NO_ITEM) {
+            if (talk->item != ITEM_CODE_NONE) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
             }
             break;
@@ -1394,7 +1392,7 @@ void VillagerTalkObject_PickByStep(u16 *out, VillagerTalk *talk, unsigned int st
         ((void (*)(u16 *, VillagerObject *, u8 *))(uintptr_t) function)(out, object, record);
         return;
     }
-    *out = VILLAGER_TALK_OBJECT_NO_ITEM;
+    *out = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_020261b0, VillagerTalkObject_PickByStep)
 
@@ -1412,7 +1410,7 @@ void VillagerTalkObject_KindItem(u16 *out, VillagerObject *object, u8 *villager)
     if (kind < VILLAGER_OBJECT_KIND_NONE) {
         ItemAttributes_KindItem(out, kind, 0);
     } else {
-        *out = VILLAGER_TALK_OBJECT_NO_ITEM;
+        *out = ITEM_CODE_NONE;
     }
 }
 CLEAN_AS(func_020261f8, VillagerTalkObject_KindItem)
@@ -1460,7 +1458,7 @@ void VillagerTalkObject_DrawKindItem(u16 *out, int unused_object, int unused_vil
     ItemLists_DrawRange(&drawn[0], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, NULL, 1, 0xa, 0, 1);
     ItemLists_DrawRange(&drawn[1], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, PlayerRecords_Current(),
                         0, 0xa, 0, 1);
-    *out = VILLAGER_TALK_OBJECT_NO_ITEM;
+    *out = ITEM_CODE_NONE;
     if (drawn[0] >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST && drawn[0] <= ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
         if (drawn[1] >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST && drawn[1] <= ITEM_ATTRIBUTES_KIND_ITEM_LAST &&
             (MainRandom_Below(10) & 1) != 0) {
@@ -1486,7 +1484,7 @@ void VillagerTalkObject_PickClothesByStep(u16 *out, VillagerTalk *talk, unsigned
         u16 clothes = *TownVillager_Clothes(record);
         ((void (*)(u16 *, const u8 *, u16 *))(uintptr_t) function)(out, data, &clothes);
     } else {
-        *out = VILLAGER_TALK_OBJECT_NO_ITEM;
+        *out = ITEM_CODE_NONE;
     }
 }
 CLEAN_AS(func_020263b0, VillagerTalkObject_PickClothesByStep)
@@ -1504,10 +1502,10 @@ static void object_draw_clothes(u16 *item, u8 *data, int clothes, u8 *player, in
 void VillagerTalkObject_DrawClothes(u16 *out, u8 *data, int clothes)
 {
     u16 drawn[2];
-    *out = VILLAGER_TALK_OBJECT_NO_ITEM;
+    *out = ITEM_CODE_NONE;
     object_draw_clothes(&drawn[0], data, clothes, PlayerRecords_Current(), 0);
     *out = drawn[0];
-    if (*out == VILLAGER_TALK_OBJECT_NO_ITEM) {
+    if (*out == ITEM_CODE_NONE) {
         object_draw_clothes(&drawn[1], data, clothes, PlayerRecords_Current(), 1);
         *out = drawn[1];
     }

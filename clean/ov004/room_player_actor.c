@@ -8,6 +8,7 @@
 #include "main/angle_sector.h"
 #include "main/field_actor.h"
 #include "main/field_actor_parts.h"
+#include "main/item_code.h"
 #include "main/player_actor_ops.h"
 #include "main/session_players.h"
 #include "ov004/field_actor_place_states.h"
@@ -50,7 +51,6 @@ static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next state");
 
 /* The actor's flag set while its head item and part C are taken off. */
 #define RPA_FLAG_HEADWEAR_OFF 0x0c
-#define RPA_ITEM_NONE 0xfff1
 
 /* The states the players' points are asked for in. */
 #define RPA_STATE_PLACE 0x08
@@ -313,8 +313,8 @@ int RoomPlayerActor_SwitchHeadwear(int on)
         if (FieldActor_TestFlag(actor, RPA_FLAG_HEADWEAR_OFF) != 0) {
             return 1;
         }
-        part_c = RPA_ITEM_NONE;
-        head = RPA_ITEM_NONE;
+        part_c = ITEM_CODE_NONE;
+        head = ITEM_CODE_NONE;
         FieldActor_SetFlag(actor, RPA_FLAG_HEADWEAR_OFF);
     }
     unsigned int kind = FieldActor_RecordHeadKind(actor);

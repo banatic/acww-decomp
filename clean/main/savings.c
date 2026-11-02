@@ -2,6 +2,7 @@
 #include "savings.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "mail.h"
 #include "letter.h"
 #include "mail_text.h"
@@ -11,8 +12,6 @@
 #include "player_records.h"
 #include "state_flags.h"
 #include "town_name.h"
-
-#define NO_ITEM 0xfff1
 
 /* The message entries the letters fill in. */
 #define TOWN_NAME_ENTRY 0
@@ -51,7 +50,7 @@ extern u8 data_020e3100[], data_020e3114[];
 extern u8 data_020e3108[], data_020e3104[];
 extern u8 data_020e3110[], data_020e310c[];
 
-/* The present of a rank's letter, NO_ITEM for none. */
+/* The present of a rank's letter, ITEM_CODE_NONE for none. */
 static u16 savings_rank_present(int rank)
 {
     switch (rank) {
@@ -70,7 +69,7 @@ static u16 savings_rank_present(int rank)
         case 20:
             return 0x1404;
         default:
-            return NO_ITEM;
+            return ITEM_CODE_NONE;
     }
 }
 
@@ -89,7 +88,7 @@ void Savings_SendRankLetter(int days)
     u8 message = (u8) rank;
     Letter_WriteSpecialToPlayer(&letter, &message, data_020e3118, data_020e3100, data_020e3114, PlayerRecord_Player(player));
     u16 present = savings_rank_present(rank);
-    if (present != NO_ITEM) {
+    if (present != ITEM_CODE_NONE) {
         Letter_SetItem(&letter, present, 1);
     }
     if (Mail_Post(&letter) != 0) {

@@ -97,8 +97,6 @@ static_assert(sizeof(BirthdayVillager) == 0xa70, "the size func_ov004_0221d4f4 a
 #define BIRTHDAY_VILLAGER_ITEM_NAME_KIND 7
 /* The item named in the lines' values 0 and 1. */
 #define BIRTHDAY_VILLAGER_LINE_ITEM 0x1100
-/* The item code of "no item". */
-#define BIRTHDAY_VILLAGER_NO_ITEM 0xfff1
 
 /* The word its motion requests carry, the range of its looks and the point they are given. */
 extern u16 data_020c80f8;
@@ -848,7 +846,7 @@ u16 BirthdayVillager_PickGift(int fondness)
     }
     u16 item;
     ItemLists_DrawByGroup(&item, (int) (uintptr_t) PlayerRecords_Current(), NULL);
-    if (item == BIRTHDAY_VILLAGER_NO_ITEM) {
+    if (item == ITEM_CODE_NONE) {
         return draw_from_list(0);
     }
     return item;
@@ -1375,11 +1373,11 @@ int BirthdayVillager_CanOffer(u16 *item, int state)
     }
     int empty;
     if (ItemCode_HasVariant(item)) {
-        ItemCode none = BIRTHDAY_VILLAGER_NO_ITEM;
+        ItemCode none = ITEM_CODE_NONE;
         int variant = ItemCode_VariantItem(item);
         empty = variant == ItemCode_VariantItem(&none);
     } else {
-        empty = *item == BIRTHDAY_VILLAGER_NO_ITEM;
+        empty = *item == ITEM_CODE_NONE;
     }
     return !empty;
 }
@@ -1413,7 +1411,7 @@ BirthdayVillager *BirthdayVillager_New(void)
         *(const u8 **) (void *) villager->base = data_ov004_02253674;
         VillagerTalkScene_ConstructAlt(&villager->talk.base);
         villager->talk.base.scene.vtable = data_ov004_022535e4;
-        villager->gift = BIRTHDAY_VILLAGER_NO_ITEM;
+        villager->gift = ITEM_CODE_NONE;
     }
     return villager;
 }

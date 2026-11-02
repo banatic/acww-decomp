@@ -91,7 +91,6 @@ static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size RoomObject02253058_
 #define TALK_STATE 4    /* the receiver's state byte with "obj_etc_player" */
 #define DONE_EVENT 0x2e /* queued in SceneTables_EntryRecord's object when the sequence is done */
 #define DONE_EVENT_ARG 2
-#define NO_ITEM 0xfff1 /* RoomObject02253058.item when none is kept */
 #define ROOM_OBJECT_02253058_SIZE 0x8b8
 
 /* The class's vtables, and its receiver part's. */
@@ -1003,7 +1002,7 @@ RoomObject02253058 *RoomObject02253058_Construct(RoomObject02253058 *object)
 {
     RoomObject_ConstructBase(&object->base);
     RoomObject02253058_set_vtables(object);
-    object->item = NO_ITEM;
+    object->item = ITEM_CODE_NONE;
     GlowSet_Construct(&object->glows);
     return object;
 }

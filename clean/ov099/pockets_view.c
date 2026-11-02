@@ -7,6 +7,7 @@
 #include "main/cell_layer_sprite.h"
 #include "main/current_pockets.h"
 #include "main/display_layers.h"
+#include "main/item_code.h"
 #include "main/layer_load_task.h"
 #include "main/sliding_window.h"
 #include "main/state_flags.h"
@@ -29,8 +30,8 @@ extern u8 data_021f6c30;
 #define GRID_NO_INDEX 0x23
 #define LETTERS_NO_INDEX 0x37
 
-/* The answers for a place outside the grid (PocketsView_PlaceItem, PocketsView_PlaceItemState). */
-#define NO_ITEM 0xfff1
+/* What PocketsView_PlaceItemState answers for a place outside the grid (PocketsView_PlaceItem:
+ * ITEM_CODE_NONE). */
 #define NO_ITEM_STATE 0xf1
 
 /* The scene's sub states (MenuScene_SetSubState; the table of PocketsView_RunInteractive). */
@@ -600,7 +601,7 @@ int PocketsView_PlaceItem(PocketsView *self, int place)
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
         return PocketsGrid_Item((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
     }
-    return NO_ITEM;
+    return ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov099_0229cc40, PocketsView_PlaceItem)
 
@@ -719,7 +720,7 @@ int PocketsView_DropHeldAt(PocketsView *self, int place)
         return 0;
     }
     int item = PocketsView_PlaceItem(self, place);
-    if (item != NO_ITEM) {
+    if (item != ITEM_CODE_NONE) {
         PocketsView_SetSlotItem(self, self->held_place, item, PocketsView_PlaceItemState(self, place));
     }
     PocketsView_PutHeldAt(self, place);

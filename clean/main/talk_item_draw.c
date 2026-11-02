@@ -2,10 +2,10 @@
 #include "talk_item_draw.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "item_lists.h"
 #include "main_random.h"
 
-#define TALK_ITEM_DRAW_NONE 0xfff1
 #define TALK_ITEM_DRAW_FOUR 4
 #define TALK_ITEM_DRAW_THREE 3
 #define TALK_ITEM_DRAW_KINDS 4
@@ -45,14 +45,14 @@ void TalkItemDraw_OfLists(u16 *item, const TalkItemDrawList *lists, u32 count, u
     TalkItemDrawObject list;
     TalkItemDrawObject copy;
     const TalkItemDrawList *picked = &lists[MainRandom_Below(count)];
-    *item = TALK_ITEM_DRAW_NONE;
+    *item = ITEM_CODE_NONE;
     u32 group = picked->group;
     ItemList_Construct((ItemList *) &list, picked->kind, picked->group);
     copy = list;
     ItemLists_Draw(&drawn, (ItemList *) &copy, value, 0, 1, 1, (int) (uintptr_t) &group);
     *item = drawn;
     ItemList_Destruct(&copy);
-    if (*item == TALK_ITEM_DRAW_NONE) {
+    if (*item == ITEM_CODE_NONE) {
         u16 again;
         TalkItemDrawObject list2;
         TalkItemDrawObject copy2;

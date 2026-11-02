@@ -4,6 +4,7 @@
 #include "calendar.h"
 #include "clean.h"
 #include "current_pockets.h"
+#include "item_code.h"
 #include "npc_id.h"
 #include "player_pockets.h"
 #include "player_record.h"
@@ -30,7 +31,6 @@
 #define VILLAGER_TALK_APPROACH_RECORD 0x830
 #define VILLAGER_TALK_APPROACH_HABIT_BYTE 0x824
 
-#define VILLAGER_TALK_APPROACH_NO_ITEM 0xfff1
 /* The item classes of the five modes of group 0 (insect, fish, kind item, clothes, furniture). */
 #define VILLAGER_TALK_APPROACH_MODES 5
 #define VILLAGER_TALK_APPROACH_POCKETS 15
@@ -143,7 +143,7 @@ static void approach_gift_from_items(VillagerTalk *talk, u8 *record)
     u16 item;
     VillagerItems_Random(&item, record);
     talk->gift = item;
-    if (talk->gift != VILLAGER_TALK_APPROACH_NO_ITEM) {
+    if (talk->gift != ITEM_CODE_NONE) {
         talk->gift_from_items = 1;
     } else {
         u16 drawn;
@@ -196,10 +196,10 @@ void VillagerTalkApproach_Line(VillagerTalk *talk, VillagerTalkLine *out)
     SceneBase *base = (SceneBase *) (void *) talk;
     VillagerTalkGreeting_PutRandomWord(talk, 4, 3);
     VillagerTalkGreeting_PutRandomWord(talk, 6, 4);
-    if (talk->item != VILLAGER_TALK_APPROACH_NO_ITEM) {
+    if (talk->item != ITEM_CODE_NONE) {
         SceneBase_PutItemName(base, (int) (uintptr_t) &talk->item, 0, VILLAGER_TALK_APPROACH_ITEM_KIND);
     }
-    if (talk->gift != VILLAGER_TALK_APPROACH_NO_ITEM) {
+    if (talk->gift != ITEM_CODE_NONE) {
         SceneBase_PutItemName(base, (int) (uintptr_t) &talk->gift, 1, VILLAGER_TALK_APPROACH_ITEM_KIND);
         SceneBase_PutItemName(base, (int) (uintptr_t) &talk->gift, 2, VILLAGER_TALK_APPROACH_ITEM_KIND);
     }
@@ -224,7 +224,7 @@ int VillagerTalkApproach_Sell(VillagerTalk *talk)
         return 0;
     }
     approach_gift_from_items(talk, record);
-    if (talk->gift == VILLAGER_TALK_APPROACH_NO_ITEM) {
+    if (talk->gift == ITEM_CODE_NONE) {
         return 0;
     }
 
@@ -253,7 +253,7 @@ int VillagerTalkApproach_Trade(VillagerTalk *talk)
     u16 wanted;
     VillagerTalkApproach_PickPocketItem(&wanted, (unsigned int) approach_mode(record));
     talk->item = wanted;
-    if (talk->item == VILLAGER_TALK_APPROACH_NO_ITEM) {
+    if (talk->item == ITEM_CODE_NONE) {
         return 0;
     }
     approach_gift_from_items(talk, record);
@@ -272,7 +272,7 @@ int VillagerTalkApproach_Buy(VillagerTalk *talk)
     u16 wanted;
     VillagerTalkApproach_PickPocketItem(&wanted, (unsigned int) approach_mode(record));
     talk->item = wanted;
-    if (talk->item == VILLAGER_TALK_APPROACH_NO_ITEM) {
+    if (talk->item == ITEM_CODE_NONE) {
         return 0;
     }
 
@@ -305,7 +305,7 @@ CLEAN_AS(func_0202b510, VillagerTalkApproach_RoundBells)
  * there is none or the mode is another. */
 void VillagerTalkApproach_PickPocketItem(u16 *out, unsigned int mode)
 {
-    *out = VILLAGER_TALK_APPROACH_NO_ITEM;
+    *out = ITEM_CODE_NONE;
     if (VillagerModeRecord_GroupOfMode(mode) != 0 || mode >= VILLAGER_TALK_APPROACH_MODES) {
         return;
     }

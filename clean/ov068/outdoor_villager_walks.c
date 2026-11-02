@@ -125,7 +125,6 @@ void OutdoorVillagerRecords_RedrawKind(u8 *villager);
 #define WALKS_MOTION_WALK 1
 #define WALKS_MOTION_WALK_2 2
 #define WALKS_MOTION_TURN_WALK 4
-#define WALKS_NO_ITEM 0xfff1
 #define WALKS_STATE_UNSET (-1)
 #define WALKS_WALK_FRAMES 6000
 #define WALKS_STEP_FRAMES 40
@@ -596,7 +595,7 @@ int OutdoorVillagerWalks_Choose(OutdoorVillagerBehaviour *self, u8 *villager)
     if (OutdoorVillagerWalks_AtHome(self, villager) != 0) {
         u16 item;
         VillagerSceneHeld_Item(&item, villager);
-        if (item != WALKS_NO_ITEM) {
+        if (item != ITEM_CODE_NONE) {
             walks_start_then(self, villager, WALKS_DO_ITEM_AWAY, WALKS_DO_GO_IN);
         } else {
             OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_GO_IN);
@@ -762,20 +761,20 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
         }
         u16 held;
         VillagerSceneHeld_Item(&held, villager);
-        if (held == WALKS_NO_ITEM) {
-            u16 want = WALKS_NO_ITEM;
+        if (held == ITEM_CODE_NONE) {
+            u16 want = ITEM_CODE_NONE;
             if (VillagerModeRecord_IsKindMode((unsigned int) kind) != 0) {
                 u16 kind_item;
                 VillagerModeRecord_KindItem(&kind_item, kind);
                 want = kind_item;
             }
-            if ((want == WALKS_NO_ITEM || want == WALKS_ITEM_1378) && raining) {
+            if ((want == ITEM_CODE_NONE || want == WALKS_ITEM_1378) && raining) {
                 u16 umbrella;
                 TownVillager_Item1380(&umbrella, record);
                 want = umbrella;
             }
             *hold = -1;
-            if (want == WALKS_NO_ITEM) {
+            if (want == ITEM_CODE_NONE) {
                 return 0;
             }
             VillagerSceneHeld_SetItem(villager, &want);
@@ -805,7 +804,7 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
 
     u16 held;
     VillagerSceneHeld_Item(&held, villager);
-    if (held == WALKS_NO_ITEM) {
+    if (held == ITEM_CODE_NONE) {
         if (!raining) {
             return 0;
         }

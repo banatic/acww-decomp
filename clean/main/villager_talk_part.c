@@ -4,6 +4,7 @@
 
 #include "clean.h"
 #include "group_params.h"
+#include "item_code.h"
 #include "item_object.h"
 #include "item_record.h"
 #include "lookups.h"
@@ -39,7 +40,6 @@
 #define VILLAGER_TALK_PART_BLOCK 0x160
 #define VILLAGER_TALK_PART_VILLAGER_OBJECT 0x164
 
-#define VILLAGER_TALK_PART_NO_ITEM 0xfff1
 #define VILLAGER_TALK_PART_NO_SLOT (-1)
 
 /* The talk object's types handled here (step types of band 1, villager_part_block.h). */
@@ -347,7 +347,7 @@ static int part_villager_item(VillagerTalk *talk)
     u16 item;
     VillagerItems_Random(&item, part_record(talk));
     talk->item = item;
-    if (talk->item == VILLAGER_TALK_PART_NO_ITEM) {
+    if (talk->item == ITEM_CODE_NONE) {
         return 0;
     }
     VillagerItems_Remove(part_record(talk), &talk->item);
@@ -426,7 +426,7 @@ void VillagerTalkPart_HandItem(VillagerTalk *talk)
     PlayerPockets *pockets = PlayerRecord_Pockets(player);
     if (part_is_bag(talk->item)) {
         PlayerPockets_AddBells(pockets, talk->bells, 1);
-    } else if (talk->item != VILLAGER_TALK_PART_NO_ITEM) {
+    } else if (talk->item != ITEM_CODE_NONE) {
         int slot = PlayerPockets_FreeSlot(pockets);
         if (slot != VILLAGER_TALK_PART_NO_SLOT) {
             PlayerPockets_SetSlot(pockets, &talk->item, slot, 0);
@@ -486,11 +486,11 @@ static u8 part_reaction(VillagerTalk *talk)
 void VillagerTalkPart_LineReward8d98(VillagerTalk *talk, VillagerTalkLine *out)
 {
     u8 reaction = part_reaction(talk);
-    talk->item = VILLAGER_TALK_PART_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     if (reaction == VILLAGER_TALK_PART_REACT_STYLE1) {
         part_drawn_item(talk);
     }
-    if (talk->item == VILLAGER_TALK_PART_NO_ITEM) {
+    if (talk->item == ITEM_CODE_NONE) {
         part_bells_item(talk);
     }
     part_line(talk, out, &data_020c8d98);
@@ -503,7 +503,7 @@ CLEAN_AS(func_02026c9c, VillagerTalkPart_LineReward8d98)
 void VillagerTalkPart_LineReward8da0(VillagerTalk *talk, VillagerTalkLine *out)
 {
     u8 reaction = part_reaction(talk);
-    talk->item = VILLAGER_TALK_PART_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     switch (reaction) {
         case VILLAGER_TALK_PART_REACT_STYLE0:
             part_villager_item(talk);
@@ -514,7 +514,7 @@ void VillagerTalkPart_LineReward8da0(VillagerTalk *talk, VillagerTalkLine *out)
         default:
             break;
     }
-    if (talk->item == VILLAGER_TALK_PART_NO_ITEM) {
+    if (talk->item == ITEM_CODE_NONE) {
         part_bells_item(talk);
     }
     part_line(talk, out, &data_020c8da0);
@@ -527,7 +527,7 @@ CLEAN_AS(func_02026d70, VillagerTalkPart_LineReward8da0)
 void VillagerTalkPart_LineReward8da8(VillagerTalk *talk, VillagerTalkLine *out)
 {
     u8 reaction = part_reaction(talk);
-    talk->item = VILLAGER_TALK_PART_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     switch (reaction) {
         case VILLAGER_TALK_PART_REACT_STYLE0:
             part_drawn_item(talk);
@@ -541,7 +541,7 @@ void VillagerTalkPart_LineReward8da8(VillagerTalk *talk, VillagerTalkLine *out)
             }
             break;
     }
-    if (talk->item == VILLAGER_TALK_PART_NO_ITEM) {
+    if (talk->item == ITEM_CODE_NONE) {
         part_bells_item(talk);
     }
     part_line(talk, out, &data_020c8da8);
@@ -586,13 +586,13 @@ void VillagerTalkPart_StartByType(VillagerTalk *talk, int arg)
         }
         case VILLAGER_TALK_PART_TYPE_19: {
             int chance = MainRandom_Below(100);
-            talk->item = VILLAGER_TALK_PART_NO_ITEM;
+            talk->item = ITEM_CODE_NONE;
             if (chance < VILLAGER_TALK_PART_ITEM_CHANCE) {
                 part_villager_item(talk);
             } else if (chance < VILLAGER_TALK_PART_BELLS_CHANCE) {
                 part_bells_item(talk);
             }
-            if (talk->item == VILLAGER_TALK_PART_NO_ITEM) {
+            if (talk->item == ITEM_CODE_NONE) {
                 part_drawn_item(talk);
             }
             VillagerTalkPart_SayByPocketRoom(talk);
@@ -608,9 +608,9 @@ CLEAN_AS(func_0202703c, VillagerTalkPart_StartByType)
  * gives none. */
 void VillagerTalkPart_BellBag(u16 *out, int bells)
 {
-    *out = VILLAGER_TALK_PART_NO_ITEM;
+    *out = ITEM_CODE_NONE;
     *out = (u16) ItemTraits_BellBagFor(bells, 0, NULL);
-    if (*out == VILLAGER_TALK_PART_NO_ITEM) {
+    if (*out == ITEM_CODE_NONE) {
         *out = VILLAGER_TALK_PART_SMALLEST_BAG;
     }
 }
@@ -781,7 +781,7 @@ void VillagerTalkPart_Motion16KeepItem(VillagerTalk *talk)
 {
     u8 *record = part_record(talk);
     SceneCommand_RequestMotion16(&talk->scene);
-    if (talk->item != VILLAGER_TALK_PART_NO_ITEM) {
+    if (talk->item != ITEM_CODE_NONE) {
         VillagerItems_Add(record, &talk->item);
     }
 }
@@ -910,7 +910,7 @@ void VillagerTalkPart_TakeChosenItem(VillagerTalk *talk)
         PlayerPockets *pockets = part_pockets();
         switch (part_type(talk)) {
             case VILLAGER_TALK_PART_TYPE_10: {
-                u16 none = VILLAGER_TALK_PART_NO_ITEM;
+                u16 none = ITEM_CODE_NONE;
                 talk->item = *PlayerPockets_Slot(pockets, slot);
                 PlayerPockets_SetSlot(pockets, &none, slot, 0);
                 break;
@@ -1068,7 +1068,7 @@ void VillagerTalkPart_TakeMatchingItem(VillagerTalk *talk)
             int slot = VillagerTalkScene_PocketOfItem(
                 pockets, ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)));
             if (slot != VILLAGER_TALK_PART_NO_SLOT) {
-                u16 none = VILLAGER_TALK_PART_NO_ITEM;
+                u16 none = ITEM_CODE_NONE;
                 talk->item = *ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
                 PlayerPockets_SetSlot(pockets, &none, slot, 0);
                 VillagerTalkScene_SetLines(talk, data_021c2a7c);

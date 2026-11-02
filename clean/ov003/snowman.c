@@ -329,7 +329,6 @@ typedef struct SnowmanContact {
 #define SNOWMAN_KNOCK_LIMIT 0x666
 
 #define SNOWMAN_PLAYER 4 /* the actor func_020961a8 is asked for */
-#define SNOWMAN_NO_ITEM 0xfff1
 #define SNOWMAN_SIZE_MIN 0x800
 #define SNOWMAN_SIZE_PUSHABLE 0xa00 /* smaller balls are not pushed and make sound 0x81c */
 #define SNOWMAN_SIZE_MAX 0x1400
@@ -491,11 +490,11 @@ int Snowman_KeepDisplacedItem(u16 *item)
 {
     int nothing;
     if (ItemCode_HasVariant(item)) {
-        u16 none = SNOWMAN_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         int code = ItemCode_VariantItem(item);
         nothing = code == ItemCode_VariantItem(&none);
     } else {
-        nothing = *item == SNOWMAN_NO_ITEM;
+        nothing = *item == ITEM_CODE_NONE;
     }
     if (!nothing && (ItemCode_IsKind1(item) || ItemCode_HasVariant(item))) {
         TownItemLists_PushListA(*item);
@@ -513,7 +512,7 @@ int Snowman_ClearTile(const Vec3 *position)
     if (map != NULL) {
         int x, z;
         Position_Tile(&x, &z, (const Position *) position);
-        u16 none = SNOWMAN_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         if (AcreTile_SetItem(map, &none, x, z, 0)) {
             return 1;
         }
@@ -569,7 +568,7 @@ CLEAN_AS(func_ov003_0221a538, Snowman_PlaceObjectNearby)
  * tile (nothing, 0xfff1, when it cannot stand there or there is no map). Whether it was put. */
 int Snowman_PlaceObject(int number, Vec3 *position, u16 *replaced)
 {
-    *replaced = SNOWMAN_NO_ITEM;
+    *replaced = ITEM_CODE_NONE;
     if (!Snowman_CanStandAt(position)) {
         return 0;
     }
@@ -1024,7 +1023,7 @@ void Snowman_Leave(Snowman *snowman)
         Position_Tile(&x, &z, (const Position *) &snowman->position);
         u16 *item = item_on_tile(map, x, z);
         if (item != NULL && MapCode_IsSnowman(item)) {
-            u16 none = SNOWMAN_NO_ITEM;
+            u16 none = ITEM_CODE_NONE;
             AcreTile_SetItem(map, &none, x, z, 0);
         }
         int number = snowman->flags & SNOWMAN_NUMBER_MASK;
@@ -1106,7 +1105,7 @@ CLEAN_AS(_ZN18Obj_ov003_022382ac19func_ov003_0221b320Ev, Snowman_Update)
  * sound stopped and func_0203edd0; it enters overlay 3's table of balls. */
 void Snowman_Init(Snowman *snowman)
 {
-    snowman->item_under = SNOWMAN_NO_ITEM;
+    snowman->item_under = ITEM_CODE_NONE;
     snowman->body.rolling.rotation = data_020d1a10;
     ModelObject_LoadShared((ModelObject *) &snowman->ball_model, SNOWMAN_TAG_BALL, data_ov003_022383ac);
     ModelObject_LoadShared((ModelObject *) &snowman->face_model, SNOWMAN_TAG_FACE, data_ov003_022383c8);
@@ -1222,7 +1221,7 @@ Snowman *Snowman_Construct(Snowman *snowman)
     CollisionContacts_Construct((CollisionContacts *) snowman->collider);
     SnowmanBody_Construct(&snowman->body.body);
     SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) (void *) snowman->sound);
-    snowman->item_under = SNOWMAN_NO_ITEM;
+    snowman->item_under = ITEM_CODE_NONE;
     return snowman;
 }
 CLEAN_AS(func_ov003_0221b6d4, Snowman_Construct)

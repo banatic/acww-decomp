@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "design_info.h"
+#include "item_code.h"
 #include "player_record.h"
 #include "player_records.h"
 #include "text_string.h"
@@ -30,7 +31,6 @@
 
 #define TOWN_VILLAGER_HOUSE_ITEM_COUNT 10
 #define TOWN_VILLAGER_ITEM_COUNT 4
-#define TOWN_VILLAGER_NO_ITEM 0xfff1
 /* The villager's byte 0x7d6 (how it came to the town) of an emptied place. */
 #define TOWN_VILLAGER_CAME 0x7d6
 #define TOWN_VILLAGER_CAME_RESET 3
@@ -275,7 +275,7 @@ void TownVillager_Reset(u8 *villager)
     TownName_Clear((TownName *) ((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN)));
     u16 *items = town_villager_house_items(villager);
     for (int i = 0; i < TOWN_VILLAGER_HOUSE_ITEM_COUNT; i++) {
-        items[i] = TOWN_VILLAGER_NO_ITEM;
+        items[i] = ITEM_CODE_NONE;
     }
     VillagerPlotTile_Clear((VillagerPlot *) (void *) town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
     VillagerObject_ClearRecord((VillagerRecord *) (void *) town_villager_at(villager, TOWN_VILLAGER_RECORD));
@@ -317,7 +317,7 @@ u8 *TownVillager_Construct(u8 *villager)
                    func_020051b0);
     TownName_Construct((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LAST_TOWN));
     VillagerPlotTile_Construct((VillagerPlot *) (void *) town_villager_at(villager, TOWN_VILLAGER_HOUSE_TILE));
-    *TownVillager_Clothes(villager) = TOWN_VILLAGER_NO_ITEM;
+    *TownVillager_Clothes(villager) = ITEM_CODE_NONE;
     TownName_Construct((NpcIdHead *) (void *) town_villager_at(villager, TOWN_VILLAGER_LETTER_TOWN));
     return villager;
 }

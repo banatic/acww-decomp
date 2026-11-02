@@ -474,14 +474,12 @@ extern void func_02034ce0(void *code); /* RoomInterior_ConstructCode */
 extern void func_02034cc0(void *none); /* RoomInterior_DestroySceneWallpapers */
 extern void func_02034ca0(void *none); /* RoomInterior_DestroySceneCarpets */
 
-#define STATIC_INIT_NO_ITEM 0xfff1
-
 /* __sinit_020c4c5c: the room interiors' item code (none) and the scenes' two arrays of codes,
  * each constructed by __cxa_vec_ctor and registered as a whole (a null object: the destructor
  * knows its array). */
 void StaticInit_RoomInterior(void)
 {
-    data_021c5174 = STATIC_INIT_NO_ITEM;
+    data_021c5174 = ITEM_CODE_NONE;
     static_init_register(&data_021c5174, func_020051b0, &data_021c5178);
     __cxa_vec_ctor(data_021c519c, ROOM_INTERIOR_SCENES, sizeof(u16), func_02034ce0, func_020051b0);
     static_init_register(NULL, func_02034cc0, &data_021c5184);
@@ -1120,7 +1118,7 @@ void StaticInit_ItemInfo(void)
 {
     ItemInfoFiles_Construct(&data_021cb5e0);
     static_init_register(&data_021cb5e0, func_02062d44, &data_021cb5c8);
-    data_021cb5b0 = STATIC_INIT_NO_ITEM;
+    data_021cb5b0 = ITEM_CODE_NONE;
     static_init_register(&data_021cb5b0, func_020051b0, &data_021cb5d4);
 }
 CLEAN_AS(__sinit_020c5aa0, StaticInit_ItemInfo)
@@ -1827,7 +1825,7 @@ void StaticInit_Shops(void)
 {
     DatedRandom_Construct(&data_021f4a80);
     static_init_register(&data_021f4a80, func_02063ddc, &data_021f4aa4);
-    data_021f49f0 = STATIC_INIT_NO_ITEM;
+    data_021f49f0 = ITEM_CODE_NONE;
     static_init_register(&data_021f49f0, func_020051b0, &data_021f4a44);
     data_021f49f4 = STATIC_INIT_SOLD_MARKER;
     static_init_register(&data_021f49f4, func_020051b0, &data_021f4ab0);

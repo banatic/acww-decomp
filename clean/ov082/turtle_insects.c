@@ -17,6 +17,7 @@
 #include "main/footsteps.h"
 #include "main/insect_draw.h"
 #include "main/insect_tables.h"
+#include "main/item_code.h"
 #include "main/layered_model.h"
 #include "main/main_random.h"
 #include "main/pool_link.h"
@@ -65,7 +66,6 @@ static_assert(sizeof(TurtleInsectsStep) == 0x10, "a state's functions");
 #define TURTLE_INSECTS_ACTION 0x618         /* SceneAction */
 #define TURTLE_INSECTS_HEAP 0x640           /* PoolLink */
 
-#define TURTLE_INSECTS_NO_ITEM 0xfff1
 #define TURTLE_INSECTS_HELD 2
 
 /* The field actor of this console's player. */
@@ -234,7 +234,7 @@ static void turtle_insects_make_up_record(TurtleInsects *turtle, EventWinner *re
 {
     EventWinner_Player(record); /* the result is not used */
     int band = (int) MainRandom_Below(2);
-    u16 insect = TURTLE_INSECTS_NO_ITEM;
+    u16 insect = ITEM_CODE_NONE;
     int place = 0;
     int time_slot = 0;
     DateTime now = {0};
@@ -314,7 +314,7 @@ void *TurtleInsects_Create(void)
     u8 *object = turtle->base;
     SceneObjectBase_Construct((SceneObjectBase *) (void *) object);
     *(const u8 **) (void *) object = data_020d8c64;
-    *(u16 *) (void *) turtle_insects_part(turtle, TURTLE_INSECTS_PERSON) = TURTLE_INSECTS_NO_ITEM;
+    *(u16 *) (void *) turtle_insects_part(turtle, TURTLE_INSECTS_PERSON) = ITEM_CODE_NONE;
     LayeredModel_ConstructB((LayeredModel *) (void *) turtle_insects_part(turtle, TURTLE_INSECTS_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) turtle_insects_part(turtle, TURTLE_INSECTS_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) turtle_insects_part(turtle, TURTLE_INSECTS_FACE));

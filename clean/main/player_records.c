@@ -2,13 +2,12 @@
 #include "player_records.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "session.h"
 #include "main_random.h"
 #include "player_id.h"
 #include "player_record.h"
 #include "session_players.h"
-
-#define NO_ITEM 0xfff1
 
 extern NetSession *data_020ccf94; /* the session */
 extern u8 data_021dc7bc[];        /* the town's four records */
@@ -179,7 +178,7 @@ u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number)
     }
 
     PlayerRecord_Clear(self);
-    u16 no_item = NO_ITEM;
+    u16 no_item = ITEM_CODE_NONE;
     PlayerRecord_NewPlayer(self, name, PlayerId_NewNumberNotIn(taken, count), arg, 0, 0, 0, 0, 0, 0, 0, &no_item);
     PlayerRecord_SetItem240E(self, &data_021d56f4[number & 3]);
     return self;

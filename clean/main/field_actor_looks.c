@@ -15,6 +15,7 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "field_actor_parts.h"
+#include "item_code.h"
 #include "main/calendar.h"
 #include "main/session.h"
 #include "actor_palettes.h"
@@ -63,7 +64,6 @@ extern u32 data_020cc7d0;
 #define PART_C_NONE 0x4b
 /* A part of the head that is not there (func_0205e138 and func_0205e708's result). */
 #define HEAD_MODEL_NONE 0x9e
-#define ITEM_NONE 0xfff1
 
 /* The scenes where the sun level is not faded. */
 #define SCENE_2E 0x2e
@@ -107,7 +107,7 @@ CLEAN_AS(func_020100d0, FieldActor_CopyTexture)
 
 /* ---- The head (part B at 0x428, with its models at 0x38c and 0x464) */
 
-/* func_020100e8: asks for the head to change to `item` (the head's item, ITEM_NONE for none),
+/* func_020100e8: asks for the head to change to `item` (the head's item, ITEM_CODE_NONE for none),
  * its kind when the item does not set one, the hair colour, and whether the face's textures
  * are copied onto it; 1 when it was taken, 0 while another change is under way. */
 int FieldActor_RequestHead(FieldActor *actor, const u16 *item, u8 kind, u8 hair_color, u8 with_face)
@@ -150,7 +150,7 @@ void FieldActor_ApplyHead(FieldActor *actor)
         return;
     }
 
-    u16 item = FieldActor_TestFlag(actor, 0xc) ? ITEM_NONE : FIELD_ACTOR_HEAD_ITEM(actor);
+    u16 item = FieldActor_TestFlag(actor, 0xc) ? ITEM_CODE_NONE : FIELD_ACTOR_HEAD_ITEM(actor);
     int model_kind;
     int second;
     HeadLook_ChooseModels(FieldActor_RecordFlag249A(actor), FIELD_ACTOR_HEAD_KIND(actor), &item, &model_kind, &second);
@@ -341,10 +341,10 @@ CLEAN_AS(func_020106a8, FieldActor_SetPalettes)
 
 /* ---- The player's record (FieldActor_Record, NULL for none) */
 
-/* func_020110c4: the held item (slot 5); ITEM_NONE without a record. */
+/* func_020110c4: the held item (slot 5); ITEM_CODE_NONE without a record. */
 void FieldActor_RecordHeldItem(u16 *item, FieldActor *actor)
 {
-    *item = ITEM_NONE;
+    *item = ITEM_CODE_NONE;
     u8 *record = FieldActor_Record(actor);
     if (record != NULL) {
         *item = *PlayerRecord_HeldItem(record);
@@ -483,22 +483,22 @@ unsigned int FieldActor_RecordHeadKind(FieldActor *actor)
 }
 CLEAN_AS(func_020112e4, FieldActor_RecordHeadKind)
 
-/* func_020112f8: the head's item (slot 4); ITEM_NONE without a record. */
+/* func_020112f8: the head's item (slot 4); ITEM_CODE_NONE without a record. */
 void FieldActor_RecordHeadItem(u16 *item, FieldActor *actor)
 {
     u8 *record = FieldActor_Record(actor);
-    *item = ITEM_NONE;
+    *item = ITEM_CODE_NONE;
     if (record != NULL) {
         *item = *PlayerRecord_HeadItem(record);
     }
 }
 CLEAN_AS(func_020112f8, FieldActor_RecordHeadItem)
 
-/* func_0201131c: the clothes (slot 2); ITEM_NONE without a record. */
+/* func_0201131c: the clothes (slot 2); ITEM_CODE_NONE without a record. */
 void FieldActor_RecordCloth(u16 *item, FieldActor *actor)
 {
     u8 *record = FieldActor_Record(actor);
-    *item = ITEM_NONE;
+    *item = ITEM_CODE_NONE;
     if (record != NULL) {
         *item = *PlayerRecord_Clothes(record);
     }

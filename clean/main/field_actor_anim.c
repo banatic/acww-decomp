@@ -21,6 +21,7 @@
 #include "face_texture.h"
 #include "frame_ctrl.h"
 #include "held_item_pool.h"
+#include "item_code.h"
 #include "layered_model.h"
 #include "tex_pattern_anim.h"
 
@@ -42,7 +43,6 @@ extern const u16 data_020c7d04[];
 #define FACE_ANIM_B_DEFAULT 0xba
 /* A held item without an animation of its own (func_0205f670). */
 #define HELD_ANIM_NONE 0x144
-#define ITEM_NONE 0xfff1
 /* The model's G3D model, 0x5c into a model object. */
 #define MODEL_G3D 0x5c
 
@@ -111,7 +111,7 @@ CLEAN_AS(func_0201079c, FieldActor_PlayHeldAnimation)
  * flag 0 (FieldActor_RecordHeldItem), else with none. */
 void FieldActor_AnimateHeldItem(FieldActor *actor, int animation, int frames)
 {
-    u16 item = ITEM_NONE;
+    u16 item = ITEM_CODE_NONE;
     if (data_020e54a8 == 0 && FieldActor_TestFlag(actor, 0) != 0) {
         u16 held;
         FieldActor_RecordHeldItem(&held, actor);

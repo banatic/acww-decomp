@@ -5,6 +5,7 @@
 
 #include "clean.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "member_pointer.h"
 #include "room_object_anims.h"
 #include "room_object_body.h"
@@ -51,7 +52,6 @@ static_assert(sizeof(MusicPlayer) == 0x8a8, "the size MusicPlayer_Create allocat
 #define NO_SONG (-1)
 #define NO_VALUE 0xff    /* the song given with MUSIC_PLAYER_STOPPED */
 #define MUSIC_FIRST 0xb0 /* the music of song 0 */
-#define ITEM_NONE 0xfff1 /* no item */
 
 /* What the receiver's state byte tells the talk: the song handed to the link, or none. */
 #define SAYS_SONG 5
@@ -433,7 +433,7 @@ void MusicPlayer_StopSong(MusicPlayer *player, unsigned int song, int clear_item
     if (player->playing && song < SONG_COUNT) {
         Music_DropMusic((u16) (song + MUSIC_FIRST));
         if (clear_item != 0) {
-            u16 none = ITEM_NONE;
+            u16 none = ITEM_CODE_NONE;
             HouseRecord_SetCurrentSong(&none);
         }
         player->playing = 0;
@@ -461,7 +461,7 @@ int MusicPlayer_Stop(MusicPlayer *player)
     int vanishing = RoomObject_IsVanishing(&player->base);
     MusicPlayer_StopSong(player, player->song, vanishing);
     if (data_ov004_02256fec >= MUSIC_ITEM_FIRST && data_ov004_02256fec <= MUSIC_ITEM_LAST) {
-        data_ov004_02256fec = ITEM_NONE;
+        data_ov004_02256fec = ITEM_CODE_NONE;
     }
     return 1;
 }

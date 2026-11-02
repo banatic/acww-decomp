@@ -5,6 +5,7 @@
 
 #include "clean.h"
 #include "date_time.h"
+#include "item_code.h"
 #include "text_string.h"
 #include "main_random.h"
 #include "player_id.h"
@@ -18,8 +19,6 @@
 #define VILLAGER_MEMORY_VALUES_SIZE 8
 /* How many numbers VillagerMemoryEntry_DrawUnused draws from. */
 #define VILLAGER_MEMORY_DRAW_COUNT 32
-
-#define NO_ITEM 0xfff1 /* an empty item */
 
 /* A text of six wide characters (func_02094f7c builds it, vtable data_020e2f54; 0x1c bytes),
  * as long as what the villager calls the player. */
@@ -503,7 +502,7 @@ void VillagerMemoryEntry_Clear(VillagerMemory *memory)
     MI_CpuFill8(memory, 0, sizeof(*memory));
     PlayerId_Clear(&memory->player);
     memset(&memory->when, 0, sizeof(memory->when));
-    memory->item = NO_ITEM;
+    memory->item = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_02081ef0, VillagerMemoryEntry_Clear)
 
@@ -522,7 +521,7 @@ VillagerMemory *VillagerMemoryEntry_Construct(VillagerMemory *memory)
     PlayerId_Construct(&memory->player);
     memset(&memory->when, 0, sizeof(memory->when));
     TownName_Construct(&memory->town);
-    memory->item = NO_ITEM;
+    memory->item = ITEM_CODE_NONE;
     VillagerMemoryEntry_Clear(memory);
     return memory;
 }

@@ -40,8 +40,6 @@ extern const u8 data_020d1894[];
 #define PLAYER_ACTOR_OPS_PRIORITY_6 6
 #define PLAYER_ACTOR_OPS_ARG -1
 
-#define PLAYER_ACTOR_OPS_ITEM_NONE 0xfff1
-
 /* Words of the actor its header leaves unnamed: the object under it and that object's kind
  * (FieldActor_NoteObjectUnderfoot; -1 and 0 for none), the point at 0x450 (the head's; all
  * zero for none), the look it is asked to turn to (with flag 0x15), and the byte at 0x8eb. */
@@ -310,7 +308,7 @@ int PlayerActorOps_SetHeldModel(unsigned int number, int player)
     if (actor->animation >= PLAYER_ACTOR_OPS_FIXED_LOOKS_ANIMATION) {
         u16 item;
         if (none) {
-            item = PLAYER_ACTOR_OPS_ITEM_NONE;
+            item = ITEM_CODE_NONE;
         } else {
             ItemInfo_HeldModelItem(&item, (int) (number - 1));
         }
@@ -319,9 +317,9 @@ int PlayerActorOps_SetHeldModel(unsigned int number, int player)
     }
 
     if (none) {
-        u16 item = PLAYER_ACTOR_OPS_ITEM_NONE;
+        u16 item = ITEM_CODE_NONE;
         PlayerRecord_SetHeldItem(record, &item);
-        u16 taken = PLAYER_ACTOR_OPS_ITEM_NONE;
+        u16 taken = ITEM_CODE_NONE;
         HeldItem_Take(held, &taken, NULL);
         FieldActor_RestartAnimation(actor);
     } else {
@@ -341,7 +339,7 @@ CLEAN_AS(func_02095694, PlayerActorOps_SetHeldModel)
 void PlayerActorOps_HeldItem(u16 *item, int player)
 {
     FieldActor *actor = SessionPlayers_FieldActor(player);
-    *item = PLAYER_ACTOR_OPS_ITEM_NONE;
+    *item = ITEM_CODE_NONE;
     if (actor != NULL) {
         u16 held;
         FieldActor_RecordHeldItem(&held, actor);
@@ -586,7 +584,7 @@ CLEAN_AS(func_02095b58, PlayerActorOps_RequestState7Kind0Next10)
 /* func_02095b64: state 7 with no item, kind 3, then state 5. */
 int PlayerActorOps_RequestState7NoItem(void)
 {
-    u16 item = PLAYER_ACTOR_OPS_ITEM_NONE;
+    u16 item = ITEM_CODE_NONE;
     return PlayerActorOps_RequestState7(&item, 3, 5);
 }
 CLEAN_AS(func_02095b64, PlayerActorOps_RequestState7NoItem)
@@ -653,11 +651,11 @@ int PlayerActorOps_FinishState(void)
         int empty;
         FieldActor_RecordHeldItem(&items[0], actor);
         if (ItemCode_HasVariant(&items[0])) {
-            items[1] = PLAYER_ACTOR_OPS_ITEM_NONE;
+            items[1] = ITEM_CODE_NONE;
             int held = ItemCode_VariantItem(&items[0]);
             empty = held == ItemCode_VariantItem(&items[1]);
         } else {
-            empty = items[0] == PLAYER_ACTOR_OPS_ITEM_NONE;
+            empty = items[0] == ITEM_CODE_NONE;
         }
         if (!empty && FieldActor_HeldToolNumber(actor) == 0 && state != 0x39) {
             return FieldActor_RequestState3D(actor, 2, 2, 0, 0, 0, PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);

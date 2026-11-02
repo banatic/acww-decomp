@@ -2,12 +2,12 @@
 #include "villager_scene_held.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "npc_id.h"
 #include "town_villager.h"
 #include "villager_state.h"
 #include "villager_status.h"
 
-#define VILLAGER_SCENE_HELD_NO_ITEM 0xfff1
 /* The scene object's virtual function that gives its villager's town record, or 0. */
 #define VILLAGER_SCENE_HELD_SLOT_RECORD 0x64
 
@@ -45,7 +45,7 @@ CLEAN_AS(func_0202e0c8, VillagerSceneHeld_SetItem)
 /* func_0202e118: the item the villager holds into `*item`, 0xfff1 without an entry. */
 void VillagerSceneHeld_Item(u16 *item, void *object)
 {
-    *item = VILLAGER_SCENE_HELD_NO_ITEM;
+    *item = ITEM_CODE_NONE;
     if (held_entry(object) == NULL) {
         return;
     }

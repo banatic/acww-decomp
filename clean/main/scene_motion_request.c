@@ -3,6 +3,7 @@
 #include "scene_motion_request.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "ov004/member_pointer.h"
 #include "scene_motion_core.h"
 #include "scene_motion_kinds.h"
@@ -20,9 +21,6 @@ static_assert(sizeof(SceneMotionArgs) == 0x34, "SceneMotionArgs layout");
 #define MOTION_REQUEST_KIND_ANIMATION 12
 #define MOTION_REQUEST_KIND_13 13
 #define MOTION_REQUEST_KIND_14 14
-
-/* The item code of no item. */
-#define MOTION_REQUEST_NO_ITEM 0xfff1
 
 /* The bytes of the note (0x04 to 0x12) cleared when a motion starts at once. */
 #define MOTION_REQUEST_NOTE_SIZE 15
@@ -329,8 +327,8 @@ CLEAN_AS(func_02019eac, SceneMotion_Destruct)
 SceneMotion *SceneMotion_Construct(SceneMotion *self)
 {
     SceneMotionState *state = motion_request_state(self);
-    self->next_args.item = MOTION_REQUEST_NO_ITEM;
-    self->args.item = MOTION_REQUEST_NO_ITEM;
+    self->next_args.item = ITEM_CODE_NONE;
+    self->args.item = ITEM_CODE_NONE;
     self->kind = SCENE_MOTION_KIND_NONE;
     self->entry = 0;
     self->priority = 0;

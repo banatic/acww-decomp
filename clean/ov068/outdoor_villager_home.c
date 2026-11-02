@@ -9,6 +9,7 @@
 #include "clean.h"
 #include "main/acre_tile.h"
 #include "main/footsteps.h"
+#include "main/item_code.h"
 #include "main/main_random.h"
 #include "main/path_walker.h"
 #include "main/player_record.h"
@@ -90,7 +91,6 @@ extern const MemberPointer data_ov068_02277120, data_ov068_02277150, data_ov068_
 #define HOME_DRAW_STEP 0x400 /* how far a frame it is drawn to the tile's centre going in */
 #define HOME_OUT_STEP 0x1000 /* how far south of the tile's centre it starts coming out */
 #define HOME_COLLIDER 0xd00
-#define HOME_NO_ITEM 0xfff1
 #define HOME_ITEM_DELAY 300 /* frames added to the held item's check when it comes out with one */
 #define HOME_WAIT_BASE 600
 #define HOME_WAIT_SPREAD 40
@@ -244,7 +244,7 @@ void OutdoorVillagerHome_Leave4(OutdoorVillagerBehaviour *self, u8 *villager)
     *home_flags(villager) &= ~(u32) HOME_FLAG_HELD;
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
-    if (item != HOME_NO_ITEM) {
+    if (item != ITEM_CODE_NONE) {
         OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_ITEM_OUT);
         OutdoorVillagerBehaviour_SetResume(self, HOME_DO_WALK);
         s16 *check = (s16 *) (void *) home_at(self, HOME_ITEM_CHECK);
@@ -430,7 +430,7 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
     OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_WALK);
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
-    if (item != HOME_NO_ITEM) {
+    if (item != ITEM_CODE_NONE) {
         OutdoorVillagerObject_ShowHeldItem(villager);
     }
 }

@@ -11,7 +11,6 @@ static_assert(sizeof(VramCopyMaterial) == 0x28, "VramCopyMaterial size");
 static_assert(offsetof(VillagerClothes, item) == 0x28, "VillagerClothes layout");
 static_assert(offsetof(VillagerClothes, slot) == 0x2c, "VillagerClothes layout");
 
-#define VILLAGER_CLOTHES_NO_ITEM 0xfff1
 #define VILLAGER_CLOTHES_STARTING 0xffff
 /* The items whose clothes texture is their own, and those always loaded again. */
 #define VILLAGER_CLOTHES_ITEM_FIRST 0x11a8
@@ -126,7 +125,7 @@ CLEAN_AS(func_0202e094, VillagerClothes_Destruct)
 VillagerClothes *VillagerClothes_Construct(VillagerClothes *clothes)
 {
     VramCopyMaterial_Construct(&clothes->copy);
-    clothes->item = VILLAGER_CLOTHES_NO_ITEM;
+    clothes->item = ITEM_CODE_NONE;
     PoolLink_Pool1E20Construct(&clothes->slot);
     return clothes;
 }

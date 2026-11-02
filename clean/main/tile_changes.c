@@ -3,6 +3,7 @@
 
 #include "acre_tile.h"
 #include "clean.h"
+#include "item_code.h"
 #include "scene_query.h"
 #include "session.h"
 #include "tile_requests.h"
@@ -278,7 +279,6 @@ CLEAN_AS(func_02045eec, TileChanges_FinishAt)
 #define TILE_CHANGE_SET 0x01       /* flags: the record is filled */
 #define TILE_CHANGE_NUMBER_SHIFT 2 /* flags: 4 bits, signed */
 #define TILE_CHANGE_NUMBER_MASK (0xf << TILE_CHANGE_NUMBER_SHIFT)
-#define TILE_CHANGES_NO_ITEM 0xfff1
 
 /* data_021c7c48 (tile_requests.h): the marks of the town's tiles. */
 extern TileRequests data_021c7c48;
@@ -502,7 +502,7 @@ void TileChanges_Finish(TileChange *change)
             case TILE_REQUEST_MARKED_1566:
                 /* bit 5 of `flags` is the number's sign */
                 if ((change->flags & 0x20) == 0) {
-                    change->item = TILE_CHANGES_NO_ITEM;
+                    change->item = ITEM_CODE_NONE;
                 }
                 break;
         }
@@ -565,7 +565,7 @@ void TileChanges_Free(TileChange *change)
 {
     change->who |= TILE_CHANGE_SLOT_MASK;
     change->tile = TILE_CHANGES_NO_TILE;
-    change->item = TILE_CHANGES_NO_ITEM;
+    change->item = ITEM_CODE_NONE;
     change->state = (u8) ((change->state & TILE_CHANGE_UNK_20_MASK) | TILE_CHANGE_TAG_MASK);
     change->flags = (u8) ((change->flags & 0xc0) | TILE_CHANGE_NUMBER_MASK);
 }

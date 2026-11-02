@@ -15,6 +15,7 @@
 #include "main/current_pockets.h"
 #include "main/display_layers.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/oam_buffer.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
@@ -41,7 +42,6 @@ static_assert(sizeof(StorageScene) == 0x25ac, "size (func_ov102_0229e8b0)");
 
 /* The item code of no item (main/item_code.h), and the state PlaceItemState answers for a place
  * outside the grid. */
-#define STORAGE_NO_ITEM 0xfff1
 #define STORAGE_NO_ITEM_STATE 0xf1
 
 /* What the grid's object answers for no place under the touch. */
@@ -887,7 +887,7 @@ int StorageScene_PlaceItem(StorageScene *self, int place)
     if (storage_is_grid_place(self, place)) {
         return PocketsGrid_Item(&self->grid, StorageScene_GridPlace(self, place));
     }
-    return STORAGE_NO_ITEM;
+    return ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov102_0229d034, StorageScene_PlaceItem)
 
@@ -1039,7 +1039,7 @@ int StorageScene_DropHeldAt(StorageScene *self, int place)
         return 0;
     }
     int item = StorageScene_PlaceItem(self, place);
-    if (item != STORAGE_NO_ITEM) {
+    if (item != ITEM_CODE_NONE) {
         int state = StorageScene_PlaceItemState(self, place);
         StorageScene_SetPlaceItem(self, self->home, item, state);
     }
@@ -1140,7 +1140,7 @@ u8 StorageScene_FreeBoxPlace(StorageScene *self)
 {
     u16 *items = StorageScene_PageItems(self);
     for (int i = 0; i < STORAGE_SCENE_PAGE_ITEMS; i++) {
-        if (items[i] == STORAGE_NO_ITEM) {
+        if (items[i] == ITEM_CODE_NONE) {
             return (u8) (i + STORAGE_SCENE_BOX_FIRST);
         }
     }

@@ -4,6 +4,7 @@
 
 #include "clean.h"
 #include "game_variables.h"
+#include "item_code.h"
 #include "mail.h"
 #include "message_reader.h"
 #include "message_texts.h"
@@ -17,7 +18,6 @@
 #include "name_texts.h"
 
 #define ROOM_SCORE_MAIL_PLAYERS 4
-#define ROOM_SCORE_MAIL_NO_ITEM 0xfff1
 /* PlayerRecord_TestFlag: the record that gets the first letter, and the one that got it. */
 #define ROOM_SCORE_MAIL_RECORD_WANTS 3
 #define ROOM_SCORE_MAIL_RECORD_MEMBER 0xe
@@ -87,7 +87,7 @@ void RoomScoreMail_SendPrize(RoomScoreRoom *room, int total)
     (void) room;
     int message = -1;
     u32 flag = 1;
-    u16 item = ROOM_SCORE_MAIL_NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
 
     if (StateBlock_TestFlag(data_021dc7a8, 1) == 0) {
         if (total >= 70000) {

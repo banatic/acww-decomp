@@ -4,14 +4,13 @@
 #include "calendar.h"
 #include "clean.h"
 #include "date_time.h"
+#include "item_code.h"
 #include "mail.h"
 #include "item_lists.h"
 #include "letter.h"
 #include "main_random.h"
 #include "player_record.h"
 #include "player_records.h"
-
-#define NO_ITEM 0xfff1
 
 #define MONTHS 12
 #define SUNDAY 0
@@ -95,7 +94,7 @@ static u16 list_item(int kind)
     return item;
 }
 
-/* func_02096ee4: the item letter `letter` carries, NO_ITEM for none. */
+/* func_02096ee4: the item letter `letter` carries, ITEM_CODE_NONE for none. */
 int MomLetters_Present(int letter)
 {
     switch (letter) {
@@ -146,7 +145,7 @@ int MomLetters_Present(int letter)
         case 0x47:
             return 0x3420;
     }
-    return NO_ITEM;
+    return ITEM_CODE_NONE;
 }
 CLEAN_AS(func_02096ee4, MomLetters_Present)
 
@@ -177,7 +176,7 @@ int MomLetters_Send(int letter, int month)
     u8 paper = (u8) MomLetters_DrawPaper(PAPER_SET_MOM, month);
     Letter_WriteSpecialToPlayer(&mail, &message, MomLetters_Template(letter), &kind, &paper, name);
     int item = MomLetters_Present(letter);
-    if (item != NO_ITEM) {
+    if (item != ITEM_CODE_NONE) {
         Letter_SetItem(&mail, (u16) item, 1);
     }
     int sent = Mail_Post(&mail) != 0 || Mail_HoldAtPostOffice(&mail, 0) != 0;

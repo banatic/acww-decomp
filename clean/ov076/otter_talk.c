@@ -46,7 +46,6 @@ extern const MemberPointer __ptmf_null;
  * game's symbol of OtterTalk_IsAskedItem). */
 extern int func_ov076_02278f0c(u16 *item, int state);
 
-#define OTTER_TALK_NO_ITEM 0xfff1
 #define OTTER_TALK_NO_LINE 0xff
 
 /* The vtable slot of the scene that resets it (OtterTalk_Reset). */
@@ -170,7 +169,7 @@ OtterTalk *OtterTalk_Construct(OtterTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->base.vtable = data_ov076_02279744;
-    talk->item = OTTER_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     return talk;
 }
 CLEAN_AS(func_ov076_02278e90, OtterTalk_Construct)

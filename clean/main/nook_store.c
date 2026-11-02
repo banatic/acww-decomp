@@ -909,8 +909,6 @@ CLEAN_AS(func_020aea84, NookStore_UpgradeIfDue)
 #define NOOK_COMPARE_DATE_HOUR 0x3c
 /* What func_0206300c answers for the items NookStore_HasKind4Item looks for. */
 #define NOOK_ITEM_KIND_4 4
-/* The code an empty place reads as. */
-#define NOOK_NO_ITEM 0xfff1
 
 /* "bbs_raccoon" and "bbs_shopinfo". */
 extern const char data_020e41b8[];
@@ -1020,7 +1018,7 @@ CLEAN_AS(func_020afad4, NookStore_Upgrade)
 int NookStore_HasKind4Item(NookStore *store)
 {
     for (u32 place = 0; place < NOOK_STORE_PLACES; place++) {
-        u16 code = NOOK_NO_ITEM;
+        u16 code = ITEM_CODE_NONE;
         u16 *item = NookStore_Item(store, place, &code);
         if (ItemCode_HasVariant(item) != 0 && ItemLists_GroupOf(item, 0) == NOOK_ITEM_KIND_4) {
             return 1;

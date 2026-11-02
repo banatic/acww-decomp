@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "clean.h"
+#include "item_code.h"
 #include "session.h"
 #include "villager_town.h"
 #include "item_object.h"
@@ -23,8 +24,6 @@
 /* The types of object a player's record holds itself (part 0x1e40), whose group 1 places are
  * not dealt. */
 #define VILLAGER_KIND_RECORD_TYPES 13
-/* The item of the object dealt: none. */
-#define VILLAGER_KIND_NO_ITEM 0xfff1
 
 extern NetSession *data_020ccf94;                     /* the game's session */
 extern u8 data_021d12b4[VILLAGER_KIND_GROUP_1_COUNT]; /* which group 1 places are taken */
@@ -109,7 +108,7 @@ void VillagerKind_Deal(VillagerTown *town)
             continue;
         }
         u8 *object = VillagerState_Object(VillagerStatus_StateEntry((u8 *) villager));
-        u16 item = VILLAGER_KIND_NO_ITEM;
+        u16 item = ITEM_CODE_NONE;
         ItemObject_Set((ItemObject *) (void *) object, VillagerModeRecord_Mode((VillagerModeRecord *) (void *) own), &item, 0);
         data_021d1248[i] = 1;
         villagers_left--;
@@ -131,7 +130,7 @@ void VillagerKind_Deal(VillagerTown *town)
                     continue;
                 }
                 if (nth_type == 0) {
-                    u16 item = VILLAGER_KIND_NO_ITEM;
+                    u16 item = ITEM_CODE_NONE;
                     ItemObject_Set((ItemObject *) (void *) object, (u8) (k + VILLAGER_KIND_GROUP_1_FIRST), &item, 0);
                     data_021d12b4[k] = 1;
                     types_left--;

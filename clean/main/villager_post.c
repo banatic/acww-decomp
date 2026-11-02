@@ -2,6 +2,7 @@
 #include "villager_post.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "mail.h"
 #include "mom_letters.h"
 #include "player_records.h"
@@ -13,7 +14,6 @@
 #include "main_random.h"
 
 #define VILLAGER_POST_NAME_SIZE 0x28
-#define VILLAGER_POST_NO_ITEM 0xfff1
 /* The text slot func_020662bc puts the villager's name in. */
 #define VILLAGER_POST_FROM_VILLAGER 1
 /* The texts each letter is drawn from. */
@@ -98,7 +98,7 @@ int VillagerPost_SendQ10Reply(unsigned int present, const DesignCreator *player,
     if (present < VILLAGER_POST_PRESENT_FIRST || present > VILLAGER_POST_PRESENT_LAST) {
         return 0;
     }
-    u16 item = VILLAGER_POST_NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     MainRandom_Below(3);
     MainRandom_Below(3);
 
@@ -131,7 +131,7 @@ int VillagerPost_SendQ10Reply(unsigned int present, const DesignCreator *player,
             int group;
             ItemLists_Draw(&item, (ItemList *) &copy, (int) (uintptr_t) record, 0, 1, 1, (int) (uintptr_t) &group);
             ItemList_Destruct(&copy);
-            if (item == VILLAGER_POST_NO_ITEM) {
+            if (item == ITEM_CODE_NONE) {
                 VillagerPostItemList other;
                 ItemList_Construct((ItemList *) &other, kind, group);
                 ItemLists_DrawPlain((u32) (uintptr_t) &item, (ItemList *) &other);

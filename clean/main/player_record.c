@@ -38,8 +38,6 @@ static_assert(offsetof(PlayerRecordVillager, item) == 0x1e, "PlayerRecordVillage
 static_assert(offsetof(PlayerRecordVillager, unk_20) == 0x20, "PlayerRecordVillager layout");
 static_assert(sizeof(PlayerStorage) == 0xb4, "PlayerStorage layout");
 
-#define NO_ITEM 0xfff1
-
 /* Offsets in the record. */
 #define RECORD_MOM_LETTERS 0x243e
 #define RECORD_DATED_LETTER 0x1d3c
@@ -220,7 +218,7 @@ void PlayerRecord_SendVillagerLetter(u8 *record)
 
     int first = 0;
     int count = 10;
-    if (villager->item != NO_ITEM) {
+    if (villager->item != ITEM_CODE_NONE) {
         first = 10;
         count = 5;
     }

@@ -10,6 +10,7 @@
 #include "clean.h"
 #include "main/cell_layer_sprite.h"
 #include "main/display_layers.h"
+#include "main/item_code.h"
 #include "main/label_sprite.h"
 #include "main/sliding_window.h"
 #include "main/state_flags.h"
@@ -29,9 +30,6 @@ static_assert(offsetof(CarriedLetters, held) == 0x2ba0 && offsetof(CarriedLetter
 static_assert(offsetof(CarriedLetters, held_kind) == 0x2da0 && offsetof(CarriedLetters, cursor) == 0x2da4, "bytes");
 static_assert(offsetof(CarriedLetters, choice_row) == 0x2da9, "choice row");
 static_assert(sizeof(CarriedLetters) == 0x2dac, "size (func_ov103_0229e0e4)");
-
-/* The item code of no item (main/item_code.h). */
-#define CARRIED_LETTERS_NO_ITEM 0xfff1
 
 /* The touch (main's bytes, as ov099's pockets_view.c reads them), and the frames since the pen
  * went down (main/touch_history.c). */
@@ -303,7 +301,7 @@ void CarriedLetters_OpenLetterMenu(CarriedLetters *self, int place)
             ChoiceEntries_Add(&self->entries, 0x14, CARRIED_LETTERS_ACTION_READ);
         }
     }
-    int has_item = Letter_Item(letter) != CARRIED_LETTERS_NO_ITEM;
+    int has_item = Letter_Item(letter) != ITEM_CODE_NONE;
     if ((has_item && state == 3) || state == 6 || state == 1) {
         ChoiceEntries_Add(&self->entries, 0x15, CARRIED_LETTERS_ACTION_2);
     }

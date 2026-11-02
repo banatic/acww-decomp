@@ -34,7 +34,6 @@
 #include "word_archives.h"
 
 #define VILLAGER_MAIL_TOWN_PLAYERS 4
-#define VILLAGER_MAIL_NO_ITEM 0xfff1
 /* PlayerRecord_TestFlag: a record that gets no letters from villagers. */
 #define VILLAGER_MAIL_RECORD_FLAG 1
 /* func_02094ffc of a player of this town. */
@@ -334,7 +333,7 @@ void VillagerMail_SendBirthdayLetter(u8 *villager, u8 *record, const DateTime *t
     u16 present;
     ItemLists_Draw(&present, (ItemList *) &copy, 0, 0, 1, 1, 0);
     ItemList_Destruct(&copy);
-    const u16 *item = present != VILLAGER_MAIL_NO_ITEM ? &present : NULL;
+    const u16 *item = present != ITEM_CODE_NONE ? &present : NULL;
     if (VillagerPost_Send(data_020e1988, (u8) MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS), player, npc, item,
                           VILLAGER_MAIL_ANY_PAPER)) {
         VillagerMemoryBits_SetBirthdayLetter(memory);
@@ -371,7 +370,7 @@ void VillagerMail_Reply(u8 *villager, u8 *record, Letter *letter)
             VillagerMemoryEntry_ChangeFondness(memory, VILLAGER_MAIL_BAD_FONDNESS);
         }
     } else if (grade == VILLAGER_MAIL_GRADE_GOOD) {
-        u16 present = VILLAGER_MAIL_NO_ITEM;
+        u16 present = ITEM_CODE_NONE;
         VillagerMailLabel label;
         MessagePart_Construct((MessagePart *) &label);
         int first = 0;
@@ -385,7 +384,7 @@ void VillagerMail_Reply(u8 *villager, u8 *record, Letter *letter)
             MessageReader_LoadDecoded(&label, &message, group);
             MailText_SetPartText(VILLAGER_MAIL_SLOT_WORDS + i, &label);
         }
-        if (Letter_Item(letter) != VILLAGER_MAIL_NO_ITEM) {
+        if (Letter_Item(letter) != ITEM_CODE_NONE) {
             int length = LetterGrade_BodyLength(letter);
             if (length <= VILLAGER_MAIL_SHORT_LETTER) {
                 if (MainRandom_Below(2) == 0) {
@@ -400,14 +399,13 @@ void VillagerMail_Reply(u8 *villager, u8 *record, Letter *letter)
             } else {
                 present = villager_mail_draw(data_020cd43c[MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS)]);
             }
-            if (present != VILLAGER_MAIL_NO_ITEM) {
+            if (present != ITEM_CODE_NONE) {
                 first = VILLAGER_MAIL_REPLY_PRESENT_FIRST;
             }
         }
         VillagerLetter_PostDrawn(data_020e199c, first, VILLAGER_MAIL_REPLY_TEXTS, player, npc, &present);
         if (memory != NULL) {
-            int delta =
-                Letter_Item(letter) != VILLAGER_MAIL_NO_ITEM ? VILLAGER_MAIL_GIFT_FONDNESS : VILLAGER_MAIL_GOOD_FONDNESS;
+            int delta = Letter_Item(letter) != ITEM_CODE_NONE ? VILLAGER_MAIL_GIFT_FONDNESS : VILLAGER_MAIL_GOOD_FONDNESS;
             VillagerMemoryEntry_ChangeFondness(memory, delta);
         }
         MessagePart_Destruct((MessagePart *) &label);
@@ -461,7 +459,7 @@ int VillagerMail_Receive(u8 *villager, Letter *letter)
     TownName_Copy((TownName *) ((NpcIdHead *) (void *) (villager + TOWN_VILLAGER_LETTER_TOWN)),
                   (const TownName *) &data_021dc7aa);
     u16 item = Letter_Item(letter);
-    if (item != VILLAGER_MAIL_NO_ITEM) {
+    if (item != ITEM_CODE_NONE) {
         u16 stands_for;
         ItemForm_ToPlaced(&stands_for, &item, 1);
         if (ItemCode_HasVariant(&stands_for) ||

@@ -96,7 +96,6 @@ static_assert(sizeof(MabelStep) == 0x10, "a state's functions");
 #define MABEL_ACTION 0x618         /* SceneAction */
 #define MABEL_HEAP 0x640           /* PoolLink */
 
-#define MABEL_NO_ITEM 0xfff1
 #define MABEL_HELD 2
 
 /* The field actor of this console's player, and whom an event is for when it is for it. */
@@ -312,10 +311,10 @@ static void mabel_walk_toward(Mabel *mabel, int distance, const Vec3 *step)
 static int mabel_is_empty(u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        u16 none = MABEL_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         return ItemCode_VariantItem(item) == ItemCode_VariantItem(&none);
     }
-    return *item == MABEL_NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 
 /* func_ov049_02260420 (vtable slot 0x40): her design's, her talk scene's and the special
@@ -392,7 +391,7 @@ int Mabel_FindShown(Mabel *mabel)
         return 0;
     }
 
-    mabel->item = MABEL_NO_ITEM;
+    mabel->item = ITEM_CODE_NONE;
     Vec3 ahead = *(const Vec3 *) (const void *) (player + MABEL_POSITION);
     u16 facing = *(const u16 *) (const void *) (player + MABEL_ANGLE);
     int x = 0;
@@ -1115,7 +1114,7 @@ void *Mabel_Create(void)
     u8 *object = mabel->base;
     SceneObjectBase_Construct((SceneObjectBase *) (void *) object);
     *(const u8 **) (void *) object = data_020d8c64;
-    *(u16 *) (void *) mabel_part(mabel, MABEL_PERSON) = MABEL_NO_ITEM;
+    *(u16 *) (void *) mabel_part(mabel, MABEL_PERSON) = ITEM_CODE_NONE;
     LayeredModel_ConstructB((LayeredModel *) (void *) mabel_part(mabel, MABEL_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) mabel_part(mabel, MABEL_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) mabel_part(mabel, MABEL_FACE));
@@ -1138,7 +1137,7 @@ void *Mabel_Create(void)
     MabelTalk_Construct(&mabel->talk);
     mabel->tile_x = 0;
     mabel->tile_z = 0;
-    mabel->item = MABEL_NO_ITEM;
+    mabel->item = ITEM_CODE_NONE;
     Design_Construct((char *) (void *) &mabel->design);
     return mabel;
 }

@@ -44,7 +44,6 @@ extern NetSession *data_020ccf94;
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
-#define FOX_TENT_TALK_NO_ITEM 0xfff1
 #define FOX_TENT_TALK_NO_LINE 0xff
 
 /* FoxTentTalk.card_slot: not looked for yet, and done with. */
@@ -151,11 +150,11 @@ static int fox_tent_talk_same_item(const u16 *item, const u16 *other)
 static int fox_tent_talk_no_item(const u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        u16 none = FOX_TENT_TALK_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         int own = ItemCode_VariantItem(item);
         return own == ItemCode_VariantItem(&none);
     }
-    return *item == FOX_TENT_TALK_NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 
 /* Whether two players are the same: the town's number, the town's name and PlayerId_SamePlayer. */
@@ -486,7 +485,7 @@ void FoxTentTalk_OnAnswer(FoxTentTalk *talk)
                     line = FOX_TENT_TALK_LINE_CANNOT_PAY;
                 }
             }
-            talk->owner->item = FOX_TENT_TALK_NO_ITEM;
+            talk->owner->item = ITEM_CODE_NONE;
             break;
         default:
             break;
@@ -514,7 +513,7 @@ void FoxTentTalk_Sell(FoxTentTalk *talk)
     LastSale_SetBuyer(sale, PlayerRecord_Player(PlayerRecords_Current()));
     LastSale_SetItem(sale, &fox->item);
     SceneBase_PutValue(&talk->base, talk->price, FOX_TENT_TALK_SLOT_PRICE, FOX_TENT_TALK_PRICE_FORMAT, 0, 0);
-    fox->item = FOX_TENT_TALK_NO_ITEM;
+    fox->item = ITEM_CODE_NONE;
     fox->sold = 1;
 }
 CLEAN_AS(func_ov052_022608b4, FoxTentTalk_Sell)
@@ -562,7 +561,7 @@ void FoxTentTalk_OnLineEnd(FoxTentTalk *talk)
         case FOX_TENT_TALK_LINE_JOINED: {
             u16 card = FOX_TENT_TALK_CARD;
             SceneCommand_RequestMotion14(fox_tent_talk_scene(talk), &card, 0, FOX_TENT_TALK_MOTION_B, 0);
-            talk->owner->item = FOX_TENT_TALK_NO_ITEM;
+            talk->owner->item = ITEM_CODE_NONE;
             line = FOX_TENT_TALK_LINE_CARD;
             SceneBells_Take((int) (uintptr_t) talk->owner, FOX_TENT_TALK_MEMBERSHIP);
             FoxTentTalk_SetSequence(talk, FOX_TENT_TALK_FIRST_TODAY);

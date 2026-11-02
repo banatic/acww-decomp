@@ -8,6 +8,7 @@
 #include "main/item_texture.h"   /* ClothTexture_Construct */
 #include "main/model_pool.h"     /* ModelPool_Init */
 #include "main/scene_exit.h"     /* SceneExit_Init */
+#include "main/item_code.h"
 #include "member_pointer.h"
 #include "museum_insects.h"
 #include "museum_room_setup.h"
@@ -36,7 +37,6 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
  * code (TrivialObject_DestructItemCode); and the item code that is no item. */
 extern void func_020012dc(void *object);
 extern void func_020051b0(void *item);
-#define OV004_INIT_NO_ITEM 0xfff1
 
 /* The game's empty member pointer. */
 extern const MemberPointer __ptmf_null;
@@ -183,7 +183,7 @@ void Ov004Init_MusicPlayer(void)
         {&data_ov004_02257300, -0x1000, 0x1000, &data_ov004_02257118},
     };
     ov004_init_points(points, 7);
-    data_ov004_02256fec = OV004_INIT_NO_ITEM;
+    data_ov004_02256fec = ITEM_CODE_NONE;
     ov004_init_register(&data_ov004_02256fec, func_020051b0, &data_ov004_022570b8);
 }
 CLEAN_AS(__sinit_ov004_0224e058, Ov004Init_MusicPlayer)
@@ -535,7 +535,7 @@ extern Ov004InitRecord data_ov004_02258ad8, data_ov004_02258a84;
 void Ov004Init_RoomShell(void)
 {
     ov004_init_vec(&data_ov004_02258a30, 0, 0, 0, &data_ov004_02258ad8);
-    data_ov004_022589ec = OV004_INIT_NO_ITEM;
+    data_ov004_022589ec = ITEM_CODE_NONE;
     ov004_init_register(&data_ov004_022589ec, func_020051b0, &data_ov004_02258a84);
 }
 CLEAN_AS(__sinit_ov004_0224ede4, Ov004Init_RoomShell)

@@ -37,8 +37,6 @@
 /* The talk's word that asks for the next line (scene_command.h). */
 #define VILLAGER_TALK_LINES_TALK_NEXT 2
 
-#define VILLAGER_TALK_LINES_NO_ITEM 0xfff1
-
 /* A text set of the talk lines: its texts and a count (a number of lines, or of lines per
  * group). */
 typedef struct VillagerTalkLinesTexts {
@@ -427,7 +425,7 @@ void VillagerTalk_GiveItemFor1546(VillagerTalk *talk)
     PlayerPockets_SetSlot(pockets, &talk->gift, slot, 0);
     ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(player), &talk->gift, 0, 1);
     SceneCommand_RequestMotion13(&talk->scene, &talk->gift, 0, 5, 0);
-    if (talk->gift != VILLAGER_TALK_LINES_NO_ITEM) {
+    if (talk->gift != ITEM_CODE_NONE) {
         SceneBase_PutItemName(lines_base(talk), (int) (uintptr_t) &talk->gift, 0, 7);
     }
 }
@@ -483,7 +481,7 @@ void VillagerTalk_TakePocketOrSay(VillagerTalk *talk)
         u8 slot = GroupParams_Arg();
         PlayerPockets *pockets = PlayerRecord_Pockets(PlayerRecords_Current());
         talk->item = *PlayerPockets_Slot(pockets, slot);
-        u16 none = VILLAGER_TALK_LINES_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         CurrentPockets_Set(&none, 0, slot);
         SceneCommand_RequestMotion14(&talk->scene, &talk->item, 0, 5, 0);
         VillagerTalkScene_SetNextCommandEnd(talk, data_020d9048);

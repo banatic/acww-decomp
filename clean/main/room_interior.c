@@ -2,6 +2,7 @@
 #include "room_interior.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "item_group.h"
 #include "session.h"
 #include "house_record.h"
@@ -15,9 +16,6 @@ static_assert(sizeof(RoomInteriorChange) == 4, "message size");
 
 /* The session message a change is sent as. */
 #define ROOM_CHANGE_HANDLER 0x14
-
-/* The code of nothing. */
-#define ROOM_ITEM_NONE 0xfff1
 
 /* 1 indoors, when overlay 4 has the room being shown. */
 extern u8 data_020e54a8;
@@ -115,8 +113,8 @@ void RoomInterior_ClearScenes(void)
     u32 scene;
 
     for (scene = 0; scene < ROOM_INTERIOR_SCENES; scene++) {
-        data_021c5204[scene] = ROOM_ITEM_NONE;
-        data_021c519c[scene] = ROOM_ITEM_NONE;
+        data_021c5204[scene] = ITEM_CODE_NONE;
+        data_021c519c[scene] = ITEM_CODE_NONE;
     }
 }
 CLEAN_AS(func_02034a18, RoomInterior_ClearScenes)
@@ -265,6 +263,6 @@ CLEAN_AS(func_02034cc0, RoomInterior_DestroySceneWallpapers)
 /* func_02034ce0: an item code's constructor: nothing. */
 void RoomInterior_ConstructCode(u16 *code)
 {
-    *code = ROOM_ITEM_NONE;
+    *code = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_02034ce0, RoomInterior_ConstructCode)

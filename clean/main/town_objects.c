@@ -44,8 +44,6 @@
 #define TOWN_OBJECTS_LAST_HOUSE 0x5008
 #define TOWN_OBJECTS_VILLAGER_STATE_2 2
 
-/* The empty item code, written over the tiles TownObjects_MarkFootprints marks. */
-#define TOWN_OBJECTS_ITEM_NONE 0xfff1
 #define TOWN_OBJECTS_ACRE_TILES 16
 
 /* The flags of an acre's model (func_02037bd8) that make room for the objects. */
@@ -216,7 +214,7 @@ static int town_objects_5000_row(int model)
 void TownObjects_MarkFootprints(void)
 {
     if ((data_021f4b40 & 1) == 0) {
-        data_021f4b28 = TOWN_OBJECTS_ITEM_NONE;
+        data_021f4b28 = ITEM_CODE_NONE;
         __register_global_object(&data_021f4b28, (void *) func_020051b0, data_021f4ba0);
         data_021f4b40 |= 1;
     }

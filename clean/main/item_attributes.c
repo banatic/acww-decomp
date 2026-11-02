@@ -6,7 +6,6 @@
 #include "item_code.h"
 #include "main_random.h"
 
-#define ITEM_ATTRIBUTES_NONE 0xfff1
 /* The attributes ItemAttributes_Match compares. */
 enum {
     ITEM_ATTRIBUTE_0 = 0, /* func_020539e4 */
@@ -81,7 +80,7 @@ CLEAN_AS(func_0209b6c0, ItemAttributes_Match)
  * `offset` items (0x450c when that passes the end); 0xfff1 when no item is of the kind. */
 void ItemAttributes_KindItem(u16 *out, u32 kind, u32 offset)
 {
-    *out = ITEM_ATTRIBUTES_NONE;
+    *out = ITEM_CODE_NONE;
     for (u32 i = 0; i < ITEM_ATTRIBUTES_KIND_ITEMS; i++) {
         u16 item = item_attributes_kind_item(i);
         if ((u32) FurnitureInfo_MuseumKind(&item) == kind) {

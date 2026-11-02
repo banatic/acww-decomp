@@ -9,6 +9,7 @@
 #include "cloth_slots.h"
 #include "frame_ctrl.h"
 #include "g3d_resource.h"
+#include "item_code.h"
 #include "model_loader.h"
 #include "vram_copy_task.h"
 #include "fishing_float.h"
@@ -19,8 +20,6 @@
 
 /* The ModelLoaderTask.state of a task that is queued. */
 #define HELD_ITEM_TASK_QUEUED 1
-/* The pool's code of an entry without an item. */
-#define HELD_ITEM_NO_ITEM 0xfff1
 /* The model kinds (func_0205f64c): no model; a model that also plays a texture SRT animation. */
 #define HELD_ITEM_NO_MODEL 0x2b
 #define HELD_ITEM_TEXTURE_ANIMATED 0x27
@@ -94,7 +93,7 @@ void HeldItem_JointMatrix(Mtx43 *out, const u8 *held, u32 joint)
 {
     Mtx43 matrix;
     int index = *held;
-    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != HELD_ITEM_NO_ITEM) {
+    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != ITEM_CODE_NONE) {
         ModelObject_JointMatrix(
             &((AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index))->object,
             &matrix, (int) joint);
@@ -111,7 +110,7 @@ CLEAN_AS(func_0205e8f8, HeldItem_JointMatrix)
 void HeldItem_Draw(HeldItemObject *held, const Mtx43 *matrix)
 {
     int index = held->index;
-    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) == HELD_ITEM_NO_ITEM) {
+    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) == ITEM_CODE_NONE) {
         return;
     }
     AnimatedModel *model = (AnimatedModel *) (uintptr_t) (HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index));
@@ -143,7 +142,7 @@ CLEAN_AS(func_0205e954, HeldItem_Draw)
 void HeldItem_Update(HeldItemObject *held)
 {
     int index = held->index;
-    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != HELD_ITEM_NO_ITEM) {
+    if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != ITEM_CODE_NONE) {
         HeldItem_PollUpload(data_021ca16c, index);
         int kind = HeldItemPool_ModelKind(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index));
         if (kind != HELD_ITEM_NO_MODEL) {
@@ -232,7 +231,7 @@ void HeldItem_Clear(HeldItemObject *held)
     HeldItemPool_SetJointAnim((HeldItemPool *) (void *) data_021ca16c, index, (int) (uintptr_t) NULL, 0);
     HeldItemPool_SetTextureAnim((HeldItemPool *) (void *) data_021ca16c, index, (int) (uintptr_t) NULL, 0);
     HeldItemPool_SetTextureAnimHeap((HeldItemPool *) (void *) data_021ca16c, index, (unsigned long) (uintptr_t) NULL);
-    *HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) = HELD_ITEM_NO_ITEM;
+    *HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) = ITEM_CODE_NONE;
     held->index = HELD_ITEM_NONE;
 }
 CLEAN_AS(func_0205ebb4, HeldItem_Clear)
@@ -254,8 +253,8 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
     u8 *pool = data_021ca16c;
     held->index = (u8) index;
     HeldItemPool_SetMaterialAnim((HeldItemPool *) (void *) pool, index, &held->anim);
-    if (*item == HELD_ITEM_NO_ITEM) {
-        *HeldItemPool_Code((HeldItemPool *) (void *) pool, index) = HELD_ITEM_NO_ITEM;
+    if (*item == ITEM_CODE_NONE) {
+        *HeldItemPool_Code((HeldItemPool *) (void *) pool, index) = ITEM_CODE_NONE;
     } else {
         unsigned int number = ItemInfo_HeldModelNumber(item);
         if ((int) number >= 0 && number < ItemInfo_HeldModelCount()) {
@@ -313,7 +312,7 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
                 }
             }
         } else {
-            *HeldItemPool_Code((HeldItemPool *) (void *) pool, index) = HELD_ITEM_NO_ITEM;
+            *HeldItemPool_Code((HeldItemPool *) (void *) pool, index) = ITEM_CODE_NONE;
         }
     }
 

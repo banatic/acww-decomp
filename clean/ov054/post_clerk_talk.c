@@ -109,7 +109,6 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_SLOT_RESET 0x08
 
 #define POST_CLERK_TALK_NO_LINE 0xff
-#define POST_CLERK_TALK_NO_ITEM 0xfff1
 
 /* The persons of the two clerks: an errand for either is one for her. */
 #define POST_CLERK_TALK_DAY_PERSON 0xd006
@@ -1342,11 +1341,11 @@ void PostClerkTalk_AfterErrand(PostClerkTalk *talk)
             }
             int empty;
             if (ItemCode_HasVariant(&item)) {
-                u16 none = POST_CLERK_TALK_NO_ITEM;
+                u16 none = ITEM_CODE_NONE;
                 int own = ItemCode_VariantItem(&item);
                 empty = own == ItemCode_VariantItem(&none);
             } else {
-                empty = item == POST_CLERK_TALK_NO_ITEM;
+                empty = item == ITEM_CODE_NONE;
             }
             if (!empty) {
                 SceneCommand_RequestMotion14(pct_scene(talk), &item, 2, POST_CLERK_TALK_MOTION_B, 1);

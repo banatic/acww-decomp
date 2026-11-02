@@ -29,7 +29,6 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern void func_02034ce0(void *item);
 extern void func_020051b0(void *item);
 
-#define ITEM_LISTS_NONE 0xfff1
 /* What ItemLists_GroupOf answers for a code of no kind. */
 #define ITEM_LISTS_NO_GROUP 0x18
 /* Groups ItemLists_DrawRange never draws. */
@@ -115,7 +114,7 @@ static int same_item(u16 *a, u16 *b)
 /* Whether a code is nothing (compared as same_item does). */
 static int is_none(u16 *item)
 {
-    u16 none = ITEM_LISTS_NONE;
+    u16 none = ITEM_CODE_NONE;
     return same_item(item, &none);
 }
 
@@ -240,7 +239,7 @@ void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source)
                the next group in play. */
         }
     }
-    *out = ITEM_LISTS_NONE;
+    *out = ITEM_CODE_NONE;
     __cxa_vec_cleanup(drawn, ITEM_LISTS_BY_GROUP_GROUPS * ITEM_LISTS_BY_GROUP_KINDS, sizeof(u16), func_020051b0);
     DateRandom_Destruct(&clock);
 }
@@ -323,7 +322,7 @@ void ItemLists_DrawRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_c
     int any = 0;
     if (passing == 0) {
         if (record != NULL) {
-            *out = ITEM_LISTS_NONE;
+            *out = ITEM_CODE_NONE;
             DateRandom_Destruct(&clock);
             return;
         }
@@ -346,7 +345,7 @@ void ItemLists_DrawRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_c
         }
         seen++;
     }
-    *out = ITEM_LISTS_NONE;
+    *out = ITEM_CODE_NONE;
     DateRandom_Destruct(&clock);
 }
 CLEAN_AS(func_02063414, ItemLists_DrawRange)
@@ -392,7 +391,7 @@ CLEAN_AS(func_020638b0, ItemLists_DrawOne)
 /* func_020638d4: one item drawn from a copy of the list (ItemLists_DrawMany); nothing first. */
 void ItemLists_Draw(unsigned short *out, ItemList *list, int record, int source, unsigned char filter, int turn, int group_out)
 {
-    *out = ITEM_LISTS_NONE;
+    *out = ITEM_CODE_NONE;
     ItemList copy = *list;
     ItemLists_DrawOne((int) (uintptr_t) out, 1, (int) (uintptr_t) &copy, record, source, filter, turn, group_out);
     ItemList_Destruct(&copy);
@@ -438,7 +437,7 @@ int ItemLists_DrawMany(u16 *out, unsigned int count, ItemList *lists, int list_c
     int season = ItemLists_Season(month, (unsigned int) source_day(picker));
 
     for (u32 i = 0; i < count; i++) {
-        out[i] = ITEM_LISTS_NONE;
+        out[i] = ITEM_CODE_NONE;
     }
     if (group_out != NULL) {
         *group_out = 1;

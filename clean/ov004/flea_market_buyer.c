@@ -127,7 +127,6 @@ static_assert(sizeof(FleaMarketBuyer) == 0xaec, "the size func_ov004_022217fc al
 
 /* The item code of "no item", the value kind of an item's name (SceneBase_PutItemName), and the
  * bag of bells given when the price has none (ItemTraits_BellBagFor). */
-#define FMB_NO_ITEM 0xfff1
 #define FMB_ITEM_NAME_KIND 7
 #define FMB_DEFAULT_BELL_BAG 0x1492
 /* The items it does not buy: the player's designs (four ranges of 0x80 codes) and three others. */
@@ -418,7 +417,7 @@ static void fmb_start_leave_wait(FleaMarketBuyer *buyer)
  * have empty places among them. */
 int FleaMarketBuyer_PickItem(FleaMarketBuyer *buyer)
 {
-    if (!fmb_item_is(&buyer->item, FMB_NO_ITEM)) {
+    if (!fmb_item_is(&buyer->item, ITEM_CODE_NONE)) {
         return 1;
     }
     if (buyer->object_count == 0 || buyer->bought >= FMB_MAX_BOUGHT) {
@@ -598,7 +597,7 @@ void FleaMarketBuyerTalk_OnAnswer(FleaMarketBuyerTalk *talk)
                 PlayerPockets *pockets = PlayerRecord_Pockets(PlayerRecords_Current());
                 int fit = SceneBells_Fit((int) (uintptr_t) talk->buyer, talk->price, 0);
                 u16 bag = (u16) ItemTraits_BellBagFor(talk->price, 0, NULL);
-                if (bag == FMB_NO_ITEM) {
+                if (bag == ITEM_CODE_NONE) {
                     bag = FMB_DEFAULT_BELL_BAG;
                 }
                 if (!PlayerPockets_CanChangeBells(pockets, talk->price, 1, 0)) {
@@ -632,7 +631,7 @@ CLEAN_AS(func_ov004_0222050c, FleaMarketBuyerTalk_OnAnswer)
  * QUIRK: answers 0x898, the place of the item in the villager. */
 int FleaMarketBuyerTalk_DropItem(FleaMarketBuyerTalk *talk)
 {
-    talk->buyer->item = FMB_NO_ITEM;
+    talk->buyer->item = ITEM_CODE_NONE;
     return (int) offsetof(FleaMarketBuyer, item);
 }
 CLEAN_AS(func_ov004_022206c0, FleaMarketBuyerTalk_DropItem)
@@ -744,7 +743,7 @@ void FleaMarketBuyerTalk_Line(FleaMarketBuyerTalk *talk, VillagerTalkLine *out)
             break;
         case FMB_STAGE_BROWSE:
             fmb_format_file(buyer, data_ov004_02257e40, data_ov004_02253ed0);
-            if (fmb_item_is(&talk->buyer->item, FMB_NO_ITEM) || talk->buyer->previous_state == FMB_STATE_GO) {
+            if (fmb_item_is(&talk->buyer->item, ITEM_CODE_NONE) || talk->buyer->previous_state == FMB_STATE_GO) {
                 out->message = (u8) (MainRandom_Below(2) + 4);
             } else {
                 SceneBase_PutItemName(fmb_scene_of(talk), (int) (uintptr_t) &talk->buyer->item, 0, FMB_ITEM_NAME_KIND);
@@ -764,7 +763,7 @@ CLEAN_AS(func_ov004_02220834, FleaMarketBuyerTalk_Line)
  * one more item is bought and its last chosen objects are cleared. */
 void FleaMarketBuyerTalk_Buy(FleaMarketBuyerTalk *talk)
 {
-    if (fmb_item_is(&talk->buyer->item, FMB_NO_ITEM)) {
+    if (fmb_item_is(&talk->buyer->item, ITEM_CODE_NONE)) {
         return;
     }
     FleaMarketBuyer *buyer = talk->buyer;
@@ -780,7 +779,7 @@ void FleaMarketBuyerTalk_Buy(FleaMarketBuyerTalk *talk)
     }
     RoomObjects_Take(talk->buyer->object);
     talk->buyer->object = -1;
-    talk->buyer->item = FMB_NO_ITEM;
+    talk->buyer->item = ITEM_CODE_NONE;
     talk->buyer->bought++;
     for (int i = 0; i < FLEA_MARKET_BUYER_RECENT; i++) {
         talk->buyer->recent[i] = FMB_NO_RECENT;
@@ -823,7 +822,7 @@ void FleaMarketBuyerTalk_Offer(FleaMarketBuyerTalk *talk)
     if (GroupParams_C4CIs1()) {
         VillagerMemory *memory = NULL;
         int fondness = 0;
-        if (!fmb_item_is(&talk->buyer->item, FMB_NO_ITEM)) {
+        if (!fmb_item_is(&talk->buyer->item, ITEM_CODE_NONE)) {
             talk->price = ItemTraits_Price(&talk->buyer->item);
             if (PlayerRecords_Current() != NULL) {
                 memory = VillagerMemory_Of(fmb_record(talk->buyer), PlayerRecord_Player(PlayerRecords_Current()));
@@ -1411,7 +1410,7 @@ int FleaMarketBuyer_Start(FleaMarketBuyer *buyer)
     if (VillagerSceneObject_Start(buyer->base) == 0) {
         return 0;
     }
-    buyer->item = FMB_NO_ITEM;
+    buyer->item = ITEM_CODE_NONE;
     Footsteps_Enable((Footsteps *) (void *) fmb_part(buyer, FMB_FOOTSTEPS));
     buyer->target = fmb_actor_of(buyer)->position;
     buyer->reach = FMB_REACH_SMALL;
@@ -1468,7 +1467,7 @@ FleaMarketBuyer *FleaMarketBuyer_New(void)
     if (buyer != NULL) {
         VillagerSceneObject_Construct(buyer->base);
         *(const u8 **) (void *) buyer->base = data_ov004_02253e10;
-        buyer->item = FMB_NO_ITEM;
+        buyer->item = ITEM_CODE_NONE;
         FleaMarketBuyerTalk_Construct(&buyer->talk);
         buyer->talk_time = (DateTime){0};
     }

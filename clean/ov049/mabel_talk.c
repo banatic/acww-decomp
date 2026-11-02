@@ -112,8 +112,6 @@ extern MemberPointer data_ov049_02263610[2];
 extern u32 data_ov049_02263600;
 extern const MemberPointer data_ov049_02263158, data_ov049_02263128;
 
-#define MABEL_TALK_NO_ITEM 0xfff1
-
 /* The vtable slot of the scene that resets it. */
 #define MABEL_TALK_SLOT_RESET 0x08
 
@@ -394,10 +392,10 @@ void MabelTalk_TakeErrand(MabelTalk *talk)
             CurrentPockets_Empty(slot);
             int empty;
             if (ItemCode_HasVariant(&item)) {
-                u16 none = MABEL_TALK_NO_ITEM;
+                u16 none = ITEM_CODE_NONE;
                 empty = ItemCode_VariantItem(&item) == ItemCode_VariantItem(&none);
             } else {
-                empty = item == MABEL_TALK_NO_ITEM;
+                empty = item == ITEM_CODE_NONE;
             }
             if (!empty) {
                 SceneCommand_RequestMotion14(mtalk_scene(talk), &item, 2, 5, 0);
@@ -453,7 +451,7 @@ void MabelTalk_PriceSale(MabelTalk *talk)
     if (GroupParams_C4CIs1()) {
         u16 *items = Pockets_List();
         for (int i = 0; i < POCKET_SLOTS; i++) {
-            if (items[i] == MABEL_TALK_NO_ITEM) {
+            if (items[i] == ITEM_CODE_NONE) {
                 break;
             }
             u16 item = items[i];
@@ -633,7 +631,7 @@ void MabelTalk_OnAnswerTriedOn(MabelTalk *talk, int answer)
     if (mtalk_is_accessory(talk->owner->item)) {
         mtalk_wear_accessory(talk->owner->worn);
     }
-    if (talk->owner->worn_second != MABEL_TALK_NO_ITEM) {
+    if (talk->owner->worn_second != ITEM_CODE_NONE) {
         u16 second = talk->owner->worn_second;
         if (mtalk_is_hat(second)) {
             mtalk_wear_hat(talk->owner->worn_second);
@@ -667,7 +665,7 @@ void MabelTalk_OnAnswerItem(MabelTalk *talk, int answer)
     if (answer != 1) {
         return;
     }
-    talk->owner->worn_second = MABEL_TALK_NO_ITEM;
+    talk->owner->worn_second = ITEM_CODE_NONE;
     Mabel *owner = talk->owner;
     u16 item = owner->item;
     if (!mtalk_is_clothes(item) && !mtalk_is_hat(item) && !mtalk_is_accessory(item)) {
@@ -679,7 +677,7 @@ void MabelTalk_OnAnswerItem(MabelTalk *talk, int answer)
     } else if (mtalk_is_hat(item)) {
         if (mtalk_is_hat_a(item) && ItemTraits_IsHeadAUnk07Is8(&owner->item) == 0) {
             talk->owner->worn_second = *PlayerRecord_PartCItem(record);
-            mtalk_wear_accessory(MABEL_TALK_NO_ITEM);
+            mtalk_wear_accessory(ITEM_CODE_NONE);
         }
         talk->owner->worn = *PlayerRecord_HeadItem(record);
         mtalk_wear_hat(talk->owner->item);
@@ -689,7 +687,7 @@ void MabelTalk_OnAnswerItem(MabelTalk *talk, int answer)
         u16 hat = *PlayerRecord_HeadItem(record);
         if (mtalk_is_hat_a(hat) && ItemTraits_IsHeadAUnk07Is8(&hat) == 0) {
             talk->owner->worn_second = *PlayerRecord_HeadItem(record);
-            mtalk_wear_hat(MABEL_TALK_NO_ITEM);
+            mtalk_wear_hat(ITEM_CODE_NONE);
         }
     }
     PlayerActorOps_SwitchFlag0e(1, MABEL_TALK_PLAYER);

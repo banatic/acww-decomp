@@ -54,7 +54,6 @@ extern const u8 data_ov068_02276774[];
 #define RECORDS_FISH_LAST 0x131f
 #define RECORDS_INSECT_FIRST 0x12b0
 #define RECORDS_INSECT_LAST 0x12e7
-#define RECORDS_NO_ITEM 0xfff1
 
 /* The acre flag of the acres where it does not take part. */
 #define RECORDS_ACRE_FLAG 0x200
@@ -187,7 +186,7 @@ void OutdoorVillagerRecords_CatchFish(u8 *villager, u8 *now)
     if (band >= RECORDS_BAND_NONE) {
         return;
     }
-    u16 item = RECORDS_NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     if (CreatureDraw_FishOfBandsHours(&item, (int) band, (int) band + 1, when->month, when->day, when->hour, when->hour) ==
         0) {
         return;
@@ -218,7 +217,7 @@ void OutdoorVillagerRecords_CatchInsect(u8 *villager, u8 *now)
     if (band >= RECORDS_BAND_NONE) {
         return;
     }
-    u16 item = RECORDS_NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     if (InsectDraw_OfBandsHours(&item, (int) band, (int) band + 1, when->hour, when->hour, when->month) == 0) {
         return;
     }
@@ -267,7 +266,7 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
     int kind = VillagerState_GetByte1C(state);
     int sky = Sky_Falling();
     if (sky != RECORDS_RAIN && records_is_umbrella(*VillagerState_Item(state))) {
-        u16 none = RECORDS_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         VillagerState_SetItem(state, &none);
     }
     if (!records_is_umbrella(*VillagerState_Item(state))) {

@@ -85,8 +85,7 @@ static_assert(sizeof(FleaMarketVillager) == 0xa60, "the size func_ov004_0221ff70
 #define FLEA_MARKET_STAGE_LOOK 2
 #define FLEA_MARKET_STAGE_AT_START 3
 
-/* The item code of "no item", and the value kind of an item's name (SceneBase_PutItemName). */
-#define FLEA_MARKET_NO_ITEM 0xfff1
+/* The value kind of an item's name (SceneBase_PutItemName). */
 #define FLEA_MARKET_ITEM_NAME_KIND 7
 /* The items it does not sell. */
 #define FLEA_MARKET_KEPT_ITEM_A 0x409c
@@ -497,7 +496,7 @@ void FleaMarketTalk_Line(FleaMarketTalk *talk, VillagerTalkLine *out)
         return;
     }
 
-    if (!fm_item_is(&villager->item, FLEA_MARKET_NO_ITEM)) {
+    if (!fm_item_is(&villager->item, ITEM_CODE_NONE)) {
         int fondness = 0;
         SceneBase_PutItemName(fm_scene_of(talk), (int) (uintptr_t) &talk->villager->item, 0, FLEA_MARKET_ITEM_NAME_KIND);
         talk->price = ItemTraits_Price(&talk->villager->item);
@@ -522,7 +521,7 @@ void FleaMarketTalk_Line(FleaMarketTalk *talk, VillagerTalkLine *out)
 
         int kept = 0;
         if (fm_record_field(talk->villager) != NULL) {
-            u16 none = FLEA_MARKET_NO_ITEM;
+            u16 none = ITEM_CODE_NONE;
             kept = FLEA_MARKET_HOUSE_PLACES - VillagerHouseItems_CountSame(fm_record_field(talk->villager), &none);
         }
         if (talk->villager->tile.x == -1 || CurrentPockets_FreeSlot() == -1 || kept <= FLEA_MARKET_MIN_ITEMS ||
@@ -563,7 +562,7 @@ CLEAN_AS(func_ov004_0221f474, FleaMarketTalk_Line)
 void FleaMarketTalk_Sell(FleaMarketTalk *talk)
 {
     FleaMarketVillager *villager = talk->villager;
-    if (fm_item_is(&villager->item, FLEA_MARKET_NO_ITEM)) {
+    if (fm_item_is(&villager->item, ITEM_CODE_NONE)) {
         return;
     }
     SceneBells_Take((int) (uintptr_t) villager, talk->price);
@@ -575,7 +574,7 @@ void FleaMarketTalk_Sell(FleaMarketTalk *talk)
             VillagerFurniture_TakeAt(fm_record(villager), &villager->tile, villager->spots, villager->spot_count);
         }
     }
-    villager->item = FLEA_MARKET_NO_ITEM;
+    villager->item = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov004_0221f71c, FleaMarketTalk_Sell)
 
@@ -752,7 +751,7 @@ int FleaMarketVillager_UpdateTalk(FleaMarketVillager *villager)
         if (villager->stage == FLEA_MARKET_STAGE_NONE) {
             villager->stage = FLEA_MARKET_STAGE_ASK;
         }
-        villager->item = FLEA_MARKET_NO_ITEM;
+        villager->item = ITEM_CODE_NONE;
         EventQueue_FinishObjectEvent(villager);
         FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_WAIT);
     }
@@ -960,7 +959,7 @@ int FleaMarketVillager_Start(FleaMarketVillager *villager)
         return 0;
     }
     RoomManager_SetShopMode();
-    villager->item = FLEA_MARKET_NO_ITEM;
+    villager->item = ITEM_CODE_NONE;
     Footsteps_Enable((Footsteps *) (void *) fm_part(villager, FLEA_MARKET_FOOTSTEPS));
     if (SceneQuery_Is31(SceneQuery_Previous())) {
         FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_WATCH);
@@ -998,7 +997,7 @@ FleaMarketVillager *FleaMarketVillager_New(void)
     if (villager != NULL) {
         VillagerSceneObject_Construct(villager->base);
         *(const u8 **) (void *) villager->base = data_ov004_02253bb4;
-        villager->item = FLEA_MARKET_NO_ITEM;
+        villager->item = ITEM_CODE_NONE;
         villager->tile.x = 0;
         villager->tile.z = 0;
         FleaMarketTalk_Construct(&villager->talk);

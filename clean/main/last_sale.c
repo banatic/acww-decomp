@@ -2,9 +2,8 @@
 #include "last_sale.h"
 
 #include "clean.h"
+#include "item_code.h"
 #include "player_id.h"
-
-#define LAST_SALE_NO_ITEM 0xfff1
 
 static_assert(offsetof(LastSale, item) == 0x1e && sizeof(LastSale) == 0x20, "LastSale");
 
@@ -58,7 +57,7 @@ CLEAN_AS(func_0208722c, LastSale_SetUp)
 void LastSale_Clear(LastSale *sale)
 {
     PlayerId_Clear(&sale->buyer);
-    sale->item = LAST_SALE_NO_ITEM;
+    sale->item = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_02087234, LastSale_Clear)
 
@@ -74,7 +73,7 @@ CLEAN_AS(func_0208724c, LastSale_Destruct)
 LastSale *LastSale_Construct(LastSale *sale)
 {
     PlayerId_Construct(&sale->buyer);
-    sale->item = LAST_SALE_NO_ITEM;
+    sale->item = ITEM_CODE_NONE;
     return sale;
 }
 CLEAN_AS(func_0208725c, LastSale_Construct)

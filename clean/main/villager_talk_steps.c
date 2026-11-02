@@ -5,6 +5,7 @@
 #include "current_pockets.h"
 #include "date_time.h"
 #include "group_params.h"
+#include "item_code.h"
 #include "item_object.h"
 #include "item_record.h"
 #include "npc_id.h"
@@ -42,7 +43,6 @@
 #define VILLAGER_TALK_STEPS_HANDOVER 0xa4
 #define VILLAGER_TALK_STEPS_HANDOVER_DATE 0xc0
 
-#define VILLAGER_TALK_STEPS_NO_ITEM 0xfff1
 /* Kept time within this many minutes of now. */
 #define VILLAGER_TALK_STEPS_RECENT_MINUTES 30
 /* Before this hour of the kept time. */
@@ -440,11 +440,11 @@ void VillagerTalkSteps_LineGift(VillagerTalk *talk, VillagerTalkLine *out)
     u16 drawn[2];
     TalkItemDraw_ThreeLists(&drawn[0], (int) (uintptr_t) PlayerRecords_Current());
     talk->gift = drawn[0];
-    if (talk->gift == VILLAGER_TALK_STEPS_NO_ITEM) {
+    if (talk->gift == ITEM_CODE_NONE) {
         TalkItemDraw_ThreeLists(&drawn[1], 0);
         talk->gift = drawn[1];
     }
-    if (talk->gift != VILLAGER_TALK_STEPS_NO_ITEM) {
+    if (talk->gift != ITEM_CODE_NONE) {
         SceneBase_PutItemName(steps_base(talk), (int) (uintptr_t) &talk->gift, 1, 7);
     }
     steps_line(talk, out, &data_020c8c00);
@@ -596,7 +596,7 @@ void VillagerTalkSteps_TakePocketAndSay(VillagerTalk *talk)
         u8 slot = GroupParams_Arg();
         PlayerPockets *pockets = PlayerRecord_Pockets(PlayerRecords_Current());
         talk->item = *PlayerPockets_Slot(pockets, slot);
-        u16 none = VILLAGER_TALK_STEPS_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         CurrentPockets_Set(&none, 0, slot);
         VillagerTalkScene_SetLines(talk, data_021c2efc);
         SceneCommand_RequestMotion14(&talk->scene, &talk->item, 0, 5, 0);

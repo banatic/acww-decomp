@@ -34,8 +34,7 @@ extern NetSession *data_020ccf94; /* the link with other players */
 #define HOUSE_ROACH_FLOOR_GROUP 0x1f
 #define HOUSE_ROACH_GONE 0xffff
 #define HOUSE_ROACH_HEIGHT 0x200 /* above the floor cell's centre */
-#define HOUSE_ROACHES_NO_ITEM 0xfff1
-#define HOUSE_ROACHES_PLAYER 4 /* the own player's actor */
+#define HOUSE_ROACHES_PLAYER 4   /* the own player's actor */
 #define HOUSE_ROACHES_MAX_ROWS 33
 #define HOUSE_ROACHES_FAR 0x0fffffff
 
@@ -86,11 +85,11 @@ static int floor_cell_empty(AcreMap *map, int x, int z)
         return 0;
     }
     if (ItemCode_HasVariant(item)) {
-        u16 none = HOUSE_ROACHES_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         int variant = ItemCode_VariantItem(item);
         return variant == ItemCode_VariantItem(&none);
     }
-    return *item == HOUSE_ROACHES_NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 
 /* func_ov004_0223e618: the empty floor cells of the room are noted, row by row, then up to

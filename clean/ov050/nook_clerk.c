@@ -110,7 +110,6 @@ static_assert(sizeof(NookClerkStep) == 0x10, "a state's functions");
 #define NOOK_CLERK_HEAP 0x640        /* PoolLink */
 #define NOOK_CLERK_LEAD_STEP 0x651   /* u8: the step of state 17 */
 
-#define NOOK_CLERK_NO_ITEM 0xfff1
 #define NOOK_CLERK_HELD 2
 
 /* The field actor of this console's player, and whom an event is for when it is for it. */
@@ -356,10 +355,10 @@ static void nclerk_walk_toward(NookClerk *clerk, int distance, int hurry, const 
 static int nclerk_is_empty(u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        u16 none = NOOK_CLERK_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         return ItemCode_VariantItem(item) == ItemCode_VariantItem(&none);
     }
-    return *item == NOOK_CLERK_NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 
 static int nclerk_in(u16 item, u16 first, u16 last)
@@ -586,7 +585,7 @@ int NookClerk_FindShown(NookClerk *clerk)
         return 0;
     }
 
-    clerk->item = NOOK_CLERK_NO_ITEM;
+    clerk->item = ITEM_CODE_NONE;
     Vec3 ahead = *(const Vec3 *) (const void *) (player + NOOK_CLERK_POSITION);
     u16 facing = *(const u16 *) (const void *) (player + NOOK_CLERK_ANGLE);
     int x = 0;
@@ -1611,7 +1610,7 @@ static void *nclerk_create(void)
     u8 *object = clerk->base;
     SceneObjectBase_Construct((SceneObjectBase *) (void *) object);
     *(const u8 **) (void *) object = data_020d8c64;
-    *(u16 *) (void *) nclerk_part(clerk, NOOK_CLERK_PERSON) = NOOK_CLERK_NO_ITEM;
+    *(u16 *) (void *) nclerk_part(clerk, NOOK_CLERK_PERSON) = ITEM_CODE_NONE;
     LayeredModel_ConstructB((LayeredModel *) (void *) nclerk_part(clerk, NOOK_CLERK_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) nclerk_part(clerk, NOOK_CLERK_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) nclerk_part(clerk, NOOK_CLERK_FACE));
@@ -1632,7 +1631,7 @@ static void *nclerk_create(void)
     PoolLink_Heap4Construct((PoolLink *) (void *) nclerk_part(clerk, NOOK_CLERK_HEAP));
     *(const u8 **) (void *) object = data_ov050_02265a60;
     NookClerkTalk_Construct(&clerk->talk);
-    clerk->item = NOOK_CLERK_NO_ITEM;
+    clerk->item = ITEM_CODE_NONE;
     clerk->tile_x = 0;
     clerk->tile_z = 0;
     return clerk;

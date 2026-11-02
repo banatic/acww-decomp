@@ -16,6 +16,7 @@
 #include "main/current_pockets.h"
 #include "main/display_layers.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/item_form.h"
 #include "main/item_record.h"
 #include "main/main_random.h"
@@ -84,7 +85,6 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POCKETS_SWAP_INSECT_LAST 0x12e7
 #define POCKETS_SWAP_FISH_FIRST 0x12e8 /* 0x12e8 + a fish's kind */
 #define POCKETS_SWAP_FISH_LAST 0x131f
-#define POCKETS_SWAP_NO_ITEM 0xfff1   /* main/item_code.h's ITEM_CODE_NONE */
 #define POCKETS_SWAP_NO_STATE 0xf1    /* PocketsSwap_PlaceItemState off the grid */
 #define POCKETS_SWAP_ITEM_156B 0x156b /* drawn again by CurrentPockets_DrawFor156B */
 
@@ -943,7 +943,7 @@ int PocketsSwap_PlaceItem(PocketsSwap *self, int place)
     if (PocketsSwap_IsGridPlace(self, (unsigned int) place) != 0) {
         return PocketsGrid_Item(&self->grid, PocketsSwap_GridIndex(self, place));
     }
-    return POCKETS_SWAP_NO_ITEM;
+    return ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov107_0229d0f0, PocketsSwap_PlaceItem)
 

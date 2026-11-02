@@ -150,7 +150,6 @@ extern unsigned short func_ov050_022637c0(unsigned short *r0, int r1);
 extern int func_ov050_022634b4(unsigned short *p);
 
 #define NOOK_CLERK_NO_LINE 0xff
-#define NOOK_CLERK_NO_ITEM 0xfff1
 
 /* The game variable (bank 0) that, when set, makes the clerks act as when linked; the player
  * record's flag set while the player works for Tom Nook. */
@@ -256,10 +255,10 @@ static const char *ntalk_file(NookClerkTalk *talk)
 static int ntalk_is_empty(u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        u16 none = NOOK_CLERK_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         return ItemCode_VariantItem(item) == ItemCode_VariantItem(&none);
     }
-    return *item == NOOK_CLERK_NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 
 static int ntalk_in(u16 item, u16 first, u16 last)
@@ -936,7 +935,7 @@ static void ntalk_job_line(NookClerkTalk *talk, NookClerkLine *out, VillagerPart
     }
     out->text = data_ov050_02265834;
     if (ntalk_is_empty(&talk->owner->item) == 0) {
-        talk->owner->item = NOOK_CLERK_NO_ITEM;
+        talk->owner->item = ITEM_CODE_NONE;
         out->message = 0xb;
         return;
     }
@@ -1765,7 +1764,7 @@ CLEAN_AS(func_ov050_02263408, NookClerkTalk_JobGiveItems)
 /* func_ov050_022634b4 (the test the pockets are marked with): whether a pocket is empty. */
 int NookClerkTalk_IsEmptySlot(unsigned short *item)
 {
-    return *item == NOOK_CLERK_NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov050_022634b4, NookClerkTalk_IsEmptySlot)
 
@@ -1953,7 +1952,7 @@ void NookClerkTalk_PriceSale(NookClerkTalk *talk)
         int turnips_on_sunday = 0;
         int has_fossil = 0;
         for (int i = 0; i < 0xf; i++) {
-            if (list[i] == NOOK_CLERK_NO_ITEM) {
+            if (list[i] == ITEM_CODE_NONE) {
                 break;
             }
             u16 item = list[i];

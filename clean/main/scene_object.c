@@ -7,6 +7,7 @@
 #include "clean.h"
 #include "footsteps.h"
 #include "held_item_link.h"
+#include "item_code.h"
 #include "layered_model.h"
 #include "obj_020d8c64.h"
 #include "scene_action.h"
@@ -101,7 +102,6 @@
 #define SCENE_OBJECT_MOTION_GO_TO_SPOT 0x15
 /* The animation and item a note fills in, when it does not. */
 #define SCENE_OBJECT_DEFAULT_ANIMATION 0x137
-#define SCENE_OBJECT_DEFAULT_ITEM 0xfff1
 
 /* The joints whose matrix or point the drawing reads, and the shadow. */
 #define SCENE_OBJECT_JOINT_A 11
@@ -389,7 +389,7 @@ static void scene_object_follow(u8 *object)
             break;
         }
         case SCENE_MOTION_KIND_20: {
-            u16 item = SCENE_OBJECT_DEFAULT_ITEM;
+            u16 item = ITEM_CODE_NONE;
             SceneMotionNote_UnpackItem(&item, note);
             SceneMotion_RequestKind20(motion, SCENE_OBJECT_FOLLOW_PRIORITY, &item);
             break;

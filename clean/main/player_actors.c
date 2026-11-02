@@ -26,7 +26,6 @@
 /* The reported state whose start or end clears an item (state 0x75 ends state 0x74 with a
  * splash, ov003/field_actor.c), the item put in its place and the scene it is put in. */
 #define PLAYER_ACTORS_STATE_75 0x75
-#define PLAYER_ACTORS_NO_ITEM 0xfff1
 #define PLAYER_ACTORS_TOWN_SCENE 0
 
 /* The field actor of session player `player` (4: this console's), or NULL; its player number is
@@ -91,7 +90,7 @@ void PlayerActors_ClearItemOnState75(int *player, u8 *scene, int *state, int *ne
     int tile_x;
     int tile_z;
     Position_Tile(&tile_x, &tile_z, &at);
-    TownTilePut_OnScene(PLAYER_ACTORS_TOWN_SCENE, tile_x, tile_z, PLAYER_ACTORS_NO_ITEM, 0);
+    TownTilePut_OnScene(PLAYER_ACTORS_TOWN_SCENE, tile_x, tile_z, ITEM_CODE_NONE, 0);
 }
 CLEAN_AS(func_02095304, PlayerActors_ClearItemOnState75)
 

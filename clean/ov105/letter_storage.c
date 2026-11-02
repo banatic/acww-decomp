@@ -15,6 +15,7 @@
 #include "main/display_layers.h"
 #include "main/display_shadow.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/label_sprite.h"
 #include "main/layer_load_task.h"
 #include "main/oam_buffer.h"
@@ -44,9 +45,6 @@ static_assert(offsetof(LetterStorage, entries) == 0x28f0 && offsetof(LetterStora
 static_assert(offsetof(LetterStorage, view) == 0x2a18 && offsetof(LetterStorage, button) == 0x2d40, "view");
 static_assert(offsetof(LetterStorage, stored) == 0x2db8 && offsetof(LetterStorage, panel) == 0x5fb8, "stored");
 static_assert(sizeof(LetterStorage) == 0x6184, "size (func_ov105_0229f760)");
-
-/* The item code of no item (main/item_code.h). */
-#define LETTER_STORAGE_NO_ITEM 0xfff1
 
 /* The pad (autoload_2/input.h): R and L turn the page. */
 extern PadState data_021fbe40;
@@ -557,7 +555,7 @@ void LetterStorage_OpenLetterMenu(LetterStorage *self, int place, int above_popu
             ChoiceEntries_Add(&self->entries, 0x14, LETTER_STORAGE_ACTION_1);
         }
     }
-    if (Letter_Item(letter) == LETTER_STORAGE_NO_ITEM && (state == 3 || state == 6 || state == 1 || state == 4)) {
+    if (Letter_Item(letter) == ITEM_CODE_NONE && (state == 3 || state == 6 || state == 1 || state == 4)) {
         ChoiceEntries_Add(&self->entries, 0x15, LETTER_STORAGE_ACTION_MENU);
     }
     ChoiceEntries_Add(&self->entries, 2, LETTER_STORAGE_ACTION_CANCEL);

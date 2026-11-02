@@ -14,6 +14,7 @@
 #include "main/display_layers.h"
 #include "main/display_shadow.h"
 #include "main/dual_cell_sprite.h"
+#include "main/item_code.h"
 #include "main/oam_buffer.h"
 #include "main/rom_file.h"
 #include "main/state_flags.h"
@@ -89,7 +90,6 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 #define DONATION_FIRST_TAB DONATION_TAB_FOSSILS
 #define DONATION_PANEL_MESSAGE 0x65
 #define DONATION_CLOSE_BUTTON 6
-#define DONATION_NO_ITEM 0xfff1
 
 /* The touch areas: the handle's track. */
 #define DONATION_TRACK_MIN_X 0xe4
@@ -441,7 +441,7 @@ void DonationList_Setup(DonationList *self)
     self->flags = 0;
     self->tab = DONATION_TAB_PAINTINGS;
     for (int i = 0; i < DONATION_ROWS_IN_VIEW; i++) {
-        self->shown[i] = DONATION_NO_ITEM;
+        self->shown[i] = ITEM_CODE_NONE;
     }
     self->fade = DONATION_FADE_FULL;
     self->fade_mode = DONATION_FADE_NONE;

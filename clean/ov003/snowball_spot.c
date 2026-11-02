@@ -11,9 +11,6 @@
 static_assert(sizeof(SnowballSpotAcre) == 0x22, "an acre of the mask");
 static_assert(sizeof(SnowballSpotMask) == 0x220, "the mask");
 
-/* The empty tile of the map. */
-#define SNOWBALL_SPOT_NO_ITEM 0xfff1
-
 /* The scene's map (acre_map.h). */
 extern AcreMap *data_021c80bc;
 /* The mask, the guard of its one-time construction (bit 0) and its record for the list of
@@ -68,7 +65,7 @@ int SnowballSpot_Pick(void *unused, Vec3 *spot, const Vec3 *away_from, int avoid
                         int in_z = tile_z >> 4;
                         u16 *item =
                             AcreTile_ItemInAcre(map, (u32) in_x, (u32) in_z, tile_x - (in_x << 4), tile_z - (in_z << 4), 0);
-                        if (item != NULL && *item != SNOWBALL_SPOT_NO_ITEM) {
+                        if (item != NULL && *item != ITEM_CODE_NONE) {
                             SnowballSpot_Take(mask, tile_x, tile_z);
                         }
                     }

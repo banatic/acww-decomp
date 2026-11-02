@@ -91,7 +91,6 @@ static_assert(sizeof(FoxTentStep) == 0x10, "a state's functions");
 #define FOX_TENT_ACTOR_ANGLE 0x8e
 
 #define FOX_TENT_NO_PERSON 0xfff1
-#define FOX_TENT_NO_ITEM 0xfff1
 
 /* The field actor of this console's player. */
 #define FOX_TENT_PLAYER_ACTOR 4
@@ -238,11 +237,11 @@ static int fox_tent_yaw_to_player(FoxTent *fox)
 static int fox_tent_no_item(u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        u16 none = FOX_TENT_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         int own = ItemCode_VariantItem(item);
         return own == ItemCode_VariantItem(&none);
     }
-    return *item == FOX_TENT_NO_ITEM;
+    return *item == ITEM_CODE_NONE;
 }
 
 /* As he walks to the player: beyond 4.0 a walk becomes a run (rate 0x800), within it a run
@@ -825,9 +824,9 @@ int FoxTent_Start(FoxTent *fox)
         FoxTent_SetState(fox, FOX_TENT_GREET);
     }
     CollisionMap_Claim(FOX_TENT_EXIT_OBJECT);
-    fox->item = FOX_TENT_NO_ITEM;
+    fox->item = ITEM_CODE_NONE;
     for (int i = 0; i < FOX_TENT_TOLD_ITEMS; i++) {
-        fox->told[i] = FOX_TENT_NO_ITEM;
+        fox->told[i] = ITEM_CODE_NONE;
     }
     return 1;
 }
@@ -887,7 +886,7 @@ void *FoxTent_Create(void)
     PoolLink_Heap4Construct((PoolLink *) (void *) fox_tent_part(fox, FOX_TENT_HEAP));
     *(const u8 **) (void *) object = data_ov052_02261f40;
     FoxTentTalk_Construct(&fox->talk);
-    fox->item = FOX_TENT_NO_ITEM;
+    fox->item = ITEM_CODE_NONE;
     __cxa_vec_ctor(fox->told, FOX_TENT_TOLD_ITEMS, sizeof(u16), func_02034ce0, func_020051b0);
     fox->item_x = 0;
     fox->item_z = 0;

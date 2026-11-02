@@ -13,6 +13,7 @@
 #include "main/display_layers.h"
 #include "main/dual_cell_sprite.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/museum_record.h"
 #include "main/name_texts.h"
 #include "main/player_id.h"
@@ -36,9 +37,6 @@ static_assert(offsetof(DonationList, row_screen) == 0xcc6 && offsetof(DonationLi
 static_assert(offsetof(DonationList, frame_screen) == 0x1cc6 && offsetof(DonationList, palette_file) == 0x24c6, "frame");
 static_assert(offsetof(DonationList, palette) == 0x24e6 && sizeof(DonationList) == 0x2508, "size (func_ov145_0229ace8)");
 static_assert(sizeof(NameText) == 0x28 && sizeof(PlayerIdText) == 0x20, "row texts");
-
-/* The item code of no item (main/item_code.h). */
-#define DONATION_NO_ITEM 0xfff1
 
 /* The scene's vtable. */
 extern const u8 data_ov145_0229ae00[];
@@ -531,7 +529,7 @@ void DonationList_RefreshRows(DonationList *self)
         TextLabel *name = NULL;
         TextLabel *giver = NULL;
         if (row < 0 || row >= count) {
-            self->shown[place] = DONATION_NO_ITEM;
+            self->shown[place] = ITEM_CODE_NONE;
             name = DonationList_NextLabel(self);
             TextBase_Clear(name);
             giver = DonationList_NextLabel(self);

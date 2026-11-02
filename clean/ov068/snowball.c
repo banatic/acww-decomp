@@ -52,7 +52,6 @@
 #define SNOWBALL_PLAYER 4
 #define SNOWBALL_SIZE_FORGOTTEN 0x800 /* the size a forgotten ball is kept with */
 #define SNOWBALL_SIZE_PUSHABLE 0xa00  /* smaller balls are not pushed (snowman.c) */
-#define SNOWBALL_NO_ITEM 0xfff1
 #define SNOWBALL_SINK_ITEM_FIRST 0xfc
 #define SNOWBALL_SINK_ITEM_LAST 0xfd
 #define SNOWBALL_SLIDE_GROUND_A 0x16
@@ -650,7 +649,7 @@ static int ball_build_snowman(Snowman *ball, Snowman *body, AcreMap *map)
     fx32 reach = FX_Div(0, 0x64000) + 0x400;
     int x, z;
     Position_Tile(&x, &z, (const Position *) (const void *) &body->position);
-    u16 item = SNOWBALL_NO_ITEM;
+    u16 item = ITEM_CODE_NONE;
     if (map != NULL) {
         int acre_x = shift_right(x, 4);
         int acre_z = shift_right(z, 4);

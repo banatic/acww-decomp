@@ -55,7 +55,6 @@ extern int func_ov079_022794fc(u16 *item, int state);
 /* The player's daily bit that marks he took an item today (talk_checks.h). */
 #define WALRUS_TALK_DAILY_TOOK 10
 
-#define WALRUS_TALK_NO_ITEM 0xfff1
 #define WALRUS_TALK_NO_SLOT (-1)
 #define WALRUS_TALK_NO_LINE 0xff
 
@@ -345,7 +344,7 @@ void WalrusTalk_Begin(WalrusTalk *talk, struct Walrus *owner)
     const u32 *vtable = (const u32 *) (const void *) talk->scene.vtable;
     ((void (*)(WalrusTalk *))(uintptr_t) vtable[WALRUS_TALK_SLOT_RESET])(talk);
     talk->owner = owner;
-    talk->item = WALRUS_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     talk->slot = WALRUS_TALK_NO_SLOT;
 }
 CLEAN_AS(func_ov079_02278c7c, WalrusTalk_Begin)
@@ -356,7 +355,7 @@ void WalrusTalk_Reset(WalrusTalk *talk)
 {
     SceneBase_Reset(&talk->scene);
     talk->slot = WALRUS_TALK_NO_SLOT;
-    talk->item = WALRUS_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     MemberPointer none = __ptmf_null;
     talk->after_command = none;
     talk->next_after = none;
@@ -415,7 +414,7 @@ WalrusTalk *WalrusTalk_Construct(WalrusTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->scene.vtable = data_ov079_0227a074;
-    talk->item = WALRUS_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     return talk;
 }
 CLEAN_AS(func_ov079_02278d34, WalrusTalk_Construct)

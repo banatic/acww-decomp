@@ -59,7 +59,6 @@ static_assert(offsetof(PocketsScreen, tile_x) == 0x2e20 && sizeof(PocketsScreen)
 static_assert(offsetof(PocketsScreen, wipe_y) == 0x98 && offsetof(PocketsScreen, open_delay) == 0xc2, "wipe");
 
 /* The item codes some actions test (main/item_code.h). What the ranges hold is not known. */
-#define ITEM_NONE 0xfff1
 #define ITEM_RECORD_2410_FIRST 0x11a8 /* the range of the player record's item at 0x2410 */
 #define ITEM_RECORD_2410_LAST 0x12a7
 #define ITEM_PILE_FIRST 0x1000
@@ -259,7 +258,7 @@ void PocketsScreen_PutPileInLetter(PocketsScreen *self)
     PocketsScreen_SwitchTab(self, 8);
     PocketsScreen_ClearParentByte94(self);
     unsigned int count = (unsigned int) ItemCode_PileCount(&pile);
-    int left = count <= 1 ? ITEM_NONE : ItemCode_MakePile(pile_item, (int) (count - 1));
+    int left = count <= 1 ? ITEM_CODE_NONE : ItemCode_MakePile(pile_item, (int) (count - 1));
     PocketsScreen_SetPlaceItem(self, self->prev_slot, left, 0);
 }
 CLEAN_AS(func_ov096_0229c454, PocketsScreen_PutPileInLetter)
@@ -658,13 +657,13 @@ CLEAN_AS(func_ov096_0229cc74, PocketsScreen_OpenSlotMenu)
  * (texts 0x75-0x77, actions 0x11-0x0f). */
 void PocketsScreen_AddPlayerEntries(PocketsScreen *self)
 {
-    if (PocketsScreen_RecordSlotItem(self, 5) != ITEM_NONE) {
+    if (PocketsScreen_RecordSlotItem(self, 5) != ITEM_CODE_NONE) {
         ChoiceEntries_Add(&self->entries, 0x75, 0x11);
     }
-    if (PocketsScreen_RecordSlotItem(self, 4) != ITEM_NONE) {
+    if (PocketsScreen_RecordSlotItem(self, 4) != ITEM_CODE_NONE) {
         ChoiceEntries_Add(&self->entries, 0x76, 0x10);
     }
-    if (PocketsScreen_RecordSlotItem(self, 3) != ITEM_NONE) {
+    if (PocketsScreen_RecordSlotItem(self, 3) != ITEM_CODE_NONE) {
         ChoiceEntries_Add(&self->entries, 0x77, 0x0f);
     }
 }
@@ -713,7 +712,7 @@ void PocketsScreen_AddLetterEntries(PocketsScreen *self, int place)
                 PocketsTown_AddLetterRows(self);
             }
             ChoiceEntries_Add(&self->entries, 0x16, 5);
-            if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_08) && Letter_Item(letter_ptr) == ITEM_NONE &&
+            if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_08) && Letter_Item(letter_ptr) == ITEM_CODE_NONE &&
                 data_020e54a8 == 0) {
                 ChoiceEntries_Add(&self->entries, 0x15, 0x0a);
             }
@@ -726,7 +725,7 @@ void PocketsScreen_AddLetterEntries(PocketsScreen *self, int place)
             break;
     }
 
-    if (Letter_Item(letter_ptr) != ITEM_NONE) {
+    if (Letter_Item(letter_ptr) != ITEM_CODE_NONE) {
         ChoiceEntries_Add(&self->entries, 0x18, 6);
     } else if ((kind == 1 || kind == 3 || kind == 6) && data_020e54a8 == 0) {
         ChoiceEntries_Add(&self->entries, 0x15, 0x0a);
@@ -1041,7 +1040,7 @@ void PocketsScreen_ActionTakeRecordItem(PocketsScreen *self)
     } else {
         self->held_place = (u8) free_slot;
         PocketsScreen_DropHeld(self);
-        self->item = ITEM_NONE;
+        self->item = ITEM_CODE_NONE;
         PocketsScreen_BeginSubState25(self);
         PocketsScreen_SetFlags(self, POCKETS_FLAG_8000);
     }
@@ -1436,7 +1435,7 @@ int PocketsScreen_MergeItems(PocketsScreen *self, u16 *onto, int held_state, u16
             count = COUNTED_MAX;
         }
         *onto = (u16) (ITEM_COUNTED_FIRST + count - 1);
-        *other = rest > 0 ? (u16) (ITEM_COUNTED_FIRST + rest - 1) : ITEM_NONE;
+        *other = rest > 0 ? (u16) (ITEM_COUNTED_FIRST + rest - 1) : ITEM_CODE_NONE;
         return 0;
     }
 
@@ -1462,7 +1461,7 @@ int PocketsScreen_MergeItems(PocketsScreen *self, u16 *onto, int held_state, u16
     }
     int spare;
     *onto = (u16) ItemTraits_BellBagFor(sum, 1, &spare);
-    *other = rest == 0 ? ITEM_NONE : (u16) ItemTraits_BellBagFor(rest, 1, &spare);
+    *other = rest == 0 ? ITEM_CODE_NONE : (u16) ItemTraits_BellBagFor(rest, 1, &spare);
     return 0;
 }
 CLEAN_AS(func_ov096_0229defc, PocketsScreen_MergeItems)
@@ -1474,7 +1473,7 @@ int PocketsScreen_AddBagToWallet(PocketsScreen *self, u16 bag)
 {
     unsigned int bells = (unsigned int) ItemTraits_Price(&bag);
     unsigned int total = bells + (unsigned int) PocketsScreen_Wallet(self);
-    int back = ITEM_NONE;
+    int back = ITEM_CODE_NONE;
     if (total > WALLET_MAX) {
         unsigned int over = total - WALLET_MAX;
         int extra;
@@ -1550,7 +1549,7 @@ int PocketsScreen_PutBagInWallet(PocketsScreen *self)
     u16 bag = self->item;
     ItemTraits_Price(&bag);
     int back = PocketsScreen_AddBagToWallet(self, self->item);
-    if (back == ITEM_NONE) {
+    if (back == ITEM_CODE_NONE) {
         PocketsScreen_DropHeld(self);
         PocketsScreen_EndAction(self);
     } else {
@@ -1619,7 +1618,7 @@ int PocketsScreen_ActorTakeSlotItem(PocketsScreen *self, unsigned int record_slo
             return PlayerActorOps_RequestState7Kind1Next5(&asked) != 0;
         case 6:
             if (PlayerActorOps_RequestState7Kind1Next5(&asked) != 0) {
-                asked = ITEM_NONE;
+                asked = ITEM_CODE_NONE;
                 PlayerActorOps_RequestState7Kind2Next5(&asked);
                 return 1;
             }
@@ -1657,7 +1656,7 @@ int PocketsScreen_SwapRecordSlot(PocketsScreen *self, int record_slot, int item)
         case 2:
             PlayerRecord_SetClothes((u8 *) (uintptr_t) record, &value);
             if (!item_in((u16) old, ITEM_RECORD_2410_FIRST, ITEM_RECORD_2410_LAST)) {
-                old = ITEM_NONE;
+                old = ITEM_CODE_NONE;
             }
             break;
         case 3:
@@ -1666,18 +1665,18 @@ int PocketsScreen_SwapRecordSlot(PocketsScreen *self, int record_slot, int item)
         case 6:
             PlayerRecord_SetPartCItem((u8 *) (uintptr_t) record, &value);
             old = PocketsScreen_RecordSlotItem(self, 4);
-            value = ITEM_NONE;
+            value = ITEM_CODE_NONE;
             PlayerRecord_SetHeadItem((u8 *) (uintptr_t) record, &value);
             break;
         case 4:
             PlayerRecord_SetHeadItem((u8 *) (uintptr_t) record, &value);
             if (item_in((u16) old, ITEM_SLOT4_FIRST, ITEM_SLOT4_LAST)) {
-                old = ITEM_NONE;
+                old = ITEM_CODE_NONE;
             }
             break;
         case 5:
             if (item_in((u16) old, ITEM_SLOT5_FIRST, ITEM_SLOT5_LAST)) {
-                old = ITEM_NONE;
+                old = ITEM_CODE_NONE;
             }
             break;
         default:
@@ -1703,7 +1702,7 @@ int PocketsScreen_RecordSlotItem(PocketsScreen *self, int record_slot)
         case 5:
             return *PlayerRecord_HeldItem((u8 *) (uintptr_t) record);
         default:
-            return ITEM_NONE;
+            return ITEM_CODE_NONE;
     }
 }
 CLEAN_AS(func_ov096_0229e4a4, PocketsScreen_RecordSlotItem)
@@ -1729,13 +1728,13 @@ int PocketsScreen_HeldRecordSlot(PocketsScreen *self)
     }
     if (item_in(item, 0x1431, 0x1491)) {
         u16 slot4 = (u16) PocketsScreen_RecordSlotItem(self, 4);
-        if (slot4 != ITEM_NONE && item_in(slot4, 0x13a8, 0x13c7) && ItemTraits_IsHeadAUnk07Is8(&slot4) == 0) {
+        if (slot4 != ITEM_CODE_NONE && item_in(slot4, 0x13a8, 0x13c7) && ItemTraits_IsHeadAUnk07Is8(&slot4) == 0) {
             return 6;
         }
         return 3;
     }
     if (item_in(item, 0x13a8, 0x13c7)) {
-        if ((u16) PocketsScreen_RecordSlotItem(self, 3) != ITEM_NONE && ItemTraits_IsHeadAUnk07Is8(&item) == 0) {
+        if ((u16) PocketsScreen_RecordSlotItem(self, 3) != ITEM_CODE_NONE && ItemTraits_IsHeadAUnk07Is8(&item) == 0) {
             return 0;
         }
         return 4;
@@ -2177,7 +2176,7 @@ int PocketsScreen_CheckSwap(PocketsScreen *self, int place, int to)
         return answer;
     }
     u16 other = PocketsScreen_PlaceItem(self, place);
-    if (other == ITEM_NONE) {
+    if (other == ITEM_CODE_NONE) {
         return 0;
     }
     int state = PocketsScreen_PlaceItemState(self, place);
@@ -2187,7 +2186,7 @@ int PocketsScreen_CheckSwap(PocketsScreen *self, int place, int to)
         if (merged == 2 || merged == 3) {
             return 6;
         }
-        if (other == ITEM_NONE) {
+        if (other == ITEM_CODE_NONE) {
             return 0;
         }
     }
@@ -2217,7 +2216,7 @@ int PocketsScreen_CheckDrop(PocketsScreen *self, int place, int item, int state)
             return 1;
         }
         const Letter *letter = (const Letter *) (uintptr_t) PocketsScreen_PlaceLetter(self, place);
-        if (Letter_Item(letter) != ITEM_NONE) {
+        if (Letter_Item(letter) != ITEM_CODE_NONE) {
             return 3;
         }
         int kind = Letter_State(letter);
@@ -2285,14 +2284,14 @@ u16 PocketsScreen_PlaceItem(PocketsScreen *self, int place)
     }
     if (PocketsScreen_IsLetterPlace(self, place)) {
         if (PocketsScreen_PlaceIsEmpty(self, place)) {
-            return ITEM_NONE;
+            return ITEM_CODE_NONE;
         }
         return Letter_Item((const Letter *) (uintptr_t) PocketsScreen_PlaceLetter(self, place));
     }
     if (PocketsScreen_IsTopPlace(self, place)) {
         return self->place_item;
     }
-    return ITEM_NONE;
+    return ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov096_0229f0dc, PocketsScreen_PlaceItem)
 
@@ -2538,7 +2537,7 @@ CLEAN_AS(func_ov096_0229f57c, PocketsScreen_RemoveLetterAt)
 void PocketsScreen_EmptyPlace(PocketsScreen *self, int place)
 {
     if (PocketsScreen_IsGridPlace(self, (unsigned int) place) || PocketsScreen_IsLetterPlace(self, (unsigned int) place)) {
-        PocketsScreen_SetPlaceItem(self, place, ITEM_NONE, 0);
+        PocketsScreen_SetPlaceItem(self, place, ITEM_CODE_NONE, 0);
     }
 }
 CLEAN_AS(func_ov096_0229f5ac, PocketsScreen_EmptyPlace)
@@ -2576,7 +2575,7 @@ int PocketsScreen_PutHeldItemAt(PocketsScreen *self, int place)
     if (PocketsScreen_IsGridPlace(self, at) || PocketsScreen_IsLetterPlace(self, at)) {
         u16 other = PocketsScreen_PlaceItem(self, place);
         PocketsScreen_MergeItems(self, &self->item, self->held_state, &other, (u8) PocketsScreen_PlaceItemState(self, place));
-        if (other != ITEM_NONE) {
+        if (other != ITEM_CODE_NONE) {
             PocketsScreen_SetPlaceItem(self, self->held_place, other, PocketsScreen_PlaceItemState(self, place));
         }
         PocketsScreen_PlaceHeldAt(self, place, 1);
@@ -3060,7 +3059,7 @@ void PocketsScreen_WaitRecordBlink(PocketsScreen *self)
     }
     PocketsScreen_DropHeld(self);
     PocketsWallet_LoadHeldItemPicture((PocketsWallet *) (void *) self->unk_de0);
-    if (self->item != ITEM_NONE) {
+    if (self->item != ITEM_CODE_NONE) {
         if (PocketsScreen_TestFlags(self, POCKETS_FLAG_8000)) {
             PocketsScreen_HoldAndGlide(self, POCKETS_PLACE_PLAYER, self->held_place, self->item, 0);
             return;
@@ -3700,7 +3699,7 @@ void PocketsScreen_MoveHeldItemByKeys(PocketsScreen *self)
                                     there_state);
             }
         }
-        if (PocketsScreen_PlaceItem(self, self->cursor) == ITEM_NONE) {
+        if (PocketsScreen_PlaceItem(self, self->cursor) == ITEM_CODE_NONE) {
             PocketsScreen_BeginSubState14(self, self->cursor);
             return;
         }

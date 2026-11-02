@@ -9,6 +9,7 @@
 #include "constellations.h"
 #include "date_time.h"
 #include "design.h"
+#include "item_code.h"
 #include "lookups.h"
 #include "npc_id.h"
 #include "player_pockets.h"
@@ -53,7 +54,6 @@
 #define VILLAGER_TALK_TOPICS_TALKS 10
 /* The topic drawn once no other is left (func_02022454). */
 #define VILLAGER_TALK_TOPICS_LAST 4
-#define VILLAGER_TALK_TOPICS_NO_ITEM 0xfff1
 #define VILLAGER_TALK_TOPICS_MEMORIES 8
 /* The member functions of VillagerTalkTopics_SayOtherPlayer: five for memories of players met,
  * five for the others. */
@@ -619,7 +619,7 @@ int VillagerTalkTopics_HasItem(u8 *villager, VillagerMemory *memory)
 {
     (void) villager;
     const u16 *item = (const u16 *) (uintptr_t) VillagerMemoryEntry_Item(memory);
-    return *item != VILLAGER_TALK_TOPICS_NO_ITEM;
+    return *item != ITEM_CODE_NONE;
 }
 CLEAN_AS(func_02021ae4, VillagerTalkTopics_HasItem)
 
@@ -852,7 +852,7 @@ int VillagerTalkTopics_SayGiftItem(VillagerTalk *talk)
     u16 item;
     TalkItemDraw_OfKinds(&item);
     talk->item = item;
-    if (talk->item == VILLAGER_TALK_TOPICS_NO_ITEM) {
+    if (talk->item == ITEM_CODE_NONE) {
         return 0;
     }
     SceneBase_PutItemName(topics_base(talk), (int) (uintptr_t) &talk->item, 0, 7);

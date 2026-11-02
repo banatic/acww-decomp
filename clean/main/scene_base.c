@@ -8,6 +8,7 @@
 #include "autoload_2/heap.h"
 #include "autoload_2/vector.h"
 #include "clean.h"
+#include "item_code.h"
 #include "npc_id.h"
 #include "scene_command.h"
 #include "activity_vars.h"
@@ -83,7 +84,6 @@ extern const u8 data_020d8bd4[];
 
 /* The command the scene starts with (scene_command.h), and the item code for none. */
 #define SCENE_BASE_NO_COMMAND 12
-#define SCENE_BASE_NO_ITEM 0xfff1
 
 /* The message of "st_general" PutCount appends, and the kinds of value func_020683b4 takes. */
 #define SCENE_BASE_COUNT_UNIT_MESSAGE 0x1c
@@ -739,7 +739,7 @@ SceneBase *SceneBase_Construct(SceneBase *scene)
 {
     TalkReceiver_ConstructBase((TalkReceiver *) scene);
     scene->vtable = data_020d8bd4;
-    scene->item = SCENE_BASE_NO_ITEM;
+    scene->item = ITEM_CODE_NONE;
     scene->motion_arg = 0;
     scene->speakers[0] = NULL;
     scene->speakers[1] = NULL;

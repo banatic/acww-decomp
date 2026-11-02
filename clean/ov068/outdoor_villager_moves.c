@@ -15,6 +15,7 @@
 #include "main/footsteps.h"
 #include "main/frame_ctrl.h"
 #include "main/held_item_link.h"
+#include "main/item_code.h"
 #include "main/main_random.h"
 #include "main/music_queue.h"
 #include "main/npc_id.h"
@@ -104,7 +105,6 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_PRIORITY_HIGH 2
 
 #define MOVES_SOUND_VOLUME 0x7f
-#define MOVES_NO_ITEM 0xfff1
 #define MOVES_SCALE_ONE 0x1000
 #define MOVES_SCALE_STEP 0x249
 #define MOVES_FRAMES_200 200
@@ -276,7 +276,7 @@ void OutdoorVillagerMoves_Close16(OutdoorVillagerBehaviour *self, u8 *villager)
         self->step = 2;
         moves_resume(self, villager);
     } else if (moves_frame(villager) == MOVES_FRAME_CLOSE) {
-        u16 none = MOVES_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         HeldItemLink_Take(moves_link(villager), villager, &none, NULL, MOVES_POSE_ARG);
         *moves_at(villager, MOVES_ITEM_SHOWN) = 0;
     }
@@ -292,7 +292,7 @@ void OutdoorVillagerMoves_Shrink16(OutdoorVillagerBehaviour *self, u8 *villager)
         return;
     }
     if (SceneMotion_IsDone(moves_motion(villager)) != 0) {
-        u16 none = MOVES_NO_ITEM;
+        u16 none = ITEM_CODE_NONE;
         HeldItemLink_Take(moves_link(villager), villager, &none, NULL, MOVES_POSE_ARG);
         self->step = 2;
         moves_resume(self, villager);
@@ -347,7 +347,7 @@ int OutdoorVillagerMoves_Start16(OutdoorVillagerBehaviour *self, u8 *villager)
     }
     VillagerSceneObject_SetByte838(villager);
     SoundEmitter_Play(moves_emitter(villager), MOVES_SOUND_ITEM, MOVES_SOUND_VOLUME, 0);
-    u16 none = MOVES_NO_ITEM;
+    u16 none = ITEM_CODE_NONE;
     VillagerSceneHeld_SetItem(villager, &none);
     VillagerMood_SoundsOff(moves_mood(villager));
     return 1;

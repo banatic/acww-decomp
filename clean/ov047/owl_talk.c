@@ -9,6 +9,7 @@
 #include "main/block_021d27ac.h"
 #include "main/day_events.h"
 #include "main/game_variables.h"
+#include "main/item_code.h"
 #include "main/message_receiver.h"
 #include "main/museum_record.h"
 #include "main/obj_020d9ff8.h"
@@ -74,7 +75,6 @@ extern const MemberPointer data_ov047_02262b58, data_ov047_02262b50, data_ov047_
     data_ov047_02262b38;
 
 #define OWL_TALK_NO_SLOT (-1)
-#define OWL_TALK_NO_ITEM 0xfff1
 #define OWL_TALK_NO_LINE 0xff
 
 /* The vtable slot of the scene that resets it (OwlTalk_Reset). */
@@ -180,7 +180,7 @@ OwlTalk *OwlTalk_Construct(OwlTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->base.vtable = data_ov047_02262c14;
-    talk->item = OWL_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     return talk;
 }
 CLEAN_AS(func_ov047_02261990, OwlTalk_Construct)
@@ -191,7 +191,7 @@ void OwlTalk_Reset(OwlTalk *talk)
 {
     SceneBase_Reset(&talk->base);
     talk->slot = OWL_TALK_NO_SLOT;
-    talk->item = OWL_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     MemberPointer none = __ptmf_null;
     talk->after = none;
     talk->next = none;
@@ -209,7 +209,7 @@ void OwlTalk_Begin(OwlTalk *talk, Owl *owner)
     talk->drama = 0;
     talk->slot = OWL_TALK_NO_SLOT;
     talk->assessing = 0;
-    talk->item = OWL_TALK_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov047_022618cc, OwlTalk_Begin)
 

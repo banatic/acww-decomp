@@ -408,7 +408,6 @@ CLEAN_AS(func_020b3038, EventBuildings_FindSpot)
 /* ---- Emptying the tiles of item 0x1568 */
 
 #define EVENT_BUILDINGS_ITEM_1568 0x1568
-#define EVENT_BUILDINGS_NO_ITEM 0xfff1
 
 /* Whether the code is item 0x1568: for a code with a variant, whether its item is 0x1568's
  * (asked again for each tile). */
@@ -443,7 +442,7 @@ void EventBuildings_Clear1568(void)
             for (int row = 0; row < EVENT_BUILDINGS_ACRE_TILES; row++) {
                 for (int column = 0; column < EVENT_BUILDINGS_ACRE_TILES; column++) {
                     if (event_buildings_is_1568(tile)) {
-                        u16 empty = EVENT_BUILDINGS_NO_ITEM;
+                        u16 empty = ITEM_CODE_NONE;
                         AcreRecord_SetTile(acre, &empty, column, row, 0);
                     }
                     tile++;

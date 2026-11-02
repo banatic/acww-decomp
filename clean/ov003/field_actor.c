@@ -139,9 +139,6 @@ static_assert(sizeof(XZArgs) == 0xc, "XZ arguments");
 static_assert(sizeof(FieldActorWork) == 0x1c, "work");
 static_assert(sizeof(StateRequest) == 0x1c, "request");
 
-/* The held item code of nothing. */
-#define ITEM_NONE 0xfff1
-
 /* An object that answers a query about an item in vtable slot 24 (offset 0x60). */
 typedef struct GameObject {
     const u32 *vtable;
@@ -1184,9 +1181,9 @@ void FieldActor_AnimateState82(FieldActor *actor)
     }
     if (FrameCtrl_Passed(&actor->anim, 0x18)) {
         void *record = PlayerRecords_OfPlayer(actor->player);
-        u16 none = ITEM_NONE;
+        u16 none = ITEM_CODE_NONE;
         PlayerRecord_SetHeldItem(record, &none);
-        u16 held_none = ITEM_NONE;
+        u16 held_none = ITEM_CODE_NONE;
         HeldItem_Take((HeldItemObject *) actor->held, &held_none, 0);
     }
 }
@@ -1270,9 +1267,9 @@ void FieldActor_EndState81(FieldActor *actor)
         return;
     }
     void *record = PlayerRecords_OfPlayer(actor->player);
-    u16 none = ITEM_NONE;
+    u16 none = ITEM_CODE_NONE;
     PlayerRecord_SetHeldItem(record, &none);
-    u16 held_none = ITEM_NONE;
+    u16 held_none = ITEM_CODE_NONE;
     HeldItem_Take((HeldItemObject *) actor->held, &held_none, 0);
     actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     FieldActor_RequestState2(actor, 9, 1, -1);
@@ -1415,9 +1412,9 @@ void FieldActor_AnimateState80(FieldActor *actor)
         return;
     }
     void *record = PlayerRecords_OfPlayer(actor->player);
-    u16 none = ITEM_NONE;
+    u16 none = ITEM_CODE_NONE;
     PlayerRecord_SetHeldItem(record, &none);
-    u16 held_none = ITEM_NONE;
+    u16 held_none = ITEM_CODE_NONE;
     HeldItem_Take((HeldItemObject *) actor->held, &held_none, 0);
     FieldActor_PlaySound(actor, 0x850);
     Vec3 at = actor->unk_68C;
@@ -2254,11 +2251,11 @@ CLEAN_AS(func_ov003_0220ee04, FieldActor_UpdateState6E)
 static BOOL holds_nothing(u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        item[1] = ITEM_NONE;
+        item[1] = ITEM_CODE_NONE;
         int held = ItemCode_VariantItem(&item[0]);
         return held == ItemCode_VariantItem(&item[1]);
     }
-    return item[0] == ITEM_NONE;
+    return item[0] == ITEM_CODE_NONE;
 }
 
 /* func_ov003_0220ee20: once the animation is over, animation 1 starts and the actor turns to
@@ -3300,15 +3297,15 @@ static int send_request(FieldActor *actor, StateRequest *request)
 }
 
 /* Whether an item code is nothing: for a code func_0204bcdc accepts, by comparing func_0204bc64
- * of it and of ITEM_NONE (held in a temporary); otherwise by the code itself. */
+ * of it and of ITEM_CODE_NONE (held in a temporary); otherwise by the code itself. */
 static BOOL item_is_nothing(u16 *item)
 {
     if (ItemCode_HasVariant(item)) {
-        u16 none = ITEM_NONE;
+        u16 none = ITEM_CODE_NONE;
         int code = ItemCode_VariantItem(item);
         return code == ItemCode_VariantItem(&none);
     }
-    return *item == ITEM_NONE;
+    return *item == ITEM_CODE_NONE;
 }
 
 /* Releases the receiver at 0xec when flag 0x11 says it is registered. */
@@ -4342,7 +4339,7 @@ CLEAN_AS(func_ov003_022115a4, FieldActor_State5FMessage)
  * cleared; the point's tile, the actor's item and the kind are saved. With an item given it
  * becomes the actor's item, and on map object 0xfc or 0xfd the animation jumps to its last
  * frame and flag 0xd is set. Without one, when the actor holds nothing or is another player's,
- * the map object's code (ITEM_NONE without one) becomes its item. The actor of this console
+ * the map object's code (ITEM_CODE_NONE without one) becomes its item. The actor of this console
  * runs func_02035684 and, with item 0x1549, func_02079750. Then the word at 0x81c is 7 and
  * flag 0x1c is set.
  * REQUIRES: with an item given, func_0204f5e0 finds a map object for the tile (the ROM reads it
@@ -4386,7 +4383,7 @@ void FieldActor_EnterState5F(FieldActor *actor, const StateRequest *request, int
             FieldActor_SetFlag(actor, 0xd);
         }
     } else if (item_is_nothing(&actor->item) || !is_local_player(actor)) {
-        u16 code = object != NULL ? *object : ITEM_NONE;
+        u16 code = object != NULL ? *object : ITEM_CODE_NONE;
         actor->unk_822 = code;
         actor->item = code;
     }
@@ -4431,8 +4428,8 @@ int FieldActor_RequestState5F(FieldActor *actor, const Vec3 *point, int item, in
     Vec3 copy = *point;
     PointItemArgs_Set((PointItemArgs *) (void *) request.payload, &copy, (u16) item, (u8) kind);
     if (!is_local_player(actor)) {
-        actor->unk_822 = ITEM_NONE;
-        actor->item = ITEM_NONE;
+        actor->unk_822 = ITEM_CODE_NONE;
+        actor->item = ITEM_CODE_NONE;
     }
     return send_request(actor, &request);
 }
@@ -4446,7 +4443,7 @@ int FieldActor_RequestState5FNoItem(FieldActor *actor, const Vec3 *point, int ki
 
     open_request(&request, 0x5f, priority, arg);
     Vec3 copy = *point;
-    PointItemArgs_Set((PointItemArgs *) (void *) request.payload, &copy, ITEM_NONE, (u8) kind);
+    PointItemArgs_Set((PointItemArgs *) (void *) request.payload, &copy, ITEM_CODE_NONE, (u8) kind);
     return send_request(actor, &request);
 }
 CLEAN_AS(func_ov003_02211980, FieldActor_RequestState5FNoItem)
@@ -5086,7 +5083,7 @@ int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point)
             int z = 0;
             Position_Tile(&x, &z, (const Position *) &at);
             u32 copy[2] = {(u32) x, (u32) z};
-            FieldActor_RequestState62(actor, 0, copy, ITEM_NONE, 6, -1);
+            FieldActor_RequestState62(actor, 0, copy, ITEM_CODE_NONE, 6, -1);
             break;
         }
         case 7:
@@ -6762,7 +6759,7 @@ void FieldActor_RunState55(FieldActor *actor)
     FieldActor_OffsetMatrix(&block, NULL);
     Vec3 hand = block_point(&block);
 
-    u16 item = ITEM_NONE;
+    u16 item = ITEM_CODE_NONE;
     if (fish != NULL) {
         Globe_Unbend(&hand, &hand);
         Vec3 at = hand;
@@ -9085,7 +9082,7 @@ CLEAN_AS(func_ov003_02217608, FieldActor_State3EMessage)
 /* func_ov003_02217678: entering state 0x3e: the held item takes pose 0x24 (func_0205eae0).
  * Unless the flags' low bits are 2, animation 0x62 and the held item's own animation run
  * backwards from their last frames, with sound 0x858; with 2, animation 0x62 starts while the
- * player's record holds no item (ITEM_NONE, the item put back after) and flag 0 is cleared. The
+ * player's record holds no item (ITEM_CODE_NONE, the item put back after) and flag 0 is cleared. The
  * request becomes the work, and is saved with the next state coded into the flags; sound 0x4f. */
 void FieldActor_EnterState3E(FieldActor *actor, const StateRequest *request, int previous)
 {
@@ -9108,7 +9105,7 @@ void FieldActor_EnterState3E(FieldActor *actor, const StateRequest *request, int
         u16 items[2];
         FieldActor_RecordHeldItem(&items[0], actor);
         void *record = FieldActor_Record(actor);
-        items[1] = ITEM_NONE;
+        items[1] = ITEM_CODE_NONE;
         PlayerRecord_SetHeldItem(record, &items[1]);
         FieldActor_PlayAnimationOnce(actor, 0x62, 3, 0);
         PlayerRecord_SetHeldItem(record, &items[0]);
@@ -9326,7 +9323,7 @@ void FieldActor_State3DMessage(FieldActor *actor, int arg)
 CLEAN_AS(func_ov003_02217a6c, FieldActor_State3DMessage)
 
 /* func_ov003_02217adc: entering state 0x3d: animation 0x6b starts while the player's record
- * holds no item (ITEM_NONE, the item put back after). With flags 2, flag 0 is set, the weight
+ * holds no item (ITEM_CODE_NONE, the item put back after). With flags 2, flag 0 is set, the weight
  * starts at 0 and the animation plays backwards from its last frame; otherwise the weight starts
  * at 1.0. The request becomes the work, and is saved with the next state coded into the flags
  * as state 0x3e does; sound 0x4f. */
@@ -9339,7 +9336,7 @@ void FieldActor_EnterState3D(FieldActor *actor, const StateRequest *request, int
 
     FieldActor_RecordHeldItem(&items[0], actor);
     void *record = FieldActor_Record(actor);
-    items[1] = ITEM_NONE;
+    items[1] = ITEM_CODE_NONE;
     PlayerRecord_SetHeldItem(record, &items[1]);
     FieldActor_PlayAnimationOnce(actor, 0x6b, 3, 0);
     PlayerRecord_SetHeldItem(record, &items[0]);
@@ -10753,7 +10750,7 @@ CLEAN_AS(func_ov003_022195c8, FieldActor_RequestState6)
 #define THIS_PLAYER 4
 
 /* func_ov003_02219604: whether the player at this console holds item 0x1376 or 0x1377
- * (func_02095764 gives ITEM_NONE without an actor). */
+ * (func_02095764 gives ITEM_CODE_NONE without an actor). */
 int FieldActor_PlayerHolds1376(void)
 {
     u16 item;
@@ -11089,12 +11086,12 @@ int FieldActor_PlayerRequestState61(const Vec3 *point, u16 *item)
 CLEAN_AS(func_ov003_02219b90, FieldActor_PlayerRequestState61)
 
 /* func_ov003_02219be0: the item the actor of this console shows: the insect of state 0x57 or the
- * fish of state 0x54 caught there (mode 0), or item 0x1549 in state 0x5f; ITEM_NONE otherwise.
- * QUIRK: an insect kind of 0x38 or more gives 0x12b0, a fish kind of 0x38 or more ITEM_NONE. */
+ * fish of state 0x54 caught there (mode 0), or item 0x1549 in state 0x5f; ITEM_CODE_NONE otherwise.
+ * QUIRK: an insect kind of 0x38 or more gives 0x12b0, a fish kind of 0x38 or more ITEM_CODE_NONE. */
 u32 FieldActor_PlayerShownItem(void)
 {
     FieldActor *actor = SessionPlayers_FieldActor(THIS_PLAYER);
-    u32 item = ITEM_NONE;
+    u32 item = ITEM_CODE_NONE;
     if (actor == NULL) {
         return item;
     }

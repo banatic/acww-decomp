@@ -10,6 +10,7 @@
 #include "main/calendar.h"
 #include "main/current_pockets.h"
 #include "main/date_time.h"
+#include "main/item_code.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
 #include "main/obj_020d9ff8.h"
@@ -35,7 +36,6 @@ extern const u8 data_ov083_022791fc[];
 extern const char data_ov083_02279338[];
 extern const char data_ov083_02279348[];
 
-#define TURTLE_GARDENS_TALK_NO_ITEM 0xfff1
 #define TURTLE_GARDENS_TALK_NO_LINE 0xff
 
 /* The vtable slot of the scene that resets it (the scene base's reset). */
@@ -141,7 +141,7 @@ TurtleGardensTalk *TurtleGardensTalk_Construct(TurtleGardensTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->base.vtable = data_ov083_022791fc;
-    talk->prize = TURTLE_GARDENS_TALK_NO_ITEM;
+    talk->prize = ITEM_CODE_NONE;
     return talk;
 }
 CLEAN_AS(func_ov083_02278d7c, TurtleGardensTalk_Construct)

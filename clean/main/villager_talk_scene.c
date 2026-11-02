@@ -35,7 +35,6 @@ static_assert(offsetof(VillagerTalk, events) == 0x16c, "VillagerTalk layout");
 static_assert(offsetof(VillagerTalk, gift) == 0x19c, "VillagerTalk layout");
 static_assert(offsetof(VillagerTalk, bells) == 0x1a0, "VillagerTalk layout");
 
-#define VILLAGER_TALK_SCENE_NO_ITEM 0xfff1
 #define VILLAGER_TALK_SCENE_NO_INDEX (-1)
 /* The tables of lines VillagerTalkScene_Start can set. */
 #define VILLAGER_TALK_SCENE_LINE_TABLES 17
@@ -450,7 +449,7 @@ void VillagerTalkScene_Start(VillagerTalk *talk, u8 *villager, unsigned int line
     *talk_scene_member_e8(talk) = __ptmf_null;
     talk->walk = __ptmf_null;
     talk->music = __ptmf_null;
-    talk->item = VILLAGER_TALK_SCENE_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
     talk->record_138 = 0;
     talk->memory_index = VILLAGER_TALK_SCENE_NO_INDEX;
     talk->memory = NULL;
@@ -472,7 +471,7 @@ void VillagerTalkScene_Start(VillagerTalk *talk, u8 *villager, unsigned int line
     for (int i = 0; i < VILLAGER_TALK_MEMBER_EVENTS; i++) {
         talk->events[i] = __ptmf_null;
     }
-    talk->gift = VILLAGER_TALK_SCENE_NO_ITEM;
+    talk->gift = ITEM_CODE_NONE;
     talk->gift_from_items = 0;
     talk->bells = 0;
     MI_CpuFill8(data_021c1e84, 0, VILLAGER_TALK_SCENE_SHARED_SIZE);
@@ -514,8 +513,8 @@ static VillagerTalk *talk_scene_construct(VillagerTalk *talk)
 {
     SceneBase_Construct(talk_scene_base(talk));
     *(const u8 **) (void *) talk = data_020d9df8;
-    talk->item = VILLAGER_TALK_SCENE_NO_ITEM;
-    talk->gift = VILLAGER_TALK_SCENE_NO_ITEM;
+    talk->item = ITEM_CODE_NONE;
+    talk->gift = ITEM_CODE_NONE;
     return talk;
 }
 

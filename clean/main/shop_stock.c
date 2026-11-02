@@ -6,9 +6,6 @@
 #include "item_form.h"
 #include "item_lists.h"
 
-/* An empty place: no item. */
-#define SHOP_STOCK_NO_ITEM 0xfff1
-
 /* The draws of ShopStock_DrawCodes: the value func_020637d0 takes after its two zeros. */
 #define SHOP_STOCK_CODES_MODE 10
 
@@ -105,7 +102,7 @@ CLEAN_AS(func_020b00a8, ShopStock_IsSold)
 void ShopStock_Clear(u16 *items, u8 *sold, u32 count)
 {
     for (u32 i = 0; i < count; i++) {
-        items[i] = SHOP_STOCK_NO_ITEM;
+        items[i] = ITEM_CODE_NONE;
     }
     for (u32 i = 0; i < (count >> 3) + 1; i++) {
         sold[i] = 0;

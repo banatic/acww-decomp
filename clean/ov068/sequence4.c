@@ -8,6 +8,7 @@
 #include "main/animated_model.h"
 #include "main/event_queue.h"
 #include "main/frame_ctrl.h"
+#include "main/item_code.h"
 #include "main/player_actor_ops.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
@@ -489,7 +490,6 @@ static_assert(offsetof(SceneActor, message) == 0x10a, "message");
 #define SEQUENCE4_AHEAD_NUMERATOR 0x19000 /* the effect point ahead: 25.0 / 100.0 ... */
 #define SEQUENCE4_AHEAD_DENOMINATOR 0x64000
 #define SEQUENCE4_AHEAD_BACK 0xf6 /* ... less 0xf6, along x */
-#define SEQUENCE4_NO_ITEM 0xfff1  /* the item code of an empty hand */
 #define SEQUENCE4_ID_MESSAGE 1    /* the message when the player's id byte 0x1c is 1 */
 
 /* The vtables: the class's and its receiver part's. */
@@ -913,7 +913,7 @@ int Sequence4_Setup(Sequence4 *actor)
     } else if (Block020b220c_Flag4b1c() != 0) {
         actor->flag_2de = 1;
         if (record != NULL) {
-            u16 item = SEQUENCE4_NO_ITEM;
+            u16 item = ITEM_CODE_NONE;
             PlayerRecord_SetHeldItem(record, &item);
         }
         (void) SceneTables_EntryRecord();

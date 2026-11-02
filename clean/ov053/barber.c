@@ -80,7 +80,6 @@ static_assert(sizeof(BarberStep) == 0x10, "a state's functions");
 #define BARBER_HEAP 0x640           /* PoolLink */
 
 #define BARBER_NO_PERSON 0xfff1
-#define BARBER_NO_ITEM 0xfff1
 #define BARBER_HELD 2
 
 /* The field actor of this console's player. */
@@ -270,10 +269,10 @@ int Barber_WearsHat(void *unused)
 {
     (void) unused;
     u8 *record = PlayerRecords_Current();
-    if (*PlayerRecord_PartCItem(record) != BARBER_NO_ITEM) {
+    if (*PlayerRecord_PartCItem(record) != ITEM_CODE_NONE) {
         return 1;
     }
-    return *PlayerRecord_HeadItem(record) != BARBER_NO_ITEM;
+    return *PlayerRecord_HeadItem(record) != ITEM_CODE_NONE;
 }
 CLEAN_AS(func_ov053_02260488, Barber_WearsHat)
 

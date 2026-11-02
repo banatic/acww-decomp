@@ -312,8 +312,7 @@ static_assert(offsetof(Obj021c526c, unk_2d0) == 0x2d0, "object 0x2d0");
 static_assert(offsetof(Obj021c526c, unk_2e4) == 0x2e4, "object 0x2e4");
 static_assert(offsetof(Obj021c526c, unk_2f0) == 0x2f0, "object 0x2f0");
 
-#define ITEM_NONE 0xfff1 /* no item */
-#define PLAYER_ACTOR 4   /* the player's field actor (func_02096718(4)) */
+#define PLAYER_ACTOR 4 /* the player's field actor (func_02096718(4)) */
 
 /* The object of the running process 0x020da334, NULL when there is none. */
 extern Obj021c526c *data_021c526c;
@@ -964,11 +963,11 @@ void Music2d0_Tick(Music2d0 *self)
                 PlayerActorOps_HeldItem(&item[0], PLAYER_ACTOR);
                 if (ItemCode_HasVariant(item) != 0) {
                     int held;
-                    item[1] = ITEM_NONE;
+                    item[1] = ITEM_CODE_NONE;
                     held = ItemCode_VariantItem(&item[0]);
                     empty = held == ItemCode_VariantItem(&item[1]);
                 } else {
-                    empty = item[0] == ITEM_NONE;
+                    empty = item[0] == ITEM_CODE_NONE;
                 }
                 if (!empty) {
                     frames = 0x14;

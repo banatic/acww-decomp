@@ -43,9 +43,6 @@ static_assert(offsetof(MailboxScene, unk_35b4) == 0x35b4 && offsetof(MailboxScen
 static_assert(offsetof(MailboxScene, held) == 0x4180 && offsetof(MailboxScene, swapped) == 0x4280, "held");
 static_assert(sizeof(MailboxScene) == 0x4380, "size (func_ov106_0229f41c)");
 
-/* The item code of no item (main/item_code.h). */
-#define MAILBOX_SCENE_NO_ITEM 0xfff1
-
 /* The touch (main's bytes, as ov099's pockets_view.c reads them). */
 extern u8 data_021f6c58, data_021f6c54, data_021f6c60, data_021f6c5c;
 
@@ -384,7 +381,7 @@ void MailboxScene_OpenLetterMenu(MailboxScene *self, int place, int above_popup)
             ChoiceEntries_Add(&self->entries, 0x14, MAILBOX_SCENE_ACTION_1);
         }
     }
-    if (Letter_Item(letter) == MAILBOX_SCENE_NO_ITEM && (state == 3 || state == 6 || state == 1 || state == 4)) {
+    if (Letter_Item(letter) == ITEM_CODE_NONE && (state == 3 || state == 6 || state == 1 || state == 4)) {
         ChoiceEntries_Add(&self->entries, 0x15, MAILBOX_SCENE_ACTION_MENU);
     }
     ChoiceEntries_Add(&self->entries, 2, MAILBOX_SCENE_ACTION_CANCEL);

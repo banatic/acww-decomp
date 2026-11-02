@@ -12,6 +12,7 @@
 #include "main/effect_system.h"
 #include "main/field_body.h"
 #include "main/held_item_link.h"
+#include "main/item_code.h"
 #include "main/scene_action.h"
 #include "main/scene_base.h"
 #include "main/scene_motion.h"
@@ -83,7 +84,6 @@ extern Mtx43 data_021cfe68;
 #define OBJECT_SWUNG_FIRST 0x1376
 #define OBJECT_SWUNG_LAST 0x1377
 
-#define OBJECT_NO_ITEM 0xfff1
 #define OBJECT_ITEM_SCALE 0x1000
 #define OBJECT_NO_HANDLE (-1)
 #define OBJECT_NO_MINUTE 0xff
@@ -247,7 +247,7 @@ void OutdoorVillagerObject_ShowHeldItem(u8 *villager)
 {
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
-    if (item == OBJECT_NO_ITEM) {
+    if (item == ITEM_CODE_NONE) {
         return;
     }
     VillagerSceneHeld_Item(&item, villager);
@@ -372,7 +372,7 @@ int OutdoorVillagerObject_Start(u8 *villager)
             OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_WALK);
             u16 item;
             VillagerSceneHeld_Item(&item, villager);
-            if (item != OBJECT_NO_ITEM) {
+            if (item != ITEM_CODE_NONE) {
                 OutdoorVillagerObject_ShowHeldItem(villager);
             }
         } else if (status >= OBJECT_STATUS_12_FIRST && status <= OBJECT_STATUS_12_LAST) {
@@ -403,7 +403,7 @@ int OutdoorVillagerObject_Init(u8 *villager)
     *object_word(villager, OUTDOOR_VILLAGER_PARTNER) = 0;
     *object_word(villager, OUTDOOR_VILLAGER_LINES) = OUTDOOR_VILLAGER_LINES_DEFAULT;
     *object_word(villager, OUTDOOR_VILLAGER_REACTION) = OUTDOOR_VILLAGER_REACTION_NONE;
-    u16 none = OBJECT_NO_ITEM;
+    u16 none = ITEM_CODE_NONE;
     if (HeldItemLink_Open(object_link(villager), &none) == 0) {
         return 0;
     }
