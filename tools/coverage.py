@@ -82,17 +82,18 @@ def callers(syms) -> dict[Key, set[Key]]:
     """callee -> its callers, from the names the matching sources call."""
     out: dict[Key, set[Key]] = collections.defaultdict(set)
     for path in sorted(C.SRC.rglob("*.c*")):
-        src = C.parse_source(path)
-        if src is None:
+        srcs = C.parse_sources(path)
+        if not srcs:
             continue
-        me = (src.module, src.address & ~1)
+        # (a unit's calls are counted for each of its functions: which one makes a call is not
+        # read here)
+        mine = {(src.module, src.address & ~1) for src in srcs}
         text = path.read_text(encoding="utf-8", errors="replace")
         for name in set(CALL.findall(text)):
             for s in syms.by_name.get(name, []):
                 if s.kind == "function":
                     callee = (s.module, s.address & ~1)
-                    if callee != me:
-                        out[callee].add(me)
+                    out[callee] |= mine - {callee}
     return out
 
 

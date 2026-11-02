@@ -19,6 +19,18 @@ module check then compares every linked module with the ROM byte for byte. The t
 each remaining source cannot be linked yet; most of those are functions that shared a source
 file, and data, with their neighbours.
 
+A source that holds several functions (a unit, one original source file) is checked function
+by function: each is BYTES and LINK as above, calls between them resolved by name. mwccarm
+gives each function of a file a `.text` section of its own and writes them last function
+first, and mwldarm lays out an object's sections in the object's order: a unit that defines its
+functions in address order links only if its sections are put back in ROM order, while one that
+defines them last address first links as the compiler wrote it (tried on ov097: the first fails
+dsd's module check, the second matches). So units define their functions last address first.
+Putting functions together changes nothing else in their code: mwccarm inlines only what says
+`inline` (`-inline auto` is off), so a call to a function of the same file stays a call, and
+the padding after a Thumb function of 2 bytes past a word is zeros between functions of one
+object as between objects (so it tells nothing about where a file ends).
+
 A file passes when both checks pass. A match that needs a construct no one would write on
 purpose (a redundant mask, a dead branch) carries a `FAKEMATCH` comment explaining it.
 
@@ -32,6 +44,7 @@ purpose (a redundant mask, a dead branch) carries a `FAKEMATCH` comment explaini
 | Linked with mwldarm, modules match the ROM | 25,251 | |
 | `FAKEMATCH` | 17 | |
 
-Not covered yet: regrouping functions into their original source files, the data sections
+Not covered yet: regrouping most functions into their original source files (overlays 97
+and 124 are units so far), the data sections
 (most still come from the ROM through ds-decomp's objects), the ARM7 binary, and pointers into
 `.bss` (nothing to compare). Most names are still placeholders.

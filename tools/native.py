@@ -114,7 +114,17 @@ def flags_for(path: pathlib.Path, indirect: bool = False) -> list[str]:
     # thunks): every indirect branch left is a call or a tail call, where the flags the thunk
     # changes are dead.
     branches = indirect_flags(compiler()) if indirect else []
-    return [*lang, *pic, *layout, "-O2", "-w", *relax, *uninit, *branches, "-fwrapv", "-fno-strict-aliasing", "-fno-exceptions",
+    # A unit of several functions (common.UNIT_HEADER) is compiled as one file, as for mwccarm,
+    # but each of its functions stays a function of its own on the PC, as when each had a file:
+    # none of them inlined into another (only what says `inline` is: a call goes through the
+    # callee's entry, tools/objrewrite.py, which the runtime may send to its Reference or Clean),
+    # and nothing gcc's interprocedural passes learn of one used in another (gcc's -fipa-ra would
+    # let a caller keep registers live across a call the runtime sends elsewhere).
+    unit = []
+    if len(C.parse_sources(path)) > 1:
+        unit = ["-finline-hint-functions"] if "clang" in " ".join(compiler()) else \
+            ["-fno-inline-functions", "-fno-inline-small-functions", "-flive-patching=inline-only-static"]
+    return [*lang, *pic, *layout, "-O2", "-w", *relax, *uninit, *branches, *unit, "-fwrapv", "-fno-strict-aliasing", "-fno-exceptions",
             "-include", str(C.ROOT / "runtime" / "native.h"), f"-I{C.INCLUDE}", f"-I{C.INCLUDE / 'msl'}"]
 
 
@@ -827,11 +837,11 @@ def main() -> None:
     # native_<name> a wrapper that widens the result as the ROM's code does.
     widen = {}
     for path, _ in objects:
-        src = C.parse_source(path)
-        kind = signature(path, src.name)[0]
-        if kind in WIDEN and src.object_symbol in native:
-            widen[src.object_symbol] = WIDEN[kind]
-    profile_names = {C.parse_source(path).object_symbol for path, _ in objects} & native
+        for src in C.parse_sources(path):
+            kind = signature(path, src.name)[0]
+            if kind in WIDEN and src.object_symbol in native:
+                widen[src.object_symbol] = WIDEN[kind]
+    profile_names = {src.object_symbol for path, _ in objects for src in C.parse_sources(path)} & native
     objrewrite.BODY = profile_names
     # A direct call to a function without a Native (the ROM's code runs it) goes to a stub,
     # native_call_<name>, that enters the runtime as the fault a call to its DS address takes
@@ -909,18 +919,18 @@ def main() -> None:
     count = 0
     profile_ids = {}
     for path, _ in objects:
-        src = C.parse_source(path)
-        host = PREFIX + (objrewrite.NATIVE if src.object_symbol in known else "") + src.object_symbol
-        if host not in defined:
-            continue
-        kind, params, member, floating = signature(path, src.name)
-        info = (kind | (min(params, 15) << 4) | (int(member) << 8) | (floating << 9)
-                | (modules.index(src.module) << 16))
-        lines.append(f"\t.long 0x{src.address | (1 if src.thumb else 0):08x}, 0x{src.size:x}, {host}, 0x{info:08x}")
-        if src.object_symbol in profile_names:
-            assert src.object_symbol not in profile_ids, src.object_symbol
-            profile_ids[src.object_symbol] = count
-        count += 1
+        for src in C.parse_sources(path):
+            host = PREFIX + (objrewrite.NATIVE if src.object_symbol in known else "") + src.object_symbol
+            if host not in defined:
+                continue
+            kind, params, member, floating = signature(path, src.name)
+            info = (kind | (min(params, 15) << 4) | (int(member) << 8) | (floating << 9)
+                    | (modules.index(src.module) << 16))
+            lines.append(f"\t.long 0x{src.address | (1 if src.thumb else 0):08x}, 0x{src.size:x}, {host}, 0x{info:08x}")
+            if src.object_symbol in profile_names:
+                assert src.object_symbol not in profile_ids, src.object_symbol
+                profile_ids[src.object_symbol] = count
+            count += 1
     assert set(profile_ids) == profile_names
     lines += [f"\t.globl {PREFIX}native_function_count", f"{PREFIX}native_function_count:", f"\t.long {count}"]
 
@@ -954,10 +964,11 @@ def main() -> None:
     lines += [f"\t.globl {PREFIX}native_private", f"{PREFIX}native_private:"]
     private = 0
     for path, _ in objects:
-        src = C.parse_source(path)
-        for _name, start, end in placement.get(path.relative_to(C.ROOT).as_posix(), []):
-            lines.append(f"\t.long 0x{src.address:08x}, 0x{start:08x}, 0x{end:08x}")
-            private += 1
+        # a unit's data is all of its functions' (any of them may use any of it)
+        for src in C.parse_sources(path):
+            for _name, start, end in placement.get(path.relative_to(C.ROOT).as_posix(), []):
+                lines.append(f"\t.long 0x{src.address:08x}, 0x{start:08x}, 0x{end:08x}")
+                private += 1
     lines += [f"\t.globl {PREFIX}native_private_count", f"{PREFIX}native_private_count:", f"\t.long {private}", ""]
     (OUT / "natives.s").write_text("\n".join(lines), newline="\n")
     # Sources whose Native cannot do what the ROM's code does (tools/run.py keeps them
@@ -991,6 +1002,7 @@ def main() -> None:
     # protos.widen_declarations could not change stays Reference.
     keep = []
     for (path, _), names in zip(objects, per_object):
+        first = len(keep)
         name = C.parse_source(path).object_symbol
         vts = sorted({n[strip:] for n in names if n[strip:].startswith("_ZTV") and n[strip:] not in vtables})
         zero = sorted(n[strip:] for n in code_references(_) & nowhere) if names & nowhere else []
@@ -999,6 +1011,7 @@ def main() -> None:
         if "__MWERKS__" in text and ASM_FUNCTION.search(text):
             keep.append(f"{name} matches as assembly (`asm`, under #ifdef __MWERKS__); its C version for the PC "
                         "is a rewrite, and passes registers on differently" + chr(10))
+            keep += [other.object_symbol + keep[-1][len(name):] for other in C.parse_sources(path)[1:]]
             continue
         inner = sorted(n for n in set(re.findall(r"\b(\w+_unk)\s*\(", text)) - {name}
                        if not native_args.entry_call_ok(path.relative_to(C.SRC).as_posix(), text, n))
@@ -1025,6 +1038,10 @@ def main() -> None:
         elif zero:
             keep.append(f"{name} calls {' '.join(zero)}, which has no address (a virtual call the PC's "
                         "compiler makes directly)\n")
+        # (a reason found in a unit's text is not tied to one of its functions: each of them
+        # stays Reference for it)
+        for line in keep[first:len(keep)]:
+            keep += [other.object_symbol + line[len(name):] for other in C.parse_sources(path)[1:]]
     (OUT / "keep-reference.txt").write_text("".join(keep), newline="\n")
     (OUT / "objects.txt").write_text("".join(f"{o.as_posix()}\n" for _, o in objects), newline="\n")
     # the objects as one key, so a program linked from them can tell it is up to date without

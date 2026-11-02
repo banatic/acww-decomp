@@ -319,12 +319,55 @@ class Source:
         return self.emitted or self.name
 
 
+# A translation unit of several functions (an original source file, regrouped) lists them in
+# the order the file defines them, which is the reverse of their addresses: mwccarm writes a
+# file's functions into its object last first, each in a section of its own, and mwldarm lays
+# an object's sections out in the object's order (docs/verification.md).
+#
+#   /* pockets_room: 5 functions, module ov097
+#    * mwccarm 1.2/base -O4,s
+#    * func_ov097_022a29e4 @ 0x022a29e4, 0x90 bytes, Thumb
+#    * ...
+#    * func_ov097_022a27c0 @ 0x022a27c0, 0x3c bytes, Thumb
+#    */
+#
+# A C++ function's line ends with the name the compiler emits: `, emits _ZN5Obj_x6methodEv`.
+UNIT_HEADER = re.compile(
+    r"\A/\* (?P<unit>[A-Za-z_]\w*): (?P<count>\d+) functions, module (?P<module>\w+)\n"
+    r" \* mwccarm (?P<drop>\S+) (?P<opt>-O[0-4],[sp])\n"
+    r"(?P<functions>(?: \* \S+ @ 0x[0-9a-f]{8}, 0x[0-9a-f]+ bytes, (?:ARM|Thumb)(?:, emits \S+)?\n)+)"
+    r" \*/\n")
+UNIT_FUNCTION = re.compile(r" \* (?P<name>\S+) @ 0x(?P<addr>[0-9a-f]{8}), 0x(?P<size>[0-9a-f]+) bytes, "
+                           r"(?P<isa>ARM|Thumb)(?:, emits (?P<emitted>\S+))?\n")
+
+
+def parse_sources(path: pathlib.Path) -> list[Source]:
+    """Every function a source file defines: one for a file of one function, each one its header
+    lists for a unit (UNIT_HEADER), in the file's order. Empty when the header is not either."""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    m = HEADER.match(text)
+    if m:
+        return [Source(path, m["name"], int(m["addr"], 16), int(m["size"], 16), m["isa"] == "Thumb",
+                       m["module"], m["drop"], m["opt"], m["emitted"])]
+    u = UNIT_HEADER.match(text)
+    if not u:
+        return []
+    return [Source(path, f["name"], int(f["addr"], 16), int(f["size"], 16), f["isa"] == "Thumb",
+                   u["module"], u["drop"], u["opt"], f["emitted"])
+            for f in UNIT_FUNCTION.finditer(u["functions"])]
+
+
 def parse_source(path: pathlib.Path) -> Source | None:
-    m = HEADER.match(path.read_text(encoding="utf-8", errors="replace"))
-    if not m:
-        return None
-    return Source(path, m["name"], int(m["addr"], 16), int(m["size"], 16), m["isa"] == "Thumb",
-                  m["module"], m["drop"], m["opt"], m["emitted"])
+    """The function of a file of one function; for a unit, the first it lists (which stands for
+    the unit where only the file matters: its compiler flags, its object)."""
+    found = parse_sources(path)
+    return found[0] if found else None
+
+
+def header_end(text: str) -> int:
+    """Where a source's header comment (HEADER or UNIT_HEADER) ends, or 0."""
+    m = HEADER.match(text) or UNIT_HEADER.match(text)
+    return text.index("*/", m.end() - 3) + 2 if m else 0
 
 
 def all_sources() -> list[pathlib.Path]:

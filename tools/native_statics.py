@@ -328,6 +328,10 @@ def derive(path: Path, skip: set[str] = frozenset()) -> dict | None:
             declared = boundary.declarations(text)[0]  # inline member declarators as their PC type
         except ValueError:
             pass
+    if len(C.parse_sources(path)) > 1 and any(LOCAL.fullmatch(s.name) and s.type == 1 and s.bind == 0
+                                              for s in elf.symbols):
+        # (the literals read here are the first function's: a unit's others are not looked at)
+        raise ValueError(f'{path}: statics in a unit of several functions are not placed yet')
     statics = {}
     for symbol in elf.symbols:
         m = LOCAL.fullmatch(symbol.name)

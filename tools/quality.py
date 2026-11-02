@@ -246,9 +246,10 @@ PROCESS_NOTES = re.compile(r"\b(scores?\s+\d\.\d+|0\.\d{4}|size_delta|near[- ]mi
 
 def check_file(path: pathlib.Path, verify: dict | None) -> dict:
     text = path.read_text(encoding="utf-8", errors="replace")
-    src = C.parse_source(path)
-    m = C.HEADER.match(text)
-    body = text[text.index("*/", m.end() - 3) + 2:] if m else text
+    srcs = C.parse_sources(path)
+    # (a unit's declarations serve several functions: the pasted-types count is for one)
+    src = srcs[0] if len(srcs) == 1 else None
+    body = text[C.header_end(text):]
     code, comments = split_comments(body)
     flags: dict[str, object] = {}
 

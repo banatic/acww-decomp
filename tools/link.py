@@ -118,14 +118,15 @@ def strippable(elf: C.Elf, si: int) -> bool:
     return bool(defs) and all(y.bind in (2, 13) or y.name.endswith("D2Ev") for y in defs)
 
 
-def dead_sections(elf: C.Elf, root: int, secs: dict) -> set[int]:
+def dead_sections(elf: C.Elf, roots: set[int], secs: dict) -> set[int]:
     """The strippable sections that nothing kept in the object reaches through a relocation,
-    starting from the function's own section and every section that is not strippable."""
+    starting from the functions' own sections (each function of a unit has one) and every
+    section that is not strippable."""
     refs = collections.defaultdict(set)
     for si in secs:
         for _, _, s, _ in elf.relocations(si):
             refs[si].add(s.shndx)
-    live, work = set(), [root, *(si for si in secs if not strippable(elf, si))]
+    live, work = set(), [*roots, *(si for si in secs if not strippable(elf, si))]
     while work:
         si = work.pop()
         if si not in live:
@@ -467,9 +468,9 @@ class Planner:
             self.targets[m] = {int(x.group(1), 16): reloc_modules(x.group(3))
                                for line in (d / "relocs.txt").read_text().splitlines()
                                if (x := RELOC.match(line)) and x.group(3) != "none"}
-        # (module, address) of every function that has a source of its own
-        self.sourced = {(f.parent.name, int(x.group(1), 16)) for f in (C.ROOT / "src").glob("*/*.c*")
-                        if (x := re.search(r"([0-9a-f]{8})$", f.stem))}
+        # (module, address) of every function that has a source of its own (a file of one
+        # function, or one of a unit's)
+        self.sourced = {(s.module, s.address) for f in C.SRC.glob("*/*.c*") for s in C.parse_sources(f)}
 
     def where(self, addr: int, prefer: str, only: list[str] | None = None) -> tuple[str | None, str | None]:
         for m in only or (prefer, *C.RESIDENT, *self.sections):
@@ -478,13 +479,17 @@ class Planner:
                     return m, name
         return None, None
 
-    def place(self, elf: C.Elf, src: C.Source, fn: C.ElfSymbol, secs: dict):
+    def place(self, elf: C.Elf, src: C.Source, fns: list[tuple[C.Source, C.ElfSymbol]], secs: dict):
         """Each section's candidate addresses, the modules the relocation that placed it names
-        (overlays share addresses), and the sections placed by their words alone."""
+        (overlays share addresses), and the sections placed by their words alone. `fns`: each
+        function of the source and its symbol, placed at its address."""
         anchors = collections.defaultdict(set)
-        anchors[fn.shndx].add(src.address - fn.value)
-        only: dict[int, list[str] | None] = {fn.shndx: [src.module]}
-        work, done, by_words = [fn.shndx], set(), set()
+        only: dict[int, list[str] | None] = {}
+        for f, sym in fns:
+            anchors[sym.shndx].add(f.address - sym.value)
+            only[sym.shndx] = [src.module]
+        roots = {sym.shndx for _, sym in fns}
+        work, done, by_words = sorted(roots), set(), set()
         while True:
             if not work:
                 work = self.place_by_words(elf, src, secs, anchors, only)
@@ -498,7 +503,7 @@ class Planner:
             base = min(anchors[si])
             here = self.where(base, src.module, only.get(si))[0] or src.module
             for off, typ, s, add in elf.relocations(si):
-                if typ != 2 or s.shndx in (0, fn.shndx) or s.shndx not in secs:
+                if typ != 2 or s.shndx == 0 or s.shndx in roots or s.shndx not in secs:
                     continue
                 word = self.chk.rom_abs(base + off, here, 4)
                 if len(word) < 4:
@@ -566,7 +571,7 @@ class Planner:
                 return [si]
         return []
 
-    def shared(self, elf: C.Elf, root: int, secs: dict, anchors: dict, only: dict,
+    def shared(self, elf: C.Elf, roots: set[int], secs: dict, anchors: dict, only: dict,
                module: str, by_words: set[int]) -> dict[int, dict[int, str | None]]:
         """The placed copies of inline bodies (sections whose symbols are all weak) that are
         the ROM's copy kept from another object: in another module, or apart from this
@@ -576,12 +581,12 @@ class Planner:
         def defs(si: int) -> list[C.ElfSymbol]:
             return [y for y in elf.symbols if y.shndx == si and y.type in (1, 2) and y.name
                     and not y.name.startswith("$")]
-        weak = {si for si in secs if si != root and defs(si) and all(y.bind in (2, 13) for y in defs(si))}
+        weak = {si for si in secs if si not in roots and defs(si) and all(y.bind in (2, 13) for y in defs(si))}
         mod = {si: self.where(min(anchors[si]), module, only.get(si))[0] for si in secs if anchors.get(si)}
         cand = {si for si in weak if si in mod and mod[si] != module}
         # code at the start of a function another source defines is that source's copy (an
         # inline body, or a destructor a thunk's file defines again)
-        cand |= {si for si in secs if si != root and si in mod and elf.sections[si].name == ".text"
+        cand |= {si for si in secs if si not in roots and si in mod and elf.sections[si].name == ".text"
                  and (mod[si], min(anchors[si])) in self.sourced}
         # a vtable copy: its file is the one whose code points to it (a .ctor entry is the source's own)
         cand |= {si for si in by_words & set(mod) if elf.sections[si].name == ".data"}
@@ -591,7 +596,7 @@ class Planner:
             for _, _, y, _ in elf.relocations(si):
                 if y.shndx in secs and y.shndx != si:
                     users[y.shndx].add(si)
-        while more := {si for si in mod if si != root and si not in cand and users[si] and users[si] <= cand}:
+        while more := {si for si in mod if si not in roots and si not in cand and users[si] and users[si] <= cand}:
             cand |= more
         by = collections.defaultdict(list)
         for si, m in mod.items():
@@ -624,28 +629,31 @@ class Planner:
                 del out[si]
 
     def plan(self, path: pathlib.Path) -> dict | None:
-        src = C.parse_source(path)
-        if src is None:
+        srcs = C.parse_sources(path)
+        if not srcs:
             return None
+        src = srcs[0]
         rel = path.relative_to(C.ROOT).as_posix()
         obj, _ = C.compile_source(src)
         if obj is None:
             return {"file": rel, "error": "does not compile"}
         elf = C.Elf(obj)
-        fn = elf.function(src.object_symbol)
-        if fn is None:
+        fns = [(s, elf.function(s.object_symbol)) for s in srcs]
+        if any(sym is None for _, sym in fns):
             return {"file": rel, "error": "function not in the object"}
+        fn = fns[0][1]
+        roots = {sym.shndx for _, sym in fns}
         secs = {i: s for i, s in enumerate(elf.sections) if s.size and s.type in (1, 8)
                 and not s.name.startswith(META)}
-        dead = dead_sections(elf, fn.shndx, secs)
+        dead = dead_sections(elf, roots, secs)
         secs = {i: s for i, s in secs.items() if i not in dead}
-        anchors, only, by_words = self.place(elf, src, fn, secs)
-        shared = self.shared(elf, fn.shndx, secs, anchors, only, src.module, by_words)
+        anchors, only, by_words = self.place(elf, src, fns, secs)
+        shared = self.shared(elf, roots, secs, anchors, only, src.module, by_words)
         extern = []
         if shared:
             # what only the shared copies used goes with them
             rest = {i: s for i, s in secs.items() if i not in shared}
-            gone = dead_sections(elf, fn.shndx, rest)
+            gone = dead_sections(elf, roots, rest)
             dead |= set(shared) | gone
             secs = {i: s for i, s in rest.items() if i not in gone}
             index = {id(y): j for j, y in enumerate(elf.symbols)}
@@ -654,7 +662,8 @@ class Planner:
         # "index": each section's index in the object; "same": its bytes and relocations, to
         # tell an identical copy (an inline body two sources of a link unit both emit);
         # "extern": [symbol index, name] of each symbol of a shared copy, used by its ROM name
-        out = {"file": rel, "module": src.module, "root": fn.shndx, "sections": [], "strip": sorted(dead),
+        out = {"file": rel, "module": src.module, "root": fn.shndx, "roots": sorted(roots), "sections": [],
+               "strip": sorted(dead),
                "index": list(secs), "same": [], "extern": extern}
         for si, s in secs.items():
             out["same"].append(hashlib.sha1(repr((elf.section_bytes(si), sorted(
@@ -669,7 +678,7 @@ class Planner:
             base = min(anchors[si])
             out["sections"].append([s.name, *self.where(base, src.module, only.get(si)), base, base + s.size])
         out["globals"] = [[y.name, min(anchors[y.shndx]) + y.value] for y in elf.symbols
-                          if y.bind == 1 and y.name and y.shndx in secs and y.shndx != fn.shndx
+                          if y.bind == 1 and y.name and y.shndx in secs and y.shndx not in roots
                           and anchors.get(y.shndx)]
         # the names the kept sections use that the object does not define (by the names
         # aliases.txt maps them to, as source_object writes them), and the names it defines
@@ -797,7 +806,7 @@ def code_data(mod: str, a: int, b: int) -> bool:
     return bool(inside) and inside[0] == a and all(x in data_symbols(mod) for x in inside)
 
 
-def find_units(good: dict[str, dict], seeds: list[str], module: dict[str, str], root: dict[str, int],
+def find_units(good: dict[str, dict], seeds: list[str], module: dict[str, str], root: dict[str, set[int]],
                banned: dict[frozenset, str]) -> tuple[dict, dict[str, str]]:
     """Link units: the sources a source with gaps between its same-named sections has to be
     linked with as one object, because the original file held their functions and data
@@ -844,7 +853,7 @@ def find_units(good: dict[str, dict], seeds: list[str], module: dict[str, str], 
         reason, copies, merged, holes = None, {}, {}, []
         for name in spans:
             # a source's own function first: the copy kept of two at one place
-            parts = sorted((a, b, i != root[f], f, i) for f in group for a, b, i, _ in good[f].get(name, ()))
+            parts = sorted((a, b, i not in root[f], f, i) for f in group for a, b, i, _ in good[f].get(name, ()))
             kept, end = parts[0], parts[0][1]
             for cur in parts[1:]:
                 if cur[:2] == kept[:2]:
@@ -949,7 +958,7 @@ def choose_once(plans: list[dict], mods: dict, banned: dict[frozenset, str], kno
             why["a static in autoload_3's .bss has no symbol there"] += 1
             LEFT_OUT[f] = "a static in autoload_3's .bss has no symbol there"
     seeds += [f for f in PAIRS if f in good and f not in seeds]
-    units, failed = find_units(good, seeds, module, {r["file"]: r.get("root") for r in plans}, banned)
+    units, failed = find_units(good, seeds, module, {r["file"]: set(r.get("roots", ())) for r in plans}, banned)
     in_unit = {f for members, *_ in units.values() for f in members}
     for f, reason in failed.items():
         why[reason] += 1

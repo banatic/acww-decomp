@@ -108,22 +108,61 @@ class Checker:
         off = address - base
         return img[off:off + n] if 0 <= off and off + n <= len(img) else b""
 
-    def check(self, path: pathlib.Path) -> dict:
+    def check(self, path: pathlib.Path) -> list[dict]:
+        """One result per function the file defines (a unit defines several)."""
         res = self._check(path)
         # wibo and the Windows compiler disagree on a handful of switch-heavy functions;
         # Wine agrees with Windows. MWCC_FALLBACK (e.g. "wine") recompiles a BYTES failure
         # with it, so CI judges the code and not the emulator. A real mismatch still fails.
         fallback = os.environ.get("MWCC_FALLBACK")
-        if res["status"] == "bytes" and fallback:
+        if any(r["status"] == "bytes" for r in res) and fallback:
             res = self._check(path, wrapper=fallback, force=True)
         return res
 
     def _check(self, path: pathlib.Path, wrapper: str | None = None,
-               force: bool = False) -> dict:
-        src = C.parse_source(path)
+               force: bool = False) -> list[dict]:
+        srcs = C.parse_sources(path)
         rel = path.relative_to(C.ROOT).as_posix()
-        if src is None:
-            return {"file": rel, "status": "error", "why": "no recognisable header"}
+        if not srcs:
+            return [{"file": rel, "status": "error", "why": "no recognisable header"}]
+        obj, log = C.compile_source(srcs[0], wrapper=wrapper, force=force)
+        elf = C.Elf(obj) if obj is not None else None
+        out = [self._check_function(src, rel, elf, log) for src in srcs]
+        if len(srcs) > 1 and elf is not None:
+            why = self.unit_layout(srcs, elf)
+            if why:
+                for r in out:
+                    if r["status"] == "ok":
+                        r.update(status="link", problems=[{"kind": "unit-layout", "why": why}])
+        return out
+
+    def unit_layout(self, srcs: list[C.Source], elf: C.Elf) -> str | None:
+        """Why a unit's code does not lie in its object as in the ROM, or None: the functions of
+        one section are as far apart as in the ROM, and the bytes between them (the padding
+        to the next function, a Thumb nop) are the ROM's."""
+        placed = []
+        for src in srcs:
+            fn = elf.function(src.object_symbol)
+            if fn is None:
+                return None  # reported by the function's own check
+            placed.append((fn.shndx, fn.value, src))
+        by_section: dict[int, list] = collections.defaultdict(list)
+        for shndx, value, src in placed:
+            by_section[shndx].append((value, src))
+        for shndx, rows in by_section.items():
+            rows.sort(key=lambda r: r[0])
+            data = elf.section_bytes(shndx)
+            v0, s0 = rows[0]
+            for value, src in rows:
+                if src.address - s0.address != value - v0:
+                    return f"{src.name} is at +{value - v0:#x} in the object, +{src.address - s0.address:#x} in the ROM"
+            for (va, a), (vb, b) in zip(rows, rows[1:]):
+                gap = data[va + a.size:vb]
+                if gap != self.rom(a.module, a.address + a.size, len(gap)):
+                    return f"the bytes between {a.name} and {b.name} differ from the ROM's"
+        return None
+
+    def _check_function(self, src: C.Source, rel: str, elf: C.Elf | None, log: str) -> dict:
         res = {"file": rel, "module": src.module, "address": f"{src.address:#010x}",
                "size": src.size, "name": src.name}
 
@@ -135,11 +174,9 @@ class Checker:
             res["renamed"] = sym.name
         target = self.rom(src.module, src.address, src.size)
 
-        obj, log = C.compile_source(src, wrapper=wrapper, force=force)
-        if obj is None:
+        if elf is None:
             return {**res, "status": "bytes", "why": "does not compile: "
                     + (log.strip().splitlines() or ["?"])[-1][:160]}
-        elf = C.Elf(obj)
         fn = elf.function(src.object_symbol)
         if fn is None:
             return {**res, "status": "bytes",
@@ -301,6 +338,12 @@ class Checker:
                     return hit.address | (1 if hit.thumb else 0)
             base = src.address + (s.value - fn.value)
             return base | (1 if (s.type == 2 and src.thumb) else 0)
+        if s.type == 2 and s.name and not s.name.startswith("$"):
+            # another function of the object (mwccarm gives each function of a unit a section
+            # of its own): the symbol table's address for its name
+            hit = self.syms.lookup(s.name, src.module)
+            if hit is not None and hit.kind == "function":
+                return hit.address | (1 if hit.thumb else 0)
         return "local-data"                               # string literals, local tables
 
     @staticmethod
@@ -368,7 +411,7 @@ def main() -> None:
     results = []
     with cf.ThreadPoolExecutor(args.workers) as pool:
         for i, r in enumerate(pool.map(chk.check, files), 1):
-            results.append(r)
+            results += r
             if i % 2000 == 0:
                 print(f"  {i}/{len(files)}", flush=True)
 
@@ -381,7 +424,7 @@ def main() -> None:
     for r in results:
         if r["status"] in ("bytes", "error"):
             print(f"  {r['status'].upper():<6} {r['file']}  {r.get('why', '')}")
-    print(f"\n{len(results)} sources: " + ", ".join(f"{k} {v}" for k, v in counts.most_common()))
+    print(f"\n{len(files)} sources, {len(results)} functions: " + ", ".join(f"{k} {v}" for k, v in counts.most_common()))
     print(f"  with hardcoded addresses: {hard}   header name differs from symbol table: {renamed}")
     if not args.paths:
         print(f"  details: {out.relative_to(C.ROOT)}")

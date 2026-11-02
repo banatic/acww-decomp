@@ -11,15 +11,35 @@ pull request. Run `python tools/lint.py` as well (CI runs it).
 
 ## Source files
 
-Each function lives in `src/<module>/<symbol>.c` (`.cpp` where only C++ reproduces the code).
-Library code is not part of this repository (see [libs/README.md](libs/README.md)).
-The first comment is read by the tools, so keep its format:
+Most functions still live in a file of their own, `src/<module>/<symbol>.c` (`.cpp` where only
+C++ reproduces the code); the functions of an original source file are being joined back into
+one file, a unit, named for what it does (`src/ov097/pockets_room.c`). Library code is not part
+of this repository (see [libs/README.md](libs/README.md)). The first comment is read by the
+tools, so keep its format:
 
 ```c
 /* func_0207e16c @ 0x0207e16c, 0x2c bytes, Thumb, module main
  * mwccarm 1.2/base -O4,s
  */
 ```
+
+A unit lists its functions in the order it defines them, which is the last address first:
+mwccarm writes a file's functions into its object last first and the linker keeps that order,
+so this is the order the original file had (docs/verification.md).
+
+```c
+/* pockets_room: 5 functions, module ov097
+ * mwccarm 1.2/base -O4,s
+ * func_ov097_022a29e4 @ 0x022a29e4, 0x90 bytes, Thumb
+ * ...
+ * func_ov097_022a27c0 @ 0x022a27c0, 0x3c bytes, Thumb
+ */
+```
+
+A C++ function's line ends with the name it emits (`, emits _ZN...`). All of a unit's functions
+take the same compiler and options. `python tools/regroup.py <module> <unit> FILE...` joins files
+into a unit and lists what they declare differently; settle those (one type, a cast at a call),
+then `tools/verify.py`, `tools/link.py` and `tools/lint.py` must pass as for any change.
 
 - Format with clang-format 22.1.8 (`pip install clang-format==22.1.8`) and the repository's
   `.clang-format`; CI checks it. `pre-commit install` runs it on every commit.

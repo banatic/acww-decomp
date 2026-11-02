@@ -5,7 +5,7 @@ runtime/native_run.c while it records the crossings, kept in the scene's directo
 functions-seen.txt). A Native or Clean function only runs where the game runs that function, so
 a change to it can only change the scenes whose list names it. A change is mapped to functions:
 
-- a source in src/: its own function;
+- a source in src/: the functions it defines (a unit defines several);
 - a header in include/: every source in src/ that includes it;
 - a Clean source: the functions it registers (CLEAN_AS); a Clean header: those of every Clean
   source that includes it;
@@ -45,9 +45,25 @@ def changed_paths(base: str) -> list[str]:
     return sorted(paths)
 
 
-def _source_function(path: pathlib.Path) -> tuple[str, int] | None:
-    src = C.parse_source(path) if path.exists() else None
-    return (src.module, src.address & ~1) if src else None
+def _source_functions(path: pathlib.Path) -> set[tuple[str, int]] | None:
+    """The functions a source defines (a unit defines several), or None for no source."""
+    srcs = C.parse_sources(path) if path.exists() else []
+    return {(src.module, src.address & ~1) for src in srcs} or None
+
+
+def _removed_functions(rel: str, base: str) -> set[tuple[str, int]] | None:
+    """The functions a source that is gone from the tree defined in `base` (one regrouped into a
+    unit, or a unit taken apart), or None when `base` has no such source."""
+    old = subprocess.run(["git", "show", f"{base}:{rel}"], cwd=C.ROOT, capture_output=True)
+    if old.returncode != 0:
+        return None
+    m = C.HEADER.match(old.stdout.decode("utf-8", "replace"))
+    u = C.UNIT_HEADER.match(old.stdout.decode("utf-8", "replace"))
+    if m:
+        return {(m["module"], int(m["addr"], 16))}
+    if u:
+        return {(u["module"], int(f["addr"], 16)) for f in C.UNIT_FUNCTION.finditer(u["functions"])}
+    return None
 
 
 def _clean_functions(path: pathlib.Path) -> set[tuple[str, int]]:
@@ -155,10 +171,13 @@ def functions_of(paths: list[str], base: str = "main") -> tuple[set[tuple[str, i
             scenes |= changed
             continue
         if rel.startswith("src/") and rel.endswith((".c", ".cpp")):
-            f = _source_function(path)
+            f = _source_functions(path)
+            if f is None:
+                # a source removed: the functions it had, if a source of the base defined them
+                f = _removed_functions(rel, base)
             if f is None:
                 return EVERYTHING, scenes
-            funcs.add(f)
+            funcs |= f
         elif rel.startswith("include/"):
             headers.add(path.resolve())
         elif rel.startswith("clean/") and rel.endswith(".c"):
@@ -170,9 +189,7 @@ def functions_of(paths: list[str], base: str = "main") -> tuple[set[tuple[str, i
     if headers:
         for src in sorted(C.SRC.rglob("*.c*")):
             if headers & set(C.included_files(src)):
-                f = _source_function(src)
-                if f is not None:
-                    funcs.add(f)
+                funcs |= _source_functions(src) or set()
     if clean_headers:
         import run  # noqa: PLC0415 (its header walk, which knows clean/)
         for src in sorted((C.ROOT / "clean").rglob("*.c")):

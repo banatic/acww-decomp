@@ -191,10 +191,7 @@ def param_table() -> pathlib.Path:
     """build/adm-kr/runtime/native_params.c: for every game function, its parameters' kinds,
     three bits each, `this` first for a member; bit 31 when they are not all known."""
     rows = []
-    for path in C.all_sources():
-        if C.SRC not in path.parents:
-            continue
-        src = C.parse_source(path)
+    for path, src in ((p, s) for p in C.all_sources() if C.SRC in p.parents for s in C.parse_sources(p)):
         text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
         m = re.search(r"(?:^|[;}])\s*((?:[\w<>]+[\s\*&]+)+?)((?:\w+::)?)" + re.escape(src.name)
                       + r"\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)\s*(?:const\s*)?\{", text, re.M)

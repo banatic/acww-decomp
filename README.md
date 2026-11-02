@@ -35,8 +35,9 @@ reproduces every module of the ROM byte for byte.
 - **Linked**: Matching, and the whole program, linked with the original linker, also reproduces
   the module byte for byte.
 
-The sources are still one file per function, and the data sections still come from the ROM;
-regrouping the functions into their original source files is in progress.
+Most sources are still one file per function, and the data sections still come from the ROM;
+regrouping the functions into their original source files is in progress (the first units:
+`src/ov097/pockets_room.c`, `src/ov124/han_panel.c`).
 
 ## Part II: Clean code and the Windows port
 

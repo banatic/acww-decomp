@@ -87,27 +87,55 @@ def main() -> None:
     syms = C.SymbolTable({m: {} for m in mods})
     seen: dict[tuple[str, int], pathlib.Path] = {}
     sources = C.all_sources()
+    functions = 0
     for path in sources:
         rel = path.relative_to(C.ROOT).as_posix()
-        src = C.parse_source(path)
-        if src is None:
+        srcs = C.parse_sources(path)
+        if not srcs:
             errors.append(f"{rel}: missing or malformed header")
             continue
+        functions += len(srcs)
         parts = rel.split("/")
         if not ((parts[0] == "src" and len(parts) == 3) or
                 (parts[0] == "libs" and len(parts) == 4 and parts[1] in LIB_PACKAGES)):
             errors.append(f"{rel}: not at src/<module>/ or libs/<Package>/<module>/")
-        if path.parent.name != src.module:
-            errors.append(f"{rel}: header says module {src.module}")
-        if path.stem not in (src.name, f"{src.name}__{src.module}_{src.address:08x}"):
-            errors.append(f"{rel}: file name does not match header symbol {src.name}")
-        sym = syms.function(src.module, src.address)
-        if sym is None or sym.size != src.size:
-            errors.append(f"{rel}: no {src.size:#x}-byte function at {src.address:#010x}")
-        key = (src.module, src.address)
-        if key in seen:
-            errors.append(f"{rel}: same address as {seen[key].relative_to(C.ROOT).as_posix()}")
-        seen[key] = path
+        if path.parent.name != srcs[0].module:
+            errors.append(f"{rel}: header says module {srcs[0].module}")
+        unit = C.UNIT_HEADER.match(path.read_text(encoding="utf-8", errors="replace"))
+        if unit is None and path.stem not in (srcs[0].name, f"{srcs[0].name}__{srcs[0].module}_{srcs[0].address:08x}"):
+            errors.append(f"{rel}: file name does not match header symbol {srcs[0].name}")
+        if unit is not None:
+            # a unit (several functions, one original source file): named for what it is, its
+            # functions listed last address first (common.UNIT_HEADER), as many as the first line
+            # says, all of them ARM or all Thumb (the compiler's -thumb is one per file), and
+            # defined in the file in that order
+            if path.stem != unit["unit"]:
+                errors.append(f"{rel}: file name does not match the unit's name {unit['unit']}")
+            if int(unit["count"]) != len(srcs) or len(srcs) < 2:
+                errors.append(f"{rel}: the header lists {len(srcs)} functions, not {unit['count']}"
+                              if len(srcs) > 1 else f"{rel}: a unit of one function; give it the one-function header")
+            if [s.address for s in srcs] != sorted({s.address for s in srcs}, reverse=True):
+                errors.append(f"{rel}: the unit's functions are not listed last address first")
+            if len({s.thumb for s in srcs}) > 1:
+                errors.append(f"{rel}: the unit mixes ARM and Thumb functions")
+            body = path.read_text(encoding="utf-8", errors="replace")
+            body = body[C.header_end(body):]
+            # each definition: at the start of a line, its name, its parameters and the brace
+            at = [re.search(r"^[^\n;{}()]*\b" + re.escape(s.name.split("::")[-1])
+                            + r"\s*\([^;{]*\)\s*(?:const\s*)?\{", body, re.M) for s in srcs]
+            for s, m in zip(srcs, at):
+                if m is None:
+                    errors.append(f"{rel}: {s.name} is listed but not defined")
+            if all(at) and [m.start() for m in at] != sorted(m.start() for m in at):
+                errors.append(f"{rel}: the unit defines its functions in another order than it lists them")
+        for src in srcs:
+            sym = syms.function(src.module, src.address)
+            if sym is None or sym.size != src.size:
+                errors.append(f"{rel}: no {src.size:#x}-byte function at {src.address:#010x}")
+            key = (src.module, src.address)
+            if key in seen:
+                errors.append(f"{rel}: same address as {seen[key].relative_to(C.ROOT).as_posix()}")
+            seen[key] = path
 
     # runtime/native-private.txt (tools/link.py) must follow a source that moves or goes
     present = {p.relative_to(C.ROOT).as_posix() for p in sources}
@@ -156,7 +184,7 @@ def main() -> None:
         print(e)
     if len(errors) > 50:
         print(f"... and {len(errors) - 50} more")
-    print(f"{len(sources)} sources, {len(errors)} problems")
+    print(f"{len(sources)} sources ({functions} functions), {len(errors)} problems")
     sys.exit(1 if errors else 0)
 
 

@@ -688,24 +688,22 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
         digest = f"{st.st_size} {st.st_mtime_ns}"  # (a changed source has a new time)
         fact = memo.get(rel)
         if fact is None or fact[0] != digest:
-            src = C.parse_source(path)
-            fact = [digest, None]
-            if src:
+            # one entry for each function the file defines (a unit defines several)
+            fact = [digest, []]
+            for src in C.parse_sources(path):
                 _kind, count, member, _floating = native_build.signature(path, src.name)
                 words = native_abi.word_arguments(path.read_text(encoding="utf-8", errors="replace"), src.name)
-                fact = [digest, [src.module, src.address, src.name,
-                                 count + int(member) if _kind != native_build.RET_SKIP or count else -1,
-                                 words if words is not None else -1]]
+                fact[1].append([src.module, src.address, src.name,
+                                count + int(member) if _kind != native_build.RET_SKIP or count else -1,
+                                words if words is not None else -1])
         facts[rel] = fact
-        if fact[1] is None:
-            continue
-        module, address, name, count, words = fact[1]
-        params[(module, address)] = count
-        arg_words[(module, address)] = words
-        if C.LIBS in path.parents:
-            library[(module, address)] = (name, count, words)
-        if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES):
-            helpers[(module, address)] = name
+        for module, address, name, count, words in fact[1]:
+            params[(module, address)] = count
+            arg_words[(module, address)] = words
+            if C.LIBS in path.parents:
+                library[(module, address)] = (name, count, words)
+            if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES):
+                helpers[(module, address)] = name
     OUT.mkdir(parents=True, exist_ok=True)
     memo_path.write_text(json.dumps({"readers": readers, "facts": facts}), newline="\n")
     helpers = compiler_helpers(helpers)

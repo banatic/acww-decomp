@@ -1,4 +1,5 @@
-"""Rename a symbol in the symbol table, every source that uses it, and its file name.
+"""Rename a symbol in the symbol table, every source that uses it, and its file name (a file of
+one function; a unit of several keeps its name).
 
     python tools/rename_symbol.py <module> <address> <old> <new>
     python tools/rename_symbol.py --tsv renames.tsv     # columns: module address old new
