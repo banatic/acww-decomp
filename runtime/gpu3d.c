@@ -70,7 +70,8 @@ typedef struct Polygon {
     uint32_t command; /* the list's command that completed it (for the check) */
 } Polygon;
 
-/* The two polygon lists: the geometry engine fills one while the other is rendered. */
+/* The polygon lists: the geometry engine fills one while those handed over before it are
+ * rendered (gpu3d.h, GPU3D_LISTS). */
 typedef struct PolygonList {
     Polygon *poly;
     int polygons, vertices; /* the RAM_COUNT values */
@@ -127,8 +128,8 @@ static struct {
     int16_t vec_result[3];
 } ge;
 
-static PolygonList lists[2];
-static int geometry_list; /* the list the geometry engine writes; the other is rendered */
+static PolygonList lists[GPU3D_LISTS];
+static int geometry_list; /* the list the geometry engine writes; the others are rendered */
 
 /* Counters for the report. */
 static uint64_t count_commands, count_polygons, count_dropped, count_swaps, count_frames, count_fifo_lost;
@@ -2620,10 +2621,10 @@ void gpu3d_vblank(void)
     done->manual_sort = (int) ge.flush_attr & 1;
     capture_list_end(done);
     render_3d(geometry_list); /* gpu3d_render, here or on the drawing thread */
-    geometry_list ^= 1;
+    geometry_list = (geometry_list + 1) % GPU3D_LISTS;
     lists[geometry_list].polygons = 0;
     lists[geometry_list].vertices = 0;
-    ge.last_strip = -1; /* the polygon RAM is the other list's now */
+    ge.last_strip = -1; /* the polygon RAM is the next list's now */
     if (cap.on) {
         capture_list_start();
     }
@@ -2705,7 +2706,7 @@ void gpu3d_init(void)
     set_viewport(0xbfff0000u); /* the full screen */
     ge.dot_limit = 0xffffff;   /* until DISP_1DOT_DEPTH is written, no dot is too far */
     ge.last_strip = -1;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < GPU3D_LISTS; i++) {
         if (lists[i].poly == NULL) {
             lists[i].poly = calloc(POLYGON_RAM, sizeof(Polygon));
         }

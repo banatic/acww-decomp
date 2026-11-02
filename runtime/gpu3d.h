@@ -44,8 +44,11 @@ void gpu3d_gxstat_write(uint32_t value);
  * list it hands over is rendered into the output buffer. */
 void gpu3d_vblank(void);
 
-/* Draws list `list` (0 or 1), which a swap handed over, into the output buffer (render.c
- * calls it, on the drawing thread or at once, from gpu3d_vblank). */
+/* Draws list `list`, which a swap handed over, into the output buffer (render.c calls it, on
+ * the drawing thread or at once, from gpu3d_vblank). The geometry engine fills the lists in
+ * turn: the list after the one a swap hands over is the next it fills, which the thread must
+ * have drawn by then (render.c waits for it), so the thread may lag a few swaps behind. */
+#define GPU3D_LISTS 5
 void gpu3d_render(int list);
 
 /* The last rendered frame: as the 2D engine's BG0 sees it, 256 pixels of red | green << 8 |

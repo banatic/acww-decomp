@@ -6,8 +6,10 @@
  * together with what changed in that state since the request before (the display and 3D
  * registers whole, the video memory by the 256-byte pieces written), and the thread keeps its
  * own copy of that state up to date from the queue: each line is drawn from exactly what it
- * would have read, while the emulation goes on. A frame with a display capture (DISPCAPCNT),
- * which writes VRAM the CPU reads back, is drawn where it is asked for, the thread idle.
+ * would have read, while the emulation goes on, up to a few frames ahead (render.c). The
+ * thread is woken for each frame and reports after each one. A frame with a display capture
+ * (DISPCAPCNT), which writes VRAM the CPU reads back, is drawn where it is asked for, the
+ * thread idle.
  *
  * RUN_RENDER_THREAD=0 in the environment turns the thread off: the requests are then drawn
  * at once, as they are when RUN_DUMP3D or RUN_TRACE=gx (which print from the renderer) are

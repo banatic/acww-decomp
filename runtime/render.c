@@ -25,6 +25,11 @@ static const struct {
 
 #define R_DISPCAPCNT 0x064u
 
+/* How many frames the thread may be behind the emulation: enough that it can wait for the
+ * processor now and then without holding the emulation up (GPU3D_LISTS lets the 3D frames
+ * be as far behind). */
+#define LAG_FRAMES 3
+
 enum Kind { M_LINE, M_FRAME, M_WRITE, M_3D, M_DATA, M_WRAP };
 
 /* A message: what changed (the registers when `regs` is set, then `chunks` pieces of video
@@ -42,6 +47,7 @@ static int direct = 1; /* this frame is drawn where it is asked for (no thread, 
 static uint8_t *ring;
 static uint64_t head, tail; /* bytes written and consumed, under the lock */
 static int waiting;         /* the thread waits for messages */
+static int main_waiting;    /* the emulation waits for the thread */
 static uint64_t frames_queued, frames_drawn, renders_queued, renders_done, frames_here;
 
 static IoVideo copy;                   /* the thread's state */
@@ -118,6 +124,8 @@ static uint32_t message_size(const Message *m)
     return (n + ALIGN - 1) & ~(ALIGN - 1);
 }
 
+/* Draws what is queued; after each frame and each 3D frame, which the emulation may be
+ * waiting for, it reports how far it got. */
 static void run_thread(void)
 {
     LOCK();
@@ -127,26 +135,26 @@ static void run_thread(void)
             WAIT(to_thread);
             waiting = 0;
         }
-        uint64_t end = head;
+        uint64_t at = tail, end = head;
         UNLOCK();
-        uint64_t at = tail;
-        uint64_t frames = 0, renders = 0;
-        while (at < end) {
+        uint32_t kind = M_DATA;
+        while (at < end && kind != M_FRAME && kind != M_3D) {
             const Message *m = (const Message *) (ring + at % RING);
-            if (m->kind == M_WRAP) {
+            kind = m->kind;
+            if (kind == M_WRAP) {
                 at += RING - at % RING;
                 continue;
             }
             handle(m);
-            frames += m->kind == M_FRAME;
-            renders += m->kind == M_3D;
             at += message_size(m);
         }
         LOCK();
         tail = at;
-        frames_drawn += frames;
-        renders_done += renders;
-        WAKE(to_main);
+        frames_drawn += kind == M_FRAME;
+        renders_done += kind == M_3D;
+        if (main_waiting) {
+            WAKE(to_main);
+        }
     }
 }
 
@@ -175,7 +183,9 @@ static void wait_for_thread(void)
     if (waiting) {
         WAKE(to_thread);
     }
+    main_waiting = 1;
     WAIT(to_main);
+    main_waiting = 0;
 }
 
 /* Room for `size` contiguous bytes, the thread having consumed enough. */
@@ -287,6 +297,10 @@ void render_init(void)
         fprintf(stderr, "render: cannot start the thread\n");
         return;
     }
+    /* Above the emulation's priority: on a busy machine Windows otherwise lets the thread
+       wait for a processor long after it is woken, and the emulation waits for its frames
+       (it sleeps whenever it has nothing to draw, so it takes no more than its share). */
+    SetThreadPriority(t, THREAD_PRIORITY_ABOVE_NORMAL);
     CloseHandle(t);
 #else
     pthread_t t;
@@ -319,7 +333,7 @@ void render_line(uint32_t y)
         gpu2d_line(y);
         return;
     }
-    post_request(M_LINE, y, 0, y % 32 == 31);
+    post_request(M_LINE, y, 0, 0);
 }
 
 void render_frame_end(uint32_t frame)
@@ -332,10 +346,13 @@ void render_frame_end(uint32_t frame)
     }
     post_request(M_FRAME, frame, 0, 1);
     frames_queued++;
-    /* at most one frame behind */
+    /* A few frames behind at most; when it is that far, the emulation waits until it has
+       caught up most of the way, so that it does not wait again at the next frame. */
     LOCK();
-    while (frames_drawn + 1 < frames_queued) {
-        wait_for_thread();
+    if (frames_drawn + LAG_FRAMES < frames_queued) {
+        while (frames_drawn + 1 < frames_queued) {
+            wait_for_thread();
+        }
     }
     UNLOCK();
 }
@@ -355,9 +372,10 @@ void render_3d(int list)
         gpu3d_render(list);
         return;
     }
-    /* The list the last one drew is the next the geometry engine fills (gpu3d.c). */
+    /* The list after this one is the next the geometry engine fills (gpu3d.h): the render
+       that used it, GPU3D_LISTS - 1 renders before this one, must be done. */
     LOCK();
-    while (renders_done < renders_queued) {
+    while (renders_done + GPU3D_LISTS - 2 < renders_queued) {
         wait_for_thread();
     }
     UNLOCK();
