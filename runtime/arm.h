@@ -124,6 +124,9 @@ struct ArmCpu {
      * at the same moments; ARM_EXEC_CHECK runs blocks and checks each one against the
      * decoding interpreter, ending the program at the first difference. */
     int exec;
+    /* With blocks, on 32-bit x86: a block that has run this many times is translated into x86
+     * code (arm_x86.c), which does what the block does; 0 never translates. */
+    uint32_t translate;
     /* Set while a block runs when it has to end after the current instruction (a branch, an
      * I/O access, a store into its own code). */
     int block_exit;

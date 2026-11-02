@@ -69,6 +69,7 @@ static void begin(const char *name)
     current = name;
     arm_init(&cpu);
     cpu.exec = exec_mode;
+    cpu.translate = exec_mode == ARM_EXEC_DECODE ? 0 : 1;
     cpu.r[13] = STACK_TOP;
     memset(memory_host(DATA, 0x100), 0, 0x100);
 }
@@ -2149,7 +2150,8 @@ static void test_rom(const char *dir)
 /* Code that changes ------------------------------------------------------------------------ */
 
 /* A store into the instructions that follow it (the block running holds them), and code
- * changed between two runs (the block decoded from it must not be used again). */
+ * changed between two runs (the block decoded from it must not be used again). Each runs
+ * three times, so that blocks run translated too. */
 static void test_code_changes(void)
 {
     for (int run = 0; run < 3; run++) {
@@ -2282,12 +2284,14 @@ typedef struct {
 
 /* From `first`, with memory as in `start`: three steps of at most 100 instructions, a pending
  * interrupt between them. */
+static uint32_t translate_after; /* (ArmCpu.translate) */
 
 static void random_run(int mode, const ArmCpu *first, const MemorySnapshot *start, RandomEnd *end)
 {
     memory_restore(start);
     cpu = *first;
     cpu.exec = mode;
+    cpu.translate = mode == ARM_EXEC_DECODE ? 0 : translate_after;
     random_trace = 0;
     for (int i = 0; i < 3; i++) {
         end->stop = arm_run(&cpu, ARM_RETURN_ADDRESS, 100);
@@ -2299,6 +2303,7 @@ static void random_run(int mode, const ArmCpu *first, const MemorySnapshot *star
     end->cpu = cpu;
     end->cpu.exec = 0;
     end->cpu.block_exit = 0;
+    end->cpu.translate = 0;
     end->trace = random_trace;
     end->ram = random_ram_hash();
 }
@@ -2347,6 +2352,7 @@ static void test_random_blocks(void)
         ArmCpu first = cpu;
         RandomEnd decoded, blocks, checked;
         random_run(ARM_EXEC_DECODE, &first, start, &decoded);
+        translate_after = (uint32_t) (trial / 2) % 3; /* never, at once, at the second run */
         random_run(ARM_EXEC_BLOCKS, &first, start, &blocks);
         random_run(ARM_EXEC_CHECK, &first, start, &checked);
         memory_snapshot_free(start);

@@ -38,6 +38,10 @@
  *     coprocessor is privileged: user mode gets the undefined instruction. Other coprocessors
  *     are undefined.
  */
+#if !defined(_WIN32) && !defined(_DEFAULT_SOURCE)
+#define _DEFAULT_SOURCE 1 /* MAP_ANONYMOUS (arm_x86.c) */
+#endif
+
 #include "arm.h"
 
 #include <stdio.h>
@@ -1703,6 +1707,8 @@ struct BlockOp {
 
 typedef struct Block {
     uint32_t start, bytes, count, thumb;
+    uint32_t runs; /* how many times it ran, until it is translated */
+    void *code;    /* its x86 code (arm_x86.c), or NULL */
     int active;    /* runs inside it: a hook in it can start another run, or switch host stacks */
     int dead;      /* replaced while a run was inside: freed when the last one leaves */
     BlockOp ops[]; /* then the bytes of the code */
@@ -2381,6 +2387,8 @@ static Block *block_build(uint32_t pc, uint32_t thumb, uint32_t region_end)
     b->bytes = bytes;
     b->count = count;
     b->thumb = thumb;
+    b->runs = 0;
+    b->code = NULL;
     b->active = 0;
     b->dead = 0;
     memcpy(b->ops, ops, count * sizeof(BlockOp));
@@ -2438,6 +2446,10 @@ static Block *block_at(uint32_t pc, uint32_t thumb)
     return fresh;
 }
 
+#if defined(__i386__)
+#include "arm_x86.c"
+#endif
+
 /* Runs block `b` from its first instruction, which the run loop has checked as it checks
  * every instruction; `mode` is the loop's stall index. Returns CONTINUE or a stop, with *at
  * the address of the last instruction executed. */
@@ -2464,16 +2476,28 @@ static int block_run(ArmCpu *cpu, Block *b, uint32_t until, uint64_t limit, int 
     block_lo = b->start;
     block_len = b->bytes;
     cpu->block_exit = 0;
-    for (;;) {
-        uint32_t next = op->pc + size;
-        cpu->r[15] = next;
-        result = op->fn(cpu, op);
-        cpu->steps++;
-        if (result != CONTINUE || cpu->block_exit || cpu->r[15] != next || --n == 0) {
-            break;
-        }
-        op++;
+#if defined(__i386__)
+    if (b->code == NULL && cpu->translate != 0 && b->runs < cpu->translate && ++b->runs == cpu->translate) {
+        b->code = (void *) x86_translate(b);
     }
+    if (b->code != NULL) {
+        uint32_t last;
+        x86_active++;
+        result = ((BlockCode) b->code)(cpu, n, &last);
+        x86_active--;
+        op = &b->ops[last];
+    } else
+#endif
+        for (;;) {
+            uint32_t next = op->pc + size;
+            cpu->r[15] = next;
+            result = op->fn(cpu, op);
+            cpu->steps++;
+            if (result != CONTINUE || cpu->block_exit || cpu->r[15] != next || --n == 0) {
+                break;
+            }
+            op++;
+        }
     block_lo = block_len = 0;
     *at = op->pc;
     if (--b->active == 0 && b->dead) {
@@ -2610,13 +2634,23 @@ static int block_checked(ArmCpu *cpu, Block *b, uint32_t until, uint64_t limit, 
     return result;
 }
 
+static uint64_t blocks_translated(void)
+{
+#if defined(__i386__)
+    return x86_blocks;
+#else
+    return 0;
+#endif
+}
+
 void arm_exec_report(const ArmCpu *cpu, FILE *out)
 {
     if (cpu->exec == ARM_EXEC_CHECK) {
         fprintf(out,
-                "arm: %llu blocks decoded; %llu block runs checked against the decoding interpreter, %llu not "
-                "(a callback or a hook ran)\n",
-                (unsigned long long) blocks_built, (unsigned long long) checked_blocks, (unsigned long long) unchecked_blocks);
+                "arm: %llu blocks decoded, %llu translated; %llu block runs checked against the decoding interpreter, "
+                "%llu not (a callback or a hook ran)\n",
+                (unsigned long long) blocks_built, (unsigned long long) blocks_translated(),
+                (unsigned long long) checked_blocks, (unsigned long long) unchecked_blocks);
     }
 }
 

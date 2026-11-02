@@ -773,12 +773,14 @@ int run_main(int argc, char **argv)
     cpu.io_read = bios_io_read;
     cpu.io_write = io_write;
     cpu.hook_at = hook_at;
-    /* RUN_JIT: 1 runs decoded blocks; "check" also checks each block run against the decoding
-       interpreter (runtime/arm.h, ArmCpu.exec). Unset or 0: the decoding interpreter. */
+    /* RUN_JIT: 1 runs decoded blocks, translated to x86 once a block has run 8 times; "blocks"
+       never translates; "check" and "check-blocks" also check each block run against the
+       decoding interpreter (runtime/arm.h, ArmCpu.exec). Unset or 0: the decoding interpreter. */
     const char *exec = getenv("RUN_JIT");
-    cpu.exec = exec == NULL || !*exec || !strcmp(exec, "0") ? ARM_EXEC_DECODE
-               : !strcmp(exec, "check")                     ? ARM_EXEC_CHECK
-                                                            : ARM_EXEC_BLOCKS;
+    cpu.exec = exec == NULL || !*exec || !strcmp(exec, "0")              ? ARM_EXEC_DECODE
+               : !strcmp(exec, "check") || !strcmp(exec, "check-blocks") ? ARM_EXEC_CHECK
+                                                                         : ARM_EXEC_BLOCKS;
+    cpu.translate = exec != NULL && (!strcmp(exec, "blocks") || !strcmp(exec, "check-blocks")) ? 0 : 8;
     if (getenv("RUN_STEPS") != NULL) {
         /* RUN_STEPS=<from>,<count>: print those instructions as they execute */
         unsigned long long from = 0, count = 0;
