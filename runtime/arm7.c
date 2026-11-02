@@ -61,6 +61,7 @@ static struct {
     uint32_t snd_finished;
     int sequencer; /* the sequencer runs the lists' commands (RUN_SEQUENCER) */
     int wireless;  /* the wireless manager answers (RUN_WIRELESS, wm.h) */
+    int wifi;      /* Nintendo Wi-Fi Connection offline (RUN_WIFI, wifi.h) */
     /* tag 0xb: the ARM9's command block, the backup chip, and whether the next word is
        the block's address (it follows command 0) */
     uint32_t card_command;
@@ -284,6 +285,16 @@ static void backup_load(const char *path)
     fprintf(stderr, "arm7: save %s, %zu bytes\n", path, n);
 }
 
+/* Whether the variable `name` is set to a nonzero number. The wireless (wm.c, wifi.c) and the
+ * sound sequences (sequencer.c) are entered only when theirs is (here, and run.c through
+ * arm7_wifi): a run without it does not depend on those files, which tools/run.py leaves out of
+ * the Reference cache's key then. */
+static int env_on(const char *name)
+{
+    const char *text = getenv(name);
+    return text != NULL && atoi(text) != 0;
+}
+
 void arm7_init(const char *rom)
 {
     memset(&arm7, 0, sizeof(arm7));
@@ -298,16 +309,14 @@ void arm7_init(const char *rom)
     rtc_pin();
     rtc_update();
     nvram_init();
-    arm7.wireless = wm_init(arm7.nvram);
-    if (arm7.wireless) {
-        wifi_init(arm7.nvram);
-    }
+    arm7.wireless = env_on("RUN_WIRELESS") && wm_init(arm7.nvram);
+    arm7.wifi = arm7.wireless && wifi_init(arm7.nvram);
     /* the save chip, a 2 Mbit flash as this game has: erased, or holding the image RUN_SAVE
        names (a save file as emulators write it). Writes stay in memory; the file is only read. */
     arm7.backup = malloc(BACKUP_SIZE);
     memset(arm7.backup, 0xff, BACKUP_SIZE);
     backup_load(getenv("RUN_SAVE"));
-    arm7.sequencer = sequencer_init(rom);
+    arm7.sequencer = env_on("RUN_SEQUENCER") && sequencer_init(rom);
 }
 
 static void reply(uint32_t tag, uint32_t data, int err)
@@ -612,6 +621,15 @@ void arm7_report(FILE *out)
                     (unsigned long long) arm7.answered[tag], (unsigned long long) arm7.unanswered[tag]);
         }
     }
-    sequencer_report(out);
-    wm_report(out);
+    if (arm7.sequencer) {
+        sequencer_report(out);
+    }
+    if (arm7.wireless) {
+        wm_report(out);
+    }
+}
+
+int arm7_wifi(void)
+{
+    return arm7.wifi;
 }

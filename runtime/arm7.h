@@ -24,4 +24,7 @@ void arm7_report(FILE *out);
 #define ARM7_BACKUP_SIZE 0x40000u
 const uint8_t *arm7_backup(uint64_t *writes);
 
+/* Nintendo Wi-Fi Connection offline is on (RUN_WIFI with RUN_WIRELESS, wifi.h). */
+int arm7_wifi(void);
+
 #endif

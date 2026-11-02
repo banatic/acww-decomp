@@ -94,10 +94,13 @@ Environment variables, for following a run on stderr:
 from __future__ import annotations
 
 import argparse
+import array
 import concurrent.futures as cf
 import functools
 import hashlib
+import itertools
 import json
+import lzma
 import os
 import pathlib
 import re
@@ -486,6 +489,7 @@ def build(native: bool, clean: str | None = None, ran: bool = False, play: str |
     srcs = [str(RUNTIME / n) for n in SOURCES]
     extra: list[str] = []
     link: list[str] = []
+    runtime_sources: list[pathlib.Path] = []  # the runtime code in `extra`, for program_inputs
     if native:
         if not (NATIVE / "natives.s").exists():
             raise SystemExit("run `python tools/native.py` first")
@@ -495,8 +499,11 @@ def build(native: bool, clean: str | None = None, ran: bool = False, play: str |
         extra = [str(compile_asm(a, OUT / ("run-" + a.name.replace(".s", ".o")))) for a in assembly]
         table = write_clean_table(clean)
         extra += [str(RUNTIME / "native_rt.c"), str(table), f"@{NATIVE / 'objects.txt'}"]
+        runtime_sources += [RUNTIME / "native_rt_win.s"] if WINDOWS else []
+        runtime_sources += [RUNTIME / "native_rt.c", table]
         if ran:
             extra.append(str(RUNTIME / "clean_ran.c"))
+            runtime_sources.append(RUNTIME / "clean_ran.c")
         if clean:
             extra += build_clean(flags)
         # Classes split one function per file define their destructors and vtable in several
@@ -526,14 +533,18 @@ def build(native: bool, clean: str | None = None, ran: bool = False, play: str |
         flags = [*flags, "-DRUN_FRONT_END"]
         link = [*link, "-luser32", "-lgdi32", "-ldelayimp", "-Wl,/DELAYLOAD:user32.dll", "-Wl,/DELAYLOAD:gdi32.dll"]
     cmd = [*diffcheck.compiler(), *flags, *srcs, *extra, *link, "-o", str(exe)]
+    inputs = json.dumps(program_inputs(cmd, [pathlib.Path(s) for s in srcs] + runtime_sources), indent=1)
     key = link_key(cmd)  # an unchanged program is not linked again
     if built_before(exe, key):
+        exe.with_name(exe.name + ".inputs").write_text(inputs, newline="\n")
         return exe
     exe.with_name(exe.name + ".key").unlink(missing_ok=True)
+    exe.with_name(exe.name + ".inputs").unlink(missing_ok=True)
     p = subprocess.run(cmd, capture_output=True, text=True)
     if p.returncode != 0:
         raise SystemExit((p.stdout + p.stderr)[-6000:])
     exe.with_name(exe.name + ".key").write_text(key)
+    exe.with_name(exe.name + ".inputs").write_text(inputs, newline="\n")
     if p.stderr.strip() and not native:  # the Native link warns of every duplicate it drops
         print(p.stderr[-4000:], file=sys.stderr)
     return exe
@@ -805,29 +816,92 @@ def summary(text: str) -> dict:
 
 
 # The Reference pass only interprets the ROM: what it writes (its log, frame hashes, memory
-# images, the crossings record) follows from the interpreter, the inputs, and which functions
-# the policy makes Native or Clean (it records the crossings at those, and with Clean the
-# runtime runs the static initialisers itself), not from what the Native or Clean code does.
+# images, the crossings record) follows from the program's runtime code, the inputs, and which
+# functions the policy makes Native or Clean (it records the crossings at those, and with Clean
+# the runtime runs the static initialisers itself), not from what the Native or Clean code does.
 # A run with all of those the same reuses an earlier run's results, from the cache every
-# checkout shares (tools/common.py). ACWW_NO_REFERENCE_CACHE=1 always runs it.
+# checkout shares (tools/common.py). ACWW_NO_REFERENCE_CACHE=1 always runs it;
+# ACWW_REFERENCE_VERIFY=1 runs it even when the cache has it, and fails when the two differ
+# (tools/scenes.py --verify-cache does so for a few scenes of each pass).
 REFERENCE_PATHS = ("RUN_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_RECORD", "RUN_FUNCTIONS_SEEN")
+# What a cache entry holds and how: changed whenever an entry's contents, their encoding, or
+# the way this file runs the Reference pass changes (the rest of this file is not in the key)
+REFERENCE_FORMAT = "2"
+# Runtime sources the program enters only when a variable is set (runtime/arm7.c, env_on, and
+# run.c through arm7_wifi): without it a Reference run does not depend on them, and the key
+# leaves them out. tools/test_run_reference.py holds the places they are entered from.
+FEATURE_SOURCES = {"wm.c": "RUN_WIRELESS", "wifi.c": "RUN_WIRELESS", "sequencer.c": "RUN_SEQUENCER"}
 
 
-def reference_key(env: dict, budget: list[str], manifest: pathlib.Path, table: pathlib.Path, args) -> str:
+def program_inputs(cmd: list[str], sources: list[pathlib.Path]) -> dict:
+    """What a program's runtime code is made of, for the Reference cache's key: the compile and
+    link command without its objects, response files and output paths (the Native and Clean
+    code, which the Reference pass does not run), and the runtime sources compiled into it."""
+    command, skip = [], False
+    for arg in cmd:
+        if skip or arg == "-o":
+            skip = not skip
+            continue
+        if arg.startswith("@") or ".map" in arg or pathlib.Path(arg).suffix in (".c", ".s", ".S", ".o", ".obj"):
+            continue
+        command.append(C.tree_free(arg.replace(str(OUT), "<out>")))
+    names = []
+    for src in sources:
+        src = src.resolve()
+        names.append("<root>/" + src.relative_to(C.ROOT).as_posix() if src.is_relative_to(RUNTIME)
+                     else "<out>/" + src.relative_to(OUT.resolve()).as_posix())
+    return {"command": command, "sources": names}
+
+
+def runtime_includes(paths: list[pathlib.Path]) -> list[pathlib.Path]:
+    """The headers `paths` pull in through #include "...", transitively, as the runtime's compile
+    finds them (the including file's directory, then runtime/)."""
+    seen: dict[pathlib.Path, None] = {}
+    todo = list(paths)
+    while todo:
+        path = todo.pop()
+        for name in C.INCLUDE_LINE.findall(path.read_bytes()):
+            for base in (path.parent, RUNTIME):
+                cand = (base / name.decode()).resolve()
+                if cand.is_file():
+                    if cand not in seen:
+                        seen[cand] = None
+                        todo.append(cand)
+                    break
+    return sorted(seen)
+
+
+def reference_sources(inputs: dict, env: dict) -> list[pathlib.Path]:
+    """The program's sources a Reference run with `env` can enter, and every header they include."""
+    sources = []
+    for name in inputs["sources"]:
+        path = (C.ROOT / name[len("<root>/"):] if name.startswith("<root>/") else OUT / name[len("<out>/"):]).resolve()
+        gate = FEATURE_SOURCES.get(path.name) if path.parent == RUNTIME else None
+        if gate is None or gate in env:
+            sources.append(path)
+    return sorted(set(sources) | set(runtime_includes(sources)))
+
+
+def reference_key(env: dict, budget: list[str], manifest: pathlib.Path, table: pathlib.Path,
+                  exe: pathlib.Path) -> str | None:
+    try:
+        inputs = json.loads(exe.with_name(exe.name + ".inputs").read_text())
+    except (OSError, ValueError):
+        return None  # a program built before its inputs were noted
     h = hashlib.sha1()
 
     def add(label: str, data: bytes) -> None:
         h.update(f"{label}\0{len(data)}\0".encode() + data)
-    for path in sorted(p for p in RUNTIME.iterdir() if p.is_file()):  # the interpreter and the runtime
-        add(path.name, path.read_bytes())
-    add("run.py", pathlib.Path(__file__).read_bytes())
+    add("format", REFERENCE_FORMAT.encode())
+    add("command", "\0".join(inputs["command"]).encode())
+    for path in reference_sources(inputs, env):  # the interpreter and the rest of the runtime
+        label = path.relative_to(RUNTIME).as_posix() if path.is_relative_to(RUNTIME) else path.name
+        add(label, path.read_bytes())
     add("rom", ROM.read_bytes())
     add("modules", C.tree_free(manifest.read_text()).encode())
     add("symbols", table.read_bytes())
     for name in ("natives.s", "absolute.s"):  # which functions have a Native, and where
         add(name, (NATIVE / name).read_bytes())
-    if args.clean:
-        add("clean table", (OUT / "clean_table.c").read_bytes())
     add("budget", " ".join(budget).encode())
     for name, value in sorted(env.items()):
         if not name.startswith("RUN_") or name in REFERENCE_PATHS:
@@ -843,29 +917,106 @@ def reference_files(out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Pat
     if (out / "functions-seen.txt").exists():
         files["functions-seen.txt"] = out / "functions-seen.txt"
     if trace.exists():
-        files["crossings.bin"] = trace
-    files |= {f"ram/{p.name}": p for p in ram_dir.glob("ram-*-reference.bin")}
+        files[CROSSINGS] = trace
+    files |= {f"ram/{p.name}": p for p in sorted(ram_dir.glob("ram-*-reference.bin"))}
     return files
 
 
+# A cache entry: index.json (each file's name, size and SHA-1, in order), crossings.xz (the
+# crossings record, see pack_crossings) and files.xz (the other files one after another). An
+# entry takes about a sixtieth of the space of the files it holds; each file put back is
+# checked by its SHA-1.
+CROSSINGS = "crossings.bin"
+RECORD_BYTES = 40  # runtime/native_run.c, RECORD_WORDS
+CHUNK_RECORDS = 1 << 20
+
+
+def pack_crossings(src: pathlib.Path, dest: pathlib.Path) -> str:
+    """The crossings record as LZMA of its words a column at a time (each 2^20 records), the low
+    word of the step count as the difference from the previous record's; returns its SHA-1."""
+    assert array.array("I").itemsize == 4 and sys.byteorder == "little"
+    digest = hashlib.sha1()
+    comp = lzma.LZMACompressor(preset=1)
+    previous = 0
+    words_per_record = RECORD_BYTES // 4
+    with open(src, "rb") as f, open(dest, "wb") as out:
+        while data := f.read(CHUNK_RECORDS * RECORD_BYTES):
+            if len(data) % RECORD_BYTES:
+                raise ValueError(f"{src}: not whole records")
+            digest.update(data)
+            words = array.array("I", data)
+            columns = [words[i::words_per_record] for i in range(words_per_record)]
+            low = columns[3]
+            columns[3] = array.array("I", map(lambda a, b: (a - b) & 0xFFFFFFFF, low, itertools.chain([previous], low)))
+            previous = low[-1]
+            for column in columns:
+                out.write(comp.compress(column.tobytes()))
+        out.write(comp.flush())
+    return digest.hexdigest()
+
+
+def unpack_crossings(src: pathlib.Path, dest: pathlib.Path, size: int) -> str:
+    """pack_crossings undone; returns the SHA-1 of what it wrote."""
+    digest = hashlib.sha1()
+    previous = 0
+    words_per_record = RECORD_BYTES // 4
+    with lzma.open(src, "rb") as f, open(dest, "wb") as out:
+        for at in range(0, size, CHUNK_RECORDS * RECORD_BYTES):
+            n = min(CHUNK_RECORDS * RECORD_BYTES, size - at) // RECORD_BYTES
+            data = f.read(n * RECORD_BYTES)
+            if len(data) != n * RECORD_BYTES:
+                raise ValueError(f"{src}: short")
+            columns = [array.array("I", data[i * 4 * n:(i + 1) * 4 * n]) for i in range(words_per_record)]
+            low = array.array("I", map(lambda v: v & 0xFFFFFFFF, itertools.accumulate(columns[3], initial=previous)))
+            columns[3] = low[1:]
+            previous = low[-1]
+            words = array.array("I", bytes(n * RECORD_BYTES))
+            for i, column in enumerate(columns):
+                words[i::words_per_record] = column
+            data = words.tobytes()
+            digest.update(data)
+            out.write(data)
+    return digest.hexdigest()
+
+
+def file_sha1(path: pathlib.Path) -> str:
+    h = hashlib.sha1()
+    with open(path, "rb") as f:
+        while block := f.read(1 << 24):
+            h.update(block)
+    return h.hexdigest()
+
+
+def reference_entry(key: str) -> pathlib.Path:
+    return C.CACHE_DIR / "reference" / key[:2] / key
+
+
 def reference_cached(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> bool:
-    """Put a cached Reference run's results in place; False when there is none."""
-    entry = C.CACHE_DIR / "reference" / key[:2] / key
+    """Put a cached Reference run's results in place; False when there is none (or it does not
+    come back exactly as it was kept)."""
+    entry = reference_entry(key)
     if os.environ.get("ACWW_NO_REFERENCE_CACHE") or not (entry / "done").exists():
         return False
     try:
+        index = json.loads((entry / "index.json").read_text())
         trace.unlink(missing_ok=True)
-        (out / "functions-seen.txt").unlink(missing_ok=True)  # (an older entry has none)
+        (out / "functions-seen.txt").unlink(missing_ok=True)
         for old in ram_dir.glob("ram-*-reference.bin"):
             old.unlink()
-        for src in entry.rglob("*"):
-            name = src.relative_to(entry).as_posix()
-            if src.is_file() and name != "done":
-                dest = ram_dir / src.name if name.startswith("ram/") else out / name
-                shutil.copyfile(src, dest)
+        with lzma.open(entry / "files.xz", "rb") as packed:
+            for name, size, sha1 in index:
+                dest = ram_dir / name[len("ram/"):] if name.startswith("ram/") else out / name
+                if name == CROSSINGS:
+                    if unpack_crossings(entry / "crossings.xz", dest, size) != sha1:
+                        raise ValueError(name)
+                    continue
+                data = packed.read(size)
+                if len(data) != size or hashlib.sha1(data).hexdigest() != sha1:
+                    raise ValueError(name)
+                dest.write_bytes(data)
         os.utime(entry)
         return True
-    except OSError:
+    except (OSError, ValueError, lzma.LZMAError):
         return False
 
 
@@ -873,19 +1024,54 @@ def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pa
     """Keep this Reference run's results in the shared cache (written whole, then renamed)."""
     if os.environ.get("ACWW_NO_REFERENCE_CACHE"):
         return
-    entry = C.CACHE_DIR / "reference" / key[:2] / key
+    entry = reference_entry(key)
     if (entry / "done").exists():
         return
     tmp = entry.with_name(f"{key}.{os.getpid()}")
     try:
-        for name, src in reference_files(out, ram_dir, trace).items():
-            (tmp / name).parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(src, tmp / name)
+        tmp.mkdir(parents=True, exist_ok=True)
+        index = []
+        # the memory images follow one another closely: a dictionary that holds one finds the next
+        filters = [{"id": lzma.FILTER_LZMA2, "preset": 1, "dict_size": 8 << 20}]
+        with lzma.open(tmp / "files.xz", "wb", format=lzma.FORMAT_XZ, filters=filters) as packed:
+            for name, src in reference_files(out, ram_dir, trace).items():
+                if name == CROSSINGS:
+                    index.append([name, src.stat().st_size, pack_crossings(src, tmp / "crossings.xz")])
+                    continue
+                data = src.read_bytes()
+                packed.write(data)
+                index.append([name, len(data), hashlib.sha1(data).hexdigest()])
+        (tmp / "index.json").write_text(json.dumps(index), newline="\n")
         (tmp / "done").touch()
         os.replace(tmp, entry)
-    except OSError:
+    except (OSError, ValueError):
         shutil.rmtree(tmp, ignore_errors=True)
     C.prune_cache(("reference",))
+
+
+def log_facts(text: str) -> list[str]:
+    """A Reference log's lines, without those that name a host path or a host time."""
+    return [line for line in text.splitlines() if not re.search(r"[A-Za-z]:[\\/]|/|\bms\b", line)]
+
+
+def reference_differs(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> list[str]:
+    """The files of the cache's entry for `key` that this (fresh) run did not give exactly."""
+    entry = reference_entry(key)
+    index = json.loads((entry / "index.json").read_text())
+    files = reference_files(out, ram_dir, trace)
+    differ = sorted(set(files) ^ {name for name, _, _ in index})
+    with lzma.open(entry / "files.xz", "rb") as packed:
+        for name, size, sha1 in index:
+            kept = packed.read(size) if name != CROSSINGS else b""
+            if name not in files:
+                continue
+            if name == "reference.log":
+                fresh = files[name].read_text(encoding="utf-8", errors="replace")
+                if log_facts(fresh) != log_facts(kept.decode("utf-8", errors="replace")):
+                    differ.append(name)
+            elif file_sha1(files[name]) != sha1:
+                differ.append(name)
+    return differ
 
 
 def prepared(args) -> tuple[pathlib.Path, pathlib.Path]:
@@ -927,7 +1113,10 @@ def native_main(args, manifest, table, budget, env) -> int:
     ram_dir = pathlib.Path(args.ram_dump) if args.ram_dump else out / "ram"
     ram_dir.mkdir(parents=True, exist_ok=True)
     env["RUN_RAM_DUMP"] = str(ram_dir.resolve())
-    trace = out / "crossings.bin"
+    trace = out / CROSSINGS
+    keeping: list[cf.Future] = []  # the cache's copy is made while the Native run runs
+    keeper = cf.ThreadPoolExecutor(1)
+    wrong: list[str] = []
 
     def reference() -> dict:
         ref_env = dict(env, RUN_HASH=str(out / "reference-hashes.txt"))
@@ -936,16 +1125,26 @@ def native_main(args, manifest, table, budget, env) -> int:
             # the functions the game runs, for scenes.py --affected
             ref_env["RUN_FUNCTIONS_SEEN"] = str(out / "functions-seen.txt")
         # (a run that writes pictures, RUN_PNG, keeps nothing: the cache holds no pictures)
-        key = None if "RUN_PNG" in ref_env else reference_key(ref_env, budget, manifest, table, args)
-        if key and reference_cached(key, out, ram_dir, trace):
+        key = None if "RUN_PNG" in ref_env else reference_key(ref_env, budget, manifest, table, exe)
+        verify = (bool(os.environ.get("ACWW_REFERENCE_VERIFY")) and key is not None
+                  and not os.environ.get("ACWW_NO_REFERENCE_CACHE") and (reference_entry(key) / "done").exists())
+        if key and not verify and reference_cached(key, out, ram_dir, trace):
             print(f"reference run: the results of an identical one ({key[:12]})", flush=True)
             return summary((out / "reference.log").read_text(encoding="utf-8", errors="replace"))
         print("reference run" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
         status, text = run_once(exe, manifest, table, budget, ref_env, out / "reference.log")
+        if verify:
+            differ = reference_differs(key, out, ram_dir, trace)
+            print(f"reference cache: entry {key[:12]} " + (f"DIFFERS from a fresh run in {', '.join(differ)}"
+                                                         if differ else "is what a fresh run gives"), flush=True)
+            if differ:
+                # its key leaves out something the run depends on: drop the entry, fail the run
+                wrong.extend(differ)
+                shutil.rmtree(reference_entry(key), ignore_errors=True)
         # only a run that ended as it should is kept: one cut short (a full disk, a crash)
         # would otherwise be reused as if it were the Reference
-        if key and status == 0 and summary(text)["sequence"] is not None:
-            keep_reference(key, out, ram_dir, trace)
+        elif key and status == 0 and summary(text)["sequence"] is not None:
+            keeping.append(keeper.submit(keep_reference, key, out, ram_dir, trace))
         return summary(text)
 
     ref = reference()
@@ -975,7 +1174,12 @@ def native_main(args, manifest, table, budget, env) -> int:
         # the record depends on which functions are Native: make it again
         (OUT / "prepared.txt").unlink(missing_ok=True)
         env["RUN_NATIVE_POLICY"] = nat_env["RUN_NATIVE_POLICY"] = str(write_policy(args.native, args.clean))
+        for f in keeping:  # (the record is made again)
+            f.result()
         ref = reference()
+    for f in keeping:
+        f.result()
+    keeper.shutdown()
     nat = summary(nat_text)
     if args.clean_ran:
         write_ran(ran, pathlib.Path(args.clean_ran))
@@ -1002,6 +1206,9 @@ def native_main(args, manifest, table, budget, env) -> int:
         print(f"ram after frame {frame}: reference {a}, native {b}: {verdict}")
         same = same and differ == 0
     print("Native and Reference agree" if same else "Native and Reference DIFFER")
+    if wrong:
+        print("reference cache: an entry did not give what a fresh run gives (its key misses an input)")
+        return 1
     return 0 if same else 1
 
 

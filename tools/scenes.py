@@ -10,6 +10,7 @@ which is not part of this repository.
     python tools/scenes.py --seed PATH --look fish-cast      # Reference only, PNGs of its key frames
     python tools/scenes.py --seed PATH --clean-ran DIR       # also DIR/<scene>.json: the Clean functions entered
     python tools/scenes.py --seed PATH --write-expect NEW    # a new scene's <scene>.sha1, once it passes
+    python tools/scenes.py --seed PATH -j 4 --verify-cache 2 # two scenes' cached Reference runs made again
     python tools/scenes.py --seed PATH --bisect house       # which Clean function breaks a scene
     python tools/scenes.py --convert SCRIPT.pad --at 3000:2400   # a pad script as a recording
 
@@ -49,6 +50,7 @@ import hashlib
 import os
 import pathlib
 import queue
+import random
 import re
 import struct
 import subprocess
@@ -2847,23 +2849,25 @@ def work_dir(name: str, look: bool, clean: str | None) -> pathlib.Path:
 
 
 def run(name: str, seed: pathlib.Path, look: bool, only_native: str, clean: str | None,
-        runtime: pathlib.Path, ran: pathlib.Path | None = None, token: str | None = None) -> dict:
+        runtime: pathlib.Path, ran: pathlib.Path | None = None, token: str | None = None, verify: bool = False) -> dict:
     """One scene's run: tools/run.py builds and runs in `runtime` (ACWW_RUNTIME_OUT, a directory
     from take_runtimes), so scenes can run side by side: each one's runs write their programs and
     logs in one place. With `ran` (and `clean`), the Clean functions the scene entered go to
     ran/<name>.json. With `token`, the program and policy the first scene in `runtime` made are
-    used again (tools/run.py --reuse-build)."""
+    used again (tools/run.py --reuse-build). With `verify`, a Reference run the cache has is made
+    again and compared with it (tools/run.py, ACWW_REFERENCE_VERIFY)."""
     sc = SCENES[name]
     work = work_dir(name, look, clean)
     held = lock(work / "lock", wait=True)  # one run of a scene's pass at a time
     try:
-        return run_in(name, sc, seed, work, look, only_native, clean, runtime, ran, token)
+        return run_in(name, sc, seed, work, look, only_native, clean, runtime, ran, token, verify)
     finally:
         held.close()
 
 
 def run_in(name: str, sc: dict, seed: pathlib.Path, work: pathlib.Path, look: bool, only_native: str,
-           clean: str | None, runtime: pathlib.Path, ran: pathlib.Path | None, token: str | None) -> dict:
+           clean: str | None, runtime: pathlib.Path, ran: pathlib.Path | None, token: str | None,
+           verify: bool = False) -> dict:
     recording = RECORDINGS / f"{sc['recording']}.txt"
     save = derive_save(seed, sc["save"])
     cmd = [sys.executable, str(C.ROOT / "tools" / "run.py"), "0", str(sc["frames"]), "--input", str(recording),
@@ -2888,6 +2892,8 @@ def run_in(name: str, sc: dict, seed: pathlib.Path, work: pathlib.Path, look: bo
             cmd += ["--reuse-build", token]
     started = time.monotonic()
     env = dict(os.environ, ACWW_RUNTIME_OUT=str(runtime))
+    if verify:
+        env["ACWW_REFERENCE_VERIFY"] = "1"
     p = subprocess.run(cmd, cwd=C.ROOT, capture_output=True, text=True, errors="replace", env=env)
     text = p.stdout + p.stderr
     (work / ("look.log" if look else "run.log")).write_text(text, encoding="utf-8")
@@ -2995,6 +3001,8 @@ def main() -> int:
     ap.add_argument("--look", action="store_true", help="Reference only, PNGs of the key frames")
     ap.add_argument("--native", default="all", help="the --native policy for tools/run.py (default all)")
     ap.add_argument("--clean", default="all", help="the --clean list for tools/run.py (default all; 'none': Native only)")
+    ap.add_argument("--verify-cache", type=int, default=0, metavar="N", help="for N scenes picked at random, "
+                    "run the Reference again when the cache has it, and fail when the two differ (tools/run.py)")
     ap.add_argument("--clean-ran", metavar="DIR", help="also list the Clean functions each scene entered, "
                     "as DIR/<scene>.json (tools/run.py --clean-ran; merge with tools/progress_map.py --merge-ran)")
     ap.add_argument("--write-expect", action="store_true", help="write <scene>.sha1 beside the recording for "
@@ -3049,11 +3057,14 @@ def main() -> int:
     for runtime, _held in held_slots:
         slots.put(runtime)
     token = f"{os.getpid()}-{time.time_ns()}"
+    verified = set(random.sample(names, min(max(0, args.verify_cache), len(names)))) if not args.look else set()
+    if verified:
+        print(f"scenes: the cached Reference runs of {' '.join(sorted(verified))} are made again", flush=True)
 
     def one(name: str) -> dict:
         runtime = slots.get()
         try:
-            return run(name, seed, args.look, args.native, clean, runtime, ran, token)
+            return run(name, seed, args.look, args.native, clean, runtime, ran, token, name in verified)
         finally:
             slots.put(runtime)
     pool = cf.ThreadPoolExecutor(max(1, args.jobs))

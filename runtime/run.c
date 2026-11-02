@@ -278,7 +278,7 @@ static ArmHook hook_at(void *user, uint32_t address, void **hook_user)
         verified = boot_verify(manifest_path, stdout);
         native_resident_ready();
     }
-    ArmHook shim = wifi_hook_at(address, hook_user);
+    ArmHook shim = arm7_wifi() ? wifi_hook_at(address, hook_user) : NULL;
     if (shim != NULL) {
         return shim;
     }

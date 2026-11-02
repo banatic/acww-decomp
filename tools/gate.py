@@ -34,6 +34,7 @@ import common as C  # noqa: E402
 PY = sys.executable
 RTC = "2005-11-23 12:00:00"
 JOBS = os.environ.get("ACWW_GATE_JOBS") or str(max(1, (os.cpu_count() or 4) * 3 // 8))
+VERIFY = os.environ.get("ACWW_GATE_VERIFY") or "2"  # scenes a pass runs its Reference again for
 RECORDINGS = [
     ("title", "runtime/recordings/title-start", 1300, "100,390,500,700,1000,1299"),
     ("new-game", "runtime/recordings/new-game", 13760, "1299,2600,7200,9750,12100,13300,13759"),
@@ -54,8 +55,11 @@ Step = tuple[str, list[str]]
 
 def scene_steps(names: list[str]) -> list[list[Step]]:
     """The two passes, each a chain of its own (they run side by side)."""
-    return [[("scenes-clean", [PY, "tools/scenes.py", "-j", JOBS, *names])],
-            [("scenes-none", [PY, "tools/scenes.py", "--clean", "none", "-j", JOBS, *names])]]
+    # a few of each pass's cached Reference runs are made again: a key that leaves out something
+    # a run depends on shows as a failed step (tools/run.py, ACWW_REFERENCE_VERIFY)
+    verify = ["--verify-cache", VERIFY]
+    return [[("scenes-clean", [PY, "tools/scenes.py", "-j", JOBS, *verify, *names])],
+            [("scenes-none", [PY, "tools/scenes.py", "--clean", "none", "-j", JOBS, *verify, *names])]]
 
 
 def plan(base: str | None) -> list[list[list[Step]]]:

@@ -108,7 +108,7 @@ def prune_cache(kinds: tuple[str, ...] | None = None) -> None:
     goes first, a directory entry (a Reference run's results) as a whole. Nothing used in the
     last ten minutes is removed. The whole cache is looked over at most once an hour; with
     `kinds`, only those, every time, against their own limit (ACWW_CACHE_REFERENCE_GB, default
-    6, for "reference": one entry is up to 700 MB, and a gate stores dozens)."""
+    16, for "reference": an entry is 2 to 15 MB, and a gate stores two for every scene)."""
     stamp = CACHE_DIR / ".pruned"
     now = time.time()
     if kinds is None:
@@ -119,7 +119,7 @@ def prune_cache(kinds: tuple[str, ...] | None = None) -> None:
             pass
         limit = float(os.environ.get("ACWW_CACHE_LIMIT_GB", "10")) * (1 << 30)
     else:
-        limit = float(os.environ.get("ACWW_CACHE_REFERENCE_GB", "6")) * (1 << 30)
+        limit = float(os.environ.get("ACWW_CACHE_REFERENCE_GB", "16")) * (1 << 30)
     entries = []  # (last used, size, path)
     for kind in (CACHE_DIR.iterdir() if CACHE_DIR.is_dir() else ()):
         if not kind.is_dir() or (kinds is not None and kind.name not in kinds):
