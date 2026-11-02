@@ -1460,10 +1460,17 @@ static struct {
     uint32_t disp3dcnt, alpha_ref, clear1, clear2, fog_color, fog_offset, fog_shift;
     uint8_t fog_table[34]; /* the 32 entries with the first and last repeated at the ends */
     uint16_t toon[32], edge[8];
+    const uint8_t *texture[4], *texture_palette[8]; /* the slots as mapped (io.h), or NULL */
 } rr;
 
 static void capture_registers(void)
 {
+    for (int i = 0; i < 4; i++) {
+        rr.texture[i] = io_vram_texture(i);
+    }
+    for (int i = 0; i < 8; i++) {
+        rr.texture_palette[i] = io_vram_texture_palette(i); /* 6 and 7: none */
+    }
     rr.disp3dcnt = io_view_reg(0x060) & 0xffff;
     rr.alpha_ref = (rr.disp3dcnt & 4) ? io_view_reg(0x340) & 31 : 0; /* alpha 0 is never drawn */
     rr.clear1 = io_view_reg(0x350);
@@ -1502,17 +1509,17 @@ static uint32_t rgb555_to_6(uint32_t c)
     return COLOR(c6(c & 31), c6((c >> 5) & 31), c6((c >> 10) & 31), 0);
 }
 
-/* Texture memory: the 512 KiB image space and the 128 KiB palette space, by bank slot. A
- * read where no bank is mapped gives zero. */
+/* Texture memory: the 512 KiB image space and the 128 KiB palette space, by bank slot (as
+ * mapped when the frame started). A read where no bank is mapped gives zero. */
 static uint8_t tex_read8(uint32_t address)
 {
-    const uint8_t *slot = io_vram_texture((int) ((address >> 17) & 3));
+    const uint8_t *slot = rr.texture[(address >> 17) & 3];
     return slot ? slot[address & 0x1ffff] : 0;
 }
 
 static uint16_t tex_read16(uint32_t address)
 {
-    const uint8_t *slot = io_vram_texture((int) ((address >> 17) & 3));
+    const uint8_t *slot = rr.texture[(address >> 17) & 3];
     if (slot == NULL) {
         return 0;
     }
@@ -1522,7 +1529,7 @@ static uint16_t tex_read16(uint32_t address)
 
 static uint16_t pal_read16(uint32_t address)
 {
-    const uint8_t *slot = io_vram_texture_palette((int) ((address >> 14) & 7));
+    const uint8_t *slot = rr.texture_palette[(address >> 14) & 7];
     if (slot == NULL) {
         return 0;
     }
@@ -2473,27 +2480,58 @@ static void render_list(PolygonList *list)
         order[i] = &list->poly[i];
     }
     qsort(order, (size_t) list->polygons, sizeof(order[0]), list->manual_sort ? compare_order : compare_polygons);
+    /* Line by line, each polygon on the line in order. A polygon covers its lines from ytop
+       to ybot - 1, or ytop alone when it is one line high; the polygons a line covers are
+       kept in order: those still covering it, merged with those whose first line on the
+       screen it is (`starting`, from `first` for each line, in order). */
+    static int first[SCREEN_H + 1], starting[POLYGON_RAM], active[2][POLYGON_RAM];
+    static int32_t first_line[POLYGON_RAM], last_line[POLYGON_RAM];
     int count = 0;
+    memset(first, 0, sizeof(first));
     for (int i = 0; i < list->polygons; i++) {
-        if (!order[i]->degenerate) {
-            raster_setup(&raster[count++], order[i]);
+        const Polygon *p = order[i];
+        if (!p->degenerate) {
+            first_line[count] = p->ytop < 0 ? 0 : p->ytop;
+            last_line[count] = p->ybot > p->ytop ? p->ybot - 1 : p->ytop;
+            if (first_line[count] < SCREEN_H && first_line[count] <= last_line[count]) {
+                first[first_line[count] + 1]++;
+            }
+            raster_setup(&raster[count++], p);
         }
     }
-    /* line by line, each polygon on the line in order */
+    for (int y = 0; y < SCREEN_H; y++) {
+        first[y + 1] += first[y]; /* where each line's starters begin in `starting` */
+    }
+    {
+        int at[SCREEN_H];
+        memcpy(at, first, sizeof(at));
+        for (int i = 0; i < count; i++) {
+            if (first_line[i] < SCREEN_H && first_line[i] <= last_line[i]) {
+                starting[at[first_line[i]]++] = i;
+            }
+        }
+    }
+    int live = 0, *now = active[0], *next = active[1];
     prev_shadow_mask = 0;
     for (int y = 0; y < SCREEN_H; y++) {
-        for (int i = 0; i < count; i++) {
-            Raster *rp = &raster[i];
-            const Polygon *p = rp->p;
-            if (y < p->ytop || (y >= p->ybot && !(y == p->ytop && p->ybot == p->ytop))) {
-                continue;
+        int n = 0, a = 0, b = first[y], b_end = first[y + 1];
+        while (a < live || b < b_end) {
+            int i = (b == b_end || (a < live && now[a] < starting[b])) ? now[a++] : starting[b++];
+            if (last_line[i] < y) {
+                continue; /* done above */
             }
-            if (p->shadow_mask) {
+            next[n++] = i;
+            Raster *rp = &raster[i];
+            if (rp->p->shadow_mask) {
                 mask_line(rp, y);
             } else {
                 draw_line(rp, y);
             }
         }
+        live = n;
+        int *t = now;
+        now = next;
+        next = t;
     }
     if (rr.disp3dcnt & (1u << 5)) {
         edge_marking();
