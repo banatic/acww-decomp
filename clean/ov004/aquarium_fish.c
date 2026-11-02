@@ -899,7 +899,7 @@ void AquariumFish_SetUpRiver(AquariumFish *fish)
     }
     fish->focus = (u8) fish->index;
     AquariumFish_SetSwim(fish);
-    if (fish->unk_1c6 != 0) {
+    if (fish->three_anims != 0) {
         ModelObject_SetInitHook(&fish->model.object, (void *) (uintptr_t) func_ov004_0223653c, fish);
     }
 }
@@ -958,7 +958,7 @@ void AquariumFish_SetUpSea(AquariumFish *fish)
     fish->focus = (u8) fish->index;
     fish->yield_to = (u8) fish->index;
     AquariumFish_SetSwim(fish);
-    if (fish->unk_1c6 != 0) {
+    if (fish->three_anims != 0) {
         ModelObject_SetInitHook(&fish->model.object, (void *) (uintptr_t) func_ov004_0223653c, fish);
     }
 }

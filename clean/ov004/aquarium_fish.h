@@ -79,7 +79,7 @@ typedef struct AquariumFish {
     s16 yaw;               /* 0x1c0 */
     s16 target_yaw;        /* 0x1c2 */
     s16 pitch;             /* 0x1c4 */
-    u8 unk_1c6;            /* 0x1c6: set for the kinds with three animations */
+    u8 three_anims;        /* 0x1c6: set for the kinds with three animations */
     u8 solid;              /* 0x1c7: its body is entered on the field */
     u8 area;               /* 0x1c8: in the sea room, how wide a part of the tank it keeps to (0-2) */
     u8 yielding;           /* 0x1c9: it makes way for another (yield_to) */
@@ -100,7 +100,7 @@ typedef struct AquariumFish {
     u32 met[2];       /* 0x1f4: the kinds met this frame, by bit */
     u8 glass_turning; /* 0x1fc: its turn from the glass has begun */
     u8 glass_turn;    /* 0x1fd: AQUARIUM_GLASS_* */
-    u8 unk_1fe;       /* 0x1fe */
+    u8 bend_frame;    /* 0x1fe: AQUARIUM_BEND_* while turning (aquarium_swim.h) */
     u8 pad_1ff;
     s16 glass_step;   /* 0x200: what it turns by each frame from the glass */
     u8 cruise_frames; /* 0x202: how long it cruises (mode 4) */

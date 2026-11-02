@@ -15,7 +15,7 @@
 static_assert(offsetof(AquariumSwimmer, bend.bending) == 0x22e, "swimmer bending");
 static_assert(offsetof(AquariumSwimmer, glass.glass_turned) == 0x250, "swimmer glass turned");
 static_assert(sizeof(AquariumSwimmer) == sizeof(AquariumFish), "swimmer view");
-static_assert(offsetof(AquariumFish, unk_1fe) == 0x1fe, "fish bend frame");
+static_assert(offsetof(AquariumFish, bend_frame) == 0x1fe, "fish bend frame");
 static_assert(offsetof(AquariumFish, model.frames.frame) == 0x108, "fish anim frame");
 
 /* What each kind is like (museum_aquarium.c). */
@@ -293,7 +293,7 @@ CLEAN_AS(func_ov004_02239820, AquariumSwim_PlayAnim)
  * frame straightens. Whether it did. */
 int AquariumSwim_EndBend(AquariumFish *fish)
 {
-    if (fish->unk_1c6 != 0 && ((AquariumSwimmer *) fish)->bend.bending != 0) {
+    if (fish->three_anims != 0 && ((AquariumSwimmer *) fish)->bend.bending != 0) {
         u32 last = ((u32) fish->model.frames.end << 4) >> 16;
         if (FrameCtrl_Passed(&fish->model.frames, (int) last)) {
             AquariumSwim_Straighten(fish);
@@ -318,7 +318,7 @@ static void AquariumSwim_hold(AquariumFish *fish, int frame)
 void AquariumSwim_Bend(AquariumFish *fish, int frame)
 {
     AquariumSwimmer *swimmer = (AquariumSwimmer *) fish;
-    if (fish->unk_1c6 == 0 || swimmer->bend.bending) {
+    if (fish->three_anims == 0 || swimmer->bend.bending) {
         AquariumSwim_hold(fish, frame);
         return;
     }
@@ -339,9 +339,9 @@ void AquariumSwim_StartGlassTurn(AquariumFish *fish, int x_first, int low, int h
     int same_signs = FX_MulFunc(AquariumSwim_sin(fish->yaw), AquariumSwim_cos(fish->yaw)) >= 0;
     if ((x_first != 0) == same_signs) {
         fish->glass_step = (s16) -fish->glass_step;
-        fish->unk_1fe = AQUARIUM_BEND_LEFT;
+        fish->bend_frame = AQUARIUM_BEND_LEFT;
     } else {
-        fish->unk_1fe = AQUARIUM_BEND_RIGHT;
+        fish->bend_frame = AQUARIUM_BEND_RIGHT;
     }
 }
 CLEAN_AS(func_ov004_02239944, AquariumSwim_StartGlassTurn)
@@ -393,16 +393,16 @@ void AquariumSwim_TurnFromGlass(AquariumFish *fish)
         if (fish->glass_step * swimmer->glass.glass_turned < 0) {
             if (AquariumSwim_EndBend(fish)) {
                 fish->glass_turn = AQUARIUM_GLASS_ROUND;
-            } else if (fish->unk_1c6 == 0) {
+            } else if (fish->three_anims == 0) {
                 fish->glass_turn = AQUARIUM_GLASS_ROUND;
-            } else if (fish->unk_1c6 == 1 && !swimmer->bend.bending) {
+            } else if (fish->three_anims == 1 && !swimmer->bend.bending) {
                 fish->glass_turn = AQUARIUM_GLASS_ROUND;
             }
         } else {
             fish->turning = 0;
             fish->yaw = (s16) (fish->yaw + fish->glass_step);
             swimmer->glass.glass_turned = (s16) (swimmer->glass.glass_turned + fish->glass_step);
-            AquariumSwim_Bend(fish, (u16) (s8) fish->unk_1fe);
+            AquariumSwim_Bend(fish, (u16) (s8) fish->bend_frame);
             if (fish->mode == AQUARIUM_MODE_CRUISE) {
                 fish->timer = 0;
             }

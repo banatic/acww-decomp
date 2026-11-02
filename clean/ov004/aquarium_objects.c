@@ -636,7 +636,7 @@ static AquariumFish *AquariumSwimmer_construct(AquariumFish *fish)
     fish->vtable = data_ov004_02255ea4;
     AquariumSwimmerFields *own = (AquariumSwimmerFields *) fish;
     fish->mode = AQUARIUM_MODE_NEW_COURSE;
-    fish->unk_1fe = 2;
+    fish->bend_frame = 2;
     fish->glass_step = SWIMMER_GLASS_STEP;
     fish->glass_turning = 0;
     own->own.unk_21c = 0;
@@ -716,7 +716,7 @@ AquariumFish *AquariumFish_Construct(AquariumFish *fish)
     fish->index = -1;
     fish->state = AQUARIUM_FISH_OFF;
     ModelPoolFiles_Reset(&fish->files);
-    fish->unk_1c6 = 0;
+    fish->three_anims = 0;
     fish->solid = 1;
     fish->meetings = 0;
     fish->pitch = 0;

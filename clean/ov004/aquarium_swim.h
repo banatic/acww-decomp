@@ -4,7 +4,7 @@
  * the constructor and destructor of a fish's body (AquariumFishBody, vtable 0x02255d28).
  *
  * Bending: a fish turning holds its animation at frame 3 (bent one way) or 10 (the other,
- * AquariumFish.unk_1fe says which). A fish of three animations (unk_1c6) instead plays its
+ * AquariumFish.bend_frame says which). A fish of three animations (three_anims) instead plays its
  * animation 1 or 2 once its current one ends, held at that frame, and plays animation 0 again
  * at the end of the bending one. */
 #ifndef CLEAN_OV004_AQUARIUM_SWIM_H
@@ -27,7 +27,7 @@ typedef union AquariumSwimmer {
     } glass;
 } AquariumSwimmer;
 
-/* The frames a turning fish holds its animation at (AquariumFish.unk_1fe). */
+/* The frames a turning fish holds its animation at (AquariumFish.bend_frame). */
 enum {
     AQUARIUM_BEND_RIGHT = 3,
     AQUARIUM_BEND_LEFT = 10,

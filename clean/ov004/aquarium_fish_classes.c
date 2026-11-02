@@ -450,8 +450,8 @@ static void AquariumLaneFish_turn_at_end(AquariumFish *fish, int facing, int pus
     }
     AquariumSwim_Move(&fish->position, LANE_TURN_PUSH, fish->yaw);
     fish->model.frames.speed = ONE;
-    fish->unk_1fe = bend;
-    AquariumSwim_Bend(fish, (u16) (s8) fish->unk_1fe);
+    fish->bend_frame = bend;
+    AquariumSwim_Bend(fish, (u16) (s8) fish->bend_frame);
 }
 
 /* func_ov004_02238804: a fish of kinds 52 to 54 within 2.0 of the end at `low` or `high` (whole
@@ -466,9 +466,9 @@ void AquariumLaneFish_Pace(AquariumFish *fish, int low, int high)
     } else if (fish->position.x >= AquariumClasses_mul(AquariumClasses_sub(high, 2), ONE)) {
         AquariumLaneFish_turn_at_end(fish, -QUARTER_TURN, -LANE_TURN_PUSH, AQUARIUM_BEND_LEFT);
     } else {
-        if ((s8) fish->unk_1fe == AQUARIUM_BEND_RIGHT) {
+        if ((s8) fish->bend_frame == AQUARIUM_BEND_RIGHT) {
             Approach_S16(&fish->yaw, QUARTER_TURN, LANE_TURN_STEP);
-        } else if ((s8) fish->unk_1fe == AQUARIUM_BEND_LEFT) {
+        } else if ((s8) fish->bend_frame == AQUARIUM_BEND_LEFT) {
             Approach_S16(&fish->yaw, -QUARTER_TURN, LANE_TURN_STEP);
         }
         AquariumClasses_run_mode(fish);

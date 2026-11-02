@@ -550,11 +550,11 @@ static int Aquarium_finish_create(MuseumAquarium *self, int kind)
     }
     int anims = data_ov004_02247924[kind].anims;
     if (anims == 3) {
-        (*slot)->unk_1c6 = 1;
+        (*slot)->three_anims = 1;
     }
     if (!Aquarium_LoadFishAnims(self, slot, kind, anims)) {
         Aquarium_ReleaseFish(self, kind);
-        (*slot)->unk_1c6 = 0;
+        (*slot)->three_anims = 0;
         return 0;
     }
     return 1;
