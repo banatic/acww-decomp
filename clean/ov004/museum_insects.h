@@ -48,9 +48,8 @@ enum {
     MUSEUM_INSECT_SHOWN = 2,
 };
 
-/* MuseumInsect.mode, as far as set here. */
+/* MuseumInsect.mode: at rest (the motions' own modes are in museum_insect_motions.h). */
 #define MUSEUM_INSECT_MODE_REST 0x19
-#define MUSEUM_INSECT_MODE_4 4
 
 /* What the table data_ov004_02256308 says of each kind (4 bytes). */
 typedef struct InsectKindInfo {
@@ -71,42 +70,42 @@ typedef struct InsectKindCode {
  * only kind 24 plays (a texture animation). */
 typedef struct MuseumInsect {
     ModelAnim anim; /* 0x000 */
-    u8 unk_20;      /* 0x020: set when its body touches one of flags 0x80 (or 0x40, for kind 23) */
+    u8 unk_20;      /* 0x020: touched: set when its body touches one of flags 0x80 (or 0x40, for kind 23) */
     u8 paired;      /* 0x021: kinds 54 and 55 when both are shown */
     u8 awake;       /* 0x022: its kind's hour bands that the hour now is in */
     u8 pad_23;
     SoundSource sound; /* 0x024: the class's vtable data_0213f020 */
     u8 unk_30[4];      /* 0x030 */
     Vec3 kept;         /* 0x034: a position kept (its body touched one of flags 0x40) */
-    Vec3 anchor;       /* 0x040 */
-    int unk_4c;        /* 0x04c */
-    u8 unk_50;         /* 0x050 */
+    Vec3 anchor;       /* 0x040: a point it hovers about */
+    int unk_4c;        /* 0x04c: each motion's own (a turn step, a place, an x, a choice) */
+    u8 unk_50;         /* 0x050: each motion's own (a wait, a way to turn) */
     u8 unk_51[3];
-    fx32 unk_54;                /* 0x054: a height, set with unk_a8 */
+    fx32 level;                 /* 0x054: the height it bobs about, mostly `height` */
     fx32 low[2];                /* 0x058: the x and z it is kept within (InsectRoom_KeepInBounds) */
     fx32 high[2];               /* 0x060 */
     CollisionContacts contacts; /* 0x068 */
-    s16 unk_98;                 /* 0x098: frames; 0x098-0x0af are its motion's (InsectMotion_Start) */
-    u8 unk_9a;                  /* 0x09a */
+    s16 countdown;              /* 0x098: frames left (a hop, a hidden spell); 0x098-0x0af: InsectMotion_Start */
+    u8 startled;                /* 0x09a: (InsectMotion_FollowPlayer: circling) */
     u8 pad_9b;                  /* 0x09b */
-    s16 unk_9c;                 /* 0x09c */
-    s16 unk_9e;                 /* 0x09e */
-    fx32 unk_a0;                /* 0x0a0 */
+    s16 alarm;                  /* 0x09c: 0-255 (InsectMotion_FollowPlayer counts frames in it) */
+    s16 alarm_threshold;        /* 0x09e */
+    fx32 sight;                 /* 0x0a0: how far it sees the player */
     u8 distance;                /* 0x0a4: a distance it moves, in whole units */
     u8 pad_a5[3];               /* 0x0a5 */
-    fx32 unk_a8;                /* 0x0a8: the height it moves at */
-    s16 unk_ac;                 /* 0x0ac */
-    u8 unk_ae;                  /* 0x0ae */
+    fx32 height;                /* 0x0a8: the height it moves at */
+    s16 target_yaw;             /* 0x0ac: the yaw it turns to */
+    u8 turn_way;                /* 0x0ae: the way it turns (hovering: the way it drifts in x) */
     u8 pad_af;                  /* 0x0af */
     RmoAnimatedModel model;     /* 0x0b0 */
-    s16 unk_168;                /* 0x168 */
-    s16 unk_16a;                /* 0x16a */
-    int unk_16c;                /* 0x16c */
-    u8 unk_170;                 /* 0x170 */
+    s16 unk_168;                /* 0x168: the frames of the current mode, or a phase */
+    s16 phase_length;           /* 0x16a: a flap's length (InsectMotion_FlapBounds) */
+    int speed;                  /* 0x16c */
+    u8 way;                     /* 0x170: a direction (up or down, left or right, round) */
     u8 pad_171;
     s16 mode;        /* 0x172: MUSEUM_INSECT_MODE_* */
     int timer;       /* 0x174: frames */
-    Vec3 unk_178[2]; /* 0x178 */
+    Vec3 unk_178[2]; /* 0x178: the feelers, two points ahead (InsectMotion_PlaceFeelers) */
     s16 pitch;       /* 0x190 */
     s16 yaw;         /* 0x192 */
     s16 roll;        /* 0x194 */

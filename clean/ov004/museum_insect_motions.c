@@ -17,13 +17,13 @@
 
 static_assert(offsetof(MuseumInsect, kept) == 0x34, "insect kept");
 static_assert(offsetof(MuseumInsect, anchor) == 0x40, "insect anchor");
-static_assert(offsetof(MuseumInsect, unk_98) == 0x98, "insect 0x98");
-static_assert(offsetof(MuseumInsect, unk_a0) == 0xa0, "insect 0xa0");
+static_assert(offsetof(MuseumInsect, countdown) == 0x98, "insect 0x98");
+static_assert(offsetof(MuseumInsect, sight) == 0xa0, "insect 0xa0");
 static_assert(offsetof(MuseumInsect, distance) == 0xa4, "insect 0xa4");
-static_assert(offsetof(MuseumInsect, unk_ac) == 0xac, "insect 0xac");
+static_assert(offsetof(MuseumInsect, target_yaw) == 0xac, "insect 0xac");
 static_assert(offsetof(MuseumInsect, model.frames) == 0x14c, "insect frames");
 static_assert(offsetof(MuseumInsect, unk_168) == 0x168, "insect 0x168");
-static_assert(offsetof(MuseumInsect, unk_170) == 0x170, "insect 0x170");
+static_assert(offsetof(MuseumInsect, way) == 0x170, "insect 0x170");
 static_assert(offsetof(MuseumInsect, mode) == 0x172, "insect mode");
 static_assert(offsetof(MuseumInsect, pitch) == 0x190, "insect pitch");
 static_assert(offsetof(MuseumInsect, roll) == 0x194, "insect roll");
@@ -88,17 +88,17 @@ int InsectMotion_Start(MuseumInsect *insect, short threshold, int sight, short p
     insect->mode = MUSEUM_INSECT_MODE_REST;
     insect->yaw = yaw;
     insect->pitch = pitch;
-    insect->unk_9e = threshold;
-    insect->unk_a0 = FX_MulFunc(InsectMotion_fx(sight), 0x100);
+    insect->alarm_threshold = threshold;
+    insect->sight = FX_MulFunc(InsectMotion_fx(sight), 0x100);
     insect->unk_4c = 0;
-    insect->unk_16c = speed;
+    insect->speed = speed;
     /* a halfword at 0x30 cleared */
     insect->unk_30[0] = 0;
     insect->unk_30[1] = 0;
-    insect->unk_9c = 0;
-    insect->unk_a8 = insect->position.y + FX_MulFunc(InsectMotion_fx(height), 0x100);
-    insect->unk_54 = insect->unk_a8;
-    insect->unk_9a = 0;
+    insect->alarm = 0;
+    insect->height = insect->position.y + FX_MulFunc(InsectMotion_fx(height), 0x100);
+    insect->level = insect->height;
+    insect->startled = 0;
     return 0;
 }
 CLEAN_AS(func_ov004_02240f2c, InsectMotion_Start)
@@ -142,14 +142,14 @@ CLEAN_AS(func_ov004_0224105c, InsectMotion_RandomTurn)
 void InsectMotion_Drift(MuseumInsect *insect)
 {
     s16 yaw = insect->yaw;
-    u8 way = insect->unk_ae;
+    u8 way = insect->turn_way;
     Vec3 *position = &insect->position;
     Vec3 old = *position;
     Vec3 unit;
     if (InsectMotion_random(100) > 80) {
         if ((int) data_ov004_02259a24 % 20 == 0) {
             way = !way;
-            insect->unk_ae = way;
+            insect->turn_way = way;
         }
         if (way) {
             yaw = (s16) (yaw + (s16) insect->unk_4c);
@@ -159,8 +159,8 @@ void InsectMotion_Drift(MuseumInsect *insect)
     }
     InsectMotion_Facing(&unit, yaw);
     insect->yaw = yaw;
-    position->z += FX_MulFunc(FX_MulFunc(InsectMotion_fx(insect->unk_16c), unit.z), 128);
-    position->x += FX_MulFunc(FX_MulFunc(InsectMotion_fx(insect->unk_16c), unit.x), 128);
+    position->z += FX_MulFunc(FX_MulFunc(InsectMotion_fx(insect->speed), unit.z), 128);
+    position->x += FX_MulFunc(FX_MulFunc(InsectMotion_fx(insect->speed), unit.x), 128);
     if (position->x < insect->low[0] || position->x > insect->high[0]) {
         position->x = old.x;
     }
@@ -188,7 +188,7 @@ void InsectMotion_ReactToPlayer(MuseumInsect *insect, short *frames)
     if (!sighting.seen) {
         return;
     }
-    s16 alarm = insect->unk_9c;
+    s16 alarm = insect->alarm;
     if (sighting.distance <= 0xccd) {
         *frames = 0;
         return;
@@ -203,7 +203,7 @@ void InsectMotion_ReactToPlayer(MuseumInsect *insect, short *frames)
             insect->unk_50 = 60;
         } else if (insect->unk_50) {
             insect->unk_50--;
-        } else if (sighting.distance < insect->unk_a0) {
+        } else if (sighting.distance < insect->sight) {
             unsigned int frame = InsectMotion_frame(insect);
             if (frame == 0) {
                 InsectMotion_play(insect, 4, FRAME_CTRL_ONCE, 0x1000, 0);
@@ -285,7 +285,7 @@ void InsectMotion_UpdateWatcher(MuseumInsect *insect)
 {
     InsectMotion_UpdateAlarm(insect);
     if (insect->kind == 20) {
-        if (insect->unk_9c >= insect->unk_9e || insect->unk_50 != 0) {
+        if (insect->alarm >= insect->alarm_threshold || insect->unk_50 != 0) {
             if (InsectMotion_frame(insect) == 0) {
                 InsectMotion_play(insect, 4, FRAME_CTRL_ONCE, 0x1000, 0);
                 insect->unk_50 = 60;
@@ -300,7 +300,7 @@ void InsectMotion_UpdateWatcher(MuseumInsect *insect)
         }
     }
     if (insect->awake) {
-        if (insect->unk_9c < insect->unk_9e) {
+        if (insect->alarm < insect->alarm_threshold) {
             if (insect->unk_50 == 0) {
                 InsectMotion_PlaySound(insect, 0);
             } else {
@@ -381,7 +381,7 @@ static void InsectMotion_bob(MuseumInsect *insect, short *step, int dy, int next
  * at rest. */
 void InsectMotion_Sink(MuseumInsect *insect, short *step)
 {
-    fx32 lowest = insect->unk_a8 - 0x100;
+    fx32 lowest = insect->height - 0x100;
     InsectMotion_bob(insect, step, -0x20, MUSEUM_INSECT_MODE_REST);
     if (insect->position.y < lowest) {
         insect->position.y = lowest;
@@ -393,7 +393,7 @@ CLEAN_AS(func_ov004_02241680, InsectMotion_Sink)
  * down (mode 1). */
 void InsectMotion_Rise(MuseumInsect *insect, short *step)
 {
-    fx32 highest = insect->unk_a8 + 0x400;
+    fx32 highest = insect->height + 0x400;
     InsectMotion_bob(insect, step, 0x20, INSECT_MOTION_SINK);
     if (insect->position.y > highest) {
         insect->position.y = highest;
@@ -454,22 +454,22 @@ void InsectMotion_UpdateHoverer(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_02241894, InsectMotion_UpdateHoverer)
 
-/* func_ov004_0224193c: the yaw swung 0x222 a step between -0xaaa and 0xaaa (the way, unk_170,
+/* func_ov004_0224193c: the yaw swung 0x222 a step between -0xaaa and 0xaaa (the way, way,
  * drawn at step 0); *step counted. Always 1. */
 int InsectMotion_Swing(MuseumInsect *insect, short *step)
 {
     s16 yaw = insect->yaw;
     if (*step == 0) {
-        insect->unk_170 = InsectMotion_random(100) > 50 ? 0 : 1;
+        insect->way = InsectMotion_random(100) > 50 ? 0 : 1;
     }
-    if (insect->unk_170) {
+    if (insect->way) {
         if (yaw > 0xaaa) {
-            insect->unk_170 = 0;
+            insect->way = 0;
         }
     } else if (yaw < -0xaaa) {
-        insect->unk_170 = 1;
+        insect->way = 1;
     }
-    insect->yaw = (s16) (insect->unk_170 ? yaw + 0x222 : yaw - 0x222);
+    insect->yaw = (s16) (insect->way ? yaw + 0x222 : yaw - 0x222);
     *step += 1;
     return 1;
 }
@@ -483,21 +483,21 @@ int InsectMotion_PlayerWithin(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_022419c4, InsectMotion_PlayerWithin)
 
-/* func_ov004_022419f8 (kind 53's frame): with the player near, after its wait (unk_98) it shows
+/* func_ov004_022419f8 (kind 53's frame): with the player near, after its wait (countdown) it shows
  * and plays animation 33 (mode 1); at frame 32 it swings (mode 18) for 40-80 frames, then plays
  * animation 57 from frame 32 (mode 2) rolling 91 either way each frame, and at frame 56 it is
  * hidden again at its x (unk_4c) with a wait of 60-120 frames. Without a player near, its
  * animation is set to stop at its end. */
 void InsectMotion_UpdateKind53(MuseumInsect *insect)
 {
-    short *wait = &insect->unk_98;
+    short *wait = &insect->countdown;
     switch (insect->mode) {
         case 2:
-            if (insect->unk_170) {
-                insect->unk_170 = 0;
+            if (insect->way) {
+                insect->way = 0;
                 insect->roll = 91;
             } else {
-                insect->unk_170 = 1;
+                insect->way = 1;
                 insect->roll = -91;
             }
             if (InsectMotion_frame(insect) == 56) {
@@ -505,12 +505,12 @@ void InsectMotion_UpdateKind53(MuseumInsect *insect)
                 insect->roll = 0;
                 insect->position.x = insect->unk_4c;
                 InsectMotion_set_alpha(insect, 0);
-                insect->unk_98 = (s16) ((InsectMotion_random(4) + 3) * 20);
+                insect->countdown = (s16) ((InsectMotion_random(4) + 3) * 20);
             }
             break;
         case 1:
             if (InsectMotion_frame(insect) == 32) {
-                insect->unk_98 = (s16) ((InsectMotion_random(3) + 2) * 20);
+                insect->countdown = (s16) ((InsectMotion_random(3) + 2) * 20);
                 insect->mode = 18;
                 insect->unk_168 = 0;
             }
@@ -530,7 +530,7 @@ void InsectMotion_UpdateKind53(MuseumInsect *insect)
                     --*wait;
                 } else {
                     insect->mode = 1;
-                    insect->unk_9c = 0;
+                    insect->alarm = 0;
                     InsectMotion_play(insect, 33, FRAME_CTRL_ONCE, 0x1000, 0);
                     InsectMotion_set_alpha(insect, 31);
                 }
@@ -585,7 +585,7 @@ int InsectMotion_Walk(MuseumInsect *insect)
     if (blocked_by && kind != 52) {
         return blocked_by;
     }
-    fx32 step = InsectMotion_fx(length + insect->unk_16c);
+    fx32 step = InsectMotion_fx(length + insect->speed);
     position->x += FX_MulFunc(step, direction.x);
     position->z += FX_MulFunc(step, direction.z);
     if (kind == 52 || kind == 48) {
@@ -622,14 +622,14 @@ int InsectMotion_Walk(MuseumInsect *insect)
 CLEAN_AS(func_ov004_02241ba8, InsectMotion_Walk)
 
 /* func_ov004_02241d20 (mode 4 of a hopper): a walk step; facing a seen player, within 0x1800 it
- * hops (unk_98 counting the hop's frames) when the player lies close to straight ahead, and
+ * hops (countdown counting the hop's frames) when the player lies close to straight ahead, and
  * within 0x2800 it turns towards the player while not turning from a wall. A hop rises and falls
  * as 0x99a t - 0xcd t^2 (t the frames) and ends at height 3; while hopping its animation runs
  * between frames 1 and 2 and its hop sound plays, otherwise its other sound and frame 0. At the
  * end of its walking time, and not hopping, it rests 60-240 frames. */
 void InsectMotion_Hop(MuseumInsect *insect, InsectSighting *sighting)
 {
-    short *hop = &insect->unk_98;
+    short *hop = &insect->countdown;
     Vec3 *position = &insect->position;
     Vec3 to_player;
     Vec3 ahead;
@@ -682,8 +682,8 @@ void InsectMotion_UpdateHopper(MuseumInsect *insect)
 {
     InsectSighting sighting;
     int alarm = InsectMotion_WatchPlayer(insect, &sighting);
-    if (insect->unk_9c > 80) {
-        insect->unk_9c = 80;
+    if (insect->alarm > 80) {
+        insect->alarm = 80;
     }
     switch (insect->mode) {
         case INSECT_MOTION_MOVE:
@@ -691,7 +691,7 @@ void InsectMotion_UpdateHopper(MuseumInsect *insect)
             break;
         case INSECT_MOTION_TURN: {
             s16 yaw = insect->yaw;
-            if (Approach_S16Wrapped(&yaw, insect->unk_ac, 0x2000)) {
+            if (Approach_S16Wrapped(&yaw, insect->target_yaw, 0x2000)) {
                 insect->mode = INSECT_MOTION_MOVE;
             }
             insect->yaw = yaw;
@@ -699,7 +699,7 @@ void InsectMotion_UpdateHopper(MuseumInsect *insect)
         }
         default:
             if (alarm == INSECT_MOTION_ALARM_ABOVE) {
-                insect->unk_ac = Vec_YawTo(&sighting.player, &insect->position);
+                insect->target_yaw = Vec_YawTo(&sighting.player, &insect->position);
                 insect->timer = 20 * (InsectMotion_random(4) + 2);
                 insect->mode = INSECT_MOTION_TURN;
             } else if (InsectMotion_TimerDone(insect)) {
@@ -708,7 +708,7 @@ void InsectMotion_UpdateHopper(MuseumInsect *insect)
             }
             break;
     }
-    if (insect->unk_4c == 0 && sighting.seen && sighting.player_speed > 0 && insect->unk_98 == 0) {
+    if (insect->unk_4c == 0 && sighting.seen && sighting.player_speed > 0 && insect->countdown == 0) {
         if (Vec_DistanceXZ(&sighting.player, &insect->position) < 0xe66) {
             EtcMuseum_SpawnLone();
             insect->unk_4c = 1;
@@ -720,7 +720,7 @@ CLEAN_AS(func_ov004_02241e88, InsectMotion_UpdateHopper)
 /* func_ov004_02241f88 (kinds 35 and 56's frame): at the end of a rest its animation speeds up
  * to full (mode 4), then plays until the end of its time (mode 5) and stops for a rest. Kind 35
  * draws the times (rests of 40-80 frames awake, 120-240 asleep; plays of 40-200 frames) and
- * hands each to its partner, kind 56 (unk_98), which takes it from there.
+ * hands each to its partner, kind 56 (countdown), which takes it from there.
  * REQUIRES: kind 56's entry is in use while kind 35's is (InsectRoom_FindPartner). */
 void InsectMotion_UpdatePartners(MuseumInsect *insect)
 {
@@ -748,9 +748,9 @@ void InsectMotion_UpdatePartners(MuseumInsect *insect)
                         rest = (s16) (3 * rest);
                     }
                     insect->timer = rest;
-                    partner->unk_98 = (s16) rest;
+                    partner->countdown = (s16) rest;
                 } else {
-                    insect->timer = insect->unk_98;
+                    insect->timer = insect->countdown;
                 }
             }
             break;
@@ -760,9 +760,9 @@ void InsectMotion_UpdatePartners(MuseumInsect *insect)
                 if (kind == MUSEUM_INSECT_WITH_PARTNER) {
                     int play = (s16) (20 * (InsectMotion_random(9) + 2));
                     insect->timer = play;
-                    partner->unk_98 = (s16) play;
-                } else if (insect->unk_98 > 0) {
-                    insect->timer = insect->unk_98;
+                    partner->countdown = (s16) play;
+                } else if (insect->countdown > 0) {
+                    insect->timer = insect->countdown;
                 }
             }
             break;
@@ -776,7 +776,7 @@ CLEAN_AS(func_ov004_02241f88, InsectMotion_UpdatePartners)
 int InsectMotion_FacePlayer(MuseumInsect *insect)
 {
     InsectSighting sighting;
-    short *after = &insect->unk_98;
+    short *after = &insect->countdown;
     int alarm = InsectMotion_WatchPlayer(insect, &sighting);
     if (!sighting.seen || (alarm != INSECT_MOTION_ALARM_ABOVE && *after == 0)) {
         return 0;
@@ -815,11 +815,11 @@ void InsectMotion_PairWalk(MuseumInsect *insect)
         insect->mode = INSECT_MOTION_TURN;
     } else if (InsectMotion_TimerDone(insect)) {
         if (blocked_by) {
-            insect->unk_ac = InsectMotion_YawFromWall(insect->yaw, blocked_by);
+            insect->target_yaw = InsectMotion_YawFromWall(insect->yaw, blocked_by);
         } else {
-            insect->unk_ac = InsectMotion_RandomTurn(16);
+            insect->target_yaw = InsectMotion_RandomTurn(16);
         }
-        insect->unk_9a = 0;
+        insect->startled = 0;
         insect->mode = MUSEUM_INSECT_MODE_REST;
         if (insect->awake) {
             insect->timer = (s16) (20 * (InsectMotion_random(6) + 1));
@@ -875,14 +875,14 @@ void InsectMotion_PairPause(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_022422fc, InsectMotion_PairPause)
 
-/* The way round of a circling (unk_170, drawn again every tenth frame) and how far round it has
+/* The way round of a circling (way, drawn again every tenth frame) and how far round it has
  * gone (*offset, 0 to 0x1554): `angle` moved 0xb6 that way, or the way turned at an end. */
 static int InsectMotion_circle_step(MuseumInsect *insect, int angle, int *offset)
 {
     if ((int) data_ov004_02259a24 % 10 == 0) {
-        insect->unk_170 = InsectMotion_random(100) > 50 ? 1 : 0;
+        insect->way = InsectMotion_random(100) > 50 ? 1 : 0;
     }
-    u8 way = insect->unk_170;
+    u8 way = insect->way;
     if (way && *offset < 0x1554) {
         angle = (s16) (angle + 0xb6);
         *offset += 0xb6;
@@ -890,9 +890,9 @@ static int InsectMotion_circle_step(MuseumInsect *insect, int angle, int *offset
         angle = (s16) (angle - 0xb6);
         *offset -= 0xb6;
     } else if (way) {
-        insect->unk_170 = 0;
+        insect->way = 0;
     } else {
-        insect->unk_170 = 1;
+        insect->way = 1;
     }
     return angle;
 }
@@ -958,7 +958,7 @@ void InsectMotion_PairCircledBy(MuseumInsect *insect)
 CLEAN_AS(func_ov004_02242470, InsectMotion_PairCircledBy)
 
 /* func_ov004_022425a8 (mode 20 of the pair): the two jostle. Every 15th frame a choice (unk_4c,
- * 0-99) and a side (unk_98: 5-9 for the other insect, as many negative for this one) are drawn;
+ * 0-99) and a side (countdown: 5-9 for the other insect, as many negative for this one) are drawn;
  * the side counts towards 0. The one of the side moves, by facing steps (InsectMotion_Facing)
  * along the line between them: close (within 0xccd), a choice below 30 moves this one 2 steps
  * towards the other or the other 2 steps back, below 60 this one 2 steps back or the other 2
@@ -977,7 +977,7 @@ void InsectMotion_PairJostle(MuseumInsect *insect)
     fx32 distance = Vec_DistanceXZ(mine, theirs);
     int waggle_other = 1;
     int waggle_mine = 1;
-    short *side = &insect->unk_98;
+    short *side = &insect->countdown;
     Vec3 their_facing;
     Vec3 my_facing;
     Vec3 step;
@@ -1063,7 +1063,7 @@ static void InsectMotion_keep_place(MuseumInsect *insect, MuseumInsect *circler)
     insect->kept.x = insect->position.x;
     insect->kept.y = insect->position.y;
     insect->kept.z = insect->position.z;
-    circler->unk_170 = InsectMotion_random(100) > 50 ? 0 : 1;
+    circler->way = InsectMotion_random(100) > 50 ? 0 : 1;
 }
 
 /* func_ov004_02242820: kinds 54 and 55 together. Both are kept in their bounds; kind 55 runs its
@@ -1090,7 +1090,7 @@ int InsectMotion_PairChoose(MuseumInsect *insect)
     if (insect->mode == MUSEUM_INSECT_MODE_REST) {
         MuseumInsect *other = InsectRoom_FindPairSecond();
         u8 choice = (u8) InsectMotion_random(100);
-        short *side = &insect->unk_98;
+        short *side = &insect->countdown;
         if (!InsectMotion_PairFaceEachOther(insect, other)) {
             return 0;
         }
@@ -1199,11 +1199,11 @@ void InsectMotion_UpdatePair(MuseumInsect *insect)
         case INSECT_MOTION_TURN_AWAY: {
             int blocked_by = InsectMotion_FeelGround(insect);
             if (blocked_by && insect->mode == INSECT_MOTION_TURN) {
-                insect->unk_ac = InsectMotion_YawFromWall(insect->yaw, blocked_by);
+                insect->target_yaw = InsectMotion_YawFromWall(insect->yaw, blocked_by);
                 insect->mode = INSECT_MOTION_TURN_AWAY;
             } else {
                 s16 yaw = insect->yaw;
-                if (Approach_S16Wrapped(&yaw, insect->unk_ac, 0x71c)) {
+                if (Approach_S16Wrapped(&yaw, insect->target_yaw, 0x71c)) {
                     insect->mode = INSECT_MOTION_MOVE;
                 }
                 insect->yaw = yaw;
@@ -1212,11 +1212,11 @@ void InsectMotion_UpdatePair(MuseumInsect *insect)
         }
         default:
             if (InsectMotion_TimerDone(insect)) {
-                insect->unk_9a = 0;
+                insect->startled = 0;
                 insect->mode = INSECT_MOTION_TURN;
                 insect->timer = (s16) ((InsectMotion_random(3) + 1) * 20);
                 s16 yaw = insect->yaw;
-                insect->unk_ac = (s16) (InsectMotion_RandomTurn(16) + yaw);
+                insect->target_yaw = (s16) (InsectMotion_RandomTurn(16) + yaw);
             }
             break;
     }
@@ -1224,40 +1224,40 @@ void InsectMotion_UpdatePair(MuseumInsect *insect)
 CLEAN_AS(func_ov004_02242ae4, InsectMotion_UpdatePair)
 
 /* func_ov004_02242c64 (mode 0 of kind 8): a hover about the anchor, 48 times the speed a frame
- * in x and in y, each one way or the other (unk_ae and unk_170); seven times in ten the way in
+ * in x and in y, each one way or the other (turn_way and way); seven times in ten the way in
  * y is turned every tenth frame, else the way in x every fifth. Beyond 0x1000 in x or 0x800 in
  * y from the anchor, that coordinate goes back and its way turns. */
 void InsectMotion_Hover(MuseumInsect *insect)
 {
-    u8 in_x = insect->unk_ae;
+    u8 in_x = insect->turn_way;
     Vec3 *position = &insect->position;
     const Vec3 *anchor = &insect->anchor;
-    u8 in_y = insect->unk_170;
+    u8 in_y = insect->way;
     Vec3 old = *position;
     if (InsectMotion_random(100) > 30) {
         int clock = data_ov004_02259a24;
         if (clock % 10 == 0) {
-            insect->unk_170 = !in_y;
+            insect->way = !in_y;
         } else if (clock % 5 == 0) {
-            insect->unk_ae = !in_x;
+            insect->turn_way = !in_x;
         }
     }
     if (in_x) {
-        position->x += 48 * insect->unk_16c;
+        position->x += 48 * insect->speed;
     } else {
-        position->x -= 48 * insect->unk_16c;
+        position->x -= 48 * insect->speed;
     }
     if (in_y) {
-        position->y += 48 * insect->unk_16c;
+        position->y += 48 * insect->speed;
     } else {
-        position->y -= 48 * insect->unk_16c;
+        position->y -= 48 * insect->speed;
     }
     fx32 off = position->x - anchor->x;
     if (off < 0) {
         off = -off;
     }
     if (off > 0x1000) {
-        insect->unk_ae = !in_x;
+        insect->turn_way = !in_x;
         position->x = old.x;
     }
     off = position->y - anchor->y;
@@ -1265,7 +1265,7 @@ void InsectMotion_Hover(MuseumInsect *insect)
         off = -off;
     }
     if (off > 0x800) {
-        insect->unk_170 = !in_y;
+        insect->way = !in_y;
         position->y = old.y;
     }
 }
@@ -1278,7 +1278,7 @@ void InsectMotion_UpdateHovering(MuseumInsect *insect)
     if (insect->mode == 0) {
         InsectMotion_Hover(insect);
     } else if (insect->awake) {
-        insect->unk_9a = 0;
+        insect->startled = 0;
         insect->mode = 0;
         insect->unk_168 = 0;
     } else if ((int) data_ov004_02259a24 % 40 == 0) {
@@ -1303,27 +1303,27 @@ void InsectMotion_PlaceOf(Vec3 *out, unsigned int place)
 CLEAN_AS(func_ov004_02242df8, InsectMotion_PlaceOf)
 
 /* func_ov004_02242e84: kind 49's next place (unk_4c) to its kept point: on along its way
- * (unk_170: up the places, or down), turned at the ends, and three times in ten at another
+ * (way: up the places, or down), turned at the ends, and three times in ten at another
  * place, back the other way. */
 void InsectMotion_NextPlace(MuseumInsect *insect)
 {
     u8 place = (u8) insect->unk_4c;
     u8 next;
-    if (place == 0 && insect->unk_170 == 0) {
+    if (place == 0 && insect->way == 0) {
         next = 1;
-        insect->unk_170 = 1;
-    } else if (place == 4 && insect->unk_170 != 0) {
+        insect->way = 1;
+    } else if (place == 4 && insect->way != 0) {
         next = 3;
-        insect->unk_170 = 0;
+        insect->way = 0;
     } else if (InsectMotion_random(100) > 70 && place != 0 && place != 4) {
-        if (insect->unk_170 != 0) {
+        if (insect->way != 0) {
             next = (u8) (place - 1);
-            insect->unk_170 = 0;
+            insect->way = 0;
         } else {
             next = (u8) (place + 1);
-            insect->unk_170 = 1;
+            insect->way = 1;
         }
-    } else if (insect->unk_170 != 0) {
+    } else if (insect->way != 0) {
         next = (u8) (place + 1);
     } else {
         next = (u8) (place - 1);
@@ -1348,7 +1348,7 @@ void InsectMotion_FlyToPlace(MuseumInsect *insect)
         insect->mode = MUSEUM_INSECT_MODE_REST;
     } else if (!Approach_PointXZ(position, target, 64, 0x1000, 41)) {
         InsectMotion_NextPlace(insect);
-        insect->unk_ac = Vec_YawTo(position, target);
+        insect->target_yaw = Vec_YawTo(position, target);
         insect->mode = INSECT_MOTION_TURN;
     } else {
         s16 time = (s16) insect->timer;
@@ -1369,7 +1369,7 @@ int InsectMotion_Calm(MuseumInsect *insect)
 {
     int wait = insect->unk_50;
     InsectMotion_UpdateAlarm(insect);
-    if (insect->unk_9c < insect->unk_9e && wait < 2) {
+    if (insect->alarm < insect->alarm_threshold && wait < 2) {
         InsectMotion_set_frame(insect, 1);
         return 1;
     }
@@ -1391,7 +1391,7 @@ void InsectMotion_UpdateVisitor(MuseumInsect *insect)
         case INSECT_MOTION_TURN:
             if (InsectMotion_Calm(insect)) {
                 s16 yaw = insect->yaw;
-                if (Approach_S16Wrapped(&yaw, insect->unk_ac, 0x38e)) {
+                if (Approach_S16Wrapped(&yaw, insect->target_yaw, 0x38e)) {
                     insect->mode = INSECT_MOTION_MOVE;
                 }
                 insect->yaw = yaw;
@@ -1452,13 +1452,13 @@ int InsectMotion_AvoidWalls(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_022430f8, InsectMotion_AvoidWalls)
 
-/* func_ov004_02243194 (mode 4 of kind 30): out of the ground for unk_98 frames, walking in its
+/* func_ov004_02243194 (mode 4 of kind 30): out of the ground for countdown frames, walking in its
  * bounds and now and then (every eighth frame, one time in two) turning up to 12 steps (mode
  * 3); 5 frames before the end its dust (effect set 0x80), and at the end it is hidden for 60
  * frames (mode 16), *frames cleared. */
 void InsectMotion_WalkOut(MuseumInsect *insect, short *frames)
 {
-    short *left = &insect->unk_98;
+    short *left = &insect->countdown;
     if (*left > 0) {
         *left = (short) (*left - 1);
         InsectMotion_Walk(insect);
@@ -1466,7 +1466,7 @@ void InsectMotion_WalkOut(MuseumInsect *insect, short *frames)
         if (*left > 5) {
             if ((int) data_ov004_02259a24 % 8 == 0 && InsectMotion_random(100) > 50) {
                 s16 yaw = insect->yaw;
-                insect->unk_ac = (s16) (yaw + InsectMotion_RandomTurn(12));
+                insect->target_yaw = (s16) (yaw + InsectMotion_RandomTurn(12));
                 insect->mode = INSECT_MOTION_TURN;
             }
         } else if (*left == 5) {
@@ -1489,7 +1489,7 @@ void InsectMotion_Leap(MuseumInsect *insect, short *frames)
     Vec3 *position = &insect->position;
     Vec3 direction;
     CollisionGround ground;
-    fx32 step = InsectMotion_fx(insect->unk_16c + 2);
+    fx32 step = InsectMotion_fx(insect->speed + 2);
     InsectMotion_Facing(&direction, insect->yaw);
     position->x = position->x + FX_MulFunc(step, direction.x);
     position->z = position->z + FX_MulFunc(step, direction.z);
@@ -1500,7 +1500,7 @@ void InsectMotion_Leap(MuseumInsect *insect, short *frames)
     CollisionGround_Destroy(&ground);
     if (landed && *frames > 0) {
         insect->mode = INSECT_MOTION_MOVE;
-        insect->unk_9c = 0;
+        insect->alarm = 0;
         *frames = 0;
         insect->pitch = 0;
     } else {
@@ -1518,7 +1518,7 @@ void InsectMotion_WaitHidden(MuseumInsect *insect)
     Vec3 *position = &insect->position;
     InsectSighting sighting;
     /* QUIRK: the alarm before the sighting, cut to 8 bits */
-    u8 before = (u8) insect->unk_9c;
+    u8 before = (u8) insect->alarm;
     InsectMotion_WatchPlayer(insect, &sighting);
     if (!sighting.seen) {
         return;
@@ -1531,10 +1531,10 @@ void InsectMotion_WaitHidden(MuseumInsect *insect)
         InsectMotion_PlaySound(insect, 0);
         insect->unk_50 = (u8) (countdown - 1);
     }
-    if (before > insect->unk_9e) {
+    if (before > insect->alarm_threshold) {
         insect->mode = 5;
         EffectSystem_StartSet(128, position, NULL, &data_020e25d4);
-        insect->unk_98 = (s16) ((InsectMotion_random(11) + 5) * 20);
+        insect->countdown = (s16) ((InsectMotion_random(11) + 5) * 20);
         insect->yaw = Vec_YawTo(&sighting.player, position);
         InsectMotion_set_alpha(insect, 31);
         insect->kept = insect->position;
@@ -1556,7 +1556,7 @@ void InsectMotion_UpdateBurrower(MuseumInsect *insect)
             break;
         case INSECT_MOTION_TURN: {
             s16 yaw = insect->yaw;
-            if (Approach_S16Wrapped(&yaw, insect->unk_ac, 0x38e)) {
+            if (Approach_S16Wrapped(&yaw, insect->target_yaw, 0x38e)) {
                 insect->mode = INSECT_MOTION_MOVE;
             }
             InsectMotion_PlaySound(insect, 2);
@@ -1577,16 +1577,16 @@ void InsectMotion_UpdateBurrower(MuseumInsect *insect)
 CLEAN_AS(func_ov004_022433c8, InsectMotion_UpdateBurrower)
 
 /* func_ov004_02243484 (mode 4 of kind 48): a hop to its kept point, y rising and falling as
- * 0x99a t - 123 t^2 (t, unk_98, the hop's frames); landing, it rests 10-29 frames (10-49 with
+ * 0x99a t - 123 t^2 (t, countdown, the hop's frames); landing, it rests 10-29 frames (10-49 with
  * the player within 0x6000). Its position stays on the floor (InsectMotion_StayOnFloor). */
 void InsectMotion_HopToKept(MuseumInsect *insect)
 {
-    short *hop = &insect->unk_98;
+    short *hop = &insect->countdown;
     Vec3 *position = &insect->position;
     Vec3 previous = *position;
     Approach_PointXZ(position, &insect->kept, 0xaa, 0x1000, 0x333);
-    if (insect->unk_98 > 0) {
-        fx32 t = InsectMotion_fx(insect->unk_98);
+    if (insect->countdown > 0) {
+        fx32 t = InsectMotion_fx(insect->countdown);
         position->y = FX_MulFunc(0x99a - FX_MulFunc(123, t), t);
         if (position->y < 0) {
             Actor *player = SessionPlayers_ActorOf(4);
@@ -1622,7 +1622,7 @@ void InsectMotion_UpdateJumper(MuseumInsect *insect)
             }
             insect->yaw = Vec_YawTo(position, target);
             InsectMotion_PointAlong(&insect->kept, position, insect->yaw, FX_MulFunc(InsectMotion_fx(length), 0x100));
-            insect->unk_98 = 1;
+            insect->countdown = 1;
             insect->mode = INSECT_MOTION_MOVE;
         }
     }
@@ -1630,15 +1630,15 @@ void InsectMotion_UpdateJumper(MuseumInsect *insect)
 CLEAN_AS(func_ov004_02243544, InsectMotion_UpdateJumper)
 
 /* func_ov004_022435e0 (mode 0 of kinds 10 and 51): a flight, faster while startled; its
- * animation flaps; y bobs by the phase in unk_98 (kind 51 a little, twice as fast). */
+ * animation flaps; y bobs by the phase in countdown (kind 51 a little, twice as fast). */
 void InsectMotion_Fly(MuseumInsect *insect)
 {
-    short *phase = &insect->unk_98;
+    short *phase = &insect->countdown;
     InsectMotion_FlipFrame(insect);
     if (InsectMotion_FleeIfAlarmed(insect) == INSECT_MOTION_ALARM_FELL) {
-        insect->unk_9a = 0;
+        insect->startled = 0;
     }
-    if (insect->unk_9a) {
+    if (insect->startled) {
         InsectMotion_Wander(insect, 0xaaa, 10, 70);
     } else {
         InsectMotion_SeekAnchor(insect);
@@ -1655,7 +1655,7 @@ void InsectMotion_Fly(MuseumInsect *insect)
 CLEAN_AS(func_ov004_022435e0, InsectMotion_Fly)
 
 /* func_ov004_02243694 (kinds 10 and 51's frame): the flight (mode 0) with its sound; resting
- * (6, kind 10 drifting), InsectMotion_Perched; startled (7), back to flight turned by unk_ac;
+ * (6, kind 10 drifting), InsectMotion_Perched; startled (7), back to flight turned by target_yaw;
  * in any other mode, back to flight, kind 51 then hovering about one of two points. */
 void InsectMotion_UpdateFlier(MuseumInsect *insect)
 {
@@ -1672,12 +1672,12 @@ void InsectMotion_UpdateFlier(MuseumInsect *insect)
             break;
         case 7:
             insect->mode = 0;
-            if (insect->unk_9a != 0) {
-                insect->yaw = (s16) (insect->yaw + insect->unk_ac);
+            if (insect->startled != 0) {
+                insect->yaw = (s16) (insect->yaw + insect->target_yaw);
             }
             break;
         default:
-            insect->unk_9a = 0;
+            insect->startled = 0;
             insect->mode = 0;
             if (insect->kind == 51) {
                 Vec3 *anchor = &insect->anchor;
@@ -1715,7 +1715,7 @@ void InsectMotion_UpdateFlutterer(MuseumInsect *insect)
         InsectMotion_Flutter(insect);
         InsectMotion_ClampToBounds(insect, &insect->position);
     } else {
-        insect->unk_9a = 0;
+        insect->startled = 0;
         insect->mode = 0;
     }
 }
@@ -1723,7 +1723,7 @@ CLEAN_AS(func_ov004_0224379c, InsectMotion_UpdateFlutterer)
 
 /* func_ov004_022437e0 (mode 0 of kind 50): with a player, it flies after the player at 8 units
  * a frame, turning 0x38e a frame, and within 0x2000 seven times in ten swerves 0x5b0 more.
- * Within 0x1000 it starts to circle (unk_9a), counting frames in unk_9c (to 60); past 0x3000
+ * Within 0x1000 it starts to circle (startled), counting frames in alarm (to 60); past 0x3000
  * it stops. After 60 frames circling within 0x1000, the first time the player can take state 79
  * (PlayerActorOps_RequestState79) it stops and notes it (unk_4c), its phase cleared. y bobs by
  * the phase, stepped 0xaaa a frame. */
@@ -1740,24 +1740,24 @@ void InsectMotion_FollowPlayer(MuseumInsect *insect, short *phase)
     s16 yaw = insect->yaw;
     Approach_S16Wrapped(&yaw, Vec_YawTo(position, target), 0x38e);
     *phase = (short) (*phase + 0xaaa);
-    if (insect->unk_9a) {
-        s16 circled = insect->unk_9c;
+    if (insect->startled) {
+        s16 circled = insect->alarm;
         if (distance > 0x3000) {
-            insect->unk_9a = 0;
+            insect->startled = 0;
         } else if (circled < 60) {
             ++circled;
-            insect->unk_9c = (u8) circled;
+            insect->alarm = (u8) circled;
         } else if (insect->unk_4c == 0 && distance < 0x1000 && PlayerActorOps_RequestState79()) {
-            insect->unk_9a = 0;
+            insect->startled = 0;
             insect->mode = 0;
             insect->unk_4c = 1;
             *phase = 0;
         }
     }
     if (distance < 0x2000) {
-        if (distance < 0x1000 && !insect->unk_9a) {
-            insect->unk_9a = 1;
-            insect->unk_9c = 0;
+        if (distance < 0x1000 && !insect->startled) {
+            insect->startled = 1;
+            insect->alarm = 0;
         }
         if (InsectMotion_random(100) > 30) {
             if (yaw > 0) {
@@ -1804,43 +1804,43 @@ CLEAN_AS(func_ov004_02243980, InsectMotion_RandomSideTurn)
 /* func_ov004_022439ec (mode 4 of kind 25): a dash along the yaw at height 0x200, slowing with
  * *frames (each frame *frames times the speed, *frames counting down). Out of the bounds it
  * goes back and turns about with a side turn (mode 15); at the end it rests up to 59 frames
- * awake, up to 299 asleep (unk_98). */
+ * awake, up to 299 asleep (countdown). */
 void InsectMotion_Dash(MuseumInsect *insect, short *frames)
 {
     Vec3 *position = &insect->position;
     Vec3 save = *position;
     Vec3 direction;
     InsectMotion_Facing(&direction, insect->yaw);
-    position->x += FX_MulFunc(InsectMotion_fx(*frames * insect->unk_16c), direction.x);
-    position->z += FX_MulFunc(InsectMotion_fx(*frames * insect->unk_16c), direction.z);
+    position->x += FX_MulFunc(InsectMotion_fx(*frames * insect->speed), direction.x);
+    position->z += FX_MulFunc(InsectMotion_fx(*frames * insect->speed), direction.z);
     position->y = 0x200;
     *frames = (short) (*frames - 1);
     if (position->x < insect->low[0] || position->x > insect->high[0] || position->z < insect->low[1] ||
         position->z > insect->high[1]) {
         *position = save;
-        insect->unk_ac = (s16) (-0x8000 + InsectMotion_RandomSideTurn(8));
+        insect->target_yaw = (s16) (-0x8000 + InsectMotion_RandomSideTurn(8));
         insect->mode = INSECT_MOTION_TURN_AWAY;
         *frames = 0;
     } else if (*frames <= 0) {
         insect->mode = MUSEUM_INSECT_MODE_REST;
         if (insect->awake) {
-            insect->unk_98 = (s16) InsectMotion_random(60);
+            insect->countdown = (s16) InsectMotion_random(60);
         } else {
-            insect->unk_98 = (s16) InsectMotion_random(300);
+            insect->countdown = (s16) InsectMotion_random(300);
         }
     }
 }
 CLEAN_AS(func_ov004_022439ec, InsectMotion_Dash)
 
 /* func_ov004_02243af4 (modes 3 and 15 of kind 25): a dash started (mode 4) of 8-15 frames
- * (*frames), turned by unk_ac after a wall (15), else by 0-4 steps of 0xaaa either way, with
+ * (*frames), turned by target_yaw after a wall (15), else by 0-4 steps of 0xaaa either way, with
  * the effect set 0x1f where it starts. */
 void InsectMotion_StartDash(MuseumInsect *insect, short *frames)
 {
     s16 yaw = insect->yaw;
     s16 turned;
     if (insect->mode == INSECT_MOTION_TURN_AWAY) {
-        turned = (s16) (yaw + insect->unk_ac);
+        turned = (s16) (yaw + insect->target_yaw);
         insect->mode = INSECT_MOTION_MOVE;
     } else {
         u8 steps = (u8) InsectMotion_random(5);
@@ -1860,7 +1860,7 @@ void InsectMotion_StartDash(MuseumInsect *insect, short *frames)
 CLEAN_AS(func_ov004_02243af4, InsectMotion_StartDash)
 
 /* func_ov004_02243bb0 (kind 25's frame): dashes (InsectMotion_StartDash, InsectMotion_Dash)
- * after rests of unk_98 frames. */
+ * after rests of countdown frames. */
 void InsectMotion_UpdateDasher(MuseumInsect *insect)
 {
     switch (insect->mode) {
@@ -1872,13 +1872,13 @@ void InsectMotion_UpdateDasher(MuseumInsect *insect)
             InsectMotion_Dash(insect, &insect->unk_168);
             break;
         default: {
-            s16 left = insect->unk_98;
+            s16 left = insect->countdown;
             if (left <= 0) {
                 insect->mode = INSECT_MOTION_TURN;
             } else {
-                insect->unk_98 = (s16) (left - 1);
+                insect->countdown = (s16) (left - 1);
             }
-            insect->unk_9a = 0;
+            insect->startled = 0;
             break;
         }
     }
@@ -1892,7 +1892,7 @@ void InsectMotion_SingWhenCalm(MuseumInsect *insect)
         case 27:
         case 28:
         case 29:
-            if (insect->unk_9c < 5) {
+            if (insect->alarm < 5) {
                 InsectMotion_PlaySound(insect, 0);
             }
             break;
@@ -1907,11 +1907,11 @@ void *InsectMotion_TurnFromWall(MuseumInsect *insect, short *frames)
 {
     int blocked_by = InsectMotion_FeelGround(insect);
     if (blocked_by != 0) {
-        insect->unk_ac = InsectMotion_YawFromWall(insect->yaw, blocked_by);
-        s16 away = insect->unk_ac;
+        insect->target_yaw = InsectMotion_YawFromWall(insect->yaw, blocked_by);
+        s16 away = insect->target_yaw;
         int more = InsectMotion_random(3);
         InsectMotion_PointAlong(&insect->kept, &insect->position, away, InsectMotion_fx(insect->distance + more));
-        insect->unk_ac = Vec_YawTo(&insect->position, &insect->kept);
+        insect->target_yaw = Vec_YawTo(&insect->position, &insect->kept);
         insect->mode = INSECT_MOTION_TURN_AWAY;
         insect->unk_4c += 1;
         *frames = 0;
@@ -1922,15 +1922,15 @@ CLEAN_AS(func_ov004_02243c30, InsectMotion_TurnFromWall)
 
 /* func_ov004_02243cb0 (mode 4 of kind 12): a glide to its kept point at its speed (while the
  * feelers are clear, unless it touched something, unk_20; else it stays), kept in its bounds;
- * rising to 0x1400 (unk_170) or settling to the ground. Settled, it rests 60-200 frames
- * (unk_98) at frame 0, the kept point there, and if it had been startled its alarm is set 10
+ * rising to 0x1400 (way) or settling to the ground. Settled, it rests 60-200 frames
+ * (countdown) at frame 0, the kept point there, and if it had been startled its alarm is set 10
  * below the threshold. */
 void InsectMotion_Glide(MuseumInsect *insect)
 {
     Vec3 *target = &insect->kept;
     Vec3 *position = &insect->position;
     Vec3 old = *position;
-    int speed = insect->unk_16c;
+    int speed = insect->speed;
     if (!InsectMotion_FeelGround(insect) || insect->unk_20) {
         if (Approach_PointXZ(position, target, speed, 0x1000, 0x333)) {
             if (InsectMotion_ClampToBounds(insect, position)) {
@@ -1945,9 +1945,9 @@ void InsectMotion_Glide(MuseumInsect *insect)
     }
     /* the height eased as a 32-bit int; fx32 is one */
     int *height = (int *) &position->y;
-    if (insect->unk_170) {
+    if (insect->way) {
         if (!Approach_EaseS32MinMax(height, 0x1400, speed, 0x1000, 0xcd)) {
-            insect->unk_170 = 0;
+            insect->way = 0;
         }
     } else {
         CollisionGround ground;
@@ -1955,13 +1955,13 @@ void InsectMotion_Glide(MuseumInsect *insect)
         int floor = CollisionGround_GetHeight(&ground, 0);
         CollisionGround_Destroy(&ground);
         if (!Approach_EaseS32MinMax(height, floor, speed, 0x1000, 0x266)) {
-            insect->unk_98 = (s16) ((InsectMotion_random(9) + 2) * 20);
+            insect->countdown = (s16) ((InsectMotion_random(9) + 2) * 20);
             insect->mode = MUSEUM_INSECT_MODE_REST;
             InsectMotion_set_frame(insect, 0);
             *target = *position;
-            if (insect->unk_9a) {
-                insect->unk_9c = (u8) (insect->unk_9e - 10);
-                insect->unk_9a = 0;
+            if (insect->startled) {
+                insect->alarm = (u8) (insect->alarm_threshold - 10);
+                insect->startled = 0;
             }
         }
     }
@@ -1969,8 +1969,8 @@ void InsectMotion_Glide(MuseumInsect *insect)
 CLEAN_AS(func_ov004_02243cb0, InsectMotion_Glide)
 
 /* func_ov004_02243e04 (kind 12's frame): turns (3 and 15, then up to the glide: mode 4 with
- * unk_170 set), the glide, and at rest (awake, its sound while calm) a turn from a wall, or
- * after the rest's time (unk_98, five times as long once alarmed or asleep) or a touch, a
+ * way set), the glide, and at rest (awake, its sound while calm) a turn from a wall, or
+ * after the rest's time (countdown, five times as long once alarmed or asleep) or a touch, a
  * glide up to a point `distance` plus 0-2 units off along a turn of up to 12 steps, its alarm
  * cleared. The touch (unk_20) is cleared each frame. */
 void InsectMotion_UpdateGlider(MuseumInsect *insect)
@@ -1985,7 +1985,7 @@ void InsectMotion_UpdateGlider(MuseumInsect *insect)
             break;
         default: {
             short *frames = &insect->unk_168;
-            short *rest = &insect->unk_98;
+            short *rest = &insect->countdown;
             if (insect->awake) {
                 InsectMotion_SingWhenCalm(insect);
             }
@@ -2000,13 +2000,13 @@ void InsectMotion_UpdateGlider(MuseumInsect *insect)
             *frames = (short) (*frames + 1);
             if (*frames >= *rest || insect->unk_20) {
                 int yaw = insect->yaw;
-                insect->unk_ac = (s16) (InsectMotion_RandomTurn(12) + yaw);
-                InsectMotion_PointAlong(&insect->kept, &insect->position, insect->unk_ac,
+                insect->target_yaw = (s16) (InsectMotion_RandomTurn(12) + yaw);
+                InsectMotion_PointAlong(&insect->kept, &insect->position, insect->target_yaw,
                                         InsectMotion_fx(insect->distance + InsectMotion_random(3)));
-                insect->unk_ac = Vec_YawTo(&insect->position, &insect->kept);
+                insect->target_yaw = Vec_YawTo(&insect->position, &insect->kept);
                 insect->mode = INSECT_MOTION_TURN;
                 *frames = 0;
-                insect->unk_9c = 0;
+                insect->alarm = 0;
             }
             break;
         }
@@ -2096,11 +2096,11 @@ void InsectMotion_DartFromWall(MuseumInsect *insect)
     if (blocked == 0) {
         return;
     }
-    insect->unk_ac = InsectMotion_YawFromWall(insect->yaw, blocked);
-    short yaw = insect->unk_ac;
+    insect->target_yaw = InsectMotion_YawFromWall(insect->yaw, blocked);
+    short yaw = insect->target_yaw;
     InsectMotion_PointAlong(&insect->kept, &insect->position, yaw, InsectMotion_fx(insect->distance + InsectMotion_random(3)));
-    insect->unk_ac = Vec_YawTo(&insect->position, &insect->kept);
-    if (insect->unk_9a) {
+    insect->target_yaw = Vec_YawTo(&insect->position, &insect->kept);
+    if (insect->startled) {
         insect->mode = INSECT_MOTION_TURN_AWAY;
     } else {
         insect->mode = INSECT_MOTION_HOVER_BLOCKED;
@@ -2111,27 +2111,27 @@ CLEAN_AS(func_ov004_02243fec, InsectMotion_DartFromWall)
 
 /* func_ov004_02244094 (mode 4 of kinds 21-23): a dart in x and z to the kept point at the
  * insect's speed (steps of at least unk_4c, at most a unit), facing it; there, it rests (mode
- * 25). Its height eases to a unit below unk_a8 first (unk_170 clear, set once there), then to
- * unk_a8. */
+ * 25). Its height eases to a unit below `height` first (way clear, set once there), then to
+ * `height`. */
 void InsectMotion_Dart(MuseumInsect *insect)
 {
     Vec3 *position = &insect->position;
-    int speed = insect->unk_16c;
+    int speed = insect->speed;
     if (Approach_PointXZ(position, &insect->kept, speed, 0x1000, insect->unk_4c) == 0) {
         insect->mode = MUSEUM_INSECT_MODE_REST;
     } else {
         insect->yaw = Vec_YawTo(position, &insect->kept);
     }
-    if (insect->unk_170) {
-        Approach_EaseS32MinMax((int *) (void *) &position->y, insect->unk_a8, speed, 0x1000, 0xcd);
-    } else if (Approach_EaseS32MinMax((int *) (void *) &position->y, insect->unk_a8 - 0x1000, speed, 0x1000, 0xcd) == 0) {
-        insect->unk_170 = 1;
+    if (insect->way) {
+        Approach_EaseS32MinMax((int *) (void *) &position->y, insect->height, speed, 0x1000, 0xcd);
+    } else if (Approach_EaseS32MinMax((int *) (void *) &position->y, insect->height - 0x1000, speed, 0x1000, 0xcd) == 0) {
+        insect->way = 1;
     }
 }
 CLEAN_AS(func_ov004_02244094, InsectMotion_Dart)
 
 /* func_ov004_0224412c (modes 11-14 of kinds 21-23): a hover, bobbing 0x80 a frame (up for five
- * frames of ten while below unk_a8 + 0x800, down for five while above unk_a8 - 0x1000), for
+ * frames of ten while below `height` + 0x800, down for five while above `height` - 0x1000), for
  * unk_168 frames. Then, after a wall (12 or 13) it turns to its point (15); going to rest (14)
  * it turns to its rest point (19); else it turns (3) by up to 4 steps (kind 23) or 12 to a new
  * point 1-2 units plus its distance off, to dart there. */
@@ -2141,10 +2141,10 @@ void InsectMotion_HoverInPlace(MuseumInsect *insect)
     Vec3 *position = &insect->position;
     if (*frames > 0) {
         if (*frames % 10 < 5) {
-            if (position->y < insect->unk_a8 + 0x800) {
+            if (position->y < insect->height + 0x800) {
                 position->y += 0x80;
             }
-        } else if (position->y > insect->unk_a8 - 0x1000) {
+        } else if (position->y > insect->height - 0x1000) {
             position->y -= 0x80;
         }
         --*frames;
@@ -2157,17 +2157,17 @@ void InsectMotion_HoverInPlace(MuseumInsect *insect)
         insect->mode = INSECT_MOTION_TURN_TO_REST;
     } else {
         int yaw = insect->yaw;
-        insect->unk_ac = (s16) (InsectMotion_RandomTurn(insect->kind == 23 ? 4 : 12) + yaw);
+        insect->target_yaw = (s16) (InsectMotion_RandomTurn(insect->kind == 23 ? 4 : 12) + yaw);
         insect->mode = INSECT_MOTION_TURN;
-        InsectMotion_PointAlong(&insect->kept, position, insect->unk_ac,
+        InsectMotion_PointAlong(&insect->kept, position, insect->target_yaw,
                                 InsectMotion_fx(insect->distance + InsectMotion_random(3)));
-        insect->unk_ac = Vec_YawTo(&insect->position, &insect->kept);
+        insect->target_yaw = Vec_YawTo(&insect->position, &insect->kept);
     }
 }
 CLEAN_AS(func_ov004_0224412c, InsectMotion_HoverInPlace)
 
 /* func_ov004_02244224 (mode 5 of kinds 21-23): a flight to its anchor (the rest point), slower
- * for kind 21 and 22; there, it rests (mode 25) for 100-180 frames, settled (unk_ae). */
+ * for kind 21 and 22; there, it rests (mode 25) for 100-180 frames, settled (turn_way). */
 void InsectMotion_SettleOnRestPoint(MuseumInsect *insect)
 {
     Vec3 *position = &insect->position;
@@ -2190,7 +2190,7 @@ void InsectMotion_SettleOnRestPoint(MuseumInsect *insect)
     if (Approach_Point(position, &insect->anchor, rate, 0x1000, min_step) == 0) {
         insect->mode = MUSEUM_INSECT_MODE_REST;
         insect->timer = (InsectMotion_random(5) + 5) * 20;
-        insect->unk_ae = 1;
+        insect->turn_way = 1;
     } else {
         insect->yaw = Vec_YawTo(position, &insect->anchor);
     }
@@ -2205,7 +2205,7 @@ CLEAN_AS(func_ov004_02244224, InsectMotion_SettleOnRestPoint)
  *   5       the flight to the rest point;
  *   11-14   the hover;
  *   7       startled: on to a point ahead (15) for 160 frames, its alarm cleared.
- *   rest    touched, startled (7). Settled (unk_ae), one frame in 20 it may go to frame 2 (one
+ *   rest    touched, startled (7). Settled (turn_way), one frame in 20 it may go to frame 2 (one
  *           time in 14, from frame 0) or to frame 0 (about one time in two), and on the other
  *           frames, off frame 0, its wings beat; it takes fright (InsectMotion_FleeIfAlarmed),
  *           and awake at the end of its rest it takes off into a hover (11) for 160 frames. Not
@@ -2227,7 +2227,7 @@ void InsectMotion_UpdateDarter(MuseumInsect *insect)
             break;
         case INSECT_MOTION_MOVE:
             if (InsectMotion_TimerDone(insect) && InsectMotion_NearestRestPoint(insect) < 0x5000) {
-                insect->unk_ac = Vec_YawTo(&insect->position, &insect->anchor);
+                insect->target_yaw = Vec_YawTo(&insect->position, &insect->anchor);
                 insect->mode = INSECT_MOTION_HOVER_TO_REST;
                 if (insect->kind != 23) {
                     insect->unk_168 = (s16) ((InsectMotion_random(5) + 2) * 10);
@@ -2248,20 +2248,20 @@ void InsectMotion_UpdateDarter(MuseumInsect *insect)
             break;
         case INSECT_MOTION_STARTLED: {
             insect->mode = INSECT_MOTION_TURN_AWAY;
-            insect->unk_9c = 0;
+            insect->alarm = 0;
             insect->timer = 160;
-            insect->unk_9a = 0;
-            insect->unk_ae = 0;
-            short yaw = insect->unk_ac;
+            insect->startled = 0;
+            insect->turn_way = 0;
+            short yaw = insect->target_yaw;
             InsectMotion_PointAlong(&insect->kept, &insect->position, yaw,
                                     InsectMotion_fx(insect->distance + InsectMotion_random(3)));
-            insect->unk_ac = Vec_YawTo(&insect->position, &insect->kept);
+            insect->target_yaw = Vec_YawTo(&insect->position, &insect->kept);
             break;
         }
         default:
             if (insect->unk_20) {
                 insect->mode = INSECT_MOTION_STARTLED;
-            } else if (insect->unk_ae) {
+            } else if (insect->turn_way) {
                 if (data_ov004_02259a24 % 20 == 0) {
                     u8 roll = (u8) InsectMotion_random(100);
                     if (InsectMotion_frame(insect) == 0 && roll > 92) {
@@ -2274,7 +2274,7 @@ void InsectMotion_UpdateDarter(MuseumInsect *insect)
                 }
                 InsectMotion_FleeIfAlarmed(insect);
                 if (insect->awake && InsectMotion_TimerDone(insect)) {
-                    insect->unk_ae = 0;
+                    insect->turn_way = 0;
                     insect->mode = INSECT_MOTION_HOVER;
                     insect->timer = 160;
                     insect->unk_168 = InsectMotion_hover_frames(insect);
@@ -2290,39 +2290,39 @@ void InsectMotion_UpdateDarter(MuseumInsect *insect)
 CLEAN_AS(func_ov004_022442b4, InsectMotion_UpdateDarter)
 
 /* func_ov004_022444f0: the bounds of a flapping flight: at the end of a flap (`phase` past
- * unk_16a) the next starts, at phase 0 and 16 long when rising (unk_170), else at 8 and 20
- * long. Rising, above unk_54 + 0x300 it starts to fall; falling below unk_54 it rises again,
- * put back on unk_54 when less than 0x320 below it.
- * QUIRK: the height read from unk_a8 is always replaced by unk_54's. */
+ * phase_length) the next starts, at phase 0 and 16 long when rising (way), else at 8 and 20
+ * long. Rising, above `level` + 0x300 it starts to fall; falling below it it rises again,
+ * put back on `level` when less than 0x320 below it.
+ * QUIRK: the height read from `height` is always replaced by `level`'s. */
 void InsectMotion_FlapBounds(MuseumInsect *insect, short *phase)
 {
-    fx32 level = insect->unk_54;
+    fx32 level = insect->level;
     fx32 top = level + 0x300;
-    u8 rising = insect->unk_170;
+    u8 rising = insect->way;
     Vec3 *position = &insect->position;
-    if (insect->unk_16a < *phase) {
+    if (insect->phase_length < *phase) {
         if (rising) {
             *phase = 0;
-            insect->unk_16a = 16;
+            insect->phase_length = 16;
         } else {
             *phase = 8;
-            insect->unk_16a = 20;
+            insect->phase_length = 20;
         }
     }
     if (rising && position->y > top) {
-        insect->unk_170 = 0;
+        insect->way = 0;
     } else if (position->y < level) {
         if (position->y > level - 0x320) {
             position->y = level;
         }
-        insect->unk_170 = 1;
+        insect->way = 1;
     }
 }
 CLEAN_AS(func_ov004_022444f0, InsectMotion_FlapBounds)
 
 /* func_ov004_0224457c (mode 0 of kinds 0-7): a flapping flight: each flap lifts the insect by
  * (0x44 - 5 t) t (t, unk_168, steps 4 a flap frame), at most 0x333 down a frame, and doubled
- * while rising (unk_170); the flap's bounds (InsectMotion_FlapBounds), the way to its anchor
+ * while rising (way); the flap's bounds (InsectMotion_FlapBounds), the way to its anchor
  * (InsectMotion_SeekAnchor) and a wander. An animation longer than 9 frames is set to 9 frames
  * at the insect's own speed (unk_4c). */
 void InsectMotion_FlapFly(MuseumInsect *insect)
@@ -2334,7 +2334,7 @@ void InsectMotion_FlapFly(MuseumInsect *insect)
     if (InsectMotion_end(insect) > 9) {
         InsectMotion_play(insect, 9, 0, (u32) insect->unk_4c, 0);
     }
-    if (insect->unk_170 && lift >= 0) {
+    if (insect->way && lift >= 0) {
         lift = FX_MulFunc(lift, 0x2000);
     } else if (lift < -0x333) {
         lift = -0x333;
@@ -2359,24 +2359,24 @@ void InsectMotion_UpdateFlapper(MuseumInsect *insect)
             InsectMotion_Perched(insect);
             break;
         default:
-            insect->unk_9a = 0;
+            insect->startled = 0;
             insect->mode = INSECT_MOTION_FLY;
-            insect->unk_9c = 0;
+            insect->alarm = 0;
             break;
     }
 }
 CLEAN_AS(func_ov004_02244620, InsectMotion_UpdateFlapper)
 
 /* func_ov004_02244658: the player watched: where it is, its speed and its distance from the
- * insect in x and z. The alarm (unk_9c) rises by 25 within 0x2000; beyond the insect's sight
- * (unk_a0), or with the player still, it falls by 1; else it rises with the player's speed: 1
+ * insect in x and z. The alarm rises by 25 within 0x2000; beyond the insect's sight,
+ * or with the player still, it falls by 1; else it rises with the player's speed: 1
  * up to 1000, 3 up to 1100, 5 up to 1168, 8 at 1169, 15 above. It is kept within 0-255.
- * Returns INSECT_MOTION_ALARM_*: how it stands against the threshold (unk_9e) now and before.
+ * Returns INSECT_MOTION_ALARM_*: how it stands against alarm_threshold now and before.
  * QUIRK: the steps are added in 16 bits before the alarm is kept within its range. */
 int InsectMotion_WatchPlayer(MuseumInsect *insect, InsectSighting *sighting)
 {
-    short before = insect->unk_9c;
-    short threshold = insect->unk_9e;
+    short before = insect->alarm;
+    short threshold = insect->alarm_threshold;
     short alarm = before;
     Actor *player = SessionPlayers_ActorOf(INSECT_MOTION_OWN_PLAYER);
     if (player == NULL) {
@@ -2390,7 +2390,7 @@ int InsectMotion_WatchPlayer(MuseumInsect *insect, InsectSighting *sighting)
     int step;
     if (sighting->distance < 0x2000) {
         step = 25;
-    } else if (sighting->distance > insect->unk_a0 || sighting->player_speed == 0) {
+    } else if (sighting->distance > insect->sight || sighting->player_speed == 0) {
         step = -1;
     } else if (sighting->player_speed <= 1000) {
         step = 1;
@@ -2409,7 +2409,7 @@ int InsectMotion_WatchPlayer(MuseumInsect *insect, InsectSighting *sighting)
     } else if (alarm > 255) {
         alarm = 255;
     }
-    insect->unk_9c = alarm;
+    insect->alarm = alarm;
     if (alarm >= threshold) {
         return before < threshold ? INSECT_MOTION_ALARM_ROSE : INSECT_MOTION_ALARM_ABOVE;
     }
@@ -2428,14 +2428,14 @@ int InsectMotion_UpdateAlarm(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_02244764, InsectMotion_UpdateAlarm)
 
-/* func_ov004_02244774: a turn of up to 0xe38 (20 degrees) a frame towards unk_ac; once there,
- * the mode becomes `mode` and unk_170 `flag`. */
+/* func_ov004_02244774: a turn of up to 0xe38 (20 degrees) a frame towards target_yaw; once there,
+ * the mode becomes `mode` and way `flag`. */
 void InsectMotion_TurnToHeading(MuseumInsect *insect, int flag, int mode)
 {
     s16 yaw = insect->yaw;
-    if (Approach_S16Wrapped(&yaw, insect->unk_ac, 0xe38) != 0) {
+    if (Approach_S16Wrapped(&yaw, insect->target_yaw, 0xe38) != 0) {
         insect->mode = (s16) mode;
-        insect->unk_170 = (u8) flag;
+        insect->way = (u8) flag;
     }
     insect->yaw = yaw;
 }
@@ -2500,55 +2500,53 @@ void InsectMotion_TowardAnchor(MuseumInsect *insect, short *turn, int *distance,
 }
 CLEAN_AS(func_ov004_0224489c, InsectMotion_TowardAnchor)
 
-/* func_ov004_02244904: the player watched; seen, with the insect calm (unk_9a clear) and its
- * alarm at its threshold, it is startled (mode 7, unk_9a set) for 200-260 frames, turned away
- * from the player (unk_ac), its height back to unk_a8. The alarm's standing is returned. */
+/* func_ov004_02244904: the player watched; seen, with the insect calm (startled clear) and its
+ * alarm at its threshold, it is startled (mode 7, startled set) for 200-260 frames, turned away
+ * from the player (target_yaw), its height back to `height`. The alarm's standing is returned. */
 int InsectMotion_FleeIfAlarmed(MuseumInsect *insect)
 {
     InsectSighting sighting;
     int alarm = InsectMotion_WatchPlayer(insect, &sighting);
-    if (sighting.seen && !insect->unk_9a && insect->unk_9c >= insect->unk_9e) {
-        insect->unk_ac = Vec_YawTo(&sighting.player, &insect->position);
+    if (sighting.seen && !insect->startled && insect->alarm >= insect->alarm_threshold) {
+        insect->target_yaw = Vec_YawTo(&sighting.player, &insect->position);
         insect->timer = (InsectMotion_random(4) + 10) * 20;
         insect->mode = INSECT_MOTION_STARTLED;
-        insect->unk_9a = 1;
-        insect->unk_54 = insect->unk_a8;
+        insect->startled = 1;
+        insect->level = insect->height;
     }
     return alarm;
 }
 CLEAN_AS(func_ov004_02244904, InsectMotion_FleeIfAlarmed)
 
 /* func_ov004_0224497c: a bob in height: the sine of `phase` over `divisor` added to y while it
- * keeps y within `range` of unk_54 (half the range when unk_54 is not unk_a8). */
+ * keeps y within `range` of `level` (half the range when `level` is not `height`). */
 void InsectMotion_BobHeight(MuseumInsect *insect, int phase, int range, int divisor)
 {
     Vec3 *position = &insect->position;
     fx32 step = FX_Div(FX_SinCosTable_[((u16) phase >> 4) * 2], divisor);
-    if (insect->unk_54 != insect->unk_a8) {
+    if (insect->level != insect->height) {
         range = FX_MulFunc(range, 0x800);
     }
-    if ((step > 0 && position->y + step < range + insect->unk_54) ||
-        (step < 0 && position->y + step > insect->unk_54 - range)) {
+    if ((step > 0 && position->y + step < range + insect->level) || (step < 0 && position->y + step > insect->level - range)) {
         position->y += step;
     }
 }
 CLEAN_AS(func_ov004_0224497c, InsectMotion_BobHeight)
 
 /* func_ov004_022449ec: a wander: every `period`th frame, when a roll of 0-99 is above
- * `threshold`, the way it turns (unk_ae) changes; when the roll is above unk_50 it turns by
- * `step` that way. It moves along its yaw at its speed, 1.5 times as fast while startled
- * (unk_9a).
+ * `threshold`, the way it turns (turn_way) changes; when the roll is above unk_50 it turns by
+ * `step` that way. It moves along its yaw at its speed, 1.5 times as fast while startled.
  * QUIRK: a period of 0 counts as every frame (the ROM's remainder by 0 is 0). */
 void InsectMotion_Wander(MuseumInsect *insect, int step, int period, unsigned int threshold)
 {
     s16 yaw = insect->yaw;
-    u8 way = insect->unk_ae;
+    u8 way = insect->turn_way;
     u8 roll = (u8) InsectMotion_random(100);
     Vec3 *position = &insect->position;
     Vec3 facing;
     if (InsectMotion_rom_mod(data_ov004_02259a24, period) == 0 && roll > threshold) {
         way = !way;
-        insect->unk_ae = way;
+        insect->turn_way = way;
     }
     if (roll > insect->unk_50) {
         if (way) {
@@ -2559,12 +2557,12 @@ void InsectMotion_Wander(MuseumInsect *insect, int step, int period, unsigned in
     }
     InsectMotion_Facing(&facing, yaw);
     insect->yaw = yaw;
-    if (insect->unk_9a) {
-        position->x += FX_MulFunc(FX_MulFunc(0x1800, InsectMotion_fx(insect->unk_16c)), facing.x);
-        position->z += FX_MulFunc(FX_MulFunc(0x1800, InsectMotion_fx(insect->unk_16c)), facing.z);
+    if (insect->startled) {
+        position->x += FX_MulFunc(FX_MulFunc(0x1800, InsectMotion_fx(insect->speed)), facing.x);
+        position->z += FX_MulFunc(FX_MulFunc(0x1800, InsectMotion_fx(insect->speed)), facing.z);
     } else {
-        position->x += FX_MulFunc(InsectMotion_fx(insect->unk_16c), facing.x);
-        position->z += FX_MulFunc(InsectMotion_fx(insect->unk_16c), facing.z);
+        position->x += FX_MulFunc(InsectMotion_fx(insect->speed), facing.x);
+        position->z += FX_MulFunc(InsectMotion_fx(insect->speed), facing.z);
     }
 }
 CLEAN_AS(func_ov004_022449ec, InsectMotion_Wander)
@@ -2645,7 +2643,7 @@ CLEAN_AS(func_ov004_02244c20, InsectMotion_TimerDone)
 
 /* func_ov004_02244c40 (mode 6 of the flappers and of kinds 10 and 51): perched. It may take
  * fright (InsectMotion_FleeIfAlarmed). At the end of its time while awake, or startled, it
- * flies off (mode 25, its height back to unk_a8) after 320-500 frames, with its flight's
+ * flies off (mode 25, its height back to `height`) after 320-500 frames, with its flight's
  * animation (9 frames at unk_4c; kinds 10 and 51 frame 1). Otherwise kinds 10 and 51 keep frame
  * 0; the others' animation, when shorter than 12 frames, becomes the 17-frame one from frame 9
  * played once, and at its frame 16 is played again one time in 25 (tried while awake, else one
@@ -2654,7 +2652,7 @@ void InsectMotion_Perched(MuseumInsect *insect)
 {
     u8 kind = (u8) insect->kind;
     InsectMotion_FleeIfAlarmed(insect);
-    if (!(InsectMotion_TimerDone(insect) && insect->awake) && !insect->unk_9a) {
+    if (!(InsectMotion_TimerDone(insect) && insect->awake) && !insect->startled) {
         if (kind == 10 || kind == 51) {
             if (InsectMotion_frame(insect) != 0) {
                 InsectMotion_set_frame(insect, 0);
@@ -2669,7 +2667,7 @@ void InsectMotion_Perched(MuseumInsect *insect)
         return;
     }
     insect->mode = MUSEUM_INSECT_MODE_REST;
-    insect->unk_54 = insect->unk_a8;
+    insect->level = insect->height;
     insect->timer = (InsectMotion_random(10) + 16) * 20;
     if (kind != 10 && kind != 51) {
         InsectMotion_play(insect, 9, 0, (u32) insect->unk_4c, 0);
@@ -2681,13 +2679,13 @@ CLEAN_AS(func_ov004_02244c40, InsectMotion_Perched)
 
 /* func_ov004_02244d58: at the end of its time the flier heads for its anchor: within 0x400 of
  * it in x and z and 0x200 in height it perches (mode 6) for 200-380 frames; else, when a roll
- * of 0-99 is above unk_50 - 20, it turns towards it, flies at its height (or at unk_a8 while
+ * of 0-99 is above unk_50 - 20, it turns towards it, flies at its height (or at `height` while
  * farther than 0x3000) and steps towards it by at most 1/64 of a unit in x and z. Before the
- * end of its time it flies at unk_a8. */
+ * end of its time it flies at `height`. */
 void InsectMotion_SeekAnchor(MuseumInsect *insect)
 {
     if (!InsectMotion_TimerDone(insect)) {
-        insect->unk_54 = insect->unk_a8;
+        insect->level = insect->height;
         return;
     }
     Vec3 *position = &insect->position;
@@ -2704,9 +2702,9 @@ void InsectMotion_SeekAnchor(MuseumInsect *insect)
     int keen = insect->unk_50;
     if (InsectMotion_random(100) > keen - 20) {
         if (distance <= 0x3000) {
-            insect->unk_54 = anchor.y;
+            insect->level = anchor.y;
         } else {
-            insect->unk_54 = insect->unk_a8;
+            insect->level = insect->height;
         }
         insect->yaw = (s16) (turn + insect->yaw);
         VEC_Subtract(&anchor, position, &anchor);

@@ -2,26 +2,12 @@
  * (InsectMotion_Start) and their frame functions run one each frame (InsectMotion_Update*).
  *
  * A motion is a state machine on MuseumInsect.mode: MUSEUM_INSECT_MODE_REST (25) waits out
- * MuseumInsect.timer, 4 moves, 3 turns towards MuseumInsect.unk_ac, and each motion adds its
- * own modes. The player is watched through InsectMotion_WatchPlayer (InsectSighting): each frame it
- * moves the insect's alarm (unk_9c, 0-255) up while the player is near or moving and down
- * otherwise, and says how the alarm stands against the insect's threshold (unk_9e). An alarmed
- * insect runs, hops, flies off or hides, by its motion.
- *
- * The fields a motion uses, as far as the code shows:
- *   unk_98   frames left (a hop, a hidden spell, a walk)
- *   unk_9a   set while startled
- *   unk_9c   the alarm (InsectMotion_FollowPlayer counts frames in it)
- *   unk_9e   the alarm's threshold
- *   unk_a0   how far it sees the player
- *   unk_a8   the height it moves at, unk_54 a copy
- *   unk_ac   the yaw it turns to
- *   unk_ae   the way it turns (or, hovering, the way it drifts in x)
- *   unk_168  the frames of the current mode, or a phase
- *   unk_16c  its speed
- *   unk_170  a direction flag (up or down, left or right)
- *   kept     a point it goes to or comes back to; anchor, a point it hovers about
- *   low/high the x and z it keeps within */
+ * MuseumInsect.timer, 4 moves, 3 turns towards MuseumInsect.target_yaw, and each motion adds its
+ * own modes. The player is watched through InsectMotion_WatchPlayer (InsectSighting): each frame
+ * it moves the insect's alarm (0-255) up while the player is near or moving and down otherwise,
+ * and says how the alarm stands against the insect's alarm_threshold. An alarmed insect runs,
+ * hops, flies off or hides, by its motion. The fields a motion uses are described in
+ * museum_insects.h; unk_4c and unk_50 mean something different to each motion. */
 #ifndef CLEAN_OV004_MUSEUM_INSECT_MOTIONS_H
 #define CLEAN_OV004_MUSEUM_INSECT_MOTIONS_H
 
@@ -48,15 +34,15 @@ typedef struct InsectSighting {
 /* MuseumInsect.mode, as the motions use it. */
 #define INSECT_MOTION_SINK 1       /* hovering: down */
 #define INSECT_MOTION_RISE 2       /* hovering: up */
-#define INSECT_MOTION_TURN 3       /* to unk_ac (hovering: a sway) */
+#define INSECT_MOTION_TURN 3       /* to target_yaw (hovering: a sway) */
 #define INSECT_MOTION_MOVE 4       /* walking, flying, hopping */
-#define INSECT_MOTION_TURN_AWAY 15 /* from a wall, to unk_ac */
+#define INSECT_MOTION_TURN_AWAY 15 /* from a wall, to target_yaw */
 
 /* More of MuseumInsect.mode: the flappers' (kinds 0-7) and the darters' (kinds 21-23). */
 #define INSECT_MOTION_FLY 0              /* flapping */
 #define INSECT_MOTION_SETTLE 5           /* to the rest point */
 #define INSECT_MOTION_PERCH 6            /* on the anchor */
-#define INSECT_MOTION_STARTLED 7         /* alarmed: off along unk_ac */
+#define INSECT_MOTION_STARTLED 7         /* alarmed: off along target_yaw */
 #define INSECT_MOTION_HOVER 11           /* before a dart */
 #define INSECT_MOTION_HOVER_BLOCKED 12   /* after a wall */
 #define INSECT_MOTION_HOVER_BLOCKED_2 13 /* the same */
