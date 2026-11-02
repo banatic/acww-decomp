@@ -162,18 +162,23 @@ static void symbol_blocks_build(void)
     }
 }
 
-/* The index of the symbol containing `address`, or -1: the last one starting at or before it. */
+/* The index of the symbol containing `address`, or -1: the last one starting at or before it.
+ * Most branch targets are in the symbol the last one was in (loops): that one is tried first. */
 static int symbol_index(uint32_t address)
 {
+    static int last = -1;
+    if (last >= 0 && symbols[last].address <= address && (last + 1 == symbol_count || symbols[last + 1].address > address)) {
+        return last;
+    }
     uint32_t b = (address - symbol_block_base) >> SYMBOL_BLOCK_SHIFT;
     if (symbol_block == NULL || address < symbol_block_base || b >= symbol_block_count) {
-        return symbol_index_search(address);
+        return last = symbol_index_search(address);
     }
     int i = symbol_block[b];
     while (i + 1 < symbol_count && symbols[i + 1].address <= address) {
         i++;
     }
-    return i;
+    return last = i;
 }
 
 static int symbol_index_search(uint32_t address)
@@ -773,6 +778,7 @@ int run_main(int argc, char **argv)
     cpu.io_read = bios_io_read;
     cpu.io_write = io_write;
     cpu.hook_at = hook_at;
+    cpu.stores_told = 1; /* between slices memory is written through bus_write alone */
     /* RUN_JIT: 1 runs decoded blocks, translated to x86 once a block has run 8 times; "blocks"
        never translates; "check" and "check-blocks" also check each block run against the
        decoding interpreter (runtime/arm.h, ArmCpu.exec). Unset or 0: the decoding interpreter. */

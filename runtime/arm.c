@@ -226,6 +226,77 @@ static void restore_cpsr(ArmCpu *cpu)
 
 /* The code of the block running, [block_lo, block_lo + block_len). */
 static uint32_t block_lo, block_len;
+
+/* Code that has not changed: what was decoded from memory (a block, arm_code_stamp's callers)
+ * keeps a stamp of the moment its bytes were last seen as they are, and the bytes are known
+ * to be the same while no store was made to them since. The stores the interpreter makes
+ * stamp the 256 bytes they land in (code_written), and so do the runtime's own, which the
+ * I/O callbacks make (a DMA, the ARM7's answers) through bus_write (arm_memory_stored); a
+ * hook, which may run Native code, and whatever runs between two runs of the interpreter
+ * (unless it tells its stores too, ArmCpu.stores_told) move code_epoch instead, after which
+ * nothing is known to be the same until it is seen again. */
+#define CODE_BASE MEM_ITCM_BASE
+#define CODE_END (MEM_MAIN_BASE + MEM_MAIN_SIZE)
+#define CODE_GRAIN_SHIFT 8
+#define CODE_CLOCK_LAST 0xfffffff0u /* then nothing is ever known to be the same */
+static uint32_t code_clock = 1, code_epoch;
+static uint32_t code_stamps[(CODE_END - CODE_BASE) >> CODE_GRAIN_SHIFT];
+/* Set while the interpreter runs, and clear while a hook or an I/O callback does: only the
+ * interpreter's own stores are stamped, so only then is anything known (arm_code_unchanged). */
+static int code_live;
+static int code_hooks; /* hooks running (some may be suspended on another host stack) */
+
+static inline void code_written(uint32_t address)
+{
+    uint32_t offset = address - CODE_BASE;
+    if (address - MEM_MIRROR_BASE < MEM_MIRROR_SIZE) {
+        offset = address - MEM_MIRROR_BASE + (CODE_END - MEM_MIRROR_SIZE) - CODE_BASE; /* the same memory */
+    }
+    if (offset < CODE_END - CODE_BASE) {
+        code_stamps[offset >> CODE_GRAIN_SHIFT] = code_clock;
+    }
+}
+
+static inline void code_anything_written(void)
+{
+    code_epoch = code_clock;
+}
+
+void arm_memory_stored(uint32_t address, uint32_t size)
+{
+    code_written(address);
+    code_written(address + size - 1);
+}
+
+static inline uint32_t code_now(void)
+{
+    return code_clock < CODE_CLOCK_LAST ? ++code_clock : 0;
+}
+
+uint32_t arm_code_stamp(void)
+{
+    return code_live ? code_now() : 0;
+}
+
+/* Whether no store can have reached [address, address + size) since `stamp`. */
+static inline int code_same(uint32_t stamp, uint32_t address, uint32_t size)
+{
+    uint32_t offset = address - CODE_BASE;
+    if (stamp <= code_epoch || offset >= CODE_END - CODE_BASE || size > CODE_END - CODE_BASE - offset || size == 0) {
+        return 0;
+    }
+    for (uint32_t g = offset >> CODE_GRAIN_SHIFT, last = (offset + size - 1) >> CODE_GRAIN_SHIFT; g <= last; g++) {
+        if (code_stamps[g] >= stamp) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int arm_code_unchanged(uint32_t stamp, uint32_t address, uint32_t size)
+{
+    return code_live && code_same(stamp, address, size);
+}
 /* ARM_EXEC_CHECK: stores are logged, and callbacks and hooks counted, while a block runs
  * (check_logging); the decoding interpreter runs the same instructions again with neither
  * (check_shadow). */
@@ -235,6 +306,7 @@ static void check_log_store(uint32_t address, uint32_t size, const uint8_t *p, u
 
 static inline void ram_store(ArmCpu *cpu, uint32_t address, uint32_t size, uint8_t *p, uint32_t value)
 {
+    code_written(address);
     if (address - block_lo + size - 1 < block_len + size - 1) {
         cpu->block_exit = 1;
     }
@@ -247,6 +319,7 @@ static inline void ram_store(ArmCpu *cpu, uint32_t address, uint32_t size, uint8
 static inline int callout(ArmCpu *cpu)
 {
     cpu->block_exit = 1;
+    code_live = 0; /* (until the next instruction) */
     check_callouts++;
     if (check_shadow) {
         check_shadow_io++;
@@ -626,7 +699,17 @@ static int jump(ArmCpu *cpu, uint32_t target)
             return CONTINUE;
         }
         check_callouts++;
+        int live = code_live;
+        code_live = 0;
+        code_hooks++;
         int asked = hook(cpu, user);
+        code_hooks--;
+        code_live = live;
+        if (asked & ARM_HOOK_QUIET) {
+            asked &= ~ARM_HOOK_QUIET;
+        } else {
+            code_anything_written(); /* it may have run Native code, which writes memory directly */
+        }
         if (asked == 1) {
             cpu->stop_pc = target;
             return ARM_HOOK_STOP;
@@ -1708,14 +1791,20 @@ struct BlockOp {
 typedef struct Block {
     uint32_t start, bytes, count, thumb;
     uint32_t runs; /* how many times it ran, until it is translated */
+    uint32_t seen; /* when its code was last seen to be the bytes it was decoded from */
     void *code;    /* its x86 code (arm_x86.c), or NULL */
     int active;    /* runs inside it: a hook in it can start another run, or switch host stacks */
     int dead;      /* replaced while a run was inside: freed when the last one leaves */
+    /* The blocks the run went on to after this one (the last two addresses), as found while
+     * blocks_replaced was next_gen: used without looking them up while it still is. */
+    uint32_t next_pc[2], next_gen[2], next_last;
+    struct Block *next[2];
     BlockOp ops[]; /* then the bytes of the code */
 } Block;
 
 static Block **main_blocks, **itcm_blocks;
-static uint64_t blocks_built;
+static uint64_t blocks_built, blocks_compared, blocks_known;
+static uint32_t blocks_replaced = 1; /* moves when a block is replaced (and may be freed) */
 
 /* Where the block starting at `pc` is kept, or NULL where blocks are not used (code outside
  * main RAM and the ITCM, as the BIOS's, is fetched and decoded as it runs). `end` is the end of
@@ -2388,9 +2477,12 @@ static Block *block_build(uint32_t pc, uint32_t thumb, uint32_t region_end)
     b->count = count;
     b->thumb = thumb;
     b->runs = 0;
+    b->seen = code_now();
     b->code = NULL;
     b->active = 0;
     b->dead = 0;
+    b->next_gen[0] = b->next_gen[1] = 0;
+    b->next_last = 0;
     memcpy(b->ops, ops, count * sizeof(BlockOp));
     memcpy(b->ops + count, (const void *) (uintptr_t) pc, bytes);
     blocks_built++;
@@ -2419,8 +2511,46 @@ static inline int block_unchanged(const Block *b)
 }
 
 /* The block at `pc` in the current state, decoded now if there is none or its code changed;
- * NULL where blocks are not used. */
-static Block *block_at(uint32_t pc, uint32_t thumb)
+ * NULL where blocks are not used. `prev`, when not NULL, is the block the run comes from. */
+static Block *block_find(uint32_t pc, uint32_t thumb, int check);
+
+/* ARM_EXEC_CHECK: a block whose code is known to be the same is compared all the same, and
+ * must be the one its address keeps. */
+static void block_check_known(const Block *b)
+{
+    uint32_t end;
+    if (!block_unchanged(b) || *block_slot(b->start, &end) != b) {
+        fprintf(stderr, "arm: block check FAILED: the code of the block at %08x changed unseen\n", b->start);
+        abort();
+    }
+}
+
+static inline Block *block_at(uint32_t pc, uint32_t thumb, int check, Block *prev)
+{
+    if (prev != NULL) {
+        for (int k = 0; k < 2; k++) {
+            Block *b = prev->next[k];
+            if (prev->next_pc[k] == pc && prev->next_gen[k] == blocks_replaced && b->thumb == thumb &&
+                code_same(b->seen, b->start, b->bytes)) {
+                blocks_known++;
+                if (check) {
+                    block_check_known(b);
+                }
+                return b;
+            }
+        }
+    }
+    Block *b = block_find(pc, thumb, check);
+    if (prev != NULL && b != NULL) {
+        uint32_t k = prev->next_last ^= 1;
+        prev->next_pc[k] = pc;
+        prev->next[k] = b;
+        prev->next_gen[k] = blocks_replaced;
+    }
+    return b;
+}
+
+static Block *block_find(uint32_t pc, uint32_t thumb, int check)
 {
     uint32_t end;
     Block **slot = block_slot(pc, &end);
@@ -2428,14 +2558,26 @@ static Block *block_at(uint32_t pc, uint32_t thumb)
         return NULL; /* (ARM code at an address that is not a word's: it fetches the word below) */
     }
     Block *b = *slot;
-    if (b != NULL && b->thumb == thumb && block_unchanged(b)) {
-        return b;
+    if (b != NULL && b->thumb == thumb) {
+        if (code_same(b->seen, b->start, b->bytes)) {
+            blocks_known++;
+            if (check) {
+                block_check_known(b);
+            }
+            return b;
+        }
+        blocks_compared++;
+        if (block_unchanged(b)) {
+            b->seen = code_now();
+            return b;
+        }
     }
     Block *fresh = block_build(pc, thumb, end);
     if (fresh == NULL) {
         return NULL;
     }
     if (b != NULL) {
+        blocks_replaced++;
         if (b->active) {
             b->dead = 1;
         } else {
@@ -2589,6 +2731,7 @@ static int block_checked(ArmCpu *cpu, Block *b, uint32_t until, uint64_t limit, 
     after = *cpu;
     for (uint32_t i = check_logged[0]; i-- > 0;) {
         memcpy((void *) (uintptr_t) check_log[0][i].address, check_log[0][i].old, check_log[0][i].size);
+        code_written(check_log[0][i].address);
     }
     *cpu = before;
     check_shadow = 1;
@@ -2648,15 +2791,16 @@ void arm_exec_report(const ArmCpu *cpu, FILE *out)
     if (cpu->exec == ARM_EXEC_CHECK) {
         fprintf(out,
                 "arm: %llu blocks decoded, %llu translated; %llu block runs checked against the decoding interpreter, "
-                "%llu not (a callback or a hook ran)\n",
+                "%llu not (a callback or a hook ran); %llu entered knowing their code, %llu comparing it\n",
                 (unsigned long long) blocks_built, (unsigned long long) blocks_translated(),
-                (unsigned long long) checked_blocks, (unsigned long long) unchecked_blocks);
+                (unsigned long long) checked_blocks, (unsigned long long) unchecked_blocks, (unsigned long long) blocks_known,
+                (unsigned long long) blocks_compared);
     }
 }
 
 /* The run loop ---------------------------------------------------------------------------- */
 
-static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
+static enum ArmStop run_loop(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
 {
     uint64_t limit = max_steps ? cpu->steps + max_steps : UINT64_MAX;
     until &= ~1u;
@@ -2669,8 +2813,11 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
         return (enum ArmStop) result;
     }
 
+    Block *prev = NULL; /* the block run last, while blocks_replaced is prev_gen */
+    uint32_t prev_gen = 0;
     for (;;) {
         uint32_t pc = cpu->r[15];
+        code_live = 1;
         if (pc == until) {
             cpu->stop_pc = pc;
             return ARM_RETURNED;
@@ -2717,8 +2864,13 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
                     (unsigned long long) cpu->steps, pc, (cpu->cpsr & ARM_CPSR_T) ? 't' : 'a', cpu->cpsr, cpu->r[0], cpu->r[1],
                     cpu->r[2], cpu->r[3], cpu->r[4], cpu->r[5], cpu->r[6], cpu->r[7], cpu->r[13], cpu->r[14]);
         }
-        Block *b = cpu->exec != ARM_EXEC_DECODE && cpu->trace_count == 0 ? block_at(pc, cpu->cpsr & ARM_CPSR_T) : NULL;
+        Block *b = NULL;
+        if (cpu->exec != ARM_EXEC_DECODE && cpu->trace_count == 0) {
+            b = block_at(pc, cpu->cpsr & ARM_CPSR_T, cpu->exec == ARM_EXEC_CHECK, prev_gen == blocks_replaced ? prev : NULL);
+        }
+        prev = b;
         if (b != NULL) {
+            prev_gen = blocks_replaced; /* (b is freed only once replaced, which moves it) */
             result = cpu->exec == ARM_EXEC_CHECK ? block_checked(cpu, b, until, limit, mode, &pc)
                                                  : block_run(cpu, b, until, limit, mode, &pc);
         } else {
@@ -2750,6 +2902,23 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
         }
         return (enum ArmStop) result;
     }
+}
+
+/* Memory may have changed before a run, and may after it before the next: unless the caller
+ * tells every store it makes between runs (ArmCpu.stores_told), and the run is not one that
+ * Native code makes from a hook, whose stores are not told. */
+static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
+{
+    int live = code_live, untold = !cpu->stores_told || code_hooks > 0;
+    if (untold) {
+        code_anything_written();
+    }
+    enum ArmStop stop = run_loop(cpu, until, max_steps);
+    if (untold) {
+        code_anything_written();
+    }
+    code_live = live;
+    return stop;
 }
 
 void arm_init(ArmCpu *cpu)

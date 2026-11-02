@@ -176,7 +176,7 @@ static int hook_irq_vector(ArmCpu *cpu, void *user)
             break;
         }
     }
-    return 0;
+    return ARM_HOOK_QUIET;
 }
 
 ArmHook bios_hook_at(void *user, uint32_t address, void **hook_user)

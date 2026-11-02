@@ -351,6 +351,22 @@ static void load_store(Emit *e, const Block *b, const BlockOp *op, uint32_t next
     address_into_ecx(e, base_reg, base_value, op->imm);
     fast_range(e, &s, size, store, b);
     if (store) {
+        /* the store's stamp (code_written): lea edx, [ecx - CODE_BASE]; cmp edx, CODE_END -
+           CODE_BASE; jae over; shr edx, CODE_GRAIN_SHIFT; mov eax, [code_clock];
+           mov [code_stamps + edx * 4], eax */
+        e8(e, 0x8d);
+        e8(e, 0x91);
+        e32(e, 0u - CODE_BASE);
+        alu_imm(e, X_CMP, EDX, CODE_END - CODE_BASE);
+        uint8_t *over = jump_forward(e, CC_AE);
+        shift_imm(e, 5, EDX, CODE_GRAIN_SHIFT);
+        e8(e, 0xa1);
+        e32(e, (uint32_t) (uintptr_t) &code_clock);
+        e8(e, 0x89);
+        e8(e, 0x04);
+        e8(e, 0x95);
+        e32(e, (uint32_t) (uintptr_t) code_stamps);
+        land(e, over);
         load_cpu(e, EAX, CPU_R(op->rd));
         if (size == 4) {
             e8(e, 0x89); /* mov [ecx], eax */

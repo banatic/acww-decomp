@@ -1322,6 +1322,7 @@ int bus_write(uint32_t address, int size, uint32_t value)
 {
     uint8_t *p = memory_host(address, (uint32_t) size);
     if (p) {
+        arm_memory_stored(address, (uint32_t) size); /* (code there is decoded again) */
         memcpy(p, &value, (size_t) size);
         return 1;
     }

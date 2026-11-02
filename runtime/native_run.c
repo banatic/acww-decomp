@@ -84,6 +84,8 @@ typedef struct Fn {
     int guest_saves;                         /* audited registers its entry push saves (bit n: rn); -1 unproved */
     uint64_t calls_in;                       /* from the interpreter, run as Native */
     uint64_t calls_out;                      /* from Native code, run by the interpreter */
+    uint32_t loaded_seen;                    /* is_loaded: when its bytes were last compared (arm.h) */
+    int loaded;                              /* ... and whether they were its own */
 } Fn;
 
 typedef struct Module {
@@ -114,6 +116,10 @@ static Fn **guest_functions; /* Native/Clean table index to policy function, inc
 #define ENTRY_BASE MEM_ITCM_BASE
 #define ENTRY_END (MEM_MAIN_BASE + MEM_MAIN_SIZE)
 static uint8_t *entry_bits;
+/* For each 32 bits of entry_bits, how many are set before them; for each address with a
+ * function (in address order), the first of the functions there: first_at without a search. */
+static uint32_t *entry_rank;
+static int *entry_first;
 
 static ArmCpu *cpu;
 static int running, recording, replaying, resident_ready;
@@ -296,6 +302,21 @@ static int load_policy(const char *path)
             entry_bits[bit >> 3] |= (uint8_t) (1u << (bit & 7));
         }
     }
+    uint32_t words = (ENTRY_END - ENTRY_BASE) / 64, set = 0;
+    entry_rank = calloc(words, sizeof(uint32_t));
+    entry_first = calloc((size_t) fn_count + 1, sizeof(int));
+    for (uint32_t w = 0; w < words; w++) {
+        uint32_t bits;
+        memcpy(&bits, entry_bits + 4 * w, 4);
+        entry_rank[w] = set;
+        set += (uint32_t) __builtin_popcount(bits);
+    }
+    for (int i = 0, n = 0; i < fn_count; i++) {
+        uint32_t a = fns[i].address & ~1u;
+        if (a >= ENTRY_BASE && a < ENTRY_END && (i == 0 || (fns[i - 1].address & ~1u) != a)) {
+            entry_first[n++] = i;
+        }
+    }
     for (int i = 0; i < fn_count; i++) {
         modules[fns[i].module].code_count++;
     }
@@ -319,10 +340,12 @@ static Fn *first_at(uint32_t address)
 {
     address &= ~1u;
     if (address >= ENTRY_BASE && address < ENTRY_END) {
-        uint32_t bit = (address - ENTRY_BASE) >> 1;
-        if (!(entry_bits[bit >> 3] & (1u << (bit & 7)))) {
+        uint32_t bit = (address - ENTRY_BASE) >> 1, bits;
+        memcpy(&bits, entry_bits + 4 * (bit >> 5), 4);
+        if (!((bits >> (bit & 31)) & 1)) {
             return NULL;
         }
+        return &fns[entry_first[entry_rank[bit >> 5] + (uint32_t) __builtin_popcount(bits & ((1u << (bit & 31)) - 1))]];
     }
     int lo = 0, hi = fn_count;
     while (lo < hi) {
@@ -345,9 +368,21 @@ static int is_loaded(const Fn *f)
         return resident_ready;
     }
     uint32_t a = f->address & ~1u;
+    int known = arm_code_unchanged(f->loaded_seen, a, f->size);
+    if (known && (cpu == NULL || cpu->exec != ARM_EXEC_CHECK)) {
+        return f->loaded; /* no store reached its bytes since they were compared */
+    }
     const uint8_t *p = memory_host(a, f->size);
-    return p != NULL && m->image != NULL && a >= m->base && a - m->base + f->size <= m->size &&
-           memcmp(p, m->image + (a - m->base), f->size) == 0;
+    int loaded = p != NULL && m->image != NULL && a >= m->base && a - m->base + f->size <= m->size &&
+                 memcmp(p, m->image + (a - m->base), f->size) == 0;
+    if (known && loaded != f->loaded) {
+        fprintf(stderr, "native: check FAILED: the code of %s changed unseen\n", f->name);
+        abort();
+    }
+    Fn *seen = (Fn *) f;
+    seen->loaded = loaded;
+    seen->loaded_seen = arm_code_stamp();
+    return seen->loaded;
 }
 
 /* Whether every function of an overlay has its own bytes in memory. */
@@ -819,9 +854,13 @@ static uint32_t stream_key(void)
 
 static Stream *stream_for(uint32_t key)
 {
+    static Stream *last; /* (streams do not move) */
+    if (last != NULL && last->key == key) {
+        return last;
+    }
     for (int i = 0; i < stream_count; i++) {
         if (streams[i].key == key) {
-            return &streams[i];
+            return last = &streams[i];
         }
     }
     if (stream_count == MAX_STREAMS) {
@@ -1714,8 +1753,11 @@ static void record_branch(uint32_t address)
            it calls are not. Nor is the scheduler's return into a thread it interrupted inside
            Native code (OS_LoadContext, in supervisor mode, with the thread's resume address in
            lr): the Native run takes interrupts only while it idles, outside Native code. */
+        if (!inside) {
+            return;
+        }
         Fn *c = containing(address);
-        if (!inside || (c != NULL && (native_for_native(c) || c->status == 'H')) || !inside_native(cpu->r[14]) ||
+        if ((c != NULL && (native_for_native(c) || c->status == 'H')) || !inside_native(cpu->r[14]) ||
             (cpu->r[14] & ~1u) - (address & ~1u) < 8u || (cpu->cpsr & ARM_MODE_MASK) == ARM_MODE_SVC) {
             return;
         }

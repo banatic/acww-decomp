@@ -47,6 +47,11 @@ typedef struct ArmCpu ArmCpu;
  * even when pc did not change (the hook switched host stacks, and what it found on its return
  * is a different moment of the run; see run.c). */
 #define ARM_HOOK_AGAIN 2
+/* Added to the result by a hook that wrote no DS memory, or only through stores it told
+ * (arm_memory_stored, which bus_write calls): the interpreter keeps what it knows of the code
+ * in memory. Without it, the hook may have changed any of it (Native code writes it
+ * directly). */
+#define ARM_HOOK_QUIET 4
 typedef int (*ArmHook)(ArmCpu *cpu, void *user);
 
 struct ArmCpu {
@@ -130,6 +135,10 @@ struct ArmCpu {
     /* Set while a block runs when it has to end after the current instruction (a branch, an
      * I/O access, a store into its own code). */
     int block_exit;
+    /* Nonzero: the caller of arm_run and arm_call writes DS memory between runs only through
+     * stores it tells (arm_memory_stored), so that what the interpreter knows of the code in
+     * memory holds from one run to the next. Zero: it may write it in any way. */
+    int stores_told;
 };
 
 #define ARM_EXEC_DECODE 0
@@ -218,6 +227,17 @@ enum ArmStop arm_call(ArmCpu *cpu, uint32_t address, uint64_t max_steps);
  * which stops with ARM_RETURNED, or something else stops it. A branch to ARM_RETURN_ADDRESS
  * stops with ARM_RETURNED as well. */
 enum ArmStop arm_run(ArmCpu *cpu, uint32_t until, uint64_t max_steps);
+
+/* For what keeps something it read from code in memory (arm.c, "Code that has not
+ * changed"): arm_code_stamp() is the moment now (0 when there are no more), and
+ * arm_code_unchanged(stamp, address, size) whether [address, address + size) can only hold
+ * the bytes it held at `stamp`: no store reached it since, and nothing else that may write
+ * memory ran. 0 means it may have changed (the bytes are then to be compared). */
+uint32_t arm_code_stamp(void);
+int arm_code_unchanged(uint32_t stamp, uint32_t address, uint32_t size);
+/* Every store into DS memory that is not the interpreter's own and is made while it runs (by
+ * an I/O callback: io.c's bus_write) is told here; Native code, which runs in hooks, need not. */
+void arm_memory_stored(uint32_t address, uint32_t size);
 
 /* With ARM_EXEC_CHECK, how many blocks were checked, to `out`; nothing otherwise. */
 void arm_exec_report(const ArmCpu *cpu, FILE *out);
