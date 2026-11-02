@@ -798,10 +798,10 @@ static void header(const uint8_t *p, uint32_t n, const char *name, char *value, 
 /* NAS's Base64: A-Z a-z 0-9 '.' '-', padded with '*'. */
 static const char B64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.-";
 
-static uint32_t b64_encode(const char *text, char *out)
+static uint32_t b64_encode(const char *text, char *out, uint32_t size)
 {
     uint32_t n = (uint32_t) strlen(text), o = 0;
-    for (uint32_t i = 0; i < n; i += 3) {
+    for (uint32_t i = 0; i < n && o + 4 < size; i += 3) {
         uint32_t v = (uint32_t) (uint8_t) text[i] << 16;
         if (i + 1 < n) {
             v |= (uint32_t) (uint8_t) text[i + 1] << 8;
@@ -869,7 +869,7 @@ static void http_respond(Tcp *c, const char *status, const char *type, const cha
  * fixed; the time is the run's clock's day at noon. */
 static void nas(Tcp *c, const char *body, uint32_t n)
 {
-    char action[32], gamecd[16], out[1024], value[160], field[256];
+    char action[32], gamecd[16], out[1024], value[256], field[320];
     form_field(body, n, "action", action, sizeof(action));
     form_field(body, n, "gamecd", gamecd, sizeof(gamecd));
     for (char *p = action; *p; p++) {
@@ -902,7 +902,7 @@ static void nas(Tcp *c, const char *body, uint32_t n)
         if (strcmp(action, "svcloc") != 0 && i >= 6) {
             break;
         }
-        b64_encode(fields[i].value, value);
+        b64_encode(fields[i].value, value, sizeof(value));
         int k = snprintf(field, sizeof(field), "%s%s=%s", i ? "&" : "", fields[i].name, value);
         if (k > 0 && o + (uint32_t) k + 3 < sizeof(out)) {
             memcpy(out + o, field, (size_t) k);
