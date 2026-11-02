@@ -30,7 +30,7 @@ struct Camel;
 /* The talk scene (0xbc bytes). */
 typedef struct CamelTalk {
     SceneBase scene;                 /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];                 /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];               /* 0x80: the scene's commands (scene_command.h) */
     struct Camel *owner;             /* 0xb0 */
     s32 pocket;                      /* 0xb4: the slot of item 0x13ac, or CAMEL_TALK_POCKET_* */
     u16 rewards[CAMEL_TALK_REWARDS]; /* 0xb8: item code objects; 0xfff1 when made */

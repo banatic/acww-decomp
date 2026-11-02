@@ -36,7 +36,7 @@ struct Mole;
  * 0x022797fc (mole_talk.h). */
 typedef struct MoleTalk {
     SceneBase scene;    /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];    /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];  /* 0x80: the scene's commands (scene_command.h) */
     s32 sequence;       /* 0xb0: MOLE_TALK_SEQ_*, what runs next (MoleTalk_SetSequence) */
     u8 countdown;       /* 0xb4: the frames left before MOLE_TALK_SEQ_WAIT goes on */
     u8 unk_b5[3];       /* 0xb5 */

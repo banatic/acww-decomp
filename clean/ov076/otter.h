@@ -39,7 +39,7 @@ struct Otter;
  * 0x02279744 (otter_talk.h). */
 typedef struct OtterTalk {
     SceneBase base;              /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];             /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];           /* 0x80: the scene's commands (scene_command.h) */
     s32 sequence;                /* 0xb0: OTTER_TALK_*, what the talk started with */
     struct Otter *owner;         /* 0xb4 */
     u16 item;                    /* 0xb8: the item he gave, 0xfff1 for none */

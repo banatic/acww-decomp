@@ -41,7 +41,7 @@ struct XctExchange;
  * 0x02260f44 (xct_exchange_talk.h). */
 typedef struct XctExchangeTalk {
     SceneBase base;            /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];           /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];         /* 0x80: the scene's commands (scene_command.h) */
     struct XctExchange *owner; /* 0xb0 */
     u32 step;                  /* 0xb4: XCT_EXCHANGE_TALK_STEP_*, data_ov055_02260f0c */
 } XctExchangeTalk;

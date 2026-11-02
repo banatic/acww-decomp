@@ -104,7 +104,7 @@ struct NookClerk;
  * with vtable data_ov050_02265b14. */
 typedef struct NookClerkTalk {
     SceneBase base;          /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];         /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];       /* 0x80: the scene's commands (scene_command.h) */
     u32 mode;                /* 0xb0: NOOK_CLERK_MODE_* */
     struct NookClerk *owner; /* 0xb4 */
     MemberPointer sequence;  /* 0xb8: void (talk), run once when a command of the scene ends */

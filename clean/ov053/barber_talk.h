@@ -57,7 +57,7 @@ enum BarberTopic {
 /* Its talk scene (0xc0 bytes): a scene of class 0x020d9ff8 (main's obj_020d9ff8.h). */
 typedef struct BarberTalk {
     SceneBase base;       /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];      /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];    /* 0x80: the scene's commands (scene_command.h) */
     u32 topic;            /* 0xb0: enum BarberTopic */
     struct Barber *owner; /* 0xb4 */
     u8 other_styles;      /* 0xb8: the styles offered are the other set's (line 0x17) */

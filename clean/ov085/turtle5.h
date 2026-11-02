@@ -37,7 +37,7 @@ struct Turtle5;
  * receiver's message (byte 0x1e of the scene) is the line shown. */
 typedef struct Turtle5Talk {
     SceneBase base;               /* 0x00 */
-    u8 unk_80[0x30];              /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];            /* 0x80: the scene's commands (scene_command.h) */
     struct Turtle5 *owner;        /* 0xb0 */
     s32 item_slot;                /* 0xb4: the pockets' slot of item 0x37e0, or TURTLE5_TALK_SLOT_* */
     u8 next_villager;             /* 0xb8: the town's place the list of villagers goes on from */

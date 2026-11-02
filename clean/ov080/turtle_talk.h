@@ -32,7 +32,7 @@ struct Turtle;
 /* The talk scene (0xb8 bytes). */
 typedef struct TurtleTalk {
     SceneBase scene;      /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];      /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];    /* 0x80: the scene's commands (scene_command.h) */
     struct Turtle *owner; /* 0xb0 */
     s32 slot;             /* 0xb4: the pockets' slot of item 0x37e0, or TURTLE_TALK_SLOT_* */
 } TurtleTalk;

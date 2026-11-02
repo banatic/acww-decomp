@@ -33,7 +33,7 @@ struct TurtleFishing;
  * 0x0227972c (turtle_fishing_talk.h). */
 typedef struct TurtleFishingTalk {
     SceneBase base;              /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];             /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];           /* 0x80: the scene's commands (scene_command.h) */
     struct TurtleFishing *owner; /* 0xb0 */
     MemberPointer after_command; /* 0xb4: run once when a command of the scene ends */
     MemberPointer then_command;  /* 0xbc: becomes after_command once that has run */

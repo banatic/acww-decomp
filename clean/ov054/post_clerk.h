@@ -49,7 +49,7 @@ struct PostClerk;
  * (main's obj_020d9ff8.h) with vtable data_ov054_02263004. */
 typedef struct PostClerkTalk {
     SceneBase base;          /* 0x00: the receiver's file name (0x04) and message (0x1e) */
-    u8 unk_80[0x30];         /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];       /* 0x80: the scene's commands (scene_command.h) */
     struct PostClerk *owner; /* 0xb0 */
     u32 menu;                /* 0xb4: the menu of answers offered (POST_CLERK_TALK_MENU_*) */
     u32 step;                /* 0xb8: POST_CLERK_TALK_STEP_* (post_clerk_talk.h) */

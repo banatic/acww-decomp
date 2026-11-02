@@ -43,7 +43,7 @@ struct ReactionNpc;
  * receiver's message (byte 0x1e of the scene) is the line shown. */
 typedef struct ReactionNpcTalk {
     SceneBase base;                        /* 0x00 */
-    u8 unk_80[0x30];                       /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];                     /* 0x80: the scene's commands (scene_command.h) */
     s32 step;                              /* 0xb0: REACTION_NPC_STEP_* */
     u8 step_state;                         /* 0xb4: cleared with each step set */
     u8 unk_b5[3];                          /* 0xb5 */

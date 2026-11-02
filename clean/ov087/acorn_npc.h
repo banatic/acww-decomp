@@ -30,7 +30,7 @@ struct AcornNpc;
  * receiver's message (byte 0x1e of the scene) is the line shown. */
 typedef struct AcornNpcTalk {
     SceneBase base;         /* 0x00 */
-    u8 unk_80[0x30];        /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];      /* 0x80: the scene's commands (scene_command.h) */
     struct AcornNpc *owner; /* 0xb0 */
 } AcornNpcTalk;
 

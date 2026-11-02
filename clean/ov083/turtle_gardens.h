@@ -35,7 +35,7 @@ struct TurtleGardens;
  * 0x022791fc (turtle_gardens_talk.h). */
 typedef struct TurtleGardensTalk {
     SceneBase base;              /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];             /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];           /* 0x80: the scene's commands (scene_command.h) */
     struct TurtleGardens *owner; /* 0xb0 */
     s32 slot_37e0;               /* 0xb4: TURTLE_GARDENS_TALK_37E0_*, or the pocket of item
                                   * 0x37e0 */

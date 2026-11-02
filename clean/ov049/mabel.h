@@ -81,7 +81,7 @@ struct Mabel;
  * data_ov049_022634b4. */
 typedef struct MabelTalk {
     SceneBase base;      /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];     /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];   /* 0x80: the scene's commands (scene_command.h) */
     struct Mabel *owner; /* 0xb0 */
     u32 mode;            /* 0xb4: MABEL_TALK_MODE_* */
     u32 sequence;        /* 0xb8: MABEL_TALK_SEQUENCE_* (mabel_talk.h) */

@@ -46,7 +46,7 @@ struct FoxTent;
  * 0x02261eb0. */
 typedef struct FoxTentTalk {
     SceneBase base;        /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];       /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];     /* 0x80: the scene's commands (scene_command.h) */
     u32 sequence;          /* 0xb0: FOX_TENT_TALK_* , what the next talk starts with */
     struct FoxTent *owner; /* 0xb4 */
     s32 price;             /* 0xb8: the price of the item the player faces */

@@ -54,7 +54,7 @@ struct Owl;
 /* Its talk scene (0xd4 bytes): a scene of class 0x020d9ff8 (main's obj_020d9ff8.h). */
 typedef struct OwlTalk {
     SceneBase base;      /* 0x00: the receiver's message (byte 0x1e) is the line shown */
-    u8 unk_80[0x30];     /* 0x80: the scene's commands (scene_command.h) */
+    u8 commands[0x30];   /* 0x80: the scene's commands (scene_command.h) */
     s32 drama;           /* 0xb0: 1 while a dated event's line of "sp_npc_drama1" is shown */
     struct Owl *owner;   /* 0xb4 */
     MemberPointer after; /* 0xb8: run once the command of the scene ends (OwlTalk_RunAfter) */
