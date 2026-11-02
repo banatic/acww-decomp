@@ -779,13 +779,15 @@ int run_main(int argc, char **argv)
     cpu.io_write = io_write;
     cpu.hook_at = hook_at;
     cpu.stores_told = 1; /* between slices memory is written through bus_write alone */
-    /* RUN_JIT: 1 runs decoded blocks, translated to x86 once a block has run 8 times; "blocks"
-       never translates; "check" and "check-blocks" also check each block run against the
-       decoding interpreter (runtime/arm.h, ArmCpu.exec). Unset or 0: the decoding interpreter. */
+    /* RUN_JIT: unset or 1 runs decoded blocks, translated to x86 once a block has run 8 times
+       (on 32-bit x86 hosts; elsewhere blocks alone); "blocks" never translates; "check" and
+       "check-blocks" also check each block run against the decoding interpreter (runtime/arm.h,
+       ArmCpu.exec); 0 runs the decoding interpreter alone. All of them run the same
+       instructions to the same results. */
     const char *exec = getenv("RUN_JIT");
-    cpu.exec = exec == NULL || !*exec || !strcmp(exec, "0")              ? ARM_EXEC_DECODE
-               : !strcmp(exec, "check") || !strcmp(exec, "check-blocks") ? ARM_EXEC_CHECK
-                                                                         : ARM_EXEC_BLOCKS;
+    cpu.exec = exec != NULL && !strcmp(exec, "0")                                          ? ARM_EXEC_DECODE
+               : exec != NULL && (!strcmp(exec, "check") || !strcmp(exec, "check-blocks")) ? ARM_EXEC_CHECK
+                                                                                           : ARM_EXEC_BLOCKS;
     cpu.translate = exec != NULL && (!strcmp(exec, "blocks") || !strcmp(exec, "check-blocks")) ? 0 : 8;
     if (getenv("RUN_STEPS") != NULL) {
         /* RUN_STEPS=<from>,<count>: print those instructions as they execute */

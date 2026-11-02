@@ -78,7 +78,11 @@ written down as `REQUIRES:`. Clean is never bent just to pass a test.
 - **Memory**: main RAM, the TCMs, VRAM and the overlay regions at their DS addresses; overlays
   loaded from the ROM as the game asks for them.
 - **CPU**: an ARMv5TE interpreter for ARM and Thumb code, used for the Reference and for any
-  function without another implementation.
+  function without another implementation. It runs code as decoded blocks, and a block that
+  runs often as x86 code it translated (32-bit x86 hosts); `RUN_JIT=0` runs each instruction
+  through the decoder alone, and `RUN_JIT=check` checks every block run against it. A store
+  into code makes the blocks it reaches decoded again. Every mode gives the same frames and
+  memory.
 - **Hardware**: the DS's 2D and 3D graphics at their native resolution, sound, input, the clock
   and save memory, written to behave like the hardware. The graphics are drawn on a second
   thread from a copy of the state each line reads, kept up to date line by line, so the
