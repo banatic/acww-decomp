@@ -285,7 +285,11 @@ static int have_sha_ni(void)
 
 static void sha1_blocks(uint32_t h[5], const uint8_t *p, size_t blocks)
 {
-    if (have_sha_ni() && getenv("RUN_NO_SHA_NI") == NULL) {
+    static int use_ni = -1; /* (asked once: several hashes are taken for every frame) */
+    if (use_ni < 0) {
+        use_ni = have_sha_ni() && getenv("RUN_NO_SHA_NI") == NULL;
+    }
+    if (use_ni) {
         sha1_blocks_ni(h, p, blocks);
         return;
     }

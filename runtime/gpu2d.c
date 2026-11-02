@@ -60,11 +60,19 @@ typedef struct Engine {
     uint8_t alpha3d[GPU2D_WIDTH]; /* the 3D layer's 5-bit alpha where BG0 is 3D */
     uint32_t obj[GPU2D_WIDTH];
     uint8_t obj_prio[GPU2D_WIDTH], obj_flags[GPU2D_WIDTH], obj_alpha[GPU2D_WIDTH], obj_window[GPU2D_WIDTH];
-    uint32_t obj_prios;        /* bit p: some OBJ pixel of the line has priority p */
-    uint8_t win[GPU2D_WIDTH];  /* per pixel: bits 0-3 BG0-3 shown, 4 OBJ shown, 5 effects allowed */
-    uint32_t out[GPU2D_WIDTH]; /* the composed line before master brightness */
+    uint32_t obj_prios, obj_kinds; /* some OBJ pixel of the line has: priority p (bit p), these flags */
+    uint8_t win[GPU2D_WIDTH];      /* per pixel: bits 0-3 BG0-3 shown, 4 OBJ shown, 5 effects allowed */
+    uint32_t out[GPU2D_WIDTH];     /* the composed line before master brightness */
 
     uint32_t frame[GPU2D_HEIGHT * GPU2D_WIDTH]; /* 18-bit colours */
+
+    /* OAM as last seen (once `oam_known`), and from it where each OBJ is: the line it starts
+       at and its height (doubled with the double size), or that it is never drawn (hidden,
+       or a prohibited shape), or that it is in a mosaic, whose lines depend on its size. */
+    uint8_t oam_seen[0x400];
+    int oam_known;
+    int16_t obj_top[128];
+    uint8_t obj_height[128], obj_lines[128];
 
     /* A display capture in progress: it starts with the first line of the frame after the
        enable bit was set and runs to the end of that frame (GBATEK, "DS Video Display
@@ -172,17 +180,32 @@ static enum BgKind bg_kind(const Engine *e, int bg, uint32_t dispcnt)
     return kind;
 }
 
+/* The 3D frame's lines as the BG0 layer takes them: 18-bit colours or NONE, and alphas;
+ * each line converted once per 3D frame (gpu3d_generation). */
+static uint32_t layer3d[GPU2D_HEIGHT][GPU2D_WIDTH];
+static uint8_t layer3d_alpha[GPU2D_HEIGHT][GPU2D_WIDTH];
+static uint32_t layer3d_generation[GPU2D_HEIGHT];
+
 static void draw_3d(Engine *e, uint32_t y)
 {
-    const uint32_t *line = gpu3d_line_rgb6((int) y);
+    uint32_t generation = gpu3d_generation();
+    if (layer3d_generation[y] != generation) {
+        layer3d_generation[y] = generation;
+        /* its colours keep the 3D engine's 6 bits per component */
+        const uint32_t *line = gpu3d_line_rgb6((int) y);
+        for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
+            uint32_t c = line[x], a = (c >> 24) & 31u;
+            layer3d[y][x] = a ? (c & 0x3fu) | ((c >> 8) & 0x3fu) << 6 | ((c >> 16) & 0x3fu) << 12 : NONE;
+            layer3d_alpha[y][x] = (uint8_t) a;
+        }
+    }
     /* BG0HOFS scrolls the 3D layer horizontally; the image is 256 wide in a 512-wide space
-       and the rest is transparent (the 3D layer does not wrap). Its colours keep the 3D
-       engine's 6 bits per component. */
+       and the rest is transparent (the 3D layer does not wrap) */
     uint32_t hofs = reg16(e, R_BG0HOFS) & 0x1ffu;
     for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
-        uint32_t sx = (x + hofs) & 0x1ffu, c = sx < 256 ? line[sx] : 0, a = (c >> 24) & 31u;
-        e->bg[0][x] = a ? (c & 0x3fu) | ((c >> 8) & 0x3fu) << 6 | ((c >> 16) & 0x3fu) << 12 : NONE;
-        e->alpha3d[x] = (uint8_t) a;
+        uint32_t sx = (x + hofs) & 0x1ffu;
+        e->bg[0][x] = sx < 256 ? layer3d[y][sx] : NONE;
+        e->alpha3d[x] = sx < 256 ? layer3d_alpha[y][sx] : 0;
     }
 }
 
@@ -398,6 +421,26 @@ static const uint8_t obj_dims[3][4][2] = {
     {{8, 16}, {8, 32}, {16, 32}, {32, 64}},
 };
 
+enum { LINES_NONE, LINES_RANGE, LINES_MOSAIC };
+
+static void decode_oam(Engine *e, const uint8_t *oam)
+{
+    memcpy(e->oam_seen, oam, sizeof(e->oam_seen));
+    e->oam_known = 1;
+    for (uint32_t i = 0; i < 128; i++) {
+        uint32_t a0 = oam16(oam, i * 8), a1 = oam16(oam, i * 8 + 2), shape = a0 >> 14;
+        int affine = (a0 & 0x100) != 0;
+        if ((!affine && (a0 & 0x200)) || shape == 3) {
+            e->obj_lines[i] = LINES_NONE;
+            continue;
+        }
+        int h = obj_dims[shape][a1 >> 14][1], yo = (int) (a0 & 0xff);
+        e->obj_height[i] = (uint8_t) (affine && (a0 & 0x200) ? 2 * h : h);
+        e->obj_top[i] = (int16_t) (yo >= GPU2D_HEIGHT ? yo - 256 : yo);
+        e->obj_lines[i] = (a0 & 0x1000) ? LINES_MOSAIC : LINES_RANGE;
+    }
+}
+
 static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
 {
     for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
@@ -405,7 +448,7 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
         e->obj_window[x] = 0;
         e->obj_flags[x] = 0;
     }
-    e->obj_prios = 0;
+    e->obj_prios = e->obj_kinds = 0;
     if ((dispcnt & 0x1000) == 0 && (dispcnt & 0x8000) == 0) {
         return; /* neither OBJ display nor the OBJ window */
     }
@@ -423,7 +466,15 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
        wins, and a BG between them cannot bring the loser back (the GBA/DS "OBJ priority"
        quirk). The hardware also runs out of drawing time with many large OBJs on a line;
        that limit is not modelled. */
+    if (!e->oam_known || memcmp(oam, e->oam_seen, sizeof(e->oam_seen)) != 0) {
+        decode_oam(e, oam);
+    }
     for (uint32_t i = 0; i < 128; i++) {
+        /* (what decode_oam finds is not on this line, the tests below would skip) */
+        if (e->obj_lines[i] == LINES_NONE ||
+            (e->obj_lines[i] == LINES_RANGE && (uint32_t) ((int) y - e->obj_top[i]) >= e->obj_height[i])) {
+            continue;
+        }
         uint32_t a0 = oam16(oam, i * 8), a1 = oam16(oam, i * 8 + 2), a2 = oam16(oam, i * 8 + 4);
         int affine = (a0 & 0x100) != 0;
         if (!affine && (a0 & 0x200)) {
@@ -546,6 +597,7 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
             e->obj_alpha[sx] = (uint8_t) alpha;
             e->obj_flags[sx] =
                 (uint8_t) ((mode == 1 ? OBJ_SEMI : 0) | (mode == 3 ? OBJ_BITMAP : 0) | (use_mosaic ? OBJ_MOSAIC : 0));
+            e->obj_kinds |= e->obj_flags[sx];
         }
     }
     if (mh) {
@@ -625,15 +677,18 @@ static uint32_t blend(uint32_t a, uint32_t b, uint32_t eva, uint32_t evb, uint32
     return r;
 }
 
-static uint32_t brightness(uint32_t a, uint32_t evy, int up, uint32_t bias)
+/* A brightness change, for each 6-bit channel value: a line's fades all have the same
+ * parameters, so they are looked up. */
+static void fade_table(uint8_t table[64], uint32_t evy, int up, uint32_t bias)
 {
-    uint32_t r = 0;
-    for (int ch = 0; ch < 3; ch++) {
-        uint32_t c = (a >> (6 * ch)) & 63;
-        c = up ? c + (((63 - c) * evy + bias) >> 4) : c - ((c * evy + bias) >> 4);
-        r |= c << (6 * ch);
+    for (uint32_t c = 0; c < 64; c++) {
+        table[c] = (uint8_t) (up ? c + (((63 - c) * evy + bias) >> 4) : c - ((c * evy + bias) >> 4));
     }
-    return r;
+}
+
+static inline uint32_t fade(const uint8_t table[64], uint32_t a)
+{
+    return table[a & 63] | (uint32_t) table[(a >> 6) & 63] << 6 | (uint32_t) table[(a >> 12) & 63] << 12;
 }
 
 static void compose(Engine *e, uint32_t dispcnt)
@@ -647,6 +702,10 @@ static void compose(Engine *e, uint32_t dispcnt)
     uint32_t backdrop = pal_colour(bg_palette(e), 0);
     int obj_on = (dispcnt & 0x1000) != 0;
     int bg0_3d = bg_kind(e, 0, dispcnt) == BG_3D;
+    uint8_t faded[64];
+    if (effect >= 2) {
+        fade_table(faded, evy, effect == 2, effect == 2 ? 8 : 7);
+    }
 
     /* BGs by priority, lower BG number first within a priority. */
     int order[4][4], count[4] = {0, 0, 0, 0};
@@ -695,6 +754,15 @@ static void compose(Engine *e, uint32_t dispcnt)
         }
     }
 
+    /* No colour effect can apply on the line: without second targets, only a fade could
+       (which needs effect 2 or 3), and without a fade, only an OBJ or the 3D layer with
+       alpha could. */
+    if ((effect < 2 && (bldcnt & 0x3f00) == 0) || (effect == 0 && (e->obj_kinds & (OBJ_SEMI | OBJ_BITMAP)) == 0 && !bg0_3d)) {
+        for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
+            e->out[x] = front[x] & 0xffffffu;
+        }
+        return;
+    }
     for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
         uint32_t w = win[x];
         uint32_t top = front[x] & 0xffffffu, second = behind[x] & 0xffffffu;
@@ -709,7 +777,7 @@ static void compose(Engine *e, uint32_t dispcnt)
                 if (matched) {
                     c = blend(top, second, eva, evb, 4);
                 } else if (first && effect >= 2) {
-                    c = brightness(top, evy, effect == 2, effect == 2 ? 8 : 7);
+                    c = fade(faded, top);
                 }
             } else if (flags & OBJ_BITMAP) {
                 /* a bitmap OBJ blends by its own alpha (OAM attribute 2): EVA = alpha + 1 in
@@ -717,7 +785,7 @@ static void compose(Engine *e, uint32_t dispcnt)
                 if (matched) {
                     c = blend(top, second, (uint32_t) e->obj_alpha[x] + 1, 15u - e->obj_alpha[x], 4);
                 } else if (first && effect >= 2) {
-                    c = brightness(top, evy, effect == 2, effect == 2 ? 8 : 7);
+                    c = fade(faded, top);
                 }
             } else if (top_layer == 0 && bg0_3d && matched) {
                 /* the 3D layer over a second target blends by its own alpha, in 32nds
@@ -731,7 +799,7 @@ static void compose(Engine *e, uint32_t dispcnt)
             } else if (effect == 1 && first && matched) {
                 c = blend(top, second, eva, evb, 4);
             } else if (effect >= 2 && first) {
-                c = brightness(top, evy, effect == 2, effect == 2 ? 8 : 7);
+                c = fade(faded, top);
             }
         }
         e->out[x] = c;
@@ -861,8 +929,10 @@ static void finish_line(Engine *e, uint32_t y, uint32_t dispcnt)
     uint32_t mb = reg16(e, R_MASTER_BRIGHT), factor = mb & 31, mode = mb >> 14;
     factor = factor > 16 ? 16 : factor;
     if ((mode == 1 || mode == 2) && factor > 0) {
+        uint8_t table[64];
+        fade_table(table, factor, mode == 1, mode == 1 ? 0 : 15);
         for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
-            row[x] = brightness(row[x], factor, mode == 1, mode == 1 ? 0 : 15);
+            row[x] = fade(table, row[x]);
         }
     }
 }
@@ -979,6 +1049,7 @@ void gpu2d_init(void)
 {
     memset(engines, 0, sizeof(engines));
     memset(screens, 0, sizeof(screens));
+    memset(layer3d_generation, 0, sizeof(layer3d_generation));
     frames_done = 0;
     fifo_head = fifo_count = 0;
     engines[0].index = 0;

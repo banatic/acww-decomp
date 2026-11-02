@@ -1455,6 +1455,7 @@ static uint8_t stencil[2][SCREEN_W]; /* shadow masks, by line parity: bit 0 top,
 static int prev_shadow_mask;
 static uint16_t out_color[SCREEN_H][SCREEN_W];
 static uint32_t out_full[SCREEN_H][SCREEN_W];
+static uint32_t out_generation; /* counts the changes of the output (gpu3d.h) */
 
 /* The rendering registers, captured when a frame starts. */
 static struct {
@@ -1500,25 +1501,25 @@ static void capture_registers(void)
 }
 
 /* A 5-bit component to 6 bits: zero stays zero, others gain a low bit. */
-static uint32_t c6(uint32_t c5)
+static inline uint32_t c6(uint32_t c5)
 {
     return c5 ? c5 * 2 + 1 : 0;
 }
 
-static uint32_t rgb555_to_6(uint32_t c)
+static inline uint32_t rgb555_to_6(uint32_t c)
 {
     return COLOR(c6(c & 31), c6((c >> 5) & 31), c6((c >> 10) & 31), 0);
 }
 
 /* Texture memory: the 512 KiB image space and the 128 KiB palette space, by bank slot (as
  * mapped when the frame started). A read where no bank is mapped gives zero. */
-static uint8_t tex_read8(uint32_t address)
+static inline uint8_t tex_read8(uint32_t address)
 {
     const uint8_t *slot = rr.texture[(address >> 17) & 3];
     return slot ? slot[address & 0x1ffff] : 0;
 }
 
-static uint16_t tex_read16(uint32_t address)
+static inline uint16_t tex_read16(uint32_t address)
 {
     const uint8_t *slot = rr.texture[(address >> 17) & 3];
     if (slot == NULL) {
@@ -1528,7 +1529,7 @@ static uint16_t tex_read16(uint32_t address)
     return (uint16_t) (slot[address] | (slot[address + 1] << 8));
 }
 
-static uint16_t pal_read16(uint32_t address)
+static inline uint16_t pal_read16(uint32_t address)
 {
     const uint8_t *slot = rr.texture_palette[(address >> 14) & 7];
     if (slot == NULL) {
@@ -1539,7 +1540,7 @@ static uint16_t pal_read16(uint32_t address)
 }
 
 /* (c0 * a + c1 * b) / 8 per component, for 4x4 compressed textures' mixed colours. */
-static uint32_t mix555(uint32_t c0, uint32_t c1, uint32_t a, uint32_t b, uint32_t shift)
+static inline uint32_t mix555(uint32_t c0, uint32_t c1, uint32_t a, uint32_t b, uint32_t shift)
 {
     uint32_t r = (((c0 & 0x1f) * a + (c1 & 0x1f) * b) >> shift) & 0x1f;
     uint32_t g = (((c0 & 0x3e0) * a + (c1 & 0x3e0) * b) >> shift) & 0x3e0;
@@ -1737,7 +1738,7 @@ static void interp_setup(Interp *ip, int32_t x0, int32_t x1, int32_t w0, int32_t
     }
 }
 
-static void interp_at(Interp *ip, int32_t x)
+static inline void interp_at(Interp *ip, int32_t x)
 {
     x -= ip->x0;
     ip->x = x;
@@ -1748,7 +1749,7 @@ static void interp_at(Interp *ip, int32_t x)
     }
 }
 
-static int32_t interp_value(const Interp *ip, int32_t a, int32_t b)
+static inline int32_t interp_value(const Interp *ip, int32_t a, int32_t b)
 {
     if (ip->xdiff == 0 || a == b) {
         return a;
@@ -1765,7 +1766,7 @@ static int32_t interp_value(const Interp *ip, int32_t a, int32_t b)
     return (int32_t) (b + (int64_t) (a - b) * (ip->xdiff - ip->x) / ip->xdiff);
 }
 
-static int32_t interp_depth(const Interp *ip, int32_t a, int32_t b)
+static inline int32_t interp_depth(const Interp *ip, int32_t a, int32_t b)
 {
     if (ip->xdiff == 0 || a == b) {
         return a;
@@ -2059,7 +2060,7 @@ static void span_setup(Raster *rp, int32_t y, Span *sp)
 
 /* The depth test: less, or less or equal over an opaque back face for a front face; within
  * 0x200 (Z) or 0xff (W) with attribute bit 14. */
-static int depth_pass(const Polygon *p, uint32_t dst, int32_t z, uint32_t dstattr)
+static inline int depth_pass(const Polygon *p, uint32_t dst, int32_t z, uint32_t dstattr)
 {
     if (p->attr & (1u << 14)) {
         int32_t d = (int32_t) dst - z;
@@ -2131,6 +2132,8 @@ static void draw_line(Raster *rp, int32_t y)
     interp_setup(&ix, sp.xstart, sp.xend + 1, sp.wl, sp.wr, p->wbuffer, 0);
     int32_t x = sp.xstart < 0 ? 0 : sp.xstart, xcov = 0;
     int aa = (rr.disp3dcnt & 0x10) != 0;
+    int shadow = p->shadow, write_depth = (p->attr & (1u << 11)) != 0;
+    uint32_t alpha_ref = rr.alpha_ref;
     for (int part = PART_LEFT; part <= PART_RIGHT; part++) {
         int32_t limit;
         uint32_t edge = (uint32_t) sp.yedge, cov_param = 0;
@@ -2169,7 +2172,7 @@ static void draw_line(Raster *rp, int32_t y)
         for (; x < limit; x++) {
             int addr = PIXEL(x, y);
             uint32_t dstattr = attr_buf[addr];
-            if (p->shadow) {
+            if (shadow) {
                 uint8_t st = stencil[y & 1][x];
                 if (!st) {
                     continue;
@@ -2199,7 +2202,7 @@ static void draw_line(Raster *rp, int32_t y)
             int16_t s = (int16_t) interp_value(&ix, sl, sr), t = (int16_t) interp_value(&ix, tl, tr);
             uint32_t color = shade(p, (vr >> 3) & 0xff, (vg >> 3) & 0xff, (vb >> 3) & 0xff, s, t);
             uint32_t alpha = color >> 24;
-            if (alpha <= rr.alpha_ref) {
+            if (alpha <= alpha_ref) {
                 continue;
             }
             if (alpha == 31) {
@@ -2225,10 +2228,9 @@ static void draw_line(Raster *rp, int32_t y)
                 color_buf[addr] = color;
                 attr_buf[addr] = attr;
             } else {
-                int write_depth = (p->attr & (1u << 11)) != 0;
-                plot_translucent(addr, color, z, write_depth, polyattr, p->shadow);
+                plot_translucent(addr, color, z, write_depth, polyattr, shadow);
                 if ((dstattr & A_EDGES) && addr < BUF_SIZE) {
-                    plot_translucent(addr + BUF_SIZE, color, z, write_depth, polyattr, p->shadow);
+                    plot_translucent(addr + BUF_SIZE, color, z, write_depth, polyattr, shadow);
                 }
             }
         }
@@ -2551,6 +2553,7 @@ static void render_list(PolygonList *list)
                                           (a ? 0x8000 : 0));
         }
     }
+    out_generation++;
     render_seconds += (double) (clock() - start) / CLOCKS_PER_SEC;
     count_frames++;
 }
@@ -2658,6 +2661,11 @@ const uint32_t *gpu3d_line_rgb6(int y)
     return out_full[y < 0 ? 0 : y >= SCREEN_H ? SCREEN_H - 1 : y];
 }
 
+uint32_t gpu3d_generation(void)
+{
+    return out_generation;
+}
+
 void gpu3d_report(FILE *out)
 {
     fprintf(out,
@@ -2715,6 +2723,7 @@ void gpu3d_init(void)
     geometry_list = 0;
     memset(out_color, 0, sizeof(out_color));
     memset(out_full, 0, sizeof(out_full));
+    out_generation++;
 
     /* RUN_DUMP3D=<dir>[:<list>], the list as n, a-b or a-b/step, comma-separated; without
        one RUN_PNG_FRAMES (tools/run.py --frames) is used, and without that every frame. The

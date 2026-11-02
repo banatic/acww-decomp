@@ -58,6 +58,10 @@ void gpu3d_render(int list);
 const uint32_t *gpu3d_line_rgb6(int y);
 const uint16_t *gpu3d_line(int y);
 
+/* A number that changes whenever the frame above does (and is never 0), for what is made
+ * from it to be made again. */
+uint32_t gpu3d_generation(void);
+
 /* Writes the last rendered frame alone as a 256x192 RGB PNG (frame.c's writer), with a grey
  * checkerboard where the layer has no alpha. 0 on success. RUN_DUMP3D=<dir>[:<list>] in the
  * environment does this at each VBlank of the listed frames as <dir>/3d-<frame>.png; the
