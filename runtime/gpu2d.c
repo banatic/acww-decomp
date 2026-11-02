@@ -60,6 +60,7 @@ typedef struct Engine {
     uint8_t alpha3d[GPU2D_WIDTH]; /* the 3D layer's 5-bit alpha where BG0 is 3D */
     uint32_t obj[GPU2D_WIDTH];
     uint8_t obj_prio[GPU2D_WIDTH], obj_flags[GPU2D_WIDTH], obj_alpha[GPU2D_WIDTH], obj_window[GPU2D_WIDTH];
+    uint32_t obj_prios;        /* bit p: some OBJ pixel of the line has priority p */
     uint8_t win[GPU2D_WIDTH];  /* per pixel: bits 0-3 BG0-3 shown, 4 OBJ shown, 5 effects allowed */
     uint32_t out[GPU2D_WIDTH]; /* the composed line before master brightness */
 
@@ -84,58 +85,70 @@ static uint32_t fifo_head, fifo_count;
 
 /* Register access ------------------------------------------------------------------------- */
 
-static uint32_t reg16(const Engine *e, uint32_t offset)
+/* The registers, palettes, OAM and VRAM are read through io_view (the live state, or the
+ * drawing thread's copy of it: render.h), here directly rather than through io.c's
+ * accessors, as these run for every pixel. */
+static inline uint32_t reg16(const Engine *e, uint32_t offset)
 {
-    uint32_t v = io_view_reg(e->reg + offset);
-    return (v >> ((offset & 2) * 8)) & 0xffffu;
+    const uint8_t *p = io_view->regs + e->reg + offset;
+    return (uint32_t) p[0] | ((uint32_t) p[1] << 8);
 }
 
-static uint32_t reg32(const Engine *e, uint32_t offset)
+static inline uint32_t reg32(const Engine *e, uint32_t offset)
 {
-    return io_view_reg(e->reg + offset);
+    uint32_t v;
+    memcpy(&v, io_view->regs + e->reg + offset, 4);
+    return v;
 }
 
 /* VRAM and palettes ------------------------------------------------------------------------ */
 
-static uint32_t vram8(uint32_t base, uint32_t mask, uint32_t offset)
+/* The byte at `offset` in the region at `base` of `mask` + 1 bytes, through the CPU's page
+ * table of 16 KiB pages (io.h), or NULL where no bank is mapped. A run of bytes that starts
+ * at a multiple of its length (up to the page size) lies in one page. */
+static inline const uint8_t *vram_at(uint32_t base, uint32_t mask, uint32_t offset)
 {
     uint32_t a = base + (offset & mask);
-    const uint8_t *p = io_vram_page(a);
-    return p ? p[a & 0x3fffu] : 0;
+    const uint8_t *page = io_view->page[(a - 0x06000000u) >> 14];
+    return page ? page + (a & 0x3fffu) : NULL;
 }
 
-static uint32_t vram16(uint32_t base, uint32_t mask, uint32_t offset)
+static inline uint32_t vram8(uint32_t base, uint32_t mask, uint32_t offset)
 {
-    uint32_t a = base + (offset & mask & ~1u);
-    const uint8_t *p = io_vram_page(a);
-    return p ? (uint32_t) p[a & 0x3fffu] | ((uint32_t) p[(a & 0x3fffu) + 1] << 8) : 0;
+    const uint8_t *p = vram_at(base, mask, offset);
+    return p ? *p : 0;
+}
+
+static inline uint32_t vram16(uint32_t base, uint32_t mask, uint32_t offset)
+{
+    const uint8_t *p = vram_at(base, mask, offset & ~1u);
+    return p ? (uint32_t) p[0] | ((uint32_t) p[1] << 8) : 0;
 }
 
 /* A 15-bit palette colour as the 18-bit value the engine works in: each 5-bit channel is
  * doubled (GBATEK: the 2D engine extends colours to 6 bits with the low bit clear). */
-static uint32_t rgb15(uint32_t c)
+static inline uint32_t rgb15(uint32_t c)
 {
     return ((c & 0x1fu) << 1) | ((c & 0x3e0u) << 2) | ((c & 0x7c00u) << 3);
 }
 
-static uint32_t pal_colour(uint32_t palette_offset, uint32_t index)
+/* Entry `index` of a palette: the standard palettes in palette RAM and the extended ones
+ * in VRAM alike. */
+static inline uint32_t pal_colour(const uint8_t *palette, uint32_t index)
 {
-    const uint8_t *p = io_palette_ram() + palette_offset + 2 * index;
+    const uint8_t *p = palette + 2 * index;
     return rgb15((uint32_t) p[0] | ((uint32_t) p[1] << 8));
 }
 
-static uint32_t ext_colour(const uint8_t *slot, uint32_t index)
+/* An engine's standard BG palette (its OBJ palette follows 0x200 bytes on). */
+static const uint8_t *bg_palette(const Engine *e)
 {
-    if (slot == NULL) {
-        return 0; /* an unmapped extended palette reads as zero: black */
-    }
-    return rgb15((uint32_t) slot[2 * index] | ((uint32_t) slot[2 * index + 1] << 8));
+    return io_view->mem + IO_VRAM_SIZE + e->palette;
 }
 
-static uint32_t oam16(const Engine *e, uint32_t offset)
+static inline uint32_t oam16(const uint8_t *oam, uint32_t offset)
 {
-    const uint8_t *p = io_oam_ram() + e->oam + offset;
-    return (uint32_t) p[0] | ((uint32_t) p[1] << 8);
+    return (uint32_t) oam[offset] | ((uint32_t) oam[offset + 1] << 8);
 }
 
 /* Backgrounds ------------------------------------------------------------------------------ */
@@ -193,38 +206,42 @@ static void draw_text(Engine *e, int bg, uint32_t y, uint32_t dispcnt)
         int slot = (bg < 2 && (cnt & 0x2000)) ? bg + 2 : bg;
         ext = io_vram_bg_ext_palette(e->index, slot);
     }
+    const uint8_t *pal = bg_palette(e);
+    uint32_t *line = e->bg[bg];
     uint32_t yy = (y + vofs) & (size >= 2 ? 511u : 255u);
     uint32_t width_mask = (size & 1) ? 511u : 255u;
     uint32_t row = screen_base + ((yy >> 8) * (size == 3 ? 2u : 1u)) * 0x800u + ((yy & 255) >> 3) * 64;
-    uint32_t entry = 0, tile_row = 0;
-    for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
+    uint32_t ty = yy & 7;
+    /* a tile at a time: its map entry, then the pixels of its row the line shows */
+    for (uint32_t x = 0; x < GPU2D_WIDTH;) {
         uint32_t xx = (x + hofs) & width_mask;
-        uint32_t tx = xx & 7, ty = yy & 7;
-        if (x == 0 || tx == 0) {
-            entry = vram16(e->bg_base, e->bg_mask, row + (xx >> 8) * 0x800u + ((xx & 255) >> 3) * 2);
-            uint32_t tile = entry & 0x3ffu;
-            uint32_t fy = (entry & 0x800) ? 7 - ty : ty;
-            tile_row = char_base + (colours256 ? tile * 64 + fy * 8 : tile * 32 + fy * 4);
+        uint32_t entry = vram16(e->bg_base, e->bg_mask, row + (xx >> 8) * 0x800u + ((xx & 255) >> 3) * 2);
+        uint32_t tile = entry & 0x3ffu, fy = (entry & 0x800) ? 7 - ty : ty;
+        const uint8_t *src =
+            vram_at(e->bg_base, e->bg_mask, char_base + (colours256 ? tile * 64 + fy * 8 : tile * 32 + fy * 4));
+        uint32_t flip = (entry & 0x400) ? 7 : 0;
+        uint32_t tx = xx & 7, end = x + 8 - tx;
+        if (end > GPU2D_WIDTH) {
+            end = GPU2D_WIDTH;
         }
-        if (entry & 0x400) {
-            tx = 7 - tx;
+        if (src == NULL) {
+            for (; x < end; x++) {
+                line[x] = NONE; /* no bank mapped: colour 0, transparent */
+            }
+            continue;
         }
-        uint32_t index;
         if (colours256) {
-            index = vram8(e->bg_base, e->bg_mask, tile_row + tx);
-            if (index == 0) {
-                e->bg[bg][x] = NONE;
-                continue;
+            const uint8_t *colours = ext ? ext + (entry >> 12) * 512 : pal;
+            for (; x < end; x++, tx++) {
+                uint32_t index = src[tx ^ flip];
+                line[x] = index ? pal_colour(colours, index) : NONE;
             }
-            e->bg[bg][x] = ext ? ext_colour(ext, (entry >> 12) * 256 + index) : pal_colour(e->palette, index);
         } else {
-            uint32_t b = vram8(e->bg_base, e->bg_mask, tile_row + (tx >> 1));
-            index = (tx & 1) ? b >> 4 : b & 15;
-            if (index == 0) {
-                e->bg[bg][x] = NONE;
-                continue;
+            const uint8_t *colours = pal + (entry >> 12) * 32;
+            for (; x < end; x++, tx++) {
+                uint32_t t = tx ^ flip, index = (src[t >> 1] >> ((t & 1) * 4)) & 15;
+                line[x] = index ? pal_colour(colours, index) : NONE;
             }
-            e->bg[bg][x] = pal_colour(e->palette, (entry >> 12) * 16 + index);
         }
     }
 }
@@ -276,6 +293,7 @@ static void draw_affine(Engine *e, int bg, uint32_t y, uint32_t dispcnt, enum Bg
         h = size == 0 ? 128 : size == 3 ? 512 : 256;
     }
     const uint8_t *ext = (dispcnt & (1u << 30)) ? io_vram_bg_ext_palette(e->index, bg) : NULL;
+    const uint8_t *pal = bg_palette(e);
 
     for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
         int32_t xx = cx >> 8, yy = cy >> 8;
@@ -296,7 +314,7 @@ static void draw_affine(Engine *e, int bg, uint32_t y, uint32_t dispcnt, enum Bg
                 if (index) {
                     /* the 8-bit map of a plain rotscale BG has no palette number, and the
                        extended palettes are for 16-bit map entries only: standard palette */
-                    colour = pal_colour(e->palette, index);
+                    colour = pal_colour(pal, index);
                 }
                 break;
             }
@@ -305,14 +323,14 @@ static void draw_affine(Engine *e, int bg, uint32_t y, uint32_t dispcnt, enum Bg
                 uint32_t tx = (entry & 0x400) ? 7 - (ux & 7) : ux & 7, ty = (entry & 0x800) ? 7 - (uy & 7) : uy & 7;
                 index = vram8(e->bg_base, e->bg_mask, char_base + (entry & 0x3ffu) * 64 + ty * 8 + tx);
                 if (index) {
-                    colour = ext ? ext_colour(ext, (entry >> 12) * 256 + index) : pal_colour(e->palette, index);
+                    colour = ext ? pal_colour(ext, (entry >> 12) * 256 + index) : pal_colour(pal, index);
                 }
                 break;
             }
             case BMP8:
                 index = vram8(e->bg_base, e->bg_mask, bitmap_base + uy * w + ux);
                 if (index) {
-                    colour = pal_colour(e->palette, index); /* bitmaps use the standard palette */
+                    colour = pal_colour(pal, index); /* bitmaps use the standard palette */
                 }
                 break;
             case BMP16: {
@@ -325,7 +343,7 @@ static void draw_affine(Engine *e, int bg, uint32_t y, uint32_t dispcnt, enum Bg
             case LARGE:
                 index = vram8(e->bg_base, e->bg_mask, uy * w + ux);
                 if (index) {
-                    colour = pal_colour(e->palette, index);
+                    colour = pal_colour(pal, index);
                 }
                 break;
         }
@@ -387,6 +405,7 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
         e->obj_window[x] = 0;
         e->obj_flags[x] = 0;
     }
+    e->obj_prios = 0;
     if ((dispcnt & 0x1000) == 0 && (dispcnt & 0x8000) == 0) {
         return; /* neither OBJ display nor the OBJ window */
     }
@@ -396,7 +415,8 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
     uint32_t bitmap_1d = dispcnt & 0x40, bitmap_stride = (dispcnt & 0x20) ? 256 : 128;
     uint32_t bitmap_boundary = (dispcnt & (1u << 22)) ? 256 : 128;
     const uint8_t *ext = (dispcnt & (1u << 31)) ? io_vram_obj_ext_palette(e->index) : NULL;
-    uint32_t obj_palette = e->palette + 0x200;
+    const uint8_t *obj_palette = bg_palette(e) + 0x200;
+    const uint8_t *oam = io_view->mem + IO_VRAM_SIZE + 0x800 + e->oam;
 
     /* OAM order decides between overlapping OBJs: a later OBJ only replaces an earlier one
        at a pixel when its priority number is lower, so the first OBJ at a given priority
@@ -404,7 +424,7 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
        quirk). The hardware also runs out of drawing time with many large OBJs on a line;
        that limit is not modelled. */
     for (uint32_t i = 0; i < 128; i++) {
-        uint32_t a0 = oam16(e, i * 8), a1 = oam16(e, i * 8 + 2), a2 = oam16(e, i * 8 + 4);
+        uint32_t a0 = oam16(oam, i * 8), a1 = oam16(oam, i * 8 + 2), a2 = oam16(oam, i * 8 + 4);
         int affine = (a0 & 0x100) != 0;
         if (!affine && (a0 & 0x200)) {
             continue; /* hidden */
@@ -444,10 +464,10 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
         int32_t pa = 0x100, pb = 0, pc = 0, pd = 0x100;
         if (affine) {
             uint32_t p = ((a1 >> 9) & 31) * 32;
-            pa = (int16_t) oam16(e, p + 6);
-            pb = (int16_t) oam16(e, p + 14);
-            pc = (int16_t) oam16(e, p + 22);
-            pd = (int16_t) oam16(e, p + 30);
+            pa = (int16_t) oam16(oam, p + 6);
+            pb = (int16_t) oam16(oam, p + 14);
+            pc = (int16_t) oam16(oam, p + 22);
+            pd = (int16_t) oam16(oam, p + 30);
         }
         uint32_t tile = a2 & 0x3ffu, prio = (a2 >> 10) & 3, pal = a2 >> 12;
         int colours256 = (a0 & 0x2000) != 0;
@@ -498,7 +518,7 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
                 if (index == 0) {
                     continue;
                 }
-                colour = ext ? ext_colour(ext, pal * 256 + index) : pal_colour(obj_palette, index);
+                colour = ext ? pal_colour(ext, pal * 256 + index) : pal_colour(obj_palette, index);
             } else {
                 uint32_t address;
                 if (dispcnt & 0x10) {
@@ -522,6 +542,7 @@ static void draw_objs(Engine *e, uint32_t y, uint32_t dispcnt)
             }
             e->obj[sx] = colour;
             e->obj_prio[sx] = (uint8_t) prio;
+            e->obj_prios |= 1u << prio;
             e->obj_alpha[sx] = (uint8_t) alpha;
             e->obj_flags[sx] =
                 (uint8_t) ((mode == 1 ? OBJ_SEMI : 0) | (mode == 3 ? OBJ_BITMAP : 0) | (use_mosaic ? OBJ_MOSAIC : 0));
@@ -615,16 +636,15 @@ static uint32_t brightness(uint32_t a, uint32_t evy, int up, uint32_t bias)
     return r;
 }
 
-static void compose(Engine *e, uint32_t y, uint32_t dispcnt)
+static void compose(Engine *e, uint32_t dispcnt)
 {
-    (void) y;
     uint32_t bldcnt = reg16(e, R_BLDCNT), bldalpha = reg16(e, R_BLDALPHA);
     uint32_t effect = (bldcnt >> 6) & 3;
     uint32_t eva = bldalpha & 31, evb = (bldalpha >> 8) & 31, evy = reg16(e, R_BLDY) & 31;
     eva = eva > 16 ? 16 : eva;
     evb = evb > 16 ? 16 : evb;
     evy = evy > 16 ? 16 : evy;
-    uint32_t backdrop = pal_colour(e->palette, 0);
+    uint32_t backdrop = pal_colour(bg_palette(e), 0);
     int obj_on = (dispcnt & 0x1000) != 0;
     int bg0_3d = bg_kind(e, 0, dispcnt) == BG_3D;
 
@@ -638,36 +658,47 @@ static void compose(Engine *e, uint32_t y, uint32_t dispcnt)
         order[p][count[p]++] = bg;
     }
 
+    /* The two front-most layers at each pixel. Front to back, the layers are: for each
+       priority, the OBJs of that priority, then the BGs of it; a pixel takes the first two
+       that the window shows there and that are not transparent, the backdrop behind all.
+       Here a layer at a time over the line, each pixel's colour with its layer number in
+       bits 24-26, `found` counting what the pixel has (past two it no longer matters). */
+    uint32_t front[GPU2D_WIDTH], behind[GPU2D_WIDTH], found[GPU2D_WIDTH];
+    const uint8_t *win = e->win;
     for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
-        uint32_t w = e->win[x];
-        uint32_t top = backdrop, second = backdrop;
-        int top_layer = LAYER_BACKDROP, second_layer = LAYER_BACKDROP, found = 0;
-        for (uint32_t p = 0; p < 4 && found < 2; p++) {
-            if (obj_on && (w & 0x10) && e->obj[x] != NONE && e->obj_prio[x] == p) {
-                if (found++ == 0) {
-                    top = e->obj[x];
-                    top_layer = LAYER_OBJ;
-                } else {
-                    second = e->obj[x];
-                    second_layer = LAYER_OBJ;
-                    break;
-                }
-            }
-            for (int k = 0; k < count[p] && found < 2; k++) {
-                int bg = order[p][k];
-                if ((w & (1u << bg)) == 0 || e->bg[bg][x] == NONE) {
-                    continue;
-                }
-                if (found++ == 0) {
-                    top = e->bg[bg][x];
-                    top_layer = bg;
-                } else {
-                    second = e->bg[bg][x];
-                    second_layer = bg;
-                }
+        front[x] = behind[x] = backdrop | (uint32_t) LAYER_BACKDROP << 24;
+        found[x] = 0;
+    }
+    for (uint32_t p = 0; p < 4; p++) {
+        if (obj_on && (e->obj_prios & (1u << p))) {
+            const uint32_t *obj = e->obj;
+            const uint8_t *prio = e->obj_prio;
+            for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
+                uint32_t f = found[x], c = obj[x] | (uint32_t) LAYER_OBJ << 24;
+                uint32_t take = (win[x] & 0x10) != 0 && obj[x] != NONE && prio[x] == p;
+                front[x] = take && f == 0 ? c : front[x];
+                behind[x] = take && f == 1 ? c : behind[x];
+                found[x] = f + take;
             }
         }
+        for (int k = 0; k < count[p]; k++) {
+            int bg = order[p][k];
+            const uint32_t *line = e->bg[bg];
+            uint32_t shown = 1u << bg, tag = (uint32_t) bg << 24;
+            for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
+                uint32_t f = found[x], c = line[x] | tag;
+                uint32_t take = (win[x] & shown) != 0 && line[x] != NONE;
+                front[x] = take && f == 0 ? c : front[x];
+                behind[x] = take && f == 1 ? c : behind[x];
+                found[x] = f + take;
+            }
+        }
+    }
 
+    for (uint32_t x = 0; x < GPU2D_WIDTH; x++) {
+        uint32_t w = win[x];
+        uint32_t top = front[x] & 0xffffffu, second = behind[x] & 0xffffffu;
+        int top_layer = (int) (front[x] >> 24), second_layer = (int) (behind[x] >> 24);
         uint32_t c = top;
         if (w & 0x20) {
             int first = (bldcnt >> top_layer) & 1, matched = (bldcnt >> (8 + second_layer)) & 1;
@@ -860,7 +891,7 @@ void gpu2d_line(uint32_t y)
         draw_bgs(e, y, dispcnt);
         draw_objs(e, y, dispcnt);
         build_window(e, y, dispcnt);
-        compose(e, y, dispcnt);
+        compose(e, dispcnt);
         if (i == 0) {
             capture_line(e, y, dispcnt, (dispcnt & 8) ? gpu3d_line((int) y) : NULL);
         }
