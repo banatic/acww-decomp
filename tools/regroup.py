@@ -1,8 +1,9 @@
 """Join sources of one function each into a unit: one file of several functions, as the original
 source file held them (common.UNIT_HEADER).
 
-    python tools/regroup.py <module> <unit> FILE...    # writes src/<module>/<unit>.c(pp)
-    python tools/regroup.py --plan <module>            # the units the module's sources make
+    python tools/regroup.py <module> <unit> FILE...    # writes <unit>.c(pp) beside the files
+    python tools/regroup.py --plan <module>            # the units src/<module>/ makes
+    python tools/regroup.py --plan libs/<Package>/<module>   # ... or a library's folder
 
 The functions go in the original file's order, the last address first (mwccarm writes a file's
 functions into its object last first, and the linker keeps the object's order). All the files
@@ -856,15 +857,18 @@ def settle(module: str, unit: str, srcs: list[C.Source], pinned: set[str] | None
 
 
 def regroup(module: str, unit: str, paths: list[pathlib.Path]) -> tuple[pathlib.Path | None, list[str]]:
-    """Write src/<module>/<unit>.c(pp) from `paths` and remove them: (the unit, []). When the
-    files cannot be settled into one, nothing is written: (None, the reason)."""
+    """Write <unit>.c(pp) from `paths` (one folder's: src/<module>/ or libs/<Package>/<module>/)
+    beside them and remove them: (the unit, []). When the files cannot be settled into one,
+    nothing is written: (None, the reason)."""
     srcs = []
     for p in paths:
         found = C.parse_sources(p)
         if len(found) != 1 or found[0].module != module:
             raise SystemExit(f"{p}: not a source of one function of {module}")
         srcs.append(found[0])
-    dest = C.SRC / module / f"{unit}{srcs[0].path.suffix}"
+    if len({s.path.parent for s in srcs}) != 1:
+        raise SystemExit("the files are in different folders")
+    dest = srcs[0].path.parent / f"{unit}{srcs[0].path.suffix}"
     if dest.exists():
         raise SystemExit(f"{dest} exists")
     try:
@@ -888,12 +892,14 @@ def clean_files(module: str) -> dict[str, str]:
     return out
 
 
-def runs(module: str) -> list[list[C.Source]]:
-    """Runs of address-adjacent sources of one function compiled alike: a unit, or a change of
-    compiler, options, ISA or language, ends one, and so do bytes between two functions beyond
-    the padding to a word (code no source defines, such as a second entry point: tools/link.py
-    takes a unit's functions as one piece and would find a hole in it)."""
-    srcs = sorted((s for p in (C.SRC / module).glob("*.c*") for s in C.parse_sources(p)), key=lambda s: s.address)
+def runs(module: str, folder: pathlib.Path | None = None) -> list[list[C.Source]]:
+    """Runs of address-adjacent sources of one function compiled alike, in src/<module>/ or
+    `folder` (a library's, libs/<Package>/<module>/): a unit, or a change of compiler, options,
+    ISA or language, ends one, and so do bytes between two functions beyond the padding to a
+    word (code no source of the folder defines, such as a second entry point or another
+    package's: tools/link.py takes a unit's functions as one piece and would find a hole in it)."""
+    folder = C.SRC / module if folder is None else folder
+    srcs = sorted((s for p in folder.glob("*.c*") for s in C.parse_sources(p)), key=lambda s: s.address)
     out: list[list[C.Source]] = []
     prev = None
     for s in srcs:
@@ -907,13 +913,14 @@ def runs(module: str) -> list[list[C.Source]]:
     return [r for r in out if len(r) > 1 and r[0].path.stem == r[0].name]
 
 
-def plan(module: str, apart: frozenset[str] = frozenset()) -> list[tuple[str, list[C.Source]]]:
-    """The units the module's sources of one function make (see the module docstring), each
-    named; a function in `apart` stays a source of its own."""
+def plan(module: str, apart: frozenset[str] = frozenset(),
+         folder: pathlib.Path | None = None) -> list[tuple[str, list[C.Source]]]:
+    """The units the module's sources of one function make (see the module docstring), in
+    src/<module>/ or `folder`, each named; a function in `apart` stays a source of its own."""
     clean = clean_files(module)
     pinned = _pinned()
     groups: list[list[C.Source]] = []
-    for run in runs(module):
+    for run in runs(module, folder):
         segs: list[list[C.Source]] = [[]]
         for s in run:
             where = clean.get(s.object_symbol)
@@ -952,7 +959,9 @@ def plan(module: str, apart: frozenset[str] = frozenset()) -> list[tuple[str, li
 
 def main() -> None:
     if sys.argv[1:2] == ["--plan"] and len(sys.argv) == 3:
-        for name, g in plan(sys.argv[2]):
+        where = pathlib.Path(sys.argv[2])
+        folder = where.resolve() if len(where.parts) > 1 else None
+        for name, g in plan(where.name, folder=folder):
             print(f"{name}: {len(g)} functions, {g[0].address:08x}-{g[-1].address:08x}")
             print("  " + " ".join(s.path.relative_to(C.ROOT).as_posix() for s in g))
         return

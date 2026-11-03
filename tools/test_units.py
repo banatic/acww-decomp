@@ -3,9 +3,10 @@
     python tools/test_units.py
 
 Reads a unit's header and a one-function header, checks that tools/lint.py's rules for units
-hold for every unit in src/ (its functions last address first, one ISA, one module, each declared
-before it is used), that tools/regroup.py adds the prototype a call to a function defined
-further down needs, and how it settles what the files declare differently, or refuses to; and
+hold for every unit in src/ and libs/ (its functions last address first, one ISA, one module,
+each declared before it is used), that tools/regroup.py adds the prototype a call to a function
+defined further down needs, and writes a library's unit beside its sources, and how it settles
+what the files declare differently, or refuses to; and
 that tools/native.py compiles a unit for the PC with each call to one of its functions going to
 that function's entry (none folded into its caller), and reads the unit as declared.
 """
@@ -48,7 +49,7 @@ class Units(unittest.TestCase):
         self.assertEqual(len(C.parse_sources(path)), 1)
 
     def test_units_in_the_tree(self):
-        units = [p for p in C.SRC.glob("*/*.c*") if C.UNIT_HEADER.match(p.read_text(encoding="utf-8"))]
+        units = [p for p in C.all_sources() if C.UNIT_HEADER.match(p.read_text(encoding="utf-8"))]
         self.assertTrue(units)
         for p in units:
             srcs = C.parse_sources(p)
@@ -260,6 +261,30 @@ class Settle(unittest.TestCase):
             finally:
                 C.SRC = old
         self.assertEqual(found, [[0x022a2900, 0x022a2910], [0x022a2930, 0x022a2940]])
+
+    def test_library_folder(self):
+        # a library's sources (libs/<Package>/<module>/): the runs of that folder, and the unit
+        # written beside them, not under src/
+        with tempfile.TemporaryDirectory() as d:
+            folder = pathlib.Path(d) / "libs" / "NitroSDK" / "ov097"
+            folder.mkdir(parents=True)
+            paths = []
+            for address in (0x022a2900, 0x022a2910):
+                name, text = one(address, f"int func_ov097_{address:08x}(void)\n{{\n    return 0;\n}}\n")
+                paths.append(folder / name)
+                paths[-1].write_text(text, newline="\n")
+            old, C.SRC = C.SRC, pathlib.Path(d) / "src"
+            try:
+                found = [[s.address for s in r] for r in regroup.runs("ov097", folder)]
+                self.assertEqual(regroup.runs("ov097"), [])
+                dest, problems = regroup.regroup("ov097", "sample_unit", paths)
+            finally:
+                C.SRC = old
+            self.assertEqual(found, [[0x022a2900, 0x022a2910]])
+            self.assertEqual(problems, [])
+            self.assertEqual(dest, folder / "sample_unit.c")
+            self.assertEqual([s.address for s in C.parse_sources(dest)], [0x022a2910, 0x022a2900])
+            self.assertFalse(any(p.exists() for p in paths))
 
     def test_types_renamed_in_c(self):
         # a type of one name defined two ways: the later file's (the lower address) is renamed
