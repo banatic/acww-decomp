@@ -280,10 +280,10 @@ def translate(relative: str, text: str, base: str | None = None) -> str | None:
     text = text if base is None else base
     parameters = _parameter_names(text, name)
     body = text[text.index("{", text.index(name + "(")):]
-    for name in names:
-        if name in parameters and re.search(r"(?:\+\+|--|&)\s*" + name + r"\b|\b" + name
-                                            + r"\s*(?:[-+*/%&|^]|<<|>>)?=(?!=)|\b" + name + r"\s*(?:\+\+|--)", body):
-            raise ValueError(f"{relative}: {name} is assigned; the ROM's register may not hold it")
+    for arg in names:
+        if arg in parameters and re.search(r"(?:\+\+|--|&)\s*" + arg + r"\b|\b" + arg
+                                           + r"\s*(?:[-+*/%&|^]|<<|>>)?=(?!=)|\b" + arg + r"\s*(?:\+\+|--)", body):
+            raise ValueError(f"{relative}: {arg} is assigned; the ROM's register may not hold it")
     decl = re.compile(r"(\bextern\s+[\w\s\*]*\b" + re.escape(callee) + r"\s*\()([^()]*)(\)\s*;)")
     if len(decl.findall(text)) != 1:
         raise ValueError(f"{relative}: one declaration of {callee} expected")
@@ -293,11 +293,14 @@ def translate(relative: str, text: str, base: str | None = None) -> str | None:
         return m.group(1) + ", ".join(params + ["unsigned int"] * len(names)) + m.group(3)
 
     text = decl.sub(widen, text)
-    # the calls of this function only (a unit's others call the callee as they did)
+    # the calls of this function only; another function of its unit calling the callee would
+    # call it with fewer arguments than the widened declaration has
     start, end = C.function_span(text, name) or (0, len(text))
     out, pos = [], 0
     for m in re.finditer(r"\b" + re.escape(callee) + r"\s*\(", text):
         if not start <= m.start() < end:
+            if not re.search(r"\bextern\b[^;]*$", text[:m.start()]):
+                raise ValueError(f"{relative}: another function of its unit calls {callee}")
             continue
         if re.search(r"\bextern\b[^;]*$", text[:m.start()]):
             continue  # the declaration

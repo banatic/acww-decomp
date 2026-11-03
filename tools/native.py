@@ -324,28 +324,14 @@ WIDENED: dict[pathlib.Path, set[str]] = {}
 PMF_TRANSLATED: set[pathlib.Path] = set()
 
 
-def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, str]:
-    flags = flags_for(path, indirect=True)
-    obj = OUT / "obj" / path.relative_to(C.SRC).with_suffix(".o")
-    source, text = path, path.read_bytes()
-    relative = path.relative_to(C.SRC).as_posix()
-    original = text.decode("utf-8")
-    # The tables name functions by their keys (common.function_key) and pin each by its own
-    # text (common.function_sha256), which a unit holds as a file of one function did: each of
-    # a unit's functions gets its own copy's edits, checked against the original and made to the
-    # copy so far. A member-pointer copy is the whole source's (it translates every member
-    # declaration in the text): one for all of a unit's functions in the member boundary.
-    keys = [C.function_key(src) for src in C.parse_sources(path)]
+def source_copy(keys: list[str], original: str) -> tuple:
+    """The tables' audited edits to a source's text (`original`, defining the functions `keys`):
+    (the member-pointer copy or None, its headers, the text to compile, whether it is a copy,
+    whether it needs native_guest.h, native_publish.h, and whether it places statics). Raises
+    ValueError where an edit does not apply, as tools/regroup.py checks for a new unit."""
     member_headers = {}
     member_keys = [key for key in keys if key in native_pmf.paths()]
     member = native_pmf.translate(member_keys, original, member_headers) if member_keys else None
-    if member_headers:
-        header_root = OUT / 'member-headers' / pathlib.Path(relative).with_suffix('')
-        for name, content in member_headers.items():
-            destination = header_root / name
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_text(content, newline='\n')
-        flags = ['-I' + str(header_root), *flags]
     wide = member if member is not None else original
     copied = member is not None
     guest = published = statics = False
@@ -368,6 +354,29 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
         # block-scope statics at the ROM's addresses (tools/native_statics.py), in whichever copy
         if key in native_statics.paths():
             wide, statics = native_statics.translate(key, original, wide), True
+    return member, member_headers, wide, copied, guest, published, statics
+
+
+def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, str]:
+    flags = flags_for(path, indirect=True)
+    obj = OUT / "obj" / path.relative_to(C.SRC).with_suffix(".o")
+    source, text = path, path.read_bytes()
+    relative = path.relative_to(C.SRC).as_posix()
+    original = text.decode("utf-8")
+    # The tables name functions by their keys (common.function_key) and pin each by its own
+    # text (common.function_sha256), which a unit holds as a file of one function did: each of
+    # a unit's functions gets its own copy's edits, checked against the original and made to the
+    # copy so far. A member-pointer copy is the whole source's (it translates every member
+    # declaration in the text): one for all of a unit's functions in the member boundary.
+    keys = [C.function_key(src) for src in C.parse_sources(path)]
+    member, member_headers, wide, copied, guest, published, statics = source_copy(keys, original)
+    if member_headers:
+        header_root = OUT / 'member-headers' / pathlib.Path(relative).with_suffix('')
+        for name, content in member_headers.items():
+            destination = header_root / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(content, newline='\n')
+        flags = ['-I' + str(header_root), *flags]
     if NARROWED.get(path) or copied or statics:
         if member is not None:
             PMF_TRANSLATED.add(path)

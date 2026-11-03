@@ -37,12 +37,20 @@ so this is the order the original file had (docs/verification.md).
 ```
 
 A C++ function's line ends with the name it emits (`, emits _ZN...`). All of a unit's functions
-take the same compiler and options. `python tools/regroup.py <module> <unit> FILE...` joins files
-into a unit and lists what they declare differently; settle those (one type, a cast at a call).
-A function called above its definition (a call to a lower address) needs a prototype above
-the call: gcc 14 and later refuse an implicit declaration even with `-w`. regroup.py adds
-it, and tools/lint.py checks it. Then `tools/verify.py`, `tools/link.py` and `tools/lint.py`
-must pass as for any change.
+take the same compiler and options. `python tools/regroup.py --plan <module>` lists the units a
+module's files make: runs of adjacent functions compiled alike, split where the Clean files
+split them, each named for its Clean file. `python tools/regroup.py <module> <unit> FILE...`
+joins files into a unit and declares every name once: as the unit defines it, else as most
+files declared it, with a cast at each call or use of a file that declared it otherwise (in C;
+C++ files must agree). It refuses, and writes nothing, where it would have to guess: a
+`#pragma` (mwccarm applies an optimisation pragma to every function of the file), a macro or
+static another file uses otherwise, an `asm` function (Native leaves its file out), or a change
+inside a function a Native table pins
+(tools/native_tables.py); such a function stays a file of its own, and so does one that no
+longer verifies beside the others. A function called above its definition (a call to a lower
+address) needs a prototype above the call: gcc 14 and later refuse an implicit declaration even
+with `-w`. regroup.py adds it, and tools/lint.py checks it. Then `tools/verify.py`,
+`tools/link.py` and `tools/lint.py` must pass as for any change.
 
 - Format with clang-format 22.1.8 (`pip install clang-format==22.1.8`) and the repository's
   `.clang-format`; CI checks it. `pre-commit install` runs it on every commit.

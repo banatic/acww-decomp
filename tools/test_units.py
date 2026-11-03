@@ -4,8 +4,8 @@
 
 Reads a unit's header and a one-function header, checks that tools/lint.py's rules for units
 hold for every unit in src/ (its functions last address first, one ISA, one module, each declared
-before it is used), and that tools/regroup.py adds the prototype a call to a function defined
-further down needs.
+before it is used), that tools/regroup.py adds the prototype a call to a function defined
+further down needs, and how it settles what the files declare differently, or refuses to.
 """
 from __future__ import annotations
 
@@ -112,6 +112,97 @@ class Units(unittest.TestCase):
             self.assertIsNotNone(src, (table, key))
             if digest is not None:
                 self.assertEqual(C.pinned_sha256(key, src.path.read_text(encoding="utf-8")), digest, (table, key))
+
+
+def one(address: int, body: str, suffix: str = ".c", emits: str | None = None) -> tuple[str, str]:
+    """(file name, text) of a source of one function of ov097."""
+    name = f"func_ov097_{address:08x}"
+    head = (f"/* {name} @ 0x{address:08x}, 0x10 bytes, Thumb, module ov097\n * mwccarm 1.2/base -O4,s\n"
+            + (f" * compiler-emitted symbol: {emits}\n" if emits else "") + " */\n\n")
+    return name + suffix, head + body
+
+
+class Settle(unittest.TestCase):
+    """tools/regroup.py's settling of what the files declare: one declaration per name, casts
+    where a file's own differed, a refusal where it would have to guess."""
+
+    def settle(self, files: list[tuple[str, str]], pinned: frozenset = frozenset()) -> tuple[str, list[str]]:
+        with tempfile.TemporaryDirectory() as d:
+            (pathlib.Path(d) / "ov097").mkdir()
+            srcs = []
+            for name, text in files:
+                path = pathlib.Path(d) / "ov097" / name
+                path.write_text(text, newline="\n")
+                srcs += C.parse_sources(path)
+            return regroup.settle("ov097", "sample_unit", srcs, set(pinned))
+
+    def test_one_declaration_and_casts(self):
+        # two files take func_02000000's argument as an int, one as a byte: the unit declares
+        # it as most did, and the third file's call converts as its own declaration did
+        text, edited = self.settle([
+            one(0x022a2900, "extern int func_02000000(int a);\nextern u16 data_02100000;\n\n"
+                            "int func_ov097_022a2900(int x)\n{\n    return func_02000000(x) + data_02100000;\n}\n"),
+            one(0x022a2910, "extern int func_02000000(int);\n\nint func_ov097_022a2910(int x)\n{\n"
+                            "    return func_02000000(x + 1);\n}\n"),
+            one(0x022a2920, "extern int func_02000000(unsigned char a);\nextern unsigned short data_02100000[];\n\n"
+                            "int func_ov097_022a2920(int x)\n{\n    return x && func_02000000(x) & data_02100000[1];\n}\n"),
+        ])
+        body = text[C.header_end(text):]
+        self.assertEqual(body.count("func_02000000("), 4)  # one declaration, three calls
+        self.assertIn("extern int func_02000000(int);\n", body)
+        self.assertIn("extern unsigned short data_02100000[];\n", body)
+        self.assertIn("x && func_02000000((unsigned char) x) & data_02100000[1]", body)
+        self.assertIn("func_02000000(x) + (*(u16 *) data_02100000)", body)
+        self.assertEqual(sorted(edited), ["func_ov097_022a2900", "func_ov097_022a2920"])
+
+    def test_types_renamed_in_c(self):
+        # a type of one name defined two ways: the later file's (the lower address) is renamed
+        text, _ = self.settle([
+            one(0x022a2900, "typedef struct {\n    int a;\n} Obj;\n\nint func_ov097_022a2900(Obj *o)\n{\n    return o->a;\n}\n"),
+            one(0x022a2910, "typedef struct {\n    char a;\n} Obj;\n\nint func_ov097_022a2910(Obj *o)\n{\n    return o->a;\n}\n"),
+        ])
+        self.assertIn("} Obj_022a2900;", text)
+        self.assertIn("int func_ov097_022a2900(Obj_022a2900 *o)", text)
+        self.assertIn("int func_ov097_022a2910(Obj *o)", text)
+
+    def test_refusals(self):
+        plain = one(0x022a2900, "int func_ov097_022a2900(void)\n{\n    return 1;\n}\n")
+        cases = {
+            "applies to the whole file": [plain, one(0x022a2910, "#pragma opt_propagation off\n\n"
+                                                                "int func_ov097_022a2910(void)\n{\n    return 2;\n}\n")],
+            "a Native table pins it": [one(0x022a2900, "extern int func_02000000(int);\n\nint func_ov097_022a2900(void)\n"
+                                                       "{\n    return func_02000000(1);\n}\n"),
+                                       one(0x022a2910, "extern int func_02000000(char *);\n\nint func_ov097_022a2910(void)\n"
+                                                       "{\n    return 0;\n}\n"),
+                                       one(0x022a2920, "extern int func_02000000(char *);\n\nint func_ov097_022a2920(void)\n"
+                                                       "{\n    return 0;\n}\n")],
+            "unlike another file (C++)": [one(0x022a2900, 'extern "C" int func_02000000(int);\n\nextern "C" int '
+                                                          "func_ov097_022a2900(void)\n{\n    return func_02000000(1);\n}\n", ".cpp"),
+                                          one(0x022a2910, 'extern "C" int func_02000000(char *);\n\nextern "C" int '
+                                                          "func_ov097_022a2910(void)\n{\n    return 0;\n}\n", ".cpp")],
+            "defines as a macro": [one(0x022a2900, "#define N 4\n\nint func_ov097_022a2900(void)\n{\n    return N;\n}\n"),
+                                   one(0x022a2910, "int func_ov097_022a2910(int N)\n{\n    return N;\n}\n")],
+        }
+        for why, files in cases.items():
+            with self.assertRaises(regroup.Refused, msg=why) as e:
+                self.settle(files, frozenset({"ov097/func_ov097_022a2900"}))
+            self.assertIn(why, str(e.exception))
+
+    def test_cpp_unit(self):
+        # C++: extern "C" blocks keep their linkage, a member function keeps its emitted name in
+        # the header, and a C function whose definition does not say extern "C" gets a prototype
+        # that does
+        text, edited = self.settle([
+            one(0x022a2900, '#include "cpp/ov097/Obj.h"\n\nextern "C" {\nextern int func_02000000(void *);\n}\n\n'
+                            "void Obj::func_ov097_022a2900()\n{\n    func_02000000(this);\n}\n",
+                ".cpp", "_ZN3Obj19func_ov097_022a2900Ev"),
+            one(0x022a2910, 'extern "C" {\nextern int func_02000000(void *);\nint func_ov097_022a2910(int);\n}\n\n'
+                            "int func_ov097_022a2910(int a)\n{\n    return func_02000000(0) + a;\n}\n", ".cpp"),
+        ])
+        self.assertEqual(edited, [])
+        self.assertIn(", emits _ZN3Obj19func_ov097_022a2900Ev\n", text)
+        self.assertEqual(text.count("int func_02000000(void *);"), 1)
+        self.assertIn('extern "C" {\nint func_ov097_022a2910(int a);\n}\n', text)
 
 
 if __name__ == "__main__":

@@ -477,6 +477,7 @@ def function_key(src: Source) -> str:
 
 _FUNCTION_SOURCES: dict[str, Source] = {}
 _SCANNED: set[str] = set()
+_SCAN_LOCK = threading.Lock()
 
 
 def function_source(key: str) -> Source | None:
@@ -489,11 +490,16 @@ def function_source(key: str) -> Source | None:
             found = [s for s in parse_sources(path) if s.name == name]
             if found:
                 return found[0]
-    if module not in _SCANNED:
-        _SCANNED.add(module)
-        for path in sorted((SRC / module).glob("*.c*")):
-            for s in parse_sources(path):
-                _FUNCTION_SOURCES.setdefault(function_key(s), s)
+    # the scan is published whole, after it is done: tools/native.py looks keys up from threads
+    with _SCAN_LOCK:
+        if module not in _SCANNED:
+            found: dict[str, Source] = {}
+            for path in sorted((SRC / module).glob("*.c*")):
+                for s in parse_sources(path):
+                    found.setdefault(function_key(s), s)
+            for k, s in found.items():
+                _FUNCTION_SOURCES.setdefault(k, s)
+            _SCANNED.add(module)
     return _FUNCTION_SOURCES.get(key)
 
 
