@@ -119,13 +119,29 @@ def flags_for(path: pathlib.Path, indirect: bool = False) -> list[str]:
     # none of them inlined into another (only what says `inline` is: a call goes through the
     # callee's entry, tools/objrewrite.py, which the runtime may send to its Reference or Clean),
     # and nothing gcc's interprocedural passes learn of one used in another (gcc's -fipa-ra would
-    # let a caller keep registers live across a call the runtime sends elsewhere).
+    # let a caller keep registers live across a call the runtime sends elsewhere). clang has no
+    # such switch: it folds a call to a function of the unit that returns a constant into the
+    # constant, and drops a call whose result is unused to one it finds reads only memory (a
+    # function that tests a value for a caller that uses r0 lost its call, and with it the
+    # result). It learns nothing from a definition marked `nobuiltin` (LLVM takes it as one the
+    # linker may replace), which changes nothing else about the code of a function that is no
+    # library function's; separate_flags.
     unit = []
-    if len(C.parse_sources(path)) > 1:
-        unit = ["-finline-hint-functions"] if "clang" in " ".join(compiler()) else \
-            ["-fno-inline-functions", "-fno-inline-small-functions", "-flive-patching=inline-only-static"]
+    srcs = C.parse_sources(path)
+    if len(srcs) > 1:
+        unit = separate_flags(compiler(), [src.object_symbol for src in srcs])
     return [*lang, *pic, *layout, "-O2", "-w", *relax, *uninit, *branches, *unit, "-fwrapv", "-fno-strict-aliasing", "-fno-exceptions",
             "-include", str(C.ROOT / "runtime" / "native.h"), f"-I{C.INCLUDE}", f"-I{C.INCLUDE / 'msl'}"]
+
+
+def separate_flags(cc: list[str], names: list[str]) -> list[str]:
+    """The flags that keep the functions `names` of one file from being compiled with what the
+    compiler learns of each other (flags_for): each is called through its entry, as from
+    another file, and is not inlined."""
+    if "clang" in " ".join(cc):
+        return ["-finline-hint-functions",
+                *(f for name in names for f in ("-mllvm", f"-force-attribute={name}:nobuiltin"))]
+    return ["-fno-inline-functions", "-fno-inline-small-functions", "-flive-patching=inline-only-static"]
 
 
 def indirect_flags(cc: list[str]) -> list[str]:

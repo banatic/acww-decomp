@@ -5,11 +5,15 @@
 Reads a unit's header and a one-function header, checks that tools/lint.py's rules for units
 hold for every unit in src/ (its functions last address first, one ISA, one module, each declared
 before it is used), that tools/regroup.py adds the prototype a call to a function defined
-further down needs, and how it settles what the files declare differently, or refuses to.
+further down needs, and how it settles what the files declare differently, or refuses to; and
+that tools/native.py compiles a unit for the PC with each call to one of its functions going to
+that function's entry (none folded into its caller).
 """
 from __future__ import annotations
 
 import pathlib
+import re
+import subprocess
 import tempfile
 import unittest
 
@@ -285,6 +289,107 @@ class Settle(unittest.TestCase):
         self.assertIn(", emits _ZN3Obj19func_ov097_022a2900Ev\n", text)
         self.assertEqual(text.count("int func_02000000(void *);"), 1)
         self.assertIn('extern "C" {\nint func_ov097_022a2910(int a);\n}\n', text)
+
+
+
+# A unit compiled for the PC (tools/native.py): each function called through its entry
+NATIVE_UNIT = {".c": """/* sample_unit: 6 functions, module main
+ * mwccarm 1.2/base -O4,s
+ * func_02000050 @ 0x02000050, 0x10 bytes, Thumb
+ * func_02000040 @ 0x02000040, 0x10 bytes, Thumb
+ * func_02000030 @ 0x02000030, 0x10 bytes, Thumb
+ * func_02000020 @ 0x02000020, 0x10 bytes, Thumb
+ * func_02000010 @ 0x02000010, 0x10 bytes, Thumb
+ * func_02000000 @ 0x02000000, 0x10 bytes, Thumb
+ */
+
+int func_02000000(int unused, int b);
+int func_02000010(void);
+int func_02000030(unsigned short *p);
+
+int func_02000050(int a, int b)
+{
+    return func_02000000(a, b) + 1;
+}
+
+void func_02000040(unsigned short *p)
+{
+    func_02000030(p);
+}
+
+int func_02000030(unsigned short *p)
+{
+    return *p == 0x1000;
+}
+
+int func_02000020(void)
+{
+    return func_02000010() + 1;
+}
+
+int func_02000010(void)
+{
+    return 3;
+}
+
+int func_02000000(int unused, int b)
+{
+    return b;
+}
+""", ".cpp": """/* sample_unit: 2 functions, module main
+ * mwccarm 1.2/base -O4,s
+ * func_02000020 @ 0x02000020, 0x10 bytes, Thumb
+ * func_02000010 @ 0x02000010, 0x10 bytes, Thumb, emits _ZN3Obj13func_02000010Ev
+ */
+
+struct Obj {
+    int func_02000010();
+};
+
+extern "C" int func_02000020(Obj *o)
+{
+    return o->func_02000010() + 1;
+}
+
+int Obj::func_02000010()
+{
+    return 3;
+}
+"""}
+
+
+class NativeUnit(unittest.TestCase):
+    def calls(self, suffix: str) -> dict[str, set[str]]:
+        """The names each function of the sample unit's Native object refers to in its code."""
+        import native
+        with tempfile.TemporaryDirectory() as d:
+            path = pathlib.Path(d) / f"sample_unit{suffix}"
+            path.write_text(NATIVE_UNIT[suffix], newline="\n")
+            obj = path.with_suffix(".o")
+            subprocess.run([*native.compiler(), "-c", *native.flags_for(path), str(path), "-o", str(obj)], check=True)
+            tool = str(native.LLVM / "llvm-objdump.exe") if native.WINDOWS else "objdump"
+            out = subprocess.run([tool, "-dr", str(obj)], capture_output=True, text=True, check=True).stdout
+        found: dict[str, set[str]] = {}
+        here = None
+        for line in out.splitlines():
+            m = re.match(r"^[0-9a-f]+ <(\S+)>:$", line)
+            if m:
+                here = found.setdefault(m.group(1)[len(native.PREFIX):], set())
+            elif here is not None and (r := re.search(r"(?:IMAGE_REL_I386|R_386)_\w+\s+(\S+)$", line)):
+                here.add(r.group(1)[len(native.PREFIX):])
+        return found
+
+    def test_calls_in_a_unit_go_to_the_callee(self):
+        # The runtime may send any of these functions to its Reference or Clean code (at its
+        # entry): a caller must not have taken in what its callee computes. A void function
+        # that tests a value leaves the result in r0 for a caller through a pointer; a call to a
+        # function that returns a constant is still a call.
+        calls = self.calls(".c")
+        self.assertIn("func_02000030", calls["func_02000040"])
+        self.assertIn("func_02000010", calls["func_02000020"])
+        self.assertIn("func_02000000", calls["func_02000050"])
+        calls = self.calls(".cpp")
+        self.assertIn("_ZN3Obj13func_02000010Ev", calls["func_02000020"])
 
 
 if __name__ == "__main__":
