@@ -1,0 +1,44 @@
+/* host_picker_2: 2 functions, module ov140
+ * mwccarm 1.2/base -O4,s
+ * func_ov140_0229a614 @ 0x0229a614, 0x24 bytes, Thumb
+ * func_ov140_0229a5b0 @ 0x0229a5b0, 0x64 bytes, Thumb
+ */
+
+struct UnkStruct_0229a5b0 {
+    char pad_00[0x8d];
+    unsigned char unk_8D;
+    char pad_8E[0x820];
+    unsigned char unk_8AE;
+    char pad_8AF[0x9dd];
+    unsigned char huge;
+};
+
+extern int func_ov140_0229a67c(int a);
+extern int func_ov140_0229a65c(int a);
+extern int func_ov140_02299fb0(void *, int);
+extern void func_ov140_02299f90(void *, int);
+extern void func_ov002_0220a05c(void *, int, int, int, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
+
+unsigned char *func_ov140_0229a5b0(struct UnkStruct_0229a5b0 *p, int a, int b);
+
+int func_ov140_0229a614(int a)
+{
+    int x;
+    int y;
+    x = func_ov140_0229a67c(a);
+    y = func_ov140_0229a65c(a);
+    return (int) func_ov140_0229a5b0((struct UnkStruct_0229a5b0 *) a, x, y);
+}
+
+unsigned char *func_ov140_0229a5b0(struct UnkStruct_0229a5b0 *p, int a, int b)
+{
+    if (func_ov140_02299fb0(p, 0x10) != 0) {
+        func_ov002_0220a05c(&p->huge, a, b, 3, 0);
+        func_ov140_02299f90(p, 0x10);
+    } else {
+        func_ov002_0220a05c(&p->huge, a, b, 3, 1);
+    }
+    p->unk_8AE = p->unk_8D;
+    return func_ov002_02208098((void *) (p), 2);
+}
