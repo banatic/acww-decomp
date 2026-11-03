@@ -20,6 +20,54 @@ to build it.
 > library and runtime: 4,083 functions, about 590 KB) are not included. Library versions are
 > listed in [libs/README.md](libs/README.md).
 
+## How it works
+
+```mermaid
+flowchart LR
+    rom["Machine code<br/>in your ROM"] -->|decompiled| match["Matching source<br/>(src/)"]
+    match -->|"original compiler:<br/>the ROM's exact bytes"| rom
+    match -->|rewritten to read| clean["Clean source<br/>(clean/)"]
+    clean -->|"built for the PC,<br/>checked against the ROM's code"| pc["The game<br/>on Windows"]
+```
+
+One function, `func_02063f18` (36 bytes of Thumb code in the ROM), at each step:
+
+**Matching source** (`src/main/`): written so the original compiler gives back the ROM's exact
+bytes. Names are still addresses.
+
+```c
+int func_02063f18(int arg0, unsigned char arg1)
+{
+    unsigned char *p;
+    unsigned int i;
+    p = func_020640e0(arg0);
+    for (i = 0; i < 3; i++) {
+        if (arg1 == p[i]) {
+            return i + 1;
+        }
+    }
+    return 1;
+}
+```
+
+**Clean source** (`clean/main/item_group_order.c`): the same behaviour with names, types and
+constants. The PC build runs it in the matching source's place.
+
+```c
+/* func_02063f18: the group (1-3) the order gives `weight`; group 1 when none does. */
+int ItemGroupOrder_GroupOfWeight(u8 *order, u8 weight)
+{
+    const u8 *row = ItemGroupOrder_Row(order);
+    for (u32 i = 0; i < ITEM_GROUP_ORDER_GROUPS; i++) {
+        if (row[i] == weight) {
+            return (int) i + 1;
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_02063f18, ItemGroupOrder_GroupOfWeight)
+```
+
 ## Part I: Decompilation (100% matching and linked)
 
 ![Decompilation progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-decomp.svg)
