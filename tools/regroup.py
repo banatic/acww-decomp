@@ -318,7 +318,9 @@ def rewrite(s: str, local: dict[str, Decl], chosen: dict[str, Decl], where: str,
             if not statement and norm(lo.ret) != norm(ch.ret):
                 if "void" in (norm(lo.ret), norm(ch.ret)):
                     raise Refused(f"{where}: {name} returns {ch.ret}, its file said {lo.ret}")
-                call = f"({lo.ret}) {call}"
+                # a member, element or call of the result applies to the cast result
+                post = re.match(r"\s*(?:->|\.|\[|\()", s[close + 1:]) is not None
+                call = f"(({lo.ret}) {call})" if post else f"({lo.ret}) {call}"
             out.append(call)
             i = close + 1
             continue

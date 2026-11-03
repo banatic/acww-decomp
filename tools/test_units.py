@@ -171,6 +171,19 @@ class Settle(unittest.TestCase):
         self.assertIn("func_02000000(x) + (*(u16 *) data_02100000)", body)
         self.assertEqual(sorted(edited), ["func_ov097_022a2900", "func_ov097_022a2920"])
 
+    def test_cast_result_then_member(self):
+        # a result read through a member or an element is cast before the member is taken:
+        # `(struct B *) f(x)->b` would cast the member
+        decl = "struct {0} {{\n    int a;\n    int b;\n}};\nextern struct {0} *func_02000000(int i);\n\n"
+        text, edited = self.settle([
+            one(0x022a2900, decl.format("A") + "int func_ov097_022a2900(int x)\n{\n    return func_02000000(x)->b;\n}\n"),
+            one(0x022a2910, decl.format("A") + "int func_ov097_022a2910(int x)\n{\n    return func_02000000(x)->a;\n}\n"),
+            one(0x022a2920, decl.format("B") + "int func_ov097_022a2920(int x)\n{\n"
+                                               "    return func_02000000(x)->b + func_02000000(x)[1].a;\n}\n"),
+        ])
+        self.assertIn("((struct B *) func_02000000(x))->b + ((struct B *) func_02000000(x))[1].a", text)
+        self.assertEqual(edited, ["func_ov097_022a2920"])
+
     def test_struct_by_value(self):
         # a struct passed by value that another file names otherwise: no cast converts one
         # struct type to another, so the argument object is read as the unit's type
