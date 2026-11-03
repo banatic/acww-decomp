@@ -39,7 +39,7 @@ Most sources are still one file per function, and the data sections still come f
 regrouping the functions into their original source files is in progress (the first units:
 `src/ov097/pockets_room.c`, `src/ov124/han_panel.c`).
 
-## Part II: Clean code and the Windows port
+## Part II: Clean code and the Windows port (100% rewritten)
 
 ![Clean code progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-clean.svg)
 
