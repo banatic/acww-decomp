@@ -334,7 +334,7 @@
       "rom_sha256": "d35d2c7fb53793b70f0ce72deaf03b43a99687e05a73704b88ed416f07c367e2",
       "statics": {
         "mtbl": {
-          "symbol": "mtbl$5",
+          "symbol": "mtbl$29",
           "section": "bss",
           "address": "02256c0c",
           "size": 24,

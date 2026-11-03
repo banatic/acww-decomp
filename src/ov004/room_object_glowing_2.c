@@ -1,0 +1,22 @@
+/* room_object_glowing_2: 2 functions, module ov004
+ * mwccarm 1.2/base -O4,s
+ * func_ov004_02212260 @ 0x02212260, 0x4 bytes, Thumb
+ * func_ov004_0221224c @ 0x0221224c, 0x14 bytes, Thumb
+ */
+
+#include "types.h"
+
+extern const u8 data_ov004_0224765c[];
+
+int func_ov004_02212260(void)
+{
+    return 1;
+}
+
+u8 func_ov004_0221224c(void *self, unsigned int i)
+{
+    if (i < 2) {
+        return data_ov004_0224765c[i];
+    }
+    return 0;
+}
