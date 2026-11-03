@@ -553,6 +553,8 @@ def signature_read(path: pathlib.Path, name: str) -> tuple[int, int, bool, int]:
 
 ASM_FUNCTION = re.compile(r"^\s*asm\s+[\w\s\*]*\w+\s*\(", re.M)
 STRUCT_TYPE = re.compile(r"\}\s*(\w+)\s*;|\bstruct\s+(\w+)\s*\{")
+# the words that start a statement, not a declaration (struct_results)
+STATEMENT_WORDS = {"return", "break", "continue", "goto", "else", "do", "case", "default", "sizeof"}
 
 
 PMF_TYPEDEF = re.compile(r"\(\s*(?:\w+\s*::\s*)+\*\s*(\w+)\s*\)")
@@ -810,7 +812,8 @@ def struct_results(text: str) -> list[str]:
     """The functions a source declares as returning a structure (its own typedefs or struct
     tags) by value and calls. Virtual methods count too: called through the vtable, a Reference
     callee stores its result where the PC's Native passed something else (`this`)."""
-    types = {a or b for a, b in STRUCT_TYPE.findall(text)}
+    # (`} return;` after a block is no structure's name, nor `return f(x);` a declaration of f)
+    types = {a or b for a, b in STRUCT_TYPE.findall(text)} - STATEMENT_WORDS
     out = []
     decl = r"(?:^|[;}:])\s*(?:(?:extern|virtual|static|inline)\s+)*(?:struct\s+)?(\w+)\s+(\w+)\s*\([^;{}]*\)\s*(?:const\s*)?;"
     for m in re.finditer(decl, text, re.M):

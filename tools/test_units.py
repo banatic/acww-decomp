@@ -7,7 +7,7 @@ hold for every unit in src/ (its functions last address first, one ISA, one modu
 before it is used), that tools/regroup.py adds the prototype a call to a function defined
 further down needs, and how it settles what the files declare differently, or refuses to; and
 that tools/native.py compiles a unit for the PC with each call to one of its functions going to
-that function's entry (none folded into its caller).
+that function's entry (none folded into its caller), and reads the unit as declared.
 """
 from __future__ import annotations
 
@@ -390,6 +390,15 @@ class NativeUnit(unittest.TestCase):
         self.assertIn("func_02000000", calls["func_02000050"])
         calls = self.calls(".cpp")
         self.assertIn("_ZN3Obj13func_02000010Ev", calls["func_02000020"])
+
+    def test_struct_results(self):
+        # the functions that return a structure by value (Native keeps their callers Reference)
+        import native
+        text = ("typedef struct {\n    int x;\n} S;\n\nS g(void);\nint k(int);\n\nint f(int a)\n{\n"
+                "    if (a) {\n        a++;\n    }\n    return;\n}\n\nint h(void)\n{\n    return k(1);\n}\n\nint n(void)\n{\n"
+                "    return k(2);\n}\n")
+        self.assertEqual(native.struct_results(text), [])
+        self.assertEqual(native.struct_results(text + "\nint m(void)\n{\n    return g().x;\n}\n"), ["g"])
 
 
 if __name__ == "__main__":
