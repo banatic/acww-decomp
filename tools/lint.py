@@ -86,6 +86,7 @@ def main() -> None:
     mods = sorted(p.name for p in (C.CONFIG / "overlays").iterdir()) + list(C.RESIDENT)
     syms = C.SymbolTable({m: {} for m in mods})
     seen: dict[tuple[str, int], pathlib.Path] = {}
+    names: dict[str, pathlib.Path] = {}
     sources = C.all_sources()
     functions = 0
     for path in sources:
@@ -129,6 +130,11 @@ def main() -> None:
                     errors.append(f"{rel}: {s.name} is listed but not defined")
             if all(at) and [m.start() for m in at] != sorted(m.start() for m in at):
                 errors.append(f"{rel}: the unit defines its functions in another order than it lists them")
+        # dsd names each object for its source file and refuses a file name two modules use
+        if path.name in names and names[path.name] != path.parent:
+            errors.append(f"{rel}: {names[path.name].relative_to(C.ROOT).as_posix()} has the same file name; "
+                          "dsd needs one per file")
+        names.setdefault(path.name, path.parent)
         for src in srcs:
             sym = syms.function(src.module, src.address)
             if sym is None or sym.size != src.size:

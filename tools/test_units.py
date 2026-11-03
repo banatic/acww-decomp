@@ -59,6 +59,13 @@ class Units(unittest.TestCase):
             text = p.read_text(encoding="utf-8")
             self.assertEqual(C.undeclared_uses(text[C.header_end(text):], [s.name for s in srcs]), [], p)
 
+    def test_one_file_name_per_module(self):
+        # dsd names each object for its source file and refuses a name two modules use, so a unit
+        # named for its Clean file is numbered on past the names of every module (regroup.plan)
+        where: dict[str, pathlib.Path] = {}
+        for p in C.all_sources():
+            self.assertEqual(where.setdefault(p.name, p.parent), p.parent, p)
+
     def test_used_before_declared(self):
         body = "\nvoid f2(void)\n{\n    g1(0);\n}\n\nint g1(int a)\n{\n    return a;\n}\n"
         self.assertEqual(C.undeclared_uses(body, ["f2", "g1"]), ["g1"])

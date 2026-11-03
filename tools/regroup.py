@@ -37,7 +37,8 @@ function that no longer verifies beside the others stays a source of its own as 
 
 --plan lists, for each run of address-adjacent sources of one function compiled alike, the
 units it makes: split where the Clean files (clean/<module>/) file the functions apart, and
-before a function the settling refuses to add; each named for its Clean file.
+before a function the settling refuses to add; each named for its Clean file, numbered on where
+a source of any module already has the name (dsd refuses one file name in two modules).
 """
 
 from __future__ import annotations
@@ -931,7 +932,8 @@ def plan(module: str, apart: frozenset[str] = frozenset()) -> list[tuple[str, li
                     groups.append(cur)
                     cur = [s]
             groups.append(cur)
-    taken = {p.stem for p in (C.SRC / module).glob("*.c*")}
+    # dsd names each object for its source file, and refuses one file name in two modules
+    taken = {p.stem for p in C.all_sources()}
     out = []
     count: collections.Counter = collections.Counter()
     for g in (g for g in groups if len(g) > 1):
