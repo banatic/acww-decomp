@@ -1,0 +1,66 @@
+/* pockets_box_2: 4 functions, module ov100
+ * mwccarm 1.2/base -O4,s
+ * func_ov100_0229cb80 @ 0x0229cb80, 0x54 bytes, Thumb
+ * func_ov100_0229cb1c @ 0x0229cb1c, 0x64 bytes, Thumb
+ * func_ov100_0229cad0 @ 0x0229cad0, 0x4c bytes, Thumb
+ * func_ov100_0229ca9c @ 0x0229ca9c, 0x34 bytes, Thumb
+ */
+
+typedef struct {
+    char pad_00[0x2925];
+    unsigned char unk_2925;
+    unsigned char unk_2926;
+} TestStruct;
+
+extern int func_ov002_02208ae4(void *ptr);
+extern int func_ov002_02208ad8(void *ptr, unsigned char byte);
+extern int func_ov002_0220a08c(void *ptr, int a, int b, int c);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
+extern void func_0208e4c0(void *, int);
+extern int func_ov002_022090e4(void *, int);
+extern void func_ov002_0220a0b4(void *, int, int);
+extern void func_ov002_0220a374(char *, int);
+extern int func_ov100_0229cc70(void *p);
+extern int func_ov100_0229cc60(void *p);
+
+void func_ov100_0229cb80(unsigned char *param)
+{
+    int v1;
+    v1 = func_ov002_02208ae4(param + 0x22d8);
+    func_ov002_0220a08c(param + 0x2274, v1, func_ov002_02208ad8(param + 0x22d8, param[0x2926]), 2);
+    param[0x2924] = param[0x8d];
+    func_ov002_02208098((void *) (param), 8);
+}
+
+void func_ov100_0229cb1c(TestStruct *self)
+{
+    char *base = (char *) self;
+    int tmp1, tmp2;
+
+    self->unk_2925 = 1;
+    self->unk_2926 = (unsigned char) func_ov002_022090e4(base + 0x22d8, 1);
+    tmp1 = func_ov002_02208ae4(base + 0x22d8);
+    tmp2 = func_ov002_02208ad8(base + 0x22d8, self->unk_2926);
+    func_ov002_0220a0b4(base + 0x2274, tmp1, tmp2);
+    func_0208e4c0(base + 0x2274, 8);
+    func_ov002_02208098((void *) (base), 0x12);
+}
+
+void func_ov100_0229cad0(unsigned char *self)
+{
+    int v1;
+    int v2;
+    self[0x2926] = 0;
+    v1 = func_ov002_02208ae4((void *) ((char *) (self + 0x22d8)));
+    v2 = func_ov002_02208ad8((void *) ((char *) (self + 0x22d8)), self[0x2926]);
+    func_ov002_0220a0b4((void *) ((char *) (self + 0x2274)), v1, v2);
+    func_ov002_0220a374((char *) (self + 0x2274), 7);
+}
+
+void func_ov100_0229ca9c(int *p)
+{
+    int a = func_ov100_0229cc70(p);
+    int b = func_ov100_0229cc60(p);
+    func_ov002_0220a0b4(&p[0x89D], a, b);
+    func_ov002_0220a374((char *) (&p[0x89D]), 1);
+}
