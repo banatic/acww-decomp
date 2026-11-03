@@ -46,14 +46,18 @@ def main():
     base = C.modules()['main']['base']
     for index, (relative, spec) in enumerate(native_aggregate.SPECS.items()):
         path = C.key_path(relative)
-        assert native_aggregate.return_kind(path) == spec['kind'] == index + 8
-        source = C.parse_source(path)
+        assert native_aggregate.return_kind(path, relative.partition('/')[2]) == spec['kind'] == index + 8
+        source = C.source_of(relative)
         body = image[source.address-base:source.address-base+source.size]
         name = f'aggregate_rom_{index}'
         names.append(name)
         arrays.append(f'static const unsigned char {name}[] = {{' + ','.join(hex(b) for b in body) + '};')
-        obj = folder / (path.stem + '.o')
-        subprocess.run([*native.compiler(), *native.flags_for(path), '-c', str(path), '-o', str(obj)], check=True)
+        # the function alone: a unit's other functions are not the fixture's
+        copy = folder / (relative.partition('/')[2] + path.suffix)
+        copy.write_text(C.function_alone(path.read_bytes().decode(), relative), newline='\n')
+        obj = copy.with_suffix('.o')
+        subprocess.run([*native.compiler(), *native.flags_for(path), '-iquote', str(path.parent),
+                        '-c', str(copy), '-o', str(obj)], check=True)
         objects.append(obj)
     (folder/'aggregate_rom.h').write_text('\n'.join(arrays) + '\nstatic const unsigned char *aggregate_rom[] = {' +
                                         ','.join(names) + '};\n', newline='\n')

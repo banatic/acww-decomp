@@ -22,7 +22,7 @@ specs = {}
 reports = []
 for relative, (name,count,call) in paths.items():
     path = C.key_path(relative)
-    parsed = C.parse_source(path)
+    parsed = C.source_of(relative)
     source = path.read_bytes().decode()
     case = int(parsed.module[2:])
     mod = C.modules()[parsed.module]

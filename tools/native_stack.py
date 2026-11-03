@@ -671,7 +671,8 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '    _Static_assert(sizeof(host_buf) == 0xe8, "the popup\'s texts");\n'
          '    locals = mode == 2 ? (void *) (uintptr_t) native_guest_stack_slot_if(0x0229abf8u, 0, sizeof(host_buf)) : 0;\n'
          '    if (locals == 0) {\n        locals = &host_buf;\n    }\n'
-         '#define buf (*locals)\n'),),
+         '#define buf (*locals)\n'),
+        ('    func_02070be8(buf.unk78);\n}\n', '    func_02070be8(buf.unk78);\n#undef buf\n}\n')),
     # 0220fc9c-0220fca0: r5 = the object, r4 = `p1`, r6 = `p2`; mounted: r7 = the objects'
     # table (0220fcb2), r6 = the mount's z (0220fcf0), r4 its y (0220fcfa); else r4 = the angle
     # (0220fd44).
@@ -814,7 +815,11 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '    locals = (struct Locals *) (uintptr_t) native_guest_stack_slot_if(0x0202f464u, 0, sizeof(host_locals));\n'
          '    if (locals == 0) {\n        locals = &host_locals;\n    }\n'
          '#define v1 (locals->v1)\n#define v2 (locals->v2)\n#define v3 (locals->v3)\n#define v4 (locals->v4)\n'
-         '#define m1 (locals->m1)\n#define m2 (locals->m2)\n'),),
+         '#define m1 (locals->m1)\n#define m2 (locals->m2)\n'),
+        # the names are the function's own: a unit's other functions keep theirs
+        ('            func_0202f6e8(m1);\n            return 0;\n        }\n    }\n    return 0;\n}\n',
+         '            func_0202f6e8(m1);\n            return 0;\n        }\n    }\n    return 0;\n'
+         '#undef v1\n#undef v2\n#undef v3\n#undef v4\n#undef m1\n#undef m2\n}\n')),
     # The field actor's walls (02033678, reached from 0201100c through 02031288, 02030ebc and
     # 02032aa8, audited above): its three points at body SP + 0x24 to + 0x3b and the three
     # copies of the position and the pushed point it stores for each wall it tests (+ 0x3c to
@@ -832,7 +837,10 @@ CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '    if (locals == 0) {\n        locals = &host_locals;\n    }\n'
          '#define v24 (locals->v24)\n#define v2c (locals->v2c)\n#define v34 (locals->v34)\n'
          '#define w1 (locals->w1)\n#define w2 (locals->w2)\n#define w3 (locals->w3)\n'
-         '    ret = 0;\n')),
+         '    ret = 0;\n'),
+        ('    m->z = v24.z;\n    return ret;\n}\n',
+         '    m->z = v24.z;\n    return ret;\n'
+         '#undef v24\n#undef v2c\n#undef v34\n#undef w1\n#undef w2\n#undef w3\n}\n')),
     # The field actor's move (02031288, scene museum-insect-alone): its push-out visitor stays at
     # body SP + 0x48 where its path is audited (else the PC's stack: it runs on many paths). The
     # posts' landing (02032eb8, from the visitor's method for the posts 020329ec) keeps the

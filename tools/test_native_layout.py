@@ -42,8 +42,9 @@ def main() -> None:
             pass
         else:
             raise AssertionError("changed sources must require a new audit")
-        copied = folder / source.name
-        copied.write_bytes(result.encode())
+        # the function alone, named for itself: a unit's other functions are not the fixture's
+        copied = folder / (relative.partition("/")[2] + source.suffix)
+        copied.write_bytes(C.function_alone(result, relative).encode())
         obj = copied.with_suffix(".o")
         subprocess.run([*native.compiler(), *native.flags_for(source), "-iquote", str(source.parent),
                         "-c", str(copied), "-o", str(obj)], check=True)
@@ -53,9 +54,11 @@ def main() -> None:
     for relative in ("main/func_0200322c", "ov003/func_ov003_02215f4c",
                      "ov003/func_ov003_02211da0", "ov003/func_ov003_022119d8"):
         source = C.key_path(relative)
-        obj = folder / (source.stem + ".o")
-        subprocess.run([*native.compiler(), *native.flags_for(source),
-                        "-c", str(source), "-o", str(obj)], check=True)
+        copied = folder / (relative.partition("/")[2] + source.suffix)
+        copied.write_bytes(C.function_alone(source.read_bytes().decode("utf-8"), relative).encode())
+        obj = copied.with_suffix(".o")
+        subprocess.run([*native.compiler(), *native.flags_for(source), "-iquote", str(source.parent),
+                        "-c", str(copied), "-o", str(obj)], check=True)
         objects.append(str(obj))
     source = C.ROOT / "tests/native/stack_layout.c"
     exe = folder / ("layout.exe" if native.WINDOWS else "layout")

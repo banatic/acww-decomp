@@ -221,7 +221,7 @@ def pair_fixture():
     source = C.key_path('main/func_02013948')
     raw = source.read_bytes()
     assert C.pinned_sha256('main/func_02013948', raw.decode()) == 'b09902dbf83126a91553a6f05d539e0988fa745c3cd4392d1b9a84ecf0b324ed'
-    parsed = C.parse_source(source)
+    parsed = C.source_of('main/func_02013948')
     image = C.module_image('main')
     base = C.modules()['main']['base']
     rom = image[parsed.address-base:parsed.address-base+parsed.size]
@@ -247,7 +247,7 @@ def pair_fixture():
     translated, headers = boundary.checked_copy('main/func_02013948', raw.decode(), C.ROOT,
                                                C.modules(), C.module_image)
     assert not headers
-    copy.write_text(translated +
+    copy.write_text(C.function_alone(translated, 'main/func_02013948') +
                     '\nstatic_assert(sizeof(Entry)==0x40,"ROM table stride");\n'
                     'static_assert(__builtin_offsetof(Entry,pmf)==8,"ROM member offset");\n'
                     'static_assert(sizeof(Pair)==8,"ROM hidden result");\n', newline='\n')
@@ -284,20 +284,23 @@ def register_fixture():
                                                C.modules(), C.module_image)
     assert not headers
     copy = folder / 'caller.cpp'
-    copy.write_text(translated + '\nstatic_assert(sizeof(UnkStruct_0201f40c)==0x130,"ROM object size");\n',
+    copy.write_text(C.function_alone(translated, relative) + '\nstatic_assert(sizeof(UnkStruct_0201f40c)==0x130,"ROM object size");\n',
                     newline='\n')
     objects = []
-    for path, original, extra in [(copy, source, []), (C.key_path('main/func_020819bc'),
-                                   C.key_path('main/func_020819bc'), ['-Dfunc_020819bc=native_flag_body'])]:
+    # the flag body alone: a unit's other functions are not the fixture's
+    flag_source = C.key_path('main/func_020819bc')
+    flag = folder / ('func_020819bc' + flag_source.suffix)
+    flag.write_text(C.function_alone(flag_source.read_bytes().decode(), 'main/func_020819bc'), newline='\n')
+    for path, original, extra in [(copy, source, []), (flag, flag_source, ['-Dfunc_020819bc=native_flag_body'])]:
         obj = folder / (path.stem + '.o')
         subprocess.run([*native.compiler(), *native.flags_for(original), '-I'+str(C.ROOT/'runtime'),
-                        *extra, '-c', str(path), '-o', str(obj)], check=True)
+                        '-iquote', str(original.parent), *extra, '-c', str(path), '-o', str(obj)], check=True)
         objects.append(obj)
     image = C.module_image('main')
     base = C.modules()['main']['base']
     arrays = []
-    for path, name in [(source, 'member_register_rom'), (C.key_path('main/func_020819bc'), 'member_flag_rom')]:
-        parsed = C.parse_source(path)
+    for key, name in [(relative, 'member_register_rom'), ('main/func_020819bc', 'member_flag_rom')]:
+        parsed = C.source_of(key)
         body = image[parsed.address-base:parsed.address-base+parsed.size]
         arrays.append(f'static const unsigned char {name}[] = {{' + ','.join(hex(b) for b in body) + '};')
     (folder/'member_register_rom.h').write_text('\n'.join(arrays)+'\n', newline='\n')

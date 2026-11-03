@@ -1,6 +1,7 @@
 """Reject stale stack proofs and check their real ROM/source inputs."""
 from __future__ import annotations
 
+import re
 import unittest
 
 import common as C
@@ -135,6 +136,14 @@ class NativeStackTests(unittest.TestCase):
                     self.assertIn(after, copy)
                 with self.assertRaises(ValueError):
                     native_stack.clean_copy(text + '\n', relative)
+
+    def test_effect_macros_end_with_their_function(self):
+        # a unit's other functions may use the same names
+        for relative, edits in native_stack.CUE_EDITS.items():
+            with self.subTest(relative=relative):
+                added = ''.join(after for _before, after in edits)
+                defined = set(re.findall(r'^#define (\w+)', added, re.M))
+                self.assertEqual(set(re.findall(r'^#undef (\w+)', added, re.M)) & defined, defined)
 
     def test_cue_copy_order(self):
         relative = 'autoload_2/func_020f9d00'

@@ -22,8 +22,8 @@ def check_rom_subset() -> None:
     modules = C.modules()
     images = {}
     for relative in sorted(native_pmf.READ_ONLY):
-        source = C.parse_source(C.key_path(relative))
-        assert source is not None and source.size <= 0x80, relative
+        source = C.source_of(relative)
+        assert source.size <= 0x80, relative
         if source.module not in images:
             images[source.module] = C.module_image(source.module)
         offset = source.address - modules[source.module]['base']

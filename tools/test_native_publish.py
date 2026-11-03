@@ -50,10 +50,13 @@ def fixture():
     print('Actual Clean publication copy compiles with strict pointer types')
     objects = []
     for name, relative in [('gradient', publish.SOURCE), ('shift', publish.SHIFT_SOURCE)]:
-        source = folder / f'{name}.c'
-        source.write_text(publish.translate(relative, (C.key_path(relative)).read_bytes().decode()), newline='\n')
+        # the function alone: a unit's other functions are not the fixture's
+        original = C.key_path(relative)
+        source = folder / f'{name}{original.suffix}'
+        source.write_text(C.function_alone(publish.translate(relative, original.read_bytes().decode()), relative),
+                          newline='\n')
         obj = folder / f'{name}.o'
-        subprocess.run([*native.compiler(), *native.flags_for(C.key_path(relative)),
+        subprocess.run([*native.compiler(), *native.flags_for(original), '-iquote', str(original.parent),
                         '-I', str(C.ROOT / 'runtime'), '-c', str(source), '-o', str(obj)], check=True)
         objects.append(str(obj))
     prefix = '_' if os.name == 'nt' else ''
