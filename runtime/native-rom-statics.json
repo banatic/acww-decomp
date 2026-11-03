@@ -242,7 +242,7 @@
       "rom_sha256": "8669075edf993128c28bfa7b38b8bb70ff143de121011407e705c9819192d71e",
       "statics": {
         "pmf": {
-          "symbol": "pmf$5",
+          "symbol": "pmf$39",
           "section": "bss",
           "address": "0223c754",
           "size": 24,
@@ -288,7 +288,7 @@
       "rom_sha256": "63f8dbf7fe74a0d7d071923e76c59f99dc2ca24742314d85ba7e4051b534612b",
       "statics": {
         "s_tbl": {
-          "symbol": "s_tbl$6",
+          "symbol": "s_tbl$21",
           "section": "bss",
           "address": "0223ca30",
           "size": 56,
@@ -311,7 +311,7 @@
       "rom_sha256": "8f4fae10ea413aac2a24b3aaf3e92f044115b7303f9758971d9b8e8113ad8a43",
       "statics": {
         "pmf_arr": {
-          "symbol": "pmf_arr$5",
+          "symbol": "pmf_arr$43",
           "section": "bss",
           "address": "0223ca08",
           "size": 40,
