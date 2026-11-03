@@ -522,13 +522,16 @@ def unit_keys(key: str, among) -> list[str]:
 def function_alone(text: str, key: str) -> str:
     """`text` (a copy of the file of `key`) without the definitions of the file's other
     functions: the function as a file of one function, for a test fixture that runs it alone
-    and does not define what the unit's other functions use."""
+    and does not define what the unit's other functions use. Each of them is left declared (a
+    function defined above the one that calls it has no prototype of its own, and gcc 14 and
+    later refuse a call to an undeclared function); a member function is declared by its class."""
     for src in parse_sources(key_path(key)):
         if function_key(src) != key:
             span = function_span(text, src.name)
             if span is None:
                 raise ValueError(f"{key}: no definition of {src.name} in the copy")
-            text = text[:span[0]] + text[span[1]:]
+            head = text[span[0]:text.index("{", span[0])].strip()
+            text = text[:span[0]] + ("" if "::" in head else head + ";") + text[span[1]:]
     return text
 
 
