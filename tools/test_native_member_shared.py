@@ -33,7 +33,7 @@ FIXTURES = {'ov054/func_ov054_022608ac', 'ov147/func_ov147_0229942c', 'ov147/fun
 storage = {relative: tables for relative, tables in storage.items() if relative in FIXTURES}
 for relative, tables in storage.items():
     path = C.key_path(relative)
-    parsed = C.parse_source(path)
+    parsed = C.source_of(relative)
     case = int(parsed.module[2:])
     state_table = relative == 'ov147/func_ov147_0229a634'
     folder = base/(host+('-baseline-' if baseline else '-fixed-')+str(case)+f'-{parsed.address:x}')
@@ -85,7 +85,10 @@ for relative, tables in storage.items():
               'static const struct Table tables[] = {'+','.join(entries)+'};\n'
               'static const unsigned char module_rom[] = {'+','.join(hex(b) for b in image)+'};\n')
     (folder/'shared_rom.h').write_text(header,newline='\n')
-    copy = boundary.checked_copy(relative,source,C.ROOT,C.modules(),C.module_image)[0]
+    copy = boundary.checked_copy(C.unit_keys(relative,boundary.specifications()),source,C.ROOT,C.modules(),C.module_image)[0]
+    # the owner alone, as a file of one function: a unit's other functions call what the fixture
+    # does not define, and the fixture never runs them
+    copy = C.function_alone(copy, relative)
     if baseline:
         copy = boundary.copy(source, {name: tuple(value['words']) for name, value in spec['constants'].items()})
     call = ('static_cast<Obj_ov147_0229ac1c *>(p)->func_ov147_0229a634()' if state_table else

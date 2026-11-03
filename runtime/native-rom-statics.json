@@ -2710,7 +2710,7 @@
       "rom_sha256": "83a3bebfb914203f46016dd78c5431c57d1ba5caac2f49efd3b21988143b7811",
       "statics": {
         "tbl": {
-          "symbol": "tbl$5",
+          "symbol": "tbl$24",
           "section": "bss",
           "address": "02278948",
           "size": 88,
@@ -2813,7 +2813,7 @@
       "rom_sha256": "705e6ef28a8cefecaa0d8b91885b28d7c534a7ba3f1b710d87a946e342b7e54c",
       "statics": {
         "init_flag": {
-          "symbol": "init_flag$7",
+          "symbol": "init_flag$30",
           "section": "bss",
           "address": "02279900",
           "size": 4,
@@ -2822,7 +2822,7 @@
           ]
         },
         "table": {
-          "symbol": "table$8",
+          "symbol": "table$31",
           "section": "bss",
           "address": "02279904",
           "size": 16,
@@ -2999,7 +2999,7 @@
       "rom_sha256": "ceefa08675c2ca52747025795a0db1690d058492bc3c1edf47c99f2ee8f33c53",
       "statics": {
         "tbl": {
-          "symbol": "tbl$12",
+          "symbol": "tbl$48",
           "section": "bss",
           "address": "0229e0d0",
           "size": 168,
@@ -3046,7 +3046,7 @@
       "rom_sha256": "557951b68d18cfadf6bd73a8c8e4ebfc3bcbd02e80f16e167db5f1d8a5a616ef",
       "statics": {
         "table": {
-          "symbol": "table$12",
+          "symbol": "table$52",
           "section": "bss",
           "address": "0229e110",
           "size": 192,
@@ -3069,7 +3069,7 @@
       "rom_sha256": "331ea37228677fe8196faf3f541ba657a3e3c636ddff9d73217f1a507af6b137",
       "statics": {
         "tbl": {
-          "symbol": "tbl$69",
+          "symbol": "tbl$108",
           "section": "bss",
           "address": "0229ec18",
           "size": 128,
@@ -3111,7 +3111,7 @@
       "rom_sha256": "84cec7d49fd1fb81c674fd2d0df1960e1e636493de337fb9395ae5bfe715d1c3",
       "statics": {
         "tbl": {
-          "symbol": "tbl$12",
+          "symbol": "tbl$14",
           "section": "bss",
           "address": "0229f800",
           "size": 232,
@@ -3134,7 +3134,7 @@
       "rom_sha256": "859a15b08f6067eae296babc09079c40d60184680f3821ff5ed771690da7cd95",
       "statics": {
         "table": {
-          "symbol": "table$7",
+          "symbol": "table$44",
           "section": "bss",
           "address": "0229f7a8",
           "size": 88,
@@ -3181,7 +3181,7 @@
       "rom_sha256": "d86128c2f70ae138eb0270d7816852805b7bee4c2253fca1b6957351c48dc8c6",
       "statics": {
         "table": {
-          "symbol": "table$7",
+          "symbol": "table$45",
           "section": "bss",
           "address": "0229f7c8",
           "size": 88,
@@ -3204,7 +3204,7 @@
       "rom_sha256": "6b227d4da08a0a8a7cd288ec3026cd2e2e9431a0050a115c7fcc0d8121687427",
       "statics": {
         "gTables": {
-          "symbol": "gTables$6",
+          "symbol": "gTables$37",
           "section": "bss",
           "address": "0229e474",
           "size": 192,
@@ -3273,7 +3273,7 @@
       "rom_sha256": "f8e4a1d31e9aa60355b378ed8480bd29fa2f4c18d8a985a6206adb3321497fe6",
       "statics": {
         "tbl": {
-          "symbol": "tbl$9",
+          "symbol": "tbl$22",
           "section": "bss",
           "address": "0229dc48",
           "size": 40,
@@ -3296,7 +3296,7 @@
       "rom_sha256": "c7d96775b95939673f2cc281efe9ad907e500ced0ce079df868e2761a6a42fa3",
       "statics": {
         "tbl": {
-          "symbol": "tbl$12",
+          "symbol": "tbl$66",
           "section": "bss",
           "address": "0229ee60",
           "size": 176,
@@ -3342,7 +3342,7 @@
       "rom_sha256": "aed74f11db5d2a217c52598dd0b8951dc8478c455f60a0493f2aafd67eff366f",
       "statics": {
         "arr": {
-          "symbol": "arr$5",
+          "symbol": "arr$40",
           "section": "bss",
           "address": "022a21c8",
           "size": 112,
@@ -3457,7 +3457,7 @@
       "rom_sha256": "596b2c702e1b5fc4d7d3c356c8eba897c6c4527524c4cb8e2f41df016cb396b5",
       "statics": {
         "table": {
-          "symbol": "table$5",
+          "symbol": "table$51",
           "section": "bss",
           "address": "0229c798",
           "size": 56,
@@ -3550,7 +3550,7 @@
       "rom_sha256": "900eb7f3e8ba814141d97729d7b1c4d2cf9dd060b4b2f1795c0ee7944aac56ec",
       "statics": {
         "table": {
-          "symbol": "table$11",
+          "symbol": "table$26",
           "section": "bss",
           "address": "0229d34c",
           "size": 104,
@@ -3573,7 +3573,7 @@
       "rom_sha256": "b7625a2e942dd79a96fcb3b6c5dc06172cb518ca4c24ddfe4ef6a8f497633d31",
       "statics": {
         "pmf_table": {
-          "symbol": "pmf_table$7",
+          "symbol": "pmf_table$13",
           "section": "bss",
           "address": "0229d2ec",
           "size": 96,
@@ -3596,7 +3596,7 @@
       "rom_sha256": "982f599131c3fa22d43ef0d76e48caadf53281d0aecbae9f6f1c36a335778799",
       "statics": {
         "table": {
-          "symbol": "table$7",
+          "symbol": "table$25",
           "section": "bss",
           "address": "022a0b28",
           "size": 40,
@@ -3619,7 +3619,7 @@
       "rom_sha256": "e1d5a0a40c5e57170abe7420702a1971ca5fb80a6b6a668b9e01c1f8db467f3e",
       "statics": {
         "table": {
-          "symbol": "table$11",
+          "symbol": "table$53",
           "section": "bss",
           "address": "022a2208",
           "size": 136,
@@ -3804,7 +3804,7 @@
       "rom_sha256": "8d472695f0dce9dd66f11e7b9f4b0faa6b509a4f574fe9c544838042cc41afbb",
       "statics": {
         "tbl": {
-          "symbol": "tbl$11",
+          "symbol": "tbl$36",
           "section": "bss",
           "address": "0229b010",
           "size": 48,
@@ -3827,7 +3827,7 @@
       "rom_sha256": "d2b85664be07569c84dfc76cdbde56ffccf4c5fad01afb600ef0d0ce8f2412b0",
       "statics": {
         "inited": {
-          "symbol": "inited$6",
+          "symbol": "inited$177",
           "section": "bss",
           "address": "0229afa0",
           "size": 4,
@@ -3836,7 +3836,7 @@
           ]
         },
         "table": {
-          "symbol": "table$7",
+          "symbol": "table$178",
           "section": "bss",
           "address": "0229afac",
           "size": 16,

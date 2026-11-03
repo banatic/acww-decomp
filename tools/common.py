@@ -511,6 +511,34 @@ def key_path(key: str) -> pathlib.Path:
     return found.path
 
 
+def unit_keys(key: str, among) -> list[str]:
+    """The keys of the functions the file of `key` defines that are in `among` (a table's keys),
+    `key` always among them: what native.source_copy gives a table for the file's text."""
+    keys = [function_key(src) for src in parse_sources(key_path(key))]
+    return [k for k in keys if k == key or k in among]
+
+
+def function_alone(text: str, key: str) -> str:
+    """`text` (a copy of the file of `key`) without the definitions of the file's other
+    functions: the function as a file of one function, for a test fixture that runs it alone
+    and does not define what the unit's other functions use."""
+    for src in parse_sources(key_path(key)):
+        if function_key(src) != key:
+            span = function_span(text, src.name)
+            if span is None:
+                raise ValueError(f"{key}: no definition of {src.name} in the copy")
+            text = text[:span[0]] + text[span[1]:]
+    return text
+
+
+def source_of(key: str) -> Source:
+    """The function `key` itself (function_source), not the first function of its file."""
+    found = function_source(key)
+    if found is None:
+        raise FileNotFoundError(f"no source defines {key}")
+    return found
+
+
 def undeclared_uses(body: str, names: list[str]) -> list[str]:
     """The unit functions `body` names before declaring them. A unit lists its functions last
     address first, so a function often calls one defined below it: that needs a prototype above

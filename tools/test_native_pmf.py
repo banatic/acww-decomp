@@ -45,13 +45,14 @@ def main() -> None:
     check_rom_subset()
     for relative in native_pmf.paths():
         source = (C.key_path(relative)).read_text()
-        result = native_pmf.translate(relative, source, {})
+        unit = C.unit_keys(relative, native_pmf.paths())
+        result = native_pmf.translate(unit, source, {})
         assert result is not None
         if relative in native_pmf.VERIFIED:
             _, before, after, _ = native_pmf.VERIFIED[relative]
             assert before not in result and after in result
         try:
-            native_pmf.translate(relative, C.function_changed(source, relative.partition('/')[2]), {})
+            native_pmf.translate(unit, C.function_changed(source, relative.partition('/')[2]), {})
         except ValueError:
             pass
         else:
@@ -71,9 +72,11 @@ def main() -> None:
         # Compile the exact audited game copy independently of the game's object
         # cache, so this check can run while an existing scene gate is active.
         source = C.key_path(relative)
-        copied = folder / source.name
+        # named for the function: a unit's file holds others, and the null check links by name
+        copied = folder / (relative.partition('/')[2] + source.suffix)
         headers = {}
-        copied.write_text(native_pmf.translate(relative, source.read_text(), headers), newline='\n')
+        copied.write_text(native_pmf.translate(C.unit_keys(relative, native_pmf.paths()),
+                                               source.read_text(), headers), newline='\n')
         header_root = folder / 'headers' / source.relative_to(C.SRC).with_suffix('')
         for name, text in headers.items():
             destination = header_root / name

@@ -29,7 +29,8 @@ def pc_copy(relative: str, specs: dict | None = None) -> str:
     source = (C.key_path(relative)).read_bytes().decode()
     text = source
     if relative in boundary.specifications():
-        text = boundary.checked_copy(relative, source, C.ROOT, C.modules(), C.module_image)[0]
+        unit = C.unit_keys(relative, boundary.specifications())
+        text = boundary.checked_copy(unit, source, C.ROOT, C.modules(), C.module_image)[0]
     return statics.translate(relative, source, text, specs=specs)
 
 
@@ -179,18 +180,20 @@ def fixture(relatives: list[str], baseline: bool = False) -> list[str]:
     symbols = C.SymbolTable(modules)
     for relative in relatives:
         path = C.key_path(relative)
-        parsed = C.parse_source(path)
+        parsed = C.source_of(relative)
         spec = statics.specifications()[relative]
         work = folder / relative.replace('/', '_').rsplit('.', 1)[0]
         work.mkdir(exist_ok=True)
         source = path.read_bytes().decode()
         headers = {}
         if relative in boundary.specifications():
-            text, headers = boundary.checked_copy(relative, source, C.ROOT, modules, C.module_image)
+            text, headers = boundary.checked_copy(C.unit_keys(relative, boundary.specifications()), source,
+                                                  C.ROOT, modules, C.module_image)
         else:
             text = source
         if not baseline:
             text = statics.translate(relative, source, text)
+        text = C.function_alone(text, relative)  # the owner runs alone; a unit's others are not placed
         body = work / ('body' + path.suffix)
         body.write_text(f'#line 1 "{path.as_posix()}"\n{text}', newline='\n')
         header_root = work / 'headers'

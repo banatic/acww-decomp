@@ -147,14 +147,15 @@ class BoundaryCopy(unittest.TestCase):
         headers = 0
         for relative in specs:
             original = (C.key_path(relative)).read_bytes().decode()
-            translated, copies = boundary.checked_copy(relative, original, C.ROOT, C.modules(),
+            unit = C.unit_keys(relative, specs)
+            translated, copies = boundary.checked_copy(unit, original, C.ROOT, C.modules(),
                                                        C.module_image, specs=specs)
             self.assertNotIn('::*', translated)
             if not copies:
                 self.assertNotEqual(original, translated)
             headers += bool(copies)
             with self.assertRaisesRegex(ValueError, 'source changed'):
-                boundary.checked_copy(relative, C.function_changed(original, relative.partition('/')[2]), C.ROOT, C.modules(), C.module_image, specs=specs)
+                boundary.checked_copy(unit, C.function_changed(original, relative.partition('/')[2]), C.ROOT, C.modules(), C.module_image, specs=specs)
         self.assertEqual(headers, 3)
 
     def test_body_header_and_literal_changes_are_rejected(self):
