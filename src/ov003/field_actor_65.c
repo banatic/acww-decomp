@@ -1,6 +1,12 @@
-/* func_ov003_02216124 @ 0x02216124, 0x36 bytes, Thumb, module ov003
+/* field_actor_65: 2 functions, module ov003
  * mwccarm 1.2/base -O4,s
+ * func_ov003_02216124 @ 0x02216124, 0x36 bytes, Thumb
+ * func_ov003_0221611c @ 0x0221611c, 0x6 bytes, Thumb
  */
+
+typedef struct {
+    unsigned char unk_00;
+} UnkStruct_0221611c;
 
 extern unsigned int func_0200e92c(char *buf);
 extern void func_0200e90c(char *buf, int size, const char *fmt, int arg);
@@ -17,4 +23,9 @@ int func_ov003_02216124(int a, const char *fmt, int arg)
     res = func_0200e894(a, buf);
     func_0200e91c(buf);
     return res;
+}
+
+void func_ov003_0221611c(UnkStruct_0221611c *p)
+{
+    p->unk_00 = 0;
 }

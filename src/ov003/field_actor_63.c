@@ -1,14 +1,8 @@
-/* func_ov003_02212afc @ 0x02212afc, 0xdc bytes, Thumb, module ov003
+/* field_actor_63: 2 functions, module ov003
  * mwccarm 1.2/base -O4,s
+ * func_ov003_02212afc @ 0x02212afc, 0xdc bytes, Thumb
+ * func_ov003_02212ac0 @ 0x02212ac0, 0x3c bytes, Thumb
  */
-
-extern void func_ov003_02212bec(void *p, unsigned char a, unsigned char b, int c);
-extern void func_020109a0(void *self, int b, int c, unsigned short d);
-extern void func_0204f794(int *out, int a, int b);
-extern void func_0200fa1c(void *out, void *self, void *a, void *b, int *acc);
-extern void func_0204f7e0(void *a, void *b);
-extern int func_020e8ed8(int a, int b);
-extern void func_ov003_02212bf4(void *q, void *v, int d, int k);
 
 typedef struct {
     int x, y, z;
@@ -35,6 +29,16 @@ typedef struct {
     char pad_00[0xc];
     unsigned char b0, b1, b2;
 } UnkStruct_02212afc;
+
+extern void func_ov003_02212bec(void *p, unsigned char a, unsigned char b, int c);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
+extern void func_0204f794(int *out, int a, int b);
+extern void func_0200fa1c(void *out, void *self, void *a, void *b, int *acc);
+extern void func_0204f7e0(void *a, void *b);
+extern int func_020e8ed8(int a, int b);
+extern void func_ov003_02212bf4(void *q, void *v, int d, int k);
+extern void func_ov003_02212bd8(void *, char *, char *, char *);
+extern int func_ov003_02212c10(void *, char *, char *, char *, int, int);
 
 void func_ov003_02212afc(UnkStruct_02212afc_2 *self, UnkStruct_02212afc *a, int previous)
 {
@@ -75,4 +79,11 @@ void func_ov003_02212afc(UnkStruct_02212afc_2 *self, UnkStruct_02212afc *a, int 
     cp.y = out.y;
     cp.z = out.z;
     func_ov003_02212bf4(q, &cp, r, d);
+}
+
+void func_ov003_02212ac0(void *p, int n)
+{
+    char buf[3];
+    func_ov003_02212bd8((char *) p + 0x8f0, buf, buf + 1, buf + 2);
+    func_ov003_02212c10(p, buf, buf + 1, buf + 2, 6, n);
 }
