@@ -177,6 +177,20 @@ class Settle(unittest.TestCase):
                                                  "void func_ov097_022a2910(int *d)\n{\n    func_ov097_022a2900(d, 1);\n}\n")])
         self.assertIn("takes Pair, its file said int", str(e.exception))
 
+    def test_runs_end_at_a_gap(self):
+        # 0x022a2920-0x022a2930 is code no source defines: the run ends before it
+        with tempfile.TemporaryDirectory() as d:
+            (pathlib.Path(d) / "ov097").mkdir()
+            for address in (0x022a2900, 0x022a2910, 0x022a2930, 0x022a2940):
+                name, text = one(address, f"int func_ov097_{address:08x}(void)\n{{\n    return 0;\n}}\n")
+                (pathlib.Path(d) / "ov097" / name).write_text(text, newline="\n")
+            old, C.SRC = C.SRC, pathlib.Path(d)
+            try:
+                found = [[s.address for s in r] for r in regroup.runs("ov097")]
+            finally:
+                C.SRC = old
+        self.assertEqual(found, [[0x022a2900, 0x022a2910], [0x022a2930, 0x022a2940]])
+
     def test_types_renamed_in_c(self):
         # a type of one name defined two ways: the later file's (the lower address) is renamed
         text, _ = self.settle([

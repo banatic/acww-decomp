@@ -843,13 +843,16 @@ def clean_files(module: str) -> dict[str, str]:
 
 def runs(module: str) -> list[list[C.Source]]:
     """Runs of address-adjacent sources of one function compiled alike: a unit, or a change of
-    compiler, options, ISA or language, ends one."""
+    compiler, options, ISA or language, ends one, and so do bytes between two functions beyond
+    the padding to a word (code no source defines, such as a second entry point: tools/link.py
+    takes a unit's functions as one piece and would find a hole in it)."""
     srcs = sorted((s for p in (C.SRC / module).glob("*.c*") for s in C.parse_sources(p)), key=lambda s: s.address)
     out: list[list[C.Source]] = []
     prev = None
     for s in srcs:
         kind = (s.drop, s.opt, s.thumb, s.lang, s.path.stem == s.name)
-        if out and kind == prev and kind[4]:
+        last = out[-1][-1] if out else None
+        if out and kind == prev and kind[4] and s.address <= (last.address + last.size + 3) & ~3:
             out[-1].append(s)
         else:
             out.append([s])
