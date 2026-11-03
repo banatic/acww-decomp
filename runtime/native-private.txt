@@ -28,8 +28,8 @@ main/func_0206cd40 .data 020dedac 020dedb4
 main/func_0209ca6c .bss 021dc588 021dc58c
 main/func_0209ca6c .bss 021dc5a0 021dc5b0
 main/func_020a7aa8 .data 020e3cfc 020e3d04
-main/func_020ab71c .data 020e40a4 020e40a8
-main/func_020ab71c .data 020e40a8 020e40c1
+main/func_020ab790 .data 020e40a4 020e40a8
+main/func_020ab790 .data 020e40a8 020e40c1
 main/func_020c3b1c .data 020e7f68 020e7f70
 main/func_020c3b1c .bss 021fbd7c 021fbd80
 main/func_020c3b1c .bss 021fbd88 021fbd90
