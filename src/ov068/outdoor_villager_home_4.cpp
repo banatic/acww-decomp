@@ -1,0 +1,116 @@
+/* outdoor_villager_home_4: 2 functions, module ov068
+ * mwccarm 1.2/base -O4,s
+ * func_ov068_0226b904 @ 0x0226b904, 0x78 bytes, Thumb
+ * func_ov068_0226b88c @ 0x0226b88c, 0x78 bytes, Thumb
+ */
+
+extern "C" int func_02019e00(void *ptr);
+extern "C" int func_02019de8(void *ptr);
+extern "C" int func_0207f294(int obj);
+extern "C" int func_ov003_02220340(int index);
+extern "C" int func_020800d0(int obj);
+extern "C" int func_02019c20(void *ptr, int a, int b, int c, int d, int e);
+extern unsigned short data_020c80f8;
+
+class UnkStruct_0226b904 {
+  public:
+    virtual void v0();
+    virtual void v1();
+    virtual void v2();
+    virtual void v3();
+    virtual void v4();
+    virtual void v5();
+    virtual void v6();
+    virtual void v7();
+    virtual void v8();
+    virtual void v9();
+    virtual void v10();
+    virtual void v11();
+    virtual void v12();
+    virtual void v13();
+    virtual void v14();
+    virtual void v15();
+    virtual void v16();
+    virtual void v17();
+    virtual void v18();
+    virtual void v19();
+    virtual void v20();
+    virtual void v21();
+    virtual void v22();
+    virtual void v23();
+    virtual void v24();
+    virtual void *v25();
+
+    unsigned char pad_04[0x50D];
+    unsigned char unk_511;
+    unsigned char pad_512[0x52];
+    char unk_564;
+};
+
+typedef struct StateStruct {
+    unsigned char pad_00[0x1C];
+    unsigned char unk_1C;
+} StateStruct;
+
+class UnkStruct_0226b88c {
+  public:
+    virtual void v0();
+    virtual void v1();
+    virtual void v2();
+    virtual void v3();
+    virtual void v4();
+    virtual void v5();
+    virtual void v6();
+    virtual void v7();
+    virtual void v8();
+    virtual void v9();
+    virtual void v10();
+    virtual void v11();
+    virtual void v12();
+    virtual void v13();
+    virtual void v14();
+    virtual void v15();
+    virtual void v16();
+    virtual void v17();
+    virtual void v18();
+    virtual void v19();
+    virtual void v20();
+    virtual void v21();
+    virtual void v22();
+    virtual void v23();
+    virtual void v24();
+    virtual int v25();
+};
+
+typedef struct {
+    unsigned char pad_00[0x1c];
+    unsigned char flag;
+} UnkStruct_0226b88c_2;
+
+extern "C" void func_ov068_0226b904(StateStruct *param1, UnkStruct_0226b904 *param2)
+{
+    if (func_02019e00(&param2->unk_564) == 3) {
+        if (func_02019de8(&param2->unk_564) != 0) {
+            if (func_ov003_02220340(func_0207f294((int) param2->v25())) != 0) {
+                func_020800d0((int) param2->v25());
+                func_02019c20(&param2->unk_564, 2, 0x3b, 1, data_020c80f8, 0);
+                param2->unk_511 = 0;
+                param1->unk_1C = 2;
+            }
+        }
+    }
+}
+
+extern "C" void func_ov068_0226b88c(UnkStruct_0226b88c_2 *out, UnkStruct_0226b88c *obj)
+{
+    if (func_02019e00((char *) obj + 0x564) == 1) {
+        if (func_02019de8((char *) obj + 0x564) != 0) {
+            if (func_ov003_02220340(func_0207f294(obj->v25())) != 0) {
+                func_020800d0(obj->v25());
+                func_02019c20((char *) obj + 0x564, 2, 0x3b, 1, data_020c80f8, 0);
+                *((unsigned char *) obj + 0x511) = 0;
+                out->flag = 2;
+            }
+        }
+    }
+}
