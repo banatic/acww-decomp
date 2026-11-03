@@ -41,11 +41,15 @@ class StaticsCopy(unittest.TestCase):
         self.assertEqual(sum(len(e['statics']) for e in specs.values()), 168)
         for relative, spec in specs.items():
             text = pc_copy(relative)
+            # in a unit another function may have a static of the same name: the function's
+            # own definition names the DS storage and nothing of its own
+            span = C.function_span(text, relative.partition('/')[2])
+            own = text[span[0]:span[1]] if span and len(C.parse_sources(C.key_path(relative))) > 1 else text
             for name, item in spec['statics'].items():
-                self.assertIn(f'#define {name} (*(', text)
-                self.assertIn(f' 0x{item["address"]}u)\n', text)
+                self.assertIn(f'#define {name} (*(', own)
+                self.assertIn(f' 0x{item["address"]}u)\n', own)
                 self.assertIn(f'#undef {name}\n', text)
-                self.assertIsNone(re.search(r'\bstatic\s[^;{}()]*\b' + name + r'\s*[\[=;]', statics.masked(text)),
+                self.assertIsNone(re.search(r'\bstatic\s[^;{}()]*\b' + name + r'\s*[\[=;]', statics.masked(own)),
                                   relative)
                 if 'guard' in item:
                     self.assertIn(f'(unsigned int *) 0x{item["guard"]}u;', text)
