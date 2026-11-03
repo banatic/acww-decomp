@@ -1,5 +1,8 @@
 /* The Native run: dispatch between Native and Reference code, the crossing trace that gives
  * Native code the Reference's timing, and the memory hashes. See native_run.h. */
+/* 64-bit file offsets (fseeko): a long scene's crossing trace may pass 2 GB */
+#define _FILE_OFFSET_BITS 64
+
 #include "native_run.h"
 
 #include <stdlib.h>
@@ -591,17 +594,50 @@ typedef struct Record {
     uint32_t steps_lo, steps_hi;
     uint32_t check;
     uint32_t args[4]; /* r0-r3 at the crossing */
-    uint32_t next;    /* replay: the stream's next record (index + 1) */
 } Record;
+_Static_assert(sizeof(Record) == 4 * RECORD_WORDS, "a Record is one record of the trace");
 
 static FILE *record_out;
-static Record *records;
 static uint32_t record_count;
+
+/* Replay: a stream's records, read from the trace as the run meets them (a long scene's trace
+ * does not fit in the 32-bit process). The trace is read in blocks of REPLAY_BLOCK records; a
+ * stream reads the blocks that hold its records, in order, into a window of its own. */
+#define REPLAY_BLOCK (1u << 13)
+/* the CROSS_ARGUMENTS records after one call: (ARG_WORDS - 4) words, three a record */
+#define MAX_ATTACHED 4
+typedef struct Reader {
+    uint32_t *blocks; /* the blocks that hold the stream's records, in order */
+    uint32_t block_count, block_next, block_capacity;
+    Record *window;      /* REPLAY_BLOCK + MAX_ATTACHED records */
+    uint32_t length, at; /* records in the window; the stream's next record there (== length: none) */
+    uint32_t left;       /* the stream's crossings not yet met */
+} Reader;
+
+static FILE *replay_file;
+
+/* where a trace file is read (64-bit offsets on both hosts) */
+static int trace_seek(FILE *f, long long offset, int whence)
+{
+#ifdef _WIN32
+    return _fseeki64(f, offset, whence);
+#else
+    return fseeko(f, (off_t) offset, whence);
+#endif
+}
+
+static long long trace_tell(FILE *f)
+{
+#ifdef _WIN32
+    return _ftelli64(f);
+#else
+    return (long long) ftello(f);
+#endif
+}
 
 typedef struct Stream {
     uint32_t key;
-    uint32_t next; /* replay: index + 1 of the record to meet next, 0 at the end */
-    uint32_t last; /* replay: while loading, the last record so far */
+    Reader *reader; /* replay: the stream's records (NULL: none) */
     uint64_t seen;
     /* record: the shadow call stack of crossings still open */
     struct Frame {
@@ -1069,96 +1105,164 @@ static uint32_t narrow_result(const Fn *f, uint32_t r0, uint32_t r1)
     }
 }
 
+/* The CROSS_ARGUMENTS records that follow a call's record (write_record). */
+static unsigned attached_records(const Record *r)
+{
+    unsigned count = (r->kind == CROSS_CALL || r->kind == CROSS_CALL_OUT) ? contract_words(contract_at(r->function)) : 0;
+    return count > 4 ? (count - 4 + 2) / 3 : 0;
+}
+_Static_assert((ARG_WORDS - 4 + 2) / 3 <= MAX_ATTACHED, "a call's argument records fit in a window");
+
+/* The next block of the stream's records after what is left of its window from its next
+ * record on; 0 when it has read them all. */
+static int reader_more(Reader *q)
+{
+    uint32_t keep = q->length - q->at;
+    memmove(q->window, q->window + q->at, (size_t) keep * sizeof(Record));
+    q->at = 0;
+    q->length = keep;
+    if (q->block_next == q->block_count) {
+        return 0;
+    }
+    uint32_t block = q->blocks[q->block_next++];
+    uint32_t count = record_count - block * REPLAY_BLOCK < REPLAY_BLOCK ? record_count - block * REPLAY_BLOCK : REPLAY_BLOCK;
+    if (trace_seek(replay_file, (long long) block * REPLAY_BLOCK * sizeof(Record), SEEK_SET) != 0 ||
+        fread(q->window + q->length, sizeof(Record), count, replay_file) != count) {
+        fprintf(stderr, "native: cannot read the trace's block %u\n", block);
+        exit(7);
+    }
+    q->length += count;
+    return 1;
+}
+
+/* The window from the stream's next record on: the record and its argument records in it. */
+static void reader_settle(Stream *s)
+{
+    Reader *q = s->reader;
+    for (;;) {
+        while (q->at < q->length && (q->window[q->at].stream != s->key || q->window[q->at].kind == CROSS_ARGUMENTS)) {
+            q->at++;
+        }
+        if (q->at < q->length && q->at + attached_records(&q->window[q->at]) < q->length) {
+            return;
+        }
+        if (!reader_more(q)) {
+            q->at = q->length; /* (load_replay found every call's argument records) */
+            return;
+        }
+    }
+}
+
+/* The stream's next record in the Reference's trace, or NULL after its last. Valid until the
+ * stream moves on (replay_advance). */
+static Record *replay_record(Stream *s)
+{
+    Reader *q = s->reader;
+    return q != NULL && q->at < q->length ? &q->window[q->at] : NULL;
+}
+
+/* The stream past its next record. */
+static void replay_advance(Stream *s)
+{
+    Reader *q = s->reader;
+    q->at++;
+    q->left--;
+    reader_settle(s);
+}
+
 static int load_replay(const char *path)
 {
-    FILE *f = fopen(path, "rb");
-    if (f == NULL) {
+    replay_file = fopen(path, "rb");
+    if (replay_file == NULL) {
         return -1;
     }
-    fseek(f, 0, SEEK_END);
-    long size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    if (size < 0 || size % (4 * RECORD_WORDS) != 0) {
-        fclose(f);
+    long long size = trace_seek(replay_file, 0, SEEK_END) == 0 ? trace_tell(replay_file) : -1;
+    if (size < 0 || size % (long long) sizeof(Record) != 0 || size / (long long) sizeof(Record) >= UINT32_MAX ||
+        trace_seek(replay_file, 0, SEEK_SET) != 0) {
         return -1;
     }
-    uint32_t n = (uint32_t) (size / (4 * RECORD_WORDS));
-    /* read a block of records at a time: a long scene's trace does not fit in the 32-bit
-     * process twice */
-    enum { LOAD_BLOCK = 1 << 16 };
-    uint32_t *raw = malloc((size_t) LOAD_BLOCK * 4 * RECORD_WORDS);
-    records = malloc((size_t) n * sizeof(Record) + 1);
-    if (raw == NULL || records == NULL) {
-        free(raw);
-        free(records);
-        records = NULL;
-        fclose(f);
+    uint32_t n = (uint32_t) (size / sizeof(Record));
+    record_count = n;
+    Record *block = malloc((size_t) REPLAY_BLOCK * sizeof(Record));
+    if (block == NULL) {
         return -1;
     }
-    for (uint32_t at = 0; at < n;) {
-        uint32_t count = n - at < LOAD_BLOCK ? n - at : LOAD_BLOCK;
-        if (fread(raw, 4 * RECORD_WORDS, count, f) != count) {
-            free(raw);
-            free(records);
-            records = NULL;
-            fclose(f);
-            return -1;
-        }
-        for (uint32_t i = 0; i < count; i++) {
-            Record *r = &records[at + i];
-            memcpy(r, raw + RECORD_WORDS * i, 4 * RECORD_WORDS);
-            r->next = 0;
-        }
-        at += count;
-    }
-    fclose(f);
     /* Argument records must immediately follow their exact physical parent.
      * An IRQ/thread event cannot fill a hole, and all unused payload is zero. */
-    for (uint32_t i = 0; i < n; i++) {
-        Record *r = &records[i];
-        if (r->kind >= CROSS_ARGUMENTS) {
-            goto malformed;
+    Record parent = {0};
+    uint32_t parent_index = 0; /* one-based */
+    unsigned first = 0, count = 0;
+    for (uint32_t at = 0; at < n; at += REPLAY_BLOCK) {
+        uint32_t got = n - at < REPLAY_BLOCK ? n - at : REPLAY_BLOCK;
+        if (fread(block, sizeof(Record), got, replay_file) != got) {
+            free(block);
+            return -1;
         }
-        unsigned count = (r->kind == CROSS_CALL || r->kind == CROSS_CALL_OUT) ? contract_words(contract_at(r->function)) : 0;
-        uint32_t parent = i + 1;
-        for (unsigned first = 4; first < count; first += 3) {
-            if (++i >= n) {
-                goto malformed;
-            }
-            Record *extra = &records[i];
-            unsigned words = count - first < 3 ? count - first : 3;
-            if (extra->kind != CROSS_ARGUMENTS || extra->stream != r->stream || extra->function != r->function ||
-                extra->steps_lo != parent || extra->steps_hi != r->kind || extra->check != first || extra->args[0] != words) {
-                goto malformed;
-            }
-            for (unsigned word = words; word < 3; word++) {
-                if (extra->args[1 + word] != 0) {
+        for (uint32_t i = 0; i < got; i++) {
+            const Record *r = &block[i];
+            if (first < count) {
+                unsigned words = count - first < 3 ? count - first : 3;
+                if (r->kind != CROSS_ARGUMENTS || r->stream != parent.stream || r->function != parent.function ||
+                    r->steps_lo != parent_index || r->steps_hi != parent.kind || r->check != first || r->args[0] != words) {
                     goto malformed;
                 }
+                for (unsigned word = words; word < 3; word++) {
+                    if (r->args[1 + word] != 0) {
+                        goto malformed;
+                    }
+                }
+                first += 3;
+            } else {
+                if (r->kind >= CROSS_ARGUMENTS) {
+                    goto malformed;
+                }
+                parent = *r;
+                parent_index = at + i + 1;
+                count = (r->kind == CROSS_CALL || r->kind == CROSS_CALL_OUT) ? contract_words(contract_at(r->function)) : 0;
+                first = 4;
+            }
+            Stream *s = stream_for(r->stream);
+            if (s->reader == NULL) {
+                s->reader = calloc(1, sizeof(Reader));
+                if (s->reader == NULL) {
+                    free(block);
+                    return -1;
+                }
+            }
+            Reader *q = s->reader;
+            q->left += r->kind != CROSS_ARGUMENTS;
+            uint32_t b = at / REPLAY_BLOCK;
+            if (q->block_count == 0 || q->blocks[q->block_count - 1] != b) {
+                if (q->block_count == q->block_capacity) {
+                    q->block_capacity = q->block_capacity ? q->block_capacity * 2 : 64;
+                    q->blocks = realloc(q->blocks, (size_t) q->block_capacity * sizeof(*q->blocks));
+                    if (q->blocks == NULL) {
+                        free(block);
+                        return -1;
+                    }
+                }
+                q->blocks[q->block_count++] = b;
             }
         }
     }
-    for (uint32_t i = 0; i < n; i++) {
-        Record *r = &records[i];
-        if (r->kind == CROSS_ARGUMENTS) {
-            continue;
-        }
-        Stream *s = stream_for(r->stream);
-        if (s->last) {
-            records[s->last - 1].next = i + 1;
-        } else {
-            s->next = i + 1;
-        }
-        s->last = i + 1;
+    if (first < count) {
+        goto malformed;
     }
-    free(raw);
-    record_count = n;
+    free(block);
+    for (int i = 0; i < stream_count; i++) {
+        Reader *q = streams[i].reader;
+        if (q != NULL) {
+            q->window = malloc((size_t) (REPLAY_BLOCK + MAX_ATTACHED) * sizeof(Record));
+            if (q->window == NULL) {
+                return -1;
+            }
+            reader_settle(&streams[i]);
+        }
+    }
     return 0;
 malformed:
     fprintf(stderr, "native: malformed audited argument records\n");
-    free(raw);
-    free(records);
-    records = NULL;
+    free(block);
     record_count = 0;
     return -1;
 }
@@ -1472,7 +1576,7 @@ static void report_divergence(Stream *s, const Record *r, uint32_t kind, uint32_
 {
     uint32_t left = 0;
     for (int i = 0; i < stream_count; i++) {
-        left += streams[i].next != 0;
+        left += replay_record(&streams[i]) != NULL;
     }
     if (r == NULL && left == 0) {
         /* every stream's record is used up: the Reference run stopped here (its last frame),
@@ -1518,7 +1622,7 @@ static unsigned long long debug_from;
 /* A call from Native code into the ROM's code: the arguments it declares must be the
  * Reference's, except where the Native run passes a PC address (a variable on the host stack,
  * a string) and the Reference one on its stack (r->check is its stack pointer then). */
-static void check_arguments(const Record *r, uint32_t function)
+static void check_arguments(const Record *r, unsigned attached, uint32_t function)
 {
     Fn *f = loaded_at(function);
     if (f == NULL && contract_at(function) != NULL) {
@@ -1527,11 +1631,8 @@ static void check_arguments(const Record *r, uint32_t function)
     }
     unsigned words = contract_words(f);
     if (words) {
-        uintptr_t start = (uintptr_t) records, current = (uintptr_t) r;
         unsigned extra = words > 4 ? (words - 4 + 2) / 3 : 0;
-        if ((r->kind != CROSS_CALL && r->kind != CROSS_CALL_OUT) || r->function != (function & ~1u) ||
-            (extra && (records == NULL || current < start || (current - start) % sizeof(Record) != 0 ||
-                       (current - start) / sizeof(Record) + extra >= record_count))) {
+        if ((r->kind != CROSS_CALL && r->kind != CROSS_CALL_OUT) || r->function != (function & ~1u) || extra > attached) {
             fprintf(stderr, "native: ARGUMENT audited parent or attachment is unavailable\n");
             exit(7);
         }
@@ -1583,7 +1684,7 @@ static void crossing(uint32_t kind, uint32_t function, uint32_t check, uint32_t 
         return;
     }
     Stream *s = stream_for(key);
-    Record *r = s->next ? &records[s->next - 1] : NULL;
+    Record *r = replay_record(s);
     if (r != NULL && r->kind == CROSS_SNAPSHOT && kind == CROSS_CALL) {
         char hex[41];
         hash_memory(r->function, hex);
@@ -1591,8 +1692,8 @@ static void crossing(uint32_t kind, uint32_t function, uint32_t check, uint32_t 
         if (dump_dir != NULL) {
             compare_with_reference(r->function);
         }
-        s->next = r->next;
-        r = s->next ? &records[s->next - 1] : NULL;
+        replay_advance(s);
+        r = replay_record(s);
     }
     s->seen++;
     peek(s->key, s->seen);
@@ -1621,10 +1722,15 @@ static void crossing(uint32_t kind, uint32_t function, uint32_t check, uint32_t 
         diverged = 1;
         return;
     }
-    s->next = r->next;
+    /* the record and its argument records, kept as the stream moves on */
+    Record met[1 + MAX_ATTACHED];
+    unsigned attached = attached_records(r);
+    memcpy(met, r, (1 + attached) * sizeof(Record));
+    r = met;
+    replay_advance(s);
     replay_events++;
     if (kind == CROSS_CALL_OUT || (kind == CROSS_CALL && contract_at(r->function))) {
-        check_arguments(r, function == HOST_FUNCTION ? r->function : function);
+        check_arguments(r, attached, function == HOST_FUNCTION ? r->function : function);
     }
     if (r->check != check && kind != CROSS_CALL_OUT && function != HOST_FUNCTION) {
         /* Same function, other values: a Native that computes something else, or one that
@@ -1705,7 +1811,7 @@ static uint32_t replay_call_sp(uint32_t target)
         return 0;
     }
     Stream *s = stream_for(stream_key());
-    Record *r = s->next ? &records[s->next - 1] : NULL;
+    Record *r = replay_record(s);
     if (r == NULL || r->kind != CROSS_CALL_OUT || r->function != (target & ~1u)) {
         return 0;
     }
@@ -1834,7 +1940,7 @@ static uint64_t next_crossing_step(void)
         return 0;
     }
     Stream *s = stream_for(stream_key());
-    Record *r = s->next ? &records[s->next - 1] : NULL;
+    Record *r = replay_record(s);
     return r != NULL ? ((uint64_t) r->steps_hi << 32) | r->steps_lo : 0;
 }
 
@@ -1883,7 +1989,8 @@ static void publish_word(uint32_t pc, uint32_t *pointer, uint32_t value)
     }
     if (replaying && !diverged) {
         Stream *s = stream_for(stream_key());
-        Record *r = s->next ? &records[s->next - 1] : NULL;
+        Record *next = replay_record(s), met;
+        Record *r = next != NULL ? (met = *next, &met) : NULL; /* (the stream may move on while it idles) */
         if (r == NULL || r->kind != CROSS_PUBLISH || r->function != pc) {
             report_divergence(s, r, CROSS_PUBLISH, pc);
             if (!record_ended) {
@@ -2971,9 +3078,7 @@ void native_report(FILE *out)
     if (replaying) {
         uint32_t left = 0;
         for (int i = 0; i < stream_count; i++) {
-            for (uint32_t r = streams[i].next; r; r = records[r - 1].next) {
-                left++;
-            }
+            left += streams[i].reader != NULL ? streams[i].reader->left : 0;
         }
         fprintf(out,
                 "native: followed %llu of %u Reference crossings (%u left)%s; %llu with other values; %llu calls "

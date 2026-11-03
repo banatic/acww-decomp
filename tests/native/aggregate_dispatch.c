@@ -177,7 +177,7 @@ void aggregate_test_run_until_return(void)
     CHECK(agg_phase == 2);
     Record expected = {.kind = CROSS_CALL_OUT, .function = agg_active->address & ~1u};
     memcpy(expected.args, agg_arguments, sizeof(expected.args));
-    check_arguments(&expected, agg_active->address & ~1u);
+    check_arguments(&expected, 0, agg_active->address & ~1u);
     CHECK(arm_run(cpu, ARM_RETURN_ADDRESS, 10000) == ARM_RETURNED);
 }
 

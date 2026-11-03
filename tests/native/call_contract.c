@@ -217,19 +217,21 @@ int main(int argc, char **argv)
     memset(streams, 0, sizeof(streams));
     stream_count = 0;
     CHECK(load_replay(path) == 0);
-    CHECK(stream_count == 3 && stream_for(0)->next == 1);
-    CHECK(stream_for(STREAM_IRQ)->next == 2 + extra_count);
-    CHECK(stream_for(0x02200080)->next == 3 + extra_count);
-    CHECK(records[0].next == 0); /* Neither extra words nor IRQ records enter this chain. */
+    Record *first = replay_record(stream_for(0));
+    CHECK(stream_count == 3 && first != NULL && stream_for(0)->reader->at == 0);
+    CHECK(stream_for(STREAM_IRQ)->reader->at == 1 + extra_count);
+    CHECK(stream_for(0x02200080)->reader->at == 2 + extra_count);
+    CHECK(stream_for(0)->reader->left == 1); /* Neither extra words nor IRQ records are its crossings. */
+    CHECK(attached_records(first) == extra_count);
 
     if (strcmp(test, "unavailable-owner") == 0) {
         modules[0].resident = 0;
-        check_arguments(&records[0], address);
+        check_arguments(first, extra_count, address);
         CHECK(0);
     }
     if (strcmp(test, "detached-parent") == 0) {
-        Record detached = records[0];
-        check_arguments(&detached, address);
+        Record detached = *first;
+        check_arguments(&detached, 0, address);
         CHECK(0);
     }
 
@@ -271,10 +273,10 @@ int main(int argc, char **argv)
     if (kind == CROSS_CALL) {
         replaying = 1;
         crossing(kind, address, argument_hash(target), 0);
-        CHECK(stream_for(0)->next == 0 && stream_for(0)->seen == 1);
+        CHECK(replay_record(stream_for(0)) == NULL && stream_for(0)->seen == 1);
         CHECK(replay_events == 1 + extra_count);
     } else {
-        check_arguments(&records[0], address);
+        check_arguments(first, extra_count, address);
     }
     puts("Audited arguments agree");
     return 0;

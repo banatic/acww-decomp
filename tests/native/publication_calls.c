@@ -62,6 +62,7 @@ static ArmHook publication_hooks(void *user, uint32_t address, void **hook_user)
 }
 
 static Record event;
+static Reader event_reader; /* the replay's records: `event` (prepare) */
 
 static void verify_recording(uint32_t entry, uint32_t size, uint32_t pc, uint32_t address, uint16_t store)
 {
@@ -118,9 +119,9 @@ static void prepare(uint64_t now, uint64_t end, uint64_t at, int irq)
     cpu->hook_at = publication_hooks;
     memset(streams, 0, sizeof(streams));
     stream_count = 1;
-    streams[0].next = 1;
-    event = (Record){0, CROSS_PUBLISH, 0x020bb16e, (uint32_t) at, (uint32_t) (at >> 32), 1, {0x021f6f70, 4, 0, 0}, 0};
-    records = &event;
+    event = (Record){0, CROSS_PUBLISH, 0x020bb16e, (uint32_t) at, (uint32_t) (at >> 32), 1, {0x021f6f70, 4, 0, 0}};
+    event_reader = (Reader){.window = &event, .length = 1, .left = 1};
+    streams[0].reader = &event_reader;
     record_count = 1;
     running = replaying = 1;
     recording = diverged = record_ended = 0;
@@ -174,9 +175,9 @@ int main(int argc, char **argv)
         } else if (strcmp(argv[1], "destination") == 0) {
             address += 4;
         } else if (strcmp(argv[1], "missing") == 0) {
-            streams[0].next = 0;
+            streams[0].reader = NULL;
             streams[1].key = STREAM_IRQ;
-            streams[1].next = 1;
+            streams[1].reader = &event_reader;
             stream_count = 2;
         } else if (strcmp(argv[1], "late") == 0) {
             prepare(101, 512, 100, 0);
@@ -192,7 +193,7 @@ int main(int argc, char **argv)
             uint64_t at = 512u + (uint64_t) delta;
             prepare(512 - extent, 512, at, 0);
             native_publish_word(0x020bb16e, (uint32_t *) (uintptr_t) 0x021f6f70, 1);
-            CHECK(ds_word(0x021f6f70) == 1 && publications == 1 && streams[0].next == 0);
+            CHECK(ds_word(0x021f6f70) == 1 && publications == 1 && replay_record(&streams[0]) == NULL);
             CHECK(cpu->steps == at);
             CHECK(publication_advances() == (unsigned) (delta >= 0));
             CHECK(publication_old_seen() == publication_advances());
@@ -216,7 +217,7 @@ int main(int argc, char **argv)
         CHECK(*(uint16_t *) (uintptr_t) (0x021f6f74 + 0x180 + i * 2) == 0x4210);
     }
     event.check = 0;
-    streams[0].next = 1;
+    event_reader = (Reader){.window = &event, .length = 1, .left = 1};
     func_020bb090();
     CHECK(publications == 2 && ds_word(0x021f6f70) == 0);
     for (unsigned i = 0; i < 192; i++) {
@@ -225,16 +226,16 @@ int main(int argc, char **argv)
     /* HBlank samples a separate line-shift selector while the gradient is
      * still being calculated. Run both real compiled bodies around that IRQ. */
     prepare(500, 512, 520, 1);
-    Record sequence[2] = {{0, CROSS_PUBLISH, 0x020ba348, 505, 0, 0, {0x021f8acc, 4, 0, 0}, 2}, event};
-    records = sequence;
+    Record sequence[2] = {{0, CROSS_PUBLISH, 0x020ba348, 505, 0, 0, {0x021f8acc, 4, 0, 0}}, event};
+    event_reader = (Reader){.window = sequence, .length = 2, .left = 2};
     record_count = 2;
     CHECK(bus_write(0x021f8accu, 4, 1));
     irq_shift_expected = 0;
     shift_callbacks = 0;
     func_020ba340();
-    CHECK(publications == 1 && shift_callbacks == 1 && irq_visits == 1 && streams[0].next == 2);
+    CHECK(publications == 1 && shift_callbacks == 1 && irq_visits == 1 && replay_record(&streams[0]) == &sequence[1]);
     func_020bb090();
-    CHECK(publications == 2 && streams[0].next == 0 && ds_word(0x021f6f70u) == 1);
+    CHECK(publications == 2 && replay_record(&streams[0]) == NULL && ds_word(0x021f6f70u) == 1);
     puts("Publication preserves computed data, slice ordering, nested returns, IRQ waits and independent line shifts");
     return 0;
 }
