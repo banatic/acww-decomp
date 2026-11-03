@@ -345,7 +345,9 @@ static Fn *first_at(uint32_t address)
         if (!((bits >> (bit & 31)) & 1)) {
             return NULL;
         }
-        return &fns[entry_first[entry_rank[bit >> 5] + (uint32_t) __builtin_popcount(bits & ((1u << (bit & 31)) - 1))]];
+        if (entry_rank != NULL) { /* (load_policy built it; a test that fills entry_bits searches) */
+            return &fns[entry_first[entry_rank[bit >> 5] + (uint32_t) __builtin_popcount(bits & ((1u << (bit & 31)) - 1))]];
+        }
     }
     int lo = 0, hi = fn_count;
     while (lo < hi) {
@@ -855,7 +857,7 @@ static uint32_t stream_key(void)
 static Stream *stream_for(uint32_t key)
 {
     static Stream *last; /* (streams do not move) */
-    if (last != NULL && last->key == key) {
+    if (last != NULL && last - streams < stream_count && last->key == key) {
         return last;
     }
     for (int i = 0; i < stream_count; i++) {
