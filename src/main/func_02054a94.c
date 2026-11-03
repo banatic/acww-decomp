@@ -1,5 +1,0 @@
-/* func_02054a94 @ 0x02054a94, 0x2 bytes, Thumb, module main
- * mwccarm 1.2/base -O4,s
- */
-
-void func_02054a94(unsigned int index, unsigned int item) {}

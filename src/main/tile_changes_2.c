@@ -1,0 +1,272 @@
+/* tile_changes_2: 6 functions, module main
+ * mwccarm 1.2/base -O4,s
+ * func_0204629c @ 0x0204629c, 0x1f4 bytes, Thumb
+ * func_0204622c @ 0x0204622c, 0x70 bytes, Thumb
+ * func_02046224 @ 0x02046224, 0x8 bytes, Thumb
+ * func_020461e0 @ 0x020461e0, 0x44 bytes, Thumb
+ * func_02046194 @ 0x02046194, 0x4c bytes, Thumb
+ * func_02046154 @ 0x02046154, 0x3e bytes, Thumb
+ */
+
+typedef struct {
+    int x, y;
+} Pt2;
+
+typedef struct {
+    unsigned char k0 : 3;
+    unsigned char kind : 5;
+    unsigned char m0 : 2;
+    unsigned char m2 : 3;
+    unsigned char m5 : 2;
+    unsigned char m7 : 1;
+    signed char n0 : 2;
+    signed char n2 : 4;
+    signed char n6 : 2;
+    unsigned char pad_03[5];
+    unsigned short unk_08;
+    unsigned short unk_0A;
+} UnkStruct_0204629c;
+
+typedef struct {
+    unsigned char flag : 3;
+    unsigned char type : 5;
+    unsigned char unk_01;
+    unsigned char unk_02;
+    unsigned char pad_03[7];
+    unsigned short unk_0A;
+    unsigned short unk_0C;
+} UnkStruct_0204622c;
+
+struct UnkStruct_020461e0 {
+    unsigned char : 3;
+    unsigned char kind : 5;
+    unsigned char pad_01[7];
+    unsigned short unk_08;
+};
+
+struct Src {
+    int a;
+    int b;
+};
+
+typedef struct {
+    int a;
+    int b;
+} UnkStruct_02046154;
+
+typedef struct {
+    unsigned char lo : 3;
+    unsigned char field : 5;
+} UnkField;
+
+extern int func_020b6660(void);
+extern void *func_0204e414(void);
+extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
+extern void func_02045d98(int a);
+extern void func_02042c58(void *a, Pt2 *p, int d);
+extern void func_020464d4(UnkStruct_0204629c *p);
+extern void func_020465b0(UnkStruct_0204629c *p);
+extern unsigned char data_021c7c48;
+extern unsigned char data_021c7884[];
+extern int func_02046518(unsigned char *ptr, unsigned int arg1, unsigned short packed, unsigned int arg4, unsigned short a5,
+                         unsigned char a6, unsigned char a7, unsigned char a8, unsigned char a9, unsigned char a10,
+                         signed char a11);
+extern int func_02045cec(UnkStruct_02046154 *p, int flag);
+extern UnkField *func_02045bac(int id);
+extern void func_02045eec(int id);
+
+void func_0204629c(UnkStruct_0204629c *p)
+{
+    void *ctx;
+    int x, y;
+    int cx, cz;
+    int result;
+    unsigned short *o;
+    int h, g, f, e, d, c, b, a;
+    unsigned int v;
+    int dir;
+    Pt2 pt;
+
+    result = 0;
+    if (func_020b6660() == 0) {
+        goto end;
+    }
+    ctx = func_0204e414();
+    if (ctx == 0) {
+        goto end;
+    }
+    y = p->unk_08 & 0xff;
+    x = p->unk_08 >> 8;
+    cx = x >> 4;
+    cz = y >> 4;
+    o = func_0204f5e0(ctx, cx, cz, x - (cx << 4), y - (cz << 4), 0);
+    if (o == 0) {
+        goto end;
+    }
+    switch (p->kind) {
+        case 18:
+            func_02045d98(p->k0);
+        case 17:
+        case 19:
+        case 24:
+        case 26:
+            h = 1;
+            g = 1;
+            f = 1;
+            e = 1;
+            d = 1;
+            c = 1;
+            b = 1;
+            a = 0;
+            v = *o;
+            if (v <= 5) {
+                a = 1;
+            }
+            if (a == 0) {
+                if (!(v >= 6 && v <= 0xb)) {
+                    b = 0;
+                }
+            }
+            if (b == 0) {
+                if (!(v >= 0xc && v <= 0x11)) {
+                    c = 0;
+                }
+            }
+            if (c == 0) {
+                if (!((v >= 0x12 && v <= 0x19) || v == 0x1c)) {
+                    d = 0;
+                }
+            }
+            if (d == 0) {
+                if (!((v >= 0x8a && v <= 0x8f) || (v >= 0x90 && v <= 0x95) || (v >= 0x96 && v <= 0x9b) ||
+                      (v >= 0x9c && v <= 0xa3) || v == 0xa5)) {
+                    e = 0;
+                }
+            }
+            if (e == 0) {
+                if (v != 0x1a) {
+                    f = 0;
+                }
+            }
+            if (f == 0) {
+                if (v != 0xa4) {
+                    g = 0;
+                }
+            }
+            if (g == 0) {
+                if (v != 0x1d) {
+                    h = 0;
+                }
+            }
+            if (h == 0) {
+                if (!((v >= 0x26 && v <= 0x2a) || (v >= 0x5d && v <= 0x61) || (v >= 0x2f && v <= 0x56) ||
+                      (v >= 0x57 && v <= 0x5b) || (v >= 0x66 && v <= 0x68) || v == 0x69 || (v >= 0x6a && v <= 0x6c) ||
+                      v == 0x6d || (v >= 0xc8 && v <= 0xcf))) {
+                    if (p->m0 != 0) {
+                        result = 1;
+                    }
+                }
+            }
+            break;
+        case 6:
+        case 7:
+            if (p->m5 == 2) {
+                break;
+            }
+            dir = p->m0;
+            pt.x = x;
+            pt.y = y;
+            func_02042c58(&data_021c7c48, &pt, (dir + 1) & 3);
+            break;
+        case 10:
+            result = p->m0;
+            break;
+        case 25:
+            if (p->n2 >= 0) {
+                p->unk_0A = 0xfff1;
+            }
+            break;
+    }
+end:
+    p->m0 = (unsigned char) result;
+    func_020464d4(p);
+    func_020465b0(p);
+}
+
+void func_0204622c(UnkStruct_0204622c *p)
+{
+    switch (p->type) {
+        case 4:
+        case 22:
+        case 25:
+            func_020464d4((UnkStruct_0204629c *) p);
+            p->unk_01 |= 0x80;
+            p->unk_02 &= ~1;
+            break;
+        case 10:
+            func_020464d4((UnkStruct_0204629c *) p);
+            p->unk_01 |= 0x80;
+            p->unk_02 &= ~1;
+            p->unk_0A = p->unk_0C;
+            p->unk_01 = (p->unk_01 & ~3) | 1;
+            break;
+        default:
+            func_0204629c((UnkStruct_0204629c *) p);
+            break;
+    }
+}
+
+void func_02046224(unsigned char *argument0)
+{
+    func_020465b0((UnkStruct_0204629c *) ((unsigned char *) argument0));
+}
+
+void func_020461e0(struct UnkStruct_020461e0 *p)
+{
+    if (p->unk_08 == 0xffff) {
+        return;
+    }
+
+    switch (p->kind) {
+        case 4:
+        case 10:
+        case 22:
+        case 25:
+            func_020465b0((UnkStruct_0204629c *) p);
+            break;
+        default:
+            func_0204629c((UnkStruct_0204629c *) p);
+            break;
+    }
+}
+
+int func_02046194(unsigned int idx, unsigned int arg1, struct Src *src, unsigned int arg4, unsigned short a5, unsigned char a6,
+                  unsigned char a7, unsigned char a8, unsigned char a9, unsigned char a10, signed char a11)
+{
+    unsigned short packed;
+
+    ((unsigned char *) &packed)[1] = (unsigned char) src->a;
+    ((unsigned char *) &packed)[0] = (unsigned char) src->b;
+
+    return func_02046518(&data_021c7884[idx << 4], arg1, packed, arg4, a5, a6, a7, a8, a9, a10, a11);
+}
+
+int func_02046154(UnkStruct_02046154 *arg)
+{
+    UnkStruct_02046154 local;
+    int ret;
+    int result = 1;
+
+    local.a = arg->a;
+    local.b = arg->b;
+    ret = func_02045cec(&local, 0);
+    if (ret >= 0) {
+        UnkField *uf = func_02045bac(ret);
+        if (uf->field == 0x1A) {
+            func_02045eec(ret);
+        } else {
+            result = 0;
+        }
+    }
+    return result;
+}
