@@ -1,5 +1,7 @@
-/* func_ov004_0222b31c @ 0x0222b31c, 0xb8 bytes, Thumb, module ov004
+/* field_actor_place_states_11: 2 functions, module ov004
  * mwccarm 1.2/base -O4,s
+ * func_ov004_0222b31c @ 0x0222b31c, 0xb8 bytes, Thumb
+ * func_ov004_0222b2f0 @ 0x0222b2f0, 0x2c bytes, Thumb
  */
 
 struct UnkStruct_0222b31c {
@@ -7,6 +9,7 @@ struct UnkStruct_0222b31c {
     int b;
     int c;
 };
+
 extern int func_02073908(int a, int b);
 extern void func_020109a0(void *self, int a, int b, unsigned short d);
 extern void func_0200fa1c(struct UnkStruct_0222b31c *out, void *self, struct UnkStruct_0222b31c *in, unsigned short *p,
@@ -15,6 +18,9 @@ extern void func_ov004_0222b3e0(void *dst, int a, int c);
 extern void func_ov004_0222b3dc(void *dst, int b);
 extern int func_0200f328(void *self, int msg);
 extern int data_020ccf94;
+extern void func_ov004_0222b3d4(unsigned char *addr, unsigned char *out);
+extern int func_ov004_0222b3e8(unsigned char *addr, unsigned char v, int n, int arg2);
+
 void func_ov004_0222b31c(unsigned char *self, unsigned char *p, int previous)
 {
     unsigned char *w;
@@ -45,4 +51,11 @@ void func_ov004_0222b31c(unsigned char *self, unsigned char *p, int previous)
     func_ov004_0222b3e0(w, out.a, out.c);
     func_ov004_0222b3dc(self + 0x8f0, b);
     func_0200f328(self, 0x435);
+}
+
+void func_ov004_0222b2f0(unsigned char *base, int arg2)
+{
+    unsigned char val;
+    func_ov004_0222b3d4(base + 0x8f0, &val);
+    func_ov004_0222b3e8(base, val, 6, arg2);
 }

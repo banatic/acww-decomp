@@ -1,5 +1,7 @@
-/* func_ov004_02211c84 @ 0x02211c84, 0x250 bytes, Thumb, module ov004
+/* room_object_periodic_2: 2 functions, module ov004
  * mwccarm 1.2/base -O4,s
+ * func_ov004_02211c84 @ 0x02211c84, 0x250 bytes, Thumb
+ * func_ov004_02211c80 @ 0x02211c80, 0x4 bytes, Thumb
  */
 
 #include "types.h"
@@ -7,6 +9,7 @@
 #define B(o) (*(u8 *) (self + (o)))
 #define H(o) (*(u16 *) (self + (o)))
 #define W(o) (*(u32 *) (self + (o)))
+
 extern int func_ov004_0220fde0(char *);
 extern u16 func_ov004_0223a760(int);
 extern u16 data_ov004_0224fd38;
@@ -16,6 +19,7 @@ extern void func_ov004_022101e4(char *, int, int, int, int);
 extern int func_02056f28(void *, int);
 extern void *func_ov004_0220e220(void *);
 extern int func_ov004_0220d9ec(void *, int);
+
 int func_ov004_02211c84(char *self)
 {
     int kind = func_ov004_0223a760(func_ov004_0220fde0(self));
@@ -103,5 +107,10 @@ int func_ov004_02211c84(char *self)
                 break;
         }
     }
+    return 1;
+}
+
+int func_ov004_02211c80(void)
+{
     return 1;
 }
