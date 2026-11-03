@@ -155,6 +155,28 @@ class Settle(unittest.TestCase):
         self.assertIn("func_02000000(x) + (*(u16 *) data_02100000)", body)
         self.assertEqual(sorted(edited), ["func_ov097_022a2900", "func_ov097_022a2920"])
 
+    def test_struct_by_value(self):
+        # a struct passed by value that another file names otherwise: no cast converts one
+        # struct type to another, so the argument object is read as the unit's type
+        callee = one(0x022a2900, "typedef struct {\n    int a;\n    int b;\n} Pair;\n\n"
+                                 "void func_ov097_022a2900(int *d, Pair p)\n{\n    d[0] = p.a;\n}\n")
+        text, edited = self.settle([
+            callee,
+            one(0x022a2910, "struct S {\n    int a;\n    int b;\n};\nextern void func_ov097_022a2900(int *d, struct S p);\n"
+                            "extern struct S data_02100000;\n\nvoid func_ov097_022a2910(int *d, struct S *s)\n{\n"
+                            "    func_ov097_022a2900(d, *s);\n    func_ov097_022a2900(d, data_02100000);\n}\n"),
+        ])
+        self.assertIn("func_ov097_022a2900(d, *(Pair *) &(*s));", text)
+        self.assertIn("func_ov097_022a2900(d, *(Pair *) &data_02100000);", text)
+        self.assertEqual(edited, ["func_ov097_022a2910"])
+        self.assertEqual(regroup.aggregate_typedefs({"Pair": "typedef struct { int a; } Pair;",
+                                                     "PairP": "typedef struct { int a; } *PairP;",
+                                                     "Num": "typedef int Num;"}), {"Pair"})
+        with self.assertRaises(regroup.Refused) as e:
+            self.settle([callee, one(0x022a2910, "extern void func_ov097_022a2900(int *d, int p);\n\n"
+                                                 "void func_ov097_022a2910(int *d)\n{\n    func_ov097_022a2900(d, 1);\n}\n")])
+        self.assertIn("takes Pair, its file said int", str(e.exception))
+
     def test_types_renamed_in_c(self):
         # a type of one name defined two ways: the later file's (the lower address) is renamed
         text, _ = self.settle([

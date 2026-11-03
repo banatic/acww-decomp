@@ -18,7 +18,9 @@ Each file declared what it uses in its own way; in the unit every name is declar
   (non-const first), anything else as most files declared it (non-const first, then the first).
 - In C, where a function's own file declared a name differently, its calls cast each argument
   whose parameter differs, and the result to the type its file expected, and its uses of data
-  read the object as the type its file declared. In C++ every file must already agree.
+  read the object as the type its file declared. A struct passed by value under another name is
+  read as the unit's type (`*(Pair *) &arg`): no cast converts one struct type to another. In
+  C++ every file must already agree.
 - A unit function or datum named above its definition (a call to a lower address) gets a
   prototype above all the bodies, copied from its definition: gcc 14 and later refuse an
   implicit declaration even with -w, and tools/lint.py checks for it.
@@ -213,9 +215,30 @@ def _cast_before(before: str) -> bool:
     return False
 
 
-def rewrite(s: str, local: dict[str, Decl], chosen: dict[str, Decl], where: str) -> str:
+def by_value(t: str, aggregates: frozenset[str] | set[str]) -> bool:
+    """Whether the parameter type `t` is a struct or union passed by value; `aggregates` are the
+    typedef names the unit's files define as one."""
+    t = " ".join(re.sub(r"\b(?:const|volatile)\b", "", t).split())
+    return "*" not in t and "(" not in t and (re.match(r"(?:struct|union)\b", t) is not None or t in aggregates)
+
+
+def aggregate_typedefs(types: dict[str, str]) -> set[str]:
+    """The typedef names among `types` (name -> definition) that name a struct or union itself
+    (not a pointer to one)."""
+    out = set()
+    for tn, code in types.items():
+        if " " not in tn and re.match(r"typedef\s+(?:const\s+|volatile\s+)*(?:struct|union)\b", code) \
+                and re.search(r"[}\w]\s*\b" + re.escape(tn) + r"\s*;$", code) \
+                and not re.search(r"[*(]\s*" + re.escape(tn) + r"\b", code):
+            out.add(tn)
+    return out
+
+
+def rewrite(s: str, local: dict[str, Decl], chosen: dict[str, Decl], where: str,
+            aggregates: frozenset[str] | set[str] = frozenset()) -> str:
     """`s` (C) with its calls and its uses of data cast from the declarations its file made
-    (`local`) to the unit's (`chosen`)."""
+    (`local`) to the unit's (`chosen`); `aggregates` are the typedef names of structs and
+    unions (aggregate_typedefs)."""
     names = [n for n in local if n in chosen and not local[n].same(chosen[n])]
     if not names:
         return s
@@ -255,7 +278,7 @@ def rewrite(s: str, local: dict[str, Decl], chosen: dict[str, Decl], where: str)
                 i = m.end()
                 continue
             spans, close = call_args(s, k)
-            args = [rewrite(s[a:b], local, chosen, where).strip() for a, b in spans]
+            args = [rewrite(s[a:b], local, chosen, where, aggregates).strip() for a, b in spans]
             if args == [""]:
                 args = []
             new = []
@@ -264,6 +287,12 @@ def rewrite(s: str, local: dict[str, Decl], chosen: dict[str, Decl], where: str)
                 ct = ch.params[n] if n < len(ch.params) else None
                 if ct is None or ct == "..." or (lt is not None and norm(lt) == norm(ct)) or a == "0":
                     new.append(a)
+                elif lt is not None and (by_value(lt, aggregates) or by_value(ct, aggregates)):
+                    # a struct passed by value: no cast converts one struct type to another, so
+                    # the argument object is read as the unit's type
+                    if not (by_value(lt, aggregates) and by_value(ct, aggregates)):
+                        raise Refused(f"{where}: {name} takes {ct}, its file said {lt}")
+                    new.append(f"*({ct} *) &{a}" if simple(a) else f"*({ct} *) &({a})")
                 elif lt is not None and "*" not in lt + ct and "(" not in lt + ct:
                     # numbers: the conversion this file made, then the implicit one to the
                     # unit's parameter
@@ -587,6 +616,7 @@ def settle(module: str, unit: str, srcs: list[C.Source], pinned: set[str] | None
 
     # types
     types = {tn: _flat(it.code) for f in files for it in _all(f.pre) if it.kind == "type" for tn in it.names}
+    aggregates = aggregate_typedefs(types)
     need_types_h = False
     for f in files:
         for it in _all(f.pre):
@@ -664,7 +694,7 @@ def settle(module: str, unit: str, srcs: list[C.Source], pinned: set[str] | None
                         view[d.name] = d
                         code = code.replace(m.group(0), "", 1)
             if not cpp:
-                code = rewrite(code, view, chosen, f.src.name)
+                code = rewrite(code, view, chosen, f.src.name, aggregates)
             parts.append((f, it, code))
 
     # the top: includes, then macros, types and declarations (C), or the files' own order (C++)
