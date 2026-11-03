@@ -1760,7 +1760,7 @@
       "rom_sha256": "494e3ed2ad8a88946f06e780dc49448e24601fef8bd75775c1174c1c554b3045",
       "statics": {
         "tbl": {
-          "symbol": "tbl$10",
+          "symbol": "tbl$22",
           "section": "bss",
           "address": "02258250",
           "size": 32,
@@ -1783,7 +1783,7 @@
       "rom_sha256": "caae9019957997c4b0e8bca5c967be20844df675dad2f62f72f7bf283b1e7d8e",
       "statics": {
         "tbl": {
-          "symbol": "tbl$8",
+          "symbol": "tbl$26",
           "section": "bss",
           "address": "022582cc",
           "size": 32,
@@ -1806,7 +1806,7 @@
       "rom_sha256": "f20239f069a62261a095b2cade66e3a594f8d3504acef0fa8b84a5bdddadef74",
       "statics": {
         "tbl": {
-          "symbol": "tbl$6",
+          "symbol": "tbl$9",
           "section": "bss",
           "address": "022582ec",
           "size": 32,
@@ -1898,7 +1898,7 @@
       "rom_sha256": "0ae58a63563c2b5a06996955629bd7310dea24e0f42dbdcf69a8de3855ccf67f",
       "statics": {
         "tbl": {
-          "symbol": "tbl$9",
+          "symbol": "tbl$19",
           "section": "bss",
           "address": "02258524",
           "size": 48,
@@ -1921,7 +1921,7 @@
       "rom_sha256": "8a954866915d3d10e0143b1e99759b4cd514556354e9d7852b0f662112158b77",
       "statics": {
         "tbl": {
-          "symbol": "tbl$8",
+          "symbol": "tbl$30",
           "section": "bss",
           "address": "022584d4",
           "size": 32,
@@ -1944,7 +1944,7 @@
       "rom_sha256": "a079885b635bd0e1d59c7e9bbcc4e1062cabe30ab0247410d00afdd312872674",
       "statics": {
         "tbl": {
-          "symbol": "tbl$8",
+          "symbol": "tbl$11",
           "section": "bss",
           "address": "022584b4",
           "size": 32,
