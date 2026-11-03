@@ -1,0 +1,147 @@
+/* day_plan: 9 functions, module main
+ * mwccarm 1.2/base -O4,s
+ * func_02087168 @ 0x02087168, 0x2 bytes, Thumb
+ * func_02087164 @ 0x02087164, 0x2 bytes, Thumb
+ * func_02087140 @ 0x02087140, 0x22 bytes, Thumb
+ * func_02087138 @ 0x02087138, 0x8 bytes, Thumb
+ * func_02086ee8 @ 0x02086ee8, 0x250 bytes, Thumb
+ * func_02086ed4 @ 0x02086ed4, 0x12 bytes, Thumb
+ * func_02086ecc @ 0x02086ecc, 0x8 bytes, Thumb
+ * func_02086ec4 @ 0x02086ec4, 0x8 bytes, Thumb
+ * func_02086eb0 @ 0x02086eb0, 0x12 bytes, Thumb
+ */
+
+typedef struct {
+    unsigned char a : 1;
+    unsigned char b : 3;
+    unsigned char c : 3;
+    unsigned char d : 1;
+} UnkStruct_02086ee8;
+
+typedef struct {
+    unsigned char flag : 1;
+} FlagStruct;
+
+extern int func_020644cc(int n);
+extern int func_0209ded0(void);
+extern int func_020e8b0c(int v, int lo, int hi);
+extern int func_020af028(void *p);
+extern char data_021f395c[];
+
+void func_02086ee8(UnkStruct_02086ee8 *s);
+
+void func_02087168(void *self) {}
+
+void func_02087164(void *self) {}
+
+void func_02087140(volatile unsigned char *p)
+{
+    *p &= ~0x01;
+    *p &= ~0x0e;
+    *p &= ~0x70;
+    *p &= ~0x80;
+}
+
+void func_02087138(void *argument0)
+{
+    func_02086ee8((UnkStruct_02086ee8 *) ((void *) argument0));
+}
+
+void func_02086ee8(UnkStruct_02086ee8 *s)
+{
+    int x, y, z;
+    int m;
+
+    s->a = (unsigned char) func_020644cc(2);
+    s->d = 1;
+    x = func_020644cc(0x64);
+    y = func_020644cc(0x64);
+    z = func_020644cc(0x64);
+    m = func_0209ded0();
+    switch (m) {
+        case 6:
+            if (func_020e8b0c(x, 0, 0x4a) != 0) {
+                s->b = 0;
+            } else if (func_020e8b0c(x, 0x4b, 0x54) != 0) {
+                s->b = 1;
+            } else {
+                s->b = 2;
+            }
+            if (func_020e8b0c(y, 0, 0x4a) != 0) {
+                s->c = 0;
+            } else if (func_020e8b0c(y, 0x4b, 0x54) != 0) {
+                s->c = 1;
+            } else {
+                s->c = 2;
+            }
+            break;
+        case 0:
+            if (func_020e8b0c(x, 0, 0x31) != 0) {
+                s->b = 0;
+            } else if (func_020e8b0c(x, 0x32, 0x3b) != 0) {
+                s->b = 1;
+            } else if (func_020e8b0c(x, 0x3c, 0x46) != 0) {
+                s->b = 2;
+            } else {
+                s->b = 4;
+            }
+            if (func_020e8b0c(y, 0, 0x4a) != 0) {
+                s->c = 0;
+            } else if (func_020e8b0c(y, 0x4b, 0x54) != 0) {
+                s->c = 1;
+            } else if (func_020e8b0c(y, 0x55, 0x5e) != 0) {
+                s->c = 2;
+            } else {
+                s->c = 3;
+            }
+            break;
+        default:
+            if (func_020e8b0c(x, 0, 0x4a) != 0) {
+                s->b = 0;
+            } else if (func_020e8b0c(x, 0x4b, 0x55) != 0) {
+                s->b = 1;
+            } else {
+                s->b = 2;
+            }
+            if (func_020e8b0c(y, 0, 0x4a) != 0) {
+                s->c = 0;
+            } else if (func_020e8b0c(y, 0x4b, 0x55) != 0) {
+                s->c = 1;
+            } else {
+                s->c = 2;
+            }
+            if (func_020e8b0c(z, 0, 0x1d) != 0 && func_020af028(data_021f395c) == 3) {
+                s->d = 1;
+            } else {
+                s->d = 0;
+            }
+            break;
+    }
+    if (s->b == s->c) {
+        s->c = 0;
+    }
+}
+
+int func_02086ed4(const FlagStruct *p)
+{
+    if (p->flag) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int func_02086ecc(unsigned char *p0)
+{
+    return (int) ((unsigned int) ((p0[0] << 28)) >> 29);
+}
+
+int func_02086ec4(unsigned char *p0)
+{
+    return (int) ((unsigned int) ((p0[0] << 25)) >> 29);
+}
+
+int func_02086eb0(unsigned char *p)
+{
+    return (((unsigned int) (*p) << 24) >> 31) ? 1 : 0;
+}
