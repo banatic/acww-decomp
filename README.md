@@ -7,8 +7,8 @@ Animal Crossing: Wild World (Korea)
 [actions]: https://github.com/banatic/acww-decomp/actions/workflows/build.yml
 
 A decompilation of the ARM9 code of *Animal Crossing: Wild World*, Korean release (`ADMK`).
-It does not contain any game assets, code or disassembly; you need your own copy of the game
-to build it.
+It does not contain any game assets, code or disassembly (apart from the one short example
+below); you need your own copy of the game to build it.
 
 ![The game running on a PC from this repository](https://raw.githubusercontent.com/banatic/acww-decomp/media/screens.webp)
 
@@ -31,6 +31,33 @@ flowchart LR
 ```
 
 One function, `func_02063f18` (36 bytes of Thumb code in the ROM), at each step:
+
+**Machine code** (in the ROM at `0x02063f18`, 36 bytes of Thumb), as a disassembler shows it:
+
+```asm
+func_02063f18:
+    push  {r4, lr}
+    adds  r4, r1, #0          @ keep arg1
+    bl    func_020640e0       @ p = func_020640e0(arg0)
+    movs  r2, #0              @ i = 0
+    b     .Lcheck
+.Lloop:
+    ldrb  r1, [r0, r2]        @ p[i]
+    cmp   r4, r1
+    bne   .Lnext
+    adds  r0, r2, #1          @ return i + 1
+    b     .Lreturn
+.Lnext:
+    adds  r2, r2, #1          @ i++
+.Lcheck:
+    cmp   r2, #3
+    blo   .Lloop              @ while i < 3
+    movs  r0, #1              @ return 1
+.Lreturn:
+    pop   {r4}
+    pop   {r3}
+    bx    r3
+```
 
 **Matching source** (`src/main/`): written so the original compiler gives back the ROM's exact
 bytes. Names are still addresses.
