@@ -182,6 +182,47 @@ class Settle(unittest.TestCase):
                                                  "void func_ov097_022a2910(int *d)\n{\n    func_ov097_022a2900(d, 1);\n}\n")])
         self.assertIn("takes Pair, its file said int", str(e.exception))
 
+    def test_declared_name(self):
+        for decl, name in [("extern void (*data_02100000[])(int);", "data_02100000"),
+                           ("extern BOOL (*hook)(u32 size);", "hook"), ("extern void (Obj::*__ptmf_null)();", "__ptmf_null"),
+                           ("int f(void (*cb)(int));", "f"), ("extern u8 data_02100000[4];", "data_02100000")]:
+            self.assertEqual(regroup.declared_name(decl), name, decl)
+
+    def test_several_declarators(self):
+        self.assertEqual(regroup.split_declarators("extern struct S *a, b, c[4];\n"),
+                         ["extern struct S *a;\n", "extern struct S b;\n", "extern struct S c[4];\n"])
+        for kept in ("int a, b;\n", "extern int a = 1, b;\n", "extern int f(int), g;\n",
+                     "extern int a, b; // the pair\n", 'extern "C" int a, b;\n'):
+            self.assertIsNone(regroup.split_declarators(kept), kept)
+        text, _ = self.settle([
+            one(0x022a2900, "extern int data_02100000, data_02100004;\n\nint func_ov097_022a2900(void)\n{\n"
+                            "    return data_02100000 + data_02100004;\n}\n"),
+            one(0x022a2910, "extern int data_02100004;\n\nint func_ov097_022a2910(void)\n{\n    return data_02100004;\n}\n"),
+        ])
+        self.assertEqual(text.count("extern int data_02100004;\n"), 1)
+        self.assertIn("extern int data_02100000;\n", text)
+
+    def test_c_function_in_cpp(self):
+        # C++: a C function declared with other pointer types is one function, cast to as in C;
+        # one declared with another number type is refused
+        text, edited = self.settle([
+            one(0x022a2900, 'extern "C" int func_02000000(struct A *a);\n\nextern "C" int func_ov097_022a2900(struct A *a)\n'
+                            "{\n    return func_02000000(a);\n}\n", ".cpp"),
+            one(0x022a2910, 'extern "C" int func_02000000(struct B *);\n\nextern "C" int func_ov097_022a2910(struct B *b)\n'
+                            "{\n    return func_02000000(b);\n}\n", ".cpp"),
+            one(0x022a2920, 'extern "C" int func_02000000(struct A *);\n\nextern "C" int func_ov097_022a2920(struct A *a)\n'
+                            "{\n    return func_02000000(a);\n}\n", ".cpp"),
+        ])
+        self.assertIn("return func_02000000((struct A *) b);", text)
+        self.assertEqual(edited, ["func_ov097_022a2910"])
+        with self.assertRaises(regroup.Refused):
+            self.settle([
+                one(0x022a2900, 'extern "C" int func_02000000(int a);\n\nextern "C" int func_ov097_022a2900(void)\n'
+                                "{\n    return func_02000000(1);\n}\n", ".cpp"),
+                one(0x022a2910, 'extern "C" int func_02000000(char a);\n\nextern "C" int func_ov097_022a2910(void)\n'
+                                "{\n    return func_02000000(1);\n}\n", ".cpp"),
+            ])
+
     def test_runs_end_at_a_gap(self):
         # 0x022a2920-0x022a2930 is code no source defines: the run ends before it
         with tempfile.TemporaryDirectory() as d:

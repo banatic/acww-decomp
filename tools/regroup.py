@@ -69,7 +69,8 @@ def declared_name(decl: str) -> str | None:
     t = re.sub(r"^extern\b\s*", "", _flat(decl)).rstrip(";").split("=", 1)[0].strip()
     ptr = re.search(r"\(\s*(?:\w+::)?\*\s*(\w+)\s*[\)\[]", t)
     fn = re.search(r"\b(\w+)\s*\(", t)
-    if ptr and (fn is None or ptr.start() < fn.start()):
+    # `void (*name[])(int)`: the first parenthesis is the pointer's, after its type
+    if ptr and (fn is None or ptr.start() <= fn.end() - 1):
         return ptr.group(1)
     if fn and fn.group(1) not in KEYWORDS:
         return fn.group(1)
@@ -170,6 +171,16 @@ def choose(ds: list[Decl]) -> Decl:
         or next((d for d in ds if d.kind == "array" and "const" not in d.ret), None) \
         or next((d for d in ds if d.kind == "array"), None) \
         or majority(ds)
+
+
+def pointers_differ(d: Decl, ch: Decl) -> bool:
+    """Whether the function declarations `d` and `ch` differ only in pointer types (a parameter
+    or the result), which a cast converts in C++ as in C."""
+    def ptr(t: str) -> bool:
+        return "*" in t and not re.search(r"[&(]|\.\.\.", t)
+    if d.kind != "func" or ch.kind != "func" or len(d.params) != len(ch.params):
+        return False
+    return all(norm(a) == norm(b) or (ptr(a) and ptr(b)) for a, b in zip(d.params + [d.ret], ch.params + [ch.ret]))
 
 
 def simple(a: str) -> bool:
@@ -372,6 +383,24 @@ def type_names(code: str) -> list[str]:
     return names
 
 
+def split_declarators(code: str) -> list[str] | None:
+    """`extern T a, *b, c[];` as one declaration a line (`extern T a;` ...), or None for anything
+    else: a definition, an initializer, a function or a pointer to one, a comment."""
+    flat = " ".join(code.split())
+    if C.masked(code) != code or not flat.startswith("extern ") or not flat.endswith(";") \
+            or re.search(r'[(){}=]|extern\s*"', flat):
+        return None
+    parts = split_top(flat[:-1])
+    first = re.search(r"[\s*]*\b(\w+)\s*(?:\[[^\]]*\]\s*)*$", parts[0])
+    if first is None:
+        return None
+    base = parts[0][:first.start()].rstrip()
+    declarators = [parts[0][first.start():].strip()] + parts[1:]
+    if base in ("extern", "") or not all(re.fullmatch(r"\**\s*\w+\s*(?:\[[^\]]*\]\s*)*", d) for d in declarators):
+        return None
+    return [f"{base} {d};\n" for d in declarators]
+
+
 def items(body: str) -> list[Item]:
     """The top-level pieces of a source's text after its header, in order."""
     plain = C.masked(body)
@@ -449,7 +478,12 @@ def items(body: str) -> list[Item]:
             ok = "{" not in flat or re.search(r"\}\s*\w*\s*;$", flat)
             out.append(Item("type" if ok else "other", lead, code, type_names(code) if ok else []))
         elif "," in _depth0(flat):
-            out.append(Item("other", lead, code, []))  # several declarators
+            # several declarators: a declaration of names of one type is one declaration each
+            one_each = split_declarators(code)
+            if one_each is None:
+                out.append(Item("other", lead, code, []))
+            for index, part in enumerate(one_each or ()):
+                out.append(Item("decl", lead if index == 0 else "", part, [declared_name(part)]))
         else:
             name = declared_name(code)
             depth0 = _depth0(flat)
@@ -666,12 +700,20 @@ def settle(module: str, unit: str, srcs: list[C.Source], pinned: set[str] | None
     for name, ds in seen.items():
         if name not in chosen:
             chosen[name] = choose(ds)
+    # C++: every file must agree, but for a C function whose declarations differ only in the
+    # pointers it takes or returns (one function, no overloads), which its calls cast to as in C
+    cast_in_cpp: dict[str, set[str]] = collections.defaultdict(set)
     if cpp:
         for f in files:
             for name, d in local[f.src.name].items():
                 ch = chosen[name]
-                if not d.same(ch) or (name not in short and name not in defined and d.linkage != ch.linkage):
-                    raise Refused(f"{f.src.name}: declares {name} unlike another file (C++)")
+                if d.same(ch) and (name in short or name in defined or d.linkage == ch.linkage):
+                    continue
+                c_both = d.linkage == "C" and (ch.linkage == "C" or proto.get(name, ("", ""))[1] == "C")
+                if c_both and pointers_differ(d, ch):
+                    cast_in_cpp[f.src.name].add(name)
+                    continue
+                raise Refused(f"{f.src.name}: declares {name} unlike another file (C++)")
 
     # each file's function and what it defines beside it, cast where its file declared a name
     # otherwise (C)
@@ -695,6 +737,8 @@ def settle(module: str, unit: str, srcs: list[C.Source], pinned: set[str] | None
                         code = code.replace(m.group(0), "", 1)
             if not cpp:
                 code = rewrite(code, view, chosen, f.src.name, aggregates)
+            elif cast_in_cpp[f.src.name]:
+                code = rewrite(code, {n: view[n] for n in cast_in_cpp[f.src.name] if n in view}, chosen, f.src.name)
             parts.append((f, it, code))
 
     # the top: includes, then macros, types and declarations (C), or the files' own order (C++)
