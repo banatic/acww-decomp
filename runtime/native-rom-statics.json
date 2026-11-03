@@ -32,7 +32,7 @@
       "rom_sha256": "10017383d56c2e65abcbb15899ff9599304ac0dad9acfe6792ffa6fcc858d432",
       "statics": {
         "tbl": {
-          "symbol": "tbl$28",
+          "symbol": "tbl$39",
           "section": "bss",
           "address": "021c1564",
           "size": 8,
