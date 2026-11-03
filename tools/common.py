@@ -380,8 +380,9 @@ def header_end(text: str) -> int:
 
 def unit_definition(body: str, name: str) -> re.Match | None:
     """Where a unit (UNIT_HEADER) defines `name`: at the start of a line, its parameters and
-    the brace. `body` is the text after the header."""
-    return re.search(r"^[^\n;{}()]*\b" + re.escape(name.split("::")[-1])
+    the brace. `body` is the text after the header. A definition starts in the first column; a
+    call that starts an indented line of a condition (`    f(a) != 0 || g(b)) {`) is not one."""
+    return re.search(r"^(?=\S)[^\n;{}()]*\b" + re.escape(name.split("::")[-1])
                      + r"\s*\([^;{]*\)\s*(?:const\s*)?\{", body, re.M)
 
 
@@ -410,7 +411,7 @@ def masked(text: str) -> str:
     return ''.join(out)
 
 
-DEFINITION = r"^[^\n;{{}}()#]*\b{name}\s*\([^;{{]*\)\s*(?:const\s*)?(?::[^;{{]*)?\{{"
+DEFINITION = r"^(?=\S)[^\n;{{}}()#]*\b{name}\s*\([^;{{]*\)\s*(?:const\s*)?(?::[^;{{]*)?\{{"
 
 
 def function_span(text: str, name: str) -> tuple[int, int] | None:

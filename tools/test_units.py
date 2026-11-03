@@ -103,6 +103,11 @@ class Units(unittest.TestCase):
         self.assertTrue(text[start:].startswith("int f(int a)\n{"))
         self.assertTrue(text[:end].endswith("    return 0;\n}"))
         self.assertIsNone(C.function_span(text, "h"))
+        # a call that starts an indented line of a condition is not the definition
+        body = ("\nint g(int a);\n\nint f(int a)\n{\n    if (a != 0 ||\n        g(a) != 0 || g(a + 1) != 0) {\n"
+                "        return 1;\n    }\n    return 0;\n}\n\nint g(int a)\n{\n    return a;\n}\n")
+        self.assertEqual(C.unit_definition(body, "g").start(), body.index("int g(int a)\n{"))
+        self.assertEqual(C.function_span(body, "g")[0], body.index("int g(int a)\n{"))
 
     def test_tables_name_functions(self):
         # every Native table entry is a function of a source, pinned by its current text
