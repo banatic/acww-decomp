@@ -47,8 +47,8 @@ typedef struct ActivityJobsText {
 #define STATE_BLOCK_17276 (0x17276 - 0x17254) /* a byte of part_17254 cleared with the last player */
 
 enum ActivityJobsStateBlockMode {
-    STATE_BLOCK_MODE_3 = 3, /* the save loaded */
-    STATE_BLOCK_MODE_4 = 4, /* no save */
+    STATE_BLOCK_MODE_NEW_TOWN = 3, /* no save: a new town */
+    STATE_BLOCK_MODE_LOADED = 4, /* the save loaded */
 };
 
 #define SEQUENCE1_REMOVED 7
@@ -306,9 +306,9 @@ void ActivityJobs_Step0C(Activity *activity)
         StateBlock_Init(&data_021dc7a8);
         PlayerRecords_ClearGuests();
         VillagerState_Reset();
-        StateBlock_Start(&data_021dc7a8, STATE_BLOCK_MODE_3);
+        StateBlock_Start(&data_021dc7a8, STATE_BLOCK_MODE_NEW_TOWN);
     } else {
-        StateBlock_Start(&data_021dc7a8, STATE_BLOCK_MODE_4);
+        StateBlock_Start(&data_021dc7a8, STATE_BLOCK_MODE_LOADED);
     }
     StateBlock_FinishStart(&data_021dc7a8);
     VillagerState_CallNoOp();
