@@ -5,7 +5,7 @@
 # crossing from the east; the player goes north to tile 45, 21 and A at 8473, as it passes
 # overhead, shoots it down: it falls (main/sky_visitors.c kind 6) and crashes on the building
 # 0x5020 it takes the place of (main/event_buildings.c, tile 19, 20); the beside spot puts
-# Gulliver by it (ov003/spawn_spot.c, ov072/gull.c). West to him, A every 54 frames: his talks
+# Gulliver by it (ov003/gull_spot.c, ov072/gull.c). West to him, A every 54 frames: his talks
 # until he wakes and asks for his parts, which he scatters (ov072/gull_spots.c, item 0x1568);
 # one picked up at tile 26, 23 (B) and handed over in the next talk.
 0 - -

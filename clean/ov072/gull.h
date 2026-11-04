@@ -2,7 +2,7 @@
  * npc_sp/model/seg, object profile 0x60 (its record at data_ov072_02279a3c, which the main
  * module's profile table data_020e3134 points to). Main's spawner (main/spawner.h) makes it
  * from its spawn table's entry of code 0xd015, loading this overlay with it; overlay 3's spot
- * object of profile 0x27 (ov003/spawn_spot.h) asks for it where that object stands. A scene
+ * object of profile 0x27 (ov003/gull_spot.h) asks for it where that object stands. A scene
  * object of class 0x020da088 (special_scene_object.h) with vtable 0x02279b08, 0x724 bytes.
  *
  * It wants spaceship part 0x1568: its talk (GullTalk, gull_talk.h, at 0x658) takes each one the player

@@ -552,7 +552,7 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov003/countdown:CountdownBoard_Destroy ov003/countdown:CountdownDigit_Destroy
   ov003/mailbox:Mailbox_Destroy ov003/outdoor_clock:OutdoorClock_Destroy
   ov003/panther:Panther_Destroy ov003/player_house:PlayerHouse_Destroy
-  ov003/sign_board:SignBoard_Destroy ov003/spawn_spot:SpawnSpot_Destroy
+  ov003/sign_board:SignBoard_Destroy ov003/gull_spot:GullSpot_Destroy
   ov003/store_front:StoreFront_Destroy ov003/villager_house:VillagerHouse_Destroy
   ov004/barber_machine:BarberMachine_Destruct ov004/birthday_guest:BirthdayGuest_Destroy
   ov004/birthday_villager:BirthdayVillager_Destroy ov004/bromide:Bromide_Destroy
@@ -1242,7 +1242,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov003/panther:Panther_ReceiverDestroyAndFree ov003/player_house:PlayerHouse_ReceiverDestroyAndFree
   ov003/bulletin_board:BulletinBoard_ReceiverDestroyAndFree
   ov003/sign_board:SignBoard_ReceiverDestroyAndFree ov003/snowman:Snowman_ReceiverDestroyAndFree
-  ov003/spawn_spot:SpawnSpot_ReceiverDestroyAndFree
+  ov003/gull_spot:GullSpot_ReceiverDestroyAndFree
   ov003/store_front:StoreFront_ReceiverDestroyAndFree ov003/town_insect:TownInsectAnim_DestructDelete
   ov003/town_post_source:TownPostSource_Delete
   ov003/villager_house:VillagerHouse_ReceiverDestroyAndFree
@@ -1347,7 +1347,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov003/outdoor_clock:OutdoorClock_ReceiverDestroy ov003/panther:Panther_ReceiverDestroy
   ov003/player_house:PlayerHouse_ReceiverDestroy ov003/bulletin_board:BulletinBoard_ReceiverDestroy
   ov003/sign_board:SignBoard_ReceiverDestroy ov003/snowman:Snowman_ReceiverDestroy
-  ov003/spawn_spot:SpawnSpot_ReceiverDestroy ov003/store_front:StoreFront_ReceiverDestroy
+  ov003/gull_spot:GullSpot_ReceiverDestroy ov003/store_front:StoreFront_ReceiverDestroy
   ov003/villager_house:VillagerHouse_ReceiverDestroy ov003/giraffe_spot:GiraffeSpot_ReceiverDestroy
   ov004/atm:AtmReceiver_Destroy ov004/barber_machine:BarberMachineReceiver_Destruct
   ov004/birthday_guest:BirthdayGuestTalk_Destroy ov004/birthday_villager:BirthdayVillagerTalk_Destroy
