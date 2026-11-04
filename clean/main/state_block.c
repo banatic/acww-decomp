@@ -379,7 +379,7 @@ void StateBlock_StartMode5(StateBlock *block)
     VillagerKind_Deal(villagers_of(block));
     settle_town(block);
     SceneClaim_Reset();
-    PlayerRecord_SetByte2452(record, 0);
+    PlayerRecord_SetSlingshotHits(record, 0);
     finish_villagers(block);
 }
 CLEAN_AS(func_0209eac8, StateBlock_StartMode5)
@@ -483,7 +483,7 @@ void StateBlock_StartMode1(StateBlock *block)
     VillagerKind_Deal(villagers_of(block));
     settle_town(block);
     SceneClaim_Reset();
-    PlayerRecord_SetByte2452(record, 0);
+    PlayerRecord_SetSlingshotHits(record, 0);
     finish_villagers(block);
 }
 CLEAN_AS(func_0209ed90, StateBlock_StartMode1)

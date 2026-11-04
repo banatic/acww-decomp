@@ -769,8 +769,8 @@ CLEAN_AS(func_ov003_02221a64, TileEvent_InitKind14)
  * - else: falling to the ground (height 0), then thrown up (1.0) towards the centre of a free
  *   tile around (TileEvent_FindFreeTileAround, in 8 frames; Block020ba298_SetByte7Or8(0)),
  *   falling with gravity 0.25 per frame; on the ground again Block020ba298_SetByte6, and when a
- *   tile was found its code is put there (item 0x137b also sets flag 0x30 of the current player
- *   record); it ends without finishing its change. */
+ *   tile was found its code is put there (item 0x137b, the golden slingshot, also sets flag 0x30
+ *   of the current player record); it ends without finishing its change. */
 void TileEvent_StepKind12(TileEventEntry *entry)
 {
     CollisionGround ground;

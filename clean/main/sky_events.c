@@ -40,10 +40,10 @@
 #define SKY_EVENTS_BLEND_MINUTES 45 /* its minutes in all */
 #define SKY_EVENTS_BLEND_MAX 0xc000 /* 12 (fx32) */
 #define SKY_EVENTS_ODDS 8
-#define SKY_EVENTS_STATE_FLAG_9 9   /* the state block's flag that ends kind 6 */
-#define SKY_EVENTS_ACTOR_D_KIND_7 8 /* the D actor whose scene object ends kind 7 */
-#define SKY_EVENTS_FLAG_30 0x30     /* a player record's flag that keeps kind 5's variant away */
-#define SKY_EVENTS_FLAG_32 0x32     /* a player record's flag SkyEvents_PostFlag32Letters answers */
+#define SKY_EVENTS_STATE_FLAG_9 9             /* the state block's flag that ends kind 6 */
+#define SKY_EVENTS_ACTOR_D_KIND_7 8           /* the D actor whose scene object ends kind 7 */
+#define SKY_EVENTS_FLAG_GOLDEN_SLINGSHOT 0x30 /* set once the golden slingshot 0x137b was found */
+#define SKY_EVENTS_FLAG_32 0x32               /* a player record's flag SkyEvents_PostFlag32Letters answers */
 #define SKY_EVENTS_KIND_12_COUNT 3
 #define SKY_EVENTS_THIS_PLAYERS 4
 
@@ -244,8 +244,8 @@ CLEAN_AS(func_020bd1c4, SkyEvents_AddSpaceship)
 
 /* func_020bd2d0: outside a session, from 10:00 to 15:59, as the minute turns to one ending in
  * 4 and unless entry 45 holds kind 5: an object of kind 5 in entry 45 at growing odds. It is
- * the variant (parameter 1) one time in four when this system's player lacks flag 0x30 and has
- * counted 16 hits (SkyShots_HitCountFull); otherwise the palettes' part at 0x2eb8 is given a
+ * the variant (parameter 1) one time in four when this system's player has not found the golden
+ * slingshot (flag 0x30) and has counted 16 slingshot hits (SkyShots_HitCountFull); otherwise the palettes' part at 0x2eb8 is given a
  * new random pick (func_020bece0). */
 void SkyEvents_AddKind5(SkyObjects *objects)
 {
@@ -261,7 +261,7 @@ void SkyEvents_AddKind5(SkyObjects *objects)
     if (!sky_events_try_odds(&objects->events[SKY_EVENT_ODDS_5])) {
         return;
     }
-    if (!PlayerRecord_TestFlag(PlayerRecords_Current(), SKY_EVENTS_FLAG_30) && SkyShots_HitCountFull() &&
+    if (!PlayerRecord_TestFlag(PlayerRecords_Current(), SKY_EVENTS_FLAG_GOLDEN_SLINGSHOT) && SkyShots_HitCountFull() &&
         MainRandom_Below(4) == 0) {
         SkyObjects_Add(objects, SKY_OBJECT_KIND_5, SKY_ENTRY_VISITOR, NULL, 1);
     } else {

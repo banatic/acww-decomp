@@ -1,10 +1,10 @@
-/* Shots into the sky from a player's position (Sky_Objects020bdf68, run as the field actor
- * enters state 0x64): objects of kind SKY_OBJECT_SHOT, and what the player of this system
+/* Slingshot shots into the sky from a player's position (Sky_Objects020bdf68, run as the field
+ * actor enters state 0x64): objects of kind SKY_OBJECT_SHOT, and what the player of this system
  * does while one of its shots is up.
  *
  * A shot is asked for (SkyShots_Fire) into one of four requests at 0x2f58 of the sky's
  * objects, one per player: from the player's position, three objects instead of one when the
- * player holds item 0x137b. At the next frame each request becomes objects in that player's
+ * player holds the golden slingshot 0x137b. At the next frame each request becomes objects in that player's
  * entries 33 + 3 * player (SkyShots_Launch); when none can be added the player's state ends
  * at once (func_020beb98).
  *

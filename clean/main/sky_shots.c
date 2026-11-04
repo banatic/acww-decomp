@@ -314,7 +314,7 @@ CLEAN_AS(func_020be9b8, SkyShots_HitWait)
 /* func_020be9dc: this system's player has counted 16 hits. */
 int SkyShots_HitCountFull(void)
 {
-    return PlayerRecord_Byte2452(PlayerRecords_Current()) >= SKY_SHOTS_HITS_MAX;
+    return PlayerRecord_SlingshotHits(PlayerRecords_Current()) >= SKY_SHOTS_HITS_MAX;
 }
 CLEAN_AS(func_020be9dc, SkyShots_HitCountFull)
 
@@ -322,9 +322,9 @@ CLEAN_AS(func_020be9dc, SkyShots_HitCountFull)
 void SkyShots_CountHit(void)
 {
     u8 *record = PlayerRecords_Current();
-    u8 hits = PlayerRecord_Byte2452(record);
+    u8 hits = PlayerRecord_SlingshotHits(record);
     if (hits < SKY_SHOTS_HITS_MAX) {
-        PlayerRecord_SetByte2452(record, (u8) (hits + 1));
+        PlayerRecord_SetSlingshotHits(record, (u8) (hits + 1));
     }
 }
 CLEAN_AS(func_020be9f8, SkyShots_CountHit)

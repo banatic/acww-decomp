@@ -26,12 +26,12 @@
 /* The items made from a design. */
 #define HELD_ITEM_DESIGN_FIRST 0x13a0
 #define HELD_ITEM_DESIGN_LAST 0x13a7
-/* The fishing rods (their line takes kind 0 or 1) and the items whose line takes kind 2; other
- * items' lines take kind 3. */
+/* The fishing rods (their line takes kind 0 or 1) and the slingshots (their band takes kind 2);
+ * other items' lines take kind 3. */
 #define HELD_ITEM_ROD_A 0x1374
 #define HELD_ITEM_ROD_B 0x1375
-#define HELD_ITEM_LINE_2_A 0x137a
-#define HELD_ITEM_LINE_2_B 0x137b
+#define HELD_ITEM_SLINGSHOT 0x137a
+#define HELD_ITEM_GOLDEN_SLINGSHOT 0x137b
 /* The joint of the rods' model the line hangs from; other items use joint 0. */
 #define HELD_ITEM_ROD_JOINT 2
 /* The texture SRT animation's buffer and the room kept after it. */
@@ -245,7 +245,7 @@ CLEAN_AS(func_0205ebb4, HeldItem_Clear)
  * model, looping at speed 1.0), the rest of the heap becomes the joint animation's buffer, the
  * model plays joint animation `kind`, is attached, and unless `plain` gets the node callbacks
  * (func_0205ef5c, given the item). Last the line is set up with `owner` (kind 0 or 1 for the
- * rods, 2 for items 0x137a and 0x137b, else 3) and set to state 1 for the rods.
+ * rods, 2 for the slingshots 0x137a and 0x137b, else 3) and set to state 1 for the rods.
  * QUIRK: a texture-animated item takes 0x1c more bytes from its heap and never uses them. */
 void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item, u8 *record, int plain)
 {
@@ -320,7 +320,7 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
         line_kind = 1;
     } else if (held_item_is(item, HELD_ITEM_ROD_A)) {
         line_kind = 0;
-    } else if (held_item_is(item, HELD_ITEM_LINE_2_A) || held_item_is(item, HELD_ITEM_LINE_2_B)) {
+    } else if (held_item_is(item, HELD_ITEM_SLINGSHOT) || held_item_is(item, HELD_ITEM_GOLDEN_SLINGSHOT)) {
         line_kind = 2;
     } else {
         line_kind = 3;

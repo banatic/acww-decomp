@@ -8,7 +8,7 @@
  * float that uses the entry.
  *
  * A float (0x40 bytes, at 0x28 in a field actor's held item) is set up for a rod when the
- * item is taken (FishingFloat_Setup; the rods 0x1374, 0x1375, 0x137a and 0x137b) and moved
+ * item is taken (FishingFloat_Setup; the rods 0x1374 and 0x1375 and the slingshots 0x137a and 0x137b) and moved
  * once a frame (FishingFloat_Update) by the step function of its state, from the table of
  * member functions at data_021cad30:
  *

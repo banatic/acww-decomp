@@ -45,7 +45,7 @@ static_assert(sizeof(PlayerStorage) == 0xb4, "PlayerStorage layout");
 #define RECORD_FLAGS 0x23f8
 #define RECORD_BIRTHDAY 0x2414
 #define RECORD_COUNT 0x2451
-#define RECORD_BYTE_2452 0x2452
+#define RECORD_SLINGSHOT_HITS 0x2452
 #define RECORD_BIRTHDAY_YEAR 0x2453
 #define RECORD_BIRTHDAY_NOTICE_YEARS 0x2454
 #define RECORD_VILLAGER 0x245c
@@ -278,18 +278,18 @@ u8 PlayerRecord_BirthdayNoticeYear(u8 *record, u32 villager)
 CLEAN_AS(func_02099174, PlayerRecord_BirthdayNoticeYear)
 
 /* func_02099188 */
-void PlayerRecord_SetByte2452(u8 *record, u8 value)
+void PlayerRecord_SetSlingshotHits(u8 *record, u8 value)
 {
-    record[RECORD_BYTE_2452] = value;
+    record[RECORD_SLINGSHOT_HITS] = value;
 }
-CLEAN_AS(func_02099188, PlayerRecord_SetByte2452)
+CLEAN_AS(func_02099188, PlayerRecord_SetSlingshotHits)
 
 /* func_02099194 */
-u8 PlayerRecord_Byte2452(const u8 *record)
+u8 PlayerRecord_SlingshotHits(const u8 *record)
 {
-    return record[RECORD_BYTE_2452];
+    return record[RECORD_SLINGSHOT_HITS];
 }
-CLEAN_AS(func_02099194, PlayerRecord_Byte2452)
+CLEAN_AS(func_02099194, PlayerRecord_SlingshotHits)
 
 /* func_020991a0: raise the count by one: from 0 to 2, and at most to 10. QUIRK: 255 wraps to
  * 0, which stays. */

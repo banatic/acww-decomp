@@ -13,7 +13,7 @@
  *   0x2414  the birthday: day, month
  *   0x243e  the mother's letters' state (mom_letters.h)
  *   0x2451  a count, 0 or 2-10, raised by PlayerRecord_RaiseCount
- *   0x2452  a byte (func_020be9dc tests it against 16)
+ *   0x2452  the slingshot hits counted, up to 16 (SkyShots_CountHit, SkyShots_HitCountFull)
  *   0x2453  the year of the last birthday celebrated, 0xff for none this year
  *   0x2454  for each of the town's 8 villagers, the year of the birthday the player was last
  *           sent its notice for (VillagerTown_SendBirthdayNotices), 0xff for none
@@ -60,8 +60,8 @@ void PlayerRecord_SendVillagerLetter(u8 *record);
 PlayerRecordVillager *PlayerRecord_Villager(u8 *record);
 void PlayerRecord_SetBirthdayNoticeYear(u8 *record, u32 villager, u8 value);
 u8 PlayerRecord_BirthdayNoticeYear(u8 *record, u32 villager);
-void PlayerRecord_SetByte2452(u8 *record, u8 value);
-u8 PlayerRecord_Byte2452(const u8 *record);
+void PlayerRecord_SetSlingshotHits(u8 *record, u8 value);
+u8 PlayerRecord_SlingshotHits(const u8 *record);
 void PlayerRecord_RaiseCount(u8 *record);
 u8 PlayerRecord_Count(u8 *record);
 void PlayerRecord_UpdateSinceLastPlay(void);
