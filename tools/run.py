@@ -723,7 +723,7 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
             arg_words[(module, address)] = words
             if C.LIBS in path.parents:
                 library[(module, address)] = (name, count, words)
-            if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES):
+            if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and name in HOST_NAMES):
                 helpers[(module, address)] = name
     OUT.mkdir(parents=True, exist_ok=True)
     memo_path.write_text(json.dumps({"readers": readers, "facts": facts}), newline="\n")

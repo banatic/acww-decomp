@@ -1,4 +1,5 @@
 """Check bridge extents, especially signatures where parameter counts are unsafe."""
+import functools
 from pathlib import Path
 import re
 import unittest
@@ -9,6 +10,32 @@ from native_abi import word_arguments
 
 ROOT = Path(__file__).resolve().parents[1]
 MATH = [('FX_Div', 2), ('FX_MulFunc', 2), ('VEC_Add', 3)]
+# Stackless assembly not yet in native_abi.STACKLESS_ASM: the search by file name never reached
+# them (a file named for its address as well, and on Windows sqrt.c and Sqrt.c taken for one
+# name). Listing them changes what a Native call copies onto the ROM's stack: an audit's.
+UNAUDITED = {('autoload_2', 0x02113910),  # OS_UnLockCartridge
+             ('autoload_2', 0x02134ad0),  # sqrt
+             ('main', 0x020004ce)}        # Sqrt
+
+
+@functools.cache
+def library_definitions() -> dict[str, list[Path]]:
+    """The library sources that define each function, by its name (a unit defines several)."""
+    found: dict[str, list[Path]] = {}
+    for path in C.all_sources():
+        if C.LIBS in path.parents:
+            for src in C.parse_sources(path):
+                found.setdefault(src.name, []).append(path)
+    return found
+
+
+def definition_text(path: Path, name: str) -> str:
+    """The text of the function `name` of the source `path`: the whole file for a file of one
+    function, its definition in a unit."""
+    text = path.read_text(encoding='utf-8', errors='replace')
+    if len(C.parse_sources(path)) > 1 and (span := C.function_span(text, name)):
+        return text[span[0]:span[1]]
+    return text
 
 
 class WordArguments(unittest.TestCase):
@@ -52,7 +79,7 @@ class WordArguments(unittest.TestCase):
     @unittest.skipUnless((ROOT / 'libs/NitroSDK').is_dir(), 'no library sources (libs/README.md)')
     def test_actual_math_callees(self):
         for name, count in MATH:
-            source = ROOT / 'libs/NitroSDK/itcm' / (name + '.c')
+            [source] = library_definitions()[name]
             self.assertEqual(word_arguments(source.read_text(), name), count)
 
     def test_kept_library_counts(self):
@@ -108,8 +135,8 @@ class StacklessAssembly(unittest.TestCase):
             module, address, name, count, words = line.split()
             if words != '-1' or int(count) > 4:
                 continue
-            sources = list((ROOT / 'libs').rglob(name + '.c'))
-            if len(sources) != 1 or not re.search(r'\basm\b', sources[0].read_text(errors='replace')):
+            sources = library_definitions().get(name, [])
+            if len(sources) != 1 or not re.search(r'\basm\b', definition_text(sources[0], name)):
                 continue
             sym = syms.lookup(name, module)
             if sym is None:
@@ -117,7 +144,7 @@ class StacklessAssembly(unittest.TestCase):
             start = sym.address - mods[module]['base']
             if stays_off_the_stack(C.module_image(module)[start:start + sym.size], sym.address, sym.thumb):
                 found.add((module, sym.address))
-        self.assertEqual(found, set(native_abi.STACKLESS_ASM))
+        self.assertEqual(found - UNAUDITED, set(native_abi.STACKLESS_ASM))
 
 
 if __name__ == '__main__':
