@@ -2374,16 +2374,16 @@ void FieldActor_RunState6D(FieldActor *actor)
         return;
     }
     if (actor->work.s6d.kind == 0) {
-        if (AcreMap_HasBuilding5014((int) source, (int) (uintptr_t) &point, 0, 0)) {
+        if (AcreMap_HasPlayerHouse((int) source, (int) (uintptr_t) &point, 0, 0)) {
             SceneExit_SetTo((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0, &actor->position, 0x1b800000, 0, 2, 2);
         }
     } else if (actor->player == 0) {
-        if (AcreMap_HasBuilding5014((int) source, (int) (uintptr_t) &point, 0, 0)) {
+        if (AcreMap_HasPlayerHouse((int) source, (int) (uintptr_t) &point, 0, 0)) {
             point.z = add32(point.z, 0x2000);
             SceneExit_SetTo((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0, &point, 0x1b800000, 0, 2, 2);
         }
     } else {
-        if (AcreMap_HasBuilding500b((int) source, (int) (uintptr_t) &point, 0, 0)) {
+        if (AcreMap_HasGate((int) source, (int) (uintptr_t) &point, 0, 0)) {
             SceneExit_SetTo((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0, &point, 0x1b800000, 0, 2, 2);
         }
     }

@@ -497,8 +497,8 @@ int PostClerk_UpdateLeave(PostClerk *clerk)
         Vec3 point;
         int tile_x;
         int tile_z;
-        if (AcreMap_HasBuilding5000((int) town, (int) (uintptr_t) &point, (int) (uintptr_t) &tile_x,
-                                    (int) (uintptr_t) &tile_z) != 0) {
+        if (AcreMap_HasTownHall((int) town, (int) (uintptr_t) &point, (int) (uintptr_t) &tile_x, (int) (uintptr_t) &tile_z) !=
+            0) {
             point.z += POST_CLERK_LEAVE_AHEAD;
             SceneExit_SetTo((SceneExit *) (uintptr_t) (u32) SceneTables_EntryRecord(), POST_CLERK_LEAVE_SCENE, &point,
                             POST_CLERK_LEAVE_PLAYER_PARAM, 0, POST_CLERK_LEAVE_CHANGE_ARG, POST_CLERK_LEAVE_NEXT_ARG);

@@ -47,10 +47,10 @@
 #define TOWN_OBJECTS_ACRE_TILES 16
 
 /* The flags of an acre's model (func_02037bd8) that make room for the objects. */
-#define TOWN_OBJECTS_MODEL_5014 0x001  /* codes 0x5014-0x501a */
-#define TOWN_OBJECTS_MODEL_STORE 0x002 /* codes 0x500d-0x5010 (the store) and 0x500c */
-#define TOWN_OBJECTS_MODEL_5000 0x200
-#define TOWN_OBJECTS_MODEL_5011 0x800
+#define TOWN_OBJECTS_MODEL_PLAYER_HOUSE 0x001 /* codes 0x5014-0x501a, the player's house */
+#define TOWN_OBJECTS_MODEL_STORE 0x002        /* codes 0x500d-0x5010 (the store) and 0x500c (the tailor) */
+#define TOWN_OBJECTS_MODEL_TOWN_HALL 0x200    /* code 0x5000 */
+#define TOWN_OBJECTS_MODEL_MUSEUM 0x800       /* code 0x5011 */
 
 extern u8 data_020e54a8; /* 0 or 1, a mode many scenes test */
 extern NetSession *data_020ccf94;
@@ -155,7 +155,7 @@ static int town_objects_out_of_place(int has_flag, int row, int x, int z)
     return !(x != 0 && row == z);
 }
 
-static int town_objects_5014_row(int model)
+static int town_objects_player_house_row(int model)
 {
     return model >= 0x1d && model <= 0x1f ? 5 : -1;
 }
@@ -173,7 +173,7 @@ static int town_objects_store_row(int model)
     return -1;
 }
 
-static int town_objects_500c_row(int model)
+static int town_objects_tailor_row(int model)
 {
     switch (model) {
         case 0x23:
@@ -186,7 +186,7 @@ static int town_objects_500c_row(int model)
     return -1;
 }
 
-static int town_objects_5011_row(int model)
+static int town_objects_museum_row(int model)
 {
     switch (model) {
         case 0x20:
@@ -199,7 +199,7 @@ static int town_objects_5011_row(int model)
     return -1;
 }
 
-static int town_objects_5000_row(int model)
+static int town_objects_town_hall_row(int model)
 {
     return model >= 0x26 && model <= 0x28 ? 4 : -1;
 }
@@ -240,7 +240,8 @@ void TownObjects_ClearMisplacedFootprints(void)
                     }
                     int mark = 0;
                     if (MapCode_IsPlayerHouse(object) &&
-                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_5014, town_objects_5014_row(model), x, z)) {
+                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_PLAYER_HOUSE,
+                                                  town_objects_player_house_row(model), x, z)) {
                         mark = 1;
                     }
                     if (MapCode_IsStore(object) &&
@@ -248,15 +249,16 @@ void TownObjects_ClearMisplacedFootprints(void)
                         mark = 1;
                     }
                     if (town_objects_is(object, 0x500c) &&
-                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_STORE, town_objects_500c_row(model), x, z)) {
+                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_STORE, town_objects_tailor_row(model), x, z)) {
                         mark = 1;
                     }
                     if (town_objects_is(object, 0x5011) &&
-                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_5011, town_objects_5011_row(model), x, z)) {
+                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_MUSEUM, town_objects_museum_row(model), x, z)) {
                         mark = 1;
                     }
                     if (town_objects_is(object, 0x5000) &&
-                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_5000, town_objects_5000_row(model), x, z)) {
+                        town_objects_out_of_place(flags & TOWN_OBJECTS_MODEL_TOWN_HALL, town_objects_town_hall_row(model), x,
+                                                  z)) {
                         mark = 1;
                     }
                     if (!mark) {

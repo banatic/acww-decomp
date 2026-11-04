@@ -48,7 +48,7 @@ typedef struct ActivityJobsText {
 
 enum ActivityJobsStateBlockMode {
     STATE_BLOCK_MODE_NEW_TOWN = 3, /* no save: a new town */
-    STATE_BLOCK_MODE_LOADED = 4, /* the save loaded */
+    STATE_BLOCK_MODE_LOADED = 4,   /* the save loaded */
 };
 
 #define SEQUENCE1_REMOVED 7
@@ -374,7 +374,7 @@ void ActivityJobs_Step0F(Activity *activity)
     }
     TalkObject_DetachReceiver((TalkObject *) talk);
     int front[3] = {0, 0, 0};
-    AcreMap_FindBuilding5000Front((int) AcreMap_Town(), front, NULL, NULL);
+    AcreMap_FindTownHallFront((int) AcreMap_Town(), front, NULL, NULL);
     SceneExit_SetTo(entry_record(), 0, (const Vec3 *) (const void *) front, 0x400000, -0x8000, 3, 2);
     ActivityProcess_StartJob(activity, 0);
 }

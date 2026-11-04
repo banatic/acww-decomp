@@ -85,10 +85,10 @@ int AcreMap_Room(int room);
 void AcreMap_InitRoom(AcreMap *map);
 
 int AcreMap_FindSpaceship(int map, int position);
-int AcreMap_FindBuilding5000Front(int map, int *position, int *tile_x, int *tile_z);
-int AcreMap_HasBuilding500b(int map, int position, int tile_x, int tile_z);
-int AcreMap_HasBuilding5014(int map, int position, int tile_x, int tile_z);
-int AcreMap_HasBuilding5000(int map, int position, int tile_x, int tile_z);
+int AcreMap_FindTownHallFront(int map, int *position, int *tile_x, int *tile_z);
+int AcreMap_HasGate(int map, int position, int tile_x, int tile_z);
+int AcreMap_HasPlayerHouse(int map, int position, int tile_x, int tile_z);
+int AcreMap_HasTownHall(int map, int position, int tile_x, int tile_z);
 void AcreMap_FindBuildingPoint(u16 *out, void *map, int *position, int *tile_x, int *tile_z, u16 first, u16 last, u32 flags);
 void AcreMap_FindItem(u16 *out, void *map, u32 position, int *tile_x, int *tile_z, u16 first, u16 last, u32 flags);
 int AcreMap_SetBuildingInAcre(int map, int acre_x, int acre_z, int x, int z, int item);

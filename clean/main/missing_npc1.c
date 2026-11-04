@@ -263,7 +263,7 @@ static u8 *missing_npc1_pairing(void)
  * here it is zero. */
 static void missing_npc1_gate(Vec3 *point)
 {
-    AcreMap_HasBuilding500b((int) AcreMap_Town(), (int) (uintptr_t) point, 0, 0);
+    AcreMap_HasGate((int) AcreMap_Town(), (int) (uintptr_t) point, 0, 0);
 }
 
 static int missing_npc1_add(int a, int b)

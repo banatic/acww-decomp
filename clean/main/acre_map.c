@@ -450,9 +450,9 @@ int AcreMap_FindSpaceship(int map, int position)
 }
 CLEAN_AS(func_0204df68, AcreMap_FindSpaceship)
 
-/* func_0204dfe0: AcreMap_FindBuildingPoint for building 0x5000 (flags 0x200), moved one tile
+/* func_0204dfe0: AcreMap_FindBuildingPoint for the town hall, building 0x5000 (flags 0x200), moved one tile
  * left and four tiles further along z; the tile too when asked for. */
-int AcreMap_FindBuilding5000Front(int map, int *position, int *tile_x, int *tile_z)
+int AcreMap_FindTownHallFront(int map, int *position, int *tile_x, int *tile_z)
 {
     u16 item;
 
@@ -470,10 +470,10 @@ int AcreMap_FindBuilding5000Front(int map, int *position, int *tile_x, int *tile
     }
     return 1;
 }
-CLEAN_AS(func_0204dfe0, AcreMap_FindBuilding5000Front)
+CLEAN_AS(func_0204dfe0, AcreMap_FindTownHallFront)
 
-/* func_0204e08c: AcreMap_FindBuildingPoint for building 0x500b (flags 0x400); whether found. */
-int AcreMap_HasBuilding500b(int map, int position, int tile_x, int tile_z)
+/* func_0204e08c: AcreMap_FindBuildingPoint for the gate, building 0x500b (flags 0x400); whether found. */
+int AcreMap_HasGate(int map, int position, int tile_x, int tile_z)
 {
     u16 item;
 
@@ -481,10 +481,10 @@ int AcreMap_HasBuilding500b(int map, int position, int tile_x, int tile_z)
                               (int *) (uintptr_t) tile_z, 0x500b, 0x500b, 0x400);
     return !acre_map_item_is_none(&item);
 }
-CLEAN_AS(func_0204e08c, AcreMap_HasBuilding500b)
+CLEAN_AS(func_0204e08c, AcreMap_HasGate)
 
-/* func_0204e108: the same for buildings 0x5014-0x501a (flags 1). */
-int AcreMap_HasBuilding5014(int map, int position, int tile_x, int tile_z)
+/* func_0204e108: the same for the player's house, buildings 0x5014-0x501a (flags 1). */
+int AcreMap_HasPlayerHouse(int map, int position, int tile_x, int tile_z)
 {
     u16 item;
 
@@ -492,10 +492,10 @@ int AcreMap_HasBuilding5014(int map, int position, int tile_x, int tile_z)
                               (int *) (uintptr_t) tile_z, 0x5014, 0x501a, 1);
     return !acre_map_item_is_none(&item);
 }
-CLEAN_AS(func_0204e108, AcreMap_HasBuilding5014)
+CLEAN_AS(func_0204e108, AcreMap_HasPlayerHouse)
 
-/* func_0204e188: the same for building 0x5000 (flags 0x200). */
-int AcreMap_HasBuilding5000(int map, int position, int tile_x, int tile_z)
+/* func_0204e188: the same for the town hall, building 0x5000 (flags 0x200). */
+int AcreMap_HasTownHall(int map, int position, int tile_x, int tile_z)
 {
     u16 item;
 
@@ -503,7 +503,7 @@ int AcreMap_HasBuilding5000(int map, int position, int tile_x, int tile_z)
                               (int *) (uintptr_t) tile_z, 0x5000, 0x5000, 0x200);
     return !acre_map_item_is_none(&item);
 }
-CLEAN_AS(func_0204e188, AcreMap_HasBuilding5000)
+CLEAN_AS(func_0204e188, AcreMap_HasTownHall)
 
 /* func_0204e204: finds a building in [first, last] (AcreMap_FindItem) and gives the point in
  * front of it: the tile's centre moved by the mean x and z of the corners of its shape's

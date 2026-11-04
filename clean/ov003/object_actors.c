@@ -348,7 +348,7 @@ CLEAN_AS(func_ov003_02220460, ObjectActors_Place)
  * while either of Block020b220c's arrival flags is set, and object 0x501e (or a variant of it)
  * outside the snow season. Then, when SceneQuery_CurrentIs0 says so, this system's session slot
  * is not taken, one of those flags is set and the town's map has object 0x5000, object 0x501b
- * is placed (not put down) one tile further along z than the tile AcreMap_FindBuilding5000Front
+ * is placed (not put down) one tile further along z than the tile AcreMap_FindTownHallFront
  * gives. The number of objects placed from the map. */
 int ObjectActors_PlaceAll(ObjectActors *self)
 {
@@ -404,7 +404,7 @@ int ObjectActors_PlaceAll(ObjectActors *self)
             int front[4]; /* the point (x, y, z) and a word the ROM leaves room for */
             int x;
             int z;
-            if (AcreMap_FindBuilding5000Front((int) town, front, &x, &z) != 0) {
+            if (AcreMap_FindTownHallFront((int) town, front, &x, &z) != 0) {
                 u16 front_object = OBJECT_ACTORS_FRONT_OBJECT;
                 ObjectActors_Place(self, &front_object, x, z + 1, 0);
             }

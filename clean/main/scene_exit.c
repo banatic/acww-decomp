@@ -343,15 +343,15 @@ int SceneExit_ResolveSpecial(const SceneExit *entry, int index, u8 *scene, Vec3 
 
     switch (exit->scene) {
         case SCENE_EXIT_TO_BUILDINGS_5014: {
-            int found = AcreMap_HasBuilding5014(town, (int) (uintptr_t) &front, (int) (uintptr_t) &front_tile_x,
-                                                (int) (uintptr_t) &front_tile_z);
+            int found = AcreMap_HasPlayerHouse(town, (int) (uintptr_t) &front, (int) (uintptr_t) &front_tile_x,
+                                               (int) (uintptr_t) &front_tile_z);
             scene_exit_to_building(exit, found, &front, front_tile_x, front_tile_z, scene, position, player_param, angle,
                                    tile_x, tile_z, change_arg, next_arg);
             return SCENE_EXIT_FROM_MARKED;
         }
         case SCENE_EXIT_TO_BUILDING_500B: {
-            int found = AcreMap_HasBuilding500b(town, (int) (uintptr_t) &front, (int) (uintptr_t) &front_tile_x,
-                                                (int) (uintptr_t) &front_tile_z);
+            int found = AcreMap_HasGate(town, (int) (uintptr_t) &front, (int) (uintptr_t) &front_tile_x,
+                                        (int) (uintptr_t) &front_tile_z);
             scene_exit_to_building(exit, found, &front, front_tile_x, front_tile_z, scene, position, player_param, angle,
                                    tile_x, tile_z, change_arg, next_arg);
             return SCENE_EXIT_FROM_MARKED;

@@ -55,10 +55,11 @@ static_assert(offsetof(AnimatedModel, frames) == 0x9c, "animated model frames");
 /* Mode 4 waits this many frames before the door closes. */
 #define SCENE_ACTOR_CLOSE_WAIT 26
 
-/* The buildings whose modes 1 and 2 play the melody, and as what kind. */
-#define SCENE_ACTOR_TUNE_CODE_1 0x500d
-#define SCENE_ACTOR_TUNE_CODE_2 0x5000
-#define SCENE_ACTOR_TUNE_CODE_3 0x500c
+/* The buildings whose modes 1 and 2 play the melody, and as what kind: Nook's store, the town
+ * hall and the tailor. */
+#define SCENE_ACTOR_TUNE_STORE 0x500d
+#define SCENE_ACTOR_TUNE_TOWN_HALL 0x5000
+#define SCENE_ACTOR_TUNE_TAILOR 0x500c
 
 /* Mode 0 asks nothing while flag 0x13 of this console's player is set. */
 #define SCENE_ACTOR_MODE_PLAYER_FLAG 0x13
@@ -207,11 +208,11 @@ static int mode_enter_with_sounds(SceneActor *actor, u32 slot)
         return 1;
     }
     int kind = 0;
-    if (mode_code_is(&actor->code, SCENE_ACTOR_TUNE_CODE_1)) {
+    if (mode_code_is(&actor->code, SCENE_ACTOR_TUNE_STORE)) {
         kind = 1;
-    } else if (mode_code_is(&actor->code, SCENE_ACTOR_TUNE_CODE_2)) {
+    } else if (mode_code_is(&actor->code, SCENE_ACTOR_TUNE_TOWN_HALL)) {
         kind = 2;
-    } else if (mode_code_is(&actor->code, SCENE_ACTOR_TUNE_CODE_3)) {
+    } else if (mode_code_is(&actor->code, SCENE_ACTOR_TUNE_TAILOR)) {
         kind = 3;
     }
     Vec3 position;

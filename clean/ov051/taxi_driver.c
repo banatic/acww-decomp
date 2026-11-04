@@ -231,7 +231,7 @@ int TaxiDriver_UpdateArrive(TaxiDriver *driver)
 
     StateBlock_ClearFlag((u32 *) (void *) &data_021dc7a8, TD_START_FLAG);
     int front[3] = {0, 0, 0};
-    AcreMap_FindBuilding5000Front((int) AcreMap_Town(), front, NULL, NULL);
+    AcreMap_FindTownHallFront((int) AcreMap_Town(), front, NULL, NULL);
     SceneExit_SetTo((SceneExit *) (uintptr_t) (u32) SceneTables_EntryRecord(), TD_EXIT_SCENE,
                     (const Vec3 *) (const void *) front, TD_EXIT_PLAYER_PARAM, TD_EXIT_ANGLE, TD_EXIT_CHANGE_ARG,
                     TD_EXIT_NEXT_ARG);

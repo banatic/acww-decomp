@@ -231,7 +231,7 @@ void EventAnnounce_StepEnter(void *unused)
     if (data_021c75a0.message == SPACESHIP_MESSAGE) {
         found = AcreMap_FindSpaceship(map, (int) (uintptr_t) &position);
     } else {
-        found = AcreMap_HasBuilding5000(map, (int) (uintptr_t) &position, 0, 0);
+        found = AcreMap_HasTownHall(map, (int) (uintptr_t) &position, 0, 0);
     }
     if (!found) {
         return;

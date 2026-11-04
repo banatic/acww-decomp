@@ -17,8 +17,8 @@
  *   job 0xd   ... func_020a53ec told (2, 3, 0, 0);
  *   job 0xe   ... with data_021c75b8 2, the start kind chosen and applied (start_kind.h), then
  *             the scene 0x2d entered;
- *   job 0xf   ... with data_021c75b8 2, the scene 0 entered in front of the town's building
- *             0x5000;
+ *   job 0xf   ... with data_021c75b8 2, the scene 0 entered in front of the town hall
+ *             (building 0x5000);
  *   job 0x10  ... the entry record's exit 2 taken in scene 6, exit 0 elsewhere;
  *   job 0x11  ... the entry record's exit 2 taken;
  *   job 0x12  the card checked, then the written copy and the letters written;
