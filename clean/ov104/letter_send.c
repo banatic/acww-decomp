@@ -2549,7 +2549,7 @@ int LetterSend_Update(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229eee4, LetterSend_Update)
 
-/* func_ov104_0229eef8 (vtable slot 0x5c, phase 4): the scene's end, by how it ended. Answers 1.
+/* func_ov104_0229eef8 (vtable slot 0x5c, phase 5): the scene's end, by how it ended. Answers 1.
  *
  * - Cancelled: the carried letters as they were (LetterSend_RestoreCarried), main told nothing
  *   changed (GroupParams_SetC4C(0)).
@@ -2614,19 +2614,19 @@ int LetterSend_End(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229eef8, LetterSend_End)
 
-/* func_ov104_0229f038 (vtable slot 0x58, phase 1): nothing. */
-int LetterSend_Phase1Idle(void)
+/* func_ov104_0229f038 (vtable slot 0x58, phase 4): nothing. */
+int LetterSend_Phase4Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov104_0229f038, LetterSend_Phase1Idle)
+CLEAN_AS(func_ov104_0229f038, LetterSend_Phase4Idle)
 
-/* func_ov104_0229f03c (vtable slot 0x54, phase 0): nothing. */
-int LetterSend_Phase0Idle(void)
+/* func_ov104_0229f03c (vtable slot 0x54, phase 3): nothing. */
+int LetterSend_Phase3Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov104_0229f03c, LetterSend_Phase0Idle)
+CLEAN_AS(func_ov104_0229f03c, LetterSend_Phase3Idle)
 
 /* Obj_ov104_0229f6d0::func_ov104_0229f040 (vtable slot 0x50, phase 2): a frame of the scene in
  * use: the frame's start, its sub state and its end. Answers 1. */

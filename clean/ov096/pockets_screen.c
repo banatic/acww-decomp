@@ -4486,7 +4486,7 @@ int PocketsScreen_TakeTabSwitch(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_022a192c, PocketsScreen_TakeTabSwitch)
 
-/* func_ov096_022a19c8 (vtable slot 0x5c, phase 4): the scene asks to be deleted. */
+/* func_ov096_022a19c8 (vtable slot 0x5c, phase 5): the scene asks to be deleted. */
 int PocketsScreen_RequestDelete(PocketsScreen *self)
 {
     Process_RequestDelete((Process *) (void *) self);
@@ -4494,19 +4494,19 @@ int PocketsScreen_RequestDelete(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_022a19c8, PocketsScreen_RequestDelete)
 
-/* func_ov096_022a19d8 (vtable slot 0x58, phase 1): nothing. */
-int PocketsScreen_Phase1Idle(void)
+/* func_ov096_022a19d8 (vtable slot 0x58, phase 4): nothing. */
+int PocketsScreen_Phase4Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov096_022a19d8, PocketsScreen_Phase1Idle)
+CLEAN_AS(func_ov096_022a19d8, PocketsScreen_Phase4Idle)
 
-/* func_ov096_022a19dc (vtable slot 0x54, phase 0): nothing. */
-int PocketsScreen_Phase0Idle(void)
+/* func_ov096_022a19dc (vtable slot 0x54, phase 3): nothing. */
+int PocketsScreen_Phase3Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov096_022a19dc, PocketsScreen_Phase0Idle)
+CLEAN_AS(func_ov096_022a19dc, PocketsScreen_Phase3Idle)
 
 /* Obj_ov096_022a23e8::func_ov096_022a19e0 (vtable slot 0x50, phase 2): a frame of the pockets in
  * use: the tab switches first; when none happened, the frame's start, its sub state and its

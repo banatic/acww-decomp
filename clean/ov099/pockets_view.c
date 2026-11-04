@@ -1512,7 +1512,7 @@ void PocketsView_StartSetup(PocketsView *self)
 }
 CLEAN_AS(func_ov099_0229db94, PocketsView_StartSetup)
 
-/* func_ov099_0229dbb0 (vtable slot 0x5c, phase 4): the scene asks to be deleted. */
+/* func_ov099_0229dbb0 (vtable slot 0x5c, phase 5): the scene asks to be deleted. */
 int PocketsView_RequestDelete(PocketsView *self)
 {
     Process_RequestDelete((Process *) (void *) self);
@@ -1520,19 +1520,19 @@ int PocketsView_RequestDelete(PocketsView *self)
 }
 CLEAN_AS(func_ov099_0229dbb0, PocketsView_RequestDelete)
 
-/* func_ov099_0229dbc0 (vtable slot 0x58, phase 1): nothing. */
-int PocketsView_Phase1Idle(void)
+/* func_ov099_0229dbc0 (vtable slot 0x58, phase 4): nothing. */
+int PocketsView_Phase4Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov099_0229dbc0, PocketsView_Phase1Idle)
+CLEAN_AS(func_ov099_0229dbc0, PocketsView_Phase4Idle)
 
-/* func_ov099_0229dbc4 (vtable slot 0x54, phase 0): nothing. */
-int PocketsView_Phase0Idle(void)
+/* func_ov099_0229dbc4 (vtable slot 0x54, phase 3): nothing. */
+int PocketsView_Phase3Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov099_0229dbc4, PocketsView_Phase0Idle)
+CLEAN_AS(func_ov099_0229dbc4, PocketsView_Phase3Idle)
 
 /* Obj_ov099_0229e040::func_ov099_0229dbc8 (vtable slot 0x50, phase 2): a frame of the scene in
  * use: its start, its sub state through the table of member functions (filled once from its

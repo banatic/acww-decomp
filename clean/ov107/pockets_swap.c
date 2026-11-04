@@ -1656,19 +1656,19 @@ int PocketsSwap_RequestDelete(PocketsSwap *self)
 }
 CLEAN_AS(func_ov107_0229de70, PocketsSwap_RequestDelete)
 
-/* func_ov107_0229de80 (vtable slot 0x58): nothing. */
-int PocketsSwap_Phase1Idle(void)
+/* func_ov107_0229de80 (vtable slot 0x58, phase 4): nothing. */
+int PocketsSwap_Phase4Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov107_0229de80, PocketsSwap_Phase1Idle)
+CLEAN_AS(func_ov107_0229de80, PocketsSwap_Phase4Idle)
 
-/* func_ov107_0229de84 (vtable slot 0x54): nothing. */
-int PocketsSwap_Phase0Idle(void)
+/* func_ov107_0229de84 (vtable slot 0x54, phase 3): nothing. */
+int PocketsSwap_Phase3Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov107_0229de84, PocketsSwap_Phase0Idle)
+CLEAN_AS(func_ov107_0229de84, PocketsSwap_Phase3Idle)
 
 /* func_ov107_0229de88 (vtable slot 0x50, phase 2): a frame of the scene in use: the frame's
  * start, its sub state and its end. Answers 1. */

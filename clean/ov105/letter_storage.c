@@ -2636,7 +2636,7 @@ void LetterStorage_StartSetup(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229f1b4, LetterStorage_StartSetup)
 
-/* func_ov105_0229f1d0 (vtable slot 0x5c, phase 4): main told whether the stored letters changed
+/* func_ov105_0229f1d0 (vtable slot 0x5c, phase 5): main told whether the stored letters changed
  * (GroupParams_SetC4C); when they did, they are copied back to the letters the current player
  * keeps (when they have them). Then the scene asks to be deleted. Answers 1. */
 int LetterStorage_End(LetterStorage *self)
@@ -2658,19 +2658,19 @@ int LetterStorage_End(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229f1d0, LetterStorage_End)
 
-/* func_ov105_0229f238 (vtable slot 0x58, phase 1): nothing. */
-int LetterStorage_Phase1Idle(void)
+/* func_ov105_0229f238 (vtable slot 0x58, phase 4): nothing. */
+int LetterStorage_Phase4Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov105_0229f238, LetterStorage_Phase1Idle)
+CLEAN_AS(func_ov105_0229f238, LetterStorage_Phase4Idle)
 
-/* func_ov105_0229f23c (vtable slot 0x54, phase 0): nothing. */
-int LetterStorage_Phase0Idle(void)
+/* func_ov105_0229f23c (vtable slot 0x54, phase 3): nothing. */
+int LetterStorage_Phase3Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov105_0229f23c, LetterStorage_Phase0Idle)
+CLEAN_AS(func_ov105_0229f23c, LetterStorage_Phase3Idle)
 
 /* Obj_ov105_0229fad0::func_ov105_0229f240 (vtable slot 0x50, phase 2): a frame of the scene in
  * use: its start, its sub state, its end. Answers 1. */

@@ -260,7 +260,7 @@ match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
   ov099/pockets_view:PocketsView_LetterPlaceAtTouch ov099/pockets_view:PocketsView_MoveCursor
   ov099/pockets_view:PocketsView_MoveCursorInGrid ov099/pockets_view:PocketsView_MoveHeldItemByKeys
   ov099/pockets_view:PocketsView_New ov099/pockets_view:PocketsView_OpenChoice
-  ov099/pockets_view:PocketsView_Phase0Idle ov099/pockets_view:PocketsView_Phase1Idle
+  ov099/pockets_view:PocketsView_Phase3Idle ov099/pockets_view:PocketsView_Phase4Idle
   ov099/pockets_view:PocketsView_PickActionRow ov099/pockets_view:PocketsView_PickUpItem
   ov099/pockets_view:PocketsView_PickUpOnTurn ov099/pockets_view:PocketsView_PickUpWithCursor
   ov099/pockets_view:PocketsView_PickUpWithTouch ov099/pockets_view:PocketsView_PlaceCursorSprite
@@ -451,14 +451,14 @@ needs: unreachable
 match: ov090/menu_tabs:MenuTabs_Phase3 ov090/menu_tabs:MenuTabs_Phase4
   ov091/letter_reader:LetterReader_Phase3 ov091/letter_reader:LetterReader_Phase4
   ov092/menu_dispatch:MenuDispatch_Phase3 ov092/menu_dispatch:MenuDispatch_Phase4
-  ov096/pockets_screen:PocketsScreen_Phase0Idle ov096/pockets_screen:PocketsScreen_Phase1Idle
+  ov096/pockets_screen:PocketsScreen_Phase3Idle ov096/pockets_screen:PocketsScreen_Phase4Idle
   ov100/pockets_box_scene:PocketsBox_Phase3Idle ov100/pockets_box_scene:PocketsBox_Phase4Idle
   ov101/pockets_pick:PocketsPick_Phase3Idle ov101/pockets_pick:PocketsPick_Phase4Idle
   ov102/storage_scene:StorageScene_Phase3Idle ov102/storage_scene:StorageScene_Phase4Idle
-  ov104/letter_send:LetterSend_Phase0Idle ov104/letter_send:LetterSend_Phase1Idle
-  ov105/letter_storage:LetterStorage_Phase0Idle ov105/letter_storage:LetterStorage_Phase1Idle
-  ov106/mailbox_scene:MailboxScene_Phase0Idle ov106/mailbox_scene:MailboxScene_Phase1Idle
-  ov107/pockets_swap:PocketsSwap_Phase0Idle ov107/pockets_swap:PocketsSwap_Phase1Idle
+  ov104/letter_send:LetterSend_Phase3Idle ov104/letter_send:LetterSend_Phase4Idle
+  ov105/letter_storage:LetterStorage_Phase3Idle ov105/letter_storage:LetterStorage_Phase4Idle
+  ov106/mailbox_scene:MailboxScene_Phase3Idle ov106/mailbox_scene:MailboxScene_Phase4Idle
+  ov107/pockets_swap:PocketsSwap_Phase3Idle ov107/pockets_swap:PocketsSwap_Phase4Idle
   ov108/letter_pick:LetterPick_Phase3Idle ov108/letter_pick:LetterPick_Phase4Idle
   ov109/song_pockets:SongPockets_Phase3Idle ov109/song_pockets:SongPockets_Phase4Idle
   ov110/public_box_states:PublicBox_Phase3Idle ov110/public_box_states:PublicBox_Phase4Idle
@@ -470,8 +470,8 @@ match: ov090/menu_tabs:MenuTabs_Phase3 ov090/menu_tabs:MenuTabs_Phase4
   ov118/map_menu_scene:MapMenu_Phase3 ov118/map_menu_scene:MapMenu_Phase4
   ov119/friend_roster:FriendRoster_Phase3Idle ov119/friend_roster:FriendRoster_Phase4Idle
   ov120/town_map:TownMap_Phase3 ov120/town_map:TownMap_Phase4 ov121/my_designs:MyDesigns_Phase3
-  ov121/my_designs:MyDesigns_Phase4 ov122/letter_write_scene:LetterWrite_Phase0Idle
-  ov122/letter_write_scene:LetterWrite_Phase1Idle ov123/design_editor:DesignEditor_Phase3Idle
+  ov121/my_designs:MyDesigns_Phase4 ov122/letter_write_scene:LetterWrite_Phase3Idle
+  ov122/letter_write_scene:LetterWrite_Phase4Idle ov123/design_editor:DesignEditor_Phase3Idle
   ov123/design_editor:DesignEditor_Phase4Idle ov125/design_picker:DesignPicker_Phase3Idle
   ov125/design_picker:DesignPicker_Phase4Idle ov126/keyboard_entry_scene:KeyboardEntry_Slot54
   ov126/keyboard_entry_scene:KeyboardEntry_Slot58 ov128/star_view:StarView_Phase3

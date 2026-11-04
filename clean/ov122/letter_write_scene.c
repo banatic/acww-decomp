@@ -2848,7 +2848,7 @@ int LetterWrite_CloseOnRequest(LetterWriteScene *self)
 }
 CLEAN_AS(func_ov122_022a1e90, LetterWrite_CloseOnRequest)
 
-/* func_ov122_022a1ef4 (vtable slot 0x5c, phase 4): the header and the footer kept as the
+/* func_ov122_022a1ef4 (vtable slot 0x5c, phase 5): the header and the footer kept as the
  * player's defaults, then the scene asks to be deleted. Answers 1. */
 int LetterWrite_End(LetterWriteScene *self)
 {
@@ -2858,19 +2858,19 @@ int LetterWrite_End(LetterWriteScene *self)
 }
 CLEAN_AS(func_ov122_022a1ef4, LetterWrite_End)
 
-/* func_ov122_022a1f0c (vtable slot 0x58, phase 1): nothing. */
-int LetterWrite_Phase1Idle(void)
+/* func_ov122_022a1f0c (vtable slot 0x58, phase 4): nothing. */
+int LetterWrite_Phase4Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov122_022a1f0c, LetterWrite_Phase1Idle)
+CLEAN_AS(func_ov122_022a1f0c, LetterWrite_Phase4Idle)
 
-/* func_ov122_022a1f10 (vtable slot 0x54, phase 0): nothing. */
-int LetterWrite_Phase0Idle(void)
+/* func_ov122_022a1f10 (vtable slot 0x54, phase 3): nothing. */
+int LetterWrite_Phase3Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov122_022a1f10, LetterWrite_Phase0Idle)
+CLEAN_AS(func_ov122_022a1f10, LetterWrite_Phase3Idle)
 
 /* Obj_ov122_022a2738::func_ov122_022a1f14 (vtable slot 0x50, phase 2): a frame of the scene in
  * use, unless the menu closes on main's request: the sprites updated, the sub state, then the

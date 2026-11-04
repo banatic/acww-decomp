@@ -2474,7 +2474,7 @@ void MailboxScene_StartSetup(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229eeb4, MailboxScene_StartSetup)
 
-/* func_ov106_0229eed0 (vtable slot 0x5c, phase 4): main told the letters changed
+/* func_ov106_0229eed0 (vtable slot 0x5c, phase 5): main told the letters changed
  * (GroupParams_SetC4C(1), always), the scene's ten letters compacted (Mail_Compact, its answer
  * unused) and copied back to the current player's mailbox. Then the scene asks to be deleted.
  * Answers 1. */
@@ -2492,19 +2492,19 @@ int MailboxScene_End(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229eed0, MailboxScene_End)
 
-/* func_ov106_0229ef28 (vtable slot 0x58, phase 1): nothing. */
-int MailboxScene_Phase1Idle(void)
+/* func_ov106_0229ef28 (vtable slot 0x58, phase 4): nothing. */
+int MailboxScene_Phase4Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov106_0229ef28, MailboxScene_Phase1Idle)
+CLEAN_AS(func_ov106_0229ef28, MailboxScene_Phase4Idle)
 
-/* func_ov106_0229ef2c (vtable slot 0x54, phase 0): nothing. */
-int MailboxScene_Phase0Idle(void)
+/* func_ov106_0229ef2c (vtable slot 0x54, phase 3): nothing. */
+int MailboxScene_Phase3Idle(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov106_0229ef2c, MailboxScene_Phase0Idle)
+CLEAN_AS(func_ov106_0229ef2c, MailboxScene_Phase3Idle)
 
 /* Obj_ov106_0229f6e0::func_ov106_0229ef30 (vtable slot 0x50, phase 2): a frame of the scene in
  * use. The menu close's delay is counted first; when the menu is asked to close in sub state 0,
