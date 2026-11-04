@@ -1,5 +1,7 @@
-/* func_ov094_0229a9b4 @ 0x0229a9b4, 0x60 bytes, Thumb, module ov094
+/* pockets_grid_4: 2 functions, module ov094
  * mwccarm 1.2/base -O4,s
+ * func_ov094_0229a9b4 @ 0x0229a9b4, 0x60 bytes, Thumb
+ * func_ov094_0229a99c @ 0x0229a99c, 0x18 bytes, Thumb
  */
 
 extern int func_ov094_0229a524(unsigned int a, unsigned int b);
@@ -8,6 +10,7 @@ extern int func_ov094_0229aa84(unsigned int a, unsigned int b);
 extern void func_ov094_0229a34c(unsigned int a, unsigned int b);
 extern void func_ov094_0229a36c(unsigned int a, unsigned int b);
 extern void func_ov094_0229a958(unsigned int a, int b, int c, int d);
+extern int data_ov094_0229bf70;
 
 void func_ov094_0229a9b4(unsigned int param1, unsigned int param2)
 {
@@ -26,4 +29,9 @@ void func_ov094_0229a9b4(unsigned int param1, unsigned int param2)
         func_ov094_0229a36c(param1 + 0xa38, param2);
         func_ov094_0229a958(param1, r7, r6, sp0);
     }
+}
+
+void func_ov094_0229a99c(int a0, int a1, int a2)
+{
+    func_ov094_0229a958(a0, (int) (&data_ov094_0229bf70), a1, a2);
 }
