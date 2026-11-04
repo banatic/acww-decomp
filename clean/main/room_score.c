@@ -456,11 +456,11 @@ static void add_points(void *context, u16 *item, u32 x, u32 z)
     (void) x;
     (void) z;
     if (ItemCode_HasVariant(item)) {
-        *total += ItemInfo_ScorePoints(FurnitureInfo_Unk04(ItemCode_VariantItem(item)));
+        *total += ItemInfo_ScorePoints(FurnitureInfo_ListGroup(ItemCode_VariantItem(item)));
     }
 }
 
-/* func_0205ac84: the points of the room's furniture, by FurnitureInfo_Unk04 (func_0206226c). */
+/* func_0205ac84: the points of the room's furniture, by FurnitureInfo_ListGroup (func_0206226c). */
 int RoomScore_ItemPoints(RoomScoreRoom *room, AcreMap *map)
 {
     int total = 0;

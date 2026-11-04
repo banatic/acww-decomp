@@ -549,7 +549,7 @@ CLEAN_AS(func_ov114_0229c8dc, CatalogList_ResetPicture)
 void CatalogList_LoadIcon(CatalogList *self, const ItemCode *item, int slot)
 {
     CatalogListEntry *entry = &self->entries[slot];
-    int icon = ItemTraits_Unk02(item);
+    int icon = ItemTraits_Icon(item);
     if ((u32) icon == (u32) entry->icon) {
         return;
     }

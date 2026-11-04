@@ -396,7 +396,7 @@ CLEAN_CUE_SHA = {
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
     'clean/main/villager_talk.c': 'ba844325677b85c53ec2a3a7d8d9312f4c0d70b86e1e41595aa60ff75706967d',
     'clean/main/villager_talk_replies.c': '72ef64053c5bbe0f4c8fc7881378dd5255c8fa78756de8383cca9b0220fe2507',
-    'clean/ov094/pockets_grid.c': '87926d988fdd840217cda1a73ea8d9bdcc3aa7d7ddb93d2a0c2f87420ee98a53',
+    'clean/ov094/pockets_grid.c': '093ef1a3af08d94416bafcbfff3b7f20d40ea37e1ebf127575091f63fd762070',
     'clean/ov004/push_box.c': '7a3464385bff4588f7aad11452e78ed5283edd2ff6d409d3e7a3188a519b8d52',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {

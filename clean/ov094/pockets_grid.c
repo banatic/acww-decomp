@@ -675,7 +675,7 @@ void PocketsGrid_SetPopupText(PocketsGrid *grid, Popup *popup, u16 *item, int st
 CLEAN_AS(func_ov094_0229abf8, PocketsGrid_SetPopupText)
 
 /* func_ov094_0229acb0: the icon of `item` in slot state `state`: 0xb3 in state 1; in state 2
- * 0xb4 unless the item is one of 0x155f-0x1564; else the item's own (ItemTraits_Unk02). */
+ * 0xb4 unless the item is one of 0x155f-0x1564; else the item's own (ItemTraits_Icon). */
 int PocketsGrid_IconOf(PocketsGrid *grid, u16 *item, int state)
 {
     (void) grid;
@@ -686,9 +686,9 @@ int PocketsGrid_IconOf(PocketsGrid *grid, u16 *item, int state)
             if (PocketsItem_IsIn155fTo1564(*item) == 0) {
                 return POCKETS_GRID_ICON_STATE_2;
             }
-            return ItemTraits_Unk02(item);
+            return ItemTraits_Icon(item);
         default:
-            return ItemTraits_Unk02(item);
+            return ItemTraits_Icon(item);
     }
 }
 CLEAN_AS(func_ov094_0229acb0, PocketsGrid_IconOf)

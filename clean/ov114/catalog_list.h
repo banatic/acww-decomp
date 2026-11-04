@@ -68,7 +68,7 @@ enum CatalogListScrollMode {
  * palette, and the icon whose characters they are. */
 typedef struct CatalogListEntry {
     OamEntry obj; /* 0x0: tile 0xc0 + 2 * place, the icon's palette */
-    s32 icon;     /* 0x8: ItemTraits_Unk02 of the item, -1 for none */
+    s32 icon;     /* 0x8: ItemTraits_Icon of the item, -1 for none */
 } CatalogListEntry;
 
 /* The description's text class (vtable data_ov114_0229daf0) on main's text base: 266 8-bit

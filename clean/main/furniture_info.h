@@ -19,14 +19,14 @@
 
 /* A record of always.bin. */
 typedef struct FurnitureAlways {
-    u8 group;    /* 0x00: FurnitureInfo_CountInGroup counts the numbers sharing it */
-    u8 unk_01;   /* 0x01 */
-    u8 unk_02;   /* 0x02 */
-    u8 unk_03;   /* 0x03 */
-    u8 unk_04;   /* 0x04 */
-    u8 shape;    /* 0x05: the footprint's shape (item_footprint.h) */
-    u8 category; /* 0x06 */
-    u8 flags;    /* 0x07: bits 0-4 */
+    u8 group;      /* 0x00: FurnitureInfo_CountInGroup counts the numbers sharing it */
+    u8 unk_01;     /* 0x01 */
+    u8 unk_02;     /* 0x02 */
+    u8 unk_03;     /* 0x03 */
+    u8 list_group; /* 0x04: the item list group (ItemInfoAlways.list_group) */
+    u8 shape;      /* 0x05: the footprint's shape (item_footprint.h) */
+    u8 category;   /* 0x06 */
+    u8 flags;      /* 0x07: bits 0-4 */
 } FurnitureAlways;
 
 /* A record of indoor.bin. */
@@ -86,8 +86,8 @@ int FurnitureInfo_ItemUnk03(const ItemCode *item);
 int FurnitureInfo_Unk03(int number);
 int FurnitureInfo_ItemShape(const ItemCode *item);
 u8 FurnitureInfo_Shape(int number);
-int FurnitureInfo_ItemUnk04(const ItemCode *item);
-u8 FurnitureInfo_Unk04(int number);
+int FurnitureInfo_ItemListGroup(const ItemCode *item);
+u8 FurnitureInfo_ListGroup(int number);
 int FurnitureInfo_ItemGroup(const ItemCode *item);
 u8 FurnitureInfo_Group(int number);
 int FurnitureInfo_Unk02(int number);
@@ -120,7 +120,7 @@ int FurnitureInfo_NoneB(int number);
 int FurnitureInfo_NoneC(int number);
 int FurnitureInfo_DmaUnk19(int number);
 u8 FurnitureInfo_DmaUnk18(int number);
-u16 FurnitureInfo_DmaUnk16(int number);
+u16 FurnitureInfo_Price(int number);
 void FurnitureFiles_FreeIndoor(FurnitureRecordFiles *files);
 int FurnitureFiles_LoadIndoor(FurnitureRecordFiles *files, int stream);
 void FurnitureFiles_Close(FurnitureRecordFiles *files);

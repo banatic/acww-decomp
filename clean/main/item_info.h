@@ -26,11 +26,11 @@
 /* A record of always.bin. */
 typedef struct ItemInfoAlways {
     u16 price;     /* 0x00: the bells the item is worth (for a pile: the full pile) */
-    u16 unk_02;    /* 0x02 */
+    u16 icon;      /* 0x02: its icon on the pockets and catalog screens */
     u8 item_class; /* 0x04 */
     u8 series;     /* 0x05: its series (series.bin) */
-    u8 unk_06;     /* 0x06 */
-    u8 unk_07;     /* 0x07 */
+    u8 list_group; /* 0x06: the item list group the shops draw by (item_lists.h) */
+    u8 look;       /* 0x07: the model it is drawn with (ItemInfo_LookModelName) */
     u8 unk_08;     /* 0x08: read for items of class 5 */
     u8 flags;      /* 0x09: bit 0 a held model; bits 1-4 */
     u8 unk_0a[2];  /* 0x0a */
@@ -38,7 +38,7 @@ typedef struct ItemInfoAlways {
 
 /* A record of indoor.bin. */
 typedef struct ItemInfoIndoor {
-    u8 unk_00;       /* 0x00 */
+    u8 style;        /* 0x00: a cloth's style (0-9) */
     u8 ground_sound; /* 0x01: a ground sound attribute (ground_sound.c) */
     u8 unk_02[2];    /* 0x02 */
 } ItemInfoIndoor;
@@ -65,7 +65,7 @@ const char *ItemInfo_LookModelName(int look, int outdoors);
 int ItemInfo_ScorePoints(int value);
 const ItemInfoSeries *ItemInfo_SeriesRecord(int series);
 u8 ItemInfo_SeriesKind(int series);
-u8 ItemInfo_IndoorUnk00(const u16 *item);
+u8 ItemInfo_IndoorStyle(const u16 *item);
 u8 ItemInfo_IndoorUnk01(const u16 *item);
 int ItemInfo_FlagBit4(const u16 *item);
 int ItemInfo_FlagBit3(const u16 *item);
@@ -73,29 +73,29 @@ int ItemInfo_FlagBit2(const u16 *item);
 int ItemInfo_FlagBit1(const u16 *item);
 int ItemInfo_HasHeldModel(const u16 *item);
 int ItemInfo_Class5Unk08(const u16 *item);
-u8 ItemInfo_Unk07(const u16 *item);
-int ItemInfo_Unk06(const u16 *item);
+u8 ItemInfo_Look(const u16 *item);
+int ItemInfo_ListGroup(const u16 *item);
 u8 ItemInfo_Class(const u16 *item);
 int ItemInfo_Price(const u16 *item);
 u8 ItemInfo_Series(const u16 *item);
 int ItemInfo_NoneA(const u16 *item);
 int ItemInfo_NoneB(const u16 *item);
 int ItemInfo_NoneC(const u16 *item);
-u16 ItemInfo_Unk02(const u16 *item);
+u16 ItemInfo_Icon(const u16 *item);
 const ItemInfoDma *ItemInfo_Dma(const u16 *item);
 int ItemInfo_FreeIndoor(void);
 void ItemInfo_LoadIndoor(int stream);
 void ItemInfo_Close(void);
 void ItemInfo_Open(void);
 int ItemInfo_Zero(void);
-void ItemInfo_CountUnk06Is1d(void);
+void ItemInfo_CountTailorHeadwear(void);
 void ItemInfo_CountSharedPairs(void);
 void ItemInfo_FindHeldModels(void);
 int ItemInfoFiles_FreeIndoor(ItemInfoFiles *files);
 void ItemInfoFiles_LoadIndoor(ItemInfoFiles *files, int stream);
 
-int ItemInfo_Count13a8Unk06Is1d(void);
-u32 ItemInfo_Count13c8Unk06Is1d(void);
+int ItemInfo_CountTailorHeadA(void);
+u32 ItemInfo_CountTailorHeadB(void);
 u32 ItemInfo_CountSecondOfPair(void);
 int ItemInfo_CountFirstOfPair(void);
 u32 ItemInfo_HeldModelNumber(const u16 *item);

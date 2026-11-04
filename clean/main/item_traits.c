@@ -34,12 +34,12 @@
 #define ITEM_TRAITS_CLASS_ROOM_450C 0x39
 #define ITEM_TRAITS_CLASS_ROOM_45DC 0x3a
 #define ITEM_TRAITS_CLASS_ROOM_OTHER 0x3b
-/* ItemTraits_Unk02 of the room codes 0x450c-0x45db. */
+/* ItemTraits_Icon of the room codes 0x450c-0x45db. */
 #define ITEM_TRAITS_UNK02_ROOM_450C 0xa7
 /* ItemTraits_FishValue and ItemTraits_FishGroupOrder of an item that is no fish. */
 #define ITEM_TRAITS_NO_FISH_VALUE 10
 #define ITEM_TRAITS_NO_FISH_ORDER 4
-#define ITEM_TRAITS_HEAD_A_UNK07 8
+#define ITEM_TRAITS_HAT_LOOK 8
 
 /* An arithmetic shift right, as the ARM's ASR does it, for negative values too. */
 static int shift_right(int value, int bits)
@@ -223,7 +223,7 @@ u32 ItemTraits_ClothStyle(const ItemCode *item)
         return 0;
     }
     ItemCode code = *item;
-    return ItemInfo_IndoorUnk00(&code);
+    return ItemInfo_IndoorStyle(&code);
 }
 CLEAN_AS(func_0204c228, ItemTraits_ClothStyle)
 
@@ -317,12 +317,13 @@ int ItemTraits_CarriedNonCreature(const ItemCode *item, ItemCode *out)
 }
 CLEAN_AS(func_0204c438, ItemTraits_CarriedNonCreature)
 
-/* func_0204c4c0: a head item 0x13a8-0x13c7 whose ItemTraits_Unk07 is 8. */
-int ItemTraits_IsHeadAUnk07Is8(const ItemCode *item)
+/* func_0204c4c0: a head item 0x13a8-0x13c7 drawn with look 8, the one the items 0x13c8-0x1407
+ * share, rather than a look of its own. */
+int ItemTraits_IsHeadAWithHatLook(const ItemCode *item)
 {
-    return ItemGroup_IsHeadA(item) && ItemTraits_Unk07(item) == ITEM_TRAITS_HEAD_A_UNK07;
+    return ItemGroup_IsHeadA(item) && ItemTraits_Look(item) == ITEM_TRAITS_HAT_LOOK;
 }
-CLEAN_AS(func_0204c4c0, ItemTraits_IsHeadAUnk07Is8)
+CLEAN_AS(func_0204c4c0, ItemTraits_IsHeadAWithHatLook)
 
 /* func_0204c4e8: for an item of kind 1 whether it has a held model, 0 for another. */
 int ItemTraits_HasHeldModel(const ItemCode *item)
@@ -362,13 +363,13 @@ CLEAN_AS(func_0204c520, ItemTraits_Class)
 
 /* func_0204c63c: for an item whose carried form is of kind 1 that form's always.bin byte 7;
  * for one of kind 3 or 4 whether it is one of 0x45dc-0x47d7; 0 for any other. */
-int ItemTraits_Unk07(const ItemCode *item)
+int ItemTraits_Look(const ItemCode *item)
 {
     ItemCode carried = carried_form(item);
     switch (ItemCode_Kind(&carried)) {
         case ITEM_TRAITS_KIND_CARRIED: {
             ItemCode code = carried;
-            return ItemInfo_Unk07(&code);
+            return ItemInfo_Look(&code);
         }
         case ITEM_TRAITS_KIND_ROOM_A:
         case ITEM_TRAITS_KIND_ROOM_B:
@@ -377,16 +378,16 @@ int ItemTraits_Unk07(const ItemCode *item)
             return 0;
     }
 }
-CLEAN_AS(func_0204c63c, ItemTraits_Unk07)
+CLEAN_AS(func_0204c63c, ItemTraits_Look)
 
 /* func_0204c6b8: for an item of kind 1 its always.bin halfword 2; for one of kind 3 or 4 0xa7
  * (0x450c-0x45db), 1 (0x45dc-0x47d7) or 0; 0 for any other. */
-int ItemTraits_Unk02(const ItemCode *item)
+int ItemTraits_Icon(const ItemCode *item)
 {
     switch (ItemCode_Kind(item)) {
         case ITEM_TRAITS_KIND_CARRIED: {
             ItemCode code = *item;
-            return ItemInfo_Unk02(&code);
+            return ItemInfo_Icon(&code);
         }
         case ITEM_TRAITS_KIND_ROOM_A:
         case ITEM_TRAITS_KIND_ROOM_B:
@@ -398,7 +399,7 @@ int ItemTraits_Unk02(const ItemCode *item)
             return 0;
     }
 }
-CLEAN_AS(func_0204c6b8, ItemTraits_Unk02)
+CLEAN_AS(func_0204c6b8, ItemTraits_Icon)
 
 /* func_0204c788: an item's price at the store, halved (rounded down) during the store's time
  * sale (NookStore_IsTimeSale, 0 or 1) except for a bag of bells. */
@@ -508,7 +509,7 @@ CLEAN_AS(func_0204c86c, ItemTraits_ShopPointsLevel)
 /* func_0204c878: an item's price in bells, by its carried form. Of kind 1: its always.bin price
  * (ItemInfo_Price), ten times that for a bag of bells (so a bag's price is the bells it
  * holds), a fifth for the town's own fruit, a hundred times for the items 0x1406 and 0x1407.
- * Of kinds 3 and 4: its variant item's FurnitureInfo_DmaUnk16, a hundred times for variant
+ * Of kinds 3 and 4: its variant item's FurnitureInfo_Price, a hundred times for variant
  * item 0x208. 0 for another kind.
  * QUIRK: 0x1406 and 0x1407 are looked for in the item as given, not its carried form. */
 int ItemTraits_Price(const ItemCode *item)
@@ -538,7 +539,7 @@ int ItemTraits_Price(const ItemCode *item)
         case ITEM_TRAITS_KIND_ROOM_A:
         case ITEM_TRAITS_KIND_ROOM_B: {
             int variant_item = ItemCode_VariantItem(&carried);
-            int price = FurnitureInfo_DmaUnk16(variant_item);
+            int price = FurnitureInfo_Price(variant_item);
             if (variant_item == ITEM_TRAITS_HUNDREDFOLD_VARIANT) {
                 return item_traits_times(price, ITEM_TRAITS_HUNDREDFOLD);
             }

@@ -1728,13 +1728,13 @@ int PocketsScreen_HeldRecordSlot(PocketsScreen *self)
     }
     if (item_in(item, 0x1431, 0x1491)) {
         u16 slot4 = (u16) PocketsScreen_RecordSlotItem(self, 4);
-        if (slot4 != ITEM_CODE_NONE && item_in(slot4, 0x13a8, 0x13c7) && ItemTraits_IsHeadAUnk07Is8(&slot4) == 0) {
+        if (slot4 != ITEM_CODE_NONE && item_in(slot4, 0x13a8, 0x13c7) && ItemTraits_IsHeadAWithHatLook(&slot4) == 0) {
             return 6;
         }
         return 3;
     }
     if (item_in(item, 0x13a8, 0x13c7)) {
-        if ((u16) PocketsScreen_RecordSlotItem(self, 3) != ITEM_CODE_NONE && ItemTraits_IsHeadAUnk07Is8(&item) == 0) {
+        if ((u16) PocketsScreen_RecordSlotItem(self, 3) != ITEM_CODE_NONE && ItemTraits_IsHeadAWithHatLook(&item) == 0) {
             return 0;
         }
         return 4;

@@ -19,14 +19,14 @@ extern ItemInfoFiles data_021cb5e0;
  * and how many there are. */
 extern u16 data_021cb5b0;
 extern u32 data_021cb5c0;
-/* The counts ItemInfo_CountSharedPairs and ItemInfo_CountUnk06Is1d keep. */
+/* The counts ItemInfo_CountSharedPairs and ItemInfo_CountTailorHeadwear keep. */
 extern int data_021cb5b4; /* items 0x1408-0x1428 func_0204be38 accepts */
 extern u32 data_021cb5b8; /* items 0x1471-0x1491 func_0204bd84 accepts (the first refused) */
-extern int data_021cb5bc; /* items 0x13a8-0x13c7 with unk_06 0x1d */
-extern u32 data_021cb5c4; /* items 0x13c8-0x1407 with unk_06 0x1d */
+extern int data_021cb5bc; /* items 0x13a8-0x13c7 in the tailor's list group */
+extern u32 data_021cb5c4; /* items 0x13c8-0x1407 in the tailor's list group */
 /* By look (0-0x48), the names of its two models: outdoors, and in a room. */
 extern const char *const data_020de368[][2];
-/* The points of each value 0-45 of FurnitureAlways.unk_04 (room_score.c). */
+/* The points of each value 0-45 of FurnitureAlways.list_group (room_score.c). */
 extern const u16 data_020cca34[];
 
 #define ITEM_INFO_LAST_NUMBER (ITEM_INFO_NUMBERS - 1)
@@ -39,8 +39,8 @@ extern const u16 data_020cca34[];
 #define ITEM_INFO_FLAG_HELD_MODEL 0
 /* The codes looked through for held models. */
 #define ITEM_INFO_FIRST_CODE 0x1000
-/* The items whose unk_06 0x1d ItemInfo_CountUnk06Is1d counts. */
-#define ITEM_INFO_UNK_06_COUNTED 0x1d
+/* The list group of the tailor's lots (tailor_stock.c), which ItemInfo_CountTailorHeadwear counts. */
+#define ITEM_INFO_LIST_GROUP_TAILOR 0x1d
 #define ITEM_INFO_13C8_FIRST 0x13c8
 #define ITEM_INFO_13C8_ITEMS 0x40
 #define ITEM_INFO_13A8_FIRST 0x13a8
@@ -103,18 +103,18 @@ static int item_info_same(const u16 *a, const u16 *b)
 }
 
 /* func_02062118 */
-int ItemInfo_Count13a8Unk06Is1d(void)
+int ItemInfo_CountTailorHeadA(void)
 {
     return data_021cb5bc;
 }
-CLEAN_AS(func_02062118, ItemInfo_Count13a8Unk06Is1d)
+CLEAN_AS(func_02062118, ItemInfo_CountTailorHeadA)
 
 /* func_02062124 */
-u32 ItemInfo_Count13c8Unk06Is1d(void)
+u32 ItemInfo_CountTailorHeadB(void)
 {
     return data_021cb5c4;
 }
-CLEAN_AS(func_02062124, ItemInfo_Count13c8Unk06Is1d)
+CLEAN_AS(func_02062124, ItemInfo_CountTailorHeadB)
 
 /* func_02062130 */
 u32 ItemInfo_CountSecondOfPair(void)
@@ -193,7 +193,7 @@ const char *ItemInfo_LookModelName(int look, int outdoors)
 }
 CLEAN_AS(func_0206223c, ItemInfo_LookModelName)
 
-/* func_0206226c: the points a value of FurnitureAlways.unk_04 gives a room; 0 from 46.
+/* func_0206226c: the points a value of FurnitureAlways.list_group gives a room; 0 from 46.
  * REQUIRES: `value` is not negative. */
 int ItemInfo_ScorePoints(int value)
 {
@@ -230,13 +230,13 @@ u8 ItemInfo_SeriesKind(int series)
 }
 CLEAN_AS(func_020622a0, ItemInfo_SeriesKind)
 
-/* func_020622c4: ItemInfoIndoor.unk_00. */
-u8 ItemInfo_IndoorUnk00(const u16 *item)
+/* func_020622c4: ItemInfoIndoor.style. */
+u8 ItemInfo_IndoorStyle(const u16 *item)
 {
     const ItemInfoIndoor *record = item_info_indoor(item_info_number(*item));
-    return record != NULL ? record->unk_00 : 0;
+    return record != NULL ? record->style : 0;
 }
-CLEAN_AS(func_020622c4, ItemInfo_IndoorUnk00)
+CLEAN_AS(func_020622c4, ItemInfo_IndoorStyle)
 
 /* func_02062300: ItemInfoIndoor.ground_sound. */
 u8 ItemInfo_IndoorUnk01(const u16 *item)
@@ -293,21 +293,21 @@ int ItemInfo_Class5Unk08(const u16 *item)
 }
 CLEAN_AS(func_02062734, ItemInfo_Class5Unk08)
 
-/* func_02062780: ItemInfoAlways.unk_07. */
-u8 ItemInfo_Unk07(const u16 *item)
+/* func_02062780: ItemInfoAlways.look. */
+u8 ItemInfo_Look(const u16 *item)
 {
     const ItemInfoAlways *record = item_info_always(item_info_number(*item));
-    return record != NULL ? record->unk_07 : 0;
+    return record != NULL ? record->look : 0;
 }
-CLEAN_AS(func_02062780, ItemInfo_Unk07)
+CLEAN_AS(func_02062780, ItemInfo_Look)
 
-/* func_020627bc: ItemInfoAlways.unk_06 (of the full pile). */
-int ItemInfo_Unk06(const u16 *item)
+/* func_020627bc: ItemInfoAlways.list_group (of the full pile). */
+int ItemInfo_ListGroup(const u16 *item)
 {
     const ItemInfoAlways *record = item_info_always(item_info_full_number(item));
-    return record != NULL ? record->unk_06 : 0;
+    return record != NULL ? record->list_group : 0;
 }
-CLEAN_AS(func_020627bc, ItemInfo_Unk06)
+CLEAN_AS(func_020627bc, ItemInfo_ListGroup)
 
 /* func_02062870: ItemInfoAlways.item_class. */
 u8 ItemInfo_Class(const u16 *item)
@@ -365,13 +365,13 @@ int ItemInfo_NoneC(const u16 *item)
 }
 CLEAN_AS(func_020629e4, ItemInfo_NoneC)
 
-/* func_020629ec: ItemInfoAlways.unk_02. */
-u16 ItemInfo_Unk02(const u16 *item)
+/* func_020629ec: ItemInfoAlways.icon. */
+u16 ItemInfo_Icon(const u16 *item)
 {
     const ItemInfoAlways *record = item_info_always(item_info_number(*item));
-    return record != NULL ? record->unk_02 : 0;
+    return record != NULL ? record->icon : 0;
 }
-CLEAN_AS(func_020629ec, ItemInfo_Unk02)
+CLEAN_AS(func_020629ec, ItemInfo_Icon)
 
 /* func_02062a28: the dma.bin record (of the full pile), or NULL. */
 const ItemInfoDma *ItemInfo_Dma(const u16 *item)
@@ -416,9 +416,9 @@ int ItemInfo_Zero(void)
 }
 CLEAN_AS(func_02062b14, ItemInfo_Zero)
 
-/* func_02062b18: how many of the items 0x13c8-0x1407 and of 0x13a8-0x13c7 have unk_06 0x1d,
+/* func_02062b18: how many of the items 0x13c8-0x1407 and of 0x13a8-0x13c7 are in list group 0x1d,
  * counted afresh. */
-void ItemInfo_CountUnk06Is1d(void)
+void ItemInfo_CountTailorHeadwear(void)
 {
     u16 item;
 
@@ -426,18 +426,18 @@ void ItemInfo_CountUnk06Is1d(void)
     data_021cb5c4 = 0;
     for (u32 i = 0; i < ITEM_INFO_13C8_ITEMS; i++) {
         item = (u16) (ITEM_INFO_13C8_FIRST + i);
-        if (ItemInfo_Unk06(&item) == ITEM_INFO_UNK_06_COUNTED) {
+        if (ItemInfo_ListGroup(&item) == ITEM_INFO_LIST_GROUP_TAILOR) {
             data_021cb5c4++;
         }
     }
     for (u32 i = 0; i < ITEM_INFO_13A8_ITEMS; i++) {
         item = (u16) (ITEM_INFO_13A8_FIRST + i);
-        if (ItemInfo_Unk06(&item) == ITEM_INFO_UNK_06_COUNTED) {
+        if (ItemInfo_ListGroup(&item) == ITEM_INFO_LIST_GROUP_TAILOR) {
             data_021cb5bc++;
         }
     }
 }
-CLEAN_AS(func_02062b18, ItemInfo_CountUnk06Is1d)
+CLEAN_AS(func_02062b18, ItemInfo_CountTailorHeadwear)
 
 /* func_02062b98: for each of the 33 pairs, its first item counted when func_0204be38 accepts
  * it, else its second when func_0204bd84 does.
@@ -532,7 +532,7 @@ int ItemInfoFiles_Open(ItemInfoFiles *files)
                             data_020de5e0, sizeof(ItemInfoDma), ITEM_INFO_FILE_RECORDS);
     ItemInfo_FindHeldModels();
     ItemInfo_CountSharedPairs();
-    ItemInfo_CountUnk06Is1d();
+    ItemInfo_CountTailorHeadwear();
     (void) RecordFile_Open(&files->series, data_020de5f4, sizeof(ItemInfoSeries), ITEM_INFO_SERIES_RECORDS);
     RecordFile_ReadWhole(&files->series);
     return 1;

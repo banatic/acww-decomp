@@ -46,7 +46,7 @@ extern void func_0210744c(u8 *model, int value);
 extern void func_02107524(u8 *model, u16 colour);
 
 /* The process's words outside the parts tile_event.h names. */
-#define TOWN_ITEM_MODELS_ITEM_HOLDERS 0x0050 /* the holders of items, by ItemTraits_Unk07 */
+#define TOWN_ITEM_MODELS_ITEM_HOLDERS 0x0050 /* the holders of items, by ItemTraits_Look */
 #define TOWN_ITEM_MODELS_CODE_1D 0x3060      /* the holders of codes 0x1d and 0x1e */
 #define TOWN_ITEM_MODELS_CODE_E3 0x46f4      /* five holders for the codes 0xe3-0xfb */
 #define TOWN_ITEM_MODELS_SHORT 0x4978        /* twelve holders for the short lines */
@@ -310,8 +310,7 @@ void TownItemModels_DrawAround(TileEventProcess *process, AcreMap *map)
                     if (FieldUnits_IsBitSet((UnitBitsGrid *) (void *) map, x, z)) {
                         TownItemModels_DrawCodeA6(process, tile, matrix);
                     } else {
-                        ModelObject *holder =
-                            town_item_pointer(process, TOWN_ITEM_MODELS_ITEM_HOLDERS, ItemTraits_Unk07(tile));
+                        ModelObject *holder = town_item_pointer(process, TOWN_ITEM_MODELS_ITEM_HOLDERS, ItemTraits_Look(tile));
                         TownItemModels_Draw(process, holder, matrix);
                     }
                     break;
@@ -640,7 +639,7 @@ void TownItemModels_DrawCode(TileEventProcess *process, u16 code, const Vec3 *po
         case 1:
         case 3:
         case 4: {
-            ModelObject *holder = town_item_pointer(process, TOWN_ITEM_MODELS_ITEM_HOLDERS, ItemTraits_Unk07(&drawn));
+            ModelObject *holder = town_item_pointer(process, TOWN_ITEM_MODELS_ITEM_HOLDERS, ItemTraits_Look(&drawn));
             TownItemModels_Draw(process, holder, data_021fbe48);
             break;
         }
@@ -648,7 +647,7 @@ void TownItemModels_DrawCode(TileEventProcess *process, u16 code, const Vec3 *po
 }
 CLEAN_AS(func_ov003_02225b24, TownItemModels_DrawCode)
 
-/* func_ov003_02225da0: `item` drawn by its holder (ItemTraits_Unk07, TownItemModels_DrawHolder);
+/* func_ov003_02225da0: `item` drawn by its holder (ItemTraits_Look, TownItemModels_DrawHolder);
  * the holder's address. */
 int TownItemModels_DrawItem(TileEventProcess *process, int item, const Vec3 *point, int alpha, const Vec3 *scale,
                             short angle_x, short angle_y, short angle_z)
@@ -657,7 +656,7 @@ int TownItemModels_DrawItem(TileEventProcess *process, int item, const Vec3 *poi
     Vec3 at = *point;
     Vec3 size = *scale;
     ModelObject *model =
-        TownItemModels_DrawHolder(process, ItemTraits_Unk07(&code), &at, alpha, &size, angle_x, angle_y, angle_z);
+        TownItemModels_DrawHolder(process, ItemTraits_Look(&code), &at, alpha, &size, angle_x, angle_y, angle_z);
     return (int) (intptr_t) model;
 }
 CLEAN_AS(func_ov003_02225da0, TownItemModels_DrawItem)

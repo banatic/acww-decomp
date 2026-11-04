@@ -161,21 +161,21 @@ void IconModels_DrawMapItems(IconModels *self, AcreMap *map)
 }
 CLEAN_AS(func_ov004_02233c78, IconModels_DrawMapItems)
 
-/* func_ov004_02233dc0: the model of `item`'s look (ItemTraits_Unk07) drawn. */
+/* func_ov004_02233dc0: the model of `item`'s look (ItemTraits_Look) drawn. */
 void IconModels_DrawItem(IconModels *self, u16 item, const Vec3 *position, const Vec3 *scale, short x_angle, short y_angle,
                          short z_angle)
 {
     u16 code = item;
     Vec3 at = *position;
     Vec3 size = *scale;
-    int look = ItemTraits_Unk07(&code);
+    int look = ItemTraits_Look(&code);
     IconModels_DrawLook(self, look, &at, &size, x_angle, y_angle, z_angle);
 }
 CLEAN_AS(func_ov004_02233dc0, IconModels_DrawItem)
 
 /* func_ov004_02233e18: the model of `look` drawn (when there is one) at `position` bent onto
  * the ground, turned by the ground's angle and the three angles, at `scale`; the model.
- * REQUIRES: look < ICON_MODELS_LOOKS (ItemTraits_Unk07 gives no other). */
+ * REQUIRES: look < ICON_MODELS_LOOKS (ItemTraits_Look gives no other). */
 ModelObject *IconModels_DrawLook(IconModels *self, int look, const Vec3 *position, const Vec3 *scale, short x_angle,
                                  short y_angle, short z_angle)
 {

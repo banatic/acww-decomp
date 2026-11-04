@@ -32,9 +32,9 @@ int ItemTraits_FlagBit4(const ItemCode *item);
 int ItemTraits_FlagBit3(const ItemCode *item);
 int ItemTraits_HasHeldModel(const ItemCode *item);
 int ItemTraits_Class(const ItemCode *item);
-int ItemTraits_Unk07(const ItemCode *item);
-int ItemTraits_Unk02(const ItemCode *item);
-int ItemTraits_IsHeadAUnk07Is8(const ItemCode *item);
+int ItemTraits_Look(const ItemCode *item);
+int ItemTraits_Icon(const ItemCode *item);
+int ItemTraits_IsHeadAWithHatLook(const ItemCode *item);
 int ItemTraits_CarriedNonCreature(const ItemCode *item, ItemCode *out);
 
 u16 ItemTraits_InsectSize(const ItemCode *item);

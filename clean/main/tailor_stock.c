@@ -57,10 +57,10 @@ CLEAN_AS(func_020ae798, TailorStock_StockLot5)
  * func_02062124 / (func_02062124 + func_02062118). */
 void TailorStock_StockLot6Or8(TailorStock *list, u32 *next)
 {
-    u32 first = ItemInfo_Count13c8Unk06Is1d();
-    u32 second = ItemInfo_Count13a8Unk06Is1d();
+    u32 first = ItemInfo_CountTailorHeadB();
+    u32 second = ItemInfo_CountTailorHeadA();
     u32 draw = DatedRandom_Below((DatedRandom *) (void *) data_021f4a80, first + second);
-    int kind = draw < ItemInfo_Count13c8Unk06Is1d() ? 6 : 8;
+    int kind = draw < ItemInfo_CountTailorHeadB() ? 6 : 8;
     ShopStock_DrawLot(list->items, next, kind, 0x1d, 1, TAILOR_STOCK_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae7b4, TailorStock_StockLot6Or8)

@@ -263,9 +263,9 @@ static int range_candidate(u16 *code, u16 *drawn, u32 drawn_count, int skip_draw
     }
     int group = 0;
     if (ItemCode_IsKind1(code)) {
-        group = ItemInfo_Unk06(code);
+        group = ItemInfo_ListGroup(code);
     } else if (ItemCode_HasVariant(code)) {
-        group = FurnitureInfo_ItemUnk04(code);
+        group = FurnitureInfo_ItemListGroup(code);
     }
     if (group == ITEM_LISTS_GROUP_19 || group == ITEM_LISTS_GROUP_18) {
         return 0;

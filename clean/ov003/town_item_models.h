@@ -4,7 +4,7 @@
  * Each frame (TownItemModels_DrawProcess) the process draws the tiles around the field's
  * point: 19 x 19 tiles, rows from 4 tiles behind to 14 in front, each code of kind 0 by the
  * drawer of its set into the process's model holders (TownItemModels_DrawCode*), each item of
- * kinds 1, 3 and 4 by the holder its traits name (ItemTraits_Unk07, the pointers at 0x50), at
+ * kinds 1, 3 and 4 by the holder its traits name (ItemTraits_Look, the pointers at 0x50), at
  * most 252 tiles; then the tile events and the growth models. A model is drawn in a matrix
  * built from its tile's centre bent over the globe (Globe_BendFar), with the scene's emission
  * colour.

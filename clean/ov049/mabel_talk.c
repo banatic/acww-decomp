@@ -675,7 +675,7 @@ void MabelTalk_OnAnswerItem(MabelTalk *talk, int answer)
         talk->owner->worn = *PlayerRecord_Clothes(record);
         mtalk_wear_clothes(talk->owner->item);
     } else if (mtalk_is_hat(item)) {
-        if (mtalk_is_hat_a(item) && ItemTraits_IsHeadAUnk07Is8(&owner->item) == 0) {
+        if (mtalk_is_hat_a(item) && ItemTraits_IsHeadAWithHatLook(&owner->item) == 0) {
             talk->owner->worn_second = *PlayerRecord_PartCItem(record);
             mtalk_wear_accessory(ITEM_CODE_NONE);
         }
@@ -685,7 +685,7 @@ void MabelTalk_OnAnswerItem(MabelTalk *talk, int answer)
         talk->owner->worn = *PlayerRecord_PartCItem(record);
         mtalk_wear_accessory(talk->owner->item);
         u16 hat = *PlayerRecord_HeadItem(record);
-        if (mtalk_is_hat_a(hat) && ItemTraits_IsHeadAUnk07Is8(&hat) == 0) {
+        if (mtalk_is_hat_a(hat) && ItemTraits_IsHeadAWithHatLook(&hat) == 0) {
             talk->owner->worn_second = *PlayerRecord_HeadItem(record);
             mtalk_wear_hat(ITEM_CODE_NONE);
         }

@@ -361,22 +361,22 @@ u8 FurnitureInfo_Shape(int number)
 CLEAN_AS(func_02053be0, FurnitureInfo_Shape)
 
 /* func_02053c14 */
-int FurnitureInfo_ItemUnk04(const ItemCode *item)
+int FurnitureInfo_ItemListGroup(const ItemCode *item)
 {
     if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Unk04(ItemCode_VariantItem(item));
+        return FurnitureInfo_ListGroup(ItemCode_VariantItem(item));
     }
     return 0;
 }
-CLEAN_AS(func_02053c14, FurnitureInfo_ItemUnk04)
+CLEAN_AS(func_02053c14, FurnitureInfo_ItemListGroup)
 
-/* func_02053c34: FurnitureAlways.unk_04. */
-u8 FurnitureInfo_Unk04(int number)
+/* func_02053c34: FurnitureAlways.list_group. */
+u8 FurnitureInfo_ListGroup(int number)
 {
     const FurnitureAlways *record = always_record(number);
-    return record != NULL ? record->unk_04 : 0;
+    return record != NULL ? record->list_group : 0;
 }
-CLEAN_AS(func_02053c34, FurnitureInfo_Unk04)
+CLEAN_AS(func_02053c34, FurnitureInfo_ListGroup)
 
 /* func_02053c68 */
 int FurnitureInfo_ItemGroup(const ItemCode *item)
@@ -471,9 +471,9 @@ u8 FurnitureInfo_DmaUnk18(int number)
 }
 CLEAN_AS(func_02053de4, FurnitureInfo_DmaUnk18)
 
-/* func_02053e18: the halfword at 0x16 of the dma.bin record (little-endian, as the DS keeps
+/* func_02053e18: the piece's price in bells, the halfword at 0x16 of the dma.bin record (little-endian, as the DS keeps
  * it; the records are 0x20 bytes, so it is aligned). */
-u16 FurnitureInfo_DmaUnk16(int number)
+u16 FurnitureInfo_Price(int number)
 {
     const FurnitureDma *record = dma_record(number);
     if (record == NULL) {
@@ -481,7 +481,7 @@ u16 FurnitureInfo_DmaUnk16(int number)
     }
     return (u16) (record->unk_00[0x16] | record->unk_00[0x17] << 8);
 }
-CLEAN_AS(func_02053e18, FurnitureInfo_DmaUnk16)
+CLEAN_AS(func_02053e18, FurnitureInfo_Price)
 
 /* The record files' own functions (main's record file code, func_0206e6f0 and on). */
 extern int func_0206e6f0(FurnitureRecordFiles *files); /* free indoor.bin's whole copy */
