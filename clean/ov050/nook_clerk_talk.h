@@ -19,7 +19,8 @@
  *   pattern of a roof paint; bought when the player has a free pocket slot and the bells
  *   (NookClerkTalk_Buy); wallpaper and carpets can be tried on in the room first;
  * - the player's items sold (the pockets' screen in mode 0x1d, sequence 0): a quarter of each
- *   one's price, turnips at today's price (not on Sunday), fossils by their assessed kind;
+ *   one's price, turnips at today's price (not on Sunday), the fox's forged paintings at a
+ *   quarter of the price of the fake painting each is revealed as;
  * - an order from the catalog (the screen in mode 0x3e, sequence 1), sent by mail;
  * - the roof's paint picked (data_ov050_022650b4) and the house loan's payments;
  * - an errand's item handed over (the pockets' screen, sequence 2);

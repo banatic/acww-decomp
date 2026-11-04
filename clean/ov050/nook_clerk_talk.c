@@ -174,10 +174,12 @@ extern int func_ov050_022634b4(unsigned short *p);
 #define NOOK_CLERK_PAINT_LAST 0x1530
 #define NOOK_CLERK_TURNIPS_FIRST 0x1531
 #define NOOK_CLERK_TURNIPS_LAST 0x153a
-#define NOOK_CLERK_FOSSIL_FIRST 0x38e4
-#define NOOK_CLERK_FOSSIL_LAST 0x3933
-#define NOOK_CLERK_FOSSIL_KINDS 0x14
-#define NOOK_CLERK_FOSSIL_ASSESSED 0x3934
+/* The fox's 20 forged paintings 0x38e4-0x3933 (named as the genuine paintings 0x3894-0x38e3
+ * are) and the first of the 20 fake paintings they are revealed as (item_form.h). */
+#define NOOK_CLERK_FORGERY_FIRST 0x38e4
+#define NOOK_CLERK_FORGERY_LAST 0x3933
+#define NOOK_CLERK_FORGERIES 0x14
+#define NOOK_CLERK_REVEALED_FIRST 0x3934
 #define NOOK_CLERK_ERRAND_FIRST 0x155f
 #define NOOK_CLERK_ERRAND_LAST 0x1560
 #define NOOK_CLERK_ERRAND_STATE 2
@@ -1933,12 +1935,13 @@ void NookClerkTalk_PriceOrder(NookClerkTalk *talk)
 CLEAN_AS(func_ov050_022637e8, NookClerkTalk_PriceOrder)
 
 /* func_ov050_022638d4 (sequence 0, after the screen of the items to sell): the price of the
- * items listed (Pockets_List, up to 15, until an empty one): fossils (0x38e4-0x3933) by their
- * assessed kind's price, turnips at today's price each (not sold on Sunday), the rest a quarter
- * of their price. Line 0xd with turnips on Sunday; with one of the items 0x136a, 0x1373,
- * 0x1375, 0x1377, 0x1379 or 0x137b the price (value 0) and line 0x11; with a fossil the price
- * and line 0x40; with nothing to pay line 0xa; else the price and line 0xe. Nothing picked:
- * line 8. The price is kept, with no extra bags. */
+ * items listed (Pockets_List, up to 15, until an empty one): the fox's forged paintings
+ * (0x38e4-0x3933) at a quarter of the price of the fake painting each is revealed as, turnips at
+ * today's price each (not sold on Sunday), the rest a quarter of their price. Line 0xd with
+ * turnips on Sunday; with one of the items 0x136a, 0x1373, 0x1375, 0x1377, 0x1379 or 0x137b the
+ * price (value 0) and line 0x11; with a forged painting the price and line 0x40; with nothing to
+ * pay line 0xa; else the price and line 0xe. Nothing picked: line 8. The price is kept, with no
+ * extra bags. */
 void NookClerkTalk_PriceSale(NookClerkTalk *talk)
 {
     static const u16 special[6] = {0x136a, 0x1373, 0x1375, 0x1377, 0x1379, 0x137b};
@@ -1950,7 +1953,7 @@ void NookClerkTalk_PriceSale(NookClerkTalk *talk)
         u16 *list = Pockets_List();
         int has_special = 0;
         int turnips_on_sunday = 0;
-        int has_fossil = 0;
+        int has_forgery = 0;
         for (int i = 0; i < 0xf; i++) {
             if (list[i] == ITEM_CODE_NONE) {
                 break;
@@ -1961,12 +1964,12 @@ void NookClerkTalk_PriceSale(NookClerkTalk *talk)
                     has_special = 1;
                 }
             }
-            if (ntalk_in(item, NOOK_CLERK_FOSSIL_FIRST, NOOK_CLERK_FOSSIL_LAST)) {
-                has_fossil = 1;
-                unsigned int kind = (unsigned int) (item - NOOK_CLERK_FOSSIL_FIRST) >> 2;
-                u16 assessed = (u16) (kind < NOOK_CLERK_FOSSIL_KINDS ? kind * 4 + NOOK_CLERK_FOSSIL_ASSESSED
-                                                                     : NOOK_CLERK_FOSSIL_ASSESSED);
-                talk->price = talk->price + ItemTraits_Price(&assessed) / 4;
+            if (ntalk_in(item, NOOK_CLERK_FORGERY_FIRST, NOOK_CLERK_FORGERY_LAST)) {
+                has_forgery = 1;
+                unsigned int kind = (unsigned int) (item - NOOK_CLERK_FORGERY_FIRST) >> 2;
+                u16 revealed =
+                    (u16) (kind < NOOK_CLERK_FORGERIES ? kind * 4 + NOOK_CLERK_REVEALED_FIRST : NOOK_CLERK_REVEALED_FIRST);
+                talk->price = talk->price + ItemTraits_Price(&revealed) / 4;
             } else if (PlayerRecords_Current() != NULL) {
                 if (ntalk_in(item, NOOK_CLERK_TURNIPS_FIRST, NOOK_CLERK_TURNIPS_LAST)) {
                     if (Calendar_TodayWeekday() == 0) {
@@ -1985,7 +1988,7 @@ void NookClerkTalk_PriceSale(NookClerkTalk *talk)
         } else if (has_special == 1) {
             SceneBase_PutValue(&talk->base, talk->price, 0, NOOK_CLERK_VALUE_BELLS, 0, 0);
             line = 0x11;
-        } else if (has_fossil == 1) {
+        } else if (has_forgery == 1) {
             line = 0x40;
             SceneBase_PutValue(&talk->base, talk->price, 0, NOOK_CLERK_VALUE_BELLS, 0, 0);
         } else if (talk->price == 0) {
