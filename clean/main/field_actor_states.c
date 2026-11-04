@@ -4621,7 +4621,7 @@ CLEAN_AS(func_0200c3f0, FieldActor_SetArgs10)
  * Kinds 0 to 2 hand the request's value to FieldActor_SetCloth, FieldActor_RequestPartC and FieldActor_RequestHead;
  * kind 3 takes the player's record (func_020984fc). Then state 5 or 0x10 follows, or
  * func_02095bdc. Leaving the state does what was not done yet, and the actor of this console
- * passes the value on (FieldActor_SendItem, or FieldActor_SendNoItem for kind 3). */
+ * passes the value on (FieldActor_SendItem, or FieldActor_SendNotStung for kind 3). */
 
 /* State 7's work. */
 typedef struct State7Work {
@@ -4839,7 +4839,7 @@ CLEAN_AS(func_0200c648, FieldActor_EffectsState7)
 
 /* func_0200c708: leaving state 7: the kind's work is done if it was not (kind 3: with the
  * player's record, FieldActor_RestartAnimation and func_02079280); then the actor of this console passes the
- * value to FieldActor_SendItem with the kind (0 to 2), or runs FieldActor_SendNoItem (3). */
+ * value to FieldActor_SendItem with the kind (0 to 2), or runs FieldActor_SendNotStung (3). */
 void FieldActor_ExitState7(FieldActor *actor)
 {
     State7Work *work = state7_work(actor);
@@ -4874,7 +4874,7 @@ void FieldActor_ExitState7(FieldActor *actor)
             FieldActor_SendItem(actor, (int) work->kind, work->value);
             break;
         case 3:
-            FieldActor_SendNoItem(actor);
+            FieldActor_SendNotStung(actor);
             break;
         default:
             break;

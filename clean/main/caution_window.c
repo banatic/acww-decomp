@@ -567,9 +567,10 @@ void CautionWindow_ApplyBlend(CautionWindow *self)
 }
 CLEAN_AS(func_020386fc, CautionWindow_ApplyBlend)
 
-/* func_02038758: while shown, the projection (and the 3D state's flags 0x50 cleared), a camera
- * at data_021fbee8 looking down -z (flags 0xe8 cleared), and the model's scale. */
-void CautionWindow_SetCamera(CautionWindow *self)
+/* func_02038758: while shown, the window drawn: the projection (and the 3D state's flags 0x50
+ * cleared), a camera at data_021fbee8 looking down -z (flags 0xe8 cleared), and the model at
+ * its scale. */
+void CautionWindow_Draw(CautionWindow *self)
 {
     if (self->shown == 0) {
         return;
@@ -588,7 +589,7 @@ void CautionWindow_SetCamera(CautionWindow *self)
     Vec3 scales = {scale, scale, 0x1000};
     ModelObject_Draw((ModelObject *) (void *) self->model, &scales);
 }
-CLEAN_AS(func_02038758, CautionWindow_SetCamera)
+CLEAN_AS(func_02038758, CautionWindow_Draw)
 
 /* func_02038828: a frame: whether there is trouble kept, the network's errors checked, and the
  * state's member function called (the table is filled on the first call).
@@ -660,11 +661,11 @@ void CautionWindow_ApplyBlendGlobal(void)
 CLEAN_AS(func_020389e0, CautionWindow_ApplyBlendGlobal)
 
 /* func_020389f0 */
-void CautionWindow_SetCameraGlobal(void)
+void CautionWindow_DrawGlobal(void)
 {
-    CautionWindow_SetCamera(&data_021c5c4c);
+    CautionWindow_Draw(&data_021c5c4c);
 }
-CLEAN_AS(func_020389f0, CautionWindow_SetCameraGlobal)
+CLEAN_AS(func_020389f0, CautionWindow_DrawGlobal)
 
 /* func_02038a00 */
 void CautionWindow_UpdateGlobal(int trouble)

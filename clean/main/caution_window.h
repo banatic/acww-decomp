@@ -5,8 +5,8 @@
  * button before func_02116a1c(0) is called.
  *
  * The main loop calls CautionWindow_UpdateGlobal each frame with whether the session shows
- * error flags, then CautionWindow_SetCameraGlobal; CautionWindow_ApplyBlendGlobal runs at the
- * frame's end. The window's text is drawn into a 32 x 2-tile bitmap in RAM and copied into four
+ * error flags, then CautionWindow_DrawGlobal; CautionWindow_ApplyBlendGlobal runs after the
+ * vertical blank (MainLoop_AfterVBlank). The window's text is drawn into a 32 x 2-tile bitmap in RAM and copied into four
  * 0x800-byte parts of the model's texture, one per line.
  *
  * The update is a state machine (CautionWindow.state) dispatched through a table of member
@@ -98,13 +98,13 @@ void CautionWindow_ClearTexture(CautionWindow *self);
 void CautionWindow_UploadLine(CautionWindow *self, int part);
 void CautionWindow_SetMatrix(CautionWindow *self);
 void CautionWindow_ApplyBlend(CautionWindow *self);
-void CautionWindow_SetCamera(CautionWindow *self);
+void CautionWindow_Draw(CautionWindow *self);
 void CautionWindow_Update(CautionWindow *self, unsigned char trouble);
 void CautionWindow_Close(CautionWindow *self);
 void CautionWindow_Start(CautionWindow *self);
 int CautionWindow_LoadMessages(void);
 void CautionWindow_ApplyBlendGlobal(void);
-void CautionWindow_SetCameraGlobal(void);
+void CautionWindow_DrawGlobal(void);
 void CautionWindow_UpdateGlobal(int trouble);
 void CautionWindow_CloseGlobal(void);
 void CautionWindow_StartGlobal(void);

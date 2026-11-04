@@ -11,8 +11,9 @@
  * Its states (ClockPanelState), stepped by its update (ClockPanel_Update): hidden, until it has
  * been asked to show for `wait` frames; appearing, until its animation is done; shown, while it
  * should; hiding, until its animation is done. It should show while `shown` is set, unless an
- * event runs with no overlay group owner, or no owner while player 4 is not in session state 2, or
- * an event with an owner while state flag 4 is clear or its value below 1.0. The wait is set while
+ * event runs with no overlay group owner, or no owner while this console's player (4) is not
+ * standing (actor state 2), or an event with an owner while state flag 4 is clear or its value
+ * below 1.0. The wait is set while
  * it should not: 30 frames after the first two cases, 1 after the third, 10 while `shown` is
  * clear. It is drawn 20 pixels higher, eased, while this system's quick message balloon is out and
  * it should show. */

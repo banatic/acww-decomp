@@ -1067,7 +1067,7 @@ void SessionMessage_Handle44(int size, int kind, int scene, int slot)
 }
 CLEAN_AS(func_02076c3c, SessionMessage_Handle44)
 
-/* func_02076c14: a byte for func_02095578 with the sender's slot.
+/* func_02076c14: the sender's stung flag set or cleared by a byte (PlayerActorOps_SetStung).
  * REQUIRES: size <= 8. */
 void SessionMessage_Handle45(int size, int kind, u8 scene, u32 slot)
 {

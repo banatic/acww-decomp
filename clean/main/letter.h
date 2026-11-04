@@ -166,7 +166,7 @@ void Letter_Construct(Letter *letter);
 int LetterParty_IsKind(const LetterParty *party, int kind);
 void LetterParty_SetKind(LetterParty *party, int kind);
 void LetterParty_Clear(LetterParty *party);
-void LetterParty_SetPlayer(LetterParty *party, const DesignCreator *player);
+void LetterParty_SetSelf(LetterParty *party, const DesignCreator *player);
 
 void LetterParty_SetAsPlayer(LetterParty *party, const DesignCreator *player);
 void LetterParty_SetAsVillager(LetterParty *party, const NpcId *villager);

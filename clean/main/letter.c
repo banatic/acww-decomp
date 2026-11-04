@@ -635,7 +635,7 @@ void Letter_AddressToSelf(Letter *letter)
         TextString_CopyChars(defaults->self_header, letter->header, LETTER_HEADER_CHARS);
         letter->header_line = defaults->self_header_line;
     }
-    LetterParty_SetPlayer(&letter->addressee, player);
+    LetterParty_SetSelf(&letter->addressee, player);
 }
 CLEAN_AS(func_02066514, Letter_AddressToSelf)
 
@@ -750,13 +750,14 @@ void LetterParty_Clear(LetterParty *party)
 }
 CLEAN_AS(func_020666b4, LetterParty_Clear)
 
-/* func_020666bc: the party made this system's player (kind 1), copied from `player`. */
-void LetterParty_SetPlayer(LetterParty *party, const DesignCreator *player)
+/* func_020666bc: the party made this system's own player writing to themself (kind 1), copied
+ * from `player`. */
+void LetterParty_SetSelf(LetterParty *party, const DesignCreator *player)
 {
     party->kind = LETTER_PARTY_SELF;
     PlayerId_CopyTo(player, (DesignCreator *) party);
 }
-CLEAN_AS(func_020666bc, LetterParty_SetPlayer)
+CLEAN_AS(func_020666bc, LetterParty_SetSelf)
 
 /* func_020666d0: the party made a player (kind 2), copied from `player`. */
 void LetterParty_SetAsPlayer(LetterParty *party, const DesignCreator *player)

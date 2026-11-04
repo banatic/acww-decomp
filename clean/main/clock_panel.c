@@ -475,8 +475,8 @@ void ClockPanel_OpenTextBoxes(ClockPanel *panel)
 CLEAN_AS(func_0208db08, ClockPanel_OpenTextBoxes)
 
 /* func_0208db3c: whether the panel should show (the `shown` byte as it is, else 0): `shown`
- * set, and none of: an event running with no overlay group owner; no owner while player 4 is
- * not in session state 2; an event with an owner while state flag 4 is clear or its value
+ * set, and none of: an event running with no overlay group owner; no owner while this console's
+ * player (4) is not standing (actor state 2); an event with an owner while state flag 4 is clear or its value
  * below 1.0. When it should not, `wait` is set: 10 without `shown`, 30 for the first two
  * cases, 1 for the third. */
 int ClockPanel_ShouldShow(ClockPanel *panel)

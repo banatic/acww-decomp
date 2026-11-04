@@ -396,7 +396,7 @@ void FieldActor_RunChecksAside(struct FieldActor *actor);
 int FieldActor_StateFlagA20(struct FieldActor *actor, int state);
 void FieldActor_TurnHeadBack(struct FieldActor *actor);
 void FieldActor_SendSunLevel(struct FieldActor *actor);
-void FieldActor_SendNoItem(struct FieldActor *actor);
+void FieldActor_SendNotStung(struct FieldActor *actor);
 void FieldActor_SendItem(struct FieldActor *actor, int kind, int item);
 int FieldActor_JointBPoint(struct FieldActor *actor, Vec3 *out);
 void FieldActor_TakeAimMode(struct FieldActor *actor);

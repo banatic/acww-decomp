@@ -29,9 +29,9 @@ enum FieldLabelWindowState {
 extern const u32 data_020e5858[]; /* this class's vtable */
 extern const u8 data_020d71d4[];  /* the marker's cells */
 
-/* func_020b8edc: whether the marker is held hidden: state flag 0x10 is set, or state flag 4 is
+/* func_020b8edc: whether the window is held hidden: state flag 0x10 is set, or state flag 4 is
  * set with a value under 1.0. The three are read every time. */
-int FieldLabelWindow_MarkerSuppressed(void)
+int FieldLabelWindow_Hidden(void)
 {
     BOOL flag_10 = StateFlags_Test10() != 0;
     BOOL flag_4 = StateFlags_Test4() != 0;
@@ -39,7 +39,7 @@ int FieldLabelWindow_MarkerSuppressed(void)
 
     return flag_10 || (flag_4 && value < FIELD_LABEL_WINDOW_VALUE_ONE);
 }
-CLEAN_AS(func_020b8edc, FieldLabelWindow_MarkerSuppressed)
+CLEAN_AS(func_020b8edc, FieldLabelWindow_Hidden)
 
 /* func_020b8f20: one frame of the marker. A request shows it (frame 0, or 25 when held
  * hidden) and starts its animation. Shown, it goes when the window has closed; while the
@@ -50,7 +50,7 @@ void FieldLabelWindow_UpdateMarker(FieldLabelWindow *window)
         if (window->request) {
             window->request = 0;
             window->shown = 1;
-            window->frames = FieldLabelWindow_MarkerSuppressed() ? FIELD_LABEL_WINDOW_HIDDEN_FRAME : 0;
+            window->frames = FieldLabelWindow_Hidden() ? FIELD_LABEL_WINDOW_HIDDEN_FRAME : 0;
             FieldLabelWindow_StartMarker(window);
         }
         return;
@@ -65,7 +65,7 @@ void FieldLabelWindow_UpdateMarker(FieldLabelWindow *window)
         if (window->frames == 0) {
             SoundSys_PlaySe(FIELD_LABEL_WINDOW_MARKER_SE);
         }
-        if (FieldLabelWindow_MarkerSuppressed()) {
+        if (FieldLabelWindow_Hidden()) {
             window->frames = FIELD_LABEL_WINDOW_HIDDEN_FRAME;
         } else if (window->mode != 0) {
             window->frames++;
@@ -93,19 +93,19 @@ void FieldLabelWindow_StartMarker(FieldLabelWindow *window)
 }
 CLEAN_AS(func_020b8fe0, FieldLabelWindow_StartMarker)
 
-/* func_020b9030: blinking, and the marker in the shown part of the round. */
-int FieldLabelWindow_MarkerBlinkShown(FieldLabelWindow *window)
+/* func_020b9030: blinking, and the window in the shown part of the round. */
+int FieldLabelWindow_BlinkVisible(FieldLabelWindow *window)
 {
     return window->mode != 0 && window->frames < FIELD_LABEL_WINDOW_HIDDEN_FRAME;
 }
-CLEAN_AS(func_020b9030, FieldLabelWindow_MarkerBlinkShown)
+CLEAN_AS(func_020b9030, FieldLabelWindow_BlinkVisible)
 
 /* func_020b904c: blinking, and on the round's last frame. */
-int FieldLabelWindow_MarkerBlinkLast(FieldLabelWindow *window)
+int FieldLabelWindow_BlinkLast(FieldLabelWindow *window)
 {
     return window->mode != 0 && window->frames == FIELD_LABEL_WINDOW_LAST_FRAME;
 }
-CLEAN_AS(func_020b904c, FieldLabelWindow_MarkerBlinkLast)
+CLEAN_AS(func_020b904c, FieldLabelWindow_BlinkLast)
 
 /* func_020b9068 */
 void FieldLabelWindow_SetMode(FieldLabelWindow *window, u8 mode)
@@ -144,8 +144,8 @@ void FieldLabelWindow_Update(FieldLabelWindow *window)
 CLEAN_AS(func_020b90ac, FieldLabelWindow_Update)
 
 /* func_020b90cc (vtable slot 2): under frame 25 of the count, the marker (when shown) at the
- * window's place plus the offsets of the window's animation and its own, then the window; past
- * it, nothing. `drawn` says whether the marker was drawn. */
+ * window's place plus the offsets of the window's animation and its own, then the window; from
+ * it on, neither. `drawn` says whether the marker was drawn. */
 void FieldLabelWindow_Draw(FieldLabelWindow *window)
 {
     u8 drawn = 0;

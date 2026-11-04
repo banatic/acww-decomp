@@ -19,8 +19,8 @@ extern const CellAnimData data_020d6fcc[];
 #define CONTROL_MODE_ICON_ANIM_BUTTONS 0x43
 #define CONTROL_MODE_ICON_ANIM_TOUCH 0x44
 
-/* The last frame, as CellAnim_FrameX and CellAnim_FrameY take it. */
-#define CONTROL_MODE_ICON_LAST_FRAME (-1)
+/* The current frame, as CellAnim_FrameX and CellAnim_FrameY take it. */
+#define CONTROL_MODE_ICON_CURRENT_FRAME (-1)
 
 /* func_0208fdc8: the icon of the mode set, held on its last frame, from its start: buttons for
  * mode 1, touch for any other but 0; nothing shown for mode 0. */
@@ -112,7 +112,7 @@ void ControlModeIcon_Update(ControlModeIcon *icon)
 CLEAN_AS(func_0208feb0, ControlModeIcon_Update)
 
 /* func_0208fedc (vtable slot 2): the icon's cell drawn on the other screen than the 3D one, at
- * the place plus its last frame's offset, unless it is hidden. */
+ * the place plus its current frame's offset, unless it is hidden. */
 void ControlModeIcon_Draw(ControlModeIcon *icon)
 {
     if (icon->shown == 0 || ControlModeIcon_IsHidden(icon) != 0) {
@@ -120,9 +120,9 @@ void ControlModeIcon_Draw(ControlModeIcon *icon)
     }
     const OamEntry *cell = CellAnim_Cell(&icon->anim);
     int x = ScreenSprite_X(&icon->base);
-    x += CellAnim_FrameX(&icon->anim, CONTROL_MODE_ICON_LAST_FRAME);
+    x += CellAnim_FrameX(&icon->anim, CONTROL_MODE_ICON_CURRENT_FRAME);
     int y = ScreenSprite_Y(&icon->base);
-    y += CellAnim_FrameY(&icon->anim, CONTROL_MODE_ICON_LAST_FRAME);
+    y += CellAnim_FrameY(&icon->anim, CONTROL_MODE_ICON_CURRENT_FRAME);
     OamBuffer_DrawCell(OAM_BUFFER_SCREEN_OTHER, cell, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208fedc, ControlModeIcon_Draw)

@@ -86,8 +86,8 @@ int ItemRecord_HasAllFish(void)
 CLEAN_AS(func_0203cc38, ItemRecord_HasAllFish)
 
 /* func_0203cc54: how many of the `count` items from `first` the current player has had,
- * counting only the listed ones (func_0204c2b4). `first` is either an item in a pile (then
- * each code from it is taken as its room code) or an item with variants (then the items that
+ * counting only the listed ones (func_0204c2b4). `first` is either a code of kind 1
+ * (0x1000-0x1fff; then each code from it is taken as its room code) or an item with variants (then the items that
  * follow it, each in variant 0); for any other code, and when there is no current player, 0.
  * QUIRK: the count is compared unsigned, so a negative `count` runs past every item. */
 int ItemRecord_CountHad(int first, int count)

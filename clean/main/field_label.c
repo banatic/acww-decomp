@@ -76,10 +76,10 @@ void FieldLabel_UpdateMessage(FieldLabel *label)
     if (SlidingWindow_State(window_of(label)) == 0) {
         FieldLabel_EnterClosed(label);
     } else if (!FieldLabel_MessageActive(label)) {
-        if (FieldLabelWindow_MarkerBlinkShown(window_of(label)) == 0) {
+        if (FieldLabelWindow_BlinkVisible(window_of(label)) == 0) {
             SlidingWindow_RequestClose(window_of(label));
         }
-    } else if (FieldLabelWindow_MarkerBlinkLast(window_of(label)) != 0) {
+    } else if (FieldLabelWindow_BlinkLast(window_of(label)) != 0) {
         FieldLabel_ShowMessageText(label, 0);
     }
 }
@@ -348,7 +348,7 @@ typedef struct FieldLabelTalk {
 
 /* The kind of an item (the code's top four bits). */
 #define FIELD_LABEL_ITEM_KIND(code) (((code) & 0xf000) >> 12)
-/* The session state player 4 must be in for its item to show. */
+/* The actor state player 4 (this console's) must be in for an item to show: standing. */
 #define FIELD_LABEL_PLAYER 4
 #define FIELD_LABEL_PLAYER_STATE 2
 /* The messages FieldLabel_ShowMessage9 and 10 start; 10 is not replaced by
@@ -394,10 +394,10 @@ static int scene_without_label(void)
     return (scene >= 12 && scene <= 14) || scene == 46 || scene == 47;
 }
 
-/* func_020b8af0: the item whose name shows this frame: the one under player 4 while that player
- * is in session state 2 and the item is of a kind shown there (outdoors kinds 1, 3 and 4, in a
- * room only kind 1). The item code shown the frame before goes to `previous_item` (NO_ITEM
- * when there was none). */
+/* func_020b8af0: the item whose name shows this frame: the one a step ahead of this console's
+ * player (PlayerActorOps_ItemAhead) while its actor stands (state 2) and the item is of a kind
+ * shown there (outdoors kinds 1, 3 and 4, in a room only kind 1). The item code shown the frame
+ * before goes to `previous_item` (NO_ITEM when there was none). */
 void FieldLabel_PickItem(FieldLabel *label)
 {
     const u16 *item = NULL;

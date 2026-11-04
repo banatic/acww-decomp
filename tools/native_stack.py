@@ -391,7 +391,7 @@ CLEAN_CUE_SHA = {
     'clean/main/talk_object.c': 'd0aae1a9c2e9852a24919b9ba16ce2f1d22c887397e814dc94e0560112c875b7',
     'clean/main/villager_talk_offers.c': '1261878134bbd25c73723cbff3c736eb3146fbc16c02ba4bdf5ea500d78d52ce',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
-    'clean/main/field_collision.c': '55d958e6a9bddd45451ede27c07df805222887622bb83e1b24cfe30aa1545f1f',
+    'clean/main/field_collision.c': 'c1efa49efed565e2a051e4edf64d29ba420d6051bfaceae83c5eebf0b36650bf',
     'clean/main/collision_query.c': '64b4370e713ddc57343b34d5e4aca0b4c2ef0dcd7384f66a554d2a3df3fe7a6a',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
     'clean/main/villager_talk.c': 'ba844325677b85c53ec2a3a7d8d9312f4c0d70b86e1e41595aa60ff75706967d',

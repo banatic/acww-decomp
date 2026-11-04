@@ -4,10 +4,10 @@
  *
  * The marker (a cell animation, data_020d71d4) shows once the window is asked to (`request`)
  * and while the window is open. Its frame count runs from 0: on frame 0 sound effect 0x3d
- * plays; in a blinking mode (`mode` not 0) the count goes round 0-29 and the marker is drawn on
- * frames 0-24, the sound playing again at each round; otherwise the count stays at 1 after the
- * first frame. While FieldLabelWindow_MarkerSuppressed holds the count is held at 25: the
- * marker is not drawn and no sound plays. */
+ * plays; in a blinking mode (`mode` not 0) the count goes round 0-29 and the window with its marker
+ * is drawn on frames 0-24, the sound playing again at each round; otherwise the count stays at 1 after the
+ * first frame. While FieldLabelWindow_Hidden holds the count is held at 25: neither
+ * the window nor the marker is drawn and no sound plays. */
 #ifndef CLEAN_MAIN_FIELD_LABEL_WINDOW_H
 #define CLEAN_MAIN_FIELD_LABEL_WINDOW_H
 
@@ -32,11 +32,11 @@ typedef struct FieldLabelWindow {
     u8 pad_e9[3];
 } FieldLabelWindow;
 
-int FieldLabelWindow_MarkerSuppressed(void);
+int FieldLabelWindow_Hidden(void);
 void FieldLabelWindow_UpdateMarker(FieldLabelWindow *window);
 void FieldLabelWindow_StartMarker(FieldLabelWindow *window);
-int FieldLabelWindow_MarkerBlinkShown(FieldLabelWindow *window);
-int FieldLabelWindow_MarkerBlinkLast(FieldLabelWindow *window);
+int FieldLabelWindow_BlinkVisible(FieldLabelWindow *window);
+int FieldLabelWindow_BlinkLast(FieldLabelWindow *window);
 void FieldLabelWindow_SetMode(FieldLabelWindow *window, u8 mode);
 void FieldLabelWindow_Reset(FieldLabelWindow *window);
 void FieldLabelWindow_RequestMarker(FieldLabelWindow *window);

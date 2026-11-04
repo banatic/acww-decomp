@@ -57,7 +57,7 @@ void MainLoop_Run(void)
         int trouble = errors != 0;
         CautionWindow_UpdateGlobal(trouble);
         Process_RunFrame(trouble);
-        CautionWindow_SetCameraGlobal();
+        CautionWindow_DrawGlobal();
         MainLoop_EndDraw(errors);
         MainLoop_AfterDraw();
         data_021cfb6c = 1;

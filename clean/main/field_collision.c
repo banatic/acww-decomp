@@ -48,7 +48,7 @@ static_assert(sizeof(CollisionTypeInfo) == 0x1e, "type row");
 #define UNIT_TYPE_54 0x54
 #define UNIT_TYPE_55 0x55
 
-/* Back faces of cliffs and the posts of the extra list are this high. */
+/* Back faces of cliffs are this high (8.0; the extra posts are 1.0). */
 #define COLLISION_BACK_TOP 0x8000
 /* A wall stops only what is below its top by more than this. */
 #define COLLISION_WALL_CLEARANCE 0x700
@@ -60,7 +60,7 @@ extern const u8 data_020da21c[];
 
 /* The type and attribute table (0x7c rows). */
 extern const CollisionTypeInfo data_020c907c[];
-/* The radius of an extra post by its kind (0 to 2). */
+/* The radius of an extra post by its age (0 to 2). */
 extern const fx32 data_020c9050[];
 /* (0, 0): the origin of CollisionPoint distances. */
 extern CollisionPoint data_021c30b8;
@@ -380,7 +380,7 @@ CLEAN_AS(func_02032d48, CollisionPosts_AddFences)
 /* func_02032d8c: the posts of the units x0..x1 by z0..z1 (rows of Z, X increasing). Where the
  * source names a post, it is added at the unit's centre with its radius, height and attribute,
  * as kind 2 when the source says 2 and kind 1 otherwise; a kind 2 post is skipped unless `all`.
- * With `all`, a unit without one may hold one of the extra posts (radius by its kind, height
+ * With `all`, a unit without one may hold one of the extra posts (radius by its age, height
  * 1.0, kind 2, attribute 2). */
 void CollisionPosts_Gather(CollisionPostList *posts, CollisionPostSource *source, int x0, int x1, int z0, int z1, int all)
 {

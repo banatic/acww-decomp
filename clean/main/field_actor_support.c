@@ -64,7 +64,7 @@ extern u8 data_020e54a8;
 extern void *data_021c80bc;
 /* The object of the scene whose word at 0x248 a talk's end sets. */
 extern u8 *data_021c526c;
-/* The message shown when the player answered no (as ErrorMessage_EndTalk shows it). */
+/* The empty message, no message file (as ErrorMessage_EndTalk and the shop talks set it). */
 extern u8 data_021f43e8;
 /* A copy of the actor's model matrix FieldActor_RebuildPose keeps. */
 extern FieldActorBlock48 data_021cfe68;
@@ -332,7 +332,7 @@ void FieldActor_TalkClosing(FieldActor *actor)
 CLEAN_AS(func_0200ea18, FieldActor_TalkClosing)
 
 /* func_0200ebbc (the receiver's slot 0x18): after the player chose, in progress 0, 2, 3 or 4,
- * the message data_021f43e8 is shown; then choice 0 makes the progress 5, else 9 from 0 and 4,
+ * the empty message data_021f43e8 is set; then choice 0 makes the progress 5, else 9 from 0 and 4,
  * 0xb from 2 and 15 from 3. */
 void FieldActor_TalkChoice(FieldActor *actor)
 {
@@ -591,8 +591,9 @@ void FieldActor_SendSunLevel(FieldActor *actor)
 }
 CLEAN_AS(func_0200f11c, FieldActor_SendSunLevel)
 
-/* func_0200f164: while linked, message 0x2d with a zero byte. */
-void FieldActor_SendNoItem(FieldActor *actor)
+/* func_0200f164: while linked, message 0x2d with a zero byte: the other consoles clear this
+ * player's stung flag (SessionMessage_Handle45, PlayerActorOps_SetStung). */
+void FieldActor_SendNotStung(FieldActor *actor)
 {
     (void) actor;
     if (!Session_IsLinked(data_020ccf94)) {
@@ -604,7 +605,7 @@ void FieldActor_SendNoItem(FieldActor *actor)
     Session_AppendMessage(session, &zero, 1);
     Session_EndMessage(session, 0x2d, 4);
 }
-CLEAN_AS(func_0200f164, FieldActor_SendNoItem)
+CLEAN_AS(func_0200f164, FieldActor_SendNotStung)
 
 /* func_0200f1a4: while linked, message 0x2b with the item packed (func_02096484) and its kind:
  * 3 bytes. */
