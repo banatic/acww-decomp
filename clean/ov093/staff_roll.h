@@ -1,5 +1,5 @@
 /* Overlay 93: the staff roll ("st_staffroll"), the object the cafe's music show makes through
- * overlay 4 (ov004/music_show_overlay.h; 0x2520 bytes from the scenes' heap).
+ * overlay 4 (ov004/staff_roll_overlay.h; 0x2520 bytes from the scenes' heap).
  *
  * The roll's text is message archive "st_staffroll": its line n is line n % 6 of message n / 6,
  * 0xcc lines in all. It is laid out on two background layers (0 and 4), each with a map of 32

@@ -45,7 +45,7 @@
 #include "main/town_start_day.h"
 #include "ov004/cafe_props.h"
 #include "ov004/member_pointer.h"
-#include "ov004/music_show_overlay.h"
+#include "ov004/staff_roll_overlay.h"
 #include "ov004/room_camera.h"
 #include "ov004/room_player_actor.h"
 
@@ -509,7 +509,7 @@ void CafeGuestScene_GiveSong(CafeGuestScene *scene)
         }
     }
     TalkObject_SetMessage(scene_talk(scene), &message, data_ov068_02277ca4[owner->kind]);
-    MusicShowOverlay_Close();
+    StaffRollOverlay_Close();
     Music_DropMusic((u16) owner->music);
     owner->timer = CAFE_GUEST_LIGHTS_FRAMES;
     SceneLights_RequestOff(1, 1);
@@ -537,12 +537,12 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
     const CafeGuestShow *now = (const CafeGuestShow *) (const void *) SoundSys_FirstEntryData();
     CafeGuestShow *seen = &scene->show;
     CafeGuest *owner = scene->owner;
-    MusicShowOverlay_Update();
+    StaffRollOverlay_Update();
     if (now != NULL && !(now->var2 == 1 && seen->var2 == 1)) {
         if (now->var3 != seen->var3) {
             if (now->var3 == 2) {
                 RoomCamera_ShowViews();
-                MusicShowOverlay_SetDisplay();
+                StaffRollOverlay_ShowLogo();
             } else if ((u8) now->var3 <= 1) {
                 RoomCamera_ShowNextSpot();
             }
@@ -582,9 +582,9 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
         }
         if (now->var2 != seen->var2) {
             if (now->var2 == 0) {
-                MusicShowOverlay_Update();
-                MusicShowOverlay_Restart(0);
-                MusicShowOverlay_Upload();
+                StaffRollOverlay_Update();
+                StaffRollOverlay_Restart(0);
+                StaffRollOverlay_Upload();
             }
             if (now->var2 == 1) {
                 SceneFace_MapNamed(guest_face(owner), (void *) (uintptr_t) data_ov068_022779a8);
@@ -593,9 +593,9 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
             }
         }
     }
-    MusicShowOverlay_Upload();
+    StaffRollOverlay_Upload();
     MI_CpuCopy8(now, seen, sizeof(CafeGuestShow));
-    if (MusicShowOverlay_HasEnded() != 0) {
+    if (StaffRollOverlay_HasEnded() != 0) {
         owner->timer = CAFE_GUEST_SHOW_END_FRAMES;
         CafeGuestScene_SetStep(scene, CAFE_GUEST_STEP_GIVE);
     }
@@ -647,7 +647,7 @@ void CafeGuestScene_StartMusic(CafeGuestScene *scene)
     }
     Music_Add(CAFE_GUEST_MUSIC_PRIORITY, (u16) owner->music, CAFE_GUEST_MUSIC_0C, 0);
     scene->show_started = 0;
-    MusicShowOverlay_Open();
+    StaffRollOverlay_Open();
     CafeGuestScene_SetStep(scene, CAFE_GUEST_STEP_SHOW);
 }
 CLEAN_AS(func_ov068_02273eb0, CafeGuestScene_StartMusic)
@@ -1180,7 +1180,7 @@ int CafeGuest_Leave(CafeGuest *self)
         return 0;
     }
     if ((u32) self->kind == CAFE_GUEST_KIND_MUSIC) {
-        MusicShowOverlay_Close();
+        StaffRollOverlay_Close();
     }
     return 1;
 }

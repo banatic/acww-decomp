@@ -2260,7 +2260,7 @@ scene: from the title: start a new player in the seed's town (the taxi ride, Kap
 reach: the title of the seed save; the town has three free player slots; the new player's first days are on the seed's day
 needs: seed
 match: ov147/* ov051/* ov068/sequence4 ov068/town_nook ov068/taxi ov068/field_actor_states87 ov068/field_camera_modes
-  ov093/* ov004/music_show_overlay main/boot_screen main/start_kind main/player_id main/town_name
+  ov093/* ov004/staff_roll_overlay main/boot_screen main/start_kind main/player_id main/town_name
   main/player_options main/player_record main/player_records main/player_field_2416
 
 area: New player and title (the seed's save)

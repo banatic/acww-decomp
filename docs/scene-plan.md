@@ -1515,7 +1515,7 @@ What reading the Clean code found about the groups above; counts are of function
   This answers the earlier findings that the show's end, the staff roll and the tune editor's
   playback wait on the ARM7's sequence player.
 - K.K.'s show follows the music's variables 2 and 3 (MusicBeatShow_ReadVariables): variable 2
-  going to 0 restarts the staff roll (MusicShowOverlay_Restart), which scrolls
+  going to 0 restarts the staff roll (StaffRollOverlay_Restart), which scrolls
   (StaffRoll_Advance, _LayOutRow); variable 3 at 2 switches to the logo (StaffRoll_ShowLogo,
   about frame 19,500 of kk-show's recording), whose fade ends the show (StaffRoll_HasEnded); K.K.
   speaks once more and the player stands up: kk-show-end (42). StaffRoll_ShowLogo writes the

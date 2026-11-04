@@ -3,7 +3,7 @@
 # Save: as museum.txt. K.K. asks the player to sit: east to the counter's stool and up onto it
 # (Brewster's coffee offered and declined), then west and down to the chairs before the stage;
 # seated (about 10900, ov068/cafe_guest.c), A answers K.K.: the show (the room camera's show
-# mode, ov004/music_show_overlay.c) and the staff roll (ov093/staff_roll.c) begin (about 11300)
+# mode, ov004/staff_roll_overlay.c) and the staff roll (ov093/staff_roll.c) begin (about 11300)
 # and run on to the end of the recording.
 900 START -
 906 - -
