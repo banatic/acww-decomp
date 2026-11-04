@@ -169,7 +169,7 @@ int VillagerHouse_Slot9C(VillagerHouse *house)
         if (Session_IsSlotTaken(session, slot) != 0) {
             u8 link_state[3];
             LinkScene_GlobalPlace(slot, &link_state[0], &link_state[1], &link_state[2]);
-            if (index == SceneQuery_IndexIn11(link_state[0])) {
+            if (index == SceneQuery_VillagerHouseIndex(link_state[0])) {
                 return 1;
             }
         }

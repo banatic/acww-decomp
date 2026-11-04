@@ -608,7 +608,7 @@ void BirthdayGuestTalk_Line(BirthdayGuestTalk *talk, VillagerTalkLine *out)
     if (talk->guest->talk.base.scene.talk == NULL) {
         return;
     }
-    int house = SceneQuery_CurrentIndexIn11();
+    int house = SceneQuery_CurrentVillagerHouse();
     if (VillagerRoster_IsFilled(&data_021e5a2c, house) != 0) {
         PlayerIdText unused;
         PlayerIdText_Construct(&unused);

@@ -888,7 +888,7 @@ int VillagerTalkTopics_SayByAcre(VillagerTalk *talk)
 {
     int group = 4;
     AcreMap *map = data_021c80bc;
-    if (SceneQuery_CurrentIn11() != 0 && SceneQuery_CurrentIndexIn11() == VillagerStatus_Index(topics_record(talk))) {
+    if (SceneQuery_InVillagerHouse() != 0 && SceneQuery_CurrentVillagerHouse() == VillagerStatus_Index(topics_record(talk))) {
         group = 3;
     } else if (map != NULL && data_020e54a8 == 0) {
         const s32 *position = (const s32 *) (const void *) (talk->villager + VILLAGER_TALK_TOPICS_OBJECT_POSITION);

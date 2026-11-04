@@ -28,7 +28,7 @@ static_assert(sizeof(TvScheduleEntry) == 3, "a schedule's entry");
 #define DAYS_PER_WEEK 7
 #define LOOPS_MAX 0xffff
 
-/* Set by the room's start (RoomManager_Init) when SceneKinds_CurrentIsHouseRoom or SceneQuery_CurrentIn11 says so:
+/* Set by the room's start (RoomManager_Init) when SceneKinds_CurrentIsHouseRoom or SceneQuery_InVillagerHouse says so:
  * the TV's sound is played. */
 extern u8 data_ov004_022595b8;
 /* The heap files are loaded on, and the room's heap the TV's texture is copied into. */

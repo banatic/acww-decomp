@@ -3,7 +3,7 @@
  * that keep a 4-bit step.
  *
  * The scenes with a record (RoomCells_ForScene): the player's house rooms 1-5 (func_020b67e8)
- * at 0x400 in their records at data_021ebcd4, the scenes 17-24 (func_020b6694) in
+ * at 0x400 in their records at data_021ebcd4, the villagers' houses, scenes 17-24 (func_020b6694), in
  * data_021c89fc, Nook's scenes 26-31 (func_020b6744) in data_021c884c, and scene 10 in
  * data_021c87b4.
  *

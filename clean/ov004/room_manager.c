@@ -62,7 +62,7 @@ CLEAN_AS(func_ov004_0223b274, RoomManager_SetBroadcastChanged)
 static_assert(offsetof(RoomManager, unk_2a8) == 0x2a8, "TV sound state");
 static_assert(offsetof(RoomObject, sound.position) == 0x7b8, "object's sound point");
 
-/* Set by the room's start in a house's room or a scene of kind 11: the TV is heard. */
+/* Set by the room's start in a house's room or a villager's house: the TV is heard. */
 extern u8 data_ov004_022595b8;
 /* The room's shared frame counter, counted 0 to 0x27 by the room's update. */
 extern u16 data_ov004_022595bc;
@@ -425,14 +425,14 @@ int RoomManager_Update(RoomManager *room)
 CLEAN_AS(func_ov004_0223d3b4, RoomManager_Update)
 
 /* func_ov004_0223d434 (vtable slot 0): the room's start: the TV is heard in a house's room and
- * in scenes of kind 11; the TV's sound state and the broadcast's flag are cleared; the shop
+ * in the villagers' houses; the TV's sound state and the broadcast's flag are cleared; the shop
  * mode is set by the scene; the objects' heap is made for the scene's number of objects; this
  * is the room; the objects' grid and the pushes are cleared; the model pool is made (one entry
  * per object); then the TVs (with room for more than one object), the furniture mover, the item
  * shown's files and the furniture of the room's map; 1. */
 int RoomManager_Init(RoomManager *room)
 {
-    if (SceneKinds_CurrentIsHouseRoom() != 0 || SceneQuery_CurrentIn11() != 0) {
+    if (SceneKinds_CurrentIsHouseRoom() != 0 || SceneQuery_InVillagerHouse() != 0) {
         data_ov004_022595b8 = 1;
     }
     RoomTvSoundState *state = (RoomTvSoundState *) (void *) room->unk_2a8;

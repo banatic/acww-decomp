@@ -89,8 +89,8 @@ RoomCells *RoomCells_ForScene(int scene)
         if (record != 0) {
             return (RoomCells *) (uintptr_t) (u32) HouseRecord_RoomCells((HouseRoom *) (uintptr_t) record);
         }
-    } else if (SceneQuery_In11(scene)) {
-        return &data_021c89fc[SceneQuery_IndexIn11(scene)];
+    } else if (SceneQuery_IsVillagerHouse(scene)) {
+        return &data_021c89fc[SceneQuery_VillagerHouseIndex(scene)];
     } else if (SceneQuery_InNook(scene)) {
         return &data_021c884c[SceneQuery_IndexInNook(scene)];
     } else if (scene == ROOM_CELLS_SCENE_OTHER) {

@@ -147,7 +147,7 @@ static void RoomObject02252ba8_hold_joints(RoomObject02252ba8 *object, const Ani
 /* func_ov004_02214df8 (entry of STARTING): the sound at 2, the switch on, at once, and the
  * countdown at 0xffff. Then, by the tile it is on:
  * - while its model is being bound (RoomObject.unk_77E) in the mode given (unk_76C not 0) or
- *   where SceneQuery_CurrentIn11 says so: the cue plays (even when it was not set up) and its step goes
+ *   where SceneQuery_InVillagerHouse says so: the cue plays (even when it was not set up) and its step goes
  *   to the cell and to unk_77C; the joints take the archive's animation; the countdown at 0;
  * - while its model is being bound otherwise: the cue waits for the step the cell keeps, which
  *   goes to unk_77C; the joints take the mover's animation;
@@ -166,7 +166,7 @@ int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
     object->countdown = 0xffff;
     Position_Tile(&x, &y, (const Position *) (const void *) &base->position);
     if (base->unk_77E != 0) {
-        if (base->unk_76C != 0 || SceneQuery_CurrentIn11() != 0) {
+        if (base->unk_76C != 0 || SceneQuery_InVillagerHouse() != 0) {
             SoundCue_SetMode(object->cue, CUE_PLAY);
             step = SoundCue_ReadVariable((char *) object->cue) & STEP_MASK;
             RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());

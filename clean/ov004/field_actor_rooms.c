@@ -894,7 +894,7 @@ void FieldActorRooms_EnterArrive(FieldActor *actor, const StateRequest *request,
     FIELD_ACTOR_ROOMS_WALKING(actor) = 1;
     switch (kind) {
         case FIELD_ACTOR_ROOMS_GONE_DOOR:
-            if ((FieldActor_LinkedNotPlayer0(actor) && SceneKinds_CurrentIsHouseRoom()) || SceneQuery_CurrentIn11()) {
+            if ((FieldActor_LinkedNotPlayer0(actor) && SceneKinds_CurrentIsHouseRoom()) || SceneQuery_InVillagerHouse()) {
                 wait = FIELD_ACTOR_ROOMS_ARRIVE_WAIT;
                 sound = FIELD_ACTOR_ROOMS_SOUND_DOOR_HELD;
                 FIELD_ACTOR_ROOMS_WALKING(actor) = 0;

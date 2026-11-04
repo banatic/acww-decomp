@@ -602,7 +602,7 @@ void RoomObject_Vfunc14(RoomObject *object, int mode)
             int y = 0;
             RoomObject_FindVariantCell(object, &x, &y, NULL, 0);
             int area = SceneQuery_Current();
-            if (RoomManager_ShopMode() != 0 && SceneQuery_In11(area) == 0 && SceneKinds_IsHouseRoom(area) == 0) {
+            if (RoomManager_ShopMode() != 0 && SceneQuery_IsVillagerHouse(area) == 0 && SceneKinds_IsHouseRoom(area) == 0) {
                 void *map = data_021c80bc;
                 RoomObject_TakeOffMap(object, 0, 0);
                 if (map != NULL) {

@@ -509,7 +509,7 @@ void CameraControl_FollowFrame(CameraControl *camera)
     Vec3 player = player_position();
     if (scene()->outdoors != 0) {
         CameraControl_Follow(camera, &player);
-    } else if (SceneKinds_CurrentIsHouseRoom() || SceneQuery_CurrentIn11() ||
+    } else if (SceneKinds_CurrentIsHouseRoom() || SceneQuery_InVillagerHouse() ||
                (SceneQuery_CurrentIn20() && SceneQuery_Current() != SCENE_20 && SceneQuery_Current() != SCENE_22)) {
         CameraControl_LoadPreset(camera, data_020ca158[camera->preset_row][camera->preset_column], NULL);
         camera->goal.second_offset = player;

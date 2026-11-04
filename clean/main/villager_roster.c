@@ -84,10 +84,10 @@ CLEAN_AS(func_0207c4a4, VillagerRoster_FindNumber)
 /* func_0207cd4c: the villager a code 17-24 stands for (places 0-7), or NULL. */
 u8 *VillagerRoster_ForCode(VillagerTown *town, int code)
 {
-    if (SceneQuery_In11((u8) code) == 0) {
+    if (SceneQuery_IsVillagerHouse((u8) code) == 0) {
         return NULL;
     }
-    int index = SceneQuery_IndexIn11((u8) code);
+    int index = SceneQuery_VillagerHouseIndex((u8) code);
     if (!ActorTable_IsKindESlot((u32) index)) {
         return NULL;
     }

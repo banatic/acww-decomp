@@ -706,8 +706,8 @@ void RoomShell_SceneSurfaces(RoomShell *self, u16 *wallpaper, int *wallpaper_mod
         *carpet = *HouseRecord_RoomCarpet(room, (unsigned int *) carpet_mode);
         return;
     }
-    if (SceneQuery_In11((int) scene)) {
-        u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, SceneQuery_IndexIn11(scene));
+    if (SceneQuery_IsVillagerHouse((int) scene)) {
+        u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, SceneQuery_VillagerHouseIndex(scene));
         if (villager == NULL) {
             return;
         }

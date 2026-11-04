@@ -549,7 +549,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
     } else if (SceneQuery_CurrentIn20() != 0 && SceneQuery_IndexIn20(SceneQuery_Current()) == 1) {
         texts = &data_020c8a80;
     } else if (since == VILLAGER_TALK_GREETING_EARLIER_DAY) {
-        if (SceneQuery_CurrentIn11() != 0) {
+        if (SceneQuery_InVillagerHouse() != 0) {
             texts = &data_020c8a78;
         } else if (falling == VILLAGER_TALK_GREETING_RAIN) {
             texts = &data_020c8cf0;

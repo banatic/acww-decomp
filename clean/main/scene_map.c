@@ -222,8 +222,8 @@ AcreMapSource *SceneMap_MakeSources(SceneMap *self, int *acre_models, int count,
     if (SceneKinds_CurrentIsHouseRoom()) {
         return HouseRecord_RoomSource((HouseRecord *) (void *) data_021ebcd4, SceneKinds_CurrentHouseRoomIndex(), heap);
     }
-    if (SceneQuery_CurrentIn11()) {
-        int villager = SceneQuery_CurrentIndexIn11();
+    if (SceneQuery_InVillagerHouse()) {
+        int villager = SceneQuery_CurrentVillagerHouse();
         int items = (int) (uintptr_t) AcreTemplates_EmptyItems(heap, SCENE_MAP_ITEMS_ALIGN);
         SceneMap_SetAcreItems(self, items, 0);
         return AcreMap_MakeVillagerSource(items, villager, heap);

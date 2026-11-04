@@ -42,13 +42,13 @@ int RoomPushes_Allowed(void)
 CLEAN_AS(func_ov004_0223c700, RoomPushes_Allowed)
 
 /* func_ov004_0223c72c: unless RoomManager_ShopMode says no, whether the scene is a house's room
- * (SceneKinds_CurrentIsHouseRoom) or of kind 11 (SceneQuery_CurrentIn11). */
+ * (SceneKinds_CurrentIsHouseRoom) or a villager's house (SceneQuery_InVillagerHouse). */
 int RoomPushes_Enabled(void)
 {
     if (RoomManager_ShopMode() != 0) {
         return 0;
     }
-    if (SceneKinds_CurrentIsHouseRoom() != 0 || SceneQuery_CurrentIn11() != 0) {
+    if (SceneKinds_CurrentIsHouseRoom() != 0 || SceneQuery_InVillagerHouse() != 0) {
         return 1;
     }
     return 0;

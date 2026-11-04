@@ -1173,7 +1173,7 @@ int Spawner_Delete(Spawner *self)
     }
     VillagerTown_UpdateWithClock(town);
     int next = SceneExit_NextScene();
-    if (SceneQuery_In11(next) == 0) {
+    if (SceneQuery_IsVillagerHouse(next) == 0) {
         return 1;
     }
     u8 *villager = VillagerRoster_ForCode(town, (s8) next);
@@ -1227,7 +1227,7 @@ int Spawner_Create(Spawner *self)
             }
             Spawner_PlaceTownVillagers(self);
         }
-    } else if (SceneQuery_CurrentIn11() != 0) {
+    } else if (SceneQuery_InVillagerHouse() != 0) {
         Spawner_SpawnHouseOwner(self);
     } else if (SceneKinds_CurrentIsHouseRoom() != 0) {
         if (VillagerTown_CurrentEvent() != SPAWNER_EVENT_FLEA_MARKET &&
@@ -1343,7 +1343,7 @@ CLEAN_AS(func_020856fc, Spawner_SpawnHouseGuest)
 void Spawner_SpawnHouseOwner(Spawner *self)
 {
     VillagerTown *town = &data_021e5a2c;
-    int index = SceneQuery_CurrentIndexIn11();
+    int index = SceneQuery_CurrentVillagerHouse();
     u8 *villager = VillagerRoster_At(town, index);
     if (villager == NULL || NpcId_IsValid(TownVillager_NpcId(villager)) == 0) {
         return;

@@ -268,9 +268,9 @@ int MusicPlayer_EnterTalk(MusicPlayer *player)
     SceneObjectBase_TakeReceiver(&player->base.scene, MusicPlayer_receiver(player));
     player->base.link->next_state = 1;
     MessageReceiver_SetName(&player->base.receiver.base, data_ov004_022531f0);
-    if (SceneQuery_CurrentIn11() != 0) {
+    if (SceneQuery_InVillagerHouse() != 0) {
         u32 song = 0;
-        void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentIndexIn11());
+        void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentVillagerHouse());
         if (villager != NULL) {
             song = (u32) VillagerStatus_Song(villager);
         }
@@ -511,9 +511,9 @@ int MusicPlayer_Start(MusicPlayer *player)
     if (base->unk_76C == 1) {
         RoomSync_SetState(&player->base, MUSIC_PLAYER_STOPPED, NO_VALUE, 1);
     } else if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
-        if (SceneQuery_CurrentIn11() != 0) {
+        if (SceneQuery_InVillagerHouse() != 0) {
             u32 song = 0;
-            void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentIndexIn11());
+            void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentVillagerHouse());
             if (villager != NULL) {
                 song = (u32) VillagerStatus_Song(villager);
             }

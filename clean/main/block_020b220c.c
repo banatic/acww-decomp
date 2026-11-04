@@ -31,7 +31,7 @@ void Block020b220c_PlaySceneSound(void)
 {
     int scene = SceneQuery_Current();
     int entry;
-    if (SceneKinds_IsHouseRoom((unsigned int) scene) != 0 || SceneQuery_In11(scene) != 0) {
+    if (SceneKinds_IsHouseRoom((unsigned int) scene) != 0 || SceneQuery_IsVillagerHouse(scene) != 0) {
         entry = 0;
     } else if (scene == 0x1a) {
         entry = 1;

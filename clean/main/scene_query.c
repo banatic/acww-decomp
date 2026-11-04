@@ -4,9 +4,9 @@
 #include "clean.h"
 #include "scene_kinds.h"
 
-/* The group of scenes 0x11-0x18, Nook's scenes and the group 0x20-0x29. */
-#define SCENE_QUERY_GROUP_11_FIRST 0x11
-#define SCENE_QUERY_GROUP_11_LAST 0x18
+/* The villagers' houses 0x11-0x18, Nook's scenes and the group 0x20-0x29. */
+#define SCENE_QUERY_VILLAGER_HOUSE_FIRST 0x11
+#define SCENE_QUERY_VILLAGER_HOUSE_LAST 0x18
 #define SCENE_QUERY_NOOK_FIRST 0x1a
 #define SCENE_QUERY_NOOK_LAST 0x1f
 #define SCENE_QUERY_GROUP_20_FIRST 0x20
@@ -124,35 +124,35 @@ int SceneQuery_Is0(int scene)
 CLEAN_AS(func_020b6674, SceneQuery_Is0)
 
 /* func_020b6680 */
-int SceneQuery_CurrentIn11(void)
+int SceneQuery_InVillagerHouse(void)
 {
-    return SceneQuery_In11(SceneQuery_Current());
+    return SceneQuery_IsVillagerHouse(SceneQuery_Current());
 }
-CLEAN_AS(func_020b6680, SceneQuery_CurrentIn11)
+CLEAN_AS(func_020b6680, SceneQuery_InVillagerHouse)
 
-/* func_020b6694: whether `scene` is one of 0x11-0x18. */
-int SceneQuery_In11(int scene)
+/* func_020b6694: whether `scene` is a villager's house, one of 0x11-0x18. */
+int SceneQuery_IsVillagerHouse(int scene)
 {
-    return SceneQuery_IndexIn11((unsigned int) scene) != SCENE_QUERY_NOT_IN_GROUP;
+    return SceneQuery_VillagerHouseIndex((unsigned int) scene) != SCENE_QUERY_NOT_IN_GROUP;
 }
-CLEAN_AS(func_020b6694, SceneQuery_In11)
+CLEAN_AS(func_020b6694, SceneQuery_IsVillagerHouse)
 
 /* func_020b66b0 */
-int SceneQuery_CurrentIndexIn11(void)
+int SceneQuery_CurrentVillagerHouse(void)
 {
-    return SceneQuery_IndexIn11(SceneQuery_Current());
+    return SceneQuery_VillagerHouseIndex(SceneQuery_Current());
 }
-CLEAN_AS(func_020b66b0, SceneQuery_CurrentIndexIn11)
+CLEAN_AS(func_020b66b0, SceneQuery_CurrentVillagerHouse)
 
-/* func_020b66c4: the index of `scene` in 0x11-0x18, -1 outside it. */
-int SceneQuery_IndexIn11(unsigned int scene)
+/* func_020b66c4: the index of the villager whose house `scene` is (0x11-0x18), -1 for another. */
+int SceneQuery_VillagerHouseIndex(unsigned int scene)
 {
-    if (scene >= SCENE_QUERY_GROUP_11_FIRST && scene <= SCENE_QUERY_GROUP_11_LAST) {
-        return (int) (scene - SCENE_QUERY_GROUP_11_FIRST);
+    if (scene >= SCENE_QUERY_VILLAGER_HOUSE_FIRST && scene <= SCENE_QUERY_VILLAGER_HOUSE_LAST) {
+        return (int) (scene - SCENE_QUERY_VILLAGER_HOUSE_FIRST);
     }
     return SCENE_QUERY_NOT_IN_GROUP;
 }
-CLEAN_AS(func_020b66c4, SceneQuery_IndexIn11)
+CLEAN_AS(func_020b66c4, SceneQuery_VillagerHouseIndex)
 
 /* func_020b66d8 */
 int SceneQuery_CurrentIn20(void)

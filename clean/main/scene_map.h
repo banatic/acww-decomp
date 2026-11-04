@@ -5,7 +5,7 @@
  *
  * The map's acres come, by the scene: for the town (scenes 0, 0x2c and 0x31) from the town's
  * layout (town_layout.h); for a room of the player's house from the house's records; for a
- * villager's house (SceneQuery_CurrentIn11) from that villager; for any other scene from the
+ * villager's house (SceneQuery_InVillagerHouse) from that villager; for any other scene from the
  * scene setup's list of acre models, each acre's items filled from the item templates of the
  * current mode (acre_templates.h). The item arrays made for the acres are kept with the
  * process until it frees the map. */

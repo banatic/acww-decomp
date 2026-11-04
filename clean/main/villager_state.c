@@ -340,7 +340,7 @@ CLEAN_AS(func_02079468, VillagerState_DoubleByte1E)
 /* func_02079478: flag 1 set unless the current scene passes func_020b6694. */
 void VillagerState_SetFlag1UnlessScene(VillagerState *entry)
 {
-    if (SceneQuery_CurrentIn11() == 0) {
+    if (SceneQuery_InVillagerHouse() == 0) {
         entry->flags |= VILLAGER_STATE_FLAG_1;
     }
 }
