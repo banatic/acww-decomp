@@ -368,6 +368,28 @@ def header_files() -> frozenset[str]:
                      for d, _, files in os.walk(top) for f in files)
 
 
+def clean_flags(flags: list[str]) -> list[str]:
+    """`flags` and what every Clean object is compiled with besides (build_clean)."""
+    # Each Clean function stays a function of its own, as each Native one is (one per source):
+    # the runtime redirects a function at its entry, which a call inlined into its caller, or
+    # two identical functions folded into one, would get round (and see clean_entry_flags).
+    flags = [*flags, "-fno-inline", "-ffunction-sections"] + ([] if "clang" in " ".join(diffcheck.compiler()) else ["-fno-ipa-icf"])
+    # uninitialized locals filled as the Native objects' are (tools/native.py), so the memory
+    # comparison tells the bytes a structure filled in part passes on from the game's values
+    flags += ["-ftrivial-auto-var-init=pattern"]
+    # indirect calls through natives.s's thunks, as Native code's (tools/native.py, flags_for)
+    return flags + native_build.indirect_flags(diffcheck.compiler())
+
+
+def clean_entry_flags(text: str) -> list[str]:
+    """The flags a Clean source `text` is compiled with for the functions it registers: the
+    runtime may send a call to any of them elsewhere at its entry, which a call the compiler
+    folded into what it learns of the callee (a constant result, an unread argument, a call
+    dropped whose result is unused) would get round. Each is compiled as the functions of a
+    Native unit are (tools/native.py, entry_flags)."""
+    return native_build.entry_flags(diffcheck.compiler(), [f for _, _, f in CLEAN_AS.findall(text)])
+
+
 def build_clean(flags: list[str]) -> list[str]:
     """The Clean code and its checks as objects, and the names they take from the game placed at
     their DS addresses (as tools/diffcheck.py builds them). Each object is rewritten as the Native
@@ -378,15 +400,7 @@ def build_clean(flags: list[str]) -> list[str]:
     known = set(syms.by_name)
     native = {name for name, _ in natives_table().values()}
     prefix = "_" if WINDOWS else ""
-    # Each Clean function stays a function of its own, as each Native one is (one per source):
-    # the runtime redirects a function at its entry, which a call inlined into its caller, or
-    # two identical functions folded into one, would get round.
-    flags = [*flags, "-fno-inline", "-ffunction-sections"] + ([] if "clang" in " ".join(diffcheck.compiler()) else ["-fno-ipa-icf"])
-    # uninitialized locals filled as the Native objects' are (tools/native.py), so the memory
-    # comparison tells the bytes a structure filled in part passes on from the game's values
-    flags += ["-ftrivial-auto-var-init=pattern"]
-    # indirect calls through natives.s's thunks, as Native code's (tools/native.py, flags_for)
-    flags += native_build.indirect_flags(diffcheck.compiler())
+    flags = clean_flags(flags)
     tree = OUT / "clean"
     profiles = {r[1] for r in clean_registrations("all")}
     # A direct call to a function without a Native goes through its native_call_ stub, as
@@ -418,7 +432,8 @@ def build_clean(flags: list[str]) -> list[str]:
             source = OUT / 'clean-copy' / src.relative_to(C.ROOT)
             source.parent.mkdir(parents=True, exist_ok=True)
             source.write_text(f'#line 1 "{src.as_posix()}"\n' + copy, newline='\n')
-        cmd = [*compiler, '-iquote', str(src.parent), "-c", str(source), "-o", str(obj)]
+        entry = clean_entry_flags(copy)
+        cmd = [*compiler, *entry, '-iquote', str(src.parent), "-c", str(source), "-o", str(obj)]
         # the object as linked, kept by everything it is made from (here and in the cache every
         # checkout shares): an unchanged file is not compiled again
         key = hashlib.sha1(C.tree_free(" ".join(cmd) + "\0" + copy).encode() + rewritten.digest())
@@ -432,6 +447,12 @@ def build_clean(flags: list[str]) -> list[str]:
             stamp.write_text(key)
             return obj, None
         stamp.unlink(missing_ok=True)
+        if len(entry) > 1:
+            # the entry flags through a response file: a file of hundreds of functions would pass
+            # Windows's limit on a command line
+            listed = obj.with_suffix(".flags")
+            listed.write_text("".join(f"{f}\n" for f in entry), newline="\n")
+            cmd = [*compiler, f"@{listed}", *cmd[len(compiler) + len(entry):]]
         p = subprocess.run(cmd, capture_output=True, text=True)
         if p.returncode != 0:
             raise SystemExit(p.stdout + p.stderr)

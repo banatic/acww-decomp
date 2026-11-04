@@ -8,7 +8,8 @@ each declared before it is used), that tools/regroup.py adds the prototype a cal
 defined further down needs, and writes a library's unit beside its sources, and how it settles
 what the files declare differently, or refuses to; and
 that tools/native.py compiles a unit for the PC with each call to one of its functions going to
-that function's entry (none folded into its caller), and reads the unit as declared.
+that function's entry (none folded into its caller), and reads the unit as declared; and that
+tools/run.py compiles a Clean file of several functions the same way.
 """
 from __future__ import annotations
 
@@ -422,6 +423,22 @@ int Obj::func_02000010()
 """}
 
 
+def object_calls(obj: pathlib.Path) -> dict[str, set[str]]:
+    """The names each function of a PC object refers to in its code."""
+    import native
+    tool = str(native.LLVM / "llvm-objdump.exe") if native.WINDOWS else "objdump"
+    out = subprocess.run([tool, "-dr", str(obj)], capture_output=True, text=True, check=True).stdout
+    found: dict[str, set[str]] = {}
+    here = None
+    for line in out.splitlines():
+        m = re.match(r"^[0-9a-f]+ <(\S+)>:$", line)
+        if m:
+            here = found.setdefault(m.group(1)[len(native.PREFIX):], set())
+        elif here is not None and (r := re.search(r"(?:IMAGE_REL_I386|R_386)_\w+\s+(\S+)$", line)):
+            here.add(r.group(1)[len(native.PREFIX):])
+    return found
+
+
 class NativeUnit(unittest.TestCase):
     def calls(self, suffix: str) -> dict[str, set[str]]:
         """The names each function of the sample unit's Native object refers to in its code."""
@@ -431,17 +448,7 @@ class NativeUnit(unittest.TestCase):
             path.write_text(NATIVE_UNIT[suffix], newline="\n")
             obj = path.with_suffix(".o")
             subprocess.run([*native.compiler(), "-c", *native.flags_for(path), str(path), "-o", str(obj)], check=True)
-            tool = str(native.LLVM / "llvm-objdump.exe") if native.WINDOWS else "objdump"
-            out = subprocess.run([tool, "-dr", str(obj)], capture_output=True, text=True, check=True).stdout
-        found: dict[str, set[str]] = {}
-        here = None
-        for line in out.splitlines():
-            m = re.match(r"^[0-9a-f]+ <(\S+)>:$", line)
-            if m:
-                here = found.setdefault(m.group(1)[len(native.PREFIX):], set())
-            elif here is not None and (r := re.search(r"(?:IMAGE_REL_I386|R_386)_\w+\s+(\S+)$", line)):
-                here.add(r.group(1)[len(native.PREFIX):])
-        return found
+            return object_calls(obj)
 
     def test_calls_in_a_unit_go_to_the_callee(self):
         # The runtime may send any of these functions to its Reference or Clean code (at its
@@ -463,6 +470,71 @@ class NativeUnit(unittest.TestCase):
                 "    return k(2);\n}\n")
         self.assertEqual(native.struct_results(text), [])
         self.assertEqual(native.struct_results(text + "\nint m(void)\n{\n    return g().x;\n}\n"), ["g"])
+
+
+# A Clean file of several functions (tools/run.py, build_clean): each registered function
+# called through its entry, where the runtime may send it on to the ROM's code or Native's
+CLEAN_UNIT = """#include "clean.h"
+
+int Sample_Pick(int unused, int b);
+int Sample_Three(void);
+int Sample_IsCode(unsigned short *p);
+
+int Sample_PickPlusOne(int a, int b)
+{
+    return Sample_Pick(a, b) + 1;
+}
+CLEAN_AS(func_02000050, Sample_PickPlusOne)
+
+void Sample_TestCode(unsigned short *p)
+{
+    Sample_IsCode(p);
+}
+CLEAN_AS(func_02000040, Sample_TestCode)
+
+int Sample_IsCode(unsigned short *p)
+{
+    return *p == 0x1000;
+}
+CLEAN_AS(func_02000030, Sample_IsCode)
+
+int Sample_Four(void)
+{
+    return Sample_Three() + 1;
+}
+CLEAN_AS(func_02000020, Sample_Four)
+
+int Sample_Three(void)
+{
+    return 3;
+}
+CLEAN_AS(func_02000010, Sample_Three)
+
+int Sample_Pick(int unused, int b)
+{
+    return b;
+}
+CLEAN_AS(func_02000000, Sample_Pick)
+"""
+
+
+class CleanUnit(unittest.TestCase):
+    def test_calls_in_a_file_go_to_the_callee(self):
+        # as for a Native unit (NativeUnit): the runtime may send any registered function
+        # elsewhere at its entry, so a caller in the same file must still call it
+        import diffcheck
+        import run
+        with tempfile.TemporaryDirectory() as d:
+            path = pathlib.Path(d) / "sample.c"
+            path.write_text(CLEAN_UNIT, newline="\n")
+            obj = path.with_suffix(".o")
+            flags = run.clean_flags(["-std=c11", "-O2", "-fwrapv", "-fno-strict-aliasing", f"-I{C.ROOT / 'clean'}"])
+            subprocess.run([*diffcheck.compiler(), *flags, *run.clean_entry_flags(CLEAN_UNIT), "-c", str(path),
+                            "-o", str(obj)], check=True)
+            calls = object_calls(obj)
+        self.assertIn("Sample_IsCode", calls["Sample_TestCode"])
+        self.assertIn("Sample_Three", calls["Sample_Four"])
+        self.assertIn("Sample_Pick", calls["Sample_PickPlusOne"])
 
 
 if __name__ == "__main__":

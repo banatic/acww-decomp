@@ -138,10 +138,17 @@ def separate_flags(cc: list[str], names: list[str]) -> list[str]:
     """The flags that keep the functions `names` of one file from being compiled with what the
     compiler learns of each other (flags_for): each is called through its entry, as from
     another file, and is not inlined."""
+    inline = ["-finline-hint-functions"] if "clang" in " ".join(cc) else ["-fno-inline-functions", "-fno-inline-small-functions"]
+    return [*inline, *entry_flags(cc, names)]
+
+
+def entry_flags(cc: list[str], names: list[str]) -> list[str]:
+    """The flags that keep what the compiler learns of the functions `names` of one file out of
+    the code of the others (separate_flags; tools/run.py's Clean objects, build_clean): a call
+    to one is made, with its arguments, and its result taken from it, however little it does."""
     if "clang" in " ".join(cc):
-        return ["-finline-hint-functions",
-                *(f for name in names for f in ("-mllvm", f"-force-attribute={name}:nobuiltin"))]
-    return ["-fno-inline-functions", "-fno-inline-small-functions", "-flive-patching=inline-only-static"]
+        return [f for name in names for f in ("-mllvm", f"-force-attribute={name}:nobuiltin")]
+    return ["-flive-patching=inline-only-static"]
 
 
 def indirect_flags(cc: list[str]) -> list[str]:
