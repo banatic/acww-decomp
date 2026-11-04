@@ -1246,7 +1246,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov003/store_front:StoreFront_ReceiverDestroyAndFree ov003/town_insect:TownInsectAnim_DestructDelete
   ov003/town_post_source:TownPostSource_Delete
   ov003/villager_house:VillagerHouse_ReceiverDestroyAndFree
-  ov003/warp_object:WarpObject_ReceiverDestroyAndFree ov004/atm:AtmReceiver_Delete
+  ov003/giraffe_spot:GiraffeSpot_ReceiverDestroyAndFree ov004/atm:AtmReceiver_Delete
   ov004/barber_machine:BarberMachineReceiver_Delete ov004/birthday_guest:BirthdayGuestTalk_Delete
   ov004/birthday_villager:BirthdayVillagerTalk_Delete ov004/bromide:BromideReceiver_Delete
   ov004/cafe_master:CafeMasterTalk_Delete ov004/chest:ChestReceiver_Delete
@@ -1348,7 +1348,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov003/player_house:PlayerHouse_ReceiverDestroy ov003/screen_object:ScreenObject_ReceiverDestroy
   ov003/sign_board:SignBoard_ReceiverDestroy ov003/snowman:Snowman_ReceiverDestroy
   ov003/spawn_spot:SpawnSpot_ReceiverDestroy ov003/store_front:StoreFront_ReceiverDestroy
-  ov003/villager_house:VillagerHouse_ReceiverDestroy ov003/warp_object:WarpObject_ReceiverDestroy
+  ov003/villager_house:VillagerHouse_ReceiverDestroy ov003/giraffe_spot:GiraffeSpot_ReceiverDestroy
   ov004/atm:AtmReceiver_Destroy ov004/barber_machine:BarberMachineReceiver_Destruct
   ov004/birthday_guest:BirthdayGuestTalk_Destroy ov004/birthday_villager:BirthdayVillagerTalk_Destroy
   ov004/bromide:BromideReceiver_Destroy ov004/chest:ChestReceiver_Destroy

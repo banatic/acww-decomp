@@ -8,7 +8,7 @@
  * a pending request for the current scene is carried out: its entry's placer sets the actor's
  * position and angle, its overlay is loaded when the entry asks for it, and the actor is made
  * under the spawner (Spawner_Serve). Other code asks for an actor with priority 1
- * (Spawner_RequestAt, the warp object of overlay 3).
+ * (Spawner_RequestAt, the giraffe's spot of overlay 3).
  *
  * The spawn table (data_020e1d8c, data_020d0644 entries) gives each profile the argument it is
  * made with (`code`), an overlay and its placer, a member function of the spawner. */

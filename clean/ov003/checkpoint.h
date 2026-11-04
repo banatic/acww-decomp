@@ -6,8 +6,8 @@
  *
  * The design is put on through a CheckpointDesign at 0x2b4: a texture binding of main (built
  * by func_020b9e58, filled by func_020b9d3c) and a texture file the design is loaded into
- * (func_0203cff8). The receiver's slot 0x14 is overlay 9's, through WarpObject_ReceiverSlot14
- * (warp_object.h).
+ * (func_0203cff8). The receiver's slot 0x14 is overlay 9's, through GiraffeSpot_ReceiverSlot14
+ * (giraffe_spot.h).
  *
  * When it is set up (vtable slot 0x70) it puts the design on and makes the five tiles of the
  * row before it (x - 2 to x + 2 at z - 1) solid; leaving the scene (slot 0x0c) takes the design
