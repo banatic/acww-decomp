@@ -5,7 +5,7 @@
 # a day before; the item 0x3934, one of the claims' codes 0x3934-0x3983, in pocket 0). A every
 # 40 frames goes through his talk with the first answers: the claim asked for and the pockets
 # opened on it (InsurerTalk_IsClaimItem), it is taken and the record's count of claims raised
-# (InsurerTalk_TakeClaim, PlayerField2416_RaiseClaims); the talk ends at about 9600.
+# (InsurerTalk_TakeClaim, PlayerField2416_RaiseForgeryClaims); the talk ends at about 9600.
 900 START -
 906 - -
 1000 A -

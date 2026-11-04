@@ -9,27 +9,27 @@ static_assert(offsetof(PlayerField2416, tailor_talk_days) == 0x08 && offsetof(Pl
 static_assert(sizeof(PlayerField2416) == PLAYER_FIELD_2416_SIZE, "field 2416");
 static_assert(offsetof(PlayerField2416, job_end) == 0x04 && offsetof(PlayerField2416, resets) == 0x0d, "field 2416");
 
-/* func_02088a60: the claims count raised by one.
+/* func_02088a60: the count of forged paintings claimed raised by one.
  * BUG: the cap at 255 is tested after the byte was raised, so 255 wraps to 0.
  * BUGFIX: test before raising. */
-void PlayerField2416_RaiseClaims(PlayerField2416 *field)
+void PlayerField2416_RaiseForgeryClaims(PlayerField2416 *field)
 {
 #ifdef BUGFIX
-    if (field->claims < PLAYER_FIELD_2416_CLAIMS_MAX) {
-        field->claims++;
+    if (field->forgery_claims < PLAYER_FIELD_2416_FORGERY_CLAIMS_MAX) {
+        field->forgery_claims++;
     }
 #else
-    field->claims = (u8) (field->claims + 1);
+    field->forgery_claims = (u8) (field->forgery_claims + 1);
 #endif
 }
-CLEAN_AS(func_02088a60, PlayerField2416_RaiseClaims)
+CLEAN_AS(func_02088a60, PlayerField2416_RaiseForgeryClaims)
 
 /* func_02088a74 */
-int PlayerField2416_Claims(PlayerField2416 *field)
+int PlayerField2416_ForgeryClaims(PlayerField2416 *field)
 {
-    return field->claims;
+    return field->forgery_claims;
 }
-CLEAN_AS(func_02088a74, PlayerField2416_Claims)
+CLEAN_AS(func_02088a74, PlayerField2416_ForgeryClaims)
 
 /* func_02088a78: the date becomes today. */
 void PlayerField2416_SetToday(PlayerField2416 *field)

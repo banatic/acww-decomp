@@ -480,7 +480,7 @@ void InsurerTalk_TakeClaim(InsurerTalk *talk)
         } else {
             PlayerField2416 *field = (PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current());
             message = INSURER_LINE_CLAIM_TAKEN;
-            PlayerField2416_RaiseClaims(field);
+            PlayerField2416_RaiseForgeryClaims(field);
             SceneCommand_RequestMotion14(it_scene(talk), &item, 0, 4, 0);
             if (slot >= 0) {
                 CurrentPockets_Empty(slot);

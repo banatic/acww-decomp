@@ -2839,7 +2839,7 @@ What reading the Clean code found about the groups above; counts are of function
 - The insurance seller's claims: with the player record's flags 0x17 and 0x18 (insured and
   covered on an earlier day: the first flag word at 0x23f8) and an item of 0x3934-0x3983 in the
   pockets, his talk on his own approach asks for the claim and takes it (InsurerTalk_TakeClaim,
-  PlayerField2416_RaiseClaims): save insured, scene insurance-claim.
+  PlayerField2416_RaiseForgeryClaims): save insured, scene insurance-claim.
 - Mabel's price for clothes sold goes into bags when the wallet cannot hold it (line 0x1e,
   MabelTalk_PaySale): save able-shop-rich (99,990 bells), scene able-sell-bags on able-sell's
   recording.

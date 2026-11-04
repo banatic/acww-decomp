@@ -38,12 +38,12 @@ typedef struct PlayerField2416 {
     u8 acorn_level;      /* 0x0c: overlay 87's level in that table, up to PLAYER_FIELD_2416_ACORN_LEVEL_MAX */
     u8 resets;           /* 0x0d: up to PLAYER_FIELD_2416_RESETS_MAX */
     u8 fashion_score;    /* 0x0e: up to PLAYER_FIELD_2416_FASHION_SCORE_MAX */
-    u8 claims;           /* 0x0f */
+    u8 forgery_claims;   /* 0x0f: the forged paintings claimed from the insurer (ov071) */
     u8 flags;            /* 0x10 */
 } PlayerField2416;
 
 #define PLAYER_FIELD_2416_FASHION_SCORE_MAX 100
-#define PLAYER_FIELD_2416_CLAIMS_MAX 0xff
+#define PLAYER_FIELD_2416_FORGERY_CLAIMS_MAX 0xff
 #define PLAYER_FIELD_2416_FIREWORKS_GIFTS_MAX 10
 
 /* PlayerField2416.flags */
@@ -53,8 +53,8 @@ typedef struct PlayerField2416 {
 #define PLAYER_FIELD_2416_FIREWORKS_GIFTS_MASK 0x3c
 #define PLAYER_FIELD_2416_GARDENING 0x40
 
-void PlayerField2416_RaiseClaims(PlayerField2416 *field);
-int PlayerField2416_Claims(PlayerField2416 *field);
+void PlayerField2416_RaiseForgeryClaims(PlayerField2416 *field);
+int PlayerField2416_ForgeryClaims(PlayerField2416 *field);
 void PlayerField2416_SetToday(PlayerField2416 *field);
 PlayerField2416 *PlayerField2416_Date(PlayerField2416 *field);
 void PlayerField2416_ClearGardening(PlayerField2416 *field);
