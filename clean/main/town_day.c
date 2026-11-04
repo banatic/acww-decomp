@@ -2,7 +2,7 @@
 #include "town_day.h"
 
 #include "acre_tile.h"
-#include "block_02042200.h"
+#include "town_pests.h"
 #include "board_notices.h"
 #include "bottle_mail.h"
 #include "clean.h"
@@ -69,7 +69,7 @@ static_assert(sizeof(TownDayEvent) == 12, "TownDayEvent");
 extern TownDay data_021c779c;
 extern StateBlock data_021dc7a8;
 extern NetSession *data_020ccf94;
-extern u8 data_021c776c[2];                                     /* block_02042200.h */
+extern u8 data_021c776c[2];                                     /* town_pests.h */
 extern TileRequestsAction data_021c7788[TILE_REQUESTS_ACTIONS]; /* tile_requests.h */
 extern TownDayStamp data_021f39fc;                              /* the state block's record at 0x17254 */
 extern TownDayStamp data_021f3a50;                              /* the day the calendar's buildings were set */
@@ -125,7 +125,7 @@ static void TownDay_SetStamp(TownDayStamp *stamp, const DateTime *when)
 void TownDay_Update(void)
 {
     TileRequests_UpdateRock((u32) (uintptr_t) &data_021c779c.requests);
-    Block02042200_Apply(data_021c776c);
+    TownPests_Apply(data_021c776c);
 }
 CLEAN_AS(func_02046600, TownDay_Update)
 
@@ -255,7 +255,7 @@ CLEAN_AS(func_0204678c, TownDay_Summarize)
 void TownDay_Enter(void)
 {
     TownDay_Summarize();
-    Block02042200_ReadFlags(data_021c776c);
+    TownPests_ReadFlags(data_021c776c);
     TownDay_ResetMarks();
     TileChanges_Activate();
 }

@@ -3453,7 +3453,7 @@ What reading the Clean code found about the groups above; counts are of function
   (FieldActor_RunState57). Kind 0x33 (the fly) is drawn by TownInsect_SpecialKind, every 40th
   frame without a session when nothing falls: of place 8 when the town day's summary has a spot
   (code 0x1b on a tile, TownDay_SpotPosition), else of place 7 one time in five while
-  data_ov003_0226054c is set (by Block02042200_Apply from bits 7 and 6 of the summary's flags:
+  data_ov003_0226054c is set (by TownPests_Apply from bits 7 and 6 of the summary's flags:
   items 0x1320-0x1322 and 0x154a). Kind 0x30 is left out of the month's lists (TownInsect_DrawKind)
   and 0x18 is what the event insect 0x3b is caught as. With code 0x1b on an empty tile south of
   the house, the town's insects were all flies at 2700; the net's third chase caught one:
@@ -3689,7 +3689,7 @@ What reading the Clean code found about the groups above; counts are of function
   counts down to his first act: scene gull-wait (save gull-wait), 3,201 frames in place of the
   25,245 of the scene that hands the parts over.
 - Spoiled turnips (0x154a-0x1553) on the ground make the day's summary set flag 0x40, and main
-  asks overlay 3 for its event insect of kind 0x3b (Block02042200_Apply, TownInsect_SetFlag54c);
+  asks overlay 3 for its event insect of kind 0x3b (TownPests_Apply, TownInsect_SetFlag54c);
   TownInsect_PickTile places it only on a tile more than 8.0 from the player, so the player walks
   away and waits: it is shown on a turnip (InsectPath_Show) and sits there
   (TownInsectKind_Update18, TownInsectMove_Update18, TownInsect_OnPlayersAheadTile): scene

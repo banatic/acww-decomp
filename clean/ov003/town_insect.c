@@ -8,7 +8,7 @@
 #include "main/acre_tile.h"   /* AcreTile_IsMarked, AcreTile_ItemInAcre */
 #include "main/actor.h"       /* Actor, Vec_YawTo */
 #include "main/actor_table.h" /* Position_Tile, Actors_GetEByIndex */
-#include "main/block_02042200.h"
+#include "main/town_pests.h"
 #include "main/building_shapes.h"
 #include "main/calendar.h"
 #include "main/c_library.h"
@@ -99,7 +99,7 @@ extern u16 data_ov003_02260594[TOWN_TILE_MASK_SIZE / 2];
 
 /* The process's frame counter for placing insects (TownInsect_UpdateTown). */
 extern u8 data_ov003_02260534;
-/* Set by main (block_02042200.c) for the event insect of kind 0x3b; cleared once placed. */
+/* Set by main (town_pests.c) for the event insect of kind 0x3b; cleared once placed. */
 extern u8 data_ov003_02260538;
 /* Set by the session's handler 41 (session_message.c); TownInsect_Release reads it. */
 extern u8 data_ov003_0226053c;
@@ -2569,13 +2569,13 @@ int TownInsect_ProcessSetUp(TownInsectProcess *process)
 CLEAN_AS(func_ov003_0222fd60, TownInsect_ProcessSetUp)
 
 /* func_ov003_0222fe18: an insect removed from the table of `mode` (TOWN_INSECT_MODE_*, any
- * other the held insects'): kind 0x33's end told to main (Block02042200_Update), its animation
+ * other the held insects'): kind 0x33's end told to main (TownPests_Update), its animation
  * detached, its sound released, its files released and its pool entry given back; it is left
  * with no kind or state, shown, at (1, 1, 1). */
 void TownInsect_Remove(TownInsectProcess *process, TownInsect *insect, int mode)
 {
     if (insect->kind == 0x33) {
-        Block02042200_Update();
+        TownPests_Update();
     }
     if (insect->kind >= 0) {
         AnimatedModel_DetachAnim(town_insect_animated(insect));

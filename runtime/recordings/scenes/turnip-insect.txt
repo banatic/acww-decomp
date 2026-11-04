@@ -2,7 +2,7 @@
 # not in this repository). As house.txt to 2600. Save: turnips-spoiled (four spoiled turnips,
 # item 0x154a, on the ground south-east of the player's house). The day's summary finds an acre
 # with them (TownAcreCount, flag 0x40), so main asks overlay 3 for its event insect of kind 0x3b
-# (Block02042200_Apply, TownInsect_SetFlag54c). It is placed only on a tile farther than 8.0
+# (TownPests_Apply, TownInsect_SetFlag54c). It is placed only on a tile farther than 8.0
 # from the player (TownInsect_PickTile): east from the house to tile 53.5, 58.4 and a wait of
 # 1200 frames (too near), then north-east to tile 68, 45 (about 6590) and a wait: on one of the
 # turnips it is shown (InsectPath_Show, about 7100) and sits there (TownInsectKind_Update18,

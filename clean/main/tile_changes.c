@@ -282,7 +282,7 @@ CLEAN_AS(func_02045eec, TileChanges_FinishAt)
 
 /* data_021c7c48 (tile_requests.h): the marks of the town's tiles. */
 extern TileRequests data_021c7c48;
-/* data_021c776c (block_02042200.h): two flags of main. */
+/* data_021c776c (town_pests.h): the trash and spoiled turnip flags. */
 extern u8 data_021c776c[2];
 
 /* func_02045f08: the change at the tile and layer finished (TileChanges_FinishAt). */

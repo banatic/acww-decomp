@@ -6,7 +6,7 @@
  *
  *   data_ov003_02260994  2 records, the "event" insects (mode 2): the second is placed by the
  *                        process for kind 0x3b when main's flag data_ov003_02260538 is set
- *                        (block_02042200.c) and handed to func_ov068_0226fe00; the first is
+ *                        (town_pests.c) and handed to func_ov068_0226fe00; the first is
  *                        moved to a point by TownInsect_SetEventPoint;
  *   data_ov003_02260e4c  4 records, one per player: the insect the player holds up or lets go
  *                        (mode 3; TownInsect_HeldFromMatrix, TownInsect_LetGo...);

@@ -669,7 +669,7 @@ void StaticInit_EventAnnounce(void)
 }
 CLEAN_AS(__sinit_020c5194, StaticInit_EventAnnounce)
 
-/* The object at data_021c79c4 (block_02042200.c reads its first 0x34 bytes): three words at
+/* The object at data_021c79c4 (town_pests.c reads its first 0x34 bytes): three words at
  * 0x18 (cleared, then set to -1 by func_0204b160), four words, and sixteen entries of 0x20
  * bytes. */
 typedef struct StaticInitEntry79c4 {

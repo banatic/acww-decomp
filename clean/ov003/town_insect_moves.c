@@ -8,7 +8,7 @@
 #include "main/actor.h"
 #include "main/actor_table.h"
 #include "main/animated_model.h"
-#include "main/block_02042200.h"
+#include "main/town_pests.h"
 #include "main/collision_query.h"
 #include "main/effect_system.h"
 #include "main/field_collision.h"
@@ -1733,7 +1733,7 @@ CLEAN_AS(func_ov003_0223345c, TownInsectMove_Update1E)
 
 /* func_ov003_022334d8 (kinds 0x18 and 0x3b): hops let go and flees. Fading (actions 7 and 8) by
  * 4 a frame, once faded it is hidden at rest (action 0x13) at the origin and main's
- * Block02042200_Update runs. At action 0x12 it fades (action 7) when its tile's item code is
+ * TownPests_Update runs. At action 0x12 it fades (action 7) when its tile's item code is
  * outside 0x154a-0x1553 or it is on the tile ahead of this console's player.
  * REQUIRES: at action 0x12 the town map exists and the tile has an item code (the original
  * reads it without a test). */
@@ -1754,7 +1754,7 @@ void TownInsectMove_Update18(TownInsect *insect)
                 insect->position.x = 0;
                 insect->position.y = 0;
                 insect->position.z = 0;
-                Block02042200_Update();
+                TownPests_Update();
             }
             break;
         case 0x12: {
