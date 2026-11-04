@@ -5,8 +5,8 @@
  *
  * - "menu/icon/icon%02d.bch", file icon / 16, for the item icons (PocketsIcons_Chars), with a
  *   palette for each icon (PocketsIcons_Palette);
- * - "menu/icon/pre%d.bch", by a variant, for the frames of the grid's pick-up
- *   (PocketsIcons_LoadPickUpFrame), after which the next item icon reads its file again. */
+ * - "menu/icon/pre%d.bch", by a variant, for the frames of the grid's unwrapping
+ *   (PocketsIcons_LoadUnwrapFrame), after which the next item icon reads its file again. */
 #ifndef CLEAN_OV094_POCKETS_ICONS_H
 #define CLEAN_OV094_POCKETS_ICONS_H
 
@@ -24,7 +24,7 @@ typedef struct PocketsIcons {
 } PocketsIcons;
 
 u8 PocketsIcons_Palette(PocketsIcons *icons, int icon);
-u8 *PocketsIcons_LoadPickUpFrame(PocketsIcons *icons, unsigned int frame, unsigned int variant);
+u8 *PocketsIcons_LoadUnwrapFrame(PocketsIcons *icons, unsigned int frame, unsigned int variant);
 u8 *PocketsIcons_Chars(PocketsIcons *icons, int icon);
 void PocketsIcons_Forget(PocketsIcons *icons);
 PocketsIcons *PocketsIcons_DestructDelete(PocketsIcons *icons);

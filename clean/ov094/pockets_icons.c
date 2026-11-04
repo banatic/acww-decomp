@@ -33,11 +33,11 @@ u8 PocketsIcons_Palette(PocketsIcons *icons, int icon)
 }
 CLEAN_AS(func_ov094_0229b03c, PocketsIcons_Palette)
 
-/* func_ov094_0229b048: frame `frame` of the pick-up's file of variant `variant`, which is read
+/* func_ov094_0229b048: frame `frame` of the unwrapping's file of variant `variant`, which is read
  * every time; the next item icon reads its file again.
  * QUIRK: the matching source names `variant` unused, but the ROM's code leaves it where the
  * format's number is read: the file is "menu/icon/pre<variant>.bch". */
-u8 *PocketsIcons_LoadPickUpFrame(PocketsIcons *icons, unsigned int frame, unsigned int variant)
+u8 *PocketsIcons_LoadUnwrapFrame(PocketsIcons *icons, unsigned int frame, unsigned int variant)
 {
     char path[POCKETS_ICONS_PATH_SIZE];
     u8 *chars;
@@ -48,7 +48,7 @@ u8 *PocketsIcons_LoadPickUpFrame(PocketsIcons *icons, unsigned int frame, unsign
     icons->file = POCKETS_ICONS_NO_FILE;
     return chars;
 }
-CLEAN_AS(func_ov094_0229b048, PocketsIcons_LoadPickUpFrame)
+CLEAN_AS(func_ov094_0229b048, PocketsIcons_LoadUnwrapFrame)
 
 /* func_ov094_0229b088: the characters of item icon `icon`, its file ("menu/icon/icon<icon /
  * 16>.bch") read first unless it is the one held. */

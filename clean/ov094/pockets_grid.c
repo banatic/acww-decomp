@@ -1,4 +1,4 @@
-/* Overlay 094's grid object (pockets_grid.h): its sets of bits, the held item's pick-up and
+/* Overlay 094's grid object (pockets_grid.h): its sets of bits, the held item's unwrapping and
  * the drawing of a place. */
 #include "pockets_grid.h"
 
@@ -27,7 +27,7 @@ static_assert(offsetof(PocketsGrid, held_item) == 0xa54 && offsetof(PocketsGrid,
 static_assert(offsetof(PocketsGrid, held_lowered) == 0xa5c && sizeof(PocketsGrid) == 0xa60, "grid size");
 static_assert(sizeof(OamEntry) == 8, "OBJ");
 
-/* The sizes of the pick-up's steps 6 to 11 (8, 4, 0, 3, 7, 10 tenths; step 8 sets 0 itself). */
+/* The sizes of the unwrapping's steps 6 to 11 (8, 4, 0, 3, 7, 10 tenths; step 8 sets 0 itself). */
 extern const u8 data_ov094_0229bc48[];
 /* The animation frames of steps 0 to 5 (0, none, 1, 2, 3, none). */
 extern const u8 data_ov094_0229bc50[];
@@ -48,9 +48,9 @@ extern int func_ov094_0229ab7c(unsigned char *grid, unsigned char place);
 extern void *func_ov094_0229ab68(void *grid);
 extern int func_ov094_0229a8bc(int grid, int place);
 
-#define POCKETS_GRID_PICKUP_FRAMES 6 /* steps 0 to 5 */
-#define POCKETS_GRID_PICKUP_HIDDEN 8 /* the step that sets the held OBJ's item */
-#define POCKETS_GRID_PICKUP_END 12
+#define POCKETS_GRID_UNWRAP_FRAMES 6 /* steps 0 to 5 */
+#define POCKETS_GRID_UNWRAP_HIDDEN 8 /* the step that sets the held OBJ's item */
+#define POCKETS_GRID_UNWRAP_END 12
 #define POCKETS_GRID_NO_FRAME 0xff
 #define POCKETS_GRID_HELD_PALETTE 8
 #define POCKETS_GRID_DIMMED_PALETTE 0xe
@@ -89,68 +89,68 @@ void PocketsBits_ClearAll(PocketsBits *bits)
 }
 CLEAN_AS(func_ov094_0229a38c, PocketsBits_ClearAll)
 
-/* func_ov094_0229a39c: the held OBJ's size at this step of the pick-up. REQUIRES: the step is
- * 6 to 11 (PocketsGrid_StepPickUp's only calls). */
-u8 PocketsGrid_PickUpSize(PocketsGrid *grid)
+/* func_ov094_0229a39c: the held OBJ's size at this step of the unwrapping. REQUIRES: the step is
+ * 6 to 11 (PocketsGrid_StepUnwrap's only calls). */
+u8 PocketsGrid_UnwrapSize(PocketsGrid *grid)
 {
-    return data_ov094_0229bc48[grid->pickup_step - POCKETS_GRID_PICKUP_FRAMES];
+    return data_ov094_0229bc48[grid->unwrap_step - POCKETS_GRID_UNWRAP_FRAMES];
 }
-CLEAN_AS(func_ov094_0229a39c, PocketsGrid_PickUpSize)
+CLEAN_AS(func_ov094_0229a39c, PocketsGrid_UnwrapSize)
 
-/* func_ov094_0229a3b0: a step of the pick-up; 1 once it is over. Steps 0 to 5 copy the
+/* func_ov094_0229a3b0: a step of the unwrapping; 1 once it is over. Steps 0 to 5 copy the
  * animation's frames into the held OBJ (in palette 8), steps 6, 7 and 9 to 11 size it, step 8
  * hides it and gives it the held item; step 12 ends it at full size. */
-int PocketsGrid_StepPickUp(PocketsGrid *grid)
+int PocketsGrid_StepUnwrap(PocketsGrid *grid)
 {
-    u8 step = grid->pickup_step;
+    u8 step = grid->unwrap_step;
 
-    if (step < POCKETS_GRID_PICKUP_FRAMES) {
+    if (step < POCKETS_GRID_UNWRAP_FRAMES) {
         u8 frame = data_ov094_0229bc50[step];
         if (frame != POCKETS_GRID_NO_FRAME) {
             void *chars =
-                (void *) PocketsIcons_LoadPickUpFrame((PocketsIcons *) (void *) grid->animation, frame, grid->pickup_variant);
+                (void *) PocketsIcons_LoadUnwrapFrame((PocketsIcons *) (void *) grid->animation, frame, grid->unwrap_variant);
             PocketsGrid_SetObjChars(grid, &data_ov094_0229bf70, chars, POCKETS_GRID_HELD_PALETTE);
         }
-        grid->pickup_step++;
-    } else if (step < POCKETS_GRID_PICKUP_HIDDEN) {
-        grid->held_size = PocketsGrid_PickUpSize(grid);
-        grid->pickup_step++;
-    } else if (step == POCKETS_GRID_PICKUP_HIDDEN) {
+        grid->unwrap_step++;
+    } else if (step < POCKETS_GRID_UNWRAP_HIDDEN) {
+        grid->held_size = PocketsGrid_UnwrapSize(grid);
+        grid->unwrap_step++;
+    } else if (step == POCKETS_GRID_UNWRAP_HIDDEN) {
         PocketsGrid_SetHeldIcon(grid, grid->held_item, 0);
         grid->held_size = 0;
-        grid->pickup_step++;
-    } else if (step < POCKETS_GRID_PICKUP_END) {
-        grid->held_size = PocketsGrid_PickUpSize(grid);
-        grid->pickup_step++;
+        grid->unwrap_step++;
+    } else if (step < POCKETS_GRID_UNWRAP_END) {
+        grid->held_size = PocketsGrid_UnwrapSize(grid);
+        grid->unwrap_step++;
     } else {
-        PocketsGrid_EndPickUp(grid);
+        PocketsGrid_EndUnwrap(grid);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_ov094_0229a3b0, PocketsGrid_StepPickUp)
+CLEAN_AS(func_ov094_0229a3b0, PocketsGrid_StepUnwrap)
 
 /* func_ov094_0229a464: the held OBJ at full size, with data_ov094_0229bfa0 under it. */
-void PocketsGrid_EndPickUp(PocketsGrid *grid)
+void PocketsGrid_EndUnwrap(PocketsGrid *grid)
 {
     grid->held_size = POCKETS_GRID_FULL_SIZE;
     grid->held_lowered = 1;
 }
-CLEAN_AS(func_ov094_0229a464, PocketsGrid_EndPickUp)
+CLEAN_AS(func_ov094_0229a464, PocketsGrid_EndUnwrap)
 
-/* func_ov094_0229a47c: a pick-up of `item` (in pocket slot state `state`) started: frames of
- * variant 0 for state 1, else variant 1; data_ov094_0229bfa0 no longer drawn under it when
+/* func_ov094_0229a47c: an unwrapping of `item` (in pocket slot state `state`) started: frames of
+ * variant 0 for state 1 (a present), else variant 1; data_ov094_0229bfa0 no longer drawn under it when
  * StateFlags_IsClear2. */
-void PocketsGrid_StartPickUp(PocketsGrid *grid, u16 item, int state)
+void PocketsGrid_StartUnwrap(PocketsGrid *grid, u16 item, int state)
 {
     grid->held_item = item;
-    grid->pickup_step = 0;
-    grid->pickup_variant = state == 1 ? 0 : 1;
+    grid->unwrap_step = 0;
+    grid->unwrap_variant = state == 1 ? 0 : 1;
     if (StateFlags_IsClear2() != 0) {
         grid->held_lowered = 0;
     }
 }
-CLEAN_AS(func_ov094_0229a47c, PocketsGrid_StartPickUp)
+CLEAN_AS(func_ov094_0229a47c, PocketsGrid_StartUnwrap)
 
 /* func_ov094_0229a4c0: the next of this frame's three tasks. QUIRK: once the three are used,
  * the last one is answered again. */

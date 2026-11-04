@@ -860,7 +860,7 @@ CLEAN_AS(func_ov096_0229d1d4, PocketsScreen_ShowChoice)
  * runs its member function from the table (filled once):
  *   0, 1    PocketsScreen_BeginSubState12      18      func_ov097_022a2954
  *   2       PocketsScreen_ActionUseItem         19      func_ov097_022a29e4
- *   3       PocketsScreen_FinishScene           20      PocketsScreen_ActionGridSubState2b
+ *   3       PocketsScreen_FinishScene           20      PocketsScreen_ActionOpenPresent
  *   4       PocketsScreen_ActionLetterChoice    21      func_ov098_022a2e9c
  *   5       PocketsScreen_ActionLetter05        22      func_ov098_022a2b6c
  *   6       PocketsScreen_ActionToFreeSlot      23      func_ov098_022a2a0c
@@ -990,16 +990,17 @@ void PocketsScreen_ActionDiscardLetter(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229d5f4, PocketsScreen_ActionDiscardLetter)
 
-/* func_ov096_0229d664 (action 20): sub state 0x2b, with the grid's object, the item and 0xb0. */
-void PocketsScreen_ActionGridSubState2b(PocketsScreen *self)
+/* func_ov096_0229d664 (action 20, text 9 "open" or 0x17 "peek"): the picked item taken up and
+ * unwrapped by the grid's object (sub state 0x2b), with the item and its state. */
+void PocketsScreen_ActionOpenPresent(PocketsScreen *self)
 {
     u8 place = self->slot;
     PocketsScreen_PickUpItem(self, place);
     set_menu_place(self, place);
     MenuScene_SetSubState(scene_of(self), 0x2b);
-    PocketsGrid_StartPickUp((PocketsGrid *) (void *) self->grid, self->item, self->held_state);
+    PocketsGrid_StartUnwrap((PocketsGrid *) (void *) self->grid, self->item, self->held_state);
 }
-CLEAN_AS(func_ov096_0229d664, PocketsScreen_ActionGridSubState2b)
+CLEAN_AS(func_ov096_0229d664, PocketsScreen_ActionOpenPresent)
 
 /* func_ov096_0229d6dc (actions 15-17: the record's items 3, 4 and 5): with no free pocket slot
  * the action ends with message 0xa and command 0x73, unless the record's item is in its range
@@ -2347,7 +2348,7 @@ int PocketsScreen_PlaceY(PocketsScreen *self, int place)
 }
 CLEAN_AS(func_ov096_0229f200, PocketsScreen_PlaceY)
 
-/* The item codes PocketsScreen_WaitGridObject records. */
+/* The item codes PocketsScreen_WaitPresentOpened records. */
 #define ITEM_136A 0x136a
 #define ITEM_137B 0x137b
 
@@ -3005,12 +3006,12 @@ void PocketsScreen_WaitActorState(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229fdf8, PocketsScreen_WaitActorState)
 
-/* func_ov096_0229fe10 (sub state 0x2b): once the grid's object is done, holding 0x136a or
+/* func_ov096_0229fe10 (sub state 0x2b): once the grid's object has unwrapped it, holding 0x136a or
  * 0x137b sets bit 0x27 or 0x28 of the current player's record; the held item, in state 0, goes
  * to the picked place and the action ends. */
-void PocketsScreen_WaitGridObject(PocketsScreen *self)
+void PocketsScreen_WaitPresentOpened(PocketsScreen *self)
 {
-    if (PocketsGrid_StepPickUp((PocketsGrid *) (void *) self->grid) == 0) {
+    if (PocketsGrid_StepUnwrap((PocketsGrid *) (void *) self->grid) == 0) {
         return;
     }
     int record = (int) (uintptr_t) PlayerRecords_Current();
@@ -3023,7 +3024,7 @@ void PocketsScreen_WaitGridObject(PocketsScreen *self)
     PocketsScreen_PlaceHeldAt(self, self->slot, 1);
     PocketsScreen_EndAction(self);
 }
-CLEAN_AS(func_ov096_0229fe10, PocketsScreen_WaitGridObject)
+CLEAN_AS(func_ov096_0229fe10, PocketsScreen_WaitPresentOpened)
 
 /* func_ov096_0229fe74 (sub state 0x2a): once the letters' object has shrunk the letter away, the scene
  * lets go and the action ends. */
@@ -4526,7 +4527,7 @@ CLEAN_AS(_ZN18Obj_ov096_022a23e819func_ov096_022a19e0Ev, PocketsScreen_RunIntera
  *   0x0b  PocketsScreen_MoveHeldItemByKeys     0x28  PocketsScreen_WaitUseRequest28
  *   0x0c  PocketsScreen_MoveHeldLetterByKeys   0x29  PocketsScreen_WaitUseRequest29
  *   0x0d  PocketsScreen_ActionChoiceByKeys     0x2a  PocketsScreen_WaitLetterDiscarded
- *   0x0e  PocketsScreen_PickActionRow          0x2b  PocketsScreen_WaitGridObject
+ *   0x0e  PocketsScreen_PickActionRow          0x2b  PocketsScreen_WaitPresentOpened
  *   0x0f  PocketsScreen_WaitCursorGlide        0x2c  func_ov098_022a2df4
  *   0x10  PocketsScreen_SwitchToCursorTab      0x2d  func_ov098_022a2b1c
  *   0x11  PocketsScreen_WaitCursorAnim         0x2e  func_ov098_022a2ac8
