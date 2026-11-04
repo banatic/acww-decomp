@@ -13,7 +13,7 @@
 #include "villager_furniture.h"
 #include "villager_items.h"
 #include "villager_memories.h"
-#include "villager_move.h"
+#include "villager_sickness.h"
 #include "villager_object.h"
 #include "villager_part_handover.h"
 #include "villager_status.h"
@@ -78,17 +78,17 @@ int TownVillager_IsMemoryIndex(u8 *villager, u32 index)
 CLEAN_AS(func_02080808, TownVillager_IsMemoryIndex)
 
 /* func_02080928: whether the villager can be picked as a companion: its NpcId valid, not the
- * villager planning to move away (VillagerMove_VillagerIndex), its stay VILLAGER_STAY_RESIDENT,
+ * villager sick in bed (VillagerSickness_VillagerIndex), its stay VILLAGER_STAY_RESIDENT,
  * and with a current player whose record's part does not hold an object handed over by it. */
 int TownVillager_IsFreeCompanion(u8 *villager)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return 0;
     }
-    int moving =
-        VillagerMove_VillagerIndex((VillagerTown *) (void *) (ItemTraits_StateBlockAddress() + TOWN_VILLAGER_TOWN_OFFSET));
+    int sick =
+        VillagerSickness_VillagerIndex((VillagerTown *) (void *) (ItemTraits_StateBlockAddress() + TOWN_VILLAGER_TOWN_OFFSET));
     u8 *record = PlayerRecords_Current();
-    if (moving == VillagerStatus_Index(villager)) {
+    if (sick == VillagerStatus_Index(villager)) {
         return 0;
     }
     if (VillagerStatus_Stay(villager) != VILLAGER_STAY_RESIDENT) {

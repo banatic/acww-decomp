@@ -35,8 +35,8 @@
 #include "main/talk_checks.h"
 #include "main/talk_object.h"
 #include "main/town_item_lists.h"
-#include "main/villager_move.h"
-#include "main/villager_move_record.h"
+#include "main/villager_sickness.h"
+#include "main/villager_sickness_record.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(Gatekeeper2Talk, owner) == 0xb0, "owner");
@@ -836,8 +836,8 @@ unsigned int Gatekeeper2_TextureName(void)
 CLEAN_AS(func_ov004_02225788, Gatekeeper2_TextureName)
 
 /* func_ov004_02225794 (vtable slot 0x0c): when the special character may leave and this
- * console's slot is taken in a session that is not linked, the town's plan of a villager to
- * move away is cleared (when a villager has one). Whether it may leave. */
+ * console's slot is taken in a session that is not linked, the town's sick villager is
+ * made well (its record cleared, when a villager is sick). Whether it may leave. */
 int Gatekeeper2_Leave(Gatekeeper2 *keeper)
 {
     if (SpecialSceneObject_Leave(keeper) == 0) {
@@ -846,8 +846,8 @@ int Gatekeeper2_Leave(Gatekeeper2 *keeper)
     NetSession *session = data_020ccf94;
     if (Session_IsSlotTaken(session, session->local_slot) && !Session_IsLinked(session)) {
         VillagerTown *town = (VillagerTown *) (void *) data_021e5a2c;
-        if (VillagerMove_VillagerIndex(town) != -1) {
-            VillagerMoveRecord_Clear(VillagerMove_Record(town));
+        if (VillagerSickness_VillagerIndex(town) != -1) {
+            VillagerSicknessRecord_Clear(VillagerSickness_Record(town));
         }
     }
     return 1;

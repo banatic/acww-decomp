@@ -89,7 +89,7 @@ ROACHES = 0xF52C + 0x15A0 + 3
 NOOK_STORE = 0x171B4  # Nook's store (main/nook_store.h)
 VILLAGER_PART = 0x14 + 0x1E40  # the player's villager part (main/villager_part.h)
 HANDOVER = VILLAGER_PART + 0xA4  # its handed-over record
-VILLAGER_MOVE = 0x9284 + 0x3F90  # the town's villager move record (main/villager_move.h)
+VILLAGER_SICKNESS = 0x9284 + 0x3F90  # the town's villager sickness record (main/villager_sickness.h)
 
 
 def raw(offset: int, data: bytes) -> list[tuple[int, str, int]]:
@@ -161,16 +161,16 @@ SAVES = {
                      raw(HANDOVER + 0x10, bytes((0, 0, 11, 11, 9, 26, 0, 0))) +  # the object's date, 11:00
                      [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
                      raw(HANDOVER + 0x1C, bytes((0, 30, 11, 11, 9, 26, 0, 0))),  # the time agreed, 11:30
-    # villager 1 sick in its house: the town's villager move record (main/villager_move.h, at
+    # villager 1 sick in its house: the town's villager sickness record (main/villager_sickness.h, at
     # 0x3f90 of the villagers at 0x9284) given its object, dated 14:00 on 23 September, with the
     # medicine (item 0x155e, object type 9), the villager's NpcId (as for "house-visitor"), the
-    # plan started on the 23rd and stepped on the 24th to stage 1; the medicine in pocket 0 and
+    # sickness started on the 23rd and stepped on the 24th to stage 1; the medicine in pocket 0 and
     # 30,000 bells
     "sick": [(POCKETS, "<H", 0x155E), (MONEY, "<I", 30000)] +
-            raw(VILLAGER_MOVE, bytes((0, 0, 14, 23, 9, 26, 0, 0))) +
-            [(VILLAGER_MOVE + 8, "<H", 0x155E), (VILLAGER_MOVE + 0xA, "<B", 9)] +
-            raw(VILLAGER_MOVE + 0xC, bytes.fromhex("6ec64331433143314331433143310310")) +
-            raw(VILLAGER_MOVE + 0xB2, bytes((23, 9, 26, 1, 24, 9, 26, 0))) + [(VILLAGER_MOVE + 0xBA, "<B", 1)],
+            raw(VILLAGER_SICKNESS, bytes((0, 0, 14, 23, 9, 26, 0, 0))) +
+            [(VILLAGER_SICKNESS + 8, "<H", 0x155E), (VILLAGER_SICKNESS + 0xA, "<B", 9)] +
+            raw(VILLAGER_SICKNESS + 0xC, bytes.fromhex("6ec64331433143314331433143310310")) +
+            raw(VILLAGER_SICKNESS + 0xB2, bytes((23, 9, 26, 1, 24, 9, 26, 0))) + [(VILLAGER_SICKNESS + 0xBA, "<B", 1)],
     "axe": [(HELD, "<H", 0x136B)],
     "net": [(HELD, "<H", 0x1376)],
     "shovel": [(HELD, "<H", 0x1369)],
@@ -429,16 +429,16 @@ SAVES = {
     "snowman": [(SNOWMEN, "<H", 27 | 1 << 7 | 12 << 11), (SNOWMEN + 2, "<H", 0x800 // 0x80 | (0xA00 // 0x80) << 7),
                 (SNOWMEN + 4, "<B", 0), (SNOWMEN + 5, "<B", 1), (TOWN_ITEMS + ((2 * 4 + 1) * 256 + 9 * 16 + 13) * 2, "<H", 0xB001)],
 
-    # villager 3's plan to move away (VillagerMove at 0x3f90 of the town's villagers, 0x9284 of the
-    # state block, main/villager_move.h): its object in use (type 0, low bits 1), the villager's
+    # villager 3 sick (the scene and save names say "move", an earlier reading; VillagerSickness at 0x3f90 of the town's villagers, 0x9284 of the
+    # state block, main/villager_sickness.h): its object in use (type 0, low bits 1), the villager's
     # NpcId, the player's id in the first stage's slot, started on 8 September 2026 and last
-    # stepped on the 10th, at stage 1: the boot on the 11th takes the day's step (VillagerMove_Step)
+    # stepped on the 10th, at stage 1: the boot on the 11th takes the day's step (VillagerSickness_Step)
     "move-plan": raw(0x9284 + 0x3F90, bytes.fromhex("0000000000000000f1ff0001" "6ec6433143314331433143314331002f"
                                                      "6ec643314331433143314331433185d14331433143314331000000000000")) +
                  raw(0x9284 + 0x3F90 + 0xB2, bytes.fromhex("08091a000a091a00")) +
                  [(0x9284 + 0x3F90 + 0xBA, "<B", 1), (0x9284 + 0x4076, "<b", 3)],
-    # as "move-plan" ended (stage 5) the day before the boot's, its first steps marked taken: kept
-    # for three days from its last step (VillagerMoveRecord_IsRecentlyDone)
+    # as "move-plan" well again (stage 5) since the day before the boot's, its first steps marked taken: kept
+    # for three days from its last step (VillagerSicknessRecord_IsRecentlyCured)
     "move-done": raw(0x9284 + 0x3F90, bytes.fromhex("0000000000000000f1ff0001" "6ec6433143314331433143314331002f"
                                                      "6ec643314331433143314331433185d14331433143314331000000000000")) +
                  raw(0x9284 + 0x3F90 + 0xB2, bytes.fromhex("05091a010a091a00")) +
@@ -825,30 +825,30 @@ SAVES["deliver-cloth-style1"] = (delivery(10, (0, 0, 12, 12, 9, 26), 0x11E5, 1, 
 SAVES["visit-missed"] = (raw(HANDOVER, SEED_NPC[0]) + raw(HANDOVER + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
                          [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
                          raw(HANDOVER + 0x1C, bytes((0, 30, 11, 10, 9, 26, 0, 0))))
-# villager 0's plan to move away (the town's villager move record, as for "sick") ended the day
-# before the boot and so kept for three days (VillagerMoveRecord_IsRecentlyDone): stage 5, the object
-# of type 9 still in use with its low bits `low`, the plan started on the 1st and last stepped on
+# villager 0's sickness (the town's villager sickness record, as for "sick") cured the day
+# before the boot and so kept for three days (VillagerSicknessRecord_IsRecentlyCured): stage 5, the object
+# of type 9 still in use with its low bits `low`, the sickness started on the 1st and last stepped on
 # the 10th, each stage naming `players` (player ids of 30 bytes). The villager stays out of the ones
-# drawn to walk outside, so it is at home, and its talk's offer is VillagerTalkOffer_AfterMove.
+# drawn to walk outside, so it is at home, and its talk's offer is VillagerTalkOffer_AfterSickness.
 SEED_PLAYER = LETTER_FROM_PLAYER[:0x1C] + bytes(2)  # the seed's player (its id in the record at 0x247e)
 
 
-def move_ended(low: int, players: list[bytes]) -> list[tuple[int, str, int]]:
-    return (raw(VILLAGER_MOVE, bytes((0, 0, 12, 1, 9, 26, 0, 0))) +
-            [(VILLAGER_MOVE + 8, "<H", 0x155E), (VILLAGER_MOVE + 0xA, "<B", 9), (VILLAGER_MOVE + 0xB, "<B", low)] +
-            raw(VILLAGER_MOVE + 0xC, SEED_NPC[0]) + raw(VILLAGER_MOVE + 0x1C, b"".join(players)) +
-            raw(VILLAGER_MOVE + 0xB2, bytes((1, 9, 26, 1, 10, 9, 26, 0))) + [(VILLAGER_MOVE + 0xBA, "<B", 5)])
+def sickness_ended(low: int, players: list[bytes]) -> list[tuple[int, str, int]]:
+    return (raw(VILLAGER_SICKNESS, bytes((0, 0, 12, 1, 9, 26, 0, 0))) +
+            [(VILLAGER_SICKNESS + 8, "<H", 0x155E), (VILLAGER_SICKNESS + 0xA, "<B", 9), (VILLAGER_SICKNESS + 0xB, "<B", low)] +
+            raw(VILLAGER_SICKNESS + 0xC, SEED_NPC[0]) + raw(VILLAGER_SICKNESS + 0x1C, b"".join(players)) +
+            raw(VILLAGER_SICKNESS + 0xB2, bytes((1, 9, 26, 1, 10, 9, 26, 0))) + [(VILLAGER_SICKNESS + 0xBA, "<B", 5)])
 
 
 # every stage names the seed's player, low bits 1 ("move-ended") or 0 ("move-ended-unmarked"), with the
 # pockets full of furniture ("-full"); the first stage names the seed's player and the next two a
 # player of another town ("move-ended-names"), or every stage that player ("move-ended-other")
 _FULL_POCKETS = [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)]
-SAVES["move-ended"] = move_ended(1, [SEED_PLAYER] * 5)
-SAVES["move-ended-full"] = move_ended(1, [SEED_PLAYER] * 5) + _FULL_POCKETS
-SAVES["move-ended-unmarked-full"] = move_ended(0, [SEED_PLAYER] * 5) + _FULL_POCKETS
-SAVES["move-ended-names"] = move_ended(0, [SEED_PLAYER, OTHER_PLAYER_A, OTHER_PLAYER_A, bytes(30), bytes(30)])
-SAVES["move-ended-other"] = move_ended(0, [OTHER_PLAYER_A] * 5)
+SAVES["move-ended"] = sickness_ended(1, [SEED_PLAYER] * 5)
+SAVES["move-ended-full"] = sickness_ended(1, [SEED_PLAYER] * 5) + _FULL_POCKETS
+SAVES["move-ended-unmarked-full"] = sickness_ended(0, [SEED_PLAYER] * 5) + _FULL_POCKETS
+SAVES["move-ended-names"] = sickness_ended(0, [SEED_PLAYER, OTHER_PLAYER_A, OTHER_PLAYER_A, bytes(30), bytes(30)])
+SAVES["move-ended-other"] = sickness_ended(0, [OTHER_PLAYER_A] * 5)
 PRAISE = bytes.fromhex("4331433143314331")  # a praise word of 4 characters
 # the player of another town: the town part of the player's id (0x247e of its record) and of the
 # villagers' records of the player (villager 0-3's first memories and villager 1's word at 0x658)
@@ -1010,7 +1010,7 @@ SAVES["leave-held"] = [e for at, data in HELD_VILLAGER for e in raw(EXCHANGE + 0
 # eight villagers: places 5-7 (empty in the seed) given HELD_VILLAGER's villager with the numbers
 # 0x30-0x32 of this town, and the latest time the villagers saw (0x4050 of the block) four days
 # before the boot's: the load picks a villager to leave (VillagerResidents_IsLeaveDue, _PickLeaver,
-# VillagerMode_SetLeaving) and, the town being full, one to plan a move (VillagerMove_PickVillager)
+# VillagerMode_SetLeaving) and, the town being full, one to fall sick (VillagerSickness_PickVillager)
 SAVES["town-full"] = [e for place, number in ((5, 0x30), (6, 0x31), (7, 0x32))
                       for e in [f for at, data in HELD_VILLAGER
                                 for f in raw(TOWN_VILLAGERS + 0x7EC * place + at, bytes.fromhex(data))] +
@@ -2099,10 +2099,10 @@ scene("title-move-in", "seed", 2330, [1100, 1500, 1800, 2100, 2329], frames(1400
       "from the continue menu, the passing exchange refused, then a player moving in from another town: "
       "the DS wireless link set up and its search started")
 scene("villager-move-plan", "move-plan", 4900, [2600, 4100, 4500, 4899], frames(4000, 4900, 50),
-      "villager-talk with villager 3 planning to move away: the boot takes the plan's step of the day",
+      "villager-talk with villager 3 sick: the boot takes the sickness's step of the day",
       "villager-talk")
 scene("villager-move-done", "move-done", 4900, [2600, 4100, 4500, 4899], frames(4000, 4900, 50),
-      "villager-talk the day after villager 3's plan to move away ended: the boot keeps it, recently done",
+      "villager-talk the day after villager 3 got well: the boot keeps the record, recently cured",
       "villager-talk")
 scene("villager-chat-players", "fond", 8000, [2600, 4500, 5300, 6400, 7300, 7999], frames(4100, 8000, 50),
       "villager-chat in the afternoon with the villagers fond of the player: a line branches on the "
@@ -2181,7 +2181,7 @@ for _name, _what in (("move-ended", "the player it names most is this one: a gif
                      ("move-ended-names", "another player named most, this one by the first stage"),
                      ("move-ended-other", "another player named by every stage")):
     scene(f"villager-{_name}", _name, 5672, [2600, 3400, 4300, 4900, 5671], frames(4250, 5672, 50),
-          f"villager-deliver-late's walk with villager 0's plan to move away ended the day before: {_what}",
+          f"villager-deliver-late's walk with villager 0 well again since the day before: {_what}",
           "villager-deliver-late")
 scene("villager-home-talks", "seed", 7342, [2600, 4100, 4800, 5600, 6500, 7341], frames(4100, 7342, 50),
       "villager-home's owner talked to three times: lines branch on the insects caught and on its fondness")
@@ -2662,7 +2662,7 @@ scene("villager-leave-held", "leave-held", 4800, [2600, 3700, 4400, 4799], frame
       "menus with a villager about to leave and a villager of this town held: the load moves it out "
       "into the hold, its farewells sent", recording="menus")
 scene("town-full", "town-full", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
-      "menus in a town of eight villagers: the load picks one to leave and one to plan a move away",
+      "menus in a town of eight villagers: the load picks one to leave and one to fall sick",
       recording="menus", rtc="2026-09-11 11:31:00")
 scene("villager-items-stored", "villager-items", 6300, [2600, 3700, 4100, 5200, 6299], frames(3600, 6300, 50),
       "villager-home with villagers 0 and 1 holding four pieces of furniture each (group A fossils for "

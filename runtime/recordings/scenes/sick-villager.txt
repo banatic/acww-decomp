@@ -1,8 +1,8 @@
 # sick-villager (format: runtime/input.h), played from a town save by tools/scenes.py (the save
 # is not in this repository). Boot and the run south and along the beach as
 # villager-birthday.txt to 5365, the clock at 14:00 on Thursday 24 September (rain).
-# Save: sick: villager 1 of the seed town sick in its house (the town's villager move record,
-# main/villager_move.h), the medicine (0x155e) in pocket 0 and 30,000 bells. East and north to
+# Save: sick: villager 1 of the seed town sick in its house (the town's villager sickness record,
+# main/villager_sickness.h), the medicine (0x155e) in pocket 0 and 30,000 bells. East and north to
 # the house by the beach (tile 61, 69), A+UP into it (inside at about 5900); UP to the
 # villager (ov004/sick_villager.h) and A every 40 frames from 6051: it says it feels ill, the
 # first answer offers the medicine, the pockets open (about 6650) and the A presses give it;

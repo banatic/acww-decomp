@@ -4,7 +4,7 @@
  * and then for an act, talks to this console's player and may be offered, from the player's
  * pockets, the item 0x155e (the predicate SickVillager_IsAskedItem).
  *
- * The stage of the town's villager move record (main's villager_move.h, byte 0xba) is read at
+ * The stage of the town's villager sickness record (main's villager_sickness.h, byte 0xba) is read at
  * its set-up into its talk scene; above stage 1 the base's byte 0x897 is set: its file is then
  * "q12_sick3_5", it walks with other animations and longer waits, and while walking shows the
  * mood effect 3 every 14 frames.
@@ -52,7 +52,7 @@ struct SickVillager;
 /* Its talk scene (0x1ac bytes, vtable data_ov004_02254148). */
 typedef struct SickVillagerTalk {
     VillagerTalk base;             /* 0x000 */
-    u8 stage;                      /* 0x1a4: the town's villager move record's, at its set-up */
+    u8 stage;                      /* 0x1a4: the town's villager sickness record's, at its set-up */
     u8 unk_1a5[3];                 /* 0x1a5 */
     struct SickVillager *villager; /* 0x1a8: the villager it belongs to */
 } SickVillagerTalk;

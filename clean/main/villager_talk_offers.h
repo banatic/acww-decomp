@@ -5,7 +5,7 @@
  * (data_020c8928 running data_021c1e14, data_020c8924 running data_021c1d6c). The five look at:
  *
  * - block 0 of the part naming the villager in its first-pick types (VillagerTalkOffer_FirstPick);
- * - the villager's plan to move away, finished in the last days (VillagerTalkOffer_AfterMove);
+ * - the villager's sickness, cured in the last days (VillagerTalkOffer_AfterSickness);
  * - a block of the part whose first villager is this one (VillagerTalkOffer_PartBlock);
  * - the object something holds for the villager (VillagerKind_Known, VillagerTalkOffer_ByKnown);
  * - the object of the villager's entry in the running state table (VillagerTalkOffer_ByState).
@@ -28,7 +28,7 @@
 
 void VillagerTalkOffer_Reply(VillagerTalk *talk, int unused, int choice);
 void VillagerTalkOffer_Start(VillagerTalk *talk);
-int VillagerTalkOffer_AfterMove(VillagerTalk *talk, u8 *record);
+int VillagerTalkOffer_AfterSickness(VillagerTalk *talk, u8 *record);
 int VillagerTalkOffer_ByState(VillagerTalk *talk, u8 *record, VillagerPart *part);
 int VillagerTalkOffer_StateHandover(VillagerTalk *talk, u8 *record, VillagerPart *part);
 int VillagerTalkOffer_StateGroup0(VillagerTalk *talk, u8 *record, int unused);

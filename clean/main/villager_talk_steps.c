@@ -21,8 +21,8 @@
 #include "villager_kinds.h"
 #include "villager_memory_entry.h"
 #include "villager_mail.h"
-#include "villager_move.h"
-#include "villager_move_record.h"
+#include "villager_sickness.h"
+#include "villager_sickness_record.h"
 #include "villager_object.h"
 #include "villager_part_handover.h"
 #include "villager_state.h"
@@ -370,16 +370,16 @@ void VillagerTalkSteps_Line8aa8Group1(VillagerTalk *talk, VillagerTalkLine *out)
 }
 CLEAN_AS(func_02023864, VillagerTalkSteps_Line8aa8Group1)
 
-/* func_020238c8: the object of the town's moving villager record gets the value 1 in its low
+/* func_020238c8: the object of the town's villager sickness record gets the value 1 in its low
  * bits, when it is in use. */
-void VillagerTalkSteps_MarkMoveObject(void)
+void VillagerTalkSteps_MarkSicknessObject(void)
 {
-    ItemObject *object = (ItemObject *) (void *) VillagerMoveRecord_Object(VillagerMove_Record(&data_021e5a2c));
+    ItemObject *object = (ItemObject *) (void *) VillagerSicknessRecord_Object(VillagerSickness_Record(&data_021e5a2c));
     if (ItemObject_IsInUse(object) != 0) {
         ItemObject_SetLow5(object, 1);
     }
 }
-CLEAN_AS(func_020238c8, VillagerTalkSteps_MarkMoveObject)
+CLEAN_AS(func_020238c8, VillagerTalkSteps_MarkSicknessObject)
 
 /* func_020238f0: a line of the set at 0x020c89e0, then data_020d8e58 run at the last
  * message. */
@@ -390,12 +390,12 @@ void VillagerTalkSteps_Line89e0(VillagerTalk *talk, VillagerTalkLine *out)
 }
 CLEAN_AS(func_020238f0, VillagerTalkSteps_Line89e0)
 
-/* func_02023968: the town's moving villager record emptied. */
-void VillagerTalkSteps_ClearMove(void)
+/* func_02023968: the town's villager sickness record emptied. */
+void VillagerTalkSteps_ClearSickness(void)
 {
-    VillagerMoveRecord_Clear(VillagerMove_Record(&data_021e5a2c));
+    VillagerSicknessRecord_Clear(VillagerSickness_Record(&data_021e5a2c));
 }
-CLEAN_AS(func_02023968, VillagerTalkSteps_ClearMove)
+CLEAN_AS(func_02023968, VillagerTalkSteps_ClearSickness)
 
 /* func_02023980: a line of the set at 0x020c8bf8, the sound 0x5f, then data_020d94d0 run at
  * the last message. */

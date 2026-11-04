@@ -868,7 +868,7 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/transition_mark:TransitionMark_Delete main/transition_mark:TransitionMark_Destruct
   main/trivial_object:TrivialObject_DestructByte main/turnip_prices:TurnipPrices_Destruct
   main/view_frustum:ViewFrustum_Destruct main/view_frustum:ViewFrustum_DestructDelete
-  main/villager_bonds:VillagerBond_Destruct main/villager_move_record:VillagerMoveRecord_Destruct
+  main/villager_bonds:VillagerBond_Destruct main/villager_sickness_record:VillagerSicknessRecord_Destruct
   main/villager_outdoors:VillagerOutdoors_Destruct
   main/villager_part_block:VillagerPartBlock_Destruct main/villager_part_block:VillagerPart_Destruct
   main/villager_part_handover:VillagerPartHandover_Destruct

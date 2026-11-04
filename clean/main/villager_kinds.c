@@ -13,7 +13,7 @@
 #include "player_records.h"
 #include "town_villager.h"
 #include "villager_mode_record.h"
-#include "villager_move_record.h"
+#include "villager_sickness_record.h"
 #include "villager_object.h"
 #include "villager_part.h"
 #include "villager_part_block.h"
@@ -53,9 +53,9 @@ CLEAN_AS(func_0207b57c, VillagerKind_DealIfNeeded)
 
 /* func_0207b594: types dealt to the villagers, each group 1 type to one villager at most.
  * Taken first are the group 1 places of the 13 types of data_020cd454, and of each resident
- * villager (other than the one planning to move away) that already has a group 1 type
+ * villager (other than the sick one) that already has a group 1 type
  * (VillagerKind_Of with the current player). An empty place, a villager that is not resident
- * and the one planning to move are left out. A villager whose record's object has a group 0
+ * and the sick one are left out. A villager whose record's object has a group 0
  * value in its byte 0x10 (below 5) gets that as its type. Then, while villagers and group 1
  * types are left, a random villager left gets a random type left. Nothing without a current
  * player.
@@ -69,7 +69,7 @@ void VillagerKind_Deal(VillagerTown *town)
         return;
     }
     int place = 0;
-    int moving = VillagerMove_VillagerIndex(town);
+    int sick = VillagerSickness_VillagerIndex(town);
     MI_CpuFill8(data_021d12b4, 0, (u32) types_left);
     MI_CpuFill8(data_021d1248, 0, (u32) villagers_left);
 
@@ -81,7 +81,7 @@ void VillagerKind_Deal(VillagerTown *town)
     }
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
-        if (!has_villager(villager) || VillagerStatus_Stay(villager) != 3 || i == moving) {
+        if (!has_villager(villager) || VillagerStatus_Stay(villager) != 3 || i == sick) {
             data_021d1248[i] = 1;
             villagers_left--;
             continue;
@@ -211,7 +211,7 @@ CLEAN_AS(func_0207b810, VillagerKind_Of)
 
 /* func_0207b86c: the type of the object something holds for the villager, looked for in turn
  * in: the two blocks of the player's record part (when their first NpcId is the villager's),
- * the plan to move away (when it names the villager), the object at 0xb4 of the part
+ * the sickness record (when it names the villager), the object at 0xb4 of the part
  * (func_0209aebc) and the object of the villager's own record; 22 for none, or without a
  * player's record (the current player's when `record` is NULL). */
 int VillagerKind_Known(VillagerTown *town, u8 *villager, void *record)
@@ -235,9 +235,9 @@ int VillagerKind_Known(VillagerTown *town, u8 *villager, void *record)
             return ItemObject_Type((ItemObject *) (void *) VillagerPartBlock_Object((VillagerPartBlock *) (void *) blocks[i]));
         }
     }
-    if (ItemObject_IsInUse((ItemObject *) (void *) VillagerMoveRecord_Object(&town->move)) &&
-        same_npc(VillagerMoveRecord_Npc(&town->move), npc)) {
-        return ItemObject_Type((ItemObject *) (void *) VillagerMoveRecord_Object(&town->move));
+    if (ItemObject_IsInUse((ItemObject *) (void *) VillagerSicknessRecord_Object(&town->sickness)) &&
+        same_npc(VillagerSicknessRecord_Npc(&town->sickness), npc)) {
+        return ItemObject_Type((ItemObject *) (void *) VillagerSicknessRecord_Object(&town->sickness));
     }
     if (VillagerPartHandover_IsFrom((VillagerPartHandover *) (void *) part, npc)) {
         return ItemObject_Type((ItemObject *) (void *) (part + 0x10));

@@ -13,7 +13,7 @@
 #include "process_020dabc0.h"
 #include "town_villager.h"
 #include "villager_data.h"
-#include "villager_move.h"
+#include "villager_sickness.h"
 #include "villager_roster.h"
 #include "villager_status.h"
 #include "villager_town.h"
@@ -600,7 +600,7 @@ void EventCalendar_VillagerBirthdayKey(const EventRule *rule, EventKey *key, int
         villager -= EVENT_CALENDAR_VILLAGER_EVENT_FIRST;
     }
     u8 *place = VillagerRoster_At(&data_021e5a2c, villager);
-    if (!EventCalendar_VillagerCounts(place, VillagerMove_VillagerIndex(&data_021e5a2c))) {
+    if (!EventCalendar_VillagerCounts(place, VillagerSickness_VillagerIndex(&data_021e5a2c))) {
         return;
     }
     const MonthDay *birthday = VillagerData_Birthday(place);
@@ -613,14 +613,14 @@ void EventCalendar_VillagerBirthdayKey(const EventRule *rule, EventKey *key, int
 CLEAN_AS(func_02040548, EventCalendar_VillagerBirthdayKey)
 
 /* func_020405a8: 1 when `villager` is there (a valid NpcId), staying as a resident, with an
- * entry of the state table, and is not the villager `moving` (VillagerMove_VillagerIndex). */
-int EventCalendar_VillagerCounts(u8 *villager, int moving)
+ * entry of the state table, and is not the villager `moving` (VillagerSickness_VillagerIndex). */
+int EventCalendar_VillagerCounts(u8 *villager, int sick)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager)) || VillagerStatus_Stay(villager) != VILLAGER_STAY_RESIDENT) {
         return 0;
     }
     int index = VillagerStatus_Index(villager);
-    return index != -1 && index != moving;
+    return index != -1 && index != sick;
 }
 CLEAN_AS(func_020405a8, EventCalendar_VillagerCounts)
 

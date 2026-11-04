@@ -5,12 +5,12 @@
  *           villager whose NpcId is not valid (NpcId_IsValid) is an empty place
  *   0x3f60  how each pair of villagers gets on (villager_bonds.h)
  *   0x3f7c  who is out walking (villager_outdoors.h)
- *   0x3f90  one villager's plan to move away (villager_move.h)
+ *   0x3f90  one villager sick in bed (villager_sickness.h)
  *   0x404c  a date and whether it is set (VillagerTown_SetDate404C)
  *   0x4050  the latest clock time seen, kept from going back (VillagerTown_Update)
  *   0x4058  a second time, moved back with it when it is set
  *   0x4075  a villager index, or -1 (left out by func_0207bfdc)
- *   0x4076  the villager index last picked to move away (VillagerMove_PickVillager)
+ *   0x4076  the villager index last picked to fall sick (VillagerSickness_PickVillager)
  *   0x4078  a marked villager: bit 1 set, its index in bits 2-4 (VillagerTown_Mark)
  *   0x407a  the day the per-day update last ran (VillagerTown_StartDay)
  *
@@ -24,7 +24,7 @@
 #include "mail.h"
 #include "npc_id.h"
 #include "types.h"
-#include "villager_move.h"
+#include "villager_sickness.h"
 #include "villager_outdoors.h"
 #include "villager_state.h"
 
@@ -45,13 +45,13 @@ typedef struct VillagerTown {
     u8 villagers[VILLAGER_TOWN_VILLAGERS][VILLAGER_TOWN_VILLAGER_SIZE]; /* 0x0000 */
     s8 bonds[VILLAGER_TOWN_PAIRS];                                      /* 0x3f60 */
     VillagerOutdoors outdoors;                                          /* 0x3f7c */
-    VillagerMove move;                                                  /* 0x3f90 */
+    VillagerSickness sickness;                                          /* 0x3f90 */
     Date date_404c;     /* 0x404c: its last byte (0x404f) set once the date is */
     DateTime latest;    /* 0x4050 */
     DateTime time_4058; /* 0x4058 */
     u8 unknown_4060[0x15];
     s8 index_4075; /* 0x4075 */
-    s8 move_index; /* 0x4076 */
+    s8 last_sick;  /* 0x4076 */
     u8 unknown_4077;
     u16 mark;      /* 0x4078: VILLAGER_TOWN_MARK* */
     Date last_day; /* 0x407a */

@@ -9,7 +9,7 @@
 #include "tile_requests.h"
 #include "villager_home.h"
 #include "villager_mode_record.h"
-#include "villager_move.h"
+#include "villager_sickness.h"
 #include "villager_object.h"
 #include "villager_plot_tile.h"
 #include "villager_roster.h"
@@ -452,14 +452,14 @@ void TownSpawn_HousesForDays(TownDay *town, AcreMap *map, const DateTime *today,
 CLEAN_AS(func_02048824, TownSpawn_HousesForDays)
 
 /* func_0204886c: family A codes around the house of each villager that counts for the calendar
- * (EventCalendar_VillagerCounts, the one moving away left out) and has a house; unless `all`,
+ * (EventCalendar_VillagerCounts, the sick one left out) and has a house; unless `all`,
  * only the villagers whose record is in mode 5. */
 void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days)
 {
-    int moving = VillagerMove_VillagerIndex(&data_021e5a2c);
+    int sick = VillagerSickness_VillagerIndex(&data_021e5a2c);
     for (int i = 0; i < TOWN_SPAWN_VILLAGERS; i++) {
         u8 *villager = VillagerRoster_At(&data_021e5a2c, i);
-        if (EventCalendar_VillagerCounts(villager, moving) == 0) {
+        if (EventCalendar_VillagerCounts(villager, sick) == 0) {
             continue;
         }
         if (all == 0) {

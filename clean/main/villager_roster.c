@@ -18,7 +18,7 @@
 #include "town_villager.h"
 #include "villager_memories.h"
 #include "villager_memory_entry.h"
-#include "villager_move_record.h"
+#include "villager_sickness_record.h"
 #include "villager_status.h"
 
 static_assert(sizeof(NpcIdHead) == 14, "NpcId head");
@@ -294,7 +294,7 @@ CLEAN_AS(func_0207cb10, VillagerRoster_FondestOrAny)
 
 /* func_0207cb9c: a random villager for which func_0207f074 holds (a resident, not away, that
  * the current player's record does not hold), leaving out the `count` villagers of `excluded`
- * (NULL entries skipped) and the one planning to move away; NULL for none. */
+ * (NULL entries skipped) and the sick one; NULL for none. */
 u8 *VillagerRoster_PickResident(VillagerTown *town, const NpcId *const *excluded, int count)
 {
     u8 left_out = 0;
@@ -306,9 +306,9 @@ u8 *VillagerRoster_PickResident(VillagerTown *town, const NpcId *const *excluded
             }
         }
     }
-    int moving = VillagerMove_VillagerIndex(town);
-    if (ActorTable_IsKindESlot((u32) moving)) {
-        left_out |= (u8) (1u << moving);
+    int sick = VillagerSickness_VillagerIndex(town);
+    if (ActorTable_IsKindESlot((u32) sick)) {
+        left_out |= (u8) (1u << sick);
     }
 
     u8 candidates = 0;
@@ -414,7 +414,7 @@ CLEAN_AS(func_0207c754, VillagerRoster_UpdateOutdoors)
 
 /* ---- The block as a whole */
 
-/* func_0207cf80: every place emptied, the bonds, the walkers and the moving plan reset; the date
+/* func_0207cf80: every place emptied, the bonds, the walkers and the sickness record reset; the date
  * at 0x404c to day 1 of month 1 of year 0, not set; no time seen; no newcomer and no villager
  * gone; no mark and no number met. */
 void VillagerRoster_Init(VillagerTown *town)
@@ -424,7 +424,7 @@ void VillagerRoster_Init(VillagerTown *town)
     }
     VillagerBond_Clear(town->bonds);
     VillagerOutdoors_Init(&town->outdoors);
-    VillagerMoveRecord_Clear(&town->move);
+    VillagerSicknessRecord_Clear(&town->sickness);
 
     town->date_404c.day = 1;
     town->date_404c.month = 1;
@@ -440,11 +440,11 @@ void VillagerRoster_Init(VillagerTown *town)
 }
 CLEAN_AS(func_0207cf80, VillagerRoster_Init)
 
-/* func_0207d03c: the destructor: the moving plan, the walkers, the bonds, then the eight
+/* func_0207d03c: the destructor: the sickness record, the walkers, the bonds, then the eight
  * villagers. */
 VillagerTown *VillagerRoster_Destruct(VillagerTown *town)
 {
-    VillagerMoveRecord_Destruct(&town->move);
+    VillagerSicknessRecord_Destruct(&town->sickness);
     VillagerOutdoors_Destruct(&town->outdoors);
     VillagerBond_Destruct(town->bonds);
     __cxa_vec_cleanup(town->villagers, VILLAGER_TOWN_VILLAGERS, VILLAGER_TOWN_VILLAGER_SIZE,
@@ -453,7 +453,7 @@ VillagerTown *VillagerRoster_Destruct(VillagerTown *town)
 }
 CLEAN_AS(func_0207d03c, VillagerRoster_Destruct)
 
-/* func_0207d080: the constructor: the eight villagers, the bonds, the walkers, the moving plan;
+/* func_0207d080: the constructor: the eight villagers, the bonds, the walkers, the sickness record;
  * no time seen. */
 VillagerTown *VillagerRoster_Construct(VillagerTown *town)
 {
@@ -461,7 +461,7 @@ VillagerTown *VillagerRoster_Construct(VillagerTown *town)
                    (void (*)(void *))(uintptr_t) func_020817a8, (void (*)(void *))(uintptr_t) func_02081710);
     VillagerBond_Construct(town->bonds);
     VillagerOutdoors_Construct(&town->outdoors);
-    VillagerMoveRecord_Construct(&town->move);
+    VillagerSicknessRecord_Construct(&town->sickness);
     memset(&town->latest, 0, sizeof(town->latest));
     memset(&town->time_4058, 0, sizeof(town->time_4058));
     return town;

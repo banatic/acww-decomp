@@ -28,7 +28,7 @@
 #include "villager_memory_entry.h"
 #include "villager_mode.h"
 #include "villager_mode_record.h"
-#include "villager_move_record.h"
+#include "villager_sickness_record.h"
 #include "villager_object.h"
 #include "villager_part.h"
 #include "villager_part_handover.h"
@@ -39,12 +39,12 @@
 
 static_assert(offsetof(VillagerTown, bonds) == 0x3f60, "bonds");
 static_assert(offsetof(VillagerTown, outdoors) == 0x3f7c, "outdoors");
-static_assert(offsetof(VillagerTown, move) == 0x3f90, "move");
+static_assert(offsetof(VillagerTown, sickness) == 0x3f90, "sickness");
 static_assert(offsetof(VillagerTown, date_404c) == 0x404c, "date 0x404c");
 static_assert(offsetof(VillagerTown, latest) == 0x4050, "latest");
 static_assert(offsetof(VillagerTown, time_4058) == 0x4058, "time 0x4058");
 static_assert(offsetof(VillagerTown, index_4075) == 0x4075, "index 0x4075");
-static_assert(offsetof(VillagerTown, move_index) == 0x4076, "move index");
+static_assert(offsetof(VillagerTown, last_sick) == 0x4076, "last sick");
 static_assert(offsetof(VillagerTown, mark) == 0x4078, "mark");
 static_assert(offsetof(VillagerTown, last_day) == 0x407a, "last day");
 static_assert(sizeof(VillagerTownEvent) == 12, "event");
@@ -376,8 +376,8 @@ CLEAN_AS(func_0207a8ac, VillagerTown_ApplyEventStates)
 
 /* func_0207a964: the state table's indexes 0x162 and 0x163 brought up to date: the villager of
  * today's event (VillagerTown_FindEventVillager) and the one closest to it. A villager of the
- * event that is new takes a new companion, and when it is the one planning to move away, the
- * plan is dropped. For the same one, its companion is kept while func_02080928 accepts it. */
+ * event that is new takes a new companion, and when it is the sick one, the
+ * sickness record is cleared. For the same one, its companion is kept while func_02080928 accepts it. */
 void VillagerTown_UpdateEventVillager(VillagerTown *town)
 {
     DateTime now = {0};
@@ -397,8 +397,8 @@ void VillagerTown_UpdateEventVillager(VillagerTown *town)
         int companion = VillagerTown_ClosestCompanion(town, event_villager);
         VillagerState_SetIndex162((unsigned char) event_villager);
         VillagerState_SetIndex163((unsigned char) companion);
-        if (event_villager == VillagerMove_VillagerIndex(town)) {
-            VillagerMoveRecord_Clear(&town->move);
+        if (event_villager == VillagerSickness_VillagerIndex(town)) {
+            VillagerSicknessRecord_Clear(&town->sickness);
         }
     }
 }
@@ -564,7 +564,7 @@ CLEAN_AS(func_0207acbc, VillagerTown_UpdateAlone)
 
 /* func_0207acf8: bit 5 of the flags of one villager's memory of the player set: a random one
  * of the villagers out walking that know the player, else of the resident villagers that know
- * it, other than the one planning to move away. Nothing when the player id is not set. */
+ * it, other than the sick one. Nothing when the player id is not set. */
 void VillagerTown_FlagAcquaintance(VillagerTown *town, const void *player)
 {
     if (!PlayerId_IsSet((DesignCreator *) player)) {
@@ -587,7 +587,7 @@ void VillagerTown_FlagAcquaintance(VillagerTown *town, const void *player)
         count = 0;
         for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
             const u8 *villager = town->villagers[i];
-            if (has_villager(villager) && is_resident(villager) && i != VillagerMove_VillagerIndex(town) &&
+            if (has_villager(villager) && is_resident(villager) && i != VillagerSickness_VillagerIndex(town) &&
                 VillagerMemory_Of((u8 *) villager, player) != NULL) {
                 candidates |= bit_of(i);
                 count++;
@@ -697,7 +697,7 @@ int VillagerTown_CurrentEvent(void)
 CLEAN_AS(func_0207af30, VillagerTown_CurrentEvent)
 
 /* func_0207af90: the state table's byte 0x161 set to a random one of the villagers out
- * walking, else of the resident villagers other than the one planning to move away; 0 for
+ * walking, else of the resident villagers other than the sick one; 0 for
  * none. */
 void VillagerTown_PickIndex161(VillagerTown *town)
 {
@@ -720,7 +720,7 @@ void VillagerTown_PickIndex161(VillagerTown *town)
         count = 0;
         for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
             const u8 *villager = town->villagers[i];
-            if (has_villager(villager) && is_resident(villager) && i != VillagerMove_VillagerIndex(town)) {
+            if (has_villager(villager) && is_resident(villager) && i != VillagerSickness_VillagerIndex(town)) {
                 candidates |= bit_of(i);
                 count++;
             }
@@ -861,7 +861,7 @@ void VillagerTown_Update(VillagerTown *town, int skip_designs)
     VillagerResidents_MoveInNew(town, &now);
     VillagerTown_StartDay(town);
     VillagerTown_UpdateVillagers(town, skip_designs);
-    VillagerMove_Update(town);
+    VillagerSickness_Update(town);
     if (skip_designs == 0) {
         VillagerTown_UpdatePlayersVillagerBytes(town);
     }

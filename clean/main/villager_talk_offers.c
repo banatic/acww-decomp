@@ -24,8 +24,8 @@
 #include "villager_kinds.h"
 #include "villager_mode.h"
 #include "villager_mode_record.h"
-#include "villager_move.h"
-#include "villager_move_record.h"
+#include "villager_sickness.h"
+#include "villager_sickness_record.h"
 #include "villager_part_block.h"
 #include "villager_part_handover.h"
 #include "villager_roster.h"
@@ -136,7 +136,7 @@ extern u8 data_021c307c[];
 extern MemberPointer data_021c1dc4[VILLAGER_TALK_OFFER_TRIES];
 extern u32 data_021c1cf4;
 extern const MemberPointer data_020d9108; /* VillagerTalkOffer_FirstPick */
-extern const MemberPointer data_020d94c0; /* VillagerTalkOffer_AfterMove */
+extern const MemberPointer data_020d94c0; /* VillagerTalkOffer_AfterSickness */
 extern const MemberPointer data_020d9198; /* VillagerTalkOffer_PartBlock */
 extern const MemberPointer data_020d91b0; /* VillagerTalkOffer_ByKnown */
 extern const MemberPointer data_020d91b8; /* VillagerTalkOffer_ByState */
@@ -344,26 +344,26 @@ void VillagerTalkOffer_Start(VillagerTalk *talk)
 }
 CLEAN_AS(func_02028924, VillagerTalkOffer_Start)
 
-/* func_02028a40: when this villager's plan to move away has ended in the last days (no plan,
- * VillagerMoveRecord_IsRecentlyDone on the clock's date) and its object is in use, and the
+/* func_02028a40: when this villager got well from its sickness in the last days (stage 5,
+ * VillagerSicknessRecord_IsRecentlyCured on the clock's date) and its object is in use, and the
  * player its stages named most is set up: two choices, the first running data_021c2fbc (the
  * current player is that player, the object's low bits 1), data_021c2f5c (that player, other
- * bits), data_021c2f44 (another player the plan names) or data_021c2f2c (one it does not), the
+ * bits), data_021c2f44 (another player a stage names) or data_021c2f2c (one it does not), the
  * second data_021c1d6c; the reply data_020d8e78; that player's name put into slot 1. Whether it
  * offered. */
-int VillagerTalkOffer_AfterMove(VillagerTalk *talk, u8 *record)
+int VillagerTalkOffer_AfterSickness(VillagerTalk *talk, u8 *record)
 {
     VillagerTown *town = &data_021e5a2c;
-    int index = VillagerMove_VillagerIndex(town);
+    int index = VillagerSickness_VillagerIndex(town);
     if (index == VILLAGER_TALK_OFFER_NOT_FOUND || index != VillagerStatus_Index(record)) {
         return 0;
     }
-    VillagerMove *move = VillagerMove_Record(town);
-    ItemObject *object = (ItemObject *) (void *) VillagerMoveRecord_Object(move);
-    if (ItemObject_IsInUse(object) == 0 || VillagerMoveRecord_IsRecentlyDone(move, NULL) == 0) {
+    VillagerSickness *sickness = VillagerSickness_Record(town);
+    ItemObject *object = (ItemObject *) (void *) VillagerSicknessRecord_Object(sickness);
+    if (ItemObject_IsInUse(object) == 0 || VillagerSicknessRecord_IsRecentlyCured(sickness, NULL) == 0) {
         return 0;
     }
-    DesignCreator *named = VillagerMoveRecord_MostNamedPlayer(move);
+    DesignCreator *named = VillagerSicknessRecord_MostNamedPlayer(sickness);
     if (named == NULL || PlayerId_IsSet(named) == 0) {
         return 0;
     }
@@ -374,7 +374,7 @@ int VillagerTalkOffer_AfterMove(VillagerTalk *talk, u8 *record)
     if (offer_same_player(current, named)) {
         first = ItemObject_Low5(object) == 1 ? data_021c2fbc : data_021c2f5c;
     } else {
-        first = VillagerMoveRecord_NamesPlayer(move, current) != 0 ? data_021c2f44 : data_021c2f2c;
+        first = VillagerSicknessRecord_NamesPlayer(sickness, current) != 0 ? data_021c2f44 : data_021c2f2c;
     }
     offer_set_from(talk, &list, 0, data_020c8928, first);
     offer_set_from(talk, &list, 1, data_020c8924, data_021c1d6c);
@@ -382,7 +382,7 @@ int VillagerTalkOffer_AfterMove(VillagerTalk *talk, u8 *record)
     SceneBase_PutNameAt10(offer_base(talk), named, 1);
     return 1;
 }
-CLEAN_AS(func_02028a40, VillagerTalkOffer_AfterMove)
+CLEAN_AS(func_02028a40, VillagerTalkOffer_AfterSickness)
 
 /* func_02028b74: by the object of the villager's entry in the running state table, when it is
  * in use, the current player's flag 1 is clear and a roll below 100 is under 30: group 0 goes to

@@ -6,14 +6,14 @@
 #include "clean.h"
 #include "npc_id.h"
 #include "player_records.h"
-#include "villager_move.h"
+#include "villager_sickness.h"
 #include "villager_roster.h"
 #include "villager_state.h"
 #include "villager_town.h"
 #include "player_id.h"
 #include "player_record.h"
 #include "town_villager.h"
-#include "villager_move_record.h"
+#include "villager_sickness_record.h"
 #include "villager_status.h"
 
 /* What func_0207f150 gives a villager that lives in the town as usual. */
@@ -33,15 +33,15 @@ static int same_npc(const NpcId *a, const NpcId *b)
 }
 
 /* func_0207d6c4: whether the villager lives in the town as usual and is not the one the town's
- * plan to move away names (the personality is not compared). */
+ * sickness record names (the personality is not compared). */
 int VillagerCheck_IsStayingResident(u8 *villager)
 {
     NpcId *npc = TownVillager_NpcId(villager);
     if (!NpcId_IsValid(npc) || VillagerStatus_Stay(villager) != VILLAGER_CHECK_RESIDENT) {
         return 0;
     }
-    NpcId *moving = VillagerMoveRecord_Npc(VillagerMove_Record(town()));
-    return !same_npc(npc, moving);
+    NpcId *sick = VillagerSicknessRecord_Npc(VillagerSickness_Record(town()));
+    return !same_npc(npc, sick);
 }
 CLEAN_AS(func_0207d6c4, VillagerCheck_IsStayingResident)
 

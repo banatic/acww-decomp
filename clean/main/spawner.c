@@ -1038,8 +1038,8 @@ CLEAN_AS(func_02084f88, Spawner_PartConstruct)
 #include "villager_events.h"
 #include "villager_furniture.h"
 #include "villager_home.h"
-#include "villager_move.h"
-#include "villager_move_record.h"
+#include "villager_sickness.h"
+#include "villager_sickness_record.h"
 #include "villager_outdoors.h"
 #include "villager_roster.h"
 #include "villager_state.h"
@@ -1057,7 +1057,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define SPAWNER_PROFILE_EVENT_VILLAGER 0x80 /* the villager VillagerState_GetIndex162 names */
 #define SPAWNER_PROFILE_COMPANION 0x81      /* the one VillagerState_GetIndex163 names, with it */
 #define SPAWNER_PROFILE_GUEST 0x82          /* a villager who said it would come */
-#define SPAWNER_PROFILE_MOVING 0x83         /* the villager planning to move, while it does */
+#define SPAWNER_PROFILE_SICK 0x83           /* the sick villager, while it is sick */
 #define SPAWNER_PROFILE_OUTDOORS 0x84       /* a villager out in the town */
 #define SPAWNER_PROFILE_VILLAGER 0x85       /* a villager at home */
 #define SPAWNER_PROFILE_STAYING 0x86        /* a villager at home in event 10, status 3 */
@@ -1337,7 +1337,7 @@ CLEAN_AS(func_020856fc, Spawner_SpawnHouseGuest)
  * else on a free tile (Spawner_PlaceOnFreeTile) facing a random quarter turn; nothing when
  * there is none. Outside the session it is the event villager (index 0x162, profile 0x80) with
  * its companion (index 0x163, profile 0x81, made after it on another free tile), the villager
- * planning to move while it does (0x83), or in event 10 a villager with status 3 (0x86); else
+ * sick in bed while it is (0x83), or in event 10 a villager with status 3 (0x86); else
  * profile 0x85. */
 void Spawner_SpawnHouseOwner(Spawner *self)
 {
@@ -1376,9 +1376,9 @@ void Spawner_SpawnHouseOwner(Spawner *self)
                 companion = spawner_villager_person(VillagerState_GetIndex163());
                 companion_profile = SPAWNER_PROFILE_COMPANION;
             }
-        } else if (index == VillagerMove_VillagerIndex(town)) {
-            if (VillagerMoveRecord_IsIdle(VillagerMove_Record(town)) == 0) {
-                profile = SPAWNER_PROFILE_MOVING;
+        } else if (index == VillagerSickness_VillagerIndex(town)) {
+            if (VillagerSicknessRecord_IsWell(VillagerSickness_Record(town)) == 0) {
+                profile = SPAWNER_PROFILE_SICK;
             }
         } else if (VillagerTown_CurrentEvent() == SPAWNER_EVENT_10 &&
                    VillagerStatus_Stay(villager) == SPAWNER_STATUS_STAYING) {

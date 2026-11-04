@@ -37,8 +37,8 @@
 #include "main/villager_memories.h"
 #include "main/villager_memory_entry.h"
 #include "main/villager_mood.h"
-#include "main/villager_move.h"
-#include "main/villager_move_record.h"
+#include "main/villager_sickness.h"
+#include "main/villager_sickness_record.h"
 #include "main/villager_scene_slots.h"
 #include "main/villager_talk_scene.h"
 #include "main/villager_town.h"
@@ -661,13 +661,13 @@ void SickVillagerTalk_OnMessageEnded(SickVillagerTalk *talk)
 CLEAN_AS(func_ov004_022223b8, SickVillagerTalk_OnMessageEnded)
 
 /* func_ov004_0222251c (the talk scene's receiver slot 0x10, a message begins): the player the
- * current stage of the town's villager move record names (asked twice), when there is one, is
+ * current stage of the town's villager sickness record names (asked twice), when there is one, is
  * the talk's name 0. */
 void SickVillagerTalk_OnMessageBegun(SickVillagerTalk *talk)
 {
-    VillagerMove *move = VillagerMove_Record(&data_021e5a2c);
-    if (move != NULL && VillagerMoveRecord_StagePlayer(move) != NULL) {
-        SceneBase_PutNameAt10((SceneBase *) (void *) talk, VillagerMoveRecord_StagePlayer(move), 0);
+    VillagerSickness *sickness = VillagerSickness_Record(&data_021e5a2c);
+    if (sickness != NULL && VillagerSicknessRecord_StagePlayer(sickness) != NULL) {
+        SceneBase_PutNameAt10((SceneBase *) (void *) talk, VillagerSicknessRecord_StagePlayer(sickness), 0);
     }
 }
 CLEAN_AS(func_ov004_0222251c, SickVillagerTalk_OnMessageBegun)
@@ -732,7 +732,7 @@ extern fx32 data_020c814c;
 /* func_ov004_02222554 (the talk scene's vtable slot 0x78, the line to say): the file
  * "q12_ask1_2" (above stage 1 "q12_ask3_5") for the villager, written into
  * data_ov004_02257f9c, the player's answer forgotten, and a message 0 to 2, or 3 to 5 when the
- * current stage of the town's villager move record names a player (which is noted).
+ * current stage of the town's villager sickness record names a player (which is noted).
  * QUIRK: the talk's stage is asked for first and not used. */
 void SickVillagerTalk_Line(SickVillagerTalk *talk, VillagerTalkLine *out)
 {
@@ -783,7 +783,7 @@ void SickVillagerTalk_TakeItem(SickVillagerTalk *talk)
 CLEAN_AS(func_ov004_022225fc, SickVillagerTalk_TakeItem)
 
 /* func_ov004_0222269c (the talk scene's vtable slot 0x84, told which command ended): after
- * command 4 (the item handed) the current stage of the town's villager move record names the
+ * command 4 (the item handed) the current stage of the town's villager sickness record names the
  * current player and the talk window opens again. */
 void SickVillagerTalk_OnCommandEnd(SickVillagerTalk *talk, int command)
 {
@@ -803,25 +803,25 @@ void SickVillagerTalk_Start(SickVillagerTalk *talk, SickVillager *villager)
 }
 CLEAN_AS(func_ov004_022226b4, SickVillagerTalk_Start)
 
-/* func_ov004_022226d4: the current stage of the town's villager move record names the current
+/* func_ov004_022226d4: the current stage of the town's villager sickness record names the current
  * player. */
 void SickVillagerTalk_NameStagePlayer(void)
 {
-    VillagerMove *move = VillagerMove_Record(&data_021e5a2c);
-    VillagerMoveRecord_SetStagePlayer(move, PlayerRecord_Player(PlayerRecords_Current()));
+    VillagerSickness *sickness = VillagerSickness_Record(&data_021e5a2c);
+    VillagerSicknessRecord_SetStagePlayer(sickness, PlayerRecord_Player(PlayerRecords_Current()));
 }
 CLEAN_AS(func_ov004_022226d4, SickVillagerTalk_NameStagePlayer)
 
-/* func_ov004_022226f8: whether the current stage of the town's villager move record names a
+/* func_ov004_022226f8: whether the current stage of the town's villager sickness record names a
  * player. The talk is not used. */
 int SickVillagerTalk_StageNamesPlayer(SickVillagerTalk *talk)
 {
     (void) talk;
-    return VillagerMoveRecord_HasStagePlayer(VillagerMove_Record(&data_021e5a2c)) != 0;
+    return VillagerSicknessRecord_HasStagePlayer(VillagerSickness_Record(&data_021e5a2c)) != 0;
 }
 CLEAN_AS(func_ov004_022226f8, SickVillagerTalk_StageNamesPlayer)
 
-/* func_ov004_0222271c: the stage of the town's villager move record at its set-up. */
+/* func_ov004_0222271c: the stage of the town's villager sickness record at its set-up. */
 int SickVillagerTalk_Stage(SickVillagerTalk *talk)
 {
     return talk->stage;
@@ -967,7 +967,7 @@ CLEAN_AS(func_ov004_0222290c, SickVillager_Start)
 
 /* func_ov004_02222950 (vtable slot 0x04, its set-up): the town villager's set-up; then it is the
  * villager set up (data_ov004_02257f7c), its talk scene becomes its scene and is started, and
- * the talk keeps the stage of the town's villager move record. Above stage 1 its standard
+ * the talk keeps the stage of the town's villager sickness record. Above stage 1 its standard
  * animations are 0xe9 and 0xea, it walks slower, looks straight ahead and 0x897 is set; else it
  * walks at a well villager's pace. Then it wanders (state 0). Whether the set-up was done. */
 int SickVillager_Init(SickVillager *villager)
@@ -978,7 +978,7 @@ int SickVillager_Init(SickVillager *villager)
     data_ov004_02257f7c = villager;
     SceneObject_SetScene(villager->base, (SceneBase *) (void *) &villager->talk);
     SickVillagerTalk_Start(&villager->talk, villager);
-    villager->talk.stage = VillagerMove_Record(&data_021e5a2c)->stage;
+    villager->talk.stage = VillagerSickness_Record(&data_021e5a2c)->stage;
     if ((unsigned int) SickVillagerTalk_Stage(&villager->talk) > 1) {
         SceneStandardAnims *anims = (SceneStandardAnims *) (void *) sk_part(villager, SICK_VILLAGER_STANDARD_ANIMS);
         SceneStandardAnims_SetSecond(anims, SICK_VILLAGER_BADLY_ANIM_SECOND);

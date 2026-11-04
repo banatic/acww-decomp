@@ -8,7 +8,7 @@
 #include "villager_bonds.h"
 #include "villager_copy.h"
 #include "villager_entry.h"
-#include "villager_move.h"
+#include "villager_sickness.h"
 #include "villager_outdoors.h"
 #include "villager_roster.h"
 #include "actor_table.h"
@@ -320,16 +320,16 @@ int VillagerResidents_IsLeaveDue(VillagerTown *town, const DateTime *now)
 CLEAN_AS(func_0207c048, VillagerResidents_IsLeaveDue)
 
 /* func_0207bfdc: a random villager to leave, or -1: one that is not the last to move in nor
- * the one planning to move away (villager_move.h), and that no player's record holds
+ * the sick one (villager_sickness.h), and that no player's record holds
  * (func_0207dca8). */
 int VillagerResidents_PickLeaver(VillagerTown *town)
 {
-    int moving = VillagerMove_VillagerIndex(town);
+    int sick = VillagerSickness_VillagerIndex(town);
     u8 candidates = 0;
     int count = 0;
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
-        if (i == town->index_4075 || i == moving) {
+        if (i == town->index_4075 || i == sick) {
             continue;
         }
         if (!NpcId_IsValid(TownVillager_NpcId(villager)) || VillagerCheck_NoPlayerHolds(villager) == 0) {
@@ -556,7 +556,7 @@ CLEAN_AS(func_0207c498, VillagerResidents_SetNewcomer)
 /* func_0207c76c: a new town: the block reset, then three villagers drawn for places 0-2, each
  * of the personality fewest have among those not given yet, and among the villagers whose
  * byte 0x4b is 0; a place whose draw finds none stays empty. The clock's time becomes the latest seen, the walkers' order is made, today is the
- * day the per-day update last ran, and no villager is picked to move away. */
+ * day the per-day update last ran, and no villager was the last picked to fall sick. */
 void VillagerResidents_StartTown(VillagerTown *town)
 {
     u8 excluded = 0;
@@ -577,6 +577,6 @@ void VillagerResidents_StartTown(VillagerTown *town)
     DateTime_Now(&town->latest);
     VillagerOutdoors_ListResidents(&town->outdoors, town->villagers[0]);
     Calendar_Today(&town->last_day);
-    town->move_index = VILLAGER_TOWN_NONE;
+    town->last_sick = VILLAGER_TOWN_NONE;
 }
 CLEAN_AS(func_0207c76c, VillagerResidents_StartTown)

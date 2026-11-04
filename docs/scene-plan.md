@@ -564,8 +564,8 @@ What reading the Clean code found about the groups above; counts are of function
   OutdoorVillagerObject_OnItemSwung. Talks on the insurance seller's day (2026-09-12, town event
   1, the talk lines of table 3) add only VillagerTalkReplies_LineFirstOfDay. The planting errand
   is the part-time job's type 0xc (the four flower bags and three saplings of nook-job); planting
-  is pockets-town's, so a scene of it adds little. A villager moves away only from a town of 7
-  villagers or more (main/villager_move.h; the seed has 5); one moving in already runs on the
+  is pockets-town's, so a scene of it adds little. A villager falls sick only in a town of 7
+  villagers or more (main/villager_sickness.h; the seed has 5); one moving in already runs on the
   boots on other days (VillagerResidents_MoveInNew).
 
 ### A new town, the trip, the dated events, the sky shows (2026-10-27, scenes/rest2)
@@ -1068,12 +1068,12 @@ What reading the Clean code found about the groups above; counts are of function
   halt, the debug screen). The fourth choice, the Wi-Fi settings, leaves by
   TitleScene_ExitByRequest after its talk (about 2240), when no RAM can be read any more (the
   settings program): not a scene.
-- A villager's plan to move away (VillagerMove at 0x3f90 of the town's villagers, written into
+- A villager sick in bed (VillagerSickness at 0x3f90 of the town's villagers, written into
   the save: its object in use, the villager's NpcId, the player in a stage's slot, the start and
-  last step dates, the stage): at stage 1 the boot takes the day's step (VillagerMove_Step,
-  villager-move-plan), ended the day before it is kept as recently done
-  (VillagerMoveRecord_IsRecentlyDone, villager-move-done). The talk that follows a plan
-  (VillagerTalkOffer_AfterMove's offer) was not reached with the plan on any of the five
+  last step dates, the stage): at stage 1 the boot takes the day's step (VillagerSickness_Step,
+  villager-move-plan), well again since the day before it is kept as recently cured
+  (VillagerSicknessRecord_IsRecentlyCured, villager-move-done). The talk that follows a sickness
+  (VillagerTalkOffer_AfterSickness's offer) was not reached with the record on any of the five
   villagers in villager-talk, villager-chat, villager-talks or villager-three: the offers are
   tried only when the talk reaches them and an earlier offer does not take it.
 - Recordings played again at another time (w16/var.sh): villager-talks at 7:30, 14:30, 18:30
@@ -2482,9 +2482,9 @@ What reading the Clean code found about the groups above; counts are of function
      talk), and what the villager knows of the player (VillagerTalkGreeting_SayByKnownObject: a
      delivery past its date, an item or letter not held, a handover due).
   3. The offer (VillagerTalkOffer_Start), five tries in turn: FirstPick (part block 0 in band 1
-     naming this villager, types 14/16/17: Nook's job), AfterMove (the move plan recently done),
+     naming this villager, types 14/16/17: Nook's job), AfterSickness (a sickness recently cured),
      PartBlock (a delivery to this villager: its date past, or the item held), ByKnown (the type
-     VillagerKind_Known finds: the player part's blocks, the move plan, the part's object at 0xb4,
+     VillagerKind_Known finds: the player part's blocks, the sickness record, the part's object at 0xb4,
      then the villager's own object at 0x758 of its town record; group 0 to KnownGroup0, class 1
      to KnownBlock, class 3 to KnownHandover), ByState (30 in 100: the state entry's object, which
      VillagerKind_Deal sets at the boot to the villager's mode for modes 0-4, else a group-1 type
@@ -2984,8 +2984,8 @@ What reading the Clean code found about the groups above; counts are of function
 - Gained little: behaviour 23 (a caught insect shown off from the pockets, "show", with a villager
   that has just talked looking at the player, look kind 1, within 3 tiles) did not start in three
   tries: the villager walked off before the show (the pockets take about 150 frames to open after
-  a talk). The moving villager's thanks (VillagerTalkOffer_AfterMove's rows data_021c2f2c-2fd4):
-  the plan's villager is neither out walking nor at home on the boot after its plan ended, so no
+  a talk). The cured villager's thanks (VillagerTalkOffer_AfterSickness's rows data_021c2f2c-2fd4):
+  the record's villager is neither out walking nor at home on the boot after it got well, so no
   talk reaches it. The event-0x11 winner written into the save is cleared at the boot. The
   scorpion's night (July, 23:00) had no villager within reach of it for the poisonous greeting.
 - The local lists of 63 scenes with ov017, ov018 or ov038's initialiser and 37 older ones were
@@ -3494,24 +3494,24 @@ What reading the Clean code found about the groups above; counts are of function
 - The plan before (with the first batch): seed 488, date 137, unknown 448, unreachable 3,209;
   after: seed 487, date 137, unknown 448, unreachable 3,210. Checked in a run: 20,969.
 
-### A villager's plan to move away ended: the thanks by the player it named (2026-10-30, rows11)
-- VillagerTalkOffer_AfterMove (the second of the five offers VillagerTalkOffer_Start tries) needs
-  the town's villager move record (tools/scenes.py VILLAGER_MOVE) to name the talk's villager with
-  its object in use (type 9), at stage 5, last stepped 0-2 days before (VillagerMoveRecord_IsRecentlyDone,
-  so the boot's VillagerMove_Update keeps it) and with a player its stages name most. The
+### A villager well again: the thanks by the player it named (2026-10-30, rows11)
+- VillagerTalkOffer_AfterSickness (the second of the five offers VillagerTalkOffer_Start tries) needs
+  the town's villager sickness record (tools/scenes.py VILLAGER_SICKNESS) to name the talk's villager with
+  its object in use (type 9), at stage 5, last stepped 0-2 days before (VillagerSicknessRecord_IsRecentlyCured,
+  so the boot's VillagerSickness_Update keeps it) and with a player its stages name most. The
   villager-move-done save of main (object type 0, so not in use) never offered it. While the object
   is in use the villager is left out of the ones drawn to walk outside, and Spawner_SpawnHouseOwner
   makes it at home whatever the stage, so villager 0 named by the record is at home on
   villager-deliver-late's walk, and that recording reaches the offer with no change: its first
   answer runs the row the record picks.
-- Saves move-ended (tools/scenes.py move_ended: villager 0, every stage naming the seed's player,
+- Saves move-ended (tools/scenes.py sickness_ended: villager 0, every stage naming the seed's player,
   low bits 1) and its variants: villager-move-ended (data_021c2fbc: VillagerTalkSteps_Line8aa8Group1,
   _SayByFreePocket2fd4, then the gift, VillagerTalkSteps_LineGift, _GiveGiftToPockets, _Say2f8c,
-  _Line8bf8, and the record cleared, _ClearMove; VillagerMoveRecord_MostNamedPlayer),
+  _Line8bf8, and the record cleared, _ClearSickness; VillagerSicknessRecord_MostNamedPlayer),
   villager-move-ended-full (the pockets full: _Line89a8Group2), villager-move-ended-unmarked-full
   (low bits 0: data_021c2f5c, _Line8c08, _SayByFreePocket2fa4, _Line89e0 and the record marked,
-  _MarkMoveObject), villager-move-ended-names (the first stage the seed's player, the next two a
-  player of another town: data_021c2f44, _Line8c18, VillagerMoveRecord_NamesPlayer) and
+  _MarkSicknessObject), villager-move-ended-names (the first stage the seed's player, the next two a
+  player of another town: data_021c2f44, _Line8c18, VillagerSicknessRecord_NamesPlayer) and
   villager-move-ended-other (every stage that other player: data_021c2f2c, _Line8cd8). Both ways
   agree for all five.
 - Gained little: the handover rows 55 and 56 (VillagerTalkSteps_GiveByObjectType, _LineByObjectType,
@@ -4147,8 +4147,8 @@ What reading the Clean code found about the groups above; counts are of function
 - town-full (save town-full: places 5-7 given HELD_VILLAGER's villager with the numbers 0x30-0x32
   of this town, the villagers' latest time four days before the boot's), at 11:31: menus'
   recording. The load picks a villager to leave (VillagerResidents_PickLeaver,
-  VillagerMode_SetLeaving, VillagerCheck_NoPlayerHolds) and one to plan a move
-  (VillagerMove_PickVillager, VillagerMoveRecord_Start: the draw passes at 11:31, not at 11:30).
+  VillagerMode_SetLeaving, VillagerCheck_NoPlayerHolds) and one to fall sick
+  (VillagerSickness_PickVillager, VillagerSicknessRecord_Start: the draw passes at 11:31, not at 11:30).
 - villager-items-stored (save villager-items: four pieces of furniture in villager 0's items at
   0x7b0, four group A fossils in villager 1's, villager 2's errand of an item with variants done):
   villager-home's recording. The load puts the items into the houses (VillagerHouseItems_MakeRoom,

@@ -18,7 +18,7 @@
 #include "town_villager.h"
 #include "villager_checks.h"
 #include "villager_memories.h"
-#include "villager_move.h"
+#include "villager_sickness.h"
 #include "villager_roster.h"
 #include "villager_status.h"
 
@@ -232,7 +232,7 @@ void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *co
     u8 candidates = 0;
     int left = 0;
     void *town = (void *) (uintptr_t) (u32) (ItemTraits_StateBlockAddress() + VILLAGER_OUTDOORS_VILLAGERS_FROM_0204C7C0);
-    int excluded = VillagerMove_VillagerIndex(town);
+    int excluded = VillagerSickness_VillagerIndex(town);
 
     for (int i = 0; i < VILLAGERS; i++) {
         int villager = list[i];
