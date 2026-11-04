@@ -62,8 +62,8 @@ extern const SceneActorRecord data_020d1f24[TOWN_OBJECTS_COUNT];
 extern u8 data_021e5a2c[];  /* the town's villagers (VillagerTown) */
 extern void *data_021c80bc; /* the map being played on (AcreMap), or 0 */
 extern s8 data_021f69b8[];  /* a tile at bytes 0x13 and 0x14 */
-/* The function-local static item code of TownObjects_MarkFootprints: its guard, the code
- * and its destruction record. */
+/* The function-local static item code of TownObjects_ClearMisplacedFootprints: its guard, the
+ * code and its destruction record. */
 extern u32 data_021f4b40;
 extern u16 data_021f4b28;
 extern u8 data_021f4ba0[];
@@ -211,7 +211,7 @@ static int town_objects_5000_row(int model)
  * for destruction (func_020051b0, which does nothing); it is what is written. Without acre
  * records the model is still asked of address 0, once per acre. Each of the five tests runs
  * whatever the others answered. */
-void TownObjects_MarkFootprints(void)
+void TownObjects_ClearMisplacedFootprints(void)
 {
     if ((data_021f4b40 & 1) == 0) {
         data_021f4b28 = ITEM_CODE_NONE;
@@ -283,7 +283,7 @@ void TownObjects_MarkFootprints(void)
         }
     }
 }
-CLEAN_AS(func_020b1e54, TownObjects_MarkFootprints)
+CLEAN_AS(func_020b1e54, TownObjects_ClearMisplacedFootprints)
 
 /* ---- Visits */
 

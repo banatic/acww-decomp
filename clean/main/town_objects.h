@@ -30,7 +30,7 @@
 #define TOWN_OBJECTS_ANSWER_FULL 2   /* more visitors than byte 9 of the object's record */
 #define TOWN_OBJECTS_ANSWER_HOUSE 3  /* a villager's house (TownObjects_HouseState2) with nobody in */
 
-void TownObjects_MarkFootprints(void);
+void TownObjects_ClearMisplacedFootprints(void);
 int TownObjects_VisitorsHere(void);
 int TownObjects_VisitorsInScene(int scene);
 int TownObjects_VisitorMask(int scene);

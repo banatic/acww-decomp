@@ -457,13 +457,13 @@ int ObjectActors_Update(void)
 }
 CLEAN_AS(func_ov003_022207dc, ObjectActors_Update)
 
-/* func_ov003_022207e0 (vtable slot 0, set up): the objects' footprints marked, the list
+/* func_ov003_022207e0 (vtable slot 0, set up): misplaced objects' footprints cleared, the list
  * emptied, main's kept object kept (TownObjects_KeepAtKeptTile), main's building slot claimed,
  * the countdown heap made, the houses' palettes, textures and X files loaded, every object of
  * the scene's map placed, and process class 0xf spawned under data_021f42f4. 1. */
 int ObjectActors_SetUp(ObjectActors *self)
 {
-    TownObjects_MarkFootprints();
+    TownObjects_ClearMisplacedFootprints();
     ObjectActors_ClearList();
     TownObjects_KeepAtKeptTile();
     BuildingTaker_Claim(self);

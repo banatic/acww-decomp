@@ -479,7 +479,7 @@ static int TownDay_QuietPeriod(int period)
  *   five of func_02048698;
  * - up to 60 days of func_020486d8 and func_020487d8 (the first after func_02049ad0, each
  *   other after func_020499cc with its number);
- * - then the town's other records each by the days, in a fixed order: footprints, the
+ * - then the town's other records each by the days, in a fixed order: misplaced footprints, the
  *   calendar's buildings (TownDay_UpdateEvents), the object's acres, the event letters, the
  *   museum, the house rooms, Nook's store, the item lists, the house's score, the layout, the
  *   sky, the bottle, mom's letters, the day plan, the room cells, the paired town, the
@@ -541,7 +541,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
 
         TownSpawn_HousesForDays(town, map, to, days);
         MomDate mom_date = {to->year, to->month, to->day};
-        TownObjects_MarkFootprints();
+        TownObjects_ClearMisplacedFootprints();
         TownDay_UpdateEvents(town, map, wide, high, to, loaded);
         TownGrowth_ChangeLastStages(town, map, wide, high);
         TownSpawn_Maybe1a(town, map, wide, high);
