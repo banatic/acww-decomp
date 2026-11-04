@@ -604,13 +604,13 @@ int FoxTent_EnterTalkThenOut(FoxTent *fox)
 CLEAN_AS(func_ov052_022613ec, FoxTent_EnterTalkThenOut)
 
 /* func_ov052_02261424 (state 5's update): once his action is idle and, when his talk waits for
- * them, every answer came (Shops_AllAnsweredA), his event ends and state 7. 1. */
+ * them, every answer came (Shops_AllAnsweredTailor), his event ends and state 7. 1. */
 int FoxTent_UpdateTalk(FoxTent *fox)
 {
     if (SceneAction_IsBusy(fox_tent_action(fox))) {
         return 1;
     }
-    if (fox->awaiting_answers != 0 && !Shops_AllAnsweredA()) {
+    if (fox->awaiting_answers != 0 && !Shops_AllAnsweredTailor()) {
         return 1;
     }
     EventQueue_FinishObjectEvent(fox);

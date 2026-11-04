@@ -126,7 +126,7 @@ extern const MemberPointer data_ov049_02263158, data_ov049_02263128;
 #define MABEL_TALK_PLAYER 4
 #define MABEL_TALK_PLAYER_STATE_TRIED 16
 
-/* The fee of line 0x0b, and the shop kind its stock is taken from (Shops_TakeFromListA). */
+/* The fee of line 0x0b, and the shop kind its stock is taken from (Shops_TakeFromTailor). */
 #define MABEL_TALK_FEE 0x15e
 #define MABEL_TALK_SHOP_KIND 10
 
@@ -346,7 +346,7 @@ void MabelTalk_Buy(MabelTalk *talk)
     talk->owner->bought = 1;
     SceneBells_Take(mtalk_owner(talk), talk->price);
     CurrentPockets_Give(&talk->owner->item, 0);
-    Shops_TakeFromListA(talk->owner->tile_x, talk->owner->tile_z, MABEL_TALK_SHOP_KIND);
+    Shops_TakeFromTailor(talk->owner->tile_x, talk->owner->tile_z, MABEL_TALK_SHOP_KIND);
     VillagerEvent_Report3();
 }
 CLEAN_AS(func_ov049_02260ac4, MabelTalk_Buy)

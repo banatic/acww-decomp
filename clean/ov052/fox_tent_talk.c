@@ -509,7 +509,7 @@ void FoxTentTalk_Sell(FoxTentTalk *talk)
 
     SceneBells_Take((int) (uintptr_t) fox, talk->price);
     CurrentPockets_Give(&fox->item, 0);
-    Shops_TakeFromListB(fox->item_x, fox->item_z, 0xf);
+    Shops_TakeFromFox(fox->item_x, fox->item_z, 0xf);
     LastSale_SetBuyer(sale, PlayerRecord_Player(PlayerRecords_Current()));
     LastSale_SetItem(sale, &fox->item);
     SceneBase_PutValue(&talk->base, talk->price, FOX_TENT_TALK_SLOT_PRICE, FOX_TENT_TALK_PRICE_FORMAT, 0, 0);

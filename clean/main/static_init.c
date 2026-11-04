@@ -97,7 +97,7 @@
 #include "session_link.h"
 #include "shadow.h"
 #include "shop_answers.h"
-#include "shop_list_a.h"
+#include "tailor_stock.h"
 #include "sky.h"
 #include "sky_objects.h"
 #include "sky_weather_day.h"
@@ -1641,7 +1641,7 @@ void StaticInit_StateBlock(void)
     TurnipPrices_Construct((TurnipPrices *) block->part_17364);
     SkyWeatherDay_Construct((SkyWeatherDay *) block->part_1737e);
     FoxShop_Construct((FoxShop *) block->fox_shop);
-    ShopListA_Construct((ShopListA *) block->shop_list_a);
+    TailorStock_Construct((TailorStock *) block->tailor_stock);
     Snowmen_ConstructRecords((SnowmenRecord *) block->snowmen);
     RoomScoreState_ConstructJudgeDate(block->part_173c8);
     ItemGroupOrder_ConstructAll(block->part_173d4);

@@ -1,4 +1,4 @@
-/* A shop's stock as Nook's store (nook_store.h), shop list A (shop_list_a.h) and the fox's shop
+/* A shop's stock as Nook's store (nook_store.h), the tailor's (tailor_stock.h) and the fox's shop
  * (fox_shop.h) keep it: `count` item codes, one per place, and a bit per place in `sold`
  * ((count >> 3) + 1 bytes, bit (place & 7) of byte place >> 3).
  *

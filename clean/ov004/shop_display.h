@@ -4,7 +4,7 @@
  * about what is on sale there that main's shops.c asks.
  *
  * The shops: Nook's scenes 0x1a-0x1f (Nook's store, nook_store.h, 37 places; none in scene
- * 0x1f), scene 0xa (shop list A, shop_list_a.h, and eight fixed items 0x3e04-0x3e20) and
+ * 0x1f), scene 0xa (the tailor's shop, tailor_stock.h, and eight fixed items 0x3e04-0x3e20) and
  * scene 0xf (the fox's shop, fox_shop.h).
  *
  * Each shop has a layout (ShopDisplay_Layout): a spot kind for each tile of the room, 16 rows of
@@ -21,7 +21,7 @@
 /* ShopDisplay.kind: the shop the creation stocks. */
 enum ShopDisplayKind {
     SHOP_DISPLAY_NOOK = 0,   /* one of Nook's scenes */
-    SHOP_DISPLAY_LIST_A = 1, /* scene 0xa */
+    SHOP_DISPLAY_TAILOR = 1, /* scene 0xa */
     SHOP_DISPLAY_FOX = 2,    /* scene 0xf */
     SHOP_DISPLAY_OTHER = 3,  /* nothing to stock */
     SHOP_DISPLAY_KINDS = 4,
@@ -40,9 +40,9 @@ int ShopDisplay_StockOther(void);
 u16 *ShopDisplay_FoxItemAt(int x, int z);
 int ShopDisplay_StockFox(ShopDisplay *self);
 void ShopDisplay_PlaceFox(ShopDisplay *self);
-u16 *ShopDisplay_ListAItemAt(int x, int z);
-int ShopDisplay_StockListA(ShopDisplay *self);
-void ShopDisplay_PlaceListA(ShopDisplay *self);
+u16 *ShopDisplay_TailorItemAt(int x, int z);
+int ShopDisplay_StockTailor(ShopDisplay *self);
+void ShopDisplay_PlaceTailorStock(ShopDisplay *self);
 int ShopDisplay_FindNookPlace(int *x, int *z, int place);
 int ShopDisplay_PairedIndex(int x, int z);
 u16 *ShopDisplay_ItemAt(int x, int z);

@@ -22,7 +22,7 @@
 #include "room_interior.h"
 #include "room_object_state.h"
 #include "scene_claim.h"
-#include "shop_list_a.h"
+#include "tailor_stock.h"
 #include "snowmen.h"
 #include "sound.h"
 #include "town_layout.h"
@@ -270,7 +270,7 @@ void StateBlock_SetUpTown(StateBlock *block)
     ItemGroupOrder_InitAll(block->part_173d4);
     Bbs_Init((Bbs *) block->bbs);
     NookStore_Reset((NookStore *) block->nook_store);
-    ShopListA_Reset((ShopListA *) block->shop_list_a);
+    TailorStock_Reset((TailorStock *) block->tailor_stock);
     FoxShop_Reset((FoxShop *) block->fox_shop);
     TownRecord_Start((TownRecord *) (void *) block->part_17254);
     SkyWeatherDay_Reset((SkyWeatherDay *) (void *) block->part_1737e);
@@ -535,7 +535,7 @@ void StateBlock_Init(StateBlock *block)
     TownName_Clear((TownName *) &block->town);
     PlayerRecords_ClearTown(block->players);
     VillagerRoster_Init(villagers_of(block));
-    ShopListA_Init((ShopListA *) block->shop_list_a);
+    TailorStock_Init((TailorStock *) block->tailor_stock);
     FoxShop_Init((FoxShop *) block->fox_shop);
     TownLayout_Clear(block->layout);
     Bbs_Clear((Bbs *) block->bbs);
@@ -588,7 +588,7 @@ StateBlock *StateBlock_Destruct(StateBlock *block)
     ItemGroupOrder_DestructAll(block->part_173d4);
     RoomScoreState_DestructJudgeDate(block->part_173c8);
     Snowmen_DestructRecords((SnowmenRecord *) block->snowmen);
-    ShopListA_Destruct((ShopListA *) block->shop_list_a);
+    TailorStock_Destruct((TailorStock *) block->tailor_stock);
     FoxShop_Destruct((FoxShop *) block->fox_shop);
     SkyWeatherDay_Destruct((SkyWeatherDay *) (void *) block->part_1737e);
     TurnipPrices_Destruct((TurnipPrices *) (void *) block->part_17364);

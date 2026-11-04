@@ -5,7 +5,7 @@
 #include "main/acre_map.h"
 #include "main/bbs.h"
 #include "main/session.h"
-#include "main/shop_list_a.h"
+#include "main/tailor_stock.h"
 #include "main/shop_stock.h"
 #include "main/shops.h"
 #include "main/state_block.h"
@@ -112,7 +112,7 @@ extern NetSession *data_020ccf94;
 extern u32 data_021dc7a8[]; /* the state block (state_block.h) */
 extern u8 data_021dc7bc[];  /* the four players' records */
 extern NookStore data_021f395c;
-extern ShopListA data_021f3b44;
+extern TailorStock data_021f3b44;
 /* The day's random numbers, seeded from the date by func_02063ce0. */
 extern u8 data_021f4a80[];
 /* The section sizes, by level. */
@@ -638,7 +638,7 @@ static void nook_december(NookStore *store, const DateTime *now)
  * QUIRK: the hour is cleared before the link is looked at. */
 void NookStore_Refresh(NookStore *store, int force)
 {
-    ShopListA_Refresh(&data_021f3b44);
+    TailorStock_Refresh(&data_021f3b44);
     if (Shops_PendingState() == 1) {
         Shops_SetPendingState(2);
         return;

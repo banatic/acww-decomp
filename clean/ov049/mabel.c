@@ -419,7 +419,7 @@ int Mabel_FindShown(Mabel *mabel)
         }
     }
 
-    u16 item = *(const u16 *) ShopDisplay_ListAItemAt(x, z);
+    u16 item = *(const u16 *) ShopDisplay_TailorItemAt(x, z);
     if (mabel_is_empty(&item)) {
         return 0;
     }
@@ -841,14 +841,14 @@ int Mabel_EnterTalkLeave(Mabel *mabel)
 CLEAN_AS(func_ov049_0226262c, Mabel_EnterTalkLeave)
 
 /* func_ov049_02262664 (state 4's update): once her action is idle and, with the item on
- * display bought, the shops' answers are all in (Shops_AllAnsweredB), her event ends and
+ * display bought, the shops' answers are all in (Shops_AllAnsweredFox), her event ends and
  * state 6. 1. */
 int Mabel_UpdateTalk(Mabel *mabel)
 {
     if (SceneAction_IsBusy(mabel_action(mabel)) != 0) {
         return 1;
     }
-    if (mabel->bought != 0 && Shops_AllAnsweredB() == 0) {
+    if (mabel->bought != 0 && Shops_AllAnsweredFox() == 0) {
         return 1;
     }
     EventQueue_FinishObjectEvent(mabel);

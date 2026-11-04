@@ -24,7 +24,7 @@
 #include "player_records.h"
 #include "scene_query.h"
 #include "session.h"
-#include "shop_list_a.h"
+#include "tailor_stock.h"
 #include "town_villager.h"
 #include "villager_data.h"
 #include "villager_mode_record.h"
@@ -510,7 +510,7 @@ int Design_VillagerTakeShopDesign(int villager, int announce_it)
         ItemCode item = ITEM_CODE_NONE;
         int found = 0;
         for (int i = 0; i < TAKE_ITEMS; i++) {
-            ShopListA_Item((ShopListA *) (void *) data_021f3b44, i, &item);
+            TailorStock_Item((TailorStock *) (void *) data_021f3b44, i, &item);
             if ((item >= TAKE_ITEM_FIRST && item <= TAKE_ITEM_LAST) ||
                 (item >= TAKE_ROOM_ITEM_FIRST && item <= TAKE_ROOM_ITEM_LAST)) {
                 found = 1;

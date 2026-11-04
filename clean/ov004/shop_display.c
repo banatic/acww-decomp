@@ -12,7 +12,7 @@
 #include "main/item_traits.h"
 #include "main/nook_store.h"
 #include "main/scene_query.h"
-#include "main/shop_list_a.h"
+#include "main/tailor_stock.h"
 #include "member_pointer.h"
 #include "room_object_body.h" /* RoomObject_Number */
 #include "room_objects.h"
@@ -20,7 +20,7 @@
 static_assert(sizeof(ShopDisplay) == 0x58, "the process");
 
 /* The scenes. */
-#define SHOP_DISPLAY_SCENE_LIST_A 0xa
+#define SHOP_DISPLAY_SCENE_TAILOR 0xa
 #define SHOP_DISPLAY_SCENE_FOX 0xf
 #define SHOP_DISPLAY_SCENE_NOOK_UNSTOCKED 0x1f /* the last of Nook's: nothing put out */
 
@@ -63,7 +63,7 @@ extern const s32 data_ov004_0224c264[SHOP_DISPLAY_ROWS * SHOP_DISPLAY_COLUMNS];
 extern u32 data_ov004_0225ff0c;
 extern MemberPointer data_ov004_0225ff30[SHOP_DISPLAY_KINDS];
 extern const MemberPointer data_ov004_02256894; /* ShopDisplay_StockNook */
-extern const MemberPointer data_ov004_0225689c; /* ShopDisplay_StockListA */
+extern const MemberPointer data_ov004_0225689c; /* ShopDisplay_StockTailor */
 extern const MemberPointer data_ov004_022568b4; /* ShopDisplay_StockFox */
 extern const MemberPointer data_ov004_022568a4; /* ShopDisplay_StockOther */
 
@@ -78,7 +78,7 @@ extern u8 data_ov004_0225ff18[];
 
 extern AcreMap *data_021c80bc; /* the room's map */
 extern NookStore data_021f395c;
-extern ShopListA data_021f3b44;
+extern TailorStock data_021f3b44;
 extern FoxShop data_021f3b30;
 
 extern void __register_global_object(void *object, void *destruct, void *record);
@@ -118,9 +118,9 @@ static u16 *ShopDisplay_fox_item(u32 index, u16 *out)
     return FoxShop_Item(&data_021f3b30, (int) index, out);
 }
 
-static u16 *ShopDisplay_list_a_item(u32 index, u16 *out)
+static u16 *ShopDisplay_tailor_item(u32 index, u16 *out)
 {
-    return ShopListA_Item(&data_021f3b44, index, out);
+    return TailorStock_Item(&data_021f3b44, index, out);
 }
 
 static u16 *ShopDisplay_nook_item(u32 index, u16 *out)
@@ -157,20 +157,20 @@ void ShopDisplay_PlaceFox(ShopDisplay *self)
 }
 CLEAN_AS(func_ov004_02246010, ShopDisplay_PlaceFox)
 
-/* func_ov004_022460c8: what is on sale at tile (x, z) of the shop of list A (main's shops.c
+/* func_ov004_022460c8: what is on sale at tile (x, z) of the tailor's shop (main's shops.c
  * asks). */
-u16 *ShopDisplay_ListAItemAt(int x, int z)
+u16 *ShopDisplay_TailorItemAt(int x, int z)
 {
     return ShopDisplay_ItemAt(x, z);
 }
-CLEAN_AS(func_ov004_022460c8, ShopDisplay_ListAItemAt)
+CLEAN_AS(func_ov004_022460c8, ShopDisplay_TailorItemAt)
 
-/* func_ov004_022460d0 (stocking of SHOP_DISPLAY_LIST_A): list A's six items put out, then the
+/* func_ov004_022460d0 (stocking of SHOP_DISPLAY_TAILOR): the tailor's six items put out, then the
  * eight fixed items on their tiles, row by row.
  * REQUIRES: the room has a map. */
-int ShopDisplay_StockListA(ShopDisplay *self)
+int ShopDisplay_StockTailor(ShopDisplay *self)
 {
-    ShopDisplay_PlaceListA(self);
+    ShopDisplay_PlaceTailorStock(self);
     AcreMap *map = data_021c80bc;
     u16 item = SHOP_DISPLAY_FIXED_FIRST;
     for (int z = 0; z < SHOP_DISPLAY_FIXED_ROWS; z++) {
@@ -182,14 +182,14 @@ int ShopDisplay_StockListA(ShopDisplay *self)
     }
     return 1;
 }
-CLEAN_AS(func_ov004_022460d0, ShopDisplay_StockListA)
+CLEAN_AS(func_ov004_022460d0, ShopDisplay_StockTailor)
 
-/* func_ov004_022461c4: list A's six items put out. */
-void ShopDisplay_PlaceListA(ShopDisplay *self)
+/* func_ov004_022461c4: the tailor's six items put out. */
+void ShopDisplay_PlaceTailorStock(ShopDisplay *self)
 {
-    ShopDisplay_place_all(self, SHOP_LIST_A_ITEMS, ShopDisplay_list_a_item);
+    ShopDisplay_place_all(self, TAILOR_STOCK_ITEMS, ShopDisplay_tailor_item);
 }
-CLEAN_AS(func_ov004_022461c4, ShopDisplay_PlaceListA)
+CLEAN_AS(func_ov004_022461c4, ShopDisplay_PlaceTailorStock)
 
 /* func_ov004_0224627c: the tile (*x, *z) of Nook's store's `place`: the item's spot kind, and
  * the tile of that kind as many places on as the places before it holding an item of that
@@ -301,18 +301,18 @@ u16 *ShopDisplay_ItemAt(int x, int z)
 CLEAN_AS(func_ov004_02246378, ShopDisplay_ItemAt)
 
 /* func_ov004_022464f0: whether the shop of the current scene sells `item`: Nook's store in
- * Nook's scenes, list A or the fixed items in scene 0xa, the fox's shop elsewhere. */
+ * Nook's scenes, the tailor's stock or the fixed items in scene 0xa, the fox's shop elsewhere. */
 int ShopDisplay_IsOnSale(u16 *item)
 {
     int scene = SceneQuery_Current();
     if (SceneQuery_InNook((unsigned int) scene)) {
         return NookStore_FindItem(&data_021f395c, item) != -1;
     }
-    if (scene == SHOP_DISPLAY_SCENE_LIST_A) {
+    if (scene == SHOP_DISPLAY_SCENE_TAILOR) {
         if (*item >= SHOP_DISPLAY_FIXED_FIRST && *item <= SHOP_DISPLAY_FIXED_LAST) {
             return 1;
         }
-        return ShopListA_FindItem(&data_021f3b44, item) != -1;
+        return TailorStock_FindItem(&data_021f3b44, item) != -1;
     }
     return FoxShop_FindItem(&data_021f3b30, item) != -1;
 }
@@ -395,8 +395,8 @@ int ShopDisplay_Create(ShopDisplay *self)
     self->nook_index = SceneQuery_CurrentIndexInNook();
     if (SceneQuery_CurrentInNook() != 0) {
         self->kind = SHOP_DISPLAY_NOOK;
-    } else if (SceneQuery_Current() == SHOP_DISPLAY_SCENE_LIST_A) {
-        self->kind = SHOP_DISPLAY_LIST_A;
+    } else if (SceneQuery_Current() == SHOP_DISPLAY_SCENE_TAILOR) {
+        self->kind = SHOP_DISPLAY_TAILOR;
     } else if (SceneQuery_Current() == SHOP_DISPLAY_SCENE_FOX) {
         self->kind = SHOP_DISPLAY_FOX;
     } else {
@@ -466,7 +466,7 @@ const s32 *ShopDisplay_Layout(void)
     if (SceneQuery_CurrentInNook() != 0) {
         return data_ov004_0224c664[SceneQuery_CurrentIndexInNook()];
     }
-    if (SceneQuery_Current() == SHOP_DISPLAY_SCENE_LIST_A) {
+    if (SceneQuery_Current() == SHOP_DISPLAY_SCENE_TAILOR) {
         return data_ov004_0224be64;
     }
     return data_ov004_0224c264;

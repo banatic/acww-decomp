@@ -56,7 +56,7 @@ typedef struct StateBlock {
     u8 part_17364[0x1737e - 0x17364];         /* 0x17364 */
     u8 part_1737e[0x17388 - 0x1737e];         /* 0x1737e */
     u8 fox_shop[0x1739c - 0x17388];           /* 0x17388: FoxShop */
-    u8 shop_list_a[0x173ae - 0x1739c];        /* 0x1739c: ShopListA */
+    u8 tailor_stock[0x173ae - 0x1739c];       /* 0x1739c: TailorStock */
     u8 snowmen[0x173c0 - 0x173ae];            /* 0x173ae: SnowmenRecord */
     u8 part_173c0[0x173c8 - 0x173c0];         /* 0x173c0 */
     u8 part_173c8[0x173cc - 0x173c8];         /* 0x173c8 */

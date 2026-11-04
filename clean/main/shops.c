@@ -23,7 +23,7 @@
 #include "scene_query.h"
 #include "shop_answers.h"
 #include "shop_field.h"
-#include "shop_list_a.h"
+#include "tailor_stock.h"
 #include "fox_shop.h"
 
 /* Message 39, the answer to message 38. */
@@ -119,10 +119,10 @@ void Shops_ApplyMessage(const u32 *payload, int slot)
     int kind = (int) (word >> SHOPS_KIND_SHIFT);
     int flag = (int) ((word >> SHOPS_FLAG_SHIFT) & 1);
 
-    if (kind == SHOPS_KIND_LIST_A) {
+    if (kind == SHOPS_KIND_TAILOR) {
         Shops_ChangePlace(place, 0, kind, 1, 1, 0, 1);
-    } else if (kind == SHOPS_KIND_LIST_B) {
-        Shops_SetListBPlace(place, kind, 0, 1);
+    } else if (kind == SHOPS_KIND_FOX) {
+        Shops_SetFoxPlace(place, kind, 0, 1);
     } else if (SceneQuery_InNook((u32) kind) != 0) {
         int amount = (int) ((*payload >> SHOPS_AMOUNT_SHIFT) & SHOPS_AMOUNT_MASK);
         Shops_ChangePlace(place, amount, kind, flag, 0, 0, 1);
@@ -137,51 +137,51 @@ void Shops_ApplyMessage(const u32 *payload, int slot)
 CLEAN_AS(func_020ad7f4, Shops_ApplyMessage)
 
 /* func_020ad888: whether every answer came (always, when not linked). */
-int Shops_AllAnsweredA(void)
+int Shops_AllAnsweredTailor(void)
 {
     return ShopAnswers_AllCameIfLinked();
 }
-CLEAN_AS(func_020ad888, Shops_AllAnsweredA)
+CLEAN_AS(func_020ad888, Shops_AllAnsweredTailor)
 
 /* func_020ad890: the item func_ov004_02245ff8 gives for (a, b) taken from data_021f3b30, sent
  * to the other systems, when it is there. */
-void Shops_TakeFromListB(int a, int b, int kind)
+void Shops_TakeFromFox(int a, int b, int kind)
 {
     void *item = ShopDisplay_FoxItemAt(a, b);
     int place = FoxShop_FindItem((FoxShop *) (void *) data_021f3b30, (u16 *) (uintptr_t) item);
     if (place != -1) {
         ShopAnswers_Expect((ShopAnswers *) (void *) data_021f49ec);
-        Shops_SetListBPlace(place, kind, 1, 0);
+        Shops_SetFoxPlace(place, kind, 1, 0);
     }
 }
-CLEAN_AS(func_020ad890, Shops_TakeFromListB)
+CLEAN_AS(func_020ad890, Shops_TakeFromFox)
 
 /* func_020ad8d0 */
-void Shops_SetListBPlace(int place, int kind, int send, int g)
+void Shops_SetFoxPlace(int place, int kind, int send, int g)
 {
     Shops_ChangePlace(place, 0, kind, 1, 2, (u8) send, g);
 }
-CLEAN_AS(func_020ad8d0, Shops_SetListBPlace)
+CLEAN_AS(func_020ad8d0, Shops_SetFoxPlace)
 
-/* func_020ad8f0: the same as Shops_AllAnsweredA. */
-int Shops_AllAnsweredB(void)
+/* func_020ad8f0: the same as Shops_AllAnsweredTailor. */
+int Shops_AllAnsweredFox(void)
 {
     return ShopAnswers_AllCameIfLinked();
 }
-CLEAN_AS(func_020ad8f0, Shops_AllAnsweredB)
+CLEAN_AS(func_020ad8f0, Shops_AllAnsweredFox)
 
 /* func_020ad8f8: the item func_ov004_022460c8 gives for (a, b) taken from data_021f3b44, sent
  * to the other systems, when it is there. */
-void Shops_TakeFromListA(int a, int b, int kind)
+void Shops_TakeFromTailor(int a, int b, int kind)
 {
-    u16 item = *ShopDisplay_ListAItemAt(a, b);
-    int place = ShopListA_FindItem((ShopListA *) (void *) data_021f3b44, &item);
+    u16 item = *ShopDisplay_TailorItemAt(a, b);
+    int place = TailorStock_FindItem((TailorStock *) (void *) data_021f3b44, &item);
     if (place != -1) {
         ShopAnswers_Expect((ShopAnswers *) (void *) data_021f49ec);
         Shops_ChangePlace(place, 0, kind, 1, 1, 1, 0);
     }
 }
-CLEAN_AS(func_020ad8f8, Shops_TakeFromListA)
+CLEAN_AS(func_020ad8f8, Shops_TakeFromTailor)
 
 /* func_020ad944: when not linked and the post office has room, a letter from Tom Nook
  * ("sp_npc_raccoon") carrying `item`, which waits at the post office; then the item's price
@@ -259,7 +259,7 @@ int Shops_CanMail(void)
 }
 CLEAN_AS(func_020ada14, Shops_CanMail)
 
-/* func_020ada40: the same as Shops_AllAnsweredA. */
+/* func_020ada40: the same as Shops_AllAnsweredTailor. */
 int Shops_AllAnsweredC(void)
 {
     return ShopAnswers_AllCameIfLinked();
@@ -364,7 +364,7 @@ void Shops_ChangePlace(int place, int amount, int kind, int flag, int mode, u8 s
             item = *NookStore_Item((NookStore *) data_021f395c, place, NULL);
             break;
         case 1:
-            item = *ShopListA_Item((ShopListA *) (void *) data_021f3b44, place, NULL);
+            item = *TailorStock_Item((TailorStock *) (void *) data_021f3b44, place, NULL);
             break;
         case 2:
             item = *FoxShop_Item((FoxShop *) data_021f3b30, place, NULL);
@@ -391,7 +391,7 @@ void Shops_ChangePlace(int place, int amount, int kind, int flag, int mode, u8 s
             }
             break;
         case 1:
-            ShopListA_TakeItem((ShopListA *) (void *) data_021f3b44, &item);
+            TailorStock_TakeItem((TailorStock *) (void *) data_021f3b44, &item);
             ShopField_ShowItemTaken(&item, kind, g);
             break;
         case 2:
