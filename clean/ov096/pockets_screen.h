@@ -46,7 +46,7 @@ enum PocketsScreenFlag {
     POCKETS_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor over the left edge */
     POCKETS_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it over the right edge */
     POCKETS_FLAG_40 = 0x40,            /* the held thing is not drawn */
-    POCKETS_FLAG_80 = 0x80,            /* the picked letter is read once the pockets have wiped out */
+    POCKETS_FLAG_READ_LETTER = 0x80,   /* the picked letter is read once the pockets have wiped out */
     POCKETS_FLAG_BUTTON_DRAWN = 0x100, /* the letter reader's button is drawn */
     POCKETS_FLAG_200 = 0x200,
     POCKETS_FLAG_SWITCH_ON = 0x400,      /* see PocketsScreen_ApplySwitch */
@@ -72,10 +72,12 @@ enum PocketsScreenPlace {
     POCKETS_LETTERS_LAST = 0x18,
     POCKETS_ROW_FIRST = 0x19, /* 25-32: a row of eight: the menu's tabs 0-7 (PocketsScreen_SwitchTab) */
     POCKETS_ROW_LAST = 0x20,
-    POCKETS_PLACE_21 = 0x21, /* left of the grid's last row, when PocketsScreen_CanReachPlace21 */
+    POCKETS_PLACE_BACKDROP = 0x21, /* the backdrop's clothes, left of the grid's last row (when
+                                    * PocketsScreen_CanReachBackdrop) */
     POCKETS_PLACE_22 = 0x22,
     POCKETS_PLACE_23 = 0x23,
-    POCKETS_PLACE_PLAYER = 0x24, /* its choice offers the record's items at 0x240c, 0x240a, 0x2406 */
+    POCKETS_PLACE_PLAYER = 0x24, /* its choice offers the record's accessory (0x240c), hat (0x240a)
+                                  * and tool (0x2406) */
     POCKETS_PLACE_BELLS = 0x25,
     POCKETS_PLACE_27 = 0x27, /* given to PocketsScreen_OpenSlotMenu; becomes the bells' place */
     POCKETS_NO_PLACE = 0x26  /* PocketsScreen_FreePocketSlot: no free pocket slot */
@@ -159,16 +161,16 @@ PocketsScreen *PocketsScreen_Delete(PocketsScreen *self);
 void PocketsScreen_ClearFlags(PocketsScreen *self, unsigned int flags);
 void PocketsScreen_SetFlags(PocketsScreen *self, unsigned int flags);
 int PocketsScreen_TestFlags(PocketsScreen *self, unsigned int flags);
-int PocketsScreen_CanReachPlace21(PocketsScreen *self);
-void PocketsScreen_SwapRecordItem(PocketsScreen *self);
+int PocketsScreen_CanReachBackdrop(PocketsScreen *self);
+void PocketsScreen_SetBackdropClothes(PocketsScreen *self);
 void PocketsScreen_ApplySwitch(PocketsScreen *self);
 void PocketsScreen_RequestSwitchOff(PocketsScreen *self);
 void PocketsScreen_RequestSwitchOn(PocketsScreen *self);
-void PocketsScreen_PutPileInLetter(PocketsScreen *self);
+void PocketsScreen_PutPaperInLetter(PocketsScreen *self);
 int PocketsScreen_SlotLetter(PocketsScreen *self);
 void PocketsScreen_ExitToParent(PocketsScreen *self);
 void PocketsScreen_PressButton(PocketsScreen *self);
-void PocketsScreen_FinishScene(PocketsScreen *self);
+void PocketsScreen_ActionReadLetter(PocketsScreen *self);
 int PocketsScreen_MoveCursor(PocketsScreen *self, int keys, int mode);
 void PocketsScreen_MoveCursorAtPlaces(PocketsScreen *self, int keys, int mode);
 void PocketsScreen_MoveCursorInRow(PocketsScreen *self, int keys, int mode);
@@ -188,22 +190,22 @@ void PocketsScreen_CloseChoiceToLeave(PocketsScreen *self);
 void PocketsScreen_CancelChoice(PocketsScreen *self);
 void PocketsScreen_ShowChoice(PocketsScreen *self, int above_popup);
 void PocketsScreen_RunAction(PocketsScreen *self);
-void PocketsScreen_ActionSendMessage(PocketsScreen *self);
-void PocketsScreen_ActionSendMessage0(PocketsScreen *self);
-void PocketsScreen_SendMessage(PocketsScreen *self, int message);
-void PocketsScreen_ActionMessageMenu(PocketsScreen *self);
+void PocketsScreen_ActionStartTimer(PocketsScreen *self);
+void PocketsScreen_ActionStopTimer(PocketsScreen *self);
+void PocketsScreen_SetTimer(PocketsScreen *self, int message);
+void PocketsScreen_ActionTimerMenu(PocketsScreen *self);
 int PocketsScreen_ActionSubState31(PocketsScreen *self);
 void PocketsScreen_ActionDiscardConfirm(PocketsScreen *self);
 void PocketsScreen_ActionDiscardLetter(PocketsScreen *self);
 void PocketsScreen_ActionOpenPresent(PocketsScreen *self);
 void PocketsScreen_ActionTakeRecordItem(PocketsScreen *self);
 void PocketsScreen_ActionTakeBells(PocketsScreen *self);
-void PocketsScreen_ActionNewLetterFromSlot(PocketsScreen *self);
-void PocketsScreen_ActionNewLetterChoice(PocketsScreen *self);
+void PocketsScreen_ActionWriteBottleLetter(PocketsScreen *self);
+void PocketsScreen_ActionWriteLetter(PocketsScreen *self);
 int PocketsScreen_MoveToFreeLetter(PocketsScreen *self);
 void PocketsScreen_ActionToFreeSlot(PocketsScreen *self);
-void PocketsScreen_ActionLetter05(PocketsScreen *self);
-void PocketsScreen_ActionLetterChoice(PocketsScreen *self);
+void PocketsScreen_ActionRewriteLetter(PocketsScreen *self);
+void PocketsScreen_ActionChangeAddressee(PocketsScreen *self);
 void PocketsScreen_ActionUseItem(PocketsScreen *self);
 int PocketsScreen_CheckUseItem(PocketsScreen *self, int item);
 int PocketsScreen_CanUseItem(PocketsScreen *self, unsigned int item);
@@ -280,7 +282,7 @@ int PocketsScreen_BellAmountAtTouch(PocketsScreen *self, int x, int y);
 int PocketsScreen_TouchOnBells(PocketsScreen *self, int x, int y);
 int PocketsScreen_TouchOnPlayer(PocketsScreen *self, int x, int y);
 int PocketsScreen_PlaceAtTouch(PocketsScreen *self, int x, int y);
-int PocketsScreen_TouchOnPlace21(PocketsScreen *self, int x, int y);
+int PocketsScreen_TouchOnBackdrop(PocketsScreen *self, int x, int y);
 void PocketsScreen_PutLetterAt(PocketsScreen *self, int place, void *letter);
 int PocketsScreen_PutHeldLetterAt(PocketsScreen *self, int place);
 int PocketsScreen_LetterPlaceAtTouch(PocketsScreen *self, int x, int y, int with_letter);

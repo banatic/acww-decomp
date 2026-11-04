@@ -5,7 +5,7 @@
 # (villager 3, block 0's type 0xf, main/villager_part.h), the paper in pocket 1. Y opens the
 # pockets (2600); a first pen tap, the paper (2802), "write a letter" (2846), villager 3 of the
 # addressees (3050), three keys and Decide (3354-3426), Yes (3682): the letter is written
-# (main/letter.c Letter_AddressToVillager, ov096 PocketsScreen_ActionNewLetterChoice); B B
+# (main/letter.c Letter_AddressToVillager, ov096 PocketsScreen_ActionWriteLetter); B B
 # close the pockets. North into the town hall (about 4800) and to the post office window, A:
 # Pelly's posting page (about 5700); a first tap, the letter dragged onto it (6418-6487) and
 # Decide (6519): the letter goes (VillagerMail_Receive; noted for the errand, the block's step

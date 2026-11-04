@@ -784,7 +784,7 @@ What reading the Clean code found about the groups above; counts are of function
   (refused, NookClerkTalk_PackageDone runs instead and he does not ask again).
 - The second screen panel's countdown (main/catch_panel.h, with the fish and insects caught while
   it runs) is the timer's: the item 0x156c in the pockets has a row that starts it (3, 5, 10 or 15
-  minutes, PocketsScreen_ActionMessageMenu; alone, PocketsScreen_SendMessage applies it at once,
+  minutes, PocketsScreen_ActionTimerMenu; alone, PocketsScreen_SetTimer applies it at once,
   linked it is sent to the others) and, while it runs, one that stops it: save timer, scene timer
   (29 functions). Letting it run out adds nothing more.
 - The seed's player was born on 1 January, so on new year's day a villager fond of the player
@@ -2334,7 +2334,7 @@ What reading the Clean code found about the groups above; counts are of function
   frames) entered nothing new; the topics need their villager's state. The pockets: putting the
   held tool away with full pockets (full-net) closed the menu without
   PocketsScreen_ActionTakeRecordItem, and the clothes dropped by the pen on the page's empty places
-  and round the portrait never reached place 0x21 (PocketsScreen_SwapRecordItem). A friend code
+  and round the portrait never reached place 0x21 (PocketsScreen_SetBackdropClothes). A friend code
   already registered, typed in the roster of friends-full, was taken as new
   (FriendCodeEntry_IsOtherFriendsCode not entered). The talk receivers' empty slots
   TalkReceiver_Nothing38-60 are each named only at their own offset of the 64 receiver vtables
@@ -2344,10 +2344,10 @@ What reading the Clean code found about the groups above; counts are of function
   seed 880, date 238, unknown 506, unreachable 3,198.
 
 ### The pockets' backdrop, a design refused with full pockets (2026-10-29, town11, second batch)
-- Place 0x21 of the pockets is the round place at the lower left (PocketsScreen_TouchOnPlace21:
+- Place 0x21 of the pockets is the round place at the lower left (PocketsScreen_TouchOnBackdrop:
   4-27 by 172-195), not the portrait: clothes (0x11a8-0x12a7) let go there become the page's
   backdrop, the player record's item at 0x2410. New scene pockets-backdrop (5): pockets' work
-  clothes carried there by the pen (PocketsScreen_CanReachPlace21, _SwapRecordItem,
+  clothes carried there by the pen (PocketsScreen_CanReachBackdrop, _SetBackdropClothes,
   MenuBackdrop_QueueDesign, PlayerRecord_SetItem2410, LayerTask_QueueCharsAndPalette).
 - New scene designs-full (2): design-wear's first design dragged onto the shirt with every pocket
   taken (save full-rod): the clothes worn have no pocket to go to, so the error message shows

@@ -2,7 +2,7 @@
 # in this repository). Boot: as pockets-town.txt; the player stands in front of the house from
 # about 2550. Save: the rod held and the item 0x156c (a timer) in pocket 0. The pockets by the pen
 # from 2700: the timer (2806) and its first row, the time (2854), the shortest of the four
-# (2902, three minutes: ov096/pockets_screen.c PocketsScreen_ActionMessageMenu, then
+# (2902, three minutes: ov096/pockets_screen.c PocketsScreen_ActionTimerMenu, then
 # PlayerMessages_ApplyMode): the countdown panel appears (main/catch_panel.h) with the field
 # label's notice. Y twice closes the page; the pockets again from 3102, the timer's first row
 # now stops it (3256). Y twice closes the page and the panel hides.
