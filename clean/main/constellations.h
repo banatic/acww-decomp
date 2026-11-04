@@ -1,6 +1,8 @@
 /* The players' constellations in the night sky ("menu/star"): up to 16 kept in the town's
- * save (data_021f2b04), a draft being designed (at 0x100 of data_021ee418), and the sky's
- * background map and palettes they are drawn into.
+ * save (data_021f2b04), the one the town's exchange block carries (at 0x100 of data_021ee418:
+ * a kept one drawn at random to send, Constellations_PackRandomForExchange; one received is kept
+ * on the next start, Constellations_AcceptExchanged), and the sky's background map and
+ * palettes they are drawn into.
  *
  * A constellation is made of up to 16 pieces, each a group of up to four stars from the table
  * at data_020e42a0; a star sits in one of the sky's 64 columns and 32 rows of 8-pixel tiles.
@@ -39,8 +41,8 @@ void Constellations_PaintPiece(u16 *map, int piece, int palette);
 int Constellations_MapIndex(int column, int row);
 int Constellations_IsStarTile(int tile);
 int Constellations_NameTaken(const u16 *name, int except);
-void Constellations_FileDraft(void);
-void Constellations_DraftRandom(void);
+void Constellations_AcceptExchanged(void);
+void Constellations_PackRandomForExchange(void);
 int Constellations_Add(Constellation *constellation);
 void Constellations_ReleaseJudge(void);
 void Constellations_LoadJudge(void);

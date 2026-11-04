@@ -640,7 +640,7 @@ What reading the Clean code found about the groups above; counts are of function
   any scene either (none of about 120): the receivers are destroyed with their owners, whose
   destructors call TalkReceiver_Destruct on the member directly.
 - Celeste's greeting that tells of a new constellation (AstroTalk_TellNew) did not come with a
-  constellation marked new in a derived save; Constellations_DraftRandom and the unseen marks
+  constellation marked new in a derived save; Constellations_PackRandomForExchange and the unseen marks
   are set by the linked session's jobs (main/activity_link_jobs.c).
 - A second player whose taxi questions get the other answers adds two functions
   (TaxiDriverTalk_OnAnswer0b, _End0d) over new-player; not added.
@@ -1193,12 +1193,12 @@ What reading the Clean code found about the groups above; counts are of function
   that has not drifted: bottle-throw's block (its letter's bytes from that run's RAM, with the
   block's checksum made good) in a save (bottle-sent) gives it, and yes leaves the title for
   scene 0x30 (TitleScene_ExitToScene30, _EnterExitScene30): the block written to both copies
-  (CardSave_WriteExchangeBlock), a constellation drafted for it (Constellations_DraftRandom) and
+  (CardSave_WriteExchangeBlock), a constellation drafted for it (Constellations_PackRandomForExchange) and
   overlay 55's exchange (XctExchange_*, its talk, the room camera's look-at mode:
   RoomCamera_SetModeLookAt, _LookAtStart, _LookAtFrame), which waits at its line 0x38 for
   another system: title-bottle (28 functions). These were in unreachable groups: ov055's
   exchange and static initialiser and ExchangeBlock_OfSlot and _Drifts ("local wireless"),
-  CardSave_WriteExchangeBlock ("hardware and failure paths"), Constellations_DraftRandom and
+  CardSave_WriteExchangeBlock ("hardware and failure paths"), Constellations_PackRandomForExchange and
   RoomCamera_SetModeLookAt ("what only the linked session and the visits call") and the room
   camera's mode 20 ("camera modes only unreachable code sets"); the title's answer reaches them
   with one system (the groups' texts are left to the re-check of the unreachable groups).
@@ -1247,7 +1247,7 @@ What reading the Clean code found about the groups above; counts are of function
   written in a save, its checksum made good: with bottle-throw's letter in it the load puts the
   bottle on the beach (BottleMail_ReceiveDrifting, ExchangeBlock_ArrivesAtOnce; on the seed's
   day at tile 61.8, 75.0), and B there picks it up and opens it (BottleMail_Open): bottle-came;
-  with a constellation draft of another player the load keeps it (Constellations_FileDraft:
+  with a constellation draft of another player the load keeps it (Constellations_AcceptExchanged:
   Constellations_Add, the judge loaded and released, StarScope_CollectStars and _StarsAreFree):
   star-came. Celeste's greeting does not tell of it (AstroTalk_TellNew needs the unseen marks,
   which only the linked session's jobs set). A villager of another town held in the block moves
@@ -1454,7 +1454,7 @@ What reading the Clean code found about the groups above; counts are of function
   registered: Session_Start, the Wi-Fi library ov065 and the gatekeeper's StartWfc, StartSession,
   WaitFriends, TimeOutOrError, PutErrorCode and EndWfc), bottle-came and star-came (what the
   passing exchange brings: BottleMail_ReceiveDrifting's arrival, ExchangeBlock_ArrivesAtOnce,
-  BottleMail_Open, Constellations_FileDraft and _Add) title-moved-in (flag 0x12 of the state
+  BottleMail_Open, Constellations_AcceptExchanged and _Add) title-moved-in (flag 0x12 of the state
   block: StartKind_SetPlayer0), gate-wfc-code and gate-wfc-invite (the friend-code choice starts
   the same Wi-Fi set-up with no friend registered) and villager-came (a villager of another town
   in the received exchange block moves in at load: VillagerHome_LastTown,

@@ -3,7 +3,7 @@
  * each of the three other slots, in an array at data_021d36d4. A block holds:
  *   - a letter in a bottle (mail.h), with how many times it has drifted (up to 5) and a flag
  *     that lets it arrive at once (bottle_mail.h);
- *   - a constellation being designed (constellations.h);
+ *   - a constellation, one of the town's sent to the other (constellations.h);
  *   - a villager moving between towns (villager_copy.h);
  *   - a paired town (paired_town.h);
  *   - its checksum, a halfword (card_save.c).

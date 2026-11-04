@@ -446,7 +446,7 @@ void StateBlock_StartMode2(StateBlock *block)
     SoundSys_SetCaptureEffect(data_020d1b90[PlayerOptions_SoundInUse()]);
     PairedTown_RestoreCurrent();
     BottleMail_ReceiveDrifting();
-    Constellations_FileDraft();
+    Constellations_AcceptExchanged();
     Mail_DeliverWaiting();
     StartKind_Clear();
     Sky_ReseedForMode2();

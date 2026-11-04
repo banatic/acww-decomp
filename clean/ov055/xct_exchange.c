@@ -217,12 +217,12 @@ void XctExchange_SaveBlock(XctExchange *xct)
 }
 CLEAN_AS(func_ov055_02260514, XctExchange_SaveBlock)
 
-/* func_ov055_02260544: a random constellation drafted; the town's own exchange block moved
+/* func_ov055_02260544: a random kept constellation packed for the exchange; the town's own exchange block moved
  * into the packet he sends (which then carries a block) and cleared in the town; then, unless
  * a save failed before, the exchange block saved and a failure remembered. */
 void XctExchange_PrepareSend(XctExchange *xct)
 {
-    Constellations_DraftRandom();
+    Constellations_PackRandomForExchange();
     ExchangeBlock *own = xct_exchange_own_block();
     MI_CpuCopy8(own, &xct->send.block, sizeof(ExchangeBlock));
     xct->send.kind = XCT_EXCHANGE_CARRIES_BLOCK;

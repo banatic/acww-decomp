@@ -51,7 +51,7 @@ static_assert(offsetof(ConstellationStore, unseen) == 0x4a2, "constellation stor
 #define CONSTELLATIONS_DAY_START 6
 #define CONSTELLATIONS_NIGHT_START 18
 
-/* The constellations kept, the draft's holder (the draft is at 0x100 of it), the columns
+/* The constellations kept, the town's exchange block (its constellation at 0x100), the columns
  * marked by Constellations_Center (one bit each) and the pieces' stars. */
 extern ConstellationStore data_021f2b04;
 extern u8 data_021ee418[];
@@ -177,41 +177,42 @@ int Constellations_NameTaken(const u16 *name, int except)
 }
 CLEAN_AS(func_020b1078, Constellations_NameTaken)
 
-/* func_020b10b8: the draft, when it has pieces, kept (Constellations_Add); a draft that uses a
- * piece twice, or that was kept, is emptied. */
-void Constellations_FileDraft(void)
+/* func_020b10b8: the constellation of the town's exchange block (one another town sent), when
+ * the block is sendable and it has pieces, kept (Constellations_Add); one that uses a piece
+ * twice, or that was kept, is emptied. */
+void Constellations_AcceptExchanged(void)
 {
     void *holder = data_021ee418;
     if (ExchangeBlock_IsSendable(holder) == 0) {
         return;
     }
-    Constellation *draft = (Constellation *) (uintptr_t) ExchangeBlock_Constellation(holder);
+    Constellation *exchanged = (Constellation *) (uintptr_t) ExchangeBlock_Constellation(holder);
     int pieces = 0;
     for (int i = 0; i < CONSTELLATIONS_PIECES; i++) {
-        if (draft->pieces[i] == CONSTELLATIONS_NO_PIECE) {
+        if (exchanged->pieces[i] == CONSTELLATIONS_NO_PIECE) {
             continue;
         }
         pieces++;
         for (int j = 0; j < i; j++) {
-            if (draft->pieces[i] == draft->pieces[j]) {
-                Constellations_Clear(draft);
+            if (exchanged->pieces[i] == exchanged->pieces[j]) {
+                Constellations_Clear(exchanged);
                 return;
             }
         }
     }
-    if (pieces != 0 && Constellations_Add(draft) != 0) {
-        Constellations_Clear(draft);
+    if (pieces != 0 && Constellations_Add(exchanged) != 0) {
+        Constellations_Clear(exchanged);
     }
 }
-CLEAN_AS(func_020b10b8, Constellations_FileDraft)
+CLEAN_AS(func_020b10b8, Constellations_AcceptExchanged)
 
-/* func_020b1130: the draft emptied, then made a copy of a kept constellation drawn at random,
- * when there is one. */
-void Constellations_DraftRandom(void)
+/* func_020b1130: the constellation of the town's exchange block emptied, then made a copy of a
+ * kept constellation drawn at random, when there is one: what the town sends another. */
+void Constellations_PackRandomForExchange(void)
 {
-    Constellation *draft =
+    Constellation *exchanged =
         (Constellation *) (uintptr_t) (ExchangeBlock_Constellation((ExchangeBlock *) (void *) data_021ee418));
-    Constellations_Clear(draft);
+    Constellations_Clear(exchanged);
     int kept = 0;
     ConstellationStore *store = constellations_store(Constellations_StoreAddress());
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
@@ -230,12 +231,12 @@ void Constellations_DraftRandom(void)
         if (skip > 0) {
             skip--;
         } else {
-            Constellations_Copy(draft, (const Constellation *) (uintptr_t) (u32) Constellations_Get(i));
+            Constellations_Copy(exchanged, (const Constellation *) (uintptr_t) (u32) Constellations_Get(i));
             return;
         }
     }
 }
-CLEAN_AS(func_020b1130, Constellations_DraftRandom)
+CLEAN_AS(func_020b1130, Constellations_PackRandomForExchange)
 
 /* func_020b11a4: the constellation kept in the first free place, marked new, when there is a
  * place, no kept constellation has its name and overlay 127 accepts it; whether it was. */

@@ -954,7 +954,7 @@ SAVES["friends-full"] = [e for i in range(32) for e in raw(
     (0x14 + 0x1F5C + 0x480, "<H", 0xF680)]
 # the town's exchange block as the passing exchange leaves it with another system's constellation
 # draft (0x100: made by OTHER_PLAYER_A, four characters, pieces 0-2), drifted once and set to
-# arrive at once, its checksum made good: the load keeps the draft (Constellations_FileDraft)
+# arrive at once, its checksum made good: the load keeps the draft (Constellations_AcceptExchanged)
 SAVES["star-came"] = raw(EXCHANGE + 0x100, OTHER_PLAYER_A + bytes.fromhex("4331433143314331") + bytes(4) +
                          struct.pack("<16H", 0, 1, 2, *[0xFFFF] * 13) + bytes(2)) + [
     (EXCHANGE + 0x938, "<H", 0x0101), (EXCHANGE + 0x94A, "<H", 0xAC79)]

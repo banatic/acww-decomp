@@ -188,11 +188,11 @@ static void queue_sequence2(u8 message)
 }
 
 /* func_020a4210: job 0x14 starts: the gatekeeper's end (no message) and a constellation
- * drafted. */
+ * packed for the exchange. */
 void ActivityLinkJobs_Start14(Activity *activity)
 {
     Activity_TalkGatekeeper(activity, 1);
-    Constellations_DraftRandom();
+    Constellations_PackRandomForExchange();
 }
 CLEAN_AS(func_020a4210, ActivityLinkJobs_Start14)
 
@@ -347,14 +347,14 @@ void ActivityLinkJobs_Step14(Activity *activity)
 CLEAN_AS(func_020a3ea4, ActivityLinkJobs_Step14)
 
 /* func_020a3e74: job 0x15 starts: the gatekeeper's end (no message); with one player in the
- * session, held mail delivered twice, a constellation drafted and the recent slots cleared. */
+ * session, held mail delivered twice, a constellation packed for the exchange and the recent slots cleared. */
 void ActivityLinkJobs_Start15(Activity *activity)
 {
     Activity_TalkGatekeeper(activity, 1);
     if (data_020ccf94->player_count == 1) {
         Mail_DeliverHeld();
         Mail_DeliverHeld();
-        Constellations_DraftRandom();
+        Constellations_PackRandomForExchange();
         RecentSlots_Clear();
     }
 }
