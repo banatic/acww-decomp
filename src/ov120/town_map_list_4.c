@@ -1,11 +1,14 @@
-/* func_ov120_0229aa80 @ 0x0229aa80, 0x4c bytes, Thumb, module ov120
+/* town_map_list_4: 2 functions, module ov120
  * mwccarm 1.2/base -O4,s
+ * func_ov120_0229aa80 @ 0x0229aa80, 0x4c bytes, Thumb
+ * func_ov120_0229aa30 @ 0x0229aa30, 0x50 bytes, Thumb
  */
 
 extern unsigned char func_ov120_0229b14c(void *);
 extern void func_ov120_0229abec(void *, int);
 extern int _s32_div_f(int, int);
 extern unsigned char data_021f6c54;
+extern unsigned short data_021fbe40;
 
 void func_ov120_0229aa80(void *r0)
 {
@@ -30,4 +33,24 @@ void func_ov120_0229aa80(void *r0)
     r1 = 0x58;
     r0i = _s32_div_f(r0i, r1);
     func_ov120_0229abec(r0, r0i);
+}
+
+void func_ov120_0229aa30(void *p)
+{
+    int field;
+    int upper;
+
+    field = *(unsigned short *) ((char *) p + 0x9a);
+    if (data_021fbe40 & 0x40) {
+        field -= 4;
+    } else if (data_021fbe40 & 0x80) {
+        field += 4;
+    }
+    upper = (int) func_ov120_0229b14c(p);
+    if (field < 0) {
+        field = 0;
+    } else if (field > upper) {
+        field = upper;
+    }
+    func_ov120_0229abec(p, field);
 }
