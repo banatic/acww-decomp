@@ -11,7 +11,7 @@
 #include "ov004/rmo_telephone.h"
 #include "ov004/room_etc_board.h"
 #include "ov004/room_objects.h"
-#include "ov004/trash_box.h"
+#include "ov004/recycle_bin.h"
 #include "session_players.h"
 
 /* The modes of data_020e54a8: 0 outdoors, 1 in a room. */
@@ -67,7 +67,7 @@ CLEAN_AS(func_020b73ac, TouchPick_RoomObject13)
 int TouchPick_RoomObject12(void)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return (int) TrashBox_Current();
+        return (int) RecycleBin_Current();
     }
     return 0;
 }
