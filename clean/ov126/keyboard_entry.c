@@ -327,9 +327,9 @@ CLEAN_AS(func_ov126_0229fb58, KeyboardEntry_CommitDesignTitle)
 void KeyboardEntry_LoadText(KeyboardEntry *self)
 {
     switch (GroupParams_Mode()) {
-        case KEYBOARD_ENTRY_MODE_11:
-        case KEYBOARD_ENTRY_MODE_15:
-        case 0x16:
+        case KEYBOARD_ENTRY_MODE_NICKNAME:
+        case KEYBOARD_ENTRY_MODE_CATCHPHRASE:
+        case KEYBOARD_ENTRY_MODE_GREETING:
         case KEYBOARD_ENTRY_MODE_17:
             TextString_CopyChars(GroupParams_Text(), self->text, self->max_chars);
             break;

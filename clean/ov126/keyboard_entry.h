@@ -41,16 +41,17 @@ enum KeyboardEntryMode {
     KEYBOARD_ENTRY_MODE_PASSWORD = 0x0e,            /* compared with message `arg` of "st_password" */
     KEYBOARD_ENTRY_MODE_PLAYER_NAME = 0x0f,         /* the current player's name */
     KEYBOARD_ENTRY_MODE_TOWN_NAME = 0x10,           /* the town's name */
-    KEYBOARD_ENTRY_MODE_11 = 0x11,                  /* main's text (GroupParams_Text) */
+    KEYBOARD_ENTRY_MODE_NICKNAME = 0x11,            /* main's text (GroupParams_Text); sign "a nickname" */
     KEYBOARD_ENTRY_MODE_CONSTELLATION = 0x12,       /* the name of constellation `arg` */
-    KEYBOARD_ENTRY_MODE_13 = 0x13,                  /* starts empty */
+    KEYBOARD_ENTRY_MODE_13 = 0x13,                  /* starts empty; sign "who were you again?" */
     KEYBOARD_ENTRY_MODE_RECORD_DESIGN_TITLE = 0x14, /* the title of the town record's design */
-    KEYBOARD_ENTRY_MODE_15 = 0x15,                  /* 0x15-0x17: main's text */
-    KEYBOARD_ENTRY_MODE_17 = 0x17,
-    KEYBOARD_ENTRY_MODE_FRIEND_TOWN = 0x18,     /* the town of friend `arg` (main/wifi_friends.h) */
-    KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN = 0x19, /* the same for a friend being added */
-    KEYBOARD_ENTRY_MODE_FRIEND_NAME = 0x1a,     /* the name of friend `arg` */
-    KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME = 0x1b  /* the same for a friend being added */
+    KEYBOARD_ENTRY_MODE_CATCHPHRASE = 0x15,         /* 0x15-0x17: main's text; sign "a catchphrase" */
+    KEYBOARD_ENTRY_MODE_GREETING = 0x16,            /* sign "a greeting" */
+    KEYBOARD_ENTRY_MODE_17 = 0x17,                  /* sign "praise me!" */
+    KEYBOARD_ENTRY_MODE_FRIEND_TOWN = 0x18,         /* the town of friend `arg` (main/wifi_friends.h) */
+    KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN = 0x19,     /* the same for a friend being added */
+    KEYBOARD_ENTRY_MODE_FRIEND_NAME = 0x1a,         /* the name of friend `arg` */
+    KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME = 0x1b      /* the same for a friend being added */
 };
 
 #define KEYBOARD_ENTRY_FIRST_FRIEND_MODE KEYBOARD_ENTRY_MODE_FRIEND_TOWN

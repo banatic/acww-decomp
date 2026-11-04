@@ -1,8 +1,9 @@
 /* Overlay 124's object, kept by the scenes of overlays 125 (at 0x94) and 126 (at 0xb0), which
  * ov092's dispatch loads with it for its modes 0x04-0x0a (overlay group 0x0e: overlays 124 and
  * 125) and 0x0b-0x17 (group 0x0f: overlays 124, 126 and 095), as ov092/menu_dispatch.c lists.
- * Its files are those under "menu/han/"; what the screens show is not known, so the object is
- * named after that folder.
+ * Its files are those under "menu/han/" (the object is named after that folder): the backdrop
+ * and the sign of the text-entry screens, the sign asking for what is typed ("your name?",
+ * "a nickname", "the friend's town?" and so on, HanPanel_LoadSign).
  *
  * It holds a text label (an array of one, built by __cxa_vec_ctor) and a sign: a panel sprite
  * (ov002/panel_sprite.h) showing a message of "2d_menu" chosen by the mode, drawn with a few
