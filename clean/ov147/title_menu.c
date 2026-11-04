@@ -38,18 +38,19 @@ static_assert(sizeof(TitleChoices) == 0x0c, "TitleChoices");
 
 /* The receiver's messages acted on (in "sp_etc_sequence1" unless said). */
 enum TitleMenuMessage {
-    TITLE_MESSAGE_ASK_REQUEST = 0x00, /* yes: TITLE_STATE_EXIT_REQUEST */
-    TITLE_MESSAGE_SUB_MENU = 0x01,    /* answers by the town's state */
-    TITLE_MESSAGE_PICK_PLAYER = 0x03, /* the town's players listed */
-    TITLE_MESSAGE_REMOVE = 0x04,      /* a player picked to remove, its name as part 0 */
-    TITLE_MESSAGE_THEN_31A = 0x05,    /* message 0x31 follows */
-    TITLE_MESSAGE_REMOVED = 0x06,     /* the talk ends: TITLE_STATE_EXIT_JOB_6 */
-    TITLE_MESSAGE_THEN_31B = 0x0a,    /* message 0x31 follows */
-    TITLE_MESSAGE_JOB_5 = 0x0b,       /* the talk ends: TITLE_STATE_EXIT_JOB_5 */
-    TITLE_MESSAGE_ANSWER_YES = 0x12,  /* the answers' messages with sound kind 1 (and 0, 1) */
-    TITLE_MESSAGE_PLAYER_0 = 0x24,    /* with flag 0x12 of the state block: START_KIND_PLAYER_0 */
-    TITLE_MESSAGE_NEW_PLAYER = 0x27,  /* START_KIND_NEW_PLAYER */
-    TITLE_MESSAGE_MENU_FIRST = 0x2d,  /* the first menu, by the part of the day: 0x2d-0x2f */
+    TITLE_MESSAGE_ASK_WIFI_SETUP = 0x00,   /* "start the Wi-Fi settings?"; yes: TITLE_STATE_EXIT_WIFI_SETUP */
+    TITLE_MESSAGE_SUB_MENU = 0x01,         /* answers by the town's state */
+    TITLE_MESSAGE_PICK_PLAYER = 0x03,      /* the town's players listed */
+    TITLE_MESSAGE_REMOVE = 0x04,           /* a player picked to remove, its name as part 0 */
+    TITLE_MESSAGE_THEN_31A = 0x05,         /* message 0x31 follows */
+    TITLE_MESSAGE_REMOVED = 0x06,          /* "... removed from the town"; the talk ends: TITLE_STATE_EXIT_REMOVE_PLAYER */
+    TITLE_MESSAGE_THEN_31B = 0x0a,         /* message 0x31 follows */
+    TITLE_MESSAGE_DELETE_TOWN = 0x0b,      /* "I will delete the town"; the talk ends: TITLE_STATE_EXIT_DELETE_TOWN */
+    TITLE_MESSAGE_ANSWER_YES = 0x12,       /* the answers' messages with sound kind 1 (and 0, 1) */
+    TITLE_MESSAGE_PLAYER_MOVING_IN = 0x24, /* "a player is moving, the game starts"; with flag 0x12 of the
+                                            * state block: START_KIND_PLAYER_0 */
+    TITLE_MESSAGE_NEW_PLAYER = 0x27,       /* START_KIND_NEW_PLAYER */
+    TITLE_MESSAGE_MENU_FIRST = 0x2d,       /* the first menu, by the part of the day: 0x2d-0x2f */
     TITLE_MESSAGE_MENU_LAST = 0x2f,
     TITLE_MESSAGE_ASK_JOB_1C = 0x30, /* yes: TITLE_STATE_EXIT_JOB_1C */
     TITLE_MESSAGE_MENU = 0x31,       /* the first menu again */
@@ -223,7 +224,7 @@ CLEAN_AS(func_ov147_02299414, TitleMenu_NewTown)
 
 /* func_ov147_0229942c (slot 0x18): the player's answer to the receiver's message:
  * - the first menu: the member function of the town's table for the answer, if any;
- * - messages 0 and 0x30: yes ends the talk and leaves by TITLE_STATE_EXIT_REQUEST or
+ * - messages 0 and 0x30: yes ends the talk and leaves by TITLE_STATE_EXIT_WIFI_SETUP or
  *   TITLE_STATE_EXIT_JOB_1C; message 0x35: yes ends the receiver's talk and leaves by
  *   TITLE_STATE_EXIT_SCENE_30;
  * - message 3: the player picked (TitleMenu_PickTownPlayer).
@@ -251,10 +252,10 @@ void TitleMenu_OnAnswer(TitleReceiver *self)
     MemberTable_InitOnce(&data_ov147_0229acac, data_ov147_0229ad24, other, 5);
 
     switch (self->base.base.message) {
-        case TITLE_MESSAGE_ASK_REQUEST:
+        case TITLE_MESSAGE_ASK_WIFI_SETUP:
             if (picked == 0) {
                 TalkObject_SetMessage(talk, &data_021f43e8, NULL);
-                TitleScene_SetState(self->scene, TITLE_STATE_EXIT_REQUEST);
+                TitleScene_SetState(self->scene, TITLE_STATE_EXIT_WIFI_SETUP);
             }
             break;
         case TITLE_MESSAGE_MENU_FIRST:
@@ -292,7 +293,7 @@ CLEAN_AS(func_ov147_0229942c, TitleMenu_OnAnswer)
 void TitleMenu_OnClose(TitleReceiver *self)
 {
     u8 message = self->base.base.message;
-    if (message == TITLE_MESSAGE_PLAYER_0 || message == TITLE_MESSAGE_NEW_PLAYER) {
+    if (message == TITLE_MESSAGE_PLAYER_MOVING_IN || message == TITLE_MESSAGE_NEW_PLAYER) {
         SoundSys_PlaySe(TITLE_SE_CLOSE);
     }
 }
@@ -370,7 +371,7 @@ CLEAN_AS(func_ov147_0229977c, TitleMenu_OfferChoices)
  * - 0x27: a new player (START_KIND_NEW_PLAYER), the talk quiet, TITLE_STATE_EXIT_NEW;
  * - 0x24: the talk quiet and ended, START_KIND_PLAYER_0, TITLE_STATE_EXIT_NEW;
  * - 3: the players listed; 0, 0x30, 0x35: yes or no;
- * - 6 and 0x0b: the talk ended, TITLE_STATE_EXIT_JOB_6 or TITLE_STATE_EXIT_JOB_5;
+ * - 6 and 0x0b: the talk ended, TITLE_STATE_EXIT_REMOVE_PLAYER or TITLE_STATE_EXIT_DELETE_TOWN;
  * - 5 and 0x0a: message 0x31 next; 0x37: back to the title; 0x32: the talk ended, back to the
  *   title. */
 void TitleMenu_AfterMessage(TitleReceiver *self)
@@ -416,11 +417,11 @@ void TitleMenu_AfterMessage(TitleReceiver *self)
             break;
         case TITLE_MESSAGE_REMOVED:
             TalkObject_SetMessage(talk, &data_021f43e8, NULL);
-            TitleScene_SetState(self->scene, TITLE_STATE_EXIT_JOB_6);
+            TitleScene_SetState(self->scene, TITLE_STATE_EXIT_REMOVE_PLAYER);
             break;
-        case TITLE_MESSAGE_JOB_5:
+        case TITLE_MESSAGE_DELETE_TOWN:
             TalkObject_SetMessage(talk, &data_021f43e8, NULL);
-            TitleScene_SetState(self->scene, TITLE_STATE_EXIT_JOB_5);
+            TitleScene_SetState(self->scene, TITLE_STATE_EXIT_DELETE_TOWN);
             break;
         case TITLE_MESSAGE_THEN_31A:
         case TITLE_MESSAGE_THEN_31B: {
@@ -431,12 +432,12 @@ void TitleMenu_AfterMessage(TitleReceiver *self)
         case TITLE_MESSAGE_BACK:
             TitleScene_SetState(self->scene, TITLE_STATE_END_TALK);
             break;
-        case TITLE_MESSAGE_ASK_REQUEST:
+        case TITLE_MESSAGE_ASK_WIFI_SETUP:
         case TITLE_MESSAGE_ASK_JOB_1C:
         case TITLE_MESSAGE_ASK_BOTTLE:
             TitleMenu_OfferChoices(self, &data_ov147_0229aad0);
             break;
-        case TITLE_MESSAGE_PLAYER_0:
+        case TITLE_MESSAGE_PLAYER_MOVING_IN:
             TalkObject_SetQuiet(talk);
             TalkObject_SetMessage(talk, &data_021f43e8, NULL);
             StartKind_SetPlayer0();

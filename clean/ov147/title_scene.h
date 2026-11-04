@@ -34,18 +34,18 @@ struct TitleScene;
 
 /* The scene's states (TitleScene.state), each a pair of the table data_ov147_0229ad4c. */
 enum TitleSceneState {
-    TITLE_STATE_WAIT = 0,           /* TitleScene_ResetIdleTimer, TitleScene_WaitForPress */
-    TITLE_STATE_START_TALK = 1,     /* TitleScene_EnterStartTalk, TitleScene_StartTalk */
-    TITLE_STATE_TALK = 2,           /* TitleScene_EnterTalk, TitleScene_RunTalk: the receiver acts */
-    TITLE_STATE_END_TALK = 3,       /* TitleScene_EnterEndTalk, TitleScene_WaitTalkClosed */
-    TITLE_STATE_EXIT_JOB_6 = 4,     /* TitleScene_EnterExitJob6, TitleScene_ExitForJob6 */
-    TITLE_STATE_EXIT_JOB_5 = 5,     /* TitleScene_EnterExitJob5, TitleScene_ExitForJob5 */
-    TITLE_STATE_EXIT_SCENE_6 = 6,   /* TitleScene_EnterExitScene6, TitleScene_ExitToScene6 */
-    TITLE_STATE_EXIT_NEW = 7,       /* TitleScene_EnterExitNew, TitleScene_ExitToScene2d */
-    TITLE_STATE_EXIT_REQUEST = 8,   /* TitleScene_EnterExitRequest, TitleScene_ExitByRequest */
-    TITLE_STATE_EXIT_JOB_1C = 9,    /* TitleScene_EnterExitJob1c, TitleScene_ExitForJob1c */
-    TITLE_STATE_EXIT_SCENE_30 = 10, /* TitleScene_EnterExitScene30, TitleScene_ExitToScene30 */
-    TITLE_STATE_IDLE_RESTART = 11,  /* TitleScene_EnterIdleRestart, TitleScene_RestartTitle */
+    TITLE_STATE_WAIT = 0,               /* TitleScene_ResetIdleTimer, TitleScene_WaitForPress */
+    TITLE_STATE_START_TALK = 1,         /* TitleScene_EnterStartTalk, TitleScene_StartTalk */
+    TITLE_STATE_TALK = 2,               /* TitleScene_EnterTalk, TitleScene_RunTalk: the receiver acts */
+    TITLE_STATE_END_TALK = 3,           /* TitleScene_EnterEndTalk, TitleScene_WaitTalkClosed */
+    TITLE_STATE_EXIT_REMOVE_PLAYER = 4, /* TitleScene_EnterExitRemovePlayer, TitleScene_ExitToRemovePlayer */
+    TITLE_STATE_EXIT_DELETE_TOWN = 5,   /* TitleScene_EnterExitDeleteTown, TitleScene_ExitToDeleteTown */
+    TITLE_STATE_EXIT_SCENE_6 = 6,       /* TitleScene_EnterExitScene6, TitleScene_ExitToScene6 */
+    TITLE_STATE_EXIT_NEW = 7,           /* TitleScene_EnterExitNew, TitleScene_ExitToScene2d */
+    TITLE_STATE_EXIT_WIFI_SETUP = 8,    /* TitleScene_EnterExitWifiSetup, TitleScene_ExitToWifiSetup */
+    TITLE_STATE_EXIT_JOB_1C = 9,        /* TitleScene_EnterExitJob1c, TitleScene_ExitForJob1c */
+    TITLE_STATE_EXIT_SCENE_30 = 10,     /* TitleScene_EnterExitScene30, TitleScene_ExitToScene30 */
+    TITLE_STATE_IDLE_RESTART = 11,      /* TitleScene_EnterIdleRestart, TitleScene_RestartTitle */
     TITLE_STATES = 12
 };
 
@@ -158,8 +158,8 @@ TitleReceiver *TitleReceiver_Destruct(TitleReceiver *self);
 TitleReceiver *TitleReceiver_Construct(TitleReceiver *self);
 
 /* title_scene.c */
-void TitleScene_ExitByRequest(TitleScene *self);
-void TitleScene_EnterExitRequest(TitleScene *self);
+void TitleScene_ExitToWifiSetup(TitleScene *self);
+void TitleScene_EnterExitWifiSetup(TitleScene *self);
 void TitleScene_ExitToScene30(TitleScene *self);
 void TitleScene_EnterExitScene30(TitleScene *self);
 void TitleScene_ExitForJob1c(TitleScene *self);
@@ -168,10 +168,10 @@ void TitleScene_ExitToScene2d(TitleScene *self);
 void TitleScene_EnterExitNew(TitleScene *self);
 void TitleScene_ExitToScene6(TitleScene *self);
 void TitleScene_EnterExitScene6(TitleScene *self);
-void TitleScene_ExitForJob5(TitleScene *self);
-void TitleScene_EnterExitJob5(TitleScene *self);
-void TitleScene_ExitForJob6(TitleScene *self);
-void TitleScene_EnterExitJob6(TitleScene *self);
+void TitleScene_ExitToDeleteTown(TitleScene *self);
+void TitleScene_EnterExitDeleteTown(TitleScene *self);
+void TitleScene_ExitToRemovePlayer(TitleScene *self);
+void TitleScene_EnterExitRemovePlayer(TitleScene *self);
 void TitleScene_WaitTalkClosed(TitleScene *self);
 void TitleScene_EnterEndTalk(void);
 void TitleScene_RunTalk(void);

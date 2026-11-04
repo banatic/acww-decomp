@@ -4,7 +4,7 @@
 # Save: the seed town. Its fourth choice (DOWN three times, A at 1796), the Nintendo Wi-Fi
 # Connection settings: A every 32 frames from 1850 reads the lines (message 0 of
 # sp_etc_sequence1) and answers yes; the talk ends and the title leaves for the settings program
-# (TitleScene_EnterExitRequest, TitleScene_ExitByRequest: process class 2 asked for), to 2139,
+# (TitleScene_EnterExitWifiSetup, TitleScene_ExitToWifiSetup: process class 2 asked for), to 2139,
 # before the system resets into it.
 900 START -
 906 - -

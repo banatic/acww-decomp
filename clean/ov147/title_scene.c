@@ -51,7 +51,7 @@ static_assert(sizeof(TitleScene) == 0xf8, "TitleScene");
 /* The messages the talk starts with (title_menu.c). */
 #define TITLE_MESSAGE_WFC_FAILED 0x32
 #define TITLE_MESSAGE_CARD_UNREADABLE 9 /* of "sp_etc_sequence2" */
-#define TITLE_MESSAGE_PLAYER_0 0x24
+#define TITLE_MESSAGE_PLAYER_MOVING_IN 0x24
 
 /* The scenes left to and what the process between scenes is asked for with
  * (SceneExit_SetToScene's change_arg and next_arg). */
@@ -116,9 +116,9 @@ static void title_call_entry(const MemberPointer *entry, TitleScene *self)
 
 /* --- The ways out --- */
 
-/* func_ov147_02299b00 (TITLE_STATE_EXIT_REQUEST): with the screen shown and talk 0 closed, the
- * talk let go, process class 2 asked for (SceneProcessBase_Request) and the music stopped. */
-void TitleScene_ExitByRequest(TitleScene *self)
+/* func_ov147_02299b00 (TITLE_STATE_EXIT_WIFI_SETUP): with the screen shown and talk 0 closed, the
+ * talk let go, process class 2 (the Wi-Fi settings) asked for (SceneProcessBase_Request) and the music stopped. */
+void TitleScene_ExitToWifiSetup(TitleScene *self)
 {
     TalkObject *talk = TalkObject_Get(TITLE_TALK);
     if (title_screen_shown() && talk->state == TALK_OBJECT_CLOSED) {
@@ -127,14 +127,14 @@ void TitleScene_ExitByRequest(TitleScene *self)
         TitleScene_StopMusic(self);
     }
 }
-CLEAN_AS(func_ov147_02299b00, TitleScene_ExitByRequest)
+CLEAN_AS(func_ov147_02299b00, TitleScene_ExitToWifiSetup)
 
-/* func_ov147_02299b44 (TITLE_STATE_EXIT_REQUEST's entry). */
-void TitleScene_EnterExitRequest(TitleScene *self)
+/* func_ov147_02299b44 (TITLE_STATE_EXIT_WIFI_SETUP's entry). */
+void TitleScene_EnterExitWifiSetup(TitleScene *self)
 {
     TitleScene_EndMusicOnLeave(self);
 }
-CLEAN_AS(func_ov147_02299b44, TitleScene_EnterExitRequest)
+CLEAN_AS(func_ov147_02299b44, TitleScene_EnterExitWifiSetup)
 
 /* func_ov147_02299b4c (TITLE_STATE_EXIT_SCENE_30): with the screen shown and talk 0 closed, the
  * talk let go, scene 0x30 to go to (arguments 2 and 2) and the music stopped. */
@@ -225,10 +225,10 @@ void TitleScene_EnterExitScene6(TitleScene *self)
 }
 CLEAN_AS(func_ov147_02299c78, TitleScene_EnterExitScene6)
 
-/* func_ov147_02299c80 (TITLE_STATE_EXIT_JOB_5): with the screen shown and talk 0 closed, the
- * talk let go, scene 0x2e to go to (arguments 2 and 3) with the activity's job 5, and the music
- * stopped. */
-void TitleScene_ExitForJob5(TitleScene *self)
+/* func_ov147_02299c80 (TITLE_STATE_EXIT_DELETE_TOWN): with the screen shown and talk 0 closed, the
+ * talk let go, scene 0x2e to go to (arguments 2 and 3) with the activity's job 5 (the town's save erased), and the
+ * music stopped. */
+void TitleScene_ExitToDeleteTown(TitleScene *self)
 {
     if (!title_screen_shown()) {
         return;
@@ -241,19 +241,19 @@ void TitleScene_ExitForJob5(TitleScene *self)
         TitleScene_StopMusic(self);
     }
 }
-CLEAN_AS(func_ov147_02299c80, TitleScene_ExitForJob5)
+CLEAN_AS(func_ov147_02299c80, TitleScene_ExitToDeleteTown)
 
-/* func_ov147_02299cc8 (TITLE_STATE_EXIT_JOB_5's entry). */
-void TitleScene_EnterExitJob5(TitleScene *self)
+/* func_ov147_02299cc8 (TITLE_STATE_EXIT_DELETE_TOWN's entry). */
+void TitleScene_EnterExitDeleteTown(TitleScene *self)
 {
     TitleScene_EndMusicOnLeave(self);
 }
-CLEAN_AS(func_ov147_02299cc8, TitleScene_EnterExitJob5)
+CLEAN_AS(func_ov147_02299cc8, TitleScene_EnterExitDeleteTown)
 
-/* func_ov147_02299cd0 (TITLE_STATE_EXIT_JOB_6): with the screen shown and talk 0 closed, the
+/* func_ov147_02299cd0 (TITLE_STATE_EXIT_REMOVE_PLAYER): with the screen shown and talk 0 closed, the
  * talk let go, scene 0x2e to go to (arguments 2 and 3) with the activity's job 6 (the town
  * player picked removed), and the music stopped. */
-void TitleScene_ExitForJob6(TitleScene *self)
+void TitleScene_ExitToRemovePlayer(TitleScene *self)
 {
     if (!title_screen_shown()) {
         return;
@@ -266,14 +266,14 @@ void TitleScene_ExitForJob6(TitleScene *self)
         TitleScene_StopMusic(self);
     }
 }
-CLEAN_AS(func_ov147_02299cd0, TitleScene_ExitForJob6)
+CLEAN_AS(func_ov147_02299cd0, TitleScene_ExitToRemovePlayer)
 
-/* func_ov147_02299d18 (TITLE_STATE_EXIT_JOB_6's entry). */
-void TitleScene_EnterExitJob6(TitleScene *self)
+/* func_ov147_02299d18 (TITLE_STATE_EXIT_REMOVE_PLAYER's entry). */
+void TitleScene_EnterExitRemovePlayer(TitleScene *self)
 {
     TitleScene_EndMusicOnLeave(self);
 }
-CLEAN_AS(func_ov147_02299d18, TitleScene_EnterExitJob6)
+CLEAN_AS(func_ov147_02299d18, TitleScene_EnterExitRemovePlayer)
 
 /* --- The talk --- */
 
@@ -330,7 +330,7 @@ void TitleScene_StartTalk(TitleScene *self)
         message->message = TITLE_MESSAGE_CARD_UNREADABLE;
     } else if (StateBlock_TestFlag(data_021dc7a8, TITLE_STATE_FLAG_12) != 0) {
         MessageReceiver_SetName(message, data_ov147_0229a8b0);
-        message->message = TITLE_MESSAGE_PLAYER_0;
+        message->message = TITLE_MESSAGE_PLAYER_MOVING_IN;
     } else {
         MessageReceiver_SetName(message, data_ov147_0229a8b0);
         message->message = TitleMenu_GreetingMessage(receiver);
@@ -601,13 +601,13 @@ int TitleScene_InitStateTable(void)
         &data_ov147_0229a95c, &data_ov147_0229a9ec, /* TITLE_STATE_START_TALK */
         &data_ov147_0229a96c, &data_ov147_0229a974, /* TITLE_STATE_TALK */
         &data_ov147_0229a97c, &data_ov147_0229a94c, /* TITLE_STATE_END_TALK */
-        &data_ov147_0229a98c, &data_ov147_0229a934, /* TITLE_STATE_EXIT_JOB_6 */
-        &data_ov147_0229a994, &data_ov147_0229a9f4, /* TITLE_STATE_EXIT_JOB_5 */
+        &data_ov147_0229a98c, &data_ov147_0229a934, /* TITLE_STATE_EXIT_REMOVE_PLAYER */
+        &data_ov147_0229a994, &data_ov147_0229a9f4, /* TITLE_STATE_EXIT_DELETE_TOWN */
         &data_ov147_0229a9c4, &data_ov147_0229a9d4, /* TITLE_STATE_EXIT_SCENE_6 */
         &data_ov147_0229a9e4, &data_ov147_0229a9dc, /* TITLE_STATE_EXIT_NEW */
     };
     static const MemberPointer *const last[8] = {
-        &data_ov147_0229a8dc, &data_ov147_0229a9cc, /* TITLE_STATE_EXIT_REQUEST */
+        &data_ov147_0229a8dc, &data_ov147_0229a9cc, /* TITLE_STATE_EXIT_WIFI_SETUP */
         &data_ov147_0229a8e4, &data_ov147_0229a9bc, /* TITLE_STATE_EXIT_JOB_1C */
         &data_ov147_0229a9b4, &data_ov147_0229a9ac, /* TITLE_STATE_EXIT_SCENE_30 */
         &data_ov147_0229a8fc, &data_ov147_0229a99c, /* TITLE_STATE_IDLE_RESTART */

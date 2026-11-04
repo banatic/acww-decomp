@@ -1066,7 +1066,7 @@ What reading the Clean code found about the groups above; counts are of function
   writes IME, which Native keeps Reference), so the scene ends at 2330, as gate-visit does; a
   drive run past it enters about 50 more Clean functions (the local wireless session's set-up, the
   halt, the debug screen). The fourth choice, the Wi-Fi settings, leaves by
-  TitleScene_ExitByRequest after its talk (about 2240), when no RAM can be read any more (the
+  TitleScene_ExitToWifiSetup after its talk (about 2240), when no RAM can be read any more (the
   settings program): not a scene.
 - A villager sick in bed (VillagerSickness at 0x3f90 of the town's villagers, written into
   the save: its object in use, the villager's NpcId, the player in a stage's slot, the start and
@@ -1239,7 +1239,7 @@ What reading the Clean code found about the groups above; counts are of function
   writes; whether the game ever saves it between the link and the restart was not checked.
   Pelly's counter then repeats lines 7 and 0x16 of sp_etc_sequence4 to every answer tried.
 - The continue menu's "something else", fourth choice, the Wi-Fi Connection settings: yes ends
-  the talk and the title asks for process class 2 (TitleScene_EnterExitRequest, _ExitByRequest);
+  the talk and the title asks for process class 2 (TitleScene_EnterExitWifiSetup, _ExitByRequest);
   the system then resets into the settings program (OSi_DoResetSystem) and no RAM is left to
   hash after about 2140, so title-wfc-settings ends at 2139.
 - What the passing exchange leaves on the system that receives a block
@@ -2197,7 +2197,7 @@ What reading the Clean code found about the groups above; counts are of function
   system's player is never in scenes 0x0d, 0x0e or 0x2e"; the message's entry, placing, update
   and markers stay, as FieldLabel_UpdateClosed reaches them. Calibration: 0 ran functions cut off.
 - Scene 0x2e is entered by one player: the title's exits for the activity's jobs 5, 6 (a
-  resident erased: erase-player runs TitleScene_ExitForJob6) and 0x1c ask for it, but no scene
+  resident erased: erase-player runs TitleScene_ExitToRemovePlayer) and 0x1c ask for it, but no scene
   list holds overlay 37 yet (erase-player ends before the change of scene); a longer erase-player
   would enter its static initialiser.
 - Gained little: the scene objects' base slots (0x54-0xa4): each is the word of 40 to 120
