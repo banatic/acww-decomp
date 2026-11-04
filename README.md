@@ -110,9 +110,10 @@ reproduces every module of the ROM byte for byte.
 - **Linked**: Matching, and the whole program, linked with the original linker, also reproduces
   the module byte for byte.
 
-Most sources are still one file per function, and the data sections still come from the ROM;
-regrouping the functions into their original source files is in progress (the first units:
-`src/ov097/pockets_room.c`, `src/ov124/han_panel.c`).
+The functions are regrouped into source files as the original ones held them
+(`src/ov097/pockets_room.c` is one): 2,977 files of several functions, and 2,963 functions still
+in a file of their own where joining them would change the code. The data sections still come
+from the ROM.
 
 ## Part II: Clean code and the Windows port (100% rewritten)
 
