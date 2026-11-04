@@ -416,28 +416,29 @@ u8 *VillagerState_Object(VillagerState *entry)
 CLEAN_AS(func_020794d0, VillagerState_Object)
 
 /* func_020794d4: QUIRK: keeps the low 8 bits. */
-void VillagerState_SetByte01(VillagerState *entry, int value)
+void VillagerState_SetPlace(VillagerState *entry, int value)
 {
-    entry->byte_01 = (u8) value;
+    entry->place = (u8) value;
 }
-CLEAN_AS(func_020794d4, VillagerState_SetByte01)
+CLEAN_AS(func_020794d4, VillagerState_SetPlace)
 
-/* func_020794d8: byte 0x01, read as 1 when it is 0 while this system holds its session slot. */
-int VillagerState_LinkedByte01(const VillagerState *entry)
+/* func_020794d8: the place, read as at home (1) when it is outside (0) while this system holds
+ * its session slot. */
+int VillagerState_LinkedPlace(const VillagerState *entry)
 {
-    if (has_session_slot() && entry->byte_01 == 0) {
+    if (has_session_slot() && entry->place == 0) {
         return 1;
     }
-    return entry->byte_01;
+    return entry->place;
 }
-CLEAN_AS(func_020794d8, VillagerState_LinkedByte01)
+CLEAN_AS(func_020794d8, VillagerState_LinkedPlace)
 
-/* func_02079500: a state of 2-6 becomes 1 when VillagerState_LinkedByte01 is 0, else 0; other
+/* func_02079500: a state of 2-6 becomes 1 when VillagerState_LinkedPlace is 0, else 0; other
  * states stay. */
 void VillagerState_SettleState(VillagerState *entry)
 {
     if (entry->state >= 2 && entry->state <= 6) {
-        entry->state = VillagerState_LinkedByte01(entry) == 0 ? 1 : 0;
+        entry->state = VillagerState_LinkedPlace(entry) == 0 ? 1 : 0;
     }
 }
 CLEAN_AS(func_02079500, VillagerState_SettleState)
@@ -465,7 +466,7 @@ void VillagerState_Init(VillagerState *entry)
 {
     MI_CpuFill8(entry, 0, sizeof *entry);
     entry->state = 0;
-    entry->byte_01 = 3;
+    entry->place = 3;
     ItemObject_Clear((ItemObject *) (void *) entry->object);
     VillagerModeRecord_ClearKindBytes(entry->bytes_10);
     entry->mood = 5;

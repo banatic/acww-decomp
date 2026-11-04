@@ -383,7 +383,7 @@ void VillagerRoster_WakeUp(VillagerTown *town)
             continue;
         }
         VillagerState *state = VillagerStatus_StateEntry(villager);
-        if (VillagerState_LinkedByte01(state) != VILLAGER_PLACE_ASLEEP || VillagerState_LinkedState(state) != 0) {
+        if (VillagerState_LinkedPlace(state) != VILLAGER_PLACE_ASLEEP || VillagerState_LinkedState(state) != 0) {
             continue;
         }
         if (VillagerOutdoors_OutsideSlot(&town->outdoors, i) != VILLAGER_OUTDOORS_NONE) {
@@ -392,7 +392,7 @@ void VillagerRoster_WakeUp(VillagerTown *town)
         if (NpcLookup_IsInNightWindow(NpcId_Personality(npc), &now) != 0) {
             continue;
         }
-        VillagerState_SetByte01(state, VILLAGER_PLACE_HOME);
+        VillagerState_SetPlace(state, VILLAGER_PLACE_HOME);
     }
 }
 CLEAN_AS(func_0207c6a4, VillagerRoster_WakeUp)

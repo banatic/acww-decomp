@@ -335,7 +335,7 @@ int VillagerTown_PickOutsideAcquaintance(VillagerTown *town)
         if (has_villager(villager) && VillagerMemory_Of((u8 *) villager, (const DesignCreator *) (void *) player) != NULL &&
             VillagerMemoryBits_FleaMarketDone(VillagerMemory_Of((u8 *) villager, (const DesignCreator *) (void *) player)) ==
                 0 &&
-            VillagerState_LinkedByte01(VillagerStatus_StateEntry((u8 *) villager)) == VILLAGER_PLACE_OUTSIDE) {
+            VillagerState_LinkedPlace(VillagerStatus_StateEntry((u8 *) villager)) == VILLAGER_PLACE_OUTSIDE) {
             candidates |= bit_of(i);
             count++;
         }
@@ -581,7 +581,7 @@ void VillagerTown_PickFortuneGiver(VillagerTown *town, const void *player)
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
         if (has_villager(villager) &&
-            VillagerState_LinkedByte01(VillagerStatus_StateEntry((u8 *) villager)) == VILLAGER_PLACE_OUTSIDE &&
+            VillagerState_LinkedPlace(VillagerStatus_StateEntry((u8 *) villager)) == VILLAGER_PLACE_OUTSIDE &&
             VillagerMemory_Of((u8 *) villager, player) != NULL) {
             candidates |= bit_of(i);
             count++;
@@ -714,7 +714,7 @@ void VillagerTown_PickFoxPasswordVillager(VillagerTown *town)
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
         if (has_villager(villager) &&
-            VillagerState_LinkedByte01(VillagerStatus_StateEntry((u8 *) villager)) == VILLAGER_PLACE_OUTSIDE) {
+            VillagerState_LinkedPlace(VillagerStatus_StateEntry((u8 *) villager)) == VILLAGER_PLACE_OUTSIDE) {
             candidates |= bit_of(i);
             count++;
         }

@@ -62,14 +62,14 @@ static VillagerState *state_at(u8 *states, int index)
 
 static void set_place(VillagerState *entry, int place, int state)
 {
-    VillagerState_SetByte01(entry, place);
+    VillagerState_SetPlace(entry, place);
     VillagerState_SetState(entry, state);
 }
 
 static void mark_all_absent(VillagerStates *table)
 {
     for (int i = 0; i < VILLAGERS; i++) {
-        VillagerState_SetByte01(&table->entries[i], VILLAGER_PLACE_NONE);
+        VillagerState_SetPlace(&table->entries[i], VILLAGER_PLACE_NONE);
     }
 }
 

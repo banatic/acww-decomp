@@ -43,7 +43,7 @@ typedef struct VillagerTally {
 
 typedef struct VillagerState {
     u8 state;             /* 0x00: 0-7 */
-    u8 byte_01;           /* 0x01: 3 when set up */
+    u8 place;             /* 0x01: where it is (enum VillagerPlace of villager_outdoors.h); none (3) when set up */
     u8 unused_02[2];      /* 0x02 */
     u8 object[12];        /* 0x04: set up by func_0209bd5c (no item, 0xfff1, at its 0x08) */
     u8 bytes_10[8];       /* 0x10: cleared by func_0209c52c */
@@ -123,8 +123,8 @@ int VillagerState_GetMood(const VillagerState *entry);
 void VillagerState_SetActivity(VillagerState *entry, int value);
 int VillagerState_GetActivity(const VillagerState *entry);
 u8 *VillagerState_Object(VillagerState *entry);
-void VillagerState_SetByte01(VillagerState *entry, int value);
-int VillagerState_LinkedByte01(const VillagerState *entry);
+void VillagerState_SetPlace(VillagerState *entry, int value);
+int VillagerState_LinkedPlace(const VillagerState *entry);
 void VillagerState_SettleState(VillagerState *entry);
 void VillagerState_SetState(VillagerState *entry, int state);
 int VillagerState_LinkedState(const VillagerState *entry);

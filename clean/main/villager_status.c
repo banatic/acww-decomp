@@ -167,10 +167,10 @@ int VillagerStatus_Exists(void *villager)
 }
 CLEAN_AS(func_0207f1d4, VillagerStatus_Exists)
 
-/* 1, or 2 when the entry's byte 0x01 is 2. */
+/* 1, or 2 when the entry's place is asleep (2). */
 static int VillagerStatus_HomeOrAway(const VillagerState *entry)
 {
-    return VillagerState_LinkedByte01(entry) == 2 ? VILLAGER_STATUS_AWAY : VILLAGER_STATUS_HOME;
+    return VillagerState_LinkedPlace(entry) == 2 ? VILLAGER_STATUS_AWAY : VILLAGER_STATUS_HOME;
 }
 
 /* func_0207f1d8: the villager's status (VILLAGER_STATUS_*, 0-7). */

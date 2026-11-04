@@ -270,7 +270,7 @@ void OutdoorVillagerHome_Open4(OutdoorVillagerBehaviour *self, u8 *villager)
                                  0);
     *(MemberPointer *) (void *) home_at(villager, HOME_DRAW_HOOK) = data_ov068_02276f50;
     VillagerState_SetState(entry, HOME_STATE_OUT);
-    VillagerState_SetByte01(entry, 0);
+    VillagerState_SetPlace(entry, 0);
     *home_at(villager, HOME_ENABLED) = 1;
     *home_at(villager, HOME_POSED) = 1;
     SceneObject_SetColliderSize(villager, 0);
@@ -393,7 +393,7 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
     if (VillagerStatus_Get(record) == HOME_ASLEEP) {
         if (VillagerEntry_IsSleepTime(record, NULL) == 0) {
             if (VillagerStatus_StateEntry(record) != NULL) {
-                VillagerState_SetByte01(VillagerStatus_StateEntry(record), 0);
+                VillagerState_SetPlace(VillagerStatus_StateEntry(record), 0);
                 self->wait = home_wait();
             }
             out = 1;
@@ -423,7 +423,7 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
     VillagerState *entry = VillagerStatus_StateEntry(record);
     VillagerPlot *home = VillagerHome_Tile(record);
     VillagerState_SetState(entry, HOME_STATE_OUT);
-    VillagerState_SetByte01(entry, 0);
+    VillagerState_SetPlace(entry, 0);
     AcreTile_TileCentre(home_position(villager), home->x, (u32) home->z + 1);
     home_settle(villager);
     PathWalker_Init(home_walker(self));
@@ -462,9 +462,9 @@ int OutdoorVillagerHome_Start3(OutdoorVillagerBehaviour *self, u8 *villager)
     VillagerState_SetState(entry, HOME_STATE_IN);
     entry->flags &= (u8) ~VILLAGER_STATE_FLAG_1;
     if (flag_1 == 0 && VillagerEntry_IsSleepTime(record, NULL) != 0) {
-        VillagerState_SetByte01(entry, HOME_ASLEEP);
+        VillagerState_SetPlace(entry, HOME_ASLEEP);
     } else {
-        VillagerState_SetByte01(entry, 0);
+        VillagerState_SetPlace(entry, 0);
     }
     VillagerFurniture_StoreItems(record);
     VillagerSceneObject_SetByte838(villager);

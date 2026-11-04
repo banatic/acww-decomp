@@ -129,7 +129,7 @@ void SystemCommand_ReadEntries(u8 *data, u16 length)
         u16 half;
 
         MI_CpuCopy8(data, &status, 1);
-        VillagerState_SetByte01((VillagerState *) entry, status);
+        VillagerState_SetPlace((VillagerState *) entry, status);
 
         MI_CpuCopy8(data + 1, &object, sizeof(object));
         u8 *dst = VillagerState_Object((VillagerState *) entry);
@@ -168,7 +168,7 @@ void SystemCommand_WriteEntries(int slot)
 
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
         SystemCommandEntry *entry = (SystemCommandEntry *) VillagerTown_StateAt(i);
-        u8 status = entry != NULL ? VillagerState_LinkedByte01((const VillagerState *) entry) : 3;
+        u8 status = entry != NULL ? VillagerState_LinkedPlace((const VillagerState *) entry) : 3;
         Session_AppendShareData(session, &status, 1);
         Session_AppendShareData(session, VillagerState_Object((VillagerState *) entry), sizeof(SystemCommandObject));
         u32 word = entry->unk_20;
