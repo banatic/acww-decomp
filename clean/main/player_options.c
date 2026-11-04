@@ -15,18 +15,18 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern PlayerOptions data_021c6998;
 
 /* func_0203d22c */
-void PlayerOptions_MarkSettingChanged(PlayerOptions *options)
+void PlayerOptions_MarkVoiceChanged(PlayerOptions *options)
 {
-    options->changed |= PLAYER_OPTIONS_SETTING_CHANGED;
+    options->changed |= PLAYER_OPTIONS_VOICE_CHANGED;
 }
-CLEAN_AS(func_0203d22c, PlayerOptions_MarkSettingChanged)
+CLEAN_AS(func_0203d22c, PlayerOptions_MarkVoiceChanged)
 
 /* func_0203d238 */
-void PlayerOptions_MarkSoundChanged(PlayerOptions *options)
+void PlayerOptions_MarkStereoChanged(PlayerOptions *options)
 {
     options->changed |= PLAYER_OPTIONS_SOUND_CHANGED;
 }
-CLEAN_AS(func_0203d238, PlayerOptions_MarkSoundChanged)
+CLEAN_AS(func_0203d238, PlayerOptions_MarkStereoChanged)
 
 /* func_0203d244 */
 void PlayerOptions_MarkFlagChanged(PlayerOptions *options)
@@ -36,18 +36,18 @@ void PlayerOptions_MarkFlagChanged(PlayerOptions *options)
 CLEAN_AS(func_0203d244, PlayerOptions_MarkFlagChanged)
 
 /* func_0203d250 */
-int PlayerOptions_SettingChanged(const PlayerOptions *options)
+int PlayerOptions_VoiceChanged(const PlayerOptions *options)
 {
-    return (options->changed & PLAYER_OPTIONS_SETTING_CHANGED) != 0;
+    return (options->changed & PLAYER_OPTIONS_VOICE_CHANGED) != 0;
 }
-CLEAN_AS(func_0203d250, PlayerOptions_SettingChanged)
+CLEAN_AS(func_0203d250, PlayerOptions_VoiceChanged)
 
 /* func_0203d264 */
-int PlayerOptions_SoundChanged(const PlayerOptions *options)
+int PlayerOptions_StereoChanged(const PlayerOptions *options)
 {
     return (options->changed & PLAYER_OPTIONS_SOUND_CHANGED) != 0;
 }
-CLEAN_AS(func_0203d264, PlayerOptions_SoundChanged)
+CLEAN_AS(func_0203d264, PlayerOptions_StereoChanged)
 
 /* func_0203d278 */
 int PlayerOptions_FlagChanged(const PlayerOptions *options)
@@ -62,7 +62,7 @@ void PlayerOptions_Clear(PlayerOptions *options)
     PlayerOptions_ClearValues(&options->values);
     options->changed &= (u8) ~PLAYER_OPTIONS_FLAG_CHANGED;
     options->changed &= (u8) ~PLAYER_OPTIONS_SOUND_CHANGED;
-    options->changed &= (u8) ~PLAYER_OPTIONS_SETTING_CHANGED;
+    options->changed &= (u8) ~PLAYER_OPTIONS_VOICE_CHANGED;
 }
 CLEAN_AS(func_0203d28c, PlayerOptions_Clear)
 
@@ -82,40 +82,40 @@ int PlayerOptions_Empty2C4(int value)
 }
 CLEAN_AS(func_0203d2c4, PlayerOptions_Empty2C4)
 
-/* func_0203d2d4: the setting (its low two bits). */
-void PlayerOptions_SetSetting(u8 *values, unsigned int setting)
+/* func_0203d2d4: the voice (its low two bits). */
+void PlayerOptions_SetVoice(u8 *values, unsigned int voice)
 {
-    *values = (u8) ((*values & ~PLAYER_OPTIONS_SETTING_MASK) | ((setting & 3) << PLAYER_OPTIONS_SETTING_SHIFT));
+    *values = (u8) ((*values & ~PLAYER_OPTIONS_VOICE_MASK) | ((voice & 3) << PLAYER_OPTIONS_VOICE_SHIFT));
 }
-CLEAN_AS(func_0203d2d4, PlayerOptions_SetSetting)
+CLEAN_AS(func_0203d2d4, PlayerOptions_SetVoice)
 
 /* func_0203d2ec */
-int PlayerOptions_Setting(const u8 *values)
+int PlayerOptions_Voice(const u8 *values)
 {
-    return (*values & PLAYER_OPTIONS_SETTING_MASK) >> PLAYER_OPTIONS_SETTING_SHIFT;
+    return (*values & PLAYER_OPTIONS_VOICE_MASK) >> PLAYER_OPTIONS_VOICE_SHIFT;
 }
-CLEAN_AS(func_0203d2ec, PlayerOptions_Setting)
+CLEAN_AS(func_0203d2ec, PlayerOptions_Voice)
 
 /* func_0203d2f4 */
-void PlayerOptions_ClearSound(u8 *values)
+void PlayerOptions_ClearStereo(u8 *values)
 {
     *values &= (u8) ~PLAYER_OPTIONS_SOUND;
 }
-CLEAN_AS(func_0203d2f4, PlayerOptions_ClearSound)
+CLEAN_AS(func_0203d2f4, PlayerOptions_ClearStereo)
 
 /* func_0203d300 */
-void PlayerOptions_SetSound(u8 *values)
+void PlayerOptions_SetStereo(u8 *values)
 {
     *values |= PLAYER_OPTIONS_SOUND;
 }
-CLEAN_AS(func_0203d300, PlayerOptions_SetSound)
+CLEAN_AS(func_0203d300, PlayerOptions_SetStereo)
 
 /* func_0203d30c */
-int PlayerOptions_Sound(const u8 *values)
+int PlayerOptions_Stereo(const u8 *values)
 {
     return (*values & PLAYER_OPTIONS_SOUND) != 0;
 }
-CLEAN_AS(func_0203d30c, PlayerOptions_Sound)
+CLEAN_AS(func_0203d30c, PlayerOptions_Stereo)
 
 /* func_0203d320 */
 void PlayerOptions_ClearFlag(u8 *values)
@@ -156,8 +156,8 @@ CLEAN_AS(func_0203d35c, PlayerOptions_CopyTo)
 void PlayerOptions_ClearValues(u8 *values)
 {
     PlayerOptions_ClearFlag(values);
-    PlayerOptions_ClearSound(values);
-    PlayerOptions_SetSetting(values, 0);
+    PlayerOptions_ClearStereo(values);
+    PlayerOptions_SetVoice(values, 0);
 }
 CLEAN_AS(func_0203d368, PlayerOptions_ClearValues)
 
@@ -198,15 +198,15 @@ void PlayerOptions_Store(void)
             PlayerOptions_ClearFlag(stored);
         }
     }
-    if (PlayerOptions_SoundChanged(in_use)) {
-        if (PlayerOptions_SoundInUse() == 1) {
-            PlayerOptions_SetSound(stored);
+    if (PlayerOptions_StereoChanged(in_use)) {
+        if (PlayerOptions_StereoInUse() == 1) {
+            PlayerOptions_SetStereo(stored);
         } else {
-            PlayerOptions_ClearSound(stored);
+            PlayerOptions_ClearStereo(stored);
         }
     }
-    if (PlayerOptions_SettingChanged(in_use)) {
-        PlayerOptions_SetSetting(stored, (unsigned int) PlayerOptions_CurrentSetting());
+    if (PlayerOptions_VoiceChanged(in_use)) {
+        PlayerOptions_SetVoice(stored, (unsigned int) PlayerOptions_CurrentVoice());
     }
     PlayerOptions_CopyTo(stored, &values);
     PlayerOptions_Clear(in_use);
@@ -214,39 +214,39 @@ void PlayerOptions_Store(void)
 }
 CLEAN_AS(func_0203d394, PlayerOptions_Store)
 
-/* func_0203d41c: the setting in use, marked changed. */
-void PlayerOptions_ChangeSetting(unsigned int setting)
+/* func_0203d41c: the voice in use, marked changed. */
+void PlayerOptions_ChangeVoice(unsigned int voice)
 {
-    PlayerOptions_SetSetting(&data_021c6998.values, setting);
-    PlayerOptions_MarkSettingChanged(&data_021c6998);
+    PlayerOptions_SetVoice(&data_021c6998.values, voice);
+    PlayerOptions_MarkVoiceChanged(&data_021c6998);
 }
-CLEAN_AS(func_0203d41c, PlayerOptions_ChangeSetting)
+CLEAN_AS(func_0203d41c, PlayerOptions_ChangeVoice)
 
-/* func_0203d438: the setting in use. */
-int PlayerOptions_CurrentSetting(void)
+/* func_0203d438: the voice in use. */
+int PlayerOptions_CurrentVoice(void)
 {
-    return PlayerOptions_Setting(&data_021c6998.values);
+    return PlayerOptions_Voice(&data_021c6998.values);
 }
-CLEAN_AS(func_0203d438, PlayerOptions_CurrentSetting)
+CLEAN_AS(func_0203d438, PlayerOptions_CurrentVoice)
 
-/* func_0203d448: the sound flag in use set (`on` is 1) or cleared, marked changed. */
-void PlayerOptions_ChangeSound(int on)
+/* func_0203d448: the stereo flag in use set (`on` is 1) or cleared, marked changed. */
+void PlayerOptions_ChangeStereo(int on)
 {
     if (on == 1) {
-        PlayerOptions_SetSound(&data_021c6998.values);
+        PlayerOptions_SetStereo(&data_021c6998.values);
     } else {
-        PlayerOptions_ClearSound(&data_021c6998.values);
+        PlayerOptions_ClearStereo(&data_021c6998.values);
     }
-    PlayerOptions_MarkSoundChanged(&data_021c6998);
+    PlayerOptions_MarkStereoChanged(&data_021c6998);
 }
-CLEAN_AS(func_0203d448, PlayerOptions_ChangeSound)
+CLEAN_AS(func_0203d448, PlayerOptions_ChangeStereo)
 
-/* func_0203d470: the sound flag in use. */
-int PlayerOptions_SoundInUse(void)
+/* func_0203d470: the stereo flag in use. */
+int PlayerOptions_StereoInUse(void)
 {
-    return PlayerOptions_Sound(&data_021c6998.values);
+    return PlayerOptions_Stereo(&data_021c6998.values);
 }
-CLEAN_AS(func_0203d470, PlayerOptions_SoundInUse)
+CLEAN_AS(func_0203d470, PlayerOptions_StereoInUse)
 
 /* func_0203d480: the flag in use set (`on` is 1) or cleared, marked changed. */
 void PlayerOptions_ChangeFlag(int on)

@@ -100,7 +100,7 @@ CLEAN_AS(func_02068924, TalkVoice_VillagerKind)
  * setting 0 counts as 1 for a talk whose kind is neither 0 nor 3 or whose text has colour 4. */
 u8 TalkVoice_Style(TalkVoice *voice)
 {
-    int setting = PlayerOptions_CurrentSetting();
+    int setting = PlayerOptions_CurrentVoice();
     int kind = voice->kind_override != TALK_VOICE_NO_KIND ? voice->kind_override : voice->kind;
     int index = setting;
     if (kind != TALK_VOICE_KIND_PLAIN && kind != TALK_VOICE_KIND_PLAIN2 && setting == 0) {

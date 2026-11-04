@@ -302,14 +302,14 @@ typedef struct RmoTelephoneState {
 /* The messages of "sp_etc_sequence1" these functions start or answer. */
 #define RMO_TELEPHONE_MESSAGE_MENU 0x0e
 #define RMO_TELEPHONE_MESSAGE_DONE 0x0f
-#define RMO_TELEPHONE_MESSAGE_SETTING 0x11
+#define RMO_TELEPHONE_MESSAGE_VOICE 0x11
 #define RMO_TELEPHONE_MESSAGE_FLAG 0x14
 #define RMO_TELEPHONE_MESSAGE_FLAG_13 0x17
 #define RMO_TELEPHONE_MESSAGE_FLAG_14 0x1a
-#define RMO_TELEPHONE_MESSAGE_SOUND 0x1b
-#define RMO_TELEPHONE_MESSAGE_SOUND_ON 0x1c
+#define RMO_TELEPHONE_MESSAGE_STEREO 0x1b
+#define RMO_TELEPHONE_MESSAGE_STEREO_CHOSEN 0x1c
 #define RMO_TELEPHONE_MESSAGE_LINKED 0x1d
-#define RMO_TELEPHONE_MESSAGE_SOUND_OFF 0x1e
+#define RMO_TELEPHONE_MESSAGE_SURROUND_CHOSEN 0x1e
 #define RMO_TELEPHONE_MESSAGE_MENU_AGAIN 0x1f
 #define RMO_TELEPHONE_MESSAGE_20 0x20
 #define RMO_TELEPHONE_MESSAGE_RING 0x22
@@ -692,28 +692,28 @@ void RmoTelephone_OnAnswer(RmoTelephone *self)
                 StateBlock_SetFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_14);
             }
             break;
-        case RMO_TELEPHONE_MESSAGE_SOUND:
+        case RMO_TELEPHONE_MESSAGE_STEREO:
             if (choice == 0) {
-                PlayerOptions_ChangeSound(1);
+                PlayerOptions_ChangeStereo(1);
                 SoundSys_SetCaptureEffect(0);
-                next = RMO_TELEPHONE_MESSAGE_SOUND_ON;
+                next = RMO_TELEPHONE_MESSAGE_STEREO_CHOSEN;
             } else if (choice == 1) {
-                PlayerOptions_ChangeSound(0);
+                PlayerOptions_ChangeStereo(0);
                 SoundSys_SetCaptureEffect(1);
-                next = RMO_TELEPHONE_MESSAGE_SOUND_OFF;
+                next = RMO_TELEPHONE_MESSAGE_SURROUND_CHOSEN;
             }
             break;
-        case RMO_TELEPHONE_MESSAGE_SETTING:
-            self->unk_640 = PlayerOptions_CurrentSetting();
+        case RMO_TELEPHONE_MESSAGE_VOICE:
+            self->unk_640 = PlayerOptions_CurrentVoice();
             if (choice <= 2) {
-                PlayerOptions_ChangeSetting(choice);
+                PlayerOptions_ChangeVoice(choice);
             }
             break;
         case RMO_TELEPHONE_MESSAGE_KEEP_FIRST:
         case RMO_TELEPHONE_MESSAGE_KEEP_SECOND:
         case RMO_TELEPHONE_MESSAGE_KEEP_LAST:
             if (choice == 1) {
-                PlayerOptions_ChangeSetting((unsigned int) self->unk_640);
+                PlayerOptions_ChangeVoice((unsigned int) self->unk_640);
             }
             break;
     }
@@ -757,7 +757,7 @@ void RmoTelephone_AfterMessage(RmoTelephone *self)
 {
     TalkObject *talk = RmoTelephone_talk(self);
     switch (self->receiver.base.message) {
-        case RMO_TELEPHONE_MESSAGE_SOUND:
+        case RMO_TELEPHONE_MESSAGE_STEREO:
             RmoTelephone_OfferAnswers(self, &data_ov004_022558e8, -1);
             break;
         case RMO_TELEPHONE_MESSAGE_MENU:

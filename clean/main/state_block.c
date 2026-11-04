@@ -443,7 +443,7 @@ void StateBlock_StartMode2(StateBlock *block)
     settle_town(block);
     SceneClaim_Reset();
     RoomScoreMail_SendWelcome();
-    SoundSys_SetCaptureEffect(data_020d1b90[PlayerOptions_SoundInUse()]);
+    SoundSys_SetCaptureEffect(data_020d1b90[PlayerOptions_StereoInUse()]);
     PairedTown_RestoreCurrent();
     BottleMail_ReceiveDrifting();
     Constellations_AcceptExchanged();
