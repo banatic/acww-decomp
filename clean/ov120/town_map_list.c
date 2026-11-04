@@ -644,7 +644,7 @@ void TownMap_SetRowText(TownMap *self, TextLabel *label, unsigned int value)
     } else if (value < TOWN_MAP_ROW_VILLAGER_FIRST) {
         ChoiceRow_SetPlayerName(row, (int) (value - TOWN_MAP_ROW_PLAYER_FIRST));
     } else if (value < TOWN_MAP_ROW_PLACE_FIRST) {
-        ChoiceRow_SetListBName(row, (int) (value - TOWN_MAP_ROW_VILLAGER_FIRST));
+        ChoiceRow_SetVillagerName(row, (int) (value - TOWN_MAP_ROW_VILLAGER_FIRST));
     } else if (value <= TOWN_MAP_ROW_PLACE_LAST) {
         /* menu messages 0x96-0x9a */
         TextLabel_LoadMenuMessage(label, (char) (value + 0x88));

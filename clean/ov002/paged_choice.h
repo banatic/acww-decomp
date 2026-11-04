@@ -4,9 +4,10 @@
  *
  * Two ways fill the rows:
  * - by page (PagedChoice_ShowPage): the table at 0x3cc holds five choice codes per page, 0
- *   ending a page. Codes 1-4 and 5-12 name entries of two of the game's lists (the text of the
- *   row and the effect of PagedChoice_Apply come from them), 13 one more kind, and 14 and 15
- *   the two codes that do not pick: 14 turns the page, 15 leaves;
+ *   ending a page. Codes 1-4 and 5-12 name the town's players and villagers a letter can be
+ *   addressed to (the text of the row and the effect of PagedChoice_Apply come from them), 13
+ *   the letter's writer, and 14 and 15 the two codes that do not pick: 14 turns the page, 15
+ *   leaves;
  * - from a ChoiceEntries (PagedChoice_ShowEntries): up to five text codes, or texts given
  *   whole (PagedChoice_AddTextEntry).
  *
@@ -24,9 +25,9 @@
 /* The choice codes of the page table. */
 enum PagedChoiceCode {
     CHOICE_NONE = 0,     /* ends the page */
-    CHOICE_LIST_A = 1,   /* 1-4: player code - 1 of the town's four (records at data_021dc7bc) */
-    CHOICE_LIST_B = 5,   /* 5-12: entry code - 5 of the list at data_021e5a2c */
-    CHOICE_SPECIAL = 13, /* the letter to its writer (Letter_AddressToSelf) */
+    CHOICE_PLAYER = 1,   /* 1-4: player code - 1 of the town's four (records at data_021dc7bc) */
+    CHOICE_VILLAGER = 5, /* 5-12: villager code - 5 of the town's (data_021e5a2c) */
+    CHOICE_SELF = 13,    /* the letter to its writer (Letter_AddressToSelf) */
     CHOICE_NEXT_PAGE = 14,
     CHOICE_LEAVE = 15
 };
@@ -133,7 +134,7 @@ int PagedChoice_IsIdle(PagedChoice *choice);
 int PagedChoice_IsShown(PagedChoice *choice);
 void PagedChoice_BuildPages(PagedChoice *choice);
 void PagedChoice_SetRowText(PagedChoice *choice, PagedChoiceRow *row, unsigned int code);
-int ChoiceRow_SetListBName(PagedChoiceRow *row, int index);
+int ChoiceRow_SetVillagerName(PagedChoiceRow *row, int index);
 int ChoiceRow_SetTextFrom(PagedChoiceRow *row, const void *source);
 int ChoiceRow_SetPlayerName(PagedChoiceRow *row, int player);
 int ChoiceRow_SetName(PagedChoiceRow *row, const void *name);

@@ -90,7 +90,7 @@ int PagedChoice_TestFlags(PagedChoice *choice, int flags)
 CLEAN_AS(func_ov002_02208a14, PagedChoice_TestFlags)
 
 /* func_ov002_02208a24: applies the choice `code` to `target`, a letter it addresses (to its writer,
- * to player `code - CHOICE_LIST_A` or to villager `code - CHOICE_LIST_B`); returns what the code
+ * to player `code - CHOICE_PLAYER` or to villager `code - CHOICE_VILLAGER`); returns what the code
  * did (PagedChoiceKind), CHOICE_KIND_NONE for a code that is none of the game's. The choice is not
  * read. */
 int PagedChoice_Apply(PagedChoice *choice, void *target, unsigned int code)
@@ -101,16 +101,16 @@ int PagedChoice_Apply(PagedChoice *choice, void *target, unsigned int code)
             return CHOICE_KIND_LEAVE;
         case CHOICE_NEXT_PAGE:
             return CHOICE_KIND_NEXT_PAGE;
-        case CHOICE_SPECIAL:
+        case CHOICE_SELF:
             Letter_AddressToSelf(target);
             return CHOICE_KIND_PICK;
     }
-    if (code >= CHOICE_LIST_A && code < CHOICE_LIST_B) {
-        Letter_AddressToPlayer(target, (int) (code - CHOICE_LIST_A));
+    if (code >= CHOICE_PLAYER && code < CHOICE_VILLAGER) {
+        Letter_AddressToPlayer(target, (int) (code - CHOICE_PLAYER));
         return CHOICE_KIND_PICK;
     }
-    if (code >= CHOICE_LIST_B && code < CHOICE_SPECIAL) {
-        Letter_AddressToVillager(target, (int) (code - CHOICE_LIST_B));
+    if (code >= CHOICE_VILLAGER && code < CHOICE_SELF) {
+        Letter_AddressToVillager(target, (int) (code - CHOICE_VILLAGER));
         return CHOICE_KIND_PICK;
     }
     return CHOICE_KIND_NONE;
@@ -418,7 +418,7 @@ CLEAN_AS(func_ov002_02208e18, PagedChoice_IsIdle)
 /* ---- The window: the page table, picking, placing, opening and closing ---- */
 
 #define PLAYERS 4
-#define LIST_B_ENTRIES 8
+#define VILLAGERS 8
 #define PAGE_TABLE_PAGES 5
 #define PICK_COLOUR 15
 #define ROW_CELLS 13     /* the width of a row's text box, in cells */
@@ -430,7 +430,7 @@ CLEAN_AS(func_ov002_02208e18, PagedChoice_IsIdle)
 
 /* the town's players */
 extern u8 data_021dc7bc[]; /* the four players' records */
-/* the eight entries of the list at data_021e5a2c (0x7ec bytes each) */
+/* the town's eight villagers (0x7ec bytes each) */
 extern u8 data_021e5a2c[];
 
 /* files */
@@ -481,9 +481,9 @@ int PagedChoice_IsShown(PagedChoice *choice)
 CLEAN_AS(func_ov002_02208e28, PagedChoice_IsShown)
 
 /* func_ov002_02208e38: fills the page table: the town's other players (codes 1-4), then the
- * entries in use of the second list that func_020807a8 accepts with the current player's
- * name (codes 5-12), four to a page with a page turn in each full page's last row and one ending the last of these
- * pages. A page of its own follows with the special code and leave, and a page turn back to
+ * town's villagers that know the current player (VillagerMemory_Of, codes 5-12), four to a
+ * page with a page turn in each full page's last row and one ending the last of these pages. A
+ * page of its own follows with the writer's code and leave, and a page turn back to
  * the first page when there are pages before it.
  * The table is cleared for five pages; the lists fill at most four. */
 void PagedChoice_BuildPages(PagedChoice *choice)
@@ -502,17 +502,17 @@ void PagedChoice_BuildPages(PagedChoice *choice)
     self = PlayerRecords_FindIndex(data_021dc7bc, name);
     for (i = 0; i < PLAYERS; i++) {
         if (i != self && PlayerRecords_TownExists(data_021dc7bc, i)) {
-            choice->codes[count++] = (u8) (CHOICE_LIST_A + i);
+            choice->codes[count++] = (u8) (CHOICE_PLAYER + i);
         }
     }
     if (count % PAGED_CHOICE_ROWS == PAGED_CHOICE_ROWS - 1) {
         choice->codes[count++] = CHOICE_NEXT_PAGE;
     }
-    for (i = 0; i < LIST_B_ENTRIES; i++) {
+    for (i = 0; i < VILLAGERS; i++) {
         if (VillagerRoster_IsFilled((VillagerTown *) (void *) data_021e5a2c, i) &&
             (int) (uintptr_t) VillagerMemory_Of((void *) VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, i),
                                                 name)) {
-            choice->codes[count++] = (u8) (CHOICE_LIST_B + i);
+            choice->codes[count++] = (u8) (CHOICE_VILLAGER + i);
         }
         if (count % PAGED_CHOICE_ROWS == PAGED_CHOICE_ROWS - 1) {
             choice->codes[count++] = CHOICE_NEXT_PAGE;
@@ -525,7 +525,7 @@ void PagedChoice_BuildPages(PagedChoice *choice)
     while (count % PAGED_CHOICE_ROWS != 0) {
         choice->codes[count++] = CHOICE_NONE;
     }
-    choice->codes[count] = CHOICE_SPECIAL;
+    choice->codes[count] = CHOICE_SELF;
     choice->codes[count + 1] = CHOICE_LEAVE;
     count += 2;
     if (count > 2) {
@@ -535,18 +535,18 @@ void PagedChoice_BuildPages(PagedChoice *choice)
 }
 CLEAN_AS(func_ov002_02208e38, PagedChoice_BuildPages)
 
-/* func_ov002_02208f58: gives `row` the text of `code`: a player's name, the text of an entry
- * of the second list, or messages 0x25 (special), 0x1e (page turn) and 0x27 (leave). Other
+/* func_ov002_02208f58: gives `row` the text of `code`: a player's name, a villager's name, or
+ * messages 0x25 (the letter's writer), 0x1e (page turn) and 0x27 (leave). Other
  * codes leave the row as it is. */
 void PagedChoice_SetRowText(PagedChoice *choice, PagedChoiceRow *row, unsigned int code)
 {
-    if (code >= CHOICE_LIST_A && code < CHOICE_LIST_B) {
-        ChoiceRow_SetPlayerName(row, (int) (code - CHOICE_LIST_A));
-    } else if (code >= CHOICE_LIST_B && code < CHOICE_SPECIAL) {
-        ChoiceRow_SetListBName(row, (int) (code - CHOICE_LIST_B));
+    if (code >= CHOICE_PLAYER && code < CHOICE_VILLAGER) {
+        ChoiceRow_SetPlayerName(row, (int) (code - CHOICE_PLAYER));
+    } else if (code >= CHOICE_VILLAGER && code < CHOICE_SELF) {
+        ChoiceRow_SetVillagerName(row, (int) (code - CHOICE_VILLAGER));
     } else {
         switch (code) {
-            case CHOICE_SPECIAL:
+            case CHOICE_SELF:
                 PagedChoice_RequestRowText(choice, row, 0x25);
                 break;
             case CHOICE_NEXT_PAGE:
@@ -560,13 +560,13 @@ void PagedChoice_SetRowText(PagedChoice *choice, PagedChoiceRow *row, unsigned i
 }
 CLEAN_AS(func_ov002_02208f58, PagedChoice_SetRowText)
 
-/* func_ov002_02208fac: the text of entry `index` of the second list. */
-int ChoiceRow_SetListBName(PagedChoiceRow *row, int index)
+/* func_ov002_02208fac: the name of the town's villager `index`. */
+int ChoiceRow_SetVillagerName(PagedChoiceRow *row, int index)
 {
     return ChoiceRow_SetTextFrom(
         row, (void *) TownVillager_NpcId((void *) VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, index)));
 }
-CLEAN_AS(func_ov002_02208fac, ChoiceRow_SetListBName)
+CLEAN_AS(func_ov002_02208fac, ChoiceRow_SetVillagerName)
 
 /* func_ov002_02208fcc: the row's text from `source` (by func_02003618, through a string
  * object). Returns what destroying the string object returns. */

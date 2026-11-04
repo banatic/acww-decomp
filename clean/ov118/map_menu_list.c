@@ -548,7 +548,7 @@ void MapMenu_SetRowText(MapMenu *self, TextLabel *label, unsigned int entry)
     } else if (entry >= MAP_MENU_ENTRY_PLAYER && entry < MAP_MENU_ENTRY_VILLAGER) {
         ChoiceRow_SetPlayerName(row, (int) (entry - MAP_MENU_ENTRY_PLAYER));
     } else if (entry >= MAP_MENU_ENTRY_VILLAGER && entry < MAP_MENU_ENTRY_PLACE) {
-        ChoiceRow_SetListBName(row, (int) (entry - MAP_MENU_ENTRY_VILLAGER));
+        ChoiceRow_SetVillagerName(row, (int) (entry - MAP_MENU_ENTRY_VILLAGER));
     } else if (entry >= MAP_MENU_ENTRY_PLACE && entry < MAP_MENU_ENTRY_END) {
         TextLabel_LoadMenuMessage(label, (char) (entry + MAP_MENU_PLACE_MESSAGE));
     } else {
