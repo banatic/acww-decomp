@@ -85,14 +85,14 @@ CLEAN_AS(func_02079640, VillagerEvent_Idle)
 
 /* ---- The events */
 
-/* func_02079664: kind 6 at `position`, when the map's cell there has bit 8. */
-void VillagerEvent_AtMarkedTile(const Vec3 *position)
+/* func_02079664: kind 6 (a shell picked up) at `position`, when the map's cell there has bit 8. */
+void VillagerEvent_ShellPicked(const Vec3 *position)
 {
     if (!Session_IsLinked(data_020ccf94) && VillagerEvent_IsMarkedTile(position)) {
-        VillagerEvent_Spread(VILLAGER_EVENT_MARKED_TILE, position);
+        VillagerEvent_Spread(VILLAGER_EVENT_SHELL_PICKED, position);
     }
 }
-CLEAN_AS(func_02079664, VillagerEvent_AtMarkedTile)
+CLEAN_AS(func_02079664, VillagerEvent_ShellPicked)
 
 /* func_02079690: whether the cell of the map's grid at `position` (x and z in units of 32) has
  * bit 8; 0 without a map, outside the grid or when the grid has no cells. Negative coordinates
@@ -115,32 +115,32 @@ int VillagerEvent_IsMarkedTile(const Vec3 *position)
 }
 CLEAN_AS(func_02079690, VillagerEvent_IsMarkedTile)
 
-/* func_020796e4 */
-void VillagerEvent_Report5(const Vec3 *position)
+/* func_020796e4: kind 5, tiles watered at `position`. */
+void VillagerEvent_Watered(const Vec3 *position)
 {
     if (!Session_IsLinked(data_020ccf94)) {
-        VillagerEvent_Spread(VILLAGER_EVENT_5, position);
+        VillagerEvent_Spread(VILLAGER_EVENT_WATERED, position);
     }
 }
-CLEAN_AS(func_020796e4, VillagerEvent_Report5)
+CLEAN_AS(func_020796e4, VillagerEvent_Watered)
 
-/* func_02079708 */
-void VillagerEvent_Report4(void)
+/* func_02079708: kind 4, an item bought at Nook's. */
+void VillagerEvent_StorePurchase(void)
 {
     if (!Session_IsLinked(data_020ccf94)) {
-        VillagerEvent_Spread(VILLAGER_EVENT_4, NULL);
+        VillagerEvent_Spread(VILLAGER_EVENT_STORE_PURCHASE, NULL);
     }
 }
-CLEAN_AS(func_02079708, VillagerEvent_Report4)
+CLEAN_AS(func_02079708, VillagerEvent_StorePurchase)
 
-/* func_0207972c */
-void VillagerEvent_Report3(void)
+/* func_0207972c: kind 3, an item bought at the tailor's. */
+void VillagerEvent_TailorPurchase(void)
 {
     if (!Session_IsLinked(data_020ccf94)) {
-        VillagerEvent_Spread(VILLAGER_EVENT_3, NULL);
+        VillagerEvent_Spread(VILLAGER_EVENT_TAILOR_PURCHASE, NULL);
     }
 }
-CLEAN_AS(func_0207972c, VillagerEvent_Report3)
+CLEAN_AS(func_0207972c, VillagerEvent_TailorPurchase)
 
 /* func_02079750 */
 void VillagerEvent_Item1549(const Vec3 *position)

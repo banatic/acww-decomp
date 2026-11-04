@@ -340,14 +340,14 @@ CLEAN_AS(func_ov049_02260780, MabelTalk_SetDesignKind)
 
 /* func_ov049_02260ac4: the item on display bought: noted, its price taken, the item put in the
  * pockets, taken from the shop's stock at its tile (kind 10), and the villagers told
- * (VillagerEvent_Report3). */
+ * (VillagerEvent_TailorPurchase). */
 void MabelTalk_Buy(MabelTalk *talk)
 {
     talk->owner->bought = 1;
     SceneBells_Take(mtalk_owner(talk), talk->price);
     CurrentPockets_Give(&talk->owner->item, 0);
     Shops_TakeFromTailor(talk->owner->tile_x, talk->owner->tile_z, MABEL_TALK_SHOP_KIND);
-    VillagerEvent_Report3();
+    VillagerEvent_TailorPurchase();
 }
 CLEAN_AS(func_ov049_02260ac4, MabelTalk_Buy)
 

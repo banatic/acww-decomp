@@ -14,25 +14,25 @@
 #include "types.h"
 
 enum VillagerEventKind {
-    VILLAGER_EVENT_INSECT_CAUGHT = 0, /* an insect caught (overlay 3's state 0x57) */
-    VILLAGER_EVENT_FISH_CAUGHT = 1,   /* a fish of kind below 0x38 caught (overlay 3's state 0x54) */
-    VILLAGER_EVENT_ITEM_1549 = 2,     /* item 0x1549 in overlay 3's state 0x5f */
-    VILLAGER_EVENT_3 = 3,             /* from overlay 49 */
-    VILLAGER_EVENT_4 = 4,             /* from overlay 50 */
-    VILLAGER_EVENT_5 = 5,             /* from func_02042ff8, with a place */
-    VILLAGER_EVENT_MARKED_TILE = 6,   /* items 0x1554-0x155c on a tile with bit 8 (state 0x19) */
-    VILLAGER_EVENT_IDLE = 7           /* nothing else reported for 1200 frames */
+    VILLAGER_EVENT_INSECT_CAUGHT = 0,   /* an insect caught (overlay 3's state 0x57) */
+    VILLAGER_EVENT_FISH_CAUGHT = 1,     /* a fish of kind below 0x38 caught (overlay 3's state 0x54) */
+    VILLAGER_EVENT_ITEM_1549 = 2,       /* item 0x1549 in overlay 3's state 0x5f */
+    VILLAGER_EVENT_TAILOR_PURCHASE = 3, /* an item bought at the tailor's (overlay 49, MabelTalk_Buy) */
+    VILLAGER_EVENT_STORE_PURCHASE = 4,  /* an item bought at Nook's (overlay 50, NookClerkTalk_Buy) */
+    VILLAGER_EVENT_WATERED = 5,         /* a cross of tiles watered (TileRequests_ChangeCodesAround), with a place */
+    VILLAGER_EVENT_SHELL_PICKED = 6,    /* a shell (items 0x1554-0x155c) picked up on a tile with bit 8 (state 0x19) */
+    VILLAGER_EVENT_IDLE = 7             /* nothing else reported for 1200 frames */
 };
 
 #define VILLAGER_EVENT_IDLE_FRAMES 1200
 
 void VillagerEvent_CountIdleFrame(void);
 void VillagerEvent_Idle(void);
-void VillagerEvent_AtMarkedTile(const Vec3 *position);
+void VillagerEvent_ShellPicked(const Vec3 *position);
 int VillagerEvent_IsMarkedTile(const Vec3 *position);
-void VillagerEvent_Report5(const Vec3 *position);
-void VillagerEvent_Report4(void);
-void VillagerEvent_Report3(void);
+void VillagerEvent_Watered(const Vec3 *position);
+void VillagerEvent_StorePurchase(void);
+void VillagerEvent_TailorPurchase(void);
 void VillagerEvent_Item1549(const Vec3 *position);
 void VillagerEvent_InsectCaught(const Vec3 *position);
 void VillagerEvent_FishCaught(const Vec3 *position);

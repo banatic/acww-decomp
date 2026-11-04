@@ -322,7 +322,7 @@ static void ntalk_dispatch(NookClerkTalk *talk, u32 *guard, NookClerkHandler *ta
 
 /* func_ov050_02260dd4: the item on display bought: noted as bought, its price taken, the item
  * given to the pockets (state 0), the player's index among the players looked up (not used),
- * the item taken from Nook's store at its tile, and the villagers told (event 4). */
+ * the item taken from Nook's store at its tile, and the villagers told (VillagerEvent_StorePurchase). */
 void NookClerkTalk_Buy(NookClerkTalk *talk)
 {
     NookClerk *owner = talk->owner;
@@ -332,7 +332,7 @@ void NookClerkTalk_Buy(NookClerkTalk *talk)
     PlayerRecords_FindIndex(data_021dc7bc, (const PlayerRecordsId *) (void *) PlayerRecord_Player(PlayerRecords_Current()));
     Shops_TakeFromStore((void *) (uintptr_t) (u32) talk->owner->tile_x, (void *) (uintptr_t) (u32) talk->owner->tile_z,
                         talk->price, SceneQuery_Current());
-    VillagerEvent_Report4();
+    VillagerEvent_StorePurchase();
 }
 CLEAN_AS(func_ov050_02260dd4, NookClerkTalk_Buy)
 

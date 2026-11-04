@@ -3760,7 +3760,7 @@ void FieldActor_EnterState19(FieldActor *actor, const StateRequest *request, int
         } else {
             FieldActor_PlaySound(actor, 0x5d);
             if (actor->item >= 0x1554 && actor->item <= 0x155c) {
-                VillagerEvent_AtMarkedTile(&actor->position);
+                VillagerEvent_ShellPicked(&actor->position);
             }
         }
         FieldActor_SetFlag(actor, 0xd);

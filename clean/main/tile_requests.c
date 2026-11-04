@@ -451,7 +451,7 @@ CLEAN_AS(func_02042fd4, TileRequests_ClearSpawnTile)
  * func_020475b0 changes (0x86 the golden rose 0xa5 when `player` holds the golden watering can)
  * takes its new code (func_0205f9d4). When one did, or a tile holds a code of families A-C
  * (map_item.h, with 0x1c and 0xa5), 0x1a, 0x1d, 0x1e, 0x88 or 0xa4, and this system is not
- * linked, the villagers hear of it at the tile (VillagerEvent_Report5). */
+ * linked, the villagers hear of it at the tile (VillagerEvent_Watered). */
 void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
@@ -486,7 +486,7 @@ void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
     if (found && !Session_IsLinked(data_020ccf94)) {
         Vec3 centre;
         AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-        VillagerEvent_Report5(&centre);
+        VillagerEvent_Watered(&centre);
     }
 }
 CLEAN_AS(func_02042ff8, TileRequests_ChangeCodesAround)
