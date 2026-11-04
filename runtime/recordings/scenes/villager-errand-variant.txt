@@ -4,7 +4,7 @@
 # 0x3508, the player named; furniture 0x3508-0x351c in pockets 0-5): the pockets' pick opens on
 # the furniture with the first piece's popup. B, DOWN to the piece below it, A to give it, then
 # A every 40 frames: the villager thanks the player, adds its liking of the piece to the errand's
-# count (VillagerTalkObject_CountItem, VillagerObject_AddCount, SessionVillager_SendObjectByte2E)
+# count (VillagerTalkObject_CountItem, VillagerObject_AddCount, SessionVillager_SendObjectCount)
 # and the talk ends.
 900 START -
 906 - -

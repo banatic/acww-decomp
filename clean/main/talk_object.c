@@ -1057,7 +1057,7 @@ void TalkObject_ChangeFondness(TalkObject *talk, int change)
         return;
     }
     VillagerMemoryEntry_ChangeFondness(memory, data_020ccea0[change]);
-    SessionVillager_SendEntryByte6C(villager, entry, VillagerMemoryEntry_Fondness(memory));
+    SessionVillager_SendMemoryFondness(villager, entry, VillagerMemoryEntry_Fondness(memory));
 }
 CLEAN_AS(func_02067648, TalkObject_ChangeFondness)
 

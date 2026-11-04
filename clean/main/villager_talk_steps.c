@@ -627,11 +627,11 @@ int VillagerTalkSteps_IsDelivery(u16 *item, int state)
 CLEAN_AS(func_020240a8, VillagerTalkSteps_IsDelivery)
 
 /* func_020240c8: the talk's villager object (0x164) taken to its next step, then the villager
- * sent to the others in the session (SessionVillager_SendObjectOp2). */
+ * sent to the others in the session (SessionVillager_SendObjectNextStep). */
 void VillagerTalkSteps_NextStep(VillagerTalk *talk)
 {
     VillagerObject *object = *(VillagerObject **) (void *) ((u8 *) talk + VILLAGER_TALK_STEPS_VILLAGER_OBJECT);
     VillagerObject_NextStep(object);
-    SessionVillager_SendObjectOp2(steps_record(talk));
+    SessionVillager_SendObjectNextStep(steps_record(talk));
 }
 CLEAN_AS(func_020240c8, VillagerTalkSteps_NextStep)

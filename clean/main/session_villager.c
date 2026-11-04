@@ -29,7 +29,7 @@
 #define CHANGE_SIZE 2     /* the payload of message 60 */
 #define ENTRY_ITEM_SIZE 3 /* the payload of message 62 */
 
-/* The items SessionVillager_SendItem7D2ByIndex sends (and handler 58 takes). */
+/* The items SessionVillager_SendClothesByIndex sends (and handler 58 takes). */
 #define VILLAGER_ITEM_FIRST 0x11a8
 #define VILLAGER_ITEM_LAST 0x12a7
 
@@ -102,20 +102,20 @@ void SessionVillager_PackItems(u8 *bytes, char index, const u16 *items)
 }
 CLEAN_AS(func_02078380, SessionVillager_PackItems)
 
-/* ---- Message 58: the item 0x7d2 */
+/* ---- Message 58: the villager's clothes (0x7d2) */
 
-/* func_020783a8: sends the villager's item 0x7d2 (`item`). */
-void SessionVillager_SendItem7D2(u8 *villager, const u16 *item)
+/* func_020783a8: sends the villager's clothes (`item`, its item 0x7d2). */
+void SessionVillager_SendClothes(u8 *villager, const u16 *item)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendItem7D2ByIndex(index, item);
+        SessionVillager_SendClothesByIndex(index, item);
     }
 }
-CLEAN_AS(func_020783a8, SessionVillager_SendItem7D2)
+CLEAN_AS(func_020783a8, SessionVillager_SendClothes)
 
-/* func_020783e0: sends the item 0x7d2 of villager `index`, when it is one of 0x11a8-0x12a7. */
-void SessionVillager_SendItem7D2ByIndex(int index, const u16 *item)
+/* func_020783e0: sends the clothes of villager `index`, when they are one of 0x11a8-0x12a7. */
+void SessionVillager_SendClothesByIndex(int index, const u16 *item)
 {
     if (!Session_IsLinked(data_020ccf94)) {
         return;
@@ -127,7 +127,7 @@ void SessionVillager_SendItem7D2ByIndex(int index, const u16 *item)
     SessionVillager_PackItem(payload, (u8) index, item);
     send_message(payload, ITEM_SIZE, HANDLER_VILLAGER_ITEM_7D2);
 }
-CLEAN_AS(func_020783e0, SessionVillager_SendItem7D2ByIndex)
+CLEAN_AS(func_020783e0, SessionVillager_SendClothesByIndex)
 
 /* func_02078448: the villager's index (byte 2) and the item; returns the item. */
 u32 SessionVillager_UnpackItem(u32 *index, u16 *item, const u8 *bytes)
@@ -222,33 +222,33 @@ CLEAN_AS(func_020785dc, SessionVillager_PackObject)
 
 /* ---- Message 60: a change to the villager's object */
 
-/* func_0207860c: the object's byte 0x2e becomes `value`. */
-void SessionVillager_SendObjectByte2E(u8 *villager, int value)
+/* func_0207860c: the object's count (0x2e) becomes `value`. */
+void SessionVillager_SendObjectCount(u8 *villager, int value)
 {
-    SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_BYTE_2E);
+    SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_COUNT);
 }
-CLEAN_AS(func_0207860c, SessionVillager_SendObjectByte2E)
+CLEAN_AS(func_0207860c, SessionVillager_SendObjectCount)
 
-/* func_02078618: bit `bit` of the object's byte 0x30 is set, and its byte 0x2e becomes `bit`. */
-void SessionVillager_SendObjectBit30(u8 *villager, int bit)
+/* func_02078618: bit `bit` of the object's flags (0x30) is set, and its count becomes `bit`. */
+void SessionVillager_SendObjectFlag(u8 *villager, int bit)
 {
-    SessionVillager_SendObjectChange(villager, bit, VILLAGER_OBJECT_SET_BIT_30);
+    SessionVillager_SendObjectChange(villager, bit, VILLAGER_OBJECT_SET_FLAG);
 }
-CLEAN_AS(func_02078618, SessionVillager_SendObjectBit30)
+CLEAN_AS(func_02078618, SessionVillager_SendObjectFlag)
 
-/* func_02078624: the object's byte 0x2f becomes `value` (func_0209b8a4). */
-void SessionVillager_SendObjectByte2F(u8 *villager, int value)
+/* func_02078624: the object's kind (0x2f) becomes `value` (VillagerObject_SetKind). */
+void SessionVillager_SendObjectKind(u8 *villager, int value)
 {
-    SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_BYTE_2F);
+    SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_KIND);
 }
-CLEAN_AS(func_02078624, SessionVillager_SendObjectByte2F)
+CLEAN_AS(func_02078624, SessionVillager_SendObjectKind)
 
 /* func_02078630: operation 2 (func_0209b920), with the value 1, which it does not read. */
-void SessionVillager_SendObjectOp2(u8 *villager)
+void SessionVillager_SendObjectNextStep(u8 *villager)
 {
-    SessionVillager_SendObjectChange(villager, 1, VILLAGER_OBJECT_OP_2);
+    SessionVillager_SendObjectChange(villager, 1, VILLAGER_OBJECT_NEXT_STEP);
 }
-CLEAN_AS(func_02078630, SessionVillager_SendObjectOp2)
+CLEAN_AS(func_02078630, SessionVillager_SendObjectNextStep)
 
 /* func_0207863c: the object is emptied (func_0209ba7c), with the value 0. */
 void SessionVillager_SendObjectClear(u8 *villager)
@@ -306,55 +306,55 @@ void SessionVillager_PackObjectChange(u8 *bytes, char index, char operation, cha
 }
 CLEAN_AS(func_020786f8, SessionVillager_PackObjectChange)
 
-/* ---- Message 62: the item 0x6a of a villager's entry */
+/* ---- Message 62: the item 0x6a of a villager's memory of a player */
 
-/* func_02078710: sends the item 0x6a (`item`) of the villager's entry `entry`. */
-void SessionVillager_SendEntryItem(u8 *villager, int entry, const u16 *item)
+/* func_02078710: sends the item 0x6a (`item`) of the villager's memory `entry`. */
+void SessionVillager_SendMemoryItem(u8 *villager, int entry, const u16 *item)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendEntryItemByIndex(index, entry, item);
+        SessionVillager_SendMemoryItemByIndex(index, entry, item);
     }
 }
-CLEAN_AS(func_02078710, SessionVillager_SendEntryItem)
+CLEAN_AS(func_02078710, SessionVillager_SendMemoryItem)
 
-/* func_02078748: sends the item 0x6a of entry `entry` of villager `index`. */
-void SessionVillager_SendEntryItemByIndex(int index, int entry, const u16 *item)
+/* func_02078748: sends the item 0x6a of memory `entry` of villager `index`. */
+void SessionVillager_SendMemoryItemByIndex(int index, int entry, const u16 *item)
 {
     if (!Session_IsLinked(data_020ccf94)) {
         return;
     }
     u8 payload[ENTRY_ITEM_SIZE];
-    SessionVillager_PackEntryItem(payload, index, entry, item);
+    SessionVillager_PackMemoryItem(payload, index, entry, item);
     send_message(payload, ENTRY_ITEM_SIZE, HANDLER_ENTRY_ITEM);
 }
-CLEAN_AS(func_02078748, SessionVillager_SendEntryItemByIndex)
+CLEAN_AS(func_02078748, SessionVillager_SendMemoryItemByIndex)
 
 /* func_02078794: the villager's index and the entry (byte 2), then the item (bytes 0-1). */
-void SessionVillager_UnpackEntryItem(u32 *index, u32 *entry, u16 *item, const u8 *bytes)
+void SessionVillager_UnpackMemoryItem(u32 *index, u32 *entry, u16 *item, const u8 *bytes)
 {
-    SessionVillager_UnpackEntry((int *) index, (int *) entry, &bytes[2]);
+    SessionVillager_UnpackMemory((int *) index, (int *) entry, &bytes[2]);
     *item = PackedBytes_ReadItem(bytes);
 }
-CLEAN_AS(func_02078794, SessionVillager_UnpackEntryItem)
+CLEAN_AS(func_02078794, SessionVillager_UnpackMemoryItem)
 
 /* func_020787b4: the villager's index and the entry into byte 2, then the item into bytes
  * 0-1. */
-void SessionVillager_PackEntryItem(u8 *bytes, int index, int entry, const u16 *item)
+void SessionVillager_PackMemoryItem(u8 *bytes, int index, int entry, const u16 *item)
 {
-    SessionVillager_PackEntry(&bytes[2], index, entry);
+    SessionVillager_PackMemory(&bytes[2], index, entry);
     PackedBytes_WriteItem(bytes, *item);
 }
-CLEAN_AS(func_020787b4, SessionVillager_PackEntryItem)
+CLEAN_AS(func_020787b4, SessionVillager_PackMemoryItem)
 
-/* ---- Messages 57 and 56: the bytes 0x6c and 0x6d of a villager's entry */
+/* ---- Messages 57 and 56: the fondness (0x6c) and the impression (0x6d) of a villager's memory */
 
 /* Sends the villager's index and the entry (1 byte), then the low byte of `value`. */
 static void send_entry_byte(int index, int entry, int value, u32 handler)
 {
     u8 byte;
     u8 value_byte = (u8) value;
-    SessionVillager_PackEntry(&byte, index, entry);
+    SessionVillager_PackMemory(&byte, index, entry);
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, &byte, 1);
@@ -362,106 +362,106 @@ static void send_entry_byte(int index, int entry, int value, u32 handler)
     Session_EndMessage(session, handler, MESSAGE_KIND);
 }
 
-/* func_020787d4: sends the byte 0x6c (`value`) of the villager's entry `entry`. */
-void SessionVillager_SendEntryByte6C(u8 *villager, int entry, int value)
+/* func_020787d4: sends the fondness (`value`, byte 0x6c) of the villager's memory `entry`. */
+void SessionVillager_SendMemoryFondness(u8 *villager, int entry, int value)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendEntryByte6CByIndex(index, entry, value);
+        SessionVillager_SendMemoryFondnessByIndex(index, entry, value);
     }
 }
-CLEAN_AS(func_020787d4, SessionVillager_SendEntryByte6C)
+CLEAN_AS(func_020787d4, SessionVillager_SendMemoryFondness)
 
-/* func_0207880c: sends the byte 0x6c of entry `entry` of villager `index`. */
-void SessionVillager_SendEntryByte6CByIndex(int index, int entry, int value)
+/* func_0207880c: sends the fondness of memory `entry` of villager `index`. */
+void SessionVillager_SendMemoryFondnessByIndex(int index, int entry, int value)
 {
     if (Session_IsLinked(data_020ccf94)) {
         send_entry_byte(index, entry, value, HANDLER_ENTRY_BYTE_6C);
     }
 }
-CLEAN_AS(func_0207880c, SessionVillager_SendEntryByte6CByIndex)
+CLEAN_AS(func_0207880c, SessionVillager_SendMemoryFondnessByIndex)
 
-/* func_02078864: sends the byte 0x6d (`value`) of the villager's entry `entry`. */
-void SessionVillager_SendEntryByte6D(u8 *villager, int entry, int value)
+/* func_02078864: sends the impression (`value`, byte 0x6d) of the villager's memory `entry`. */
+void SessionVillager_SendMemoryImpression(u8 *villager, int entry, int value)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendEntryByte6DByIndex(index, entry, value);
+        SessionVillager_SendMemoryImpressionByIndex(index, entry, value);
     }
 }
-CLEAN_AS(func_02078864, SessionVillager_SendEntryByte6D)
+CLEAN_AS(func_02078864, SessionVillager_SendMemoryImpression)
 
-/* func_0207889c: sends the byte 0x6d of entry `entry` of villager `index`. */
-void SessionVillager_SendEntryByte6DByIndex(int index, int entry, int value)
+/* func_0207889c: sends the impression of memory `entry` of villager `index`. */
+void SessionVillager_SendMemoryImpressionByIndex(int index, int entry, int value)
 {
     if (Session_IsLinked(data_020ccf94)) {
         send_entry_byte(index, entry, value, HANDLER_ENTRY_BYTE_6D);
     }
 }
-CLEAN_AS(func_0207889c, SessionVillager_SendEntryByte6DByIndex)
+CLEAN_AS(func_0207889c, SessionVillager_SendMemoryImpressionByIndex)
 
-/* ---- Messages 55 and 54: a villager's entry and the sender's name */
+/* ---- Messages 55 and 54: a villager's memory and the sender's name */
 
 /* Sends the villager's index and the entry (1 byte). */
 static void send_entry(int index, int entry, u32 handler)
 {
     u8 byte;
-    SessionVillager_PackEntry(&byte, index, entry);
+    SessionVillager_PackMemory(&byte, index, entry);
     send_message(&byte, 1, handler);
 }
 
-/* func_020788f4: the villager's entry `entry` is to be filled with this system's name. */
-void SessionVillager_SendEntryFill(u8 *villager, int entry)
+/* func_020788f4: the villager's memory `entry` is to be filled with this system's name. */
+void SessionVillager_SendMemoryFill(u8 *villager, int entry)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendEntryFillByIndex(index, entry);
+        SessionVillager_SendMemoryFillByIndex(index, entry);
     }
 }
-CLEAN_AS(func_020788f4, SessionVillager_SendEntryFill)
+CLEAN_AS(func_020788f4, SessionVillager_SendMemoryFill)
 
-/* func_0207892c: as SessionVillager_SendEntryFill, for villager `index`. */
-void SessionVillager_SendEntryFillByIndex(int index, int entry)
+/* func_0207892c: as SessionVillager_SendMemoryFill, for villager `index`. */
+void SessionVillager_SendMemoryFillByIndex(int index, int entry)
 {
     if (Session_IsLinked(data_020ccf94)) {
         send_entry(index, entry, HANDLER_ENTRY_FILL);
     }
 }
-CLEAN_AS(func_0207892c, SessionVillager_SendEntryFillByIndex)
+CLEAN_AS(func_0207892c, SessionVillager_SendMemoryFillByIndex)
 
-/* func_02078974: the villager's entry `entry` is to get this system's name. */
-void SessionVillager_SendEntrySender(u8 *villager, int entry)
+/* func_02078974: the villager's memory `entry` is to get this system's name. */
+void SessionVillager_SendMemorySender(u8 *villager, int entry)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendEntrySenderByIndex(index, entry);
+        SessionVillager_SendMemorySenderByIndex(index, entry);
     }
 }
-CLEAN_AS(func_02078974, SessionVillager_SendEntrySender)
+CLEAN_AS(func_02078974, SessionVillager_SendMemorySender)
 
-/* func_020789ac: as SessionVillager_SendEntrySender, for villager `index`. */
-void SessionVillager_SendEntrySenderByIndex(int index, int entry)
+/* func_020789ac: as SessionVillager_SendMemorySender, for villager `index`. */
+void SessionVillager_SendMemorySenderByIndex(int index, int entry)
 {
     if (Session_IsLinked(data_020ccf94)) {
         send_entry(index, entry, HANDLER_ENTRY_SENDER);
     }
 }
-CLEAN_AS(func_020789ac, SessionVillager_SendEntrySenderByIndex)
+CLEAN_AS(func_020789ac, SessionVillager_SendMemorySenderByIndex)
 
 /* ---- A villager and one of its entries in one byte */
 
 /* func_020789f4: the villager's index (high nibble) and the entry (low nibble), written in that
  * order; the byte is read again after the first write. */
-void SessionVillager_UnpackEntry(int *index, int *entry, const u8 *byte)
+void SessionVillager_UnpackMemory(int *index, int *entry, const u8 *byte)
 {
     *index = (*byte >> 4) & 0xf;
     *entry = *byte & 0xf;
 }
-CLEAN_AS(func_020789f4, SessionVillager_UnpackEntry)
+CLEAN_AS(func_020789f4, SessionVillager_UnpackMemory)
 
 /* func_02078a0c: the low nibbles of the villager's index (high) and the entry (low). */
-void SessionVillager_PackEntry(u8 *byte, int index, int entry)
+void SessionVillager_PackMemory(u8 *byte, int index, int entry)
 {
     *byte = (u8) ((((u32) index << 4) & 0xf0) | ((u32) entry & 0xf));
 }
-CLEAN_AS(func_02078a0c, SessionVillager_PackEntry)
+CLEAN_AS(func_02078a0c, SessionVillager_PackMemory)

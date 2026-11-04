@@ -8,7 +8,8 @@
  *   0x3e  a text of 10 characters, set when bit 3 of the flags is
  *   0x54  a date and time (func_02081e10)
  *   0x5c  a town (func_02081d64)
- *   0x6a  an item; 0x6c (signed) how fond the villager is of the player; 0x6d a byte
+ *   0x6a  an item; 0x6c (signed) how fond the villager is of the player; 0x6d its
+ *        impression of the player (villager_impression.h)
  *   0x7c  flags
  *
  * A memory is in use when its player is set (func_02081edc). When the villager meets a new
@@ -39,7 +40,7 @@ typedef struct VillagerMemory {
     NpcIdHead town;    /* 0x5c */
     u16 item;          /* 0x6a */
     s8 fondness;       /* 0x6c */
-    u8 byte_6d;        /* 0x6d */
+    u8 impression;     /* 0x6d */
     u8 unknown_6e[14]; /* 0x6e */
     u16 flags;         /* 0x7c */
     u8 unknown_7e[2];

@@ -152,14 +152,14 @@ CLEAN_AS(func_02081a14, VillagerMemoryEntry_DrawUnused)
 /* func_02081a80 */
 void VillagerMemoryEntry_SetImpression(VillagerMemory *memory, u8 impression)
 {
-    memory->byte_6d = impression;
+    memory->impression = impression;
 }
 CLEAN_AS(func_02081a80, VillagerMemoryEntry_SetImpression)
 
 /* func_02081a88: the villager's impression of the player (villager_impression.h). */
 u8 VillagerMemoryEntry_Impression(VillagerMemory *memory)
 {
-    return memory->byte_6d;
+    return memory->impression;
 }
 CLEAN_AS(func_02081a88, VillagerMemoryEntry_Impression)
 

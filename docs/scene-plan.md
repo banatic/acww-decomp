@@ -3575,14 +3575,14 @@ What reading the Clean code found about the groups above; counts are of function
   errand of an item of a kind at step 2 asking for the fossil 0x450c, six fossils in the pockets,
   villager-catch-draw's walk): the fossil shown is judged and its place in its kind kept
   (VillagerTalkObject_ItemPart, _KindPart, VillagerObject_SetFlag, _TestFlag,
-  VillagerTalkOffer_PocketsOfKind, SessionVillager_SendObjectBit30), and PocketsView_Delete (ov099)
+  VillagerTalkOffer_PocketsOfKind, SessionVillager_SendObjectFlag), and PocketsView_Delete (ov099)
   runs. villager-fish-due (a fish errand at step 2, three fish in the pockets): the pockets screen on
   the fish (VillagerTalkOffer_IsFishFree) opens ov103's CarriedLetters_ShowCursorFirstOfSet,
   _PlaceCursorSprite, _PointAtFirstRow and _HighlightPlace. Both contradict the group's reason, as
   villager-deliver-pick did; they wait for that group's correction.
 - Gained little: an errand of an item with variants (type 4) given an item with variants opens the
   item pick on ov103 (VillagerTalkObject_CountItem's VillagerObject_AddCount and
-  SessionVillager_SendObjectByte2E are past it), the same screen. The kind errand at step 3 took
+  SessionVillager_SendObjectCount are past it), the same screen. The kind errand at step 3 took
   another branch (PocketsOfKind and TestFlag only).
 - The plan before (with the second batch): seed 469, date 137, unknown 448, unreachable 3,212;
   after (475 scenes): seed 466, date 137, unknown 448, unreachable 3,212. Checked in a run: 20,985
@@ -3814,7 +3814,7 @@ What reading the Clean code found about the groups above; counts are of function
   errand-fish-due: a fish errand at step 2 asking for 0x12e8, three fish in the pockets), both on
   villager-catch-draw's walk: the pockets open on the kind's items (VillagerTalkOffer_PocketsOfKind,
   VillagerTalkObject_ItemPart, _KindPart, VillagerObject_TestFlag, _SetFlag,
-  SessionVillager_SendObjectBit30) or on the fish (VillagerTalkOffer_IsFishFree). That screen too is
+  SessionVillager_SendObjectFlag) or on the fish (VillagerTalkOffer_IsFishFree). That screen too is
   ov101's pockets pick: the lists name PocketsPick_* only, no function of ov099 or ov103 (the same
   eight-byte twins, PocketsView_Delete among them, had been read as entered), and --plan warns of
   no unreachable group taking a function a scene ran.
@@ -4034,7 +4034,7 @@ What reading the Clean code found about the groups above; counts are of function
   on villager-catch-draw's walk: the pockets' pick (ov101) opens on the furniture. The first
   piece, the one asked for, and the pieces right of it draw ko_q05_miss; the piece below it draws
   ko_q05_thanks, and the villager's liking of it is added to the errand's count
-  (VillagerTalkObject_CountItem: VillagerObject_AddCount, SessionVillager_SendObjectByte2E).
+  (VillagerTalkObject_CountItem: VillagerObject_AddCount, SessionVillager_SendObjectCount).
   The same walk at steps 1 and 3 runs nothing more.
 - The plan before (with the first batch): seed 415, date 95, unknown 407, unreachable 3,246;
   after (510 scene lists): seed 413, date 95, unknown 407, unreachable 3,246. Checked in a run:

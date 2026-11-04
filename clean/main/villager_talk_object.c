@@ -418,7 +418,7 @@ static void object_note_item(VillagerTalk *talk, u8 *record)
 {
     if (talk->item != ITEM_CODE_NONE && talk->memory != NULL && talk->memory_index != VILLAGER_TALK_OBJECT_NO_MEMORY) {
         VillagerMemoryEntry_SetItem((VillagerMemory *) (void *) talk->memory, &talk->item);
-        SessionVillager_SendEntryItem(record, talk->memory_index, &talk->item);
+        SessionVillager_SendMemoryItem(record, talk->memory_index, &talk->item);
     }
 }
 
@@ -763,7 +763,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
             {
                 u8 part = (u8) VillagerTalkObject_ItemPart(&talk->item);
                 VillagerObject_SetFlag(object_villager_object(talk), part);
-                SessionVillager_SendObjectBit30(record, part);
+                SessionVillager_SendObjectFlag(record, part);
             }
             break;
         case VILLAGER_TALK_OBJECT_TYPE_CLOTHES:
@@ -906,7 +906,7 @@ void VillagerTalkObject_CountItem(VillagerTalk *talk)
     if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_FURNITURE && ItemCode_HasVariant(&talk->item)) {
         u8 liking = (u8) VillagerData_ItemLiking(record, &talk->item);
         u8 count = VillagerObject_AddCount(object_villager_object(talk), liking);
-        SessionVillager_SendObjectByte2E(record, count);
+        SessionVillager_SendObjectCount(record, count);
     }
     ItemObject_SetLow5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), 1);
     SessionVillager_SendObjectByte0B(record, 1);
@@ -1405,7 +1405,7 @@ void VillagerTalkObject_KindItem(u16 *out, VillagerObject *object, u8 *villager)
     if (kind == VILLAGER_OBJECT_KIND_NONE) {
         kind = ItemAttributes_PickMissingFossilKind(VillagerHouseItems_Items(villager), VILLAGER_HOUSE_ITEMS);
         VillagerObject_SetKind(object, (u8) kind);
-        SessionVillager_SendObjectByte2F(villager, (int) kind);
+        SessionVillager_SendObjectKind(villager, (int) kind);
     }
     if (kind < VILLAGER_OBJECT_KIND_NONE) {
         ItemAttributes_FossilOfKind(out, kind, 0);

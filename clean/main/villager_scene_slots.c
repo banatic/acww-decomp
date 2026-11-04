@@ -202,7 +202,7 @@ void VillagerSceneObject_TakeClothes(u8 *object, u16 *item, int share)
     if (record != 0) {
         TownVillager_SetClothes((u8 *) (uintptr_t) record, item);
         if (share) {
-            SessionVillager_SendItem7D2((u8 *) (uintptr_t) record, item);
+            SessionVillager_SendClothes((u8 *) (uintptr_t) record, item);
         }
     }
 }

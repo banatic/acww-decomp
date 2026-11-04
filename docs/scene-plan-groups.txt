@@ -25,7 +25,7 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   main/link_bundle:LinkBundle_WriteEnteredNothing main/link_bundle:LinkBundle_WriteLeft
   main/link_bundle:LinkBundle_WriteLeftNothing main/recent_slots:RecentSlots_Forget
   main/recent_slots:RecentSlots_Newest main/session_message:SessionMessage_ChangeVillagerObject
-  main/session_message:SessionMessage_FillVillagerEntry main/session_message:SessionMessage_Handle20
+  main/session_message:SessionMessage_FillVillagerMemory main/session_message:SessionMessage_Handle20
   main/session_message:SessionMessage_Handle24 main/session_message:SessionMessage_Handle25
   main/session_message:SessionMessage_Handle26 main/session_message:SessionMessage_Handle27
   main/session_message:SessionMessage_Handle28 main/session_message:SessionMessage_Handle29
@@ -59,11 +59,11 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   main/session_message:SessionMessage_SetLinkStatusBits
   main/session_message:SessionMessage_SetLinkWord74 main/session_message:SessionMessage_SetOwnStatus
   main/session_message:SessionMessage_SetSenderStatus
-  main/session_message:SessionMessage_SetVillagerEntryByte6C
-  main/session_message:SessionMessage_SetVillagerEntryByte6D
-  main/session_message:SessionMessage_SetVillagerEntryItem
-  main/session_message:SessionMessage_SetVillagerEntrySender
-  main/session_message:SessionMessage_SetVillagerItem7D2
+  main/session_message:SessionMessage_SetVillagerMemoryFondness
+  main/session_message:SessionMessage_SetVillagerMemoryImpression
+  main/session_message:SessionMessage_SetVillagerMemoryItem
+  main/session_message:SessionMessage_SetVillagerMemorySender
+  main/session_message:SessionMessage_SetVillagerClothes
   main/session_message:SessionMessage_SetVillagerItems7B0
   main/session_message:SessionMessage_SetVillagerObject
   main/session_message:SessionMessage_SetVillagerObjectItem
@@ -926,8 +926,8 @@ match: autoload_2/network:Wfc_FinishPost autoload_2/network:Wfc_FriendIndexOf
   main/scene_command:SceneCommand_SetScreenArgs
   main/scene_share_table:SceneShareTable_ClaimScenePersons main/session:Session_AppendBundle15
   main/session:Session_GetBundle15Length main/session_players:SessionPlayers_ReadItemOperation
-  main/session_players:SessionPlayers_SplitLowHigh main/session_villager:SessionVillager_UnpackEntry
-  main/session_villager:SessionVillager_UnpackEntryItem
+  main/session_players:SessionPlayers_SplitLowHigh main/session_villager:SessionVillager_UnpackMemory
+  main/session_villager:SessionVillager_UnpackMemoryItem
   main/session_villager:SessionVillager_UnpackItem main/session_villager:SessionVillager_UnpackItems
   main/session_villager:SessionVillager_UnpackObject
   main/session_villager:SessionVillager_UnpackObjectChange main/shop_answers:ShopAnswers_Count
@@ -1722,16 +1722,16 @@ match: autoload_2/network:Net_ClearSendQueue autoload_2/network:Wfc_CanSendToAll
   main/session_record:SessionRecord_Write64 main/session_record:SessionRecord_Write65
   main/session_record:SessionRecord_Write66 main/session_record:SessionRecord_Write67
   main/session_record:SessionRecord_Write68 main/session_record:SessionRecord_Write69
-  main/session_record:SessionRecord_Write7 main/session_villager:SessionVillager_PackEntry
-  main/session_villager:SessionVillager_PackEntryItem main/session_villager:SessionVillager_PackItem
+  main/session_record:SessionRecord_Write7 main/session_villager:SessionVillager_PackMemory
+  main/session_villager:SessionVillager_PackMemoryItem main/session_villager:SessionVillager_PackItem
   main/session_villager:SessionVillager_PackItems main/session_villager:SessionVillager_PackObject
   main/session_villager:SessionVillager_PackObjectChange
-  main/session_villager:SessionVillager_SendEntryByte6CByIndex
-  main/session_villager:SessionVillager_SendEntryByte6DByIndex
-  main/session_villager:SessionVillager_SendEntryFillByIndex
-  main/session_villager:SessionVillager_SendEntryItemByIndex
-  main/session_villager:SessionVillager_SendEntrySenderByIndex
-  main/session_villager:SessionVillager_SendItem7D2ByIndex
+  main/session_villager:SessionVillager_SendMemoryFondnessByIndex
+  main/session_villager:SessionVillager_SendMemoryImpressionByIndex
+  main/session_villager:SessionVillager_SendMemoryFillByIndex
+  main/session_villager:SessionVillager_SendMemoryItemByIndex
+  main/session_villager:SessionVillager_SendMemorySenderByIndex
+  main/session_villager:SessionVillager_SendClothesByIndex
   main/session_villager:SessionVillager_SendItemsByIndex
   main/session_villager:SessionVillager_SendObjectByIndex
   main/session_villager:SessionVillager_SendObjectChangeByIndex
@@ -2163,12 +2163,12 @@ match: main/villager_talk* main/villager_part* main/villager_object main/village
   main/scene_motion:SceneMotion_StartKind15 main/scene_motion:SceneMotion_Kind15After
   main/scene_motion_core:SceneMotionNote_PackItem
   main/session_villager:SessionVillager_SendObjectItem
-  main/session_villager:SessionVillager_SendObjectByte2E
-  main/session_villager:SessionVillager_SendObjectBit30
-  main/session_villager:SessionVillager_SendItem7D2
+  main/session_villager:SessionVillager_SendObjectCount
+  main/session_villager:SessionVillager_SendObjectFlag
+  main/session_villager:SessionVillager_SendClothes
   main/session_villager:SessionVillager_SendObjectClear
-  main/session_villager:SessionVillager_SendObjectByte2F
-  main/session_villager:SessionVillager_SendObjectOp2
+  main/session_villager:SessionVillager_SendObjectKind
+  main/session_villager:SessionVillager_SendObjectNextStep
 
 area: Unreachable for one player
 group: message tags no shown message holds

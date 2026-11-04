@@ -232,8 +232,8 @@ CLEAN_AS(func_0202d8ec, VillagerTalkScene_RequestTalk)
  * memory, unless the talk's byte 0x13c says not to. Without a memory yet (`*memory` 0): when the
  * villager remembers the player already (VillagerMemory_IndexOfPlayer), only its place goes into
  * `*index`; otherwise a memory to reuse is taken for the player (VillagerMemoryEntry_Take) and
- * sent with its sender (SessionVillager_SendEntrySender). With a memory, it is brought up to
- * date (VillagerMemoryEntry_Update) and sent (SessionVillager_SendEntryFill).
+ * sent with its sender (SessionVillager_SendMemorySender). With a memory, it is brought up to
+ * date (VillagerMemoryEntry_Update) and sent (SessionVillager_SendMemoryFill).
  * QUIRK: a memory found by the player leaves `*memory` 0. */
 void VillagerTalkScene_NoteMemory(VillagerTalk *talk, u8 **memory, s32 *index, u8 *villager, int player)
 {
@@ -258,10 +258,10 @@ void VillagerTalkScene_NoteMemory(VillagerTalk *talk, u8 **memory, s32 *index, u
         }
         *memory = (u8 *) VillagerMemory_At(villager, *index);
         VillagerMemoryEntry_Take((VillagerMemory *) (void *) *memory, who, NULL, NULL);
-        SessionVillager_SendEntrySender(villager, *index);
+        SessionVillager_SendMemorySender(villager, *index);
     } else {
         VillagerMemoryEntry_Update((VillagerMemory *) (void *) *memory, who, NULL, NULL);
-        SessionVillager_SendEntryFill(villager, *index);
+        SessionVillager_SendMemoryFill(villager, *index);
     }
 }
 CLEAN_AS(func_0202d8f8, VillagerTalkScene_NoteMemory)

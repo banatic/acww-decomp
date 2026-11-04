@@ -48,7 +48,7 @@
 /* The scene (func_020b65c4) the activity handlers act in. */
 #define SCENE_2E 46
 
-/* The item ids SessionMessage_SetVillagerItem7D2 and SessionMessage_SetVillagerObjectItem take. */
+/* The item ids SessionMessage_SetVillagerClothes and SessionMessage_SetVillagerObjectItem take. */
 #define VILLAGER_ITEM_FIRST 0x11a8
 #define VILLAGER_ITEM_LAST 0x12a7
 #define OBJECT0_ITEM_FIRST 0x12b0 /* for an object of type 0 */
@@ -399,7 +399,7 @@ static u8 *session_message_villager_entry(const u8 *byte)
 {
     int villager;
     int entry;
-    SessionVillager_UnpackEntry(&villager, &entry, byte);
+    SessionVillager_UnpackMemory(&villager, &entry, byte);
     u8 *record = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, villager);
     if (record == NULL) {
         return NULL;
@@ -408,9 +408,9 @@ static u8 *session_message_villager_entry(const u8 *byte)
 }
 
 /* func_02076a18: the entry the payload names gets the sender's name (func_02081e94).
- * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendEntrySenderByIndex); the original
+ * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendMemorySenderByIndex); the original
  * reads it into a 4-byte variable. */
-void SessionMessage_SetVillagerEntrySender(int size, int kind, int scene, int slot)
+void SessionMessage_SetVillagerMemorySender(int size, int kind, int scene, int slot)
 {
     (void) kind;
     (void) scene;
@@ -423,13 +423,13 @@ void SessionMessage_SetVillagerEntrySender(int size, int kind, int scene, int sl
                                  (const NpcIdHead *) (void *) data_021dc7aa, NULL);
     }
 }
-CLEAN_AS(func_02076a18, SessionMessage_SetVillagerEntrySender)
+CLEAN_AS(func_02076a18, SessionMessage_SetVillagerMemorySender)
 
 /* func_020769b8: the entry the payload names is filled with the sender's name
  * (func_02081e14).
- * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendEntryFillByIndex); the original
+ * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendMemoryFillByIndex); the original
  * reads it into a 4-byte variable. */
-void SessionMessage_FillVillagerEntry(int size, int kind, int scene, int slot)
+void SessionMessage_FillVillagerMemory(int size, int kind, int scene, int slot)
 {
     (void) kind;
     (void) scene;
@@ -442,11 +442,11 @@ void SessionMessage_FillVillagerEntry(int size, int kind, int scene, int slot)
                                    (const NpcIdHead *) (void *) data_021dc7aa, NULL);
     }
 }
-CLEAN_AS(func_020769b8, SessionMessage_FillVillagerEntry)
+CLEAN_AS(func_020769b8, SessionMessage_FillVillagerMemory)
 
-/* func_0207695c: the entry the first byte names gets the second byte as its byte 0x6d; the
- * second byte is read only when the entry exists. */
-void SessionMessage_SetVillagerEntryByte6D(int size, int kind, u8 scene, u32 slot)
+/* func_0207695c: the memory the first byte names gets the second byte as its impression (byte
+ * 0x6d); the second byte is read only when the memory exists. */
+void SessionMessage_SetVillagerMemoryImpression(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -461,11 +461,11 @@ void SessionMessage_SetVillagerEntryByte6D(int size, int kind, u8 scene, u32 slo
         VillagerMemoryEntry_SetImpression((VillagerMemory *) (void *) entry, bytes[1]);
     }
 }
-CLEAN_AS(func_0207695c, SessionMessage_SetVillagerEntryByte6D)
+CLEAN_AS(func_0207695c, SessionMessage_SetVillagerMemoryImpression)
 
-/* func_02076900: as SessionMessage_SetVillagerEntryByte6D, for the byte 0x6c.
+/* func_02076900: as SessionMessage_SetVillagerMemoryImpression, for the fondness (byte 0x6c).
  * QUIRK: the value is passed as a signed byte. */
-void SessionMessage_SetVillagerEntryByte6C(int size, int kind, u8 scene, u32 slot)
+void SessionMessage_SetVillagerMemoryFondness(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -480,11 +480,11 @@ void SessionMessage_SetVillagerEntryByte6C(int size, int kind, u8 scene, u32 slo
         VillagerMemoryEntry_SetFondness((VillagerMemory *) (void *) entry, (s8) bytes[1]);
     }
 }
-CLEAN_AS(func_02076900, SessionMessage_SetVillagerEntryByte6C)
+CLEAN_AS(func_02076900, SessionMessage_SetVillagerMemoryFondness)
 
-/* func_020765cc: an item (2 bytes) and a villager (byte 2): the villager's item 0x7d2 becomes
- * it when it is one of 0x11a8-0x12a7 (SessionVillager_SendItem7D2ByIndex sends only those). */
-void SessionMessage_SetVillagerItem7D2(int size, int kind, u8 scene, u32 slot)
+/* func_020765cc: an item (2 bytes) and a villager (byte 2): the villager's clothes (its item
+ * 0x7d2) become it when it is one of 0x11a8-0x12a7 (SessionVillager_SendClothesByIndex sends only those). */
+void SessionMessage_SetVillagerClothes(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -500,7 +500,7 @@ void SessionMessage_SetVillagerItem7D2(int size, int kind, u8 scene, u32 slot)
         TownVillager_SetClothes(villager, &item);
     }
 }
-CLEAN_AS(func_020765cc, SessionMessage_SetVillagerItem7D2)
+CLEAN_AS(func_020765cc, SessionMessage_SetVillagerClothes)
 
 /* func_02076568: four items (2 bytes each) and a villager (byte 8): the villager's items from
  * 0x7b0. */
@@ -623,7 +623,7 @@ CLEAN_AS(func_020766f8, SessionMessage_SetVillagerObject)
 
 /* func_0207689c: an item (bytes 0-1) and a villager and entry (byte 2): the entry's item 0x6a,
  * when func_02081edc allows. */
-void SessionMessage_SetVillagerEntryItem(int size, int kind, u8 scene, u32 slot)
+void SessionMessage_SetVillagerMemoryItem(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -634,7 +634,7 @@ void SessionMessage_SetVillagerEntryItem(int size, int kind, u8 scene, u32 slot)
     u32 index;
     u32 entry_index;
     Session_ReadMessage(data_020ccf94, bytes, 3);
-    SessionVillager_UnpackEntryItem(&index, &entry_index, &item, bytes);
+    SessionVillager_UnpackMemoryItem(&index, &entry_index, &item, bytes);
     u8 *villager = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;
@@ -644,7 +644,7 @@ void SessionMessage_SetVillagerEntryItem(int size, int kind, u8 scene, u32 slot)
         VillagerMemoryEntry_SetItem((VillagerMemory *) (void *) entry, &item);
     }
 }
-CLEAN_AS(func_0207689c, SessionMessage_SetVillagerEntryItem)
+CLEAN_AS(func_0207689c, SessionMessage_SetVillagerMemoryItem)
 
 /* func_02076638: an item (bytes 0-1) and a villager (byte 2; byte 3 is read and not used):
  * the item of the villager's object in use (0x2c) becomes it when it fits the object's type:

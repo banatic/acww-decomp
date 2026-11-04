@@ -376,12 +376,12 @@ static void ftt_read_friendship(FortuneTeller *teller, u8 *record, int luck, Des
         case FORTUNE_TELLER_LUCK_GOOD:
             ftt_mark_villager(entry, FT_COUNTER_GOOD, FT_STATE_GOOD);
             VillagerMemoryEntry_ChangeFondness(memory, FT_FONDNESS_GOOD);
-            SessionVillager_SendEntryByte6C(villager, index, VillagerMemoryEntry_Fondness(memory));
+            SessionVillager_SendMemoryFondness(villager, index, VillagerMemoryEntry_Fondness(memory));
             break;
         case FORTUNE_TELLER_LUCK_BAD:
             ftt_mark_villager(entry, FT_COUNTER_BAD, FT_STATE_BAD);
             VillagerMemoryEntry_ChangeFondness(memory, FT_FONDNESS_BAD);
-            SessionVillager_SendEntryByte6C(villager, index, VillagerMemoryEntry_Fondness(memory));
+            SessionVillager_SendMemoryFondness(villager, index, VillagerMemoryEntry_Fondness(memory));
             break;
         default:
             break;

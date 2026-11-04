@@ -251,7 +251,7 @@ void VillagerTalk_OnEvent14(VillagerTalk *talk, int event)
         VillagerImpression_Choose(villager_talk_record(talk), (s8 *) talk->memory, NULL);
         if (talk->memory_index != -1) {
             int impression = VillagerMemoryEntry_Impression((VillagerMemory *) (void *) talk->memory);
-            SessionVillager_SendEntryByte6D(villager_talk_record(talk), talk->memory_index, impression);
+            SessionVillager_SendMemoryImpression(villager_talk_record(talk), talk->memory_index, impression);
         }
         if (villager_talk_record(talk) != NULL) {
             VillagerEntry_NoteVisitor(villager_talk_record(talk), NULL);
