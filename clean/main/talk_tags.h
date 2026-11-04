@@ -178,7 +178,7 @@ void TalkTags_ThreeChoices(TalkTagsWalker *walker);
 void TalkTags_TwoChoices(TalkTagsWalker *walker);
 
 /* Group 1. */
-void TalkTags_SetTalkWord10(TalkTagsWalker *walker);
+void TalkTags_SetAutoAdvance(TalkTagsWalker *walker);
 void TalkTags_Receiver1cWith4(TalkTagsWalker *walker);
 void TalkTags_Receiver1cWith3(TalkTagsWalker *walker);
 void TalkTags_Receiver1cWith2(TalkTagsWalker *walker);

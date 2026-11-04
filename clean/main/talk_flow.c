@@ -428,7 +428,7 @@ void TalkFlow_EnterOpening(TalkObject *talk)
     if (data_020ccf94 != NULL) {
         QuickMessage_Dismiss((unsigned int) data_020ccf94->local_slot);
     }
-    if (talk->unk_1e99 == 0) {
+    if (talk->mute_open_sound == 0) {
         SoundSys_PlaySe(TALK_FLOW_SE_OPEN);
     }
     if (talk->silent == 0 && talk->mode != 1 && talk->mode != 2 && talk->mode != 3) {
@@ -502,7 +502,7 @@ CLEAN_AS(func_02067b1c, TalkFlow_EndAtLast)
 void TalkFlow_End(TalkObject *talk)
 {
     TalkFlow_NextMessage(talk);
-    talk->unk_1e99 = 0;
+    talk->mute_open_sound = 0;
 }
 CLEAN_AS(func_02067b3c, TalkFlow_End)
 

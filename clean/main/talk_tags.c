@@ -1203,14 +1203,14 @@ void TalkTags_TwoChoices(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206a8f4, TalkTags_TwoChoices)
 
-/* func_0206a978 (tag 1/16): the talk's word 0x10 set to the tag's first byte. */
-void TalkTags_SetTalkWord10(TalkTagsWalker *walker)
+/* func_0206a978 (tag 1/16): the talk's auto-advance (its word 0x10) set to the tag's first byte. */
+void TalkTags_SetAutoAdvance(TalkTagsWalker *walker)
 {
     u8 value;
     MessageTag_GetFirstByte(&walker->tag, &value);
     TalkObject_SetAutoAdvance(talk_tags_object(walker), value);
 }
-CLEAN_AS(func_0206a978, TalkTags_SetTalkWord10)
+CLEAN_AS(func_0206a978, TalkTags_SetAutoAdvance)
 
 /* func_0206a998 (tag 1/15): the receiver's slot 0x1c handed 4. */
 void TalkTags_Receiver1cWith4(TalkTagsWalker *walker)
@@ -1520,7 +1520,7 @@ void TalkTags_DispatchGroup2(TalkTagsWalker *walker)
 CLEAN_AS(func_0206b510, TalkTags_DispatchGroup2)
 
 /* func_0206b608 (group 1): kinds 0 to 16, the walk's own tags (TalkTags_Pause to
- * TalkTags_SetTalkWord10). */
+ * TalkTags_SetAutoAdvance). */
 void TalkTags_DispatchGroup1(TalkTagsWalker *walker)
 {
     static const MemberPointer *const constants[17] = {

@@ -213,8 +213,8 @@ int ErrorMessage_WaitUp(ErrorMessage *error)
 CLEAN_AS(func_ov002_0220b804, ErrorMessage_WaitUp)
 
 /* func_ov002_0220b830: resets the receiver to message `*message` of "obj_etc_error", gives it
- * to the error's talk and starts the talk (without `flag`, the talk's byte 0x1e99 is set
- * too); a message that is not fatal darkens the sub screen now. */
+ * to the error's talk and starts the talk (without `flag`, the talk's window opens without
+ * its sound, TalkObject_MuteOpenSound); a message that is not fatal darkens the sub screen now. */
 void ErrorMessage_StartTalk(ErrorMessage *error, const u8 *message, int flag)
 {
     TalkObject *talk = TalkObject_Get(ERROR_TALK);
@@ -226,7 +226,7 @@ void ErrorMessage_StartTalk(ErrorMessage *error, const u8 *message, int flag)
     TalkObject_AttachReceiver(talk, receiver);
     TalkObject_SetSilent(talk);
     if (flag == 0) {
-        TalkObject_SetUnk1e99(talk);
+        TalkObject_MuteOpenSound(talk);
     }
     talk->next_state = TALK_OBJECT_OPENING;
     TalkObject_Hold(talk);

@@ -462,12 +462,12 @@ void TalkObject_SetQuiet(TalkObject *talk)
 }
 CLEAN_AS(func_020682fc, TalkObject_SetQuiet)
 
-/* func_02068308 */
-void TalkObject_SetUnk1e99(TalkObject *talk)
+/* func_02068308: the window opens without its sound until the talk ends (TalkFlow_End). */
+void TalkObject_MuteOpenSound(TalkObject *talk)
 {
-    talk->unk_1e99 = 1;
+    talk->mute_open_sound = 1;
 }
-CLEAN_AS(func_02068308, TalkObject_SetUnk1e99)
+CLEAN_AS(func_02068308, TalkObject_MuteOpenSound)
 
 /* func_02068314 */
 void TalkObject_SetSilent(TalkObject *talk)
@@ -719,7 +719,7 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     talk->unk_1e96 = 0;
     talk->voiced = 0;
     talk->silent = 0;
-    talk->unk_1e99 = 0;
+    talk->mute_open_sound = 0;
     talk->quiet = 0;
     MI_CpuFill8(talk->name, 0, TALK_OBJECT_NAME_SIZE);
     return talk;

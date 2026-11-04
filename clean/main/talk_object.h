@@ -130,7 +130,7 @@ typedef struct TalkObject {
     u8 unk_1e96;                            /* 0x1e96 */
     u8 voiced;                              /* 0x1e97: the speaker says the characters shown (the mouth moves) */
     u8 silent;                              /* 0x1e98: no voice, no input and the music kept as it is */
-    u8 unk_1e99;                            /* 0x1e99 */
+    u8 mute_open_sound;                     /* 0x1e99: the window opens without its sound */
     u8 quiet;                               /* 0x1e9a: no sounds of the window */
     u8 pad_1e9b;
 } TalkObject;
@@ -164,7 +164,7 @@ void TalkObject_FreeAll(void);
 void TalkObject_AllocAll(void);
 TalkObject *TalkObject_Get(int index);
 void TalkObject_SetQuiet(TalkObject *talk);
-void TalkObject_SetUnk1e99(TalkObject *talk);
+void TalkObject_MuteOpenSound(TalkObject *talk);
 void TalkObject_SetSilent(TalkObject *talk);
 void TalkObject_DetachReceiver(TalkObject *talk);
 void TalkObject_AttachReceiver(TalkObject *talk, TalkReceiver *receiver);
