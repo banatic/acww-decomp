@@ -1052,7 +1052,7 @@ int BirthdayVillagerTalk_LikesItem(BirthdayVillagerTalk *talk, u16 *item)
         case 3:
             return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_CLOTHES_FIRST, BIRTHDAY_VILLAGER_CLOTHES_LAST);
         case 4:
-            return ItemCode_HasVariant(item) &&
+            return ItemCode_IsFurniture(item) &&
                    !birthday_villager_item_in(item, BIRTHDAY_VILLAGER_FOSSIL_FIRST, BIRTHDAY_VILLAGER_FOSSIL_LAST);
         default:
             return 0;

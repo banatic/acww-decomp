@@ -194,7 +194,7 @@ void RoomObject_SetUp(RoomObject *object)
     if (object->number > LAST_NUMBER) {
         object->number = LAST_NUMBER;
     }
-    (void) ItemCode_MakeVariant(object->number, 0);
+    (void) ItemCode_MakeFurniture(object->number, 0);
     object->layer = (u8) PLACE_ON_TOP(word);
     if (!RoomObject_IsUnplaced(object) && object->layer == LAYER_FLOOR) {
         object->position.y = 0;

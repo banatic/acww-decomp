@@ -278,7 +278,7 @@ void MyDesigns_PlaceEasel(MyDesigns *self)
         case MY_DESIGNS_BUTTON_HEAD:
             result = RoomPlacement_PlaceMyHat(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
-        case MY_DESIGNS_BUTTON_FURNITURE:
+        case MY_DESIGNS_BUTTON_EASEL:
             result = RoomPlacement_PlaceMyEasel(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
         case MY_DESIGNS_BUTTON_HELD:

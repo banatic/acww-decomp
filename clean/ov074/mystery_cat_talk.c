@@ -199,7 +199,7 @@ void MysteryCatTalk_Line(MysteryCatTalk *talk, MysteryCatLine *out)
     if (PlayerId_IsSet(&maker)) {
         SceneBase_PutPlayerName(&talk->base, &maker, 1);
         SceneBase_PutTownName(&talk->base, (unsigned int) (uintptr_t) PlayerId_Town(&maker), 0);
-        u8 impression = WfcStats_Byte237(&data_021f3278);
+        u8 impression = MysteryCatRecord_Impression(&data_021f3278);
         TalkObject_LoadPart(mcat_talk_object(talk), 2, &impression, (unsigned int) (uintptr_t) data_ov074_02279d28);
         DesignInfo_TitleToText(&info, &title);
         TalkObject_SetPart(mcat_talk_object(talk), 3, (TextBase *) (void *) &title);
