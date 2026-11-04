@@ -148,7 +148,7 @@ static int it_ask_price(InsurerTalk *talk, int price)
  * - 0x28-0x2c: the first answer 0x04, the second 0x02;
  * - 0x08: the fox's weekday is the answer plus 1 (EventSchedule.fox_day), and 0x09;
  * - 0x0c, answers 0-4: 0x0d, the explanations start afresh, and his event 0x3c is barred for
- *   the week from the Sunday after (answer 4) or no longer barred (EventSchedule_Bar3c);
+ *   the week from the Sunday after (answer 4) or no longer barred (EventSchedule_BarInsurer);
  * - 0x15, 0x17, answered 0: the insurance's 3000 bells asked; 0x1d, 0x27: the cover's 6000;
  * - 0x20, 0x21, answered 0: 0x23;
  * - 0x23: the pockets' screen for a claim.
@@ -180,7 +180,7 @@ void InsurerTalk_OnAnswer(InsurerTalk *talk)
                 next = INSURER_LINE_EXPLAIN_START;
                 MI_CpuFill8(talk->owner->explained, 0, INSURER_EXPLANATIONS);
                 talk->explained_count = 0;
-                EventSchedule_Bar3c(0, answer == IT_ANSWER_BAR ? 1 : 0);
+                EventSchedule_BarInsurer(0, answer == IT_ANSWER_BAR ? 1 : 0);
             }
             break;
         case INSURER_LINE_OFFER:

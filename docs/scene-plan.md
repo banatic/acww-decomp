@@ -3652,7 +3652,7 @@ What reading the Clean code found about the groups above; counts are of function
 ### The insurance seller barred for a week, the tourney's record beaten (2026-10-30, rows12, third batch)
 - The insurance seller's question about himself (line 0x0c of sp_npc_insurance) has five answers;
   the last, that he should keep away, bars his event 0x3c for the week from the Sunday after
-  (InsurerTalk_OnAnswer, EventSchedule_Bar3c: EventSchedule_WeekEdge): insurance's survey with
+  (InsurerTalk_OnAnswer, EventSchedule_BarInsurer: EventSchedule_WeekEdge): insurance's survey with
   that answer, scene insurance-bar.
 - The day's record of the fishing tourney is drawn again at the day's start (a villager with the
   fish 0x1318, size 0x44304 on 25 October), whatever the save holds, so a save's smaller size does

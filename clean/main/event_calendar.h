@@ -37,7 +37,8 @@
 /* An event number for none. */
 #define EVENT_CALENDAR_NONE 0x63
 
-/* Event numbers with code of their own. 0x3d is the fox's (fox_shop.h): its letters go out
+/* Event numbers with code of their own. 0x3c is the insurer's visit (ov071 insurer_talk.c
+ * bars it), 0x40 Gracie's (ov070 giraffe_talk.c, ov003 giraffe_spot.c). 0x3d is the fox's (fox_shop.h): its letters go out
  * the day before its day of the schedule (EventSchedule_Update). */
 #define EVENT_CALENDAR_EVENT_0B 0x0b
 #define EVENT_CALENDAR_EVENT_16 0x16
@@ -45,13 +46,13 @@
 #define EVENT_CALENDAR_EVENT_19 0x19
 #define EVENT_CALENDAR_EVENT_29 0x29
 #define EVENT_CALENDAR_EVENT_2A 0x2a
-#define EVENT_CALENDAR_EVENT_3C 0x3c
+#define EVENT_CALENDAR_INSURER 0x3c
 #define EVENT_CALENDAR_FOX 0x3d
-#define EVENT_CALENDAR_EVENT_40 0x40
+#define EVENT_CALENDAR_GRACIE 0x40
 #define EVENT_CALENDAR_SPACESHIP 0x44
 #define EVENT_CALENDAR_EVENT_45 0x45
 #define EVENT_CALENDAR_EVENT_48 0x48
-#define EVENT_CALENDAR_EVENT_60 0x60 /* looked up in the schedule as 0x40 */
+#define EVENT_CALENDAR_EVENT_60 0x60 /* Gracie's other day: looked up in the schedule as 0x40 */
 #define EVENT_CALENDAR_EVENT_61 0x61
 #define EVENT_CALENDAR_EVENT_62 0x62
 

@@ -42,9 +42,9 @@ typedef struct EventScheduleDay {
 
 typedef struct EventSchedule {
     u8 unk_00[8];
-    Date no_3c_from;  /* 0x08: event 0x3c is not held in the 7 days from it (1 Jan 2000: none) */
-    Date no_fox_from; /* 0x0c: nor is the fox */
-    u8 fox_day;       /* 0x10: the fox's weekday (1-5), set by overlay 71 */
+    Date no_insurer_from; /* 0x08: the insurer's visit (0x3c) is not held in the 7 days from it (1 Jan 2000: none) */
+    Date no_fox_from;     /* 0x0c: nor is the fox */
+    u8 fox_day;           /* 0x10: the fox's weekday (1-5), set by overlay 71 */
     u8 unk_11;
     u8 today_event;                             /* 0x12 */
     u8 today_weekday;                           /* 0x13 */
@@ -64,8 +64,8 @@ void EventSchedule_LoadTodayPlayers(EventSchedule *unused);
 void EventSchedule_UpdateToday(EventSchedule *schedule);
 int EventSchedule_HasTakenPart(int event);
 int EventSchedule_FoxBarred(EventKey date);
-void EventSchedule_Bar3c(int previous, int set);
-int EventSchedule_3cBarred(EventKey date);
+void EventSchedule_BarInsurer(int previous, int set);
+int EventSchedule_InsurerBarred(EventKey date);
 void EventSchedule_WeekEdge(DateTime *out, int previous);
 void EventSchedule_MarkToday(u32 event);
 int EventSchedule_IndexOf(EventSchedule *schedule, int event);

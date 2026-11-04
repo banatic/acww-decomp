@@ -4,7 +4,7 @@
 # A every 40 frames through his survey (the first answers: the fox's weekday) to his question about
 # himself (line 0x0c of sp_npc_insurance, about 7400); DOWN four times picks its fifth answer, that
 # he should keep away: his event 0x3c is barred for the week from the Sunday after
-# (InsurerTalk_OnAnswer, EventSchedule_Bar3c, EventSchedule_WeekEdge), and his explanations start
+# (InsurerTalk_OnAnswer, EventSchedule_BarInsurer, EventSchedule_WeekEdge), and his explanations start
 # again (line 0x0d), to 7915.
 900 START -
 906 - -

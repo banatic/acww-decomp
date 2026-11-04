@@ -12,7 +12,7 @@
 #include "main_random.h"
 
 static_assert(sizeof(EventScheduleDay) == 6, "EventScheduleDay");
-static_assert(offsetof(EventSchedule, no_3c_from) == 0x08, "EventSchedule.no_3c_from");
+static_assert(offsetof(EventSchedule, no_insurer_from) == 0x08, "EventSchedule.no_insurer_from");
 static_assert(offsetof(EventSchedule, fox_day) == 0x10, "EventSchedule.fox_day");
 static_assert(offsetof(EventSchedule, today_event) == 0x12, "EventSchedule.today_event");
 static_assert(offsetof(EventSchedule, days) == 0x14, "EventSchedule.days");
@@ -97,7 +97,7 @@ int EventSchedule_IsExcluded(int event, u8 weekday)
         return 0;
     }
     if (event == EVENT_CALENDAR_EVENT_60) {
-        event = EVENT_CALENDAR_EVENT_40;
+        event = EVENT_CALENDAR_GRACIE;
     }
     EventScheduleDay *day = EventSchedule_Day(&data_021f39c0, weekday);
     if (day == NULL) {
@@ -209,12 +209,12 @@ int EventSchedule_FoxBarred(EventKey date)
 }
 CLEAN_AS(func_02040a90, EventSchedule_FoxBarred)
 
-/* func_02040adc: event 0x3c barred for the 7 days from the week's edge (EventSchedule_WeekEdge:
+/* func_02040adc: the insurer's visit (event 0x3c) barred for the 7 days from the week's edge (EventSchedule_WeekEdge:
  * `previous` 1 for the Saturday before this week, else the Sunday after), or no longer barred
  * (`set` 0). */
-void EventSchedule_Bar3c(int previous, int set)
+void EventSchedule_BarInsurer(int previous, int set)
 {
-    Date *from = &data_021f39c0.no_3c_from;
+    Date *from = &data_021f39c0.no_insurer_from;
     if (set == 0) {
         from->day = 1;
         from->month = 1;
@@ -228,14 +228,14 @@ void EventSchedule_Bar3c(int previous, int set)
     from->month = edge.month;
     from->year = edge.year;
 }
-CLEAN_AS(func_02040adc, EventSchedule_Bar3c)
+CLEAN_AS(func_02040adc, EventSchedule_BarInsurer)
 
-/* func_02040b20: 1 when `date` is in the 7 days event 0x3c is barred from. */
-int EventSchedule_3cBarred(EventKey date)
+/* func_02040b20: 1 when `date` is in the 7 days the insurer's visit (event 0x3c) is barred from. */
+int EventSchedule_InsurerBarred(EventKey date)
 {
-    return in_week_from(&data_021f39c0.no_3c_from, date);
+    return in_week_from(&data_021f39c0.no_insurer_from, date);
 }
-CLEAN_AS(func_02040b20, EventSchedule_3cBarred)
+CLEAN_AS(func_02040b20, EventSchedule_InsurerBarred)
 
 /* func_02040b6c: in `out`, the clock's date and time moved to the Saturday before this week
  * (`previous` 1) or to the Sunday after it. */
@@ -613,7 +613,7 @@ int EventSchedule_CountFreeDays(EventSchedule *unused, int *free_days, DateTime 
 }
 CLEAN_AS(func_02041140, EventSchedule_CountFreeDays)
 
-/* The date no_3c_from and no_fox_from hold when nothing is barred: 1 January 2000. */
+/* The date no_insurer_from and no_fox_from hold when nothing is barred: 1 January 2000. */
 static void event_schedule_clear_bar(Date *from)
 {
     from->day = 1;
@@ -622,7 +622,7 @@ static void event_schedule_clear_bar(Date *from)
     from->unused = 0;
 }
 
-/* func_02041194: when the game is started: a bar on event 0x3c or the fox 7 or more days old
+/* func_02041194: when the game is started: a bar on the insurer's visit (event 0x3c) or the fox 7 or more days old
  * lifted, the week drawn if it is a new one, the calendar's list of today's events made again
  * and the announcements reset (event_announce.h). */
 void EventSchedule_FinishStart(EventSchedule *schedule)
@@ -630,8 +630,8 @@ void EventSchedule_FinishStart(EventSchedule *schedule)
     Date today;
 
     Calendar_Today(&today);
-    if (Calendar_DaysFrom(&today, &schedule->no_3c_from) >= 7) {
-        event_schedule_clear_bar(&schedule->no_3c_from);
+    if (Calendar_DaysFrom(&today, &schedule->no_insurer_from) >= 7) {
+        event_schedule_clear_bar(&schedule->no_insurer_from);
     }
     Calendar_Today(&today);
     if (Calendar_DaysFrom(&today, &schedule->no_fox_from) >= 7) {
@@ -666,7 +666,7 @@ void EventSchedule_Reset(EventSchedule *schedule)
     schedule->unk_00[5] = today.month;
     schedule->unk_00[6] = today.year;
     schedule->unk_00[7] = today.unused;
-    event_schedule_clear_bar(&schedule->no_3c_from);
+    event_schedule_clear_bar(&schedule->no_insurer_from);
     event_schedule_clear_bar(&schedule->no_fox_from);
     schedule->fox_day = (u8) (MainRandom_Below(EVENT_SCHEDULE_DAYS) + 1);
     schedule->unk_11 = EVENT_CALENDAR_NONE;

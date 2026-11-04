@@ -388,8 +388,8 @@ int EventCalendar_IsBlocked(const EventCalendarEntry *entry, EventKey date, cons
         return 1;
     }
     switch (event->id) {
-        case EVENT_CALENDAR_EVENT_3C:
-            return EventSchedule_3cBarred(date);
+        case EVENT_CALENDAR_INSURER:
+            return EventSchedule_InsurerBarred(date);
         case EVENT_CALENDAR_FOX:
             return EventSchedule_FoxBarred(date);
     }
@@ -578,7 +578,7 @@ EventKey EventCalendar_ScheduleKey(const EventRule *rule, int event, EventKey da
         return 0;
     }
     if (event == EVENT_CALENDAR_EVENT_60) {
-        event = EVENT_CALENDAR_EVENT_40;
+        event = EVENT_CALENDAR_GRACIE;
     }
     for (int i = 0; i < 2; i++) {
         day = EventSchedule_Day(schedule, weekday - 1 + i);
