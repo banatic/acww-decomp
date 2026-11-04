@@ -1,20 +1,8 @@
-/* func_ov096_0229f650 @ 0x0229f650, 0x10c bytes, Thumb, module ov096
+/* pockets_screen_27: 2 functions, module ov096
  * mwccarm 1.2/base -O4,s
+ * func_ov096_0229f650 @ 0x0229f650, 0x10c bytes, Thumb
+ * func_ov096_0229f5e0 @ 0x0229f5e0, 0x70 bytes, Thumb
  */
-
-extern int func_ov096_0229f820(void *, int);
-extern int func_ov096_0229f150(void *, int);
-extern int func_ov096_0229f830(void *, int);
-extern unsigned short func_ov096_0229f0dc(void *, int);
-extern int func_ov096_0229f088(void *, int);
-extern int func_ov096_0229defc(void *, void *, unsigned char, unsigned short *, int);
-extern void func_ov096_0229f5e0(void *, unsigned char, unsigned short, int);
-extern void func_ov096_0229e898(void *, int, int);
-extern int func_ov096_0229e71c(void *);
-extern void func_ov096_0229e29c(void *);
-extern void func_ov096_0229e67c(void *);
-extern int func_ov096_0229e1ec(void *);
-extern void func_ov096_0229c348(void *);
 
 typedef struct {
     unsigned char pad_00[0xac];
@@ -26,6 +14,27 @@ typedef struct {
     unsigned char pad_B5[11];
     unsigned char unk_C0;
 } UnkStruct_0229f650;
+
+extern int func_ov096_0229f820(void *, int);
+extern int func_ov096_0229f150(void *, int);
+extern int func_ov096_0229f830(void *, int);
+extern unsigned short func_ov096_0229f0dc(void *, int);
+extern int func_ov096_0229f088(void *, int);
+extern int func_ov096_0229defc(void *, void *, unsigned char, unsigned short *, int);
+extern void func_ov096_0229e898(void *, int, int);
+extern int func_ov096_0229e71c(void *);
+extern void func_ov096_0229e29c(void *);
+extern void func_ov096_0229e67c(void *);
+extern int func_ov096_0229e1ec(void *);
+extern void func_ov096_0229c348(void *);
+extern int func_ov096_0229f7ac(int p0, int p1);
+extern int func_ov096_0229f054(int p0, int p1);
+extern int func_ov096_0229e0a8(int p0, int p1);
+extern void func_ov094_0229aa14(int p0, int p1, int p2, int p3);
+extern void func_ov094_0229a9b4(int p0, int p1);
+extern unsigned short func_02065ed0(int p0, int p1, int p2);
+
+void func_ov096_0229f5e0(int a0, int a1, int a2, int a3);
 
 int func_ov096_0229f650(UnkStruct_0229f650 *self, int arg)
 {
@@ -40,7 +49,7 @@ int func_ov096_0229f650(UnkStruct_0229f650 *self, int arg)
         func_ov096_0229defc(self, &self->unk_AC, self->unk_B0, &tmp, func_ov096_0229f088(self, arg));
 
         if (tmp != 0xfff1) {
-            func_ov096_0229f5e0(self, self->unk_B4, tmp, func_ov096_0229f088(self, arg));
+            func_ov096_0229f5e0((int) self, (unsigned char) self->unk_B4, (unsigned short) tmp, func_ov096_0229f088(self, arg));
         }
         func_ov096_0229e898(self, arg, 1);
         return 1;
@@ -71,6 +80,24 @@ int func_ov096_0229f650(UnkStruct_0229f650 *self, int arg)
             return 1;
         } else {
             return 0;
+        }
+    }
+}
+
+void func_ov096_0229f5e0(int a0, int a1, int a2, int a3)
+{
+    if (func_ov096_0229f830((void *) a0, a1)) {
+        int ret = func_ov096_0229f7ac(a0, a1);
+        func_ov094_0229aa14(a0 + 0x358, ret, a2, a3);
+        func_ov094_0229a9b4(a0 + 0x358, ret);
+    } else {
+        if (func_ov096_0229f820((void *) a0, a1)) {
+            int ret2 = func_ov096_0229f054(a0, a1);
+            func_02065ed0(ret2, a2, a3);
+        } else {
+            if (a1 == 0x25) {
+                func_ov096_0229e0a8(a0, a2);
+            }
         }
     }
 }
