@@ -22,7 +22,7 @@
  *   action ends its mood is applied, the object event finished and it is unpaired.
  *
  * The walker's kinds (its `status`): 3 home (when its state entry's flag 1 is set, or at night
- * for its personality unless the current player has flag 1), 6 for a villager whose kind of
+ * for its personality unless the current player still works for Nook, flag 1), 6 for a villager whose kind of
  * the moment (byte 0x1c of its state entry) is 6, else one of 0, 2 and 4 at random
  * (data_ov068_022767ac), not the one it had. Walking home, behaviour 2 (or 16 first, to put
  * its held item away) starts within 0x800 of its door.

@@ -48,8 +48,8 @@ typedef struct TurtleFireworksFortunePart {
 #define TURTLE_FIREWORKS_LINE_FIRST_SATURDAY 0x00 /* the first talk of the day, on the month's first Saturday */
 #define TURTLE_FIREWORKS_LINE_SATURDAY 0x01       /* ... on another Saturday */
 #define TURTLE_FIREWORKS_LINE_LAST_SATURDAY 0x02  /* ... on its last Saturday; these and 0x06 end with a gift */
-#define TURTLE_FIREWORKS_LINE_GIVEN 0x03          /* the item given (byte 0x1c of the player 0) */
-#define TURTLE_FIREWORKS_LINE_GIVEN_OTHER 0x04    /* the item given (byte 0x1c of the player not 0) */
+#define TURTLE_FIREWORKS_LINE_GIVEN_BOY 0x03      /* the item given (byte 0x1c of the player 0) */
+#define TURTLE_FIREWORKS_LINE_GIVEN_GIRL 0x04     /* the item given (byte 0x1c of the player not 0) */
 #define TURTLE_FIREWORKS_LINE_NO_ROOM 0x05        /* the pockets are full */
 #define TURTLE_FIREWORKS_LINE_NOT_BOTH 0x06       /* later talks: the player lacks one of the two items */
 #define TURTLE_FIREWORKS_LINE_OFFER_FORTUNE 0x07  /* answered 0: the fortune letter */

@@ -28,8 +28,8 @@
 #define HELD_ITEM_DESIGN_LAST 0x13a7
 /* The fishing rods (their line takes kind 0 or 1) and the slingshots (their band takes kind 2);
  * other items' lines take kind 3. */
-#define HELD_ITEM_ROD_A 0x1374
-#define HELD_ITEM_ROD_B 0x1375
+#define HELD_ITEM_ROD 0x1374
+#define HELD_ITEM_GOLDEN_ROD 0x1375
 #define HELD_ITEM_SLINGSHOT 0x137a
 #define HELD_ITEM_GOLDEN_SLINGSHOT 0x137b
 /* The joint of the rods' model the line hangs from; other items use joint 0. */
@@ -118,8 +118,8 @@ void HeldItem_Draw(HeldItemObject *held, const Mtx43 *matrix)
     AnimatedModel_Draw(model, &scale);
 
     Mtx43 joint;
-    if (held_item_is(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index), HELD_ITEM_ROD_A) ||
-        held_item_is(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index), HELD_ITEM_ROD_B)) {
+    if (held_item_is(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index), HELD_ITEM_ROD) ||
+        held_item_is(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index), HELD_ITEM_GOLDEN_ROD)) {
         HeldItem_JointMatrix(&joint, &held->index, HELD_ITEM_ROD_JOINT);
     } else {
         HeldItem_JointMatrix(&joint, &held->index, 0);
@@ -316,9 +316,9 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
     }
 
     unsigned int line_kind;
-    if (held_item_is(item, HELD_ITEM_ROD_B)) {
+    if (held_item_is(item, HELD_ITEM_GOLDEN_ROD)) {
         line_kind = 1;
-    } else if (held_item_is(item, HELD_ITEM_ROD_A)) {
+    } else if (held_item_is(item, HELD_ITEM_ROD)) {
         line_kind = 0;
     } else if (held_item_is(item, HELD_ITEM_SLINGSHOT) || held_item_is(item, HELD_ITEM_GOLDEN_SLINGSHOT)) {
         line_kind = 2;
@@ -326,7 +326,7 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
         line_kind = 3;
     }
     FishingFloat_Setup((FishingFloat *) &held->line, index, owner, line_kind);
-    if (held_item_is(item, HELD_ITEM_ROD_A) || held_item_is(item, HELD_ITEM_ROD_B)) {
+    if (held_item_is(item, HELD_ITEM_ROD) || held_item_is(item, HELD_ITEM_GOLDEN_ROD)) {
         FishingFloat_SetState((FishingFloat *) &held->line, 1);
     }
 }

@@ -15,7 +15,7 @@
  *   plays its footsteps at frames 8, 12, 22, 27 and 34; at its end behaviour 3.
  * - 3: in its house: standing, unseen (the byte at 0x562 cleared, the state entry's state 0),
  *   its furniture's items stored; asleep (the entry's byte 0x01 is 2) at its sleep time unless
- *   the current player has flag 1. Each frame it is disabled (the byte at 0x561). Asleep, it
+ *   the current player still works for Nook (flag 1). Each frame it is disabled (the byte at 0x561). Asleep, it
  *   wakes once its sleep time is over (the wait then 600 to 639 frames); awake, it waits. When
  *   it comes out: on screen (OutdoorVillagerWalks_OnScreen) behaviour 4 unless this console's
  *   player is within 0x6000; off screen it is put in front of the house at once and walks on

@@ -52,7 +52,7 @@ extern const u8 data_ov077_02279600[5];
 #define MOLE_LINE_CLOSE_8 0x08
 #define MOLE_LINE_ASK 0x0b /* answered 0: 0x0d or 0x0e at random, else 0x0c or 0x0e */
 #define MOLE_LINE_ASK_YES 0x0d
-#define MOLE_LINE_ASK_NO 0x0c
+#define MOLE_LINE_ASK_YES_YES 0x0c
 #define MOLE_LINE_ASK_EITHER 0x0e
 #define MOLE_LINE_WAIT 0x0f /* ends with the 90 frames' wait */
 #define MOLE_LINE_WAITED 0x10
@@ -150,7 +150,7 @@ void MoleTalk_OnAnswer(MoleTalk *talk)
     u8 shown = mole_line_shown(talk);
 
     if (shown == MOLE_LINE_ASK) {
-        line = mole_either(MOLE_LINE_ASK_EITHER, answer == 0 ? MOLE_LINE_ASK_YES : MOLE_LINE_ASK_NO);
+        line = mole_either(MOLE_LINE_ASK_EITHER, answer == 0 ? MOLE_LINE_ASK_YES : MOLE_LINE_ASK_YES_YES);
     } else if (shown >= MOLE_LINE_GUESS_FIRST && shown <= MOLE_LINE_GUESS_LAST) {
         int low = (int) MainRandom_Below(MOLE_GUESS_RANGE);
         int step = (int) TalkAnswers_PickedStep(mole_choices(talk));

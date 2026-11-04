@@ -35,7 +35,7 @@
 #define VILLAGER_TALK_REQUEST_TYPE_LETTER 19
 
 /* The state an item handed over is put into the pockets with. */
-#define VILLAGER_TALK_REQUEST_POCKET_STATE 2
+#define VILLAGER_TALK_REQUEST_POCKET_ENTRUSTED 2
 #define VILLAGER_TALK_REQUEST_SOUND_5E 0x5e
 #define VILLAGER_TALK_REQUEST_WAITS 3
 /* What SceneBase_PutItemName is told the item is. */
@@ -202,7 +202,7 @@ void VillagerTalkRequest_Accept(VillagerTalk *talk)
     u8 *player = PlayerRecords_Current();
     (void) PlayerRecord_VillagerPart(player);
     u8 *record = request_record(talk);
-    u32 mode = VILLAGER_TALK_REQUEST_POCKET_STATE;
+    u32 mode = VILLAGER_TALK_REQUEST_POCKET_ENTRUSTED;
     if (request_block(talk) != NULL) {
         int type = request_type(talk);
         VillagerPartBlock_SetType(request_block(talk), type, TownVillager_NpcId(record), *request_other(talk));

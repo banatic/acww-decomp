@@ -35,7 +35,7 @@
  *  11  paused:    an event starts: nothing.
  *
  * Her talk scene (PostClerkTalk, post_clerk_talk.h) handles the letters, the savings, the
- * house's loan and the errands of the villagers, and starts linked games. */
+ * house's loan and the errands of the villagers, and moves the player to another town over DS wireless. */
 #ifndef CLEAN_OV054_POST_CLERK_H
 #define CLEAN_OV054_POST_CLERK_H
 
@@ -57,7 +57,7 @@ typedef struct PostClerkTalk {
     u8 unk_bd[3];            /* 0xbd */
     s32 balance;             /* 0xc0: the account's balance before its screen */
     s32 donations;           /* 0xc4: the town's donations before this one was added */
-    u16 search_frames;       /* 0xc8: the frames left to find a linked game */
+    u16 search_frames;       /* 0xc8: the frames left to find a town to move to */
     u8 unk_ca[0x1ac - 0xca]; /* 0xca */
 } PostClerkTalk;
 

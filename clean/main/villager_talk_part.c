@@ -43,8 +43,8 @@
 #define VILLAGER_TALK_PART_NO_SLOT (-1)
 
 /* The talk object's types handled here (step types of band 1, villager_part_block.h). */
-#define VILLAGER_TALK_PART_TYPE_10 10
-#define VILLAGER_TALK_PART_TYPE_19 19
+#define VILLAGER_TALK_PART_TYPE_ITEM 10
+#define VILLAGER_TALK_PART_TYPE_LETTER 19
 /* The villager object's types of group 0 that matter here (villager_talk_object.h). */
 #define VILLAGER_TALK_PART_TYPE_INSECT 0
 #define VILLAGER_TALK_PART_TYPE_FISH 1
@@ -306,9 +306,9 @@ static const VillagerTalkPartTexts *part_texts_by_type(VillagerTalk *talk, const
                                                        const VillagerTalkPartTexts *for_19)
 {
     switch (part_type(talk)) {
-        case VILLAGER_TALK_PART_TYPE_10:
+        case VILLAGER_TALK_PART_TYPE_ITEM:
             return for_10;
-        case VILLAGER_TALK_PART_TYPE_19:
+        case VILLAGER_TALK_PART_TYPE_LETTER:
             return for_19;
         default:
             return NULL;
@@ -398,7 +398,7 @@ CLEAN_AS(func_02026804, VillagerTalkPart_LineByPlaceStep9cc0)
 void VillagerTalkPart_LineClearBlock(VillagerTalk *talk, VillagerTalkLine *out)
 {
     const VillagerTalkPartTexts *texts = &data_020c8d88;
-    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_19) {
+    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_LETTER) {
         texts = &data_020c8d78;
     }
     part_line(talk, out, texts);
@@ -570,7 +570,7 @@ void VillagerTalkPart_StartByType(VillagerTalk *talk, int arg)
 {
     (void) arg;
     switch (part_type(talk)) {
-        case VILLAGER_TALK_PART_TYPE_10: {
+        case VILLAGER_TALK_PART_TYPE_ITEM: {
             TalkChoiceList list;
             TalkChoices_Clear(talk, &list);
             for (int i = 0; i < VILLAGER_TALK_PART_CHOICES; i++) {
@@ -584,7 +584,7 @@ void VillagerTalkPart_StartByType(VillagerTalk *talk, int arg)
             TalkObject_OpenChoices((TalkObject *) (void *) part_talk(talk), 1);
             break;
         }
-        case VILLAGER_TALK_PART_TYPE_19: {
+        case VILLAGER_TALK_PART_TYPE_LETTER: {
             int chance = MainRandom_Below(100);
             talk->item = ITEM_CODE_NONE;
             if (chance < VILLAGER_TALK_PART_ITEM_CHANCE) {
@@ -652,13 +652,13 @@ void VillagerTalkPart_LineTakeByType(VillagerTalk *talk, VillagerTalkLine *out)
 {
     const VillagerTalkPartTexts *texts = &data_020c8df0;
     switch (part_type(talk)) {
-        case VILLAGER_TALK_PART_TYPE_10:
+        case VILLAGER_TALK_PART_TYPE_ITEM:
             ItemObject_SetLow5(part_block_object(talk), 1);
             if (part_is_clothes(talk->item)) {
                 VillagerItems_Add(part_record(talk), &talk->item);
             }
             break;
-        case VILLAGER_TALK_PART_TYPE_19: {
+        case VILLAGER_TALK_PART_TYPE_LETTER: {
             Letter *letter = VillagerTalkScene_LetterToSend(part_pockets());
             ItemObject_SetLow5(part_block_object(talk), 1);
             texts = &data_020c8de8;
@@ -860,11 +860,11 @@ CLEAN_AS(func_02027914, VillagerTalkPart_ReactToClothes)
 void VillagerTalkPart_RaiseBondByType(VillagerTalk *talk)
 {
     switch (part_type(talk)) {
-        case VILLAGER_TALK_PART_TYPE_10:
+        case VILLAGER_TALK_PART_TYPE_ITEM:
             SceneCommand_RequestMotion18(&talk->scene);
             VillagerTalkScene_SetCommandEnd(talk, data_020d94d8);
             break;
-        case VILLAGER_TALK_PART_TYPE_19: {
+        case VILLAGER_TALK_PART_TYPE_LETTER: {
             Letter *letter = VillagerTalkScene_LetterToSend(part_pockets());
             if (letter != NULL) {
                 if (Letter_State(letter) == VILLAGER_TALK_PART_LETTER_STATE_7) {
@@ -900,7 +900,7 @@ CLEAN_AS(func_02027ad4, VillagerTalkPart_LineByType8e48)
 void VillagerTalkPart_TakeChosenItem(VillagerTalk *talk)
 {
     if (GroupParams_C4CIs1() == 0) {
-        if (part_type(talk) == VILLAGER_TALK_PART_TYPE_19) {
+        if (part_type(talk) == VILLAGER_TALK_PART_TYPE_LETTER) {
             part_next_line(talk);
         }
         VillagerTalkScene_SetLines(talk, data_021c2adc);
@@ -909,13 +909,13 @@ void VillagerTalkPart_TakeChosenItem(VillagerTalk *talk)
         int slot = GroupParams_Arg();
         PlayerPockets *pockets = part_pockets();
         switch (part_type(talk)) {
-            case VILLAGER_TALK_PART_TYPE_10: {
+            case VILLAGER_TALK_PART_TYPE_ITEM: {
                 u16 none = ITEM_CODE_NONE;
                 talk->item = *PlayerPockets_Slot(pockets, slot);
                 PlayerPockets_SetSlot(pockets, &none, slot, 0);
                 break;
             }
-            case VILLAGER_TALK_PART_TYPE_19:
+            case VILLAGER_TALK_PART_TYPE_LETTER:
                 VillagerTalkScene_SetNextCommandEnd(talk, data_020d8e48);
                 talk->item = VILLAGER_TALK_PART_LETTER_ITEM;
                 mode = 0;
@@ -951,12 +951,12 @@ CLEAN_AS(func_02027c64, VillagerTalkPart_Line8980)
 void VillagerTalkPart_AskPocketsByType(VillagerTalk *talk)
 {
     switch (part_type(talk)) {
-        case VILLAGER_TALK_PART_TYPE_10:
+        case VILLAGER_TALK_PART_TYPE_ITEM:
             SceneCommand_SetPocketPredicate(&talk->scene, (PocketPredicate) (void (*)(void)) func_02027d38, 13, 0);
             SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_POCKETS);
             VillagerTalkScene_SetCommandEnd(talk, data_020d8dc8);
             break;
-        case VILLAGER_TALK_PART_TYPE_19:
+        case VILLAGER_TALK_PART_TYPE_LETTER:
             SceneCommand_SetScreenMode(&talk->scene, 0x28, 1);
             SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_MODE);
             VillagerTalkScene_SetCommandEnd(talk, data_020d8e08);
@@ -987,7 +987,7 @@ CLEAN_AS(func_02027d68, VillagerTalkPart_Line8978)
  * second villager lowered by 20 and the block cleared. */
 void VillagerTalkPart_ShowObjectItemLowerBond(VillagerTalk *talk)
 {
-    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_19) {
+    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_LETTER) {
         SceneCommand_RequestMotion14(&talk->scene, ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)),
                                      0, 5, 0);
         VillagerTalkScene_SetCommandEnd(talk, data_020d8e00);
@@ -1040,7 +1040,7 @@ CLEAN_AS(func_02027f74, VillagerTalkPart_LineByType8990)
  * at the command's end; then the block cleared. */
 void VillagerTalkPart_ShowItemClear(VillagerTalk *talk)
 {
-    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_10) {
+    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_ITEM) {
         SceneCommand_RequestMotion14(&talk->scene, &talk->item, 2, 5, 0);
         VillagerTalkScene_SetCommandEnd(talk, data_020d90b8);
     }
@@ -1064,7 +1064,7 @@ void VillagerTalkPart_TakeMatchingItem(VillagerTalk *talk)
 {
     PlayerPockets *pockets = part_pockets();
     switch (part_type(talk)) {
-        case VILLAGER_TALK_PART_TYPE_10: {
+        case VILLAGER_TALK_PART_TYPE_ITEM: {
             int slot = VillagerTalkScene_PocketOfItem(
                 pockets, ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)));
             if (slot != VILLAGER_TALK_PART_NO_SLOT) {
@@ -1078,7 +1078,7 @@ void VillagerTalkPart_TakeMatchingItem(VillagerTalk *talk)
             part_say_set_if_on(talk);
             break;
         }
-        case VILLAGER_TALK_PART_TYPE_19:
+        case VILLAGER_TALK_PART_TYPE_LETTER:
             talk->item = VILLAGER_TALK_PART_LETTER_ITEM;
             SceneCommand_RequestMotion14(&talk->scene, &talk->item, 0, 5, 0);
             VillagerTalkScene_SetCommandEnd(talk, data_020d8f08);
@@ -1097,7 +1097,7 @@ CLEAN_AS(func_020280c8, VillagerTalkPart_TakeMatchingItem)
 void VillagerTalkPart_SayByLetter(VillagerTalk *talk)
 {
     PlayerPockets *pockets = part_pockets();
-    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_19) {
+    if (part_type(talk) == VILLAGER_TALK_PART_TYPE_LETTER) {
         Letter *letter = VillagerTalkScene_LetterToSend(pockets);
         if (letter != NULL) {
             if (Letter_State(letter) == VILLAGER_TALK_PART_LETTER_STATE_7) {

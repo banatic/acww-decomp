@@ -88,7 +88,7 @@ CLEAN_AS(func_ov075_02278aec, TownPelicanTalk_OnAnswer)
 void TownPelicanTalk_OnLineEnded(TownPelicanTalk *talk)
 {
     PlayerRecords_Current();
-    if (tpel_talk_line_shown(talk) == TOWN_PELICAN_LINE_FIRST) {
+    if (tpel_talk_line_shown(talk) == TOWN_PELICAN_LINE_GROAN) {
         SceneCommand_RequestTalkMode((SceneCommandScene *) (void *) talk, 0);
         TownPelicanTalk_SetSequence(talk, TOWN_PELICAN_TALK_SEQUENCE_WAKE);
     }
@@ -99,9 +99,9 @@ CLEAN_AS(func_ov075_02278b00, TownPelicanTalk_OnLineEnded)
  * or, when he was met and the current player has flag 6, one of 0x0c to 0x0f at random. */
 void TownPelicanTalk_Line(TownPelicanTalk *talk, TownPelicanLine *out)
 {
-    out->message = TOWN_PELICAN_LINE_FIRST;
+    out->message = TOWN_PELICAN_LINE_GROAN;
     if (talk->owner->met != 0 && PlayerRecord_TestFlag(PlayerRecords_Current(), TPEL_TALK_FLAG_MET)) {
-        out->message = (u8) (MainRandom_Below(4) + TOWN_PELICAN_LINE_AGAIN);
+        out->message = (u8) (MainRandom_Below(4) + TOWN_PELICAN_LINE_BUSY);
     }
     out->text = (u32) (uintptr_t) data_ov075_02279aa8;
 }

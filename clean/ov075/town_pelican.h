@@ -1,6 +1,6 @@
 /* Overlay 75: the pelican of the message file "sp_npc_mpelican" with the model npc_sp/model/plb
- * and its texture plb_tex (person code 0xd008), met in the town. Pete, the game's mail carrier,
- * is a male pelican, but nothing here names him; the post office's pelicans are another file
+ * and its texture plb_tex (person code 0xd008), met in the town: Pete, the game's mail carrier,
+ * whom his line 0x10 names; the post office's pelicans are another file
  * ("sp_npc_pelican"). The spawner's table (main's spawner.h, data_020e1d8c) makes him as object
  * profile 0x54 with code 0xd008 and loads overlay 75 with him; his record at 0x02279918 is what
  * main's profile table data_020e3134 points to for profile 0x54. He is put where the town's

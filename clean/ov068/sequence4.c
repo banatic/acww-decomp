@@ -490,7 +490,7 @@ static_assert(offsetof(SceneActor, message) == 0x10a, "message");
 #define SEQUENCE4_AHEAD_NUMERATOR 0x19000 /* the effect point ahead: 25.0 / 100.0 ... */
 #define SEQUENCE4_AHEAD_DENOMINATOR 0x64000
 #define SEQUENCE4_AHEAD_BACK 0xf6 /* ... less 0xf6, along x */
-#define SEQUENCE4_ID_MESSAGE 1    /* the message when the player's id byte 0x1c is 1 */
+#define SEQUENCE4_MESSAGE_GIRL 1  /* the message when the player's id byte 0x1c is 1 */
 
 /* The vtables: the class's and its receiver part's. */
 extern const u8 data_ov068_02277750[];
@@ -537,8 +537,8 @@ int Sequence4_EnterState4(Sequence4 *actor)
     MessageReceiver_SetName(&receiver->base, data_ov068_02277890);
     u8 *record = PlayerRecords_Current();
     int message = 0;
-    if (record != NULL && PlayerId_Gender((const s8 *) (void *) PlayerRecord_Player(record)) == SEQUENCE4_ID_MESSAGE) {
-        message = SEQUENCE4_ID_MESSAGE;
+    if (record != NULL && PlayerId_Gender((const s8 *) (void *) PlayerRecord_Player(record)) == SEQUENCE4_MESSAGE_GIRL) {
+        message = SEQUENCE4_MESSAGE_GIRL;
     }
     actor->base.message = (u8) message;
     TalkObject_AttachReceiver(talk, receiver);

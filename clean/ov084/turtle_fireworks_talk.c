@@ -243,11 +243,11 @@ void TurtleFireworksTalk_OnLineEnded(TurtleFireworksTalk *talk)
                 PlayerField2416 *field = (PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current());
                 if ((u32) PlayerField2416_FireworksGifts(field) < T4T_GIFTS_MAX) {
                     PlayerField2416_RaiseFireworksGifts(field);
-                    int other = PlayerId_Gender((const s8 *) (const void *) PlayerRecord_Player(PlayerRecords_Current()));
+                    int gender = PlayerId_Gender((const s8 *) (const void *) PlayerRecord_Player(PlayerRecords_Current()));
                     SceneCommand_RequestMotion13(t4t_scene(talk), &gift, 0, T4T_MOTION_B, 0);
                     CurrentPockets_Give(&gift, 0);
                     SceneBase_PutItemName(&talk->base, (int) (u32) (uintptr_t) &gift, 0, T4T_NAME_KIND);
-                    next = other == 0 ? TURTLE_FIREWORKS_LINE_GIVEN : TURTLE_FIREWORKS_LINE_GIVEN_OTHER;
+                    next = gender == 0 ? TURTLE_FIREWORKS_LINE_GIVEN_BOY : TURTLE_FIREWORKS_LINE_GIVEN_GIRL;
                 } else {
                     next = TURTLE_FIREWORKS_LINE_ALL_GIVEN;
                 }

@@ -91,7 +91,7 @@ CLEAN_AS(func_02048ab0, TownGrowth_ChangeLastStagesTo68)
  * acre fewer than two that holds one.
  *
  * BUG: with more than two such acres the count is below 0 and the loop goes round until it
- * wraps to 0, about 2^32 times (BUGFIX: none). */
+ * wraps to 0, about 2^32 times (BUGFIX: the count kept at 0). */
 void TownGrowth_ChangeLastStagesTo66(TownDay *town, AcreMap *map, int wide, int high)
 {
     u32 missing = (u32) (TOWN_GROWTH_ACRES_66 - TownAcreCount_Totals(&data_021c779c)->acres_66);

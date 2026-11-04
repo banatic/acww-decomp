@@ -161,10 +161,10 @@ void TownSpot_Construct(TownSpot *spot)
 }
 CLEAN_AS(func_02087a74, TownSpot_Construct)
 
-/* The objects that keep a tile from suiting: the event buildings, and (beside the tile) the
+/* The objects that keep a tile from suiting: the buildings, and (beside the tile) the
  * codes of the growth lines and 0x66-0x6d (map_item.h) past their first stage. */
-#define TOWN_SPOT_EVENT_BUILDING_FIRST 0x5000
-#define TOWN_SPOT_EVENT_BUILDING_LAST 0x5021
+#define TOWN_SPOT_BUILDING_FIRST 0x5000
+#define TOWN_SPOT_BUILDING_LAST 0x5021
 
 /* The acre of a tile, with the ROM's arithmetic shift for tiles left of or above the map. */
 static int town_spot_acre_of(int tile)
@@ -172,9 +172,9 @@ static int town_spot_acre_of(int tile)
     return tile >= 0 ? tile / TOWN_SPOT_ACRE_TILES : ~(~tile / TOWN_SPOT_ACRE_TILES);
 }
 
-static int town_spot_is_event_building(u16 code)
+static int town_spot_is_building(u16 code)
 {
-    return code >= TOWN_SPOT_EVENT_BUILDING_FIRST && code <= TOWN_SPOT_EVENT_BUILDING_LAST;
+    return code >= TOWN_SPOT_BUILDING_FIRST && code <= TOWN_SPOT_BUILDING_LAST;
 }
 
 /* The growth lines 0x26-0x2a, 0x2f-0x56, 0x57-0x5b, 0x5d-0x61 and 0xc8-0xcf, and the codes
@@ -204,7 +204,7 @@ static const u16 *town_spot_item(AcreMap *map, int x, int z)
 
 /* func_02088024: whether an actor may be put on tile (x, z) of the map: the tile is clear
  * (TownTile_IsClear), and for the tiles 1 and then 2 away in +z and in -z (asked in the order
- * +1, -1, +2, -2) each is on the map and holds no event building (0x5000-0x5021); the ones in
+ * +1, -1, +2, -2) each is on the map and holds no building (0x5000-0x5021); the ones in
  * +z must also not hold an object func_0204c71c accepts, nor a growing object past its first
  * stage (MapItem_IsStage0 is asked first). 0 without a map. */
 int TownSpot_TileSuits(int x, int z, AcreMap *map)
@@ -217,7 +217,7 @@ int TownSpot_TileSuits(int x, int z, AcreMap *map)
     }
     for (int i = 1; i <= 2; i++) {
         const u16 *item = town_spot_item(map, x, z + i);
-        if (item == NULL || town_spot_is_event_building(*item)) {
+        if (item == NULL || town_spot_is_building(*item)) {
             return 0;
         }
         if (MapCode_IsSpecial(item) != 0) {
@@ -227,7 +227,7 @@ int TownSpot_TileSuits(int x, int z, AcreMap *map)
             return 0;
         }
         item = town_spot_item(map, x, z - i);
-        if (item == NULL || town_spot_is_event_building(*item)) {
+        if (item == NULL || town_spot_is_building(*item)) {
             return 0;
         }
     }

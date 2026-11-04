@@ -46,9 +46,9 @@ typedef struct TownPelicanLine {
 } TownPelicanLine;
 
 /* The lines of "sp_npc_mpelican". */
-#define TOWN_PELICAN_LINE_AGAIN 0x0c /* 0x0c to 0x0f: met, and the player has flag 6 */
+#define TOWN_PELICAN_LINE_BUSY 0x0c  /* 0x0c to 0x0f: met, and the player has flag 6 */
 #define TOWN_PELICAN_LINE_MET 0x10   /* the first meeting of the player */
-#define TOWN_PELICAN_LINE_FIRST 0x1a /* otherwise; its end begins sequence 1 */
+#define TOWN_PELICAN_LINE_GROAN 0x1a /* otherwise; its end begins sequence 1 */
 
 void TownPelicanTalk_OnAnswer(TownPelicanTalk *talk);
 void TownPelicanTalk_OnLineEnded(TownPelicanTalk *talk);

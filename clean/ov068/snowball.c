@@ -810,7 +810,8 @@ void Snowball_Burst(Snowman *ball)
 CLEAN_AS(func_ov068_0226fcbc, Snowball_Burst)
 
 /* func_ov068_0226fd28: a snowman's face from the ratio of its head's size to its body's (20.12):
- * 0 from 0.9 to below 1.0 (the best), 1 from 0.8 or up to 1.1, 2 from 0.7 or up to 1.2, else 3. */
+ * 0 from 0.8 to below 0.9 (the best), 1 in [0.7, 0.8) or [0.9, 1.0), 2 in [0.6, 0.7) or
+ * [1.0, 1.1), else 3. */
 int Snowball_Face(fx32 ratio)
 {
     if (ratio < 0x99a) {
