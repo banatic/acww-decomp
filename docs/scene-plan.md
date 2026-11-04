@@ -3064,7 +3064,7 @@ What reading the Clean code found about the groups above; counts are of function
 - Found reachable (a trigger for a scene): the post clerk's savings line is 0x1f plus the rank
   whose range holds the town-wide total, or, when the total is below the first range (10,000
   bells, data_ov054_02262a18), 0x1f plus the account's own rank byte
-  (PostClerkTalk_TellSavingsRank, after lines 0x1d and 0x1e of a deposit). That byte is the
+  (PostClerkTalk_TellDonationRank, after lines 0x1d and 0x1e of a deposit). That byte is the
   current player's (SavingsAccount.rank, in the save), so a save with the rank set and a
   town-wide total below 10,000 shows any line of the clerk's own file (opelican_ or ypelican_):
   rank 0x1d gives line 0x3c, whose end sets her LEAVE state (PostClerk_EnterLeave and
@@ -3111,7 +3111,7 @@ What reading the Clean code found about the groups above; counts are of function
 ### The post clerk's lines by the savings rank: her leave and the move out, the linked game ended, step 14, the gift's summary (2026-10-30, clerk6)
 - Saves rank-19, rank-1c, rank-1d and rank-1f (tools/scenes.py): the current player's savings
   rank (the byte at 0x23e4 of the record) set; the seed's town-wide total is 0, so after
-  town-hall's donation of 100 bells PostClerkTalk_TellSavingsRank shows line 0x1f plus that byte.
+  town-hall's donation of 100 bells PostClerkTalk_TellDonationRank shows line 0x1f plus that byte.
 - savings-leave (0x1d): line 0x3c, at whose end she leaves (PostClerk_EnterLeave, _UpdateLeave,
   Block020b220c_SetFlag4b1c) and the second sequence of ov068/sequence4.h walks the player out to
   the car (states 10-16, field actor state 0x88, SceneActor_IsInMode0); the title follows at
@@ -4155,7 +4155,7 @@ What reading the Clean code found about the groups above; counts are of function
   _PickEmpty, _PickCheapest, _MaybeGiveUp, _StoreGroupA, _GroupAPlace, RoomCells_ResetByIndex)
   and ends the errand (VillagerMode_StepCounter7D7).
 - savings-rank-1 (save fund-9950: the town-wide amount 50 bells short of rank 1): savings-gift's
-  recording; town-hall's donation reaches the rank and the clerk sets it (Savings_SetRank).
+  recording; town-hall's donation reaches the rank and the clerk sets it (Savings_SetDonationRank).
 - The plan before (main 5c2caceb): seed 396, date 93, unknown 358, unreachable 3,276; after (525
   scene lists with main's clean-entered.txt): seed 367, date 93, unknown 358, unreachable 3,276.
   Checked in a run: 21,157.

@@ -24,8 +24,8 @@
  *   taken (deposited) or handed over (withdrawn);
  * - the loan: what is left of it told after its screen; paid off, flag 0 of block 0x021d27ac
  *   is set and flag 0x10 of the state block cleared;
- * - an amount added to the town-wide amount (savings.h) after the screen in mode 0x37, and the
- *   savings rank it reaches (PostClerkTalk_TellSavingsRank);
+ * - an amount added to the town's donations (savings.h) after the screen in mode 0x37, and the
+ *   donation rank it reaches (PostClerkTalk_TellDonationRank);
  * - a villager's errand for the clerk: the item handed over from the pockets;
  * - a linked game (line 0x36): the session started, a game looked for for up to 600 frames,
  *   joined, then activity job 0x12 or 0x1f asked for (activity_job.h).
@@ -43,7 +43,7 @@ enum PostClerkTalkStepId {
     POST_CLERK_TALK_STEP_NONE = 0,
     POST_CLERK_TALK_STEP_LETTERS = 1,       /* PostClerkTalk_AfterLetters */
     POST_CLERK_TALK_STEP_SCREEN_26 = 2,     /* PostClerkTalk_AfterScreen26 */
-    POST_CLERK_TALK_STEP_TOWN_AMOUNT = 3,   /* PostClerkTalk_AfterTownAmount */
+    POST_CLERK_TALK_STEP_DONATION = 3,      /* PostClerkTalk_AfterDonation */
     POST_CLERK_TALK_STEP_SCREEN_3F = 4,     /* PostClerkTalk_AfterScreen3f */
     POST_CLERK_TALK_STEP_DATED_LETTER = 5,  /* PostClerkTalk_AfterDatedLetter */
     POST_CLERK_TALK_STEP_LOAN = 6,          /* PostClerkTalk_AfterLoan */
@@ -128,12 +128,12 @@ void PostClerkTalk_OnLineEnd(PostClerkTalk *talk, u32 arg);
 void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg);
 void PostClerkTalk_OnDramaLineEnd(PostClerkTalk *talk, unsigned int arg);
 void PostClerkTalk_OnSequenceLineEnd(PostClerkTalk *talk, unsigned int arg);
-void PostClerkTalk_TellSavingsRank(PostClerkTalk *talk, int arg);
+void PostClerkTalk_TellDonationRank(PostClerkTalk *talk, int arg);
 
 /* The steps. */
 void PostClerkTalk_AfterLetters(PostClerkTalk *talk);
 void PostClerkTalk_AfterScreen26(PostClerkTalk *talk);
-void PostClerkTalk_AfterTownAmount(PostClerkTalk *talk);
+void PostClerkTalk_AfterDonation(PostClerkTalk *talk);
 void PostClerkTalk_AfterScreen3f(PostClerkTalk *talk);
 void PostClerkTalk_AfterDatedLetter(PostClerkTalk *talk);
 void PostClerkTalk_AfterLoan(PostClerkTalk *talk);

@@ -68,7 +68,7 @@ extern const u8 data_ov054_02262984[2];
 /* The line of each dated event of kind 0 and its part, six parts a row. */
 #define POST_CLERK_TALK_DRAMA_PARTS 6
 extern const u8 data_ov054_022629f8[];
-/* The town-wide amounts the savings ranks start at (rank i from entry i, 1 to 20). */
+/* The donations the donation ranks start at (rank i from entry i, 1 to 20). */
 #define POST_CLERK_TALK_RANKS 21
 extern const s32 data_ov054_02262a18[POST_CLERK_TALK_RANKS + 1];
 /* The house, the town's four players' records and the state block. */
@@ -135,7 +135,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_MODE_26 0x26
 #define POST_CLERK_TALK_MODE_DATE 0x33
 #define POST_CLERK_TALK_MODE_LOAN 0x34
-#define POST_CLERK_TALK_MODE_TOWN_AMOUNT 0x37
+#define POST_CLERK_TALK_MODE_DONATION 0x37
 #define POST_CLERK_TALK_MODE_SAVINGS 0x3b
 #define POST_CLERK_TALK_MODE_3F 0x3f
 
@@ -151,7 +151,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_VALUE_YEAR 4
 #define POST_CLERK_TALK_YEAR_BASE 2000
 /* The savings line tells a 200th of the balance too, and a deposit of 5,000 bells or more to
- * the town-wide amount gets its own line. */
+ * the town's donations gets its own line. */
 #define POST_CLERK_TALK_SAVINGS_PART 200
 #define POST_CLERK_TALK_BIG_AMOUNT 5000
 
@@ -878,34 +878,34 @@ void PostClerkTalk_OnDramaLineEnd(PostClerkTalk *talk, unsigned int arg)
 }
 CLEAN_AS(func_ov054_02260ef8, PostClerkTalk_OnDramaLineEnd)
 
-/* func_ov054_02260710 (the end of the lines 0x1d and 0x1e, an amount added to the town-wide
- * amount): the savings rank whose range [entry i, entry i + 1) holds the town-wide amount (1 to
+/* func_ov054_02260710 (the end of the lines 0x1d and 0x1e, a donation added to the town's
+ * donations): the donation rank whose range [entry i, entry i + 1) holds the town's donations (1 to
  * 20, data_ov054_02262a18) becomes the account's; when the amount before was below that rank's
  * start the current player's rank letter is to be written (flag 0x16). The line is 0x1f plus the
  * rank (the account's rank when none matches). */
-void PostClerkTalk_TellSavingsRank(PostClerkTalk *talk, int arg)
+void PostClerkTalk_TellDonationRank(PostClerkTalk *talk, int arg)
 {
     (void) arg;
     TalkObject *object = pct_object(talk);
     const char *file = pct_files(talk)->own;
     u8 *record = PlayerRecords_Current();
     SavingsAccount *account = PlayerRecord_Savings(record);
-    int amount = (int) Savings_Total();
-    u8 line = (u8) (Savings_Rank(account) + 0x1f);
+    int amount = (int) Savings_Donations();
+    u8 line = (u8) (Savings_DonationRank(account) + 0x1f);
 
     for (int rank = 1; rank < POST_CLERK_TALK_RANKS; rank++) {
         int start = data_ov054_02262a18[rank];
         if (amount >= start && amount < data_ov054_02262a18[rank + 1]) {
-            Savings_SetRank(account, (u8) rank);
-            if (talk->town_amount < start) {
-                PlayerRecord_SetFlag(record, SAVINGS_FLAG_RANK_LETTER);
+            Savings_SetDonationRank(account, (u8) rank);
+            if (talk->donations < start) {
+                PlayerRecord_SetFlag(record, SAVINGS_FLAG_DONATION_LETTER);
             }
             line = (u8) (rank + 0x1f);
         }
     }
     TalkObject_SetMessage(object, &line, file);
 }
-CLEAN_AS(func_ov054_02260710, PostClerkTalk_TellSavingsRank)
+CLEAN_AS(func_ov054_02260710, PostClerkTalk_TellDonationRank)
 
 /* The line of the town summary (TownDay_Summarize): 0x42 down to 0x3e for 0 to 4, else 0x40. */
 static int pct_summary_line(int summary)
@@ -948,7 +948,7 @@ static int pct_acres_line(int value)
  *   screen in mode 0x37, step 3; 0x49: the screen in mode 0x3f, step 4;
  * - 0x13 to 0x15, 0x17, 0x18: 0x52 (the menu again);
  * - 0x55: the talk held, its spinner (sound 0), step 8 (activity job 0x12);
- * - 0x1d, 0x1e: PostClerkTalk_TellSavingsRank;
+ * - 0x1d, 0x1e: PostClerkTalk_TellDonationRank;
  * - 0x36: the talk held, its spinner (sound 1), overlay 66 switched to, a linked session
  *   started (mode 2, two players), 600 frames to find a game, step 12;
  * - 0x3d: the town summary's line; 0x40 to 0x42: the acre summary's line;
@@ -1035,14 +1035,14 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
             break;
         case 0x19:
         case 0x1b:
-            pct_open(talk, POST_CLERK_TALK_MODE_TOWN_AMOUNT, 1, POST_CLERK_TALK_STEP_TOWN_AMOUNT);
+            pct_open(talk, POST_CLERK_TALK_MODE_DONATION, 1, POST_CLERK_TALK_STEP_DONATION);
             break;
         case 0x49:
             pct_open(talk, POST_CLERK_TALK_MODE_3F, 0, POST_CLERK_TALK_STEP_SCREEN_3F);
             break;
         case 0x1d:
         case 0x1e:
-            PostClerkTalk_TellSavingsRank(talk, arg);
+            PostClerkTalk_TellDonationRank(talk, arg);
             break;
         case 0x36:
             TalkObject_Hold(object);
@@ -1166,10 +1166,10 @@ CLEAN_AS(func_ov054_02261bb4, PostClerkTalk_AfterScreen26)
 
 /* func_ov054_02261af8 (step 3, after the screen in mode 0x37): when confirmed, the amount
  * given (GroupParams_C78) in slot 7 as bells, line 0x1d for 5,000 bells or more, else 0x1e; the
- * bells taken (motion 14 with the item 0x149b), step 10; the town-wide amount noted and the
+ * bells taken (motion 14 with the item 0x149b), step 10; the town's donations noted and the
  * amount added to it. Else line 0x1c and the next line. The current player's account is asked
  * for and not used. */
-void PostClerkTalk_AfterTownAmount(PostClerkTalk *talk)
+void PostClerkTalk_AfterDonation(PostClerkTalk *talk)
 {
     u8 line;
     if (GroupParams_C4CIs1()) {
@@ -1179,8 +1179,8 @@ void PostClerkTalk_AfterTownAmount(PostClerkTalk *talk)
         pct_hand_over(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NEXT_LINE);
         (void) PlayerRecord_Savings(PlayerRecords_Current());
-        talk->town_amount = (s32) Savings_Total();
-        Savings_SetTotal(talk->town_amount + amount);
+        talk->donations = (s32) Savings_Donations();
+        Savings_SetDonations(talk->donations + amount);
     } else {
         line = 0x1c;
         SceneCommand_RequestNextLine(pct_scene(talk));
@@ -1188,7 +1188,7 @@ void PostClerkTalk_AfterTownAmount(PostClerkTalk *talk)
     }
     pct_say(talk, line);
 }
-CLEAN_AS(func_ov054_02261af8, PostClerkTalk_AfterTownAmount)
+CLEAN_AS(func_ov054_02261af8, PostClerkTalk_AfterDonation)
 
 /* func_ov054_02261a94 (step 4, after the screen in mode 0x3f): with a slot in the session, line
  * 0x63 when confirmed, else 0x64; without, 0x5d or 0x5e; no step. */

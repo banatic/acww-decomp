@@ -332,7 +332,7 @@ void PlayerRecord_UpdateSinceLastPlay(void)
 
     Savings_PayInterest((today.month - last->month) + 12 * (today.year - last->year));
     Savings_SendMilestoneLetter(days);
-    Savings_SendRankLetter(days);
+    Savings_SendDonationLetter(days);
     NpcLetters_SendInsurance((PlayerField2416 *) (void *) PlayerRecord_Field2416(self));
     /* QUIRK: the field is asked for once more, unused. */
     PlayerRecord_Field2416(self);

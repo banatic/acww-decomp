@@ -372,7 +372,7 @@ static s16 variable(u16 index)
 }
 
 #define VARIABLE_BALANCE 0x4b /* 1-5: the savings balance set to one of five amounts */
-#define VARIABLE_TOTAL 0x4c   /* a level (1-21) of data_020d1b98 the savings total is raised to */
+#define VARIABLE_TOTAL 0x4c   /* a level (1-21) of data_020d1b98 the town's donations are raised to */
 #define VARIABLE_BELLS 0x48   /* bells added to the pockets, then cleared */
 #define SAVINGS_TOTAL_LEVELS 21
 #define POCKET_BELLS_MAX 99999
@@ -403,9 +403,9 @@ int StartMenu_Execute(StartMenu *menu)
             } else if (level > SAVINGS_TOTAL_LEVELS) {
                 level = SAVINGS_TOTAL_LEVELS;
             }
-            s32 total = (s32) Savings_Total();
+            s32 total = (s32) Savings_Donations();
             if (data_020d1b98[level] > total) {
-                Savings_SetTotal(data_020d1b98[level] - 100);
+                Savings_SetDonations(data_020d1b98[level] - 100);
             }
         }
     }

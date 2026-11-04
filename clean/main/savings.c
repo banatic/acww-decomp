@@ -26,7 +26,7 @@
 #define INTEREST_PER_UNIT 10
 #define INTEREST_MAX 99999
 
-/* The town-wide amount behind the ranks. */
+/* The town's donations, behind the ranks. */
 typedef struct SavingsTotals {
     u8 unk_00[0x40];
     u32 total;
@@ -73,16 +73,16 @@ static u16 savings_rank_present(int rank)
     }
 }
 
-/* func_020980f0: `days` days on, with SAVINGS_FLAG_RANK_LETTER set, write the letter for the
+/* func_020980f0: `days` days on, with SAVINGS_FLAG_DONATION_LETTER set, write the letter for the
  * account's rank (with its present) and post it; once it is posted, the flag is cleared. */
-void Savings_SendRankLetter(int days)
+void Savings_SendDonationLetter(int days)
 {
     void *player = PlayerRecords_Current();
     SavingsAccount *account = PlayerRecord_Savings(player);
-    if (days <= 0 || PlayerRecord_TestFlag(player, SAVINGS_FLAG_RANK_LETTER) == 0) {
+    if (days <= 0 || PlayerRecord_TestFlag(player, SAVINGS_FLAG_DONATION_LETTER) == 0) {
         return;
     }
-    int rank = Savings_Rank(account);
+    int rank = Savings_DonationRank(account);
     Letter letter;
     Letter_Construct(&letter);
     u8 message = (u8) rank;
@@ -92,11 +92,11 @@ void Savings_SendRankLetter(int days)
         Letter_SetItem(&letter, present, 1);
     }
     if (Mail_Post(&letter) != 0) {
-        PlayerRecord_ClearFlag(player, SAVINGS_FLAG_RANK_LETTER);
+        PlayerRecord_ClearFlag(player, SAVINGS_FLAG_DONATION_LETTER);
     }
     Letter_Destruct(&letter);
 }
-CLEAN_AS(func_020980f0, Savings_SendRankLetter)
+CLEAN_AS(func_020980f0, Savings_SendDonationLetter)
 
 /* func_020981f4: `days` days on, the letter for the highest savings step the balance has
  * reached (1, 10, 100 and 500 million, and the full SAVINGS_MAX), with its present and the
@@ -203,35 +203,35 @@ void Savings_PayInterest(int months)
 CLEAN_AS(func_020982f8, Savings_PayInterest)
 
 /* func_020983c0 */
-void Savings_SetRank(SavingsAccount *account, int rank)
+void Savings_SetDonationRank(SavingsAccount *account, int rank)
 {
-    account->rank = (u8) rank;
+    account->donation_rank = (u8) rank;
 }
-CLEAN_AS(func_020983c0, Savings_SetRank)
+CLEAN_AS(func_020983c0, Savings_SetDonationRank)
 
 /* func_020983c4 */
-int Savings_Rank(SavingsAccount *account)
+int Savings_DonationRank(SavingsAccount *account)
 {
-    return account->rank;
+    return account->donation_rank;
 }
-CLEAN_AS(func_020983c4, Savings_Rank)
+CLEAN_AS(func_020983c4, Savings_DonationRank)
 
-/* func_020983c8: set the town-wide amount, at most SAVINGS_MAX. */
-void Savings_SetTotal(int total)
+/* func_020983c8: set the town's donations, at most SAVINGS_MAX. */
+void Savings_SetDonations(int total)
 {
     if (total > SAVINGS_MAX) {
         total = SAVINGS_MAX;
     }
     data_021ef8a8.total = (u32) total;
 }
-CLEAN_AS(func_020983c8, Savings_SetTotal)
+CLEAN_AS(func_020983c8, Savings_SetDonations)
 
 /* func_020983e0 */
-u32 Savings_Total(void)
+u32 Savings_Donations(void)
 {
     return data_021ef8a8.total;
 }
-CLEAN_AS(func_020983e0, Savings_Total)
+CLEAN_AS(func_020983e0, Savings_Donations)
 
 /* func_020983ec */
 void Savings_SetBalance(SavingsAccount *account, int balance)
@@ -251,7 +251,7 @@ CLEAN_AS(func_020983f0, Savings_Balance)
 void Savings_InitAccount(SavingsAccount *account)
 {
     account->balance = 0;
-    account->rank = 0;
+    account->donation_rank = 0;
 }
 CLEAN_AS(func_020983f4, Savings_InitAccount)
 
@@ -269,5 +269,5 @@ void Savings_ConstructAccount(SavingsAccount *account)
 }
 CLEAN_AS(func_02098400, Savings_ConstructAccount)
 
-static_assert(offsetof(SavingsAccount, rank) == 4, "SavingsAccount layout");
+static_assert(offsetof(SavingsAccount, donation_rank) == 4, "SavingsAccount layout");
 static_assert(offsetof(SavingsTotals, total) == 0x40, "SavingsTotals layout");

@@ -1222,13 +1222,13 @@ SAVES["cafe-plan"] = SAVES["museum"] + [(DAY_PLAN, "<B", 0xC7)]
 SAVES["pupil"] = SAVES["visitor-43"] + [(0x14 + 0x23F8, "<I", 0x16608), (0x14 + 0x23E8, "<B", 0x17)]
 # the current player's savings rank (the byte at 0x23e4 of the record, SavingsAccount.rank of
 # main/savings.h, the seed's 0): below 10,000 bells town-wide (the seed's total is 0) the post
-# clerk's line after a donation is 0x1f plus that byte (PostClerkTalk_TellSavingsRank), any line
+# clerk's line after a donation is 0x1f plus that byte (PostClerkTalk_TellDonationRank), any line
 # of her own file
 for _rank in (0x19, 0x1C, 0x1D, 0x1F):
     SAVES[f"rank-{_rank:02x}"] = [(0x14 + 0x23E4, "<B", _rank)]
-# the town-wide savings amount (Savings_Total, 0x40 of data_021ef8a8) 50 bells short of rank 1's
+# the town-wide savings amount (Savings_Donations, 0x40 of data_021ef8a8) 50 bells short of rank 1's
 # start (10,000, data_ov054_02262a18): town-hall's donation of 100 bells reaches it, and the clerk
-# sets the account's rank (Savings_SetRank) before she tells it
+# sets the account's rank (Savings_SetDonationRank) before she tells it
 SAVES["fund-9950"] = [(0x13140, "<I", 9950)]
 
 # as "songs-all" with the pockets full (the dummy item 0x3508 of "full-net" in all 15): the music

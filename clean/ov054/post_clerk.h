@@ -56,7 +56,7 @@ typedef struct PostClerkTalk {
     u8 letters_shown;        /* 0xbc: the letters (item 0x1565) were shown in this talk */
     u8 unk_bd[3];            /* 0xbd */
     s32 balance;             /* 0xc0: the account's balance before its screen */
-    s32 town_amount;         /* 0xc4: the town-wide amount before something was added to it */
+    s32 donations;           /* 0xc4: the town's donations before this one was added */
     u16 search_frames;       /* 0xc8: the frames left to find a linked game */
     u8 unk_ca[0x1ac - 0xca]; /* 0xca */
 } PostClerkTalk;
