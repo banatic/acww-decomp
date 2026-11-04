@@ -72,10 +72,10 @@ enum PocketsScreenPlace {
     POCKETS_LETTERS_LAST = 0x18,
     POCKETS_ROW_FIRST = 0x19, /* 25-32: a row of eight: the menu's tabs 0-7 (PocketsScreen_SwitchTab) */
     POCKETS_ROW_LAST = 0x20,
-    POCKETS_PLACE_BACKDROP = 0x21, /* the backdrop's clothes, left of the grid's last row (when
+    POCKETS_PLACE_BACKDROP = 0x21,  /* the backdrop's clothes, left of the grid's last row (when
                                     * PocketsScreen_CanReachBackdrop) */
-    POCKETS_PLACE_22 = 0x22,
-    POCKETS_PLACE_23 = 0x23,
+    POCKETS_PLACE_DROP_LEFT = 0x22, /* 0x22, 0x23: under the player, the held item dropped there */
+    POCKETS_PLACE_DROP_RIGHT = 0x23,
     POCKETS_PLACE_PLAYER = 0x24, /* its choice offers the record's accessory (0x240c), hat (0x240a)
                                   * and tool (0x2406) */
     POCKETS_PLACE_BELLS = 0x25,
@@ -150,7 +150,7 @@ typedef struct PocketsScreen {
                             * func_0206e35c): shows a letter on layers 3 and 4 */
     LabelButton button;     /* 0x2d9c: a LabelButton0 */
     u8 pad_2e14[0xc];       /* 0x2e14 */
-    u32 tile_x;             /* 0x2e20: the tile ahead (PocketsTown_FindTileAhead), cleared by PocketsScreen_New */
+    u32 tile_x;             /* 0x2e20: the tile ahead (PocketsTown_FindHoleAhead), cleared by PocketsScreen_New */
     u32 tile_z;             /* 0x2e24 */
     Letter held_letter;     /* 0x2e28: the held letter's copy */
     Letter unk_2f28;        /* 0x2f28: a second letter copy (Letter_Assign) */
@@ -206,9 +206,9 @@ int PocketsScreen_MoveToFreeLetter(PocketsScreen *self);
 void PocketsScreen_ActionToFreeSlot(PocketsScreen *self);
 void PocketsScreen_ActionRewriteLetter(PocketsScreen *self);
 void PocketsScreen_ActionChangeAddressee(PocketsScreen *self);
-void PocketsScreen_ActionUseItem(PocketsScreen *self);
-int PocketsScreen_CheckUseItem(PocketsScreen *self, int item);
-int PocketsScreen_CanUseItem(PocketsScreen *self, unsigned int item);
+void PocketsScreen_ActionDropItem(PocketsScreen *self);
+int PocketsScreen_StartDrop(PocketsScreen *self, int item);
+int PocketsScreen_CanDropItem(PocketsScreen *self, unsigned int item);
 void PocketsScreen_BeginSubState15(PocketsScreen *self, u8 value);
 void PocketsScreen_BeginSubState14(PocketsScreen *self, int value);
 void PocketsScreen_BeginSubState12(PocketsScreen *self);
@@ -242,8 +242,8 @@ int PocketsScreen_RecordSlotItem(PocketsScreen *self, int record_slot);
 int PocketsScreen_HeldRecordSlot(PocketsScreen *self);
 void PocketsScreen_BeginSubState25(PocketsScreen *self);
 void PocketsScreen_DropHeld(PocketsScreen *self);
-int PocketsScreen_CanUseHeld(PocketsScreen *self);
-int PocketsScreen_UseHeld(PocketsScreen *self);
+int PocketsScreen_CanDropHeldItem(PocketsScreen *self);
+int PocketsScreen_DropHeldItem(PocketsScreen *self);
 int PocketsScreen_PutHeldAt(PocketsScreen *self, int place);
 void PocketsScreen_SwapHeldWith(PocketsScreen *self, int place);
 void PocketsScreen_ReturnHeld(PocketsScreen *self, int drop);
@@ -266,7 +266,7 @@ void PocketsScreen_ClearHighlights(PocketsScreen *self);
 void PocketsScreen_SelectPlace(PocketsScreen *self, int place);
 void PocketsScreen_ClearSelection(PocketsScreen *self);
 int PocketsScreen_CanReachBells(PocketsScreen *self, int mode);
-int PocketsScreen_CanReachPlace22(PocketsScreen *self, int mode);
+int PocketsScreen_CanReachDrop(PocketsScreen *self, int mode);
 int PocketsScreen_CanReachPlayer(PocketsScreen *self, int mode);
 int PocketsScreen_CheckReturnHeld(PocketsScreen *self, int place);
 int PocketsScreen_CheckSwap(PocketsScreen *self, int place, int to);
@@ -316,8 +316,8 @@ int PocketsScreen_BeginSubState08(PocketsScreen *self);
 void PocketsScreen_EndAction(PocketsScreen *self);
 void PocketsScreen_EndActionAtCursor(PocketsScreen *self);
 void PocketsScreen_EndActionHidden(PocketsScreen *self);
-void PocketsScreen_WaitUseRequest29(PocketsScreen *self);
-void PocketsScreen_WaitUseRequest28(PocketsScreen *self);
+void PocketsScreen_WaitDropRequest29(PocketsScreen *self);
+void PocketsScreen_WaitDropRequest28(PocketsScreen *self);
 void PocketsScreen_BlinkSlot(PocketsScreen *self);
 u8 *PocketsScreen_HandSlotItemToActor(PocketsScreen *self);
 void PocketsScreen_WaitActorState(PocketsScreen *self);

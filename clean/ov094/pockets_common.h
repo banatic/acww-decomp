@@ -12,10 +12,10 @@
 void PocketsSound_Play0d(void);
 void PocketsSound_Play0c(void);
 void PocketsSound_Play0e(void);
-int PocketsItem_CanUse(unsigned int item);
+int PocketsItem_CanDrop(unsigned int item);
 int PocketsItem_Is155d(u16 item);
 int PocketsItem_IsDayItem(u16 item);
-int PocketsItem_IsIn155fTo1564(u16 item);
+int PocketsItem_IsDelivery(u16 item);
 int PocketsItem_InLetterRefusedRanges(unsigned int item);
 
 #endif

@@ -32,7 +32,7 @@
 #include "ov094/pockets_common.h"
 
 /* The pockets scene's words at 0x2e14-0x2e27: a point in the town (written by
- * func_0203162c, PocketsTown_FindPointAhead) and a tile (PocketsTown_FindTileAhead). */
+ * func_0203162c, PocketsTown_FindWaterAhead) and a tile (PocketsTown_FindHoleAhead). */
 static_assert(offsetof(PocketsScreen, pad_2e14) == 0x2e14 && offsetof(PocketsScreen, tile_x) == 0x2e20, "the tile ahead");
 
 static Vec3 *point_of(PocketsScreen *self)
@@ -50,32 +50,33 @@ static MenuScene *scene_of(PocketsScreen *self)
 #define ITEM_INSECT_LAST 0x12e7
 #define ITEM_FISH_FIRST 0x12e8 /* item 0x12e8 + kind */
 #define ITEM_FISH_LAST 0x131f
-#define ITEM_TOOL_1369 0x1369 /* the two items held (record slot 5) that look for a tile ahead */
-#define ITEM_TOOL_136A 0x136a
+#define ITEM_SHOVEL 0x1369 /* the two items held (record slot 5) that look for a hole ahead */
+#define ITEM_GOLDEN_SHOVEL 0x136a
 #define NO_KIND 0xff
 
-/* The actions of the choice rows added here (PocketsScreen_RunAction) and the rows' texts. */
+/* The actions of the choice rows added here (PocketsScreen_RunAction) and the rows' texts (2d_menu:
+ * 8 "let go", 7 "bury", 6 "plant", 0x11 "send", 0x1b "show off"). */
 #define ACTION_INSECT 0x15
-#define ACTION_TILE 0x16
-#define ACTION_TILE_OR_DROP 0x17
-#define ACTION_FISH 0x18
-#define ACTION_LETTER 0x19
+#define ACTION_BURY 0x16
+#define ACTION_PLANT 0x17
+#define ACTION_RELEASE_FISH 0x18
+#define ACTION_THROW_BOTTLE 0x19
 #define ACTION_SHOW 0x21
 #define ROW_LET_GO 8
-#define ROW_TILE 7
-#define ROW_TILE_OR_DROP 6
-#define ROW_LETTER 0x11
+#define ROW_BURY 7
+#define ROW_PLANT 6
+#define ROW_SEND 0x11
 #define ROW_SHOW 0x1b
 
 /* The scene's sub states (PocketsScreen_RunSubState). */
-#define SUB_USE_REQUEST 0x29 /* PocketsScreen_WaitUseRequest29 */
+#define SUB_DROP_REQUEST 0x29 /* PocketsScreen_WaitDropRequest29 */
 #define SUB_INSECT 0x2c
-#define SUB_TILE_REQUEST 0x2d
-#define SUB_TILE_STATE 0x2e
-#define SUB_TILE_DONE 0x2f /* PocketsScreen_WaitActorState */
-#define SUB_FISH 0x30
-#define SUB_LETTER_PLACING 0x33
-#define SUB_LETTER_PLACED 0x34
+#define SUB_HOLE_REQUEST 0x2d
+#define SUB_FILL_HOLE 0x2e
+#define SUB_HOLE_DONE 0x2f /* PocketsScreen_WaitActorState */
+#define SUB_RELEASE_FISH 0x30
+#define SUB_BOTTLE_THROW 0x33
+#define SUB_BOTTLE_LANDED 0x34
 #define SUB_SHOW 0x35
 #define SUB_SHOWING 0x36
 #define SUB_SHOWN 0x37
@@ -88,7 +89,7 @@ static MenuScene *scene_of(PocketsScreen *self)
 #define ERROR_13 13
 #define SOUND_ERROR 0x73
 
-#define TILE_OPERATION 2
+#define HOLE_OPERATION 2
 #define DROP_KIND 0x18
 
 /* What SessionPlayers_ActorOf gives for a player (4: the one at this console); its position and its
@@ -119,7 +120,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
 #define LETTER_SIZE 0x100
 #define MESSAGE_TO 4 /* where these messages are sent (as PlayerMessages_SetMode answers) */
 
-/* The angles beside the player's that PocketsTown_FindTileAhead looks along: ahead, then
+/* The angles beside the player's that PocketsTown_FindHoleAhead looks along: ahead, then
  * 0x1800 to either side. */
 extern const s16 data_ov098_022a3240[3];
 
@@ -194,12 +195,13 @@ void PocketsTown_ActionShowItem(PocketsScreen *self)
 }
 CLEAN_AS(func_ov098_022a28d0, PocketsTown_ActionShowItem)
 
-/* func_ov098_022a28ec: the point ahead is told to the others (message 5) and the picked letter
- * goes to the record at data_021ee418: kept there by this console when it is not linked or is
+/* func_ov098_022a28ec: the point ahead is told to the others (message 5) and the picked bottle
+ * letter goes to the exchange record at data_021ee418 (its drifting bottle letter): kept there
+ * by this console when it is not linked or is
  * in slot 0, else sent to slot 0 in a message of type 6 (built in a block of the heap at
  * data_021c9b28). REQUIRES: that heap has room for the message (the allocation is not
  * checked). */
-void PocketsTown_PassLetter(PocketsScreen *self)
+void PocketsTown_HandBottleToExchange(PocketsScreen *self)
 {
     PocketsTown_SendPoint(self, 0, PLAYER_MESSAGE_PLACE);
     const void *letter = (const void *) (uintptr_t) PocketsScreen_PlaceLetter(self, self->slot);
@@ -220,58 +222,59 @@ void PocketsTown_PassLetter(PocketsScreen *self)
     Session_EndMessage(data_020ccf94, PLAYER_MESSAGE_CATEGORY, 0);
     Heap_Free(heap, message);
 }
-CLEAN_AS(func_ov098_022a28ec, PocketsTown_PassLetter)
+CLEAN_AS(func_ov098_022a28ec, PocketsTown_HandBottleToExchange)
 
-/* func_ov098_022a2994 (sub state 0x34): the action ends once func_ov003_0222c364 answers 0 for
- * this console's player. */
-void PocketsTown_WaitLetterPlaced(PocketsScreen *self)
+/* func_ov098_022a2994 (sub state 0x34): the action ends once the thrown bottle is gone
+ * (func_ov003_0222c364 answers 0 for this console's player). */
+void PocketsTown_WaitBottleLanded(PocketsScreen *self)
 {
     if (ThrownBottle_IsActive(PocketsScreen_LocalSlotIfTaken(self)) == 0) {
         PocketsScreen_EndAction(self);
     }
 }
-CLEAN_AS(func_ov098_022a2994, PocketsTown_WaitLetterPlaced)
+CLEAN_AS(func_ov098_022a2994, PocketsTown_WaitBottleLanded)
 
-/* func_ov098_022a29b0 (sub state 0x33): sub state 0x34 once func_ov003_0222c364 answers 1. */
-void PocketsTown_WaitLetterPlacing(PocketsScreen *self)
+/* func_ov098_022a29b0 (sub state 0x33): sub state 0x34 once the bottle is thrown
+ * (func_ov003_0222c364 answers 1). */
+void PocketsTown_WaitBottleThrow(PocketsScreen *self)
 {
     if (ThrownBottle_IsActive(PocketsScreen_LocalSlotIfTaken(self)) == 1) {
-        MenuScene_SetSubState(scene_of(self), SUB_LETTER_PLACED);
+        MenuScene_SetSubState(scene_of(self), SUB_BOTTLE_LANDED);
     }
 }
-CLEAN_AS(func_ov098_022a29b0, PocketsTown_WaitLetterPlacing)
+CLEAN_AS(func_ov098_022a29b0, PocketsTown_WaitBottleThrow)
 
-/* func_ov098_022a29d0 (action 25): the letter passed on (PocketsTown_PassLetter), the player
- * asked for state 0x89, the point ahead given to func_ov003_0222c3a8, the letter taken from
- * its place and sub state 0x33. */
-void PocketsTown_ActionPlaceLetter(PocketsScreen *self)
+/* func_ov098_022a29d0 (action 25, text 0x11 "send"): the bottle letter thrown into the sea:
+ * handed on (PocketsTown_HandBottleToExchange), the player asked for state 0x89, the water ahead
+ * given to func_ov003_0222c3a8, the letter taken from its place and sub state 0x33. */
+void PocketsTown_ActionThrowBottle(PocketsScreen *self)
 {
-    PocketsTown_PassLetter(self);
+    PocketsTown_HandBottleToExchange(self);
     FieldActor_PlayerRequestState89();
     ThrownBottle_SetTarget(point_of(self), PocketsScreen_LocalSlotIfTaken(self));
     PocketsScreen_RemoveLetterAt(self, self->slot);
-    MenuScene_SetSubState(scene_of(self), SUB_LETTER_PLACING);
+    MenuScene_SetSubState(scene_of(self), SUB_BOTTLE_THROW);
 }
-CLEAN_AS(func_ov098_022a29d0, PocketsTown_ActionPlaceLetter)
+CLEAN_AS(func_ov098_022a29d0, PocketsTown_ActionThrowBottle)
 
-/* The request at the tile ahead (PocketsTown_FindTileAhead's) for `item`, kept at `tile_request`. */
-static int request_tile(PocketsScreen *self, u16 item)
+/* The request at the hole ahead (PocketsTown_FindHoleAhead's) for `item`, kept at `tile_request`. */
+static int request_hole(PocketsScreen *self, u16 item)
 {
     s32 tile[2] = {(s32) self->tile_x, (s32) self->tile_z};
     self->tile_request =
-        TileRequests_AskOp(data_020ccf94->local_slot, (const TileRequestTile *) tile, TILE_OPERATION, 0, item);
+        TileRequests_AskOp(data_020ccf94->local_slot, (const TileRequestTile *) tile, HOLE_OPERATION, 0, item);
     return self->tile_request;
 }
 
-/* func_ov098_022a2a0c (action 23): with a tile ahead, its request for the picked item, waited
- * for in sub state 0x2d. Without one, or when it cannot be made, a drop request (kind 0x18)
+/* func_ov098_022a2a0c (action 23, text 6 "plant"): with a hole ahead, its request for the picked
+ * item, waited for in sub state 0x2d. Without one, or when it cannot be made, a request (kind 0x18)
  * waited for in sub state 0x29 with flag 0x1000; error 8 and the refusal's sound when that
  * cannot be made either. */
-void PocketsTown_ActionTileOrDrop(PocketsScreen *self)
+void PocketsTown_ActionPlant(PocketsScreen *self)
 {
     int item = PocketsScreen_PlaceItem(self, self->slot);
-    if (PocketsTown_FindTileAhead(self) != 0 && request_tile(self, (u16) item) != -1) {
-        MenuScene_SetSubState(scene_of(self), SUB_TILE_REQUEST);
+    if (PocketsTown_FindHoleAhead(self) != 0 && request_hole(self, (u16) item) != -1) {
+        MenuScene_SetSubState(scene_of(self), SUB_HOLE_REQUEST);
         return;
     }
     self->tile_request = TileRequests_AskPut(data_020ccf94->local_slot, DROP_KIND, item);
@@ -280,35 +283,35 @@ void PocketsTown_ActionTileOrDrop(PocketsScreen *self)
         PocketsScreen_ShowError(self, ERROR_8, 0xff, 0);
         SoundSys_PlaySe(SOUND_ERROR);
     } else {
-        MenuScene_SetSubState(scene_of(self), SUB_USE_REQUEST);
+        MenuScene_SetSubState(scene_of(self), SUB_DROP_REQUEST);
         PocketsScreen_SetFlags(self, POCKETS_FLAG_1000);
     }
 }
-CLEAN_AS(func_ov098_022a2a0c, PocketsTown_ActionTileOrDrop)
+CLEAN_AS(func_ov098_022a2a0c, PocketsTown_ActionPlant)
 
-/* func_ov098_022a2ac8 (sub state 0x2e): the player asked for state 0x61 at the tile with the
- * picked item; once queued the place is emptied and sub state 0x2f follows. */
-void PocketsTown_StartTileState61(PocketsScreen *self)
+/* func_ov098_022a2ac8 (sub state 0x2e): the player asked for state 0x61 (filling the hole) at the
+ * tile with the picked item; once queued the place is emptied and sub state 0x2f follows. */
+void PocketsTown_StartFillHole(PocketsScreen *self)
 {
     Vec3 point;
     AcreTile_TileCentre(&point, (int) self->tile_x, (int) self->tile_z);
     u16 item = PocketsScreen_PlaceItem(self, self->slot);
     if (FieldActor_PlayerRequestState61(&point, &item) != 0) {
         PocketsScreen_EmptyPlace(self, self->slot);
-        MenuScene_SetSubState(scene_of(self), SUB_TILE_DONE);
+        MenuScene_SetSubState(scene_of(self), SUB_HOLE_DONE);
     }
 }
-CLEAN_AS(func_ov098_022a2ac8, PocketsTown_StartTileState61)
+CLEAN_AS(func_ov098_022a2ac8, PocketsTown_StartFillHole)
 
-/* func_ov098_022a2b1c (sub state 0x2d): the tile request done goes on to sub state 0x2e at
+/* func_ov098_022a2b1c (sub state 0x2d): the hole's request done goes on to sub state 0x2e at
  * once; failed, the action ends with error 3 (flag 1). Either way it is freed (`tile_request` -1);
  * nothing while it is pending. */
-void PocketsTown_WaitTileRequest(PocketsScreen *self)
+void PocketsTown_WaitHoleRequest(PocketsScreen *self)
 {
     switch (TileRequests_Answer(self->tile_request)) {
         case 1:
-            MenuScene_SetSubState(scene_of(self), SUB_TILE_STATE);
-            PocketsTown_StartTileState61(self);
+            MenuScene_SetSubState(scene_of(self), SUB_FILL_HOLE);
+            PocketsTown_StartFillHole(self);
             break;
         case 2:
             PocketsScreen_EndAction(self);
@@ -320,32 +323,32 @@ void PocketsTown_WaitTileRequest(PocketsScreen *self)
     TileRequests_Release(self->tile_request);
     self->tile_request = -1;
 }
-CLEAN_AS(func_ov098_022a2b1c, PocketsTown_WaitTileRequest)
+CLEAN_AS(func_ov098_022a2b1c, PocketsTown_WaitHoleRequest)
 
-/* func_ov098_022a2b6c (action 22): the request at the tile ahead for the picked item, waited
- * for in sub state 0x2d; error 13 (flag 1) without a tile or when it cannot be made. */
-void PocketsTown_ActionTile(PocketsScreen *self)
+/* func_ov098_022a2b6c (action 22, text 7 "bury"): the request at the hole ahead for the picked
+ * item, waited for in sub state 0x2d; error 13 (flag 1) without a hole or when it cannot be made. */
+void PocketsTown_ActionBury(PocketsScreen *self)
 {
-    if (PocketsTown_FindTileAhead(self) != 0) {
+    if (PocketsTown_FindHoleAhead(self) != 0) {
         u16 item = PocketsScreen_PlaceItem(self, self->slot);
-        if (request_tile(self, item) != -1) {
-            MenuScene_SetSubState(scene_of(self), SUB_TILE_REQUEST);
+        if (request_hole(self, item) != -1) {
+            MenuScene_SetSubState(scene_of(self), SUB_HOLE_REQUEST);
             return;
         }
     }
     PocketsScreen_EndAction(self);
     PocketsScreen_ShowError(self, ERROR_13, 0xff, 1);
 }
-CLEAN_AS(func_ov098_022a2b6c, PocketsTown_ActionTile)
+CLEAN_AS(func_ov098_022a2b6c, PocketsTown_ActionBury)
 
-/* func_ov098_022a2bfc: while the record's slot 5 holds item 0x1369 or 0x136a, looks at the
+/* func_ov098_022a2bfc: while the record's slot 5 holds a shovel (0x1369 or 0x136a), looks at the
  * tiles next to the player's, ahead and then 0x1800 to the left and right of its angle, for
- * one whose map object (layer 0) is 0xfc or 0xfd; the first found is kept at 0x2e20 and 0x2e24.
+ * one whose map object (layer 0) is a hole (0xfc or 0xfd); the first found is kept at 0x2e20 and 0x2e24.
  * Whether one was found. */
-int PocketsTown_FindTileAhead(PocketsScreen *self)
+int PocketsTown_FindHoleAhead(PocketsScreen *self)
 {
     u16 held = *PlayerRecord_HeldItem(PlayerRecords_Current());
-    if (held != ITEM_TOOL_1369 && held != ITEM_TOOL_136A) {
+    if (held != ITEM_SHOVEL && held != ITEM_GOLDEN_SHOVEL) {
         return 0;
     }
     PocketsTownPlayer *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
@@ -369,7 +372,7 @@ int PocketsTown_FindTileAhead(PocketsScreen *self)
     }
     return 0;
 }
-CLEAN_AS(func_ov098_022a2bfc, PocketsTown_FindTileAhead)
+CLEAN_AS(func_ov098_022a2bfc, PocketsTown_FindHoleAhead)
 
 /* func_ov098_022a2cd8: the step to the neighbouring tile in the direction of `angle` (16
  * sectors of 0x1000, from its bits 12-15): sector 0 is +z, 4 is +x, 8 is -z, 12 is -x, and each
@@ -468,11 +471,11 @@ void PocketsTown_SendPoint(PocketsScreen *self, char id, char type)
 }
 CLEAN_AS(func_ov098_022a2ec0, PocketsTown_SendPoint)
 
-/* func_ov098_022a2f2c (sub state 0x30): the picked fish placed at the point ahead by this
+/* func_ov098_022a2f2c (sub state 0x30): the picked fish let go into the water ahead by this
  * console's player (func_ov003_0222780c); once it is, the others told with its kind
  * (PocketsTown_SendPlaceId), the player looking (FieldActor_PlayerLook with the flag) and the
  * place blinking. QUIRK: an item that is not a fish gives the kind 0xff. */
-void PocketsTown_PlaceFish(PocketsScreen *self)
+void PocketsTown_ReleaseFish(PocketsScreen *self)
 {
     int player = PocketsScreen_LocalSlotIfTaken(self);
     int item = PocketsScreen_PlaceItem(self, self->slot);
@@ -484,22 +487,22 @@ void PocketsTown_PlaceFish(PocketsScreen *self)
         PocketsScreen_StartBlinkSlot(self);
     }
 }
-CLEAN_AS(func_ov098_022a2f2c, PocketsTown_PlaceFish)
+CLEAN_AS(func_ov098_022a2f2c, PocketsTown_ReleaseFish)
 
-/* func_ov098_022a2fa8 (action 24): sub state 0x30, run at once. */
-void PocketsTown_ActionFish(PocketsScreen *self)
+/* func_ov098_022a2fa8 (action 24, text 8 "let go" on a fish): sub state 0x30, run at once. */
+void PocketsTown_ActionReleaseFish(PocketsScreen *self)
 {
-    MenuScene_SetSubState(scene_of(self), SUB_FISH);
-    PocketsTown_PlaceFish(self);
+    MenuScene_SetSubState(scene_of(self), SUB_RELEASE_FISH);
+    PocketsTown_ReleaseFish(self);
 }
-CLEAN_AS(func_ov098_022a2fa8, PocketsTown_ActionFish)
+CLEAN_AS(func_ov098_022a2fa8, PocketsTown_ActionReleaseFish)
 
-/* func_ov098_022a2fc0: func_0203162c looks for a point ahead of the player (along its angle,
+/* func_ov098_022a2fc0: func_0203162c looks for water ahead of the player (along its angle,
  * from 0x7800, over a range) and keeps it at 0x2e14; whether it found one. The range depends
  * on the town map's bits at the player's position (func_0204f658 at x >> 17, z >> 17): with
  * bits 0x7f000 or 8 it is 0x1b58 for a letter and 0x1810 otherwise, without them 0xde8; a
  * letter is not looked for without them. */
-int PocketsTown_FindPointAhead(PocketsScreen *self, int for_letter)
+int PocketsTown_FindWaterAhead(PocketsScreen *self, int for_letter)
 {
     PocketsTownPlayer *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     int bits = (int) (uintptr_t) AcreTile_AcreFlags((AcreMap *) (uintptr_t) data_021c80bc, player->position.x >> 17,
@@ -516,20 +519,21 @@ int PocketsTown_FindPointAhead(PocketsScreen *self, int for_letter)
     }
     return CollisionQuery_FindWaterAhead(point_of(self), &player->position, player->angle, 0x7800, range, 0xc);
 }
-CLEAN_AS(func_ov098_022a2fc0, PocketsTown_FindPointAhead)
+CLEAN_AS(func_ov098_022a2fc0, PocketsTown_FindWaterAhead)
 
 /* func_ov098_022a3060: for a letter of kind 4 (PocketsScreen_AddLetterEntries): flag 8 cleared;
- * when not linked and a point ahead is found for a letter, the row of action 25 and flag 8. */
+ * when not linked and the sea is found ahead for a letter, the row of action 25 (throw the
+ * bottle letter in) and flag 8. */
 void PocketsTown_AddLetterRows(PocketsScreen *self)
 {
     PocketsScreen_ClearFlags(self, POCKETS_FLAG_08);
     if (Session_IsLinked(data_020ccf94) != 0) {
         return;
     }
-    if (PocketsTown_FindPointAhead(self, 1) == 0) {
+    if (PocketsTown_FindWaterAhead(self, 1) == 0) {
         return;
     }
-    ChoiceEntries_Add(&self->entries, ROW_LETTER, ACTION_LETTER);
+    ChoiceEntries_Add(&self->entries, ROW_SEND, ACTION_THROW_BOTTLE);
     PocketsScreen_SetFlags(self, POCKETS_FLAG_08);
 }
 CLEAN_AS(func_ov098_022a3060, PocketsTown_AddLetterRows)
@@ -544,17 +548,17 @@ static int is_fish(u16 item)
     return item >= ITEM_FISH_FIRST && item <= ITEM_FISH_LAST;
 }
 
-/* The items that get the row of action 23. */
-static int is_tile_or_drop_item(u16 item)
+/* The items that get the row of action 23 (plant): flowers, saplings and the turnip seeds. */
+static int is_plantable(u16 item)
 {
     return item == 0x137c || (item >= 0x1408 && item <= 0x1428) || (item >= 0x1471 && item <= 0x1491) ||
            (item >= 0x14fe && item <= 0x1517) || (item >= 0x151d && item <= 0x151e) || item == 0x1567;
 }
 
 /* func_ov098_022a30a4: the rows for a grid item (PocketsScreen_AddGridEntries): an insect or a
- * fish can be shown (action 33); an insect let go (21); a fish placed (24) when a point ahead is
- * found; some items (is_tile_or_drop_item) get action 23; others action 22 when there is a tile
- * ahead (PocketsTown_FindTileAhead). */
+ * fish can be shown (action 33); an insect let go (21); a fish let go (24) when water ahead is
+ * found; flowers, saplings and seeds (is_plantable) get action 23 (plant); others action 22
+ * (bury) when there is a hole ahead (PocketsTown_FindHoleAhead). */
 void PocketsTown_AddItemRows(PocketsScreen *self, u16 item)
 {
     if (is_insect(item) || is_fish(item)) {
@@ -565,25 +569,25 @@ void PocketsTown_AddItemRows(PocketsScreen *self, u16 item)
         return;
     }
     if (is_fish(item)) {
-        if (PocketsTown_FindPointAhead(self, 0) != 0) {
-            ChoiceEntries_Add(&self->entries, ROW_LET_GO, ACTION_FISH);
+        if (PocketsTown_FindWaterAhead(self, 0) != 0) {
+            ChoiceEntries_Add(&self->entries, ROW_LET_GO, ACTION_RELEASE_FISH);
         }
         return;
     }
-    if (is_tile_or_drop_item(item)) {
-        ChoiceEntries_Add(&self->entries, ROW_TILE_OR_DROP, ACTION_TILE_OR_DROP);
+    if (is_plantable(item)) {
+        ChoiceEntries_Add(&self->entries, ROW_PLANT, ACTION_PLANT);
         return;
     }
-    if (PocketsTown_FindTileAhead(self) != 0) {
-        ChoiceEntries_Add(&self->entries, ROW_TILE, ACTION_TILE);
+    if (PocketsTown_FindHoleAhead(self) != 0) {
+        ChoiceEntries_Add(&self->entries, ROW_BURY, ACTION_BURY);
     }
 }
 CLEAN_AS(func_ov098_022a30a4, PocketsTown_AddItemRows)
 
-/* func_ov098_022a31d8: whether `item` can be used (PocketsScreen_CanUseItem asks this one when
+/* func_ov098_022a31d8: whether `item` can be dropped (PocketsScreen_CanDropItem asks this one when
  * data_020e54a8 is 0): items 0x14fe-0x1517 and 0x151d-0x151e not while the current player's
  * record has bit 1 set, others as overlay 94 says. */
-int PocketsTown_CanUseItem(PocketsScreen *self, unsigned int item)
+int PocketsTown_CanDropItem(PocketsScreen *self, unsigned int item)
 {
     (void) self;
     if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) != 0) {
@@ -591,6 +595,6 @@ int PocketsTown_CanUseItem(PocketsScreen *self, unsigned int item)
             return 0;
         }
     }
-    return PocketsItem_CanUse(item);
+    return PocketsItem_CanDrop(item);
 }
-CLEAN_AS(func_ov098_022a31d8, PocketsTown_CanUseItem)
+CLEAN_AS(func_ov098_022a31d8, PocketsTown_CanDropItem)

@@ -616,7 +616,7 @@ CLEAN_AS(func_ov107_0229c990, PocketsSwap_OpenChoice)
 
 /* func_ov107_0229c9e4: the rows of the choice of `slot`'s item: text 0x10 releasing an insect
  * (0x12b0-0x12e7) or a fish (0x12e8-0x131f), or for other items in mode 0x2a the tile operation;
- * for an item PocketsItem_CanUse allows, the drop (text 1 in mode 0x2a, else 0x10); text 2 to
+ * for an item PocketsItem_CanDrop allows, the drop (text 1 in mode 0x2a, else 0x10); text 2 to
  * cancel. (GroupParams_MaskArg is read first and its value left unused.) */
 void PocketsSwap_AddEntries(PocketsSwap *self)
 {
@@ -632,7 +632,7 @@ void PocketsSwap_AddEntries(PocketsSwap *self)
     } else if (mode == POCKETS_SWAP_MODE_ITEM_2A) {
         ChoiceEntries_Add(&self->entries, 0x10, POCKETS_SWAP_ACTION_TILE_OP);
     }
-    if (PocketsItem_CanUse((unsigned int) item) != 0) {
+    if (PocketsItem_CanDrop((unsigned int) item) != 0) {
         if (mode == POCKETS_SWAP_MODE_ITEM_2A) {
             ChoiceEntries_Add(&self->entries, 1, POCKETS_SWAP_ACTION_DROP);
         } else {

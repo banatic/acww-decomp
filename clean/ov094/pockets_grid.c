@@ -683,7 +683,7 @@ int PocketsGrid_IconOf(PocketsGrid *grid, u16 *item, int state)
         case 1:
             return POCKETS_GRID_ICON_STATE_1;
         case 2:
-            if (PocketsItem_IsIn155fTo1564(*item) == 0) {
+            if (PocketsItem_IsDelivery(*item) == 0) {
                 return POCKETS_GRID_ICON_STATE_2;
             }
             return ItemTraits_Icon(item);

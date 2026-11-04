@@ -58,13 +58,13 @@ static void refuse(PocketsScreen *self, int message, unsigned int flag)
     SoundSys_PlaySe(SOUND_ERROR);
 }
 
-/* func_ov097_022a27fc: whether `item` can be used (PocketsScreen_CheckUseItem asks this one
+/* func_ov097_022a27fc: the drop of `item` in the room (PocketsScreen_StartDrop asks this one
  * when data_020e54a8 is set). An item that converts (func_02061b1c) to one func_0204bcdc
  * accepts is asked of overlay 4: answers 0 and 2 refuse with error 3, 1 with error 5 (flag 1);
  * any other hands its value to func_ov004_0223c660 and answers 1. Any other item is asked for
- * by a use request (kept at `tile_request`): 2 when one was made, else a refusal with error 3.
+ * by a drop request (kept at `tile_request`): 2 when one was made, else a refusal with error 3.
  * Refusals answer 0. */
-int PocketsRoom_CheckUseItem(PocketsScreen *self, u16 item)
+int PocketsRoom_StartDrop(PocketsScreen *self, u16 item)
 {
     u16 original = item;
     u16 converted;
@@ -91,7 +91,7 @@ int PocketsRoom_CheckUseItem(PocketsScreen *self, u16 item)
     }
     return 2;
 }
-CLEAN_AS(func_ov097_022a27fc, PocketsRoom_CheckUseItem)
+CLEAN_AS(func_ov097_022a27fc, PocketsRoom_StartDrop)
 
 /* func_ov097_022a28e4: when PocketsRoom_CanUse allows it, a carpet in the grid gets the row
  * of action 19 and a wallpaper the row of action 18. */

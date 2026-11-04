@@ -350,9 +350,9 @@ void PocketsScreen_MoveCursorAtPlaces(PocketsScreen *self, int keys, int mode)
                 Glider_TurnToSetC(&self->cursor_sprite);
             }
         } else if (KeyRepeat_HasDown(keys)) {
-            self->cursor = PocketsScreen_CanReachPlace22(self, mode) ? POCKETS_PLACE_22 : 0x04;
+            self->cursor = PocketsScreen_CanReachDrop(self, mode) ? POCKETS_PLACE_DROP_LEFT : 0x04;
         }
-    } else if (place == POCKETS_PLACE_22 || place == POCKETS_PLACE_23) {
+    } else if (place == POCKETS_PLACE_DROP_LEFT || place == POCKETS_PLACE_DROP_RIGHT) {
         if (KeyRepeat_HasLeft(keys)) {
             if (PocketsScreen_CanReachBells(self, mode)) {
                 self->cursor = POCKETS_PLACE_BELLS;
@@ -374,8 +374,8 @@ void PocketsScreen_MoveCursorAtPlaces(PocketsScreen *self, int keys, int mode)
             PocketsScreen_SetFlags(self, POCKETS_FLAG_WRAPPED_LEFT);
             self->cursor = 0x12;
         } else if (KeyRepeat_HasRight(keys)) {
-            if (PocketsScreen_CanReachPlace22(self, mode)) {
-                self->cursor = POCKETS_PLACE_22;
+            if (PocketsScreen_CanReachDrop(self, mode)) {
+                self->cursor = POCKETS_PLACE_DROP_LEFT;
             } else if (PocketsScreen_CanReachPlayer(self, mode)) {
                 self->cursor = POCKETS_PLACE_PLAYER;
             } else {
@@ -428,17 +428,17 @@ void PocketsScreen_MoveCursorInRow(PocketsScreen *self, int keys, int mode)
 }
 CLEAN_AS(func_ov096_0229c7e0, PocketsScreen_MoveCursorInRow)
 
-/* From the letters' rows 0 and 1 to the places 0x22-0x25, as PocketsScreen_CanReachPlace22 and
+/* From the letters' rows 0 and 1 to the places 0x22-0x25, as PocketsScreen_CanReachDrop and
  * PocketsScreen_CanReachPlayer (both asked) allow; whether either did.
  * QUIRK: "both" is the bitwise and of their results, as in the game. */
 static int letters_to_places(PocketsScreen *self, int row, int mode)
 {
-    int to_22 = PocketsScreen_CanReachPlace22(self, mode);
+    int to_22 = PocketsScreen_CanReachDrop(self, mode);
     int to_player = PocketsScreen_CanReachPlayer(self, mode);
     if ((to_22 & to_player) != 0) {
-        self->cursor = row == 0 ? POCKETS_PLACE_PLAYER : POCKETS_PLACE_22;
+        self->cursor = row == 0 ? POCKETS_PLACE_PLAYER : POCKETS_PLACE_DROP_LEFT;
     } else if (to_22 != 0) {
-        self->cursor = POCKETS_PLACE_22;
+        self->cursor = POCKETS_PLACE_DROP_LEFT;
     } else if (to_player != 0) {
         self->cursor = POCKETS_PLACE_PLAYER;
     } else {
@@ -553,8 +553,8 @@ void PocketsScreen_MoveCursorInGrid(PocketsScreen *self, int keys, unsigned int 
             self->cursor = POCKETS_PLACE_BELLS;
             return;
         }
-        if (PocketsScreen_CanReachPlace22(self, (int) mode) != 0) {
-            self->cursor = POCKETS_PLACE_22;
+        if (PocketsScreen_CanReachDrop(self, (int) mode) != 0) {
+            self->cursor = POCKETS_PLACE_DROP_LEFT;
             return;
         }
         if (PocketsScreen_CanReachPlayer(self, (int) mode) != 0) {
@@ -754,7 +754,7 @@ void PocketsScreen_AddGridEntries(PocketsScreen *self, int place)
 
     switch (kind) {
         case 0:
-            if (PocketsScreen_CanUseItem(self, item) != 0) {
+            if (PocketsScreen_CanDropItem(self, item) != 0) {
                 ChoiceEntries_Add(&self->entries, data_020e54a8 == 0 ? 1 : 0x0a, 2);
             }
             if (data_020e54a8 == 0) {
@@ -772,7 +772,7 @@ void PocketsScreen_AddGridEntries(PocketsScreen *self, int place)
             ChoiceEntries_Add(&self->entries, 9, 0x14);
             break;
         case 2:
-            if (PocketsItem_IsIn155fTo1564(item) == 0) {
+            if (PocketsItem_IsDelivery(item) == 0) {
                 ChoiceEntries_Add(&self->entries, 0x17, 0x14);
             }
             break;
@@ -861,7 +861,7 @@ CLEAN_AS(func_ov096_0229d1d4, PocketsScreen_ShowChoice)
  * 0, 0x0f-0x11, 0x1a or the cancel; the cancel ends with PocketsScreen_EndAction, any other action
  * runs its member function from the table (filled once):
  *   0, 1   PocketsScreen_BeginSubState12          18     func_ov097_022a2954
- *   2      PocketsScreen_ActionUseItem            19     func_ov097_022a29e4
+ *   2      PocketsScreen_ActionDropItem            19     func_ov097_022a29e4
  *   3      PocketsScreen_ActionReadLetter         20     PocketsScreen_ActionOpenPresent
  *   4      PocketsScreen_ActionChangeAddressee    21     func_ov098_022a2e9c
  *   5      PocketsScreen_ActionRewriteLetter      22     func_ov098_022a2b6c
@@ -1165,19 +1165,20 @@ void PocketsScreen_ActionChangeAddressee(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229d9cc, PocketsScreen_ActionChangeAddressee)
 
-/* func_ov096_0229d9f0 (action 2): when the place's item can be used (else message 9), by
- * PocketsScreen_CheckUseItem: 2 starts sub state 0x28 with flag 0x1000, any other non-zero
+/* func_ov096_0229d9f0 (action 2, text 1 "put on the ground" or 0x0a "put in the room"): when
+ * the place's item can be dropped (else message 9), by
+ * PocketsScreen_StartDrop: 2 starts sub state 0x28 with flag 0x1000, any other non-zero
  * answer hands the place's grid index to the grid's object and ends the action. */
-void PocketsScreen_ActionUseItem(PocketsScreen *self)
+void PocketsScreen_ActionDropItem(PocketsScreen *self)
 {
     u8 place = self->slot;
     int item = PocketsScreen_PlaceItem(self, place);
-    if (PocketsScreen_CanUseItem(self, (unsigned int) item) == 0) {
+    if (PocketsScreen_CanDropItem(self, (unsigned int) item) == 0) {
         PocketsScreen_EndAction(self);
         PocketsScreen_ShowError(self, 9, 0xff, 1);
         return;
     }
-    int how = PocketsScreen_CheckUseItem(self, item);
+    int how = PocketsScreen_StartDrop(self, item);
     if (how == 0) {
         return;
     }
@@ -1189,12 +1190,13 @@ void PocketsScreen_ActionUseItem(PocketsScreen *self)
         PocketsScreen_EndAction(self);
     }
 }
-CLEAN_AS(func_ov096_0229d9f0, PocketsScreen_ActionUseItem)
+CLEAN_AS(func_ov096_0229d9f0, PocketsScreen_ActionDropItem)
 
-/* func_ov096_0229da6c: the ov098 way asks func_020435fc (with this system's session slot): -1
+/* func_ov096_0229da6c: the drop of `item` asked for. The ov098 way asks func_020435fc
+ * (TileRequests_AskDrop, with this system's session slot): -1
  * ends the action with message 3 and command 0x73 and answers 0, else 2. The ov097 way, when
  * func_020b67d4 allows it, answers func_ov097_022a27fc; else 0. */
-int PocketsScreen_CheckUseItem(PocketsScreen *self, int item)
+int PocketsScreen_StartDrop(PocketsScreen *self, int item)
 {
     if (data_020e54a8 == 0) {
         self->tile_request = TileRequests_AskDrop(data_020ccf94->local_slot, item);
@@ -1207,25 +1209,25 @@ int PocketsScreen_CheckUseItem(PocketsScreen *self, int item)
         return 2;
     }
     if (SceneKinds_CurrentIsHouseRoom() != 0) {
-        return PocketsRoom_CheckUseItem(self, item);
+        return PocketsRoom_StartDrop(self, item);
     }
     return 0;
 }
-CLEAN_AS(func_ov096_0229da6c, PocketsScreen_CheckUseItem)
+CLEAN_AS(func_ov096_0229da6c, PocketsScreen_StartDrop)
 
 /* func_ov096_0229daec: by func_ov098_022a31d8 the ov098 way, by func_ov097_022a27c0 the ov097
  * way when func_020b67d4 allows it, else no. */
-int PocketsScreen_CanUseItem(PocketsScreen *self, unsigned int item)
+int PocketsScreen_CanDropItem(PocketsScreen *self, unsigned int item)
 {
     if (data_020e54a8 == 0) {
-        return PocketsTown_CanUseItem(self, item);
+        return PocketsTown_CanDropItem(self, item);
     }
     if (SceneKinds_CurrentIsHouseRoom() != 0) {
         return PocketsRoom_CanUse(self) != 0;
     }
     return 0;
 }
-CLEAN_AS(func_ov096_0229daec, PocketsScreen_CanUseItem)
+CLEAN_AS(func_ov096_0229daec, PocketsScreen_CanDropItem)
 
 /* func_ov096_0229db30: the popup hidden, the sub state kept at 0xba, `value` at 0xb7, the
  * cursor sprite's animation 6, sub state 0x15. */
@@ -1784,9 +1786,9 @@ void PocketsScreen_DropHeld(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229e6a0, PocketsScreen_DropHeld)
 
-/* func_ov096_0229e6b0: whether the held item (in state 0) can be used
- * (PocketsScreen_CanUseItem); never a bell bag that came from the wallet. */
-int PocketsScreen_CanUseHeld(PocketsScreen *self)
+/* func_ov096_0229e6b0: whether the held item (in state 0) can be dropped
+ * (PocketsScreen_CanDropItem); never a bell bag that came from the wallet. */
+int PocketsScreen_CanDropHeldItem(PocketsScreen *self)
 {
     if (!holds_plain_item(self)) {
         return 0;
@@ -1794,22 +1796,22 @@ int PocketsScreen_CanUseHeld(PocketsScreen *self)
     if (item_in(self->item, ITEM_BAG_FIRST, ITEM_BAG_LAST) && self->held_place == POCKETS_PLACE_BELLS) {
         return 0;
     }
-    return PocketsScreen_CanUseItem(self, self->item);
+    return PocketsScreen_CanDropItem(self, self->item);
 }
-CLEAN_AS(func_ov096_0229e6b0, PocketsScreen_CanUseHeld)
+CLEAN_AS(func_ov096_0229e6b0, PocketsScreen_CanDropHeldItem)
 
-/* func_ov096_0229e71c: uses the held item. When it cannot be used, message 9 and the item goes
- * back. By PocketsScreen_CheckUseItem: 1 lets go of it (answers 1), 2 starts sub state 0x28
- * with flag 0x1000 cleared, 0 and others put it back. Answers whether it was used up. */
-int PocketsScreen_UseHeld(PocketsScreen *self)
+/* func_ov096_0229e71c: drops the held item. When it cannot be dropped, message 9 and the item
+ * goes back. By PocketsScreen_StartDrop: 1 lets go of it (answers 1), 2 starts sub state 0x28
+ * with flag 0x1000 cleared, 0 and others put it back. Answers whether it was dropped at once. */
+int PocketsScreen_DropHeldItem(PocketsScreen *self)
 {
-    if (PocketsScreen_CanUseHeld(self) == 0) {
+    if (PocketsScreen_CanDropHeldItem(self) == 0) {
         PocketsScreen_EndAction(self);
         PocketsScreen_ShowError(self, 9, 0xff, 1);
         PocketsScreen_ReturnHeld(self, 1);
         return 0;
     }
-    switch (PocketsScreen_CheckUseItem(self, self->item)) {
+    switch (PocketsScreen_StartDrop(self, self->item)) {
         case 1:
             PocketsScreen_DropHeld(self);
             return 1;
@@ -1822,7 +1824,7 @@ int PocketsScreen_UseHeld(PocketsScreen *self)
             return 0;
     }
 }
-CLEAN_AS(func_ov096_0229e71c, PocketsScreen_UseHeld)
+CLEAN_AS(func_ov096_0229e71c, PocketsScreen_DropHeldItem)
 
 /* func_ov096_0229e79c: puts the held thing down at `place` (PocketsScreen_PutHeldItemAt for an item,
  * PocketsScreen_PutHeldLetterAt for a letter); whether it was put down. */
@@ -2078,8 +2080,8 @@ void PocketsScreen_HighlightPlace(PocketsScreen *self, unsigned int place)
             case POCKETS_PLACE_BELLS:
                 PocketsGrid_MarkPlace((PocketsGrid *) (void *) self->grid, 0x21);
                 break;
-            case POCKETS_PLACE_22:
-            case POCKETS_PLACE_23:
+            case POCKETS_PLACE_DROP_LEFT:
+            case POCKETS_PLACE_DROP_RIGHT:
                 PocketsWallet_SetFrame((PocketsWallet *) (void *) self->unk_de0, 0);
                 break;
             case POCKETS_PLACE_PLAYER:
@@ -2143,16 +2145,16 @@ int PocketsScreen_CanReachBells(PocketsScreen *self, int mode)
 }
 CLEAN_AS(func_ov096_0229ee10, PocketsScreen_CanReachBells)
 
-/* func_ov096_0229ee38: whether the cursor may go to place 0x22: in mode 1, when the held item
- * can be used. */
-int PocketsScreen_CanReachPlace22(PocketsScreen *self, int mode)
+/* func_ov096_0229ee38: whether the cursor may go to the drop place 0x22: in mode 1, when the
+ * held item can be dropped. */
+int PocketsScreen_CanReachDrop(PocketsScreen *self, int mode)
 {
     if (mode == 1) {
-        return PocketsScreen_CanUseHeld(self);
+        return PocketsScreen_CanDropHeldItem(self);
     }
     return 0;
 }
-CLEAN_AS(func_ov096_0229ee38, PocketsScreen_CanReachPlace22)
+CLEAN_AS(func_ov096_0229ee38, PocketsScreen_CanReachDrop)
 
 /* func_ov096_0229ee50: whether the cursor may go to the player's place: always in mode 0, never
  * in 2, in mode 1 when the held item fits a record slot. */
@@ -2435,8 +2437,8 @@ int PocketsScreen_TouchOnPlayer(PocketsScreen *self, int x, int y)
 }
 CLEAN_AS(func_ov096_0229f3bc, PocketsScreen_TouchOnPlayer)
 
-/* func_ov096_0229f3d4: the place of the upper part under the touch: the player's; 0x22 (x
- * below 0x98) or 0x23 in x 0x6d-0xc3, y 0x51-0x67; the bells' place (its own area or x
+/* func_ov096_0229f3d4: the place of the upper part under the touch: the player's; the drop
+ * place 0x22 (x below 0x98) or 0x23 in x 0x6d-0xc3, y 0x51-0x67, under the player; the bells' place (its own area or x
  * 0x31-0x5f, y 0x51-0x5f) unless flag 0x4000 is set; else no place, flag 0x4000 cleared. */
 int PocketsScreen_PlaceAtTouch(PocketsScreen *self, int x, int y)
 {
@@ -2444,7 +2446,7 @@ int PocketsScreen_PlaceAtTouch(PocketsScreen *self, int x, int y)
         return POCKETS_PLACE_PLAYER;
     }
     if (x > 0x6c && x < 0xc4 && y > 0x50 && y < 0x68) {
-        return x < 0x98 ? POCKETS_PLACE_22 : POCKETS_PLACE_23;
+        return x < 0x98 ? POCKETS_PLACE_DROP_LEFT : POCKETS_PLACE_DROP_RIGHT;
     }
     if (PocketsScreen_TouchOnBells(self, x, y) || (x > 0x30 && x < 0x60 && y > 0x50 && y < 0x60)) {
         return PocketsScreen_TestFlags(self, POCKETS_FLAG_4000) ? POCKETS_NO_PLACE : POCKETS_PLACE_BELLS;
@@ -2574,7 +2576,7 @@ CLEAN_AS(func_ov096_0229f5e0, PocketsScreen_SetPlaceItem)
 /* func_ov096_0229f650: the held item put down at `place`; whether it was.
  * The grid or a letter (not an empty letter's place): the held item merges onto the item there
  * (PocketsScreen_MergeItems); what is left of that goes to the held item's place, then the held
- * item is put down. 0x22, 0x23: PocketsScreen_UseHeld. The player's place: into the record
+ * item is put down. 0x22, 0x23: PocketsScreen_DropHeldItem. The player's place: into the record
  * slot (PocketsScreen_BeginSubState25), refused when it fits none. The bells' place: into the
  * wallet. 0x21: PocketsScreen_SetBackdropClothes.
  * QUIRK: 0x22 and 0x23 are told by the place's low byte only. */
@@ -2593,8 +2595,8 @@ int PocketsScreen_PutHeldItemAt(PocketsScreen *self, int place)
         PocketsScreen_PlaceHeldAt(self, place, 1);
         return 1;
     }
-    if ((u8) (place - POCKETS_PLACE_22) <= 1) {
-        return PocketsScreen_UseHeld(self) != 0;
+    if ((u8) (place - POCKETS_PLACE_DROP_LEFT) <= 1) {
+        return PocketsScreen_DropHeldItem(self) != 0;
     }
     switch (place) {
         case POCKETS_PLACE_PLAYER:
@@ -2674,7 +2676,7 @@ CLEAN_AS(func_ov096_0229f7e0, PocketsScreen_CursorToSpriteColumn)
 int PocketsScreen_IsTopPlace(PocketsScreen *self, unsigned int place)
 {
     (void) self;
-    return place >= POCKETS_PLACE_22 && place <= POCKETS_PLACE_BELLS;
+    return place >= POCKETS_PLACE_DROP_LEFT && place <= POCKETS_PLACE_BELLS;
 }
 CLEAN_AS(func_ov096_0229f800, PocketsScreen_IsTopPlace)
 
@@ -2919,17 +2921,17 @@ void PocketsScreen_EndActionHidden(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229fbf0, PocketsScreen_EndActionHidden)
 
-/* The answers of a use request (`tile_request`, PocketsScreen_CheckUseItem). */
-enum PocketsUseResult { POCKETS_USE_PENDING = 0, POCKETS_USE_DONE = 1, POCKETS_USE_FAILED = 2 };
+/* The answers of a drop request (`tile_request`, PocketsScreen_StartDrop). */
+enum PocketsDropResult { POCKETS_DROP_PENDING = 0, POCKETS_DROP_DONE = 1, POCKETS_DROP_FAILED = 2 };
 
-/* What sub states 0x28 and 0x29 do once their request answered `result`: done, the item used
- * from a slot (flag 0x1000) is handed to the grid's object, one used from the hand is let go;
+/* What sub states 0x28 and 0x29 do once their request answered `result`: done, the item dropped
+ * from a slot (flag 0x1000) is handed to the grid's object, one dropped from the hand is let go;
  * failed, one from the hand goes back, and error `message` with command 0x73. Either way the
  * action ends and the request is freed (`tile_request` -1). Nothing while it is pending. */
-static void finish_use_request(PocketsScreen *self, int result, int message)
+static void finish_drop_request(PocketsScreen *self, int result, int message)
 {
     switch (result) {
-        case POCKETS_USE_DONE:
+        case POCKETS_DROP_DONE:
             if (PocketsScreen_TestFlags(self, POCKETS_FLAG_1000)) {
                 PocketsGrid_EmptyPlace((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, self->slot));
             } else {
@@ -2937,7 +2939,7 @@ static void finish_use_request(PocketsScreen *self, int result, int message)
             }
             PocketsScreen_EndAction(self);
             break;
-        case POCKETS_USE_FAILED:
+        case POCKETS_DROP_FAILED:
             if (PocketsScreen_TestFlags(self, POCKETS_FLAG_1000) == 0) {
                 PocketsScreen_ReturnHeld(self, 1);
             }
@@ -2952,21 +2954,21 @@ static void finish_use_request(PocketsScreen *self, int result, int message)
     self->tile_request = -1;
 }
 
-/* func_ov096_0229fc0c (sub state 0x29): waits for the use request by func_020436a8; error 8
+/* func_ov096_0229fc0c (sub state 0x29): waits for the drop (or plant) request by func_020436a8; error 8
  * when it fails. */
-void PocketsScreen_WaitUseRequest29(PocketsScreen *self)
+void PocketsScreen_WaitDropRequest29(PocketsScreen *self)
 {
-    finish_use_request(self, TileRequests_Answer((unsigned int) self->tile_request), 8);
+    finish_drop_request(self, TileRequests_Answer((unsigned int) self->tile_request), 8);
 }
-CLEAN_AS(func_ov096_0229fc0c, PocketsScreen_WaitUseRequest29)
+CLEAN_AS(func_ov096_0229fc0c, PocketsScreen_WaitDropRequest29)
 
-/* func_ov096_0229fca8 (sub state 0x28): waits for the use request by func_020431c8; error 3
+/* func_ov096_0229fca8 (sub state 0x28): waits for the drop request by func_020431c8; error 3
  * when it fails. */
-void PocketsScreen_WaitUseRequest28(PocketsScreen *self)
+void PocketsScreen_WaitDropRequest28(PocketsScreen *self)
 {
-    finish_use_request(self, TileRequests_Carry(self->tile_request), 3);
+    finish_drop_request(self, TileRequests_Carry(self->tile_request), 3);
 }
-CLEAN_AS(func_ov096_0229fca8, PocketsScreen_WaitUseRequest28)
+CLEAN_AS(func_ov096_0229fca8, PocketsScreen_WaitDropRequest28)
 
 /* func_ov096_0229fd44 (sub state 0x32): the picked place blinks (marked when the frames left
  * are 3 more than a multiple of 5, unmarked on the multiples) and is emptied on the last
@@ -3645,7 +3647,7 @@ static void put_held_item_on_top_place(PocketsScreen *self)
     if (place == POCKETS_PLACE_PLAYER) {
         self->record_slot = (u8) PocketsScreen_HeldRecordSlot(self);
         PocketsScreen_BeginSubState14(self, self->cursor);
-    } else if (place == POCKETS_PLACE_22) {
+    } else if (place == POCKETS_PLACE_DROP_LEFT) {
         PocketsScreen_RequestSwitchOff(self);
         PocketsScreen_BeginSubState14(self, self->cursor);
     } else if (place == POCKETS_PLACE_BELLS) {
@@ -3886,12 +3888,12 @@ CLEAN_AS(func_ov096_022a0da8, PocketsScreen_DragHeldLetter)
 /* What lifting the pen over place 0x22-0x25 does with a dragged item (sub state 5). */
 static void drop_dragged_item_on_top_place(PocketsScreen *self, u8 place)
 {
-    if (place == POCKETS_PLACE_22 || place == POCKETS_PLACE_23) {
-        if (PocketsScreen_CanUseHeld(self) == 0) {
+    if (place == POCKETS_PLACE_DROP_LEFT || place == POCKETS_PLACE_DROP_RIGHT) {
+        if (PocketsScreen_CanDropHeldItem(self) == 0) {
             PocketsScreen_GlideHeldTo(self, self->held_place, 4);
             return;
         }
-        if (PocketsScreen_UseHeld(self) != 0) {
+        if (PocketsScreen_DropHeldItem(self) != 0) {
             PocketsScreen_EndAction(self);
         }
     } else if (place == POCKETS_PLACE_PLAYER) {
@@ -3923,11 +3925,11 @@ static void drop_dragged_item_on_top_place(PocketsScreen *self, u8 place)
  *   a grid or letter place     put down there when PocketsScreen_CheckSwap allows it (a
  *                              letter's place asks the switch off; the action ends when still
  *                              in this sub state; sound 0xe), else back to its place
- *   0x22, 0x23                 used when it can be (the action ends when used up)
+ *   0x22, 0x23                 dropped when it can be (the action ends when dropped at once)
  *   the player's place         into its record slot (PocketsScreen_BeginSubState25), refused
  *                              when it fits none, back when the slot is 1
  *   the bells' place           a bell bag goes into the wallet
- *   0x21                       swapped with the record's item when it may go there
+ *   0x21                       put on the backdrop (swapped with its clothes) when it may go there
  * and back to its place otherwise. */
 void PocketsScreen_DragHeldItem(PocketsScreen *self)
 {
@@ -4534,8 +4536,8 @@ CLEAN_AS(_ZN18Obj_ov096_022a23e819func_ov096_022a19e0Ev, PocketsScreen_RunIntera
  *   8     PocketsScreen_CodeChoiceByTouch      0x25  PocketsScreen_GiveToRecordSlot
  *   9     PocketsScreen_HoldBellDigit          0x26  PocketsScreen_WaitRecordBlink
  *   0x0a  PocketsScreen_IdleByKeys             0x27  PocketsScreen_WaitActorForRecord
- *   0x0b  PocketsScreen_MoveHeldItemByKeys     0x28  PocketsScreen_WaitUseRequest28
- *   0x0c  PocketsScreen_MoveHeldLetterByKeys   0x29  PocketsScreen_WaitUseRequest29
+ *   0x0b  PocketsScreen_MoveHeldItemByKeys     0x28  PocketsScreen_WaitDropRequest28
+ *   0x0c  PocketsScreen_MoveHeldLetterByKeys   0x29  PocketsScreen_WaitDropRequest29
  *   0x0d  PocketsScreen_ActionChoiceByKeys     0x2a  PocketsScreen_WaitLetterDiscarded
  *   0x0e  PocketsScreen_PickActionRow          0x2b  PocketsScreen_WaitPresentOpened
  *   0x0f  PocketsScreen_WaitCursorGlide        0x2c  func_ov098_022a2df4

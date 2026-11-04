@@ -34,10 +34,10 @@ static int in_range(unsigned int item, unsigned int first, unsigned int last)
     return item >= first && item <= last;
 }
 
-/* func_ov094_022999e4: whether the pockets scene of the town (PocketsTown_CanUseItem) lets
- * `item` be used: not an insect or a fish (0x12b0-0x131f), not 0x137c and not a worn item
- * (0x1408-0x1428, 0x1471-0x1491); 1 for every other code. */
-int PocketsItem_CanUse(unsigned int item)
+/* func_ov094_022999e4: whether the pockets scene of the town (PocketsTown_CanDropItem) lets
+ * `item` be dropped: not an insect or a fish (0x12b0-0x131f, they are let go), not a flower
+ * (0x137c, 0x1408-0x1428, 0x1471-0x1491, they are planted); 1 for every other code. */
+int PocketsItem_CanDrop(unsigned int item)
 {
     if (in_range(item, 0x12e8, 0x131f) || in_range(item, 0x12b0, 0x12e7)) {
         return 0;
@@ -47,7 +47,7 @@ int PocketsItem_CanUse(unsigned int item)
     }
     return 1;
 }
-CLEAN_AS(func_ov094_022999e4, PocketsItem_CanUse)
+CLEAN_AS(func_ov094_022999e4, PocketsItem_CanDrop)
 
 /* func_ov094_02299a54: whether `item` is 0x155d (a letter refuses it, PocketsScreen_CheckDrop). */
 int PocketsItem_Is155d(u16 item)
@@ -63,12 +63,13 @@ int PocketsItem_IsDayItem(u16 item)
 }
 CLEAN_AS(func_ov094_02299a70, PocketsItem_IsDayItem)
 
-/* func_ov094_02299a90: whether `item` is one of 0x155f-0x1564. */
-int PocketsItem_IsIn155fTo1564(u16 item)
+/* func_ov094_02299a90: whether `item` is one of the deliveries 0x155f-0x1564 (item_info: the
+ * delivered carpet, wallpaper, furniture and watering can). */
+int PocketsItem_IsDelivery(u16 item)
 {
     return in_range(item, 0x155f, 0x1560) || in_range(item, 0x1561, 0x1564);
 }
-CLEAN_AS(func_ov094_02299a90, PocketsItem_IsIn155fTo1564)
+CLEAN_AS(func_ov094_02299a90, PocketsItem_IsDelivery)
 
 /* func_ov094_02299b04: whether `item` is one a letter refuses with answer 4
  * (PocketsScreen_CheckDrop): 0x1531-0x1541 (the counted items 0x1531-0x153a among them),
