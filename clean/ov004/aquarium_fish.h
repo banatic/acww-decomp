@@ -44,15 +44,6 @@ enum {
     AQUARIUM_FISH_SHOWN = 2,
 };
 
-/* AquariumFish.mode, as far as read here. */
-enum {
-    AQUARIUM_FISH_MODE_1 = 1, /* animates at 1.5, does not turn to target_yaw nor mind the ends */
-    AQUARIUM_FISH_MODE_2 = 2,
-    AQUARIUM_FISH_MODE_3 = 3, /* its animation speed counts its speed three times */
-    AQUARIUM_FISH_MODE_5 = 5, /* its animation speed counts a third of its speed */
-    AQUARIUM_FISH_MODE_6 = 6, /* becomes 2 at the room's ends */
-};
-
 struct AquariumFish;
 
 /* The fish's body: a body at a point (its position), and the fish (vtable 0x02255d28: the
@@ -146,12 +137,12 @@ void AquariumFish_SetPassingWays(AquariumFish *fish, AquariumFish **other);
  * down and rests, then sets off again; a startled fish flees. */
 enum {
     AQUARIUM_MODE_NONE = 0,
-    AQUARIUM_MODE_FLEE = 1,
+    AQUARIUM_MODE_FLEE = 1, /* animates at 1.5, does not turn to target_yaw nor mind the ends */
     AQUARIUM_MODE_NEW_COURSE = 2,
-    AQUARIUM_MODE_SPEED_UP = 3,
+    AQUARIUM_MODE_SPEED_UP = 3, /* its animation speed counts its speed three times */
     AQUARIUM_MODE_CRUISE = 4,
-    AQUARIUM_MODE_SLOW_DOWN = 5,
-    AQUARIUM_MODE_REST = 6,
+    AQUARIUM_MODE_SLOW_DOWN = 5, /* its animation speed counts a third of its speed */
+    AQUARIUM_MODE_REST = 6,      /* becomes NEW_COURSE at the room's ends */
 };
 
 /* AquariumFish.glass_turn: what a fish does about the glass ahead of it. */

@@ -856,8 +856,8 @@ void TileEvent_PlaceKind12Effect(int *transform)
 }
 CLEAN_AS(func_ov003_02221c9c, TileEvent_PlaceKind12Effect)
 
-/* func_ov003_02221cb4: kind 0xb's step: half a turn of a hop in 8 frames from `point`, half a
- * tile high at its top, along the direction `angle` (x by its sine, z by its cosine); it ends
+/* func_ov003_02221cb4: kind 0xb's step: a nudge out from `point` along the direction `angle`
+ * (x by its sine, z by its cosine) and back, level, 0.5 out at its peak, over 4 frames; it ends
  * once the phase passes the half turn. */
 void TileEvent_StepKind11(TileEventEntry *entry)
 {

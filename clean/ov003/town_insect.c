@@ -55,7 +55,7 @@ static_assert(offsetof(TownInsect, position) == 0x204, "TownInsect.position");
 static_assert(offsetof(TownInsect, effect) == 0x22c, "TownInsect.effect");
 static_assert(offsetof(TownInsect, slot) == 0x230, "TownInsect.slot");
 static_assert(offsetof(TownInsect, angle_x) == 0x238, "TownInsect.angle_x");
-static_assert(offsetof(TownInsect, frames_left) == 0x242, "TownInsect.frames_left");
+static_assert(offsetof(TownInsect, frame_count) == 0x242, "TownInsect.frame_count");
 static_assert(offsetof(TownInsect, used) == 0x248, "TownInsect.used");
 static_assert(offsetof(TownInsect, kind) == 0x24d, "TownInsect.kind");
 static_assert(offsetof(TownInsect, state) == 0x250, "TownInsect.state");
@@ -97,7 +97,7 @@ extern const u32 data_0213f020[];
 extern u16 data_ov003_02260794[TOWN_TILE_MASK_SIZE / 2];
 extern u16 data_ov003_02260594[TOWN_TILE_MASK_SIZE / 2];
 
-/* The process's frame counter for placing insects (TownInsect_UpdateTown). */
+/* The process's frame counter for placing insects (TownInsect_UpdatePlacing). */
 extern u8 data_ov003_02260534;
 /* Set by main (town_pests.c) for the event insect of kind 0x3b; cleared once placed. */
 extern u8 data_ov003_02260538;
@@ -776,8 +776,7 @@ int TownInsect_SpecialKind(u8 *kind, u8 *place, int town)
         }
     } else if (falling != 1) {
         TownInsect *event = &data_ov003_02260994[1];
-        if (data_ov003_02260538 != 0 && event->state == TOWN_INSECT_STATE_ACTIVE &&
-            event->action == TOWN_INSECT_ACTION_SHOWN) {
+        if (data_ov003_02260538 != 0 && event->state == TOWN_INSECT_STATE_ACTIVE && event->action == TOWN_INSECT_ACTION_CALM) {
             *kind = TOWN_INSECT_KIND_ANTS;
             *place = 7;
             return 1;
@@ -823,7 +822,7 @@ TownInsect *TownInsect_Construct(TownInsect *insect)
     __cxa_vec_ctor(insect->unk_1ec, 2, sizeof insect->unk_1ec[0], func_020012e8, func_020012dc);
     ModelPoolSlot_Construct(&insect->slot);
     ModelPoolFiles_Reset(&insect->files);
-    insect->action = TOWN_INSECT_ACTION_SHOWN;
+    insect->action = TOWN_INSECT_ACTION_CALM;
     insect->counter = 0;
     insect->angle_y = 0;
     insect->angle_z = 0;
@@ -832,7 +831,7 @@ TownInsect *TownInsect_Construct(TownInsect *insect)
     insect->state = TOWN_INSECT_STATE_NONE;
     insect->unk_170 = 0;
     insect->unk_24c = 1;
-    insect->frames_left = 0;
+    insect->frame_count = 0;
     insect->unk_24b = 1;
     insect->unk_24a = 0;
     insect->used = 0;
@@ -1161,7 +1160,7 @@ void TownInsect_SetFlag54c(void)
 CLEAN_AS(func_ov003_0222ddac, TownInsect_SetFlag54c)
 
 /* func_ov003_0222ddb8: the insects of a table (town or event, by `mode`) checked against the
- * box around the camera's point (2.0 across, from 7.0 behind to 3.0 ahead): those that keep
+ * box around the camera's point (32.0 across, 16.0 either side; from 28.0 behind to 12.0 ahead): those that keep
  * away in this weather and are out of view removed; the others have unk_246 set by the weather
  * and in_view by the box. Nothing while the camera's first word is 0. */
 void TownInsect_UpdateView(TownInsectProcess *process, int mode)
@@ -1352,7 +1351,7 @@ int TownInsect_HasShadow(int unused, TownInsect *insect)
     switch (kind) {
         case 0x1e:
         case 0x31:
-            return insect->action != TOWN_INSECT_ACTION_SHOWN;
+            return insect->action != TOWN_INSECT_ACTION_CALM;
         case 0x18:
         case 0x30:
         case 0x32:
@@ -1421,7 +1420,7 @@ int TownInsect_Catch(u8 id)
     if ((kind == 0x31 || kind == 0x1e || kind == 0x35) && NNS_G3dMdlGetMdlAlpha(town_insect_model(insect), 0) < 0x1f) {
         return 0;
     }
-    if (kind == 0x35 && action == TOWN_INSECT_ACTION_SHOWN) {
+    if (kind == 0x35 && action == TOWN_INSECT_ACTION_CALM) {
         return 0;
     }
     if (insect->kind != TOWN_INSECT_KIND_WASPS && insect->kind != TOWN_INSECT_KIND_ANTS) {
@@ -1436,7 +1435,7 @@ int TownInsect_Catch(u8 id)
 }
 CLEAN_AS(func_ov003_0222e3a4, TownInsect_Catch)
 
-/* func_ov003_0222e4c0: the insect `id` names shown again (alpha 0x1f, TOWN_INSECT_ACTION_SHOWN)
+/* func_ov003_0222e4c0: the insect `id` names shown again (alpha 0x1f, TOWN_INSECT_ACTION_CALM)
  * when it is hidden and has a kind.
  * QUIRK: an id with neither table's bit is taken as the record's address. */
 void TownInsect_Show(int id)
@@ -1445,7 +1444,7 @@ void TownInsect_Show(int id)
     if (insect->action != TOWN_INSECT_ACTION_HIDDEN || insect->kind < 0) {
         return;
     }
-    insect->action = TOWN_INSECT_ACTION_SHOWN;
+    insect->action = TOWN_INSECT_ACTION_CALM;
     NNS_G3dMdlSetMdlAlpha(town_insect_model(insect), 0, 0x1f);
 }
 CLEAN_AS(func_ov003_0222e4c0, TownInsect_Show)
@@ -1481,7 +1480,7 @@ CLEAN_AS(func_ov003_0222e538, TownInsect_Release)
 int TownInsect_Caught(u8 id)
 {
     TownInsect *insect = town_insect_by_id(id, NULL);
-    insect->frames_left = 0;
+    insect->frame_count = 0;
     insect->state = TOWN_INSECT_STATE_LEAVING;
     if (town_insect_in_session()) {
         town_insect_send(&id, 0x30, 4);
@@ -1559,7 +1558,7 @@ CLEAN_AS(func_ov003_0222e7bc, TownInsect_KindFlees)
 void TownInsect_Startle(int id)
 {
     TownInsect *insect = town_insect_by_id(id, NULL);
-    insect->frames_left = 0;
+    insect->frame_count = 0;
     u8 action = insect->action;
     if (TownInsect_KindFlees(insect->kind) != 0 && insect->state != TOWN_INSECT_STATE_LEAVING &&
         action != TOWN_INSECT_ACTION_HIDDEN && action != TOWN_INSECT_ACTION_END) {
@@ -1932,7 +1931,7 @@ int TownInsect_CheckTarget(int unused, TownInsect *insect, int kind, int x, int 
 }
 CLEAN_AS(func_ov003_0222ef80, TownInsect_CheckTarget)
 
-/* func_ov003_0222efc0: the town insects run while linked. For each, in a session, the
+/* func_ov003_0222efc0: the town insects' frame, run every frame. For each, in a session, the
  * session's message of it is read (TownInsectTables_PublishRecord, then TownInsectTables_ReadRecord with its kind,
  * point and byte 0x254): a free record whose message names a kind and a point (x above 1)
  * becomes that insect, in state 2; a message of byte 0xff or x 1 removes it (not kind 0x1e in
@@ -1946,12 +1945,12 @@ CLEAN_AS(func_ov003_0222ef80, TownInsect_CheckTarget)
  *      time, its byte 0x254 set to 0xff, its target and position to (1, 1, 1) and its id sent
  *      (handler 0x30, kind 7), then removed after 200 frames; else its sound moved and removed
  *      when its byte 0x254 is 0xff.
- * QUIRK: the x and z and the kind of the message are those of the last insect read when this
- * one's was not (TownInsectTables_PublishRecord answered).
+ * QUIRK: the x and z of the message are those of the last insect read when this one's was not
+ * (TownInsectTables_PublishRecord answered).
  * QUIRK: sending an id (bit 4 set) ends the loop, so the insects after it wait a frame.
  * REQUIRES: whether this system is in the session does not change during the loop (the original
  * reads the message's kind uninitialised otherwise). */
-void TownInsect_UpdateLinked(TownInsectProcess *process)
+void TownInsect_UpdateStates(TownInsectProcess *process)
 {
     TownInsect *insect = data_ov003_022617bc;
     int x = 0;
@@ -2041,8 +2040,8 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
                         Session_AppendMessage(session, &i, 1);
                         Session_EndMessage(session, 0x30, 7);
                     }
-                    insect->frames_left++;
-                    if (insect->frames_left > 200) {
+                    insect->frame_count++;
+                    if (insect->frame_count > 200) {
                         insect->action = TOWN_INSECT_ACTION_END;
                         TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
                     }
@@ -2062,7 +2061,7 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
         }
     }
 }
-CLEAN_AS(func_ov003_0222efc0, TownInsect_UpdateLinked)
+CLEAN_AS(func_ov003_0222efc0, TownInsect_UpdateStates)
 
 /* func_ov003_0222f320: the process's frame for the town and event insects. Outside a session,
  * or holding the scene, a frame counter places insects: every 20th frame first
@@ -2072,7 +2071,7 @@ CLEAN_AS(func_ov003_0222efc0, TownInsect_UpdateLinked)
  * 0x3b when due, shown by overlay 68 and main's flag cleared. Then the insects' view: in a
  * session around each player in the town (TownInsect_UpdatePlayerView), else around the camera
  * (TownInsect_UpdateView, the town's and the event's). */
-void TownInsect_UpdateTown(TownInsectProcess *process)
+void TownInsect_UpdatePlacing(TownInsectProcess *process)
 {
     int linked = town_insect_in_session();
     if (linked == 0 || LinkGlobal_HoldsScene() != 0) {
@@ -2115,7 +2114,7 @@ void TownInsect_UpdateTown(TownInsectProcess *process)
         TownInsect_UpdateView(process, TOWN_INSECT_MODE_EVENT);
     }
 }
-CLEAN_AS(func_ov003_0222f320, TownInsect_UpdateTown)
+CLEAN_AS(func_ov003_0222f320, TownInsect_UpdatePlacing)
 
 /* func_ov003_0222f458: where town insect `id` (its low four bits) is, and its kind. */
 int TownInsect_GetPosition(Vec3 *position, int id)
@@ -2276,16 +2275,16 @@ static AnimatedModel *town_insect_animated(TownInsect *insect)
     return (AnimatedModel *) &insect->model;
 }
 
-/* func_ov003_0222f67c (vtable slot 6): the process's frame: the town insects while linked, the
- * event insects outside a session, the held insects, then the town's frame. */
+/* func_ov003_0222f67c (vtable slot 6): the process's frame: the town insects' states, the event
+ * insects outside a session, the held insects, then the placing and the view. */
 int TownInsect_ProcessUpdate(TownInsectProcess *process)
 {
-    TownInsect_UpdateLinked(process);
+    TownInsect_UpdateStates(process);
     if (town_insect_in_session() == 0) {
         TownInsect_UpdateEvent(process);
     }
     TownInsect_UpdateHeld(process);
-    TownInsect_UpdateTown(process);
+    TownInsect_UpdatePlacing(process);
     return 1;
 }
 CLEAN_AS(func_ov003_0222f67c, TownInsect_ProcessUpdate)
@@ -2594,8 +2593,8 @@ void TownInsect_Remove(TownInsectProcess *process, TownInsect *insect, int mode)
     insect->players_near = 0;
     insect->kind = TOWN_INSECT_NO_KIND;
     insect->angle_y = 0;
-    insect->frames_left = 0;
-    insect->action = TOWN_INSECT_ACTION_SHOWN;
+    insect->frame_count = 0;
+    insect->action = TOWN_INSECT_ACTION_CALM;
     ModelPoolFiles_Release(&insect->files);
     insect->anim.anim = NULL;
     insect->anim.model = NULL;

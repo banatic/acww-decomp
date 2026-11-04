@@ -64,8 +64,8 @@
 #define FISH_SHADOW_WAIT_GROUP1 4
 
 /* FishShadow.behaviour */
-#define FISH_SHADOW_STARTLED 2 /* turned away from a float that landed near it */
-#define FISH_SHADOW_FLEEING 5  /* swimming off (func_ov003_02228150) */
+#define FISH_SHADOW_CRUISE 2  /* cruising; a startled fish turns away from a float that landed near it */
+#define FISH_SHADOW_FLEEING 5 /* swimming off (func_ov003_02228150) */
 
 /* FishShadow.hook_state */
 #define FISH_SHADOW_HOOK_FLEEING 6 /* fled while hooked */
@@ -132,7 +132,7 @@ typedef struct FishShadow {
     u8 alpha;                    /* 0x1fd: the model's alpha, 1-0x1f */
     u8 ground;                   /* 0x1fe: the kind of water it lives in */
     u8 size;                     /* 0x1ff: the kind's size class (CreatureTableInfo.size_class) */
-    u8 behaviour;                /* 0x200: FISH_SHADOW_STARTLED, FISH_SHADOW_FLEEING */
+    u8 behaviour;                /* 0x200: FISH_SHADOW_CRUISE, FISH_SHADOW_FLEEING */
     u8 unk_201;                  /* 0x201 */
     u8 pad_202[2];               /* 0x202 */
     int effect;                  /* 0x204: its effect's handle, -1 for none */

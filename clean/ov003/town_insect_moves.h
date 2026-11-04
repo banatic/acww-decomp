@@ -115,7 +115,7 @@ void TownInsectMove_SetTurnDelay(TownInsect *insect);
 void TownInsectMove_TurnBack(TownInsect *insect, const Vec3 *point, int step);
 int TownInsectMove_SoundNumber(int kind, int which);
 void TownInsectMove_PlaySound(TownInsect *insect, int which, int play);
-int TownInsectMove_CountStand(TownInsect *insect, const Vec3 *point);
+int TownInsectMove_CountToToolHit(TownInsect *insect, const Vec3 *point);
 int TownInsectMove_Splash(TownInsect *insect);
 int TownInsectMove_SuitsCode(int kind, const u16 *code);
 void TownInsectMove_OnSpot(TownInsect *insect);

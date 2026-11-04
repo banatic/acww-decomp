@@ -434,7 +434,8 @@ static void fish_shadow_alarm_up(FishShadowSense *sense)
     }
 }
 
-/* The player at this console's position, NULL when there is none. */
+/* Player 0's position at the start of its frame (not this console's player), NULL when there is
+ * none. */
 static const Vec3 *fish_shadow_player_position(void)
 {
     return PlayerActorOps_StartPosition(0);
@@ -867,8 +868,8 @@ int FishShadow_TryBite(FishShadow *fish)
         int reach = (data_ov003_0223c014[fish->size].reach << 12) / 100;
         Vec3 float_at = fishing_float->position;
         if (FishShadow_SplashRecent() && FishShadow_InBox(&fish->position, &float_at, reach, reach, reach)) {
-            if (fish->behaviour != FISH_SHADOW_STARTLED) {
-                fish->behaviour = FISH_SHADOW_STARTLED;
+            if (fish->behaviour != FISH_SHADOW_CRUISE) {
+                fish->behaviour = FISH_SHADOW_CRUISE;
             }
             fish->yaw = (s16) (fish->yaw + (s16) FishShadow_RandomSigned(0x5000, 0x7fff));
             fish->unk_140 = 0x14;

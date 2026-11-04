@@ -29,7 +29,7 @@ static_assert(offsetof(TownInsect, unk_257) == 0x257, "byte 0x257");
 
 #define INSECT_PATH_PLAYER 4
 #define INSECT_PATH_OPAQUE 0x1f      /* a model's full alpha */
-#define INSECT_PATH_CALM 0x13        /* TOWN_INSECT_ACTION_SHOWN: its usual behaviour */
+#define INSECT_PATH_CALM 0x13        /* TOWN_INSECT_ACTION_CALM: its usual behaviour */
 #define INSECT_PATH_ALARMED 0x14     /* TownInsect.unk_254 from which kinds 0x36 and 0x37 act */
 #define INSECT_PATH_TURN_LIMIT 0x38e /* the most a spot turns it in a frame (5 degrees) */
 
@@ -234,7 +234,7 @@ int InsectPath_GoToSpot(TownInsect *insect, s16 *heading)
         position->y >= spot.y - FX_Div(0x1000, 0x8000)) {
         insect->action = INSECT_PATH_SETTLED;
         insect->unk_244 = (s16) (0x14 * (MainRandom_Below(5) + 0x10));
-        insect->frames_left = 0;
+        insect->frame_count = 0;
         if (insect->kind == INSECT_PATH_KIND_FLY) {
             if (insect->unk_21c != 1) {
                 insect->action = 0;
@@ -502,20 +502,20 @@ void InsectPath_CircleOrLeave(TownInsect *insect)
             position->z += FX_MulFunc(0x23000, way.z);
             InsectPath_Flap(scale, &insect->model, before - angle);
         }
-        s16 frames = insect->frames_left;
+        s16 frames = insect->frame_count;
         if (frames == 0) {
             if (FieldActor_PlayerRequestState78() != 0) {
                 TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_ACTIVE, 0);
-                insect->frames_left = (s16) (insect->frames_left + 1);
+                insect->frame_count = (s16) (insect->frame_count + 1);
             } else {
                 TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
             }
             return;
         }
-        insect->frames_left = (s16) (frames + 1);
-        if (insect->frames_left > 0x42) {
+        insect->frame_count = (s16) (frames + 1);
+        if (insect->frame_count > 0x42) {
             insect->action = INSECT_PATH_FLEE;
-            insect->frames_left = 0;
+            insect->frame_count = 0;
         }
         return;
     }
@@ -616,7 +616,7 @@ void InsectPath_Chase(TownInsect *insect)
     fx32 distance = Vec_DistanceXZ(position, player_position);
     if (distance < 0x1000) {
         insect->action = INSECT_PATH_CIRCLE;
-        insect->frames_left = 0;
+        insect->frame_count = 0;
         return;
     }
     if (insect->unk_256 != 0) {
@@ -672,7 +672,7 @@ static_assert(offsetof(TownInsect, reach) == 0x224, "reach");
 static_assert(offsetof(TownInsect, timer) == 0x232, "timer");
 static_assert(offsetof(TownInsect, angle_x) == 0x238, "angle_x");
 static_assert(offsetof(TownInsect, unk_240) == 0x240, "unk_240");
-static_assert(offsetof(TownInsect, frames_left) == 0x242, "frames_left");
+static_assert(offsetof(TownInsect, frame_count) == 0x242, "frame_count");
 static_assert(offsetof(TownInsect, unk_254) == 0x254, "byte 0x254");
 static_assert(offsetof(Snowman, position) == 0x5c, "snowball position");
 static_assert(offsetof(Actor, speed) == 0x98, "actor speed");
@@ -996,7 +996,7 @@ void InsectPath_Rest(TownInsect *insect)
     }
     if (left <= 0) {
         insect->action = INSECT_PATH_LEAVE;
-        insect->frames_left = 0;
+        insect->frame_count = 0;
     } else {
         insect->timer = (s16) (left - 1);
     }
@@ -1019,7 +1019,7 @@ void InsectPath_Roam(TownInsect *insect)
     }
     TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
     if (insect->unk_24a == 0 && InsectPath_GoToSpot(insect, &heading) == 0 && insect->kind == INSECT_PATH_KIND_HONEYBEE) {
-        insect->frames_left = 0;
+        insect->frame_count = 0;
         insect->action = INSECT_PATH_LEAVE;
         return;
     }

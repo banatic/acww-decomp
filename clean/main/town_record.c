@@ -53,7 +53,7 @@ int TownRecord_OwnFruit(const TownRecord *record)
 }
 CLEAN_AS(func_0204ca60, TownRecord_OwnFruit)
 
-/* func_0204ca8c: the period of the town's day noted (at most 0x16), unless linked with other
+/* func_0204ca8c: the foliage period of the year noted (Calendar_FoliagePeriodOf, at most 0x16), unless linked with other
  * systems. */
 void TownRecord_SetPeriod(u32 period)
 {
@@ -67,7 +67,7 @@ void TownRecord_SetPeriod(u32 period)
 }
 CLEAN_AS(func_0204ca8c, TownRecord_SetPeriod)
 
-/* func_0204cab4: the period of the town's day noted last. */
+/* func_0204cab4: the foliage period of the year noted last. */
 u8 TownRecord_Period(void)
 {
     return data_021f39fc.period;

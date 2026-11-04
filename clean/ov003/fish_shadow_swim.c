@@ -59,7 +59,7 @@ typedef struct FishSwimStepPair {
 /* FishShadow.behaviour: the swimming states. */
 #define FISH_SWIM_START 0
 #define FISH_SWIM_SPEED_UP 1
-#define FISH_SWIM_CRUISE 2 /* FISH_SHADOW_STARTLED */
+#define FISH_SWIM_CRUISE 2 /* FISH_SHADOW_CRUISE */
 #define FISH_SWIM_SLOW_DOWN 3
 #define FISH_SWIM_DRIFT 4
 #define FISH_SWIM_FLEE 5 /* FISH_SHADOW_FLEEING */
@@ -553,8 +553,8 @@ CLEAN_AS(func_ov003_0222b428, FishShadowHook_StepHesitate)
 
 /* func_ov003_0222b5c8: FISH_HOOK_APPROACH: it swims to the float (faster each frame, facing
  * it). In its size's box it nibbles (FISH_HOOK_NIBBLE) for 4-179 frames, 96 times in 100 (always
- * when the float is on its kind of water: group 1 of the unit types for the grounds 0-3, group
- * 2 for 5 and 6), else it hesitates (FISH_HOOK_HESITATE). 0 without a float. */
+ * when the float is on the other kind of water: the sea, group 1 of the unit types, for the river
+ * grounds 0-3; the river, group 2, for the sea grounds 5 and 6), else it hesitates (FISH_HOOK_HESITATE). 0 without a float. */
 int FishShadowHook_StepApproach(FishShadow *fish)
 {
     FishingFloat *fishing_float = fish->fishing_float;
@@ -760,8 +760,9 @@ static void fish_swim_turn(FishShadow *fish, int amount)
  * water behind it, speeding up or cruising, it turns towards its side unless facing nearly
  * straight back. Its frames are counted. Unless its line was dropped or it flees it tries to
  * bite (FishShadow_TryBite; when it does, its frames start again and it waits on the float);
- * otherwise its hook state is cleared and, standing on its kind of water (group 1 for the
- * grounds 0-3, group 2 for 5 and 6), it escapes (func_ov003_022282b8). */
+ * otherwise its hook state is cleared and, over the other kind of water (the sea, group 1 of the
+ * unit types, for the river grounds 0-3; the river, group 2, for the sea grounds 5 and 6), it
+ * escapes (func_ov003_022282b8). */
 void FishShadowSwim_Update(FishShadow *fish)
 {
     if (fish->kind == FISH_SWIM_KIND_WITH_SENSE) {
@@ -811,17 +812,17 @@ void FishShadowSwim_Update(FishShadow *fish)
         return;
     }
     fish->hook_state = FISH_HOOK_WAIT;
-    int water_group;
+    int wrong_water_group;
     switch (fish->ground) {
         case 0:
         case 1:
         case 2:
         case 3:
-            water_group = 1;
+            wrong_water_group = 1;
             break;
         case 5:
         case 6:
-            water_group = 2;
+            wrong_water_group = 2;
             break;
         default:
             return;
@@ -829,7 +830,7 @@ void FishShadowSwim_Update(FishShadow *fish)
     int x;
     int z;
     Position_Tile(&x, &z, (const Position *) &fish->position);
-    if (UnitTypeInfo_GroupAt(x, z) == water_group) {
+    if (UnitTypeInfo_GroupAt(x, z) == wrong_water_group) {
         FishShadow_TryFlee(fish, &fish->last_position);
     }
 }

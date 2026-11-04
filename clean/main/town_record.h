@@ -34,7 +34,7 @@ typedef struct TownRecord {
     u8 slogan_used[TOWN_RECORD_SLOGAN_BYTES];   /* 0x16: BoardNoticesState.slogan_used */
     s8 perfect_days;                            /* 0x21: days in a row the town was perfect, -1 */
     u8 events_posted;                           /* 0x22: BoardNoticesState.events_posted */
-    u8 period;                                  /* 0x23: the period of the town's day */
+    u8 period;                                  /* 0x23: the foliage period of the year */
     TownDayEvent events[TOWN_DAY_EVENTS];       /* 0x24: data_021f3a20 */
     Date unk_54;                                /* 0x54 */
     Date player_days[TOWN_RECORD_PLAYERS];      /* 0x58: the day each player last used a turn */

@@ -324,7 +324,7 @@ typedef struct SnowmanGround {
 /* What func_0208a020 gives for the body: something touching it, with a value at 0x98. */
 typedef struct SnowmanContact {
     u8 unk_00[0x98];
-    int unk_98; /* above SNOWMAN_KNOCK_LIMIT knocks a snowman's part */
+    int unk_98; /* above SNOWMAN_KNOCK_LIMIT: Snowman_Knock (nothing for a head, which then skips its talk request) */
 } SnowmanContact;
 #define SNOWMAN_KNOCK_LIMIT 0x666
 

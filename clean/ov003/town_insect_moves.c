@@ -401,7 +401,7 @@ CLEAN_AS(func_ov003_0223141c, TownInsectMove_OnSetBTile)
  * let go, kind 0x1a hops and the others fly. */
 void TownInsectMove_UpdateInArea(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     if (town_insect_moves_kind_e_or_f(insect->kind) && town_insect_moves_frame(insect) != 0 &&
         (insect->action == 4 || insect->action == 0x13)) {
         Actor *player = SessionPlayers_ActorOf(TOWN_INSECT_MOVES_THIS_PLAYER);
@@ -766,7 +766,7 @@ CLEAN_AS(func_ov003_02231d1c, TownInsectMove_Rest)
  * a startle. */
 void TownInsectMove_UpdateLeaning(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     u8 action = insect->action;
     if (action != TOWN_INSECT_ACTION_LET_GO && action != 9 && action != 7) {
         if (insect->kind == 0x1f) {
@@ -824,7 +824,7 @@ CLEAN_AS(func_ov003_02231e24, TownInsectMove_UpdateLeaning)
  * 56 hides it again at its place. Hidden and not shown, its animation is set to play once. */
 void TownInsectMove_Update35(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     NNS_G3dMdlGetMdlAlpha(town_insect_moves_model(insect), 0);
     u8 action = insect->action;
     if (action != TOWN_INSECT_ACTION_LET_GO && action != 9) {
@@ -933,7 +933,7 @@ CLEAN_AS(func_ov003_022321b8, TownInsectMove_ClampXZ)
 int TownInsectMove_WalkLinked(TownInsect *insect)
 {
     Vec3 *position = &insect->position;
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     int result = 0;
     CollisionGround ground;
     CollisionGround_Init(&ground, position, 0, 1);
@@ -1001,7 +1001,7 @@ CLEAN_AS(func_ov003_02232210, TownInsectMove_WalkLinked)
 int TownInsectMove_Walk(TownInsect *insect)
 {
     Vec3 *position = &insect->position;
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     int speed = 2;
     int result = 1;
     CollisionGround ground;
@@ -1070,7 +1070,7 @@ void TownInsectMove_Update23(TownInsect *insect)
             break;
         case 9:
         case TOWN_INSECT_ACTION_LET_GO:
-            TownInsectMove_FlyOff(insect, &insect->frames_left);
+            TownInsectMove_FlyOff(insect, &insect->frame_count);
             break;
         case 0x13:
             town_insect_moves_set_frame(insect, 3);
@@ -1123,11 +1123,11 @@ void TownInsectMove_Update36(TownInsect *insect)
             InsectPath_CalmDown(insect, fall, heard);
             break;
         case TOWN_INSECT_ACTION_LET_GO:
-            TownInsectMove_Hop(insect, &insect->frames_left);
+            TownInsectMove_Hop(insect, &insect->frame_count);
             break;
         case 9:
             TownInsectMove_PlaySound(insect, 0, 1);
-            TownInsectMove_Flee(insect, &insect->frames_left);
+            TownInsectMove_Flee(insect, &insect->frame_count);
             break;
         case 3: {
             s16 angle = insect->angle_y;
@@ -1185,7 +1185,7 @@ void TownInsectMove_Update30(TownInsect *insect)
             }
             break;
         case TOWN_INSECT_ACTION_LET_GO: {
-            short *frames = &insect->frames_left;
+            short *frames = &insect->frame_count;
             Vec3 *position = &insect->position;
             Vec3 before;
             town_insect_moves_copy(&before, position);
@@ -1278,7 +1278,7 @@ void TownInsectMove_Update08(TownInsect *insect)
 }
 CLEAN_AS(func_ov003_02232a44, TownInsectMove_Update08)
 
-/* func_ov003_02232aa0 (kind 0x31 hidden): counts down the frames a player stands on its tile
+/* func_ov003_02232aa0 (kind 0x31 hidden): counts down the frames until a player's act lands on its tile
  * (FieldActor_PlayerFramesToActOnTile, the byte 0x24e: in a session the first of players 0-3
  * with some, else this console's player); when they run out it comes out (action 5, shown)
  * heading away from the nearest player, and 1 is returned. */
@@ -1320,7 +1320,8 @@ CLEAN_AS(func_ov003_02232aa0, TownInsectMove_AppearFromTile)
  * stops it unless it returned 0; else TownInsectMove_Walk, which stops it when it returned 0).
  * Alarmed to its byte 0x255 (outside a session, or holding the scene, or at its point) it stops
  * (action 7, frame 0; holding the scene in a session its point becomes where it is). Else it
- * walks its timer down, kept up while a player stands on its tile, and once out fades away. */
+ * walks its timer down (run out at once when a player's tool lands on it,
+ * TownInsectMove_CountToToolHit), and once out fades away. */
 void TownInsectMove_Walk31(TownInsect *insect)
 {
     Vec3 *position = &insect->position;
@@ -1347,7 +1348,7 @@ void TownInsectMove_Walk31(TownInsect *insect)
             TownInsectMove_Leave(insect);
         }
     } else {
-        if (TownInsectMove_CountStand(insect, position) != 0) {
+        if (TownInsectMove_CountToToolHit(insect, position) != 0) {
             timer = 1;
         }
         insect->timer = (short) (timer - 1);
@@ -1356,14 +1357,14 @@ void TownInsectMove_Walk31(TownInsect *insect)
 CLEAN_AS(func_ov003_02232b68, TownInsectMove_Walk31)
 
 /* func_ov003_02232c70 (kind 0x31 stopped, action 7): its timer runs down while a player is
- * found (kept up while one stands on its tile); once its alarm is under its byte 0x255 it walks
+ * found (run out at once when a player's tool lands on it); once its alarm is under its byte 0x255 it walks
  * again (action 4, frame 1) away from the player (holding the scene in a session, with a point
  * 12.0 ahead). Out of time it fades away. */
 void TownInsectMove_Wait31(TownInsect *insect)
 {
     short timer = insect->timer;
     Vec3 *position = &insect->position;
-    if (TownInsectMove_CountStand(insect, position) != 0) {
+    if (TownInsectMove_CountToToolHit(insect, position) != 0) {
         timer = 1;
     }
     if (timer <= 0) {
@@ -1390,11 +1391,11 @@ void TownInsectMove_Wait31(TownInsect *insect)
 CLEAN_AS(func_ov003_02232c70, TownInsectMove_Wait31)
 
 /* func_ov003_02232d30 (kind 0x31): walks (actions 4 and 0x11), stops (7), comes out (5: hops),
- * flees, hops let go (at frame 0 from frame 1), and hidden (0x13) waits at frame 0 for a player
- * to stand by. */
+ * flees, hops let go (at frame 0 from frame 1), and hidden (0x13) waits at frame 0 for a player's
+ * tool to land on it. */
 void TownInsectMove_Update31(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     switch (insect->action) {
         case 4:
         case 0x11:
@@ -1676,14 +1677,15 @@ void TownInsectMove_Hop(TownInsect *insect, short *frames)
 }
 CLEAN_AS(func_ov003_02233178, TownInsectMove_Hop)
 
-/* func_ov003_022333b0 (kind 0x1e hidden): when its tile's count runs out it comes out (action 5,
+/* func_ov003_022333b0 (kind 0x1e hidden): when a player's tool lands on it
+ * (TownInsectMove_CountToToolHit) it comes out (action 5,
  * shown) heading away from the nearest player. Else with a player within 5.0 its byte 0x252 is
  * set to 60 frames, during which it plays its sound 0. */
 void TownInsectMove_Wait1E(TownInsect *insect, short *frames)
 {
     const Vec3 *position = &insect->position;
     Actor *nearest = TownInsectMove_NearestPlayer(position);
-    if (TownInsectMove_CountStand(insect, position) != 0) {
+    if (TownInsectMove_CountToToolHit(insect, position) != 0) {
         if (nearest != NULL) {
             int angle = Vec_YawTo(position, &nearest->position);
             insect->action = 5;
@@ -1705,10 +1707,10 @@ void TownInsectMove_Wait1E(TownInsect *insect, short *frames)
 CLEAN_AS(func_ov003_022333b0, TownInsectMove_Wait1E)
 
 /* func_ov003_0223345c (kind 0x1e): walks with its sound 1 (actions 4 and 0x11), hops (5 and
- * let go), flees, and hidden (0x13) waits for a player to stand by. */
+ * let go), flees, and hidden (0x13) waits for a player's tool to land on it. */
 void TownInsectMove_Update1E(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     switch (insect->action) {
         case 4:
         case 0x11:
@@ -1741,10 +1743,10 @@ void TownInsectMove_Update18(TownInsect *insect)
 {
     switch (insect->action) {
         case TOWN_INSECT_ACTION_LET_GO:
-            TownInsectMove_Hop(insect, &insect->frames_left);
+            TownInsectMove_Hop(insect, &insect->frame_count);
             break;
         case 9:
-            TownInsectMove_Flee(insect, &insect->frames_left);
+            TownInsectMove_Flee(insect, &insect->frame_count);
             break;
         case 7:
         case 8:
@@ -1854,7 +1856,7 @@ CLEAN_AS(func_ov003_02233674, TownInsectMove_Update0B)
 void TownInsectMove_Crawl25(TownInsect *insect)
 {
     short heading = insect->angle_y;
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     if (!town_insect_moves_in_session() || LinkGlobal_HoldsScene() != 0) {
         if (TownInsectMove_Sense(insect) == 2) {
             TownInsect_SetAnimSpeed(insect, 0x1000);
@@ -1878,10 +1880,10 @@ void TownInsectMove_Update25(TownInsect *insect)
             break;
         case 9:
         case TOWN_INSECT_ACTION_LET_GO:
-            if (insect->frames_left == 0) {
+            if (insect->frame_count == 0) {
                 TownInsectMove_PlaySound(insect, 1, 0);
             }
-            TownInsectMove_FlyOff(insect, &insect->frames_left);
+            TownInsectMove_FlyOff(insect, &insect->frame_count);
             break;
         case 7:
             insect->action = 0;
@@ -1906,7 +1908,7 @@ CLEAN_AS(func_ov003_022337d8, TownInsectMove_Update25)
  * and away; at rest it starts (action 0). */
 void TownInsectMove_Update32(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     switch (insect->action) {
         case 0:
             InsectPath_FollowPlayer(insect, frames);
@@ -1938,7 +1940,7 @@ CLEAN_AS(func_ov003_02233890, TownInsectMove_Update32)
  * away; at rest it waits out its timer and starts (action 3). */
 void TownInsectMove_Update19(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     switch (insect->action) {
         case 3:
         case 0xf:
@@ -2056,7 +2058,7 @@ void TownInsectMove_FlyWaiting(TownInsect *insect)
             floor = ground.limit;
             if (insect->action == 0x11) {
                 TownInsectMove_Splash(insect);
-                insect->frames_left = 0;
+                insect->frame_count = 0;
                 TownInsectMove_Leave(insect);
                 CollisionGround_Destroy(&ground);
                 return;
@@ -2077,7 +2079,7 @@ void TownInsectMove_FlyWaiting(TownInsect *insect)
             town_insect_moves_set_frame(insect, 0);
             if (floor < 0) {
                 TownInsectMove_Splash(insect);
-                insect->frames_left = 0;
+                insect->frame_count = 0;
                 TownInsectMove_Leave(insect);
             } else if (insect->unk_24a != 0) {
                 insect->unk_254 = (u8) (insect->unk_255 - 0xa);
@@ -2139,7 +2141,7 @@ CLEAN_AS(func_ov003_02233cb8, TownInsectMove_Wait)
  * what is ahead or else waits (its word 0x21c cleared). */
 void TownInsectMove_UpdateWaiting(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     u8 action = insect->action;
     if (action != TOWN_INSECT_ACTION_LET_GO && action != 9 && action != 4) {
         TownInsectMove_Sense(insect);
@@ -2369,7 +2371,7 @@ void TownInsectMove_CheckObstacle(TownInsect *insect)
     }
     insect->unk_240 = TownInsectMove_HeadingOff(insect->angle_y, side);
     insect->unk_21c += 1;
-    insect->frames_left = 0;
+    insect->frame_count = 0;
     town_insect_moves_copy(&insect->target, &insect->position);
 }
 CLEAN_AS(func_ov003_02234264, TownInsectMove_CheckObstacle)
@@ -2499,7 +2501,7 @@ CLEAN_AS(func_ov003_022344c8, TownInsectMove_Hover)
  * QUIRK: the masks 0xff0f and 0xfff0 also clear the word's upper 16 bits. */
 void TownInsectMove_UpdateTurned(TownInsect *insect)
 {
-    short *frames = &insect->frames_left;
+    short *frames = &insect->frame_count;
     int count = (insect->unk_21c & 0xf0) >> 4;
     int waits = 0;
     if (count > 0 && insect->action == 0x13) {
@@ -2630,7 +2632,7 @@ static void town_insect_moves_retarget(TownInsect *insect)
 }
 
 /* func_ov003_02234840: the flap cycle of kinds 0-7 (TownInsectMove_FlyBobbing), run after
- * `frames` (TownInsect.frames_left) was stepped. Once `frames` is past the byte 0x256 the cycle
+ * `frames` (TownInsect.frame_count) was stepped. Once `frames` is past the byte 0x256 the cycle
  * starts again: at 0 for 0x10 frames when the byte 0x24c (down) is set, else at 8 for 0x14. The
  * byte 0x24c is cleared once the insect is more than 0x300 above the word 0x220 (its floor), and
  * set when it is below the floor; within 0x320 below, it is put back on it. */
@@ -2664,7 +2666,7 @@ void TownInsectMove_FlapCycle(TownInsect *insect, short *frames)
 CLEAN_AS(func_ov003_02234840, TownInsectMove_FlapCycle)
 
 /* func_ov003_022348dc: flown up and away along its heading: a step of 0x29 along it (at 16 times
- * the length when nothing stands ahead), and up by `speed` times 0x44 times TownInsect.frames_left
+ * the length when nothing stands ahead), and up by `speed` times 0x44 times TownInsect.frame_count
  * (shifted down 12), which counts up by one a frame. Leaves once it has faded out
  * (TownInsectMove_FadeStep).
  * QUIRK: the rise is shifted right by FX_Div(frames squared, 1.0) + 12 as an ARM register shift,
@@ -2676,7 +2678,7 @@ void TownInsectMove_Escape(TownInsect *insect, fx32 speed)
     if (TownInsectMove_FadeStep(insect, 1) != 0) {
         TownInsectMove_Leave(insect);
     }
-    int n = insect->frames_left;
+    int n = insect->frame_count;
     fx32 rise = FX_MulFunc(speed, (fx32) ((u32) (0x44 * n) << 12));
     int shift = FX_Div((fx32) ((u32) (n * n) << 12), 0x1000) + 12;
     step.y = town_insect_moves_asr_register(rise, shift);
@@ -2684,7 +2686,7 @@ void TownInsectMove_Escape(TownInsect *insect, fx32 speed)
         step.x = FX_MulFunc(step.x, 0x10000);
         step.z = FX_MulFunc(step.z, 0x10000);
     }
-    insect->frames_left = (s16) (insect->frames_left + 1);
+    insect->frame_count = (s16) (insect->frame_count + 1);
     VEC_Add(&insect->position, &step, &insect->position);
 }
 CLEAN_AS(func_ov003_022348dc, TownInsectMove_Escape)
@@ -2708,7 +2710,7 @@ CLEAN_AS(func_ov003_02234984, TownInsectMove_WaitOver)
  *   not alarmed: kind 8 flies as overlay 68 says (func_ov068_022715a0, which may stop the frame
  *                there); the others go to a spot to settle on outside a session
  *                (InsectPath_GoToSpot).
- * Then the bob: up by 0x44 n - 5 n^2 for n = TownInsect.frames_left, at least -0x333 (unless the
+ * Then the bob: up by 0x44 n - 5 n^2 for n = TownInsect.frame_count, at least -0x333 (unless the
  * byte 0x24c is set and the rise is not negative), with n stepped by 4 and the flap cycle run
  * (TownInsectMove_FlapCycle); and the heading wanders (TownInsectMove_Meander, overlay 68's
  * InsectPath_Wander for kind 8) at the byte 0x257 for scale.
@@ -2718,7 +2720,7 @@ void TownInsectMove_FlyBobbing(TownInsect *insect)
 {
     s16 heading = insect->angle_y;
     Vec3 *position = &insect->position;
-    s16 *frames = &insect->frames_left;
+    s16 *frames = &insect->frame_count;
     Vec3 step;
 
     if (insect->kind != 8 && town_insect_moves_frame_count(insect) > 9) {
@@ -2818,7 +2820,7 @@ void TownInsectMove_Update00To07(TownInsect *insect)
             insect->angle_y = (s16) (insect->angle_y + insect->unk_240);
             town_insect_moves_retarget(insect);
             break;
-        case TOWN_INSECT_ACTION_SHOWN:
+        case TOWN_INSECT_ACTION_CALM:
             insect->unk_24a = 0;
             insect->action = 0;
             town_insect_moves_retarget(insect);
@@ -3181,7 +3183,7 @@ CLEAN_AS(func_ov003_022353a4, TownInsectMove_PlaySound)
  * state 0x5e at `point` (FieldActor_PlayerFramesToState5E): when it is not above 0 it is
  * refilled, in a session from the first of players 0-3 with a count above 0, else from this
  * console's player. Returns 1 when the count reaches 0. */
-int TownInsectMove_CountStand(TownInsect *insect, const Vec3 *point)
+int TownInsectMove_CountToToolHit(TownInsect *insect, const Vec3 *point)
 {
     if ((s8) insect->unk_24e <= 0) {
         if (town_insect_moves_in_session()) {
@@ -3203,7 +3205,7 @@ int TownInsectMove_CountStand(TownInsect *insect, const Vec3 *point)
     }
     return 0;
 }
-CLEAN_AS(func_ov003_022353e0, TownInsectMove_CountStand)
+CLEAN_AS(func_ov003_022353e0, TownInsectMove_CountToToolHit)
 
 /* func_ov003_02235454: the splash where it fell into water: when the ground under it says so
  * (CollisionGround.unk_30), sound 0x7e5 and effect 0x13 (kinds 0xc, 0xd, 0x1e, 0x1f), 0x14
@@ -3317,7 +3319,7 @@ void TownInsectMove_OnSpot(TownInsect *insect)
             }
         }
     } else {
-        insect->action = TOWN_INSECT_ACTION_SHOWN;
+        insect->action = TOWN_INSECT_ACTION_CALM;
         insect->unk_220 = insect->unk_228;
         insect->unk_244 = (s16) (((int) MainRandom_Below(6) + 7) * 0x14);
         s8 kind = insect->kind;

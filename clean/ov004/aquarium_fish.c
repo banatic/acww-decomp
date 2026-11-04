@@ -36,9 +36,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* A body index from this one on is a rock's. */
 #define FIRST_ROCK_INDEX AQUARIUM_FISH_KINDS
-/* What a fish notes on touching a rock. */
-#define MET_ROCK 0x20
-
 /* The part of the room a fish turns back at (x of its position). */
 #define ROOM_LEFT_END 0x5000
 #define ROOM_RIGHT_END 0x1e000
@@ -46,7 +43,8 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 /* The fastest a fish's animation runs, and the speed it is measured against. */
 #define FISH_ANIM_TOP 0x1800
 
-/* The ways it turns from the glass (a sixteenth of a turn either side of a quarter), and how
+/* The ways it turns from the glass (10 degrees either side of a quarter turn: 80 and 100
+ * degrees), and how
  * fast; how fast it turns to its target, the big kinds slower. */
 #define TURN_FROM_GLASS_FAR 0x471c
 #define TURN_FROM_GLASS_NEAR 0x38e4
@@ -181,7 +179,7 @@ void AquariumFishBody_Touched(AquariumFishBody *body, int kind, unsigned int ind
     }
     AquariumFish *owner = body->owner;
     if (index >= FIRST_ROCK_INDEX) {
-        owner->meeting |= MET_ROCK;
+        owner->meeting |= AQUARIUM_MEET_ROCK;
     } else if (data_ov004_02247924[index].size != 0 || index < AQUARIUM_RIVER_FISH) {
         AquariumFish **other = &data_ov004_022594d4[index];
         AquariumFish_Meet(body, &owner, other);
@@ -194,13 +192,13 @@ CLEAN_AS(func_ov004_02235810, AquariumFishBody_Touched)
  * off the room's length; in mode 6 it goes on in mode 2. */
 void AquariumFish_KeepOffRoomEnds(AquariumFish *fish)
 {
-    if (fish->mode == AQUARIUM_FISH_MODE_1) {
+    if (fish->mode == AQUARIUM_MODE_FLEE) {
         return;
     }
     if (fish->position.x <= ROOM_LEFT_END || fish->position.x >= ROOM_RIGHT_END) {
         AquariumFish_KeepYawAcross(fish);
-        if (fish->mode == AQUARIUM_FISH_MODE_6) {
-            fish->mode = AQUARIUM_FISH_MODE_2;
+        if (fish->mode == AQUARIUM_MODE_REST) {
+            fish->mode = AQUARIUM_MODE_NEW_COURSE;
         }
     }
 }
@@ -221,13 +219,13 @@ void AquariumFish_SetAnimSpeed(AquariumFish *fish, fx32 least)
 {
     u8 mode = fish->mode;
     fx32 speed;
-    if (mode == AQUARIUM_FISH_MODE_1) {
+    if (mode == AQUARIUM_MODE_FLEE) {
         speed = FISH_ANIM_TOP;
     } else {
         speed = fish->speed;
-        if (mode == AQUARIUM_FISH_MODE_3) {
+        if (mode == AQUARIUM_MODE_SPEED_UP) {
             speed = (fx32) ((u32) speed * 3u);
-        } else if (mode == AQUARIUM_FISH_MODE_5) {
+        } else if (mode == AQUARIUM_MODE_SLOW_DOWN) {
             speed = speed / 3;
         }
         speed = FX_MulFunc(FX_Div(speed, fish->top_speed), FISH_ANIM_TOP);
@@ -245,7 +243,7 @@ CLEAN_AS(func_ov004_022358c0, AquariumFish_SetAnimSpeed)
  * turning once there; not in mode 1, nor slow (0.6 or less) in mode 5. */
 void AquariumFish_Turn(AquariumFish *fish)
 {
-    if ((fish->speed <= SLOW_SPEED && fish->mode == AQUARIUM_FISH_MODE_5) || fish->mode == AQUARIUM_FISH_MODE_1 ||
+    if ((fish->speed <= SLOW_SPEED && fish->mode == AQUARIUM_MODE_SLOW_DOWN) || fish->mode == AQUARIUM_MODE_FLEE ||
         !fish->turning) {
         return;
     }
@@ -779,7 +777,7 @@ CLEAN_AS(func_ov004_02236418, AquariumFish_CheckTapped)
 /* func_ov004_02236464: whether the stylus touches the glass of either tank near the fish (not
  * on the frame the pen came down): 0x9000 or less in the ground plane and 3.0 of its height;
  * the point touched in `tap` then.
- * QUIRK: the squared distance is compared with 0x9000 (about 9.6 units squared, 3.1 units). */
+ * QUIRK: the squared distance is compared with 0x9000 (9.0 units squared, so 3.0 units). */
 int AquariumFish_FindTap(AquariumFish *fish, Vec3 *tap)
 {
     Vec3 point;

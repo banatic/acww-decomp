@@ -89,7 +89,8 @@ typedef struct FishShadowUnit {
 #define FISH_STATE_SCARE_FRAMES 6
 #define FISH_STATE_AWAY_SHORT 300 /* the timer out of view with water behind it */
 #define FISH_STATE_AWAY_LONG 1200
-/* The box around the camera's point a shadow is seen in: 10.0 across, 16.0 ahead, 10.0 behind. */
+/* The box around the camera's point a shadow is seen in: 10.0 either side (20.0 across), 16.0
+ * ahead, 10.0 behind. */
 #define FISH_STATE_VIEW_X 0xa000
 #define FISH_STATE_VIEW_AHEAD 0x10000
 #define FISH_STATE_VIEW_BEHIND 0xa000

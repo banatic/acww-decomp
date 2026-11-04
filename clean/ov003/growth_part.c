@@ -100,8 +100,8 @@ GrowthPart *GrowthPart_StartFirst(GrowthParts *parts, int mode, int stage, const
 }
 CLEAN_AS(func_ov003_02223c7c, GrowthPart_StartFirst)
 
-/* func_ov003_02223d14: the second part, as GrowthPart_StartFirst but only in the periods of the
- * day data_ov003_02236b1c marks (else NULL), with the set of its group from
+/* func_ov003_02223d14: the second part, as GrowthPart_StartFirst but only in the foliage periods
+ * of the year data_ov003_02236b1c marks (else NULL), with the set of its group from
  * data_ov003_022368ec and the set-ups of data_ov003_0223a188. */
 GrowthPart *GrowthPart_StartSecond(GrowthParts *parts, int mode, int stage, const u16 *item, const TileChangesTile *tile,
                                    int count)

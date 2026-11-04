@@ -23,12 +23,12 @@
  * action (TOWN_INSECT_ACTION_*) is the step of its own behaviour, run by functions of the kind
  * from the table data_ov003_0223c2ac.
  *
- * The town insects are placed from a frame counter of the process (TownInsect_UpdateTown): every
+ * The town insects are placed from a frame counter of the process (TownInsect_UpdatePlacing): every
  * 60th frame a new one of the month's lists, every 40th (without a session) a fly (kind 0x33),
  * every 20th (without a session) the event insect of kind 0x3b, the ants. A place is a free tile of a
  * random inner acre of the town (town_tile_mask.h) that suits the kind's place
  * (TownInsect_CountTiles). While this system is in a session, the town insects follow what the
- * session's messages say of them (TownInsect_UpdateLinked). */
+ * session's messages say of them (TownInsect_UpdateStates). */
 #ifndef CLEAN_OV003_TOWN_INSECT_H
 #define CLEAN_OV003_TOWN_INSECT_H
 
@@ -78,7 +78,7 @@
 #define TOWN_INSECT_ACTION_LET_GO 0x0b /* let go from a player's hand */
 #define TOWN_INSECT_ACTION_HIDDEN 0x10 /* its model's alpha set to 0 */
 #define TOWN_INSECT_ACTION_11 0x11
-#define TOWN_INSECT_ACTION_SHOWN 0x13 /* its model's alpha set to 0x1f; what it starts with */
+#define TOWN_INSECT_ACTION_CALM 0x13 /* at ease (resting): what it starts with, its alpha 0x1f */
 
 /* What TownInsect_Weather says of a kind in the weather of the moment. */
 #define TOWN_INSECT_WEATHER_OUT 3   /* as usual */
@@ -129,7 +129,7 @@ typedef struct TownInsect {
     s16 angle_z;        /* 0x23c */
     s16 unk_23e;        /* 0x23e */
     s16 unk_240;        /* 0x240 */
-    s16 frames_left;    /* 0x242: counted up in TOWN_INSECT_STATE_LEAVING */
+    s16 frame_count;    /* 0x242: frames counted up (in TOWN_INSECT_STATE_LEAVING and by the moves) */
     s16 unk_244;        /* 0x244: set by TownInsectKind_Begin */
     u8 unk_246;         /* 0x246: cleared in TOWN_INSECT_WEATHER_QUIET, else 1 */
     u8 unk_247;
@@ -227,8 +227,8 @@ void TownInsect_UpdateHeld(TownInsectProcess *process);
 void TownInsect_UpdateEvent(TownInsectProcess *process);
 int TownInsect_OnItsTile(int unused, TownInsect *insect);
 int TownInsect_CheckTarget(int unused, TownInsect *insect, int kind, int x, int z);
-void TownInsect_UpdateLinked(TownInsectProcess *process);
-void TownInsect_UpdateTown(TownInsectProcess *process);
+void TownInsect_UpdateStates(TownInsectProcess *process);
+void TownInsect_UpdatePlacing(TownInsectProcess *process);
 int TownInsect_GetPosition(Vec3 *position, int id);
 int TownInsect_KindHighPlace(int id);
 int TownInsect_Byte254Reached(u8 *reached, int id);
