@@ -1,5 +1,8 @@
-/* func_01ffcd50 @ 0x01ffcd50, 0x168 bytes, ARM, module itcm
+/* line_effects: 3 functions, module itcm
  * mwccarm 1.2/base -O4,s
+ * func_01ffcd50 @ 0x01ffcd50, 0x168 bytes, ARM
+ * func_01ffcd4c @ 0x01ffcd4c, 0x4 bytes, ARM
+ * func_01ffccf4 @ 0x01ffccf4, 0x58 bytes, ARM
  */
 
 #include "types.h"
@@ -8,18 +11,21 @@ struct UnkStruct_01ffcd50 {
     unsigned char pad_00[0x51c];
     u32 idx;
 };
+
 struct UnkStruct_01ffcd50_2 {
     u32 cur;
     u16 tbl[2][0xc0];
     u16 unk_304;
     u16 unk_306;
 };
+
 struct Rec {
     int a;
     int b;
     s16 c;
     s16 d;
 };
+
 struct UnkStruct_01ffcd50_3 {
     u32 unk_00;
     u32 sel;
@@ -32,6 +38,8 @@ extern struct UnkStruct_01ffcd50 data_021f85b0;
 extern u32 data_021f8ac4[];
 extern struct UnkStruct_01ffcd50_2 data_021f6f70;
 extern struct UnkStruct_01ffcd50_3 data_021f75b0;
+extern unsigned char data_027e0434;
+extern unsigned char data_027e0438[];
 
 void func_01ffcd50(void)
 {
@@ -65,4 +73,27 @@ void func_01ffcd50(void)
         *(volatile u16 *) 0x04000050 = 0x2048;
     }
     *(volatile u16 *) 0x04000052 = data_021f75b0.arr2[data_021f75b0.sel][line];
+}
+
+void func_01ffcd4c(void) {}
+
+void func_01ffccf4(void)
+{
+    volatile unsigned short *regs;
+    unsigned int c;
+    unsigned char val;
+    unsigned int combined;
+
+    c = data_027e0434;
+    regs = (volatile unsigned short *) 0x04000000;
+    val = data_027e0438[(c >= 0x18) ? (0x2f - c) : c];
+    combined = (((unsigned int) val << 8) & 0xff00) | 0xff;
+    c = c + 1;
+    if (regs[2] & 2) {
+        regs[0x21] = (unsigned short) combined;
+    }
+    if (c >= 0x30) {
+        c = c - 0x30;
+    }
+    data_027e0434 = (unsigned char) c;
 }
