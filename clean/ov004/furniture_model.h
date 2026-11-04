@@ -2,8 +2,8 @@
  * number: the texture file "/ftr/<number / 256>/<number % 256 / 16>/<number, 4 hex digits>.nsbtx"
  * and the archive ".arc" beside it, which holds the model ("bmd0") and the animations
  * (AnimSet, room_object_parts.h). Loading takes the files, then the texture through a loader
- * that may take several frames; once the texture is in, the texture file is freed, unless a
- * copy of it was asked for.
+ * that may take several frames; once the texture is in, the texture file is freed (when a copy
+ * of it was asked for, the copy made into the slot's heap as it was read is kept instead).
  *
  * Also the four animations a room object plays (its members at 0x7c4), a class over the main
  * program's animation (constructor ModelAnim_ConstructBase). */

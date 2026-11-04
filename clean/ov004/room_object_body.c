@@ -237,7 +237,7 @@ int RoomObject_EnterFirstState(RoomObject *object)
 CLEAN_AS(func_ov004_0220f7d4, RoomObject_EnterFirstState)
 
 /* func_ov004_0220f7f0: for an object on the floor that carries what stands on it, a shadow
- * (TouchPick_SetCylinderAndAdd, its slot by cell) under each pile item lying on its cells, at the height
+ * (TouchPick_SetCylinderAndAdd, its slot by cell) under each item of kind 1 lying on its cells, at the height
  * RoomObjects_HeightAtCell finds. */
 void RoomObject_ShadowItemsOnTop(RoomObject *object)
 {

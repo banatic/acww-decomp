@@ -92,8 +92,8 @@ void CarriedItems_PutDown(CarriedItems *items, RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220d4ec, CarriedItems_PutDown)
 
-/* func_ov004_0220d594: when nothing but pile items lies loose on the object's cells, takes the
- * pile items with their positions on its top (in its space), and carries none if they do not
+/* func_ov004_0220d594: when nothing but items of kind 1 lies loose on the object's cells, takes
+ * those items with their positions on its top (in its space), and carries none if they do not
  * all fit. Whether they did.
  * QUIRK: when the cells hold other loose items, nothing changes and the result is still 1.
  * QUIRK: the first call builds a function-local static item code (0xfff1) that nothing reads,
@@ -138,8 +138,8 @@ int CarriedItems_PickUp(CarriedItems *items, RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220d594, CarriedItems_PickUp)
 
-/* func_ov004_0220d6b8: whether the object's cells hold no loose items other than pile items
- * (kind 1) and the ones ItemCode_IsF031OrVariant names. `items` is not read. */
+/* func_ov004_0220d6b8: whether the object's cells hold no loose items other than items of kind
+ * 1 (codes 0x1000-0x1fff) and the ones ItemCode_IsF031OrVariant names. `items` is not read. */
 int CarriedItems_CellsAreClear(CarriedItems *items, RoomObject *object)
 {
     (void) items;

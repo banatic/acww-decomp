@@ -1,5 +1,5 @@
 /* The items a room object carries while it moves or turns (its member at 0x18c): when a move
- * or turn starts, the pile items (kind 1) lying on the cells it covers are taken off the town's
+ * or turn starts, the loose items of kind 1 (codes 0x1000-0x1fff) lying on the cells it covers are taken off the town's
  * map with their position in the object's space; while it moves they are drawn with it; when it
  * stops they are put back on the map on the cells under their new positions. Up to four. */
 #ifndef CLEAN_OV004_CARRIED_ITEMS_H
