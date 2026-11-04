@@ -34,8 +34,6 @@
 #include "word_archives.h"
 
 #define VILLAGER_MAIL_TOWN_PLAYERS 4
-/* PlayerRecord_TestFlag: a record that gets no letters from villagers. */
-#define VILLAGER_MAIL_RECORD_FLAG 1
 /* func_02094ffc of a player of this town. */
 #define VILLAGER_MAIL_THIS_TOWN 0
 /* How fond the villager must be of a player to write on new year's day and its birthday, and
@@ -232,7 +230,7 @@ static DesignCreator *villager_mail_day_player(NpcId *npc, u8 **record)
     }
     DesignCreator *player = PlayerRecord_Player(*record);
     if (!PlayerId_IsSet(player) || PlayerId_WhichTown(player) != VILLAGER_MAIL_THIS_TOWN ||
-        PlayerRecord_TestFlag(*record, VILLAGER_MAIL_RECORD_FLAG) != 0) {
+        PlayerRecord_TestFlag(*record, PLAYER_FLAG_NOOK_JOB) != 0) {
         return NULL;
     }
     return player;
@@ -350,7 +348,7 @@ CLEAN_AS(func_02080ff8, VillagerMail_SendBirthdayLetter)
 void VillagerMail_Reply(u8 *villager, u8 *record, Letter *letter)
 {
     NpcId *npc = TownVillager_NpcId(villager);
-    if (record == NULL || PlayerRecord_TestFlag(record, VILLAGER_MAIL_RECORD_FLAG) != 0) {
+    if (record == NULL || PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         return;
     }
     if (!NpcId_IsValid(npc)) {

@@ -317,7 +317,7 @@ message byte at body SP + 0. The song's line function, `VillagerTalkReplies_Requ
 (02020728), writes none, and the ROM reads what its frame held: just before, at the same depth,
 0201cfe4 called 0201d198, whose entry push stored 0201cfe4's r4 (the event, 0: no text) at
 body SP + 4 and its r5 (the talk) at + 8, whose low byte becomes the message. The copies of
-0201cfe4 (Native, and `VillagerTalk_OnEvent14`) say what r4 and r5 hold, 0201d198's audited
+0201cfe4 (Native, and `VillagerTalk_OnSlot14`) say what r4 and r5 hold, 0201d198's audited
 push stores them, and the copies of 02020764 (Native, and `VillagerTalkReplies_Say2484`) keep the
 line at its slot where the frame is proved. Before, the PC copy faulted in strncpy on its unset
 line and Clean said message 0.

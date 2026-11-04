@@ -41,8 +41,8 @@ u32 VillagerTalkTopics_PickWithItem(VillagerTalk *talk, VillagerMemory **list, u
 int VillagerTalkTopics_HasItem(u8 *villager, VillagerMemory *memory);
 int VillagerTalkTopics_PickAny(VillagerTalk *talk, VillagerMemory **list, int count);
 int VillagerTalkTopics_Any(void);
-int VillagerTalkTopics_PickWithValues(VillagerTalk *talk, VillagerMemory **list, int count);
-int VillagerTalkTopics_HasValues(u8 *villager, VillagerMemory *memory);
+int VillagerTalkTopics_PickWithTownTune(VillagerTalk *talk, VillagerMemory **list, int count);
+int VillagerTalkTopics_HasTownTune(u8 *villager, VillagerMemory *memory);
 int VillagerTalkTopics_PickLetterOfResident(VillagerTalk *talk, VillagerMemory **list, int count);
 int VillagerTalkTopics_HoldsLetterOfResident(u8 *villager, VillagerMemory *memory);
 void *VillagerTalkTopics_PickWithText2A(VillagerTalk *talk, VillagerMemory **list, int count);

@@ -293,11 +293,11 @@ void PocketsBox_Confirm(PocketsBox *self)
             GroupParams_SetArg((u8) count);
             Pockets_SetList(self->box_start);
             MI_CpuCopy8(self->box, data_021f3a68, sizeof self->box);
-            PocketsBox_SendBox(self, PLAYER_MESSAGE_BYTES_A);
+            PocketsBox_SendBox(self, PLAYER_MESSAGE_LOST_AND_FOUND);
             break;
         case POCKETS_BOX_MODE_RECYCLE_BIN:
             MI_CpuCopy8(self->box, data_021f3a86, sizeof self->box);
-            PocketsBox_SendBox(self, PLAYER_MESSAGE_BYTES_B);
+            PocketsBox_SendBox(self, PLAYER_MESSAGE_RECYCLE_BIN);
             GroupParams_SetC4C(1);
             break;
     }

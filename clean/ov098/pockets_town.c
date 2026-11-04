@@ -118,7 +118,7 @@ extern Heap *data_021c9b28;
 extern u8 data_021ee418[0x100];
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
 #define LETTER_SIZE 0x100
-#define MESSAGE_TO 4 /* where these messages are sent (as PlayerMessages_SetMode answers) */
+#define MESSAGE_TO 4 /* where these messages are sent (as PlayerMessages_SetCountdown answers) */
 
 /* The angles beside the player's that PocketsTown_FindHoleAhead looks along: ahead, then
  * 0x1800 to either side. */
@@ -215,7 +215,7 @@ void PocketsTown_HandBottleToExchange(PocketsScreen *self)
     }
     Heap *heap = data_021c9b28;
     u8 *message = Heap_AllocBack(heap, 1 + LETTER_SIZE);
-    message[0] = PLAYER_MESSAGE_RECORD;
+    message[0] = PLAYER_MESSAGE_BOTTLE_LETTER;
     MI_CpuCopy8(letter, message + 1, LETTER_SIZE);
     Session_BeginMessage(data_020ccf94);
     Session_AppendMessage(data_020ccf94, message, 1 + LETTER_SIZE);
@@ -395,13 +395,13 @@ PocketsTownStep *PocketsTown_DirectionStep(int unused, int angle)
 }
 CLEAN_AS(func_ov098_022a2cd8, PocketsTown_DirectionStep)
 
-/* func_ov098_022a2dac: in a linked session, message 1 (PlayerMessages_Turn) with an insect's
+/* func_ov098_022a2dac: in a linked session, message 1 (PlayerMessages_ReleaseInsect) with an insect's
  * kind and a turn in degrees plus 30. */
 void PocketsTown_SendTurn(PocketsScreen *self, int kind, int turn)
 {
     (void) self;
     if (Session_IsLinked(data_020ccf94)) {
-        u8 message[3] = {PLAYER_MESSAGE_TURN, (u8) kind, (u8) turn};
+        u8 message[3] = {PLAYER_MESSAGE_RELEASE_INSECT, (u8) kind, (u8) turn};
         NetSession *session = data_020ccf94;
         Session_BeginMessage(session);
         Session_AppendMessage(session, message, sizeof message);

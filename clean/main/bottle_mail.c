@@ -163,7 +163,7 @@ int BottleMail_Open(void)
     Letter_Clear(bottle);
     NetSession *session = data_020ccf94;
     if (Session_IsLinked(session) && session->local_slot != 0) {
-        PlayerMessages_Send(PLAYER_MESSAGE_CLEAR_RECORD, 0);
+        PlayerMessages_Send(PLAYER_MESSAGE_CLEAR_BOTTLE_LETTER, 0);
     }
     return 1;
 }

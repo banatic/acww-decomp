@@ -1,4 +1,5 @@
-/* The villagers' part of a player's record (0xcc bytes at 0x1e40, PlayerRecord_VillagerPart).
+/* The villagers' part of a player's record (0xcc bytes at 0x1e40, PlayerRecord_VillagerPart):
+ * the progress of the player's part-time job at Nook's and its errands to villagers.
  *
  * It holds two blocks of 48 bytes (VillagerPart_Block), each an object (12 bytes: its item at
  * 8, its type at 0x0a, a five-bit value in byte 0x0b) and two NpcIds; three NpcIds of villagers

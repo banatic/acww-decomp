@@ -21,10 +21,11 @@
 #define VILLAGER_STAY_MODE_11 2  /* mode 11 */
 #define VILLAGER_STAY_RESIDENT 3 /* any other mode */
 
-/* VillagerStatus_Get: 0 for no villager or a state entry in state 1 or 7 or above; with this
+/* VillagerStatus_Get: 0 (outside, or no villager) for no villager or a state entry in state 1
+ * or 7 or above; with this
  * system in a session slot 1 or 2 from the entry's byte 0x01; else 1 or 2 from byte 0x01 for
  * state 0, and 3-7 for states 2-6. */
-#define VILLAGER_STATUS_NONE 0
+#define VILLAGER_STATUS_OUTSIDE 0
 #define VILLAGER_STATUS_HOME 1
 #define VILLAGER_STATUS_ASLEEP 2 /* the entry's place (byte 0x01) is VILLAGER_PLACE_ASLEEP */
 #define VILLAGER_STATUS_STATE_2 3

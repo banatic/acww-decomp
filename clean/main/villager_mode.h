@@ -1,5 +1,7 @@
 /* The mode record each of the town's villagers keeps at 0x734 (VillagerTown, villager_town.h),
- * and the day-to-day updates of it.
+ * and the day-to-day updates of it. The mode is the villager's hobby, the kinds of event of
+ * villager_events.h: 0 insects, 1 fishing, 2 fossils, 3 clothes, 4 furniture, 5 flowers,
+ * 6 shells, 7 walking.
  *
  *   0x00  the date and time the mode was set
  *   0x08  the day up to which the counts below have been taken into the scores

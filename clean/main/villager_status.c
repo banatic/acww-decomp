@@ -177,7 +177,7 @@ static int VillagerStatus_HomeOrAsleep(const VillagerState *entry)
 int VillagerStatus_Get(u8 *villager)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
-        return VILLAGER_STATUS_NONE;
+        return VILLAGER_STATUS_OUTSIDE;
     }
     VillagerState *entry = VillagerStatus_StateEntry(villager);
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
@@ -190,7 +190,7 @@ int VillagerStatus_Get(u8 *villager)
     if (state >= 2 && state <= 6) {
         return VILLAGER_STATUS_STATE_2 + (state - 2);
     }
-    return VILLAGER_STATUS_NONE;
+    return VILLAGER_STATUS_OUTSIDE;
 }
 CLEAN_AS(func_0207f1d8, VillagerStatus_Get)
 

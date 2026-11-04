@@ -292,11 +292,11 @@ void PublicBox_Finish(PublicBox *self, int with_delay)
             GroupParams_SetArg((u8) count);
             Pockets_SetList(self->box_start);
             MI_CpuCopy8(self->box, data_021f3a68, sizeof self->box);
-            PublicBox_SendBox(self, PLAYER_MESSAGE_BYTES_A);
+            PublicBox_SendBox(self, PLAYER_MESSAGE_LOST_AND_FOUND);
             break;
         case PUBLIC_BOX_MODE_RECYCLE:
             MI_CpuCopy8(self->box, data_021f3a86, sizeof self->box);
-            PublicBox_SendBox(self, PLAYER_MESSAGE_BYTES_B);
+            PublicBox_SendBox(self, PLAYER_MESSAGE_RECYCLE_BIN);
             GroupParams_SetC4C(1);
             break;
     }

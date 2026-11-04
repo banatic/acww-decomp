@@ -86,12 +86,12 @@
 #define VILLAGER_TALK_GREETING_MOOD_TIRED 4
 #define VILLAGER_TALK_GREETING_MOOD_JOY 1
 
-/* The weather (Sky_Falling) and the villager's modes the greeting looks at. */
+/* The weather (Sky_Falling) and the villager's hobbies (modes) the greeting looks at. */
 #define VILLAGER_TALK_GREETING_RAIN 1
 #define VILLAGER_TALK_GREETING_SNOW 2
-#define VILLAGER_TALK_GREETING_MODE_SHOP2 3
-#define VILLAGER_TALK_GREETING_MODE_SHOP1 4
-#define VILLAGER_TALK_GREETING_MODE_BOOM 8
+#define VILLAGER_TALK_GREETING_HOBBY_CLOTHES 3
+#define VILLAGER_TALK_GREETING_HOBBY_FURNITURE 4
+#define VILLAGER_TALK_GREETING_HOBBY_NONE_YET 8
 #define VILLAGER_TALK_GREETING_SCENE_SHOP2 10
 
 /* What VillagerStatus_Came says of a villager: 1 (moved in from no player's town), 2 (from
@@ -440,7 +440,8 @@ static const VillagerTalkGreetingTexts *greeting_weather(int falling, int *group
 /* func_0202bdb4: the greeting line. The slots are filled (VillagerTalkGreeting_FillSlots), then
  * the greetings are asked in turn and the first that holds gives the text set, the group and
  * the random part (0 unless said):
- * - a fall (never); running: both set the byte 0x13c when the player is met for the first time;
+ * - a fall (never); an event insect shown (VillagerTalkGreeting_IsRun): both set the byte
+ *   0x13c when the player is met for the first time;
  * - a first meeting (VillagerTalkGreeting_FirstTexts); a player of another town than the
  *   memory's ("ai_mfirst", group 7, part 3);
  * - a poisonous insect near; fleas; another town (VillagerTalkGreeting_ForeignTexts);
@@ -539,12 +540,12 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         }
     } else if (SceneQuery_CurrentInNook() != 0) {
         texts = &data_020c8c38;
-        if (greeting_mode(record) != VILLAGER_TALK_GREETING_MODE_SHOP1) {
+        if (greeting_mode(record) != VILLAGER_TALK_GREETING_HOBBY_FURNITURE) {
             group = 1;
         }
     } else if (SceneQuery_Current() == VILLAGER_TALK_GREETING_SCENE_SHOP2) {
         texts = &data_020c8c90;
-        if (greeting_mode(record) != VILLAGER_TALK_GREETING_MODE_SHOP2) {
+        if (greeting_mode(record) != VILLAGER_TALK_GREETING_HOBBY_CLOTHES) {
             group = 1;
         }
     } else if (SceneQuery_CurrentIn20() != 0 && SceneQuery_IndexIn20(SceneQuery_Current()) == 1) {
@@ -560,7 +561,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
             texts = &data_020c8b78;
         }
         group = Calendar_PartOfDay();
-    } else if (greeting_mode(record) == VILLAGER_TALK_GREETING_MODE_BOOM) {
+    } else if (greeting_mode(record) == VILLAGER_TALK_GREETING_HOBBY_NONE_YET) {
         texts = &data_020c8a00;
     } else if (VillagerTally_Level(VillagerState_Tally(entry)) != 0) {
         texts = &data_020c8b90;
@@ -684,7 +685,7 @@ const VillagerTalkGreetingTexts *VillagerTalkGreeting_ForeignTexts(VillagerTalk 
 {
     if (greeting_memory(talk) != NULL) {
         int town = VillagerMemoryEntry_Town(greeting_memory(talk));
-        SceneBase_PutNameAt2(greeting_base(talk), (unsigned int) town, 1);
+        SceneBase_PutTownName(greeting_base(talk), (unsigned int) town, 1);
     }
     return &data_020c8cf8;
 }
@@ -710,7 +711,7 @@ int VillagerTalkGreeting_FirstTexts(VillagerTalk *talk, int *group, u8 *villager
         came = 0;
     }
     if (came == VILLAGER_TALK_GREETING_CAME_FROM_TOWN) {
-        SceneBase_PutNameAt2(greeting_base(talk), (unsigned int) (uintptr_t) VillagerHome_LastTown(villager), 1);
+        SceneBase_PutTownName(greeting_base(talk), (unsigned int) (uintptr_t) VillagerHome_LastTown(villager), 1);
     } else {
         *group = Calendar_PartOfDay();
     }
@@ -728,7 +729,8 @@ int VillagerTalkGreeting_IsFirst(VillagerTalk *talk, int since)
 }
 CLEAN_AS(func_0202c3e4, VillagerTalkGreeting_IsFirst)
 
-/* func_0202c3f0: in the town's field, whether the player runs (overlay 3). */
+/* func_0202c3f0: in the town's field, whether the town's first event insect is shown
+ * (TownInsect_EventShown). */
 int VillagerTalkGreeting_IsRun(VillagerTalk *talk)
 {
     (void) talk;

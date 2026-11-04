@@ -34,7 +34,7 @@ typedef struct VillagerMemory {
     DesignCreator player; /* 0x00 */
     u16 nickname[6];      /* 0x1e */
     u16 text_2a[10];      /* 0x2a */
-    u16 text_3e[10];      /* 0x3e */
+    u16 greeting[10];     /* 0x3e */
     u8 unknown_52[2];
     DateTime when;     /* 0x54 */
     NpcIdHead town;    /* 0x5c */
@@ -57,8 +57,8 @@ static_assert(sizeof(VillagerMemory) == 0x80, "a memory is 0x80 bytes");
  * players (data_021dc7bc). */
 typedef int (*VillagerMemoryTest)(void *player, void *town, void *players);
 
-void VillagerMemory_SetText3E(u8 *villager, const u16 *text, int length, const DesignCreator *player);
-int VillagerMemory_GetText3E(u8 *villager, void *text, const DesignCreator *player);
+void VillagerMemory_SetGreeting(u8 *villager, const u16 *text, int length, const DesignCreator *player);
+int VillagerMemory_GetGreeting(u8 *villager, void *text, const DesignCreator *player);
 void VillagerMemory_SetText2A(u8 *villager, const u16 *text, int length, const DesignCreator *player);
 int VillagerMemory_GetText2A(u8 *villager, void *text, const DesignCreator *player);
 void VillagerMemory_ShareNickname(u8 *villager_a, u8 *villager_b, u8 *record);

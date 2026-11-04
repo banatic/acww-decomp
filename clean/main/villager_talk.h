@@ -72,8 +72,8 @@ typedef struct VillagerTalk {
     s32 bells;                                         /* 0x1a0 */
 } VillagerTalk;
 
-void VillagerTalk_OnEvent14(VillagerTalk *talk, int event);
-void VillagerTalk_OnEvent10(VillagerTalk *talk, void *arg);
+void VillagerTalk_OnSlot14(VillagerTalk *talk, int event);
+void VillagerTalk_OnSlot10(VillagerTalk *talk, void *arg);
 int VillagerTalk_RunEvent(VillagerTalk *talk, unsigned int event);
 int VillagerTalk_Event16(VillagerTalk *talk);
 int VillagerTalk_Event15(VillagerTalk *talk);

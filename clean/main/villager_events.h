@@ -16,7 +16,7 @@
 enum VillagerEventKind {
     VILLAGER_EVENT_INSECT_CAUGHT = 0,   /* an insect caught (overlay 3's state 0x57) */
     VILLAGER_EVENT_FISH_CAUGHT = 1,     /* a fish of kind below 0x38 caught (overlay 3's state 0x54) */
-    VILLAGER_EVENT_ITEM_1549 = 2,       /* item 0x1549 in overlay 3's state 0x5f */
+    VILLAGER_EVENT_FOSSIL_DUG = 2,      /* a fossil (item 0x1549) dug up in overlay 3's state 0x5f */
     VILLAGER_EVENT_TAILOR_PURCHASE = 3, /* an item bought at the tailor's (overlay 49, MabelTalk_Buy) */
     VILLAGER_EVENT_STORE_PURCHASE = 4,  /* an item bought at Nook's (overlay 50, NookClerkTalk_Buy) */
     VILLAGER_EVENT_WATERED = 5,         /* a cross of tiles watered (TileRequests_ChangeCodesAround), with a place */
@@ -33,7 +33,7 @@ int VillagerEvent_IsMarkedTile(const Vec3 *position);
 void VillagerEvent_Watered(const Vec3 *position);
 void VillagerEvent_StorePurchase(void);
 void VillagerEvent_TailorPurchase(void);
-void VillagerEvent_Item1549(const Vec3 *position);
+void VillagerEvent_FossilDug(const Vec3 *position);
 void VillagerEvent_InsectCaught(const Vec3 *position);
 void VillagerEvent_FishCaught(const Vec3 *position);
 void VillagerEvent_Spread(int kind, const Vec3 *position);

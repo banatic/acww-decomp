@@ -26,20 +26,20 @@
 #include "main_random.h"
 
 /* The object's parts, by place. */
-#define VSO_PERSON 0x0ea   /* ItemCode: the person (kind 0xe) */
-#define VSO_MODEL 0x0ec    /* LayeredModel (a ModelObject first) */
-#define VSO_FACE 0x2ac     /* SceneFace */
-#define VSO_ANIM 0x334     /* SpeakerAnim */
-#define VSO_BODY 0x4cc     /* FieldOwnedBody */
-#define VSO_MOTION 0x564   /* SceneMotion */
-#define VSO_WORD_644 0x644 /* u32 */
-#define VSO_CLOTHES 0x64c  /* VillagerClothes */
-#define VSO_TALK 0x680     /* VillagerTalk */
-#define VSO_COIN 0x824     /* u8: 0 or 1, drawn at init */
-#define VSO_HEAP 0x828     /* PoolLink to a heap8 slot */
-#define VSO_RECORD 0x830   /* u8 *: the town record, or NULL */
-#define VSO_STATE 0x834    /* the record's state entry */
-#define VSO_MOOD 0x83c     /* VillagerMood */
+#define VSO_PERSON 0x0ea        /* ItemCode: the person (kind 0xe) */
+#define VSO_MODEL 0x0ec         /* LayeredModel (a ModelObject first) */
+#define VSO_FACE 0x2ac          /* SceneFace */
+#define VSO_ANIM 0x334          /* SpeakerAnim */
+#define VSO_BODY 0x4cc          /* FieldOwnedBody */
+#define VSO_MOTION 0x564        /* SceneMotion */
+#define VSO_WORD_644 0x644      /* u32 */
+#define VSO_CLOTHES 0x64c       /* VillagerClothes */
+#define VSO_TALK 0x680          /* VillagerTalk */
+#define VSO_ASKS_GREETING 0x824 /* u8: 0 or 1, drawn at init: whether it asks for a greeting */
+#define VSO_HEAP 0x828          /* PoolLink to a heap8 slot */
+#define VSO_RECORD 0x830        /* u8 *: the town record, or NULL */
+#define VSO_STATE 0x834         /* the record's state entry */
+#define VSO_MOOD 0x83c          /* VillagerMood */
 
 /* The kind of the person codes of town villagers (the code's top four bits). */
 #define VSO_KIND_VILLAGER 0xe
@@ -177,7 +177,7 @@ int VillagerSceneObject_Init(u8 *object)
     }
     VillagerSceneObject_FindRecord(object);
     *(u32 *) (void *) vso_at(object, VSO_WORD_644) = 0;
-    *vso_at(object, VSO_COIN) = (u8) MainRandom_Below(2);
+    *vso_at(object, VSO_ASKS_GREETING) = (u8) MainRandom_Below(2);
     VillagerMood_Start((VillagerMood *) (void *) vso_at(object, VSO_MOOD));
     VillagerSceneObject_SetEvent(object);
     return 1;

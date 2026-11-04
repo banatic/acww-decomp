@@ -23,11 +23,11 @@
 #include "town_tune.h"
 #include "villager_town.h"
 
-#define RECORD_SIZE 0x100
-#define BYTES_SIZE 30
-#define NIBBLES_SIZE 16
+#define LETTER_SIZE 0x100
+#define ITEM_LIST_SIZE 30
+#define TOWN_TUNE_NOTES 16
 #define PACKED_POSITION_SIZE 5
-#define LOG_ENTRY_SIZE 0xc0
+#define BBS_POST_SIZE 0xc0
 
 /* One degree in the game's 16-bit angles (65536 / 360, rounded). */
 #define ANGLE_DEGREE 0xb6
@@ -44,19 +44,19 @@ typedef struct PlayerObject {
     s16 angle;
 } PlayerObject;
 
-extern Heap *data_021fbe94;                           /* the current heap (heap.h) */
-extern void *data_020ccf94;                           /* the message being built to send */
-extern u8 data_020df6a4;                              /* the last reply to a type 8 (PLAYER_MESSAGE_NONE: none) */
-extern const int data_020df6a8[PLAYER_MESSAGE_MODES]; /* the word for each mode: 0-4 */
-extern u8 data_021cfbbc[NIBBLES_SIZE];                /* type 12's values */
-extern u64 data_021f3b68;                             /* and packed, one in each 4 bits */
+extern Heap *data_021fbe94;                                /* the current heap (heap.h) */
+extern void *data_020ccf94;                                /* the message being built to send */
+extern u8 data_020df6a4;                                   /* the last reply to a type 8 (PLAYER_MESSAGE_NONE: none) */
+extern const int data_020df6a8[PLAYER_MESSAGE_COUNTDOWNS]; /* the time of each countdown: 0-4 */
+extern u8 data_021cfbbc[TOWN_TUNE_NOTES];                  /* the town tune's notes */
+extern u64 data_021f3b68;                                  /* and packed, one in each 4 bits */
 extern u16 data_021e5a2c;
-extern u8 data_021f36ec[RECORD_SIZE];
-extern u8 data_021ee418[RECORD_SIZE];
-extern u8 data_021f3a68[BYTES_SIZE];
-extern u8 data_021f3a86[BYTES_SIZE];
-extern u8 data_020e54a8;  /* types 1, 2 and 5 are ignored unless 0 */
-extern s32 data_020c904c; /* the height types 2 and 5 are placed at */
+extern u8 data_021f36ec[LETTER_SIZE];
+extern u8 data_021ee418[LETTER_SIZE];
+extern u8 data_021f3a68[ITEM_LIST_SIZE]; /* the lost and found's list */
+extern u8 data_021f3a86[ITEM_LIST_SIZE]; /* the recycle bin's list */
+extern u8 data_020e54a8;                 /* types 1, 2 and 5 are ignored unless 0 */
+extern s32 data_020c904c;                /* the height types 2 and 5 are placed at */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -70,57 +70,58 @@ static void *mode_object(void)
     return (void *) (uintptr_t) ScreenPanels_SecondPanel();
 }
 
-/* func_0207042c: type 23. */
-void PlayerMessages_Key(const u8 *message, int player)
+/* func_0207042c: type 23, a held tile change freed (TileChanges_FreeHeld). */
+void PlayerMessages_FreeHeldTileChange(const u8 *message, int player)
 {
     (void) player;
     TileChanges_FreeHeld(message[1]);
 }
-CLEAN_AS(func_0207042c, PlayerMessages_Key)
+CLEAN_AS(func_0207042c, PlayerMessages_FreeHeldTileChange)
 
-/* func_02070438: types 18-22, the answer to 13-17: take the mode too. */
-void PlayerMessages_ModeSet(const u8 *message, int player)
+/* func_02070438: types 18-22, the answer to 13-17: start the countdown here too. */
+void PlayerMessages_CountdownSet(const u8 *message, int player)
 {
     (void) player;
-    PlayerMessages_ApplyMode(message[0] - PLAYER_MESSAGE_MODE_SET);
+    PlayerMessages_ApplyCountdown(message[0] - PLAYER_MESSAGE_COUNTDOWN_SET);
 }
-CLEAN_AS(func_02070438, PlayerMessages_ModeSet)
+CLEAN_AS(func_02070438, PlayerMessages_CountdownSet)
 
-/* func_02070444: types 13-17, set the mode (0-4) and answer with types 18-22. Mode 0 is taken
- * only when the mode is not 0 already, the others only when it is 0; otherwise nothing is done
+/* func_02070444: types 13-17, start the countdown (0-4) and answer with types 18-22. Countdown 0
+ * (stop) is taken only while one runs, the others only while it is stopped; otherwise nothing is done
  * or answered. QUIRK: the answer goes to player 4, not to the sender. */
-void PlayerMessages_SetMode(const u8 *message, int player)
+void PlayerMessages_SetCountdown(const u8 *message, int player)
 {
     (void) player;
-    int mode = message[0] - PLAYER_MESSAGE_SET_MODE;
-    BOOL mode_is_0 = CatchPanel_IsStopped(mode_object()) != 0;
-    if (mode == 0 ? mode_is_0 : !mode_is_0) {
+    int mode = message[0] - PLAYER_MESSAGE_SET_COUNTDOWN;
+    BOOL stopped = CatchPanel_IsStopped(mode_object()) != 0;
+    if (mode == 0 ? stopped : !stopped) {
         return;
     }
-    PlayerMessages_ApplyMode(mode);
-    PlayerMessages_Send((u8) (PLAYER_MESSAGE_MODE_SET + mode), 4);
+    PlayerMessages_ApplyCountdown(mode);
+    PlayerMessages_Send((u8) (PLAYER_MESSAGE_COUNTDOWN_SET + mode), 4);
 }
-CLEAN_AS(func_02070444, PlayerMessages_SetMode)
+CLEAN_AS(func_02070444, PlayerMessages_SetCountdown)
 
-/* func_02070490: request 0x67 for mode 0 and 0x66 for the others (SoundSys_PlaySe), then set
- * the mode's word. REQUIRES: 0 <= mode < 5. */
-void PlayerMessages_ApplyMode(int mode)
+/* func_02070490: sound 0x67 for countdown 0 and 0x66 for the others (SoundSys_PlaySe), then
+ * the second panel's countdown started with its time (CatchPanel_Start). REQUIRES: 0 <= mode < 5. */
+void PlayerMessages_ApplyCountdown(int mode)
 {
     SoundSys_PlaySe(mode == 0 ? 0x67 : 0x66);
     CatchPanel_Start(mode_object(), data_020df6a8[mode], 0);
 }
-CLEAN_AS(func_02070490, PlayerMessages_ApplyMode)
+CLEAN_AS(func_02070490, PlayerMessages_ApplyCountdown)
 
-/* func_020704c0: type 12, 16 values of four bits: kept, and packed into a 64-bit word. */
-void PlayerMessages_Nibbles(const void *message, int player)
+/* func_020704c0: type 12, the town tune (16 notes of four bits): kept, packed into a 64-bit
+ * word (TownTune_Pack) and used. */
+void PlayerMessages_TownTune(const void *message, int player)
 {
     (void) player;
-    MI_CpuCopy8((const u8 *) message + 1, data_021cfbbc, NIBBLES_SIZE);
+    MI_CpuCopy8((const u8 *) message + 1, data_021cfbbc, TOWN_TUNE_NOTES);
     TownTune_Pack((TownTunePacked *) &data_021f3b68, data_021cfbbc);
     TownTune_UseTune();
     VillagerTown_ClearMark((VillagerTown *) &data_021e5a2c);
 }
-CLEAN_AS(func_020704c0, PlayerMessages_Nibbles)
+CLEAN_AS(func_020704c0, PlayerMessages_TownTune)
 
 /* func_020704f4: types 9-11, the answer to a type 8. */
 void PlayerMessages_StoreReply(const u8 *message, int player)
@@ -130,22 +131,22 @@ void PlayerMessages_StoreReply(const u8 *message, int player)
 }
 CLEAN_AS(func_020704f4, PlayerMessages_StoreReply)
 
-/* func_02070500: type 8, a record to store in the first free of 10 slots; the sender is told
+/* func_02070500: type 8, a letter to hold at the post office (Mail_HoldAtPostOffice); the sender is told
  * whether it was stored and whether there is room for another. REQUIRES: the current heap has
- * room for the record's copy (the allocation is not checked). */
-void PlayerMessages_StoreRecord(const u8 *message, int player)
+ * room for the letter's copy (the allocation is not checked). */
+void PlayerMessages_HoldLetter(const u8 *message, int player)
 {
     Heap *heap = data_021fbe94;
-    void *record = Heap_AllocBack(heap, RECORD_SIZE);
+    void *record = Heap_AllocBack(heap, LETTER_SIZE);
     int reply = PLAYER_MESSAGE_NOT_STORED;
-    MI_CpuCopy8(message + 1, record, RECORD_SIZE);
+    MI_CpuCopy8(message + 1, record, LETTER_SIZE);
     if (Mail_HoldAtPostOffice(record, 1) != 0) {
         reply = Mail_PostOfficeHasRoom() != 0 ? PLAYER_MESSAGE_STORED : PLAYER_MESSAGE_STORED_FULL;
     }
     Heap_Free(heap, record);
     PlayerMessages_Send(reply, player);
 }
-CLEAN_AS(func_02070500, PlayerMessages_StoreRecord)
+CLEAN_AS(func_02070500, PlayerMessages_HoldLetter)
 
 /* func_0207055c: send a message of one byte, `type`, to `player`. */
 void PlayerMessages_Send(int type, int player)
@@ -172,46 +173,46 @@ u8 PlayerMessages_Reply(void)
 }
 CLEAN_AS(func_0207059c, PlayerMessages_Reply)
 
-/* func_020705a8: type 7. */
-void PlayerMessages_ClearRecord(const u8 *message, int player)
+/* func_020705a8: type 7, the bottle's letter at data_021f36ec emptied. */
+void PlayerMessages_ClearBottleLetter(const u8 *message, int player)
 {
     (void) message;
     (void) player;
     Letter_Clear((Letter *) BottleMail_Letter((BottleState *) (void *) data_021f36ec));
 }
-CLEAN_AS(func_020705a8, PlayerMessages_ClearRecord)
+CLEAN_AS(func_020705a8, PlayerMessages_ClearBottleLetter)
 
-/* func_020705c0: type 6, a record for data_021ee418. REQUIRES: the current heap has room for
- * the record's copy (the allocation is not checked). */
-void PlayerMessages_Record(const char *message, int player)
+/* func_020705c0: type 6, a bottle's letter for data_021ee418, which arrives at once. REQUIRES:
+ * the current heap has room for the letter's copy (the allocation is not checked). */
+void PlayerMessages_BottleLetter(const char *message, int player)
 {
     (void) player;
     Heap *heap = data_021fbe94;
-    void *copy = Heap_AllocBack(heap, RECORD_SIZE);
-    MI_CpuCopy8(message + 1, copy, RECORD_SIZE);
+    void *copy = Heap_AllocBack(heap, LETTER_SIZE);
+    MI_CpuCopy8(message + 1, copy, LETTER_SIZE);
     Letter_Assign((Letter *) ExchangeBlock_BottleLetter((ExchangeBlock *) (void *) data_021ee418), copy);
     ExchangeBlock_ClearDrifts((ExchangeBlock *) (void *) data_021ee418);
     ExchangeBlock_SetArrivesAtOnce((ExchangeBlock *) (void *) data_021ee418, 0);
     Heap_Free(heap, copy);
 }
-CLEAN_AS(func_020705c0, PlayerMessages_Record)
+CLEAN_AS(func_020705c0, PlayerMessages_BottleLetter)
 
-/* func_02070614: types 3 and 4, 30 bytes for one of two places. */
-void PlayerMessages_Bytes(const u8 *message, int player)
+/* func_02070614: types 3 and 4, a list of 30 bytes for the lost and found or the recycle bin. */
+void PlayerMessages_ItemList(const u8 *message, int player)
 {
     (void) player;
-    u8 bytes[BYTES_SIZE];
-    MI_CpuCopy8(message + 1, bytes, BYTES_SIZE);
+    u8 bytes[ITEM_LIST_SIZE];
+    MI_CpuCopy8(message + 1, bytes, ITEM_LIST_SIZE);
     switch (message[0]) {
-        case PLAYER_MESSAGE_BYTES_A:
-            MI_CpuCopy8(bytes, data_021f3a68, BYTES_SIZE);
+        case PLAYER_MESSAGE_LOST_AND_FOUND:
+            MI_CpuCopy8(bytes, data_021f3a68, ITEM_LIST_SIZE);
             break;
-        case PLAYER_MESSAGE_BYTES_B:
-            MI_CpuCopy8(bytes, data_021f3a86, BYTES_SIZE);
+        case PLAYER_MESSAGE_RECYCLE_BIN:
+            MI_CpuCopy8(bytes, data_021f3a86, ITEM_LIST_SIZE);
             break;
     }
 }
-CLEAN_AS(func_02070614, PlayerMessages_Bytes)
+CLEAN_AS(func_02070614, PlayerMessages_ItemList)
 
 /* func_02070658: types 2 and 5, a position packed in five bytes (from the payload's second
  * byte), at the height data_020c904c: type 2 a fish put down there from the sender's pockets
@@ -236,10 +237,10 @@ void PlayerMessages_Place(const u8 *message, int player)
 }
 CLEAN_AS(func_02070658, PlayerMessages_Place)
 
-/* func_020706cc: type 1, an angle in degrees (less TURN_BIAS) from the sender's object's own,
- * and a byte for func_ov003_0222e898; nothing while func_ov003_0222ea84 is not 0 for the
- * sender. QUIRK: the angle is kept in 16 bits, wrapping. */
-void PlayerMessages_Turn(const u8 *message, int player)
+/* func_020706cc: type 1, the sender lets an insect go: the insect (TownInsect_TakeHeld) let go
+ * at an angle in degrees (less TURN_BIAS) from the sender's object's own; nothing while the
+ * sender holds one already (TownInsect_HeldState). QUIRK: the angle is kept in 16 bits, wrapping. */
+void PlayerMessages_ReleaseInsect(const u8 *message, int player)
 {
     if (data_020e54a8 != 0) {
         return;
@@ -256,20 +257,20 @@ void PlayerMessages_Turn(const u8 *message, int player)
         TownInsect_LetGo(sender, angle);
     }
 }
-CLEAN_AS(func_020706cc, PlayerMessages_Turn)
+CLEAN_AS(func_020706cc, PlayerMessages_ReleaseInsect)
 
-/* func_0207072c: type 0, an entry for the log at data_021eed68, copied out of the message
- * first (into a block of the current heap). */
-void PlayerMessages_LogEntry(const u8 *message, int player)
+/* func_0207072c: type 0, a post for the bulletin board (Bbs_PostText), copied out of the
+ * message first (into a block of the current heap). */
+void PlayerMessages_BbsPost(const u8 *message, int player)
 {
     (void) player;
     Heap *heap = data_021fbe94;
-    void *entry = Heap_AllocBack(heap, LOG_ENTRY_SIZE);
-    MI_CpuCopy8(message + 1, entry, LOG_ENTRY_SIZE);
+    void *entry = Heap_AllocBack(heap, BBS_POST_SIZE);
+    MI_CpuCopy8(message + 1, entry, BBS_POST_SIZE);
     Bbs_PostText(entry);
     Heap_Free(heap, entry);
 }
-CLEAN_AS(func_0207072c, PlayerMessages_LogEntry)
+CLEAN_AS(func_0207072c, PlayerMessages_BbsPost)
 
 /* func_02070760: hand a received message to the handler of its type. QUIRK: the type is not
  * checked; one of PLAYER_MESSAGE_TYPES or more calls whatever word follows the table. */

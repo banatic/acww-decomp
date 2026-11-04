@@ -182,7 +182,7 @@ int LetterSend_TestFlags(LetterSendScene *self, int flags)
 }
 CLEAN_AS(func_ov104_0229c364, LetterSend_TestFlags)
 
-/* func_ov104_0229c378: `letter` sent to the host as message 8 (PLAYER_MESSAGE_STORE_RECORD,
+/* func_ov104_0229c378: `letter` sent to the host as message 8 (PLAYER_MESSAGE_HOLD_LETTER,
  * the type byte and then the letter, built in a block of the menu scenes' heap), and the reply
  * set to 8 until the host answers. Always 1. REQUIRES: the heap has the block's 0x101 bytes;
  * the original writes through a null block too. */
@@ -191,14 +191,14 @@ int LetterSend_SendToHost(LetterSendScene *self, const Letter *letter)
     (void) self;
     Heap *heap = data_021c9b28;
     u8 *message = Heap_AllocBack(heap, LETTER_SEND_MESSAGE_SIZE);
-    message[0] = PLAYER_MESSAGE_STORE_RECORD;
+    message[0] = PLAYER_MESSAGE_HOLD_LETTER;
     MI_CpuCopy8(letter, message + 1, sizeof(Letter));
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, message, LETTER_SEND_MESSAGE_SIZE);
     Session_EndMessage(session, PLAYER_MESSAGE_CATEGORY, 0);
     Heap_Free(heap, message);
-    PlayerMessages_SetReply(PLAYER_MESSAGE_STORE_RECORD);
+    PlayerMessages_SetReply(PLAYER_MESSAGE_HOLD_LETTER);
     return 1;
 }
 CLEAN_AS(func_ov104_0229c378, LetterSend_SendToHost)
@@ -224,7 +224,7 @@ void LetterSend_ContinueLinkedPost(LetterSendScene *self)
     if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_AWAITING_REPLY) != 0) {
         reply = PlayerMessages_Reply();
         switch (reply) {
-            case PLAYER_MESSAGE_STORE_RECORD:
+            case PLAYER_MESSAGE_HOLD_LETTER:
                 return;
             case PLAYER_MESSAGE_NOT_STORED:
                 self->result |= LETTER_SEND_RESULT_NOT_ALL_SENT;

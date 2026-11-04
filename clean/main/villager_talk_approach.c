@@ -27,11 +27,11 @@
 #include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h), and its byte that picks the group
- * of the catchphrase's lines. */
+ * of the catchphrase's lines (whether the villager asks for a greeting, drawn at init). */
 #define VILLAGER_TALK_APPROACH_RECORD 0x830
-#define VILLAGER_TALK_APPROACH_HABIT_BYTE 0x824
+#define VILLAGER_TALK_APPROACH_ASKS_GREETING 0x824
 
-/* The item classes of the five modes of group 0 (insect, fish, kind item, clothes, furniture). */
+/* The item classes of the five modes of group 0 (insect, fish, fossil, clothes, furniture). */
 #define VILLAGER_TALK_APPROACH_MODES 5
 #define VILLAGER_TALK_APPROACH_POCKETS 15
 /* What SceneBase_PutItemName and SceneBase_PutValue are told. */
@@ -407,10 +407,10 @@ int VillagerTalkApproach_Picture(VillagerTalk *talk)
         return 0;
     }
     int group = 0;
-    if (VillagerMemoryEntry_Bit4(approach_memory(talk)) == 0) {
+    if (VillagerMemoryEntry_PictureGiven(approach_memory(talk)) == 0) {
         if (VillagerMemoryEntry_Fondness(approach_memory(talk)) >= VILLAGER_TALK_APPROACH_PICTURE_FOND) {
             if (CurrentPockets_FreeSlot() != -1) {
-                VillagerMemoryEntry_SetBit4(approach_memory(talk));
+                VillagerMemoryEntry_SetPictureGiven(approach_memory(talk));
                 group = 1;
             } else {
                 group = 2;
@@ -437,7 +437,7 @@ CLEAN_AS(func_0202b800, VillagerTalkApproach_Picture)
 int VillagerTalkApproach_Catchphrase(VillagerTalk *talk)
 {
     int personality = approach_personality(approach_record(talk));
-    int group = talk->villager[VILLAGER_TALK_APPROACH_HABIT_BYTE] & 1;
+    int group = talk->villager[VILLAGER_TALK_APPROACH_ASKS_GREETING] & 1;
     approach_draw(talk, personality, data_020c8b18.texts, 9, group, data_020c8b18.count);
     VillagerTalkScene_SetLines(talk, data_021c2704);
     return 1;

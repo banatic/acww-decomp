@@ -143,13 +143,13 @@ void VillagerEvent_TailorPurchase(void)
 CLEAN_AS(func_0207972c, VillagerEvent_TailorPurchase)
 
 /* func_02079750 */
-void VillagerEvent_Item1549(const Vec3 *position)
+void VillagerEvent_FossilDug(const Vec3 *position)
 {
     if (!Session_IsLinked(data_020ccf94)) {
-        VillagerEvent_Spread(VILLAGER_EVENT_ITEM_1549, position);
+        VillagerEvent_Spread(VILLAGER_EVENT_FOSSIL_DUG, position);
     }
 }
-CLEAN_AS(func_02079750, VillagerEvent_Item1549)
+CLEAN_AS(func_02079750, VillagerEvent_FossilDug)
 
 /* func_02079774 */
 void VillagerEvent_InsectCaught(const Vec3 *position)

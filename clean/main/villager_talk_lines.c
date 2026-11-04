@@ -770,7 +770,7 @@ static void lines_item_line(VillagerTalk *talk, VillagerTalkLine *out, u16 first
             SceneBase_PutNpcName(lines_base(talk), npc, 1);
         } else if (PlayerId_IsSet((DesignCreator *) (void *) player) != 0) {
             group = VillagerTalk_GroupForHour(now.hour);
-            SceneBase_PutNameAt10(lines_base(talk), EventWinner_Player((EventWinner *) (void *) data_021f3aa4), 1);
+            SceneBase_PutPlayerName(lines_base(talk), EventWinner_Player((EventWinner *) (void *) data_021f3aa4), 1);
         }
         put_size(talk, EventWinner_Size((const EventWinner *) (void *) data_021f3aa4));
         SceneBase_PutItemName(lines_base(talk), (int) (uintptr_t) &item, 0, 7);
@@ -809,11 +809,11 @@ CLEAN_AS(func_0201fa14, VillagerTalk_NoteAndMarkMemoryAgain)
 
 /* func_0201fa58: lines_item_line for the items 0x12e8-0x131f and the set at 0x020c8a60, the
  * size with its fraction; data_020d90e8 at the last message. */
-void VillagerTalk_LineItem12e8(VillagerTalk *talk, VillagerTalkLine *out)
+void VillagerTalk_LineFish(VillagerTalk *talk, VillagerTalkLine *out)
 {
     lines_item_line(talk, out, 0x12e8, 0x131f, &data_020c8a60, lines_put_decimal_size, &data_020d90e8);
 }
-CLEAN_AS(func_0201fa58, VillagerTalk_LineItem12e8)
+CLEAN_AS(func_0201fa58, VillagerTalk_LineFish)
 
 /* func_0201fc14: the group of a line by the hour: 6 at 6, 9, 12 and 15 o'clock, 12 at 8, 11,
  * 14 and 17 o'clock, else 9. */

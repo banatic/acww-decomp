@@ -240,15 +240,15 @@ CLEAN_AS(func_02038ed0, QuickMessage_Spawn)
 
 /* ---- The sender */
 
-/* func_02038eec: with no post in the last 30 frames, in scene 0x28, 0x2b, 8 or 9
- * (func_020960d8(4)), while linked and data_021c72b8 is clear, a button pressed this frame
+/* func_02038eec: with no post in the last 30 frames, with this console's player actor in state
+ * 0x28, 0x2b, 8 or 9 (PlayerActorOps_State(4)), while linked and data_021c72b8 is clear, a button pressed this frame
  * posts its message under this system's slot: SELECT, X, Y, A, B in that order of priority,
  * else START, which only the system in slot 0 posts. */
 void QuickMessage_PollButtons(int unused)
 {
     (void) unused;
-    int scene = PlayerActorOps_State(4);
-    int in_scene = scene == 0x28 || scene == 0x2b || scene == 8 || scene == 9;
+    int state = PlayerActorOps_State(4);
+    int in_state = state == 0x28 || state == 0x2b || state == 8 || state == 9;
 
     u16 pressed = data_021fbe40.pressed;
     int any = (pressed & (PAD_START | PAD_SELECT | PAD_X | PAD_Y | PAD_A | PAD_B)) != 0;
@@ -260,7 +260,7 @@ void QuickMessage_PollButtons(int unused)
     if (data_021c6730 > 0) {
         return;
     }
-    if (!in_scene || !any || !linked || !idle) {
+    if (!in_state || !any || !linked || !idle) {
         return;
     }
 

@@ -917,7 +917,7 @@ void PocketsScreen_ActionStopTimer(PocketsScreen *self)
 CLEAN_AS(func_ov096_0229d4f0, PocketsScreen_ActionStopTimer)
 
 /* func_ov096_0229d508: the timer item's mode `mode` (0 stops it, 1-4 start it for 3, 5, 10 or 15
- * minutes). Alone, applies it (PlayerMessages_ApplyMode). Linked, slot 0 sends message 0x12 +
+ * minutes). Alone, applies it (PlayerMessages_ApplyCountdown). Linked, slot 0 sends message 0x12 +
  * `mode` to player 4 and applies it when "mode is 0" differs from whether the timer's panel
  * (func_0208d12c on the object at func_0208b500) is stopped; any other slot sends 0x0d + `mode`
  * to player 0. */
@@ -930,13 +930,13 @@ void PocketsScreen_SetTimer(PocketsScreen *self, int mode)
             unsigned int is_zero = mode == 0;
             if (is_zero != CatchPanel_IsStopped((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel())) {
                 PlayerMessages_Send((u8) (mode + 0x12), 4);
-                PlayerMessages_ApplyMode(mode);
+                PlayerMessages_ApplyCountdown(mode);
             }
         } else {
             PlayerMessages_Send((u8) (mode + 0x0d), 0);
         }
     } else {
-        PlayerMessages_ApplyMode(mode);
+        PlayerMessages_ApplyCountdown(mode);
     }
 }
 CLEAN_AS(func_ov096_0229d508, PocketsScreen_SetTimer)

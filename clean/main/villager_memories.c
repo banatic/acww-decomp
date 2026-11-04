@@ -55,27 +55,27 @@ static int same_town(const NpcIdHead *a, const NpcIdHead *b)
 
 /* func_02080108: the text at 0x3e of the villager's memory of the player set from `length`
  * characters, when it knows the player. */
-void VillagerMemory_SetText3E(u8 *villager, const u16 *text, int length, const DesignCreator *player)
+void VillagerMemory_SetGreeting(u8 *villager, const u16 *text, int length, const DesignCreator *player)
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        VillagerMemoryEntry_SetText3E(memory, text, length);
+        VillagerMemoryEntry_SetGreeting(memory, text, length);
     }
 }
-CLEAN_AS(func_02080108, VillagerMemory_SetText3E)
+CLEAN_AS(func_02080108, VillagerMemory_SetGreeting)
 
 /* func_0208012c: the text at 0x3e of the villager's memory of the player copied to `text`, when
  * it knows the player, the player is set and the text has been; non-zero when it was. */
-int VillagerMemory_GetText3E(u8 *villager, void *text, const DesignCreator *player)
+int VillagerMemory_GetGreeting(u8 *villager, void *text, const DesignCreator *player)
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
-    if (memory != NULL && PlayerId_IsSet((DesignCreator *) player) && VillagerMemoryEntry_Text3ESet(memory)) {
-        VillagerMemoryEntry_Text3EToLabel(memory, text);
+    if (memory != NULL && PlayerId_IsSet((DesignCreator *) player) && VillagerMemoryEntry_GreetingSet(memory)) {
+        VillagerMemoryEntry_GreetingToLabel(memory, text);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_0208012c, VillagerMemory_GetText3E)
+CLEAN_AS(func_0208012c, VillagerMemory_GetGreeting)
 
 /* func_0208016c: the text at 0x2a of the villager's memory of the player set from `length`
  * characters, when it knows the player. */

@@ -216,14 +216,14 @@ static void villager_talk_name_next_villager(VillagerTalk *talk)
     }
 }
 
-/* func_0201cfe4 (the scene's slot 0x14): unless an event handler takes the event
+/* func_0201cfe4 (the scene's slot 0x14, not VillagerTalk_Event14): unless an event handler takes the event
  * (VillagerTalk_RunEvent), the sound at 0x15a is played and cleared, and the member at 0xc0 is
  * run (on the message data_021f43f8) or the member at 0xc8 run once (on data_021f43e8). On the
  * message data_021f43e8, whatever the handler did, the villager then chooses its impression of
  * the player from its memory (sent to the session for the memory's place when that is not -1)
  * and notes the visitor, and the partner villager (the word at 0x644) does the same with its
  * memory. The message is the one the talk had on entry. */
-void VillagerTalk_OnEvent14(VillagerTalk *talk, int event)
+void VillagerTalk_OnSlot14(VillagerTalk *talk, int event)
 {
     u8 message = villager_talk_talk(talk)[VILLAGER_TALK_TALK_MESSAGE];
 
@@ -265,11 +265,11 @@ void VillagerTalk_OnEvent14(VillagerTalk *talk, int event)
         }
     }
 }
-CLEAN_AS(func_0201cfe4, VillagerTalk_OnEvent14)
+CLEAN_AS(func_0201cfe4, VillagerTalk_OnSlot14)
 
 /* func_0201d140 (the scene's slot 0x10): unless an event handler takes the event, the member at
  * 0xb8 is run once with `arg`. */
-void VillagerTalk_OnEvent10(VillagerTalk *talk, void *arg)
+void VillagerTalk_OnSlot10(VillagerTalk *talk, void *arg)
 {
     if (VillagerTalk_RunEvent(talk, (unsigned int) (uintptr_t) arg) == 0) {
         if (talk->on_event_10.function != 0) {
@@ -278,7 +278,7 @@ void VillagerTalk_OnEvent10(VillagerTalk *talk, void *arg)
         }
     }
 }
-CLEAN_AS(func_0201d140, VillagerTalk_OnEvent10)
+CLEAN_AS(func_0201d140, VillagerTalk_OnSlot10)
 
 /* func_0201d198: the handler of `event` run, its answer given; 0 for an event without one.
  * The handlers are a table filled the first time (bit 0 of the guard says it was): 1, 7 and
@@ -837,8 +837,8 @@ void VillagerTalk_PlayMusic(void)
 }
 CLEAN_AS(func_0201e1f4, VillagerTalk_PlayMusic)
 
-/* func_0201e21c (a walk step): once the villager stands (motion kind 0, done), an effect at a
- * point 0x2000 above it, the line of the table at data_021c222c said, the next line asked for
+/* func_0201e21c (a walk step): once the villager stands (motion kind 0, done), the camera focused on
+ * a point 0x2000 above it (CameraControl_FocusOn), the line of the table at data_021c222c said, the next line asked for
  * and the walk over. */
 void VillagerTalk_WalkSay(VillagerTalk *talk)
 {

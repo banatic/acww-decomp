@@ -4,15 +4,15 @@
  * Besides what villager_memories.h lists, a memory holds:
  *
  *   0x70  a word marking which of 32 numbers have been drawn (VillagerMemoryEntry_DrawUnused)
- *   0x74  8 bytes copied from data_021f3b68 (type 12's values, packed) when it is updated
+ *   0x74  8 bytes: the town tune, packed (copied from data_021f3b68) when it is updated
  *
  * and these bits of its flags (0x7c; villager_memory_bits.h has bits 5 and 11-14):
  *
  *   bit 0     a letter of the player is held (villager_mail.h)
  *   bit 1     the text at 0x2a is set
- *   bit 2     the 8 bytes at 0x74 are set
- *   bit 3     the text at 0x3e is set
- *   bit 4     tested and set by func_0202b800
+ *   bit 2     the town tune at 0x74 is set
+ *   bit 3     the greeting at 0x3e is set
+ *   bit 4     the villager gave its picture (VillagerTalkApproach_Picture)
  *   bit 6     tested and set by the scenes of func_0201e898 and others
  *   bit 7     set by overlay 4
  *
@@ -33,9 +33,9 @@
 
 #define VILLAGER_MEMORY_LETTER_HELD 0x0001
 #define VILLAGER_MEMORY_TEXT_2A_SET 0x0002
-#define VILLAGER_MEMORY_VALUES_SET 0x0004
-#define VILLAGER_MEMORY_TEXT_3E_SET 0x0008
-#define VILLAGER_MEMORY_BIT_4 0x0010
+#define VILLAGER_MEMORY_TOWN_TUNE_SET 0x0004
+#define VILLAGER_MEMORY_GREETING_SET 0x0008
+#define VILLAGER_MEMORY_PICTURE_GIVEN 0x0010
 #define VILLAGER_MEMORY_BIT_6 0x0040
 #define VILLAGER_MEMORY_BIT_7 0x0080
 #define VILLAGER_MEMORY_DAYS_SHIFT 8
@@ -51,19 +51,19 @@ void VillagerMemoryEntry_SetBit7(VillagerMemory *memory);
 int VillagerMemoryEntry_Bit6(VillagerMemory *memory);
 void VillagerMemoryEntry_ClearBit6(VillagerMemory *memory);
 void VillagerMemoryEntry_SetBit6(VillagerMemory *memory);
-int VillagerMemoryEntry_Bit4(VillagerMemory *memory);
-void VillagerMemoryEntry_SetBit4(VillagerMemory *memory);
+int VillagerMemoryEntry_PictureGiven(VillagerMemory *memory);
+void VillagerMemoryEntry_SetPictureGiven(VillagerMemory *memory);
 int VillagerMemoryEntry_DrawUnused(VillagerMemory *memory);
 void VillagerMemoryEntry_SetImpression(VillagerMemory *memory, u8 impression);
 u8 VillagerMemoryEntry_Impression(VillagerMemory *memory);
-void VillagerMemoryEntry_SetValues(VillagerMemory *memory, const void *values);
-int VillagerMemoryEntry_ValuesSet(VillagerMemory *memory);
+void VillagerMemoryEntry_SetTownTune(VillagerMemory *memory, const void *values);
+int VillagerMemoryEntry_TownTuneSet(VillagerMemory *memory);
 int VillagerMemoryEntry_Item(VillagerMemory *memory);
 void VillagerMemoryEntry_SetItem(VillagerMemory *memory, const u16 *item);
-void VillagerMemoryEntry_SetText3E(VillagerMemory *memory, const u16 *text, int length);
-void VillagerMemoryEntry_Text3EToWide(VillagerMemory *memory, void *wide);
-void VillagerMemoryEntry_Text3EToLabel(VillagerMemory *memory, void *label);
-int VillagerMemoryEntry_Text3ESet(VillagerMemory *memory);
+void VillagerMemoryEntry_SetGreeting(VillagerMemory *memory, const u16 *text, int length);
+void VillagerMemoryEntry_GreetingToWide(VillagerMemory *memory, void *wide);
+void VillagerMemoryEntry_GreetingToLabel(VillagerMemory *memory, void *label);
+int VillagerMemoryEntry_GreetingSet(VillagerMemory *memory);
 void VillagerMemoryEntry_SetText2A(VillagerMemory *memory, const u16 *text, int length);
 void VillagerMemoryEntry_Text2AToWide(VillagerMemory *memory, void *wide);
 void *VillagerMemoryEntry_Text2AToLabel(VillagerMemory *memory, void *label);

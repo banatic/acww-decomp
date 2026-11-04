@@ -22,9 +22,9 @@
 #include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h), and a byte that picks the
- * catchphrase's message. */
+ * catchphrase's message (whether the villager asks for a greeting, drawn at init). */
 #define VILLAGER_TALK_NICKNAME_RECORD 0x830
-#define VILLAGER_TALK_NICKNAME_HABIT_BYTE 0x824
+#define VILLAGER_TALK_NICKNAME_ASKS_GREETING 0x824
 
 /* The nickname's length in characters, and the text screen it is typed on. */
 #define VILLAGER_TALK_NICKNAME_CHARS 6
@@ -336,7 +336,7 @@ void VillagerTalkNickname_LineHabit(VillagerTalk *talk, VillagerTalkLine *out)
     int personality = nickname_personality(talk);
     Personality_FormatResourceName(talk->text, VILLAGER_TALK_TEXT_SIZE, (const char *) (uintptr_t) data_020c8b18.texts,
                                    personality);
-    talk->message = talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] == 0 ? 2 : 3;
+    talk->message = talk->villager[VILLAGER_TALK_NICKNAME_ASKS_GREETING] == 0 ? 2 : 3;
     nickname_name(talk, out);
 }
 CLEAN_AS(func_0202abf4, VillagerTalkNickname_LineHabit)
@@ -348,8 +348,8 @@ CLEAN_AS(func_0202abf4, VillagerTalkNickname_LineHabit)
 
 #define VILLAGER_TALK_NICKNAME_HABIT_CHARS 4
 #define VILLAGER_TALK_NICKNAME_HABIT_MODE 0x15
-#define VILLAGER_TALK_NICKNAME_TEXT3E_CHARS 10
-#define VILLAGER_TALK_NICKNAME_TEXT3E_MODE 0x16
+#define VILLAGER_TALK_NICKNAME_GREETING_CHARS 10
+#define VILLAGER_TALK_NICKNAME_GREETING_MODE 0x16
 
 /* Tables of three member pointers for 0xb0 to 0xc0, which the choices also run. */
 extern const MemberPointer data_021c2734[3];
@@ -386,12 +386,13 @@ static void nickname_offer_ranges(VillagerTalk *talk, int first, int first_last,
 void VillagerTalkNickname_LineHabitFlip(VillagerTalk *talk, VillagerTalkLine *out)
 {
     int personality = nickname_personality(talk);
-    int group = talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] & 1;
+    int group = talk->villager[VILLAGER_TALK_NICKNAME_ASKS_GREETING] & 1;
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality,
                                (int) data_020c8b18.texts, 5, group, data_020c8b18.count);
     talk->message += 7;
     nickname_name(talk, out);
-    talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] = (u8) ((talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] + 1) & 1);
+    talk->villager[VILLAGER_TALK_NICKNAME_ASKS_GREETING] =
+        (u8) ((talk->villager[VILLAGER_TALK_NICKNAME_ASKS_GREETING] + 1) & 1);
 }
 CLEAN_AS(func_0202ac64, VillagerTalkNickname_LineHabitFlip)
 
@@ -410,7 +411,7 @@ void VillagerTalkNickname_LineHabit6(VillagerTalk *talk, VillagerTalkLine *out)
     int personality = nickname_personality(talk);
     Personality_FormatResourceName(talk->text, VILLAGER_TALK_TEXT_SIZE, (const char *) (uintptr_t) data_020c8b18.texts,
                                    personality);
-    talk->message = talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] == 0 ? 6 : 11;
+    talk->message = talk->villager[VILLAGER_TALK_NICKNAME_ASKS_GREETING] == 0 ? 6 : 11;
     nickname_name(talk, out);
 }
 CLEAN_AS(func_0202ad58, VillagerTalkNickname_LineHabit6)
@@ -434,14 +435,14 @@ void VillagerTalkNickname_KeepHabit(VillagerTalk *talk)
     if (GroupParams_C4CIs1() != 0) {
         u8 *record = nickname_record(talk);
         VillagerTalkScene_SetLines(talk, data_021c274c);
-        if (talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] == 0) {
+        if (talk->villager[VILLAGER_TALK_NICKNAME_ASKS_GREETING] == 0) {
             VillagerCatchphrase_Set(record, GroupParams_Text(), VILLAGER_TALK_NICKNAME_HABIT_CHARS);
         } else if (nickname_memory(talk) != NULL && VillagerMemoryEntry_InUse(nickname_memory(talk)) != 0) {
-            VillagerMemoryEntry_SetText3E(nickname_memory(talk), GroupParams_Text(), VILLAGER_TALK_NICKNAME_TEXT3E_CHARS);
+            VillagerMemoryEntry_SetGreeting(nickname_memory(talk), GroupParams_Text(), VILLAGER_TALK_NICKNAME_GREETING_CHARS);
         } else {
             const u16 *chars = GroupParams_Text();
             const DesignCreator *player = PlayerRecord_Player(PlayerRecords_Current());
-            VillagerMemory_SetText3E(record, chars, VILLAGER_TALK_NICKNAME_TEXT3E_CHARS, player);
+            VillagerMemory_SetGreeting(record, chars, VILLAGER_TALK_NICKNAME_GREETING_CHARS, player);
         }
     }
     VillagerTalkLine line = nickname_set_line(talk);
@@ -457,12 +458,12 @@ void VillagerTalkNickname_AskHabitText(VillagerTalk *talk, int unused)
 {
     (void) unused;
     MI_CpuFill8(data_021c1e84, 0, VILLAGER_TALK_NICKNAME_TEXT_BYTES);
-    if (talk->villager[VILLAGER_TALK_NICKNAME_HABIT_BYTE] == 0) {
+    if (talk->villager[VILLAGER_TALK_NICKNAME_ASKS_GREETING] == 0) {
         SceneCommand_SetScreenText(&talk->scene, VILLAGER_TALK_NICKNAME_HABIT_MODE, (u32) (uintptr_t) data_021c1e84,
                                    VILLAGER_TALK_NICKNAME_HABIT_CHARS, 0);
     } else {
-        SceneCommand_SetScreenText(&talk->scene, VILLAGER_TALK_NICKNAME_TEXT3E_MODE, (u32) (uintptr_t) data_021c1e84,
-                                   VILLAGER_TALK_NICKNAME_TEXT3E_CHARS, 0);
+        SceneCommand_SetScreenText(&talk->scene, VILLAGER_TALK_NICKNAME_GREETING_MODE, (u32) (uintptr_t) data_021c1e84,
+                                   VILLAGER_TALK_NICKNAME_GREETING_CHARS, 0);
     }
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_MODE_TEXT);
     VillagerTalkScene_SetCommandEnd(talk, data_020d9260);

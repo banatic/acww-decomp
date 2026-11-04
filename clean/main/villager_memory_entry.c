@@ -15,8 +15,8 @@
 
 /* Where the parts villager_memories.h leaves unnamed are. */
 #define VILLAGER_MEMORY_DRAWN 0x70
-#define VILLAGER_MEMORY_VALUES 0x74
-#define VILLAGER_MEMORY_VALUES_SIZE 8
+#define VILLAGER_MEMORY_TOWN_TUNE 0x74
+#define VILLAGER_MEMORY_TOWN_TUNE_SIZE 8
 /* How many numbers VillagerMemoryEntry_DrawUnused draws from. */
 #define VILLAGER_MEMORY_DRAW_COUNT 32
 
@@ -101,19 +101,19 @@ void VillagerMemoryEntry_SetBit6(VillagerMemory *memory)
 }
 CLEAN_AS(func_020819e0, VillagerMemoryEntry_SetBit6)
 
-/* func_020819f0 */
-int VillagerMemoryEntry_Bit4(VillagerMemory *memory)
+/* func_020819f0: whether the villager gave the player its picture. */
+int VillagerMemoryEntry_PictureGiven(VillagerMemory *memory)
 {
-    return has_flag(memory, VILLAGER_MEMORY_BIT_4);
+    return has_flag(memory, VILLAGER_MEMORY_PICTURE_GIVEN);
 }
-CLEAN_AS(func_020819f0, VillagerMemoryEntry_Bit4)
+CLEAN_AS(func_020819f0, VillagerMemoryEntry_PictureGiven)
 
-/* func_02081a04 */
-void VillagerMemoryEntry_SetBit4(VillagerMemory *memory)
+/* func_02081a04: the villager gave the player its picture. */
+void VillagerMemoryEntry_SetPictureGiven(VillagerMemory *memory)
 {
-    set_flag(memory, VILLAGER_MEMORY_BIT_4);
+    set_flag(memory, VILLAGER_MEMORY_PICTURE_GIVEN);
 }
-CLEAN_AS(func_02081a04, VillagerMemoryEntry_SetBit4)
+CLEAN_AS(func_02081a04, VillagerMemoryEntry_SetPictureGiven)
 
 /* func_02081a14: one of the numbers 0-31 not drawn yet for this player, at random, marked as
  * drawn; once the last one is drawn all start over. A word with all 32 marked (which this never
@@ -163,20 +163,20 @@ u8 VillagerMemoryEntry_Impression(VillagerMemory *memory)
 }
 CLEAN_AS(func_02081a88, VillagerMemoryEntry_Impression)
 
-/* func_02081a90: the 8 bytes at 0x74 copied from `values`, and marked set. */
-void VillagerMemoryEntry_SetValues(VillagerMemory *memory, const void *values)
+/* func_02081a90: the town tune at 0x74 copied from `values` (packed), and marked set. */
+void VillagerMemoryEntry_SetTownTune(VillagerMemory *memory, const void *values)
 {
-    set_flag(memory, VILLAGER_MEMORY_VALUES_SET);
-    memcpy(memory_at(memory, VILLAGER_MEMORY_VALUES), values, VILLAGER_MEMORY_VALUES_SIZE);
+    set_flag(memory, VILLAGER_MEMORY_TOWN_TUNE_SET);
+    memcpy(memory_at(memory, VILLAGER_MEMORY_TOWN_TUNE), values, VILLAGER_MEMORY_TOWN_TUNE_SIZE);
 }
-CLEAN_AS(func_02081a90, VillagerMemoryEntry_SetValues)
+CLEAN_AS(func_02081a90, VillagerMemoryEntry_SetTownTune)
 
 /* func_02081aa8 */
-int VillagerMemoryEntry_ValuesSet(VillagerMemory *memory)
+int VillagerMemoryEntry_TownTuneSet(VillagerMemory *memory)
 {
-    return has_flag(memory, VILLAGER_MEMORY_VALUES_SET);
+    return has_flag(memory, VILLAGER_MEMORY_TOWN_TUNE_SET);
 }
-CLEAN_AS(func_02081aa8, VillagerMemoryEntry_ValuesSet)
+CLEAN_AS(func_02081aa8, VillagerMemoryEntry_TownTuneSet)
 
 /* ---- The item */
 
@@ -196,47 +196,47 @@ CLEAN_AS(func_02081ac0, VillagerMemoryEntry_SetItem)
 
 /* ---- The two texts of 10 characters */
 
-/* func_02081ac8: the text at 0x3e emptied, then set from up to 10 characters, and marked set.
+/* func_02081ac8: the greeting at 0x3e emptied, then set from up to 10 characters, and marked set.
  * REQUIRES: length >= 0; the game copies (length * 2) bytes taken as unsigned otherwise. */
-void VillagerMemoryEntry_SetText3E(VillagerMemory *memory, const u16 *text, int length)
+void VillagerMemoryEntry_SetGreeting(VillagerMemory *memory, const u16 *text, int length)
 {
-    MI_CpuFill8(memory->text_3e, 0, sizeof(memory->text_3e));
+    MI_CpuFill8(memory->greeting, 0, sizeof(memory->greeting));
     if (length > VILLAGER_MEMORY_TEXT_LENGTH) {
         length = VILLAGER_MEMORY_TEXT_LENGTH;
     }
-    MI_CpuCopy8(text, memory->text_3e, (u32) length * 2);
-    set_flag(memory, VILLAGER_MEMORY_TEXT_3E_SET);
+    MI_CpuCopy8(text, memory->greeting, (u32) length * 2);
+    set_flag(memory, VILLAGER_MEMORY_GREETING_SET);
 }
-CLEAN_AS(func_02081ac8, VillagerMemoryEntry_SetText3E)
+CLEAN_AS(func_02081ac8, VillagerMemoryEntry_SetGreeting)
 
-/* func_02081b00: the wide text emptied, then set from the 10 characters at 0x3e. */
-void VillagerMemoryEntry_Text3EToWide(VillagerMemory *memory, void *wide)
+/* func_02081b00: the wide text emptied, then set from the greeting's 10 characters at 0x3e. */
+void VillagerMemoryEntry_GreetingToWide(VillagerMemory *memory, void *wide)
 {
     TextString_ClearWide((TextObject *) wide);
-    TextBase_SetWide(wide, memory->text_3e, VILLAGER_MEMORY_TEXT_LENGTH);
+    TextBase_SetWide(wide, memory->greeting, VILLAGER_MEMORY_TEXT_LENGTH);
 }
-CLEAN_AS(func_02081b00, VillagerMemoryEntry_Text3EToWide)
+CLEAN_AS(func_02081b00, VillagerMemoryEntry_GreetingToWide)
 
-/* func_02081b24: the text at 0x3e converted to 8 bits into the label. */
-void VillagerMemoryEntry_Text3EToLabel(VillagerMemory *memory, void *label)
+/* func_02081b24: the greeting at 0x3e converted to 8 bits into the label. */
+void VillagerMemoryEntry_GreetingToLabel(VillagerMemory *memory, void *label)
 {
     VillagerMemoryWide wide;
     VillagerMemoryWide_Construct(&wide);
-    VillagerMemoryEntry_Text3EToWide(memory, &wide);
+    VillagerMemoryEntry_GreetingToWide(memory, &wide);
     TextBase_WideToBytes(label, (WideTextBase *) &wide, 0, 0);
     VillagerMemoryWide_Destruct(&wide);
 }
-CLEAN_AS(func_02081b24, VillagerMemoryEntry_Text3EToLabel)
+CLEAN_AS(func_02081b24, VillagerMemoryEntry_GreetingToLabel)
 
 /* func_02081b54 */
-int VillagerMemoryEntry_Text3ESet(VillagerMemory *memory)
+int VillagerMemoryEntry_GreetingSet(VillagerMemory *memory)
 {
-    return has_flag(memory, VILLAGER_MEMORY_TEXT_3E_SET);
+    return has_flag(memory, VILLAGER_MEMORY_GREETING_SET);
 }
-CLEAN_AS(func_02081b54, VillagerMemoryEntry_Text3ESet)
+CLEAN_AS(func_02081b54, VillagerMemoryEntry_GreetingSet)
 
 /* func_02081b68: the text at 0x2a emptied, then set from up to 10 characters, and marked set.
- * REQUIRES: length >= 0, as for VillagerMemoryEntry_SetText3E. */
+ * REQUIRES: length >= 0, as for VillagerMemoryEntry_SetGreeting. */
 void VillagerMemoryEntry_SetText2A(VillagerMemory *memory, const u16 *text, int length)
 {
     MI_CpuFill8(memory->text_2a, 0, sizeof(memory->text_2a));
@@ -259,7 +259,7 @@ CLEAN_AS(func_02081ba0, VillagerMemoryEntry_Text2AToWide)
 /* func_02081bc4: the text at 0x2a converted to 8 bits into the label; gives what the wide
  * text's destructor gives (the wide text's address).
  * QUIRK: the wide text is set from the characters twice; it is a different class (vtable
- * data_020e194c) from the one VillagerMemoryEntry_Text3EToLabel uses, of the same size. */
+ * data_020e194c) from the one VillagerMemoryEntry_GreetingToLabel uses, of the same size. */
 void *VillagerMemoryEntry_Text2AToLabel(VillagerMemory *memory, void *label)
 {
     VillagerMemoryWide wide;
@@ -281,7 +281,7 @@ CLEAN_AS(func_02081c00, VillagerMemoryEntry_Text2ASet)
 /* ---- What the villager calls the player */
 
 /* func_02081c14: emptied, then set from up to 6 characters.
- * REQUIRES: length >= 0, as for VillagerMemoryEntry_SetText3E. */
+ * REQUIRES: length >= 0, as for VillagerMemoryEntry_SetGreeting. */
 void VillagerMemoryEntry_SetNicknameChars(VillagerMemory *memory, const u16 *chars, int length)
 {
     MI_CpuFill8(memory->nickname, 0, sizeof(memory->nickname));
@@ -468,7 +468,7 @@ void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *pla
     }
     TownName_Copy((TownName *) ((NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory)), (const TownName *) town);
     MI_CpuCopy8(now, (void *) (uintptr_t) VillagerMemoryEntry_When(memory), sizeof(DateTime));
-    VillagerMemoryEntry_SetValues(memory, data_021f3b68);
+    VillagerMemoryEntry_SetTownTune(memory, data_021f3b68);
 }
 CLEAN_AS(func_02081e14, VillagerMemoryEntry_Update)
 

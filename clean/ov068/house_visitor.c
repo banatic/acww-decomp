@@ -814,7 +814,7 @@ CLEAN_AS(func_ov068_02275d74, HouseVisitorTalk_OnAnswer)
 #define HOUSE_VISITOR_SOUND_BYE 0x5f
 
 /* func_ov068_02275d98 (the talk scene's slot 0x14, a message ended), by what it says:
- * - chatting: a town villager's (VillagerTalk_OnEvent14);
+ * - chatting: a town villager's (VillagerTalk_OnSlot14);
  * - its call from outside: state 2;
  * - "q10_back" or "q10_wait": it says goodbye: one of three messages of its "q_bye" file
  *   (written into data_ov068_022788f8) unless the talk has one already;
@@ -826,7 +826,7 @@ void HouseVisitorTalk_OnMessageEnded(HouseVisitorTalk *talk, int event)
     HouseVisitor *visitor = talk->visitor;
     u8 says = visitor->talk_kind;
     if (says == HOUSE_VISITOR_SAYS_CHAT) {
-        VillagerTalk_OnEvent14(&talk->base, event);
+        VillagerTalk_OnSlot14(&talk->base, event);
         return;
     }
     if (visitor == NULL) {
@@ -850,11 +850,11 @@ void HouseVisitorTalk_OnMessageEnded(HouseVisitorTalk *talk, int event)
 CLEAN_AS(func_ov068_02275d98, HouseVisitorTalk_OnMessageEnded)
 
 /* func_ov068_02275e54 (the talk scene's slot 0x10, a message begins): a town villager's
- * (VillagerTalk_OnEvent10) while it chats. */
+ * (VillagerTalk_OnSlot10) while it chats. */
 void HouseVisitorTalk_OnMessageBegun(HouseVisitorTalk *talk, int arg)
 {
     if (talk->visitor->talk_kind == HOUSE_VISITOR_SAYS_CHAT) {
-        VillagerTalk_OnEvent10(&talk->base, (void *) (intptr_t) arg);
+        VillagerTalk_OnSlot10(&talk->base, (void *) (intptr_t) arg);
     }
 }
 CLEAN_AS(func_ov068_02275e54, HouseVisitorTalk_OnMessageBegun)

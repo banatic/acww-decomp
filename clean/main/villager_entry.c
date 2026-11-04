@@ -24,9 +24,6 @@
 /* VillagerEntry_MarkItems marks three to five items, fewer when it has fewer. */
 #define VILLAGER_ENTRY_MARK_LEAST 3
 #define VILLAGER_ENTRY_MARK_MOST 5
-/* The bit of a player's record flags (func_02099020) under which the villagers leave the player
- * be. */
-#define VILLAGER_ENTRY_RECORD_FLAG 1
 /* The draws that scale how fond the villager is into byte 0x1e. */
 #define VILLAGER_ENTRY_RAISE_DRAW 3
 #define VILLAGER_ENTRY_SET_DRAW 10
@@ -104,14 +101,15 @@ void VillagerEntry_ClearByte1E(u8 *villager)
 CLEAN_AS(func_0207d16c, VillagerEntry_ClearByte1E)
 
 /* The player's record, the current player's for NULL, when it can be used here: it exists, its
- * player id is set and its flag 1 is clear; else NULL. */
+ * player id is set and it is no longer on Nook's part-time job (PLAYER_FLAG_NOOK_JOB clear);
+ * else NULL. */
 static void *usable_record(void *record)
 {
     if (record == NULL) {
         record = PlayerRecords_Current();
     }
     if (record == NULL || PlayerId_IsSet(PlayerRecord_Player(record)) == 0 ||
-        PlayerRecord_TestFlag(record, VILLAGER_ENTRY_RECORD_FLAG) != 0) {
+        PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         return NULL;
     }
     return record;
