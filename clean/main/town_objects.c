@@ -536,7 +536,7 @@ CLEAN_AS(func_020b2800, TownObjects_SetActorMode)
  * record's code with the tile's x and z packed below it (func_020b2a20); else 0. */
 int TownObjects_AtKeptTile(void)
 {
-    if (SceneQuery_CurrentIs0() == 0 || Block020b220c_Flag4b18() != 0) {
+    if (SceneQuery_CurrentIs0() == 0 || Block020b220c_ArrivedByTaxi() != 0) {
         return 0;
     }
     if (data_020e54a8 != 0) {
@@ -680,7 +680,7 @@ int TownObjects_RecordId(const SceneActorRecord *record)
 CLEAN_AS(func_020b2a50, TownObjects_RecordId)
 
 /* func_020b2a58: byte 3 (overlay 3 counts the objects where it is 1 and, while
- * Block020b220c_Flag4b18 or Block020b220c_Flag4b1c is set, leaves out those where it is 2). */
+ * Block020b220c_ArrivedByTaxi or Block020b220c_SentOutByClerk is set, leaves out those where it is 2). */
 int TownObjects_RecordByte3(const SceneActorRecord *record)
 {
     return record->bytes[1];

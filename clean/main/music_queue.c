@@ -132,7 +132,7 @@ void Obj021c526c_ApplyChange24c(Obj021c526c *self)
     if (SceneKinds_SoundKind(1) == 0) {
         apply = 0;
     }
-    if (SceneQuery_CurrentIs0() != 0 && Block020b220c_Flag4b18() != 0) {
+    if (SceneQuery_CurrentIs0() != 0 && Block020b220c_ArrivedByTaxi() != 0) {
         apply = 0;
     }
     if (self->unk_2f4 != 0) {

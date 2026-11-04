@@ -9,7 +9,7 @@
 #include "main/acre_tile.h"
 #include "main/actor.h"          /* Actor_Spawn */
 #include "main/actor_table.h"    /* Position, Position_Tile */
-#include "main/block_020b220c.h" /* Block020b220c_Flag4b18, Block020b220c_Flag4b1c */
+#include "main/block_020b220c.h" /* Block020b220c_ArrivedByTaxi, Block020b220c_SentOutByClerk */
 #include "main/building_shapes.h"
 #include "main/building_taker.h"
 #include "main/collision_map.h"
@@ -64,7 +64,7 @@ extern int data_021f42f4;
 #define OBJECT_ACTORS_SNOW_OBJECT 0x501e
 #define OBJECT_ACTORS_FRONT_OBJECT 0x501b
 /* A record's byte 3: 1 is counted in data_ov003_0223ce54; 2 is not placed while either of
- * Block020b220c's flags 0x4b18 and 0x4b1c is set. */
+ * Block020b220c's arrival flags is set. */
 #define OBJECT_ACTORS_MODE_COUNTED 1
 #define OBJECT_ACTORS_MODE_FLAGGED 2
 
@@ -345,7 +345,7 @@ CLEAN_AS(func_ov003_02220460, ObjectActors_Place)
  * too), acre by acre and in each acre tile by tile (layer 0), counting those whose record's
  * byte 3 is 1 in data_ov003_0223ce54 (cleared first). Before an acre of model 0x1a-0x1c is
  * searched, object 0x500b is put on its tile (7, 0). Not placed: an object whose byte 3 is 2
- * while Block020b220c's flag 0x4b18 or 0x4b1c is set, and object 0x501e (or a variant of it)
+ * while either of Block020b220c's arrival flags is set, and object 0x501e (or a variant of it)
  * outside the snow season. Then, when SceneQuery_CurrentIs0 says so, this system's session slot
  * is not taken, one of those flags is set and the town's map has object 0x5000, object 0x501b
  * is placed (not put down) one tile further along z than the tile AcreMap_FindBuilding5000Front
@@ -356,7 +356,7 @@ int ObjectActors_PlaceAll(ObjectActors *self)
     AcreMap *map = data_021c80bc;
     u32 acres_wide = (u32) map->acres_wide;
     u32 acres_high = (u32) map->acres_high;
-    int flagged = Block020b220c_Flag4b18() != 0 || Block020b220c_Flag4b1c() != 0;
+    int flagged = Block020b220c_ArrivedByTaxi() != 0 || Block020b220c_SentOutByClerk() != 0;
     int placed = 0;
 
     for (u32 acre_z = 0; acre_z < acres_high; acre_z++) {
@@ -400,7 +400,7 @@ int ObjectActors_PlaceAll(ObjectActors *self)
 
     if (SceneQuery_CurrentIs0() != 0 && Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) == 0) {
         unsigned int town = AcreMap_Town();
-        if (Block020b220c_Flag4b18() != 0 || Block020b220c_Flag4b1c() != 0) {
+        if (Block020b220c_ArrivedByTaxi() != 0 || Block020b220c_SentOutByClerk() != 0) {
             int front[4]; /* the point (x, y, z) and a word the ROM leaves room for */
             int x;
             int z;

@@ -617,8 +617,8 @@ What reading the Clean code found about the groups above; counts are of function
   the players' status bits of the shared work) in the runtime: a change to what every scene's
   music state is, and so to every scene's frames and memory, not a scene of its own.
 - Sequence4's second sequence (ov068/sequence4.h states 10-16, a player leaving the town) starts
-  only with Block020b220c_Flag4b1c, which nothing sets
-  (Block020b220c_SetFlag4b1c has no caller).
+  only with Block020b220c_SentOutByClerk, which nothing sets
+  (Block020b220c_SetSentOutByClerk has no caller).
 - Nook's store's upgrade (main/nook_store.h): with the level's cap spent and the upgrade planned
   for the seed's day (save store-due), the store stays closed until a new day's start makes it:
   its door's sign is read (scene store-closed). Planned for a day booted on (save
@@ -796,7 +796,7 @@ What reading the Clean code found about the groups above; counts are of function
   built read every function as ARM: the symbol table gives a Thumb function an even address, so
   its BL pairs were never decoded. Read by the symbols' Thumb flag, the graph has 18,118 call
   targets. The "has no caller" claims above came from reading sources and hold, but for
-  Block020b220c_SetFlag4b1c: PostClerk_UpdateLeave (ov054, Pelly's state 8) calls it. So the
+  Block020b220c_SetSentOutByClerk: PostClerk_UpdateLeave (ov054, Pelly's state 8) calls it. So the
   second sequence of ov068/sequence4.h (states 10-16) is the walk out of a player who moves to
   another console's town: Pelly's line 0x3c after activity job 0x1f of line 0x3b, which follows a
   linked game found (lines 0x38 and 0x39) in the local wireless session her moving topic starts
@@ -3113,7 +3113,7 @@ What reading the Clean code found about the groups above; counts are of function
   rank (the byte at 0x23e4 of the record) set; the seed's town-wide total is 0, so after
   town-hall's donation of 100 bells PostClerkTalk_TellDonationRank shows line 0x1f plus that byte.
 - savings-leave (0x1d): line 0x3c, at whose end she leaves (PostClerk_EnterLeave, _UpdateLeave,
-  Block020b220c_SetFlag4b1c) and the second sequence of ov068/sequence4.h walks the player out to
+  Block020b220c_SetSentOutByClerk) and the second sequence of ov068/sequence4.h walks the player out to
   the car (states 10-16, field actor state 0x88, SceneActor_IsInMode0); the title follows at
   about 10000. This runs 21 of the 22 functions of the unreachable group "a player moving to
   another town", whose reason ("line 0x3c follows job 0x1f of line 0x3b, only after a linked

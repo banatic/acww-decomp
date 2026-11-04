@@ -69,43 +69,43 @@ void Block020b220c_SetGoneKind(unsigned int kind)
 CLEAN_AS(func_020b22ac, Block020b220c_SetGoneKind)
 
 /* func_020b22b8 */
-u8 Block020b220c_Flag4b18(void)
+u8 Block020b220c_ArrivedByTaxi(void)
 {
     return data_021f4b18;
 }
-CLEAN_AS(func_020b22b8, Block020b220c_Flag4b18)
+CLEAN_AS(func_020b22b8, Block020b220c_ArrivedByTaxi)
 
 /* func_020b22c4 */
-void Block020b220c_ClearFlag4b18(void)
+void Block020b220c_ClearArrivedByTaxi(void)
 {
     data_021f4b18 = 0;
 }
-CLEAN_AS(func_020b22c4, Block020b220c_ClearFlag4b18)
+CLEAN_AS(func_020b22c4, Block020b220c_ClearArrivedByTaxi)
 
 /* func_020b22d0 */
-void Block020b220c_SetFlag4b18(void)
+void Block020b220c_SetArrivedByTaxi(void)
 {
     data_021f4b18 = 1;
 }
-CLEAN_AS(func_020b22d0, Block020b220c_SetFlag4b18)
+CLEAN_AS(func_020b22d0, Block020b220c_SetArrivedByTaxi)
 
 /* func_020b22dc */
-u8 Block020b220c_Flag4b1c(void)
+u8 Block020b220c_SentOutByClerk(void)
 {
     return data_021f4b1c;
 }
-CLEAN_AS(func_020b22dc, Block020b220c_Flag4b1c)
+CLEAN_AS(func_020b22dc, Block020b220c_SentOutByClerk)
 
 /* func_020b22e8 */
-void Block020b220c_ClearFlag4b1c(void)
+void Block020b220c_ClearSentOutByClerk(void)
 {
     data_021f4b1c = 0;
 }
-CLEAN_AS(func_020b22e8, Block020b220c_ClearFlag4b1c)
+CLEAN_AS(func_020b22e8, Block020b220c_ClearSentOutByClerk)
 
 /* func_020b22f4 */
-void Block020b220c_SetFlag4b1c(void)
+void Block020b220c_SetSentOutByClerk(void)
 {
     data_021f4b1c = 1;
 }
-CLEAN_AS(func_020b22f4, Block020b220c_SetFlag4b1c)
+CLEAN_AS(func_020b22f4, Block020b220c_SetSentOutByClerk)

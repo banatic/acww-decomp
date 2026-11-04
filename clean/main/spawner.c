@@ -336,12 +336,12 @@ CLEAN_AS(func_02083f84, Spawner_CheckEvents3e)
 
 /* func_02083fa4: the entry of the profile of the first of `count` events that is on now, when
  * its condition (if `conditions` and the event's one are set) holds; 0 while the last of the
- * bytes at data_021f3b85 is set, the player is in Nook's job (flag 1), either sound flag is set, this console
+ * bytes at data_021f3b85 is set, the player is in Nook's job (flag 1), either arrival flag is set, this console
  * is in the session, or the check mode forbids it. */
 int Spawner_CheckEvents(const SpawnerEvent *events, SpawnerCondition *const *conditions, int count, int check_mode)
 {
     int held = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
-    if (!mode_allows(check_mode) || held != 0 || Spawner_PlayerInNookJob() || Spawner_SoundFlagSet() || in_session()) {
+    if (!mode_allows(check_mode) || held != 0 || Spawner_PlayerInNookJob() || Spawner_ArrivalPending() || in_session()) {
         return 0;
     }
     int index = Spawner_FirstEventOn(events, count);
@@ -365,13 +365,13 @@ int Spawner_CheckD020(void)
 CLEAN_AS(func_0208404c, Spawner_CheckD020)
 
 /* func_02084058: the entry of code 0xd020 when none of the events 0x3b-0x44 is on now and
- * func_020881c4 accepts data_021f3278; 0 while the player is in Nook's job (flag 1), either sound flag is
+ * func_020881c4 accepts data_021f3278; 0 while the player is in Nook's job (flag 1), either arrival flag is
  * set, the check mode forbids it or this console is in the session. */
 int Spawner_CheckD020In(int check_mode)
 {
     DateTime now = {0};
     DateTime_Now(&now);
-    if (Spawner_PlayerInNookJob() || Spawner_SoundFlagSet() || !mode_allows(check_mode) || in_session()) {
+    if (Spawner_PlayerInNookJob() || Spawner_ArrivalPending() || !mode_allows(check_mode) || in_session()) {
         return 0;
     }
     for (u32 event = EVENT_D020_FIRST; event <= EVENT_D020_LAST; event++) {
@@ -405,11 +405,11 @@ void Spawner_CheckD023(void)
 CLEAN_AS(func_0208417c, Spawner_CheckD023)
 
 /* func_02084188: the entry of code 0xd023 while func_02088394 holds and event 0x3d is off;
- * 0 while the player is in Nook's job (flag 1), either sound flag is set, the check mode forbids it or this
+ * 0 while the player is in Nook's job (flag 1), either arrival flag is set, the check mode forbids it or this
  * console is in the session. */
 int Spawner_CheckD023In(int check_mode)
 {
-    if (PairedTown_CurrentFlaggedInLastWeek() == 0 || Spawner_PlayerInNookJob() || Spawner_SoundFlagSet() ||
+    if (PairedTown_CurrentFlaggedInLastWeek() == 0 || Spawner_PlayerInNookJob() || Spawner_ArrivalPending() ||
         !mode_allows(check_mode) || in_session() || Spawner_EventOn(EVENT_3D, NULL) != 0) {
         return 0;
     }
@@ -460,10 +460,10 @@ CLEAN_AS(func_020842ac, Spawner_CheckD022)
  *   event 0x3d is off, or
  *   func_02087f30 accepts part 0x0c of the object at data_021d27ac and the scene is 0x0b with
  *   the session not linked, or the scene is 0x0c;
- * 0 while the player is in Nook's job (flag 1) or either sound flag is set. */
+ * 0 while the player is in Nook's job (flag 1) or either arrival flag is set. */
 int Spawner_CheckD022In(int check_mode)
 {
-    if (Spawner_PlayerInNookJob() || Spawner_SoundFlagSet()) {
+    if (Spawner_PlayerInNookJob() || Spawner_ArrivalPending()) {
         return 0;
     }
     if (PairedTown_CurrentUnflaggedInLastWeek() != 0 && mode_allows(check_mode) && !in_session() &&
@@ -491,11 +491,11 @@ CLEAN_AS(func_0208437c, Spawner_CheckD002)
 
 /* func_02084388: the entry of code 0xd002 while event 0x3b is on; 0 while this console is in
  * the session, the check mode forbids it, the last of the bytes at data_021f3b85 is set, the
- * player has flag 1 or either sound flag is set. */
+ * player has flag 1 or either arrival flag is set. */
 int Spawner_CheckD002In(int check_mode)
 {
     int held = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
-    if (in_session() || !mode_allows(check_mode) || held != 0 || Spawner_PlayerInNookJob() || Spawner_SoundFlagSet() ||
+    if (in_session() || !mode_allows(check_mode) || held != 0 || Spawner_PlayerInNookJob() || Spawner_ArrivalPending() ||
         Spawner_EventOn(EVENT_3B, NULL) == 0) {
         return 0;
     }
@@ -542,7 +542,7 @@ CLEAN_AS(func_020844b8, Spawner_CheckD00D)
 int Spawner_CheckD00DIn(int check_mode)
 {
     int held = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
-    if (in_session() || !mode_allows(check_mode) || held != 0 || Spawner_PlayerInNookJob() || Spawner_SoundFlagSet() ||
+    if (in_session() || !mode_allows(check_mode) || held != 0 || Spawner_PlayerInNookJob() || Spawner_ArrivalPending() ||
         Spawner_EventOn(EVENT_3C, NULL) == 0) {
         return 0;
     }
@@ -644,7 +644,7 @@ CLEAN_AS(func_020846c0, Spawner_CheckEvents06a4)
 /* func_020846cc: when this console is not in the session,
  *   profile 0x56 while Spawner_PlayerBlock0Ready, else
  *   the profile of the first of the eight events of data_020d06a4 that is on now (looked for
- *   unless either sound flag is set) while the event of data_020d0664 it needs is going on
+ *   unless either arrival flag is set) while the event of data_020d0664 it needs is going on
  *   (0x13 needs none),
  * each only when the check mode allows it; else, or when Spawner_Profile56Allowed fails, the
  * entry of code 0xd025 in scene 9. In the session only the last one: code 0xd025 in scene 9. */
@@ -658,7 +658,7 @@ int Spawner_CheckEvents06a4In(int check_mode)
         return allowed ? profile_result(&data_020e1b88) : 0;
     }
     int index = -1;
-    if (!Spawner_SoundFlagSet()) {
+    if (!Spawner_ArrivalPending()) {
         index = Spawner_FirstEventOn(data_020d06a4, 8);
     }
     if (index != -1) {
@@ -678,7 +678,7 @@ int Spawner_CheckEvents06a4In(int check_mode)
 CLEAN_AS(func_020846cc, Spawner_CheckEvents06a4In)
 
 /* func_020847e4: whether the current player's villager part has a block 0 whose object is in
- * use at step band 1, and neither sound flag is set. */
+ * use at step band 1, and neither arrival flag is set. */
 int Spawner_PlayerBlock0Ready(void)
 {
     u8 *record = PlayerRecords_Current();
@@ -687,7 +687,7 @@ int Spawner_PlayerBlock0Ready(void)
         block = VillagerPart_Block((VillagerPart *) PlayerRecord_VillagerPart(record), 0);
     }
     if (block == NULL || ItemObject_IsInUse((ItemObject *) VillagerPartBlock_Object(block)) == 0 ||
-        ItemObject_StepBand((ItemObject *) VillagerPartBlock_Object(block)) != 1 || Spawner_SoundFlagSet()) {
+        ItemObject_StepBand((ItemObject *) VillagerPartBlock_Object(block)) != 1 || Spawner_ArrivalPending()) {
         return 0;
     }
     return 1;
@@ -714,11 +714,11 @@ int Spawner_CheckProfile56In(int check_mode)
 CLEAN_AS(func_02084840, Spawner_CheckProfile56In)
 
 /* func_02084890: whether this console is not in the session, flag 8 of the object at
- * data_021d27ac is set, neither sound flag is set and the player lacks flag 1. */
+ * data_021d27ac is set, neither arrival flag is set and the player lacks flag 1. */
 int Spawner_Profile56Allowed(void)
 {
     return !in_session() && Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), OBJECT_FLAG_GOLDEN_TOOL_DUE) != 0 &&
-           !Spawner_SoundFlagSet() && !Spawner_PlayerInNookJob();
+           !Spawner_ArrivalPending() && !Spawner_PlayerInNookJob();
 }
 CLEAN_AS(func_02084890, Spawner_Profile56Allowed)
 
@@ -750,12 +750,12 @@ int Spawner_PlaceBelowBuilding(Spawner *self, Vec3 *position, u16 *angle)
 CLEAN_AS(func_020848d0, Spawner_PlaceBelowBuilding)
 
 /* func_0208496c (check 2, priority 4): the entry of code 0xd019 in scene 0 while the player
- * has flag 0x23 and the scene byte at data_020e54b0 is 1-5 or 6; 0 while either sound flag
+ * has flag 0x23 and the scene byte at data_020e54b0 is 1-5 or 6; 0 while either arrival flag
  * is set or this console is in the session. */
 int Spawner_CheckD019(void)
 {
     u8 *record = PlayerRecords_Current();
-    if (SceneQuery_Current() != SCENE_0 || Spawner_SoundFlagSet() || in_session() || record == NULL ||
+    if (SceneQuery_Current() != SCENE_0 || Spawner_ArrivalPending() || in_session() || record == NULL ||
         PlayerRecord_TestFlag(record, PLAYER_FLAG_23) == 0) {
         return 0;
     }
@@ -804,11 +804,11 @@ CLEAN_AS(func_02084a78, Spawner_CheckD011)
 
 /* func_02084ad0: whether either of the flags at data_021f4b18 and data_021f4b1c (the ones the
  * scenes' sound classes test) is set. */
-int Spawner_SoundFlagSet(void)
+int Spawner_ArrivalPending(void)
 {
-    return Block020b220c_Flag4b18() != 0 || Block020b220c_Flag4b1c() != 0;
+    return Block020b220c_ArrivedByTaxi() != 0 || Block020b220c_SentOutByClerk() != 0;
 }
-CLEAN_AS(func_02084ad0, Spawner_SoundFlagSet)
+CLEAN_AS(func_02084ad0, Spawner_ArrivalPending)
 
 /* func_02084af0: whether there is a current player and its record has flag 1. */
 int Spawner_PlayerInNookJob(void)
@@ -1217,7 +1217,7 @@ int Spawner_Create(Spawner *self)
     }
 
     if (outdoors()) {
-        if (Spawner_SoundFlagSet() == 0) {
+        if (Spawner_ArrivalPending() == 0) {
             if (!in_session()) {
                 const void *player = NULL;
                 if (PlayerRecords_Current() != NULL) {

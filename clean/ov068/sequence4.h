@@ -4,7 +4,7 @@
  * actor, ObjectActors_FindByCode), by seventeen states, each an entry (whose answer says whether
  * the state is taken) and an update run each frame (data_ov068_02278774), changed by its member
  * func_ov068_02272a7c. Its slot 0x70 picks the first state by two flags of main
- * (Block020b220c_Flag4b18: state 1; Block020b220c_Flag4b1c: state 10; else state 0).
+ * (Block020b220c_ArrivedByTaxi: state 1; Block020b220c_SentOutByClerk: state 10; else state 0).
  *
  * Its animations are those of its vtable's slots 0x64 and 0x68 and of func_ov068_02272dc8
  * (overlay 9's), each started once (AnimatedModel_Start) and stepped each frame until done.

@@ -601,12 +601,12 @@ void Music27c_OnSceneStart(Music27c *self)
     }
 
     record = PlayerRecords_Current();
-    if (Block020b220c_Flag4b18() != 0) {
+    if (Block020b220c_ArrivedByTaxi() != 0) {
         Music_AddValue(3, 0, 5);
         Music27c_Start(self, 4, 0x45, 1);
         return;
     }
-    if (Block020b220c_Flag4b1c() != 0) {
+    if (Block020b220c_SentOutByClerk() != 0) {
         Music27c_Start(self, 0x0d, 0x4a, 0);
         return;
     }

@@ -197,7 +197,7 @@ int TaxiDriver_EnterLeave(void)
 CLEAN_AS(func_ov051_022610d0, TaxiDriver_EnterLeave)
 
 /* func_ov051_022610d4 (state 3's update): once the screen is closed: it is shown at once
- * (keeping the music) and flag 0x4b18 of the block 0x020b220c set; starting as player 0 or a
+ * (keeping the music) and the arrived-by-taxi flag set (Block020b220c_SetArrivedByTaxi); starting as player 0 or a
  * new town, the clock's date and time are kept (Global021cfc98_CopyIn); the state block is
  * started in mode 0 (a new town), 6 (as player 0) or 1 (a new player) and finished, with any
  * other start not at all; its flag 0x12 is cleared; main's entry record enters scene 0 in
@@ -210,7 +210,7 @@ int TaxiDriver_UpdateArrive(TaxiDriver *driver)
         return 1;
     }
     ScreenTransition_Open(SCREEN_TRANSITION_NONE, 0, 1);
-    Block020b220c_SetFlag4b18();
+    Block020b220c_SetArrivedByTaxi();
 
     if (StartKind_IsPlayer0() || StartKind_IsNewTown()) {
         DateTime now = {0};

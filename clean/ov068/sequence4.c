@@ -871,8 +871,8 @@ int Sequence4_Release(Sequence4 *actor)
     }
     if (actor->flag_2de != 0) {
         actor->flag_2de = 0;
-        Block020b220c_ClearFlag4b18();
-        Block020b220c_ClearFlag4b1c();
+        Block020b220c_ClearArrivedByTaxi();
+        Block020b220c_ClearSentOutByClerk();
     }
     return 1;
 }
@@ -898,19 +898,20 @@ int Sequence4_Update(Sequence4 *actor)
 CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272e2cEv, Sequence4_Update)
 
 /* func_ov068_02272e50 (vtable slot 0x70, setting it up): the effect point starts at its
- * position. With main's flag 4b18 a sequence starts at state 1; with flag 4b1c, at state 10,
+ * position. With main's arrived-by-taxi flag a sequence starts at state 1; with the sent-out-by-clerk
+ * flag, at state 10,
  * the current player's hand emptied first; both reset the marked place. Otherwise state 0.
  * Always 1. */
 int Sequence4_Setup(Sequence4 *actor)
 {
     u8 *record = PlayerRecords_Current();
     actor->effect_point = actor->base.position;
-    if (Block020b220c_Flag4b18() != 0) {
+    if (Block020b220c_ArrivedByTaxi() != 0) {
         actor->flag_2de = 1;
         (void) SceneTables_EntryRecord();
         ScenePlace_ResetMarked();
         set_state(actor, 1);
-    } else if (Block020b220c_Flag4b1c() != 0) {
+    } else if (Block020b220c_SentOutByClerk() != 0) {
         actor->flag_2de = 1;
         if (record != NULL) {
             u16 item = ITEM_CODE_NONE;

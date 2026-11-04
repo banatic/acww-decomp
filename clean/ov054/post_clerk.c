@@ -483,7 +483,7 @@ int PostClerk_EnterAwait(void)
 CLEAN_AS(func_ov054_022620c8, PostClerk_EnterAwait)
 
 /* func_ov054_022620cc (state 8's update): once talk 0 is gone (TALK_OBJECT_GONE), the flag
- * 0x021f4b1c is set and, with the town's map and its building 0x5000 found, main's entry record
+ * 0x021f4b1c (Block020b220c_SetSentOutByClerk) is set and, with the town's map and its building 0x5000 found, main's entry record
  * is set to the town at the point before the building one tile on; then she has talked
  * (state 5). 1. */
 int PostClerk_UpdateLeave(PostClerk *clerk)
@@ -491,7 +491,7 @@ int PostClerk_UpdateLeave(PostClerk *clerk)
     if (TalkObject_Get(0)->state != TALK_OBJECT_GONE) {
         return 1;
     }
-    Block020b220c_SetFlag4b1c();
+    Block020b220c_SetSentOutByClerk();
     unsigned int town = AcreMap_Town();
     if (town != 0) {
         Vec3 point;

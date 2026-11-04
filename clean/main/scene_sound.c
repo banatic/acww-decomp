@@ -143,7 +143,7 @@ static SceneSound *make_default(void)
     if (data_020e54a8 != 0) {
         return make(0x20, func_020f3be8);
     }
-    if (Block020b220c_Flag4b18() != 0 || Block020b220c_Flag4b1c() != 0) {
+    if (Block020b220c_ArrivedByTaxi() != 0 || Block020b220c_SentOutByClerk() != 0) {
         return make(8, func_020f3dc4);
     }
     if (SceneQuery_CurrentIs31() != 0) {

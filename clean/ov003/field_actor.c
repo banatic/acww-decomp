@@ -9539,7 +9539,7 @@ void FieldActor_EndState3B(FieldActor *actor)
 
     switch (actor->work.s3b.kind) {
         case 0:
-            if (!item_is_nothing(&item) && !Block020b220c_Flag4b1c() && !FieldActor_TestFlag(actor, 0x1d)) {
+            if (!item_is_nothing(&item) && !Block020b220c_SentOutByClerk() && !FieldActor_TestFlag(actor, 0x1d)) {
                 FieldActor_RequestState3D(actor, 2, 2, 0, 0, 0, 6, -1);
                 break;
             }
@@ -9560,7 +9560,7 @@ void FieldActor_EndState3B(FieldActor *actor)
             if (Session_IsLocalPlayer(session, actor->player)) {
                 Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF);
             }
-            if (!Block020b220c_Flag4b1c()) {
+            if (!Block020b220c_SentOutByClerk()) {
                 FieldActor_RequestState76(actor, 2, 0, 0, 6, -1);
                 break;
             }
