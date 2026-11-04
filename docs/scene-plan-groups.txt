@@ -861,8 +861,8 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/text_walker:TextCopier_Delete main/text_walker:TextCopier_Destruct
   main/touch_pick_shapes:TouchPick_Destruct main/touch_pick_shapes:TouchPick_DestructBase
   main/town_acre_count:TownAcreCount_DestroyAcres main/town_acre_count:TownAcreCount_DestroyTown
-  main/town_acre_count:TownAcreCount_DestroyWorst main/town_item_lists:TownItemLists_DestructListA
-  main/town_item_lists:TownItemLists_DestructListB main/town_layout:TownLayout_Destruct
+  main/town_acre_count:TownAcreCount_DestroyWorst main/town_item_lists:TownItemLists_DestructLostAndFound
+  main/town_item_lists:TownItemLists_DestructRecycleBin main/town_layout:TownLayout_Destruct
   main/town_layout:TownLayout_DestructBlock main/town_record:TownRecord_Destruct
   main/town_spot:TownSpot_Destruct main/town_start_day:TownStartDay_Destruct
   main/transition_mark:TransitionMark_Delete main/transition_mark:TransitionMark_Destruct

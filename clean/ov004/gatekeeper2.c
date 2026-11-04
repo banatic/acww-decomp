@@ -466,8 +466,8 @@ void Gatekeeper2Talk_OnAnswer(Gatekeeper2Talk *talk)
                     message = gk2_visitor_message(code);
                 }
             } else if (answer == 1) {
-                if (TownItemLists_AnyListA()) {
-                    SceneBase_PutValue(&talk->base, TownItemLists_CountListA(), 0, 2, 0, 0);
+                if (TownItemLists_AnyLostAndFound()) {
+                    SceneBase_PutValue(&talk->base, TownItemLists_CountLostAndFound(), 0, 2, 0, 0);
                     message = GATEKEEPER2_LINE_ITEMS;
                 } else {
                     message = GATEKEEPER2_LINE_NO_ITEMS;

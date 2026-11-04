@@ -32,7 +32,7 @@ void TownSpoil_All(TownDay *town)
     TownSpoil_Pockets();
     TownSpoil_Town((int) (uintptr_t) town);
     TownSpoil_Rooms((int) (uintptr_t) town);
-    TownSpoil_ListB();
+    TownSpoil_RecycleBin();
     for (int i = 0; i < TOWN_SPOIL_LIST_PLACES; i++) {
         if (TownSpoil_Spoils(data_021f3a68[i])) {
             data_021f3a68[i] = TownSpoil_Spoiled(data_021f3a68[i]);
@@ -42,7 +42,7 @@ void TownSpoil_All(TownDay *town)
 CLEAN_AS(func_02046c2c, TownSpoil_All)
 
 /* func_02046cac: the counted items of the town's item list B spoiled. */
-void TownSpoil_ListB(void)
+void TownSpoil_RecycleBin(void)
 {
     for (int i = 0; i < TOWN_SPOIL_LIST_PLACES; i++) {
         if (TownSpoil_Spoils(data_021f3a86[i])) {
@@ -50,7 +50,7 @@ void TownSpoil_ListB(void)
         }
     }
 }
-CLEAN_AS(func_02046cac, TownSpoil_ListB)
+CLEAN_AS(func_02046cac, TownSpoil_RecycleBin)
 
 /* func_02046d14: the counted items on the five rooms' maps spoiled. */
 void TownSpoil_Rooms(int unused)

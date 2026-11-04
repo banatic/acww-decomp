@@ -19,7 +19,7 @@
 #define TOWN_SPOIL_ROOMS 5
 
 void TownSpoil_All(TownDay *town);
-void TownSpoil_ListB(void);
+void TownSpoil_RecycleBin(void);
 void TownSpoil_Rooms(int unused);
 void TownSpoil_Town(int unused);
 void TownSpoil_Pockets(void);

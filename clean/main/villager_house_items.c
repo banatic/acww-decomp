@@ -355,14 +355,14 @@ int VillagerHouseItems_MaybeGiveUp(const u16 *item)
     if (MainRandom_Below(2) != 0) {
         return 1;
     }
-    return TownItemLists_AddListB(*item) != 0;
+    return TownItemLists_AddRecycleBin(*item) != 0;
 }
 CLEAN_AS(func_0207fb70, VillagerHouseItems_MaybeGiveUp)
 
 /* func_0207fb98: the item goes to the town's list; non-zero when it found room. */
 int VillagerHouseItems_GiveUp(const u16 *item)
 {
-    return TownItemLists_AddListB(*item) != 0;
+    return TownItemLists_AddRecycleBin(*item) != 0;
 }
 CLEAN_AS(func_0207fb98, VillagerHouseItems_GiveUp)
 

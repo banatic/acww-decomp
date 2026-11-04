@@ -79,7 +79,7 @@ int AcreTile_StampBuildingNoting(AcreMap *map, u16 *building, int x, int z, u8 t
         return 0;
     }
     if (ItemCode_IsKind1(&replaced) || ItemCode_HasVariant(&replaced)) {
-        TownItemLists_PushListA(replaced);
+        TownItemLists_PushLostAndFound(replaced);
     }
     return 1;
 }
@@ -259,7 +259,7 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
     if (tile != NULL) {
         u16 replaced = *tile;
         if (ItemCode_IsKind1(&replaced) || ItemCode_HasVariant(&replaced)) {
-            TownItemLists_PushListA(replaced);
+            TownItemLists_PushLostAndFound(replaced);
         }
     }
     if (acre_tile_is_building(*building)) {
@@ -282,7 +282,7 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
         if (other != NULL) {
             if (ItemCode_HasVariant(other) || ItemCode_IsKind1(other)) {
                 if (!Session_IsLinked(data_020ccf94)) {
-                    TownItemLists_PushListA(*other);
+                    TownItemLists_PushLostAndFound(*other);
                 }
             } else if (MapCode_IsSnowman(other)) {
                 Snowmen_Forget((SnowmenRecord *) (void *) data_021f3b56, (unsigned int) MapCode_SnowmanIndex(other));

@@ -282,7 +282,7 @@ void StateBlock_SetUpTown(StateBlock *block)
     EventWinner_Restart((EventWinner *) (void *) block->part_172fc);
     RoomScoreState_ResetJudgeDate((Date *) (void *) block->part_173c8);
     TownTune_Store((TownTunePacked *) (void *) block->part_173c0);
-    TownItemLists_StartListA((u16 *) (void *) block->part_172c0);
+    TownItemLists_StartLostAndFound((u16 *) (void *) block->part_172c0);
     CafeGuests_SetUp(&block->cafe_guests);
     ExchangeBlock_SetUp((ExchangeBlock *) (void *) block->part_11c70);
 }
@@ -549,8 +549,8 @@ void StateBlock_Init(StateBlock *block)
     SpaceshipParts_Clear(&block->part_0f52a);
     EventWinner_Reset((EventWinner *) (void *) block->part_172fc);
     MailPostOffice_Init((MailPostOffice *) block->post_office);
-    TownItemLists_ClearListA((u16 *) (void *) block->part_172c0);
-    TownItemLists_ClearListB((u16 *) (void *) block->part_172de);
+    TownItemLists_ClearLostAndFound((u16 *) (void *) block->part_172c0);
+    TownItemLists_ClearRecycleBin((u16 *) (void *) block->part_172de);
     Constellations_ResetStore((ConstellationStore *) block->constellations);
     BottleMail_InitState((BottleState *) block->bottle);
     WaitingLetter_Clear((WaitingLetter *) (void *) block->part_1704c);
@@ -594,8 +594,8 @@ StateBlock *StateBlock_Destruct(StateBlock *block)
     TurnipPrices_Destruct((TurnipPrices *) (void *) block->part_17364);
     LastSale_Destruct((LastSale *) (void *) block->part_17344);
     EventWinner_Destruct((EventWinner *) (void *) block->part_172fc);
-    TownItemLists_DestructListB(block->part_172de);
-    TownItemLists_DestructListA(block->part_172c0);
+    TownItemLists_DestructRecycleBin(block->part_172de);
+    TownItemLists_DestructLostAndFound(block->part_172c0);
     TownRecord_Destruct(block->part_17254);
     EventSchedule_Destruct((EventSchedule *) (void *) block->part_17218);
     NookStore_Destruct((NookStore *) block->nook_store);

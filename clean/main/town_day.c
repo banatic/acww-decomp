@@ -559,8 +559,8 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         NookStore_UpgradeIfDue();
         HouseRecord_AddRoachesForAbsence((HouseRecord *) (void *) data_021ebcd4, days);
         ItemForm_RevealForgeries();
-        TownItemLists_FillListA(data_021f3a68, days);
-        TownItemLists_EmptyListBOnDays(data_021f3a86, to, days);
+        TownItemLists_FillLostAndFound(data_021f3a68, days);
+        TownItemLists_EmptyRecycleBinOnDays(data_021f3a86, to, days);
         RoomScoreRoom house;
         RoomScore_InitRoom(&house);
         RoomScore_JudgeHouse(&house);

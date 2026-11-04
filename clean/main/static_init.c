@@ -1634,8 +1634,8 @@ void StaticInit_StateBlock(void)
     NookStore_Construct((NookStore *) block->nook_store);
     EventSchedule_ClearWeek((EventSchedule *) block->part_17218);
     TownRecord_Construct(block->part_17254);
-    TownItemLists_ConstructListA(block->part_172c0);
-    TownItemLists_ConstructListB(block->part_172de);
+    TownItemLists_ConstructLostAndFound(block->part_172c0);
+    TownItemLists_ConstructRecycleBin(block->part_172de);
     EventWinner_Construct((EventWinner *) block->part_172fc);
     LastSale_Construct((LastSale *) block->part_17344);
     TurnipPrices_Construct((TurnipPrices *) block->part_17364);

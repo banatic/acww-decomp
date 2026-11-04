@@ -496,7 +496,7 @@ int Snowman_KeepDisplacedItem(u16 *item)
         nothing = *item == ITEM_CODE_NONE;
     }
     if (!nothing && (ItemCode_IsKind1(item) || ItemCode_HasVariant(item))) {
-        TownItemLists_PushListA(*item);
+        TownItemLists_PushLostAndFound(*item);
         return 1;
     }
     return 0;

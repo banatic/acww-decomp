@@ -43,7 +43,7 @@
 
 /* 0 outdoors, 1 in a room. */
 extern u8 data_020e54a8;
-/* The town's list A of 15 items (TownItemLists, at 0x172c0 of the state block). */
+/* The town's lost and found, 15 items (TownItemLists, at 0x172c0 of the state block). */
 extern u16 data_021f3a68[TOWN_ITEM_LIST_PLACES];
 extern PlayerStorage data_021f2fa8[ITEM_FORM_STORAGES];
 
@@ -125,11 +125,11 @@ void ItemForm_RevealForgeries(void)
     }
 
     for (u32 place = 0; place < TOWN_ITEM_LIST_PLACES; place++) {
-        u16 item = (u16) TownItemLists_ListBItem(place);
+        u16 item = (u16) TownItemLists_RecycleBinItem(place);
         u16 replacement;
         ItemForm_RevealedForgery(&replacement, &item);
         if (!item_form_same(&item, &replacement)) {
-            TownItemLists_PutListB(place, replacement);
+            TownItemLists_PutRecycleBin(place, replacement);
         }
     }
 
