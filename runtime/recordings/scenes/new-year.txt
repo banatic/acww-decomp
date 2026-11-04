@@ -5,7 +5,7 @@
 # 4100).
 # Save: the seed town. South, west and north from 4400 (the player bumps into the house's
 # door, 4776), then south, west and north to the town hall, where the countdown's clock stands
-# (about 5200); the turtle (ov086/turtle6.h) stands in front of the hall: LEFT faces him and A
+# (about 5200); the turtle (ov086/turtle_countdown.h) stands in front of the hall: LEFT faces him and A
 # every 40 frames talks to him, twice (to about 6150).
 900 START -
 906 - -

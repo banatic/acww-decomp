@@ -1,6 +1,6 @@
 /* The talk scene of overlay 84's turtle: his lines, the items he hands out and the fortune
- * letter (turtle4_talk.h). */
-#include "turtle4_talk.h"
+ * letter (turtle_fireworks_talk.h). */
+#include "turtle_fireworks_talk.h"
 
 #include <stdint.h>
 
@@ -31,11 +31,11 @@
 #include "main/talk_object.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
-static_assert(offsetof(Turtle4Talk, owner) == 0xb0, "owner");
-static_assert(offsetof(Turtle4Talk, item_slot) == 0xb4, "item slot");
-static_assert(offsetof(Turtle4Talk, unk_b8) == 0xb8, "item code");
-static_assert(sizeof(Turtle4Line) == 8, "a line");
-static_assert(sizeof(Turtle4FortunePart) == 8, "a part of the fortune");
+static_assert(offsetof(TurtleFireworksTalk, owner) == 0xb0, "owner");
+static_assert(offsetof(TurtleFireworksTalk, item_slot) == 0xb4, "item slot");
+static_assert(offsetof(TurtleFireworksTalk, unk_b8) == 0xb8, "item code");
+static_assert(sizeof(TurtleFireworksLine) == 8, "a line");
+static_assert(sizeof(TurtleFireworksFortunePart) == 8, "a part of the fortune");
 static_assert(sizeof(MessageReceiver) == 0x20 && offsetof(MessageReceiver, message) == 0x1e, "the line shown");
 
 /* The talk scene's vtable. */
@@ -48,7 +48,7 @@ extern const char data_ov084_02279568[];
 extern const char data_ov084_02279578[];
 extern const u8 data_ov084_02279384[];
 extern const u8 data_ov084_02279380[];
-extern const Turtle4FortunePart data_ov084_022792fc[TURTLE4_FORTUNE_PARTS];
+extern const TurtleFireworksFortunePart data_ov084_022792fc[TURTLE_FIREWORKS_FORTUNE_PARTS];
 
 /* The items exchanged while the pockets hold the item 0x37e0. */
 #define T4T_ASKED_ITEM 0x37e0
@@ -92,17 +92,17 @@ extern const Turtle4FortunePart data_ov084_022792fc[TURTLE4_FORTUNE_PARTS];
 /* The talk scene's vtable slot its talks call first (SceneBase_Reset). */
 #define T4T_TALK_SLOT_08 0x08
 
-static u8 t4t_line_shown(const Turtle4Talk *talk)
+static u8 t4t_line_shown(const TurtleFireworksTalk *talk)
 {
     return ((const MessageReceiver *) (const void *) talk)->message;
 }
 
-static TalkObject *t4t_talk_object(Turtle4Talk *talk)
+static TalkObject *t4t_talk_object(TurtleFireworksTalk *talk)
 {
     return (TalkObject *) (void *) talk->base.talk;
 }
 
-static SceneCommandScene *t4t_scene(Turtle4Talk *talk)
+static SceneCommandScene *t4t_scene(TurtleFireworksTalk *talk)
 {
     return (SceneCommandScene *) (void *) talk;
 }
@@ -134,9 +134,9 @@ static void t4t_write_fortune(Letter *letter, u8 *record)
     MessagePart_Construct(&text);
     int fortune = (int) MainRandom_Below(T4T_FORTUNES);
     int message = fortune + T4T_FORTUNE_FIRST_MESSAGE;
-    for (int i = 0; i < TURTLE4_FORTUNE_PARTS; i++) {
+    for (int i = 0; i < TURTLE_FIREWORKS_FORTUNE_PARTS; i++) {
         u8 number = (u8) message;
-        const Turtle4FortunePart *part = &data_ov084_022792fc[i];
+        const TurtleFireworksFortunePart *part = &data_ov084_022792fc[i];
         MessageReader_LoadMessage(&text, &number, (const char *) (uintptr_t) part->name);
         MailText_SetPartText(part->part, &text);
         message = fortune * T4T_FORTUNE_VARIANTS + (int) MainRandom_Below(T4T_FORTUNE_VARIANTS) + i * T4T_FORTUNE_PART_STEP;
@@ -158,40 +158,40 @@ static void t4t_write_fortune(Letter *letter, u8 *record)
  * - else line 7 answered 0: with a free letter in the pockets the fortune letter is written
  *   into it, line 9; else line 0x0c.
  * The line, when one was picked, is shown. */
-void Turtle4Talk_OnAnswer(Turtle4Talk *talk)
+void TurtleFireworksTalk_OnAnswer(TurtleFireworksTalk *talk)
 {
     unsigned int answer = TalkAnswers_Picked((TalkAnswers *) (uintptr_t) (u32) SceneBase_TalkChoices(&talk->base));
-    int next = TURTLE4_NO_LINE;
+    int next = TURTLE_FIREWORKS_NO_LINE;
     int slot = talk->item_slot;
 
     if (slot >= 0) {
-        if (t4t_line_shown(talk) == TURTLE4_COMMON_LINE_ASK && answer == 0) {
+        if (t4t_line_shown(talk) == TURTLE_FIREWORKS_COMMON_LINE_ASK && answer == 0) {
             CurrentPockets_Empty(slot);
             u16 item = T4T_ASKED_ITEM;
             SceneCommand_RequestMotion14(t4t_scene(talk), &item, 0, T4T_MOTION_B, 0);
-            next = TURTLE4_COMMON_LINE_TAKEN;
+            next = TURTLE_FIREWORKS_COMMON_LINE_TAKEN;
         }
-        if (next != TURTLE4_NO_LINE) {
+        if (next != TURTLE_FIREWORKS_NO_LINE) {
             t4t_say(t4t_talk_object(talk), (u8) next, data_ov084_02279568);
         }
         return;
     }
 
-    if (t4t_line_shown(talk) == TURTLE4_LINE_OFFER_FORTUNE && answer == 0) {
-        next = TURTLE4_LINE_NO_LETTER;
+    if (t4t_line_shown(talk) == TURTLE_FIREWORKS_LINE_OFFER_FORTUNE && answer == 0) {
+        next = TURTLE_FIREWORKS_LINE_NO_LETTER;
         if (CurrentPockets_FreeLetterIndex() != -1) {
             Letter *letter = CurrentPockets_FreeLetter();
             if (letter != NULL) {
-                next = TURTLE4_LINE_FORTUNE;
+                next = TURTLE_FIREWORKS_LINE_FORTUNE;
                 t4t_write_fortune(letter, PlayerRecords_Current());
             }
         }
     }
-    if (next != TURTLE4_NO_LINE) {
+    if (next != TURTLE_FIREWORKS_NO_LINE) {
         t4t_say(t4t_talk_object(talk), (u8) next, data_ov084_02279558);
     }
 }
-CLEAN_AS(func_ov084_02278ab8, Turtle4Talk_OnAnswer)
+CLEAN_AS(func_ov084_02278ab8, TurtleFireworksTalk_OnAnswer)
 
 /* The item he hands out: the one of 0x137e and 0x137f the pockets lack (0x137f when they have
  * both, one of the two at random when they have neither). */
@@ -212,31 +212,31 @@ static u16 t4t_pick_gift(void)
  *   line 0x0b; with no free slot, its name only: line 5;
  * - line 9: the scene's motion 13 with the letters (item 0x1565), line 0x0a.
  * The line, when one was picked, is shown. */
-void Turtle4Talk_OnLineEnded(Turtle4Talk *talk)
+void TurtleFireworksTalk_OnLineEnded(TurtleFireworksTalk *talk)
 {
-    int next = TURTLE4_NO_LINE;
+    int next = TURTLE_FIREWORKS_NO_LINE;
 
     if (talk->item_slot >= 0) {
         u8 line = t4t_line_shown(talk);
-        if (line == TURTLE4_COMMON_LINE_DONE || line == TURTLE4_COMMON_LINE_GIVEN) {
-            talk->item_slot = TURTLE4_TALK_SLOT_DONE;
+        if (line == TURTLE_FIREWORKS_COMMON_LINE_DONE || line == TURTLE_FIREWORKS_COMMON_LINE_GIVEN) {
+            talk->item_slot = TURTLE_FIREWORKS_TALK_SLOT_DONE;
         }
-        if (t4t_line_shown(talk) != TURTLE4_COMMON_LINE_TAKEN) {
+        if (t4t_line_shown(talk) != TURTLE_FIREWORKS_COMMON_LINE_TAKEN) {
             return;
         }
         u16 shown = T4T_EXCHANGE_ITEM;
         SceneCommand_RequestMotion13(t4t_scene(talk), &shown, 0, T4T_MOTION_B, 0);
         u16 given = T4T_EXCHANGE_ITEM;
         CurrentPockets_Give(&given, 0);
-        t4t_say(t4t_talk_object(talk), TURTLE4_COMMON_LINE_GIVEN, data_ov084_02279568);
+        t4t_say(t4t_talk_object(talk), TURTLE_FIREWORKS_COMMON_LINE_GIVEN, data_ov084_02279568);
         return;
     }
 
     switch (t4t_line_shown(talk)) {
-        case TURTLE4_LINE_FIRST_SATURDAY:
-        case TURTLE4_LINE_SATURDAY:
-        case TURTLE4_LINE_LAST_SATURDAY:
-        case TURTLE4_LINE_NOT_BOTH: {
+        case TURTLE_FIREWORKS_LINE_FIRST_SATURDAY:
+        case TURTLE_FIREWORKS_LINE_SATURDAY:
+        case TURTLE_FIREWORKS_LINE_LAST_SATURDAY:
+        case TURTLE_FIREWORKS_LINE_NOT_BOTH: {
             int free_slot = CurrentPockets_FreeSlot();
             u16 gift = t4t_pick_gift();
             if (free_slot >= 0) {
@@ -247,34 +247,34 @@ void Turtle4Talk_OnLineEnded(Turtle4Talk *talk)
                     SceneCommand_RequestMotion13(t4t_scene(talk), &gift, 0, T4T_MOTION_B, 0);
                     CurrentPockets_Give(&gift, 0);
                     SceneBase_PutItemName(&talk->base, (int) (u32) (uintptr_t) &gift, 0, T4T_NAME_KIND);
-                    next = other == 0 ? TURTLE4_LINE_GIVEN : TURTLE4_LINE_GIVEN_OTHER;
+                    next = other == 0 ? TURTLE_FIREWORKS_LINE_GIVEN : TURTLE_FIREWORKS_LINE_GIVEN_OTHER;
                 } else {
-                    next = TURTLE4_LINE_ALL_GIVEN;
+                    next = TURTLE_FIREWORKS_LINE_ALL_GIVEN;
                 }
             } else {
                 SceneBase_PutItemName(&talk->base, (int) (u32) (uintptr_t) &gift, 0, T4T_NAME_KIND);
-                next = TURTLE4_LINE_NO_ROOM;
+                next = TURTLE_FIREWORKS_LINE_NO_ROOM;
             }
             break;
         }
-        case TURTLE4_LINE_FORTUNE: {
+        case TURTLE_FIREWORKS_LINE_FORTUNE: {
             u16 letters = T4T_LETTERS_ITEM;
             SceneCommand_RequestMotion13(t4t_scene(talk), &letters, 0, T4T_MOTION_B, 0);
-            next = TURTLE4_LINE_FORTUNE_SENT;
+            next = TURTLE_FIREWORKS_LINE_FORTUNE_SENT;
             break;
         }
         default:
             break;
     }
-    if (next != TURTLE4_NO_LINE) {
+    if (next != TURTLE_FIREWORKS_NO_LINE) {
         t4t_say(t4t_talk_object(talk), (u8) next, data_ov084_02279558);
     }
 }
-CLEAN_AS(func_ov084_02278c18, Turtle4Talk_OnLineEnded)
+CLEAN_AS(func_ov084_02278c18, TurtleFireworksTalk_OnLineEnded)
 
 /* func_ov084_02278dec (slot 0x78, the line the talk starts with), of "sp_npc_turtle4" unless
  * said otherwise. The current player's villager part is looked up first (and not used).
- * - The pockets are looked through for the item 0x37e0 once a talk (Turtle4Talk.item_slot);
+ * - The pockets are looked through for the item 0x37e0 once a talk (TurtleFireworksTalk.item_slot);
  *   when they hold it, line 0 of "sp_npc_turtle".
  * - A later talk of the day (daily bit 0x1e set): line 6 unless the pockets have both items
  *   0x137e and 0x137f or the player holds one of them; then line 7 until the fortune was
@@ -283,17 +283,17 @@ CLEAN_AS(func_ov084_02278c18, Turtle4Talk_OnLineEnded)
  *   set now): line 0 on the month's first Saturday, 2 on its last one (the fifth, or the
  *   fourth when there is no fifth), else 1.
  * QUIRK: when the greeting was said the message is left as it was. */
-void Turtle4Talk_FirstLine(Turtle4Talk *talk, Turtle4Line *out)
+void TurtleFireworksTalk_FirstLine(TurtleFireworksTalk *talk, TurtleFireworksLine *out)
 {
     (void) PlayerRecord_VillagerPart(PlayerRecords_Current());
     out->text = (u32) (uintptr_t) data_ov084_02279558;
 
-    if (talk->item_slot == TURTLE4_TALK_SLOT_UNKNOWN) {
+    if (talk->item_slot == TURTLE_FIREWORKS_TALK_SLOT_UNKNOWN) {
         u16 asked = T4T_ASKED_ITEM;
         talk->item_slot = CurrentPockets_FindItem(&asked);
         if (talk->item_slot >= 0) {
             out->text = (u32) (uintptr_t) data_ov084_02279568;
-            out->message = TURTLE4_COMMON_LINE_ASK;
+            out->message = TURTLE_FIREWORKS_COMMON_LINE_ASK;
             return;
         }
     }
@@ -303,14 +303,14 @@ void Turtle4Talk_FirstLine(Turtle4Talk *talk, Turtle4Line *out)
         PlayerActorOps_HeldItem(&held, ActivityVars_Slot3C1C());
         int ready = !t4t_lacks(T4T_GIFT_A) && !t4t_lacks(T4T_GIFT_B);
         if (!ready && !(held >= T4T_GIFT_A && held <= T4T_GIFT_B)) {
-            out->message = TURTLE4_LINE_NOT_BOTH;
+            out->message = TURTLE_FIREWORKS_LINE_NOT_BOTH;
             return;
         }
         if (Block021d27ac_TestFlag(&t4t_block()->flags, T4T_FLAG_FORTUNE) == 0) {
-            out->message = TURTLE4_LINE_OFFER_FORTUNE;
+            out->message = TURTLE_FIREWORKS_LINE_OFFER_FORTUNE;
             return;
         }
-        out->message = (u8) (MainRandom_Below(4) + TURTLE4_LINE_AFTER_FORTUNE);
+        out->message = (u8) (MainRandom_Below(4) + TURTLE_FIREWORKS_LINE_AFTER_FORTUNE);
         return;
     }
 
@@ -319,57 +319,57 @@ void Turtle4Talk_FirstLine(Turtle4Talk *talk, Turtle4Line *out)
     }
     Block021d27ac_SetFlag(&t4t_block()->flags, T4T_FLAG_GREETED);
     if (talk->owner->week == 1) {
-        out->message = TURTLE4_LINE_FIRST_SATURDAY;
+        out->message = TURTLE_FIREWORKS_LINE_FIRST_SATURDAY;
         return;
     }
     DateTime now = {0};
     DateTime_Now(&now);
     u8 last_week = Calendar_NthWeekday(now.year, now.month, T4T_SATURDAY, T4T_FIFTH) == -1 ? 4 : 5;
-    out->message = talk->owner->week < last_week ? TURTLE4_LINE_SATURDAY : TURTLE4_LINE_LAST_SATURDAY;
+    out->message = talk->owner->week < last_week ? TURTLE_FIREWORKS_LINE_SATURDAY : TURTLE_FIREWORKS_LINE_LAST_SATURDAY;
 }
-CLEAN_AS(func_ov084_02278dec, Turtle4Talk_FirstLine)
+CLEAN_AS(func_ov084_02278dec, TurtleFireworksTalk_FirstLine)
 
 /* func_ov084_02278f60: his talk scene told through its vtable slot 0x08 and given its owner,
  * the pockets not looked through yet. */
-void Turtle4Talk_Begin(Turtle4Talk *talk, Turtle4 *owner)
+void TurtleFireworksTalk_Begin(TurtleFireworksTalk *talk, TurtleFireworks *owner)
 {
     u32 vtable = *(const u32 *) (const void *) talk;
     u32 code = *(const u32 *) (uintptr_t) (vtable + T4T_TALK_SLOT_08);
-    ((void (*)(Turtle4Talk *))(uintptr_t) code)(talk);
+    ((void (*)(TurtleFireworksTalk *))(uintptr_t) code)(talk);
     talk->owner = owner;
-    talk->item_slot = TURTLE4_TALK_SLOT_UNKNOWN;
+    talk->item_slot = TURTLE_FIREWORKS_TALK_SLOT_UNKNOWN;
 }
-CLEAN_AS(func_ov084_02278f60, Turtle4Talk_Begin)
+CLEAN_AS(func_ov084_02278f60, TurtleFireworksTalk_Begin)
 
 /* func_ov084_02278f84 (slot 0x04): its destructor (the scene class 0x020d9ff8's), then the
  * scene freed. */
-void *Turtle4Talk_Delete(void *talk)
+void *TurtleFireworksTalk_Delete(void *talk)
 {
-    Turtle4Talk *self = talk;
+    TurtleFireworksTalk *self = talk;
     self->base.vtable = data_ov084_0227941c;
     Obj020d9ff8_DestructBody(self);
     Heap_OperatorDeleteB(self);
     return self;
 }
-CLEAN_AS(func_ov084_02278f84, Turtle4Talk_Delete)
+CLEAN_AS(func_ov084_02278f84, TurtleFireworksTalk_Delete)
 
 /* func_ov084_02278fa4 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *Turtle4Talk_Destroy(void *talk)
+void *TurtleFireworksTalk_Destroy(void *talk)
 {
-    Turtle4Talk *self = talk;
+    TurtleFireworksTalk *self = talk;
     self->base.vtable = data_ov084_0227941c;
     Obj020d9ff8_DestructBody(self);
     return self;
 }
-CLEAN_AS(func_ov084_02278fa4, Turtle4Talk_Destroy)
+CLEAN_AS(func_ov084_02278fa4, TurtleFireworksTalk_Destroy)
 
 /* func_ov084_02278fbc: the constructor: a scene of class 0x020d9ff8 given this class's vtable,
  * and its item code 0xfff1. */
-Turtle4Talk *Turtle4Talk_Construct(Turtle4Talk *talk)
+TurtleFireworksTalk *TurtleFireworksTalk_Construct(TurtleFireworksTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->base.vtable = data_ov084_0227941c;
     talk->unk_b8 = ITEM_CODE_NONE;
     return talk;
 }
-CLEAN_AS(func_ov084_02278fbc, Turtle4Talk_Construct)
+CLEAN_AS(func_ov084_02278fbc, TurtleFireworksTalk_Construct)

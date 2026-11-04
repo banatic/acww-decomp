@@ -1,6 +1,6 @@
 /* The talk scene of overlay 85's turtle: his lines, the villager the player names and the
- * winner he names (turtle5_talk.h). */
-#include "turtle5_talk.h"
+ * winner he names (turtle_snow_festival_talk.h). */
+#include "turtle_snow_festival_talk.h"
 
 #include <stdint.h>
 
@@ -30,11 +30,11 @@
 #include "main/villager_town.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
-static_assert(offsetof(Turtle5Talk, owner) == 0xb0, "owner");
-static_assert(offsetof(Turtle5Talk, item_slot) == 0xb4, "item slot");
-static_assert(offsetof(Turtle5Talk, next_villager) == 0xb8, "next villager");
-static_assert(offsetof(Turtle5Talk, choices) == 0xbc, "choices");
-static_assert(sizeof(Turtle5Line) == 8, "a line");
+static_assert(offsetof(TurtleSnowFestivalTalk, owner) == 0xb0, "owner");
+static_assert(offsetof(TurtleSnowFestivalTalk, item_slot) == 0xb4, "item slot");
+static_assert(offsetof(TurtleSnowFestivalTalk, next_villager) == 0xb8, "next villager");
+static_assert(offsetof(TurtleSnowFestivalTalk, choices) == 0xbc, "choices");
+static_assert(sizeof(TurtleSnowFestivalLine) == 8, "a line");
 static_assert(sizeof(MessageReceiver) == 0x20 && offsetof(MessageReceiver, message) == 0x1e, "the line shown");
 
 /* The talk scene's vtable. */
@@ -62,7 +62,7 @@ extern StateBlock data_021dc7a8;
 /* The flag of the state block set once the winner was named. */
 #define T5T_FLAG_RESULT 0x11
 
-/* The last day of event 0x11 (Turtle5.festival_day). */
+/* The last day of event 0x11 (TurtleSnowFestival.festival_day). */
 #define T5T_LAST_DAY 6
 
 /* The talk's parts the names go in. */
@@ -79,21 +79,21 @@ extern StateBlock data_021dc7a8;
 #define T5T_TOWN_IN_STATE_BLOCK 0x9284
 
 /* The talk scene's vtable slots: the one its talks call first (SceneBase_Reset) and the list of
- * villagers (Turtle5Talk_OfferVillagers). */
+ * villagers (TurtleSnowFestivalTalk_OfferVillagers). */
 #define T5T_TALK_SLOT_08 0x08
 #define T5T_TALK_SLOT_88 0x88
 
-static u8 t5t_line_shown(const Turtle5Talk *talk)
+static u8 t5t_line_shown(const TurtleSnowFestivalTalk *talk)
 {
     return ((const MessageReceiver *) (const void *) talk)->message;
 }
 
-static TalkObject *t5t_talk_object(Turtle5Talk *talk)
+static TalkObject *t5t_talk_object(TurtleSnowFestivalTalk *talk)
 {
     return (TalkObject *) (void *) talk->base.talk;
 }
 
-static SceneCommandScene *t5t_scene(Turtle5Talk *talk)
+static SceneCommandScene *t5t_scene(TurtleSnowFestivalTalk *talk)
 {
     return (SceneCommandScene *) (void *) talk;
 }
@@ -105,11 +105,11 @@ static void t5t_say(TalkObject *object, u8 message, const char *name)
 }
 
 /* The talk scene's function at vtable slot `slot` called. */
-static void t5t_call_slot(Turtle5Talk *talk, u32 slot)
+static void t5t_call_slot(TurtleSnowFestivalTalk *talk, u32 slot)
 {
     u32 vtable = *(const u32 *) (const void *) talk;
     u32 code = *(const u32 *) (uintptr_t) (vtable + slot);
-    ((void (*)(Turtle5Talk *))(uintptr_t) code)(talk);
+    ((void (*)(TurtleSnowFestivalTalk *))(uintptr_t) code)(talk);
 }
 
 static TextBase *t5t_text(PlayerIdText *name)
@@ -124,13 +124,13 @@ static char *t5t_chars(PlayerIdText *name)
 
 /* The common file's exchange of the item 0x37e0, in the player's answer: line 0 answered 0
  * takes it (its slot emptied, the scene's motion 14 with it): line 2. */
-static void t5t_exchange_answer(Turtle5Talk *talk, unsigned int answer)
+static void t5t_exchange_answer(TurtleSnowFestivalTalk *talk, unsigned int answer)
 {
-    if (t5t_line_shown(talk) == TURTLE5_COMMON_LINE_ASK && answer == 0) {
+    if (t5t_line_shown(talk) == TURTLE_SNOW_FESTIVAL_COMMON_LINE_ASK && answer == 0) {
         CurrentPockets_Empty(talk->item_slot);
         u16 item = T5T_ASKED_ITEM;
         SceneCommand_RequestMotion14(t5t_scene(talk), &item, 0, T5T_MOTION_B, 0);
-        t5t_say(t5t_talk_object(talk), TURTLE5_COMMON_LINE_TAKEN, data_ov085_022795ac);
+        t5t_say(t5t_talk_object(talk), TURTLE_SNOW_FESTIVAL_COMMON_LINE_TAKEN, data_ov085_022795ac);
     }
 }
 
@@ -143,10 +143,10 @@ static void t5t_exchange_answer(Turtle5Talk *talk, unsigned int answer)
  *   0x14.
  * The line, when one was picked, is shown.
  * REQUIRES: an answer of the list is 0 to 4. */
-void Turtle5Talk_OnAnswer(Turtle5Talk *talk)
+void TurtleSnowFestivalTalk_OnAnswer(TurtleSnowFestivalTalk *talk)
 {
     unsigned int answer = TalkAnswers_Picked((TalkAnswers *) (uintptr_t) (u32) SceneBase_TalkChoices(&talk->base));
-    int next = TURTLE5_NO_LINE;
+    int next = TURTLE_SNOW_FESTIVAL_NO_LINE;
 
     if (talk->item_slot >= 0) {
         t5t_exchange_answer(talk, answer);
@@ -155,17 +155,17 @@ void Turtle5Talk_OnAnswer(Turtle5Talk *talk)
 
     u8 line = t5t_line_shown(talk);
     switch (line) {
-        case TURTLE5_LINE_ASK:
+        case TURTLE_SNOW_FESTIVAL_LINE_ASK:
             if (answer == 0) {
-                next = (u8) (MainRandom_Below(2) + TURTLE5_LINE_NAME);
+                next = (u8) (MainRandom_Below(2) + TURTLE_SNOW_FESTIVAL_LINE_NAME);
             } else {
-                next = (u8) (MainRandom_Below(2) + TURTLE5_LINE_DECLINED);
+                next = (u8) (MainRandom_Below(2) + TURTLE_SNOW_FESTIVAL_LINE_DECLINED);
             }
             break;
-        case TURTLE5_LINE_NAME:
-        case TURTLE5_LINE_NAME + 1:
-        case TURTLE5_LINE_MORE:
-        case TURTLE5_LINE_MORE_AGAIN:
+        case TURTLE_SNOW_FESTIVAL_LINE_NAME:
+        case TURTLE_SNOW_FESTIVAL_LINE_NAME + 1:
+        case TURTLE_SNOW_FESTIVAL_LINE_MORE:
+        case TURTLE_SNOW_FESTIVAL_LINE_MORE_AGAIN:
             if (talk->choices[answer] >= 0) {
                 PlayerIdText name;
                 PlayerIdText_Construct(&name);
@@ -178,44 +178,45 @@ void Turtle5Talk_OnAnswer(Turtle5Talk *talk)
                     EventWinner_SetVillager(&data_021f3aa4, TownVillager_NpcId(villager));
                 }
                 EventWinner_SetNpc2E(&data_021f3aa4, TownVillager_NpcId(villager));
-                next = (u8) (MainRandom_Below(2) + TURTLE5_LINE_NAMED);
+                next = (u8) (MainRandom_Below(2) + TURTLE_SNOW_FESTIVAL_LINE_NAMED);
                 PlayerIdText_Destruct(&name);
             } else {
-                next = line != TURTLE5_LINE_MORE ? TURTLE5_LINE_MORE : TURTLE5_LINE_MORE_AGAIN;
+                next = line != TURTLE_SNOW_FESTIVAL_LINE_MORE ? TURTLE_SNOW_FESTIVAL_LINE_MORE
+                                                              : TURTLE_SNOW_FESTIVAL_LINE_MORE_AGAIN;
             }
             break;
         default:
             break;
     }
-    if (next != TURTLE5_NO_LINE) {
+    if (next != TURTLE_SNOW_FESTIVAL_NO_LINE) {
         t5t_say(t5t_talk_object(talk), (u8) next, data_ov085_0227959c);
     }
 }
-CLEAN_AS(func_ov085_02278ab8, Turtle5Talk_OnAnswer)
+CLEAN_AS(func_ov085_02278ab8, TurtleSnowFestivalTalk_OnAnswer)
 
 /* The common file's exchange of the item 0x37e0, when a line ended: lines 1 and 4 end it;
  * line 2 shows (motion 13) and gives the item 0x1559, then line 4. */
-static void t5t_exchange_line_ended(Turtle5Talk *talk)
+static void t5t_exchange_line_ended(TurtleSnowFestivalTalk *talk)
 {
     u8 line = t5t_line_shown(talk);
-    if (line == TURTLE5_COMMON_LINE_DONE || line == TURTLE5_COMMON_LINE_GIVEN) {
-        talk->item_slot = TURTLE5_TALK_SLOT_DONE;
+    if (line == TURTLE_SNOW_FESTIVAL_COMMON_LINE_DONE || line == TURTLE_SNOW_FESTIVAL_COMMON_LINE_GIVEN) {
+        talk->item_slot = TURTLE_SNOW_FESTIVAL_TALK_SLOT_DONE;
     }
-    if (t5t_line_shown(talk) != TURTLE5_COMMON_LINE_TAKEN) {
+    if (t5t_line_shown(talk) != TURTLE_SNOW_FESTIVAL_COMMON_LINE_TAKEN) {
         return;
     }
     u16 shown = T5T_EXCHANGE_ITEM;
     SceneCommand_RequestMotion13(t5t_scene(talk), &shown, 0, T5T_MOTION_B, 0);
     u16 given = T5T_EXCHANGE_ITEM;
     CurrentPockets_Give(&given, 0);
-    t5t_say(t5t_talk_object(talk), TURTLE5_COMMON_LINE_GIVEN, data_ov085_022795ac);
+    t5t_say(t5t_talk_object(talk), TURTLE_SNOW_FESTIVAL_COMMON_LINE_GIVEN, data_ov085_022795ac);
 }
 
 /* The winner named (line 0x0f ended): the record's villager, or when it has none the current
  * player's fondest villager (or any, VillagerRoster_FondestOrAny) made it when that place is
  * filled; its name in mail part 0 and the talk's part 1, one of two notices of "bbs_snowfes"
  * posted on the town's board and the villagers' memory flags cleared. */
-static void t5t_name_winner(Turtle5Talk *talk)
+static void t5t_name_winner(TurtleSnowFestivalTalk *talk)
 {
     NpcId *winner = EventWinner_Villager(&data_021f3aa4);
     PlayerIdText name;
@@ -242,36 +243,36 @@ static void t5t_name_winner(Turtle5Talk *talk)
  * - line 0x0f: the winner named (t5t_name_winner), line 0x10;
  * - lines 7, 8, 0x14 and 0x15: the list of villagers offered (vtable slot 0x88).
  * The line, when one was picked, is shown. */
-void Turtle5Talk_OnLineEnded(Turtle5Talk *talk)
+void TurtleSnowFestivalTalk_OnLineEnded(TurtleSnowFestivalTalk *talk)
 {
-    int next = TURTLE5_NO_LINE;
+    int next = TURTLE_SNOW_FESTIVAL_NO_LINE;
 
     if (talk->item_slot >= 0) {
         t5t_exchange_line_ended(talk);
         return;
     }
-    if (t5t_line_shown(talk) == TURTLE5_LINE_RESULT) {
+    if (t5t_line_shown(talk) == TURTLE_SNOW_FESTIVAL_LINE_RESULT) {
         t5t_name_winner(talk);
-        next = TURTLE5_LINE_WINNER;
+        next = TURTLE_SNOW_FESTIVAL_LINE_WINNER;
     }
     switch (t5t_line_shown(talk)) {
-        case TURTLE5_LINE_NAME:
-        case TURTLE5_LINE_NAME + 1:
-        case TURTLE5_LINE_MORE:
-        case TURTLE5_LINE_MORE_AGAIN:
+        case TURTLE_SNOW_FESTIVAL_LINE_NAME:
+        case TURTLE_SNOW_FESTIVAL_LINE_NAME + 1:
+        case TURTLE_SNOW_FESTIVAL_LINE_MORE:
+        case TURTLE_SNOW_FESTIVAL_LINE_MORE_AGAIN:
             t5t_call_slot(talk, T5T_TALK_SLOT_88);
             break;
         default:
             break;
     }
-    if (next != TURTLE5_NO_LINE) {
+    if (next != TURTLE_SNOW_FESTIVAL_NO_LINE) {
         t5t_say(t5t_talk_object(talk), (u8) next, data_ov085_0227959c);
     }
 }
-CLEAN_AS(func_ov085_02278c14, Turtle5Talk_OnLineEnded)
+CLEAN_AS(func_ov085_02278c14, TurtleSnowFestivalTalk_OnLineEnded)
 
 /* The name of `npc` put in the talk's part `part`, when it is valid. */
-static void t5t_put_name(Turtle5Talk *talk, NpcId *npc, int part)
+static void t5t_put_name(TurtleSnowFestivalTalk *talk, NpcId *npc, int part)
 {
     PlayerIdText name;
     PlayerIdText_Construct(&name);
@@ -282,24 +283,24 @@ static void t5t_put_name(Turtle5Talk *talk, NpcId *npc, int part)
 
 /* func_ov085_02278d68 (slot 0x78, the line the talk starts with), of "sp_npc_turtle5" unless
  * said otherwise. The current player's villager part is looked up first (and not used).
- * - The pockets are looked through for the item 0x37e0 once a talk (Turtle5Talk.item_slot);
+ * - The pockets are looked through for the item 0x37e0 once a talk (TurtleSnowFestivalTalk.item_slot);
  *   when they hold it, line 0 of "sp_npc_turtle".
  * - The last day (6): the first time line 0x0f (flag 0x11 of the state block set now); later
  *   one of lines 0x11-0x13, the record's villager in part 1 when there is one.
  * - Days 0-5: with a villager named today (the record's NpcId at 0x2e) one of lines
  *   0x0b-0x0e, its name in part 0; else line 4, or before the player's first talk of the day
  *   (daily bit 0x1f, set now) line 0 on day 0, 1 on days 1-2, 2 on days 3-4 and 3 on day 5. */
-void Turtle5Talk_FirstLine(Turtle5Talk *talk, Turtle5Line *out)
+void TurtleSnowFestivalTalk_FirstLine(TurtleSnowFestivalTalk *talk, TurtleSnowFestivalLine *out)
 {
     (void) PlayerRecord_VillagerPart(PlayerRecords_Current());
     out->text = (u32) (uintptr_t) data_ov085_0227959c;
 
-    if (talk->item_slot == TURTLE5_TALK_SLOT_UNKNOWN) {
+    if (talk->item_slot == TURTLE_SNOW_FESTIVAL_TALK_SLOT_UNKNOWN) {
         u16 asked = T5T_ASKED_ITEM;
         talk->item_slot = CurrentPockets_FindItem(&asked);
         if (talk->item_slot >= 0) {
             out->text = (u32) (uintptr_t) data_ov085_022795ac;
-            out->message = TURTLE5_COMMON_LINE_ASK;
+            out->message = TURTLE_SNOW_FESTIVAL_COMMON_LINE_ASK;
             return;
         }
     }
@@ -310,9 +311,9 @@ void Turtle5Talk_FirstLine(Turtle5Talk *talk, Turtle5Line *out)
             if (NpcId_IsValid(winner)) {
                 t5t_put_name(talk, winner, T5T_PART_WINNER);
             }
-            out->message = (u8) (MainRandom_Below(3) + TURTLE5_LINE_AFTER_RESULT);
+            out->message = (u8) (MainRandom_Below(3) + TURTLE_SNOW_FESTIVAL_LINE_AFTER_RESULT);
         } else {
-            out->message = TURTLE5_LINE_RESULT;
+            out->message = TURTLE_SNOW_FESTIVAL_LINE_RESULT;
             StateBlock_SetFlag((u32 *) (void *) &data_021dc7a8, T5T_FLAG_RESULT);
         }
         return;
@@ -324,76 +325,76 @@ void Turtle5Talk_FirstLine(Turtle5Talk *talk, Turtle5Line *out)
         PlayerIdText_Construct(&name);
         NpcId_FormatName(named, t5t_chars(&name));
         TalkObject_SetPart(t5t_talk_object(talk), T5T_PART_NAMED, t5t_text(&name));
-        out->message = (u8) (MainRandom_Below(4) + TURTLE5_LINE_NAMED_TODAY);
+        out->message = (u8) (MainRandom_Below(4) + TURTLE_SNOW_FESTIVAL_LINE_NAMED_TODAY);
         PlayerIdText_Destruct(&name);
         return;
     }
-    out->message = TURTLE5_LINE_ASK;
+    out->message = TURTLE_SNOW_FESTIVAL_LINE_ASK;
     if (TalkChecks_TestSetDailyBit(T5T_DAILY_TALKED, 1) != 0) {
         return;
     }
     switch (talk->owner->festival_day) {
         case 0:
-            out->message = TURTLE5_LINE_DAY_0;
+            out->message = TURTLE_SNOW_FESTIVAL_LINE_DAY_0;
             break;
         case 1:
         case 2:
-            out->message = TURTLE5_LINE_DAY_1;
+            out->message = TURTLE_SNOW_FESTIVAL_LINE_DAY_1;
             break;
         case 3:
         case 4:
-            out->message = TURTLE5_LINE_DAY_3;
+            out->message = TURTLE_SNOW_FESTIVAL_LINE_DAY_3;
             break;
         case 5:
-            out->message = TURTLE5_LINE_DAY_5;
+            out->message = TURTLE_SNOW_FESTIVAL_LINE_DAY_5;
             break;
         default:
             break;
     }
 }
-CLEAN_AS(func_ov085_02278d68, Turtle5Talk_FirstLine)
+CLEAN_AS(func_ov085_02278d68, TurtleSnowFestivalTalk_FirstLine)
 
 /* func_ov085_02278eb8: his talk scene told through its vtable slot 0x08 and given its owner,
  * the pockets not looked through yet. */
-void Turtle5Talk_Begin(Turtle5Talk *talk, Turtle5 *owner)
+void TurtleSnowFestivalTalk_Begin(TurtleSnowFestivalTalk *talk, TurtleSnowFestival *owner)
 {
     t5t_call_slot(talk, T5T_TALK_SLOT_08);
     talk->owner = owner;
-    talk->item_slot = TURTLE5_TALK_SLOT_UNKNOWN;
+    talk->item_slot = TURTLE_SNOW_FESTIVAL_TALK_SLOT_UNKNOWN;
 }
-CLEAN_AS(func_ov085_02278eb8, Turtle5Talk_Begin)
+CLEAN_AS(func_ov085_02278eb8, TurtleSnowFestivalTalk_Begin)
 
 /* func_ov085_02278edc (slot 0x04): its destructor (the scene class 0x020d9ff8's), then the
  * scene freed. */
-void *Turtle5Talk_Delete(void *talk)
+void *TurtleSnowFestivalTalk_Delete(void *talk)
 {
-    Turtle5Talk *self = talk;
+    TurtleSnowFestivalTalk *self = talk;
     self->base.vtable = data_ov085_0227945c;
     Obj020d9ff8_DestructBody(self);
     Heap_OperatorDeleteB(self);
     return self;
 }
-CLEAN_AS(func_ov085_02278edc, Turtle5Talk_Delete)
+CLEAN_AS(func_ov085_02278edc, TurtleSnowFestivalTalk_Delete)
 
 /* func_ov085_02278efc (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *Turtle5Talk_Destroy(void *talk)
+void *TurtleSnowFestivalTalk_Destroy(void *talk)
 {
-    Turtle5Talk *self = talk;
+    TurtleSnowFestivalTalk *self = talk;
     self->base.vtable = data_ov085_0227945c;
     Obj020d9ff8_DestructBody(self);
     return self;
 }
-CLEAN_AS(func_ov085_02278efc, Turtle5Talk_Destroy)
+CLEAN_AS(func_ov085_02278efc, TurtleSnowFestivalTalk_Destroy)
 
 /* func_ov085_02278f14: the constructor: a scene of class 0x020d9ff8 given this class's
  * vtable. */
-Turtle5Talk *Turtle5Talk_Construct(Turtle5Talk *talk)
+TurtleSnowFestivalTalk *TurtleSnowFestivalTalk_Construct(TurtleSnowFestivalTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->base.vtable = data_ov085_0227945c;
     return talk;
 }
-CLEAN_AS(func_ov085_02278f14, Turtle5Talk_Construct)
+CLEAN_AS(func_ov085_02278f14, TurtleSnowFestivalTalk_Construct)
 
 /* Whether the town's place `place` holds a villager. */
 static int t5t_place_filled(int place)
@@ -402,12 +403,12 @@ static int t5t_place_filled(int place)
 }
 
 /* func_ov085_02278f2c (slot 0x88): the list of villagers offered as the talk's answers: from
- * the place Turtle5Talk.next_villager (place 0 when it holds none) the next four places that
+ * the place TurtleSnowFestivalTalk.next_villager (place 0 when it holds none) the next four places that
  * hold one, each answer's text the villager's name and its place noted (the others -1); the
  * list then goes on from the place after the last one looked at (0 past the eighth). When the
  * town has more than four villagers a last answer goes on to the next ones (message 0x3d of
  * the file TalkAnswers_SelectFileName(0)), and B picks it. */
-void Turtle5Talk_OfferVillagers(Turtle5Talk *talk)
+void TurtleSnowFestivalTalk_OfferVillagers(TurtleSnowFestivalTalk *talk)
 {
     TalkAnswers *answers = TalkObject_Answers(t5t_talk_object(talk));
     u8 more = T5T_MORE_MESSAGE;
@@ -415,7 +416,7 @@ void Turtle5Talk_OfferVillagers(Turtle5Talk *talk)
 
     PlayerIdText_Construct(&name);
     TalkAnswers_Clear(answers);
-    for (int i = 0; i < TURTLE5_CHOICES; i++) {
+    for (int i = 0; i < TURTLE_SNOW_FESTIVAL_CHOICES; i++) {
         talk->choices[i] = -1;
     }
     if (!t5t_place_filled(talk->next_villager)) {
@@ -452,4 +453,4 @@ void Turtle5Talk_OfferVillagers(Turtle5Talk *talk)
     TalkObject_OpenChoices(t5t_talk_object(talk), 1);
     PlayerIdText_Destruct(&name);
 }
-CLEAN_AS(func_ov085_02278f2c, Turtle5Talk_OfferVillagers)
+CLEAN_AS(func_ov085_02278f2c, TurtleSnowFestivalTalk_OfferVillagers)

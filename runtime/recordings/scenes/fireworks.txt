@@ -3,7 +3,7 @@
 # 2027 (events 0x0f and 0x17 of event_calendar.h: the fireworks show, main/sky_show.h; the
 # player stands in front of the house from about 4000 and, as in kk-request.txt, runs east to 4400).
 # Save: the seed town. South, west, north, east and north from there to the town hall (5360),
-# where the turtle (ov084/turtle4.h) stands; LEFT faces him and A every 40 frames talks to him:
+# where the turtle (ov084/turtle_fireworks.h) stands; LEFT faces him and A every 40 frames talks to him:
 # the show, his question about the town's lights, the first answers (to about 7050).
 900 START -
 906 - -

@@ -1,8 +1,8 @@
 # snow-named (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). As snow-festival.txt to 7060 (10:00 on Monday 8
 # February 2027, the snow festival's week, calendar event 0x11; the turtle by the town hall, whose
-# first answers name villager 0 for the festival: TURTLE5_LINE_NAME, the event winner record's NpcId at
-# 0x2e, ov085/turtle5_talk.c). A held 4 frames every 40 frames: his later lines (to about 8040);
+# first answers name villager 0 for the festival: TURTLE_SNOW_FESTIVAL_LINE_NAME, the event winner record's NpcId at
+# 0x2e, ov085/turtle_snow_festival_talk.c). A held 4 frames every 40 frames: his later lines (to about 8040);
 # south-east to stand west of villager 3 (personality bo) at about (46.0, 56.5), facing it (8558). A
 # held 4 every 40 frames from 8610: its first talk (ev_snowfes 4), and the second, of the day's later
 # talks, the table that names the person the record holds (VillagerTalk_LineRandom2044, data_021c205c:

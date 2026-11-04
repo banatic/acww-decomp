@@ -2,8 +2,8 @@
 # is not in this repository). Clock and the input to 5800: as fireworks.txt (the turtle of overlay
 # 84 at the town hall on the fireworks' evening, 20:00 on 7 August 2027).
 # Save: turtle-37e0 (the seed with the item 0x37e0, the massage chair, in pocket 14). The pockets
-# hold the item he asks for, so his first line is line 0 of "sp_npc_turtle" (Turtle4Talk_FirstLine);
-# A every 40 frames: its first answer gives it (Turtle4Talk_OnAnswer: the slot emptied, line 2),
+# hold the item he asks for, so his first line is line 0 of "sp_npc_turtle" (TurtleFireworksTalk_FirstLine);
+# A every 40 frames: its first answer gives it (TurtleFireworksTalk_OnAnswer: the slot emptied, line 2),
 # to 6905.
 900 START -
 906 - -

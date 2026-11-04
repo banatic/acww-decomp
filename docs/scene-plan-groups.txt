@@ -599,8 +599,8 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov054/post_clerk:PostClerk_Destruct ov068/cafe_guest:CafeGuest_Destruct
   ov068/cafe_room:CafeRoom_Destruct ov068/house_visitor:HouseVisitor_Destroy
   ov068/sequence4:Sequence4_Destroy ov068/town_nook:TownNook_Destruct ov070/giraffe:Giraffe_Destroy
-  ov071/insurer:Insurer_Destroy ov080/turtle:Turtle_Destruct ov084/turtle4:Turtle4_Destroy
-  ov085/turtle5:Turtle5_Destroy ov086/turtle6:Turtle6_Destroy ov087/acorn_npc:AcornNpc_Destroy
+  ov071/insurer:Insurer_Destroy ov080/turtle:Turtle_Destruct ov084/turtle_fireworks:TurtleFireworks_Destroy
+  ov085/turtle_snow_festival:TurtleSnowFestival_Destroy ov086/turtle_countdown:TurtleCountdown_Destroy ov087/acorn_npc:AcornNpc_Destroy
   main/music_queue:Process020da334_Destruct main/quick_message:QuickMessage_Destruct
   main/camera_control:CameraControl_Destruct main/process_020daae4:Process020daae4_Destruct
   main/fish_disp:FishDisp_Destruct main/text_draw:TextDraw_ProcessDestruct
@@ -1305,8 +1305,8 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov080/turtle_talk:TurtleTalk_DestructDelete
   ov081/turtle_fishing_talk:TurtleFishingTalk_DestructDelete
   ov082/turtle_insects_talk:TurtleInsectsTalk_DestructDelete
-  ov083/turtle_gardens_talk:TurtleGardensTalk_DestructDelete ov084/turtle4_talk:Turtle4Talk_Delete
-  ov085/turtle5_talk:Turtle5Talk_Delete ov086/turtle6_talk:Turtle6Talk_Delete
+  ov083/turtle_gardens_talk:TurtleGardensTalk_DestructDelete ov084/turtle_fireworks_talk:TurtleFireworksTalk_Delete
+  ov085/turtle_snow_festival_talk:TurtleSnowFestivalTalk_Delete ov086/turtle_countdown_talk:TurtleCountdownTalk_Delete
   ov087/acorn_npc_talk:AcornNpcTalk_Delete ov088/reaction_npc_talk:ReactionNpcTalk_Delete
   ov093/staff_roll:StaffRollText_Delete ov094/pockets_grid:PocketsGrid_DestructDelete
   ov094/pockets_icons:PocketsIcons_DestructDelete ov094/pockets_letters:PocketsLetters_DestructDelete
@@ -1939,8 +1939,8 @@ match: ov004/tailor_sister:TailorSister_UpdateTalked ov004/cafe_master:CafeMaste
   ov075/town_pelican:TownPelican_UpdateTalked ov076/otter:Otter_UpdateTalked ov077/mole:Mole_UpdateTalked
   ov078/camel:Camel_UpdateDone ov079/walrus:Walrus_UpdateDone ov080/turtle:Turtle_UpdateTalked
   ov081/turtle_fishing:TurtleFishing_UpdateTalked ov082/turtle_insects:TurtleInsects_UpdateTalked
-  ov083/turtle_gardens:TurtleGardens_UpdateTalked ov084/turtle4:Turtle4_UpdateTalked
-  ov085/turtle5:Turtle5_UpdateTalked ov086/turtle6:Turtle6_UpdateTalked ov087/acorn_npc:AcornNpc_UpdateStand
+  ov083/turtle_gardens:TurtleGardens_UpdateTalked ov084/turtle_fireworks:TurtleFireworks_UpdateTalked
+  ov085/turtle_snow_festival:TurtleSnowFestival_UpdateTalked ov086/turtle_countdown:TurtleCountdown_UpdateTalked ov087/acorn_npc:AcornNpc_UpdateStand
   ov088/reaction_npc:ReactionNpc_UpdateTalked
 
 area: Not attributed to one scene

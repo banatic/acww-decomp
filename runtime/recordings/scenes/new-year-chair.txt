@@ -3,7 +3,7 @@
 # at the countdown's clock, 23:40 on 31 December 2026).
 # Save: turtle-37e0 (the seed with the item 0x37e0 in pocket 14): his first line is line 0 of
 # "sp_npc_turtle", asking for it; A every 40 frames: its first answer gives it
-# (Turtle6Talk_OnAnswer: the slot emptied, line 2), to 7081.
+# (TurtleCountdownTalk_OnAnswer: the slot emptied, line 2), to 7081.
 900 START -
 906 - -
 1000 A -

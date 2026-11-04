@@ -2973,7 +2973,7 @@ What reading the Clean code found about the groups above; counts are of function
   which the drive runs without the ARM7's sequencer, so the talk never ends there.
 - Line table 10 (calendar 0x11, the snow festival): VillagerTalk_Line8d60AboutNpc needs the
   person at 0x2e of the event winner record (main/event_winner.h), which only the turtle sets when
-  told of a villager (ov085/turtle5_talk.c, lines 7-8 and 0x14-0x15) and clears at the next day's
+  told of a villager (ov085/turtle_snow_festival_talk.c, lines 7-8 and 0x14-0x15) and clears at the next day's
   first talk with him; written into the save it is gone by the boot. snow-festival's answers name
   villager 0; villager 3's second talk, 12 frames after the first, draws data_021c205c:
   snow-named.
@@ -3616,8 +3616,8 @@ What reading the Clean code found about the groups above; counts are of function
   midnight: fortune-midnight boots at 23:58:30 on the save's day (visitor-3f), walks into the tent
   as fortune-tent does and waits there past 0:00.
 - The turtles of overlays 84 (the fireworks) and 86 (New Year's Eve) ask for the item 0x37e0, the
-  massage chair, when the pockets hold it (Turtle4Talk_FirstLine, Turtle6Talk's line 0 of
-  "sp_npc_turtle"), and the first answer gives it (Turtle4Talk_OnAnswer, Turtle6Talk_OnAnswer):
+  massage chair, when the pockets hold it (TurtleFireworksTalk_FirstLine, TurtleCountdownTalk's line 0 of
+  "sp_npc_turtle"), and the first answer gives it (TurtleFireworksTalk_OnAnswer, TurtleCountdownTalk_OnAnswer):
   save turtle-37e0 (the seed with it in pocket 14), scenes fireworks-chair and new-year-chair.
 - insurance-claim ends while the claimed item's motion plays; a wait after it lets the talk's
   sequence 1 ask for its next line (InsurerTalk_NextLine): insurance-claim-wait.

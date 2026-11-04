@@ -1,6 +1,6 @@
 /* The talk scene of overlay 86's turtle: his lines at the turn of the year, the item he gives
- * and the fortune letter (turtle6_talk.h). */
-#include "turtle6_talk.h"
+ * and the fortune letter (turtle_countdown_talk.h). */
+#include "turtle_countdown_talk.h"
 
 #include <stdint.h>
 
@@ -26,10 +26,10 @@
 #include "main/talk_object.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
-static_assert(offsetof(Turtle6Talk, owner) == 0xb0, "owner");
-static_assert(offsetof(Turtle6Talk, item_slot) == 0xb4, "item slot");
-static_assert(sizeof(Turtle6Line) == 8, "a line");
-static_assert(sizeof(Turtle6FortunePart) == 8, "a part of the fortune");
+static_assert(offsetof(TurtleCountdownTalk, owner) == 0xb0, "owner");
+static_assert(offsetof(TurtleCountdownTalk, item_slot) == 0xb4, "item slot");
+static_assert(sizeof(TurtleCountdownLine) == 8, "a line");
+static_assert(sizeof(TurtleCountdownFortunePart) == 8, "a part of the fortune");
 static_assert(sizeof(MessageReceiver) == 0x20 && offsetof(MessageReceiver, message) == 0x1e, "the line shown");
 
 /* The talk scene's vtable. */
@@ -42,7 +42,7 @@ extern const char data_ov086_02279438[];
 extern const char data_ov086_02279458[];
 extern const u8 data_ov086_02279260[];
 extern const u8 data_ov086_02279264[];
-extern const Turtle6FortunePart data_ov086_022791d0[TURTLE6_FORTUNE_PARTS];
+extern const TurtleCountdownFortunePart data_ov086_022791d0[TURTLE_COUNTDOWN_FORTUNE_PARTS];
 
 /* The items exchanged while the pockets hold the item 0x37e0. */
 #define T6T_ASKED_ITEM 0x37e0
@@ -82,17 +82,17 @@ extern const Turtle6FortunePart data_ov086_022791d0[TURTLE6_FORTUNE_PARTS];
 /* The talk scene's vtable slot its talks call first (SceneBase_Reset). */
 #define T6T_TALK_SLOT_08 0x08
 
-static u8 t6t_line_shown(const Turtle6Talk *talk)
+static u8 t6t_line_shown(const TurtleCountdownTalk *talk)
 {
     return ((const MessageReceiver *) (const void *) talk)->message;
 }
 
-static TalkObject *t6t_talk_object(Turtle6Talk *talk)
+static TalkObject *t6t_talk_object(TurtleCountdownTalk *talk)
 {
     return (TalkObject *) (void *) talk->base.talk;
 }
 
-static SceneCommandScene *t6t_scene(Turtle6Talk *talk)
+static SceneCommandScene *t6t_scene(TurtleCountdownTalk *talk)
 {
     return (SceneCommandScene *) (void *) talk;
 }
@@ -106,36 +106,36 @@ static void t6t_say(TalkObject *object, u8 message, const char *name)
 /* func_ov086_02278ab8 (slot 0x18, the player's answer): only while the pockets hold the item
  * 0x37e0: line 0 answered 0 takes it (its slot emptied, the scene's motion 14 with it) and
  * line 2 of "sp_npc_turtle" follows. */
-void Turtle6Talk_OnAnswer(Turtle6Talk *talk)
+void TurtleCountdownTalk_OnAnswer(TurtleCountdownTalk *talk)
 {
     unsigned int answer = TalkAnswers_Picked((TalkAnswers *) (uintptr_t) (u32) SceneBase_TalkChoices(&talk->base));
     int slot = talk->item_slot;
     if (slot < 0) {
         return;
     }
-    if (t6t_line_shown(talk) == TURTLE6_COMMON_LINE_ASK && answer == 0) {
+    if (t6t_line_shown(talk) == TURTLE_COUNTDOWN_COMMON_LINE_ASK && answer == 0) {
         CurrentPockets_Empty(slot);
         u16 item = T6T_ASKED_ITEM;
         SceneCommand_RequestMotion14(t6t_scene(talk), &item, 0, T6T_MOTION_B, 0);
-        t6t_say(t6t_talk_object(talk), TURTLE6_COMMON_LINE_TAKEN, data_ov086_02279438);
+        t6t_say(t6t_talk_object(talk), TURTLE_COUNTDOWN_COMMON_LINE_TAKEN, data_ov086_02279438);
     }
 }
-CLEAN_AS(func_ov086_02278ab8, Turtle6Talk_OnAnswer)
+CLEAN_AS(func_ov086_02278ab8, TurtleCountdownTalk_OnAnswer)
 
 /* The fortune letter written into `letter` for the player of `record`: a fortune drawn, part
  * 0 its message of "st_fortune", parts 1-3 a message of "st_fortune2" each (a fifth number is
  * drawn after the last part and not used), then the letter from message 0 of "ev_fortune"; a
  * pile of item 0x1d marked in the player's item record, flag 4 set and the scene's motion 13
  * with the letters (item 0x1565). */
-static void t6t_write_fortune(Turtle6Talk *talk, Letter *letter, u8 *record)
+static void t6t_write_fortune(TurtleCountdownTalk *talk, Letter *letter, u8 *record)
 {
     MessagePart text;
     MessagePart_Construct(&text);
     int fortune = (int) MainRandom_Below(T6T_FORTUNES);
     int message = fortune;
-    for (int i = 0; i < TURTLE6_FORTUNE_PARTS; i++) {
+    for (int i = 0; i < TURTLE_COUNTDOWN_FORTUNE_PARTS; i++) {
         u8 number = (u8) message;
-        const Turtle6FortunePart *part = &data_ov086_022791d0[i];
+        const TurtleCountdownFortunePart *part = &data_ov086_022791d0[i];
         MessageReader_LoadMessage(&text, &number, (const char *) (uintptr_t) part->name);
         MailText_SetPartText(part->part, &text);
         message = fortune * T6T_FORTUNE_VARIANTS + (int) MainRandom_Below(T6T_FORTUNE_VARIANTS) + i * T6T_FORTUNE_PART_STEP;
@@ -160,29 +160,29 @@ static void t6t_write_fortune(Turtle6Talk *talk, Letter *letter, u8 *record)
  *   0x13: with a free letter the fortune letter is written into it, line 0x15; else 0x14;
  *   0x19-0x1b: the item 0x137d shown (motion 13) and given, one of lines 0x1c-0x1e.
  * The line, when one was picked, is shown. */
-void Turtle6Talk_OnLineEnded(Turtle6Talk *talk)
+void TurtleCountdownTalk_OnLineEnded(TurtleCountdownTalk *talk)
 {
-    int next = TURTLE6_NO_LINE;
+    int next = TURTLE_COUNTDOWN_NO_LINE;
 
     if (talk->item_slot >= 0) {
         u8 line = t6t_line_shown(talk);
-        if (line == TURTLE6_COMMON_LINE_DONE || line == TURTLE6_COMMON_LINE_GIVEN) {
-            talk->item_slot = TURTLE6_TALK_SLOT_DONE;
+        if (line == TURTLE_COUNTDOWN_COMMON_LINE_DONE || line == TURTLE_COUNTDOWN_COMMON_LINE_GIVEN) {
+            talk->item_slot = TURTLE_COUNTDOWN_TALK_SLOT_DONE;
         }
-        if (t6t_line_shown(talk) == TURTLE6_COMMON_LINE_TAKEN) {
+        if (t6t_line_shown(talk) == TURTLE_COUNTDOWN_COMMON_LINE_TAKEN) {
             u16 shown = T6T_EXCHANGE_ITEM;
             SceneCommand_RequestMotion13(t6t_scene(talk), &shown, 0, T6T_MOTION_B, 0);
             u16 given = T6T_EXCHANGE_ITEM;
             CurrentPockets_Give(&given, 0);
-            t6t_say(t6t_talk_object(talk), TURTLE6_COMMON_LINE_GIVEN, data_ov086_02279438);
+            t6t_say(t6t_talk_object(talk), TURTLE_COUNTDOWN_COMMON_LINE_GIVEN, data_ov086_02279438);
         }
         return;
     }
 
     int letter_index = CurrentPockets_FreeLetterIndex();
     switch (t6t_line_shown(talk)) {
-        case TURTLE6_LINE_OFFER_FORTUNE: {
-            next = TURTLE6_LINE_NO_LETTER;
+        case TURTLE_COUNTDOWN_LINE_OFFER_FORTUNE: {
+            next = TURTLE_COUNTDOWN_LINE_NO_LETTER;
             if (letter_index == -1) {
                 break;
             }
@@ -191,27 +191,27 @@ void Turtle6Talk_OnLineEnded(Turtle6Talk *talk)
                 break;
             }
             t6t_write_fortune(talk, letter, PlayerRecords_Current());
-            next = TURTLE6_LINE_FORTUNE;
+            next = TURTLE_COUNTDOWN_LINE_FORTUNE;
             break;
         }
-        case TURTLE6_LINE_GIFT:
-        case TURTLE6_LINE_GIFT + 1:
-        case TURTLE6_LINE_GIFT + 2: {
+        case TURTLE_COUNTDOWN_LINE_GIFT:
+        case TURTLE_COUNTDOWN_LINE_GIFT + 1:
+        case TURTLE_COUNTDOWN_LINE_GIFT + 2: {
             u16 shown = T6T_GIFT;
             SceneCommand_RequestMotion13(t6t_scene(talk), &shown, 0, T6T_MOTION_B, 0);
             u16 given = T6T_GIFT;
             CurrentPockets_Give(&given, 0);
-            next = (u8) (MainRandom_Below(3) + TURTLE6_LINE_GIVEN);
+            next = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_GIVEN);
             break;
         }
         default:
             break;
     }
-    if (next != TURTLE6_NO_LINE) {
+    if (next != TURTLE_COUNTDOWN_NO_LINE) {
         t6t_say(t6t_talk_object(talk), (u8) next, data_ov086_02279448);
     }
 }
-CLEAN_AS(func_ov086_02278b24, Turtle6Talk_OnLineEnded)
+CLEAN_AS(func_ov086_02278b24, TurtleCountdownTalk_OnLineEnded)
 
 /* A number below 3 moved up by `by` unless it is 0. */
 static u8 t6t_zero_or(u8 by)
@@ -225,7 +225,7 @@ static u8 t6t_zero_or(u8 by)
 
 /* func_ov086_02278cf0 (slot 0x78, the line the talk starts with), of "sp_npc_turtle6" unless
  * said otherwise. The current player's villager part is looked up first (and not used).
- * - The pockets are looked through for the item 0x37e0 once a talk (Turtle6Talk.item_slot);
+ * - The pockets are looked through for the item 0x37e0 once a talk (TurtleCountdownTalk.item_slot);
  *   when they hold it, line 0 of "sp_npc_turtle".
  * - In December, by the clock: in the morning one of lines 0-2, in the afternoon 0, 3 or 4,
  *   before 23:00 0, 5 or 6, before 23:30 0, 7 or 8, before 23:55 9-11; before 23:59 0x0c-0x0d
@@ -234,17 +234,17 @@ static u8 t6t_zero_or(u8 by)
  *   was written (flag 4) one of 0x16-0x18; else line 0x13.
  * A line that is not final is, when the pockets have a free slot, one of 0x19-0x1b half the
  * time. */
-void Turtle6Talk_FirstLine(Turtle6Talk *talk, Turtle6Line *out)
+void TurtleCountdownTalk_FirstLine(TurtleCountdownTalk *talk, TurtleCountdownLine *out)
 {
     (void) PlayerRecord_VillagerPart(PlayerRecords_Current());
     out->text = (u32) (uintptr_t) data_ov086_02279448;
 
-    if (talk->item_slot == TURTLE6_TALK_SLOT_UNKNOWN) {
+    if (talk->item_slot == TURTLE_COUNTDOWN_TALK_SLOT_UNKNOWN) {
         u16 asked = T6T_ASKED_ITEM;
         talk->item_slot = CurrentPockets_FindItem(&asked);
         if (talk->item_slot >= 0) {
             out->text = (u32) (uintptr_t) data_ov086_02279438;
-            out->message = TURTLE6_COMMON_LINE_ASK;
+            out->message = TURTLE_COUNTDOWN_COMMON_LINE_ASK;
             return;
         }
     }
@@ -264,21 +264,21 @@ void Turtle6Talk_FirstLine(Turtle6Talk *talk, Turtle6Line *out)
         } else if (now.hour == T6T_LAST_HOUR && now.minute < T6T_HALF_HOUR) {
             out->message = t6t_zero_or(6);
         } else if (now.hour == T6T_LAST_HOUR && now.minute < T6T_FIVE_MINUTES_LEFT) {
-            out->message = (u8) (MainRandom_Below(3) + TURTLE6_LINE_HALF_HOUR_LEFT);
+            out->message = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_HALF_HOUR_LEFT);
         } else if (now.hour == T6T_LAST_HOUR && now.minute < T6T_LAST_MINUTE) {
-            out->message = (u8) (MainRandom_Below(2) + TURTLE6_LINE_MINUTES_LEFT);
+            out->message = (u8) (MainRandom_Below(2) + TURTLE_COUNTDOWN_LINE_MINUTES_LEFT);
             return;
         } else {
-            out->message = (u8) (MainRandom_Below(2) + TURTLE6_LINE_LAST_MINUTE);
+            out->message = (u8) (MainRandom_Below(2) + TURTLE_COUNTDOWN_LINE_LAST_MINUTE);
             return;
         }
     } else {
         if (now.hour < T6T_MORNING_HOUR) {
-            out->message = (u8) (MainRandom_Below(3) + TURTLE6_LINE_EARLY);
+            out->message = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_EARLY);
         } else if (Block021d27ac_TestFlag(&Block021d27ac_Get()->flags, T6T_FLAG_FORTUNE) != 0) {
-            out->message = (u8) (MainRandom_Below(3) + TURTLE6_LINE_AFTER_FORTUNE);
+            out->message = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_AFTER_FORTUNE);
         } else {
-            out->message = TURTLE6_LINE_OFFER_FORTUNE;
+            out->message = TURTLE_COUNTDOWN_LINE_OFFER_FORTUNE;
         }
         return;
     }
@@ -289,50 +289,50 @@ void Turtle6Talk_FirstLine(Turtle6Talk *talk, Turtle6Line *out)
     if (MainRandom_Below(2) != 0) {
         return;
     }
-    out->message = (u8) (MainRandom_Below(3) + TURTLE6_LINE_GIFT);
+    out->message = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_GIFT);
 }
-CLEAN_AS(func_ov086_02278cf0, Turtle6Talk_FirstLine)
+CLEAN_AS(func_ov086_02278cf0, TurtleCountdownTalk_FirstLine)
 
 /* func_ov086_02278e6c: his talk scene told through its vtable slot 0x08 and given its owner,
  * the pockets not looked through yet. */
-void Turtle6Talk_Begin(Turtle6Talk *talk, Turtle6 *owner)
+void TurtleCountdownTalk_Begin(TurtleCountdownTalk *talk, TurtleCountdown *owner)
 {
     u32 vtable = *(const u32 *) (const void *) talk;
     u32 code = *(const u32 *) (uintptr_t) (vtable + T6T_TALK_SLOT_08);
-    ((void (*)(Turtle6Talk *))(uintptr_t) code)(talk);
+    ((void (*)(TurtleCountdownTalk *))(uintptr_t) code)(talk);
     talk->owner = owner;
-    talk->item_slot = TURTLE6_TALK_SLOT_UNKNOWN;
+    talk->item_slot = TURTLE_COUNTDOWN_TALK_SLOT_UNKNOWN;
 }
-CLEAN_AS(func_ov086_02278e6c, Turtle6Talk_Begin)
+CLEAN_AS(func_ov086_02278e6c, TurtleCountdownTalk_Begin)
 
 /* func_ov086_02278e90 (slot 0x04): its destructor (the scene class 0x020d9ff8's), then the
  * scene freed. */
-void *Turtle6Talk_Delete(void *talk)
+void *TurtleCountdownTalk_Delete(void *talk)
 {
-    Turtle6Talk *self = talk;
+    TurtleCountdownTalk *self = talk;
     self->base.vtable = data_ov086_022792fc;
     Obj020d9ff8_DestructBody(self);
     Heap_OperatorDeleteB(self);
     return self;
 }
-CLEAN_AS(func_ov086_02278e90, Turtle6Talk_Delete)
+CLEAN_AS(func_ov086_02278e90, TurtleCountdownTalk_Delete)
 
 /* func_ov086_02278eb0 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *Turtle6Talk_Destroy(void *talk)
+void *TurtleCountdownTalk_Destroy(void *talk)
 {
-    Turtle6Talk *self = talk;
+    TurtleCountdownTalk *self = talk;
     self->base.vtable = data_ov086_022792fc;
     Obj020d9ff8_DestructBody(self);
     return self;
 }
-CLEAN_AS(func_ov086_02278eb0, Turtle6Talk_Destroy)
+CLEAN_AS(func_ov086_02278eb0, TurtleCountdownTalk_Destroy)
 
 /* func_ov086_02278ec8: the constructor: a scene of class 0x020d9ff8 given this class's
  * vtable. */
-Turtle6Talk *Turtle6Talk_Construct(Turtle6Talk *talk)
+TurtleCountdownTalk *TurtleCountdownTalk_Construct(TurtleCountdownTalk *talk)
 {
     Obj020d9ff8_Construct(talk);
     talk->base.vtable = data_ov086_022792fc;
     return talk;
 }
-CLEAN_AS(func_ov086_02278ec8, Turtle6Talk_Construct)
+CLEAN_AS(func_ov086_02278ec8, TurtleCountdownTalk_Construct)

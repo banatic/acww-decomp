@@ -2,7 +2,7 @@
 # is not in this repository). Boot: as kk-request.txt, the clock at 10:00 on Monday 8 February
 # 2027 (events 0x11 and 0x19 of event_calendar.h: the snow festival's week; snow on the
 # ground; the player stands in front of the house from about 4000, runs east as kk-request.txt to 4400).
-# Save: the seed town. As fireworks.txt to the turtle by the town hall (ov085/turtle5.h, about
+# Save: the seed town. As fireworks.txt to the turtle by the town hall (ov085/turtle_snow_festival.h, about
 # 5360); A every 40 frames talks to him: the festival and the town's snowmen, the first
 # answers (to about 7050).
 900 START -
