@@ -5,7 +5,7 @@
  * 0x750 bytes, made by CafeGuest_Create.
  *
  * Its kind (CafeGuest.kind) is picked when it is set up (CafeGuest_Init) from the clock, the
- * weekday and the day's plan (main's day_plan.h); kind 8 is none, and the guest deletes itself
+ * weekday and the day's guests (main's cafe_guests.h); kind 8 is none, and the guest deletes itself
  * on its first update. Kind 7, on Saturdays from 19:30, plays music: the player may name a
  * song (an item 0x1323-0x1368, one of 70) on a screen of overlay group 9; the guest then plays
  * that song's music (0x63 plus its number), or one of the musics 0xa9-0xac when the name
@@ -38,8 +38,8 @@
 /* The guest's kinds: the index of its person code, model, texture and message file. */
 #define CAFE_GUEST_KIND_MORNING 0 /* 6:00-6:54 with the day plan's morning bit */
 #define CAFE_GUEST_KIND_NIGHT 1   /* 21:00-21:54 except on Saturdays */
-#define CAFE_GUEST_KIND_LATE 2    /* weekdays 23:00-23:59, with the plan's night bit and Nook's store at level 3 */
-#define CAFE_GUEST_KIND_PLAN_4 3  /* the plan's noon or afternoon value 4 */
+#define CAFE_GUEST_KIND_LATE 2    /* weekdays 23:00-23:59, with the guests byte's night bit and Nook's store at level 3 */
+#define CAFE_GUEST_KIND_PLAN_4 3  /* the guests byte's noon or afternoon value 4 */
 #define CAFE_GUEST_KIND_PLAN_1 4  /* value 1 */
 #define CAFE_GUEST_KIND_PLAN_2 5  /* value 2 */
 #define CAFE_GUEST_KIND_PLAN_3 6  /* value 3 */

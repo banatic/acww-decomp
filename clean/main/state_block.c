@@ -39,7 +39,7 @@
 #include "block_021d27ac.h"
 #include "block_021d27ac_parts.h"
 #include "catch_panel.h"
-#include "day_plan.h"
+#include "cafe_guests.h"
 #include "event_schedule.h"
 #include "event_winner.h"
 #include "exchange_block.h"
@@ -283,7 +283,7 @@ void StateBlock_SetUpTown(StateBlock *block)
     RoomScoreState_ResetJudgeDate((Date *) (void *) block->part_173c8);
     TownTune_Store((TownTunePacked *) (void *) block->part_173c0);
     TownItemLists_StartListA((u16 *) (void *) block->part_172c0);
-    DayPlan_SetUp(&block->part_0f52b);
+    CafeGuests_SetUp(&block->cafe_guests);
     ExchangeBlock_SetUp((ExchangeBlock *) (void *) block->part_11c70);
 }
 CLEAN_AS(func_0209e828, StateBlock_SetUpTown)
@@ -559,7 +559,7 @@ void StateBlock_Init(StateBlock *block)
     Snowmen_ForgetAll((SnowmenRecord *) block->snowmen);
     EventSchedule_Construct((EventSchedule *) (void *) block->part_17218);
     PairedTown_Reset(block->part_173e2);
-    DayPlan_Clear(&block->part_0f52b);
+    CafeGuests_Clear(&block->cafe_guests);
     ExchangeBlock_Clear((ExchangeBlock *) (void *) block->part_11c70);
 }
 CLEAN_AS(func_0209ef7c, StateBlock_Init)
@@ -613,7 +613,7 @@ StateBlock *StateBlock_Destruct(StateBlock *block)
     ExchangeBlock_Destruct((ExchangeBlock *) (void *) block->part_11c70);
     ShopDesigns_Destruct((ShopDesigns *) block->shop_designs);
     HouseRecord_Destruct((HouseRecord *) (void *) block->part_0f52c);
-    DayPlan_Destruct(&block->part_0f52b);
+    CafeGuests_Destruct(&block->cafe_guests);
     SpaceshipParts_Destruct(&block->part_0f52a);
     TownLayout_Destruct(block->layout);
     VillagerRoster_Destruct(villagers_of(block));

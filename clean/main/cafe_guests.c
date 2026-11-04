@@ -1,5 +1,5 @@
-/* The day's plan (day_plan.h). */
-#include "day_plan.h"
+/* The cafe's guests of the day (cafe_guests.h). */
+#include "cafe_guests.h"
 
 #include "autoload_2/approach.h"
 #include "calendar.h"
@@ -7,50 +7,50 @@
 #include "nook_store.h"
 #include "main_random.h"
 
-#define DAY_PLAN_SUNDAY 0
-#define DAY_PLAN_SATURDAY 6
+#define CAFE_GUESTS_SUNDAY 0
+#define CAFE_GUESTS_SATURDAY 6
 /* The Nook's store level that bit 7 may be set for. */
-#define DAY_PLAN_NIGHT_STORE_LEVEL 3
+#define CAFE_GUESTS_NIGHT_STORE_LEVEL 3
 
 extern NookStore data_021f395c; /* the town's Nook's store */
 
-static int day_plan_get(const u8 *plan, u8 mask, int shift)
+static int cafe_guests_get(const u8 *plan, u8 mask, int shift)
 {
     return (*plan & mask) >> shift;
 }
 
-static void day_plan_set(u8 *plan, u8 mask, int shift, u32 value)
+static void cafe_guests_set(u8 *plan, u8 mask, int shift, u32 value)
 {
     *plan = (u8) ((*plan & ~mask) | ((value << shift) & mask));
 }
 
 /* func_02086eb0 */
-int DayPlan_Night(const u8 *plan)
+int CafeGuests_Night(const u8 *plan)
 {
-    return day_plan_get(plan, DAY_PLAN_NIGHT_MASK, DAY_PLAN_NIGHT_SHIFT);
+    return cafe_guests_get(plan, CAFE_GUESTS_NIGHT_MASK, CAFE_GUESTS_NIGHT_SHIFT);
 }
-CLEAN_AS(func_02086eb0, DayPlan_Night)
+CLEAN_AS(func_02086eb0, CafeGuests_Night)
 
 /* func_02086ec4 */
-int DayPlan_Afternoon(const u8 *plan)
+int CafeGuests_Afternoon(const u8 *plan)
 {
-    return day_plan_get(plan, DAY_PLAN_AFTERNOON_MASK, DAY_PLAN_AFTERNOON_SHIFT);
+    return cafe_guests_get(plan, CAFE_GUESTS_AFTERNOON_MASK, CAFE_GUESTS_AFTERNOON_SHIFT);
 }
-CLEAN_AS(func_02086ec4, DayPlan_Afternoon)
+CLEAN_AS(func_02086ec4, CafeGuests_Afternoon)
 
 /* func_02086ecc */
-int DayPlan_Noon(const u8 *plan)
+int CafeGuests_Noon(const u8 *plan)
 {
-    return day_plan_get(plan, DAY_PLAN_NOON_MASK, DAY_PLAN_NOON_SHIFT);
+    return cafe_guests_get(plan, CAFE_GUESTS_NOON_MASK, CAFE_GUESTS_NOON_SHIFT);
 }
-CLEAN_AS(func_02086ecc, DayPlan_Noon)
+CLEAN_AS(func_02086ecc, CafeGuests_Noon)
 
 /* func_02086ed4 */
-int DayPlan_Morning(const u8 *plan)
+int CafeGuests_Morning(const u8 *plan)
 {
-    return day_plan_get(plan, DAY_PLAN_MORNING_MASK, DAY_PLAN_MORNING_SHIFT);
+    return cafe_guests_get(plan, CAFE_GUESTS_MORNING_MASK, CAFE_GUESTS_MORNING_SHIFT);
 }
-CLEAN_AS(func_02086ed4, DayPlan_Morning)
+CLEAN_AS(func_02086ed4, CafeGuests_Morning)
 
 /* func_02086ee8: a new plan. The morning bit is a coin toss and three numbers 0-99 are drawn,
  * x for noon, y for the afternoon and z for the night:
@@ -62,17 +62,17 @@ CLEAN_AS(func_02086ed4, DayPlan_Morning)
  *   night bit set for z 0-29 when Nook's store is at level 3, else cleared.
  *
  * The night bit is set on Saturday and Sunday. An afternoon equal to the noon becomes 0. */
-void DayPlan_Draw(u8 *plan)
+void CafeGuests_Draw(u8 *plan)
 {
-    day_plan_set(plan, DAY_PLAN_MORNING_MASK, DAY_PLAN_MORNING_SHIFT, MainRandom_Below(2));
-    day_plan_set(plan, DAY_PLAN_NIGHT_MASK, DAY_PLAN_NIGHT_SHIFT, 1);
+    cafe_guests_set(plan, CAFE_GUESTS_MORNING_MASK, CAFE_GUESTS_MORNING_SHIFT, MainRandom_Below(2));
+    cafe_guests_set(plan, CAFE_GUESTS_NIGHT_MASK, CAFE_GUESTS_NIGHT_SHIFT, 1);
     int x = (int) MainRandom_Below(100);
     int y = (int) MainRandom_Below(100);
     int z = (int) MainRandom_Below(100);
     u32 noon;
     u32 afternoon;
     switch (Calendar_TodayWeekday()) {
-        case DAY_PLAN_SATURDAY:
+        case CAFE_GUESTS_SATURDAY:
             if (Math_IsBetween(x, 0, 74)) {
                 noon = 0;
             } else if (Math_IsBetween(x, 75, 84)) {
@@ -80,7 +80,7 @@ void DayPlan_Draw(u8 *plan)
             } else {
                 noon = 2;
             }
-            day_plan_set(plan, DAY_PLAN_NOON_MASK, DAY_PLAN_NOON_SHIFT, noon);
+            cafe_guests_set(plan, CAFE_GUESTS_NOON_MASK, CAFE_GUESTS_NOON_SHIFT, noon);
             if (Math_IsBetween(y, 0, 74)) {
                 afternoon = 0;
             } else if (Math_IsBetween(y, 75, 84)) {
@@ -88,9 +88,9 @@ void DayPlan_Draw(u8 *plan)
             } else {
                 afternoon = 2;
             }
-            day_plan_set(plan, DAY_PLAN_AFTERNOON_MASK, DAY_PLAN_AFTERNOON_SHIFT, afternoon);
+            cafe_guests_set(plan, CAFE_GUESTS_AFTERNOON_MASK, CAFE_GUESTS_AFTERNOON_SHIFT, afternoon);
             break;
-        case DAY_PLAN_SUNDAY:
+        case CAFE_GUESTS_SUNDAY:
             if (Math_IsBetween(x, 0, 49)) {
                 noon = 0;
             } else if (Math_IsBetween(x, 50, 59)) {
@@ -100,7 +100,7 @@ void DayPlan_Draw(u8 *plan)
             } else {
                 noon = 4;
             }
-            day_plan_set(plan, DAY_PLAN_NOON_MASK, DAY_PLAN_NOON_SHIFT, noon);
+            cafe_guests_set(plan, CAFE_GUESTS_NOON_MASK, CAFE_GUESTS_NOON_SHIFT, noon);
             if (Math_IsBetween(y, 0, 74)) {
                 afternoon = 0;
             } else if (Math_IsBetween(y, 75, 84)) {
@@ -110,7 +110,7 @@ void DayPlan_Draw(u8 *plan)
             } else {
                 afternoon = 3;
             }
-            day_plan_set(plan, DAY_PLAN_AFTERNOON_MASK, DAY_PLAN_AFTERNOON_SHIFT, afternoon);
+            cafe_guests_set(plan, CAFE_GUESTS_AFTERNOON_MASK, CAFE_GUESTS_AFTERNOON_SHIFT, afternoon);
             break;
         default:
             if (Math_IsBetween(x, 0, 74)) {
@@ -120,7 +120,7 @@ void DayPlan_Draw(u8 *plan)
             } else {
                 noon = 2;
             }
-            day_plan_set(plan, DAY_PLAN_NOON_MASK, DAY_PLAN_NOON_SHIFT, noon);
+            cafe_guests_set(plan, CAFE_GUESTS_NOON_MASK, CAFE_GUESTS_NOON_SHIFT, noon);
             if (Math_IsBetween(y, 0, 74)) {
                 afternoon = 0;
             } else if (Math_IsBetween(y, 75, 85)) {
@@ -128,44 +128,44 @@ void DayPlan_Draw(u8 *plan)
             } else {
                 afternoon = 2;
             }
-            day_plan_set(plan, DAY_PLAN_AFTERNOON_MASK, DAY_PLAN_AFTERNOON_SHIFT, afternoon);
-            if (Math_IsBetween(z, 0, 29) && NookStore_Level(&data_021f395c) == DAY_PLAN_NIGHT_STORE_LEVEL) {
-                day_plan_set(plan, DAY_PLAN_NIGHT_MASK, DAY_PLAN_NIGHT_SHIFT, 1);
+            cafe_guests_set(plan, CAFE_GUESTS_AFTERNOON_MASK, CAFE_GUESTS_AFTERNOON_SHIFT, afternoon);
+            if (Math_IsBetween(z, 0, 29) && NookStore_Level(&data_021f395c) == CAFE_GUESTS_NIGHT_STORE_LEVEL) {
+                cafe_guests_set(plan, CAFE_GUESTS_NIGHT_MASK, CAFE_GUESTS_NIGHT_SHIFT, 1);
             } else {
-                day_plan_set(plan, DAY_PLAN_NIGHT_MASK, DAY_PLAN_NIGHT_SHIFT, 0);
+                cafe_guests_set(plan, CAFE_GUESTS_NIGHT_MASK, CAFE_GUESTS_NIGHT_SHIFT, 0);
             }
             break;
     }
-    if (DayPlan_Noon(plan) == DayPlan_Afternoon(plan)) {
-        day_plan_set(plan, DAY_PLAN_AFTERNOON_MASK, DAY_PLAN_AFTERNOON_SHIFT, 0);
+    if (CafeGuests_Noon(plan) == CafeGuests_Afternoon(plan)) {
+        cafe_guests_set(plan, CAFE_GUESTS_AFTERNOON_MASK, CAFE_GUESTS_AFTERNOON_SHIFT, 0);
     }
 }
-CLEAN_AS(func_02086ee8, DayPlan_Draw)
+CLEAN_AS(func_02086ee8, CafeGuests_Draw)
 
 /* func_02087138: the town's setting up draws the first plan. */
-void DayPlan_SetUp(u8 *plan)
+void CafeGuests_SetUp(u8 *plan)
 {
-    DayPlan_Draw(plan);
+    CafeGuests_Draw(plan);
 }
-CLEAN_AS(func_02087138, DayPlan_SetUp)
+CLEAN_AS(func_02087138, CafeGuests_SetUp)
 
 /* func_02087140 */
-void DayPlan_Clear(u8 *plan)
+void CafeGuests_Clear(u8 *plan)
 {
     *plan = 0;
 }
-CLEAN_AS(func_02087140, DayPlan_Clear)
+CLEAN_AS(func_02087140, CafeGuests_Clear)
 
 /* func_02087164: the destructor does nothing. */
-void DayPlan_Destruct(u8 *plan)
+void CafeGuests_Destruct(u8 *plan)
 {
     (void) plan;
 }
-CLEAN_AS(func_02087164, DayPlan_Destruct)
+CLEAN_AS(func_02087164, CafeGuests_Destruct)
 
 /* func_02087168: the constructor does nothing. */
-void DayPlan_Construct(u8 *plan)
+void CafeGuests_Construct(u8 *plan)
 {
     (void) plan;
 }
-CLEAN_AS(func_02087168, DayPlan_Construct)
+CLEAN_AS(func_02087168, CafeGuests_Construct)

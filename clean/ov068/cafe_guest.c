@@ -14,7 +14,7 @@
 #include "main/camera_modes.h"
 #include "main/current_pockets.h"
 #include "main/date_time.h"
-#include "main/day_plan.h"
+#include "main/cafe_guests.h"
 #include "main/event_queue.h"
 #include "main/game_variables.h"
 #include "main/group_params.h"
@@ -129,7 +129,7 @@ extern s16 data_020c80f4;
 extern s16 data_020c80ec;
 extern fx32 data_020c814c;
 extern Vec3 data_021fbee8;
-/* The session, the day the town was started, the day's plan and Nook's store. */
+/* The session, the day the town was started, the day's guests and Nook's store. */
 extern NetSession *data_020ccf94;
 extern TownStartDay data_021f3b85;
 extern u8 data_021ebcd3;
@@ -1207,7 +1207,7 @@ int CafeGuest_Start(CafeGuest *self)
 }
 CLEAN_AS(func_ov068_02274abc, CafeGuest_Start)
 
-/* The kind the plan's noon or afternoon value gives (none for 0 and above 4). */
+/* The kind the guests byte's noon or afternoon value gives (none for 0 and above 4). */
 static void kind_of_plan(CafeGuest *self, unsigned int value)
 {
     switch (value) {
@@ -1232,9 +1232,9 @@ static void kind_of_plan(CafeGuest *self, unsigned int value)
  * gets it as its owner), it has no shadow, and its kind is picked: none while this system is
  * linked to a session or the town's first day counts; else by the weekday and the clock
  * (Saturday 19:30-23:59 kind 7, which brings the actor of profile 0x10; 21:00-21:54 kind 1
- * except on Saturdays; weekdays 23:00-23:59 kind 2 with the plan's night bit and Nook's store
- * at level 3; 12:00-13:29 and 14:30-15:59 by the plan's noon and afternoon values; 6:00-6:54
- * kind 0 with the plan's morning bit, a later rule winning). Then it takes the kind's person
+ * except on Saturdays; weekdays 23:00-23:59 kind 2 with the guests byte's night bit and Nook's store
+ * at level 3; 12:00-13:29 and 14:30-15:59 by the guests byte's noon and afternoon values; 6:00-6:54
+ * kind 0 with the guests byte's morning bit, a later rule winning). Then it takes the kind's person
  * code; kind 7 stands at (15.0, 19.0) at angle 0 with a reach of 5.0, its standard
  * animations 0x102 and a look about within view, the others the standard animations 0x1e and
  * no pitch limit. Whether it was set up. */
@@ -1274,18 +1274,18 @@ int CafeGuest_Init(CafeGuest *self)
             if (hour == 21 && minute < 55) {
                 self->kind = CAFE_GUEST_KIND_NIGHT;
             }
-            if (hour == 23 && minute <= 59 && DayPlan_Night(plan) != 0 && NookStore_Level(&data_021f395c) == 3) {
+            if (hour == 23 && minute <= 59 && CafeGuests_Night(plan) != 0 && NookStore_Level(&data_021f395c) == 3) {
                 self->kind = CAFE_GUEST_KIND_LATE;
             }
             break;
     }
     if (hour == 12 || (hour == 13 && minute < 30)) {
-        kind_of_plan(self, (unsigned int) DayPlan_Noon(plan));
+        kind_of_plan(self, (unsigned int) CafeGuests_Noon(plan));
     }
     if ((hour == 14 && minute >= 30) || (hour == 15 && minute <= 59)) {
-        kind_of_plan(self, (unsigned int) DayPlan_Afternoon(plan));
+        kind_of_plan(self, (unsigned int) CafeGuests_Afternoon(plan));
     }
-    if (hour == 6 && minute < 55 && DayPlan_Morning(plan) != 0) {
+    if (hour == 6 && minute < 55 && CafeGuests_Morning(plan) != 0) {
         self->kind = CAFE_GUEST_KIND_MORNING;
     }
     u16 person = data_ov068_022767ec[self->kind];

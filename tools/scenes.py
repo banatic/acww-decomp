@@ -1209,7 +1209,7 @@ SAVES["house-carry"] = SAVES["house-placed"] + [(0xF52C + 0x200 + 2 * (4 + 16 * 
 # main room, at (6, 9) and (6, 7), both facing south: head to foot, a cell of each next to one of
 # the other's
 SAVES["house-beds"] = SAVES["house-big"] + [room_item(6, 9, 0), room_item(6, 7, 0)]
-# as "museum" with the day's plan (main/day_plan.h, the byte at 0xf52b of the state block; the
+# as "museum" with the day's plan (main/cafe_guests.h, the byte at 0xf52b of the state block; the
 # seed's 0x10) giving the cafe a guest at every hour it may have one: the morning bit, noon 3
 # (the guest that shows part 8 of the counter), afternoon 4 and the night bit
 # (ov068/cafe_guest.c, CafeGuest_Init); booted on the seed's day, the plan is not drawn again

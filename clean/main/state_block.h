@@ -32,7 +32,7 @@ typedef struct StateBlock {
     u8 villagers[0xd304 - 0x9284];            /* 0x09284: VillagerTown */
     u8 layout[0xf52a - 0xd304];               /* 0x0d304: town_layout.h */
     u8 part_0f52a;                            /* 0x0f52a */
-    u8 part_0f52b;                            /* 0x0f52b */
+    u8 cafe_guests;                           /* 0x0f52b */
     u8 part_0f52c[0x10ad0 - 0xf52c];          /* 0x0f52c */
     u8 shop_designs[0x11c70 - 0x10ad0];       /* 0x10ad0: ShopDesigns */
     u8 part_11c70[0x125c0 - 0x11c70];         /* 0x11c70 */

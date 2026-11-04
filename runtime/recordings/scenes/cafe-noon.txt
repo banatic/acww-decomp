@@ -3,7 +3,7 @@
 # seed's day. Boot and walk: as museum.txt to 4440 (inside the museum), then as kk-request.txt
 # from 5680 (1240 frames earlier): north, west and south to the stairs and down to the cafe
 # (about 5300). Save: cafe-plan (museum with the day's plan 0xc7): at 12:00-13:29 the guest of
-# the plan's noon value 3 sits at the counter (CafeGuest_Init, DayPlan_Noon; the counter's parts
+# the plan's noon value 3 sits at the counter (CafeGuest_Init, CafeGuests_Noon; the counter's parts
 # 6, 7 and 8 shown), at 14:30-15:59 that of its afternoon value 4, at 6:00-6:54 that of its
 # morning bit, at 23:00 the night bit is asked for. South, east along the floor and up to the
 # counter in front of Brewster (about 5616); A every 46 frames talks to him: with a guest in he

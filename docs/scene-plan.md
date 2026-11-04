@@ -2870,7 +2870,7 @@ What reading the Clean code found about the groups above; counts are of function
 ### The cafe's guests by the day's plan, the flea market's goodbyes (2026-10-30, dates3)
 - The cafe's guest (ov068/cafe_guest.c, CafeGuest_Init) is picked when the cafe is entered:
   6:00-6:54 by the day's plan's morning bit, 12:00-13:29 by its noon value, 14:30-15:59 by its
-  afternoon value, and at 23:00 on a weekday the night bit is asked for (main/day_plan.h: the
+  afternoon value, and at 23:00 on a weekday the night bit is asked for (main/cafe_guests.h: the
   byte at 0xf52b of the state block, the seed's 0x10, noon 0 and afternoon 1; booted on the
   seed's day it is not drawn again). The earlier tries played cafe-coffee at those hours, but
   its recording leaves the museum's way when booted at another hour (at 14:28 the player was
@@ -2878,7 +2878,7 @@ What reading the Clean code found about the groups above; counts are of function
   walk into the museum, kk-request's from the hall down to the cafe 1240 frames earlier, then up
   to Brewster's counter and A. Save cafe-plan (museum, plan 0xc7): scenes cafe-noon (12:00, the
   guest of value 3 shows the counter's part 8, CafeProps_ShowPart8), cafe-afternoon (14:30),
-  cafe-morning (6:00) and cafe-late (23:00): DayPlan_Noon, _Afternoon, _Morning, _Night, and
+  cafe-morning (6:00) and cafe-late (23:00): CafeGuests_Noon, _Afternoon, _Morning, _Night, and
   Brewster asking whether the guest is the musician (CafeGuest_Kind). The guest's own talk
   (Kapp'n at 14:30 with the seed's plan, his song) did not reach CafeGuest_UpdateDone.
 - The flea market's seller and buyer say goodbye when the player stands at the room's start

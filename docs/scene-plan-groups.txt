@@ -775,7 +775,7 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/collision_box:CollisionBox_ListDestruct main/collision_query:CollisionQuery_DestructCell
   main/constellations:Constellations_DestructList main/control_mode_icon:ControlModeIcon_Delete
   main/control_mode_icon:ControlModeIcon_Destruct main/daily_bits:DailyBits_Destruct
-  main/day_events:DayEvents_MarkDestruct main/day_plan:DayPlan_Destruct
+  main/day_events:DayEvents_MarkDestruct main/cafe_guests:CafeGuests_Destruct
   main/design_assets:DesignArchive_Destruct main/design_assets:DesignPalettes_Destruct
   main/design_assets:DesignTextures_Destruct main/design_sets:DesignHolder_Destruct
   main/design_sets:DesignManager_Destruct main/design_sets:DesignOrder_Destruct
@@ -2383,7 +2383,7 @@ reach: boot in winter (snow), on rainy days, at night for falling stars (main/sk
 needs: date
 match: main/sky* ov003/snowman ov003/snowball_* ov068/snowball main/snowmen main/town_day main/town_growth
   main/town_spawn main/town_generator main/town_start_day main/mom_letters main/npc_letters main/bottle_mail
-  ov003/thrown_bottle main/turnip_prices main/day_plan main/nook_store main/room_score* main/town_record
+  ov003/thrown_bottle main/turnip_prices main/cafe_guests main/nook_store main/room_score* main/town_record
   main/creature_draw main/creature_table main/creature_weight main/insect_draw main/insect_tables
 
 area: Other dates, times and visitors (for the boot on another day)

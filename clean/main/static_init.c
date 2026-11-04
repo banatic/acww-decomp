@@ -33,7 +33,7 @@
 #include "constellations.h"
 #include "control_mode_icon.h"
 #include "date_random.h"
-#include "day_plan.h"
+#include "cafe_guests.h"
 #include "design_assets.h"
 #include "design_sets.h"
 #include "display_frame.h"
@@ -1617,7 +1617,7 @@ void StaticInit_StateBlock(void)
     VillagerRoster_Construct((VillagerTown *) block->villagers);
     TownLayout_Construct(block->layout);
     SpaceshipParts_Construct(&block->part_0f52a);
-    DayPlan_Construct(&block->part_0f52b);
+    CafeGuests_Construct(&block->cafe_guests);
     HouseRecord_Construct((HouseRecord *) block->part_0f52c);
     ShopDesigns_Construct((ShopDesigns *) block->shop_designs);
     ExchangeBlock_Construct((ExchangeBlock *) (void *) block->part_11c70);

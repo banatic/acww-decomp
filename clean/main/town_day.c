@@ -8,7 +8,7 @@
 #include "clean.h"
 #include "clock.h"
 #include "date_time.h"
-#include "day_plan.h"
+#include "cafe_guests.h"
 #include "event_announce.h"
 #include "event_buildings.h"
 #include "event_calendar.h"
@@ -568,7 +568,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         Sky_Objects020bdfd8(days);
         BottleMail_DailyCheck(days);
         MomLetters_DailyCheck(&mom_date, days);
-        DayPlan_Draw(data_021ebcd3);
+        CafeGuests_Draw(data_021ebcd3);
         NookStore_Refresh(&data_021f395c, 0);
         RoomCells_ResetOther();
         PairedTown_PassDays(days);
