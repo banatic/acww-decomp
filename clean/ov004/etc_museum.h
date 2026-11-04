@@ -7,8 +7,8 @@
  * within one group of the record), the angle the player may face away from it by and a message.
  * The kind picks the record's group the exhibits are in (EtcMuseum_MakeItems makes the item
  * codes):
- *   0  group C (0x12b0 on), 1  group B (0x12e8 on), 2  group D (0x3894 on, 4 apart),
- *   3  group A (0x450c on, 4 apart);
+ *   0  the insects (0x12b0 on), 1  the fish (0x12e8 on), 2  the paintings (0x3894 on, 4 apart),
+ *   3  the fossils (0x450c on, 4 apart);
  *   4  a lone one (EtcMuseum_SpawnLone, from InsectMotion_UpdateHopper) with no exhibits, put before
  *      this console's player when it is created; it asks for an event about itself once, says
  *      who gave item 0x12e4 (or that nobody did) and is deleted after.
@@ -41,10 +41,10 @@ enum EtcMuseumState { ETC_MUSEUM_IDLE, ETC_MUSEUM_TALK, ETC_MUSEUM_OPEN, ETC_MUS
 
 /* EtcMuseum.kind */
 enum EtcMuseumKind {
-    ETC_MUSEUM_GROUP_C = 0,
-    ETC_MUSEUM_GROUP_B = 1,
-    ETC_MUSEUM_GROUP_D = 2,
-    ETC_MUSEUM_GROUP_A = 3,
+    ETC_MUSEUM_INSECTS = 0,
+    ETC_MUSEUM_FISH = 1,
+    ETC_MUSEUM_PAINTINGS = 2,
+    ETC_MUSEUM_FOSSILS = 3,
     ETC_MUSEUM_LONE = 4
 };
 
@@ -62,7 +62,7 @@ typedef struct EtcMuseum {
     u8 unk_156[2];          /* 0x156 */
     s32 face_angle;         /* 0x158: how far from facing it the player may turn */
     u32 kind;               /* 0x15c: enum EtcMuseumKind */
-    s16 complete_message;   /* 0x160: group A's message once every exhibit is given */
+    s16 complete_message;   /* 0x160: the fossils' message once every exhibit is given */
     u8 unk_162[2];          /* 0x162 */
     u16 *items;             /* 0x164: the exhibits' item codes (from the current heap) */
     u32 count;              /* 0x168: how many */

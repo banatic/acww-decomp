@@ -5,13 +5,13 @@
  *             scene class of autoload_2 (data_020da13c);
  *   class 83  vtable data_ov004_022566d8, profile data_ov004_022566c8 (MuseumSetupPlain_New),
  *             derived from class 81;
- *   class 82  vtable data_ov004_02256780, profile data_ov004_022566b8 (MuseumSetupGroupA_New),
+ *   class 82  vtable data_ov004_02256780, profile data_ov004_022566b8 (MuseumSetupFossils_New),
  *             derived from class 81.
  *
  * Their creation (slot 0, MuseumSetup_Create) makes the scene's obj_etc_museum spots from the
  * table data_ov004_0224b868 (one row of spots for each of the seven scenes; the spots are built
  * by the overlay's static initialiser), then calls the class's slot 18: nothing in classes 81
- * and 83; in class 82 (MuseumSetupGroupA_ClearMissing) each item of the museum record's group A
+ * and 83; in class 82 (MuseumSetupFossils_ClearMissing) each item of the museum record's fossils
  * lying on the scene's acre (0, 0) that nobody has given is taken away: replaced by item 0x4a54
  * when its furniture shape is 0, else by the empty tile. Their execution (slot 6) is done at
  * once. */
@@ -57,11 +57,11 @@ MuseumSetup *MuseumSetupPlain_DestructFree(MuseumSetup *self);
 MuseumSetup *MuseumSetupPlain_Destruct(MuseumSetup *self);
 MuseumSetup *MuseumSetupPlain_Construct(MuseumSetup *self);
 void MuseumSetupPlain_New(void);
-int MuseumSetupGroupA_ClearMissing(void);
-MuseumSetup *MuseumSetupGroupA_DestructFree(MuseumSetup *self);
-MuseumSetup *MuseumSetupGroupA_Destruct(MuseumSetup *self);
-MuseumSetup *MuseumSetupGroupA_Construct(MuseumSetup *self);
-void MuseumSetupGroupA_New(void);
+int MuseumSetupFossils_ClearMissing(void);
+MuseumSetup *MuseumSetupFossils_DestructFree(MuseumSetup *self);
+MuseumSetup *MuseumSetupFossils_Destruct(MuseumSetup *self);
+MuseumSetup *MuseumSetupFossils_Construct(MuseumSetup *self);
+void MuseumSetupFossils_New(void);
 void MuseumSetup_SpawnSpots(void);
 int MuseumSetup_Execute(void);
 int MuseumSetup_SetUpScene(void);

@@ -1320,7 +1320,7 @@ CLEAN_AS(func_02025fec, VillagerTalkObject_OfferChoices1f)
  * villager object's when its object is in use, else 0), then data_020d9388 set at 0xe8:
  *   types 0 and 1: the item at 0x124 in slot 0;
  *   type 2: without an item at 0x124 one picked for the step (VillagerTalkObject_PickByStep);
- *     from step 2 the index (ItemAttributes_KindIndex) of the villager object's kind, or of
+ *     from step 2 the index (ItemAttributes_FossilKindIndex) of the villager object's kind, or of
  *     the item's kind when the object has none and the item is of 0x450c-0x45db, as a byte in
  *     slot 0 when it has one;
  *   type 3: without an item at 0x124 one picked for the step
@@ -1351,12 +1351,12 @@ void VillagerTalkObject_PutItemNames(VillagerTalk *talk)
                 break;
             }
             int kind = VillagerObject_Kind(object_villager_object(talk));
-            if (kind >= VILLAGER_OBJECT_KIND_NONE && talk->item >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST &&
-                talk->item <= ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
-                kind = FurnitureInfo_MuseumKind(&talk->item);
+            if (kind >= VILLAGER_OBJECT_KIND_NONE && talk->item >= ITEM_ATTRIBUTES_FOSSIL_FIRST &&
+                talk->item <= ITEM_ATTRIBUTES_FOSSIL_LAST) {
+                kind = FurnitureInfo_FossilKind(&talk->item);
             }
             if (kind < VILLAGER_OBJECT_KIND_NONE) {
-                int index = ItemAttributes_KindIndex(kind);
+                int index = ItemAttributes_FossilKindIndex(kind);
                 if (index != -1) {
                     u8 bytes[2] = {(u8) index, 0};
                     SceneBase_PutBytes(object_base(talk), 0, &bytes[0], (int) (uintptr_t) data_020d9f94, &bytes[1]);
@@ -1398,17 +1398,17 @@ CLEAN_AS(func_020261b0, VillagerTalkObject_PickByStep)
 
 /* func_020261f8: the item of the villager object's kind (offset 0), or 0xfff1 when it has none.
  * Without a kind, one the villager's house items miss is picked
- * (ItemAttributes_PickMissingKind), set and sent to the others in the session. */
+ * (ItemAttributes_PickMissingFossilKind), set and sent to the others in the session. */
 void VillagerTalkObject_KindItem(u16 *out, VillagerObject *object, u8 *villager)
 {
     unsigned int kind = VillagerObject_Kind(object);
     if (kind == VILLAGER_OBJECT_KIND_NONE) {
-        kind = ItemAttributes_PickMissingKind(VillagerHouseItems_Items(villager), VILLAGER_HOUSE_ITEMS);
+        kind = ItemAttributes_PickMissingFossilKind(VillagerHouseItems_Items(villager), VILLAGER_HOUSE_ITEMS);
         VillagerObject_SetKind(object, (u8) kind);
         SessionVillager_SendObjectByte2F(villager, (int) kind);
     }
     if (kind < VILLAGER_OBJECT_KIND_NONE) {
-        ItemAttributes_KindItem(out, kind, 0);
+        ItemAttributes_FossilOfKind(out, kind, 0);
     } else {
         *out = ITEM_CODE_NONE;
     }
@@ -1416,25 +1416,25 @@ void VillagerTalkObject_KindItem(u16 *out, VillagerObject *object, u8 *villager)
 CLEAN_AS(func_020261f8, VillagerTalkObject_KindItem)
 
 /* func_02026250: the place of the item among the items of its kind
- * (VillagerTalkObject_KindPart with FurnitureInfo_MuseumKind). */
+ * (VillagerTalkObject_KindPart with FurnitureInfo_FossilKind). */
 int VillagerTalkObject_ItemPart(u16 *item)
 {
-    return VillagerTalkObject_KindPart(item, FurnitureInfo_MuseumKind(item));
+    return VillagerTalkObject_KindPart(item, FurnitureInfo_FossilKind(item));
 }
 CLEAN_AS(func_02026250, VillagerTalkObject_ItemPart)
 
 /* func_02026268: for an item of 0x450c-0x45db, its place (0-2) after the first of the 52 items
- * (four codes apart) whose kind (FurnitureInfo_MuseumKind) is `kind`; -1 for other items, when
+ * (four codes apart) whose kind (FurnitureInfo_FossilKind) is `kind`; -1 for other items, when
  * no item is of the kind, or when the item is not within the three from that first one. */
 int VillagerTalkObject_KindPart(u16 *item, int kind)
 {
-    if (*item < ITEM_ATTRIBUTES_KIND_ITEM_FIRST || *item > ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
+    if (*item < ITEM_ATTRIBUTES_FOSSIL_FIRST || *item > ITEM_ATTRIBUTES_FOSSIL_LAST) {
         return -1;
     }
-    int index = (*item - ITEM_ATTRIBUTES_KIND_ITEM_FIRST) >> 2;
-    for (int i = 0; i < ITEM_ATTRIBUTES_KIND_ITEMS; i++) {
-        u16 code = (u16) (ITEM_ATTRIBUTES_KIND_ITEM_FIRST + i * 4);
-        if (FurnitureInfo_MuseumKind(&code) == kind) {
+    int index = (*item - ITEM_ATTRIBUTES_FOSSIL_FIRST) >> 2;
+    for (int i = 0; i < ITEM_ATTRIBUTES_FOSSILS; i++) {
+        u16 code = (u16) (ITEM_ATTRIBUTES_FOSSIL_FIRST + i * 4);
+        if (FurnitureInfo_FossilKind(&code) == kind) {
             for (int part = 0; part < 3; part++) {
                 if (index == i + part) {
                     return part;
@@ -1455,12 +1455,12 @@ void VillagerTalkObject_DrawKindItem(u16 *out, int unused_object, int unused_vil
     (void) unused_object;
     (void) unused_villager;
     u16 drawn[2];
-    ItemLists_DrawRange(&drawn[0], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, NULL, 1, 0xa, 0, 1);
-    ItemLists_DrawRange(&drawn[1], ITEM_ATTRIBUTES_KIND_ITEM_FIRST, ITEM_ATTRIBUTES_KIND_ITEMS, 0, 0, PlayerRecords_Current(),
-                        0, 0xa, 0, 1);
+    ItemLists_DrawRange(&drawn[0], ITEM_ATTRIBUTES_FOSSIL_FIRST, ITEM_ATTRIBUTES_FOSSILS, 0, 0, NULL, 1, 0xa, 0, 1);
+    ItemLists_DrawRange(&drawn[1], ITEM_ATTRIBUTES_FOSSIL_FIRST, ITEM_ATTRIBUTES_FOSSILS, 0, 0, PlayerRecords_Current(), 0,
+                        0xa, 0, 1);
     *out = ITEM_CODE_NONE;
-    if (drawn[0] >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST && drawn[0] <= ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
-        if (drawn[1] >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST && drawn[1] <= ITEM_ATTRIBUTES_KIND_ITEM_LAST &&
+    if (drawn[0] >= ITEM_ATTRIBUTES_FOSSIL_FIRST && drawn[0] <= ITEM_ATTRIBUTES_FOSSIL_LAST) {
+        if (drawn[1] >= ITEM_ATTRIBUTES_FOSSIL_FIRST && drawn[1] <= ITEM_ATTRIBUTES_FOSSIL_LAST &&
             (MainRandom_Below(10) & 1) != 0) {
             *out = drawn[1];
         } else {

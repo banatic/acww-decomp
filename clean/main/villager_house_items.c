@@ -35,9 +35,9 @@
 /* The items mode 3 keeps. */
 #define VILLAGER_HOUSE_MODE_3_FIRST 0x11a8
 #define VILLAGER_HOUSE_MODE_3_LAST 0x12a7
-/* The kinds of group A items (func_020535f0) are below this. */
-#define VILLAGER_HOUSE_GROUP_A_KINDS 24
-/* VillagerHouseItems_StoreGroupA: an object of this type (byte 0x0a) names a group A kind. */
+/* The kinds of fossils (func_020535f0) are below this. */
+#define VILLAGER_HOUSE_FOSSIL_KINDS 24
+/* VillagerHouseItems_StoreFossil: an object of this type (byte 0x0a) names a fossil kind. */
 #define VILLAGER_HOUSE_OBJECT_TYPE_2 2
 /* VillagerHouseItems_PickCheapest starts from a worth above any item's. */
 #define VILLAGER_HOUSE_WORTH_MAX 99999
@@ -59,15 +59,15 @@ extern const int data_020e18c0[VILLAGER_HOUSE_CLASSES]; /* -1, -1, -1 */
 extern const MemberPointer data_021d1330[VILLAGER_HOUSE_FILTERS];
 extern const MemberPointer __ptmf_null;
 
-static int is_group_a(u16 code)
+static int is_fossil(u16 code)
 {
-    return code >= MUSEUM_A_FIRST && code <= MUSEUM_A_LAST;
+    return code >= MUSEUM_FOSSIL_FIRST && code <= MUSEUM_FOSSIL_LAST;
 }
 
-/* The group A item code's index among the 52 (its variant left out). */
-static int group_a_index(u16 code)
+/* The fossil code's index among the 52 (its variant left out). */
+static int fossil_index(u16 code)
 {
-    return (code - MUSEUM_A_FIRST) >> 2;
+    return (code - MUSEUM_FOSSIL_FIRST) >> 2;
 }
 
 /* The mode and its bit FROM_2, from the villager's mode record. */
@@ -196,8 +196,8 @@ int VillagerHouseItems_CountSame(const u8 *villager, const u16 *item)
 CLEAN_AS(func_0207f708, VillagerHouseItems_CountSame)
 
 /* func_0207f76c: `item` put away into the villager's house. An item of kind 3 or 4 (by the item
- * its code stands for) takes a place of its size class (VillagerHouseItems_MakeRoom; a group A
- * item of class 2 VillagerHouseItems_StoreGroupA) or, with no place for it, may go to the
+ * its code stands for) takes a place of its size class (VillagerHouseItems_MakeRoom; a fossil
+ * of class 2 VillagerHouseItems_StoreFossil) or, with no place for it, may go to the
  * town's list; a wallpaper or a carpet becomes the house's. Non-zero when the item went into
  * one of the ten places. */
 int VillagerHouseItems_Store(u8 *villager, u16 *item)
@@ -214,8 +214,8 @@ int VillagerHouseItems_Store(u8 *villager, u16 *item)
     if (ItemCode_HasVariant(&stands_for)) {
         int fits = VillagerHouseItems_FitsMode(villager, item, (u32) mode);
         int size_class = FurnitureInfo_ItemShape(&stands_for);
-        if (is_group_a(*item) && size_class == 2) {
-            return VillagerHouseItems_StoreGroupA(villager, item, size_class, mode, (u8) from_2, (u8) fits);
+        if (is_fossil(*item) && size_class == 2) {
+            return VillagerHouseItems_StoreFossil(villager, item, size_class, mode, (u8) from_2, (u8) fits);
         }
         int slot = VillagerHouseItems_MakeRoom(villager, size_class, mode, from_2, (u8) fits);
         if (VillagerHouseItems_IsSlot(villager, (u32) slot)) {
@@ -236,17 +236,17 @@ int VillagerHouseItems_Store(u8 *villager, u16 *item)
 }
 CLEAN_AS(func_0207f76c, VillagerHouseItems_Store)
 
-/* func_0207f8a0: a group A item of size class 2 put into the place its kind gives within the
- * class's range (its place among the items of its kind, VillagerHouseItems_GroupAPlace, wrapped
+/* func_0207f8a0: a fossil of size class 2 put into the place its kind gives within the
+ * class's range (its place among the items of its kind, VillagerHouseItems_FossilPlace, wrapped
  * around the range). An empty place just takes it. Else the item there gives way (half of the
  * time to the town's list) and the new one takes its place, except when the new item does not
  * fit the mode while the old one does, or, in mode 2, when the villager's object (of type 2,
- * byte 0x2a at least 2) names a group A kind (byte 0x2f) that the old item has and the new one
+ * byte 0x2a at least 2) names a fossil kind (byte 0x2f) that the old item has and the new one
  * has not: then the new item gives way instead. Non-zero when it was put in.
  * QUIRK: what both items are worth (func_0204c878) is asked for and not used. */
-int VillagerHouseItems_StoreGroupA(u8 *villager, u16 *item, int size_class, int mode, u8 from_2, u8 fits)
+int VillagerHouseItems_StoreFossil(u8 *villager, u16 *item, int size_class, int mode, u8 from_2, u8 fits)
 {
-    if (!is_group_a(*item) || size_class != 2) {
+    if (!is_fossil(*item) || size_class != 2) {
         return 0;
     }
     int first = 0;
@@ -255,7 +255,7 @@ int VillagerHouseItems_StoreGroupA(u8 *villager, u16 *item, int size_class, int 
         return 0;
     }
     int width = end - first;
-    int place = VillagerHouseItems_GroupAPlace(villager, item);
+    int place = VillagerHouseItems_FossilPlace(villager, item);
     int slot = 0;
     if (place >= 0) {
         slot = first + place % width;
@@ -275,15 +275,15 @@ int VillagerHouseItems_StoreGroupA(u8 *villager, u16 *item, int size_class, int 
         ItemTraits_Price(item);
         ItemTraits_Price(there);
         if (mode == 2) {
-            u32 wanted = VILLAGER_HOUSE_GROUP_A_KINDS;
+            u32 wanted = VILLAGER_HOUSE_FOSSIL_KINDS;
             if (ItemObject_IsInUse((ItemObject *) (void *) same) &&
                 ItemObject_Type((ItemObject *) (void *) same) == VILLAGER_HOUSE_OBJECT_TYPE_2 &&
                 VillagerObject_Step((VillagerObject *) (void *) object) >= 2 &&
-                VillagerObject_Kind((VillagerObject *) (void *) object) < VILLAGER_HOUSE_GROUP_A_KINDS) {
+                VillagerObject_Kind((VillagerObject *) (void *) object) < VILLAGER_HOUSE_FOSSIL_KINDS) {
                 wanted = VillagerObject_Kind((VillagerObject *) (void *) object);
             }
-            if (wanted < VILLAGER_HOUSE_GROUP_A_KINDS && wanted != (u32) FurnitureInfo_MuseumKind(item) && old_fits &&
-                wanted == (u32) FurnitureInfo_MuseumKind(there)) {
+            if (wanted < VILLAGER_HOUSE_FOSSIL_KINDS && wanted != (u32) FurnitureInfo_FossilKind(item) && old_fits &&
+                wanted == (u32) FurnitureInfo_FossilKind(there)) {
                 VillagerHouseItems_MaybeGiveUp(item);
                 return 0;
             }
@@ -296,29 +296,29 @@ int VillagerHouseItems_StoreGroupA(u8 *villager, u16 *item, int size_class, int 
     *there = *item;
     return 1;
 }
-CLEAN_AS(func_0207f8a0, VillagerHouseItems_StoreGroupA)
+CLEAN_AS(func_0207f8a0, VillagerHouseItems_StoreFossil)
 
-/* func_0207fa3c: for a group A item of a kind below 24, its index less that of the first group
- * A item of the same kind; -1 for any other item. */
-int VillagerHouseItems_GroupAPlace(const u8 *villager, const u16 *item)
+/* func_0207fa3c: for a fossil of a kind below 24, its index less that of the first fossil
+ * of the same kind; -1 for any other item. */
+int VillagerHouseItems_FossilPlace(const u8 *villager, const u16 *item)
 {
     (void) villager;
-    if (!is_group_a(*item)) {
+    if (!is_fossil(*item)) {
         return -1;
     }
-    u32 kind = FurnitureInfo_MuseumKind(item);
-    if (kind >= VILLAGER_HOUSE_GROUP_A_KINDS) {
+    u32 kind = FurnitureInfo_FossilKind(item);
+    if (kind >= VILLAGER_HOUSE_FOSSIL_KINDS) {
         return -1;
     }
-    for (int i = 0; i < MUSEUM_A_ITEMS; i++) {
-        u16 other = (u16) (MUSEUM_A_FIRST + i * 4);
-        if ((u32) FurnitureInfo_MuseumKind(&other) == kind) {
-            return group_a_index(*item) - i;
+    for (int i = 0; i < MUSEUM_FOSSILS; i++) {
+        u16 other = (u16) (MUSEUM_FOSSIL_FIRST + i * 4);
+        if ((u32) FurnitureInfo_FossilKind(&other) == kind) {
+            return fossil_index(*item) - i;
         }
     }
     return -1;
 }
-CLEAN_AS(func_0207fa3c, VillagerHouseItems_GroupAPlace)
+CLEAN_AS(func_0207fa3c, VillagerHouseItems_FossilPlace)
 
 /* func_0207fad0: a place of the size class's range made ready for a new item: a random empty
  * one; else a random one whose item does not fit the mode, or when the new item fits, the one
@@ -416,11 +416,11 @@ MemberPointer VillagerHouseItems_ModeFilter(u32 villager, u32 mode)
 }
 CLEAN_AS(func_0207fc7c, VillagerHouseItems_ModeFilter)
 
-/* func_0207fcc8: the filter of mode 4: an item of kind 3 or 4 outside group A that the villager
+/* func_0207fcc8: the filter of mode 4: an item of kind 3 or 4 outside the fossils that the villager
  * likes (func_02080834 above 0). */
 int VillagerHouseItems_FitsMode4(u8 *villager, u16 *item)
 {
-    if (!ItemCode_HasVariant(item) || is_group_a(*item)) {
+    if (!ItemCode_HasVariant(item) || is_fossil(*item)) {
         return 0;
     }
     return VillagerData_ItemLiking(villager, item) > 0;
@@ -435,27 +435,27 @@ int VillagerHouseItems_FitsMode3(const u8 *villager, const u16 *item)
 }
 CLEAN_AS(func_0207fd1c, VillagerHouseItems_FitsMode3)
 
-/* func_0207fd44: the filter of mode 2: group A items. */
+/* func_0207fd44: the filter of mode 2: fossils. */
 int VillagerHouseItems_FitsMode2(const u8 *villager, const u16 *item)
 {
     (void) villager;
-    return is_group_a(*item);
+    return is_fossil(*item);
 }
 CLEAN_AS(func_0207fd44, VillagerHouseItems_FitsMode2)
 
-/* func_0207fd6c: the filter of mode 1: group B items. */
+/* func_0207fd6c: the filter of mode 1: fish. */
 int VillagerHouseItems_FitsMode1(const u8 *villager, const u16 *item)
 {
     (void) villager;
-    return *item >= MUSEUM_B_FIRST && *item <= MUSEUM_B_LAST;
+    return *item >= MUSEUM_FISH_FIRST && *item <= MUSEUM_FISH_LAST;
 }
 CLEAN_AS(func_0207fd6c, VillagerHouseItems_FitsMode1)
 
-/* func_0207fd94: the filter of mode 0: group C items. */
+/* func_0207fd94: the filter of mode 0: insects. */
 int VillagerHouseItems_FitsMode0(const u8 *villager, const u16 *item)
 {
     (void) villager;
-    return *item >= MUSEUM_C_FIRST && *item <= MUSEUM_C_LAST;
+    return *item >= MUSEUM_INSECT_FIRST && *item <= MUSEUM_INSECT_LAST;
 }
 CLEAN_AS(func_0207fd94, VillagerHouseItems_FitsMode0)
 

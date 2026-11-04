@@ -11,11 +11,11 @@
  * The villager's mode (villager_mode.h) also picks what it likes to keep: in modes 0-4 an item
  * "fits" when the filter for the mode accepts it (VillagerHouseItems_FitsMode):
  *
- *   mode 0  (an insect caught)   items 0x12b0-0x12e7 (museum_record.h, group C)
- *   mode 1  (a fish caught)      items 0x12e8-0x131f (group B)
- *   mode 2  (item 0x1549)        items 0x450c-0x45db (group A)
+ *   mode 0  (an insect caught)   items 0x12b0-0x12e7 (museum_record.h, the insects)
+ *   mode 1  (a fish caught)      items 0x12e8-0x131f (the fish)
+ *   mode 2  (item 0x1549)        items 0x450c-0x45db (the fossils)
  *   mode 3                       items 0x11a8-0x12a7
- *   mode 4                       items of kind 3 or 4 outside group A that func_02080834 likes
+ *   mode 4                       items of kind 3 or 4 outside the fossils that func_02080834 likes
  *
  * Every item fits in the other modes. An item that gives way goes to the town's list of 15
  * items (data_021f3a86, func_0203a6ec) when there is room, or, from VillagerHouseItems_MaybeGiveUp,
@@ -40,8 +40,8 @@ void VillagerHouseItems_GiveAwayOne(u8 *villager);
 int VillagerHouseItems_Count(const u8 *villager);
 int VillagerHouseItems_CountSame(const u8 *villager, const u16 *item);
 int VillagerHouseItems_Store(u8 *villager, u16 *item);
-int VillagerHouseItems_StoreGroupA(u8 *villager, u16 *item, int size_class, int mode, u8 from_2, u8 fits);
-int VillagerHouseItems_GroupAPlace(const u8 *villager, const u16 *item);
+int VillagerHouseItems_StoreFossil(u8 *villager, u16 *item, int size_class, int mode, u8 from_2, u8 fits);
+int VillagerHouseItems_FossilPlace(const u8 *villager, const u16 *item);
 int VillagerHouseItems_MakeRoom(u8 *villager, int size_class, int mode, int from_2, u8 fits);
 int VillagerHouseItems_MaybeGiveUp(const u16 *item);
 int VillagerHouseItems_GiveUp(const u16 *item);

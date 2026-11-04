@@ -273,9 +273,9 @@ void VillagerObject_Set(VillagerObject *object, u32 type, const u16 *item, const
         ItemObject_SetLow5(villager_object_held(object), 0);
         ItemObject_SetItem(villager_object_held(object), item);
         if (ItemObject_Type(villager_object_held(object)) == VILLAGER_OBJECT_KIND_TYPE &&
-            VillagerObject_Step(object) == VILLAGER_OBJECT_KIND_STEP && *item >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST &&
-            *item <= ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
-            VillagerObject_SetKind(object, (u8) FurnitureInfo_MuseumKind(item));
+            VillagerObject_Step(object) == VILLAGER_OBJECT_KIND_STEP && *item >= ITEM_ATTRIBUTES_FOSSIL_FIRST &&
+            *item <= ITEM_ATTRIBUTES_FOSSIL_LAST) {
+            VillagerObject_SetKind(object, (u8) FurnitureInfo_FossilKind(item));
         }
     }
     if (player != NULL) {

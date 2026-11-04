@@ -699,32 +699,34 @@ void DonationList_ShowCursorSprite(DonationList *self)
 }
 CLEAN_AS(func_ov145_02299f7c, DonationList_ShowCursorSprite)
 
-/* func_ov145_02299fc8: the insects given (group C). */
+/* func_ov145_02299fc8: the insects given. */
 void DonationList_CollectInsects(DonationList *self)
 {
-    self->counts[DONATION_TAB_INSECTS] = (u16) DonationList_CollectEach(self, self->insects, MUSEUM_C_FIRST, MUSEUM_C_ITEMS);
+    self->counts[DONATION_TAB_INSECTS] =
+        (u16) DonationList_CollectEach(self, self->insects, MUSEUM_INSECT_FIRST, MUSEUM_INSECTS);
 }
 CLEAN_AS(func_ov145_02299fc8, DonationList_CollectInsects)
 
-/* func_ov145_02299fec: the fish given (group B). */
+/* func_ov145_02299fec: the fish given. */
 void DonationList_CollectFish(DonationList *self)
 {
-    self->counts[DONATION_TAB_FISH] = (u16) DonationList_CollectEach(self, self->fish, MUSEUM_B_FIRST, MUSEUM_B_ITEMS);
+    self->counts[DONATION_TAB_FISH] = (u16) DonationList_CollectEach(self, self->fish, MUSEUM_FISH_FIRST, MUSEUM_FISH);
 }
 CLEAN_AS(func_ov145_02299fec, DonationList_CollectFish)
 
-/* func_ov145_0229a010: the paintings given (group D). */
+/* func_ov145_0229a010: the paintings given. */
 void DonationList_CollectPaintings(DonationList *self)
 {
     self->counts[DONATION_TAB_PAINTINGS] =
-        (u16) DonationList_CollectEvery4(self, self->paintings, MUSEUM_D_FIRST, MUSEUM_D_ITEMS);
+        (u16) DonationList_CollectEvery4(self, self->paintings, MUSEUM_PAINTING_FIRST, MUSEUM_PAINTINGS);
 }
 CLEAN_AS(func_ov145_0229a010, DonationList_CollectPaintings)
 
-/* func_ov145_0229a034: the fossils given (group A). */
+/* func_ov145_0229a034: the fossils given. */
 void DonationList_CollectFossils(DonationList *self)
 {
-    self->counts[DONATION_TAB_FOSSILS] = (u16) DonationList_CollectEvery4(self, self->fossils, MUSEUM_A_FIRST, MUSEUM_A_ITEMS);
+    self->counts[DONATION_TAB_FOSSILS] =
+        (u16) DonationList_CollectEvery4(self, self->fossils, MUSEUM_FOSSIL_FIRST, MUSEUM_FOSSILS);
 }
 CLEAN_AS(func_ov145_0229a034, DonationList_CollectFossils)
 

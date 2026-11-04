@@ -623,7 +623,7 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov004/aquarium_objects:Aquarium_Destruct ov004/room_manager:RoomManager_Destruct
   ov004/house_roach:HouseRoach_Destruct ov004/house_roaches:HouseRoaches_Destruct
   ov004/museum_insects:InsectRoom_Destruct ov004/museum_room_setup:MuseumSetupPlain_Destruct
-  ov004/museum_room_setup:MuseumSetupGroupA_Destruct ov004/museum_room_setup:MuseumSetup_Destruct
+  ov004/museum_room_setup:MuseumSetupFossils_Destruct ov004/museum_room_setup:MuseumSetup_Destruct
   ov004/player_pick:PlayerPick_Destruct ov004/shop_display:ShopDisplay_Destruct
   ov046/astro:Astro_Destruct ov050/nook_clerk:NookClerk_Destruct ov053/barber:Barber_Destruct
   ov055/xct_exchange:XctExchange_Destruct ov056/ov056_process:Ov056Process_Destroy

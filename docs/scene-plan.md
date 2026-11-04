@@ -2518,7 +2518,7 @@ What reading the Clean code found about the groups above; counts are of function
   0 at home with an insect errand at step 2: the insect shown worth as much as, more or less than
   the one asked for, the rematch's low bits 1), villager-errand-done (low bits 2: the next step,
   the insect of step 1), villager-kind-done (type 2 done at step 1: the kind its house misses,
-  ItemAttributes_PickMissingKind) and villager-variant-done (type 4: its count).
+  ItemAttributes_PickMissingFossilKind) and villager-variant-done (type 4: its count).
 - Gate count1 (w34/classify.py): tag 0xff/2 (the talk spans) is held only by ev_arbeit's messages
   1, 0x14 and 0x15 (bo: 0x17, 0x18) and test_ 3-5 (w34/tagwhere.py over the KOR files); ev_arbeit's
   message is the player record's count, its other users say 11, 13 and 14, and no next byte or

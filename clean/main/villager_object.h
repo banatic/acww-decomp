@@ -11,7 +11,7 @@
  *   0x2c  an item (0xfff1: none)
  *   0x2e  a count, at most 14; for type 4 a step is done once it reaches data_020d1a30's
  *         figure for the step (2, 4, 6, 8, 10, 13: VillagerObject_IsCountReached)
- *   0x2f  a kind of the items 0x450c-0x45db (item_attributes.h), 0x18 for none
+ *   0x2f  a fossil kind (the items 0x450c-0x45db, item_attributes.h), 0x18 for none
  *   0x30  three flags, bits 0-2
  *
  * Session messages 60-63 carry changes to it to the other systems (session_villager.h). */

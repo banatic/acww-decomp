@@ -4,10 +4,10 @@
  * the pockets offer.
  *
  * The museum's record (main's museum_record.h) has four groups; by their item codes (main's
- * item_group.h and item_form.h) and the owl's lines they are the fossils (group A, 0x450c-0x45db,
- * four codes an item; FurnitureInfo_MuseumKind gives the kind of a fossil, several to a kind), the
- * fish (group B, 0x12e8-0x131f), the insects (group C, 0x12b0-0x12e7) and the paintings (group
- * D, 0x3894-0x38e3, four codes an item). The item 0x1549 is a fossil not assessed yet: the owl
+ * item_group.h and item_form.h) and the owl's lines they are the fossils (0x450c-0x45db,
+ * four codes an item; FurnitureInfo_FossilKind gives the kind of a fossil, several to a kind), the
+ * fish (0x12e8-0x131f), the insects (0x12b0-0x12e7) and the paintings
+ * (0x3894-0x38e3, four codes an item). The item 0x1549 is a fossil not assessed yet: the owl
  * replaces it with a fossil drawn at random (OwlTalk_EndAssess). Offered one of the room items
  * 0x38e4-0x3933 it changes it in the pockets for the one of the twenty after them (as
  * item_form.h's replacement), and it has a line for those (0x3934-0x3983).

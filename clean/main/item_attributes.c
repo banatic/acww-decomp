@@ -18,15 +18,14 @@ enum {
 #define ITEM_ATTRIBUTES_FULL 2
 #define ITEM_ATTRIBUTES_HALF 1
 
-extern const u8 data_020d1a60[ITEM_ATTRIBUTES_KINDS]; /* the ten kinds */
+extern const u8 data_020d1a60[ITEM_ATTRIBUTES_PART_FOSSIL_KINDS]; /* the ten kinds */
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 /* The index-th item of the kinds' items; the first one past the end. */
 static u16 item_attributes_kind_item(u32 index)
 {
-    return index < ITEM_ATTRIBUTES_KIND_ITEMS ? (u16) (ITEM_ATTRIBUTES_KIND_ITEM_FIRST + index * 4)
-                                              : ITEM_ATTRIBUTES_KIND_ITEM_FIRST;
+    return index < ITEM_ATTRIBUTES_FOSSILS ? (u16) (ITEM_ATTRIBUTES_FOSSIL_FIRST + index * 4) : ITEM_ATTRIBUTES_FOSSIL_FIRST;
 }
 
 /* func_0209b6c0: how well an item with a variant matches `value` of attribute `attribute`: 2 for
@@ -78,18 +77,18 @@ CLEAN_AS(func_0209b6c0, ItemAttributes_Match)
 
 /* func_0209b750: into `out` the first of the items 0x450c-0x45db of kind `kind`, moved on by
  * `offset` items (0x450c when that passes the end); 0xfff1 when no item is of the kind. */
-void ItemAttributes_KindItem(u16 *out, u32 kind, u32 offset)
+void ItemAttributes_FossilOfKind(u16 *out, u32 kind, u32 offset)
 {
     *out = ITEM_CODE_NONE;
-    for (u32 i = 0; i < ITEM_ATTRIBUTES_KIND_ITEMS; i++) {
+    for (u32 i = 0; i < ITEM_ATTRIBUTES_FOSSILS; i++) {
         u16 item = item_attributes_kind_item(i);
-        if ((u32) FurnitureInfo_MuseumKind(&item) == kind) {
+        if ((u32) FurnitureInfo_FossilKind(&item) == kind) {
             *out = item_attributes_kind_item(i + offset);
             return;
         }
     }
 }
-CLEAN_AS(func_0209b750, ItemAttributes_KindItem)
+CLEAN_AS(func_0209b750, ItemAttributes_FossilOfKind)
 
 /* func_0209b7ac: one of the ten kinds drawn at random among those none of the `count` items
  * is of.
@@ -97,17 +96,17 @@ CLEAN_AS(func_0209b750, ItemAttributes_KindItem)
  * BUG: when they cover all ten, the original reads on past its ten flags into its stack, and
  * then past the kinds' table; Clean gives 0, what it gives when the first byte after the flags
  * is 0. */
-u8 ItemAttributes_PickMissingKind(u16 *items, int count)
+u8 ItemAttributes_PickMissingFossilKind(u16 *items, int count)
 {
-    int left = ITEM_ATTRIBUTES_KINDS;
-    u8 seen[ITEM_ATTRIBUTES_KINDS];
-    MI_CpuFill8(seen, 0, ITEM_ATTRIBUTES_KINDS);
+    int left = ITEM_ATTRIBUTES_PART_FOSSIL_KINDS;
+    u8 seen[ITEM_ATTRIBUTES_PART_FOSSIL_KINDS];
+    MI_CpuFill8(seen, 0, ITEM_ATTRIBUTES_PART_FOSSIL_KINDS);
     for (int i = 0; i < count; i++, items++) {
-        if (*items < ITEM_ATTRIBUTES_KIND_ITEM_FIRST || *items > ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
+        if (*items < ITEM_ATTRIBUTES_FOSSIL_FIRST || *items > ITEM_ATTRIBUTES_FOSSIL_LAST) {
             continue;
         }
-        for (int j = 0; j < ITEM_ATTRIBUTES_KINDS; j++) {
-            if (FurnitureInfo_MuseumKind(items) == data_020d1a60[j] && seen[j] == 0) {
+        for (int j = 0; j < ITEM_ATTRIBUTES_PART_FOSSIL_KINDS; j++) {
+            if (FurnitureInfo_FossilKind(items) == data_020d1a60[j] && seen[j] == 0) {
                 seen[j] = 1;
                 left--;
                 break;
@@ -118,7 +117,7 @@ u8 ItemAttributes_PickMissingKind(u16 *items, int count)
     int n = MainRandom_Below(left);
     int k = 0;
     while (n >= 0) {
-        if (k >= ITEM_ATTRIBUTES_KINDS) {
+        if (k >= ITEM_ATTRIBUTES_PART_FOSSIL_KINDS) {
             return 0;
         }
         if (seen[k] == 0) {
@@ -131,16 +130,16 @@ u8 ItemAttributes_PickMissingKind(u16 *items, int count)
     }
     return data_020d1a60[k];
 }
-CLEAN_AS(func_0209b7ac, ItemAttributes_PickMissingKind)
+CLEAN_AS(func_0209b7ac, ItemAttributes_PickMissingFossilKind)
 
 /* func_0209b850: the index of `kind` among the ten kinds, or -1. */
-int ItemAttributes_KindIndex(int kind)
+int ItemAttributes_FossilKindIndex(int kind)
 {
-    for (int i = 0; i < ITEM_ATTRIBUTES_KINDS; i++) {
+    for (int i = 0; i < ITEM_ATTRIBUTES_PART_FOSSIL_KINDS; i++) {
         if (kind == data_020d1a60[i]) {
             return i;
         }
     }
     return -1;
 }
-CLEAN_AS(func_0209b850, ItemAttributes_KindIndex)
+CLEAN_AS(func_0209b850, ItemAttributes_FossilKindIndex)

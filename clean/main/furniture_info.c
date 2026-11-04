@@ -97,29 +97,29 @@ u8 FurnitureInfo_IndexInGroup(const ItemCode *item)
 }
 CLEAN_AS(func_0205352c, FurnitureInfo_IndexInGroup)
 
-/* func_020535b4: how many of the museum's group A items are of `kind`. */
-int FurnitureInfo_CountMuseumKind(int kind)
+/* func_020535b4: how many of the fossils are of `kind`. */
+int FurnitureInfo_CountFossilKind(int kind)
 {
     int count = 0;
-    for (u32 i = 0; i < MUSEUM_A_ITEMS; i++) {
-        ItemCode item = (ItemCode) (MUSEUM_A_FIRST + i * 4);
-        if (kind == FurnitureInfo_MuseumKind(&item)) {
+    for (u32 i = 0; i < MUSEUM_FOSSILS; i++) {
+        ItemCode item = (ItemCode) (MUSEUM_FOSSIL_FIRST + i * 4);
+        if (kind == FurnitureInfo_FossilKind(&item)) {
             count++;
         }
     }
     return count;
 }
-CLEAN_AS(func_020535b4, FurnitureInfo_CountMuseumKind)
+CLEAN_AS(func_020535b4, FurnitureInfo_CountFossilKind)
 
-/* func_020535f0: the kind of a museum group A item (FurnitureIndoor.kind); 0 for other codes. */
-int FurnitureInfo_MuseumKind(const ItemCode *item)
+/* func_020535f0: the kind of a fossil (FurnitureIndoor.kind); 0 for other codes. */
+int FurnitureInfo_FossilKind(const ItemCode *item)
 {
-    if (*item >= MUSEUM_A_FIRST && *item <= MUSEUM_A_LAST) {
+    if (*item >= MUSEUM_FOSSIL_FIRST && *item <= MUSEUM_FOSSIL_LAST) {
         return FurnitureInfo_Kind(ItemCode_VariantItem(item));
     }
     return 0;
 }
-CLEAN_AS(func_020535f0, FurnitureInfo_MuseumKind)
+CLEAN_AS(func_020535f0, FurnitureInfo_FossilKind)
 
 /* func_02053624: FurnitureIndoor.kind. */
 u8 FurnitureInfo_Kind(int number)

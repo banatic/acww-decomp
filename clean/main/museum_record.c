@@ -18,9 +18,9 @@
 #include "player_records.h"
 #include "town_name.h"
 
-static_assert(offsetof(MuseumRecord, group_b) == 0x1b, "group B");
-static_assert(offsetof(MuseumRecord, group_c) == 0x38, "group C");
-static_assert(offsetof(MuseumRecord, group_d) == 0x55, "group D");
+static_assert(offsetof(MuseumRecord, fish) == 0x1b, "fish");
+static_assert(offsetof(MuseumRecord, insects) == 0x38, "insects");
+static_assert(offsetof(MuseumRecord, paintings) == 0x55, "paintings");
 static_assert(offsetof(MuseumRecord, day) == 0x60, "date");
 
 /* The state block's flag set once the letters are posted. */
@@ -46,24 +46,24 @@ typedef struct Text8 {
 } Text8;
 
 /* The code of entry `index` of each group. */
-static u16 group_a_item(unsigned int index)
+static u16 fossil_item(unsigned int index)
 {
-    return (u16) (MUSEUM_A_FIRST + index * 4);
+    return (u16) (MUSEUM_FOSSIL_FIRST + index * 4);
 }
 
-static u16 group_b_item(unsigned int index)
+static u16 fish_item(unsigned int index)
 {
-    return (u16) (MUSEUM_B_FIRST + index);
+    return (u16) (MUSEUM_FISH_FIRST + index);
 }
 
-static u16 group_c_item(unsigned int index)
+static u16 insect_item(unsigned int index)
 {
-    return (u16) (MUSEUM_C_FIRST + index);
+    return (u16) (MUSEUM_INSECT_FIRST + index);
 }
 
-static u16 group_d_item(unsigned int index)
+static u16 painting_item(unsigned int index)
 {
-    return (u16) (MUSEUM_D_FIRST + index * 4);
+    return (u16) (MUSEUM_PAINTING_FIRST + index * 4);
 }
 
 /* Where entry `index`'s four bits are in its byte. */
@@ -77,45 +77,45 @@ static u8 *locate(MuseumRecord *record, const u16 *item, int *index)
     return (u8 *) (uintptr_t) MuseumRecord_Locate(record, item, index);
 }
 
-/* func_02070d74: how many group A items whose kind (func_020535f0) is `kind` were given. */
-int MuseumRecord_CountGroupAKind(MuseumRecord *record, int kind)
+/* func_02070d74: how many fossils whose kind (func_020535f0) is `kind` were given. */
+int MuseumRecord_CountFossilKind(MuseumRecord *record, int kind)
 {
     int count = 0;
-    for (unsigned int i = 0; i < MUSEUM_A_ITEMS; i++) {
-        u16 item = group_a_item(i);
-        if (kind == FurnitureInfo_MuseumKind(&item) && MuseumRecord_IsGiven(record, &item) != 0) {
+    for (unsigned int i = 0; i < MUSEUM_FOSSILS; i++) {
+        u16 item = fossil_item(i);
+        if (kind == FurnitureInfo_FossilKind(&item) && MuseumRecord_IsGiven(record, &item) != 0) {
             count++;
         }
     }
     return count;
 }
-CLEAN_AS(func_02070d74, MuseumRecord_CountGroupAKind)
+CLEAN_AS(func_02070d74, MuseumRecord_CountFossilKind)
 
-/* func_02070dc0: the share of the 184 items given, in percent (20.12); groups D, B, C then A. */
+/* func_02070dc0: the share of the 184 items given, in percent (20.12); paintings, fish, insects then fossils. */
 int MuseumRecord_PercentGiven(MuseumRecord *record)
 {
     int given = 0;
     u16 item;
-    for (unsigned int i = 0; i < MUSEUM_D_ITEMS; i++) {
-        item = group_d_item(i);
+    for (unsigned int i = 0; i < MUSEUM_PAINTINGS; i++) {
+        item = painting_item(i);
         if (MuseumRecord_IsGiven(record, &item) != 0) {
             given++;
         }
     }
-    for (unsigned int i = 0; i < MUSEUM_B_ITEMS; i++) {
-        item = group_b_item(i);
+    for (unsigned int i = 0; i < MUSEUM_FISH; i++) {
+        item = fish_item(i);
         if (MuseumRecord_IsGiven(record, &item) != 0) {
             given++;
         }
     }
-    for (unsigned int i = 0; i < MUSEUM_C_ITEMS; i++) {
-        item = group_c_item(i);
+    for (unsigned int i = 0; i < MUSEUM_INSECTS; i++) {
+        item = insect_item(i);
         if (MuseumRecord_IsGiven(record, &item) != 0) {
             given++;
         }
     }
-    for (unsigned int i = 0; i < MUSEUM_A_ITEMS; i++) {
-        item = group_a_item(i);
+    for (unsigned int i = 0; i < MUSEUM_FOSSILS; i++) {
+        item = fossil_item(i);
         if (MuseumRecord_IsGiven(record, &item) != 0) {
             given++;
         }
@@ -124,63 +124,63 @@ int MuseumRecord_PercentGiven(MuseumRecord *record)
 }
 CLEAN_AS(func_02070dc0, MuseumRecord_PercentGiven)
 
-/* func_02070e98: whether every group B item was given (it stops at the first that was not). */
-int MuseumRecord_GroupBComplete(MuseumRecord *record)
+/* func_02070e98: whether every fish was given (it stops at the first that was not). */
+int MuseumRecord_FishComplete(MuseumRecord *record)
 {
-    for (unsigned int i = 0; i < MUSEUM_B_ITEMS; i++) {
-        u16 item = group_b_item(i);
+    for (unsigned int i = 0; i < MUSEUM_FISH; i++) {
+        u16 item = fish_item(i);
         if (MuseumRecord_IsGiven(record, &item) == 0) {
             return 0;
         }
     }
     return 1;
 }
-CLEAN_AS(func_02070e98, MuseumRecord_GroupBComplete)
+CLEAN_AS(func_02070e98, MuseumRecord_FishComplete)
 
 /* func_02070edc */
-unsigned int MuseumRecord_GroupDComplete(MuseumRecord *record)
+unsigned int MuseumRecord_PaintingsComplete(MuseumRecord *record)
 {
-    for (unsigned int i = 0; i < MUSEUM_D_ITEMS; i++) {
-        u16 item = group_d_item(i);
+    for (unsigned int i = 0; i < MUSEUM_PAINTINGS; i++) {
+        u16 item = painting_item(i);
         if (MuseumRecord_IsGiven(record, &item) == 0) {
             return 0;
         }
     }
     return 1;
 }
-CLEAN_AS(func_02070edc, MuseumRecord_GroupDComplete)
+CLEAN_AS(func_02070edc, MuseumRecord_PaintingsComplete)
 
 /* func_02070f1c */
-int MuseumRecord_GroupAComplete(MuseumRecord *record)
+int MuseumRecord_FossilsComplete(MuseumRecord *record)
 {
-    for (unsigned int i = 0; i < MUSEUM_A_ITEMS; i++) {
-        u16 item = group_a_item(i);
+    for (unsigned int i = 0; i < MUSEUM_FOSSILS; i++) {
+        u16 item = fossil_item(i);
         if (MuseumRecord_IsGiven(record, &item) == 0) {
             return 0;
         }
     }
     return 1;
 }
-CLEAN_AS(func_02070f1c, MuseumRecord_GroupAComplete)
+CLEAN_AS(func_02070f1c, MuseumRecord_FossilsComplete)
 
 /* func_02070f5c */
-int MuseumRecord_GroupCComplete(MuseumRecord *record)
+int MuseumRecord_InsectsComplete(MuseumRecord *record)
 {
-    for (unsigned int i = 0; i < MUSEUM_C_ITEMS; i++) {
-        u16 item = group_c_item(i);
+    for (unsigned int i = 0; i < MUSEUM_INSECTS; i++) {
+        u16 item = insect_item(i);
         if (MuseumRecord_IsGiven(record, &item) == 0) {
             return 0;
         }
     }
     return 1;
 }
-CLEAN_AS(func_02070f5c, MuseumRecord_GroupCComplete)
+CLEAN_AS(func_02070f5c, MuseumRecord_InsectsComplete)
 
-/* func_02070fa0: whether every item was given, asking groups D, B, C then A. */
+/* func_02070fa0: whether every item was given, asking paintings, fish, insects then fossils. */
 int MuseumRecord_Complete(MuseumRecord *record)
 {
-    return MuseumRecord_GroupDComplete(record) != 0 && MuseumRecord_GroupBComplete(record) != 0 &&
-           MuseumRecord_GroupCComplete(record) != 0 && MuseumRecord_GroupAComplete(record) != 0;
+    return MuseumRecord_PaintingsComplete(record) != 0 && MuseumRecord_FishComplete(record) != 0 &&
+           MuseumRecord_InsectsComplete(record) != 0 && MuseumRecord_FossilsComplete(record) != 0;
 }
 CLEAN_AS(func_02070fa0, MuseumRecord_Complete)
 
@@ -209,26 +209,26 @@ static void forget_if(MuseumRecord *record, const u16 *item, int giver)
     }
 }
 
-/* func_02071028: the items player `player` (0-3) gave are now a former player's; groups A, B, C
- * then D. */
+/* func_02071028: the items player `player` (0-3) gave are now a former player's; fossils, fish,
+ * insects then paintings. */
 void MuseumRecord_ForgetPlayer(MuseumRecord *record, int player)
 {
     int giver = (player & 3) + MUSEUM_GIVEN_BY_PLAYER_0;
     u16 item;
-    for (unsigned int i = 0; i < MUSEUM_A_ITEMS; i++) {
-        item = group_a_item(i);
+    for (unsigned int i = 0; i < MUSEUM_FOSSILS; i++) {
+        item = fossil_item(i);
         forget_if(record, &item, giver);
     }
-    for (unsigned int i = 0; i < MUSEUM_B_ITEMS; i++) {
-        item = group_b_item(i);
+    for (unsigned int i = 0; i < MUSEUM_FISH; i++) {
+        item = fish_item(i);
         forget_if(record, &item, giver);
     }
-    for (unsigned int i = 0; i < MUSEUM_C_ITEMS; i++) {
-        item = group_c_item(i);
+    for (unsigned int i = 0; i < MUSEUM_INSECTS; i++) {
+        item = insect_item(i);
         forget_if(record, &item, giver);
     }
-    for (unsigned int i = 0; i < MUSEUM_D_ITEMS; i++) {
-        item = group_d_item(i);
+    for (unsigned int i = 0; i < MUSEUM_PAINTINGS; i++) {
+        item = painting_item(i);
         forget_if(record, &item, giver);
     }
 }
@@ -353,18 +353,18 @@ int MuseumRecord_Locate(MuseumRecord *record, const u16 *item, int *index)
     u16 code = *item;
     u32 group;
     int entry;
-    if (code >= MUSEUM_A_FIRST && code <= MUSEUM_A_LAST) {
-        group = offsetof(MuseumRecord, group_a);
-        entry = (code - MUSEUM_A_FIRST) >> 2;
-    } else if (code >= MUSEUM_D_FIRST && code <= MUSEUM_D_LAST) {
-        group = offsetof(MuseumRecord, group_d);
-        entry = (code - MUSEUM_D_FIRST) >> 2;
-    } else if (code >= MUSEUM_C_FIRST && code <= MUSEUM_C_LAST) {
-        group = offsetof(MuseumRecord, group_c);
-        entry = code - MUSEUM_C_FIRST;
-    } else if (code >= MUSEUM_B_FIRST && code <= MUSEUM_B_LAST) {
-        group = offsetof(MuseumRecord, group_b);
-        entry = code - MUSEUM_B_FIRST;
+    if (code >= MUSEUM_FOSSIL_FIRST && code <= MUSEUM_FOSSIL_LAST) {
+        group = offsetof(MuseumRecord, fossils);
+        entry = (code - MUSEUM_FOSSIL_FIRST) >> 2;
+    } else if (code >= MUSEUM_PAINTING_FIRST && code <= MUSEUM_PAINTING_LAST) {
+        group = offsetof(MuseumRecord, paintings);
+        entry = (code - MUSEUM_PAINTING_FIRST) >> 2;
+    } else if (code >= MUSEUM_INSECT_FIRST && code <= MUSEUM_INSECT_LAST) {
+        group = offsetof(MuseumRecord, insects);
+        entry = code - MUSEUM_INSECT_FIRST;
+    } else if (code >= MUSEUM_FISH_FIRST && code <= MUSEUM_FISH_LAST) {
+        group = offsetof(MuseumRecord, fish);
+        entry = code - MUSEUM_FISH_FIRST;
     } else {
         return 0;
     }
@@ -402,10 +402,10 @@ CLEAN_AS(func_02071424, MuseumRecord_Clear)
 /* func_02071450: nothing given (the date is kept). */
 void MuseumRecord_ClearAll(MuseumRecord *record)
 {
-    memset(record->group_a, 0, sizeof(record->group_a));
-    memset(record->group_b, 0, sizeof(record->group_b));
-    memset(record->group_c, 0, sizeof(record->group_c));
-    memset(record->group_d, 0, sizeof(record->group_d));
+    memset(record->fossils, 0, sizeof(record->fossils));
+    memset(record->fish, 0, sizeof(record->fish));
+    memset(record->insects, 0, sizeof(record->insects));
+    memset(record->paintings, 0, sizeof(record->paintings));
 }
 CLEAN_AS(func_02071450, MuseumRecord_ClearAll)
 

@@ -47,7 +47,7 @@ static_assert(sizeof(EtcMuseum) == 0x170, "the size its constructor's caller all
 #define ETC_MUSEUM_MESSAGE_GIVEN_BY_FORMER 2 /* the current exhibit, by a player who left */
 #define ETC_MUSEUM_MESSAGE_LONE_GIVEN 3      /* the lone one: item 0x12e4 and its giver */
 #define ETC_MUSEUM_MESSAGE_LONE_NOT_GIVEN 4  /* the lone one: nobody gave it */
-#define ETC_MUSEUM_MESSAGE_ONE 5             /* one exhibit named (also group A's lone exhibit) */
+#define ETC_MUSEUM_MESSAGE_ONE 5             /* one exhibit named (also the fossils' lone exhibit) */
 #define ETC_MUSEUM_MESSAGE_TWO 6             /* two exhibits named */
 #define ETC_MUSEUM_MESSAGE_THREE 7           /* three exhibits named */
 /* The two answers offered when exhibits are left. */
@@ -65,7 +65,7 @@ extern EtcMuseum *data_ov004_0225797c[ETC_MUSEUM_MAX];
 extern u8 data_ov004_02257908;
 extern u8 data_ov004_02257904;
 /* What the spawns leave for the object's creation (EtcMuseum_OnCreate) to read: its kind,
- * group A's message, its exhibits and their count, and its face angle. */
+ * the fossils' message, its exhibits and their count, and its face angle. */
 extern s32 data_ov004_02257914;
 extern s16 data_ov004_0225337c;
 extern const u8 *data_ov004_02257918;
@@ -101,7 +101,7 @@ static u8 count_message(unsigned int left)
     return (u8) ((left - 1) % 3 + ETC_MUSEUM_MESSAGE_ONE);
 }
 
-/* The message about the current exhibit of groups C and D: given by a player of the town or by
+/* The message about the current exhibit of insects and paintings: given by a player of the town or by
  * one who left. */
 static u8 giver_message(EtcMuseum *museum)
 {
@@ -229,8 +229,8 @@ CLEAN_AS(func_ov004_0221b388, EtcMuseum_UpdateTalk)
  * current one (the first of all when none is), the receiver is taken and named, and its message
  * picked:
  *   - none given: message 0;
- *   - group A: message 5 for a list of one, else the one it was made with;
- *   - groups C and B: the message naming the given exhibits left from the current one (5-7);
+ *   - fossils: message 5 for a list of one, else the one it was made with;
+ *   - insects and fish: the message naming the given exhibits left from the current one (5-7);
  *   - else: whether a player of the town or one who left gave the current one (1 or 2).
  * The talk is asked to open. REQUIRES: the receiver has a talk. */
 int EtcMuseum_EnterTalk(EtcMuseum *museum)
@@ -247,13 +247,13 @@ int EtcMuseum_EnterTalk(EtcMuseum *museum)
     MessageReceiver_SetName(&museum->receiver.base, data_ov004_022534cc);
     if (EtcMuseum_AnyGiven(museum) == 0) {
         museum->receiver.base.message = ETC_MUSEUM_MESSAGE_NONE_GIVEN;
-    } else if (museum->kind == ETC_MUSEUM_GROUP_A) {
+    } else if (museum->kind == ETC_MUSEUM_FOSSILS) {
         if (museum->count == 1) {
             museum->receiver.base.message = ETC_MUSEUM_MESSAGE_ONE;
         } else {
             museum->receiver.base.message = (u8) museum->complete_message;
         }
-    } else if (museum->kind <= ETC_MUSEUM_GROUP_B) {
+    } else if (museum->kind <= ETC_MUSEUM_FISH) {
         museum->receiver.base.message = count_message((unsigned int) EtcMuseum_CountGivenLeft(museum));
     } else {
         museum->receiver.base.message = giver_message(museum);
@@ -342,7 +342,7 @@ CLEAN_AS(func_ov004_0221b570, EtcMuseum_SetState)
 
 /* func_ov004_0221b60c (the receiver's slot 0x18, the player's answer): on the first answer (go
  * on) the talk is given the next message about the current exhibit (as EtcMuseum_EnterTalk picks
- * it for groups C, B and the others), on the other the message that ends the talk. The lone one
+ * it for insects, fish and the others), on the other the message that ends the talk. The lone one
  * ignores answers. */
 void EtcMuseum_OnAnswer(EtcMuseum *museum)
 {
@@ -352,7 +352,7 @@ void EtcMuseum_OnAnswer(EtcMuseum *museum)
         return;
     }
     if (TalkAnswers_Picked(TalkObject_Answers(talk_of(museum))) == 0) {
-        if (museum->kind <= ETC_MUSEUM_GROUP_B) {
+        if (museum->kind <= ETC_MUSEUM_FISH) {
             message = count_message((unsigned int) EtcMuseum_CountGivenLeft(museum));
         } else {
             message = giver_message(museum);
@@ -364,7 +364,7 @@ void EtcMuseum_OnAnswer(EtcMuseum *museum)
 }
 CLEAN_AS(func_ov004_0221b60c, EtcMuseum_OnAnswer)
 
-/* func_ov004_0221b6d8 (the receiver's slot 0x14, a message ended). For group A: once every
+/* func_ov004_0221b6d8 (the receiver's slot 0x14, a message ended). For the fossils: once every
  * exhibit is given, the message it was made with is followed by the next one; anything else
  * ends the talk. For the others: while given exhibits are left, the player is offered to go on
  * (answers 0xe5 and 0xe6, B picking the second) and the choices open; else the talk ends. The
@@ -376,7 +376,7 @@ void EtcMuseum_OnMessageEnded(EtcMuseum *museum)
     if (EtcMuseum_IsLone(museum)) {
         return;
     }
-    if (museum->kind == ETC_MUSEUM_GROUP_A) {
+    if (museum->kind == ETC_MUSEUM_FOSSILS) {
         u8 shown = museum->receiver.base.message;
         if (shown != ETC_MUSEUM_MESSAGE_ONE && EtcMuseum_AllGiven(museum) && museum->complete_message == shown) {
             message = (u8) (shown + 1);
@@ -409,17 +409,17 @@ static void set_item_value(EtcMuseum *museum, int index, u16 *item, NameText *na
     TalkObject_SetValue(talk_of(museum), index, (TextBase *) (void *) name, ETC_MUSEUM_VALUE_KIND);
 }
 
-/* func_ov004_0221b808 (the receiver's slot 0x10, a message begins). For groups C and B the
+/* func_ov004_0221b808 (the receiver's slot 0x10, a message begins). For insects and fish the
  * message names one to three exhibits (messages 5-7): the names of that many, from the current
  * one on, become the talk's values 0-2, the current one moving on to the next given after each.
  * For the others, while the current one is in the list: its giver's name becomes part 0 and its
- * name value 0, and (but for group A) the current one moves on. The lone one does nothing. */
+ * name value 0, and (but for the fossils) the current one moves on. The lone one does nothing. */
 void EtcMuseum_OnMessageBegun(EtcMuseum *museum)
 {
     if (EtcMuseum_IsLone(museum)) {
         return;
     }
-    if (museum->kind <= ETC_MUSEUM_GROUP_B) {
+    if (museum->kind <= ETC_MUSEUM_FISH) {
         u32 named;
         switch (museum->receiver.base.message) {
             case ETC_MUSEUM_MESSAGE_ONE:
@@ -450,7 +450,7 @@ void EtcMuseum_OnMessageBegun(EtcMuseum *museum)
         MuseumRecord_GiverName(&data_021f38f8, &giver, &item);
         TalkObject_SetPart(talk_of(museum), 0, (TextBase *) (void *) &giver);
         set_item_value(museum, 0, &item, &name);
-        if (museum->kind != ETC_MUSEUM_GROUP_A) {
+        if (museum->kind != ETC_MUSEUM_FOSSILS) {
             EtcMuseum_NextGiven(museum);
         }
         NameText_Destruct(&name);
@@ -553,15 +553,15 @@ int EtcMuseum_AnyGiven(EtcMuseum *museum)
 CLEAN_AS(func_ov004_0221ba88, EtcMuseum_AnyGiven)
 
 /* The first item code of each group (EtcMuseumKind 0-3) and how many numbers the group has;
- * the codes of groups D and A are 4 apart. */
-#define ETC_MUSEUM_GROUP_C_FIRST 0x12b0
-#define ETC_MUSEUM_GROUP_B_FIRST 0x12e8
-#define ETC_MUSEUM_GROUP_D_FIRST 0x3894
-#define ETC_MUSEUM_GROUP_A_FIRST 0x450c
-#define ETC_MUSEUM_GROUP_C_COUNT 0x38
-#define ETC_MUSEUM_GROUP_B_COUNT 0x38
-#define ETC_MUSEUM_GROUP_D_COUNT 0x14
-#define ETC_MUSEUM_GROUP_A_COUNT 0x34
+ * the codes of paintings and fossils are 4 apart. */
+#define ETC_MUSEUM_INSECTS_FIRST 0x12b0
+#define ETC_MUSEUM_FISH_FIRST 0x12e8
+#define ETC_MUSEUM_PAINTINGS_FIRST 0x3894
+#define ETC_MUSEUM_FOSSILS_FIRST 0x450c
+#define ETC_MUSEUM_INSECTS_COUNT 0x38
+#define ETC_MUSEUM_FISH_COUNT 0x38
+#define ETC_MUSEUM_PAINTINGS_COUNT 0x14
+#define ETC_MUSEUM_FOSSILS_COUNT 0x34
 #define ETC_MUSEUM_WIDE_STEP 4
 
 /* The item code of exhibit `number` of a group: `first` plus `number` steps.
@@ -589,26 +589,26 @@ int EtcMuseum_MakeItems(EtcMuseum *museum)
         return 0;
     }
     switch (museum->kind) {
-        case ETC_MUSEUM_GROUP_C:
+        case ETC_MUSEUM_INSECTS:
             for (u32 i = 0; i < museum->count; i++) {
-                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_C_COUNT, 1, ETC_MUSEUM_GROUP_C_FIRST);
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_INSECTS_COUNT, 1, ETC_MUSEUM_INSECTS_FIRST);
             }
             return 1;
-        case ETC_MUSEUM_GROUP_B:
+        case ETC_MUSEUM_FISH:
             for (u32 i = 0; i < museum->count; i++) {
-                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_B_COUNT, 1, ETC_MUSEUM_GROUP_B_FIRST);
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_FISH_COUNT, 1, ETC_MUSEUM_FISH_FIRST);
             }
             return 1;
-        case ETC_MUSEUM_GROUP_D:
+        case ETC_MUSEUM_PAINTINGS:
             for (u32 i = 0; i < museum->count; i++) {
-                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_D_COUNT, ETC_MUSEUM_WIDE_STEP,
-                                                ETC_MUSEUM_GROUP_D_FIRST);
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_PAINTINGS_COUNT, ETC_MUSEUM_WIDE_STEP,
+                                                ETC_MUSEUM_PAINTINGS_FIRST);
             }
             return 1;
-        case ETC_MUSEUM_GROUP_A:
+        case ETC_MUSEUM_FOSSILS:
             for (u32 i = 0; i < museum->count; i++) {
-                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_A_COUNT, ETC_MUSEUM_WIDE_STEP,
-                                                ETC_MUSEUM_GROUP_A_FIRST);
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_FOSSILS_COUNT, ETC_MUSEUM_WIDE_STEP,
+                                                ETC_MUSEUM_FOSSILS_FIRST);
             }
             return 1;
         default:
@@ -711,7 +711,7 @@ extern const fx16 FX_SinCosTable_[];
 extern NetSession *data_020ccf94;
 
 /* func_ov004_0221bd28 (vtable slot 0x00, the creation's work): takes what the spawn left (kind,
- * group A's message, count and face angle) and enters it in the table (emptying the table first
+ * the fossils' message, count and face angle) and enters it in the table (emptying the table first
  * when it holds none). When there was room: the lone one moves one unit before this console's
  * player, along the player's direction (when the player has a field actor); its id becomes its
  * session slot (2 bits), the current scene (6 bits) and its index (8 bits); it starts idle and

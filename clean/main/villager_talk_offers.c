@@ -845,7 +845,7 @@ int VillagerTalkOffer_ChoicesKind(VillagerTalk *talk)
                 offer_set(talk, &list, index, 0x14, data_021c2cd4);
             }
             if (VillagerObject_Step(*offer_villager_object(talk)) >= 2) {
-                int kind = ItemAttributes_KindIndex(VillagerObject_Kind(*offer_villager_object(talk)));
+                int kind = ItemAttributes_FossilKindIndex(VillagerObject_Kind(*offer_villager_object(talk)));
                 if (kind != VILLAGER_TALK_OFFER_NOT_FOUND) {
                     u8 bytes[2];
                     bytes[0] = (u8) kind;
@@ -896,7 +896,7 @@ u16 VillagerTalkOffer_PocketsOfKind(VillagerObject *object)
     for (int i = 0; i < VILLAGER_TALK_OFFER_KIND_ITEMS; i++) {
         if (VillagerObject_TestFlag(object, (u32) i) == 0) {
             u16 item;
-            ItemAttributes_KindItem(&item, VillagerObject_Kind(object), (u32) i);
+            ItemAttributes_FossilOfKind(&item, VillagerObject_Kind(object), (u32) i);
             wanted[i] = item;
         } else {
             wanted[i] = VILLAGER_TALK_OFFER_NO_ITEM;

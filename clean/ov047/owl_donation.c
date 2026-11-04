@@ -275,7 +275,7 @@ CLEAN_AS(func_ov047_02260d28, OwlTalk_EndInsect)
 void OwlTalk_EndPainting(OwlTalk *talk)
 {
     OwlTalk_TakeItem(talk);
-    if (MuseumRecord_GroupDComplete(&data_021f38f8)) {
+    if (MuseumRecord_PaintingsComplete(&data_021f38f8)) {
         talk->next_line = 0x31;
     } else {
         talk->next_line = 0x27;
@@ -497,14 +497,14 @@ void OwlTalk_OnLineEnded(OwlTalk *talk)
     }
     if (shown == 0x33 || owl_in(shown, OWL_LINE_INSECT, OWL_LINE_INSECT_LAST)) {
         OwlTalk_TakeItem(talk);
-        talk->next_line = MuseumRecord_GroupCComplete(&data_021f38f8) ? 0x34 : 0x27;
+        talk->next_line = MuseumRecord_InsectsComplete(&data_021f38f8) ? 0x34 : 0x27;
         SceneCommand_RequestMotion16(owl_scene(talk));
         owl_say_on(owl_object(talk), (u8) talk->next_line);
         return;
     }
     if (owl_in(shown, OWL_LINE_FISH, OWL_LINE_FISH_LAST)) {
         OwlTalk_TakeItem(talk);
-        talk->next_line = MuseumRecord_GroupBComplete(&data_021f38f8) ? 0x36 : 0x27;
+        talk->next_line = MuseumRecord_FishComplete(&data_021f38f8) ? 0x36 : 0x27;
         SceneCommand_RequestMotion16(owl_scene(talk));
         owl_say_on(owl_object(talk), (u8) talk->next_line);
         return;
@@ -529,7 +529,7 @@ void OwlTalk_OnLineEnded(OwlTalk *talk)
     }
 
     if (owl_in(owl_shown(talk), OWL_LINE_FOSSIL_KIND, OWL_LINE_FOSSIL_KIND_LAST)) {
-        if (MuseumRecord_GroupAComplete(&data_021f38f8)) {
+        if (MuseumRecord_FossilsComplete(&data_021f38f8)) {
             talk->next_line = 0x29;
         } else {
             talk->next_line = talk->assessing == 0 ? 0x27 : 0x20;
@@ -540,9 +540,9 @@ void OwlTalk_OnLineEnded(OwlTalk *talk)
     shown = owl_shown(talk);
     if ((shown == 0x25 || shown == 0x2c || shown == 0x2d || shown == 0x69) && !owl_is_none(&talk->item)) {
         owl_keep_gift(talk, giver);
-        int kind = FurnitureInfo_MuseumKind(&talk->item);
-        int pieces = FurnitureInfo_CountMuseumKind(kind);
-        int given = MuseumRecord_CountGroupAKind(&data_021f38f8, kind);
+        int kind = FurnitureInfo_FossilKind(&talk->item);
+        int pieces = FurnitureInfo_CountFossilKind(kind);
+        int given = MuseumRecord_CountFossilKind(&data_021f38f8, kind);
         if (pieces == 1) {
             if (owl_shown(talk) != 0x2d) {
                 talk->next_line = 0x2d;

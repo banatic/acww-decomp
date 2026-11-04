@@ -16,7 +16,7 @@ static_assert(sizeof(MuseumSetupSpot) == 0x1c, "a spot");
 static_assert(offsetof(MuseumSetupSpot, kind) == 0x19, "a spot's kind");
 static_assert(sizeof(MuseumSetupRow) == 0xc, "a row");
 
-/* What class 82 puts in place of a missing group A item whose furniture shape is 0. */
+/* What class 82 puts in place of a missing fossil whose furniture shape is 0. */
 #define MUSEUM_SETUP_STAND_IN 0x4a54
 
 /* The vtables: classes 83, 82 and 81, and the scene class of autoload_2. */
@@ -92,7 +92,7 @@ void MuseumSetupPlain_New(void)
 CLEAN_AS(func_ov004_02245214, MuseumSetupPlain_New)
 
 /* Class 82's two item codes, built and registered the first time. */
-static void MuseumSetupGroupA_init_codes(void)
+static void MuseumSetupFossils_init_codes(void)
 {
     if ((data_ov004_0225f53c & 1) == 0) {
         data_ov004_0225f538 = MUSEUM_SETUP_STAND_IN;
@@ -107,21 +107,21 @@ static void MuseumSetupGroupA_init_codes(void)
 }
 
 /* func_ov004_0224522c (class 82's slot 18): each tile of the scene's acre (0, 0), row by row,
- * holding an item of the museum record's group A that nobody has given gets item 0x4a54 when
+ * holding an item of the museum record's fossils that nobody has given gets item 0x4a54 when
  * the item's furniture shape is 0, else the empty tile. */
-int MuseumSetupGroupA_ClearMissing(void)
+int MuseumSetupFossils_ClearMissing(void)
 {
     AcreMap *map = data_021c80bc;
     for (int z = 0; z < 16; z++) {
         for (int x = 0; x < 16; x++) {
             u16 *item = AcreTile_ItemInAcre(map, 0, 0, x, z, 0);
-            if (item == NULL || *item < MUSEUM_A_FIRST || *item > MUSEUM_A_LAST) {
+            if (item == NULL || *item < MUSEUM_FOSSIL_FIRST || *item > MUSEUM_FOSSIL_LAST) {
                 continue;
             }
             if (MuseumRecord_IsGiven(&data_021f38f8, item)) {
                 continue;
             }
-            MuseumSetupGroupA_init_codes();
+            MuseumSetupFossils_init_codes();
             u16 code;
             if (FurnitureInfo_ItemShape(item) == 0) {
                 code = data_ov004_0225f538;
@@ -133,46 +133,46 @@ int MuseumSetupGroupA_ClearMissing(void)
     }
     return 1;
 }
-CLEAN_AS(func_ov004_0224522c, MuseumSetupGroupA_ClearMissing)
+CLEAN_AS(func_ov004_0224522c, MuseumSetupFossils_ClearMissing)
 
 /* func_ov004_02245358 (class 82's slot 17): the destructor, and the process freed. */
-MuseumSetup *MuseumSetupGroupA_DestructFree(MuseumSetup *self)
+MuseumSetup *MuseumSetupFossils_DestructFree(MuseumSetup *self)
 {
     self->base.vtable = data_ov004_02256780;
     MuseumSetup_DestructBase(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov004_02245358, MuseumSetupGroupA_DestructFree)
+CLEAN_AS(func_ov004_02245358, MuseumSetupFossils_DestructFree)
 
 /* func_ov004_02245378 (class 82's slot 16): the destructor. */
-MuseumSetup *MuseumSetupGroupA_Destruct(MuseumSetup *self)
+MuseumSetup *MuseumSetupFossils_Destruct(MuseumSetup *self)
 {
     self->base.vtable = data_ov004_02256780;
     MuseumSetup_DestructBase(self);
     return self;
 }
-CLEAN_AS(func_ov004_02245378, MuseumSetupGroupA_Destruct)
+CLEAN_AS(func_ov004_02245378, MuseumSetupFossils_Destruct)
 
 /* func_ov004_02245390: class 82's constructor. */
-MuseumSetup *MuseumSetupGroupA_Construct(MuseumSetup *self)
+MuseumSetup *MuseumSetupFossils_Construct(MuseumSetup *self)
 {
     MuseumSetup_ConstructBase(self);
     self->base.vtable = data_ov004_02256780;
     return self;
 }
-CLEAN_AS(func_ov004_02245390, MuseumSetupGroupA_Construct)
+CLEAN_AS(func_ov004_02245390, MuseumSetupFossils_Construct)
 
 /* func_ov004_022453a8 (class 82's profile): a process of class 82 from the auxiliary heap. */
-void MuseumSetupGroupA_New(void)
+void MuseumSetupFossils_New(void)
 {
     MuseumSetup *self = Heap_AllocAuxZeroed(sizeof(MuseumSetup));
     if (self == NULL) {
         return;
     }
-    MuseumSetupGroupA_Construct(self);
+    MuseumSetupFossils_Construct(self);
 }
-CLEAN_AS(func_ov004_022453a8, MuseumSetupGroupA_New)
+CLEAN_AS(func_ov004_022453a8, MuseumSetupFossils_New)
 
 /* func_ov004_022453c0: the current scene's obj_etc_museum spots made, from the first row of
  * data_ov004_0224b868 for that scene. */

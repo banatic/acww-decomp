@@ -31,7 +31,7 @@ typedef struct FurnitureAlways {
 
 /* A record of indoor.bin. */
 typedef struct FurnitureIndoor {
-    u8 kind;   /* 0x00: for the museum's group A items, the kind they are counted by */
+    u8 kind;   /* 0x00: for the fossils, the creature each is of (0-23; one dinosaur's parts share it) */
     u8 flags;  /* 0x01: bit 4 and bit 5 the light kind */
     u8 flags2; /* 0x02: bit 0 */
     u8 unk_03; /* 0x03 */
@@ -59,8 +59,8 @@ enum FurnitureLightKind {
 
 u8 FurnitureInfo_CountInGroup(u32 group);
 u8 FurnitureInfo_IndexInGroup(const ItemCode *item);
-int FurnitureInfo_CountMuseumKind(int kind);
-int FurnitureInfo_MuseumKind(const ItemCode *item);
+int FurnitureInfo_CountFossilKind(int kind);
+int FurnitureInfo_FossilKind(const ItemCode *item);
 u8 FurnitureInfo_Kind(int number);
 s8 FurnitureInfo_Lift(int number);
 int FurnitureInfo_Scale(int number);
