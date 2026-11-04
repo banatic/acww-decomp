@@ -61,19 +61,19 @@ int VillagerImpression_Clothes12A8(u8 *record)
 }
 CLEAN_AS(func_0207e6d4, VillagerImpression_Clothes12A8)
 
-/* func_0207e708: func_020ba4e4 gives 2. */
-int VillagerImpression_State8AB0Is2(void)
+/* func_0207e708: snow is falling (Sky_Falling gives SKY_FALLING_SNOW, 2). */
+int VillagerImpression_IsSnowing(void)
 {
     return Sky_Falling() == 2;
 }
-CLEAN_AS(func_0207e708, VillagerImpression_State8AB0Is2)
+CLEAN_AS(func_0207e708, VillagerImpression_IsSnowing)
 
-/* func_0207e720: func_020ba4e4 gives 1. */
-int VillagerImpression_State8AB0Is1(void)
+/* func_0207e720: rain is falling (Sky_Falling gives SKY_FALLING_RAIN, 1). */
+int VillagerImpression_IsRaining(void)
 {
     return Sky_Falling() == 1;
 }
-CLEAN_AS(func_0207e720, VillagerImpression_State8AB0Is1)
+CLEAN_AS(func_0207e720, VillagerImpression_IsRaining)
 
 /* ---- The player's looks */
 
