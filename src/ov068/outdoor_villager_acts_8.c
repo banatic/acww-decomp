@@ -1,10 +1,15 @@
-/* func_ov068_022680a4 @ 0x022680a4, 0x1b0 bytes, Thumb, module ov068
+/* outdoor_villager_acts_8: 2 functions, module ov068
  * mwccarm 1.2/base -O4,s
+ * func_ov068_022680a4 @ 0x022680a4, 0x1b0 bytes, Thumb
+ * func_ov068_02268020 @ 0x02268020, 0x84 bytes, Thumb
  */
+
+#define IN(v, lo, hi) ((v) >= (lo) && (v) <= (hi))
 
 typedef struct {
     int x, y, z;
 } Vec;
+
 typedef struct {
     char pad_00[0x34];
     int unk_34;
@@ -12,6 +17,7 @@ typedef struct {
 } Big;
 
 typedef struct UnkStruct_022680a4 UnkStruct_022680a4;
+
 struct UnkStruct_022680a4 {
     char pad_00[0x1c];
     unsigned char unk_1C;
@@ -22,6 +28,7 @@ struct UnkStruct_022680a4 {
 };
 
 typedef struct UnkStruct_022680a4_2 UnkStruct_022680a4_2;
+
 struct UnkStruct_022680a4_2 {
     char pad_00[0x5c];
     Vec unk_5C;
@@ -40,8 +47,6 @@ struct UnkStruct_022680a4_2 {
     unsigned char unk_A04;
 };
 
-#define IN(v, lo, hi) ((v) >= (lo) && (v) <= (hi))
-
 extern unsigned short data_020c80f8;
 extern int func_020164a0(int *p, int a);
 extern void func_0201651c(void *p, int a);
@@ -56,6 +61,9 @@ extern int func_02091254(int a, Vec *v, int b, int c);
 extern int func_0200442c(void *p, int a, int b, int c);
 extern void func_0203423c(Big *p);
 extern void func_02091278(int a, Vec *v, int b, int c);
+extern int func_02019de8(const void *ptr);
+extern void func_02016638(const void *a, const void *b, const void *c, int d, int e);
+extern void func_ov068_0226cce8(const void *a, const void *b, int c);
 
 void func_ov068_022680a4(UnkStruct_022680a4 *a, UnkStruct_022680a4_2 *b)
 {
@@ -117,5 +125,18 @@ other:
     b->unk_198 = a->unk_30;
     if (b->unk_A00 != -1) {
         func_02091278(b->unk_A00, &b->unk_5C, 0, 0);
+    }
+}
+
+void func_ov068_02268020(void *p0, void *p1)
+{
+    if (func_020164a0((int *) ((char *) p1 + 0x334), 0) == 0x12b || func_020164a0((int *) ((char *) p1 + 0x334), 0) == 0x12a) {
+        if (func_02019de8((char *) p1 + 0x564) == 0) {
+            return;
+        }
+        *(unsigned int *) ((char *) p1 + 0x4e8) &= ~2;
+        *((unsigned char *) p0 + 0x1c) = 5;
+        func_02016638((char *) p1 + 0x334, p1, (char *) p1 + 0x9b4, 0, 3);
+        func_ov068_0226cce8(p0, p1, 0);
     }
 }

@@ -1,5 +1,7 @@
-/* func_ov068_0226bc1c @ 0x0226bc1c, 0x2e0 bytes, Thumb, module ov068
+/* outdoor_villager_walks_7: 2 functions, module ov068
  * mwccarm 1.2/base -O4,s
+ * func_ov068_0226bc1c @ 0x0226bc1c, 0x2e0 bytes, Thumb
+ * func_ov068_0226bb3c @ 0x0226bb3c, 0xe0 bytes, Thumb
  */
 
 #include "types.h"
@@ -32,7 +34,6 @@ typedef struct {
 extern u16 data_020c80f8;
 extern char data_021cb5a0[];
 extern int data_021fbee8[];
-
 extern int func_ov068_0226ca74(UnkStruct_0226bc1c *a, UnkStruct_0226bc1c_2 *b);
 extern void func_ov068_0226cce8(UnkStruct_0226bc1c *a, UnkStruct_0226bc1c_2 *b, int n);
 extern int func_ov068_0226befc(UnkStruct_0226bc1c *a, UnkStruct_0226bc1c_2 *b);
@@ -53,6 +54,15 @@ extern unsigned char func_ov068_0226cf8c(UnkStruct_0226bc1c_2 *b);
 extern int func_02019d0c(char *w, int a, int b, int c, int d, short e, short f, int g, int h, u16 i, u16 j);
 extern int func_ov068_0226c7dc(UnkStruct_0226bc1c *a, UnkStruct_0226bc1c_2 *b);
 extern int *func_0201afd0(char *p);
+extern void func_ov068_0226cfd4(void *);
+extern void func_ov068_02266c34(void *a, void *b, int c, int d, int e, void *f, int g, int h, int i);
+extern void func_02013c04(void *);
+extern int func_02013894(void *);
+extern void func_020138a4(void *, int);
+extern void func_ov068_0226c964(void *, int, void *);
+extern void func_0201cbbc(void *);
+extern unsigned int data_020c814c;
+extern unsigned int __ptmf_null[2];
 
 int func_ov068_0226bc1c(UnkStruct_0226bc1c *a, UnkStruct_0226bc1c_2 *b)
 {
@@ -190,4 +200,37 @@ fail0:
     func_ov068_0226cce8(a, b, 1);
 done:
     return 0;
+}
+
+int func_ov068_0226bb3c(void *self, void *other)
+{
+    int zero = 0;
+    unsigned long long tmp;
+
+    func_ov068_0226cfd4(other);
+    func_ov068_02266c34((char *) other + 0x898, other, zero, zero, zero, (void *) ((unsigned char *) data_021fbee8), 4, data_020c814c, 1);
+    func_02019c6c((char *) ((char *) other + 0x564), 1, (unsigned short) ((*(unsigned short *) &data_020c80f8)));
+    *(unsigned int *) ((char *) self + 0x20) = 0;
+
+    tmp = *(unsigned long long *) &__ptmf_null;
+    *(unsigned int *) ((char *) other + 0x8b0) = (unsigned int) tmp;
+    *(unsigned int *) ((char *) other + 0x8b4) = (unsigned int) (tmp >> 32);
+
+    func_02013c04((char *) other + 0x558);
+    *(unsigned short *) ((char *) self + 0xda) = 0;
+    *(unsigned int *) ((char *) self + 0xf8) = 0x384;
+
+    if (func_02013894((char *) self + 0x3c) != 0) {
+        self = (void *) ((char *) self + 0x3c);
+        func_020138a4(self, 1);
+    } else {
+        func_ov068_0226c964(self, 1, other);
+        *(short *) ((char *) self + 0xd8) = -1;
+        self = (void *) ((char *) self + 0xda);
+        *(unsigned short *) self = 0;
+    }
+
+    *(unsigned char *) ((char *) other + 0x9f0) = 0;
+    func_0201cbbc((char *) other + 0x83c);
+    return 1;
 }

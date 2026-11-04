@@ -1,8 +1,43 @@
-/* func_ov068_02266f44 @ 0x02266f44, 0x35c bytes, Thumb, module ov068
+/* outdoor_villager_4: 2 functions, module ov068
  * mwccarm 1.2/base -O4,s
+ * func_ov068_022672a0 @ 0x022672a0, 0x90 bytes, Thumb
+ * func_ov068_02266f44 @ 0x02266f44, 0x35c bytes, Thumb
  */
 
 #include "types.h"
+
+extern short data_ov068_02278260;
+
+class UnkStruct_022672a0 {
+  public:
+    virtual int v0() = 0;
+    virtual int v1() = 0;
+    virtual int v2() = 0;
+    virtual int v3() = 0;
+    virtual int v4() = 0;
+    virtual int v5() = 0;
+    virtual int v6() = 0;
+    virtual int v7() = 0;
+    virtual int v8() = 0;
+    virtual int v9() = 0;
+    virtual int v10() = 0;
+    virtual int v11() = 0;
+    virtual int v12() = 0;
+    virtual int v13() = 0;
+    virtual int v14() = 0;
+    virtual int v15() = 0;
+    virtual int v16() = 0;
+    virtual int v17() = 0;
+    virtual int v18(void *other) = 0;
+};
+
+extern "C" {
+int func_ov068_0226cf8c(void *);
+int func_0202e174(void *);
+int func_ov068_0226cbe4(void *, int);
+int func_0201c350(void *, void *, int);
+int func_0203ef00(void *, void *, int, int);
+}
 
 struct Vec3 {
     int x;
@@ -98,7 +133,6 @@ class UnkStruct_02266f44_2 {
 
 extern "C" int func_0201ce18(UnkStruct_02266f44_2 *);
 extern "C" UnkStruct_02266f44 *func_0201ce50(UnkStruct_02266f44_2 *);
-extern "C" int func_ov068_0226cbe4(int *, int);
 extern "C" int func_0201cddc(UnkStruct_02266f44_2 *);
 extern "C" int func_ov068_0226cf58(UnkStruct_02266f44_2 *);
 extern "C" void func_02079400(void *context);
@@ -120,6 +154,19 @@ extern "C" void func_0203eddc(UnkStruct_02266f44_2 *);
 extern "C" void func_0207d0f0(void *, int);
 extern "C" void func_0201b6e4(UnkStruct_02266f44_2 *, int, int);
 
+extern "C" int func_ov068_022672a0(UnkStruct_022672a0 *self, void *other)
+{
+    short s = data_ov068_02278260;
+    int local = func_ov068_0226cf8c(self);
+    int ret = 0;
+    if (self->v18(other) != 0 && func_0202e174(self) == 0 && func_ov068_0226cbe4((char *) self + 0x8b8, 0) != 0 &&
+        (unsigned) local <= 1 && func_0201c350(self, other, 0x5000) == 0 && func_0201c350(self, other, 0xe000) != 0 &&
+        func_0203ef00(self, other, (short) (-s), s) != 0) {
+        ret = 1;
+    }
+    return ret;
+}
+
 extern "C" void func_ov068_02266f44(UnkStruct_02266f44_2 *self, int kind, int arg)
 {
     int n;
@@ -136,7 +183,7 @@ extern "C" void func_ov068_02266f44(UnkStruct_02266f44_2 *self, int kind, int ar
                 self->unk_9FC = 1;
                 self->unk_9F8 = func_0201ce50(self);
                 self->unk_9F8->o35();
-            } else if (func_ov068_0226cbe4(&self->unk_8B8, 7) != 0) {
+            } else if (func_ov068_0226cbe4((void *) (&self->unk_8B8), 7) != 0) {
                 self->unk_9FC = 2;
             } else if (self->unk_A04 != 0) {
                 self->unk_9FC = 0xe;
