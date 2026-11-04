@@ -3390,7 +3390,8 @@ int FieldActor_RequestState65(FieldActor *actor, int priority, int arg)
 }
 CLEAN_AS(func_ov003_02210154, FieldActor_RequestState65)
 
-/* ---- State 0x64: animation 0x5f with the held object in pose 0x22, then 0x60 */
+/* ---- State 0x64: the slingshot (tool 6) shot: animation 0x5f with the held object in pose 0x22,
+ * then 0x60 */
 
 /* func_ov003_0221018c: state 0x64's update. */
 void FieldActor_UpdateState64(FieldActor *actor)
@@ -3418,8 +3419,9 @@ CLEAN_AS(func_ov003_022101a8, FieldActor_EndState64)
 
 /* func_ov003_022101fc: the actor turns to yaw 0 (func_0200faa8, 0x400). During animation
  * 0x5f, at a point 0xb00 above and 0x300 beyond (z) where the frame's update began, the frames
- * before 11 run func_0200f2a0 (0x851); on frame 11 the object at 0x5c8 is set up there (9),
- * sounds 0x852 and 0x853 play and flag 9 is set. */
+ * before 11 run func_0200f2a0 (0x851); on frame 11 the slingshot's pellet (the float at 0x5c8)
+ * is shot from there (FISHING_FLOAT_PELLET_SHOT), sounds 0x852 and 0x853 play and flag 9 is
+ * set. */
 void FieldActor_RunState64(FieldActor *actor)
 {
     FieldActor_TurnToHalfTurn(actor, 0x400);

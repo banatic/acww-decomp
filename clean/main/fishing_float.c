@@ -67,8 +67,8 @@ static_assert(offsetof(FishingFloatPool, owner) == 0x750, "FishingFloatPool.owne
 #define FISHING_FLOAT_THROW_STEP 1600
 
 /* The heights over the water's surface, and the line's length. */
-#define FISHING_FLOAT_RISE_STEP 0x1000
-#define FISHING_FLOAT_RISE_TOP 0x28000
+#define FISHING_FLOAT_PELLET_STEP 0x1000
+#define FISHING_FLOAT_PELLET_TOP 0x28000
 #define FISHING_FLOAT_LAND_DEPTH 819
 #define FISHING_FLOAT_BOB_STEP 0x66
 #define FISHING_FLOAT_BOB_TOP 0x19a
@@ -199,15 +199,15 @@ CLEAN_AS(func_0205fc3c, FishingFloat_SwingBack)
 
 /* ---- The states' step functions ---- */
 
-/* func_0205fca0: FISHING_FLOAT_RISE: up 1.0 a frame; at 40.0 none. */
-void FishingFloat_StepRise(FishingFloat *self)
+/* func_0205fca0: FISHING_FLOAT_PELLET_SHOT (the slingshot's pellet): up 1.0 a frame; at 40.0 none. */
+void FishingFloat_StepPelletShot(FishingFloat *self)
 {
-    self->position.y += FISHING_FLOAT_RISE_STEP;
-    if (self->position.y >= FISHING_FLOAT_RISE_TOP) {
+    self->position.y += FISHING_FLOAT_PELLET_STEP;
+    if (self->position.y >= FISHING_FLOAT_PELLET_TOP) {
         FishingFloat_SetState(self, FISHING_FLOAT_NONE);
     }
 }
-CLEAN_AS(func_0205fca0, FishingFloat_StepRise)
+CLEAN_AS(func_0205fca0, FishingFloat_StepPelletShot)
 
 /* func_0205fcc8: FISHING_FLOAT_REEL_HIGH: flown to the target; once over it, held. */
 void FishingFloat_StepReelHigh(FishingFloat *self)

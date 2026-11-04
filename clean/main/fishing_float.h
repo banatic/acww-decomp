@@ -7,8 +7,9 @@
  * its texture is placed in and the task that takes the texture there, the model, and the
  * float that uses the entry.
  *
- * A float (0x40 bytes, at 0x28 in a field actor's held item) is set up for a rod when the
- * item is taken (FishingFloat_Setup; the rods 0x1374 and 0x1375 and the slingshots 0x137a and 0x137b) and moved
+ * A float (0x40 bytes, at 0x28 in a field actor's held item) is set up for a rod or a
+ * slingshot, whose pellet it is, when the item is taken (FishingFloat_Setup; the rods 0x1374
+ * and 0x1375 and the slingshots 0x137a and 0x137b) and moved
  * once a frame (FishingFloat_Update) by the step function of its state, from the table of
  * member functions at data_021cad30:
  *
@@ -21,7 +22,7 @@
  *   6 FISHING_FLOAT_RIPPLING  rippling the water (raised while a fish is on it)
  *   7 FISHING_FLOAT_REEL      reeled in on a low arc to the rod's tip
  *   8 FISHING_FLOAT_REEL_HIGH reeled in on a higher arc
- *   9 FISHING_FLOAT_RISE      rising until 40.0 high, then none
+ *   9 FISHING_FLOAT_PELLET_SHOT the slingshot's pellet shot up until 40.0 high, then none
  *
  * The ground under the float (field_collision.h) is taken as water where its unk_30 is not 0,
  * the surface at its `limit`; the effects (func_020912d4) are 12 (landing), 13 (reeled out of
@@ -49,7 +50,7 @@
 #define FISHING_FLOAT_RIPPLING 6
 #define FISHING_FLOAT_REEL 7
 #define FISHING_FLOAT_REEL_HIGH 8
-#define FISHING_FLOAT_RISE 9
+#define FISHING_FLOAT_PELLET_SHOT 9
 #define FISHING_FLOAT_STATES 10
 
 /* FishingFloat.ripple and .player for none. */
@@ -84,7 +85,7 @@ typedef struct FishingFloatPool {
 int FishingFloat_Fly(const Vec3 *target, fx32 gravity, Vec3 *position, fx32 *speed, unsigned char ease_down);
 void FishingFloat_Arc(const Vec3 *target, const Vec3 *position, fx32 *gravity, fx32 *speed, unsigned char arc);
 void FishingFloat_SwingBack(FishingFloat *self);
-void FishingFloat_StepRise(FishingFloat *self);
+void FishingFloat_StepPelletShot(FishingFloat *self);
 void FishingFloat_StepReelHigh(FishingFloat *self);
 void FishingFloat_StepReel(FishingFloat *self);
 void FishingFloat_StepRippling(FishingFloat *self);
