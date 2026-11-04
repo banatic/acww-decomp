@@ -100,7 +100,7 @@ typedef struct TitleReceiver {
 } TitleReceiver;
 
 /* The answers a message offers (TitleMenu_OfferChoices): their messages and the bytes each
- * answer's unk_70 gets (main/talk_answers.h). */
+ * answer's next_message gets (main/talk_answers.h). */
 typedef struct TitleChoices {
     u8 *messages;
     u8 *values;

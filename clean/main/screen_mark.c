@@ -25,11 +25,11 @@ extern const CellAnimData data_020d5b3c[];
 /* POWCNT1's swap bit: 1 for the main engine on the top screen. */
 extern int data_021c8c9c;
 
-#define SCREEN_MARK_SCENE_WHICH 4
-#define SCREEN_MARK_NO_SCENE_FIRST_1 8
-#define SCREEN_MARK_NO_SCENE_COUNT_1 8
-#define SCREEN_MARK_NO_SCENE_FIRST_2 0x24
-#define SCREEN_MARK_NO_SCENE_COUNT_2 9
+#define SCREEN_MARK_OWN_PLAYER 4
+#define SCREEN_MARK_HIDDEN_STATES_FIRST_1 8
+#define SCREEN_MARK_HIDDEN_STATES_COUNT_1 8
+#define SCREEN_MARK_HIDDEN_STATES_FIRST_2 0x24
+#define SCREEN_MARK_HIDDEN_STATES_COUNT_2 9
 #define SCREEN_MARK_NO_QUERY_SCENE 6
 
 static void screen_mark_set_anim(ScreenMark *mark, int entry)
@@ -45,11 +45,11 @@ int ScreenMark_ShouldShow(void)
     int main_on_bottom = data_021c8c9c == 0;
     int no_event = EventQueue_HasCurrent() == 0;
     int query_scene = SceneQuery_Current() == SCREEN_MARK_NO_QUERY_SCENE;
-    u32 scene = (u32) PlayerActorOps_State(SCREEN_MARK_SCENE_WHICH);
-    int no_scene_1 = scene - SCREEN_MARK_NO_SCENE_FIRST_1 < SCREEN_MARK_NO_SCENE_COUNT_1;
-    int no_scene_2 = scene - SCREEN_MARK_NO_SCENE_FIRST_2 < SCREEN_MARK_NO_SCENE_COUNT_2;
+    u32 player_state = (u32) PlayerActorOps_State(SCREEN_MARK_OWN_PLAYER);
+    int hidden_1 = player_state - SCREEN_MARK_HIDDEN_STATES_FIRST_1 < SCREEN_MARK_HIDDEN_STATES_COUNT_1;
+    int hidden_2 = player_state - SCREEN_MARK_HIDDEN_STATES_FIRST_2 < SCREEN_MARK_HIDDEN_STATES_COUNT_2;
 
-    return main_on_bottom && no_event && !query_scene && !no_scene_1 && !no_scene_2;
+    return main_on_bottom && no_event && !query_scene && !hidden_1 && !hidden_2;
 }
 CLEAN_AS(func_0208ecd0, ScreenMark_ShouldShow)
 

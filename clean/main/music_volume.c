@@ -16,8 +16,8 @@ static_assert(sizeof(MusicVolumeSlot) == 0x10, "slot size");
 static_assert(offsetof(MusicVolumeSlot, state) == 0x0c, "slot state");
 static_assert(sizeof(MusicVolume) == 0x88, "volume member size");
 static_assert(offsetof(MusicVolume, countdown) == 0x84, "volume member countdown");
-static_assert(offsetof(MusicRequest, unk_0c) == 0x0c, "request volume");
-static_assert(offsetof(MusicRequest, unk_10) == 0x10, "request byte 0x10");
+static_assert(offsetof(MusicRequest, volume) == 0x0c, "request volume");
+static_assert(offsetof(MusicRequest, hold_volume) == 0x10, "request hold volume");
 static_assert(offsetof(MusicRequest, music_started) == 0x14, "request music started");
 
 /* The head slot's state while the queue is not empty. */
@@ -32,7 +32,7 @@ extern const u32 data_020c9f1c[];
 typedef struct MusicVolumeGround {
     u8 unk_00[0x30];
     s32 unk_30;
-    s32 kind; /* 0x34 */
+    s32 attr; /* 0x34: the ground's attribute (CollisionGround.attr) */
     u8 unk_38[8];
 } MusicVolumeGround;
 
@@ -111,7 +111,7 @@ void MusicVolume_HoldForHead(MusicVolume *self)
     const MusicQueue *queue = &self->owner->queue;
     int i;
 
-    if (queue->count <= 0 || queue->requests[0].unk_10 == 0) {
+    if (queue->count <= 0 || queue->requests[0].hold_volume == 0) {
         return;
     }
     for (i = 2; i <= 6; i++) {
@@ -129,8 +129,8 @@ void MusicVolume_UpdateHeadSlot(MusicVolume *self, MusicVolumeSlot *slot)
 
     if (queue->count > 0) {
         const MusicRequest *head = &queue->requests[0];
-        if (head->music_started != 0 && head->unk_0c != 0) {
-            MusicVolume_Request(slot, head->unk_0c, 0, 1);
+        if (head->music_started != 0 && head->volume != 0) {
+            MusicVolume_Request(slot, head->volume, 0, 1);
         }
         MusicQueue_ForEach(queue, data_020da284);
         slot->state = MUSIC_VOLUME_HEAD_STATE;
@@ -170,7 +170,7 @@ void MusicVolume_UpdateSceneSlot(MusicVolume *self, MusicVolumeSlot *slot)
 }
 CLEAN_AS(func_02036124, MusicVolume_UpdateSceneSlot)
 
-/* func_02036188: slot 5's handler: while the player stands on ground of kind 0x13 or 0x16, or
+/* func_02036188: slot 5's handler: while the player stands on ground of attribute 0x13 or 0x16, or
  * the ground 0x2000 further along z has its word 0x30 at 1, the volume lowered to 0x28 over
  * 0x3c frames (state 0x10); back to full over 0x3c frames otherwise. Without a player it counts
  * as otherwise. */
@@ -191,7 +191,7 @@ void MusicVolume_UpdateGroundSlot(MusicVolume *self, MusicVolumeSlot *slot)
         at.y = player->y;
         at.z = (fx32) ((u32) player->z + 0x2000);
         CollisionGround_Init((CollisionGround *) &ahead, &at, 0, 0);
-        if (here.kind == 0x13 || here.kind == 0x16 || ahead.unk_30 == 1) {
+        if (here.attr == 0x13 || here.attr == 0x16 || ahead.unk_30 == 1) {
             lowered = 1;
         }
         CollisionGround_Destroy((CollisionGround *) &ahead);

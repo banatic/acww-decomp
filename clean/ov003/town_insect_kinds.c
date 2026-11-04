@@ -173,7 +173,7 @@ CLEAN_AS(func_ov003_022303c4, TownInsectKind_Update0B)
  * 0x21c is cleared. */
 void TownInsectKind_Start0B(TownInsect *insect)
 {
-    if (insect->action == TOWN_INSECT_ACTION_SHOWN) {
+    if (insect->action == TOWN_INSECT_ACTION_CALM) {
         town_insect_kinds_fade(insect);
     }
     TownInsectKind_Begin(insect, 0, 0x5a, 0x3c, 0, 0, 2, 0, 0, 0);
@@ -551,7 +551,7 @@ void TownInsectKind_Begin(TownInsect *insect, short unk_244, u8 reached, int rea
     fx32 y = FX_Div((fx32) ((u32) height << 12), 0x10000);
     fx32 reach_fx = FX_Div((fx32) ((u32) reach << 12), 0x10000);
     if (town_insect_kinds_placed(insect)) {
-        insect->action = TOWN_INSECT_ACTION_SHOWN;
+        insect->action = TOWN_INSECT_ACTION_CALM;
         insect->angle_y = angle_y;
         /* a word at a time, as the original copies */
         insect->target.x = insect->position.x;

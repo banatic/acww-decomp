@@ -66,10 +66,10 @@ TalkPage *TalkPage_Construct(TalkPage *page, u8 *talk);
 /* The measurer's handlers of tags (the tables of func_0206cd40 and func_0206cdbc). */
 void TalkPageMeasurer_AltText(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutParticle(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_Name3(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_Name2(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_Name1(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_Name0(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Value3(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Value2(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Value1(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Value0(TalkPageMeasurer *measurer);
 
 /* ---- The rest of the measurer's handlers, and its tables of them by the tag's kind. The
  * measurer walks the texts the talk's tag walker (talk_tags.h) walks in place of a tag, without
@@ -100,10 +100,10 @@ void TalkPageMeasurer_PutBoom(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutPraise(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutNickname(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutImpression(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_PutName3(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_PutName2(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_PutName1(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_PutName0(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutValue3(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutValue2(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutValue1(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutValue0(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutPart10(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutPart9(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutPart8(TalkPageMeasurer *measurer);
@@ -155,7 +155,7 @@ void TalkPageMeasurer_DispatchGroup0(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_DispatchTag(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_IgnoreText(void *measurer, void *text);
 void TalkPageMeasurer_Ignore(void);
-void TalkPageMeasurer_PutTalkName(TalkPageMeasurer *measurer, int index);
+void TalkPageMeasurer_PutTalkValue(TalkPageMeasurer *measurer, int index);
 void TalkPageMeasurer_PutTalkPart(TalkPageMeasurer *measurer, int index);
 void TalkPageMeasurer_Clear50(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_OnTag(TalkPageMeasurer *measurer, int position);

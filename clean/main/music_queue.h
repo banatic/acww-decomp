@@ -20,9 +20,9 @@ typedef struct MusicRequest {
     s32 priority; /* lower first; 0x25 when cleared */
     u16 music;    /* 0x04: MUSIC_NONE: none */
     u8 unk_06[2];
-    s32 value; /* 0x08: the music commands' value (MusicCommands_SetValue) while it is current */
-    s32 unk_0c;
-    u8 unk_10;
+    s32 value;        /* 0x08: the music commands' value (MusicCommands_SetValue) while it is current */
+    s32 volume;       /* 0x0c: the volume asked for once its music starts; 0 for none */
+    u8 hold_volume;   /* 0x10: at the head, slots 2 to 6 of the volume are held */
     u8 head_only;     /* 0x11: done once it is not at the head */
     u8 current;       /* 0x12: the one played */
     u8 done;          /* 0x13: to be taken out */
@@ -40,14 +40,14 @@ typedef struct MusicQueue {
 typedef struct Obj021c526c {
     MusicQueue queue;
     u8 unk_1c4[0x88]; /* worked by the field actor (func_02036448 and the like) */
-    u8 unk_24c[0x18];
+    u8 clock[0x18];
     u8 unk_264[0x3c];
     u8 unk_2a0[0x14];
     u8 music_commands[0x1c]; /* 0x2b4: what the sound system is asked next frame */
     u8 unk_2d0[0x14];
     u8 unk_2e4[0x0c];
     u8 unk_2f0[0x04];
-    u8 unk_2f4;
+    u8 no_hour_tune;
     u8 unk_2f5[3];
 } Obj021c526c;
 
@@ -64,7 +64,7 @@ void *Process020da334_Destruct(Process020da334 *self);
 void *Process020da334_Construct(Process020da334 *self);
 void Process020da334_New(void);
 void Obj021c526c_EndUpdate(Obj021c526c *self);
-void Obj021c526c_ApplyChange24c(Obj021c526c *self);
+void Obj021c526c_PlayHourTune(Obj021c526c *self);
 void MusicQueue_ForEach(MusicQueue *queue, MemberFn fn);
 void MusicQueue_OpenAt(MusicQueue *queue, int index);
 MusicRequest *MusicQueue_FirstNotDone(MusicRequest *requests, int count);
@@ -121,15 +121,15 @@ void Obj021c526c_Delete(Obj021c526c *self);
 void Obj021c526c_Create(Obj021c526c *self);
 void *Obj021c526c_Destruct(Obj021c526c *self);
 Obj021c526c *Obj021c526c_Construct(Obj021c526c *self);
-void Music_Set2f4(void);
-void Music_Clear2f4(void);
+void Music_SetNoHourTune(void);
+void Music_ClearNoHourTune(void);
 u16 Music_CurrentMusic(void);
 void Music_DropMusicFlagged(int music);
 void Music_DropPriority(int priority);
 void Music_DropMusic(int music);
 void Music_AddHeadOnly(int priority, int music);
 void Music_AddValue(int priority, int value, int frames);
-void Music_Add(int priority, int music, int unk_0c, int unk_10);
+void Music_Add(int priority, int music, int volume, int hold_volume);
 void Music2f0_ApplyMode(Music2f0 *self);
 void Music2f0_SetTracksForScene(void);
 void Music2f0_Update(Music2f0 *self);

@@ -26,7 +26,7 @@
 static_assert(offsetof(TalkTagsWalker, talk) == 0x24, "walker talk");
 static_assert(offsetof(TalkTagsWalker, state) == 0x30, "walker state");
 static_assert(offsetof(TalkTagsWalker, tag) == 0x38, "walker tag");
-static_assert(offsetof(TalkTagsWalker, name_colour) == 0x5c, "walker colour");
+static_assert(offsetof(TalkTagsWalker, text_colour) == 0x5c, "walker colour");
 static_assert(offsetof(TalkTagsWalker, choices_shown) == 0xd8, "walker choices");
 static_assert(offsetof(TalkTagsWalker, convert_next) == 0xd9, "walker convert");
 static_assert(offsetof(TalkTagsWalker, unk_e0) == 0xe0, "walker e0");
@@ -41,7 +41,7 @@ static_assert(sizeof(TalkTagsWalker) == 0xe4, "walker");
 #define TALK_TAGS_RO_AFTER_RIEUL 0x1a60 /* the particles' ro_after_rieul */
 #define TALK_TAGS_WEEKDAY 0x1a6c        /* Calendar_TodayWeekday when the talk began (func_02067c20) */
 #define TALK_TAGS_PART_OF_DAY 0x1a74    /* Calendar_PartOfDay then (enum PartOfDay) */
-#define TALK_TAGS_OTHER_COLOUR 0x1e76   /* set: the other resident's name ends with colour 6 */
+#define TALK_TAGS_OTHER_COLOUR 0x1e76   /* set: the other resident's name is drawn in colour 6 */
 
 /* The texts func_020679b0 to func_02067728 load from the villager (see their handlers). */
 #define TALK_TAGS_LIKED_NPC 0x1ccc
@@ -72,7 +72,7 @@ enum TalkTagsBranch {
     TALK_TAGS_BRANCH_RANDOM2 = 0,
     TALK_TAGS_BRANCH_RANDOM3 = 1,
     TALK_TAGS_BRANCH_FONDNESS = 2,
-    TALK_TAGS_BRANCH_PLAYER_KIND = 3,
+    TALK_TAGS_BRANCH_GENDER = 3,
     TALK_TAGS_BRANCH_HOUSE = 4,
     TALK_TAGS_BRANCH_INSECTS = 5,
     TALK_TAGS_BRANCH_FISH = 6,
@@ -193,22 +193,23 @@ static void talk_tags_go_to(TalkTagsWalker *walker, u8 message)
     TalkTags_GoToMessage(walker, &message);
 }
 
-/* A text the talk loaded (`loaded`: whether the load worked) walked in place of the tag between
- * the walker's name colour and `colour_after` (no colour tags with -1), its last syllable kept
- * for the particles, and the particles' ro_after_rieul set to `ro_after_rieul`. A failed load
+/* A text the talk loaded (`loaded`: whether the load worked) walked in place of the tag, drawn in
+ * `name_colour` and followed by the walker's text colour again (no colour tags with -1;
+ * MessageWalker_Enter stacks them, the last entered first), its last syllable kept for the
+ * particles, and the particles' ro_after_rieul set to `ro_after_rieul`. A failed load
  * leaves a note only: the text is walked as it is. */
-static void talk_tags_put_loaded(TalkTagsWalker *walker, int loaded, int line, const char *label, u32 text, int colour_after,
+static void talk_tags_put_loaded(TalkTagsWalker *walker, int loaded, int line, const char *label, u32 text, int name_colour,
                                  s32 ro_after_rieul)
 {
     if (loaded == 0) {
         TalkTags_FailureNote(walker, line, label);
     }
-    if (colour_after >= 0) {
-        MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
+    if (name_colour >= 0) {
+        MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->text_colour));
     }
     MessageWalker_Enter(&walker->base, talk_tags_characters(talk_tags_at(walker, text)));
-    if (colour_after >= 0) {
-        MessageWalker_Enter(&walker->base, MessageTag_ColourTag(colour_after));
+    if (name_colour >= 0) {
+        MessageWalker_Enter(&walker->base, MessageTag_ColourTag(name_colour));
     }
     MailParticles_TakeLastSyllable((MailTextParticles *) (void *) talk_tags_at(walker, TALK_TAGS_PARTICLES),
                                    (const char *) (uintptr_t) talk_tags_characters(talk_tags_at(walker, text)));
@@ -556,18 +557,18 @@ void TalkTags_BranchByHouse(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_02069a20, TalkTags_BranchByHouse)
 
-/* func_02069a94 (tag 6/3): the first message when this system's player's kind (the byte 0x1c
- * of its id) is 0, else the second. */
-void TalkTags_BranchByPlayerKind(TalkTagsWalker *walker)
+/* func_02069a94 (tag 6/3): the first message when this system's player is a boy (PlayerId_Gender
+ * of its id is 0), else the second. */
+void TalkTags_BranchByGender(TalkTagsWalker *walker)
 {
     u8 messages[2];
 
-    talk_tags_branch(walker, TALK_TAGS_BRANCH_PLAYER_KIND, 2);
+    talk_tags_branch(walker, TALK_TAGS_BRANCH_GENDER, 2);
     MessageTag_ReadTwoBytes(&walker->tag, &messages[0], &messages[1]);
-    int other = PlayerId_Gender((const s8 *) PlayerRecord_Player(PlayerRecords_Current())) != 0;
-    talk_tags_go_to(walker, messages[other]);
+    int girl = PlayerId_Gender((const s8 *) PlayerRecord_Player(PlayerRecords_Current())) != 0;
+    talk_tags_go_to(walker, messages[girl]);
 }
-CLEAN_AS(func_02069a94, TalkTags_BranchByPlayerKind)
+CLEAN_AS(func_02069a94, TalkTags_BranchByGender)
 
 /* func_02069af0 (tag 6/2): the tag's bytes are a fondness and two messages: the second when
  * the villager talked to remembers this system's player with less fondness, else the first
@@ -640,13 +641,13 @@ void TalkTags_SliderChoices(TalkTagsWalker *walker)
     TalkAnswer *fourth = TalkAnswers_Answer(answers, 3);
     TalkAnswers_Clear(answers);
     u8 *weight0 = TalkAnswers_Weight(first);
-    u8 *byte0 = TalkAnswers_Answer70(first);
+    u8 *byte0 = TalkAnswers_AnswerNext(first);
     u8 *weight1 = TalkAnswers_Weight(second);
-    u8 *byte1 = TalkAnswers_Answer70(second);
+    u8 *byte1 = TalkAnswers_AnswerNext(second);
     u8 *weight2 = TalkAnswers_Weight(third);
-    u8 *byte2 = TalkAnswers_Answer70(third);
+    u8 *byte2 = TalkAnswers_AnswerNext(third);
     u8 *weight3 = TalkAnswers_Weight(fourth);
-    u8 *byte3 = TalkAnswers_Answer70(fourth);
+    u8 *byte3 = TalkAnswers_AnswerNext(fourth);
     MessageTagText *text0 = (MessageTagText *) (void *) TalkAnswers_FirstText(answers);
     MessageTagText *text4 = (MessageTagText *) (void *) TalkAnswers_FifthText(answers);
     int texts = MessageTag_ReadEightBytesTwoTexts(&walker->tag, weight0, byte0, weight1, byte1, weight2, byte2, weight3, byte3,
@@ -668,7 +669,7 @@ void TalkTags_PutBoom(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_02069d24, TalkTags_PutBoom)
 
-/* func_02069d8c (tag 4/33): the villager's praise word (func_02067728), ending with colour 2. */
+/* func_02069d8c (tag 4/33): the villager's praise word (func_02067728), drawn in colour 2. */
 void TalkTags_PutPraise(TalkTagsWalker *walker)
 {
     talk_tags_put_loaded(walker, TalkObject_LoadPraise(talk_tags_object(walker)), TALK_TAGS_NOTE_PRAISE, data_020df154,
@@ -697,32 +698,32 @@ void TalkTags_PutImpression(TalkTagsWalker *walker)
 CLEAN_AS(func_02069e98, TalkTags_PutImpression)
 
 /* func_02069f00 (tag 4/29): the talk's name 3. */
-void TalkTags_PutName3(TalkTagsWalker *walker)
+void TalkTags_PutValue3(TalkTagsWalker *walker)
 {
-    TalkTags_PutName(walker, 3);
+    TalkTags_PutValue(walker, 3);
 }
-CLEAN_AS(func_02069f00, TalkTags_PutName3)
+CLEAN_AS(func_02069f00, TalkTags_PutValue3)
 
 /* func_02069f0c (tag 4/28): the talk's name 2. */
-void TalkTags_PutName2(TalkTagsWalker *walker)
+void TalkTags_PutValue2(TalkTagsWalker *walker)
 {
-    TalkTags_PutName(walker, 2);
+    TalkTags_PutValue(walker, 2);
 }
-CLEAN_AS(func_02069f0c, TalkTags_PutName2)
+CLEAN_AS(func_02069f0c, TalkTags_PutValue2)
 
 /* func_02069f18 (tag 4/27): the talk's name 1. */
-void TalkTags_PutName1(TalkTagsWalker *walker)
+void TalkTags_PutValue1(TalkTagsWalker *walker)
 {
-    TalkTags_PutName(walker, 1);
+    TalkTags_PutValue(walker, 1);
 }
-CLEAN_AS(func_02069f18, TalkTags_PutName1)
+CLEAN_AS(func_02069f18, TalkTags_PutValue1)
 
 /* func_02069f24 (tag 4/26): the talk's name 0. */
-void TalkTags_PutName0(TalkTagsWalker *walker)
+void TalkTags_PutValue0(TalkTagsWalker *walker)
 {
-    TalkTags_PutName(walker, 0);
+    TalkTags_PutValue(walker, 0);
 }
-CLEAN_AS(func_02069f24, TalkTags_PutName0)
+CLEAN_AS(func_02069f24, TalkTags_PutValue0)
 
 /* func_02069f30 (tag 4/25): the talk's part 10. */
 void TalkTags_PutPart10(TalkTagsWalker *walker)
@@ -801,14 +802,14 @@ void TalkTags_PutPart0(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_02069fa8, TalkTags_PutPart0)
 
-/* func_02069fb4 (tag 4/14): another resident's player name (func_0206786c), ending with colour
+/* func_02069fb4 (tag 4/14): another resident's player name (func_0206786c), drawn in colour
  * 5, or 6 when the talk's byte 0x1e76 is set. */
 void TalkTags_PutOtherPlayer(TalkTagsWalker *walker)
 {
     if (TalkObject_LoadOtherPlayer(talk_tags_object(walker)) == 0) {
         TalkTags_FailureNote(walker, TALK_TAGS_NOTE_OTHER_PLAYER, data_020df178);
     }
-    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
+    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->text_colour));
     MessageWalker_Enter(&walker->base, talk_tags_characters(talk_tags_at(walker, TALK_TAGS_OTHER_PLAYER)));
     int colour = *talk_tags_at(walker, TALK_TAGS_OTHER_COLOUR) != 0 ? TALK_TAGS_COLOUR_NPC : TALK_TAGS_COLOUR_PLAYER;
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(colour));
@@ -987,7 +988,7 @@ static TalkAnswers *talk_tags_clear_answers(TalkTagsWalker *walker, int count, u
     }
     TalkAnswers_Clear(answers);
     for (int i = 0; i < count; i++) {
-        bytes[i] = TalkAnswers_Answer70(answer[i]);
+        bytes[i] = TalkAnswers_AnswerNext(answer[i]);
         texts[i] = (MessageTagText *) (void *) TalkAnswers_Text(answer[i]);
     }
     return answers;
@@ -1051,7 +1052,7 @@ void TalkTags_PutYear(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206a384, TalkTags_PutYear)
 
-/* func_0206a3cc (tag 4/3): the town's name, ending with colour 8. */
+/* func_0206a3cc (tag 4/3): the town's name, drawn in colour 8. */
 void TalkTags_PutTownName(TalkTagsWalker *walker)
 {
     TalkObject_LoadTownName(talk_tags_object(walker));
@@ -1067,11 +1068,11 @@ void TalkTags_PutCatchphrase(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206a438, TalkTags_PutCatchphrase)
 
-/* func_0206a4a0 (tag 4/1): the name of the receiver (the one talked to), ending with colour
+/* func_0206a4a0 (tag 4/1): the name of the receiver (the one talked to), drawn in colour
  * 6. */
 void TalkTags_PutReceiverName(TalkTagsWalker *walker)
 {
-    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
+    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->text_colour));
     void *receiver = talk_tags_receiver(walker);
     MessageWalker_Enter(&walker->base, talk_tags_characters(TalkReceiver_SpeakerName(receiver)));
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(TALK_TAGS_COLOUR_NPC));
@@ -1081,7 +1082,7 @@ void TalkTags_PutReceiverName(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206a4a0, TalkTags_PutReceiverName)
 
-/* func_0206a510 (tag 4/0): this system's player's name, ending with colour 5. */
+/* func_0206a510 (tag 4/0): this system's player's name, drawn in colour 5. */
 void TalkTags_PutPlayerName(TalkTagsWalker *walker)
 {
     TalkObject_LoadPlayerName(talk_tags_object(walker));
@@ -1551,9 +1552,9 @@ CLEAN_AS(func_0206b750, TalkTags_DispatchGroup0)
 #include "talk_span.h"
 
 /* The parts of a talk used below. */
-#define TALK_TAGS_NAMES 0x18ac        /* four names (text objects, TALK_TAGS_PART_SIZE bytes) */
-#define TALK_TAGS_NAME_COLOURS 0x1a1c /* the colour tag put after each name */
-#define TALK_TAGS_COLOUR 0x1a54       /* the colour of the text shown (set by tag 0xff/0) */
+#define TALK_TAGS_VALUES 0x18ac        /* four names (text objects, TALK_TAGS_PART_SIZE bytes) */
+#define TALK_TAGS_VALUE_COLOURS 0x1a1c /* the colour tag put after each name */
+#define TALK_TAGS_COLOUR 0x1a54        /* the colour of the text shown (set by tag 0xff/0) */
 
 /* The characters that do not count towards a frame's share: a newline, which begins a line,
  * and the ideographic space. */
@@ -1646,19 +1647,19 @@ static void talk_tags_keep_last_syllable(TalkTagsWalker *walker, const void *tex
     *(s32 *) (void *) talk_tags_at(walker, TALK_TAGS_RO_AFTER_RIEUL) = 1;
 }
 
-/* func_0206b984: the talk's name `index` (0 to 3) walked in place of the tag, between the
- * walker's name colour and the colour the talk keeps for after that name. */
-void TalkTags_PutName(TalkTagsWalker *walker, int index)
+/* func_0206b984: the talk's value `index` (0 to 3) walked in place of the tag, drawn in the
+ * colour the talk keeps for that value, then the walker's text colour again. */
+void TalkTags_PutValue(TalkTagsWalker *walker, int index)
 {
-    const void *name = talk_tags_at(walker, TALK_TAGS_NAMES + (u32) index * TALK_TAGS_PART_SIZE);
-    s32 colour_after = *(const s32 *) (const void *) talk_tags_at(walker, TALK_TAGS_NAME_COLOURS + (u32) index * 4);
-    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
+    const void *name = talk_tags_at(walker, TALK_TAGS_VALUES + (u32) index * TALK_TAGS_PART_SIZE);
+    s32 value_colour = *(const s32 *) (const void *) talk_tags_at(walker, TALK_TAGS_VALUE_COLOURS + (u32) index * 4);
+    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->text_colour));
     MessageWalker_Enter(&walker->base, talk_tags_characters(name));
-    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(colour_after));
+    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(value_colour));
     TalkTags_ClearE0(walker);
     talk_tags_keep_last_syllable(walker, name);
 }
-CLEAN_AS(func_0206b984, TalkTags_PutName)
+CLEAN_AS(func_0206b984, TalkTags_PutValue)
 
 /* func_0206ba08: the talk's part `index` (0 to 10) walked in place of the tag. */
 void TalkTags_PutPart(TalkTagsWalker *walker, int index)
@@ -1863,10 +1864,10 @@ void TalkTags_OnText(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206bca8, TalkTags_OnText)
 
-/* func_0206bd14: the name colour and the talk's text colour back to 0. */
+/* func_0206bd14: the walker's text colour and the talk's back to 0. */
 void TalkTags_ResetColour(TalkTagsWalker *walker)
 {
-    walker->name_colour = 0;
+    walker->text_colour = 0;
     *(u32 *) (void *) talk_tags_at(walker, TALK_TAGS_COLOUR) = 0;
 }
 CLEAN_AS(func_0206bd14, TalkTags_ResetColour)
@@ -1896,13 +1897,13 @@ void TalkTags_SetSpeed(TalkTagsWalker *walker, int speed)
 }
 CLEAN_AS(func_0206bd40, TalkTags_SetSpeed)
 
-/* func_0206bd44: a new page: no line shown, the page emptied in the name colour, and its first
+/* func_0206bd44: a new page: no line shown, the page emptied in the text colour, and its first
  * line begun where the walk is. */
 void TalkTags_NewPage(TalkTagsWalker *walker)
 {
     walker->lines = 0;
     TalkPage_Nothing();
-    TalkPage_Clear(walker->window, walker->name_colour);
+    TalkPage_Clear(walker->window, walker->text_colour);
     TalkPage_BeginLine(walker->window, (int) walker->base.position);
     walker->convert_next = 0;
     walker->unk_e0 = 0;
@@ -1954,7 +1955,7 @@ TalkTagsWalker *TalkTags_Construct(TalkTagsWalker *walker, u8 *talk, void *page)
     walker->unk_50 = 0;
     walker->unk_54 = 0;
     walker->unk_58 = 0;
-    walker->name_colour = 0;
+    walker->text_colour = 0;
     TalkSpan_Construct(talk_tags_span_after(walker), talk, page);
     TalkSpan_Construct(talk_tags_span_own(walker), talk, page);
     walker->choices_shown = 0;
@@ -1967,8 +1968,6 @@ CLEAN_AS(func_0206bde0, TalkTags_Construct)
 
 /* ---- The handlers of tags 0xff/0 and 0xff/2, and of group 11 from kind 8 on. */
 
-/* The talk's four values (MessagePart), after its parts. */
-#define TALK_TAGS_VALUES 0x18ac
 /* The particles' last syllable (MailTextParticles.last_syllable). */
 #define TALK_TAGS_LAST_SYLLABLE 0x1a5c
 /* The first Hangul syllable, the syllables of one initial and vowel (one for each final
@@ -2000,14 +1999,14 @@ void TalkTags_StartSpans(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_02069270, TalkTags_StartSpans)
 
-/* func_020692c8 (tag 0xff/0): a colour change: the colour kept for the names, put into the
+/* func_020692c8 (tag 0xff/0): a colour change: the walker's text colour, put into the
  * window's page as a tag and for its new lines, and told to the talk's voice. */
 void TalkTags_ChangeColour(TalkTagsWalker *walker)
 {
-    walker->name_colour = MessageTag_Colour(&walker->tag);
+    walker->text_colour = MessageTag_Colour(&walker->tag);
     TalkPage_PutTag((TalkPage *) walker->window, &walker->tag);
-    TalkPage_SetColourOfNewLines((TalkPage *) walker->window, walker->name_colour);
-    talk_tags_talk(walker)->voice.colour = walker->name_colour;
+    TalkPage_SetColourOfNewLines((TalkPage *) walker->window, walker->text_colour);
+    talk_tags_talk(walker)->voice.colour = walker->text_colour;
 }
 CLEAN_AS(func_020692c8, TalkTags_ChangeColour)
 

@@ -24,9 +24,9 @@ static_assert(sizeof(MusicRequest) == 0x1c, "request size");
 static_assert(offsetof(MusicRequest, done) == 0x13, "request done");
 static_assert(offsetof(MusicRequest, timer) == 0x18, "request timer");
 static_assert(offsetof(MusicQueue, count) == 0x1c0, "queue count");
-static_assert(offsetof(Obj021c526c, unk_24c) == 0x24c, "object 0x24c");
+static_assert(offsetof(Obj021c526c, clock) == 0x24c, "object 0x24c");
 static_assert(offsetof(Obj021c526c, music_commands) == 0x2b4, "object 0x2b4");
-static_assert(offsetof(Obj021c526c, unk_2f4) == 0x2f4, "object 0x2f4");
+static_assert(offsetof(Obj021c526c, no_hour_tune) == 0x2f4, "object 0x2f4");
 static_assert(sizeof(Process020da334) == 0x348, "process 0x020da334 size");
 
 /* The class's vtable and the scene objects' root vtable. */
@@ -118,15 +118,15 @@ void Obj021c526c_EndUpdate(Obj021c526c *self)
 }
 CLEAN_AS(func_02034dc8, Obj021c526c_EndUpdate)
 
-/* func_02034dcc: when the member at 0x24c has changed, func_0206e9bc is told whether its
- * words 0x00 and 0x0c differ, unless func_020b6840(1) answers 0, func_020b6660 and
- * func_020b22b8 both answer not 0, or the byte at 0x2f4 is set. The three checks are all made
+/* func_02034dcc: on the hour (the clock at 0x24c), the hourly tune (TownTune_StartFirst) is played,
+ * told whether the year changed, unless func_020b6840(1) answers 0, func_020b6660 and
+ * func_020b22b8 both answer not 0, or the hourly tune is off (Music_SetNoHourTune). The three checks are all made
  * whatever the first ones answer. */
-void Obj021c526c_ApplyChange24c(Obj021c526c *self)
+void Obj021c526c_PlayHourTune(Obj021c526c *self)
 {
     int apply = 1;
 
-    if (MusicClock_HourChanged((const MusicClock *) (void *) self->unk_24c) == 0) {
+    if (MusicClock_HourChanged((const MusicClock *) (void *) self->clock) == 0) {
         return;
     }
     if (SceneKinds_SoundKind(1) == 0) {
@@ -135,14 +135,14 @@ void Obj021c526c_ApplyChange24c(Obj021c526c *self)
     if (SceneQuery_CurrentIs0() != 0 && Block020b220c_ArrivedByTaxi() != 0) {
         apply = 0;
     }
-    if (self->unk_2f4 != 0) {
+    if (self->no_hour_tune != 0) {
         apply = 0;
     }
     if (apply) {
-        TownTune_StartFirst(MusicClock_YearChanged((const MusicClock *) (void *) self->unk_24c));
+        TownTune_StartFirst(MusicClock_YearChanged((const MusicClock *) (void *) self->clock));
     }
 }
-CLEAN_AS(func_02034dcc, Obj021c526c_ApplyChange24c)
+CLEAN_AS(func_02034dcc, Obj021c526c_PlayHourTune)
 
 /* ---- The queue */
 
@@ -496,13 +496,13 @@ void Music_Reset(void)
     MusicCommands_Clear((MusicCommands *) (void *) self->music_commands);
     SceneMusic_Reset((SceneMusic *) (void *) self->unk_2a0);
     Music264_Reset((Music264 *) (void *) self->unk_264);
-    MusicClock_Reset((MusicClock *) (void *) self->unk_24c);
+    MusicClock_Reset((MusicClock *) (void *) self->clock);
     MusicVolume_Reset((MusicVolume *) (void *) self->unk_1c4);
     for (i = 0; i < MUSIC_QUEUE_SIZE; i++) {
         MusicRequest_Clear(&self->queue.requests[i]);
     }
     self->queue.count = 0;
-    self->unk_2f4 = 0;
+    self->no_hour_tune = 0;
 }
 CLEAN_AS(func_02035294, Music_Reset)
 
@@ -511,11 +511,11 @@ void Obj021c526c_Execute(Obj021c526c *self)
 {
     Music2e4_Execute(member_2e4(self));
     Music2d0_Execute(member_2d0(self));
-    MusicClock_Execute((MusicClock *) (void *) self->unk_24c);
+    MusicClock_Execute((MusicClock *) (void *) self->clock);
     Music264_Execute((Music264 *) (void *) self->unk_264);
     SceneMusic_Execute((SceneMusic *) (void *) self->unk_2a0);
     Obj021c526c_UpdateQueue(self);
-    Obj021c526c_ApplyChange24c(self);
+    Obj021c526c_PlayHourTune(self);
     Obj021c526c_EndUpdate(self);
 }
 CLEAN_AS(func_02035344, Obj021c526c_Execute)
@@ -528,7 +528,7 @@ void Obj021c526c_Delete(Obj021c526c *self)
     MusicCommands_Clear((MusicCommands *) (void *) self->music_commands);
     SceneMusic_Delete((SceneMusic *) (void *) self->unk_2a0);
     Music264_Delete((Music264 *) (void *) self->unk_264);
-    MusicClock_Delete((MusicClock *) (void *) self->unk_24c);
+    MusicClock_Delete((MusicClock *) (void *) self->clock);
     MusicVolume_Delete((MusicVolume *) (void *) self->unk_1c4);
     data_021c526c = NULL;
 }
@@ -546,13 +546,13 @@ void Obj021c526c_Create(Obj021c526c *self)
     }
     self->queue.count = 0;
     MusicVolume_Create((MusicVolume *) (void *) self->unk_1c4);
-    MusicClock_Create((MusicClock *) (void *) self->unk_24c);
+    MusicClock_Create((MusicClock *) (void *) self->clock);
     Music264_Create((Music264 *) (void *) self->unk_264);
     SceneMusic_Create((SceneMusic *) (void *) self->unk_2a0);
     MusicCommands_Clear((MusicCommands *) (void *) self->music_commands);
     Music2d0_Create(member_2d0(self));
     Music2e4_Create(member_2e4(self));
-    self->unk_2f4 = 0;
+    self->no_hour_tune = 0;
 }
 CLEAN_AS(func_02035404, Obj021c526c_Create)
 
@@ -566,7 +566,7 @@ void *Obj021c526c_Destruct(Obj021c526c *self)
     MusicCommands_Destruct((MusicCommands *) (void *) self->music_commands);
     SceneMusic_Destruct((SceneMusic *) (void *) self->unk_2a0);
     Music264_Destruct((Music264 *) (void *) self->unk_264);
-    MusicClock_Destruct((MusicClock *) (void *) self->unk_24c);
+    MusicClock_Destruct((MusicClock *) (void *) self->clock);
     MusicVolume_Destruct((MusicVolume *) (void *) self->unk_1c4);
     __cxa_vec_cleanup(self->queue.requests, MUSIC_QUEUE_SIZE, sizeof(MusicRequest),
                       (void (*)(void *))(uintptr_t) func_020374cc);
@@ -582,31 +582,31 @@ Obj021c526c *Obj021c526c_Construct(Obj021c526c *self)
                    (void (*)(void *))(uintptr_t) func_020374cc);
     self->queue.count = 0;
     MusicVolume_Construct((MusicVolume *) (void *) self->unk_1c4, self);
-    MusicClock_Construct((MusicClock *) (void *) self->unk_24c);
+    MusicClock_Construct((MusicClock *) (void *) self->clock);
     Music264_Construct((Music264 *) (void *) self->unk_264, self);
     SceneMusic_Construct((SceneMusic *) (void *) self->unk_2a0, self);
     MusicCommands_Construct((MusicCommands *) (void *) self->music_commands, self);
     Music2d0_Construct(member_2d0(self), self);
     Music2e4_Construct(member_2e4(self), self);
     Music2f0_Construct(member_2f0(self));
-    self->unk_2f4 = 0;
+    self->no_hour_tune = 0;
     return self;
 }
 CLEAN_AS(func_02035510, Obj021c526c_Construct)
 
-/* func_020355b8: the byte at 0x2f4 set (Obj021c526c_ApplyChange24c then does nothing). */
-void Music_Set2f4(void)
+/* func_020355b8: the byte at 0x2f4 set (Obj021c526c_PlayHourTune then does nothing). */
+void Music_SetNoHourTune(void)
 {
-    data_021c526c->unk_2f4 = 1;
+    data_021c526c->no_hour_tune = 1;
 }
-CLEAN_AS(func_020355b8, Music_Set2f4)
+CLEAN_AS(func_020355b8, Music_SetNoHourTune)
 
 /* func_020355cc: the byte at 0x2f4 cleared. */
-void Music_Clear2f4(void)
+void Music_ClearNoHourTune(void)
 {
-    data_021c526c->unk_2f4 = 0;
+    data_021c526c->no_hour_tune = 0;
 }
-CLEAN_AS(func_020355cc, Music_Clear2f4)
+CLEAN_AS(func_020355cc, Music_ClearNoHourTune)
 
 /* func_020355e0: the current request's music, MUSIC_NONE when there is none. */
 u16 Music_CurrentMusic(void)
@@ -668,12 +668,13 @@ void Music_AddValue(int priority, int value, int frames)
 }
 CLEAN_AS(func_02035684, Music_AddValue)
 
-/* func_020356c4: a request for `music` at `priority` with the word 0x0c and the byte 0x10. */
-void Music_Add(int priority, int music, int unk_0c, int unk_10)
+/* func_020356c4: a request for `music` at `priority` with a volume and whether it holds the
+ * volume's other slots. */
+void Music_Add(int priority, int music, int volume, int hold_volume)
 {
     MusicRequest request;
 
-    MusicRequest_Make(&request, priority, music, unk_0c, 0, unk_10);
+    MusicRequest_Make(&request, priority, music, volume, 0, hold_volume);
     MusicQueue_Add(&data_021c526c->queue, &request);
     MusicRequest_Destruct(&request);
 }

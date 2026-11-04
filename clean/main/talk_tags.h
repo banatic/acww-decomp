@@ -38,7 +38,7 @@ typedef struct TalkTagsWalker {
     s32 unk_50;         /* 0x50 */
     s32 unk_54;         /* 0x54 */
     s32 unk_58;         /* 0x58 */
-    s32 name_colour;    /* 0x5c: the colour tag put before a name */
+    s32 text_colour;    /* 0x5c: the running text colour, restored after a name or value */
     u8 unk_60[0x3c];    /* 0x60 */
     u8 unk_9c[0x3c];    /* 0x9c */
     u8 choices_shown;   /* 0xd8: set while the slider tag waits to open its window */
@@ -89,7 +89,7 @@ void TalkTags_BranchByVillagers(TalkTagsWalker *walker);
 void TalkTags_BranchByFish(TalkTagsWalker *walker);
 void TalkTags_BranchByInsects(TalkTagsWalker *walker);
 void TalkTags_BranchByHouse(TalkTagsWalker *walker);
-void TalkTags_BranchByPlayerKind(TalkTagsWalker *walker);
+void TalkTags_BranchByGender(TalkTagsWalker *walker);
 void TalkTags_BranchByFondness(TalkTagsWalker *walker);
 void TalkTags_BranchRandom3(TalkTagsWalker *walker);
 void TalkTags_BranchRandom2(TalkTagsWalker *walker);
@@ -103,10 +103,10 @@ void TalkTags_PutPraise(TalkTagsWalker *walker);
 void TalkTags_Nothing4_32(void);
 void TalkTags_PutNickname(TalkTagsWalker *walker);
 void TalkTags_PutImpression(TalkTagsWalker *walker);
-void TalkTags_PutName3(TalkTagsWalker *walker);
-void TalkTags_PutName2(TalkTagsWalker *walker);
-void TalkTags_PutName1(TalkTagsWalker *walker);
-void TalkTags_PutName0(TalkTagsWalker *walker);
+void TalkTags_PutValue3(TalkTagsWalker *walker);
+void TalkTags_PutValue2(TalkTagsWalker *walker);
+void TalkTags_PutValue1(TalkTagsWalker *walker);
+void TalkTags_PutValue0(TalkTagsWalker *walker);
 void TalkTags_PutPart10(TalkTagsWalker *walker);
 void TalkTags_PutPart9(TalkTagsWalker *walker);
 void TalkTags_PutPart8(TalkTagsWalker *walker);
@@ -247,7 +247,7 @@ void TalkTags_DispatchTag(TalkTagsWalker *walker);
 void TalkTags_GoToMessage(TalkTagsWalker *walker, const u8 *message);
 void TalkTags_NotePart(TalkTagsWalker *walker, void *part);
 void TalkTags_NoteNothing(void);
-void TalkTags_PutName(TalkTagsWalker *walker, int index);
+void TalkTags_PutValue(TalkTagsWalker *walker, int index);
 void TalkTags_PutPart(TalkTagsWalker *walker, int index);
 void TalkTags_ClearE0(TalkTagsWalker *walker);
 int TalkTags_Pace(TalkTagsWalker *walker);

@@ -44,7 +44,7 @@ static_assert(offsetof(TalkObject, run) == 0x149c, "talk run");
 static_assert(offsetof(TalkObject, receiver) == 0x14a8, "talk receiver");
 static_assert(offsetof(TalkObject, parts) == 0x14b8, "talk parts");
 static_assert(offsetof(TalkObject, values) == 0x18ac, "talk values");
-static_assert(offsetof(TalkObject, value_kinds) == 0x1a1c, "talk value kinds");
+static_assert(offsetof(TalkObject, value_colours) == 0x1a1c, "talk value kinds");
 static_assert(offsetof(TalkObject, voice) == 0x1a2c, "talk voice");
 static_assert(offsetof(TalkObject, particles) == 0x1a58, "talk particles");
 static_assert(offsetof(TalkObject, year) == 0x1a64, "talk year");
@@ -535,11 +535,12 @@ void TalkObject_OpenChoices(TalkObject *talk, int later)
 }
 CLEAN_AS(func_02068388, TalkObject_OpenChoices)
 
-/* func_020683b4: value `index` a message's tags put in: a copy of `text`, and its kind. */
-void TalkObject_SetValue(TalkObject *talk, int index, TextBase *text, int kind)
+/* func_020683b4: value `index` a message's tags put in: a copy of `text`, and the colour it is
+ * drawn in. */
+void TalkObject_SetValue(TalkObject *talk, int index, TextBase *text, int colour)
 {
     TextBase_Copy((TextBase *) (void *) &talk->values[index], text);
-    talk->value_kinds[index] = kind;
+    talk->value_colours[index] = colour;
 }
 CLEAN_AS(func_020683b4, TalkObject_SetValue)
 
@@ -766,7 +767,7 @@ extern StateBlock data_021dc7a8;
 #define TALK_OBJECT_NAME_BACKGROUND 0x0e
 #define TALK_OBJECT_NAME_COLOUR 2
 
-/* The kind a cleared value gets (TalkObject.value_kinds). */
+/* The colour a cleared value gets (TalkObject.value_colours). */
 #define TALK_OBJECT_VALUE_CLEARED 7
 
 /* The size of the walker TalkObject_RunAnswerText builds on its stack. */
@@ -1098,7 +1099,7 @@ int TalkObject_LoadMemory(TalkObject *talk)
     if (villager == NULL) {
         return 0;
     }
-    return VillagerMemory_GetText3E(villager, &talk->memory, talk_object_player()) != 0;
+    return VillagerMemory_GetGreeting(villager, &talk->memory, talk_object_player()) != 0;
 }
 CLEAN_AS(func_020676d0, TalkObject_LoadMemory)
 
@@ -1351,7 +1352,7 @@ void TalkObject_ClearValues(TalkObject *talk)
 {
     for (int i = 0; i < TALK_OBJECT_VALUES; i++) {
         MessagePart_Clear(&talk->values[i]);
-        talk->value_kinds[i] = TALK_OBJECT_VALUE_CLEARED;
+        talk->value_colours[i] = TALK_OBJECT_VALUE_CLEARED;
     }
 }
 CLEAN_AS(func_02067ac0, TalkObject_ClearValues)

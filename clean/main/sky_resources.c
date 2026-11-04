@@ -3,6 +3,7 @@
 
 #include "clean.h"
 #include "main_random.h"
+#include "sky_objects.h"
 
 static_assert(sizeof(SkyResourceFile) == 16, "a resource");
 static_assert(offsetof(SkyResourceFile, palette) == 0x0c, "the palette");
@@ -18,7 +19,6 @@ static_assert(sizeof(SkyPalettes) == 0x48, "the palettes");
 #define SKY_FILES_READ_PALETTES 14      /* of a_sky_obj_ncl.bin */
 #define SKY_FILES_READ_MOON_PALETTES 10 /* of a_sky_moon_obj_ncl.bin */
 #define SKY_SLOT_FIRST_TILE 0x94        /* the slots' cells' first tile in OBJ VRAM */
-#define SKY_RESOURCE_UNUSED 0x34        /* SkyObjectSlot.kind: no resource */
 #define SKY_PALETTE_BYTES 32
 
 /* The paths of the palette files, as the game copies them. */
@@ -226,10 +226,10 @@ CLEAN_AS(func_020bee4c, SkySlot_Reload)
 /* func_020bee60: the slot given another resource, to be loaded. */
 void SkySlot_SetResource(SkyObjectSlot *slot, unsigned int resource)
 {
-    if (resource != (u32) slot->kind) {
+    if (resource != (u32) slot->resource) {
         slot->loaded = 0;
         slot->changed = 1;
-        slot->kind = (s32) resource;
+        slot->resource = (s32) resource;
     }
 }
 CLEAN_AS(func_020bee60, SkySlot_SetResource)
@@ -239,10 +239,10 @@ CLEAN_AS(func_020bee60, SkySlot_SetResource)
 void SkySlot_Use(SkyObjectSlot *slot, int resource, SkyPalettes *palettes)
 {
     (*sky_slot_users(slot))++;
-    if (resource != slot->kind) {
+    if (resource != slot->resource) {
         slot->loaded = 0;
         SkyPalettes_ForgetResource(palettes, resource);
-        slot->kind = resource;
+        slot->resource = resource;
     }
 }
 CLEAN_AS(func_020bee74, SkySlot_Use)
@@ -255,7 +255,7 @@ void SkySlot_LoadCells(SkyObjectSlot *slot, SkyFiles *files)
 {
     int sub = data_021f75b0.screen == SKY_SCREEN_SUB;
     SkyFiles_FlushCells(files);
-    const SkySlotLayout *layout = &data_020d26a0[data_020d2bac[slot->kind].slot];
+    const SkySlotLayout *layout = &data_020d26a0[data_020d2bac[slot->resource].slot];
     for (int row = 0; row < SKY_FILES_ROWS; row++) {
         int top = row < SKY_FILES_ROWS / 2;
         s32 first = top ? layout->top_first : layout->bottom_first;
@@ -277,7 +277,7 @@ CLEAN_AS(func_020bee9c, SkySlot_LoadCells)
 /* func_020bef78: the constructor: no resource, no object, not loaded. */
 void SkySlot_Construct(SkyObjectSlot *slot)
 {
-    slot->kind = SKY_RESOURCE_UNUSED;
+    slot->resource = SKY_OBJECT_NO_RESOURCE;
     *sky_slot_users(slot) = 0;
     slot->loaded = 0;
     slot->changed = 0;

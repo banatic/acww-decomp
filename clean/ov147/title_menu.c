@@ -60,7 +60,7 @@ enum TitleMenuMessage {
 };
 
 #define TITLE_MESSAGE_LIST_CANCEL 0x10 /* the last answer of the players' list */
-#define TITLE_PLAYER_ANSWER_70 4       /* the players' answers' unk_70 */
+#define TITLE_PLAYER_ANSWER_70 4       /* the players' answers' next_message */
 #define TITLE_SE_CLOSE 0x3a            /* the sound when the talk of 0x24 or 0x27 closes */
 #define TITLE_STATE_FLAG_12 0x12       /* the flag of the state block job 0xe reads */
 
@@ -300,7 +300,7 @@ void TitleMenu_OnClose(TitleReceiver *self)
 CLEAN_AS(func_ov147_02299698, TitleMenu_OnClose)
 
 /* func_ov147_022996b4 (after message 3): the receiver's talk offers the town's players by name
- * (their answers' unk_70 4), then message 0x10 of answers' file 1 (unk_70 0), which B picks;
+ * (their answers' next_message 4), then message 0x10 of answers' file 1 (next_message 0), which B picks;
  * the choices open. */
 void TitleMenu_ListTownPlayers(TitleReceiver *self)
 {
@@ -321,7 +321,7 @@ void TitleMenu_ListTownPlayers(TitleReceiver *self)
         PlayerId_NameToText(PlayerRecord_Player(PlayerRecords_TownRecord(data_021dc7bc, i)), (TextBase *) (void *) &name);
         TalkAnswer *answer = TalkAnswers_Answer(answers, count);
         player_value = TITLE_PLAYER_ANSWER_70;
-        TalkAnswers_Set70(answer, &player_value);
+        TalkAnswers_SetNext(answer, &player_value);
         TextBase_Copy(TalkAnswers_Text(answer), (TextBase *) (void *) &name);
         count++;
         PlayerIdText_Destruct(&name);
@@ -332,7 +332,7 @@ void TitleMenu_ListTownPlayers(TitleReceiver *self)
     TalkAnswers_SetMessage(cancel, &cancel_message);
     TalkAnswers_SetFile(cancel, (int) TalkAnswers_SelectFileName(1));
     cancel_value = 0;
-    TalkAnswers_Set70(cancel, &cancel_value);
+    TalkAnswers_SetNext(cancel, &cancel_value);
     TalkAnswers_LoadAnswerText(cancel);
     TalkAnswers_SetCount(answers, count + 1);
     TalkAnswers_SetCancelToLast(answers);

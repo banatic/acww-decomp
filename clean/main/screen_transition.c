@@ -29,7 +29,7 @@ static_assert(sizeof(ScreenTransitionFunctions) == 0x10, "ScreenTransitionFuncti
 
 #define DISPSTAT_IN_HBLANK 0x0002
 #define BGCNT_PRIORITY 0x0003
-#define BGCNT_KEEP 0x0043  /* the character base and the mosaic */
+#define BGCNT_KEEP 0x0043  /* the priority and the mosaic (the character base is cleared) */
 #define BG2CNT_MAIN 0x0600 /* screen base 6, priority 0 */
 #define BG2CNT_SUB 0x0e04  /* screen base 0xe, character base 1, priority 0 */
 #define BLACK 0x8000       /* a colour of the clear backgrounds */

@@ -264,7 +264,7 @@ CLEAN_AS(func_ov124_0229f27c, HanPanel_TextStyle)
 /* func_ov124_0229f2c8 */
 void HanPanel_SetTextBoxParams(HanPanel *self, int a, int b, int c, int d)
 {
-    TextLabel_SetBoxParams(&self->label, a, b, c, d);
+    TextLabel_SetMark(&self->label, a, b, c, d);
 }
 CLEAN_AS(func_ov124_0229f2c8, HanPanel_SetTextBoxParams)
 

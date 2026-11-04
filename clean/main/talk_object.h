@@ -88,7 +88,7 @@ typedef struct TalkObject {
     MessageEntry entry;                     /* 0x14ac */
     MessagePart parts[TALK_OBJECT_PARTS];   /* 0x14b8 */
     MessagePart values[TALK_OBJECT_VALUES]; /* 0x18ac */
-    s32 value_kinds[TALK_OBJECT_VALUES];    /* 0x1a1c */
+    s32 value_colours[TALK_OBJECT_VALUES];  /* 0x1a1c */
     TalkVoice voice;                        /* 0x1a2c */
     MailTextParticles particles;            /* 0x1a58 */
     s32 year;                               /* 0x1a64: the date and time the talk began */
@@ -173,7 +173,7 @@ void TalkObject_StartSpinner(TalkObject *talk, int sound);
 u8 TalkObject_Voiced(TalkObject *talk);
 TalkAnswers *TalkObject_Answers(TalkObject *talk);
 void TalkObject_OpenChoices(TalkObject *talk, int later);
-void TalkObject_SetValue(TalkObject *talk, int index, TextBase *text, int kind);
+void TalkObject_SetValue(TalkObject *talk, int index, TextBase *text, int colour);
 int TalkObject_LoadPart(TalkObject *talk, int index, const u8 *message, unsigned int name);
 void TalkObject_SetPart(TalkObject *talk, int index, TextBase *text);
 void TalkObject_StopGoingOn(TalkObject *talk);

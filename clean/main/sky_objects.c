@@ -491,24 +491,24 @@ void SkyObjects_ReleaseOverlapping(SkyObjects *objects, int slot)
     SkyObjectSlot *slots = objects->slots;
     switch (slot) {
         case 0:
-            slots[3].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[3].resource = SKY_OBJECT_NO_RESOURCE;
             break;
         case 1:
-            slots[4].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[4].resource = SKY_OBJECT_NO_RESOURCE;
             break;
         case 2:
-            slots[3].kind = SKY_OBJECT_NO_RESOURCE;
-            slots[4].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[3].resource = SKY_OBJECT_NO_RESOURCE;
+            slots[4].resource = SKY_OBJECT_NO_RESOURCE;
             break;
         case 3:
-            slots[0].kind = SKY_OBJECT_NO_RESOURCE;
-            slots[2].kind = SKY_OBJECT_NO_RESOURCE;
-            slots[4].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[0].resource = SKY_OBJECT_NO_RESOURCE;
+            slots[2].resource = SKY_OBJECT_NO_RESOURCE;
+            slots[4].resource = SKY_OBJECT_NO_RESOURCE;
             break;
         case 4:
-            slots[1].kind = SKY_OBJECT_NO_RESOURCE;
-            slots[2].kind = SKY_OBJECT_NO_RESOURCE;
-            slots[3].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[1].resource = SKY_OBJECT_NO_RESOURCE;
+            slots[2].resource = SKY_OBJECT_NO_RESOURCE;
+            slots[3].resource = SKY_OBJECT_NO_RESOURCE;
             break;
         default:
             break;
@@ -523,7 +523,7 @@ CLEAN_AS(func_020be160, SkyObjects_ReleaseOverlapping)
 int SkyObjects_SlotFor(SkyObjects *objects, int resource)
 {
     int slot = data_020d2bb4[resource].slot;
-    if (slot == SKY_OBJECT_NO_SLOT || sky_objects_slot_at(objects, slot)->kind == resource) {
+    if (slot == SKY_OBJECT_NO_SLOT || sky_objects_slot_at(objects, slot)->resource == resource) {
         return slot;
     }
     int used[SKY_SLOTS];
@@ -558,9 +558,9 @@ CLEAN_AS(func_020be1c4, SkyObjects_SlotFor)
 /* A slot's resource shown: with `read_files` its files read first; its cells loaded unless
  * they are (then marked loaded, and with `read_files` no longer changed), its palette loaded
  * unless it is. */
-static void sky_objects_fireworks_slot(SkyObjects *objects, SkyObjectSlot *slot, int read_files)
+static void sky_objects_load_slot(SkyObjects *objects, SkyObjectSlot *slot, int read_files)
 {
-    int resource = slot->kind;
+    int resource = slot->resource;
     int loaded = slot->loaded;
     int palette_loaded = SkyPalettes_IsLoaded((SkyPalettes *) (void *) objects->palettes, resource);
     if (!loaded) {
@@ -587,8 +587,8 @@ void SkyObjects_ReloadChangedSlots(SkyObjects *objects, void *unused)
         if (slot->changed == 0) {
             continue;
         }
-        if (slot->kind != SKY_OBJECT_NO_RESOURCE) {
-            sky_objects_fireworks_slot(objects, slot, 0);
+        if (slot->resource != SKY_OBJECT_NO_RESOURCE) {
+            sky_objects_load_slot(objects, slot, 0);
         }
         slot->changed = 0;
     }
@@ -603,10 +603,10 @@ void SkyObjects_ReadSlotFiles(SkyObjects *objects)
         if (slot->changed == 0) {
             continue;
         }
-        if (slot->kind == SKY_OBJECT_NO_RESOURCE) {
+        if (slot->resource == SKY_OBJECT_NO_RESOURCE) {
             slot->changed = 0;
         } else if (slot->loaded == 0) {
-            SkyFiles_ReadCells((SkyFiles *) (void *) objects->files, slot->kind);
+            SkyFiles_ReadCells((SkyFiles *) (void *) objects->files, slot->resource);
         }
     }
 }
@@ -617,8 +617,8 @@ CLEAN_AS(func_020be348, SkyObjects_ReadSlotFiles)
 void SkyObjects_LoadSlots(SkyObjects *objects)
 {
     for (SkyObjectSlot *slot = objects->slots; slot < objects->slots + SKY_SLOTS; slot++) {
-        if (slot->kind != SKY_OBJECT_NO_RESOURCE) {
-            sky_objects_fireworks_slot(objects, slot, 1);
+        if (slot->resource != SKY_OBJECT_NO_RESOURCE) {
+            sky_objects_load_slot(objects, slot, 1);
         }
     }
 }

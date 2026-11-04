@@ -69,7 +69,7 @@ extern const u8 data_020cce90[];
 #define TALK_BOX_REG16(address) (*(volatile u16 *) (address))
 #define TALK_BOX_REG_BG2CNT TALK_BOX_REG16(0x0400000c)
 #define TALK_BOX_BGCNT_PRIORITY 0x0003
-#define TALK_BOX_BGCNT_KEEP 0x0043 /* the priority, the character base and the mosaic */
+#define TALK_BOX_BGCNT_KEEP 0x0043 /* the priority and the mosaic (the character base is cleared) */
 #define TALK_BOX_BGCNT_MOSAIC 0x0040
 #define TALK_BOX_BG2_PRIORITY 1
 #define TALK_BOX_BG2_SCREEN_BASE 0x0600

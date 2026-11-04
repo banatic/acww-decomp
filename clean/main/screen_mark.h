@@ -6,8 +6,8 @@
  * Its states (ScreenMarkState), stepped by its update (func_0208ee20, through a table of member
  * functions): hidden, until it should show; appearing, until its animation is done; shown, while
  * it should; hiding, until its animation is done. It should show while the main engine is on
- * the bottom screen, no event runs, the scene query's current scene is not 6 and the scene
- * number (func_020960d8(4)) is not 8 to 15 or 0x24 to 0x2c. */
+ * the bottom screen, no event runs, the scene query's current scene is not 6 and the state of
+ * this console's player actor (PlayerActorOps_State(4)) is not 8 to 15 or 0x24 to 0x2c. */
 #ifndef CLEAN_MAIN_SCREEN_MARK_H
 #define CLEAN_MAIN_SCREEN_MARK_H
 

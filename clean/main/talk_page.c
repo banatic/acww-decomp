@@ -34,8 +34,8 @@ static_assert(sizeof(TalkPageMeasurer) == 0x54, "measurer");
 #define TALK_PAGE_BOX_BACKGROUND 0x0e
 
 /* The parts of the talk the measurer reads. */
-#define TALK_PAGE_TALK_NAMES 0x18ac /* four names (text objects of 0x5c bytes) */
-#define TALK_PAGE_TALK_NAME_SIZE 0x5c
+#define TALK_PAGE_TALK_VALUES 0x18ac /* four values (text objects of 0x5c bytes) */
+#define TALK_PAGE_TALK_VALUE_SIZE 0x5c
 #define TALK_PAGE_TALK_PARTICLES 0x1a58 /* MailTextParticles */
 
 /* The first Hangul syllable, the finals per syllable, and the final rieul. */
@@ -311,39 +311,39 @@ void TalkPageMeasurer_PutParticle(TalkPageMeasurer *measurer)
 }
 CLEAN_AS(func_0206c3fc, TalkPageMeasurer_PutParticle)
 
-/* The talk's name `index` handed to the empty TalkPageMeasurer_IgnoreText. */
-static void talk_page_measurer_name(TalkPageMeasurer *measurer, int index)
+/* The talk's value `index` handed to the empty TalkPageMeasurer_IgnoreText. */
+static void talk_page_measurer_value(TalkPageMeasurer *measurer, int index)
 {
-    TalkPageMeasurer_IgnoreText(measurer, measurer->talk + TALK_PAGE_TALK_NAMES + index * TALK_PAGE_TALK_NAME_SIZE);
+    TalkPageMeasurer_IgnoreText(measurer, measurer->talk + TALK_PAGE_TALK_VALUES + index * TALK_PAGE_TALK_VALUE_SIZE);
 }
 
-/* func_0206c480: name 3. */
-void TalkPageMeasurer_Name3(TalkPageMeasurer *measurer)
+/* func_0206c480: the talk's value 3. */
+void TalkPageMeasurer_Value3(TalkPageMeasurer *measurer)
 {
-    talk_page_measurer_name(measurer, 3);
+    talk_page_measurer_value(measurer, 3);
 }
-CLEAN_AS(func_0206c480, TalkPageMeasurer_Name3)
+CLEAN_AS(func_0206c480, TalkPageMeasurer_Value3)
 
-/* func_0206c49c: name 2. */
-void TalkPageMeasurer_Name2(TalkPageMeasurer *measurer)
+/* func_0206c49c: the talk's value 2. */
+void TalkPageMeasurer_Value2(TalkPageMeasurer *measurer)
 {
-    talk_page_measurer_name(measurer, 2);
+    talk_page_measurer_value(measurer, 2);
 }
-CLEAN_AS(func_0206c49c, TalkPageMeasurer_Name2)
+CLEAN_AS(func_0206c49c, TalkPageMeasurer_Value2)
 
-/* func_0206c4b0: name 1. */
-void TalkPageMeasurer_Name1(TalkPageMeasurer *measurer)
+/* func_0206c4b0: the talk's value 1. */
+void TalkPageMeasurer_Value1(TalkPageMeasurer *measurer)
 {
-    talk_page_measurer_name(measurer, 1);
+    talk_page_measurer_value(measurer, 1);
 }
-CLEAN_AS(func_0206c4b0, TalkPageMeasurer_Name1)
+CLEAN_AS(func_0206c4b0, TalkPageMeasurer_Value1)
 
-/* func_0206c4c4: name 0. */
-void TalkPageMeasurer_Name0(TalkPageMeasurer *measurer)
+/* func_0206c4c4: the talk's value 0. */
+void TalkPageMeasurer_Value0(TalkPageMeasurer *measurer)
 {
-    talk_page_measurer_name(measurer, 0);
+    talk_page_measurer_value(measurer, 0);
 }
-CLEAN_AS(func_0206c4c4, TalkPageMeasurer_Name0)
+CLEAN_AS(func_0206c4c4, TalkPageMeasurer_Value0)
 
 /* ---- The rest of the measurer's handlers, and its tables by kind */
 
@@ -353,7 +353,7 @@ CLEAN_AS(func_0206c4c4, TalkPageMeasurer_Name0)
 
 /* The parts of the talk the handlers below read. */
 #define TALK_PAGE_TALK_RECEIVER 0x14a8 /* the receiver (Base_02066994) */
-#define TALK_PAGE_TALK_PARTS 0x14b8    /* eleven parts (text objects of 0x5c bytes), then the names */
+#define TALK_PAGE_TALK_PARTS 0x14b8    /* eleven parts (text objects of 0x5c bytes), then the values */
 #define TALK_PAGE_TALK_PART_SIZE 0x5c
 #define TALK_PAGE_TALK_CATCHPHRASE 0x1c70  /* the villager's catchphrase (func_02067a74) */
 #define TALK_PAGE_TALK_TOWN_NAME 0x1c8c    /* the town's name (func_02067a3c) */
@@ -619,33 +619,33 @@ void TalkPageMeasurer_PutImpression(TalkPageMeasurer *measurer)
 }
 CLEAN_AS(func_0206c6fc, TalkPageMeasurer_PutImpression)
 
-/* func_0206c74c (tag 4/29): the talk's name 3. */
-void TalkPageMeasurer_PutName3(TalkPageMeasurer *measurer)
+/* func_0206c74c (tag 4/29): the talk's value 3. */
+void TalkPageMeasurer_PutValue3(TalkPageMeasurer *measurer)
 {
-    TalkPageMeasurer_PutTalkName(measurer, 3);
+    TalkPageMeasurer_PutTalkValue(measurer, 3);
 }
-CLEAN_AS(func_0206c74c, TalkPageMeasurer_PutName3)
+CLEAN_AS(func_0206c74c, TalkPageMeasurer_PutValue3)
 
-/* func_0206c758 (tag 4/28): name 2. */
-void TalkPageMeasurer_PutName2(TalkPageMeasurer *measurer)
+/* func_0206c758 (tag 4/28): the talk's value 2. */
+void TalkPageMeasurer_PutValue2(TalkPageMeasurer *measurer)
 {
-    TalkPageMeasurer_PutTalkName(measurer, 2);
+    TalkPageMeasurer_PutTalkValue(measurer, 2);
 }
-CLEAN_AS(func_0206c758, TalkPageMeasurer_PutName2)
+CLEAN_AS(func_0206c758, TalkPageMeasurer_PutValue2)
 
-/* func_0206c764 (tag 4/27): name 1. */
-void TalkPageMeasurer_PutName1(TalkPageMeasurer *measurer)
+/* func_0206c764 (tag 4/27): the talk's value 1. */
+void TalkPageMeasurer_PutValue1(TalkPageMeasurer *measurer)
 {
-    TalkPageMeasurer_PutTalkName(measurer, 1);
+    TalkPageMeasurer_PutTalkValue(measurer, 1);
 }
-CLEAN_AS(func_0206c764, TalkPageMeasurer_PutName1)
+CLEAN_AS(func_0206c764, TalkPageMeasurer_PutValue1)
 
-/* func_0206c770 (tag 4/26): name 0. */
-void TalkPageMeasurer_PutName0(TalkPageMeasurer *measurer)
+/* func_0206c770 (tag 4/26): the talk's value 0. */
+void TalkPageMeasurer_PutValue0(TalkPageMeasurer *measurer)
 {
-    TalkPageMeasurer_PutTalkName(measurer, 0);
+    TalkPageMeasurer_PutTalkValue(measurer, 0);
 }
-CLEAN_AS(func_0206c770, TalkPageMeasurer_PutName0)
+CLEAN_AS(func_0206c770, TalkPageMeasurer_PutValue0)
 
 /* func_0206c77c (tag 4/25): the talk's part 10. */
 void TalkPageMeasurer_PutPart10(TalkPageMeasurer *measurer)
@@ -902,7 +902,7 @@ CLEAN_AS(func_0206cd40, TalkPageMeasurer_DispatchGroupFF)
 
 /* func_0206cdbc (group 11): kinds 0 to 20: 1 and 2 TalkPageMeasurer_Set50One and Set50Two, 4
  * TalkPageMeasurer_Nothing11_4, 5 to 15 the parts (TalkPageMeasurer_Part0 to Part10), 16 to
- * 19 the names (TalkPageMeasurer_Name0 to Name3), 20 TalkPageMeasurer_PutParticle; 0 and 3
+ * 19 the values (TalkPageMeasurer_Value0 to Name3), 20 TalkPageMeasurer_PutParticle; 0 and 3
  * nothing. */
 void TalkPageMeasurer_DispatchGroup11(TalkPageMeasurer *measurer)
 {
@@ -1019,7 +1019,7 @@ void TalkPageMeasurer_DispatchTag(TalkPageMeasurer *measurer)
 }
 CLEAN_AS(func_0206d330, TalkPageMeasurer_DispatchTag)
 
-/* func_0206d420: nothing (the measurer meeting one of the talk's names or parts in a group 11
+/* func_0206d420: nothing (the measurer meeting one of the talk's values or parts in a group 11
  * tag). */
 void TalkPageMeasurer_IgnoreText(void *measurer, void *text)
 {
@@ -1044,12 +1044,12 @@ static void talk_page_measurer_put_text(TalkPageMeasurer *measurer, u32 offset)
     talk_page_particles(measurer)->ro_after_rieul = 0;
 }
 
-/* func_0206d428: the talk's name `index` walked in place of the tag. */
-void TalkPageMeasurer_PutTalkName(TalkPageMeasurer *measurer, int index)
+/* func_0206d428: the talk's value `index` walked in place of the tag. */
+void TalkPageMeasurer_PutTalkValue(TalkPageMeasurer *measurer, int index)
 {
-    talk_page_measurer_put_text(measurer, TALK_PAGE_TALK_NAMES + (u32) index * TALK_PAGE_TALK_NAME_SIZE);
+    talk_page_measurer_put_text(measurer, TALK_PAGE_TALK_VALUES + (u32) index * TALK_PAGE_TALK_VALUE_SIZE);
 }
-CLEAN_AS(func_0206d428, TalkPageMeasurer_PutTalkName)
+CLEAN_AS(func_0206d428, TalkPageMeasurer_PutTalkValue)
 
 /* func_0206d484: the talk's part `index` walked in place of the tag. */
 void TalkPageMeasurer_PutTalkPart(TalkPageMeasurer *measurer, int index)

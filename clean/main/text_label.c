@@ -26,9 +26,9 @@ static_assert(offsetof(TextLabel, box) == 0x68, "label box");
 /* The archive TextLabel_LoadMenuMessageAt names: none, which func_020b4980 reads as "2d_menu". */
 #define DEFAULT_ARCHIVE NULL
 
-/* The boxes' modes func_020a8fe8 / func_020a9034 are asked for. */
-#define BOX_MODE_1 1
-#define BOX_MODE_2 2
+/* The rows of the boxes LabelBox_New and LabelBox_NewInVram are asked for. */
+#define BOX_ROWS_1 1
+#define BOX_ROWS_2 2
 
 extern const TextVtable data_020e1784; /* the wide text's vtable */
 extern const TextVtable data_020e179c; /* the label's vtable */
@@ -123,15 +123,15 @@ int TextLabel_EqualsTrimmed(TextLabel *label, const u16 *text, u16 length)
 }
 CLEAN_AS(func_020707e8, TextLabel_EqualsTrimmed)
 
-/* func_02070854: pass four values to the label's box (func_02051608 stores them at 0x3a, 0x3b,
- * 0x40 and 0x44); nothing without a box. */
-void TextLabel_SetBoxParams(TextLabel *label, int a, int b, int c, int d)
+/* func_02070854: the label's box marks characters `first` to `first + count` in `color` on
+ * `background` (TextDraw_SetMark); nothing without a box. */
+void TextLabel_SetMark(TextLabel *label, int color, int background, int first, int count)
 {
     if (label->box != NULL) {
-        TextDraw_SetMark(&label->box->base, (u8) a, (u8) b, c, d);
+        TextDraw_SetMark(&label->box->base, (u8) color, (u8) background, first, count);
     }
 }
-CLEAN_AS(func_02070854, TextLabel_SetBoxParams)
+CLEAN_AS(func_02070854, TextLabel_SetMark)
 
 /* func_02070870: set the label from `length` 16-bit characters; the end code is only added
  * when newlines are escaped. */
@@ -267,14 +267,14 @@ void TextLabel_Show(TextLabel *label, int center, int underline)
 }
 CLEAN_AS(func_02070a04, TextLabel_Show)
 
-/* func_02070a54: replace the label's box with one from func_020a8fe8 (mode 2) that draws at
- * once, in the two colours given. */
-void TextLabel_OpenBox(TextLabel *label, int a, int b, int color_38, u8 color_39)
+/* func_02070a54: replace the label's box with one in RAM (LabelBox_New, `cells` across, 2 rows)
+ * that draws at once, in the two colours given. */
+void TextLabel_OpenBox(TextLabel *label, int ram, int cells, int color_38, u8 color_39)
 {
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = LabelBox_New(a, b, BOX_MODE_2);
+    label->box = LabelBox_New(ram, cells, BOX_ROWS_2);
     if (label->box != NULL) {
         label->box->base.background = color_39;
         label->box->base.color = (u8) color_38;
@@ -283,49 +283,50 @@ void TextLabel_OpenBox(TextLabel *label, int a, int b, int color_38, u8 color_39
 }
 CLEAN_AS(func_02070a54, TextLabel_OpenBox)
 
-/* func_02070a98: replace the label's box with one from func_020a9034 (mode 1) in `style` and
- * the two colours, with the font data_021c828c. QUIRK: the last argument is not read.
+/* func_02070a98: replace the label's box with one in VRAM (LabelBox_NewInVram, from
+ * `first_tile`, `cells` across, 1 row) on the display layer `layer` in the two colours, with
+ * the font data_021c828c. QUIRK: the last argument is not read.
  * REQUIRES: the box is allocated; the original writes the font to address 0x28 otherwise. */
-void TextLabel_OpenStyledBox(TextLabel *label, int style, int a, int b, u8 color_38, u8 color_39, int unused)
+void TextLabel_OpenStyledBox(TextLabel *label, int layer, int first_tile, int cells, u8 color_38, u8 color_39, int unused)
 {
     (void) unused;
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = LabelBox_NewInVram(a, b, BOX_MODE_1);
-    TextLabel_SetStyle(label, style, (char) color_38, (char) color_39);
+    label->box = LabelBox_NewInVram(first_tile, cells, BOX_ROWS_1);
+    TextLabel_SetStyle(label, layer, (char) color_38, (char) color_39);
     label->box->base.font = &data_021c828c;
 }
 CLEAN_AS(func_02070a98, TextLabel_OpenStyledBox)
 
-/* func_02070adc: as TextLabel_OpenStyledBox in mode 2, with the font data_021c82e8 when
+/* func_02070adc: as TextLabel_OpenStyledBox with 2 rows, with the font data_021c82e8 when
  * `other_font` is set (else the box's own). REQUIRES: with `other_font`, the box is allocated
  * (as above). */
-void TextLabel_OpenStyledBox2(TextLabel *label, int style, int a, int b, u8 color_38, u8 color_39, int other_font)
+void TextLabel_OpenStyledBox2(TextLabel *label, int layer, int first_tile, int cells, u8 color_38, u8 color_39, int other_font)
 {
     if (label->box != NULL) {
         TextLabel_CloseBox(label);
     }
-    label->box = LabelBox_NewInVram(a, b, BOX_MODE_2);
-    TextLabel_SetStyle(label, style, (char) color_38, (char) color_39);
+    label->box = LabelBox_NewInVram(first_tile, cells, BOX_ROWS_2);
+    TextLabel_SetStyle(label, layer, (char) color_38, (char) color_39);
     if (other_font != 0) {
         label->box->base.font = &data_021c82e8;
     }
 }
 CLEAN_AS(func_02070adc, TextLabel_OpenStyledBox2)
 
-/* func_02070b24: give the box the style and the two colours. QUIRK: the style is converted
- * (func_02002dc8) even when there is no box. */
-void TextLabel_SetStyle(TextLabel *label, int style, char color_38, char color_39)
+/* func_02070b24: give the box the display layer (its plane and screen) and the two colours.
+ * QUIRK: the layer's plane is looked up (DisplayLayer_PlaneNumber) even when there is no box. */
+void TextLabel_SetStyle(TextLabel *label, int layer, char color_38, char color_39)
 {
-    int box_style = DisplayLayer_PlaneNumber(style);
+    int plane = DisplayLayer_PlaneNumber(layer);
     LabelBox *box = label->box;
     if (box == NULL) {
         return;
     }
-    box->base.layer = box_style;
-    label->box->base.screens = DisplayLayer_IsMainScreen((unsigned int) style) != 0 ? TEXT_DRAW_TO_MAIN : TEXT_DRAW_TO_SUB;
-    label->box->base.rows_full_width = box_style == 4;
+    box->base.layer = plane;
+    label->box->base.screens = DisplayLayer_IsMainScreen((unsigned int) layer) != 0 ? TEXT_DRAW_TO_MAIN : TEXT_DRAW_TO_SUB;
+    label->box->base.rows_full_width = plane == 4;
     label->box->base.background = (u8) color_39;
     label->box->base.color = (u8) color_38;
 }

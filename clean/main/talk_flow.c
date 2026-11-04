@@ -477,7 +477,7 @@ CLEAN_AS(func_02067108, TalkFlow_EnterNext)
  * receiver told the answer. */
 void TalkFlow_TakeAnswer(TalkObject *talk)
 {
-    const u8 *message = TalkAnswers_Picked70(&talk->answers);
+    const u8 *message = TalkAnswers_PickedNext(&talk->answers);
     const char *name = TalkAnswers_PickedName(&talk->answers);
     TalkObject_SetMessage(talk, message, name);
     TalkObject_GoOn(talk);

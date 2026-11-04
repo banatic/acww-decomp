@@ -70,7 +70,7 @@ CLEAN_AS(func_02036584, SceneMusic_CheckLateHour)
 /* func_02036648: the object's member at 0x24c, the clock. */
 void *SceneMusic_Clock(void)
 {
-    return data_021c526c->unk_24c;
+    return data_021c526c->clock;
 }
 CLEAN_AS(func_02036648, SceneMusic_Clock)
 
