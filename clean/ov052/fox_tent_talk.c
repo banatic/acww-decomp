@@ -87,7 +87,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define FOX_TENT_TALK_LINE_CANNOT_JOIN 0x0a
 #define FOX_TENT_TALK_LINE_NOT_JOINING 0x0c
 #define FOX_TENT_TALK_LINE_JOINED 0x10
-#define FOX_TENT_TALK_LINE_CARD 0x11
+#define FOX_TENT_TALK_LINE_PAID 0x11
 #define FOX_TENT_TALK_LINE_OFFER_AGAIN 0x12
 #define FOX_TENT_TALK_LINE_PLAIN 0x17
 #define FOX_TENT_TALK_LINE_PLAIN_4 0x1a
@@ -526,8 +526,8 @@ CLEAN_AS(func_ov052_022608b4, FoxTentTalk_Sell)
  * - 6 (the greeting): the next talk offers the membership (3) to a player without flag 0xc, else
  *   is the plain talk (10);
  * - 7 (the offer): the next offers it again (4);
- * - 0x10 (joined): the scene's motion 14 with the card 0x149d, the player faces no item; line
- *   0x11; 3,000 bells out of the pockets, the next talk is that of the first today (7), the
+ * - 0x10 (joined): the scene's motion 14 with the bag of 3,000 bells 0x149d (the fee), the player
+ *   faces no item; line 0x11; 3,000 bells out of the pockets, the next talk is that of the first today (7), the
  *   current player becomes a member (flag 0xc) and the daily bit 1 is set;
  * - 0x24 to 0x28 (thanks): the item is sold (FoxTentTalk_Sell).
  * The line, when there is one, is shown. */
@@ -560,10 +560,10 @@ void FoxTentTalk_OnLineEnd(FoxTentTalk *talk)
             FoxTentTalk_SetSequence(talk, FOX_TENT_TALK_OFFER_AGAIN);
             break;
         case FOX_TENT_TALK_LINE_JOINED: {
-            u16 card = FOX_TENT_TALK_FEE_BAG;
-            SceneCommand_RequestMotion14(fox_tent_talk_scene(talk), &card, 0, FOX_TENT_TALK_MOTION_B, 0);
+            u16 bag = FOX_TENT_TALK_FEE_BAG;
+            SceneCommand_RequestMotion14(fox_tent_talk_scene(talk), &bag, 0, FOX_TENT_TALK_MOTION_B, 0);
             talk->owner->item = ITEM_CODE_NONE;
-            line = FOX_TENT_TALK_LINE_CARD;
+            line = FOX_TENT_TALK_LINE_PAID;
             SceneBells_Take((int) (uintptr_t) talk->owner, FOX_TENT_TALK_MEMBERSHIP);
             FoxTentTalk_SetSequence(talk, FOX_TENT_TALK_FIRST_TODAY);
             PlayerRecord_SetFlag(record, FOX_TENT_TALK_MEMBER_FLAG);

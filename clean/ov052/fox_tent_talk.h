@@ -22,7 +22,8 @@
  *
  * Answering an offer with the first choice buys the item when the player can pay and has a free
  * pocket (one of five thanks, 0x24 to 0x28, after which the sale is made); else 0x29 (cannot
- * pay) or 0x2a (no room). The membership costs 3,000 bells (line 0x10, the card 0x149d). */
+ * pay) or 0x2a (no room). The membership costs 3,000 bells (line 0x10, the bag of bells 0x149d
+ * handed over). */
 #ifndef CLEAN_OV052_FOX_TENT_TALK_H
 #define CLEAN_OV052_FOX_TENT_TALK_H
 
