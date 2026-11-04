@@ -558,7 +558,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         HouseRecord_Build((HouseRecord *) (void *) data_021ebcd4);
         NookStore_UpgradeIfDue();
         HouseRecord_AddRoachesForAbsence((HouseRecord *) (void *) data_021ebcd4, days);
-        ItemForm_ReplaceEverywhere();
+        ItemForm_RevealForgeries();
         TownItemLists_FillListA(data_021f3a68, days);
         TownItemLists_EmptyListBOnDays(data_021f3a86, to, days);
         RoomScoreRoom house;
@@ -700,7 +700,7 @@ void TownDay_RemoveEventBuildings(TownDay *town, int loaded)
     DateTime_Now(&now);
     MI_CpuCopy8(&now, &when, sizeof when);
     if (EventCalendar_State(0x3d, &when, loaded) == EVENT_CALENDAR_OFF) {
-        EventBuildings_Remove5012();
+        EventBuildings_RemoveFoxTent();
     }
     MI_CpuCopy8(&now, &when, sizeof when);
     if (EventCalendar_State(0x3f, &when, loaded) == EVENT_CALENDAR_OFF) {
@@ -712,7 +712,7 @@ void TownDay_RemoveEventBuildings(TownDay *town, int loaded)
     }
     MI_CpuCopy8(&now, &when, sizeof when);
     if (EventCalendar_State(0x44, &when, loaded) == EVENT_CALENDAR_OFF) {
-        EventBuildings_Revert5020();
+        EventBuildings_RevertSpaceship();
     }
 }
 CLEAN_AS(func_02047730, TownDay_RemoveEventBuildings)
@@ -778,7 +778,7 @@ void TownDay_PutEventBuildings(TownDay *town, StateBlock *block, int loaded)
         }
         switch (i) {
             case 0:
-                EventBuildings_Put5012();
+                EventBuildings_PutFoxTent();
                 break;
             case 1:
                 EventBuildings_Put5013();

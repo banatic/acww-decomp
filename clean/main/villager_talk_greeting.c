@@ -514,7 +514,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         texts = &data_020c8970;
     } else if (VillagerTalkGreeting_IsTired(talk, mood) != 0) {
         texts = &data_020c8c88;
-    } else if (VillagerCheck_TellsFoxPassword(record) != 0 && FoxShop_Has5012AfterSix() != 0 &&
+    } else if (VillagerCheck_TellsFoxPassword(record) != 0 && FoxShop_HasTentAfterSix() != 0 &&
                FoxShop_CurrentPlayerMarked() == 0) {
         FoxShopText password;
         FoxShopText_Construct(&password);

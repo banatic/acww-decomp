@@ -11,7 +11,7 @@
  * one); 1, a follower kept behind the object of kind 3 (16 pixels over that object's
  * height scale: 32 pixels),
  * turning and sized from a table for 23 frames, done once there is no running kind 3; others
- * (SkyKind6_Sparkle gives 2 and 3), done after 6 frames. */
+ * (SkySpaceship_Sparkle gives 2 and 3), done after 6 frames. */
 #ifndef CLEAN_MAIN_SKY_KIND3_H
 #define CLEAN_MAIN_SKY_KIND3_H
 

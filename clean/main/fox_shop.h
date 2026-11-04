@@ -57,7 +57,7 @@ void FoxShop_SendLetters(void);
 int FoxShop_MarkCurrentPlayer(void);
 int FoxShop_CurrentPlayerMarked(void);
 void FoxShop_ClearPlayer(int player);
-int FoxShop_Has5012AfterSix(void);
+int FoxShop_HasTentAfterSix(void);
 FoxPassword *FoxShop_Password(FoxShop *shop);
 void FoxShop_Init(FoxShop *shop);
 void FoxShop_ClearItems(FoxShop *shop);

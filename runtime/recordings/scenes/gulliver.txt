@@ -1,7 +1,7 @@
 # gulliver (format: runtime/input.h), played from a town save by tools/scenes.py (the save is not
 # in this repository). As rock-shovel.txt to 2600.
 # Save: sky-ship (the schedule's day given event 0x44; the slingshot held). At 11:32 the
-# spaceship appears in the sky's entry 45 (main/sky_events.c SkyEvents_AddKind6, about 7100)
+# spaceship appears in the sky's entry 45 (main/sky_events.c SkyEvents_AddSpaceship, about 7100)
 # crossing from the east; the player goes north to tile 45, 21 and A at 8473, as it passes
 # overhead, shoots it down: it falls (main/sky_visitors.c kind 6) and crashes on the building
 # 0x5020 it takes the place of (main/event_buildings.c, tile 19, 20); the beside spot puts

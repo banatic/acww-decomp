@@ -84,7 +84,7 @@ int AcreMap_RoomByNumber(int number);
 int AcreMap_Room(int room);
 void AcreMap_InitRoom(AcreMap *map);
 
-int AcreMap_FindBuilding5020(int map, int position);
+int AcreMap_FindSpaceship(int map, int position);
 int AcreMap_FindBuilding5000Front(int map, int *position, int *tile_x, int *tile_z);
 int AcreMap_HasBuilding500b(int map, int position, int tile_x, int tile_z);
 int AcreMap_HasBuilding5014(int map, int position, int tile_x, int tile_z);

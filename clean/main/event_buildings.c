@@ -12,8 +12,8 @@
 
 #define EVENT_BUILDINGS_FIRST 0x5000
 #define EVENT_BUILDINGS_LAST 0x5021
-#define EVENT_BUILDINGS_500A 0x500a
-#define EVENT_BUILDINGS_5020 0x5020
+#define EVENT_BUILDINGS_FREE_PLOT 0x500a
+#define EVENT_BUILDINGS_SPACESHIP 0x5020
 
 /* The event spot: tile (10, 9) of the first acre whose model has this flag. */
 #define EVENT_BUILDINGS_SPOT_ACRE_FLAG 0x200
@@ -27,12 +27,12 @@
 /* An acre with any of these flags never has its 0x500a turned. */
 #define EVENT_BUILDINGS_NO_TURN_FLAGS_1 0xe0
 #define EVENT_BUILDINGS_NO_TURN_FLAGS_2 0x10
-/* The event whose end turns 0x5020 back, and that EventBuildings_Place5020 marks. */
-#define EVENT_BUILDINGS_EVENT_5020 0x44
+/* The event whose end turns 0x5020 back, and that EventBuildings_PlaceSpaceship marks. */
+#define EVENT_BUILDINGS_EVENT_SPACESHIP 0x44
 /* A position's acre: its x and z over 0x20000. */
 #define EVENT_BUILDINGS_ACRE_SHIFT 17
 
-/* The function-local static item codes of EventBuildings_Revert5020, their guards and their
+/* The function-local static item codes of EventBuildings_RevertSpaceship, their guards and their
  * destruction records. */
 extern u16 data_021f4b20; /* 0x5020 */
 extern u32 data_021f4b38;
@@ -40,7 +40,7 @@ extern u8 data_021f4b88[];
 extern u16 data_021f4b24; /* 0x500a */
 extern u32 data_021f4b4c;
 extern u8 data_021f4b94[];
-/* A counter that EventBuildings_Place5020 clears (func_02087a78 reads it). */
+/* A counter that EventBuildings_PlaceSpaceship clears (func_02087a78 reads it). */
 extern u8 data_021ebcd2[];
 
 extern void __register_global_object(void *object, void *destruct, void *record);
@@ -71,14 +71,14 @@ static int event_buildings_in_range(u16 code)
  * found and turned.
  * QUIRK: each code is a function-local static, built on first use and registered for
  * destruction (func_020051b0, which does nothing). */
-int EventBuildings_Revert5020(void)
+int EventBuildings_RevertSpaceship(void)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
     if (town == NULL) {
         return 0;
     }
     if ((data_021f4b38 & 1) == 0) {
-        data_021f4b20 = EVENT_BUILDINGS_5020;
+        data_021f4b20 = EVENT_BUILDINGS_SPACESHIP;
         __register_global_object(&data_021f4b20, (void *) func_020051b0, data_021f4b88);
         data_021f4b38 |= 1;
     }
@@ -94,7 +94,7 @@ int EventBuildings_Revert5020(void)
                 continue;
             }
             if ((data_021f4b4c & 1) == 0) {
-                data_021f4b24 = EVENT_BUILDINGS_500A;
+                data_021f4b24 = EVENT_BUILDINGS_FREE_PLOT;
                 __register_global_object(&data_021f4b24, (void *) func_020051b0, data_021f4b94);
                 data_021f4b4c |= 1;
             }
@@ -106,17 +106,17 @@ int EventBuildings_Revert5020(void)
     }
     return 0;
 }
-CLEAN_AS(func_020b2a90, EventBuildings_Revert5020)
+CLEAN_AS(func_020b2a90, EventBuildings_RevertSpaceship)
 
-/* One acre of EventBuildings_Place5020: whether a building 0x500a of acre (x, z) became
+/* One acre of EventBuildings_PlaceSpaceship: whether a building 0x500a of acre (x, z) became
  * 0x5020; when it did, the counter at data_021ebcd2 is cleared and event 0x44 marked. */
 static int event_buildings_place_in(AcreMap *town, int x, int z)
 {
-    if (EventBuildings_TurnRandom500a(event_buildings_acre(town, x, z), EVENT_BUILDINGS_5020) == 0) {
+    if (EventBuildings_TurnRandomFreePlot(event_buildings_acre(town, x, z), EVENT_BUILDINGS_SPACESHIP) == 0) {
         return 0;
     }
     SpaceshipParts_SetUp(data_021ebcd2);
-    TownDay_MarkEventOf(EVENT_BUILDINGS_EVENT_5020);
+    TownDay_MarkEventOf(EVENT_BUILDINGS_EVENT_SPACESHIP);
     return 1;
 }
 
@@ -139,7 +139,7 @@ static int event_buildings_place_in_columns(AcreMap *town, int from, int to, int
  * (lower x first and moving away when `lower_first`, else higher x), then the other acres of
  * its own column, then the columns on the other side, and last its own acre. Whether one was
  * turned. */
-int EventBuildings_Place5020(const Vec3 *position, int lower_first)
+int EventBuildings_PlaceSpaceship(const Vec3 *position, int lower_first)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
     if (town == NULL) {
@@ -175,25 +175,25 @@ int EventBuildings_Place5020(const Vec3 *position, int lower_first)
 
     return event_buildings_place_in(town, x, z);
 }
-CLEAN_AS(func_020b2b8c, EventBuildings_Place5020)
+CLEAN_AS(func_020b2b8c, EventBuildings_PlaceSpaceship)
 
 /* func_020b2d98: a random one of the acre's buildings 0x500a becomes building `code`; whether
  * it did. Without any, no random number is drawn. */
-int EventBuildings_TurnRandom500a(u8 *acre, int code)
+int EventBuildings_TurnRandomFreePlot(u8 *acre, int code)
 {
-    int count = EventBuildings_Count500a(acre);
+    int count = EventBuildings_CountFreePlots(acre);
     if (count == 0) {
         return 0;
     }
     int index = (int) MainRandom_Below(count);
-    return EventBuildings_Turn500a(acre, index, code);
+    return EventBuildings_TurnFreePlot(acre, index, code);
 }
-CLEAN_AS(func_020b2d98, EventBuildings_TurnRandom500a)
+CLEAN_AS(func_020b2d98, EventBuildings_TurnRandomFreePlot)
 
 /* func_020b2dc4: the acre's building 0x500a number `index` (counting row by row) becomes
  * building `code` (cut to 16 bits); whether it did. An acre with flags 0xe0 or 0x10 has none
  * turned. */
-int EventBuildings_Turn500a(u8 *acre, int index, int code)
+int EventBuildings_TurnFreePlot(u8 *acre, int index, int code)
 {
     if (acre == NULL) {
         return 0;
@@ -206,7 +206,7 @@ int EventBuildings_Turn500a(u8 *acre, int index, int code)
     for (int z = 0; z < EVENT_BUILDINGS_ACRE_TILES; z++) {
         for (int x = 0; x < EVENT_BUILDINGS_ACRE_TILES; x++) {
             u16 *tile = (u16 *) (uintptr_t) AcreRecord_Tile((AcreRecord *) (void *) acre, x, z, 0);
-            if (tile == NULL || *tile != EVENT_BUILDINGS_500A) {
+            if (tile == NULL || *tile != EVENT_BUILDINGS_FREE_PLOT) {
                 continue;
             }
             if (count == index) {
@@ -221,11 +221,11 @@ int EventBuildings_Turn500a(u8 *acre, int index, int code)
     }
     return 0;
 }
-CLEAN_AS(func_020b2dc4, EventBuildings_Turn500a)
+CLEAN_AS(func_020b2dc4, EventBuildings_TurnFreePlot)
 
 /* func_020b2e54: the number of the acre's tiles holding building 0x500a; 0 for an acre with
  * flags 0xe0 or 0x10. */
-int EventBuildings_Count500a(u8 *acre)
+int EventBuildings_CountFreePlots(u8 *acre)
 {
     if (acre == NULL) {
         return 0;
@@ -238,14 +238,14 @@ int EventBuildings_Count500a(u8 *acre)
     for (int z = 0; z < EVENT_BUILDINGS_ACRE_TILES; z++) {
         for (int x = 0; x < EVENT_BUILDINGS_ACRE_TILES; x++) {
             u16 *tile = (u16 *) (uintptr_t) AcreRecord_Tile((AcreRecord *) (void *) acre, x, z, 0);
-            if (tile != NULL && *tile == EVENT_BUILDINGS_500A) {
+            if (tile != NULL && *tile == EVENT_BUILDINGS_FREE_PLOT) {
                 count++;
             }
         }
     }
     return count;
 }
-CLEAN_AS(func_020b2e54, EventBuildings_Count500a)
+CLEAN_AS(func_020b2e54, EventBuildings_CountFreePlots)
 
 /* func_020b2eb8 */
 void EventBuildings_Remove501e(void)
@@ -290,18 +290,18 @@ void EventBuildings_Put5013(void)
 CLEAN_AS(func_020b2f08, EventBuildings_Put5013)
 
 /* func_020b2f18: whether building 0x5012 was removed. */
-int EventBuildings_Remove5012(void)
+int EventBuildings_RemoveFoxTent(void)
 {
     return EventBuildings_RemoveAtSpot(0x5012);
 }
-CLEAN_AS(func_020b2f18, EventBuildings_Remove5012)
+CLEAN_AS(func_020b2f18, EventBuildings_RemoveFoxTent)
 
 /* func_020b2f28 */
-void EventBuildings_Put5012(void)
+void EventBuildings_PutFoxTent(void)
 {
     EventBuildings_PutAtSpot(0x5012);
 }
-CLEAN_AS(func_020b2f28, EventBuildings_Put5012)
+CLEAN_AS(func_020b2f28, EventBuildings_PutFoxTent)
 
 /* func_020b2f38: the building at the event spot removed when it is building `code` (for a code
  * with a variant, when their items are the same); what removing it answered, or 0.

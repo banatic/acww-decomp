@@ -7,10 +7,11 @@
  *
  * - Kind 5 (resource kept, parameter 1: the variant handed to SkyShots_StartLook2): falls
  *   straight down, slowed by drag.
- * - Kind 6 (it sets flag 9 of the state block when set up): plays two animations as it is
+ * - Kind 6, the spaceship (it sets flag 9 of the state block when set up): plays two animations as it is
  *   thrown up and sideways, then falls with a drift, giving off small objects of kind 2 every
- *   two or three frames (SkyKind6_Sparkle); off the screen it marks calendar event 0x44 for
- *   today and has object 0x5020 placed at the player's position (EventBuildings_Place5020).
+ *   two or three frames (SkySpaceship_Sparkle); off the screen it marks calendar event 0x44 for
+ *   today and has the crashed spaceship (building 0x5020) placed near the player's position
+ *   (EventBuildings_PlaceSpaceship), whose parts the gull (overlay 72) has the player find.
  * - Kind 7 (west to east when its resource is 0x28): gives one object of kind 2 where it was
  *   hit (SkyKind7_AddSparkle), shrinks for a frame, then falls; off the screen it marks event
  *   0x45 for today. */
@@ -44,10 +45,10 @@ void SkyKind7_TakeDown(SkyObject *object);
 void SkyKind7_Run(SkyObject *object);
 void SkyKind7_SetUp(SkyObject *object);
 void SkyKind7_AddSparkle(const Vec3 *at, fx32 scale, fx32 speed);
-void SkyKind6_TakeDown(SkyObject *object);
-void SkyKind6_Run(SkyObject *object);
-void SkyKind6_SetUp(SkyObject *object);
-void SkyKind6_Sparkle(SkyObject *object);
+void SkySpaceship_TakeDown(SkyObject *object);
+void SkySpaceship_Run(SkyObject *object);
+void SkySpaceship_SetUp(SkyObject *object);
+void SkySpaceship_Sparkle(SkyObject *object);
 void SkyKind5_TakeDown(SkyObject *object);
 void SkyKind5_Run(SkyObject *object);
 void SkyKind5_SetUp(SkyObject *object, int param);

@@ -83,11 +83,11 @@ extern const MemberPointer data_ov047_02262b18, data_ov047_02262b10, data_ov047_
 #define OWL_FISH_LAST 0x131f
 #define OWL_PAINTING_FIRST 0x3894
 #define OWL_PAINTING_LAST 0x38e3
-#define OWL_REPLACED_FIRST 0x38e4
-#define OWL_REPLACED_LAST 0x3933
-#define OWL_REPLACED_ITEMS 0x14
-#define OWL_REPLACEMENT_FIRST 0x3934
-#define OWL_REPLACEMENT_LAST 0x3983
+#define OWL_FORGERY_FIRST 0x38e4
+#define OWL_FORGERY_LAST 0x3933
+#define OWL_FORGERIES 0x14
+#define OWL_REVEALED_FIRST 0x3934
+#define OWL_REVEALED_LAST 0x3983
 #define OWL_UNASSESSED_FOSSIL 0x1549
 #define OWL_ERRAND_FIRST 0x155f
 #define OWL_ERRAND_LAST 0x1560
@@ -667,7 +667,7 @@ CLEAN_AS(func_ov047_02261c20, OwlTalk_NextLine)
  * - the fossil to assess (0x1549): line 0x21;
  * - an item the museum lacks: a fossil, not assessing and line 0x25; a painting, one of the
  *   lines 0x2e to 0x30 at random; an insect, line 0x32 (0x33 for the insect 0x34); a fish, line
- *   0x35; one of the room items 0x38e4-0x3933, it becomes its replacement 0x3934 on (in its
+ *   0x35; one of the forged paintings 0x38e4-0x3933, it becomes its fake painting 0x3934 on (in its
  *   pocket too) and line 0x42; one of those, line 0x43; else line 0x22;
  * - an item the museum has: by its giver, line 0x39 (the current player), 0x38 (another player
  *   of the town, whose name is the talk's part 0), 0x37 (a player who has left), else 0x22;
@@ -705,14 +705,14 @@ void OwlTalk_TakeOffered(OwlTalk *talk)
                 line = item - OWL_INSECT_FIRST != OWL_INSECT_OWN_LINE ? 0x32 : 0x33;
             } else if (owl_in(item, OWL_FISH_FIRST, OWL_FISH_LAST)) {
                 line = 0x35;
-            } else if (owl_in(item, OWL_REPLACED_FIRST, OWL_REPLACED_LAST)) {
-                unsigned int index = (unsigned int) (item - OWL_REPLACED_FIRST) >> 2;
-                talk->item = (u16) (index < OWL_REPLACED_ITEMS ? OWL_REPLACEMENT_FIRST + index * 4 : OWL_REPLACEMENT_FIRST);
+            } else if (owl_in(item, OWL_FORGERY_FIRST, OWL_FORGERY_LAST)) {
+                unsigned int index = (unsigned int) (item - OWL_FORGERY_FIRST) >> 2;
+                talk->item = (u16) (index < OWL_FORGERIES ? OWL_REVEALED_FIRST + index * 4 : OWL_REVEALED_FIRST);
                 if (talk->slot >= 0) {
                     CurrentPockets_Set(&talk->item, 0, talk->slot);
                 }
                 line = 0x42;
-            } else if (owl_in(item, OWL_REPLACEMENT_FIRST, OWL_REPLACEMENT_LAST)) {
+            } else if (owl_in(item, OWL_REVEALED_FIRST, OWL_REVEALED_LAST)) {
                 line = 0x43;
             }
         } else {
@@ -773,7 +773,7 @@ int OwlTalk_IsMuseumItem(u16 *item, int state)
     u16 v = *item;
     return owl_in(v, OWL_UNASSESSED_FOSSIL, OWL_UNASSESSED_FOSSIL) | owl_in(v, OWL_FOSSIL_FIRST, OWL_FOSSIL_LAST) |
            owl_in(v, OWL_PAINTING_FIRST, OWL_PAINTING_LAST) | owl_in(v, OWL_INSECT_FIRST, OWL_INSECT_LAST) |
-           owl_in(v, OWL_FISH_FIRST, OWL_FISH_LAST) | owl_in(v, OWL_REPLACED_FIRST, OWL_REPLACED_LAST) |
-           owl_in(v, OWL_REPLACEMENT_FIRST, OWL_REPLACEMENT_LAST);
+           owl_in(v, OWL_FISH_FIRST, OWL_FISH_LAST) | owl_in(v, OWL_FORGERY_FIRST, OWL_FORGERY_LAST) |
+           owl_in(v, OWL_REVEALED_FIRST, OWL_REVEALED_LAST);
 }
 CLEAN_AS(func_ov047_02261ea4, OwlTalk_IsMuseumItem)

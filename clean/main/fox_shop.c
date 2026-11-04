@@ -40,7 +40,7 @@ static_assert(sizeof(FoxShopText) == 0x34, "text");
 #define FOX_LETTER_MESSAGES 3
 /* The value func_02094ffc gives for a name of another town. */
 #define FOX_OTHER_TOWN 1
-/* The item a town map is searched for (FoxShop_Has5012AfterSix), and from which hour. */
+/* The item a town map is searched for (FoxShop_HasTentAfterSix), and from which hour. */
 #define FOX_TOWN_ITEM 0x5012
 #define FOX_FROM_HOUR 6
 #define FOX_TEXT_CAPACITY 34
@@ -65,7 +65,7 @@ extern const u8 data_020e4164[];
 extern const char data_020e41ac[];
 /* The vtable of FoxShopText. */
 extern const u8 data_020e4170[];
-/* The item FoxShop_Has5012AfterSix looks for, a static object made on its first call: its
+/* The item FoxShop_HasTentAfterSix looks for, a static object made on its first call: its
  * guard (bit 0) and its record for __register_global_object. */
 extern u16 data_021f49f8;
 extern u32 data_021f49fc;
@@ -258,7 +258,7 @@ CLEAN_AS(func_020ae310, FoxShop_ClearPlayer)
 
 /* func_020ae32c: whether the town's map has an acre (func_0204f694 with 0x200) holding item
  * 0x5012 and the clock's hour is 6 or later. */
-int FoxShop_Has5012AfterSix(void)
+int FoxShop_HasTentAfterSix(void)
 {
     unsigned int map = AcreMap_Town();
     if (map == 0) {
@@ -282,7 +282,7 @@ int FoxShop_Has5012AfterSix(void)
     DateTime_Now(&now);
     return now.hour >= FOX_FROM_HOUR;
 }
-CLEAN_AS(func_020ae32c, FoxShop_Has5012AfterSix)
+CLEAN_AS(func_020ae32c, FoxShop_HasTentAfterSix)
 
 /* func_020ae3b8 */
 FoxPassword *FoxShop_Password(FoxShop *shop)

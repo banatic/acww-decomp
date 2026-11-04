@@ -20,18 +20,19 @@
  * The items 0x1408-0x1428 and 0x1471-0x1491 share their placed codes; converted back, a code
  * is the first of the two the item tests accept (func_0204be38, func_0204bd84), else 0x137c.
  *
- * Also here: the 20 room items 0x38e4-0x3933 are replaced by the 20 after them (0x3934-0x3983,
- * variant 0), everywhere items are kept (ItemForm_ReplaceEverywhere, which func_0204714c
- * calls right after the house's extension is built). */
+ * Also here: the fox's 20 forged paintings 0x38e4-0x3933 (named as the genuine paintings
+ * 0x3894-0x38e3 are) are revealed as the 20 fake paintings after them (0x3934-0x3983, variant
+ * 0) everywhere items are kept (ItemForm_RevealForgeries), each time the town moves on by days
+ * (TownDay_Pass). */
 #ifndef CLEAN_MAIN_ITEM_FORM_H
 #define CLEAN_MAIN_ITEM_FORM_H
 
 #include "acre_map.h" /* AcreMap */
 #include "types.h"
 
-void ItemForm_ReplaceEverywhere(void);
-void ItemForm_ReplaceOnMap(AcreMap *map);
-void ItemForm_Replacement(u16 *out, const u16 *item);
+void ItemForm_RevealForgeries(void);
+void ItemForm_RevealForgeriesOnMap(AcreMap *map);
+void ItemForm_RevealedForgery(u16 *out, const u16 *item);
 void ItemForm_ToPlaced(u16 *out, u16 *item, int in_room);
 void ItemForm_ToCarried(u16 *out, u16 *item);
 

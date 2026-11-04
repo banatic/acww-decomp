@@ -118,16 +118,16 @@ void SkyObjects_SetBlend(SkyObjects *objects);
 
 /* SkyObject.kind: the others these functions add. */
 enum SkyObjectKindAdded {
-    SKY_OBJECT_RAIN = 0,     /* SkyEvents_Rain */
-    SKY_OBJECT_SNOW = 1,     /* SkyEvents_Snow */
-    SKY_OBJECT_MOON = 4,     /* shown at night; its picture follows a cycle of 29.53 days */
-    SKY_OBJECT_KIND_5 = 5,   /* SkyEvents_AddKind5 */
-    SKY_OBJECT_KIND_6 = 6,   /* SkyEvents_AddKind6 */
-    SKY_OBJECT_KIND_7 = 7,   /* SkyEvents_AddKind7 */
-    SKY_OBJECT_KIND_8 = 8,   /* sometimes, with the thunder of heavy rain */
-    SKY_OBJECT_KIND_10 = 10, /* with the clouds' blending, SkyEvents_UpdateKind10 */
-    SKY_OBJECT_SHOT = 11,    /* sky_shots.h */
-    SKY_OBJECT_KIND_12 = 12, /* SkyEvents_AddKind12 */
+    SKY_OBJECT_RAIN = 0,      /* SkyEvents_Rain */
+    SKY_OBJECT_SNOW = 1,      /* SkyEvents_Snow */
+    SKY_OBJECT_MOON = 4,      /* shown at night; its picture follows a cycle of 29.53 days */
+    SKY_OBJECT_KIND_5 = 5,    /* SkyEvents_AddKind5 */
+    SKY_OBJECT_SPACESHIP = 6, /* SkyEvents_AddSpaceship */
+    SKY_OBJECT_KIND_7 = 7,    /* SkyEvents_AddKind7 */
+    SKY_OBJECT_KIND_8 = 8,    /* sometimes, with the thunder of heavy rain */
+    SKY_OBJECT_KIND_10 = 10,  /* with the clouds' blending, SkyEvents_UpdateKind10 */
+    SKY_OBJECT_SHOT = 11,     /* sky_shots.h */
+    SKY_OBJECT_KIND_12 = 12,  /* SkyEvents_AddKind12 */
 };
 
 /* SkyObjects_Add's entry: SKY_ENTRY_ANY, or the one entry an object of a kind always takes. */
@@ -148,7 +148,7 @@ enum SkyObjectKindAdded {
 /* SkyObjects.events: bytes of the events that add objects (sky_events.h). */
 enum SkyObjectsEventByte {
     SKY_EVENT_ODDS_5 = 0,      /* 0x2f24: SkyEvents_AddKind5's odds, 0: not drawn yet */
-    SKY_EVENT_ODDS_6 = 1,      /* 0x2f25: SkyEvents_AddKind6's */
+    SKY_EVENT_ODDS_6 = 1,      /* 0x2f25: SkyEvents_AddSpaceship's */
     SKY_EVENT_44 = 2,          /* 0x2f26: calendar event 0x44 is on (SkyEvents_ReadCalendar) */
     SKY_EVENT_45 = 3,          /* 0x2f27: event 0x45 is */
     SKY_EVENT_SHOW = 4,        /* 0x2f28: event 0x13 or 0xf is */

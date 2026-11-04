@@ -119,7 +119,7 @@ void EventSchedule_MarkTakenPart(int event)
     if (day == NULL) {
         return;
     }
-    if (event == EVENT_CALENDAR_EVENT_44) {
+    if (event == EVENT_CALENDAR_SPACESHIP) {
         day->players = EVENT_SCHEDULE_ALL;
     } else {
         day->players = (u8) (day->players | arm_lsl(1, (u32) PlayerRecords_CurrentNumber()));

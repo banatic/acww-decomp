@@ -2,7 +2,7 @@
 # not in this repository). Boot: as gulliver.txt to 2600 (the player in front of the house).
 # Save: ship-crashed (the seed with the crashed spaceship's building 0x5020 at tile 19, 20, in
 # place of a building 0x500a, as gulliver leaves it): on a day the schedule does not give event
-# 0x44 the town's day start turns it back into 0x500a (EventBuildings_Revert5020,
+# 0x44 the town's day start turns it back into 0x500a (EventBuildings_RevertSpaceship,
 # AcreMap_SetBuildingInAcre) and empties every tile holding his part 0x1568
 # (EventBuildings_ClearSpaceshipParts). No key to 2701.
 0 - -

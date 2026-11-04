@@ -15,7 +15,7 @@
 #include "types.h"
 
 /* The posts this source makes. */
-#define TOWN_POSTS_OBJECT_500A 0x500a
+#define TOWN_POSTS_FREE_PLOT 0x500a
 #define TOWN_POSTS_HEIGHT 0x2000
 #define TOWN_POSTS_KIND_10 10
 

@@ -45,7 +45,7 @@ void *TownLayout_Get(void *layout);
 void TownLayout_Generate(void *layout, void *heap);
 void TownLayout_FillFromTemplates(u8 *layout, int heap);
 int TownLayout_HasFiveE3ToE7(void *layout);
-int TownLayout_HasNine500a(void *layout);
+int TownLayout_HasNineFreePlots(void *layout);
 AcreMapSource *TownLayout_MakeSources(unsigned char *layout, int heap);
 void TownLayout_SetUpperSettings(unsigned int layout);
 unsigned int TownLayout_RandomSetting(TownLayout *layout);

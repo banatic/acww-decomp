@@ -177,7 +177,7 @@ void SkyObjects_RunWeather(SkyObjects *objects)
     SkyShow_Run(objects);
     if (SceneQuery_Current() != SKY_OBJECTS_SCENE_2C) {
         SkyEvents_AddKind5(objects);
-        SkyEvents_AddKind6(objects);
+        SkyEvents_AddSpaceship(objects);
         SkyEvents_AddKind7(objects);
         SkyShots_Launch(objects);
     }

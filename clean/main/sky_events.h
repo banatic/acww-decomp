@@ -27,7 +27,7 @@
 void SkyEvents_AddKind12(SkyObjects *objects);
 void SkyEvents_UpdateKind10(SkyObjects *objects);
 void SkyEvents_AddKind7(SkyObjects *objects);
-void SkyEvents_AddKind6(SkyObjects *objects);
+void SkyEvents_AddSpaceship(SkyObjects *objects);
 void SkyEvents_AddKind5(SkyObjects *objects);
 void SkyEvents_UpdateMoon(SkyObjects *objects);
 void SkyEvents_AddKind3(SkyObjects *objects);

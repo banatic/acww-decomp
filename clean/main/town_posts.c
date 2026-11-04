@@ -21,7 +21,7 @@ extern void *data_021c80bc; /* the town's map */
 extern u8 data_021f3b56[];  /* the snowmen's records (snowmen.h) */
 
 /* The post of the object 0x500a, the snowmen's, and the one of scene 0x1d. */
-#define TOWN_POSTS_RADIUS_500A 0xb33
+#define TOWN_POSTS_RADIUS_FREE_PLOT 0xb33
 #define TOWN_POSTS_RADIUS_SNOWMAN 0x1000
 #define TOWN_POSTS_KIND_SNOWMAN 0
 #define TOWN_POSTS_SCENE 0x1d
@@ -73,8 +73,8 @@ int TownPosts_PostAt(CollisionPostSource *source, fx32 *radius, fx32 *height, in
     if (item == NULL) {
         return 0;
     }
-    if (*item == TOWN_POSTS_OBJECT_500A) {
-        town_posts_set(radius, height, kind, TOWN_POSTS_RADIUS_500A, TOWN_POSTS_KIND_10);
+    if (*item == TOWN_POSTS_FREE_PLOT) {
+        town_posts_set(radius, height, kind, TOWN_POSTS_RADIUS_FREE_PLOT, TOWN_POSTS_KIND_10);
         return 1;
     }
     if (MapCode_IsSnowman(item) == 0) {

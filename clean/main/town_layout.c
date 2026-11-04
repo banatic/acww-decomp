@@ -72,7 +72,7 @@ void TownLayout_Generate(void *layout, void *heap)
     for (;;) {
         TownGenerator_LayOut(layout);
         TownLayout_FillFromTemplates(layout, (int) (uintptr_t) heap);
-        if (TownLayout_HasNine500a(layout) && TownLayout_HasFiveE3ToE7(layout)) {
+        if (TownLayout_HasNineFreePlots(layout) && TownLayout_HasFiveE3ToE7(layout)) {
             break;
         }
     }
@@ -128,11 +128,11 @@ int TownLayout_HasFiveE3ToE7(void *layout)
 CLEAN_AS(func_0204e7dc, TownLayout_HasFiveE3ToE7)
 
 /* func_0204e854: whether at least nine tiles hold item 0x500a. */
-int TownLayout_HasNine500a(void *layout)
+int TownLayout_HasNineFreePlots(void *layout)
 {
     return town_layout_count_items(layout, 0x500a, 0x500a) >= 9;
 }
-CLEAN_AS(func_0204e854, TownLayout_HasNine500a)
+CLEAN_AS(func_0204e854, TownLayout_HasNineFreePlots)
 
 /* func_0204e8c4: what AcreMap_BuildTown builds each of the 36 acres from, row by row: its model
  * number, and for an inner acre its items and record (0 for a border acre). 0 when the array

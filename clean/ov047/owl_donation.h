@@ -8,9 +8,9 @@
  * four codes an item; FurnitureInfo_FossilKind gives the kind of a fossil, several to a kind), the
  * fish (0x12e8-0x131f), the insects (0x12b0-0x12e7) and the paintings
  * (0x3894-0x38e3, four codes an item). The item 0x1549 is a fossil not assessed yet: the owl
- * replaces it with a fossil drawn at random (OwlTalk_EndAssess). Offered one of the room items
- * 0x38e4-0x3933 it changes it in the pockets for the one of the twenty after them (as
- * item_form.h's replacement), and it has a line for those (0x3934-0x3983).
+ * replaces it with a fossil drawn at random (OwlTalk_EndAssess). Offered one of the fox's forged
+ * paintings 0x38e4-0x3933 it changes it in the pockets for the fake painting it is (one of the
+ * twenty after them, as item_form.h reveals them), and it has a line for those (0x3934-0x3983).
  *
  * Its lines (of "sp_npc_owl") name an item given: 0x6e plus its index for an insect, 0xaa plus
  * its index for a fish, 0x50 plus its kind for the last fossil of a kind. */

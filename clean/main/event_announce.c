@@ -55,7 +55,7 @@ extern const u32 data_020da13c[];
 #define SCREEN_SHOWN 2      /* data_021c75b8: the screen is shown */
 #define FIELD_SCENE_CLASS 6 /* the field's process class */
 #define SCENE_IN_LINK_WAIT 0xd
-#define BUILDING_5020_MESSAGE 14 /* the message whose building is found by FindBuilding5020 */
+#define SPACESHIP_MESSAGE 14 /* the message whose building is found by AcreMap_FindSpaceship */
 #define PLAYER_PARAM 0x400000
 #define EXIT_RETURN 0x14 /* the scene exit that takes the player back out */
 
@@ -201,7 +201,7 @@ CLEAN_AS(func_02041470, EventAnnounce_StepShow)
  * again (the announcement dropped when it is not taken). Once it runs, the announcement's
  * event is made the one looked at and the one going on, and when the queue allows it and the
  * field is ready the player is sent into scene 0x31 at the town's building (the one of event
- * 0x44's message found by FindBuilding5020, the others' by HasBuilding5000), the music told,
+ * 0x44's message found by AcreMap_FindSpaceship, the others' by HasBuilding5000), the music told,
  * and the step is 4. */
 void EventAnnounce_StepEnter(void *unused)
 {
@@ -227,8 +227,8 @@ void EventAnnounce_StepEnter(void *unused)
         return;
     }
     int found;
-    if (data_021c75a0.message == BUILDING_5020_MESSAGE) {
-        found = AcreMap_FindBuilding5020(map, (int) (uintptr_t) &position);
+    if (data_021c75a0.message == SPACESHIP_MESSAGE) {
+        found = AcreMap_FindSpaceship(map, (int) (uintptr_t) &position);
     } else {
         found = AcreMap_HasBuilding5000(map, (int) (uintptr_t) &position, 0, 0);
     }

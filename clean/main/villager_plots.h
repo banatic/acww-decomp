@@ -1,6 +1,6 @@
 /* Free house plots handed to the villagers that have none.
  *
- * A tile of the town's map holding item 0x500a is a free plot (TownLayout_HasNine500a); the
+ * A tile of the town's map holding item 0x500a is a free plot (TownLayout_HasNineFreePlots); the
  * houses of the villagers are items 0x5001-0x5008, one for each villager index (func_0204bbbc).
  * Each villager keeps the tile of its house at 0x7ce (x, then z; 0xff for none, func_020800dc).
  *

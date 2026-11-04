@@ -439,7 +439,7 @@ CLEAN_AS(func_0204df54, AcreMap_InitRoom)
 
 /* func_0204df68: whether the map holds building 0x5020; its tile's centre goes to `position`
  * (a Vec3). */
-int AcreMap_FindBuilding5020(int map, int position)
+int AcreMap_FindSpaceship(int map, int position)
 {
     u16 item;
     int tile_x;
@@ -448,7 +448,7 @@ int AcreMap_FindBuilding5020(int map, int position)
     AcreMap_FindItem(&item, (void *) (uintptr_t) map, (u32) position, &tile_x, &tile_z, 0x5020, 0x5020, 0);
     return !acre_map_item_is_none(&item);
 }
-CLEAN_AS(func_0204df68, AcreMap_FindBuilding5020)
+CLEAN_AS(func_0204df68, AcreMap_FindSpaceship)
 
 /* func_0204dfe0: AcreMap_FindBuildingPoint for building 0x5000 (flags 0x200), moved one tile
  * left and four tiles further along z; the tile too when asked for. */

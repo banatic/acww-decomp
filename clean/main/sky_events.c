@@ -208,7 +208,7 @@ static int sky_events_try_odds(u8 *odds)
  * of the state block is set or the event is no longer on) and outside a session: as the
  * minute turns to one ending in 2 or 7, unless the beside spot of data_021d27ac was served or
  * entry 45 holds kind 6, an object of kind 6 in entry 45 at growing odds. */
-void SkyEvents_AddKind6(SkyObjects *objects)
+void SkyEvents_AddSpaceship(SkyObjects *objects)
 {
     if (objects->events[SKY_EVENT_44] != 0) {
         if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, SKY_EVENTS_STATE_FLAG_9)) {
@@ -218,7 +218,7 @@ void SkyEvents_AddKind6(SkyObjects *objects)
             DateTime when;
             DateTime_Now(&now);
             MI_CpuCopy8(&now, &when, sizeof(DateTime));
-            if (EventCalendar_State(EVENT_CALENDAR_EVENT_44, &when, 0) == EVENT_CALENDAR_OFF) {
+            if (EventCalendar_State(EVENT_CALENDAR_SPACESHIP, &when, 0) == EVENT_CALENDAR_OFF) {
                 objects->events[SKY_EVENT_44] = 0;
             }
         }
@@ -232,15 +232,15 @@ void SkyEvents_AddKind6(SkyObjects *objects)
         return;
     }
     if (BesideSpot_WasServed(Block021d27ac_Part31(Block021d27ac_Get())) ||
-        objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_KIND_6) {
+        objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_SPACESHIP) {
         return;
     }
     if (sky_events_try_odds(&objects->events[SKY_EVENT_ODDS_6])) {
-        SkyObjects_Add(objects, SKY_OBJECT_KIND_6, SKY_ENTRY_VISITOR, NULL, 0);
+        SkyObjects_Add(objects, SKY_OBJECT_SPACESHIP, SKY_ENTRY_VISITOR, NULL, 0);
         objects->events[SKY_EVENT_ODDS_6] = 1;
     }
 }
-CLEAN_AS(func_020bd1c4, SkyEvents_AddKind6)
+CLEAN_AS(func_020bd1c4, SkyEvents_AddSpaceship)
 
 /* func_020bd2d0: outside a session, from 10:00 to 15:59, as the minute turns to one ending in
  * 4 and unless entry 45 holds kind 5: an object of kind 5 in entry 45 at growing odds. It is
@@ -574,7 +574,7 @@ void SkyEvents_ReadCalendar(SkyObjects *objects)
         if (EventCalendar_State(id, &when, 0) == EVENT_CALENDAR_OFF) {
             continue;
         }
-        if (id == EVENT_CALENDAR_EVENT_44) {
+        if (id == EVENT_CALENDAR_SPACESHIP) {
             objects->events[SKY_EVENT_44] = 1;
         } else if (id == EVENT_CALENDAR_EVENT_45) {
             objects->events[SKY_EVENT_45] = 1;

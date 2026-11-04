@@ -12,11 +12,11 @@
 #include "town_item_lists.h"
 #include "item_traits.h"
 
-/* The items replaced, and the first of their replacements. */
-#define ITEM_FORM_REPLACED_FIRST 0x38e4
-#define ITEM_FORM_REPLACED_LAST 0x3933
-#define ITEM_FORM_REPLACED_ITEMS 20
-#define ITEM_FORM_REPLACEMENT_FIRST 0x3934
+/* The forged paintings, and the first of the fake paintings they are revealed as. */
+#define ITEM_FORM_FORGERY_FIRST 0x38e4
+#define ITEM_FORM_FORGERY_LAST 0x3933
+#define ITEM_FORM_FORGERIES 20
+#define ITEM_FORM_REVEALED_FIRST 0x3934
 
 /* The records looked at for pockets (0-6, PlayerRecords_Get), the rooms' maps, and the
  * players' storages. */
@@ -95,16 +95,16 @@ static int item_form_in(unsigned int code, unsigned int first, unsigned int last
     return code >= first && code <= last;
 }
 
-/* func_020617f0: the replaced items (ItemForm_Replacement) replaced on the town's map and the
+/* func_020617f0: the forged paintings revealed (ItemForm_RevealedForgery) on the town's map and the
  * five rooms' maps, in the pockets of every player record there is (a slot in state 0 only,
  * the replacement then also marked in the record's items had), in the town's lists B and A,
  * and in the four players' storages. For pockets the replacement is compared first; elsewhere
  * the item kept is. */
-void ItemForm_ReplaceEverywhere(void)
+void ItemForm_RevealForgeries(void)
 {
-    ItemForm_ReplaceOnMap((AcreMap *) (uintptr_t) AcreMap_Town());
+    ItemForm_RevealForgeriesOnMap((AcreMap *) (uintptr_t) AcreMap_Town());
     for (int room = 0; room < ITEM_FORM_ROOM_MAPS; room++) {
-        ItemForm_ReplaceOnMap((AcreMap *) (uintptr_t) AcreMap_Room(room));
+        ItemForm_RevealForgeriesOnMap((AcreMap *) (uintptr_t) AcreMap_Room(room));
     }
 
     for (int number = 0; number < ITEM_FORM_PLAYER_RECORDS; number++) {
@@ -116,7 +116,7 @@ void ItemForm_ReplaceEverywhere(void)
             int state = PlayerPockets_SlotState(PlayerRecord_Pockets(player), slot);
             u16 item = *PlayerPockets_Slot(PlayerRecord_Pockets(player), slot);
             u16 replacement;
-            ItemForm_Replacement(&replacement, &item);
+            ItemForm_RevealedForgery(&replacement, &item);
             if (!item_form_same(&replacement, &item) && state == 0) {
                 PlayerPockets_SetSlot(PlayerRecord_Pockets(player), &replacement, slot, 0);
                 ItemRecord_Mark((ItemRecord *) PlayerRecord_ItemRecord(player), &replacement, 0);
@@ -127,7 +127,7 @@ void ItemForm_ReplaceEverywhere(void)
     for (u32 place = 0; place < TOWN_ITEM_LIST_PLACES; place++) {
         u16 item = (u16) TownItemLists_ListBItem(place);
         u16 replacement;
-        ItemForm_Replacement(&replacement, &item);
+        ItemForm_RevealedForgery(&replacement, &item);
         if (!item_form_same(&item, &replacement)) {
             TownItemLists_PutListB(place, replacement);
         }
@@ -136,7 +136,7 @@ void ItemForm_ReplaceEverywhere(void)
     for (int place = 0; place < TOWN_ITEM_LIST_PLACES; place++) {
         u16 item = data_021f3a68[place];
         u16 replacement;
-        ItemForm_Replacement(&replacement, &item);
+        ItemForm_RevealedForgery(&replacement, &item);
         if (!item_form_same(&item, &replacement)) {
             data_021f3a68[place] = replacement;
         }
@@ -147,18 +147,18 @@ void ItemForm_ReplaceEverywhere(void)
         for (int place = 0; place < PLAYER_STORAGE_ITEMS; place++) {
             u16 item = items[place];
             u16 replacement;
-            ItemForm_Replacement(&replacement, &item);
+            ItemForm_RevealedForgery(&replacement, &item);
             if (!item_form_same(&item, &replacement)) {
                 items[place] = replacement;
             }
         }
     }
 }
-CLEAN_AS(func_020617f0, ItemForm_ReplaceEverywhere)
+CLEAN_AS(func_020617f0, ItemForm_RevealForgeries)
 
 /* func_02061a14: the replaced items replaced on layer 0 of `map`, tile by tile, row by row
  * (nothing for no map). */
-void ItemForm_ReplaceOnMap(AcreMap *map)
+void ItemForm_RevealForgeriesOnMap(AcreMap *map)
 {
     if (map == NULL) {
         return;
@@ -173,30 +173,30 @@ void ItemForm_ReplaceOnMap(AcreMap *map)
                 continue;
             }
             u16 replacement;
-            ItemForm_Replacement(&replacement, item);
+            ItemForm_RevealedForgery(&replacement, item);
             if (!item_form_same(item, &replacement)) {
                 AcreTile_SetItem(map, &replacement, x, z, 0);
             }
         }
     }
 }
-CLEAN_AS(func_02061a14, ItemForm_ReplaceOnMap)
+CLEAN_AS(func_02061a14, ItemForm_RevealForgeriesOnMap)
 
 /* func_02061ac4: the item that stands for `*item`: for the 20 replaced items (any variant) the
  * matching one of the 20 after them, with variant 0; any other code is itself. */
-void ItemForm_Replacement(u16 *out, const u16 *item)
+void ItemForm_RevealedForgery(u16 *out, const u16 *item)
 {
     u16 code = *item;
-    if (item_form_in(code, ITEM_FORM_REPLACED_FIRST, ITEM_FORM_REPLACED_LAST)) {
-        unsigned int index = (unsigned int) (code - ITEM_FORM_REPLACED_FIRST) >> 2;
-        if (index < ITEM_FORM_REPLACED_ITEMS) {
-            *out = (u16) (ITEM_FORM_REPLACEMENT_FIRST + index * 4);
+    if (item_form_in(code, ITEM_FORM_FORGERY_FIRST, ITEM_FORM_FORGERY_LAST)) {
+        unsigned int index = (unsigned int) (code - ITEM_FORM_FORGERY_FIRST) >> 2;
+        if (index < ITEM_FORM_FORGERIES) {
+            *out = (u16) (ITEM_FORM_REVEALED_FIRST + index * 4);
             return;
         }
     }
     *out = code;
 }
-CLEAN_AS(func_02061ac4, ItemForm_Replacement)
+CLEAN_AS(func_02061ac4, ItemForm_RevealedForgery)
 
 /* func_02061b1c: the code `*item` is placed as. In a room (data_020e54a8 is 1) or with
  * `in_room` set, a carried item's room code (variant 0); outdoors, the outdoor code of the few

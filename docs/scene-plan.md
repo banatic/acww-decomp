@@ -3628,7 +3628,7 @@ What reading the Clean code found about the groups above; counts are of function
   line 0x42.
 - The crashed spaceship's building 0x5020 (gulliver leaves it at tile 19, 20, state block 0xd3ae)
   in a save booted on a day without event 0x44 is turned back into 0x500a by the day's start
-  (EventBuildings_Revert5020, AcreMap_SetBuildingInAcre), which then empties every tile holding
+  (EventBuildings_RevertSpaceship, AcreMap_SetBuildingInAcre), which then empties every tile holding
   his part 0x1568 (EventBuildings_ClearSpaceshipParts): save ship-crashed, scene ship-reverted.
 - Proved unreachable: the fox's tent's state 4 (FoxTent_EnterFollow4, _UpdateFollow4). They are
   named only by his states' table (data_ov052_02262000); his state is written only by
