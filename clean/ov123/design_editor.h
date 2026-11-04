@@ -84,10 +84,10 @@ enum DesignEditorPlace {
     DESIGN_EDITOR_PLACE_LAYER3 = 0x0d,   /* layer 3 shown or hidden */
     DESIGN_EDITOR_PLACE_COLOUR_1 = 0x0e, /* 0x0e-0x1c: the colours 1-15 */
     DESIGN_EDITOR_PLACE_COLOUR_15 = 0x1c,
-    DESIGN_EDITOR_PLACE_SAVE = 0x1d,   /* the panel's button 9: save */
-    DESIGN_EDITOR_PLACE_QUIT = 0x1e,   /* the panel's button 8: quit without saving */
-    DESIGN_EDITOR_PLACE_DONE = 0x1f,   /* the question's "yes" (button 3): the editor ends */
-    DESIGN_EDITOR_PLACE_CHOICE = 0x20, /* the question's "no" (button 4): back to editing */
+    DESIGN_EDITOR_PLACE_SAVE = 0x1d, /* the panel's button 9: save */
+    DESIGN_EDITOR_PLACE_QUIT = 0x1e, /* the panel's button 8: quit without saving */
+    DESIGN_EDITOR_PLACE_YES = 0x1f,  /* the question's "yes" (button 3): the editor ends */
+    DESIGN_EDITOR_PLACE_NO = 0x20,   /* the question's "no" (button 4): back to editing */
     DESIGN_EDITOR_PLACE_CANVAS = 0x21,
     DESIGN_EDITOR_NO_PLACE = 0x22
 };

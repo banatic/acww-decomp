@@ -65,9 +65,9 @@ extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 #define DESIGN_PICKER_QUIT_SOUND 0x28
 
 /* The choice's rows: the confirm row's text by GroupParams' mode, and the other row's. */
-#define DESIGN_PICKER_MESSAGE_CONFIRM_A 0x91 /* modes 5, 8 and 9 */
-#define DESIGN_PICKER_MESSAGE_CONFIRM_B 0x72 /* modes 4, 7 and 10 */
-#define DESIGN_PICKER_MESSAGE_CONFIRM_C 0x28 /* mode 6 and any other */
+#define DESIGN_PICKER_MESSAGE_USE_THIS 0x91 /* "use this one": modes 5, 8 and 9 */
+#define DESIGN_PICKER_MESSAGE_PUT_HERE 0x72 /* "put it here": modes 4, 7 and 10 */
+#define DESIGN_PICKER_MESSAGE_USE 0x28      /* "use": mode 6 and any other */
 #define DESIGN_PICKER_MESSAGE_BACK 2
 
 /* The cursor sprite's animations (glide.h): at a design, at the quit button or a choice row. */
@@ -427,15 +427,15 @@ void DesignPicker_FillEntries(DesignPicker *self)
         case 1:
         case 4:
         case 5:
-            ChoiceEntries_Add(&self->entries, DESIGN_PICKER_MESSAGE_CONFIRM_A, DESIGN_PICKER_ACTION_CONFIRM);
+            ChoiceEntries_Add(&self->entries, DESIGN_PICKER_MESSAGE_USE_THIS, DESIGN_PICKER_ACTION_CONFIRM);
             break;
         case 0:
         case 3:
         case 6:
-            ChoiceEntries_Add(&self->entries, DESIGN_PICKER_MESSAGE_CONFIRM_B, DESIGN_PICKER_ACTION_CONFIRM);
+            ChoiceEntries_Add(&self->entries, DESIGN_PICKER_MESSAGE_PUT_HERE, DESIGN_PICKER_ACTION_CONFIRM);
             break;
         default:
-            ChoiceEntries_Add(&self->entries, DESIGN_PICKER_MESSAGE_CONFIRM_C, DESIGN_PICKER_ACTION_CONFIRM);
+            ChoiceEntries_Add(&self->entries, DESIGN_PICKER_MESSAGE_USE, DESIGN_PICKER_ACTION_CONFIRM);
             break;
     }
     ChoiceEntries_Add(&self->entries, DESIGN_PICKER_MESSAGE_BACK, DESIGN_PICKER_ACTION_BACK);

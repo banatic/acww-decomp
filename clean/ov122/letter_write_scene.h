@@ -129,8 +129,8 @@ enum LetterWriteCode {
     LETTER_WRITE_CODE_CONVERT_2 = 0x104, /* (SoftKeyboard_Convert2) */
     LETTER_WRITE_CODE_CONVERT_3 = 0x105, /* (SoftKeyboard_Convert3) */
     LETTER_WRITE_CODE_SCROLL = 0x112,    /* the scroll button pressed: the d-pad scrolls */
-    LETTER_WRITE_CODE_BUTTON_1 = 0x113,  /* the panel's button 1 */
-    LETTER_WRITE_CODE_BUTTON_0 = 0x114,  /* the panel's button 0 */
+    LETTER_WRITE_CODE_DONE = 0x113,      /* the panel's button 1: the writing done */
+    LETTER_WRITE_CODE_CHOICE = 0x114,    /* the panel's button 0: the choice */
     LETTER_WRITE_CODE_COPY = 0x118,
     LETTER_WRITE_CODE_PASTE = 0x119
 };
@@ -271,8 +271,8 @@ void LetterWrite_RunKeys(LetterWriteScene *self);
 int LetterWrite_Command(LetterWriteScene *self, int code);
 void LetterWrite_Paste(LetterWriteScene *self);
 void LetterWrite_Copy(LetterWriteScene *self);
-void LetterWrite_PressButton0(LetterWriteScene *self);
-void LetterWrite_PressButton1(LetterWriteScene *self);
+void LetterWrite_PressChoice(LetterWriteScene *self);
+void LetterWrite_PressDone(LetterWriteScene *self);
 void LetterWrite_Leave(LetterWriteScene *self);
 int LetterWrite_TypeChar(LetterWriteScene *self, int code);
 int LetterWrite_InsertChar(LetterWriteScene *self, int code, int notify);

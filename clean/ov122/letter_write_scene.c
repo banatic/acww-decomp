@@ -1164,14 +1164,14 @@ unsigned char *LetterWrite_BeginTouch(LetterWriteScene *self)
 }
 CLEAN_AS(func_ov122_022a0054, LetterWrite_BeginTouch)
 
-/* func_ov122_022a006c: Start pressed: the panel's button 1. */
+/* func_ov122_022a006c: Start pressed: the panel's button 1 (done). */
 int LetterWrite_StartKey(LetterWriteScene *self)
 {
     if ((data_021fbe40.pressed & LETTER_WRITE_PAD_START) == 0) {
         return 0;
     }
     LetterWrite_HidePointer(self);
-    LetterWrite_PressButton1(self);
+    LetterWrite_PressDone(self);
     return 1;
 }
 CLEAN_AS(func_ov122_022a006c, LetterWrite_StartKey)
@@ -1576,7 +1576,7 @@ CLEAN_AS(func_ov122_022a07d4, LetterWrite_RunMarkKeys)
 
 /* func_ov122_022a0848 (LETTER_WRITE_SUB_0C): the pointer at the text cursor, by the buttons:
  * the d-pad moves the cursor (ending the mark), Y goes back to the keys, B deletes, A begins a
- * mark, L copies, R pastes, Start presses the panel's button 1. */
+ * mark, L copies, R pastes, Start presses the panel's button 1 (done). */
 void LetterWrite_RunTextKeys(LetterWriteScene *self)
 {
     int keys;
@@ -1800,12 +1800,12 @@ int LetterWrite_Command(LetterWriteScene *self, int code)
                 }
                 result = 2;
                 break;
-            case LETTER_WRITE_CODE_BUTTON_1:
-                LetterWrite_PressButton1(self);
+            case LETTER_WRITE_CODE_DONE:
+                LetterWrite_PressDone(self);
                 result = 3;
                 break;
-            case LETTER_WRITE_CODE_BUTTON_0:
-                LetterWrite_PressButton0(self);
+            case LETTER_WRITE_CODE_CHOICE:
+                LetterWrite_PressChoice(self);
                 result = 3;
                 break;
             case LETTER_WRITE_CODE_COPY:
@@ -1891,18 +1891,18 @@ void LetterWrite_Copy(LetterWriteScene *self)
 CLEAN_AS(func_ov122_022a0d84, LetterWrite_Copy)
 
 /* func_ov122_022a0dec: the panel's button 0 (the choice). */
-void LetterWrite_PressButton0(LetterWriteScene *self)
+void LetterWrite_PressChoice(LetterWriteScene *self)
 {
     LetterWrite_PressButton(self, 0);
 }
-CLEAN_AS(func_ov122_022a0dec, LetterWrite_PressButton0)
+CLEAN_AS(func_ov122_022a0dec, LetterWrite_PressChoice)
 
 /* func_ov122_022a0df8: the panel's button 1 (the writing done). */
-void LetterWrite_PressButton1(LetterWriteScene *self)
+void LetterWrite_PressDone(LetterWriteScene *self)
 {
     LetterWrite_PressButton(self, 1);
 }
-CLEAN_AS(func_ov122_022a0df8, LetterWrite_PressButton1)
+CLEAN_AS(func_ov122_022a0df8, LetterWrite_PressDone)
 
 /* func_ov122_022a0e04: the writing left (LETTER_WRITE_STATE_LEAVE): the scroll back to the top,
  * the cursor hidden, no mark, no composition, the whole letter given to the view, the pointer
@@ -2221,12 +2221,12 @@ void LetterWrite_RunTouch(LetterWriteScene *self)
     x = data_021f6c58;
     y = data_021f6c54;
     if (ButtonPanel_IsTouched(&self->panel, 9)) {
-        LetterWrite_PressButton1(self);
+        LetterWrite_PressDone(self);
         return;
     }
     if (!LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_NO_HEADER)) {
         if (ButtonPanel_IsTouched(&self->panel, 0)) {
-            LetterWrite_PressButton0(self);
+            LetterWrite_PressChoice(self);
             return;
         }
     }

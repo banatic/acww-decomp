@@ -61,9 +61,9 @@ extern const OamEntry *const data_ov119_0229cca8[FRIEND_ROSTER_PAGE_TABS];
 #define FRIEND_ROSTER_TEXT_YES 0x04
 #define FRIEND_ROSTER_TEXT_NO 0x13
 #define FRIEND_ROSTER_TEXT_REGISTER 0xce
-#define FRIEND_ROSTER_TEXT_TAB_11 0xcf
-#define FRIEND_ROSTER_TEXT_TAB_9 0xd0
-#define FRIEND_ROSTER_TEXT_TAB_13 0xd1
+#define FRIEND_ROSTER_TEXT_RENAME 0xcf
+#define FRIEND_ROSTER_TEXT_RENAME_TOWN 0xd0
+#define FRIEND_ROSTER_TEXT_CHANGE_CODE 0xd1
 #define FRIEND_ROSTER_TEXT_DELETE 0xd2
 #define FRIEND_ROSTER_TEXT_ASK_DELETE 0xd3
 
@@ -154,13 +154,13 @@ void FriendRoster_RunAction(FriendRoster *self)
         case FRIEND_ROSTER_ACTION_ASK_DELETE:
             FriendRoster_AskDelete(self);
             break;
-        case FRIEND_ROSTER_ACTION_TAB_9:
+        case FRIEND_ROSTER_ACTION_RENAME_TOWN:
             FriendRoster_OpenTabWithFriend(self, FRIEND_ROSTER_MENU_TAB_9);
             break;
-        case FRIEND_ROSTER_ACTION_TAB_11:
+        case FRIEND_ROSTER_ACTION_RENAME:
             FriendRoster_OpenTabWithFriend(self, FRIEND_ROSTER_MENU_TAB_11);
             break;
-        case FRIEND_ROSTER_ACTION_TAB_13:
+        case FRIEND_ROSTER_ACTION_CHANGE_CODE:
             FriendRoster_OpenTabWithFriend(self, FRIEND_ROSTER_MENU_TAB_13);
             break;
         case FRIEND_ROSTER_ACTION_REGISTER:
@@ -376,19 +376,19 @@ void FriendRoster_AskDelete(FriendRoster *self)
 }
 CLEAN_AS(func_ov119_0229b450, FriendRoster_AskDelete)
 
-/* func_ov119_0229b49c: a friend's choice: tab 11 (text 0xcf), tab 9 (0xd0), tab 13 (0xd1, only
- * for a friend registered by friend key, WifiFriendData_IsNotFriendKey answering 0), delete
- * (0xd2) and cancel. */
+/* func_ov119_0229b49c: a friend's choice: tab 11 (text 0xcf "rename"), tab 9 (0xd0 "rename
+ * the town"), tab 13 (0xd1 "change the code", only for a friend registered by friend key,
+ * WifiFriendData_IsNotFriendKey answering 0), delete (0xd2) and cancel. */
 void FriendRoster_OpenFriendChoice(FriendRoster *self)
 {
     ChoiceEntries_Clear(&self->entries, FRIEND_ROSTER_ACTION_CANCEL);
-    ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_TAB_11, FRIEND_ROSTER_ACTION_TAB_11);
-    ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_TAB_9, FRIEND_ROSTER_ACTION_TAB_9);
+    ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_RENAME, FRIEND_ROSTER_ACTION_RENAME);
+    ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_RENAME_TOWN, FRIEND_ROSTER_ACTION_RENAME_TOWN);
     WifiFriend *entry = FriendRoster_FriendAtCursor(self);
     if (entry != NULL) {
         WifiFriendData *data = WifiFriend_GetFriendData(entry);
         if (WifiFriendData_IsNotFriendKey(data) == 0) {
-            ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_TAB_13, FRIEND_ROSTER_ACTION_TAB_13);
+            ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_CHANGE_CODE, FRIEND_ROSTER_ACTION_CHANGE_CODE);
         }
     }
     ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_DELETE, FRIEND_ROSTER_ACTION_ASK_DELETE);

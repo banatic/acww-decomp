@@ -74,9 +74,11 @@ enum FriendRosterPlace {
 enum FriendRosterAction {
     FRIEND_ROSTER_ACTION_ASK_DELETE = 0, /* FriendRoster_AskDelete */
     FRIEND_ROSTER_ACTION_DELETE = 1,     /* FriendRoster_DeleteFriend */
-    FRIEND_ROSTER_ACTION_TAB_9 = 2,      /* 2-4: the menu's tab 9, 11 or 13 with the friend's index */
-    FRIEND_ROSTER_ACTION_TAB_11 = 3,
-    FRIEND_ROSTER_ACTION_TAB_13 = 4,
+    /* 2-4: the menu's tab 9, 11 or 13 with the friend's index: its town renamed, it renamed, its
+     * friend code changed. */
+    FRIEND_ROSTER_ACTION_RENAME_TOWN = 2,
+    FRIEND_ROSTER_ACTION_RENAME = 3,
+    FRIEND_ROSTER_ACTION_CHANGE_CODE = 4,
     FRIEND_ROSTER_ACTION_REGISTER = 5, /* FriendRoster_OpenRegister: the menu's tab 14 */
     FRIEND_ROSTER_ACTION_PLAYER = 6,   /* 6-9: add the session's player (action - 6) */
     FRIEND_ROSTER_ACTION_PLAYER_LAST = 9,

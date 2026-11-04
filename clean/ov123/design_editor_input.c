@@ -614,11 +614,11 @@ void DesignEditor_RunCommand(DesignEditor *self)
     if (command == DESIGN_EDITOR_PLACE_LAYER3) {
         DesignEditor_ToggleLayer3(self);
     }
-    if (self->command == DESIGN_EDITOR_PLACE_DONE) {
+    if (self->command == DESIGN_EDITOR_PLACE_YES) {
         de_answer_yes(self);
         return;
     }
-    if (self->command == DESIGN_EDITOR_PLACE_CHOICE) {
+    if (self->command == DESIGN_EDITOR_PLACE_NO) {
         DesignEditor_PressPanel(self, DESIGN_EDITOR_STATE_START_END_QUESTION, DESIGN_EDITOR_BUTTON_NO);
         if (DesignEditor_TestFlags(self, DESIGN_EDITOR_FLAG_QUIT) != 0) {
             self->key_place = DESIGN_EDITOR_PLACE_QUIT;
@@ -737,7 +737,7 @@ CLEAN_AS(func_ov123_0229b600, DesignEditor_EnterPanel)
 void DesignEditor_EnterPanelByKeys(DesignEditor *self)
 {
     MenuScene_ResetKeyRepeat(de_scene(self));
-    self->key_place = DESIGN_EDITOR_PLACE_CHOICE;
+    self->key_place = DESIGN_EDITOR_PLACE_NO;
     DesignEditor_PlaceCursorSprite(self);
     MenuScene_SetSubState(de_scene(self), DESIGN_EDITOR_SUB_PANEL);
 }
@@ -857,9 +857,9 @@ void DesignEditor_PanelByKeys(DesignEditor *self)
     u8 from = self->key_place;
     MenuScene_LatchRepeatedKeys(de_scene(self));
     if (MenuScene_RepeatedLeft(de_scene(self)) != 0) {
-        self->key_place = DESIGN_EDITOR_PLACE_DONE;
+        self->key_place = DESIGN_EDITOR_PLACE_YES;
     } else if (MenuScene_RepeatedRight(de_scene(self)) != 0) {
-        self->key_place = DESIGN_EDITOR_PLACE_CHOICE;
+        self->key_place = DESIGN_EDITOR_PLACE_NO;
     }
     if (from != self->key_place) {
         DesignEditor_GlideToPlace(self);
@@ -870,11 +870,11 @@ void DesignEditor_PanelByKeys(DesignEditor *self)
         DesignEditor_BeginPress(self);
     } else if (pressed & DESIGN_EDITOR_PAD_B) {
         DesignEditor_HideCursor(self);
-        self->command = DESIGN_EDITOR_PLACE_CHOICE;
+        self->command = DESIGN_EDITOR_PLACE_NO;
         DesignEditor_RunCommand(self);
     } else if (pressed & DESIGN_EDITOR_PAD_START) {
         DesignEditor_HideCursor(self);
-        self->command = DESIGN_EDITOR_PLACE_DONE;
+        self->command = DESIGN_EDITOR_PLACE_YES;
         DesignEditor_RunCommand(self);
     }
 }
@@ -1112,10 +1112,10 @@ void DesignEditor_PanelByTouch(DesignEditor *self)
     }
     if (de_pen_pressed()) {
         if (ButtonPanel_IsTouched(&self->panel, DESIGN_EDITOR_BUTTON_YES) != 0) {
-            self->command = DESIGN_EDITOR_PLACE_DONE;
+            self->command = DESIGN_EDITOR_PLACE_YES;
             DesignEditor_RunCommand(self);
         } else if (ButtonPanel_IsTouched(&self->panel, DESIGN_EDITOR_BUTTON_NO) != 0) {
-            self->command = DESIGN_EDITOR_PLACE_CHOICE;
+            self->command = DESIGN_EDITOR_PLACE_NO;
             DesignEditor_RunCommand(self);
         }
     }
