@@ -504,7 +504,7 @@ CLEAN_AS(func_0200eebc, FieldActor_PoseHeldTool)
 
 /* func_0200ef1c: FieldActor_EnterContact (the actor's checks) with the position moved aside for a
  * moment. When the object at 0x174 met (0x1b0) a player's actor (kind 0x15 at 0x182, its player
- * at 0x183) that is this console's and stands (state 2 for player 4, func_020960f8), and the
+ * at 0x183) that is this console's and stands (state 2 for this console's player, func_020960f8), and the
  * point reported for this actor lies in the same direction (within 0x400) and not nearer than
  * that player's start position, the checks run data_020d7300's distance aside of the actor, a
  * quarter turn to the left of that direction when this actor's player number is not below the
@@ -1421,7 +1421,7 @@ void FieldActor_EaseValueBy(fx32 *value, int target, fx32 rate, int max_step, in
 CLEAN_AS(func_020114b0, FieldActor_EaseValueBy)
 
 /* func_02011520: run after each frame's update. For this console's player, unless its actor has
- * flag 0xb, 0x13 or 5 (PlayerActorOps_TestFlag): the object at the position of player 4's actor
+ * flag 0xb, 0x13 or 5 (PlayerActorOps_TestFlag): the object at its actor's position
  * (func_02030890, -1 for none) is noted (func_020953c4), its kind looked up in func_020b5e10's
  * table (func_020b6044) and noted (func_020953a4). For kinds 1, 2 and 4, or an object
  * func_0209d780 accepts, func_0203e110 (only while func_020b67ac) and func_0203e420 run;

@@ -4,7 +4,7 @@
  * - a message (`message` 1-10, for `timer` frames from data_020d2298, set by func_020b889c),
  *   placed at (18, -48); messages 1 and 2 alternate with a second text while they stay up;
  * - a notice (`notice` 1-3, for 60 frames, set by func_020b88c0), placed at (0, -48);
- * - the name of an item (`item`, chosen by func_020b8af0 each frame), over player 4's head.
+ * - the name of an item (`item`, chosen by func_020b8af0 each frame), over this console's player's head.
  * The message goes before the notice and the notice before the item; the window closes when
  * what it shows ends or something before it comes.
  *

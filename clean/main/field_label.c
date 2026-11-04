@@ -32,7 +32,7 @@ static_assert(offsetof(FieldLabel, notice_renewed) == 0x10d, "FieldLabel");
 /* Where the message and the notice are placed in the window. */
 #define FIELD_LABEL_MESSAGE_X 18
 #define FIELD_LABEL_TOP_Y (-48)
-/* How far above player 4's feet the item's name is placed (3.75). */
+/* How far above this console's player's feet the item's name is placed (3.75). */
 #define FIELD_LABEL_HEAD_HEIGHT 0x3c00
 /* The second texts of messages 1 and 2. */
 #define FIELD_LABEL_SECOND_TEXT_1 0x93
@@ -311,9 +311,9 @@ void FieldLabel_PlaceForNotice(FieldLabel *label)
 }
 CLEAN_AS(func_020b8a4c, FieldLabel_PlaceForNotice)
 
-/* func_020b8a5c: places the window over player 4's head: the point 3.75 above the player,
- * through the camera's view (copied to data_021fbe48) onto the near plane, in pixels from the
- * screen's middle (Y up). Nothing when there is no player 4. */
+/* func_020b8a5c: places the window over this console's player's head: the point 3.75 above
+ * the player, through the camera's view (copied to data_021fbe48) onto the near plane, in pixels from the
+ * screen's middle (Y up). Nothing when there is no such player. */
 void FieldLabel_PlaceOverPlayer(FieldLabel *label)
 {
     data_021fbe48 = *CameraControl_ViewMatrix();
@@ -348,8 +348,7 @@ typedef struct FieldLabelTalk {
 
 /* The kind of an item (the code's top four bits). */
 #define FIELD_LABEL_ITEM_KIND(code) (((code) & 0xf000) >> 12)
-/* The actor state player 4 (this console's) must be in for an item to show: standing. */
-#define FIELD_LABEL_PLAYER 4
+/* The actor state this console's player must be in for an item to show: standing. */
 #define FIELD_LABEL_PLAYER_STATE 2
 /* The messages FieldLabel_ShowMessage9 and 10 start; 10 is not replaced by
  * FieldLabel_ChooseMessage. */
@@ -402,7 +401,7 @@ void FieldLabel_PickItem(FieldLabel *label)
 {
     const u16 *item = NULL;
 
-    if (PlayerActorOps_InState(FIELD_LABEL_PLAYER_STATE, FIELD_LABEL_PLAYER) != 0) {
+    if (PlayerActorOps_InState(FIELD_LABEL_PLAYER_STATE, SESSION_PLAYERS_OWN) != 0) {
         item = PlayerActorOps_ItemAhead();
     }
     if (item != NULL) {
