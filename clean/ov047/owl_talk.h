@@ -5,7 +5,9 @@
  *
  * The answers go to the handlers of a table keyed by the line shown (the receiver's message,
  * byte 0x1e). The menu (lines 0x0c and 0x44, OwlTalk_OnMenu) offers five choices: to give an item
- * to the museum (0), to have a fossil assessed (1), how far the museum is (3), and two more (2 and 4, OwlTalk_OnMenu).
+ * to the museum (0), to have a fossil assessed (1), to ask what this place is (2), nothing (3, a
+ * farewell by how far the museum is) and, once something was given, the list of the donations
+ * (4, OwlTalk_OnMenu).
  * Its handlers set the line the talk goes on with (OwlTalk.next_line), which the talk then
  * shows; some instead open a screen of the pockets with a test of the items offered
  * (SceneCommand_SetPocketPredicate) and set the work to do once it closes (OwlTalk_SetAfter):

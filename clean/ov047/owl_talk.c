@@ -97,12 +97,13 @@ extern const MemberPointer data_ov047_02262b58, data_ov047_02262b50, data_ov047_
 #define OWL_TALK_SCREEN_POCKETS 0
 #define OWL_TALK_POCKET_ARG 0xd
 
-/* The menu's choices (OwlTalk_OnMenu). */
+/* The menu's choices (OwlTalk_OnMenu): donate, a fossil assessed, what this place is, nothing,
+ * and the list of what was given (only on the menu of line 0x44, once something was). */
 #define OWL_TALK_MENU_GIVE 0
 #define OWL_TALK_MENU_ASSESS 1
-#define OWL_TALK_MENU_2 2
-#define OWL_TALK_MENU_PROGRESS 3
-#define OWL_TALK_MENU_4 4
+#define OWL_TALK_MENU_ABOUT 2
+#define OWL_TALK_MENU_NOTHING 3
+#define OWL_TALK_MENU_LIST 4
 
 /* The share of the museum's record given (20.12 percent) its lines change at: 30 and 70. */
 #define OWL_TALK_PERCENT_FEW 0x1e000
@@ -500,22 +501,24 @@ void OwlTalk_OnAnswer0e(OwlTalk *talk, int answer)
 CLEAN_AS(func_ov047_02260780, OwlTalk_OnAnswer0e)
 
 /* func_ov047_0226078c (the menu: lines 0x0c, 0x44 to 0x48, 0xe9 and 0xea): once an item was given
- * to the museum, the menu's third choice does what the fifth did and the next two move up one.
+ * to the museum, the menu (line 0x44) has the list third, and the choices are put back in
+ * their order.
  * By the choice:
  * - give: not assessing; line 0x40 when this console is not the host, else 0x41 linked (or with
  *   the game variable 0x4a set), else 0x14 (whose end opens the pockets for a gift);
  * - assess: not assessing; line 0x18 when the pockets hold no fossil to assess (item 0x1549),
  *   else assessing and 0x17 (the first time for the current player) or 0x16;
- * - 2: line 0x4a linked (or with the game variable 0x4a set), else 0xd;
- * - how far the museum is: line 0x10 when nothing was given, 0x11 up to 30 percent, 0x12 up to
+ * - about ("where is this?"): line 0x4a linked (or with the game variable 0x4a set), else 0xd;
+ * - nothing: a farewell by how far the museum is: line 0x10 when nothing was given, 0x11 up to 30 percent, 0x12 up to
  *   70, 0x49 when the museum is complete, else 0x13;
- * - 4: line 0x3f (whose end opens the screen of mode 0x41, then tells how far the museum is). */
+ * - the list: line 0x3f (whose end opens the donations' list, the screen of mode 0x41, then tells
+ *   how far the museum is). */
 void OwlTalk_OnMenu(OwlTalk *talk, int choice)
 {
     if (owl_talk_given_flag()) {
-        if (choice == OWL_TALK_MENU_2) {
-            choice = OWL_TALK_MENU_4;
-        } else if (choice > OWL_TALK_MENU_2) {
+        if (choice == OWL_TALK_MENU_ABOUT) {
+            choice = OWL_TALK_MENU_LIST;
+        } else if (choice > OWL_TALK_MENU_ABOUT) {
             choice--;
         }
     }
@@ -544,14 +547,14 @@ void OwlTalk_OnMenu(OwlTalk *talk, int choice)
             }
             break;
         }
-        case OWL_TALK_MENU_2:
+        case OWL_TALK_MENU_ABOUT:
             if (owl_talk_linked_or_variable(data_020ccf94)) {
                 talk->next_line = 0x4a;
             } else {
                 talk->next_line = 0xd;
             }
             break;
-        case OWL_TALK_MENU_PROGRESS: {
+        case OWL_TALK_MENU_NOTHING: {
             MuseumRecord *record = &data_021f38f8;
             int percent = MuseumRecord_PercentGiven(record);
             talk->next_line = 0x13;
@@ -566,7 +569,7 @@ void OwlTalk_OnMenu(OwlTalk *talk, int choice)
             }
             break;
         }
-        case OWL_TALK_MENU_4:
+        case OWL_TALK_MENU_LIST:
             talk->next_line = 0x3f;
             break;
         default:
