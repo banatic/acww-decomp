@@ -131,13 +131,13 @@ extern const MemberPointer data_ov049_02263158, data_ov049_02263128;
 #define MABEL_TALK_SHOP_KIND 10
 
 /* The screens (SceneCommand_RequestScreen): 0 the pockets, 2 in a mode
- * (SceneCommand_SetScreenMode): a design of the player's picked to be given a kind (4), the
- * screen before the fee (0xb), the player's clothes to sell (0x1e), a design of the player's
+ * (SceneCommand_SetScreenMode): the design editor, a place picked and a design drawn in it (4),
+ * the keyboard for the design's name before the fee (0xb), the player's clothes to sell (0x1e), a design of the player's
  * shown in the shop (5), one of the shop's bought (7) or swapped (8). */
 #define MABEL_TALK_SCREEN_POCKETS 0
 #define MABEL_TALK_SCREEN 2
-#define MABEL_TALK_MODE_DESIGN_PICK 4
-#define MABEL_TALK_MODE_SCREEN_B 0xb
+#define MABEL_TALK_MODE_DESIGN_EDITOR 4
+#define MABEL_TALK_MODE_NAME_KEYBOARD 0xb
 #define MABEL_TALK_MODE_SELL 0x1e
 #define MABEL_TALK_MODE_SHOW_DESIGN 5
 #define MABEL_TALK_MODE_BUY_DESIGN 7
@@ -520,20 +520,21 @@ void MabelTalk_ShowDesign(MabelTalk *talk)
 }
 CLEAN_AS(func_ov049_02260fe4, MabelTalk_ShowDesign)
 
-/* func_ov049_02261060 (sequence 2, after the screen in mode 0xb): line 0x12. */
-void MabelTalk_SayAfterScreenB(MabelTalk *talk)
+/* func_ov049_02261060 (sequence 2, after the design's name was typed in mode 0xb): line 0x12, the
+ * fee. */
+void MabelTalk_SayDesignNamed(MabelTalk *talk)
 {
     mtalk_say(talk, MABEL_LINE_FEE);
 }
-CLEAN_AS(func_ov049_02261060, MabelTalk_SayAfterScreenB)
+CLEAN_AS(func_ov049_02261060, MabelTalk_SayDesignNamed)
 
-/* func_ov049_02261080 (sequence 1, after the screen in mode 4): line 0x10 when the player
- * picked a design, else 0x0f. */
-void MabelTalk_SayDesignPicked(MabelTalk *talk)
+/* func_ov049_02261080 (sequence 1, after the design editor, mode 4): line 0x10 ("you finished
+ * it: what is its concept?") when the player drew a design, else 0x0f. */
+void MabelTalk_SayDesignDrawn(MabelTalk *talk)
 {
     mtalk_say(talk, GroupParams_C4CIs1() ? MABEL_LINE_DESIGN_KIND : MABEL_LINE_NO_DESIGN);
 }
-CLEAN_AS(func_ov049_02261080, MabelTalk_SayDesignPicked)
+CLEAN_AS(func_ov049_02261080, MabelTalk_SayDesignDrawn)
 
 /* func_ov049_022610c4: its sequence set. */
 void MabelTalk_SetSequence(MabelTalk *talk, unsigned long sequence)
@@ -919,28 +920,29 @@ void MabelTalk_TakeFee(MabelTalk *talk)
 }
 CLEAN_AS(func_ov049_02261b6c, MabelTalk_TakeFee)
 
-/* func_ov049_02261b80 (the end of line 0x11): the screen in mode 0xb, sequence 2. */
-void MabelTalk_OpenScreenB(MabelTalk *talk)
+/* func_ov049_02261b80 (the end of line 0x11, "what is the design's name?"): the name's
+ * keyboard (mode 0xb), sequence 2. */
+void MabelTalk_OpenNameKeyboard(MabelTalk *talk)
 {
-    mtalk_open(talk, MABEL_TALK_MODE_SCREEN_B, MABEL_TALK_SEQUENCE_SCREEN_B);
+    mtalk_open(talk, MABEL_TALK_MODE_NAME_KEYBOARD, MABEL_TALK_SEQUENCE_DESIGN_NAMED);
 }
-CLEAN_AS(func_ov049_02261b80, MabelTalk_OpenScreenB)
+CLEAN_AS(func_ov049_02261b80, MabelTalk_OpenNameKeyboard)
 
-/* func_ov049_02261ba4 (the end of line 0x0e): the screen to pick a design (mode 4),
- * sequence 1. */
-void MabelTalk_OpenDesignPick(MabelTalk *talk)
+/* func_ov049_02261ba4 (the end of line 0x0e, "pick where to put the design you draw"):
+ * the design editor (mode 4), sequence 1. */
+void MabelTalk_OpenDesignEditor(MabelTalk *talk)
 {
-    mtalk_open(talk, MABEL_TALK_MODE_DESIGN_PICK, MABEL_TALK_SEQUENCE_DESIGN_PICKED);
+    mtalk_open(talk, MABEL_TALK_MODE_DESIGN_EDITOR, MABEL_TALK_SEQUENCE_DESIGN_DRAWN);
 }
-CLEAN_AS(func_ov049_02261ba4, MabelTalk_OpenDesignPick)
+CLEAN_AS(func_ov049_02261ba4, MabelTalk_OpenDesignEditor)
 
 /* func_ov049_02261bc8 (the ends of her own lines): each handler whose line is the one shown
  * is called. */
 void MabelTalk_OnPlainLineEnded(MabelTalk *talk)
 {
     static const MemberPointer *const handlers[MABEL_TALK_LINE_ENDS] = {
-        &data_ov049_02263178, /* 0x0e: MabelTalk_OpenDesignPick */
-        &data_ov049_022631a0, /* 0x11: MabelTalk_OpenScreenB */
+        &data_ov049_02263178, /* 0x0e: MabelTalk_OpenDesignEditor */
+        &data_ov049_022631a0, /* 0x11: MabelTalk_OpenNameKeyboard */
         &data_ov049_022631b0, /* 0x12: MabelTalk_TakeFee */
         &data_ov049_022631c0, /* 0x14: MabelTalk_OpenSell */
         &data_ov049_02263220, /* 0x1e: MabelTalk_PaySale */

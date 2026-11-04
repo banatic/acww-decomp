@@ -29,8 +29,8 @@ extern MabelStep data_ov049_022636c0[MABEL_STATES / 2];
 int MabelInit_Tables(void)
 {
     static const MemberPointer *const sequences[MABEL_TALK_SEQUENCES - 1] = {
-        &data_ov049_02263280, /* 1: MabelTalk_SayDesignPicked */
-        &data_ov049_022630c8, /* 2: MabelTalk_SayAfterScreenB */
+        &data_ov049_02263280, /* 1: MabelTalk_SayDesignDrawn */
+        &data_ov049_022630c8, /* 2: MabelTalk_SayDesignNamed */
         &data_ov049_022630c0, /* 3: MabelTalk_ShowDesign */
         &data_ov049_02263110, /* 4: MabelTalk_BuyDesign */
         &data_ov049_02263160, /* 5: MabelTalk_SwapDesign */

@@ -38,15 +38,15 @@
 
 enum MabelTalkSequence {
     MABEL_TALK_SEQUENCE_NONE = 0,
-    MABEL_TALK_SEQUENCE_DESIGN_PICKED = 1, /* MabelTalk_SayDesignPicked */
-    MABEL_TALK_SEQUENCE_SCREEN_B = 2,      /* MabelTalk_SayAfterScreenB */
-    MABEL_TALK_SEQUENCE_SHOW_DESIGN = 3,   /* MabelTalk_ShowDesign */
-    MABEL_TALK_SEQUENCE_BUY_DESIGN = 4,    /* MabelTalk_BuyDesign */
-    MABEL_TALK_SEQUENCE_SWAP_DESIGN = 5,   /* MabelTalk_SwapDesign */
-    MABEL_TALK_SEQUENCE_PRICE_SALE = 6,    /* MabelTalk_PriceSale */
-    MABEL_TALK_SEQUENCE_TRYING_ON = 7,     /* MabelTalk_WatchTryOn, each step */
-    MABEL_TALK_SEQUENCE_TRIED_ON = 8,      /* MabelTalk_EndTryOn, each step */
-    MABEL_TALK_SEQUENCE_ERRAND = 9,        /* MabelTalk_TakeErrand */
+    MABEL_TALK_SEQUENCE_DESIGN_DRAWN = 1, /* MabelTalk_SayDesignDrawn */
+    MABEL_TALK_SEQUENCE_DESIGN_NAMED = 2, /* MabelTalk_SayDesignNamed */
+    MABEL_TALK_SEQUENCE_SHOW_DESIGN = 3,  /* MabelTalk_ShowDesign */
+    MABEL_TALK_SEQUENCE_BUY_DESIGN = 4,   /* MabelTalk_BuyDesign */
+    MABEL_TALK_SEQUENCE_SWAP_DESIGN = 5,  /* MabelTalk_SwapDesign */
+    MABEL_TALK_SEQUENCE_PRICE_SALE = 6,   /* MabelTalk_PriceSale */
+    MABEL_TALK_SEQUENCE_TRYING_ON = 7,    /* MabelTalk_WatchTryOn, each step */
+    MABEL_TALK_SEQUENCE_TRIED_ON = 8,     /* MabelTalk_EndTryOn, each step */
+    MABEL_TALK_SEQUENCE_ERRAND = 9,       /* MabelTalk_TakeErrand */
     MABEL_TALK_SEQUENCES = 10
 };
 
@@ -79,9 +79,9 @@ typedef struct MabelTalkChoices {
 #define MABEL_LINE_0B 0x0b               /* its first answer costs 350 bells */
 #define MABEL_LINE_NO_BELLS_FEE 0x0d     /* the player cannot pay 350 bells */
 #define MABEL_LINE_FEE_OK 0x0e           /* ends opening the screen in mode 4 */
-#define MABEL_LINE_NO_DESIGN 0x0f        /* no design picked on that screen */
-#define MABEL_LINE_DESIGN_KIND 0x10      /* a design picked: its answer gives its kind */
-#define MABEL_LINE_11 0x11               /* ends opening the screen in mode 0xb */
+#define MABEL_LINE_NO_DESIGN 0x0f        /* no design drawn in the editor */
+#define MABEL_LINE_DESIGN_KIND 0x10      /* a design drawn: its answer gives its kind */
+#define MABEL_LINE_DESIGN_NAME 0x11      /* asks the design's name; ends opening the keyboard (mode 0xb) */
 #define MABEL_LINE_FEE 0x12              /* ends taking 350 bells */
 #define MABEL_LINE_SELL 0x14             /* ends opening the screen of the clothes to sell */
 #define MABEL_LINE_NO_SALE 0x15          /* nothing confirmed on it */
@@ -136,8 +136,8 @@ void MabelTalk_PriceSale(MabelTalk *talk);
 void MabelTalk_SwapDesign(MabelTalk *talk);
 void MabelTalk_BuyDesign(MabelTalk *talk);
 void MabelTalk_ShowDesign(MabelTalk *talk);
-void MabelTalk_SayAfterScreenB(MabelTalk *talk);
-void MabelTalk_SayDesignPicked(MabelTalk *talk);
+void MabelTalk_SayDesignNamed(MabelTalk *talk);
+void MabelTalk_SayDesignDrawn(MabelTalk *talk);
 
 /* The answers. */
 void MabelTalk_OnAnswer(MabelTalk *talk, int arg);
@@ -164,7 +164,7 @@ void MabelTalk_OfferItemChoices(MabelTalk *talk);
 void MabelTalk_PaySale(MabelTalk *talk);
 void MabelTalk_OpenSell(MabelTalk *talk);
 void MabelTalk_TakeFee(MabelTalk *talk);
-void MabelTalk_OpenScreenB(MabelTalk *talk);
-void MabelTalk_OpenDesignPick(MabelTalk *talk);
+void MabelTalk_OpenNameKeyboard(MabelTalk *talk);
+void MabelTalk_OpenDesignEditor(MabelTalk *talk);
 
 #endif
