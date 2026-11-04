@@ -239,11 +239,11 @@ CLEAN_AS(func_ov117_02299c50, TownMapImage_ClearBlock)
 void TownMapImage_MarkOthers(TownMapMarker *markers)
 {
     TownMapImage_MarkSpots(markers);
-    TownMapImage_Mark5000(markers);
-    TownMapImage_Mark500B(markers);
+    TownMapImage_MarkTownHall(markers);
+    TownMapImage_MarkGate(markers);
     TownMapImage_MarkPlayerHouse(markers);
-    TownMapImage_Mark5011(markers);
-    TownMapImage_Mark500C(markers);
+    TownMapImage_MarkMuseum(markers);
+    TownMapImage_MarkTailor(markers);
     TownMapImage_MarkStore(markers);
 }
 CLEAN_AS(func_ov117_02299c68, TownMapImage_MarkOthers)
@@ -324,33 +324,33 @@ static void mark_single_building(TownMapMarker *markers, int index, u16 code, in
     mark_building(markers, map, index, &code, &code, flags, 0);
 }
 
-/* func_ov117_02299d9c: building 0x5000 (flag 0x200). */
-void TownMapImage_Mark5000(TownMapMarker *markers)
+/* func_ov117_02299d9c: the town hall, building 0x5000 (flag 0x200). */
+void TownMapImage_MarkTownHall(TownMapMarker *markers)
 {
-    mark_single_building(markers, TOWN_MAP_MARKER_5000, 0x5000, 0x200);
+    mark_single_building(markers, TOWN_MAP_MARKER_TOWN_HALL, 0x5000, 0x200);
 }
-CLEAN_AS(func_ov117_02299d9c, TownMapImage_Mark5000)
+CLEAN_AS(func_ov117_02299d9c, TownMapImage_MarkTownHall)
 
-/* func_ov117_02299e44: building 0x500c (flag 2). */
-void TownMapImage_Mark500C(TownMapMarker *markers)
+/* func_ov117_02299e44: the Able Sisters' tailor, building 0x500c (flag 2). */
+void TownMapImage_MarkTailor(TownMapMarker *markers)
 {
-    mark_single_building(markers, TOWN_MAP_MARKER_500C, 0x500c, 2);
+    mark_single_building(markers, TOWN_MAP_MARKER_TAILOR, 0x500c, 2);
 }
-CLEAN_AS(func_ov117_02299e44, TownMapImage_Mark500C)
+CLEAN_AS(func_ov117_02299e44, TownMapImage_MarkTailor)
 
-/* func_ov117_02299ee8: building 0x500b (no flags). */
-void TownMapImage_Mark500B(TownMapMarker *markers)
+/* func_ov117_02299ee8: the gate, building 0x500b (no flags). */
+void TownMapImage_MarkGate(TownMapMarker *markers)
 {
-    mark_single_building(markers, TOWN_MAP_MARKER_500B, 0x500b, 0);
+    mark_single_building(markers, TOWN_MAP_MARKER_GATE, 0x500b, 0);
 }
-CLEAN_AS(func_ov117_02299ee8, TownMapImage_Mark500B)
+CLEAN_AS(func_ov117_02299ee8, TownMapImage_MarkGate)
 
-/* func_ov117_02299f8c: building 0x5011 (flag 0x800). */
-void TownMapImage_Mark5011(TownMapMarker *markers)
+/* func_ov117_02299f8c: the museum, building 0x5011 (flag 0x800). */
+void TownMapImage_MarkMuseum(TownMapMarker *markers)
 {
-    mark_single_building(markers, TOWN_MAP_MARKER_5011, 0x5011, 0x800);
+    mark_single_building(markers, TOWN_MAP_MARKER_MUSEUM, 0x5011, 0x800);
 }
-CLEAN_AS(func_ov117_02299f8c, TownMapImage_Mark5011)
+CLEAN_AS(func_ov117_02299f8c, TownMapImage_MarkMuseum)
 
 /* func_ov117_0229a034: the players' house (codes 0x5014-0x501a, flag 1), by the shape of the
  * one found.

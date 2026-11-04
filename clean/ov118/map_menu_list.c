@@ -390,8 +390,8 @@ CLEAN_AS(func_ov118_0229b088, MapMenu_MarkAt)
 
 /* func_ov118_0229b120: the marks from overlay 117's spots, 8 pixels left of and 16 below them.
  * Spots 0-2 are the extra marks, by the spot's kind (0: kind 8, 1: 7, 2: 9, 3: 9 flipped, others
- * none); spots 3-10 are villagers' houses, 11 the players' house, 12-16 buildings
- * (data_ov118_0229caa0). A spot without a place has no mark. */
+ * none); spots 3-10 are villagers' houses, 11 the players' house, 12-16 the town hall,
+ * the museum, the store, the tailor and the gate (data_ov118_0229caa0). A spot without a place has no mark. */
 void MapMenu_FillMarks(MapMenu *self, TownMapMarker *spots)
 {
     for (int i = 0; i < MAP_MENU_EXTRA_MARKS; i++) {

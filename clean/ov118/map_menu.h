@@ -69,7 +69,7 @@ enum MapMenuEntry {
     MAP_MENU_ENTRY_SELF = 1,     /* the current player */
     MAP_MENU_ENTRY_PLAYER = 2,   /* 2-5: the town's player 0-3 */
     MAP_MENU_ENTRY_VILLAGER = 6, /* 6-13: the town's villager 0-7 */
-    MAP_MENU_ENTRY_PLACE = 14,   /* 14-18: place 0-4, the menu message 0x96-0x9a */
+    MAP_MENU_ENTRY_PLACE = 14,   /* 14-18: place 0-4, the menu message 0x96-0x9a (shop, tailor, town hall, museum, gate) */
     MAP_MENU_ENTRY_END = 19
 };
 

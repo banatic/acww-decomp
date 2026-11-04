@@ -10,8 +10,10 @@
  * - 0-2: the spots found in acres of flag 4 (CollisionQuery_FindSpotInBlock), whose kind is the
  *   spot's (0-3);
  * - 3-10: the houses of the eight villagers;
- * - 11-16: the buildings found on the town map: the players' house (0x5014-0x501a), building
- *   0x5000, building 0x5011, the store (0x500d-0x5010), building 0x500c and building 0x500b.
+ * - 11-16: the buildings found on the town map: the players' house (0x5014-0x501a), the town
+ *   hall (0x5000), the museum (0x5011), the store (0x500d-0x5010), the tailor (0x500c) and the
+ *   gate (0x500b); overlay 118 lists the last five as places 2, 3, 0, 1 and 4, the menu's
+ *   messages 0x98 "town hall", 0x99 "museum", 0x96 "shop", 0x97 "tailor" and 0x9a "gate".
  *
  * Overlay 118 asks for the picture one acre row at a time (TownMapImage_DrawRow), then for the
  * markers (TownMapImage_Mark), and finally takes the picture and the markers into its own
@@ -32,11 +34,11 @@ enum TownMapMarkerIndex {
     TOWN_MAP_MARKER_SPOTS = 0,     /* 0-2 */
     TOWN_MAP_MARKER_VILLAGERS = 3, /* 3-10, by villager */
     TOWN_MAP_MARKER_PLAYER_HOUSE = 0x0b,
-    TOWN_MAP_MARKER_5000 = 0x0c,
-    TOWN_MAP_MARKER_5011 = 0x0d,
+    TOWN_MAP_MARKER_TOWN_HALL = 0x0c,
+    TOWN_MAP_MARKER_MUSEUM = 0x0d,
     TOWN_MAP_MARKER_STORE = 0x0e,
-    TOWN_MAP_MARKER_500C = 0x0f,
-    TOWN_MAP_MARKER_500B = 0x10
+    TOWN_MAP_MARKER_TAILOR = 0x0f,
+    TOWN_MAP_MARKER_GATE = 0x10
 };
 
 /* Which markers TownMapImage_Mark puts. */
@@ -80,10 +82,10 @@ void TownMapImage_MarkOthers(TownMapMarker *markers);
 void TownMapImage_MarkVillagers(TownMapMarker *markers);
 void TownMapMarkers_Copy(TownMapMarker *from, TownMapMarker *to);
 void TownMapImage_MarkStore(TownMapMarker *markers);
-void TownMapImage_Mark5000(TownMapMarker *markers);
-void TownMapImage_Mark500C(TownMapMarker *markers);
-void TownMapImage_Mark500B(TownMapMarker *markers);
-void TownMapImage_Mark5011(TownMapMarker *markers);
+void TownMapImage_MarkTownHall(TownMapMarker *markers);
+void TownMapImage_MarkTailor(TownMapMarker *markers);
+void TownMapImage_MarkGate(TownMapMarker *markers);
+void TownMapImage_MarkMuseum(TownMapMarker *markers);
 void TownMapImage_MarkPlayerHouse(TownMapMarker *markers);
 void TownMapImage_MarkVillagerHouses(TownMapMarker *markers);
 void TownMapImage_MarkSpots(TownMapMarker *markers);
