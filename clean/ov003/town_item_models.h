@@ -41,7 +41,7 @@ ModelObject *TownItemModels_DrawCode1f(TileEventProcess *process, const u16 *cod
 ModelObject *TownItemModels_DrawCode1a(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawFamilyB(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawFamily(TileEventProcess *process, const u16 *code, Mtx43 matrix);
-ModelObject *TownItemModels_DrawShortLine(TileEventProcess *process, const u16 *code, Mtx43 matrix);
+ModelObject *TownItemModels_DrawStump(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawCode25(TileEventProcess *process, const u16 *code, int x, int z, Mtx43 matrix);
 void TownItemModels_DrawGrowthWithShadow(TileEventProcess *process, const u16 *code, int x, int z, Vec3 *point, Mtx43 matrix);
 ModelObject *TownItemModels_DrawGrowth(TileEventProcess *process, const u16 *code, int x, int z, const Vec3 *point,

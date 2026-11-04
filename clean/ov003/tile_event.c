@@ -644,7 +644,7 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
     } else if (code == TILE_EVENT_ID_UNIT_0 || code == TILE_EVENT_ID_UNIT_SET) {
         TownItemModels_DrawCodeFc(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_short(code)) {
-        TownItemModels_DrawShortLine(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        TownItemModels_DrawStump(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_growth(code)) {
         draw->growth_point = draw->point;
         TownItemModels_DrawGrowth(data_ov003_0223cf70, (const u16 *) draw, entry->tile.x, entry->tile.z, &draw->growth_point,

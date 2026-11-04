@@ -49,7 +49,7 @@ extern void func_02107524(u8 *model, u16 colour);
 #define TOWN_ITEM_MODELS_ITEM_HOLDERS 0x0050 /* the holders of items, by ItemTraits_Look */
 #define TOWN_ITEM_MODELS_CODE_1D 0x3060      /* the holders of codes 0x1d and 0x1e */
 #define TOWN_ITEM_MODELS_CODE_E3 0x46f4      /* five holders for the codes 0xe3-0xfb */
-#define TOWN_ITEM_MODELS_SHORT 0x4978        /* twelve holders for the short lines */
+#define TOWN_ITEM_MODELS_STUMPS 0x4978       /* twelve holders for the stumps */
 #define TOWN_ITEM_MODELS_CLOCK 0x6a6c        /* frames, 0-59 */
 
 /* Holders per line in the families' block at 0x1590. */
@@ -199,8 +199,8 @@ static int town_item_code_e3(u16 code)
     return code >= 0xe3 && code <= 0xfb;
 }
 
-/* The codes of the four short lines (main/map_item.h). */
-static int town_item_short_line(u16 code)
+/* The codes of the tree stumps: four of each of the trees, cedars and palms (main/map_item.h). */
+static int town_item_stump(u16 code)
 {
     return (code >= 0x2b && code <= 0x2e) || (code >= 0xff && code <= 0x102) || (code >= 0x62 && code <= 0x65) ||
            (code >= 0xd0 && code <= 0xd3);
@@ -246,8 +246,8 @@ static void town_item_draw_map_code(TileEventProcess *process, AcreMap *map, con
         TownItemModels_DrawCodeFc(process, tile, matrix);
     } else if (code == 0x25 || code == 0x5c || code == 0xc7) {
         TownItemModels_DrawCode25(process, tile, x, z, matrix);
-    } else if (town_item_short_line(code)) {
-        TownItemModels_DrawShortLine(process, tile, matrix);
+    } else if (town_item_stump(code)) {
+        TownItemModels_DrawStump(process, tile, matrix);
     } else if (town_item_code_1a(code) || code == 0xa4) {
         TownItemModels_DrawCode1a(process, tile, matrix);
     } else if (FieldUnits_IsBitSet((UnitBitsGrid *) (void *) map, x, z)) {
@@ -464,9 +464,10 @@ ModelObject *TownItemModels_DrawFamily(TileEventProcess *process, const u16 *cod
 }
 CLEAN_AS(func_ov003_02225598, TownItemModels_DrawFamily)
 
-/* func_ov003_02225608: the short lines: of the twelve pointers at 0x4978, 0-3 for 0x2b-0x2e and
- * for 0xff-0x102, 4-7 for 0x62-0x65, 8-11 for 0xd0-0xd3 (any other code: the code less 0xc8). */
-ModelObject *TownItemModels_DrawShortLine(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+/* func_ov003_02225608: the stumps (the models of '/fg/tree/stamp/'): of the twelve pointers at
+ * 0x4978, 0-3 for 0x2b-0x2e and for 0xff-0x102, 4-7 for 0x62-0x65, 8-11 for 0xd0-0xd3 (any
+ * other code: the code less 0xc8). */
+ModelObject *TownItemModels_DrawStump(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     u16 id = *code;
     int index;
@@ -479,11 +480,11 @@ ModelObject *TownItemModels_DrawShortLine(TileEventProcess *process, const u16 *
     } else {
         index = id - 0xc8;
     }
-    ModelObject *model = town_item_pointer(process, TOWN_ITEM_MODELS_SHORT, index);
+    ModelObject *model = town_item_pointer(process, TOWN_ITEM_MODELS_STUMPS, index);
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_02225608, TownItemModels_DrawShortLine)
+CLEAN_AS(func_ov003_02225608, TownItemModels_DrawStump)
 
 /* func_ov003_02225694: codes 0x25 (holder 5 of the set at 0x174 for the tile's parity), 0xc7
  * (holder 5 at 0x11e8) and 0x5c (any other: holder 5 at 0xc6c). */

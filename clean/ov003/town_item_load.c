@@ -187,7 +187,7 @@ int TownItemLoad_InitProcess(TileEventProcess *process)
 CLEAN_AS(func_ov003_02225ebc, TownItemLoad_InitProcess)
 
 /* func_ov003_02225f68: the loaders of data_ov003_0223b8a4 run in order (trees, flowers, grass,
- * func_ov003_022271f8, holes, cracks, stamps, red turnips, designs) until one fails: 0; 1 when
+ * func_ov003_022271f8, holes, cracks, stumps, red turnips, designs) until one fails: 0; 1 when
  * all succeed. They work on the current process, not on `process`. */
 int TownItemLoad_RunLoaders(TileEventProcess *process)
 {
@@ -1003,21 +1003,21 @@ int TownItemLoad_TreeLook(TileEventProcess *process, int variant)
 }
 CLEAN_AS(func_ov003_02227170, TownItemLoad_TreeLook)
 
-/* func_ov003_02227190: the stamps loaded into the current process (func_ov003_022271a0). */
-int TownItemLoad_LoadStamps(void)
+/* func_ov003_02227190: the stumps loaded into the current process (func_ov003_022271a0). */
+int TownItemLoad_LoadStumps(void)
 {
-    return TownItemLoad_LoadStampModels(data_ov003_0223cf70);
+    return TownItemLoad_LoadStumpModels(data_ov003_0223cf70);
 }
-CLEAN_AS(func_ov003_02227190, TownItemLoad_LoadStamps)
+CLEAN_AS(func_ov003_02227190, TownItemLoad_LoadStumps)
 
 /* The stumps' model set file ('/fg/tree/stamp/stamp.nsbmd') and the names of its twelve models
  * (tree, cedar and palm stumps, four each); the stones' model set files by look (one 'w', two
  * 's') and the names of each one's five models; the icons' model set file. */
-#define TOWN_ITEM_LOAD_STAMPS 12
+#define TOWN_ITEM_LOAD_STUMPS 12
 #define TOWN_ITEM_LOAD_STONES 5
 #define TOWN_ITEM_LOAD_ICONS 0x49
 extern const char data_ov003_0223bd74[];
-extern const char *const data_ov003_0223bc44[TOWN_ITEM_LOAD_STAMPS];
+extern const char *const data_ov003_0223bc44[TOWN_ITEM_LOAD_STUMPS];
 extern const char *const data_ov003_02239ef0[3];
 extern const char *const *const data_ov003_02239f2c[3];
 extern const char data_ov003_0223bd90[];
@@ -1026,18 +1026,18 @@ extern void *func_021077e8(void *file);
 
 /* func_ov003_022271a0: model set 3 loaded from the stumps' file into the first heap, and the
  * twelve pointers at 0x4978 set to its models by name; 0 when the set could not be loaded. */
-int TownItemLoad_LoadStampModels(TileEventProcess *process)
+int TownItemLoad_LoadStumpModels(TileEventProcess *process)
 {
     if (ModelSet_Load(&process->sets[3], data_ov003_0223bd74, data_ov003_0223cf74) == 0) {
         return 0;
     }
-    ModelObject **stamps = (ModelObject **) (void *) process->unk_4978;
-    for (int i = 0; i < TOWN_ITEM_LOAD_STAMPS; i++) {
-        stamps[i] = ModelSet_Find(&process->sets[3], data_ov003_0223bc44[i]);
+    ModelObject **stumps = (ModelObject **) (void *) process->unk_4978;
+    for (int i = 0; i < TOWN_ITEM_LOAD_STUMPS; i++) {
+        stumps[i] = ModelSet_Find(&process->sets[3], data_ov003_0223bc44[i]);
     }
     return 1;
 }
-CLEAN_AS(func_ov003_022271a0, TownItemLoad_LoadStampModels)
+CLEAN_AS(func_ov003_022271a0, TownItemLoad_LoadStumpModels)
 
 /* func_ov003_022271f8: the stones loaded into the current process. */
 int TownItemLoad_LoadStones(void)

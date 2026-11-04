@@ -12,7 +12,7 @@
  *     growth models' animated trees (growth_model.h);
  *   - flowers: the four families at 0x1590, the two flowers at 0x2df0 and the dandelions of
  *     model set 1 (pointers at 0x3060);
- *   - grass, holes, cracks, func_ov003_022271f8, stamps (func_ov003_022271a0), red turnips and
+ *   - grass, holes, cracks, func_ov003_022271f8, stumps (func_ov003_022271a0), red turnips and
  *     the players' designs on the ground (0x3068).
  *
  * A model is read from a model file (.nsbmd) with the textures and palettes of a texture file
@@ -105,8 +105,8 @@ const char *TownItemLoad_CedarModelPath(TileEventProcess *process, int stage);
 const char *TownItemLoad_TreeGrowthPath(TileEventProcess *process, int variant, int stage);
 const char *TownItemLoad_TreeModelPath(TileEventProcess *process, int variant, int stage);
 int TownItemLoad_TreeLook(TileEventProcess *process, int variant);
-int TownItemLoad_LoadStamps(void);
-int TownItemLoad_LoadStampModels(TileEventProcess *process);
+int TownItemLoad_LoadStumps(void);
+int TownItemLoad_LoadStumpModels(TileEventProcess *process);
 int TownItemLoad_LoadStones(void);
 int TownItemLoad_LoadStoneModels(TileEventProcess *process);
 int TownItemLoad_LoadIcons(TileEventProcess *process);

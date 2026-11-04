@@ -13,7 +13,8 @@
  * 0x5d-0x61 and 0xc8-0xcf; 0x66-0x6d are codes at their last stage only.
  *
  * Short lines: four lines of four codes, 0x2b-0x2e, 0x62-0x65, 0xd0-0xd3 and 0xff-0x102,
- * numbered by stage from 1. */
+ * numbered by stage from 1: the tree stumps (overlay 3 draws them with the tree, cedar and
+ * palm stumps of '/fg/tree/stamp/', TownItemModels_DrawStump). */
 #ifndef CLEAN_MAIN_MAP_ITEM_H
 #define CLEAN_MAIN_MAP_ITEM_H
 
