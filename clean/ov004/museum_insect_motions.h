@@ -76,7 +76,7 @@ void InsectMotion_ClampXZ(Vec3 *dst, const Vec3 *src, int whole);
 int InsectMotion_Walk(MuseumInsect *insect);
 void InsectMotion_Hop(MuseumInsect *insect, InsectSighting *sighting);
 void InsectMotion_UpdateHopper(MuseumInsect *insect);
-void InsectMotion_UpdatePartners(MuseumInsect *insect);
+void InsectMotion_UpdateDungBeetle(MuseumInsect *insect);
 int InsectMotion_FacePlayer(MuseumInsect *insect);
 void InsectMotion_PairWalk(MuseumInsect *insect);
 void InsectMotion_PairBackOff(MuseumInsect *insect);

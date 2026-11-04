@@ -36,7 +36,7 @@ static s16 InsectKind_pair_rest(const MuseumInsect *insect)
 /* func_ov004_02240124 (kinds 35 and 56's frame) */
 void InsectKind_Frame35(MuseumInsect *insect)
 {
-    InsectMotion_UpdatePartners(insect);
+    InsectMotion_UpdateDungBeetle(insect);
 }
 CLEAN_AS(func_ov004_02240124, InsectKind_Frame35)
 
@@ -47,24 +47,24 @@ CLEAN_AS(func_ov004_02240124, InsectKind_Frame35)
  * REQUIRES: kind 56 is shown with kind 35 (InsectRoom_AddGivenInsects adds it). */
 void InsectKind_Init35(MuseumInsect *insect)
 {
-    if (insect->kind == MUSEUM_INSECT_WITH_PARTNER) {
-        MuseumInsect *partner = InsectRoom_FindPartner();
+    if (insect->kind == MUSEUM_INSECT_DUNG_BEETLE) {
+        MuseumInsect *ball = InsectRoom_FindDungBall();
         if (MainRandom_Below(100) > 50) {
             int frames = rest_frames(9, 4);
             insect->timer = frames;
-            partner->timer = frames;
+            ball->timer = frames;
             insect->mode = INSECT_MOTION_MOVE;
-            partner->mode = INSECT_MOTION_MOVE;
+            ball->mode = INSECT_MOTION_MOVE;
         } else {
             int frames = rest_frames(3, 2);
             if (!insect->awake) {
                 frames = (s16) (3 * frames);
             }
             insect->timer = frames;
-            partner->timer = frames;
+            ball->timer = frames;
             insect->model.frames.speed = 0;
             insect->mode = MUSEUM_INSECT_MODE_REST;
-            partner->mode = MUSEUM_INSECT_MODE_REST;
+            ball->mode = MUSEUM_INSECT_MODE_REST;
         }
     } else if (insect->mode == MUSEUM_INSECT_MODE_REST) {
         insect->model.frames.speed = 0;

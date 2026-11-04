@@ -720,14 +720,14 @@ CLEAN_AS(func_ov004_02241e88, InsectMotion_UpdateHopper)
 /* func_ov004_02241f88 (kinds 35 and 56's frame): at the end of a rest its animation speeds up
  * to full (mode 4), then plays until the end of its time (mode 5) and stops for a rest. Kind 35
  * draws the times (rests of 40-80 frames awake, 120-240 asleep; plays of 40-200 frames) and
- * hands each to its partner, kind 56 (countdown), which takes it from there.
- * REQUIRES: kind 56's entry is in use while kind 35's is (InsectRoom_FindPartner). */
-void InsectMotion_UpdatePartners(MuseumInsect *insect)
+ * hands each to its ball, kind 56 (countdown), which takes it from there.
+ * REQUIRES: kind 56's entry is in use while kind 35's is (InsectRoom_FindDungBall). */
+void InsectMotion_UpdateDungBeetle(MuseumInsect *insect)
 {
     u8 kind = (u8) insect->kind;
-    MuseumInsect *partner = NULL;
-    if (kind == MUSEUM_INSECT_WITH_PARTNER) {
-        partner = InsectRoom_FindPartner();
+    MuseumInsect *ball = NULL;
+    if (kind == MUSEUM_INSECT_DUNG_BEETLE) {
+        ball = InsectRoom_FindDungBall();
     }
     switch (insect->mode) {
         case INSECT_MOTION_MOVE: {
@@ -742,13 +742,13 @@ void InsectMotion_UpdatePartners(MuseumInsect *insect)
             if (InsectMotion_TimerDone(insect)) {
                 insect->mode = MUSEUM_INSECT_MODE_REST;
                 insect->model.frames.speed = 0;
-                if (kind == MUSEUM_INSECT_WITH_PARTNER) {
+                if (kind == MUSEUM_INSECT_DUNG_BEETLE) {
                     int rest = (s16) (20 * (InsectMotion_random(3) + 2));
                     if (!insect->awake) {
                         rest = (s16) (3 * rest);
                     }
                     insect->timer = rest;
-                    partner->countdown = (s16) rest;
+                    ball->countdown = (s16) rest;
                 } else {
                     insect->timer = insect->countdown;
                 }
@@ -757,10 +757,10 @@ void InsectMotion_UpdatePartners(MuseumInsect *insect)
         default:
             if (InsectMotion_TimerDone(insect)) {
                 insect->mode = INSECT_MOTION_MOVE;
-                if (kind == MUSEUM_INSECT_WITH_PARTNER) {
+                if (kind == MUSEUM_INSECT_DUNG_BEETLE) {
                     int play = (s16) (20 * (InsectMotion_random(9) + 2));
                     insect->timer = play;
-                    partner->countdown = (s16) play;
+                    ball->countdown = (s16) play;
                 } else if (insect->countdown > 0) {
                     insect->timer = insect->countdown;
                 }
@@ -768,7 +768,7 @@ void InsectMotion_UpdatePartners(MuseumInsect *insect)
             break;
     }
 }
-CLEAN_AS(func_ov004_02241f88, InsectMotion_UpdatePartners)
+CLEAN_AS(func_ov004_02241f88, InsectMotion_UpdateDungBeetle)
 
 /* func_ov004_02242078: while the player is seen and the insect alarmed (or for the 60 frames
  * after), it turns towards the player 0x38e a frame, and kind 55 runs its animation to frame 3

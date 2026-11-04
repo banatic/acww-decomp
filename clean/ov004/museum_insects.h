@@ -33,9 +33,9 @@
 /* The kinds, and the two pairs shown together. */
 #define MUSEUM_INSECT_KINDS 57
 #define MUSEUM_INSECT_GIVEN_KINDS 56
-#define MUSEUM_INSECT_WITH_PARTNER 35 /* its partner, kind 56, is shown with it */
-#define MUSEUM_INSECT_PARTNER 56
-#define MUSEUM_INSECT_PAIR_FIRST 54 /* kinds 54 and 55 keep together */
+#define MUSEUM_INSECT_DUNG_BEETLE 35 /* item 0x12d3; its ball, kind 56, is shown with it */
+#define MUSEUM_INSECT_DUNG_BALL 56   /* the dung beetle's ball, no item of its own */
+#define MUSEUM_INSECT_PAIR_FIRST 54  /* kinds 54 and 55 keep together */
 #define MUSEUM_INSECT_PAIR_SECOND 55
 
 /* The entries of the static table. */
@@ -128,8 +128,8 @@ typedef struct InsectRoom {
     Process base;                              /* 0x000: param is the room, 0 or 1 */
     FieldPointBody bodies[INSECT_ROOM_BODIES]; /* 0x050 */
     ModelPool pool;                            /* 0x180 */
-    u8 *with_partner_anim;                     /* 0x198: kind 35's animation file */
-    u8 *partner_anim;                          /* 0x19c: kind 56's */
+    u8 *dung_beetle_anim;                      /* 0x198: kind 35's animation file */
+    u8 *dung_ball_anim;                        /* 0x19c: kind 56's */
 } InsectRoom;
 
 int InsectRoom_HourBand(void);
@@ -142,7 +142,7 @@ InsectRoom *InsectRoom_Construct(InsectRoom *self);
 void InsectRoom_ReleaseInsect(InsectRoom *self, int index);
 MuseumInsect *MuseumInsect_Destruct(MuseumInsect *self);
 MuseumInsect *MuseumInsect_Construct(MuseumInsect *self);
-MuseumInsect *InsectRoom_FindPartner(void);
+MuseumInsect *InsectRoom_FindDungBall(void);
 MuseumInsect *InsectRoom_FindPairSecond(void);
 int InsectRoom_RoomOf(InsectRoom *self, unsigned int kind);
 void InsectRoom_AddGivenInsects(InsectRoom *self);

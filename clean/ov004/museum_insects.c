@@ -116,9 +116,9 @@ extern void func_0205c978(void);
 /* The bodies' flags. */
 #define INSECT_BODY_FLAGS 0x80
 #define INSECT_BODY_FLAGS_HIGH 0x82
-#define INSECT_BODY_FLAGS_PARTNER 0x42
+#define INSECT_BODY_FLAGS_DUNG_BALL 0x42
 #define INSECT_BODY_TOUCHES 0xc0
-#define INSECT_PARTNER_HEIGHT 0x1200
+#define INSECT_DUNG_BALL_HEIGHT 0x1200
 #define INSECT_TOUCHED_KEEP 0x40
 #define INSECT_TOUCHED_MARK 0x80
 #define INSECT_MOVE_FLAGS 11
@@ -252,12 +252,12 @@ void InsectRoom_ReleaseInsect(InsectRoom *self, int index)
     }
     MuseumInsect *insect = &data_ov004_02259a34[index];
     int kind = insect->kind;
-    if (kind == MUSEUM_INSECT_PARTNER) {
-        Heap_FreeCurrent(self->partner_anim);
-        self->partner_anim = NULL;
-    } else if (kind == MUSEUM_INSECT_WITH_PARTNER) {
-        Heap_FreeCurrent(self->with_partner_anim);
-        self->with_partner_anim = NULL;
+    if (kind == MUSEUM_INSECT_DUNG_BALL) {
+        Heap_FreeCurrent(self->dung_ball_anim);
+        self->dung_ball_anim = NULL;
+    } else if (kind == MUSEUM_INSECT_DUNG_BEETLE) {
+        Heap_FreeCurrent(self->dung_beetle_anim);
+        self->dung_beetle_anim = NULL;
     }
     if (kind_info(kind)->visibility_anim) {
         AnimatedModel_DetachVisibility(insect_model(insect));
@@ -332,11 +332,11 @@ static MuseumInsect *InsectRoom_find(s8 *found, int kind)
 }
 
 /* func_ov004_0223edd8: kind 56's entry (InsectRoom_find), or NULL. */
-MuseumInsect *InsectRoom_FindPartner(void)
+MuseumInsect *InsectRoom_FindDungBall(void)
 {
-    return InsectRoom_find(&data_ov004_02256290, MUSEUM_INSECT_PARTNER);
+    return InsectRoom_find(&data_ov004_02256290, MUSEUM_INSECT_DUNG_BALL);
 }
-CLEAN_AS(func_ov004_0223edd8, InsectRoom_FindPartner)
+CLEAN_AS(func_ov004_0223edd8, InsectRoom_FindDungBall)
 
 /* func_ov004_0223ee38: kind 55's entry (InsectRoom_find), or NULL. */
 MuseumInsect *InsectRoom_FindPairSecond(void)
@@ -384,24 +384,24 @@ int InsectRoom_RoomOf(InsectRoom *self, unsigned int kind)
 CLEAN_AS(func_ov004_0223ee98, InsectRoom_RoomOf)
 
 /* func_ov004_0223ef1c: each kind of the room shown that the record has been given added, and
- * kind 56 after kind 35 was. */
+ * the dung ball (kind 56) after the dung beetle (35) was. */
 void InsectRoom_AddGivenInsects(InsectRoom *self)
 {
     u8 room = (u8) self->base.param;
-    int partner = 0;
+    int beetle = 0;
     for (u8 kind = 0; kind < MUSEUM_INSECT_KINDS; kind++) {
         if ((u8) InsectRoom_RoomOf(self, kind) != room) {
             continue;
         }
         u16 item = kind < MUSEUM_INSECT_GIVEN_KINDS ? (u16) (MUSEUM_INSECT_FIRST_ITEM + kind) : MUSEUM_INSECT_FIRST_ITEM;
-        if (kind == MUSEUM_INSECT_PARTNER) {
-            if (partner) {
+        if (kind == MUSEUM_INSECT_DUNG_BALL) {
+            if (beetle) {
                 InsectRoom_AddInsect(self, kind);
             }
         } else if (MuseumRecord_IsGiven(&data_021f38f8, &item)) {
             InsectRoom_AddInsect(self, kind);
-            if (kind == MUSEUM_INSECT_WITH_PARTNER) {
-                partner = 1;
+            if (kind == MUSEUM_INSECT_DUNG_BEETLE) {
+                beetle = 1;
             }
         }
     }
@@ -688,14 +688,14 @@ void InsectRoom_UpdateInsect(InsectRoom *self, MuseumInsect *insect)
         Vec3 origin = *position;
         int flags;
         fx32 height;
-        if (kind == MUSEUM_INSECT_PARTNER) {
+        if (kind == MUSEUM_INSECT_DUNG_BALL) {
             Mtx43 joint;
             if (ModelObject_JointMatrix(&insect->model.object, &joint, 0)) {
                 Vec3 drawn = {joint.m[3][0], joint.m[3][1], joint.m[3][2]};
                 Globe_Unbend(&origin, &drawn);
             }
-            flags = INSECT_BODY_FLAGS_PARTNER;
-            height = INSECT_PARTNER_HEIGHT;
+            flags = INSECT_BODY_FLAGS_DUNG_BALL;
+            height = INSECT_DUNG_BALL_HEIGHT;
         } else {
             flags = InsectRoom_body_flags(insect, kind);
             height = kind_info(kind)->size;
@@ -750,9 +750,9 @@ static void InsectRoom_file_name(char *name, MuseumInsect *insect, int kind)
         kind_info(kind)->visibility_anim = 1;
     } else if (kind == KIND_24) {
         CLib_SPrintf(name, data_ov004_022565c8, KIND_24_FILE);
-    } else if (kind == MUSEUM_INSECT_WITH_PARTNER) {
+    } else if (kind == MUSEUM_INSECT_DUNG_BEETLE) {
         CLib_SPrintf(name, data_ov004_022565dc);
-    } else if (kind == MUSEUM_INSECT_PARTNER) {
+    } else if (kind == MUSEUM_INSECT_DUNG_BALL) {
         CLib_SPrintf(name, data_ov004_022565f0);
     } else if (kind < 10) {
         CLib_SPrintf(name, data_ov004_02256604, kind);
@@ -819,12 +819,12 @@ void InsectRoom_LoadInsect(InsectRoom *self, MuseumInsect *insect)
     }
     Heap *heap = (Heap *) (intptr_t) ModelPoolEntry_Heap(entry);
     void *file;
-    if (kind == MUSEUM_INSECT_PARTNER) {
-        self->partner_anim = RomFile_Load(path, data_021fbe94, 4, NULL);
-        file = self->partner_anim;
-    } else if (kind == MUSEUM_INSECT_WITH_PARTNER) {
-        self->with_partner_anim = RomFile_Load(path, data_021fbe94, 4, NULL);
-        file = self->with_partner_anim;
+    if (kind == MUSEUM_INSECT_DUNG_BALL) {
+        self->dung_ball_anim = RomFile_Load(path, data_021fbe94, 4, NULL);
+        file = self->dung_ball_anim;
+    } else if (kind == MUSEUM_INSECT_DUNG_BEETLE) {
+        self->dung_beetle_anim = RomFile_Load(path, data_021fbe94, 4, NULL);
+        file = self->dung_beetle_anim;
     } else {
         file = RomFile_Load(path, heap, 4, NULL);
     }
