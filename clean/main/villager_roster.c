@@ -415,7 +415,7 @@ CLEAN_AS(func_0207c754, VillagerRoster_UpdateOutdoors)
 /* ---- The block as a whole */
 
 /* func_0207cf80: every place emptied, the bonds, the walkers and the sickness record reset; the date
- * at 0x404c to day 1 of month 1 of year 0, not set; no time seen; no newcomer and no villager
+ * of the last nickname (0x404c) to day 1 of month 1 of year 0, not set; no time seen; no newcomer and no villager
  * gone; no mark and no number met. */
 void VillagerRoster_Init(VillagerTown *town)
 {
@@ -426,10 +426,10 @@ void VillagerRoster_Init(VillagerTown *town)
     VillagerOutdoors_Init(&town->outdoors);
     VillagerSicknessRecord_Clear(&town->sickness);
 
-    town->date_404c.day = 1;
-    town->date_404c.month = 1;
-    town->date_404c.year = 0;
-    town->date_404c.unused = 0;
+    town->nickname_date.day = 1;
+    town->nickname_date.month = 1;
+    town->nickname_date.year = 0;
+    town->nickname_date.unused = 0;
     memset(&town->last_arrival, 0, sizeof(town->last_arrival));
     memset(&town->last_departure, 0, sizeof(town->last_departure));
     town->newcomer_index = VILLAGER_TOWN_NONE;

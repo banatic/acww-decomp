@@ -40,7 +40,7 @@
 static_assert(offsetof(VillagerTown, bonds) == 0x3f60, "bonds");
 static_assert(offsetof(VillagerTown, outdoors) == 0x3f7c, "outdoors");
 static_assert(offsetof(VillagerTown, sickness) == 0x3f90, "sickness");
-static_assert(offsetof(VillagerTown, date_404c) == 0x404c, "date 0x404c");
+static_assert(offsetof(VillagerTown, nickname_date) == 0x404c, "date 0x404c");
 static_assert(offsetof(VillagerTown, last_arrival) == 0x4050, "last arrival");
 static_assert(offsetof(VillagerTown, last_departure) == 0x4058, "last departure");
 static_assert(offsetof(VillagerTown, newcomer_index) == 0x4075, "newcomer");
@@ -55,8 +55,9 @@ static_assert(sizeof(VillagerTownEvent) == 12, "event");
 #define VILLAGER_TOWN_POCKETS_FULL (-1)
 /* The state func_0207f150 gives a villager that lives in the town as usual. */
 #define VILLAGER_TOWN_RESIDENT 3
-/* The days within which VillagerTown_IsFarFromDate404C gives 0. */
-#define VILLAGER_TOWN_DATE_404C_DAYS 14
+/* The days after a nickname within which VillagerTown_IsFarFromNicknameDate gives 0: no new
+ * nickname is offered. */
+#define VILLAGER_TOWN_NICKNAME_DAYS 14
 /* The item a villager takes when it takes a design from the shop. */
 #define VILLAGER_TOWN_DESIGN_ITEM 0x12a8
 /* What func_0209c020 and func_0207d788 give for nothing to do. */
@@ -200,33 +201,33 @@ int VillagerTown_AllRemember(VillagerTown *town, const void *player)
 }
 CLEAN_AS(func_0207a5d0, VillagerTown_AllRemember)
 
-/* func_0207a62c: the date at 0x404c set to `date`. */
-void VillagerTown_SetDate404C(VillagerTown *town, const Date *date)
+/* func_0207a62c: the day of the last nickname (0x404c) set to `date`. */
+void VillagerTown_SetNicknameDate(VillagerTown *town, const Date *date)
 {
-    MI_CpuCopy8(date, &town->date_404c, sizeof(Date));
-    town->date_404c.unused = 1;
+    MI_CpuCopy8(date, &town->nickname_date, sizeof(Date));
+    town->nickname_date.unused = 1;
 }
-CLEAN_AS(func_0207a62c, VillagerTown_SetDate404C)
+CLEAN_AS(func_0207a62c, VillagerTown_SetNicknameDate)
 
-/* func_0207a650: 0 when the date at 0x404c is set and `date` is within 13 days of it, either
+/* func_0207a650: 0 when the last nickname's day (0x404c) is set and `date` is within 13 days of it, either
  * way; otherwise 1. */
-int VillagerTown_IsFarFromDate404C(VillagerTown *town, const Date *date)
+int VillagerTown_IsFarFromNicknameDate(VillagerTown *town, const Date *date)
 {
     int far = 1;
-    if (town->date_404c.unused != 0) {
+    if (town->nickname_date.unused != 0) {
         int days;
-        if (Calendar_IsOnOrAfter(date, &town->date_404c)) {
-            days = Calendar_DaysFrom(date, &town->date_404c);
+        if (Calendar_IsOnOrAfter(date, &town->nickname_date)) {
+            days = Calendar_DaysFrom(date, &town->nickname_date);
         } else {
-            days = Calendar_DaysFrom(&town->date_404c, date);
+            days = Calendar_DaysFrom(&town->nickname_date, date);
         }
-        if (days < VILLAGER_TOWN_DATE_404C_DAYS) {
+        if (days < VILLAGER_TOWN_NICKNAME_DAYS) {
             far = 0;
         }
     }
     return far;
 }
-CLEAN_AS(func_0207a650, VillagerTown_IsFarFromDate404C)
+CLEAN_AS(func_0207a650, VillagerTown_IsFarFromNicknameDate)
 
 /* func_0207a6a0: the villager that goes out first (the state table's birthday greeter, 0x16c) cleared;
  * then, in scene 6, on the date at 0x2414 of the player's record (read as the player's

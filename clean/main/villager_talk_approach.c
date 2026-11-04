@@ -377,7 +377,7 @@ int VillagerTalkApproach_Mail(VillagerTalk *talk)
 CLEAN_AS(func_0202b6c8, VillagerTalkApproach_Mail)
 
 /* func_0202b770 ("ap_nickn"): with a memory of the player that is not unfond, when the town's
- * date at 0x404c is far enough from today (VillagerTown_IsFarFromDate404C); the talk's line
+ * day of the last nickname (0x404c) is far enough from today (VillagerTown_IsFarFromNicknameDate); the talk's line
  * functions then set from data_021c2794. */
 int VillagerTalkApproach_Nickname(VillagerTalk *talk)
 {
@@ -386,7 +386,7 @@ int VillagerTalkApproach_Nickname(VillagerTalk *talk)
     if (approach_memory(talk) == NULL || VillagerMemoryEntry_Fondness(approach_memory(talk)) < 0) {
         return 0;
     }
-    if (VillagerTown_IsFarFromDate404C(&data_021e5a2c, &today) == 0) {
+    if (VillagerTown_IsFarFromNicknameDate(&data_021e5a2c, &today) == 0) {
         return 0;
     }
     approach_draw(talk, approach_personality(approach_record(talk)), data_020c8b20.texts, data_020c8b20.count, 0, 0);

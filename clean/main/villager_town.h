@@ -6,7 +6,8 @@
  *   0x3f60  how each pair of villagers gets on (villager_bonds.h)
  *   0x3f7c  who is out walking (villager_outdoors.h)
  *   0x3f90  one villager sick in bed (villager_sickness.h)
- *   0x404c  a date and whether it is set (VillagerTown_SetDate404C)
+ *   0x404c  the day a villager last gave the player a nickname, and whether it is set
+ *           (VillagerTown_SetNicknameDate)
  *   0x4050  when a villager last moved in (or the town started); kept from being after the
  *           clock (VillagerTown_Update); a villager is due to leave a set number of days after
  *   0x4058  when a villager last left, unset until one has; moved with the time above while set;
@@ -51,7 +52,7 @@ typedef struct VillagerTown {
     s8 bonds[VILLAGER_TOWN_PAIRS];                                      /* 0x3f60 */
     VillagerOutdoors outdoors;                                          /* 0x3f7c */
     VillagerSickness sickness;                                          /* 0x3f90 */
-    Date date_404c;          /* 0x404c: its last byte (0x404f) set once the date is */
+    Date nickname_date;      /* 0x404c: the last nickname's day; its last byte (0x404f) set once it is */
     DateTime last_arrival;   /* 0x4050 */
     DateTime last_departure; /* 0x4058 */
     u8 numbers_met[0x15];    /* 0x4060: a bit for each NpcId number met (five words), then the number gone */
@@ -78,8 +79,8 @@ void VillagerTown_Mark(VillagerTown *town, const NpcId *npc);
 void VillagerTown_ClearMark(VillagerTown *town);
 int VillagerTown_GiveLetter(VillagerTown *town, Letter *letter);
 int VillagerTown_AllRemember(VillagerTown *town, const void *player);
-void VillagerTown_SetDate404C(VillagerTown *town, const Date *date);
-int VillagerTown_IsFarFromDate404C(VillagerTown *town, const Date *date);
+void VillagerTown_SetNicknameDate(VillagerTown *town, const Date *date);
+int VillagerTown_IsFarFromNicknameDate(VillagerTown *town, const Date *date);
 void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record);
 int VillagerTown_FondestOf(VillagerTown *town, const void *player);
 void VillagerTown_PickFleaMarketVisitor(VillagerTown *town);

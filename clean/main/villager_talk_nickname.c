@@ -257,7 +257,7 @@ CLEAN_AS(func_0202a940, VillagerTalkNickname_OfferIfFond)
 
 /* func_0202aa04: a nickname picked for the current player (VillagerTalkNickname_Load with the
  * player's name, the name itself when none loads) and kept: in the talk's memory, with the
- * town's date at 0x404c set to today, or else in a memory of the player the villager makes;
+ * town's day of the last nickname (0x404c) set to today, or else in a memory of the player the villager makes;
  * then shown in the talk's slot 0. */
 void VillagerTalkNickname_Pick(VillagerTalk *talk)
 {
@@ -274,7 +274,7 @@ void VillagerTalkNickname_Pick(VillagerTalk *talk)
         Date today;
         Calendar_Today(&today);
         VillagerMemoryEntry_SetNickname(nickname_memory(talk), &nickname);
-        VillagerTown_SetDate404C(&data_021e5a2c, &today);
+        VillagerTown_SetNicknameDate(&data_021e5a2c, &today);
     } else {
         VillagerMemory_SetNickname(nickname_record(talk), &nickname, player);
     }
