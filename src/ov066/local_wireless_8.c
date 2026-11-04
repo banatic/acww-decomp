@@ -1,12 +1,18 @@
-/* func_ov066_0226748c @ 0x0226748c, 0xa4 bytes, ARM, module ov066
+/* local_wireless_8: 2 functions, module ov066
  * mwccarm 1.2/base -O4,p
+ * func_ov066_0226748c @ 0x0226748c, 0xa4 bytes, ARM
+ * func_ov066_02267404 @ 0x02267404, 0x88 bytes, ARM
  */
+
+struct OverlayState {
+    int pad_00;
+    int state;
+};
 
 extern int data_ov066_0226bdec;
 extern int (*data_ov066_0226bde8)(int, int);
 extern int (*data_ov066_0226bde4)(int);
 extern int data_ov066_0226bde0;
-
 extern int func_ov066_02266908(int, int);
 extern void func_ov066_02267530(int);
 extern void func_ov066_0226686c(int);
@@ -38,4 +44,20 @@ int func_ov066_0226748c(int r0, int (*r1)(int, int), int (*r2)(int), int r3)
         }
     }
     return 0;
+}
+
+int func_ov066_02267404(void)
+{
+    if ((*(struct OverlayState * *) &data_ov066_0226bdec)->state == 1) {
+        (*(struct OverlayState * *) &data_ov066_0226bdec)->state = 0;
+        func_ov066_022668c4((int) ((*(struct OverlayState * *) &data_ov066_0226bdec)));
+        data_ov066_0226bde8 = 0;
+        data_ov066_0226bde4 = 0;
+        data_ov066_0226bde0 = 0;
+        (*(struct OverlayState * *) &data_ov066_0226bdec) = 0;
+        return 1;
+    } else {
+        func_ov066_0226686c(0x44);
+        return 0;
+    }
 }
