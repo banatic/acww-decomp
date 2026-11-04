@@ -1,0 +1,96 @@
+/* villager_talk_part_11: 2 functions, module main
+ * mwccarm 1.2/base -O4,s
+ * func_02027230 @ 0x02027230, 0x90 bytes, Thumb
+ * func_020271a0 @ 0x020271a0, 0x90 bytes, Thumb
+ */
+
+struct UnkStruct_02027230 {
+    int a;
+    unsigned char b;
+};
+
+struct Param1 {
+    char pad_00[0x100];
+    void *unk_100;
+    char unk_104[0x1e];
+    unsigned char unk_122;
+    char pad_123[0x3d];
+    int flag160;
+};
+
+struct UnkStruct_02027230_2 {
+    void *ptr;
+    unsigned char byte;
+};
+
+struct UnkStruct_020271a0 {
+    int a;
+    unsigned char b;
+};
+
+struct UnkStruct_020271a0_2 {
+    void *ptr;
+    unsigned char byte;
+};
+
+extern struct UnkStruct_02027230 data_020c8de0;
+extern struct UnkStruct_02027230 data_020c8dd0;
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
+extern int func_0208150c(int);
+extern int func_020036e8(int);
+extern int func_0202da38(void *p1, void *p2, void *p3, int n, int a, int b, int c, int d, int e);
+extern struct UnkStruct_020271a0 data_020c8dc8;
+extern struct UnkStruct_020271a0 data_020c8db8;
+
+void func_02027230(struct Param1 *p, struct UnkStruct_02027230_2 *o)
+{
+    struct UnkStruct_02027230 *r4 = 0;
+    int v;
+    int tmp;
+
+    v = func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) p));
+
+    switch (v) {
+        case 0xa:
+            r4 = &data_020c8de0;
+            break;
+        case 0x13:
+            r4 = &data_020c8dd0;
+            break;
+    }
+
+    if (p->flag160 != 0 && r4 != 0) {
+        tmp = func_020036e8(func_0208150c(*(int *) ((char *) p->unk_100 + 0x830)));
+        func_0202da38(p, &p->unk_104, &p->unk_122, 0x1e, tmp, r4->a, r4->b, 0, 0);
+    }
+
+    o->ptr = &p->unk_104;
+    o->byte = p->unk_122;
+}
+
+void func_020271a0(struct Param1 *p, struct UnkStruct_020271a0_2 *o)
+{
+    struct UnkStruct_020271a0 *r4 = 0;
+    int v;
+    int tmp;
+
+    v = func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) p));
+
+    switch (v) {
+        case 0xa:
+            r4 = &data_020c8dc8;
+            break;
+        case 0x13:
+            r4 = &data_020c8db8;
+            break;
+    }
+
+    if (p->flag160 != 0 && r4 != 0) {
+        tmp = func_020036e8(func_0208150c(*(int *) ((char *) p->unk_100 + 0x830)));
+        func_0202da38(p, &p->unk_104, &p->unk_122, 0x1e, tmp, r4->a, r4->b, 0, 0);
+    }
+
+    o->ptr = &p->unk_104;
+    o->byte = p->unk_122;
+}
