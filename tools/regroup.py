@@ -13,6 +13,8 @@ Each file declared what it uses in its own way; in the unit every name is declar
 - `#include` lines and `#define`s go to the top, once; a type defined alike in several files is
   kept once. In C, a type that a later file defines differently is renamed in that file
   (`Name_<address>`); in C++ that could change the names the compiler emits, so it is refused.
+  A tagged struct or union a declaration defines (`extern struct S {...} *p;`) is such a type,
+  and the declaration names it (`extern struct S *p;`).
 - Every other declaration goes to the top, one per name: a unit function is declared by its
   definition, data the unit defines as it is defined, a function with a 64-bit result keeps it
   (the divide helpers' quotient and remainder), data as an array if any file declared it so
@@ -481,6 +483,16 @@ def items(body: str) -> list[Item]:
         elif flat.startswith("typedef") or re.match(r"(?:struct|union|enum|class)\s+\w*\s*(?:\{|;|:)", flat):
             ok = "{" not in flat or re.search(r"\}\s*\w*\s*;$", flat)
             out.append(Item("type" if ok else "other", lead, code, type_names(code) if ok else []))
+        elif tagged := re.match(r"extern\s+((?:(?:const|volatile)\s+)*)(struct|union)\s+(\w+)\s*\{",
+                                C.masked(code)):
+            # `extern struct Tag {...} *name;`: the type is defined at the top like any other,
+            # and the declaration names it (a cast to this file's type then names the tag
+            # instead of defining it a second time)
+            close = _matching(C.masked(code), tagged.end() - 1)
+            kw, tag = tagged.group(2), tagged.group(3)
+            out.append(Item("type", lead, code[tagged.start(2):close + 1] + ";\n", [f"{kw} {tag}"]))
+            for part in items(f"extern {tagged.group(1)}{kw} {tag}{code[close + 1:]}"):
+                out.append(dataclasses.replace(part, lead=""))
         elif "," in _depth0(flat):
             # several declarators: a declaration of names of one type is one declaration each
             one_each = split_declarators(code)

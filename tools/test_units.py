@@ -185,6 +185,25 @@ class Settle(unittest.TestCase):
         self.assertIn("((struct B *) func_02000000(x))->b + ((struct B *) func_02000000(x))[1].a", text)
         self.assertEqual(edited, ["func_ov097_022a2920"])
 
+    def test_struct_defined_in_a_declaration(self):
+        # `extern struct S {...} data;` in one file, an array in another: the struct is defined
+        # once at the top and the cast names its tag (a second definition would not compile)
+        text, edited = self.settle([
+            one(0x022a2900, "extern unsigned char data_02100000[];\n\n"
+                            "void func_ov097_022a2900(int x)\n{\n    data_02100000[3] = x;\n}\n"),
+            one(0x022a2910, "extern unsigned char data_02100000[];\n\n"
+                            "void func_ov097_022a2910(int x)\n{\n    data_02100000[4] = x;\n}\n"),
+            one(0x022a2920, "extern const struct S {\n    char a;\n    char b;\n} data_02100000;\n"
+                            "extern int (*data_02100010[])(struct S *);\n\n"
+                            "void func_ov097_022a2920(int x)\n{\n    data_02100000.b = x;\n}\n"),
+        ])
+        body = text[C.header_end(text):]
+        self.assertEqual(body.count("struct S {"), 1)
+        self.assertLess(body.index("struct S {"), body.index("extern int (*data_02100010[])(struct S *);"))
+        self.assertIn("extern unsigned char data_02100000[];\n", body)
+        self.assertIn("(*(const struct S *) data_02100000).b = x;", body)
+        self.assertEqual(edited, ["func_ov097_022a2920"])
+
     def test_struct_by_value(self):
         # a struct passed by value that another file names otherwise: no cast converts one
         # struct type to another, so the argument object is read as the unit's type
