@@ -65,7 +65,7 @@ static_assert(offsetof(Spawner, overlay) == 0x74 && sizeof(Spawner) == 0x78, "sp
 #define PLAYER_BIT_18 0x18
 #define PLAYER_FLAG_1 1
 #define PLAYER_FLAG_23 0x23
-#define OBJECT_FLAG_8 8
+#define OBJECT_FLAG_GOLDEN_TOOL_DUE 8
 
 /* What the placers look for on the map (AcreTile_FindItemAllFlags): a building of the codes
  * 0x5014-0x501a in a tile with flag 1, or building 0x5000 in a tile with flag 0x200. */
@@ -717,7 +717,7 @@ CLEAN_AS(func_02084840, Spawner_CheckProfile56In)
  * data_021d27ac is set, neither sound flag is set and the player lacks flag 1. */
 int Spawner_Profile56Allowed(void)
 {
-    return !in_session() && Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), OBJECT_FLAG_8) != 0 &&
+    return !in_session() && Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), OBJECT_FLAG_GOLDEN_TOOL_DUE) != 0 &&
            !Spawner_SoundFlagSet() && !Spawner_PlayerHasFlag1();
 }
 CLEAN_AS(func_02084890, Spawner_Profile56Allowed)

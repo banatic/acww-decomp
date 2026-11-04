@@ -9476,7 +9476,8 @@ void FieldActor_EnterState3C(FieldActor *actor, const StateRequest *request, int
         FieldActor_PlayAnimationOnce(actor, 0x35, 0, 0);
     }
     actor->unk_7F8 = 0;
-    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 0) || Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 5)) {
+    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF) ||
+        Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE)) {
         if (is_local_player(actor)) {
             Music_AddValue(0x12, 0xf, 0);
         }
@@ -9557,7 +9558,7 @@ void FieldActor_EndState3B(FieldActor *actor)
         case 2: {
             void *session = data_020ccf94;
             if (Session_IsLocalPlayer(session, actor->player)) {
-                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), 0);
+                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF);
             }
             if (!Block020b220c_Flag4b1c()) {
                 FieldActor_RequestState76(actor, 2, 0, 0, 6, -1);
@@ -9579,7 +9580,7 @@ void FieldActor_EndState3B(FieldActor *actor)
         }
         case 3:
             if (is_local_player(actor)) {
-                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), 5);
+                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE);
                 PlayerRecord_ClearFlag(PlayerRecords_Current(), 1);
                 BoardNotices_Update();
             }
@@ -9680,9 +9681,9 @@ void FieldActor_EnterState3B(FieldActor *actor, const StateRequest *request, int
         if (!SceneQuery_Current() && record != NULL && PlayerRecord_TestFlag(record, 0x23) &&
             (SceneKinds_IsHouseRoom(SceneQuery_Previous()) || SceneQuery_Previous() == 6)) {
             kind = 1;
-        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 0)) {
+        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF)) {
             kind = 2;
-        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), 5)) {
+        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE)) {
             kind = 3;
         }
     } else {

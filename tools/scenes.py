@@ -372,7 +372,7 @@ SAVES = {
 
     # as "catalog-full" (its first bytes mark every fish and insect had, ItemRecord_HasAllFish and
     # _HasAllInsects) with item 0x37e0 in pocket 0: the turtle of overlay 80 comes (flag 8 of
-    # main/block_021d27ac.c, Block021d27ac_NoteCollections, on a day without event 8), asks for that
+    # main/block_021d27ac.c, Block021d27ac_NoteGoldenToolDue, on a day without event 8), asks for that
     # item and gives the golden rod and net (ov080/turtle_talk.h)
     "turtle": CATALOG_FULL + [(POCKETS, "<H", 0x37E0)],
 

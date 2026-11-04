@@ -2,8 +2,21 @@
  * __sinit_020c6194): a word of flags and seven parts whose own functions (0x02087a64 to
  * 0x020881a8) set them up. The spawner's placers and checks read parts 0x04, 0x0c, 0x24, 0x30
  * and 0x31 (spawner.h); StateBlock_FinishStart resets the object (Block021d27ac_Reset) and sets
- * flag 8 when the player qualifies (Block021d27ac_NoteCollections). Overlays test and change
- * flags 0, 5, 7 and 9.
+ * flag 8 when the player qualifies (Block021d27ac_NoteGoldenToolDue).
+ *
+ * The flags, each named by its writer:
+ *   0  the house loan paid off (ov054 post_clerk_talk.c); ov003's field actor then takes the
+ *      player's walk out as kind 2
+ *   1  the gardens judged (ov083 turtle_gardens_talk.c)
+ *   2, 3  the fireworks turtle's greeting and fortune (ov084), 4 the countdown turtle's fortune
+ *      (ov086)
+ *   5  Nook's part-time job done (ov050 NookClerkTalk_JobEnd); the player walks out as kind 3
+ *   7  the barber paid (ov053)
+ *   8  a golden tool due: the player has every fish without the golden rod 0x1375 or every
+ *      insect without the golden net 0x1377 (player flags 0x21, 0x22), so the spawner makes the
+ *      turtle that hands it over (ov080 turtle_talk.h, Spawner_Profile56Allowed)
+ *   9  the owl's greeting (ov047 owl_talk.c)
+ *   10 the giraffe not paid (ov070 giraffe_talk.c)
  *
  * The flag functions take a word of 32 flags; a flag of 32 or more is never set. */
 #ifndef CLEAN_MAIN_BLOCK_021D27AC_H
@@ -12,7 +25,9 @@
 #include "types.h"
 
 #define BLOCK_021D27AC_FLAGS 32
-#define BLOCK_021D27AC_FLAG_8 8 /* see Block021d27ac_NoteCollections */
+#define BLOCK_021D27AC_FLAG_LOAN_PAID_OFF 0
+#define BLOCK_021D27AC_FLAG_NOOK_JOB_DONE 5
+#define BLOCK_021D27AC_FLAG_GOLDEN_TOOL_DUE 8 /* see Block021d27ac_NoteGoldenToolDue */
 
 /* The parts' sizes are the distances between them; the last ends before data_021d27e0. */
 typedef struct Block021d27ac {
@@ -27,7 +42,7 @@ typedef struct Block021d27ac {
 } Block021d27ac;
 
 Block021d27ac *Block021d27ac_Get(void);
-void Block021d27ac_NoteCollections(Block021d27ac *self);
+void Block021d27ac_NoteGoldenToolDue(Block021d27ac *self);
 u8 *Block021d27ac_Part04(Block021d27ac *self);
 u8 *Block021d27ac_Part31(Block021d27ac *self);
 u8 *Block021d27ac_Part24(Block021d27ac *self);

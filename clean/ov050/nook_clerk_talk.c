@@ -1171,7 +1171,7 @@ void NookClerkTalk_JobLead(NookClerkTalk *talk, int unused)
 CLEAN_AS(func_ov050_02262618, NookClerkTalk_JobLead)
 
 /* func_ov050_02262628 (the job's ends of lines 0x35 and 0x36, the job done): the errand step
- * ended, the player no longer at work, main's block's flag 5 set, and the date of the player
+ * ended, the player no longer at work, main's block's flag 5 (the job done) set, and the date of the player
  * record's field 0x2416 today. */
 void NookClerkTalk_JobEnd(int unused, int part)
 {
@@ -1180,7 +1180,7 @@ void NookClerkTalk_JobEnd(int unused, int part)
     u8 *record = PlayerRecords_Current();
     PlayerRecord_ClearFlag(record, NOOK_CLERK_TALK_JOB_FLAG);
     PlayerField2416 *field = (PlayerField2416 *) (void *) PlayerRecord_Field2416(record);
-    Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Get(), 5);
+    Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE);
     PlayerField2416_SetJobEndToday(field);
 }
 CLEAN_AS(func_ov050_02262628, NookClerkTalk_JobEnd)

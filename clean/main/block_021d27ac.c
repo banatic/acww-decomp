@@ -25,11 +25,11 @@ extern Block021d27ac data_021d27ac;
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
-/* The player record's flags Block021d27ac_NoteCollections reads (PlayerRecord_TestFlag). */
-#define BLOCK_021D27AC_PLAYER_FLAG_1 1
-#define BLOCK_021D27AC_PLAYER_FLAG_21 0x21 /* read with the fish */
-#define BLOCK_021D27AC_PLAYER_FLAG_22 0x22 /* read with the insects */
-#define BLOCK_021D27AC_EVENT_8 8           /* func_0203fc78's event */
+/* The player record's flags Block021d27ac_NoteGoldenToolDue reads (PlayerRecord_TestFlag). */
+#define BLOCK_021D27AC_PLAYER_FLAG_NOOK_JOB 1      /* working for Nook (ov050 NOOK_CLERK_TALK_JOB_FLAG) */
+#define BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_ROD 0x21 /* the golden rod 0x1375 had (ov080) */
+#define BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_NET 0x22 /* the golden net 0x1377 had (ov080) */
+#define BLOCK_021D27AC_EVENT_8 8                   /* func_0203fc78's event */
 
 /* The part at `offset`, computed from the address only. */
 static u8 *block_021d27ac_part(Block021d27ac *self, size_t offset)
@@ -44,10 +44,11 @@ Block021d27ac *Block021d27ac_Get(void)
 }
 CLEAN_AS(func_0208602c, Block021d27ac_Get)
 
-/* func_02086034: flag 8 set when the current player has a name (func_020951bc), lacks player
- * flag 1, and has every fish without player flag 0x21 or every insect without player flag
- * 0x22, while event 8 is not on now. */
-void Block021d27ac_NoteCollections(Block021d27ac *self)
+/* func_02086034: flag 8 (a golden tool due) set when the current player has a name
+ * (func_020951bc), is not working for Nook (player flag 1), and has every fish without having had
+ * the golden rod (player flag 0x21) or every insect without the golden net (0x22), while event 8
+ * is not on now. */
+void Block021d27ac_NoteGoldenToolDue(Block021d27ac *self)
 {
     u8 *record = PlayerRecords_Current();
     if (record == NULL) {
@@ -56,11 +57,11 @@ void Block021d27ac_NoteCollections(Block021d27ac *self)
     if (PlayerId_IsSet(PlayerRecord_Player(record)) == 0) {
         return;
     }
-    if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_1) != 0) {
+    if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_NOOK_JOB) != 0) {
         return;
     }
-    if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_21) != 0 || ItemRecord_HasAllFish() == 0) {
-        if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_22) != 0 || ItemRecord_HasAllInsects() == 0) {
+    if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_ROD) != 0 || ItemRecord_HasAllFish() == 0) {
+        if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_NET) != 0 || ItemRecord_HasAllInsects() == 0) {
             return;
         }
     }
@@ -71,9 +72,9 @@ void Block021d27ac_NoteCollections(Block021d27ac *self)
     if (EventCalendar_State(BLOCK_021D27AC_EVENT_8, &copy, 0) != 0) {
         return;
     }
-    Block021d27ac_SetFlag(&self->flags, BLOCK_021D27AC_FLAG_8);
+    Block021d27ac_SetFlag(&self->flags, BLOCK_021D27AC_FLAG_GOLDEN_TOOL_DUE);
 }
-CLEAN_AS(func_02086034, Block021d27ac_NoteCollections)
+CLEAN_AS(func_02086034, Block021d27ac_NoteGoldenToolDue)
 
 /* func_020860b8 */
 u8 *Block021d27ac_Part04(Block021d27ac *self)

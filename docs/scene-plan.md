@@ -722,7 +722,7 @@ What reading the Clean code found about the groups above; counts are of function
   talk has two choices; "I will draw it" opens the design editor (ov123, its town-design paths)
   and then the keyboard (ov126) for the face's theme; she keeps the design in the record.
 - The turtle of overlay 80 stands by the player's house while a player has every fish or every
-  insect and has not had the golden rod or net (Block021d27ac_NoteCollections, flag 8, on a day
+  insect and has not had the golden rod or net (Block021d27ac_NoteGoldenToolDue, flag 8, on a day
   without event 8): the catalog-full save qualifies. He asks for item 0x37e0 (a massage chair)
   when the pockets hold it and gives item 0x1559 for it, then the golden rod and net, each held
   up (field actor state 0x76): save turtle, scene turtle. The gardening event's turtle (ov083)

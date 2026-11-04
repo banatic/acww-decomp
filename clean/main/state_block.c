@@ -170,7 +170,7 @@ void StateBlock_FinishStart(StateBlock *block)
     TownTune_Load((const TownTunePacked *) (void *) block->part_173c0);
     MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()));
     NearSpot_Clear((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
-    Block021d27ac_NoteCollections(Block021d27ac_Get());
+    Block021d27ac_NoteGoldenToolDue(Block021d27ac_Get());
     TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()));
     CatchPanel_Start((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel(), 0, 1);
     BatteryWarning_Reset();
