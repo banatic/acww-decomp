@@ -9,7 +9,8 @@
 extern const DayWindow data_020cd4ac[6];
 /* The last day of each star sign, in enum StarSign order. */
 extern const MonthDay data_020cd494[12];
-/* Where each of the five groups starts in a flat numbering of 32 (0, 2, 14, 16, 20). */
+/* Where each of the five furniture taste attributes (item_attributes.h) starts in the 32 lines
+ * of st_furniture_taste (0, 2, 14, 16, 20). */
 extern const u8 data_020cd424[5];
 /* Three bytes for each of the 38 items of kind 0xd. */
 extern const u8 data_020cd550[38][3];

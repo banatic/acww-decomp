@@ -54,28 +54,28 @@ static int always_flag(const FurnitureAlways *record, int bit)
     return record != NULL ? (record->flags >> bit) & 1 : 0;
 }
 
-/* func_020534ec: how many numbers are in `group`.
+/* func_020534ec: how many numbers are in series `group`.
  * QUIRK: each number's code with variant 0 is made and dropped. The count is kept in 8 bits. */
-u8 FurnitureInfo_CountInGroup(u32 group)
+u8 FurnitureInfo_CountInSeries(u32 group)
 {
     u8 count = 0;
     for (u32 number = 0; number < FURNITURE_INFO_NUMBERS; number++) {
         (void) ItemCode_MakeVariant((int) number, 0);
-        if (group == FurnitureInfo_Group((int) number)) {
+        if (group == FurnitureInfo_Series((int) number)) {
             count++;
         }
     }
     return count;
 }
-CLEAN_AS(func_020534ec, FurnitureInfo_CountInGroup)
+CLEAN_AS(func_020534ec, FurnitureInfo_CountInSeries)
 
-/* func_0205352c: how many numbers below the item's are in the item's group (its place in its
- * group); 0 when no number matches the item. Each number is made into a code with variant 0 and
+/* func_0205352c: how many numbers below the item's are in the item's series (its place in its
+ * series); 0 when no number matches the item. Each number is made into a code with variant 0 and
  * compared with the item by number (or by code, for a code without a variant, which never
  * happens). The count is cut to 8 bits. */
-u8 FurnitureInfo_IndexInGroup(const ItemCode *item)
+u8 FurnitureInfo_IndexInSeries(const ItemCode *item)
 {
-    int group = FurnitureInfo_ItemGroup(item);
+    int group = FurnitureInfo_ItemSeries(item);
     int count = 0;
     for (u32 number = 0; number < FURNITURE_INFO_NUMBERS; number++) {
         ItemCode code = ItemCode_MakeVariant((int) number, 0);
@@ -89,13 +89,13 @@ u8 FurnitureInfo_IndexInGroup(const ItemCode *item)
         if (found) {
             return (u8) count;
         }
-        if (group == FurnitureInfo_Group((int) number)) {
+        if (group == FurnitureInfo_Series((int) number)) {
             count++;
         }
     }
     return 0;
 }
-CLEAN_AS(func_0205352c, FurnitureInfo_IndexInGroup)
+CLEAN_AS(func_0205352c, FurnitureInfo_IndexInSeries)
 
 /* func_020535b4: how many of the fossils are of `kind`. */
 int FurnitureInfo_CountFossilKind(int kind)
@@ -264,18 +264,19 @@ u8 FurnitureInfo_Category(int number)
 CLEAN_AS(func_020539b0, FurnitureInfo_Category)
 
 /* func_020539e4 */
-int FurnitureInfo_ItemFlagBits23(const ItemCode *item)
+int FurnitureInfo_ItemFeel(const ItemCode *item)
 {
     if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_FlagBits23(ItemCode_VariantItem(item));
+        return FurnitureInfo_Feel(ItemCode_VariantItem(item));
     }
     return 0;
 }
-CLEAN_AS(func_020539e4, FurnitureInfo_ItemFlagBits23)
+CLEAN_AS(func_020539e4, FurnitureInfo_ItemFeel)
 
-/* func_02053a04: 1 when bit 2 of FurnitureAlways.flags is set, else 2 when bit 3 is, else 0.
+/* func_02053a04: the piece's feel, 1 quiet (bit 2 of FurnitureAlways.flags), else 2 cute (bit
+ * 3), else 0.
  * The record is looked up twice, both times before bit 2 is tested. */
-int FurnitureInfo_FlagBits23(int number)
+int FurnitureInfo_Feel(int number)
 {
     const FurnitureAlways *first = always_record(number);
     int bit2 = always_flag(first, 2);
@@ -288,21 +289,22 @@ int FurnitureInfo_FlagBits23(int number)
     }
     return 0;
 }
-CLEAN_AS(func_02053a04, FurnitureInfo_FlagBits23)
+CLEAN_AS(func_02053a04, FurnitureInfo_Feel)
 
 /* func_02053a88 */
-int FurnitureInfo_ItemFlagBits01(const ItemCode *item)
+int FurnitureInfo_ItemEra(const ItemCode *item)
 {
     if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_FlagBits01(ItemCode_VariantItem(item));
+        return FurnitureInfo_Era(ItemCode_VariantItem(item));
     }
     return 0;
 }
-CLEAN_AS(func_02053a88, FurnitureInfo_ItemFlagBits01)
+CLEAN_AS(func_02053a88, FurnitureInfo_ItemEra)
 
-/* func_02053aa8: 1 when bit 0 of FurnitureAlways.flags is set, else 2 when bit 1 is, else 0.
+/* func_02053aa8: the piece's era, 1 modern (bit 0 of FurnitureAlways.flags), else 2
+ * old-fashioned (bit 1), else 0.
  * The record is looked up twice, both times before bit 0 is tested. */
-int FurnitureInfo_FlagBits01(int number)
+int FurnitureInfo_Era(int number)
 {
     const FurnitureAlways *first = always_record(number);
     int bit0 = always_flag(first, 0);
@@ -315,7 +317,7 @@ int FurnitureInfo_FlagBits01(int number)
     }
     return 0;
 }
-CLEAN_AS(func_02053aa8, FurnitureInfo_FlagBits01)
+CLEAN_AS(func_02053aa8, FurnitureInfo_Era)
 
 /* func_02053b2c: bit 4 of FurnitureAlways.flags. */
 int FurnitureInfo_FlagBit4(int number)
@@ -325,22 +327,22 @@ int FurnitureInfo_FlagBit4(int number)
 CLEAN_AS(func_02053b2c, FurnitureInfo_FlagBit4)
 
 /* func_02053b6c */
-int FurnitureInfo_ItemUnk03(const ItemCode *item)
+int FurnitureInfo_ItemTheme(const ItemCode *item)
 {
     if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Unk03(ItemCode_VariantItem(item));
+        return FurnitureInfo_Theme(ItemCode_VariantItem(item));
     }
     return 0;
 }
-CLEAN_AS(func_02053b6c, FurnitureInfo_ItemUnk03)
+CLEAN_AS(func_02053b6c, FurnitureInfo_ItemTheme)
 
-/* func_02053b8c: FurnitureAlways.unk_03. */
-int FurnitureInfo_Unk03(int number)
+/* func_02053b8c: FurnitureAlways.theme. */
+int FurnitureInfo_Theme(int number)
 {
     const FurnitureAlways *record = always_record(number);
-    return record != NULL ? record->unk_03 : 0;
+    return record != NULL ? record->theme : 0;
 }
-CLEAN_AS(func_02053b8c, FurnitureInfo_Unk03)
+CLEAN_AS(func_02053b8c, FurnitureInfo_Theme)
 
 /* func_02053bc0 */
 int FurnitureInfo_ItemShape(const ItemCode *item)
@@ -379,38 +381,38 @@ u8 FurnitureInfo_ListGroup(int number)
 CLEAN_AS(func_02053c34, FurnitureInfo_ListGroup)
 
 /* func_02053c68 */
-int FurnitureInfo_ItemGroup(const ItemCode *item)
+int FurnitureInfo_ItemSeries(const ItemCode *item)
 {
     if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Group(ItemCode_VariantItem(item));
+        return FurnitureInfo_Series(ItemCode_VariantItem(item));
     }
     return 0;
 }
-CLEAN_AS(func_02053c68, FurnitureInfo_ItemGroup)
+CLEAN_AS(func_02053c68, FurnitureInfo_ItemSeries)
 
-/* func_02053c88: FurnitureAlways.group. */
-u8 FurnitureInfo_Group(int number)
+/* func_02053c88: FurnitureAlways.series. */
+u8 FurnitureInfo_Series(int number)
 {
     const FurnitureAlways *record = always_record(number);
-    return record != NULL ? record->group : 0;
+    return record != NULL ? record->series : 0;
 }
-CLEAN_AS(func_02053c88, FurnitureInfo_Group)
+CLEAN_AS(func_02053c88, FurnitureInfo_Series)
 
-/* func_02053cbc: FurnitureAlways.unk_02. */
-int FurnitureInfo_Unk02(int number)
+/* func_02053cbc: FurnitureAlways.color_b. */
+int FurnitureInfo_ColorB(int number)
 {
     const FurnitureAlways *record = always_record(number);
-    return record != NULL ? record->unk_02 : 0;
+    return record != NULL ? record->color_b : 0;
 }
-CLEAN_AS(func_02053cbc, FurnitureInfo_Unk02)
+CLEAN_AS(func_02053cbc, FurnitureInfo_ColorB)
 
-/* func_02053cf0: FurnitureAlways.unk_01. */
-int FurnitureInfo_Unk01(int number)
+/* func_02053cf0: FurnitureAlways.color_a. */
+int FurnitureInfo_ColorA(int number)
 {
     const FurnitureAlways *record = always_record(number);
-    return record != NULL ? record->unk_01 : 0;
+    return record != NULL ? record->color_a : 0;
 }
-CLEAN_AS(func_02053cf0, FurnitureInfo_Unk01)
+CLEAN_AS(func_02053cf0, FurnitureInfo_ColorA)
 
 /* func_02053d24: FurnitureDma.unk_1e, with 0xff (none) read as -1. */
 int FurnitureInfo_DmaUnk1E(int number)

@@ -8,11 +8,11 @@
 
 /* The attributes ItemAttributes_Match compares. */
 enum {
-    ITEM_ATTRIBUTE_0 = 0, /* func_020539e4 */
-    ITEM_ATTRIBUTE_1 = 1, /* func_02053cf0 and func_02053cbc of the item without its variant */
-    ITEM_ATTRIBUTE_2 = 2, /* func_02053a88 */
-    ITEM_ATTRIBUTE_3 = 3, /* func_02053b6c */
-    ITEM_ATTRIBUTE_4 = 4  /* func_02053c68 */
+    ITEM_ATTRIBUTE_FEEL = 0,  /* func_020539e4 */
+    ITEM_ATTRIBUTE_COLOR = 1, /* func_02053cf0 and func_02053cbc of the item without its variant */
+    ITEM_ATTRIBUTE_ERA = 2,   /* func_02053a88 */
+    ITEM_ATTRIBUTE_THEME = 3, /* func_02053b6c */
+    ITEM_ATTRIBUTE_SERIES = 4 /* func_02053c68 */
 };
 /* What a match is worth: a whole one, or each of attribute 1's two halves. */
 #define ITEM_ATTRIBUTES_FULL 2
@@ -38,33 +38,33 @@ int ItemAttributes_Match(u16 *item, int attribute, int value)
         return score;
     }
     switch (attribute) {
-        case ITEM_ATTRIBUTE_0:
-            if (value == FurnitureInfo_ItemFlagBits23(item)) {
+        case ITEM_ATTRIBUTE_FEEL:
+            if (value == FurnitureInfo_ItemFeel(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;
-        case ITEM_ATTRIBUTE_1: {
+        case ITEM_ATTRIBUTE_COLOR: {
             int base = ItemCode_VariantItem(item);
-            if (value == FurnitureInfo_Unk01(base)) {
+            if (value == FurnitureInfo_ColorA(base)) {
                 score = ITEM_ATTRIBUTES_HALF;
             }
-            if (value == FurnitureInfo_Unk02(base)) {
+            if (value == FurnitureInfo_ColorB(base)) {
                 score += ITEM_ATTRIBUTES_HALF;
             }
             break;
         }
-        case ITEM_ATTRIBUTE_2:
-            if (value == FurnitureInfo_ItemFlagBits01(item)) {
+        case ITEM_ATTRIBUTE_ERA:
+            if (value == FurnitureInfo_ItemEra(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;
-        case ITEM_ATTRIBUTE_3:
-            if (value == FurnitureInfo_ItemUnk03(item)) {
+        case ITEM_ATTRIBUTE_THEME:
+            if (value == FurnitureInfo_ItemTheme(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;
-        case ITEM_ATTRIBUTE_4:
-            if (value == FurnitureInfo_ItemGroup(item)) {
+        case ITEM_ATTRIBUTE_SERIES:
+            if (value == FurnitureInfo_ItemSeries(item)) {
                 score = ITEM_ATTRIBUTES_FULL;
             }
             break;

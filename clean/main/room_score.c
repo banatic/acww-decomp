@@ -21,7 +21,7 @@ static_assert(sizeof(RoomScoreRoom) == 0x14, "RoomScoreRoom size");
 
 #define ROOM_SCORE_TILES 16 /* a room's acre is 16 x 16 tiles */
 #define ROOM_SCORE_LAYERS 2
-/* The distinct pieces RoomScore_FlagBitsBonus and RoomScore_ColorBonus keep apart. */
+/* The distinct pieces RoomScore_EraFeelBonus and RoomScore_ColorBonus keep apart. */
 #define ROOM_SCORE_DISTINCT 0x18
 #define ROOM_SCORE_NO_PIECE 0xffff
 /* Below this many pieces the shares are not looked at. */
@@ -293,14 +293,14 @@ static void count_theme(void *context, u16 *item, u32 x, u32 z)
     (void) x;
     (void) z;
     if (ItemCode_HasVariant(item)) {
-        counts[FurnitureInfo_ItemUnk03(item)]++;
+        counts[FurnitureInfo_ItemTheme(item)]++;
     }
 }
 
-/* func_0205a7d4: 400 for each piece of each value 0-3 of FurnitureInfo_ItemUnk03 that 8 or
+/* func_0205a7d4: 400 for each piece of each value 0-3 of FurnitureInfo_ItemTheme that 8 or
  * more pieces of the room have (value 4 counts for nothing); *theme is set to the last such
  * value.
- * REQUIRES: FurnitureInfo_ItemUnk03 is below 5. */
+ * REQUIRES: FurnitureInfo_ItemTheme is below 5. */
 int RoomScore_ThemeBonus(RoomScoreRoom *room, AcreMap *map, int *theme)
 {
     u8 counts[ROOM_SCORE_THEMES];
@@ -360,10 +360,10 @@ static int share_bonus(const u16 *ids, const u8 *histogram, u32 count, int *cate
 }
 
 /* func_0205a87c: the bonuses of the shares of the room's furniture by
- * FurnitureInfo_ItemFlagBits01 (*first) and by FurnitureInfo_ItemFlagBits23 (*second), each
+ * FurnitureInfo_ItemEra (*first) and by FurnitureInfo_ItemFeel (*second), each
  * for 10 or more pieces.
  * REQUIRES: both values are below 3. */
-int RoomScore_FlagBitsBonus(RoomScoreRoom *room, AcreMap *map, int *first, int *second)
+int RoomScore_EraFeelBonus(RoomScoreRoom *room, AcreMap *map, int *first, int *second)
 {
     u8 first_histogram[3];
     u8 second_histogram[3];
@@ -372,17 +372,17 @@ int RoomScore_FlagBitsBonus(RoomScoreRoom *room, AcreMap *map, int *first, int *
     MI_CpuFill8(second_histogram, 0, sizeof(second_histogram));
 
     clear_distinct(ids);
-    ShareCount s = {ids, first_histogram, FurnitureInfo_ItemFlagBits01, 0};
+    ShareCount s = {ids, first_histogram, FurnitureInfo_ItemEra, 0};
     scan_room(room, map, count_share, &s);
     int score = share_bonus(ids, first_histogram, s.count, first);
 
     clear_distinct(ids);
-    ShareCount t = {ids, second_histogram, FurnitureInfo_ItemFlagBits23, 0};
+    ShareCount t = {ids, second_histogram, FurnitureInfo_ItemFeel, 0};
     scan_room(room, map, count_share, &t);
     score += share_bonus(ids, second_histogram, t.count, second);
     return score;
 }
-CLEAN_AS(func_0205a87c, RoomScore_FlagBitsBonus)
+CLEAN_AS(func_0205a87c, RoomScore_EraFeelBonus)
 
 #define ROOM_SCORE_COLORS_COUNT 13
 
@@ -402,15 +402,15 @@ static void count_colors(void *context, u16 *item, u32 x, u32 z)
     }
     int number = ItemCode_VariantItem(item);
     keep_distinct(c->ids, number);
-    int first = FurnitureInfo_Unk01(number);
-    int second = FurnitureInfo_Unk02(number);
+    int first = FurnitureInfo_ColorA(number);
+    int second = FurnitureInfo_ColorB(number);
     c->counts[first]++;
     c->counts[second]++;
     c->count++;
 }
 
-/* func_0205ab10: for 10 or more pieces of furniture, each with two values (FurnitureInfo_Unk01
- * and _Unk02): the first value 1-12 with 90% of the values gives 600 per distinct piece, else
+/* func_0205ab10: for 10 or more pieces of furniture, each with two values (FurnitureInfo_ColorA
+ * and _ColorB): the first value 1-12 with 90% of the values gives 600 per distinct piece, else
  * the first with 70% 200; else 0.
  * QUIRK: the values are looked at in order, and the first one with 70% ends the search even
  * when a later one has 90%.
@@ -479,7 +479,7 @@ static void mark_category(void *context, u16 *item, u32 x, u32 z)
     }
     int number = ItemCode_VariantItem(item);
     int category = FurnitureInfo_Category(number);
-    int group = FurnitureInfo_Group(number);
+    int group = FurnitureInfo_Series(number);
     u32 bit = 0;
     if (category == 1) {
         bit = 1;
@@ -516,9 +516,9 @@ static void mark_piece(void *context, u16 *item, u32 x, u32 z)
     if (!ItemCode_HasVariant(item)) {
         return;
     }
-    int group = FurnitureInfo_ItemGroup(item);
+    int group = FurnitureInfo_ItemSeries(item);
     if (ItemInfo_SeriesKind(group) == g->kind) {
-        g->bits[group] |= (u16) (1u << FurnitureInfo_IndexInGroup(item));
+        g->bits[group] |= (u16) (1u << FurnitureInfo_IndexInSeries(item));
     }
 }
 
@@ -550,7 +550,7 @@ int RoomScore_Kind2Sets(RoomScoreRoom *room, AcreMap *map)
         if (ItemInfo_SeriesKind((int) k) != ROOM_SCORE_GROUP_KIND2) {
             continue;
         }
-        u32 count = FurnitureInfo_CountInGroup(k);
+        u32 count = FurnitureInfo_CountInSeries(k);
         if (g.bits[k] >= group_mask(count)) {
             found = 1;
             raise_group(k, 1000 * count);
@@ -575,7 +575,7 @@ int RoomScore_Kind1Sets(RoomScoreRoom *room, AcreMap *map)
         if (ItemInfo_SeriesKind((int) i) != ROOM_SCORE_GROUP_KIND1) {
             continue;
         }
-        u32 count = FurnitureInfo_CountInGroup(i);
+        u32 count = FurnitureInfo_CountInSeries(i);
         int matches = i == wallpaper_group && i == carpet_group;
         if (g.bits[i] >= group_mask(count)) {
             if (matches) {
@@ -720,7 +720,7 @@ static u16 kind0_flag(u32 score)
 
 /* func_0205b270: the score of rooms `first_index` to `first_index + count - 1` of `source`,
  * each measured into `room` (its bounds, wallpaper and carpet): the furniture's points, the
- * edges, the colours, the flag bits' shares (*first, *second), the themes (*theme), less the
+ * edges, the colours, the eras' and feels' shares (*first, *second), the themes (*theme), less the
  * penalty, plus each group's best (data_021c9854), 5000 when one group has all four
  * categories (1000 when the rooms have them only together), and 7777 for each special item;
  * never below 0. `*bonuses` gets the bonuses found (ROOM_SCORE_*), and a random group of kind
@@ -778,7 +778,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         points += RoomScore_ItemPoints(room, map);
         edges_score += RoomScore_EdgeBonus(room, &edges);
         colors += RoomScore_ColorBonus(room, map);
-        flag_bits += RoomScore_FlagBitsBonus(room, map, first, second);
+        flag_bits += RoomScore_EraFeelBonus(room, map, first, second);
         themes += RoomScore_ThemeBonus(room, map, theme);
         u8 faces = 0;
         u8 loose_items = 0;
@@ -1260,10 +1260,10 @@ static void count_inside(void *context, u16 *item, u32 x, u32 z)
         }
     }
     if (inside) {
-        if (c->value == FurnitureInfo_Unk01(number)) {
+        if (c->value == FurnitureInfo_ColorA(number)) {
             c->count++;
         }
-        if (c->value == FurnitureInfo_Unk02(number)) {
+        if (c->value == FurnitureInfo_ColorB(number)) {
             c->count++;
         }
     }

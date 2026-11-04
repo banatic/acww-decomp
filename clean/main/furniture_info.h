@@ -19,14 +19,14 @@
 
 /* A record of always.bin. */
 typedef struct FurnitureAlways {
-    u8 group;      /* 0x00: FurnitureInfo_CountInGroup counts the numbers sharing it */
-    u8 unk_01;     /* 0x01 */
-    u8 unk_02;     /* 0x02 */
-    u8 unk_03;     /* 0x03 */
+    u8 series;     /* 0x00: its series or set (0-11 the ten-piece series, st_furniture_taste) */
+    u8 color_a;    /* 0x01: its two colours, 1-11 and 12 colourful (0 none) */
+    u8 color_b;    /* 0x02 */
+    u8 theme;      /* 0x03: 0 instrument, 1 painting, 2 model, 3 plant, 4 none */
     u8 list_group; /* 0x04: the item list group (ItemInfoAlways.list_group) */
     u8 shape;      /* 0x05: the footprint's shape (item_footprint.h) */
     u8 category;   /* 0x06 */
-    u8 flags;      /* 0x07: bits 0-4 */
+    u8 flags;      /* 0x07: bits 0-1 the era, 2-3 the feel (FurnitureInfo_Era, _Feel); bit 4 */
 } FurnitureAlways;
 
 /* A record of indoor.bin. */
@@ -57,8 +57,8 @@ enum FurnitureLightKind {
     FURNITURE_LIGHT_BIT5 = 2,
 };
 
-u8 FurnitureInfo_CountInGroup(u32 group);
-u8 FurnitureInfo_IndexInGroup(const ItemCode *item);
+u8 FurnitureInfo_CountInSeries(u32 group);
+u8 FurnitureInfo_IndexInSeries(const ItemCode *item);
 int FurnitureInfo_CountFossilKind(int kind);
 int FurnitureInfo_FossilKind(const ItemCode *item);
 u8 FurnitureInfo_Kind(int number);
@@ -77,21 +77,21 @@ int FurnitureInfo_IndoorBit0(int number);
 int FurnitureInfo_DmaUnk1A(int number);
 int FurnitureInfo_ItemCategory(const ItemCode *item);
 u8 FurnitureInfo_Category(int number);
-int FurnitureInfo_ItemFlagBits23(const ItemCode *item);
-int FurnitureInfo_FlagBits23(int number);
-int FurnitureInfo_ItemFlagBits01(const ItemCode *item);
-int FurnitureInfo_FlagBits01(int number);
+int FurnitureInfo_ItemFeel(const ItemCode *item);
+int FurnitureInfo_Feel(int number);
+int FurnitureInfo_ItemEra(const ItemCode *item);
+int FurnitureInfo_Era(int number);
 int FurnitureInfo_FlagBit4(int number);
-int FurnitureInfo_ItemUnk03(const ItemCode *item);
-int FurnitureInfo_Unk03(int number);
+int FurnitureInfo_ItemTheme(const ItemCode *item);
+int FurnitureInfo_Theme(int number);
 int FurnitureInfo_ItemShape(const ItemCode *item);
 u8 FurnitureInfo_Shape(int number);
 int FurnitureInfo_ItemListGroup(const ItemCode *item);
 u8 FurnitureInfo_ListGroup(int number);
-int FurnitureInfo_ItemGroup(const ItemCode *item);
-u8 FurnitureInfo_Group(int number);
-int FurnitureInfo_Unk02(int number);
-int FurnitureInfo_Unk01(int number);
+int FurnitureInfo_ItemSeries(const ItemCode *item);
+u8 FurnitureInfo_Series(int number);
+int FurnitureInfo_ColorB(int number);
+int FurnitureInfo_ColorA(int number);
 int FurnitureInfo_DmaUnk1E(int number);
 
 /* How many records each file is opened with room for. */

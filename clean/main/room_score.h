@@ -6,15 +6,15 @@
  * layers; RoomScore_Bounds finds the square the room's floor covers. Its furniture (the codes
  * with a variant, item_code.h) is scored by what furniture_info.h tells of each piece:
  *   - its points (func_0206226c of FurnitureInfo_ListGroup);
- *   - the groups it belongs to (FurnitureInfo_ItemGroup and _IndexInGroup): a group of kind
+ *   - the groups it belongs to (FurnitureInfo_ItemSeries and _IndexInSeries): a group of kind
  *     0 complete with all 12 pieces scores 30000, with its first 10 and a wallpaper or carpet
  *     of the group 25000, with its first 10 20000 (RoomScore_Kind0Sets); a complete group of
  *     kind 1 with the wallpaper and the carpet of the group 3000 per piece and 3000 more, with
  *     those but incomplete 3000 (RoomScore_Kind1Sets); a complete group of kind 2 1000 per
  *     piece (RoomScore_Kind2Sets). The best of each group is kept in data_021c9854;
- *   - the share of the pieces with one value of FurnitureInfo_ItemFlagBits01 or _ItemFlagBits23
- *     (RoomScore_FlagBitsBonus), with one of the values of FurnitureInfo_Unk01 and _Unk02
- *     (RoomScore_ColorBonus), 8 or more of one value of FurnitureInfo_ItemUnk03
+ *   - the share of the pieces with one value of FurnitureInfo_ItemEra or _ItemFeel
+ *     (RoomScore_EraFeelBonus), with one of the values of FurnitureInfo_ColorA and _ColorB
+ *     (RoomScore_ColorBonus), 8 or more of one value of FurnitureInfo_ItemTheme
  *     (RoomScore_ThemeBonus), all four categories 1-4 of FurnitureInfo_Category
  *     (RoomScore_MarkCategories), each piece of a kind marked in the indoor data counted once
  *     at 7777 (RoomScore_MarkSpecialItems);
@@ -65,7 +65,7 @@ typedef struct RoomScoreEdges {
 #define ROOM_SCORE_CATEGORIES 0x20        /* all four categories */
 #define ROOM_SCORE_EDGES 0x40             /* 500 (2000) from the edges */
 #define ROOM_SCORE_COLORS 0x80            /* 2000 (6000) from RoomScore_ColorBonus */
-#define ROOM_SCORE_FLAG_BITS 0x100        /* 2000 (6000) from RoomScore_FlagBitsBonus */
+#define ROOM_SCORE_FLAG_BITS 0x100        /* 2000 (6000) from RoomScore_EraFeelBonus */
 #define ROOM_SCORE_THEME 0x200            /* 3000 (3200) from RoomScore_ThemeBonus */
 #define ROOM_SCORE_SPECIAL 0x400          /* 7000 from the special items */
 #define ROOM_SCORE_LOOSE_ITEMS 0x800      /* the letter's only: items of kind 1 on the floor */
@@ -79,7 +79,7 @@ int RoomScore_Bounds(int *left, int *right, int *top, int *bottom, AcreMap *map)
 void RoomScore_MarkSpecialItems(RoomScoreRoom *room, AcreMap *map);
 int RoomScore_WallPenalty(RoomScoreRoom *room, AcreMap *map, u8 *facing, u8 *loose);
 int RoomScore_ThemeBonus(RoomScoreRoom *room, AcreMap *map, int *theme);
-int RoomScore_FlagBitsBonus(RoomScoreRoom *room, AcreMap *map, int *first, int *second);
+int RoomScore_EraFeelBonus(RoomScoreRoom *room, AcreMap *map, int *first, int *second);
 int RoomScore_ColorBonus(RoomScoreRoom *room, AcreMap *map);
 int RoomScore_EdgeBonus(RoomScoreRoom *room, RoomScoreEdges *edges);
 int RoomScore_ItemPoints(RoomScoreRoom *room, AcreMap *map);

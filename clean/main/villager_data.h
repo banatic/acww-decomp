@@ -36,7 +36,7 @@
 #define VILLAGER_DATA_UMBRELLA_FIRST 0x1380
 #define VILLAGER_DATA_UMBRELLAS 0x20
 
-/* An attribute of items and a value of it. */
+/* A furniture taste: an attribute of items and a value of it (item_attributes.h). */
 typedef struct VillagerDataLike {
     u8 attribute;
     u8 value;
