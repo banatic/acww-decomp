@@ -643,7 +643,7 @@ What reading the Clean code found about the groups above; counts are of function
   constellation marked new in a derived save; Constellations_PackRandomForExchange and the unseen marks
   are set by the linked session's jobs (main/activity_link_jobs.c).
 - A second player whose taxi questions get the other answers adds two functions
-  (TaxiDriverTalk_OnAnswer0b, _End0d) over new-player; not added.
+  (TaxiDriverTalk_OnAnswerGirlsName, _End0d) over new-player; not added.
 
 ### Memories, impressions, sleep and the newcomer (2026-10-28, scenes/memories)
 - A villager's memory of a player (main/villager_memories.h, 0x80 bytes, eight at the start of
@@ -978,7 +978,7 @@ What reading the Clean code found about the groups above; counts are of function
   kind, the lid and battery requests by FieldActor_CheckBatteryAndLid), which the script prints.
 - The taxi driver guesses the new resident's kind from the name's answer: new-player's ride with
   the second answer about the rain (DOWN at 1910) and "cute?" for the name (3037) makes him
-  guess a girl (line 0x0b, TaxiDriverTalk_OnAnswer0b), and the second answer there (3397) "who
+  guess a girl (line 0x0b, TaxiDriverTalk_OnAnswerGirlsName), and the second answer there (3397) "who
   says I am a girl" (line 0x0d, _End0d): new-player-girl. The second answers to the later
   questions (moving, money) add nothing; lines 0x2b-0x2e and 0x30 were not reached.
 - A villager struck by the bug net (0x1376 or 0x1377: OutdoorVillagerObject_OnItemSwung, when it

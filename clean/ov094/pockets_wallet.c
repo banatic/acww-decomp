@@ -339,7 +339,7 @@ CLEAN_AS(func_ov094_02299dcc, PocketsWallet_LoadPicture)
 void PocketsWallet_LoadHeldItemPicture(PocketsWallet *wallet)
 {
     u8 *record = PlayerRecords_Current();
-    int w_set = PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record));
+    int w_set = PlayerId_Gender((const s8 *) PlayerRecord_Player(record));
     unsigned int item = *PlayerRecord_HeldItem(record);
     int picture = 0;
 

@@ -701,7 +701,7 @@ void SoftKeyboard_Init(SoftKeyboard *kb, int kind)
 
     record = PlayerRecords_Current();
     if (record != NULL) {
-        if (PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
+        if (PlayerId_Gender((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
             SoundSys_SetByte71(0);
             return;
         }

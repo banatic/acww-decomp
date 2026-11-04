@@ -564,7 +564,7 @@ void TalkTags_BranchByPlayerKind(TalkTagsWalker *walker)
 
     talk_tags_branch(walker, TALK_TAGS_BRANCH_PLAYER_KIND, 2);
     MessageTag_ReadTwoBytes(&walker->tag, &messages[0], &messages[1]);
-    int other = PlayerId_Byte1c((const s8 *) PlayerRecord_Player(PlayerRecords_Current())) != 0;
+    int other = PlayerId_Gender((const s8 *) PlayerRecord_Player(PlayerRecords_Current())) != 0;
     talk_tags_go_to(walker, messages[other]);
 }
 CLEAN_AS(func_02069a94, TalkTags_BranchByPlayerKind)

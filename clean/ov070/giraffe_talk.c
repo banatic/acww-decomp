@@ -285,7 +285,7 @@ void GiraffeTalk_OnLineEnded(GiraffeTalk *talk)
     switch (line) {
         case GIRAFFE_LINE_GREETING: {
             int special = ItemLists_GroupOf(PlayerRecord_Clothes(record), 0) == GT_CLOTHES_SPECIAL;
-            int second = PlayerId_Byte1c((const s8 *) (const void *) PlayerRecord_Player(record)) != 0;
+            int second = PlayerId_Gender((const s8 *) (const void *) PlayerRecord_Player(record)) != 0;
             unsigned int base = special ? (second ? 3 : 1) : (second ? 7 : 5);
             next = (u8) (MainRandom_Below(2) + base);
             break;

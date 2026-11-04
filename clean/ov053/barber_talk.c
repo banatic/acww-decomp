@@ -198,7 +198,7 @@ int BarberTalk_ChairLine(void *unused)
     u8 *record = PlayerRecords_Current();
     if ((unsigned int) PlayerField2416_Haircuts((PlayerField2416 *) (void *) PlayerRecord_Field2416(record)) >=
         BARBER_TALK_MANY_CUTS) {
-        if (PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
+        if (PlayerId_Gender((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
             return BARBER_LINE_CHAIR_MANY_0;
         }
         return BARBER_LINE_CHAIR_MANY_1;
@@ -315,7 +315,7 @@ void BarberTalk_OnLineEnded(BarberTalk *talk)
         case 0x34:
         case 0x35:
         case 0x36: {
-            int set = PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record));
+            int set = PlayerId_Gender((const s8 *) (void *) PlayerRecord_Player(record));
             if (talk->other_styles != 0) {
                 set = set == 0 ? 1 : 0;
             }

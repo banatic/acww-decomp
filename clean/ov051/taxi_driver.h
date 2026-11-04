@@ -11,8 +11,8 @@
  * 0x71c bytes, made by TaxiDriver_Create. data_ov051_02261b80 points to the one started last.
  *
  * Its talk scene (TaxiDriverTalk, taxi_driver_talk.h, at 0x658) asks the player the
- * questions of a new game: the time (the screen it opens in mode 0x30), two more screens
- * (modes 0x0f and 0x10), the player's kind and three questions whose answers make the
+ * questions of a new game: the time (the screen it opens in mode 0x30), the keyboards of the
+ * player's and the town's names (modes 0x0f and 0x10), the player's gender and three questions whose answers make the
  * player's face (TaxiDriver.points).
  *
  * Its states (TaxiDriver.state, TAXI_DRIVER_*), each an entry and an update function (C++

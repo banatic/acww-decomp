@@ -513,7 +513,7 @@ int FieldActor_RecordFlag249A(FieldActor *actor)
     if (record == NULL) {
         return 0;
     }
-    return PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record)) != 0;
+    return PlayerId_Gender((const s8 *) PlayerRecord_Player(record)) != 0;
 }
 CLEAN_AS(func_02011340, FieldActor_RecordFlag249A)
 

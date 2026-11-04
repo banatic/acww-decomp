@@ -687,7 +687,7 @@ void CafeMasterTalk_Drink(CafeMasterTalk *talk)
     }
     if (master->talk_frames == 70) {
         u8 *record = PlayerRecords_Current();
-        if (PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record)) == 0) {
+        if (PlayerId_Gender((const s8 *) PlayerRecord_Player(record)) == 0) {
             cm_play(master, 0x4e4);
         } else {
             cm_play(master, 0x4e5);

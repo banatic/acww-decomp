@@ -77,7 +77,7 @@ int PlayerDesignObject_Start(PlayerDesignObject *object)
     int index = design % PLAYER_DESIGNS_PER_PLAYER;
     u8 *record = PlayerRecords_Get(player);
     if (record != NULL) {
-        if (PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record)) == 0) {
+        if (PlayerId_Gender((const s8 *) PlayerRecord_Player(record)) == 0) {
             object->cleared_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531cc);
         } else {
             object->cleared_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531d0);

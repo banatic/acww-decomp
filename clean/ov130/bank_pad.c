@@ -845,7 +845,7 @@ void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
     pad->limit = 0;
     pad->current = 0;
     u8 *record = PlayerRecords_Current();
-    if (record != NULL && PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
+    if (record != NULL && PlayerId_Gender((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
         SoundSys_SetByte71(0);
     } else {
         SoundSys_SetByte71(1);

@@ -94,7 +94,7 @@ CLEAN_AS(func_0207e054, VillagerImpression_Choose)
 /* func_0207e0c4: the first rule for the player's kind whose test passes, or 0x58. */
 int VillagerImpression_Pick(u8 *record, int fondness, int mood)
 {
-    int kind = PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record));
+    int kind = PlayerId_Gender((const s8 *) PlayerRecord_Player(record));
     for (int i = 0; i < VILLAGER_IMPRESSION_COUNT; i++) {
         const VillagerImpressionRule *rule = &data_020cd5c4[i];
         if (rule->kind != VILLAGER_IMPRESSION_ANY_KIND && rule->kind != kind) {

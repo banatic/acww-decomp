@@ -1,6 +1,7 @@
 /* A player's id (DesignCreator of design.h, 0x1e bytes): the player's town (TownName of
  * town_name.h: its number and name), the player's number (bit 15 set when made, zero: none),
- * the player's six 16-bit characters and a signed byte at 0x1c (2 when cleared; tables that
+ * the player's six 16-bit characters and a signed byte at 0x1c, the player's gender (0 a boy, 1
+ * a girl: the taxi driver's questions set it, ov051/taxi_driver_talk.c; 2 when cleared; tables that
  * select by it take 2 as any value). A player's record holds its own at 0x247e; designs keep
  * their creator's.
  *
@@ -53,8 +54,8 @@ void PlayerId_SetNameFromText(DesignCreator *player, TextBase *text);
 void *PlayerId_NameToText(DesignCreator *player, TextBase *text);
 int PlayerId_Name(int player);
 void PlayerId_SetName(DesignCreator *player, const u16 *name);
-int PlayerId_Byte1c(const s8 *player);
-void PlayerId_SetByte1c(u8 *player, int value);
+int PlayerId_Gender(const s8 *player);
+void PlayerId_SetGender(u8 *player, int value);
 void PlayerId_SetNumber(u16 *player, int number);
 int PlayerId_Number(const u16 *player);
 u16 PlayerId_NewNumber(void);

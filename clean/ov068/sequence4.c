@@ -537,7 +537,7 @@ int Sequence4_EnterState4(Sequence4 *actor)
     MessageReceiver_SetName(&receiver->base, data_ov068_02277890);
     u8 *record = PlayerRecords_Current();
     int message = 0;
-    if (record != NULL && PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record)) == SEQUENCE4_ID_MESSAGE) {
+    if (record != NULL && PlayerId_Gender((const s8 *) (void *) PlayerRecord_Player(record)) == SEQUENCE4_ID_MESSAGE) {
         message = SEQUENCE4_ID_MESSAGE;
     }
     actor->base.message = (u8) message;

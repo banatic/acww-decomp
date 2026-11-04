@@ -216,19 +216,19 @@ void PlayerId_SetName(DesignCreator *player, const u16 *name)
 }
 CLEAN_AS(func_020950ac, PlayerId_SetName)
 
-/* func_020950c0: the id's byte at 0x1c, signed. */
-int PlayerId_Byte1c(const s8 *player)
+/* func_020950c0: the id's byte at 0x1c, signed: the player's gender (0 a boy, 1 a girl). */
+int PlayerId_Gender(const s8 *player)
 {
     return ((const DesignCreator *) (const void *) player)->unk_1c;
 }
-CLEAN_AS(func_020950c0, PlayerId_Byte1c)
+CLEAN_AS(func_020950c0, PlayerId_Gender)
 
 /* func_020950c8: the id's byte at 0x1c set (its low 8 bits). */
-void PlayerId_SetByte1c(u8 *player, int value)
+void PlayerId_SetGender(u8 *player, int value)
 {
     ((DesignCreator *) (void *) player)->unk_1c = (s8) (u8) value;
 }
-CLEAN_AS(func_020950c8, PlayerId_SetByte1c)
+CLEAN_AS(func_020950c8, PlayerId_SetGender)
 
 /* func_020950cc: the player's number set (its low 16 bits). */
 void PlayerId_SetNumber(u16 *player, int number)

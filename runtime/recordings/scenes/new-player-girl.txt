@@ -1,7 +1,7 @@
 # new-player-girl (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). new-player's recording to the taxi, with other answers: DOWN at 1910
 # takes the second answer about the rain, DOWN at 3037 the second about the name ("cute?"), so the
-# taxi driver guesses a girl (line 0x0b, TaxiDriverTalk_OnAnswer0b), and DOWN at 3397 answers "who
+# taxi driver guesses a girl (line 0x0b, TaxiDriverTalk_OnAnswerGirlsName), and DOWN at 3397 answers "who
 # says I am a girl" (line 0x0d, TaxiDriverTalk_End0d); A every 60 frames reads on to the money
 # question (about 4000). Ends in the taxi.
 900 START -
