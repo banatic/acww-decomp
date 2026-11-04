@@ -166,7 +166,7 @@ int EventCalendar_StartKey(const EventRule *rule, int year, EventKey date, int e
 EventKey EventCalendar_RuleKey(const EventRule *rule, int year, EventKey date, int event);
 EventKey EventCalendar_ScheduleKey(const EventRule *rule, int event, EventKey date);
 void EventCalendar_VillagerBirthdayKey(const EventRule *rule, EventKey *key, int villager);
-int EventCalendar_VillagerCounts(u8 *villager, int moving);
+int EventCalendar_VillagerCounts(u8 *villager, int sick);
 void EventCalendar_PlayerBirthdayKey(const EventRule *rule, EventKey *key);
 u8 EventCalendar_RuleDay(const EventRule *rule, int year, EventKey date, int month, int event);
 int EventCalendar_RuleMonth(const EventRule *rule, int year, EventKey date, int event);

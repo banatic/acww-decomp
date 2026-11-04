@@ -613,7 +613,7 @@ void EventCalendar_VillagerBirthdayKey(const EventRule *rule, EventKey *key, int
 CLEAN_AS(func_02040548, EventCalendar_VillagerBirthdayKey)
 
 /* func_020405a8: 1 when `villager` is there (a valid NpcId), staying as a resident, with an
- * entry of the state table, and is not the villager `moving` (VillagerSickness_VillagerIndex). */
+ * entry of the state table, and is not the sick villager `sick` (VillagerSickness_VillagerIndex). */
 int EventCalendar_VillagerCounts(u8 *villager, int sick)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager)) || VillagerStatus_Stay(villager) != VILLAGER_STAY_RESIDENT) {
