@@ -173,7 +173,7 @@ int TownFamily_PutAround(AcreMap *map, const TownGrowthTiles *size, const TownGr
 CLEAN_AS(func_020498b0, TownFamily_PutAround)
 
 /* func_02049ca0: `code` put (unmarked) on `tile` when it is free and its unit has word 6 of 0 or
- * 1 (TownPlace_TestWord06Low); whether it was put. */
+ * more (TownPlace_TestWord06NotNegative); whether it was put. */
 int TownFamily_PutOnFree(AcreMap *map, const TownGrowthTiles *tile, const TownGrowthTiles *from, const TownGrowthTiles *size,
                          u16 code)
 {
@@ -183,7 +183,7 @@ int TownFamily_PutOnFree(AcreMap *map, const TownGrowthTiles *tile, const TownGr
     if (now == NULL || *now != ACRE_MAP_ITEM_NONE) {
         return 0;
     }
-    if (TownPlace_TestWord06Low(map, tile->x, tile->z) == 0) {
+    if (TownPlace_TestWord06NotNegative(map, tile->x, tile->z) == 0) {
         return 0;
     }
     TownTilePut_At(map, (u32) tile->x, (u32) tile->z, code, 0);

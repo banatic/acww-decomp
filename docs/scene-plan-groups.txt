@@ -1044,10 +1044,10 @@ match: ov004/rmo_telephone:RmoTelephone_EnterState4 ov004/rmo_telephone:RmoTelep
 
 area: Unreachable for one player
 group: the fox's wait for the shops' answers, whose flag nothing sets
-scene: none: Shops_AllAnsweredTailor, which the fox in his tent asks at the end of his talk only while his talk waits for the shops' answers
+scene: none: Shops_AllAnsweredFox, which the fox in his tent asks at the end of his talk only while his talk waits for the shops' answers
 reach: (findings 2026-10-31, rows25) FoxTent_UpdateTalk, its only caller, asks it only with the tent's byte +0x730 (FoxTent.awaiting_answers) set; the byte is stored only by FoxTent_FindFacedItem, with 0 (in src/ov052 the only store of +0x730 is func_ov052_02260574's; the tent is made zeroed), so the call is never made (w65-wt5/cls/classify.py, gate foxwait)
 needs: unreachable
-match: main/shops:Shops_AllAnsweredTailor
+match: main/shops:Shops_AllAnsweredFox
 
 area: Unreachable for one player
 group: the field actor's closed lid and low battery

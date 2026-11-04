@@ -8,7 +8,7 @@
  * a word: the place in bits 0-5 (63 for none: only an amount spent at Nook's), the amount in
  * bits 6-24, a flag in bit 25 and the shop's kind in bits 26-31. A system that gets message 38
  * applies it (Shops_ApplyMessage) and answers with message 39; the sender counts the answers in
- * data_021f49ec (Shops_CountAnswer) and waits for all (Shops_AllAnsweredTailor, Shops_AllAnsweredFox).
+ * data_021f49ec (Shops_CountAnswer) and waits for all (Shops_AllAnsweredFox, Shops_AllAnsweredTailor).
  *
  * What some of these do is only known from where they are called; the names say what the code
  * does. */
@@ -31,10 +31,10 @@ int Shops_IsHour8To22(void);
 void Shops_PickRandomItem(u16 *out);
 int Shops_CountAnswer(int slot);
 void Shops_ApplyMessage(const u32 *payload, int slot);
-int Shops_AllAnsweredTailor(void);
+int Shops_AllAnsweredFox(void);
 void Shops_TakeFromFox(int a, int b, int kind);
 void Shops_SetFoxPlace(int place, int kind, int send, int g);
-int Shops_AllAnsweredFox(void);
+int Shops_AllAnsweredTailor(void);
 void Shops_TakeFromTailor(int a, int b, int kind);
 int Shops_MailNookItem(const u16 *item);
 int Shops_CanMail(void);

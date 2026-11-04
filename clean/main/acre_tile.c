@@ -119,15 +119,15 @@ int AcreTile_PathDirections(AcreMap *map, int x, int z)
 }
 CLEAN_AS(func_0204ed58, AcreTile_PathDirections)
 
-/* func_0204ed80 */
-int AcreTile_UnitWord06(AcreMap *map, int x, int z)
+/* func_0204ed80: UnitTypeInfo_Word06CappedAt on `map`'s collision map (1 for any value above 0). */
+int AcreTile_UnitWord06Capped(AcreMap *map, int x, int z)
 {
     CollisionMap_Select(map->slot);
-    int result = UnitTypeInfo_Word06At(x, z);
+    int result = UnitTypeInfo_Word06CappedAt(x, z);
     CollisionMap_Select(0);
     return result;
 }
-CLEAN_AS(func_0204ed80, AcreTile_UnitWord06)
+CLEAN_AS(func_0204ed80, AcreTile_UnitWord06Capped)
 
 /* func_0204eda8 */
 int AcreTile_UnitByte09(AcreMap *map, int x, int z)

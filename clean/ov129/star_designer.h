@@ -218,7 +218,7 @@ void StarDesigner_MoveEndAlong(StarDesigner *self);
 int StarDesigner_TouchFirst(StarDesigner *self);
 int StarDesigner_TakeOffPiece(StarDesigner *self);
 unsigned short StarDesigner_PieceBetween(StarDesigner *self, int star, unsigned char other);
-int StarDesigner_CanStartAt(StarDesigner *self, unsigned int star);
+int StarDesigner_FirstTouchAt(StarDesigner *self, unsigned int star);
 int StarDesigner_HasDrawnPieceAt(StarDesigner *self, u32 star);
 int StarDesigner_PieceSlot(StarDesigner *self, unsigned short piece);
 int StarDesigner_FreeSlot(StarDesigner *self);

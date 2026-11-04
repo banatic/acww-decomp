@@ -17,7 +17,7 @@ void Vec_RotateZ(Vec3 *v, int angle);
 void Vec_RotateY(Vec3 *v, int angle);
 void Vec_RotateX(Vec3 *v, int angle);
 int Vec_NormalizeNonZero(Vec3 *v);
-void Vec_NormalizeCopy(Vec3 *dst, Vec3 *v);
+void Vec_NormalizeInPlaceAndCopy(Vec3 *dst, Vec3 *v);
 void Vec_CrossProductCopy(Vec3 *dst, Vec3 *product, const Vec3 *a, const Vec3 *b);
 fx32 Vec_DotXZ(const Vec3 *a, const Vec3 *b);
 s64 Vec_DistanceSquaredXZ(const Vec3 *a, const Vec3 *b);

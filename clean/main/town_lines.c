@@ -151,11 +151,11 @@ void TownLines_Check5d(TownDay *town, AcreMap *map, u16 *code, const TownGrowthT
 }
 CLEAN_AS(func_020497e4, TownLines_Check5d)
 
-/* func_02049818: the stage-0 code at (x, z) goes back unless its tile's unit has word 6 of 1
+/* func_02049818: the stage-0 code at (x, z) goes back unless its tile's unit has word 6 above 0
  * and nothing around it stands in its way (TownLines_HasRoom). */
 void TownLines_CheckTile(TownDay *town, AcreMap *map, u16 *code, const TownGrowthTiles *size, int x, int z)
 {
-    if (AcreTile_UnitWord06(map, x, z) != TOWN_LINES_GROUND) {
+    if (AcreTile_UnitWord06Capped(map, x, z) != TOWN_LINES_GROUND) {
         TownLines_PutBack(map, *code, x, z);
         return;
     }

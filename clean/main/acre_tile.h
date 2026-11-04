@@ -28,7 +28,7 @@ int AcreTile_StampBuildingNoting(AcreMap *map, u16 *building, int x, int z, u8 t
 int AcreTile_RetypeUnit(AcreMap *map, int x, int z);
 int AcreTile_PathDirectionsAt(AcreMap *map, const Vec3 *position);
 int AcreTile_PathDirections(AcreMap *map, int x, int z);
-int AcreTile_UnitWord06(AcreMap *map, int x, int z);
+int AcreTile_UnitWord06Capped(AcreMap *map, int x, int z);
 int AcreTile_UnitByte09(AcreMap *map, int x, int z);
 int AcreTile_UnitHasByte17(AcreMap *map, int x, int z);
 int AcreTile_UnitByte08(AcreMap *map, int x, int z);

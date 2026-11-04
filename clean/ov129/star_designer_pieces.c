@@ -167,7 +167,7 @@ CLEAN_AS(func_ov129_0229b9a0, StarDesigner_MoveEndAlong)
 
 /* func_ov129_0229b9d8: a touch with no star picked: a star under the pointer from which a piece
  * can start becomes the first star and the end of the line (the first-star mode); one from
- * which none can shows error message 0x16. Returns StarDesigner_CanStartAt's answer (0 with no
+ * which none can shows error message 0x16. Returns StarDesigner_FirstTouchAt's answer (0 with no
  * star under the pointer). */
 int StarDesigner_TouchFirst(StarDesigner *self)
 {
@@ -176,7 +176,7 @@ int StarDesigner_TouchFirst(StarDesigner *self)
     if (self->star == STAR_DESIGNER_NO_STAR) {
         return STAR_DESIGNER_TOUCH_NONE;
     }
-    result = StarDesigner_CanStartAt(self, self->star);
+    result = StarDesigner_FirstTouchAt(self, self->star);
     if (result == STAR_DESIGNER_TOUCH_STAR) {
         self->mode = STAR_DESIGNER_MODE_FIRST;
         self->first_star = self->star;
@@ -304,10 +304,10 @@ unsigned short StarDesigner_PieceBetween(StarDesigner *self, int star, unsigned 
 }
 CLEAN_AS(func_ov129_0229bbd8, StarDesigner_PieceBetween)
 
-/* func_ov129_0229bc34: whether a first piece can be drawn from `star`: 0 when a piece round it
- * is another constellation's, 1 when a piece round it does not reach one at its other star, 3
- * when every one does. */
-int StarDesigner_CanStartAt(StarDesigner *self, unsigned int star)
+/* func_ov129_0229bc34: what touching `star` first gives (a STAR_DESIGNER_TOUCH_ code, not a
+ * boolean): NONE (0) when a piece round it is another constellation's, STAR (1) when a piece
+ * round it does not reach one at its other star, ERROR (3) when every one does. */
+int StarDesigner_FirstTouchAt(StarDesigner *self, unsigned int star)
 {
     u16 around[STAR_DESIGNER_AROUND];
     int count = star_designer_pieces_around(around, star);
@@ -324,7 +324,7 @@ int StarDesigner_CanStartAt(StarDesigner *self, unsigned int star)
     }
     return STAR_DESIGNER_TOUCH_ERROR;
 }
-CLEAN_AS(func_ov129_0229bc34, StarDesigner_CanStartAt)
+CLEAN_AS(func_ov129_0229bc34, StarDesigner_FirstTouchAt)
 
 /* func_ov129_0229bca4: whether a drawn piece is round `star` (the source passes it as a
  * pointer). */

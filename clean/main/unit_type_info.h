@@ -18,13 +18,13 @@ u16 UnitTypeInfo_Sound(int type);
 int UnitTypeInfo_Bytes18At(u8 *out, int x, int z);
 int UnitTypeInfo_IsType1eOver08(int x, int z);
 int UnitTypeInfo_HasByte17At(int x, int z);
-int UnitTypeInfo_Word06At(int x, int z);
+int UnitTypeInfo_Word06CappedAt(int x, int z);
 u8 UnitTypeInfo_Byte09At(int x, int z);
 int UnitTypeInfo_Byte05At(int x, int z);
 int UnitTypeInfo_Byte08At(int x, int z);
 u8 UnitTypeInfo_Byte04At(int x, int z);
 int UnitTypeInfo_GroupAt(int x, int z);
-int UnitTypeInfo_IsType03At(int x, int z);
+int UnitTypeInfo_IsType03Or1dAt(int x, int z);
 
 struct Vec3;
 int UnitTypeInfo_IsType07At(int x, int z);

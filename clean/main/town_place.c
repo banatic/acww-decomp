@@ -76,7 +76,7 @@ int TownPlace_ListFree(TownDay *town, TownPlaceTile *tiles, AcreMap *map, int ac
 CLEAN_AS(func_02048db8, TownPlace_ListFree)
 
 /* Whether the two tiles below (x, z) hold codes, none of them one func_0204a034 picks out. */
-static int TownPlace_ClearBelow(AcreMap *map, int x, int z)
+static int TownPlace_AreTwoBelowClear(AcreMap *map, int x, int z)
 {
     for (int below = 1; below <= 2; below++) {
         const u16 *code = TownAcreCount_CodeAt(map, x, z + below);
@@ -109,34 +109,35 @@ int TownPlace_TestByte09Low(AcreMap *map, int x, int z)
     if (value != 0 && value != 1) {
         return 0;
     }
-    return TownPlace_ClearBelow(map, x, z);
+    return TownPlace_AreTwoBelowClear(map, x, z);
 }
 CLEAN_AS(func_02048e54, TownPlace_TestByte09Low)
 
-/* func_02048ec8: whether the tile's unit has word 6 of 0 or 1. */
-int TownPlace_TestWord06Low(AcreMap *map, int x, int z)
+/* func_02048ec8: whether the tile's unit has word 6 of 0 or more (AcreTile_UnitWord06Capped
+ * gives 0 or 1). */
+int TownPlace_TestWord06NotNegative(AcreMap *map, int x, int z)
 {
-    int value = AcreTile_UnitWord06(map, x, z);
+    int value = AcreTile_UnitWord06Capped(map, x, z);
     return value == 0 || value == 1;
 }
-CLEAN_AS(func_02048ec8, TownPlace_TestWord06Low)
+CLEAN_AS(func_02048ec8, TownPlace_TestWord06NotNegative)
 
-/* func_02048ee4: whether the tile's unit has word 6 of 1 and the two tiles below are clear. */
-int TownPlace_TestWord06Is1Clear(AcreMap *map, int x, int z)
+/* func_02048ee4: whether the tile's unit has word 6 above 0 and the two tiles below are clear. */
+int TownPlace_TestWord06PositiveClear(AcreMap *map, int x, int z)
 {
-    if (TownPlace_TestWord06Is1(map, x, z) == 0) {
+    if (TownPlace_TestWord06Positive(map, x, z) == 0) {
         return 0;
     }
-    return TownPlace_ClearBelow(map, x, z);
+    return TownPlace_AreTwoBelowClear(map, x, z);
 }
-CLEAN_AS(func_02048ee4, TownPlace_TestWord06Is1Clear)
+CLEAN_AS(func_02048ee4, TownPlace_TestWord06PositiveClear)
 
-/* func_02048f54: whether the tile's unit has word 6 of 1. */
-int TownPlace_TestWord06Is1(AcreMap *map, int x, int z)
+/* func_02048f54: whether the tile's unit has word 6 above 0 (AcreTile_UnitWord06Capped's 1). */
+int TownPlace_TestWord06Positive(AcreMap *map, int x, int z)
 {
-    return AcreTile_UnitWord06(map, x, z) == 1;
+    return AcreTile_UnitWord06Capped(map, x, z) == 1;
 }
-CLEAN_AS(func_02048f54, TownPlace_TestWord06Is1)
+CLEAN_AS(func_02048f54, TownPlace_TestWord06Positive)
 
 /* func_02048f6c: whether the tile's unit has a byte 8 and the two tiles below are clear. */
 int TownPlace_TestByte08Clear(AcreMap *map, int x, int z)
@@ -144,6 +145,6 @@ int TownPlace_TestByte08Clear(AcreMap *map, int x, int z)
     if (AcreTile_UnitByte08(map, x, z) == 0) {
         return 0;
     }
-    return TownPlace_ClearBelow(map, x, z);
+    return TownPlace_AreTwoBelowClear(map, x, z);
 }
 CLEAN_AS(func_02048f6c, TownPlace_TestByte08Clear)

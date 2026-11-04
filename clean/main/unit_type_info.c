@@ -104,7 +104,7 @@ CLEAN_AS(func_02031a74, UnitTypeInfo_HasByte17At)
 
 /* func_02031aa0: the halfword at 6 of the row of unit (x, z), signed, as 1 when above 0; -1 for
  * a type without a row. */
-int UnitTypeInfo_Word06At(int x, int z)
+int UnitTypeInfo_Word06CappedAt(int x, int z)
 {
     int type = FieldUnits_GetType(x, z);
     if (type >= COLLISION_TYPE_COUNT) {
@@ -113,7 +113,7 @@ int UnitTypeInfo_Word06At(int x, int z)
     s16 value = (s16) unit_type_word(unit_type_row(type), 6);
     return value > 0 ? 1 : value;
 }
-CLEAN_AS(func_02031aa0, UnitTypeInfo_Word06At)
+CLEAN_AS(func_02031aa0, UnitTypeInfo_Word06CappedAt)
 
 /* func_02031acc: byte 9 of the row of unit (x, z); 2 for a type without a row. */
 u8 UnitTypeInfo_Byte09At(int x, int z)
@@ -163,12 +163,12 @@ CLEAN_AS(func_02031b5c, UnitTypeInfo_GroupAt)
 
 /* func_02031b84: whether unit (x, z) is of type 3 or 0x1d (what CollisionMap_RetypeToPlain
  * turns type 3 into). */
-int UnitTypeInfo_IsType03At(int x, int z)
+int UnitTypeInfo_IsType03Or1dAt(int x, int z)
 {
     int type = FieldUnits_GetType(x, z);
     return type == UNIT_TYPE_03 || type == UNIT_TYPE_1D;
 }
-CLEAN_AS(func_02031b84, UnitTypeInfo_IsType03At)
+CLEAN_AS(func_02031b84, UnitTypeInfo_IsType03Or1dAt)
 
 /* func_02031ba0: whether unit (x, z) is of type 7. */
 int UnitTypeInfo_IsType07At(int x, int z)

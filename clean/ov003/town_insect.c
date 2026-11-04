@@ -297,7 +297,7 @@ int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap
                         }
                         break;
                     case 4:
-                        if (UnitTypeInfo_IsType03At(wx, wz) != 0 && *code == ACRE_MAP_ITEM_NONE) {
+                        if (UnitTypeInfo_IsType03Or1dAt(wx, wz) != 0 && *code == ACRE_MAP_ITEM_NONE) {
                             count++;
                         }
                         break;

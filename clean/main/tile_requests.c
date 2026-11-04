@@ -587,7 +587,7 @@ CLEAN_AS(func_02043368, TileRequests_FindDropTile)
 
 /* func_02043484: the code of the tile (x, z) when it is empty and something of `kind` may go
  * there, else NULL: kinds 0x10-0x12 when func_020317c4 allows it from `from`, 0x1a when it
- * allows it with its flag, 0x18 on a tile whose AcreTile_UnitWord06 is 0 or 1. */
+ * allows it with its flag, 0x18 on a tile whose AcreTile_UnitWord06Capped is 0 or 1. */
 u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRequestTile *from)
 {
     u16 *code = TileRequests_CodeAt(map, x, z, 0);
@@ -606,7 +606,7 @@ u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRe
             }
             break;
         case TILE_REQUEST_SPLIT_DROP: {
-            int unit = AcreTile_UnitWord06(map, x, z);
+            int unit = AcreTile_UnitWord06Capped(map, x, z);
             if (unit != 0 && unit != 1) {
                 return NULL;
             }

@@ -479,7 +479,7 @@ void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days)
 CLEAN_AS(func_0204886c, TownSpawn_AroundHouses)
 
 /* func_020488e4: up to two family A codes for each day (data_020cabc4, drawn) put on the free
- * tiles of the ring around the house (data_020cab28) that TownPlace_TestWord06Low accepts, each
+ * tiles of the ring around the house (data_020cab28) that TownPlace_TestWord06NotNegative accepts, each
  * tile drawn among those left.
  *
  * QUIRK: with `days` 0 or less one code is put all the same. */
@@ -492,7 +492,7 @@ void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *hou
         int x = house->x + ((offset >> 4) - 8);
         int z = house->z + ((offset & 0xf) - 8);
         const u16 *code = TownAcreCount_CodeAt(map, x, z);
-        if (code != NULL && *code == ACRE_MAP_ITEM_NONE && TownPlace_TestWord06Low(map, x, z) != 0) {
+        if (code != NULL && *code == ACRE_MAP_ITEM_NONE && TownPlace_TestWord06NotNegative(map, x, z) != 0) {
             free_tiles[count].x = x;
             free_tiles[count].z = z;
             count++;

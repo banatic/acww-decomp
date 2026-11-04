@@ -4,7 +4,7 @@
  * to the session's record of map items (LinkedMapItems_Set) instead of the map.
  *
  * The tests (TownPlaceTest) look at what the map's slot says of the tile's unit
- * (AcreTile_UnitWord06, AcreTile_UnitByte08, AcreTile_UnitByte09, AcreTile_UnitHasByte17) and
+ * (AcreTile_UnitWord06Capped, AcreTile_UnitByte08, AcreTile_UnitByte09, AcreTile_UnitHasByte17) and
  * some at the two tiles below it (z + 1 and z + 2), which must hold codes and none that
  * func_0204a034 picks out. */
 #ifndef CLEAN_MAIN_TOWN_PLACE_H
@@ -33,9 +33,9 @@ int TownPlace_ListFree(TownDay *town, TownPlaceTile *tiles, AcreMap *map, int ac
 int TownPlace_TestByte17(AcreMap *map, int x, int z);
 int TownPlace_TestByte17Raw(AcreMap *map, int x, int z);
 int TownPlace_TestByte09Low(AcreMap *map, int x, int z);
-int TownPlace_TestWord06Low(AcreMap *map, int x, int z);
-int TownPlace_TestWord06Is1Clear(AcreMap *map, int x, int z);
-int TownPlace_TestWord06Is1(AcreMap *map, int x, int z);
+int TownPlace_TestWord06NotNegative(AcreMap *map, int x, int z);
+int TownPlace_TestWord06PositiveClear(AcreMap *map, int x, int z);
+int TownPlace_TestWord06Positive(AcreMap *map, int x, int z);
 int TownPlace_TestByte08Clear(AcreMap *map, int x, int z);
 
 /* The game's tests, to hand to the game. */

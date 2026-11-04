@@ -126,20 +126,20 @@ int Vec_NormalizeNonZero(Vec3 *v)
         return FALSE;
     }
     Vec3 copy;
-    Vec_NormalizeCopy(&copy, v);
+    Vec_NormalizeInPlaceAndCopy(&copy, v);
     return TRUE;
 }
 CLEAN_AS(func_020ea838, Vec_NormalizeNonZero)
 
 /* func_020ea88c: `v` normalized in place, and copied to `dst`. */
-void Vec_NormalizeCopy(Vec3 *dst, Vec3 *v)
+void Vec_NormalizeInPlaceAndCopy(Vec3 *dst, Vec3 *v)
 {
     VEC_Normalize(v, v);
     dst->x = v->x;
     dst->y = v->y;
     dst->z = v->z;
 }
-CLEAN_AS(func_020ea88c, Vec_NormalizeCopy)
+CLEAN_AS(func_020ea88c, Vec_NormalizeInPlaceAndCopy)
 
 /* func_020ea8c8: `product` = `a` x `b`, and copied to `dst`. */
 void Vec_CrossProductCopy(Vec3 *dst, Vec3 *product, const Vec3 *a, const Vec3 *b)

@@ -136,12 +136,13 @@ void Shops_ApplyMessage(const u32 *payload, int slot)
 }
 CLEAN_AS(func_020ad7f4, Shops_ApplyMessage)
 
-/* func_020ad888: whether every answer came (always, when not linked). */
-int Shops_AllAnsweredTailor(void)
+/* func_020ad888: whether every answer came (always, when not linked); the fox's wait, beside
+ * Shops_TakeFromFox. */
+int Shops_AllAnsweredFox(void)
 {
     return ShopAnswers_AllCameIfLinked();
 }
-CLEAN_AS(func_020ad888, Shops_AllAnsweredTailor)
+CLEAN_AS(func_020ad888, Shops_AllAnsweredFox)
 
 /* func_020ad890: the item func_ov004_02245ff8 gives for (a, b) taken from data_021f3b30, sent
  * to the other systems, when it is there. */
@@ -163,12 +164,12 @@ void Shops_SetFoxPlace(int place, int kind, int send, int g)
 }
 CLEAN_AS(func_020ad8d0, Shops_SetFoxPlace)
 
-/* func_020ad8f0: the same as Shops_AllAnsweredTailor. */
-int Shops_AllAnsweredFox(void)
+/* func_020ad8f0: the same as Shops_AllAnsweredFox; the tailor's wait, beside Shops_TakeFromTailor. */
+int Shops_AllAnsweredTailor(void)
 {
     return ShopAnswers_AllCameIfLinked();
 }
-CLEAN_AS(func_020ad8f0, Shops_AllAnsweredFox)
+CLEAN_AS(func_020ad8f0, Shops_AllAnsweredTailor)
 
 /* func_020ad8f8: the item func_ov004_022460c8 gives for (a, b) taken from data_021f3b44, sent
  * to the other systems, when it is there. */
@@ -259,7 +260,7 @@ int Shops_CanMail(void)
 }
 CLEAN_AS(func_020ada14, Shops_CanMail)
 
-/* func_020ada40: the same as Shops_AllAnsweredTailor. */
+/* func_020ada40: the same as Shops_AllAnsweredFox. */
 int Shops_AllAnsweredC(void)
 {
     return ShopAnswers_AllCameIfLinked();
