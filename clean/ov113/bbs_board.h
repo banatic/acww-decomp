@@ -88,7 +88,7 @@ enum BbsBoardPhase {
 /* The modes told to the dispatch (MenuDispatch_SetMode). */
 #define BBS_BOARD_MODE_WRITE 1 /* the screen that writes a post (overlay group 10, overlay 112) */
 
-#define BBS_BOARD_LAYER 2 /* BG 2 of the main engine */
+#define BBS_BOARD_LAYER 2 /* BG 3 of the main engine */
 #define BBS_BOARD_SCREEN_SIZE 0x800
 #define BBS_BOARD_LINES 6
 #define BBS_BOARD_LINE_CHARS_SIZE 0x500 /* 40 characters of 32 bytes */

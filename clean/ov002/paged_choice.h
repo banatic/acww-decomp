@@ -63,7 +63,7 @@ enum PagedChoiceFlag {
 typedef struct PagedChoiceRow {
     TextLabel label;
     u16 first_tile; /* 0x6c: the box's first character tile */
-    u8 style;       /* 0x6e: PagedChoice_Init gives the choice's layer */
+    u8 layer;       /* 0x6e: the text layer; PagedChoice_Init gives the choice's */
     u8 colour;      /* 0x6f: the palette it is drawn with */
     u8 colour_39;   /* 0x70: the box's second colour */
     u8 pad_71[3];
@@ -174,7 +174,7 @@ void PagedChoice_Init(PagedChoice *choice, u8 layer, int priority, const char *s
 PagedChoice *PagedChoice_Delete(PagedChoice *choice);
 PagedChoice *PagedChoice_Destroy(PagedChoice *choice);
 PagedChoice *PagedChoice_Construct(PagedChoice *choice);
-void ChoiceRow_SetStyle(PagedChoiceRow *row, u8 style, u16 first_tile, u8 colour, u8 colour_39);
+void ChoiceRow_SetLayer(PagedChoiceRow *row, u8 layer, u16 first_tile, u8 colour, u8 colour_39);
 void ChoiceRow_Draw(PagedChoiceRow *row, int colour);
 PagedChoiceRow *ChoiceRow_Delete(PagedChoiceRow *row);
 PagedChoiceRow *ChoiceRow_Destroy(PagedChoiceRow *row);

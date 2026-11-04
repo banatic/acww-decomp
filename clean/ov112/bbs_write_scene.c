@@ -78,11 +78,9 @@ extern const MemberPointer data_ov112_022a1f60, data_ov112_022a1f68, data_ov112_
 #define BBS_WRITE_WIPE_TEXT 2     /* the wipes' layers: the text's */
 #define BBS_WRITE_WIPE_KEYBOARD 8 /* the keyboard's */
 
-/* The panel's messages for the two questions, and the mode the scene tells its parent it ends
- * with (MENU_DISPATCH_MODE_CLOSE). */
+/* The panel's messages for the two questions. */
 #define BBS_WRITE_MESSAGE_QUIT 0x87
 #define BBS_WRITE_MESSAGE_POST 0x22
-#define BBS_WRITE_PARENT_CLOSE 0x44
 
 /* The signature: menu message 0x89 with the player's name, padded with wide spaces. */
 #define BBS_WRITE_SIGNATURE_MESSAGE 0x89
@@ -265,7 +263,7 @@ void BbsWrite_StartCloseWipeOut(BbsWriteScene *self)
     }
     BbsWrite_ClearFlags(self, BBS_WRITE_FLAG_CURSOR_SHOWN);
     BbsWrite_EndDim(self);
-    MenuDispatch_SetMode(bbs_write_parent(self), BBS_WRITE_PARENT_CLOSE, 1);
+    MenuDispatch_SetMode(bbs_write_parent(self), MENU_DISPATCH_MODE_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(bbs_write_scene(self), BBS_WRITE_WIPE_TEXT | BBS_WRITE_WIPE_KEYBOARD, 0, 0,
                                  BBS_WRITE_WIPE_MARGIN);
     MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
@@ -301,7 +299,7 @@ void BbsWrite_FinishAfterAnswer(BbsWriteScene *self)
     }
     BbsWrite_ClearFlags(self, BBS_WRITE_FLAG_CURSOR_SHOWN);
     BbsWrite_EndDim(self);
-    MenuDispatch_SetMode(bbs_write_parent(self), BBS_WRITE_PARENT_CLOSE, 1);
+    MenuDispatch_SetMode(bbs_write_parent(self), MENU_DISPATCH_MODE_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(bbs_write_scene(self), BBS_WRITE_WIPE_TEXT, 0, 0, BBS_WRITE_WIPE_MARGIN);
     MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
     MenuScene_SetState(bbs_write_scene(self), BBS_WRITE_STATE_FINISH_WIPE_OUT);

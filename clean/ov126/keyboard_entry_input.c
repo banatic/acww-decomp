@@ -697,7 +697,7 @@ void KeyboardEntry_UpdateKeys(KeyboardEntry *self)
             ButtonPanel_ClearSpriteFlag4(&self->panel, KEYBOARD_ENTRY_BUTTON_OK);
         }
     }
-    SoftKeyboard_DisableSpecial(keyboard, KEYBOARD_ENTRY_KEY_0);
+    SoftKeyboard_DisableSpecial(keyboard, KEYBOARD_ENTRY_KEY_NEWLINE);
     if (KeyboardEntry_IsMarking(self) != 0) {
         SoftKeyboard_EnableSpecial(keyboard, KEYBOARD_ENTRY_KEY_COPY);
     } else {
@@ -710,7 +710,7 @@ void KeyboardEntry_UpdateKeys(KeyboardEntry *self)
     }
     if (KeyboardEntry_IsMarking(self) != 0) {
         SoftKeyboard_DisableEditKeys(keyboard);
-        SoftKeyboard_EnableSpecial(keyboard, KEYBOARD_ENTRY_KEY_6);
+        SoftKeyboard_EnableSpecial(keyboard, KEYBOARD_ENTRY_KEY_BACKSPACE);
     } else if (self->position == 0) {
         SoftKeyboard_DisableEditKeys(keyboard);
     } else {

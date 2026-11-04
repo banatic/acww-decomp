@@ -223,13 +223,13 @@ int StarDesigner_IsPointerSetB(StarDesigner *self)
 CLEAN_AS(func_ov129_0229c520, StarDesigner_IsPointerSetB)
 
 /* func_ov129_0229c548: the pointer's set is A: the free pointer, or the key cursor anywhere
- * but on the top arrow (STAR_SCOPE_ARROW_DOWN) and "done". */
+ * but on the top arrow (STAR_SCOPE_ARROW_TOP) and "done". */
 int StarDesigner_IsPointerSetA(StarDesigner *self)
 {
     if (StarDesigner_TestFlags(self, STAR_DESIGNER_FLAG_FREE) != 0) {
         return 1;
     }
-    if (self->cursor == STAR_SCOPE_ARROW_DOWN || self->cursor == STAR_DESIGNER_CURSOR_DONE) {
+    if (self->cursor == STAR_SCOPE_ARROW_TOP || self->cursor == STAR_DESIGNER_CURSOR_DONE) {
         return 0;
     }
     return 1;
@@ -552,8 +552,8 @@ void StarDesigner_SubPress(StarDesigner *self)
             break;
         case STAR_SCOPE_ARROW_LEFT:
         case STAR_SCOPE_ARROW_RIGHT:
-        case STAR_SCOPE_ARROW_UP:
-        case STAR_SCOPE_ARROW_DOWN:
+        case STAR_SCOPE_ARROW_BOTTOM:
+        case STAR_SCOPE_ARROW_TOP:
             self->arrow = self->cursor;
             StarScope_HoldArrow(&self->scope, self->arrow, 0);
             MenuScene_SetSubState(star_designer_scene(self), STAR_DESIGNER_SUB_ARROW_KEY);

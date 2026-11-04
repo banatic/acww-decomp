@@ -105,10 +105,10 @@ extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 #define DONATION_HANDLE_CUE_DISTANCE 4
 #define DONATION_SCROLL_STEP 4
 
-/* The row texts: the item's name in a box of style 4 at 0x184 + 0x1a * place, 0xd wide; the
+/* The row texts: the item's name in a box on layer 4 at 0x184 + 0x1a * place, 0xd wide; the
  * giver's at 0xf4 + 0x10 * place, 8 wide; colours 15 and 7. Message 0xcc of the menu's when
  * the giver has no name to show. */
-#define DONATION_TEXT_STYLE 4
+#define DONATION_TEXT_LAYER 4
 #define DONATION_NAME_BASE 0x184
 #define DONATION_NAME_STEP 0x1a
 #define DONATION_NAME_WIDTH 0xd
@@ -502,10 +502,10 @@ CLEAN_AS(func_ov145_02299bd0, DonationList_UploadPending)
 /* Two labels of a ring place opened and shown: the item's name and its giver's. */
 static void donation_open_row(TextLabel *name, TextLabel *giver, int place)
 {
-    TextLabel_OpenStyledBox2(name, DONATION_TEXT_STYLE, place * DONATION_NAME_STEP + DONATION_NAME_BASE, DONATION_NAME_WIDTH,
+    TextLabel_OpenStyledBox2(name, DONATION_TEXT_LAYER, place * DONATION_NAME_STEP + DONATION_NAME_BASE, DONATION_NAME_WIDTH,
                              DONATION_TEXT_COLOUR, DONATION_TEXT_SHADOW, 0);
     TextLabel_Show(name, 0, 0);
-    TextLabel_OpenStyledBox2(giver, DONATION_TEXT_STYLE, place * DONATION_GIVER_STEP + DONATION_GIVER_BASE,
+    TextLabel_OpenStyledBox2(giver, DONATION_TEXT_LAYER, place * DONATION_GIVER_STEP + DONATION_GIVER_BASE,
                              DONATION_GIVER_WIDTH, DONATION_TEXT_COLOUR, DONATION_TEXT_SHADOW, 0);
     TextLabel_Show(giver, 0, 0);
 }

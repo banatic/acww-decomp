@@ -37,11 +37,8 @@ extern u8 data_021f6c58, data_021f6c54;
 /* The scene's vtable. */
 extern const u8 data_ov108_0229e098[];
 
-/* What the dispatcher (overlay 92's) is told: the screen ends (MenuDispatch_SetMode). */
-#define LETTER_PICK_PARENT_CODE_END 0x44
-
-/* The choice's texts: the pick and the cancel. */
-#define LETTER_PICK_TEXT_PICK 0x0d
+/* The choice's texts: give and cancel. */
+#define LETTER_PICK_TEXT_GIVE 0x0d
 #define LETTER_PICK_TEXT_CANCEL 0x02
 
 /* The letter states dimmed by the setup (ov094's POCKETS_LETTERS_DIM_WRITTEN | ..._RECEIVED). */
@@ -206,7 +203,7 @@ void LetterPick_OpenLetterMenu(LetterPick *self, int place, int above_popup)
     self->slot = (u8) place;
     ChoiceEntries_Clear(&self->entries, LETTER_PICK_ACTION_CANCEL);
     (void) LetterPick_PlaceLetter(self, place);
-    ChoiceEntries_Add(&self->entries, LETTER_PICK_TEXT_PICK, LETTER_PICK_ACTION_PICK);
+    ChoiceEntries_Add(&self->entries, LETTER_PICK_TEXT_GIVE, LETTER_PICK_ACTION_GIVE);
     ChoiceEntries_Add(&self->entries, LETTER_PICK_TEXT_CANCEL, LETTER_PICK_ACTION_CANCEL);
     LetterPick_HideCursorSprite(self);
     if (above_popup == 0) {
@@ -247,7 +244,7 @@ CLEAN_AS(func_ov108_0229c498, LetterPick_ShowChoice)
 /* func_ov108_0229c508: the action picked (`action`); any value but 0 cancels. */
 void LetterPick_RunAction(LetterPick *self)
 {
-    if (self->action == LETTER_PICK_ACTION_PICK) {
+    if (self->action == LETTER_PICK_ACTION_GIVE) {
         LetterPick_PickSlotLetter(self);
     } else {
         LetterPick_EndAction(self);
@@ -1437,7 +1434,7 @@ void LetterPick_StartWipeOut(LetterPick *self)
 {
     Popup_Hide(&self->popup, 1);
     LetterPick_HideCursorSprite(self);
-    MenuDispatch_SetMode(lp_parent(self), LETTER_PICK_PARENT_CODE_END, 1);
+    MenuDispatch_SetMode(lp_parent(self), MENU_DISPATCH_MODE_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(lp_scene(self), LETTER_PICK_WIPE_LAYERS, 0, 0, LETTER_PICK_WIPE_MARGIN);
     lp_scroll_scene_layer(self);
     MenuScene_SetState(lp_scene(self), LETTER_PICK_STATE_SCENE_WIPE_OUT);

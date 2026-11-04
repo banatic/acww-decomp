@@ -101,7 +101,7 @@ extern const MemberPointer data_ov110_0229ebc0, data_ov110_0229ebc8, data_ov110_
 #define PUBLIC_BOX_DONE_TOP 0x60
 #define PUBLIC_BOX_DONE_BOTTOM 0x70
 
-/* A touch let go at this height or lower is over the pockets (PublicBox_DropHeldAtTouch). */
+/* The held item's hot spot, 8 pixels in from its corner (PublicBox_DropHeldAtTouch). */
 #define PUBLIC_BOX_HELD_HOTSPOT 8
 
 static MenuScene *pbox_scene(PublicBox *self)
@@ -849,7 +849,7 @@ CLEAN_AS(func_ov110_0229e60c, PublicBox_PocketsWipeIn)
 
 /* func_ov110_0229e68c (state 1): a step of the wallet display's setup (its answer unused), the
  * pockets loaded into the grid with the box, the slots that may not move locked, the pockets'
- * letters loaded and those in states 0-3 dimmed; the pockets' covered wipe in starts, their layer
+ * letters loaded and all dimmed; the pockets' covered wipe in starts, their layer
  * shown and the scene and the pockets drawn from then on (state 2). */
 void PublicBox_StartWipeIn(PublicBox *self)
 {

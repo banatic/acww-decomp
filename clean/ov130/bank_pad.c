@@ -814,7 +814,7 @@ void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
             pad->layout = BANK_PAD_LAYOUT_TRANSFER;
             pad->picture = 1;
             break;
-        case BANK_PAD_KIND_PAY:
+        case BANK_PAD_KIND_DONATION:
             pad->layout = BANK_PAD_LAYOUT_PAY;
             pad->picture = 2;
             break;

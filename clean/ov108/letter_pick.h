@@ -68,7 +68,7 @@ enum LetterPickHeldKind {
 
 /* The values of the choice rows (`action`), run by LetterPick_RunAction. */
 enum LetterPickAction {
-    LETTER_PICK_ACTION_PICK = 0,  /* LetterPick_PickSlotLetter */
+    LETTER_PICK_ACTION_GIVE = 0,  /* LetterPick_PickSlotLetter */
     LETTER_PICK_ACTION_CANCEL = 1 /* LetterPick_EndAction */
 };
 

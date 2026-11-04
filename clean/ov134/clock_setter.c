@@ -529,7 +529,7 @@ void ClockSetter_DrawMessage(ClockSetter *self, int layer, int first_char, int c
 }
 CLEAN_AS(func_ov134_0229b63c, ClockSetter_DrawMessage)
 
-/* func_ov134_0229b680: the next of the labels; once sixteen are out, the last one again and
+/* func_ov134_0229b680: the next of the labels; once seventeen are out, the last one again and
  * again. */
 TextLabel *ClockSetter_NextLabel(ClockSetter *self)
 {
@@ -834,8 +834,8 @@ void ClockSetter_Teardown(ClockSetter *self)
 }
 CLEAN_AS(func_ov134_0229bcf0, ClockSetter_Teardown)
 
-/* func_ov134_0229bd2c: the value bounded below by `min` (overlay 135 asks for it after
- * ClockSetter_Init in one case of its own). */
+/* func_ov134_0229bd2c: the value bounded below by `min` (after ClockSetter_Init overlay 135
+ * asks for it in one case of its own, overlay 138's DateScreen_Setup always). */
 void ClockSetter_UseMinimum(ClockSetter *self)
 {
     ClockSetter_SetFlags(self, CLOCK_SETTER_FLAG_HAS_MIN);

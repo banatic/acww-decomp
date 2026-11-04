@@ -37,7 +37,7 @@ extern const char data_ov142_0229c57c[];
 extern const char data_ov142_0229c594[];
 extern const char data_ov142_0229c5ac[];
 
-/* The OBJs drawn: the down arrow, the bar's two ends, the up arrow, the order button's cell, a
+/* The OBJs drawn: the down arrow, a bar end, the up arrow, the other bar end, the order button's cell, a
  * row's cell and the picked row's, and the tabs (two OBJs each, the last tab's first). */
 extern const OamEntry data_ov142_0229c358;
 extern const OamEntry data_ov142_0229c360;

@@ -42,7 +42,7 @@
 /* In `flags`. */
 enum LetterSendFlag {
     LETTER_SEND_FLAG_SHOWN = 0x1,             /* set by the setup; the draw does nothing without it */
-    LETTER_SEND_FLAG_SCROLLED = 0x2,          /* set by the setup; the draw places the objects by unk_98 */
+    LETTER_SEND_FLAG_OBJECTS_DRAWN = 0x2,     /* set by the setup; the draw places the objects by unk_98 */
     LETTER_SEND_FLAG_JUMP = 0x8,              /* the cursor sprite jumps to the cursor instead of easing
                                                * (LetterSend_GlideToCursor), once */
     LETTER_SEND_FLAG_WRAPPED_LEFT = 0x10,     /* the cursor sprite's x is a screen width (256) less */
@@ -321,7 +321,7 @@ void LetterSend_SetUpLayers(void);
 #define LETTER_SEND_FLAG_LETTER_SHOWN 0x080 /* a letter is shown with the label button below it */
 #define LETTER_SEND_FLAG_OUTBOX_SHOWN 0x200 /* the page of the letters to post is shown */
 
-/* `unk_98` is the wipe's y the panel and the objects are drawn at (LETTER_SEND_FLAG_SCROLLED),
+/* `unk_98` is the wipe's y the panel and the objects are drawn at (LETTER_SEND_FLAG_OBJECTS_DRAWN),
  * `unk_9c` the wipe's x the letters to post are drawn at (LETTER_SEND_FLAG_OUTBOX_SHOWN). */
 
 /* The scene's states (MenuScene.state), run from the table of func_ov104_0229f248. */

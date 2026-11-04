@@ -34,8 +34,8 @@ extern u8 data_021f6c54; /* and its y */
 #define KEYBOARD_ENTRY_SE_DELETE 0x35 /* a character deleted */
 
 /* The keyboard's keys and codes the scene acts on (SoftKeyboard_KeyCode gives a key's code). */
-#define KEYBOARD_ENTRY_KEY_0 0 /* always disabled here */
-#define KEYBOARD_ENTRY_KEY_6 6 /* enabled with the character before the cursor */
+#define KEYBOARD_ENTRY_KEY_NEWLINE 0   /* always disabled here */
+#define KEYBOARD_ENTRY_KEY_BACKSPACE 6 /* enabled with the character before the cursor */
 #define KEYBOARD_ENTRY_KEY_COPY 11
 #define KEYBOARD_ENTRY_KEY_PASTE 12
 #define KEYBOARD_ENTRY_KEY_107 0x107 /* not pressed by A while the panel's OK button is dimmed */

@@ -167,13 +167,13 @@ CLEAN_AS(func_ov138_0229c588, DateScreen_MoveCursor)
 
 /* func_ov138_0229c630: the sprite shows the third look of its set (a press let go) and the
  * scene waits for it (sub state 10) before going back to this sub state. */
-void DateScreen_PressAndReturn(DateScreen *self)
+void DateScreen_ReleaseAndReturn(DateScreen *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_PRESS_RELEASE);
 }
-CLEAN_AS(func_ov138_0229c630, DateScreen_PressAndReturn)
+CLEAN_AS(func_ov138_0229c630, DateScreen_ReleaseAndReturn)
 
 /* func_ov138_0229c654: the sprite shows the second look of its set (pressed) and, once it has,
  * the press is acted on (sub state 9). */
@@ -478,7 +478,7 @@ void DateScreen_ActOnPress(DateScreen *self)
             DateScreen_PickListRow(self);
         } else {
             MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_LIST);
-            DateScreen_PressAndReturn(self);
+            DateScreen_ReleaseAndReturn(self);
         }
         return;
     }
@@ -510,7 +510,7 @@ void DateScreen_SettleThumb(DateScreen *self)
 {
     if (ClockSetter_SettleThumb(&self->clock)) {
         MenuScene_SetSubState(date_scene(self), DATE_SCREEN_SUB_LIST);
-        DateScreen_PressAndReturn(self);
+        DateScreen_ReleaseAndReturn(self);
     }
     int x = DateScreen_CursorSpriteX(self);
     int y = DateScreen_CursorSpriteY(self);

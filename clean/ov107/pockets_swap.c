@@ -85,8 +85,8 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POCKETS_SWAP_INSECT_LAST 0x12e7
 #define POCKETS_SWAP_FISH_FIRST 0x12e8 /* 0x12e8 + a fish's kind */
 #define POCKETS_SWAP_FISH_LAST 0x131f
-#define POCKETS_SWAP_NO_STATE 0xf1    /* PocketsSwap_PlaceItemState off the grid */
-#define POCKETS_SWAP_ITEM_156B 0x156b /* drawn again by CurrentPockets_DrawPresent */
+#define POCKETS_SWAP_NO_STATE 0xf1       /* PocketsSwap_PlaceItemState off the grid */
+#define POCKETS_SWAP_ITEM_PRESENT 0x156b /* drawn again by CurrentPockets_DrawPresent */
 
 /* The game's mode the scene was opened in (GroupParams_Mode). */
 #define POCKETS_SWAP_MODE_ITEM_29 0x29
@@ -654,7 +654,7 @@ void PocketsSwap_TakeNewItem(PocketsSwap *self)
     ItemForm_ToCarried(&carried, &got);
     int item = carried;
     int state = 0;
-    if (item == POCKETS_SWAP_ITEM_156B) {
+    if (item == POCKETS_SWAP_ITEM_PRESENT) {
         item = CurrentPockets_DrawPresent();
         state = 1;
     }
@@ -1619,7 +1619,7 @@ CLEAN_AS(func_ov107_0229dd88, PocketsSwap_WipeIn)
 
 /* func_ov107_0229ddc4 (state 1): the object files loaded, the panel in layout 5 with message
  * 0x65, the pockets loaded into the grid (the places that cannot be given up dimmed) and the
- * letters (states 0-3 dimmed), the wipe in started covered (8 frames on window 2, margin 0x30),
+ * letters (all dimmed), the wipe in started covered (8 frames on window 2, margin 0x30),
  * layer 6 shown and scrolled 16 up, state 2, the scene and its objects drawn. */
 void PocketsSwap_StartWipeIn(PocketsSwap *self)
 {

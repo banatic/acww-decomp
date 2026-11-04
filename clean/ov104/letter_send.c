@@ -78,9 +78,6 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define LETTER_SEND_BUTTON_CANCEL 7
 #define LETTER_SEND_BUTTON_POST 9
 
-/* The state both buttons set the scene to, directly (not by MenuScene_SetState). */
-#define LETTER_SEND_STATE_END 4
-
 /* The size of a message sent to the host: its type and the letter. */
 #define LETTER_SEND_MESSAGE_SIZE (1 + (int) sizeof(Letter))
 
@@ -529,7 +526,7 @@ void LetterSend_Cancel(LetterSendScene *self)
     LetterSend_SetFlags(self, LETTER_SEND_FLAG_CANCELLED);
     ButtonPanel_Select(&self->panel, LETTER_SEND_BUTTON_CANCEL);
     MenuScene_SetSubState(lsend_scene(self), 0x1b);
-    self->base.state = LETTER_SEND_STATE_END;
+    self->base.state = LETTER_SEND_STATE_START_WIPE_OUT;
     LetterSend_ClearFlags(self, LETTER_SEND_FLAG_READ);
 }
 CLEAN_AS(func_ov104_0229c9fc, LetterSend_Cancel)
@@ -543,7 +540,7 @@ void LetterSend_Post(LetterSendScene *self)
     LetterSend_ClearFlags(self, LETTER_SEND_FLAG_CANCELLED);
     ButtonPanel_Select(&self->panel, LETTER_SEND_BUTTON_POST);
     MenuScene_SetSubState(lsend_scene(self), 0x1b);
-    self->base.state = LETTER_SEND_STATE_END;
+    self->base.state = LETTER_SEND_STATE_START_WIPE_OUT;
     LetterSend_ClearFlags(self, LETTER_SEND_FLAG_READ);
     if (Session_IsLinked(data_020ccf94) != 0) {
         LetterSend_BeginLinkedPost(self);
@@ -2219,10 +2216,6 @@ CLEAN_AS(func_ov104_0229e98c, LetterSend_SetUpLayers)
 /* The margin of the wipes on window 2. */
 #define LETTER_SEND_WIPE_MARGIN 0x30
 
-/* What the parent (overlay 92's) is told (func_ov092_02299324) when the scene ends without a
- * letter to show, and what it is told when the scene closes. */
-#define LETTER_SEND_PARENT_CODE_END 0x44
-
 /* A letter's constructor, handed to __cxa_vec_ctor with its destructor (so the game's symbols). */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void func_02066694(void *letter);
@@ -2424,13 +2417,13 @@ CLEAN_AS(func_ov104_0229ec4c, LetterSend_ShowLetter)
 
 /* func_ov104_0229ecc0 (state 6): the scene wipes out; when done, its layer hidden and its
  * objects no longer drawn: with LETTER_SEND_FLAG_READ the letter is shown (state 7, run at
- * once), else the scene is no longer drawn and the run phase begins. Else the scene layer follows
+ * once), else the scene is no longer drawn and asks to be deleted (phase 5). Else the scene layer follows
  * the wipe. */
 void LetterSend_SceneWipeOut(LetterSendScene *self)
 {
     if (MenuScene_StepWipe(lsend_scene(self), 0) != 0) {
         DisplayLayer_HideAndResetScroll(LETTER_SEND_SCENE_LAYER);
-        LetterSend_ClearFlags(self, LETTER_SEND_FLAG_SCROLLED);
+        LetterSend_ClearFlags(self, LETTER_SEND_FLAG_OBJECTS_DRAWN);
         if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_READ) != 0) {
             MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_SHOW_LETTER);
             LetterSend_ShowLetter(self);
@@ -2470,7 +2463,7 @@ void LetterSend_StartWipeOut(LetterSendScene *self)
     Popup_Hide(&self->popup, 1);
     LetterSend_HideCursorSprite(self);
     if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_READ) == 0) {
-        MenuDispatch_SetMode((MenuDispatch *) (void *) lsend_parent(self), LETTER_SEND_PARENT_CODE_END, 1);
+        MenuDispatch_SetMode((MenuDispatch *) (void *) lsend_parent(self), MENU_DISPATCH_MODE_CLOSE, 1);
     }
     MenuScene_StartWipeOnWindow2(lsend_scene(self), 2, 0, 2, LETTER_SEND_WIPE_MARGIN);
     MenuScene_SetWipeExtent(lsend_scene(self), 0xc0);
@@ -2524,7 +2517,7 @@ void LetterSend_StartWipeIn(LetterSendScene *self)
     DisplayLayer_Show(LETTER_SEND_SCENE_LAYER);
     MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_SCENE_WIPE_IN);
     LetterSend_SetFlags(self, LETTER_SEND_FLAG_SHOWN);
-    LetterSend_SetFlags(self, LETTER_SEND_FLAG_SCROLLED);
+    LetterSend_SetFlags(self, LETTER_SEND_FLAG_OBJECTS_DRAWN);
     LetterSend_ScrollSceneLayer(self);
 }
 CLEAN_AS(func_ov104_0229ee54, LetterSend_StartWipeIn)
@@ -2691,7 +2684,7 @@ int LetterSend_Draw(LetterSendScene *self)
         Glider_DrawWrapped(&self->cursor_sprite);
     }
     LetterSend_DrawHeld(self);
-    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_SCROLLED) != 0) {
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_OBJECTS_DRAWN) != 0) {
         ButtonPanel_Draw(&self->panel, self->unk_98);
         int y = (int) ((u32) self->unk_98 - 0x10);
         PocketsGrid_DrawPockets(&self->grid, 0, y);

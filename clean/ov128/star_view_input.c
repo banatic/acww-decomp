@@ -237,10 +237,10 @@ int StarView_HeldArrow(StarView *self)
         return STAR_SCOPE_ARROW_RIGHT;
     }
     if (held & STAR_VIEW_KEY_UP) {
-        return STAR_SCOPE_ARROW_DOWN;
+        return STAR_SCOPE_ARROW_TOP;
     }
     if (held & STAR_VIEW_KEY_DOWN) {
-        return STAR_SCOPE_ARROW_UP;
+        return STAR_SCOPE_ARROW_BOTTOM;
     }
     return STAR_SCOPE_ARROWS;
 }
@@ -319,7 +319,7 @@ void StarView_GlideToCursor(StarView *self)
 
     if (StarView_TestFlags(self, STAR_VIEW_FLAG_FREE) != 0) {
         Glider_TurnToSetA(&self->pointer);
-    } else if (self->pointer_spot == STAR_SCOPE_ARROW_DOWN) {
+    } else if (self->pointer_spot == STAR_SCOPE_ARROW_TOP) {
         Glider_TurnToSetC(&self->pointer);
     } else {
         Glider_TurnToSetA(&self->pointer);
@@ -369,7 +369,7 @@ void StarView_PlacePointer(StarView *self)
     Glider_PlaceAt(&self->pointer, x, y);
     if (StarView_TestFlags(self, STAR_VIEW_FLAG_FREE)) {
         Glider_SetAnim(&self->pointer, GLIDER_ANIM_SET_A);
-    } else if (self->pointer_spot == STAR_SCOPE_ARROW_DOWN) {
+    } else if (self->pointer_spot == STAR_SCOPE_ARROW_TOP) {
         Glider_SetAnim(&self->pointer, GLIDER_ANIM_SET_C);
     } else {
         Glider_SetAnim(&self->pointer, GLIDER_ANIM_SET_A);

@@ -85,7 +85,7 @@ void DateScreen_ClearFlags(DateScreen *self, u16 flags);
 void DateScreen_SetFlags(DateScreen *self, u16 flags);
 int DateScreen_TestFlags(DateScreen *self, u16 flags);
 int DateScreen_MoveCursor(DateScreen *self, int keys);
-void DateScreen_PressAndReturn(DateScreen *self);
+void DateScreen_ReleaseAndReturn(DateScreen *self);
 void DateScreen_PressToAct(DateScreen *self);
 void DateScreen_ShowCursorSprite(DateScreen *self);
 void DateScreen_GlideTo(DateScreen *self, int x, int y);

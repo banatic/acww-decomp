@@ -15,7 +15,8 @@
  *
  * In modes 0 and 1 `min` and `max` (now and twelve hours later) can bound the value
  * (CLOCK_SETTER_FLAG_HAS_MIN / HAS_MAX); overlay 136 (mode 1) sets both, overlay 135 (mode 0)
- * sets the minimum only, under a condition of its own (ClockSetter_UseMinimum). */
+ * sets the minimum only, under a condition of its own, and overlay 138 (mode 3) always sets
+ * the minimum (ClockSetter_UseMinimum). */
 #ifndef CLEAN_OV134_CLOCK_SETTER_H
 #define CLEAN_OV134_CLOCK_SETTER_H
 

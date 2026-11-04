@@ -157,17 +157,18 @@ void OrderCatalog_ApplyFade(OrderCatalog *self, u32 step)
 CLEAN_AS(func_ov142_022996f0, OrderCatalog_ApplyFade)
 
 /* func_ov142_02299794: the 15-bit colours `colour` and `faded` blended by `step` thirds of
- * `colour`: each component (colour's * step + faded's * (3 - step)) / 3.
+ * `colour`: each component (colour's * step + faded's * (3 - step)) / 3 (BGR555: red in the
+ * low bits).
  * QUIRK: each component is kept to 8 bits before it is put in place, so a step outside 0-3
  * spills into the next component (the game passes 0-3). */
 u16 OrderCatalog_BlendColour(void *self, u16 colour, u16 faded, int step)
 {
     (void) self;
     int rest = 3 - step;
-    u8 blue = (u8) (((colour & 0x1f) * step + (faded & 0x1f) * rest) / 3);
+    u8 red = (u8) (((colour & 0x1f) * step + (faded & 0x1f) * rest) / 3);
     u8 green = (u8) ((((colour >> 5) & 0x1f) * step + ((faded >> 5) & 0x1f) * rest) / 3);
-    u8 red = (u8) ((((colour >> 10) & 0x1f) * step + ((faded >> 10) & 0x1f) * rest) / 3);
-    return (u16) (blue | (green << 5) | (red << 10));
+    u8 blue = (u8) ((((colour >> 10) & 0x1f) * step + ((faded >> 10) & 0x1f) * rest) / 3);
+    return (u16) (red | (green << 5) | (blue << 10));
 }
 CLEAN_AS(func_ov142_02299794, OrderCatalog_BlendColour)
 

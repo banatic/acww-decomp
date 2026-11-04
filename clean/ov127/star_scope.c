@@ -521,10 +521,10 @@ void StarScope_ScrollByArrow(StarScope *scope, unsigned int arrow, int amount, i
         case STAR_SCOPE_ARROW_RIGHT:
             StarScope_ScrollHorizontally(scope, amount);
             break;
-        case STAR_SCOPE_ARROW_UP:
+        case STAR_SCOPE_ARROW_BOTTOM:
             StarScope_ScrollVertically(scope, amount, bounce);
             break;
-        case STAR_SCOPE_ARROW_DOWN:
+        case STAR_SCOPE_ARROW_TOP:
             StarScope_ScrollVertically(scope, -amount, bounce);
             break;
         default:

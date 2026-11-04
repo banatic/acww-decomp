@@ -36,11 +36,11 @@ enum StarScopeFlag {
 
 /* The arrows, as they are drawn round the screen's middle and scroll the view. */
 enum StarScopeArrow {
-    STAR_SCOPE_ARROW_LEFT = 0,  /* x down */
-    STAR_SCOPE_ARROW_RIGHT = 1, /* x up */
-    STAR_SCOPE_ARROW_UP = 2,    /* y up */
-    STAR_SCOPE_ARROW_DOWN = 3,  /* y down */
-    STAR_SCOPE_ARROWS = 4       /* none (StarScope_ArrowAt, `pressed`) */
+    STAR_SCOPE_ARROW_LEFT = 0,   /* x down */
+    STAR_SCOPE_ARROW_RIGHT = 1,  /* x up */
+    STAR_SCOPE_ARROW_BOTTOM = 2, /* the bottom arrow: y up */
+    STAR_SCOPE_ARROW_TOP = 3,    /* the top arrow: y down */
+    STAR_SCOPE_ARROWS = 4        /* none (StarScope_ArrowAt, `pressed`) */
 };
 
 /* What a tile of the sky draws (the top four bits of the tiles' table). */

@@ -377,7 +377,7 @@ CLEAN_AS(func_ov146_02299f08, WfcHostList_RefreshList)
  * hosting there fades in (to 20) when the scene has it as hosting, else its status is copied
  * and its fade starts from 0; a friend the scene has as hosting who no longer is fades out, and
  * at 0 the scene's status is cleared. When the count of friends hosting changed, it is shown
- * in full-width digits (one or two) in a label (style 8, tile 0x1f4, 2 cells, colours 9 and
+ * in full-width digits (one or two) in a label (layer 8, tile 0x1f4, 2 cells, colours 9 and
  * 0). */
 void WfcHostList_UpdateHosts(WfcHostList *self)
 {
@@ -465,7 +465,7 @@ void WfcHostList_ShowTitlesOnce(WfcHostList *self)
 }
 CLEAN_AS(func_ov146_0229a17c, WfcHostList_ShowTitlesOnce)
 
-/* A title: menu message `message` in a label of style 8 at tile `tile` (6 cells, colours 15 and
+/* A title: menu message `message` in a label on layer 8 at tile `tile` (6 cells, colours 15 and
  * 0), centred. */
 static void wfc_host_list_show_title(WfcHostList *self, int message, int tile)
 {

@@ -303,7 +303,7 @@ void MusicList_FlushScreens(MusicList *self)
 CLEAN_AS(func_ov144_02299ed4, MusicList_FlushScreens)
 
 /* func_ov144_02299f44: the nine rows from the top labelled with their songs' names, each in the
- * label of its screen row % 9 (style 4, 0x184 + 0x1a per label and 0xd, colours 0xf and 7): a
+ * label of its screen row % 9 (layer 4, 0x184 + 0x1a per label and 0xd, colours 0xf and 7): a
  * row past the list gets no song and an empty label; a row whose song the label already shows
  * is left as it is. */
 void MusicList_LabelRows(MusicList *self)

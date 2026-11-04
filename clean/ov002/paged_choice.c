@@ -1234,7 +1234,7 @@ void PagedChoice_Init(PagedChoice *choice, u8 layer, int priority, const char *s
 
     tile = (u16) choice->first_tile;
     for (i = 0; i < PAGED_CHOICE_ROWS; i++) {
-        ChoiceRow_SetStyle(&choice->rows[i], layer, tile, 1, 9);
+        ChoiceRow_SetLayer(&choice->rows[i], layer, tile, 1, 9);
         tile = (u16) (tile + ROW_TILES);
     }
 
@@ -1291,14 +1291,14 @@ PagedChoice *PagedChoice_Construct(PagedChoice *choice)
 CLEAN_AS(func_ov002_02209b14, PagedChoice_Construct)
 
 /* func_ov002_02209b6c */
-void ChoiceRow_SetStyle(PagedChoiceRow *row, u8 style, u16 first_tile, u8 colour, u8 colour_39)
+void ChoiceRow_SetLayer(PagedChoiceRow *row, u8 layer, u16 first_tile, u8 colour, u8 colour_39)
 {
-    row->style = style;
+    row->layer = layer;
     row->first_tile = first_tile;
     row->colour = colour;
     row->colour_39 = colour_39;
 }
-CLEAN_AS(func_ov002_02209b6c, ChoiceRow_SetStyle)
+CLEAN_AS(func_ov002_02209b6c, ChoiceRow_SetLayer)
 
 /* func_ov002_02209b94: opens the row's text box, 13 cells wide, in `colour` (its low four
  * bits), or in the row's own colour when `colour` is negative. */
@@ -1309,7 +1309,7 @@ void ChoiceRow_Draw(PagedChoiceRow *row, int colour)
     if (colour >= 0) {
         drawn = (u8) (colour & 0xf);
     }
-    TextLabel_OpenStyledBox2(&row->label, row->style, row->first_tile, ROW_CELLS, drawn, row->colour_39, 0);
+    TextLabel_OpenStyledBox2(&row->label, row->layer, row->first_tile, ROW_CELLS, drawn, row->colour_39, 0);
 }
 CLEAN_AS(func_ov002_02209b94, ChoiceRow_Draw)
 
@@ -1332,12 +1332,12 @@ PagedChoiceRow *ChoiceRow_Destroy(PagedChoiceRow *row)
 }
 CLEAN_AS(func_ov002_02209bf0, ChoiceRow_Destroy)
 
-/* func_ov002_02209c08: an empty label drawn with style 3 from tile 0 in colours 1 and 9. */
+/* func_ov002_02209c08: an empty label drawn on layer 3 from tile 0 in colours 1 and 9. */
 PagedChoiceRow *ChoiceRow_Construct(PagedChoiceRow *row)
 {
     TextLabel_ConstructCopy(&row->label);
     row->label.vtable = (const TextVtable *) (const void *) data_ov002_0220bba8;
-    row->style = 3;
+    row->layer = 3;
     row->first_tile = 0;
     row->colour = 1;
     row->colour_39 = 9;
