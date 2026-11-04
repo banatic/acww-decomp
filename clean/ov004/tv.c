@@ -70,9 +70,9 @@ static void Tv_switch_to(Tv *tv, int state)
  * switch is on and RoomObjects_InNookOrScene0AOr0F says no, else the "off" one. */
 static void Tv_bind_and_enter(Tv *tv, int on_state, int off_state)
 {
-    int on = Switch_Value(&tv->base.light_switch);
+    int on = Switch_Value(&tv->base.on_switch);
     Glow_Bind(&tv->screen, tv->base.model_resource, data_ov004_022531d8, on);
-    if (Switch_Value(&tv->base.light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    if (Switch_Value(&tv->base.on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         Tv_switch_to(tv, on_state);
     } else {
         Tv_switch_to(tv, off_state);
@@ -83,7 +83,7 @@ static void Tv_bind_and_enter(Tv *tv, int on_state, int off_state)
  * it and the screen. */
 static void TvAnimated_show(TvAnimated *tv, int on)
 {
-    Switch_Set(&tv->base.base.light_switch, (u8) on, 0);
+    Switch_Set(&tv->base.base.on_switch, (u8) on, 0);
     Glow_Switch(&tv->base.screen, on, 1, 0);
     Tv_ShowScreen(&tv->base, on);
 }
@@ -92,7 +92,7 @@ static void TvAnimated_show(TvAnimated *tv, int on)
  * the animations, TV_ANIMATED_OFF. */
 void TvAnimated_UpdateTurningOff(TvAnimated *tv)
 {
-    Switch_Set(&tv->base.base.light_switch, 0, 0);
+    Switch_Set(&tv->base.base.on_switch, 0, 0);
     if (RoomObject_AdvanceAnims(&tv->base.base) != 0) {
         Tv_switch_to(&tv->base, TV_ANIMATED_OFF);
     }
@@ -114,7 +114,7 @@ CLEAN_AS(func_ov004_02215788, TvAnimated_EnterTurningOff)
  * requests TV_ANIMATED_TURNING_OFF and gives the answer, else 0. */
 int TvAnimated_UpdateOn(TvAnimated *tv)
 {
-    if (Switch_IsPending(&tv->base.base.light_switch)) {
+    if (Switch_IsPending(&tv->base.base.on_switch)) {
         return RoomSync_RequestState(&tv->base.base, TV_ANIMATED_TURNING_OFF, SLOT_70_VALUE, 1);
     }
     return 0;
@@ -135,7 +135,7 @@ CLEAN_AS(func_ov004_022157fc, TvAnimated_EnterOn)
  * animations, TV_ANIMATED_ON. */
 void TvAnimated_UpdateTurningOn(TvAnimated *tv)
 {
-    Switch_Set(&tv->base.base.light_switch, 1, 0);
+    Switch_Set(&tv->base.base.on_switch, 1, 0);
     if (RoomObject_AdvanceAnims(&tv->base.base) != 0) {
         Tv_switch_to(&tv->base, TV_ANIMATED_ON);
     }
@@ -157,7 +157,7 @@ CLEAN_AS(func_ov004_02215874, TvAnimated_EnterTurningOn)
  * requests TV_ANIMATED_TURNING_ON. */
 void TvAnimated_UpdateOff(TvAnimated *tv)
 {
-    if (Switch_IsPending(&tv->base.base.light_switch)) {
+    if (Switch_IsPending(&tv->base.base.on_switch)) {
         RoomSync_RequestState(&tv->base.base, TV_ANIMATED_TURNING_ON, SLOT_70_VALUE, 1);
     }
 }
@@ -300,7 +300,7 @@ CLEAN_AS(func_ov004_02215b8c, TvAnimated_Create)
  * and gives the answer, else 0. */
 int Tv_UpdateOn(Tv *tv)
 {
-    if (Switch_IsPending(&tv->base.light_switch)) {
+    if (Switch_IsPending(&tv->base.on_switch)) {
         return RoomSync_RequestState(&tv->base, TV_OFF, SLOT_70_VALUE, 1);
     }
     return 0;
@@ -313,7 +313,7 @@ int Tv_EnterOn(Tv *tv)
 {
     RoomObject_PlaySound1(&tv->base);
     Glow_Switch(&tv->screen, 1, 1, 0);
-    Switch_Set(&tv->base.light_switch, 1, 0);
+    Switch_Set(&tv->base.on_switch, 1, 0);
     Tv_ShowScreen(tv, 1);
     return 1;
 }
@@ -323,7 +323,7 @@ CLEAN_AS(func_ov004_02215bd0, Tv_EnterOn)
  * TV_ON. */
 void Tv_UpdateOff(Tv *tv)
 {
-    if (Switch_IsPending(&tv->base.light_switch)) {
+    if (Switch_IsPending(&tv->base.on_switch)) {
         RoomSync_RequestState(&tv->base, TV_ON, SLOT_70_VALUE, 1);
     }
 }
@@ -335,7 +335,7 @@ int Tv_EnterOff(Tv *tv)
 {
     RoomObject_PlaySound2(&tv->base);
     Glow_Switch(&tv->screen, 0, 1, 0);
-    Switch_Set(&tv->base.light_switch, 0, 0);
+    Switch_Set(&tv->base.on_switch, 0, 0);
     Tv_ShowScreen(tv, 0);
     return 1;
 }

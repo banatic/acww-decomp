@@ -10,7 +10,7 @@
  *   at 0 is played each frame; while the switch has a change pending it requests "off".
  *
  * Once its model is bound it enters "on" when its switch is on, unless RoomObjects_InNookOrScene0AOr0F
- * says otherwise, and "off" if not; in mode 1 (RoomObject.unk_76C) it requests "off" through
+ * says otherwise, and "off" if not; in mode 1 (RoomObject.placement_mode) it requests "off" through
  * RoomSync_SetState instead. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_GLOWING_H
 #define CLEAN_OV004_ROOM_OBJECT_GLOWING_H

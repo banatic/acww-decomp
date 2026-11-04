@@ -165,7 +165,7 @@ int PeriodicRoomObject_Start(PeriodicRoomObject *object)
     object->repeats = object->count;
     object->phase = PERIODIC_WAIT;
     object->wait = 0;
-    if (base->unk_76C != 1) {
+    if (base->placement_mode != 1) {
         if (sound == SOUND_SHORT_WAIT) {
             object->wait = (u16) MainRandom_Below(SHORT_WAIT);
         } else if (single_burst(sound)) {

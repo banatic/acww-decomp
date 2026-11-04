@@ -43,11 +43,11 @@ enum DesignKind {
     /* The eight designs at data_021ed278, which villagers take (Design_VillagerTakeShopDesign);
      * likely the Able Sisters'. */
     DESIGN_KIND_SHOP = 4,
-    DESIGN_KIND_RECORD_5 = 5, /* the one design at data_021f34b0 + 4 (overlay 3's actor 0x500b) */
-    DESIGN_KIND_VILLAGER = 6, /* the design of each villager (by villager) */
-    DESIGN_KIND_SAMPLE = 7,   /* the samples "menu/desi/myc/obj%d.bch", one at a time: read only */
-    DESIGN_KIND_RECORD_8 = 8, /* the one design at data_021f3278 */
-    DESIGN_KIND_LOCAL = 9,    /* this system's player; a session slot in messages */
+    DESIGN_KIND_TOWN_FLAG = 5, /* the one design at data_021f34b0 + 4 (overlay 3's actor 0x500b) */
+    DESIGN_KIND_VILLAGER = 6,  /* the design of each villager (by villager) */
+    DESIGN_KIND_SAMPLE = 7,    /* the samples "menu/desi/myc/obj%d.bch", one at a time: read only */
+    DESIGN_KIND_RECORD_8 = 8,  /* the one design at data_021f3278 */
+    DESIGN_KIND_LOCAL = 9,     /* this system's player; a session slot in messages */
     DESIGN_KINDS = 10
 };
 

@@ -48,8 +48,8 @@ extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
 /* The presets and timings the modes start with. */
 #define ROOM_CAMERA_PRESET_10 0x11
 #define ROOM_CAMERA_PRESET_15 0x1d
-#define ROOM_CAMERA_PRESET_11 0x12 /* the first of four: one per size of Nook's shop */
-#define ROOM_CAMERA_PRESET_12 0x16 /* the same, for mode 12 */
+#define ROOM_CAMERA_PRESET_TRY_WALLPAPER 0x12 /* the first of four: one per size of Nook's shop */
+#define ROOM_CAMERA_PRESET_TRY_CARPET 0x16    /* the same, for mode 12 */
 #define ROOM_CAMERA_PRESET_16 0x1e
 #define ROOM_CAMERA_PRESET_LOOK_AT 0x20
 #define ROOM_CAMERA_PRESET_FOCUS 0xb
@@ -388,63 +388,63 @@ CLEAN_AS(func_ov004_0224719c, RoomCamera_SetModeBetween)
 
 /* func_ov004_022471d4: mode 12's frame: the goal's second offset at the origin, the camera
  * placed. */
-void RoomCamera_Mode12Frame(CameraControl *camera)
+void RoomCamera_TryCarpetFrame(CameraControl *camera)
 {
     camera->goal.second_offset = (Vec3){0, 0, 0};
     RoomCamera_place(camera);
 }
-CLEAN_AS(func_ov004_022471d4, RoomCamera_Mode12Frame)
+CLEAN_AS(func_ov004_022471d4, RoomCamera_TryCarpetFrame)
 
 /* func_ov004_02247238: mode 12's start: preset 0x16 plus the size of Nook's shop the scene
  * is (RoomCamera_NookShopSize) and timing 0, the move restarted; 1. */
-int RoomCamera_Mode12Start(CameraControl *camera)
+int RoomCamera_TryCarpetStart(CameraControl *camera)
 {
-    CameraControl_LoadPreset(camera, ROOM_CAMERA_PRESET_12 + RoomCamera_NookShopSize(), NULL);
+    CameraControl_LoadPreset(camera, ROOM_CAMERA_PRESET_TRY_CARPET + RoomCamera_NookShopSize(), NULL);
     CameraControl_SelectTiming(camera, ROOM_CAMERA_TIMING_0);
     CameraControl_RestartMove();
     return 1;
 }
-CLEAN_AS(func_ov004_02247238, RoomCamera_Mode12Start)
+CLEAN_AS(func_ov004_02247238, RoomCamera_TryCarpetStart)
 
 /* func_ov004_02247260: mode 11's frame: the goal's second offset at the origin, the camera
  * placed. */
-void RoomCamera_Mode11Frame(CameraControl *camera)
+void RoomCamera_TryWallpaperFrame(CameraControl *camera)
 {
     camera->goal.second_offset = (Vec3){0, 0, 0};
     RoomCamera_place(camera);
 }
-CLEAN_AS(func_ov004_02247260, RoomCamera_Mode11Frame)
+CLEAN_AS(func_ov004_02247260, RoomCamera_TryWallpaperFrame)
 
 /* func_ov004_022472c4: mode 11's start: preset 0x12 plus the size of Nook's shop the scene
  * is and timing 0, the move restarted; 1. */
-int RoomCamera_Mode11Start(CameraControl *camera)
+int RoomCamera_TryWallpaperStart(CameraControl *camera)
 {
-    CameraControl_LoadPreset(camera, ROOM_CAMERA_PRESET_11 + RoomCamera_NookShopSize(), NULL);
+    CameraControl_LoadPreset(camera, ROOM_CAMERA_PRESET_TRY_WALLPAPER + RoomCamera_NookShopSize(), NULL);
     CameraControl_SelectTiming(camera, ROOM_CAMERA_TIMING_0);
     CameraControl_RestartMove();
     return 1;
 }
-CLEAN_AS(func_ov004_022472c4, RoomCamera_Mode11Start)
+CLEAN_AS(func_ov004_022472c4, RoomCamera_TryWallpaperStart)
 
 /* func_ov004_022472ec: mode 12; whether the camera switched (0 without a camera). */
-int RoomCamera_SetMode12(void)
+int RoomCamera_SetModeTryCarpet(void)
 {
     if (data_021c67a4 != NULL) {
-        return CameraControl_SetMode(data_021c67a4, ROOM_CAMERA_MODE_12);
+        return CameraControl_SetMode(data_021c67a4, ROOM_CAMERA_MODE_TRY_CARPET);
     }
     return 0;
 }
-CLEAN_AS(func_ov004_022472ec, RoomCamera_SetMode12)
+CLEAN_AS(func_ov004_022472ec, RoomCamera_SetModeTryCarpet)
 
 /* func_ov004_0224730c: mode 11; whether the camera switched (0 without a camera). */
-int RoomCamera_SetMode11(void)
+int RoomCamera_SetModeTryWallpaper(void)
 {
     if (data_021c67a4 != NULL) {
-        return CameraControl_SetMode(data_021c67a4, ROOM_CAMERA_MODE_11);
+        return CameraControl_SetMode(data_021c67a4, ROOM_CAMERA_MODE_TRY_WALLPAPER);
     }
     return 0;
 }
-CLEAN_AS(func_ov004_0224730c, RoomCamera_SetMode11)
+CLEAN_AS(func_ov004_0224730c, RoomCamera_SetModeTryWallpaper)
 
 /* func_ov004_0224732c: which of Nook's shops the scene is, 0 to 3 (both floors of the last
  * give 3); 0 in any other scene. */

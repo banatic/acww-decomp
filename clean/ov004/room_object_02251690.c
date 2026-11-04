@@ -60,7 +60,7 @@ CLEAN_AS(func_ov004_022132bc, RoomObject02251690_Follow)
  * touched, it requests state 0 for the object at its cell; then vtable slot 0x84. */
 int RoomObject02251690_Update(RoomObject02251690 *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, 0, SLOT_70_VALUE, 1);
     }
     object->base.vtable->update_unsettled(&object->base);

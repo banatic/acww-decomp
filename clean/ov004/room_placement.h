@@ -22,10 +22,10 @@ enum RoomPlacementResult {
 /* RoomPlacement_Find's `mode` that makes the placement without a search (its mode 2). */
 #define ROOM_PLACEMENT_MODE_UNPLACED 2
 
-int RoomPlacement_PlaceSeries3F24(u32 *out, unsigned int item, int mode);
-int RoomPlacement_PlaceSeries4224(u32 *out, unsigned int item, int mode);
-int RoomPlacement_PlaceSeries3EA4(u32 *out, unsigned int item, int mode);
-int RoomPlacement_PlaceSeries3D84(u32 *out, unsigned int item, int mode);
+int RoomPlacement_PlaceMyEasel(u32 *out, unsigned int item, int mode);
+int RoomPlacement_PlaceMyHat(u32 *out, unsigned int item, int mode);
+int RoomPlacement_PlaceMyUmbrella(u32 *out, unsigned int item, int mode);
+int RoomPlacement_PlaceMyClothes(u32 *out, unsigned int item, int mode);
 int RoomPlacement_PlayerIndex(void);
 int RoomPlacement_FindNearPlayer(u32 *out, ItemCode *item, int mode);
 int RoomPlacement_Find(u32 *out, ItemCode *item, const Vec3 *position, int angle, int mode);

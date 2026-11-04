@@ -998,7 +998,7 @@ static void end_play(CafeGuest *self)
         RoomPlayerActor_RequestSpotMove(0);
     }
     Music_DropPriority(CAFE_GUEST_TALK_PRIORITY);
-    Music_Clear2f4();
+    Music_ClearNoHourTune();
     CameraControl_ResetMode();
     CafeGuest_SetState(self, CAFE_GUEST_DONE);
 }
@@ -1027,7 +1027,7 @@ int CafeGuest_StartPlay(CafeGuest *self)
     SceneLook_RequestAngles(guest_look(self), 0, 0, CAFE_GUEST_LOOK_AHEAD, data_020c80f4, data_020c80ec);
     SceneAction_RequestTalk(guest_action(self), 0, 1);
     Music_AddValue(CAFE_GUEST_TALK_PRIORITY, CAFE_GUEST_TALK_VALUE, 0);
-    Music_Set2f4();
+    Music_SetNoHourTune();
     return 1;
 }
 CLEAN_AS(func_ov068_02274790, CafeGuest_StartPlay)
@@ -1094,7 +1094,7 @@ int CafeGuest_StartTalk(CafeGuest *self)
 CLEAN_AS(func_ov068_02274878, CafeGuest_StartTalk)
 
 /* func_ov068_022748f0 (update of CAFE_GUEST_WAIT): kind 8 (none) is deleted; kind 7 waits for
- * the player at its seat; the others show parts 6 and 7 of the cafe's counter (cafe_props.h),
+ * the player at its seat; the others show parts 6 and 7 of the cafe master's cup (cafe_props.h),
  * and kind 6 its part 8 too. */
 int CafeGuest_UpdateWait(CafeGuest *self)
 {

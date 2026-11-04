@@ -54,13 +54,13 @@ void RoomObject02252e00_UpdatePlaying(RoomObject02252e00 *object)
     switch (RoomObject_Number(base)) {
         case FURNITURE_RESTARTS_1:
         case FURNITURE_RESTARTS_2:
-            if (Switch_IsPending(&base->light_switch)) {
+            if (Switch_IsPending(&base->on_switch)) {
                 RoomObject02252e00_request(object, ROOM_OBJECT_02252E00_PLAYING);
                 return;
             }
             break;
     }
-    Switch_Toggle(&base->light_switch, 0);
+    Switch_Toggle(&base->on_switch, 0);
     if (RoomObject_AdvanceAnims(base)) {
         RoomObject02252e00_request(object, ROOM_OBJECT_02252E00_STILL);
     } else {
@@ -86,7 +86,7 @@ CLEAN_AS(func_ov004_02219ed8, RoomObject02252e00_EnterPlaying)
  * PLAYING. */
 void RoomObject02252e00_UpdateStill(RoomObject02252e00 *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomObject02252e00_request(object, ROOM_OBJECT_02252E00_PLAYING);
     }
 }
@@ -140,7 +140,7 @@ CLEAN_AS(func_ov004_02219fc4, RoomObject02252e00_EnterState)
 /* func_ov004_0221a048 (vtable slot 0x0c): the switch off, shown at once. */
 int RoomObject02252e00_SwitchOff(RoomObject02252e00 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_0221a048, RoomObject02252e00_SwitchOff)
@@ -160,7 +160,7 @@ CLEAN_AS(_ZN18Obj_ov004_02252e0019func_ov004_0221a064Ev, RoomObject02252e00_Upda
 int RoomObject02252e00_Start(RoomObject02252e00 *object)
 {
     RoomObject *base = &object->base;
-    Switch_Set(&base->light_switch, 0, 0);
+    Switch_Set(&base->on_switch, 0, 0);
     RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlayAnimsFromEnd(base, 0, ANIM_MODE_ONCE, FX32_ONE);
     base->vtable->vfunc_70(base, ROOM_OBJECT_02252E00_STILL, SLOT_70_VALUE);

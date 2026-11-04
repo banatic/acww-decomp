@@ -365,7 +365,7 @@ int RoomSync_SetState(RoomObject *object, int state, int value, int flag)
 CLEAN_AS(func_02052738, RoomSync_SetState)
 
 /* func_02052794: message 24 for the object at cell (x, y) of `layer`, sent with `kind` when the
- * session is linked and the object is not a preview (RoomObject_Unk76CIs2); sent to anyone but
+ * session is linked and the object is not a preview (RoomObject_IsUnplaced); sent to anyone but
  * everyone it asks to be relayed. 0 without an object there, else 1 (sent or not). */
 int RoomSync_SendState(int x, int y, int layer, int state, u8 value, u8 flag, int kind)
 {
@@ -374,7 +374,7 @@ int RoomSync_SendState(int x, int y, int layer, int state, u8 value, u8 flag, in
     if (object == NULL) {
         return 0;
     }
-    if (Session_IsLinked(data_020ccf94) && !RoomObject_Unk76CIs2(object)) {
+    if (Session_IsLinked(data_020ccf94) && !RoomObject_IsUnplaced(object)) {
         u32 on = (u32) shows_on(object, state);
         u32 scene = SceneQuery_Current();
         u32 music = (u32) RoomObject_Unk00CIs3A(object);
@@ -412,7 +412,7 @@ void RoomSync_ToggleAt(int scene, int x, int y, int layer, u8 flag)
     if (object == NULL) {
         return;
     }
-    if (Switch_Value(&object->light_switch) == 0) {
+    if (Switch_Value(&object->on_switch) == 0) {
         if (RoomObjects_CountOn((RoomObjectsTest) func_ov004_02211280) >= LIGHTS_ON_MAX) {
             RoomObject *other = RoomObjects_PickOn((RoomObjectsTest) func_ov004_02211280, 0);
             if (other != NULL) {

@@ -11,15 +11,15 @@
  * run, vtable 0x02253d80), the stage of its visit (0xac8), a countdown of frames to its leaving
  * (0xacc), the date and time of its last talk (0xad0), how close it walks to the item (0xad8),
  * two countdowns (0xadc, 0xadd), whether its action sound was played (0xade), how many items it
- * bought (0xae0), the count of the room's objects (0xae4) and its frames of looking about
- * (0xae8).
+ * bought (0xae0), the count of the room's objects (0xae4) and its frames of waiting at the
+ * door to be greeted (0xae8).
  *
  * The stages of its visit (0xac8), as the code here reads them:
  *   0  it has just come in and calls the player ("q10_call");
  *   1  it was greeted; its talk ends with it stepping in;
  *   2  it looks about the room for an item to buy, and offers for it ("ev_fmarket3");
  *   3  its time is up (the countdown at 0xacc, an hour since its last talk or 600 frames of
- *      looking about): it says goodbye ("ev_fmarket3", then "q_bye", stage 4) and leaves;
+ *      waiting at the door): it says goodbye ("ev_fmarket3", then "q_bye", stage 4) and leaves;
  *   5  the player stands at the room's way out: "q10_wait", then "q_bye" (stage 6) and it
  *      leaves with them.
  *
@@ -91,7 +91,7 @@ typedef struct FleaMarketBuyer {
     u8 bought;                            /* 0xae0: the items it bought */
     u8 unk_ae1[3];                        /* 0xae1 */
     s32 object_count;                     /* 0xae4: the room's objects when it came */
-    s32 browse_frames;                    /* 0xae8: counted while nonzero */
+    s32 wait_to_talk_frames;              /* 0xae8: counted while nonzero */
 } FleaMarketBuyer;
 
 FleaMarketBuyer *FleaMarketBuyer_Destroy(FleaMarketBuyer *buyer);

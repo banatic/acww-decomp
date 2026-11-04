@@ -4,8 +4,8 @@
  *
  * The placement word (RoomObject.placement): the cell within its block (bits 0-3 and 4-7), the
  * furniture's number (8-23), the side it faces (24-25, a quarter turn each), its mode (26-27,
- * RoomObject.unk_76C: 2 for a preview shown in front of the camera) and whether it stands on
- * another object (28, RoomObject.unk_288). */
+ * RoomObject.placement_mode: 2 for a preview shown in front of the camera) and whether it stands on
+ * another object (28, RoomObject.layer). */
 #ifndef CLEAN_OV004_ROOM_OBJECT_BODY_H
 #define CLEAN_OV004_ROOM_OBJECT_BODY_H
 
@@ -17,10 +17,10 @@ void RoomObject_SetModelByIndex(RoomObject *object);
 void RoomObject_BindModel(RoomObject *object);
 void RoomObject_SetUp(RoomObject *object);
 int RoomObject_EnterFirstState(RoomObject *object);
-void RoomObject_ShadowItemsOnTop(RoomObject *object);
-void RoomObject_UpdateBoxAndShadow(RoomObject *object);
+void RoomObject_PickItemsOnTop(RoomObject *object);
+void RoomObject_UpdateBoxAndPick(RoomObject *object);
 void RoomObject_RemoveBox(RoomObject *object);
-void RoomObject_SetUpBoxAndShadow(RoomObject *object);
+void RoomObject_SetUpBoxAndPick(RoomObject *object);
 void RoomObject_Size(RoomObject *object, Vec3 *size);
 void RoomObject_UpdateMatrices(RoomObject *object);
 void RoomObject_BuildMatrix(RoomObject *object, Vec3 *offset, int turn);

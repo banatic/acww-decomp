@@ -7,10 +7,10 @@
  * - its lid (Chest.lid), entered through vtable slot 0x70: closed (the switch on), opening
  *   (sound 1, the animations of variant 0 once), open (the switch off) and closing (sound 2).
  *   Touching it closed asks the scene for an event (EventQueue_RequestKind6); a chest of kind 0xb does so
- *   only when the cells in front of it are free, else the touch is undone. In mode 2 (unk_76C)
+ *   only when the cells in front of it are free, else the touch is undone. In mode 2 (placement_mode)
  *   it opens and closes by itself;
  * - its talk (Chest.talk_step): the scene's event 1 (vtable slot 0x4c) starts the menu when
- *   SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else a talk; event 8 ends either. Both first
+ *   SceneKinds_CurrentIsHouseRoom and Room_PlayerIsOfThisTown allow it, else a talk; event 8 ends either. Both first
  *   send actor 4 (SessionPlayers_FieldActor(4)) message 0x2d with the chest's index and its entry's values
  *   (RoomPlayerActor_RequestChestApproach) and wait for RoomPlayerActor_TestFlag2, then open the lid; the menu opens
  *   group 9 in mode 0x22, the talk takes the receiver and sets its state byte to one of 16

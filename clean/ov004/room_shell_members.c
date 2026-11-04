@@ -205,12 +205,13 @@ CollisionBox *RoomShellBoxes_Construct(CollisionBox *boxes)
 }
 CLEAN_AS(func_ov004_0223248c, RoomShellBoxes_Construct)
 
-/* func_ov004_022324b4: the animation object, 0 before it is allocated. */
+/* The animation the object starts with. */
 static ModelAnim *RoomShellMaterialAnim_base(RoomShellMaterialAnim *anim)
 {
     return (ModelAnim *) (void *) anim;
 }
 
+/* func_ov004_022324b4: the animation object, 0 before it is allocated. */
 unsigned long RoomShellMaterialAnim_Anim(RoomShellMaterialAnim *anim)
 {
     return (unsigned long) (uintptr_t) anim->anim;

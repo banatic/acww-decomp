@@ -69,7 +69,7 @@ CLEAN_AS(func_ov004_0221974c, RoomObject022525cc_UpdateStopping)
  * the glows towards on (fading). */
 int RoomObject022525cc_EnterStopping(RoomObject022525cc *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlaySound2(&object->base);
     GlowSet_Switch(&object->glows, 1, 1, 0);
     return 1;
@@ -82,7 +82,7 @@ int RoomObject022525cc_UpdateOn(RoomObject022525cc *object)
 {
     RoomObject_Lookup020537a8(&object->base);
     RoomObject_PlaySound0(&object->base);
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         return RoomObject022525cc_request(object, ROOM_OBJECT_022525CC_STOPPING);
     }
     return 0;
@@ -94,7 +94,7 @@ CLEAN_AS(func_ov004_022197b0, RoomObject022525cc_UpdateOn)
 int RoomObject022525cc_EnterOn(RoomObject022525cc *object)
 {
     object->speed = FX32_ONE;
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlaySound1(&object->base);
     GlowSet_Switch(&object->glows, 1, 1, 0);
     return 1;
@@ -104,7 +104,7 @@ CLEAN_AS(func_ov004_022197e0, RoomObject022525cc_EnterOn)
 /* func_ov004_02219824 (update of OFF): with a change of the switch pending, requests ON. */
 void RoomObject022525cc_UpdateOff(RoomObject022525cc *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomObject022525cc_request(object, ROOM_OBJECT_022525CC_ON);
     }
 }
@@ -115,7 +115,7 @@ CLEAN_AS(func_ov004_02219824, RoomObject022525cc_UpdateOff)
 int RoomObject022525cc_EnterOff(RoomObject022525cc *object)
 {
     object->speed = 0;
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     GlowSet_Switch(&object->glows, 0, 1, 0);
     return 1;
 }
@@ -201,8 +201,8 @@ int RoomObject022525cc_Start(RoomObject022525cc *object)
 {
     RoomObject *base = &object->base;
     RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
-    GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
-    if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->on_switch));
+    if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         RoomObject022525cc_switch_to(object, ROOM_OBJECT_022525CC_ON);
     } else {
         RoomObject022525cc_switch_to(object, ROOM_OBJECT_022525CC_OFF);

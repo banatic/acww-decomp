@@ -65,7 +65,7 @@ typedef struct SpawnerEvent {
 /* The process (0x78 bytes). */
 typedef struct Spawner {
     Process base;      /* 0x00 */
-    u8 part_50[0x20];  /* 0x50: a part with an empty constructor and destructor */
+    u8 grid[0x20];     /* 0x50: a tile grid (TileGrid, empty constructor and destructor) */
     u8 overlay_loaded; /* 0x70: whether `overlay` was loaded for the last actor */
     u8 unused_71[3];
     u32 overlay; /* 0x74 */
@@ -129,8 +129,8 @@ void Spawner_NoteOverlay(Spawner *self, const u32 *overlay);
 int Spawner_IsPending(int self, const SpawnerRequest *request);
 void Spawner_ClearRequest(SpawnerRequest *request);
 void Spawner_SetRequest(SpawnerRequest *request, const u16 *profile, u8 scene, u8 priority, const Vec3 *position);
-void Spawner_PartDestruct(void *part);
-void Spawner_PartConstruct(void *part);
+void TileGrid_Destruct(void *part);
+void TileGrid_Construct(void *part);
 
 /* The process's phases and the villagers it makes (the vtable's slots 0, 3 and 6). */
 int Spawner_Execute(void);

@@ -29,10 +29,10 @@
 
 static_assert(offsetof(RoomObject, placement) == 0x8, "placement");
 static_assert(offsetof(RoomObject, slot) == 0x132, "slot");
-static_assert(offsetof(RoomObject, item_shadows) == 0x1d0, "item shadows");
+static_assert(offsetof(RoomObject, item_picks) == 0x1d0, "item shadows");
 static_assert(offsetof(RoomObject, base_matrix) == 0x254, "base matrix");
 static_assert(offsetof(RoomObject, is_set_up) == 0x289, "set up");
-static_assert(offsetof(RoomObject, shadow) == 0x28c, "shadow");
+static_assert(offsetof(RoomObject, pick_box) == 0x28c, "pick box");
 static_assert(offsetof(RoomObject, model_resource) == 0x594, "model resource");
 static_assert(offsetof(RoomObject, joint_frame) == 0x5dc, "joint frame");
 static_assert(offsetof(RoomObject, unk_774) == 0x774, "unk_774");
@@ -46,7 +46,7 @@ static_assert(offsetof(PushBox, base.active) == 0x98, "push box active");
 static_assert(offsetof(FurnitureAnim, base.ctrl.frame) == 0x08, "anim frame");
 
 #define OTHER_PLAYERS 4     /* actors 0 to 3 */
-#define LAYER_FLOOR 0       /* RoomObject.unk_288: on the floor */
+#define LAYER_FLOOR 0       /* RoomObject.layer: on the floor */
 #define LAYER_ON_TOP 1      /* standing on another object */
 #define BLOCK_CELLS 16      /* cells along a block of the town's map */
 #define CELL 0x2000         /* the width of a cell, 20.12 fixed point */
@@ -108,7 +108,7 @@ static void set_vec(Vec3 *v, fx32 x, fx32 y, fx32 z)
 }
 
 /* func_ov004_0220e8f0: whether the object may move by `offset`, or else turn by `turn`. Not
- * when unk_77D is set, when SceneKinds_CurrentIsHouseRoom or Room_Check0220fed0 say no, when it stands on
+ * when unk_77D is set, when SceneKinds_CurrentIsHouseRoom or Room_PlayerIsOfThisTown say no, when it stands on
  * another object, without the town's map or the player, or when CarriedItems_CellsAreClear
  * says no. Else it is taken off the map for the test, and each cell it would cover must hold no
  * item on the floor, pass UnitTypeInfo_Byte04At and have no object on top that is not idle. Without
@@ -126,12 +126,12 @@ int RoomObject_CanMoveOrTurn(RoomObject *object, Vec3 *offset, int turn)
     if (!SceneKinds_CurrentIsHouseRoom()) {
         return 0;
     }
-    if (!Room_Check0220fed0()) {
+    if (!Room_PlayerIsOfThisTown()) {
         return 0;
     }
     void *map = data_021c80bc;
     MapActor *player = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
-    if (object->unk_288 == LAYER_ON_TOP) {
+    if (object->layer == LAYER_ON_TOP) {
         return 0;
     }
     if (map == NULL || player == NULL) {
@@ -231,7 +231,7 @@ int RoomObject_HasItemsOnTop(RoomObject *object)
     RoomObject_ListCells(object, &cells, NULL, 0);
     void *map = data_021c80bc;
     int found = 0;
-    if (object->unk_288 == LAYER_FLOOR && object->unk_788 == CARRIES_ITEMS) {
+    if (object->layer == LAYER_FLOOR && object->unk_788 == CARRIES_ITEMS) {
         for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
             int y = CellList_At(&cells, (int) i)->y;
             int x = CellList_At(&cells, (int) i)->x;
@@ -256,7 +256,7 @@ void RoomObject_MoveOnMap(RoomObject *object, Vec3 *offset, int turn)
     CellList_Construct(&cells);
     RoomObject_ListCells(object, &cells, NULL, 0);
     ObjectSet on_top;
-    ObjectSet_Construct(&on_top, &cells, object->unk_288);
+    ObjectSet_Construct(&on_top, &cells, object->layer);
     RoomObject_TakeOffMap(object, 1, 1);
     RoomObject_PutOnMap(object, 1, offset, turn, 1);
     for (unsigned long i = 0; i < ObjectSet_Count(&on_top); i++) {
@@ -275,13 +275,13 @@ CLEAN_AS(func_ov004_0220ee90, RoomObject_MoveOnMap)
  * its first cell (RoomSync_PutFurniture), and the object into the room's grid at each of its cells.
  * With `update_reference`, its reference (RoomObject_Reference) is kept when it changed. An
  * object on top of another faces the way the matrix RoomObject_ListCells left says. Nothing
- * for a preview (unk_76C 2).
+ * for a preview (placement_mode 2).
  * QUIRK: the first call on top of another object builds two function-local static vectors and
  * registers them for destruction (TrivialObject_Destruct, which does nothing). */
 void RoomObject_PutOnMap(RoomObject *object, int unused, Vec3 *offset, int turn, u8 update_reference)
 {
     (void) unused;
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return;
     }
     CellList cells;
@@ -289,7 +289,7 @@ void RoomObject_PutOnMap(RoomObject *object, int unused, Vec3 *offset, int turn,
     RoomObject_ListCells(object, &cells, offset, turn);
 
     ItemCode code;
-    if (object->unk_288 == LAYER_ON_TOP) {
+    if (object->layer == LAYER_ON_TOP) {
         if ((data_ov004_02256c50 & 1) == 0) {
             set_vec(&data_ov004_02256cb4, 0, 0, 0);
             __register_global_object(&data_ov004_02256cb4, (void *) func_020012dc, data_ov004_02256ca8);
@@ -315,16 +315,16 @@ void RoomObject_PutOnMap(RoomObject *object, int unused, Vec3 *offset, int turn,
 
     for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
         if (i == 0) {
-            int on = Switch_Value(&object->light_switch);
+            int on = Switch_Value(&object->on_switch);
             int town = SceneQuery_Current();
             int x = CellList_At(&cells, (int) i)->x;
             int y = CellList_At(&cells, (int) i)->y;
-            RoomSync_PutFurniture(town, x, y, object->unk_288, on, option, kind, &code, 1);
+            RoomSync_PutFurniture(town, x, y, object->layer, on, option, kind, &code, 1);
         }
         void *grid = RoomObjects_Grid();
         int x = CellList_At(&cells, (int) i)->x;
         int y = CellList_At(&cells, (int) i)->y;
-        RoomObjects_GridSetCell(grid, object, x, y, object->unk_288);
+        RoomObjects_GridSetCell(grid, object, x, y, object->layer);
     }
     if (update_reference) {
         u16 reference = RoomObject_Reference(object, offset, turn);
@@ -342,7 +342,7 @@ CLEAN_AS(func_ov004_0220ef14, RoomObject_PutOnMap)
  * the floor also leaves the grid's layer 1 where that holds one. Nothing for a preview. */
 void RoomObject_TakeOffMap(RoomObject *object, u8 flag, int with_top)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return;
     }
     CellList cells;
@@ -354,13 +354,13 @@ void RoomObject_TakeOffMap(RoomObject *object, u8 flag, int with_top)
     for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
         int x = CellList_At(&cells, (int) i)->x;
         int y = CellList_At(&cells, (int) i)->y;
-        ItemCode *item = map_item(map, x, y, object->unk_288);
-        if (item != NULL && ItemCode_IsFurniture(item)) {
+        ItemCode *item = map_item(map, x, y, object->layer);
+        if (item != NULL && ItemCode_HasVariant(item)) {
             int town = SceneQuery_Current();
-            RoomSync_TakeFurniture(town, x, y, object->unk_288, Switch_Value(&object->light_switch), item, with_top, flag);
+            RoomSync_TakeFurniture(town, x, y, object->layer, Switch_Value(&object->on_switch), item, with_top, flag);
         }
-        RoomObjects_GridClearCell(RoomObjects_Grid(), object, x, y, object->unk_288);
-        if (with_top && object->unk_288 == LAYER_FLOOR &&
+        RoomObjects_GridClearCell(RoomObjects_Grid(), object, x, y, object->layer);
+        if (with_top && object->layer == LAYER_FLOOR &&
             RoomObjects_GridIndexAt(RoomObjects_Grid(), x, y, LAYER_ON_TOP) != -1) {
             RoomObjects_GridClearCell(RoomObjects_Grid(), object, x, y, LAYER_ON_TOP);
         }
@@ -374,7 +374,7 @@ CLEAN_AS(func_ov004_0220f100, RoomObject_TakeOffMap)
 int RoomObject_FacingItemCode(ItemCode *code, RoomObject *object, int angle)
 {
     int side = Angle_Side(angle);
-    u16 value = ItemCode_MakeFurniture(object->unk_284, side);
+    u16 value = ItemCode_MakeVariant(object->number, side);
     *code = value;
     return value;
 }
@@ -507,9 +507,9 @@ int Actors_AreNear(Vec3 *point, fx32 reach, Vec3 *other, fx32 radius)
 }
 CLEAN_AS(func_ov004_0220feac, Actors_AreNear)
 
-/* func_ov004_0220fed0: whether PlayerId_WhichTown says 0 of the child (PlayerRecord_Player) of
- * PlayerRecords_Current's object; not when either is missing. */
-int Room_Check0220fed0(void)
+/* func_ov004_0220fed0: whether the current player is of this town (PlayerId_WhichTown of
+ * PlayerRecords_Current's player says 0); not when either is missing. */
+int Room_PlayerIsOfThisTown(void)
 {
     u8 *parent = PlayerRecords_Current();
     if (parent == NULL) {
@@ -521,4 +521,4 @@ int Room_Check0220fed0(void)
     }
     return PlayerId_WhichTown(child) == 0;
 }
-CLEAN_AS(func_ov004_0220fed0, Room_Check0220fed0)
+CLEAN_AS(func_ov004_0220fed0, Room_PlayerIsOfThisTown)

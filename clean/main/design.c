@@ -99,7 +99,7 @@ static const u16 room_design_first[ROOM_DESIGN_RANGES] = {0x3d84, 0x3ea4, 0x3f24
 #define TAKE_ROOM_ITEM_LAST 0x3ea3
 
 /* Design_Changed: the scene (func_020b65c4) the shop's textures exist in, and the overlay 3
- * actor that shows DESIGN_KIND_RECORD_5. */
+ * actor that shows DESIGN_KIND_TOWN_FLAG. */
 #define SHOP_SCENE 10
 #define RECORD_5_ACTOR 0x500b
 
@@ -108,7 +108,7 @@ extern Session *data_020ccf94;    /* the session (also the message being built t
 extern u8 data_021ed278[];        /* the shop's designs */
 extern u8 data_021e5a2c[];        /* the villagers (0x7ec bytes each) */
 extern u8 data_021f3278[];        /* DESIGN_KIND_RECORD_8 */
-extern u8 data_021f34b0[];        /* DESIGN_KIND_RECORD_5, at 4 */
+extern u8 data_021f34b0[];        /* DESIGN_KIND_TOWN_FLAG, at 4 */
 extern u8 data_021ebcd4[];        /* five 0x450-byte records with two design codes */
 extern u8 data_021f3b44[];        /* the list of six items Design_VillagerTakeShopDesign reads */
 extern u8 data_020e54a8;          /* 0 or 1: which of the refreshes of Design_Changed apply */
@@ -204,7 +204,7 @@ int Design_FindVillager(int villager)
 }
 CLEAN_AS(func_02071678, Design_FindVillager)
 
-/* func_0207169c: DESIGN_KIND_RECORD_5, a single design: the index is not used. */
+/* func_0207169c: DESIGN_KIND_TOWN_FLAG, a single design: the index is not used. */
 int Design_FindRecord5(int index)
 {
     (void) index;
@@ -576,7 +576,7 @@ int Design_Changed(int kind, int index)
                 DesignManager_MarkShopChanged((DesignManager *) (uintptr_t) DesignManager_Get(), index & 7);
             }
             return 1;
-        case DESIGN_KIND_RECORD_5:
+        case DESIGN_KIND_TOWN_FLAG:
             if (data_020e54a8 == 0 && SceneQuery_CurrentIs0() != 0) {
                 void *actor = ObjectActors_FindByCode(RECORD_5_ACTOR);
                 if (actor != NULL) {

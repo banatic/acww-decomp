@@ -32,12 +32,12 @@
 
 #define ONE 0x1000             /* 1 in 20.12 fixed point */
 #define PLAYER 4               /* the actor SessionPlayers_ActorOf is asked for */
-#define LAYER_FLOOR 0          /* RoomObject.unk_288 */
+#define LAYER_FLOOR 0          /* RoomObject.layer */
 #define LAYER_ON_TOP 1         /* standing on another object */
 #define CARRIES_ITEMS 1        /* RoomObject.unk_788: what stands on its cells moves with it */
 #define FOOTPRINT_TWO 1        /* RoomObject.unk_784: two cells along its X axis */
 #define FOOTPRINT_TWO_BY_TWO 2 /* 2x2 cells, its position at their middle */
-#define MODE_PREVIEW 2         /* RoomObject.unk_76C */
+#define MODE_PREVIEW 2         /* RoomObject.placement_mode */
 #define LAST_NUMBER 0x6e8      /* the highest furniture number the tables have */
 #define BLOCK_CELLS 16
 #define AREA_ROOM 10            /* func_020b65c4: the area where the floor's height is looked up */
@@ -45,10 +45,10 @@
 #define PREVIEW_DISTANCE 0x4000 /* ...4 units along the camera's line */
 #define STATE_CHANGE_EXIT 2     /* the value of vtable slot 0x14's argument handled here */
 #define SOLD_OUT_SIGN 0x1547    /* the sold-out sign, put where a vanishing object stood */
-#define SHADOW_SHRINK 0xc00     /* the shadow is 3/4 of the object */
+#define PICK_SHRINK 0xc00       /* the touch-pick box is 3/4 of the object */
 #define BOX_HEIGHT 0x4000
-#define SHADOW_PLAIN 8      /* the shadow's flags... */
-#define SHADOW_020B67AC 0xf /* ...when SceneKinds_CurrentIn6To8 says so */
+#define PICK_KIND_ROOM_OBJECT 8          /* the touch pick's kind... */
+#define PICK_KIND_ROOM_OBJECT_LINKED 0xf /* ...when SceneKinds_CurrentIn6To8 says so */
 
 /* Placement word fields. */
 #define PLACE_X(word) ((word) & 0xf)
@@ -70,7 +70,7 @@ extern Vec3 data_021c67d0;
 /* The angles a preview is turned by about X and Y (set up by RoomObject_SetUp). */
 extern u16 data_ov004_02256c40;
 extern u16 data_ov004_02256c3c;
-/* The first state for each mode (RoomObject.unk_76C). */
+/* The first state for each mode (RoomObject.placement_mode). */
 extern const s32 data_ov004_02247634[];
 /* A byte for each index among the room's objects, given to ModelObject_SetPolygonId. */
 extern const u8 data_ov004_02247640[];
@@ -156,7 +156,7 @@ CLEAN_AS(func_ov004_0220f484, RoomObject_BindModel)
 /* func_ov004_0220f52c: sets the object up once from its placement word: its position (the
  * centre of its cell, at the height RoomObjects_HeightAtPoint finds), angle, number (at most
  * LAST_NUMBER), layer, and the furniture's values from the main program's tables; then its
- * matrices, switch, place on the map, first state, box and shadow. A preview instead stands 4
+ * matrices, switch, place on the map, first state, box and touch pick. A preview instead stands 4
  * units from data_021c67b8 towards data_021c67d0, at a quarter of its size, and the angles it
  * is turned by are set to face along that line. An object on the floor stands at height 0,
  * except in area 10; one on top of another is mounted on it.
@@ -167,7 +167,7 @@ void RoomObject_SetUp(RoomObject *object)
         return;
     }
     u32 word = object->placement;
-    if (!RoomObject_Unk76CIs2(object)) {
+    if (!RoomObject_IsUnplaced(object)) {
         AcreTile_TileCentreInAcre(&object->position, 0, 0, (int) PLACE_X(word), (int) PLACE_Y(word));
         object->position.y = RoomObjects_HeightAtPoint(&object->position);
         set_scale(object, ONE);
@@ -190,41 +190,41 @@ void RoomObject_SetUp(RoomObject *object)
         data_ov004_02256c3c = (u16) (Math_Atan2(direction.x, direction.z) + 0x8000);
     }
     object->angle = (s16) (PLACE_SIDE(word) << 14);
-    object->unk_284 = (s32) PLACE_NUMBER(word);
-    if (object->unk_284 > LAST_NUMBER) {
-        object->unk_284 = LAST_NUMBER;
+    object->number = (s32) PLACE_NUMBER(word);
+    if (object->number > LAST_NUMBER) {
+        object->number = LAST_NUMBER;
     }
-    (void) ItemCode_MakeFurniture(object->unk_284, 0);
-    object->unk_288 = (u8) PLACE_ON_TOP(word);
-    if (!RoomObject_Unk76CIs2(object) && object->unk_288 == LAYER_FLOOR) {
+    (void) ItemCode_MakeVariant(object->number, 0);
+    object->layer = (u8) PLACE_ON_TOP(word);
+    if (!RoomObject_IsUnplaced(object) && object->layer == LAYER_FLOOR) {
         object->position.y = 0;
         if (SceneQuery_Current() == AREA_ROOM) {
             object->position.y = RoomObjects_HeightAtPoint(&object->position);
         }
     }
-    object->unk_780 = FurnitureInfo_DmaUnk18(object->unk_284);
-    object->top_height = FurnitureInfo_DmaUnk19(object->unk_284);
-    object->unk_784 = FurnitureInfo_Shape(object->unk_284);
-    object->unk_774 = FurnitureInfo_DmaUnk1D(object->unk_284);
-    object->unk_778 = FurnitureInfo_DmaUnk1E(object->unk_284);
-    object->unk_78C = (u8) FurnitureInfo_IndoorBit2(object->unk_284);
-    object->unk_78D = (u8) FurnitureInfo_IndoorBit3(object->unk_284);
-    object->unk_788 = (u32) FurnitureInfo_DmaUnk1A(object->unk_284);
-    object->light_kind = FurnitureInfo_LightKind(object->unk_284);
-    if (!RoomObject_Unk76CIs2(object)) {
+    object->unk_780 = FurnitureInfo_DmaUnk18(object->number);
+    object->top_height = FurnitureInfo_DmaUnk19(object->number);
+    object->unk_784 = FurnitureInfo_Shape(object->number);
+    object->unk_774 = FurnitureInfo_DmaUnk1D(object->number);
+    object->unk_778 = FurnitureInfo_DmaUnk1E(object->number);
+    object->unk_78C = (u8) FurnitureInfo_IndoorBit2(object->number);
+    object->unk_78D = (u8) FurnitureInfo_IndoorBit3(object->number);
+    object->unk_788 = (u32) FurnitureInfo_DmaUnk1A(object->number);
+    object->light_kind = FurnitureInfo_LightKind(object->number);
+    if (!RoomObject_IsUnplaced(object)) {
         if (object->unk_784 == FOOTPRINT_TWO_BY_TWO) {
             object->position.x += ONE;
             object->position.z += ONE;
         }
-        if (object->unk_288 == LAYER_ON_TOP) {
+        if (object->layer == LAYER_ON_TOP) {
             Mount_AttachAt(&object->mount, (int) PLACE_X(word), (int) PLACE_Y(word), object->angle);
         }
     }
     RoomObject_UpdateMatrices(object);
-    Switch_Load(&object->light_switch, object);
+    Switch_Load(&object->on_switch, object);
     RoomObject_PutOnMap(object, 1, NULL, 0, 0);
     RoomObject_EnterFirstState(object);
-    RoomObject_SetUpBoxAndShadow(object);
+    RoomObject_SetUpBoxAndPick(object);
     object->is_set_up = 1;
 }
 CLEAN_AS(func_ov004_0220f52c, RoomObject_SetUp)
@@ -232,16 +232,16 @@ CLEAN_AS(func_ov004_0220f52c, RoomObject_SetUp)
 /* func_ov004_0220f7d4: enters the first state of the object's mode. */
 int RoomObject_EnterFirstState(RoomObject *object)
 {
-    return RoomObject_EnterState(object, data_ov004_02247634[object->unk_76C]);
+    return RoomObject_EnterState(object, data_ov004_02247634[object->placement_mode]);
 }
 CLEAN_AS(func_ov004_0220f7d4, RoomObject_EnterFirstState)
 
-/* func_ov004_0220f7f0: for an object on the floor that carries what stands on it, a shadow
- * (TouchPick_SetCylinderAndAdd, its slot by cell) under each item of kind 1 lying on its cells, at the height
+/* func_ov004_0220f7f0: for an object on the floor that carries what stands on it, a touch
+ * pick (TouchPick_SetCylinderAndAdd, its slot by cell) under each item of kind 1 lying on its cells, at the height
  * RoomObjects_HeightAtCell finds. */
-void RoomObject_ShadowItemsOnTop(RoomObject *object)
+void RoomObject_PickItemsOnTop(RoomObject *object)
 {
-    if (object->unk_288 != LAYER_FLOOR || object->unk_788 != CARRIES_ITEMS) {
+    if (object->layer != LAYER_FLOOR || object->unk_788 != CARRIES_ITEMS) {
         return;
     }
     CellList cells;
@@ -257,26 +257,26 @@ void RoomObject_ShadowItemsOnTop(RoomObject *object)
             Vec3 point;
             AcreTile_TileCentre(&point, (unsigned int) x, (unsigned int) y);
             point.y = RoomObjects_HeightAtCell(x, y);
-            TouchPick_SetCylinderAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &object->item_shadows[i], &point,
+            TouchPick_SetCylinderAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &object->item_picks[i], &point,
                                         0xccd, 0x100, 0xa, 0xff);
         }
     }
     CellList_Destruct(&cells);
 }
-CLEAN_AS(func_ov004_0220f7f0, RoomObject_ShadowItemsOnTop)
+CLEAN_AS(func_ov004_0220f7f0, RoomObject_PickItemsOnTop)
 
-/* The shadow's flags. */
-static int shadow_flags(void)
+/* The touch pick's kind. */
+static int pick_kind(void)
 {
-    return SceneKinds_CurrentIn6To8() != 0 ? SHADOW_020B67AC : SHADOW_PLAIN;
+    return SceneKinds_CurrentIn6To8() != 0 ? PICK_KIND_ROOM_OBJECT_LINKED : PICK_KIND_ROOM_OBJECT;
 }
 
 /* func_ov004_0220f8c0 (each frame): moves the box to the object (CollisionBox_Place, when the box
- * is set up and the object has one: not with unk_78C) and its shadow, 3/4 of its size, with
- * it; the shadow goes (TouchPick_AddFaces) when the box did not move. Nothing for a preview. */
-void RoomObject_UpdateBoxAndShadow(RoomObject *object)
+ * is set up and the object has one: not with unk_78C) and its touch-pick box, 3/4 of its
+ * size, with it; the box is added again (TouchPick_AddFaces) when the box did not move. Nothing for a preview. */
+void RoomObject_UpdateBoxAndPick(RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return;
     }
     Vec3 size;
@@ -293,23 +293,23 @@ void RoomObject_UpdateBoxAndShadow(RoomObject *object)
             shown = 1;
         }
     }
-    size.x = FX_MulFunc(size.x, SHADOW_SHRINK);
-    size.z = FX_MulFunc(size.z, SHADOW_SHRINK);
+    size.x = FX_MulFunc(size.x, PICK_SHRINK);
+    size.z = FX_MulFunc(size.z, PICK_SHRINK);
     if (shown) {
         u8 index = (u8) RoomObjects_IndexOf(RoomObjects_Table(), object);
-        int flags = shadow_flags();
-        TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->shadow, &centre, size.x, size.z,
+        int flags = pick_kind();
+        TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box, &centre, size.x, size.z,
                                size.y, object->angle, flags, index);
     } else {
-        TouchPick_AddFaces((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->shadow);
+        TouchPick_AddFaces((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box);
     }
 }
-CLEAN_AS(func_ov004_0220f8c0, RoomObject_UpdateBoxAndShadow)
+CLEAN_AS(func_ov004_0220f8c0, RoomObject_UpdateBoxAndPick)
 
 /* func_ov004_0220f994: takes the box out of the world, when the object has one. */
 void RoomObject_RemoveBox(RoomObject *object)
 {
-    if (!RoomObject_Unk76CIs2(object) && !object->unk_78C) {
+    if (!RoomObject_IsUnplaced(object) && !object->unk_78C) {
         CollisionBox_Remove(&object->push_box.base);
         PushBox_ClearOwner(&object->push_box);
     }
@@ -317,11 +317,11 @@ void RoomObject_RemoveBox(RoomObject *object)
 CLEAN_AS(func_ov004_0220f994, RoomObject_RemoveBox)
 
 /* func_ov004_0220f9c8: sets up the box (CollisionBox_Add, BOX_HEIGHT high, when the object has
- * one) and the shadow, as RoomObject_UpdateBoxAndShadow. Nothing for a preview.
+ * one) and the touch pick, as RoomObject_UpdateBoxAndPick. Nothing for a preview.
  * QUIRK: the object it stands on is looked up (RoomObjects_At) and not used. */
-void RoomObject_SetUpBoxAndShadow(RoomObject *object)
+void RoomObject_SetUpBoxAndPick(RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return;
     }
     Vec3 size;
@@ -337,13 +337,13 @@ void RoomObject_SetUpBoxAndShadow(RoomObject *object)
         CollisionBox_Add(&object->push_box.base, size.x, size.z, BOX_HEIGHT, &centre, object->angle, &scale);
     }
     u8 index = (u8) RoomObjects_IndexOf(RoomObjects_Table(), object);
-    size.x = FX_MulFunc(size.x, SHADOW_SHRINK);
-    size.z = FX_MulFunc(size.z, SHADOW_SHRINK);
-    int flags = shadow_flags();
-    TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->shadow, &centre, size.x, size.z, size.y,
-                           object->angle, flags, index);
+    size.x = FX_MulFunc(size.x, PICK_SHRINK);
+    size.z = FX_MulFunc(size.z, PICK_SHRINK);
+    int flags = pick_kind();
+    TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box, &centre, size.x, size.z,
+                           size.y, object->angle, flags, index);
 }
-CLEAN_AS(func_ov004_0220f9c8, RoomObject_SetUpBoxAndShadow)
+CLEAN_AS(func_ov004_0220f9c8, RoomObject_SetUpBoxAndPick)
 
 /* func_ov004_0220faac: the object's size by footprint (one cell, two, or 2x2), its height
  * what stands on it (halved unless RoomManager_ShopMode says so), or 0x200 when that is 0.
@@ -380,7 +380,7 @@ CLEAN_AS(func_ov004_0220faac, RoomObject_Size)
  * FurnitureInfo_Lift of its number, less 600. Both leave the matrix in data_021fbe48. */
 void RoomObject_UpdateMatrices(RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         Mtx43_Translation(&data_021fbe48, object->position.x, object->position.y, object->position.z);
         Mtx43_RotateX(&data_021fbe48, (s16) data_ov004_02256c40);
         Mtx43_RotateY(&data_021fbe48, (s16) (object->angle + (s16) data_ov004_02256c3c));
@@ -436,7 +436,7 @@ CLEAN_AS(func_ov004_0220fc98, RoomObject_BuildMatrix)
 /* func_ov004_0220fd8c: 0 on the floor, 1 on top of another object. */
 int RoomObject_Layer(RoomObject *object)
 {
-    return object->unk_288;
+    return object->layer;
 }
 CLEAN_AS(func_ov004_0220fd8c, RoomObject_Layer)
 
@@ -444,7 +444,7 @@ CLEAN_AS(func_ov004_0220fd8c, RoomObject_Layer)
 int RoomObject_ToggleSwitch(RoomObject *object)
 {
     if (object->unk_77D == 0) {
-        Switch_Toggle(&object->light_switch, 1);
+        Switch_Toggle(&object->on_switch, 1);
         return 1;
     }
     return 0;
@@ -471,7 +471,7 @@ CLEAN_AS(func_ov004_0220fdc8, RoomObject_SetUnk77C)
 /* func_ov004_0220fde0: the furniture's number. */
 int RoomObject_Number(RoomObject *object)
 {
-    return object->unk_284;
+    return object->number;
 }
 CLEAN_AS(func_ov004_0220fde0, RoomObject_Number)
 
@@ -514,7 +514,7 @@ CLEAN_AS(func_ov004_0220ff74, RoomObject_ToWorld)
 /* func_ov004_0221081c: FurnitureInfo_IndoorBit6 of the furniture's number. */
 int RoomObject_Lookup020537a8(RoomObject *object)
 {
-    return FurnitureInfo_IndoorBit6(object->unk_284);
+    return FurnitureInfo_IndoorBit6(object->number);
 }
 CLEAN_AS(func_ov004_0221081c, RoomObject_Lookup020537a8)
 
@@ -593,7 +593,7 @@ void RoomObject_Vfunc14(RoomObject *object, int mode)
         RoomObject_ExitLight(object);
         RoomObject_RemoveBox(object);
         if (!RoomObject_IsVanishing(object) && !RoomObject_IsShrunk(object)) {
-            Switch_Save(&object->light_switch, object);
+            Switch_Save(&object->on_switch, object);
         }
         FurnitureModel_EndLoad(&object->model_files);
         ModelPool_Release(&data_ov004_02259698, &object->slot);
@@ -612,7 +612,7 @@ void RoomObject_Vfunc14(RoomObject *object, int mode)
             } else {
                 RoomObject_TakeOffMap(object, 1, 0);
             }
-            RoomObject_EffectTowardsPlayer(object);
+            RoomObject_RoachFromCentre(object);
         }
         RoomObjects_Remove(RoomObjects_Table(), object);
     }
@@ -628,7 +628,7 @@ int RoomObject_Vfunc10(RoomObject *object)
 }
 CLEAN_AS(func_ov004_022109cc, RoomObject_Vfunc10)
 
-/* func_ov004_0221137c: the mode of a placement word (bits 26-27, RoomObject.unk_76C). */
+/* func_ov004_0221137c: the mode of a placement word (bits 26-27, RoomObject.placement_mode). */
 unsigned int Placement_Mode(unsigned int placement)
 {
     return (placement >> 26) & 3;

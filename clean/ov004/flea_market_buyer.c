@@ -79,7 +79,7 @@ static_assert(offsetof(FleaMarketBuyer, talk_wait) == 0xadd, "talk wait");
 static_assert(offsetof(FleaMarketBuyer, sound_played) == 0xade, "sound played");
 static_assert(offsetof(FleaMarketBuyer, bought) == 0xae0, "bought");
 static_assert(offsetof(FleaMarketBuyer, object_count) == 0xae4, "object count");
-static_assert(offsetof(FleaMarketBuyer, browse_frames) == 0xae8, "browse frames");
+static_assert(offsetof(FleaMarketBuyer, wait_to_talk_frames) == 0xae8, "browse frames");
 static_assert(sizeof(FleaMarketBuyer) == 0xaec, "the size func_ov004_022217fc allocates");
 
 /* The parts of the town villager scene object used here, by place (main's scene_object.h). */
@@ -148,9 +148,9 @@ static_assert(sizeof(FleaMarketBuyer) == 0xaec, "the size func_ov004_022217fc al
 
 /* The frames it is given to leave after no item could be found (10 seconds). */
 #define FMB_LEAVE_FRAMES 0x258
-/* It leaves an hour after its last talk, or after 600 frames of looking about. */
+/* It leaves an hour after its last talk, or after 600 frames of waiting at the door to be greeted. */
 #define FMB_STAY_MINUTES 0x3c
-#define FMB_BROWSE_FRAMES 0x258
+#define FMB_PATIENCE_FRAMES 0x258
 
 /* How close it walks to an item by the item's shape (FurnitureInfo_Shape). */
 #define FMB_REACH_SMALL 0x3000
@@ -452,7 +452,7 @@ static int fmb_leave(FleaMarketBuyer *buyer, u8 stage)
 /* func_ov004_02220318: whether it asks to leave (stage 5, or 3, and an event of kind 6): stage 5
  * when the player (where their frame began) is on the unit the collision map has claimed.
  * Else, with no event going on, its leaving countdown runs down, and asks on reaching 1; its
- * frames of looking about are counted while nonzero, and it asks when an hour has passed since
+ * frames of waiting to be greeted are counted while nonzero, and it asks when an hour has passed since
  * its last talk or after 600 of them. */
 int FleaMarketBuyer_CheckLeave(FleaMarketBuyer *buyer)
 {
@@ -472,10 +472,10 @@ int FleaMarketBuyer_CheckLeave(FleaMarketBuyer *buyer)
     DateTime now = {0};
     DateTime_Now(&now);
     int minutes = DateTime_MinutesBetween(&buyer->talk_time, &now);
-    if (buyer->browse_frames != 0) {
-        buyer->browse_frames++;
+    if (buyer->wait_to_talk_frames != 0) {
+        buyer->wait_to_talk_frames++;
     }
-    if (minutes >= FMB_STAY_MINUTES || buyer->browse_frames > FMB_BROWSE_FRAMES) {
+    if (minutes >= FMB_STAY_MINUTES || buyer->wait_to_talk_frames > FMB_PATIENCE_FRAMES) {
         return fmb_leave(buyer, FMB_STAGE_TIME_UP);
     }
     return 0;
@@ -942,7 +942,7 @@ CLEAN_AS(func_ov004_02220d58, FleaMarketBuyer_EnterDone)
 /* func_ov004_02220d5c (state 6's update): while its talk's countdown runs, it turns to the
  * talk's partner and talks (the camera kept) when the countdown is at 1, and counts down. Then
  * the time is its last talk's, and once its action is idle the object's event ends, a greeted
- * villager starts looking about (stage 2, its frames 0) and it is done (state 8). 1. */
+ * villager starts looking about (stage 2, its frames of waiting 0) and it is done (state 8). 1. */
 int FleaMarketBuyer_UpdateTalk(FleaMarketBuyer *buyer)
 {
     u8 wait = buyer->talk_wait;
@@ -958,7 +958,7 @@ int FleaMarketBuyer_UpdateTalk(FleaMarketBuyer *buyer)
         EventQueue_FinishObjectEvent(buyer);
         if (buyer->stage == FMB_STAGE_GREETED) {
             buyer->stage = FMB_STAGE_BROWSE;
-            buyer->browse_frames = 0;
+            buyer->wait_to_talk_frames = 0;
         }
         FleaMarketBuyer_SetState(buyer, FMB_STATE_DONE);
     }
@@ -1403,7 +1403,7 @@ static int fmb_player_known(FleaMarketBuyer *buyer, DesignCreator *player)
  * objects are counted, the town's extra visitors set, the collision map's claim set to 0, the
  * room notes a villager of the flea market (RoomManager_SetShopMode), the time is its last talk's
  * and it browses (stage 2, state 3). Else it waits at the way in, (0x10000, 0x23000), to call
- * (its first try in 100 frames, its frames of looking about counted, state 0). With a town
+ * (its first try in 100 frames, its frames of waiting counted, state 0). With a town
  * record, its state entry is set to state 2. Whether the start was done. */
 int FleaMarketBuyer_Start(FleaMarketBuyer *buyer)
 {
@@ -1434,7 +1434,7 @@ int FleaMarketBuyer_Start(FleaMarketBuyer *buyer)
     } else {
         fmb_place(buyer, FMB_DOOR_X, FMB_DOOR_Z);
         buyer->unk_adf = FMB_CALL_WAIT;
-        buyer->browse_frames = 1;
+        buyer->wait_to_talk_frames = 1;
         FleaMarketBuyer_SetState(buyer, FMB_STATE_CALL);
     }
     if (fmb_record_virtual(buyer) != NULL) {

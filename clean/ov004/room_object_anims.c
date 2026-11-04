@@ -60,7 +60,7 @@ static u16 start_frame(const AnimFile *file, u16 frame, u32 current)
 }
 
 /* func_ov004_0220ec8c: the sound of a move (NO_SOUND outside data_020e54a8 1): the one
- * UnitTypeInfo_Word02 gives the floor item of RoomShell_CarpetCode2 when it is one of
+ * UnitTypeInfo_Word02 gives the floor item of RoomShell_CurrentCarpet when it is one of
  * FLOOR_SOUND_FIRST to FLOOR_SOUND_LAST, else DEFAULT_MOVE_SOUND. */
 int RoomObject_MoveSound(RoomObject *object)
 {
@@ -68,7 +68,7 @@ int RoomObject_MoveSound(RoomObject *object)
     if (data_020e54a8 != 1) {
         return NO_SOUND;
     }
-    ItemCode *item = RoomShell_CarpetCode2();
+    ItemCode *item = RoomShell_CurrentCarpet();
     if (*item >= FLOOR_SOUND_FIRST && *item <= FLOOR_SOUND_LAST) {
         int sound = UnitTypeInfo_Word02(ItemInfo_IndoorGroundSound(item));
         if (sound != NO_SOUND) {
@@ -276,30 +276,30 @@ static int play_sound(RoomObject *object, int sound)
  * whether there was one. Not for a preview. */
 int RoomObject_PlaySound3(RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return 0;
     }
-    return play_sound(object, FurnitureSounds_Sound3(object->unk_284));
+    return play_sound(object, FurnitureSounds_Sound3(object->number));
 }
 CLEAN_AS(func_ov004_022106fc, RoomObject_PlaySound3)
 
 /* func_ov004_02210744: the same with the sound at 4 (FurnitureSounds_Sound2). */
 int RoomObject_PlaySound2(RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return 0;
     }
-    return play_sound(object, FurnitureSounds_Sound2(object->unk_284));
+    return play_sound(object, FurnitureSounds_Sound2(object->number));
 }
 CLEAN_AS(func_ov004_02210744, RoomObject_PlaySound2)
 
 /* func_ov004_0221078c: the same with the sound at 2 (FurnitureSounds_Sound1). */
 int RoomObject_PlaySound1(RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return 0;
     }
-    return play_sound(object, FurnitureSounds_Sound1(object->unk_284));
+    return play_sound(object, FurnitureSounds_Sound1(object->number));
 }
 CLEAN_AS(func_ov004_0221078c, RoomObject_PlaySound1)
 
@@ -307,10 +307,10 @@ CLEAN_AS(func_ov004_0221078c, RoomObject_PlaySound1)
  * (RoomSound_PlayAt). */
 int RoomObject_PlaySound0(RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object)) {
+    if (RoomObject_IsUnplaced(object)) {
         return 0;
     }
-    int sound = FurnitureSounds_Sound0(object->unk_284);
+    int sound = FurnitureSounds_Sound0(object->number);
     if (sound != data_ov004_0224fd38) {
         RoomSound_PlayAt(&object->sound, sound, &object->sound.position);
         return 1;

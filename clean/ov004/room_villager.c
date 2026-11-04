@@ -179,7 +179,7 @@ static int rv_call_int(const MemberPointer *member, RoomVillagerMachine *machine
 RoomVillager *RoomVillager_Destroy(RoomVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_022539cc;
-    Spawner_PartDestruct(&villager->grid);
+    TileGrid_Destruct(&villager->grid);
     RoomVillagerMachine_Destroy(&villager->machine);
     VillagerSceneObject_DestructBody(villager->base);
     return villager;
@@ -190,7 +190,7 @@ CLEAN_AS(func_ov004_0221e308, RoomVillager_Destroy)
 RoomVillager *RoomVillager_Delete(RoomVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_022539cc;
-    Spawner_PartDestruct(&villager->grid);
+    TileGrid_Destruct(&villager->grid);
     RoomVillagerMachine_Destroy(&villager->machine);
     VillagerSceneObject_DestructBody(villager->base);
     Heap_FreeAux(villager);
@@ -748,7 +748,7 @@ RoomVillager *RoomVillager_New(void)
         VillagerSceneObject_Construct(villager->base);
         *(const u8 **) (void *) villager->base = data_ov004_022539cc;
         RoomVillagerMachine_Construct(&villager->machine);
-        Spawner_PartConstruct(&villager->grid);
+        TileGrid_Construct(&villager->grid);
     }
     return villager;
 }

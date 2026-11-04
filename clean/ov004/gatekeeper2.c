@@ -82,7 +82,7 @@ static_assert(sizeof(Gatekeeper2) == 0x714, "the size func_ov004_022258c4 alloca
 #define GATEKEEPER2_LINE_ITEM 0x1e       /* the first pocket's item named in slot 0 */
 #define GATEKEEPER2_LINE_NO_CHOICE 0x20  /* the screen gave no choice */
 #define GATEKEEPER2_LINE_NO_VISITOR 0x2e /* no special character visits today */
-#define GATEKEEPER2_LINE_ALONE 0x2f      /* linked: no one else; else 0x30, the newest named */
+#define GATEKEEPER2_LINE_ALONE 0x2f      /* in a session not linked: no one passed; linked: 0x30, the newest named */
 #define GATEKEEPER2_LINE_NEWEST 0x30
 #define GATEKEEPER2_LINE_COPIED 0x18
 #define GATEKEEPER2_LINE_SWAPPED 0x19
@@ -454,7 +454,7 @@ void Gatekeeper2Talk_OnAnswer(Gatekeeper2Talk *talk)
                     if (Session_IsLinked(session)) {
                         u8 *record = PlayerRecords_OfPlayer(RecentSlots_Newest());
                         if (record != NULL) {
-                            SceneBase_PutNameAt10(&talk->base, PlayerRecord_Player(record), 1);
+                            SceneBase_PutPlayerName(&talk->base, PlayerRecord_Player(record), 1);
                         }
                         message = GATEKEEPER2_LINE_NEWEST;
                     } else {

@@ -72,25 +72,25 @@ u8 Switch_Value(const Switch *sw)
 CLEAN_AS(func_ov004_0220d2b8, Switch_Value)
 
 /* func_ov004_0220d2bc: the wanted value into the town's map record of the object's cell
- * (RoomCells_SetSwitch, for its layer), unless RoomObject_Unk76CIs2 says the object is not to be kept
+ * (RoomCells_SetSwitch, for its layer), unless RoomObject_IsUnplaced says the object is not to be kept
  * there or it has no cell. */
 void Switch_Save(const Switch *sw, RoomObject *object)
 {
-    if (RoomObject_Unk76CIs2(object) == 0) {
+    if (RoomObject_IsUnplaced(object) == 0) {
         int x;
         int y;
         if (RoomObject_FindVariantCell(object, &x, &y, 0, 0) != 0) {
-            RoomCells_SetSwitch(x, y, object->unk_288, sw->wanted, SceneQuery_Current());
+            RoomCells_SetSwitch(x, y, object->layer, sw->wanted, SceneQuery_Current());
         }
     }
 }
 CLEAN_AS(func_ov004_0220d2bc, Switch_Save)
 
-/* func_ov004_0220d300: shows the wanted value and returns it; when RoomObject_Unk76CIs2 says
+/* func_ov004_0220d300: shows the wanted value and returns it; when RoomObject_IsUnplaced says
  * otherwise, leaves it pending and returns what that said. */
 int Switch_Apply(Switch *sw, RoomObject *object)
 {
-    int held = RoomObject_Unk76CIs2(object);
+    int held = RoomObject_IsUnplaced(object);
     if (held == 0) {
         sw->shown = sw->wanted;
         return sw->shown;
@@ -99,19 +99,19 @@ int Switch_Apply(Switch *sw, RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220d300, Switch_Apply)
 
-/* func_ov004_0220d318: the value to start with, shown at once: when unk_76C is 1 or 2, on if
+/* func_ov004_0220d318: the value to start with, shown at once: when placement_mode is 1 or 2, on if
  * unk_78D is 0; otherwise what the town's map record of the object's cell says (off when it has
  * no cell). */
 void Switch_Load(Switch *sw, RoomObject *object)
 {
     int value = 0;
-    if (object->unk_76C == 1 || RoomObject_Unk76CIs2(object) != 0) {
+    if (object->placement_mode == 1 || RoomObject_IsUnplaced(object) != 0) {
         value = object->unk_78D == 0;
     } else {
         int x;
         int y;
         if (RoomObject_FindVariantCell(object, &x, &y, 0, 0) != 0) {
-            value = RoomCells_GetSwitch(x, y, object->unk_288, SceneQuery_Current());
+            value = RoomCells_GetSwitch(x, y, object->layer, SceneQuery_Current());
         }
     }
     /* QUIRK: the record's answer is kept in a byte. */

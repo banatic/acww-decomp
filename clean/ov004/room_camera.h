@@ -23,8 +23,8 @@
 
 /* The modes started here (main's CameraControl_SetMode). */
 enum RoomCameraMode {
-    ROOM_CAMERA_MODE_11 = 0xb,
-    ROOM_CAMERA_MODE_12 = 0xc,
+    ROOM_CAMERA_MODE_TRY_WALLPAPER = 0xb,
+    ROOM_CAMERA_MODE_TRY_CARPET = 0xc,
     ROOM_CAMERA_MODE_14 = 0xe,
     ROOM_CAMERA_MODE_15 = 0xf,
     ROOM_CAMERA_MODE_BETWEEN = 0x10,
@@ -79,12 +79,12 @@ int RoomCamera_Mode14Start(CameraControl *camera);
 void RoomCamera_BetweenFrame(CameraControl *camera);
 int RoomCamera_BetweenStart(CameraControl *camera);
 int RoomCamera_SetModeBetween(const Vec3 *point);
-void RoomCamera_Mode12Frame(CameraControl *camera);
-int RoomCamera_Mode12Start(CameraControl *camera);
-void RoomCamera_Mode11Frame(CameraControl *camera);
-int RoomCamera_Mode11Start(CameraControl *camera);
-int RoomCamera_SetMode12(void);
-int RoomCamera_SetMode11(void);
+void RoomCamera_TryCarpetFrame(CameraControl *camera);
+int RoomCamera_TryCarpetStart(CameraControl *camera);
+void RoomCamera_TryWallpaperFrame(CameraControl *camera);
+int RoomCamera_TryWallpaperStart(CameraControl *camera);
+int RoomCamera_SetModeTryCarpet(void);
+int RoomCamera_SetModeTryWallpaper(void);
 int RoomCamera_NookShopSize(void);
 void RoomCamera_Mode10Frame(CameraControl *camera);
 int RoomCamera_ResetGoal(CameraControl *camera);

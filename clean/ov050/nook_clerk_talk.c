@@ -576,10 +576,10 @@ void NookClerkTalk_OnAnswerTryOn(NookClerkTalk *talk, int answer)
         u16 *item = &talk->owner->item;
         if (ntalk_is_empty(item) == 0) {
             if (ntalk_in(talk->owner->item, NOOK_CLERK_WALLPAPER_FIRST, NOOK_CLERK_WALLPAPER_LAST)) {
-                RoomCamera_SetMode11();
+                RoomCamera_SetModeTryWallpaper();
                 RoomInterior_SetWallpaper(&talk->owner->item, 0, 1, 1);
             } else {
-                RoomCamera_SetMode12();
+                RoomCamera_SetModeTryCarpet();
                 RoomInterior_SetCarpet(&talk->owner->item, 0, 1, 1);
             }
         }
@@ -594,9 +594,9 @@ void NookClerkTalk_OnAnswerEndTryOn(NookClerkTalk *talk, int answer)
     u16 *item = &talk->owner->item;
     if (ntalk_is_empty(item) == 0) {
         if (ntalk_in(talk->owner->item, NOOK_CLERK_WALLPAPER_FIRST, NOOK_CLERK_WALLPAPER_LAST)) {
-            RoomInterior_ResendWallpaper(1);
+            RoomInterior_RestoreWallpaper(1);
         } else {
-            RoomInterior_ResendCarpet(1);
+            RoomInterior_RestoreCarpet(1);
         }
         CameraControl_SetPreviousMode();
     }

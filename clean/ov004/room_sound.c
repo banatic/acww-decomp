@@ -5,67 +5,67 @@
 #include "main/sound_emitter.h"
 #include "room_manager.h"
 
-static_assert(offsetof(RoomSound, playing) == 0x1c, "playing");
+static_assert(offsetof(RoomSound, joined) == 0x1c, "joined");
 static_assert(offsetof(RoomSoundList, started) == 0x10, "list started");
 static_assert(sizeof(RoomSoundList) == 0x14, "list");
 
-/* func_ov004_0223cf18: PointSound_SetVariable while the sound plays. */
+/* func_ov004_0223cf18: PointSound_SetVariable while the sound has joined the list. */
 void RoomSound_SetVariable(RoomSound *sound, short value)
 {
-    if (sound->playing != 0) {
+    if (sound->joined != 0) {
         PointSound_SetVariable(sound, value);
     }
 }
 CLEAN_AS(func_ov004_0223cf18, RoomSound_SetVariable)
 
-/* func_ov004_0223cf2c: PointSound_UpdateVolumeAt while the sound plays. */
+/* func_ov004_0223cf2c: PointSound_UpdateVolumeAt while the sound has joined the list. */
 void RoomSound_UpdateVolumeAt(RoomSound *sound, const Vec3 *at)
 {
-    if (sound->playing != 0) {
+    if (sound->joined != 0) {
         PointSound_UpdateVolumeAt(sound, at);
     }
 }
 CLEAN_AS(func_ov004_0223cf2c, RoomSound_UpdateVolumeAt)
 
-/* func_ov004_0223cf40: PointSound_PlayAt while the sound plays. */
+/* func_ov004_0223cf40: PointSound_PlayAt while the sound has joined the list. */
 void RoomSound_PlayAt(RoomSound *sound, int number, const Vec3 *at)
 {
-    if (sound->playing != 0) {
+    if (sound->joined != 0) {
         PointSound_PlayAt(sound, number, at);
     }
 }
 CLEAN_AS(func_ov004_0223cf40, RoomSound_PlayAt)
 
-/* func_ov004_0223cf54: PointSound_PlayAtB while the sound plays. */
+/* func_ov004_0223cf54: PointSound_PlayAtB while the sound has joined the list. */
 void RoomSound_PlayAtB(RoomSound *sound, int number, const Vec3 *at)
 {
-    if (sound->playing != 0) {
+    if (sound->joined != 0) {
         PointSound_PlayAtB(sound, number, at);
     }
 }
 CLEAN_AS(func_ov004_0223cf54, RoomSound_PlayAtB)
 
-/* func_ov004_0223cf68: a sound that plays is released and marked stopped. */
+/* func_ov004_0223cf68: a sound that joined the list is released and marked not joined. */
 void RoomSound_Stop(RoomSound *sound)
 {
-    if (sound->playing != 0) {
+    if (sound->joined != 0) {
         PointSound_Release((char *) (void *) sound);
-        sound->playing = 0;
+        sound->joined = 0;
     }
 }
 CLEAN_AS(func_ov004_0223cf68, RoomSound_Stop)
 
-/* func_ov004_0223cf80: a sound not yet playing joins the room's list (RoomManager_SoundList)
- * once that list is started, and is marked playing. */
+/* func_ov004_0223cf80: a sound not yet joined joins the room's list (RoomManager_SoundList)
+ * once that list is started, and is marked joined. */
 void RoomSound_Start(RoomSound *sound)
 {
-    if (sound->playing != 0) {
+    if (sound->joined != 0) {
         return;
     }
     RoomSoundList *list = RoomManager_SoundList();
     if (list != NULL && RoomSoundList_Started(list) != 0) {
         PointSound_Init(sound, (int) (intptr_t) RoomSoundList_Points(list));
-        sound->playing = 1;
+        sound->joined = 1;
     }
 }
 CLEAN_AS(func_ov004_0223cf80, RoomSound_Start)
@@ -77,10 +77,10 @@ void RoomSound_Destruct(RoomSound *sound)
 }
 CLEAN_AS(func_ov004_0223cfb8, RoomSound_Destruct)
 
-/* func_ov004_0223cfbc: the constructor: not playing. */
+/* func_ov004_0223cfbc: the constructor: not joined. */
 void RoomSound_Construct(RoomSound *sound)
 {
-    sound->playing = 0;
+    sound->joined = 0;
 }
 CLEAN_AS(func_ov004_0223cfbc, RoomSound_Construct)
 

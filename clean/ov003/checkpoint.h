@@ -1,7 +1,7 @@
 /* The checkpoint of overlay 3 (class Obj_ov003_02238934, vtable 0x02238934, receiver part
  * 0x022389f8, 0x5a0 bytes): an object whose model is "obj_check0", "obj_check1" or
  * "obj_check2" from "/str/chkp/", by the style main keeps after the town's single design
- * (DESIGN_KIND_RECORD_5 at data_021f34b0 + 4, design.h), and which wears that design on its
+ * (DESIGN_KIND_TOWN_FLAG at data_021f34b0 + 4, design.h), and which wears that design on its
  * material "w". When the design changes, main calls Checkpoint_RefreshDesign on actor 0x500b.
  *
  * The design is put on through a CheckpointDesign at 0x2b4: a texture binding of main (built

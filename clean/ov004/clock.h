@@ -3,7 +3,7 @@
  * Each frame it reads the time of day (Calendar_Now), keeping the last one, and by its kind
  * (RoomObject.unk_780):
  * - 0x10 strikes the hours: when the hour changes it strikes the hour on a 12-hour dial (12 for
- *   0), each strike one play of its joint animation with sound 0x42d; in mode 2 (unk_76C) it
+ *   0), each strike one play of its joint animation with sound 0x42d; in mode 2 (placement_mode) it
  *   strikes once, then keeps swinging without sound;
  * - 0x11 shows the frame of the room's shared frame counter (RoomManager_FrameCounter) on its joint
  *   animation;

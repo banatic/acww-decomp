@@ -83,7 +83,7 @@ static_assert(sizeof(FleaMarketVillager) == 0xa60, "the size func_ov004_0221ff70
 #define FLEA_MARKET_STAGE_NONE 0
 #define FLEA_MARKET_STAGE_ASK 1
 #define FLEA_MARKET_STAGE_LOOK 2
-#define FLEA_MARKET_STAGE_AT_START 3
+#define FLEA_MARKET_STAGE_PLAYER_AT_EXIT 3
 
 /* The value kind of an item's name (SceneBase_PutItemName). */
 #define FLEA_MARKET_ITEM_NAME_KIND 7
@@ -191,20 +191,20 @@ FleaMarketVillager *FleaMarketVillager_Delete(FleaMarketVillager *villager)
 }
 CLEAN_AS(func_ov004_0221ef00, FleaMarketVillager_Delete)
 
-/* func_ov004_0221ef2c: when the room's start point of this console's player
- * (PlayerActorOps_StartPosition) is on the unit the collision map has claimed, the stage is 3
+/* func_ov004_0221ef2c: when this console's player stands at the room's exit (its start point,
+ * PlayerActorOps_StartPosition) on the unit the collision map has claimed, the stage is 3
  * and an event of kind 6 about it is asked for; whether it was. */
-int FleaMarketVillager_RequestIfStartClaimed(FleaMarketVillager *villager)
+int FleaMarketVillager_RequestIfPlayerAtExit(FleaMarketVillager *villager)
 {
     Vec3 start = *PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
     if (CollisionMap_IsClaimedAtPoint(&start)) {
-        villager->stage = FLEA_MARKET_STAGE_AT_START;
+        villager->stage = FLEA_MARKET_STAGE_PLAYER_AT_EXIT;
         EventQueue_RequestKind6(villager, 0);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_ov004_0221ef2c, FleaMarketVillager_RequestIfStartClaimed)
+CLEAN_AS(func_ov004_0221ef2c, FleaMarketVillager_RequestIfPlayerAtExit)
 
 /* func_ov004_0221ef70: when the player asks about an item (FleaMarketVillager_PickItemAhead), an
  * event of kind 6 about it is asked for; whether it was. */
@@ -327,7 +327,7 @@ void FleaMarketVillager_OnEvent(FleaMarketVillager *villager, int code)
             fm_ready_talk(villager);
             if (villager->stage == FLEA_MARKET_STAGE_NONE) {
                 FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_1);
-            } else if (villager->stage == FLEA_MARKET_STAGE_AT_START) {
+            } else if (villager->stage == FLEA_MARKET_STAGE_PLAYER_AT_EXIT) {
                 FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_3);
             } else {
                 FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_7);
@@ -489,7 +489,7 @@ void FleaMarketTalk_Line(FleaMarketTalk *talk, VillagerTalkLine *out)
     }
 
     FleaMarketVillager *villager = talk->villager;
-    if (villager->stage == FLEA_MARKET_STAGE_AT_START) {
+    if (villager->stage == FLEA_MARKET_STAGE_PLAYER_AT_EXIT) {
         fm_format_file(talk, data_ov004_02257d30, data_ov004_02253c98);
         out->text = (u32) (uintptr_t) data_ov004_02257d30;
         out->message = (u8) (MainRandom_Below(3) + 3);
@@ -791,12 +791,12 @@ int FleaMarketVillager_EnterBye(FleaMarketVillager *villager)
 CLEAN_AS(func_ov004_0221fa9c, FleaMarketVillager_EnterBye)
 
 /* func_ov004_0221fad4 (state 6's update): nothing more once the event of the player at the
- * room's start point or of an item asked about is asked for. Else it steps along the paths to
+ * room's exit or of an item asked about is asked for. Else it steps along the paths to
  * the player, running when far, and watches them (state 4) when close (0x3000 or less) or with
  * no step to take. 1. */
 int FleaMarketVillager_UpdateFollow(FleaMarketVillager *villager)
 {
-    if (FleaMarketVillager_RequestIfStartClaimed(villager) || FleaMarketVillager_RequestItemTalk(villager)) {
+    if (FleaMarketVillager_RequestIfPlayerAtExit(villager) || FleaMarketVillager_RequestItemTalk(villager)) {
         return 1;
     }
     Vec3 player = *PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
@@ -825,7 +825,7 @@ CLEAN_AS(func_ov004_0221fbc4, FleaMarketVillager_EnterFollow)
  * 6); else its mover turns to them, and with its turn done it watches them (state 4). 1. */
 int FleaMarketVillager_UpdateTurn(FleaMarketVillager *villager)
 {
-    if (FleaMarketVillager_RequestIfStartClaimed(villager) || FleaMarketVillager_RequestItemTalk(villager)) {
+    if (FleaMarketVillager_RequestIfPlayerAtExit(villager) || FleaMarketVillager_RequestItemTalk(villager)) {
         return 1;
     }
     Vec3 player = *PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
@@ -855,7 +855,7 @@ CLEAN_AS(func_ov004_0221fca8, FleaMarketVillager_EnterTurn)
 
 /* func_ov004_0221fcdc (state 4's update): farther than 0x3000 from the player with a step to take
  * towards them, it follows them (state 6); else turned away from them by more than 0x2000 it
- * turns (state 5). Then the event of the player at the room's start point is asked for, or when
+ * turns (state 5). Then the event of the player at the room's exit is asked for, or when
  * it is not, that of an item asked about. 1. */
 int FleaMarketVillager_UpdateWatch(FleaMarketVillager *villager)
 {
@@ -870,7 +870,7 @@ int FleaMarketVillager_UpdateWatch(FleaMarketVillager *villager)
     } else if (away > FLEA_MARKET_TURN_ANGLE) {
         FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_TURN);
     }
-    if (FleaMarketVillager_RequestIfStartClaimed(villager) == 0) {
+    if (FleaMarketVillager_RequestIfPlayerAtExit(villager) == 0) {
         FleaMarketVillager_RequestItemTalk(villager);
     }
     return 1;

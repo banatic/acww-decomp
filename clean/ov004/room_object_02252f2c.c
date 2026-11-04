@@ -47,11 +47,11 @@ static int RoomObject02252f2c_joints_passed(RoomObject02252f2c *object, int fram
     return FrameCtrl_Passed(&object->base.model.frames, frame);
 }
 
-/* Sound `id` at the object's point, unless RoomObject.unk_76C is 2; whether it was played. */
+/* Sound `id` at the object's point, unless RoomObject.placement_mode is 2; whether it was played. */
 static int RoomObject02252f2c_play_sound(RoomObject02252f2c *object, int id)
 {
     RoomObject *base = &object->base;
-    if (RoomObject_Unk76CIs2(base)) {
+    if (RoomObject_IsUnplaced(base)) {
         return 0;
     }
     RoomSound_PlayAt(&base->sound, id, &base->sound.position);
@@ -68,7 +68,7 @@ CLEAN_AS(func_ov004_0221a150, RoomObject02252f2c_UpdateOn)
 /* func_ov004_0221a158 (entry of ON): the switch on (shown at once) and the sound at 2. */
 int RoomObject02252f2c_EnterOn(RoomObject02252f2c *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlaySound1(&object->base);
     return 1;
 }
@@ -78,7 +78,7 @@ CLEAN_AS(func_ov004_0221a158, RoomObject02252f2c_EnterOn)
  * change of the switch pending, requests the other state (the state plus one, its low bit). */
 void RoomObject02252f2c_UpdateOff(RoomObject02252f2c *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         int other = (object->state + 1) & 1;
         RoomSync_RequestState(&object->base, other, SLOT_70_VALUE, 1);
     }
@@ -88,7 +88,7 @@ CLEAN_AS(func_ov004_0221a17c, RoomObject02252f2c_UpdateOff)
 /* func_ov004_0221a1b0 (entry of OFF): the switch off (shown at once) and the sound at 4. */
 int RoomObject02252f2c_EnterOff(RoomObject02252f2c *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlaySound2(&object->base);
     return 1;
 }
@@ -148,7 +148,7 @@ CLEAN_AS(func_ov004_0221a2d8, RoomObject02252f2c_Vfunc0C)
 
 /* _ZN18Obj_ov004_02252f2c19func_ov004_0221a2dcEv (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the animations (with unk_780 at 1), each glow's frame and the glows
- * on (at once), FurnitureInfo_IndoorBit6 of its number and the state's update. Then, unless unk_76C is 2,
+ * on (at once), FurnitureInfo_IndoorBit6 of its number and the state's update. Then, unless placement_mode is 2,
  * furniture 0x123 plays sound 0x429 at its point, setting the sound's variable to 1 at frame
  * 0x43 of the joint animation; 0x1fb plays 0x42b, 1 at frame 4 and 2 at frame 0x16; 0x1fc plays
  * 0x42c, 1 at frames 5 and 0x12. Other furniture plays the sound at 0. */
@@ -196,7 +196,7 @@ CLEAN_AS(_ZN18Obj_ov004_02252f2c19func_ov004_0221a2dcEv, RoomObject02252f2c_Upda
 
 /* func_ov004_0221a420 (vtable slot 0x7c, once the model is bound): with unk_780 at 1, binds the
  * animations of variant 0 in a loop from a random frame below their frame count (from the start
- * when unk_76C is 1; the count is read either way) and the glows lit. Then enters ON when the
+ * when placement_mode is 1; the count is read either way) and the glows lit. Then enters ON when the
  * switch is on, OFF otherwise; done at once. */
 int RoomObject02252f2c_Start(RoomObject02252f2c *object)
 {
@@ -204,7 +204,7 @@ int RoomObject02252f2c_Start(RoomObject02252f2c *object)
     if (base->unk_780 == 1) {
         int frames = RoomObject_AnimFrames(base, 0);
         int start;
-        if (base->unk_76C == 1) {
+        if (base->placement_mode == 1) {
             start = 0;
         } else {
             start = MainRandom_Below(frames);
@@ -212,7 +212,7 @@ int RoomObject02252f2c_Start(RoomObject02252f2c *object)
         RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, (u16) start);
         GlowSet_Bind(&object->glows, base->model_resource, 1);
     }
-    if (Switch_Value(&base->light_switch) != 0) {
+    if (Switch_Value(&base->on_switch) != 0) {
         base->vtable->vfunc_70(base, ROOM_OBJECT_02252F2C_ON, SLOT_70_VALUE);
     } else {
         base->vtable->vfunc_70(base, ROOM_OBJECT_02252F2C_OFF, SLOT_70_VALUE);

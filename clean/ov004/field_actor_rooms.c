@@ -267,7 +267,7 @@ int FieldActorRooms_TryTarget(FieldActor *actor, int tool, int mode)
     }
     int index = RoomObjects_FindAheadOfPlayer(&x, &z, &actor->item, &actor->unk_822);
     if (index >= 0 && (index == FIELD_ACTOR_PICK_EXTRA(actor) || actor->aim_mode == 1)) {
-        if (!RoomObjects_Unk288Of((unsigned int) index)) {
+        if (!RoomObjects_LayerOf((unsigned int) index)) {
             int none[2] = {0, 0};
             FieldActor_RequestState18(actor, none, index, FIELD_ACTOR_ROOMS_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
         } else {
@@ -660,7 +660,7 @@ void FieldActorRooms_EndWalk(FieldActor *actor)
     if (actor->unk_098 != 0 || FIELD_ACTOR_ROOMS_WALKING(actor) != 1) {
         return;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     FieldActor_RequestState2(actor, FIELD_ACTOR_ROOMS_END_STATE2_ARG, FIELD_ACTOR_ROOMS_END_PRIORITY,
                              FIELD_ACTOR_ROOMS_NO_ARG);
     FieldActor_ClearFlag(actor, FIELD_ACTOR_ROOMS_DOOR_FLAG);

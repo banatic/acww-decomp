@@ -89,8 +89,8 @@ void RoomObject02252ba8_UpdatePlaying(RoomObject02252ba8 *object)
                             frame & 0xfff, (u16) (frame >> 12), 0);
         AnimatedModel_Update(&object->base.model);
     }
-    if (Switch_IsPending(&object->base.light_switch)) {
-        Switch_Set(&object->base.light_switch, 1, 0);
+    if (Switch_IsPending(&object->base.on_switch)) {
+        Switch_Set(&object->base.on_switch, 1, 0);
         RoomObject02252ba8_hand_on(object);
     }
 }
@@ -100,7 +100,7 @@ CLEAN_AS(func_ov004_02214c50, RoomObject02252ba8_UpdatePlaying)
  * looped from the start, and the joint animation of variant 0 held (speed 0) at frame 0. */
 int RoomObject02252ba8_EnterPlaying(RoomObject02252ba8 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     AnimatedModel_Start(&object->base.model, (const u8 *) RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP, 0, 0, 0);
     return 1;
@@ -130,8 +130,8 @@ void RoomObject02252ba8_UpdateStarting(RoomObject02252ba8 *object)
             AnimatedModel_Play(&base->model, (const u8 *) RoomObject02252ba8_joint_anim(object), (u16) start, 0, 0, 0, 0);
         }
     }
-    if (Switch_IsPending(&base->light_switch)) {
-        Switch_Set(&base->light_switch, 1, 0);
+    if (Switch_IsPending(&base->on_switch)) {
+        Switch_Set(&base->on_switch, 1, 0);
         RoomObject02252ba8_hand_on(object);
     }
 }
@@ -146,7 +146,7 @@ static void RoomObject02252ba8_hold_joints(RoomObject02252ba8 *object, const Ani
 
 /* func_ov004_02214df8 (entry of STARTING): the sound at 2, the switch on, at once, and the
  * countdown at 0xffff. Then, by the tile it is on:
- * - while its model is being bound (RoomObject.unk_77E) in the mode given (unk_76C not 0) or
+ * - while its model is being bound (RoomObject.unk_77E) in the mode given (placement_mode not 0) or
  *   where SceneQuery_InVillagerHouse says so: the cue plays (even when it was not set up) and its step goes
  *   to the cell and to unk_77C; the joints take the archive's animation; the countdown at 0;
  * - while its model is being bound otherwise: the cue waits for the step the cell keeps, which
@@ -162,11 +162,11 @@ int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
     int x, y;
     int step;
     RoomObject_PlaySound1(base);
-    Switch_Set(&base->light_switch, 1, 0);
+    Switch_Set(&base->on_switch, 1, 0);
     object->countdown = 0xffff;
     Position_Tile(&x, &y, (const Position *) (const void *) &base->position);
     if (base->unk_77E != 0) {
-        if (base->unk_76C != 0 || SceneQuery_InVillagerHouse() != 0) {
+        if (base->placement_mode != 0 || SceneQuery_InVillagerHouse() != 0) {
             SoundCue_SetMode(object->cue, CUE_PLAY);
             step = SoundCue_ReadVariable((char *) object->cue) & STEP_MASK;
             RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());
@@ -203,8 +203,8 @@ void RoomObject02252ba8_UpdateOff(RoomObject02252ba8 *object)
 {
     RoomObject02252ba8_UpdateCue(object, &object->base.position);
     AnimatedModel_Update(&object->base.model);
-    if (Switch_IsPending(&object->base.light_switch)) {
-        Switch_Set(&object->base.light_switch, 0, 0);
+    if (Switch_IsPending(&object->base.on_switch)) {
+        Switch_Set(&object->base.on_switch, 0, 0);
         RoomObject02252ba8_hand_on(object);
     }
 }
@@ -223,7 +223,7 @@ int RoomObject02252ba8_EnterOff(RoomObject02252ba8 *object)
     RoomCells_ClearStep(x, y, SceneQuery_Current());
     RoomObject02252ba8_CueSetMode(object, CUE_OFF);
     RoomObject_PlaySound2(base);
-    Switch_Set(&base->light_switch, 0, 0);
+    Switch_Set(&base->on_switch, 0, 0);
     if (RoomManager_Mover() != NULL) {
         const AnimFile *file = RoomObject02252ba8_mover_anim(RoomManager_Mover());
         if (base->unk_77E != 0) {
@@ -425,8 +425,8 @@ CLEAN_AS(_ZN18Obj_ov004_02252ba819func_ov004_02215374Ev, RoomObject02252ba8_Upda
 /* func_ov004_02215394 (vtable slot 0x7c, once the model is bound): no frames counted and no
  * step; the cue set up for the sound at 6 of the furniture's row; the animations of variant 0
  * bound to play once from the start; the model's block from the heap of its pool entry
- * (ModelObject_AllocJointResults). Then, in mode 1 (unk_76C), the switch off at once and handed on without a
- * state; for a preview (unk_76C 2) OFF; else STARTING when the switch is on, OFF when off. Done
+ * (ModelObject_AllocJointResults). Then, in mode 1 (placement_mode), the switch off at once and handed on without a
+ * state; for a preview (placement_mode 2) OFF; else STARTING when the switch is on, OFF when off. Done
  * at once. */
 int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
 {
@@ -437,12 +437,12 @@ int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
     RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     ModelObject_AllocJointResults(
         &base->model.object, (Heap *) (uintptr_t) ModelPoolEntry_Heap((void *) (uintptr_t) (u32) RoomObject_PoolEntry(base)));
-    if (base->unk_76C == 1) {
-        Switch_Set(&base->light_switch, 0, 0);
+    if (base->placement_mode == 1) {
+        Switch_Set(&base->on_switch, 0, 0);
         RoomObject02252ba8_hand_on(object);
-    } else if (RoomObject_Unk76CIs2(base)) {
+    } else if (RoomObject_IsUnplaced(base)) {
         base->vtable->vfunc_70(base, ROOM_OBJECT_02252BA8_OFF, SLOT_70_VALUE);
-    } else if (Switch_Value(&base->light_switch) != 0) {
+    } else if (Switch_Value(&base->on_switch) != 0) {
         base->vtable->vfunc_70(base, ROOM_OBJECT_02252BA8_STARTING, SLOT_70_VALUE);
     } else {
         base->vtable->vfunc_70(base, ROOM_OBJECT_02252BA8_OFF, SLOT_70_VALUE);

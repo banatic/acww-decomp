@@ -104,7 +104,7 @@ static void *MusicPlayer_receiver(MusicPlayer *player)
 /* Touching it: the switch put back to `shown`, and the scene asked for an event. */
 static int MusicPlayer_touched(MusicPlayer *player, u8 shown)
 {
-    Switch_Set(&player->base.light_switch, shown, 0);
+    Switch_Set(&player->base.on_switch, shown, 0);
     EventQueue_RequestKind6(player, 0);
     return PlayerActorOps_SetOwnFlag17();
 }
@@ -118,7 +118,7 @@ int MusicPlayer_UpdatePlaying(MusicPlayer *player)
     RoomObject_PlaySound0(&player->base);
     GlowSet_Switch(&player->glows, 1, 1, 0);
     RoomSound_UpdateVolumeAt(&player->base.sound, &player->base.sound.position);
-    if (Switch_IsPending(&player->base.light_switch)) {
+    if (Switch_IsPending(&player->base.on_switch)) {
         return MusicPlayer_touched(player, 1);
     }
     return 0;
@@ -133,7 +133,7 @@ int MusicPlayer_EnterPlaying(MusicPlayer *player)
 {
     RoomObject_PlaySound1(&player->base);
     RoomObjects_SetSwitches(0, func_ov004_02211308, 0);
-    Switch_Set(&player->base.light_switch, 1, 0);
+    Switch_Set(&player->base.on_switch, 1, 0);
     player->song = player->base.unk_77C;
     MusicPlayer_PlaySong(player, player->base.unk_77C);
     if (player->base.unk_780 == KIND_ANIMATED) {
@@ -151,7 +151,7 @@ void MusicPlayer_UpdateStopped(MusicPlayer *player)
         RoomObject_AdvanceAnims(&player->base);
     }
     GlowSet_Switch(&player->glows, 0, 1, 0);
-    if (Switch_IsPending(&player->base.light_switch)) {
+    if (Switch_IsPending(&player->base.on_switch)) {
         MusicPlayer_touched(player, 0);
     }
 }
@@ -163,7 +163,7 @@ CLEAN_AS(func_ov004_0221605c, MusicPlayer_UpdateStopped)
 int MusicPlayer_EnterStopped(MusicPlayer *player)
 {
     RoomObject_PlaySound2(&player->base);
-    Switch_Set(&player->base.light_switch, 0, 0);
+    Switch_Set(&player->base.on_switch, 0, 0);
     if (player->base.unk_77E == 0) {
         MusicPlayer_StopSong(player, player->song, 1);
     }
@@ -406,13 +406,13 @@ int MusicPlayer_EnterTalkStep(MusicPlayer *player, int step)
 CLEAN_AS(func_ov004_022164a0, MusicPlayer_EnterTalkStep)
 
 /* func_ov004_02216558 (vtable slot 0x4c): the scene's answer to EventQueue_RequestKind6. Event 1 starts
- * the song menu when SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else the talk that tells the
+ * the song menu when SceneKinds_CurrentIsHouseRoom and Room_PlayerIsOfThisTown allow it, else the talk that tells the
  * song; event 8 ends the talk; others do nothing. */
 void MusicPlayer_OnSceneEvent(MusicPlayer *player, int event)
 {
     switch (event) {
         case 1:
-            if (SceneKinds_CurrentIsHouseRoom() != 0 && Room_Check0220fed0() != 0) {
+            if (SceneKinds_CurrentIsHouseRoom() != 0 && Room_PlayerIsOfThisTown() != 0) {
                 MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_MENU_NEXT);
             } else {
                 MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_NEXT);
@@ -493,7 +493,7 @@ static int MusicPlayer_request(MusicPlayer *player, int state, int song)
 
 /* func_ov004_022166b8 (vtable slot 0x7c, once the model is bound): kinds 0x13 and 0x29 load the
  * animations of variant 0, looping; the glows are bound, on as the switch shows. In mode 1
- * (unk_76C) STOPPED is requested for the object's cell (RoomSync_SetState). Otherwise, with the
+ * (placement_mode) STOPPED is requested for the object's cell (RoomSync_SetState). Otherwise, with the
  * switch on outside the areas RoomObjects_InNookOrScene0AOr0F names, it plays:
  * - in a villager's house the villager's song (song 0 for no villager), noted as started
  *   (data_ov004_02256fec, the first song's item for a song past the last); but once a song was
@@ -507,10 +507,10 @@ int MusicPlayer_Start(MusicPlayer *player)
     if (base->unk_780 == KIND_ANIMATED || base->unk_780 == KIND_13) {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
-    GlowSet_Bind(&player->glows, base->model_resource, Switch_Value(&base->light_switch));
-    if (base->unk_76C == 1) {
+    GlowSet_Bind(&player->glows, base->model_resource, Switch_Value(&base->on_switch));
+    if (base->placement_mode == 1) {
         RoomSync_SetState(&player->base, MUSIC_PLAYER_STOPPED, NO_VALUE, 1);
-    } else if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    } else if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         if (SceneQuery_InVillagerHouse() != 0) {
             u32 song = 0;
             void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentVillagerHouse());

@@ -9,7 +9,7 @@
  * at its cell (RoomSync_RequestState). ON shows it on (vtable slot 0x74).
  *
  * With RoomObject.unk_780 at 1 its animations of variant 0 run in a loop from a random frame
- * (from the start when RoomObject.unk_76C is 1) and the glows are bound lit. Furniture 0x123,
+ * (from the start when RoomObject.placement_mode is 1) and the glows are bound lit. Furniture 0x123,
  * 0x1fb and 0x1fc play their own sound at a point (0x429, 0x42b and 0x42c) and set its variable
  * at some frames of the joint animation; the others play the sound at 0 each frame. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02252F2C_H

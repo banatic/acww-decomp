@@ -153,7 +153,7 @@ CLEAN_AS(func_ov004_02211790, Telephone_EnterOpen)
  * address 0x2c; kept. */
 void Telephone_UpdateIdle(Telephone *phone)
 {
-    if (Switch_IsPending(&phone->base.light_switch)) {
+    if (Switch_IsPending(&phone->base.on_switch)) {
         void *entry = RoomPushes_FindObject(RoomPushes_Records(), &phone->base);
         Vec3 *destination = RoomPushes_Destination(entry);
         phone->entry_words[0] = destination->x;
@@ -162,7 +162,7 @@ void Telephone_UpdateIdle(Telephone *phone)
         phone->entry_value = (u16) RoomPushes_Facing(entry);
         EventQueue_RequestKind6(phone, 0);
     }
-    Switch_Set(&phone->base.light_switch, 0, 0);
+    Switch_Set(&phone->base.on_switch, 0, 0);
 }
 CLEAN_AS(func_ov004_022117b0, Telephone_UpdateIdle)
 
@@ -224,7 +224,7 @@ CLEAN_AS(func_ov004_02211964, Telephone_UpdateSwitchTurningOff)
  * with sound 1. */
 int Telephone_EnterSwitchTurningOff(Telephone *phone)
 {
-    Switch_Set(&phone->base.light_switch, 0, 0);
+    Switch_Set(&phone->base.on_switch, 0, 0);
     RoomObject_PlaySound1(&phone->base);
     return 1;
 }
@@ -240,7 +240,7 @@ CLEAN_AS(func_ov004_0221199c, Telephone_UpdateSwitchOn)
 /* func_ov004_022119a0 (entry of TELEPHONE_SWITCH_ON): the switch on, shown at once. */
 int Telephone_EnterSwitchOn(Telephone *phone)
 {
-    Switch_Set(&phone->base.light_switch, 1, 0);
+    Switch_Set(&phone->base.on_switch, 1, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022119a0, Telephone_EnterSwitchOn)
@@ -256,7 +256,7 @@ CLEAN_AS(func_ov004_022119bc, Telephone_UpdateSwitchTurningOn)
  * with sound 1. */
 int Telephone_EnterSwitchTurningOn(Telephone *phone)
 {
-    Switch_Set(&phone->base.light_switch, 1, 0);
+    Switch_Set(&phone->base.on_switch, 1, 0);
     RoomObject_PlaySound1(&phone->base);
     return 1;
 }
@@ -272,7 +272,7 @@ CLEAN_AS(func_ov004_022119f4, Telephone_UpdateSwitchOff)
 /* func_ov004_022119f8 (entry of TELEPHONE_SWITCH_OFF): the switch off, shown at once. */
 int Telephone_EnterSwitchOff(Telephone *phone)
 {
-    Switch_Set(&phone->base.light_switch, 0, 0);
+    Switch_Set(&phone->base.on_switch, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022119f8, Telephone_EnterSwitchOff)
@@ -359,15 +359,15 @@ int Telephone_Update(Telephone *phone)
 }
 CLEAN_AS(_ZN18Obj_ov004_0225295019func_ov004_02211b80Ev, Telephone_Update)
 
-/* func_ov004_02211b98 (vtable slot 0x7c, once the model is bound): in mode 1 (unk_76C) the
+/* func_ov004_02211b98 (vtable slot 0x7c, once the model is bound): in mode 1 (placement_mode) the
  * switch is set off first; the switch then enters on or off as its value says, and the
  * telephone is idle; done at once. */
 int Telephone_Start(Telephone *phone)
 {
-    if (phone->base.unk_76C == 1) {
-        Switch_Set(&phone->base.light_switch, 0, 0);
+    if (phone->base.placement_mode == 1) {
+        Switch_Set(&phone->base.on_switch, 0, 0);
     }
-    if (Switch_Value(&phone->base.light_switch) != 0) {
+    if (Switch_Value(&phone->base.on_switch) != 0) {
         switch_to(phone, TELEPHONE_SWITCH_ON);
     } else {
         switch_to(phone, TELEPHONE_SWITCH_OFF);

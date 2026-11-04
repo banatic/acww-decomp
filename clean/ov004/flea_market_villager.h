@@ -77,7 +77,7 @@ typedef struct FleaMarketVillager {
 
 FleaMarketVillager *FleaMarketVillager_Destroy(FleaMarketVillager *villager);
 FleaMarketVillager *FleaMarketVillager_Delete(FleaMarketVillager *villager);
-int FleaMarketVillager_RequestIfStartClaimed(FleaMarketVillager *villager);
+int FleaMarketVillager_RequestIfPlayerAtExit(FleaMarketVillager *villager);
 int FleaMarketVillager_RequestItemTalk(FleaMarketVillager *villager);
 int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager);
 void FleaMarketVillager_OnEvent(FleaMarketVillager *villager, int code);

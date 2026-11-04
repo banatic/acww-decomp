@@ -38,7 +38,7 @@ extern const u8 data_ov004_02250b84[];
 /* The state's frame: the switch and the node set's value both `value`. */
 static void show(SwitchShownObject *object, u8 value)
 {
-    Switch_Set(&object->base.light_switch, value, 0);
+    Switch_Set(&object->base.on_switch, value, 0);
     ByteSet_SetValue(&object->base.node_set, value);
 }
 
@@ -52,7 +52,7 @@ CLEAN_AS(func_ov004_022123c4, SwitchShown_UpdateOn)
 /* func_ov004_022123ec (entry of SWITCH_SHOWN_ON): the switch on, shown at once. */
 int SwitchShown_EnterOn(SwitchShownObject *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022123ec, SwitchShown_EnterOn)
@@ -67,7 +67,7 @@ CLEAN_AS(func_ov004_02212408, SwitchShown_UpdateOff)
 /* func_ov004_02212430 (entry of SWITCH_SHOWN_OFF): the switch off, shown at once. */
 int SwitchShown_EnterOff(SwitchShownObject *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02212430, SwitchShown_EnterOff)
@@ -164,7 +164,7 @@ int SwitchShown_Start(SwitchShownObject *object)
     if (code >= ALWAYS_DRAWN_FIRST && code <= ALWAYS_DRAWN_LAST) {
         object->always_drawn = 1;
     }
-    if (Switch_Value(&base->light_switch) != 0) {
+    if (Switch_Value(&base->on_switch) != 0) {
         base->vtable->vfunc_70(base, SWITCH_SHOWN_ON, SLOT_70_VALUE);
     } else {
         base->vtable->vfunc_70(base, SWITCH_SHOWN_OFF, SLOT_70_VALUE);

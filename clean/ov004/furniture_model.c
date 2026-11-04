@@ -54,7 +54,6 @@ extern char data_ov004_02256e7c[];
 extern const u8 data_ov004_0224fe44[];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-/* The slot the furniture is loaded for: something at 8 for the texture, and a heap. */
 extern int NNS_FndMountArchive(Archive *archive, const char *name, void *data);
 extern u8 *NNS_FndGetArchiveFileByName(const char *path);
 extern int func_0210285c(Archive *archive);

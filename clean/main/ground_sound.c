@@ -86,8 +86,8 @@ int GroundSound_ResolveAttr(int attr)
     if (attr != GROUND_SOUND_ATTR_REPLACED || data_020e54a8 != 1) {
         return attr;
     }
-    u16 code = *RoomShell_CarpetCode2();
-    return ItemInfo_IndoorGroundSound(&code);
+    u16 code = *RoomShell_CurrentCarpet();
+    return ItemInfo_IndoorUnk01(&code);
 }
 CLEAN_AS(func_020b1d54, GroundSound_ResolveAttr)
 

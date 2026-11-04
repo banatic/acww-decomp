@@ -38,15 +38,15 @@ static_assert(offsetof(RoomObject, target_position) == 0x170, "target position")
 static_assert(offsetof(RoomObject, mount) == 0x17c, "mount");
 static_assert(offsetof(RoomObject, carried) == 0x18c, "carried items");
 static_assert(offsetof(RoomObject, matrix) == 0x59c, "matrix");
-static_assert(offsetof(RoomObject, light_switch) == 0x740, "switch");
+static_assert(offsetof(RoomObject, on_switch) == 0x740, "switch");
 static_assert(offsetof(RoomObject, nodes) == 0x742, "nodes");
 static_assert(offsetof(RoomObject, glow) == 0x748, "glow");
 static_assert(offsetof(RoomObject, node_set) == 0x764, "node set");
-static_assert(offsetof(RoomObject, unk_76C) == 0x76c, "unk_76C");
+static_assert(offsetof(RoomObject, placement_mode) == 0x76c, "placement_mode");
 static_assert(offsetof(RoomObject, unk_78D) == 0x78d, "unk_78D");
 static_assert(offsetof(RoomObject, top_height) == 0x790, "top height");
 static_assert(offsetof(RoomObject, move_flag) == 0x250, "move flag");
-static_assert(offsetof(RoomObject, unk_284) == 0x284, "unk_284");
+static_assert(offsetof(RoomObject, number) == 0x284, "number");
 static_assert(offsetof(RoomObject, state) == 0x534, "state");
 static_assert(offsetof(RoomObject, state_frames) == 0x770, "state frames");
 static_assert(offsetof(RoomObject, unk_780) == 0x780, "unk_780");
@@ -219,7 +219,7 @@ static int start_move(RoomObject *object, int (*start)(void *, void *, Vec3 *, i
     void *mover = RoomManager_Mover();
     if (mover != NULL && start(mover, &object->move_flag, &object->position, object->target_angle) != 0) {
         object->vtable->vfunc_94(object, ahead);
-        RoomObject_EffectAtCellTowardsPlayer(object, !ahead);
+        RoomObject_RoachFromCell(object, !ahead);
         return 1;
     }
     return 0;
@@ -269,13 +269,13 @@ static void call_turn(RoomObject *object, enum TurnSlot slot, int down)
     }
 }
 
-/* The object's turn, and when it carries them (unk_288 0 and unk_788 1), the turn of the
+/* The object's turn, and when it carries them (layer 0 and unk_788 1), the turn of the
  * objects on its cells (layer 1).
  * QUIRK: each cell is asked for twice, once for its x and once for its y. */
 static void turn_with_cells(RoomObject *object, enum TurnSlot slot, int down)
 {
     call_turn(object, slot, down);
-    if (object->unk_288 != 0 || object->unk_788 != 1) {
+    if (object->layer != 0 || object->unk_788 != 1) {
         return;
     }
     CellList cells;
@@ -394,8 +394,8 @@ CLEAN_AS(func_ov004_0220c9fc, RoomObject_UpdateAppear)
 
 /* func_ov004_0220cb68 (entry of ROOM_OBJECT_APPEAR): scale 0, the wobble's start, and when
  * SessionPlayers_ActorOf(SESSION_PLAYERS_OWN) says so, whatever DroppedItems_DropFromLocalPlayer does at 0x800 above the object's
- * centre (on the floor when unk_288 is 0, else at the height RoomObjects_HeightAtPoint gives) with
- * the value ItemCode_MakeFurniture makes of unk_284; its result decides. */
+ * centre (on the floor when layer is 0, else at the height RoomObjects_HeightAtPoint gives) with
+ * the value ItemCode_MakeVariant makes of number; its result decides. */
 int RoomObject_EnterAppear(RoomObject *object)
 {
     object->unk_15C = 0x555;
@@ -410,13 +410,13 @@ int RoomObject_EnterAppear(RoomObject *object)
     if (SessionPlayers_ActorOf(SESSION_PLAYERS_OWN)) {
         Vec3 centre;
         RoomObject_Centre(object, &centre);
-        if (object->unk_288 == 0) {
+        if (object->layer == 0) {
             centre.y = 0;
         } else {
             centre.y = RoomObjects_HeightAtPoint(&centre);
         }
         centre.y += 0x800;
-        u16 code = ItemCode_MakeFurniture(object->unk_284, 0);
+        u16 code = ItemCode_MakeVariant(object->number, 0);
         return DroppedItems_DropFromLocalPlayer(&code, &centre);
     }
     return 1;

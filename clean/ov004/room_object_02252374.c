@@ -65,7 +65,7 @@ static void *RoomObject02252374_texture_file(RoomObject02252374 *object)
 /* func_ov004_02213d70 (update of OFF): the switch off, shown at once. */
 void RoomObject02252374_UpdateOff(RoomObject02252374 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
 }
 CLEAN_AS(func_ov004_02213d70, RoomObject02252374_UpdateOff)
 
@@ -73,7 +73,7 @@ CLEAN_AS(func_ov004_02213d70, RoomObject02252374_UpdateOff)
  * its own texture file on "w"; unk_870 cleared when that went on. */
 int RoomObject02252374_EnterOff(RoomObject02252374 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     int tex_index = G3dRes_TextureIndex(RoomObject02252374_texture_file(object), data_ov004_022531d4);
     int plt_index = G3dRes_PaletteIndex(RoomObject02252374_texture_file(object), data_ov004_022531d4);
     G3dModel *model = object->base.model_resource;
@@ -88,7 +88,7 @@ CLEAN_AS(func_ov004_02213d84, RoomObject02252374_EnterOff)
 /* func_ov004_02213e10 (update of ON): the switch on, shown at once. */
 void RoomObject02252374_UpdateOn(RoomObject02252374 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
 }
 CLEAN_AS(func_ov004_02213e10, RoomObject02252374_UpdateOn)
 
@@ -97,7 +97,7 @@ CLEAN_AS(func_ov004_02213e10, RoomObject02252374_UpdateOn)
  * REQUIRES: the item model was loaded (without it ClothTexture_Textures is handed NULL). */
 int RoomObject02252374_EnterOn(RoomObject02252374 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     G3dModel *model = object->base.model_resource;
     void *texture = (void *) (uintptr_t) ClothTexture_Textures(object->item_model);
     VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_022531c8, texture, 0, 0);
@@ -204,7 +204,7 @@ int RoomObject02252374_Start(RoomObject02252374 *object)
             (Heap *) (uintptr_t) ModelPoolEntry_Heap((ModelPoolEntry *) (uintptr_t) RoomObject_PoolEntry(&object->base));
         object->item_model = Heap_Alloc(heap, sizeof(DesignModel));
         ClothTexture_Load(object->item_model, &shown, NULL);
-        if (Switch_Value(&object->base.light_switch) != 0) {
+        if (Switch_Value(&object->base.on_switch) != 0) {
             RoomObject02252374_switch_to(object, ROOM_OBJECT_02252374_ON);
         } else {
             RoomObject02252374_switch_to(object, ROOM_OBJECT_02252374_OFF);

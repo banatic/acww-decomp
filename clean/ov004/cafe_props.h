@@ -1,5 +1,5 @@
-/* The props of the cafe's counter (a room object of the RMO family, rmo_object.h; vtable
- * 0x02254fc8, 0xf44 bytes): the counter itself (/roomObj/obj_cafe1) and nine animated parts
+/* The cafe master's props (a room object of the RMO family, rmo_object.h; vtable
+ * 0x02254fc8, 0xf44 bytes): his cup (/roomObj/obj_cafe1) and nine animated parts
  * (obj_cafe2 to obj_cafe6, some loaded twice), which the cafe's master handles while he makes
  * coffee. Only one exists at a time; data_ov004_02258310 points to it while it runs.
  *
@@ -10,11 +10,11 @@
  * master's own animation (CafeMaster_AnimNumber, numbers 0xf2 to 0xf8) reaches theirs, often
  * from his animation's frame (CafeMaster_AnimFrame):
  *
- * - 0: shows the counter and part 0; master's 0xf2 or 0xf4 play animation 0 or 1 on both;
+ * - 0: shows the cup and part 0; master's 0xf2 or 0xf4 play animation 0 or 1 on both;
  * - 1: master's 0xf3 or 0xf5 play animation 0 or 1 on parts 1 and 2;
  * - 2: master's 0xf3 plays 3 and 0 on parts 1 and 2, his 0xf5 plays 4 and 1;
- * - 3 and 7: as 0 and 1 together; master's 0xf6 shows or hides the counter and parts 0 to 2 by
- *   his frame and plays animation 2 on the counter and parts 0 to 2;
+ * - 3 and 7: as 0 and 1 together; master's 0xf6 shows or hides the cup and parts 0 to 2 by
+ *   his frame and plays animation 2 on the cup and parts 0 to 2;
  * - 4: part 3 plays its first animation from the start; master's 0xf7 plays 5 and 3 on parts 1
  *   and 2;
  * - 5: master's 0xf8 plays 6 and 4 on parts 1 and 2, and at his frame 0x3b starts effect 0x6b
@@ -26,10 +26,10 @@
  * - 9: the camera goes back to its previous mode; once part 1's animation 11 has run out, 12
  *   and 10 play on parts 1 and 2.
  *
- * Each frame the counter and part 0 follow the beat of a music between 99 and 171, the
+ * Each frame the cup and part 0 follow the beat of a music between 99 and 171, the
  * animations step, the state's update runs, the effect follows its point, and parts 4 and 6,
  * once shown, start an effect 0x6b each. The master's draw places and draws them
- * (CafeProps_DrawCurrent): the counter and part 0 at two of his matrices, parts 1 and 2 at his
+ * (CafeProps_DrawCurrent): the cup and part 0 at two of his matrices, parts 1 and 2 at his
  * first matrix or at a fixed point by state, part 3 at his second matrix during frames 15 to
  * 72 of its animation, the others at fixed points. */
 #ifndef CLEAN_OV004_CAFE_PROPS_H
@@ -44,12 +44,12 @@
 #define CAFE_PROPS_EFFECT_PARTS 2 /* parts 4 and 6 */
 
 typedef struct CafeProps {
-    RmoObject base;                                   /* 0x000: the counter */
+    RmoObject base;                                   /* 0x000: the cup */
     RmoAnimatedModel parts[CAFE_PROPS_PARTS];         /* 0x290 */
     RmoModel part_models[CAFE_PROPS_PARTS];           /* 0x908 */
     RmoTexture part_textures[CAFE_PROPS_PARTS];       /* 0xecc */
     u8 part_shown[CAFE_PROPS_PARTS];                  /* 0xef0: drawn when nonzero */
-    u8 body_shown;                                    /* 0xef9: the counter is drawn */
+    u8 cup_shown;                                     /* 0xef9: the cup is drawn */
     u8 unk_efa[2];                                    /* 0xefa */
     s32 state;                                        /* 0xefc: 0 to 9 */
     u8 unk_f00[0x10];                                 /* 0xf00 */

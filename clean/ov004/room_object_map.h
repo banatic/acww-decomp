@@ -31,6 +31,6 @@ void RoomObject_ListCells(RoomObject *object, CellList *cells, Vec3 *offset, int
 int RoomObject_MountParent(RoomObject *object);
 int Actors_NoneNear(Vec3 *point, fx32 player_reach, fx32 npc_reach, fx32 player_radius, fx32 npc_radius);
 int Actors_AreNear(Vec3 *point, fx32 reach, Vec3 *other, fx32 radius);
-int Room_Check0220fed0(void);
+int Room_PlayerIsOfThisTown(void);
 
 #endif

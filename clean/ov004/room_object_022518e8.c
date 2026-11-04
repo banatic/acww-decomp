@@ -13,7 +13,7 @@
 #include "main/room_sync.h"
 #include "room_objects.h"
 
-static_assert(offsetof(RoomObject, light_switch) == 0x740, "switch");
+static_assert(offsetof(RoomObject, on_switch) == 0x740, "switch");
 static_assert(offsetof(RoomObject, node_set) == 0x764, "node set");
 static_assert(offsetof(RoomObject022518e8, state) == 0x845, "state");
 static_assert(sizeof(RoomObject022518e8) == 0x848, "the size RoomObject022518e8_Create allocates");
@@ -44,12 +44,12 @@ static void RoomObject022518e8_switch_to(RoomObject022518e8 *object, int state)
 }
 
 /* Touched (a change of the switch pending), `state` is requested for the object at its cell;
- * else with unk_76C at 2 it is entered at once. */
+ * else with placement_mode at 2 it is entered at once. */
 static void RoomObject022518e8_on_touch(RoomObject022518e8 *object, int state)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
-    } else if (RoomObject_Unk76CIs2(&object->base)) {
+    } else if (RoomObject_IsUnplaced(&object->base)) {
         RoomObject022518e8_switch_to(object, state);
     }
 }
@@ -60,7 +60,7 @@ void RoomObject022518e8_UpdateSwitchingOff(RoomObject022518e8 *object)
 {
     ByteSet_SetValue(&object->base.node_set, 1);
     RoomObject_PlaySound0(&object->base);
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_OFF);
     }
@@ -71,7 +71,7 @@ CLEAN_AS(func_ov004_02218f28, RoomObject022518e8_UpdateSwitchingOff)
  * value 1, the animations of variant 1 once from the start and sound 2 of its row. */
 int RoomObject022518e8_EnterSwitchingOff(RoomObject022518e8 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     ByteSet_SetValue(&object->base.node_set, 1);
     RoomObject_PlayAnimsFrom(&object->base, 1, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound2(&object->base);
@@ -91,7 +91,7 @@ CLEAN_AS(func_ov004_02218fb4, RoomObject022518e8_UpdateOn)
  * once from their end and the node set's value 1. */
 int RoomObject022518e8_EnterOn(RoomObject022518e8 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE);
     ByteSet_SetValue(&object->base.node_set, 1);
     return 1;
@@ -102,7 +102,7 @@ CLEAN_AS(func_ov004_02218ff8, RoomObject022518e8_EnterOn)
  * once the animations end. */
 void RoomObject022518e8_UpdateSwitchingOn(RoomObject022518e8 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlaySound0(&object->base);
     if (RoomObject_AdvanceAnims(&object->base)) {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_ON);
@@ -114,7 +114,7 @@ CLEAN_AS(func_ov004_02219034, RoomObject022518e8_UpdateSwitchingOn)
  * value 1, the animations of variant 0 once from the start and sound 1 of its row. */
 int RoomObject022518e8_EnterSwitchingOn(RoomObject022518e8 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     ByteSet_SetValue(&object->base.node_set, 1);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound1(&object->base);
@@ -133,7 +133,7 @@ CLEAN_AS(func_ov004_022190b4, RoomObject022518e8_UpdateOff)
  * 1 once from their end and the node set's value 0. */
 int RoomObject022518e8_EnterOff(RoomObject022518e8 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlayAnimsFromEnd(&object->base, 1, ANIM_MODE_ONCE, FX32_ONE);
     ByteSet_SetValue(&object->base.node_set, 0);
     return 1;
@@ -211,7 +211,7 @@ CLEAN_AS(_ZN18Obj_ov004_022518e819func_ov004_02219274Ev, RoomObject022518e8_Upda
 int RoomObject022518e8_Start(RoomObject022518e8 *object)
 {
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
-    if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
+    if (Switch_Value(&object->base.on_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_ON);
     } else {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_OFF);

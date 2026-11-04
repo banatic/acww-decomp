@@ -41,7 +41,7 @@ static_assert(sizeof(SpawnerEntry) == 0x14, "spawn table entry size");
 static_assert(offsetof(SpawnerEntry, place) == 0x08 && offsetof(SpawnerEntry, flags) == 0x10, "spawn table entry");
 static_assert(sizeof(SpawnerCheck) == 0x0c, "check size");
 static_assert(sizeof(SpawnerEvent) == 0x08, "event entry size");
-static_assert(offsetof(Spawner, part_50) == 0x50 && offsetof(Spawner, overlay_loaded) == 0x70, "spawner");
+static_assert(offsetof(Spawner, grid) == 0x50 && offsetof(Spawner, overlay_loaded) == 0x70, "spawner");
 static_assert(offsetof(Spawner, overlay) == 0x74 && sizeof(Spawner) == 0x78, "spawner");
 
 /* Scenes some checks look for (func_020b65c4). */
@@ -176,7 +176,7 @@ static uintptr_t member_target(const MemberFn *fn, void *object, void **self)
 static void destruct(Spawner *self)
 {
     self->base.vtable = data_020e1cc0;
-    Spawner_PartDestruct(self->part_50);
+    TileGrid_Destruct(self->grid);
     self->base.vtable = data_020da13c;
     Process_Destruct(&self->base);
 }
@@ -1000,19 +1000,19 @@ void Spawner_SetRequest(SpawnerRequest *request, const u16 *profile, u8 scene, u
 }
 CLEAN_AS(func_02084dc8, Spawner_SetRequest)
 
-/* func_02084f84: the destructor of the spawner's part at 0x50; nothing to do. */
-void Spawner_PartDestruct(void *part)
+/* func_02084f84: a tile grid's destructor (the spawner's at 0x50, the room villagers'); nothing to do. */
+void TileGrid_Destruct(void *part)
 {
     (void) part;
 }
-CLEAN_AS(func_02084f84, Spawner_PartDestruct)
+CLEAN_AS(func_02084f84, TileGrid_Destruct)
 
-/* func_02084f88: the constructor of the spawner's part at 0x50; nothing to do. */
-void Spawner_PartConstruct(void *part)
+/* func_02084f88: a tile grid's constructor (the spawner's at 0x50, the room villagers'); nothing to do. */
+void TileGrid_Construct(void *part)
 {
     (void) part;
 }
-CLEAN_AS(func_02084f88, Spawner_PartConstruct)
+CLEAN_AS(func_02084f88, TileGrid_Construct)
 
 /* ---- The process's phases and the villagers it makes
  *
@@ -1090,7 +1090,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The tile grid kept in the spawner's part at 0x50 (tile_grid.h). */
 static TileGrid *spawner_grid(Spawner *self)
 {
-    return (TileGrid *) (void *) self->part_50;
+    return (TileGrid *) (void *) self->grid;
 }
 
 static u16 spawner_villager_person(int index)
@@ -1573,7 +1573,7 @@ Spawner *Spawner_New(void)
         Process_Construct(&self->base);
         self->base.vtable = data_020da13c;
         self->base.vtable = data_020e1cc0;
-        Spawner_PartConstruct(self->part_50);
+        TileGrid_Construct(self->grid);
     }
     return self;
 }

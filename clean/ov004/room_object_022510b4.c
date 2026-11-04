@@ -13,7 +13,7 @@
 #include "main/room_sync.h"
 #include "room_objects.h"
 
-static_assert(offsetof(RoomObject, light_switch) == 0x740, "switch");
+static_assert(offsetof(RoomObject, on_switch) == 0x740, "switch");
 static_assert(offsetof(RoomObject022510b4, unbound) == 0x844, "unbound");
 static_assert(offsetof(RoomObject022510b4, state) == 0x845, "state");
 static_assert(sizeof(RoomObject022510b4) == 0x848, "the size RoomObject022510b4_Create allocates");
@@ -46,12 +46,12 @@ static void RoomObject022510b4_switch_to(RoomObject022510b4 *object, int state)
 }
 
 /* Touched (a change of the switch pending), `state` is requested for the object at its cell;
- * else with unk_76C at 2 it is entered at once. */
+ * else with placement_mode at 2 it is entered at once. */
 static void RoomObject022510b4_on_touch(RoomObject022510b4 *object, int state)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
-    } else if (RoomObject_Unk76CIs2(&object->base)) {
+    } else if (RoomObject_IsUnplaced(&object->base)) {
         RoomObject022510b4_switch_to(object, state);
     }
 }
@@ -60,7 +60,7 @@ static void RoomObject022510b4_on_touch(RoomObject022510b4 *object, int state)
  * animations end. */
 void RoomObject022510b4_UpdateSwitchingOff(RoomObject022510b4 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
         RoomObject022510b4_switch_to(object, ROOM_OBJECT_022510B4_OFF);
     }
@@ -71,7 +71,7 @@ CLEAN_AS(func_ov004_02218b2c, RoomObject022510b4_UpdateSwitchingOff)
  * row and the animations of variant 0 from their end in mode 3. */
 int RoomObject022510b4_EnterSwitchingOff(RoomObject022510b4 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlaySound2(&object->base);
     RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_3, FX32_ONE);
     return 1;
@@ -93,7 +93,7 @@ CLEAN_AS(func_ov004_02218b90, RoomObject022510b4_UpdateOn)
  * variant 1 in a loop from their end. */
 int RoomObject022510b4_EnterOn(RoomObject022510b4 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlayAnimsFromEnd(&object->base, 1, ANIM_MODE_LOOP, FX32_ONE);
     return 1;
 }
@@ -103,7 +103,7 @@ CLEAN_AS(func_ov004_02218be0, RoomObject022510b4_EnterOn)
  * animations end. */
 void RoomObject022510b4_UpdateSwitchingOn(RoomObject022510b4 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
         RoomObject022510b4_switch_to(object, ROOM_OBJECT_022510B4_ON);
     }
@@ -114,7 +114,7 @@ CLEAN_AS(func_ov004_02218c0c, RoomObject022510b4_UpdateSwitchingOn)
  * and the animations of variant 0 once from the start. */
 int RoomObject022510b4_EnterSwitchingOn(RoomObject022510b4 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlaySound1(&object->base);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     return 1;
@@ -132,7 +132,7 @@ CLEAN_AS(func_ov004_02218c74, RoomObject022510b4_UpdateOff)
  * variant 0 in mode 3 from the start. */
 int RoomObject022510b4_EnterOff(RoomObject022510b4 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, FX32_ONE, 0);
     return 1;
 }
@@ -210,7 +210,7 @@ int RoomObject022510b4_Start(RoomObject022510b4 *object)
 {
     object->unbound = 0;
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
-    if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
+    if (Switch_Value(&object->base.on_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject022510b4_switch_to(object, ROOM_OBJECT_022510B4_ON);
     } else {
         RoomObject022510b4_switch_to(object, ROOM_OBJECT_022510B4_OFF);

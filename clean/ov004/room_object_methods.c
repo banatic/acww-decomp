@@ -22,12 +22,12 @@
 #include "room_object_map.h"
 #include "room_objects.h"
 
-#define KIND_NO_ITEM 0x1c    /* unk_780 of an object that is no item of the map */
-#define EFFECT_3D 0x3d       /* what RoomObject_Effect3dAt gives EffectSystem_StartOneShotSetNumber */
-#define BLOCK_CELLS 16       /* cells along a block of the town's map */
-#define INDEX_BITS 0x1ff     /* a reference by index: the index, 9 bits... */
-#define INDEX_TOWN_BITS 0x7f /* ...and the town, 7 bits */
-#define CELL_TOWN_BITS 0x3f  /* a reference by cell: the town in 6 bits */
+#define KIND_NO_ITEM 0x1c     /* unk_780 of an object that is no item of the map */
+#define EFFECT_3D 0x3d        /* what RoomObject_Effect3dAt gives EffectSystem_StartOneShotSetNumber */
+#define BLOCK_CELLS 16        /* cells along a block of the town's map */
+#define INDEX_BITS 0x1ff      /* a reference by index: the index, 9 bits... */
+#define INDEX_SCENE_BITS 0x7f /* ...and the scene, 7 bits */
+#define CELL_SCENE_BITS 0x3f  /* a reference by cell: the scene in 6 bits */
 
 /* The town's map (AcreTile_ItemInAcre finds the item on a cell of it). */
 extern void *data_021c80bc;
@@ -109,7 +109,7 @@ int RoomObject_Unk00CIs3A(RoomObject *object)
 CLEAN_AS(func_ov004_0220e5b8, RoomObject_Unk00CIs3A)
 
 /* func_ov004_0220e5c0: what RoomObject_IsLight says (FurnitureInfo_LightKind accepts the furniture's
- * number and unk_76C is not 2). */
+ * number and placement_mode is not 2). */
 int RoomObject_Check0221134c(RoomObject *object)
 {
     return RoomObject_IsLight(object);
@@ -117,11 +117,11 @@ int RoomObject_Check0221134c(RoomObject *object)
 CLEAN_AS(func_ov004_0220e5c0, RoomObject_Check0221134c)
 
 /* func_ov004_0220e5c8 */
-int RoomObject_Unk76CIs2(const RoomObject *object)
+int RoomObject_IsUnplaced(const RoomObject *object)
 {
-    return object->unk_76C == 2;
+    return object->placement_mode == 2;
 }
-CLEAN_AS(func_ov004_0220e5c8, RoomObject_Unk76CIs2)
+CLEAN_AS(func_ov004_0220e5c8, RoomObject_IsUnplaced)
 
 /* func_ov004_0220e5dc: the effect of RoomObject_Effect3dAt halfway between corner `corner`
  * (RoomObject_Corner) and the centre of the object, at the object's height. */
@@ -148,9 +148,9 @@ int RoomObject_Effect3dAt(RoomObject *object, const Vec3 *point)
 }
 CLEAN_AS(func_ov004_0220e61c, RoomObject_Effect3dAt)
 
-/* func_ov004_0220e640: the effect of RoomEffect_SpawnC0 at the object's centre, turned towards
+/* func_ov004_0220e640: a roach (RoomEffect_SpawnRoach) at the object's centre, running away from
  * the player; 0 without a player. */
-int RoomObject_EffectTowardsPlayer(RoomObject *object)
+int RoomObject_RoachFromCentre(RoomObject *object)
 {
     Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player == NULL) {
@@ -158,15 +158,15 @@ int RoomObject_EffectTowardsPlayer(RoomObject *object)
     }
     Vec3 centre;
     RoomObject_Centre(object, &centre);
-    return RoomEffect_SpawnC0(&centre, Vec_YawTo(&centre, player));
+    return RoomEffect_SpawnRoach(&centre, Vec_YawTo(&centre, player));
 }
-CLEAN_AS(func_ov004_0220e640, RoomObject_EffectTowardsPlayer)
+CLEAN_AS(func_ov004_0220e640, RoomObject_RoachFromCentre)
 
-/* func_ov004_0220e674: the effect of RoomEffect_SpawnC0 at the centre of the object's cell
- * farthest from the player (nearest unless `farthest`), turned towards the player.
+/* func_ov004_0220e674: a roach (RoomEffect_SpawnRoach) at the centre of the object's cell farthest
+ * from the player (nearest unless `farthest`), running away from the player.
  * QUIRK: the farthest cell is searched from distance 0 and the nearest from data_020ca0ec, by
  * strict comparisons: on equal distances the first cell wins. */
-void RoomObject_EffectAtCellTowardsPlayer(RoomObject *object, int farthest)
+void RoomObject_RoachFromCell(RoomObject *object, int farthest)
 {
     Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player == NULL) {
@@ -200,20 +200,20 @@ void RoomObject_EffectAtCellTowardsPlayer(RoomObject *object, int farthest)
         int y = CellList_At(&cells, chosen)->y;
         Vec3 centre;
         AcreTile_TileCentre(&centre, (unsigned int) x, (unsigned int) y);
-        RoomEffect_SpawnC0(&centre, Vec_YawTo(&centre, player));
+        RoomEffect_SpawnRoach(&centre, Vec_YawTo(&centre, player));
     }
     CellList_Destruct(&cells);
 }
-CLEAN_AS(func_ov004_0220e674, RoomObject_EffectAtCellTowardsPlayer)
+CLEAN_AS(func_ov004_0220e674, RoomObject_RoachFromCell)
 
-/* func_ov004_0220e73c: effect 0xc0 at `point`, turned by `angle` about the vertical axis
- * (HouseRoaches_SpawnAt, which runs up to three at once); whether it started. */
-int RoomEffect_SpawnC0(Vec3 *point, int angle)
+/* func_ov004_0220e73c: a roach (effect 0xc0, GOKI) at `point`, turned by `angle` about the
+ * vertical axis (HouseRoaches_SpawnAt, which runs up to three at once); whether it started. */
+int RoomEffect_SpawnRoach(Vec3 *point, int angle)
 {
     s16 rotation[3] = {0, (s16) angle, 0};
     return HouseRoaches_SpawnAt(point, rotation);
 }
-CLEAN_AS(func_ov004_0220e73c, RoomEffect_SpawnC0)
+CLEAN_AS(func_ov004_0220e73c, RoomEffect_SpawnRoach)
 
 /* func_ov004_0220e758: the first of the cells the object would cover (moved by `offset` and
  * turned by `turn`, RoomObject_ListCells) where the town's map holds, on the object's layer, an
@@ -225,7 +225,7 @@ int RoomObject_FindVariantCell(RoomObject *object, int *x, int *y, Vec3 *offset,
     RoomObject_ListCells(object, &cells, offset, turn);
     void *map = data_021c80bc;
     for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
-        int layer = object->unk_288;
+        int layer = object->layer;
         s32 cell_y = CellList_At(&cells, (int) i)->y;
         s32 cell_x = CellList_At(&cells, (int) i)->x;
         ItemCode *item = AcreTile_ItemInAcre(map, shift_right(cell_x, 4), shift_right(cell_y, 4), cell_x & (BLOCK_CELLS - 1),
@@ -242,17 +242,17 @@ int RoomObject_FindVariantCell(RoomObject *object, int *x, int *y, Vec3 *offset,
 }
 CLEAN_AS(func_ov004_0220e758, RoomObject_FindVariantCell)
 
-/* func_ov004_0220e808: the object's reference. When SceneKinds_CurrentIn6To8 says so or unk_76C is 2: its
- * index among the room's objects (bits 0-8) and the town (SceneQuery_Current, bits 9-15). Else, by
+/* func_ov004_0220e808: the object's reference. When SceneKinds_CurrentIn6To8 says so or placement_mode is 2: its
+ * index among the room's objects (bits 0-8) and the scene (SceneQuery_Current, bits 9-15). Else, by
  * the cell RoomObject_FindVariantCell finds: x and y within their block (bits 0-3 and 4-7),
- * the object's layer (bit 8) and the town (bits 9-14); 0 when there is none.
+ * the object's layer (bit 8) and the scene (bits 9-14); 0 when there is none.
  * BUG: bit 15 of a reference by cell is left from whatever the stack held; here it is 0. */
 u16 RoomObject_Reference(RoomObject *object, Vec3 *offset, int turn)
 {
-    if (SceneKinds_CurrentIn6To8() != 0 || RoomObject_Unk76CIs2(object)) {
+    if (SceneKinds_CurrentIn6To8() != 0 || RoomObject_IsUnplaced(object)) {
         int index = RoomObjects_IndexOf(RoomObjects_Table(), object);
         u16 reference = (u16) (index & INDEX_BITS);
-        reference |= (u16) ((SceneQuery_Current() & INDEX_TOWN_BITS) << 9);
+        reference |= (u16) ((SceneQuery_Current() & INDEX_SCENE_BITS) << 9);
         return reference;
     }
     int x;
@@ -260,8 +260,8 @@ u16 RoomObject_Reference(RoomObject *object, Vec3 *offset, int turn)
     if (RoomObject_FindVariantCell(object, &x, &y, offset, (s16) turn) != 0) {
         u16 reference = (u16) (x & (BLOCK_CELLS - 1));
         reference |= (u16) ((y & (BLOCK_CELLS - 1)) << 4);
-        reference |= (u16) ((object->unk_288 & 1) << 8);
-        reference |= (u16) ((SceneQuery_Current() & CELL_TOWN_BITS) << 9);
+        reference |= (u16) ((object->layer & 1) << 8);
+        reference |= (u16) ((SceneQuery_Current() & CELL_SCENE_BITS) << 9);
         return reference;
     }
     return 0;
@@ -337,7 +337,7 @@ int RoomObject_Unk00CIs3BOr3CAndOn(RoomObject *object)
     if (object->unk_00C != KIND_00C_3B && object->unk_00C != KIND_00C_3C) {
         return 0;
     }
-    return Switch_Value(&object->light_switch) != 0;
+    return Switch_Value(&object->on_switch) != 0;
 }
 CLEAN_AS(func_ov004_022112c4, RoomObject_Unk00CIs3BOr3CAndOn)
 
@@ -346,7 +346,7 @@ CLEAN_AS(func_ov004_022112c4, RoomObject_Unk00CIs3BOr3CAndOn)
 int RoomObject_Unk00CIs3AAndOn(RoomObject *object)
 {
     if (RoomObject_TestUnk00CIs3A(object)) {
-        return Switch_Value(&object->light_switch);
+        return Switch_Value(&object->on_switch);
     }
     return 0;
 }
@@ -361,14 +361,14 @@ int RoomObject_TestUnk00CIs3A(const RoomObject *object)
 CLEAN_AS(func_ov004_0221132c, RoomObject_TestUnk00CIs3A)
 
 /* func_ov004_0221134c: whether `object` (or NULL) is a light: FurnitureInfo_LightKind accepts its
- * furniture's number and it is not a preview (RoomObject_Unk76CIs2). The lights' code
+ * furniture's number and it is not a preview (RoomObject_IsUnplaced). The lights' code
  * (room_object_light.c) hands this function to RoomObjects_CountOn to count the lights. */
 int RoomObject_IsLight(RoomObject *object)
 {
     if (object == NULL) {
         return 0;
     }
-    return FurnitureInfo_LightKind(RoomObject_Number(object)) != 0 && !RoomObject_Unk76CIs2(object);
+    return FurnitureInfo_LightKind(RoomObject_Number(object)) != 0 && !RoomObject_IsUnplaced(object);
 }
 CLEAN_AS(func_ov004_0221134c, RoomObject_IsLight)
 

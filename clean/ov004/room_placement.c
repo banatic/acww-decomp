@@ -61,32 +61,32 @@ static int place_series(u32 *out, unsigned int item, int mode, u16 first)
 }
 
 /* func_ov004_0223b3f8: RoomPlacement_FindNearPlayer for an item of the series 0x3f24. */
-int RoomPlacement_PlaceSeries3F24(u32 *out, unsigned int item, int mode)
+int RoomPlacement_PlaceMyEasel(u32 *out, unsigned int item, int mode)
 {
     return place_series(out, item, mode, 0x3f24);
 }
-CLEAN_AS(func_ov004_0223b3f8, RoomPlacement_PlaceSeries3F24)
+CLEAN_AS(func_ov004_0223b3f8, RoomPlacement_PlaceMyEasel)
 
 /* func_ov004_0223b440: the same for the series 0x4224. */
-int RoomPlacement_PlaceSeries4224(u32 *out, unsigned int item, int mode)
+int RoomPlacement_PlaceMyHat(u32 *out, unsigned int item, int mode)
 {
     return place_series(out, item, mode, 0x4224);
 }
-CLEAN_AS(func_ov004_0223b440, RoomPlacement_PlaceSeries4224)
+CLEAN_AS(func_ov004_0223b440, RoomPlacement_PlaceMyHat)
 
 /* func_ov004_0223b488: the same for the series 0x3ea4. */
-int RoomPlacement_PlaceSeries3EA4(u32 *out, unsigned int item, int mode)
+int RoomPlacement_PlaceMyUmbrella(u32 *out, unsigned int item, int mode)
 {
     return place_series(out, item, mode, 0x3ea4);
 }
-CLEAN_AS(func_ov004_0223b488, RoomPlacement_PlaceSeries3EA4)
+CLEAN_AS(func_ov004_0223b488, RoomPlacement_PlaceMyUmbrella)
 
 /* func_ov004_0223b4d0: the same for the series 0x3d84. */
-int RoomPlacement_PlaceSeries3D84(u32 *out, unsigned int item, int mode)
+int RoomPlacement_PlaceMyClothes(u32 *out, unsigned int item, int mode)
 {
     return place_series(out, item, mode, 0x3d84);
 }
-CLEAN_AS(func_ov004_0223b4d0, RoomPlacement_PlaceSeries3D84)
+CLEAN_AS(func_ov004_0223b4d0, RoomPlacement_PlaceMyClothes)
 
 /* func_ov004_0223b518: the index among the four players' records (data_021dc7bc) of this
  * console's player, -1 without a current record. */

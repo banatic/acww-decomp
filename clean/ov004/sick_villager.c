@@ -215,7 +215,7 @@ CLEAN_AS(func_ov004_02221b9c, SickVillagerTalk_Delete)
 static void sk_destruct(SickVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_022541d8;
-    Spawner_PartDestruct(villager->spawner);
+    TileGrid_Destruct(villager->spawner);
     sk_set_talk_vtable(&villager->talk);
     VillagerTalkScene_DestructBody(&villager->talk.base);
     VillagerSceneObject_DestructBody(villager->base);
@@ -667,7 +667,7 @@ void SickVillagerTalk_OnMessageBegun(SickVillagerTalk *talk)
 {
     VillagerSickness *sickness = VillagerSickness_Record(&data_021e5a2c);
     if (sickness != NULL && VillagerSicknessRecord_StagePlayer(sickness) != NULL) {
-        SceneBase_PutNameAt10((SceneBase *) (void *) talk, VillagerSicknessRecord_StagePlayer(sickness), 0);
+        SceneBase_PutPlayerName((SceneBase *) (void *) talk, VillagerSicknessRecord_StagePlayer(sickness), 0);
     }
 }
 CLEAN_AS(func_ov004_0222251c, SickVillagerTalk_OnMessageBegun)
@@ -1024,7 +1024,7 @@ SickVillager *SickVillager_New(void)
         *(const u8 **) (void *) villager->base = data_ov004_022541d8;
         VillagerTalkScene_ConstructAlt(&villager->talk.base);
         sk_set_talk_vtable(&villager->talk);
-        Spawner_PartConstruct(villager->spawner);
+        TileGrid_Construct(villager->spawner);
     }
     return villager;
 }

@@ -11,7 +11,7 @@
  *   Sound 0x3ff is played again each time the joint animation passes frame 20.
  *
  * An animation counts as done on the second frame its end is seen (PeriodicRoomObject.ended).
- * In mode 1 (RoomObject.unk_76C) the first wait is 0. */
+ * In mode 1 (RoomObject.placement_mode) the first wait is 0. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_PERIODIC_H
 #define CLEAN_OV004_ROOM_OBJECT_PERIODIC_H
 

@@ -52,19 +52,19 @@ static void RoomObject0225130c_switch_to(RoomObject0225130c *object, int state)
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
 
-/* Keeps the running sound playing at the object's centre (unless unk_76C is 2). */
+/* Keeps the running sound playing at the object's centre (unless placement_mode is 2). */
 static void RoomObject0225130c_keep_sound(RoomObject0225130c *object)
 {
-    if (!RoomObject_Unk76CIs2(&object->base)) {
+    if (!RoomObject_IsUnplaced(&object->base)) {
         RoomSound_PlayAt(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
     }
 }
 
 /* At frame 0 of the joint animation the sound's variable is set to 1; at frame 0x14 to 1 and 2
- * in turn (unless unk_76C is 2). */
+ * in turn (unless placement_mode is 2). */
 static void RoomObject0225130c_tick(RoomObject0225130c *object)
 {
-    if (RoomObject_Unk76CIs2(&object->base)) {
+    if (RoomObject_IsUnplaced(&object->base)) {
         return;
     }
     if (FrameCtrl_Passed(&object->base.model.frames, 0)) {
@@ -79,14 +79,14 @@ static void RoomObject0225130c_tick(RoomObject0225130c *object)
  * off; off once the animations end. */
 void RoomObject0225130c_UpdateSettling(RoomObject0225130c *object)
 {
-    if (!RoomObject_Unk76CIs2(&object->base)) {
+    if (!RoomObject_IsUnplaced(&object->base)) {
         RoomSound_PlayAt(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
         if (object->settle_reset != 0) {
             RoomSound_SetVariable(&object->base.sound, 1);
             object->settle_reset = 0;
         }
     }
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_OFF);
     }
@@ -97,7 +97,7 @@ CLEAN_AS(func_ov004_02212a14, RoomObject0225130c_UpdateSettling)
  * of variant 0 from their end in mode 3. */
 int RoomObject0225130c_EnterSettling(RoomObject0225130c *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlayAnimsFromEnd(&object->base, 0, ANIM_MODE_3, FX32_ONE);
     object->settle_reset = 1;
     return 1;
@@ -109,7 +109,7 @@ CLEAN_AS(func_ov004_02212a84, RoomObject0225130c_EnterSettling)
 void RoomObject0225130c_UpdateStopping(RoomObject0225130c *object)
 {
     RoomObject0225130c_keep_sound(object);
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject0225130c_tick(object);
     if (RoomObject_AdvanceAnims(&object->base)) {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_SETTLING);
@@ -121,7 +121,7 @@ CLEAN_AS(func_ov004_02212ab8, RoomObject0225130c_UpdateStopping)
  * the animations of variant 1 once, each from the frame it is at. */
 int RoomObject0225130c_EnterStopping(RoomObject0225130c *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlaySound2(&object->base);
     RoomObject_PlayAnimsFrom(&object->base, 1, ANIM_MODE_ONCE, FX32_ONE, KEEP_FRAME);
     return 1;
@@ -135,7 +135,7 @@ void RoomObject0225130c_UpdateRunning(RoomObject0225130c *object)
     RoomObject0225130c_keep_sound(object);
     RoomObject_AdvanceAnims(&object->base);
     RoomObject0225130c_tick(object);
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, ROOM_OBJECT_0225130C_STOPPING, SLOT_70_VALUE, 1);
     }
 }
@@ -145,7 +145,7 @@ CLEAN_AS(func_ov004_02212bb0, RoomObject0225130c_UpdateRunning)
  * variant 1 in a loop from their end. */
 int RoomObject0225130c_EnterRunning(RoomObject0225130c *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlayAnimsFromEnd(&object->base, 1, ANIM_MODE_LOOP, FX32_ONE);
     return 1;
 }
@@ -156,7 +156,7 @@ CLEAN_AS(func_ov004_02212c64, RoomObject0225130c_EnterRunning)
 void RoomObject0225130c_UpdateStarting(RoomObject0225130c *object)
 {
     RoomObject0225130c_keep_sound(object);
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
     }
@@ -167,7 +167,7 @@ CLEAN_AS(func_ov004_02212c90, RoomObject0225130c_UpdateStarting)
  * variant 0 once from the start and the sound at 2. */
 int RoomObject0225130c_EnterStarting(RoomObject0225130c *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound1(&object->base);
     return 1;
@@ -177,7 +177,7 @@ CLEAN_AS(func_ov004_02212ce4, RoomObject0225130c_EnterStarting)
 /* func_ov004_02212d1c (update of OFF): touched, it requests STARTING. */
 void RoomObject0225130c_UpdateOff(RoomObject0225130c *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, ROOM_OBJECT_0225130C_STARTING, SLOT_70_VALUE, 1);
     }
 }
@@ -187,7 +187,7 @@ CLEAN_AS(func_ov004_02212d1c, RoomObject0225130c_UpdateOff)
  * variant 0 in mode 3 from the start. */
 int RoomObject0225130c_EnterOff(RoomObject0225130c *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_3, FX32_ONE, 0);
     return 1;
 }
@@ -255,7 +255,7 @@ CLEAN_AS(func_ov004_02212ed0, RoomObject0225130c_Vfunc0C)
  * but not while vanishing. */
 int RoomObject0225130c_UpdateUnsettled(RoomObject0225130c *object)
 {
-    if (!RoomObject_Unk76CIs2(&object->base) && !RoomObject_IsVanishing(&object->base)) {
+    if (!RoomObject_IsUnplaced(&object->base) && !RoomObject_IsVanishing(&object->base)) {
         RoomSound_PlayAt(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
     }
     return 1;
@@ -278,7 +278,7 @@ int RoomObject0225130c_Start(RoomObject0225130c *object)
 {
     object->unbound = 0;
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
-    if (Switch_Value(&object->base.light_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
+    if (Switch_Value(&object->base.on_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
     } else {
         RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_OFF);

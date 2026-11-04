@@ -25,7 +25,7 @@ typedef struct PushingActor {
 } PushingActor;
 
 typedef struct PushBox {
-    CollisionBox base;        /* base.active clear: RoomObject_UpdateBoxAndShadow does not update it */
+    CollisionBox base;        /* base.active clear: RoomObject_UpdateBoxAndPick does not update it */
     struct RoomObject *owner; /* the object it belongs to while it is in the world */
 } PushBox;
 

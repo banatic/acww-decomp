@@ -21,7 +21,6 @@ extern SessionRecordFiller *const data_020cd1dc[]; /* the fillers, by record id 
 extern const u16 data_020cd050[];                  /* each record's offset in the table */
 extern const u8 data_020ccfa8[];                   /* each record's size */
 
-/* The packers of records 0-7 (the actors' saved states use them too). */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 

@@ -129,28 +129,29 @@ int RoomInterior_Set(u16 *item, int option, int wallpaper, int with_sound, u8 se
 }
 CLEAN_AS(func_02034a48, RoomInterior_Set)
 
-/* func_02034a74: indoors, the room's carpet set to itself (sent to the others when `send`);
- * whether it was indoors. */
-int RoomInterior_ResendCarpet(int send)
+/* func_02034a74: indoors, the carpet from before the one tried on put back (sent to the others
+ * when `send`); whether it was indoors. */
+int RoomInterior_RestoreCarpet(int send)
 {
     if (data_020e54a8 == 1) {
-        RoomInterior_SetCarpet(RoomShell_CarpetCode(), 0, 0, (u32) send);
+        RoomInterior_SetCarpet(RoomShell_PreviousCarpet(), 0, 0, (u32) send);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_02034a74, RoomInterior_ResendCarpet)
+CLEAN_AS(func_02034a74, RoomInterior_RestoreCarpet)
 
-/* func_02034aa8 */
-int RoomInterior_ResendWallpaper(int send)
+/* func_02034aa8: indoors, the wallpaper from before the one tried on put back (sent to the
+ * others when `send`); whether it was indoors. */
+int RoomInterior_RestoreWallpaper(int send)
 {
     if (data_020e54a8 == 1) {
-        RoomInterior_SetWallpaper(RoomShell_WallpaperCode(), 0, 0, send);
+        RoomInterior_SetWallpaper(RoomShell_PreviousWallpaper(), 0, 0, send);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_02034aa8, RoomInterior_ResendWallpaper)
+CLEAN_AS(func_02034aa8, RoomInterior_RestoreWallpaper)
 
 /* func_02034adc: the carpet changed to one of the current player's designs. */
 void RoomInterior_SetCarpetDesign(int design, int option, int with_sound, int send)

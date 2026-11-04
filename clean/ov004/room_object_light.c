@@ -23,7 +23,7 @@ extern int func_ov004_0221134c(RoomObject *object);
  * on: SceneLights_RequestOff(0, 1), and when it vanishes also RoomSync_SetLit with 0. */
 void RoomObject_ExitLight(RoomObject *object)
 {
-    if (RoomObject_Check0221134c(object) && Area_CurrentIs1To5() && Switch_Value(&object->light_switch) &&
+    if (RoomObject_Check0221134c(object) && Area_CurrentIs1To5() && Switch_Value(&object->on_switch) &&
         RoomObjects_CountOn(func_ov004_0221134c) == 1) {
         SceneLights_RequestOff(0, 1);
         if (RoomObject_IsVanishing(object)) {
@@ -40,9 +40,9 @@ CLEAN_AS(func_ov004_0220ecec, RoomObject_ExitLight)
 void RoomObject_UpdateLight(RoomObject *object)
 {
     if (RoomObject_Check0221134c(object) && Area_CurrentIs1To5() &&
-        Glow_Switch(&object->glow, Switch_Value(&object->light_switch), 1, object->light_kind == LIGHT_FLASHES)) {
+        Glow_Switch(&object->glow, Switch_Value(&object->on_switch), 1, object->light_kind == LIGHT_FLASHES)) {
         int lights_on = RoomObjects_CountOn(func_ov004_0221134c);
-        if (Switch_Value(&object->light_switch)) {
+        if (Switch_Value(&object->on_switch)) {
             if (lights_on == 1) {
                 RoomLight_TurnOn(object->light_kind);
                 RoomSync_SetLit(SceneQuery_Current(), 1);
@@ -59,18 +59,18 @@ CLEAN_AS(func_ov004_0220ed40, RoomObject_UpdateLight)
 /* func_ov004_0220ede0 (vtable slot 0x08 with 2): a light binds its glow to the material
  * data_ov004_02250010 of its model, lit by its switch; when it is the only light on, it sets
  * the room's lighting: by its kind (RoomLight_TurnOn and RoomSync_SetLit with 1), or for mode
- * 0 (unk_76C) with SceneLights_RequestOn(0, 1, 0). */
+ * 0 (placement_mode) with SceneLights_RequestOn(0, 1, 0). */
 void RoomObject_StartLight(RoomObject *object)
 {
     if (!RoomObject_Check0221134c(object)) {
         return;
     }
     G3dModel *model = object->model_resource;
-    Glow_Bind(&object->glow, model, data_ov004_02250010, Switch_Value(&object->light_switch));
+    Glow_Bind(&object->glow, model, data_ov004_02250010, Switch_Value(&object->on_switch));
     if (Area_CurrentIs1To5()) {
         int lights_on = RoomObjects_CountOn(func_ov004_0221134c);
-        if (Switch_Value(&object->light_switch) && lights_on == 1) {
-            if (object->unk_76C != 0) {
+        if (Switch_Value(&object->on_switch) && lights_on == 1) {
+            if (object->placement_mode != 0) {
                 RoomLight_TurnOn(object->light_kind);
                 RoomSync_SetLit(SceneQuery_Current(), 1);
             } else {

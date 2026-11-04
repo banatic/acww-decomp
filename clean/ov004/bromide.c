@@ -115,7 +115,7 @@ CLEAN_AS(func_ov004_022134d8, Bromide_EnterOpen)
  * scene for an event (EventQueue_RequestKind6) and gives its answer; else 0. */
 int Bromide_UpdateIdle(Bromide *bromide)
 {
-    if (Switch_IsPending(&bromide->base.light_switch)) {
+    if (Switch_IsPending(&bromide->base.on_switch)) {
         return EventQueue_RequestKind6(bromide, 0);
     }
     return 0;

@@ -67,14 +67,14 @@ int RoomObject02251564_EnterUsed(RoomObject02251564 *object)
 CLEAN_AS(func_ov004_02213010, RoomObject02251564_EnterUsed)
 
 /* func_ov004_02213074 (update of IDLE): touched, it requests USED with this system's player
- * number; else, with unk_76C at 2, it enters USED with no player. */
+ * number; else, with placement_mode at 2, it enters USED with no player. */
 void RoomObject02251564_UpdateIdle(RoomObject02251564 *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, ROOM_OBJECT_02251564_USED, (u8) data_020ccf94->local_player, 1);
         return;
     }
-    if (RoomObject_Unk76CIs2(&object->base)) {
+    if (RoomObject_IsUnplaced(&object->base)) {
         object->base.vtable->vfunc_70(&object->base, ROOM_OBJECT_02251564_USED, SLOT_70_VALUE);
     }
 }

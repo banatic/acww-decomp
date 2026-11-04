@@ -1,4 +1,4 @@
-/* The props of the cafe's counter (cafe_props.h). */
+/* The cafe master's props (cafe_props.h). */
 #include "cafe_props.h"
 
 #include "autoload_2/approach.h"
@@ -30,7 +30,7 @@ static_assert(offsetof(CafeProps, parts) == 0x290, "parts");
 static_assert(offsetof(CafeProps, part_models) == 0x908, "part models");
 static_assert(offsetof(CafeProps, part_textures) == 0xecc, "part textures");
 static_assert(offsetof(CafeProps, part_shown) == 0xef0, "part shown");
-static_assert(offsetof(CafeProps, body_shown) == 0xef9, "body shown");
+static_assert(offsetof(CafeProps, cup_shown) == 0xef9, "body shown");
 static_assert(offsetof(CafeProps, state) == 0xefc, "state");
 static_assert(offsetof(CafeProps, effect_point) == 0xf10, "effect point");
 static_assert(offsetof(CafeProps, part_effect_points) == 0xf1c, "part effect points");
@@ -42,7 +42,7 @@ static_assert(sizeof(CafeProps) == 0xf44, "the size CafeProps_Create allocates")
 #define NO_EFFECT (-1)    /* CafeProps.effect and part_effects when none runs */
 #define EFFECT_SET 0x6b   /* the effect set of all three effects */
 #define EFFECT_FRAME 0x3b /* the master's frame at which state 5 starts its effect */
-#define MUSIC_FIRST 99    /* the musics whose beat the counter and part 0 follow */
+#define MUSIC_FIRST 99    /* the musics whose beat the cup and part 0 follow */
 #define MUSIC_LAST 171
 #define RECORD_STOPPED 1 /* byte 3 of the sound's entry while it does not play */
 #define PLAY_LOOP 0      /* FrameCtrlFlags */
@@ -58,7 +58,7 @@ static_assert(sizeof(CafeProps) == 0xf44, "the size CafeProps_Create allocates")
 #define MASTER_ANIM_F7 0xf7
 #define MASTER_ANIM_F8 0xf8
 
-/* Frames of the master's animation 0xf6: the counter and part 0 show up to the first, parts 1
+/* Frames of the master's animation 0xf6: the cup and part 0 show up to the first, parts 1
  * and 2 from the second. */
 #define SHOW_BODY_LAST 6
 #define SHOW_PARTS_FIRST 18
@@ -78,7 +78,7 @@ static_assert(sizeof(CafeProps) == 0xf44, "the size CafeProps_Create allocates")
 /* The one that exists, NULL for none. */
 extern CafeProps *data_ov004_02258310;
 
-/* The archives of the counter and of the parts (/roomObj/obj_cafe1 to obj_cafe6). */
+/* The archives of the cup and of the parts (/roomObj/obj_cafe1 to obj_cafe6). */
 extern const char data_ov004_02255030[], data_ov004_02255048[]; /* obj_cafe1.arc, .nsbtx */
 extern const char data_ov004_02255064[], data_ov004_0225507c[]; /* obj_cafe2 */
 extern const char data_ov004_02255098[], data_ov004_022550b0[]; /* obj_cafe3 */
@@ -357,7 +357,7 @@ static void play_parts_1_2(CafeProps *self, int anim1, int anim2, u8 flags, u16 
     CafeProps_PlayAnim(self, anim2, &self->parts[2], &self->part_models[2], flags, FX32_ONE, start, 0);
 }
 
-/* The counter and part 0 play `anim`, looping. */
+/* The cup and part 0 play `anim`, looping. */
 static void play_body_part_0(CafeProps *self, int anim)
 {
     CafeProps_PlayAnim(self, anim, &self->base.body, &self->base.body_model, PLAY_LOOP, FX32_ONE, 0, 0);
@@ -475,7 +475,7 @@ void CafeProps_UpdateState3(CafeProps *self)
     } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F6) {
         u8 early = frame <= SHOW_BODY_LAST;
         u8 late = frame >= SHOW_PARTS_FIRST;
-        self->body_shown = early;
+        self->cup_shown = early;
         self->part_shown[0] = early;
         self->part_shown[1] = late;
         self->part_shown[2] = late;
@@ -551,10 +551,10 @@ void CafeProps_UpdateState0(CafeProps *self)
 }
 CLEAN_AS(func_ov004_0222e5a4, CafeProps_UpdateState0)
 
-/* func_ov004_0222e644: the counter and part 0 shown. */
+/* func_ov004_0222e644: the cup and part 0 shown. */
 int CafeProps_OnEnterState0(CafeProps *self)
 {
-    self->body_shown = 1;
+    self->cup_shown = 1;
     self->part_shown[0] = 1;
     return 1;
 }
@@ -610,7 +610,7 @@ int CafeProps_SetState(CafeProps *self, int state)
 }
 CLEAN_AS(func_ov004_0222e73c, CafeProps_SetState)
 
-/* func_ov004_0222e82c (vtable slot 0x0c): the counter's and the parts' archives released; the
+/* func_ov004_0222e82c (vtable slot 0x0c): the cup's and the parts' archives released; the
  * props are no longer the current ones. */
 int CafeProps_Release(CafeProps *self)
 {
@@ -647,7 +647,7 @@ static int placed(const CafeProps *self, int part)
 }
 
 /* func_ov004_0222e860: each model's matrix set (built in the scratch matrix data_021fbe48), then
- * the counter and the parts drawn that are shown. Outside states 8 and 9 the effect's point
+ * the cup and the parts drawn that are shown. Outside states 8 and 9 the effect's point
  * follows part 1: the fixed point while it is placed, else the master's first matrix's
  * translation. */
 void CafeProps_Draw(CafeProps *self)
@@ -699,7 +699,7 @@ void CafeProps_Draw(CafeProps *self)
     translate_to(&data_ov004_02258348);
     *model_matrix(&self->parts[8]) = data_021fbe48;
 
-    if (self->body_shown) {
+    if (self->cup_shown) {
         AnimatedModel_Draw(animated(&self->base.body), NULL);
     }
     for (int i = 0; i < CAFE_PROPS_PARTS; i++) {
@@ -727,7 +727,7 @@ static void step_to_beat(RmoAnimatedModel *model, fx32 speed)
 }
 
 /* _ZN18Obj_ov004_02254fc819func_ov004_0222ec34Ev (vtable slot 0x18): while one of the musics
- * plays (its sound entry not stopped), the counter and part 0 follow its beat (the entry's word
+ * plays (its sound entry not stopped), the cup and part 0 follow its beat (the entry's word
  * at 0x10); the animations step, the state's update runs, the effect follows its point, and
  * parts 4 and 6 start their effects once shown. */
 int CafeProps_Update(CafeProps *self)
@@ -766,7 +766,7 @@ static fx32 last_frame(fx32 end)
     return (fx32) ((u32) (u16) (whole_frames(end) - 1) << 12);
 }
 
-/* func_ov004_0222ed60 (vtable slot 0x00): the props become the current ones; the counter and
+/* func_ov004_0222ed60 (vtable slot 0x00): the props become the current ones; the cup and
  * the parts loaded and shown at their first frames, state 0 entered, part 3 shown, parts 4 to
  * 7 standing at their animations' last frames, the effects' points set and no effect running. */
 int CafeProps_Start(CafeProps *self)

@@ -459,13 +459,13 @@ int Chest_Index(Chest *chest)
 CLEAN_AS(func_ov004_02217230, Chest_Index)
 
 /* func_ov004_02217264 (vtable slot 0x4c): the scene's answer to EventQueue_RequestKind6. Event 1 starts
- * the menu when SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else the talk; event 8 ends
+ * the menu when SceneKinds_CurrentIsHouseRoom and Room_PlayerIsOfThisTown allow it, else the talk; event 8 ends
  * either; others do nothing. */
 void Chest_OnSceneEvent(Chest *chest, int event)
 {
     switch (event) {
         case 1:
-            if (SceneKinds_CurrentIsHouseRoom() != 0 && Room_Check0220fed0() != 0) {
+            if (SceneKinds_CurrentIsHouseRoom() != 0 && Room_PlayerIsOfThisTown() != 0) {
                 Chest_EnterTalkStep(chest, CHEST_MENU_NEXT);
             } else {
                 Chest_EnterTalkStep(chest, CHEST_TALK_NEXT);
@@ -495,7 +495,7 @@ CLEAN_AS(func_ov004_022172ac, Chest_UpdateLidClosing)
 int Chest_EnterLidClosing(Chest *chest)
 {
     RoomObject *base = &chest->base;
-    Switch_Set(&base->light_switch, 1, 0);
+    Switch_Set(&base->on_switch, 1, 0);
     RoomObject_PlaySound2(base);
     if (base->unk_780 == KIND_0F) {
         RoomObject_PlayAnimsFrom(base, 1, ANIM_MODE_ONCE, FX32_ONE, 0);
@@ -506,12 +506,12 @@ int Chest_EnterLidClosing(Chest *chest)
 }
 CLEAN_AS(func_ov004_022172dc, Chest_EnterLidClosing)
 
-/* func_ov004_02217330 (update of CHEST_LID_OPEN): the node set's value 1; in mode 2 (unk_76C) it
+/* func_ov004_02217330 (update of CHEST_LID_OPEN): the node set's value 1; in mode 2 (placement_mode) it
  * closes at once. */
 void Chest_UpdateLidOpen(Chest *chest)
 {
     ByteSet_SetValue(&chest->base.node_set, 1);
-    if (RoomObject_Unk76CIs2(&chest->base)) {
+    if (RoomObject_IsUnplaced(&chest->base)) {
         Chest_switch_to(chest, CHEST_LID_CLOSING);
     }
 }
@@ -523,7 +523,7 @@ CLEAN_AS(func_ov004_02217330, Chest_UpdateLidOpen)
 int Chest_EnterLidOpen(Chest *chest)
 {
     RoomObject *base = &chest->base;
-    Switch_Set(&base->light_switch, 0, 0);
+    Switch_Set(&base->on_switch, 0, 0);
     if (base->unk_780 == KIND_0F) {
         AnimSet_Anim00(FurnitureModel_Anims(&base->model_files), 0);
     }
@@ -548,7 +548,7 @@ CLEAN_AS(func_ov004_022173b8, Chest_UpdateLidOpening)
 int Chest_EnterLidOpening(Chest *chest)
 {
     RoomObject *base = &chest->base;
-    Switch_Set(&base->light_switch, 0, 0);
+    Switch_Set(&base->on_switch, 0, 0);
     RoomObject_PlaySound1(base);
     RoomObject_PlayAnimsFrom(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     return 1;
@@ -571,7 +571,7 @@ static int Chest_front_blocked(Chest *chest)
         s32 x = dx + CellList_At(&cells, (int) i)->x;
         s32 y = dy + CellList_At(&cells, (int) i)->y;
         if (RoomObjects_HeightAtCell(x, y) != 0 || CollisionMap_UnclaimedObjectAt(x, y) != -1) {
-            Switch_Set(&base->light_switch, 1, 0);
+            Switch_Set(&base->on_switch, 1, 0);
             CellList_Destruct(&cells);
             return 1;
         }
@@ -583,19 +583,19 @@ static int Chest_front_blocked(Chest *chest)
 /* func_ov004_02217420 (update of CHEST_LID_CLOSED): the node set's value 0. When touched, with an
  * entry that RoomPushes_Side does not hold back, it asks the scene for an event
  * (EventQueue_RequestKind6, then PlayerActorOps_SetOwnFlag17); a chest of kind 0xb only when the cells in front of it
- * are free, else its switch is put back on. Otherwise in mode 2 (unk_76C) it opens at once. */
+ * are free, else its switch is put back on. Otherwise in mode 2 (placement_mode) it opens at once. */
 void Chest_UpdateLidClosed(Chest *chest)
 {
     RoomObject *base = &chest->base;
     ByteSet_SetValue(&base->node_set, 0);
     void *entry = RoomPushes_FindObject(RoomPushes_Records(), &chest->base);
-    if (Switch_IsPending(&base->light_switch) && entry != NULL && RoomPushes_Side(entry) == 0) {
+    if (Switch_IsPending(&base->on_switch) && entry != NULL && RoomPushes_Side(entry) == 0) {
         if (base->unk_780 == KIND_0B && Chest_front_blocked(chest)) {
             return;
         }
         EventQueue_RequestKind6(chest, 0);
         PlayerActorOps_SetOwnFlag17();
-    } else if (RoomObject_Unk76CIs2(base)) {
+    } else if (RoomObject_IsUnplaced(base)) {
         Chest_switch_to(chest, CHEST_LID_OPENING);
     }
 }
@@ -607,7 +607,7 @@ CLEAN_AS(func_ov004_02217420, Chest_UpdateLidClosed)
 int Chest_EnterLidClosed(Chest *chest)
 {
     RoomObject *base = &chest->base;
-    Switch_Set(&base->light_switch, 1, 0);
+    Switch_Set(&base->on_switch, 1, 0);
     if (base->unk_780 == KIND_0F) {
         RoomObject_PlayAnimsFromEnd(base, 1, ANIM_MODE_ONCE, FX32_ONE);
     } else {
@@ -691,22 +691,22 @@ int Chest_Update(Chest *chest)
 CLEAN_AS(_ZN18Obj_ov004_0225211c19func_ov004_022176e8Ev, Chest_Update)
 
 /* func_ov004_02217700 (vtable slot 0x7c, once the model is bound): the node set's value 0; in
- * mode 1 (unk_76C) the switch is set on first. The animations of variant 0 are bound (kind 0xf
+ * mode 1 (placement_mode) the switch is set on first. The animations of variant 0 are bound (kind 0xf
  * to play once, the others in mode 3); the lid starts closed when the switch is on or
  * RoomObjects_InNookOrScene0AOr0F says so, else open; and the chest is not talking. Done at once. */
 int Chest_Start(Chest *chest)
 {
     RoomObject *base = &chest->base;
     ByteSet_SetValue(&base->node_set, 0);
-    if (base->unk_76C == 1) {
-        Switch_Set(&base->light_switch, 1, 0);
+    if (base->placement_mode == 1) {
+        Switch_Set(&base->on_switch, 1, 0);
     }
     if (base->unk_780 == KIND_0F) {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     } else {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_3, FX32_ONE, 0);
     }
-    if (Switch_Value(&base->light_switch) != 0 || RoomObjects_InNookOrScene0AOr0F() != 0) {
+    if (Switch_Value(&base->on_switch) != 0 || RoomObjects_InNookOrScene0AOr0F() != 0) {
         Chest_switch_to(chest, CHEST_LID_CLOSED);
     } else {
         Chest_switch_to(chest, CHEST_LID_OPEN);

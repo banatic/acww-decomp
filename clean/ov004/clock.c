@@ -93,32 +93,32 @@ CLEAN_AS(func_ov004_022168f8, Clock_Vfunc0C)
 static void Clock_strike(Clock *clock)
 {
     RoomObject *base = &clock->base;
-    if (!RoomObject_Unk76CIs2(base) && clock->strikes >= 0 && clock->strikes != clock->last_strikes &&
+    if (!RoomObject_IsUnplaced(base) && clock->strikes >= 0 && clock->strikes != clock->last_strikes &&
         clock->nearest_striker) {
         RoomSound_SetVariable(&base->sound, 1);
     }
     clock->last_strikes = clock->strikes;
     if (clock->strikes == NO_STRIKES) {
-        if (RoomObject_Unk76CIs2(base)) {
+        if (RoomObject_IsUnplaced(base)) {
             clock->strikes = 1;
         } else if (!RoomObjects_InNookOrScene0AOr0F() && clock->last_time.hour != clock->time.hour) {
             clock->strikes = (s8) (clock->time.hour % 12);
             if (clock->strikes == 0) {
                 clock->strikes = 12;
             }
-            if (!RoomObject_Unk76CIs2(base)) {
+            if (!RoomObject_IsUnplaced(base)) {
                 RoomSound_PlayAt(&base->sound, STRIKE_SOUND, &base->sound.position);
             }
             Clock_play_strike(clock);
         }
     } else if (clock->strikes > 0) {
-        if (!RoomObject_Unk76CIs2(base)) {
+        if (!RoomObject_IsUnplaced(base)) {
             RoomSound_PlayAt(&base->sound, STRIKE_SOUND, &base->sound.position);
         }
         AnimatedModel_Update(&base->model);
         if (FrameCtrl_IsDone(&base->model.frames)) {
             Clock_play_strike(clock);
-            if (!RoomObject_Unk76CIs2(base)) {
+            if (!RoomObject_IsUnplaced(base)) {
                 clock->strikes--;
             }
             if (clock->strikes == 0) {

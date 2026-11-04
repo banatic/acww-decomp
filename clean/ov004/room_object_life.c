@@ -28,17 +28,17 @@ static_assert(offsetof(RoomObject, receiver_vtable) == 0xec, "receiver part");
 static_assert(offsetof(RoomObject, receiver_state) == 0x10a, "receiver state byte");
 static_assert(offsetof(RoomObject, link) == 0x12c, "receiver's link");
 static_assert(offsetof(RoomObject, slot) == 0x132, "slot");
-static_assert(offsetof(RoomObject, item_shadows) == 0x1d0, "item shadows");
+static_assert(offsetof(RoomObject, item_picks) == 0x1d0, "item shadows");
 static_assert(offsetof(RoomObject, sound) == 0x798, "sound");
 static_assert(offsetof(RoomObject, anims) == 0x7c4, "anims");
 static_assert(sizeof(RoomObject) == 0x844, "the size RoomObject_Create allocates");
 
 #define ROOM_OBJECT_SIZE 0x844
 #define RECEIVER_OFFSET 0xec
-#define MODE_FIRST 0         /* RoomObject.unk_76C: its model is loaded at once */
+#define MODE_FIRST 0         /* RoomObject.placement_mode: its model is loaded at once */
 #define STATE_CHANGE_START 2 /* the value of vtable slot 0x08's argument handled here */
 #define LOADING (-1)         /* RoomObject_Init: the model is not loaded yet */
-#define ITEM_SHADOW_SIZE 0x20
+#define ITEM_PICK_SIZE 0x20
 #define ANIM_SIZE 0x20
 
 /* The vtables of the base class and of its receiver part. */
@@ -61,14 +61,14 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
 /* The members' constructors and destructors the arrays are given (the game's functions). */
-extern void func_020b7ee8(void *shadow);
-extern void func_020b7ed8(void *shadow);
+extern void func_020b7ee8(void *pick);
+extern void func_020b7ed8(void *pick);
 extern void func_ov004_0220e4ec(void *anim);
 extern void func_ov004_0220e4d4(void *anim);
 
 /* func_ov004_022109e4 (vtable slot 0x28): draws the model at its scale (when it has one) unless
  * the scene object (Actor_CanDraw) or the class (vtable slot 0x88) says not to, then what it
- * carries. A preview (RoomObject_Unk76CIs2) is drawn with every light white and carries
+ * carries. A preview (RoomObject_IsUnplaced) is drawn with every light white and carries
  * nothing. Whether it was drawn.
  * REQUIRES: whether it is a preview does not change while its model is drawn (the ROM would
  * then put back light colours it never saved). */
@@ -82,20 +82,20 @@ int RoomObject_Draw(RoomObject *object)
     }
     if (object->scale_x != 0 || object->scale_y != 0 || object->scale_z != 0) {
         u32 saved[4] = {0};
-        if (RoomObject_Unk76CIs2(object)) {
+        if (RoomObject_IsUnplaced(object)) {
             for (u32 light = 0; light < 4; light++) {
                 saved[light] = NNS_G3dGlb.light_colors[light];
                 NNS_G3dGlb.light_colors[light] = light << 30 | LIGHT_WHITE;
             }
         }
         AnimatedModel_Draw(&object->model, &object->scale);
-        if (RoomObject_Unk76CIs2(object)) {
+        if (RoomObject_IsUnplaced(object)) {
             for (u32 light = 0; light < 4; light++) {
                 NNS_G3dGlb.light_colors[light] = saved[light];
             }
         }
     }
-    if (!RoomObject_Unk76CIs2(object)) {
+    if (!RoomObject_IsUnplaced(object)) {
         CarriedItems_Draw(&object->carried, object);
     }
     return 1;
@@ -117,21 +117,21 @@ int RoomObject_Vfunc80(void)
 CLEAN_AS(func_ov004_02210ab8, RoomObject_Vfunc80)
 
 /* _ZN10RoomObject19func_ov004_02210abcEv (vtable slot 0x18, each frame): its sound follows its
- * centre, then the state's update, the box, shadow and matrices. While neither appearing nor
+ * centre, then the state's update, the box, touch pick and matrices. While neither appearing nor
  * vanishing the class's slot 0x80 runs (after RoomObject_Lookup020537a8's lookup when unk_780 is 0);
  * otherwise slot 0x84 runs and a switch that was asked to change is put back (Switch_Toggle
- * with the change shown). Then, except for a preview, the light, the switch and the shadows of
+ * with the change shown). Then, except for a preview, the light, the switch and the touch picks of
  * what stands on it. */
 int RoomObject_Update(RoomObject *object)
 {
-    if (!RoomObject_Unk76CIs2(object)) {
+    if (!RoomObject_IsUnplaced(object)) {
         Vec3 centre;
         RoomSound_Start(&object->sound);
         RoomObject_Centre(object, &centre);
         object->sound.position = centre;
     }
     RoomObject_UpdateState(object);
-    RoomObject_UpdateBoxAndShadow(object);
+    RoomObject_UpdateBoxAndPick(object);
     RoomObject_UpdateMatrices(object);
     if (!RoomObject_IsInState(object, ROOM_OBJECT_APPEAR) && !RoomObject_IsInState(object, ROOM_OBJECT_VANISH)) {
         if (object->unk_780 == 0) {
@@ -140,14 +140,14 @@ int RoomObject_Update(RoomObject *object)
         object->vtable->update_settled(object);
     } else {
         object->vtable->update_unsettled(object);
-        if (Switch_IsPending(&object->light_switch)) {
-            Switch_Toggle(&object->light_switch, 0);
+        if (Switch_IsPending(&object->on_switch)) {
+            Switch_Toggle(&object->on_switch, 0);
         }
     }
-    if (!RoomObject_Unk76CIs2(object)) {
+    if (!RoomObject_IsUnplaced(object)) {
         RoomObject_UpdateLight(object);
-        Switch_Apply(&object->light_switch, object);
-        RoomObject_ShadowItemsOnTop(object);
+        Switch_Apply(&object->on_switch, object);
+        RoomObject_PickItemsOnTop(object);
     }
     return 1;
 }
@@ -188,18 +188,18 @@ static int bind_model(RoomObject *object)
  * bind_model. */
 int RoomObject_Init(RoomObject *object)
 {
-    object->unk_76C = (s32) ((object->placement >> 26) & 3);
+    object->placement_mode = (s32) ((object->placement >> 26) & 3);
     RoomObjects_Add(RoomObjects_Table(), object);
     void *slot = ModelPool_Take(&data_ov004_02259698, &object->slot);
     RoomObject_SetUp(object);
     if (!SceneObjectBase_Id(&object->scene)) {
         SceneObjectBase_SetId(&object->scene, RoomObject_Reference(object, NULL, 0));
     }
-    if (object->unk_76C == MODE_FIRST) {
-        FurnitureModel_Load(&object->model_files, slot, object->unk_284, object->vtable->keeps_texture_copy(object));
+    if (object->placement_mode == MODE_FIRST) {
+        FurnitureModel_Load(&object->model_files, slot, object->number, object->vtable->keeps_texture_copy(object));
         return bind_model(object);
     }
-    if (FurnitureModel_LoadStep(&object->model_files, slot, object->unk_284, object->vtable->keeps_texture_copy(object))) {
+    if (FurnitureModel_LoadStep(&object->model_files, slot, object->number, object->vtable->keeps_texture_copy(object))) {
         return bind_model(object);
     }
     return LOADING;
@@ -217,13 +217,13 @@ static void destroy(RoomObject *object)
     ByteSet_Destruct(&object->node_set);
     Glow_Destruct(&object->glow);
     NodePair_Destruct(&object->nodes);
-    Switch_Destruct(&object->light_switch);
+    Switch_Destruct(&object->on_switch);
     FurnitureModel_Destruct(&object->model_files);
     PushBox_Destruct(&object->push_box);
     AnimatedModel_DestructBlendedComplete(&object->model);
-    TouchPickFaces_DestructBox(object->shadow);
+    TouchPickFaces_DestructBox(object->pick_box);
     FurnitureMoveFlag_Destruct(&object->move_flag);
-    __cxa_vec_cleanup(object->item_shadows, 4, ITEM_SHADOW_SIZE, func_020b7ed8);
+    __cxa_vec_cleanup(object->item_picks, 4, ITEM_PICK_SIZE, func_020b7ed8);
     CarriedItems_Destruct(&object->carried);
     Mount_Destruct(&object->mount);
     ModelPoolSlot_Destruct(&object->slot);
@@ -267,13 +267,13 @@ static void construct(RoomObject *object)
     ModelPoolSlot_Construct(&object->slot);
     Mount_Construct(&object->mount);
     CarriedItems_Construct(&object->carried);
-    __cxa_vec_ctor(object->item_shadows, 4, ITEM_SHADOW_SIZE, func_020b7ee8, func_020b7ed8);
+    __cxa_vec_ctor(object->item_picks, 4, ITEM_PICK_SIZE, func_020b7ee8, func_020b7ed8);
     FurnitureMoveFlag_Construct(&object->move_flag);
-    TouchPickFaces_ConstructBox(object->shadow);
+    TouchPickFaces_ConstructBox(object->pick_box);
     AnimatedModel_ConstructBlended(&object->model);
     PushBox_Construct(&object->push_box);
     FurnitureModel_Construct(&object->model_files);
-    Switch_Construct(&object->light_switch);
+    Switch_Construct(&object->on_switch);
     NodePair_Construct(&object->nodes);
     Glow_Construct(&object->glow);
     ByteSet_Construct(&object->node_set);

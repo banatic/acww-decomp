@@ -60,12 +60,14 @@ static_assert(offsetof(TalkObject, next_state) == 0x08, "talk next state");
 /* Its receiver's vtable slot 0x08: the reset (talk_receiver.h). */
 #define RMO_TELEPHONE_RECEIVER_SLOT_RESET 0x08
 
-/* State 14's messages in "sp_etc_sequence1", by GroupParams_C4CIs1 (GroupParams_C4CIs1); the scene
- * after which it goes on to state 12 instead of 4; the group whose screen state 13 opens. */
-#define RMO_TELEPHONE_MESSAGE_IF_SET 0x10
-#define RMO_TELEPHONE_MESSAGE_ELSE 0x18
-#define RMO_TELEPHONE_SCENE_12 6
-#define RMO_TELEPHONE_SCREEN_GROUP 0x30
+/* State 14's messages in "sp_etc_sequence1": the time set or the setting cancelled (by
+ * GroupParams_C4CIs1); the attic, the scene after which it goes on to state 12 instead of 4 (the
+ * telephone that answers the pen itself, states 7 to 14); the group of the clock's screen, which
+ * state 13 opens. */
+#define RMO_TELEPHONE_MESSAGE_TIME_SET 0x10
+#define RMO_TELEPHONE_MESSAGE_TIME_CANCELLED 0x18
+#define RMO_TELEPHONE_SCENE_ATTIC 6
+#define RMO_TELEPHONE_SCREEN_GROUP_CLOCK 0x30
 
 /* The one that exists, NULL for none. */
 extern RmoTelephone *data_ov004_022588c8;
@@ -169,18 +171,18 @@ CLEAN_AS(func_ov004_02230db8, RmoTelephone_StartTalk)
 
 /* func_ov004_02230e08 (update of state 14): once the group screen has closed (it could open
  * again), talk 0 shows message 0x10 of "sp_etc_sequence1" (0x18 when GroupParams_C4CIs1 answers 0)
- * and is asked to open; then state 12 in scene 6, else state 4. */
+ * and is asked to open; then state 12 in the attic (scene 6), else state 4. */
 void RmoTelephone_UpdateState14(RmoTelephone *self)
 {
     if (GroupParams_CanOpen()) {
         TalkObject *talk = TalkObject_Get(RMO_TELEPHONE_TALK);
-        u8 message = RMO_TELEPHONE_MESSAGE_IF_SET;
+        u8 message = RMO_TELEPHONE_MESSAGE_TIME_SET;
         if (!GroupParams_C4CIs1()) {
-            message = RMO_TELEPHONE_MESSAGE_ELSE;
+            message = RMO_TELEPHONE_MESSAGE_TIME_CANCELLED;
         }
         TalkObject_SetMessage(talk, &message, data_ov004_022558ac);
         talk->next_state = TALK_OBJECT_OPENING;
-        if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_12) {
+        if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_ATTIC) {
             RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_12);
         } else {
             RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_4);
@@ -193,12 +195,12 @@ CLEAN_AS(func_ov004_02230e08, RmoTelephone_UpdateState14)
 void RmoTelephone_EnterState14(void) {}
 CLEAN_AS(func_ov004_02230e68, RmoTelephone_EnterState14)
 
-/* func_ov004_02230e6c (update of state 13): once talk 0 is gone, the screen of group 0x30
+/* func_ov004_02230e6c (update of state 13): once talk 0 is gone, the clock's screen (group 0x30)
  * opened and state 14. */
 void RmoTelephone_UpdateState13(RmoTelephone *self)
 {
     if (TalkObject_Get(RMO_TELEPHONE_TALK)->state == TALK_OBJECT_GONE) {
-        GroupParams_Open(RMO_TELEPHONE_SCREEN_GROUP);
+        GroupParams_Open(RMO_TELEPHONE_SCREEN_GROUP_CLOCK);
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_14);
     }
 }
@@ -255,7 +257,7 @@ CLEAN_AS(func_ov004_02230ef4, RmoTelephone_UpdateState10)
 /* The rest of the class (rmo_telephone.h). */
 
 static_assert(offsetof(RmoTelephone, unk_61c) == 0x61c, "touch sphere");
-static_assert(offsetof(RmoTelephone, unk_640) == 0x640, "kept setting");
+static_assert(offsetof(RmoTelephone, previous_voice) == 0x640, "kept setting");
 static_assert(offsetof(Actor, position) == 0x5c, "position");
 static_assert(offsetof(Actor, angle) == 0x8c, "angle");
 static_assert(offsetof(TalkObject, mode) == 0x14, "talk mode");
@@ -284,16 +286,14 @@ typedef struct RmoTelephoneState {
 #define RMO_TELEPHONE_PICK_KIND 13
 #define RMO_TELEPHONE_PICK_INDEX 0xff
 
-/* The scene whose telephone answers the pen itself (states 7 to 14), and this system's player
- * (session_players.h), whose number in the session that scene also asks for. */
-#define RMO_TELEPHONE_OWN_SCENE 6
+/* This system's player (session_players.h), whose number in the session the attic also asks for. */
 #define RMO_TELEPHONE_OWN_PLAYER SESSION_PLAYERS_OWN
 
-/* The state block's flags: 0, the telephone of scene 6 has rung; 0x13 and 0x14, two options
- * its talk sets. */
-#define RMO_TELEPHONE_FLAG_RUNG 0
-#define RMO_TELEPHONE_FLAG_13 0x13
-#define RMO_TELEPHONE_FLAG_14 0x14
+/* The state block's flags: 0, the attic telephone's introduction has been given; 0x13 and 0x14,
+ * the options its talk sets: no art catalogue and no downloads. */
+#define RMO_TELEPHONE_FLAG_ATTIC_INTRO_SHOWN 0
+#define RMO_TELEPHONE_FLAG_NO_ART_CAT 0x13
+#define RMO_TELEPHONE_FLAG_NO_DOWNLOADS 0x14
 
 /* The sounds of states 1 and 5. */
 #define RMO_TELEPHONE_SOUND_1 0x4d4
@@ -301,21 +301,21 @@ typedef struct RmoTelephoneState {
 
 /* The messages of "sp_etc_sequence1" these functions start or answer. */
 #define RMO_TELEPHONE_MESSAGE_MENU 0x0e
-#define RMO_TELEPHONE_MESSAGE_DONE 0x0f
+#define RMO_TELEPHONE_MESSAGE_TIME_SETTING 0x0f
 #define RMO_TELEPHONE_MESSAGE_VOICE 0x11
 #define RMO_TELEPHONE_MESSAGE_FLAG 0x14
-#define RMO_TELEPHONE_MESSAGE_FLAG_13 0x17
-#define RMO_TELEPHONE_MESSAGE_FLAG_14 0x1a
+#define RMO_TELEPHONE_MESSAGE_ASK_ART_CAT 0x17
+#define RMO_TELEPHONE_MESSAGE_ASK_DOWNLOADS 0x1a
 #define RMO_TELEPHONE_MESSAGE_STEREO 0x1b
 #define RMO_TELEPHONE_MESSAGE_STEREO_CHOSEN 0x1c
 #define RMO_TELEPHONE_MESSAGE_LINKED 0x1d
 #define RMO_TELEPHONE_MESSAGE_SURROUND_CHOSEN 0x1e
 #define RMO_TELEPHONE_MESSAGE_MENU_AGAIN 0x1f
-#define RMO_TELEPHONE_MESSAGE_20 0x20
-#define RMO_TELEPHONE_MESSAGE_RING 0x22
-#define RMO_TELEPHONE_MESSAGE_KEEP_FIRST 0x2a
-#define RMO_TELEPHONE_MESSAGE_KEEP_SECOND 0x2b
-#define RMO_TELEPHONE_MESSAGE_KEEP_LAST 0x2c
+#define RMO_TELEPHONE_MESSAGE_GOODBYE 0x20
+#define RMO_TELEPHONE_MESSAGE_ATTIC_INTRO 0x22
+#define RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_FIRST 0x2a
+#define RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_SECOND 0x2b
+#define RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_LAST 0x2c
 /* Message 0x17 again, answered by one of these by flags 0x13 and 0x14 of the state block. */
 #define RMO_TELEPHONE_MESSAGE_FLAGS_BOTH 0x42
 #define RMO_TELEPHONE_MESSAGE_FLAGS_14 0x41
@@ -331,7 +331,7 @@ typedef struct RmoTelephoneState {
 /* What the scene's events (vtable slot 0x4c) are. */
 #define RMO_TELEPHONE_EVENT_0 0
 #define RMO_TELEPHONE_EVENT_1 1
-#define RMO_TELEPHONE_EVENT_IDLE 8
+#define RMO_TELEPHONE_EVENT_ENDED 8
 
 /* Who may act on it (vtable slot 0x48): nearer than this to its point on the XZ plane, and
  * facing it within this much. */
@@ -423,7 +423,7 @@ CLEAN_AS(func_ov004_02230f38, RmoTelephone_UpdateState9)
 /* func_ov004_02230f64 (entry of state 9): the talk started with message 0x22. */
 void RmoTelephone_EnterState9(RmoTelephone *self)
 {
-    RmoTelephone_StartTalk(self, data_ov004_022558ac, RMO_TELEPHONE_MESSAGE_RING);
+    RmoTelephone_StartTalk(self, data_ov004_022558ac, RMO_TELEPHONE_MESSAGE_ATTIC_INTRO);
 }
 CLEAN_AS(func_ov004_02230f64, RmoTelephone_EnterState9)
 
@@ -458,7 +458,7 @@ void RmoTelephone_UpdateState7(RmoTelephone *self)
         return;
     }
     TouchPick_AddFaces(RmoTelephone_field_pick(), self->pick_faces);
-    if (SceneQuery_Current() == RMO_TELEPHONE_OWN_SCENE && data_020ccf94->local_player != RMO_TELEPHONE_OWN_PLAYER) {
+    if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_ATTIC && data_020ccf94->local_player != RMO_TELEPHONE_OWN_PLAYER) {
         return;
     }
     if (!ControlModeIcon_IsTouch()) {
@@ -654,19 +654,22 @@ void RmoTelephone_OnAnswer(RmoTelephone *self)
     switch (self->receiver.base.message) {
         case RMO_TELEPHONE_MESSAGE_MENU:
         case RMO_TELEPHONE_MESSAGE_MENU_AGAIN:
-            if (SceneQuery_Current() == RMO_TELEPHONE_OWN_SCENE) {
+            if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_ATTIC) {
                 next = data_ov004_022478cc[choice];
             } else {
                 next = data_ov004_022478c8[choice];
             }
-            if (next == RMO_TELEPHONE_MESSAGE_FLAG_13) {
-                if (RmoTelephone_flag(RMO_TELEPHONE_FLAG_13) && RmoTelephone_flag(RMO_TELEPHONE_FLAG_14)) {
+            if (next == RMO_TELEPHONE_MESSAGE_ASK_ART_CAT) {
+                if (RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) && RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_BOTH;
-                } else if (!RmoTelephone_flag(RMO_TELEPHONE_FLAG_13) && RmoTelephone_flag(RMO_TELEPHONE_FLAG_14)) {
+                } else if (!RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
+                           RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_14;
-                } else if (RmoTelephone_flag(RMO_TELEPHONE_FLAG_13) && !RmoTelephone_flag(RMO_TELEPHONE_FLAG_14)) {
+                } else if (RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
+                           !RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_13;
-                } else if (!RmoTelephone_flag(RMO_TELEPHONE_FLAG_13) && !RmoTelephone_flag(RMO_TELEPHONE_FLAG_14)) {
+                } else if (!RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
+                           !RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_NONE;
                 }
             }
@@ -678,18 +681,18 @@ void RmoTelephone_OnAnswer(RmoTelephone *self)
                 PlayerOptions_ChangeFlag(1);
             }
             break;
-        case RMO_TELEPHONE_MESSAGE_FLAG_13:
+        case RMO_TELEPHONE_MESSAGE_ASK_ART_CAT:
             if (choice == 0) {
-                StateBlock_ClearFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_13);
+                StateBlock_ClearFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_NO_ART_CAT);
             } else if (choice == 1) {
-                StateBlock_SetFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_13);
+                StateBlock_SetFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_NO_ART_CAT);
             }
             break;
-        case RMO_TELEPHONE_MESSAGE_FLAG_14:
+        case RMO_TELEPHONE_MESSAGE_ASK_DOWNLOADS:
             if (choice == 0) {
-                StateBlock_ClearFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_14);
+                StateBlock_ClearFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_NO_DOWNLOADS);
             } else if (choice == 1) {
-                StateBlock_SetFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_14);
+                StateBlock_SetFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_NO_DOWNLOADS);
             }
             break;
         case RMO_TELEPHONE_MESSAGE_STEREO:
@@ -704,20 +707,20 @@ void RmoTelephone_OnAnswer(RmoTelephone *self)
             }
             break;
         case RMO_TELEPHONE_MESSAGE_VOICE:
-            self->unk_640 = PlayerOptions_CurrentVoice();
+            self->previous_voice = PlayerOptions_CurrentVoice();
             if (choice <= 2) {
                 PlayerOptions_ChangeVoice(choice);
             }
             break;
-        case RMO_TELEPHONE_MESSAGE_KEEP_FIRST:
-        case RMO_TELEPHONE_MESSAGE_KEEP_SECOND:
-        case RMO_TELEPHONE_MESSAGE_KEEP_LAST:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_FIRST:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_SECOND:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_LAST:
             if (choice == 1) {
-                PlayerOptions_ChangeVoice((unsigned int) self->unk_640);
+                PlayerOptions_ChangeVoice((unsigned int) self->previous_voice);
             }
             break;
     }
-    if (SceneQuery_Current() != RMO_TELEPHONE_OWN_SCENE) {
+    if (SceneQuery_Current() != RMO_TELEPHONE_SCENE_ATTIC) {
         PlayerOptions_Store();
     }
     if (next != 0) {
@@ -762,22 +765,22 @@ void RmoTelephone_AfterMessage(RmoTelephone *self)
             break;
         case RMO_TELEPHONE_MESSAGE_MENU:
         case RMO_TELEPHONE_MESSAGE_MENU_AGAIN:
-            if (SceneQuery_Current() == RMO_TELEPHONE_OWN_SCENE) {
+            if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_ATTIC) {
                 RmoTelephone_OfferAnswers(self, &data_ov004_022558d8, 3);
             } else {
                 RmoTelephone_OfferAnswers(self, &data_ov004_022558e0, 2);
             }
             break;
-        case RMO_TELEPHONE_MESSAGE_DONE:
+        case RMO_TELEPHONE_MESSAGE_TIME_SETTING:
             talk->mode = RMO_TELEPHONE_TALK_MODE;
             RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_13);
             break;
-        case RMO_TELEPHONE_MESSAGE_20:
+        case RMO_TELEPHONE_MESSAGE_GOODBYE:
             TalkVoice_ClearForcedMode(&talk->voice);
             break;
-        case RMO_TELEPHONE_MESSAGE_KEEP_FIRST:
-        case RMO_TELEPHONE_MESSAGE_KEEP_SECOND:
-        case RMO_TELEPHONE_MESSAGE_KEEP_LAST:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_FIRST:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_SECOND:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_LAST:
             TalkVoice_ClearKindOverride(&talk->voice);
             break;
     }
@@ -793,9 +796,9 @@ void RmoTelephone_OnMessageBegun(RmoTelephone *self)
         case RMO_TELEPHONE_MESSAGE_MENU:
             TalkVoice_SetForcedMode(&talk->voice, 0);
             break;
-        case RMO_TELEPHONE_MESSAGE_KEEP_FIRST:
-        case RMO_TELEPHONE_MESSAGE_KEEP_SECOND:
-        case RMO_TELEPHONE_MESSAGE_KEEP_LAST:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_FIRST:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_SECOND:
+        case RMO_TELEPHONE_MESSAGE_VOICE_PREVIEW_LAST:
             TalkVoice_SetKindOverride(&talk->voice, 0);
             break;
     }
@@ -818,7 +821,7 @@ void RmoTelephone_OnSceneEvent(RmoTelephone *self, int event)
         case RMO_TELEPHONE_EVENT_1:
             RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_1);
             break;
-        case RMO_TELEPHONE_EVENT_IDLE:
+        case RMO_TELEPHONE_EVENT_ENDED:
             RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_0);
             break;
     }
@@ -888,10 +891,10 @@ int RmoTelephone_Start(RmoTelephone *self)
     }
     TouchPick_SetBoxAndAdd(RmoTelephone_field_pick(), self->pick_faces, &position, RMO_TELEPHONE_SIZE, RMO_TELEPHONE_SIZE,
                            RMO_TELEPHONE_SIZE, 0, RMO_TELEPHONE_PICK_KIND, RMO_TELEPHONE_PICK_INDEX);
-    if (SceneQuery_Current() == RMO_TELEPHONE_OWN_SCENE) {
-        if (!StateBlock_TestFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_RUNG)) {
+    if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_ATTIC) {
+        if (!StateBlock_TestFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_ATTIC_INTRO_SHOWN)) {
             RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_8);
-            StateBlock_SetFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_RUNG);
+            StateBlock_SetFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_ATTIC_INTRO_SHOWN);
         } else {
             RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_7);
         }

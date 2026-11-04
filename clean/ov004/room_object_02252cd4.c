@@ -37,7 +37,6 @@ static_assert(sizeof(RoomObject02252cd4) == 0x848, "the size RoomObject02252cd4_
 extern const u8 data_ov004_02252cd4[];
 extern const u8 data_ov004_02252d80[];
 
-/* The cell of a point of the town's map. */
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 
 /* func_ov004_02218848: the point checked for people in front of the entry: the object's own

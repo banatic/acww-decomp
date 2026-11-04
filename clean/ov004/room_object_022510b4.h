@@ -3,11 +3,11 @@
  * dispatched through tables of member pointers (member_pointer.h):
  *
  * - OFF (0): the animations of variant 0 in mode 3 from the start; touching it (a change of the
- *   switch pending) requests SWITCHING_ON, and unk_76C at 2 enters it at once;
+ *   switch pending) requests SWITCHING_ON, and placement_mode at 2 enters it at once;
  * - SWITCHING_ON (1): the switch on, sound 1 of its row and the animations of variant 0 once;
  *   then ON;
  * - ON (2): the animations of variant 1 in a loop from their end, advanced each frame with
- *   sound 0 and FurnitureInfo_IndoorBit6 of its number; touching it requests SWITCHING_OFF, and unk_76C at
+ *   sound 0 and FurnitureInfo_IndoorBit6 of its number; touching it requests SWITCHING_OFF, and placement_mode at
  *   2 enters it at once;
  * - SWITCHING_OFF (3): the switch off, sound 2 of its row and the animations of variant 0 from
  *   their end in mode 3; then OFF.

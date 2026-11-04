@@ -89,7 +89,7 @@ static void RoomObject02252824_run_material(RoomObject02252824 *object, int next
  * material animation has ended. */
 void RoomObject02252824_UpdateTurningOff(RoomObject02252824 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject02252824_run_material(object, ROOM_OBJECT_02252824_OFF);
 }
 CLEAN_AS(func_ov004_02214474, RoomObject02252824_UpdateTurningOff)
@@ -99,7 +99,7 @@ CLEAN_AS(func_ov004_02214474, RoomObject02252824_UpdateTurningOff)
  * QUIRK: a file without frames starts from 0xffff. */
 int RoomObject02252824_EnterTurningOff(RoomObject02252824 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
         const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
         FurnitureAnim *anim = RoomObject02252824_material(object);
@@ -119,7 +119,7 @@ int RoomObject02252824_UpdateOn(RoomObject02252824 *object)
 {
     RoomObject_Lookup020537a8(&object->base);
     RoomObject_PlaySound0(&object->base);
-    if (Switch_IsPending(&object->base.light_switch) == 0) {
+    if (Switch_IsPending(&object->base.on_switch) == 0) {
         return 0;
     }
     return RoomSync_RequestState(&object->base, ROOM_OBJECT_02252824_TURNING_OFF, SLOT_70_VALUE, 1);
@@ -131,7 +131,7 @@ CLEAN_AS(func_ov004_02214568, RoomObject02252824_UpdateOn)
  * QUIRK: a file without frames starts from 0xffff. */
 int RoomObject02252824_EnterOn(RoomObject02252824 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
         const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
         ModelAnim_Restart(&RoomObject02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
@@ -145,7 +145,7 @@ CLEAN_AS(func_ov004_02214598, RoomObject02252824_EnterOn)
  * ON once the material animation has ended. */
 void RoomObject02252824_UpdateTurningOn(RoomObject02252824 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlaySound0(&object->base);
     RoomObject02252824_run_material(object, ROOM_OBJECT_02252824_ON);
 }
@@ -155,7 +155,7 @@ CLEAN_AS(func_ov004_02214610, RoomObject02252824_UpdateTurningOn)
  * when the archive has one and it is bound, once from the start; the sound at 2. */
 int RoomObject02252824_EnterTurningOn(RoomObject02252824 *object)
 {
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
         const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
         FurnitureAnim *anim = RoomObject02252824_material(object);
@@ -173,7 +173,7 @@ CLEAN_AS(func_ov004_02214680, RoomObject02252824_EnterTurningOn)
  * TURNING_ON. */
 void RoomObject02252824_UpdateOff(RoomObject02252824 *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, ROOM_OBJECT_02252824_TURNING_ON, SLOT_70_VALUE, 1);
     }
 }
@@ -183,7 +183,7 @@ CLEAN_AS(func_ov004_02214704, RoomObject02252824_UpdateOff)
  * the archive has one, in mode 3 from its first frame (bound or not). */
 int RoomObject02252824_EnterOff(RoomObject02252824 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
         const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
         ModelAnim_Restart(&RoomObject02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
@@ -328,7 +328,7 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
-    if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         RoomObject02252824_switch_to(object, ROOM_OBJECT_02252824_ON);
     } else {
         RoomObject02252824_switch_to(object, ROOM_OBJECT_02252824_OFF);

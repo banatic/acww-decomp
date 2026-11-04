@@ -13,7 +13,7 @@
  *   0x29 loops the animations of variant 1. Each frame the sound at 0 follows the object.
  * Touching it does not switch it: the switch is put back and the scene is asked for an event
  * (EventQueue_RequestKind6), whose answer (vtable slot 0x4c) starts a talk: event 1 the song menu when
- * SceneKinds_CurrentIsHouseRoom and Room_Check0220fed0 allow it, else the talk that tells the song; event 8
+ * SceneKinds_CurrentIsHouseRoom and Room_PlayerIsOfThisTown allow it, else the talk that tells the song; event 8
  * ends the talk.
  *
  * Once its model is bound (vtable slot 0x7c) it plays when its switch is on, outside the areas

@@ -4,11 +4,11 @@
  * (RoomObject.node_set) is 0 when off and 1 in the other states.
  *
  * - OFF (0): the animations of variant 1 once from their end; touching it (a change of the
- *   switch pending) requests SWITCHING_ON, and unk_76C at 2 enters it at once;
+ *   switch pending) requests SWITCHING_ON, and placement_mode at 2 enters it at once;
  * - SWITCHING_ON (1): the switch on, the animations of variant 0 once from the start and sound 1
  *   of its row; sound 0 each frame; then ON;
  * - ON (2): the animations of variant 0 once from their end; sound 0 each frame; touching it
- *   requests SWITCHING_OFF, and unk_76C at 2 enters it at once;
+ *   requests SWITCHING_OFF, and placement_mode at 2 enters it at once;
  * - SWITCHING_OFF (3): the switch off, the animations of variant 1 once from the start and sound
  *   2 of its row; sound 0 each frame; then OFF.
  *

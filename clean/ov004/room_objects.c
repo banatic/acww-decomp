@@ -26,8 +26,8 @@
 
 static_assert(offsetof(RoomObject, position) == 0x5c, "position");
 static_assert(offsetof(RoomObject, scale_x) == 0x150, "scale");
-static_assert(offsetof(RoomObject, unk_288) == 0x288, "unk_288");
-static_assert(offsetof(RoomObject, light_switch) == 0x740, "switch");
+static_assert(offsetof(RoomObject, layer) == 0x288, "layer");
+static_assert(offsetof(RoomObject, on_switch) == 0x740, "switch");
 static_assert(offsetof(RoomObject, unk_774) == 0x774, "unk_774");
 static_assert(offsetof(RoomObject, unk_778) == 0x778, "unk_778");
 static_assert(offsetof(RoomObject, unk_780) == 0x780, "unk_780");
@@ -286,15 +286,15 @@ int RoomObjects_TakeWithItem(unsigned int index, ItemCode *item, ItemCode *item_
 }
 CLEAN_AS(func_ov004_0223bb20, RoomObjects_TakeWithItem)
 
-/* func_ov004_0223bb88: the byte unk_288 of the object of `index`, 0 without one. */
-int RoomObjects_Unk288Of(unsigned int index)
+/* func_ov004_0223bb88: the byte layer of the object of `index`, 0 without one. */
+int RoomObjects_LayerOf(unsigned int index)
 {
     if (index < (unsigned int) RoomObjects_Capacity() && object_of(index) != NULL) {
-        return object_of(index)->unk_288;
+        return object_of(index)->layer;
     }
     return 0;
 }
-CLEAN_AS(func_ov004_0223bb88, RoomObjects_Unk288Of)
+CLEAN_AS(func_ov004_0223bb88, RoomObjects_LayerOf)
 
 /* func_ov004_0223bbc0: RoomObjects_FindAhead for the player's actor (actor 4), -1 without it. */
 int RoomObjects_FindAheadOfPlayer(int *x, int *z, ItemCode *item, ItemCode *item_copy)
@@ -457,11 +457,11 @@ RoomObject *RoomObjects_PickOn(RoomObjectsTest test, int pending)
         if (test != NULL && test(object) == 0) {
             continue;
         }
-        if (Switch_Value(&object->light_switch) == 0) {
+        if (Switch_Value(&object->on_switch) == 0) {
             continue;
         }
         if (seen == pick) {
-            Switch_Set(&object->light_switch, 0, pending);
+            Switch_Set(&object->on_switch, 0, pending);
             return object;
         }
         seen++;
@@ -480,7 +480,7 @@ int RoomObjects_CountOn(RoomObjectsTest test)
         if (object == NULL) {
             continue;
         }
-        if (test == NULL || (test(object) != 0 && Switch_Value(&object->light_switch) != 0)) {
+        if (test == NULL || (test(object) != 0 && Switch_Value(&object->on_switch) != 0)) {
             count++;
         }
     }
@@ -500,10 +500,10 @@ void RoomObjects_SetSwitches(int value, RoomObjectsTest test, int pending)
         if (test != NULL && test(object) == 0) {
             continue;
         }
-        if (value == Switch_Value(&object->light_switch)) {
+        if (value == Switch_Value(&object->on_switch)) {
             continue;
         }
-        Switch_Set(&object->light_switch, (u8) value, pending);
+        Switch_Set(&object->on_switch, (u8) value, pending);
     }
 }
 CLEAN_AS(func_ov004_0223c2b4, RoomObjects_SetSwitches)
@@ -520,7 +520,7 @@ int RoomObjects_SyncKind3AOn(void)
         if (RoomObject_Unk00CIs3A(object) == 0) {
             continue;
         }
-        if (Switch_Value(&object->light_switch) == 0) {
+        if (Switch_Value(&object->on_switch) == 0) {
             continue;
         }
         RoomSync_SetState(object, 0, 0xff, 1);
@@ -693,7 +693,7 @@ int RoomObjects_Spawn(u32 placement)
         if ((unsigned int) RoomObjects_CountOn(func_ov004_02211280) >= LAMPS_ON_MAX) {
             RoomObject *lamp = RoomObjects_PickOn(func_ov004_02211280, 0);
             if (lamp != NULL) {
-                Switch_Set(&lamp->light_switch, 1, 0);
+                Switch_Set(&lamp->on_switch, 1, 0);
                 RoomSync_ToggleSwitchAtPoint(SceneQuery_Current(), &lamp->position, 0);
             }
         }

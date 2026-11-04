@@ -8,7 +8,7 @@
  *   less in the player's wallet (at 0xa68 of the pockets, PlayerPockets_Bells and PlayerPockets_SetBells) if
  *   any is left. Its update is idle's, so it can be used again.
  *
- * With unk_76C at 2 it enters the used state by itself, each frame, with no player (0xff). Once
+ * With placement_mode at 2 it enters the used state by itself, each frame, with no player (0xff). Once
  * its model is bound it is idle. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02251564_H
 #define CLEAN_OV004_ROOM_OBJECT_02251564_H

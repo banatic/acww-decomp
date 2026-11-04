@@ -346,8 +346,8 @@ void RoomShell_NodeDescHook(RoomShell *self, int node, G3dRenderState *state)
 }
 CLEAN_AS(func_ov004_02231fcc, RoomShell_NodeDescHook)
 
-/* func_ov004_02232054: the wallpaper's first code (main/room_interior.c changes it). */
-u16 *RoomShell_WallpaperCode(void)
+/* func_ov004_02232054: the wallpaper before the one tried on (main/room_interior.c puts it back). */
+u16 *RoomShell_PreviousWallpaper(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
@@ -355,10 +355,10 @@ u16 *RoomShell_WallpaperCode(void)
     }
     return data_ov004_022589ec;
 }
-CLEAN_AS(func_ov004_02232054, RoomShell_WallpaperCode)
+CLEAN_AS(func_ov004_02232054, RoomShell_PreviousWallpaper)
 
-/* func_ov004_02232080: the wallpaper's second code. */
-u16 *RoomShell_WallpaperCode2(void)
+/* func_ov004_02232080: the wallpaper shown now. */
+u16 *RoomShell_CurrentWallpaper(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
@@ -366,10 +366,10 @@ u16 *RoomShell_WallpaperCode2(void)
     }
     return data_ov004_022589ec;
 }
-CLEAN_AS(func_ov004_02232080, RoomShell_WallpaperCode2)
+CLEAN_AS(func_ov004_02232080, RoomShell_CurrentWallpaper)
 
-/* func_ov004_022320ac: the carpet's first code (main/room_interior.c changes it). */
-u16 *RoomShell_CarpetCode(void)
+/* func_ov004_022320ac: the carpet before the one tried on (main/room_interior.c puts it back). */
+u16 *RoomShell_PreviousCarpet(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
@@ -377,11 +377,11 @@ u16 *RoomShell_CarpetCode(void)
     }
     return data_ov004_022589ec;
 }
-CLEAN_AS(func_ov004_022320ac, RoomShell_CarpetCode)
+CLEAN_AS(func_ov004_022320ac, RoomShell_PreviousCarpet)
 
-/* func_ov004_022320d8: the carpet's second code (the floor's item for its sounds,
+/* func_ov004_022320d8: the carpet shown now (the floor's item for its sounds,
  * main/ground_sound.c). */
-u16 *RoomShell_CarpetCode2(void)
+u16 *RoomShell_CurrentCarpet(void)
 {
     RoomShell *self = data_ov004_022589fc;
     if (self != NULL) {
@@ -389,7 +389,7 @@ u16 *RoomShell_CarpetCode2(void)
     }
     return data_ov004_022589ec;
 }
-CLEAN_AS(func_ov004_022320d8, RoomShell_CarpetCode2)
+CLEAN_AS(func_ov004_022320d8, RoomShell_CurrentCarpet)
 
 /* The room's process (vtable 0x02255ac8): its creation (slot 0), release (slot 3), each
  * frame's work (slot 6) and drawing (slot 9), its destructors (slots 0x40 and 0x44), its
@@ -444,7 +444,6 @@ extern u8 data_ov004_02258ac0[], data_ov004_02258ab4[], data_ov004_02258a0c[], d
 extern u8 data_ov004_02258a78[], data_ov004_02258aa8[], data_ov004_02258acc[], data_ov004_02258a3c[], data_ov004_02258a00[],
     data_ov004_02258a24[];
 
-/* The frame of the room's shared frame counter (clock.h). */
 extern void NNS_G3dMdlSetMdlDiff(u8 *model, int material, u16 diffuse);
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));

@@ -2,7 +2,7 @@
 # is not in this repository). As designs-room.txt up to 4050: in the player's room, the pockets'
 # designs tab (ov121/my_designs.c) open.
 # Save: rod. The first design dragged onto the head button and "put" picked in its choice
-# (about 4140): a hat of the design stands in the room (RoomPlacement_PlaceSeries4224); the second
+# (about 4140): a hat of the design stands in the room (RoomPlacement_PlaceMyHat); the second
 # onto the clothes button and "put" (about 4330): clothes of the design (_PlaceSeries3D84); the
 # first again onto the held item's button (about 4700), which in the player's own room makes an
 # umbrella of it at once (_PlaceSeries3EA4). B twice (4776, 4836) closes the page; the room again

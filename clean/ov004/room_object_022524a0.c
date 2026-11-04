@@ -36,8 +36,6 @@ extern const u8 data_ov004_0225254c[];
 /* The main program's scratch matrix. */
 extern Mtx43 data_021fbe48;
 
-/* Request a state for the object at the object's cell (only when data_020e54a8 is 1), straight
- * to RoomSync_SetStateAt. */
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 
 static void RoomObject022524a0_set_vtables(RoomObject022524a0 *object)
@@ -73,7 +71,7 @@ CLEAN_AS(func_ov004_02214160, RoomObject022524a0_EnterPlaying)
  * PLAYING. */
 void RoomObject022524a0_UpdateIdle(RoomObject022524a0 *object)
 {
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_SetState(&object->base, ROOM_OBJECT_022524A0_PLAYING, SLOT_70_VALUE, 1);
     }
 }
@@ -156,7 +154,7 @@ CLEAN_AS(func_ov004_02214370, RoomObject022524a0_OnVanish)
 /* func_ov004_0221438c (vtable slot 0x0c): the switch off, at once. */
 int RoomObject022524a0_Vfunc0C(RoomObject022524a0 *object)
 {
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_0221438c, RoomObject022524a0_Vfunc0C)

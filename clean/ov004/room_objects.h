@@ -48,7 +48,7 @@ void RoomObjects_SetVanishPoint(const Vec3 *point);
 const Vec3 *RoomObjects_VanishPoint(int index);
 int RoomObjects_Take(int index);
 int RoomObjects_TakeWithItem(unsigned int index, ItemCode *item, ItemCode *item_copy);
-int RoomObjects_Unk288Of(unsigned int index);
+int RoomObjects_LayerOf(unsigned int index);
 int RoomObjects_FindAheadOfPlayer(int *x, int *z, ItemCode *item, ItemCode *item_copy);
 int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemCode *item, ItemCode *item_copy);
 int RoomObjects_InNookOrScene0AOr0F(void);

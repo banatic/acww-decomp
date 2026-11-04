@@ -1017,14 +1017,14 @@ CLEAN_AS(func_ov004_0221cee4, BirthdayVillagerTalk_ChangeFondness)
 
 /* The items that go with the villager's modes 0 to 3 (insects and fish for 0 and 1, see
  * ov098/pockets_town.c); mode 4 takes items with a variant outside mode 2's range. */
-#define BIRTHDAY_VILLAGER_MODE0_FIRST 0x12b0
-#define BIRTHDAY_VILLAGER_MODE0_LAST 0x12e7
-#define BIRTHDAY_VILLAGER_MODE1_FIRST 0x12e8
-#define BIRTHDAY_VILLAGER_MODE1_LAST 0x131f
-#define BIRTHDAY_VILLAGER_MODE2_FIRST 0x450c
-#define BIRTHDAY_VILLAGER_MODE2_LAST 0x45db
-#define BIRTHDAY_VILLAGER_MODE3_FIRST 0x11a8
-#define BIRTHDAY_VILLAGER_MODE3_LAST 0x12a7
+#define BIRTHDAY_VILLAGER_INSECT_FIRST 0x12b0
+#define BIRTHDAY_VILLAGER_INSECT_LAST 0x12e7
+#define BIRTHDAY_VILLAGER_FISH_FIRST 0x12e8
+#define BIRTHDAY_VILLAGER_FISH_LAST 0x131f
+#define BIRTHDAY_VILLAGER_FOSSIL_FIRST 0x450c
+#define BIRTHDAY_VILLAGER_FOSSIL_LAST 0x45db
+#define BIRTHDAY_VILLAGER_CLOTHES_FIRST 0x11a8
+#define BIRTHDAY_VILLAGER_CLOTHES_LAST 0x12a7
 
 static int birthday_villager_item_in(const u16 *item, u16 first, u16 last)
 {
@@ -1044,16 +1044,16 @@ int BirthdayVillagerTalk_LikesItem(BirthdayVillagerTalk *talk, u16 *item)
     VillagerModeRecord *status = VillagerStatus_ModeRecord(record_of(villager->base));
     switch (VillagerModeRecord_Mode(VillagerObject_RecordMode((VillagerRecord *) (void *) status))) {
         case 0:
-            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE0_FIRST, BIRTHDAY_VILLAGER_MODE0_LAST);
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_INSECT_FIRST, BIRTHDAY_VILLAGER_INSECT_LAST);
         case 1:
-            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE1_FIRST, BIRTHDAY_VILLAGER_MODE1_LAST);
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_FISH_FIRST, BIRTHDAY_VILLAGER_FISH_LAST);
         case 2:
-            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE2_FIRST, BIRTHDAY_VILLAGER_MODE2_LAST);
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_FOSSIL_FIRST, BIRTHDAY_VILLAGER_FOSSIL_LAST);
         case 3:
-            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE3_FIRST, BIRTHDAY_VILLAGER_MODE3_LAST);
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_CLOTHES_FIRST, BIRTHDAY_VILLAGER_CLOTHES_LAST);
         case 4:
-            return ItemCode_IsFurniture(item) &&
-                   !birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE2_FIRST, BIRTHDAY_VILLAGER_MODE2_LAST);
+            return ItemCode_HasVariant(item) &&
+                   !birthday_villager_item_in(item, BIRTHDAY_VILLAGER_FOSSIL_FIRST, BIRTHDAY_VILLAGER_FOSSIL_LAST);
         default:
             return 0;
     }

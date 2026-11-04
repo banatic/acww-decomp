@@ -35,10 +35,10 @@ typedef struct ByteSet {
 } ByteSet;
 
 /* A sound played at a point (RoomSound_PlayAtB and RoomSound_PlayAt play one while
- * `playing`, RoomSound_Stop stops it); the point is the object's centre, kept each frame. */
+ * `joined`, RoomSound_Stop stops it); the point is the object's centre, kept each frame. */
 typedef struct RoomSound {
     u8 unk_00[0x1c];
-    u8 playing;
+    u8 joined; /* 0x1c: it joined the room's sound list (RoomSound_Start) */
     u8 unk_1d[3];
     Vec3 position;
 } RoomSound;
@@ -121,16 +121,16 @@ typedef struct RoomObject {
     Vec3 target_position;
     Mount mount;
     CarriedItems carried;
-    TouchPickCylinder item_shadows[4]; /* of the items lying on its cells (TouchPick_SetCylinderAndAdd) */
-    FurnitureMoveFlag move_flag;       /* given to the move functions FurnitureMover_Step/58/80 */
+    TouchPickCylinder item_picks[4]; /* touch picks of the items lying on its cells (TouchPick_SetCylinderAndAdd) */
+    FurnitureMoveFlag move_flag;     /* given to the move functions FurnitureMover_Step/58/80 */
     u8 unk_251[3];
     Mtx43 base_matrix; /* its place in the world, about its pivot (RoomObject_BuildMatrix) */
-    s32 unk_284;       /* the furniture's number (RoomObject_Number), which names its files */
-    u8 unk_288;        /* 0: the objects on its cells turn with it; the layer of the town's map it is on */
+    s32 number;        /* the furniture's number (RoomObject_Number), which names its files */
+    u8 layer;          /* the layer it is on (0: the floor, whose objects on its cells turn with it) */
     u8 is_set_up;      /* func_ov004_0220f52c has run */
     u8 unk_28a[2];
-    TouchPickFace shadow[10]; /* its shadow (TouchPick_SetBoxAndAdd) */
-    s32 state;                /* RoomObjectState */
+    TouchPickFace pick_box[10]; /* its touch-pick box (TouchPick_SetBoxAndAdd) */
+    s32 state;                  /* RoomObjectState */
     union {
         AnimatedModel model; /* the main program's blended model */
         struct {
@@ -146,14 +146,15 @@ typedef struct RoomObject {
     };
     PushBox push_box;
     FurnitureModel model_files;
-    Switch light_switch;
-    NodePair nodes; /* "kh_j" and "km_j" */
+    Switch on_switch; /* its on/off switch (lamps, televisions, music players) */
+    NodePair nodes;   /* "kh_j" and "km_j" */
     u8 unk_745[3];
     Glow glow;
     ByteSet node_set; /* the nodes "v", "v1", "v2" and "v3" */
     u8 unk_769[3];
-    s32 unk_76C;      /* 2: RoomObject_Unk76CIs2 says so */
-    u16 state_frames; /* frames in the state, for the states that count them */
+    s32 placement_mode; /* how it was placed ((placement >> 26) & 3): 0 placed first, 1 found by a
+                       * search, 2 not yet placed (a preview) */
+    u16 state_frames;   /* frames in the state, for the states that count them */
     u8 unk_772[2];
     s32 unk_774;
     s32 unk_778;
@@ -165,7 +166,7 @@ typedef struct RoomObject {
     u32 unk_784; /* 1: two cells long, its pivot at either end (PushBox_SettlePivot) */
     u32 unk_788; /* 1: the objects on its cells turn with it */
     u8 unk_78C;
-    u8 unk_78D; /* 0: its switch starts on when unk_76C is 1 or 2 */
+    u8 unk_78D; /* 0: its switch starts on when placement_mode is 1 or 2 */
     u8 unk_78e[2];
     fx32 top_height; /* the height of what stands on it, in its own space */
     s32 light_kind;  /* func_02053818 of its number: 0 for no light */

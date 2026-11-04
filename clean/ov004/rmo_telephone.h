@@ -35,7 +35,7 @@ typedef struct RmoTelephone {
     s32 state;                                      /* 0x638: 0 to 14 */
     u8 talking;                                     /* 0x63c: set while it holds the talk */
     u8 unk_63d[3];                                  /* 0x63d */
-    s32 unk_640;                                    /* 0x640 */
+    s32 previous_voice;                             /* 0x640 */
 } RmoTelephone;
 
 void RmoTelephone_PlayFromEnd(void);

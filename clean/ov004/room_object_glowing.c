@@ -43,7 +43,7 @@ int GlowingRoomObject_UpdateOn(GlowingRoomObject *object)
     RoomObject_AdvanceAnims(&object->base);
     GlowSet_Switch(&object->glows, 1, 1, 0);
     RoomObject_PlaySound0(&object->base);
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         return RoomSync_RequestState(&object->base, GLOWING_OFF, SLOT_70_VALUE, 1);
     }
     return 0;
@@ -55,7 +55,7 @@ CLEAN_AS(func_ov004_0221206c, GlowingRoomObject_UpdateOn)
 int GlowingRoomObject_EnterOn(GlowingRoomObject *object)
 {
     RoomObject_PlaySound1(&object->base);
-    Switch_Set(&object->base.light_switch, 1, 0);
+    Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlayAnimsFrom(&object->base, 1, ANIM_MODE_LOOP, FX32_ONE, 0);
     return 1;
 }
@@ -67,7 +67,7 @@ int GlowingRoomObject_UpdateOff(GlowingRoomObject *object)
 {
     RoomObject_AdvanceAnims(&object->base);
     GlowSet_Switch(&object->glows, 0, 1, 0);
-    if (Switch_IsPending(&object->base.light_switch)) {
+    if (Switch_IsPending(&object->base.on_switch)) {
         return RoomSync_RequestState(&object->base, GLOWING_ON, SLOT_70_VALUE, 1);
     }
     return 0;
@@ -79,7 +79,7 @@ CLEAN_AS(func_ov004_022120e8, GlowingRoomObject_UpdateOff)
 int GlowingRoomObject_EnterOff(GlowingRoomObject *object)
 {
     RoomObject_PlaySound2(&object->base);
-    Switch_Set(&object->base.light_switch, 0, 0);
+    Switch_Set(&object->base.on_switch, 0, 0);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     return 1;
 }
@@ -155,10 +155,10 @@ int GlowingRoomObject_Start(GlowingRoomObject *object)
 {
     RoomObject *base = &object->base;
     RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
-    GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->light_switch));
-    if (base->unk_76C == 1) {
+    GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->on_switch));
+    if (base->placement_mode == 1) {
         RoomSync_SetState(&object->base, GLOWING_OFF, SLOT_70_VALUE, 1);
-    } else if (Switch_Value(&base->light_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    } else if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
         base->vtable->vfunc_70(base, GLOWING_ON, SLOT_70_VALUE);
     } else {
         base->vtable->vfunc_70(base, GLOWING_OFF, SLOT_70_VALUE);

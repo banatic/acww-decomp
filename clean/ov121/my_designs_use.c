@@ -273,16 +273,16 @@ void MyDesigns_PlaceEasel(MyDesigns *self)
     }
     switch (self->target) {
         case MY_DESIGNS_BUTTON_CLOTHES:
-            result = RoomPlacement_PlaceSeries3D84(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
+            result = RoomPlacement_PlaceMyClothes(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
         case MY_DESIGNS_BUTTON_HEAD:
-            result = RoomPlacement_PlaceSeries4224(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
+            result = RoomPlacement_PlaceMyHat(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
-        case MY_DESIGNS_BUTTON_EASEL:
-            result = RoomPlacement_PlaceSeries3F24(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
+        case MY_DESIGNS_BUTTON_FURNITURE:
+            result = RoomPlacement_PlaceMyEasel(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
         case MY_DESIGNS_BUTTON_HELD:
-            result = RoomPlacement_PlaceSeries3EA4(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
+            result = RoomPlacement_PlaceMyUmbrella(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
         default:
             MyDesigns_BackToIdle(self);
@@ -380,7 +380,7 @@ static void use_on_room(MyDesigns *self, int option, int wallpaper)
         PlayerRecords_Current();
     }
     int free_slot = CurrentPockets_FreeSlot();
-    u16 there = wallpaper ? *RoomShell_WallpaperCode2() : *RoomShell_CarpetCode2();
+    u16 there = wallpaper ? *RoomShell_CurrentWallpaper() : *RoomShell_CurrentCarpet();
     int a_design = in_range(there, MY_DESIGNS_ROOM_DESIGN_FIRST, MY_DESIGNS_ROOM_DESIGN_LAST);
     if (!a_design && free_slot == -1) {
         MyDesigns_ShowError(self, MY_DESIGNS_ERROR_POCKETS_FULL, 1);
