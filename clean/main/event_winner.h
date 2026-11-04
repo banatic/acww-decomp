@@ -35,7 +35,7 @@ typedef struct EventWinnerTile {
 #define EVENT_WINNER_ITEM_KINDS 30
 
 void EventWinner_JudgeGardens(EventWinner *record);
-int EventWinner_ScoreAroundBuilding(EventWinner *record, AcreMap *map);
+int EventWinner_ScoreAroundPlayerHouse(EventWinner *record, AcreMap *map);
 int EventWinner_IsNearAttr4(const EventWinnerTile *tile);
 int EventWinner_ScoreAroundHome(u8 *villager, AcreMap *map);
 int EventWinner_CountBits(u32 bits);

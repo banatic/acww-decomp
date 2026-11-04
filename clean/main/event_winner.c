@@ -48,11 +48,12 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 #define EVENT_WINNER_VILLAGERS 8
 #define EVENT_WINNER_PLAYERS 4
 
-/* The buildings EventWinner_ScoreAroundBuilding looks for, in a tile with flag 1, and the
- * tiles around it it counts: x from -5 to 4 and z from -1 to 8 of its tile. */
-#define EVENT_WINNER_BUILDING_FIRST 0x5014
-#define EVENT_WINNER_BUILDING_LAST 0x501a
-#define EVENT_WINNER_BUILDING_FLAGS 1
+/* The players' house (0x5014-0x501a, by its size) EventWinner_ScoreAroundPlayerHouse looks
+ * for, in a tile with flag 1, and the tiles around it it counts: x from -5 to 4 and z from -1
+ * to 8 of its tile. */
+#define EVENT_WINNER_PLAYER_HOUSE_FIRST 0x5014
+#define EVENT_WINNER_PLAYER_HOUSE_LAST 0x501a
+#define EVENT_WINNER_PLAYER_HOUSE_FLAGS 1
 #define EVENT_WINNER_AREA_LEFT 5
 #define EVENT_WINNER_AREA_RIGHT 5
 #define EVENT_WINNER_AREA_BACK 1
@@ -62,19 +63,20 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 #define EVENT_WINNER_ITEM_SKIPPED 27
 
-/* The creature items EventWinner_RandomSize sizes. */
-#define EVENT_WINNER_CREATURES_FIRST 0x12e8
-#define EVENT_WINNER_CREATURES_LAST 0x131f
-#define EVENT_WINNER_OTHERS_FIRST 0x12b0
-#define EVENT_WINNER_OTHERS_LAST 0x12e7
+/* The fish and the insects EventWinner_RandomSize sizes. */
+#define EVENT_WINNER_FISH_FIRST 0x12e8
+#define EVENT_WINNER_FISH_LAST 0x131f
+#define EVENT_WINNER_INSECTS_FIRST 0x12b0
+#define EVENT_WINNER_INSECTS_LAST 0x12e7
 #define EVENT_WINNER_SCALE_MIN 0xccd   /* 0.8 */
 #define EVENT_WINNER_SCALE_RANGE 0x666 /* up to 0.4 more */
 
-/* The events EventWinner_ExpireForEvent's `event` 0-2 stand for (func_0203fdc4), the state
- * block's flag it clears for event 1 and the player flag for event 2; a record lasts a week. */
-#define EVENT_WINNER_EVENT_0 0x0e
-#define EVENT_WINNER_EVENT_1 0x11
-#define EVENT_WINNER_EVENT_2 0x10
+/* The events EventWinner_ExpireForEvent's `event` 0-2 stand for (func_0203fdc4): the gardens
+ * judged, the snow festival and the acorn festival; the state block's flag it clears for event 1
+ * and the player flag for event 2; a record lasts a week. */
+#define EVENT_WINNER_EVENT_GARDENS 0x0e
+#define EVENT_WINNER_EVENT_SNOW 0x11
+#define EVENT_WINNER_EVENT_ACORNS 0x10
 #define EVENT_WINNER_BLOCK_FLAG 0x11
 #define EVENT_WINNER_PLAYER_FLAG 0x0f
 #define EVENT_WINNER_DAYS 7
@@ -95,7 +97,7 @@ static u16 *event_winner_item_at(AcreMap *map, int x, int z)
 
 /* func_020861dc: outdoors, the record's winner cleared, then on the scene's map each valid
  * villager's score (EventWinner_ScoreAroundHome) set against the player's
- * (EventWinner_ScoreAroundBuilding). The player wins with no villager, with a higher score, or
+ * (EventWinner_ScoreAroundPlayerHouse). The player wins with no villager, with a higher score, or
  * with an equal score above 0 on a coin toss; else one of the villagers of the best score, at
  * random (VillagerRoster_PickBit), when still valid. */
 void EventWinner_JudgeGardens(EventWinner *record)
@@ -130,7 +132,7 @@ void EventWinner_JudgeGardens(EventWinner *record)
         }
     }
 
-    int player = EventWinner_ScoreAroundBuilding(record, map);
+    int player = EventWinner_ScoreAroundPlayerHouse(record, map);
     if (count == 0 || player > best || (player > 0 && player == best && MainRandom_Below(2) == 0)) {
         EventWinner_SetPlayer(record, PlayerRecord_Player(PlayerRecords_Current()));
         return;
@@ -142,21 +144,21 @@ void EventWinner_JudgeGardens(EventWinner *record)
 }
 CLEAN_AS(func_020861dc, EventWinner_JudgeGardens)
 
-/* func_020862ec: around the first building 0x5014-0x501a (in a tile with flag 1), the tiles
- * from 5 left to 4 right and from 1 back to 8 ahead whose item has a kind
+/* func_020862ec: around the players' house (the first code 0x5014-0x501a, in a tile with flag
+ * 1), the tiles from 5 left to 4 right and from 1 back to 8 ahead whose item has a kind
  * (EventWinner_ItemKind) and that are near ground of attribute 4: their number times the
- * number of kinds among them, divided by 3 rounded up. 0 without the building. `record` is
+ * number of kinds among them, divided by 3 rounded up. 0 without the house. `record` is
  * not used. */
-int EventWinner_ScoreAroundBuilding(EventWinner *record, AcreMap *map)
+int EventWinner_ScoreAroundPlayerHouse(EventWinner *record, AcreMap *map)
 {
     (void) record;
     int acre_x = 0;
     int acre_z = 0;
     int x = 0;
     int z = 0;
-    u16 first = EVENT_WINNER_BUILDING_FIRST;
-    u16 last = EVENT_WINNER_BUILDING_LAST;
-    if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, EVENT_WINNER_BUILDING_FLAGS, 0) == 0) {
+    u16 first = EVENT_WINNER_PLAYER_HOUSE_FIRST;
+    u16 last = EVENT_WINNER_PLAYER_HOUSE_LAST;
+    if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, EVENT_WINNER_PLAYER_HOUSE_FLAGS, 0) == 0) {
         return 0;
     }
     u32 kinds = 0;
@@ -184,7 +186,7 @@ int EventWinner_ScoreAroundBuilding(EventWinner *record, AcreMap *map)
     int score = count * EventWinner_CountBits(kinds);
     return (score + 2) / 3;
 }
-CLEAN_AS(func_020862ec, EventWinner_ScoreAroundBuilding)
+CLEAN_AS(func_020862ec, EventWinner_ScoreAroundPlayerHouse)
 
 /* func_020863dc: whether one of the eight tiles data_021d27e0 offsets from `tile` has ground of
  * attribute 4. */
@@ -257,17 +259,17 @@ int EventWinner_ItemKind(u32 *kind, const u16 *item)
 }
 CLEAN_AS(func_020864f4, EventWinner_ItemKind)
 
-/* func_02086564: the item's size (ItemTraits_FishSize for creatures 0x12e8-0x131f, func_0204c308
- * for items 0x12b0-0x12e7) as fx32 times a random 0.8 to 1.2; 0 for other items. The random
+/* func_02086564: the item's size (ItemTraits_FishSize for the fish 0x12e8-0x131f,
+ * ItemTraits_InsectSize for the insects 0x12b0-0x12e7) as fx32 times a random 0.8 to 1.2; 0 for other items. The random
  * number is drawn for any item. */
 fx32 EventWinner_RandomSize(u16 *item)
 {
     fx32 scale = (fx32) MainRandom_BelowB(EVENT_WINNER_SCALE_RANGE) + EVENT_WINNER_SCALE_MIN;
     u16 code = *item;
-    if (code >= EVENT_WINNER_CREATURES_FIRST && code <= EVENT_WINNER_CREATURES_LAST) {
+    if (code >= EVENT_WINNER_FISH_FIRST && code <= EVENT_WINNER_FISH_LAST) {
         return FX_MulFunc((fx32) ((u32) ItemTraits_FishSize(item) << 12), scale);
     }
-    if (code >= EVENT_WINNER_OTHERS_FIRST && code <= EVENT_WINNER_OTHERS_LAST) {
+    if (code >= EVENT_WINNER_INSECTS_FIRST && code <= EVENT_WINNER_INSECTS_LAST) {
         return FX_MulFunc((fx32) ((u32) ItemTraits_InsectSize(item) << 12), scale);
     }
     return 0;
@@ -289,13 +291,13 @@ void EventWinner_ExpireForEvent(EventWinner *record, int event)
     int since_event = 0;
     switch (event) {
         case 0:
-            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_0);
+            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_GARDENS);
             break;
         case 1:
-            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_1);
+            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_SNOW);
             break;
         case 2:
-            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_2);
+            since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_ACORNS);
             break;
         default:
             break;
@@ -647,7 +649,7 @@ void EventWinner_SendLetters(EventWinner *record)
             return;
         }
     } else {
-        int since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_0);
+        int since_event = EventCalendar_DaysSinceStart(EVENT_WINNER_EVENT_GARDENS);
         /* The clock read again, this time as it is. */
         DateTime_Now(&now);
         if (since_event != -1) {
