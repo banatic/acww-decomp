@@ -59,7 +59,7 @@
 #include "held_item_pool.h"
 #include "house_looks.h"
 #include "house_record.h"
-#include "item_1568_count.h"
+#include "spaceship_parts.h"
 #include "item_group_order.h"
 #include "item_info.h"
 #include "last_sale.h"
@@ -1616,7 +1616,7 @@ void StaticInit_StateBlock(void)
     PlayerRecords_ConstructTown(block->players);
     VillagerRoster_Construct((VillagerTown *) block->villagers);
     TownLayout_Construct(block->layout);
-    Item1568Count_Construct(&block->part_0f52a);
+    SpaceshipParts_Construct(&block->part_0f52a);
     DayPlan_Construct(&block->part_0f52b);
     HouseRecord_Construct((HouseRecord *) block->part_0f52c);
     ShopDesigns_Construct((ShopDesigns *) block->shop_designs);

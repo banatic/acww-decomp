@@ -799,7 +799,7 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/house_looks:HouseLooks_DestructDesign main/house_looks:HouseLooks_DestructLooks
   main/house_record:HouseRecord_Destruct main/house_record:HouseRecord_DestructLayer
   main/house_record:HouseRecord_DestructSongs main/house_record:HouseRecord_RoomDestruct
-  main/item_1568_count:Item1568Count_Destruct main/item_group_order:ItemGroupOrder_Destruct
+  main/spaceship_parts:SpaceshipParts_Destruct main/item_group_order:ItemGroupOrder_Destruct
   main/item_group_order:ItemGroupOrder_DestructAll main/item_info:ItemInfoFiles_Destruct
   main/item_record:ItemRecord_Destruct main/last_sale:LastSale_Destruct
   main/library_overlay:LibraryOverlay_Destroy main/link_parts:LinkPart_EndArrived
@@ -2366,7 +2366,7 @@ scene: one scene per event day: fishing tourney, bug-off, gardens judge, the eve
 reach: boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle)
 needs: date
 match: ov080/* ov081/* ov082/* ov083/* ov084/* ov085/* ov086/* main/event_* main/sky_show* main/sky_events
-  main/event_winner main/day_events main/board_notices main/item_1568_count ov003/countdown ov004/indoor_countdown
+  main/event_winner main/day_events main/board_notices main/spaceship_parts ov003/countdown ov004/indoor_countdown
   ov003/etc_board
 
 area: Other dates, times and visitors (for the boot on another day)

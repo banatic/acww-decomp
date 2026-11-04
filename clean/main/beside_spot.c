@@ -3,11 +3,11 @@
 
 #include "acre_tile.h"
 #include "clean.h"
-#include "item_1568_count.h"
+#include "spaceship_parts.h"
 #include "main_random.h"
 
-/* The count of item 0x1568 that makes the actor face the request's position. */
-#define BESIDE_SPOT_ITEM_1568_FACE 5
+/* The count of spaceship part 0x1568 that makes the actor face the request's position. */
+#define BESIDE_SPOT_SPACESHIP_PARTS_FACE 5
 #define BESIDE_SPOT_SIDES 3
 
 /* Per side: the offset from the request's position (two tiles to +z, -x, +x) and the angle
@@ -16,7 +16,7 @@
  * follow each table. */
 extern const BesideSpotOffset data_020d06ec[];
 extern const s16 data_020d06e4[];
-/* The count of item 0x1568 (item_1568_count.h). */
+/* The count of spaceship part 0x1568 (spaceship_parts.h). */
 extern u8 data_021ebcd2[];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
@@ -28,7 +28,7 @@ static int beside_spot_side(const u8 *spot)
 
 /* func_02087a78: the side and the facing picked if they were not yet; the position set to the
  * centre of the tile at the side's offset from the request's position (at height 0), and the
- * angle: facing the request's position once 5 of item 0x1568 were counted, else 0 when the
+ * angle: facing the request's position once 5 of spaceship part 0x1568 were counted, else 0 when the
  * count has its mark, else the quarter turn picked. */
 void BesideSpot_Place(u8 *spot, Vec3 *position, u16 *angle_y, const SpawnerRequest *request)
 {
@@ -39,9 +39,9 @@ void BesideSpot_Place(u8 *spot, Vec3 *position, u16 *angle_y, const SpawnerReque
     Vec3 beside = {request->position.x + offset->x, 0, request->position.z + offset->z};
     AcreTile_SnapToTileCentre(position, &beside);
 
-    if (Item1568Count_Get(data_021ebcd2) >= BESIDE_SPOT_ITEM_1568_FACE) {
+    if (SpaceshipParts_Get(data_021ebcd2) >= BESIDE_SPOT_SPACESHIP_PARTS_FACE) {
         *angle_y = (u16) data_020d06e4[beside_spot_side(spot)];
-    } else if (Item1568Count_HasMark(data_021ebcd2) != 0) {
+    } else if (SpaceshipParts_HasMark(data_021ebcd2) != 0) {
         *angle_y = 0;
     } else {
         *angle_y = (u16) (((*spot & BESIDE_SPOT_FACING_MASK) >> BESIDE_SPOT_FACING_SHIFT) << 14);

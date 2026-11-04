@@ -12,7 +12,7 @@
 #include "main/field_body.h"
 #include "main/field_collision.h"
 #include "main/footsteps.h"
-#include "main/item_1568_count.h"
+#include "main/spaceship_parts.h"
 #include "main/layered_model.h"
 #include "main/main_random.h"
 #include "main/pool_link.h"
@@ -70,7 +70,7 @@ static_assert(sizeof(Gull) == 0x724, "Gull");
 /* Its flag of the scene object: it is held (scene_action.h). */
 #define GULL_HELD 2
 
-/* Five of item 0x1568 counted. */
+/* Five of spaceship part 0x1568 counted. */
 #define GULL_ALL_COUNTED 5
 
 /* Its motions (scene_motion_request.h): standing, its acts, and GULL_UNMET's animation. */
@@ -93,7 +93,7 @@ static_assert(sizeof(Gull) == 0x724, "Gull");
 #define GULL_LOOK_AT 1
 #define GULL_LOOK_AWAY 0
 
-/* The count of item 0x1568 (item_1568_count.h). */
+/* The count of spaceship part 0x1568 (spaceship_parts.h). */
 extern u8 data_021ebcd2[];
 /* The word of a motion request, the range of a look request and its point (the origin). */
 extern u16 data_020c80f8;
@@ -185,7 +185,7 @@ void Gull_OnEvent(Gull *self, int code)
             break;
         }
         case GULL_EVENT_ACT_ENDED:
-            if (Item1568Count_HasMark(data_021ebcd2) != 0) {
+            if (SpaceshipParts_HasMark(data_021ebcd2) != 0) {
                 Gull_SetState(self, GULL_IDLE);
             } else {
                 Gull_SetState(self, GULL_UNMET);
@@ -226,8 +226,8 @@ int Gull_Start(Gull *self)
     if (SpecialSceneObject_Start(self) == 0) {
         return 0;
     }
-    if (Item1568Count_HasMark(data_021ebcd2) != 0) {
-        if (Item1568Count_Get(data_021ebcd2) >= GULL_ALL_COUNTED) {
+    if (SpaceshipParts_HasMark(data_021ebcd2) != 0) {
+        if (SpaceshipParts_Get(data_021ebcd2) >= GULL_ALL_COUNTED) {
             self->all_counted = 1;
         }
         Gull_SetState(self, GULL_IDLE);
@@ -322,7 +322,7 @@ CLEAN_AS(func_ov072_02278fa8, Gull_UpdateTalk)
 int Gull_EnterTalk(Gull *self)
 {
     self->all_counted = 0;
-    if (Item1568Count_HasMark(data_021ebcd2) != 0) {
+    if (SpaceshipParts_HasMark(data_021ebcd2) != 0) {
         if (self->act_frames == 0) {
             gull_turn_and_talk(self);
         } else {

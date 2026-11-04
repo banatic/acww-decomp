@@ -9,7 +9,7 @@
 #include "gull_spots.h"
 #include "main/current_pockets.h"
 #include "main/event_schedule.h"
-#include "main/item_1568_count.h"
+#include "main/spaceship_parts.h"
 #include "main/item_lists.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
@@ -32,7 +32,7 @@ static_assert(sizeof(GullTalkLine) == 8 && sizeof(GullTalkStep) == 0xc, "GullTal
 extern const char data_ov072_02279a00[];
 /* The first line of each topic (the archive and the line; the topics 0 and 3 draw theirs). */
 extern const GullTalkLine data_ov072_02279874[GULL_TALK_TOPICS];
-/* The count of item 0x1568 (item_1568_count.h). */
+/* The count of spaceship part 0x1568 (spaceship_parts.h). */
 extern u8 data_021ebcd2[];
 /* The word of a motion request. */
 extern u16 data_020c80f8;
@@ -49,7 +49,7 @@ extern const u8 data_ov072_02279a78[];
 /* The pockets' slots, the most it can take at once. */
 #define GULL_TALK_POCKET_SLOTS 15
 
-/* The player's daily bits (talk_checks.h): talked today, and brought item 0x1568 today. */
+/* The player's daily bits (talk_checks.h): talked today, and brought spaceship part 0x1568 today. */
 #define GULL_TALK_DAILY_TALKED 0x14
 #define GULL_TALK_DAILY_BROUGHT 0x15
 
@@ -122,7 +122,7 @@ static void gull_talk_say(TalkObject *object, u8 line)
     TalkObject_SetMessage(object, &line, data_ov072_02279a00);
 }
 
-/* The slot of the first of item 0x1568 in the player's pockets, or a negative number. */
+/* The slot of the first of spaceship part 0x1568 in the player's pockets, or a negative number. */
 static int gull_talk_find_item(void)
 {
     u16 item = GULL_TALK_ITEM;
@@ -181,8 +181,8 @@ CLEAN_AS(func_ov072_02278ad4, GullTalk_OnAnswer)
 
 /* func_ov072_02278ae8 (slot 0x14): what follows the line shown:
  * - 0x00: the talk's window goes away (talk mode 0) and step 1 starts;
- * - 0x0b: up to five of item 0x1568 placed in the town (GullSpots_PlaceItems);
- * - 0x14, 0x15: item 0x1568 in its hand, then line 0x16;
+ * - 0x0b: up to five of spaceship part 0x1568 placed in the town (GullSpots_PlaceItems);
+ * - 0x14, 0x15: spaceship part 0x1568 in its hand, then line 0x16;
  * - 0x16: line 0x17 when five were counted, else line 0x19 plus the count;
  * - 0x18: an item of kind 0, group 0x13 drawn, put in its hand and given to the player, then
  *   line 0x19;
@@ -208,10 +208,10 @@ void GullTalk_OnLineShown(GullTalk *talk)
             break;
         }
         case GULL_TALK_LINE_COUNT:
-            if (Item1568Count_Get(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
+            if (SpaceshipParts_Get(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
                 line = 0x17;
             } else {
-                line = (u8) (Item1568Count_Get(data_021ebcd2) + 0x19);
+                line = (u8) (SpaceshipParts_Get(data_021ebcd2) + 0x19);
             }
             break;
         case GULL_TALK_LINE_GIFT: {
@@ -241,10 +241,10 @@ CLEAN_AS(func_ov072_02278ae8, GullTalk_OnLineShown)
  * - the first talk of the day (daily bit 0x14 not set): with the count's mark, topic 2 and the
  *   bit set; without, topic 0;
  * - else five counted: topic 3;
- * - else none of item 0x1568 in the pockets: topic 4 when none was counted, else topic 5 with
+ * - else none of spaceship part 0x1568 in the pockets: topic 4 when none was counted, else topic 5 with
  *   how many more it needs in part 0;
  * - else topic 6 when daily bit 0x15 was set already, else 7 (the bit set either way); then each
- *   of item 0x1568 in the pockets (at most 15) taken out and counted while fewer than five
+ *   of spaceship part 0x1568 in the pockets (at most 15) taken out and counted while fewer than five
  *   are, and how many were taken in part 1.
  * The line: topic 0 one of 0-4, topic 3 one of 0xd-0x11, the others the table's.
  * QUIRK: the pockets are looked at before anything else, even when the result is not used. */
@@ -253,21 +253,21 @@ void GullTalk_Line(GullTalk *talk, GullTalkLine *line)
     int slot = gull_talk_find_item();
 
     if (TalkChecks_TestSetDailyBit(GULL_TALK_DAILY_TALKED, 0) == 0) {
-        if (Item1568Count_HasMark(data_021ebcd2) != 0) {
+        if (SpaceshipParts_HasMark(data_021ebcd2) != 0) {
             talk->topic = GULL_TALK_TOPIC_FIRST_MARKED;
             TalkChecks_TestSetDailyBit(GULL_TALK_DAILY_TALKED, 1);
         } else {
             talk->topic = GULL_TALK_TOPIC_FIRST_MEETING;
         }
-    } else if (Item1568Count_Get(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
+    } else if (SpaceshipParts_Get(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
         talk->topic = GULL_TALK_TOPIC_ALL_COUNTED;
     } else if (slot < 0) {
-        if (Item1568Count_Get(data_021ebcd2) == 0) {
+        if (SpaceshipParts_Get(data_021ebcd2) == 0) {
             talk->topic = GULL_TALK_TOPIC_NONE_YET;
         } else {
             int missing;
             talk->topic = GULL_TALK_TOPIC_MORE_NEEDED;
-            missing = GULL_TALK_COUNT_MAX - Item1568Count_Get(data_021ebcd2);
+            missing = GULL_TALK_COUNT_MAX - SpaceshipParts_Get(data_021ebcd2);
             if (missing < 0) {
                 missing = 0;
             }
@@ -282,8 +282,8 @@ void GullTalk_Line(GullTalk *talk, GullTalkLine *line)
         }
         for (taken = 1; taken <= GULL_TALK_POCKET_SLOTS; taken++) {
             CurrentPockets_Empty(slot);
-            if (Item1568Count_Get(data_021ebcd2) < GULL_TALK_COUNT_MAX) {
-                Item1568Count_Increment(data_021ebcd2);
+            if (SpaceshipParts_Get(data_021ebcd2) < GULL_TALK_COUNT_MAX) {
+                SpaceshipParts_Increment(data_021ebcd2);
             }
             slot = gull_talk_find_item();
             if (slot < 0) {
@@ -339,7 +339,7 @@ void GullTalk_StepTurnToPlayer(GullTalk *talk)
         case GULL_TALK_STEP_ENDING:
             if (SceneMotion_Kind(gull_talk_owner_motion(talk)) == GULL_TALK_STEP_TURN &&
                 SceneMotion_IsDone(gull_talk_owner_motion(talk)) != 0) {
-                Item1568Count_SetMark(data_021ebcd2);
+                SpaceshipParts_SetMark(data_021ebcd2);
                 SceneCommand_RequestNextLine(gull_talk_command(talk));
                 TalkChecks_TestSetDailyBit(GULL_TALK_DAILY_TALKED, 1);
                 gull_talk_say(gull_talk_object(talk),

@@ -46,7 +46,7 @@
 #include "global_021cfc98.h"
 #include "group_params.h"
 #include "house_record.h"
-#include "item_1568_count.h"
+#include "spaceship_parts.h"
 #include "item_group_order.h"
 #include "last_sale.h"
 #include "middle_spot.h"
@@ -278,7 +278,7 @@ void StateBlock_SetUpTown(StateBlock *block)
     WfcStats_Init((WfcStats *) (void *) block->part_16ad0);
     TurnipPrices_SetUp((TurnipPrices *) (void *) block->part_17364);
     LastSale_SetUp((LastSale *) (void *) block->part_17344);
-    Item1568Count_SetUp(&block->part_0f52a);
+    SpaceshipParts_SetUp(&block->part_0f52a);
     EventWinner_Restart((EventWinner *) (void *) block->part_172fc);
     RoomScoreState_ResetJudgeDate((Date *) (void *) block->part_173c8);
     TownTune_Store((TownTunePacked *) (void *) block->part_173c0);
@@ -546,7 +546,7 @@ void StateBlock_Init(StateBlock *block)
     WfcStats_Reset((WfcStats *) (void *) block->part_16ad0);
     TurnipPrices_Clear((TurnipPrices *) (void *) block->part_17364);
     LastSale_Clear((LastSale *) (void *) block->part_17344);
-    Item1568Count_Clear(&block->part_0f52a);
+    SpaceshipParts_Clear(&block->part_0f52a);
     EventWinner_Reset((EventWinner *) (void *) block->part_172fc);
     MailPostOffice_Init((MailPostOffice *) block->post_office);
     TownItemLists_ClearListA((u16 *) (void *) block->part_172c0);
@@ -614,7 +614,7 @@ StateBlock *StateBlock_Destruct(StateBlock *block)
     ShopDesigns_Destruct((ShopDesigns *) block->shop_designs);
     HouseRecord_Destruct((HouseRecord *) (void *) block->part_0f52c);
     DayPlan_Destruct(&block->part_0f52b);
-    Item1568Count_Destruct(&block->part_0f52a);
+    SpaceshipParts_Destruct(&block->part_0f52a);
     TownLayout_Destruct(block->layout);
     VillagerRoster_Destruct(villagers_of(block));
     PlayerRecords_DestructTown(block->players);

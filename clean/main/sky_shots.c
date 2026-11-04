@@ -7,7 +7,7 @@
 #include "camera_control.h"
 #include "clean.h"
 #include "daily_bits.h"
-#include "item_1568_count.h"
+#include "spaceship_parts.h"
 #include "near_spot.h"
 #include "ov003/field_actor.h"
 #include "ov004/member_pointer.h"
@@ -42,7 +42,7 @@ static_assert(offsetof(SkyShotsHit, variant) == 0x21, "variant");
 
 extern SkyObjectSounds data_021fbb14; /* the sounds of the sky's objects */
 extern StateBlock data_021dc7a8;
-extern u8 data_021ebcd2[]; /* Item1568Count */
+extern u8 data_021ebcd2[]; /* SpaceshipParts */
 extern u32 data_021f6cc4;  /* SkyShots_RunHit's table was filled */
 extern MemberPointer data_021f6d48[SKY_SHOTS_HIT_STATES];
 extern const MemberPointer __ptmf_null;
@@ -237,7 +237,7 @@ void SkyShots_HitEnd6(SkyShotsHit *hit)
             DailyBits_Clear((DailyBits *) (void *) PlayerRecord_Field23EC(record), SKY_SHOTS_FLAG_14);
         }
     }
-    Item1568Count_Clear(data_021ebcd2);
+    SpaceshipParts_Clear(data_021ebcd2);
     EventAnnounce_Request(0x44, 0x63, 0);
     SkyShots_ResetHit(hit);
 }

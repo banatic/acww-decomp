@@ -4,7 +4,7 @@
 # place of a building 0x500a, as gulliver leaves it): on a day the schedule does not give event
 # 0x44 the town's day start turns it back into 0x500a (EventBuildings_Revert5020,
 # AcreMap_SetBuildingInAcre) and empties every tile holding his part 0x1568
-# (EventBuildings_Clear1568). No key to 2701.
+# (EventBuildings_ClearSpaceshipParts). No key to 2701.
 0 - -
 900 START -
 906 - -

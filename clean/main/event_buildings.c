@@ -4,7 +4,7 @@
 #include "clean.h"
 #include "main/acre_map.h"
 #include "main/acre_tile.h"
-#include "item_1568_count.h"
+#include "spaceship_parts.h"
 #include "main_random.h"
 #include "town_day.h"
 #include "acre_record.h"
@@ -67,7 +67,7 @@ static int event_buildings_in_range(u16 code)
 }
 
 /* func_020b2a90: the first building 0x5020 found in the inner acres (row by row) turned back
- * into 0x500a; then the tiles holding item 0x1568 are emptied (func_02085f48). Whether one was
+ * into 0x500a; then the tiles holding spaceship part 0x1568 are emptied (func_02085f48). Whether one was
  * found and turned.
  * QUIRK: each code is a function-local static, built on first use and registered for
  * destruction (func_020051b0, which does nothing). */
@@ -99,7 +99,7 @@ int EventBuildings_Revert5020(void)
                 data_021f4b4c |= 1;
             }
             if (AcreMap_SetBuildingInAcre((int) (uintptr_t) town, x, z, tile_x, tile_z, (int) (uintptr_t) &data_021f4b24)) {
-                EventBuildings_Clear1568();
+                EventBuildings_ClearSpaceshipParts();
                 return 1;
             }
         }
@@ -115,7 +115,7 @@ static int event_buildings_place_in(AcreMap *town, int x, int z)
     if (EventBuildings_TurnRandom500a(event_buildings_acre(town, x, z), EVENT_BUILDINGS_5020) == 0) {
         return 0;
     }
-    Item1568Count_SetUp(data_021ebcd2);
+    SpaceshipParts_SetUp(data_021ebcd2);
     TownDay_MarkEventOf(EVENT_BUILDINGS_EVENT_5020);
     return 1;
 }
@@ -405,25 +405,25 @@ u16 *EventBuildings_FindSpot(int *tile_x, int *tile_z)
 }
 CLEAN_AS(func_020b3038, EventBuildings_FindSpot)
 
-/* ---- Emptying the tiles of item 0x1568 */
+/* ---- Emptying the tiles of spaceship part 0x1568 */
 
-#define EVENT_BUILDINGS_ITEM_1568 0x1568
+#define EVENT_BUILDINGS_SPACESHIP_PART 0x1568
 
-/* Whether the code is item 0x1568: for a code with a variant, whether its item is 0x1568's
+/* Whether the code is spaceship part 0x1568: for a code with a variant, whether its item is 0x1568's
  * (asked again for each tile). */
-static int event_buildings_is_1568(const u16 *code)
+static int event_buildings_is_spaceship_part(const u16 *code)
 {
     if (ItemCode_HasVariant(code)) {
-        u16 item = EVENT_BUILDINGS_ITEM_1568;
+        u16 item = EVENT_BUILDINGS_SPACESHIP_PART;
         int variant = ItemCode_VariantItem(code);
         return variant == ItemCode_VariantItem(&item);
     }
-    return *code == EVENT_BUILDINGS_ITEM_1568;
+    return *code == EVENT_BUILDINGS_SPACESHIP_PART;
 }
 
 /* func_02085f48: in the town's inner acres (row by row), every tile of layer 0 holding item
  * 0x1568 emptied. */
-void EventBuildings_Clear1568(void)
+void EventBuildings_ClearSpaceshipParts(void)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
     if (town == NULL) {
@@ -441,7 +441,7 @@ void EventBuildings_Clear1568(void)
             }
             for (int row = 0; row < EVENT_BUILDINGS_ACRE_TILES; row++) {
                 for (int column = 0; column < EVENT_BUILDINGS_ACRE_TILES; column++) {
-                    if (event_buildings_is_1568(tile)) {
+                    if (event_buildings_is_spaceship_part(tile)) {
                         u16 empty = ITEM_CODE_NONE;
                         AcreRecord_SetTile(acre, &empty, column, row, 0);
                     }
@@ -451,4 +451,4 @@ void EventBuildings_Clear1568(void)
         }
     }
 }
-CLEAN_AS(func_02085f48, EventBuildings_Clear1568)
+CLEAN_AS(func_02085f48, EventBuildings_ClearSpaceshipParts)

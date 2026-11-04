@@ -1,14 +1,14 @@
 /* The talk scene of overlay 72's character (class vtable 0x02279a78, at 0x658 of the character,
  * gull.h): a scene of class 0x020d9ff8 (obj_020d9ff8.h) that shows the lines of the archive
- * "sp_npc_gull" and keeps the count of item 0x1568 the character takes (item_1568_count.h).
+ * "sp_npc_gull" and keeps the count of spaceship part 0x1568 the character takes (spaceship_parts.h).
  *
  * Its vtable slots:
  * - 0x78 (GullTalk_Line): the first line, by the talk's topic (GULL_TALK_TOPIC_*), which it
  *   picks itself: the first talk of the day (daily bit 0x14 of the player) before or after the
- *   count's mark, five counted, or how many of item 0x1568 the player brings. Each of item
+ *   count's mark, five counted, or how many of spaceship part 0x1568 the player brings. Each of item
  *   0x1568 in the player's pockets is taken out and counted (up to five);
  * - 0x14 (GullTalk_OnLineShown): what follows the line shown (the receiver's message, byte
- *   0x1e): the closing of the first talk, the placing of item 0x1568 in the town
+ *   0x1e): the closing of the first talk, the placing of spaceship part 0x1568 in the town
  *   (gull_spots.h), and the gift once five were counted;
  * - 0x18 (GullTalk_OnAnswer): the player's answer read and dropped;
  * - 0x80 and 0x84: the scene's steps, a table of member functions with a flag (the scene's

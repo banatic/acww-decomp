@@ -558,7 +558,7 @@ SAVES["barber-hat"] = SAVES["barber"] + [(0x14 + 0x240A, "<H", 0x4000)]
 SAVES["turtle-37e0"] = [(POCKETS + 28, "<H", 0x37E0)]
 # as "sky-ship" with the crashed spaceship's building 0x5020 already in place (as for
 # "ship-crashed") and the count of Gulliver's parts at 5 with its mark (0x0d at 0xf52a, the state
-# block's data_021ebcd2, main/item_1568_count.h): Gulliver stands by it at the boot, all counted
+# block's data_021ebcd2, main/spaceship_parts.h): Gulliver stands by it at the boot, all counted
 SAVES["gull-wait"] = SAVES["sky-ship"] + [(0xD3AE, "<H", 0x5020), (0xF52A, "<B", 0x0D)]
 # the seed with a spoiled turnip (item 0x154a, main/town_spoil.h) on four empty tiles south-east
 # of the player's house (the town's items at 0xd328: 512 bytes an inner acre, 2 a tile)

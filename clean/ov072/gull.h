@@ -5,8 +5,8 @@
  * object of profile 0x27 (ov003/spawn_spot.h) asks for it where that object stands. A scene
  * object of class 0x020da088 (special_scene_object.h) with vtable 0x02279b08, 0x724 bytes.
  *
- * It wants item 0x1568: its talk (GullTalk, gull_talk.h, at 0x658) takes each one the player
- * carries and counts them in the state block (item_1568_count.h) up to five, places up to five
+ * It wants spaceship part 0x1568: its talk (GullTalk, gull_talk.h, at 0x658) takes each one the player
+ * carries and counts them in the state block (spaceship_parts.h) up to five, places up to five
  * of them in the town's inner acres (gull_spots.h), and once five were counted gives an item of
  * kind 0, group 0x13 (item_lists.h). The count's mark is set at the end of the first talk.
  *
