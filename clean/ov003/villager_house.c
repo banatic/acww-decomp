@@ -58,8 +58,8 @@ static_assert(sizeof(VillagerHouseAnim) == 0x20, "anim");
 
 #define VILLAGER_HOUSE_FIRST_CODE 0x5001
 #define VILLAGER_HOUSE_LAST_CODE 0x5008
-#define VILLAGER_HOUSE_MESSAGE_GONE 6 /* when func_0207f1d4 says there is no villager */
-#define VILLAGER_HOUSE_STATUS_AWAY 2  /* the status for which the session's slots are looked at */
+#define VILLAGER_HOUSE_MESSAGE_GONE 6  /* when func_0207f1d4 says there is no villager */
+#define VILLAGER_HOUSE_STATUS_ASLEEP 2 /* asleep at home: the session's slots are looked at */
 #define VILLAGER_HOUSE_SESSION_SLOTS 4
 
 /* The eight villagers (0x7ec bytes each). */
@@ -161,7 +161,7 @@ int VillagerHouse_Slot9C(VillagerHouse *house)
     if (villager_house_status_refuses(villager)) {
         return 0;
     }
-    if (VillagerStatus_Get(villager) != VILLAGER_HOUSE_STATUS_AWAY) {
+    if (VillagerStatus_Get(villager) != VILLAGER_HOUSE_STATUS_ASLEEP) {
         return 1;
     }
     NetSession *session = data_020ccf94;

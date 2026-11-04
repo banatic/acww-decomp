@@ -389,15 +389,15 @@ void VillagerResidents_MoveOut(VillagerTown *town, u8 *hold, u8 *villager, int i
 }
 CLEAN_AS(func_0207c330, VillagerResidents_MoveOut)
 
-/* func_0207c3b0: `newcomer` moves into place `index` (`place`): the villagers' objects checked
- * first (VillagerTown_CheckObjects); it is copied there, its object put in mode 10 with `now`,
+/* func_0207c3b0: `newcomer` moves into place `index` (`place`): the villagers' arrivals settled
+ * first (VillagerTown_SettleArrivals); it is copied there, its object put in mode 10 with `now`,
  * no house tile yet, `came` kept at its 0x7d6 and its items marked; it joins the walkers'
  * order with no bonds, and its number is met. `now` becomes the last arrival (and the last
  * departure, when a villager has left), and the place the newcomer's. */
 void VillagerResidents_MoveIn(VillagerTown *town, u8 *place, int index, const u8 *newcomer, unsigned char came,
                               const DateTime *now)
 {
-    VillagerTown_CheckObjects(town);
+    VillagerTown_SettleArrivals(town);
     TownVillager_Copy(place, newcomer);
     VillagerMode_SetArrived(place, now);
     VillagerHome_ClearTile(place);

@@ -60,8 +60,9 @@ static_assert(sizeof(VillagerTownEvent) == 12, "event");
 #define VILLAGER_TOWN_NICKNAME_DAYS 14
 /* The item a villager takes when it takes a design from the shop. */
 #define VILLAGER_TOWN_DESIGN_ITEM 0x12a8
-/* What func_0209c020 and func_0207d788 give for nothing to do. */
-#define VILLAGER_TOWN_OBJECT_NONE 12
+/* The mode VillagerModeRecord_LeaveArrived and VillagerMode_Update give for no change
+ * (VILLAGER_MODE_UNCHANGED). */
+#define VILLAGER_TOWN_MODE_UNCHANGED 12
 /* The type of object VillagerTown_ExpirePlayerObjects looks at, and the type it sets. */
 #define VILLAGER_TOWN_PLAYER_OBJECT 0x15
 #define VILLAGER_TOWN_PLAYER_OBJECT_DONE 4
@@ -231,11 +232,11 @@ CLEAN_AS(func_0207a650, VillagerTown_IsFarFromNicknameDate)
 
 /* func_0207a6a0: the villager that goes out first (the state table's birthday greeter, 0x16c) cleared;
  * then, in scene 6, on the date at 0x2414 of the player's record (read as the player's
- * birthday) from 6:00, when the record has not marked this year (its byte 0x2453), its flag 1
+ * birthday) from 6:00, when the record has not marked this year (its byte 0x2453), its flag 1 (Nook's job)
  * is clear and its pockets have room: the villager fondest of the player (VillagerTown_FondestOf)
  * goes out first, and the ones out are drawn again. `record` is the current player's when
  * NULL. */
-void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record)
+void VillagerTown_PickBirthdayGreeter(VillagerTown *town, void *record)
 {
     VillagerState_SetBirthdayGreeter((char) VILLAGER_TOWN_NONE);
     if (SceneQuery_Current() != 6) {
@@ -275,7 +276,7 @@ void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record)
     }
     VillagerState_SetBirthdayGreeter((char) villager);
 }
-CLEAN_AS(func_0207a6a0, VillagerTown_PickBirthdayVisitor)
+CLEAN_AS(func_0207a6a0, VillagerTown_PickBirthdayGreeter)
 
 /* func_0207a764: a random one of the resident villagers fondest of the player, or -1 (also
  * when the player id is not set). */
@@ -863,7 +864,7 @@ void VillagerTown_Update(VillagerTown *town, int skip_designs)
         }
     }
     VillagerTown_ExpirePlayerObjects(town, &now);
-    VillagerTown_UpdateObjects(town, &now);
+    VillagerTown_UpdateModes(town, &now);
     VillagerResidents_Exchange(town, &now);
     VillagerTown_StartLeaving(town, &now);
     VillagerResidents_MoveInNew(town, &now);
@@ -894,10 +895,11 @@ void VillagerTown_UpdateWithClock(VillagerTown *town)
 }
 CLEAN_AS(func_0207be8c, VillagerTown_UpdateWithClock)
 
-/* func_0207bee0: for every villager, the object of its record checked with no date
- * (func_0209c020); for a result other than 12, func_0207f414 with it and bit 0 of the object's
- * byte 0x21 (read before the check). */
-void VillagerTown_CheckObjects(VillagerTown *town)
+/* func_0207bee0: for every villager, its mode record's arrival settled with no date
+ * (VillagerModeRecord_LeaveArrived); for a mode other than 12 (unchanged), its furniture reset
+ * for that mode (VillagerFurniture_ResetForMode) with whether the record was from mode 2 (read
+ * before the settling). */
+void VillagerTown_SettleArrivals(VillagerTown *town)
 {
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
@@ -907,16 +909,17 @@ void VillagerTown_CheckObjects(VillagerTown *town)
         u8 *object = (u8 *) (VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
         int flag = VillagerModeRecord_IsFrom2((VillagerModeRecord *) (void *) object);
         int result = VillagerModeRecord_LeaveArrived((VillagerModeRecord *) (void *) object, NULL);
-        if (result != VILLAGER_TOWN_OBJECT_NONE) {
+        if (result != VILLAGER_TOWN_MODE_UNCHANGED) {
             VillagerFurniture_ResetForMode(villager, result, flag);
         }
     }
 }
-CLEAN_AS(func_0207bee0, VillagerTown_CheckObjects)
+CLEAN_AS(func_0207bee0, VillagerTown_SettleArrivals)
 
-/* func_0207bf38: for every villager, func_0207d978 and func_0207d91c with the time; then when
- * func_0207d788 gives other than 12, the object of its record is cleared (func_0209baf4). */
-void VillagerTown_UpdateObjects(VillagerTown *town, const DateTime *now)
+/* func_0207bf38: for every villager, its mode's dates kept (VillagerMode_KeepSinceDate,
+ * _KeepCountedDate) and its mode updated with the time; when the mode changed (not 12), the
+ * object of its record is cleared (VillagerObject_Clear). */
+void VillagerTown_UpdateModes(VillagerTown *town, const DateTime *now)
 {
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
@@ -925,12 +928,12 @@ void VillagerTown_UpdateObjects(VillagerTown *town, const DateTime *now)
         }
         VillagerMode_KeepSinceDate(villager, now);
         VillagerMode_KeepCountedDate(villager, now);
-        if (VillagerMode_Update(villager, &town->last_arrival, &town->last_departure, now) != VILLAGER_TOWN_OBJECT_NONE) {
+        if (VillagerMode_Update(villager, &town->last_arrival, &town->last_departure, now) != VILLAGER_TOWN_MODE_UNCHANGED) {
             VillagerObject_Clear(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
         }
     }
 }
-CLEAN_AS(func_0207bf38, VillagerTown_UpdateObjects)
+CLEAN_AS(func_0207bf38, VillagerTown_UpdateModes)
 
 /* func_0207bfa4: when a villager is due to leave (VillagerResidents_IsLeaveDue), the one
  * VillagerResidents_PickLeaver picks, if any, starts leaving (mode 9, VillagerMode_SetLeaving). */

@@ -75,7 +75,7 @@ void VillagerSickness_Update(VillagerTown *town)
     Calendar_Today(&today);
 
     if (villager == VILLAGER_TOWN_NONE) {
-        if (!VillagerSickness_TownIsFull(town)) {
+        if (!VillagerSickness_HasEnoughVillagers(town)) {
             return;
         }
         villager = VillagerSickness_PickVillager(town, (u8) (today.month - 1));
@@ -196,11 +196,11 @@ void VillagerSickness_Step(VillagerTown *town)
 CLEAN_AS(func_0207b268, VillagerSickness_Step)
 
 /* func_0207b2f8: whether the town has seven villagers or more. */
-int VillagerSickness_TownIsFull(VillagerTown *town)
+int VillagerSickness_HasEnoughVillagers(VillagerTown *town)
 {
     return VillagerRoster_Count(town) >= VILLAGER_SICKNESS_MIN_VILLAGERS;
 }
-CLEAN_AS(func_0207b2f8, VillagerSickness_TownIsFull)
+CLEAN_AS(func_0207b2f8, VillagerSickness_HasEnoughVillagers)
 
 /* func_0207b310: a villager to fall sick in month `month` (0-11), or -1: a random one of the
  * resident villagers no player has in its record (func_0207dca8) for which func_02080998 gives

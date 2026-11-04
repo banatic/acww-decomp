@@ -22,8 +22,8 @@
 #include "types.h"
 #include "villager_part.h"
 
-/* The band of the step types, and its first type. */
-#define VILLAGER_PART_BLOCK_STEP_BAND 1
+/* The class of the step types (ItemObject_ClassOfType: types 10-19), and its first type. */
+#define VILLAGER_PART_BLOCK_CLASS 1
 #define VILLAGER_PART_BLOCK_FIRST_STEP 10
 #define VILLAGER_PART_BLOCK_STEPS 10
 

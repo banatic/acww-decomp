@@ -292,7 +292,7 @@ u8 *VillagerRoster_FondestOrAny(VillagerTown *town, const void *player)
 }
 CLEAN_AS(func_0207cb10, VillagerRoster_FondestOrAny)
 
-/* func_0207cb9c: a random villager for which func_0207f074 holds (a resident, not away, that
+/* func_0207cb9c: a random villager for which func_0207f074 holds (a resident, not asleep, that
  * the current player's record does not hold), leaving out the `count` villagers of `excluded`
  * (NULL entries skipped) and the sick one; NULL for none. */
 u8 *VillagerRoster_PickResident(VillagerTown *town, const NpcId *const *excluded, int count)

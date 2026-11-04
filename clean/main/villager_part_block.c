@@ -95,7 +95,7 @@ CLEAN_AS(func_0209b414, VillagerPartBlock_IsOwnTypePastLimit)
 int VillagerPartBlock_IsPastLimit(VillagerPartBlock *block, int type)
 {
     if (ItemObject_IsInUse((ItemObject *) (void *) block->object) == 0 ||
-        ItemObject_ClassOfType(type) != VILLAGER_PART_BLOCK_STEP_BAND) {
+        ItemObject_ClassOfType(type) != VILLAGER_PART_BLOCK_CLASS) {
         return 0;
     }
     if (type != ItemObject_Type((ItemObject *) (void *) block->object)) {
@@ -143,7 +143,7 @@ CLEAN_AS(func_0209b4d4, VillagerPartBlock_Object)
  * when it was set. */
 int VillagerPartBlock_SetType(VillagerPartBlock *block, int type, const NpcId *first, const NpcId *second)
 {
-    if (ItemObject_ClassOfType(type) != VILLAGER_PART_BLOCK_STEP_BAND) {
+    if (ItemObject_ClassOfType(type) != VILLAGER_PART_BLOCK_CLASS) {
         return 0;
     }
     int place = 0;

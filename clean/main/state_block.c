@@ -452,7 +452,7 @@ void StateBlock_StartMode2(StateBlock *block)
     Sky_ReseedForMode2();
     Block020ba298_SetByte9();
     TurnipPrices_RedrawIfClockMoved((TurnipPrices *) (void *) block->part_17364);
-    VillagerTown_PickBirthdayVisitor(villagers_of(block), NULL);
+    VillagerTown_PickBirthdayGreeter(villagers_of(block), NULL);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
     if (SceneQuery_Current() == SCENE_6 && VillagerState_GetBirthdayGreeter() == -1 &&
         PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) == 0 &&

@@ -41,7 +41,7 @@ typedef struct VillagerTown VillagerTown;
 
 void VillagerSickness_Update(VillagerTown *town);
 void VillagerSickness_Step(VillagerTown *town);
-int VillagerSickness_TownIsFull(VillagerTown *town);
+int VillagerSickness_HasEnoughVillagers(VillagerTown *town);
 int VillagerSickness_PickVillager(VillagerTown *town, unsigned int month);
 int VillagerSickness_VillagerIndex(VillagerTown *town);
 VillagerSickness *VillagerSickness_Record(VillagerTown *town);

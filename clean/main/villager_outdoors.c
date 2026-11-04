@@ -30,8 +30,6 @@
 #define VILLAGER_OUTDOORS_CANDIDATES 6
 /* The minutes after which the ones out are drawn again. */
 #define VILLAGER_OUTDOORS_DRAW_MINUTES 60
-/* The bit of the current player's record that keeps the villagers awake. */
-#define VILLAGER_OUTDOORS_PLAYER_NO_SLEEP 1
 /* The flea's entry of the month's insect table (item 0x12e0), which VillagerOutdoors_FleaMonthChance
  * looks for. */
 #define VILLAGER_OUTDOORS_FLEA_INSECT 0x30
@@ -152,13 +150,13 @@ void VillagerOutdoors_PutToSleep(VillagerOutdoors *outdoors, u8 *villagers, cons
 {
     (void) outdoors;
     int record = (int) (uintptr_t) PlayerRecords_Current();
-    int awake = record != 0 && PlayerRecord_TestFlag((u8 *) (uintptr_t) record, VILLAGER_OUTDOORS_PLAYER_NO_SLEEP) != 0;
+    int nook_job = record != 0 && PlayerRecord_TestFlag((u8 *) (uintptr_t) record, PLAYER_FLAG_NOOK_JOB) != 0;
     VillagerState *entry = VillagerState_Table()->entries;
 
     for (int i = 0; i < VILLAGERS; i++) {
         NpcId *npc = TownVillager_NpcId((u8 *) villager_at(villagers, i));
         if (NpcId_IsValid(npc)) {
-            if (!awake && NpcLookup_IsInNightWindow(NpcId_Personality(npc), now)) {
+            if (!nook_job && NpcLookup_IsInNightWindow(NpcId_Personality(npc), now)) {
                 set_place(&entry[i], VILLAGER_PLACE_ASLEEP, 0);
             }
         } else {

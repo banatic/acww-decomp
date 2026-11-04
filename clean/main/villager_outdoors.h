@@ -9,7 +9,7 @@
  *   - out walking: place 0, state 1 (overlay 3's houses then find their doors closed);
  *   - at home: place 1, state 0;
  *   - asleep: place 2, state 0, for the hours of the night its personality sleeps
- *     (func_020821d4), unless bit 1 of the current player's record is set;
+ *     (func_020821d4), unless the current player is in Nook's job (PLAYER_FLAG_NOOK_JOB);
  *   - no villager: place 3, state 7.
  *
  * At most three quarters of the villagers go out, and four; none while this system holds a

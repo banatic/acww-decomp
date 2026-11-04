@@ -92,13 +92,13 @@ int VillagerStatus_PlayerHolds(u8 *villager, u8 *part)
 CLEAN_AS(func_0207ef54, VillagerStatus_PlayerHolds)
 
 /* func_0207f074: whether the villager can be picked: it has a valid NpcId, stays as a resident,
- * is not away (status 2) and the current player's record does not hold it.
+ * is not asleep (status 2) and the current player's record does not hold it.
  * REQUIRES: there is a current player's record (its part is looked up first). */
 int VillagerStatus_IsFree(u8 *villager)
 {
     u8 *part = PlayerRecord_VillagerPart(PlayerRecords_Current());
     return NpcId_IsValid(TownVillager_NpcId(villager)) && VillagerStatus_Stay(villager) == VILLAGER_STAY_RESIDENT &&
-           VillagerStatus_Get(villager) != VILLAGER_STATUS_AWAY && !VillagerStatus_PlayerHolds(villager, part);
+           VillagerStatus_Get(villager) != VILLAGER_STATUS_ASLEEP && !VillagerStatus_PlayerHolds(villager, part);
 }
 CLEAN_AS(func_0207f074, VillagerStatus_IsFree)
 
@@ -168,9 +168,9 @@ int VillagerStatus_Exists(void *villager)
 CLEAN_AS(func_0207f1d4, VillagerStatus_Exists)
 
 /* 1, or 2 when the entry's place is asleep (2). */
-static int VillagerStatus_HomeOrAway(const VillagerState *entry)
+static int VillagerStatus_HomeOrAsleep(const VillagerState *entry)
 {
-    return VillagerState_LinkedPlace(entry) == 2 ? VILLAGER_STATUS_AWAY : VILLAGER_STATUS_HOME;
+    return VillagerState_LinkedPlace(entry) == 2 ? VILLAGER_STATUS_ASLEEP : VILLAGER_STATUS_HOME;
 }
 
 /* func_0207f1d8: the villager's status (VILLAGER_STATUS_*, 0-7). */
@@ -181,11 +181,11 @@ int VillagerStatus_Get(u8 *villager)
     }
     VillagerState *entry = VillagerStatus_StateEntry(villager);
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
-        return VillagerStatus_HomeOrAway(entry);
+        return VillagerStatus_HomeOrAsleep(entry);
     }
     int state = VillagerState_LinkedState(entry);
     if (state == 0) {
-        return VillagerStatus_HomeOrAway(entry);
+        return VillagerStatus_HomeOrAsleep(entry);
     }
     if (state >= 2 && state <= 6) {
         return VILLAGER_STATUS_STATE_2 + (state - 2);

@@ -26,7 +26,7 @@
  * state 0, and 3-7 for states 2-6. */
 #define VILLAGER_STATUS_NONE 0
 #define VILLAGER_STATUS_HOME 1
-#define VILLAGER_STATUS_AWAY 2 /* byte 0x01 of the entry is 2 */
+#define VILLAGER_STATUS_ASLEEP 2 /* the entry's place (byte 0x01) is VILLAGER_PLACE_ASLEEP */
 #define VILLAGER_STATUS_STATE_2 3
 
 /* The text VillagerStatus_LoadModeText loads for a mode of group 2 or above. */

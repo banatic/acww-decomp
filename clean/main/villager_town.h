@@ -81,7 +81,7 @@ int VillagerTown_GiveLetter(VillagerTown *town, Letter *letter);
 int VillagerTown_AllRemember(VillagerTown *town, const void *player);
 void VillagerTown_SetNicknameDate(VillagerTown *town, const Date *date);
 int VillagerTown_IsFarFromNicknameDate(VillagerTown *town, const Date *date);
-void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record);
+void VillagerTown_PickBirthdayGreeter(VillagerTown *town, void *record);
 int VillagerTown_FondestOf(VillagerTown *town, const void *player);
 void VillagerTown_PickFleaMarketVisitor(VillagerTown *town);
 int VillagerTown_PickOutsideAcquaintance(VillagerTown *town);
@@ -107,8 +107,8 @@ VillagerState *VillagerTown_StateAt(int index);
 void VillagerTown_StartDay(VillagerTown *town);
 void VillagerTown_Update(VillagerTown *town, int skip_designs);
 void VillagerTown_UpdateWithClock(VillagerTown *town);
-void VillagerTown_CheckObjects(VillagerTown *town);
-void VillagerTown_UpdateObjects(VillagerTown *town, const DateTime *now);
+void VillagerTown_SettleArrivals(VillagerTown *town);
+void VillagerTown_UpdateModes(VillagerTown *town, const DateTime *now);
 void VillagerTown_StartLeaving(VillagerTown *town, const DateTime *now);
 
 #endif
