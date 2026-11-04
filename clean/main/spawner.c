@@ -1054,7 +1054,7 @@ extern const int data_020d0648; /* the number of events of data_020d0684 */
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The profiles of the villager actors made here. */
-#define SPAWNER_PROFILE_EVENT_VILLAGER 0x80    /* the villager VillagerState_GetBirthdayVillager names */
+#define SPAWNER_PROFILE_BIRTHDAY_VILLAGER 0x80 /* the villager VillagerState_GetBirthdayVillager names */
 #define SPAWNER_PROFILE_COMPANION 0x81         /* the one VillagerState_GetBirthdayCompanion names, with it */
 #define SPAWNER_PROFILE_GUEST 0x82             /* a villager who said it would come */
 #define SPAWNER_PROFILE_SICK 0x83              /* the sick villager, while it is sick */
@@ -1185,9 +1185,9 @@ int Spawner_Delete(Spawner *self)
 CLEAN_AS(func_020854f4, Spawner_Delete)
 
 /* func_02085558 (vtable slot 0, the create phase): parts 0x24 and 0x31 of the object at
- * data_021d27ac prepared; in scene 0 the event villager updated, the states applied and index
+ * data_021d27ac prepared; in scene 0 the birthday villager updated, the states applied and index
  * 0x164 cleared; coming from scene 0, indices 0x162 and 0x163 cleared (and the states applied)
- * when the event villager changed. Then the scene's villagers made: outdoors (unless the sound
+ * when the birthday villager changed. Then the scene's villagers made: outdoors (unless the sound
  * flag is set) those out in the town, after drawing index 0x160 outside the session; in a
  * villager's house its owner; in the player's house, outside event 10, index 0x164 and the
  * extra visitors cleared, and in its first room the guest. Then the checks run and the request
@@ -1372,7 +1372,7 @@ void Spawner_SpawnHouseOwner(Spawner *self)
     int companion_profile = SPAWNER_PROFILE_NONE;
     if (!in_session()) {
         if (index == VillagerState_GetBirthdayVillager()) {
-            profile = SPAWNER_PROFILE_EVENT_VILLAGER;
+            profile = SPAWNER_PROFILE_BIRTHDAY_VILLAGER;
             if (ActorTable_IsKindESlot((u32) VillagerState_GetBirthdayCompanion())) {
                 companion = spawner_villager_person(VillagerState_GetBirthdayCompanion());
                 companion_profile = SPAWNER_PROFILE_COMPANION;
