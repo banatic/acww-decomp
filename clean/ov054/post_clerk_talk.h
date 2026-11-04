@@ -41,21 +41,21 @@
 
 enum PostClerkTalkStepId {
     POST_CLERK_TALK_STEP_NONE = 0,
-    POST_CLERK_TALK_STEP_LETTERS = 1,       /* PostClerkTalk_AfterLetters */
-    POST_CLERK_TALK_STEP_SCREEN_26 = 2,     /* PostClerkTalk_AfterScreen26 */
-    POST_CLERK_TALK_STEP_DONATION = 3,      /* PostClerkTalk_AfterDonation */
-    POST_CLERK_TALK_STEP_SCREEN_3F = 4,     /* PostClerkTalk_AfterScreen3f */
-    POST_CLERK_TALK_STEP_DATED_LETTER = 5,  /* PostClerkTalk_AfterDatedLetter */
-    POST_CLERK_TALK_STEP_LOAN = 6,          /* PostClerkTalk_AfterLoan */
-    POST_CLERK_TALK_STEP_SAVINGS = 7,       /* PostClerkTalk_AfterSavings */
-    POST_CLERK_TALK_STEP_ASK_JOB_12 = 8,    /* PostClerkTalk_AskJob12, each step */
-    POST_CLERK_TALK_STEP_AWAIT_JOB_12 = 9,  /* PostClerkTalk_AwaitJob12, each step */
-    POST_CLERK_TALK_STEP_NEXT_LINE = 10,    /* PostClerkTalk_NextLine */
-    POST_CLERK_TALK_STEP_ERRAND = 11,       /* PostClerkTalk_AfterErrand */
-    POST_CLERK_TALK_STEP_SEARCH = 12,       /* PostClerkTalk_SearchGame, each step */
-    POST_CLERK_TALK_STEP_CONNECT = 13,      /* PostClerkTalk_AwaitConnection, each step */
-    POST_CLERK_TALK_STEP_ASK_JOB_1F = 14,   /* PostClerkTalk_AskJob1f, each step */
-    POST_CLERK_TALK_STEP_AWAIT_JOB_1F = 15, /* PostClerkTalk_AwaitJob1f, each step */
+    POST_CLERK_TALK_STEP_LETTERS = 1,        /* PostClerkTalk_AfterLetters */
+    POST_CLERK_TALK_STEP_LETTER_STORAGE = 2, /* PostClerkTalk_AfterLetterStorage */
+    POST_CLERK_TALK_STEP_DONATION = 3,       /* PostClerkTalk_AfterDonation */
+    POST_CLERK_TALK_STEP_TUNE_EDITOR = 4,    /* PostClerkTalk_AfterTuneEditor */
+    POST_CLERK_TALK_STEP_DATED_LETTER = 5,   /* PostClerkTalk_AfterDatedLetter */
+    POST_CLERK_TALK_STEP_LOAN = 6,           /* PostClerkTalk_AfterLoan */
+    POST_CLERK_TALK_STEP_SAVINGS = 7,        /* PostClerkTalk_AfterSavings */
+    POST_CLERK_TALK_STEP_ASK_JOB_12 = 8,     /* PostClerkTalk_AskJob12, each step */
+    POST_CLERK_TALK_STEP_AWAIT_JOB_12 = 9,   /* PostClerkTalk_AwaitJob12, each step */
+    POST_CLERK_TALK_STEP_NEXT_LINE = 10,     /* PostClerkTalk_NextLine */
+    POST_CLERK_TALK_STEP_ERRAND = 11,        /* PostClerkTalk_AfterErrand */
+    POST_CLERK_TALK_STEP_SEARCH = 12,        /* PostClerkTalk_SearchGame, each step */
+    POST_CLERK_TALK_STEP_CONNECT = 13,       /* PostClerkTalk_AwaitConnection, each step */
+    POST_CLERK_TALK_STEP_ASK_JOB_1F = 14,    /* PostClerkTalk_AskJob1f, each step */
+    POST_CLERK_TALK_STEP_AWAIT_JOB_1F = 15,  /* PostClerkTalk_AwaitJob1f, each step */
     POST_CLERK_TALK_STEPS = 16
 };
 
@@ -119,7 +119,7 @@ void PostClerkTalk_OnMenuAnswer(PostClerkTalk *talk, unsigned int arg);
 void PostClerkTalk_ChooseLetters(PostClerkTalk *talk);
 void PostClerkTalk_ChooseLoan(PostClerkTalk *talk);
 void PostClerkTalk_ChooseSavings(PostClerkTalk *talk);
-void PostClerkTalk_ChooseScreen26(PostClerkTalk *talk);
+void PostClerkTalk_OpenLetterStorage(PostClerkTalk *talk);
 void PostClerkTalk_ChooseGoodbye(PostClerkTalk *talk);
 unsigned short PostClerkTalk_IsErrandItem(unsigned short *item, int state);
 
@@ -132,9 +132,9 @@ void PostClerkTalk_TellDonationRank(PostClerkTalk *talk, int arg);
 
 /* The steps. */
 void PostClerkTalk_AfterLetters(PostClerkTalk *talk);
-void PostClerkTalk_AfterScreen26(PostClerkTalk *talk);
+void PostClerkTalk_AfterLetterStorage(PostClerkTalk *talk);
 void PostClerkTalk_AfterDonation(PostClerkTalk *talk);
-void PostClerkTalk_AfterScreen3f(PostClerkTalk *talk);
+void PostClerkTalk_AfterTuneEditor(PostClerkTalk *talk);
 void PostClerkTalk_AfterDatedLetter(PostClerkTalk *talk);
 void PostClerkTalk_AfterLoan(PostClerkTalk *talk);
 void PostClerkTalk_AfterSavings(PostClerkTalk *talk);

@@ -133,12 +133,12 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_SCREEN_POCKETS 0
 #define POST_CLERK_TALK_SCREEN_LETTERS 1
 #define POST_CLERK_TALK_SCREEN 2
-#define POST_CLERK_TALK_MODE_26 0x26
+#define POST_CLERK_TALK_MODE_LETTER_STORAGE 0x26
 #define POST_CLERK_TALK_MODE_DATE 0x33
 #define POST_CLERK_TALK_MODE_LOAN 0x34
 #define POST_CLERK_TALK_MODE_DONATION 0x37
 #define POST_CLERK_TALK_MODE_SAVINGS 0x3b
-#define POST_CLERK_TALK_MODE_3F 0x3f
+#define POST_CLERK_TALK_MODE_TUNE_EDITOR 0x3f
 
 /* The current player's flags (player_record.h): the loan offered (1), the line 0x1a said once
  * (4), the sequence's first talk (9), the gift handed over (0x20). */
@@ -576,12 +576,13 @@ void PostClerkTalk_ChooseGoodbye(PostClerkTalk *talk)
 }
 CLEAN_AS(func_ov054_02260860, PostClerkTalk_ChooseGoodbye)
 
-/* func_ov054_0226083c (the menu's answer 0xd5): the screen in mode 0x26, then step 2. */
-void PostClerkTalk_ChooseScreen26(PostClerkTalk *talk)
+/* func_ov054_0226083c (the menu's answer 0xd5): the letter storage (mode 0x26, overlay 105), then
+ * step 2. */
+void PostClerkTalk_OpenLetterStorage(PostClerkTalk *talk)
 {
-    pct_open(talk, POST_CLERK_TALK_MODE_26, 0, POST_CLERK_TALK_STEP_SCREEN_26);
+    pct_open(talk, POST_CLERK_TALK_MODE_LETTER_STORAGE, 0, POST_CLERK_TALK_STEP_LETTER_STORAGE);
 }
-CLEAN_AS(func_ov054_0226083c, PostClerkTalk_ChooseScreen26)
+CLEAN_AS(func_ov054_0226083c, PostClerkTalk_OpenLetterStorage)
 
 /* func_ov054_022607ec (the menu's answer 0xed): the house's loan in slot 4 (as bells), line
  * 0x12. */
@@ -611,14 +612,14 @@ void PostClerkTalk_OnMenuAnswer(PostClerkTalk *talk, unsigned int arg)
     static const MemberPointer *const menu_plain[4] = {
         &data_ov054_02262e18, /* 0xeb PostClerkTalk_ChooseLetters */
         &data_ov054_02262ce0, /* 0xec PostClerkTalk_ChooseSavings */
-        &data_ov054_02262df0, /* 0xd5 PostClerkTalk_ChooseScreen26 */
+        &data_ov054_02262df0, /* 0xd5 PostClerkTalk_OpenLetterStorage */
         &data_ov054_02262d00, /* 0x56 PostClerkTalk_ChooseGoodbye */
     };
     static const MemberPointer *const menu_loan[5] = {
         &data_ov054_02262d50, /* 0xeb PostClerkTalk_ChooseLetters */
         &data_ov054_02262d58, /* 0xed PostClerkTalk_ChooseLoan */
         &data_ov054_02262d98, /* 0xec PostClerkTalk_ChooseSavings */
-        &data_ov054_02262d88, /* 0xd5 PostClerkTalk_ChooseScreen26 */
+        &data_ov054_02262d88, /* 0xd5 PostClerkTalk_OpenLetterStorage */
         &data_ov054_02262e20, /* 0x56 PostClerkTalk_ChooseGoodbye */
     };
     static const MemberPointer *const menu_linked[3] = {
@@ -1039,7 +1040,7 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
             pct_open(talk, POST_CLERK_TALK_MODE_DONATION, 1, POST_CLERK_TALK_STEP_DONATION);
             break;
         case 0x49:
-            pct_open(talk, POST_CLERK_TALK_MODE_3F, 0, POST_CLERK_TALK_STEP_SCREEN_3F);
+            pct_open(talk, POST_CLERK_TALK_MODE_TUNE_EDITOR, 0, POST_CLERK_TALK_STEP_TUNE_EDITOR);
             break;
         case 0x1d:
         case 0x1e:
@@ -1156,14 +1157,14 @@ void PostClerkTalk_AfterLetters(PostClerkTalk *talk)
 }
 CLEAN_AS(func_ov054_02261c00, PostClerkTalk_AfterLetters)
 
-/* func_ov054_02261bb4 (step 2, after the screen in mode 0x26): line 0x54 when it was confirmed,
- * else 0x53; no step. */
-void PostClerkTalk_AfterScreen26(PostClerkTalk *talk)
+/* func_ov054_02261bb4 (step 2, after the letter storage, mode 0x26): line 0x54 when it was
+ * confirmed, else 0x53; no step. */
+void PostClerkTalk_AfterLetterStorage(PostClerkTalk *talk)
 {
     pct_say(talk, GroupParams_C4CIs1() ? 0x54 : 0x53);
     PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
 }
-CLEAN_AS(func_ov054_02261bb4, PostClerkTalk_AfterScreen26)
+CLEAN_AS(func_ov054_02261bb4, PostClerkTalk_AfterLetterStorage)
 
 /* func_ov054_02261af8 (step 3, after the screen in mode 0x37): when confirmed, the amount
  * given (GroupParams_C78) in slot 7 as bells, line 0x1d for 5,000 bells or more, else 0x1e; the
@@ -1191,9 +1192,9 @@ void PostClerkTalk_AfterDonation(PostClerkTalk *talk)
 }
 CLEAN_AS(func_ov054_02261af8, PostClerkTalk_AfterDonation)
 
-/* func_ov054_02261a94 (step 4, after the screen in mode 0x3f): with a slot in the session, line
- * 0x63 when confirmed, else 0x64; without, 0x5d or 0x5e; no step. */
-void PostClerkTalk_AfterScreen3f(PostClerkTalk *talk)
+/* func_ov054_02261a94 (step 4, after the town tune's editor, mode 0x3f, overlay 143): with a
+ * slot in the session, line 0x63 when confirmed, else 0x64; without, 0x5d or 0x5e; no step. */
+void PostClerkTalk_AfterTuneEditor(PostClerkTalk *talk)
 {
     u8 line;
     if (PostClerk_HasSessionSlot(talk->owner) != 0) {
@@ -1204,7 +1205,7 @@ void PostClerkTalk_AfterScreen3f(PostClerkTalk *talk)
     PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
     pct_say(talk, line);
 }
-CLEAN_AS(func_ov054_02261a94, PostClerkTalk_AfterScreen3f)
+CLEAN_AS(func_ov054_02261a94, PostClerkTalk_AfterTuneEditor)
 
 /* func_ov054_02261a00 (step 5, after the date's screen): when a date was picked, it (the kept
  * date, Global021cfc98_CopyOut) goes in (the year, 2000 on, in slot 1; the month in slot 2;

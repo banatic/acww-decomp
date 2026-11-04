@@ -29,9 +29,9 @@ void Ov054Init_PostClerkTables(void)
 {
     static const MemberPointer *const steps[POST_CLERK_TALK_STEPS - 1] = {
         &data_ov054_02262d18, /* 1: PostClerkTalk_AfterLetters */
-        &data_ov054_02262de0, /* 2: PostClerkTalk_AfterScreen26 */
+        &data_ov054_02262de0, /* 2: PostClerkTalk_AfterLetterStorage */
         &data_ov054_02262de8, /* 3: PostClerkTalk_AfterDonation */
-        &data_ov054_02262dc8, /* 4: PostClerkTalk_AfterScreen3f */
+        &data_ov054_02262dc8, /* 4: PostClerkTalk_AfterTuneEditor */
         &data_ov054_02262dc0, /* 5: PostClerkTalk_AfterDatedLetter */
         &data_ov054_02262d08, /* 6: PostClerkTalk_AfterLoan */
         &data_ov054_02262d10, /* 7: PostClerkTalk_AfterSavings */
