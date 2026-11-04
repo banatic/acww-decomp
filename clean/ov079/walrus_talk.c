@@ -92,15 +92,15 @@ extern int func_ov079_022794fc(u16 *item, int state);
 /* His special items (line 3). */
 #define WALRUS_TALK_FISH_FIRST 0x12e8
 #define WALRUS_TALK_FISH_LAST 0x131f
-#define WALRUS_TALK_SPOILING_FIRST 0x1531
-#define WALRUS_TALK_SPOILING_LAST 0x153a
+#define WALRUS_TALK_TURNIP_FIRST 0x1531 /* the turnips, 10 to 100 a bag */
+#define WALRUS_TALK_TURNIP_LAST 0x153a
 #define WALRUS_TALK_FRUIT_FIRST 0x1518
 #define WALRUS_TALK_FRUIT_LAST 0x151c
 #define WALRUS_TALK_ACORN_FIRST 0x1542
 #define WALRUS_TALK_ACORN_LAST 0x1546
 #define WALRUS_TALK_COCONUT 0x1548
-#define WALRUS_TALK_153B_FIRST 0x153b
-#define WALRUS_TALK_153B_LAST 0x1541
+#define WALRUS_TALK_RED_TURNIP_FIRST 0x153b /* the red turnips */
+#define WALRUS_TALK_RED_TURNIP_LAST 0x1541
 
 /* For a red turnip (one of 0x153b-0x1541) he gives the turban 0x13ac, or the acoustic guitar
  * 0x3530 one time in two. */
@@ -134,7 +134,7 @@ static const WalrusTalkFishDesign walrus_talk_fish_designs[] = {
 /* The samples for the other items. */
 #define WALRUS_TALK_SAMPLE_1548 0x0b
 #define WALRUS_TALK_SAMPLE_1542 0x08
-#define WALRUS_TALK_SAMPLE_SPOILING 0x0a
+#define WALRUS_TALK_SAMPLE_TURNIPS 0x0a
 #define WALRUS_TALK_SAMPLE_FRUIT 0x09
 #define WALRUS_TALK_SAMPLE_OTHER 0x00
 /* By ItemTraits_FishGroupOrder: 0 one of 0-7, 1 one of 0x0c-0x14, 2 0x1c. */
@@ -194,8 +194,8 @@ static int walrus_talk_sample(const u16 *item)
     if (walrus_talk_in(*item, WALRUS_TALK_ACORN_FIRST, WALRUS_TALK_ACORN_LAST)) {
         return WALRUS_TALK_SAMPLE_1542;
     }
-    if (walrus_talk_in(*item, WALRUS_TALK_SPOILING_FIRST, WALRUS_TALK_SPOILING_LAST)) {
-        return WALRUS_TALK_SAMPLE_SPOILING;
+    if (walrus_talk_in(*item, WALRUS_TALK_TURNIP_FIRST, WALRUS_TALK_TURNIP_LAST)) {
+        return WALRUS_TALK_SAMPLE_TURNIPS;
     }
     if (ItemTraits_FishGroupOrder(item) == 0) {
         return (u8) MainRandom_Below(WALRUS_TALK_SAMPLES_GROUP_0);
@@ -276,7 +276,7 @@ void WalrusTalk_OnLineShown(WalrusTalk *talk)
             break;
         case WALRUS_TALK_LINE_MOTION_19:
             line = WALRUS_TALK_LINE_OFFER;
-            if (walrus_talk_in(talk->item, WALRUS_TALK_153B_FIRST, WALRUS_TALK_153B_LAST)) {
+            if (walrus_talk_in(talk->item, WALRUS_TALK_RED_TURNIP_FIRST, WALRUS_TALK_RED_TURNIP_LAST)) {
                 talk->item = WALRUS_TALK_TURBAN;
                 if (MainRandom_Below(WALRUS_TALK_GIFT_ODDS) != 0) {
                     talk->item = WALRUS_TALK_GUITAR;
@@ -507,10 +507,10 @@ void WalrusTalk_TakeOffering(WalrusTalk *talk)
 
         u16 item = talk->item;
         if (walrus_talk_in(item, WALRUS_TALK_FISH_FIRST, WALRUS_TALK_FISH_LAST) ||
-            walrus_talk_in(item, WALRUS_TALK_SPOILING_FIRST, WALRUS_TALK_SPOILING_LAST) ||
+            walrus_talk_in(item, WALRUS_TALK_TURNIP_FIRST, WALRUS_TALK_TURNIP_LAST) ||
             walrus_talk_in(item, WALRUS_TALK_FRUIT_FIRST, WALRUS_TALK_FRUIT_LAST) ||
             walrus_talk_in(item, WALRUS_TALK_ACORN_FIRST, WALRUS_TALK_ACORN_LAST) || item == WALRUS_TALK_COCONUT ||
-            walrus_talk_in(item, WALRUS_TALK_153B_FIRST, WALRUS_TALK_153B_LAST)) {
+            walrus_talk_in(item, WALRUS_TALK_RED_TURNIP_FIRST, WALRUS_TALK_RED_TURNIP_LAST)) {
             message = WALRUS_TALK_LINE_SPECIAL;
         }
         item = talk->item;
