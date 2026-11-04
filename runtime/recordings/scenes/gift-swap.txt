@@ -4,7 +4,7 @@
 # of item 0x156b on the tile two south of the door, 41, 56). DOWN faces it and B takes it up
 # (2654): the pockets are full, "swap it for something?" (A twice): the swap page opens
 # (ov107/pockets_swap.c), A on pocket 0 and A on "swap": the present goes into the pockets as an
-# item drawn for 0x156b (CurrentPockets_DrawFor156B) and the pocket's item is put down.
+# item drawn for 0x156b (CurrentPockets_DrawPresent) and the pocket's item is put down.
 0 - -
 900 START -
 906 - -

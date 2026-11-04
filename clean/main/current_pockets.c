@@ -11,11 +11,12 @@
 #include "item_lists.h"
 #include "item_traits.h"
 
-/* An item marked in the record of items when a 0x151f is given in state 0. */
-#define CURRENT_POCKETS_151F 0x151f
-#define CURRENT_POCKETS_151F_MARK 0x1033
-/* The item that is given as an item drawn from a list instead (CurrentPockets_ReceiveAt). */
-#define CURRENT_POCKETS_DRAWN_ITEM 0x156b
+/* The bottle letter; when one is given in state 0 the bottle stationery is marked in the record
+ * of items too. */
+#define CURRENT_POCKETS_BOTTLE_LETTER 0x151f
+#define CURRENT_POCKETS_BOTTLE_STATIONERY 0x1033
+/* The present: given as an item drawn from a list, wrapped (CurrentPockets_ReceiveAt). */
+#define CURRENT_POCKETS_PRESENT 0x156b
 #define CURRENT_POCKETS_DRAW_KIND 0
 #define CURRENT_POCKETS_DRAW_GROUP 3
 /* Codes CurrentPockets_Receive takes without putting anything in a slot. */
@@ -152,8 +153,8 @@ void CurrentPockets_Set(u16 *item, int state, int slot)
     if (*item != PLAYER_POCKETS_NO_ITEM && state == 0) {
         ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), item, 0, 1);
     }
-    if (state == 0 && *item == CURRENT_POCKETS_151F) {
-        u16 mark = CURRENT_POCKETS_151F_MARK;
+    if (state == 0 && *item == CURRENT_POCKETS_BOTTLE_LETTER) {
+        u16 mark = CURRENT_POCKETS_BOTTLE_STATIONERY;
         ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(record), &mark, 0, 1);
     }
     PlayerPockets_SetSlot(PlayerRecord_Pockets(record), item, slot, state);
@@ -181,14 +182,14 @@ int CurrentPockets_Receive(u16 *item)
 }
 CLEAN_AS(func_0209a110, CurrentPockets_Receive)
 
-/* func_0209a14c: `*item` put in the slot: a 0x156b as an item drawn for it
- * (CurrentPockets_DrawFor156B) in state 1, any other in its pocket form in state 0. */
+/* func_0209a14c: `*item` put in the slot: a present (0x156b) as an item drawn for it
+ * (CurrentPockets_DrawPresent) in state 1 (wrapped), any other in its pocket form in state 0. */
 void CurrentPockets_ReceiveAt(u16 *item, u32 slot)
 {
     u16 given;
     int state = 0;
-    if (*item == CURRENT_POCKETS_DRAWN_ITEM) {
-        given = CurrentPockets_DrawFor156B();
+    if (*item == CURRENT_POCKETS_PRESENT) {
+        given = CurrentPockets_DrawPresent();
         state = 1;
     } else {
         u16 carried;
@@ -199,8 +200,8 @@ void CurrentPockets_ReceiveAt(u16 *item, u32 slot)
 }
 CLEAN_AS(func_0209a14c, CurrentPockets_ReceiveAt)
 
-/* func_0209a19c: an item drawn from item list 0, group 3. */
-u16 CurrentPockets_DrawFor156B(void)
+/* func_0209a19c: the item inside a present: one drawn from item list 0, group 3. */
+u16 CurrentPockets_DrawPresent(void)
 {
     u16 item;
     CurrentPocketsItemList list;
@@ -209,7 +210,7 @@ u16 CurrentPockets_DrawFor156B(void)
     ItemList_Destruct(&list);
     return item;
 }
-CLEAN_AS(func_0209a19c, CurrentPockets_DrawFor156B)
+CLEAN_AS(func_0209a19c, CurrentPockets_DrawPresent)
 
 /* func_0209a1d0: the first empty letter place, or NULL. */
 Letter *CurrentPockets_FreeLetter(void)

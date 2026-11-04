@@ -2829,7 +2829,7 @@ What reading the Clean code found about the groups above; counts are of function
   whose always.bin flags have bit 1). Worn at the boot (save face-pair, the player record's part C
   at 0x240c = 0x1483), the look reads it: scene face-pair (the tools recording to 2700).
 - A present (item 0x156b) taken up with the pockets full asks to swap; on the swap page the
-  present goes into the pocket as an item drawn for it (CurrentPockets_DrawFor156B) and the
+  present goes into the pocket as an item drawn for it (CurrentPockets_DrawPresent) and the
   pocket's item is put down where the player stands (TileRequests_AskAtActorTile): save gift-full
   (full-rod with the present two tiles south of the door), scene gift-swap. Taken with a free
   pocket, the present goes in as it is.
