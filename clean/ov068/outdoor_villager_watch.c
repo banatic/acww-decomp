@@ -41,7 +41,7 @@ static const Vec3 *watch_position(u8 *villager)
 }
 
 /* func_ov068_0226687c: a frame: nothing while held. When the look's kind is no longer the
- * watch's, the watch is held. Looking at the player (kind 1) with byte 0x18 of its record's
+ * watch's, the watch is held. Looking at the player (kind 1) with the mood (byte 0x18) of its record's
  * state entry 0 or 1 and the player out of sight (SceneLook_CanSee), an insect within 0x5000
  * is looked at, else a fish shadow within 0x5000. Looking at a point (kind 3): a frame counted
  * while the point is in sight, then the insect or fish shadow followed, or the player looked at

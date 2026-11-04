@@ -23,7 +23,7 @@ extern const u32 data_020def3c[];
 extern const u16 data_020cb8f4;
 /* The style of the sounds by the player's options' setting (0, 1, 2). */
 extern const u8 data_020cce7c[];
-/* The kind of the sounds by the villager's state byte 0x18. */
+/* The kind of the sounds by the villager's mood (state byte 0x18). */
 extern const u8 data_020cce88[];
 
 /* A colour of text, and the talk's kind, that change the sound mode. */
@@ -80,7 +80,7 @@ void TalkVoice_FollowColour(TalkVoice *voice)
 }
 CLEAN_AS(func_020688e0, TalkVoice_FollowColour)
 
-/* func_02068924: the kind of the sounds: data_020cce88 by the state byte 0x18 of the villager
+/* func_02068924: the kind of the sounds: data_020cce88 by the mood (state byte 0x18) of the villager
  * talked to; the table's first without a villager or its state. */
 u8 TalkVoice_VillagerKind(TalkVoice *voice)
 {

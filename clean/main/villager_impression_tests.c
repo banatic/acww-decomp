@@ -218,7 +218,7 @@ CLEAN_AS(func_0207ebf8, VillagerImpression_HeldNet)
 
 /* ---- The villager and the town */
 
-/* func_0207ec34: the state entry's byte 0x18 is 2 or 4. */
+/* func_0207ec34: the state entry's mood (byte 0x18) is 2 or 4. */
 int VillagerImpression_MoodIs2Or4(u8 *record, int fondness, int mood)
 {
     (void) record;
@@ -227,7 +227,7 @@ int VillagerImpression_MoodIs2Or4(u8 *record, int fondness, int mood)
 }
 CLEAN_AS(func_0207ec34, VillagerImpression_MoodIs2Or4)
 
-/* func_0207ec44: the state entry's byte 0x18 is 1. */
+/* func_0207ec44: the state entry's mood (byte 0x18) is 1. */
 int VillagerImpression_MoodIs1(u8 *record, int fondness, int mood)
 {
     (void) record;

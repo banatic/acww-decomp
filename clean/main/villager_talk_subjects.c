@@ -322,7 +322,7 @@ int VillagerTalkSubjects_Say8c80(VillagerTalk *talk)
 CLEAN_AS(func_0202261c, VillagerTalkSubjects_Say8c80)
 
 /* func_02022674: with data_020e54a8 at 0, the member of a table of eight (data_021c1ec4) for
- * the kind in the byte 0x1c of the villager's state entry, when it is one of the eight; its
+ * the activity (byte 0x1c) of the villager's state entry, when it is one of the eight; its
  * answer, else 0. */
 int VillagerTalkSubjects_SayByStateKind(VillagerTalk *talk)
 {

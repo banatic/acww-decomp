@@ -161,7 +161,7 @@ void VillagerState_Reset(void)
 }
 CLEAN_AS(func_020792c8, VillagerState_Reset)
 
-/* func_020792dc: each entry's state, flag 0, byte 0x18, counter, flag 2 and tally cleared. */
+/* func_020792dc: each entry's state, flag 0, mood (byte 0x18), counter, flag 2 and tally cleared. */
 void VillagerState_ClearTable(VillagerStates *table)
 {
     for (int i = 0; i < VILLAGER_STATE_ENTRIES; i++) {
@@ -460,7 +460,7 @@ int VillagerState_LinkedState(const VillagerState *entry)
 }
 CLEAN_AS(func_02079544, VillagerState_LinkedState)
 
-/* func_0207956c: the entry cleared and set up: state 0, byte 0x01 3, byte 0x18 5, byte 0x1c 12,
+/* func_0207956c: the entry cleared and set up: state 0, place (byte 0x01) 3, mood (byte 0x18) 5, activity (byte 0x1c) 12,
  * no item. */
 void VillagerState_Init(VillagerState *entry)
 {

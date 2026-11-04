@@ -1121,7 +1121,7 @@ static void spawner_entry_place(const SceneShareEntry *entry, Vec3 *position)
 
 /* func_0208541c (vtable slot 6, the execute phase): in scene 0 the villagers' idle frames are
  * counted and, outside the session, the roster woken up. Outside the session, each villager
- * with a state entry and no actor counts its entry down while byte 0x18 is set: byte 0x18 is
+ * with a state entry and no actor counts its entry down while its mood (byte 0x18) is set: the mood is
  * cleared when the counter reaches 0, and the entry's tally ticks. Always 1. */
 int Spawner_Execute(void)
 {

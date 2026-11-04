@@ -59,13 +59,13 @@ extern const u8 data_ov068_02276774[];
 #define RECORDS_ACRE_FLAG 0x200
 #define RECORDS_ACRE_SHIFT 17
 
-/* The kinds of the moment (byte 0x1c of the state entry) given by the town events, and the one
+/* The activities of the moment (byte 0x1c of the state entry) given by the town events, and the one
  * kept when none is drawn. */
-#define RECORDS_KIND_NONE 8
-#define RECORDS_KIND_FISH 1
-#define RECORDS_KIND_INSECT 0
-#define RECORDS_KIND_EVENT_5 5
-#define RECORDS_KIND_DAYS 3      /* the days after which the kind may change */
+#define RECORDS_ACTIVITY_NONE 8
+#define RECORDS_ACTIVITY_FISH 1
+#define RECORDS_ACTIVITY_INSECT 0
+#define RECORDS_ACTIVITY_EVENT_5 5
+#define RECORDS_ACTIVITY_DAYS 3  /* the days after which the kind may change */
 #define RECORDS_REDRAW_CHANCE 30 /* in 100 */
 
 /* The held items. */
@@ -120,7 +120,7 @@ VillagerTally *OutdoorVillagerRecords_Tally(u8 *villager)
 }
 CLEAN_AS(func_ov068_0226cf58, OutdoorVillagerRecords_Tally)
 
-/* func_ov068_0226cf8c: byte 0x18 of the state entry of its town record, 0 without one. The
+/* func_ov068_0226cf8c: the mood (byte 0x18) of the state entry of its town record, 0 without one. The
  * town record is asked for again for each step. */
 u8 OutdoorVillagerRecords_Mood(u8 *villager)
 {
@@ -253,7 +253,7 @@ CLEAN_AS(func_ov068_0226d20c, OutdoorVillagerRecords_InContest)
 
 /* func_ov068_0226d264: the item its state entry says it holds, brought up to date: an umbrella
  * (0x1380 to 0x139f) put away unless rain falls; then, holding no umbrella, the item of its
- * kind of the moment (VillagerModeRecord_KindItem) unless it already holds it (for an item
+ * activity of the moment (VillagerModeRecord_KindItem) unless it already holds it (for an item
  * with variants, any variant of it); then while rain falls item 0x1378 is changed for its
  * umbrella (TownVillager_Umbrella). Only for a town record of a villager. */
 void OutdoorVillagerRecords_RefreshItem(u8 *villager)
@@ -291,11 +291,11 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
 }
 CLEAN_AS(func_ov068_0226d264, OutdoorVillagerRecords_RefreshItem)
 
-/* func_ov068_0226d374: its kind of the moment redrawn (OutdoorVillagerRecords_RedrawKind) when
+/* func_ov068_0226d374: its activity of the moment redrawn (OutdoorVillagerRecords_RedrawActivity) when
  * it is not one the mode record allows (VillagerModeRecord_IsKindMode, or 8), when it is not the
  * record's mode and the mode is under 3 days old, or during the town events 3 to 5. Only for a
  * town record of a villager. */
-void OutdoorVillagerRecords_CheckKind(u8 *villager)
+void OutdoorVillagerRecords_CheckActivity(u8 *villager)
 {
     u8 *record = records_record(villager);
     if (record == NULL || !records_valid(record)) {
@@ -305,54 +305,55 @@ void OutdoorVillagerRecords_CheckKind(u8 *villager)
     VillagerModeRecord *mode = records_mode_record(record);
     DateTime now = {0};
     DateTime_Now(&now);
-    int keep = (VillagerModeRecord_IsKindMode((unsigned int) kind) != 0 || kind == RECORDS_KIND_NONE) &&
-               (kind == VillagerModeRecord_Mode(mode) || VillagerModeRecord_IsKindDaysOld(mode, &now, RECORDS_KIND_DAYS) != 0);
+    int keep =
+        (VillagerModeRecord_IsKindMode((unsigned int) kind) != 0 || kind == RECORDS_ACTIVITY_NONE) &&
+        (kind == VillagerModeRecord_Mode(mode) || VillagerModeRecord_IsKindDaysOld(mode, &now, RECORDS_ACTIVITY_DAYS) != 0);
     if (!keep || VillagerSceneObject_Event(villager) == RECORDS_EVENT_FISH ||
         VillagerSceneObject_Event(villager) == RECORDS_EVENT_INSECT ||
         VillagerSceneObject_Event(villager) == RECORDS_EVENT_5) {
-        OutdoorVillagerRecords_RedrawKind(villager);
+        OutdoorVillagerRecords_RedrawActivity(villager);
     }
 }
-CLEAN_AS(func_ov068_0226d374, OutdoorVillagerRecords_CheckKind)
+CLEAN_AS(func_ov068_0226d374, OutdoorVillagerRecords_CheckActivity)
 
-/* func_ov068_0226d408: its kind of the moment drawn again: the record's mode, or with 30 in
+/* func_ov068_0226d408: its activity of the moment drawn again: the record's mode, or with 30 in
  * 100 when the mode is 3 days old or more a random one of 0 to 7; kept when the mode record
  * allows it (or it is 8), else 8; the town events 3, 4 and 5 give 1, 0 and 5. Only for a town
  * record of a villager. */
-void OutdoorVillagerRecords_RedrawKind(u8 *villager)
+void OutdoorVillagerRecords_RedrawActivity(u8 *villager)
 {
     u8 *record = records_record(villager);
     if (record == NULL || !records_valid(record)) {
         return;
     }
-    int kind = RECORDS_KIND_NONE;
+    int kind = RECORDS_ACTIVITY_NONE;
     VillagerModeRecord *mode = records_mode_record(record);
     int drawn = VillagerModeRecord_Mode(mode);
     unsigned int chance = MainRandom_Below(100);
     DateTime now = {0};
     DateTime_Now(&now);
-    if ((int) chance < RECORDS_REDRAW_CHANCE && VillagerModeRecord_IsKindDaysOld(mode, &now, RECORDS_KIND_DAYS) != 0) {
-        drawn = (u8) MainRandom_Below(RECORDS_KIND_NONE);
+    if ((int) chance < RECORDS_REDRAW_CHANCE && VillagerModeRecord_IsKindDaysOld(mode, &now, RECORDS_ACTIVITY_DAYS) != 0) {
+        drawn = (u8) MainRandom_Below(RECORDS_ACTIVITY_NONE);
     }
-    if (VillagerModeRecord_IsKindMode((unsigned int) drawn) != 0 || drawn == RECORDS_KIND_NONE) {
+    if (VillagerModeRecord_IsKindMode((unsigned int) drawn) != 0 || drawn == RECORDS_ACTIVITY_NONE) {
         kind = drawn;
     }
     switch (VillagerSceneObject_Event(villager)) {
         case RECORDS_EVENT_FISH:
-            kind = RECORDS_KIND_FISH;
+            kind = RECORDS_ACTIVITY_FISH;
             break;
         case RECORDS_EVENT_INSECT:
-            kind = RECORDS_KIND_INSECT;
+            kind = RECORDS_ACTIVITY_INSECT;
             break;
         case RECORDS_EVENT_5:
-            kind = RECORDS_KIND_EVENT_5;
+            kind = RECORDS_ACTIVITY_EVENT_5;
             break;
         default:
             break;
     }
     VillagerState_SetActivity(VillagerStatus_StateEntry(record), kind);
 }
-CLEAN_AS(func_ov068_0226d408, OutdoorVillagerRecords_RedrawKind)
+CLEAN_AS(func_ov068_0226d408, OutdoorVillagerRecords_RedrawActivity)
 
 /* func_ov068_0226d598: its memory of this console's player (VillagerMemory_Of), or null without
  * a current player record whose player is set or without a town record of a villager. The

@@ -117,7 +117,7 @@ static void *usable_record(void *record)
     return record;
 }
 
-/* func_0207d18c: whether byte 0x1e is full (32) and byte 0x18 of the entry 0 or 1, for a usable
+/* func_0207d18c: whether byte 0x1e is full (32) and the entry's mood (byte 0x18) 0 or 1, for a usable
  * player record (`record`, else the current player's). */
 int VillagerEntry_IsByte1EFull(u8 *villager, void *record)
 {
@@ -131,7 +131,7 @@ int VillagerEntry_IsByte1EFull(u8 *villager, void *record)
 CLEAN_AS(func_0207d18c, VillagerEntry_IsByte1EFull)
 
 /* func_0207d1f8: byte 0x1e raised by a draw of 0-2 times how fond the villager is of the
- * player (a factor of 1 or 2), when the player's record is usable, byte 0x18 is 0 or 1 and the
+ * player (a factor of 1 or 2), when the player's record is usable, the entry's mood (byte 0x18) is 0 or 1 and the
  * villager knows the player; else by nothing (kept within 0-32 all the same). */
 void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
 {
@@ -151,7 +151,7 @@ void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
 }
 CLEAN_AS(func_0207d1f8, VillagerEntry_RaiseByte1E)
 
-/* func_0207d278: whether byte 0x18 of the villager's state entry is 0 or 1. */
+/* func_0207d278: whether the mood (byte 0x18) of the villager's state entry is 0 or 1. */
 int VillagerEntry_IsMoodLow(u8 *villager)
 {
     if (!has_villager(villager)) {

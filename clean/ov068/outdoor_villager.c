@@ -394,7 +394,7 @@ CLEAN_AS(func_ov068_02266f44, OutdoorVillager_OnEvent)
 
 /* func_ov068_022672a0 (slot 0x54): whether `other` may start an event with it from a
  * distance: its slot 0x48 agrees (OutdoorVillager_MayAct), the byte at 0x838 is clear,
- * behaviour 0 runs, byte 0x18 of its record's state entry is 0 or 1, `other` is not
+ * behaviour 0 runs, the mood (byte 0x18) of its record's state entry is 0 or 1, `other` is not
  * within 0x5000 but within 0xe000, and it faces `other` within data_ov068_02278260 either way
  * (SceneObjectBase_Faces). The state byte is read first. */
 int OutdoorVillager_Ask54(u8 *object, u8 *other)

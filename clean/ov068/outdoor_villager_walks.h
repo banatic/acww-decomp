@@ -6,7 +6,7 @@
  *   first four words around the camera's target (OutdoorVillagerWalks_OnScreen; else behaviour
  *   1), each frame it may start another behaviour (OutdoorVillagerWalks_Choose). Once a motion
  *   ends it stands, now and then (one frame in eight) walks a step of its walker (kind 1, or
- *   kind 2 one time in four when byte 0x18 of its state entry is clear; kind 4 to turn first
+ *   kind 2 one time in four when the mood (byte 0x18) of its state entry is clear; kind 4 to turn first
  *   when the step is more than a quarter turn away), but not across the line between this
  *   console's player and the object of an object event (OutdoorVillagerWalks_CrossesEvent).
  *   While it walks it stops when its wait is out, when it walks into that line, or when its
@@ -34,7 +34,7 @@
  * showing an insect or a fish (23), and a step aside around what blocks it.
  *
  * The held item (OutdoorVillagerWalks_ChangeHeldItem), checked while it stands: every 12000
- * frames (the halfword at 0x34) the kind of the moment is redrawn (OutdoorVillagerRecords_RedrawKind), and
+ * frames (the halfword at 0x34) the activity of the moment is redrawn (OutdoorVillagerRecords_RedrawActivity), and
  * the item it should hold is the kind's (VillagerModeRecord_KindItem), its umbrella (items
  * 0x1380 to 0x139f, TownVillager_Umbrella) when rain falls and the kind has none or item
  * 0x1378; behaviour 15 brings an item out, 16 puts one away. The halfword at 0x36 (300 after

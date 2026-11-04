@@ -390,7 +390,7 @@ CLEAN_AS(func_ov068_0226d850, OutdoorVillagerObject_Start)
  * (VillagerSceneObject_Init; 0 when it fails): its talk scene made its scene and reset, no
  * partner, the default lines, no reaction (3); its held item link opened with no item (0 when
  * that fails) and named by the object's link pointer; no effect handle, the bytes at 0xa04,
- * 0xa05 and 0xa09 and the push count cleared, no minute looked at; then its kind of the moment
+ * 0xa05 and 0xa09 and the push count cleared, no minute looked at; then its activity of the moment
  * checked and its held item brought up to date; 1. */
 int OutdoorVillagerObject_Init(u8 *villager)
 {
@@ -414,7 +414,7 @@ int OutdoorVillagerObject_Init(u8 *villager)
     *(u16 *) (void *) object_at(villager, OBJECT_COUNT_A06) = 0;
     *object_at(villager, OBJECT_MINUTE) = OBJECT_NO_MINUTE;
     *object_at(villager, OBJECT_BYTE_A09) = 0;
-    OutdoorVillagerRecords_CheckKind(villager);
+    OutdoorVillagerRecords_CheckActivity(villager);
     OutdoorVillagerRecords_RefreshItem(villager);
     return 1;
 }

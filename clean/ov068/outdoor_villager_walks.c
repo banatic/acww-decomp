@@ -93,8 +93,8 @@ extern const MemberPointer data_ov068_02276e98, data_ov068_02276f20;
 int OutdoorVillagerBehaviour_CallsPlayer(OutdoorVillagerBehaviour *self, u8 *villager);
 /* Once a minute of the clock, in a contest, a catch drawn that may beat the event's winner's. */
 void OutdoorVillagerRecords_EachMinute(u8 *villager);
-/* The kind of the moment of its state entry redrawn (byte 0x1c). */
-void OutdoorVillagerRecords_RedrawKind(u8 *villager);
+/* The activity of the moment of its state entry redrawn (byte 0x1c). */
+void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 
 /* The parts of the villager read here besides outdoor_villager.h's (main's scene_object.c). */
 #define WALKS_ANGLE 0x8e      /* s16: where it faces */
@@ -110,7 +110,7 @@ void OutdoorVillagerRecords_RedrawKind(u8 *villager);
 #define WALKS_BYTE_A05 0xa05
 #define WALKS_TOWN_RECORD 0x830 /* u8 *: its town record */
 /* The parts of the behaviour member read here besides outdoor_villager.h's. */
-#define WALKS_ITEM_CHECK 0x34  /* s16: frames to the next redraw of the kind of the moment */
+#define WALKS_ITEM_CHECK 0x34  /* s16: frames to the next redraw of the activity of the moment */
 #define WALKS_ITEM_HOLD 0x36   /* s16: while it and the check run, only the weather counts */
 #define WALKS_WALKER 0x3c      /* PathWalker */
 #define WALKS_WALK_TIME 0xd8   /* s16: frames left of the walker's walk, -1 before it starts */
@@ -144,7 +144,7 @@ void OutdoorVillagerRecords_RedrawKind(u8 *villager);
 #define WALKS_UMBRELLA_FIRST 0x1380
 #define WALKS_UMBRELLA_LAST 0x139f
 #define WALKS_WATERING_CAN 0x1378
-#define WALKS_KIND_NONE 7 /* no kind of the moment (VillagerState_GetActivity) */
+#define WALKS_ACTIVITY_NONE 7 /* no activity of the moment (VillagerState_GetActivity) */
 #define WALKS_KIND_6 6
 #define WALKS_ITEM_MARKED 0x1566
 #define WALKS_MARKED_NEAR 0xb00
@@ -293,7 +293,7 @@ static int walks_player_flag_1(void)
     return current != NULL ? PlayerRecord_TestFlag(current, WALKS_FLAG_1_PLAYER) : 0;
 }
 
-/* The kind of the moment of a record's state entry (byte 0x1c), 7 without a valid record. */
+/* The activity of the moment of a record's state entry (byte 0x1c), 7 without a valid record. */
 static int walks_kind(u8 *record, int kind)
 {
     if (record != NULL && NpcId_IsValid(TownVillager_NpcId(record)) != 0 && VillagerStatus_StateEntry(record) != NULL) {
@@ -469,7 +469,7 @@ CLEAN_AS(func_ov068_0226bb3c, OutdoorVillagerWalks_Start1)
 /* Once the motion is done: the pause to watch ends unless the watch still follows an insect
  * or a fish shadow it has seen for 15 frames or more and still sees; while it stands paused,
  * nothing more. Else it stands (when it may not walk, and seven frames in eight), or walks a
- * step of its walker: kind 1 (or 2 one time in four when byte 0x18 of its state entry is
+ * step of its walker: kind 1 (or 2 one time in four when the mood (byte 0x18) of its state entry is
  * clear) within a quarter turn of its facing, else kind 4 turning first, and the wait 0x100
  * or 0x128. It stands rather than cross the line between the player and an object event's
  * object near (0xc000). */
@@ -640,7 +640,7 @@ int OutdoorVillagerWalks_Choose(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226befc, OutdoorVillagerWalks_Choose)
 
 /* func_ov068_0226c034: whether to watch what this console's player shows (behaviour 23): not
- * yet shown (`shown`), byte 0x18 of its state entry 0 or 1, the player showing an insect or a
+ * yet shown (`shown`), the mood (byte 0x18) of its state entry 0 or 1, the player showing an insect or a
  * fish, its look on the player, the player within 0x6000, seen and looked at. */
 int OutdoorVillagerWalks_WatchShown(OutdoorVillagerBehaviour *self, u8 *villager)
 {
@@ -746,7 +746,7 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
     }
     u8 *record = walks_record(villager);
     int falling = Sky_Falling();
-    int kind = walks_kind(record, WALKS_KIND_NONE);
+    int kind = walks_kind(record, WALKS_ACTIVITY_NONE);
     DateTime now = {0};
     DateTime_Now(&now);
     s16 *check = walks_half(self, WALKS_ITEM_CHECK);
@@ -755,7 +755,7 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
 
     if (*check == 0 || *hold == 0) {
         if (*check == 0) {
-            OutdoorVillagerRecords_RedrawKind(villager);
+            OutdoorVillagerRecords_RedrawActivity(villager);
             kind = walks_kind(record, kind);
             *check = WALKS_ITEM_FRAMES;
         }
@@ -1095,7 +1095,7 @@ void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehaviour *self, int state,
             DateTime_Now(&now);
             if (flag_1 == 0 && NpcLookup_IsInNightWindow(NpcId_Personality(TownVillager_NpcId(record)), &now) != 0) {
                 kind = WALKS_WALKER_HOME;
-            } else if (walks_kind(record, WALKS_KIND_NONE) == WALKS_KIND_6) {
+            } else if (walks_kind(record, WALKS_ACTIVITY_NONE) == WALKS_KIND_6) {
                 kind = WALKS_WALKER_KIND_6;
             }
         }
