@@ -30,7 +30,7 @@ int VillagerImpression_Clothes12A8(u8 *record);
 int VillagerImpression_IsSnowing(void);
 int VillagerImpression_IsRaining(void);
 int VillagerImpression_HeldUmbrella(u8 *record);
-int VillagerImpression_Held137COrHeadOrPartC(u8 *record);
+int VillagerImpression_HasFlower(u8 *record);
 int VillagerImpression_HeadIs1406(u8 *record);
 int VillagerImpression_HeadIs13E4(u8 *record);
 int VillagerImpression_HeadIs13E3(u8 *record);
