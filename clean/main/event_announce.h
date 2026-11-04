@@ -8,8 +8,9 @@
  * the process of vtable data_020db71c (EventAnnounceProcess, profile data_020db6e8):
  *
  *   0  nothing asked for
- *   1  asked for while the field was busy (func_0206e980): waits until it is (then 2)
- *   2  waits until the field is not busy, then asks the event queue for an event of kind 11
+ *   1  asked for at minute 0 of the hour: waits until the hourly town tune starts
+ *      (TownTune_IsBusy, then 2)
+ *   2  waits until the town tune is not playing, then asks the event queue for an event of kind 11
  *      (EventAnnounce_QueueEvent): 3 when it took it, else 0
  *   3  while the event of kind 11 runs: the player sent to scene 0x31 (then 4); when the
  *      queue stops running it and does not take a new one, 0
@@ -43,8 +44,8 @@
 /* EventAnnounceState.step */
 enum EventAnnounceStep {
     EVENT_ANNOUNCE_IDLE = 0,
-    EVENT_ANNOUNCE_WAIT_BUSY = 1,
-    EVENT_ANNOUNCE_WAIT_FREE = 2,
+    EVENT_ANNOUNCE_WAIT_TUNE_START = 1,
+    EVENT_ANNOUNCE_WAIT_TUNE_END = 2,
     EVENT_ANNOUNCE_ENTER = 3,
     EVENT_ANNOUNCE_ENTERING = 4,
     EVENT_ANNOUNCE_SHOW = 5,

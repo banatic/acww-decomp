@@ -91,7 +91,8 @@ CLEAN_AS(func_020412a0, EventAnnounce_SceneIsExcluded)
  * below 0); `record` is made the event going on once it is shown. Nothing while linked, in
  * scene 0 when the flag of data_021d27ac's part 0x30 is set and this system's slot is not
  * taken, or while another announcement is pending. The day's change starts at once (step 3)
- * except at minute 0 of the hour (step 1); the others wait for the field (step 2). */
+ * except at minute 0 of the hour (step 1, for the hourly town tune to start); the others wait
+ * for the town tune to end (step 2). */
 void EventAnnounce_Request(int event, int record, int ending)
 {
     EventAnnounceState *state = &data_021c75a0;
@@ -113,12 +114,12 @@ void EventAnnounce_Request(int event, int record, int ending)
     if (event >= EVENT_ANNOUNCE_FIRST && event <= EVENT_ANNOUNCE_LAST) {
         message = event - EVENT_ANNOUNCE_FIRST;
         data_021c758c = ending == 0 ? 1 : 2;
-        step = EVENT_ANNOUNCE_WAIT_FREE;
+        step = EVENT_ANNOUNCE_WAIT_TUNE_END;
     } else if (event == EVENT_ANNOUNCE_EVENT_44) {
         if (state->step == EVENT_ANNOUNCE_IDLE) {
             message = EVENT_ANNOUNCE_MESSAGE_44;
             data_021c758c = 0;
-            step = EVENT_ANNOUNCE_WAIT_FREE;
+            step = EVENT_ANNOUNCE_WAIT_TUNE_END;
         }
     } else if (event < 0) {
         if (state->step == EVENT_ANNOUNCE_IDLE) {
@@ -127,8 +128,8 @@ void EventAnnounce_Request(int event, int record, int ending)
             data_021c758c = 0;
             state->new_day = 1;
             DateTime_Now(&now);
-            step = now.minute != 0 ? EVENT_ANNOUNCE_ENTER : EVENT_ANNOUNCE_WAIT_BUSY;
-        } else if (state->step == EVENT_ANNOUNCE_WAIT_FREE) {
+            step = now.minute != 0 ? EVENT_ANNOUNCE_ENTER : EVENT_ANNOUNCE_WAIT_TUNE_START;
+        } else if (state->step == EVENT_ANNOUNCE_WAIT_TUNE_END) {
             state->new_day = 1;
         }
     }
@@ -200,7 +201,7 @@ CLEAN_AS(func_02041470, EventAnnounce_StepShow)
 /* func_020414e0 (step 3): until the event queue runs the event of kind 11, it is asked for
  * again (the announcement dropped when it is not taken). Once it runs, the announcement's
  * event is made the one looked at and the one going on, and when the queue allows it and the
- * field is ready the player is sent into scene 0x31 at the town's building (the one of event
+ * town tune is not playing the player is sent into scene 0x31 at the town's building (the one of event
  * 0x44's message found by AcreMap_FindSpaceship, the others' by HasBuilding5000), the music told,
  * and the step is 4. */
 void EventAnnounce_StepEnter(void *unused)
@@ -259,7 +260,7 @@ int EventAnnounce_QueueEvent(void)
 }
 CLEAN_AS(func_020415a8, EventAnnounce_QueueEvent)
 
-/* func_020415d0 (step 2): once the field is ready, step 3 asked for. */
+/* func_020415d0 (step 2): once the town tune is not playing, step 3 asked for. */
 void EventAnnounce_StepWaitFree(void *unused)
 {
     (void) unused;
@@ -269,12 +270,12 @@ void EventAnnounce_StepWaitFree(void *unused)
 }
 CLEAN_AS(func_020415d0, EventAnnounce_StepWaitFree)
 
-/* func_020415e8 (step 1): once the field is busy, step 2. */
+/* func_020415e8 (step 1): once the hourly town tune plays, step 2. */
 void EventAnnounce_StepWaitBusy(void *unused)
 {
     (void) unused;
     if (TownTune_IsBusy()) {
-        data_021c75a0.step = EVENT_ANNOUNCE_WAIT_FREE;
+        data_021c75a0.step = EVENT_ANNOUNCE_WAIT_TUNE_END;
     }
 }
 CLEAN_AS(func_020415e8, EventAnnounce_StepWaitBusy)
@@ -433,8 +434,8 @@ int EventAnnounceProcess_Delete(void)
                 EventAnnounce_Reset();
             }
             break;
-        case EVENT_ANNOUNCE_WAIT_BUSY:
-            data_021c75a0.step = EVENT_ANNOUNCE_WAIT_FREE;
+        case EVENT_ANNOUNCE_WAIT_TUNE_START:
+            data_021c75a0.step = EVENT_ANNOUNCE_WAIT_TUNE_END;
             break;
         default:
             break;
@@ -458,10 +459,10 @@ int EventAnnounceProcess_Execute(EventAnnounceProcess *process)
         case EVENT_ANNOUNCE_IDLE:
             EventAnnounce_StepNothing(process);
             break;
-        case EVENT_ANNOUNCE_WAIT_BUSY:
+        case EVENT_ANNOUNCE_WAIT_TUNE_START:
             EventAnnounce_StepWaitBusy(process);
             break;
-        case EVENT_ANNOUNCE_WAIT_FREE:
+        case EVENT_ANNOUNCE_WAIT_TUNE_END:
             EventAnnounce_StepWaitFree(process);
             break;
         case EVENT_ANNOUNCE_ENTER:
@@ -528,10 +529,10 @@ int EventAnnounceProcess_Create(void)
 
     switch (data_021c75a0.step) {
         case EVENT_ANNOUNCE_IDLE:
-        case EVENT_ANNOUNCE_WAIT_FREE:
+        case EVENT_ANNOUNCE_WAIT_TUNE_END:
         case EVENT_ANNOUNCE_ENTER:
             break;
-        case EVENT_ANNOUNCE_WAIT_BUSY:
+        case EVENT_ANNOUNCE_WAIT_TUNE_START:
             EventAnnounce_Reset();
             break;
         default:
