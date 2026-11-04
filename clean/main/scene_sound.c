@@ -91,13 +91,13 @@ void SceneSound_Vfunc20(void)
 }
 CLEAN_AS(func_020045dc, SceneSound_Vfunc20)
 
-/* func_02004618: slot 7: set the keyboard's mode in the sound state (SoundSys_SetKeyboardMode)
+/* func_02004618: slot 7: set the speaking voice's type in the sound state (SoundSys_SetVoiceType)
  * and play its sound. */
-int SceneSound_SetKeyboardMode(int mode)
+int SceneSound_SetVoiceType(int mode)
 {
-    return data_0213fff0->vtable->set_keyboard_mode(data_0213fff0, mode);
+    return data_0213fff0->vtable->set_voice_type(data_0213fff0, mode);
 }
-CLEAN_AS(func_02004618, SceneSound_SetKeyboardMode)
+CLEAN_AS(func_02004618, SceneSound_SetVoiceType)
 
 /* func_0200468c: slot 5: stop; the sound state's byte 0x4d is set, which keeps further sounds
  * from playing. */

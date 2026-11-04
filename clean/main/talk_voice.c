@@ -139,7 +139,7 @@ void TalkVoice_Start(TalkVoice *voice)
     }
     voice->mode = mode;
     if (mode != TALK_VOICE_NO_MODE) {
-        SceneSound_SetKeyboardMode(mode);
+        SceneSound_SetVoiceType(mode);
     }
 }
 CLEAN_AS(func_020689b4, TalkVoice_Start)
@@ -177,7 +177,7 @@ void TalkVoice_Update(TalkVoice *voice)
                     SoundSys_PlaySe(TALK_VOICE_BEEP);
                 }
             } else {
-                SoundSys_PlayKeyboardSound(style, kind, voice->chars[0], voice->chars[1]);
+                SoundSys_Speak(style, kind, voice->chars[0], voice->chars[1]);
             }
         }
         if (voice->colour != TALK_VOICE_COLOUR_MUTE) {
@@ -268,7 +268,7 @@ CLEAN_AS(func_02068b64, TalkVoice_TakeSpeakerMode)
 void TalkVoice_ChangeMode(TalkVoice *voice, int mode)
 {
     if (voice->forced_mode == TALK_VOICE_NO_MODE && voice->mode != TALK_VOICE_NO_MODE && voice->mode != mode) {
-        SoundSys_SetKeyboardMode(mode);
+        SoundSys_SetVoiceType(mode);
         voice->mode = mode;
     }
 }

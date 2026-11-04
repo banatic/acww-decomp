@@ -4,7 +4,7 @@
  *
  * The talk's walker hands it each character it shows (TalkObject_PushVoiceChar), up to two a
  * frame. While the talk shows its message, each frame (TalkVoice_Update) plays the sound of
- * those characters (SoundSys_PlayKeyboardSound with a style from the player's options and a
+ * those characters (SoundSys_Speak with a style from the player's options and a
  * kind from the villager talked to), or sound 0x2c in place of it while no sound mode is set,
  * and tells the talk whether any of them is one the speaker says (its byte 0x1e97, which the
  * scenes read to move the speaker's mouth); punctuation, spaces and newlines are not.

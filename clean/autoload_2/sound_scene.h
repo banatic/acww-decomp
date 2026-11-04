@@ -146,7 +146,7 @@ SoundScene *SoundScene31_Construct(SoundScene *scene);
  *   kind 2: when func_020b22b8 or func_020b22dc says so;
  *   kind 3: on the days of events 0xf and 0x12, and of event 0x13 before 2:00;
  *   kind 1: otherwise. Classes 60, 3 and 2 derive from it; it has its own slots 7, 8 and 9,
- *   which reload bank 0x8f after the keyboard's sounds are dropped.
+ *   which reload bank 0x8f after the voice's sounds are dropped.
  *
  * Also here: the base class's helpers that make the heaps of players 6, 12, 13, 17, 18 and
  * 19. */
@@ -156,7 +156,7 @@ typedef struct SoundScene10 {
     SoundScene base; /* 0x00 */
     MusicBeat part;  /* 0x08 */
     /* 0x1c: 0 when built, 1 once the scene's sounds are loaded (start or slot 8), 2 once the
-     * keyboard's sounds replace them (slot 7) */
+     * voice's sounds replace them (slot 7) */
     u8 stage;
     u8 heap_level; /* 0x1d: the sound heap's level before bank 0x90 */
     u8 pad_1e[2];
@@ -202,7 +202,7 @@ SoundScene *SoundScene19_Destruct(SoundScene *scene);
 SoundScene *SoundScene19_Construct(SoundScene *scene);
 
 void SoundScene10_ReloadSounds(SoundScene10 *scene);
-void SoundScene10_SetKeyboardMode(SoundScene10 *scene, int mode);
+void SoundScene10_SetVoiceType(SoundScene10 *scene, int mode);
 void SoundScene10_OnMusic(SoundScene10 *scene, unsigned char stopped);
 void SoundScene10_Update(SoundScene10 *scene, int value);
 void SoundScene10_Start(SoundScene10 *scene);
@@ -222,7 +222,7 @@ SoundScene *SoundScene2_Construct(SoundScene *scene);
 
 void SoundScene1_Vfunc24(SoundScene *scene, int value);
 void SoundScene1_Vfunc20(SoundScene *scene);
-int SoundScene1_SetKeyboardMode(SoundScene *scene, int mode);
+int SoundScene1_SetVoiceType(SoundScene *scene, int mode);
 void SoundScene1_Start(SoundScene *scene);
 SoundScene *SoundScene1_DestructBase(SoundScene *scene);
 SoundScene *SoundScene1_DestructDelete(SoundScene *scene);
@@ -237,11 +237,11 @@ void SoundScene_CreatePlayer17Heaps(SoundScene *scene);
 void SoundScene_CreatePlayer6Heaps(SoundScene *scene);
 
 /* The base class (vtable 0x0213efb4, kind -1): its slots, constructor and destructors. Its
- * slot 7 makes the keyboard's mode the voice's kind and loads that mode's sounds (sequence
+ * slot 7 sets the voice's type and loads that mode's sounds (sequence
  * archive 0x85, 0x86 or 0x87); slot 8 drops them again. */
 void SoundSceneBase_OnMusic(SoundScene *scene, int stopped, int music);
 void SoundSceneBase_RestoreHeap(SoundScene *scene);
-int SoundSceneBase_SetKeyboardMode(SoundScene *scene, unsigned int mode);
+int SoundSceneBase_SetVoiceType(SoundScene *scene, unsigned int mode);
 void SoundSceneBase_Unload(SoundScene *scene);
 int SoundSceneBase_Stop(SoundScene *scene);
 void SoundSceneBase_Update(SoundScene *scene, int value);

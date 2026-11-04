@@ -11,7 +11,8 @@
  * - SoundSys: the game's sound state at data_021fd1bc: two volume faders at 0x10 and 0x1c that
  *   lower and restore the music, a fader at 0x04 with a track mask at 0x64, a byte at 0x70
  *   handed to both players as -128 to 127, and the music's volume. It also owns two sound
- *   handles of its own (at 0x38 and 0x40) and the click sounds of the on-screen keyboard.
+ *   handles of its own (at 0x38 and 0x40) and the villagers' speaking voice
+ *   (SoundSys_Speak, TalkVoice_Update).
  *   A sound number is an index of the sound archive: (sequence archive * 1000) + index. */
 #ifndef CLEAN_MAIN_SOUND_H
 #define CLEAN_MAIN_SOUND_H
@@ -66,8 +67,8 @@ void SoundSys_StartOnHandle40B(int index);
 int SoundSys_PlaySound2c(void *unused);
 void SoundSys_SetByte71(int value);
 void SoundSys_SetHandleLevel(int level);
-void SoundSys_SetKeyboardMode(int mode);
-void SoundSys_PlayKeyboardSound(int action, int layout, int key, int previous_key);
+void SoundSys_SetVoiceType(int mode);
+void SoundSys_Speak(int style, int kind, int character, int previous_character);
 void SoundSys_SetCaptureEffect(int effect);
 void SoundSys_StopSound(int number, int fade_frames);
 void SoundSys_StartOnHandle38(int number);

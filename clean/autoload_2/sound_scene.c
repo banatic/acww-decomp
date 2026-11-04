@@ -1193,7 +1193,7 @@ SoundScene *SoundScene19_Construct(SoundScene *scene)
 CLEAN_AS(func_020f39e0, SoundScene19_Construct)
 
 /* func_020f3a0c: slot 8: the base class's (the sound heap back to its saved state, which drops
- * the keyboard's sounds), then bank 0x90 and player 12's heaps loaded again. */
+ * the voice's sounds), then bank 0x90 and player 12's heaps loaded again. */
 void SoundScene10_ReloadSounds(SoundScene10 *scene)
 {
     SoundSceneBase_RestoreHeap(&scene->base);
@@ -1205,15 +1205,15 @@ void SoundScene10_ReloadSounds(SoundScene10 *scene)
 CLEAN_AS(func_020f3a0c, SoundScene10_ReloadSounds)
 
 /* func_020f3a48: slot 7: the sound heap back to its level before bank 0x90, then
- * the base class's (the keyboard's sounds for `mode` loaded).
+ * the base class's (the voice's sounds for `mode` loaded).
  * QUIRK: the base class's result is not returned. */
-void SoundScene10_SetKeyboardMode(SoundScene10 *scene, int mode)
+void SoundScene10_SetVoiceType(SoundScene10 *scene, int mode)
 {
     Sound_RestoreHeapLevel(scene->heap_level);
-    SoundSceneBase_SetKeyboardMode(&scene->base, (unsigned int) mode);
+    SoundSceneBase_SetVoiceType(&scene->base, (unsigned int) mode);
     scene->stage = 2;
 }
-CLEAN_AS(func_020f3a48, SoundScene10_SetKeyboardMode)
+CLEAN_AS(func_020f3a48, SoundScene10_SetVoiceType)
 
 /* func_020f3a80: slot 10, told of the music: the part set up with `stopped`, whatever the music
  * is. */
@@ -1406,7 +1406,7 @@ void SoundScene1_Vfunc24(SoundScene *scene, int value)
 }
 CLEAN_AS(func_020f3e0c, SoundScene1_Vfunc24)
 
-/* func_020f3e5c: slot 8: the base class's (the keyboard's sounds dropped), then sequence
+/* func_020f3e5c: slot 8: the base class's (the voice's sounds dropped), then sequence
  * archive 0x8f loaded again. */
 void SoundScene1_Vfunc20(SoundScene *scene)
 {
@@ -1416,12 +1416,12 @@ void SoundScene1_Vfunc20(SoundScene *scene)
 CLEAN_AS(func_020f3e5c, SoundScene1_Vfunc20)
 
 /* func_020f3e84: slot 7: the sound heap back to its saved state (dropping bank 0x8f), then the base class's. */
-int SoundScene1_SetKeyboardMode(SoundScene *scene, int mode)
+int SoundScene1_SetVoiceType(SoundScene *scene, int mode)
 {
     Sound_RestoreHeapLevel(Sound_GetHeapLevel());
-    return SoundSceneBase_SetKeyboardMode(scene, (unsigned int) mode);
+    return SoundSceneBase_SetVoiceType(scene, (unsigned int) mode);
 }
-CLEAN_AS(func_020f3e84, SoundScene1_SetKeyboardMode)
+CLEAN_AS(func_020f3e84, SoundScene1_SetVoiceType)
 
 /* func_020f3eb4: slot 3: group 1 of the archive loaded, with 0x21ef8 bytes for player 0, three
  * heaps for player 11 and player 13's, then bank 0x8f. */
@@ -1565,10 +1565,10 @@ extern void NNS_SndPlayerStopSeqByPlayerNo(int player_no, int fade_frames);
  * stopped. */
 static const u8 scene_players[] = {11, 2, 4, 5, 6, 7, 8, 9, 10, 12, 15, 16, 17, 18, 19};
 
-/* The banks of the keyboard's sounds, by mode (SoundSceneBase_SetKeyboardMode). */
-#define BANK_KEYBOARD_A 0x85 /* modes 0 and 4 */
-#define BANK_KEYBOARD_B 0x86 /* modes 1 and 3 */
-#define BANK_KEYBOARD_C 0x87 /* mode 2 */
+/* The banks of the voice's sounds, by mode (SoundSceneBase_SetVoiceType). */
+#define BANK_VOICE_A 0x85 /* modes 0 and 4 */
+#define BANK_VOICE_B 0x86 /* modes 1 and 3 */
+#define BANK_VOICE_C 0x87 /* mode 2 */
 
 /* The sequence archive the base constructor gives the current sound set's first melody player. */
 #define SOUND_SET_VALUE_BASE 0xd2
@@ -1635,7 +1635,7 @@ void SoundSceneBase_OnMusic(SoundScene *scene, int stopped, int music)
 }
 CLEAN_AS(func_020f4314, SoundSceneBase_OnMusic)
 
-/* func_020f4318: slot 8: the sound heap back to its saved state (the keyboard's sounds
+/* func_020f4318: slot 8: the sound heap back to its saved state (the voice's sounds
  * dropped); the scene's byte 6 cleared. */
 void SoundSceneBase_RestoreHeap(SoundScene *scene)
 {
@@ -1644,25 +1644,25 @@ void SoundSceneBase_RestoreHeap(SoundScene *scene)
 }
 CLEAN_AS(func_020f4318, SoundSceneBase_RestoreHeap)
 
-/* func_020f4338: slot 7: the keyboard's mode made the voice's kind, and the bank
+/* func_020f4338: slot 7: the voice's type set, and the bank
  * of that mode's sounds loaded; the scene's byte 6 set. Returns 1.
  * BUG: for a mode above 4 the ROM loads whatever number its register held from the caller.
  * REQUIRES: mode 0 to 4; Clean loads nothing for the others. */
-int SoundSceneBase_SetKeyboardMode(SoundScene *scene, unsigned int mode)
+int SoundSceneBase_SetVoiceType(SoundScene *scene, unsigned int mode)
 {
     int bank = -1;
 
     switch (mode) {
         case 0:
         case 4:
-            bank = BANK_KEYBOARD_A;
+            bank = BANK_VOICE_A;
             break;
         case 1:
         case 3:
-            bank = BANK_KEYBOARD_B;
+            bank = BANK_VOICE_B;
             break;
         case 2:
-            bank = BANK_KEYBOARD_C;
+            bank = BANK_VOICE_C;
             break;
         default:
             break;
@@ -1674,7 +1674,7 @@ int SoundSceneBase_SetKeyboardMode(SoundScene *scene, unsigned int mode)
     scene->started = 1;
     return 1;
 }
-CLEAN_AS(func_020f4338, SoundSceneBase_SetKeyboardMode)
+CLEAN_AS(func_020f4338, SoundSceneBase_SetVoiceType)
 
 /* func_020f43a4: slot 6: the slots' hooks set to none and the group closed (unloaded). Unless
  * the system's byte 0x62 is set, the sound heap goes back to level 1 and the output effect is

@@ -4,7 +4,7 @@
  * layer, are 8 bytes long (one 0x20 and one 0x38) and share the base vtable at 0x0213efb4:
  * start (slot 3: load the scene's sounds, after saving the sound heap's level), the frame's
  * update (slot 4), stopping (slot 5), unloading (slot 6: back to the saved level) and the
- * keyboard's mode (slot 7).
+ * speaking voice's type (slot 7).
  *
  * Also here: the start-up of the sound layer and its part of each frame. */
 #ifndef CLEAN_MAIN_SCENE_SOUND_H
@@ -15,16 +15,16 @@
 struct SceneSound;
 
 typedef struct SceneSoundVtable {
-    const void *destruct;                                         /* 0x00 */
-    void (*destruct_delete)(struct SceneSound *sound);            /* 0x04 */
-    const void *unk_08;                                           /* 0x08 */
-    void (*start)(struct SceneSound *sound);                      /* 0x0c */
-    void (*update)(struct SceneSound *sound, int value);          /* 0x10 */
-    void (*stop)(struct SceneSound *sound);                       /* 0x14 */
-    void (*unload)(struct SceneSound *sound);                     /* 0x18 */
-    int (*set_keyboard_mode)(struct SceneSound *sound, int mode); /* 0x1c */
-    void (*vfunc_20)(struct SceneSound *sound);                   /* 0x20 */
-    void (*vfunc_24)(struct SceneSound *sound, int value);        /* 0x24: nothing in the base */
+    const void *destruct;                                      /* 0x00 */
+    void (*destruct_delete)(struct SceneSound *sound);         /* 0x04 */
+    const void *unk_08;                                        /* 0x08 */
+    void (*start)(struct SceneSound *sound);                   /* 0x0c */
+    void (*update)(struct SceneSound *sound, int value);       /* 0x10 */
+    void (*stop)(struct SceneSound *sound);                    /* 0x14 */
+    void (*unload)(struct SceneSound *sound);                  /* 0x18 */
+    int (*set_voice_type)(struct SceneSound *sound, int mode); /* 0x1c */
+    void (*vfunc_20)(struct SceneSound *sound);                /* 0x20 */
+    void (*vfunc_24)(struct SceneSound *sound, int value);     /* 0x24: nothing in the base */
 } SceneSoundVtable;
 
 typedef struct SceneSound {
@@ -35,7 +35,7 @@ typedef struct SceneSound {
 void SceneSound_Vfunc24(int value);
 void SceneSound_BaseVfunc24(void);
 void SceneSound_Vfunc20(void);
-int SceneSound_SetKeyboardMode(int mode);
+int SceneSound_SetVoiceType(int mode);
 void SceneSound_Stop(void);
 void SceneSound_Delete(void);
 void SceneSound_Create(void);

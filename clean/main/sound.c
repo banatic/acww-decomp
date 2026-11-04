@@ -358,19 +358,21 @@ void SoundSys_SetHandleLevel(int level)
 }
 CLEAN_AS(func_0200459c, SoundSys_SetHandleLevel)
 
-/* func_020045cc: the keyboard's mode at 0x44, which SoundSys_PlayKeyboardSound reads. */
-void SoundSys_SetKeyboardMode(int mode)
+/* func_020045cc: the speaking voice's type at 0x44 (SoundSystem_SetVoiceType), which
+ * SoundSys_Speak reads. */
+void SoundSys_SetVoiceType(int mode)
 {
     SoundSystem_SetVoiceType((SoundSystem *) (void *) data_021fd1bc, mode);
 }
-CLEAN_AS(func_020045cc, SoundSys_SetKeyboardMode)
+CLEAN_AS(func_020045cc, SoundSys_SetVoiceType)
 
-/* func_020045f4: the click of a key of the on-screen keyboard. */
-void SoundSys_PlayKeyboardSound(int action, int layout, int key, int previous_key)
+/* func_020045f4: the villagers' speaking voice: the sound of one character of the talk, by the
+ * talk's style and the speaker's kind, with the character before it (Voice_Speak). */
+void SoundSys_Speak(int style, int kind, int character, int previous_character)
 {
-    Voice_Speak((SoundSystem *) (void *) data_021fd1bc, action, layout, key, previous_key);
+    Voice_Speak((SoundSystem *) (void *) data_021fd1bc, style, kind, character, previous_character);
 }
-CLEAN_AS(func_020045f4, SoundSys_PlayKeyboardSound)
+CLEAN_AS(func_020045f4, SoundSys_Speak)
 
 /* func_02004634: keep `effect` at 0x50 and hand it to the sound capture. */
 void SoundSys_SetCaptureEffect(int effect)
