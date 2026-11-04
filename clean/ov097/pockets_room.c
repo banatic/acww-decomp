@@ -14,8 +14,8 @@
 #include "ov004/room_objects.h"
 #include "ov004/room_placement.h"
 
-/* The item codes of the wallpapers and the carpets (ov004/room_object_022511e0.c,
- * ov004/room_object_02250e5c.c). */
+/* The item codes of the wallpapers and the carpets (ov004/wallpaper_preview.c,
+ * ov004/carpet_preview.c). */
 #define ITEM_WALLPAPER_FIRST 0x1100
 #define ITEM_WALLPAPER_LAST 0x1143
 #define ITEM_CARPET_FIRST 0x1144

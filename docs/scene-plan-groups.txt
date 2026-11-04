@@ -564,8 +564,8 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov004/music_player:MusicPlayer_Destroy ov004/rmo_object_base:RmoObjectBase_Destruct
   ov004/rmo_telephone:RmoTelephone_Destruct ov004/room_object_02250c04:RoomObject02250c04_Destroy
   ov004/room_object_02250d30:RoomObject02250d30_Destroy
-  ov004/room_object_02250e5c:RoomObject02250e5c_Destroy
-  ov004/room_object_022511e0:RoomObject022511e0_Destroy
+  ov004/carpet_preview:CarpetPreview_Destroy
+  ov004/wallpaper_preview:WallpaperPreview_Destroy
   ov004/room_object_0225130c:RoomObject0225130c_Destroy
   ov004/room_object_02251564:RoomObject02251564_Destroy
   ov004/room_object_02251690:RoomObject02251690_Destroy
@@ -1258,9 +1258,9 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov004/room_etc_board:RoomEtcBoardReceiver_Delete
   ov004/room_object_02250c04:RoomObject02250c04Receiver_Delete
   ov004/room_object_02250d30:RoomObject02250d30Receiver_Delete
-  ov004/room_object_02250e5c:RoomObject02250e5cReceiver_Delete
+  ov004/carpet_preview:CarpetPreviewReceiver_Delete
   ov004/room_object_022510b4:RoomObject022510b4Receiver_Delete
-  ov004/room_object_022511e0:RoomObject022511e0Receiver_Delete
+  ov004/wallpaper_preview:WallpaperPreviewReceiver_Delete
   ov004/room_object_0225130c:RoomObject0225130cReceiver_Delete
   ov004/room_object_02251564:RoomObject02251564Receiver_Delete
   ov004/room_object_02251690:RoomObject02251690Receiver_Delete
@@ -1357,9 +1357,9 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov004/rmo_telephone:RmoTelephoneReceiver_Destruct ov004/room_etc_board:RoomEtcBoardReceiver_Destroy
   ov004/room_object_02250c04:RoomObject02250c04Receiver_Destroy
   ov004/room_object_02250d30:RoomObject02250d30Receiver_Destroy
-  ov004/room_object_02250e5c:RoomObject02250e5cReceiver_Destroy
+  ov004/carpet_preview:CarpetPreviewReceiver_Destroy
   ov004/room_object_022510b4:RoomObject022510b4Receiver_Destroy
-  ov004/room_object_022511e0:RoomObject022511e0Receiver_Destroy
+  ov004/wallpaper_preview:WallpaperPreviewReceiver_Destroy
   ov004/room_object_0225130c:RoomObject0225130cReceiver_Destroy
   ov004/room_object_02251564:RoomObject02251564Receiver_Destroy
   ov004/room_object_02251690:RoomObject02251690Receiver_Destroy

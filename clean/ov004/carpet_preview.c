@@ -1,5 +1,5 @@
-/* The room's floor (room_object_02250e5c.h). */
-#include "room_object_02250e5c.h"
+/* A carpet shown in the room as a preview (carpet_preview.h). */
+#include "carpet_preview.h"
 
 #include "clean.h"
 #include "room_object_life.h"
@@ -7,11 +7,11 @@
 #include "main/vram_copy_task.h"
 #include "room_preview.h"
 
-static_assert(offsetof(RoomObject02250e5c, shown_frames) == 0x846, "shown_frames");
-static_assert(offsetof(RoomObject02250e5c, material_texture) == 0x848, "material texture");
-static_assert(sizeof(RoomObject02250e5c) == 0x870, "the size RoomObject02250e5c_Create allocates");
+static_assert(offsetof(CarpetPreview, shown_frames) == 0x846, "shown_frames");
+static_assert(offsetof(CarpetPreview, material_texture) == 0x848, "material texture");
+static_assert(sizeof(CarpetPreview) == 0x870, "the size CarpetPreview_Create allocates");
 
-#define ROOM_OBJECT_02250E5C_SIZE 0x870
+#define CARPET_PREVIEW_SIZE 0x870
 #define FLOOR_DRAWN_FRAMES 2
 #define CARPET_FIRST 0x1144 /* the item code of carpet 0 */
 #define CARPET_COUNT 0x44
@@ -24,34 +24,34 @@ extern const u8 data_ov004_02250f08[];
 extern const char data_ov004_02253190[];
 
 /* func_ov004_02212764 (vtable slot 0x88): drawn once shown_frames is 2 or more. */
-int RoomObject02250e5c_CanDraw(RoomObject02250e5c *object)
+int CarpetPreview_CanDraw(CarpetPreview *object)
 {
     return object->shown_frames >= FLOOR_DRAWN_FRAMES;
 }
-CLEAN_AS(func_ov004_02212764, RoomObject02250e5c_CanDraw)
+CLEAN_AS(func_ov004_02212764, CarpetPreview_CanDraw)
 
 /* func_ov004_02212778 (vtable slot 0x0c) */
-int RoomObject02250e5c_Vfunc0C(void)
+int CarpetPreview_Vfunc0C(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02212778, RoomObject02250e5c_Vfunc0C)
+CLEAN_AS(func_ov004_02212778, CarpetPreview_Vfunc0C)
 
 /* func_ov004_0221277c (vtable slot 0x80, each frame while neither appearing nor vanishing):
  * counts the frames since the carpet was put on, up to 2. */
-int RoomObject02250e5c_Update(RoomObject02250e5c *object)
+int CarpetPreview_Update(CarpetPreview *object)
 {
     if (object->shown_frames < FLOOR_DRAWN_FRAMES) {
         object->shown_frames++;
     }
     return 1;
 }
-CLEAN_AS(func_ov004_0221277c, RoomObject02250e5c_Update)
+CLEAN_AS(func_ov004_0221277c, CarpetPreview_Update)
 
 /* func_ov004_02212794 (vtable slot 0x7c, once the model is bound): keeps the room's carpet
  * number, loads that carpet into the room's floor texture file and puts its texture on
  * "m_dummy_floor"; done when the material took it. */
-int RoomObject02250e5c_Start(RoomObject02250e5c *object)
+int CarpetPreview_Start(CarpetPreview *object)
 {
     object->carpet = (u16) RoomPreview_Number(RoomPreview_Get());
     object->shown_frames = 0;
@@ -61,9 +61,9 @@ int RoomObject02250e5c_Start(RoomObject02250e5c *object)
     void *texture = CarpetTexture_Textures(RoomPreview_CarpetFile(RoomPreview_Get()));
     return VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_02253190, texture, 0, 0) != 0;
 }
-CLEAN_AS(func_ov004_02212794, RoomObject02250e5c_Start)
+CLEAN_AS(func_ov004_02212794, CarpetPreview_Start)
 
-static void RoomObject02250e5c_set_vtables(RoomObject02250e5c *object)
+static void CarpetPreview_set_vtables(CarpetPreview *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02250e5c;
     object->base.receiver_vtable = data_ov004_02250f08;
@@ -71,63 +71,63 @@ static void RoomObject02250e5c_set_vtables(RoomObject02250e5c *object)
 
 /* func_ov004_02212820 (the deleting destructor, vtable slot 0x44).
  * QUIRK: the material texture binding at 0x848 the constructor built is not taken down. */
-RoomObject02250e5c *RoomObject02250e5c_Delete(RoomObject02250e5c *object)
+CarpetPreview *CarpetPreview_Delete(CarpetPreview *object)
 {
-    RoomObject02250e5c_set_vtables(object);
+    CarpetPreview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
 }
-CLEAN_AS(func_ov004_02212820, RoomObject02250e5c_Delete)
+CLEAN_AS(func_ov004_02212820, CarpetPreview_Delete)
 
 /* func_ov004_0221284c (the destructor, vtable slot 0x40); the same QUIRK. */
-RoomObject02250e5c *RoomObject02250e5c_Destroy(RoomObject02250e5c *object)
+CarpetPreview *CarpetPreview_Destroy(CarpetPreview *object)
 {
-    RoomObject02250e5c_set_vtables(object);
+    CarpetPreview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_0221284c, RoomObject02250e5c_Destroy)
+CLEAN_AS(func_ov004_0221284c, CarpetPreview_Destroy)
 
 /* func_ov004_02212870 (the constructor). Its other fields are left as the allocation zeroed
  * them. */
-RoomObject02250e5c *RoomObject02250e5c_Construct(RoomObject02250e5c *object)
+CarpetPreview *CarpetPreview_Construct(CarpetPreview *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02250e5c_set_vtables(object);
+    CarpetPreview_set_vtables(object);
     VramCopyMaterial_Construct(&object->material_texture);
     return object;
 }
-CLEAN_AS(func_ov004_02212870, RoomObject02250e5c_Construct)
+CLEAN_AS(func_ov004_02212870, CarpetPreview_Construct)
 
 /* func_ov004_022128a0: a new floor from the room's heap; nothing when it has no room. */
-void RoomObject02250e5c_Create(void)
+void CarpetPreview_Create(void)
 {
-    RoomObject02250e5c *object = RoomObject_Alloc(ROOM_OBJECT_02250E5C_SIZE);
+    CarpetPreview *object = RoomObject_Alloc(CARPET_PREVIEW_SIZE);
     if (object != NULL) {
-        RoomObject02250e5c_Construct(object);
+        CarpetPreview_Construct(object);
     }
 }
-CLEAN_AS(func_ov004_022128a0, RoomObject02250e5c_Create)
+CLEAN_AS(func_ov004_022128a0, CarpetPreview_Create)
 
-/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02250e5c's destructors through
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters CarpetPreview's destructors through
  * its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02250e5c *RoomObject02250e5c_from_receiver(void *receiver)
+static CarpetPreview *CarpetPreview_from_receiver(void *receiver)
 {
-    return (RoomObject02250e5c *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+    return (CarpetPreview *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
 
 /* func_ov004_0221ab84: the deleting destructor, entered from the receiver part. */
-RoomObject02250e5c *RoomObject02250e5cReceiver_Delete(void *receiver)
+CarpetPreview *CarpetPreviewReceiver_Delete(void *receiver)
 {
-    return RoomObject02250e5c_Delete(RoomObject02250e5c_from_receiver(receiver));
+    return CarpetPreview_Delete(CarpetPreview_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD0Ev, RoomObject02250e5cReceiver_Delete)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD0Ev, CarpetPreviewReceiver_Delete)
 
 /* func_ov004_0221aba0: the destructor, entered from the receiver part. */
-RoomObject02250e5c *RoomObject02250e5cReceiver_Destroy(void *receiver)
+CarpetPreview *CarpetPreviewReceiver_Destroy(void *receiver)
 {
-    return RoomObject02250e5c_Destroy(RoomObject02250e5c_from_receiver(receiver));
+    return CarpetPreview_Destroy(CarpetPreview_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD1Ev, RoomObject02250e5cReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD1Ev, CarpetPreviewReceiver_Destroy)

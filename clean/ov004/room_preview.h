@@ -3,7 +3,7 @@
  * (RoomPreview_Clear). A wallpaper (0x1100-0x1143) is shown as room object 0x4a64 and a carpet
  * (0x1144-0x1187) as 0x4a60, which read the number noted here (RoomPreview_Number) and load
  * it into the texture files kept here (RoomPreview_WallpaperFile, RoomPreview_CarpetFile;
- * room_object_022511e0.h, room_object_02250e5c.h); an item of a pile (0x1000-0x10ff) as the
+ * wallpaper_preview.h, carpet_preview.h); an item of a pile (0x1000-0x10ff) as the
  * object 0x4a68 + 4 * its item, and anything else as its placed form.
  *
  * Two objects take turns: a new item starts in the other slot, near the player

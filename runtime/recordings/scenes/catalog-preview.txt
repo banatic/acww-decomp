@@ -4,8 +4,8 @@
 # Save: catalog-all: every furniture, wallpaper and carpet had. The pen from 4790 (the first tap
 # is the first touch); each entry checked is shown in the room (ov004/room_preview.h, two
 # objects taking turns): three pieces of furniture (4888-5016), two wallpapers on the tab at
-# 5080 (the wall object, room_object_022511e0.h), two hats (5272), a piece of furniture again,
-# two carpets on the tab at 5592 (the floor object, room_object_02250e5c.h), two letter papers on
+# 5080 (the wallpaper preview, wallpaper_preview.h), two hats (5272), a piece of furniture again,
+# two carpets on the tab at 5592 (the carpet preview, carpet_preview.h), two letter papers on
 # the tab at 5784 (an item of a pile, room_object_02250d30.h), a wallpaper again; Quit at 6104:
 # Nook's words, UP and A pick "nothing" (about 6550).
 0 - -

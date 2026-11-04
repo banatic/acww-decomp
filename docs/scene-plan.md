@@ -739,7 +739,7 @@ What reading the Clean code found about the groups above; counts are of function
 - A seat left to the side (FieldActorRoomStates_RequestSpotTurnPlus) and sat on again from the
   side (RequestSpotEnterMinusAhead), and its blocked side tried: house-sit.
 - Nook's order catalog shows the entry checked in the room (ov004/room_preview.h): a wallpaper
-  as the wall object (room_object_022511e0.h), a carpet as the floor (02250e5c) and a letter
+  as the wallpaper preview (wallpaper_preview.h), a carpet as the carpet preview (carpet_preview.h) and a letter
   paper as an item of a pile (02250d30), once the item record lists them (save catalog-all, the
   record's wallpaper and carpet bits): catalog-preview.
 - The other console's field actor: the message handlers of the field actor's states
