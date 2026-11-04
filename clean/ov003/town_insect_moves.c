@@ -1734,7 +1734,7 @@ CLEAN_AS(func_ov003_0223345c, TownInsectMove_Update1E)
 /* func_ov003_022334d8 (kinds 0x18 and 0x3b): hops let go and flees. Fading (actions 7 and 8) by
  * 4 a frame, once faded it is hidden at rest (action 0x13) at the origin and main's
  * TownPests_Update runs. At action 0x12 it fades (action 7) when its tile's item code is
- * outside 0x154a-0x1553 or it is on the tile ahead of this console's player.
+ * not a spoiled turnip (0x154a-0x1553) or it is on the tile ahead of this console's player.
  * REQUIRES: at action 0x12 the town map exists and the tile has an item code (the original
  * reads it without a test). */
 void TownInsectMove_Update18(TownInsect *insect)
@@ -1763,7 +1763,7 @@ void TownInsectMove_Update18(TownInsect *insect)
             int z;
             Position_Tile(&x, &z, (const Position *) &insect->position);
             u16 item = *town_insect_moves_item_at(map, x, z);
-            int on_it = item >= 0x154a && item <= 0x1553;
+            int on_it = item >= 0x154a && item <= 0x1553; /* the spoiled turnips */
             if (!on_it || TownInsect_OnPlayersAheadTile(&insect->position) != 0) {
                 insect->action = 7;
             }

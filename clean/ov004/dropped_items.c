@@ -46,12 +46,13 @@ extern void func_ov004_02233ff4(void *drop);
 #define BOUNCE_KEEP 0x4cd /* of the speed along the ground, 0.3 */
 #define GROWTH 0x19a      /* of the scale each frame */
 
-/* Its sounds: thrown, and landing for items 0x1492-0x14fd. */
+/* Its sounds: thrown, and landing for the bags of bells (items 0x1492-0x14fd, 100 to 99000
+ * Bells). */
 #define SOUND_THROWN 0x75
 #define SOUND_LANDING 0x70
 #define SOUND_VOLUME 0x7f
-#define LANDING_SOUND_FIRST 0x1492
-#define LANDING_SOUND_LAST 0x14fd
+#define BELL_BAG_FIRST 0x1492
+#define BELL_BAG_LAST 0x14fd
 
 /* The kinds of item (the top four bits of its code). */
 #define ITEM_KIND(code) (((code) & 0xf000) >> 12)
@@ -202,7 +203,7 @@ void DroppedItem_Fly(DroppedItem *drop)
     }
     if (drop->bounces < 2) {
         u16 item = drop->item_0a;
-        if (item >= LANDING_SOUND_FIRST && item <= LANDING_SOUND_LAST) {
+        if (item >= BELL_BAG_FIRST && item <= BELL_BAG_LAST) {
             SoundEmitter_PlayB(DroppedItem_sound(drop), SOUND_LANDING, SOUND_VOLUME, 0);
         }
     }

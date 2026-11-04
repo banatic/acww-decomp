@@ -590,8 +590,9 @@ void TownItemModels_DrawCode6dFrame(TileEventProcess *process, const Vec3 *point
 }
 CLEAN_AS(func_ov003_022259e8, TownItemModels_DrawCode6dFrame)
 
-/* func_ov003_02225a90: the three fruit of a grown code of the lines 0x2f-0x5b: item 0x14b8 for
- * line 0x57-0x5b, else the fruit of its line (data_ov003_0223667c). */
+/* func_ov003_02225a90: the three fruit of a grown code of the lines 0x2f-0x5b: item 0x14b8 (a
+ * bag of 30000 Bells) for line 0x57-0x5b (the money tree), else the fruit of its line
+ * (data_ov003_0223667c). */
 void TownItemModels_DrawFruit(TileEventProcess *process, const u16 *code, const Vec3 *point)
 {
     u16 id = *code;
